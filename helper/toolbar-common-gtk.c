@@ -143,7 +143,10 @@ static GtkWidget *prop_menu;
 static GtkWidget *right_click_menu;
 static unsigned int read_tag;
 static int uim_fd;
+static GtkIconFactory *uim_factory;
+static GList *uim_icon_list;
 
+static gboolean register_icon(const gchar *name);
 static gboolean has_n_strs(gchar **str_list, guint n);
 
 static gboolean
@@ -483,15 +486,23 @@ tool_button_destroy(gpointer data, gpointer user_data)
 }
 
 static GtkWidget *
-prop_button_create(GtkWidget *widget, const gchar *label,
-		   const gchar *tip_text)
+prop_button_create(GtkWidget *widget, const gchar *icon_name,
+		   const gchar *label, const gchar *tip_text)
 {
   GtkWidget *button;
   GtkTooltips *tooltip;
   GtkSizeGroup *sg;
   
   sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
-  button = gtk_button_new_with_label(label);
+
+  if (register_icon(icon_name)) {
+    GtkWidget *img = gtk_image_new_from_stock(icon_name, GTK_ICON_SIZE_MENU);
+    button = gtk_button_new();
+    gtk_container_add(GTK_CONTAINER(button), img);
+  } else {
+    button = gtk_button_new_with_label(label);
+  }
+
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE,
@@ -512,9 +523,11 @@ prop_button_append_menu(GtkWidget *button,
 			const gchar *label, const gchar *tooltip,
 			const gchar *action, const gchar *state)
 {
-  GList *label_list = g_object_get_data(G_OBJECT(button), "prop_label");
-  GList *tooltip_list = g_object_get_data(G_OBJECT(button), "prop_tooltip");
-  GList *action_list = g_object_get_data(G_OBJECT(button), "prop_action");
+  GList *label_list, *tooltip_list, *action_list;
+
+  label_list = g_object_get_data(G_OBJECT(button), "prop_label");
+  tooltip_list = g_object_get_data(G_OBJECT(button), "prop_tooltip");
+  action_list = g_object_get_data(G_OBJECT(button), "prop_action");
   
   label_list = g_list_append(label_list, g_strdup(label));
   tooltip_list = g_list_append(tooltip_list, g_strdup(tooltip));
@@ -610,6 +623,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     g_list_free(prop_buttons);
     g_object_set_data(G_OBJECT(widget), OBJECT_DATA_PROP_BUTTONS, NULL);
   }
+
   if (tool_buttons) {
     g_list_foreach(tool_buttons, tool_button_destroy, NULL);
     g_list_free(tool_buttons);
@@ -631,7 +645,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 	indication_id = cols[1];
 	iconic_label  = cols[2];
 	tooltip_str   = cols[3];
-	button = prop_button_create(widget, iconic_label, tooltip_str);
+	button = prop_button_create(widget,
+				    indication_id, iconic_label, tooltip_str);
 	append_prop_button(widget, button);
       } else if (!strcmp("leaf", cols[0]) && has_n_strs(cols, 7)) {
 	indication_id = cols[1];
@@ -920,29 +935,66 @@ right_click_menu_create(void)
   return menu;
 }
 
-static void
-register_icon(void)
+static gboolean
+is_icon_registered(const gchar *name)
 {
-  GtkIconFactory *factory;
+  GList *list;
+
+  list = uim_icon_list;
+  while (list) {
+   if (!strcmp(list->data, name))
+     return TRUE;
+   list = list->next;
+  }
+
+  return FALSE;
+}
+
+static gboolean
+register_icon(const gchar *name)
+{
   GtkIconSet *icon_set;
   GdkPixbuf *pixbuf;
+  GString *filename;
 
-  factory = gtk_icon_factory_new();
-  gtk_icon_factory_add_default(factory);
+  g_return_val_if_fail(uim_factory, FALSE);
 
-  pixbuf = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/switcher-icon.png", NULL);
+  if (is_icon_registered(name))
+    return TRUE;
+
+  filename = g_string_new(UIM_PIXMAPSDIR "/");
+  g_string_append(filename, name);
+  g_string_append(filename, ".png");
+
+  pixbuf = gdk_pixbuf_new_from_file(filename->str, NULL);
+  if (!pixbuf) {
+    g_string_free(filename, TRUE);
+    return FALSE;
+  }
+
   icon_set = gtk_icon_set_new_from_pixbuf(pixbuf);
-  gtk_icon_factory_add(factory, "switcher-icon", icon_set);
+  gtk_icon_factory_add(uim_factory, name, icon_set);
+
+  g_list_append(uim_icon_list, g_strdup(name));
+
+  g_string_free(filename, TRUE);
   gtk_icon_set_unref(icon_set);
   g_object_unref(G_OBJECT(pixbuf));
 
-  pixbuf = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
-  icon_set = gtk_icon_set_new_from_pixbuf(pixbuf);
-  gtk_icon_factory_add(factory, "uim-icon", icon_set);
-  gtk_icon_set_unref(icon_set);
-  g_object_unref(G_OBJECT(pixbuf));
+  return TRUE;
+}
 
-  g_object_unref(G_OBJECT(factory));
+static void
+init_icon(void)
+{
+  if (uim_factory)
+    return;
+
+  uim_factory = gtk_icon_factory_new();
+  gtk_icon_factory_add_default(uim_factory);
+
+  register_icon("switcher-icon");
+  register_icon("uim-icon");
 }
 
 static GtkWidget *
@@ -954,7 +1006,7 @@ toolbar_new(gint type)
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
-  register_icon();
+  init_icon();
 
   /* create widgets */
   hbox = gtk_hbox_new(FALSE, 0);
