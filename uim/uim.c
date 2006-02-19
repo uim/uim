@@ -58,6 +58,10 @@ char *uim_last_client_encoding;
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
+
+/* Explicitly initialized by zero although it is ensured to be zero by
+ * the C standard, because some implementation violates it? kzk, note
+ * the name.  -- YamaKen 2006-02-20 */
 static int uim_initialized = 0;
 
 void
