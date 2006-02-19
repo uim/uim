@@ -58,7 +58,7 @@ char *uim_last_client_encoding;
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
-static int uim_initialized;
+static int uim_initialized = 0;
 
 void
 uim_set_preedit_cb(uim_context uc,
