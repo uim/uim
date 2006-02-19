@@ -61,6 +61,9 @@
     (or (assq-cdr idname imsw-iconic-label-alist)
 	imsw-default-iconic-label)))
 
+;; FIXME: the helper protocol must to be revised as codeset included
+;; in each branches, to make the switcher widget context-encoding
+;; independent.
 (define imsw-actions
   (lambda ()
     (reverse
@@ -78,8 +81,8 @@
 				 indication)
 
 			       (lambda (ctx) ;; activity predicate
-				 (= (im-name (context-im ctx))
-				    idname))
+				 (eq? (im-name (context-im ctx))
+				      idname))
 
 			       (lambda (ctx) ;; action handler
 				 (uim-switch-im (context-id ctx) idname)
@@ -99,6 +102,11 @@
 	      act-name))
 	  im-list))))
 
+(define imsw-widget-codeset
+  (or (and (feature? 'nls)
+	   (bind-textdomain-codeset (gettext-package) #f))
+      (locale-codeset (locale-new ""))))
+
 (define imsw-register-widget
   (lambda ()
     (let ((acts (imsw-actions)))
@@ -106,17 +114,25 @@
 		       (activity-indicator-new acts)
 		       (actions-new acts)))))
 
+(define imsw-add-im-switcher-widget
+  (lambda (widget-id-list)
+    (if (memq 'widget_im_switcher widget-id-list)
+	widget-id-list
+	(cons 'widget_im_switcher widget-id-list)
+	;;(append widget-id-list '(widget_im_switcher))
+	)))
+
 (define context-init-widgets-orig context-init-widgets!)
 (define context-init-widgets!
   (lambda (context widget-id-list)
     (context-init-widgets-orig context
-			       (cons 'widget_im_switcher widget-id-list))))
+			       (imsw-add-im-switcher-widget widget-id-list))))
 
 (define context-list-replace-widgets-orig context-list-replace-widgets!)
 (define context-list-replace-widgets!
   (lambda (target-im-name widget-id-list)
     (context-list-replace-widgets-orig
      target-im-name
-     (cons 'widget_im_switcher widget-id-list))))
+     (imsw-add-im-switcher-widget widget-id-list))))
 
 (imsw-register-widget)
