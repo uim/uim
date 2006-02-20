@@ -29,8 +29,10 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;
 
-;; To enable the action-based IM switching, add (require "im-switcher.scm") to
-;; ~/.uim
+;; FIXME:
+;; - Support the input_mode assumption of mode API
+;; - Fix context-propagate-widget-configuration on dynamic toolbar
+;;   reconfiguration. current-context is needed.
 
 (require "util.scm")
 (require "im.scm")
