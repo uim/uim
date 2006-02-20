@@ -353,11 +353,26 @@
   (_ "long description will be here."))
 
 ;; toolbar buttons
+(define-custom 'toolbar-show-action-based-switcher-button? #t
+  '(toolbar buttons)
+  '(boolean)
+  (_ "menu-based input method switcher")
+  (_ "Show the menu-based IM switcher on toolbar."))
+
+(custom-add-hook 'toolbar-show-action-based-switcher-button?
+		 'custom-set-hooks
+		 (lambda ()
+		   (if toolbar-show-action-based-switcher-button?
+		       (require "im-switcher.scm"))
+		   (if (symbol-bound? 'context-refresh-switcher-widget!)
+		       (for-each context-refresh-switcher-widget!
+				 context-list))))
+
 (define-custom 'toolbar-show-switcher-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "input method switcher")
-  (_ "long description will be here."))
+  (_ "full-featured input method switcher")
+  (_ "Show the button on toolbar that invokes uim-im-switcher application for IM switching."))
 
 (define-custom 'toolbar-show-pref-button? #t
   '(toolbar buttons)
