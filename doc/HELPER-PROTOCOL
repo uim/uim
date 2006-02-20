@@ -171,9 +171,6 @@ protocol within uim.
     of leaves. A branch represents a property which is shown as (popup) menu
     for user, and a leaf represents a menu item of the branch.
 
-    iconic_label is a very short string typically 1 character to be used as
-    icon. For example, "a" means 'direct input'.
-
     indication_id is an identifier that specifies visual appearance of the
     item. The ID roughly considerable as "icon name", and so the message
     receiver can use it to form filename for the corresponding icon
@@ -182,11 +179,17 @@ protocol within uim.
     toolkit-native separator. But it is not necessary since the "separator"
     appears as dummy item with no action if the receiver is not aware of it.
 
+    iconic_label is a very short string typically 1 character to be used as
+    icon. For example, "a" means 'direct input'. This field should be
+    translated with gettext(3) or equivalent. See safe_gettext() of
+    toolbar-common-gtk.c.
+
     label_string is a short string to be shown in the menu, or used as tooltip
-    of the button.
+    of the button. This field should be translated with gettext(3) or
+    equivalent.
 
     short_desc is a short description string usually used as tooltip of the
-    menu item.
+    menu item. This field should be translated with gettext(3) or equivalent.
 
     action_id is an identifier of the menu item. This will be
     notified to other processes by prop_activate when this menu item has been

@@ -34,6 +34,7 @@
 #include "config.h"
 
 #include <gtk/gtk.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -144,8 +145,20 @@ static int uim_fd;
 static GtkIconFactory *uim_factory;
 static GList *uim_icon_list;
 
-static gboolean register_icon(const gchar *name);
+static const char *safe_gettext(const char *msgid);
 static gboolean has_n_strs(gchar **str_list, guint n);
+static gboolean register_icon(const gchar *name);
+
+static const char *
+safe_gettext(const char *msgid)
+{
+  const char *p;
+
+  for (p = msgid; *p && isascii(*p); p++)
+    continue;
+
+  return (*p) ? msgid : gettext(msgid);
+}
 
 static gboolean
 has_n_strs(gchar **str_list, guint n)
@@ -529,8 +542,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   guint i;
   gchar **cols;
   gchar *charset;
-  gchar *indication_id, *iconic_label, *label, *tooltip_str;
-  gchar *action_id, *is_selected;
+  const gchar *indication_id, *iconic_label, *label, *tooltip_str;
+  const gchar *action_id, *is_selected;
   GList *prop_buttons, *tool_buttons;
   GtkSizeGroup *sg;
 
@@ -572,9 +585,9 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 	append_prop_button(widget, button);
       } else if (!strcmp("leaf", cols[0]) && has_n_strs(cols, 7)) {
 	indication_id = cols[1];
-	iconic_label  = cols[2];
-	label         = cols[3];
-	tooltip_str   = cols[4];
+	iconic_label  = safe_gettext(cols[2]);
+	label         = safe_gettext(cols[3]);
+	tooltip_str   = safe_gettext(cols[4]);
 	action_id     = cols[5];
 	is_selected   = cols[6];
 	prop_button_append_menu(button,

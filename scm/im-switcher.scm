@@ -70,12 +70,10 @@
      (map (lambda (im)
 	    (let* ((idname (im-name im))
 		   (act-name (symbolconc 'action_imsw_ idname))
-		   (label (ugettext (im-name-label im)))
-		   (desc (ugettext (im-short-desc im)))
 		   (indication (list (imsw-indication-id idname)
 				     (imsw-iconic-label idname)
-				     label
-				     desc)))
+				     (im-name-label im)
+				     (im-short-desc im))))
 	      (register-action act-name
 			       (lambda (ctx) ;; indication handler
 				 indication)
