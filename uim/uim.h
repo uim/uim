@@ -485,20 +485,15 @@ void
 uim_prop_list_update(uim_context uc);
 
 /**
- * Set callback function to be called when property list is updated.
- *
- * @param uc input context
- * @param update_cb called when property list is updated.
- *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
- *        2nd argument is the message to be sent to the helper server with "prop_label_update" command and charset info.
+ * Obsolete. Only existing for Backward compatibility and should not
+ * be called.
  */
 void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str));
 /**
- * Update property label
- *
- * @param uc input context
+ * Obsolete. Only existing for Backward compatibility and should not
+ * be called.
  */
 void
 uim_prop_label_update(uim_context uc);

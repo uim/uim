@@ -87,7 +87,6 @@ struct uim_context_ {
   /**/
   int mode;
   /**/
-  char *proplabelstr;
   char *propstr;
   /**/
   int candidate_index;
@@ -104,8 +103,6 @@ struct uim_context_ {
   void (*mode_update_cb)(void *ptr, int);
   /* property list */
   void (*prop_list_update_cb)(void *ptr, const char *str);
-  /* property label */
-  void (*prop_label_update_cb)(void *ptr, const char *str);
   /* candidate window */
   void (*candidate_selector_activate_cb)(void *ptr, int nr, int index);
   void (*candidate_selector_select_cb)(void *ptr, int index);

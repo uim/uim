@@ -144,7 +144,6 @@ uim_create_context(void *ptr,
   uc->mode = 0;
   /**/
   uc->propstr = NULL;
-  uc->proplabelstr = NULL;
   /**/
   uc->preedit_clear_cb = NULL;
   uc->preedit_pushback_cb = NULL;
@@ -155,7 +154,6 @@ uim_create_context(void *ptr,
   uc->mode_update_cb = NULL;
   /**/
   uc->prop_list_update_cb  = NULL;
-  uc->prop_label_update_cb = NULL;
   /**/
   uc->candidate_selector_activate_cb = NULL;
   uc->candidate_selector_select_cb = NULL;
@@ -272,7 +270,6 @@ uim_release_context(uim_context uc)
     uc->modes[i] = NULL;
   }
   free(uc->propstr);
-  free(uc->proplabelstr);
   free(uc->modes);
   free(uc->short_desc);
   free(uc->encoding);
@@ -310,7 +307,6 @@ uim_set_mode_list_update_cb(uim_context uc,
   uc->mode_list_update_cb = update_cb;
 }
 
-
 void
 uim_set_prop_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr, const char *str))
@@ -318,14 +314,12 @@ uim_set_prop_list_update_cb(uim_context uc,
   uc->prop_list_update_cb = update_cb;
 }
 
-
+/* Obsolete */
 void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str))
 {
-  uc->prop_label_update_cb = update_cb;
 }
-
 
 void
 uim_prop_activate(uim_context uc, const char *str)
@@ -398,11 +392,10 @@ uim_prop_list_update(uim_context uc)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
 }
 
+/* Obsolete */
 void
 uim_prop_label_update(uim_context uc)
 {
-  if (uc && uc->proplabelstr && uc->prop_label_update_cb)
-    uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
 }
 
 int

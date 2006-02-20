@@ -57,6 +57,30 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Obsolete prop_label handlings
+Affects: Helper program developers, Bridge developers
+Updates: Helper protocol, Scheme API
+Version: 1.1.0
+Revision: ac3122, ac3123, ac3125, ac3131
+Date: 2006-02-20
+Modifier: Etsushi, YamaKen
+Related: "Add icon support to helper protocol"
+URL:
+Changes:
+    (removed) "prop_label_get"
+    (removed) "prop_label_update"
+    (removed) im-update-prop-label
+  (obsoleted) uim_set_prop_label_update_cb
+  (obsoleted) uim_prop_label_update
+Description:
+  The prop_label messages had already lost its original role by revised
+  prop_list message (particularly 'activity' field). Because format revision
+  of prop_list_update broke the protocol compatibility, it is good opportunity
+  to remove the unusable message.
+  
+  Although C API/ABI is kept to be backward compatible with uim 1.0, bridges
+  and helper programs should remove prop_label handlings.
+------------------------------------------------------------------------------
 Summary: Add icon support to helper protocol
 Affects: Helper program developers
 Updates: Helper protocol
@@ -68,14 +92,13 @@ Related:
 URL:
   http://lists.freedesktop.org/archives/uim/2006-February/001434.html
 Changes:
-  (update) "prop_label_update"
   (update) "prop_list_update"
 Description:
-  Add 'indication_id' attribute to the two messages to support icons on
+  Add 'indication_id' attribute to the message to support icons on
   toolbars. And a special indication_id "separator" is also defined.
   
-  The message formats have been incompatible with former ones. Helper program
-  developers, please read doc/HELPER-PROTOCOL and follow the changes.
+  The message format have been incompatible with former one. Helper program
+  developers, please read doc/HELPER-PROTOCOL and follow the change.
 ------------------------------------------------------------------------------
 Summary: Rename is-set-ugid? to follow the Scheme naming convention
 Affects: IM developers, uim developers

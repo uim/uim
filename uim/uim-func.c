@@ -528,27 +528,6 @@ im_update_prop_list(uim_lisp id, uim_lisp prop_)
   return uim_scm_f();
 }
 
-
-static uim_lisp
-im_update_prop_label(uim_lisp id, uim_lisp prop_)
-{
-  uim_context uc = retrieve_uim_context(id);
-  const char *prop = uim_scm_refer_c_str(prop_);
-    
-  if (!uc)
-    return uim_scm_f();
-
-  if (uc && uc->proplabelstr)
-    free(uc->proplabelstr);
-  
-  uc->proplabelstr = uc->conv_if->convert(uc->conv, prop);
-
-  if (uc->prop_label_update_cb)
-    uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
-
-  return uim_scm_f();
-}
-
 static uim_lisp
 im_update_mode(uim_lisp id, uim_lisp mode_)
 {
@@ -757,7 +736,6 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_2("im-pushback-mode-list", im_pushback_mode_list);
   uim_scm_init_subr_1("im-update-mode-list",   im_update_mode_list);
   /**/
-  uim_scm_init_subr_2("im-update-prop-label", im_update_prop_label);
   uim_scm_init_subr_2("im-update-prop-list",  im_update_prop_list);
   /**/
   uim_scm_init_subr_2("im-update-mode", im_update_mode);

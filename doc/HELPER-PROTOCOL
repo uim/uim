@@ -82,8 +82,6 @@ protocol within uim.
   message  = (focus_in            |
               focus_out           |
               prop_activate       |
-              prop_label_get      |
-              prop_label_update   |
               prop_list_get       |
               prop_list_update    |
               im_list             |
@@ -151,44 +149,6 @@ protocol within uim.
 
     prop_activate = "prop_activate\n" action_id "\n"
 
-  - prop_label_get
-
-    This message requests a prop_label_update. The request sender will receive
-    prop_label_update in response to this message. This message is currently
-    not used by official uim suites.
-
-    See also prop_label_update
-
-    prop_label_get = "prop_label_get\n"
-
-  - prop_label_update
-
-    This message notifies a subset of prop_list_update. This message had been
-    designed to reduce message passing overhead by replacing prop_list_update
-    by this.
-
-    indication_id is an identifier that specifies visual appearance of the
-    item. The ID roughly considerable as "icon name", and so the message
-    receiver can use it to form filename for the corresponding icon
-    (e.g. "anthy" -> "/path/to/somewhere/32x32/anthy.png").
-
-    iconic_label is a very short string typically 1 character to be used as
-    icon. For example, "a" means 'direct input'.
-
-    label_string is a string usually used as tooltip of the button.
-
-    Invoke im-update-prop-label to send this message.
-
-    See also prop_list_update.
-
-    prop_label_update = "prop_label_update\n" charset_specifier labels
-    labels = labels label | label
-    label = indication_id "\t" iconic_label "\t" label_string "\n"
-
-    indication_id = identifier
-    iconic_label = str
-    label_string = str
-
   - prop_list_get
 
     This message requests a prop_list_update. The request sender will receive
@@ -214,11 +174,13 @@ protocol within uim.
     iconic_label is a very short string typically 1 character to be used as
     icon. For example, "a" means 'direct input'.
 
-    indication_id is an identifier. This element has same meaning as in
-    prop_label_update except for the special ID "separator". If the ID is
-    "separator", message receivers should display the leaf as toolkit-native
-    separator. But it is not necessary since the "separator" appears as dummy
-    item with no action if the receiver is not aware of it.
+    indication_id is an identifier that specifies visual appearance of the
+    item. The ID roughly considerable as "icon name", and so the message
+    receiver can use it to form filename for the corresponding icon
+    (e.g. "anthy" -> "/path/to/somewhere/32x32/anthy.png"). There is a special
+    ID. If the ID is "separator", message receivers should display the leaf as
+    toolkit-native separator. But it is not necessary since the "separator"
+    appears as dummy item with no action if the receiver is not aware of it.
 
     label_string is a short string to be shown in the menu, or used as tooltip
     of the button.

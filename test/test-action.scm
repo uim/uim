@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 3130 of new repository
+;; This file is tested with revision 3131 of new repository
 
 (use test.unit)
 
@@ -1496,61 +1496,6 @@
    (assert-false (uim-bool '(map widget-id test-widget-conf)))
    (assert-false (uim-bool '(map widget-id test-widget-state))))
 
-  ("test context-propagate-prop-label-update"
-   ;; 2 widgets
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_input_mode
-				       widget_test_kana_input_method))
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "figure_ja_direct\ta\t直接入力\n"
-				"figure_ja_roma\tＲ\tローマ字\n")
-		 (uim 'test-prop-label))
-   ;; 2 widgets (updated state)
-   (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-						   (context-widgets tc))
-					     'action_test_katakana)))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "figure_ja_katakana\tア\tカタカナ\n"
-				"figure_ja_roma\tＲ\tローマ字\n")
-		 (uim 'test-prop-label))
-   ;; 2 widgets (without latter activity-indicator)
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_input_mode
-				       widget_test_kana_input_method_without_act_indicator))
-	   #t))
-   (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-						   (context-widgets tc))
-					     'action_test_katakana)))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "figure_ja_katakana\tア\tカタカナ\n"
-				"unknown\t?\tunknown\n")
-		 (uim 'test-prop-label))
-   ;; 2 widgets with non-existent
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_kana_input_method
-				       widget_test_nonexistent
-				       widget_test_input_mode))
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "figure_ja_roma\tＲ\tローマ字\n"
-				"figure_ja_katakana\tア\tカタカナ\n")
-		 (uim 'test-prop-label))
-   ;; no widgets
-   (uim '(begin
-	   (context-init-widgets! tc ())
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal "unknown\t?\tunknown\n"
-		 (uim 'test-prop-label))
-   ;; widget_test_null
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_null))
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal "unknown\t?\tunknown\n"
-		 (uim 'test-prop-label)))
-
   ("test context-propagate-prop-list-update"
    (uim '(begin
 	   (define test-prop-list #f)
@@ -1645,9 +1590,7 @@
 		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
 		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
-   (assert-equal (string-append "figure_ja_direct\ta\t直接入力\n"
-				"figure_ja_roma\tＲ\tローマ字\n")
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 3
 		 (uim 'test-updated-mode))
    ;; 2 widgets (updated state)
@@ -1668,9 +1611,7 @@
 		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
 		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
-   (assert-equal (string-append "figure_ja_katakana\tア\tカタカナ\n"
-				"figure_ja_roma\tＲ\tローマ字\n")
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 1
 		 (uim 'test-updated-mode))
    ;; 2 widgets with non-existent
@@ -1693,9 +1634,7 @@
 		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
 		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
 		 (uim 'test-prop-list))
-   (assert-equal (string-append "figure_ja_roma\tＲ\tローマ字\n"
-				"figure_ja_katakana\tア\tカタカナ\n")
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 1
 		 (uim 'test-updated-mode))
    ;; no widgets
@@ -1707,8 +1646,7 @@
 	   #t))
    (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
-   (assert-equal "unknown\t?\tunknown\n"
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 0
 		 (uim 'test-updated-mode))
    ;; widget_test_null
@@ -1720,8 +1658,7 @@
 	   #t))
    (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
-   (assert-equal "unknown\t?\tunknown\n"
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 0
 		 (uim 'test-updated-mode)))
 

@@ -353,18 +353,6 @@
       (if (not (null? (filter-map widget-update-state! widgets)))
           (context-propagate-widget-states context)))))
 
-(define context-propagate-prop-label-update
-  (lambda (context)
-    (let* ((widgets (context-widgets context))
-	   (active-label (lambda (widget)
-			   (let* ((indicator (widget-indicator widget))
-				  (indication (action-indicate indicator
-							       context)))
-			     (indication-compose-label indication))))
-	   (labels (map active-label widgets))
-	   (message (apply string-append labels)))
-      (im-update-prop-label context message))))
-
 (define context-propagate-prop-list-update
   (lambda (context)
     (let* ((widgets (context-widgets context))
@@ -376,7 +364,6 @@
 ;; API for uim developers
 (define context-propagate-widget-states
   (lambda (context)
-    (context-propagate-prop-label-update context)
     ;; Sending prop_list every time costs all uim participant
     ;; processes slightly heavy resource consumptions. Although it is
     ;; not a problem for the rich desktop environment today, we should
