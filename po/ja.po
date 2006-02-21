@@ -603,7 +603,7 @@ msgstr ""
 #. icon = gdk_pixbuf_new_from_xpm_data(ICON_APPLET);
 #: helper/toolbar-applet-gnome.c:129
 msgid "Uim Applet for GNOME"
-msgstr "GNOMEパネル用のuimアプレット"
+msgstr "uimアプレット"
 
 #: helper/toolbar-applet-gnome.c:130
 msgid "Applet for indicate uim's status"

@@ -122,7 +122,7 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
   icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
 
   dialog = gnome_about_new(_("Uim Applet for GNOME"), VERSION,
-			   "Copyright 2003-2006 uim Project.",
+			   "Copyright \xc2\xa9 2003-2006 uim Project.",
 			   _("Applet for indicate uim's status"),
 			   authors,
 			   NULL,
