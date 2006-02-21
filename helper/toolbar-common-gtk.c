@@ -252,14 +252,16 @@ static void
 popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 		GtkWidget *widget)
 {
-  GtkWidget *menu_item;
+  GtkWidget *menu_item, *hbox, *label, *img;
   GtkTooltips *tooltip;
-  GList *menu_item_list, *label_list, *tooltip_list, *action_list, *state_list;
+  GList *menu_item_list, *icon_list, *label_list, *tooltip_list, *action_list,
+	*state_list;
   int i, selected = -1;
 
   uim_toolbar_check_helper_connection(widget);
 
   menu_item_list = gtk_container_get_children(GTK_CONTAINER(prop_menu));
+  icon_list = g_object_get_data(G_OBJECT(prop_button), "prop_icon");
   label_list = g_object_get_data(G_OBJECT(prop_button), "prop_label");
   tooltip_list = g_object_get_data(G_OBJECT(prop_button), "prop_tooltip");
   action_list = g_object_get_data(G_OBJECT(prop_button), "prop_action");
@@ -272,7 +274,7 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   gtk_widget_destroy(prop_menu);
   prop_menu = gtk_menu_new();
 
-  /* check if state_list contains state data */
+  /* check selected item */
   i = 0;
   while (state_list) {
     if (!strcmp("*", state_list->data)) {
@@ -286,11 +288,25 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   i = 0;
   while (label_list) {
     if (selected != -1) {
-      menu_item = gtk_check_menu_item_new_with_label(label_list->data);
+      menu_item = gtk_check_menu_item_new();
+      label = gtk_label_new(label_list->data);
+      hbox = gtk_hbox_new(FALSE, 0);
 #if GTK_CHECK_VERSION(2, 4, 0)
       gtk_check_menu_item_set_draw_as_radio(GTK_CHECK_MENU_ITEM(menu_item),
-		      			    TRUE);
+					    TRUE);
 #endif
+      if (register_icon(icon_list->data))
+	img = gtk_image_new_from_stock(icon_list->data, GTK_ICON_SIZE_MENU);
+      else
+	img = gtk_image_new_from_stock("null", GTK_ICON_SIZE_MENU);
+      if (img) {
+	gtk_box_pack_start(GTK_BOX(hbox), img, FALSE, FALSE, 3);
+	gtk_widget_show(img);
+      }
+      gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 3);
+      gtk_container_add(GTK_CONTAINER(menu_item), hbox);
+      gtk_widget_show(label);
+      gtk_widget_show(hbox);
       if (i == selected)
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
     } else {
@@ -299,7 +315,8 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 
     /* tooltips */
     tooltip = gtk_tooltips_new();
-    gtk_tooltips_set_tip(tooltip, menu_item, tooltip_list ? tooltip_list->data : NULL, NULL);
+    gtk_tooltips_set_tip(tooltip, menu_item,
+			 tooltip_list ? tooltip_list->data : NULL, NULL);
 
     /* add to the menu */
     gtk_menu_shell_append(GTK_MENU_SHELL(prop_menu), menu_item);
@@ -307,8 +324,11 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     gtk_widget_show(menu_item);
     g_signal_connect(G_OBJECT(menu_item), "activate",
 		     G_CALLBACK(prop_menu_activate), prop_menu);
-    g_object_set_data(G_OBJECT(menu_item), "prop_action", action_list? action_list->data : NULL);
+    g_object_set_data(G_OBJECT(menu_item), "prop_action",
+		      action_list? action_list->data : NULL);
     label_list = label_list->next;
+    if (icon_list)
+      icon_list = icon_list->next;
     if (action_list)
       action_list = action_list->next;
     if (tooltip_list)
@@ -392,6 +412,8 @@ static void
 prop_data_flush(gpointer data)
 {
   GList *list;
+  list = g_object_get_data(data, "prop_icon");
+  list_data_free(list);
   list = g_object_get_data(data, "prop_label");
   list_data_free(list);
   list = g_object_get_data(data, "prop_tooltip");
@@ -401,6 +423,7 @@ prop_data_flush(gpointer data)
   list = g_object_get_data(data, "prop_state");
   list_data_free(list);
 
+  g_object_set_data(G_OBJECT(data), "prop_icon", NULL);
   g_object_set_data(G_OBJECT(data), "prop_label", NULL);
   g_object_set_data(G_OBJECT(data), "prop_tooltip", NULL);
   g_object_set_data(G_OBJECT(data), "prop_action", NULL);
@@ -455,28 +478,29 @@ prop_button_create(GtkWidget *widget, const gchar *icon_name,
 
 static void
 prop_button_append_menu(GtkWidget *button,
+			const gchar *icon_name,
 			const gchar *label, const gchar *tooltip,
 			const gchar *action, const gchar *state)
 {
-  GList *label_list, *tooltip_list, *action_list;
+  GList *icon_list, *label_list, *tooltip_list, *action_list, *state_list;
 
+  icon_list = g_object_get_data(G_OBJECT(button), "prop_icon");
   label_list = g_object_get_data(G_OBJECT(button), "prop_label");
   tooltip_list = g_object_get_data(G_OBJECT(button), "prop_tooltip");
   action_list = g_object_get_data(G_OBJECT(button), "prop_action");
+  state_list = g_object_get_data(G_OBJECT(button), "prop_state");
   
+  icon_list = g_list_append(icon_list, g_strdup(icon_name));
   label_list = g_list_append(label_list, g_strdup(label));
   tooltip_list = g_list_append(tooltip_list, g_strdup(tooltip));
   action_list = g_list_append(action_list, g_strdup(action));
+  state_list = g_list_append(state_list, g_strdup(state));
   
+  g_object_set_data(G_OBJECT(button), "prop_icon", icon_list);
   g_object_set_data(G_OBJECT(button), "prop_label", label_list);
   g_object_set_data(G_OBJECT(button), "prop_tooltip", tooltip_list);
   g_object_set_data(G_OBJECT(button), "prop_action", action_list);
-
-  if (state) {
-    GList *state_list = g_object_get_data(G_OBJECT(button), "prop_state");
-    state_list = g_list_append(state_list, g_strdup(state));
-    g_object_set_data(G_OBJECT(button), "prop_state", state_list);
-  }
+  g_object_set_data(G_OBJECT(button), "prop_state", state_list);
 }
 
 static void
@@ -591,7 +615,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 	action_id     = cols[5];
 	is_selected   = cols[6];
 	prop_button_append_menu(button,
-				label, tooltip_str, action_id, is_selected);
+				indication_id, label, tooltip_str, action_id,
+				is_selected);
       }
       g_strfreev(cols);
     }
@@ -680,7 +705,8 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
       button = g_list_nth_data(prop_buttons, i - 2);
 
       if (register_icon(indication_id)) {
-	GtkWidget *img = gtk_image_new_from_stock(indication_id, GTK_ICON_SIZE_MENU);
+	GtkWidget *img = gtk_image_new_from_stock(indication_id,
+						  GTK_ICON_SIZE_MENU);
 #if GTK_CHECK_VERSION(2, 6, 0)
 	gtk_button_set_image(GTK_BUTTON(button), img);
 #else
@@ -873,6 +899,7 @@ init_icon(void)
 
   register_icon("switcher-icon");
   register_icon("uim-icon");
+  register_icon("null");
 }
 
 static GtkWidget *
