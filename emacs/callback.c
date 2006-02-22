@@ -141,17 +141,6 @@ prop_list_update_cb(void *ptr, const char *str)
 
 
 void
-prop_label_update_cb(void *ptr , const char *str)
-{
-  uim_agent_context *ua = (uim_agent_context *)ptr;
-
-  debug_printf(DEBUG_NOTE, "prop_label_update_cb\n");
-
-  update_prop_label(ua->prop, str);
-}
-
-
-void
 configuration_changed_cb(void *ptr)
 {
 

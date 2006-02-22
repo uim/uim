@@ -117,7 +117,6 @@ switch_context_im(uim_agent_context *ua, const char *im)
 
 	update_context_im(ua);
 
-	uim_prop_label_update(ua->context);
 	uim_prop_list_update(ua->context);
 
   } else {
@@ -133,7 +132,6 @@ switch_context_im(uim_agent_context *ua, const char *im)
 
   }
 
-  uim_prop_label_update(ua->context);
   uim_prop_list_update(ua->context);
 
   return ua;
@@ -169,8 +167,6 @@ create_context(const char *encoding, uim_agent_context *ptr)
   uim_set_prop_list_update_cb(context,
 							  prop_list_update_cb);
 
-  uim_set_prop_label_update_cb(context,
-							   prop_label_update_cb);
 
   uim_set_configuration_changed_cb(context,
 								   configuration_changed_cb);
@@ -318,7 +314,6 @@ set_current_uim_agent_context(uim_agent_context *ua)
 
   current = ua;
 
-  uim_prop_label_update(ua->context);
   uim_prop_list_update(ua->context);
 
   return ua->context_id;

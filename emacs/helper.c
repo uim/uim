@@ -117,7 +117,6 @@ helper_im_changed(char *request, char *engine_name)
 	  switch_context_im(current, engine_name);
 	  if(current->im) free(current->im);
 	  current->im = strdup(engine_name);
-      uim_prop_label_update(current->context);
       uim_prop_list_update(current->context);
     }
 
@@ -147,7 +146,6 @@ helper_im_changed(char *request, char *engine_name)
 		ptr->agent_context->im = strdup(engine_name);
 		
 		if (current && ptr->agent_context == current) {
-		  uim_prop_label_update(ptr->agent_context->context);
 		  uim_prop_list_update(ptr->agent_context->context);
 		}
 	  }
@@ -193,14 +191,6 @@ helper_handler(void)
 	  else
 		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
 		
-	} else if (strcmp("prop_label_get", line) == 0) { 
-	  /* for current context */
-
-	  if (current_exist)
-		uim_prop_label_update(current->context);
-	  else
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
-
 	} else if (strcmp("prop_activate", line) == 0) { 
 	  /* for current context */
 
@@ -302,9 +292,6 @@ helper_handler(void)
 	} else if (strcmp("prop_list_update", line) == 0) {
 	  /* ignore */
 	  debug_printf(DEBUG_NOTE, " prop_list_update (helper)\n");
-	} else if ( strcmp("prop_label_update", line) == 0) {
-	  /* ignore */
-	  debug_printf(DEBUG_NOTE, " prop_label_update (helper)\n");
 	} else {
 	  debug_printf(DEBUG_WARNING, " undefined helper message: %s\n", message);
 	}

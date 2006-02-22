@@ -46,9 +46,7 @@ create_prop()
   prop->valid = 0;
 
   prop->list = NULL;
-  prop->label = NULL;
   prop->list_update = 0;
-  prop->label_update = 0;
 
   return prop;
 }
@@ -66,21 +64,6 @@ update_prop_list(property *prop, const char *str)
   debug_printf(DEBUG_NOTE, "prop->list: %s\n", prop->list);  
 
   prop->list_update = 1;
-
-}
-
-void
-update_prop_label(property *prop, const char *str)
-{
-  prop->valid = 1;
-
-  if (prop->label != NULL) free(prop->label);
-
-  prop->label = strdup(str);
-
-  debug_printf(DEBUG_NOTE, "prop->label: %s\n", prop->label);  
-
-  prop->label_update = 1;
 
 }
 
@@ -172,31 +155,3 @@ show_prop(property *prop)
 }
 
 
-void
-announce_prop_label_update(property *prop, const char *encoding)
-{
-  unsigned len;
-  char *buf;
-
-  if (prop->label == NULL) {
-	debug_printf(DEBUG_ERROR, "no prop_label\n");
-	return;
-  }
-
-#define PROP_LABEL_FORMAT "prop_label_update\ncharset=%s\n%s"
-
-  len = strlen(PROP_LABEL_FORMAT) + strlen(encoding) 
-	+ strlen(prop->label) + 1;
-  
-  buf = (char *)malloc(len);
-
-  snprintf(buf, len, PROP_LABEL_FORMAT, encoding, prop->label);
-
-  uim_helper_send_message(helper_fd, buf);
-
-
-  free(buf);
-
-#undef PROP_LABEL_FORMAT
-
-}

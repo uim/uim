@@ -66,7 +66,6 @@ void candidate_shift_page_cb(void *ptr, int direction);
 void candidate_deactivate_cb(void *ptr);
 
 void prop_list_update_cb(void *ptr, const char *str);
-void prop_label_update_cb(void *ptr, const char *str);
 
 void configuration_changed_cb(void *ptr);
 

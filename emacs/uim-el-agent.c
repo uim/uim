@@ -272,11 +272,6 @@ check_prop_list_label(void)
 	show_prop_uim_agent_context(current);
 	current->prop->list_update = 0;
   }
-
-  if (current->prop->label_update) {
-	announce_prop_label_update(current->prop, current->encoding);
-	current->prop->label_update = 0;
-  }
 }
 
 
