@@ -91,13 +91,15 @@ caret_state_indicator_paint_window(GtkWidget *window)
 GtkWidget *
 caret_state_indicator_new(void)
 {
-  GtkWidget *window, *label, *hbox;
-  GList *label_list = NULL;
+  GtkWidget *window, *label, *hbox, *frame;
+  GList *label_list = NULL, *frame_list = NULL;
 
   window = gtk_window_new(GTK_WINDOW_POPUP);
   label  = gtk_label_new("");
+  frame = gtk_frame_new(NULL);
+  gtk_container_add(GTK_CONTAINER(frame), label);
   hbox = gtk_hbox_new(TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(hbox), label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), frame, TRUE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), hbox);
 
   gtk_window_set_default_size(GTK_WINDOW(window),
@@ -112,6 +114,8 @@ caret_state_indicator_new(void)
   gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);
 
   label_list = g_list_append(label_list, label);
+  frame_list = g_list_append(frame_list, frame);
+  g_object_set_data(G_OBJECT(window), "frames", frame_list);
   g_object_set_data(G_OBJECT(window), "labels", label_list);
   g_object_set_data(G_OBJECT(window), "hbox", hbox);
 
@@ -130,35 +134,45 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
 
   if (str) {
     gchar **cols;
-    GtkWidget *label, *hbox;
-    GList *label_list, *list;
+    GtkWidget *label, *hbox, *frame;
+    GList *label_list, *frame_list, *list1, *list2;
     gint i;
 
-    list = label_list = g_object_get_data(G_OBJECT(window), "labels");
+    list1 = label_list = g_object_get_data(G_OBJECT(window), "labels");
+    list2 = frame_list = g_object_get_data(G_OBJECT(window), "frames");
     hbox = g_object_get_data(G_OBJECT(window), "hbox");
 
     cols = g_strsplit(str, "\t", 0);
     for (i = 0; cols[i] && strcmp("", cols[i]); i++) {
       if (label_list) {
-        label = label_list->data;
-        gtk_label_set_text(GTK_LABEL(label), cols[i]);
+	label = label_list->data;
+	gtk_label_set_text(GTK_LABEL(label), cols[i]);
       } else {
-        label = gtk_label_new(cols[i]);
-	gtk_box_pack_start(GTK_BOX(hbox), label, TRUE, TRUE, 0);
-	list = g_list_append(list, label);
-        g_object_set_data(G_OBJECT(window), "labels", list);
-	label_list = g_list_find(list, label);
+	label = gtk_label_new(cols[i]);
+	frame = gtk_frame_new(NULL);
+	gtk_container_add(GTK_CONTAINER(frame), label);
+	gtk_box_pack_start(GTK_BOX(hbox), frame, TRUE, TRUE, 0);
+	list1 = g_list_append(list1, label);
+	label_list = g_list_find(list1, label);
+	list2 = g_list_append(list2, frame);
+	frame_list = g_list_find(list2, frame);
       }
       label_list = label_list->next;
+      frame_list = frame_list->next;
     }
 
     while (label_list) {
       label = label_list->data;
+      frame = frame_list->data;
       label_list = label_list->next;
-      gtk_container_remove(GTK_CONTAINER(hbox), label);
-      g_list_remove(list, label);
-      g_object_set_data(G_OBJECT(window), "labels", list);
+      frame_list = frame_list->next;
+      gtk_container_remove(GTK_CONTAINER(frame), label);
+      gtk_container_remove(GTK_CONTAINER(hbox), frame);
+      g_list_remove(list1, label);
+      g_list_remove(list2, frame);
     }
+    g_object_set_data(G_OBJECT(window), "labels", list1);
+    g_object_set_data(G_OBJECT(window), "frames", list2);
 
     g_strfreev(cols);
   }

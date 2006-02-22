@@ -271,6 +271,8 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     gtk_widget_destroy(menu_item_list->data);
     menu_item_list = menu_item_list->next;
   }
+  g_list_free(menu_item_list);
+
   gtk_widget_destroy(prop_menu);
   prop_menu = gtk_menu_new();
 
@@ -713,6 +715,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
 	GList *children = gtk_container_get_children(GTK_CONTAINER(button));
 	if (children)
 	  gtk_container_remove(GTK_CONTAINER(button), children->data);
+	g_list_free(children);
 	gtk_container_add(GTK_CONTAINER(button), img);
 #endif
       } else {
