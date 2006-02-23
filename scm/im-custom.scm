@@ -211,9 +211,9 @@
 
 (define usable-im-list
   (lambda ()
-    (let ((imlist (filter
-		    (lambda (name)
-	              (memq name system-available-im-list)) enabled-im-list)))
+    (let ((imlist (filter (lambda (name)
+			    (memq name system-available-im-list))
+			  enabled-im-list)))
 	 (if (not (null? imlist))
 	     imlist
 	     '(direct)))))
@@ -231,10 +231,7 @@
 (custom-add-hook 'enabled-im-list
 		 'custom-get-hooks
 		 (lambda ()
-		   (set! enabled-im-list (remove (lambda (name)
-						   (eq? name
-							'direct))
-						 enabled-im-list))))
+		   (set! enabled-im-list (delete 'direct enabled-im-list))))
 
 ;; value dependency
 (if custom-full-featured?

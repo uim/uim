@@ -300,9 +300,7 @@
 ;; TODO: write test
 (define key-list-strip-shift
   (lambda (key-list)
-    (remove (lambda (key)
-	      (eq? key 'Shift_key))
-	    key-list)))
+    (delete 'Shift_key key-list eq?)))
 
 ;; TODO: write test
 (define key-list-strip-regular-shift
@@ -310,9 +308,7 @@
     (let* ((str (find string? key-list))
 	   (printable (string->printable-char str)))
       (if (char-graphic? printable)
-	  (remove (lambda (key)
-		    (eq? key 'Shift_key))
-		  key-list)
+	  (key-list-strip-shift key-list)
 	  key-list))))
 
 ;; TODO: write test
