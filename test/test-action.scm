@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 3131 of new repository
+;; This file is tested with revision 3140 of new repository
 
 (use test.unit)
 
@@ -40,6 +40,8 @@
    (lambda ()
      (uim
       '(begin
+	 (custom-set-value! 'toolbar-show-action-based-switcher-button? #f)
+
 	 (require "load-action.scm")
 	 (require "rk.scm")
 	 (require "japanese.scm")
@@ -227,7 +229,7 @@
 	  (actions-new '(action_test_roma
 			 action_test_kana)))
 
-	 (define tc (test-context-new))
+	 (define tc (test-context-new 0 (retrieve-im 'direct)))
 	 (begin (test-context-set-rkc! tc (rk-context-new ja-rk-rule #t #f))
 		#t)
 
