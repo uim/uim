@@ -352,21 +352,30 @@
   (_ "Enable lazy input method loading for fast startup")
   (_ "long description will be here."))
 
+
+;;
 ;; toolbar buttons
+;;
+
+(define imsw-reconfigure
+  (lambda ()
+    (if toolbar-show-action-based-switcher-button?
+	(require "im-switcher.scm"))
+    (if (symbol-bound? 'context-refresh-switcher-widget!)
+	(for-each context-refresh-switcher-widget!
+		  context-list))))
+
+;; must be hooked before 'toolbar-show-action-based-switcher-button?
+;; definition
+(custom-add-hook 'toolbar-show-action-based-switcher-button?
+		 'custom-set-hooks
+		 imsw-reconfigure)
+
 (define-custom 'toolbar-show-action-based-switcher-button? #t
   '(toolbar buttons)
   '(boolean)
   (_ "menu-based input method switcher")
   (_ "Show the menu-based IM switcher on toolbar."))
-
-(custom-add-hook 'toolbar-show-action-based-switcher-button?
-		 'custom-set-hooks
-		 (lambda ()
-		   (if toolbar-show-action-based-switcher-button?
-		       (require "im-switcher.scm"))
-		   (if (symbol-bound? 'context-refresh-switcher-widget!)
-		       (for-each context-refresh-switcher-widget!
-				 context-list))))
 
 (define-custom 'toolbar-show-switcher-button? #f
   '(toolbar buttons)

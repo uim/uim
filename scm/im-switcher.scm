@@ -117,11 +117,14 @@
 (define imsw-add-im-switcher-widget
   (lambda (widget-id-list)
     (if toolbar-show-action-based-switcher-button?
-	(if (memq 'widget_im_switcher widget-id-list)
-	    widget-id-list
-	    (cons 'widget_im_switcher widget-id-list)
-	    ;;(append widget-id-list '(widget_im_switcher))
-	    )
+	(begin
+	  (or (assq 'widget_im_switcher widget-proto-list)
+	      (imsw-register-widget))
+	  (if (memq 'widget_im_switcher widget-id-list)
+	      widget-id-list
+	      (cons 'widget_im_switcher widget-id-list)
+	      ;;(append widget-id-list '(widget_im_switcher))
+	      ))
 	(delete 'widget_im_switcher widget-id-list eq?))))
 
 (define context-init-widgets-orig context-init-widgets!)
@@ -148,5 +151,3 @@
 			    (alist-delete 'widget_im_switcher widgets eq?))))
       (context-set-widgets! ctx new-widgets)
       (context-propagate-widget-configuration ctx))))
-
-(imsw-register-widget)
