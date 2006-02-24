@@ -58,11 +58,11 @@
 
 (define assert-orig assert)
 (define assert
-  (lambda (msg exp)
+  (lambda (test-name err-msg exp)
     ;; current assert implementation cannot print msg before exp has
     ;; been evaluated
-    (display msg)
-    (assert-orig msg exp)
+    (display err-msg)
+    (assert-orig test-name err-msg exp)
     (display " ...OK\n")))
 
 
