@@ -550,11 +550,15 @@ static void prop_list_update_cb(void *ptr, const char *str)
 
     error = TRUE;
 
-    /* branch = "branch\t" iconic_label "\t" buttontooltip_string "\n" */
+    /* branch = "branch\t" indication_id "\t" iconic_label "\t" label_string "\n" */
     if (!str_has_prefix(line, "branch\t")) {
       break;
     }
     label = line + strlen("branch\t");
+    if ((label = strchr(label, '\t')) == NULL) {
+      break;
+    }
+    label++;
 
     if ((tab = strchr(label, '\t')) == NULL) {
       break;
@@ -568,10 +572,14 @@ static void prop_list_update_cb(void *ptr, const char *str)
 
     while (str_has_prefix(line, "leaf\t")) {
       char *leaf_label = line + strlen("leaf\t");
+      if ((leaf_label = strchr(leaf_label, '\t')) == NULL) {
+	break;
+      }
+      leaf_label++;
 
-      tab = line + strlen("leaf");
+      tab = leaf_label - 1;
 
-      /* leaf = "leaf\t" iconic_label "\t" menulabel_string "\t" menutooltip_string "\t" menucommand_name "\t" flag "\n" */
+      /* leaf = "leaf\t" indication_id "\t" iconic_label "\t" label_string "\t" short_desc "\t" action_id "\t" activity "\n" */
       for (i = 0; i < 4; i++) {
         if ((tab = strchr(tab + 1, '\t')) == NULL) {
           goto loop_end;
