@@ -572,8 +572,11 @@ static void prop_list_update_cb(void *ptr, const char *str)
 
     while (str_has_prefix(line, "leaf\t")) {
       char *leaf_label = line + strlen("leaf\t");
+
+      error = TRUE;
+
       if ((leaf_label = strchr(leaf_label, '\t')) == NULL) {
-	break;
+	goto loop_end;
       }
       leaf_label++;
 
@@ -593,10 +596,14 @@ static void prop_list_update_cb(void *ptr, const char *str)
 
       error = FALSE;
 
-      label_width = strlen(leaf_label);
+      label_width = strwidth(leaf_label);
       if (label_width > max_label_width) {
         max_label_width = label_width;
       }
+    }
+
+    if (error) {
+      break;
     }
 
     label_width = strwidth(label);
