@@ -61,7 +61,7 @@ Summary: Context-originated IM switching of other contexts
 Affects: Bridge developers
 Updates: C API
 Version: 1.1.0
-Revision: ac3147
+Revision: ac3147, ac3148
 Date: 2006-02-24
 Modifier: YamaKen
 Related: action-based IM switcher

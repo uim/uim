@@ -139,6 +139,8 @@ typedef struct _IMContextUIMClass
 static void im_uim_class_init(GtkIMContextClass *class);
 static void im_uim_class_finalize(GtkIMContextClass *class);
 static void im_uim_init(IMUIMContext *uic);
+static void switch_app_global_im_cb(void *ptr, const char *name);
+static void switch_system_global_im_cb(void *ptr, const char *name);
 
 #if IM_UIM_USE_SNOOPER
 static gboolean key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data);
@@ -786,6 +788,42 @@ configuration_changed_cb(void *ptr)
     send_im_list();
 }
 
+static void
+switch_app_global_im_cb(void *ptr, const char *name)
+{
+  IMUIMContext *uic, *cc;
+  GString *im_name_sym;
+
+  uic = (IMUIMContext *)ptr;
+  im_name_sym = g_string_new(name);
+  g_string_prepend_c(im_name_sym, '\'');
+
+  for (cc = context_list.next; cc != &context_list; cc = cc->next) {
+    if (cc != uic)
+      uim_switch_im(cc->uc, name);
+  }
+  uim_prop_update_custom(uic->uc,
+			 "custom-preserved-default-im-name", im_name_sym->str);
+  g_string_free(im_name_sym, TRUE);
+}
+
+static void
+switch_system_global_im_cb(void *ptr, const char *name)
+{
+  GString *msg;
+
+  /* switch contexts of this process */
+  switch_app_global_im_cb(ptr, name);
+
+  /* Switch contexts of other processes. Bridges should not expect
+   * that the helper-server reflect back the messaage to the
+   * originating process.  -- YamaKen 2006-03-01 */
+  msg = g_string_new("");
+  g_string_printf(msg, "im_change_whole_desktop\n%s\n", name);
+  uim_helper_send_message(im_uim_fd, msg->str);
+  g_string_free(msg, TRUE);
+}
+
 
 
 /* uim helper related */
@@ -1330,6 +1368,9 @@ im_module_create(const gchar *context_id)
   uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
 				cand_shift_page_cb, cand_deactivate_cb);
   uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);
+  uim_set_im_switch_request_cb(uic->uc,
+			       switch_app_global_im_cb,
+			       switch_system_global_im_cb);
 
   uim_prop_list_update(uic->uc);
 
