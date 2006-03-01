@@ -413,6 +413,9 @@ InputContext::createUimContext(const char *engine)
 #endif
 	uim_set_configuration_changed_cb(uc,
 			InputContext::configuration_changed_cb);
+	uim_set_im_switch_request_cb(uc,
+				     InputContext::switch_app_global_im_cb,
+				     InputContext::switch_system_global_im_cb);
 
 	if (mFocusedContext == this)
 	    uim_prop_list_update(uc);
@@ -453,6 +456,24 @@ void InputContext::configuration_changed()
     InputContext *focusedContext = InputContext::focusedContext();
     if (this == focusedContext)
 	send_im_list();
+}
+
+void InputContext::switch_app_global_im(const char *name)
+{
+    get_im_by_id(this->get_ic()->get_imid())->changeContext(name);
+}
+
+void InputContext::switch_system_global_im(const char *name)
+{
+  char *msg;
+  std::map<Window, XimServer *>::iterator it;
+
+  for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it)
+    (*it).second->changeContext(name);
+
+  asprintf(&msg, "im_change_whole_desktop\n%s\n", name);
+  uim_helper_send_message(lib_uim_fd, msg);
+  free(msg);
 }
 
 void InputContext::review_im(const char *engine)
@@ -623,6 +644,20 @@ void InputContext::configuration_changed_cb(void *ptr)
     InputContext *ic = (InputContext *)ptr;
 
     ic->configuration_changed();
+}
+
+void InputContext::switch_app_global_im_cb(void *ptr, const char *name)
+{
+    InputContext *ic = (InputContext *)ptr;
+
+    ic->switch_app_global_im(name);
+}
+
+void InputContext::switch_system_global_im_cb(void *ptr, const char *name)
+{
+    InputContext *ic = (InputContext *)ptr;
+
+    ic->switch_system_global_im(name);
 }
 
 void InputContext::clear_pe_stat()

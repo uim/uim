@@ -179,6 +179,8 @@ public:
     void customContext(const char *custom, const char *val);
     void createUimContext(const char *engine);
     void configuration_changed();
+    void switch_app_global_im(const char *name);
+    void switch_system_global_im(const char *name);
 public:
     static void commit_cb(void *ptr, const char *str);
     static void clear_cb(void *ptr);
@@ -191,6 +193,8 @@ public:
     static void update_prop_list_cb(void *ptr, const char *str);
     static void update_prop_label_cb(void *ptr, const char *str);
     static void configuration_changed_cb(void *ptr);
+    static void switch_app_global_im_cb(void *ptr, const char *name);
+    static void switch_system_global_im_cb(void *ptr, const char *name);
     static InputContext *focusedContext();
     static void deletefocusedContext();
 private:
