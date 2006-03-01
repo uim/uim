@@ -177,6 +177,15 @@ has_n_strs(gchar **str_list, guint n)
 }
 
 static void
+destroy_tooltips(GtkWidget *widget)
+{
+  GtkTooltipsData *ttd = gtk_tooltips_data_get(widget);
+
+  if (ttd)
+   g_signal_emit_by_name(ttd->tooltips, "destroy");
+}
+
+static void
 calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
 		   GtkWidget *button)
 {
@@ -268,6 +277,7 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   state_list = g_object_get_data(G_OBJECT(prop_button), "prop_state");
 
   while (menu_item_list) {
+    destroy_tooltips(menu_item_list->data);
     gtk_widget_destroy(menu_item_list->data);
     menu_item_list = menu_item_list->next;
   }
@@ -435,6 +445,7 @@ prop_data_flush(gpointer data)
 static void
 prop_button_destroy(gpointer data, gpointer user_data)
 {
+  destroy_tooltips(data);
   prop_data_flush(data);
   gtk_widget_destroy(GTK_WIDGET(data));
 }
@@ -442,6 +453,7 @@ prop_button_destroy(gpointer data, gpointer user_data)
 static void
 tool_button_destroy(gpointer data, gpointer user_data)
 {
+  destroy_tooltips(data);
   gtk_widget_destroy(GTK_WIDGET(data));
 }
 
