@@ -162,6 +162,9 @@ uim_create_context(void *ptr,
   /**/
   uc->configuration_changed_cb = NULL;
   /**/
+  uc->switch_app_global_im_cb = NULL;
+  uc->switch_system_global_im_cb = NULL;
+  /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
   /**/
@@ -209,6 +212,15 @@ uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {
   uc->configuration_changed_cb = changed_cb;
+}
+
+void
+uim_set_im_switch_request_cb(uim_context uc,
+			     void (*sw_app_im_cb)(void *ptr, const char *name),
+			     void (*sw_system_im_cb)(void *ptr, const char *name))
+{
+  uc->switch_app_global_im_cb = sw_app_im_cb;
+  uc->switch_system_global_im_cb = sw_system_im_cb;
 }
 
 void

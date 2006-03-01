@@ -39,6 +39,11 @@
 (require "i18n.scm")
 (require "load-action.scm")
 
+;; FIXME: make customizable
+(define imsw-propagation 'focused-context)
+;;(define imsw-propagation 'app-global)
+;;(define imsw-propagation 'system-global)
+
 (define imsw-indication-id-alist
   '())
 
@@ -85,20 +90,28 @@
 				      idname))
 
 			       (lambda (ctx) ;; action handler
-				 (uim-switch-im (context-id ctx) idname)
-				 ;; FIXME: Switch IM of all contexts to the
-				 ;; idname. It should be performed by each
-				 ;; bridges via new callback, since some IM
-				 ;; environments do not have the concept 'all
-				 ;; context' (i.e. single-context system).
-				 ;;
-				 ;; FIXME: im-change-whole-desktop should not
-				 ;; be called directly.
-				 ;; 'im-switch-system-global-im' is
-				 ;; appropriate?
-				 ;;
-				 ;; (im-change-whole-desktop idname)
-				 ))
+				 (let ((cid (context-id ctx)))
+				   (uim-switch-im cid idname)
+				   (case imsw-propagation
+				     ((focused-context)
+				      #t)
+
+				     ((app-global)
+				      ;; Performed by each bridges via the
+				      ;; callback, since the concept
+				      ;; "application global" is differently
+				      ;; mapped to a set of input context for
+				      ;; each IM environment. (i.e. an
+				      ;; application may not have dedicated
+				      ;; process)
+				      (im-switch-app-global-im cid idname))
+
+				     ((system-global)
+				      ;; Performed by each bridges via the
+				      ;; callback, since some IM environments
+				      ;; do not have the concept "all context"
+				      ;; (i.e. single-context system).
+				      (im-switch-system-global-im cid idname))))))
 	      act-name))
 	  im-list))))
 

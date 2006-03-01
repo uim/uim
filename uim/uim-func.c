@@ -714,6 +714,37 @@ switch_im(uim_lisp id_, uim_lisp name_)
   return uim_scm_t();
 }
 
+static uim_lisp
+switch_app_global_im(uim_lisp id_, uim_lisp name_)
+{
+  uim_context uc;
+  int id;
+  const char *name;
+
+  uc = uim_find_context(uim_scm_c_int(id_));
+  name = uim_scm_refer_c_str(name_);
+
+  if (uc->switch_app_global_im_cb)
+    uc->switch_app_global_im_cb(uc->ptr, name);
+
+  return uim_scm_t();
+}
+
+static uim_lisp
+switch_system_global_im(uim_lisp id_, uim_lisp name_)
+{
+  uim_context uc;
+  const char *name;
+
+  uc = uim_find_context(uim_scm_c_int(id_));
+  name = uim_scm_refer_c_str(name_);
+
+  if (uc->switch_system_global_im_cb)
+    uc->switch_system_global_im_cb(uc->ptr, name);
+
+  return uim_scm_t();
+}
+
 void
 uim_init_im_subrs(void)
 {
@@ -749,4 +780,7 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_3("im-delete-surrounding", im_delete_surrounding);
   /**/
   uim_scm_init_subr_2("uim-switch-im", switch_im); /* FIXME: This function name would not be appropriate. */
+  
+  uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);
+  uim_scm_init_subr_2("im-switch-system-global-im", switch_system_global_im);
 }

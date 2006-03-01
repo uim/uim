@@ -113,6 +113,9 @@ struct uim_context_ {
   int (*delete_surrounding_text_cb)(void *ptr, int offset, int len);
   /* configuration changed */
   void (*configuration_changed_cb)(void *ptr);
+  /* switch IM */
+  void (*switch_app_global_im_cb)(void *ptr, const char *name);
+  void (*switch_system_global_im_cb)(void *ptr, const char *name);
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;

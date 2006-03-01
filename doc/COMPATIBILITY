@@ -57,6 +57,24 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Context-originated IM switching of other contexts
+Affects: Bridge developers
+Updates: C API
+Version: 1.1.0
+Revision: ac3147
+Date: 2006-02-24
+Modifier: YamaKen
+Related: action-based IM switcher
+URL:
+Changes:
+  (new) uim_set_im_switch_request_cb()
+  (new) im-switch-app-global-im
+  (new) im-switch-system-global-im
+Description:
+  These APIs are used for IM switching of specific set of contexts other than
+  currently focused context. It ordinarily issued in response to
+  action_imsw_*, and can be used for switching by keystroke.
+------------------------------------------------------------------------------
 Summary: Obsolete prop_label handlings
 Affects: Helper program developers, Bridge developers
 Updates: Helper protocol, Scheme API
