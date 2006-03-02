@@ -426,8 +426,13 @@ InputContext::createUimContext(const char *engine)
 void
 InputContext::changeContext(const char *engine)
 {
-    const char *encoding = mXic->get_encoding();
-    const char *im_lang = get_im_lang_from_engine(engine);
+    const char *encoding, *im_lang;
+
+    if (!strcmp(mEngineName, engine))
+	return;
+
+    encoding = mXic->get_encoding();
+    im_lang = get_im_lang_from_engine(engine);
 
     // Don't change im unless encoding matches for clients with legacy locales.
     if (strcmp(encoding, "UTF-8")) {
