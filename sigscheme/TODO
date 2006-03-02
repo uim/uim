@@ -1,12 +1,6 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Implement format string
-  - Evaluate SRFI-28 and SRFI-48
-  - Implement limited part of the SRFIs for both Scheme object and raw C word
-  - Replace asprintf and vasprintf
-  - Obsolete vprintf method of port object
-
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Prepare replace functions (asprintf and so on)
   - Make most settings in src/config.h configurable with configure options
@@ -142,6 +136,12 @@ Assigned to Kazuki:
 
 ==============================================================================
 Assigned to YamaKen:
+
+* Implement format string
+  - Evaluate SRFI-28 and SRFI-48
+  - Implement limited part of the SRFIs for both Scheme object and raw C word
+  - Replace asprintf and vasprintf
+  - Obsolete vprintf method of port object
 
 * Write tests for SRFI-75
 
