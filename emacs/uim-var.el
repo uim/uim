@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.7")
+(defconst uim-el-version "0.0.7.1")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -222,6 +222,8 @@ displayed at the echo area.")
 ;; hook called after reset key map 
 (defvar uim-reset-keymap-hook nil)
 
+(defvar uim-update-label-hook nil)
+
 (defvar uim-send-recv-again nil)
 
 (defvar uim-last-key-vector nil
@@ -243,11 +245,26 @@ displayed at the echo area.")
 ;; Encoding initialized flag
 (defvar uim-im-initialized nil)
 
+(defvar uim-show-im-mode t
+  "If the value is non-nil, IM mode is displayed on mode-line.")
+
+(defvar uim-show-im-name t
+  "If the value is non-nil, IM name is displayed on mode-line.")
+
 
 ;;; Buffer Local Variables
 
 (uim-deflocalvar uim-mode-line-string " U"
 		 "mode-line string of uim-mode.")
+
+;; IM name label (may not equal to uim-current-im-engine)
+(uim-deflocalvar uim-im-name-str "")
+;; IM's indication ID 
+(uim-deflocalvar uim-im-indication-id "")
+
+;; IM mode indicator
+(uim-deflocalvar uim-im-mode-str "")
+
 
 (uim-deflocalvar uim-initialized nil)
 
@@ -256,9 +273,6 @@ displayed at the echo area.")
 
 ;; IM name which is used in the buffer
 (uim-deflocalvar uim-current-im-engine nil) 
-
-;; current property label
-(uim-deflocalvar uim-current-prop-label nil)
 
 ;; minor-mode status
 (uim-deflocalvar uim-mode nil)

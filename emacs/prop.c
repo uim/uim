@@ -88,6 +88,8 @@ announce_prop_list_update(property *prop, const char *encoding)
 
   snprintf(buf, len, PROP_LIST_FORMAT, encoding, prop->list);
 
+  debug_printf(DEBUG_NOTE, PROP_LIST_FORMAT, encoding, prop->list);
+
   uim_helper_send_message(helper_fd, buf);
 
   free(buf);
@@ -102,7 +104,9 @@ show_prop(property *prop)
 {
   char *buf;
   char *head, *tail;
-  char *p[4];
+  char *p[6];
+  char *indication_id = NULL, *iconic_label =NULL, *label_string = NULL;
+  int check_leaf = 0;
   
   /* output new prop_list for Emacs */
 
@@ -120,6 +124,10 @@ show_prop(property *prop)
 
   head = buf;
 
+#define PART_BRANCH "branch"
+#define PART_LEAF   "leaf"
+#define ACTION_ID_IMSW "action_imsw_"
+
   while (head && *head) { 
 
 	/* 
@@ -135,12 +143,39 @@ show_prop(property *prop)
 	  break;
 
 	/* head always not equal NULL */
-	if (strlen(head) >= 6 && strncmp(head, "branch", 6) == 0) {
+	if (strlen(head) >= strlen(PART_BRANCH)
+		&& strncmp(head, PART_BRANCH, strlen(PART_BRANCH)) == 0) {
 	  if ((p[0] = strchr(head, '\t')) 
 		  && (p[1] = strchr(p[0] + 1, '\t'))
 		  && (p[2] = strchr(p[1] + 1, '\t'))) {
 		*p[0] = *p[1] = *p[2] = '\0';
-		a_printf(" ( \"%s\" \"%s\" \"%s\" ) ", p[0] + 1, p[1] + 1, p[2] + 1);
+		indication_id = p[0] + 1;
+		iconic_label = p[1] + 1;
+		label_string = p[2] + 1;
+
+		check_leaf = 1; /* check next leaf */
+		/*a_printf(" ( \"%s\" \"%s\" \"%s\" ) ", p[0] + 1, p[1] + 1, p[2] + 1);*/
+	  }
+	} else if (strlen(head) >= strlen(PART_LEAF) 
+			   && strncmp(head, PART_LEAF, strlen(PART_LEAF)) == 0) {
+	  if (check_leaf && indication_id && iconic_label && label_string) {
+		check_leaf = 0;
+		/* im_switcher detection */
+		if ((p[0] = strchr(head, '\t')) 
+			&& (p[1] = strchr(p[0] + 1, '\t'))
+			&& (p[2] = strchr(p[1] + 1, '\t'))
+			&& (p[3] = strchr(p[2] + 1, '\t'))
+			&& (p[4] = strchr(p[3] + 1, '\t'))
+			&& (p[5] = strchr(p[4] + 1, '\t')))
+		  *p[0] = *p[1] = *p[2] = *p[3] = *p[4] = *p[5] = '\0';
+
+		  if (strlen(p[4] + 1) >= strlen(ACTION_ID_IMSW)
+			  && strncmp(p[4] + 1, ACTION_ID_IMSW, strlen(ACTION_ID_IMSW)) == 0)
+			a_printf(" ( \"im-name\" \"%s\" \"%s\" \"%s\" ) ", 
+					 indication_id, iconic_label, label_string);
+		  else
+			a_printf(" ( \"im-mode\" \"%s\" \"%s\" \"%s\" ) ", 
+					 indication_id, iconic_label, label_string);
 	  }
 	}
 	head = tail + 1;
@@ -152,6 +187,9 @@ show_prop(property *prop)
 
   return 1;
 
+#undef PART_BRANCH
+#undef PART_LEAF
+#undef ACTION_ID_IMSW
 }
 
 

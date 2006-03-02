@@ -142,21 +142,6 @@
   )
 
 
-;; Update mode-line string to "label1 label2".
-(defun uim-update-mode-line (label1 &optional label2)
-  (setq uim-current-prop-label (format "%s" (car label1)))
-  (if label2
-      (setq uim-current-prop-label 
-	    (concat uim-current-prop-label (format "%s" (car label2)))))
-
-  (setq uim-mode-line-string 
-	(format " U %s[%s]"
-		uim-current-im-engine uim-current-prop-label))
-
-  )
-
-
-
 ;;	
 ;; Create new context
 ;;
@@ -576,14 +561,30 @@
 ;; Update property label
 ;;
 (defun uim-update-label (label)
-  ;; label: ( ("indication_id" "iconic_label"  "buttontooltip_string") ... )
+  ;; label: ( ("type" "indication_id" "iconic_label" "buttontooltip_string") ... )
   (let ((mode-str ""))
     (mapcar
      '(lambda (x)
-	(setq mode-str (concat mode-str (nth 1 x))))
+	(cond ((string= (nth 0 x) "im-mode")
+	       (setq mode-str (concat mode-str (nth 2 x))))
+	      ((string= (nth 0 x) "im-name")
+	       (setq uim-im-indication-id (nth 1 x))
+	       (setq uim-im-name-str (nth 3 x)))
+	      )
+	)
      label)
+
+    (setq uim-im-mode-str mode-str)
+
     (setq uim-mode-line-string 
-	  (format " U %s[%s]" uim-current-im-engine mode-str)))
+	  (concat (if (or uim-show-im-name uim-show-im-mode) " ")
+		  (if uim-show-im-name
+		      uim-im-name-str "")
+		  (if uim-show-im-mode
+		      (format "[%s]" uim-im-mode-str) "")))
+    )
+
+  (run-hooks 'uim-update-label-hook)  
   )
 
 

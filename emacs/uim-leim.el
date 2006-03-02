@@ -36,13 +36,15 @@
 
 (require 'uim)
 
-;; alist of LEIM style IM names and its Uim style IM names
+;; alist of LEIM style IM names and its uim style IM names
 ;;  ( japanese-anthy-uim . anthy )
 (defvar uim-leim-inputmethod-alist '())
 
 ;; LEIM status
 (uim-deflocalvar uim-leim-active nil)
 
+;; LEIM mode-line-string
+(uim-deflocalvar uim-leim-mode-line-string "")
 
 ;; Inactivate function
 (defun uim-leim-inactivate ()
@@ -55,7 +57,7 @@
     ad-do-it))
 
 ;; Activate function (callback?)
-;;  all Uim related LEIM input methods call this function at activation time
+;;  all uim related LEIM input methods call this function at activation time
 (defun uim-leim-activate (&optional name)
 
   (let (im)
@@ -67,11 +69,12 @@
     (setq im (cdr (assoc name uim-leim-inputmethod-alist)))
 
     (when (uim-mode-on)
-      ;; switch IM after Uim activation
+      ;; switch IM after uim activation
       (if (not (equal im uim-current-im-engine))
 	  (uim-change-im im))
 
       (setq uim-leim-active t))))
+
 
 
 (defun uim-leim-reset ()
@@ -86,10 +89,39 @@
     (concat lang "-" im "-uim")))
 
 
+(defun uim-leim-xemacs-modeline-init ()
+  (unless (assq 'uim-leim-active mode-line-format)
+    (setq mode-line-format
+	  (append (list (list 'uim-leim-active 
+			      'current-input-method-title))
+		  mode-line-format))
+    ))
+
+(defun uim-leim-update-label ()
+
+  (setq uim-leim-mode-line-string
+	(format "%s[%s]" uim-im-name-str uim-im-mode-str))
+
+  (setq current-input-method-title uim-leim-mode-line-string)
+
+  (if uim-xemacs
+      (uim-leim-xemacs-modeline-init))
+  )
+
+(defun uim-leim-input-method-activate-hook ()
+  (setq current-input-method-title uim-leim-mode-line-string)
+
+  (if uim-xemacs
+      (uim-leim-xemacs-modeline-init))
+  )
+
 (defun uim-leim-init ()
   ;; register IM to input-method-alist
   ;;   to display the alist, call list-input-methods
   (uim-im-init)
+
+  (setq uim-show-im-name nil)
+  (setq uim-show-im-mode nil)
 
   (mapcar
    '(lambda (x)
@@ -97,8 +129,8 @@
 	     (lang (uim-get-emacs-lang name)))
 	(when (and name lang)
 	  (setq im (uim-leim-make-im-name name))
-	  (register-input-method im lang 'uim-leim-activate "[Uim]"
-				 (concat "Uim " name))
+	  (register-input-method im lang 'uim-leim-activate "uim"
+				 (concat "uim " name))
 
 	  ;; ( japanese-anthy-uim . anthy )
 	  (setq uim-leim-inputmethod-alist 
@@ -130,6 +162,16 @@
 	      (add-hook 'change-major-mode-hook
 			'inactivate-input-method nil t)))
 	       
+  ;; 
+  ;;uim-leim-update-label 
+  (add-hook 'uim-update-label-hook
+	    (lambda ()
+	      (uim-leim-update-label)))
+
+  (add-hook 'input-method-activate-hook
+	    (lambda ()
+	      (uim-leim-input-method-activate-hook)))
+
   )
 
 
@@ -138,6 +180,7 @@
   (interactive)
   (message "uim.el: use \"M-x set-input-method\" when using LEIM"))
 
+(uim-debug "LEIM")
 (uim-leim-init)
   
 (provide 'uim-leim)
