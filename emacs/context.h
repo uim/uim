@@ -78,6 +78,7 @@ int release_uim_agent_context(int id);
 uim_agent_context *get_uim_agent_context(int id);
 
 uim_agent_context *switch_context_im(uim_agent_context *ua, const char *im);
+void switch_context_im_all(const char *im);
 
 int set_current_uim_agent_context(uim_agent_context *ua);
 int clear_current_uim_agent_context(void);

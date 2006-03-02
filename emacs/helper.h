@@ -52,6 +52,8 @@
 #include "helper-server.h"
 
 void helper_send_im_list(void);
+void helper_send_im_change_whole_desktop(const char *name);
+
 void helper_im_changed(char *request, char *engine_name);
 
 void helper_handler(void);

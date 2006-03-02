@@ -51,6 +51,7 @@
 #include "im.h"
 #include "context.h"
 #include "commit.h"
+#include "helper.h"
 #include "helper-server.h"
 #include "prop.h"
 
@@ -68,5 +69,8 @@ void candidate_deactivate_cb(void *ptr);
 void prop_list_update_cb(void *ptr, const char *str);
 
 void configuration_changed_cb(void *ptr);
+
+void switch_app_global_im_cb(void *ptr, const char *name);
+void switch_system_global_im_cb(void *ptr, const char *name);
 
 #endif

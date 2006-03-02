@@ -76,6 +76,7 @@ helper_send_im_list(void)
 
   buflen = snprintf(buf, len, HEADER_FORMAT, current->encoding);
 
+#undef HEADER_FORMAT
 
   for (i = 0 ; i < uim_get_nr_im(current->context); i++) {
 	const char *name, *lang, *shortd;	
@@ -103,57 +104,50 @@ helper_send_im_list(void)
 }
 
 
+void
+helper_send_im_change_whole_desktop(const char *name)
+{
+  int len = 0;
+  char *buf;
+
+#define HEADER_FORMAT "im_change_this_application_only\n%s\n"
+
+  len += strlen(HEADER_FORMAT);
+  len += name ? strlen(name) : 0;
+
+  buf = (char *)malloc(sizeof(char) * len);
+
+  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+
+  uim_helper_send_message(helper_fd, buf);
+
+  free(buf);
+
+#undef HEADER_FORMAT
+}
+
 
 void
 helper_im_changed(char *request, char *engine_name)
 {
-  uim_agent_context_list *ptr;
 
   debug_printf(DEBUG_NOTE, "helper_im_changed: %s\n", engine_name);
 
   if (strcmp(request, "im_change_this_text_area_only") == 0) {
 
-    if (current) {
-	  switch_context_im(current, engine_name);
-	  if(current->im) free(current->im);
-	  current->im = strdup(engine_name);
-      uim_prop_list_update(current->context);
-    }
+    if (current) switch_context_im(current, engine_name);
 
   } else if (strcmp(request, "im_change_whole_desktop") == 0 
 			 || strcmp(request, "im_change_this_application_only") == 0) {
-
-	char *quot_engine_name;
 
 	/* change default */
 	update_default_engine(engine_name);
 
 	/* check focus state when change IM of current application */
-	if (strcmp(request, "im_change_whole_desktop") == 0 || current) {
-	  quot_engine_name = (char *)malloc(strlen(engine_name) + 2);
-	  quot_engine_name[0] = '\'';
-	  quot_engine_name[1] = '\0';
-	  strcat(quot_engine_name, engine_name);
-	  for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
-
-		switch_context_im(ptr->agent_context, engine_name);
-
-		uim_prop_update_custom(ptr->agent_context->context,
-							   "custom-preserved-default-im-name",
-							   quot_engine_name);
-
-		if (ptr->agent_context->im) free(ptr->agent_context->im);
-		ptr->agent_context->im = strdup(engine_name);
-		
-		if (current && ptr->agent_context == current) {
-		  uim_prop_list_update(ptr->agent_context->context);
-		}
-	  }
-	  free(quot_engine_name);
-    }
+	if (strcmp(request, "im_change_whole_desktop") == 0 || current)
+	  switch_context_im_all(engine_name);
   }
 }
-
 
 
 /* handle messages from helper */

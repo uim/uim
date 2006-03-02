@@ -139,6 +139,36 @@ switch_context_im(uim_agent_context *ua, const char *im)
 }
 
 
+void
+switch_context_im_all(const char *im)
+{
+  char *quot_im_name;
+  uim_agent_context_list *ptr;
+
+  /* change default IM  */
+  update_default_engine(im);
+
+  /* check focus state when change IM of current application */
+  quot_im_name = (char *)malloc(strlen(im) + 2);
+  quot_im_name[0] = '\'';
+  quot_im_name[1] = '\0';
+  strcat(quot_im_name, im);
+
+  if (agent_context_list_head)
+	/* update default IM name in libuim? should be called only one time? */
+	uim_prop_update_custom(agent_context_list_head->agent_context->context,
+						   "custom-preserved-default-im-name",
+						   quot_im_name);
+
+  for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
+	switch_context_im(ptr->agent_context, im);
+  }
+
+  free(quot_im_name);
+
+  if (current) uim_prop_list_update(current->context);
+}
+
 
 
 uim_context
@@ -170,6 +200,11 @@ create_context(const char *encoding, uim_agent_context *ptr)
 
   uim_set_configuration_changed_cb(context,
 								   configuration_changed_cb);
+  
+  uim_set_im_switch_request_cb(context,
+							   switch_app_global_im_cb,
+							   switch_system_global_im_cb);
+
   
   return context;
 
