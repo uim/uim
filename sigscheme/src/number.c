@@ -511,7 +511,7 @@ scm_string2number(const char *str, int radix, scm_bool *err)
 #endif
 
     if (errno == ERANGE || n < SCM_INT_MIN || SCM_INT_MAX < n)
-        ERR("fixnum limit exceeded: %d", n);
+        ERR("fixnum limit exceeded: " SCM_INT_T_FMT, n);
 
     empty_strp = (end == str);  /* apply the first rule above */
     *err = (empty_strp || *end);

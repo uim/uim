@@ -243,7 +243,7 @@ extern "C" {
 #ifndef SCM_BOOL_DEFINED
 typedef int scm_bool;
 #define scm_false 0
-#define scm_true  (!scm_false)
+#define scm_true  1
 #define SCM_BOOL_DEFINED
 #endif /* SCM_BOOL_DEFINED */
 
