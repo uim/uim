@@ -68,7 +68,7 @@
     (or (assq-cdr idname imsw-iconic-label-alist)
 	imsw-default-iconic-label)))
 
-;; FIXME: the helper protocol must to be revised as codeset included
+;; FIXME: the helper protocol must be revised as codeset included
 ;; in each branches, to make the switcher widget context-encoding
 ;; independent.
 (define imsw-actions
@@ -90,28 +90,16 @@
 				      idname))
 
 			       (lambda (ctx) ;; action handler
-				 (let ((cid (context-id ctx)))
-				   (uim-switch-im cid idname)
-				   (case imsw-propagation
-				     ((focused-context)
-				      #t)
+				 (im-switch-im ctx idname)
+				 (case imsw-propagation
+				   ((focused-context)
+				    #t)
 
-				     ((app-global)
-				      ;; Performed by each bridges via the
-				      ;; callback, since the concept
-				      ;; "application global" is differently
-				      ;; mapped to a set of input context for
-				      ;; each IM environment. (i.e. an
-				      ;; application may not have dedicated
-				      ;; process)
-				      (im-switch-app-global-im cid idname))
+				   ((app-global)
+				    (im-switch-app-global-im ctx idname))
 
-				     ((system-global)
-				      ;; Performed by each bridges via the
-				      ;; callback, since some IM environments
-				      ;; do not have the concept "all context"
-				      ;; (i.e. single-context system).
-				      (im-switch-system-global-im cid idname))))))
+				   ((system-global)
+				    (im-switch-system-global-im ctx idname)))))
 	      act-name))
 	  im-list))))
 

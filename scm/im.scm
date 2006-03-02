@@ -195,7 +195,7 @@
 
 (define switch-im
   (lambda (id name)
-    (uim-switch-im id (next-im name))))
+    (im-switch-im id (next-im name))))
 
 ;; im-toggle
 (define toggle-im-preserved-im #f)
@@ -210,14 +210,14 @@
 	    (set! toggle-im-alt-preserved-widget-states widget-states)
 	    (if toggle-im-preserved-im
 		(begin
-		  (uim-switch-im id toggle-im-preserved-im)
+		  (im-switch-im id toggle-im-preserved-im)
 		  (context-update-widget-states!
 		   (find-context id)
 		   toggle-im-preserved-widget-states))))
 	  (begin
 	    (set! toggle-im-preserved-im name)
 	    (set! toggle-im-preserved-widget-states widget-states)
-	    (uim-switch-im id toggle-im-alt-im)
+	    (im-switch-im id toggle-im-alt-im)
 	    (context-update-widget-states! (find-context id)
 	    			  toggle-im-alt-preserved-widget-states))))))
 
