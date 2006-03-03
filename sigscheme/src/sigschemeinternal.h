@@ -612,6 +612,9 @@ ScmCharPort *scm_make_char_port(ScmBytePort *bport);
 /* write.c */
 void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
 
+/* format.c */
+void scm_init_format(void);
+
 /* module.c */
 void scm_init_module(void);
 void scm_register_funcs(struct scm_func_registration_info *table);

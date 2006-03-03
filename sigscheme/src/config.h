@@ -60,6 +60,8 @@
 /*===========================================================================
   Optional Features
 ===========================================================================*/
+#define SCM_USE_RAW_C_FORMAT    1  /* use internal format which takes raw C values from va_list */
+#define SCM_USE_SSCM_FORMAT_EXTENSION 1 /* use 'format+' */
 #define SCM_USE_SSCM_EXTENSIONS 1  /* use SigScheme-specific extensions */
 #define SCM_USE_LEGACY_MACRO    0  /* (not supported yet) use define-macro */
 #define SCM_USE_DUMP            0  /* (not supported yet) use storage dump */
@@ -71,8 +73,10 @@
 #define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
 #define SCM_USE_SRFI22          1  /* use SRFI-22 running scheme scripts on Unix */
 #define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */
+#define SCM_USE_SRFI28          1  /* use SRFI-28 'format' */
 #define SCM_USE_SRFI34          1  /* use SRFI-34 exception handling for programs */
 #define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
+#define SCM_USE_SRFI48          1  /* use SRFI-48 'format' (superset of SRFI-28) */
 #define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
 #define SCM_USE_SRFI75_NAMED_CHARS 1  /* use named characters of SRFI-75 R6RS unicode data */
 #define SCM_USE_SRFI75          1  /* use SRFI-75 R6RS unicode data */
@@ -194,6 +198,21 @@
 #undef SCM_USE_PORT
 #define SCM_USE_PORT            1
 #endif /* (SCM_USE_READER || SCM_USE_WRITER) */
+
+#if (SCM_USE_SRFI28 || SCM_USE_SRFI48                                        \
+     || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT)
+#undef SCM_USE_FORMAT
+#define SCM_USE_FORMAT          1
+#endif /* (SCM_USE_SRFI28 || SCM_USE_SRFI48
+           || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT) */
+#if SCM_USE_SSCM_FORMAT_EXTENSION
+#undef SCM_USE_SRFI48
+#define SCM_USE_SRFI48          1
+#endif /* SCM_USE_SSCM_FORMAT_EXTENSION */
+#if SCM_USE_SRFI48
+#undef SCM_USE_SRFI28
+#define SCM_USE_SRFI28          1
+#endif /* USE_SRFI48 */
 
 #if SCM_COMPAT_SIOD
 #undef SCM_USE_SSCM_EXTENSIONS

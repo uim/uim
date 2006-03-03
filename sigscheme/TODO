@@ -138,8 +138,8 @@ Assigned to Kazuki:
 Assigned to YamaKen:
 
 * Implement format string
-  - Evaluate SRFI-28 and SRFI-48
-  - Implement limited part of the SRFIs for both Scheme object and raw C word
+  - Write tests
+  - Complete width and padding handlings
   - Replace asprintf and vasprintf
   - Obsolete vprintf method of port object
 

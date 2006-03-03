@@ -20,8 +20,10 @@ FUNC_TABLES = \
         functable-srfi6.c \
         functable-srfi8.c \
         functable-srfi23.c \
+        functable-srfi28.c \
         functable-srfi34.c \
         functable-srfi38.c \
+        functable-srfi48.c \
         functable-srfi60.c
 
 SSCM_PROC_SRCS = error.c module.c
@@ -79,10 +81,14 @@ functable-srfi8.c: module-srfi8.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi8_func_info_table" $<
 functable-srfi23.c: module-srfi23.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi23_func_info_table" $<
+functable-srfi28.c: module-srfi28.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL) $@ "scm_srfi28_func_info_table" $<
 functable-srfi34.c: module-srfi34.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi34_func_info_table" $<
 functable-srfi38.c: module-srfi38.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi38_func_info_table" $<
+functable-srfi48.c: module-srfi48.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL) $@ "scm_srfi48_func_info_table" $<
 functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_srfi60_func_info_table" $<
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
@@ -146,6 +152,9 @@ if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h
   libsscm_la_SOURCES += encoding.c
 endif
+if USE_FORMAT
+  libsscm_la_SOURCES += format.c
+endif
 if USE_SSCM_EXTENSIONS
   libsscm_la_SOURCES += module-sscm-ext.c
 endif
@@ -167,11 +176,17 @@ endif
 if USE_SRFI23
   libsscm_la_SOURCES += module-srfi23.c
 endif
+if USE_SRFI28
+  libsscm_la_SOURCES += module-srfi28.c
+endif
 if USE_SRFI34
   libsscm_la_SOURCES += module-srfi34.c
 endif
 if USE_SRFI38
   libsscm_la_SOURCES += module-srfi38.c
+endif
+if USE_SRFI48
+  libsscm_la_SOURCES += module-srfi48.c
 endif
 if USE_SRFI60
   libsscm_la_SOURCES += module-srfi60.c

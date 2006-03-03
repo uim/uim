@@ -114,6 +114,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_init_storage(storage_conf);
     scm_init_error();
     scm_init_port();
+#if SCM_USE_FORMAT
+    scm_init_format();
+#endif
     scm_init_module();
 
     /* fallback to unibyte */

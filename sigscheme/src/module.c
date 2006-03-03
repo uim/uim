@@ -82,11 +82,17 @@ static struct module_info module_info_table[] = {
 #if SCM_USE_SRFI23
     {"srfi-23", scm_initialize_srfi23},
 #endif
+#if SCM_USE_SRFI28
+    {"srfi-28", scm_initialize_srfi28},
+#endif
 #if SCM_USE_SRFI34
     {"srfi-34", scm_initialize_srfi34},
 #endif
 #if SCM_USE_SRFI38
     {"srfi-38", scm_initialize_srfi38},
+#endif
+#if SCM_USE_SRFI48
+    {"srfi-48", scm_initialize_srfi48},
 #endif
 #if SCM_USE_SRFI60
     {"srfi-60", scm_initialize_srfi60},

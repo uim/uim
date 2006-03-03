@@ -1,4 +1,11 @@
-Overview of changes from 0.5.0-alpha (r2902 + local modifications)
+Overview of changes from 0.5.0 (r3097 + private modifications)
+==
+* New features
+
+  - Support format strings (covers SRFI-28 and SRFI-48)
+
+
+Overview of changes from 0.5.0-alpha (r2902 + private modifications)
 ==
 * New features
 

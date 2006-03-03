@@ -437,36 +437,56 @@ prepare_radix(const char *funcname, ScmObj args)
     return r;
 }
 
+/*
+ * FIXME:
+ * - width
+ * - padding
+ */
+char *
+scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
+{
+    char buf[sizeof("-") + SCM_INT_BITS];
+    char *p;
+    const char *end;
+    uintmax_t un;  /* must be unsinged to be capable of -INT_MIN */
+    int digit;
+    scm_bool neg;
+    DECLARE_INTERNAL_FUNCTION("scm_int2string");
+
+    SCM_ASSERT(radix == 2 || radix == 8 || radix == 10 || radix == 16);
+    neg = (vfmt.signedp && ((intmax_t)n < 0));
+    un = (neg) ? (uintmax_t)-(intmax_t)n : n;
+
+    end = p = &buf[sizeof(buf) - 1];
+    *p = '\0';
+
+    do {
+        digit = un % radix;
+        *--p = (digit <= 9) ? '0' + digit : 'a' + digit - 10;
+    } while (un /= radix);
+    if (neg)
+        *--p = '-';
+
+    return scm_strdup(p);
+}
+
 ScmObj
 scm_p_number2string(ScmObj num, ScmObj args)
 {
-  char buf[sizeof("-") + SCM_INT_BITS];
-  char *p;
-  const char *end;
-  scm_int_t n;
-  /* 'un' must be unsinged to be capable of -INT_MIN */
-  scm_uint_t un, digit, r;
-  scm_bool neg;
-  DECLARE_FUNCTION("number->string", procedure_variadic_1);
+    char *str;
+    intmax_t n;
+    int r;
+    ScmValueFormat vfmt;
+    DECLARE_FUNCTION("number->string", procedure_variadic_1);
 
-  ENSURE_INT(num);
+    ENSURE_INT(num);
 
-  n = SCM_INT_VALUE(num);
-  neg = (n < 0);
-  un = (neg) ? -n : n;
-  r = (scm_uint_t)prepare_radix(SCM_MANGLE(name), args);
+    n = (intmax_t)SCM_INT_VALUE(num);
+    r = prepare_radix(SCM_MANGLE(name), args);
+    SCM_VALUE_FORMAT_INIT(vfmt);
+    str = scm_int2string(vfmt, (uintmax_t)n, r);
 
-  end = p = &buf[sizeof(buf) - 1];
-  *p = '\0';
-
-  do {
-      digit = un % r;
-      *--p = (digit <= 9) ? '0' + digit : 'a' + digit - 10;
-  } while (un /= r);
-  if (neg)
-    *--p = '-';
-
-  return MAKE_STRING_COPYING(p, end - p);
+    return MAKE_STRING(str, SCM_STRLEN_UNKNOWN);
 }
 
 scm_int_t

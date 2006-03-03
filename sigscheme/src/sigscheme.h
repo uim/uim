@@ -928,6 +928,45 @@ struct ScmEvalState_ {
      : (obj))
 
 /*=======================================
+   Format Strings
+=======================================*/
+enum ScmFormatCapability {
+    SCM_FMT_NONE            = 0,
+    SCM_FMT_RAW_C           = 1 << 0,  /* take raw C values from va_list */
+    SCM_FMT_SRFI28          = 1 << 1,
+    SCM_FMT_SRFI48_ADDENDUM = 1 << 2,
+    SCM_FMT_LEADING_ZEROS   = 1 << 3,  /* padding with zeros "00034" */
+    SCM_FMT_PREFIXED_RADIX  = 1 << 4,  /* "8x" 65536 => "    ffff" */
+
+    SCM_FMT_SRFI48        = (SCM_FMT_SRFI28 | SCM_FMT_SRFI48_ADDENDUM),
+    SCM_FMT_SSCM_ADDENDUM = (SCM_FMT_LEADING_ZEROS | SCM_FMT_PREFIXED_RADIX),
+    SCM_FMT_SSCM          = (SCM_FMT_SRFI48 | SCM_FMT_SSCM_ADDENDUM),
+    SCM_FMT_INTERNAL      = (SCM_FMT_RAW_C | SCM_FMT_SSCM)
+};
+
+typedef struct ScmValueFormat_ ScmValueFormat;
+struct ScmValueFormat_ {
+    signed char width;       /* integer part width */
+    signed char frac_width;  /* fractional part width */
+    char pad;                /* char for padding prefix */
+    char signedp;
+};
+
+#define SCM_VALUE_FORMAT_INIT(vfmt)                                          \
+    SCM_VALUE_FORMAT_INIT4(vfmt, -1, -1, ' ', scm_true)
+
+#define SCM_VALUE_FORMAT_INIT4(vfmt, w, fw, p, s)                            \
+    do {                                                                     \
+        vfmt.width = w;                                                      \
+        vfmt.frac_width = fw;                                                \
+        vfmt.pad = p;                                                        \
+        vfmt.signedp = s;                                                    \
+    } while (/* CONSTCOND */ 0)
+
+#define SCM_VALUE_FORMAT_SPECIFIEDP(vfmt)                                    \
+    (vfmt.width > 0 || vfmt.frac_width > 0 || vfmt.pad != ' ' || !vfmt.signedp)
+
+/*=======================================
    Variable Declarations
 =======================================*/
 /* storage-gc.c */
@@ -1229,6 +1268,7 @@ ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 
 #if SCM_USE_NUMBER
 /* number.c */
+char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
 ScmObj scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state);
 ScmObj scm_p_subtract(ScmObj left, ScmObj right,
                       enum ScmReductionState *state);
@@ -1410,6 +1450,17 @@ void scm_load(const char *filename);
 ScmObj scm_p_load(ScmObj filename);
 #endif /* SCM_USE_LOAD */
 
+#if SCM_USE_FORMAT
+/* format.c */
+void scm_pretty_print(ScmObj port, ScmObj obj);
+ScmObj scm_lformat(ScmObj port, enum ScmFormatCapability fcap,
+                   const char *fmt, ScmObj scm_args);
+ScmObj scm_vformat(ScmObj port, enum ScmFormatCapability fcap,
+                   const char *fmt, va_list c_args);
+ScmObj scm_format(ScmObj port, enum ScmFormatCapability fcap,
+                  const char *fmt, ...);
+#endif /* SCM_USE_FORMAT */
+
 /*===========================================================================
    SigScheme : Optional Funtions
 ===========================================================================*/
@@ -1513,6 +1564,12 @@ void   scm_initialize_srfi23(void);
 ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 #endif
 
+#if SCM_USE_SRFI28
+/* module-srfi28.c */
+void scm_initialize_srfi28(void);
+ScmObj scm_p_srfi28_format(ScmObj fmt, ScmObj objs);
+#endif
+
 #if SCM_USE_SRFI34
 /* module-srfi34.c */
 void  scm_initialize_srfi34(void);
@@ -1526,6 +1583,13 @@ ScmObj scm_p_srfi34_raise(ScmObj obj);
 /* module-srfi38.c */
 void   scm_initialize_srfi38(void);
 ScmObj scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args);
+#endif
+
+#if SCM_USE_SRFI48
+/* module-srfi48.c */
+void scm_initialize_srfi48(void);
+ScmObj scm_p_srfi48_format(ScmObj fmt_or_port, ScmObj rest);
+ScmObj scm_p_formatplus(ScmObj fmt_or_port, ScmObj rest);
 #endif
 
 #if SCM_USE_SRFI60
