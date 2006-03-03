@@ -157,7 +157,10 @@ configuration_changed_cb(void *ptr)
 void
 switch_app_global_im_cb(void *ptr, const char *name)
 {
-  helper_send_im_change_whole_desktop(name);
+  /* change default */
+  update_default_engine(name);
+
+  switch_context_im_all(name);
 }
 
 
@@ -168,5 +171,6 @@ switch_system_global_im_cb(void *ptr, const char *name)
   update_default_engine(name);
 
   switch_context_im_all(name);
+  helper_send_im_change_whole_desktop(name);
 }
 

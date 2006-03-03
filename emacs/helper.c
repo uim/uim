@@ -110,7 +110,7 @@ helper_send_im_change_whole_desktop(const char *name)
   int len = 0;
   char *buf;
 
-#define HEADER_FORMAT "im_change_this_application_only\n%s\n"
+#define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
 
   len += strlen(HEADER_FORMAT);
   len += name ? strlen(name) : 0;
