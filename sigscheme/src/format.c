@@ -289,15 +289,15 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
         return scm_true;
     }
 
-    /* size modifiers */
+    /* size modifiers (ordered by size) */
     modifiedp = scm_true;
     switch (c) {
-    case 'M': /* scm_int_t */
-        n = va_arg(*args, scm_uint_t);
-        break;
-
     case 'W': /* int32_t */
         n = va_arg(*args, uint32_t);
+        break;
+
+    case 'M': /* scm_int_t */
+        n = va_arg(*args, scm_uint_t);
         break;
 
     case 'L': /* long */
