@@ -111,10 +111,6 @@ void helper_handler(void)
         debug(("prop_list_get\n"));
         uim_prop_list_update(g_context);
 
-      } else if (str_has_prefix(message, "prop_label_get")) {
-        debug(("prop_label_get\n"));
-        uim_prop_label_update(g_context);
-
       } else if (str_has_prefix(message, "prop_activate")) {
         char *eol;
         debug(("prop_activate\n"));
@@ -227,5 +223,4 @@ void focus_in(void)
   g_focus_in = TRUE;
   uim_helper_client_focus_in(g_context);
   uim_prop_list_update(g_context);
-  uim_prop_label_update(g_context);
 }

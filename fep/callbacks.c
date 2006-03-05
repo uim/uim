@@ -71,6 +71,8 @@ static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
 
 static void configuration_changed_cb(void *ptr);
+static void switch_app_global_im_cb(void *ptr, const char *name);
+static void switch_system_global_im_cb(void *ptr, const char *name);
 static void activate_cb(void *ptr, int nr, int display_limit);
 static void select_cb(void *ptr, int index);
 static void shift_page_cb(void *ptr, int direction);
@@ -80,7 +82,6 @@ static void pushback_cb(void *ptr, int attr, const char *str);
 static void update_cb(void *ptr);
 static void mode_update_cb(void *ptr, int mode);
 static void prop_list_update_cb(void *ptr, const char *str);
-static void prop_label_update_cb(void *ptr, const char *str);
 static struct preedit_tag *dup_preedit(struct preedit_tag *p);
 static void make_page_strs(void);
 static int numwidth(int n);
@@ -141,8 +142,8 @@ void init_callbacks(void)
   uim_set_preedit_cb(g_context, clear_cb, pushback_cb, update_cb);
   uim_set_mode_cb(g_context, mode_update_cb);
   uim_set_prop_list_update_cb(g_context, prop_list_update_cb);
-  uim_set_prop_label_update_cb(g_context, prop_label_update_cb);
   uim_set_configuration_changed_cb(g_context, configuration_changed_cb);
+  uim_set_im_switch_request_cb(g_context, switch_app_global_im_cb, switch_system_global_im_cb);
   configuration_changed_cb(NULL);
   if (g_opt.status_type != NONE) {
     uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
@@ -343,6 +344,28 @@ static void configuration_changed_cb(void *ptr)
 {
   s_im_str = uim_get_current_im_name(g_context);
   s_im_str = s_im_str != NULL ? s_im_str : "";
+}
+
+static void switch_app_global_im_cb(void *ptr, const char *name)
+{
+}
+
+static void switch_system_global_im_cb(void *ptr, const char *name)
+{
+  char *buf;
+  int len = 0;
+
+#define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
+
+  len += strlen(HEADER_FORMAT);
+  len += name ? strlen(name) : 0;
+
+  buf = malloc(len);
+  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+  uim_helper_send_message(g_helper_fd, buf);
+  free(buf);
+
+#undef HEADER_FORMAT
 }
 
 /*
@@ -640,26 +663,6 @@ loop_end:
   uim_helper_send_message(g_helper_fd, message_buf);
   free(message_buf);
   debug(("prop_list_update_cb send message\n"));
-}
-
-static void prop_label_update_cb(void *ptr, const char *str)
-{
-  const char *enc;
-  char *message_buf;
-
-  debug(("prop_label_update_cb\n"));
-  debug2(("str = %s", str));
-
-  if (!g_focus_in) {
-    return;
-  }
-
-  enc = get_enc();
-  message_buf = malloc(strlen("prop_label_update\ncharset=") + strlen(enc) + strlen("\n") + strlen(str) + 1);
-  sprintf(message_buf, "prop_label_update\ncharset=%s\n%s", enc, str);
-  uim_helper_send_message(g_helper_fd, message_buf);
-  free(message_buf);
-  debug(("prop_label_update_cb send message\n"));
 }
 
 /*
