@@ -154,12 +154,11 @@ union ScmObj_ {
 /*=======================================
   System Include
 =======================================*/
+#include <stddef.h>
 
 /*=======================================
   Local Include
 =======================================*/
-#include "my-stdint.h"
-#include "baseport.h"
 
 /*=======================================
   Type Declarations
@@ -169,6 +168,10 @@ typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
 
 typedef ScmObj (*ScmFuncType)();
+
+/* FIXME: including baseport.h cause the redeclaration of SCM_PORT_MALLOC or
+ * so. */
+struct ScmCharPort_;
 
 /*=======================================
   Struct Declarations
@@ -678,20 +681,20 @@ struct ScmCell_ {
 
 #define SCM_SAL_PTR_BITS    (sizeof(void *) * CHAR_BIT)
 
-#define SCM_SAL_CHAR_BITS   /* FIXME */
-#define SCM_SAL_CHAR_MAX    /* FIXME */
+#define SCM_SAL_CHAR_BITS   (SCM_SAL_PTR_BITS - SCM_IMM_VAL_OFFSET_CHAR)
+#define SCM_SAL_CHAR_MAX    (1 << SCM_SAL_CHAR_BITS)
 
-#define SCM_SAL_INT_BITS    /* FIXME */
-#define SCM_SAL_INT_MAX     /* FIXME */
-#define SCM_SAL_INT_MIN     /* FIXME */
+#define SCM_SAL_INT_BITS    (SCM_SAL_PTR_BITS - SCM_IMM_VAL_OFFSET_INT)
+#define SCM_SAL_INT_MAX     (SCM_INT_T_MAX >> SCM_IMM_VAL_OFFSET_INT)
+#define SCM_SAL_INT_MIN     (SCM_INT_T_MIN >> SCM_IMM_VAL_OFFSET_INT)
 
 /* string length */
-#define SCM_SAL_STRLEN_BITS /* FIXME */
-#define SCM_SAL_STRLEN_MAX  /* FIXME */
+#define SCM_SAL_STRLEN_BITS SCM_INT_BITS
+#define SCM_SAL_STRLEN_MAX  SCM_INT_MAX
 
 /* vector length */
-#define SCM_SAL_VECLEN_BITS /* FIXME */
-#define SCM_SAL_VECLEN_MAX  /* FIXME */
+#define SCM_SAL_VECLEN_BITS SCM_INT_BITS
+#define SCM_SAL_VECLEN_MAX  SCM_INT_MAX
 
 /*=======================================
   Object Creators
@@ -762,6 +765,7 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_C_FUNCPOINTERP(a) SCM_TAG_OTHERS_TYPEP((a), C_FUNCPOINTER)
 #define SCM_SAL_FREECELLP(a)      SCM_TAG_OTHERS_TYPEP((a), FREECELL)
 /* Immediates */
+#define SCM_SAL_NUMBERP(a)        SCM_TAG_IMM_TYPEP((a), INT)
 #define SCM_SAL_INTP(a)           SCM_TAG_IMM_TYPEP((a), INT)
 #define SCM_SAL_CHARP(a)          SCM_TAG_IMM_TYPEP((a), CHAR)
 #define SCM_SAL_CONSTANTP(a)      SCM_TAG_IMM_TYPEP((a), CONSTANT)
