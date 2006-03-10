@@ -438,7 +438,7 @@ scm_type(ScmObj obj)
             return ScmCFuncPointer;
         else if (FREECELLP(obj))
             return ScmFreeCell;
-        ERR("invalid others object: ptr = %p", (void *)obj);
+        PLAIN_ERR(" invalid others object: ptr = %p", (void *)obj);
 
     case SCM_TAG_IMM:
         if (INTP(obj))
@@ -447,10 +447,10 @@ scm_type(ScmObj obj)
             return ScmChar;
         else if (SCM_CONSTANTP(obj))
             return ScmConstant;
-        ERR("invalid imm object: ptr = %p", (void *)obj);
+        PLAIN_ERR("invalid imm object: ptr = %p", (void *)obj);
 
     default:
-        ERR("invalid object: ptr = %p", (void *)obj);
+        PLAIN_ERR("invalid object: ptr = %p", (void *)obj);
     }
 
     /* NOTREACHED */
