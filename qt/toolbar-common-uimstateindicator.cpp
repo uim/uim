@@ -30,6 +30,7 @@
  SUCH DAMAGE.
 
 */
+#include "uim/config.h"
 #include "toolbar-common-uimstateindicator.h"
 
 #include <qsocketnotifier.h>
@@ -42,6 +43,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+static const QString ICONDIR = UIM_PIXMAPSDIR;
 static int uim_fd;
 static QHelperToolbarButton *fallbackButton = NULL;
 static QSocketNotifier *notifier = NULL;
@@ -128,8 +130,12 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
 
                 // create button
                 QHelperToolbarButton *button = new QHelperToolbarButton( this );
-                button->setText( fields[ 1 ] );
-                QToolTip::add( button, fields[ 2 ] );
+                QPixmap icon = QPixmap(ICONDIR + "/" + fields[1] + ".png");
+                if (!icon.isNull())
+                    button->setPixmap(icon);
+                else
+                    button->setText( fields[ 2 ] );
+                QToolTip::add( button, fields[ 3 ] );
                 button->setPopup( popupMenu );
                 button->setPopupDelay( 50 );
                 button->show();
@@ -139,13 +145,14 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
             else if ( fields[ 0 ].startsWith( "leaf" ) )
             {
                 if ( popupMenu
-                        && !fields[ 2 ].isEmpty()
+                        && !fields[ 1 ].isEmpty()
                         && !fields[ 3 ].isEmpty()
-                        && !fields[ 4 ].isEmpty() )
+                        && !fields[ 4 ].isEmpty()
+                        && !fields[ 5 ].isEmpty() )
                 {
-                    int id = popupMenu->insertHelperItem( fields[ 2 ], fields[ 3 ], fields[ 4 ] );
+                    int id = popupMenu->insertHelperItem( fields[1], fields[ 3 ], fields[ 4 ], fields[ 5 ] );
                     // check the item which is now used
-                    if ( !fields[ 5 ].isEmpty() && fields[ 5 ] == "*" )
+                    if ( !fields[ 6 ].isEmpty() && fields[ 6 ] == "*" )
                         popupMenu->setItemChecked( id, true );
                 }
             }
@@ -231,11 +238,18 @@ QHelperPopupMenu::~QHelperPopupMenu()
     msgDict.clear();
 }
 
-int QHelperPopupMenu::insertHelperItem( const QString &menulabelStr,
+int QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
+                                        const QString &menulabelStr,
                                         const QString &menutooltipStr,
                                         const QString &menucommandStr )
 {
-    const int id = insertItem( menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
+    int id;
+    QPixmap icon = QPixmap(ICONDIR + "/" + indicationIdStr + ".png");
+
+    if (!icon.isNull())
+        id = insertItem( icon, menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
+    else
+        id = insertItem( menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
 
     setWhatsThis( id, menutooltipStr );
     msgDict.insert( id, new QString( menucommandStr ) );

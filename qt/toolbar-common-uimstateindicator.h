@@ -90,7 +90,8 @@ public:
     QHelperPopupMenu( QWidget *parent = 0, const char *name = 0 );
     ~QHelperPopupMenu();
 
-    int insertHelperItem( const QString &menulabelStr,
+    int insertHelperItem( const QString &indicationIdStr,
+                          const QString &menulabelStr,
                           const QString &menutooltipStr,
                           const QString &menucommandStr );
 
