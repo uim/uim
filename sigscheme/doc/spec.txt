@@ -229,6 +229,21 @@ Specifications of SigScheme
       procedure: exact->inexact z
       procedure: inexact->exact z
 
+* SRFI conformance
+  - SRFI-48
+
+    The 'd' part of ~w,dF directive is acceptable, but completely ignored on
+    output format. Since SigScheme only supports integer currently, number is
+    always formatted as integer even if the 'd' part is specified.
+
+    proper behavior:
+      (format "~3F"   3)  => "  3"
+      (format "~3,2F" 3)  => "3.00"
+
+    SigScheme:
+      (format "~3F"   3)  => "  3"
+      (format "~3,2F" 3)  => "  3"
+
 * SIOD compatibility
 
   - #f and '()

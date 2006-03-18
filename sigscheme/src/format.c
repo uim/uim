@@ -199,7 +199,7 @@ read_number(format_string_t *fmt)
     scm_int_t ret;
     scm_bool err;
     char *bufp;
-    char buf[sizeof("099")];
+    char buf[sizeof("0127")];
     DECLARE_INTERNAL_FUNCTION("format");
 
     for (bufp = buf;
@@ -213,6 +213,9 @@ read_number(format_string_t *fmt)
     ret = scm_string2number(buf, 10, &err);
     if (err)  /* empty case */
         ret = -1;
+
+    if (ret > 127)
+        ERR("too much column width: %d", (int)ret);
 
     return ret;
 }
@@ -302,7 +305,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
         str_len = cstr_len;
 #endif
         for (i = str_len; i < vfmt.width; i++)
-            scm_port_put_char(port, vfmt.pad);
+            scm_port_put_char(port, ' ');  /* ignore leading zero */
         scm_port_puts(port, str);
         return (*str) ? str[cstr_len - 1] : c;
     }
@@ -420,7 +423,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
             obj = POP_FORMAT_ARG(args);
             if (STRINGP(obj)) {
                 for (i = SCM_STRING_LEN(obj); i < vfmt.width; i++)
-                    scm_port_put_char(port, vfmt.pad);
+                    scm_port_put_char(port, ' ');  /* ignore leading zero */
                 scm_display(port, obj);
             } else {
                 if (!INTP(obj))

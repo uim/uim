@@ -443,7 +443,7 @@ scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
     char buf[sizeof("-") + sizeof(uintmax_t) * CHAR_BIT];
     char *p, *end, *str;
     uintmax_t un;  /* must be unsinged to be capable of -INT_MIN */
-    int digit, len, pad_len;
+    int digit, sign_len, pad_len, len;
     scm_bool neg;
     DECLARE_INTERNAL_FUNCTION("scm_int2string");
 
@@ -461,14 +461,16 @@ scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
     if (neg && vfmt.pad != '0')
         *--p = '-';
 
+    sign_len = (neg && vfmt.pad == '0') ? 1 : 0;
     len = end - p;
-    pad_len = (len < vfmt.width) ? vfmt.width - len : 0;
-    str = scm_malloc(pad_len + len + sizeof(""));
-    strcpy(&str[pad_len], p);
-    while (pad_len)
-        str[--pad_len] = vfmt.pad;
+    pad_len = (sign_len + len < vfmt.width) ? vfmt.width - sign_len - len : 0;
 
-    if (neg && vfmt.pad == '0')
+    str = scm_malloc(sign_len + pad_len + len + sizeof(""));
+    strcpy(&str[sign_len + pad_len], p);
+    while (pad_len)
+        str[sign_len + --pad_len] = vfmt.pad;
+
+    if (sign_len)
         *str = '-';
 
     return str;

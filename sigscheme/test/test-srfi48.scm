@@ -46,6 +46,9 @@
 
 (define tn test-name)
 
+(define testing-format+? (and (symbol-bound? 'format+)
+                              (eq? format format+)))
+
 (define cl (list 0 1))
 (set-cdr! (cdr cl) cl)
 
@@ -131,7 +134,8 @@
 (assert-error  (tn) (lambda () (format "~d" "aBc")))
 (assert-error  (tn) (lambda () (format "~d" '(0 1))))
 (assert-error  (tn) (lambda () (format "~d" '#(0 1))))
-(assert-error  (tn) (lambda () (format "~1d" 1)))
+(if (not testing-format+?)
+    (assert-error  (tn) (lambda () (format "~1d" 1))))
 (assert-equal? (tn) "-100" (format "~d" -100))
 (assert-equal? (tn) "-10"  (format "~d" -10))
 (assert-equal? (tn) "-1"   (format "~d" -1))
@@ -149,7 +153,8 @@
 (assert-error  (tn) (lambda () (format "~x" "aBc")))
 (assert-error  (tn) (lambda () (format "~x" '(0 1))))
 (assert-error  (tn) (lambda () (format "~x" '#(0 1))))
-(assert-error  (tn) (lambda () (format "~1x" 1)))
+(if (not testing-format+?)
+    (assert-error  (tn) (lambda () (format "~1x" 1))))
 (assert-equal? (tn) "-64"  (format "~x" -100))
 (assert-equal? (tn) "-a"   (format "~x" -10))
 (assert-equal? (tn) "-1"   (format "~x" -1))
@@ -167,7 +172,8 @@
 (assert-error  (tn) (lambda () (format "~o" "aBc")))
 (assert-error  (tn) (lambda () (format "~o" '(0 1))))
 (assert-error  (tn) (lambda () (format "~o" '#(0 1))))
-(assert-error  (tn) (lambda () (format "~1o" 1)))
+(if (not testing-format+?)
+    (assert-error  (tn) (lambda () (format "~1o" 1))))
 (assert-equal? (tn) "-144" (format "~o" -100))
 (assert-equal? (tn) "-12"  (format "~o" -10))
 (assert-equal? (tn) "-1"   (format "~o" -1))
@@ -185,7 +191,8 @@
 (assert-error  (tn) (lambda () (format "~b" "aBc")))
 (assert-error  (tn) (lambda () (format "~b" '(0 1))))
 (assert-error  (tn) (lambda () (format "~b" '#(0 1))))
-(assert-error  (tn) (lambda () (format "~1b" 1)))
+(if (not testing-format+?)
+    (assert-error  (tn) (lambda () (format "~1b" 1))))
 (assert-equal? (tn) "-1100100" (format "~b" -100))
 (assert-equal? (tn) "-1010"    (format "~b" -10))
 (assert-equal? (tn) "-1"       (format "~b" -1))
@@ -245,7 +252,6 @@
 (assert-equal? (tn) "\"" (format "~c" #\"))
 (assert-equal? (tn) "あ" (format "~c" #\あ))
 
-;; FIXME: prefixed format
 (tn "format ~f (number)")
 (assert-error  (tn) (lambda () (format "~f")))
 (assert-error  (tn) (lambda () (format "~f" 0 1)))
@@ -253,9 +259,12 @@
 (assert-error  (tn) (lambda () (format "~f" #\a)))
 (assert-error  (tn) (lambda () (format "~f" '(0 1))))
 (assert-error  (tn) (lambda () (format "~f" '#(0 1))))
-(assert-error  (tn) (lambda () (format "0100f"   1)))
-(assert-error  (tn) (lambda () (format "0100,1f" 1)))
-(assert-error  (tn) (lambda () (format "1,0100f" 1)))
+(assert-error  (tn) (lambda () (format "0128f"    1)))
+(assert-error  (tn) (lambda () (format "0128,1f"  1)))
+(assert-error  (tn) (lambda () (format "1,0128f"  1)))
+(assert-error  (tn) (lambda () (format "01024f"   1)))
+(assert-error  (tn) (lambda () (format "01024,1f" 1)))
+(assert-error  (tn) (lambda () (format "1,01024f" 1)))
 (assert-error  (tn) (lambda () (format "~-1f"    1)))
 (assert-error  (tn) (lambda () (format "~-0f"    1)))
 (assert-error  (tn) (lambda () (format "~0,-0f"  1)))
@@ -278,13 +287,15 @@
 (assert-equal? (tn) "10"   (format "~f" 10))
 (assert-equal? (tn) "100"  (format "~f" 100))
 
-(assert-equal? (tn) "-100" (format "~0f" -100))
-(assert-equal? (tn) "-10"  (format "~0f" -10))
-(assert-equal? (tn) "-1"   (format "~0f" -1))
-(assert-equal? (tn) "0"    (format "~0f" 0))
-(assert-equal? (tn) "1"    (format "~0f" 1))
-(assert-equal? (tn) "10"   (format "~0f" 10))
-(assert-equal? (tn) "100"  (format "~0f" 100))
+(if (not testing-format+?)
+    (begin
+      (assert-equal? (tn) "-100" (format "~0f" -100))
+      (assert-equal? (tn) "-10"  (format "~0f" -10))
+      (assert-equal? (tn) "-1"   (format "~0f" -1))
+      (assert-equal? (tn) "0"    (format "~0f" 0))
+      (assert-equal? (tn) "1"    (format "~0f" 1))
+      (assert-equal? (tn) "10"   (format "~0f" 10))
+      (assert-equal? (tn) "100"  (format "~0f" 100))))
 
 (assert-equal? (tn) "-100" (format "~1f" -100))
 (assert-equal? (tn) "-10"  (format "~1f" -10))
@@ -326,13 +337,15 @@
 (assert-equal? (tn) "   10" (format "~5f" 10))
 (assert-equal? (tn) "  100" (format "~5f" 100))
 
-(assert-equal? (tn) " -100" (format "~05f" -100))
-(assert-equal? (tn) "  -10" (format "~05f" -10))
-(assert-equal? (tn) "   -1" (format "~05f" -1))
-(assert-equal? (tn) "    0" (format "~05f" 0))
-(assert-equal? (tn) "    1" (format "~05f" 1))
-(assert-equal? (tn) "   10" (format "~05f" 10))
-(assert-equal? (tn) "  100" (format "~05f" 100))
+(if (not testing-format+?)
+    (begin
+      (assert-equal? (tn) " -100" (format "~05f" -100))
+      (assert-equal? (tn) "  -10" (format "~05f" -10))
+      (assert-equal? (tn) "   -1" (format "~05f" -1))
+      (assert-equal? (tn) "    0" (format "~05f" 0))
+      (assert-equal? (tn) "    1" (format "~05f" 1))
+      (assert-equal? (tn) "   10" (format "~05f" 10))
+      (assert-equal? (tn) "  100" (format "~05f" 100))))
 
 (if (symbol-bound? 'exact->inexact)
     (begin
@@ -360,20 +373,29 @@
       (assert-equal? (tn) "10.00"   (format "~5,2f" 10))
       (assert-equal? (tn) "100.00"  (format "~5,2f" 100))
 
-      (assert-equal? (tn) "-100.00" (format "~05,02f" -100))
-      (assert-equal? (tn) "-10.00"  (format "~05,02f" -10))
-      (assert-equal? (tn) "-1.00"   (format "~05,02f" -1))
-      (assert-equal? (tn) " 0.00"   (format "~05,02f" 0))
-      (assert-equal? (tn) " 1.00"   (format "~05,02f" 1))
-      (assert-equal? (tn) "10.00"   (format "~05,02f" 10))
-      (assert-equal? (tn) "100.00"  (format "~05,02f" 100))
+      (if (not testing-format+?)
+          (begin
+            (assert-equal? (tn) "-100.00" (format "~05,02f" -100))
+            (assert-equal? (tn) "-10.00"  (format "~05,02f" -10))
+            (assert-equal? (tn) "-1.00"   (format "~05,02f" -1))
+            (assert-equal? (tn) " 0.00"   (format "~05,02f" 0))
+            (assert-equal? (tn) " 1.00"   (format "~05,02f" 1))
+            (assert-equal? (tn) "10.00"   (format "~05,02f" 10))
+            (assert-equal? (tn) "100.00"  (format "~05,02f" 100))))
 
       (assert-equal? (tn) "100.0"  (format "~5,1F" 100))))
+
+(assert-equal? (tn)
+               "                                                                                                                            123"
+               (format "~127f" 123))
+(if (not testing-format+?)
+    (assert-equal? (tn)
+                   "                                                                                                                            123"
+                   (format "~0127f" 123)))
 
 (assert-equal? (tn) "10"    (format "~F" 10))
 (assert-equal? (tn) "  100" (format "~5F" 100))
 
-;; FIXME: prefixed format
 (tn "format ~f (string)")
 (assert-error  (tn) (lambda () (format "~f" "a" "b")))
 (assert-error  (tn) (lambda () (format "~f" '("a" "b"))))
@@ -444,6 +466,13 @@
 (assert-equal? (tn) "    \""  (format "~05,02f" "\""))
 (assert-equal? (tn) "  aBc"   (format "~05,02f" "aBc"))
 (assert-equal? (tn) "  あbう" (format "~05,02f" "あbう"))
+
+(assert-equal? (tn)
+               "                                                                                                                            aBc"
+               (format "~127f" "aBc"))
+(assert-equal? (tn)
+               "                                                                                                                            aBc"
+               (format "~0127f" "aBc"))
 
 (assert-equal? (tn) "aBc"     (format "~F"      "aBc"))
 (assert-equal? (tn) "  aBc"   (format "~5F"     "aBc"))
@@ -608,7 +637,6 @@
 (assert-error  (tn) (lambda () (format "~1_")))
 (assert-equal? (tn) " " (format "~_"))
 
-;; FIXME: failed
 (tn "format ~&")
 (assert-error  (tn) (lambda () (format "~&" #t)))
 (assert-error  (tn) (lambda () (format "~&" 0)))
