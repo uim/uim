@@ -39,6 +39,7 @@
 =======================================*/
 #include <stddef.h>
 #include <stdarg.h>
+#include <string.h>
 
 /*=======================================
   Local Include
@@ -140,14 +141,14 @@ static ScmValueFormat read_number_prefix(enum ScmFormatCapability fcap,
 static void format_int(ScmObj port,
                        ScmValueFormat vfmt, uintmax_t n, int radix);
 #if SCM_USE_RAW_C_FORMAT
-static scm_bool format_raw_c_directive(ScmObj port,
-                                       format_string_t *fmt, va_list *args);
+static scm_ichar_t format_raw_c_directive(ScmObj port,
+                                          format_string_t *fmt, va_list *args);
 #endif
 #if SCM_USE_SRFI28
-static scm_bool format_directive(ScmObj port, scm_ichar_t prev_ch,
-                                 enum ScmFormatCapability fcap,
-                                 format_string_t *fmt,
-                                 struct format_args *args);
+static scm_ichar_t format_directive(ScmObj port, scm_ichar_t last_ch,
+                                    enum ScmFormatCapability fcap,
+                                    format_string_t *fmt,
+                                    struct format_args *args);
 #endif
 static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
                               const char *fmt, struct format_args *args);
@@ -169,7 +170,8 @@ scm_init_format(void)
 static scm_ichar_t
 format_str_peek(ScmMultibyteString mbs_fmt, const char *caller)
 {
-    return scm_charcodec_read_char(scm_current_char_codec, &mbs_fmt, caller);
+    return (FORMAT_STR_ENDP(mbs_fmt)) ? '\0' :
+        scm_charcodec_read_char(scm_current_char_codec, &mbs_fmt, caller);
 }
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 
@@ -177,13 +179,17 @@ void
 scm_pretty_print(ScmObj port, ScmObj obj)
 {
     ScmObj proc_pretty_print;
+    DECLARE_INTERNAL_FUNCTION("scm_pretty_print");
 
-    proc_pretty_print = scm_symbol_value(sym_pretty_print,
-                                         SCM_INTERACTION_ENV);
-    if (!EQ(proc_pretty_print, SCM_UNBOUND))
+    /* FIXME: search pretty-print in current env */
+    proc_pretty_print = SCM_SYMBOL_VCELL(sym_pretty_print);
+
+    if (!EQ(proc_pretty_print, SCM_UNBOUND)) {
+        ENSURE_PROCEDURE(proc_pretty_print);
         scm_call(proc_pretty_print, LIST_1(obj));
-    else
+    } else {
         scm_write(port, obj);
+    }
 }
 
 static signed char
@@ -193,7 +199,7 @@ read_number(format_string_t *fmt)
     scm_int_t ret;
     scm_bool err;
     char *bufp;
-    char buf[sizeof("99")];
+    char buf[sizeof("099")];
     DECLARE_INTERNAL_FUNCTION("format");
 
     for (bufp = buf;
@@ -247,11 +253,13 @@ format_int(ScmObj port, ScmValueFormat vfmt, uintmax_t n, int radix)
 }
 
 #if SCM_USE_RAW_C_FORMAT
-/* ([CP]|(0?[0-9]+(,0?[0-9]+)?)?(S|([MWQLGJTZ]?[UDXOB]))) */
-static scm_bool
+/* returns '\0' if no valid directive handled */
+/* ([CP]|(0?[0-9]+(,0?[0-9]+)?)?(S|[MWQLGJTZ]?[UDXOB])) */
+static scm_ichar_t
 format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 {
     const void *orig_pos;
+    const char *str;
     scm_ichar_t c;
     uintmax_t n;  /* FIXME: sign extension */
     int radix;
@@ -265,8 +273,9 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     switch (c) {
     case 'C': /* Character */
         FORMAT_STR_SKIP_CHAR(*fmt);
-        scm_port_put_char(port, va_arg(*args, scm_ichar_t));
-        return scm_true;
+        c = va_arg(*args, scm_ichar_t);
+        scm_port_put_char(port, c);
+        return c;
 
     case 'P': /* Pointer */
         FORMAT_STR_SKIP_CHAR(*fmt);
@@ -274,7 +283,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
         SCM_VALUE_FORMAT_INIT4(vfmt, sizeof(void *) * CHAR_BIT / 4,
                                -1, '0', scm_false);
         format_int(port, vfmt, (uintptr_t)va_arg(*args, void *), 16);
-        return scm_true;
+        return c;
 
     default:
         break;
@@ -285,8 +294,9 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     if (c == 'S') { /* String */
         FORMAT_STR_SKIP_CHAR(*fmt);
         /* FIXME: reflect vfmt.width */
-        scm_port_puts(port, va_arg(*args, const char *));
-        return scm_true;
+        str = va_arg(*args, const char *);
+        scm_port_puts(port, str);
+        return (*str) ? str[strlen(str) - 1] : c;
     }
 
     /* size modifiers (ordered by size) */
@@ -357,25 +367,26 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     default:
         /* no internal directives found */
         SCM_ASSERT(FORMAT_STR_POS(*fmt) == orig_pos);
-        return scm_false;
+        return '\0';
     }
     FORMAT_STR_SKIP_CHAR(*fmt);
     if (!modifiedp)
         n = va_arg(*args, unsigned int);
     format_int(port, vfmt, n, radix);
 
-    return scm_true;
+    return c;
 }
 #endif /* SCM_USE_RAW_C_FORMAT */
 
 #if SCM_USE_SRFI28
-static scm_bool
-format_directive(ScmObj port, scm_ichar_t prev_ch,
+static scm_ichar_t
+format_directive(ScmObj port, scm_ichar_t last_ch,
                  enum ScmFormatCapability fcap,
                  format_string_t *fmt, struct format_args *args)
 {
     const void *orig_pos;
     char directive;
+    scm_bool eolp;
 #if SCM_USE_SRFI48
     ScmObj obj, indirect_fmt, indirect_args;
     scm_bool prefixedp;
@@ -390,32 +401,7 @@ format_directive(ScmObj port, scm_ichar_t prev_ch,
     prefixedp = (FORMAT_STR_POS(*fmt) != orig_pos);
 #endif /* SCM_USE_SRFI48 */
     directive = ICHAR_DOWNCASE(FORMAT_STR_PEEK(*fmt));
-
-    if (fcap & SCM_FMT_SRFI28) {
-        if (prefixedp)
-            goto err_invalid_prefix;
-
-        switch (directive) {
-        case 'a': /* Any */
-            scm_display(port, POP_FORMAT_ARG(args));
-            goto fin;
-
-        case 's': /* Slashified */
-            scm_write(port, POP_FORMAT_ARG(args));
-            goto fin;
-
-        case '%': /* Newline */
-            scm_port_newline(port);
-            goto fin;
-
-        case '~': /* Tilde */
-            scm_port_put_char(port, '~');
-            goto fin;
-
-        default:
-            break;
-        }
-    }
+    eolp = scm_false;
 
 #if SCM_USE_SRFI48
     if (fcap & SCM_FMT_SRFI48_ADDENDUM) {
@@ -458,10 +444,38 @@ format_directive(ScmObj port, scm_ichar_t prev_ch,
             format_int(port, vfmt, SCM_INT_VALUE(obj), radix);
             goto fin;
         }
+    }
+#endif /* SCM_USE_SRFI48 */
 
-        if (prefixedp)
-            goto err_invalid_prefix;
+    if (prefixedp)
+        ERR("invalid prefix for directive ~%c", directive);
 
+    if (fcap & SCM_FMT_SRFI28) {
+        switch (directive) {
+        case 'a': /* Any */
+            scm_display(port, POP_FORMAT_ARG(args));
+            goto fin;
+
+        case 's': /* Slashified */
+            scm_write(port, POP_FORMAT_ARG(args));
+            goto fin;
+
+        case '%': /* Newline */
+            scm_port_newline(port);
+            eolp = scm_true;
+            goto fin;
+
+        case '~': /* Tilde */
+            scm_port_put_char(port, '~');
+            goto fin;
+
+        default:
+            break;
+        }
+    }
+
+#if SCM_USE_SRFI48
+    if (fcap & SCM_FMT_SRFI48_ADDENDUM) {
         switch (directive) {
         case 'w': /* WriteCircular */
             scm_write_ss(port, POP_FORMAT_ARG(args));
@@ -496,8 +510,9 @@ format_directive(ScmObj port, scm_ichar_t prev_ch,
             goto fin;
 
         case '&': /* Freshline */
-            if (prev_ch != NEWLINE_CHAR)
+            if (last_ch != NEWLINE_CHAR)
                 scm_port_newline(port);
+            eolp = scm_true;
             goto fin;
 
         case 'h': /* Help */
@@ -519,12 +534,9 @@ format_directive(ScmObj port, scm_ichar_t prev_ch,
      * reference implementation treats it as error. */
     ERR("invalid escape sequence: ~%c", directive);
 
- err_invalid_prefix:
-    ERR("invalid prefix for directive ~%c", directive);
-
  fin:
     FORMAT_STR_SKIP_CHAR(*fmt);
-    return scm_true;
+    return (eolp) ? NEWLINE_CHAR : directive;
 }
 #endif /* SCM_USE_SRFI28 */
 
@@ -532,7 +544,7 @@ static ScmObj
 format_internal(ScmObj port, enum ScmFormatCapability fcap,
                 const char *fmt, struct format_args *args)
 {
-    scm_ichar_t c, prev_c;
+    scm_ichar_t c, last_c;
     format_string_t cur;
     scm_bool implicit_portp;
     DECLARE_INTERNAL_FUNCTION("format");
@@ -549,15 +561,16 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
         implicit_portp = scm_false;
     }
 
-    prev_c = '\0';
-    FORMAT_STR_INIT(cur, fmt);
-    for (; !FORMAT_STR_ENDP(cur); prev_c = c) {
+    last_c = '\0';
+    FORMAT_STR_INIT(cur, fmt); 
+    while (!FORMAT_STR_ENDP(cur)) {
         c = FORMAT_STR_READ(cur);
         if (c == '~') {
 #if SCM_USE_RAW_C_FORMAT
             if (fcap & SCM_FMT_RAW_C) {
                 SCM_ASSERT(args->type == ARG_VA_LIST);
-                if (format_raw_c_directive(port, &cur, &args->lst.va))
+                last_c = format_raw_c_directive(port, &cur, &args->lst.va);
+                if (last_c)
                     continue;
             }
 #endif /* SCM_USE_RAW_C_FORMAT */
@@ -565,13 +578,14 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
             if (fcap & (SCM_FMT_SRFI28 | SCM_FMT_SRFI48 | SCM_FMT_SSCM)) {
                 SCM_ASSERT(args->type == ARG_VA_LIST
                            || args->type == ARG_SCM_LIST);
-                if (format_directive(port, prev_c, fcap, &cur, args))
-                    continue;
+                last_c = format_directive(port, last_c, fcap, &cur, args);
+                continue;
             }
 #endif /* SCM_USE_SRFI28 */
             SCM_ASSERT(scm_false);
         } else {
             scm_port_put_char(port, c);
+            last_c = c;
         }
     }
 

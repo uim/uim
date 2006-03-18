@@ -30,9 +30,9 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(load "./test/unittest.scm")
+;; All tests in this file are passed against r3166 (new repository)
 
-;;(set! *test-track-progress* #t)
+(load "./test/unittest.scm")
 
 (use srfi-28)
 
@@ -42,8 +42,8 @@
 (assert-error  (tn) (lambda () (format)))
 (assert-error  (tn) (lambda () (format #f)))
 (assert-error  (tn) (lambda () (format #\a)))
-;; FIXME: assertion failed
-;;(assert-error  (tn) (lambda () (format "~")))
+(assert-error  (tn) (lambda () (format "~")))
+(assert-error  (tn) (lambda () (format "a" "a")))
 
 (tn "format unknown directives")
 (assert-error  (tn) (lambda () (format "~z")))
@@ -84,6 +84,7 @@
 (tn "format ~a")
 (assert-error  (tn) (lambda () (format "~a")))
 (assert-error  (tn) (lambda () (format "~a" 0 1)))
+(assert-error  (tn) (lambda () (format "~1a" 1)))
 (assert-equal? (tn)
                (if (and (provided? "sigscheme")
                         (provided? "siod-bugs"))
@@ -109,6 +110,7 @@
 (tn "format ~A")
 (assert-error  (tn) (lambda () (format "~A")))
 (assert-error  (tn) (lambda () (format "~A" 0 1)))
+(assert-error  (tn) (lambda () (format "~1A" 1)))
 (assert-equal? (tn)
                (if (and (provided? "sigscheme")
                         (provided? "siod-bugs"))
@@ -134,6 +136,7 @@
 (tn "format ~s")
 (assert-error  (tn) (lambda () (format "~s")))
 (assert-error  (tn) (lambda () (format "~s" 0 1)))
+(assert-error  (tn) (lambda () (format "~1s" 1)))
 (assert-equal? (tn)
                (if (and (provided? "sigscheme")
                         (provided? "siod-bugs"))
@@ -159,6 +162,7 @@
 (tn "format ~S")
 (assert-error  (tn) (lambda () (format "~S")))
 (assert-error  (tn) (lambda () (format "~S" 0 1)))
+(assert-error  (tn) (lambda () (format "~1S" 1)))
 (assert-equal? (tn)
                (if (and (provided? "sigscheme")
                         (provided? "siod-bugs"))
