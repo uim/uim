@@ -138,8 +138,7 @@ Assigned to Kazuki:
 Assigned to YamaKen:
 
 * Implement format string
-  - Write tests
-  - Complete width and padding handlings
+  - Write tests for format+
   - Replace asprintf and vasprintf
   - Obsolete vprintf method of port object
 
