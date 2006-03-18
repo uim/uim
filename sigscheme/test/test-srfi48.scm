@@ -32,7 +32,7 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;; All tests in this file are passed against r3167 (new repository)
+;; All tests in this file are passed against r3170 (new repository)
 
 (load "./test/unittest.scm")
 
@@ -662,18 +662,43 @@
 
 (tn "format ~h")
 (define help-str
-"
+"(format [<port>] <format-string> [<arg>...])
+  - <port> is #t, #f or an output-port
+  - any escape sequence is case insensitive
 
-
+SEQ   MNEMONIC        DESCRIPTION
+~H    [Help]          output this text
+~A    [Any]           (display arg) for humans
+~S    [Slashified]    (write arg) for parsers
+~W    [WriteCircular] like ~s but outputs with write/ss
+~~    [tilde]         output a tilde
+~T    [Tab]           output a tab character
+~%    [Newline]       output a newline character
+~&    [Freshline]     output a newline if the previous output was not a newline
+~D    [Decimal]       the arg is a number which is output in decimal radix
+~X    [heXadecimal]   the arg is a number which is output in hexdecimal radix
+~O    [Octal]         the arg is a number which is output in octal radix
+~B    [Binary]        the arg is a number which is output in binary radix
+~F
+~wF   [Fixed]         the arg is a string or number which has width w and
+~w,dF                 d digits after the decimal
+~C    [Character]     charater arg is output by write-char
+~_    [Space]         a single space character is output
+~Y    [Yuppify]       the list arg is pretty-printed to the output
+~?    [Indirection]   recursive format: next 2 args are format-string and list
+                      of arguments
+~K    [Indirection]   same as ~?
 ")
-(assert-error  (tn) (lambda () (format "~h" #t)))
-(assert-error  (tn) (lambda () (format "~h" 0)))
-(assert-error  (tn) (lambda () (format "~h" #\a)))
-(assert-error  (tn) (lambda () (format "~h" "aBc")))
-(assert-error  (tn) (lambda () (format "~h" '(0 1))))
-(assert-error  (tn) (lambda () (format "~h" '#(0 1))))
-(assert-error  (tn) (lambda () (format "~1h")))
-(assert-equal? (tn) help-str (format "~h"))
-(assert-equal? (tn) help-str (format "~H"))
+(if (not testing-format+?)
+    (begin
+      (assert-error  (tn) (lambda () (format "~h" #t)))
+      (assert-error  (tn) (lambda () (format "~h" 0)))
+      (assert-error  (tn) (lambda () (format "~h" #\a)))
+      (assert-error  (tn) (lambda () (format "~h" "aBc")))
+      (assert-error  (tn) (lambda () (format "~h" '(0 1))))
+      (assert-error  (tn) (lambda () (format "~h" '#(0 1))))
+      (assert-error  (tn) (lambda () (format "~1h")))
+      (assert-equal? (tn) help-str (format "~h"))
+      (assert-equal? (tn) help-str (format "~H"))))
 
 (total-report)

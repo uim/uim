@@ -1,5 +1,3 @@
-#! /usr/bin/env sscm -C UTF-8
-
 ;;  FileName : test-formatplus.scm
 ;;  About    : unit test for SigScheme-specific procedure format+
 ;;
@@ -32,7 +30,7 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;; All tests in this file are passed against r3169 (new repository)
+;; All tests in this file are passed against r3170 (new repository)
 
 (load "./test/unittest.scm")
 
@@ -195,5 +193,26 @@
 (assert-equal? (tn)
                "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123"
                (format+ "~0127f" 123))
+
+(tn "format ~h")
+(define help-str
+"(format+ [<port>] <format-string> [<arg>...])
+  - <port> is #t, #f or an output-port
+  - any escape sequence is case insensitive
+
+  The format+ procedure is a SigScheme-specific superset of SRFI-48.
+  Following directives accept optional width w and d digits after the decimal,
+  and w accepts leading zero as zero-digit-padding specifier. All other rules
+  are same as SRFI-48. See also the help message for SRFI-48.
+
+SEQ        MNEMONIC       DESCRIPTION
+~[w[,d]]D  [Decimal]      the arg is a number output in decimal radix
+~[w[,d]]X  [heXadecimal]  the arg is a number output in hexdecimal radix
+~[w[,d]]O  [Octal]        the arg is a number output in octal radix
+~[w[,d]]B  [Binary]       the arg is a number output in binary radix
+~[w[,d]]F  [Fixed]        the arg is a string or number
+")
+(assert-equal? (tn) help-str (format "~h"))
+(assert-equal? (tn) help-str (format "~H"))
 
 (total-report)

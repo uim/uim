@@ -32,6 +32,32 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+/* The help strings (MSG_SRFI48_DIRECTIVE_HELP and MSG_SSCM_DIRECTIVE_HELP) are
+ * derived from the reference implementation of SRFI-48. Here is the copyright
+ * for the strings. No other part is covered by this copyright.
+ *   -- 2006-03-18 YamaKen */
+/*
+ * Copyright (C) Kenneth A Dickey (2003). All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
 #include "config.h"
 
 /*=======================================
@@ -55,18 +81,51 @@
 =======================================*/
 #define PRETTY_PRINT_PROCEDURE_NAME "pretty-print"
 
-/* FIXME */
-#define MSG_SRFI48_DIRECTIVE_HELP \
-    "\n" \
-    "\n" \
-    "\n"
+#define MSG_SRFI48_DIRECTIVE_HELP                                             \
+"(format [<port>] <format-string> [<arg>...])\n"                              \
+"  - <port> is #t, #f or an output-port\n"                                    \
+"  - any escape sequence is case insensitive\n"                               \
+"\n"                                                                          \
+"SEQ   MNEMONIC        DESCRIPTION\n"                                         \
+"~H    [Help]          output this text\n"                                    \
+"~A    [Any]           (display arg) for humans\n"                            \
+"~S    [Slashified]    (write arg) for parsers\n"                             \
+"~W    [WriteCircular] like ~s but outputs with write/ss\n"                   \
+"~~    [tilde]         output a tilde\n"                                      \
+"~T    [Tab]           output a tab character\n"                              \
+"~%    [Newline]       output a newline character\n"                          \
+"~&    [Freshline]     output a newline if the previous output was not a newline\n" \
+"~D    [Decimal]       the arg is a number which is output in decimal radix\n" \
+"~X    [heXadecimal]   the arg is a number which is output in hexdecimal radix\n" \
+"~O    [Octal]         the arg is a number which is output in octal radix\n"  \
+"~B    [Binary]        the arg is a number which is output in binary radix\n" \
+"~F\n"                                                                        \
+"~wF   [Fixed]         the arg is a string or number which has width w and\n" \
+"~w,dF                 d digits after the decimal\n"                          \
+"~C    [Character]     charater arg is output by write-char\n"                \
+"~_    [Space]         a single space character is output\n"                  \
+"~Y    [Yuppify]       the list arg is pretty-printed to the output\n"        \
+"~?    [Indirection]   recursive format: next 2 args are format-string and list\n" \
+"                      of arguments\n"                                        \
+"~K    [Indirection]   same as ~?\n"
 
 #if SCM_USE_SSCM_FORMAT_EXTENSION
-/* FIXME */
-#define MSG_SSCM_DIRECTIVE_HELP \
-    "\n" \
-    "\n" \
-    "\n"
+#define MSG_SSCM_DIRECTIVE_HELP                                              \
+"(format+ [<port>] <format-string> [<arg>...])\n"                            \
+"  - <port> is #t, #f or an output-port\n"                                   \
+"  - any escape sequence is case insensitive\n"                              \
+"\n"                                                                         \
+"  The format+ procedure is a SigScheme-specific superset of SRFI-48.\n"     \
+"  Following directives accept optional width w and d digits after the decimal,\n" \
+"  and w accepts leading zero as zero-digit-padding specifier. All other rules\n" \
+"  are same as SRFI-48. See also the help message for SRFI-48.\n"            \
+"\n"                                                                         \
+"SEQ        MNEMONIC       DESCRIPTION\n"                                    \
+"~[w[,d]]D  [Decimal]      the arg is a number output in decimal radix\n"    \
+"~[w[,d]]X  [heXadecimal]  the arg is a number output in hexdecimal radix\n" \
+"~[w[,d]]O  [Octal]        the arg is a number output in octal radix\n"      \
+"~[w[,d]]B  [Binary]       the arg is a number output in binary radix\n"     \
+"~[w[,d]]F  [Fixed]        the arg is a string or number\n"
 #endif /* SCM_USE_SSCM_FORMAT_EXTENSION */
 
 #define NEWLINE_CHAR                                                         \
