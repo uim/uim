@@ -32,6 +32,8 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+;; All tests in this file are passed against r3167 (new repository)
+
 (load "./test/unittest.scm")
 
 (use srfi-6)
@@ -408,12 +410,12 @@
 (assert-equal? (tn) "aBc"     (format "~1f"  "aBc"))
 (assert-equal? (tn) "あbう"   (format "~1f"  "あbう"))
 
-(assert-equal? (tn) " "       (format "~2f"  ""))
+(assert-equal? (tn) "  "      (format "~2f"  ""))
 (assert-equal? (tn) " \""     (format "~2f"  "\""))
 (assert-equal? (tn) "aBc"     (format "~2f"  "aBc"))
 (assert-equal? (tn) "あbう"   (format "~2f"  "あbう"))
 
-(assert-equal? (tn) "  "      (format "~3f"  ""))
+(assert-equal? (tn) "   "     (format "~3f"  ""))
 (assert-equal? (tn) "  \""    (format "~3f"  "\""))
 (assert-equal? (tn) "aBc"     (format "~3f"  "aBc"))
 (assert-equal? (tn) "あbう"   (format "~3f"  "あbう"))

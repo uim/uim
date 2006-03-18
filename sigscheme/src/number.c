@@ -437,19 +437,13 @@ prepare_radix(const char *funcname, ScmObj args)
     return r;
 }
 
-/*
- * FIXME:
- * - width
- * - padding
- */
 char *
 scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
 {
-    char buf[sizeof("-") + SCM_INT_BITS];
-    char *p;
-    const char *end;
+    char buf[sizeof("-") + sizeof(uintmax_t) * CHAR_BIT];
+    char *p, *end, *str;
     uintmax_t un;  /* must be unsinged to be capable of -INT_MIN */
-    int digit;
+    int digit, len, pad_len;
     scm_bool neg;
     DECLARE_INTERNAL_FUNCTION("scm_int2string");
 
@@ -458,16 +452,26 @@ scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
     un = (neg) ? (uintmax_t)-(intmax_t)n : n;
 
     end = p = &buf[sizeof(buf) - 1];
-    *p = '\0';
+    *end = '\0';
 
     do {
         digit = un % radix;
         *--p = (digit <= 9) ? '0' + digit : 'a' + digit - 10;
     } while (un /= radix);
-    if (neg)
+    if (neg && vfmt.pad != '0')
         *--p = '-';
 
-    return scm_strdup(p);
+    len = end - p;
+    pad_len = (len < vfmt.width) ? vfmt.width - len : 0;
+    str = scm_malloc(pad_len + len + sizeof(""));
+    strcpy(&str[pad_len], p);
+    while (pad_len)
+        str[--pad_len] = vfmt.pad;
+
+    if (neg && vfmt.pad == '0')
+        *str = '-';
+
+    return str;
 }
 
 ScmObj

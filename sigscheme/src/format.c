@@ -260,6 +260,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 {
     const void *orig_pos;
     const char *str;
+    scm_int_t cstr_len, str_len, i;
     scm_ichar_t c;
     uintmax_t n;  /* FIXME: sign extension */
     int radix;
@@ -293,10 +294,17 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     c = FORMAT_STR_PEEK(*fmt);
     if (c == 'S') { /* String */
         FORMAT_STR_SKIP_CHAR(*fmt);
-        /* FIXME: reflect vfmt.width */
         str = va_arg(*args, const char *);
+        cstr_len = strlen(str);
+#if SCM_USE_MULTIBYTE_CHAR
+        str_len = scm_mb_bare_c_strlen(scm_current_char_codec, str);
+#else
+        str_len = cstr_len;
+#endif
+        for (i = str_len; i < vfmt.width; i++)
+            scm_port_put_char(port, vfmt.pad);
         scm_port_puts(port, str);
-        return (*str) ? str[strlen(str) - 1] : c;
+        return (*str) ? str[cstr_len - 1] : c;
     }
 
     /* size modifiers (ordered by size) */
@@ -391,6 +399,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
     ScmObj obj, indirect_fmt, indirect_args;
     scm_bool prefixedp;
     int radix;
+    scm_int_t i;
     ScmValueFormat vfmt;
 #endif
     DECLARE_INTERNAL_FUNCTION("format");
@@ -410,7 +419,8 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
         case 'f': /* Fixed */
             obj = POP_FORMAT_ARG(args);
             if (STRINGP(obj)) {
-                /* FIXME: reflect vfmt.width */
+                for (i = SCM_STRING_LEN(obj); i < vfmt.width; i++)
+                    scm_port_put_char(port, vfmt.pad);
                 scm_display(port, obj);
             } else {
                 if (!INTP(obj))
