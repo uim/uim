@@ -264,7 +264,7 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   GtkWidget *menu_item, *hbox, *label, *img;
   GtkTooltips *tooltip;
   GList *menu_item_list, *icon_list, *label_list, *tooltip_list, *action_list,
-	*state_list;
+	*state_list, *list;
   int i, selected = -1;
 
   uim_toolbar_check_helper_connection(widget);
@@ -276,10 +276,11 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
   action_list = g_object_get_data(G_OBJECT(prop_button), "prop_action");
   state_list = g_object_get_data(G_OBJECT(prop_button), "prop_state");
 
-  while (menu_item_list) {
-    destroy_tooltips(menu_item_list->data);
-    gtk_widget_destroy(menu_item_list->data);
-    menu_item_list = menu_item_list->next;
+  list = menu_item_list;
+  while (list) {
+    destroy_tooltips(list->data);
+    gtk_widget_destroy(list->data);
+    list = list->next;
   }
   g_list_free(menu_item_list);
 
