@@ -324,7 +324,8 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     const char *str;
     scm_int_t cstr_len, str_len, i;
     scm_ichar_t c;
-    uintmax_t n;  /* FIXME: sign extension */
+    intmax_t n;
+    uintmax_t un;
     int radix;
     scm_bool modifiedp;
     ScmValueFormat vfmt;
@@ -338,7 +339,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
         FORMAT_STR_SKIP_CHAR(*fmt);
         c = va_arg(*args, scm_ichar_t);
         scm_port_put_char(port, c);
-        return c;
+        return (c == '\0') ? ' ' : c;
 
     case 'P': /* Pointer */
         FORMAT_STR_SKIP_CHAR(*fmt);
@@ -373,31 +374,49 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     modifiedp = scm_true;
     switch (c) {
     case 'W': /* int32_t */
-        n = va_arg(*args, uint32_t);
+        un = va_arg(*args, uint32_t);
+        n = (int32_t)un;
         break;
 
     case 'M': /* scm_int_t */
-        n = va_arg(*args, scm_uint_t);
+        un = va_arg(*args, scm_uint_t);
+        n = (scm_int_t)un;
         break;
 
     case 'L': /* long */
-        n = va_arg(*args, unsigned long);
+        un = va_arg(*args, unsigned long);
+        n = (long)un;
         break;
 
     case 'Q': /* int64_t */
-        n = va_arg(*args, uint64_t);
+        un = va_arg(*args, uint64_t);
+        n = (int64_t)un;
         break;
 
     case 'J': /* intmax_t */
-        n = va_arg(*args, uintmax_t);
+        un = va_arg(*args, uintmax_t);
+        n = (intmax_t)un;
         break;
 
     case 'T': /* ptrdiff_t */
-        n = (uintmax_t)va_arg(*args, ptrdiff_t);
+        un = (uintmax_t)va_arg(*args, ptrdiff_t);
+        n = (ptrdiff_t)un;
         break;
 
     case 'Z': /* size_t */
-        n = va_arg(*args, size_t);
+        un = va_arg(*args, size_t);
+        /* portable ssize_t replacement */
+#if (SIZEOF_SIZE_T == SIZEOF_INTPTR_T)
+        n = (intptr_t)un;
+#elif (SIZEOF_SIZE_T == SIZEOF_INT32_T)
+        n = (int32_t)un;
+#elif (SIZEOF_SIZE_T == SIZEOF_INT64_T)
+        n = (int64_t)un;
+#elif (SIZEOF_SIZE_T == SIZEOF_INTMAX_T)
+        n = (intmax_t)un;
+#else
+#error "This platform is not supported"
+#endif
         break;
 
     default:
@@ -440,9 +459,11 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
         return '\0';
     }
     FORMAT_STR_SKIP_CHAR(*fmt);
-    if (!modifiedp)
-        n = va_arg(*args, unsigned int);
-    format_int(port, vfmt, n, radix);
+    if (!modifiedp) {
+        un = va_arg(*args, unsigned int);
+        n = (int)un;
+    }
+    format_int(port, vfmt, (vfmt.signedp) ? (uintmax_t)n : un, radix);
 
     return c;
 }
