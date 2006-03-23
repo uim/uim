@@ -20,7 +20,8 @@ AX_LIB_GLIBC
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h \
+                  strings.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -62,11 +63,33 @@ AC_CHECK_SIZEOF(intptr_t)
 
 # Checks for library functions.
 
-# FIXME: provide alternative source code
-# AC_REPLACE_FUNCS([strdup strcasecmp])
-AC_CHECK_FUNCS([strdup strcasecmp \
-                strtoll strtoimax \
-                fileno posix_memalign getpagesize])
+AC_CHECK_FUNCS([strtoll strtoimax \
+                fileno getpagesize])
+
+AC_CHECK_FUNCS(posix_memalign,
+  [
+    # For posix_memalign(3). although this value is overridden by _GNU_SOURCE
+    # on glibc, keep this for other environments.
+    AC_DEFINE(_POSIX_C_SOURCE, 200112L,
+      [Define to 200112L to enable posix_memalign(3).])
+  ])
+
+AC_CHECK_FUNCS(strdup,
+  [
+    # Overrides _POSIX_C_SOURCE
+    AC_DEFINE(_XOPEN_SOURCE, 500, [Define to 500 to enable strdup(3).])
+  ])
+
+AC_CHECK_FUNCS(strcasecmp,
+  [
+    if test "x$ax_cv_lib_glibc" = xyes; then
+      AC_DEFINE(_BSD_SOURCE, 1,
+        [Define to 1 if it is needed to enable strcasecmp(3).])
+    fi
+  ],
+  [
+    AC_LIBOBJ(strcasecmp)
+  ])
 
 AX_CHECK_PAGE_ALIGNED_MALLOC
 

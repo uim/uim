@@ -120,6 +120,9 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#if (HAVE_STRCASECMP && HAVE_STRINGS_H)
+#include <strings.h>
+#endif
 
 /*=======================================
   Local Include
@@ -761,7 +764,6 @@ read_char(ScmObj port)
          * R5RS: 6.3.4 Characters
          * Case is significant in #\<character>, but not in #\<character name>.
          */
-        /* FIXME: make strcasecmp(3) portable */
         if (strcasecmp(buf, info->lex_rep) == 0)
             return MAKE_CHAR(info->code);
     }

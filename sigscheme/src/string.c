@@ -33,13 +33,15 @@
 ===========================================================================*/
 
 #include "config.h"
-#include "config-nonstd-string.h"
 
 /*=======================================
   System Include
 =======================================*/
 #include <string.h>
 #include <stdlib.h>
+#if (HAVE_STRCASECMP && HAVE_STRINGS_H)
+#include <strings.h>
+#endif
 
 /*=======================================
   Local Include
@@ -66,9 +68,6 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if (!HAVE_STRCASECMP && !SCM_USE_MULTIBYTE_CHAR)
-static int strcasecmp(const char *s1, const char *s2);
-#endif
 static int string_cmp(const char *funcname,
                       ScmObj str1, ScmObj str2, scm_bool case_insensitive);
 
@@ -280,34 +279,6 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
 
     return str;
 }
-
-#if (!HAVE_STRCASECMP && !SCM_USE_MULTIBYTE_CHAR)
-static int
-strcasecmp(const char *s1, const char *s2)
-{
-    unsigned char c1, c2;
-
-    for (;;) {
-        c1 = *(const unsigned char *)s1;
-        c2 = *(const unsigned char *)s2;
-
-        if (c1 && !c2)
-            return 1;
-        if (!c1 && c2)
-            return -1;
-        if (!c1 && !c2)
-            return 0;
-
-        c1 = ICHAR_FOLDCASE(c1);
-        c2 = ICHAR_FOLDCASE(c2);
-        
-        if (c1 > c2)
-            return 1;
-        if (c1 < c2)
-            return -1;
-    }
-}
-#endif
 
 /* Upper case letters are less than lower. */
 static int

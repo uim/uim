@@ -103,7 +103,6 @@ BUILT_SOURCES = $(FUNC_TABLES)
 pkginclude_HEADERS = sigscheme.h config.h my-stdint.h
 
 libsscm_la_SOURCES = \
-        config-nonstd-string.h \
         alloc.c storage.c storage-gc.c storage-symbol.c \
         error.c env.c eval.c syntax.c procedure.c list.c \
         module.c \
@@ -191,6 +190,7 @@ endif
 if USE_SRFI60
   libsscm_la_SOURCES += module-srfi60.c
 endif
+libsscm_la_LIBADD = $(LIBOBJS)
 
 libsscm_la_CFLAGS   = -Wall
 

@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : config-nonstd-string.h
- *  About    : Internal configuration to enable non-standard string functions
+ *  FileName : test_strcasecmp.c
+ *  About    : unit test for scm_strcasecmp()
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
@@ -31,18 +31,40 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef __CONFIG_NONSTD_STRING_H
-#define __CONFIG_NONSTD_STRING_H
 
-#include "config.h"
+#include "cutter-sscm.h"
 
-#if HAVE_STRDUP
-/* Overrides _POSIX_C_SOURCE */
-#define _XOPEN_SOURCE 500
-#endif
+#include "sigscheme.h"
+#include "sigschemeinternal.h"
 
-#if (HAVE_GLIBC && HAVE_STRCASECMP)
-#define _BSD_SOURCE
-#endif
+int scm_strcasecmp(const char *s1, const char *s2);
 
-#endif /* __CONFIG_NONSTD_STRING_H */
+#include "strcasecmp.c"
+
+UT_DEF2(test_1, "==")
+{
+    UT_ASSERT_TRUE(0 == scm_strcasecmp("",  ""));
+    UT_ASSERT_TRUE(0 == scm_strcasecmp("a", "a"));
+    UT_ASSERT_TRUE(0 == scm_strcasecmp("a", "A"));
+    UT_ASSERT_TRUE(0 == scm_strcasecmp("A", "a"));
+    UT_ASSERT_TRUE(0 == scm_strcasecmp("A", "A"));
+
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("aa",   "aa"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("aa",   "AA"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("aa",   "aA"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("aa",   "Aa"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("AA",   "aa"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("aA",   "aa"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("Aa",   "aa"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("abc",  "abc"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("abc",  "ABC"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("abc",  "ABc"));
+    UT_ASSERT_FALSE(0 == scm_strcasecmp("abc",  "abcd"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("ABC",  "abc"));
+    UT_ASSERT_TRUE (0 == scm_strcasecmp("ABc",  "abc"));
+    UT_ASSERT_FALSE(0 == scm_strcasecmp("abcd", "abc"));
+}
+
+UT_REGISTER_BEGIN("strcasecmp")
+UT_REGISTER(test_1, "==")
+UT_REGISTER_END

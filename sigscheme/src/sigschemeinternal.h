@@ -543,6 +543,12 @@ size_t scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf);
 /*=======================================
    Function Declarations
 =======================================*/
+/* strcasecmp.c */
+#if !HAVE_STRCASECMP
+#define strcasecmp scm_strcasecmp
+int scm_strcasecmp(const char *s1, const char *s2);
+#endif /* !HAVE_STRCASECMP */
+
 /* storage.c */
 void scm_init_storage(const ScmStorageConf *conf);
 void scm_finalize_storage(void);
