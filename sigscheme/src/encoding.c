@@ -278,17 +278,16 @@ scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
     size_t len;
     ScmMultibyteCharInfo c;
 
-    CDBG((SCM_DBG_ENCODING, "mb_strlen: size = " SCM_SIZE_T_FMT "; str = %s;",
+    CDBG((SCM_DBG_ENCODING, "mb_strlen: size = ~ZU; str = ~S;",
           SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
     for (len = 0; SCM_MBS_GET_SIZE(mbs); len++) {
         c = SCM_CHARCODEC_SCAN_CHAR(codec, mbs);
-        CDBG((SCM_DBG_ENCODING, SCM_SIZE_T_FMT ", %d;",
-              SCM_MBCINFO_GET_SIZE(c), c.flag));
+        CDBG((SCM_DBG_ENCODING, "~ZU, ~D;", SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
     }
 
-    CDBG((SCM_DBG_ENCODING, "len=" SCM_SIZE_T_FMT "\n", len));
+    CDBG((SCM_DBG_ENCODING, "len=~ZU\n", len));
     return len;
 }
 

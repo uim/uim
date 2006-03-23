@@ -132,8 +132,9 @@ scm_p_make_string(ScmObj length, ScmObj args)
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str, filler_val,
                                  SCM_MB_STATELESS);
     if (!next)
-        ERR("invalid char 0x%x for encoding %s",
-            (int)filler_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
+        ERR("invalid char 0x~MX for encoding ~S",
+            (scm_int_t)filler_val,
+            SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
     str = scm_malloc(ch_len * len + sizeof(""));
     for (dst = str; dst < &str[ch_len * len]; dst += ch_len)
@@ -247,8 +248,8 @@ scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
     ch_end = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_buf, ch_val,
                                    SCM_MB_STATELESS);
     if (!ch_end)
-        ERR("invalid char 0x%x for encoding %s",
-            (int)ch_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
+        ERR("invalid char 0x~MX for encoding ~S",
+            (scm_int_t)ch_val, SCM_CHARCODEC_ENCODING(scm_current_char_codec));
     ch_len = ch_end - ch_buf;
 
     /* prepare the space for new char */
@@ -694,8 +695,8 @@ scm_p_string_filld(ScmObj str, ScmObj ch)
     next = SCM_CHARCODEC_INT2STR(scm_current_char_codec, ch_str,
                                  SCM_CHAR_VALUE(ch), SCM_MB_STATELESS);
     if (!next)
-        ERR("invalid char 0x%x for encoding %s",
-            (int)SCM_CHAR_VALUE(ch),
+        ERR("invalid char 0x~MX for encoding ~S",
+            (scm_int_t)SCM_CHAR_VALUE(ch),
             SCM_CHARCODEC_ENCODING(scm_current_char_codec));
 
     /* create new str */

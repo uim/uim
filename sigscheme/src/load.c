@@ -119,11 +119,11 @@ scm_load_internal(const char *filename)
 #endif
     DECLARE_INTERNAL_FUNCTION("load");
 
-    CDBG((SCM_DBG_FILE, "loading %s", filename));
+    CDBG((SCM_DBG_FILE, "loading ~S", filename));
 
     c_path = find_path(filename);
     if (!c_path)
-        ERR("file \"%s\" not found", filename);
+        ERR("file \"~S\" not found", filename);
 
     path = MAKE_IMMUTABLE_STRING(c_path, STRLEN_UNKNOWN);
     port = scm_p_open_input_file(path);

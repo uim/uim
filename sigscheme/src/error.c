@@ -33,7 +33,6 @@
 ===========================================================================*/
 
 #include "config.h"
-#include "config-asprintf.h"
 
 /*=======================================
   System Include
@@ -141,7 +140,7 @@ scm_categorized_debug(int category, const char *msg, ...)
 
     va_start(va, msg);
     if (debug_mask & category) {
-        scm_port_vprintf(scm_err, msg, va);
+        scm_vformat(scm_err, SCM_FMT_INTERNAL, msg, va);
         scm_port_newline(scm_err);
     }
     va_end(va);
@@ -154,7 +153,7 @@ scm_debug(const char *msg, ...)
 
     va_start(va, msg);
     if (debug_mask & SCM_DBG_DEVEL) {
-        scm_port_vprintf(scm_err, msg, va);
+        scm_vformat(scm_err, SCM_FMT_INTERNAL, msg, va);
         scm_port_newline(scm_err);
     }
     va_end(va);
@@ -272,7 +271,7 @@ scm_p_inspect_error(ScmObj err_obj)
     }
 
     if (scm_debug_categories() & SCM_DBG_ERRMSG) {
-        scm_port_printf(scm_err, SCM_ERR_HEADER);
+        scm_port_puts(scm_err, SCM_ERR_HEADER);
         if (ERROBJP(err_obj)) {
 #if SCM_USE_SRFI38
             scm_display_errobj_ss(scm_err, err_obj);
@@ -306,15 +305,12 @@ scm_p_backtrace(void)
 void
 scm_die(const char *msg, const char *filename, int line)
 {
-    char *reason;
-    ScmObj reason_holder;
+    ScmObj reason;
 
-    asprintf(&reason, "%s: (file: %s, line: %d)", msg, filename, line);
-    ENSURE_ALLOCATED(reason);
     /* reason will implicitly be freed via the object on GC */
-    reason_holder = MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN);
-
-    scm_fatal_error(reason);
+    reason = scm_format(SCM_FALSE, SCM_FMT_INTERNAL,
+                        "~S: (file: ~S, line: ~D)", msg, filename, line);
+    scm_fatal_error(SCM_STRING_STR(reason));
     /* NOTREACHED */
 }
 
@@ -322,22 +318,17 @@ static void
 scm_error_internal(const char *func_name, ScmObj obj,
                    const char *msg, va_list args)
 {
-    char *fmt, *reason;
-    ScmObj err_obj;
+    ScmObj reason, err_obj;
 
+    reason = scm_vformat(SCM_FALSE, SCM_FMT_INTERNAL, msg, args);
     if (func_name) {
-        asprintf(&fmt, "in %s: %s", func_name, msg);
-        ENSURE_ALLOCATED(fmt);
-    } else {
-        fmt = (char *)msg;
+        reason = scm_format(SCM_FALSE, SCM_FMT_INTERNAL,
+                            "in ~S: ~S", func_name, SCM_STRING_STR(reason));
     }
-    vasprintf(&reason, fmt, args);
-    ENSURE_ALLOCATED(reason);
-    if (func_name)
-        free(fmt);
 
-    err_obj = scm_make_error_obj(MAKE_IMMUTABLE_STRING(reason, STRLEN_UNKNOWN),
+    err_obj = scm_make_error_obj(reason,
                                  (EQ(obj, NO_ERR_OBJ)) ? SCM_NULL : LIST_1(obj));
+
     scm_raise_error(err_obj);
     /* NOTREACHED */
 }
@@ -395,7 +386,7 @@ show_arg(ScmObj arg, ScmObj env)
      && !SCM_SYMBOL_BOUNDP(var))
 
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
-        scm_port_printf(scm_err, "  - [%s]: ", SCM_SYMBOL_NAME(arg));
+        scm_format(scm_err, SCM_FMT_INTERNAL, "  - [~a]: ", arg);
         SCM_WRITE_SS(scm_err, scm_symbol_value(arg, env));
         scm_port_newline(scm_err);
     }

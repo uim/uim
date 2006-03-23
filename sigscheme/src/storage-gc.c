@@ -559,8 +559,7 @@ gc_mark_locations(ScmObj *start, ScmObj *end)
 
     size = end - start;
 
-    CDBG((SCM_DBG_GC, "gc_mark_locations: size = " SCM_SIZE_T_FMT,
-          (size_t)size));
+    CDBG((SCM_DBG_GC, "gc_mark_locations: size = ~TD", size));
 
     gc_mark_locations_n(start, size);
 }
@@ -691,8 +690,7 @@ gc_sweep(void)
         }
 
         sum_collected += n_collected;
-        CDBG((SCM_DBG_GC, "heap[" SCM_SIZE_T_FMT "] swept = " SCM_SIZE_T_FMT,
-              i, n_collected));
+        CDBG((SCM_DBG_GC, "heap[~ZU] swept = ~ZU", i, n_collected));
     }
     freelist = new_freelist;
 

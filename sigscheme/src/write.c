@@ -32,6 +32,8 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+/* TODO: make format.c independent */
+
 #include "config.h"
 
 /*=======================================
@@ -165,19 +167,19 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         int index = get_shared_index(obj);
         if (index > 0) {
             /* defined datum */
-            scm_port_printf(port, "#%d#", index);
+            scm_format(port, SCM_FMT_INTERNAL, "#~D#", index);
             return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            scm_port_printf(port, "#%d=", -index);
+            scm_format(port, SCM_FMT_INTERNAL, "#~D=", -index);
             /* Print it; the next time it'll be defined. */
         }
     }
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        scm_port_printf(port, SCM_INT_T_FMT, SCM_INT_VALUE(obj));
+        scm_format(port, SCM_FMT_INTERNAL, "~D", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
         if (ERROBJP(obj))
@@ -200,7 +202,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         if (NFALSEP(sym))
             scm_display(port, sym);
         else
-            scm_port_printf(port, "%p", (void *)obj);
+            scm_format(port, SCM_FMT_INTERNAL, "~P", (void *)obj);
         scm_port_put_char(port, '>');
         break;
     case ScmClosure:
@@ -233,11 +235,13 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         write_constant(port, obj, otype);
         break;
     case ScmCPointer:
-        scm_port_printf(port, "#<c_pointer %p>", SCM_C_POINTER_VALUE(obj));
+        scm_format(port, SCM_FMT_INTERNAL,
+                   "#<c_pointer ~P>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
-        scm_port_printf(port, "#<c_func_pointer %p>",
-                        (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
+        scm_format(port, SCM_FMT_INTERNAL,
+                   "#<c_func_pointer ~P>",
+                   (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
     default:
         SCM_ASSERT(scm_false);
@@ -264,7 +268,7 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 
         /* other control chars are printed in hexadecimal form */
         if (ICHAR_CONTROLP(c)) {
-            scm_port_printf(port, "x%02x", (int)c);
+            scm_format(port, SCM_FMT_INTERNAL, "x~02MX", (scm_int_t)c);
             return;
         }
         /* FALLTHROUGH */
@@ -372,12 +376,12 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
-            scm_port_printf(port, ". #%d#", index);
+            scm_format(port, SCM_FMT_INTERNAL, ". #~D#", index);
             goto close_parens_and_return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            scm_port_printf(port, ". #%d=", -index);
+            scm_format(port, SCM_FMT_INTERNAL, ". #~D=", -index);
             necessary_close_parens++;
             goto cheap_recursion;
         }

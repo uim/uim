@@ -274,7 +274,7 @@ read_number(format_string_t *fmt)
         ret = -1;
 
     if (ret > 127)
-        ERR("too much column width: %d", (int)ret);
+        ERR("too much column width: ~D", (int)ret);
 
     return ret;
 }
@@ -423,7 +423,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 
     default:
         modifiedp = scm_false;
-        n = 0;  /* dummy to suppress warning */
+        un = n = 0;  /* dummy to suppress warning */
         break;
     }
     if (modifiedp) {
@@ -544,7 +544,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
 #endif /* SCM_USE_SRFI48 */
 
     if (prefixedp)
-        ERR("invalid prefix for directive ~%c", directive);
+        ERR("invalid prefix for directive ~~~C", (scm_ichar_t)directive);
 
     if (fcap & SCM_FMT_SRFI28) {
         switch (directive) {
@@ -629,7 +629,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
 
     /* Although SRFI-48 does not specified about unknown directives, the
      * reference implementation treats it as error. */
-    ERR("invalid escape sequence: ~%c", directive);
+    ERR("invalid escape sequence: ~~~C", (scm_ichar_t)directive);
 
  fin:
     FORMAT_STR_SKIP_CHAR(*fmt);

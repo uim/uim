@@ -138,7 +138,6 @@ Assigned to Kazuki:
 Assigned to YamaKen:
 
 * Implement format string
-  - Replace asprintf and vasprintf
   - Obsolete vprintf method of port object
 
 * Write tests for SRFI-75

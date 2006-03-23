@@ -82,7 +82,7 @@ scm_intern(const char *name)
 #if 0
     /* FIXME: detect error correctly */
     if (scm_mb_bare_c_strlen(scm_identifier_codec, name) < 0)
-        ERR("invalid string for identifier: %s", name);
+        ERR("invalid string for identifier: ~S", name);
 #endif
 #endif
 

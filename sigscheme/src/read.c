@@ -437,7 +437,7 @@ read_token(ScmObj port, int *err,
     for (p = buf;;) {
         c = scm_port_peek_char(port);
         ch_class = ICHAR_CLASS(c);
-        CDBG((SCM_DBG_PARSER, "c = %c", (int)c));
+        CDBG((SCM_DBG_PARSER, "c = ~C", c));
 
         if (p == buf) {
             if (c == EOF)
@@ -457,13 +457,13 @@ read_token(ScmObj port, int *err,
             }
             codec = scm_port_codec(port);
             if (SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
-                ERR("non-ASCII char in token on a non-Unicode port: 0x%x",
-                    (int)c);
+                ERR("non-ASCII char in token on a non-Unicode port: 0x~MX",
+                    (scm_int_t)c);
             /* canonicalize internal Unicode encoding */
             p = SCM_CHARCODEC_INT2STR(scm_identifier_codec, p, c,
                                       SCM_MB_STATELESS);
 #else
-            ERR("non-ASCII char in token: 0x%x", (int)c);
+            ERR("non-ASCII char in token: 0x~X", (int)c);
 #endif
         } else {
             if (p == &buf[buf_size - sizeof("")]) {
@@ -493,7 +493,7 @@ read_sexpression(ScmObj port)
     for (;;) {
         c = skip_comment_and_space(port);
 
-        CDBG((SCM_DBG_PARSER, "read_sexpression c = %c", (int)c));
+        CDBG((SCM_DBG_PARSER, "read_sexpression c = ~C", c));
 
         ch_class = ICHAR_CLASS(c);
         if (ch_class & (SCM_CH_INITIAL | SCM_CH_NONASCII))
@@ -534,7 +534,7 @@ read_sexpression(ScmObj port)
             case EOF:
                 ERR("EOF in #");
             default:
-                ERR("Unsupported # notation: %c", (int)c);
+                ERR("Unsupported # notation: ~C", c);
             }
             break;
 
@@ -596,12 +596,12 @@ read_list(ScmObj port, scm_ichar_t closeParen)
     {
         c = skip_comment_and_space(port);
 
-        CDBG((SCM_DBG_PARSER, "read_list c = [%c]", (int)c));
+        CDBG((SCM_DBG_PARSER, "read_list c = [~C]", c));
 
         if (c == EOF) {
             if (basecport) {
                 cur_line = ScmBaseCharPort_line_number(basecport);
-                ERR("EOF inside list at line %d (starting from line %d)",
+                ERR("EOF inside list at line ~D (starting from line ~D)",
                     cur_line, start_line);
             } else {
                 ERR("EOF inside list");
@@ -744,7 +744,7 @@ read_char(ScmObj port)
     if (err == TOKEN_BUF_EXCEEDED)
         ERR("invalid character literal");
 
-    CDBG((SCM_DBG_PARSER, "read_char: ch = %s", buf));
+    CDBG((SCM_DBG_PARSER, "read_char: ch = ~S", buf));
 
 #if SCM_USE_SRFI75
     unicode = parse_unicode_sequence(buf, len + 1);
@@ -765,7 +765,7 @@ read_char(ScmObj port)
         if (strcasecmp(buf, info->lex_rep) == 0)
             return MAKE_CHAR(info->code);
     }
-    ERR("invalid character literal: #\\%s", buf);
+    ERR("invalid character literal: #\\~S", buf);
 }
 
 static ScmObj
@@ -793,13 +793,13 @@ read_string(ScmObj port)
     {
         c = scm_port_get_char(port);
 
-        CDBG((SCM_DBG_PARSER, "read_string c = %c", (int)c));
+        CDBG((SCM_DBG_PARSER, "read_string c = ~C", c));
 
         switch (c) {
         case EOF:
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
-            ERR("EOF in string: \"%s<eof>", LBUF_BUF(lbuf));
+            ERR("EOF in string: \"~S<eof>", LBUF_BUF(lbuf));
             break;
 
         case '\"':
@@ -820,7 +820,8 @@ read_string(ScmObj port)
                 p = &LBUF_BUF(lbuf)[offset];
                 p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
                 if (!p)
-                    ERR("invalid Unicode sequence in string: 0x%x", (int)c);
+                    ERR("invalid Unicode sequence in string: 0x~MX",
+                        (scm_int_t)c);
                 goto found;
             } else
 #endif
@@ -835,7 +836,7 @@ read_string(ScmObj port)
                     }
                 }
             }
-            ERR("invalid escape sequence in string: \\%c", (int)c);
+            ERR("invalid escape sequence in string: \\~C", c);
         found:
             break;
 
@@ -845,7 +846,7 @@ read_string(ScmObj port)
             /* FIXME: support stateful encoding */
             p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
             if (!p)
-                ERR("invalid char in string: 0x%x", (int)c);
+                ERR("invalid char in string: 0x~MX", (scm_int_t)c);
             break;
         }
 #if !SCM_USE_NULL_CAPABLE_STRING
@@ -854,7 +855,7 @@ read_string(ScmObj port)
 #endif
     }
     LBUF_END(lbuf)[-1] = '\0';
-    ERR("too long string: \"%s\"", LBUF_BUF(lbuf));
+    ERR("too long string: \"~S\"", LBUF_BUF(lbuf));
     /* NOTREACHED */
 }
 
@@ -931,11 +932,11 @@ read_number_or_symbol(ScmObj port)
             return scm_intern(buf);
         /* TODO: support numeric expressions when the numeric tower is
            implemented */
-        ERR("invalid identifier: %s", buf);
+        ERR("invalid identifier: ~S", buf);
     }
 
     if (c == '@')
-        ERR("invalid identifier: %s", buf);
+        ERR("invalid identifier: ~S", buf);
 
     return read_symbol(port);
 }
@@ -963,7 +964,7 @@ parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
         return MAKE_INT(number);
 
  err:
-    ERR("ill-formatted number: #%c%s", (int)prefix, buf);
+    ERR("ill-formatted number: #~C~S", (scm_ichar_t)prefix, buf);
 }
 
 static ScmObj

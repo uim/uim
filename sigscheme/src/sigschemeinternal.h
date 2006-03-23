@@ -396,11 +396,11 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #if SCM_USE_MULTIBYTE_CHAR
 #define ENSURE_STATEFUL_CODEC(codec)                                         \
     (SCM_CHARCODEC_STATEFULP(codec)                                          \
-     || (ERR("stateful character codec required but got: %s",                \
+     || (ERR("stateful character codec required but got: ~S",                \
              SCM_CHARCODEC_ENCODING(codec)), 0))
 #define ENSURE_STATELESS_CODEC(codec)                                        \
     (!SCM_CHARCODEC_STATEFULP(codec)                                         \
-     || (ERR("stateless character codec required but got: %s",               \
+     || (ERR("stateless character codec required but got: ~S",               \
              SCM_CHARCODEC_ENCODING(codec)), 0))
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 

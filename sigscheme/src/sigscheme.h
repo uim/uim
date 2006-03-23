@@ -310,28 +310,6 @@ typedef unsigned long     scm_uint_t;
 #define SCM_UINT_T_MAX    ULONG_MAX
 #endif
 
-#if   (SIZEOF_SCM_INT_T == SIZEOF_INT)
-#define SCM_INT_T_FMT "%d"
-#elif (SIZEOF_SCM_INT_T == SIZEOF_LONG)
-    /* FIXME: check by autoconf */
-#define SCM_INT_T_FMT "%ld"
-#elif (SIZEOF_SCM_INT_T == SIZEOF_INT64_T && SIZEOF_INT64_T)
-    /* FIXME: check by autoconf */
-#if 1
-#define SCM_INT_T_FMT "%lld"
-#else
-#define SCM_INT_T_FMT "%qd"
-#endif
-#elif (SIZEOF_SCM_INT_T == SIZEOF_SHORT)
-    /* FIXME: check by autoconf */
-#define SCM_INT_T_FMT "%hd"
-#elif (SIZEOF_SCM_INT_T == 1)
-    /* FIXME: check by autoconf */
-#define SCM_INT_T_FMT "%hhd"
-#else
-#error "unsupported integer size for printf(3)"
-#endif
-
 /*
  * Integer representation of abstract reference to ScmObj
  *
@@ -467,25 +445,6 @@ typedef scm_byte_t         scm_wchar_t;
       && SIZEOF_SCM_WCHAR_T  <= SIZEOF_SCM_ICHAR_T                           \
       && SIZEOF_SCM_ICHAR_T  <= SIZEOF_SCM_INT_T)
 #error "size constraints of primitive types are broken"
-#endif
-
-#if   0
-    /* FIXME: check by autoconf */
-#define SCM_SIZE_T_FMT "%zu"
-#elif (SIZEOF_SIZE_T == SIZEOF_INT)
-#define SCM_SIZE_T_FMT "%u"
-#elif (SIZEOF_SCM_INT_T == SIZEOF_LONG)
-    /* FIXME: check by autoconf */
-#define SCM_SIZE_T_FMT "%lu"
-#elif (SIZEOF_SCM_INT_T == SIZEOF_INT64_T && SIZEOF_INT64_T)
-    /* FIXME: check by autoconf */
-#if 1
-#define SCM_SIZE_T_FMT "%llu"
-#else
-#define SCM_SIZE_T_FMT "%qu"
-#endif
-#else
-#error "unsupported size_t size for printf(3)"
 #endif
 
 /*=======================================
