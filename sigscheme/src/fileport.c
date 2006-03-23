@@ -197,7 +197,7 @@ fileport_inspect(ScmFilePort *port)
     if (port->aux_info) {
         size = sizeof("file ") + strlen(port->aux_info);
         combined = SCM_PORT_MALLOC(size);
-        snprintf(combined, size, "file %s", port->aux_info);
+        sprintf(combined, "file %s", port->aux_info);
         return combined;
     } else {
         return scm_strdup("file");

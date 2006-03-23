@@ -168,7 +168,7 @@ find_path(const char *filename)
         path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof("");
 
         path = scm_malloc(path_len);
-        snprintf(path, path_len, "%s/%s", scm_lib_path, filename);
+        sprintf(path, "%s/%s", scm_lib_path, filename);
         if (file_existsp(path))
             return path;
         free(path);

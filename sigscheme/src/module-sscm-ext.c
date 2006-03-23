@@ -198,7 +198,7 @@ make_loaded_str(const char *filename)
 
     size = strlen(filename) + sizeof("*-loaded*");
     loaded_str = scm_malloc(size);
-    snprintf(loaded_str, size, "*%s-loaded*", filename);
+    sprintf(loaded_str, "*%s-loaded*", filename);
 
     return MAKE_IMMUTABLE_STRING(loaded_str, STRLEN_UNKNOWN);
 }

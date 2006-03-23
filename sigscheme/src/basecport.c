@@ -126,7 +126,7 @@ ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header)
     size = strlen(header) + strlen(encoding) + strlen(bport_part)
         + sizeof("  ");
     combined = SCM_PORT_MALLOC(size);
-    snprintf(combined, size, "%s %s %s", header, encoding, bport_part);
+    sprintf(combined, "%s %s %s", header, encoding, bport_part);
     free(bport_part);
 
     return combined;
