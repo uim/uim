@@ -167,19 +167,19 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         int index = get_shared_index(obj);
         if (index > 0) {
             /* defined datum */
-            scm_format(port, SCM_FMT_INTERNAL, "#~D#", index);
+            scm_format(port, SCM_FMT_RAW_C, "#~D#", index);
             return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            scm_format(port, SCM_FMT_INTERNAL, "#~D=", -index);
+            scm_format(port, SCM_FMT_RAW_C, "#~D=", -index);
             /* Print it; the next time it'll be defined. */
         }
     }
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        scm_format(port, SCM_FMT_INTERNAL, "~D", SCM_INT_VALUE(obj));
+        scm_format(port, SCM_FMT_RAW_C, "~D", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
         if (ERROBJP(obj))
@@ -202,7 +202,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         if (NFALSEP(sym))
             scm_display(port, sym);
         else
-            scm_format(port, SCM_FMT_INTERNAL, "~P", (void *)obj);
+            scm_format(port, SCM_FMT_RAW_C, "~P", (void *)obj);
         scm_port_put_char(port, '>');
         break;
     case ScmClosure:
@@ -235,11 +235,11 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         write_constant(port, obj, otype);
         break;
     case ScmCPointer:
-        scm_format(port, SCM_FMT_INTERNAL,
+        scm_format(port, SCM_FMT_RAW_C,
                    "#<c_pointer ~P>", SCM_C_POINTER_VALUE(obj));
         break;
     case ScmCFuncPointer:
-        scm_format(port, SCM_FMT_INTERNAL,
+        scm_format(port, SCM_FMT_RAW_C,
                    "#<c_func_pointer ~P>",
                    (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
@@ -268,7 +268,7 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 
         /* other control chars are printed in hexadecimal form */
         if (ICHAR_CONTROLP(c)) {
-            scm_format(port, SCM_FMT_INTERNAL, "x~02MX", (scm_int_t)c);
+            scm_format(port, SCM_FMT_RAW_C, "x~02MX", (scm_int_t)c);
             return;
         }
         /* FALLTHROUGH */
@@ -376,12 +376,12 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
-            scm_format(port, SCM_FMT_INTERNAL, ". #~D#", index);
+            scm_format(port, SCM_FMT_RAW_C, ". #~D#", index);
             goto close_parens_and_return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            scm_format(port, SCM_FMT_INTERNAL, ". #~D=", -index);
+            scm_format(port, SCM_FMT_RAW_C, ". #~D=", -index);
             necessary_close_parens++;
             goto cheap_recursion;
         }

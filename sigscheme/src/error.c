@@ -308,7 +308,7 @@ scm_die(const char *msg, const char *filename, int line)
     ScmObj reason;
 
     /* reason will implicitly be freed via the object on GC */
-    reason = scm_format(SCM_FALSE, SCM_FMT_INTERNAL,
+    reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
                         "~S: (file: ~S, line: ~D)", msg, filename, line);
     scm_fatal_error(SCM_STRING_STR(reason));
     /* NOTREACHED */
@@ -322,7 +322,7 @@ scm_error_internal(const char *func_name, ScmObj obj,
 
     reason = scm_vformat(SCM_FALSE, SCM_FMT_INTERNAL, msg, args);
     if (func_name) {
-        reason = scm_format(SCM_FALSE, SCM_FMT_INTERNAL,
+        reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
                             "in ~S: ~S", func_name, SCM_STRING_STR(reason));
     }
 

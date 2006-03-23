@@ -275,7 +275,7 @@ scm_p_integer2char(ScmObj n)
 #else
     if (!ICHAR_ASCIIP(val))
 #endif
-        ERR_OBJ("invalid char value", n);
+        ERR("invalid char value: #x~MX", SCM_INT_VALUE(n));
 
     return MAKE_CHAR(val);
 }

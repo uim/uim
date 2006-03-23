@@ -691,7 +691,7 @@ parse_unicode_sequence(const char *seq, int len)
     }
 
     if ((0xd800 <= c && c <= 0xdfff) || 0x10ffff < c)
-        ERR("invalid Unicode value");
+        ERR("invalid Unicode value: 0x~MX", (scm_int_t)c);
 
     return c;
 }

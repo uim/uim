@@ -194,6 +194,11 @@
 #define SCM_USE_PORT            1
 #endif /* (SCM_USE_READER || SCM_USE_WRITER) */
 
+#if SCM_USE_WRITER
+#undef SCM_USE_RAW_C_FORMAT
+#define SCM_USE_RAW_C_FORMAT    1
+#endif /* SCM_USE_WRITER */
+
 #if (SCM_USE_SRFI28 || SCM_USE_SRFI48                                        \
      || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT)
 #undef SCM_USE_FORMAT
