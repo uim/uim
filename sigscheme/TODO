@@ -29,6 +29,10 @@ Requirements and critical bugs:
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
+* Confirm security issues around file operations
+  - relative path
+  - remove operation
+
 * [uim] link libsscm into libuim statically
 
 * Clear license, copyright and changes information
@@ -50,6 +54,9 @@ Low priority bugs:
 
 ==============================================================================
 Extensions: (not required for now)
+
+* Support SRFI-75 style symbol escaping such as |-sym|
+  - Obsolete leading '-' handling in read_number_or_symbol() with it
 
 * Introduce dynamic environment for internal use
   - Fix continuation-unsafe current-{input,output}-port handling with it
