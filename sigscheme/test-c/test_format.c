@@ -42,6 +42,23 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 
+#define MSG_SSCM_DIRECTIVE_HELP                                              \
+"(format+ [<port>] <format-string> [<arg>...])\n"                            \
+"  - <port> is #t, #f or an output-port\n"                                   \
+"  - any escape sequence is case insensitive\n"                              \
+"\n"                                                                         \
+"  The format+ procedure is a SigScheme-specific superset of SRFI-48.\n"     \
+"  Following directives accept optional width w and d digits after the decimal,\n" \
+"  and w accepts leading zero as zero-digit-padding specifier. All other rules\n" \
+"  are same as SRFI-48. See also the help message for SRFI-48.\n"            \
+"\n"                                                                         \
+"SEQ        MNEMONIC       DESCRIPTION\n"                                    \
+"~[w[,d]]D  [Decimal]      the arg is a number output in decimal radix\n"    \
+"~[w[,d]]X  [heXadecimal]  the arg is a number output in hexdecimal radix\n" \
+"~[w[,d]]O  [Octal]        the arg is a number output in octal radix\n"      \
+"~[w[,d]]B  [Binary]       the arg is a number output in binary radix\n"     \
+"~[w[,d]]F  [Fixed]        the arg is a string or number\n"
+
 #define I32 (SIZEOF_INT    == SIZEOF_INT32_T)
 #define L32 (SIZEOF_LONG   == SIZEOF_INT32_T)
 #define P32 (SIZEOF_VOID_P == SIZEOF_INT32_T)
@@ -58,6 +75,8 @@
 
 #define STR SCM_STRING_STR
 
+static ScmObj lst, clst;
+
 static ScmObj
 format(const char *fmt, ...)
 {
@@ -69,6 +88,26 @@ format(const char *fmt, ...)
     va_end(args);
 
     return ret;
+}
+
+#undef  SSCM_DEFAULT_SUITE_INITIALIZER
+#define SSCM_DEFAULT_SUITE_INITIALIZER
+static bool
+suite_init(utest_info *uinfo)
+{
+    scm_initialize(NULL);
+
+    scm_gc_protect_with_init(&lst,
+                             LIST_5(SCM_TRUE,
+                                    MAKE_INT(123),
+                                    MAKE_CHAR('a'),
+                                    CONST_STRING("aBc"),
+                                    LIST_1(MAKE_INT(0))));
+
+    scm_gc_protect_with_init(&clst, LIST_2(MAKE_INT(0), MAKE_INT(1)));
+    SET_CDR(CDR(clst), clst);
+
+    return TRUE;
 }
 
 UT_DEF2(test_1, "no directives")
@@ -2584,6 +2623,455 @@ UT_DEF2(test_44, "~ZB")
                            STR(format("~0127ZB", (size_t)0x5)));
 }
 
+UT_DEF2(test_45, "~c")
+{
+    UT_ASSERT_EQUAL_STRING("",   STR(format("~c", MAKE_CHAR('\0'))));
+    UT_ASSERT_EQUAL_STRING("a",  STR(format("~c", MAKE_CHAR('a'))));
+    UT_ASSERT_EQUAL_STRING("\"", STR(format("~c", MAKE_CHAR('\"'))));
+    UT_ASSERT_EQUAL_STRING("\\", STR(format("~c", MAKE_CHAR('\\'))));
+    UT_ASSERT_EQUAL_STRING("あ", STR(format("~c", MAKE_CHAR(0x3042))));
+}
+
+UT_DEF2(test_46, "~d")
+{
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~d",   MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~d",   MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~d",   MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~d",   MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~d",   MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("10",   STR(format("~d",   MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~d",   MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~0d",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~0d",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~0d",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~0d",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~0d",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("10",   STR(format("~0d",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~0d",  MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~03d", MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~03d", MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-01",  STR(format("~03d", MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("000",  STR(format("~03d", MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("001",  STR(format("~03d", MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("010",  STR(format("~03d", MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~03d", MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~3d",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~3d",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING(" -1",  STR(format("~3d",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("  0",  STR(format("~3d",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("  1",  STR(format("~3d",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING(" 10",  STR(format("~3d",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~3d",  MAKE_INT(100))));
+}
+
+UT_DEF2(test_47, "~x")
+{
+    UT_ASSERT_EQUAL_STRING("-64",  STR(format("~x",   MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-a",   STR(format("~x",   MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~x",   MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~x",   MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~x",   MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("a",    STR(format("~x",   MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("64",   STR(format("~x",   MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-64",  STR(format("~0x",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-a",   STR(format("~0x",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~0x",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~0x",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~0x",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("a",    STR(format("~0x",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("64",   STR(format("~0x",  MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-64",  STR(format("~03x", MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-0a",  STR(format("~03x", MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-01",  STR(format("~03x", MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("000",  STR(format("~03x", MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("001",  STR(format("~03x", MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("00a",  STR(format("~03x", MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("064",  STR(format("~03x", MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-64",  STR(format("~3x",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING(" -a",  STR(format("~3x",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING(" -1",  STR(format("~3x",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("  0",  STR(format("~3x",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("  1",  STR(format("~3x",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("  a",  STR(format("~3x",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING(" 64",  STR(format("~3x",  MAKE_INT(100))));
+}
+
+UT_DEF2(test_48, "~o")
+{
+    UT_ASSERT_EQUAL_STRING("-144", STR(format("~o",   MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-12",  STR(format("~o",   MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~o",   MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~o",   MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~o",   MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("12",   STR(format("~o",   MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("144",  STR(format("~o",   MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-144", STR(format("~0o",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-12",  STR(format("~0o",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~0o",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~0o",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~0o",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("12",   STR(format("~0o",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("144",  STR(format("~0o",  MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-144", STR(format("~03o", MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-12",  STR(format("~03o", MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-01",  STR(format("~03o", MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("000",  STR(format("~03o", MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("001",  STR(format("~03o", MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("012",  STR(format("~03o", MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("144",  STR(format("~03o", MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-144", STR(format("~3o",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-12",  STR(format("~3o",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING(" -1",  STR(format("~3o",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("  0",  STR(format("~3o",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("  1",  STR(format("~3o",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING(" 12",  STR(format("~3o",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("144",  STR(format("~3o",  MAKE_INT(100))));
+}
+
+UT_DEF2(test_49, "~b")
+{
+    UT_ASSERT_EQUAL_STRING("-1100100", STR(format("~b",   MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-1010",    STR(format("~b",   MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",       STR(format("~b",   MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",        STR(format("~b",   MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",        STR(format("~b",   MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("1010",     STR(format("~b",   MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("1100100",  STR(format("~b",   MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-1100100", STR(format("~0b",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-1010",    STR(format("~0b",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",       STR(format("~0b",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",        STR(format("~0b",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",        STR(format("~0b",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("1010",     STR(format("~0b",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("1100100",  STR(format("~0b",  MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-1100100", STR(format("~05b", MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-1010",    STR(format("~05b", MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-0001",    STR(format("~05b", MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("00000",    STR(format("~05b", MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("00001",    STR(format("~05b", MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("01010",    STR(format("~05b", MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("1100100",  STR(format("~05b", MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-1100100", STR(format("~5b",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-1010",    STR(format("~5b",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("   -1",    STR(format("~5b",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("    0",    STR(format("~5b",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("    1",    STR(format("~5b",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING(" 1010",    STR(format("~5b",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("1100100",  STR(format("~5b",  MAKE_INT(100))));
+}
+
+UT_DEF2(test_50, "~f (number)")
+{
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~f",   MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~f",   MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~f",   MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~f",   MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~f",   MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("10",   STR(format("~f",   MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~f",   MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~0f",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~0f",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-1",   STR(format("~0f",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("0",    STR(format("~0f",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("1",    STR(format("~0f",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("10",   STR(format("~0f",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~0f",  MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~03f", MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~03f", MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING("-01",  STR(format("~03f", MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("000",  STR(format("~03f", MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("001",  STR(format("~03f", MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING("010",  STR(format("~03f", MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~03f", MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~3f",  MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~3f",  MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING(" -1",  STR(format("~3f",  MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("  0",  STR(format("~3f",  MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("  1",  STR(format("~3f",  MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING(" 10",  STR(format("~3f",  MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~3f",  MAKE_INT(100))));
+
+    UT_ASSERT_EQUAL_STRING("-100", STR(format("~3,02f", MAKE_INT(-100))));
+    UT_ASSERT_EQUAL_STRING("-10",  STR(format("~3,02f", MAKE_INT(-10))));
+    UT_ASSERT_EQUAL_STRING(" -1",  STR(format("~3,02f", MAKE_INT(-1))));
+    UT_ASSERT_EQUAL_STRING("  0",  STR(format("~3,02f", MAKE_INT(0))));
+    UT_ASSERT_EQUAL_STRING("  1",  STR(format("~3,02f", MAKE_INT(1))));
+    UT_ASSERT_EQUAL_STRING(" 10",  STR(format("~3,02f", MAKE_INT(10))));
+    UT_ASSERT_EQUAL_STRING("100",  STR(format("~3,02f", MAKE_INT(100))));
+}
+
+UT_DEF2(test_51, "~f (string)")
+{
+    UT_ASSERT_EQUAL_STRING("",       STR(format("~f",   CONST_STRING(""))));
+    UT_ASSERT_EQUAL_STRING("",       STR(format("~0f",  CONST_STRING(""))));
+    UT_ASSERT_EQUAL_STRING(" ",      STR(format("~1f",  CONST_STRING(""))));
+    UT_ASSERT_EQUAL_STRING("",       STR(format("~00f", CONST_STRING(""))));
+    UT_ASSERT_EQUAL_STRING(" ",      STR(format("~01f", CONST_STRING(""))));
+    UT_ASSERT_EQUAL_STRING("\"",     STR(format("~f",   CONST_STRING("\""))));
+    UT_ASSERT_EQUAL_STRING("\\",     STR(format("~f",   CONST_STRING("\\"))));
+    UT_ASSERT_EQUAL_STRING("a",      STR(format("~f",   CONST_STRING("a"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~f",   CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("あ",     STR(format("~f",   CONST_STRING("あ"))));
+    UT_ASSERT_EQUAL_STRING("あい",   STR(format("~f",   CONST_STRING("あい"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~f",   CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~0f",  CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~1f",  CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~2f",  CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~3f",  CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING(" aBc",   STR(format("~4f",  CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("  aBc",  STR(format("~5f",  CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~00f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~02f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",    STR(format("~03f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING(" aBc",   STR(format("~04f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("  aBc",  STR(format("~05f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",
+                           STR(format("~00,01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",
+                           STR(format("~01,01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",
+                           STR(format("~02,01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aBc",
+                           STR(format("~03,01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING(" aBc",
+                           STR(format("~04,01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("  aBc",
+                           STR(format("~05,01f", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~0f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~1f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~2f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~3f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~4f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~5f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING(" aあBいc",
+                           STR(format("~6f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("  aあBいc",
+                           STR(format("~7f",  CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~00f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~01f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~02f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~03f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~04f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("aあBいc",
+                           STR(format("~05f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING(" aあBいc",
+                           STR(format("~06f", CONST_STRING("aあBいc"))));
+    UT_ASSERT_EQUAL_STRING("  aあBいc",
+                           STR(format("~07f", CONST_STRING("aあBいc"))));
+}
+
+UT_DEF2(test_52, "~~")
+{
+    UT_ASSERT_EQUAL_STRING("~", STR(format("~~")));
+}
+
+UT_DEF2(test_53, "~%")
+{
+    UT_ASSERT_EQUAL_STRING("\n", STR(format("~%")));
+}
+
+UT_DEF2(test_54, "~&")
+{
+    UT_ASSERT_EQUAL_STRING("\n",   STR(format("~&")));
+    UT_ASSERT_EQUAL_STRING("\n",   STR(format("~&~&")));
+    UT_ASSERT_EQUAL_STRING("\n",   STR(format("~&~&~&")));
+    UT_ASSERT_EQUAL_STRING("\n",   STR(format("~%~&")));
+    UT_ASSERT_EQUAL_STRING("\n",   STR(format("~%~&~&")));
+    UT_ASSERT_EQUAL_STRING("\n\n", STR(format("~&~%")));
+    UT_ASSERT_EQUAL_STRING("\n\n", STR(format("~&~%~&")));
+    UT_ASSERT_EQUAL_STRING("\n",   STR(format("\n~&")));
+    UT_ASSERT_EQUAL_STRING("\n\n", STR(format("~&\n")));
+    UT_ASSERT_EQUAL_STRING("\n\n", STR(format("~&\n~&")));
+    UT_ASSERT_EQUAL_STRING(" \n",  STR(format(" ~&")));
+    UT_ASSERT_EQUAL_STRING("\n \n \n", STR(format("\n ~& ~&")));
+}
+
+UT_DEF2(test_55, "~t")
+{
+    UT_ASSERT_EQUAL_STRING("\t", STR(format("~t")));
+}
+
+UT_DEF2(test_56, "~_")
+{
+    UT_ASSERT_EQUAL_STRING(" ", STR(format("~_")));
+}
+
+UT_DEF2(test_57, "~a")
+{
+    UT_ASSERT_EQUAL_STRING("#t",  STR(format("~a", SCM_TRUE)));
+    UT_ASSERT_EQUAL_STRING("123", STR(format("~a", MAKE_INT(123))));
+    UT_ASSERT_EQUAL_STRING("a",   STR(format("~a", MAKE_CHAR('a'))));
+    UT_ASSERT_EQUAL_STRING("aBc", STR(format("~a", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("(#t 123 a aBc (0))",
+                           STR(format("~a", lst)));
+}
+
+UT_DEF2(test_58, "~s")
+{
+    UT_ASSERT_EQUAL_STRING("#t",      STR(format("~s", SCM_TRUE)));
+    UT_ASSERT_EQUAL_STRING("123",     STR(format("~s", MAKE_INT(123))));
+    UT_ASSERT_EQUAL_STRING("#\\a",    STR(format("~s", MAKE_CHAR('a'))));
+    UT_ASSERT_EQUAL_STRING("\"aBc\"", STR(format("~s", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("(#t 123 #\\a \"aBc\" (0))",
+                           STR(format("~s", lst)));
+}
+
+UT_DEF2(test_59, "~w")
+{
+    UT_ASSERT_EQUAL_STRING("#t",      STR(format("~w", SCM_TRUE)));
+    UT_ASSERT_EQUAL_STRING("123",     STR(format("~w", MAKE_INT(123))));
+    UT_ASSERT_EQUAL_STRING("#\\a",    STR(format("~w", MAKE_CHAR('a'))));
+    UT_ASSERT_EQUAL_STRING("\"aBc\"", STR(format("~w", CONST_STRING("aBc"))));
+    UT_ASSERT_EQUAL_STRING("(#t 123 #\\a \"aBc\" (0))",
+                           STR(format("~w", lst)));
+    /* SigScheme starts the index with 1 */
+    UT_ASSERT_EQUAL_STRING("#1=(0 1 . #1#)", STR(format("~w", clst)));
+}
+
+UT_DEF2(test_60, "~y")
+{
+    UT_ASSERT_EQUAL_STRING("#t",      STR(format("~y", SCM_TRUE)));
+    UT_ASSERT_EQUAL_STRING("123",     STR(format("~y", MAKE_INT(123))));
+    UT_ASSERT_EQUAL_STRING("#\\a",    STR(format("~y", MAKE_CHAR('a'))));
+    UT_ASSERT_EQUAL_STRING("\"aBc\"", STR(format("~y", CONST_STRING("aBc"))));
+    /* no pretty-print procedure */
+    UT_ASSERT_EQUAL_STRING("(#t 123 #\\a \"aBc\" (0))",
+                           STR(format("~y", lst)));
+}
+
+UT_DEF2(test_61, "~?")
+{
+    UT_ASSERT_EQUAL_STRING("~",
+                           STR(format("~k", CONST_STRING("~~"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING(" ",
+                           STR(format("~k", CONST_STRING("~_"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~k", CONST_STRING("~%"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~k", CONST_STRING("~&"), SCM_NULL)));
+#if 0
+    /* hard to be this on current port implementation */
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~?",
+                                      CONST_STRING("~%~?"),
+                                      LIST_2(CONST_STRING("~&"), SCM_NULL))));
+#else
+    UT_ASSERT_EQUAL_STRING("\n\n",
+                           STR(format("~?",
+                                      CONST_STRING("~%~?"),
+                                      LIST_2(CONST_STRING("~&"), SCM_NULL))));
+#endif
+    UT_ASSERT_EQUAL_STRING("\n \n",
+                           STR(format("~?",
+                                      CONST_STRING("~% ~?"),
+                                      LIST_2(CONST_STRING("~&"), SCM_NULL))));
+    UT_ASSERT_EQUAL_STRING("\n \n",
+                           STR(format("~?",
+                                      CONST_STRING("~%~?"),
+                                      LIST_2(CONST_STRING(" ~&"), SCM_NULL))));
+    UT_ASSERT_EQUAL_STRING("aBc",
+                           STR(format("~?",
+                                      CONST_STRING("aBc"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("0aBc1",
+                           STR(format("~?",
+                                      CONST_STRING("0~a1"),
+                                      LIST_1(CONST_STRING("aBc")))));
+    UT_ASSERT_EQUAL_STRING("02aBc31",
+                           STR(format("~?",
+                                      CONST_STRING("0~?1"),
+                                      LIST_2(CONST_STRING("2~a3"),
+                                             LIST_1(CONST_STRING("aBc"))))));
+    UT_ASSERT_EQUAL_STRING("024aBc531",
+                           STR(format("~?",
+                                      CONST_STRING("0~?1"),
+                                      LIST_2(CONST_STRING("2~?3"),
+                                             LIST_2(CONST_STRING("4~a5"),
+                                                    LIST_1(CONST_STRING("aBc")))))));
+    UT_ASSERT_EQUAL_STRING("#t",
+                           STR(format("~?",
+                                      CONST_STRING("~w"),
+                                      LIST_1(SCM_TRUE))));
+    UT_ASSERT_EQUAL_STRING("123",
+                           STR(format("~?",
+                                      CONST_STRING("~w"),
+                                      LIST_1(MAKE_INT(123)))));
+    UT_ASSERT_EQUAL_STRING("#\\a",
+                           STR(format("~?",
+                                      CONST_STRING("~w"),
+                                      LIST_1(MAKE_CHAR('a')))));
+    UT_ASSERT_EQUAL_STRING("\"\"",
+                           STR(format("~?",
+                                      CONST_STRING("~w"),
+                                      LIST_1(CONST_STRING("")))));
+    UT_ASSERT_EQUAL_STRING("\"\\\"\"",
+                           STR(format("~?",
+                                      CONST_STRING("~w"),
+                                      LIST_1(CONST_STRING("\"")))));
+    UT_ASSERT_EQUAL_STRING("\"aBc\"",
+                           STR(format("~?",
+                                      CONST_STRING("~w"),
+                                      LIST_1(CONST_STRING("aBc")))));
+    UT_ASSERT_EQUAL_STRING("(#t 123 #\\a \"aBc\" (0))",
+                           STR(format("~?",
+                                      CONST_STRING("~w"), LIST_1(lst))));
+    /* SigScheme starts the index with 1 */
+    UT_ASSERT_EQUAL_STRING("#1=(0 1 . #1#)",
+                           STR(format("~?",
+                                      CONST_STRING("~w"), LIST_1(clst))));
+}
+
+UT_DEF2(test_62, "~k")
+{
+    UT_ASSERT_EQUAL_STRING("~",
+                           STR(format("~k", CONST_STRING("~~"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING(" ",
+                           STR(format("~k", CONST_STRING("~_"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~k", CONST_STRING("~%"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~k", CONST_STRING("~&"), SCM_NULL)));
+
+    UT_ASSERT_EQUAL_STRING("024aBc531",
+                           STR(format("~k",
+                                      CONST_STRING("0~k1"),
+                                      LIST_2(CONST_STRING("2~k3"),
+                                             LIST_2(CONST_STRING("4~a5"),
+                                                    LIST_1(CONST_STRING("aBc")))))));
+}
+
+UT_DEF2(test_63, "~h")
+{
+    UT_ASSERT_EQUAL_STRING(MSG_SSCM_DIRECTIVE_HELP, STR(format("~h")));
+}
+
 UT_REGISTER_BEGIN("format")
 UT_REGISTER(test_1, "no directives")
 UT_REGISTER(test_2, "~C")
@@ -2629,4 +3117,23 @@ UT_REGISTER(test_41, "~ZU")
 UT_REGISTER(test_42, "~ZX")
 UT_REGISTER(test_43, "~ZO")
 UT_REGISTER(test_44, "~ZB")
+UT_REGISTER(test_45, "~c")
+UT_REGISTER(test_46, "~d")
+UT_REGISTER(test_47, "~x")
+UT_REGISTER(test_48, "~o")
+UT_REGISTER(test_49, "~b")
+UT_REGISTER(test_50, "~f (number)")
+UT_REGISTER(test_51, "~f (string)")
+UT_REGISTER(test_52, "~~")
+UT_REGISTER(test_53, "~%")
+UT_REGISTER(test_54, "~&")
+UT_REGISTER(test_55, "~t")
+UT_REGISTER(test_56, "~_")
+UT_REGISTER(test_57, "~a")
+UT_REGISTER(test_58, "~s")
+UT_REGISTER(test_59, "~w")
+UT_REGISTER(test_60, "~y")
+UT_REGISTER(test_61, "~?")
+UT_REGISTER(test_62, "~k")
+UT_REGISTER(test_63, "~h")
 UT_REGISTER_END

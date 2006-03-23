@@ -320,6 +320,7 @@ format_int(ScmObj port, ScmValueFormat vfmt, uintmax_t n, int radix)
 static scm_ichar_t
 format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 {
+    format_string_t orig_fmt;
     const void *orig_pos;
     const char *str;
     scm_int_t cstr_len, str_len, i;
@@ -331,6 +332,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     ScmValueFormat vfmt;
     DECLARE_INTERNAL_FUNCTION("internal format");
 
+    orig_fmt = *fmt;
     orig_pos = FORMAT_STR_POS(*fmt);
 
     c = FORMAT_STR_PEEK(*fmt);
@@ -455,7 +457,8 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 
     default:
         /* no internal directives found */
-        SCM_ASSERT(FORMAT_STR_POS(*fmt) == orig_pos);
+        if (FORMAT_STR_POS(*fmt) != orig_pos)
+            *fmt = orig_fmt;
         return '\0';
     }
     FORMAT_STR_SKIP_CHAR(*fmt);
@@ -585,7 +588,8 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
             indirect_args = POP_FORMAT_ARG(args);
             ENSURE_LIST(indirect_args);
             scm_lformat(port,
-                        fcap, SCM_STRING_STR(indirect_fmt), indirect_args);
+                        fcap & ~SCM_FMT_RAW_C,
+                        SCM_STRING_STR(indirect_fmt), indirect_args);
             goto fin;
 
         case 'c': /* Character */
@@ -637,7 +641,7 @@ static ScmObj
 format_internal(ScmObj port, enum ScmFormatCapability fcap,
                 const char *fmt, struct format_args *args)
 {
-    scm_ichar_t c, last_c;
+    scm_ichar_t c, last_c, handled;
     format_string_t cur;
     scm_bool implicit_portp;
     DECLARE_INTERNAL_FUNCTION("format");
@@ -662,9 +666,11 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
 #if SCM_USE_RAW_C_FORMAT
             if (fcap & SCM_FMT_RAW_C) {
                 SCM_ASSERT(args->type == ARG_VA_LIST);
-                last_c = format_raw_c_directive(port, &cur, &args->lst.va);
-                if (last_c)
+                handled = format_raw_c_directive(port, &cur, &args->lst.va);
+                if (handled) {
+                    last_c = handled;
                     continue;
+                }
             }
 #endif /* SCM_USE_RAW_C_FORMAT */
 #if SCM_USE_SRFI28
