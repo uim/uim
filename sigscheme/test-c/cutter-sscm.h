@@ -24,9 +24,9 @@
 
 
 #undef  UT_INITIALIZER
-#define UT_INITIALIZER default_suite_init
+#define UT_INITIALIZER suite_init
 #undef  UT_FINALIZER
-#define UT_FINALIZER   default_suite_fin
+#define UT_FINALIZER   suite_fin
 
 #undef  UT_DEF
 #define UT_DEF(name)                                                         \
@@ -47,35 +47,36 @@ name##_internal(utest_info *UT_INFO)
   }                                                                          \
 };                                                                           \
                                                                              \
-SSCM_SUITE_INITIALIZER                                                       \
-SSCM_SUITE_FINALIZER                                                         \
-SSCM_REGISTER_SUITE
+SSCM_DEFAULT_SUITE_INITIALIZER                                               \
+SSCM_DEFAULT_SUITE_FINALIZER                                                 \
+SSCM_DEFAULT_REGISTER_SUITE
 
 utest_suite *register_suite(void);
-static bool default_suite_init(utest_info *uinfo);
-static bool default_suite_fin(utest_info *uinfo);
+static bool suite_init(utest_info *uinfo);
+static bool suite_fin(utest_info *uinfo);
 
-/* Redefine these macros to override the functions. Don't forget
- * initialize/finalize SigScheme when do so. */
+/* Redefine these macros to empty and write your own ones as ordinary function
+ * definition, to override the behaviors. Don't forget initialize/finalize
+ * SigScheme when do so. */
 
-#define SSCM_REGISTER_SUITE                                                  \
+#define SSCM_DEFAULT_REGISTER_SUITE                                          \
 utest_suite *                                                                \
 register_suite(void)                                                         \
 {                                                                            \
   return &UT_SUITE;                                                          \
 }
 
-#define SSCM_SUITE_INITIALIZER                                               \
+#define SSCM_DEFAULT_SUITE_INITIALIZER                                       \
 static bool                                                                  \
-default_suite_init(utest_info *uinfo)                                        \
+suite_init(utest_info *uinfo)                                                \
 {                                                                            \
     scm_initialize(NULL);                                                    \
     return TRUE;                                                             \
 }
 
-#define SSCM_SUITE_FINALIZER                                                 \
+#define SSCM_DEFAULT_SUITE_FINALIZER                                         \
 static bool                                                                  \
-default_suite_fin(utest_info *uinfo)                                         \
+suite_fin(utest_info *uinfo)                                                 \
 {                                                                            \
     scm_finalize();                                                          \
     return TRUE;                                                             \
