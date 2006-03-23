@@ -32,6 +32,8 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+/* All tests in this file are passed against r3179 (new repository) */
+
 #include <stddef.h>
 #include <stdarg.h>
 #include <string.h>
@@ -3072,6 +3074,98 @@ UT_DEF2(test_63, "~h")
     UT_ASSERT_EQUAL_STRING(MSG_SSCM_DIRECTIVE_HELP, STR(format("~h")));
 }
 
+UT_DEF2(test_64, "mixed raw C directives")
+{
+    UT_ASSERT_EQUAL_STRING("-100 1010a64-01144100-01",
+                           STR(format("~D~5QBa~WX~03JD~3LO~ZU~03TD",
+                                      -100,
+                                      (int64_t)10,
+                                      (int32_t)100,
+                                      (intmax_t)-1,
+                                      (long)100,
+                                      (size_t)100,
+                                      (ptrdiff_t)-1)));
+
+    UT_ASSERT_EQUAL_STRING("-100 1010aa string64-01144あ100b-01",
+                           STR(format("~D~5QBa~S~WX~03JD~3LO~C~ZU~C~03TD",
+                                      -100,
+                                      (int64_t)10,
+                                      "a string",
+                                      (int32_t)100,
+                                      (intmax_t)-1,
+                                      (long)100,
+                                      (scm_ichar_t)0x3042,
+                                      (size_t)100,
+                                      (scm_ichar_t)'b',
+                                      (ptrdiff_t)-1)));
+}
+
+UT_DEF2(test_65, "mixed SRFI directives")
+{
+    UT_ASSERT_EQUAL_STRING("~\n", STR(format("~~~%")));
+    UT_ASSERT_EQUAL_STRING("slashified: #\\a\nany: a\n",
+                           STR(format("slashified: ~s~%any: ~a~%",
+                                      MAKE_CHAR('a'), MAKE_CHAR('a'))));
+
+    UT_ASSERT_EQUAL_STRING("-100 1010aa string64-01144あ100b-01",
+                           STR(format("~d~5ba~a~x~03d~3o~c~d~c~03d",
+                                      MAKE_INT(-100),
+                                      MAKE_INT(10),
+                                      CONST_STRING("a string"),
+                                      MAKE_INT(100),
+                                      MAKE_INT(-1),
+                                      MAKE_INT(100),
+                                      MAKE_CHAR(0x3042),
+                                      MAKE_INT(100),
+                                      MAKE_CHAR('b'),
+                                      MAKE_INT(-1))));
+}
+
+UT_DEF2(test_66, "mixed SRFI & raw C directives")
+{
+    UT_ASSERT_EQUAL_STRING("-100 1010aa string64another string-01144~あ100b-01",
+                           STR(format("~D~5ba~S~WX~a~03JD~3LO~~~c~ZU~C~03TD",
+                                      -100,
+                                      MAKE_INT(10),
+                                      "a string",
+                                      (int32_t)100,
+                                      CONST_STRING("another string"),
+                                      (intmax_t)-1,
+                                      (long)100,
+                                      MAKE_CHAR(0x3042),
+                                      (size_t)100,
+                                      (scm_ichar_t)'b',
+                                      (ptrdiff_t)-1)));
+}
+
+UT_DEF2(test_67, "freshline by mixed SRFI & raw C directives")
+{
+    UT_ASSERT_EQUAL_STRING("\n",     STR(format("~C~&",   (scm_ichar_t)'\n')));
+    UT_ASSERT_EQUAL_STRING("\n\n",   STR(format("~&~C~&", (scm_ichar_t)'\n')));
+    UT_ASSERT_EQUAL_STRING("\n",     STR(format("~S~&",   "\n")));
+    UT_ASSERT_EQUAL_STRING("\n\n",   STR(format("~&~S~&", "\n")));
+
+#if 0
+    /* current implementation does not support these behariors */
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~C~?",
+                                      (scm_ichar_t)'\n',
+                                      CONST_STRING("~&"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n\n",
+                           STR(format("~&~C~?",
+                                      (scm_ichar_t)'\n',
+                                      CONST_STRING("~&"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n",
+                           STR(format("~S~?",
+                                      "\n",
+                                      CONST_STRING("~&"), SCM_NULL)));
+    UT_ASSERT_EQUAL_STRING("\n\n",
+                           STR(format("~&~S~?",
+                                      "\n",
+                                      CONST_STRING("~&"), SCM_NULL)));
+#endif
+}
+
 UT_REGISTER_BEGIN("format")
 UT_REGISTER(test_1, "no directives")
 UT_REGISTER(test_2, "~C")
@@ -3136,4 +3230,8 @@ UT_REGISTER(test_60, "~y")
 UT_REGISTER(test_61, "~?")
 UT_REGISTER(test_62, "~k")
 UT_REGISTER(test_63, "~h")
+UT_REGISTER(test_64, "mixed raw C directives")
+UT_REGISTER(test_65, "mixed SRFI directives")
+UT_REGISTER(test_66, "mixed SRFI & raw C directives")
+UT_REGISTER(test_67, "freshline by mixed SRFI & raw C directives")
 UT_REGISTER_END
