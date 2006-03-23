@@ -285,11 +285,11 @@ extern ScmObj scm_null_values;
 #define DECLARE_INTERNAL_FUNCTION(name) DECLARE_FUNCTION((name), ignored)
 
 /* Signals an error without function name. The message is formatted by
- * vfprintf(). */
+ * scm_vformat(). */
 #define PLAIN_ERR scm_plain_error
 
 /* Signals an error.  The current function name and the message are
-   sent to the error port.  The message is formatted by vfprintf(). */
+   sent to the error port.  The message is formatted by scm_vformat(). */
 /* FIXME: check variadic macro availability with autoconf */
 #if HAVE_C99_VARIADIC_MACRO
 #define ERR(fmt, ...)     (scm_error(SCM_MANGLE(name), fmt, __VA_ARGS__))

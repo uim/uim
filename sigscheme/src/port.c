@@ -166,30 +166,6 @@ scm_make_shared_file_port(FILE *file, const char *aux_info,
 }
 
 int
-scm_port_printf(ScmObj port, const char *fmt, ...)
-{
-    int ret;
-    va_list args;
-
-    va_start(args, fmt);
-    ret = scm_port_vprintf(port, fmt, args);
-    va_end(args);
-
-    return ret;
-}
-
-int
-scm_port_vprintf(ScmObj port, const char *fmt, va_list args)
-{
-    int ret;
-
-    SCM_ENSURE_LIVE_PORT(port);
-    ret = SCM_CHARPORT_VPRINTF(SCM_PORT_IMPL(port), fmt, args);
-
-    return ret;
-}
-
-int
 scm_port_newline(ScmObj port)
 {
     int err;

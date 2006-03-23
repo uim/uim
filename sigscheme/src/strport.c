@@ -39,7 +39,6 @@
  */
 
 #include "config.h"
-#include "config-asprintf.h"
 
 /*=======================================
   System Include
@@ -104,8 +103,6 @@ static char *istrport_inspect(ScmInputStrPort *port);
 static scm_ichar_t istrport_get_byte(ScmInputStrPort *port);
 static scm_ichar_t istrport_peek_byte(ScmInputStrPort *port);
 static scm_bool istrport_byte_readyp(ScmInputStrPort *port);
-static int istrport_vprintf(ScmInputStrPort *port,
-                            const char *str, va_list args);
 static int istrport_puts(ScmInputStrPort *port, const char *str);
 static size_t istrport_write(ScmInputStrPort *port,
                              size_t nbytes, const char *buf);
@@ -118,8 +115,6 @@ static char *ostrport_inspect(ScmOutputStrPort *port);
 static scm_ichar_t ostrport_get_byte(ScmOutputStrPort *port);
 static scm_ichar_t ostrport_peek_byte(ScmOutputStrPort *port);
 static scm_bool ostrport_byte_readyp(ScmOutputStrPort *port);
-static int ostrport_vprintf(ScmOutputStrPort *port,
-                            const char *str, va_list args);
 static int ostrport_puts(ScmOutputStrPort *port, const char *str);
 static size_t ostrport_write(ScmOutputStrPort *port,
                              size_t nbytes, const char *buf);
@@ -138,7 +133,6 @@ static const ScmBytePortVTbl ScmInputStrPort_vtbl = {
     (ScmBytePortMethod_get_byte)   &istrport_get_byte,
     (ScmBytePortMethod_peek_byte)  &istrport_peek_byte,
     (ScmBytePortMethod_byte_readyp)&istrport_byte_readyp,
-    (ScmBytePortMethod_vprintf)    &istrport_vprintf,
     (ScmBytePortMethod_puts)       &istrport_puts,
     (ScmBytePortMethod_write)      &istrport_write,
     (ScmBytePortMethod_flush)      &istrport_flush
@@ -152,7 +146,6 @@ static const ScmBytePortVTbl ScmOutputStrPort_vtbl = {
     (ScmBytePortMethod_get_byte)   &ostrport_get_byte,
     (ScmBytePortMethod_peek_byte)  &ostrport_peek_byte,
     (ScmBytePortMethod_byte_readyp)&ostrport_byte_readyp,
-    (ScmBytePortMethod_vprintf)    &ostrport_vprintf,
     (ScmBytePortMethod_puts)       &ostrport_puts,
     (ScmBytePortMethod_write)      &ostrport_write,
     (ScmBytePortMethod_flush)      &ostrport_flush
@@ -261,13 +254,6 @@ static scm_bool
 istrport_byte_readyp(ScmInputStrPort *port)
 {
     return scm_true;
-}
-
-static int
-istrport_vprintf(ScmInputStrPort *port, const char *str, va_list args)
-{
-    SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
-    /* NOTREACHED */
 }
 
 static int
@@ -384,27 +370,6 @@ ostrport_byte_readyp(ScmOutputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmOutputStrPort);
     /* NOTREACHED */
-}
-
-static int
-ostrport_vprintf(ScmOutputStrPort *port, const char *str, va_list args)
-{
-#if HAVE_VASPRINTF
-    char *appendix;
-    int len;
-
-    len = vasprintf(&appendix, str, args);
-    if (!appendix)
-        SCM_PORT_ERROR_NOMEM(BYTE, port, ScmOutputStrPort);
-    if (0 < len)
-        ostrport_append(port, len, appendix);
-    free(appendix);
-
-    return len;
-#else
-    /* FIXME */
-#error "This platform is not supported yet"
-#endif
 }
 
 static int

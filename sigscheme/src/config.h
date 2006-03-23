@@ -170,11 +170,6 @@
 /*===========================================================================
   Dependency Resolution
 ===========================================================================*/
-/* FIXME: provide replace functions */
-#if (!HAVE_ASPRINTF || !HAVE_VASPRINTF)
-#error "This platform is not supported yet"
-#endif
-
 #if (!SCM_DEBUG && SCM_USE_NULL_CAPABLE_STRING)
 #error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
 #endif

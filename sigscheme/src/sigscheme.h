@@ -1360,8 +1360,6 @@ int scm_port_peek_char(ScmObj port);
 scm_bool scm_port_char_readyp(ScmObj port);
 int scm_port_puts(ScmObj port, const char *str);
 int scm_port_put_char(ScmObj port, scm_ichar_t ch);
-int scm_port_printf(ScmObj port, const char *fmt, ...);
-int scm_port_vprintf(ScmObj port, const char *fmt, va_list args);
 int scm_port_newline(ScmObj port);
 int scm_port_flush(ScmObj port);
 ScmObj scm_p_call_with_input_file(ScmObj filepath, ScmObj proc);

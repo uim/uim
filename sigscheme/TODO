@@ -137,9 +137,6 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* Implement format string
-  - Obsolete vprintf method of port object
-
 * Write tests for SRFI-75
 
 * Add integer->char and char->integer procedures with multibyte support

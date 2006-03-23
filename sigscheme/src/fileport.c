@@ -91,7 +91,6 @@ static char *fileport_inspect(ScmFilePort *port);
 static scm_ichar_t fileport_get_byte(ScmFilePort *bport);
 static scm_ichar_t fileport_peek_byte(ScmFilePort *bport);
 static scm_bool fileport_byte_readyp(ScmFilePort *bport);
-static int fileport_vprintf(ScmFilePort *bport, const char *str, va_list args);
 static int fileport_puts(ScmFilePort *bport, const char *str);
 static size_t fileport_write(ScmFilePort *bport,
                              size_t nbytes, const char *buf);
@@ -107,7 +106,6 @@ static const ScmBytePortVTbl ScmFilePort_vtbl = {
     (ScmBytePortMethod_get_byte)   &fileport_get_byte,
     (ScmBytePortMethod_peek_byte)  &fileport_peek_byte,
     (ScmBytePortMethod_byte_readyp)&fileport_byte_readyp,
-    (ScmBytePortMethod_vprintf)    &fileport_vprintf,
     (ScmBytePortMethod_puts)       &fileport_puts,
     (ScmBytePortMethod_write)      &fileport_write,
     (ScmBytePortMethod_flush)      &fileport_flush
@@ -231,12 +229,6 @@ fileport_byte_readyp(ScmFilePort *port)
         SCM_BYTEPORT_ERROR(port, "known bug: ready? operation is not supported on this port");
 #endif
     return scm_true;
-}
-
-static int
-fileport_vprintf(ScmFilePort *port, const char *str, va_list args)
-{
-    return vfprintf(port->file, str, args);
 }
 
 static int

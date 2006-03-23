@@ -118,8 +118,6 @@ extern "C" {
 #define SCM_CHARPORT_GET_CHAR(cport)     ((*(cport)->vptr->get_char)(cport))
 #define SCM_CHARPORT_PEEK_CHAR(cport)    ((*(cport)->vptr->peek_char)(cport))
 #define SCM_CHARPORT_CHAR_READYP(cport)  ((*(cport)->vptr->char_readyp)(cport))
-#define SCM_CHARPORT_VPRINTF(cport, str, args)                               \
-    ((*(cport)->vptr->vprintf)((cport), (str), (args)))
 #define SCM_CHARPORT_PUTS(cport, str)                                        \
     ((*(cport)->vptr->puts)((cport), (str)))
 #define SCM_CHARPORT_PUT_CHAR(cport, ch)                                     \
@@ -131,8 +129,6 @@ extern "C" {
 #define SCM_BYTEPORT_GET_BYTE(bport)     ((*(bport)->vptr->get_byte)(bport))
 #define SCM_BYTEPORT_PEEK_BYTE(bport)    ((*(bport)->vptr->peek_byte)(bport))
 #define SCM_BYTEPORT_BYTE_READYP(bport)  ((*(bport)->vptr->byte_readyp)(bport))
-#define SCM_BYTEPORT_VPRINTF(bport, str, args)                               \
-    ((*(bport)->vptr->vprintf)((bport), (str), (args)))
 #define SCM_BYTEPORT_PUTS(bport, str)                                        \
     ((*(bport)->vptr->puts)((bport), (str)))
 #define SCM_BYTEPORT_WRITE(bport, nbytes, buf)                               \
@@ -187,8 +183,6 @@ typedef scm_ichar_t (*ScmCharPortMethod_peek_char)(ScmCharPort *cport);
 typedef scm_bool (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
 
 /* output */
-typedef int (*ScmCharPortMethod_vprintf)(ScmCharPort *cport,
-                                         const char *str, va_list args);
 typedef int (*ScmCharPortMethod_puts)(ScmCharPort *cport, const char *str);
 typedef int (*ScmCharPortMethod_put_char)(ScmCharPort *cport, scm_ichar_t ch);
 typedef int (*ScmCharPortMethod_flush)(ScmCharPort *cport);
@@ -201,7 +195,6 @@ struct ScmCharPortVTbl_ {
     ScmCharPortMethod_get_char    get_char;
     ScmCharPortMethod_peek_char   peek_char;
     ScmCharPortMethod_char_readyp char_readyp;
-    ScmCharPortMethod_vprintf     vprintf;  /* tmp */
     ScmCharPortMethod_puts        puts;
     ScmCharPortMethod_put_char    put_char;
     ScmCharPortMethod_flush       flush;
@@ -232,8 +225,6 @@ typedef scm_ichar_t (*ScmBytePortMethod_peek_byte)(ScmBytePort *bport);
 typedef scm_bool (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
 
 /* output */
-typedef int (*ScmBytePortMethod_vprintf)(ScmBytePort *bport,
-                                         const char *str, va_list args);
 typedef int (*ScmBytePortMethod_puts)(ScmBytePort *bport, const char *str);
 typedef size_t (*ScmBytePortMethod_write)(ScmBytePort *bport,
                                           size_t nbytes, const char *buf);
@@ -246,7 +237,6 @@ struct ScmBytePortVTbl_ {
     ScmBytePortMethod_get_byte    get_byte;
     ScmBytePortMethod_peek_byte   peek_byte;
     ScmBytePortMethod_byte_readyp byte_readyp;
-    ScmBytePortMethod_vprintf     vprintf;  /* tmp */
     ScmBytePortMethod_puts        puts;
     ScmBytePortMethod_write       write;
     ScmBytePortMethod_flush       flush;
