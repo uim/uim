@@ -1,1 +1,1 @@
-SUBDIRS = m4 src
+SUBDIRS = m4 src test-c

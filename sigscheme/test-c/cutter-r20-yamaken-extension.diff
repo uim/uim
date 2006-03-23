@@ -1,0 +1,506 @@
+Index: helper/Makefile.am
+===================================================================
+--- helper/Makefile.am	(revision 0)
++++ helper/Makefile.am	(revision 0)
+@@ -0,0 +1 @@
++dist_bin_SCRIPTS = cutter-update-suite
+Index: helper/cutter-update-suite
+===================================================================
+--- helper/cutter-update-suite	(revision 0)
++++ helper/cutter-update-suite	(revision 0)
+@@ -0,0 +1,72 @@
++#! /usr/bin/env ruby -i
++
++# cutter-update-suite: An testsuite configurator for Cutter
++# Copyright (C) 2006  YamaKen <yamaken AT bp.iij4u.or.jp>
++# 
++# This library is free software; you can redistribute it and/or
++# modify it under the terms of the GNU Lesser General Public
++# License as published by the Free Software Foundation; either
++# version 2.1 of the License, or (at your option) any later version.
++# 
++# This library is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++# Lesser General Public License for more details.
++# 
++# You should have received a copy of the GNU Lesser General Public
++# License along with this library; if not, write to the Free Software
++# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++
++# usage:
++#
++# 1) write a test as following
++#
++#   UT_DEF2("test foo")
++#   {
++#     ...
++#   }
++#   
++#   UT_DEF2("test bar")
++#   {
++#     ...
++#   }
++#   
++#   UT_REGISTER_BEGIN("a testsuite")
++#   UT_REGISTER_END
++#
++# 2) cutter-update-suite test_foo.c
++#
++# 3) the file is rewritten to following
++#
++#   UT_DEF2(test_1, "test foo")
++#   {
++#     ...
++#   }
++#   
++#   UT_DEF2(test_2, "test bar")
++#   {
++#     ...
++#   }
++#   
++#   UT_REGISTER_BEGIN("a testsuite")
++#   UT_REGISTER(test_1, "test foo")
++#   UT_REGISTER(test_2, "test bar")
++#   UT_REGISTER_END
++#
++
++src = ARGF.read
++
++cnt = 0
++reg_entries = ""
++src.gsub!(/\bUT_DEF2\s*\([^"]*"([^\n]+)\)\s*\n/m) {
++  cnt += 1
++  desc = "\"#{$1}"
++  f = "test_#{cnt}"
++  reg_entries += "UT_REGISTER(#{f}, #{desc})\n"
++  "UT_DEF2\(#{f}, #{desc}\)\n"
++}
++
++src.sub!(/\b(UT_REGISTER_BEGIN\s*\([^\n]+\))\s*\n[\s\S]*\b(UT_REGISTER_END)\b/,
++         "\\1\n#{reg_entries}\\2")
++
++print src
+
+Property changes on: helper/cutter-update-suite
+___________________________________________________________________
+Name: svn:executable
+   + *
+
+Index: configure.ac
+===================================================================
+--- configure.ac	(revision 20)
++++ configure.ac	(working copy)
+@@ -48,6 +48,7 @@
+ 
+ AC_CONFIG_FILES([Makefile
+ 		 cutter/Makefile
++		 helper/Makefile
+                  sample/Makefile
+                  sample/calc/Makefile.test
+                  CUnit/Makefile
+Index: cutter/assersions.h
+===================================================================
+--- cutter/assersions.h	(revision 20)
++++ cutter/assersions.h	(working copy)
+@@ -5,38 +5,64 @@
+ 
+ #define ASSERT_MESSAGE_BUFFER_SIZE 512
+ 
+-#define UT_PASS return TRUE
++/* obsolete */
++#define UT_PASS return
+ 
+-#define UT_ASSERT(expect, message)                          \
+-if(!(expect))                                               \
++#define UT_FAIL(message) _UT_ASSERT(FALSE, message)
++
++#define _UT_ASSERT(expr, message)                           \
++if(!(expr))                                                 \
+ {                                                           \
++  UT_INFO->n_assertion_failed++;                            \
+   UT_INFO->logerror(UT_INFO, __LINE__ ,__FILE__, message);  \
+-  return FALSE;                                             \
++} else {                                                    \
++  UT_INFO->n_assertion_succeeded++;                         \
+ }
+ 
+-#define UT_FAIL(message)                                    \
+-if(1)                                                       \
+-{                                                           \
+-  UT_INFO->logerror(UT_INFO, __LINE__, __FILE__, message);  \
+-  return FALSE;                                             \
+-}
++#define _UT_ASSERT_TRUE(expr, message)  _UT_ASSERT(expr, message)
++#define _UT_ASSERT_FALSE(expr, message) _UT_ASSERT(!(expr), message)
+ 
+-#define UT_ASSERT_EQUAL_INT(expect, actual, message)    \
+-if (expect != actual)                                   \
+-{                                                       \
+-  char buffer[ASSERT_MESSAGE_BUFFER_SIZE];              \
+-  snprintf(buffer,                                      \
+-           ASSERT_MESSAGE_BUFFER_SIZE - 1,              \
+-           "%s\n expected: <%d>\n  but was: <%d>",      \
+-           message, expect, actual);                    \
+-  UT_INFO->logerror(UT_INFO,__LINE__,__FILE__,buffer);  \
+-  return FALSE;                                         \
++#define _UT_ASSERT_EQUAL_INTTYPE(type, escseq, expect, actual, message)      \
++if ((expect) == (actual))                                                    \
++{                                                                            \
++  _UT_ASSERT(TRUE, "");                                                      \
++} else {                                                                     \
++  /* To ensure that expect and actual are evaluated exactly                  \
++   * once, assign to another variable. */                                    \
++  type _expect = (type)(expect);                                             \
++  type _actual = (type)(actual);                                             \
++  char buffer[ASSERT_MESSAGE_BUFFER_SIZE];                                   \
++  snprintf(buffer,                                                           \
++           ASSERT_MESSAGE_BUFFER_SIZE - 1,                                   \
++           "%s\n expected: <" escseq ">\n  but was: <" escseq ">",           \
++           message, _expect, _actual);                                       \
++  _UT_ASSERT(FALSE, buffer);                                                 \
+ }
+ 
+-#define UT_ASSERT_EQUAL_DOUBLE(expect, error, actual, message)  \
++#define _UT_ASSERT_EQUAL_PTR(expect, actual, message)                        \
++    _UT_ASSERT_EQUAL_INTTYPE(void *, "%p", expect, actual, message)
++
++#define _UT_ASSERT_EQUAL_CHAR(expect, actual, message)                       \
++    _UT_ASSERT_EQUAL_INTTYPE(unsigned char, "%c", expect, actual, message)
++
++#define _UT_ASSERT_EQUAL_INT(expect, actual, message)                        \
++    _UT_ASSERT_EQUAL_INTTYPE(int, "%d", expect, actual, message)
++#define _UT_ASSERT_EQUAL_UINT(expect, actual, message)                       \
++    _UT_ASSERT_EQUAL_INTTYPE(unsigned int, "%u", expect, actual, message)
++#define _UT_ASSERT_EQUAL_XINT(expect, actual, message)                       \
++    _UT_ASSERT_EQUAL_INTTYPE(int, "%x", expect, actual, message)
++
++#define _UT_ASSERT_EQUAL_IMAX(expect, actual, message)                       \
++    _UT_ASSERT_EQUAL_INTTYPE(intmax_t, "%jd", expect, actual, message)
++#define _UT_ASSERT_EQUAL_UIMAX(expect, actual, message)                      \
++    _UT_ASSERT_EQUAL_INTTYPE(uintmax_t, "%ju", expect, actual, message)
++#define _UT_ASSERT_EQUAL_XIMAX(expect, actual, message)                      \
++    _UT_ASSERT_EQUAL_INTTYPE(intmax_t, "%jx", expect, actual, message)
++
++#define _UT_ASSERT_EQUAL_DOUBLE(expect, error, actual, message) \
+ do {                                                            \
+-  double _expect = expect;                                      \
+-  double _actual = actual;                                      \
++  double _expect = (expect);                                    \
++  double _actual = (actual);                                    \
+   double _error = error;                                        \
+   if (!(_expect - _error <= _actual &&                          \
+           _actual <= _expect + _error))                         \
+@@ -46,22 +72,66 @@
+              ASSERT_MESSAGE_BUFFER_SIZE - 1,                    \
+              "%s\n expected: <%g> +/-<%g>\n  but was: <%g>",    \
+              message, _expect, _error, _actual);                \
+-    UT_INFO->logerror(UT_INFO,__LINE__,__FILE__,buffer);        \
+-    return FALSE;                                               \
++    _UT_ASSERT(FALSE, buffer);                                  \
++  } else {                                                      \
++    _UT_ASSERT(TRUE, "");                                       \
+   }                                                             \
+ } while(0)
+ 
+-#define UT_ASSERT_EQUAL_STRING(expect, actual, message) \
+-if (strcmp(expect, actual) != 0)                        \
+-{                                                       \
+-  char buffer[ASSERT_MESSAGE_BUFFER_SIZE];              \
+-  snprintf(buffer,                                      \
+-           ASSERT_MESSAGE_BUFFER_SIZE - 1,              \
+-           "%s\n expected: <%s>\n  but was: <%s>",      \
+-           message, expect, actual);                    \
+-  UT_INFO->logerror(UT_INFO,__LINE__,__FILE__,buffer);  \
+-  return FALSE;                                         \
++#define _UT_ASSERT_EQUAL_STRING(expect, actual, message) \
++if (strcmp(expect, actual) != 0)                         \
++{                                                        \
++  char buffer[ASSERT_MESSAGE_BUFFER_SIZE];               \
++  snprintf(buffer,                                       \
++           ASSERT_MESSAGE_BUFFER_SIZE - 1,               \
++           "%s\n expected: <%s>\n  but was: <%s>",       \
++           message, expect, actual);                     \
++  _UT_ASSERT(FALSE, buffer);                             \
++} else {                                                 \
++  _UT_ASSERT(TRUE, "");                                  \
+ }
+ 
++#if UT_USE_MESSAGELESS_ASSERTIONS
++#define UT_ASSERT(expect)     _UT_ASSERT(expect, "")
++#define UT_ASSERT_TRUE(expr)  _UT_ASSERT_TRUE(expr, "")
++#define UT_ASSERT_FALSE(expr) _UT_ASSERT_FALSE(expr, "")
++#define UT_ASSERT_EQUAL_INTTYPE(expect, actual)                              \
++    _UT_ASSERT_EQUAL_INTTYPE(expect, actual, "")
++#define UT_ASSERT_EQUAL_CHAR(expect, actual)                                 \
++    _UT_ASSERT_EQUAL_CHAR(expect, actual, "")
++#define UT_ASSERT_EQUAL_INT(expect, actual)                                  \
++    _UT_ASSERT_EQUAL_INT(expect, actual, "")
++#define UT_ASSERT_EQUAL_UINT(expect, actual)                                 \
++    _UT_ASSERT_EQUAL_UINT(expect, actual, "")
++#define UT_ASSERT_EQUAL_XINT(expect, actual)                                 \
++    _UT_ASSERT_EQUAL_XINT(expect, actual, "")
++#define UT_ASSERT_EQUAL_IMAX(expect, actual)                                 \
++    _UT_ASSERT_EQUAL_IMAX(expect, actual, "")
++#define UT_ASSERT_EQUAL_UIMAX(expect, actual)                                \
++    _UT_ASSERT_EQUAL_UIMAX(expect, actual, "")
++#define UT_ASSERT_EQUAL_XIMAX(expect, actual)                                \
++    _UT_ASSERT_EQUAL_XIMAX(expect, actual, "")
++#define UT_ASSERT_EQUAL_PTR(expect, actual)                                  \
++    _UT_ASSERT_EQUAL_PTR(expect, actual, "")
++#define UT_ASSERT_EQUAL_DOUBLE(expect, error, actual)                        \
++    _UT_ASSERT_EQUAL_DOUBLE(expect, error, actual, "")
++#define UT_ASSERT_EQUAL_STRING(expect, actual)                               \
++    _UT_ASSERT_EQUAL_STRING(expect, actual, "")
++#else /* UT_USE_MESSAGELESS_ASSERTIONS */
++#define UT_ASSERT               _UT_ASSERT
++#define UT_ASSERT_TRUE          _UT_ASSERT_TRUE
++#define UT_ASSERT_FALSE         _UT_ASSERT_FALSE
++#define UT_ASSERT_EQUAL_INTTYPE _UT_ASSERT_EQUAL_INTTYPE
++#define UT_ASSERT_EQUAL_PTR     _UT_ASSERT_EQUAL_PTR
++#define UT_ASSERT_EQUAL_CHAR    _UT_ASSERT_EQUAL_CHAR
++#define UT_ASSERT_EQUAL_INT     _UT_ASSERT_EQUAL_INT
++#define UT_ASSERT_EQUAL_UINT    _UT_ASSERT_EQUAL_UINT
++#define UT_ASSERT_EQUAL_XINT    _UT_ASSERT_EQUAL_XINT
++#define UT_ASSERT_EQUAL_IMAX    _UT_ASSERT_EQUAL_IMAX
++#define UT_ASSERT_EQUAL_UIMAX   _UT_ASSERT_EQUAL_UIMAX
++#define UT_ASSERT_EQUAL_XIMAX   _UT_ASSERT_EQUAL_XIMAX
++#define UT_ASSERT_EQUAL_DOUBLE  _UT_ASSERT_EQUAL_DOUBLE
++#define UT_ASSERT_EQUAL_STRING  _UT_ASSERT_EQUAL_STRING
++#endif /* UT_USE_MESSAGELESS_ASSERTIONS */
+ 
+ #endif /* CUTTER_ASSERSIONS_H */
+Index: cutter/info.h
+===================================================================
+--- cutter/info.h	(revision 20)
++++ cutter/info.h	(working copy)
+@@ -11,6 +11,7 @@
+ #include "world.h"
+ 
+ void UTestFillInfo (utest_info* info, int line, const char* file, const char* msg);
++void UTestReportInfo (utest_info* info, int line, const char* file, const char* msg);
+ void AddInfo (utest_world* world, utest_info* info);
+ void InitInfo (utest_info* info, const char* suiteName, const char* testName);
+ 
+Index: cutter/run.c
+===================================================================
+--- cutter/run.c	(revision 20)
++++ cutter/run.c	(working copy)
+@@ -57,10 +57,8 @@
+ 		/* run test */
+ 		init_info_with_base(&uinfo, suite->name, suite->tests[t].name, world->base);
+ 		uassert (suite->tests[t].theTest != NULL);
+-		testStatus = suite->tests[t].theTest (&uinfo);
++		suite->tests[t].theTest (&uinfo);
+ 
+-		uinfo.status = testStatus;
+-
+ 		world->addinfo (world, &uinfo);
+ 
+ 		/* run teardown */
+Index: cutter/cutter.c
+===================================================================
+--- cutter/cutter.c	(revision 20)
++++ cutter/cutter.c	(working copy)
+@@ -148,7 +148,11 @@
+ 	FiniWorldTimers(&world);
+ 	
+ 	ShowProgress (&world);
++#if UT_USE_ERROR_PASSTHROUGH_MODE
++	ShowSimpleInfo (&world);
++#else
+ 	ShowInfo (&world);
++#endif
+ 
+ 	return (world.badTestCount ? 1 : 0);
+ }
+Index: cutter/cutter.h
+===================================================================
+--- cutter/cutter.h	(revision 20)
++++ cutter/cutter.h	(working copy)
+@@ -9,6 +9,14 @@
+ #ifndef CUTTER_CUTTER_H
+ #define CUTTER_CUTTER_H
+ 
++/* include-time configuration */
++#ifndef UT_USE_MESSAGELESS_ASSERTIONS
++#define UT_USE_MESSAGELESS_ASSERTIONS 0
++#endif
++
++/* compile-time configuration */
++#define UT_USE_ERROR_PASSTHROUGH_MODE 1
++
+ #ifndef TRUE
+ #define TRUE 1
+ #define FALSE 0
+@@ -58,7 +66,8 @@
+   char msg[MAXUTESTMESGLEN];
+   char suiteName[MAXUTESTNAMELEN];
+   char testName[MAXUTESTNAMELEN];
+-  int status;
++  int n_assertion_succeeded;
++  int n_assertion_failed;
+   void (*logerror)(struct utest_info_tag*,int,const char*,const char*);
+   struct utest_info_tag* next;
+ } utest_info;
+@@ -66,7 +75,7 @@
+ typedef struct utest_test_tag
+ {
+     char name[MAXUTESTNAMELEN];
+-    bool (*theTest)(utest_info*);
++    void (*theTest)(utest_info*);
+ } utest_test;
+ 
+ typedef struct utest_suite_tag
+@@ -81,9 +90,11 @@
+ 
+ 
+ #define UT_DEF(name)                            \
+-static bool                                     \
++static void                                     \
+ name(utest_info *UT_INFO)
+ 
++/* for cooperating with cutter-update-suite */
++#define UT_DEF2(name, desc) UT_DEF(name)
+ 
+ #define UT_REGISTER_BEGIN(name)                 \
+ static utest_suite UT_SUITE = {                 \
+Index: cutter/show.c
+===================================================================
+--- cutter/show.c	(revision 20)
++++ cutter/show.c	(working copy)
+@@ -100,7 +100,7 @@
+ 
+ void ShowTestInfo (utest_info* info)
+ {
+-	if (info->status == FALSE)
++	if (info->n_assertion_failed)
+ 		printf("%s/%s:%d: - %s %s - %s\n", 
+            info->base,
+            info->file,
+@@ -153,6 +153,20 @@
+ }
+ 
+ 
++void ShowSimpleInfo (utest_world* world)
++{
++	int assertionCount;
++
++	assertionCount = world->badAssertionCount + world->goodAssertionCount;
++
++	vl_printf(world, NORMAL,
++              "\n\n%s: %d tests, %d bad tests, %d assertions, %d successes, %d failures\n",
++              (world->badAssertionCount) ? "FAILED" : "OK",
++              world->testCount, world->badTestCount, assertionCount,
++              world->goodAssertionCount, world->badAssertionCount);
++}
++
++
+ void ShowStart (utest_world* world)
+ {
+ 	vl_printf(world, NORMAL,
+@@ -185,7 +199,7 @@
+ 
+   if (!can_use_escape()) {
+     if (world->infoTail) {
+-      if (world->infoTail->status) {
++      if (!world->infoTail->n_assertion_failed) {
+         vl_printf(world, PROGRESS, ".");
+       } else {
+         vl_printf(world, PROGRESS, "E");
+Index: cutter/world.c
+===================================================================
+--- cutter/world.c	(revision 20)
++++ cutter/world.c	(working copy)
+@@ -29,6 +29,9 @@
+ 	world->badTestCount = 0;
+ 	world->goodTestCount = 0;
+ 
++	world->badAssertionCount = 0;
++	world->goodAssertionCount = 0;
++
+ 	world->addstub = NULL;
+ 	world->stubHead = NULL;
+ 	world->stubTail = NULL;
+Index: cutter/info.c
+===================================================================
+--- cutter/info.c	(revision 20)
++++ cutter/info.c	(working copy)
+@@ -13,6 +13,7 @@
+ #include <cutter/cutter.h>
+ 
+ #include "info.h"
++#include "show.h"
+ 
+ /* TODO UTestFillInfo could be passed as a function pointer in the info struct */
+ void UTestFillInfo (utest_info* info, int line, const char* file, const char* msg)
+@@ -26,12 +27,20 @@
+ 	strncpy (info->file, file, MAXUTESTFILELEN);
+ }
+ 
++void UTestReportInfo (utest_info* info, int line, const char* file, const char* msg)
++{
++	UTestFillInfo(info, line, file, msg);
++	printf("\n");
++	ShowTestInfo(info);
++}
++
+ void AddInfo (utest_world* world, utest_info* info)
+ {
+ 	utest_info* copy = (utest_info*)malloc(sizeof(utest_info));
+ 
+ 	copy->line = info->line;
+-	copy->status = info->status;
++	copy->n_assertion_succeeded = info->n_assertion_succeeded;
++	copy->n_assertion_failed    = info->n_assertion_failed;
+ 	strncpy (copy->msg, info->msg, MAXUTESTMESGLEN);
+ 	strncpy (copy->file, info->file, MAXUTESTFILELEN);
+ 	strncpy (copy->base, info->base, MAX_UTEST_BASE_LEN);
+@@ -51,7 +60,9 @@
+ 	}
+ 
+ 	world->finTestCount++;
+-	if (info->status)
++	world->goodAssertionCount += info->n_assertion_succeeded;
++	world->badAssertionCount  += info->n_assertion_failed;
++	if (!info->n_assertion_failed)
+ 		world->goodTestCount++;
+ 	else
+ 		world->badTestCount++;
+@@ -65,8 +76,15 @@
+ 	info->base[0] = '\0';
+ 	info->msg[0] = '\0';
+ 
++	info->n_assertion_succeeded = 0;
++	info->n_assertion_failed    = 0;
++
+ 	strncpy (info->suiteName, suiteName, MAXUTESTNAMELEN);
+ 	strncpy (info->testName, testName, MAXUTESTNAMELEN);
+ 
++#if UT_USE_ERROR_PASSTHROUGH_MODE
++	info->logerror = &UTestReportInfo;
++#else
+ 	info->logerror = &UTestFillInfo;
++#endif
+ }
+Index: cutter/world.h
+===================================================================
+--- cutter/world.h	(revision 20)
++++ cutter/world.h	(working copy)
+@@ -36,6 +36,9 @@
+ 	int badTestCount;
+ 	int goodTestCount;
+ 
++	int badAssertionCount;
++	int goodAssertionCount;
++
+ 	/* times */
+ 	long secStart;
+ 	long usecStart;
+Index: Makefile.am
+===================================================================
+--- Makefile.am	(revision 20)
++++ Makefile.am	(working copy)
+@@ -1 +1 @@
+-SUBDIRS = cutter sample test CUnit
++SUBDIRS = cutter helper sample test CUnit
