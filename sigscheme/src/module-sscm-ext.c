@@ -233,15 +233,26 @@ scm_p_providedp(ScmObj feature)
     return MAKE_BOOL(scm_providedp(feature));
 }
 
+#if 0
 /*
+ * Disabled to avoid API confusion.  -- YamaKen 2006-03-26
+ *
  * TODO: describe compatibility with de facto standard of other Scheme
- * implementations
+ * implementations. Consider compatibility with following uim predicates. The
+ * names are based on existing extensions of major Scheme implementations.
+ *
+ * - file-readable?
+ * - file-writable?
+ * - file-executable?
+ * - file-regular?
+ * - file-directory?
  */
 ScmObj
 scm_p_file_existsp(ScmObj filepath)
 {
     FILE *f;
-    DECLARE_FUNCTION("file-exists?", procedure_fixed_1);
+    /* a dummy comment is inserted to be hidden from build_func_table.rb */
+    DECLARE_FUNCTION/**/("file-exists?", procedure_fixed_1);
 
     ENSURE_STRING(filepath);
 
@@ -252,20 +263,7 @@ scm_p_file_existsp(ScmObj filepath)
 
     return SCM_TRUE;
 }
-
-/* TODO: remove to ensure security */
-ScmObj
-scm_p_delete_file(ScmObj filepath)
-{
-    DECLARE_FUNCTION("delete-file", procedure_fixed_1);
-
-    ENSURE_STRING(filepath);
-
-    if (remove(SCM_STRING_STR(filepath)) == -1)
-        ERR_OBJ("delete failed. file = ", filepath);
-
-    return SCM_TRUE;
-}
+#endif
 
 /* to avoid being typo of length+, this procedure did not name as length++ */
 /* FIXME: replace with a SRFI or de facto standard equivalent if exist */

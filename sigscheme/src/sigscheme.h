@@ -1432,8 +1432,6 @@ void scm_require(const char *filename);
 ScmObj scm_p_require(ScmObj filename);
 ScmObj scm_p_provide(ScmObj feature);
 ScmObj scm_p_providedp(ScmObj feature);
-ScmObj scm_p_file_existsp(ScmObj filepath);
-ScmObj scm_p_delete_file(ScmObj filepath);
 ScmObj scm_p_lengthstar(ScmObj lst);
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 

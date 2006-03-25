@@ -29,9 +29,6 @@ Requirements and critical bugs:
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
-* Confirm security issues around file operations
-  - remove operation
-
 * [uim] link libsscm into libuim statically
 
 * Clear license, copyright and changes information
