@@ -6,11 +6,19 @@ Requirements and critical bugs:
   - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC
   - Generate and pack sigschemefunctable*.[hc] into distribution file by make
-    dist
+    dist, and make ruby not required for tarball build
+  - Check pointer alignment to ensure stack GC workable
+    * for example, gcc -Os on x86 breaks the alignment
 
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
     test-compact.c are checked
+
+* Clear license, copyright and changes information
+  - scm_length() in list.c
+  - "Shiro Kawai" part of read.c
+  - slib.scm
+  - test/{gauche*,bigloo*}.scm
 
 * Make 64bit-safe
   - Write tests
@@ -23,19 +31,6 @@ Requirements and critical bugs:
 
 * Confirm public API
   - Evaluate SRFI-50 (although withdrawn)
-
-* Write test for tail expression of all tail-recursive syntaxes
-
-* Add tests for proper tail recursion with 'apply' and 'guard' to
-  test-tail-rec.scm
-
-* [uim] link libsscm into libuim statically
-
-* Clear license, copyright and changes information
-  - scm_length() in list.c
-  - "Shiro Kawai" part of read.c
-  - slib.scm
-  - test/{gauche*,bigloo*}.scm
 
 * Confirm appropriate workaround for the GCC's noinline attribute vanishing
   problem on Linux environments
@@ -139,6 +134,13 @@ Assigned to Kazuki:
 
 ==============================================================================
 Assigned to YamaKen:
+
+* [uim] link libsscm into libuim statically
+
+* Write test for tail expression of all tail-recursive syntaxes
+
+* Add tests for proper tail recursion with 'apply' and 'guard' to
+  test-tail-rec.scm
 
 * Write tests for SRFI-75
 
