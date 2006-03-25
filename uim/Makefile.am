@@ -84,7 +84,9 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
-libuim_la_LDFLAGS = -version-info $(libuim_version) -export-symbols-regex uim.\*
+libuim_la_LDFLAGS = -version-info $(libuim_version) \
+		    -export-dynamic \
+		    -export-symbols-regex uim.\*
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
@@ -93,8 +95,10 @@ if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
 endif
 
-libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) -export-symbols-regex uim.\*
-libuim_custom_la_LIBADD = 
+libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) \
+			   -export-dynamic \
+			   -export-symbols-regex uim.\*
+libuim_custom_la_LIBADD = libuim.la
 libuim_custom_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-custom-enabler.la
