@@ -39,6 +39,9 @@
 =======================================*/
 #include <stdlib.h>
 
+#include <unistd.h>
+#include <sys/param.h>
+
 /*=======================================
   Local Include
 =======================================*/
@@ -62,6 +65,8 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+static char lib_path[MAXPATHLEN];
+
 #if SCM_COMPAT_SIOD
 static ScmObj feature_id_siod;
 #endif
@@ -203,6 +208,19 @@ main(int argc, char **argv)
     filename = rest_argv[0];
 
     scm_initialize(NULL);
+
+    /* Explicitly allow current directory-relative path. The sscm command is
+     * supposed to neither setuid'ed nor setgid'ed. So the privilege escalation
+     * problem for C plugins shall not occur. -- YamaKen 2006-03-25 */
+    /*
+     * FIXME:
+     * - add multiple path capability to libsscm
+     * - add library path specifying way for users
+     * - support non-UNIX platforms
+     */
+    if (!getcwd(lib_path, MAXPATHLEN))
+        return EXIT_FAILURE;
+    scm_set_lib_path(lib_path);
 
 #if SCM_USE_SRFI34
     scm_use("srfi-34");

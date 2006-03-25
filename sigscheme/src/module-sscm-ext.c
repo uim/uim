@@ -60,7 +60,7 @@
 =======================================*/
 #include "functable-sscm-ext.c"
 
-/* io.c */
+/* load.c */
 extern const char *scm_lib_path;
 
 /*=======================================

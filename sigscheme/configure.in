@@ -64,7 +64,7 @@ AC_CHECK_SIZEOF(intptr_t)
 # Checks for library functions.
 
 AC_CHECK_FUNCS([strtoll strtoimax \
-                fileno getpagesize])
+                fileno getcwd getpagesize])
 
 AC_CHECK_FUNCS(posix_memalign,
   [

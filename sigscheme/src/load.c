@@ -57,6 +57,9 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
+/* FIXME: only supports UNIX flavors */
+#define ABSOLUTE_PATHP(path) ((path)[0] == '/')
+
 #if SCM_USE_SRFI22
 /* SRFI-22: The <script prelude> line may not be longer than 64 characters. */
 #define SCRIPT_PRELUDE_MAXLEN 64
@@ -82,9 +85,19 @@ static char **parse_script_prelude(ScmObj port);
 /*=======================================
   Function Implementations
 =======================================*/
+/* Don't provide any Scheme procedure to call this function, to avoid security
+ * problems. User modification of the value or relative path capability may
+ * cause arbitrary C code injection by plugin spoofing when future SigScheme
+ * has been added C plugin feature. It could be a serious vulnerability if the
+ * libsscm client is a setugid'ed command. -- YamaKen 2006-03-25 */
 void
 scm_set_lib_path(const char *path)
 {
+    DECLARE_INTERNAL_FUNCTION("scm_set_lib_path");
+
+    if (!ABSOLUTE_PATHP(path))
+        ERR("library path must be absolute but got: ~S", path);
+
     scm_lib_path = path;
 }
 
@@ -148,7 +161,6 @@ scm_load_internal(const char *filename)
     CDBG((SCM_DBG_FILE, "done."));
 }
 
-/* FIXME: reject relative paths to ensure security */
 static char *
 find_path(const char *filename)
 {
@@ -157,13 +169,13 @@ find_path(const char *filename)
 
     SCM_ASSERT(filename);
 
-    /* try absolute and relative path */
+    /* try absolute path */
     if (file_existsp(filename))
         return scm_strdup(filename);
 
     /* try under scm_lib_path */
     if (scm_lib_path) {
-        lib_path_len = scm_lib_path ? strlen(scm_lib_path) : 0;
+        lib_path_len = (scm_lib_path) ? strlen(scm_lib_path) : 0;
         filename_len = strlen(filename);
         path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof("");
 
@@ -181,6 +193,9 @@ static scm_bool
 file_existsp(const char *c_filepath)
 {
     FILE *f;
+
+    if (!ABSOLUTE_PATHP(c_filepath))
+        return scm_false;
 
     f = fopen(c_filepath, "r");
     if (f) {

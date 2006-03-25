@@ -30,7 +30,6 @@ Requirements and critical bugs:
   test-tail-rec.scm
 
 * Confirm security issues around file operations
-  - relative path
   - remove operation
 
 * [uim] link libsscm into libuim statically
