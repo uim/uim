@@ -206,15 +206,15 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       
       snprintf(fullpath_command, cmd_len, "/usr/local/bin/%s", cmd_name);
 
-      result = execvp(fullpath_command, argv);
+      result = execv(fullpath_command, argv);
 
       if (result == -1) {
  	snprintf(fullpath_command, cmd_len, "/usr/bin/%s", cmd_name);
-	result = execvp(fullpath_command, argv);
+	result = execv(fullpath_command, argv);
       }
       if (result == -1) {
  	snprintf(fullpath_command, cmd_len, UIM_LIBEXECDIR "/%s", cmd_name);
-	result = execvp(fullpath_command, argv);
+	result = execv(fullpath_command, argv);
       }
       free(fullpath_command);
     } else {
