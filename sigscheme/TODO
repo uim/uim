@@ -136,7 +136,7 @@ Assigned to Kazuki:
 Assigned to YamaKen:
 
 * [uim] link libsscm into libuim statically
-  - Make scm_* symbols local, or avoid conflict with sscm_* prefix
+  - Make scm_* symbols local, or avoid conflict with sscm_* prefix 
 
 * Write test for tail expression of all tail-recursive syntaxes
 
