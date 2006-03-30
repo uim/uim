@@ -33,3 +33,6 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+#include <stddef.h>
+
+#include "sigscheme.h"

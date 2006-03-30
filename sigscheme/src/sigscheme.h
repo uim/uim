@@ -295,6 +295,8 @@ enum ScmObjType {
  */
 #define SCM_FUNCTYPE_MAND_MAX 5
 enum ScmFuncTypeCode {
+    SCM_FUNCTYPE_INVALID   = 0,
+
     SCM_FUNCTYPE_MAND_BITS = 4,
     SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS) - 1,
     SCM_FUNCTYPE_SYNTAX    = 1 << SCM_FUNCTYPE_MAND_BITS,
@@ -792,12 +794,10 @@ struct ScmValueFormat_ {
 /*=======================================
   Function types
 =======================================*/
-typedef void (*ScmRegisterFunc)(const char *name, ScmFuncType func);
-
 struct scm_func_registration_info {
-    const char     *funcname;
-    ScmFuncType     c_func;
-    ScmRegisterFunc reg_func;
+    const char *funcname;
+    ScmFuncType c_func;
+    enum ScmFuncTypeCode typecode;
 };
 
 typedef ScmObj (*scm_reduction_operator)(ScmObj, ScmObj, enum ScmReductionState *);

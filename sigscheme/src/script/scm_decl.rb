@@ -32,23 +32,35 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #===========================================================================
 
-# $1  :prototype       ScmObj ScmOp_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state)
+# ScmObj
+# scm_p_call_with_values(ScmObj producer, ScmObj consumer,
+#                        ScmEvalState *eval_state)
+# {
+#     ScmObj vals;
+#     DECLARE_FUNCTION("call-with-values", procedure_fixed_tailrec_2);
+#
+#         |
+#         V
+#
+# $1  :prototype       ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state)
 # $2  :ret             ScmObj
-# $3  :func            ScmOp_call_with_values
-# $4  :prefix          Op
+# $3  :func            scm_p_call_with_values
+# $4  :prefix          p
 # $5  :func_body       call_with_values
 # $6  :args            ScmObj producer, ScmObj consumer, ScmEvalState *eval_state
 # $7  :proc            call-with-values
-# $8  :register_func   ProcedureFixedTailRec2
-# $9  :functype_prefix Procedure
-# $10 :functype_spec   FixedTailRec2
-SCM_DECL_RE = /\n((ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+([^\s,]+)\)/m
+# $8  :functype_whole  procedure_fixed_tailrec_2
+# $9  :functype_prefix procedure
+# $10 :functype_spec   fixed_tailrec_2
+SCM_DECL_RE = /\n((ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+(([^_]+)_([\w]+))\)/m
 
 
+# :register_func   scm_register_procedure_fixed_tailrec_2
+# :functype_code   SCM_PROCEDURE_FIXED_TAILREC_2
 class String
   def scan_scm_decl
     res = []
-    scan(SCM_DECL_RE) { |prototype, ret, func, prefix, func_body, args, proc, register_func, functype_prefix, functype_spec|
+    scan(SCM_DECL_RE) { |prototype, ret, func, prefix, func_body, args, proc, functype_whole, functype_prefix, functype_spec|
       decl = {
         :prototype       => prototype.gsub(/\s+/, " "),
         :ret             => ret,
@@ -57,7 +69,9 @@ class String
         :func_body       => func_body,
         :args            => args.gsub(/\s+/, " "),
         :proc            => proc,
-        :register_func   => "scm_register_" + register_func,
+        :register_func   => "scm_register_" + functype_whole,
+        :functype_code   => "SCM_" + functype_whole.upcase,
+        :functype_whole  => functype_whole,
         :functype_prefix => functype_prefix,
         :functype_spec   => functype_spec,
       }
@@ -67,9 +81,15 @@ class String
   end
 end
 
+# Obsolete
+#def scm_func_table_entry(decl)
+#  proc, func, register_func = decl.values_at(:proc, :func, :register_func)
+#  "{ \"#{proc}\", (ScmFuncType)#{func}, (ScmRegisterFunc)#{register_func} }"
+#end
+
 def scm_func_table_entry(decl)
-  proc, func, register_func = decl.values_at(:proc, :func, :register_func)
-  "{ \"#{proc}\", (ScmFuncType)#{func}, (ScmRegisterFunc)#{register_func} }"
+  proc, func, functype_code = decl.values_at(:proc, :func, :functype_code)
+  "{ \"#{proc}\", (ScmFuncType)#{func}, #{functype_code} }"
 end
 
 def scm_func_register_exp(decl)
@@ -101,6 +121,9 @@ end
 # usage example
 
 #src = ARGF.read
+#print src.scan_scm_decl { |decl|
+#  p decl
+#}
 #print scm_generate_func_table_body(src)
 #print scm_generate_func_register_exps(src)
 #print scm_generate_func_prototypes(src)

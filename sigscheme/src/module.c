@@ -215,7 +215,7 @@ scm_register_funcs(const struct scm_func_registration_info *table)
     const struct scm_func_registration_info *info;
 
     for (info = &table[0]; info->funcname; info++) {
-        (*info->reg_func)(info->funcname, info->c_func);
+        scm_register_func(info->funcname, info->c_func, info->typecode);
     }
 }
 

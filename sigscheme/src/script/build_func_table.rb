@@ -53,7 +53,7 @@ def build_table_body(filename)
 end
 
 def terminal_entry
-  "    { NULL, NULL, NULL }"
+  "    { NULL, NULL, SCM_FUNCTYPE_INVALID }"
 end
 
 def build_table(table_name, src_files)
