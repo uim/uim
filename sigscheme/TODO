@@ -94,10 +94,6 @@ Performance improvements:
 
 * (not required for now) Simplify read.c by table-based tokenizer
 
-* (not required for now) Replace procedure registration functions with
-  typecode-base single function with typecheck macro, to reduce footprint
-  - Make private proc registration in SRFI-34 type-safe
-
 * (not required for now) Support string of constant-width char
   - Define SigScheme's own internal multi-CCS code
   - Make UCS2 selectable as canonical internal code
