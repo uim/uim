@@ -47,7 +47,7 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #if SCM_USE_MULTIBYTE_CHAR
-#include "mbcport.h"
+#include "scmport-mbchar.h"
 #endif
 
 /*=======================================

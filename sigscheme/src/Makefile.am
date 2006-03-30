@@ -129,11 +129,12 @@ if USE_VECTOR
   libsscm_la_SOURCES += vector.c
 endif
 if USE_PORT
-  libsscm_la_SOURCES += port.c baseport.h basecport.c fileport.h fileport.c
+  libsscm_la_SOURCES += \
+        port.c scmport.h scmport-basechar.c scmport-file.h scmport-file.c
 if USE_MULTIBYTE_CHAR
-    libsscm_la_SOURCES += mbcport.h mbcport.c
+    libsscm_la_SOURCES += scmport-mbchar.h scmport-mbchar.c
 else
-    libsscm_la_SOURCES += sbcport.h sbcport.c
+    libsscm_la_SOURCES += scmport-sbchar.h scmport-sbchar.c
 endif
 endif
 if USE_READER
@@ -159,7 +160,7 @@ if USE_SSCM_EXTENSIONS
   libsscm_la_SOURCES += module-sscm-ext.c
 endif
 if COMPAT_SIOD
-  libsscm_la_SOURCES += module-siod.c nullport.h nullport.c
+  libsscm_la_SOURCES += module-siod.c scmport-null.h scmport-null.c
 endif
 if USE_SRFI1
   libsscm_la_SOURCES += module-srfi1.c
@@ -168,7 +169,7 @@ if USE_SRFI2
   libsscm_la_SOURCES += module-srfi2.c
 endif
 if USE_SRFI6
-  libsscm_la_SOURCES += module-srfi6.c strport.h strport.c
+  libsscm_la_SOURCES += module-srfi6.c scmport-str.h scmport-str.c
 endif
 if USE_SRFI8
   libsscm_la_SOURCES += module-srfi8.c

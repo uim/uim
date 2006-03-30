@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : sbcport.c
+ *  FileName : scmport-sbchar.c
  *  About    : A ScmCharPort implementation for singlebyte character stream
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
@@ -55,8 +55,8 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 
-#include "baseport.h"
-#include "sbcport.h"
+#include "scmport.h"
+#include "scmport-sbchar.h"
 
 /*=======================================
   File Local Macro Definitions

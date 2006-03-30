@@ -59,7 +59,7 @@
 #define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
 #define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
 /* Above five macros must be defined before this inclusion. */
-#include "baseport.h"
+#include "scmport.h"
 #endif /* SCM_USE_PORT */
 
 /* trace stack for debugging */

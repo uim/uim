@@ -45,8 +45,8 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#include "baseport.h"
-#include "strport.h"
+#include "scmport.h"
+#include "scmport-str.h"
 
 /*=======================================
   File Local Struct Declarations

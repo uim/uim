@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : basecport.c
+ *  FileName : scmport-basechar.c
  *  About    : ScmBaseCharPort implementation
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
@@ -57,7 +57,7 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 
-#include "baseport.h"
+#include "scmport.h"
 
 /*=======================================
   File Local Macro Definitions

@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : fileport.h
+ *  FileName : scmport-file.h
  *  About    : A ScmBytePort implementation for file stream of the standard C
  *             library
  *
@@ -53,7 +53,7 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
-#include "baseport.h"
+#include "scmport.h"
 
 /*=======================================
   Macro Definitions

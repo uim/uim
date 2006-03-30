@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : mbcport.c
+ *  FileName : scmport-mbchar.c
  *  About    : A ScmCharPort implementation for multibyte character stream
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
@@ -58,8 +58,8 @@
 #include "sigschemeinternal.h"
 
 #include "encoding.h"
-#include "baseport.h"
-#include "mbcport.h"
+#include "scmport.h"
+#include "scmport-mbchar.h"
 
 /*=======================================
   File Local Macro Definitions

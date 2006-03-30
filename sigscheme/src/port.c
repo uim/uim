@@ -46,11 +46,11 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #if SCM_USE_MULTIBYTE_CHAR
-#include "mbcport.h"
+#include "scmport-mbchar.h"
 #else /* SCM_USE_MULTIBYTE_CHAR */
-#include "sbcport.h"
+#include "scmport-sbchar.h"
 #endif /* SCM_USE_MULTIBYTE_CHAR */
-#include "fileport.h"
+#include "scmport-file.h"
 
 /*=======================================
   File Local Struct Declarations

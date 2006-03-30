@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : baseport.h
+ *  FileName : scmport.h
  *  About    : Abstract base of port implementation
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

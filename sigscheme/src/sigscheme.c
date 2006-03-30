@@ -48,8 +48,8 @@
 #include "sigschemeinternal.h"
 #include "encoding.h"
 #if SCM_USE_EVAL_C_STRING
-#include "baseport.h"
-#include "strport.h"
+#include "scmport.h"
+#include "scmport-str.h"
 #endif
 
 /*=======================================

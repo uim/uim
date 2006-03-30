@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : strport.c
+ *  FileName : scmport-str.c
  *  About    : A ScmBytePort implementation for string
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
@@ -57,8 +57,8 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 
-#include "baseport.h"
-#include "strport.h"
+#include "scmport.h"
+#include "scmport-str.h"
 
 /*=======================================
   File Local Macro Definitions

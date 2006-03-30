@@ -47,7 +47,7 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#include "baseport.h"
+#include "scmport.h"
 
 /*=======================================
   File Local Macro Declarations

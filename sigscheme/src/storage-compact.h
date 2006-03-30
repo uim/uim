@@ -169,7 +169,7 @@ typedef ScmObj *ScmRef;
 
 typedef ScmObj (*ScmFuncType)();
 
-/* FIXME: including baseport.h cause the redeclaration of SCM_PORT_MALLOC or
+/* FIXME: including scmport.h cause the redeclaration of SCM_PORT_MALLOC or
  * so. */
 struct ScmCharPort_;
 

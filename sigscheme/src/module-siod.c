@@ -44,7 +44,7 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-#include "nullport.h"
+#include "scmport-null.h"
 
 /*=======================================
   File Local Struct Declarations

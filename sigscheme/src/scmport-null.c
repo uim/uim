@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : nullport.c
+ *  FileName : scmport-null.c
  *  About    : A ScmBytePort implementation for null read/write
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
@@ -57,8 +57,8 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 
-#include "baseport.h"
-#include "nullport.h"
+#include "scmport.h"
+#include "scmport-null.h"
 
 /*=======================================
   File Local Macro Definitions

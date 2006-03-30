@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : mbcport.h
- *  About    : A ScmCharPort implementation for multibyte character stream
+ *  FileName : scmport-null.h
+ *  About    : A ScmBytePort implementation for null read/write
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
@@ -37,8 +37,8 @@
  * merge into another file.
  */
 
-#ifndef __SCM_MBCPORT_H
-#define __SCM_MBCPORT_H
+#ifndef __SCM_NULLPORT_H
+#define __SCM_NULLPORT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,8 +51,7 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
-#include "encoding.h"
-#include "baseport.h"
+#include "scmport.h"
 
 /*=======================================
   Macro Definitions
@@ -61,27 +60,21 @@ extern "C" {
 /*=======================================
   Type Definitions
 =======================================*/
-typedef struct ScmMultiByteCharPort_ ScmMultiByteCharPort;
 
 /*=======================================
   Variable Declarations
 =======================================*/
-extern const ScmCharPortVTbl *ScmMultiByteCharPort_vptr;
+extern const ScmBytePortVTbl *ScmNullPort_vptr;
 
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_mbcport_init(void);
+void scm_nullport_init(void);
 
-void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
-                                    const ScmCharPortVTbl *vptr,
-                                    ScmBytePort *bport, ScmCharCodec *codec);
-ScmCharPort *ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec);
-
-void ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec);
+ScmBytePort *ScmNullPort_new(void);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SCM_MBCPORT_H */
+#endif /* __SCM_NULLPORT_H */

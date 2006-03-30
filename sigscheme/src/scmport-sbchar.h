@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : nullport.h
- *  About    : A ScmBytePort implementation for null read/write
+ *  FileName : scmport-sbchar.h
+ *  About    : A ScmCharPort implementation for singlebyte character stream
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
@@ -37,8 +37,8 @@
  * merge into another file.
  */
 
-#ifndef __SCM_NULLPORT_H
-#define __SCM_NULLPORT_H
+#ifndef __SCM_SBCPORT_H
+#define __SCM_SBCPORT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,7 +51,7 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
-#include "baseport.h"
+#include "scmport.h"
 
 /*=======================================
   Macro Definitions
@@ -60,21 +60,25 @@ extern "C" {
 /*=======================================
   Type Definitions
 =======================================*/
+typedef struct ScmSingleByteCharPort_ ScmSingleByteCharPort;
 
 /*=======================================
   Variable Declarations
 =======================================*/
-extern const ScmBytePortVTbl *ScmNullPort_vptr;
+extern const ScmCharPortVTbl *ScmSingleByteCharPort_vptr;
 
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_nullport_init(void);
+void scm_sbcport_init(void);
 
-ScmBytePort *ScmNullPort_new(void);
+void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
+                                     const ScmCharPortVTbl *vptr,
+                                     ScmBytePort *bport);
+ScmCharPort *ScmSingleByteCharPort_new(ScmBytePort *bport);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SCM_NULLPORT_H */
+#endif /* __SCM_SBCPORT_H */
