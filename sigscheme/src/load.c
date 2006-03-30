@@ -38,6 +38,7 @@
   System Include
 =======================================*/
 #include <stddef.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -47,6 +48,8 @@
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #if SCM_USE_MULTIBYTE_CHAR
+#include "scmport-config.h"
+#include "scmport.h"
 #include "scmport-mbchar.h"
 #endif
 

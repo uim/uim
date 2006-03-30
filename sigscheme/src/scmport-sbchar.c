@@ -44,12 +44,12 @@
   System Include
 =======================================*/
 #include <stdlib.h>
-#include <stdarg.h>
 
 /*=======================================
   Local Include
 =======================================*/
 #include "scmint.h"
+#include "scmport-config.h"
 #include "scmport.h"
 #include "scmport-sbchar.h"
 

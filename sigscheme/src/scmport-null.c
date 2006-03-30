@@ -50,6 +50,7 @@
   Local Include
 =======================================*/
 #include "scmint.h"
+#include "scmport-config.h"
 #include "scmport.h"
 #include "scmport-null.h"
 

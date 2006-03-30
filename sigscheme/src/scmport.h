@@ -47,16 +47,13 @@ extern "C" {
 /*=======================================
   System Include
 =======================================*/
-#include <stdlib.h>
-#include <stdio.h>  /* for EOF */
-#include <stdarg.h>
+#include <stddef.h>
 
 /*=======================================
   Local Include
 =======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
-#include "scmport-config.h"
 #include "encoding.h"
 
 /*=======================================
@@ -66,40 +63,12 @@ extern "C" {
 #define SCM_DEBUG_PORT 0
 #endif
 
-/*
- * Define appropriate error handling such as exception to override these. The
- * macro MUST NOT return. The replacement expression should indicate that it
- * will not return, in compiler specific way such as noreturn attribute of GCC.
- */
-#ifndef SCM_CHARPORT_ERROR
-#define SCM_CHARPORT_ERROR(cport, msg) (exit(EXIT_FAILURE))
-#endif /* SCM_CHARPORT_ERROR */
-#ifndef SCM_BYTEPORT_ERROR
-#define SCM_BYTEPORT_ERROR(bport, msg) (exit(EXIT_FAILURE))
-#endif /* SCM_BYTEPORT_ERROR */
-
 #define SCM_PORT_ERROR_INVALID_TYPE(klass, port, type)                       \
     SCM_##klass##PORT_ERROR((port), #type ": invalid object is passed to")
 #define SCM_PORT_ERROR_INVALID_OPERATION(klass, port, type)                  \
     SCM_##klass##PORT_ERROR((port), #type ": invalid operation")
 #define SCM_PORT_ERROR_NOMEM(klass, port, type)                              \
     SCM_##klass##PORT_ERROR((port), #type ": Out of memory")
-
-/* Allocation error handling in the macros is strongly recommended. */
-#ifndef SCM_PORT_MALLOC
-#define SCM_PORT_MALLOC(size) (malloc(size))
-#endif /* SCM_PORT_MALLOC */
-#ifndef SCM_PORT_CALLOC
-#define SCM_PORT_CALLOC(number, size) (calloc(number, size))
-#endif /* SCM_PORT_CALLOC */
-#ifndef SCM_PORT_REALLOC
-#define SCM_PORT_REALLOC(ptr, size) (realloc(ptr, size))
-#endif /* SCM_PORT_REALLOC */
-#ifndef SCM_PORT_STRDUP
-/* FIXME: Support platforms lacking strdup(3) */
-#include <string.h>
-#define SCM_PORT_STRDUP(str) (strdup(str))
-#endif /* SCM_PORT_REALLOC */
 
 /*
  * To allow safe method invocation (contains from subclasses), all non-standard

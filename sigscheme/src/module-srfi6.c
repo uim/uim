@@ -45,6 +45,7 @@
 =======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#include "scmport-config.h"
 #include "scmport.h"
 #include "scmport-str.h"
 

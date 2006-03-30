@@ -62,6 +62,8 @@
 /*=======================================
    Local Include
 =======================================*/
+/* Don't include scmport.h. The implementations are internal and should not be
+ * exposed to libsscm users via installation of this file. */
 
 /*=======================================
    Type Definitions

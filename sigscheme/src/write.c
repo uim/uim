@@ -39,6 +39,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>

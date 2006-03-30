@@ -353,7 +353,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 
             src_len = SCM_VECTOR_LEN(t->u.vec.src);
             src_buf = SCM_VECTOR_VEC(t->u.vec.src);
-            copy_buf = malloc((src_len + t->u.vec.growth) * sizeof(ScmObj));
+            copy_buf = scm_malloc((src_len + t->u.vec.growth) * sizeof(ScmObj));
 
             diff = t->u.vec.diff;
             change_index = SCM_INT_VALUE(CAAR(diff));

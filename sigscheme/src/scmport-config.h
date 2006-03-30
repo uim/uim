@@ -1,6 +1,6 @@
 /*===========================================================================
  *  FileName : scmport-config.h
- *  About    : Client-dependent configuration file for scmport codes
+ *  About    : Client-adaptation configuration file for the scmport codes
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>
  *
@@ -32,29 +32,42 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-/* This file configures the scmport codes to adapt to SigScheme */
-
 #ifndef __SCM_SCMPORT_CONFIG_H
 #define __SCM_SCMPORT_CONFIG_H
 
-/*=======================================
-  System Include
-=======================================*/
-
-/*=======================================
-  Local Include
-=======================================*/
+#if SCM_SCMPORT_USE_WITH_SIGSCHEME
 #include "sigscheme.h"
+#else /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
+#include <stdlib.h>
+#include <string.h>
+#endif /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
 
 /*=======================================
   Macro Definitions
 =======================================*/
+#if SCM_SCMPORT_USE_WITH_SIGSCHEME
 #define SCM_PORT_MALLOC(size)          (scm_malloc(size))
 #define SCM_PORT_CALLOC(number, size)  (scm_calloc((number), (size)))
 #define SCM_PORT_REALLOC(ptr, size)    (scm_realloc((ptr), (size)))
 #define SCM_PORT_STRDUP(str)           (scm_strdup(str))
 #define SCM_CHARPORT_ERROR(cport, msg) (scm_plain_error(msg))
 #define SCM_BYTEPORT_ERROR(bport, msg) (scm_plain_error(msg))
+#else /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
+/* Allocation error handling in the macros is strongly recommended. */
+#define SCM_PORT_MALLOC(size)          (malloc(size))
+#define SCM_PORT_CALLOC(number, size)  (calloc(number, size))
+#define SCM_PORT_REALLOC(ptr, size)    (realloc(ptr, size))
+/* FIXME: Support platforms lacking strdup(3) */
+#define SCM_PORT_STRDUP(str)           (strdup(str))
+
+/*
+ * Define appropriate error handling such as exception to override these. The
+ * macro MUST NOT return. The replacement expression should indicate that it
+ * will not return, in compiler specific way such as noreturn attribute of GCC.
+ */
+#define SCM_CHARPORT_ERROR(cport, msg) (exit(EXIT_FAILURE))
+#define SCM_BYTEPORT_ERROR(bport, msg) (exit(EXIT_FAILURE))
+#endif /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
 
 /*=======================================
   Type Definitions

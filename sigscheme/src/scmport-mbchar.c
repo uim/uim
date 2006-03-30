@@ -45,7 +45,6 @@
 =======================================*/
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
 
 /*=======================================
@@ -53,6 +52,7 @@
 =======================================*/
 #include "scmint.h"
 #include "encoding.h"
+#include "scmport-config.h"
 #include "scmport.h"
 #include "scmport-mbchar.h"
 

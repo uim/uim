@@ -64,6 +64,7 @@
   System Include
 =======================================*/
 #include <stddef.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 
