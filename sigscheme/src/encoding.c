@@ -36,8 +36,10 @@
  * i18n-introduction of the debian project.  Many thanks to its
  * authors, Tomohiro KUBOTA, et al. */
 
-
-/* This file is going to be portable. Don't depend on SigScheme if possible. */
+/*
+ * This file is intended to be portable. Don't depend on SigScheme and don't
+ * merge into another file.
+ */
 
 #include "config.h"
 
@@ -53,18 +55,14 @@
 =======================================*/
 #include "scmint.h"
 #include "encoding.h"
-#if SCM_ENCODING_USE_WITH_SIGSCHEME
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
-#else
-#define SCM_USE_UTF8  1
-#define SCM_USE_EUCJP 1
-#define SCM_USE_EUCCN 1
-#define SCM_USE_EUCKR 1
-#define SCM_USE_SJIS  1
-#define SCM_USE_UTF8_AS_DEFAULT 1
-#define CDBG(args)
-#endif
+#include "encoding-config.h"
+
+/*=======================================
+  File Local Macro Definitions
+=======================================*/
+#define ERR  SCM_ENCODING_ERROR
+#define CDBG SCM_ENCODING_CDBG
+#define DBG  SCM_ENCODING_DBG
 
 /*=======================================
   File Local Type Definitions
@@ -347,22 +345,19 @@ scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
     ScmMultibyteCharInfo mbc;
     ScmMultibyteState state;
     scm_ichar_t ch;
-    DECLARE_INTERNAL_FUNCTION("scm_charcodec_read_char");
 
-    SCM_ASSERT(SCM_MBS_GET_SIZE(*mbs));
-
-    SCM_MANGLE(name) = caller;
+    SCM_ENCODING_ASSERT(SCM_MBS_GET_SIZE(*mbs));
 
     state = SCM_MBS_GET_STATE(*mbs);
     mbc = SCM_CHARCODEC_SCAN_CHAR(codec, *mbs);
     if (SCM_MBCINFO_ERRORP(mbc) || SCM_MBCINFO_INCOMPLETEP(mbc))
-        ERR("invalid char sequence");
+        ERR("scm_charcodec_read_char: invalid char sequence");
     ch = SCM_CHARCODEC_STR2INT(codec,
                                SCM_MBS_GET_STR(*mbs),
                                SCM_MBCINFO_GET_SIZE(mbc),
                                state);
     if (ch == EOF)
-        ERR("invalid char sequence");
+        ERR("scm_charcodec_read_char: invalid char sequence");
 
     SCM_MBS_SKIP_CHAR(*mbs, mbc);
 

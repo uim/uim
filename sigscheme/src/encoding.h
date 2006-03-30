@@ -32,7 +32,10 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-/* This file is going to be portable. Don't depend on SigScheme if possible. */
+/*
+ * This file is intended to be portable. Don't depend on SigScheme and don't
+ * merge into another file.
+ */
 
 #ifndef __SCM_ENCODING_H
 #define __SCM_ENCODING_H
@@ -55,8 +58,6 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
-#define SCM_ENCODING_USE_WITH_SIGSCHEME 1
-
 #define SCM_MB_MAX_LEN 4
 
 #define SCM_HAS_2OCT_WCHAR 0

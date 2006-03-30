@@ -153,7 +153,7 @@ if USE_DEEP_CADRS
 endif
 if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h
-  libsscm_la_SOURCES += encoding.c
+  libsscm_la_SOURCES += encoding-config.h encoding.c
 endif
 if USE_FORMAT
   libsscm_la_SOURCES += format.c

@@ -93,6 +93,9 @@ AC_CHECK_FUNCS(strcasecmp,
 
 AX_CHECK_PAGE_ALIGNED_MALLOC
 
+AC_DEFINE(SCM_ENCODING_USE_WITH_SIGSCHEME, 1,
+  [Define to 1 to adapt encoding.c to SigScheme.])
+
 # Configure Option
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
