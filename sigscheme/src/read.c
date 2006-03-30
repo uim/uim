@@ -560,7 +560,7 @@ read_sexpression(ScmObj port)
             }
 
         case ')':
-            ERR("invalid close parenthesis");
+            ERR("unexpected ')'");
             /* NOTREACHED */
 
         case EOF:

@@ -54,8 +54,8 @@
   Local Include
 =======================================*/
 #include "scmint.h"
-#include "encoding.h"
 #include "encoding-config.h"
+#include "encoding.h"
 
 /*=======================================
   File Local Macro Definitions
