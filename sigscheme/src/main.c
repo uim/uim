@@ -66,7 +66,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-static char lib_path[MAXPATHLEN];
+static char sscm_lib_path[MAXPATHLEN];
 
 #if SCM_COMPAT_SIOD
 static ScmObj feature_id_siod;
@@ -219,9 +219,9 @@ main(int argc, char **argv)
      * - add library path specifying way for users
      * - support non-UNIX platforms
      */
-    if (!getcwd(lib_path, MAXPATHLEN))
+    if (!getcwd(sscm_lib_path, MAXPATHLEN))
         return EXIT_FAILURE;
-    scm_set_lib_path(lib_path);
+    scm_set_lib_path(sscm_lib_path);
 
 #if SCM_USE_SRFI34
     scm_use("srfi-34");

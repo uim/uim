@@ -93,7 +93,7 @@ static ScmObj proc_with_exception_handlers;
 static ScmObj syn_guard_internal, syn_guard_handler, syn_guard_handler_body;
 static ScmObj syn_guard_body;
 
-static ScmObj *const global_var_list[] = {
+static ScmObj *const srfi34_global_var_list[] = {
     &current_exception_handlers,
     &errmsg_unhandled_exception, &errmsg_handler_returned,
     &errmsg_fallback_exhausted,
@@ -130,7 +130,7 @@ scm_initialize_srfi34(void)
     scm_use("srfi-23");
 
     /* protect global variables */
-    for (var = &global_var_list[0]; *var; var++)
+    for (var = &srfi34_global_var_list[0]; *var; var++)
         scm_gc_protect_with_init(*var, SCM_FALSE);
 
     errmsg_unhandled_exception = CONST_STRING(ERRMSG_UNHANDLED_EXCEPTION);

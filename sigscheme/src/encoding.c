@@ -60,9 +60,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define ERR  SCM_ENCODING_ERROR
-#define CDBG SCM_ENCODING_CDBG
-#define DBG  SCM_ENCODING_DBG
 
 /*=======================================
   File Local Type Definitions
@@ -277,16 +274,17 @@ scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
     size_t len;
     ScmMultibyteCharInfo c;
 
-    CDBG((SCM_DBG_ENCODING, "mb_strlen: size = ~ZU; str = ~S;",
-          SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
+    SCM_ENCODING_CDBG((SCM_DBG_ENCODING, "mb_strlen: size = ~ZU; str = ~S;",
+                       SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STR(mbs)));
 
     for (len = 0; SCM_MBS_GET_SIZE(mbs); len++) {
         c = SCM_CHARCODEC_SCAN_CHAR(codec, mbs);
-        CDBG((SCM_DBG_ENCODING, "~ZU, ~D;", SCM_MBCINFO_GET_SIZE(c), c.flag));
+        SCM_ENCODING_CDBG((SCM_DBG_ENCODING, "~ZU, ~D;",
+                           SCM_MBCINFO_GET_SIZE(c), c.flag));
         SCM_MBS_SKIP_CHAR(mbs, c);
     }
 
-    CDBG((SCM_DBG_ENCODING, "len=~ZU\n", len));
+    SCM_ENCODING_CDBG((SCM_DBG_ENCODING, "len=~ZU\n", len));
     return len;
 }
 
@@ -351,13 +349,13 @@ scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
     state = SCM_MBS_GET_STATE(*mbs);
     mbc = SCM_CHARCODEC_SCAN_CHAR(codec, *mbs);
     if (SCM_MBCINFO_ERRORP(mbc) || SCM_MBCINFO_INCOMPLETEP(mbc))
-        ERR("scm_charcodec_read_char: invalid char sequence");
+        SCM_ENCODING_ERROR("scm_charcodec_read_char: invalid char sequence");
     ch = SCM_CHARCODEC_STR2INT(codec,
                                SCM_MBS_GET_STR(*mbs),
                                SCM_MBCINFO_GET_SIZE(mbc),
                                state);
     if (ch == EOF)
-        ERR("scm_charcodec_read_char: invalid char sequence");
+        SCM_ENCODING_ERROR("scm_charcodec_read_char: invalid char sequence");
 
     SCM_MBS_SKIP_CHAR(*mbs, mbc);
 

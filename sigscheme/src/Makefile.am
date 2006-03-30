@@ -94,12 +94,27 @@ functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_siod_func_info_table" $<
 
+sigscheme-combined.c: $(libsscm_la_SOURCES)
+	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
+	@echo >>$@
+	@echo "#define SCM_COMBINED_SOURCE 1" >>$@
+	@echo >>$@
+	@for file in $^ $>; do                          \
+	    case $$file in                              \
+	    *.c)                                        \
+		echo $(ECHO_N) '#include "' >>$@;       \
+		echo $(ECHO_N) $$file >>$@;             \
+		echo '"' >>$@;                          \
+		;;                                      \
+	    esac                                        \
+	done
+
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c \
              template.h template.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.
-BUILT_SOURCES = $(FUNC_TABLES)
+BUILT_SOURCES = $(FUNC_TABLES) sigscheme-combined.c
 
 pkginclude_HEADERS = sigscheme.h config.h my-stdint.h scmint.h
 
@@ -205,4 +220,4 @@ sscm_LDADD    = $(top_builddir)/src/libsscm.la
 
 # To enable ruby-less build on tarball distribution, we should not delete
 # $(FUNC_TABLES) here.
-CLEANFILES =
+CLEANFILES = sigscheme-combined.c

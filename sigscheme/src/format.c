@@ -185,7 +185,7 @@ struct format_args {
 /*=======================================
   Variable Declarations
 =======================================*/
-static scm_bool initialized;
+static scm_bool format_initialized;
 static ScmObj sym_pretty_print;
 
 /*=======================================
@@ -195,7 +195,7 @@ static ScmObj sym_pretty_print;
 static scm_ichar_t format_str_peek(ScmMultibyteString mbs_fmt,
                                    const char *caller);
 #endif
-static signed char read_number(format_string_t *fmt);
+static signed char read_width(format_string_t *fmt);
 static ScmValueFormat read_number_prefix(enum ScmFormatCapability fcap,
                                          format_string_t *fmt);
 static void format_int(ScmObj port,
@@ -219,10 +219,10 @@ static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
 void
 scm_init_format(void)
 {
-    if (!initialized) {
+    if (!format_initialized) {
         scm_gc_protect_with_init(&sym_pretty_print,
                                  scm_intern(PRETTY_PRINT_PROCEDURE_NAME));
-        initialized = scm_true;
+        format_initialized = scm_true;
     }
 }
 
@@ -253,7 +253,7 @@ scm_pretty_print(ScmObj port, ScmObj obj)
 }
 
 static signed char
-read_number(format_string_t *fmt)
+read_width(format_string_t *fmt)
 {
     scm_ichar_t c;
     scm_int_t ret;
@@ -294,12 +294,12 @@ read_number_prefix(enum ScmFormatCapability fcap, format_string_t *fmt)
         FORMAT_STR_SKIP_CHAR(*fmt);
         vfmt.pad = '0';
     }
-    vfmt.width = read_number(fmt);
+    vfmt.width = read_width(fmt);
     c = FORMAT_STR_PEEK(*fmt);
 
     if (c == ',') {
         FORMAT_STR_SKIP_CHAR(*fmt);
-        vfmt.frac_width = read_number(fmt);
+        vfmt.frac_width = read_width(fmt);
     }
 
     return vfmt;

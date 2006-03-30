@@ -81,7 +81,7 @@ static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
 static ScmCharPortVTbl ScmSingleByteCharPort_vtbl;
 const ScmCharPortVTbl *ScmSingleByteCharPort_vptr = &ScmSingleByteCharPort_vtbl;
 
-static ScmCharCodec *codec;
+static ScmCharCodec *sbc_codec;
 
 /*=======================================
   Function Implementations
@@ -99,7 +99,7 @@ scm_sbcport_init(void)
     vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 
-    codec = scm_mb_find_codec("ISO-8859-1");
+    sbc_codec = scm_mb_find_codec("ISO-8859-1");
 }
 
 void
@@ -131,7 +131,7 @@ sbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 static ScmCharCodec *
 sbcport_codec(ScmSingleByteCharPort *port)
 {
-    return codec;
+    return sbc_codec;
 }
 
 static char *
