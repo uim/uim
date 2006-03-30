@@ -45,18 +45,11 @@
 =======================================*/
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
 
 /*=======================================
   Local Include
 =======================================*/
 #include "scmint.h"
-/* To override SCM_{CHAR,BYTE}PORT_ERROR() and SCM_PORT_*ALLOC(). Don't depend
- * on SigScheme-specific things */
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
-
 #include "scmport.h"
 #include "scmport-null.h"
 
@@ -141,7 +134,7 @@ nullport_close(ScmNullPort *port)
 static char *
 nullport_inspect(ScmNullPort *port)
 {
-    return scm_strdup("null");
+    return SCM_PORT_STRDUP("null");
 }
 
 static scm_ichar_t

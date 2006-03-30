@@ -130,7 +130,9 @@ if USE_VECTOR
 endif
 if USE_PORT
   libsscm_la_SOURCES += \
-        port.c scmport.h scmport-basechar.c scmport-file.h scmport-file.c
+        port.c scmport.h scmport-config.h \
+        scmport-file.h scmport-file.c \
+        scmport-basechar.c
 if USE_MULTIBYTE_CHAR
     libsscm_la_SOURCES += scmport-mbchar.h scmport-mbchar.c
 else

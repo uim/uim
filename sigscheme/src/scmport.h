@@ -56,6 +56,7 @@ extern "C" {
 =======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
+#include "scmport-config.h"
 #include "encoding.h"
 
 /*=======================================
@@ -93,6 +94,11 @@ extern "C" {
 #endif /* SCM_PORT_CALLOC */
 #ifndef SCM_PORT_REALLOC
 #define SCM_PORT_REALLOC(ptr, size) (realloc(ptr, size))
+#endif /* SCM_PORT_REALLOC */
+#ifndef SCM_PORT_STRDUP
+/* FIXME: Support platforms lacking strdup(3) */
+#include <string.h>
+#define SCM_PORT_STRDUP(str) (strdup(str))
 #endif /* SCM_PORT_REALLOC */
 
 /*

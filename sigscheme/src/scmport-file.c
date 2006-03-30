@@ -53,11 +53,6 @@
   Local Include
 =======================================*/
 #include "scmint.h"
-/* To override SCM_{CHAR,BYTE}PORT_ERROR() and SCM_PORT_*ALLOC(). Don't depend
- * on SigScheme-specific things */
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
-
 #include "scmport.h"
 #include "scmport-file.h"
 
@@ -135,7 +130,7 @@ fileport_new_internal(FILE *file, const char *aux_info, scm_bool ownership)
 
     port->vptr = ScmFilePort_vptr;
     port->file = file;
-    port->aux_info = scm_strdup(aux_info);
+    port->aux_info = SCM_PORT_STRDUP(aux_info);
     port->ownership = ownership;
 
     return (ScmBytePort *)port;
@@ -201,7 +196,7 @@ fileport_inspect(ScmFilePort *port)
         sprintf(combined, "file %s", port->aux_info);
         return combined;
     } else {
-        return scm_strdup("file");
+        return SCM_PORT_STRDUP("file");
     }
 }
 

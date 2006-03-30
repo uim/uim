@@ -45,23 +45,13 @@
 =======================================*/
 #include "sigscheme.h"
 #include "encoding.h"
+#if SCM_USE_PORT
+#include "scmport.h"
+#endif
 
 /*=======================================
   Macro Definitions
 =======================================*/
-#if SCM_USE_PORT
-/*
- * Port I/O Handling macros
- */
-#define SCM_CHARPORT_ERROR(cport, msg) (scm_plain_error(msg))
-#define SCM_BYTEPORT_ERROR(bport, msg) (scm_plain_error(msg))
-#define SCM_PORT_MALLOC(size)          (scm_malloc(size))
-#define SCM_PORT_CALLOC(number, size)  (scm_calloc(number, size))
-#define SCM_PORT_REALLOC(ptr, size)    (scm_realloc(ptr, size))
-/* Above five macros must be defined before this inclusion. */
-#include "scmport.h"
-#endif /* SCM_USE_PORT */
-
 /* trace stack for debugging */
 #define MAKE_TRACE_FRAME(obj, env) CONS((obj), (env))
 #define TRACE_FRAME_OBJ CAR

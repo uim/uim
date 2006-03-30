@@ -52,11 +52,6 @@
   Local Include
 =======================================*/
 #include "scmint.h"
-/* To override SCM_{CHAR,BYTE}PORT_ERROR() and SCM_PORT_*ALLOC(). Don't depend
- * on SigScheme-specific things */
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
-
 #include "scmport.h"
 #include "scmport-str.h"
 
@@ -192,7 +187,7 @@ ScmBytePort *
 ScmInputStrPort_new_copying(const char *str,
                             ScmInputStrPort_finalizer finalize)
 {
-    return istrport_new(scm_strdup(str), scm_true, finalize);
+    return istrport_new(SCM_PORT_STRDUP(str), scm_true, finalize);
 }
 
 ScmBytePort *
@@ -236,7 +231,7 @@ istrport_close(ScmInputStrPort *port)
 static char *
 istrport_inspect(ScmInputStrPort *port)
 {
-    return scm_strdup("string");
+    return SCM_PORT_STRDUP("string");
 }
 
 static scm_ichar_t
@@ -349,7 +344,7 @@ ostrport_close(ScmOutputStrPort *port)
 static char *
 ostrport_inspect(ScmOutputStrPort *port)
 {
-    return scm_strdup("string");
+    return SCM_PORT_STRDUP("string");
 }
 
 static scm_ichar_t
