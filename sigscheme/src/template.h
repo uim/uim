@@ -31,8 +31,8 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
-#ifndef ___H
-#define ___H
+#ifndef __SCM_FIXME_H
+#define __SCM_FIXME_H
 
 /*=======================================
   System Include
@@ -51,12 +51,12 @@
 =======================================*/
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 
 
-#endif /* ___H */
+#endif /* __SCM_FIXME_H */

@@ -41,7 +41,7 @@ extern "C" {
 #include "config.h"
 
 /*=======================================
-   System Include
+  System Include
 =======================================*/
 #include <limits.h>
 #include <stddef.h>
@@ -49,13 +49,13 @@ extern "C" {
 #include <stdarg.h>
 
 /*=======================================
-   Local Include
+  Local Include
 =======================================*/
 #include "my-stdint.h"
 #include "encoding.h"
 
 /*=======================================
-   Macro Declarations
+  Macro Definitions
 =======================================*/
 #define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
@@ -926,7 +926,7 @@ struct ScmValueFormat_ {
     (vfmt.width > 0 || vfmt.frac_width > 0 || vfmt.pad != ' ' || !vfmt.signedp)
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 /* storage-gc.c */
 #if SCM_GCC4_READY_GC
@@ -940,10 +940,10 @@ extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 #endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 /*===========================================================================
-   SigScheme : Core Functions
+   SigScheme: Core Functions
 ===========================================================================*/
 /* sigscheme.c */
 void scm_initialize(const ScmStorageConf *storage_conf);
@@ -1419,7 +1419,7 @@ ScmObj scm_format(ScmObj port, enum ScmFormatCapability fcap,
 #endif /* SCM_USE_FORMAT */
 
 /*===========================================================================
-   SigScheme : Optional Funtions
+   SigScheme: Optional Funtions
 ===========================================================================*/
 #if SCM_USE_SSCM_EXTENSIONS
 /* module-sscm-ext.c */

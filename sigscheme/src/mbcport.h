@@ -64,12 +64,12 @@ extern "C" {
 typedef struct ScmMultiByteCharPort_ ScmMultiByteCharPort;
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 extern const ScmCharPortVTbl *ScmMultiByteCharPort_vptr;
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 void scm_mbcport_init(void);
 

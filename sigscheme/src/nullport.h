@@ -62,12 +62,12 @@ extern "C" {
 =======================================*/
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 extern const ScmBytePortVTbl *ScmNullPort_vptr;
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 void scm_nullport_init(void);
 

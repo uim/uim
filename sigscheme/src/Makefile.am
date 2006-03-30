@@ -94,7 +94,8 @@ functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL) $@ "scm_siod_func_info_table" $<
 
-EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c
+EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c \
+             template.h template.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.

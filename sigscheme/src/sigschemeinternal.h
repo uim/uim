@@ -35,57 +35,19 @@
 #define __SIGSCHEMEINTERNAL_H
 
 /*=======================================
-   System Include
+  System Include
 =======================================*/
 #include <stddef.h>
 #include <string.h>
 
 /*=======================================
-   Local Include
+  Local Include
 =======================================*/
 #include "sigscheme.h"
 #include "encoding.h"
 
 /*=======================================
-   Type Definitions
-=======================================*/
-typedef struct ScmSpecialCharInfo_ ScmSpecialCharInfo;
-struct ScmSpecialCharInfo_ {
-    scm_ichar_t code;     /* character code as ASCII/Unicode */
-    const char *esc_seq;  /* escape sequence as string */
-    const char *lex_rep;  /* lexical representation as character object */
-};
-
-typedef void (*ScmRegisterFunc)(const char *name, ScmFuncType func);
-
-struct scm_func_registration_info {
-    const char     *funcname;
-    ScmFuncType     c_func;
-    ScmRegisterFunc reg_func;
-};
-
-/*=======================================
-   Variable Declarations
-=======================================*/
-/* procedure.c */
-extern ScmCharCodec *scm_identifier_codec;
-
-/* port.c */
-extern ScmObj scm_in;
-extern ScmObj scm_out;
-extern ScmObj scm_err;
-extern const ScmSpecialCharInfo scm_special_char_table[];
-
-/* write.c */
-extern void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
-
-/* storage.c */
-#if SCM_USE_VALUECONS
-extern ScmObj scm_null_values;
-#endif
-
-/*=======================================
-   Macro Declarations
+  Macro Definitions
 =======================================*/
 #if SCM_USE_PORT
 /*
@@ -425,7 +387,7 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
 
 /*=======================================
-   Characters
+  Characters
 =======================================*/
 /* accepts EOF */
 #define ICHAR_ASCIIP(c)      (0 <= (c) && (c) <= 127)
@@ -466,7 +428,7 @@ void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define ICHAR_FOLDCASE(c) (ICHAR_DOWNCASE(c))
 
 /*=======================================
-   List Constructor
+  List Constructor
 =======================================*/
 typedef ScmRef ScmQueue;
 #define SCM_QUEUE_INVALIDATE(_q) ((_q) = NULL)
@@ -487,7 +449,7 @@ typedef ScmRef ScmQueue;
 #define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (SET((_q), (_lst)))
 
 /*=======================================
-   Local Buffer Allocator
+  Local Buffer Allocator
 =======================================*/
 /* don't touch inside directly */
 #define ScmLBuf(T)                                                           \
@@ -541,7 +503,45 @@ size_t scm_lbuf_f_linear(struct ScmLBuf_void_ *lbuf);
 size_t scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf);
 
 /*=======================================
-   Function Declarations
+  Type Definitions
+=======================================*/
+typedef struct ScmSpecialCharInfo_ ScmSpecialCharInfo;
+struct ScmSpecialCharInfo_ {
+    scm_ichar_t code;     /* character code as ASCII/Unicode */
+    const char *esc_seq;  /* escape sequence as string */
+    const char *lex_rep;  /* lexical representation as character object */
+};
+
+typedef void (*ScmRegisterFunc)(const char *name, ScmFuncType func);
+
+struct scm_func_registration_info {
+    const char     *funcname;
+    ScmFuncType     c_func;
+    ScmRegisterFunc reg_func;
+};
+
+/*=======================================
+  Variable Declarations
+=======================================*/
+/* procedure.c */
+extern ScmCharCodec *scm_identifier_codec;
+
+/* port.c */
+extern ScmObj scm_in;
+extern ScmObj scm_out;
+extern ScmObj scm_err;
+extern const ScmSpecialCharInfo scm_special_char_table[];
+
+/* write.c */
+extern void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
+
+/* storage.c */
+#if SCM_USE_VALUECONS
+extern ScmObj scm_null_values;
+#endif
+
+/*=======================================
+  Function Declarations
 =======================================*/
 /* strcasecmp.c */
 #if !HAVE_STRCASECMP

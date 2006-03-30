@@ -247,12 +247,12 @@ struct ScmBytePort_ {
 };
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 extern const ScmCharPortVTbl *ScmBaseCharPort_vptr;
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 void ScmBaseCharPort_construct(ScmBaseCharPort *port,
                                const ScmCharPortVTbl *vptr,

@@ -66,13 +66,13 @@ typedef void (*ScmOutputStrPort_finalizer)(char **str, size_t buf_size,
                                            void **opaque);
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 extern const ScmBytePortVTbl *ScmInputStrPort_vptr;
 extern const ScmBytePortVTbl *ScmOutputStrPort_vptr;
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 void scm_strport_init(void);
 

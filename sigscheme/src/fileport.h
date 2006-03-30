@@ -64,12 +64,12 @@ extern "C" {
 =======================================*/
 
 /*=======================================
-   Variable Declarations
+  Variable Declarations
 =======================================*/
 extern const ScmBytePortVTbl *ScmFilePort_vptr;
 
 /*=======================================
-   Function Declarations
+  Function Declarations
 =======================================*/
 void scm_fileport_init(void);
 
