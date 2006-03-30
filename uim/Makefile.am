@@ -84,9 +84,10 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
-libuim_la_LDFLAGS = -version-info $(libuim_version) \
-		    -export-dynamic \
-		    -export-symbols-regex uim.\*
+# NOTE: Don't depend on -export-symbols-regex to avoid symbol
+# conflict. The libtool option is not and will not be supported on
+# some platforms. See [Anthy-dev 2847].  -- YamaKen 2006-03-30
+libuim_la_LDFLAGS = -version-info $(libuim_version) -export-dynamic
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
@@ -96,8 +97,7 @@ libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
 endif
 
 libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) \
-			   -export-dynamic \
-			   -export-symbols-regex uim.\*
+			   -export-dynamic
 libuim_custom_la_LIBADD = libuim.la
 libuim_custom_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 
