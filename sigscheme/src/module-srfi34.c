@@ -150,19 +150,26 @@ scm_initialize_srfi34(void)
     /* prepare procedures and syntaxes */
     syn_apply   = scm_symbol_value(scm_intern("apply"),  SCM_INTERACTION_ENV);
     proc_values = scm_symbol_value(scm_intern("values"), SCM_INTERACTION_ENV);
-    /* FIXME: make registration type-safe */
+
+    SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &set_cur_handlers);
+    SCM_ASSERT_FUNCTYPE(scm_procedure_fixed_2,      &with_exception_handlers);
+    SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &guard_internal);
+    SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_tailrec_1, &guard_handler);
+    SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &guard_handler_body);
+    SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_tailrec_0, &guard_body);
+
     syn_set_cur_handlers
-        = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,          &set_cur_handlers);
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &set_cur_handlers);
     proc_with_exception_handlers
-        = MAKE_FUNC(SCM_PROCEDURE_FIXED | 2,       &with_exception_handlers);
+        = MAKE_FUNC(SCM_PROCEDURE_FIXED_2,      &with_exception_handlers);
     syn_guard_internal
-        = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,          &guard_internal);
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &guard_internal);
     syn_guard_handler
-        = MAKE_FUNC(SCM_SYNTAX_FIXED_TAIL_REC | 1, &guard_handler);
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_TAILREC_1, &guard_handler);
     syn_guard_handler_body
-        = MAKE_FUNC(SCM_SYNTAX_FIXED | 1,          &guard_handler_body);
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &guard_handler_body);
     syn_guard_body
-        = MAKE_FUNC(SCM_SYNTAX_FIXED_TAIL_REC | 0, &guard_body);
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_TAILREC_0, &guard_body);
 
 #if USE_WITH_SIGSCHEME_FATAL_ERROR
     proc_fallback_handler

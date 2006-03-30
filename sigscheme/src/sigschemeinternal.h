@@ -502,14 +502,6 @@ struct ScmSpecialCharInfo_ {
     const char *lex_rep;  /* lexical representation as character object */
 };
 
-typedef void (*ScmRegisterFunc)(const char *name, ScmFuncType func);
-
-struct scm_func_registration_info {
-    const char     *funcname;
-    ScmFuncType     c_func;
-    ScmRegisterFunc reg_func;
-};
-
 /*=======================================
   Variable Declarations
 =======================================*/
@@ -613,7 +605,6 @@ void scm_init_format(void);
 
 /* module.c */
 void scm_init_module(void);
-void scm_register_funcs(const struct scm_func_registration_info *table);
 
 /* sigscheme.c */
 char **scm_interpret_argv(char **argv);

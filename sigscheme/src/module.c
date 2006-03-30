@@ -107,8 +107,6 @@ static const struct module_info module_info_table[] = {
   File Local Function Declarations
 =======================================*/
 static scm_bool scm_use_internal(const char *feature);
-static scm_bool scm_register_func(const char *name, ScmFuncType func,
-                                  enum ScmFuncTypeCode type);
 
 /*=======================================
   Function Implementations
@@ -221,7 +219,7 @@ scm_register_funcs(const struct scm_func_registration_info *table)
     }
 }
 
-static scm_bool
+ScmObj
 scm_register_func(const char *name, ScmFuncType c_func,
                   enum ScmFuncTypeCode type)
 {
@@ -232,7 +230,7 @@ scm_register_func(const char *name, ScmFuncType c_func,
 
     /* TODO: reject bad TYPE */
     SCM_SYMBOL_SET_VCELL(sym, func);
-    return scm_true;
+    return func;
 }
 
 /* Not implemented yet. */

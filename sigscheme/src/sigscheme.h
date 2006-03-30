@@ -177,6 +177,23 @@ extern "C" {
 
 #define SCM_EVAL(obj, env) (scm_eval((obj), (env)))
 
+#define SCM_ASSERT_FUNCTYPE(type, c_func)                                    \
+    do {                                                                     \
+        type f;                                                              \
+        if (0) f = (c_func);  /* compile-time type check */                  \
+    } while (/* CONSTCOND */ 0)
+
+#if 0
+#define SCM_REGISTER_FUNC(name, c_func, type)                                \
+    do {                                                                     \
+        enum ScmFuncTypeCode typecode;                                       \
+                                                                             \
+        SCM_ASSERT_FUNCTYPE(scm_##type, (c_func));                           \
+        typecode = scm_funccode_##type;                                      \
+        scm_register_func(name, c_func, typecode);                           \
+    } while (/* CONSTCOND */ 0)
+#endif
+
 #if SCM_GCC4_READY_GC
 /*
  * Function caller with protecting Scheme objects on stack from GC
@@ -276,11 +293,10 @@ enum ScmObjType {
  * that the evaluator can correctly invoke them.  See doc/invocation
  * for details.
  */
+#define SCM_FUNCTYPE_MAND_MAX 5
 enum ScmFuncTypeCode {
     SCM_FUNCTYPE_MAND_BITS = 4,
     SCM_FUNCTYPE_MAND_MASK = (1 << SCM_FUNCTYPE_MAND_BITS) - 1,
-#define SCM_FUNCTYPE_MAND_MAX 5
-    /* SCM_FUNCTYPE_MAND_MAX  = 5, */
     SCM_FUNCTYPE_SYNTAX    = 1 << SCM_FUNCTYPE_MAND_BITS,
 
     SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS + 1),
@@ -304,6 +320,66 @@ enum ScmFuncTypeCode {
                                     | SCM_PROCEDURE_VARIADIC),
     SCM_SYNTAX_VARIADIC_TAIL_REC = (SCM_FUNCTYPE_SYNTAX
                                     | SCM_PROCEDURE_VARIADIC_TAIL_REC),
+
+    /* Proper combinations */
+    SCM_SYNTAX_FIXED_0               = (SCM_SYNTAX_FIXED                | 0),
+    SCM_SYNTAX_FIXED_TAILREC_0       = (SCM_SYNTAX_FIXED_TAIL_REC       | 0),
+    SCM_SYNTAX_VARIADIC_0            = (SCM_SYNTAX_VARIADIC             | 0),
+    SCM_SYNTAX_VARIADIC_TAILREC_0    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 0),
+    SCM_PROCEDURE_FIXED_0            = (SCM_PROCEDURE_FIXED             | 0),
+    SCM_PROCEDURE_FIXED_TAILREC_0    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 0),
+    SCM_PROCEDURE_VARIADIC_0         = (SCM_PROCEDURE_VARIADIC          | 0),
+    SCM_PROCEDURE_VARIADIC_TAILREC_0 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 0),
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+    SCM_SYNTAX_FIXED_1               = (SCM_SYNTAX_FIXED                | 1),
+    SCM_SYNTAX_FIXED_TAILREC_1       = (SCM_SYNTAX_FIXED_TAIL_REC       | 1),
+    SCM_SYNTAX_VARIADIC_1            = (SCM_SYNTAX_VARIADIC             | 1),
+    SCM_SYNTAX_VARIADIC_TAILREC_1    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 1),
+    SCM_PROCEDURE_FIXED_1            = (SCM_PROCEDURE_FIXED             | 1),
+    SCM_PROCEDURE_FIXED_TAILREC_1    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 1),
+    SCM_PROCEDURE_VARIADIC_1         = (SCM_PROCEDURE_VARIADIC          | 1),
+    SCM_PROCEDURE_VARIADIC_TAILREC_1 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 1),
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+    SCM_SYNTAX_FIXED_2               = (SCM_SYNTAX_FIXED                | 2),
+    SCM_SYNTAX_FIXED_TAILREC_2       = (SCM_SYNTAX_FIXED_TAIL_REC       | 2),
+    SCM_SYNTAX_VARIADIC_2            = (SCM_SYNTAX_VARIADIC             | 2),
+    SCM_SYNTAX_VARIADIC_TAILREC_2    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 2),
+    SCM_PROCEDURE_FIXED_2            = (SCM_PROCEDURE_FIXED             | 2),
+    SCM_PROCEDURE_FIXED_TAILREC_2    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 2),
+    SCM_PROCEDURE_VARIADIC_2         = (SCM_PROCEDURE_VARIADIC          | 2),
+    SCM_PROCEDURE_VARIADIC_TAILREC_2 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 2),
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+    SCM_SYNTAX_FIXED_3               = (SCM_SYNTAX_FIXED                | 3),
+    SCM_SYNTAX_FIXED_TAILREC_3       = (SCM_SYNTAX_FIXED_TAIL_REC       | 3),
+    SCM_SYNTAX_VARIADIC_3            = (SCM_SYNTAX_VARIADIC             | 3),
+    SCM_SYNTAX_VARIADIC_TAILREC_3    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 3),
+    SCM_PROCEDURE_FIXED_3            = (SCM_PROCEDURE_FIXED             | 3),
+    SCM_PROCEDURE_FIXED_TAILREC_3    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 3),
+    SCM_PROCEDURE_VARIADIC_3         = (SCM_PROCEDURE_VARIADIC          | 3),
+    SCM_PROCEDURE_VARIADIC_TAILREC_3 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 3),
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+    SCM_SYNTAX_FIXED_4               = (SCM_SYNTAX_FIXED                | 4),
+    SCM_SYNTAX_FIXED_TAILREC_4       = (SCM_SYNTAX_FIXED_TAIL_REC       | 4),
+    SCM_SYNTAX_VARIADIC_4            = (SCM_SYNTAX_VARIADIC             | 4),
+    SCM_SYNTAX_VARIADIC_TAILREC_4    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 4),
+    SCM_PROCEDURE_FIXED_4            = (SCM_PROCEDURE_FIXED             | 4),
+    SCM_PROCEDURE_FIXED_TAILREC_4    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 4),
+    SCM_PROCEDURE_VARIADIC_4         = (SCM_PROCEDURE_VARIADIC          | 4),
+    SCM_PROCEDURE_VARIADIC_TAILREC_4 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 4),
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+    SCM_SYNTAX_FIXED_5               = (SCM_SYNTAX_FIXED                | 5),
+    SCM_SYNTAX_FIXED_TAILREC_5       = (SCM_SYNTAX_FIXED_TAIL_REC       | 5),
+    SCM_SYNTAX_VARIADIC_5            = (SCM_SYNTAX_VARIADIC             | 5),
+    SCM_SYNTAX_VARIADIC_TAILREC_5    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 5),
+    SCM_PROCEDURE_FIXED_5            = (SCM_PROCEDURE_FIXED             | 5),
+    SCM_PROCEDURE_FIXED_TAILREC_5    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 5),
+    SCM_PROCEDURE_VARIADIC_5         = (SCM_PROCEDURE_VARIADIC          | 5),
+    SCM_PROCEDURE_VARIADIC_TAILREC_5 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 5),
+#endif
 
     /* Special type. */
     SCM_REDUCTION_OPERATOR = SCM_FUNCTYPE_ODDBALL
@@ -714,6 +790,77 @@ struct ScmValueFormat_ {
     (vfmt.width > 0 || vfmt.frac_width > 0 || vfmt.pad != ' ' || !vfmt.signedp)
 
 /*=======================================
+  Function types
+=======================================*/
+typedef void (*ScmRegisterFunc)(const char *name, ScmFuncType func);
+
+struct scm_func_registration_info {
+    const char     *funcname;
+    ScmFuncType     c_func;
+    ScmRegisterFunc reg_func;
+};
+
+typedef ScmObj (*scm_reduction_operator)(ScmObj, ScmObj, enum ScmReductionState *);
+typedef ScmObj (*scm_syntax_fixed_0)(ScmObj);
+typedef ScmObj (*scm_syntax_fixed_tailrec_0)(ScmEvalState *);
+typedef ScmObj (*scm_syntax_variadic_0)(ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_variadic_tailrec_0)(ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_fixed_0)(void);
+typedef ScmObj (*scm_procedure_fixed_tailrec_0)(ScmEvalState *);
+typedef ScmObj (*scm_procedure_variadic_0)(ScmObj);
+typedef ScmObj (*scm_procedure_variadic_tailrec_0)(ScmObj, ScmEvalState *);
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+typedef ScmObj (*scm_syntax_fixed_1)(ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_fixed_tailrec_1)(ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_syntax_variadic_1)(ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_variadic_tailrec_1)(ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_fixed_1)(ScmObj);
+typedef ScmObj (*scm_procedure_fixed_tailrec_1)(ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_variadic_1)(ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_variadic_tailrec_1)(ScmObj, ScmObj, ScmEvalState *);
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+typedef ScmObj (*scm_syntax_fixed_2)(ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_fixed_tailrec_2)(ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_syntax_variadic_2)(ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_variadic_tailrec_2)(ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_fixed_2)(ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_fixed_tailrec_2)(ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_variadic_2)(ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_variadic_tailrec_2)(ScmObj, ScmObj, ScmObj, ScmEvalState *);
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+typedef ScmObj (*scm_syntax_fixed_3)(ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_fixed_tailrec_3)(ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_syntax_variadic_3)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_variadic_tailrec_3)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_fixed_3)(ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_fixed_tailrec_3)(ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_variadic_3)(ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_variadic_tailrec_3)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+typedef ScmObj (*scm_syntax_fixed_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_fixed_tailrec_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_syntax_variadic_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_variadic_tailrec_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_fixed_4)(ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_fixed_tailrec_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_variadic_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_variadic_tailrec_4)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+#endif
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+typedef ScmObj (*scm_syntax_fixed_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_fixed_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_syntax_variadic_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_syntax_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_fixed_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_fixed_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+typedef ScmObj (*scm_procedure_variadic_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj);
+typedef ScmObj (*scm_procedure_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmObj, ScmEvalState *);
+#endif
+
+/*=======================================
   Variable Declarations
 =======================================*/
 /* storage-gc.c */
@@ -748,6 +895,9 @@ void scm_provide(ScmObj feature);
 scm_bool scm_providedp(ScmObj feature);
 scm_bool scm_use(const char *feature);
 ScmObj scm_s_use(ScmObj feature, ScmObj env);
+ScmObj scm_register_func(const char *name, ScmFuncType func,
+                         enum ScmFuncTypeCode type);
+void scm_register_funcs(const struct scm_func_registration_info *table);
 void scm_define_alias(const char *newsym, const char *sym);
 
 /* Procedure/Syntax Registration */
