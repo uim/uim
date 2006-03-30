@@ -42,8 +42,8 @@
 extern "C" {
 #endif
 
-#ifndef __SCM_FILEPORT_H
-#define __SCM_FILEPORT_H
+#ifndef __SCM_SCMPORT_FILE_H
+#define __SCM_SCMPORT_FILE_H
 
 /*=======================================
   System Include
@@ -82,4 +82,4 @@ ScmBytePort *ScmFilePort_open_output_file(const char *path);
 }
 #endif
 
-#endif /* __SCM_FILEPORT_H */
+#endif /* __SCM_SCMPORT_FILE_H */

@@ -37,8 +37,8 @@
  * merge into another file.
  */
 
-#ifndef __SCM_SBCPORT_H
-#define __SCM_SBCPORT_H
+#ifndef __SCM_SCMPORT_SBCHAR_H
+#define __SCM_SCMPORT_SBCHAR_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,4 +81,4 @@ ScmCharPort *ScmSingleByteCharPort_new(ScmBytePort *bport);
 }
 #endif
 
-#endif /* __SCM_SBCPORT_H */
+#endif /* __SCM_SCMPORT_SBCHAR_H */

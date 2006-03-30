@@ -37,8 +37,8 @@
  * merge into another file.
  */
 
-#ifndef __SCM_NULLPORT_H
-#define __SCM_NULLPORT_H
+#ifndef __SCM_SCMPORT_NULL_H
+#define __SCM_SCMPORT_NULL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,4 +77,4 @@ ScmBytePort *ScmNullPort_new(void);
 }
 #endif
 
-#endif /* __SCM_NULLPORT_H */
+#endif /* __SCM_SCMPORT_NULL_H */

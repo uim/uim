@@ -37,8 +37,8 @@
  * merge into another file.
  */
 
-#ifndef __SCM_BASEPORT_H
-#define __SCM_BASEPORT_H
+#ifndef __SCM_SCMPORT_H
+#define __SCM_SCMPORT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -241,4 +241,4 @@ int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 }
 #endif
 
-#endif /* __SCM_BASEPORT_H */
+#endif /* __SCM_SCMPORT_H */

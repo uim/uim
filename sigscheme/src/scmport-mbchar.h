@@ -37,8 +37,8 @@
  * merge into another file.
  */
 
-#ifndef __SCM_MBCPORT_H
-#define __SCM_MBCPORT_H
+#ifndef __SCM_SCMPORT_MBCHAR_H
+#define __SCM_SCMPORT_MBCHAR_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -84,4 +84,4 @@ void ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec);
 }
 #endif
 
-#endif /* __SCM_MBCPORT_H */
+#endif /* __SCM_SCMPORT_MBCHAR_H */
