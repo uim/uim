@@ -613,7 +613,7 @@ void scm_init_format(void);
 
 /* module.c */
 void scm_init_module(void);
-void scm_register_funcs(struct scm_func_registration_info *table);
+void scm_register_funcs(const struct scm_func_registration_info *table);
 
 /* sigscheme.c */
 char **scm_interpret_argv(char **argv);

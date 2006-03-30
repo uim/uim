@@ -40,7 +40,7 @@ FILE_HEADER = "#{DATA_DIR}/functable-header.txt"
 FILE_FOOTER = "#{DATA_DIR}/functable-footer.txt"
 
 def table_header(table_name)
-  "static struct scm_func_registration_info #{table_name}[] = {"
+  "static const struct scm_func_registration_info #{table_name}[] = {"
 end
 
 def table_footer

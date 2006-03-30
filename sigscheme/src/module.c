@@ -63,7 +63,7 @@ struct module_info {
 =======================================*/
 static ScmObj features;
 
-static struct module_info module_info_table[] = {
+static const struct module_info module_info_table[] = {
 #if SCM_USE_SSCM_EXTENSIONS
     {"sscm-ext", scm_initialize_sscm_extensions},
 #endif
@@ -178,7 +178,7 @@ scm_use_internal(const char *feature)
 ScmObj
 scm_s_use(ScmObj feature, ScmObj env)
 {
-    struct module_info *mod;
+    const struct module_info *mod;
     ScmObj feature_str;
     const char *c_feature_str;
     DECLARE_FUNCTION("use", syntax_fixed_1);
@@ -212,9 +212,9 @@ scm_define_alias(const char *newsym, const char *sym)
 }
 
 void
-scm_register_funcs(struct scm_func_registration_info *table)
+scm_register_funcs(const struct scm_func_registration_info *table)
 {
-    struct scm_func_registration_info *info;
+    const struct scm_func_registration_info *info;
 
     for (info = &table[0]; info->funcname; info++) {
         (*info->reg_func)(info->funcname, info->c_func);
