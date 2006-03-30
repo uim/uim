@@ -34,6 +34,10 @@
 #ifndef __STORAGE_FATTY_H
 #define __STORAGE_FATTY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * Internal representation defined in this file MUST NOT directly touched by
  * libsscm users. Use abstract public APIs defined in sigscheme.h.
@@ -492,5 +496,9 @@ extern ScmObj scm_const_unbound, scm_const_undef;
 /* sigscheme.c */
 extern ScmObj scm_sym_quote, scm_sym_quasiquote;
 extern ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __STORAGE_FATTY_H */

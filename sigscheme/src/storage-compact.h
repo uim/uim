@@ -34,6 +34,10 @@
 #ifndef __STORAGE_COMPACT_H
 #define __STORAGE_COMPACT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * FIXME: Support 64-bit data models
  *
@@ -1140,5 +1144,9 @@ extern enum ScmObjType scm_type(ScmObj obj);
 /* sigscheme.c */
 extern ScmObj scm_sym_quote, scm_sym_quasiquote;
 extern ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __STORAGE_COMPACT_H */

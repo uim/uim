@@ -35,6 +35,10 @@
 #ifndef __SCM_SCMPORT_CONFIG_H
 #define __SCM_SCMPORT_CONFIG_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if SCM_SCMPORT_USE_WITH_SIGSCHEME
 #include "sigscheme.h"
 #else /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
@@ -81,5 +85,9 @@
   Function Declarations
 =======================================*/
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_SCMPORT_CONFIG_H */

@@ -34,6 +34,10 @@
 #ifndef __SIGSCHEMEINTERNAL_H
 #define __SIGSCHEMEINTERNAL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -609,5 +613,9 @@ void scm_init_module(void);
 /* sigscheme.c */
 char **scm_interpret_argv(char **argv);
 void scm_free_argv(char **argv);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SIGSCHEMEINTERNAL_H */

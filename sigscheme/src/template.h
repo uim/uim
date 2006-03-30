@@ -34,6 +34,10 @@
 #ifndef __SCM_FIXME_H
 #define __SCM_FIXME_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -58,5 +62,9 @@
   Function Declarations
 =======================================*/
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __SCM_FIXME_H */
