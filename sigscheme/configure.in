@@ -114,7 +114,7 @@ fi
 
 # Default Compiler Option for gcc
 if test x$CC = xgcc; then
-	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
+	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
 fi
 
 # FIXME: configure variables appropriately

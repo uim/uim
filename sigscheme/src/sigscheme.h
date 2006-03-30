@@ -1072,7 +1072,6 @@ ScmObj scm_p_charp(ScmObj obj);
 ScmObj scm_p_char_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_lessp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_greaterp(ScmObj ch1, ScmObj ch2);
-ScmObj scm_p_char_greaterp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_less_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_greater_equalp(ScmObj ch1, ScmObj ch2);
 ScmObj scm_p_char_ci_equalp(ScmObj ch1, ScmObj ch2);
