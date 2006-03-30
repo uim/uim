@@ -101,7 +101,7 @@ EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c \
 # See "Built sources" section of automake info.
 BUILT_SOURCES = $(FUNC_TABLES)
 
-pkginclude_HEADERS = sigscheme.h config.h my-stdint.h
+pkginclude_HEADERS = sigscheme.h config.h my-stdint.h scmint.h
 
 libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c storage-symbol.c \

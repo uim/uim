@@ -55,6 +55,7 @@ extern "C" {
   Local Include
 =======================================*/
 #include "my-stdint.h"
+#include "scmint.h"
 #include "encoding.h"
 
 /*=======================================
@@ -138,30 +139,6 @@ extern "C" {
 /*=======================================
   Type Definitions
 =======================================*/
-#ifndef SCM_BOOL_DEFINED
-typedef int scm_bool;
-#define scm_false 0
-#define scm_true  1
-#define SCM_BOOL_DEFINED
-#endif /* SCM_BOOL_DEFINED */
-
-#ifndef SCM_ICHAR_T_DEFINED
-typedef int32_t            scm_ichar_t;
-#define SIZEOF_SCM_ICHAR_T SIZEOF_INT32_T
-#define SCM_ICHAR_T_MAX    INT32_MAX
-#define SCM_ICHAR_T_MIN    INT32_MIN
-#if (EOF < SCM_ICHAR_T_MIN || SCM_ICHAR_T_MAX < EOF)
-#error "scm_ichar_t cannot represent EOF on this platform"
-#endif
-#define SCM_ICHAR_T_DEFINED
-#endif /* SCM_ICHAR_T_DEFINED */
-
-#ifndef SCM_BYTE_T_DEFINED
-#define SCM_BYTE_T_DEFINED
-typedef unsigned char      scm_byte_t;
-#define SIZEOF_SCM_BYTE_T  1
-#endif /* SCM_BYTE_T_DEFINED */
-
 typedef struct ScmCharPortVTbl_ ScmCharPortVTbl;
 typedef struct ScmCharPort_     ScmCharPort;
 typedef struct ScmBaseCharPort_ ScmBaseCharPort;

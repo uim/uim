@@ -51,6 +51,7 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "scmint.h"
 #include "encoding.h"
 #if SCM_ENCODING_USE_WITH_SIGSCHEME
 #include "sigscheme.h"

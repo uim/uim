@@ -51,6 +51,7 @@
 /*=======================================
   Local Include
 =======================================*/
+#include "scmint.h"
 /* To override SCM_{CHAR,BYTE}PORT_ERROR() and SCM_PORT_*ALLOC(). Don't depend
  * on SigScheme-specific things */
 #include "sigscheme.h"
