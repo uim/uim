@@ -101,7 +101,7 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
-void (*scm_write_ss_func)(ScmObj port, ScmObj obj) = &scm_write;
+void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
 
 #if SCM_USE_SRFI38
 /* misc info in priting shared structures */
@@ -132,6 +132,19 @@ static void write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 /*=======================================
    Function Implementations
 =======================================*/
+void
+scm_init_writer(void)
+{
+    /* To allow re-initialization of the interpreter, these variables must be
+     * re-initialized by assignment. Initialized .data section does not work
+     * for such situation.  -- YamaKen 2006-03-31 */
+    scm_write_ss_func = scm_write;
+
+#if SCM_USE_SRFI38
+    write_ss_ctx = NULL;
+#endif
+}
+
 void
 scm_write(ScmObj port, ScmObj obj)
 {

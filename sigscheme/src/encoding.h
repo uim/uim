@@ -215,6 +215,8 @@ extern ScmCharCodec *scm_current_char_codec;
 /*=======================================
   Function Declarations
 =======================================*/
+void scm_encoding_init(void);
+
 size_t scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs);
 size_t scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *str);
 ScmMultibyteString scm_mb_substring(ScmCharCodec *codec,

@@ -602,6 +602,7 @@ ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
 ScmCharPort *scm_make_char_port(ScmBytePort *bport);
 
 /* write.c */
+void scm_init_writer(void);
 void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
 
 /* format.c */

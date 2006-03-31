@@ -86,7 +86,7 @@ static const int sscm_debug_mask_tbl[] = {
     SCM_DBG_SIOD_V4,
     SCM_DBG_SIOD_V5
 };
-static long sscm_verbose_level = -1;
+static long sscm_verbose_level;
 
 static ScmObj null_port;
 static ScmObj saved_output_port;
@@ -119,6 +119,10 @@ scm_initialize_siod(void)
     cport = scm_make_char_port(ScmNullPort_new());
     null_port = MAKE_PORT(cport, SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
+    /* To allow re-initialization of the interpreter, this variables must be
+     * initialized by assignment. Initialized .data section does not work for
+     * such situation.  -- YamaKen 2006-03-31 */
+    sscm_verbose_level = -1;
     scm_set_verbose_level(2);
 }
 

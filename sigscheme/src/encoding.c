@@ -248,25 +248,34 @@ static ScmCharCodec *const available_codecs[] = {
 /*=======================================
   Global Variables
 =======================================*/
-/* temporary solution */
-ScmCharCodec *scm_current_char_codec
-#if SCM_USE_UTF8_AS_DEFAULT
-    = utf8_codec;
-#elif SCM_USE_EUCJP_AS_DEFAULT
-    = eucjp_codec;
-#elif SCM_USE_EUCCN_AS_DEFAULT
-    = euccn_codec;
-#elif SCM_USE_EUCKR_AS_DEFAULT
-    = euckr_codec;
-#elif SCM_USE_SJIS_AS_DEFAULT
-    = sjis_codec;
-#else
-    = unibyte_codec;
-#endif
+ScmCharCodec *scm_current_char_codec;
 
 /*=======================================
   Public API
 =======================================*/
+void
+scm_encoding_init(void)
+{
+    /* To allow re-initialization of the interpreter, this variables must be
+     * initialized by assignment. Initialized .data section does not work for
+     * such situation.  -- YamaKen 2006-03-31 */
+
+    /* temporary solution */
+    scm_current_char_codec
+#if SCM_USE_UTF8_AS_DEFAULT
+        = utf8_codec;
+#elif SCM_USE_EUCJP_AS_DEFAULT
+        = eucjp_codec;
+#elif SCM_USE_EUCCN_AS_DEFAULT
+        = euccn_codec;
+#elif SCM_USE_EUCKR_AS_DEFAULT
+        = euckr_codec;
+#elif SCM_USE_SJIS_AS_DEFAULT
+        = sjis_codec;
+#else
+        = unibyte_codec;
+#endif
+}
 
 size_t
 scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
