@@ -31,6 +31,10 @@
 
 */
 
+/* FIXME: Temporary solution. Use sigscheme-combined.c instead */
+/* This file must be included before uim's config.h */
+#include "sigscheme-combined.h"
+
 #include "config.h"
 
 #include <stdio.h>
