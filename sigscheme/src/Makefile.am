@@ -97,7 +97,7 @@ functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 sigscheme-combined.c: $(libsscm_la_SOURCES)
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@echo >>$@
-	@echo "#define SCM_COMBINED_SOURCE 1" >>$@
+	@echo '#include "sigscheme-combined.h"' >>$@
 	@echo >>$@
 	@for file in $^ $>; do                          \
 	    case $$file in                              \
@@ -109,8 +109,10 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	    esac                                        \
 	done
 
+# Since no target of sigscheme directory uses sigscheme-combined.h as source,
+# the file is not listed into *_HEADERS.
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c \
-             template.h template.c
+             sigscheme-combined.h template.h template.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.
