@@ -521,49 +521,42 @@ uim_scm_require_file(const char *fn)
   return ret;
 }
 
-typedef ScmObj (*ScmProcedureFixed0)(void);
-typedef ScmObj (*ScmProcedureFixed1)(ScmObj arg1);
-typedef ScmObj (*ScmProcedureFixed2)(ScmObj arg1, ScmObj arg2);
-typedef ScmObj (*ScmProcedureFixed3)(ScmObj arg1, ScmObj arg2, ScmObj arg3);
-typedef ScmObj (*ScmProcedureFixed4)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4);
-typedef ScmObj (*ScmProcedureFixed5)(ScmObj arg1, ScmObj arg2, ScmObj arg3, ScmObj arg4, ScmObj arg5);
-
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
 {
-  scm_register_procedure_fixed_0(name, (ScmProcedureFixed0)func);
+  scm_register_func(name, (scm_procedure_fixed_0)func, SCM_PROCEDURE_FIXED_0);
 }
 
 void
 uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
 {
-  scm_register_procedure_fixed_1(name, (ScmProcedureFixed1)func);
+  scm_register_func(name, (scm_procedure_fixed_1)func, SCM_PROCEDURE_FIXED_1);
 }
 
 void
 uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
-  scm_register_procedure_fixed_2(name, (ScmProcedureFixed2)func);
+  scm_register_func(name, (scm_procedure_fixed_2)func, SCM_PROCEDURE_FIXED_2);
 }
 
 void
 uim_scm_init_subr_3(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
-  scm_register_procedure_fixed_3(name, (ScmProcedureFixed3)func);
+  scm_register_func(name, (scm_procedure_fixed_3)func, SCM_PROCEDURE_FIXED_3);
 }
 
 void
 uim_scm_init_subr_4(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
                                                        uim_lisp))
 {
-  scm_register_procedure_fixed_4(name, (ScmProcedureFixed4)func);
+  scm_register_func(name, (scm_procedure_fixed_4)func, SCM_PROCEDURE_FIXED_4);
 }
 
 void
 uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
                                                        uim_lisp, uim_lisp))
 {
-  scm_register_procedure_fixed_5(name, (ScmProcedureFixed5)func);
+  scm_register_func(name, (scm_procedure_fixed_5)func, SCM_PROCEDURE_FIXED_5);
 }
 
 static void
