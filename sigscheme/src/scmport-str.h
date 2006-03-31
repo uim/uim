@@ -68,8 +68,8 @@ typedef void (*ScmOutputStrPort_finalizer)(char **str, size_t buf_size,
 /*=======================================
   Variable Declarations
 =======================================*/
-extern const ScmBytePortVTbl *ScmInputStrPort_vptr;
-extern const ScmBytePortVTbl *ScmOutputStrPort_vptr;
+extern const ScmBytePortVTbl *const ScmInputStrPort_vptr;
+extern const ScmBytePortVTbl *const ScmOutputStrPort_vptr;
 
 /*=======================================
   Function Declarations

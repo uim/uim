@@ -100,7 +100,8 @@ static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
   Variable Declarations
 =======================================*/
 static ScmCharPortVTbl ScmMultiByteCharPort_vtbl;
-const ScmCharPortVTbl *ScmMultiByteCharPort_vptr = &ScmMultiByteCharPort_vtbl;
+const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr
+    = &ScmMultiByteCharPort_vtbl;
 
 /*=======================================
   Function Implementations

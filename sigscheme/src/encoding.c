@@ -225,7 +225,7 @@ static const ScmCharCodecVTbl unibyte_codec_vtbl = {
 };
 #define unibyte_codec (&unibyte_codec_vtbl)
 
-static ScmCharCodec *available_codecs[] = {
+static ScmCharCodec *const available_codecs[] = {
 #if SCM_USE_UTF8
     utf8_codec,
 #endif
@@ -326,7 +326,7 @@ scm_mb_substring(ScmCharCodec *codec, ScmMultibyteString mbs, size_t i, size_t l
 ScmCharCodec *
 scm_mb_find_codec(const char *encoding)
 {
-    ScmCharCodec **codecp;
+    ScmCharCodec *const *codecp;
 
     for (codecp = &available_codecs[0]; *codecp; codecp++) {
         if (strcmp(SCM_CHARCODEC_ENCODING(*codecp), encoding) == 0)

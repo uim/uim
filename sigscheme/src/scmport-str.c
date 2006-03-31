@@ -133,7 +133,7 @@ static const ScmBytePortVTbl ScmInputStrPort_vtbl = {
     (ScmBytePortMethod_write)      &istrport_write,
     (ScmBytePortMethod_flush)      &istrport_flush
 };
-const ScmBytePortVTbl *ScmInputStrPort_vptr = &ScmInputStrPort_vtbl;
+const ScmBytePortVTbl *const ScmInputStrPort_vptr = &ScmInputStrPort_vtbl;
 
 static const ScmBytePortVTbl ScmOutputStrPort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &ostrport_dyn_cast,
@@ -146,7 +146,7 @@ static const ScmBytePortVTbl ScmOutputStrPort_vtbl = {
     (ScmBytePortMethod_write)      &ostrport_write,
     (ScmBytePortMethod_flush)      &ostrport_flush
 };
-const ScmBytePortVTbl *ScmOutputStrPort_vptr = &ScmOutputStrPort_vtbl;
+const ScmBytePortVTbl *const ScmOutputStrPort_vptr = &ScmOutputStrPort_vtbl;
 
 /*=======================================
   Function Implementations

@@ -92,7 +92,7 @@ static const ScmCharPortVTbl ScmBaseCharPort_vtbl = {
     (ScmCharPortMethod_put_char)   &basecport_put_char,
     (ScmCharPortMethod_flush)      &basecport_flush
 };
-const ScmCharPortVTbl *ScmBaseCharPort_vptr = &ScmBaseCharPort_vtbl;
+const ScmCharPortVTbl *const ScmBaseCharPort_vptr = &ScmBaseCharPort_vtbl;
 
 /*=======================================
   Function Implementations
