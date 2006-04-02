@@ -3,7 +3,7 @@ objdir = @objdir@
 AM_CPPFLAGS = -I$(top_srcdir)/src
 AM_LDFLAGS  = -rpath $(libdir)
 
-EXTRA_DIST = test_template.c
+EXTRA_DIST = test_template.c test-storage-compact.c
 noinst_LTLIBRARIES =
 TEST_SRCS =
 
