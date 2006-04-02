@@ -111,9 +111,9 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	@echo >>$@
 	@echo '#include "sigscheme-combined-trim.h"' >>$@
 
-# Internal macros trimmer for combined-source version of SigScheme
-# files listed in $pkginclude_HEADERS are also handled as failsafe processing
-sigscheme-combined-trim.h: $(libsscm_la_SOURCES)
+# Internal macros trimmer for combined-source version of SigScheme.
+# All source files are processed regardless of user configuration.
+sigscheme-combined-trim.h: $(DIST_SOURCES)
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@for src in $^ $>; do                   \
 	    case $$src in                       \
@@ -131,7 +131,8 @@ sigscheme-combined-trim.h: $(libsscm_la_SOURCES)
 	    scmport-mbchar.h)  ;;               \
 	    storage-*.h)       ;;               \
 	    sigscheme.h)       ;;               \
-	    *)                                  \
+	    main.c)            ;;               \
+	    *.h | *.c)                          \
 		echo >>$@;                      \
 		perl -ne 'BEGIN { print "/* $$ARGV[0] */\n"; } if (s/^\s*#define\s+(\w+).*$$/#undef \1/) { print if (!$$macros{$$1} && $$1 !~ /^__\w+_H$$/); $$macros{$$1} = true; }' $$src >>$@; \
 		;;                              \
@@ -140,7 +141,7 @@ sigscheme-combined-trim.h: $(libsscm_la_SOURCES)
 
 # Since no target of sigscheme directory uses sigscheme-combined.h as source,
 # the file is not listed into *_HEADERS.
-EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c \
+EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) \
              sigscheme-combined.h sigscheme-combined-trim.h \
              template.h template.c
 
