@@ -112,7 +112,7 @@ scm_p_cons(ScmObj car, ScmObj cdr)
 }
 
 ScmObj
-scm_p_set_card(ScmObj pair, ScmObj car)
+scm_p_set_carx(ScmObj pair, ScmObj car)
 {
     DECLARE_FUNCTION("set-car!", procedure_fixed_2);
 
@@ -129,7 +129,7 @@ scm_p_set_card(ScmObj pair, ScmObj car)
 }
 
 ScmObj
-scm_p_set_cdrd(ScmObj pair, ScmObj cdr)
+scm_p_set_cdrx(ScmObj pair, ScmObj cdr)
 {
     DECLARE_FUNCTION("set-cdr!", procedure_fixed_2);
 

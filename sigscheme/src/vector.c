@@ -136,7 +136,7 @@ scm_p_vector_ref(ScmObj vec, ScmObj _k)
 }
 
 ScmObj
-scm_p_vector_setd(ScmObj vec, ScmObj _k, ScmObj obj)
+scm_p_vector_setx(ScmObj vec, ScmObj _k, ScmObj obj)
 {
     scm_int_t k;
     DECLARE_FUNCTION("vector-set!", procedure_fixed_3);
@@ -197,7 +197,7 @@ scm_p_list2vector(ScmObj lst)
 }
 
 ScmObj
-scm_p_vector_filld(ScmObj vec, ScmObj fill)
+scm_p_vector_fillx(ScmObj vec, ScmObj fill)
 {
     ScmObj *v;
     scm_int_t len, i;

@@ -150,7 +150,7 @@ scm_p_symbol_value(ScmObj var)
  *   Scheme implementations if existing
  */
 ScmObj
-scm_p_set_symbol_valued(ScmObj var, ScmObj val)
+scm_p_set_symbol_valuex(ScmObj var, ScmObj val)
 {
     DECLARE_FUNCTION("set-symbol-value!", procedure_fixed_2);
 

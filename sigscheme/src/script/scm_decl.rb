@@ -118,12 +118,21 @@ def scm_generate_func_prototypes(str)
 end
 
 
-# usage example
+# usage examples
 
 #src = ARGF.read
+
 #print src.scan_scm_decl { |decl|
 #  p decl
 #}
+
+#print src.scan_scm_decl { |decl|
+#  if (/!$/ =~ decl[:proc])
+#    func = decl[:func]
+#    print "perl -i -pe 's/\\b#{func}\\b/#{func.sub(/d$/, "x")}/g'\n"
+#  end
+#}
+
 #print scm_generate_func_table_body(src)
 #print scm_generate_func_register_exps(src)
 #print scm_generate_func_prototypes(src)

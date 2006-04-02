@@ -513,7 +513,7 @@ scm_p_srfi1_drop_right(ScmObj lst, ScmObj scm_elem)
 }
 
 ScmObj
-scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx)
+scm_p_srfi1_takex(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj tmp = lst;
     scm_int_t idx = 0;
@@ -535,7 +535,7 @@ scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx)
 }
 
 ScmObj
-scm_p_srfi1_drop_rightd(ScmObj lst, ScmObj scm_idx)
+scm_p_srfi1_drop_rightx(ScmObj lst, ScmObj scm_idx)
 {
     ScmObj tmp = lst;
     scm_int_t len = 0;
@@ -570,12 +570,12 @@ scm_p_srfi1_split_at(ScmObj lst, ScmObj idx)
 }
 
 ScmObj
-scm_p_srfi1_split_atd(ScmObj lst, ScmObj idx)
+scm_p_srfi1_split_atx(ScmObj lst, ScmObj idx)
 {
     ScmObj drop = scm_p_srfi1_drop(lst, idx);
     DECLARE_FUNCTION("split-at!", procedure_fixed_2);
 
-    return scm_p_values(LIST_2(scm_p_srfi1_taked(lst, idx),
+    return scm_p_values(LIST_2(scm_p_srfi1_takex(lst, idx),
                                drop));
 }
 

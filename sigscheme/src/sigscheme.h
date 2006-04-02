@@ -968,7 +968,7 @@ ScmObj scm_s_quote(ScmObj datum, ScmObj env);
 ScmObj scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env);
 ScmObj scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest,
                 ScmEvalState *eval_state);
-ScmObj scm_s_setd(ScmObj var, ScmObj val, ScmObj env);
+ScmObj scm_s_setx(ScmObj var, ScmObj val, ScmObj env);
 ScmObj scm_s_cond(ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_s_case(ScmObj key, ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_s_and(ScmObj args, ScmEvalState *eval_state);
@@ -1010,8 +1010,8 @@ ScmObj scm_p_car(ScmObj obj);
 ScmObj scm_p_cdr(ScmObj obj);
 ScmObj scm_p_pairp(ScmObj obj);
 ScmObj scm_p_cons(ScmObj car, ScmObj cdr);
-ScmObj scm_p_set_card(ScmObj pair, ScmObj car);
-ScmObj scm_p_set_cdrd(ScmObj pair, ScmObj cdr);
+ScmObj scm_p_set_carx(ScmObj pair, ScmObj car);
+ScmObj scm_p_set_cdrx(ScmObj pair, ScmObj cdr);
 ScmObj scm_p_caar(ScmObj lst);
 ScmObj scm_p_cadr(ScmObj lst);
 ScmObj scm_p_cdar(ScmObj lst);
@@ -1097,7 +1097,7 @@ ScmObj scm_p_make_string(ScmObj length, ScmObj args);
 ScmObj scm_p_string(ScmObj args);
 ScmObj scm_p_string_length(ScmObj str);
 ScmObj scm_p_string_ref(ScmObj str, ScmObj k);
-ScmObj scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch);
+ScmObj scm_p_string_setx(ScmObj str, ScmObj k, ScmObj ch);
 ScmObj scm_p_stringequalp(ScmObj str1, ScmObj str2);
 ScmObj scm_p_string_ci_equalp(ScmObj str1, ScmObj str2);
 ScmObj scm_p_string_greaterp(ScmObj str1, ScmObj str2);
@@ -1113,7 +1113,7 @@ ScmObj scm_p_string_append(ScmObj args);
 ScmObj scm_p_string2list(ScmObj str);
 ScmObj scm_p_list2string(ScmObj lst);
 ScmObj scm_p_string_copy(ScmObj str);
-ScmObj scm_p_string_filld(ScmObj str, ScmObj ch);
+ScmObj scm_p_string_fillx(ScmObj str, ScmObj ch);
 #endif /* SCM_USE_STRING */
 
 #if SCM_USE_VECTOR
@@ -1123,10 +1123,10 @@ ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
 ScmObj scm_p_vector(ScmObj args);
 ScmObj scm_p_vector_length(ScmObj vec);
 ScmObj scm_p_vector_ref(ScmObj vec, ScmObj _k);
-ScmObj scm_p_vector_setd(ScmObj vec, ScmObj _k, ScmObj obj);
+ScmObj scm_p_vector_setx(ScmObj vec, ScmObj _k, ScmObj obj);
 ScmObj scm_p_vector2list(ScmObj vec);
 ScmObj scm_p_list2vector(ScmObj lst);
-ScmObj scm_p_vector_filld(ScmObj vec, ScmObj fill);
+ScmObj scm_p_vector_fillx(ScmObj vec, ScmObj fill);
 #endif /* SCM_USE_VECTOR */
 
 #if SCM_USE_DEEP_CADRS
@@ -1246,7 +1246,7 @@ ScmObj scm_p_lengthstar(ScmObj lst);
 /* module-siod.c */
 void   scm_initialize_siod(void);
 ScmObj scm_p_symbol_value(ScmObj var);
-ScmObj scm_p_set_symbol_valued(ScmObj var, ScmObj val);
+ScmObj scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
 ScmObj scm_p_siod_equal(ScmObj obj1, ScmObj obj2);
 ScmObj scm_p_the_environment(ScmEvalState *eval_state);
 ScmObj scm_p_closure_code(ScmObj closure);
@@ -1288,10 +1288,10 @@ ScmObj scm_p_srfi1_take(ScmObj lst, ScmObj scm_idx);
 ScmObj scm_p_srfi1_drop(ScmObj lst, ScmObj scm_idx);
 ScmObj scm_p_srfi1_take_right(ScmObj lst, ScmObj scm_elem);
 ScmObj scm_p_srfi1_drop_right(ScmObj lst, ScmObj scm_elem);
-ScmObj scm_p_srfi1_taked(ScmObj lst, ScmObj scm_idx);
-ScmObj scm_p_srfi1_drop_rightd(ScmObj lst, ScmObj scm_idx);
+ScmObj scm_p_srfi1_takex(ScmObj lst, ScmObj scm_idx);
+ScmObj scm_p_srfi1_drop_rightx(ScmObj lst, ScmObj scm_idx);
 ScmObj scm_p_srfi1_split_at(ScmObj lst, ScmObj idx);
-ScmObj scm_p_srfi1_split_atd(ScmObj lst, ScmObj idx);
+ScmObj scm_p_srfi1_split_atx(ScmObj lst, ScmObj idx);
 ScmObj scm_p_srfi1_last(ScmObj lst);
 ScmObj scm_p_srfi1_last_pair(ScmObj lst);
 ScmObj scm_p_srfi1_lengthplus(ScmObj lst);

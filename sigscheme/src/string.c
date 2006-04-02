@@ -207,7 +207,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
 }
 
 ScmObj
-scm_p_string_setd(ScmObj str, ScmObj k, ScmObj ch)
+scm_p_string_setx(ScmObj str, ScmObj k, ScmObj ch)
 {
     scm_int_t idx;
     scm_ichar_t ch_val;
@@ -636,7 +636,7 @@ scm_p_string_copy(ScmObj str)
 }
 
 ScmObj
-scm_p_string_filld(ScmObj str, ScmObj ch)
+scm_p_string_fillx(ScmObj str, ScmObj ch)
 {
     size_t str_len;
     char *dst;

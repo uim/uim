@@ -463,7 +463,7 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
 ScmObj
-scm_s_setd(ScmObj sym, ScmObj exp, ScmObj env)
+scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled;
     ScmRef locally_bound;
