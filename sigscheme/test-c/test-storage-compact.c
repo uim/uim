@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : test-compact.c
+ *  FileName : test-storage-compact.c
  *  About    : scheme object compacting test
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
@@ -31,6 +31,9 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
+/* FIXME: Rename to test_storage_compact.c and adapt to Cutter testing
+ * framework */
 
 #include "config.h"
 
