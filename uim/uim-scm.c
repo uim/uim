@@ -31,9 +31,18 @@
 
 */
 
-/* FIXME: Temporary solution. Use sigscheme-combined.c instead */
+/*
+ * To avoid namespace pollution, all SigScheme functions and variables
+ * are defined as static and wrapped into uim-scm.c by direct
+ * inclusion instead of being linked via public symbols.
+ *   -- YamaKen 2004-12-21, 2005-01-10, 2006-04-02
+ */
 /* This file must be included before uim's config.h */
-#include "sigscheme-combined.h"
+#include "sigscheme-combined.c"
+
+/* Temporary solution */
+#undef FALSEP
+#undef NFALSEP
 
 #include "config.h"
 
@@ -41,8 +50,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "sigscheme.h"
-#include "encoding.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"

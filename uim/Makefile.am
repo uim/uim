@@ -86,7 +86,6 @@ libuimincludedir =  $(includedir)/uim
 
 libuim_la_LDFLAGS = -version-info $(libuim_version) -export-symbols-regex uim.\*
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ \
-		   $(top_builddir)/sigscheme/src/libsscm.la \
 		   $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) \
 		     -I$(top_srcdir) -I$(top_srcdir)/sigscheme/src \
