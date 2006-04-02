@@ -96,7 +96,7 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
 #endif
   val_ = uim_scm_symbol_value(symbol_str);
 
-  if NFALSEP(val_) {
+  if (UIM_SCM_NFALSEP(val_)) {
     val = uim_scm_c_int(val_);
   } else {
     val = 0;
@@ -141,7 +141,7 @@ uim_scm_symbol_value_str_internal(const char *symbol_str)
 #endif
   val_ = uim_scm_symbol_value(symbol_str);
 
-  if NFALSEP(val_) {
+  if (UIM_SCM_NFALSEP(val_)) {
     val = uim_scm_c_str(val_);
   } else {
     val = NULL;
@@ -207,7 +207,7 @@ uim_scm_symbol_value(const char *symbol_str)
 {
   LISP symbol_str_ = rintern(symbol_str);
   
-  if TRUEP((uim_lisp)symbol_boundp(symbol_str_, NIL)) {
+  if (UIM_SCM_NFALSEP((uim_lisp)symbol_boundp(symbol_str_, NIL))) {
     return (uim_lisp)symbol_value(symbol_str_, NIL);         
   } else {
     return uim_scm_f();
@@ -336,7 +336,7 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
 char *
 uim_scm_c_str_failsafe(uim_lisp str)
 {
-  return (NFALSEP(str)) ? uim_scm_c_str(str) : strdup("");
+  return (UIM_SCM_NFALSEP(str)) ? uim_scm_c_str(str) : strdup("");
 }
 
 char **

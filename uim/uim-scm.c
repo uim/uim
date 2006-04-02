@@ -96,7 +96,7 @@ uim_scm_set_output(FILE *fp)
 uim_bool
 uim_scm_c_bool(uim_lisp val)
 {
-  return NFALSEP(val);
+  return UIM_SCM_NFALSEP(val);
 }
 
 uim_lisp
@@ -299,7 +299,7 @@ uim_scm_load_file(const char *fn)
     return UIM_FALSE;
 
   UIM_EVAL_FSTRING1(NULL, "(*catch 'errobj (load \"%s\" #f #f))", fn);
-  succeeded = FALSEP(uim_scm_return_value()); /* has not been caught */
+  succeeded = UIM_SCM_FALSEP(uim_scm_return_value()); /* has not been caught */
 
   return succeeded;
 }
@@ -355,7 +355,7 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  return NFALSEP((uim_lisp)string_equal((LISP)a, (LISP)b));
+  return UIM_SCM_NFALSEP((uim_lisp)string_equal((LISP)a, (LISP)b));
 }
 
 uim_lisp

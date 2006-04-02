@@ -57,6 +57,30 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Deprecate truth predicates for uim-scm
+Affects: uim developers, IM developers
+Updates: C API (uim-scm)
+Version: 1.1.0
+Revision: ac3218
+Date: 2006-04-02
+Modifier: YamaKen
+Related: Introduction of combined-source version of SigScheme on r5rs branch
+URL:
+Changes:
+         (new) UIM_SCM_FALSEP
+         (new) UIM_SCM_NFALSEP
+  (deprecated) FALSEP
+  (deprecated) NFALSEP
+  (deprecated) TRUEP
+  (deprecated) NTRUEP
+Description:
+  The non-prefixed version macros conflict with SigScheme's internal ones when
+  the uim-scm.c include the combined-source version of SigScheme. And they may
+  also conflict with other headers on uim plugins that link with non-uim
+  libraries. So it should be prefixed. Although the old macros are still
+  available, it should be replaced with the new ones until the r5rs branch is
+  merged into trunk.
+------------------------------------------------------------------------------
 Summary: Rename uim-switch-im to im-switch-im
 Affects: uim developers
 Updates: Scheme API
