@@ -79,6 +79,8 @@ output_with_escape(const char *str)
 	  for (i = 0; i < strlen(str); i ++) {
 		if (str[i] == '"') 
 		  a_printf("\\\"");
+		else if (str[i] == '\\') 
+		  a_printf("\\\\");
 		else
 		  a_putchar(str[i]);
 	  }
