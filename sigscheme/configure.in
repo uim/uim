@@ -193,10 +193,15 @@ AM_CONDITIONAL(USE_NULL_CAPABLE_STRING, test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_STORAGE_COMPACT,     test "x$use_no" = xyes)
 
 AC_CONFIG_FILES([Makefile
+                 doc/Makefile
                  m4/Makefile
                  tools/Makefile
+                 misc/Makefile
                  src/Makefile
-                 test-c/Makefile])
+                 test/Makefile
+                 test-c/Makefile
+                 bench/Makefile
+                 experimental/Makefile])
 
 AC_SUBST(objdir)
 

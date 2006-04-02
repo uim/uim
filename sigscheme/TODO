@@ -2,11 +2,9 @@
 Requirements and critical bugs:
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
-  - Prepare replace functions (asprintf and so on)
   - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC
-  - Generate and pack sigschemefunctable*.[hc] into distribution file by make
-    dist, and make ruby not required for tarball build
+  - Make ruby not required for tarball build
   - Check pointer alignment to ensure stack GC workable
     * for example, gcc -Os on x86 breaks the alignment
 
