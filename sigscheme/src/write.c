@@ -193,7 +193,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 #endif
     switch (SCM_TYPE(obj)) {
     case ScmInt:
-        scm_format(port, SCM_FMT_RAW_C, "~D", SCM_INT_VALUE(obj));
+        scm_format(port, SCM_FMT_RAW_C, "~MD", SCM_INT_VALUE(obj));
         break;
     case ScmCons:
         if (ERROBJP(obj))
