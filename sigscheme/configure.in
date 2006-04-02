@@ -194,6 +194,7 @@ AM_CONDITIONAL(USE_STORAGE_COMPACT,     test "x$use_no" = xyes)
 
 AC_CONFIG_FILES([Makefile
                  m4/Makefile
+                 tools/Makefile
                  src/Makefile
                  test-c/Makefile])
 

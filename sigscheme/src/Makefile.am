@@ -1,8 +1,10 @@
 #noinst_LTLIBRARIES = libsscm.la
 lib_LTLIBRARIES = libsscm.la
 
-SCRIPT_DIR = ./script
+SCRIPT_DIR = $(top_srcdir)/tools
 BUILD_FUNCTBL = $(SCRIPT_DIR)/build_func_table.rb
+BUILD_FUNCTBL_CMD = \
+        ruby -I$(top_srcdir)/tools $(SCRIPT_DIR)/build_func_table.rb
 BUILD_FUNCTBL_DEPS = \
         $(BUILD_FUNCTBL) \
         $(SCRIPT_DIR)/scm_decl.rb \
@@ -63,36 +65,37 @@ clean-func-tables:
 	rm -rf $(FUNC_TABLES)
 
 functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_sscm_core_func_info_table" $(SSCM_PROC_SRCS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_core_func_info_table" \
+	  $(SSCM_PROC_SRCS)
 functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_r5rs_syntax_func_info_table" syntax.c
+	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_syntax_func_info_table" syntax.c
 functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_r5rs_procedure_func_info_table" \
+	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
 functable-sscm-ext.c: module-sscm-ext.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_sscm_ext_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_ext_func_info_table" $<
 functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi1_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi1_func_info_table" $<
 functable-srfi2.c: module-srfi2.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi2_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi2_func_info_table" $<
 functable-srfi6.c: module-srfi6.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi6_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi6_func_info_table" $<
 functable-srfi8.c: module-srfi8.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi8_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi8_func_info_table" $<
 functable-srfi23.c: module-srfi23.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi23_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi23_func_info_table" $<
 functable-srfi28.c: module-srfi28.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi28_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi28_func_info_table" $<
 functable-srfi34.c: module-srfi34.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi34_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi34_func_info_table" $<
 functable-srfi38.c: module-srfi38.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi38_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi38_func_info_table" $<
 functable-srfi48.c: module-srfi48.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi48_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi48_func_info_table" $<
 functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_srfi60_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi60_func_info_table" $<
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL) $@ "scm_siod_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
 
 sigscheme-combined.c: $(libsscm_la_SOURCES)
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@

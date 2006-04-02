@@ -33,9 +33,9 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #===========================================================================
 
-require 'script/scm_decl.rb'
+require 'scm_decl.rb'
 
-DATA_DIR    = "./script"
+DATA_DIR    = "../tools"  # FIXME: make specifiable via commandline option
 FILE_HEADER = "#{DATA_DIR}/functable-header.txt"
 FILE_FOOTER = "#{DATA_DIR}/functable-footer.txt"
 
