@@ -99,24 +99,54 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	@echo >>$@
 	@echo '#include "sigscheme-combined.h"' >>$@
 	@echo >>$@
-	@for file in $^ $>; do                          \
-	    case $$file in                              \
+	@for src in $^ $>; do                           \
+	    case $$src in                               \
 	    *.c)                                        \
 		echo $(ECHO_N) '#include "' >>$@;       \
-		echo $(ECHO_N) $$file >>$@;             \
+		echo $(ECHO_N) $$src >>$@;              \
 		echo '"' >>$@;                          \
 		;;                                      \
 	    esac                                        \
+	done
+	@echo >>$@
+	@echo '#include "sigscheme-combined-trim.h"' >>$@
+
+# Internal macros trimmer for combined-source version of SigScheme
+# files listed in $pkginclude_HEADERS are also handled as failsafe processing
+sigscheme-combined-trim.h: $(libsscm_la_SOURCES)
+	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
+	@for src in $^ $>; do                   \
+	    case $$src in                       \
+	    config.h)          ;;               \
+	    my-stdint.h)       ;;               \
+	    scmint.h)          ;;               \
+	    encoding.h)        ;;               \
+	    encoding-config.h) ;;               \
+	    scmport.h)         ;;               \
+	    scmport-config.h)  ;;               \
+	    scmport-null.h)    ;;               \
+	    scmport-file.h)    ;;               \
+	    scmport-str.h)     ;;               \
+	    scmport-sbchar.h)  ;;               \
+	    scmport-mbchar.h)  ;;               \
+	    storage-*.h)       ;;               \
+	    sigscheme.h)       ;;               \
+	    *)                                  \
+		echo >>$@;                      \
+		perl -ne 'BEGIN { print "/* $$ARGV[0] */\n"; } if (s/^\s*#define\s+(\w+).*$$/#undef \1/) { print if (!$$macros{$$1} && $$1 !~ /^__\w+_H$$/); $$macros{$$1} = true; }' $$src >>$@; \
+		;;                              \
+	    esac                                \
 	done
 
 # Since no target of sigscheme directory uses sigscheme-combined.h as source,
 # the file is not listed into *_HEADERS.
 EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) test-compact.c \
-             sigscheme-combined.h template.h template.c
+             sigscheme-combined.h sigscheme-combined-trim.h \
+             template.h template.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.
-BUILT_SOURCES = $(FUNC_TABLES) sigscheme-combined.c
+BUILT_SOURCES = $(FUNC_TABLES) sigscheme-combined-trim.h sigscheme-combined.c
 
 pkginclude_HEADERS = sigscheme.h config.h my-stdint.h scmint.h
 
@@ -220,6 +250,6 @@ sscm_SOURCES  = main.c
 sscm_CFLAGS   = -Wall
 sscm_LDADD    = $(top_builddir)/src/libsscm.la
 
-# To enable ruby-less build on tarball distribution, we should not delete
-# $(FUNC_TABLES) here.
+# To enable ruby-and-perl-less build on tarball distribution, we should not
+# delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
 CLEANFILES = sigscheme-combined.c

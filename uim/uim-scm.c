@@ -40,10 +40,6 @@
 /* This file must be included before uim's config.h */
 #include "sigscheme-combined.c"
 
-/* Temporary solution */
-#undef FALSEP
-#undef NFALSEP
-
 #include "config.h"
 
 #include <stdio.h>
