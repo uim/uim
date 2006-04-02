@@ -69,10 +69,6 @@ static uim_lisp uim_scm_eval_internal(uim_lisp obj);
 static uim_lisp uim_scm_eval_c_string_internal(const char *str);
 #endif
 
-static uim_lisp true_sym;
-static uim_lisp false_sym;
-static uim_lisp protected_arg0;
-
 static int uim_siod_fatal;
 static FILE *uim_output = NULL;
 
@@ -617,10 +613,6 @@ uim_scm_init(const char *verbose_level)
   scm_use("srfi-23");
   scm_use("srfi-34");
   scm_use("siod");
-
-  true_sym  = (uim_lisp)SCM_TRUE;
-  false_sym = (uim_lisp)SCM_FALSE;
-  protected_arg0 = uim_scm_f();
 
   uim_scm_set_verbose_level(vlevel);
 }
