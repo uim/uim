@@ -72,7 +72,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-const char *scm_lib_path = NULL;
+static const char *scm_lib_path = NULL;
 
 /*=======================================
   File Local Function Declarations
@@ -102,6 +102,15 @@ scm_set_lib_path(const char *path)
         ERR("library path must be absolute but got: ~S", path);
 
     scm_lib_path = path;
+}
+
+/* SigScheme specific procedure (SIOD compatible) */
+ScmObj
+scm_p_load_path(void)
+{
+    DECLARE_FUNCTION("load-path", procedure_fixed_0);
+
+    return CONST_STRING(scm_lib_path);
 }
 
 /*===========================================================================

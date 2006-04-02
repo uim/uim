@@ -101,10 +101,6 @@ ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
 static ScmObj **protected_vars;
 static size_t protected_vars_size, n_empty_protected_vars;
 
-/* storage-symbol.c */
-extern ScmObj *scm_symbol_hash;
-extern size_t scm_symbol_hash_size;
-
 /*=======================================
   File Local Function Declarations
 =======================================*/

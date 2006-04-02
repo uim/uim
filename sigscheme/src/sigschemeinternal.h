@@ -526,6 +526,11 @@ extern void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
 extern ScmObj scm_null_values;
 #endif
 
+/* storage-symbol.c */
+/* Only permitted to storage-gc.c */
+extern ScmObj *scm_symbol_hash;
+extern size_t scm_symbol_hash_size;
+
 /*=======================================
   Function Declarations
 =======================================*/

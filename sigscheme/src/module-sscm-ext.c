@@ -60,9 +60,6 @@
 =======================================*/
 #include "functable-sscm-ext.c"
 
-/* load.c */
-extern const char *scm_lib_path;
-
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -126,15 +123,6 @@ scm_p_greatest_fixnum(void)
     DECLARE_FUNCTION("greatest-fixnum", procedure_fixed_0);
 
     return MAKE_INT(SCM_INT_MAX);
-}
-
-/* SIOD compatible */
-ScmObj
-scm_p_load_path(void)
-{
-    DECLARE_FUNCTION("load-path", procedure_fixed_0);
-
-    return CONST_STRING(scm_lib_path);
 }
 
 void
