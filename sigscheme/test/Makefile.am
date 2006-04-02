@@ -50,6 +50,3 @@ EXTRA_DIST = \
         bigloo-vector.scm \
         gauche-euc-jp.scm \
         gauche-primsyn.scm
-
-# FIXME: remove these files
-EXTRA_DIST += define.scm for-each.scm io.scm
