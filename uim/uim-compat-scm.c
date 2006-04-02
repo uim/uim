@@ -88,7 +88,7 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
 #endif
   val_ = uim_scm_symbol_value(symbol_str);
 
-  if NFALSEP(val_) {
+  if (UIM_SCM_NFALSEP(val_)) {
     val = uim_scm_c_int(val_);
   } else {
     val = 0;
@@ -133,7 +133,7 @@ uim_scm_symbol_value_str_internal(const char *symbol_str)
 #endif
   val_ = uim_scm_symbol_value(symbol_str);
 
-  if NFALSEP(val_) {
+  if (UIM_SCM_NFALSEP(val_)) {
     val = uim_scm_c_str(val_);
   } else {
     val = NULL;
@@ -329,7 +329,7 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
 char *
 uim_scm_c_str_failsafe(uim_lisp str)
 {
-  return (NFALSEP(str)) ? uim_scm_c_str(str) : strdup("");
+  return (UIM_SCM_NFALSEP(str)) ? uim_scm_c_str(str) : strdup("");
 }
 
 char **

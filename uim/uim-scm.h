@@ -78,11 +78,16 @@ extern "C" {
 typedef struct uim_opaque * uim_lisp;
 typedef void (*uim_func_ptr)(void);
 
+#define UIM_SCM_FALSEP(x)  (uim_scm_eq((x), uim_scm_f()))
+#define UIM_SCM_NFALSEP(x) (!uim_scm_eq((x), uim_scm_f()))
+
+#if 1
+/* deprecated: replace with UIM_SCM_N?FALSEP() */
+#define FALSEP(x)  (UIM_SCM_FALSEP(x))
+#define NFALSEP(x) (UIM_SCM_NFALSEP(x))
 #define TRUEP(x) (uim_scm_eq(x, uim_scm_t()))
-#define FALSEP(x) (uim_scm_eq(x, uim_scm_f()))
- 
 #define NTRUEP(x) (!uim_scm_eq(x, uim_scm_t()))
-#define NFALSEP(x) (!uim_scm_eq(x, uim_scm_f()))
+#endif
 
 
 #if UIM_SCM_GCC4_READY_GC

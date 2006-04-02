@@ -57,6 +57,108 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Deprecate truth predicates for uim-scm
+Affects: uim developers, IM developers
+Updates: C API (uim-scm)
+Version: 1.1.0
+Revision: ac3218, ac3219
+Date: 2006-04-02
+Modifier: YamaKen
+Related: Introduction of combined-source version of SigScheme on r5rs branch
+URL:
+Changes:
+         (new) UIM_SCM_FALSEP
+         (new) UIM_SCM_NFALSEP
+  (deprecated) FALSEP
+  (deprecated) NFALSEP
+  (deprecated) TRUEP
+  (deprecated) NTRUEP
+Description:
+  The non-prefixed version macros conflict with SigScheme's internal ones when
+  the uim-scm.c include the combined-source version of SigScheme. And they may
+  also conflict with other headers on uim plugins that link with non-uim
+  libraries. So it should be prefixed. Although the old macros are still
+  available, it should be replaced with the new ones until the r5rs branch is
+  merged into trunk.
+------------------------------------------------------------------------------
+Summary: Rename uim-switch-im to im-switch-im
+Affects: uim developers
+Updates: Scheme API
+Version: 1.1.0
+Revision: ac3151
+Date: 2006-03-02
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (removed) uim-switch-im
+      (new) im-switch-im
+Description:
+  Rename the inappropriate procedure name. And make the argument
+  raw-context acceptable with retrieve_uim_context(), likewise other
+  im-* procedures.
+------------------------------------------------------------------------------
+Summary: Context-originated IM switching of other contexts
+Affects: Bridge developers
+Updates: C API, Scheme API
+Version: 1.1.0
+Revision: ac3147, ac3148, ac3150, ac3151
+Date: 2006-02-24
+Modifier: YamaKen, Etsushi
+Related: action-based IM switcher
+URL:
+Changes:
+  (new) uim_set_im_switch_request_cb()
+  (new) im-switch-app-global-im
+  (new) im-switch-system-global-im
+Description:
+  These APIs are used for IM switching of specific set of contexts other than
+  currently focused context. It ordinarily issued in response to
+  action_imsw_*, and can be used for switching by keystroke.
+------------------------------------------------------------------------------
+Summary: Obsolete prop_label handlings
+Affects: Helper program developers, Bridge developers
+Updates: Helper protocol, Scheme API
+Version: 1.1.0
+Revision: ac3122, ac3123, ac3125, ac3131
+Date: 2006-02-20
+Modifier: Etsushi, YamaKen
+Related: "Add icon support to helper protocol"
+URL:
+Changes:
+    (removed) "prop_label_get"
+    (removed) "prop_label_update"
+    (removed) im-update-prop-label
+  (obsoleted) uim_set_prop_label_update_cb
+  (obsoleted) uim_prop_label_update
+Description:
+  The prop_label messages had already lost its original role by revised
+  prop_list message (particularly 'activity' field). Because format revision
+  of prop_list_update broke the protocol compatibility, it is good opportunity
+  to remove the unusable message.
+  
+  Although C API/ABI is kept to be backward compatible with uim 1.0, bridges
+  and helper programs should remove prop_label handlings.
+------------------------------------------------------------------------------
+Summary: Add icon support to helper protocol
+Affects: Helper program developers
+Updates: Helper protocol
+Version: 1.1.0
+Revision: ac3110
+Date: 2006-02-18
+Modifier: YamaKen
+Related:
+URL:
+  http://lists.freedesktop.org/archives/uim/2006-February/001434.html
+Changes:
+  (update) "prop_list_update"
+Description:
+  Add 'indication_id' attribute to the message to support icons on
+  toolbars. And a special indication_id "separator" is also defined.
+  
+  The message format have been incompatible with former one. Helper program
+  developers, please read doc/HELPER-PROTOCOL and follow the change.
+------------------------------------------------------------------------------
 Summary: Rename is-set-ugid? to follow the Scheme naming convention
 Affects: IM developers, uim developers
 Updates: Scheme API

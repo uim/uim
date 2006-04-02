@@ -95,10 +95,10 @@ intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
   uim_lisp current_codeset;
 
   if (!uim_scm_stringp(domainname)
-      || !(uim_scm_stringp(codeset) || FALSEP(codeset)))
+      || !(uim_scm_stringp(codeset) || UIM_SCM_FALSEP(codeset)))
     return uim_scm_f();
 
-  c_codeset = (FALSEP(codeset)) ? NULL : uim_scm_refer_c_str(codeset);
+  c_codeset = (UIM_SCM_FALSEP(codeset)) ? NULL : uim_scm_refer_c_str(codeset);
   c_current_codeset = bind_textdomain_codeset(uim_scm_refer_c_str(domainname),
 					      c_codeset);
   if (c_current_codeset) {

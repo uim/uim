@@ -120,7 +120,7 @@ uim_scm_set_output(FILE *fp)
 uim_bool
 uim_scm_c_bool(uim_lisp val)
 {
-  return NFALSEP(val);
+  return UIM_SCM_NFALSEP(val);
 }
 
 uim_lisp
