@@ -860,7 +860,7 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
 
   hs = uim_scm_refer_c_str(head_);
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     rs = replace_numeric(hs);
 
   if (okuri_ != uim_scm_null_list())
@@ -1094,7 +1094,7 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_,
   if (ca && ca->nr_cands > 0 && !is_purged_only(ca))
       return uim_scm_t();
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     return skk_get_entry(head_, okuri_head_, okuri_, uim_scm_f());
 
   return uim_scm_f();
@@ -1631,7 +1631,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
   
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   n = uim_scm_c_int(nth_);
@@ -1720,7 +1720,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!uim_scm_nullp(numlst_))
@@ -1789,7 +1789,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look
     }
   }
 
-  if NFALSEP(use_look_)
+  if UIM_SCM_NFALSEP(use_look_)
     look_get_comp(ca, s);
 
   if (ca->nr_comps == 0) {
@@ -1831,7 +1831,7 @@ find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
   
   hs = uim_scm_refer_c_str(head_);
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     rs = replace_numeric(hs);
 
   if (!rs)
@@ -1853,7 +1853,7 @@ skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
     return uim_scm_t();
   }
 
-  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (UIM_SCM_NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
     return skk_get_completion(head_, uim_scm_f(), use_look_);
 
   return uim_scm_f();
@@ -1868,7 +1868,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_,
   char *str;
   uim_lisp numlst_ = uim_scm_null_list();
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!uim_scm_nullp(numlst_))
@@ -1909,7 +1909,7 @@ skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look
   if (ca)
     n = ca->nr_comps;
 
-  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (UIM_SCM_NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
     return uim_scm_make_int(n +
 		    uim_scm_c_int(skk_get_nr_completions(head_, uim_scm_f(), use_look_))); 
 
@@ -1926,7 +1926,7 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
 
   hs = uim_scm_refer_c_str(head_);
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     rs = replace_numeric(hs);
 
   if (!rs)
@@ -1966,7 +1966,7 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
     }
   }
 
-  if (NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (UIM_SCM_NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
     skk_clear_completions(head_, uim_scm_f());
 
   return uim_scm_t();
@@ -2017,7 +2017,7 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
   numlst_ = uim_scm_null_list();
   hs = uim_scm_refer_c_str(head_);
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!uim_scm_nullp(numlst_)) {
@@ -2035,9 +2035,9 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 			sl->state & SKK_LINE_USE_FOR_COMPLETION)
 	  return uim_scm_make_str(sl->head);
       }
-      if NFALSEP(use_look_) {
+      if UIM_SCM_NFALSEP(use_look_) {
 	look_ = look_get_top_word(hs);
-	if NFALSEP(look_)
+	if UIM_SCM_NFALSEP(look_)
 	  return look_;
       }
     } else {
@@ -2049,10 +2049,10 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 	  return restore_numeric(sl->head, numlst_);
 	}
       }
-      if NFALSEP(use_look_) {
+      if UIM_SCM_NFALSEP(use_look_) {
 	look_ = look_get_top_word(rs);
 	free(rs);
-	if NFALSEP(look_)
+	if UIM_SCM_NFALSEP(look_)
 	  return look_;
       } else {
 	free(rs);
@@ -2347,7 +2347,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   nth = uim_scm_c_int(nth_);
@@ -2494,7 +2494,7 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
   uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if NFALSEP(numeric_conv_)
+  if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!uim_scm_nullp(numlst_))

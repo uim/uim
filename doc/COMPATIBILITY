@@ -61,7 +61,7 @@ Summary: Deprecate truth predicates for uim-scm
 Affects: uim developers, IM developers
 Updates: C API (uim-scm)
 Version: 1.1.0
-Revision: ac3218
+Revision: ac3218, ac3219
 Date: 2006-04-02
 Modifier: YamaKen
 Related: Introduction of combined-source version of SigScheme on r5rs branch

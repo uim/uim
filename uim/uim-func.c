@@ -608,7 +608,7 @@ im_shift_page_candidate(uim_lisp id_, uim_lisp dir_)
   uim_context uc = retrieve_uim_context(id_);
   int dir;
 
-  if FALSEP(dir_)
+  if UIM_SCM_FALSEP(dir_)
     dir = 0;
   else
     dir = 1;

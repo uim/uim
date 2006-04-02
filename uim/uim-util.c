@@ -244,7 +244,7 @@ rk_find_seq(uim_lisp seq, uim_lisp rules)
   for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
     uim_lisp rule = uim_scm_car(rules);
     uim_lisp key = uim_scm_car(uim_scm_car(rule));
-    if NFALSEP(str_seq_equal(seq, key)) {
+    if UIM_SCM_NFALSEP(str_seq_equal(seq, key)) {
       return rule;
     }
   }
@@ -257,7 +257,7 @@ rk_find_partial_seq(uim_lisp seq, uim_lisp rules)
   for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
     uim_lisp rule = uim_scm_car(rules);
     uim_lisp key = uim_scm_car(uim_scm_car(rule));
-    if NFALSEP(str_seq_partial(seq, key)) {
+    if UIM_SCM_NFALSEP(str_seq_partial(seq, key)) {
       return rule;
     }
   }
@@ -276,7 +276,7 @@ rk_expect_seq(uim_lisp seq, uim_lisp rules)
     uim_lisp rule = uim_scm_car(cur);
     uim_lisp key = uim_scm_caar(rule);
     uim_lisp e = str_seq_partial(seq, key);
-    if NFALSEP(e) {
+    if UIM_SCM_NFALSEP(e) {
       res = uim_scm_cons(e, res);
     }
   }
@@ -306,7 +306,7 @@ c_setenv(uim_lisp name_, uim_lisp val_, uim_lisp overwrite_)
 {
   const char *name = uim_scm_refer_c_str(name_);
   const char *val = uim_scm_refer_c_str(val_);
-  int overwrite = NFALSEP(overwrite_);
+  int overwrite = UIM_SCM_NFALSEP(overwrite_);
   int err;
 
   if (!name || !val) {
@@ -519,7 +519,7 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
       }
     } else {
       pair = shift_elems(rests);
-      if (FALSEP(pair)) {
+      if (UIM_SCM_FALSEP(pair)) {
 	elms = rests = uim_scm_null_list();
       } else {
 	elms = uim_scm_car(pair);
@@ -533,7 +533,7 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
     mapped = uim_scm_eval(form);
     termp = uim_scm_car(mapped);
     res = uim_scm_cdr(mapped);
-  } while (FALSEP(termp));
+  } while (UIM_SCM_FALSEP(termp));
 
   return res;
 }
@@ -546,7 +546,7 @@ find_tail(uim_lisp pred, uim_lisp lst)
   for (; !uim_scm_nullp(lst); lst = uim_scm_cdr(lst)) {
     elem = uim_scm_car(lst);
     form = uim_scm_list2(pred, uim_scm_quote(elem));
-    if (NFALSEP(uim_scm_eval(form)))
+    if (UIM_SCM_NFALSEP(uim_scm_eval(form)))
       return lst;
   }
 
