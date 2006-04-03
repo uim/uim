@@ -53,11 +53,21 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
+/* Consumes sizeof(void *) per struct to suppress the extra semicolon warnings
+ * by default. To turn it off to minimize memory consumption,
+ * make CPPFLAGS=SCM_NO_GLOBAL_STRUCT_WARNING_SUPPRESSOR=1 */
+#if SCM_NO_GLOBAL_STRUCT_WARNING_SUPPRESSOR
+#define SCM_GLOBAL_STRUCT_WARNING_SUPPRESSOR
+#else /* SCM_NO_GLOBAL_STRUCT_WARNING_SUPPRESSOR */
+#define SCM_GLOBAL_STRUCT_WARNING_SUPPRESSOR void *dummy
+#endif /* SCM_NO_GLOBAL_STRUCT_WARNING_SUPPRESSOR */
+
 #if SCM_WRITABLE_STATICLESS_PLATFORM
 #define SCM_AGGREGATED_GLOBAL_VARS_BEGIN                                     \
     /* dummy statement to prevent static prefix */                           \
     struct scm_v_dummy_aggregated_begin { int dummy; };                      \
-    struct scm_v_aggregated {
+    struct scm_v_aggregated {                                                \
+        SCM_GLOBAL_STRUCT_WARNING_SUPPRESSOR
 #define SCM_AGGREGATED_GLOBAL_VARS(_name)                                    \
         struct scm_v_##_name _name;
 #define SCM_AGGREGATED_GLOBAL_VARS_END                                       \
@@ -102,7 +112,8 @@ extern "C" {
 #endif /* SCM_WRITABLE_STATICLESS_PLATFORM */
 
 #define SCM_GLOBAL_VARS_BEGIN(_namespace)                                    \
-    struct scm_v_##_namespace {
+    struct scm_v_##_namespace {                                              \
+    SCM_GLOBAL_STRUCT_WARNING_SUPPRESSOR
 #define SCM_GLOBAL_VARS_END(_namespace)                                      \
     }
 
