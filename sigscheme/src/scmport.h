@@ -54,6 +54,7 @@ extern "C" {
 =======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
+#include "global.h"
 #include "encoding.h"
 
 /*=======================================
@@ -201,7 +202,7 @@ struct ScmBytePort_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-extern const ScmCharPortVTbl *const ScmBaseCharPort_vptr;
+SCM_EXTERN(const ScmCharPortVTbl *const ScmBaseCharPort_vptr);
 
 /*=======================================
   Function Declarations

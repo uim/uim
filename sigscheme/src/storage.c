@@ -68,15 +68,14 @@
 =======================================*/
 /* multiple values */
 #if SCM_USE_VALUECONS
-ScmObj scm_null_values;
+SCM_DEFINE_EXPORTED_VARS(storage);
 #endif
 
 #if !SCM_OBJ_COMPACT
 /* SCM_OBJ_COMPACT MUST NOT refer these variables. Use SCM_NULL and so on. */
 
 /* constants */
-ScmObj scm_const_null, scm_const_true, scm_const_false, scm_const_eof;
-ScmObj scm_const_unbound, scm_const_undef;
+SCM_DEFINE_EXPORTED_VARS(storage_fatty);
 static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
 #endif

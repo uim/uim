@@ -93,7 +93,7 @@ static const ScmBytePortVTbl ScmNullPort_vtbl = {
     (ScmBytePortMethod_write)      &nullport_write,
     (ScmBytePortMethod_flush)      &nullport_flush
 };
-const ScmBytePortVTbl *const ScmNullPort_vptr = &ScmNullPort_vtbl;
+SCM_EXPORT const ScmBytePortVTbl *const ScmNullPort_vptr = &ScmNullPort_vtbl;
 
 /*=======================================
   Function Implementations

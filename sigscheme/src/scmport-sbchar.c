@@ -79,7 +79,8 @@ static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
   Variable Declarations
 =======================================*/
 static ScmCharPortVTbl ScmSingleByteCharPort_vtbl;
-const ScmCharPortVTbl *ScmSingleByteCharPort_vptr = &ScmSingleByteCharPort_vtbl;
+SCM_EXPORT const ScmCharPortVTbl *ScmSingleByteCharPort_vptr
+    = &ScmSingleByteCharPort_vtbl;
 
 static ScmCharCodec *sbc_codec;
 

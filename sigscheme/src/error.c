@@ -61,7 +61,7 @@
   Variable Declarations
 =======================================*/
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
-const char *scm_err_funcname;
+SCM_DEFINE_EXPORTED_VARS(error);
 #endif
 
 static int debug_mask;

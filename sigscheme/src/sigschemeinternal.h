@@ -47,6 +47,7 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
+#include "global.h"
 #include "sigscheme.h"
 #include "encoding.h"
 #if SCM_USE_PORT
@@ -252,7 +253,12 @@ extern "C" {
 #elif HAVE_GNU_VARIADIC_MACRO
 #define ERR(fmt, args...) (scm_error(SCM_MANGLE(name), fmt, args))
 #else
-extern const char *scm_err_funcname;
+SCM_GLOBAL_VARS_BEGIN(error);
+const char *scm_err_funcname;
+SCM_GLOBAL_VARS_END(error);
+#define scm_err_funcname SCM_GLOBAL_VAR(error, scm_err_funcname)
+SCM_DECLARE_EXPORTED_VARS(error);
+
 void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define ERR (scm_err_funcname = SCM_MANGLE(name)), scm_error_with_implicit_func
 #endif
@@ -510,26 +516,51 @@ struct ScmSpecialCharInfo_ {
   Variable Declarations
 =======================================*/
 /* procedure.c */
-extern ScmCharCodec *scm_identifier_codec;
+SCM_GLOBAL_VARS_BEGIN(procedure);
+ScmCharCodec *scm_identifier_codec;
+SCM_GLOBAL_VARS_END(procedure);
+#define scm_identifier_codec SCM_GLOBAL_VAR(procedure, scm_identifier_codec)
+SCM_DECLARE_EXPORTED_VARS(procedure);
 
 /* port.c */
-extern ScmObj scm_in;
-extern ScmObj scm_out;
-extern ScmObj scm_err;
-extern const ScmSpecialCharInfo scm_special_char_table[];
+SCM_GLOBAL_VARS_BEGIN(port);
+ScmObj scm_in;   /* current-input-port */
+ScmObj scm_out;  /* current-output-port */
+ScmObj scm_err;  /* current error port */
+SCM_GLOBAL_VARS_END(port);
+#define scm_in  SCM_GLOBAL_VAR(port, scm_in)
+#define scm_out SCM_GLOBAL_VAR(port, scm_out)
+#define scm_err SCM_GLOBAL_VAR(port, scm_err)
+SCM_DECLARE_EXPORTED_VARS(port);
+SCM_EXTERN(const ScmSpecialCharInfo scm_special_char_table[]);
 
 /* write.c */
-extern void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
+SCM_GLOBAL_VARS_BEGIN(write);
+void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
+SCM_GLOBAL_VARS_END(write);
+#define scm_write_ss_func SCM_GLOBAL_VAR(write, scm_write_ss_func)
+SCM_DECLARE_EXPORTED_VARS(write);
 
 /* storage.c */
 #if SCM_USE_VALUECONS
-extern ScmObj scm_null_values;
+SCM_GLOBAL_VARS_BEGIN(storage);
+ScmObj scm_null_values;
+SCM_GLOBAL_VARS_END(storage);
+#define scm_null_values SCM_GLOBAL_VAR(storage, scm_null_values)
+SCM_DECLARE_EXPORTED_VARS(storage);
 #endif
 
 /* storage-symbol.c */
 /* Only permitted to storage-gc.c */
-extern ScmObj *scm_symbol_hash;
-extern size_t scm_symbol_hash_size;
+#if SCM_USE_VALUECONS
+SCM_GLOBAL_VARS_BEGIN(symbol);
+ScmObj *scm_symbol_hash;
+size_t scm_symbol_hash_size;
+SCM_GLOBAL_VARS_END(symbol);
+#define scm_symbol_hash      SCM_GLOBAL_VAR(symbol, scm_symbol_hash)
+#define scm_symbol_hash_size SCM_GLOBAL_VAR(symbol, scm_symbol_hash_size)
+SCM_DECLARE_EXPORTED_VARS(symbol);
+#endif
 
 /*=======================================
   Function Declarations

@@ -54,6 +54,7 @@ extern "C" {
 =======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
+#include "global.h"
 
 /*=======================================
   Macro Definitions
@@ -210,7 +211,11 @@ struct ScmCharCodecVTbl_ {
 /*=======================================
   Variable Declarations
 =======================================*/
-extern ScmCharCodec *scm_current_char_codec;
+SCM_GLOBAL_VARS_BEGIN(encoding);
+ScmCharCodec *scm_current_char_codec;
+SCM_GLOBAL_VARS_END(encoding);
+#define scm_current_char_codec SCM_GLOBAL_VAR(encoding, scm_current_char_codec)
+SCM_DECLARE_EXPORTED_VARS(encoding);
 
 /*=======================================
   Function Declarations

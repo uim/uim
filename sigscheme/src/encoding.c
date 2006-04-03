@@ -248,7 +248,7 @@ static ScmCharCodec *const available_codecs[] = {
 /*=======================================
   Global Variables
 =======================================*/
-ScmCharCodec *scm_current_char_codec;
+SCM_DEFINE_EXPORTED_VARS(encoding);
 
 /*=======================================
   Public API

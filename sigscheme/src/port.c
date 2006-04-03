@@ -63,9 +63,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj scm_in;   /* current-input-port */
-ScmObj scm_out;  /* current-output-port */
-ScmObj scm_err;  /* current error port */
+SCM_DEFINE_EXPORTED_VARS(port);
 
 #if (SCM_USE_READER || SCM_USE_WRITER)
 const ScmSpecialCharInfo scm_special_char_table[] = {

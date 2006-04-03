@@ -53,6 +53,7 @@ extern "C" {
 =======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
+#include "global.h"
 #include "encoding.h"
 
 /*=======================================
@@ -872,6 +873,7 @@ typedef ScmObj (*scm_procedure_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmOb
  *
  * Don't access this variables directly. Use SCM_GC_PROTECTED_CALL*() instead.
  */
+/* FIXME: support global.h */
 extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
 #endif /* SCM_GCC4_READY_GC */
 

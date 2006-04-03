@@ -66,7 +66,7 @@ extern "C" {
 /*=======================================
   Variable Declarations
 =======================================*/
-extern const ScmBytePortVTbl *const ScmFilePort_vptr;
+SCM_EXTERN(const ScmBytePortVTbl *const ScmFilePort_vptr);
 
 /*=======================================
   Function Declarations

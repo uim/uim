@@ -56,7 +56,7 @@
   Variable Declarations
 =======================================*/
 /* canonical internal encoding for identifiers */
-ScmCharCodec *scm_identifier_codec;
+SCM_DEFINE_EXPORTED_VARS(procedure);
 
 /*=======================================
   File Local Function Declarations

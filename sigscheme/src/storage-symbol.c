@@ -58,8 +58,7 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-ScmObj *scm_symbol_hash;
-size_t scm_symbol_hash_size;
+SCM_DEFINE_EXPORTED_VARS(symbol);
 
 /*=======================================
   File Local Function Declarations

@@ -101,7 +101,7 @@ typedef struct {
 /*=======================================
   Variable Declarations
 =======================================*/
-void (*scm_write_ss_func)(ScmObj port, ScmObj obj);
+SCM_DEFINE_EXPORTED_VARS(write);
 
 #if SCM_USE_SRFI38
 /* misc info in priting shared structures */

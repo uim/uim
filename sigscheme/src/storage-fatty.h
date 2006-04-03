@@ -481,8 +481,17 @@ ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #define SCM_SAL_EQ(a, b) ((a) == (b))
 
 /* storage.c */
-extern ScmObj scm_const_null, scm_const_true, scm_const_false, scm_const_eof;
-extern ScmObj scm_const_unbound, scm_const_undef;
+SCM_GLOBAL_VARS_BEGIN(storage_fatty);
+ScmObj scm_const_null, scm_const_true, scm_const_false, scm_const_eof;
+ScmObj scm_const_unbound, scm_const_undef;
+SCM_GLOBAL_VARS_END(storage_fatty);
+#define scm_const_null    SCM_GLOBAL_VAR(storage_fatty, scm_const_null)
+#define scm_const_true    SCM_GLOBAL_VAR(storage_fatty, scm_const_true)
+#define scm_const_false   SCM_GLOBAL_VAR(storage_fatty, scm_const_false)
+#define scm_const_eof     SCM_GLOBAL_VAR(storage_fatty, scm_const_eof)
+#define scm_const_unbound SCM_GLOBAL_VAR(storage_fatty, scm_const_unbound)
+#define scm_const_undef   SCM_GLOBAL_VAR(storage_fatty, scm_const_undef)
+SCM_DECLARE_EXPORTED_VARS(storage_fatty);
 
 /*===========================================================================
   Predefined Symbols
@@ -493,9 +502,16 @@ extern ScmObj scm_const_unbound, scm_const_undef;
 #define SCM_SAL_SYM_UNQUOTE          scm_sym_unquote
 #define SCM_SAL_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
 
-/* sigscheme.c */
-extern ScmObj scm_sym_quote, scm_sym_quasiquote;
-extern ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+/* syntax.c */
+SCM_GLOBAL_VARS_BEGIN(syntax);
+ScmObj scm_sym_quote, scm_sym_quasiquote;
+ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+SCM_GLOBAL_VARS_END(syntax);
+#define scm_sym_quote            SCM_GLOBAL_VAR(syntax, scm_sym_quote)
+#define scm_sym_quasiquote       SCM_GLOBAL_VAR(syntax, scm_sym_quasiquote)
+#define scm_sym_unquote          SCM_GLOBAL_VAR(syntax, scm_sym_unquote)
+#define scm_sym_unquote_splicing SCM_GLOBAL_VAR(syntax, scm_sym_unquote_splicing)
+SCM_DECLARE_EXPORTED_VARS(syntax);
 
 #ifdef __cplusplus
 }

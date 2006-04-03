@@ -65,7 +65,7 @@ typedef struct ScmSingleByteCharPort_ ScmSingleByteCharPort;
 /*=======================================
   Variable Declarations
 =======================================*/
-extern const ScmCharPortVTbl *ScmSingleByteCharPort_vptr;
+SCM_EXTERN(const ScmCharPortVTbl *ScmSingleByteCharPort_vptr);
 
 /*=======================================
   Function Declarations

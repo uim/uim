@@ -59,8 +59,7 @@
 =======================================*/
 #include "functable-r5rs-syntax.c"
 
-ScmObj scm_sym_quote, scm_sym_quasiquote;
-ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+SCM_DEFINE_EXPORTED_VARS(syntax);
 
 static ScmObj sym_else, sym_yields;
 #if SCM_STRICT_DEFINE_PLACEMENT

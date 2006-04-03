@@ -55,9 +55,9 @@
 #include "uim-compat-scm.c"
 #endif
 
-/* FIXME: violent internal access */
-extern ScmObj scm_out;
-extern ScmObj scm_err;
+/* FIXME: illegal internal access */
+#define scm_out SCM_GLOBAL_VAR(port, scm_out)
+#define scm_err SCM_GLOBAL_VAR(port, scm_err)
 
 static void uim_scm_error(const char *msg, uim_lisp errobj);
 
