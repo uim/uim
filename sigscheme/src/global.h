@@ -110,22 +110,23 @@ extern "C" {
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)
 #define SCM_DEFINE_EXPORTED_VARS(_namespace)
 #elif SCM_COMBINED_SOURCE
+/* define at declaration in the header file */
+#define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
+    SCM_DEFINE_STATIC_VARS(_namespace)
+#define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
+    /* dummy statement to prevent static prefix */                           \
+    struct scm_v_dummy_##_namespace { int dummy; }
+#else
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
     extern struct scm_v_##_namespace scm_v_instance_##_namespace
 #define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
     /* dummy statement to prevent static prefix */                           \
     struct scm_v_dummy_##_namespace { int dummy; };                          \
     struct scm_v_##_namespace scm_v_instance_##_namespace
-#else
-#define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
-    /* dummy statement to prevent static prefix */                           \
-    struct scm_v_dummy_##_namespace { int dummy; }
-#define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
-    SCM_DEFINE_STATIC_VARS(_namespace)
 #endif
 
 #if SCM_COMBINED_SOURCE
-#define SCM_EXTERN(_decl)
+#define SCM_EXTERN(_decl) extern int scm_dummy
 #define SCM_EXPORT static
 #else /* SCM_COMBINED_SOURCE */
 #define SCM_EXTERN(_decl) extern _decl
