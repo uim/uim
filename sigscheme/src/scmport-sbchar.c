@@ -87,7 +87,7 @@ static ScmCharCodec *sbc_codec;
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_sbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
@@ -103,7 +103,7 @@ scm_sbcport_init(void)
     sbc_codec = scm_mb_find_codec("ISO-8859-1");
 }
 
-void
+SCM_EXPORT void
 ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
                                 const ScmCharPortVTbl *vptr,
                                 ScmBytePort *bport)
@@ -111,7 +111,7 @@ ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
     ScmBaseCharPort_construct((ScmBaseCharPort *)port, vptr, bport);
 }
 
-ScmCharPort *
+SCM_EXPORT ScmCharPort *
 ScmSingleByteCharPort_new(ScmBytePort *bport)
 {
     ScmSingleByteCharPort *cport;

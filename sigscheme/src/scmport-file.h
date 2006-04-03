@@ -71,12 +71,13 @@ SCM_EXTERN(const ScmBytePortVTbl *const ScmFilePort_vptr);
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_fileport_init(void);
+SCM_EXPORT void scm_fileport_init(void);
 
-ScmBytePort *ScmFilePort_new(FILE *file, const char *aux_info);
-ScmBytePort *ScmFilePort_new_shared(FILE *file, const char *aux_info);
-ScmBytePort *ScmFilePort_open_input_file(const char *path);
-ScmBytePort *ScmFilePort_open_output_file(const char *path);
+SCM_EXPORT ScmBytePort *ScmFilePort_new(FILE *file, const char *aux_info);
+SCM_EXPORT ScmBytePort *ScmFilePort_new_shared(FILE *file,
+                                               const char *aux_info);
+SCM_EXPORT ScmBytePort *ScmFilePort_open_input_file(const char *path);
+SCM_EXPORT ScmBytePort *ScmFilePort_open_output_file(const char *path);
 
 #ifdef __cplusplus
 }

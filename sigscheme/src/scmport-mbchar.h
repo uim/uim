@@ -71,14 +71,16 @@ SCM_EXTERN(const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr);
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_mbcport_init(void);
+SCM_EXPORT void scm_mbcport_init(void);
 
-void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
-                                    const ScmCharPortVTbl *vptr,
-                                    ScmBytePort *bport, ScmCharCodec *codec);
-ScmCharPort *ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec);
+SCM_EXPORT void ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
+                                               const ScmCharPortVTbl *vptr,
+                                               ScmBytePort *bport, ScmCharCodec *codec);
+SCM_EXPORT ScmCharPort *ScmMultiByteCharPort_new(ScmBytePort *bport,
+                                                 ScmCharCodec *codec);
 
-void ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec);
+SCM_EXPORT void ScmMultiByteCharPort_set_codec(ScmCharPort *cport,
+                                               ScmCharCodec *codec);
 
 #ifdef __cplusplus
 }

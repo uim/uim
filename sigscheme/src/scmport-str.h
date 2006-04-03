@@ -74,20 +74,17 @@ SCM_EXTERN(const ScmBytePortVTbl *const ScmOutputStrPort_vptr);
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_strport_init(void);
+SCM_EXPORT void scm_strport_init(void);
 
-ScmBytePort *ScmInputStrPort_new(char *str,
-                                 ScmInputStrPort_finalizer finalize);
-ScmBytePort *ScmInputStrPort_new_copying(const char *str,
-                                         ScmInputStrPort_finalizer finalize);
-ScmBytePort *ScmInputStrPort_new_const(const char *str,
-                                       ScmInputStrPort_finalizer finalize);
-void **ScmInputStrPort_ref_opaque(ScmBytePort *bport);
+SCM_EXPORT ScmBytePort *ScmInputStrPort_new(char *str, ScmInputStrPort_finalizer finalize);
+SCM_EXPORT ScmBytePort *ScmInputStrPort_new_copying(const char *str, ScmInputStrPort_finalizer finalize);
+SCM_EXPORT ScmBytePort *ScmInputStrPort_new_const(const char *str, ScmInputStrPort_finalizer finalize);
+SCM_EXPORT void **ScmInputStrPort_ref_opaque(ScmBytePort *bport);
 
-ScmBytePort *ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize);
-const char *ScmOutputStrPort_str(ScmBytePort *bport);
-size_t ScmOutputStrPort_c_strlen(ScmBytePort *bport);
-void **ScmOutputStrPort_ref_opaque(ScmBytePort *bport);
+SCM_EXPORT ScmBytePort *ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize);
+SCM_EXPORT const char *ScmOutputStrPort_str(ScmBytePort *bport);
+SCM_EXPORT size_t ScmOutputStrPort_c_strlen(ScmBytePort *bport);
+SCM_EXPORT void **ScmOutputStrPort_ref_opaque(ScmBytePort *bport);
 
 #ifdef __cplusplus
 }

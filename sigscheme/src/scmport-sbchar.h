@@ -70,12 +70,12 @@ SCM_EXTERN(const ScmCharPortVTbl *ScmSingleByteCharPort_vptr);
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_sbcport_init(void);
+SCM_EXPORT void scm_sbcport_init(void);
 
-void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
-                                     const ScmCharPortVTbl *vptr,
-                                     ScmBytePort *bport);
-ScmCharPort *ScmSingleByteCharPort_new(ScmBytePort *bport);
+SCM_EXPORT void ScmSingleByteCharPort_construct(ScmSingleByteCharPort *port,
+                                                const ScmCharPortVTbl *vptr,
+                                                ScmBytePort *bport);
+SCM_EXPORT ScmCharPort *ScmSingleByteCharPort_new(ScmBytePort *bport);
 
 #ifdef __cplusplus
 }

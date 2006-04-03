@@ -69,9 +69,9 @@ SCM_EXTERN(const ScmBytePortVTbl *const ScmNullPort_vptr);
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_nullport_init(void);
+SCM_EXPORT void scm_nullport_init(void);
 
-ScmBytePort *ScmNullPort_new(void);
+SCM_EXPORT ScmBytePort *ScmNullPort_new(void);
 
 #ifdef __cplusplus
 }

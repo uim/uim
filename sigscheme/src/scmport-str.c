@@ -158,7 +158,7 @@ SCM_EXPORT const ScmBytePortVTbl *const ScmOutputStrPort_vptr
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void
+SCM_EXPORT void
 scm_strport_init(void)
 {
 }
@@ -179,27 +179,27 @@ istrport_new(char *str, scm_bool ownership, ScmInputStrPort_finalizer finalize)
     return (ScmBytePort *)port;
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmInputStrPort_new(char *str, ScmInputStrPort_finalizer finalize)
 {
     return istrport_new(str, scm_true, finalize);
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmInputStrPort_new_copying(const char *str,
                             ScmInputStrPort_finalizer finalize)
 {
     return istrport_new(SCM_PORT_STRDUP(str), scm_true, finalize);
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmInputStrPort_new_const(const char *str, ScmInputStrPort_finalizer finalize)
 {
     /* str is actually treated as const */
     return istrport_new((char *)str, scm_false, finalize);
 }
 
-void **
+SCM_EXPORT void **
 ScmInputStrPort_ref_opaque(ScmBytePort *bport)
 {
     ScmInputStrPort *port;
@@ -276,7 +276,7 @@ istrport_flush(ScmInputStrPort *port)
 }
 
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
 {
     ScmOutputStrPort *port;
@@ -293,7 +293,7 @@ ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
     return (ScmBytePort *)port;
 }
 
-const char *
+SCM_EXPORT const char *
 ScmOutputStrPort_str(ScmBytePort *bport)
 {
     ScmOutputStrPort *port;
@@ -303,7 +303,7 @@ ScmOutputStrPort_str(ScmBytePort *bport)
     return (port->str) ? port->str : "";
 }
 
-size_t
+SCM_EXPORT size_t
 ScmOutputStrPort_c_strlen(ScmBytePort *bport)
 {
     ScmOutputStrPort *port;
@@ -313,7 +313,7 @@ ScmOutputStrPort_c_strlen(ScmBytePort *bport)
     return (port->buf_size) ? port->buf_size - sizeof("") : 0;
 }
 
-void **
+SCM_EXPORT void **
 ScmOutputStrPort_ref_opaque(ScmBytePort *bport)
 {
     ScmOutputStrPort *port;

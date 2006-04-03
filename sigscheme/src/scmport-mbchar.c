@@ -106,7 +106,7 @@ SCM_EXPORT const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_mbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
@@ -123,7 +123,7 @@ scm_mbcport_init(void)
     vptr->put_char    = (ScmCharPortMethod_put_char)&mbcport_put_char;
 }
 
-void
+SCM_EXPORT void
 ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
                                const ScmCharPortVTbl *vptr,
                                ScmBytePort *bport, ScmCharCodec *codec)
@@ -135,7 +135,7 @@ ScmMultiByteCharPort_construct(ScmMultiByteCharPort *port,
     SCM_MBCPORT_CLEAR_STATE(port);
 }
 
-ScmCharPort *
+SCM_EXPORT ScmCharPort *
 ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec)
 {
     ScmMultiByteCharPort *cport;
@@ -147,7 +147,7 @@ ScmMultiByteCharPort_new(ScmBytePort *bport, ScmCharCodec *codec)
     return (ScmCharPort *)cport;
 }
 
-void
+SCM_EXPORT void
 ScmMultiByteCharPort_set_codec(ScmCharPort *cport, ScmCharCodec *codec)
 {
     ScmMultiByteCharPort *mbcport;

@@ -103,12 +103,12 @@ SCM_EXPORT const ScmBytePortVTbl *const ScmNullPort_vptr = &ScmNullPort_vtbl;
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void
+SCM_EXPORT void
 scm_nullport_init(void)
 {
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmNullPort_new(void)
 {
     ScmNullPort *port;

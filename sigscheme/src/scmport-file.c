@@ -116,7 +116,7 @@ SCM_EXPORT const ScmBytePortVTbl *const ScmFilePort_vptr = &ScmFilePort_vtbl;
  * Client code must call this first even if current implementation does not
  * contain actual code.
  */
-void
+SCM_EXPORT void
 scm_fileport_init(void)
 {
 }
@@ -136,19 +136,19 @@ fileport_new_internal(FILE *file, const char *aux_info, scm_bool ownership)
     return (ScmBytePort *)port;
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmFilePort_new(FILE *file, const char *aux_info)
 {
     return fileport_new_internal(file, aux_info, scm_true);
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmFilePort_new_shared(FILE *file, const char *aux_info)
 {
     return fileport_new_internal(file, aux_info, scm_false);
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmFilePort_open_input_file(const char *path)
 {
     FILE *file;
@@ -157,7 +157,7 @@ ScmFilePort_open_input_file(const char *path)
     return (file) ? ScmFilePort_new(file, path) : NULL;
 }
 
-ScmBytePort *
+SCM_EXPORT ScmBytePort *
 ScmFilePort_open_output_file(const char *path)
 {
     FILE *file;

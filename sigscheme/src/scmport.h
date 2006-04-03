@@ -207,11 +207,12 @@ SCM_EXTERN(const ScmCharPortVTbl *const ScmBaseCharPort_vptr);
 /*=======================================
   Function Declarations
 =======================================*/
-void ScmBaseCharPort_construct(ScmBaseCharPort *port,
-                               const ScmCharPortVTbl *vptr,
-                               ScmBytePort *bport);
-char *ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header);
-int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
+SCM_EXPORT void ScmBaseCharPort_construct(ScmBaseCharPort *port,
+                                          const ScmCharPortVTbl *vptr,
+                                          ScmBytePort *bport);
+SCM_EXPORT char *ScmBaseCharPort_inspect(ScmBaseCharPort *port,
+                                         const char *header);
+SCM_EXPORT int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
 #ifdef __cplusplus
 }
