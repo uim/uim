@@ -1,0 +1,16 @@
+==============================================================================
+Requirements
+
+* Describe configure option when most settings in src/config.h are
+  configurable with autotools
+
+* Describe the difference between mutable/immutable string/vector
+
+* Describe imcompleted parts
+  - Special character table
+  - Character comparison detail
+  - String comparison procedures
+  - String Utilities procedures
+  - Continuation
+  - Eval Environment
+  - SRFIs

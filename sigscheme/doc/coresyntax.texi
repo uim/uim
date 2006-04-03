@@ -1,0 +1,253 @@
+@node Core Syntax
+@chapter Core Syntax
+
+@menu
+* Literals::
+* Making procedures::
+* Assignments::
+* Conditionals::
+* Binding constructs::
+* Sequencing::
+* Iteration::
+* Quasiquotation::
+* Definitions::
+@end menu
+
+@c ----------------------------------------------------------------------
+@node Literals
+@section Literals
+
+@defspec quote datum
+[R5RS]
+Evaluates to @var{datum}
+
+@example
+(quote x) @result{} x
+(quote (1 2 3)) @result{} (1 2 3)
+@end example
+@end defspec
+
+
+@deftp {Reader Syntax} 'datum
+[R5RS]
+Equivalent to @code{(quote datum)}.
+@example
+'x @result{} x
+'(1 2 3) @result{} (1 2 3)
+@end example
+@end deftp
+
+@c ----------------------------------------------------------------------
+@node Making procedures
+@section Making procedures
+
+@defspec lambda formals body @dots{}
+[R5RS]
+Evaluates to procedure.
+
+@var{formals} should have one of the following forms:
+@itemize @bullet
+@item
+@code{(@var{variable} @dots{})}: The procedure takes a fixed number of arguments. The actual arguments are bound to the corresponding variables.
+
+@example
+((lambda (a b) (+ a b)) 1 2)
+@result{} 3
+@end example
+
+@item
+@code{@var{variable}} : The procedure takes any number of arguments. The actual arguments are collected to form a new list and bound to the variable.
+
+@example
+((lambda x (list x x)) 'a 'b)
+@result{} ((a b) (a b))
+@end example
+
+@item
+@code{(@var{variable_0} @dots{} @var{variable_N-1} . @var{variable_N})}: The procedure takes at least @var{N} arguments. The actual arguments up to @var{N} is bound to the corresponding varibles. If more than @var{N} arguments are given, the rest arguments are collected to form a new list and bound to @var{variable_N}.
+
+@example
+((lambda (x y . z) (list x y z)) 'a 'b)
+@result{} (a b ())
+((lambda (x y . z) (list x y z)) 'a 'b 'c 'd)
+@result{} (a b (c d))
+@end example
+
+@end itemize
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Assignments
+@section Assignments
+
+@defspec set! symbol expression
+[R5RS]
+First, @var{expression} is evaluated. The binding of @var{symbol} is modified to the evaluation result of @var{expression}. If @var{symbol} is not bound, an error occurs.
+
+@example
+(define x 3)
+(set! x (list 1 2))  @result{} @r{undefined}
+x                    @result{} (1 2)
+
+(set! (car x) 5)     @result{} @r{undefined}
+x                    @result{} (5 2)
+@end example
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Conditionals
+@section Conditionals
+
+@defspec if test consequent alternative
+@defspecx if test consequent
+[R5RS]
+At first, @var{test} is evaluated. If it yields a true value (not #f), @var{consequent} is evaluated. Otherwise, @var{alternative} is evaluated. If @var{alternative} is not provided, it results in an undefined value.
+
+@example
+(if (number? 3) 'yes 'no) @result{} yes
+(if (number? "aiueo") 'yes 'no) @result{} no
+(if (number? "aiueo") 'yes) @result{} @r{undefined}
+@end example
+@end defspec
+
+@defspec cond clause1 clause2 @dots{}
+[R5RS]
+Each clause must be the form
+
+@example
+(test expr @dots{})
+(test => expr)
+(else expr1 expr2 @dots{})
+@end example
+
+The last form can appear only as the last clause.
+
+cond evaluates test of each clauses in order, until it yields a true value. Once it yields true, if the clause is the first form, the corresponding exprs are evaluated and the result(s) of last expr is(are) returned; if the clause is the second form, the expr is evaluated and it must yield a procedure that takes one argument. Then the result of test is passed to it, and the result(s) it returns will be returned. If no test yields true, and the last clause is not the third form (else clause), an undefined value is returned.
+
+If the last clause is else clause and all tests are failed, exprs in the else clause are evaluated, and its last expr's result(s) is(are) returned.
+
+@example
+(cond ((> 3 2) 'greater)
+      ((< 3 2) 'less)) @result{} greater
+(cond ((> 3 3) 'greater)
+      ((< 3 3) 'less)
+      (else 'equal)) @result{} equal
+(cond ((assv 'b '((a 1) (b 2))) => cadr)
+      (else #f)) @result{} 2
+@end example
+@end defspec
+
+@defspec case key clause1 clause2 @dots{}
+[R5RS]
+@end defspec
+
+@defspec and test @dots{}
+[R5RS]
+The test expressions are evaluated from left to right, and the value of the first expression that evaluates to a false value is returned. Any remaining expressions are not evaluated. If all the expressions evaluate to true values, the value of the last expression is returned. If there are no expressions then #t is returned.
+
+@example
+(and (= 2 2) (> 2 1)) @result{} #t
+(and (= 2 2) (< 2 1)) @result{} #f
+(and 1 2 'c '(f g)) @result{} (f g)
+(and) @result{} #t
+@end example
+@end defspec
+
+@defspec or test @dots{}
+[R5RS]
+The test expressions are evaluated from left to right, and the value of the first expression that evaluates to a true value is returned. Any remaining expressions are not evaluated. If all expressions evaluate to false values, the value of the last expression is returned. If there are no expressions then #f is returned.
+
+@example
+(or (= 2 2) (> 2 1)) @result{} #t
+(or (= 2 2) (< 2 1)) @result{} #t
+(or #f #f #f) @result{} #f
+(or (memq 'b '(a b c))
+    (/ 3 0))  @result{} (b c)
+@end example
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Binding constructs
+@section Binding constructs
+
+@defspec let ((var expr) @dots{}) body @dots{}
+@defspecx let* ((var expr) @dots{}) body @dots{}
+@defspecx letrec ((var expr) @dots{}) body @dots{}
+[R5RS]
+Creates a local scope where var @dots{} are bound to the value of expr @dots{} , then evaluates body @dots{} . vars must be symbols, and there shouldn't be a duplication. The value(s) of the last expression of body @dots{} becomes the value(s) of this form.
+
+The three forms differ in terms of the scope exprs are evaluated. Let evaluates exprs before (outside of) let form. Let* evaluates exprs in the scope where vars before it are bound. Letrec evaluates exprs in the environment where vars are already bound (to an undefined value, initially). letrec is necessary to define mutually recursive local procedures. 
+
+@example
+(define x 'top-x)
+
+(let  ((x 3) (y x)) (cons x y)) @result{} (3 . top-x)
+(let* ((x 3) (y x)) (cons x y)) @result{} (3 . 3)
+(let ((cons (lambda (a b) (+ a b)))
+      (list (lambda (a b) (cons a (cons b 0)))))
+  (list 1 2)) @result{} (1 2 . 0)
+@end example
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Sequencing
+@section Sequencing
+
+@defspec begin form @dots{}
+[R5RS]
+The forms are evaluated sequentially from left to right, and the value(s) of the last <expression> is(are) returned. This expression type is used to sequence side effects such as input and output.
+
+@example
+(define x 0)
+
+(begin (set! x 5)
+       (+ x 1)) @result{} 6
+(begin (display "4 plus 1 equals ")
+       (display (+ 4 1))) @result{} unspecified and prints  4 plus 1 equals 5
+@end example
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Iteration
+@section Iteration
+
+@defspec do ((variable init [step]) @dots{}) (test expr @dots{}) body @dots{}
+[R5RS]
+@end defspec
+
+@defspec let name bindings body @dots{}
+[R5RS]
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Quasiquotation
+@section Quasiquotation
+
+@defspec quasiquote template
+[R5RS]
+@end defspec
+
+@c ----------------------------------------------------------------------
+@node Definitions
+@section Definitions
+
+@defspec define variable expression
+@defspecx define (variable . formals) body @dots{}
+[R5RS]
+This form has different meanings in the toplevel (without no local bindings) or inside a local scope.
+
+On toplevel, it defines a global binding to a symbol variable. In the first form, it globally binds a symbol variable to the value of expression, in the current module.
+
+@example
+(define x (+ 1 2))
+x @result{} 3
+(define y (lambda (a) (* a 2)))
+(y 8) @result{} 16
+@end example
+
+The second form is a syntactic sugar of defining a procedure. It is equivalent to the following form.
+
+@example
+(define (name . args) body @dots{}) @equiv{} (define name (lambda args body @dots{} ))
+@end example
+@end defspec

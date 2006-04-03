@@ -1,0 +1,939 @@
+@node Core Procedures
+@chapter Core Procedures
+
+@menu
+* Equivalence::
+* Numbers::
+* Booleans::
+* Pairs and Lists::
+* Symbols::
+* Characters::
+* Strings::
+* Vectors::
+* Procedures::
+* Continuation::
+* Multiple values::
+* Delayed evaluation::
+* Eval::
+* Input and Output::
+* Loading Programs::
+@end menu
+
+@c ----------------------------------------------------------------------
+@node Equivalence
+@section Equivalence
+
+@defun eq? obj1 obj2
+[R5RS]
+@end defun
+
+@defun eqv? obj1 obj2
+[R5RS]
+@end defun
+
+@defun equal? obj1 obj2
+[R5RS]
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Numbers
+@section Numbers
+
+@menu
+* Numerical predicates::
+* Numerical comparison::
+* Arithmetics::
+* Numerical conversions::
+@end menu
+
+@node Numerical predicates
+@subsection Numerical predicates
+
+@defun number? obj
+@defunx integer? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a number or an integer.
+BTW, SigScheme supports only the integer part of the numerical tower now.
+
+@example
+(number? 3)  @result{} #t
+(integer? 3) @result{} #t
+@end example
+@end defun
+
+@defun zero? z
+[R5RS]
+Returns @code{#t} if a number @var{z} equals to zero.
+
+@example
+(zero? 1)  @result{} #f
+(zero? 0)  @result{} #t
+@end example
+@end defun
+
+@defun positive? x
+@defunx negative? x
+[R5RS]
+Returns @code{#t} if a number @var{x} is positive and negative, respectively.
+
+@example
+(positive? 1)  @result{} #t
+(positive? 0)  @result{} #f
+(positive? -1) @result{} #f
+(negative? 1)  @result{} #f
+(negative? 0)  @result{} #f
+(negative? -1) @result{} #t
+@end example
+@end defun
+
+@defun odd? n
+@defunx even? n
+[R5RS]
+Returns @code{#t} if an integer @var{n} is odd and even, respectively.
+
+@example
+(odd? 3)     @result{} #t
+(odd? 4)     @result{} #f
+(even? 3)    @result{} #f
+(evne? 4)    @result{} #t
+@end example
+@end defun
+
+@node Numerical comparison
+@subsection Numerical comparison
+
+@defun @code{=} z1 z2 z3 @dots{}
+[R5RS]
+If all the numbers @var{z} are equal, returns @code{#t}.
+This procedure requires at least 2 arguments.
+
+@example
+(= 1 1)   @result{} #t
+(= 1 0)   @result{} #f
+(= 1 1 1) @result{} #t
+(= 1 0 1) @result{} #f
+@end example
+@end defun
+
+@defun  @code{<}  x1 x2 x3 @dots{}
+@defunx @code{<=} x1 x2 x3 @dots{}
+@defunx @code{>}  x1 x2 x3 @dots{}
+@defunx @code{>=} x1 x2 x3 @dots{}
+[R5RS]
+Returns @code{#t} If all the real numbers @var{x} are
+monotonically increasing,
+monotonically nondecreasing, monotonically decreasing, or monotonically
+nonincreasing, respectively.
+@end defun
+
+@defun max x1 x2 @dots{}
+@defunx min x1 x2 @dots{}
+[R5RS]
+Returns a maximum or minimum nuber in the given real numbers, respectively.
+@end defun
+
+@node Arithmetics
+@subsection Arithmetics
+
+@defun  @code{+} z @dots{}
+@defunx @code{*} z @dots{}
+[R5RS]
+Returns the sum or the product of given numbers, respectively.
+If no argument is given, @code{(+)} yields 0 and @code{(*)} yields 1.
+@end defun
+
+@defun  @code{-} z @dots{}
+@defunx @code{/} z @dots{}
+[R5RS]
+If only one number @var{z1} is given, returns its
+negation and reciprocal, respectively.
+
+If more than one number are given, returns:
+@example
+@var{z1} - @var{z2} - @var{z3} @dots{}
+@var{z1} / @var{z2} / @var{z3} @dots{}
+@end example
+respectively.
+
+@example
+(- 3)       @result{} -3
+(- 5 2)     @result{} 3
+(- 5 2 1)   @result{} 2
+@end example
+@end defun
+
+@defun abs z
+[R5RS]
+Returns an absolute value of @var{z}.
+
+@example
+(abs -1) @result{} 1
+(abs 1)  @result{} 1
+@end example
+@end defun
+
+@defun quotient n1 n2
+@defunx remainder n1 n2
+@defunx modulo n1 n2
+[R5RS]
+Returns the quotient, remainder and modulo of dividing an integer @var{n1}
+by an integer @var{n2}.
+@end defun
+
+@node Numerical conversions
+@subsection Numerical conversions
+
+@defun number->string z &optional radix
+@defunx string->number string &optional radix
+[R5RS]
+These procedures convert a number and its string representation
+in radix @var{radix} system.
+@var{radix} must be between 2 and 36 inclusive.
+If @var{radix} is omitted, 10 is assumed.
+
+@example
+(number->string -10)     @result{} "-10"
+(number->string 10)      @result{} "10"
+(number->string -10 16)  @result{} "-a"
+(number->string 10 16)   @result{} "a"
+(number->string -10 8)   @result{} "-12"
+(number->string 10 8)    @result{} "12"
+(number->string -10 2)   @result{} "-1010"
+(number->string 10 2)    @result{} "1010"
+@end example
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Booleans
+@section Booleans
+
+@defun not obj
+[R5RS]
+Returns @code{#t} if and only if @var{obj} is @code{#f},
+and returns @code{#f} otherwise.
+@end defun
+
+@defun boolean? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a boolean value.
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Pairs and Lists
+@section Pairs and Lists
+
+@menu
+* List predicates::
+* List constructors::
+* List accessors and modifiers::
+* Other list procedures::
+@end menu
+
+@node List predicates
+@subsection List predicates
+
+@defun pair? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a pair, @code{#f} otherwise.
+@end defun
+
+@defun null? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is an empty list, @code{#f} otherwise.
+@end defun
+
+@defun list? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a proper list, @code{#f} otherwise.
+This function returns @code{#f} if @var{obj} is a dotted or circular list.
+@end defun
+
+@node List constructors
+@subsection List constructors
+
+@defun cons obj1 obj2
+[R5RS]
+Constructs a pair of @var{obj1} and @var{obj2} and returns it.
+
+@example
+(cons 'a 'b) @result{} (a . b)
+@end example
+@end defun
+
+@defun list obj @dots{}
+[R5RS]
+Makes a list, whose elements are @var{obj} @dots{}.
+
+@example
+(list 1 2 3) @result{} (1 2 3)
+(list)       @result{} ()
+@end example
+@end defun
+
+@node List accessors and modifiers
+@subsection List accessors and modifiers
+
+@defun car pair
+@defunx cdr pair
+[R5RS]
+Returns car and cdr of @var{pair}, respectively.
+
+@example
+(car '(a b)) @result{} a
+(cdr '(a b)) @result{} b
+@end example
+@end defun
+
+@defun set-car! pair obj
+@defunx set-cdr! pair obj
+[R5RS] 
+Modifies car and cdr of @var{pair}, by @var{obj}, respectively.
+@end defun
+
+@defun caar pair
+@defunx cadr pair
+@defunx cdar
+@defunx cddr
+@defunx caaar
+@defunx caadr
+@defunx cadar
+@defunx caddr
+@defunx cdaar
+@defunx cdadr
+@defunx cddar
+@defunx cdddr
+@defunx caaaar
+@defunx caaadr
+@defunx caadar
+@defunx caaddr
+@defunx cadaar
+@defunx cadadr
+@defunx caddar
+@defunx cadddr
+@defunx cdaaar
+@defunx cdaadr
+@defunx cdadar
+@defunx cdaddr
+@defunx cddaar
+@defunx cddadr
+@defunx cdddar
+@defunx cddddr
+[R5RS]
+@code{caar} @equiv{} @code{(car (car x))},
+@code{cadr} @equiv{} @code{(car (cdr x))}, and so on.
+@end defun
+
+@defun length list
+[R5RS]
+Returns the length of a proper list @var{list}.
+If @var{list} is a dotted list or a circular list, an error is signalled.
+@end defun
+
+@defun list-tail list k
+[R5RS]
+Returns @var{k}-th cdr of @var{list}.
+@var{list} can be a proper, dotted or circular list.
+
+TODO: describe the case k < 0
+@end defun
+
+@defun list-ref list k
+[R5RS]
+Returns @var{k}-th element of @var{list}.
+@var{list} can be a proper, dotted or circular list.
+
+TODO: describe the case k < 0
+@end defun
+
+@defun last-pair list
+[R5RS]
+Returns the last pair of @var{list}.
+@var{list} can be a proper or dotted list.
+@end defun
+
+@node Other list procedures
+@subsection Other list procedures
+
+@defun append list @dots{}
+[R5RS]
+Returns a list consisting of the elements of the first @var{list} followed by
+the elements of the other lists.  The resulting list is always newly
+allocated, except that it shares structure with the last list argument.
+The last argument may actually be any object; an improper list results
+if the last argument is not a proper list.
+
+@example
+(append '())              @result{} ()
+(append '(a) '(b))        @result{} (a b)
+(append '(a b) '(c d))    @result{} (a b c d)
+(append '(a b) '(c d) 'e) @result{} (a b c d . e)
+@end example
+@end defun
+
+@defun reverse list
+[R5RS]
+Returns a newly allocated list consisting of the elements of @var{list}
+in reverse order.
+
+@example
+(reverse '())      @result{} ()
+(reverse '(a b))   @result{} (b a)
+(reverse '(a b c)) @result{} (c b a)
+@end example
+@end defun
+
+@defun memq obj list
+@defunx memv obj list
+@defunx member obj list
+[R5RS]
+Searches @var{obj} in the @var{list}.  If @code{n}-th element of
+@var{list} equals to @var{obj} (in the sense of @code{eq?} for @code{memq},
+@code{eqv?} for @code{memv}, and @code{equal?} for @code{member}), 
+@code{(list-tail @var{list} @var{n})} is returned.
+Otherwise, @code{#f} is returned.
+
+@example
+(memq 'a '(a b c))          @result{} (a b c)
+(memq 'b '(a b c))          @result{}  (b c)
+(memq 'a '(b c d))          @result{} #f
+(memq (list 'a) '(b (a) c)) @result{} #f
+(memv 101 '(100 101 102))   @result{} (101 102)
+@end example
+@end defun
+
+@defun assq obj list
+@defunx assv obj list
+@defunx assoc obj list
+[R5RS]
+Each element in @var{list} must be a pair.
+These procedures search a pair whose car matches @var{obj}
+(in the sense of @code{eq?} for @code{assq},
+@code{eqv?} for @code{assv}, and @code{equal?} for @code{assoc})
+from left to right, and return the leftmost matched pair if any.
+If no pair matches, these return @code{#f}.
+
+TODO: example
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Symbols
+@section Symbols
+
+@defun symbol? obj
+[R5RS]
+Returns true if and only if @var{obj} is a symbol.
+
+@example
+(symbol? 'abc)     @result{} #t
+(symbol? 0)        @result{} #f
+@end example
+@end defun
+
+@defun symbol->string symbol
+[R5RS]
+Returns the name of @var{symbol} in a string.  Returned string is immutable.
+
+@example
+(symbol->string 'foo) @result{} foo
+@end example
+@end defun
+
+@defun string->symbol string
+[R5RS]
+Returns a symbol whose name is a string @var{string}.
+
+TODO: Describe the case when @var{string} contains weird characters.
+
+@example
+(string->symbol "a") @result{} a
+(string->symbol "A") @result{} A
+@end example
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Characters
+@section Characters
+
+TODO: Describe special symbol, and further comparison spec.
+
+@defun char? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a character, @code{#f} otherwise.
+
+@example
+(char? #\a) @result{} #t
+(char? 1)   @result{} #f
+@end example
+@end defun
+
+@defun char=? char1 char2
+@defunx char<? char1 char2
+@defunx char<=? char1 char2
+@defunx char>? char1 char2
+@defunx char>=? char1 char2
+[R5RS]
+Compares characters.
+@end defun
+
+@defun char-ci=? char1 char2
+@defunx char-ci<? char1 char2
+@defunx char-ci<=? char1 char2
+@defunx char-ci>? char1 char2
+@defunx char-ci>=? char1 char2
+[R5RS]
+Compares characters in case-insensitive way.
+@end defun
+
+@defun char-alphabetic? char
+@defunx char-numeric? char
+@defunx char-whitespace? char
+@defunx char-upper-case? char
+@defunx char-lower-case? char
+[R5RS]
+Returns true if a character @var{char} is an alphabetic character
+(@code{[A-Za-z]}), a numeric character (@code{[0-9]}), a whitespace
+character, an upper case character or a lower case character, respectively.
+Currently, these procedures works only for ASCII characters.  They
+return @code{#f} for all other characters.
+@end defun
+
+@defun char->integer char
+@defunx integer->char n
+[R5RS]
+@end defun
+
+
+@defun char-upcase char
+@defunx char-downcase char
+[R5RS]
+Returns the upper case and lower case of @var{char}, respectively.
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Strings
+@section Strings
+
+@menu
+* String predicates::
+* String constructors::
+* String accessors & modifiers::
+* String comparison::
+* String utilities::
+@end menu
+
+@node String predicates
+@subsection String predicates
+
+@defun string? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a string, @code{#f} otherwise.
+
+@example
+(string? "")  @result{} #t
+(string? "a") @result{} #t
+(string? 'a)  @result{} #f
+@end example
+@end defun
+
+@node String constructors
+@subsection String constructors
+
+@defun make-string k &optional char
+[R5RS]
+Returns a string of length @var{k}.  If optional @var{char} is given,
+the new string is filled with it.  Otherwise, the string is filled with
+a whitespace.
+
+@example
+(make-string 0)     @result{} ""
+(make-string 3)     @result{} "   "
+(make-string 3 #\a) @result{} "aaa"
+@end example
+@end defun
+
+@defun string char @dots{}
+[R5RS]
+Returns a string consisted by @var{char} @dots{}.
+
+@example
+(string)         @result ""
+(string #\a)     @result "a"
+(string #\a #\b) @result "ab"
+@end example
+@end defun
+
+@node String accessors & modifiers
+@subsection String accessors & modifiers
+
+@defun string-length string
+[R5RS]
+Returns a length of a string @var{string}.
+
+@example
+(string-length "")  @result{} 0
+(string-length "a") @result{} 1
+@end example
+@end defun
+
+@defun string-ref cstring k
+[R5RS]
+Returns @var{k}-th character of a string @var{cstring}.
+
+An error is signalled if @code{k} is out of range (negative, or greater
+than or equal to the length of @var{cstring}
+
+@example
+(string-ref "abcde" 0)  @result{} #\a
+(string-ref "abcde" -1) @result{} Error
+(string-ref "abcde" 5)  @result{} Error
+@end example
+@end defun
+
+@defun string-set! string k char
+[R5RS]
+Substitute @var{string}'s @var{k}-th character by @var{char}.
+@var{k} must be greater than or equal to zero, and less than
+@code{(string-length @var{string})}.
+
+@var{string} must be the mutable string.
+
+Return value is undefined.
+
+TODO: ref to immutable/mutable description
+@end defun
+
+@node String comparison
+@subsection String comparison
+
+@defun string=? string1 string2
+@defunx string-ci=? string1 string2
+[R5RS]
+
+@end defun
+
+@defun string<? string1 string2
+@defunx string<=? string1 string2
+@defunx string>? string1 string2
+@defunx string>=? string1 string2
+@defunx string-ci<? string1 string2
+@defunx string-ci<=? string1 string2
+@defunx string-ci>? string1 string2
+@defunx string-ci>=? string1 string2
+[R5RS]
+@end defun
+
+@node String utilities
+@subsection String utilities
+
+@defun substring string start end
+[R5RS]
+@end defun
+
+@defun string-append string @dots{}
+[R5RS]
+@end defun
+
+@defun string->list string &optional start end
+@defunx list->string list
+[R5RS]
+@end defun
+
+@defun string-copy string &optional start end
+[R5RS]
+@end defun
+
+@defun string-fill! string char &optional start end
+[R5RS]
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Vectors
+@section Vectors
+
+@defun vector? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a vector, @code{#f} otherwise.
+@end defun
+
+@defun make-vector k &optional fill
+[R5RS]
+Creates and returns a vector with length @var{k}.
+If optional argument @var{fill} is given, each element of the vector
+is initialized by it.  Otherwise, the initial value of each element
+is undefined.
+
+@example
+(make-vector 3)     @result{} #(#<undef> #<undef> #<undef>)
+(make-vector 3 1)   @result{} #(1 1 1)
+(make-vector 3 #\a) @result{} #(#\a #\a #\a)
+@end example
+@end defun
+
+@defun vector obj @dots{}
+[R5RS]
+Creates a vector whose elements are @var{obj} @dots{}.
+
+@example
+(vector)           @result{} #()
+(vector 1 #\a 'a)  @result{} #(1 #\a a)
+@end example
+@end defun
+
+@defun vector-length vector
+[R5RS]
+Returns the length of a vector @var{vector}.
+@end defun
+
+@defun vector-ref vector k
+[R5RS]
+Returns @var{k}-th element of vector @var{vector}.
+
+An error is signalled if @var{k} is negative, or greater than
+or equal to the length of @var{vector}.
+@end defun
+
+@defun vector-set! vector k obj
+[R5RS]
+Sets @var{k}-th element of the vector @var{vector} to @var{obj}.
+
+It is an error if @var{k} is negative or greater than or equal to the
+length of @var{vector}.
+@end defun
+
+@defun vector->list vector
+@defunx list->vector list
+[R5RS]
+Converts a vector to a list, or vice versa.
+
+@example
+(vector->list '#())          @result{} ()
+(vector->list '#(1 2 3 4 5)) @result{} (1 2 3 4 5)
+(list->vector '())           @result{} #()
+(list->vector '(1 2 3 4 5))  @result{} #(1 2 3 4 5)
+@end example
+@end defun
+
+@defun vector-fill! vector fill
+[R5RS]
+Sets all elements in a vector @var{vector} to @var{fill}.
+
+@example
+(vector-fill! (make-vector 3) #\x) @result{} #(#\x #\x #\x)
+@end example
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Procedures
+@section Procedures
+
+@defun procedure? obj
+[R5RS]
+Returns @code{#t} if @var{obj} is a procedure, @code{#f} otherwise.
+@end defun
+
+@defun apply proc arg1 @dots{} args
+[R5RS]
+Calls a procedure @var{proc} with a list of arguments,
+@code{(@var{arg1} @dots{} . @var{args})}.
+The last argument @var{args} must be a proper list.
+Returns (a) value(s) @var{proc} returns.
+
+@example
+(apply list 'a 'b '(c d e)) @result{} (a b c d e)
+(apply + 1 2 '(3 4 5))      @result{} 15
+@end example
+
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Continuation
+@section Continuation
+
+@defun call-with-current-continuation proc
+[R5RS]
+@end defun
+
+@defun dynamic-wind before thunk after
+[R5RS]
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Multiple values
+@section Multiple values
+
+@defun values obj @dots{}
+[R5RS]
+Returns @var{obj} @dots{} as multiple values.
+Caller can capture multiple values by a built-in syntax @code{receive}.
+@end defun
+
+@defun call-with-values producer consumer
+[R5RS]
+Call a procedure @var{producer} with no argument.
+Then applies a procedure @var{consumer} on the
+value(s) @var{producer} returned.  Returns the value(s) @var{consumer}
+returns.
+
+@example
+(call-with-values (lambda () (values 1 2)) cons) @result{} (1 . 2)
+@end example
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Delayed evaluation
+@section Delayed evaluation
+
+@defun delay expression
+[R5RS]
+This creates a @emph{promise} that delays the evaluation
+of @var{expression}.  @var{Expression} will be evaluated
+when the promise is passed to @code{force}.
+@end defun
+
+@defun force promise
+[R5RS]
+If @var{promise}'s value hasn't been computed (delayed), @code{force}
+makes @var{promise}'s encapsulated expression be evaluated, and returns
+the result.
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Eval
+@section Eval
+
+@defun eval expr env
+[R5RS]
+Evaluate @var{expr}.   @var{env} must be a value returned by
+the following procedures below.
+@end defun
+
+@defun null-environment version
+@defunx scheme-report-environment
+@defunx interaction-environment
+[R5RS]
+Returns an environment specifier which can be used as the second
+argument of @code{eval}.
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Input and Output
+@section Input and Output
+
+@menu
+* Common port operations::
+* File ports::
+* Input::
+* Output::
+@end menu
+
+@node Common port operations
+@subsection Common port operations
+
+@defun port? obj
+@defunx input-port? obj
+@defunx output-port? obj
+[R5RS]
+Returns true if @var{obj} is a port, an input port and an output port,
+respectively.
+@end defun
+
+@defun current-input-port
+@defunx current-output-port
+[R5RS]
+Returns the current input port and the current output port, respectively.
+@end defun
+
+@node File ports
+@subsection File ports
+
+@defun open-input-file filename
+@defunx open-output-file filename
+[R5RS]
+Opens a file @var{filename} for input or output, and
+returns an input or output port associated with it, respectively.
+@end defun
+
+@defun call-with-input-file string proc string proc
+@defunx call-with-output-file string proc string proc
+[R5RS]
+Opens a file specified by @var{string} for input/output,
+and call @var{proc} with one argument, the file port.  When @var{proc}
+returns, or an error is signalled from @var{proc} that is not captured
+within @var{proc}, the file is closed.
+@end defun
+
+@defun with-input-from-file string thunk
+@defunx with-output-to-file string thunk
+[R5RS]
+Opens a file specified by @var{string} for input or output
+and makes the opened port as the current input or output port,
+then calls @var{thunk}.  The file is closed when @var{thunk}
+returns or an error is signalled from @var{thunk} that is not
+captured within @var{thunk}.
+
+Returns the value(s) @code{thunk} returns.
+@end defun
+
+@node Input
+@subsection Input
+
+@defun read &optional iport
+[R5RS]
+Reads an S-expression from @var{iport} and returns it.
+@end defun
+
+@defun read-char &optional iport
+[R5RS]
+Reads one character from @var{iport} and returns it.
+If @var{iport} has already 
+reached to the end, returns an eof object.
+@end defun
+
+@defun peek-char &optional iport
+[R5RS]
+Reads one character in @var{iport} and returns it, keeping the character
+in the @var{port}.
+@end defun
+
+@defun eof-object? obj
+[R5RS]
+Returns true if @var{obj} is an EOF object.
+@end defun
+
+@defun char-ready? port
+[R5RS]
+If a character is ready to be read from @var{port}, returns @code{#t}.
+@end defun
+
+@node Output
+@subsection Output
+
+@defun newline &optional port
+[R5RS]
+Writes a newline character to @var{port}.
+@end defun
+
+@defun write obj &optional port
+@defunx display obj &optional port
+[R5RS]
+Produces a printable representation of an object @var{obj} to the output port.
+@code{Write} uses object's standard external representation
+whenever possible, so that the written output would be
+read back by @code{read}, whereas @code{display} produces more human-readable
+output.
+@end defun
+
+@defun write-char char &optional port
+[R5RS]
+Write a single character @var{char} to the output port @var{port}.
+@end defun
+
+@c ----------------------------------------------------------------------
+@node Loading Programs
+@section Loading Programs
+
+@defun load file
+[R5RS]
+Loads @var{file}, that is, read Scheme expressions in @var{file} and
+evaluates them.
+@end defun

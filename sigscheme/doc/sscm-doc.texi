@@ -1,0 +1,35 @@
+\input texinfo
+@settitle SigScheme User's Reference
+@dircategory The Algorighmic Language Scheme
+
+@titlepage
+@title SigScheme User's Manual
+@author Kazuki Ohta (mover _at_ hct.zaq.ne.jp>
+@page
+Copyright @copyright{} 2005-2006 Kazuki Ohta (mover _at_ hct.zaq.ne.jp)
+@end titlepage
+
+@node Top, Introduction, (dir), (dir)
+
+@ifnottex
+This is a user's manual for SigScheme. This manual is for version 0.5.0.
+@end ifnottex
+
+@menu
+* Introduction::
+* Features::
+* Core Syntax::
+* Core Procedures::
+* References::
+* Function and Syntax Index::
+@end menu
+
+@include introduction.texi
+@include features.texi
+@include coresyntax.texi
+@include coreprocedures.texi
+@include references.texi
+@include indexfn.texi
+
+@contents
+@bye

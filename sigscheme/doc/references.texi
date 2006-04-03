@@ -1,0 +1,14 @@
+@node References
+@chapter References
+
+@table @asis
+
+@anchor{r5rs}
+@item [R5RS]
+R. Kelsey, W. Clinger, J. Rees (eds.),
+Revised^5 Report on the Algorithmic Language Scheme,
+Higher-Order and Symbolic Computation, 11(1), September, 1998
+and ACM SIGPLAN Notices, 33(9), October, 1998. @*
+@url{http://www.schemers.org/Documents/Standards/R5RS/}.
+
+@end table
