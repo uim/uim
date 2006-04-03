@@ -450,14 +450,14 @@ eucjp_encoding(void)
     return "EUC-JP";
 }
 
-enum ScmCodedCharSet
+static enum ScmCodedCharSet
 eucjp_ccs(void)
 {
     return SCM_CCS_JIS;
 }
 
 /* FIXME: Optimize */
-int
+static int
 eucjp_char_len(scm_ichar_t ch)
 {
     uchar *end;
@@ -613,7 +613,7 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 
 #if (SCM_USE_EUCCN || SCM_USE_EUCKR)
 /* FIXME: Optimize */
-int
+static int
 euc_char_len(scm_ichar_t ch)
 {
     uchar *end;
@@ -658,7 +658,7 @@ euccn_encoding(void)
     return "EUC-CN";
 }
 
-enum ScmCodedCharSet
+static enum ScmCodedCharSet
 euccn_ccs(void)
 {
     return SCM_CCS_UNKNOWN;
@@ -698,7 +698,7 @@ euccn_scan_char(ScmMultibyteString mbs)
 #endif
 
 #if SCM_USE_EUCKR
-enum ScmCodedCharSet
+static enum ScmCodedCharSet
 euckr_ccs(void)
 {
     return SCM_CCS_UNKNOWN;
@@ -769,14 +769,14 @@ utf8_encoding(void)
     return "UTF-8";
 }
 
-enum ScmCodedCharSet
+static enum ScmCodedCharSet
 utf8_ccs(void)
 {
     return SCM_CCS_UCS4;
 }
 
 /* FIXME: Optimize */
-int
+static int
 utf8_char_len(scm_ichar_t ch)
 {
     uchar *end;
@@ -927,14 +927,14 @@ sjis_encoding(void)
     return "SHIFT_JIS";
 }
 
-enum ScmCodedCharSet
+static enum ScmCodedCharSet
 sjis_ccs(void)
 {
     return SCM_CCS_UNKNOWN;
 }
 
 /* FIXME: Optimize */
-int
+static int
 sjis_char_len(scm_ichar_t ch)
 {
     uchar *end;
@@ -1011,14 +1011,14 @@ unibyte_encoding(void)
     return "ISO-8859-1";
 }
 
-enum ScmCodedCharSet
+static enum ScmCodedCharSet
 unibyte_ccs(void)
 {
     /* conventional assumption */
     return SCM_CCS_ISO8859_1;
 }
 
-int
+static int
 unibyte_char_len(scm_ichar_t ch)
 {
     return (0 < ch && ch <= 0xff) ? 1 : 0;
