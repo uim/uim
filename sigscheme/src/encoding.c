@@ -253,7 +253,7 @@ SCM_DEFINE_EXPORTED_VARS(encoding);
 /*=======================================
   Public API
 =======================================*/
-void
+SCM_EXPORT void
 scm_encoding_init(void)
 {
     /* To allow re-initialization of the interpreter, this variables must be
@@ -277,7 +277,7 @@ scm_encoding_init(void)
 #endif
 }
 
-size_t
+SCM_EXPORT size_t
 scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
 {
     size_t len;
@@ -298,7 +298,7 @@ scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs)
 }
 
 /* FIXME: pick a better name. */
-size_t
+SCM_EXPORT size_t
 scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *s)
 {
     ScmMultibyteString mbs;
@@ -307,8 +307,9 @@ scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *s)
     return scm_mb_strlen(codec, mbs);
 }
 
-ScmMultibyteString
-scm_mb_substring(ScmCharCodec *codec, ScmMultibyteString mbs, size_t i, size_t len)
+SCM_EXPORT ScmMultibyteString
+scm_mb_substring(ScmCharCodec *codec,
+                 ScmMultibyteString mbs, size_t i, size_t len)
 {
     ScmMultibyteString ret, end;
     ScmMultibyteCharInfo c;
@@ -332,7 +333,7 @@ scm_mb_substring(ScmCharCodec *codec, ScmMultibyteString mbs, size_t i, size_t l
 }
 
 /* TODO: support encoding name canonicalization */
-ScmCharCodec *
+SCM_EXPORT ScmCharCodec *
 scm_mb_find_codec(const char *encoding)
 {
     ScmCharCodec *const *codecp;
@@ -345,7 +346,7 @@ scm_mb_find_codec(const char *encoding)
     return NULL;
 }
 
-scm_ichar_t
+SCM_EXPORT scm_ichar_t
 scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
                         const char *caller)
 {

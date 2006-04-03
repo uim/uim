@@ -66,7 +66,7 @@
 SCM_DEFINE_EXPORTED_VARS(port);
 
 #if (SCM_USE_READER || SCM_USE_WRITER)
-const ScmSpecialCharInfo scm_special_char_table[] = {
+SCM_EXPORT const ScmSpecialCharInfo scm_special_char_table[] = {
     /* printable characters */
     {'\"',   "\\\"",  "\""},         /* 34, R5RS */
     {'\\',   "\\\\",  "\\"},         /* 92, R5RS */

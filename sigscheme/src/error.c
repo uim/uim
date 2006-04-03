@@ -346,7 +346,7 @@ scm_plain_error(const char *msg, ...)
 }
 
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
-void
+SCM_EXPORT void
 scm_error_with_implicit_func(const char *msg, ...)
 {
     va_list va;

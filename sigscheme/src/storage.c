@@ -157,7 +157,7 @@ initialize_special_constants(void)
 /*===========================================================================
   Object Allocators
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_cons(ScmObj kar, ScmObj kdr)
 {
     ScmObj obj;
@@ -171,7 +171,7 @@ scm_make_cons(ScmObj kar, ScmObj kdr)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
 {
     ScmObj obj;
@@ -185,7 +185,7 @@ scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_int(scm_int_t val)
 {
     ScmObj obj;
@@ -199,7 +199,7 @@ scm_make_int(scm_int_t val)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_symbol(char *name, ScmObj val)
 {
     ScmObj obj;
@@ -212,7 +212,7 @@ scm_make_symbol(char *name, ScmObj val)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_char(scm_ichar_t val)
 {
     ScmObj obj;
@@ -254,31 +254,31 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_immutable_string(char *str, scm_int_t len)
 {
     return scm_make_string_internal(str, len, scm_true);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_immutable_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_true);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_string(char *str, scm_int_t len)
 {
     return scm_make_string_internal(str, len, scm_false);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_false);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
 {
     ScmObj obj;
@@ -291,7 +291,7 @@ scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_closure(ScmObj exp, ScmObj env)
 {
     ScmObj obj;
@@ -304,7 +304,7 @@ scm_make_closure(ScmObj exp, ScmObj env)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_vector(ScmObj *vec, scm_int_t len)
 {
     ScmObj obj;
@@ -318,7 +318,7 @@ scm_make_vector(ScmObj *vec, scm_int_t len)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 {
     ScmObj obj;
@@ -330,7 +330,7 @@ scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 {
     ScmObj obj;
@@ -349,7 +349,7 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_continuation(void)
 {
     ScmObj obj;
@@ -363,7 +363,7 @@ scm_make_continuation(void)
 }
 
 #if !SCM_USE_VALUECONS
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_value_packet(ScmObj values)
 {
     ScmObj obj;
@@ -377,7 +377,7 @@ scm_make_value_packet(ScmObj values)
 #endif
 
 #if SCM_USE_SSCM_EXTENSIONS
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_cpointer(void *ptr)
 {
     ScmObj obj;
@@ -389,7 +389,7 @@ scm_make_cpointer(void *ptr)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_cfunc_pointer(ScmCFunc ptr)
 {
     ScmObj obj;
@@ -403,7 +403,7 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 
 #if SCM_OBJ_COMPACT
-enum ScmObjType
+SCM_EXPORT enum ScmObjType
 scm_type(ScmObj obj)
 {
     scm_uintobj_t tag = SCM_TAG(obj);

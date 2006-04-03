@@ -259,7 +259,7 @@ SCM_GLOBAL_VARS_END(error);
 #define scm_err_funcname SCM_GLOBAL_VAR(error, scm_err_funcname)
 SCM_DECLARE_EXPORTED_VARS(error);
 
-void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
+SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define ERR (scm_err_funcname = SCM_MANGLE(name)), scm_error_with_implicit_func
 #endif
 
@@ -487,20 +487,21 @@ ScmLBuf(void);
 #define LBUF_EXTEND(lbuf, f, least_size)                                     \
     scm_lbuf_extend((void *)&(lbuf), (f), (least_size))
 
-void scm_lbuf_init(struct ScmLBuf_void_ *lbuf,
-                   void *init_buf, size_t init_size);
-void scm_lbuf_free(struct ScmLBuf_void_ *lbuf);
-void scm_lbuf_alloc(struct ScmLBuf_void_ *lbuf, size_t size);
-void scm_lbuf_realloc(struct ScmLBuf_void_ *lbuf, size_t size);
-void scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
-                     size_t (*f)(struct ScmLBuf_void_ *), size_t least_size);
+SCM_EXPORT void scm_lbuf_init(struct ScmLBuf_void_ *lbuf,
+                              void *init_buf, size_t init_size);
+SCM_EXPORT void scm_lbuf_free(struct ScmLBuf_void_ *lbuf);
+SCM_EXPORT void scm_lbuf_alloc(struct ScmLBuf_void_ *lbuf, size_t size);
+SCM_EXPORT void scm_lbuf_realloc(struct ScmLBuf_void_ *lbuf, size_t size);
+SCM_EXPORT void scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
+                                size_t (*f)(struct ScmLBuf_void_ *),
+                                size_t least_size);
 
 /*
  * extended size functions:
  * define your own version if more optimized version is needed
  */
-size_t scm_lbuf_f_linear(struct ScmLBuf_void_ *lbuf);
-size_t scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf);
+SCM_EXPORT size_t scm_lbuf_f_linear(struct ScmLBuf_void_ *lbuf);
+SCM_EXPORT size_t scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf);
 
 /*=======================================
   Type Definitions

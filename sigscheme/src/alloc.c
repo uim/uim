@@ -170,7 +170,7 @@ scm_strdup(const char *str)
 /*=======================================
    Extendable Local Buffer
 =======================================*/
-void
+SCM_EXPORT void
 scm_lbuf_init(struct ScmLBuf_void_ *lbuf, void *init_buf, size_t init_size)
 {
     lbuf->buf  = lbuf->init_buf  = init_buf;
@@ -178,21 +178,21 @@ scm_lbuf_init(struct ScmLBuf_void_ *lbuf, void *init_buf, size_t init_size)
     lbuf->extended_cnt = 0;
 }
 
-void
+SCM_EXPORT void
 scm_lbuf_free(struct ScmLBuf_void_ *lbuf)
 {
     if (lbuf->buf != lbuf->init_buf)
         free(lbuf->buf);
 }
 
-void
+SCM_EXPORT void
 scm_lbuf_alloc(struct ScmLBuf_void_ *lbuf, size_t size)
 {
     lbuf->buf = scm_malloc(size);
     lbuf->size = size;
 }
 
-void
+SCM_EXPORT void
 scm_lbuf_realloc(struct ScmLBuf_void_ *lbuf, size_t size)
 {
     if (lbuf->buf == lbuf->init_buf) {
@@ -205,7 +205,7 @@ scm_lbuf_realloc(struct ScmLBuf_void_ *lbuf, size_t size)
     lbuf->size = size;
 }
 
-void
+SCM_EXPORT void
 scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
                 size_t (*f)(struct ScmLBuf_void_ *), size_t least_size)
 {
@@ -222,13 +222,13 @@ scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
     }
 }
 
-size_t
+SCM_EXPORT size_t
 scm_lbuf_f_linear(struct ScmLBuf_void_ *lbuf)
 {
     return (lbuf->size + lbuf->init_size);
 }
 
-size_t
+SCM_EXPORT size_t
 scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf)
 {
     return (lbuf->size << 1);

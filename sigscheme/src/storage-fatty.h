@@ -243,27 +243,29 @@ struct ScmCell_ {
 
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
-ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
-ScmObj scm_make_immutable_cons(ScmObj kar, ScmObj kdr);
-ScmObj scm_make_int(scm_int_t val);
-ScmObj scm_make_symbol(char *name, ScmObj val);
-ScmObj scm_make_char(scm_ichar_t val);
-ScmObj scm_make_immutable_string(char *str, scm_int_t len);
-ScmObj scm_make_immutable_string_copying(const char *str, scm_int_t len);
-ScmObj scm_make_string(char *str, scm_int_t len);
-ScmObj scm_make_string_copying(const char *str, scm_int_t len);
-ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
-ScmObj scm_make_closure(ScmObj exp, ScmObj env);
-ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
-ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
-ScmObj scm_make_port(struct ScmCharPort_ *cport, enum ScmPortFlag flag);
-ScmObj scm_make_continuation(void);
+SCM_EXPORT ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
+SCM_EXPORT ScmObj scm_make_immutable_cons(ScmObj kar, ScmObj kdr);
+SCM_EXPORT ScmObj scm_make_int(scm_int_t val);
+SCM_EXPORT ScmObj scm_make_symbol(char *name, ScmObj val);
+SCM_EXPORT ScmObj scm_make_char(scm_ichar_t val);
+SCM_EXPORT ScmObj scm_make_immutable_string(char *str, scm_int_t len);
+SCM_EXPORT ScmObj scm_make_immutable_string_copying(const char *str,
+                                                    scm_int_t len);
+SCM_EXPORT ScmObj scm_make_string(char *str, scm_int_t len);
+SCM_EXPORT ScmObj scm_make_string_copying(const char *str, scm_int_t len);
+SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
+SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
+SCM_EXPORT ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
+SCM_EXPORT ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
+SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
+                                enum ScmPortFlag flag);
+SCM_EXPORT ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
-ScmObj scm_make_value_packet(ScmObj values);
+SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);
 #endif
 #if SCM_USE_SSCM_EXTENSIONS
-ScmObj scm_make_cpointer(void *ptr);
-ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
+SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
+SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #endif
 
 /*=======================================

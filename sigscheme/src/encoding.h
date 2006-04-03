@@ -220,18 +220,18 @@ SCM_DECLARE_EXPORTED_VARS(encoding);
 /*=======================================
   Function Declarations
 =======================================*/
-void scm_encoding_init(void);
+SCM_EXPORT void scm_encoding_init(void);
 
-size_t scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs);
-size_t scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *str);
-ScmMultibyteString scm_mb_substring(ScmCharCodec *codec,
-                                    ScmMultibyteString str,
-                                    size_t i, size_t len);
+SCM_EXPORT size_t scm_mb_strlen(ScmCharCodec *codec, ScmMultibyteString mbs);
+SCM_EXPORT size_t scm_mb_bare_c_strlen(ScmCharCodec *codec, const char *str);
+SCM_EXPORT ScmMultibyteString scm_mb_substring(ScmCharCodec *codec,
+                                               ScmMultibyteString str,
+                                               size_t i, size_t len);
 #define scm_mb_strref(codec, str, i) (scm_mb_substring((codec), (str), (i), 1))
-ScmCharCodec *scm_mb_find_codec(const char *encoding);
-scm_ichar_t scm_charcodec_read_char(ScmCharCodec *codec,
-                                    ScmMultibyteString *mbs,
-                                    const char *caller);
+SCM_EXPORT ScmCharCodec *scm_mb_find_codec(const char *encoding);
+SCM_EXPORT scm_ichar_t scm_charcodec_read_char(ScmCharCodec *codec,
+                                               ScmMultibyteString *mbs,
+                                               const char *caller);
 
 #ifdef __cplusplus
 }
