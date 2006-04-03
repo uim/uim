@@ -4,7 +4,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/src
 AM_LDFLAGS  = -rpath $(libdir)
 LIBS        = $(top_builddir)/src/libsscm.la
 
-EXTRA_DIST = test_template.c test-storage-compact.c
+EXTRA_DIST = \
+        test_template.c test-storage-compact.c \
+        README cutter-r20-yamaken-extension.diff
 noinst_LTLIBRARIES =
 
 noinst_LTLIBRARIES            += libtest_strcasecmp.la
