@@ -71,7 +71,7 @@ scm_initialize_srfi28(void)
     scm_register_funcs(scm_srfi28_func_info_table);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi28_format(ScmObj fmt, ScmObj objs)
 {
     DECLARE_FUNCTION("format", procedure_variadic_1);

@@ -100,7 +100,7 @@ scm_initialize_srfi60(void)
 }
 
 /* Bitwise Operations */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi60_logand(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logand", reduction_operator);
@@ -108,7 +108,7 @@ scm_p_srfi60_logand(ScmObj left, ScmObj right, enum ScmReductionState *state)
     BITWISE_OPERATION_BODY(&, left, right);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi60_logior(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logior", reduction_operator);
@@ -116,7 +116,7 @@ scm_p_srfi60_logior(ScmObj left, ScmObj right, enum ScmReductionState *state)
     BITWISE_OPERATION_BODY(|, left, right);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi60_logxor(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logxor", reduction_operator);
@@ -124,7 +124,7 @@ scm_p_srfi60_logxor(ScmObj left, ScmObj right, enum ScmReductionState *state)
     BITWISE_OPERATION_BODY(^, left, right);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi60_lognot(ScmObj n)
 {
     DECLARE_FUNCTION("lognot", procedure_fixed_1);
@@ -134,7 +134,7 @@ scm_p_srfi60_lognot(ScmObj n)
     return MAKE_INT(~SCM_INT_VALUE(n));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
 {
     scm_int_t result, c_mask;
@@ -150,7 +150,7 @@ scm_p_srfi60_bitwise_if(ScmObj mask, ScmObj n0, ScmObj n1)
     return MAKE_INT(result);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi60_logtest(ScmObj j, ScmObj k)
 {
     DECLARE_FUNCTION("logtest", procedure_fixed_2);

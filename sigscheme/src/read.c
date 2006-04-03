@@ -993,7 +993,7 @@ read_quote(ScmObj port, ScmObj quoter)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.2 Input
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_read(ScmObj args)
 {
     ScmObj port;

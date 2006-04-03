@@ -66,7 +66,7 @@
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.6 Vectors
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vectorp(ScmObj obj)
 {
     DECLARE_FUNCTION("vector?", procedure_fixed_1);
@@ -74,7 +74,7 @@ scm_p_vectorp(ScmObj obj)
     return MAKE_BOOL(VECTORP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_make_vector(ScmObj scm_len, ScmObj args)
 {
     ScmObj *vec, filler;
@@ -100,7 +100,7 @@ scm_p_make_vector(ScmObj scm_len, ScmObj args)
     return MAKE_VECTOR(vec, len);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vector(ScmObj args)
 {
     DECLARE_FUNCTION("vector", procedure_variadic_0);
@@ -108,7 +108,7 @@ scm_p_vector(ScmObj args)
     return scm_p_list2vector(args);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vector_length(ScmObj vec)
 {
     DECLARE_FUNCTION("vector-length", procedure_fixed_1);
@@ -118,7 +118,7 @@ scm_p_vector_length(ScmObj vec)
     return MAKE_INT(SCM_VECTOR_LEN(vec));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vector_ref(ScmObj vec, ScmObj _k)
 {
     scm_int_t k;
@@ -135,7 +135,7 @@ scm_p_vector_ref(ScmObj vec, ScmObj _k)
     return SCM_VECTOR_VEC(vec)[k];
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vector_setx(ScmObj vec, ScmObj _k, ScmObj obj)
 {
     scm_int_t k;
@@ -157,7 +157,7 @@ scm_p_vector_setx(ScmObj vec, ScmObj _k, ScmObj obj)
     return SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vector2list(ScmObj vec)
 {
     ScmQueue q;
@@ -178,7 +178,7 @@ scm_p_vector2list(ScmObj vec)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_list2vector(ScmObj lst)
 {
     ScmObj *vec;
@@ -196,7 +196,7 @@ scm_p_list2vector(ScmObj lst)
     return MAKE_VECTOR(vec, len);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_vector_fillx(ScmObj vec, ScmObj fill)
 {
     ScmObj *v;

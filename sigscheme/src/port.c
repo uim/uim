@@ -247,7 +247,7 @@ scm_port_flush(ScmObj port)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.1 Ports
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_call_with_input_file(ScmObj filepath, ScmObj proc)
 {
     ScmObj port, ret;
@@ -265,7 +265,7 @@ scm_p_call_with_input_file(ScmObj filepath, ScmObj proc)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_call_with_output_file(ScmObj filepath, ScmObj proc)
 {
     ScmObj port, ret;
@@ -283,7 +283,7 @@ scm_p_call_with_output_file(ScmObj filepath, ScmObj proc)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_input_portp(ScmObj port)
 {
     DECLARE_FUNCTION("input-port?", procedure_fixed_1);
@@ -293,7 +293,7 @@ scm_p_input_portp(ScmObj port)
     return MAKE_BOOL(SCM_PORT_FLAG(port) & SCM_PORTFLAG_INPUT);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_output_portp(ScmObj port)
 {
     DECLARE_FUNCTION("output-port?", procedure_fixed_1);
@@ -303,7 +303,7 @@ scm_p_output_portp(ScmObj port)
     return MAKE_BOOL(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_current_input_port(void)
 {
     DECLARE_FUNCTION("current-input-port", procedure_fixed_0);
@@ -311,7 +311,7 @@ scm_p_current_input_port(void)
     return scm_in;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_current_output_port(void)
 {
     DECLARE_FUNCTION("current-output-port", procedure_fixed_0);
@@ -319,7 +319,7 @@ scm_p_current_output_port(void)
     return scm_out;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
 {
     ScmObj saved_port, ret;
@@ -339,7 +339,7 @@ scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk)
 {
     ScmObj saved_port, ret;
@@ -359,7 +359,7 @@ scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_open_input_file(ScmObj filepath)
 {
     ScmBytePort *bport;
@@ -376,7 +376,7 @@ scm_p_open_input_file(ScmObj filepath)
     return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_open_output_file(ScmObj filepath)
 {
     ScmBytePort *bport;
@@ -393,7 +393,7 @@ scm_p_open_output_file(ScmObj filepath)
     return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_close_input_port(ScmObj port)
 {
     scm_int_t flag;
@@ -409,7 +409,7 @@ scm_p_close_input_port(ScmObj port)
     return SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_close_output_port(ScmObj port)
 {
     scm_int_t flag;
@@ -430,7 +430,7 @@ scm_p_close_output_port(ScmObj port)
 ===========================================================================*/
 /* scm_p_read() is separated into read.c */
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_read_char(ScmObj args)
 {
     ScmObj port;
@@ -446,7 +446,7 @@ scm_p_read_char(ScmObj args)
     return MAKE_CHAR(ch);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_peek_char(ScmObj args)
 {
     ScmObj port;
@@ -462,7 +462,7 @@ scm_p_peek_char(ScmObj args)
     return MAKE_CHAR(ch);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_eof_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("eof-object?", procedure_fixed_1);
@@ -470,7 +470,7 @@ scm_p_eof_objectp(ScmObj obj)
     return MAKE_BOOL(EOFP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_readyp(ScmObj args)
 {
     ScmObj port;
@@ -488,7 +488,7 @@ scm_p_char_readyp(ScmObj args)
 ===========================================================================*/
 /* scm_p_write() and scm_p_display() are separated into write.c */
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_newline(ScmObj args)
 {
     ScmObj port;
@@ -499,7 +499,7 @@ scm_p_newline(ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_write_char(ScmObj obj, ScmObj args)
 {
     ScmObj port;

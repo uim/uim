@@ -382,7 +382,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_eval(ScmObj obj, ScmObj env)
 {
     DECLARE_FUNCTION("eval", procedure_fixed_2);
@@ -428,7 +428,7 @@ eval_loop:
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmQueue q;
@@ -489,7 +489,7 @@ map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
 /*=======================================
   R5RS : 6.5 Eval
 =======================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_scheme_report_environment(ScmObj version)
 {
     DECLARE_FUNCTION("scheme-report-environment", procedure_fixed_1);
@@ -508,7 +508,7 @@ scm_p_scheme_report_environment(ScmObj version)
     return SCM_R5RS_ENV;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_null_environment(ScmObj version)
 {
     DECLARE_FUNCTION("null-environment", procedure_fixed_1);
@@ -527,7 +527,7 @@ scm_p_null_environment(ScmObj version)
     return SCM_NULL_ENV;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_interaction_environment(void)
 {
     DECLARE_FUNCTION("interaction-environment", procedure_fixed_0);

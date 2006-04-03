@@ -70,7 +70,7 @@ static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 /*===========================================================================
   R5RS : 6.1 Equivalence predicates
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_eqp(ScmObj obj1, ScmObj obj2)
 {
     DECLARE_FUNCTION("eq?", procedure_fixed_2);
@@ -78,7 +78,7 @@ scm_p_eqp(ScmObj obj1, ScmObj obj2)
     return MAKE_BOOL(EQ(obj1, obj2));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 {
 #if (!(SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY))
@@ -116,7 +116,7 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_equalp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
@@ -201,7 +201,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.1 Booleans
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_not(ScmObj obj)
 {
     DECLARE_FUNCTION("not", procedure_fixed_1);
@@ -209,7 +209,7 @@ scm_p_not(ScmObj obj)
     return MAKE_BOOL(FALSEP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_booleanp(ScmObj obj)
 {
     DECLARE_FUNCTION("boolean?", procedure_fixed_1);
@@ -220,7 +220,7 @@ scm_p_booleanp(ScmObj obj)
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.3 Symbols
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_symbolp(ScmObj obj)
 {
     DECLARE_FUNCTION("symbol?", procedure_fixed_1);
@@ -228,7 +228,7 @@ scm_p_symbolp(ScmObj obj)
     return MAKE_BOOL(SYMBOLP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_symbol2string(ScmObj sym)
 {
     DECLARE_FUNCTION("symbol->string", procedure_fixed_1);
@@ -238,7 +238,7 @@ scm_p_symbol2string(ScmObj sym)
     return CONST_STRING(SCM_SYMBOL_NAME(sym));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string2symbol(ScmObj str)
 {
     DECLARE_FUNCTION("string->symbol", procedure_fixed_1);
@@ -251,7 +251,7 @@ scm_p_string2symbol(ScmObj str)
 /*=======================================
   R5RS : 6.4 Control Features
 =======================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_procedurep(ScmObj obj)
 {
     DECLARE_FUNCTION("procedure?", procedure_fixed_1);
@@ -259,7 +259,7 @@ scm_p_procedurep(ScmObj obj)
     return MAKE_BOOL(PROCEDUREP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_map(ScmObj proc, ScmObj args)
 {
     DECLARE_FUNCTION("map", procedure_variadic_1);
@@ -322,7 +322,7 @@ map_multiple_args(ScmObj proc, ScmObj args)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_for_each(ScmObj proc, ScmObj args)
 {
     DECLARE_FUNCTION("for-each", procedure_variadic_1);
@@ -332,7 +332,7 @@ scm_p_for_each(ScmObj proc, ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_force(ScmObj closure)
 {
     DECLARE_FUNCTION("force", procedure_fixed_1);
@@ -342,7 +342,7 @@ scm_p_force(ScmObj closure)
     return scm_call(closure, SCM_NULL);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
     DECLARE_FUNCTION("call-with-current-continuation",
@@ -353,7 +353,7 @@ scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
     return scm_call_with_current_continuation(proc, eval_state);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_values(ScmObj args)
 {
     DECLARE_FUNCTION("values", procedure_variadic_0);
@@ -367,7 +367,7 @@ scm_p_values(ScmObj args)
     return SCM_MAKE_VALUEPACKET(args);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_call_with_values(ScmObj producer, ScmObj consumer,
                        ScmEvalState *eval_state)
 {
@@ -390,7 +390,7 @@ scm_p_call_with_values(ScmObj producer, ScmObj consumer,
     return scm_tailcall(consumer, vals, eval_state);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
     DECLARE_FUNCTION("dynamic-wind", procedure_fixed_3);

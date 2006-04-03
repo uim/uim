@@ -77,7 +77,7 @@ static int string_cmp(const char *funcname,
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.5 Strings
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_stringp(ScmObj obj)
 {
     DECLARE_FUNCTION("string?", procedure_fixed_1);
@@ -85,7 +85,7 @@ scm_p_stringp(ScmObj obj)
     return MAKE_BOOL(STRINGP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_make_string(ScmObj length, ScmObj args)
 {
     ScmObj filler;
@@ -149,7 +149,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     return MAKE_STRING(str, len);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string(ScmObj args)
 {
     DECLARE_FUNCTION("string", procedure_variadic_0);
@@ -157,7 +157,7 @@ scm_p_string(ScmObj args)
     return scm_p_list2string(args);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_length(ScmObj str)
 {
     scm_int_t len;
@@ -174,7 +174,7 @@ scm_p_string_length(ScmObj str)
     return MAKE_INT(len);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_ref(ScmObj str, ScmObj k)
 {
     scm_int_t idx;
@@ -206,7 +206,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
     return MAKE_CHAR(ch);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_setx(ScmObj str, ScmObj k, ScmObj ch)
 {
     scm_int_t idx;
@@ -332,7 +332,7 @@ string_cmp(const char *funcname,
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_stringequalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string=?", procedure_fixed_2);
@@ -343,7 +343,7 @@ scm_p_stringequalp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_EQUALP(str1, str2));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_ci_equalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string-ci=?", procedure_fixed_2);
@@ -356,7 +356,7 @@ scm_p_string_ci_equalp(ScmObj str1, ScmObj str2)
                          && STRING_CI_CMP(str1, str2) == 0));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_greaterp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string>?", procedure_fixed_2);
@@ -364,7 +364,7 @@ scm_p_string_greaterp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CMP(str1, str2) > 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_lessp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string<?", procedure_fixed_2);
@@ -372,7 +372,7 @@ scm_p_string_lessp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CMP(str1, str2) < 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_greater_equalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string>=?", procedure_fixed_2);
@@ -380,7 +380,7 @@ scm_p_string_greater_equalp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CMP(str1, str2) >= 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_less_equalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string<=?", procedure_fixed_2);
@@ -388,7 +388,7 @@ scm_p_string_less_equalp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CMP(str1, str2) <= 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_ci_greaterp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string-ci>?", procedure_fixed_2);
@@ -396,7 +396,7 @@ scm_p_string_ci_greaterp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CI_CMP(str1, str2) > 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_ci_lessp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string-ci<?", procedure_fixed_2);
@@ -404,7 +404,7 @@ scm_p_string_ci_lessp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CI_CMP(str1, str2) < 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_ci_greater_equalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string-ci>=?", procedure_fixed_2);
@@ -412,7 +412,7 @@ scm_p_string_ci_greater_equalp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CI_CMP(str1, str2) >= 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_ci_less_equalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string-ci<=?", procedure_fixed_2);
@@ -420,7 +420,7 @@ scm_p_string_ci_less_equalp(ScmObj str1, ScmObj str2)
     return MAKE_BOOL(STRING_CI_CMP(str1, str2) <= 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 {
     scm_int_t c_start, c_end, len, sub_len;
@@ -473,7 +473,7 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 }
 
 /* FIXME: support stateful encoding */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_append(ScmObj args)
 {
     ScmObj rest, str;
@@ -517,7 +517,7 @@ scm_p_string_append(ScmObj args)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string2list(ScmObj str)
 {
 #if SCM_USE_MULTIBYTE_CHAR
@@ -565,7 +565,7 @@ scm_p_string2list(ScmObj str)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_list2string(ScmObj lst)
 {
     ScmObj rest, ch;
@@ -620,7 +620,7 @@ scm_p_list2string(ScmObj lst)
     return MAKE_STRING(str, len);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_copy(ScmObj str)
 {
     DECLARE_FUNCTION("string-copy", procedure_fixed_1);
@@ -635,7 +635,7 @@ scm_p_string_copy(ScmObj str)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string_fillx(ScmObj str, ScmObj ch)
 {
     size_t str_len;

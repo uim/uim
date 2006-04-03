@@ -618,9 +618,9 @@ ScmObj scm_eval(ScmObj obj, ScmObj env);
 
 /* syntax.c */
 void scm_init_syntax(void);
-ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
-ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
-                           ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
+                                      ScmEvalState *eval_state);
 
 /* error.c */
 void scm_init_error(void);

@@ -102,7 +102,7 @@ srfi48_format_internal(enum ScmFormatCapability fcap,
 }
 
 /* format [port] format-string [obj ...] */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi48_format(ScmObj fmt_or_port, ScmObj rest)
 {
     DECLARE_FUNCTION("format", procedure_variadic_1);
@@ -112,7 +112,7 @@ scm_p_srfi48_format(ScmObj fmt_or_port, ScmObj rest)
 
 /* SigScheme specific procedure */
 /* format+ [port] format-string [obj ...] */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_formatplus(ScmObj fmt_or_port, ScmObj rest)
 {
     DECLARE_FUNCTION("format+", procedure_variadic_1);

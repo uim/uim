@@ -71,7 +71,7 @@ scm_initialize_srfi2(void)
     scm_register_funcs(scm_srfi2_func_info_table);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env, claw, var, val, exp;

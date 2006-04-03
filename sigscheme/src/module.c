@@ -173,7 +173,7 @@ scm_use_internal(const char *feature)
  * - Make the module_info_table dynamically registerable for dynamic loadable
  *   objects (if necessary)
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_use(ScmObj feature, ScmObj env)
 {
     const struct module_info *mod;

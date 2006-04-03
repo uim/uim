@@ -66,7 +66,7 @@
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.4 Characters
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_charp(ScmObj obj)
 {
     DECLARE_FUNCTION("char?", procedure_fixed_1);
@@ -74,7 +74,7 @@ scm_p_charp(ScmObj obj)
     return MAKE_BOOL(CHARP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char=?", procedure_fixed_2);
@@ -97,7 +97,7 @@ scm_p_char_equalp(ScmObj ch1, ScmObj ch2)
         return MAKE_BOOL(SCM_CHAR_VALUE(ch1) op SCM_CHAR_VALUE(ch2));        \
     } while (/* CONSTCOND */ 0)
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_lessp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char<?", procedure_fixed_2);
@@ -105,7 +105,7 @@ scm_p_char_lessp(ScmObj ch1, ScmObj ch2)
     CHAR_CMP_BODY(<, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_greaterp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char>?", procedure_fixed_2);
@@ -113,7 +113,7 @@ scm_p_char_greaterp(ScmObj ch1, ScmObj ch2)
     CHAR_CMP_BODY(>, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_less_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char<=?", procedure_fixed_2);
@@ -121,7 +121,7 @@ scm_p_char_less_equalp(ScmObj ch1, ScmObj ch2)
     CHAR_CMP_BODY(<=, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_greater_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char>=?", procedure_fixed_2);
@@ -142,7 +142,7 @@ scm_p_char_greater_equalp(ScmObj ch1, ScmObj ch2)
         return MAKE_BOOL(val1 op val2);                                      \
     } while (/* CONSTCOND */ 0)
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_ci_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char-ci=?", procedure_fixed_2);
@@ -150,7 +150,7 @@ scm_p_char_ci_equalp(ScmObj ch1, ScmObj ch2)
     CHAR_CI_CMP_BODY(==, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_ci_lessp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char-ci<?", procedure_fixed_2);
@@ -158,7 +158,7 @@ scm_p_char_ci_lessp(ScmObj ch1, ScmObj ch2)
     CHAR_CI_CMP_BODY(<, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_ci_greaterp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char-ci>?", procedure_fixed_2);
@@ -166,7 +166,7 @@ scm_p_char_ci_greaterp(ScmObj ch1, ScmObj ch2)
     CHAR_CI_CMP_BODY(>, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_ci_less_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char-ci<=?", procedure_fixed_2);
@@ -174,7 +174,7 @@ scm_p_char_ci_less_equalp(ScmObj ch1, ScmObj ch2)
     CHAR_CI_CMP_BODY(<=, ch1, ch2);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_ci_greater_equalp(ScmObj ch1, ScmObj ch2)
 {
     DECLARE_FUNCTION("char-ci>=?", procedure_fixed_2);
@@ -185,7 +185,7 @@ scm_p_char_ci_greater_equalp(ScmObj ch1, ScmObj ch2)
 #undef CHAR_CMP_BODY
 #undef CHAR_CI_CMP_BODY
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_alphabeticp(ScmObj ch)
 {
     scm_ichar_t val;
@@ -198,7 +198,7 @@ scm_p_char_alphabeticp(ScmObj ch)
     return MAKE_BOOL(ICHAR_ALPHABETICP(val));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_numericp(ScmObj ch)
 {
     scm_ichar_t val;
@@ -211,7 +211,7 @@ scm_p_char_numericp(ScmObj ch)
     return MAKE_BOOL(ICHAR_NUMERICP(val));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_whitespacep(ScmObj ch)
 {
     scm_ichar_t val;
@@ -224,7 +224,7 @@ scm_p_char_whitespacep(ScmObj ch)
     return MAKE_BOOL(ICHAR_WHITESPACEP(val));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_upper_casep(ScmObj ch)
 {
     scm_ichar_t val;
@@ -237,7 +237,7 @@ scm_p_char_upper_casep(ScmObj ch)
     return MAKE_BOOL(ICHAR_UPPER_CASEP(val));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_lower_casep(ScmObj ch)
 {
     scm_ichar_t val;
@@ -250,7 +250,7 @@ scm_p_char_lower_casep(ScmObj ch)
     return MAKE_BOOL(ICHAR_LOWER_CASEP(val));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char2integer(ScmObj ch)
 {
     DECLARE_FUNCTION("char->integer", procedure_fixed_1);
@@ -260,7 +260,7 @@ scm_p_char2integer(ScmObj ch)
     return MAKE_INT(SCM_CHAR_VALUE(ch));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_integer2char(ScmObj n)
 {
     scm_int_t val;
@@ -279,7 +279,7 @@ scm_p_integer2char(ScmObj n)
     return MAKE_CHAR(val);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_upcase(ScmObj ch)
 {
     scm_ichar_t val;
@@ -293,7 +293,7 @@ scm_p_char_upcase(ScmObj ch)
     return ch;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_char_downcase(ScmObj ch)
 {
     scm_ichar_t val;

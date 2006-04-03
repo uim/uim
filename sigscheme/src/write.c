@@ -720,7 +720,7 @@ scm_display_errobj_ss(ScmObj port, ScmObj errobj)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.3 Output
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_write(ScmObj obj, ScmObj args)
 {
     ScmObj port;
@@ -731,7 +731,7 @@ scm_p_write(ScmObj obj, ScmObj args)
     return SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_display(ScmObj obj, ScmObj args)
 {
     ScmObj port;

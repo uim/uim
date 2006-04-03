@@ -84,7 +84,7 @@ istrport_finalize(char **str, scm_bool ownership, void **opaque)
     scm_gc_unprotect((ScmObj *)opaque);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi6_open_input_string(ScmObj str)
 {
     ScmObj *hold_str;
@@ -101,7 +101,7 @@ scm_p_srfi6_open_input_string(ScmObj str)
     return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi6_open_output_string(void)
 {
     ScmBytePort *bport;
@@ -113,7 +113,7 @@ scm_p_srfi6_open_output_string(void)
     return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi6_get_output_string(ScmObj port)
 {
     ScmBaseCharPort *cport;

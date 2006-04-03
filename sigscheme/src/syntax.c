@@ -395,7 +395,7 @@ vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.2 Literal expressions
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_quote(ScmObj datum, ScmObj env)
 {
     DECLARE_FUNCTION("quote", syntax_fixed_1);
@@ -406,7 +406,7 @@ scm_s_quote(ScmObj datum, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.4 Procedures
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 {
     DECLARE_FUNCTION("lambda", syntax_variadic_1);
@@ -429,7 +429,7 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.5 Conditionals
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 {
     ScmObj env, alt;
@@ -461,7 +461,7 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
 {
     ScmObj evaled;
@@ -499,7 +499,7 @@ scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
 /* body of 'cond' and also invoked from 'case' and 'guard' of SRFI-34 */
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 {
     ScmObj env, clause, test, exps, proc;
@@ -603,7 +603,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
     return SCM_INVALID;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_cond(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
@@ -613,7 +613,7 @@ scm_s_cond(ScmObj args, ScmEvalState *eval_state)
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
 {
     ScmObj ret;
@@ -624,7 +624,7 @@ scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_and(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj expr, val;
@@ -648,7 +648,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
     return expr;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_or(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj expr, val;
@@ -751,7 +751,7 @@ filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
  * form validation for internal definitions as specified in R5RS (5.2.2
  * Internal definitions). */
 /* TODO: Reform as a read-time syntax translator */
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_body(ScmObj body, ScmEvalState *eval_state)
 {
 #if SCM_STRICT_DEFINE_PLACEMENT
@@ -798,7 +798,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
  *   bound to the closure.  <procname>'s scope must not penetrate to the
  *   surrounding environment.
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_let(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj env, named_let_sym, proc, bindings, binding, body;
@@ -874,7 +874,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
     return scm_s_body(body, eval_state);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj env, var, val, binding;
@@ -922,7 +922,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     return SCM_FALSE;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj binding, formals, actuals, var, val;
@@ -973,7 +973,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj expr;
@@ -995,7 +995,7 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.4 Iteration
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
          ScmEvalState *eval_state)
 {
@@ -1102,7 +1102,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_delay(ScmObj expr, ScmObj env)
 {
     DECLARE_FUNCTION("delay", syntax_fixed_1);
@@ -1211,7 +1211,7 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
     return my_result;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_quasiquote(ScmObj datum, ScmObj env)
 {
     qquote_result ret;
@@ -1235,7 +1235,7 @@ scm_s_quasiquote(ScmObj datum, ScmObj env)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_unquote(ScmObj dummy, ScmObj env)
 {
     DECLARE_FUNCTION("unquote", syntax_fixed_1);
@@ -1245,7 +1245,7 @@ scm_s_unquote(ScmObj dummy, ScmObj env)
     return SCM_FALSE;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_unquote_splicing(ScmObj dummy, ScmObj env)
 {
     DECLARE_FUNCTION("unquote-splicing", syntax_fixed_1);
@@ -1278,7 +1278,7 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
 {
     ScmObj procname, body, formals, proc;

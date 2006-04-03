@@ -70,7 +70,7 @@ scm_initialize_srfi8(void)
     scm_register_funcs(scm_srfi8_func_info_table);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                     ScmEvalState *eval_state)
 {

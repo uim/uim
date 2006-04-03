@@ -75,7 +75,7 @@ static int prepare_radix(const char *funcname, ScmObj args);
 ===========================================================================*/
 /* Note: SigScheme supports only the integer part of the numerical tower. */
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     scm_int_t result;
@@ -101,7 +101,7 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return MAKE_INT(result);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     scm_int_t result;
@@ -127,7 +127,7 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return MAKE_INT(result);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     scm_int_t result;
@@ -153,7 +153,7 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return MAKE_INT(result);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     scm_int_t result;
@@ -180,7 +180,7 @@ scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return MAKE_INT(result);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_numberp(ScmObj obj)
 {
     DECLARE_FUNCTION("number?", procedure_fixed_1);
@@ -188,7 +188,7 @@ scm_p_numberp(ScmObj obj)
     return MAKE_BOOL(NUMBERP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_integerp(ScmObj obj)
 {
     DECLARE_FUNCTION("integer?", procedure_fixed_1);
@@ -214,7 +214,7 @@ scm_p_integerp(ScmObj obj)
     }                                                                        \
     return SCM_INVALID
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("=", reduction_operator);
@@ -222,7 +222,7 @@ scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
     COMPARATOR_BODY(==);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("<", reduction_operator);
@@ -230,7 +230,7 @@ scm_p_less(ScmObj left, ScmObj right, enum ScmReductionState *state)
     COMPARATOR_BODY(<);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_less_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("<=", reduction_operator);
@@ -238,7 +238,7 @@ scm_p_less_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
     COMPARATOR_BODY(<=);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION(">", reduction_operator);
@@ -246,7 +246,7 @@ scm_p_greater(ScmObj left, ScmObj right, enum ScmReductionState *state)
     COMPARATOR_BODY(>);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_greater_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION(">=", reduction_operator);
@@ -256,7 +256,7 @@ scm_p_greater_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
 
 #undef COMPARATOR_BODY
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_zerop(ScmObj n)
 {
     DECLARE_FUNCTION("zero?", procedure_fixed_1);
@@ -266,7 +266,7 @@ scm_p_zerop(ScmObj n)
     return MAKE_BOOL(SCM_INT_VALUE(n) == 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_positivep(ScmObj n)
 {
     DECLARE_FUNCTION("positive?", procedure_fixed_1);
@@ -276,7 +276,7 @@ scm_p_positivep(ScmObj n)
     return MAKE_BOOL(SCM_INT_VALUE(n) > 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_negativep(ScmObj n)
 {
     DECLARE_FUNCTION("negative?", procedure_fixed_1);
@@ -286,7 +286,7 @@ scm_p_negativep(ScmObj n)
     return MAKE_BOOL(SCM_INT_VALUE(n) < 0);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_oddp(ScmObj n)
 {
     DECLARE_FUNCTION("odd?", procedure_fixed_1);
@@ -296,7 +296,7 @@ scm_p_oddp(ScmObj n)
     return MAKE_BOOL(SCM_INT_VALUE(n) & 0x1);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_evenp(ScmObj n)
 {
     DECLARE_FUNCTION("even?", procedure_fixed_1);
@@ -306,7 +306,7 @@ scm_p_evenp(ScmObj n)
     return MAKE_BOOL(!(SCM_INT_VALUE(n) & 0x1));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("max", reduction_operator);
@@ -319,7 +319,7 @@ scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return (SCM_INT_VALUE(left) > SCM_INT_VALUE(right)) ? left : right;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("min", reduction_operator);
@@ -333,7 +333,7 @@ scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
 }
 
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_abs(ScmObj _n)
 {
     scm_int_t n;
@@ -346,7 +346,7 @@ scm_p_abs(ScmObj _n)
     return (n < 0) ? MAKE_INT(-n) : _n;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_quotient(ScmObj _n1, ScmObj _n2)
 {
     scm_int_t n1, n2;
@@ -364,7 +364,7 @@ scm_p_quotient(ScmObj _n1, ScmObj _n2)
     return MAKE_INT((int)(n1 / n2));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_modulo(ScmObj _n1, ScmObj _n2)
 {
     scm_int_t n1, n2, rem;
@@ -389,7 +389,7 @@ scm_p_modulo(ScmObj _n1, ScmObj _n2)
     return MAKE_INT(rem);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_remainder(ScmObj _n1, ScmObj _n2)
 {
     scm_int_t n1, n2;
@@ -476,7 +476,7 @@ scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
     return str;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_number2string(ScmObj num, ScmObj args)
 {
     char *str;
@@ -544,7 +544,7 @@ scm_string2number(const char *str, int radix, scm_bool *err)
     return n;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_string2number(ScmObj str, ScmObj args)
 {
     scm_int_t ret;

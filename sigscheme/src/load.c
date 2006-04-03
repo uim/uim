@@ -105,7 +105,7 @@ scm_set_lib_path(const char *path)
 }
 
 /* SigScheme specific procedure (SIOD compatible) */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_load_path(void)
 {
     DECLARE_FUNCTION("load-path", procedure_fixed_0);
@@ -218,7 +218,7 @@ file_existsp(const char *c_filepath)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_load(ScmObj filename)
 {
     DECLARE_FUNCTION("load", procedure_fixed_1);

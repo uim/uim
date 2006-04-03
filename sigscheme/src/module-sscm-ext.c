@@ -86,7 +86,7 @@ scm_initialize_sscm_extensions(void)
  * procedure with global-variable-bound?.
  */
 /* The implementation is fully compatible with SIOD */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 {
     ScmObj env;
@@ -108,7 +108,7 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
 }
 
 /* SRFI-77 compatible */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_least_fixnum(void)
 {
     DECLARE_FUNCTION("least-fixnum", procedure_fixed_0);
@@ -117,7 +117,7 @@ scm_p_least_fixnum(void)
 }
 
 /* SRFI-77 compatible */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_greatest_fixnum(void)
 {
     DECLARE_FUNCTION("greatest-fixnum", procedure_fixed_0);
@@ -155,7 +155,7 @@ scm_require_internal(const char *filename)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_require(ScmObj filename)
 {
 #if SCM_COMPAT_SIOD
@@ -195,7 +195,7 @@ make_loaded_str(const char *filename)
  * TODO: replace original specification with a SRFI standard or other de facto
  * standard
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_provide(ScmObj feature)
 {
     DECLARE_FUNCTION("provide", procedure_fixed_1);
@@ -211,7 +211,7 @@ scm_p_provide(ScmObj feature)
  * TODO: replace original specification with a SRFI standard or other de facto
  * standard
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_providedp(ScmObj feature)
 {
     DECLARE_FUNCTION("provided?", procedure_fixed_1);
@@ -235,7 +235,7 @@ scm_p_providedp(ScmObj feature)
  * - file-regular?
  * - file-directory?
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_file_existsp(ScmObj filepath)
 {
     FILE *f;
@@ -255,7 +255,7 @@ scm_p_file_existsp(ScmObj filepath)
 
 /* to avoid being typo of length+, this procedure did not name as length++ */
 /* FIXME: replace with a SRFI or de facto standard equivalent if exist */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_lengthstar(ScmObj lst)
 {
     scm_int_t len;

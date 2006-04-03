@@ -229,7 +229,7 @@ with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
 
 /* with-exception-handler */
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk)
 {
     ScmObj handlers;
@@ -244,7 +244,7 @@ scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk)
 
 /* raise */
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi34_raise(ScmObj obj)
 {
     ScmObj handler, rest_handlers, thunk, err_obj;
@@ -273,7 +273,7 @@ scm_p_srfi34_raise(ScmObj obj)
 
 /* guard */
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body, ScmEvalState *eval_state)
 {
     ScmObj lex_env, proc_guard_int, ret;

@@ -42,17 +42,18 @@
 #         |
 #         V
 #
-# $1  :prototype       ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state)
-# $2  :ret             ScmObj
-# $3  :func            scm_p_call_with_values
-# $4  :prefix          p
-# $5  :func_body       call_with_values
-# $6  :args            ScmObj producer, ScmObj consumer, ScmEvalState *eval_state
-# $7  :proc            call-with-values
-# $8  :functype_whole  procedure_fixed_tailrec_2
-# $9  :functype_prefix procedure
-# $10 :functype_spec   fixed_tailrec_2
-SCM_DECL_RE = /\n((ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+(([^_]+)_([\w]+))\)/m
+# $1  :prototype       SCM_EXPORT ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer, ScmEvalState *eval_state)
+# $2  :scope           SCM_EXPORT
+# $3  :ret             ScmObj
+# $4  :func            scm_p_call_with_values
+# $5  :prefix          p
+# $6  :func_body       call_with_values
+# $7  :args            ScmObj producer, ScmObj consumer, ScmEvalState *eval_state
+# $8  :proc            call-with-values
+# $9  :functype_whole  procedure_fixed_tailrec_2
+# $10 :functype_prefix procedure
+# $11 :functype_spec   fixed_tailrec_2
+SCM_DECL_RE = /\n((SCM_EXPORT\s+)?(ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+(([^_]+)_([\w]+))\)/m
 
 
 # :register_func   scm_register_procedure_fixed_tailrec_2
@@ -60,9 +61,10 @@ SCM_DECL_RE = /\n((ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DE
 class String
   def scan_scm_decl
     res = []
-    scan(SCM_DECL_RE) { |prototype, ret, func, prefix, func_body, args, proc, functype_whole, functype_prefix, functype_spec|
+    scan(SCM_DECL_RE) { |scope, prototype, ret, func, prefix, func_body, args, proc, functype_whole, functype_prefix, functype_spec|
       decl = {
         :prototype       => prototype.gsub(/\s+/, " "),
+        :scope           => scope,
         :ret             => ret,
         :func            => func,
         :prefix          => prefix,

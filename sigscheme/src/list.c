@@ -67,7 +67,7 @@ static ScmObj list_tail(ScmObj lst, scm_int_t k);
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.2 Pairs and lists
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_car(ScmObj obj)
 {
     DECLARE_FUNCTION("car", procedure_fixed_1);
@@ -81,7 +81,7 @@ scm_p_car(ScmObj obj)
     return CAR(obj);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_cdr(ScmObj obj)
 {
     DECLARE_FUNCTION("cdr", procedure_fixed_1);
@@ -95,7 +95,7 @@ scm_p_cdr(ScmObj obj)
     return CDR(obj);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_pairp(ScmObj obj)
 {
     DECLARE_FUNCTION("pair?", procedure_fixed_1);
@@ -103,7 +103,7 @@ scm_p_pairp(ScmObj obj)
     return MAKE_BOOL(CONSP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_cons(ScmObj car, ScmObj cdr)
 {
     DECLARE_FUNCTION("cons", procedure_fixed_2);
@@ -111,7 +111,7 @@ scm_p_cons(ScmObj car, ScmObj cdr)
     return CONS(car, cdr);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_set_carx(ScmObj pair, ScmObj car)
 {
     DECLARE_FUNCTION("set-car!", procedure_fixed_2);
@@ -128,7 +128,7 @@ scm_p_set_carx(ScmObj pair, ScmObj car)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_set_cdrx(ScmObj pair, ScmObj cdr)
 {
     DECLARE_FUNCTION("set-cdr!", procedure_fixed_2);
@@ -145,7 +145,7 @@ scm_p_set_cdrx(ScmObj pair, ScmObj cdr)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_caar(ScmObj lst)
 {
     DECLARE_FUNCTION("caar", procedure_fixed_1);
@@ -153,7 +153,7 @@ scm_p_caar(ScmObj lst)
     return scm_p_car( scm_p_car(lst) );
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_cadr(ScmObj lst)
 {
     DECLARE_FUNCTION("cadr", procedure_fixed_1);
@@ -161,7 +161,7 @@ scm_p_cadr(ScmObj lst)
     return scm_p_car( scm_p_cdr(lst) );
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_cdar(ScmObj lst)
 {
     DECLARE_FUNCTION("cdar", procedure_fixed_1);
@@ -169,7 +169,7 @@ scm_p_cdar(ScmObj lst)
     return scm_p_cdr( scm_p_car(lst) );
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_cddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cddr", procedure_fixed_1);
@@ -177,7 +177,7 @@ scm_p_cddr(ScmObj lst)
     return scm_p_cdr( scm_p_cdr(lst) );
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_caddr(ScmObj lst)
 {
     DECLARE_FUNCTION("caddr", procedure_fixed_1);
@@ -185,7 +185,7 @@ scm_p_caddr(ScmObj lst)
     return scm_p_car( scm_p_cdr( scm_p_cdr(lst) ));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_cdddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cdddr", procedure_fixed_1);
@@ -193,7 +193,7 @@ scm_p_cdddr(ScmObj lst)
     return scm_p_cdr( scm_p_cdr( scm_p_cdr(lst) ));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_list(ScmObj args)
 {
     DECLARE_FUNCTION("list", procedure_variadic_0);
@@ -201,7 +201,7 @@ scm_p_list(ScmObj args)
     return args;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_nullp(ScmObj obj)
 {
     DECLARE_FUNCTION("null?", procedure_fixed_1);
@@ -209,7 +209,7 @@ scm_p_nullp(ScmObj obj)
     return MAKE_BOOL(NULLP(obj));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_listp(ScmObj obj)
 {
     DECLARE_FUNCTION("list?", procedure_fixed_1);
@@ -284,7 +284,7 @@ scm_length(ScmObj lst)
 
 #undef TERMINATOR_LEN
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_length(ScmObj obj)
 {
     scm_int_t len;
@@ -297,7 +297,7 @@ scm_p_length(ScmObj obj)
     return MAKE_INT(len);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_append(ScmObj args)
 {
     ScmQueue q;
@@ -321,7 +321,7 @@ scm_p_append(ScmObj args)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_reverse(ScmObj lst)
 {
     ScmObj ret, elm;
@@ -346,7 +346,7 @@ list_tail(ScmObj lst, scm_int_t k)
     return lst;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_list_tail(ScmObj lst, ScmObj k)
 {
     ScmObj ret;
@@ -361,7 +361,7 @@ scm_p_list_tail(ScmObj lst, ScmObj k)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_list_ref(ScmObj lst, ScmObj k)
 {
     ScmObj tail;
@@ -385,7 +385,7 @@ scm_p_list_ref(ScmObj lst, ScmObj k)
         return SCM_FALSE;                                                    \
     } while (/* CONSTCOND */ 0)
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_memq(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("memq", procedure_fixed_2);
@@ -393,7 +393,7 @@ scm_p_memq(ScmObj obj, ScmObj lst)
     MEMBER_BODY(obj, lst, EQ);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_memv(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("memv", procedure_fixed_2);
@@ -405,7 +405,7 @@ scm_p_memv(ScmObj obj, ScmObj lst)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_member(ScmObj obj, ScmObj lst)
 {
     DECLARE_FUNCTION("member", procedure_fixed_2);
@@ -429,7 +429,7 @@ scm_p_member(ScmObj obj, ScmObj lst)
         return SCM_FALSE;                                                    \
     } while (/* CONSTCOND */ 0)
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_assq(ScmObj obj, ScmObj alist)
 {
     DECLARE_FUNCTION("assq", procedure_fixed_2);
@@ -437,7 +437,7 @@ scm_p_assq(ScmObj obj, ScmObj alist)
     ASSOC_BODY(obj, alist, EQ);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_assv(ScmObj obj, ScmObj alist)
 {
     DECLARE_FUNCTION("assv", procedure_fixed_2);
@@ -449,7 +449,7 @@ scm_p_assv(ScmObj obj, ScmObj alist)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_assoc(ScmObj obj, ScmObj alist)
 {
     DECLARE_FUNCTION("assoc", procedure_fixed_2);

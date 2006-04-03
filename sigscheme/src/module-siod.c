@@ -132,7 +132,7 @@ scm_initialize_siod(void)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_symbol_value(ScmObj var)
 {
     DECLARE_FUNCTION("symbol-value", procedure_fixed_1);
@@ -149,7 +149,7 @@ scm_p_symbol_value(ScmObj var)
  * - make the portable proc interface similar to a de facto standard of other
  *   Scheme implementations if existing
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_set_symbol_valuex(ScmObj var, ScmObj val)
 {
     DECLARE_FUNCTION("set-symbol-value!", procedure_fixed_2);
@@ -161,7 +161,7 @@ scm_p_set_symbol_valuex(ScmObj var, ScmObj val)
     return val;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
 {
     DECLARE_FUNCTION("=", procedure_fixed_2);
@@ -176,7 +176,7 @@ scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
     return SCM_FALSE;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_the_environment(ScmEvalState *eval_state)
 {
     DECLARE_FUNCTION("the-environment", procedure_fixed_tailrec_0);
@@ -186,7 +186,7 @@ scm_p_the_environment(ScmEvalState *eval_state)
     return eval_state->env;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_closure_code(ScmObj closure)
 {
     ScmObj exp, body, sym_begin;
@@ -205,7 +205,7 @@ scm_p_closure_code(ScmObj closure)
     return CONS(CAR(exp), body);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_verbose(ScmObj args)
 {
     ScmObj level;
@@ -222,7 +222,7 @@ scm_p_verbose(ScmObj args)
     return MAKE_INT(sscm_verbose_level);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_eof_val(void)
 {
     DECLARE_FUNCTION("eof-val", procedure_fixed_0);
@@ -230,7 +230,7 @@ scm_p_eof_val(void)
     return SCM_EOF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_undefine(ScmObj var, ScmObj env)
 {
     ScmRef val;

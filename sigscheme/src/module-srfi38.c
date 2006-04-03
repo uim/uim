@@ -80,7 +80,7 @@ scm_initialize_srfi38(void)
 /*===========================================================================
   SRFI38 : External Representation for Data With Shared Structure
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
 {
     ScmObj port;

@@ -172,7 +172,7 @@ srfi34_providedp(void)
 #endif
 
 /* The name 'error?' should be reserved for SRFI-35 */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_error_objectp(ScmObj obj)
 {
     DECLARE_FUNCTION("%%error-object?", procedure_fixed_1);
@@ -233,7 +233,7 @@ void scm_set_fatal_error_callback(void (*cb)(void))
     cb_fatal_error = cb;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_fatal_error(ScmObj err_obj)
 {
     const char *msg;
@@ -253,7 +253,7 @@ scm_p_fatal_error(ScmObj err_obj)
     /* NOTREACHED */
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_inspect_error(ScmObj err_obj)
 {
     ScmObj rest, err_obj_tag, reason, objs, trace_stack;
@@ -292,7 +292,7 @@ scm_p_inspect_error(ScmObj err_obj)
     return SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_backtrace(void)
 {
     DECLARE_FUNCTION("%%backtrace", procedure_fixed_0);
