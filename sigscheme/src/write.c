@@ -132,7 +132,7 @@ static void write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 /*=======================================
    Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_writer(void)
 {
     /* To allow re-initialization of the interpreter, these variables must be
@@ -145,13 +145,13 @@ scm_init_writer(void)
 #endif
 }
 
-void
+SCM_EXPORT void
 scm_write(ScmObj port, ScmObj obj)
 {
     write_internal(port, obj, AS_WRITE);
 }
 
-void
+SCM_EXPORT void
 scm_display(ScmObj port, ScmObj obj)
 {
     write_internal(port, obj, AS_DISPLAY);
@@ -704,13 +704,13 @@ write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype)
 }
 
 /* write with shared structure */
-void
+SCM_EXPORT void
 scm_write_ss(ScmObj port, ScmObj obj)
 {
     write_ss_internal(port, obj, AS_WRITE);
 }
 
-void
+SCM_EXPORT void
 scm_display_errobj_ss(ScmObj port, ScmObj errobj)
 {
     write_ss_internal(port, errobj, AS_DISPLAY);

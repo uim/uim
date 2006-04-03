@@ -568,88 +568,92 @@ SCM_DECLARE_EXPORTED_VARS(symbol);
 /* strcasecmp.c */
 #if !HAVE_STRCASECMP
 #define strcasecmp scm_strcasecmp
-int scm_strcasecmp(const char *s1, const char *s2);
+SCM_EXPORT int scm_strcasecmp(const char *s1, const char *s2);
 #endif /* !HAVE_STRCASECMP */
 
 /* storage.c */
-void scm_init_storage(const ScmStorageConf *conf);
-void scm_finalize_storage(void);
+SCM_EXPORT void scm_init_storage(const ScmStorageConf *conf);
+SCM_EXPORT void scm_finalize_storage(void);
 
 /* storage-gc.c */
-void scm_init_gc(const ScmStorageConf *conf);
-void scm_finalize_gc(void);
-ScmObj scm_alloc_cell(void);
+SCM_EXPORT void scm_init_gc(const ScmStorageConf *conf);
+SCM_EXPORT void scm_finalize_gc(void);
+SCM_EXPORT ScmObj scm_alloc_cell(void);
 
 /* storage-continuation.c */
-void scm_init_continuation(void);
-void scm_finalize_continuation(void);
-void scm_destruct_continuation(ScmObj cont);
-ScmObj scm_call_with_current_continuation(ScmObj proc,
-                                          ScmEvalState *eval_state);
-void scm_call_continuation(ScmObj cont, ScmObj ret) SCM_NORETURN;
-ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
-void scm_push_trace_frame(ScmObj obj, ScmObj env);
-void scm_pop_trace_frame(void);
-ScmObj scm_trace_stack(void);
+SCM_EXPORT void scm_init_continuation(void);
+SCM_EXPORT void scm_finalize_continuation(void);
+SCM_EXPORT void scm_destruct_continuation(ScmObj cont);
+SCM_EXPORT ScmObj scm_call_with_current_continuation(ScmObj proc,
+                                                     ScmEvalState *eval_state);
+SCM_EXPORT void scm_call_continuation(ScmObj cont, ScmObj ret) SCM_NORETURN;
+SCM_EXPORT ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+SCM_EXPORT void scm_push_trace_frame(ScmObj obj, ScmObj env);
+SCM_EXPORT void scm_pop_trace_frame(void);
+SCM_EXPORT ScmObj scm_trace_stack(void);
 
 /* storage-symbol.c */
-void scm_init_symbol(const ScmStorageConf *conf);
-void scm_finalize_symbol(void);
+SCM_EXPORT void scm_init_symbol(const ScmStorageConf *conf);
+SCM_EXPORT void scm_finalize_symbol(void);
 
 /* env.c */
-scm_bool scm_toplevel_environmentp(ScmObj env);
-ScmObj scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env);
-ScmObj scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env);
-ScmObj scm_update_environment(ScmObj actuals, ScmObj env);
-ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
-ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
+SCM_EXPORT scm_bool scm_toplevel_environmentp(ScmObj env);
+SCM_EXPORT ScmObj scm_extend_environment(ScmObj formals, ScmObj actuals,
+                                         ScmObj env);
+SCM_EXPORT ScmObj scm_replace_environment(ScmObj formals, ScmObj actuals,
+                                          ScmObj env);
+SCM_EXPORT ScmObj scm_update_environment(ScmObj actuals, ScmObj env);
+SCM_EXPORT ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
+SCM_EXPORT ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
 
-scm_bool scm_valid_environmentp(ScmObj env);
-scm_bool scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals);
-scm_bool scm_valid_environment_extension_lengthp(scm_int_t formals_len,
-                                                 scm_int_t actuals_len);
-scm_int_t scm_validate_formals(ScmObj formals);
-scm_int_t scm_validate_actuals(ScmObj actuals);
+SCM_EXPORT scm_bool scm_valid_environmentp(ScmObj env);
+SCM_EXPORT scm_bool scm_valid_environment_extensionp(ScmObj formals,
+                                                     ScmObj actuals);
+SCM_EXPORT scm_bool scm_valid_environment_extension_lengthp(scm_int_t formals_len, scm_int_t actuals_len);
+SCM_EXPORT scm_int_t scm_validate_formals(ScmObj formals);
+SCM_EXPORT scm_int_t scm_validate_actuals(ScmObj actuals);
 
 /* eval.c */
-ScmObj scm_symbol_value(ScmObj var, ScmObj env);
-ScmObj scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_eval(ScmObj obj, ScmObj env);
+SCM_EXPORT ScmObj scm_symbol_value(ScmObj var, ScmObj env);
+SCM_EXPORT ScmObj scm_tailcall(ScmObj proc, ScmObj args,
+                               ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_eval(ScmObj obj, ScmObj env);
 
 /* syntax.c */
-void scm_init_syntax(void);
+SCM_EXPORT void scm_init_syntax(void);
 SCM_EXPORT ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
                                       ScmEvalState *eval_state);
 
 /* error.c */
-void scm_init_error(void);
+SCM_EXPORT void scm_init_error(void);
 
 /* list.c */
-scm_int_t scm_finite_length(ScmObj lst);
-scm_int_t scm_length(ScmObj lst);
+SCM_EXPORT scm_int_t scm_finite_length(ScmObj lst);
+SCM_EXPORT scm_int_t scm_length(ScmObj lst);
 
 /* number.c */
-scm_int_t scm_string2number(const char *str, int radix, scm_bool *err);
+SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
+                                       scm_bool *err);
 
 /* port.c */
-void scm_init_port(void);
-ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
-ScmCharPort *scm_make_char_port(ScmBytePort *bport);
+SCM_EXPORT void scm_init_port(void);
+SCM_EXPORT ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
+SCM_EXPORT ScmCharPort *scm_make_char_port(ScmBytePort *bport);
 
 /* write.c */
-void scm_init_writer(void);
-void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
+SCM_EXPORT void scm_init_writer(void);
+SCM_EXPORT void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
 
 /* format.c */
-void scm_init_format(void);
+SCM_EXPORT void scm_init_format(void);
 
 /* module.c */
-void scm_init_module(void);
+SCM_EXPORT void scm_init_module(void);
 
 /* sigscheme.c */
-char **scm_interpret_argv(char **argv);
-void scm_free_argv(char **argv);
+SCM_EXPORT char **scm_interpret_argv(char **argv);
+SCM_EXPORT void scm_free_argv(char **argv);
 
 #ifdef __cplusplus
 }

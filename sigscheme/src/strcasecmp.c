@@ -63,7 +63,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-int
+SCM_EXPORT int
 scm_strcasecmp(const char *s1, const char *s2)
 {
     unsigned char c1, c2;

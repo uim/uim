@@ -131,7 +131,7 @@ static void finalize_protected_var(void);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_gc(const ScmStorageConf *conf)
 {
     stack_start_pointer = NULL;
@@ -141,14 +141,14 @@ scm_init_gc(const ScmStorageConf *conf)
     initialize_heap(conf);
 }
 
-void
+SCM_EXPORT void
 scm_finalize_gc(void)
 {
     finalize_heap();
     finalize_protected_var();
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_alloc_cell(void)
 {
     ScmObj ret = SCM_FALSE;
@@ -188,7 +188,7 @@ locate_protected_var(ScmObj *var)
 }
 
 /* var must be initialized with a valid ScmObj before invocation */
-void
+SCM_EXPORT void
 scm_gc_protect(ScmObj *var)
 {
     ScmObj **slot;
@@ -205,14 +205,14 @@ scm_gc_protect(ScmObj *var)
     *slot = var;
 }
 
-void
+SCM_EXPORT void
 scm_gc_protect_with_init(ScmObj *var, ScmObj init_val)
 {
     *var = init_val;
     scm_gc_protect(var);
 }
 
-void
+SCM_EXPORT void
 scm_gc_unprotect(ScmObj *var)
 {
     ScmObj **slot;
@@ -228,7 +228,7 @@ scm_gc_unprotect(ScmObj *var)
   C Stack Protection
 ===========================================================================*/
 #if SCM_GCC4_READY_GC
-ScmObj *
+SCM_EXPORT ScmObj *
 scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
 {
     /*
@@ -251,7 +251,7 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
 
 #else /* SCM_GCC4_READY_GC */
 
-void
+SCM_EXPORT void
 scm_gc_protect_stack(ScmObj *stack_start)
 {
     if (!stack_start_pointer)
@@ -259,7 +259,7 @@ scm_gc_protect_stack(ScmObj *stack_start)
 }
 #endif /* SCM_GCC4_READY_GC */
 
-void
+SCM_EXPORT void
 scm_gc_unprotect_stack(ScmObj *stack_start)
 {
     if (stack_start_pointer == stack_start)

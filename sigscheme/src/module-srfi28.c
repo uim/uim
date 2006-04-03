@@ -64,7 +64,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_srfi28(void)
 {
     scm_init_format();

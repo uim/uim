@@ -100,7 +100,7 @@ const ScmSpecialCharInfo scm_special_char_table[] = {
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_port(void)
 {
     scm_fileport_init();
@@ -121,7 +121,7 @@ scm_init_port(void)
                                                        SCM_PORTFLAG_OUTPUT));
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_prepare_port(ScmObj args, ScmObj default_port)
 {
     ScmObj port;
@@ -140,7 +140,7 @@ scm_prepare_port(ScmObj args, ScmObj default_port)
     return port;
 }
 
-ScmCharPort *
+SCM_EXPORT ScmCharPort *
 scm_make_char_port(ScmBytePort *bport)
 {
 #if  SCM_USE_MULTIBYTE_CHAR
@@ -150,7 +150,7 @@ scm_make_char_port(ScmBytePort *bport)
 #endif
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_shared_file_port(FILE *file, const char *aux_info,
                           enum ScmPortFlag flag)
 {
@@ -163,7 +163,7 @@ scm_make_shared_file_port(FILE *file, const char *aux_info,
     return MAKE_PORT(cport, flag);
 }
 
-int
+SCM_EXPORT int
 scm_port_newline(ScmObj port)
 {
     int err;
@@ -174,7 +174,7 @@ scm_port_newline(ScmObj port)
     return err;
 }
 
-int
+SCM_EXPORT int
 scm_port_close(ScmObj port)
 {
     int err;
@@ -185,56 +185,56 @@ scm_port_close(ScmObj port)
     return err;
 }
 
-ScmCharCodec *
+SCM_EXPORT ScmCharCodec *
 scm_port_codec(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_CODEC(SCM_PORT_IMPL(port));
 }
 
-char *
+SCM_EXPORT char *
 scm_port_inspect(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_INSPECT(SCM_PORT_IMPL(port));
 }
 
-int
+SCM_EXPORT int
 scm_port_get_char(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port));
 }
 
-int
+SCM_EXPORT int
 scm_port_peek_char(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PEEK_CHAR(SCM_PORT_IMPL(port));
 }
 
-scm_bool
+SCM_EXPORT scm_bool
 scm_port_char_readyp(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port));
 }
 
-int
+SCM_EXPORT int
 scm_port_puts(ScmObj port, const char *str)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str);
 }
 
-int
+SCM_EXPORT int
 scm_port_put_char(ScmObj port, scm_ichar_t ch)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch);
 }
 
-int
+SCM_EXPORT int
 scm_port_flush(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);

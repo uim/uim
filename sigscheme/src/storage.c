@@ -98,7 +98,7 @@ static ScmObj scm_make_string_internal(char *str, scm_int_t len,
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_storage(const ScmStorageConf *conf)
 {
     if (!conf)
@@ -125,7 +125,7 @@ scm_init_storage(const ScmStorageConf *conf)
     scm_init_symbol(conf);
 }
 
-void
+SCM_EXPORT void
 scm_finalize_storage(void)
 {
     scm_finalize_symbol();

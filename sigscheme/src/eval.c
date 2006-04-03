@@ -75,7 +75,7 @@ static ScmObj map_eval(ScmObj args, scm_int_t *args_len, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_symbol_value(ScmObj var, ScmObj env)
 {
     ScmRef ref;
@@ -100,7 +100,7 @@ scm_symbol_value(ScmObj var, ScmObj env)
 }
 
 /* A wrapper for call() for internal proper tail recursion */
-ScmObj
+SCM_EXPORT ScmObj
 scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 {
     SCM_ASSERT(PROPER_LISTP(args));
@@ -112,7 +112,7 @@ scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
 /* Wrapper for call().  Just like scm_p_apply(), except ARGS is used
  * as given---nothing special is done about the last item in the
  * list. */
-ScmObj
+SCM_EXPORT ScmObj
 scm_call(ScmObj proc, ScmObj args)
 {
     ScmEvalState state;
@@ -392,7 +392,7 @@ scm_p_eval(ScmObj obj, ScmObj env)
     return scm_eval(obj, env);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_eval(ScmObj obj, ScmObj env)
 {
     ScmEvalState state;

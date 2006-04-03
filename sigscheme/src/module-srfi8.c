@@ -64,7 +64,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_srfi8(void)
 {
     scm_register_funcs(scm_srfi8_func_info_table);

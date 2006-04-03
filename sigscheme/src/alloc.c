@@ -70,7 +70,7 @@
 /*=======================================
   Function Implementations
 =======================================*/
-void *
+SCM_EXPORT void *
 scm_malloc_aligned(size_t size)
 {
     void *p;
@@ -115,7 +115,7 @@ scm_malloc_aligned(size_t size)
     return p;
 }
 
-void *
+SCM_EXPORT void *
 scm_malloc(size_t size)
 {
     void *p;
@@ -126,7 +126,7 @@ scm_malloc(size_t size)
     return p;
 }
 
-void *
+SCM_EXPORT void *
 scm_calloc(size_t number, size_t size)
 {
     void *p;
@@ -137,7 +137,7 @@ scm_calloc(size_t number, size_t size)
     return p;
 }
 
-void *
+SCM_EXPORT void *
 scm_realloc(void *ptr, size_t size)
 {
     void *p;
@@ -148,7 +148,7 @@ scm_realloc(void *ptr, size_t size)
     return p;
 }
 
-char *
+SCM_EXPORT char *
 scm_strdup(const char *str)
 {
     char *copied;

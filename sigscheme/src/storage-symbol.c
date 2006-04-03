@@ -70,7 +70,7 @@ static uint32_t symbol_name_hash(const char *name);
 /*=======================================
   Function Implementations
 =======================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_intern(const char *name)
 {
     ScmObj sym, lst, rest;
@@ -102,7 +102,7 @@ scm_intern(const char *name)
 }
 
 /* lookup the symbol bound to an obj reversely */
-ScmObj
+SCM_EXPORT ScmObj
 scm_symbol_bound_to(ScmObj obj)
 {
     ScmObj lst, sym, val;
@@ -121,13 +121,13 @@ scm_symbol_bound_to(ScmObj obj)
     return SCM_FALSE;
 }
 
-void
+SCM_EXPORT void
 scm_init_symbol(const ScmStorageConf *conf)
 {
     initialize_symbol_hash(conf);
 }
 
-void
+SCM_EXPORT void
 scm_finalize_symbol(void)
 {
     finalize_symbol_hash();

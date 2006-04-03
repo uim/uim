@@ -84,7 +84,7 @@ static void show_arg(ScmObj arg, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_error(void)
 {
     /* allocate a cons cell as unique ID */
@@ -101,19 +101,19 @@ scm_init_error(void)
 #endif
 }
 
-int
+SCM_EXPORT int
 scm_debug_categories(void)
 {
     return debug_mask;
 }
 
-void
+SCM_EXPORT void
 scm_set_debug_categories(int categories)
 {
     debug_mask = categories;
 }
 
-int
+SCM_EXPORT int
 scm_predefined_debug_categories(void)
 {
 #if SCM_DEBUG
@@ -133,7 +133,7 @@ scm_predefined_debug_categories(void)
 #endif /* SCM_DEBUG */
 }
 
-void
+SCM_EXPORT void
 scm_categorized_debug(int category, const char *msg, ...)
 {
     va_list va;
@@ -146,7 +146,7 @@ scm_categorized_debug(int category, const char *msg, ...)
     va_end(va);
 }
 
-void
+SCM_EXPORT void
 scm_debug(const char *msg, ...)
 {
     va_list va;
@@ -181,7 +181,7 @@ scm_p_error_objectp(ScmObj obj)
 }
 
 /* FIXME: make (pair? err-obj) #f */
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_error_obj(ScmObj reason, ScmObj objs)
 {
     DECLARE_INTERNAL_FUNCTION("scm_make_error_obj");
@@ -195,7 +195,7 @@ scm_make_error_obj(ScmObj reason, ScmObj objs)
     return LIST_4(err_obj_tag, reason, objs, scm_trace_stack());
 }
 
-void
+SCM_EXPORT void
 scm_raise_error(ScmObj err_obj)
 {
     DECLARE_INTERNAL_FUNCTION("scm_raise_error");
@@ -211,7 +211,7 @@ scm_raise_error(ScmObj err_obj)
     scm_p_fatal_error(err_obj);
 }
 
-void
+SCM_EXPORT void
 scm_fatal_error(const char *msg)
 {
     /* don't use Scheme-level ports here */
@@ -228,7 +228,8 @@ scm_fatal_error(const char *msg)
     /* NOTREACHED */
 }
 
-void scm_set_fatal_error_callback(void (*cb)(void))
+SCM_EXPORT void
+scm_set_fatal_error_callback(void (*cb)(void))
 {
     cb_fatal_error = cb;
 }
@@ -302,7 +303,7 @@ scm_p_backtrace(void)
     return SCM_UNDEF;
 }
 
-void
+SCM_EXPORT void
 scm_die(const char *msg, const char *filename, int line)
 {
     ScmObj reason;
@@ -333,7 +334,7 @@ scm_error_internal(const char *func_name, ScmObj obj,
     /* NOTREACHED */
 }
 
-void
+SCM_EXPORT void
 scm_plain_error(const char *msg, ...)
 {
     va_list va;
@@ -357,7 +358,7 @@ scm_error_with_implicit_func(const char *msg, ...)
 }
 #endif /* (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO) */
 
-void
+SCM_EXPORT void
 scm_error(const char *func_name, const char *msg, ...)
 {
     va_list va;
@@ -368,7 +369,7 @@ scm_error(const char *func_name, const char *msg, ...)
     /* NOTREACHED */
 }
 
-void
+SCM_EXPORT void
 scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
 {
     va_list dummy_va;
@@ -395,7 +396,7 @@ show_arg(ScmObj arg, ScmObj env)
 }
 #endif /* (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL) */
 
-void
+SCM_EXPORT void
 scm_show_backtrace(ScmObj trace_stack)
 {
 #if SCM_DEBUG

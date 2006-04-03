@@ -353,7 +353,7 @@ static ScmObj read_quote(ScmObj port, ScmObj quoter);
 /*===========================================================================
   S-Expression Parser
 ===========================================================================*/
-ScmObj
+SCM_EXPORT ScmObj
 scm_read(ScmObj port)
 {
     ScmObj sexp;
@@ -370,7 +370,7 @@ scm_read(ScmObj port)
     return sexp;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_read_char(ScmObj port)
 {
     DECLARE_INTERNAL_FUNCTION("scm_read_char");

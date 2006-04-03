@@ -69,7 +69,7 @@ static ScmObj make_loaded_str(const char *filename);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_sscm_extensions(void)
 {
     scm_register_funcs(scm_sscm_ext_func_info_table);
@@ -125,7 +125,7 @@ scm_p_greatest_fixnum(void)
     return MAKE_INT(SCM_INT_MAX);
 }
 
-void
+SCM_EXPORT void
 scm_require(const char *filename)
 {
 #if !SCM_GCC4_READY_GC

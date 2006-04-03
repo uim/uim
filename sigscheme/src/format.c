@@ -216,7 +216,7 @@ static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_format(void)
 {
     if (!format_initialized) {
@@ -235,7 +235,7 @@ format_str_peek(ScmMultibyteString mbs_fmt, const char *caller)
 }
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 
-void
+SCM_EXPORT void
 scm_pretty_print(ScmObj port, ScmObj obj)
 {
     ScmObj proc_pretty_print;
@@ -695,7 +695,7 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
     return (implicit_portp) ? scm_p_srfi6_get_output_string(port) : SCM_UNDEF;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_lformat(ScmObj port,
             enum ScmFormatCapability fcap, const char *fmt, ScmObj scm_args)
 {
@@ -706,7 +706,7 @@ scm_lformat(ScmObj port,
     return format_internal(port, fcap, fmt, &args);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_vformat(ScmObj port,
             enum ScmFormatCapability fcap, const char *fmt, va_list c_args)
 {
@@ -717,7 +717,7 @@ scm_vformat(ScmObj port,
     return format_internal(port, fcap, fmt, &args);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_format(ScmObj port, enum ScmFormatCapability fcap, const char *fmt, ...)
 {
     va_list args;

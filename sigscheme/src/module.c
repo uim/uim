@@ -111,25 +111,25 @@ static scm_bool scm_use_internal(const char *feature);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_module(void)
 {
     scm_gc_protect_with_init(&features, SCM_NULL);
 }
 
-void
+SCM_EXPORT void
 scm_provide(ScmObj feature)
 {
     features = CONS(feature, features);
 }
 
-scm_bool
+SCM_EXPORT scm_bool
 scm_providedp(ScmObj feature)
 {
     return NFALSEP(scm_p_member(feature, features));
 }
 
-scm_bool
+SCM_EXPORT scm_bool
 scm_use(const char *feature)
 {
     scm_bool ok;
@@ -202,14 +202,14 @@ scm_s_use(ScmObj feature, ScmObj env)
 /*===========================================================================
   Scheme Function Export Related Functions
 ===========================================================================*/
-void
+SCM_EXPORT void
 scm_define_alias(const char *newsym, const char *sym)
 {
     SCM_SYMBOL_SET_VCELL(scm_intern(newsym),
                          SCM_SYMBOL_VCELL(scm_intern(sym)));
 }
 
-void
+SCM_EXPORT void
 scm_register_funcs(const struct scm_func_registration_info *table)
 {
     const struct scm_func_registration_info *info;
@@ -219,7 +219,7 @@ scm_register_funcs(const struct scm_func_registration_info *table)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_register_func(const char *name, ScmFuncType c_func,
                   enum ScmFuncTypeCode type)
 {

@@ -82,7 +82,7 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_init_syntax(void)
 {
     scm_register_funcs(scm_r5rs_syntax_func_info_table);

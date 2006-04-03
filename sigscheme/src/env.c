@@ -100,7 +100,7 @@ static scm_bool valid_framep(ScmObj frame);
 /*=======================================
   Function Implementations
 =======================================*/
-scm_bool
+SCM_EXPORT scm_bool
 scm_toplevel_environmentp(ScmObj env)
 {
     return NULLP(env);
@@ -117,7 +117,7 @@ scm_toplevel_environmentp(ScmObj env)
  *
  * @see scm_eval()
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env)
 {
     ScmObj frame;
@@ -137,7 +137,7 @@ scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env)
  * this implementation returns identical to the one passed. This rule is
  * required to be compatible with future alternative implementations.
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env)
 {
     ScmObj frame;
@@ -161,7 +161,7 @@ scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env)
  * this implementation returns identical to the one passed. This rule is
  * required to be compatible with future alternative implementations.
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_update_environment(ScmObj actuals, ScmObj env)
 {
     ScmObj frame;
@@ -178,7 +178,7 @@ scm_update_environment(ScmObj actuals, ScmObj env)
 }
 
 /** Add a binding to newest frame of an env */
-ScmObj
+SCM_EXPORT ScmObj
 scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
     ScmObj frame, formals, actuals;
@@ -208,7 +208,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
  *
  * @return Reference to the variable. SCM_INVALID_REF if not found.
  */
-ScmRef
+SCM_EXPORT ScmRef
 scm_lookup_environment(ScmObj var, ScmObj env)
 {
     ScmObj frame;
@@ -258,7 +258,7 @@ lookup_frame(ScmObj var, ScmObj frame)
 /*
  * Validators
  */
-scm_bool
+SCM_EXPORT scm_bool
 scm_valid_environmentp(ScmObj env)
 {
     ScmObj frame, rest;
@@ -298,7 +298,7 @@ valid_framep(ScmObj frame)
     return scm_false;
 }
 
-scm_bool
+SCM_EXPORT scm_bool
 scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals)
 {
     scm_int_t formals_len, actuals_len;
@@ -309,7 +309,7 @@ scm_valid_environment_extensionp(ScmObj formals, ScmObj actuals)
 }
 
 /* formals_len must be validated by scm_validate_formals() prior to here */
-scm_bool
+SCM_EXPORT scm_bool
 scm_valid_environment_extension_lengthp(scm_int_t formals_len,
                                         scm_int_t actuals_len)
 {
@@ -322,7 +322,7 @@ scm_valid_environment_extension_lengthp(scm_int_t formals_len,
     return (formals_len == actuals_len);
 }
 
-scm_int_t
+SCM_EXPORT scm_int_t
 scm_validate_formals(ScmObj formals)
 {
 #if SCM_STRICT_ARGCHECK
@@ -350,7 +350,7 @@ scm_validate_formals(ScmObj formals)
 #endif
 }
 
-scm_int_t
+SCM_EXPORT scm_int_t
 scm_validate_actuals(ScmObj actuals)
 {
     scm_int_t len;

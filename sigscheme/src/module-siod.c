@@ -99,7 +99,7 @@ static ScmObj saved_error_port;
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_siod(void)
 {
     ScmCharPort *cport;
@@ -247,13 +247,13 @@ scm_s_undefine(ScmObj var, ScmObj env)
     return SCM_FALSE;
 }
 
-long
+SCM_EXPORT long
 scm_get_verbose_level(void)
 {
     return sscm_verbose_level;
 }
 
-void
+SCM_EXPORT void
 scm_set_verbose_level(long level)
 {
     DECLARE_INTERNAL_FUNCTION("scm_set_verbose_level");

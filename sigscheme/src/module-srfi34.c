@@ -122,7 +122,7 @@ static ScmObj guard_body(ScmEvalState *eval_state);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_srfi34(void)
 {
     ScmObj *const *var;

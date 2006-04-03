@@ -437,7 +437,7 @@ prepare_radix(const char *funcname, ScmObj args)
     return r;
 }
 
-char *
+SCM_EXPORT char *
 scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
 {
     char buf[sizeof("-") + sizeof(uintmax_t) * CHAR_BIT];
@@ -495,7 +495,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
     return MAKE_STRING(str, SCM_STRLEN_UNKNOWN);
 }
 
-scm_int_t
+SCM_EXPORT scm_int_t
 scm_string2number(const char *str, int radix, scm_bool *err)
 {
     scm_int_t n;

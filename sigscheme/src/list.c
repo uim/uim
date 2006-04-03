@@ -226,7 +226,7 @@ scm_p_listp(ScmObj obj)
 #define TERMINATOR_LEN 1
 
 /* scm_length() for non-circular list */
-scm_int_t
+SCM_EXPORT scm_int_t
 scm_finite_length(ScmObj lst)
 {
     scm_int_t len;
@@ -253,7 +253,7 @@ scm_finite_length(ScmObj lst)
  *
  */
 /* Returns -1 as one length improper list for non-list obj. */
-scm_int_t
+SCM_EXPORT scm_int_t
 scm_length(ScmObj lst)
 {
     ScmObj slow;

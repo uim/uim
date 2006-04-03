@@ -70,7 +70,7 @@ static void istrport_finalize(char **str, scm_bool ownership, void **opaque);
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_srfi6(void)
 {
     scm_strport_init();

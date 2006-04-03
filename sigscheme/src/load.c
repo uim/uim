@@ -93,7 +93,7 @@ static char **parse_script_prelude(ScmObj port);
  * cause arbitrary C code injection by plugin spoofing when future SigScheme
  * has been added C plugin feature. It could be a serious vulnerability if the
  * libsscm client is a setugid'ed command. -- YamaKen 2006-03-25 */
-void
+SCM_EXPORT void
 scm_set_lib_path(const char *path)
 {
     DECLARE_INTERNAL_FUNCTION("scm_set_lib_path");
@@ -116,7 +116,7 @@ scm_p_load_path(void)
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.4 System Interface
 ===========================================================================*/
-void
+SCM_EXPORT void
 scm_load(const char *filename)
 {
 #if !SCM_GCC4_READY_GC

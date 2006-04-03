@@ -66,7 +66,7 @@ static ScmObj srfi48_format_internal(enum ScmFormatCapability fcap,
 /*=======================================
   Function Implementations
 =======================================*/
-void
+SCM_EXPORT void
 scm_initialize_srfi48(void)
 {
     scm_init_format();

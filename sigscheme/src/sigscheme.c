@@ -90,7 +90,7 @@ static ScmObj scm_eval_c_string_internal(const char *exp);
  * @param storage_conf Storage configuration parameters. NULL instructs
  *                     default.
  */
-void
+SCM_EXPORT void
 scm_initialize(const ScmStorageConf *storage_conf)
 {
 #if SCM_GCC4_READY_GC
@@ -180,7 +180,7 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_initialized = scm_true;
 }
 
-void
+SCM_EXPORT void
 scm_finalize()
 {
     scm_finalize_storage();
@@ -188,7 +188,7 @@ scm_finalize()
 }
 
 #if SCM_USE_EVAL_C_STRING
-ScmObj
+SCM_EXPORT ScmObj
 scm_eval_c_string(const char *exp)
 {
 #if !SCM_GCC4_READY_GC
@@ -234,7 +234,7 @@ scm_eval_c_string_internal(const char *exp)
 #endif /* SCM_USE_EVAL_C_STRING */
 
 #if SCM_COMPAT_SIOD
-ScmObj
+SCM_EXPORT ScmObj
 scm_return_value(void)
 {
     return scm_return_value_cache;
@@ -243,7 +243,7 @@ scm_return_value(void)
 
 /* TODO: parse properly */
 /* don't access ScmObj if (!scm_initialized) */
-char **
+SCM_EXPORT char **
 scm_interpret_argv(char **argv)
 {
     char **argp, **rest;
@@ -299,7 +299,7 @@ scm_interpret_argv(char **argv)
     return rest;
 }
 
-void
+SCM_EXPORT void
 scm_free_argv(char **argv)
 {
     char **argp;
