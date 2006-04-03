@@ -673,6 +673,7 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
                     continue;
                 }
             }
+            /* FALLTHROUGH */
 #endif /* SCM_USE_RAW_C_FORMAT */
 #if SCM_USE_SRFI28
             if (fcap & (SCM_FMT_SRFI28 | SCM_FMT_SRFI48 | SCM_FMT_SSCM)) {
