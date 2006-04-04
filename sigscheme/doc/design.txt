@@ -1,12 +1,19 @@
 Design of SigScheme
+===================
 
-NOTE: Keep synchronized with introduction.texi for now -- YamaKen 2006-04-04
+// NOTE: Keep synchronized with introduction.texi for now -- YamaKen 2006-04-04
 
-* Purposes
+
+Purposes
+--------
+
   - Embedded into an application
   - Suitable for embedded platforms (i.e. non-desktop {OS,hardware})
 
-* Requirements
+
+Requirements
+------------
+
   - 3-clause BSD license
   - Basic R5RS conformance
   - Small footprint
@@ -15,7 +22,10 @@ NOTE: Keep synchronized with introduction.texi for now -- YamaKen 2006-04-04
   - Code readability to enable learning Scheme by implementation
   - Easily extensible by C
 
-* Code organization
+
+Code organization
+-----------------
+
   - Memory allocators
   - Exception and error handling
   - Storage Abstraction Layer
@@ -27,12 +37,17 @@ NOTE: Keep synchronized with introduction.texi for now -- YamaKen 2006-04-04
   - Multibyte character processing
   - Ports
 
-* Trade-offs
+
+Trade-offs
+----------
+
   - Strict form validation
   - Multibyte string processing
   - Function aggregation to share prolog/epilog code fragment
 
-* API and ABI
+
+API and ABI
+-----------
   - ABI incompatibility between configurations
   - SAL and ABI
   - Dynamic link

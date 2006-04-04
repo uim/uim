@@ -1,252 +1,303 @@
 Specifications of SigScheme
+===========================
 
-NOTE: Keep synchronized with features.texi for now -- YamaKen 2006-04-04
+// NOTE: Keep synchronized with features.texi for now -- YamaKen 2006-04-04
 
-* General
 
-  - 64-bit data models
+General
+-------
 
-    * Supports LL64, LLP64, LP64 and ILP64 (storage-fatty)
+64-bit data models
+~~~~~~~~~~~~~~~~~~
 
-    * storage-compact does not support any of above (yet)
+  - Supports LL64, LLP64, LP64 and ILP64 (storage-fatty)
 
-  - Addressable memory space
+  - storage-compact does not support any of above (yet)
 
-    Ordinary storage implementation can address any Scheme object scattered on
-    whole memory space. Both storage-fatty and storage-compact have no
-    limitation on any 32 and 64-bit data models. But it may be limited if a
-    storage implementation is designed to do so for some specific advantages,
-    as like GNU Emacs' 28-bit tagged pointer does.
+Addressable memory space
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-  - Integer range
+Ordinary storage implementation can address any Scheme object scattered on
+whole memory space. Both storage-fatty and storage-compact have no
+limitation on any 32 and 64-bit data models. But it may be limited if a
+storage implementation is designed to do so for some specific advantages,
+as like GNU Emacs' 28-bit tagged pointer does.
 
-    Only supports fixnum, and its range is varied by the user-selected
-    underlying storage implementation. The range can be known via SRFI-77
-    compatible (least-fixnum) and (greatest-fixnum).
+Integer range
+~~~~~~~~~~~~~
 
-* R5RS conformance
+Only supports fixnum, and its range is varied by the user-selected
+underlying storage implementation. The range can be known via SRFI-77
+compatible `(least-fixnum)` and `(greatest-fixnum)`.
 
-  - Proper tail recursion
 
-    Supported.
+R5RS conformance
+----------------
 
-  - Macros
+Proper tail recursion
+~~~~~~~~~~~~~~~~~~~~~
 
-    Not supported (yet).
+Supported.
 
-  - Continuations
+Macros
+~~~~~~
 
-    Limited to nested use due to its setjmp/longjmp implementation. If a
-    continuation that is not an ancestor of current continuation called, all
-    continuation objects lying between the curent and the common ancestor of
-    the destination are invalidated. Calling an invalidated continuation object
-    causes an error.
+Not supported (yet).
 
-  - Numbers
+Continuations
+~~~~~~~~~~~~~
 
-    Only integer part is implemented.
+Limited to nested use due to its setjmp/longjmp implementation. If a
+continuation that is not an ancestor of current continuation called, all
+continuation objects lying between the curent and the common ancestor of
+the destination are invalidated. Calling an invalidated continuation object
+causes an error.
 
-  - Characters
+Numbers
+~~~~~~~
 
-    All character category-sensitive procedures and predicates (such as
-    char-upcase) work correctly only in ASCII range. i.e. Neigher Unicode
-    processing specified in SRFI-75 nor other non-Unicode multibyte character
-    processing are supported in such procedures/predicates.
+Only integer part is implemented.
 
-  - Case-insensitive character comparison
+Characters
+~~~~~~~~~~
 
-    SigScheme's case-insensitive comparison conforms to the foldcase'ed
-    comparison described in SRFI-75 and SRFI-13, although R5RS does not specify
-    comparison between alphabetic and non-alphabetic char.
+All character category-sensitive procedures and predicates (such as
+char-upcase) work correctly only in ASCII range. i.e. Neigher Unicode
+processing specified in SRFI-75 nor other non-Unicode multibyte character
+processing are supported in such procedures/predicates.
 
-    See the description in operations.c for further details.
+Case-insensitive character comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  - Case-sensitive identifiers
+SigScheme's case-insensitive comparison conforms to the foldcase'ed
+comparison described in SRFI-75 and SRFI-13, although R5RS does not specify
+comparison between alphabetic and non-alphabetic char.
 
-    SigScheme does distinguish letter case in indentifiers. Although case
-    insensitivity is required in R5RS as follows, it is hard to accept for the
-    our application.
+See the description in operations.c for further details.
 
-    > 2. Lexical conventions
-    > 
-    > Upper and lower case forms of a letter are never distinguished except
-    > within character and string constants. For example, `Foo' is the same
-    > identifier as `FOO', and #x1AB is the same number as #X1ab.
+Case-sensitive identifiers
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  - Constant string
+SigScheme does distinguish letter case in indentifiers. Although case
+insensitivity is required in R5RS as follows, it is hard to accept for the
+our application.
 
-    SigScheme treats string literals as constant as specified in R5RS.
+----------------------------------------------------------------
+  2. Lexical conventions
+  
+  Upper and lower case forms of a letter are never distinguished except
+  within character and string constants. For example, `Foo' is the same
+  identifier as `FOO', and #x1AB is the same number as #X1ab.
+----------------------------------------------------------------
 
-    sscm> (string-set! "foo" 0 #\F)
-    Error: in string-set!: attempted to modify immutable string: "foo"
+Constant string
+~~~~~~~~~~~~~~~
 
-    sscm> (string-set! (string-copy "foo") 0 #\F)
-    "Foo"
+SigScheme treats string literals as constant as specified in R5RS.
 
-  - Constant list
+.constant string
+================================================================
+  sscm> (string-set! "foo" 0 #\F)
+  Error: in string-set!: attempted to modify immutable string: "foo"
 
-    SigScheme inhibits modification of constant list object by default as
-    specified in R5RS, if the storage implementation suports it. storage-fatty
-    supports it, but storage-compact does not due to no bit space for pair
-    object.
+  sscm> (string-set! (string-copy "foo") 0 #\F)
+  "Foo"
+================================================================
 
-    The behavior can be changed by SCM_CONST_LIST_LITERAL.
+Constant list
+~~~~~~~~~~~~~
 
-    > 4.1.2 Literal expressions
-    > 
-    >     `(quote <datum>)' may be abbreviated as '<datum>. The two notations
-    >     are equivalent in all respects.
-    >    
-    >     'a                                     ==>  a
-    >     '#(a b c)                              ==>  #(a b c)
-    >     '()                                    ==>  ()
-    >     '(+ 1 2)                               ==>  (+ 1 2)
-    >     '(quote a)                             ==>  (quote a)
-    >     ''a                                    ==>  (quote a)
-    > 
-    >     As noted in section 3.4 Storage model, it is an error to alter a
-    >     constant (i.e. the value of a literal expression) using a mutation
-    >     procedure like `set-car!' or `string-set!'.
+SigScheme inhibits modification of constant list object by default as
+specified in R5RS, if the storage implementation suports it. storage-fatty
+supports it, but storage-compact does not due to no bit space for pair
+object.
 
-    > 6.3.2 Pairs and lists
-    > 
-    > procedure: set-car! pair obj
-    >    
-    >     Stores obj in the car field of pair. The value returned by `set-car!'
-    >     is unspecified.
-    >    
-    >     (define (g) '(constant-list))
-    >     (set-car! (g) 3)                       ==>  error
+The behavior can be changed by `SCM_CONST_LIST_LITERAL`.
 
-  - Constant vector
+----------------------------------------------------------------
+  4.1.2 Literal expressions
+  
+      `(quote <datum>)' may be abbreviated as '<datum>. The two notations
+      are equivalent in all respects.
+     
+      'a                                     ==>  a
+      '#(a b c)                              ==>  #(a b c)
+      '()                                    ==>  ()
+      '(+ 1 2)                               ==>  (+ 1 2)
+      '(quote a)                             ==>  (quote a)
+      ''a                                    ==>  (quote a)
+  
+      As noted in section 3.4 Storage model, it is an error to alter a
+      constant (i.e. the value of a literal expression) using a mutation
+      procedure like `set-car!' or `string-set!'.
 
-    SigScheme inhibits modification of constant vector object by default as
-    specified in R5RS, if the storage implementation suports it. storage-fatty
-    supports it, but storage-compact is not yet.
+  6.3.2 Pairs and lists
+  
+  procedure: set-car! pair obj
+     
+      Stores obj in the car field of pair. The value returned by `set-car!'
+      is unspecified.
+     
+      (define (g) '(constant-list))
+      (set-car! (g) 3)                       ==>  error
+----------------------------------------------------------------
 
-    The behavior can be changed by SCM_CONST_VECTOR_LITERAL.
+Constant vector
+~~~~~~~~~~~~~~~
 
-    > 6.3.6 Vectors
-    > 
-    > procedure: vector-set! vector k obj
-    > 
-    >     (vector-set! '#(0 1 2) 1 "doe")
-    >               ==>  error  ; constant vector
+SigScheme inhibits modification of constant vector object by default as
+specified in R5RS, if the storage implementation suports it. storage-fatty
+supports it, but storage-compact is not yet.
 
-  - Quote-less null list
+The behavior can be changed by `SCM_CONST_VECTOR_LITERAL`.
 
-    SigScheme allows quote-less null list by default for convenience and
-    performance. But it can be error as specified in R5RS, when SCM_STRICT_R5RS
-    is enabled.
+----------------------------------------------------------------
+  6.3.6 Vectors
+  
+  procedure: vector-set! vector k obj
+  
+      (vector-set! '#(0 1 2) 1 "doe")
+                ==>  error  ; constant vector
+----------------------------------------------------------------
 
-    SCM_STRICT_R5RS disabled:
+Quote-less null list
+~~~~~~~~~~~~~~~~~~~~
 
+SigScheme allows quote-less null list by default for convenience and
+performance. But it can be error as specified in R5RS, when `SCM_STRICT_R5RS`
+is enabled.
+
+.SCM_STRICT_R5RS disabled
+================================================================
     sscm> (null? ())
     #t
+================================================================
 
-    SCM_STRICT_R5RS enabled:
-
+.SCM_STRICT_R5RS enabled
+================================================================
     sscm> (null? ())
     Error: eval: () is not a valid R5RS form. use '() instead
+================================================================
 
-  - Quote-less vector literal
+Quote-less vector literal
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Sigscheme inhibits quote-less vector literal by default, as specified in
-    R5RS.
+Sigscheme inhibits quote-less vector literal by default, as specified in
+R5RS.
 
-    The behavior can be changed by SCM_STRICT_VECTOR_FORM.
+The behavior can be changed by `SCM_STRICT_VECTOR_FORM`.
 
-    > 6.3.6 Vectors
-    > 
-    > Vectors are written using the notation #(obj ...). For example, a vector
-    > of length 3 containing the number zero in element 0, the list `(2 2 2 2)'
-    > in element 1, and the string `"Anna"' in element 2 can be written as
-    > following:
-    > 
-    > #(0 (2 2 2 2) "Anna")
-    >
-    > Note that this is the external representation of a vector, not an
-    > expression evaluating to a vector. Like list constants, vector constants
-    > must be quoted:
-    > 
-    > '#(0 (2 2 2 2) "Anna")  
-    >           ==>  #(0 (2 2 2 2) "Anna")
+----------------------------------------------------------------
+  6.3.6 Vectors
+  
+  Vectors are written using the notation #(obj ...). For example, a vector
+  of length 3 containing the number zero in element 0, the list `(2 2 2 2)'
+  in element 1, and the string `"Anna"' in element 2 can be written as
+  following:
+  
+  #(0 (2 2 2 2) "Anna")
+  
+  Note that this is the external representation of a vector, not an
+  expression evaluating to a vector. Like list constants, vector constants
+  must be quoted:
+  
+  '#(0 (2 2 2 2) "Anna")  
+            ==>  #(0 (2 2 2 2) "Anna")
+----------------------------------------------------------------
 
-    sscm> #(1 2 3)
-    Error: eval: #() is not a valid R5RS form. use '#() instead
-    sscm> '#(1 2 3)
-    #(1 2 3)
+.vector literals
+================================================================
+  sscm> #(1 2 3)
+  Error: eval: #() is not a valid R5RS form. use '#() instead
+  sscm> '#(1 2 3)
+  #(1 2 3)
+================================================================
 
-  - Environment specifiers
+Environment specifiers
+~~~~~~~~~~~~~~~~~~~~~~
 
-    (null-environment) and (scheme-report-environment) does not return correct
-    environemnt specified in R5RS. Current implementation returns same object
-    of (interaction-environment).
+`(null-environment)` and `(scheme-report-environment)` does not return correct
+environemnt specified in R5RS. Current implementation returns same object
+of `(interaction-environment)`.
 
-  - Internal definitions
+Internal definitions
+~~~~~~~~~~~~~~~~~~~~
 
-    FIXME
+FIXME
 
-  - Dotted list as arguments
+Dotted list as arguments
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-    FIXME
+FIXME
 
-  - Procedures not implemented
+Procedures not implemented
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Following R5RS procedures are not implemented (yet).
+Following R5RS procedures are not implemented (yet).
 
-    * Numbers
+Numbers
+^^^^^^^
 
-      procedure: complex? obj
-      procedure: real? obj
-      procedure: rational? obj
-      procedure: exact? z
-      procedure: inexact? z
-      library procedure: gcd n1 ...
-      library procedure: lcm n1 ...
-      procedure: numerator q
-      procedure: denominator q
-      procedure: floor x
-      procedure: ceiling x
-      procedure: truncate x
-      procedure: round x
-      library procedure: rationalize x y
-      procedure: exp z
-      procedure: log z
-      procedure: sin z
-      procedure: cos z
-      procedure: tan z
-      procedure: asin z
-      procedure: acos z
-      procedure: atan z
-      procedure: atan y x
-      procedure: sqrt z
-      procedure: expt z1 z2
-      procedure: make-rectangular x1 x2
-      procedure: make-polar x3 x4
-      procedure: real-part z
-      procedure: imag-part z
-      procedure: magnitude z
-      procedure: angle z
-      procedure: exact->inexact z
-      procedure: inexact->exact z
+  - *procedure:* complex? obj
+  - *procedure:* real? obj
+  - *procedure:* rational? obj
+  - *procedure:* exact? z
+  - *procedure:* inexact? z
+  - *library procedure:* gcd n1 ...
+  - *library procedure:* lcm n1 ...
+  - *procedure:* numerator q
+  - *procedure:* denominator q
+  - *procedure:* floor x
+  - *procedure:* ceiling x
+  - *procedure:* truncate x
+  - *procedure:* round x
+  - *library procedure:* rationalize x y
+  - *procedure:* exp z
+  - *procedure:* log z
+  - *procedure:* sin z
+  - *procedure:* cos z
+  - *procedure:* tan z
+  - *procedure:* asin z
+  - *procedure:* acos z
+  - *procedure:* atan z
+  - *procedure:* atan y x
+  - *procedure:* sqrt z
+  - *procedure:* expt z1 z2
+  - *procedure:* make-rectangular x1 x2
+  - *procedure:* make-polar x3 x4
+  - *procedure:* real-part z
+  - *procedure:* imag-part z
+  - *procedure:* magnitude z
+  - *procedure:* angle z
+  - *procedure:* exact->inexact z
+  - *procedure:* inexact->exact z
 
-* SRFI conformance
-  - SRFI-48
 
-    The 'd' part of ~w,dF directive is acceptable, but completely ignored on
-    output format. Since SigScheme only supports integer currently, number is
-    always formatted as integer even if the 'd' part is specified.
+SRFI conformance
+----------------
 
-    proper behavior:
-      (format "~3F"   3)  => "  3"
-      (format "~3,2F" 3)  => "3.00"
+SRFI-48
+~~~~~~~
 
-    SigScheme:
-      (format "~3F"   3)  => "  3"
-      (format "~3,2F" 3)  => "  3"
+The 'd' part of '~w,dF' directive is acceptable, but completely ignored on
+output format. Since SigScheme only supports integer currently, number is
+always formatted as integer even if the 'd' part is specified.
 
-* SIOD compatibility
+.proper behavior
+================================================================
+  (format "~3F"   3)  => "  3"
+  (format "~3,2F" 3)  => "3.00"
+================================================================
+
+.SigScheme
+================================================================
+  (format "~3F"   3)  => "  3"
+  (format "~3,2F" 3)  => "  3"
+================================================================
+
+
+SIOD compatibility
+------------------
 
   - #f and '()
 
