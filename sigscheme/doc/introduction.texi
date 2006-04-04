@@ -1,6 +1,8 @@
 @node Introduction
 @chapter Introduction
 
+@comment Keep synchronized with design.txt for now -- YamaKen 2006-04-04
+
 This is a user's document and reference manual of SigScheme, R5RS scheme interpreter.
 
 @menu
@@ -14,11 +16,13 @@ SigScheme is a Scheme interpreter, comforming Scheme language standard called R5
 
 SigScheme mainly aims to be used in the Embedded platforms (i.e. non-desktop OS, hardware) and be embedded into an application. Here's a list of the design concept emphasized in SigScheme.
 
+@comment Following texts are converted from design.txt (``Design of SigScheme''). These texts will be separated into another chapter or document since it is not intended to be an ``introduction''.  -- YamaKen 2006-04-04
+
 @table @b
 @item Purposes
 @table @b
 @item Embedded into an application
-@item Sutable for embedded platforms
+@item Sutable for embedded platforms (i.e. non-desktop OS and hardware)
 @end table
 
 @item Requirements

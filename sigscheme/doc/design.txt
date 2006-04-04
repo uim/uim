@@ -1,5 +1,7 @@
 Design of SigScheme
 
+NOTE: Keep synchronized with introduction.texi for now -- YamaKen 2006-04-04
+
 * Purposes
   - Embedded into an application
   - Suitable for embedded platforms (i.e. non-desktop {OS,hardware})

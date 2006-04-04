@@ -1,12 +1,17 @@
 @node Features
 @chapter Features
 
+@comment Keep synchronized with spec.txt for now -- YamaKen 2006-04-04
+
+@comment Following texts other than ``SRFIs'' and ``Multibyte String'' are converted from spec.txt (``Specifications of SigScheme''). These texts will be reorganized into another chapter or document since it is too excessively described for ``features''. ``features'' should be a summary, and specifications are not. The two should be distinguished and separated.  -- YamaKen 2006-04-04
+
 @menu
 * General::
-* R5RS Conformance::
+* R5RS conformance::
+* SRFI conformance::
+* SIOD compatibility::
 * SRFIs::
 * Multibyte String::
-* SIOD Compatibility::
 @end menu
 
 @node General
@@ -16,6 +21,12 @@
 @item 64-bit data models
 
 Supports LL64, LLP64, LP64 and ILP64 (storage-fatty). storage-compact does not support any of above (yet)
+@comment Reform into nested itemized text as original text does
+@comment   - 64-bit data models
+@comment 
+@comment     * Supports LL64, LLP64, LP64 and ILP64 (storage-fatty)
+@comment 
+@comment     * storage-compact does not support any of above (yet)
 
 @item Addressable memory space
 
@@ -25,10 +36,11 @@ Ordinary storage implementation can address any Scheme object scattered on whole
 Only supports fixnum, and its range is varied by the user-selected underlying storage implementation. The range can be known via SRFI-77 compatible (least-fixnum) and (greatest-fixnum).
 @end table
 
-@node R5RS Conformance
-@section R5RS Conformance
+@node R5RS conformance
+@section R5RS conformance
 
-SigScheme basically conforms to ``Revised^5 Report of Algorithmic Language Scheme'' (@ref{r5rs,[R5RS],R5RS}), except the following features.
+@comment Added by Kazuki to reform spec.txt into ``features''
+@comment SigScheme basically conforms to ``Revised^5 Report of Algorithmic Language Scheme'' (@ref{r5rs,[R5RS],R5RS}), except the following features.
 
 @table @b
 @item Proper tail recursion
@@ -37,7 +49,7 @@ Supported.
 
 @item Macros
 
-macros are not supported yet.
+Not supported (yet).
 
 @item Continuations
 
@@ -45,15 +57,17 @@ Limited to nested use due to its setjmp/longjmp implementation. If a continuatio
 
 @item Numbers
 
-Integer part is only implemented.
+Only integer part is implemented.
 
 @item Characters
 
 All character category-sensitive procedures and predicates (such as char-upcase) work correctly only in ASCII range. i.e. Neigher Unicode processing specified in SRFI-75 nor other non-Unicode multibyte character processing are supported in such procedures/predicates.
 
-@item Case-sensitive character comparison
+@item Case-insensitive character comparison
 
-SigScheme's case-insensitive comparison conforms to the foldcase'ed comparison described in SRFI-75 and SRFI-13, although R5RS does not specify comparison between alphabetic and non-alphabetic char. See the description in operations.c for further details.
+SigScheme's case-insensitive comparison conforms to the foldcase'ed comparison described in SRFI-75 and SRFI-13, although R5RS does not specify comparison between alphabetic and non-alphabetic char.
+
+See the description in operations.c for further details.
 
 @item Case-sensitive identifiers
 
@@ -61,7 +75,7 @@ SigScheme does distinguish letter case in indentifiers. Although case insensitiv
 
 @example
 > 2. Lexical conventions
->
+> 
 > Upper and lower case forms of a letter are never distinguished except
 > within character and string constants. For example, `Foo' is the same
 > identifier as `FOO', and #x1AB is the same number as #X1ab.
@@ -87,35 +101,37 @@ The behavior can be changed by SCM_CONST_LIST_LITERAL.
 
 @example
 > 4.1.2 Literal expressions
->
+> 
 >     `(quote <datum>)' may be abbreviated as '<datum>. The two notations
 >     are equivalent in all respects.
->
+>    
 >     'a                                     ==>  a
 >     '#(a b c)                              ==>  #(a b c)
 >     '()                                    ==>  ()
 >     '(+ 1 2)                               ==>  (+ 1 2)
 >     '(quote a)                             ==>  (quote a)
 >     ''a                                    ==>  (quote a)
->
+> 
 >     As noted in section 3.4 Storage model, it is an error to alter a
 >     constant (i.e. the value of a literal expression) using a mutation
 >     procedure like `set-car!' or `string-set!'.
 
 > 6.3.2 Pairs and lists
->
+> 
 > procedure: set-car! pair obj
->
+>    
 >     Stores obj in the car field of pair. The value returned by `set-car!'
 >     is unspecified.
->
+>    
 >     (define (g) '(constant-list))
 >     (set-car! (g) 3)                       ==>  error
 @end example
 
 @item Constant vector
 
-SigScheme inhibits modification of constant vector object by default as specified in R5RS, if the storage implementation suports it. storage-fatty supports it, but storage-compact is not yet. The behavior can be changed by SCM_CONST_VECTOR_LITERAL.
+SigScheme inhibits modification of constant vector object by default as specified in R5RS, if the storage implementation suports it. storage-fatty supports it, but storage-compact is not yet.
+
+The behavior can be changed by SCM_CONST_VECTOR_LITERAL.
 
 @example
 > 6.3.6 Vectors
@@ -128,7 +144,7 @@ SigScheme inhibits modification of constant vector object by default as specifie
 
 @item Quote-less null list
 
-SigScheme allows quote-less null list by default for convenience and performance. But it can be error as specified in R5RS, when SCM_STRICT_R5RS is enabled. 
+SigScheme allows quote-less null list by default for convenience and performance. But it can be error as specified in R5RS, when SCM_STRICT_R5RS is enabled.
 
 SCM_STRICT_R5RS disabled:
 
@@ -146,7 +162,9 @@ Error: eval: () is not a valid R5RS form. use '() instead
 
 @item Quote-less vector literal
 
-Sigscheme inhibits quote-less vector literal by default, as specified in R5RS. The behavior can be changed by SCM_STRICT_VECTOR_FORM.
+Sigscheme inhibits quote-less vector literal by default, as specified in R5RS.
+
+The behavior can be changed by SCM_STRICT_VECTOR_FORM.
 
 @example
 > 6.3.6 Vectors
@@ -187,7 +205,7 @@ FIXME
 
 @item Procedures not implemented
 
-These procedures listed below are not implemented in SigScheme.
+Following R5RS procedures are not implemented (yet).
 
 @table @b
 @item Numbers
@@ -230,6 +248,38 @@ These procedures listed below are not implemented in SigScheme.
 
 @end table
 
+@node SRFI conformance
+@section SRFI conformance
+
+@verbatim
+  - SRFI-48
+
+    The 'd' part of ~w,dF directive is acceptable, but completely ignored on
+    output format. Since SigScheme only supports integer currently, number is
+    always formatted as integer even if the 'd' part is specified.
+
+    proper behavior:
+      (format "~3F"   3)  => "  3"
+      (format "~3,2F" 3)  => "3.00"
+
+    SigScheme:
+      (format "~3F"   3)  => "  3"
+      (format "~3,2F" 3)  => "  3"
+@end verbatim
+
+@node SIOD compatibility
+@section SIOD compatibility
+
+@itemize @bullet
+@item #f and '()
+@item let and let* bindings
+@item '=' predicate
+@end itemize
+
+
+
+@comment Following texts are written by Kazuki as ``features''
+
 @node SRFIs
 @section SRFIs
 
@@ -249,12 +299,3 @@ SigScheme supports following SRFIs. You can choose which SRFI to include at the 
 @section Multibyte String
 
 SigScheme supports multibyte string handling. Currently, it supports UTF-8, EUC-JP, EUC-CN, EUC-KR, Shift-Jis.
-
-@node SIOD Compatibility
-@section SIOD Compatibility
-
-@itemize @bullet
-@item #f and '()
-@item let and let* bindings
-@item '=' predicate
-@end itemize
