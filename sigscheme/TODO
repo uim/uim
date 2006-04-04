@@ -1,12 +1,12 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Autoconfiscate the SigScheme package (don't rely on uim's configure)
-  - Make most settings in src/config.h configurable with configure options
-  - [uim] configure sigscheme subdir by top-level configure like GCC
-  - Make ruby not required for tarball build
-  - Check pointer alignment to ensure stack GC workable
-    * for example, gcc -Os on x86 breaks the alignment
+* Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
+  - Make all tests passed without error or SEGV
+  - Support 64bit models
+  - Support constant vector
+  - Create immediate objects directly without calling scm_make_*()
+  - Refine logical structure and namings
 
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
@@ -18,17 +18,24 @@ Requirements and critical bugs:
   - slib.scm
   - test/{gauche*,bigloo*}.scm
 
+* Autoconfiscate the SigScheme package (don't rely on uim's configure)
+  - Make most settings in src/config.h configurable with configure options
+  - [uim] configure sigscheme subdir by top-level configure like GCC
+  - Make ruby not required for tarball build
+  - Check pointer alignment to ensure stack GC workable
+    * for example, gcc -Os on x86 breaks the alignment
+
+* Confirm R5RS and SRFI conformance for each function implementation
+
+* Confirm public API
+  - Evaluate SRFI-50 (although withdrawn)
+
 * Make 64bit-safe
   - Write tests
   - Make the tests passed on actual 64bit environment with fatty representation
   - Modify storage-compact.h
   - Make the tests passed on actual 64bit environment with compact
     representation
-
-* Confirm R5RS and SRFI conformance for each function implementation
-
-* Confirm public API
-  - Evaluate SRFI-50 (although withdrawn)
 
 * Confirm appropriate workaround for the GCC's noinline attribute vanishing
   problem on Linux environments
@@ -70,25 +77,12 @@ Extensions: (not required for now)
   - Define SAL accessors considering SRFI-50 and other implementations
   - Evaluate SRFI-77 "Preliminary Proposal for R6RS Arithmetic"
 
-* Make all global and static variables encapsulatable into a dynamic object, to
-  support embedded environment that cannot use it such as BREW
-  - Abstract accessors to the variables
-  - Make the accessors replaceable with platform-specific one such as
-    GET_APP_INSTANCE()->scm->var
-
 * Add GB18030 to encoding.c
 
 * Add Big5 to encoding.c
 
 ==============================================================================
 Performance improvements:
-
-* Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
-  - Make all tests passed without error or SEGV
-  - Support 64bit models
-  - Support constant vector
-  - Create immediate objects directly without calling scm_make_*()
-  - Refine logical structure and namings
 
 * (not required for now) Simplify read.c by table-based tokenizer
 
@@ -129,8 +123,11 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* [uim] link libsscm into libuim statically
-  - Make scm_* symbols local, or avoid conflict with sscm_* prefix 
+* Make all global and static variables encapsulatable into a dynamic object, to
+  support embedded environment that cannot use it such as BREW
+  - Abstract accessors to the variables
+  - Make the accessors replaceable with platform-specific one such as
+    GET_APP_INSTANCE()->scm->var
 
 * Write test for tail expression of all tail-recursive syntaxes
 
