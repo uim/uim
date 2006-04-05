@@ -875,8 +875,11 @@ typedef ScmObj (*scm_procedure_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmOb
  *
  * Don't access this variables directly. Use SCM_GC_PROTECTED_CALL*() instead.
  */
-/* FIXME: support SCM_COMBINED_SOURCE with global.h */
-extern ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *);
+SCM_GLOBAL_VARS_BEGIN(gc);
+ScmObj *(*volatile scm_gc_protect_stack_fp)(ScmObj *);
+SCM_GLOBAL_VARS_END(gc);
+SCM_DECLARE_EXPORTED_VARS(gc);
+#define scm_gc_protect_stack_fp SCM_GLOBAL_VAR(gc, scm_gc_protect_stack_fp)
 #endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
@@ -924,7 +927,7 @@ SCM_EXPORT void scm_gc_unprotect(ScmObj *var);
 #ifdef __GNUC__
 #define scm_gc_protect_stack scm_gc_protect_stack_internal
 #else /* __GNUC__ */
-#define scm_gc_protect_stack (*scm_gc_protect_stack)
+#define scm_gc_protect_stack (*scm_gc_protect_stack_fp)
 #endif /* __GNUC__ */
 
 SCM_EXPORT ScmObj *scm_gc_protect_stack_internal(ScmObj *designated_stack_start) SCM_NOINLINE;

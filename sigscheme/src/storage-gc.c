@@ -83,12 +83,9 @@ typedef ScmCell *ScmObjHeap;
 /*=======================================
   Variable Declarations
 =======================================*/
-/* FIXME: support SCM_COMBINED_SOURCE with global.h */
-#if UIM_SCM_GCC4_READY_GC
-/* See also the comment about these variables in sigscheme.h */
-ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
-    = &scm_gc_protect_stack_internal;
-#endif /* UIM_SCM_GCC4_READY_GC */
+#if SCM_GCC4_READY_GC
+SCM_DEFINE_EXPORTED_VARS(gc);
+#endif /* SCM_GCC4_READY_GC */
 
 SCM_GLOBAL_VARS_BEGIN(static_gc);
 #define static
@@ -154,7 +151,10 @@ static void finalize_protected_var(void);
 SCM_EXPORT void
 scm_init_gc(const ScmStorageConf *conf)
 {
+    SCM_GLOBAL_VARS_INIT(gc);
     SCM_GLOBAL_VARS_INIT(static_gc);
+
+    scm_gc_protect_stack_fp = scm_gc_protect_stack_internal;
 
     initialize_heap(conf);
 }
