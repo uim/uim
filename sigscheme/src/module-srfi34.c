@@ -152,6 +152,8 @@ scm_initialize_srfi34(void)
 {
     ScmObj *vars, *var;
 
+    SCM_GLOBAL_VARS_INIT(static_srfi34);
+
     scm_use("srfi-23");
 
     /* protect global variables: assumes that all ScmObj of the global vars

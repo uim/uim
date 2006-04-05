@@ -116,6 +116,8 @@ static ScmObj continuation_stack_unwind(ScmObj dest_cont);
 SCM_EXPORT void
 scm_init_continuation(void)
 {
+    SCM_GLOBAL_VARS_INIT(static_continuation);
+
     initialize_dynamic_extent();
     initialize_continuation_env();
 

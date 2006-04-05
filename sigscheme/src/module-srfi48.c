@@ -69,6 +69,7 @@ static ScmObj srfi48_format_internal(enum ScmFormatCapability fcap,
 SCM_EXPORT void
 scm_initialize_srfi48(void)
 {
+    /* FIXME: duplicate call with scm_initialize_internal() */
     scm_init_format();
     scm_register_funcs(scm_srfi48_func_info_table);
 

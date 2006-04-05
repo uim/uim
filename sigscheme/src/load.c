@@ -94,6 +94,12 @@ static char **parse_script_prelude(ScmObj port);
 /*=======================================
   Function Implementations
 =======================================*/
+SCM_EXPORT void
+scm_init_load(void)
+{
+    SCM_GLOBAL_VARS_INIT(static_load);
+}
+
 /* Don't provide any Scheme procedure to call this function, to avoid security
  * problems. User modification of the value or relative path capability may
  * cause arbitrary C code injection by plugin spoofing when future SigScheme

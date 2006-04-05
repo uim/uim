@@ -118,6 +118,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     /*=======================================================================
       Core
     =======================================================================*/
+    SCM_GLOBAL_VARS_INIT(procedure);
+    SCM_GLOBAL_VARS_INIT(static_sigscheme);
+
     scm_set_debug_categories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                              | scm_predefined_debug_categories());
     scm_encoding_init();
@@ -128,7 +131,11 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_init_writer();
 #endif
 #if SCM_USE_FORMAT
+    /* FIXME: duplicate call with scm_initialize_srfi{28,48}() */
     scm_init_format();
+#endif
+#if SCM_USE_LOAD
+    scm_init_load();
 #endif
     scm_init_module();
 

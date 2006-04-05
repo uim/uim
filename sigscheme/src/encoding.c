@@ -256,6 +256,8 @@ SCM_DEFINE_EXPORTED_VARS(encoding);
 SCM_EXPORT void
 scm_encoding_init(void)
 {
+    SCM_GLOBAL_VARS_INIT(encoding);
+
     /* To allow re-initialization of the interpreter, this variables must be
      * initialized by assignment. Initialized .data section does not work for
      * such situation.  -- YamaKen 2006-03-31 */

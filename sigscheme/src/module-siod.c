@@ -113,6 +113,9 @@ SCM_EXPORT void
 scm_initialize_siod(void)
 {
     ScmCharPort *cport;
+
+    SCM_GLOBAL_VARS_INIT(static_siod);
+
     scm_register_funcs(scm_siod_func_info_table);
 
     scm_use("srfi-60");

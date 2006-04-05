@@ -141,14 +141,15 @@ static void write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 SCM_EXPORT void
 scm_init_writer(void)
 {
-    /* To allow re-initialization of the interpreter, these variables must be
+    SCM_GLOBAL_VARS_INIT(write);
+#if SCM_USE_SRFI38
+    SCM_GLOBAL_VARS_INIT(static_write);
+#endif
+
+    /* To allow re-initialization of the interpreter, this variable must be
      * re-initialized by assignment. Initialized .data section does not work
      * for such situation.  -- YamaKen 2006-03-31 */
     scm_write_ss_func = scm_write;
-
-#if SCM_USE_SRFI38
-    l_write_ss_ctx = NULL;
-#endif
 }
 
 SCM_EXPORT void

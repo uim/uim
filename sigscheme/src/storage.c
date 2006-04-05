@@ -116,6 +116,12 @@ static ScmObj scm_make_string_internal(char *str, scm_int_t len,
 SCM_EXPORT void
 scm_init_storage(const ScmStorageConf *conf)
 {
+    SCM_GLOBAL_VARS_INIT(storage);
+#if !SCM_OBJ_COMPACT
+    SCM_GLOBAL_VARS_INIT(storage_fatty);
+    SCM_GLOBAL_VARS_INIT(static_storage_fatty);
+#endif
+
     if (!conf)
         conf = &default_storage_conf;
 

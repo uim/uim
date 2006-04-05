@@ -119,6 +119,8 @@ scm_mbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
 
+    SCM_GLOBAL_VARS_INIT(static_scmport_mbchar);
+
     l_ScmMultiByteCharPort_vtbl = *ScmBaseCharPort_vptr;
 
     vptr = &l_ScmMultiByteCharPort_vtbl;

@@ -216,6 +216,7 @@ main(int argc, char **argv)
     filename = rest_argv[0];
 
     scm_initialize(NULL);
+    SCM_GLOBAL_VARS_INIT(static_main);
 
     /* Explicitly allow current directory-relative path. The sscm command is
      * supposed to neither setuid'ed nor setgid'ed. So the privilege escalation

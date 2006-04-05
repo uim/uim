@@ -187,11 +187,9 @@ struct format_args {
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_format);
 #define static
-static scm_bool l_format_initialized;
 static ScmObj l_sym_pretty_print;
 #undef static
 SCM_GLOBAL_VARS_END(static_format);
-#define l_format_initialized SCM_GLOBAL_VAR(static_format, l_format_initialized)
 #define l_sym_pretty_print   SCM_GLOBAL_VAR(static_format, l_sym_pretty_print)
 SCM_DEFINE_STATIC_VARS(static_format);
 
@@ -226,11 +224,10 @@ static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
 SCM_EXPORT void
 scm_init_format(void)
 {
-    if (!l_format_initialized) {
-        scm_gc_protect_with_init(&l_sym_pretty_print,
-                                 scm_intern(PRETTY_PRINT_PROCEDURE_NAME));
-        l_format_initialized = scm_true;
-    }
+    SCM_GLOBAL_VARS_INIT(static_format);
+
+    scm_gc_protect_with_init(&l_sym_pretty_print,
+                             scm_intern(PRETTY_PRINT_PROCEDURE_NAME));
 }
 
 #if SCM_USE_MULTIBYTE_CHAR

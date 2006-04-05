@@ -99,18 +99,18 @@ static void show_arg(ScmObj arg, ScmObj env);
 SCM_EXPORT void
 scm_init_error(void)
 {
+#if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
+    SCM_GLOBAL_VARS_INIT(error);
+#endif
+    SCM_GLOBAL_VARS_INIT(static_error);
+
     /* allocate a cons cell as unique ID */
     scm_gc_protect_with_init(&l_err_obj_tag, CONS(SCM_UNDEF, SCM_UNDEF));
 
     scm_gc_protect_with_init(&l_str_srfi34, CONST_STRING("srfi-34"));
     l_srfi34_is_provided = scm_false;
 
-    l_cb_fatal_error = NULL;
     l_fatal_error_looped = scm_false;
-
-#if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
-    scm_err_funcname = NULL;
-#endif
 }
 
 SCM_EXPORT int

@@ -103,6 +103,8 @@ SCM_EXPORT const ScmSpecialCharInfo scm_special_char_table[] = {
 SCM_EXPORT void
 scm_init_port(void)
 {
+    SCM_GLOBAL_VARS_INIT(port);
+
     scm_fileport_init();
 #if SCM_USE_MULTIBYTE_CHAR
     scm_mbcport_init();

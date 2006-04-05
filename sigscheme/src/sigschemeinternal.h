@@ -649,6 +649,9 @@ SCM_EXPORT void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
 /* format.c */
 SCM_EXPORT void scm_init_format(void);
 
+/* load.c */
+SCM_EXPORT void scm_init_load(void);
+
 /* module.c */
 SCM_EXPORT void scm_init_module(void);
 

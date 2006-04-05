@@ -124,6 +124,8 @@ scm_symbol_bound_to(ScmObj obj)
 SCM_EXPORT void
 scm_init_symbol(const ScmStorageConf *conf)
 {
+    SCM_GLOBAL_VARS_INIT(symbol);
+
     initialize_symbol_hash(conf);
 }
 

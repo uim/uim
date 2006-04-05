@@ -67,6 +67,7 @@
 SCM_EXPORT void
 scm_initialize_srfi28(void)
 {
+    /* FIXME: duplicate call with scm_initialize_internal() */
     scm_init_format();
     scm_register_funcs(scm_srfi28_func_info_table);
 }

@@ -120,6 +120,8 @@ static scm_bool scm_use_internal(const char *feature);
 SCM_EXPORT void
 scm_init_module(void)
 {
+    SCM_GLOBAL_VARS_INIT(static_module);
+
     scm_gc_protect_with_init(&l_features, SCM_NULL);
 }
 

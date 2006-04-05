@@ -95,6 +95,9 @@ static qquote_result qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 SCM_EXPORT void
 scm_init_syntax(void)
 {
+    SCM_GLOBAL_VARS_INIT(syntax);
+    SCM_GLOBAL_VARS_INIT(static_syntax);
+
     scm_register_funcs(scm_r5rs_syntax_func_info_table);
 
     scm_sym_quote            = scm_intern("quote");

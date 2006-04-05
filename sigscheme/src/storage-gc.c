@@ -154,10 +154,8 @@ static void finalize_protected_var(void);
 SCM_EXPORT void
 scm_init_gc(const ScmStorageConf *conf)
 {
-    l_stack_start_pointer = NULL;
-    l_protected_vars = NULL;
-    l_protected_vars_size = 0;
-    l_n_empty_protected_vars = 0;
+    SCM_GLOBAL_VARS_INIT(static_gc);
+
     initialize_heap(conf);
 }
 
