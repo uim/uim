@@ -671,7 +671,7 @@ SEQ   MNEMONIC        DESCRIPTION
 ~A    [Any]           (display arg) for humans
 ~S    [Slashified]    (write arg) for parsers
 ~W    [WriteCircular] like ~s but outputs with write/ss
-~~    [tilde]         output a tilde
+~~    [Tilde]         output a tilde
 ~T    [Tab]           output a tab character
 ~%    [Newline]       output a newline character
 ~&    [Freshline]     output a newline if the previous output was not a newline

@@ -92,7 +92,7 @@
 "~A    [Any]           (display arg) for humans\n"                            \
 "~S    [Slashified]    (write arg) for parsers\n"                             \
 "~W    [WriteCircular] like ~s but outputs with write/ss\n"                   \
-"~~    [tilde]         output a tilde\n"                                      \
+"~~    [Tilde]         output a tilde\n"                                      \
 "~T    [Tab]           output a tab character\n"                              \
 "~%    [Newline]       output a newline character\n"                          \
 "~&    [Freshline]     output a newline if the previous output was not a newline\n" \
