@@ -47,13 +47,14 @@ Only supports fixnum, and its range is varied by the user-selected underlying st
 
 Supported.
 
-@item Macros
-
-Not supported (yet).
-
 @item Continuations
 
 Limited to nested use due to its setjmp/longjmp implementation. If a continuation that is not an ancestor of current continuation called, all continuation objects lying between the curent and the common ancestor of the destination are invalidated. Calling an invalidated continuation object causes an error.
+
+@item Macros
+
+Not supported yet. But the hygienic macros specified in R5RS is being
+implemented by Jun Inoue.
 
 @item Numbers
 
@@ -197,17 +198,60 @@ sscm> '#(1 2 3)
 
 @item Internal definitions
 
-FIXME
+SigScheme strictly conforms to the 'internal definitions' defined in R5RS
+(cited below) if `SCM_STRICT_DEFINE_PLACEMENT` is enabled (default). It can be
+disabled to get the syntax loosen, shrink the footprint and reduce runtime
+cost.
 
-@item Dotted list as arguments
+@quotation
+----------------------------------------------------------------
+  5.2.2 Internal definitions
+  
+  Definitions may occur at the beginning of a <body> (that is, the body of a
+  lambda, let, let*, letrec, let-syntax, or letrec-syntax expression or that of
+  a definition of an appropriate form). Such definitions are known as internal
+  definitions as opposed to the top level definitions described above.
+----------------------------------------------------------------
+@end quotation
 
-FIXME
+@item Superfluous arguments
 
-@item Procedures not implemented
+Superfluous or dotted arguments are strictly rejected as an error if
+`SCM_STRICT_ARGCHECK` is enabled. Otherwise ignored. Resource-sensitive
+apprication could disable it.
+
+SCM_STRICT_ARGCHECK enabled
+@example
+sscm> (car '(1 2) 3 4)
+ERROR: in (function call): superfluous argument(s): #1=(3 4)
+sscm> (symbol? 'foo . #t)
+ERROR: in (function call): improper argument list terminator: #t
+sscm> (+ 3 4 . 5)
+ERROR: in (reduction): improper argument list terminator: 5
+@end example
+
+SCM_STRICT_ARGCHECK disabled
+@example
+sscm> (car '(1 2) 3 4)
+1
+sscm> (symbol? 'foo . #t)
+#t
+sscm> (+ 3 4 . 5)
+7
+@end example
+
+@item Syntaxes/procedures not implemented
 
 Following R5RS procedures are not implemented (yet).
 
 @table @b
+@item Macros
+@itemize @bullet
+@item syntax: let-syntax <bindings> <body>
+@item syntax: letrec-syntax <bindings> <body>
+@item syntax: define-syntax <keyword> <transformer spec>
+@item special form: syntax-rules <literals> <syntax rule> ...
+@end itemize
 @item Numbers
 @itemize @bullet
 @item procedure: complex? obj
@@ -244,6 +288,11 @@ Following R5RS procedures are not implemented (yet).
 @item procedure: exact->inexact z
 @item procedure: inexact->exact z
 @end itemize
+@item System interface
+@itemize @bullet
+@item optional procedure: transcript-on filename
+@item optional procedure: transcript-off
+@end itemize
 @end table
 
 @end table
@@ -252,19 +301,123 @@ Following R5RS procedures are not implemented (yet).
 @section SRFI conformance
 
 @verbatim
-  - SRFI-48
+SRFI-1  List Library
+~~~~~~~~~~~~~~~~~~~~
 
-    The 'd' part of ~w,dF directive is acceptable, but completely ignored on
-    output format. Since SigScheme only supports integer currently, number is
-    always formatted as integer even if the 'd' part is specified.
+Although a C implementation `module-srfi1.c` is existing, it is still broken
+and should not use for production codes. To get SRFI-1 working with SigScheme,
+use SLIB version of the library (will made available after some preparations).
 
-    proper behavior:
-      (format "~3F"   3)  => "  3"
-      (format "~3,2F" 3)  => "3.00"
 
-    SigScheme:
-      (format "~3F"   3)  => "  3"
-      (format "~3,2F" 3)  => "  3"
+SRFI-23 Error Reporting Mechanism
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `error` procedure throws a SigScheme-specific error object in cooperate
+with "SRFI-34 Exception Handling for Programs". Since the error objects are
+represented as a list, be careful on catching an exception based on its type.
+If you want to distinguish the error objects from ordinary lists, use
+SigScheme-specific `%%error-object?` predicate.
+
+.Error objects are also caught as a list
+================================================================
+  sscm> (guard (obj ((pair? obj) obj)) (error "reason" 1 2 3))
+  #<error "reason" 1 2 3>
+================================================================
+
+
+.Error object internal
+================================================================
+  sscm> (define err (guard (err (#t err)) (error "reason" 1 2 3)))
+  err
+  sscm> err
+  #<error "reason" 1 2 3>
+  sscm> (pair? err)
+  #t
+  sscm> (car err)
+  (#<undef> . #<undef>)
+  sscm> (%%error-object? err)
+  #t
+================================================================
+
+SRFI-38 External Representation for Data with Shared Structure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Only `write-with-shared-structure` is implemented and
+`read-with-shared-structure` is not. The optional alias `write/ss` described in
+SRFI-38 is also defined.
+
+SRFI-48 Intermediate Format Strings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The 'd' part of '~w,dF' directive is acceptable, but completely ignored on
+output format. Since SigScheme only supports integer currently, number is
+always formatted as integer even if the 'd' part is specified.
+
+.proper behavior
+================================================================
+  (format "~3F"   3)  => "  3"
+  (format "~3,2F" 3)  => "3.00"
+================================================================
+
+.SigScheme
+================================================================
+  (format "~3F"   3)  => "  3"
+  (format "~3,2F" 3)  => "  3"
+================================================================
+
+SRFI-60 Integer as Bits
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Only following procedures are implemented.
+
+  - Bitwise Operations
+    * *procedure:* logand n1 ...
+    * *procedure:* bitwise-and n1 ...
+    * *procedure:* logior n1 ...
+    * *procedure:* bitwise-ior n1 ...
+    * *procedure:* logxor n1 ...
+    * *procedure:* bitwise-xor n1 ...
+    * *procedure:* lognot n
+    * *procedure:* bitwise-not n
+    * *procedure:* bitwise-if mask n0 n1
+    * *procedure:* bitwise-merge mask n0 n1
+    * *procedure:* logtest j k
+    * *procedure:* any-bits-set? j k
+
+And the others listed below are not.
+
+  - Integer Properties
+    * *procedure:* logcount n
+    * *procedure:* bit-count n
+    * *procedure:* integer-length n
+    * *procedure:* log2-binary-factors n
+    * *procedure:* first-set-bit n
+
+  - Bit Within Word
+    * *procedure:* logbit? index n
+    * *procedure:* bit-set? index n
+    * *procedure:* copy-bit index from bit
+
+  - Field of Bits
+    * *procedure:* bit-field n start end
+    * *procedure:* copy-bit-field to from start end
+    * *procedure:* ash n count
+    * *procedure:* arithmetic-shift n count
+    * *procedure:* rotate-bit-field n count start end
+    * *procedure:* reverse-bit-field n start end
+
+  - Bits as Booleans
+    * *procedure:* integer->list k len
+    * *procedure:* integer->list k
+    * *procedure:* list->integer list
+    * *procedure:* booleans->integer bool1 ...
+
+SRFI-75 R6RS Unicode data
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - quoted-symbol by vertical bar (|) is not supported yet
+
+FIXME
 @end verbatim
 
 @node SIOD compatibility
@@ -285,13 +438,19 @@ Following R5RS procedures are not implemented (yet).
 
 SigScheme supports following SRFIs. You can choose which SRFI to include at the build process.
 
+@c Keep updated with README
 @table @asis
-@item SRFI-6, Basic String Ports
-@item SRFI-8, receive: Binding to multiple values
-@item SRFI-23, Error reporting mechanism
+@item SRFI-2,  And-let*
+@item SRFI-6,  Basic String Ports
+@item SRFI-8,  Receive
+@item SRFI-22, Running Scheme Scripts on Unix
+@item SRFI-23, Error Reporting Mechanism
+@item SRFI-28, Basic Format Strings
 @item SRFI-34, Exception Handling for Programs
-@item SRFI-38, External Representation for Data With Shared Structure
-@item SRFI-60, Integers as Bits
+@item SRFI-38, External Representation for Data with Shared Structure (partial)
+@item SRFI-48, Intermediate Format Strings
+@item SRFI-60, Integer as Bits (partial)
+@item SRFI-75, R6RS Unicode data (partial)
 @end table
 
 
