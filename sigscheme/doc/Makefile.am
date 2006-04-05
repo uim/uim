@@ -15,7 +15,7 @@ EXTRA_DIST = \
         $(TEXIS)
 
 .txt.html:
-	asciidoc -n -o $@ $<
+	asciidoc -b html4 -n -o $@ $<
 
 .PHONY: all html pdf
 all: html
