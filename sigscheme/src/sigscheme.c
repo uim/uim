@@ -67,11 +67,19 @@
 #include "functable-sscm-core.c"
 #include "functable-r5rs-procedure.c"
 
+SCM_GLOBAL_VARS_BEGIN(static_sigscheme);
+#define static
 static scm_bool scm_initialized;
 
 #if SCM_COMPAT_SIOD
-static ScmObj scm_return_value_cache    = NULL;
-#endif
+static ScmObj scm_return_value_cache;
+#endif /* SCM_COMPAT_SIOD */
+#undef static
+SCM_GLOBAL_VARS_END(static_sigscheme);
+#define scm_initialized SCM_GLOBAL_VAR(static_sigscheme, scm_initialized)
+#define scm_return_value_cache                                               \
+    SCM_GLOBAL_VAR(static_sigscheme, scm_return_value_cache)
+SCM_DEFINE_STATIC_VARS(static_sigscheme);
 
 /*=======================================
   File Local Function Declarations

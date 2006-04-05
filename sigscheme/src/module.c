@@ -61,7 +61,13 @@ struct module_info {
 /*=======================================
   Variable Declarations
 =======================================*/
+SCM_GLOBAL_VARS_BEGIN(static_module);
+#define static
 static ScmObj features;
+#undef static
+SCM_GLOBAL_VARS_END(static_module);
+#define features SCM_GLOBAL_VAR(static_module, features)
+SCM_DEFINE_STATIC_VARS(static_module);
 
 static const struct module_info module_info_table[] = {
 #if SCM_USE_SSCM_EXTENSIONS

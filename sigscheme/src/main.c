@@ -66,11 +66,18 @@
 /*=======================================
   Variable Declarations
 =======================================*/
+SCM_GLOBAL_VARS_BEGIN(static_main);
+#define static
 static char sscm_lib_path[MAXPATHLEN];
 
 #if SCM_COMPAT_SIOD
 static ScmObj feature_id_siod;
-#endif
+#endif /* SCM_COMPAT_SIOD */
+#undef static
+SCM_GLOBAL_VARS_END(static_main);
+#define sscm_lib_path   SCM_GLOBAL_VAR(static_main, sscm_lib_path)
+#define feature_id_siod SCM_GLOBAL_VAR(static_main, feature_id_siod)
+SCM_DEFINE_STATIC_VARS(static_main);
 
 /*=======================================
   File Local Function Declarations

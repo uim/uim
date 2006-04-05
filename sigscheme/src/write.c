@@ -104,9 +104,15 @@ typedef struct {
 SCM_DEFINE_EXPORTED_VARS(write);
 
 #if SCM_USE_SRFI38
+SCM_GLOBAL_VARS_BEGIN(static_write);
+#define static
 /* misc info in priting shared structures */
 static write_ss_context *write_ss_ctx;
-#endif
+#undef static
+SCM_GLOBAL_VARS_END(static_write);
+#define write_ss_ctx SCM_GLOBAL_VAR(static_write, write_ss_ctx)
+SCM_DEFINE_STATIC_VARS(static_write);
+#endif /* SCM_USE_SRFI38 */
 
 /*=======================================
   File Local Function Declarations

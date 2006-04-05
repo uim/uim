@@ -99,7 +99,15 @@ static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
 /*=======================================
   Variable Declarations
 =======================================*/
+SCM_GLOBAL_VARS_BEGIN(static_scmport_mbchar);
+#define static
 static ScmCharPortVTbl ScmMultiByteCharPort_vtbl;
+#undef static
+SCM_GLOBAL_VARS_END(static_scmport_mbchar);
+#define ScmMultiByteCharPort_vtbl                                            \
+        SCM_GLOBAL_VAR(static_scmport_mbchar, ScmMultiByteCharPort_vtbl)
+SCM_DEFINE_STATIC_VARS(static_scmport_mbchar);
+
 SCM_EXPORT const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr
     = &ScmMultiByteCharPort_vtbl;
 

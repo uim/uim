@@ -72,7 +72,13 @@
 /*=======================================
   Variable Declarations
 =======================================*/
-static const char *scm_lib_path = NULL;
+SCM_GLOBAL_VARS_BEGIN(static_load);
+#define static
+static const char *scm_lib_path;
+#undef static
+SCM_GLOBAL_VARS_END(static_load);
+#define scm_lib_path SCM_GLOBAL_VAR(static_load, scm_lib_path)
+SCM_DEFINE_STATIC_VARS(static_load);
 
 /*=======================================
   File Local Function Declarations

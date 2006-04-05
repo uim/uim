@@ -84,22 +84,42 @@ typedef ScmCell *ScmObjHeap;
 /*=======================================
   Variable Declarations
 =======================================*/
-static size_t heap_size, heap_alloc_threshold;
-static size_t n_heaps, n_heaps_max;
-static ScmObjHeap *heaps;
-static ScmCell *heaps_lowest, *heaps_highest;
-static ScmObj freelist;
-
-static jmp_buf save_regs_buf;
-static ScmObj *stack_start_pointer;
+/* FIXME: support SCM_COMBINED_SOURCE with global.h */
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in sigscheme.h */
 ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
     = &scm_gc_protect_stack_internal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
+SCM_GLOBAL_VARS_BEGIN(static_gc);
+#define static
+static size_t l_heap_size, l_heap_alloc_threshold;
+static size_t n_heaps, l_n_heaps_max;
+static ScmObjHeap *heaps;
+static ScmCell *heaps_lowest, *heaps_highest;
+static ScmObj freelist;
+
+static jmp_buf save_regs_buf;
+static ScmObj *stack_start_pointer;
+
 static ScmObj **protected_vars;
 static size_t protected_vars_size, n_empty_protected_vars;
+#undef static
+SCM_GLOBAL_VARS_END(static_gc);
+#define l_heap_size            SCM_GLOBAL_VAR(static_gc, l_heap_size)
+#define l_heap_alloc_threshold SCM_GLOBAL_VAR(static_gc, l_heap_alloc_threshold)
+#define n_heaps                SCM_GLOBAL_VAR(static_gc, n_heaps)
+#define l_n_heaps_max          SCM_GLOBAL_VAR(static_gc, l_n_heaps_max)
+#define heaps                  SCM_GLOBAL_VAR(static_gc, heaps)
+#define heaps_lowest           SCM_GLOBAL_VAR(static_gc, heaps_lowest)
+#define heaps_highest          SCM_GLOBAL_VAR(static_gc, heaps_highest)
+#define freelist               SCM_GLOBAL_VAR(static_gc, freelist)
+#define save_regs_buf          SCM_GLOBAL_VAR(static_gc, save_regs_buf)
+#define stack_start_pointer    SCM_GLOBAL_VAR(static_gc, stack_start_pointer)
+#define protected_vars         SCM_GLOBAL_VAR(static_gc, protected_vars)
+#define protected_vars_size    SCM_GLOBAL_VAR(static_gc, protected_vars_size)
+#define n_empty_protected_vars SCM_GLOBAL_VAR(static_gc, n_empty_protected_vars)
+SCM_DEFINE_STATIC_VARS(static_gc);
 
 /*=======================================
   File Local Function Declarations
@@ -274,9 +294,9 @@ initialize_heap(const ScmStorageConf *conf)
 {
     size_t i;
 
-    heap_size            = conf->heap_size;
-    heap_alloc_threshold = conf->heap_alloc_threshold;
-    n_heaps_max          = conf->n_heaps_max;
+    l_heap_size            = conf->heap_size;
+    l_heap_alloc_threshold = conf->heap_alloc_threshold;
+    l_n_heaps_max          = conf->n_heaps_max;
     n_heaps = 0;
     heaps = NULL;
     heaps_lowest = heaps_highest = NULL;
@@ -293,21 +313,21 @@ add_heap(void)
     ScmObjHeap heap;
     ScmCell *cell;
 
-    if (n_heaps_max <= n_heaps)
+    if (l_n_heaps_max <= n_heaps)
         scm_fatal_error("heap exhausted");
 
     heaps = scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
-    heap = scm_malloc_aligned(sizeof(ScmCell) * heap_size);
+    heap = scm_malloc_aligned(sizeof(ScmCell) * l_heap_size);
     heaps[n_heaps++] = heap;
 
     /* update the enclosure */
-    if (heaps_highest < &heap[heap_size])
-        heaps_highest = &heap[heap_size];
+    if (heaps_highest < &heap[l_heap_size])
+        heaps_highest = &heap[l_heap_size];
     if (&heap[0] < heaps_lowest)
         heaps_lowest = &heap[0];
 
     /* link in order */
-    for (cell = &heap[0]; cell < &heap[heap_size - 1]; cell++)
+    for (cell = &heap[0]; cell < &heap[l_heap_size - 1]; cell++)
         SCM_RECLAIM_CELL(cell, cell + 1);
     SCM_RECLAIM_CELL(cell, freelist);
     freelist = heap;
@@ -322,7 +342,7 @@ finalize_heap(void)
 
     for (i = 0; i < n_heaps; i++) {
         heap = heaps[i];
-        for (cell = &heap[0]; cell < &heap[heap_size]; cell++)
+        for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++)
             free_cell(cell);
         free(heap);
     }
@@ -339,7 +359,7 @@ gc_mark_and_sweep(void)
     gc_mark();
     n_collected = gc_sweep();
 
-    if (n_collected < heap_alloc_threshold) {
+    if (n_collected < l_heap_alloc_threshold) {
         CDBG((SCM_DBG_GC, "Cannot sweep the object, allocating new heap."));
         add_heap();
     }
@@ -484,7 +504,7 @@ within_heapp(ScmObj obj)
 
     for (i = 0; i < n_heaps; i++) {
         heap = heaps[i];
-        if (heap && &heap[0] <= ptr && ptr < &heap[heap_size]) {
+        if (heap && &heap[0] <= ptr && ptr < &heap[l_heap_size]) {
 #if SCM_OBJ_COMPACT
             /* Check the consistency between obj's tag and ptr->cdr's GC bit. */
             if (!SCM_HAS_VALID_CDR_GCBITP(obj, ptr->cdr))
@@ -671,7 +691,7 @@ gc_sweep(void)
         n_collected = 0;
         heap = heaps[i];
 
-        for (cell = &heap[0]; cell < &heap[heap_size]; cell++) {
+        for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++) {
             /* FIXME: is this safe for SCM_OBJ_COMPACT? */
             obj = (ScmObj)cell;
 

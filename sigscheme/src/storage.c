@@ -76,8 +76,21 @@ SCM_DEFINE_EXPORTED_VARS(storage);
 
 /* constants */
 SCM_DEFINE_EXPORTED_VARS(storage_fatty);
+
+/* constant substances */
+SCM_GLOBAL_VARS_BEGIN(static_storage_fatty);
+#define static
 static ScmCell null_cell, true_cell, false_cell, eof_cell;
 static ScmCell unbound_cell, undef_cell;
+#undef static
+SCM_GLOBAL_VARS_END(static_storage_fatty);
+#define null_cell    SCM_GLOBAL_VAR(static_storage_fatty, null_cell)
+#define true_cell    SCM_GLOBAL_VAR(static_storage_fatty, true_cell)
+#define false_cell   SCM_GLOBAL_VAR(static_storage_fatty, false_cell)
+#define eof_cell     SCM_GLOBAL_VAR(static_storage_fatty, eof_cell)
+#define unbound_cell SCM_GLOBAL_VAR(static_storage_fatty, unbound_cell)
+#define undef_cell   SCM_GLOBAL_VAR(static_storage_fatty, undef_cell)
+SCM_DEFINE_STATIC_VARS(static_storage_fatty);
 #endif
 
 static const ScmStorageConf default_storage_conf = {

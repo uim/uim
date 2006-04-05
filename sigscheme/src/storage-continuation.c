@@ -79,9 +79,19 @@ struct continuation_frame {
 /*=======================================
   Variable Declarations
 =======================================*/
-static volatile ScmObj current_dynamic_extent = NULL;
-static volatile ScmObj continuation_stack = NULL;
-static volatile ScmObj trace_stack = NULL;
+SCM_GLOBAL_VARS_BEGIN(static_continuation);
+#define static
+static volatile ScmObj current_dynamic_extent;
+static volatile ScmObj continuation_stack;
+static volatile ScmObj l_trace_stack;
+#undef static
+SCM_GLOBAL_VARS_END(static_continuation);
+#define current_dynamic_extent                                               \
+    SCM_GLOBAL_VAR(static_continuation, current_dynamic_extent)
+#define continuation_stack                                                   \
+    SCM_GLOBAL_VAR(static_continuation, continuation_stack)
+#define l_trace_stack SCM_GLOBAL_VAR(static_continuation, l_trace_stack)
+SCM_DEFINE_STATIC_VARS(static_continuation);
 
 /*=======================================
   File Local Function Declarations
@@ -110,7 +120,7 @@ scm_init_continuation(void)
     initialize_dynamic_extent();
     initialize_continuation_env();
 
-    scm_gc_protect_with_init((ScmObj *)&trace_stack, SCM_NULL);
+    scm_gc_protect_with_init((ScmObj *)&l_trace_stack, SCM_NULL);
 }
 
 SCM_EXPORT void
@@ -273,7 +283,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
     cont_frame.dyn_ext = current_dynamic_extent;
     cont_frame.ret_val = SCM_FALSE;
 #if SCM_DEBUG
-    cont_frame.trace_stack = trace_stack;
+    cont_frame.trace_stack = l_trace_stack;
 #endif
     cont = MAKE_CONTINUATION();
     CONTINUATION_SET_FRAME(cont, &cont_frame);
@@ -288,7 +298,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
          * continuation_stack_unwind().
          */
 #if SCM_DEBUG
-        trace_stack = cont_frame.trace_stack;
+        l_trace_stack = cont_frame.trace_stack;
 #endif
 
         enter_dynamic_extent(cont_frame.dyn_ext);
@@ -363,17 +373,17 @@ scm_push_trace_frame(ScmObj obj, ScmObj env)
     ScmObj frame;
 
     frame = MAKE_TRACE_FRAME(obj, env);
-    trace_stack = CONS(frame, trace_stack);
+    l_trace_stack = CONS(frame, l_trace_stack);
 }
 
 SCM_EXPORT void
 scm_pop_trace_frame(void)
 {
-    trace_stack = CDR(trace_stack);
+    l_trace_stack = CDR(l_trace_stack);
 }
 
 SCM_EXPORT ScmObj
 scm_trace_stack(void)
 {
-    return trace_stack;
+    return l_trace_stack;
 }

@@ -75,6 +75,8 @@
 =======================================*/
 #include "functable-srfi34.c"
 
+SCM_GLOBAL_VARS_BEGIN(static_srfi34);
+#define static
 static ScmObj current_exception_handlers;
 
 /* error messages */
@@ -92,7 +94,40 @@ static ScmObj syn_set_cur_handlers, proc_fallback_handler;
 static ScmObj proc_with_exception_handlers;
 static ScmObj syn_guard_internal, syn_guard_handler, syn_guard_handler_body;
 static ScmObj syn_guard_body;
+#undef static
+SCM_GLOBAL_VARS_END(static_srfi34);
+#define current_exception_handlers                                           \
+    SCM_GLOBAL_VAR(static_srfi34, current_exception_handlers)
+#define errmsg_unhandled_exception                                           \
+    SCM_GLOBAL_VAR(static_srfi34, errmsg_unhandled_exception)
+#define errmsg_handler_returned                                              \
+    SCM_GLOBAL_VAR(static_srfi34, errmsg_handler_returned)
+#define errmsg_fallback_exhausted                                            \
+    SCM_GLOBAL_VAR(static_srfi34, errmsg_fallback_exhausted)
+#define sym_error             SCM_GLOBAL_VAR(static_srfi34, sym_error)
+#define sym_raise             SCM_GLOBAL_VAR(static_srfi34, sym_raise)
+#define sym_lex_env           SCM_GLOBAL_VAR(static_srfi34, sym_lex_env)
+#define sym_cond_catch        SCM_GLOBAL_VAR(static_srfi34, sym_cond_catch)
+#define sym_body              SCM_GLOBAL_VAR(static_srfi34, sym_body)
+#define sym_condition         SCM_GLOBAL_VAR(static_srfi34, sym_condition)
+#define sym_guard_k           SCM_GLOBAL_VAR(static_srfi34, sym_guard_k)
+#define sym_handler_k         SCM_GLOBAL_VAR(static_srfi34, sym_handler_k)
+#define syn_apply             SCM_GLOBAL_VAR(static_srfi34, syn_apply)
+#define proc_values           SCM_GLOBAL_VAR(static_srfi34, proc_values)
+#define syn_set_cur_handlers                                                 \
+    SCM_GLOBAL_VAR(static_srfi34, syn_set_cur_handlers)
+#define proc_fallback_handler                                                \
+    SCM_GLOBAL_VAR(static_srfi34, proc_fallback_handler)
+#define proc_with_exception_handlers                                         \
+    SCM_GLOBAL_VAR(static_srfi34, proc_with_exception_handlers)
+#define syn_guard_internal    SCM_GLOBAL_VAR(static_srfi34, syn_guard_internal)
+#define syn_guard_handler     SCM_GLOBAL_VAR(static_srfi34, syn_guard_handler)
+#define syn_guard_handler_body                                               \
+    SCM_GLOBAL_VAR(static_srfi34, syn_guard_handler_body)
+#define syn_guard_body        SCM_GLOBAL_VAR(static_srfi34, syn_guard_body)
+SCM_DEFINE_STATIC_VARS(static_srfi34);
 
+/* FIXME: support non-static (i.e. dynamically allocated) global vars */
 static ScmObj *const srfi34_global_var_list[] = {
     &current_exception_handlers,
     &errmsg_unhandled_exception, &errmsg_handler_returned,

@@ -185,8 +185,15 @@ struct format_args {
 /*=======================================
   Variable Declarations
 =======================================*/
+SCM_GLOBAL_VARS_BEGIN(static_format);
+#define static
 static scm_bool format_initialized;
 static ScmObj sym_pretty_print;
+#undef static
+SCM_GLOBAL_VARS_END(static_format);
+#define format_initialized SCM_GLOBAL_VAR(static_format, format_initialized)
+#define sym_pretty_print   SCM_GLOBAL_VAR(static_format, sym_pretty_print)
+SCM_DEFINE_STATIC_VARS(static_format);
 
 /*=======================================
   File Local Function Declarations

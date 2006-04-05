@@ -78,11 +78,20 @@ static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
 /*=======================================
   Variable Declarations
 =======================================*/
+SCM_GLOBAL_VARS_BEGIN(static_scmport_sbchar);
+#define static
+static ScmCharCodec *sbc_codec;
+
 static ScmCharPortVTbl ScmSingleByteCharPort_vtbl;
+#undef static
+SCM_GLOBAL_VARS_END(static_scmport_sbchar);
+#define sbc_codec SCM_GLOBAL_VAR(static_scmport_sbchar, sbc_codec)
+#define ScmSingleByteCharPort_vtbl                                           \
+    SCM_GLOBAL_VAR(static_scmport_sbchar, ScmSingleByteCharPort_vtbl)
+SCM_DEFINE_STATIC_VARS(static_scmport_sbchar);
+
 SCM_EXPORT const ScmCharPortVTbl *ScmSingleByteCharPort_vptr
     = &ScmSingleByteCharPort_vtbl;
-
-static ScmCharCodec *sbc_codec;
 
 /*=======================================
   Function Implementations

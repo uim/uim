@@ -86,11 +86,21 @@ static const int sscm_debug_mask_tbl[] = {
     SCM_DBG_SIOD_V4,
     SCM_DBG_SIOD_V5
 };
+
+SCM_GLOBAL_VARS_BEGIN(static_siod);
+#define static
 static long sscm_verbose_level;
 
 static ScmObj null_port;
 static ScmObj saved_output_port;
 static ScmObj saved_error_port;
+#undef static
+SCM_GLOBAL_VARS_END(static_siod);
+#define sscm_verbose_level SCM_GLOBAL_VAR(static_siod, sscm_verbose_level)
+#define null_port          SCM_GLOBAL_VAR(static_siod, null_port)
+#define saved_output_port  SCM_GLOBAL_VAR(static_siod, saved_output_port)
+#define saved_error_port   SCM_GLOBAL_VAR(static_siod, saved_error_port)
+SCM_DEFINE_STATIC_VARS(static_siod);
 
 /*=======================================
   File Local Function Declarations
@@ -189,7 +199,7 @@ scm_p_the_environment(ScmEvalState *eval_state)
 SCM_EXPORT ScmObj
 scm_p_closure_code(ScmObj closure)
 {
-    ScmObj exp, body, sym_begin;
+    ScmObj exp, body;
     DECLARE_FUNCTION("%%closure-code", procedure_fixed_1);
 
     ENSURE_CLOSURE(closure);
@@ -198,8 +208,7 @@ scm_p_closure_code(ScmObj closure)
     if (NULLP(CDDR(exp))) {
         body = CADR(exp);
     } else {
-        sym_begin = scm_intern("begin");
-        body = CONS(sym_begin, CDR(exp));
+        body = CONS(scm_intern("begin"), CDR(exp));
     }
 
     return CONS(CAR(exp), body);

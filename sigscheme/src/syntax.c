@@ -61,10 +61,20 @@
 
 SCM_DEFINE_EXPORTED_VARS(syntax);
 
+SCM_GLOBAL_VARS_BEGIN(static_syntax);
+#define static
 static ScmObj sym_else, sym_yields;
 #if SCM_STRICT_DEFINE_PLACEMENT
 static ScmObj sym_define, sym_begin, syn_lambda;
-#endif
+#endif /* SCM_STRICT_DEFINE_PLACEMENT */
+#undef static
+SCM_GLOBAL_VARS_END(static_syntax);
+#define sym_else   SCM_GLOBAL_VAR(static_syntax, sym_else)
+#define sym_yields SCM_GLOBAL_VAR(static_syntax, sym_yields)
+#define sym_define SCM_GLOBAL_VAR(static_syntax, sym_define)
+#define sym_begin  SCM_GLOBAL_VAR(static_syntax, sym_begin)
+#define syn_lambda SCM_GLOBAL_VAR(static_syntax, syn_lambda)
+SCM_DEFINE_STATIC_VARS(static_syntax);
 
 /*=======================================
   File Local Function Declarations
