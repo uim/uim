@@ -52,6 +52,7 @@
 struct module_info {
     const char *name;
     void (*initializer)(void);
+    void (*finalizer)(void);
 };
 
 /*=======================================
@@ -71,58 +72,88 @@ SCM_DEFINE_STATIC_VARS(static_module);
 
 static const struct module_info module_info_table[] = {
 #if SCM_USE_SSCM_EXTENSIONS
-    {"sscm-ext", scm_initialize_sscm_extensions},
+    {"sscm-ext", scm_initialize_sscm_extensions, NULL},
 #endif
 #if SCM_USE_SRFI1
-    {"srfi-1", scm_initialize_srfi1},
+    {"srfi-1", scm_initialize_srfi1, NULL},
 #endif
 #if SCM_USE_SRFI2
-    {"srfi-2", scm_initialize_srfi2},
+    {"srfi-2", scm_initialize_srfi2, NULL},
 #endif
 #if SCM_USE_SRFI6
-    {"srfi-6", scm_initialize_srfi6},
+    {"srfi-6", scm_initialize_srfi6, NULL},
 #endif
 #if SCM_USE_SRFI8
-    {"srfi-8", scm_initialize_srfi8},
+    {"srfi-8", scm_initialize_srfi8, NULL},
 #endif
 #if SCM_USE_SRFI23
-    {"srfi-23", scm_initialize_srfi23},
+    {"srfi-23", scm_initialize_srfi23, NULL},
 #endif
 #if SCM_USE_SRFI28
-    {"srfi-28", scm_initialize_srfi28},
+    {"srfi-28", scm_initialize_srfi28, NULL},
 #endif
 #if SCM_USE_SRFI34
-    {"srfi-34", scm_initialize_srfi34},
+    {"srfi-34", scm_initialize_srfi34, NULL},
 #endif
 #if SCM_USE_SRFI38
-    {"srfi-38", scm_initialize_srfi38},
+    {"srfi-38", scm_initialize_srfi38, NULL},
 #endif
 #if SCM_USE_SRFI48
-    {"srfi-48", scm_initialize_srfi48},
+    {"srfi-48", scm_initialize_srfi48, NULL},
 #endif
 #if SCM_USE_SRFI60
-    {"srfi-60", scm_initialize_srfi60},
+    {"srfi-60", scm_initialize_srfi60, NULL},
 #endif
 #if SCM_COMPAT_SIOD
-    {"siod", scm_initialize_siod},
+    {"siod", scm_initialize_siod, NULL},
 #endif
-    {NULL, NULL}
+    {NULL, NULL, NULL}
 };
 
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static const struct module_info *lookup_module_info(const char *feature);
 static scm_bool scm_use_internal(const char *feature);
 
 /*=======================================
   Function Implementations
 =======================================*/
+static const struct module_info *
+lookup_module_info(const char *feature)
+{
+    const struct module_info *mod;
+
+    for (mod = module_info_table; mod->name; mod++) {
+        if (strcmp(feature, mod->name) == 0)
+            return mod;
+    }
+
+    return NULL;
+}
+
 SCM_EXPORT void
 scm_init_module(void)
 {
     SCM_GLOBAL_VARS_INIT(static_module);
 
     scm_gc_protect_with_init(&l_features, SCM_NULL);
+}
+
+SCM_EXPORT void
+scm_fin_module(void)
+{
+#if 0
+    const struct module_info *mod;
+    ScmObj feature;
+
+    /* FIXME: possible crash by a bogus provided string */
+    FOR_EACH (feature, features) {
+        ENSURE_STRING(feature);
+        if (mod = lookup_module_info(STRING_STR(feature)) && mod->finalizer)
+            (*mod->finalizer)();
+    }
+#endif
 }
 
 SCM_EXPORT void
@@ -192,16 +223,13 @@ scm_s_use(ScmObj feature, ScmObj env)
     ENSURE_SYMBOL(feature);
 
     c_feature_str = SCM_SYMBOL_NAME(feature);
-
-    for (mod = module_info_table; mod->name; mod++) {
-        if (strcmp(c_feature_str, mod->name) == 0) {
-            feature_str = CONST_STRING(c_feature_str);
-            if (!scm_providedp(feature_str)) {
-                (*mod->initializer)();
-                scm_provide(feature_str);
-            }
-            return SCM_TRUE;
+    if (mod = lookup_module_info(c_feature_str)) {
+        feature_str = CONST_STRING(c_feature_str);
+        if (!scm_providedp(feature_str)) {
+            (*mod->initializer)();
+            scm_provide(feature_str);
         }
+        return SCM_TRUE;
     }
 
     return SCM_FALSE;

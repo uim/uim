@@ -654,6 +654,7 @@ SCM_EXPORT void scm_init_load(void);
 
 /* module.c */
 SCM_EXPORT void scm_init_module(void);
+SCM_EXPORT void scm_fin_module(void);
 
 /* sigscheme.c */
 SCM_EXPORT char **scm_interpret_argv(char **argv);
