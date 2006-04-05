@@ -37,7 +37,9 @@
 /*=======================================
   System Include
 =======================================*/
+#if !SCM_USE_MULTIBYTE_CHAR
 #include <string.h>
+#endif
 #include <stdlib.h>
 
 /*=======================================
