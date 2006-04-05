@@ -74,10 +74,10 @@
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_load);
 #define static
-static const char *scm_lib_path;
+static const char *l_scm_lib_path;
 #undef static
 SCM_GLOBAL_VARS_END(static_load);
-#define scm_lib_path SCM_GLOBAL_VAR(static_load, scm_lib_path)
+#define l_scm_lib_path SCM_GLOBAL_VAR(static_load, l_scm_lib_path)
 SCM_DEFINE_STATIC_VARS(static_load);
 
 /*=======================================
@@ -107,7 +107,7 @@ scm_set_lib_path(const char *path)
     if (!ABSOLUTE_PATHP(path))
         ERR("library path must be absolute but got: ~S", path);
 
-    scm_lib_path = path;
+    l_scm_lib_path = path;
 }
 
 /* SigScheme specific procedure (SIOD compatible) */
@@ -116,7 +116,7 @@ scm_p_load_path(void)
 {
     DECLARE_FUNCTION("load-path", procedure_fixed_0);
 
-    return CONST_STRING(scm_lib_path);
+    return CONST_STRING(l_scm_lib_path);
 }
 
 /*===========================================================================
@@ -191,14 +191,14 @@ find_path(const char *filename)
     if (file_existsp(filename))
         return scm_strdup(filename);
 
-    /* try under scm_lib_path */
-    if (scm_lib_path) {
-        lib_path_len = (scm_lib_path) ? strlen(scm_lib_path) : 0;
+    /* try under l_scm_lib_path */
+    if (l_scm_lib_path) {
+        lib_path_len = (l_scm_lib_path) ? strlen(l_scm_lib_path) : 0;
         filename_len = strlen(filename);
         path_len = lib_path_len + sizeof((char)'/') + filename_len + sizeof("");
 
         path = scm_malloc(path_len);
-        sprintf(path, "%s/%s", scm_lib_path, filename);
+        sprintf(path, "%s/%s", l_scm_lib_path, filename);
         if (file_existsp(path))
             return path;
         free(path);

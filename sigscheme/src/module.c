@@ -63,10 +63,10 @@ struct module_info {
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_module);
 #define static
-static ScmObj features;
+static ScmObj l_features;
 #undef static
 SCM_GLOBAL_VARS_END(static_module);
-#define features SCM_GLOBAL_VAR(static_module, features)
+#define l_features SCM_GLOBAL_VAR(static_module, l_features)
 SCM_DEFINE_STATIC_VARS(static_module);
 
 static const struct module_info module_info_table[] = {
@@ -120,19 +120,19 @@ static scm_bool scm_use_internal(const char *feature);
 SCM_EXPORT void
 scm_init_module(void)
 {
-    scm_gc_protect_with_init(&features, SCM_NULL);
+    scm_gc_protect_with_init(&l_features, SCM_NULL);
 }
 
 SCM_EXPORT void
 scm_provide(ScmObj feature)
 {
-    features = CONS(feature, features);
+    l_features = CONS(feature, l_features);
 }
 
 SCM_EXPORT scm_bool
 scm_providedp(ScmObj feature)
 {
-    return NFALSEP(scm_p_member(feature, features));
+    return NFALSEP(scm_p_member(feature, l_features));
 }
 
 SCM_EXPORT scm_bool

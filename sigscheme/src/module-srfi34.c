@@ -77,69 +77,71 @@
 
 SCM_GLOBAL_VARS_BEGIN(static_srfi34);
 #define static
-static ScmObj current_exception_handlers;
+static ScmObj l_current_exception_handlers;
 
 /* error messages */
-static ScmObj errmsg_unhandled_exception, errmsg_handler_returned;
-static ScmObj errmsg_fallback_exhausted;
+static ScmObj l_errmsg_unhandled_exception, l_errmsg_handler_returned;
+static ScmObj l_errmsg_fallback_exhausted;
 
 /* symbols */
-static ScmObj sym_error, sym_raise;
-static ScmObj sym_lex_env, sym_cond_catch, sym_body;
-static ScmObj sym_condition, sym_guard_k, sym_handler_k;
+static ScmObj l_sym_error, l_sym_raise;
+static ScmObj l_sym_lex_env, l_sym_cond_catch, l_sym_body;
+static ScmObj l_sym_condition, l_sym_guard_k, l_sym_handler_k;
 
 /* procedures and syntaxes */
-static ScmObj syn_apply, proc_values;
-static ScmObj syn_set_cur_handlers, proc_fallback_handler;
-static ScmObj proc_with_exception_handlers;
-static ScmObj syn_guard_internal, syn_guard_handler, syn_guard_handler_body;
-static ScmObj syn_guard_body;
+static ScmObj l_syn_apply, l_proc_values;
+static ScmObj l_syn_set_cur_handlers, l_proc_fallback_handler;
+static ScmObj l_proc_with_exception_handlers;
+static ScmObj l_syn_guard_internal, l_syn_guard_handler, l_syn_guard_handler_body;
+static ScmObj l_syn_guard_body;
 #undef static
 SCM_GLOBAL_VARS_END(static_srfi34);
-#define current_exception_handlers                                           \
-    SCM_GLOBAL_VAR(static_srfi34, current_exception_handlers)
-#define errmsg_unhandled_exception                                           \
-    SCM_GLOBAL_VAR(static_srfi34, errmsg_unhandled_exception)
-#define errmsg_handler_returned                                              \
-    SCM_GLOBAL_VAR(static_srfi34, errmsg_handler_returned)
-#define errmsg_fallback_exhausted                                            \
-    SCM_GLOBAL_VAR(static_srfi34, errmsg_fallback_exhausted)
-#define sym_error             SCM_GLOBAL_VAR(static_srfi34, sym_error)
-#define sym_raise             SCM_GLOBAL_VAR(static_srfi34, sym_raise)
-#define sym_lex_env           SCM_GLOBAL_VAR(static_srfi34, sym_lex_env)
-#define sym_cond_catch        SCM_GLOBAL_VAR(static_srfi34, sym_cond_catch)
-#define sym_body              SCM_GLOBAL_VAR(static_srfi34, sym_body)
-#define sym_condition         SCM_GLOBAL_VAR(static_srfi34, sym_condition)
-#define sym_guard_k           SCM_GLOBAL_VAR(static_srfi34, sym_guard_k)
-#define sym_handler_k         SCM_GLOBAL_VAR(static_srfi34, sym_handler_k)
-#define syn_apply             SCM_GLOBAL_VAR(static_srfi34, syn_apply)
-#define proc_values           SCM_GLOBAL_VAR(static_srfi34, proc_values)
-#define syn_set_cur_handlers                                                 \
-    SCM_GLOBAL_VAR(static_srfi34, syn_set_cur_handlers)
-#define proc_fallback_handler                                                \
-    SCM_GLOBAL_VAR(static_srfi34, proc_fallback_handler)
-#define proc_with_exception_handlers                                         \
-    SCM_GLOBAL_VAR(static_srfi34, proc_with_exception_handlers)
-#define syn_guard_internal    SCM_GLOBAL_VAR(static_srfi34, syn_guard_internal)
-#define syn_guard_handler     SCM_GLOBAL_VAR(static_srfi34, syn_guard_handler)
-#define syn_guard_handler_body                                               \
-    SCM_GLOBAL_VAR(static_srfi34, syn_guard_handler_body)
-#define syn_guard_body        SCM_GLOBAL_VAR(static_srfi34, syn_guard_body)
+#define l_current_exception_handlers                                         \
+    SCM_GLOBAL_VAR(static_srfi34, l_current_exception_handlers)
+#define l_errmsg_unhandled_exception                                         \
+    SCM_GLOBAL_VAR(static_srfi34, l_errmsg_unhandled_exception)
+#define l_errmsg_handler_returned                                            \
+    SCM_GLOBAL_VAR(static_srfi34, l_errmsg_handler_returned)
+#define l_errmsg_fallback_exhausted                                          \
+    SCM_GLOBAL_VAR(static_srfi34, l_errmsg_fallback_exhausted)
+#define l_sym_error             SCM_GLOBAL_VAR(static_srfi34, l_sym_error)
+#define l_sym_raise             SCM_GLOBAL_VAR(static_srfi34, l_sym_raise)
+#define l_sym_lex_env           SCM_GLOBAL_VAR(static_srfi34, l_sym_lex_env)
+#define l_sym_cond_catch        SCM_GLOBAL_VAR(static_srfi34, l_sym_cond_catch)
+#define l_sym_body              SCM_GLOBAL_VAR(static_srfi34, l_sym_body)
+#define l_sym_condition         SCM_GLOBAL_VAR(static_srfi34, l_sym_condition)
+#define l_sym_guard_k           SCM_GLOBAL_VAR(static_srfi34, l_sym_guard_k)
+#define l_sym_handler_k         SCM_GLOBAL_VAR(static_srfi34, l_sym_handler_k)
+#define l_syn_apply             SCM_GLOBAL_VAR(static_srfi34, l_syn_apply)
+#define l_proc_values           SCM_GLOBAL_VAR(static_srfi34, l_proc_values)
+#define l_syn_set_cur_handlers                                               \
+    SCM_GLOBAL_VAR(static_srfi34, l_syn_set_cur_handlers)
+#define l_proc_fallback_handler                                              \
+    SCM_GLOBAL_VAR(static_srfi34, l_proc_fallback_handler)
+#define l_proc_with_exception_handlers                                       \
+    SCM_GLOBAL_VAR(static_srfi34, l_proc_with_exception_handlers)
+#define l_syn_guard_internal                                                 \
+    SCM_GLOBAL_VAR(static_srfi34, l_syn_guard_internal)
+#define l_syn_guard_handler                                                  \
+    SCM_GLOBAL_VAR(static_srfi34, l_syn_guard_handler)
+#define l_syn_guard_handler_body                                             \
+    SCM_GLOBAL_VAR(static_srfi34, l_syn_guard_handler_body)
+#define l_syn_guard_body        SCM_GLOBAL_VAR(static_srfi34, l_syn_guard_body)
 SCM_DEFINE_STATIC_VARS(static_srfi34);
 
 /* FIXME: support non-static (i.e. dynamically allocated) global vars */
 static ScmObj *const srfi34_global_var_list[] = {
-    &current_exception_handlers,
-    &errmsg_unhandled_exception, &errmsg_handler_returned,
-    &errmsg_fallback_exhausted,
-    &sym_error, &sym_raise,
-    &sym_lex_env, &sym_cond_catch, &sym_body,
-    &sym_condition, &sym_guard_k, &sym_handler_k,
-    &syn_apply, &proc_values,
-    &syn_set_cur_handlers, &proc_fallback_handler,
-    &proc_with_exception_handlers,
-    &syn_guard_internal, &syn_guard_handler, &syn_guard_handler_body,
-    &syn_guard_body,
+    &l_current_exception_handlers,
+    &l_errmsg_unhandled_exception, &l_errmsg_handler_returned,
+    &l_errmsg_fallback_exhausted,
+    &l_sym_error, &l_sym_raise,
+    &l_sym_lex_env, &l_sym_cond_catch, &l_sym_body,
+    &l_sym_condition, &l_sym_guard_k, &l_sym_handler_k,
+    &l_syn_apply, &l_proc_values,
+    &l_syn_set_cur_handlers, &l_proc_fallback_handler,
+    &l_proc_with_exception_handlers,
+    &l_syn_guard_internal, &l_syn_guard_handler, &l_syn_guard_handler_body,
+    &l_syn_guard_body,
     NULL
 };
 
@@ -168,23 +170,23 @@ scm_initialize_srfi34(void)
     for (var = &srfi34_global_var_list[0]; *var; var++)
         scm_gc_protect_with_init(*var, SCM_FALSE);
 
-    errmsg_unhandled_exception = CONST_STRING(ERRMSG_UNHANDLED_EXCEPTION);
-    errmsg_handler_returned    = CONST_STRING(ERRMSG_HANDLER_RETURNED);
-    errmsg_fallback_exhausted  = CONST_STRING(ERRMSG_FALLBACK_EXHAUSTED);
+    l_errmsg_unhandled_exception = CONST_STRING(ERRMSG_UNHANDLED_EXCEPTION);
+    l_errmsg_handler_returned    = CONST_STRING(ERRMSG_HANDLER_RETURNED);
+    l_errmsg_fallback_exhausted  = CONST_STRING(ERRMSG_FALLBACK_EXHAUSTED);
 
-    sym_error      = scm_intern("error");
-    sym_raise      = scm_intern("raise");
+    l_sym_error      = scm_intern("error");
+    l_sym_raise      = scm_intern("raise");
 
-    sym_lex_env    = scm_intern("lex-env");
-    sym_cond_catch = scm_intern("cond-catch");
-    sym_body       = scm_intern("body");
-    sym_condition  = scm_intern("condition");
-    sym_guard_k    = scm_intern("guard-k");
-    sym_handler_k  = scm_intern("handler-k");
+    l_sym_lex_env    = scm_intern("lex-env");
+    l_sym_cond_catch = scm_intern("cond-catch");
+    l_sym_body       = scm_intern("body");
+    l_sym_condition  = scm_intern("condition");
+    l_sym_guard_k    = scm_intern("guard-k");
+    l_sym_handler_k  = scm_intern("handler-k");
 
     /* prepare procedures and syntaxes */
-    syn_apply   = scm_symbol_value(scm_intern("apply"),  SCM_INTERACTION_ENV);
-    proc_values = scm_symbol_value(scm_intern("values"), SCM_INTERACTION_ENV);
+    l_syn_apply   = scm_symbol_value(scm_intern("apply"),  SCM_INTERACTION_ENV);
+    l_proc_values = scm_symbol_value(scm_intern("values"), SCM_INTERACTION_ENV);
 
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &set_cur_handlers);
     SCM_ASSERT_FUNCTYPE(scm_procedure_fixed_2,      &with_exception_handlers);
@@ -193,30 +195,30 @@ scm_initialize_srfi34(void)
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &guard_handler_body);
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_tailrec_0, &guard_body);
 
-    syn_set_cur_handlers
+    l_syn_set_cur_handlers
         = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &set_cur_handlers);
-    proc_with_exception_handlers
+    l_proc_with_exception_handlers
         = MAKE_FUNC(SCM_PROCEDURE_FIXED_2,      &with_exception_handlers);
-    syn_guard_internal
+    l_syn_guard_internal
         = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &guard_internal);
-    syn_guard_handler
+    l_syn_guard_handler
         = MAKE_FUNC(SCM_SYNTAX_FIXED_TAILREC_1, &guard_handler);
-    syn_guard_handler_body
+    l_syn_guard_handler_body
         = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &guard_handler_body);
-    syn_guard_body
+    l_syn_guard_body
         = MAKE_FUNC(SCM_SYNTAX_FIXED_TAILREC_0, &guard_body);
 
 #if USE_WITH_SIGSCHEME_FATAL_ERROR
-    proc_fallback_handler
-        = scm_s_lambda(LIST_1(sym_condition),
+    l_proc_fallback_handler
+        = scm_s_lambda(LIST_1(l_sym_condition),
                        LIST_1(LIST_4(scm_intern("if"),
                                      LIST_2(scm_intern("%%error-object?"),
-                                            sym_condition),
+                                            l_sym_condition),
                                      LIST_2(scm_intern("%%fatal-error"),
-                                            sym_condition),
-                                     LIST_3(sym_error,
-                                            errmsg_unhandled_exception,
-                                            sym_condition))),
+                                            l_sym_condition),
+                                     LIST_3(l_sym_error,
+                                            l_errmsg_unhandled_exception,
+                                            l_sym_condition))),
                        SCM_INTERACTION_ENV);
 #else /* USE_WITH_SIGSCHEME_FATAL_ERROR */
     /*
@@ -224,17 +226,17 @@ scm_initialize_srfi34(void)
      * scm_p_srfi23_error(), to allow dynamic redifinition, and keep SRFI-23
      * implementation abstract.
      */
-    proc_fallback_handler
-        = scm_s_lambda(LIST_1(sym_condition),
-                       LIST_1(LIST_3(sym_error,
-                                     errmsg_unhandled_exception,
-                                     sym_condition)),
+    l_proc_fallback_handler
+        = scm_s_lambda(LIST_1(l_sym_condition),
+                       LIST_1(LIST_3(l_sym_error,
+                                     l_errmsg_unhandled_exception,
+                                     l_sym_condition)),
                        SCM_INTERACTION_ENV);
 #endif /* USE_WITH_SIGSCHEME_FATAL_ERROR */
 
     scm_register_funcs(scm_srfi34_func_info_table);
 
-    current_exception_handlers = LIST_1(proc_fallback_handler);
+    l_current_exception_handlers = LIST_1(l_proc_fallback_handler);
 }
 
 static ScmObj
@@ -242,7 +244,7 @@ set_cur_handlers(ScmObj handlers, ScmObj env)
 {
     DECLARE_PRIVATE_FUNCTION("with_exception_handlers", syntax_fixed_1);
 
-    current_exception_handlers = handlers;
+    l_current_exception_handlers = handlers;
     return SCM_UNDEF;
 }
 
@@ -252,12 +254,12 @@ with_exception_handlers(ScmObj new_handlers, ScmObj thunk)
     ScmObj prev_handlers, before, after;
     DECLARE_PRIVATE_FUNCTION("with_exception_handlers", procedure_fixed_2);
 
-    prev_handlers = current_exception_handlers;
+    prev_handlers = l_current_exception_handlers;
     before = scm_s_lambda(SCM_NULL,
-                          LIST_1(LIST_2(syn_set_cur_handlers, new_handlers)),
+                          LIST_1(LIST_2(l_syn_set_cur_handlers, new_handlers)),
                           SCM_INTERACTION_ENV);
     after = scm_s_lambda(SCM_NULL,
-                         LIST_1(LIST_2(syn_set_cur_handlers, prev_handlers)),
+                         LIST_1(LIST_2(l_syn_set_cur_handlers, prev_handlers)),
                          SCM_INTERACTION_ENV);
     return scm_dynamic_wind(before, thunk, after);
 }
@@ -273,7 +275,7 @@ scm_p_srfi34_with_exception_handler(ScmObj handler, ScmObj thunk)
     ENSURE_PROCEDURE(handler);
     ENSURE_PROCEDURE(thunk);
 
-    handlers = CONS(handler, current_exception_handlers);
+    handlers = CONS(handler, l_current_exception_handlers);
     return with_exception_handlers(handlers, thunk);
 }
 
@@ -285,23 +287,23 @@ scm_p_srfi34_raise(ScmObj obj)
     ScmObj handler, rest_handlers, thunk, err_obj;
     DECLARE_FUNCTION("raise", procedure_fixed_1);
 
-    if (NULLP(current_exception_handlers)) {
+    if (NULLP(l_current_exception_handlers)) {
         if (ERROBJP(obj))
             err_obj = obj;
         else
             err_obj
-                = scm_make_error_obj(errmsg_fallback_exhausted, LIST_1(obj));
+                = scm_make_error_obj(l_errmsg_fallback_exhausted, LIST_1(obj));
         scm_p_fatal_error(err_obj);
         /* NOTREACHED */
     }
 
-    handler = CAR(current_exception_handlers);
-    rest_handlers = CDR(current_exception_handlers);
+    handler = CAR(l_current_exception_handlers);
+    rest_handlers = CDR(l_current_exception_handlers);
     obj = LIST_2(SYM_QUOTE, obj);
     thunk = scm_s_lambda(SCM_NULL,
                          LIST_2(LIST_2(handler, obj),
-                                LIST_3(sym_error,
-                                       errmsg_handler_returned, obj)),
+                                LIST_3(l_sym_error,
+                                       l_errmsg_handler_returned, obj)),
                          SCM_INTERACTION_ENV);
     return with_exception_handlers(rest_handlers, thunk);
 }
@@ -319,11 +321,11 @@ scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body, ScmEvalState *eval_state)
 
     lex_env = eval_state->env;
     eval_state->env
-        = scm_extend_environment(LIST_3(sym_lex_env, sym_cond_catch, sym_body),
+        = scm_extend_environment(LIST_3(l_sym_lex_env, l_sym_cond_catch, l_sym_body),
                                  LIST_3(lex_env, cond_catch, body),
                                  lex_env);
-    proc_guard_int = scm_s_lambda(LIST_1(sym_guard_k),
-                                  LIST_1(LIST_2(syn_guard_internal, sym_guard_k)),
+    proc_guard_int = scm_s_lambda(LIST_1(l_sym_guard_k),
+                                  LIST_1(LIST_2(l_syn_guard_internal, l_sym_guard_k)),
                                   eval_state->env);
 
     ret = scm_call_with_current_continuation(proc_guard_int, eval_state);
@@ -338,11 +340,11 @@ guard_internal(ScmObj q_guard_k, ScmObj env)
     ScmObj handler, body;
     DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_1);
 
-    handler = scm_s_lambda(LIST_1(sym_condition),
-                           LIST_1(LIST_2(syn_guard_handler, sym_condition)),
+    handler = scm_s_lambda(LIST_1(l_sym_condition),
+                           LIST_1(LIST_2(l_syn_guard_handler, l_sym_condition)),
                            env);
     body = scm_s_lambda(SCM_NULL,
-                        LIST_1(LIST_1(syn_guard_body)),
+                        LIST_1(LIST_1(l_syn_guard_body)),
                         env);
 
     return scm_p_srfi34_with_exception_handler(handler, body);
@@ -355,8 +357,8 @@ guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
     DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_tailrec_1);
 
     handler_body
-        = scm_s_lambda(LIST_1(sym_handler_k),
-                       LIST_1(LIST_2(syn_guard_handler_body, sym_handler_k)),
+        = scm_s_lambda(LIST_1(l_sym_handler_k),
+                       LIST_1(LIST_2(l_syn_guard_handler_body, l_sym_handler_k)),
                        eval_state->env);
     ret = scm_call_with_current_continuation(handler_body, eval_state);
     ret = SCM_FINISH_TAILREC_CALL(ret, eval_state);
@@ -371,8 +373,8 @@ delay(ScmObj evaled_obj, ScmObj env)
 
     if (VALUEPACKETP(evaled_obj)) {
         vals = SCM_VALUEPACKET_VALUES(evaled_obj);
-        return scm_s_delay(LIST_3(syn_apply,
-                                  proc_values, LIST_2(SYM_QUOTE, vals)),
+        return scm_s_delay(LIST_3(l_syn_apply,
+                                  l_proc_values, LIST_2(SYM_QUOTE, vals)),
                            env);
     } else {
         return scm_s_delay(LIST_2(SYM_QUOTE, evaled_obj), env);
@@ -388,10 +390,10 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     ScmObj sym_var, clauses, caught, reraise;
     DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_1);
 
-    lex_env    = scm_symbol_value(sym_lex_env, env);
-    condition  = scm_symbol_value(sym_condition, env);
-    cond_catch = scm_symbol_value(sym_cond_catch, env);
-    guard_k    = scm_symbol_value(sym_guard_k, env);
+    lex_env    = scm_symbol_value(l_sym_lex_env, env);
+    condition  = scm_symbol_value(l_sym_condition, env);
+    cond_catch = scm_symbol_value(l_sym_cond_catch, env);
+    guard_k    = scm_symbol_value(l_sym_guard_k, env);
     handler_k  = EVAL(q_handler_k, env);
 
     /* eval cond-catch block */
@@ -409,7 +411,7 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
             caught = EVAL(caught, cond_env);
         scm_call_continuation(guard_k, delay(caught, cond_env));
     } else {
-        reraise = scm_s_delay(LIST_2(sym_raise, LIST_2(SYM_QUOTE, condition)),
+        reraise = scm_s_delay(LIST_2(l_sym_raise, LIST_2(SYM_QUOTE, condition)),
                               cond_env);
         scm_call_continuation(handler_k, reraise);
     }
@@ -424,9 +426,9 @@ guard_body(ScmEvalState *eval_state)
     ScmObj lex_env, guard_k, body, result;
     DECLARE_PRIVATE_FUNCTION("guard", syntax_fixed_tailrec_0);
 
-    lex_env = scm_symbol_value(sym_lex_env, eval_state->env);
-    guard_k = scm_symbol_value(sym_guard_k, eval_state->env);
-    body    = scm_symbol_value(sym_body,    eval_state->env);
+    lex_env = scm_symbol_value(l_sym_lex_env, eval_state->env);
+    guard_k = scm_symbol_value(l_sym_guard_k, eval_state->env);
+    body    = scm_symbol_value(l_sym_body,    eval_state->env);
 
     /* evaluate the body */
     SCM_EVAL_STATE_INIT1(lex_eval_state, lex_env);

@@ -101,15 +101,15 @@ static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_scmport_mbchar);
 #define static
-static ScmCharPortVTbl ScmMultiByteCharPort_vtbl;
+static ScmCharPortVTbl l_ScmMultiByteCharPort_vtbl;
 #undef static
 SCM_GLOBAL_VARS_END(static_scmport_mbchar);
-#define ScmMultiByteCharPort_vtbl                                            \
-        SCM_GLOBAL_VAR(static_scmport_mbchar, ScmMultiByteCharPort_vtbl)
+#define l_ScmMultiByteCharPort_vtbl                                          \
+        SCM_GLOBAL_VAR(static_scmport_mbchar, l_ScmMultiByteCharPort_vtbl)
 SCM_DEFINE_STATIC_VARS(static_scmport_mbchar);
 
 SCM_EXPORT const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr
-    = &ScmMultiByteCharPort_vtbl;
+    = &l_ScmMultiByteCharPort_vtbl;
 
 /*=======================================
   Function Implementations
@@ -119,9 +119,9 @@ scm_mbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
 
-    ScmMultiByteCharPort_vtbl = *ScmBaseCharPort_vptr;
+    l_ScmMultiByteCharPort_vtbl = *ScmBaseCharPort_vptr;
 
-    vptr = &ScmMultiByteCharPort_vtbl;
+    vptr = &l_ScmMultiByteCharPort_vtbl;
     vptr->dyn_cast    = (ScmCharPortMethod_dyn_cast)&mbcport_dyn_cast;
     vptr->codec       = (ScmCharPortMethod_codec)&mbcport_codec;
     vptr->inspect     = (ScmCharPortMethod_inspect)&mbcport_inspect;

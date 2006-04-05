@@ -82,16 +82,16 @@ SCM_DEFINE_EXPORTED_VARS(storage_fatty);
 /* constant substances */
 SCM_GLOBAL_VARS_BEGIN(static_storage_fatty);
 #define static
-static ScmCell null_cell, true_cell, false_cell, eof_cell;
-static ScmCell unbound_cell, undef_cell;
+static ScmCell l_null_cell, l_true_cell, l_false_cell, l_eof_cell;
+static ScmCell l_unbound_cell, l_undef_cell;
 #undef static
 SCM_GLOBAL_VARS_END(static_storage_fatty);
-#define null_cell    SCM_GLOBAL_VAR(static_storage_fatty, null_cell)
-#define true_cell    SCM_GLOBAL_VAR(static_storage_fatty, true_cell)
-#define false_cell   SCM_GLOBAL_VAR(static_storage_fatty, false_cell)
-#define eof_cell     SCM_GLOBAL_VAR(static_storage_fatty, eof_cell)
-#define unbound_cell SCM_GLOBAL_VAR(static_storage_fatty, unbound_cell)
-#define undef_cell   SCM_GLOBAL_VAR(static_storage_fatty, undef_cell)
+#define l_null_cell    SCM_GLOBAL_VAR(static_storage_fatty, l_null_cell)
+#define l_true_cell    SCM_GLOBAL_VAR(static_storage_fatty, l_true_cell)
+#define l_false_cell   SCM_GLOBAL_VAR(static_storage_fatty, l_false_cell)
+#define l_eof_cell     SCM_GLOBAL_VAR(static_storage_fatty, l_eof_cell)
+#define l_unbound_cell SCM_GLOBAL_VAR(static_storage_fatty, l_unbound_cell)
+#define l_undef_cell   SCM_GLOBAL_VAR(static_storage_fatty, l_undef_cell)
 SCM_DEFINE_STATIC_VARS(static_storage_fatty);
 #endif
 
@@ -160,12 +160,12 @@ static void
 initialize_special_constants(void)
 {
 #if !SCM_OBJ_COMPACT
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_null,    null_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_true,    true_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_false,   false_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_eof,     eof_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_unbound, unbound_cell);
-    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_undef,   undef_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_null,    l_null_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_true,    l_true_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_false,   l_false_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_eof,     l_eof_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_unbound, l_unbound_cell);
+    SCM_CONSTANT_BIND_SUBSTANCE(scm_const_undef,   l_undef_cell);
 #endif /* !SCM_OBJ_COMPACT */
 }
 

@@ -107,10 +107,10 @@ SCM_DEFINE_EXPORTED_VARS(write);
 SCM_GLOBAL_VARS_BEGIN(static_write);
 #define static
 /* misc info in priting shared structures */
-static write_ss_context *write_ss_ctx;
+static write_ss_context *l_write_ss_ctx;
 #undef static
 SCM_GLOBAL_VARS_END(static_write);
-#define write_ss_ctx SCM_GLOBAL_VAR(static_write, write_ss_ctx)
+#define l_write_ss_ctx SCM_GLOBAL_VAR(static_write, l_write_ss_ctx)
 SCM_DEFINE_STATIC_VARS(static_write);
 #endif /* SCM_USE_SRFI38 */
 
@@ -147,7 +147,7 @@ scm_init_writer(void)
     scm_write_ss_func = scm_write;
 
 #if SCM_USE_SRFI38
-    write_ss_ctx = NULL;
+    l_write_ss_ctx = NULL;
 #endif
 }
 
@@ -670,12 +670,12 @@ get_shared_index(ScmObj obj)
 {
     hash_entry *ent;
 
-    if (write_ss_ctx) {
-        ent = hash_lookup(&write_ss_ctx->seen, obj, 0, HASH_FIND);
+    if (l_write_ss_ctx) {
+        ent = hash_lookup(&l_write_ss_ctx->seen, obj, 0, HASH_FIND);
 
         if (ent) {
             if (ent->datum == DEFINING_DATUM) {
-                ent->datum = write_ss_ctx->next_index++;
+                ent->datum = l_write_ss_ctx->next_index++;
                 return - (ent->datum);
             }
             return ent->datum;
@@ -701,11 +701,11 @@ write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype)
 
     /* If no structure is shared, we do a normal write. */
     if (!HASH_EMPTY(ctx.seen))
-        write_ss_ctx = &ctx;
+        l_write_ss_ctx = &ctx;
 
     write_internal(port, obj, otype);
 
-    write_ss_ctx = NULL;
+    l_write_ss_ctx = NULL;
     free(ctx.seen.ents);
 }
 

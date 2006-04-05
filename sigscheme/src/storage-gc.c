@@ -93,31 +93,32 @@ ScmObj *(*volatile scm_gc_protect_stack)(ScmObj *)
 SCM_GLOBAL_VARS_BEGIN(static_gc);
 #define static
 static size_t l_heap_size, l_heap_alloc_threshold;
-static size_t n_heaps, l_n_heaps_max;
-static ScmObjHeap *heaps;
-static ScmCell *heaps_lowest, *heaps_highest;
-static ScmObj freelist;
+static size_t l_n_heaps, l_n_heaps_max;
+static ScmObjHeap *l_heaps;
+static ScmCell *l_heaps_lowest, *l_heaps_highest;
+static ScmObj l_freelist;
 
-static jmp_buf save_regs_buf;
-static ScmObj *stack_start_pointer;
+static jmp_buf l_save_regs_buf;
+static ScmObj *l_stack_start_pointer;
 
-static ScmObj **protected_vars;
-static size_t protected_vars_size, n_empty_protected_vars;
+static ScmObj **l_protected_vars;
+static size_t l_protected_vars_size, l_n_empty_protected_vars;
 #undef static
 SCM_GLOBAL_VARS_END(static_gc);
 #define l_heap_size            SCM_GLOBAL_VAR(static_gc, l_heap_size)
 #define l_heap_alloc_threshold SCM_GLOBAL_VAR(static_gc, l_heap_alloc_threshold)
-#define n_heaps                SCM_GLOBAL_VAR(static_gc, n_heaps)
+#define l_n_heaps              SCM_GLOBAL_VAR(static_gc, l_n_heaps)
 #define l_n_heaps_max          SCM_GLOBAL_VAR(static_gc, l_n_heaps_max)
-#define heaps                  SCM_GLOBAL_VAR(static_gc, heaps)
-#define heaps_lowest           SCM_GLOBAL_VAR(static_gc, heaps_lowest)
-#define heaps_highest          SCM_GLOBAL_VAR(static_gc, heaps_highest)
-#define freelist               SCM_GLOBAL_VAR(static_gc, freelist)
-#define save_regs_buf          SCM_GLOBAL_VAR(static_gc, save_regs_buf)
-#define stack_start_pointer    SCM_GLOBAL_VAR(static_gc, stack_start_pointer)
-#define protected_vars         SCM_GLOBAL_VAR(static_gc, protected_vars)
-#define protected_vars_size    SCM_GLOBAL_VAR(static_gc, protected_vars_size)
-#define n_empty_protected_vars SCM_GLOBAL_VAR(static_gc, n_empty_protected_vars)
+#define l_heaps                SCM_GLOBAL_VAR(static_gc, l_heaps)
+#define l_heaps_lowest         SCM_GLOBAL_VAR(static_gc, l_heaps_lowest)
+#define l_heaps_highest        SCM_GLOBAL_VAR(static_gc, l_heaps_highest)
+#define l_freelist             SCM_GLOBAL_VAR(static_gc, l_freelist)
+#define l_save_regs_buf        SCM_GLOBAL_VAR(static_gc, l_save_regs_buf)
+#define l_stack_start_pointer  SCM_GLOBAL_VAR(static_gc, l_stack_start_pointer)
+#define l_protected_vars       SCM_GLOBAL_VAR(static_gc, l_protected_vars)
+#define l_protected_vars_size  SCM_GLOBAL_VAR(static_gc, l_protected_vars_size)
+#define l_n_empty_protected_vars                                             \
+    SCM_GLOBAL_VAR(static_gc, l_n_empty_protected_vars)
 SCM_DEFINE_STATIC_VARS(static_gc);
 
 /*=======================================
@@ -153,10 +154,10 @@ static void finalize_protected_var(void);
 SCM_EXPORT void
 scm_init_gc(const ScmStorageConf *conf)
 {
-    stack_start_pointer = NULL;
-    protected_vars = NULL;
-    protected_vars_size = 0;
-    n_empty_protected_vars = 0;
+    l_stack_start_pointer = NULL;
+    l_protected_vars = NULL;
+    l_protected_vars_size = 0;
+    l_n_empty_protected_vars = 0;
     initialize_heap(conf);
 }
 
@@ -172,11 +173,11 @@ scm_alloc_cell(void)
 {
     ScmObj ret = SCM_FALSE;
 
-    if (NULLP(freelist))
+    if (NULLP(l_freelist))
         gc_mark_and_sweep();
 
-    ret = freelist;
-    freelist = SCM_FREECELL_NEXT(freelist);
+    ret = l_freelist;
+    l_freelist = SCM_FREECELL_NEXT(l_freelist);
 
     return ret;
 }
@@ -193,9 +194,9 @@ locate_protected_var(ScmObj *var)
 {
     ScmObj **slot;
 
-    if (protected_vars) {
-        for (slot = protected_vars;
-             slot < &protected_vars[protected_vars_size];
+    if (l_protected_vars) {
+        for (slot = l_protected_vars;
+             slot < &l_protected_vars[l_protected_vars_size];
              slot++)
         {
             if (*slot == var)
@@ -213,13 +214,13 @@ scm_gc_protect(ScmObj *var)
     ScmObj **slot;
     size_t new_size;
 
-    if (n_empty_protected_vars) {
+    if (l_n_empty_protected_vars) {
         slot = locate_protected_var(NULL);
-        n_empty_protected_vars--;
+        l_n_empty_protected_vars--;
     } else {
-        new_size = sizeof(ScmObj *) * (protected_vars_size + 1);
-        protected_vars = scm_realloc(protected_vars, new_size);
-        slot = &protected_vars[protected_vars_size++];
+        new_size = sizeof(ScmObj *) * (l_protected_vars_size + 1);
+        l_protected_vars = scm_realloc(l_protected_vars, new_size);
+        slot = &l_protected_vars[l_protected_vars_size++];
     }
     *slot = var;
 }
@@ -239,7 +240,7 @@ scm_gc_unprotect(ScmObj *var)
     slot = locate_protected_var(var);
     if (slot) {
         *slot = NULL;
-        n_empty_protected_vars++;
+        l_n_empty_protected_vars++;
     }
 }
 
@@ -259,10 +260,10 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
     if (!designated_stack_start)
         designated_stack_start = &stack_start;
 
-    if (!stack_start_pointer)
-        stack_start_pointer = designated_stack_start;
+    if (!l_stack_start_pointer)
+        l_stack_start_pointer = designated_stack_start;
 
-    SCM_ASSERT(SCMOBJ_ALIGNEDP(stack_start_pointer));
+    SCM_ASSERT(SCMOBJ_ALIGNEDP(l_stack_start_pointer));
 
     /* may intentionally be an invalidated local address */
     return designated_stack_start;
@@ -273,16 +274,16 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
 SCM_EXPORT void
 scm_gc_protect_stack(ScmObj *stack_start)
 {
-    if (!stack_start_pointer)
-        stack_start_pointer = stack_start;
+    if (!l_stack_start_pointer)
+        l_stack_start_pointer = stack_start;
 }
 #endif /* SCM_GCC4_READY_GC */
 
 SCM_EXPORT void
 scm_gc_unprotect_stack(ScmObj *stack_start)
 {
-    if (stack_start_pointer == stack_start)
-        stack_start_pointer = NULL;
+    if (l_stack_start_pointer == stack_start)
+        l_stack_start_pointer = NULL;
 }
 
 /*===========================================================================
@@ -296,10 +297,10 @@ initialize_heap(const ScmStorageConf *conf)
     l_heap_size            = conf->heap_size;
     l_heap_alloc_threshold = conf->heap_alloc_threshold;
     l_n_heaps_max          = conf->n_heaps_max;
-    n_heaps = 0;
-    heaps = NULL;
-    heaps_lowest = heaps_highest = NULL;
-    freelist = SCM_NULL;
+    l_n_heaps = 0;
+    l_heaps = NULL;
+    l_heaps_lowest = l_heaps_highest = NULL;
+    l_freelist = SCM_NULL;
 
     /* preallocate heaps */
     for (i = 0; i < conf->n_heaps_init; i++)
@@ -312,24 +313,24 @@ add_heap(void)
     ScmObjHeap heap;
     ScmCell *cell;
 
-    if (l_n_heaps_max <= n_heaps)
+    if (l_n_heaps_max <= l_n_heaps)
         scm_fatal_error("heap exhausted");
 
-    heaps = scm_realloc(heaps, sizeof(ScmObjHeap) * (n_heaps + 1));
+    l_heaps = scm_realloc(l_heaps, sizeof(ScmObjHeap) * (l_n_heaps + 1));
     heap = scm_malloc_aligned(sizeof(ScmCell) * l_heap_size);
-    heaps[n_heaps++] = heap;
+    l_heaps[l_n_heaps++] = heap;
 
     /* update the enclosure */
-    if (heaps_highest < &heap[l_heap_size])
-        heaps_highest = &heap[l_heap_size];
-    if (&heap[0] < heaps_lowest)
-        heaps_lowest = &heap[0];
+    if (l_heaps_highest < &heap[l_heap_size])
+        l_heaps_highest = &heap[l_heap_size];
+    if (&heap[0] < l_heaps_lowest)
+        l_heaps_lowest = &heap[0];
 
     /* link in order */
     for (cell = &heap[0]; cell < &heap[l_heap_size - 1]; cell++)
         SCM_RECLAIM_CELL(cell, cell + 1);
-    SCM_RECLAIM_CELL(cell, freelist);
-    freelist = heap;
+    SCM_RECLAIM_CELL(cell, l_freelist);
+    l_freelist = heap;
 }
 
 static void
@@ -339,13 +340,13 @@ finalize_heap(void)
     ScmCell *cell;
     ScmObjHeap heap;
 
-    for (i = 0; i < n_heaps; i++) {
-        heap = heaps[i];
+    for (i = 0; i < l_n_heaps; i++) {
+        heap = l_heaps[i];
         for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++)
             free_cell(cell);
         free(heap);
     }
-    free(heaps);
+    free(l_heaps);
 }
 
 static void
@@ -472,7 +473,7 @@ mark_loop:
 static void
 finalize_protected_var(void)
 {
-    free(protected_vars);
+    free(l_protected_vars);
 }
 
 /* The core part of Conservative GC */
@@ -498,11 +499,11 @@ within_heapp(ScmObj obj)
      * - ptr is pointing to outside the enclosure which contain all heaps
      */
     if (((uintptr_t)ptr % sizeof(ScmCell))
-        || (ptr < heaps_lowest || heaps_highest <= ptr))
+        || (ptr < l_heaps_lowest || l_heaps_highest <= ptr))
         return scm_false;
 
-    for (i = 0; i < n_heaps; i++) {
-        heap = heaps[i];
+    for (i = 0; i < l_n_heaps; i++) {
+        heap = l_heaps[i];
         if (heap && &heap[0] <= ptr && ptr < &heap[l_heap_size]) {
 #if SCM_OBJ_COMPACT
             /* Check the consistency between obj's tag and ptr->cdr's GC bit. */
@@ -521,9 +522,9 @@ gc_mark_protected_var(void)
 {
     ScmObj **slot;
 
-    if (protected_vars) {
-        for (slot = protected_vars;
-             slot < &protected_vars[protected_vars_size];
+    if (l_protected_vars) {
+        for (slot = l_protected_vars;
+             slot < &l_protected_vars[l_protected_vars_size];
              slot++)
         {
             if (*slot)
@@ -588,9 +589,9 @@ gc_mark(void)
 {
     ScmObj stack_end;
 
-    setjmp(save_regs_buf);
-    gc_mark_locations_n((ScmObj *)save_regs_buf, N_REGS_IN_JMP_BUF);
-    gc_mark_locations(stack_start_pointer, &stack_end);
+    setjmp(l_save_regs_buf);
+    gc_mark_locations_n((ScmObj *)l_save_regs_buf, N_REGS_IN_JMP_BUF);
+    gc_mark_locations(l_stack_start_pointer, &stack_end);
 
     /* performed after above two because of cache pollution */
     gc_mark_protected_var();
@@ -683,12 +684,12 @@ gc_sweep(void)
     ScmCell *cell;
     ScmObj obj, new_freelist;
 
-    new_freelist = freelist; /* freelist remains on manual GC */
+    new_freelist = l_freelist; /* l_freelist remains on manual GC */
 
     sum_collected = 0;
-    for (i = 0; i < n_heaps; i++) {
+    for (i = 0; i < l_n_heaps; i++) {
         n_collected = 0;
-        heap = heaps[i];
+        heap = l_heaps[i];
 
         for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++) {
             /* FIXME: is this safe for SCM_OBJ_COMPACT? */
@@ -707,7 +708,7 @@ gc_sweep(void)
         sum_collected += n_collected;
         CDBG((SCM_DBG_GC, "heap[~ZU] swept = ~ZU", i, n_collected));
     }
-    freelist = new_freelist;
+    l_freelist = new_freelist;
 
     return sum_collected;
 }

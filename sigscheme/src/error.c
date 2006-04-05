@@ -68,19 +68,19 @@ SCM_DEFINE_EXPORTED_VARS(error);
 
 SCM_GLOBAL_VARS_BEGIN(static_error);
 #define static
-static int debug_mask;
-static scm_bool srfi34_is_provided, fatal_error_looped;
-static void (*cb_fatal_error)(void);
+static int l_debug_mask;
+static scm_bool l_srfi34_is_provided, l_fatal_error_looped;
+static void (*l_cb_fatal_error)(void);
 
-static ScmObj l_err_obj_tag, str_srfi34;
+static ScmObj l_err_obj_tag, l_str_srfi34;
 #undef static
 SCM_GLOBAL_VARS_END(static_error);
-#define debug_mask         SCM_GLOBAL_VAR(static_error, debug_mask)
-#define srfi34_is_provided SCM_GLOBAL_VAR(static_error, srfi34_is_provided)
-#define fatal_error_looped SCM_GLOBAL_VAR(static_error, fatal_error_looped)
-#define cb_fatal_error     SCM_GLOBAL_VAR(static_error, cb_fatal_error)
+#define l_debug_mask         SCM_GLOBAL_VAR(static_error, l_debug_mask)
+#define l_srfi34_is_provided SCM_GLOBAL_VAR(static_error, l_srfi34_is_provided)
+#define l_fatal_error_looped SCM_GLOBAL_VAR(static_error, l_fatal_error_looped)
+#define l_cb_fatal_error     SCM_GLOBAL_VAR(static_error, l_cb_fatal_error)
 #define l_err_obj_tag      SCM_GLOBAL_VAR(static_error, l_err_obj_tag)
-#define str_srfi34         SCM_GLOBAL_VAR(static_error, str_srfi34)
+#define l_str_srfi34         SCM_GLOBAL_VAR(static_error, l_str_srfi34)
 SCM_DEFINE_STATIC_VARS(static_error);
 
 /*=======================================
@@ -102,11 +102,11 @@ scm_init_error(void)
     /* allocate a cons cell as unique ID */
     scm_gc_protect_with_init(&l_err_obj_tag, CONS(SCM_UNDEF, SCM_UNDEF));
 
-    scm_gc_protect_with_init(&str_srfi34, CONST_STRING("srfi-34"));
-    srfi34_is_provided = scm_false;
+    scm_gc_protect_with_init(&l_str_srfi34, CONST_STRING("srfi-34"));
+    l_srfi34_is_provided = scm_false;
 
-    cb_fatal_error = NULL;
-    fatal_error_looped = scm_false;
+    l_cb_fatal_error = NULL;
+    l_fatal_error_looped = scm_false;
 
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
     scm_err_funcname = NULL;
@@ -116,13 +116,13 @@ scm_init_error(void)
 SCM_EXPORT int
 scm_debug_categories(void)
 {
-    return debug_mask;
+    return l_debug_mask;
 }
 
 SCM_EXPORT void
 scm_set_debug_categories(int categories)
 {
-    debug_mask = categories;
+    l_debug_mask = categories;
 }
 
 SCM_EXPORT int
@@ -151,7 +151,7 @@ scm_categorized_debug(int category, const char *msg, ...)
     va_list va;
 
     va_start(va, msg);
-    if (debug_mask & category) {
+    if (l_debug_mask & category) {
         scm_vformat(scm_err, SCM_FMT_INTERNAL, msg, va);
         scm_port_newline(scm_err);
     }
@@ -164,7 +164,7 @@ scm_debug(const char *msg, ...)
     va_list va;
 
     va_start(va, msg);
-    if (debug_mask & SCM_DBG_DEVEL) {
+    if (l_debug_mask & SCM_DBG_DEVEL) {
         scm_vformat(scm_err, SCM_FMT_INTERNAL, msg, va);
         scm_port_newline(scm_err);
     }
@@ -175,11 +175,11 @@ scm_debug(const char *msg, ...)
 static scm_bool
 srfi34_providedp(void)
 {
-    if (!srfi34_is_provided) {
+    if (!l_srfi34_is_provided) {
         /* expensive */
-        srfi34_is_provided = NFALSEP(scm_p_providedp(str_srfi34));
+        l_srfi34_is_provided = NFALSEP(scm_p_providedp(l_str_srfi34));
     }
-    return srfi34_is_provided;
+    return l_srfi34_is_provided;
 }
 #endif
 
@@ -233,8 +233,8 @@ scm_fatal_error(const char *msg)
         fputs(SCM_NEWLINE_STR, stderr);
     }
 
-    if (cb_fatal_error)
-        (*cb_fatal_error)();
+    if (l_cb_fatal_error)
+        (*l_cb_fatal_error)();
 
     exit(EXIT_FAILURE);
     /* NOTREACHED */
@@ -243,7 +243,7 @@ scm_fatal_error(const char *msg)
 SCM_EXPORT void
 scm_set_fatal_error_callback(void (*cb)(void))
 {
-    cb_fatal_error = cb;
+    l_cb_fatal_error = cb;
 }
 
 SCM_EXPORT ScmObj
@@ -252,11 +252,11 @@ scm_p_fatal_error(ScmObj err_obj)
     const char *msg;
     DECLARE_FUNCTION("%%fatal-error", procedure_fixed_1);
 
-    if (fatal_error_looped) {
+    if (l_fatal_error_looped) {
         /* to avoid infinite loop by implicit assertion, use no SCM macros */
         msg = "looped fatal error";
     } else {
-        fatal_error_looped = scm_true;
+        l_fatal_error_looped = scm_true;
         ENSURE_ERROBJ(err_obj);
         scm_p_inspect_error(err_obj);
         msg = NULL;

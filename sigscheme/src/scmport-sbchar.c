@@ -80,18 +80,18 @@ static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_scmport_sbchar);
 #define static
-static ScmCharCodec *sbc_codec;
+static ScmCharCodec *l_sbc_codec;
 
-static ScmCharPortVTbl ScmSingleByteCharPort_vtbl;
+static ScmCharPortVTbl l_ScmSingleByteCharPort_vtbl;
 #undef static
 SCM_GLOBAL_VARS_END(static_scmport_sbchar);
-#define sbc_codec SCM_GLOBAL_VAR(static_scmport_sbchar, sbc_codec)
-#define ScmSingleByteCharPort_vtbl                                           \
-    SCM_GLOBAL_VAR(static_scmport_sbchar, ScmSingleByteCharPort_vtbl)
+#define l_sbc_codec SCM_GLOBAL_VAR(static_scmport_sbchar, l_sbc_codec)
+#define l_ScmSingleByteCharPort_vtbl                                         \
+    SCM_GLOBAL_VAR(static_scmport_sbchar, l_ScmSingleByteCharPort_vtbl)
 SCM_DEFINE_STATIC_VARS(static_scmport_sbchar);
 
 SCM_EXPORT const ScmCharPortVTbl *ScmSingleByteCharPort_vptr
-    = &ScmSingleByteCharPort_vtbl;
+    = &l_ScmSingleByteCharPort_vtbl;
 
 /*=======================================
   Function Implementations
@@ -101,15 +101,15 @@ scm_sbcport_init(void)
 {
     ScmCharPortVTbl *vptr;
 
-    ScmSingleByteCharPort_vtbl = *ScmBaseCharPort_vptr;
+    l_ScmSingleByteCharPort_vtbl = *ScmBaseCharPort_vptr;
 
-    vptr = &ScmSingleByteCharPort_vtbl;
+    vptr = &l_ScmSingleByteCharPort_vtbl;
     vptr->dyn_cast = (ScmCharPortMethod_dyn_cast)&sbcport_dyn_cast;
     vptr->codec    = (ScmCharPortMethod_codec)&sbcport_codec;
     vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 
-    sbc_codec = scm_mb_find_codec("ISO-8859-1");
+    l_sbc_codec = scm_mb_find_codec("ISO-8859-1");
 }
 
 SCM_EXPORT void
@@ -141,7 +141,7 @@ sbcport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
 static ScmCharCodec *
 sbcport_codec(ScmSingleByteCharPort *port)
 {
-    return sbc_codec;
+    return l_sbc_codec;
 }
 
 static char *

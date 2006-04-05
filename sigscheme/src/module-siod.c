@@ -89,17 +89,17 @@ static const int sscm_debug_mask_tbl[] = {
 
 SCM_GLOBAL_VARS_BEGIN(static_siod);
 #define static
-static long sscm_verbose_level;
+static long l_sscm_verbose_level;
 
-static ScmObj null_port;
-static ScmObj saved_output_port;
-static ScmObj saved_error_port;
+static ScmObj l_null_port;
+static ScmObj l_saved_output_port;
+static ScmObj l_saved_error_port;
 #undef static
 SCM_GLOBAL_VARS_END(static_siod);
-#define sscm_verbose_level SCM_GLOBAL_VAR(static_siod, sscm_verbose_level)
-#define null_port          SCM_GLOBAL_VAR(static_siod, null_port)
-#define saved_output_port  SCM_GLOBAL_VAR(static_siod, saved_output_port)
-#define saved_error_port   SCM_GLOBAL_VAR(static_siod, saved_error_port)
+#define l_sscm_verbose_level SCM_GLOBAL_VAR(static_siod, l_sscm_verbose_level)
+#define l_null_port          SCM_GLOBAL_VAR(static_siod, l_null_port)
+#define l_saved_output_port  SCM_GLOBAL_VAR(static_siod, l_saved_output_port)
+#define l_saved_error_port   SCM_GLOBAL_VAR(static_siod, l_saved_error_port)
 SCM_DEFINE_STATIC_VARS(static_siod);
 
 /*=======================================
@@ -121,18 +121,18 @@ scm_initialize_siod(void)
     scm_define_alias("bit-xor", "logxor");
     scm_define_alias("bit-not", "lognot");
 
-    scm_gc_protect_with_init(&null_port,         SCM_FALSE);
-    scm_gc_protect_with_init(&saved_output_port, SCM_FALSE);
-    scm_gc_protect_with_init(&saved_error_port,  SCM_FALSE);
+    scm_gc_protect_with_init(&l_null_port,         SCM_FALSE);
+    scm_gc_protect_with_init(&l_saved_output_port, SCM_FALSE);
+    scm_gc_protect_with_init(&l_saved_error_port,  SCM_FALSE);
 
     scm_nullport_init();
     cport = scm_make_char_port(ScmNullPort_new());
-    null_port = MAKE_PORT(cport, SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
+    l_null_port = MAKE_PORT(cport, SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT);
 
     /* To allow re-initialization of the interpreter, this variables must be
      * initialized by assignment. Initialized .data section does not work for
      * such situation.  -- YamaKen 2006-03-31 */
-    sscm_verbose_level = -1;
+    l_sscm_verbose_level = -1;
     scm_set_verbose_level(2);
 }
 
@@ -228,7 +228,7 @@ scm_p_verbose(ScmObj args)
         scm_set_verbose_level(SCM_INT_VALUE(level));
     }
 
-    return MAKE_INT(sscm_verbose_level);
+    return MAKE_INT(l_sscm_verbose_level);
 }
 
 SCM_EXPORT ScmObj
@@ -259,7 +259,7 @@ scm_s_undefine(ScmObj var, ScmObj env)
 SCM_EXPORT long
 scm_get_verbose_level(void)
 {
-    return sscm_verbose_level;
+    return l_sscm_verbose_level;
 }
 
 SCM_EXPORT void
@@ -270,10 +270,10 @@ scm_set_verbose_level(long level)
     if (level < 0)
         ERR("positive value required but got: ~LD", level);
 
-    if (sscm_verbose_level == level)
+    if (l_sscm_verbose_level == level)
         return;
 
-    sscm_verbose_level = level;
+    l_sscm_verbose_level = level;
 
     if (level > 5)
         level = 5;
@@ -284,17 +284,17 @@ scm_set_verbose_level(long level)
                                  | scm_predefined_debug_categories());
 
     if (level == 0) {
-        if (!EQ(scm_err, null_port))
-            saved_error_port = scm_err;
-        if (!EQ(scm_out, null_port))
-            saved_output_port = scm_out;
+        if (!EQ(scm_err, l_null_port))
+            l_saved_error_port = scm_err;
+        if (!EQ(scm_out, l_null_port))
+            l_saved_output_port = scm_out;
 
-        scm_err = null_port;
-        scm_out = null_port;
+        scm_err = l_null_port;
+        scm_out = l_null_port;
     } else {
-        if (EQ(scm_err, null_port))
-            scm_err = saved_error_port;
-        if (EQ(scm_out, null_port))
-            scm_out = saved_output_port;
+        if (EQ(scm_err, l_null_port))
+            scm_err = l_saved_error_port;
+        if (EQ(scm_out, l_null_port))
+            scm_out = l_saved_output_port;
     }
 }

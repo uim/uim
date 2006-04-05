@@ -80,15 +80,15 @@ struct continuation_frame {
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_continuation);
 #define static
-static volatile ScmObj current_dynamic_extent;
-static volatile ScmObj continuation_stack;
+static volatile ScmObj l_current_dynamic_extent;
+static volatile ScmObj l_continuation_stack;
 static volatile ScmObj l_trace_stack;
 #undef static
 SCM_GLOBAL_VARS_END(static_continuation);
-#define current_dynamic_extent                                               \
-    SCM_GLOBAL_VAR(static_continuation, current_dynamic_extent)
-#define continuation_stack                                                   \
-    SCM_GLOBAL_VAR(static_continuation, continuation_stack)
+#define l_current_dynamic_extent                                             \
+    SCM_GLOBAL_VAR(static_continuation, l_current_dynamic_extent)
+#define l_continuation_stack                                                 \
+    SCM_GLOBAL_VAR(static_continuation, l_continuation_stack)
 #define l_trace_stack SCM_GLOBAL_VAR(static_continuation, l_trace_stack)
 SCM_DEFINE_STATIC_VARS(static_continuation);
 
@@ -139,7 +139,7 @@ scm_finalize_continuation(void)
 static void
 initialize_dynamic_extent(void)
 {
-    scm_gc_protect_with_init((ScmObj *)&current_dynamic_extent, SCM_NULL);
+    scm_gc_protect_with_init((ScmObj *)&l_current_dynamic_extent, SCM_NULL);
 }
 
 static void
@@ -150,17 +150,17 @@ finalize_dynamic_extent(void)
 static void
 wind_onto_dynamic_extent(ScmObj before, ScmObj after)
 {
-    current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
-                                  current_dynamic_extent);
+    l_current_dynamic_extent = CONS(MAKE_DYNEXT_FRAME(before, after),
+                                  l_current_dynamic_extent);
 }
 
 static void
 unwind_dynamic_extent(void)
 {
-    if (NULLP(current_dynamic_extent))
+    if (NULLP(l_current_dynamic_extent))
         PLAIN_ERR("corrupted dynamic extent");
 
-    current_dynamic_extent = CDR(current_dynamic_extent);
+    l_current_dynamic_extent = CDR(l_current_dynamic_extent);
 }
 
 /* enter a dynamic extent of another continuation (dest) */
@@ -173,7 +173,7 @@ enter_dynamic_extent(ScmObj dest)
     retpath = SCM_NULL;
 
     for (unwound = dest; !NULLP(unwound); unwound = CDR(unwound)) {
-        if (EQ(unwound, current_dynamic_extent))
+        if (EQ(unwound, l_current_dynamic_extent))
             break;
         frame = CAR(unwound);
         retpath = CONS(frame, retpath);
@@ -190,12 +190,12 @@ exit_dynamic_extent(ScmObj dest)
     ScmObj frame;
 
     for (;
-         !NULLP(current_dynamic_extent);
-         current_dynamic_extent = CDR(current_dynamic_extent))
+         !NULLP(l_current_dynamic_extent);
+         l_current_dynamic_extent = CDR(l_current_dynamic_extent))
     {
-        if (EQ(current_dynamic_extent, dest))
+        if (EQ(l_current_dynamic_extent, dest))
             return;
-        frame = CAR(current_dynamic_extent);
+        frame = CAR(l_current_dynamic_extent);
         scm_call(DYNEXT_FRAME_AFTER(frame), SCM_NULL);
     }
 }
@@ -222,7 +222,7 @@ scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 static void
 initialize_continuation_env(void)
 {
-    scm_gc_protect_with_init((ScmObj *)&continuation_stack, SCM_NULL);
+    scm_gc_protect_with_init((ScmObj *)&l_continuation_stack, SCM_NULL);
 }
 
 static void
@@ -233,7 +233,7 @@ finalize_continuation_env(void)
 static void
 continuation_stack_push(ScmObj cont)
 {
-    continuation_stack = CONS(cont, continuation_stack);
+    l_continuation_stack = CONS(cont, l_continuation_stack);
 }
 
 static ScmObj
@@ -241,9 +241,9 @@ continuation_stack_pop(void)
 {
     ScmObj recentmost;
 
-    if (!NULLP(continuation_stack)) {
-        recentmost = CAR(continuation_stack);
-        continuation_stack = CDR(continuation_stack);
+    if (!NULLP(l_continuation_stack)) {
+        recentmost = CAR(l_continuation_stack);
+        l_continuation_stack = CDR(l_continuation_stack);
     } else {
         recentmost = SCM_FALSE;
     }
@@ -279,7 +279,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
     volatile ScmObj cont, ret;
     struct continuation_frame cont_frame;
 
-    cont_frame.dyn_ext = current_dynamic_extent;
+    cont_frame.dyn_ext = l_current_dynamic_extent;
     cont_frame.ret_val = SCM_FALSE;
 #if SCM_DEBUG
     cont_frame.trace_stack = l_trace_stack;

@@ -187,12 +187,12 @@ struct format_args {
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_format);
 #define static
-static scm_bool format_initialized;
-static ScmObj sym_pretty_print;
+static scm_bool l_format_initialized;
+static ScmObj l_sym_pretty_print;
 #undef static
 SCM_GLOBAL_VARS_END(static_format);
-#define format_initialized SCM_GLOBAL_VAR(static_format, format_initialized)
-#define sym_pretty_print   SCM_GLOBAL_VAR(static_format, sym_pretty_print)
+#define l_format_initialized SCM_GLOBAL_VAR(static_format, l_format_initialized)
+#define l_sym_pretty_print   SCM_GLOBAL_VAR(static_format, l_sym_pretty_print)
 SCM_DEFINE_STATIC_VARS(static_format);
 
 /*=======================================
@@ -226,10 +226,10 @@ static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
 SCM_EXPORT void
 scm_init_format(void)
 {
-    if (!format_initialized) {
-        scm_gc_protect_with_init(&sym_pretty_print,
+    if (!l_format_initialized) {
+        scm_gc_protect_with_init(&l_sym_pretty_print,
                                  scm_intern(PRETTY_PRINT_PROCEDURE_NAME));
-        format_initialized = scm_true;
+        l_format_initialized = scm_true;
     }
 }
 
@@ -249,7 +249,7 @@ scm_pretty_print(ScmObj port, ScmObj obj)
     DECLARE_INTERNAL_FUNCTION("scm_pretty_print");
 
     /* FIXME: search pretty-print in current env */
-    proc_pretty_print = SCM_SYMBOL_VCELL(sym_pretty_print);
+    proc_pretty_print = SCM_SYMBOL_VCELL(l_sym_pretty_print);
 
     if (!EQ(proc_pretty_print, SCM_UNBOUND)) {
         ENSURE_PROCEDURE(proc_pretty_print);

@@ -68,15 +68,15 @@
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_main);
 #define static
-static char sscm_lib_path[MAXPATHLEN];
+static char l_sscm_lib_path[MAXPATHLEN];
 
 #if SCM_COMPAT_SIOD
-static ScmObj feature_id_siod;
+static ScmObj l_feature_id_siod;
 #endif /* SCM_COMPAT_SIOD */
 #undef static
 SCM_GLOBAL_VARS_END(static_main);
-#define sscm_lib_path   SCM_GLOBAL_VAR(static_main, sscm_lib_path)
-#define feature_id_siod SCM_GLOBAL_VAR(static_main, feature_id_siod)
+#define l_sscm_lib_path   SCM_GLOBAL_VAR(static_main, l_sscm_lib_path)
+#define l_feature_id_siod SCM_GLOBAL_VAR(static_main, l_feature_id_siod)
 SCM_DEFINE_STATIC_VARS(static_main);
 
 /*=======================================
@@ -198,7 +198,7 @@ static scm_bool
 show_promptp(void)
 {
 #if SCM_COMPAT_SIOD
-    return (FALSEP(scm_p_providedp(feature_id_siod))
+    return (FALSEP(scm_p_providedp(l_feature_id_siod))
             || scm_get_verbose_level() >= 2);
 #else
     return scm_true;
@@ -226,16 +226,16 @@ main(int argc, char **argv)
      * - add library path specifying way for users
      * - support non-UNIX platforms
      */
-    if (!getcwd(sscm_lib_path, MAXPATHLEN))
+    if (!getcwd(l_sscm_lib_path, MAXPATHLEN))
         return EXIT_FAILURE;
-    scm_set_lib_path(sscm_lib_path);
+    scm_set_lib_path(l_sscm_lib_path);
 
 #if SCM_USE_SRFI34
     scm_use("srfi-34");
 #endif
 
 #if SCM_COMPAT_SIOD
-    scm_gc_protect_with_init(&feature_id_siod, CONST_STRING(FEATURE_ID_SIOD));
+    scm_gc_protect_with_init(&l_feature_id_siod, CONST_STRING(FEATURE_ID_SIOD));
 #endif
 
     if (filename) {

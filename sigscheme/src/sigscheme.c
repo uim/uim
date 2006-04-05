@@ -69,16 +69,16 @@
 
 SCM_GLOBAL_VARS_BEGIN(static_sigscheme);
 #define static
-static scm_bool scm_initialized;
+static scm_bool l_scm_initialized;
 
 #if SCM_COMPAT_SIOD
-static ScmObj scm_return_value_cache;
+static ScmObj l_scm_return_value_cache;
 #endif /* SCM_COMPAT_SIOD */
 #undef static
 SCM_GLOBAL_VARS_END(static_sigscheme);
-#define scm_initialized SCM_GLOBAL_VAR(static_sigscheme, scm_initialized)
-#define scm_return_value_cache                                               \
-    SCM_GLOBAL_VAR(static_sigscheme, scm_return_value_cache)
+#define l_scm_initialized SCM_GLOBAL_VAR(static_sigscheme, l_scm_initialized)
+#define l_scm_return_value_cache                                             \
+    SCM_GLOBAL_VAR(static_sigscheme, l_scm_return_value_cache)
 SCM_DEFINE_STATIC_VARS(static_sigscheme);
 
 /*=======================================
@@ -185,14 +185,14 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     if (SCM_PTR_BITS == 64)
         scm_provide(CONST_STRING("64bit-addr"));
 
-    scm_initialized = scm_true;
+    l_scm_initialized = scm_true;
 }
 
 SCM_EXPORT void
 scm_finalize()
 {
     scm_finalize_storage();
-    scm_initialized = scm_false;
+    l_scm_initialized = scm_false;
 }
 
 #if SCM_USE_EVAL_C_STRING
@@ -234,7 +234,7 @@ scm_eval_c_string_internal(const char *exp)
     ret = EVAL(ret, SCM_INTERACTION_ENV);
 
 #if SCM_COMPAT_SIOD
-    scm_return_value_cache = ret;
+    l_scm_return_value_cache = ret;
 #endif
 
     return ret;
@@ -245,12 +245,12 @@ scm_eval_c_string_internal(const char *exp)
 SCM_EXPORT ScmObj
 scm_return_value(void)
 {
-    return scm_return_value_cache;
+    return l_scm_return_value_cache;
 }
 #endif
 
 /* TODO: parse properly */
-/* don't access ScmObj if (!scm_initialized) */
+/* don't access ScmObj if (!l_scm_initialized) */
 SCM_EXPORT char **
 scm_interpret_argv(char **argv)
 {
@@ -272,7 +272,7 @@ scm_interpret_argv(char **argv)
         if (strcmp(*argp, "-C") == 0) {
             encoding = *++argp;
             if (!*argp) {
-                if (scm_initialized) {
+                if (l_scm_initialized) {
                     ERR("no encoding name specified");
                 } else {
                     fputs(SCM_ERR_HEADER "no encoding name specified\n",
@@ -288,7 +288,7 @@ scm_interpret_argv(char **argv)
 #if SCM_USE_MULTIBYTE_CHAR
         specified_codec = scm_mb_find_codec(encoding);
         if (!specified_codec) {
-            if (scm_initialized) {
+            if (l_scm_initialized) {
                 err_obj = CONST_STRING(encoding);
                 scm_free_argv(argv);
                 ERR_OBJ("unsupported encoding", err_obj);

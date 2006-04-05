@@ -63,17 +63,17 @@ SCM_DEFINE_EXPORTED_VARS(syntax);
 
 SCM_GLOBAL_VARS_BEGIN(static_syntax);
 #define static
-static ScmObj sym_else, sym_yields;
+static ScmObj l_sym_else, l_sym_yields;
 #if SCM_STRICT_DEFINE_PLACEMENT
-static ScmObj sym_define, sym_begin, syn_lambda;
+static ScmObj l_sym_define, l_sym_begin, l_syn_lambda;
 #endif /* SCM_STRICT_DEFINE_PLACEMENT */
 #undef static
 SCM_GLOBAL_VARS_END(static_syntax);
-#define sym_else   SCM_GLOBAL_VAR(static_syntax, sym_else)
-#define sym_yields SCM_GLOBAL_VAR(static_syntax, sym_yields)
-#define sym_define SCM_GLOBAL_VAR(static_syntax, sym_define)
-#define sym_begin  SCM_GLOBAL_VAR(static_syntax, sym_begin)
-#define syn_lambda SCM_GLOBAL_VAR(static_syntax, syn_lambda)
+#define l_sym_else   SCM_GLOBAL_VAR(static_syntax, l_sym_else)
+#define l_sym_yields SCM_GLOBAL_VAR(static_syntax, l_sym_yields)
+#define l_sym_define SCM_GLOBAL_VAR(static_syntax, l_sym_define)
+#define l_sym_begin  SCM_GLOBAL_VAR(static_syntax, l_sym_begin)
+#define l_syn_lambda SCM_GLOBAL_VAR(static_syntax, l_syn_lambda)
 SCM_DEFINE_STATIC_VARS(static_syntax);
 
 /*=======================================
@@ -102,12 +102,12 @@ scm_init_syntax(void)
     scm_sym_unquote          = scm_intern("unquote");
     scm_sym_unquote_splicing = scm_intern("unquote-splicing");
 
-    sym_else   = scm_intern("else");
-    sym_yields = scm_intern("=>");
+    l_sym_else   = scm_intern("else");
+    l_sym_yields = scm_intern("=>");
 #if SCM_STRICT_DEFINE_PLACEMENT
-    sym_define = scm_intern("define");
-    sym_begin  = scm_intern("begin");
-    scm_gc_protect_with_init(&syn_lambda,
+    l_sym_define = scm_intern("define");
+    l_sym_begin  = scm_intern("begin");
+    scm_gc_protect_with_init(&l_syn_lambda,
                              scm_symbol_value(scm_intern("lambda"),
                                               SCM_INTERACTION_ENV));
 #endif
@@ -545,7 +545,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
         test = CAR(clause);
         exps = CDR(clause);
 
-        if (EQ(test, sym_else)) {
+        if (EQ(test, l_sym_else)) {
             ASSERT_NO_MORE_ARG(args);
         } else {
             if (VALIDP(case_key)) {
@@ -563,7 +563,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
              * result.
              */
             if (NULLP(exps)) {
-                if (EQ(test, sym_else)) {
+                if (EQ(test, l_sym_else)) {
                     ERR_OBJ("bad clause: else with no expressions", clause);
                 } else {
                     eval_state->ret_type = SCM_VALTYPE_AS_IS;
@@ -587,8 +587,8 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
              * of the <test> and the value returned by this procedure is
              * returned by the cond expression.
              */
-            if (EQ(sym_yields, CAR(exps)) && CONSP(CDR(exps))
-                && !EQ(test, sym_else))
+            if (EQ(l_sym_yields, CAR(exps)) && CONSP(CDR(exps))
+                && !EQ(test, l_sym_else))
             {
                 if (!NULLP(CDDR(exps)))
                     ERR_OBJ("bad clause", clause);
@@ -721,12 +721,12 @@ filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
         if (!CONSP(exp))
             break;
         sym = POP(exp);
-        if (EQ(sym, sym_begin)) {
+        if (EQ(sym, l_sym_begin)) {
             begin_rest = filter_definitions(exp, formals, actuals, def_expq);
             if (CONSP(begin_rest))
-                return CONS(CONS(sym_begin, begin_rest), CDR(body));
+                return CONS(CONS(l_sym_begin, begin_rest), CDR(body));
             ASSERT_NO_MORE_ARG(begin_rest);
-        } else if (EQ(sym, sym_define)) {
+        } else if (EQ(sym, l_sym_define)) {
             var = MUST_POP_ARG(exp);
             if (SYMBOLP(var)) {
                 /* (define <variable> <expression>) */
@@ -741,7 +741,7 @@ filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
 
                 ENSURE_SYMBOL(sym);
                 var = sym;
-                exp = CONS(syn_lambda, CONS(lambda_formals, lambda_body));
+                exp = CONS(l_syn_lambda, CONS(lambda_formals, lambda_body));
             } else {
                 ERR_OBJ("syntax error", var);
             }
