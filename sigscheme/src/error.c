@@ -399,7 +399,7 @@ show_arg(ScmObj arg, ScmObj env)
      && !SCM_SYMBOL_BOUNDP(var))
 
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
-        scm_format(scm_err, SCM_FMT_INTERNAL, "  - [~a]: ", arg);
+        scm_format(scm_err, SCM_FMT_RAW_C, "  - [~S]: ", SCM_SYMBOL_NAME(arg));
         SCM_WRITE_SS(scm_err, scm_symbol_value(arg, env));
         scm_port_newline(scm_err);
     }
