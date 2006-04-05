@@ -121,11 +121,13 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     SCM_GLOBAL_VARS_INIT(procedure);
     SCM_GLOBAL_VARS_INIT(static_sigscheme);
 
-    scm_set_debug_categories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
-                             | scm_predefined_debug_categories());
     scm_encoding_init();
     scm_init_storage(storage_conf);
+
     scm_init_error();
+    scm_set_debug_categories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
+                             | scm_predefined_debug_categories());
+
     scm_init_port();
 #if SCM_USE_WRITER
     scm_init_writer();
