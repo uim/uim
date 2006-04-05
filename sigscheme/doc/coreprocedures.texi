@@ -817,6 +817,34 @@ Returns (a) value(s) @var{proc} returns.
 @end example
 @end defun
 
+@defun map proc list1 list2 @dots{}
+[R5RS]
+Applies @var{proc} for each element(s) of given list(s),
+and returns a list of the results.
+
+@example
+(map cadr '((a b) (c d) (e f))) @result{} (a c e)
+(map (lambda (n) (* n 10))
+     '(1 2 3 4)) @result{} (10 20 30 40)
+@end example
+@end defun
+
+@defun for-each proc list1 list2 @dots{}
+[R5RS]
+Applies @var{proc} for each element(s) of given list(s),
+but the result(s) of @var{proc} are discarded.
+The return value of @code{for-each} is undefined.
+
+@example
+(for-each (lambda (x) (* 10 x))
+          '(1 2 3 4)) @result{} #<undef>
+(let ((v (make-vector 5)))
+     (for-each (lambda (i) (vector-set! v i (* i i)))
+               '(0 1 2 3 4))
+     v) @results{} #<0 1 4 9 16>
+@end example
+@end defun
+
 @c ----------------------------------------------------------------------
 @node Continuation
 @section Continuation
