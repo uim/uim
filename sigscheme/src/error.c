@@ -79,7 +79,7 @@ SCM_GLOBAL_VARS_END(static_error);
 #define l_srfi34_is_provided SCM_GLOBAL_VAR(static_error, l_srfi34_is_provided)
 #define l_fatal_error_looped SCM_GLOBAL_VAR(static_error, l_fatal_error_looped)
 #define l_cb_fatal_error     SCM_GLOBAL_VAR(static_error, l_cb_fatal_error)
-#define l_err_obj_tag      SCM_GLOBAL_VAR(static_error, l_err_obj_tag)
+#define l_err_obj_tag        SCM_GLOBAL_VAR(static_error, l_err_obj_tag)
 #define l_str_srfi34         SCM_GLOBAL_VAR(static_error, l_str_srfi34)
 SCM_DEFINE_STATIC_VARS(static_error);
 

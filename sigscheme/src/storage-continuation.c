@@ -89,7 +89,8 @@ SCM_GLOBAL_VARS_END(static_continuation);
     SCM_GLOBAL_VAR(static_continuation, l_current_dynamic_extent)
 #define l_continuation_stack                                                 \
     SCM_GLOBAL_VAR(static_continuation, l_continuation_stack)
-#define l_trace_stack SCM_GLOBAL_VAR(static_continuation, l_trace_stack)
+#define l_trace_stack                                                        \
+    SCM_GLOBAL_VAR(static_continuation, l_trace_stack)
 SCM_DEFINE_STATIC_VARS(static_continuation);
 
 /*=======================================
