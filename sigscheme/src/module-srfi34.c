@@ -75,6 +75,10 @@
 =======================================*/
 #include "functable-srfi34.c"
 
+#define N_GLOBAL_SCMOBJ                                                      \
+    (sizeof(SCM_GLOBAL_VARS_INSTANCE(static_srfi34)) / sizeof(ScmObj *))
+
+/* NOTE: ScmObjs must be aligned to be scanned and protected */
 SCM_GLOBAL_VARS_BEGIN(static_srfi34);
 #define static
 static ScmObj l_current_exception_handlers;
@@ -129,22 +133,6 @@ SCM_GLOBAL_VARS_END(static_srfi34);
 #define l_syn_guard_body        SCM_GLOBAL_VAR(static_srfi34, l_syn_guard_body)
 SCM_DEFINE_STATIC_VARS(static_srfi34);
 
-/* FIXME: support non-static (i.e. dynamically allocated) global vars */
-static ScmObj *const srfi34_global_var_list[] = {
-    &l_current_exception_handlers,
-    &l_errmsg_unhandled_exception, &l_errmsg_handler_returned,
-    &l_errmsg_fallback_exhausted,
-    &l_sym_error, &l_sym_raise,
-    &l_sym_lex_env, &l_sym_cond_catch, &l_sym_body,
-    &l_sym_condition, &l_sym_guard_k, &l_sym_handler_k,
-    &l_syn_apply, &l_proc_values,
-    &l_syn_set_cur_handlers, &l_proc_fallback_handler,
-    &l_proc_with_exception_handlers,
-    &l_syn_guard_internal, &l_syn_guard_handler, &l_syn_guard_handler_body,
-    &l_syn_guard_body,
-    NULL
-};
-
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -162,13 +150,18 @@ static ScmObj guard_body(ScmEvalState *eval_state);
 SCM_EXPORT void
 scm_initialize_srfi34(void)
 {
-    ScmObj *const *var;
+    ScmObj *vars, *var;
 
     scm_use("srfi-23");
 
-    /* protect global variables */
-    for (var = &srfi34_global_var_list[0]; *var; var++)
-        scm_gc_protect_with_init(*var, SCM_FALSE);
+    /* protect global variables: assumes that all ScmObj of the global vars
+     * instance is aligned */
+    for (vars = var = (ScmObj *)&SCM_GLOBAL_VARS_INSTANCE(static_srfi34);
+         var < &vars[N_GLOBAL_SCMOBJ];
+         var++)
+    {
+        scm_gc_protect_with_init(var, SCM_FALSE);
+    }
 
     l_errmsg_unhandled_exception = CONST_STRING(ERRMSG_UNHANDLED_EXCEPTION);
     l_errmsg_handler_returned    = CONST_STRING(ERRMSG_HANDLER_RETURNED);

@@ -90,8 +90,8 @@ extern "C" {
 #define SCM_DEFINE_STATIC_VARS(_namespace)
 #define SCM_GLOBAL_VARS_INIT(_namespace)
 
-#define SCM_GLOBAL_VAR(_namespace, _var_name)                                \
-    (SCM_AGGREGATED_GLOBAL_VARS_INSTANCE()._namespace._var_name)
+#define SCM_GLOBAL_VARS_INSTANCE(_namespace)                                 \
+    (SCM_AGGREGATED_GLOBAL_VARS_INSTANCE()._namespace)
 
 #else /* SCM_WRITABLE_STATICLESS_PLATFORM */
 
@@ -107,8 +107,8 @@ extern "C" {
     (memset(&scm_v_instance_##_namespace, 0,                                 \
             sizeof(scm_v_instance_##_namespace)))
 
-#define SCM_GLOBAL_VAR(_namespace, _var_name)                                \
-    (scm_v_instance_##_namespace._var_name)
+#define SCM_GLOBAL_VARS_INSTANCE(_namespace)                                 \
+    (scm_v_instance_##_namespace)
 #endif /* SCM_WRITABLE_STATICLESS_PLATFORM */
 
 #define SCM_GLOBAL_VARS_BEGIN(_namespace)                                    \
@@ -116,6 +116,9 @@ extern "C" {
     SCM_GLOBAL_STRUCT_WARNING_SUPPRESSOR
 #define SCM_GLOBAL_VARS_END(_namespace)                                      \
     }
+
+#define SCM_GLOBAL_VAR(_namespace, _var_name)                                \
+    (SCM_GLOBAL_VARS_INSTANCE(_namespace)._var_name)
 
 #if SCM_WRITABLE_STATICLESS_PLATFORM
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)
