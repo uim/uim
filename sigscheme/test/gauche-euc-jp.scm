@@ -15,16 +15,18 @@
 
 (test "string->list" '(#\い #\ろ #\h #\に #\ほ #\へ #\t)
       (lambda () (string->list "いろhにほへt")))
-(test "string->list" '(#\ろ #\h #\に #\ほ #\へ #\t)
-      (lambda () (string->list "いろhにほへt" 1)))
-(test "string->list" '(#\ろ #\h #\に)
-      (lambda () (string->list "いろhにほへt" 1 4)))
+;; SRFI-13
+;;(test "string->list" '(#\ろ #\h #\に #\ほ #\へ #\t)
+;;      (lambda () (string->list "いろhにほへt" 1)))
+;;(test "string->list" '(#\ろ #\h #\に)
+;;      (lambda () (string->list "いろhにほへt" 1 4)))
 
 (test "string-copy" '("ぁゃνぃ" #f)
       (lambda () (let* ((x "ぁゃνぃ") (y (string-copy x)))
                    (list y (eq? x y)))))
-(test "string-copy" "ゃνぃ" (lambda () (string-copy "ぁゃνぃ" 1)))
-(test "string-copy" "ゃν"  (lambda () (string-copy "ぁゃνぃ" 1 3)))
+;; SRFI-13
+;;(test "string-copy" "ゃνぃ" (lambda () (string-copy "ぁゃνぃ" 1)))
+;;(test "string-copy" "ゃν"  (lambda () (string-copy "ぁゃνぃ" 1 3)))
 
 (test "string-ref" #\ろ (lambda () (string-ref "いろは" 1)))
 (define x (string-copy "いろはにほ"))
@@ -32,10 +34,11 @@
 
 (test "string-fill!" "のののののの"
       (lambda () (string-fill! (string-copy "000000") #\の)))
-(test "string-fill!" "000ののの"
-      (lambda () (string-fill! (string-copy "000000") #\の 3)))
-(test "string-fill!" "000のの0"
-      (lambda () (string-fill! (string-copy "000000") #\の 3 5)))
+;; SRFI-13
+;;(test "string-fill!" "000ののの"
+;;      (lambda () (string-fill! (string-copy "000000") #\の 3)))
+;;(test "string-fill!" "000のの0"
+;;      (lambda () (string-fill! (string-copy "000000") #\の 3 5)))
 
 ;(test "string-join" "ふぅ ばぁ ばず"
 ;      (lambda () (string-join '("ふぅ" "ばぁ" "ばず"))))
