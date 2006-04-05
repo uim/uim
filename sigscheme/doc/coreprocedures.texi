@@ -120,7 +120,7 @@ This procedure requires at least 2 arguments.
 @defunx @code{>}  x1 x2 x3 @dots{}
 @defunx @code{>=} x1 x2 x3 @dots{}
 [R5RS]
-Returns @code{#t} If all the real numbers @var{x} are
+Returns @code{#t} If all the numbers @var{x} are
 monotonically increasing,
 monotonically nondecreasing, monotonically decreasing, or monotonically
 nonincreasing, respectively.
@@ -129,7 +129,16 @@ nonincreasing, respectively.
 @defun max x1 x2 @dots{}
 @defunx min x1 x2 @dots{}
 [R5RS]
-Returns a maximum or minimum nuber in the given real numbers, respectively.
+Returns a maximum or minimum nuber in the given numbers, respectively.
+
+@example
+(max 1)      @result{} 1
+(max 1 2)    @result{} 2
+(max 1 2 -1) @result{} 2
+(min 1)      @result{} 1
+(min 1 2)    @result{} 1
+(min 1 2 -1) @result{} -1
+@end example
 @end defun
 
 @node Arithmetics
@@ -140,6 +149,17 @@ Returns a maximum or minimum nuber in the given real numbers, respectively.
 [R5RS]
 Returns the sum or the product of given numbers, respectively.
 If no argument is given, @code{(+)} yields 0 and @code{(*)} yields 1.
+
+@example
+(+)         @result{} 0
+(+ 1)       @result{} 1
+(+ 1 2)     @result{} 3
+(+ 1 2 3)   @result{} 6
+(*)         @result{} 1
+(* 1)       @result{} 1
+(* 1 2)     @result{} 2
+(* 1 2 3)   @result{} 6
+@end example
 @end defun
 
 @defun  @code{-} z @dots{}
@@ -155,10 +175,17 @@ If more than one number are given, returns:
 @end example
 respectively.
 
+But please notice, SigScheme supports only integer part of the numerical
+tower.
+
 @example
 (- 3)       @result{} -3
 (- 5 2)     @result{} 3
 (- 5 2 1)   @result{} 2
+(/ 1)       @result{} 1
+(/ 2)       @result{} 0
+(/ 1 2)     @result{} 0
+(/ 12 2 3)  @result{} 2
 @end example
 @end defun
 
@@ -211,11 +238,24 @@ If @var{radix} is omitted, 10 is assumed.
 [R5RS]
 Returns @code{#t} if and only if @var{obj} is @code{#f},
 and returns @code{#f} otherwise.
+
+@example
+(not #f) @result{} #t
+(not 1)  @result{} #f
+(not 'a) @result{} #f
+@end example
 @end defun
 
 @defun boolean? obj
 [R5RS]
 Returns @code{#t} if @var{obj} is a boolean value.
+
+@example
+(boolean? #t) @result{} #t
+(boolean? #f) @result{} #t
+(boolean? 1)  @result{} #f
+(boolean? 'a) @result{} #f
+@end example
 @end defun
 
 @c ----------------------------------------------------------------------
@@ -257,6 +297,7 @@ Constructs a pair of @var{obj1} and @var{obj2} and returns it.
 
 @example
 (cons 'a 'b) @result{} (a . b)
+(cons 1 'a)  @result{} (1 . a)
 @end example
 @end defun
 
@@ -288,6 +329,15 @@ Returns car and cdr of @var{pair}, respectively.
 @defunx set-cdr! pair obj
 [R5RS] 
 Modifies car and cdr of @var{pair}, by @var{obj}, respectively.
+
+@example
+(define a (cons 'a 'b))
+a @result{} (a . b)
+
+(set-car! a 'x)
+(set-cdr! a 'y)
+a @result{} (x . y)
+@end example
 @end defun
 
 @defun caar pair
@@ -321,20 +371,41 @@ Modifies car and cdr of @var{pair}, by @var{obj}, respectively.
 [R5RS]
 @code{caar} @equiv{} @code{(car (car x))},
 @code{cadr} @equiv{} @code{(car (cdr x))}, and so on.
+
+@example
+(caar  '((a . b) (c . d))) @result{} a
+(cdar  '((a . b) (c . d))) @result{} b
+(caadr '((a . b) (c . d))) @result{} c
+(cdadr '((a . b) (c . d))) @result{} d
+@end example
 @end defun
 
 @defun length list
 [R5RS]
 Returns the length of a proper list @var{list}.
 If @var{list} is a dotted list or a circular list, an error is signalled.
+@example
+(length '())      @result{} 0
+(length '(1))     @result{} 1
+(length '(1 2))   @result{} 2
+(length '(1 . 2)) @result{} Error
+@end example
 @end defun
 
 @defun list-tail list k
 [R5RS]
 Returns @var{k}-th cdr of @var{list}.
 @var{list} can be a proper, dotted or circular list.
+It is an error if @var{k} is negative or greater than the length of @var{list}
 
-TODO: describe the case k < 0
+@example
+(list-tail '(a b c) -1) @result{} Error
+(list-tail '(a b c) 0)  @result{} (a b c)
+(list-tail '(a b c) 1)  @result{} (b c)
+(list-tail '(a b c) 2)  @result{} (c)
+(list-tail '(a b c) 3)  @result{} ()
+(list-tail '(a b c) 4)  @result{} Error
+@end example
 @end defun
 
 @defun list-ref list k
@@ -342,13 +413,15 @@ TODO: describe the case k < 0
 Returns @var{k}-th element of @var{list}.
 @var{list} can be a proper, dotted or circular list.
 
-TODO: describe the case k < 0
-@end defun
+It is an error if @var{k} is negative or greater than or equal to  the
+length of @var{list}
 
-@defun last-pair list
-[R5RS]
-Returns the last pair of @var{list}.
-@var{list} can be a proper or dotted list.
+@example
+(list-ref '(a b) -1) @result{} Error
+(list-ref '(a b) 0)  @result{} a
+(list-ref '(a b) 1)  @result{} b
+(list-ref '(a b) 2)  @result{} Error
+@end example
 @end defun
 
 @node Other list procedures
@@ -742,7 +815,6 @@ Returns (a) value(s) @var{proc} returns.
 (apply list 'a 'b '(c d e)) @result{} (a b c d e)
 (apply + 1 2 '(3 4 5))      @result{} 15
 @end example
-
 @end defun
 
 @c ----------------------------------------------------------------------
@@ -805,6 +877,10 @@ the result.
 [R5RS]
 Evaluate @var{expr}.   @var{env} must be a value returned by
 the following procedures below.
+
+@example
+(eval '(+ 1 2 3) (interaction-environment)) @result{} 6
+@end example
 @end defun
 
 @defun null-environment version
@@ -835,6 +911,16 @@ argument of @code{eval}.
 [R5RS]
 Returns true if @var{obj} is a port, an input port and an output port,
 respectively.
+
+@example
+(port? current-input-port)         @result{} #t
+(input-port? current-input-port)   @result{} #t
+(output-port? current-input-port)  @result{} #f
+
+(port? current-output-port)        @result{} #t
+(input-port? current-output-port)  @result{} #f
+(output-port? current-output-port) @result{} #t
+@end example
 @end defun
 
 @defun current-input-port
@@ -853,8 +939,8 @@ Opens a file @var{filename} for input or output, and
 returns an input or output port associated with it, respectively.
 @end defun
 
-@defun call-with-input-file string proc string proc
-@defunx call-with-output-file string proc string proc
+@defun call-with-input-file string proc
+@defunx call-with-output-file string proc
 [R5RS]
 Opens a file specified by @var{string} for input/output,
 and call @var{proc} with one argument, the file port.  When @var{proc}
@@ -921,6 +1007,18 @@ Produces a printable representation of an object @var{obj} to the output port.
 whenever possible, so that the written output would be
 read back by @code{read}, whereas @code{display} produces more human-readable
 output.
+
+@example
+sscm> (write " ")
+" "#<undef>
+sscm> (display " ")
+ #<undef>
+sscm> (write "\n")
+"\n"#<undef>
+sscm> (display "\n")
+
+#<undef>
+@end example
 @end defun
 
 @defun write-char char &optional port
