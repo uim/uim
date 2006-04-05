@@ -98,6 +98,7 @@ functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
 
 sigscheme-combined.c: $(libsscm_la_SOURCES)
+	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@echo >>$@
 	@echo '#include "sigscheme-combined.h"' >>$@
@@ -117,6 +118,7 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 # Internal macros trimmer for combined-source version of SigScheme.
 # All source files are processed regardless of user configuration.
 sigscheme-combined-trim.h: $(DIST_SOURCES)
+	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@for src in $^ $>; do                   \
 	    case $$src in                       \
