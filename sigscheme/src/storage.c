@@ -56,14 +56,14 @@
 /*=======================================
   File Local Macro Declarations
 =======================================*/
-#if !SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_FATTY
 /* special constant initialization */
 #define SCM_CONSTANT_BIND_SUBSTANCE(obj, cell)                               \
     do {                                                                     \
         (obj) = &(cell);                                                     \
         SCM_ENTYPE((obj), ScmConstant);                                      \
     } while (/* CONSTCOND */ 0)
-#endif /* SCM_OBJ_COMPACT */
+#endif /* SCM_USE_STORAGE_FATTY */
 
 /*=======================================
   Variable Declarations
@@ -73,9 +73,7 @@
 SCM_DEFINE_EXPORTED_VARS(storage);
 #endif
 
-#if !SCM_OBJ_COMPACT
-/* SCM_OBJ_COMPACT MUST NOT refer these variables. Use SCM_NULL and so on. */
-
+#if SCM_USE_STORAGE_FATTY
 /* constants */
 SCM_DEFINE_EXPORTED_VARS(storage_fatty);
 
@@ -93,7 +91,7 @@ SCM_GLOBAL_VARS_END(static_storage_fatty);
 #define l_unbound_cell SCM_GLOBAL_VAR(static_storage_fatty, l_unbound_cell)
 #define l_undef_cell   SCM_GLOBAL_VAR(static_storage_fatty, l_undef_cell)
 SCM_DEFINE_STATIC_VARS(static_storage_fatty);
-#endif
+#endif /* SCM_USE_STORAGE_FATTY */
 
 static const ScmStorageConf default_storage_conf = {
     SCM_DEFAULT_HEAP_SIZE,
@@ -117,7 +115,7 @@ SCM_EXPORT void
 scm_init_storage(const ScmStorageConf *conf)
 {
     SCM_GLOBAL_VARS_INIT(storage);
-#if !SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_FATTY
     SCM_GLOBAL_VARS_INIT(storage_fatty);
     SCM_GLOBAL_VARS_INIT(static_storage_fatty);
 #endif
@@ -129,7 +127,7 @@ scm_init_storage(const ScmStorageConf *conf)
 
     scm_init_gc(conf);
 
-#if 0 && (SCM_COMPAT_SIOD_BUGS && !SCM_OBJ_COMPACT)
+#if 0 && (SCM_COMPAT_SIOD_BUGS && SCM_USE_STORAGE_FATTY)
     scm_gc_protect_with_init(&scm_const_true, MAKE_INT(1));
 #endif
 
@@ -165,14 +163,14 @@ scm_finalize_storage(void)
 static void
 initialize_special_constants(void)
 {
-#if !SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_FATTY
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_null,    l_null_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_true,    l_true_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_false,   l_false_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_eof,     l_eof_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_unbound, l_unbound_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_undef,   l_undef_cell);
-#endif /* !SCM_OBJ_COMPACT */
+#endif /* SCM_USE_STORAGE_FATTY */
 }
 
 /*===========================================================================
@@ -211,7 +209,7 @@ scm_make_int(scm_int_t val)
 {
     ScmObj obj;
 
-#if !SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_FATTY
     obj = scm_alloc_cell();
 #endif
     SCM_ENTYPE_INT(obj);
@@ -238,7 +236,7 @@ scm_make_char(scm_ichar_t val)
 {
     ScmObj obj;
 
-#if !SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_FATTY
     obj = scm_alloc_cell();
 #endif
     SCM_ENTYPE_CHAR(obj);
@@ -423,7 +421,7 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
 }
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 
-#if SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_COMPACT
 SCM_EXPORT enum ScmObjType
 scm_type(ScmObj obj)
 {
@@ -475,4 +473,4 @@ scm_type(ScmObj obj)
 
     /* NOTREACHED */
 }
-#endif /* SCM_OBJ_COMPACT */
+#endif /* SCM_USE_STORAGE_COMPACT */

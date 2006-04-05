@@ -363,7 +363,7 @@ gc_mark_and_sweep(void)
     }
 }
 
-#if SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_COMPACT
 static void
 mark_obj(ScmObj obj)
 {
@@ -413,7 +413,7 @@ mark_loop:
         break;
     }
 }
-#else /* SCM_OBJ_COMPACT */
+#else /* SCM_USE_STORAGE_COMPACT */
 static void
 mark_obj(ScmObj obj)
 {
@@ -466,7 +466,7 @@ mark_loop:
         break;
     }
 }
-#endif /* SCM_OBJ_COMPACT */
+#endif /* SCM_USE_STORAGE_COMPACT */
 
 static void
 finalize_protected_var(void)
@@ -482,15 +482,15 @@ within_heapp(ScmObj obj)
     ScmCell *heap, *ptr;
     size_t i;
 
-#if SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_COMPACT
     if (!SCM_CANBE_MARKED(obj))
         return scm_false;
     /* The pointer on the stack is 'tagged' to represent its types.
      * So we need to ignore the tag to get its real pointer value. */
     ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
-#else
+#else /* SCM_USE_STORAGE_COMPACT */
     ptr = obj;
-#endif
+#endif /* SCM_USE_STORAGE_COMPACT */
     /*
      * Reject by rough conditions:
      * - heaps must be aligned to sizeof(ScmCell)
@@ -503,11 +503,11 @@ within_heapp(ScmObj obj)
     for (i = 0; i < l_n_heaps; i++) {
         heap = l_heaps[i];
         if (heap && &heap[0] <= ptr && ptr < &heap[l_heap_size]) {
-#if SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_COMPACT
             /* Check the consistency between obj's tag and ptr->cdr's GC bit. */
             if (!SCM_HAS_VALID_CDR_GCBITP(obj, ptr->cdr))
                 return scm_false;
-#endif
+#endif /* SCM_USE_STORAGE_COMPACT */
             return scm_true;
         }
     }
@@ -600,7 +600,7 @@ gc_mark(void)
 static void
 free_cell(ScmCell *cell)
 {
-#if SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_COMPACT
     if (SCM_NEED_SWEEPP(cell)) {
         if (SCM_SWEEP_PHASE_SYMBOLP(cell)) {
             if (SCM_SYMBOL_NAME(cell))
@@ -625,7 +625,7 @@ free_cell(ScmCell *cell)
             scm_destruct_continuation(cell);
         }
     }
-#else /* SCM_OBJ_COMPACT */
+#else /* SCM_USE_STORAGE_COMPACT */
     switch (SCM_TYPE(cell)) {
     case ScmCons:
     case ScmInt:
@@ -671,7 +671,7 @@ free_cell(ScmCell *cell)
     default:
         break;
     }
-#endif /* SCM_OBJ_COMPACT */
+#endif /* SCM_USE_STORAGE_COMPACT */
 }
 
 static size_t
@@ -690,7 +690,7 @@ gc_sweep(void)
         heap = l_heaps[i];
 
         for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++) {
-            /* FIXME: is this safe for SCM_OBJ_COMPACT? */
+            /* FIXME: is this safe for SCM_USE_STORAGE_COMPACT? */
             obj = (ScmObj)cell;
 
             if (SCM_MARKEDP(obj)) {

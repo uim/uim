@@ -120,7 +120,10 @@
 /*===========================================================================
   Storage configurations
 ===========================================================================*/
-#define SCM_OBJ_COMPACT         0  /* object representation compaction (experimental) */
+/* Storage layer implementation: choose exclusively. */
+#define SCM_USE_STORAGE_FATTY   1  /* the 'fatty' implementation */
+#define SCM_USE_STORAGE_COMPACT 0  /* the 'compact' implementation */
+
 #define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
 /* on-stack initial token buffer size for parser */
@@ -233,10 +236,10 @@
 #define SCM_USE_SRFI75_NAMED_CHARS 1
 #endif
 
-#if SCM_OBJ_COMPACT
+#if SCM_USE_STORAGE_COMPACT
 #undef SCM_USE_VALUECONS
 #define SCM_USE_VALUECONS       0
-#endif /* SCM_OBJ_COMPACT */
+#endif /* SCM_USE_STORAGE_COMPACT */
 
 #if (SCM_USE_UTF8 || SCM_USE_EUCCN || SCM_USE_EUCJP || SCM_USE_EUCKR || SCM_USE_SJIS)
 #define SCM_USE_MULTIBYTE_CHAR  1

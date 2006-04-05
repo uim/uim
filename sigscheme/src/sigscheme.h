@@ -437,11 +437,13 @@ typedef void (*ScmCFunc)(void);
  *
  * typedef ScmObj (*ScmFuncType)();
  */
-#if SCM_OBJ_COMPACT
-#include "storage-compact.h"
-#else /* SCM_OBJ_COMPACT */
+#if SCM_USE_STORAGE_FATTY
 #include "storage-fatty.h"
-#endif /* SCM_OBJ_COMPACT */
+#elif SCM_USE_STORAGE_COMPACT
+#include "storage-compact.h"
+#else
+#error "specify a storage layer implementation"
+#endif
 
 typedef struct ScmStorageConf_ ScmStorageConf;
 struct ScmStorageConf_ {
