@@ -205,4 +205,5 @@
                "slashified: #\\a\nany: a\n"
                (format "slashified: ~s~%any: ~a~%" #\a #\a))
 
-(total-report)
+(if (not (provided? "srfi-48"))
+    (total-report))

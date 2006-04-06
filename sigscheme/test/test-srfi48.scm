@@ -701,4 +701,5 @@ SEQ   MNEMONIC        DESCRIPTION
       (assert-equal? (tn) help-str (format "~h"))
       (assert-equal? (tn) help-str (format "~H"))))
 
-(total-report)
+(if (not testing-format+?)
+    (total-report))
