@@ -613,6 +613,20 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
 {
     scm_int_t i, len;
     hash_entry *ent;
+    ScmObj err_obj_tag, reason, objs, trace_stack;
+    DECLARE_INTERNAL_FUNCTION("write-with-shared-structure");
+
+    if (ERROBJP(obj)) {
+        err_obj_tag = MUST_POP_ARG(obj);
+        reason      = MUST_POP_ARG(obj);
+        objs        = MUST_POP_ARG(obj);
+        trace_stack = MUST_POP_ARG(obj);
+        ASSERT_NO_MORE_ARG(obj);
+
+        write_ss_scan(reason, ctx);
+        write_ss_scan(objs, ctx);
+        return;
+    }
 
     /* (for-each mark-as-seen-or-return-if-familiar obj) */
     while (CONSP(obj)) {
