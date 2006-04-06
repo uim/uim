@@ -1,3 +1,4 @@
+TXTS = design.txt spec.txt style.txt test-c.txt
 TEXIS = coreprocedures.texi \
         coresyntax.texi \
         features.texi \
@@ -9,13 +10,14 @@ TEXIS = coreprocedures.texi \
 # experimental
 ASCIIDOC_HTMLS = design.html spec.html
 
-EXTRA_DIST = \
-        TODO \
-        design.txt spec.txt style.txt test-c.txt $(ASCIIDOC_HTMLS) \
-        $(TEXIS)
+BUILT_DIST = $(ASCIIDOC_HTMLS)
+EXTRA_DIST = $(BUILT_DIST) TODO $(TXTS) $(TEXIS)
 
+# xhtml11 backend is supported from AsciiDoc 7.0.0
 .txt.html:
-	asciidoc -b html4 -n -o $@ $<
+	if test -n "$(ASCIIDOC)"; then          \
+	    $(ASCIIDOC) -b xhtml11 -n -o $@ $<; \
+	fi
 
 .PHONY: all html pdf
 all: html
@@ -25,3 +27,6 @@ html: $(TEXIS) $(ASCIIDOC_HTMLS)
 
 pdf: $(TEXIS)
 	texi2pdf sscm-doc.texi
+
+dist-hook:
+	@test -n "$(ASCIIDOC)" || (echo 'asciidoc(1) not found: install AsciiDoc'; test)

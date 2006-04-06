@@ -9,10 +9,12 @@ AC_CONFIG_HEADER([config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
-AC_PATH_PROG(has_ruby, ruby, no)
-if test x$has_ruby = xno ; then
-  AC_MSG_ERROR([please install ruby (http://www.ruby-lang.org/)])
-fi
+# These programs are only needed on make dist
+AC_PATH_PROGS(RUBY, ruby18 ruby)
+AC_PATH_PROGS(PERL, perl5 perl)
+AC_PATH_PROG(ASCIIDOC, asciidoc)
+# The modified version of the C testing framework
+AC_PATH_PROG(CUTTER, cutter)
 
 # Checks for libraries.
 

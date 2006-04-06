@@ -3,8 +3,7 @@ lib_LTLIBRARIES = libsscm.la
 
 SCRIPT_DIR = $(top_srcdir)/tools
 BUILD_FUNCTBL = $(SCRIPT_DIR)/build_func_table.rb
-BUILD_FUNCTBL_CMD = \
-        ruby -I$(top_srcdir)/tools $(SCRIPT_DIR)/build_func_table.rb
+BUILD_FUNCTBL_CMD = $(RUBY) -I$(top_srcdir)/tools $(BUILD_FUNCTBL)
 BUILD_FUNCTBL_DEPS = \
         $(BUILD_FUNCTBL) \
         $(SCRIPT_DIR)/scm_decl.rb \
@@ -139,20 +138,22 @@ sigscheme-combined-trim.h: $(DIST_SOURCES)
 	    main.c)            ;;               \
 	    *.h | *.c)                          \
 		echo >>$@;                      \
-		perl -ne 'BEGIN { print "/* $$ARGV[0] */\n"; } if (s/^\s*#define\s+(\w+).*$$/#undef \1/) { print if (!$$macros{$$1} && $$1 !~ /^__\w+_H$$/); $$macros{$$1} = true; }' $$src >>$@; \
+		$(PERL) -ne 'BEGIN { print "/* $$ARGV[0] */\n"; } if (s/^\s*#define\s+(\w+).*$$/#undef \1/) { print if (!$$macros{$$1} && $$1 !~ /^__\w+_H$$/); $$macros{$$1} = true; }' $$src >>$@; \
 		;;                              \
 	    esac                                \
 	done
 
+BUILT_DIST = $(FUNC_TABLES) sigscheme-combined-trim.h
+
 # Since no target of sigscheme directory uses sigscheme-combined.h as source,
 # the file is not listed into *_HEADERS.
-EXTRA_DIST = $(FUNC_TABLES) $(BUILD_FUNCTBL_DEPS) \
-             sigscheme-combined.h sigscheme-combined-trim.h \
-             template.h template.c
+EXTRA_DIST = \
+        $(BUILT_DIST) $(BUILD_FUNCTBL_DEPS) \
+        sigscheme-combined.h template.h template.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.
-BUILT_SOURCES = $(FUNC_TABLES) sigscheme-combined-trim.h sigscheme-combined.c
+BUILT_SOURCES = $(BUILT_DIST) sigscheme-combined.c
 
 pkginclude_HEADERS = config.h my-stdint.h scmint.h global.h sigscheme.h
 
@@ -259,3 +260,7 @@ sscm_LDADD    = $(top_builddir)/src/libsscm.la
 # To enable ruby-and-perl-less build on tarball distribution, we should not
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
 CLEANFILES = sigscheme-combined.c
+
+dist-hook:
+	@test -n "$(RUBY)" || (echo 'ruby(1) not found: install Ruby'; test)
+	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; test)

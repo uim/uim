@@ -21,7 +21,7 @@ libtest_format_la_SOURCES  = test_format.c cutter-sscm.h
 .PHONY: test update-suites
 
 test:
-	cutter $(objdir)
+	$(CUTTER) $(objdir)
 
 update-suites:
 	@for src in $(DIST_SOURCES); do         \
