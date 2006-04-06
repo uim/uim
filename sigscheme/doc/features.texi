@@ -223,7 +223,7 @@ apprication could disable it.
 SCM_STRICT_ARGCHECK enabled
 @example
 sscm> (car '(1 2) 3 4)
-ERROR: in (function call): superfluous argument(s): #1=(3 4)
+ERROR: in (function call): superfluous argument(s): (3 4)
 sscm> (symbol? 'foo . #t)
 ERROR: in (function call): improper argument list terminator: #t
 sscm> (+ 3 4 . 5)
@@ -345,6 +345,18 @@ SRFI-38 External Representation for Data with Shared Structure
 Only `write-with-shared-structure` is implemented and
 `read-with-shared-structure` is not. The optional alias `write/ss` described in
 SRFI-38 is also defined.
+
+The shared index starts with #1 (not #0).
+
+.Shared index starts with #1
+================================================================
+  sscm> (define lst (list 'a 'b))
+  lst
+  sscm> (set-cdr! lst lst)
+  #1=(a . #1#)
+  sscm> lst
+  #1=(a . #1#)
+================================================================
 
 SRFI-48 Intermediate Format Strings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
