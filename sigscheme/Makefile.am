@@ -5,3 +5,17 @@ EXTRA_DIST = \
 
 # FIXME: move to appropriate directory
 EXTRA_DIST += slib.scm
+
+UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
+SSCM_REPOSITORY = $(UIM_REPOSITORY)/sigscheme
+
+ChangeLog: FORCE
+	svn export $(UIM_REPOSITORY)/trunk/tools/gnuify-changelog.pl \
+	    $(top_srcdir)/tools/gnuify-changelog.pl
+	svn up
+	svn log | $(top_srcdir)/tools/gnuify-changelog.pl > $@
+	@test -s $@ && echo 'ChangeLog updated successfully.'
+
+.PHONY: FORCE
+
+FORCE:
