@@ -10,7 +10,7 @@
 # $ svn log | /path/to/gnuify-changelog.pl > ChangeLog
 
 %hackers = ( "tkng"     => 'TOKUNAGA Hiroyuki <tkng@xem.jp>',
-	     "yusuke"   => 'Yusuke Tabata <yusuke@cherubim.icw.co.jp>',
+	     "yusuke"   => 'Yusuke TABATA <yusuke@w5.dion.ne.jp>',
 	     "yamaken"  => 'YamaKen <yamaken@bp.iij4u.or.jp>',
 	     "omote"    => 'Masahito Omote <omote@utyuuzin.net>',
 	     "kzk"      => 'kzk <mover@hct.zaq.ne.jp>',

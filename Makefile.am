@@ -17,9 +17,9 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 ACLOCAL_AMFLAGS = -I m4
 
-ChangeLog:
+ChangeLog: FORCE
 	@cd $(top_srcdir); \
-	svn log | ./gnuify-changelog.pl > ChangeLog.tmpl; \
+	svn log | $(top_srcdir)/tools/gnuify-changelog.pl > ChangeLog.tmpl; \
 	if test -s ChangeLog.tmpl; then \
 	    mv ChangeLog.tmpl ChangeLog; \
 	    echo "ChangeLog updated successfully."; \
@@ -28,7 +28,9 @@ ChangeLog:
 	    $(RM) -f ChangeLog.tmpl; \
 	fi
 
-.PHONY: ChangeLog releasetest-all-flag-enabled releasetest-all-flag-disabled each-releasetest releasetest
+.PHONY: FORCE releasetest-all-flag-enabled releasetest-all-flag-disabled each-releasetest releasetest
+
+FORCE:
 
 releasetest-all-flag-enabled: RELEASETEST_CONFIGURE_FLAGS= --enable-debug \
 	--enable-fep --enable-emacs --enable-dict \
