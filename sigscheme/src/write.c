@@ -83,12 +83,13 @@ typedef struct {
   File Local Macro Declarations
 =======================================*/
 #if SCM_USE_SRFI38
-#define INTERESTINGP(obj)  \
-    (CONSP(obj) \
-     || (STRINGP(obj) && SCM_STRING_LEN(obj)) \
-     || CLOSUREP(obj) \
-     || VECTORP(obj) \
-     || VALUEPACKETP(obj))
+#define INTERESTINGP(obj)                                                    \
+    (CONSP(obj)                                                              \
+     || (STRINGP(obj) && SCM_STRING_LEN(obj))                                \
+     || CLOSUREP(obj)                                                        \
+     || VECTORP(obj)                                                         \
+     || VALUEPACKETP(obj)                                                    \
+     || ERROBJP(obj))
 #define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
 #define HASH_EMPTY(table)  (!(table).used)
 #define DEFINING_DATUM     (-1)
@@ -370,7 +371,10 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
 #if SCM_USE_SRFI38
     size_t necessary_close_parens;
     int index;
+#endif
+    DECLARE_INTERNAL_FUNCTION("write");
 
+#if SCM_USE_SRFI38
     necessary_close_parens = 1;
   cheap_recursion:
 #endif
@@ -382,10 +386,8 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
 
     scm_port_put_char(port, '(');
 
-    for (;;) {
-        car = CAR(lst);
+    FOR_EACH (car, lst) {
         write_obj(port, car, otype);
-        lst = CDR(lst);
         if (!CONSP(lst))
             break;
         scm_port_put_char(port, ' ');
@@ -600,7 +602,7 @@ hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
     }
 
     /* A linear probe should always find a slot. */
-    abort();
+    SCM_ASSERT(scm_false);
 }
 
 /**
@@ -629,14 +631,13 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
     }
 
     /* (for-each mark-as-seen-or-return-if-familiar obj) */
-    while (CONSP(obj)) {
+    for (; CONSP(obj); obj = CDR(obj)) {
         ent = hash_lookup(&ctx->seen, obj, NONDEFINING_DATUM, HASH_INSERT);
         if (ent) {
             ent->datum = DEFINING_DATUM;
             return;
         }
         write_ss_scan(CAR(obj), ctx);
-        obj = CDR(obj);
     }
 
     if (INTERESTINGP(obj)) {

@@ -198,11 +198,11 @@ scm_make_error_obj(ScmObj reason, ScmObj objs)
 {
     DECLARE_INTERNAL_FUNCTION("scm_make_error_obj");
 
-    ENSURE_LIST(objs);
 #if 0
     /* should be string, but not forced. displayable is sufficient. */
     ENSURE_STRING(reason);
 #endif
+    ENSURE_LIST(objs);
 
     return LIST_4(l_err_obj_tag, reason, objs, scm_trace_stack());
 }
