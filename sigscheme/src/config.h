@@ -43,7 +43,9 @@
 ===========================================================================*/
 #define SCM_USE_CONTINUATION    1  /* (cannot be 0 yet) use continuation */
 #define SCM_USE_QUASIQUOTE      1  /* (cannot be 0 yet) use quasiquotation */
-#define SCM_USE_HYGIENIC_MACRO  0  /* (not supported yet) use hygienic macros */
+#define SCM_USE_HYGIENIC_MACRO  1  /* (in progress) use hygienic macros */
+#define SCM_USE_SYNTAX_CASE     0  /* (not supported yet) use syntax-case; implies SCM_USE_UNHYGIENIC_MACRO */
+#define SCM_USE_UNHYGIENIC_MACRO 0 /* (not supported yet) syntactic closure */
 #define SCM_USE_INT             1  /* (cannot be 0 yet) use integer numbers */
 #define SCM_USE_RATIONAL        0  /* (not supported yet) use rational numbers */
 #define SCM_USE_REAL            0  /* (not supported yet) use real numbers */
@@ -113,7 +115,7 @@
 #define SCM_STRICT_ENCODING_CHECK 1 /* do all feasible encoding error checks */
 #define SCM_CONST_LIST_LITERAL  1  /* make list literal immutable */
 #define SCM_CONST_VECTOR_LITERAL 1 /* make vector literal immutable */
-#define SCM_ACCESSOR_ASSERT     0  /* enable strict type check with accessor */
+#define SCM_ACCESSOR_ASSERT     1  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_USE_NULL_CAPABLE_STRING 1  /* enable experimental null character in a middle of a string */
 
@@ -160,6 +162,7 @@
 #define SCM_DEBUG_ENCODING      0  /* debug encoding-related functions */
 #define SCM_DEBUG_BACKTRACE_SEP 0  /* enable frame-separator on backtrace */
 #define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
+#define SCM_DEBUG_MACRO         1  /* debug macro and pattern matching */
 
 /*===========================================================================
   Platform Dependency
@@ -201,6 +204,11 @@
 #undef SCM_USE_RAW_C_FORMAT
 #define SCM_USE_RAW_C_FORMAT    1
 #endif /* SCM_USE_WRITER */
+
+#if SCM_USE_SYNTAX_CASE
+#undef SCM_USE_UNHYGIENIC_MACRO
+#define SCM_USE_UNHYGIENIC_MACRO 1
+#endif /* SCM_USE_SYNTAX_CASE */
 
 #if (SCM_USE_SRFI28 || SCM_USE_SRFI48                                        \
      || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT)

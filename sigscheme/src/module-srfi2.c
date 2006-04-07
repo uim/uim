@@ -93,7 +93,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                     /* (<expression>) */
                     exp = CAR(claw);
                     val = EVAL(exp, env);
-                } else if (SYMBOLP(CAR(claw))) {
+                } else if (IDENTIFIERP(CAR(claw))) {
                     /* (<variable> <expression>) */
                     if (!LIST_2_P(claw))
                         goto err;
@@ -104,7 +104,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                 } else {
                     goto err;
                 }
-            } else if (SYMBOLP(claw)) {
+            } else if (IDENTIFIERP(claw)) {
                 /* <bound-variable> */
                 val = EVAL(claw, env);
             } else {

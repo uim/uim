@@ -165,6 +165,23 @@ struct ScmCell_ {
             ScmCFunc value;
         } c_func_pointer;
 
+#if SCM_USE_HYGIENIC_MACRO
+        struct {
+            ScmObj rules;
+            ScmPackedEnv env;
+        } hmacro;
+
+        struct {
+            ScmObj sym;
+            ScmPackedEnv env;
+        } farsym;
+
+        struct {
+            ScmObj obj;
+            scm_int_t meta;
+        } subpat;
+#endif /* SCM_USE_HYGIENIC_MACRO */
+
         /* to align against 64-bit primitives */
         struct {
             scm_uintobj_t slot2;
@@ -240,6 +257,11 @@ struct ScmCell_ {
 #else /* SCM_USE_VALUECONS */
 #define SCM_SAL_MAKE_VALUEPACKET(vals) (scm_make_value_packet(vals))
 #endif /* SCM_USE_VALUECONS */
+#if SCM_USE_HYGIENIC_MACRO
+#define SCM_SAL_MAKE_HYGIENIC_MACRO           scm_make_hygienic_macro
+#define SCM_SAL_MAKE_FARSYMBOL                scm_make_farsymbol
+#define SCM_SAL_MAKE_SUBPAT                   scm_make_subpat
+#endif /* SCM_USE_HYGIENIC_MACRO */
 
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
@@ -266,6 +288,11 @@ SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);
 #if SCM_USE_SSCM_EXTENSIONS
 SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
 SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
+#endif
+#if SCM_USE_HYGIENIC_MACRO
+ScmObj scm_make_hygienic_macro(ScmObj rules, ScmObj defenv);
+ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
+ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #endif
 
 /*=======================================
@@ -384,6 +411,34 @@ SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
     (SCM_AS_VALUEPACKET(o)->obj.value_packet.lst)
 #define SCM_SAL_VALUEPACKET_SET_VALUES(o, v) (SCM_VALUEPACKET_VALUES(o) = (v))
 #endif /* SCM_USE_VALUECONS */
+
+#if SCM_USE_HYGIENIC_MACRO || SCM_USE_UNHYGIENIC_MACRO
+#define SCM_SAL_MACROP(o)              (SCM_TYPE(o) == ScmMacro)
+#define SCM_SAL_ENTYPE_MACRO(o)        (SCM_TYPE(o) = ScmMacro)
+#if SCM_USE_HYGIENIC_MACRO && SCM_USE_UNHYGIENIC_MACRO
+#define SCM_SAL_HMACROP(o)             (SCM_SAL_MACROP(o) && /* TODO */)
+#else  /* not SCM_USE_UNHYGIENIC_MACRO */
+#define SCM_SAL_HMACROP(o)             (SCM_SAL_MACROP(o))
+#endif /* not SCM_USE_UNHYGIENIC_MACRO */
+#define SCM_SAL_HMACRO_RULES(o)        (SCM_AS_HMACRO(o)->obj.hmacro.rules)
+#define SCM_SAL_HMACRO_SET_RULES(o, r) (SCM_SAL_HMACRO_RULES(o) = (r))
+#define SCM_SAL_HMACRO_ENV(o)          (SCM_AS_HMACRO(o)->obj.hmacro.env)
+#define SCM_SAL_HMACRO_SET_ENV(o, e)   (SCM_SAL_HMACRO_ENV(o) = (e))
+
+#define SCM_SAL_ENTYPE_FARSYMBOL(o)     (SCM_TYPE(o) = ScmFarsymbol)
+#define SCM_SAL_FARSYMBOLP(o)           (SCM_TYPE(o) == ScmFarsymbol)
+#define SCM_SAL_FARSYMBOL_SYM(o)        (SCM_AS_FARSYMBOL(o)->obj.farsym.sym)
+#define SCM_SAL_FARSYMBOL_SET_SYM(o, s) (SCM_SAL_FARSYMBOL_SYM(o) = (s))
+#define SCM_SAL_FARSYMBOL_ENV(o)        (SCM_AS_FARSYMBOL(o)->obj.farsym.env)
+#define SCM_SAL_FARSYMBOL_SET_ENV(o, e) (SCM_SAL_FARSYMBOL_ENV(o) = (e))
+
+#define SCM_SAL_ENTYPE_SUBPAT(o)        (SCM_TYPE(o) = ScmSubpat)
+#define SCM_SAL_SUBPATP(o)              (SCM_TYPE(o) == ScmSubpat)
+#define SCM_SAL_SUBPAT_OBJ(o)           (SCM_AS_SUBPAT(o)->obj.subpat.obj)
+#define SCM_SAL_SUBPAT_META(o)          (SCM_AS_SUBPAT(o)->obj.subpat.meta)
+#define SCM_SAL_SUBPAT_SET_OBJ(o, x)    (SCM_SAL_SUBPAT_OBJ(o) = (x))
+#define SCM_SAL_SUBPAT_SET_META(o, m)   (SCM_SAL_SUBPAT_META(o) = (m))
+#endif /* SCM_USE_HYGIENIC_MACRO */
 
 /*===========================================================================
   Special Constants (such as SCM_NULL)

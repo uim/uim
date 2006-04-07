@@ -66,8 +66,8 @@ clean-func-tables:
 functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_core_func_info_table" \
 	  $(SSCM_PROC_SRCS)
-functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_syntax_func_info_table" syntax.c
+functable-r5rs-syntax.c: syntax.c macro.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_syntax_func_info_table" syntax.c macro.c
 functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
@@ -161,7 +161,7 @@ libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c storage-symbol.c \
         error.c env.c eval.c syntax.c procedure.c list.c \
         module.c \
-        sigschemeinternal.h sigscheme.c
+        sigschemeinternal.h sigscheme.c macro.c
 if USE_STORAGE_COMPACT
   pkginclude_HEADERS += storage-compact.h
 else
@@ -215,6 +215,9 @@ endif
 if USE_SSCM_EXTENSIONS
   libsscm_la_SOURCES += module-sscm-ext.c
 endif
+if USE_HYGIENIC_MACRO
+  libsscm_la_SOURCES += macro.c
+endif
 if COMPAT_SIOD
   libsscm_la_SOURCES += module-siod.c scmport-null.h scmport-null.c
 endif
@@ -249,6 +252,8 @@ if USE_SRFI60
   libsscm_la_SOURCES += module-srfi60.c
 endif
 libsscm_la_LIBADD = $(LIBOBJS)
+
+ETAGS_ARGS = sigschemeinternal.h
 
 libsscm_la_CFLAGS   = -Wall
 

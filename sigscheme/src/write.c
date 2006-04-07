@@ -128,6 +128,10 @@ static void write_port(ScmObj port, ScmObj obj, enum OutputType otype);
 static void write_constant(ScmObj port, ScmObj obj, enum  OutputType otype);
 static void write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype);
 
+#if SCM_USE_HYGIENIC_MACRO
+static void write_farsymbol(ScmObj port, ScmObj obj, enum OutputType otype);
+#endif
+
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab);
 static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag);
@@ -227,6 +231,37 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
             scm_format(port, SCM_FMT_RAW_C, "~P", (void *)obj);
         scm_port_put_char(port, '>');
         break;
+#if SCM_USE_HYGIENIC_MACRO
+    case ScmMacro:
+        scm_port_puts(port, "#<macro ");
+        write_obj(port, SCM_HMACRO_RULES(obj), otype);
+        scm_port_puts(port, ">");
+        break;
+    case ScmFarsymbol:
+        write_farsymbol(port, obj, otype);
+        break;
+    case ScmSubpat:
+        if (SCM_SUBPAT_PVARP(obj)) {
+#if SCM_DEBUG_MACRO
+            scm_port_puts(port, "#<pvar ");
+            write_obj(port, SCM_SUBPAT_OBJ(obj), otype);
+            scm_format(port, SCM_FMT_RAW_C, " ~MD>",
+                       SCM_SUBPAT_PVAR_INDEX(obj));
+#else  /* not SCM_DEBUG_MACRO */
+            write_obj(port, SCM_SUBPAT_OBJ(obj), otype);
+#endif /* not SCM_DEBUG_MACRO */
+        } else {
+            SCM_ASSERT(SCM_SUBPAT_REPPATP(obj));
+            write_obj(port, SCM_SUBPAT_REPPAT_PAT(obj), otype);
+#if SCM_DEBUG_MACRO
+            scm_format(port, SCM_FMT_RAW_C, " ..[~MD]..",
+                       SCM_SUBPAT_REPPAT_PVCOUNT(obj));
+#else
+            scm_port_puts(port, " ...");
+#endif
+        }
+        break;
+#endif /* SCM_USE_HYGIENIC_MACRO */
     case ScmClosure:
         scm_port_puts(port, "#<closure ");
         write_obj(port, SCM_CLOSURE_EXP(obj), otype);
@@ -534,6 +569,19 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
     if (otype == AS_WRITE)
         scm_port_put_char(port, '>');
 }
+
+#if SCM_USE_HYGIENIC_MACRO
+static void
+write_farsymbol(ScmObj port, ScmObj obj, enum  OutputType otype)
+{
+    /* Assumes that ScmPackedEnv is an integer. */
+    scm_port_puts(port, "#<farsym");
+    for (; SCM_FARSYMBOLP(obj); obj = SCM_FARSYMBOL_SYM(obj))
+        scm_format(port, SCM_FMT_RAW_C, " ~D ", SCM_FARSYMBOL_ENV(obj));
+    scm_display(port, obj); /* Name. */
+    scm_port_puts(port, ">");
+}
+#endif /* SCM_USE_HYGIENIC_MACRO */
 
 #if SCM_USE_SRFI38
 static void

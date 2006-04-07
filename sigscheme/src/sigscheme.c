@@ -152,6 +152,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 
     /* R5RS Syntaxes */
     scm_init_syntax();
+#if SCM_USE_HYGIENIC_MACRO
+    scm_init_macro();
+#endif
 
     /* R5RS Procedures */
     scm_register_funcs(scm_r5rs_procedure_func_info_table);

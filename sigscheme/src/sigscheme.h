@@ -281,7 +281,10 @@ enum ScmObjType {
     ScmContinuation = 12,
     ScmValuePacket  = 13,
     ScmPort         = 14,
-    ScmFreeCell     = 15,
+    ScmMacro        = 15,
+    ScmFarsymbol    = 16,
+    ScmSubpat       = 17,
+    ScmFreeCell     = 18,
 
     ScmCFuncPointer = 30,
     ScmCPointer     = 31
@@ -411,6 +414,17 @@ enum ScmPortFlag {
 };
 
 typedef void (*ScmCFunc)(void);
+
+
+#if SCM_USE_HYGIENIC_MACRO
+/* Environment for looking up a free variable inserted by a hygienic
+ * macro's template.  References in syntax-rules are only looked up in
+ * environments enclosed by the definition's, so we need only record
+ * the number of frames.  That doesn't work in the face of syntax-case
+ * though, so we abstract the representation here. */
+typedef scm_int_t ScmPackedEnv;
+#define SCM_PENV_EQ(x, y)  ((x) == (y))
+#endif
 
 /*
  * 64-bit support of SigScheme
@@ -550,6 +564,12 @@ struct ScmStorageConf_ {
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 #define SCM_MAKE_VALUEPACKET(vals)        SCM_SAL_MAKE_VALUEPACKET(vals)
 
+#if SCM_USE_HYGIENIC_MACRO
+#define SCM_MAKE_HYGIENIC_MACRO           SCM_SAL_MAKE_HYGIENIC_MACRO
+#define SCM_MAKE_FARSYMBOL                SCM_SAL_MAKE_FARSYMBOL
+#define SCM_MAKE_SUBPAT                   SCM_SAL_MAKE_SUBPAT
+#endif
+
 /*=======================================
   Object Accessors
 =======================================*/
@@ -576,6 +596,11 @@ struct ScmStorageConf_ {
 #define SCM_AS_VALUEPACKET(o)   (SCM_ASSERT_TYPE(SCM_VALUEPACKETP(o),   (o)))
 #define SCM_AS_C_POINTER(o)     (SCM_ASSERT_TYPE(SCM_C_POINTERP(o),     (o)))
 #define SCM_AS_C_FUNCPOINTER(o) (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(o), (o)))
+#if SCM_USE_HYGIENIC_MACRO
+#define SCM_AS_HMACRO(o)        (SCM_ASSERT_TYPE(SCM_HMACROP(o),        (o)))
+#define SCM_AS_FARSYMBOL(o)     (SCM_ASSERT_TYPE(SCM_FARSYMBOLP(o),     (o)))
+#define SCM_AS_SUBPAT(o)        (SCM_ASSERT_TYPE(SCM_SUBPATP(o),        (o)))
+#endif
 
 #define SCM_NUMBERP(o)                  SCM_SAL_NUMBERP(o)
 
@@ -665,6 +690,74 @@ struct ScmStorageConf_ {
 #define SCM_C_FUNCPOINTER_VALUE(o)      SCM_SAL_C_FUNCPOINTER_VALUE(o)
 #define SCM_C_FUNCPOINTER_SET_VALUE(o, funcptr)                              \
     SCM_SAL_C_FUNCPOINTER_SET_VALUE((o), (funcptr))
+
+#if SCM_USE_HYGIENIC_MACRO
+#define SCM_HMACROP(o)                  SCM_SAL_HMACROP(o)
+#define SCM_HMACRO_RULES(o)             SCM_SAL_HMACRO_RULES(o)
+#define SCM_HMACRO_SET_RULES(o, r)      SCM_SAL_HMACRO_SET_RULES((o), (r))
+#define SCM_HMACRO_ENV(o)               SCM_SAL_HMACRO_ENV(o)
+#define SCM_HMACRO_SET_ENV(o, e)        SCM_SAL_HMACRO_SET_ENV((o), (e))
+#define SCM_FARSYMBOLP(o)               SCM_SAL_FARSYMBOLP(o)
+#define SCM_FARSYMBOL_SYM(o)            SCM_SAL_FARSYMBOL_SYM(o)
+#define SCM_FARSYMBOL_SET_SYM(o, s)     SCM_SAL_FARSYMBOL_SET_SYM((o), (s))
+#define SCM_FARSYMBOL_ENV(o)            SCM_SAL_FARSYMBOL_ENV(o)
+#define SCM_FARSYMBOL_SET_ENV(o, e)     SCM_SAL_FARSYMBOL_SET_ENV((o), (e))
+#define SCM_SUBPATP(o)                  SCM_SAL_SUBPATP(o)
+#define SCM_SUBPAT_OBJ(o)               SCM_SAL_SUBPAT_OBJ(o)
+#define SCM_SUBPAT_META(o)              SCM_SAL_SUBPAT_META(o)
+#define SCM_SUBPAT_SET_OBJ(o, x)        SCM_SAL_SUBPAT_SET_OBJ((o), (x))
+#define SCM_SUBPAT_SET_META(o, m)       SCM_SAL_SUBPAT_SET_META((o), (m))
+
+
+/* Marks where pattern variable were present in the original pattern.
+ * Records the symbol and index of the pattern variable.  See macro.c
+ * for the terminology.  It's generally not a good idea to directly
+ * manipulate compiled macro bodies, though. */
+#if SCM_DEBUG_MACRO
+#define SCM_SUBPAT_MAKE_PVAR(obj, idx)  (MAKE_SUBPAT((obj), (idx)))
+#else  /* not SCM_DEBUG_MACRO */
+#define SCM_SUBPAT_MAKE_PVAR(obj, idx)  MAKE_SUBPAT(SCM_NULL, (idx))
+#endif /* not SCM_DEBUG_MACRO */
+#define SCM_SUBPAT_PVAR_INDEX(obj)      SCM_SUBPAT_META(obj)
+#define SCM_SUBPAT_PVARP(obj)           (SCM_SUBPAT_PVAR_INDEX(obj) >= 0)
+
+/* Repeatable subpattern.  Contains the subpattern and the number of
+ * pattern variables within it. */
+#define SCM_SUBPAT_MAKE_REPPAT(subpat, pvcount) \
+    (MAKE_SUBPAT((subpat), ~(pvcount)))
+#define SCM_SUBPAT_REPPAT_PAT(subpat)     SCM_SUBPAT_OBJ(subpat)
+#define SCM_SUBPAT_REPPAT_PVCOUNT(subpat) (~(SCM_SUBPAT_META(subpat)))
+#define SCM_SUBPAT_REPPATP(obj)           (SCM_SUBPAT_PVAR_INDEX(obj) < 0)
+
+#define SCM_IDENTIFIERP(o) (SCM_SYMBOLP(o) || SCM_FARSYMBOLP(o))
+#else  /* not SCM_USE_HYGIENIC_MACRO */
+#define SCM_IDENTIFIERP(o) SCM_SYMBOLP(o)
+#endif /* not SCM_USE_HYGIENIC_MACRO */
+
+/*===========================================================================
+  Hygienic Macro
+===========================================================================*/
+#if SCM_USE_HYGIENIC_MACRO
+/**
+ * Strips the argument of binding information.  Syntaxes that take
+ * verbatim data as their argument (e.g. quote, case) must unwrap that
+ * argument before using it.  UNWRAP_SYNTAX() may or may not
+ * destructively unwrap the input, so the return value must always be
+ * used.  The caller shouldn't assume the input is equal? before and
+ * after unwrapping.
+ */
+#define SCM_UNWRAP_SYNTAX(o)  scm_unwrap_syntaxd((o))
+
+/**
+ * If the argument is an identifier, it is stripped of binding
+ * information and returned.  Otherwise, the argument is returned
+ * without any modification.
+ */
+#define SCM_UNWRAP_KEYWORD(o) scm_unwrap_keyword(o)
+#else  /* not SCM_USE_HYGIENIC_MACRO */
+#define SCM_UNWRAP_SYNTAX(o)  (o)
+#define SCM_UNWRAP_KEYWORD(o) (o)
+#endif
 
 /*===========================================================================
   Environment Specifiers
@@ -1171,6 +1264,18 @@ SCM_EXPORT ScmObj scm_p_cddadr(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_cdddar(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_cddddr(ScmObj lst);
 #endif /* SCM_USE_DEEP_CADRS */
+
+/* macro.c */
+#if SCM_USE_HYGIENIC_MACRO
+#if SCM_DEBUG_MACRO
+ScmObj scm_s_match(ScmObj form, ScmObj patterns, ScmEvalState *state);
+ScmObj scm_s_syntax_rules(ScmObj rules, ScmObj env);
+#endif
+ScmObj scm_p_set_macro_debug_flagsd(ScmObj new_mode);
+ScmObj scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_unwrap_syntaxd(ScmObj obj);
+ScmObj scm_unwrap_keyword(ScmObj obj);
+#endif
 
 #if SCM_USE_PORT
 /* port.c */

@@ -154,7 +154,7 @@
 ;; SigScheme and Gauche surely returns #<undef>
 (define undef
   (lambda ()
-    (for-each values ())))
+    (for-each values '())))
 
 (define obj->literal
   (lambda (obj)

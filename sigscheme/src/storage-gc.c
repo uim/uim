@@ -447,6 +447,22 @@ mark_loop:
         obj = SCM_CLOSURE_ENV(obj);
         goto mark_loop;
 
+#if SCM_USE_HYGIENIC_MACRO
+    case ScmMacro:
+        /* Assumes that ScmPackedEnv is an integer. */
+        obj = SCM_HMACRO_RULES(obj);
+        goto mark_loop;
+
+    case ScmFarsymbol:
+        /* Assumes that ScmPackedEnv is an integer. */
+        obj = SCM_FARSYMBOL_SYM(obj);
+        goto mark_loop;
+
+    case ScmSubpat:
+        obj = SCM_SUBPAT_OBJ(obj);
+        goto mark_loop;
+#endif /* SCM_USE_HYGIENIC_MACRO */
+
     case ScmValuePacket:
 #if SCM_USE_VALUECONS
         mark_obj(SCM_VALUECONS_CAR(obj));

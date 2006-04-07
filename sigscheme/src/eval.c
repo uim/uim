@@ -75,30 +75,6 @@ static ScmObj map_eval(ScmObj args, scm_int_t *args_len, ScmObj env);
 /*=======================================
   Function Implementations
 =======================================*/
-SCM_EXPORT ScmObj
-scm_symbol_value(ScmObj var, ScmObj env)
-{
-    ScmRef ref;
-    ScmObj val;
-    DECLARE_INTERNAL_FUNCTION("scm_symbol_value");
-
-    SCM_ASSERT(SYMBOLP(var));
-
-    /* first, lookup the environment */
-    ref = scm_lookup_environment(var, env);
-    if (ref != SCM_INVALID_REF) {
-        /* variable is found in environment, so returns its value */
-        return DEREF(ref);
-    }
-
-    /* finally, look at the VCELL */
-    val = SCM_SYMBOL_VCELL(var);
-    if (EQ(val, SCM_UNBOUND))
-        ERR_OBJ("unbound variable", var);
-
-    return val;
-}
-
 /* A wrapper for call() for internal proper tail recursion */
 SCM_EXPORT ScmObj
 scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
@@ -218,7 +194,7 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
             goto err_improper;
     }
 
-    if (SYMBOLP(formals)) {
+    if (IDENTIFIERP(formals)) {
         /* (1) <variable> */
         eval_state->env = scm_extend_environment(LIST_1(formals),
                                                  LIST_1(args),
@@ -287,6 +263,13 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     if (!FUNCP(proc)) {
         if (CLOSUREP(proc))
             return call_closure(proc, args, eval_state, need_eval);
+#if SCM_USE_HYGIENIC_MACRO
+        if (HMACROP(proc)) {
+            if (!need_eval)
+                ERR_OBJ("can't apply/map a macro", proc);
+            return scm_expand_macro(proc, args, eval_state);
+        }
+#endif
         if (CONTINUATIONP(proc)) {
             call_continuation(proc, args, eval_state, need_eval);
             /* NOTREACHED */
@@ -405,7 +388,7 @@ scm_eval(ScmObj obj, ScmObj env)
     state.env = env;
 
 eval_loop:
-    if (SYMBOLP(obj)) {
+    if (IDENTIFIERP(obj)) {
         obj = scm_symbol_value(obj, state.env);
     } else if (CONSP(obj)) {
         obj = call(CAR(obj), CDR(obj), &state, SCM_VALTYPE_NEED_EVAL);

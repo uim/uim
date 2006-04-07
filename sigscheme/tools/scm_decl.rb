@@ -53,7 +53,7 @@
 # $9  :functype_whole  procedure_fixed_tailrec_2
 # $10 :functype_prefix procedure
 # $11 :functype_spec   fixed_tailrec_2
-SCM_DECL_RE = /\n((SCM_EXPORT\s+)?(ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+(([^_]+)_([\w]+))\)/m
+SCM_DECL_RE = /\n((SCM_EXPORT\s+)?((ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\)))[ \t]*\n\s*\{[^{}]+DECLARE_FUNCTION\(\s*\"([^\"]+)\"[\s,]+(([^_]+)_([\w]+))\)/m
 
 
 # :register_func   scm_register_procedure_fixed_tailrec_2
@@ -61,7 +61,7 @@ SCM_DECL_RE = /\n((SCM_EXPORT\s+)?(ScmObj)\s+(scm_([sp])_(\w+))\(([^{]+)\))[ \t]
 class String
   def scan_scm_decl
     res = []
-    scan(SCM_DECL_RE) { |scope, prototype, ret, func, prefix, func_body, args, proc, functype_whole, functype_prefix, functype_spec|
+    scan(SCM_DECL_RE) { |scope, export, prototype, ret, func, prefix, func_body, args, proc, functype_whole, functype_prefix, functype_spec|
       decl = {
         :prototype       => prototype.gsub(/\s+/, " "),
         :scope           => scope,

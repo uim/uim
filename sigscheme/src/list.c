@@ -59,7 +59,6 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj list_tail(ScmObj lst, scm_int_t k);
 
 /*=======================================
   Function Implementations
@@ -334,8 +333,8 @@ scm_p_reverse(ScmObj lst)
     return ret;
 }
 
-static ScmObj
-list_tail(ScmObj lst, scm_int_t k)
+ScmObj
+scm_list_tail(ScmObj lst, scm_int_t k)
 {
     while (k--) {
         if (!CONSP(lst))
@@ -354,7 +353,7 @@ scm_p_list_tail(ScmObj lst, ScmObj k)
 
     ENSURE_INT(k);
 
-    ret = list_tail(lst, SCM_INT_VALUE(k));
+    ret = scm_list_tail(lst, SCM_INT_VALUE(k));
     if (!VALIDP(ret))
         ERR_OBJ("out of range or invalid list", LIST_2(lst, k));
 
@@ -369,7 +368,7 @@ scm_p_list_ref(ScmObj lst, ScmObj k)
 
     ENSURE_INT(k);
 
-    tail = list_tail(lst, SCM_INT_VALUE(k));
+    tail = scm_list_tail(lst, SCM_INT_VALUE(k));
     if (!VALIDP(tail) || NULLP(tail))
         ERR_OBJ("out of range or invalid list", LIST_2(lst, k));
 

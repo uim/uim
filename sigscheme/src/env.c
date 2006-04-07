@@ -94,7 +94,6 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmRef lookup_frame(ScmObj var, ScmObj frame);
 static scm_bool valid_framep(ScmObj frame);
 
 /*=======================================
@@ -105,6 +104,106 @@ scm_toplevel_environmentp(ScmObj env)
 {
     return NULLP(env);
 }
+
+#if SCM_USE_HYGIENIC_MACRO
+
+/* ScmPackedEnv is scm_int_t. */
+
+ScmPackedEnv
+scm_pack_env(ScmObj env)
+{
+    scm_int_t depth;
+    DECLARE_INTERNAL_FUNCTION("scm_env_depth");
+    depth = scm_length(env);
+    SCM_ASSERT(SCM_LISTLEN_PROPERP(depth));
+    return depth;
+}
+
+/* Not used. */
+ScmObj
+scm_unpack_env(ScmPackedEnv packed, ScmObj context)
+{
+    scm_int_t depth;
+    depth = scm_length(context);
+    while (depth-- > packed)
+        context = CDR(context);
+    return context;
+}
+
+
+static ScmRef
+lookup_n_frames(ScmObj id, scm_int_t n, ScmObj env)
+{
+    ScmRef ref;
+    while (n--) {
+        SCM_ASSERT(ENVP(env));
+        ref = scm_lookup_frame(id, CAR(env));
+        if (ref != SCM_INVALID_REF)
+            return ref;
+        env = CDR(env);
+    }
+    return SCM_INVALID_REF;
+}
+
+
+/**
+ * Resolves X in scm_unpack_env(XPENV, ENV), Y in ENV and tests
+ * whether they are bound to the same location.  The parameters x and
+ * y are thus UNINTERCHANGEABLE.
+ *
+ * The pattern matcher must compare scm_wrap_identifier(x, xpenv) with
+ * y, but for performance we'd like to do that without actually
+ * allocating the wrapper.  In the absence of syntax-case or
+ * comparable mechanisms allowing for unhygienic transforms, the
+ * binding frame of X and Y are always both contained in ENV, so we
+ * might as well require that ENV be the environment in which one of
+ * the operands (namely, Y) is to be looked up.
+ *
+ * But this is definitely an ugly interface, and also inconvenient
+ * because the function needs a different signature when unhygienic
+ * transforms are enabled.  So, FIXME: is there a better way?
+ *
+ * Moving this to macro.c can be an option, but keep in mind some
+ * aspects are inherently tightly coupled with the lookup functions.
+ */
+scm_bool
+scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv,
+                     ScmObj y, ScmPackedEnv penv, ScmObj env)
+{
+    SCM_ASSERT(xpenv <= penv);
+    SCM_ASSERT(SCM_PENV_EQ(scm_pack_env(env), penv));
+#if 0
+    CDBG((SCM_DBG_MACRO, "identifier=? ~s [~MD] <> ~s [~MD] in ~s\n",
+          x, xpenv, y, penv, env));
+#endif
+    if (lookup_n_frames(y, penv - xpenv, env) != SCM_INVALID_REF)
+        return scm_false;
+    return EQ(x, y) || (FARSYMBOLP(y) && EQ(x, SCM_FARSYMBOL_SYM(y)));
+}
+
+/**
+ * Returns an identifier that is bound to the same location as ID
+ * within ENV (whose packed representation is DEPTH), but is not eq?
+ * with ID.
+ */
+ScmObj
+scm_wrap_identifier(ScmObj id, ScmPackedEnv depth, ScmObj env)
+{
+    scm_int_t id_depth;
+    SCM_ASSERT(IDENTIFIERP(id));
+    SCM_ASSERT(depth == scm_pack_env(env));
+    if (FARSYMBOLP(id)) {
+        /* Try to reduce lookup overhead. */
+        id_depth = SCM_FARSYMBOL_ENV(id);
+        SCM_ASSERT(id_depth <= depth);
+        if (lookup_n_frames(id, depth - id_depth, env) == SCM_INVALID_REF) {
+            /* ID hasn't been bound since it was captured. */
+            return MAKE_FARSYMBOL(SCM_FARSYMBOL_SYM(id), id_depth);
+        }
+    }
+    return MAKE_FARSYMBOL(id, depth);
+}
+#endif /* SCM_USE_HYGIENIC_MACRO */
 
 /**
  * Construct new frame on an env
@@ -184,7 +283,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
     ScmObj frame, formals, actuals;
     DECLARE_INTERNAL_FUNCTION("scm_add_environment");
 
-    SCM_ASSERT(SYMBOLP(var));
+    SCM_ASSERT(IDENTIFIERP(var));
     SCM_ASSERT(VALID_ENVP(env));
 
     /* add (var, val) pair to most recent frame of the env */
@@ -213,32 +312,54 @@ scm_lookup_environment(ScmObj var, ScmObj env)
 {
     ScmObj frame;
     ScmRef ref;
+#if SCM_USE_HYGIENIC_MACRO
+    scm_int_t depth = 0, id_depth;
+    ScmObj env_save = env;
+#endif /* SCM_USE_HYGIENIC_MACRO */
     DECLARE_INTERNAL_FUNCTION("scm_lookup_environment");
 
-    SCM_ASSERT(SYMBOLP(var));
+    SCM_ASSERT(IDENTIFIERP(var));
     SCM_ASSERT(VALID_ENVP(env));
 
     /* lookup in frames */
     for (; !NULLP(env); env = CDR(env)) {
         frame = CAR(env);
-        ref = lookup_frame(var, frame);
+        ref = scm_lookup_frame(var, frame);
         if (ref != SCM_INVALID_REF)
             return ref;
+#if SCM_USE_HYGIENIC_MACRO
+        ++depth;
+#endif
     }
     SCM_ASSERT(NULLP(env));
+
+#if SCM_USE_HYGIENIC_MACRO
+    if (FARSYMBOLP(var)) {
+        scm_int_t i;
+        id_depth = SCM_FARSYMBOL_ENV(var);
+        if (id_depth > depth)
+            scm_macro_bad_scope(var);
+        for (i = depth - id_depth; i--; )
+            env_save = CDR(env_save);
+        ref = lookup_n_frames(SCM_FARSYMBOL_SYM(var),
+                              id_depth, env_save);
+        SCM_ASSERT(ref != SCM_INVALID_REF || SYMBOLP(SCM_FARSYMBOL_SYM(var)));
+        return ref;
+    }
+#endif
 
     return SCM_INVALID_REF;
 }
 
-/** Lookup a variable of a frame */
-static ScmRef
-lookup_frame(ScmObj var, ScmObj frame)
+/** Lookup a variable in a frame */
+ScmRef
+scm_lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj formals;
     ScmRef actuals;
-    DECLARE_INTERNAL_FUNCTION("lookup_frame");
+    DECLARE_INTERNAL_FUNCTION("scm_lookup_frame");
 
-    SCM_ASSERT(SYMBOLP(var));
+    SCM_ASSERT(IDENTIFIERP(var));
     SCM_ASSERT(valid_framep(frame));
 
     for (formals = CAR(frame), actuals = REF_CDR(frame);
@@ -253,6 +374,36 @@ lookup_frame(ScmObj var, ScmObj frame)
         return actuals;
 
     return SCM_INVALID_REF;
+}
+
+ScmObj
+scm_symbol_value(ScmObj var, ScmObj env)
+{
+    ScmRef ref;
+    ScmObj val;
+    DECLARE_INTERNAL_FUNCTION("scm_symbol_value");
+
+    SCM_ASSERT(IDENTIFIERP(var));
+
+    /* first, lookup the environment */
+    ref = scm_lookup_environment(var, env);
+    if (ref != SCM_INVALID_REF) {
+        /* variable is found in environment, so returns its value */
+        return DEREF(ref);
+    }
+
+#if SCM_USE_HYGIENIC_MACRO
+    if (FARSYMBOLP(var))
+        var = SCM_FARSYMBOL_SYM(var);
+    SCM_ASSERT(SYMBOLP(var));
+#endif
+
+    /* finally, look at the VCELL */
+    val = SCM_SYMBOL_VCELL(var);
+    if (EQ(val, SCM_UNBOUND))
+        ERR_OBJ("unbound variable", var);
+
+    return val;
 }
 
 /*
@@ -332,13 +483,13 @@ scm_validate_formals(ScmObj formals)
     /* This loop goes infinite if the formals is circular. SigSchme expects
      * that user codes are sane here. */
     for (len = 0; CONSP(formals); formals = CDR(formals), len++) {
-        if (!SYMBOLP(CAR(formals)))
+        if (!IDENTIFIERP(CAR(formals)))
             return SCM_LISTLEN_ENCODE_ERROR(len);
     }
     if (NULLP(formals))
         return len;
     /* dotted list allowed */
-    if (SYMBOLP(formals))
+    if (IDENTIFIERP(formals))
         return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
     return SCM_LISTLEN_ENCODE_ERROR(len);
 #else

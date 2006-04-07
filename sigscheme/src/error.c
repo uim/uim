@@ -139,6 +139,9 @@ scm_predefined_debug_categories(void)
 #if SCM_DEBUG_ENCODING
             | SCM_DBG_ENCODING
 #endif
+#if SCM_DEBUG_MACRO
+            | SCM_DBG_MACRO
+#endif
             );
 #else /* SCM_DEBUG */
     return SCM_DBG_NONE;
@@ -444,7 +447,7 @@ scm_show_backtrace(ScmObj trace_stack)
             FOR_EACH (elm, obj)
                 show_arg(elm, env);
             /* dot list */
-            if (SYMBOLP(obj))
+            if (IDENTIFIERP(obj))
                 show_arg(obj, env);
             break;
 

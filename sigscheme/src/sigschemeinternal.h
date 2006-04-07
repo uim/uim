@@ -75,6 +75,12 @@ extern "C" {
 #define SCM_ENTYPE_C_POINTER(o)      SCM_SAL_ENTYPE_C_POINTER(o)
 #define SCM_ENTYPE_C_FUNCPOINTER(o)  SCM_SAL_ENTYPE_C_FUNCPOINTER(o)
 
+#if SCM_USE_HYGIENIC_MACRO
+#define SCM_ENTYPE_MACRO(o)          SCM_SAL_ENTYPE_MACRO(o)
+#define SCM_ENTYPE_FARSYMBOL(o)      SCM_SAL_ENTYPE_FARSYMBOL(o)
+#define SCM_ENTYPE_SUBPAT(o)         SCM_SAL_ENTYPE_SUBPAT(o)
+#endif
+
 /* Extraction of a valuepacket is granted only for SigScheme-internals */
 #define SCM_ENTYPE_VALUEPACKET(o)    SCM_SAL_ENTYPE_VALUEPACKET(o)
 #define SCM_VALUEPACKET_VALUES(o)    SCM_SAL_VALUEPACKET_VALUES(o)
@@ -169,6 +175,15 @@ extern "C" {
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 #define MAKE_VALUEPACKET              SCM_MAKE_VALUEPACKET
 
+#if SCM_USE_HYGIENIC_MACRO
+#define MAKE_HYGIENIC_MACRO           SCM_MAKE_HYGIENIC_MACRO
+#define MAKE_FARSYMBOL                SCM_MAKE_FARSYMBOL
+#define MAKE_SUBPAT                   SCM_MAKE_SUBPAT
+#define HMACROP        SCM_HMACROP
+#define FARSYMBOLP     SCM_FARSYMBOLP
+#define SUBPATP        SCM_SUBPATP
+#endif /* SCM_USE_HYGIENIC_MACRO */
+
 #define NUMBERP        SCM_NUMBERP
 #define INTP           SCM_INTP
 #define CONSP          SCM_CONSP
@@ -192,6 +207,7 @@ extern "C" {
 #define ENVP           SCM_ENVP
 #define VALID_ENVP     SCM_VALID_ENVP
 #define ERROBJP        SCM_ERROBJP
+#define IDENTIFIERP    SCM_IDENTIFIERP
 
 #define LISTP          SCM_LISTP
 #define LIST_1_P       SCM_LIST_1_P
@@ -306,7 +322,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
     (CONSP(_lst) ? POP(_lst) : (ERR("missing argument(s)"), NULL))
 
 #define FOR_EACH_WHILE(_kar, _lst, _cond)                                    \
-    while ((_cond) && ((_kar) = POP((_lst)), 1))
+    while ((_cond) && ((_kar) = CAR((_lst)), (_lst) = CDR(_lst), 1))
 
 #define FOR_EACH(_kar, _lst) FOR_EACH_WHILE((_kar), (_lst), CONSP(_lst))
 
@@ -342,6 +358,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
     ENSURE_TYPE(VALID_ENVP, "valid environment specifier", (obj))
 #define ENSURE_ERROBJ(obj)  ENSURE_TYPE(ERROBJP, "error object", (obj))
 #define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
+#define ENSURE_IDENTIFIER(obj) ENSURE_TYPE(IDENTIFIERP, "identifier", (obj))
 
 #define ENSURE_MUTABLE_CONS(kons)                                            \
     (SCM_CONS_MUTABLEP(kons)                                                 \
@@ -447,6 +464,171 @@ typedef ScmRef ScmQueue;
     } while (/* CONSTCOND */ 0)
 #define SCM_QUEUE_TERMINATOR(_q)          (DEREF(_q))
 #define SCM_QUEUE_SLOPPY_APPEND(_q, _lst) (SET((_q), (_lst)))
+
+/*=======================================
+   Sequential Datum Translator
+=======================================*/
+/*
+ * These utilities are for copying a sequence with partial
+ * modifications.  They're used for handling quasiquotation and macro
+ * expansion.  Translator works as a copy-on-write iterator for a list
+ * or vector.
+ *
+ * First, initialize the proper type of translator with either
+ * TRL_INIT() or TRV_INIT(), supplying the datum to be duplicated.
+ * Then, traverse over the `copy' by successively and alternately
+ * calling TR_GET_ELM() and TR_NEXT().  If an item returned by
+ * TR_GET_ELM() should be replaced, then call TR_EXECUTE() with the
+ * message TR_REPLACE or TR_SPLICE (see their definition for details).
+ * When TR_ENDP() returns true, stop and obtain the duplicate with
+ * TR_EXTRACT().  TR_CALL() is a low-level construct that doesn't
+ * demultiplex the return value.  Usually you would want TR_EXECUTE()
+ * instead.  The only exception is if you expect a boolean to be
+ * returned (those that test true for TR_BOOL_MSG_P()).
+ *
+ * The last cdr of an improper list is *not* considered a part of the
+ * list and will be treated just like the () of a proper list.  In
+ * order to retrieve that last cdr, call TRL_GET_SUBLS() *after*
+ * TR_ENDP() returns true.  Replacement of that portion must be done
+ * with TRL_SET_SUBLS().
+ *
+ * No operation except TRL_GET_SUBLS(), TRL_SET_SUBLS(), TR_EXTRACT(),
+ * and TR_ENDP() can be done on a translator for which TR_ENDP()
+ * returns true.
+ *
+ * Everything prefixed with TRL_ is specific to list translators.
+ * Likewise, TRV_ shows specificity to vector translators.  TR_
+ * denotes a polymorphism.
+ */
+
+/**
+ * Message IDs.  We have to bring this upfront because ISO C forbids
+ * forward reference to enumerations.
+ */
+enum _tr_msg {
+    /** Don't do anything. */
+    TR_MSG_NOP,
+
+    /** Put OBJ in place of the current element. */
+    TR_MSG_REPLACE,
+
+    /** Splice OBJ into the current cell. */
+    TR_MSG_SPLICE,
+
+    /**
+     * Get the object at the current position.  If the input is an
+     * improper list, the terminator is not returned in reply to this
+     * message.  Use TRL_GET_SUBLS() to retrieve the terminator in
+     * that case.
+     */
+    TR_MSG_GET_ELM,
+
+    /** Advance the iterator on the input. */
+    TR_MSG_NEXT,
+
+    /** Extract the product. */
+    TR_MSG_EXTRACT,
+
+    /** True iff the end of the sequence has been reached. */
+    TR_MSG_ENDP,
+
+    /**
+     * Splice OBJ and discard all cells at or after the current one
+     * in the input.  Only implemented for list translators.
+     */
+    TRL_MSG_SET_SUBLS,
+
+    TR_MSG_USR
+#define TR_BOOL_MSG_P(m) ((m) == TR_MSG_ENDP)
+};
+
+typedef enum _tr_msg tr_msg;
+typedef struct _tr_param tr_param;
+typedef struct _list_translator list_translator;
+typedef struct _vector_translator vector_translator;
+typedef struct _sequence_translator sequence_translator;
+typedef union _translator_ret translator_ret;
+
+struct _tr_param {
+    tr_msg msg;
+    ScmObj obj;
+};
+
+struct _list_translator {
+    ScmObj output;
+    ScmObj cur;
+    ScmObj src;
+    ScmQueue q;
+};
+
+struct _vector_translator {
+    ScmObj src;
+    ScmObj diff;
+    ScmQueue q;                 /* Points to diff. */
+    int index;                  /* Current position. */
+    int growth;
+};
+
+struct _sequence_translator {
+    translator_ret (*trans)(sequence_translator *t, tr_msg msg, ScmObj obj);
+    union {
+        list_translator lst;
+        vector_translator vec;
+    } u;
+};
+
+union _translator_ret {
+    ScmObj object;
+    scm_bool boolean;
+};
+
+/*
+ * Operations on translators.  If a list- or vector-specific macro has
+ * the same name (sans prefix) as a polymorphic one, the former tends
+ * to be faster.
+ */
+
+/* List-specific macros. */
+#define TRL_INIT(_t, _in)     ((_t).u.lst.output = (_in),               \
+                               SCM_QUEUE_POINT_TO((_t).u.lst.q,         \
+                                                  (_t).u.lst.output),   \
+                               (_t).u.lst.src = (_in),                  \
+                               (_t).u.lst.cur = (_in),                  \
+                               (_t).trans = scm_listran)
+#define TRL_GET_ELM(_t)       (CAR((_t).u.lst.cur))
+#define TRL_NEXT(_t)          ((_t).u.lst.cur = CDR((_t).u.lst.cur))
+#define TRL_ENDP(_t)          (!CONSP((_t).u.lst.cur))
+#define TRL_GET_SUBLS(_t)     ((_t).u.lst.cur)
+#define TRL_SET_SUBLS(_t, _o) (TRL_CALL((_t), TRL_MSG_SET_SUBLS, (_o)))
+#define TRL_EXTRACT(_t)       ((_t).u.lst.output)
+#define TRL_CALL(_t, _m, _o)  (scm_listran(&(_t), (_m), (_o)))
+#define TRL_EXECUTE(_t, _p)   (SCM_ASSERT(!TR_BOOL_MSG_P((_p).msg)),          \
+                               scm_listran(&(_t), (_p).msg, (_p).obj).object)
+
+/* Vector-specific macros. */
+#define TRV_INIT(_t, _in)  ((_t).u.vec.diff = SCM_NULL,                 \
+                            SCM_QUEUE_POINT_TO((_t).u.vec.q,            \
+                                               (_t).u.vec.diff),        \
+                            (_t).u.vec.src = (_in),                     \
+                            (_t).u.vec.index = 0,                       \
+                            (_t).u.vec.growth = 0,                      \
+                            (_t).trans = scm_vectran)
+#define TRV_GET_ELM(_t)    (SCM_VECTOR_VEC((_t).u.vec.src)[(_t).u.vec.index])
+#define TRV_NEXT(_t)       (++(_t).u.vec.index)
+#define TRV_GET_INDEX(_t)  ((_t).u.vec.index)
+#define TRV_GET_VEC(_t)    (SCM_VECTOR_VEC((_t).u.vec.src))
+#define TRV_ENDP(_t)       (SCM_VECTOR_LEN((_t).u.vec.src) <= (_t).u.vec.index)
+#define TRV_EXTRACT(_t)    (TRV_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID).object)
+#define TRV_EXECUTE(_t, _p)  (TRV_CALL((_t), (_p).msg, (_p).obj).object)
+#define TRV_CALL(_t, _m, _o) (scm_vectran(&(_t), (_m), (_o)))
+
+/* Polymorphic macros. */
+#define TR_CALL(_t, _msg, _o) ((*(_t).trans)(&(_t), (_msg), (_o)))
+#define TR_EXECUTE(_t, _p) (TR_CALL((_t), (_p).msg, (_p).obj).object)
+#define TR_GET_ELM(_t)     (TR_CALL((_t), TR_MSG_GET_ELM, SCM_INVALID).object)
+#define TR_NEXT(_t)        ((void)TR_CALL((_t), TR_MSG_NEXT, SCM_INVALID))
+#define TR_ENDP(_t)        (TR_CALL((_t), TR_MSG_ENDP, SCM_INVALID).boolean)
+#define TR_EXTRACT(_t)     (TR_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID).object)
 
 /*=======================================
   Local Buffer Allocator
@@ -606,6 +788,15 @@ SCM_EXPORT ScmObj scm_replace_environment(ScmObj formals, ScmObj actuals,
 SCM_EXPORT ScmObj scm_update_environment(ScmObj actuals, ScmObj env);
 SCM_EXPORT ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
 SCM_EXPORT ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
+ScmRef scm_lookup_frame(ScmObj var, ScmObj frame);
+#if SCM_USE_HYGIENIC_MACRO
+ScmPackedEnv scm_pack_env(ScmObj env);
+ScmObj scm_unpack_env(ScmPackedEnv penv, ScmObj context);
+scm_bool scm_subenvp(ScmObj env, ScmPackedEnv sub);
+scm_bool scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv, ScmObj y,
+                              ScmPackedEnv penv, ScmObj env);
+ScmObj scm_wrap_identifier(ScmObj id, ScmPackedEnv penv, ScmObj env);
+#endif
 
 SCM_EXPORT scm_bool scm_valid_environmentp(ScmObj env);
 SCM_EXPORT scm_bool scm_valid_environment_extensionp(ScmObj formals,
@@ -625,6 +816,14 @@ SCM_EXPORT void scm_init_syntax(void);
 SCM_EXPORT ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
                                       ScmEvalState *eval_state);
+translator_ret scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj);
+translator_ret scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj);
+
+/* macro.c */
+void scm_init_macro(void);
+ScmObj scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
+ScmObj scm_p_reversed(ScmObj in); /* To be relocated. */
+void scm_macro_bad_scope(ScmObj sym);
 
 /* error.c */
 SCM_EXPORT void scm_init_error(void);
@@ -632,6 +831,7 @@ SCM_EXPORT void scm_init_error(void);
 /* list.c */
 SCM_EXPORT scm_int_t scm_finite_length(ScmObj lst);
 SCM_EXPORT scm_int_t scm_length(ScmObj lst);
+ScmObj scm_list_tail(ScmObj lst, scm_int_t k);
 
 /* number.c */
 SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,

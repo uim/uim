@@ -46,40 +46,40 @@
  *                  line break>
  * <atmosphere> --> <whitespace> | <comment>
  * <intertoken space> --> <atmosphere>*
- * 
+ *
  * <identifier> --> <initial> <subsequent>* | <peculiar identifier>
  * <initial> --> <letter> | <special initial>
  * <letter> --> a | b | c | ... | z
- * 
+ *
  * <special initial> --> ! | $ | % | & | * | / | : | < | = | > | ? | ^ | _ | ~
  * <subsequent> --> <initial> | <digit> | <special subsequent>
  * <digit> --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
  * <special subsequent> --> + | - | . | @
  * <peculiar identifier> --> + | - | ...
  * <syntactic keyword> --> <expression keyword>
- *      | else | => | define 
+ *      | else | => | define
  *      | unquote | unquote-splicing
  * <expression keyword> --> quote | lambda | if
  *      | set! | begin | cond | and | or | case
  *      | let | let* | letrec | do | delay
  *      | quasiquote
- * 
+ *
  * `<variable> => <'any <identifier> that isn't
  *                 also a <syntactic keyword>>
- * 
+ *
  * <boolean> --> #t | #f
  * <character> --> #\ <any character>
  *      | #\ <character name>
  * <character name> --> space | newline
- * 
+ *
  * <string> --> " <string element>* "
  * <string element> --> <any character other than " or \>
- *      | \" | \\ 
- * 
+ *      | \" | \\
+ *
  * <number> --> <num 2>| <num 8>
  *      | <num 10>| <num 16>
- * 
- * 
+ *
+ *
  * <num R> --> <prefix R> <complex R>
  * <complex R> --> <real R> | <real R> @ <real R>
  *     | <real R> + <ureal R> i | <real R> - <ureal R> i
@@ -96,8 +96,8 @@
  * <uinteger R> --> <digit R>+ #*
  * <prefix R> --> <radix R> <exactness>
  *     | <exactness> <radix R>
- * 
- * <suffix> --> <empty> 
+ *
+ * <suffix> --> <empty>
  *     | <exponent marker> <sign> <digit 10>+
  * <exponent marker> --> e | s | f | d | l
  * <sign> --> <empty>  | + |  -
@@ -109,7 +109,7 @@
  * <digit 2> --> 0 | 1
  * <digit 8> --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
  * <digit 10> --> <digit>
- * <digit 16> --> <digit 10> | a | b | c | d | e | f 
+ * <digit 16> --> <digit 10> | a | b | c | d | e | f
  */
 
 #include "config.h"
@@ -914,7 +914,7 @@ read_number_or_symbol(ScmObj port)
         if (err == TOKEN_BUF_EXCEEDED)
             ERR("invalid number literal");
 
-            
+
         if (!buf[1]                           /* '+' or '-' */
 #if !SCM_STRICT_R5RS
             /* FIXME: Obsolete with SRFI-75 style '|-sym| */
@@ -938,7 +938,7 @@ read_number_or_symbol(ScmObj port)
     }
 
     if (c == '@')
-        ERR("invalid identifier: ~S", buf);
+        ERR("invalid identifier starting with @");
 
     return read_symbol(port);
 }

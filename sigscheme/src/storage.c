@@ -245,6 +245,49 @@ scm_make_char(scm_ichar_t val)
     return obj;
 }
 
+#if SCM_USE_HYGIENIC_MACRO
+ScmObj
+scm_make_hygienic_macro(ScmObj rules, ScmObj env)
+{
+    ScmObj obj;
+
+    obj = scm_alloc_cell();
+    SCM_ENTYPE_MACRO(obj);
+    SCM_HMACRO_SET_RULES(obj, rules);
+    SCM_HMACRO_SET_ENV(obj, scm_pack_env(env));
+    return obj;
+}
+
+ScmObj
+scm_make_farsymbol(ScmObj sym, ScmPackedEnv env)
+{
+    ScmObj obj;
+
+#if !SCM_USE_SYNTAX_CASE
+    if (SCM_FARSYMBOLP(sym) && SCM_FARSYMBOL_ENV(sym) > env)
+        scm_macro_bad_scope(sym);
+#endif
+    obj = scm_alloc_cell();
+    SCM_ENTYPE_FARSYMBOL(obj);
+    SCM_FARSYMBOL_SET_SYM(obj, sym);
+    SCM_FARSYMBOL_SET_ENV(obj, env);
+    return obj;
+}
+
+ScmObj
+scm_make_subpat(ScmObj x, scm_int_t meta)
+{
+    ScmObj obj;
+
+    obj = scm_alloc_cell();
+    SCM_ENTYPE_SUBPAT(obj);
+    SCM_SUBPAT_SET_OBJ(obj, x);
+    SCM_SUBPAT_SET_META(obj, meta);
+
+    return obj;
+}
+#endif
+
 static ScmObj
 scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
 {
