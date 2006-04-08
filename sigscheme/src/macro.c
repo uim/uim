@@ -121,7 +121,7 @@ enum dbg_flag {
     DBG_PVAR         = 1 << 4,
     DBG_RETURN       = 1 << 5,
     DBG_UNWRAP       = 1 << 6
-} debug_mode = DBG_UNWRAP;
+} debug_mode = 0;
 
 static void
 dbg_print(enum dbg_flag mask, const char *fmt, ...)
