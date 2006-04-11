@@ -2,6 +2,13 @@
 
 SSCM=src/sscm
 
+if test "x$1" != "x"; then
+  while test "$#" -ne 0; do
+    $SSCM "$1"
+    shift
+  done
+  exit 0
+fi
 
 echo "[ Run Test ported from Bigloo]"
 for test in test/bigloo-*.scm

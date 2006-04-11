@@ -422,18 +422,21 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
         if (!CONSP(clause))
             ERR_OBJ("bad clause", clause);
 
-        test = SCM_UNWRAP_KEYWORD(CAR(clause));
+        test = CAR(clause);
         exps = CDR(clause);
 
-        if (EQ(test, l_sym_else)) {
-            ASSERT_NO_MORE_ARG(args);
-        } else {
-            if (VALIDP(case_key)) {
+        if (VALIDP(case_key)) {
+            test = SCM_UNWRAP_SYNTAX(test);
+            if (EQ(test, l_sym_else)) {
+                ASSERT_NO_MORE_ARG(args);
+            } else {
                 test = scm_p_memv(case_key, test);
                 test = (NFALSEP(test)) ? case_key : SCM_FALSE;
-            } else {
-                test = EVAL(test, env);
             }
+        } else if (EQ(test, l_sym_else)) {
+            ASSERT_NO_MORE_ARG(args);
+        } else {
+            test = EVAL(test, env);
         }
 
         if (NFALSEP(test)) {
@@ -1159,7 +1162,8 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
 
     val = EVAL(exp, env);
     if (scm_toplevel_environmentp(env)) {
-        SCM_SYMBOL_SET_VCELL(var, val);
+        SCM_ASSERT(SYMBOLP(var) || SYMBOLP(SCM_FARSYMBOL_SYM(var)));
+        SCM_SYMBOL_SET_VCELL(SCM_UNWRAP_KEYWORD(var), val);
     } else {
 #if SCM_STRICT_DEFINE_PLACEMENT
         /* internal definitions are handled as a virtual letrec in

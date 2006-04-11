@@ -81,8 +81,8 @@ extern "C" {
 #define SCM_CDBG(args) (scm_categorized_debug args)
 #define SCM_DBG(args)  (scm_debug args)
 #else /* SCM_DEBUG */
-#define SCM_CDBG(args)
-#define SCM_DBG(args)
+#define SCM_CDBG(args) SCM_EMPTY_EXPR
+#define SCM_DBG(args)  SCM_EMPTY_EXPR
 #endif /* SCM_DEBUG */
 
 /*
@@ -102,6 +102,15 @@ extern "C" {
  * sane even if the condition is false with no actual check.
  *
  */
+
+/* An empty definition is generally not a good idea.  (Consider for
+ * example (FOO(), bar) where FOO() expands to only whitespaces.)
+ * Simply using 0 prompts warnings everywhere, so we cast it to void.
+ * There may be a better solution out there, so use this macro instead
+ * of crudely writing out the same expression.  The idea is taken from
+ * glibc's assert.h but it's barely even a line of code so it should
+ * be OK as the copyright goes... anyone know for sure? */
+#define SCM_EMPTY_EXPR ((void)0)
 #if SCM_DEBUG
 #if SCM_CHICKEN_DEBUG
 /* allows survival recovery */
@@ -112,7 +121,7 @@ extern "C" {
 #define SCM_ASSERT(cond) (assert(cond))
 #endif /* SCM_CHICKEN_DEBUG */
 #else /* SCM_DEBUG */
-#define SCM_ASSERT(cond)
+#define SCM_ASSERT(cond) SCM_EMPTY_EXPR
 #endif /* SCM_DEBUG */
 #define SCM_ENSURE(cond)                                                     \
     ((cond) || (scm_die("invalid condition", __FILE__, __LINE__), 1))
@@ -1267,11 +1276,8 @@ SCM_EXPORT ScmObj scm_p_cddddr(ScmObj lst);
 
 /* macro.c */
 #if SCM_USE_HYGIENIC_MACRO
-#if SCM_DEBUG_MACRO
 ScmObj scm_s_match(ScmObj form, ScmObj patterns, ScmEvalState *state);
 ScmObj scm_s_syntax_rules(ScmObj rules, ScmObj env);
-#endif
-ScmObj scm_p_set_macro_debug_flagsd(ScmObj new_mode);
 ScmObj scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
 ScmObj scm_unwrap_syntaxd(ScmObj obj);
 ScmObj scm_unwrap_keyword(ScmObj obj);

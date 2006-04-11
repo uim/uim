@@ -170,15 +170,23 @@ scm_bool
 scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv,
                      ScmObj y, ScmPackedEnv penv, ScmObj env)
 {
+    ScmRef yloc;
     SCM_ASSERT(xpenv <= penv);
     SCM_ASSERT(SCM_PENV_EQ(scm_pack_env(env), penv));
-#if 0
-    CDBG((SCM_DBG_MACRO, "identifier=? ~s [~MD] <> ~s [~MD] in ~s\n",
-          x, xpenv, y, penv, env));
-#endif
-    if (lookup_n_frames(y, penv - xpenv, env) != SCM_INVALID_REF)
+
+    while (penv-- > xpenv) {
+        if (scm_lookup_frame(y, CAR(env)) != SCM_INVALID_REF)
+            return scm_false;
+        env = CDR(env);
+    }
+    if (EQ(x, y))
+        return scm_true;
+    yloc = scm_lookup_environment(y, env);
+    if (yloc != SCM_INVALID_REF)
+        return (scm_lookup_environment(x, env) == yloc);
+    if (scm_lookup_environment(x, env) != SCM_INVALID_REF)
         return scm_false;
-    return EQ(x, y) || (FARSYMBOLP(y) && EQ(x, SCM_FARSYMBOL_SYM(y)));
+    return EQ(SCM_UNWRAP_KEYWORD(x), SCM_UNWRAP_KEYWORD(y));
 }
 
 /**

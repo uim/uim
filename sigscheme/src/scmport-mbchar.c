@@ -64,7 +64,7 @@
 #if SCM_USE_STATEFUL_ENCODING
 #define SCM_MBCPORT_CLEAR_STATE(port) (port->state = NULL)
 #else
-#define SCM_MBCPORT_CLEAR_STATE(port)
+#define SCM_MBCPORT_CLEAR_STATE(port) SCM_EMPTY_EXPR
 #endif
 
 /*=======================================

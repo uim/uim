@@ -111,6 +111,7 @@
 
 #if SCM_DEBUG_MACRO
 #define DBG_PRINT(args) (dbg_print args)
+#define INIT_DBG() init_dbg()
 #define DEFINE(name, init)  (SCM_SYMBOL_SET_VCELL(scm_intern((name)), (init)))
 #include <stdarg.h>
 enum dbg_flag {
@@ -120,7 +121,8 @@ enum dbg_flag {
     DBG_FUNCALL      = 1 << 3,
     DBG_PVAR         = 1 << 4,
     DBG_RETURN       = 1 << 5,
-    DBG_UNWRAP       = 1 << 6
+    DBG_UNWRAP       = 1 << 6,
+    DBG_EXPANDER     = 1 << 7
 } debug_mode = 0;
 
 static void
@@ -134,14 +136,18 @@ dbg_print(enum dbg_flag mask, const char *fmt, ...)
     }
 }
 
-ScmObj
+static ScmObj
 scm_p_set_macro_debug_flagsd(ScmObj new_mode)
 {
-    DECLARE_FUNCTION("set-macro-debug-flags!", procedure_fixed_1);
     SCM_ASSERT(INTP(new_mode));
     debug_mode = SCM_INT_VALUE(new_mode);
     return SCM_UNDEF;
 }
+
+static const struct scm_func_registration_info dbg_funcs[] = {
+    { "set-macro-debug-flags!", scm_p_set_macro_debug_flagsd,
+      SCM_PROCEDURE_FIXED_1 },
+};
 
 static void
 init_dbg(void)
@@ -153,10 +159,13 @@ init_dbg(void)
     DEFINE("%debug-macro-pvar", MAKE_INT(DBG_PVAR));
     DEFINE("%debug-macro-return", MAKE_INT(DBG_RETURN));
     DEFINE("%debug-macro-unwrap", MAKE_INT(DBG_UNWRAP));
+    DEFINE("%debug-macro-expander", MAKE_INT(DBG_EXPANDER));
+    scm_register_funcs(dbg_funcs);
 }
 
 #else  /* not SCM_DEBUG_MACRO */
-#define DBG_PRINT(args)               /* Empty. */
+#define DBG_PRINT(args) SCM_EMPTY_EXPR
+#define INIT_DBG()      SCM_EMPTY_EXPR
 #endif /* not SCM_DEBUG_MACRO */
 
 
@@ -195,7 +204,7 @@ scm_init_macro(void)
     scm_define_alias("let-syntax", "let");
     scm_define_alias("letrec-syntax", "letrec");
     scm_define_alias("define-syntax", "define");
-    init_dbg();
+    INIT_DBG();
 }
 
 void SCM_NORETURN
@@ -231,13 +240,16 @@ expand_hygienic_macro(ScmObj macro, ScmObj args, ScmObj env)
 ScmObj
 scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
 {
+    ScmObj ret;
     DECLARE_INTERNAL_FUNCTION("scm_expand_macro");
     eval_state->ret_type = SCM_VALTYPE_NEED_EVAL;
 #if SCM_STRICT_R5RS
     if (!SCM_LISTLEN_PROPERP(scm_length(args)))
         ERR_OBJ("bad argument list", args);
 #endif
-    return expand_hygienic_macro(macro, args, eval_state->env);
+    ret = expand_hygienic_macro(macro, args, eval_state->env);
+    DBG_PRINT((DBG_EXPANDER, "expanded to ~s\n", ret));
+    return ret;
 }
 
 ScmObj
@@ -597,7 +609,7 @@ match(ScmObj pattern, ScmObj form, ScmPackedEnv def_penv,
 static scm_bool
 match_rec(match_context *ctx, ScmObj pat, ScmObj form)
 {
-#ifdef SCM_DEBUG_MACRO
+#if SCM_DEBUG_MACRO
     ScmObj pat_save = pat;
     ScmObj form_save = form;
 #endif
@@ -1049,7 +1061,7 @@ unwrap_vectord(ScmObj obj)
 ScmObj
 scm_unwrap_syntaxd(ScmObj arg)
 {
-    DBG_PRINT((DBG_UNWRAP | DBG_FUNCALL, "unwrap-syntax!: ~s\n", arg));
+    DBG_PRINT((DBG_UNWRAP, "unwrap-syntax!: ~s\n", arg));
     if (FARSYMBOLP(arg))
         return unwrap_farsymbol(arg);
     unwrap_dispatch(arg);
@@ -1059,7 +1071,7 @@ scm_unwrap_syntaxd(ScmObj arg)
 ScmObj
 scm_unwrap_keyword(ScmObj obj)
 {
-    DBG_PRINT((DBG_UNWRAP | DBG_FUNCALL, "unwrap-keyword: ~s\n", obj));
+    DBG_PRINT((DBG_UNWRAP, "unwrap-keyword: ~s\n", obj));
     return FARSYMBOLP(obj) ? unwrap_farsymbol(obj) : obj;
 }
 

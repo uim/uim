@@ -275,6 +275,25 @@
                      (list (macro x)
                            (macro y))))))
 
+(define-syntax tl-macro
+  (syntax-rules (x)
+    ((_ x) 'match)
+    ((_ y) 'mismatch)))
+
+(assert-equal? "syntax-rules literals 2"
+               '(match mismatch mismatch (match mismatch))
+               (list (tl-macro x)
+                     (tl-macro z)
+                     (let ((x 0))
+                       (tl-macro x))
+                     (let-syntax
+                         ((foo (syntax-rules ()
+                                 ((_) (tl-macro x))))
+                          (bar (syntax-rules ()
+                                 ((_) (tl-macro z)))))
+                       (list (foo)
+                             (bar)))))
+
 (assert-equal? "syntax-rules literals in nested macro"
                'mismatch
                (let-syntax
@@ -294,6 +313,25 @@
                                      (macro ex)))))))
                           (insert x))))))
                  (foo)))
+
+(assert-equal? "syntax-rules literals in nested macro 2"
+               'match
+               ;; the y in (foo y) and x in (_ x) are both timestamped
+               ;; once but at different times
+               (let-syntax
+                   ((baz (syntax-rules ()
+                           ((_ arg)
+                            (let-syntax
+                                ((bar (syntax-rules ()
+                                        ((_ y)
+                                         (let-syntax
+                                             ((foo (syntax-rules (x)
+                                                     ((_ x) 'match)
+                                                     ((_ _) 'mismatch))))
+                                           (foo y))))))
+                              (bar arg))))))
+                 (baz x))
+               )
 
 (assert-equal? "syntax-rules hygiene in simple recursion"
                '(0 1 2)
@@ -552,6 +590,12 @@
               (let-syntax
                   ((macro (syntax-rules ()
                             ((_ (a . ...)) #f))))
+                (macro (0 . 1))))
+
+(assert-error "syntax-rules misplaced ellipsis 5"
+              (let-syntax
+                  ((macro (syntax-rules ()
+                            ((_ (a ... . b)) #f))))
                 (macro (0 . 1))))
 
 (assert-error "syntax-rules missing ellipsis"

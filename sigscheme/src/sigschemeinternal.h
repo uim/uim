@@ -304,9 +304,9 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define ASSERT_NO_MORE_ARG(args)     ENSURE_NO_MORE_ARG(args)
 #define ASSERT_PROPER_ARG_LIST(args) ENSURE_PROPER_ARG_LIST(args)
 #else  /* not SCM_STRICT_ARGCHECK */
-#define NO_MORE_ARG(args) (!CONSP(args))
-#define ASSERT_NO_MORE_ARG(args)
-#define ASSERT_PROPER_ARG_LIST(args)
+#define NO_MORE_ARG(args) (!CONSP(args)) SCM_EMPTY_EXPR
+#define ASSERT_NO_MORE_ARG(args)     SCM_EMPTY_EXPR
+#define ASSERT_PROPER_ARG_LIST(args) SCM_EMPTY_EXPR
 #endif /* not SCM_STRICT_ARGCHECK */
 
 /* Destructively retreives the first element of a list. */
