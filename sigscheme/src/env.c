@@ -337,6 +337,7 @@ scm_lookup_environment(ScmObj var, ScmObj env)
 
     /* lookup in frames */
 #if SCM_USE_HYGIENIC_MACRO
+    env_save = env;
     depth = 0;
 #endif
     for (; !NULLP(env); env = CDR(env)) {
@@ -351,7 +352,6 @@ scm_lookup_environment(ScmObj var, ScmObj env)
     SCM_ASSERT(NULLP(env));
 
 #if SCM_USE_HYGIENIC_MACRO
-    env_save = env;
     if (FARSYMBOLP(var)) {
         scm_int_t i;
         id_depth = SCM_FARSYMBOL_ENV(var);
