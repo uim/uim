@@ -1054,7 +1054,7 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                     form = TRL_GET_SUBLS(tr);
                     obj = EVAL(CAR(args), env);
                     TRL_SET_SUBLS(tr, obj);
-                    my_result.obj  = TRL_EXTRACT(tr);
+                    my_result.obj = TRL_EXTRACT(tr);
                     my_result.msg = TR_MSG_REPLACE;
                     return my_result;
                 }
@@ -1074,7 +1074,7 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                     if (!LISTP(obj))
                         ERR(",@<x> must evaluate to a list");
 
-                    my_result.obj  = obj;
+                    my_result.obj = obj;
                     my_result.msg = TR_MSG_SPLICE;
                     return my_result;
                 }
@@ -1097,7 +1097,7 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
             return tmp_result;
         }
 #endif
-        tmp_result.obj  = SCM_INVALID;
+        tmp_result.obj = SCM_INVALID;
         tmp_result.msg = TR_MSG_NOP;
         return tmp_result;
     }

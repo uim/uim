@@ -1,6 +1,6 @@
 /*===========================================================================
- *  FileName : syntax.c
- *  About    : R5RS syntaxes
+ *  FileName : macro.c
+ *  About    : R5RS hygienic macros
  *
  *  Copyright (C) 2006 Jun Inoue <jun.lambda@gmail.com>
  *
@@ -19,20 +19,18 @@
  *     may be used to endorse or promote products derived from this software
  *     without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- *  CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
- *  INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
- *  USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
- *  AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *===========================================================================*/
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+ *  IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ *  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+===========================================================================*/
 
 #include <stdlib.h>
 
@@ -129,6 +127,7 @@ static void
 dbg_print(enum dbg_flag mask, const char *fmt, ...)
 {
     va_list va;
+
     if (mask & debug_mode) {
         va_start(va, fmt);
         scm_vformat(scm_err, SCM_FMT_INTERNAL, fmt, va);
@@ -140,6 +139,7 @@ static ScmObj
 scm_p_set_macro_debug_flagsd(ScmObj new_mode)
 {
     SCM_ASSERT(INTP(new_mode));
+
     debug_mode = SCM_INT_VALUE(new_mode);
     return SCM_UNDEF;
 }
@@ -242,6 +242,7 @@ scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
     DECLARE_INTERNAL_FUNCTION("scm_expand_macro");
+
     eval_state->ret_type = SCM_VALTYPE_NEED_EVAL;
 #if SCM_STRICT_R5RS
     if (!SCM_LISTLEN_PROPERP(scm_length(args)))
@@ -257,6 +258,7 @@ scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
     DECLARE_FUNCTION("expand-macro", syntax_variadic_tailrec_1);
+
     ret = scm_expand_macro(EVAL(macro, eval_state->env), args, eval_state);
     eval_state->ret_type = SCM_VALTYPE_AS_IS;
     return ret;
@@ -268,7 +270,6 @@ scm_s_syntax_rules(ScmObj args, ScmObj env)
     ScmObj rule, compiled_rules;
     ScmQueue q;
     compilation_context ctx;
-
     DECLARE_FUNCTION("syntax-rules", syntax_variadic_0);
 
     if (NULLP(args) || NULLP(CDR(args)))
@@ -369,6 +370,7 @@ static ScmObj
 compile(compilation_context *ctx, ScmObj form)
 {
     DECLARE_INTERNAL_FUNCTION("compile (pattern or template)");
+
     if (ELLIPSISP(form))
         ERR("misplaced ellipsis");
     return compile_rec(ctx, form, 0);
@@ -1117,6 +1119,7 @@ scm_p_reversed(ScmObj in)
 {
     ScmObj out, next;
     DECLARE_FUNCTION("reverse!", procedure_fixed_1);
+
     out = SCM_NULL;
     while (CONSP(in)) {
         next = CDR(in);
@@ -1132,7 +1135,9 @@ static scm_int_t
 list_find_index(ScmObj x, ScmObj ls)
 {
     ScmObj kar;
-    scm_int_t index = 0;
+    scm_int_t index;
+
+    index = 0;
     FOR_EACH (kar, ls) {
         if (EQ(x, kar))
             return index;

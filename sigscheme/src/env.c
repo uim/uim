@@ -114,6 +114,7 @@ scm_pack_env(ScmObj env)
 {
     scm_int_t depth;
     DECLARE_INTERNAL_FUNCTION("scm_env_depth");
+
     depth = scm_length(env);
     SCM_ASSERT(SCM_LISTLEN_PROPERP(depth));
     return depth;
@@ -124,6 +125,7 @@ ScmObj
 scm_unpack_env(ScmPackedEnv packed, ScmObj context)
 {
     scm_int_t depth;
+
     depth = scm_length(context);
     while (depth-- > packed)
         context = CDR(context);
@@ -135,6 +137,7 @@ static ScmRef
 lookup_n_frames(ScmObj id, scm_int_t n, ScmObj env)
 {
     ScmRef ref;
+
     while (n--) {
         SCM_ASSERT(ENVP(env));
         ref = scm_lookup_frame(id, CAR(env));
@@ -171,6 +174,7 @@ scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv,
                      ScmObj y, ScmPackedEnv penv, ScmObj env)
 {
     ScmRef yloc;
+
     SCM_ASSERT(xpenv <= penv);
     SCM_ASSERT(SCM_PENV_EQ(scm_pack_env(env), penv));
 
@@ -198,8 +202,10 @@ ScmObj
 scm_wrap_identifier(ScmObj id, ScmPackedEnv depth, ScmObj env)
 {
     scm_int_t id_depth;
+
     SCM_ASSERT(IDENTIFIERP(id));
     SCM_ASSERT(depth == scm_pack_env(env));
+
     if (FARSYMBOLP(id)) {
         /* Try to reduce lookup overhead. */
         id_depth = SCM_FARSYMBOL_ENV(id);
@@ -321,8 +327,8 @@ scm_lookup_environment(ScmObj var, ScmObj env)
     ScmObj frame;
     ScmRef ref;
 #if SCM_USE_HYGIENIC_MACRO
-    scm_int_t depth = 0, id_depth;
-    ScmObj env_save = env;
+    scm_int_t depth, id_depth;
+    ScmObj env_save;
 #endif /* SCM_USE_HYGIENIC_MACRO */
     DECLARE_INTERNAL_FUNCTION("scm_lookup_environment");
 
@@ -330,6 +336,9 @@ scm_lookup_environment(ScmObj var, ScmObj env)
     SCM_ASSERT(VALID_ENVP(env));
 
     /* lookup in frames */
+#if SCM_USE_HYGIENIC_MACRO
+    depth = 0;
+#endif
     for (; !NULLP(env); env = CDR(env)) {
         frame = CAR(env);
         ref = scm_lookup_frame(var, frame);
@@ -342,6 +351,7 @@ scm_lookup_environment(ScmObj var, ScmObj env)
     SCM_ASSERT(NULLP(env));
 
 #if SCM_USE_HYGIENIC_MACRO
+    env_save = env;
     if (FARSYMBOLP(var)) {
         scm_int_t i;
         id_depth = SCM_FARSYMBOL_ENV(var);
