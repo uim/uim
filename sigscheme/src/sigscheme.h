@@ -290,10 +290,18 @@ enum ScmObjType {
     ScmContinuation = 12,
     ScmValuePacket  = 13,
     ScmPort         = 14,
-    ScmMacro        = 15,
-    ScmFarsymbol    = 16,
-    ScmSubpat       = 17,
-    ScmFreeCell     = 18,
+    ScmFreeCell     = 15,
+#if 0
+    /* Reserved for future extension of argument types-encoded
+     * ScmFuncTypeCode. The types for it should not exceed 4-bit.  */
+    ScmNumber       = ScmConstant,
+    ScmProc         = ScmValuePacket,
+    ScmAny          = ScmFreeCell,
+#endif
+
+    ScmMacro        = 16,
+    ScmFarsymbol    = 17,
+    ScmSubpat       = 18,
 
     ScmCFuncPointer = 30,
     ScmCPointer     = 31

@@ -577,7 +577,7 @@ write_farsymbol(ScmObj port, ScmObj obj, enum  OutputType otype)
     /* Assumes that ScmPackedEnv is an integer. */
     scm_port_puts(port, "#<farsym");
     for (; SCM_FARSYMBOLP(obj); obj = SCM_FARSYMBOL_SYM(obj))
-        scm_format(port, SCM_FMT_RAW_C, " ~D ", SCM_FARSYMBOL_ENV(obj));
+        scm_format(port, SCM_FMT_RAW_C, " ~MD ", SCM_FARSYMBOL_ENV(obj));
     scm_display(port, obj); /* Name. */
     scm_port_puts(port, ">");
 }
