@@ -93,7 +93,7 @@ static ScmObj l_sym_lex_env, l_sym_cond_catch, l_sym_body;
 static ScmObj l_sym_condition, l_sym_guard_k, l_sym_handler_k;
 
 /* procedures and syntaxes */
-static ScmObj l_syn_apply, l_proc_values;
+static ScmObj l_syn_raw_quote, l_syn_apply, l_proc_values;
 static ScmObj l_syn_set_cur_handlers, l_proc_fallback_handler;
 static ScmObj l_proc_with_exception_handlers;
 static ScmObj l_syn_guard_internal, l_syn_guard_handler, l_syn_guard_handler_body;
@@ -116,6 +116,7 @@ SCM_GLOBAL_VARS_END(static_srfi34);
 #define l_sym_condition         SCM_GLOBAL_VAR(static_srfi34, l_sym_condition)
 #define l_sym_guard_k           SCM_GLOBAL_VAR(static_srfi34, l_sym_guard_k)
 #define l_sym_handler_k         SCM_GLOBAL_VAR(static_srfi34, l_sym_handler_k)
+#define l_syn_raw_quote         SCM_GLOBAL_VAR(static_srfi34, l_syn_raw_quote)
 #define l_syn_apply             SCM_GLOBAL_VAR(static_srfi34, l_syn_apply)
 #define l_proc_values           SCM_GLOBAL_VAR(static_srfi34, l_proc_values)
 #define l_syn_set_cur_handlers                                               \
@@ -136,6 +137,7 @@ SCM_DEFINE_STATIC_VARS(static_srfi34);
 /*=======================================
   File Local Function Declarations
 =======================================*/
+static ScmObj raw_quote(ScmObj datum, ScmObj env);
 static ScmObj set_cur_handlers(ScmObj handlers, ScmObj env);
 static ScmObj with_exception_handlers(ScmObj new_handlers, ScmObj thunk);
 static ScmObj guard_internal(ScmObj q_guard_k, ScmObj env);
@@ -190,6 +192,8 @@ scm_initialize_srfi34(void)
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &guard_handler_body);
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_tailrec_0, &guard_body);
 
+    l_syn_raw_quote
+        = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &raw_quote);
     l_syn_set_cur_handlers
         = MAKE_FUNC(SCM_SYNTAX_FIXED_1,         &set_cur_handlers);
     l_proc_with_exception_handlers
@@ -232,6 +236,15 @@ scm_initialize_srfi34(void)
     scm_register_funcs(scm_srfi34_func_info_table);
 
     l_current_exception_handlers = LIST_1(l_proc_fallback_handler);
+}
+
+/* to avoid unwanted unwrap-syntax application by ordinary quote */
+static ScmObj
+raw_quote(ScmObj datum, ScmObj env)
+{
+    DECLARE_PRIVATE_FUNCTION("raw_quote", syntax_fixed_1);
+
+    return datum;
 }
 
 static ScmObj
@@ -369,10 +382,11 @@ delay(ScmObj evaled_obj, ScmObj env)
     if (VALUEPACKETP(evaled_obj)) {
         vals = SCM_VALUEPACKET_VALUES(evaled_obj);
         return scm_s_delay(LIST_3(l_syn_apply,
-                                  l_proc_values, LIST_2(SYM_QUOTE, vals)),
+                                  l_proc_values,
+                                  LIST_2(l_syn_raw_quote, vals)),
                            env);
     } else {
-        return scm_s_delay(LIST_2(SYM_QUOTE, evaled_obj), env);
+        return scm_s_delay(LIST_2(l_syn_raw_quote, evaled_obj), env);
     }
 }
 
