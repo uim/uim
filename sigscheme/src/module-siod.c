@@ -152,7 +152,7 @@ scm_p_symbol_value(ScmObj var)
 
     ENSURE_SYMBOL(var);
 
-    return scm_symbol_value(var, SCM_NULL);
+    return scm_symbol_value(var, SCM_INTERACTION_ENV);
 }
 
 /*
