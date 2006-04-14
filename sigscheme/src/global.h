@@ -69,7 +69,7 @@ extern "C" {
     struct scm_g_aggregated {                                                \
         SCM_GLOBAL_STRUCT_WARNING_SUPPRESSOR
 #define SCM_AGGREGATED_GLOBAL_VARS(_name)                                    \
-        struct scm_g_##_name _name;
+        struct scm_g_##_name _name
 #define SCM_AGGREGATED_GLOBAL_VARS_END                                       \
     } scm_g_aggregated_instance
 
