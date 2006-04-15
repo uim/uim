@@ -59,6 +59,17 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
+/* An empty definition is generally not a good idea.  (Consider for
+ * example (FOO(), bar) where FOO() expands to only whitespaces.)
+ * Simply using 0 prompts warnings everywhere, so we cast it to void.
+ * There may be a better solution out there, so use this macro instead
+ * of crudely writing out the same expression.  The idea is taken from
+ * glibc's assert.h but it's barely even a line of code so it should
+ * be OK as the copyright goes... anyone know for sure? */
+#ifndef SCM_EMPTY_EXPR
+#define SCM_EMPTY_EXPR ((void)0)
+#endif
+
 #define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
 #define SCM_ERRMSG_IMPROPER_ARGS                                             \
@@ -103,14 +114,6 @@ extern "C" {
  *
  */
 
-/* An empty definition is generally not a good idea.  (Consider for
- * example (FOO(), bar) where FOO() expands to only whitespaces.)
- * Simply using 0 prompts warnings everywhere, so we cast it to void.
- * There may be a better solution out there, so use this macro instead
- * of crudely writing out the same expression.  The idea is taken from
- * glibc's assert.h but it's barely even a line of code so it should
- * be OK as the copyright goes... anyone know for sure? */
-#define SCM_EMPTY_EXPR ((void)0)
 #if SCM_DEBUG
 #if SCM_CHICKEN_DEBUG
 /* allows survival recovery */

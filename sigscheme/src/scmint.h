@@ -70,6 +70,9 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
+#ifndef SCM_EMPTY_EXPR
+#define SCM_EMPTY_EXPR ((void)0)
+#endif
 
 /*=======================================
   Type Definitions
@@ -91,12 +94,9 @@ extern "C" {
  * VALUE FOR TRUE. Use (val) or (val != scm_false) instead.
  *
  */
-#ifndef SCM_BOOL_DEFINED
 typedef int scm_bool;
 #define scm_false 0
 #define scm_true  1
-#define SCM_BOOL_DEFINED
-#endif /* SCM_BOOL_DEFINED */
 
 /*
  * Fixed bit width numbers
@@ -137,7 +137,7 @@ typedef unsigned int      scm_uint_t;
 #define SCM_UINT_T_MAX    UINT_MAX
 #else
 #undef  SCM_USE_LONG_FIXNUM
-#define SCM_USE_LONG_FIXNUM
+#define SCM_USE_LONG_FIXNUM 1
 typedef long              scm_int_t;
 typedef unsigned long     scm_uint_t;
 #define SIZEOF_SCM_INT_T  SIZEOF_LONG
@@ -183,7 +183,7 @@ typedef uint32_t             scm_uintref_t;
 #define SIZEOF_SCM_UINTREF_T SIZEOF_INT32_T
 #else
 #undef  SCM_USE_INTPTR_SCMREF
-#define SCM_USE_INTPTR_SCMREF
+#define SCM_USE_INTPTR_SCMREF 1
 typedef intptr_t             scm_intref_t;
 typedef uintptr_t            scm_uintref_t;
 #define SIZEOF_SCM_INTREF_T  SIZEOF_INTPTR_T
@@ -231,7 +231,6 @@ typedef scm_uint_t           scm_uintobj_t;
  * Actual bit width varies for each storage implementation. Refer
  * SCM_CHAR_BITS, SCM_CHAR_MAX and SCM_CHAR_MIN if needed.
  */
-#ifndef SCM_ICHAR_T_DEFINED
 typedef int_fast32_t       scm_ichar_t;
 #define SIZEOF_SCM_ICHAR_T SIZEOF_INT_FAST32_T
 #define SCM_ICHAR_T_MAX    INT_FAST32_MAX
@@ -239,8 +238,6 @@ typedef int_fast32_t       scm_ichar_t;
 #if (EOF < SCM_ICHAR_T_MIN || SCM_ICHAR_T_MAX < EOF)
 #error "scm_ichar_t cannot represent EOF on this platform"
 #endif
-#define SCM_ICHAR_T_DEFINED
-#endif /* SCM_ICHAR_T_DEFINED */
 
 /*
  * Definitive byte type
@@ -249,13 +246,10 @@ typedef int_fast32_t       scm_ichar_t;
  * (for example, ARM compilers treat 'char' as 'unsigned char'), use this type
  * for raw strings and so on.
  */
-#ifndef SCM_BYTE_T_DEFINED
-#define SCM_BYTE_T_DEFINED
 typedef unsigned char      scm_byte_t;
 #define SIZEOF_SCM_BYTE_T  1
 #define SCM_BYTE_T_MAX     UCHAR_MAX
 #define SCM_BYTE_T_MIN     0
-#endif /* SCM_BYTE_T_DEFINED */
 
 /*
  * Constant-width character for strings (not used yet)

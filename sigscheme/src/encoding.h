@@ -71,8 +71,8 @@ extern "C" {
 #define SCM_MBCINFO_SET_STATE(inf, stat) ((inf).state = (stat))
 #define SCM_MBCINFO_GET_STATE(inf)       ((inf).state)
 #else /* SCM_USE_STATEFUL_ENCODING */
-#define SCM_MBCINFO_CLEAR_STATE(inf)
-#define SCM_MBCINFO_SET_STATE(inf, stat)
+#define SCM_MBCINFO_CLEAR_STATE(inf)     SCM_EMPTY_EXPR
+#define SCM_MBCINFO_SET_STATE(inf, stat) SCM_EMPTY_EXPR
 #define SCM_MBCINFO_GET_STATE(inf)       SCM_MB_STATELESS
 #endif /* SCM_USE_STATEFUL_ENCODING */
 #define SCM_MBCINFO_CLEAR_FLAG(inf)      ((inf).flag = 0)
@@ -98,8 +98,8 @@ extern "C" {
 #define SCM_MBS_CLEAR_STATE(mbs)      ((mbs).state = 0)
 #else
 #define SCM_MBS_GET_STATE(mbs)        SCM_MB_STATELESS
-#define SCM_MBS_SET_STATE(mbs, stat)
-#define SCM_MBS_CLEAR_STATE(mbs)
+#define SCM_MBS_SET_STATE(mbs, stat)  SCM_EMPTY_EXPR
+#define SCM_MBS_CLEAR_STATE(mbs)      SCM_EMPTY_EXPR
 #endif
 #define SCM_MBS_INIT(mbs)                                                    \
     do {                                                                     \

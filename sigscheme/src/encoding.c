@@ -417,7 +417,7 @@ pred_always_false(void)
         RETURN(n);                                                           \
     } while (/* CONSTCOND */ 0)
 #define SAVE_STATE(stat) SCM_MBCINFO_SET_STATE(_ret, (stat))
-#define EXPECT_SIZE(size) /* Currently ignored. */
+#define EXPECT_SIZE(size) SCM_EMPTY_EXPR /* Currently ignored. */
 
 /* Encodings based on ISO/IEC 2022. */
 
