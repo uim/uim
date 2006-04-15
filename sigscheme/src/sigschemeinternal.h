@@ -822,7 +822,7 @@ translator_ret scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj);
 /* macro.c */
 void scm_init_macro(void);
 ScmObj scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_p_reversed(ScmObj in); /* To be relocated. */
+ScmObj scm_p_reversex(ScmObj in); /* To be relocated. */
 void scm_macro_bad_scope(ScmObj sym);
 
 /* error.c */

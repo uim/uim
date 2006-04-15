@@ -136,7 +136,7 @@ dbg_print(enum dbg_flag mask, const char *fmt, ...)
 }
 
 static ScmObj
-scm_p_set_macro_debug_flagsd(ScmObj new_mode)
+scm_p_set_macro_debug_flagsx(ScmObj new_mode)
 {
     SCM_ASSERT(INTP(new_mode));
 
@@ -145,7 +145,7 @@ scm_p_set_macro_debug_flagsd(ScmObj new_mode)
 }
 
 static const struct scm_func_registration_info dbg_funcs[] = {
-    { "set-macro-debug-flags!", scm_p_set_macro_debug_flagsd,
+    { "set-macro-debug-flags!", scm_p_set_macro_debug_flagsx,
       SCM_PROCEDURE_FIXED_1 },
 };
 
@@ -751,7 +751,7 @@ match_reppat(match_context *ctx, ScmObj arg, ScmObj form)
     }
 
     for (ctx->sub = accum; !EQ(accum, sub_save); accum = CDR(accum))
-        SET_CAR(accum, scm_p_reversed(CAR(accum)));
+        SET_CAR(accum, scm_p_reversex(CAR(accum)));
 
     return scm_true;
 }
@@ -1007,8 +1007,8 @@ transcribe_reppat(transcription_context *ctx, ScmObj template, ScmObj sub,
 
 static ScmObj unwrap_farsymbol(ScmObj obj);
 static void unwrap_dispatch(ScmObj obj);
-static void unwrap_listd(ScmObj ls);
-static void unwrap_vectord(ScmObj obj);
+static void unwrap_listx(ScmObj ls);
+static void unwrap_vectorx(ScmObj obj);
 
 /* Like FOR_EACH(), but leaves the argument at the last cons cell. */
 #define UPTO_LAST_PAIR(ls) while (CONSP(CDR(ls)) && ((ls) = CDR(ls), 1))
@@ -1027,13 +1027,13 @@ static void
 unwrap_dispatch(ScmObj obj)
 {
     if (CONSP(obj))
-        unwrap_listd(obj);
+        unwrap_listx(obj);
     else if (VECTORP(obj))
-        unwrap_vectord(obj);
+        unwrap_vectorx(obj);
 }
 
 static void
-unwrap_listd(ScmObj ls)
+unwrap_listx(ScmObj ls)
 {
     do {
         if (FARSYMBOLP(CAR(ls)))
@@ -1041,11 +1041,11 @@ unwrap_listd(ScmObj ls)
         else
             unwrap_dispatch(CAR(ls));
     } UPTO_LAST_PAIR (ls);
-    SET_CDR(ls, scm_unwrap_syntaxd(CDR(ls)));
+    SET_CDR(ls, scm_unwrap_syntaxx(CDR(ls)));
 }
 
 static void
-unwrap_vectord(ScmObj obj)
+unwrap_vectorx(ScmObj obj)
 {
     ScmObj *vec;
     scm_int_t i;
@@ -1061,7 +1061,7 @@ unwrap_vectord(ScmObj obj)
 }
 
 ScmObj
-scm_unwrap_syntaxd(ScmObj arg)
+scm_unwrap_syntaxx(ScmObj arg)
 {
     DBG_PRINT((DBG_UNWRAP, "unwrap-syntax!: ~s\n", arg));
     if (FARSYMBOLP(arg))
@@ -1080,15 +1080,15 @@ scm_unwrap_keyword(ScmObj obj)
 #if 0
 /* Alternative implementation. */
 ScmObj
-scm_unwrap_syntaxd(ScmObj arg)
+scm_unwrap_syntaxx(ScmObj arg)
 {
     if (CONSP(arg)) {
         ScmObj ls = arg;
         do {
-            SET_CAR(ls, scm_unwrap_syntaxd(CAR(ls)));
+            SET_CAR(ls, scm_unwrap_syntaxx(CAR(ls)));
             tail = ls;
         } UPTO_LAST_PAIR(ls);
-        SET_CDR(ls, scm_unwrap_syntaxd(CDR(ls)));
+        SET_CDR(ls, scm_unwrap_syntaxx(CDR(ls)));
         return arg;
     }
 
@@ -1101,7 +1101,7 @@ scm_unwrap_syntaxd(ScmObj arg)
         i = SCM_VECTOR_LEN(arg);
         vec = SCM_VECTOR_VEC(arg);
         while (i--)
-            vec[i] = scm_unwrap_syntaxd(vec[i]);
+            vec[i] = scm_unwrap_syntaxx(vec[i]);
         return arg;
     }
     return arg;
@@ -1115,7 +1115,7 @@ scm_unwrap_syntaxd(ScmObj arg)
 
 /* TODO: move to somewhere appropriate. */
 ScmObj
-scm_p_reversed(ScmObj in)
+scm_p_reversex(ScmObj in)
 {
     ScmObj out, next;
     DECLARE_FUNCTION("reverse!", procedure_fixed_1);

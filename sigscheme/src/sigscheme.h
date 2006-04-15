@@ -766,7 +766,7 @@ struct ScmStorageConf_ {
  * used.  The caller shouldn't assume the input is equal? before and
  * after unwrapping.
  */
-#define SCM_UNWRAP_SYNTAX(o)  scm_unwrap_syntaxd((o))
+#define SCM_UNWRAP_SYNTAX(o)  scm_unwrap_syntaxx((o))
 
 /**
  * If the argument is an identifier, it is stripped of binding
@@ -1290,7 +1290,7 @@ SCM_EXPORT ScmObj scm_p_cddddr(ScmObj lst);
 ScmObj scm_s_match(ScmObj form, ScmObj patterns, ScmEvalState *state);
 ScmObj scm_s_syntax_rules(ScmObj rules, ScmObj env);
 ScmObj scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_unwrap_syntaxd(ScmObj obj);
+ScmObj scm_unwrap_syntaxx(ScmObj obj);
 ScmObj scm_unwrap_keyword(ScmObj obj);
 #endif
 
