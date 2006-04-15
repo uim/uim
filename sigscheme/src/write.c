@@ -274,7 +274,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         write_port(port, obj, otype);
         break;
     case ScmContinuation:
-        scm_port_puts(port, "#<subr continuation>");
+        scm_format(port, SCM_FMT_RAW_C, "#<continuation ~P>", (void *)obj);
         break;
     case ScmValuePacket:
         scm_port_puts(port, "#<values ");
