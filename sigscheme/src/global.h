@@ -185,21 +185,33 @@ extern "C" {
     struct scm_g_##_namespace scm_g_instance_##_namespace
 #endif
 
-#if SCM_COMBINED_SOURCE
+#if (SCM_COMBINED_SOURCE && !SCM_EXPORT_API)
 #define SCM_EXTERN(_decl) extern int scm_dummy
 #define SCM_EXPORT static
-#else /* SCM_COMBINED_SOURCE */
+
+#elif defined(__SYMBIAN32__)
+#define SCM_EXTERN(_decl) extern _decl
+#if SCM_COMPILING_LIBSSCM
+#define SCM_EXPORT EXPORT_C
+#else /* SCM_COMPILING_LIBSSCM */
+#define SCM_EXPORT IMPORT_C
+#endif /* SCM_COMPILING_LIBSSCM */
+
+#elif BREW_MAJ_VER  /* FIXME: inappropriate detection method */
+#define SCM_EXTERN(_decl) extern _decl
+#define SCM_EXPORT extern  /* respect coding style of BREW */
+
+#elif (defined(_WIN32) || defined(_WIN64))
+#define SCM_EXTERN(_decl) extern _decl
+#if SCM_COMPILING_LIBSSCM
+#define SCM_EXPORT __declspec(dllexport)
+#else /* SCM_COMPILING_LIBSSCM */
+#define SCM_EXPORT __declspec(dllimport)
+#endif /* SCM_COMPILING_LIBSSCM */
+
+#else
 #define SCM_EXTERN(_decl) extern _decl
 #define SCM_EXPORT
-#endif /* SCM_COMBINED_SOURCE */
-
-/* FIXME: Symbian needs revised API */
-#if 0
-#if (defined(__SYMBIAN32__) && !defined(EKA2))
-#define SCM_EXTERN(_decl) extern _decl
-#define SCM_EXPORT IMPORT_C
-#define SCM_EXPORT EXPORT_C
-#endif
 #endif
 
 /*=======================================

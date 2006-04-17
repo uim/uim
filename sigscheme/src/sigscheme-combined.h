@@ -85,6 +85,9 @@ extern "C" {
   Macro Definitions
 =======================================*/
 #define SCM_COMBINED_SOURCE 1
+#ifndef SCM_EXPORT_API
+#define SCM_EXPORT_API      0 /* global API symbols are hidden by default */
+#endif
 
 /*=======================================
   Type Definitions

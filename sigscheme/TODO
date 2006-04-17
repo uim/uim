@@ -126,9 +126,8 @@ Assigned to YamaKen:
 
 * Make all global and static variables encapsulatable into a dynamic object, to
   support embedded environment that cannot use it such as BREW
-  - Revise the symbol exportation control API as:
-    * Supports Symbian and other platforms
-    * Make API symbols exportable even if combined-source mode
+  - Revise exported global variables definition method to make more similar to
+    plain variable definition
   - Write document
   - Rewrite macro.c with the revised API
 

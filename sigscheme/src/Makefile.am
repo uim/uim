@@ -182,6 +182,9 @@ EXTRA_DIST = \
         $(BUILT_DIST) $(BUILD_FUNCTBL_DEPS) \
         sigscheme-combined.h global-aggregated.c template.h template.c
 
+# FIXME: Build dll on supported platforms
+EXTRA_DIST += dllentry.c
+
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.
 BUILT_SOURCES = $(BUILT_DIST)
@@ -282,11 +285,11 @@ endif
 if USE_SRFI60
   libsscm_la_SOURCES += module-srfi60.c
 endif
-libsscm_la_LIBADD = $(LIBOBJS)
+libsscm_la_LIBADD   = $(LIBOBJS)
+libsscm_la_CPPFLAGS = -DSCM_COMPILING_LIBSSCM=1
+libsscm_la_CFLAGS   = -Wall
 
 ETAGS_ARGS = sigschemeinternal.h
-
-libsscm_la_CFLAGS   = -Wall
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
