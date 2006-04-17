@@ -195,7 +195,7 @@ libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c storage-symbol.c \
         error.c env.c eval.c syntax.c procedure.c list.c \
         module.c \
-        sigschemeinternal.h sigscheme.c macro.c
+        sigschemeinternal.h sigscheme.c
 if USE_STORAGE_COMPACT
   pkginclude_HEADERS += storage-compact.h
 else
@@ -203,6 +203,11 @@ else
 endif
 if USE_CONTINUATION
   libsscm_la_SOURCES += storage-continuation.c
+endif
+# FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
+# SCM_USE_LEGACY_MACRO
+if USE_HYGIENIC_MACRO
+  libsscm_la_SOURCES += macro.c
 endif
 if USE_NUMBER
   libsscm_la_SOURCES += number.c
@@ -248,9 +253,6 @@ if USE_FORMAT
 endif
 if USE_SSCM_EXTENSIONS
   libsscm_la_SOURCES += module-sscm-ext.c
-endif
-if USE_HYGIENIC_MACRO
-  libsscm_la_SOURCES += macro.c
 endif
 if COMPAT_SIOD
   libsscm_la_SOURCES += module-siod.c scmport-null.h scmport-null.c

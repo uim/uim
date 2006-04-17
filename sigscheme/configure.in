@@ -125,7 +125,7 @@ use_no="no"
 # R5RS Features
 AM_CONDITIONAL(USE_CONTINUATION,        test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_QUASIQUOTE,          test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_HYGIENIC_MACRO,      test "x$use_no" = xyes)
+AM_CONDITIONAL(USE_HYGIENIC_MACRO,      test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_INT,                 test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_RATIONAL,            test "x$use_no" = xyes)
 AM_CONDITIONAL(USE_REAL,                test "x$use_no" = xyes)
