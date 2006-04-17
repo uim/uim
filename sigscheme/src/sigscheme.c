@@ -101,6 +101,8 @@ static ScmObj scm_eval_c_string_internal(const char *exp);
 SCM_EXPORT void
 scm_initialize(const ScmStorageConf *storage_conf)
 {
+    SCM_AGGREGATED_GLOBAL_VARS_INIT();
+
 #if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, (storage_conf));
 #else
@@ -205,6 +207,8 @@ scm_finalize()
 {
     scm_finalize_storage();
     l_scm_initialized = scm_false;
+
+    SCM_AGGREGATED_GLOBAL_VARS_FIN();
 }
 
 #if SCM_USE_EVAL_C_STRING

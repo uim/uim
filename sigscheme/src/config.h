@@ -118,6 +118,7 @@
 #define SCM_ACCESSOR_ASSERT     1  /* enable strict type check with accessor */
 #define SCM_USE_VALUECONS       1  /* use experimental values passing */
 #define SCM_USE_NULL_CAPABLE_STRING 1  /* enable experimental null character in a middle of a string */
+#define SCM_USE_WARNING_SUPPRESSOR 1 /* suppress warning with little wastes */
 
 /*===========================================================================
   Storage configurations
@@ -176,6 +177,17 @@
 /*===========================================================================
   Dependency Resolution
 ===========================================================================*/
+#if (defined(__SYMBIAN32__) && !defined(EKA2))
+#define SCM_HAVE_WRITABLE_GLOBAL_VARS 0
+#else
+#define SCM_HAVE_WRITABLE_GLOBAL_VARS 1
+#endif
+
+#if !SCM_HAVE_WRITABLE_GLOBAL_VARS
+#undef SCM_USE_AGGREGATED_GLOBAL_VARS
+#define SCM_USE_AGGREGATED_GLOBAL_VARS 1
+#endif
+
 #if (!SCM_DEBUG && SCM_USE_NULL_CAPABLE_STRING)
 #error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
 #endif

@@ -57,11 +57,14 @@ if USE_DEEP_CADRS
   R5RS_PROC_SRCS += deep-cadrs.c
 endif
 
-# For developers
-.PHONY: func-tables clean-func-tables
+.PHONY: lib combined func-tables clean-func-tables clean-built
+lib: libsscm.la
+combined: sigscheme-combined-trim.h sigscheme-combined.c
+clean-combined:
+	rm -f sigscheme-combined-trim.h sigscheme-combined.c
 func-tables: $(FUNC_TABLES)
 clean-func-tables:
-	rm -rf $(FUNC_TABLES)
+	rm -f $(FUNC_TABLES)
 
 functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_core_func_info_table" \
@@ -96,7 +99,10 @@ functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
 
+# Optional and not built by 'make all'. Build explicitly with 'make combined'
+# if needed.
 sigscheme-combined.c: $(libsscm_la_SOURCES)
+	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; test)
 	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@echo >>$@
@@ -113,10 +119,35 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	done
 	@echo >>$@
 	@echo '#include "sigscheme-combined-trim.h"' >>$@
+	@echo >>$@
+	@echo '#if SCM_USE_AGGREGATED_GLOBAL_VARS' >>$@
+	@echo 'SCM_AGGREGATED_GLOBAL_VARS_BEGIN;' >>$@
+	@for src in $^ $>; do                           \
+	    case $$src in                               \
+	    global.h) ;;                                \
+	    *.h | *.c)                                 \
+	        $(PERL) -ne 'print if s/^\s*SCM_DEFINE_(STATIC|EXPORTED)_VARS\b/    SCM_AGGREGATED_GLOBAL_VARS/g' $$src >>$@; \
+		;;                                      \
+	    esac                                        \
+	done
+	@echo 'SCM_AGGREGATED_GLOBAL_VARS_END;' >>$@
+	@echo >>$@
+	@echo '#include "global-aggregated.c"' >>$@
+	@echo >>$@
+	@for src in $^ $>; do                           \
+	    case $$src in                               \
+	    global.h) ;;                                \
+	    *.h | *.c)                                 \
+	        $(PERL) -ne 'print if s/^\s*SCM_DEFINE_(STATIC|EXPORTED)_VARS\b/SCM_DEFINE_GLOBAL_VARS_INSTANCE_ACCESSOR/g' $$src >>$@; \
+		;;                                      \
+	    esac                                        \
+	done
+	@echo '#endif /* SCM_USE_AGGREGATED_GLOBAL_VARS */' >>$@
 
 # Internal macros trimmer for combined-source version of SigScheme.
 # All source files are processed regardless of user configuration.
 sigscheme-combined-trim.h: $(DIST_SOURCES)
+	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; test)
 	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@for src in $^ $>; do                   \
@@ -149,11 +180,11 @@ BUILT_DIST = $(FUNC_TABLES) sigscheme-combined-trim.h
 # the file is not listed into *_HEADERS.
 EXTRA_DIST = \
         $(BUILT_DIST) $(BUILD_FUNCTBL_DEPS) \
-        sigscheme-combined.h template.h template.c
+        sigscheme-combined.h global-aggregated.c template.h template.c
 
 # Only works on 'make all', 'make check' and 'make install'.
 # See "Built sources" section of automake info.
-BUILT_SOURCES = $(BUILT_DIST) sigscheme-combined.c
+BUILT_SOURCES = $(BUILT_DIST)
 
 pkginclude_HEADERS = config.h my-stdint.h scmint.h global.h sigscheme.h
 

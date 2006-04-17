@@ -34,6 +34,10 @@
 
 #include "config.h"
 
+#if BREW_MAJ_VER  /* FIXME: inappropriate detection method */
+#include "sigscheme-combined.c"
+#endif
+
 /*=======================================
   System Include
 =======================================*/
@@ -41,6 +45,11 @@
 
 #include <unistd.h>
 #include <sys/param.h>
+
+#if BREW_MAJ_VER  /* FIXME: inappropriate detection method */
+#include "AEEAppGen.h"
+#include "AEEStdLib.h"
+#endif
 
 /*=======================================
   Local Include
@@ -51,7 +60,7 @@
 #include "scmport.h"
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define PROMPT_STR "sscm> "
 
@@ -60,24 +69,37 @@
 #endif
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
+struct g_sscm {
+#if SCM_COMPAT_SIOD
+    ScmObj feature_id_siod;
+#endif
+    char lib_path[MAXPATHLEN + sizeof("")];
+};
+
+#if BREW_MAJ_VER  /* FIXME: inappropriate detection method */
+/* experimental, broken and existing for technical example */
+
+#define SCM_BREW_USER_APPLET_T CSSCMApplet
+typedef struct _CSSCMApplet CSSCMApplet;
+struct _CSSCMApplet {
+    AEEApplet a;
+    struct scm_g_aggregated m_scm_g_aggregated_instance;
+
+    struct g_sscm m_sscm;
+};
+
+#define sscm (((CSSCMApplet *)GETAPPINSTANCE())->m_sscm)
+#endif /* BREW_MAJ_VER */
 
 /*=======================================
   Variable Declarations
 =======================================*/
-SCM_GLOBAL_VARS_BEGIN(static_main);
-#define static
-static char l_sscm_lib_path[MAXPATHLEN];
-
-#if SCM_COMPAT_SIOD
-static ScmObj l_feature_id_siod;
-#endif /* SCM_COMPAT_SIOD */
-#undef static
-SCM_GLOBAL_VARS_END(static_main);
-#define l_sscm_lib_path   SCM_GLOBAL_VAR(static_main, l_sscm_lib_path)
-#define l_feature_id_siod SCM_GLOBAL_VAR(static_main, l_feature_id_siod)
-SCM_DEFINE_STATIC_VARS(static_main);
+/* Don't use any global variable other than the 'sscm' */
+#if !BREW_MAJ_VER  /* FIXME: inappropriate detection method */
+static struct g_sscm sscm;
+#endif /* !BREW_MAJ_VER */
 
 /*=======================================
   File Local Function Declarations
@@ -198,7 +220,7 @@ static scm_bool
 show_promptp(void)
 {
 #if SCM_COMPAT_SIOD
-    return (FALSEP(scm_p_providedp(l_feature_id_siod))
+    return (FALSEP(scm_p_providedp(sscm.feature_id_siod))
             || scm_get_verbose_level() >= 2);
 #else
     return scm_true;
@@ -216,7 +238,6 @@ main(int argc, char **argv)
     filename = rest_argv[0];
 
     scm_initialize(NULL);
-    SCM_GLOBAL_VARS_INIT(static_main);
 
     /* Explicitly allow current directory-relative path. The sscm command is
      * supposed to neither setuid'ed nor setgid'ed. So the privilege escalation
@@ -227,16 +248,17 @@ main(int argc, char **argv)
      * - add library path specifying way for users
      * - support non-UNIX platforms
      */
-    if (!getcwd(l_sscm_lib_path, MAXPATHLEN))
+    if (!getcwd(sscm.lib_path, MAXPATHLEN))
         return EXIT_FAILURE;
-    scm_set_lib_path(l_sscm_lib_path);
+    scm_set_lib_path(sscm.lib_path);
 
 #if SCM_USE_SRFI34
     scm_use("srfi-34");
 #endif
 
 #if SCM_COMPAT_SIOD
-    scm_gc_protect_with_init(&l_feature_id_siod, CONST_STRING(FEATURE_ID_SIOD));
+    scm_gc_protect_with_init(&sscm.feature_id_siod,
+                             CONST_STRING(FEATURE_ID_SIOD));
 #endif
 
     if (filename) {

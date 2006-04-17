@@ -34,10 +34,6 @@
 #ifndef __SCM_FIXME_H
 #define __SCM_FIXME_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*=======================================
   System Include
 =======================================*/
@@ -45,6 +41,10 @@ extern "C" {
 /*=======================================
   Local Include
 =======================================*/
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

@@ -50,6 +50,8 @@ Low priority bugs:
 ==============================================================================
 Extensions: (not required for now)
 
+* Make Symbian OS and BREW support working (patches are welcome)
+
 * Support SRFI-75 style symbol escaping such as |-sym|
   - Obsolete leading '-' handling in read_number_or_symbol() with it
 
@@ -124,9 +126,11 @@ Assigned to YamaKen:
 
 * Make all global and static variables encapsulatable into a dynamic object, to
   support embedded environment that cannot use it such as BREW
-  - Abstract accessors to the variables
-  - Make the accessors replaceable with platform-specific one such as
-    GET_APP_INSTANCE()->scm->var
+  - Revise the symbol exportation control API as:
+    * Supports Symbian and other platforms
+    * Make API symbols exportable even if combined-source mode
+  - Write document
+  - Rewrite macro.c with the revised API
 
 * Write test for tail expression of all tail-recursive syntaxes
 
