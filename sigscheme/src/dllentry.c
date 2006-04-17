@@ -38,7 +38,9 @@
 /* keep all SigScheme API symbols exported against combined-source mode */
 #define SCM_EXPORT_API 1
 #include "sigscheme-combined.c"
+#endif
 
+#ifdef __SYMBIAN32__
 #include <e32std.h>
 #endif
 
