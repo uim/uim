@@ -34,15 +34,9 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stddef.h>
 #include <string.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

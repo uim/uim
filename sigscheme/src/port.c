@@ -34,15 +34,9 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stddef.h>
 #include <stdio.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #if SCM_USE_MULTIBYTE_CHAR

@@ -36,17 +36,11 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <limits.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
 #include "global.h"

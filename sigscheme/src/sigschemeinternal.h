@@ -34,15 +34,9 @@
 #ifndef __SIGSCHEMEINTERNAL_H
 #define __SIGSCHEMEINTERNAL_H
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stddef.h>
 #include <string.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "global.h"
 #include "sigscheme.h"
 #include "encoding.h"

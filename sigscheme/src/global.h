@@ -39,9 +39,6 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 #include <string.h>
 #include <stdlib.h>
@@ -51,10 +48,6 @@
 #else
 #include <string.h>
 #endif
-
-/*=======================================
-  Local Include
-=======================================*/
 
 #ifdef __cplusplus
 extern "C" {

@@ -34,16 +34,10 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 #include <limits.h>
 #include <errno.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

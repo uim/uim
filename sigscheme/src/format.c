@@ -60,17 +60,11 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #if SCM_USE_MULTIBYTE_CHAR

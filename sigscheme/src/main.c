@@ -38,9 +38,6 @@
 #include "sigscheme-combined.c"
 #endif
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 
 #include <unistd.h>
@@ -51,9 +48,6 @@
 #include "AEEStdLib.h"
 #endif
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "scmport-config.h"

@@ -40,13 +40,6 @@
 #ifndef __SCM_SCMPORT_STR_H
 #define __SCM_SCMPORT_STR_H
 
-/*=======================================
-  System Include
-=======================================*/
-
-/*=======================================
-  Local Include
-=======================================*/
 #include "scmport.h"
 
 #ifdef __cplusplus

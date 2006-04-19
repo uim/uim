@@ -36,17 +36,11 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "my-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"

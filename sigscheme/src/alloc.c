@@ -34,18 +34,12 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 #include <string.h>
 #if HAVE_GETPAGESIZE
 #include <unistd.h>
 #endif
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "my-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"

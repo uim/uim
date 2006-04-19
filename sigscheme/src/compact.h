@@ -134,15 +134,9 @@
  *         opaque (void *)      : 2 byte
  */
 
-/*=======================================
-  System Include
-=======================================*/
 #include <limits.h>
 #include <stddef.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 /* Don't include scmport.h. The implementations are internal and should not be
  * exposed to libsscm users via installation of this file. */
 

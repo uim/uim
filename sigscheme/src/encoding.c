@@ -43,16 +43,10 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 #include <stdio.h>  /* for EOF */
 #include <string.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "scmint.h"
 #include "encoding-config.h"
 #include "encoding.h"

@@ -34,14 +34,8 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "scmport-config.h"

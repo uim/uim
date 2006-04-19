@@ -34,13 +34,11 @@
 #ifndef __SCM_FIXME_H
 #define __SCM_FIXME_H
 
-/*=======================================
-  System Include
-=======================================*/
+#include "config.h"
 
-/*=======================================
-  Local Include
-=======================================*/
+/* FIXME: place system #include here */
+
+/* FIXME: place local #include here */
 
 #ifdef __cplusplus
 extern "C" {

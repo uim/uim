@@ -34,18 +34,12 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <string.h>
 #include <stdlib.h>
 #if (HAVE_STRCASECMP && HAVE_STRINGS_H)
 #include <strings.h>
 #endif
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

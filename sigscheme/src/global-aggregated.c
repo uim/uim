@@ -34,9 +34,6 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 #include <string.h>
 #include <stdlib.h>
@@ -47,9 +44,6 @@
 #include <string.h>
 #endif
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "global.h"
 
 /*=======================================

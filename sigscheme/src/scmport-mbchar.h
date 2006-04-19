@@ -40,13 +40,6 @@
 #ifndef __SCM_SCMPORT_MBCHAR_H
 #define __SCM_SCMPORT_MBCHAR_H
 
-/*=======================================
-  System Include
-=======================================*/
-
-/*=======================================
-  Local Include
-=======================================*/
 #include "encoding.h"
 #include "scmport.h"
 

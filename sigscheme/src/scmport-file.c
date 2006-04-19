@@ -41,16 +41,10 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "scmint.h"
 #include "scmport-config.h"
 #include "scmport.h"

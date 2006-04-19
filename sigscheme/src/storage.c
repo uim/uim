@@ -34,17 +34,11 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #if !SCM_USE_MULTIBYTE_CHAR
 #include <string.h>
 #endif
 #include <stdlib.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 #include "encoding.h"

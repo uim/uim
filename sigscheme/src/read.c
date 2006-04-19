@@ -114,9 +114,6 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <limits.h>
 #include <stdlib.h>
 #include <string.h>
@@ -124,9 +121,6 @@
 #include <strings.h>
 #endif
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

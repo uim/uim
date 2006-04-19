@@ -40,14 +40,8 @@
 #ifndef __SCM_ENCODING_H
 #define __SCM_ENCODING_H
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stddef.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "my-stdint.h"
 #include "scmint.h"
 #include "global.h"

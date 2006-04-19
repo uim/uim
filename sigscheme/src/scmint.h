@@ -52,15 +52,9 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <limits.h>
 #include <stdio.h>  /* for EOF */
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "my-stdint.h"
 
 #ifdef __cplusplus

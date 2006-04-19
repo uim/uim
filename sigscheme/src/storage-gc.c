@@ -55,16 +55,10 @@
 
 #include "config.h"
 
-/*=======================================
-  System Include
-=======================================*/
 #include <stddef.h>
 #include <stdlib.h>
 #include <setjmp.h>
 
-/*=======================================
-  Local Include
-=======================================*/
 #include "my-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"

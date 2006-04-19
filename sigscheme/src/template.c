@@ -32,13 +32,11 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-/*=======================================
-  System Include
-=======================================*/
+#include "config.h"
 
-/*=======================================
-  Local Include
-=======================================*/
+/* FIXME: place system #include here */
+
+/* FIXME: place local #include here */
 
 /*=======================================
   File Local Macro Definitions
