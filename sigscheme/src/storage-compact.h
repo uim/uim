@@ -34,10 +34,6 @@
 #ifndef __STORAGE_COMPACT_H
 #define __STORAGE_COMPACT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * FIXME: Support 64-bit data models
  *
@@ -165,6 +161,10 @@ union ScmObj_ {
 =======================================*/
 /* Don't include scmport.h. The implementations are internal and should not be
  * exposed to libsscm users via installation of this file. */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Type Declarations

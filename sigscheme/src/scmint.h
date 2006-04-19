@@ -50,10 +50,6 @@
 #ifndef __SCM_SCMINT_H
 #define __SCM_SCMINT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "config.h"
 
 /*=======================================
@@ -66,6 +62,10 @@ extern "C" {
   Local Include
 =======================================*/
 #include "my-stdint.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

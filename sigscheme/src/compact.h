@@ -34,12 +34,6 @@
 #ifndef __STORAGE_COMPACT_H
 #define __STORAGE_COMPACT_H
 
-#ifdef __cplusplus
-/* extern "C" { */
-#endif
-
-#include <limits.h>
-
 /*
  * Internal representation defined in this file MUST NOT directly touched by
  * libsscm users. Use abstract public APIs defined in sigscheme.h.
@@ -143,6 +137,7 @@
 /*=======================================
   System Include
 =======================================*/
+#include <limits.h>
 #include <stddef.h>
 
 /*=======================================
@@ -150,6 +145,10 @@
 =======================================*/
 /* Don't include scmport.h. The implementations are internal and should not be
  * exposed to libsscm users via installation of this file. */
+
+#ifdef __cplusplus
+/* extern "C" { */
+#endif
 
 
 /* Aux. */

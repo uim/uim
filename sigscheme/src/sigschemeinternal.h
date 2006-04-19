@@ -34,10 +34,6 @@
 #ifndef __SIGSCHEMEINTERNAL_H
 #define __SIGSCHEMEINTERNAL_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*=======================================
   System Include
 =======================================*/
@@ -52,6 +48,10 @@ extern "C" {
 #include "encoding.h"
 #if SCM_USE_PORT
 #include "scmport.h"
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*=======================================

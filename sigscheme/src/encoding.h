@@ -40,10 +40,6 @@
 #ifndef __SCM_ENCODING_H
 #define __SCM_ENCODING_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*=======================================
   System Include
 =======================================*/
@@ -55,6 +51,10 @@ extern "C" {
 #include "my-stdint.h"
 #include "scmint.h"
 #include "global.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

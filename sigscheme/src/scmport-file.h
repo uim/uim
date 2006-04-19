@@ -38,10 +38,6 @@
  * merge into another file.
  */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef __SCM_SCMPORT_FILE_H
 #define __SCM_SCMPORT_FILE_H
 
@@ -54,6 +50,10 @@ extern "C" {
   Local Include
 =======================================*/
 #include "scmport.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

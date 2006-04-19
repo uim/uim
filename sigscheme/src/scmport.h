@@ -40,10 +40,6 @@
 #ifndef __SCM_SCMPORT_H
 #define __SCM_SCMPORT_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*=======================================
   System Include
 =======================================*/
@@ -56,6 +52,10 @@ extern "C" {
 #include "scmint.h"
 #include "global.h"
 #include "encoding.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

@@ -35,16 +35,16 @@
 #ifndef __SCM_SCMPORT_CONFIG_H
 #define __SCM_SCMPORT_CONFIG_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #if SCM_SCMPORT_USE_WITH_SIGSCHEME
 #include "sigscheme.h"
 #else /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
 #include <stdlib.h>
 #include <string.h>
 #endif /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

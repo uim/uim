@@ -58,10 +58,6 @@
 #ifndef __SCM_SIGSCHEME_COMBINED_H
 #define __SCM_SIGSCHEME_COMBINED_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "config.h"
 /* Since sigscheme-combined.c is intended to be directly included into another
  * package as subordinate code module, these SigScheme-defined macros should be
@@ -80,6 +76,10 @@ extern "C" {
  * the system default. */
 #undef _POSIX_C_SOURCE
 #undef _XOPEN_SOURCE
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

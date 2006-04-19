@@ -34,10 +34,6 @@
 #ifndef __SIGSCHEME_H
 #define __SIGSCHEME_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "config.h"
 
 /*=======================================
@@ -55,6 +51,10 @@ extern "C" {
 #include "scmint.h"
 #include "global.h"
 #include "encoding.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
   Macro Definitions

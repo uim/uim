@@ -34,10 +34,6 @@
 #ifndef __STORAGE_FATTY_H
 #define __STORAGE_FATTY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  * Internal representation defined in this file MUST NOT directly touched by
  * libsscm users. Use abstract public APIs defined in sigscheme.h.
@@ -68,6 +64,10 @@ extern "C" {
 =======================================*/
 /* Don't include scmport.h. The implementations are internal and should not be
  * exposed to libsscm users via installation of this file. */
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*=======================================
    Type Definitions
