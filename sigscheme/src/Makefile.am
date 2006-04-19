@@ -192,8 +192,8 @@ BUILT_SOURCES = $(BUILT_DIST)
 pkginclude_HEADERS = config.h my-stdint.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \
-        alloc.c storage.c storage-gc.c storage-symbol.c \
-        error.c env.c eval.c syntax.c procedure.c list.c \
+        alloc.c storage.c storage-gc.c \
+        error.c symbol.c env.c eval.c syntax.c procedure.c list.c \
         module.c \
         sigschemeinternal.h sigscheme.c
 if USE_STORAGE_COMPACT
@@ -202,7 +202,7 @@ else
   pkginclude_HEADERS += storage-fatty.h
 endif
 if USE_CONTINUATION
-  libsscm_la_SOURCES += storage-continuation.c
+  libsscm_la_SOURCES += continuation.c
 endif
 # FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
 # SCM_USE_LEGACY_MACRO

@@ -1043,7 +1043,7 @@ SCM_EXPORT void scm_gc_protect_stack(ScmObj *stack_start);
 #endif /* SCM_GCC4_READY_GC */
 SCM_EXPORT void scm_gc_unprotect_stack(ScmObj *stack_start);
 
-/* storage-symbol.c */
+/* symbol.c */
 SCM_EXPORT ScmObj scm_intern(const char *name);
 SCM_EXPORT ScmObj scm_symbol_bound_to(ScmObj obj);
 

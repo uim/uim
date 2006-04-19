@@ -727,7 +727,7 @@ SCM_GLOBAL_VARS_END(storage);
 SCM_DECLARE_EXPORTED_VARS(storage);
 #endif
 
-/* storage-symbol.c */
+/* symbol.c */
 /* Only permitted to storage-gc.c */
 #if SCM_USE_VALUECONS
 SCM_GLOBAL_VARS_BEGIN(symbol);
@@ -757,7 +757,7 @@ SCM_EXPORT void scm_init_gc(const ScmStorageConf *conf);
 SCM_EXPORT void scm_finalize_gc(void);
 SCM_EXPORT ScmObj scm_alloc_cell(void);
 
-/* storage-continuation.c */
+/* continuation.c */
 SCM_EXPORT void scm_init_continuation(void);
 SCM_EXPORT void scm_finalize_continuation(void);
 SCM_EXPORT void scm_destruct_continuation(ScmObj cont);
@@ -769,7 +769,7 @@ SCM_EXPORT void scm_push_trace_frame(ScmObj obj, ScmObj env);
 SCM_EXPORT void scm_pop_trace_frame(void);
 SCM_EXPORT ScmObj scm_trace_stack(void);
 
-/* storage-symbol.c */
+/* symbol.c */
 SCM_EXPORT void scm_init_symbol(const ScmStorageConf *conf);
 SCM_EXPORT void scm_finalize_symbol(void);
 

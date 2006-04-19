@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : storage-continuation.c
+ *  FileName : continuation.c
  *  About    : A Continuation implementation with setjmp/longjmp
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
