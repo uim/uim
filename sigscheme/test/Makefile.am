@@ -23,16 +23,17 @@ EXTRA_DIST += \
         test-quote.scm \
         test-srfi1.scm \
         test-srfi2.scm \
+        test-srfi6.scm \
+        test-srfi8.scm \
         test-srfi28.scm \
         test-srfi34-2.scm \
         test-srfi34.scm \
         test-srfi38.scm \
         test-srfi48.scm \
-        test-srfi6.scm \
         test-srfi60.scm \
-        test-srfi8.scm \
         test-string-cmp.scm \
         test-string.scm \
+        test-syntax-rules.scm \
         test-syntax.scm \
         test-tail-rec.scm \
         test-vector.scm
