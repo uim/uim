@@ -50,6 +50,13 @@ Low priority bugs:
 ==============================================================================
 Extensions: (not required for now)
 
+* Complete SLIB support
+  - Make the slib.scm installable
+  - Fill some variables with configure (slib.scm.in)
+
+* Complete operations-srfi1.c and make it production quality if considerable
+  benefit exists against SLIB version of SRFI-1 implementation
+
 * Make Symbian OS and BREW support working (patches are welcome)
 
 * Support SRFI-75 style symbol escaping such as |-sym|
@@ -63,9 +70,6 @@ Extensions: (not required for now)
   based on a SRFI or de facto standard API
   - Evaluate ces API of Gauche
   - Consider dynamic environment
-
-* Complete operations-srfi1.c and make it production quality if considerable
-  benefit exists against SLIB version of SRFI-1 implementation
 
 * Implement a record type
   - Evaluate SRFI-9 and SRFI-76

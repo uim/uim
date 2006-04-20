@@ -1,10 +1,7 @@
-SUBDIRS = doc m4 tools misc src test test-c bench experimental
+SUBDIRS = doc m4 tools src lib test test-c bench
 EXTRA_DIST = \
         TODO autogen.sh \
         compare-scm.sh runbench.sh runtest.sh runtest-tail-rec.sh
-
-# FIXME: move to appropriate directory
-EXTRA_DIST += slib.scm
 
 UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 SSCM_REPOSITORY = $(UIM_REPOSITORY)/sigscheme
