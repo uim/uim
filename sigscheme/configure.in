@@ -198,12 +198,11 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  m4/Makefile
                  tools/Makefile
-                 misc/Makefile
                  src/Makefile
+                 lib/Makefile
                  test/Makefile
                  test-c/Makefile
-                 bench/Makefile
-                 experimental/Makefile])
+                 bench/Makefile])
 
 AC_SUBST(objdir)
 

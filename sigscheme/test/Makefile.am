@@ -2,7 +2,7 @@
 EXTRA_DIST = unittest.scm unittest-bigloo.scm unittest-gauche.scm
 
 # Native tests of SigScheme
-EXTRA_DIST = \
+EXTRA_DIST += \
         test-apply.scm \
         test-char-cmp.scm \
         test-char.scm \
@@ -38,7 +38,7 @@ EXTRA_DIST = \
         test-vector.scm
 
 # Imported foreign tests
-EXTRA_DIST = \
+EXTRA_DIST += \
         test-r4rs.scm \
         bigloo-apply.scm \
         bigloo-bchar.scm \
