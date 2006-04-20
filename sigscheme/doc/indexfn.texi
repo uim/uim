@@ -1,3 +1,0 @@
-@node Function and Syntax Index
-@appendix Function and Syntax Index
-@printindex fn
