@@ -959,7 +959,6 @@ void KeyGrabDialog::setKeyStr()
         keystr += "end";
         break;
 #ifdef QT_IMMODULE
-    case Qt::Key_Kanji:
     case Qt::Key_Zenkaku_Hankaku:
         keystr += "zenkaku-hankaku";
         break;
@@ -974,6 +973,12 @@ void KeyGrabDialog::setKeyStr()
         break;
     case Qt::Key_Muhenkan:
         keystr += "Muhenkan";
+        break;
+    case Qt::Key_Kanji:
+        keystr += "Kanji";
+        break;
+    case Qt::Key_Hiragana_Katakana:
+        keystr += "hiragana-katakana";
         break;
 #endif /* Def: QT_IMMODULE */
     case Qt::Key_Shift:

@@ -205,6 +205,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
 #endif
         case Qt::Key_Henkan: key = UKey_Henkan_Mode; break;
         case Qt::Key_Muhenkan: key = UKey_Muhenkan; break;
+        case Qt::Key_Kanji: key = UKey_Kanji; break;
+        case Qt::Key_Hiragana_Katakana: key = UKey_Hiragana_Katakana; break;
         case Qt::Key_F1: key = UKey_F1; break;
         case Qt::Key_F2: key = UKey_F2; break;
         case Qt::Key_F3: key = UKey_F3; break;

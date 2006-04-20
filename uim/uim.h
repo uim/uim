@@ -90,6 +90,8 @@ enum UKey {
   UKey_Mode_switch, /* charcter set switch */
   UKey_Henkan_Mode, /* start/stop conversion */
   UKey_Muhenkan, /* cancel conversion */
+  UKey_Kanji, /* kanji, kanji convert */
+  UKey_Hiragana_Katakana, /* hiragana/katakana toggle */
   UKey_F1,
   UKey_F2,
   UKey_F3,

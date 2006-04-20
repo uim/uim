@@ -102,8 +102,12 @@ convert_keyname_e2u(const char *keyname)
 	return UKey_Muhenkan;
   else if (strcmp("henkan", keyname) == 0)
 	return UKey_Henkan_Mode;
+  else if (strcmp("kanji", keyname) == 0)
+	return UKey_Kanji;
   else if (strcmp("zenkaku-hankaku", keyname) == 0)
 	return UKey_Zenkaku_Hankaku;
+  else if (strcmp("hiragana-katakana", keyname) == 0)
+	return UKey_Hiragana_Katakana;
   else if (strcmp("f1", keyname) == 0)
 	return UKey_F1;
   else if (strcmp("f2", keyname) == 0)

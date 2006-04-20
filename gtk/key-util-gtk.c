@@ -123,8 +123,13 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
       *ukey = UKey_End;
       break;
     case GDK_Kanji:
+      *ukey = UKey_Kanji;
+      break;
     case GDK_Zenkaku_Hankaku:
       *ukey = UKey_Zenkaku_Hankaku;
+      break;
+    case GDK_Hiragana_Katakana:
+      *ukey = UKey_Hiragana_Katakana;
       break;
     case GDK_Multi_key:
       *ukey = UKey_Multi_key;

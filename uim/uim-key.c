@@ -65,6 +65,8 @@ static struct key_entry key_tab[] = {
   {UKey_Mode_switch, "Mode_switch"},
   {UKey_Henkan_Mode, "Henkan_Mode"},
   {UKey_Muhenkan, "Muhenkan"},
+  {UKey_Kanji, "Kanji"},
+  {UKey_Hiragana_Katakana, "hiragana-katakana"},
   {UKey_F1, "F1"},
   {UKey_F2, "F2"},
   {UKey_F3, "F3"},

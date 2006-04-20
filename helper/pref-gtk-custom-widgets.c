@@ -1474,6 +1474,12 @@ key_pref_set_value(gint ukey, gint umod)
   case UKey_Muhenkan:
     g_string_append(keystr, "Muhenkan");
     break;
+  case UKey_Kanji:
+    g_string_append(keystr, "Kanji");
+    break;
+  case UKey_Hiragana_Katakana:
+    g_string_append(keystr, "hiragana-katakana");
+    break;
   case UKey_Shift_key:
     g_string_append(keystr, "Shift_key");
     break;

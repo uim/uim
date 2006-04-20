@@ -1100,7 +1100,6 @@ void keyState::check_key(keyEventX *x)
 	case XK_Next: mKey = UKey_Next; break;
 	case XK_Home: mKey = UKey_Home; break;
 	case XK_End: mKey = UKey_End; break;
-	case XK_Kanji:
 	case XK_Zenkaku_Hankaku: mKey = UKey_Zenkaku_Hankaku; break;
 	// Don't forward Multi_key to libuim.
 	//case XK_Multi_key: mKey = UKey_Multi_key; break;
@@ -1108,6 +1107,8 @@ void keyState::check_key(keyEventX *x)
 	case XK_Mode_switch: mKey = UKey_Mode_switch; break;
 	case XK_Henkan_Mode: mKey = UKey_Henkan_Mode; break;
 	case XK_Muhenkan: mKey = UKey_Muhenkan; break;
+	case XK_Kanji: mKey = UKey_Kanji; break;
+	case XK_Hiragana_Katakana: mKey = UKey_Hiragana_Katakana; break;
 	case XK_Shift_L: mKey = UKey_Shift_key; break;
 	case XK_Shift_R: mKey = UKey_Shift_key; break;
 	case XK_Control_L: mKey = UKey_Control_key; break;

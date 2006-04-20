@@ -221,6 +221,8 @@
 		  (Mode_switch     . "")
 		  (Henkan_Mode     . "")
 		  (Muhenkan        . "")
+		  (Kanji           . "")
+		  (hiragana-katakana . "")
 		  (F1              . "F1")
 		  (F2              . "F2")
 		  (F3              . "F3")

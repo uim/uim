@@ -263,6 +263,12 @@ void print_key(int key, int key_state)
     case UKey_Muhenkan:
       printf("Muhenkan");
       break;
+    case UKey_Kanji:
+      printf("Kanji");
+      break;
+    case UKey_Hiragana_Katakana:
+      printf("hiragana-katakana");
+      break;
     case UKey_F1:
       printf("F1");
       break;
