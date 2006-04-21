@@ -124,6 +124,8 @@ scm_finalize_continuation(void)
 {
     finalize_continuation_env();
     finalize_dynamic_extent();
+
+    SCM_GLOBAL_VARS_FIN(static_continuation);
 }
 
 /*===========================================================================

@@ -148,6 +148,7 @@ scm_fin_module(void)
             (*mod->finalizer)();
     }
 #endif
+    SCM_GLOBAL_VARS_FIN(static_module);
 }
 
 SCM_EXPORT void

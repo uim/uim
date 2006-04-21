@@ -158,6 +158,9 @@ scm_finalize_gc(void)
 {
     finalize_heap();
     finalize_protected_var();
+
+    SCM_GLOBAL_VARS_FIN(gc);
+    SCM_GLOBAL_VARS_FIN(static_gc);
 }
 
 SCM_EXPORT ScmObj

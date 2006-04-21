@@ -127,6 +127,8 @@ SCM_EXPORT void
 scm_finalize_symbol(void)
 {
     finalize_symbol_hash();
+
+    SCM_GLOBAL_VARS_FIN(symbol);
 }
 
 /*===========================================================================

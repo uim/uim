@@ -144,6 +144,12 @@ scm_finalize_storage(void)
     scm_finalize_symbol();
     scm_finalize_continuation();
     scm_finalize_gc();
+
+    SCM_GLOBAL_VARS_FIN(storage);
+#if SCM_USE_STORAGE_FATTY
+    SCM_GLOBAL_VARS_FIN(storage_fatty);
+    SCM_GLOBAL_VARS_FIN(static_storage_fatty);
+#endif
 }
 
 /*===========================================================================

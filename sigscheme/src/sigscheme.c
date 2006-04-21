@@ -202,6 +202,8 @@ scm_finalize()
     scm_finalize_storage();
     l_scm_initialized = scm_false;
 
+    SCM_GLOBAL_VARS_FIN(procedure);
+    SCM_GLOBAL_VARS_FIN(static_sigscheme);
     SCM_AGGREGATED_GLOBAL_VARS_FIN();
 }
 

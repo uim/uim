@@ -117,6 +117,7 @@ extern "C" {
     static struct scm_g_##_namespace *scm_g_instance_##_namespace(void)
 
 #define SCM_GLOBAL_VARS_INIT(_namespace)   SCM_EMPTY_EXPR
+#define SCM_GLOBAL_VARS_FIN(_namespace)    SCM_EMPTY_EXPR
 
 #define SCM_GLOBAL_VARS_INSTANCE(_namespace) (scm_g_instance_##_namespace())
 
@@ -143,6 +144,7 @@ extern "C" {
 #define SCM_GLOBAL_VARS_INIT(_namespace)                                     \
     (memset(&scm_g_instance_##_namespace, 0,                                 \
             sizeof(scm_g_instance_##_namespace)))
+#define SCM_GLOBAL_VARS_FIN(_namespace) SCM_EMPTY_EXPR
 
 #define SCM_GLOBAL_VARS_INSTANCE(_namespace)                                 \
     (scm_g_instance_##_namespace)
