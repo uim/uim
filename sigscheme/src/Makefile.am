@@ -1,4 +1,3 @@
-#noinst_LTLIBRARIES = libsscm.la
 lib_LTLIBRARIES = libsscm.la
 
 SCRIPT_DIR = $(top_srcdir)/tools
@@ -292,8 +291,6 @@ libsscm_la_LIBADD   = $(LIBOBJS)
 libsscm_la_CPPFLAGS = -DSCM_COMPILING_LIBSSCM=1
 libsscm_la_CFLAGS   = -Wall
 
-ETAGS_ARGS = sigschemeinternal.h
-
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
 sscm_CFLAGS   = -Wall
@@ -302,6 +299,9 @@ sscm_LDADD    = $(top_builddir)/src/libsscm.la
 # To enable ruby-and-perl-less build on tarball distribution, we should not
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
 CLEANFILES = sigscheme-combined.c
+DISTCLEANFILES = my-stdint.h
+
+ETAGS_ARGS = sigschemeinternal.h
 
 dist-hook:
 	@test -n "$(RUBY)" || (echo 'ruby(1) not found: install Ruby'; test)

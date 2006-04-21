@@ -11,6 +11,11 @@ lib_LTLIBRARIES = libuim.la libuim-custom.la
 uim_plugin_LTLIBRARIES = 
 uim_plugindir = $(pkglibdir)/plugin
 
+BUILT_SOURCES = sigscheme-combined
+.PHONY: sigscheme-combined
+sigscheme-combined:
+	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme/src combined
+
 pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
 		uim-scm.h uim-custom.h plugin.h
 
