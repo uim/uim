@@ -84,8 +84,7 @@ Preparation
 ~~~~~~~~~~~
 
 The combined-source version of the library is optional and not built by
-default. To build it, make Perl available on your build environment and
-instruct as follows.
+default. Instruct as follows to build it.
 
 ----------------------------------------------------------------
   $ make -C src combined

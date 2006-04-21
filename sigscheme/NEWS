@@ -2,7 +2,15 @@ Overview of changes from 0.5.0 (r3097 + private modifications)
 ==
 * New features
 
+  - Support R5RS hygienic macros
+
   - Support format strings (covers SRFI-28 and SRFI-48)
+
+  - Add global symbol exportation control method in portable way (see
+    doc/global-obj.txt)
+
+  - Add experimental support for embedded platforms that lack writable static
+    data, such as BREW or Symbian OS (see doc/global-obj.txt)
 
 
 Overview of changes from 0.5.0-alpha (r2902 + private modifications)

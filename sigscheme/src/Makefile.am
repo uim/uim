@@ -99,9 +99,9 @@ functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
 
 # Optional and not built by 'make all'. Build explicitly with 'make combined'
-# if needed.
+# if needed. This target does not use non-standard scripting languages for
+# portability.
 sigscheme-combined.c: $(libsscm_la_SOURCES)
-	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; test)
 	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@echo >>$@
@@ -125,7 +125,9 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	    case $$src in                               \
 	    global.h) ;;                                \
 	    *.h | *.c)                                 \
-	        $(PERL) -ne 'print if s/^\s*SCM_DEFINE_(STATIC|EXPORTED)_VARS\b/    SCM_AGGREGATED_GLOBAL_VARS/g' $$src >>$@; \
+	        $(EGREP) -e '^ *SCM_DEFINE_(STATIC|EXPORTED)_VARS\b' $$src \
+	          | sed -e 's/^.*SCM_DEFINE_STATIC_VARS/    SCM_AGGREGATED_GLOBAL_VARS/' \
+	                -e 's/^.*SCM_DEFINE_EXPORTED_VARS/    SCM_AGGREGATED_GLOBAL_VARS/' >>$@; \
 		;;                                      \
 	    esac                                        \
 	done
@@ -137,7 +139,9 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	    case $$src in                               \
 	    global.h) ;;                                \
 	    *.h | *.c)                                 \
-	        $(PERL) -ne 'print if s/^\s*SCM_DEFINE_(STATIC|EXPORTED)_VARS\b/SCM_DEFINE_GLOBAL_VARS_INSTANCE_ACCESSOR/g' $$src >>$@; \
+	        $(EGREP) -e '^ *SCM_DEFINE_(STATIC|EXPORTED)_VARS\b' $$src \
+	          | sed -e 's/^.*SCM_DEFINE_STATIC_VARS/SCM_DEFINE_GLOBAL_VARS_INSTANCE_ACCESSOR/' \
+	                -e 's/^.*SCM_DEFINE_EXPORTED_VARS/SCM_DEFINE_GLOBAL_VARS_INSTANCE_ACCESSOR/' >>$@; \
 		;;                                      \
 	    esac                                        \
 	done

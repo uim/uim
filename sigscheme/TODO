@@ -128,9 +128,6 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* Make all global and static variables encapsulatable into a dynamic object, to
-  support embedded environment that cannot use it such as BREW
-
 * Write test for tail expression of all tail-recursive syntaxes
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to

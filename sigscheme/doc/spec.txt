@@ -49,8 +49,7 @@ causes an error.
 Macros
 ~~~~~~
 
-Not supported yet. But the hygienic macros specified in R5RS is being
-implemented by Jun Inoue.
+The hygienic macros are fully supported.
 
 Numbers
 ~~~~~~~
@@ -267,15 +266,6 @@ Syntaxes/procedures not implemented
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Following R5RS syntaxes and procedures are not implemented (yet).
-
-Macros
-^^^^^^
-
-  - *syntax:* let-syntax <bindings> <body>
-  - *syntax:* letrec-syntax <bindings> <body>
-  - *syntax:* define-syntax <keyword> <transformer spec>
-  - *special form:* syntax-rules <literals> <syntax rule> ...
-
 
 Numbers
 ^^^^^^^
