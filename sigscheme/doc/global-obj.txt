@@ -102,7 +102,8 @@ example. Ordinary separated compilation and linking does not work because of
 its "all global objects made static" nature.
 
 .a C code using combined-source mode of the SigScheme
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #include "sigscheme-combined.c"
 
 #include "config.h"
@@ -117,7 +118,7 @@ my_function(int val)
 {
     return SCM_MAKE_INT(val * 2);
 }
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Requirements:
 
@@ -149,10 +150,11 @@ To export SigScheme API symbols against the combined-source mode, define
 follows. See `src/dllentry.c` as real example.
 
 .instructs that export SigScheme API
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #define SCM_EXPORT_API 1
 #include "sigscheme-combined.c"
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 Non-static functions handling for SigScheme developers
@@ -168,7 +170,8 @@ The `SCM_EXPORT` macro is replaced with `static` when the combined-source mode
 without `SCM_EXPORT_API`.
 
 .symbol exportation control for functions
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 SCM_EXPORT void scm_set_lib_path(const char *path);
 SCM_EXPORT ScmObj scm_p_load(ScmObj filename);
@@ -185,7 +188,7 @@ scm_p_load(ScmObj filename)
 {
     ...
 }
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 Global variables handling for SigScheme developers
@@ -209,7 +212,8 @@ Be careful about all part of the variables are certainly qualified as
 const.
 
 .a constant global variables declaration and definition
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 extern const char *const names[];
 
@@ -221,10 +225,11 @@ const char *const names[] = {
 static const char *const other_names[] = {
   "baz", "quux", NULL
 };
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .rewritten declaration and definition
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 SCM_EXTERN(const char *const names[]);
 
@@ -236,7 +241,7 @@ const char *const names[] = {
 static const char *const other_names[] = {
   "baz", "quux", NULL
 };
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Writable extern variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -244,7 +249,8 @@ Writable extern variables
 Writable and exported global variables need more complex rewriting.
 
 .a writable extern variables declaration and definition
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 extern int foo bar;
 extern ScmObj obj_a, obj_b;
@@ -254,10 +260,11 @@ extern void (*func)(void);
 int foo bar;
 ScmObj obj_a, obj_b;
 void (*func)(void);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .rewritten declaration and definition
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 SCM_GLOBAL_VARS_BEGIN(srfi99);
 int foo bar;
@@ -272,7 +279,7 @@ SCM_GLOBAVARS_END(srfi99);
 
 /* definition */
 SCM_DEFINE_EXPORTED_VARS(srfi99);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The identifier 'srfi99' in above example specifies a namespace and
 aggregational unit which the variables are placed into. It is recommended that
@@ -294,7 +301,8 @@ replacement, The variable names should be prefixed to be unique over all
 sources.
 
 .prefixing each variables is recommended
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 SCM_GLOBAL_VARS_BEGIN(srfi99);
 int scm_foo scm_bar;
@@ -309,12 +317,13 @@ SCM_GLOBAVARS_END(srfi99);
 
 /* definition */
 SCM_DEFINE_EXPORTED_VARS(srfi99);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Finally, conditional compilation is allowed even if in the declaration.
 
 .conditional compilation is allowed
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 /* declaration */
 SCM_GLOBAL_VARS_BEGIN(srfi99);
 int scm_foo scm_bar;
@@ -331,7 +340,7 @@ SCM_GLOBAVARS_END(srfi99);
 
 /* definition */
 SCM_DEFINE_EXPORTED_VARS(srfi99);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Static variables
 ~~~~~~~~~~~~~~~~
@@ -340,14 +349,16 @@ Static variables handling is similar to external one, but some additional
 treatment is needed.
 
 .a static variables definition
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 static int foo bar;
 static ScmObj obj_a, obj_b;
 static void (*func)(void);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .rewritten definition
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SCM_GLOBAL_VARS_BEGIN(static_srfi99);
 #define static
 static int l_foo l_bar;
@@ -361,7 +372,7 @@ SCM_GLOBAL_VARS_END(static_srfi99);
 #define l_obj_b SCM_GLOBAL_VAR(static_srfi99, l_obj_b)
 #define l_func  SCM_GLOBAL_VAR(static_srfi99, l_func)
 SCM_DEFINE_STATIC_VARS(static_srfi99);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The technical difference to external one is:
 
@@ -404,14 +415,15 @@ completely invalid. It is not only containing unspecified value but may cause
 crash on some platforms since the storage is not allocated yet.
 
 .initialization of a set of variables
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void
 scm_srfi99_init(void)
 {
     SCM_GLOBAL_VARS_INIT(srfi99);
     SCM_GLOBAL_VARS_INIT(static_srfi99);
 }
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 After the initialization, the variables contained in the namespace specified by
 the `SCM_GLOBAL_VARS_INIT()` are allocated and zero-cleared. If you want that
@@ -420,13 +432,14 @@ initialization. Load-time initialization is not allowed and technically does
 not work.
 
 .initialization is not allowed (and does not work)
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 SCM_GLOBAL_VARS_BEGIN(static_srfi99);
 #define static
 static int l_foo = 100;
 #undef static
 SCM_GLOBAL_VARS_END(static_srfi99);
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The by-function initialization ensures that cyclic finalization ->
 re-initialization loop works properly without careful initial value treatment
@@ -440,11 +453,12 @@ shrunk. But the macro should be added if a code module has finalization
 function.
 
 .finalization of the variables
-----------------------------------------------------------------
+[C]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 void
 scm_srfi99_fin(void)
 {
     SCM_GLOBAL_VARS_FIN(srfi99);
     SCM_GLOBAL_VARS_FIN(static_srfi99);
 }
-----------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
