@@ -284,9 +284,9 @@ SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
 SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #endif
 #if SCM_USE_HYGIENIC_MACRO
-ScmObj scm_make_hygienic_macro(ScmObj rules, ScmObj defenv);
-ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
-ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
+SCM_EXPORT ScmObj scm_make_hygienic_macro(ScmObj rules, ScmObj defenv);
+SCM_EXPORT ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
+SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #endif
 
 /*=======================================

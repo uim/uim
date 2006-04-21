@@ -121,14 +121,22 @@ enum dbg_flag {
     DBG_RETURN       = 1 << 5,
     DBG_UNWRAP       = 1 << 6,
     DBG_EXPANDER     = 1 << 7
-} debug_mode = 0;
+};
+
+SCM_GLOBAL_VARS_BEGIN(static_macro);
+#define static
+static enum dbg_flag l_debug_mode;
+#undef static
+SCM_GLOBAL_VARS_END(static_macro);
+#define l_debug_mode SCM_GLOBAL_VAR(static_macro, l_debug_mode)
+SCM_DEFINE_STATIC_VARS(static_macro);
 
 static void
 dbg_print(enum dbg_flag mask, const char *fmt, ...)
 {
     va_list va;
 
-    if (mask & debug_mode) {
+    if (mask & l_debug_mode) {
         va_start(va, fmt);
         scm_vformat(scm_err, SCM_FMT_INTERNAL, fmt, va);
         va_end(va);
@@ -140,7 +148,7 @@ scm_p_set_macro_debug_flagsx(ScmObj new_mode)
 {
     SCM_ASSERT(INTP(new_mode));
 
-    debug_mode = SCM_INT_VALUE(new_mode);
+    l_debug_mode = SCM_INT_VALUE(new_mode);
     return SCM_UNDEF;
 }
 
@@ -152,6 +160,9 @@ static const struct scm_func_registration_info dbg_funcs[] = {
 static void
 init_dbg(void)
 {
+    SCM_GLOBAL_VARS_INIT(static_macro);
+    l_debug_mode = 0;
+
     DEFINE("%debug-macro-compiler", MAKE_INT(DBG_COMPILER));
     DEFINE("%debug-macro-matcher", MAKE_INT(DBG_MATCHER));
     DEFINE("%debug-macro-transcriptor", MAKE_INT(DBG_TRANSCRIPTOR));
@@ -193,7 +204,7 @@ static ScmObj expand_hygienic_macro(ScmObj macro, ScmObj args, ScmObj env);
 static scm_int_t list_find_index(ScmObj x, ScmObj ls);
 
 
-void
+SCM_EXPORT void
 scm_init_macro(void)
 {
     /* TODO: parameterize EVAL in scm_s_let(), scm_s_letrec() and
@@ -207,7 +218,7 @@ scm_init_macro(void)
     INIT_DBG();
 }
 
-void SCM_NORETURN
+SCM_EXPORT void SCM_NORETURN
 scm_macro_bad_scope(ScmObj id)
 {
     PLAIN_ERR("Identifier ~s found in wrong context.  "
@@ -237,7 +248,7 @@ expand_hygienic_macro(ScmObj macro, ScmObj args, ScmObj env)
     /* Not reached. */
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
@@ -253,7 +264,7 @@ scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
 {
     ScmObj ret;
@@ -264,7 +275,7 @@ scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_syntax_rules(ScmObj args, ScmObj env)
 {
     ScmObj rule, compiled_rules;
@@ -315,7 +326,7 @@ scm_s_syntax_rules(ScmObj args, ScmObj env)
     return MAKE_HYGIENIC_MACRO(compiled_rules, env);
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_s_match(ScmObj form, ScmObj clauses, ScmEvalState *state)
 {
     ScmObj clause;
@@ -1060,7 +1071,7 @@ unwrap_vectorx(ScmObj obj)
     }
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_unwrap_syntaxx(ScmObj arg)
 {
     DBG_PRINT((DBG_UNWRAP, "unwrap-syntax!: ~s\n", arg));
@@ -1070,7 +1081,7 @@ scm_unwrap_syntaxx(ScmObj arg)
     return arg;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_unwrap_keyword(ScmObj obj)
 {
     DBG_PRINT((DBG_UNWRAP, "unwrap-keyword: ~s\n", obj));
@@ -1079,7 +1090,7 @@ scm_unwrap_keyword(ScmObj obj)
 
 #if 0
 /* Alternative implementation. */
-ScmObj
+SCM_EXPORT ScmObj
 scm_unwrap_syntaxx(ScmObj arg)
 {
     if (CONSP(arg)) {
@@ -1114,7 +1125,7 @@ scm_unwrap_syntaxx(ScmObj arg)
  * ==============================*/
 
 /* TODO: move to somewhere appropriate. */
-ScmObj
+SCM_EXPORT ScmObj
 scm_p_reversex(ScmObj in)
 {
     ScmObj out, next;

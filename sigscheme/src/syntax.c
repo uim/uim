@@ -129,7 +129,7 @@ scm_init_syntax(void)
  *
  * @see list_translator, tr_msg
  */
-translator_ret
+SCM_EXPORT translator_ret
 scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     DECLARE_INTERNAL_FUNCTION("(list translator)");
@@ -184,7 +184,7 @@ scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 /* '- 1' allows zero as spliced index */
 #define SPLICED_INDEX(i)  (-(i) - 1)
 
-translator_ret
+SCM_EXPORT translator_ret
 scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
     scm_int_t splice_len;

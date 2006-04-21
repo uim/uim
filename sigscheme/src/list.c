@@ -326,7 +326,7 @@ scm_p_reverse(ScmObj lst)
     return ret;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_list_tail(ScmObj lst, scm_int_t k)
 {
     while (k--) {

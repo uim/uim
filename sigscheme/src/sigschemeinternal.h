@@ -782,14 +782,16 @@ SCM_EXPORT ScmObj scm_replace_environment(ScmObj formals, ScmObj actuals,
 SCM_EXPORT ScmObj scm_update_environment(ScmObj actuals, ScmObj env);
 SCM_EXPORT ScmObj scm_add_environment(ScmObj var, ScmObj val, ScmObj env);
 SCM_EXPORT ScmRef scm_lookup_environment(ScmObj var, ScmObj env);
-ScmRef scm_lookup_frame(ScmObj var, ScmObj frame);
+SCM_EXPORT ScmRef scm_lookup_frame(ScmObj var, ScmObj frame);
 #if SCM_USE_HYGIENIC_MACRO
-ScmPackedEnv scm_pack_env(ScmObj env);
-ScmObj scm_unpack_env(ScmPackedEnv penv, ScmObj context);
-scm_bool scm_subenvp(ScmObj env, ScmPackedEnv sub);
-scm_bool scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv, ScmObj y,
-                              ScmPackedEnv penv, ScmObj env);
-ScmObj scm_wrap_identifier(ScmObj id, ScmPackedEnv penv, ScmObj env);
+SCM_EXPORT ScmPackedEnv scm_pack_env(ScmObj env);
+SCM_EXPORT ScmObj scm_unpack_env(ScmPackedEnv penv, ScmObj context);
+SCM_EXPORT scm_bool scm_subenvp(ScmObj env, ScmPackedEnv sub);
+SCM_EXPORT scm_bool scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv,
+                                         ScmObj y,
+                                         ScmPackedEnv penv, ScmObj env);
+SCM_EXPORT ScmObj scm_wrap_identifier(ScmObj id, ScmPackedEnv penv,
+                                      ScmObj env);
 #endif
 
 SCM_EXPORT scm_bool scm_valid_environmentp(ScmObj env);
@@ -810,14 +812,17 @@ SCM_EXPORT void scm_init_syntax(void);
 SCM_EXPORT ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
                                       ScmEvalState *eval_state);
-translator_ret scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj);
-translator_ret scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj);
+SCM_EXPORT translator_ret scm_vectran(sequence_translator *t, tr_msg msg,
+                                      ScmObj obj);
+SCM_EXPORT translator_ret scm_listran(sequence_translator *t, tr_msg msg,
+                                      ScmObj obj);
 
 /* macro.c */
-void scm_init_macro(void);
-ScmObj scm_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_p_reversex(ScmObj in); /* To be relocated. */
-void scm_macro_bad_scope(ScmObj sym);
+SCM_EXPORT void scm_init_macro(void);
+SCM_EXPORT ScmObj scm_expand_macro(ScmObj macro, ScmObj args,
+                                   ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_p_reversex(ScmObj in); /* To be relocated. */
+SCM_EXPORT void scm_macro_bad_scope(ScmObj sym);
 
 /* error.c */
 SCM_EXPORT void scm_init_error(void);
@@ -825,7 +830,7 @@ SCM_EXPORT void scm_init_error(void);
 /* list.c */
 SCM_EXPORT scm_int_t scm_finite_length(ScmObj lst);
 SCM_EXPORT scm_int_t scm_length(ScmObj lst);
-ScmObj scm_list_tail(ScmObj lst, scm_int_t k);
+SCM_EXPORT ScmObj scm_list_tail(ScmObj lst, scm_int_t k);
 
 /* number.c */
 SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,

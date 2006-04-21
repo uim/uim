@@ -102,7 +102,7 @@ scm_toplevel_environmentp(ScmObj env)
 
 /* ScmPackedEnv is scm_int_t. */
 
-ScmPackedEnv
+SCM_EXPORT ScmPackedEnv
 scm_pack_env(ScmObj env)
 {
     scm_int_t depth;
@@ -114,7 +114,7 @@ scm_pack_env(ScmObj env)
 }
 
 /* Not used. */
-ScmObj
+SCM_EXPORT ScmObj
 scm_unpack_env(ScmPackedEnv packed, ScmObj context)
 {
     scm_int_t depth;
@@ -162,7 +162,7 @@ lookup_n_frames(ScmObj id, scm_int_t n, ScmObj env)
  * Moving this to macro.c can be an option, but keep in mind some
  * aspects are inherently tightly coupled with the lookup functions.
  */
-scm_bool
+SCM_EXPORT scm_bool
 scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv,
                      ScmObj y, ScmPackedEnv penv, ScmObj env)
 {
@@ -191,7 +191,7 @@ scm_identifierequalp(ScmObj x, ScmPackedEnv xpenv,
  * within ENV (whose packed representation is DEPTH), but is not eq?
  * with ID.
  */
-ScmObj
+SCM_EXPORT ScmObj
 scm_wrap_identifier(ScmObj id, ScmPackedEnv depth, ScmObj env)
 {
     scm_int_t id_depth;
@@ -363,7 +363,7 @@ scm_lookup_environment(ScmObj var, ScmObj env)
 }
 
 /** Lookup a variable in a frame */
-ScmRef
+SCM_EXPORT ScmRef
 scm_lookup_frame(ScmObj var, ScmObj frame)
 {
     ScmObj formals;

@@ -240,7 +240,7 @@ scm_make_char(scm_ichar_t val)
 }
 
 #if SCM_USE_HYGIENIC_MACRO
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_hygienic_macro(ScmObj rules, ScmObj env)
 {
     ScmObj obj;
@@ -252,7 +252,7 @@ scm_make_hygienic_macro(ScmObj rules, ScmObj env)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_farsymbol(ScmObj sym, ScmPackedEnv env)
 {
     ScmObj obj;
@@ -268,7 +268,7 @@ scm_make_farsymbol(ScmObj sym, ScmPackedEnv env)
     return obj;
 }
 
-ScmObj
+SCM_EXPORT ScmObj
 scm_make_subpat(ScmObj x, scm_int_t meta)
 {
     ScmObj obj;

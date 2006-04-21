@@ -1281,11 +1281,13 @@ SCM_EXPORT ScmObj scm_p_cddddr(ScmObj lst);
 
 /* macro.c */
 #if SCM_USE_HYGIENIC_MACRO
-ScmObj scm_s_match(ScmObj form, ScmObj patterns, ScmEvalState *state);
-ScmObj scm_s_syntax_rules(ScmObj rules, ScmObj env);
-ScmObj scm_s_expand_macro(ScmObj macro, ScmObj args, ScmEvalState *eval_state);
-ScmObj scm_unwrap_syntaxx(ScmObj obj);
-ScmObj scm_unwrap_keyword(ScmObj obj);
+SCM_EXPORT ScmObj scm_s_match(ScmObj form, ScmObj patterns,
+                              ScmEvalState *state);
+SCM_EXPORT ScmObj scm_s_syntax_rules(ScmObj rules, ScmObj env);
+SCM_EXPORT ScmObj scm_s_expand_macro(ScmObj macro, ScmObj args,
+                                     ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_unwrap_syntaxx(ScmObj obj);
+SCM_EXPORT ScmObj scm_unwrap_keyword(ScmObj obj);
 #endif
 
 #if SCM_USE_PORT

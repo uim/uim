@@ -130,7 +130,6 @@ Assigned to YamaKen:
 
 * Make all global and static variables encapsulatable into a dynamic object, to
   support embedded environment that cannot use it such as BREW
-  - Rewrite macro.c with the revised API
 
 * Write test for tail expression of all tail-recursive syntaxes
 
