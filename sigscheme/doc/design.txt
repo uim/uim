@@ -1,8 +1,6 @@
 Design of SigScheme
 ===================
 
-// NOTE: Keep synchronized with introduction.texi for now -- YamaKen 2006-04-04
-
 
 Purposes
 --------

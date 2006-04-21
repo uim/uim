@@ -34,26 +34,7 @@
 
 /* This file must be included before the client package's config.h */
 
-/*
- * The combined-source version of SigScheme is provided for
- * symbol-conflict-sensitive applications such as libuim. Since SigScheme uses
- * semi-common 'scm_' and 'Scm' prefixes for exported symbols, it may conflict
- * with other Scheme implementations such as Guile if the client is linked with
- * a Scheme-based library. To avoid such conflict, the combined-source makes
- * all symbols of SigScheme static (although not finished yet). A client of
- * SigScheme can use this combined-source version by directly including
- * sigscheme-combined.c into a C source of the client. Once included, all
- * configured SigScheme features can be used as file-local code, and it can
- * also be linked with other arbitrary codes via user-written wrapper.
- *
- * Although libtool has an useful option -export-symbols-regex for such
- * purpose, libtool does not ensure its portability. Currently supported
- * platforms are limited (at least 2.1a 2006-03-30) and some platforms seems
- * that cannot be supported. So I prepare this portable method since
- * portability is very important for SigScheme.
- *
- *   -- YamaKen 2006-03-31
- */
+/* See doc/global-obj.txt for usage. */
 
 #ifndef __SCM_SIGSCHEME_COMBINED_H
 #define __SCM_SIGSCHEME_COMBINED_H

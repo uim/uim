@@ -1,8 +1,6 @@
 Specifications of SigScheme
 ===========================
 
-// NOTE: Keep synchronized with features.texi for now -- YamaKen 2006-04-04
-
 
 General
 -------

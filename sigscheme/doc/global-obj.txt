@@ -1,0 +1,395 @@
+Global object handlings of SigScheme
+====================================
+
+
+About
+-----
+
+SigScheme has portable mechanisms that control:
+
+  - global symbols hiding
+  - global variable to dynamically allocated variable conversion
+
+This document describes its necessity and usage.
+
+
+The problems
+------------
+
+Global symbol conflict with other libraries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since SigScheme uses semi-common 'scm_' and 'Scm' prefixes for exported
+symbols, it may conflict with other libraries if the client application is also
+directly or indirectly linked with another Scheme implementation such as
+libguile. This is a serious problem when implementing a fundamental library
+based on libsscm, such as libuim.
+
+To avoid such conflict, many platforms provide symbol exportation control
+ability. For example, GNU ld and Windows DLL can handle it based on a optional
+file which contains the symbol information. And libtool provides an useful
+option `-export-symbols-regex` for such purpose to make the handlings
+platform-independent. However, unfortunately libtool does not ensure its
+portability. Currently supported platforms are considerably limited (at least
+on version 2.1a 2006-03-30) and some platforms seems that can never be
+supported.
+
+Since primal portability is indispensable value of SigScheme to be being an
+useful embedded Scheme implementation, we cannot depend on such problematic
+toolchain-based symbol exportation control.
+
+Platforms that lack writable static data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some platforms such as BREW and some versions of Symbian OS lack writable
+static data capability. It means that no writable global variable can be used
+in SigScheme. But SigScheme do need various global data such as dynamic extent,
+symbol table, R5RS constant object holder and so on. So an alternative dynamic
+data store that can globally be accessed is needed.
+
+
+Solution
+--------
+
+The two problems are resolved with two related mechanisms.
+
+For the symbol conflict problem, an alternative special compilation method
+called 'combined-source mode' is provided.
+
+It combines all source code of SigScheme into single file, and makes all global
+objects static. So no symbols will be exposed. A client of libsscm can use this
+combined version of the library by including the file `sigscheme-combined.c`
+directly into a C/C++ source of the client. Once it included, all configured
+SigScheme features can be used as file-local code, and it can also be linked
+with other arbitrary objects via user-written wrapper.
+
+And the writable static data problem is resolved with 'aggregated global
+variables' mechanism works on the combined-source mode. When this feature is
+directed, all of the global variables including static ones are aggregated into
+a single big struct, and allocated to platform-specific global store such as
+thread local storage or a member variable of application instance. The
+accessing method to the variables is abstracted by some macros, and any
+variable can be accessed as if ordinary variable.
+
+Finally, a variant configuration of the two mechanisms is also available for
+the platforms lacking writable static data. It is combined, global variables
+aggregated, but exports SigScheme's API symbols. This configuration is supposed
+to provide libsscm on such platforms.
+
+
+Combined-source mode usage for libsscm users
+--------------------------------------------
+
+Preparation
+~~~~~~~~~~~
+
+The combined-source version of the library is optional and not built by
+default. To build it, make Perl available on your build environment and
+instruct as follows.
+
+----------------------------------------------------------------
+  $ make -C src combined
+----------------------------------------------------------------
+
+It results the file `src/sigscheme-combined.c`. Since the generated code
+reflects user-configuration, it must be rebuilt every after `configure`.
+
+Compilation
+~~~~~~~~~~~
+
+Include the `sigscheme-combined.c` directly into a C/C++ code, as following
+example. Ordinary separated compilation and linking does not work because of
+its "all global objects made static" nature.
+
+.a C code using combined-source mode of the SigScheme
+----------------------------------------------------------------
+#include "sigscheme-combined.c"
+
+#include "config.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "my-header.h"
+
+static ScmObj
+my_function(int val)
+{
+    return SCM_MAKE_INT(val * 2);
+}
+----------------------------------------------------------------
+
+Requirements:
+
+  - `sigscheme-combined.c` must be included prior to client's own `config.h`
+    since many autoconf-defined macros of SigScheme must appropriately be
+    undefined in the file to avoid conflicting with the client-side ones
+
+  - Add include path to `sigscheme/src` since the `sigscheme-combined.c`
+    includes various source files in the directory
+
+Other notes:
+
+  - The client code can use all of public SigScheme API defined in
+    `sigscheme.h`, `scmint.h`, `encoding.h`, `global.h` and SigScheme's own
+    `condig.h`. Any other interfaces should not be used even if accessible
+
+  - All of SigScheme's internal macros are undefined and hidden at the end of
+    `sigscheme-combined.c` inclusion, to reduce namespace pollution
+
+  - Many internal variables and functions of SigScheme are exposed to the
+    client code. Be careful of conflict
+
+
+Global variables handling for SigScheme developers
+--------------------------------------------------
+
+The aggregated variables mechanism is mainly provided for SigScheme developers
+and used to write libsscm. All global variables used in SigScheme must be
+written with this mechanism to keep portable to the embedded
+platforms. Although it tries to keep original usage of the global variables,
+some rewrite of source codes declaring and defining the variables are needed
+because of the limitation of C macro ability.
+
+Constant global variables
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Constant global variables can safely be used in all platforms regardless of
+whether static or not. But a little modification of `extern` declaration is
+needed for the combined-source mode treatment.
+
+Be careful about all part of the variables are certainly qualified as
+const.
+
+.a constant global variables declaration and definition
+----------------------------------------------------------------
+/* declaration */
+extern const char *const names[];
+
+/* definition */
+const char *const names[] = {
+  "foo", "bar", NULL
+};
+
+static const char *const other_names[] = {
+  "baz", "quux", NULL
+};
+----------------------------------------------------------------
+
+.rewritten declaration and definition
+----------------------------------------------------------------
+/* declaration */
+SCM_EXTERN(const char *const names[]);
+
+/* definition */
+const char *const names[] = {
+  "foo", "bar", NULL
+};
+
+static const char *const other_names[] = {
+  "baz", "quux", NULL
+};
+----------------------------------------------------------------
+
+Writable extern variables
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Writable and exported global variables need more complex rewriting.
+
+.a writable extern variables declaration and definition
+----------------------------------------------------------------
+/* declaration */
+extern int foo bar;
+extern ScmObj obj_a, obj_b;
+extern void (*func)(void);
+
+/* definition */
+int foo bar;
+ScmObj obj_a, obj_b;
+void (*func)(void);
+----------------------------------------------------------------
+
+.rewritten declaration and definition
+----------------------------------------------------------------
+/* declaration */
+SCM_GLOBAL_VARS_BEGIN(srfi99);
+int foo bar;
+ScmObj obj_a, obj_b;
+void (*func)(void);
+SCM_GLOBAVARS_END(srfi99);
+#define foo   SCM_GLOBAL_VAR(srfi99, foo)
+#define bar   SCM_GLOBAL_VAR(srfi99, bar)
+#define obj_a SCM_GLOBAL_VAR(srfi99, obj_a)
+#define obj_b SCM_GLOBAL_VAR(srfi99, obj_b)
+#define func  SCM_GLOBAL_VAR(srfi99, func)
+
+/* definition */
+SCM_DEFINE_EXPORTED_VARS(srfi99);
+----------------------------------------------------------------
+
+The identifier 'srfi99' in above example specifies a namespace and
+aggregational unit which the variables are placed into. It is recommended that
+the name is taken from the filename which the definition is placed.
+
+The macros defined immediately after the SCM_GLOBAVARS_END() are conventional
+accessors for the variables. The proper accessing method for the variables is
+SCM_GLOBAL_VAR(namespace, varname), but it unacceptably bothers code
+writing. So such macros should be defined. The macros make rewriting of codes
+operate on the variables unneeded. The SCM_GLOBAL_VAR() allows being accessed
+as lvalue.
+
+But since it may obviously cause unexpected replacement if any of the names are
+appeared as a non-global-variable object in a code, such as local variable or
+struct member. The macro definition may affect to all source files even if the
+header defines the macro is not included by a file, because of the unified
+translation unit formed by the combined-source. To avoid such unwanted
+replacement, The variable names should be prefixed to be unique over all
+sources.
+
+.prefixing each variables is recommended
+----------------------------------------------------------------
+/* declaration */
+SCM_GLOBAL_VARS_BEGIN(srfi99);
+int scm_foo scm_bar;
+ScmObj scm_obj_a, scm_obj_b;
+void (*scm_func)(void);
+SCM_GLOBAVARS_END(srfi99);
+#define scm_foo   SCM_GLOBAL_VAR(srfi99, scm_foo)
+#define scm_bar   SCM_GLOBAL_VAR(srfi99, scm_bar)
+#define scm_obj_a SCM_GLOBAL_VAR(srfi99, scm_obj_a)
+#define scm_obj_b SCM_GLOBAL_VAR(srfi99, scm_obj_b)
+#define scm_func  SCM_GLOBAL_VAR(srfi99, scm_func)
+
+/* definition */
+SCM_DEFINE_EXPORTED_VARS(srfi99);
+----------------------------------------------------------------
+
+Static variables
+~~~~~~~~~~~~~~~~
+
+Static variables handling is similar to external one, but some additional
+treatment is needed.
+
+.a static variables definition
+----------------------------------------------------------------
+static int foo bar;
+static ScmObj obj_a, obj_b;
+static void (*func)(void);
+----------------------------------------------------------------
+
+.rewritten definition
+----------------------------------------------------------------
+SCM_GLOBAL_VARS_BEGIN(static_srfi99);
+#define static
+static int l_foo l_bar;
+static ScmObj l_obj_a, l_obj_b;
+static void (*l_func)(void);
+#undef static
+SCM_GLOBAL_VARS_END(static_srfi99);
+#define l_foo   SCM_GLOBAL_VAR(static_srfi99, l_foo)
+#define l_bar   SCM_GLOBAL_VAR(static_srfi99, l_bar)
+#define l_obj_a SCM_GLOBAL_VAR(static_srfi99, l_obj_a)
+#define l_obj_b SCM_GLOBAL_VAR(static_srfi99, l_obj_b)
+#define l_func  SCM_GLOBAL_VAR(static_srfi99, l_func)
+SCM_DEFINE_STATIC_VARS(static_srfi99);
+----------------------------------------------------------------
+
+The technical difference to external one is:
+
+  - Use SCM_DEFINE_STATIC_VARS() instead of SCM_DEFINE_EXPORTED_VARS() to
+    define declared variables
+
+And some more conventions:
+
+  - Enclose the declaration with `#define static` and `#undef static` to keep
+    indicating that the variables are static
+
+    * The `static` specifier is technically not allowed here
+
+    * The `#define` and `#undef` must be placed inside
+      `SCM_GLOBAL_VARS_{BEGIN,END}()`. Placing outside of them makes the
+      declaration broken
+
+  - The namespace should be prefixed with `static_`
+
+  - The variable names should be prefixed with `l_` (stands for 'local')
+
+Common restrictions
+~~~~~~~~~~~~~~~~~~~
+
+  - Reserved namespaces
+
+    * `dummy`
+    * `dummy_*`
+    * `instance`
+    * `instance_*`
+    * `aggregated`
+    * `aggregated_*`
+
+Initialization and finalization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The aggregated variables *MUST* be initialized with `SCM_GLOBAL_VARS_INIT()`
+prior to being used. Before the initialization, accessing the variables is
+completely invalid. It is not only containing unspecified value but may cause
+crash on some platforms since the storage is not allocated yet.
+
+.initialization of a set of variables
+----------------------------------------------------------------
+void
+scm_srfi99_init(void)
+{
+    SCM_GLOBAL_VARS_INIT(srfi99);
+    SCM_GLOBAL_VARS_INIT(static_srfi99);
+}
+----------------------------------------------------------------
+
+After the initialization, the variables contained in the namespace specified by
+the `SCM_GLOBAL_VARS_INIT()` are allocated and zero-cleared. If you want that
+an variable is initialized, assign the value by hand after the
+initialization. Load-time initialization is not allowed and technically does
+not work.
+
+.initialization is not allowed (and does not work)
+----------------------------------------------------------------
+SCM_GLOBAL_VARS_BEGIN(static_srfi99);
+#define static
+static int l_foo = 100;
+#undef static
+SCM_GLOBAL_VARS_END(static_srfi99);
+----------------------------------------------------------------
+
+The by-function initialization ensures that cyclic finalization ->
+re-initialization loop works properly without careful initial value treatment
+of global variables. It is helpful to ensure that SigScheme is
+re-initialization safe.
+
+Finalization macro is also provided and usable. But since it is currently empty
+expression on all platforms, and most code modules do not have finalization
+function, no finalization is performed for global variables to keep footprint
+shrunk. But the macro should be added if a code module has finalization
+function.
+
+.finalization of the variables
+----------------------------------------------------------------
+void
+scm_srfi99_fin(void)
+{
+    SCM_GLOBAL_VARS_FIN(srfi99);
+    SCM_GLOBAL_VARS_FIN(static_srfi99);
+}
+----------------------------------------------------------------
+
+
+Combined-source mode with exported API symbols
+----------------------------------------------
+
+To export SigScheme API symbols against the combined-source mode, define
+`SCM_EXPORT_API` to 1 prior to including the `sigscheme-combined.c`, as
+follows. See `src/dllentry.c` as real example.
+
+.instructs that export SigScheme API
+----------------------------------------------------------------
+#define SCM_EXPORT_API 1
+#include "sigscheme-combined.c"
+----------------------------------------------------------------

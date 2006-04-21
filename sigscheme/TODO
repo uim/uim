@@ -130,9 +130,6 @@ Assigned to YamaKen:
 
 * Make all global and static variables encapsulatable into a dynamic object, to
   support embedded environment that cannot use it such as BREW
-  - Revise exported global variables definition method to make more similar to
-    plain variable definition
-  - Write document
   - Rewrite macro.c with the revised API
 
 * Write test for tail expression of all tail-recursive syntaxes

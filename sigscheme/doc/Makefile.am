@@ -1,5 +1,5 @@
-TXTS = design.txt spec.txt style.txt test-c.txt
-ASCIIDOC_HTMLS = design.html spec.html
+TXTS = design.txt spec.txt style.txt test-c.txt global-obj.txt
+ASCIIDOC_HTMLS = design.html spec.html global-obj.html
 
 BUILT_DIST = $(ASCIIDOC_HTMLS)
 EXTRA_DIST = $(BUILT_DIST) TODO $(TXTS)
