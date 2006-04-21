@@ -141,6 +141,53 @@ Other notes:
     client code. Be careful of conflict
 
 
+Combined-source mode with exported API symbols
+----------------------------------------------
+
+To export SigScheme API symbols against the combined-source mode, define
+`SCM_EXPORT_API` to 1 prior to including the `sigscheme-combined.c`, as
+follows. See `src/dllentry.c` as real example.
+
+.instructs that export SigScheme API
+----------------------------------------------------------------
+#define SCM_EXPORT_API 1
+#include "sigscheme-combined.c"
+----------------------------------------------------------------
+
+
+Non-static functions handling for SigScheme developers
+------------------------------------------------------
+
+To control global symbol exportation, any non-static function declaration and
+definition need little modification. For both prototype declaration and actual
+definition, prepend `SCM_EXPORT` to the function. There is no distinction
+between public API and library-internal API on the exportation control. Use
+`SCM_EXPORT` for both type of functions.
+
+The `SCM_EXPORT` macro is replaced with `static` when the combined-source mode
+without `SCM_EXPORT_API`.
+
+.symbol exportation control for functions
+----------------------------------------------------------------
+/* declaration */
+SCM_EXPORT void scm_set_lib_path(const char *path);
+SCM_EXPORT ScmObj scm_p_load(ScmObj filename);
+
+/* definition */
+SCM_EXPORT void
+scm_set_lib_path(const char *path)
+{
+    ...
+}
+
+SCM_EXPORT ScmObj
+scm_p_load(ScmObj filename)
+{
+    ...
+}
+----------------------------------------------------------------
+
+
 Global variables handling for SigScheme developers
 --------------------------------------------------
 
@@ -253,6 +300,28 @@ SCM_GLOBAL_VARS_BEGIN(srfi99);
 int scm_foo scm_bar;
 ScmObj scm_obj_a, scm_obj_b;
 void (*scm_func)(void);
+SCM_GLOBAVARS_END(srfi99);
+#define scm_foo   SCM_GLOBAL_VAR(srfi99, scm_foo)
+#define scm_bar   SCM_GLOBAL_VAR(srfi99, scm_bar)
+#define scm_obj_a SCM_GLOBAL_VAR(srfi99, scm_obj_a)
+#define scm_obj_b SCM_GLOBAL_VAR(srfi99, scm_obj_b)
+#define scm_func  SCM_GLOBAL_VAR(srfi99, scm_func)
+
+/* definition */
+SCM_DEFINE_EXPORTED_VARS(srfi99);
+----------------------------------------------------------------
+
+Finally, conditional compilation is allowed even if in the declaration.
+
+.conditional compilation is allowed
+----------------------------------------------------------------
+/* declaration */
+SCM_GLOBAL_VARS_BEGIN(srfi99);
+int scm_foo scm_bar;
+#if SCM_USE_FOO
+ScmObj scm_obj_a, scm_obj_b;
+void (*scm_func)(void);
+#endif
 SCM_GLOBAVARS_END(srfi99);
 #define scm_foo   SCM_GLOBAL_VAR(srfi99, scm_foo)
 #define scm_bar   SCM_GLOBAL_VAR(srfi99, scm_bar)
@@ -378,18 +447,4 @@ scm_srfi99_fin(void)
     SCM_GLOBAL_VARS_FIN(srfi99);
     SCM_GLOBAL_VARS_FIN(static_srfi99);
 }
-----------------------------------------------------------------
-
-
-Combined-source mode with exported API symbols
-----------------------------------------------
-
-To export SigScheme API symbols against the combined-source mode, define
-`SCM_EXPORT_API` to 1 prior to including the `sigscheme-combined.c`, as
-follows. See `src/dllentry.c` as real example.
-
-.instructs that export SigScheme API
-----------------------------------------------------------------
-#define SCM_EXPORT_API 1
-#include "sigscheme-combined.c"
 ----------------------------------------------------------------
