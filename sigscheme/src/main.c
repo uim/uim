@@ -88,7 +88,7 @@ struct _CSSCMApplet {
 #endif /* BREW_MAJ_VER */
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 /* Don't use any global variable other than the 'sscm' */
 #if !BREW_MAJ_VER  /* FIXME: inappropriate detection method */
@@ -103,7 +103,7 @@ static void repl_loop(void);
 static scm_bool show_promptp(void);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 static void
 repl(void)

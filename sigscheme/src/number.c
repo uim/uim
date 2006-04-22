@@ -42,15 +42,15 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 
 /*=======================================
@@ -59,7 +59,7 @@
 static int prepare_radix(const char *funcname, ScmObj args);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 /*=======================================
   R5RS : 6.2 Numbers

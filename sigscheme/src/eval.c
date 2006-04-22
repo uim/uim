@@ -38,17 +38,17 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
 #define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 
 /*=======================================
@@ -66,7 +66,7 @@ static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 static ScmObj map_eval(ScmObj args, scm_int_t *args_len, ScmObj env);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 /* A wrapper for call() for internal proper tail recursion */
 SCM_EXPORT ScmObj

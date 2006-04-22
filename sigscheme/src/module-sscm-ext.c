@@ -50,7 +50,7 @@
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-sscm-ext.c"
 
@@ -61,7 +61,7 @@ static void scm_require_internal(const char *filename);
 static ScmObj make_loaded_str(const char *filename);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_sscm_extensions(void)

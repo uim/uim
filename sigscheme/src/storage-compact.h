@@ -170,7 +170,7 @@ typedef ScmObj *ScmRef;
 typedef ScmObj (*ScmFuncType)();
 
 /*=======================================
-  Struct Declarations
+  Type Definitions
 =======================================*/
 enum ScmStrMutationType {
     SCM_STR_IMMUTABLE           = 0,

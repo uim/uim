@@ -41,7 +41,7 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 struct module_info {
     const char *name;
@@ -50,11 +50,11 @@ struct module_info {
 };
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_module);
 #define static
@@ -111,7 +111,7 @@ static const struct module_info *lookup_module_info(const char *feature);
 static scm_bool scm_use_internal(const char *feature);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 static const struct module_info *
 lookup_module_info(const char *feature)

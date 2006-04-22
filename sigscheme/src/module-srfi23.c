@@ -38,15 +38,15 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-srfi23.c"
 
@@ -55,7 +55,7 @@
 =======================================*/
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_srfi23(void)

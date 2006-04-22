@@ -44,11 +44,11 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define STRING_CMP(str1, str2)                                               \
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_false))
@@ -56,7 +56,7 @@
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_true))
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 
 /*=======================================
@@ -66,7 +66,7 @@ static int string_cmp(const char *funcname,
                       ScmObj str1, ScmObj str2, scm_bool case_insensitive);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 /*===========================================================================
   R5RS : 6.3 Other data types : 6.3.5 Strings

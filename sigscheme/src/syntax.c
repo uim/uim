@@ -38,17 +38,17 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define ERRMSG_BAD_SPLICE_LIST      "bad splice list"
 #define ERRMSG_BAD_DEFINE_PLACEMENT "bad define placement"
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-r5rs-syntax.c"
 
@@ -82,7 +82,7 @@ static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
 static tr_param qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_syntax(void)

@@ -46,7 +46,7 @@
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-srfi28.c"
 
@@ -55,7 +55,7 @@
 =======================================*/
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_srfi28(void)

@@ -87,7 +87,7 @@ static size_t fileport_write(ScmFilePort *bport,
 static int fileport_flush(ScmFilePort *bport);
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 static const ScmBytePortVTbl ScmFilePort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &fileport_dyn_cast,
@@ -103,7 +103,7 @@ static const ScmBytePortVTbl ScmFilePort_vtbl = {
 SCM_EXPORT const ScmBytePortVTbl *const ScmFilePort_vptr = &ScmFilePort_vtbl;
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 
 /*

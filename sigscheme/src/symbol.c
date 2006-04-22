@@ -42,15 +42,15 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_DEFINE_EXPORTED_VARS(symbol);
 
@@ -62,7 +62,7 @@ static void finalize_symbol_hash(void);
 static uint32_t symbol_name_hash(const char *name);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT ScmObj
 scm_intern(const char *name)

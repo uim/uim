@@ -74,7 +74,7 @@ static size_t nullport_write(ScmNullPort *bport,
 static int nullport_flush(ScmNullPort *bport);
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 static const ScmBytePortVTbl ScmNullPort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &nullport_dyn_cast,
@@ -90,7 +90,7 @@ static const ScmBytePortVTbl ScmNullPort_vtbl = {
 SCM_EXPORT const ScmBytePortVTbl *const ScmNullPort_vptr = &ScmNullPort_vtbl;
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 
 /*

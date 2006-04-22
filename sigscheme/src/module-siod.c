@@ -41,11 +41,11 @@
 #include "scmport-null.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 /*
  * SIOD's verbose-level compatible debug message printing control:
@@ -68,7 +68,7 @@
 #define SCM_DBG_SIOD_V5 (SCM_DBG_SIOD_V4 | SCM_DBG_READ)
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-siod.c"
 
@@ -101,7 +101,7 @@ SCM_DEFINE_STATIC_VARS(static_siod);
 =======================================*/
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_siod(void)

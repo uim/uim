@@ -64,18 +64,18 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 typedef ScmCell *ScmObjHeap;
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define N_REGS_IN_JMP_BUF    (sizeof(jmp_buf) / sizeof(void *))
 #define SCMOBJ_ALIGNEDP(ptr) (!((uintptr_t)(ptr) % sizeof(ScmObj)))
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #if SCM_GCC4_READY_GC
 SCM_DEFINE_EXPORTED_VARS(gc);
@@ -140,7 +140,7 @@ static size_t gc_sweep(void);
 static void finalize_protected_var(void);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_gc(const ScmStorageConf *conf)

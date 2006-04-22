@@ -91,7 +91,7 @@ static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
                                               scm_bool blockp);
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_scmport_mbchar);
 #define static
@@ -106,7 +106,7 @@ SCM_EXPORT const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr
     = &l_ScmMultiByteCharPort_vtbl;
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_mbcport_init(void)

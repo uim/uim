@@ -125,7 +125,7 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 enum LexerState {
     LEX_ST_NORMAL,
@@ -162,7 +162,7 @@ enum ScmCharClass {
 };
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define OK 0
 #define TOKEN_BUF_EXCEEDED (-1)
@@ -185,7 +185,7 @@ enum ScmCharClass {
                  : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 static const unsigned char scm_char_class_table[] = {
     SCM_CH_CONTROL,            /*   0  nul       */
@@ -342,7 +342,7 @@ static ScmObj read_number(ScmObj port, char prefix);
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 /*===========================================================================
   S-Expression Parser

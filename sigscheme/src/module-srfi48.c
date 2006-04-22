@@ -46,7 +46,7 @@
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-srfi48.c"
 
@@ -57,7 +57,7 @@ static ScmObj srfi48_format_internal(enum ScmFormatCapability fcap,
                                      ScmObj fmt_or_port, ScmObj rest);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_srfi48(void)

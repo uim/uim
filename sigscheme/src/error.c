@@ -42,11 +42,11 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define SCM_BACKTRACE_HEADER "**** BACKTRACE ****"
 #define SCM_BACKTRACE_SEP    "------------------------------"
@@ -54,7 +54,7 @@
 #define NO_ERR_OBJ l_err_obj_tag
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #if (!HAVE_C99_VARIADIC_MACRO && !HAVE_GNU_VARIADIC_MACRO)
 SCM_DEFINE_EXPORTED_VARS(error);
@@ -88,7 +88,7 @@ static void show_arg(ScmObj arg, ScmObj env);
 #endif
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_error(void)

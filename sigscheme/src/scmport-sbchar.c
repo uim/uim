@@ -70,7 +70,7 @@ static char *sbcport_inspect(ScmSingleByteCharPort *port);
 static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_scmport_sbchar);
 #define static
@@ -88,7 +88,7 @@ SCM_EXPORT const ScmCharPortVTbl *ScmSingleByteCharPort_vptr
     = &l_ScmSingleByteCharPort_vtbl;
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_sbcport_init(void)

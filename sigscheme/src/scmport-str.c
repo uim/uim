@@ -114,7 +114,7 @@ static size_t ostrport_append(ScmOutputStrPort *port,
                               size_t len, const char *str);
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 static const ScmBytePortVTbl ScmInputStrPort_vtbl = {
     (ScmBytePortMethod_dyn_cast)   &istrport_dyn_cast,
@@ -145,7 +145,7 @@ SCM_EXPORT const ScmBytePortVTbl *const ScmOutputStrPort_vptr
     = &ScmOutputStrPort_vtbl;
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 
 /*

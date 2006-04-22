@@ -48,11 +48,11 @@
 #endif
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 /* FIXME: only supports UNIX flavors */
 #define ABSOLUTE_PATHP(path) ((path)[0] == '/')
@@ -64,7 +64,7 @@
 #endif
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_load);
 #define static
@@ -86,7 +86,7 @@ static char **parse_script_prelude(ScmObj port);
 #endif
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_load(void)

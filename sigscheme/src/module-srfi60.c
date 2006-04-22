@@ -38,11 +38,11 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define BITWISE_OPERATION_BODY(op, left, right)                              \
     do {                                                                     \
@@ -68,7 +68,7 @@
     } while (/* CONSTCOND */ 0)
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-srfi60.c"
 
@@ -77,7 +77,7 @@
 =======================================*/
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_srfi60(void)

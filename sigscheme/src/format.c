@@ -177,7 +177,7 @@ struct format_args {
                                    : MUST_POP_ARG((args)->lst.scm))
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_format);
 #define static
@@ -213,7 +213,7 @@ static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
                               const char *fmt, struct format_args *args);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_format(void)

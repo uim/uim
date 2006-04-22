@@ -42,15 +42,15 @@
 #include "config.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-srfi1.c"
 
@@ -60,7 +60,7 @@
 static ScmObj compare_list(ScmObj eqproc, ScmObj lst1, ScmObj lst2);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_srfi1(void)

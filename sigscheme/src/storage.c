@@ -44,11 +44,11 @@
 #include "encoding.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #if SCM_USE_STORAGE_FATTY
 /* special constant initialization */
@@ -60,7 +60,7 @@
 #endif /* SCM_USE_STORAGE_FATTY */
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 /* multiple values */
 #if SCM_USE_VALUECONS
@@ -103,7 +103,7 @@ static ScmObj scm_make_string_internal(char *str, scm_int_t len,
                                        scm_bool is_immutable);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_storage(const ScmStorageConf *conf)

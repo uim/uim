@@ -72,7 +72,7 @@ static int basecport_put_char(ScmBaseCharPort *port, scm_ichar_t ch);
 static int basecport_flush(ScmBaseCharPort *port);
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 static const ScmCharPortVTbl ScmBaseCharPort_vtbl = {
     (ScmCharPortMethod_dyn_cast)   &basecport_dyn_cast,
@@ -90,7 +90,7 @@ SCM_EXPORT const ScmCharPortVTbl *const ScmBaseCharPort_vptr
     = &ScmBaseCharPort_vtbl;
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 ScmBaseCharPort_construct(ScmBaseCharPort *port, const ScmCharPortVTbl *vptr,

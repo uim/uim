@@ -46,7 +46,7 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 enum OutputType {
     AS_WRITE,   /* string is enclosed by ", char is written using #\ notation */
@@ -74,7 +74,7 @@ typedef struct {
 #endif /* SCM_USE_SRFI38 */
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #if SCM_USE_SRFI38
 #define INTERESTINGP(obj)                                                    \
@@ -94,7 +94,7 @@ typedef struct {
 #endif /* SCM_USE_SRFI38 */
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_DEFINE_EXPORTED_VARS(write);
 
@@ -135,7 +135,7 @@ static void write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 #endif /* SCM_USE_SRFI38 */
 
 /*=======================================
-   Function Implementations
+   Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_writer(void)

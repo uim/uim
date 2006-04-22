@@ -47,15 +47,15 @@
 #include "scmport-file.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_DEFINE_EXPORTED_VARS(port);
 
@@ -92,7 +92,7 @@ SCM_EXPORT const ScmSpecialCharInfo scm_special_char_table[] = {
 =======================================*/
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_port(void)

@@ -48,15 +48,15 @@
 #endif
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-sscm-core.c"
 #include "functable-r5rs-procedure.c"
@@ -84,7 +84,7 @@ static ScmObj scm_eval_c_string_internal(const char *exp);
 #endif
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 /**
  * Initialize the interpreter

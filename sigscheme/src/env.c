@@ -70,18 +70,18 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 #define TRUSTED_ENVP(env) (EQ(env, SCM_INTERACTION_ENV)                      \
                            || EQ(env, SCM_R5RS_ENV)                          \
                            || EQ(env, SCM_NULL_ENV))
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 
 /*=======================================
@@ -90,7 +90,7 @@
 static scm_bool valid_framep(ScmObj frame);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT scm_bool
 scm_toplevel_environmentp(ScmObj env)

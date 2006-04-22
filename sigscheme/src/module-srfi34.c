@@ -64,7 +64,7 @@
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 #include "functable-srfi34.c"
 
@@ -140,7 +140,7 @@ static ScmObj guard_handler_body(ScmObj q_handler_k, ScmObj env);
 static ScmObj guard_body(ScmEvalState *eval_state);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_initialize_srfi34(void)

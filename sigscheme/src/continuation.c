@@ -41,7 +41,7 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 /* specifies whether the storage abstraction layer can only handle nested
  * (stacked) continuation or R5RS-conformant full implementation. But current
@@ -70,7 +70,7 @@ struct continuation_frame {
 };
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_continuation);
 #define static
@@ -106,7 +106,7 @@ static ScmObj continuation_stack_pop(void);
 static ScmObj continuation_stack_unwind(ScmObj dest_cont);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 SCM_EXPORT void
 scm_init_continuation(void)

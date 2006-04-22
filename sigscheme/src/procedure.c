@@ -38,15 +38,15 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Struct Declarations
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Declarations
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  Variable Declarations
+  Variable Definitions
 =======================================*/
 /* canonical internal encoding for identifiers */
 SCM_DEFINE_EXPORTED_VARS(procedure);
@@ -58,7 +58,7 @@ static ScmObj map_single_arg(ScmObj proc, ScmObj args);
 static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 
 /*=======================================
-  Function Implementations
+  Function Definitions
 =======================================*/
 /*===========================================================================
   R5RS : 6.1 Equivalence predicates
