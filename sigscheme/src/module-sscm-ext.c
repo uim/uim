@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-sscm-ext.c
+ *  Filename : module-sscm-ext.c
  *  About    : SigScheme-specific extensions
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

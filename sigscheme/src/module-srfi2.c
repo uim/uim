@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-srfi2.c
+ *  Filename : module-srfi2.c
  *  About    : SRFI-2 AND-LET*: an AND with local bindings, a guarded LET*
  *             special form
  *

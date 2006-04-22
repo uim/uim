@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #===========================================================================
-#  FileName : build_func_table.rb
+#  Filename : build_func_table.rb
 #  About    : script to building built-in function table
 #
 #  Copyright (C) 2005-2006 Kazuki Ohta <mover at hct.zaq.ne.jp>

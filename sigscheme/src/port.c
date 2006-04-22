@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : port.c
+ *  Filename : port.c
  *  About    : R5RS ports
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

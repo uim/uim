@@ -1,4 +1,4 @@
-;;  FileName : test-apply.scm
+;;  Filename : test-apply.scm
 ;;  About    : unit test for R5RS apply
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

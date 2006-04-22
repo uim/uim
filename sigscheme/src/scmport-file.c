@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : scmport-file.c
+ *  Filename : scmport-file.c
  *  About    : A ScmBytePort implementation for file stream of the standard C
  *             library
  *

@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : read.c
+ *  Filename : read.c
  *  About    : S-Expression reader
  *
  *  Copyright (C) 2000-2001 Shiro Kawai <shiro AT acm.org>

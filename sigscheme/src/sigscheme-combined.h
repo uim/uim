@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : sigscheme-combined.h
+ *  Filename : sigscheme-combined.h
  *  About    : Header for combined-source version of SigScheme
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

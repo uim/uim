@@ -1,7 +1,7 @@
 #! /usr/bin/env sscm -C UTF-8
 ;; -*- buffer-file-coding-system: utf-8 -*-
 
-;;  FileName : test-syntax.scm
+;;  Filename : test-syntax.scm
 ;;  About    : unit test for R5RS syntax
 ;;
 ;;  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

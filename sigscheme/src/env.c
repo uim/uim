@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : env.c
+ *  Filename : env.c
  *  About    : A Scheme environemnt implementation
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

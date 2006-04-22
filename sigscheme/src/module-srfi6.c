@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-srfi6.c
+ *  Filename : module-srfi6.c
  *  About    : SRFI-6 Basic String Ports
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : global.h
+ *  Filename : global.h
  *  About    : Global object handlings
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

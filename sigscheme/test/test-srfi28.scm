@@ -1,4 +1,4 @@
-;;  FileName : test-srfi28.scm
+;;  Filename : test-srfi28.scm
 ;;  About    : unit test for SRFI-28
 ;;
 ;;  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

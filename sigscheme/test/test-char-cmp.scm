@@ -1,4 +1,4 @@
-;;  FileName : test-char-cmp.scm
+;;  Filename : test-char-cmp.scm
 ;;  About    : unit test for R5RS char comparison predicates
 ;;
 ;;  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

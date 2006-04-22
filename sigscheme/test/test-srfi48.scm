@@ -1,6 +1,6 @@
 #! /usr/bin/env sscm -C UTF-8
 
-;;  FileName : test-srfi48.scm
+;;  Filename : test-srfi48.scm
 ;;  About    : unit test for SRFI-48
 ;;
 ;;  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

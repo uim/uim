@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : string.c
+ *  Filename : string.c
  *  About    : R5RS strings
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

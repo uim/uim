@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : storage-fatty.h
+ *  Filename : storage-fatty.h
  *  About    : Storage abstraction (fatty representation)
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

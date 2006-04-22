@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : list.c
+ *  Filename : list.c
  *  About    : R5SR pairs and lists
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

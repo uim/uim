@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module.c
+ *  Filename : module.c
  *  About    : Code module handlings
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

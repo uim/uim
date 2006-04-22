@@ -2,7 +2,7 @@
 ;; -*- buffer-file-coding-system: shift_jisx0213 -*-
 ;; C-x RET c shift_jisx0213 C-x C-f test-enc-sjis.scm
 
-;;  FileName : test-enc-sjis.scm
+;;  Filename : test-enc-sjis.scm
 ;;  About    : unit test for SJIS string
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

@@ -1,4 +1,4 @@
-;;  FileName : test-srfi1.scm
+;;  Filename : test-srfi1.scm
 ;;  About    : unit test for SRFI-1
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

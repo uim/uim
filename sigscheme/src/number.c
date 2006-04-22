@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : number.c
+ *  Filename : number.c
  *  About    : R5RS numbers
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

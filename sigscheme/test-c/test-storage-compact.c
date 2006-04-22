@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : test-storage-compact.c
+ *  Filename : test-storage-compact.c
  *  About    : scheme object compacting test
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

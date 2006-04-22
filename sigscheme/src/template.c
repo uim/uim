@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : .c
+ *  Filename : .c
  *  About    : 
  *
  *  Copyright (C) 2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

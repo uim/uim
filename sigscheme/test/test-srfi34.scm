@@ -1,4 +1,4 @@
-;;  FileName : test-srfi34.scm
+;;  Filename : test-srfi34.scm
 ;;  About    : unit test for SRFI-34
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

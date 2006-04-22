@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-siod.c
+ *  Filename : module-siod.c
  *  About    : SIOD compatible procedures
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

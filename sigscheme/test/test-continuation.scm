@@ -1,4 +1,4 @@
-;;  FileName : test-continuation.scm
+;;  Filename : test-continuation.scm
 ;;  About    : unit test for continuation
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

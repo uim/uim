@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : storage-gc.c
+ *  Filename : storage-gc.c
  *  About    : Garbage Collection
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

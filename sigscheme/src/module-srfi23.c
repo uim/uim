@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-srfi23.c
+ *  Filename : module-srfi23.c
  *  About    : SRFI-23 Error reporting mechanism
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

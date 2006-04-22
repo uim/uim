@@ -1,7 +1,7 @@
 #! /usr/bin/env sscm -C UTF-8
 ;; -*- buffer-file-coding-system: utf-8 -*-
 
-;;  FileName : test-enc-utf8.scm
+;;  Filename : test-enc-utf8.scm
 ;;  About    : unit test for UTF-8 string
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

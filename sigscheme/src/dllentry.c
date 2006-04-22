@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : dllentry.c
+ *  Filename : dllentry.c
  *  About    : Entry function of dynamic-link library
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

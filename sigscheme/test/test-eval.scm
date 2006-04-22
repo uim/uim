@@ -1,4 +1,4 @@
-;;  FileName : test-eval.scm
+;;  Filename : test-eval.scm
 ;;  About    : unit test for evaluation
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

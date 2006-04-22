@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : test_format.c
+ *  Filename : test_format.c
  *  About    : unit test for format functions
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

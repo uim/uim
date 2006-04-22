@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : scmint.h
+ *  Filename : scmint.h
  *  About    : Integer types for Scheme implementation
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

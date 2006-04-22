@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : format.c
+ *  Filename : format.c
  *  About    : Format strings
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : macro.c
+ *  Filename : macro.c
  *  About    : R5RS hygienic macros
  *
  *  Copyright (C) 2006 Jun Inoue <jun.lambda@gmail.com>

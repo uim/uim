@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : test_strcasecmp.c
+ *  Filename : test_strcasecmp.c
  *  About    : unit test for scm_strcasecmp()
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

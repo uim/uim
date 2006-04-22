@@ -1,7 +1,7 @@
 #! /usr/bin/env sscm -C EUC-CN
 ;; -*- buffer-file-coding-system: euc-jp -*-
 
-;;  FileName : test-enc-eucgeneric.scm
+;;  Filename : test-enc-eucgeneric.scm
 ;;  About    : unit test for EUC string
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

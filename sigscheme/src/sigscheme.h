@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : sigscheme.h
+ *  Filename : sigscheme.h
  *  About    : Public header file
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

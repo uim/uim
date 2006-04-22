@@ -1,4 +1,4 @@
-;;  FileName : test-num.scm
+;;  Filename : test-num.scm
 ;;  About    : unit test for R5RS numbers
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

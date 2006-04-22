@@ -1,4 +1,4 @@
-;;  FileName : test-quote.scm
+;;  Filename : test-quote.scm
 ;;  About    : unit test for quote and quasiquote
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

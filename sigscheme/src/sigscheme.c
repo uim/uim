@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : sigscheme.c
+ *  Filename : sigscheme.c
  *  About    : Client interfaces
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

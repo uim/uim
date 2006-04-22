@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : symbol.c
+ *  Filename : symbol.c
  *  About    : Scheme Symbol handling
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

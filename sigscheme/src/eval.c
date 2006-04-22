@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : eval.c
+ *  Filename : eval.c
  *  About    : Evaluation and function calling
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : alloc.c
+ *  Filename : alloc.c
  *  About    : memory allocators
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

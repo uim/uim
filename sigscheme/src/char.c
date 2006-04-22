@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : char.c
+ *  Filename : char.c
  *  About    : R5RS characters
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

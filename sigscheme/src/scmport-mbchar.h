@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : scmport-mbchar.h
+ *  Filename : scmport-mbchar.h
  *  About    : A ScmCharPort implementation for multibyte character stream
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

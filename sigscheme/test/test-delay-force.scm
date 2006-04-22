@@ -1,4 +1,4 @@
-;;  FileName : test-delay-force.scm
+;;  Filename : test-delay-force.scm
 ;;  About    : unit test for R5RS delay and force
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

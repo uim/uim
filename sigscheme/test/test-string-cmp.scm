@@ -1,4 +1,4 @@
-;;  FileName : test-string-cmp.scm
+;;  Filename : test-string-cmp.scm
 ;;  About    : unit test for R5RS string
 ;;
 ;;  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

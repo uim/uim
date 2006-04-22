@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : scmport-config.h
+ *  Filename : scmport-config.h
  *  About    : Client-adaptation configuration file for the scmport codes
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

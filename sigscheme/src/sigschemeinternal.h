@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : sigschemeinternal.h
+ *  Filename : sigschemeinternal.h
  *  About    : variable and function definitions for internal use
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

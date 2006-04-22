@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : main.c
+ *  Filename : main.c
  *  About    : main function
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

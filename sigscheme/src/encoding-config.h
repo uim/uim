@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : encoding-config.h
+ *  Filename : encoding-config.h
  *  About    : Client-adaptation configuration file for the encoding.[hc]
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

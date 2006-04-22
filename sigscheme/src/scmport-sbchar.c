@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : scmport-sbchar.c
+ *  Filename : scmport-sbchar.c
  *  About    : A ScmCharPort implementation for singlebyte character stream
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

@@ -1,7 +1,7 @@
 #! /usr/bin/env sscm -C EUC-JP
 ;; -*- buffer-file-coding-system: euc-jp -*-
 
-;;  FileName : test-equation.scm
+;;  Filename : test-equation.scm
 ;;  About    : unit test for equations
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

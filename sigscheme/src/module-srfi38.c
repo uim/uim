@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-srfi38.c
+ *  Filename : module-srfi38.c
  *  About    : SRFI-38 External Representation for Data With Shared Structure
  *
  *  Copyright (C) 2005-2006 Jun Inoue

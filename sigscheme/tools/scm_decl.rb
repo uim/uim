@@ -1,5 +1,5 @@
 #===========================================================================
-#  FileName : scm_decl.rb
+#  Filename : scm_decl.rb
 #  About    : a function declaration processing library for SigScheme
 #
 #  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

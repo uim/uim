@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : encoding.h
+ *  Filename : encoding.h
  *  About    : Character encoding handling
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

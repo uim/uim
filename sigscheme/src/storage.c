@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : storage.c
+ *  Filename : storage.c
  *  About    : scheme storage layer
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

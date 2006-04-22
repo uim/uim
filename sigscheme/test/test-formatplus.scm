@@ -1,4 +1,4 @@
-;;  FileName : test-formatplus.scm
+;;  Filename : test-formatplus.scm
 ;;  About    : unit test for SigScheme-specific procedure format+
 ;;
 ;;  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>

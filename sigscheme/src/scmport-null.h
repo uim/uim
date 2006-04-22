@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : scmport-null.h
+ *  Filename : scmport-null.h
  *  About    : A ScmBytePort implementation for null read/write
  *
  *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>

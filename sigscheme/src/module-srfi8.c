@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-srfi8.c
+ *  Filename : module-srfi8.c
  *  About    : SRFI-8 receive: Binding to multiple values
  *
  *  Copyright (C) 2005-2006 Jun Inoue

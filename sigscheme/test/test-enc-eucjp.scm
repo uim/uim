@@ -1,7 +1,7 @@
 #! /usr/bin/env sscm -C EUC-JP
 ;; -*- buffer-file-coding-system: euc-jisx0213 -*-
 
-;;  FileName : test-enc-eucjp.scm
+;;  Filename : test-enc-eucjp.scm
 ;;  About    : unit test for EUC-JP string
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>

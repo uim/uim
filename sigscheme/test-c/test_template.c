@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : test_template.c
+ *  Filename : test_template.c
  *  About    : unit test for something
  *
  *  Copyright (C) 2006 Your Name <someone AT example.org>

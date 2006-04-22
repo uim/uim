@@ -1,5 +1,5 @@
 /*===========================================================================
- *  FileName : module-srfi28.c
+ *  Filename : module-srfi28.c
  *  About    : SRFI-28 Basic Format Strings
  *
  *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>
