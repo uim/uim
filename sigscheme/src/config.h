@@ -41,93 +41,22 @@
 /*===========================================================================
   R5RS Features
 ===========================================================================*/
-#define SCM_USE_CONTINUATION    1  /* (cannot be 0 yet) use continuation */
-#define SCM_USE_QUASIQUOTE      1  /* (cannot be 0 yet) use quasiquotation */
-#define SCM_USE_HYGIENIC_MACRO  1  /* (in progress) use hygienic macros */
-#define SCM_USE_SYNTAX_CASE     0  /* (not supported yet) use syntax-case; implies SCM_USE_UNHYGIENIC_MACRO */
-#define SCM_USE_UNHYGIENIC_MACRO 0 /* (not supported yet) syntactic closure */
-#define SCM_USE_INT             1  /* (cannot be 0 yet) use integer numbers */
-#define SCM_USE_RATIONAL        0  /* (not supported yet) use rational numbers */
-#define SCM_USE_REAL            0  /* (not supported yet) use real numbers */
-#define SCM_USE_COMPLEX         0  /* (not supported yet) use complex numbers */
-#define SCM_USE_CHAR            1  /* (cannot be 0 yet) use character */
-#define SCM_USE_STRING          1  /* (cannot be 0 yet) use string */
-#define SCM_USE_VECTOR          1  /* (cannot be 0 yet) use vector */
-#define SCM_USE_PORT            1  /* (cannot be 0 yet) use ports */
-#define SCM_USE_READER          1  /* (cannot be 0 yet) use sexp reader */
-#define SCM_USE_WRITER          1  /* (cannot be 0 yet) use sexp writer */
-#define SCM_USE_LOAD            1  /* (cannot be 0 yet) use 'load' */
-#define SCM_USE_DEEP_CADRS      1  /* use all c[ad]+r defined in R5RS */
 
 /*===========================================================================
   Optional Features
 ===========================================================================*/
-#define SCM_USE_RAW_C_FORMAT    1  /* use internal format which takes raw C values from va_list */
-#define SCM_USE_SSCM_FORMAT_EXTENSION 1 /* use 'format+' */
-#define SCM_USE_SSCM_EXTENSIONS 1  /* use SigScheme-specific extensions */
-#define SCM_USE_LEGACY_MACRO    0  /* (not supported yet) use define-macro */
-#define SCM_USE_DUMP            0  /* (not supported yet) use storage dump */
-#define SCM_USE_EVAL_C_STRING   1  /* use scm_eval_c_string() */
-
-#define SCM_USE_SRFI1           0  /* use SRFI-1  list library (broken) */
-#define SCM_USE_SRFI2           1  /* use SRFI-2  'and-let*' */
-#define SCM_USE_SRFI6           1  /* use SRFI-6  basic string ports */
-#define SCM_USE_SRFI8           1  /* use SRFI-8  'receive' */
-#define SCM_USE_SRFI22          1  /* use SRFI-22 running scheme scripts on Unix */
-#define SCM_USE_SRFI23          1  /* use SRFI-23 'error' */
-#define SCM_USE_SRFI28          1  /* use SRFI-28 'format' */
-#define SCM_USE_SRFI34          1  /* use SRFI-34 exception handling for programs */
-#define SCM_USE_SRFI38          1  /* use SRFI-38 'write-with-shared-structure' */
-#define SCM_USE_SRFI48          1  /* use SRFI-48 'format' (superset of SRFI-28) */
-#define SCM_USE_SRFI60          1  /* use SRFI-60 integers as bits */
-#define SCM_USE_SRFI75_NAMED_CHARS 1  /* use named characters of SRFI-75 R6RS unicode data */
-#define SCM_USE_SRFI75          1  /* use SRFI-75 R6RS unicode data */
-
-#define SCM_COMPAT_SIOD         1  /* use (some) SIOD compatible features */
-#define SCM_COMPAT_SIOD_BUGS    1  /* emulate the buggy behaviors of SIOD */
 
 /*===========================================================================
   Character Encoding Handlers
 ===========================================================================*/
-/* Support for each encoding will be compiled in if the corresponding
- * macro is defined as nonzero. */
-#define SCM_USE_UTF8            1
-#define SCM_USE_EUCCN           1
-#define SCM_USE_EUCJP           1
-#define SCM_USE_EUCKR           1
-#define SCM_USE_SJIS            1
-
-/* choose exclusively. fallbacks to the unibyte encoding if nothing chosen. */
-#define SCM_USE_UTF8_AS_DEFAULT  1
-#define SCM_USE_EUCCN_AS_DEFAULT 0
-#define SCM_USE_EUCJP_AS_DEFAULT 0
-#define SCM_USE_EUCKR_AS_DEFAULT 0
-#define SCM_USE_SJIS_AS_DEFAULT  0
 
 /*===========================================================================
   Internal Behaviors
 ===========================================================================*/
-#define SCM_STRICT_R5RS         0  /* use strict R5RS check */
-#define SCM_STRICT_NULL_FORM    0  /* disallow quote-less () */
-#define SCM_STRICT_VECTOR_FORM  1  /* disallow quote-less vector literal */
-#define SCM_STRICT_ARGCHECK     1  /* enable strict argument check */
-#define SCM_STRICT_DEFINE_PLACEMENT 1 /* reject invalid internal definitions */
-#define SCM_STRICT_ENCODING_CHECK 1 /* do all feasible encoding error checks */
-#define SCM_CONST_LIST_LITERAL  1  /* make list literal immutable */
-#define SCM_CONST_VECTOR_LITERAL 1 /* make vector literal immutable */
-#define SCM_ACCESSOR_ASSERT     1  /* enable strict type check with accessor */
-#define SCM_USE_VALUECONS       1  /* use experimental values passing */
-#define SCM_USE_NULL_CAPABLE_STRING 1  /* enable experimental null character in a middle of a string */
-#define SCM_USE_WARNING_SUPPRESSOR 1 /* suppress warning with little wastes */
 
 /*===========================================================================
   Storage configurations
 ===========================================================================*/
-/* Storage layer implementation: choose exclusively. */
-#define SCM_USE_STORAGE_FATTY   1  /* the 'fatty' implementation */
-#define SCM_USE_STORAGE_COMPACT 0  /* the 'compact' implementation */
-
-#define SCM_GCC4_READY_GC       1  /* use experimental gcc4-ready stack protection */
 
 /* on-stack initial token buffer size for parser */
 #define SCM_INITIAL_STRING_BUF_SIZE 64
@@ -143,19 +72,10 @@
 #define SCM_DEFAULT_N_HEAPS_INIT         1
 #define SCM_DEFAULT_SYMBOL_HASH_SIZE     0x400
 
-#define SCM_USE_64BIT_FIXNUM    0 /* use int64_t  as scm_int_t */
-#define SCM_USE_32BIT_FIXNUM    0 /* use int32_t  as scm_int_t */
-#define SCM_USE_INT_FIXNUM      0 /* use int      as scm_int_t */
-#define SCM_USE_LONG_FIXNUM     0 /* use long     as scm_int_t (default) */
-
-#define SCM_USE_64BIT_SCMREF    0 /* use int64_t  as scm_intref_t */
-#define SCM_USE_32BIT_SCMREF    0 /* use int32_t  as scm_intref_t */
-#define SCM_USE_INTPTR_SCMREF   0 /* use intptr_t as scm_intref_t (default) */
 
 /*===========================================================================
   Debugging
 ===========================================================================*/
-#define SCM_DEBUG               1  /* enable debugging features */
 #define SCM_CHICKEN_DEBUG       1  /* allow survival recovery */
 #define SCM_DEBUG_GC            0  /* enable GC debugging */
 #define SCM_DEBUG_PORT          0  /* enable port debugging */

@@ -100,99 +100,600 @@ AC_DEFINE(SCM_ENCODING_USE_WITH_SIGSCHEME, 1,
 AC_DEFINE(SCM_SCMPORT_USE_WITH_SIGSCHEME, 1,
   [Define to 1 to adapt scmport*.[hc] to SigScheme.])
 
-# Configure Option
+# Default Compiler Option for gcc
+if test x$CC = xgcc; then
+  CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
+fi
+
+#------------------------------------------------------------------------------
+# Configure Specs
+#------------------------------------------------------------------------------
+#--------------------------------------
+# Define R5RS Spec
+#--------------------------------------
+use_format="no"
+use_raw_c_format="no"
+use_use_sscm_format_extension="yes"
+use_sscm_extensions="yes"
+use_legacy_macro="no"
+use_dump="no"
+use_eval_c_string="yes"
+use_srfi1="no"
+use_srfi2="no"
+use_srfi6="yes"
+use_srfi8="yes"
+use_srfi22="yes"
+use_srfi23="yes"
+use_srfi28="no"
+use_srfi34="yes"
+use_srfi38="yes"
+use_srfi48="no"
+use_srfi60="no"
+use_srfi75_named_chars="yes"
+use_srfi75="yes"
+compat_siod="no"
+compat_siod_bugs="no"
+
+strict_r5rs="no"
+strict_null_form="no"
+strict_vector_form="yes"
+strict_arg_check="yes"
+strict_define_placement="yes"
+strict_encoding_check="yes"
+const_list_literal="yes"
+const_vector_literal="yes"
+accessor_assert="yes"
+use_valuecons="yes"
+use_null_capable_string="yes"
+use_warning_suppressor="yes"
+
+#--------------------------------------
+# Choose Spec
+#--------------------------------------
+AC_ARG_ENABLE(configuration,
+  AC_HELP_STRING([--enable-configuration=CONFIGURATION],
+                 [Choose SigScheme spec by CONFIGURATION.
+Following specs are currently recognized:
+(1)'full': Full Features.
+(2)'r5rs': R5RS features only.
+(3)'siod': SIOD compatible mode.
+Defaultly, 'r5rs' is selected.]),
+  [
+    case $enable_configuration in
+      r5rs)
+        ;;
+      full)
+        use_format="yes"
+        use_raw_c_format="yes"
+        use_use_sscm_format_extension="yes"
+        use_sscm_extensions="yes"
+        use_dump="yes"
+        use_eval_c_string="yes"
+        use_srfi="yes"
+        use_srfi2="yes"
+        use_srfi6="yes"
+        use_srfi8="yes"
+        use_srfi22="yes"
+        use_srfi23="yes"
+        use_srfi28="yes"
+        use_srfi34="yes"
+        use_srfi38="yes"
+        use_srfi48="yes"
+        use_srfi60="yes"
+        use_srfi75_named_chars="yes"
+        use_srfi75="yes"
+        ;;
+      siod)
+        use_srfi60="yes"
+        compat_siod="yes"
+        compat_siod_bugs="yes"
+        strict_r5rs="no"
+        strict_null_form="no"
+        ;;
+      *)
+        echo "unrecognized option: '$enable_configuration'."
+        exit 1
+        ;;
+    esac
+  ],
+  [
+    enable_configuration="r5rs"
+  ])
+
+#------------------------------------------------------------------------------
+# Define CFLAG
+#------------------------------------------------------------------------------
+use_yes="yes"
+use_no="no"
+
+#--------------------------------------
+# R5RS Features
+#--------------------------------------
+
+# (cannot be 0 yet) use continuation
+AM_CONDITIONAL(USE_CONTINUATION, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_CONTINUATION"
+fi
+
+# (cannot be 0 yet) use quasiquotation
+AM_CONDITIONAL(USE_QUASIQUOTE, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_QUASIQUOTE"
+fi
+
+# (in progress) use hygienic macros
+AM_CONDITIONAL(USE_HYGIENIC_MACRO, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_HYGIENIC_MACRO"
+fi
+
+# (not supported yet) use syntax-case; implies SCM_USE_UNHYGIENIC_MACRO
+AM_CONDITIONAL(USE_SYTAX_CASE, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SYTAX_CASE"
+fi
+
+# (not supported yet) syntactic closure
+AM_CONDITIONAL(USE_UNHYGIENIC_MACRO, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_UNHYGIENIC_MACRO"
+fi
+
+# (cannot be 0 yet) use integer numbers
+AM_CONDITIONAL(USE_INT, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_INT"
+fi
+
+# (not supported yet) use rational numbers
+AM_CONDITIONAL(USE_RATIONAL, test "x$use_no" = xyes)
+if test "x$use_no" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_RATIONAL"
+fi
+
+# (not supported yet) use real numbers
+AM_CONDITIONAL(USE_REAL, test "x$use_no" = xyes)
+if test "x$use_no" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_REAL"
+fi
+
+# (not supported yet) use complex numbers
+AM_CONDITIONAL(USE_COMPLEX, test "x$use_no" = xyes)
+if test "x$use_no" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_COMPLEX"
+fi
+
+# (cannot be 0 yet) use character
+AM_CONDITIONAL(USE_CHAR, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_CHAR"
+fi
+
+# (cannot be 0 yet) use string
+AM_CONDITIONAL(USE_STRING, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_STRING"
+fi
+
+# (cannot be 0 yet) use vector
+AM_CONDITIONAL(USE_VECTOR, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_VECTOR"
+fi
+
+# (cannot be 0 yet) use port
+AM_CONDITIONAL(USE_PORT, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_PORT"
+fi
+
+# (cannot be 0 yet) use sexp reader
+AM_CONDITIONAL(USE_READER, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_READER"
+fi
+
+# (cannot be 0 yet) use sexp writer
+AM_CONDITIONAL(USE_WRITER, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_WRITER"
+fi
+
+# (cannot be 0 yet) use 'load'
+AM_CONDITIONAL(USE_LOAD, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_LOAD"
+fi
+
+# use all c[ad]+r defined in R5RS
+AM_CONDITIONAL(USE_DEEP_CADRS, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_DEEP_CADRS"
+fi
+
+#--------------------------------------
+# Optional Features
+#--------------------------------------
+# use internal format which takes raw C values from va_list
+AM_CONDITIONAL(USE_RAW_C_FORMAT, test "x$use_raw_c_format" = xyes)
+if test "x$use_raw_c_format" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_RAW_C_FORMAT"
+fi
+
+# use 'format+'
+AM_CONDITIONAL(USE_USE_SSCM_FORMAT_EXTENSION, test "x$use_use_sscm_format_extension" = xyes)
+if test "x$use_use_sscm_format_extension" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_USE_SSCM_FORMAT_EXTENSION"
+fi
+
+#  use SigScheme-specific extensions
+AM_CONDITIONAL(USE_SSCM_EXTENSIONS, test "x$use_sscm_extensions" = xyes)
+if test "x$use_sscm_extensions" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SSCM_EXTENSIONS"
+fi
+
+# (not supported yet) use define-macro
+AM_CONDITIONAL(USE_LEGACY_MACRO, test "x$use_legacy_macro" = xyes)
+if test "x$use_legacy_macro" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_LEGACY_MACRO"
+fi
+
+# (not supported yet) use storage dump
+AM_CONDITIONAL(USE_DUMP, test "x$use_dump" = xyes)
+if test "x$use_dump" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_DUMP"
+fi
+
+# use scm_eval_c_string()
+AM_CONDITIONAL(USE_EVAL_C_STRING, test "x$use_eval_c_string" = xyes)
+if test "x$use_eval_c_string" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_EVAL_C_STRING"
+fi
+
+# use SRFI-1 list library (broken)
+AM_CONDITIONAL(USE_SRFI1, test "x$use_srfi1" = xyes)
+if test "x$use_srfi1"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI1"
+fi
+
+# use SRFI-2 'and-let*'
+AM_CONDITIONAL(USE_SRFI2, test "x$use_srfi2" = xyes)
+if test "x$use_srfi2" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI2"
+fi
+
+# use SRFI-6 basic string ports
+AM_CONDITIONAL(USE_SRFI6, test "x$use_srfi6" = xyes)
+if test "x$use_srfi6" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI6"
+fi
+
+# use SRFI-8 'receive'
+AM_CONDITIONAL(USE_SRFI8, test "x$use_srfi8" = xyes)
+if test "x$use_srfi8" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI8"
+fi
+
+# use SRFI-22 running scheme scripts on Unix
+AM_CONDITIONAL(USE_SRFI22, test "x$use_srfi22" = xyes)
+if test "x$use_srfi22" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI22"
+fi
+
+# use SRFI-23 'error'
+AM_CONDITIONAL(USE_SRFI23, test "x$use_srfi23" = xyes)
+if test "x$use_srfi23" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI23"
+fi
+
+# use SRFI-28 'format'
+AM_CONDITIONAL(USE_SRFI28, test "x$use_srfi28" = xyes)
+if test "x$use_srfi28" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI28"
+fi
+
+# use SRFI-34 exception handling for programs
+AM_CONDITIONAL(USE_SRFI34, test "x$use_srfi34" = xyes)
+if test "x$use_srfi34" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI34"
+fi
+
+# use SRFI-38 'write-with-shared-structure'
+AM_CONDITIONAL(USE_SRFI38, test "x$use_srfi38" = xyes)
+if test "x$use_srfi38" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI38"
+fi
+
+# use SRFI-48 'format' (superset of SRFI-28)
+AM_CONDITIONAL(USE_SRFI48, test "x$use_srfi48" = xyes)
+if test "x$use_srfi48" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI48"
+fi
+
+# use SRFI-60 integers as bits
+AM_CONDITIONAL(USE_SRFI60, test "x$use_srfi60" = xyes)
+if test "x$use_srfi60" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI60"
+fi
+
+# use named characters of SRFI-75 R6RS unicode data
+AM_CONDITIONAL(USE_SRFI75_NAMED_CHARS, test "x$use_srfi75_named_chars" = xyes)
+if test "x$use_srfi75_named_chars" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI75_NAMED_CHARS"
+fi
+
+# use SRFI-75 R6RS unicode data
+AM_CONDITIONAL(USE_SRFI75, test "x$use_srfi75" = xyes)
+if test "x$use_srfi75" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SRFI75"
+fi
+
+# use (some) SIOD compatible features
+AM_CONDITIONAL(COMPAT_SIOD, test "x$compat_siod" = xyes)
+if test "x$compat_siod" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_COMPAT_SIOD"
+fi
+
+# emulate the buggy behaviors of SIOD
+AM_CONDITIONAL(COMPAT_SIOD_BUGS, test "x$compat_siod_bugs" = xyes)
+if test "x$compat_siod_bugs" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_COMPAT_SIOD_BUGS"
+fi
+
+#--------------------------------------
+# Character Encoding Handlers
+#--------------------------------------
+AC_ARG_ENABLE(multibyte,
+  AC_HELP_STRING([--enable-multibyte=ENCODING],
+                 [Choose default encoding by ENCODING.
+Following encodings are available:
+(1)'utf8' (2)'euccn' (3)'eucjp' (4)'euckr' (5)'sjis'
+Defaultly, 'utf8' is selected.]),
+  [
+    case $enable_multibyte in
+      utf8)
+        ;;
+      euccn)
+        ;;
+      eucjp)
+        ;;
+      euckr)
+        ;;
+      sjis)
+        ;;
+      *)
+        enable_multibyte="utf8"
+        ;;
+    esac
+  ],
+  [
+    defaut_encoding="utf8"
+  ])
+
+#
+# Support for each encoding will be compiled in if the corresponding
+# macro is defined as nonzero
+#
+AM_CONDITIONAL(USE_MULTIBYTE_CHAR, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_MULTIBYTE_CHAR"
+fi
+AM_CONDITIONAL(USE_UTF8, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_UTF8"
+fi
+AM_CONDITIONAL(USE_EUCCN, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_EUCCN"
+fi
+AM_CONDITIONAL(USE_EUCJP, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_EUCJP"
+fi
+AM_CONDITIONAL(USE_EUCKR, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_EUCKR"
+fi
+AM_CONDITIONAL(USE_SJIS, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SJIS"
+fi
+
+#
+# choose exclusively. fallbacks to the unibyte encoding if nothing chosen.
+#
+AM_CONDITIONAL(USE_UTF8_AS_DEFAULT, test "x$enable_multibyte" = xutf8)
+if test "x$enable_multibyte" = xutf8; then
+  CFLAGS="$CFLAGS -DSCM_USE_UTF8_AS_DEFAULT"
+fi
+AM_CONDITIONAL(USE_EUCCN_AS_DEFAULT, test "x$enable_multibyte" = xeuccn)
+if test "x$enable_multibyte" = xeuccn; then
+  CFLAGS="$CFLAGS -DSCM_USE_EUCCN_AS_DEFAULT"
+fi
+AM_CONDITIONAL(USE_EUCJP_AS_DEFAULT, test "x$enable_multibyte" = xeucjp)
+if test "x$enable_multibyte" = xeucjp; then
+  CFLAGS="$CFLAGS -DSCM_USE_EUCJP_AS_DEFAULT"
+fi
+AM_CONDITIONAL(USE_EUCKR_AS_DEFAULT, test "x$enable_multibyte" = xeuckr)
+if test "x$enable_multibyte" = xeuckr; then
+  CFLAGS="$CFLAGS -DSCM_USE_EUCKR_AS_DEFAULT"
+fi
+AM_CONDITIONAL(USE_SJIS_AS_DEFAULT, test "x$enable_multibyte" = xsjis)
+if test "x$enable_multibyte" = xsjis; then
+  CFLAGS="$CFLAGS -DSCM_USE_SJIS_AS_DEFAULT"
+fi
+
+#--------------------------------------
+# Internal Behaviors
+#--------------------------------------
+# use strict R5RS check
+AM_CONDITIONAL(STRICT_R5RS, test "x$strict_r5rs" = xyes)
+if test "x$strict_r5rs" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_STRICT_R5RS"
+fi
+
+# disallow quote-less ()
+AM_CONDITIONAL(STRICT_NULL_FORM, test "x$strict_null_form" = xyes)
+if test "x$strict_null_form" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_STRICT_NULL_FORM"
+fi
+
+# disallow quote-less vector literal
+AM_CONDITIONAL(STRICT_VECTOR_FORM, test "x$strict_vector_form" = xyes)
+if test "x$strict_vector_form" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_STRICT_VECTOR_FORM"
+fi
+
+# enable strict argument check
+AM_CONDITIONAL(STRICT_ARGCHECK, test "x$strict_arg_check" = xyes)
+if test "x$strict_arg_check" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_STRICT_ARGCHECK"
+fi
+
+# reject invalid internal definitions
+AM_CONDITIONAL(STRICT_DEFINE_PLACEMENT, test "x$strict_define_placement" = xyes)
+if test "x$strict_define_placement" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_STRICT_DEFINE_PLACEMENT"
+fi
+
+# do all feasible encoding error checks
+AM_CONDITIONAL(STRICT_ENCODING_CHECK, test "x$strict_encoding_check" = xyes)
+if test "x$strict_encoding_check" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_STRICT_ENCODING_CHECK"
+fi
+
+# make list literal immutable
+AM_CONDITIONAL(CONST_LIST_LITERAL, test "x$const_list_literal" = xyes)
+if test "x$const_list_literal" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_CONST_LIST_LITERAL"
+fi
+
+# make vector literal immutable
+AM_CONDITIONAL(CONST_VECTOR_LITERAL, test "x$const_vector_literal" = xyes)
+if test "x$const_vector_literal" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_CONST_VECTOR_LITERAL"
+fi
+
+# enable strict type check with accessor
+AM_CONDITIONAL(ACCESSOR_ASSERT, test "x$accessor_assert" = xyes)
+if test "x$accessor_assert" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_ACCESSOR_ASSERT"
+fi
+
+# use experimental values passing
+AM_CONDITIONAL(USE_VALUECONS, test "x$use_valuecons" = xyes)
+if test "x$use_valuecons" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_VALUECONS"
+fi
+
+# enable experimental null character in a middle of a string
+AM_CONDITIONAL(USE_NULL_CAPABLE_STRING, test "x$use_null_capable_string" = xyes)
+if test "x$use_null_capable_string" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_NULL_CAPABLE_STRING"
+fi
+
+# suppress warning with little wastes
+AM_CONDITIONAL(USE_WARNING_SUPPRESSOR, test "x$use_warning_suppressor" = xyes)
+if test "x$use_warning_suppressor" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_WARNING_SUPPRESSOR"
+fi
+
+#--------------------------------------
+# Storage configurations
+#--------------------------------------
+#
+# Storage layer implementation: choose exclusively.
+#
+
+# the 'fatty' implementation
+AM_CONDITIONAL(USE_STORAGE_FATTY, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_STORAGE_FATTY"
+fi
+
+# the 'compact' implementation
+AM_CONDITIONAL(USE_STORAGE_COMPACT, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_STORAGE_COMPACT"
+fi
+
+# use experimental gcc4-ready stack protection
+AM_CONDITIONAL(GCC4_READY_GC, test "x$use_yes" = xyes)
+if test "x$use_yes" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_GCC4_READY_GC"
+fi
+
+# use int64_t  as scm_int_t
+AM_CONDITIONAL(USE_64BIT_FIXNUM, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_64BIT_FIXNUM"
+fi
+
+# use int32_t  as scm_int_t
+AM_CONDITIONAL(USE_32BIT_FIXNUM, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_32BIT_FIXNUM"
+fi
+
+# use int as scm_int_t
+AM_CONDITIONAL(USE_INT_FIXNUM, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_INT_FIXNUM"
+fi
+
+# use long as scm_int_t (default)
+AM_CONDITIONAL(USE_LONG_FIXNUM, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_LONG_FIXNUM"
+fi
+
+# use int64_t as scm_intref_t
+AM_CONDITIONAL(USE_64BIT_SCMREF, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_64BIT_SCMREF"
+fi
+
+# use int32_t as scm_intref_t
+AM_CONDITIONAL(USE_32BIT_SCMREF, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_32BIT_SCMREF"
+fi
+
+# use intptr_t as scm_intref_t (default)
+AM_CONDITIONAL(USE_INTPTR_SCMREF, test "x$use_no"  = xyes)
+if test "x$use_no"  = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_INTPTR_SCMREF"
+fi
+
+#--------------------------------------
+# Misc (need to resolve dependency here)
+#--------------------------------------
+AM_CONDITIONAL(USE_NUMBER, test "x$use_yes" = xyes)
+AM_CONDITIONAL(USE_FORMAT, test "x$use_yes" = xyes)
+
+#--------------------------------------
+# Debug
+#--------------------------------------
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
                  [enable debugging]),
-  [],
   [
+    CFLAGS="$CFLAGS -g -DSCM_DEBUG"
+    enable_debug="yes"
+  ],
+  [
+    CFLAGS="$CFLAGS -O2"
     enable_debug="no"
   ])
-if test x$enable_debug = xyes; then
-	CFLAGS="$CFLAGS -g -DDEBUG"
-else
-	CFLAGS="$CFLAGS -O2"
-fi
 
-# Default Compiler Option for gcc
-if test x$CC = xgcc; then
-	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-fi
-
-# FIXME: configure variables appropriately
-use_yes="yes"
-use_no="no"
-# R5RS Features
-AM_CONDITIONAL(USE_CONTINUATION,        test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_QUASIQUOTE,          test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_HYGIENIC_MACRO,      test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_INT,                 test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_RATIONAL,            test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_REAL,                test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_COMPLEX,             test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_NUMBER,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_CHAR,                test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_STRING,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_VECTOR,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_PORT,                test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_READER,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_WRITER,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_LOAD,                test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_DEEP_CADRS,          test "x$use_yes" = xyes)
-
-# Optional Features
-AM_CONDITIONAL(USE_FORMAT,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_RAW_C_FORMAT,        test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_USE_SSCM_FORMAT_EXTENSION, test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SSCM_EXTENSIONS,     test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_LEGACY_MACRO,        test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_DUMP,                test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_EVAL_C_STRING,       test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI1,               test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_SRFI2,               test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI6,               test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI8,               test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI22,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI23,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI28,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI34,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI38,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI48,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI60,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI75_NAMED_CHARS,  test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SRFI75,              test "x$use_yes" = xyes)
-AM_CONDITIONAL(COMPAT_SIOD,             test "x$use_yes" = xyes)
-AM_CONDITIONAL(COMPAT_SIOD_BUGS,        test "x$use_yes" = xyes)
-
-# Character Encoding Handlers
-AM_CONDITIONAL(USE_UTF8,                test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_EUCCN,               test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_EUCJP,               test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_EUCKR,               test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_SJIS,                test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_MULTIBYTE_CHAR,      test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_UTF8_AS_DEFAULT,     test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_EUCCN_AS_DEFAULT,    test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_EUCJP_AS_DEFAULT,    test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_EUCKR_AS_DEFAULT,    test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_SJIS_AS_DEFAULT,     test "x$use_no" = xyes)
-
-# Internal Behaviors
-AM_CONDITIONAL(STRICT_R5RS,             test "x$use_no" = xyes)
-AM_CONDITIONAL(STRICT_NULL_FORM,        test "x$use_no" = xyes)
-AM_CONDITIONAL(STRICT_VECTOR_FORM,      test "x$use_yes" = xyes)
-AM_CONDITIONAL(STRICT_ARGCHECK,         test "x$use_yes" = xyes)
-AM_CONDITIONAL(STRICT_DEFINE_PLACEMENT, test "x$use_yes" = xyes)
-AM_CONDITIONAL(STRICT_ENCODING_CHECK,   test "x$use_yes" = xyes)
-AM_CONDITIONAL(CONST_LIST_LITERAL,      test "x$use_yes" = xyes)
-AM_CONDITIONAL(CONST_VECTOR_LITERAL,    test "x$use_yes" = xyes)
-AM_CONDITIONAL(ACCESSOR_ASSERT,         test "x$use_no" = xyes)
-AM_CONDITIONAL(USE_VALUECONS,           test "x$use_yes" = xyes)
-AM_CONDITIONAL(USE_NULL_CAPABLE_STRING, test "x$use_yes" = xyes)
-
-# Storage configurations
-# FIXME
-AM_CONDITIONAL(USE_STORAGE_COMPACT,     test "x$use_no" = xyes)
+echo "--------------------------------------"
+echo "| SigScheme Configuration            |"
+echo "--------------------------------------"
+echo "cflags: '$CFLAGS'"
+echo "configuration: '$enable_configuration'"
+echo "encoding: '$enable_multibyte'"
+echo "debug: '$enable_debug'"
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
