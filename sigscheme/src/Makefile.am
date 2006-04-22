@@ -1,3 +1,5 @@
+include libtool-version.mk
+
 lib_LTLIBRARIES = libsscm.la
 
 SCRIPT_DIR = $(top_srcdir)/tools
@@ -292,13 +294,14 @@ if USE_SRFI60
   libsscm_la_SOURCES += module-srfi60.c
 endif
 libsscm_la_LIBADD   = $(LIBOBJS)
+libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
 libsscm_la_CPPFLAGS = -DSCM_COMPILING_LIBSSCM=1
 libsscm_la_CFLAGS   = -Wall
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
-sscm_CFLAGS   = -Wall
 sscm_LDADD    = $(top_builddir)/src/libsscm.la
+sscm_CFLAGS   = -Wall
 
 # To enable ruby-and-perl-less build on tarball distribution, we should not
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
