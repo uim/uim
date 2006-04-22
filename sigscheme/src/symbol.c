@@ -124,7 +124,7 @@ scm_init_symbol(const ScmStorageConf *conf)
 }
 
 SCM_EXPORT void
-scm_finalize_symbol(void)
+scm_fin_symbol(void)
 {
     finalize_symbol_hash();
 

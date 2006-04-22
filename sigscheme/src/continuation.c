@@ -120,7 +120,7 @@ scm_init_continuation(void)
 }
 
 SCM_EXPORT void
-scm_finalize_continuation(void)
+scm_fin_continuation(void)
 {
     finalize_continuation_env();
     finalize_dynamic_extent();

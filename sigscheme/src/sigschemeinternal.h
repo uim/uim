@@ -754,16 +754,16 @@ SCM_EXPORT int scm_strcasecmp(const char *s1, const char *s2);
 
 /* storage.c */
 SCM_EXPORT void scm_init_storage(const ScmStorageConf *conf);
-SCM_EXPORT void scm_finalize_storage(void);
+SCM_EXPORT void scm_fin_storage(void);
 
 /* storage-gc.c */
 SCM_EXPORT void scm_init_gc(const ScmStorageConf *conf);
-SCM_EXPORT void scm_finalize_gc(void);
+SCM_EXPORT void scm_fin_gc(void);
 SCM_EXPORT ScmObj scm_alloc_cell(void);
 
 /* continuation.c */
 SCM_EXPORT void scm_init_continuation(void);
-SCM_EXPORT void scm_finalize_continuation(void);
+SCM_EXPORT void scm_fin_continuation(void);
 SCM_EXPORT void scm_destruct_continuation(ScmObj cont);
 SCM_EXPORT ScmObj scm_call_with_current_continuation(ScmObj proc,
                                                      ScmEvalState *eval_state);
@@ -775,7 +775,7 @@ SCM_EXPORT ScmObj scm_trace_stack(void);
 
 /* symbol.c */
 SCM_EXPORT void scm_init_symbol(const ScmStorageConf *conf);
-SCM_EXPORT void scm_finalize_symbol(void);
+SCM_EXPORT void scm_fin_symbol(void);
 
 /* env.c */
 SCM_EXPORT scm_bool scm_toplevel_environmentp(ScmObj env);

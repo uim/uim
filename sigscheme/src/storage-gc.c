@@ -154,7 +154,7 @@ scm_init_gc(const ScmStorageConf *conf)
 }
 
 SCM_EXPORT void
-scm_finalize_gc(void)
+scm_fin_gc(void)
 {
     finalize_heap();
     finalize_protected_var();

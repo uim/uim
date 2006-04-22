@@ -139,11 +139,11 @@ scm_init_storage(const ScmStorageConf *conf)
 }
 
 SCM_EXPORT void
-scm_finalize_storage(void)
+scm_fin_storage(void)
 {
-    scm_finalize_symbol();
-    scm_finalize_continuation();
-    scm_finalize_gc();
+    scm_fin_symbol();
+    scm_fin_continuation();
+    scm_fin_gc();
 
     SCM_GLOBAL_VARS_FIN(storage);
 #if SCM_USE_STORAGE_FATTY

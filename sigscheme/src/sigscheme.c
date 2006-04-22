@@ -199,7 +199,7 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 SCM_EXPORT void
 scm_finalize()
 {
-    scm_finalize_storage();
+    scm_fin_storage();
     l_scm_initialized = scm_false;
 
     SCM_GLOBAL_VARS_FIN(procedure);
