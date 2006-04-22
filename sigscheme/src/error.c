@@ -42,16 +42,16 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define SCM_BACKTRACE_HEADER "**** BACKTRACE ****"
 #define SCM_BACKTRACE_SEP    "------------------------------"
 
 #define NO_ERR_OBJ l_err_obj_tag
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

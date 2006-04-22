@@ -44,16 +44,16 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define STRING_CMP(str1, str2)                                               \
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_false))
 #define STRING_CI_CMP(str1, str2)                                            \
     (string_cmp(SCM_MANGLE(name), (str1), (str2), scm_true))
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

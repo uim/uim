@@ -47,11 +47,11 @@
 #include "scmport-file.h"
 
 /*=======================================
-  File Local Type Definitions
+  File Local Macro Definitions
 =======================================*/
 
 /*=======================================
-  File Local Macro Definitions
+  File Local Type Definitions
 =======================================*/
 
 /*=======================================

@@ -38,10 +38,6 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define BITWISE_OPERATION_BODY(op, left, right)                              \
@@ -66,6 +62,10 @@
         }                                                                    \
         return MAKE_INT(result);                                             \
     } while (/* CONSTCOND */ 0)
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

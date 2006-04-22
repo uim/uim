@@ -41,10 +41,6 @@
 #include "scmport-null.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 /*
@@ -66,6 +62,10 @@
 #define SCM_DBG_SIOD_V3 (SCM_DBG_SIOD_V2 | SCM_DBG_FILE)
 #define SCM_DBG_SIOD_V4 (SCM_DBG_SIOD_V3 | SCM_DBG_GC)
 #define SCM_DBG_SIOD_V5 (SCM_DBG_SIOD_V4 | SCM_DBG_READ)
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

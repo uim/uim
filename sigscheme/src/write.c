@@ -46,6 +46,26 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
+  File Local Macro Definitions
+=======================================*/
+#if SCM_USE_SRFI38
+#define INTERESTINGP(obj)                                                    \
+    (CONSP(obj)                                                              \
+     || (STRINGP(obj) && SCM_STRING_LEN(obj))                                \
+     || CLOSUREP(obj)                                                        \
+     || VECTORP(obj)                                                         \
+     || VALUEPACKETP(obj)                                                    \
+     || ERROBJP(obj))
+#define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
+#define HASH_EMPTY(table)  (!(table).used)
+#define DEFINING_DATUM     (-1)
+#define NONDEFINING_DATUM  0
+#define GET_DEFINDEX(x)    ((unsigned)(x) >> 1)
+#define HASH_INSERT    1 /* insert key if it's not registered yet */
+#define HASH_FIND      0
+#endif /* SCM_USE_SRFI38 */
+
+/*=======================================
   File Local Type Definitions
 =======================================*/
 enum OutputType {
@@ -71,26 +91,6 @@ typedef struct {
     hash_table seen; /* a table of seen objects */
     int next_index;  /* the next index to use for #N# */
 } write_ss_context;
-#endif /* SCM_USE_SRFI38 */
-
-/*=======================================
-  File Local Macro Definitions
-=======================================*/
-#if SCM_USE_SRFI38
-#define INTERESTINGP(obj)                                                    \
-    (CONSP(obj)                                                              \
-     || (STRINGP(obj) && SCM_STRING_LEN(obj))                                \
-     || CLOSUREP(obj)                                                        \
-     || VECTORP(obj)                                                         \
-     || VALUEPACKETP(obj)                                                    \
-     || ERROBJP(obj))
-#define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
-#define HASH_EMPTY(table)  (!(table).used)
-#define DEFINING_DATUM     (-1)
-#define NONDEFINING_DATUM  0
-#define GET_DEFINDEX(x)    ((unsigned)(x) >> 1)
-#define HASH_INSERT    1 /* insert key if it's not registered yet */
-#define HASH_FIND      0
 #endif /* SCM_USE_SRFI38 */
 
 /*=======================================

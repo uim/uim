@@ -70,15 +70,15 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define TRUSTED_ENVP(env) (EQ(env, SCM_INTERACTION_ENV)                      \
                            || EQ(env, SCM_R5RS_ENV)                          \
                            || EQ(env, SCM_NULL_ENV))
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

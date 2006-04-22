@@ -125,6 +125,29 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
+  File Local Macro Definitions
+=======================================*/
+#define OK 0
+#define TOKEN_BUF_EXCEEDED (-1)
+
+#define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof(""))
+
+/* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
+#define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
+
+/* #b-010101... */
+#define INT_LITERAL_LEN_MAX (sizeof((char)'-') + SCM_INT_BITS)
+
+#define DISCARD_LOOKAHEAD(port) (scm_port_get_char(port))
+
+/* accepts EOF */
+#define ICHAR_ASCII_CLASS(c)                                                 \
+    (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_INVALID)
+#define ICHAR_CLASS(c)                                                       \
+    ((127 < (c)) ? SCM_CH_NONASCII                                           \
+                 : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
+
+/*=======================================
   File Local Type Definitions
 =======================================*/
 enum LexerState {
@@ -160,29 +183,6 @@ enum ScmCharClass {
 
     SCM_CH_NONASCII           = SCM_CH_8BIT | SCM_CH_MULTIBYTE
 };
-
-/*=======================================
-  File Local Macro Definitions
-=======================================*/
-#define OK 0
-#define TOKEN_BUF_EXCEEDED (-1)
-
-#define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof(""))
-
-/* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
-#define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
-
-/* #b-010101... */
-#define INT_LITERAL_LEN_MAX (sizeof((char)'-') + SCM_INT_BITS)
-
-#define DISCARD_LOOKAHEAD(port) (scm_port_get_char(port))
-
-/* accepts EOF */
-#define ICHAR_ASCII_CLASS(c)                                                 \
-    (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_INVALID)
-#define ICHAR_CLASS(c)                                                       \
-    ((127 < (c)) ? SCM_CH_NONASCII                                           \
-                 : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
 
 /*=======================================
   Variable Definitions

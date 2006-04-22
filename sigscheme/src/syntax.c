@@ -38,14 +38,14 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define ERRMSG_BAD_SPLICE_LIST      "bad splice list"
 #define ERRMSG_BAD_DEFINE_PLACEMENT "bad define placement"
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

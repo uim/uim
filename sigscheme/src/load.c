@@ -48,10 +48,6 @@
 #endif
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 /* FIXME: only supports UNIX flavors */
@@ -62,6 +58,10 @@
 #define SCRIPT_PRELUDE_MAXLEN 64
 #define SCRIPT_PRELUDE_DELIM  " \t\n\r"
 #endif
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

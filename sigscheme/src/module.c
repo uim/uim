@@ -41,6 +41,10 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
+  File Local Macro Definitions
+=======================================*/
+
+/*=======================================
   File Local Type Definitions
 =======================================*/
 struct module_info {
@@ -48,10 +52,6 @@ struct module_info {
     void (*initializer)(void);
     void (*finalizer)(void);
 };
-
-/*=======================================
-  File Local Macro Definitions
-=======================================*/
 
 /*=======================================
   Variable Definitions

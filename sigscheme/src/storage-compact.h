@@ -161,7 +161,7 @@ extern "C" {
 #endif
 
 /*=======================================
-  Type Declarations
+  Type Definitions
 =======================================*/
 typedef struct ScmCell_ ScmCell;
 typedef ScmCell *ScmObj;
@@ -169,9 +169,6 @@ typedef ScmObj *ScmRef;
 
 typedef ScmObj (*ScmFuncType)();
 
-/*=======================================
-  Type Definitions
-=======================================*/
 enum ScmStrMutationType {
     SCM_STR_IMMUTABLE           = 0,
     SCM_STR_MUTABLE             = 1

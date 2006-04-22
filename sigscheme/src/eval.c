@@ -38,14 +38,14 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
 #define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

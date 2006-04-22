@@ -44,10 +44,6 @@
 #include "encoding.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #if SCM_USE_STORAGE_FATTY
@@ -58,6 +54,10 @@
         SCM_ENTYPE((obj), ScmConstant);                                      \
     } while (/* CONSTCOND */ 0)
 #endif /* SCM_USE_STORAGE_FATTY */
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
 
 /*=======================================
   Variable Definitions

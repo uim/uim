@@ -64,15 +64,15 @@
 #include "sigschemeinternal.h"
 
 /*=======================================
-  File Local Type Definitions
-=======================================*/
-typedef ScmCell *ScmObjHeap;
-
-/*=======================================
   File Local Macro Definitions
 =======================================*/
 #define N_REGS_IN_JMP_BUF    (sizeof(jmp_buf) / sizeof(void *))
 #define SCMOBJ_ALIGNEDP(ptr) (!((uintptr_t)(ptr) % sizeof(ScmObj)))
+
+/*=======================================
+  File Local Type Definitions
+=======================================*/
+typedef ScmCell *ScmObjHeap;
 
 /*=======================================
   Variable Definitions
