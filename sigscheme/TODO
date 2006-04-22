@@ -18,6 +18,7 @@ Requirements and critical bugs:
   - "Shiro Kawai" part of read.c
   - slib.scm
   - test/{gauche*,bigloo*}.scm
+  - Place all above terms into sigscheme/COPYING
 
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Make most settings in src/config.h configurable with configure options
