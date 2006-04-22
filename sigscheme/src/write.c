@@ -277,9 +277,13 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         else
             write_list(port, SCM_VALUEPACKET_VALUES(obj), otype);
 #if SCM_USE_VALUECONS
+#if SCM_USE_STORAGE_FATTY
         /* SCM_VALUEPACKET_VALUES() changes the type destructively */
-        SCM_ENTYPE_VALUEPACKET(obj);
-#endif
+        SCM_ENTYPE(obj, ScmValuePacket);
+#else /* SCM_USE_STORAGE_FATTY */
+#error "valuecons is not supported on this storage implementation"
+#endif /* SCM_USE_STORAGE_FATTY */
+#endif /* SCM_USE_VALUECONS */
         scm_port_put_char(port, '>');
         break;
     case ScmConstant:
@@ -696,14 +700,18 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
 
         case ScmValuePacket:
 #if SCM_USE_VALUECONS
+#if SCM_USE_STORAGE_FATTY
             if (!SCM_NULLVALUESP(obj)) {
                 write_ss_scan(CDR(SCM_VALUEPACKET_VALUES(obj)), ctx);
                 /* SCM_VALUEPACKET_VALUES() changes the type destructively */
-                SCM_ENTYPE_VALUEPACKET(obj);
+                SCM_ENTYPE(obj, ScmValuePacket);
             }
-#else
+#else /* SCM_USE_STORAGE_FATTY */
+#error "valuecons is not supported on this storage implementation"
+#endif /* SCM_USE_STORAGE_FATTY */
+#else /* SCM_USE_VALUECONS */
             write_ss_scan(SCM_VALUEPACKET_VALUES(obj), ctx);
-#endif
+#endif /* SCM_USE_VALUECONS */
             break;
 
         case ScmVector:

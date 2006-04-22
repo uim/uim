@@ -131,7 +131,7 @@ scm_init_storage(const ScmStorageConf *conf)
      * instead of directly construct ScmCell
      */
     scm_gc_protect_with_init(&scm_null_values, CONS(SCM_NULL, SCM_NULL));
-    SCM_ENTYPE_VALUEPACKET(scm_null_values);
+    SCM_ENTYPE(scm_null_values, ScmValuePacket);
 #endif
 
     scm_init_continuation();
@@ -182,7 +182,11 @@ scm_make_cons(ScmObj kar, ScmObj kdr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmCons);
+#else
     SCM_ENTYPE_CONS(obj);
+#endif
     SCM_CONS_SET_MUTABLE(obj);
     SET_CAR(obj, kar);
     SET_CDR(obj, kdr);
@@ -196,7 +200,11 @@ scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmCons);
+#else
     SCM_ENTYPE_CONS(obj);
+#endif
     SCM_CONS_SET_IMMUTABLE(obj);
     SET_CAR(obj, kar);
     SET_CDR(obj, kdr);
@@ -211,8 +219,10 @@ scm_make_int(scm_int_t val)
 
 #if SCM_USE_STORAGE_FATTY
     obj = scm_alloc_cell();
-#endif
+    SCM_ENTYPE(obj, ScmInt);
+#else
     SCM_ENTYPE_INT(obj);
+#endif
     SCM_INT_SET_VALUE(obj, val);
 
     return obj;
@@ -224,7 +234,11 @@ scm_make_symbol(char *name, ScmObj val)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmSymbol);
+#else
     SCM_ENTYPE_SYMBOL(obj);
+#endif
     SCM_SYMBOL_SET_NAME(obj, name);
     SCM_SYMBOL_SET_VCELL(obj, val);
 
@@ -238,8 +252,10 @@ scm_make_char(scm_ichar_t val)
 
 #if SCM_USE_STORAGE_FATTY
     obj = scm_alloc_cell();
-#endif
+    SCM_ENTYPE(obj, ScmChar);
+#else
     SCM_ENTYPE_CHAR(obj);
+#endif
     SCM_CHAR_SET_VALUE(obj, val);
 
     return obj;
@@ -252,7 +268,11 @@ scm_make_hygienic_macro(ScmObj rules, ScmObj env)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmMacro);
+#else
     SCM_ENTYPE_MACRO(obj);
+#endif
     SCM_HMACRO_SET_RULES(obj, rules);
     SCM_HMACRO_SET_ENV(obj, scm_pack_env(env));
     return obj;
@@ -268,7 +288,11 @@ scm_make_farsymbol(ScmObj sym, ScmPackedEnv env)
         scm_macro_bad_scope(sym);
 #endif
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmFarsymbol);
+#else
     SCM_ENTYPE_FARSYMBOL(obj);
+#endif
     SCM_FARSYMBOL_SET_SYM(obj, sym);
     SCM_FARSYMBOL_SET_ENV(obj, env);
     return obj;
@@ -280,7 +304,11 @@ scm_make_subpat(ScmObj x, scm_int_t meta)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmSubpat);
+#else
     SCM_ENTYPE_SUBPAT(obj);
+#endif
     SCM_SUBPAT_SET_OBJ(obj, x);
     SCM_SUBPAT_SET_META(obj, meta);
 
@@ -304,7 +332,11 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
     }
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmString);
+#else
     SCM_ENTYPE_STRING(obj);
+#endif
     SCM_STRING_SET_STR(obj, str);
     SCM_STRING_SET_LEN(obj, len);
 
@@ -346,7 +378,11 @@ scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmFunc);
+#else
     SCM_ENTYPE_FUNC(obj);
+#endif
     SCM_FUNC_SET_TYPECODE(obj, type);
     SCM_FUNC_SET_CFUNC(obj, func);
 
@@ -359,7 +395,11 @@ scm_make_closure(ScmObj exp, ScmObj env)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmClosure);
+#else
     SCM_ENTYPE_CLOSURE(obj);
+#endif
     SCM_CLOSURE_SET_EXP(obj, exp);
     SCM_CLOSURE_SET_ENV(obj, env);
 
@@ -372,7 +412,11 @@ scm_make_vector(ScmObj *vec, scm_int_t len)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmVector);
+#else
     SCM_ENTYPE_VECTOR(obj);
+#endif
     SCM_VECTOR_SET_VEC(obj, vec);
     SCM_VECTOR_SET_LEN(obj, len);
     SCM_VECTOR_SET_MUTABLE(obj);
@@ -398,7 +442,11 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmPort);
+#else
     SCM_ENTYPE_PORT(obj);
+#endif
 
     if (flag & SCM_PORTFLAG_INPUT)
         flag |= SCM_PORTFLAG_LIVE_INPUT;
@@ -417,7 +465,11 @@ scm_make_continuation(void)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmContinuation);
+#else
     SCM_ENTYPE_CONTINUATION(obj);
+#endif
     SCM_CONTINUATION_SET_OPAQUE(obj, INVALID_CONTINUATION_OPAQUE);
     SCM_CONTINUATION_SET_TAG(obj, 0);
 
@@ -431,7 +483,11 @@ scm_make_value_packet(ScmObj values)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmValuePacket);
+#else
     SCM_ENTYPE_VALUEPACKET(obj);
+#endif
     SCM_VALUEPACKET_SET_VALUES(obj, values);
 
     return obj;
@@ -445,7 +501,11 @@ scm_make_cpointer(void *ptr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmCPointer);
+#else
     SCM_ENTYPE_C_POINTER(obj);
+#endif
     SCM_C_POINTER_SET_VALUE(obj, ptr);
 
     return obj;
@@ -457,7 +517,11 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
+#if SCM_USE_STORAGE_FATTY
+    SCM_ENTYPE(obj, ScmCFuncPointer);
+#else
     SCM_ENTYPE_C_FUNCPOINTER(obj);
+#endif
     SCM_C_FUNCPOINTER_SET_VALUE(obj, ptr);
 
     return obj;

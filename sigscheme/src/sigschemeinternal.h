@@ -56,6 +56,8 @@ extern "C" {
 #define TRACE_FRAME_OBJ CAR
 #define TRACE_FRAME_ENV CDR
 
+/* FIXME: remove all SCM_ENTYPE_*() macros */
+#if SCM_USE_STORAGE_COMPACT
 #define SCM_ENTYPE_INT(o)            SCM_SAL_ENTYPE_INT(o)
 #define SCM_ENTYPE_CONS(o)           SCM_SAL_ENTYPE_CONS(o)
 #define SCM_ENTYPE_SYMBOL(o)         SCM_SAL_ENTYPE_SYMBOL(o)
@@ -75,8 +77,11 @@ extern "C" {
 #define SCM_ENTYPE_SUBPAT(o)         SCM_SAL_ENTYPE_SUBPAT(o)
 #endif
 
-/* Extraction of a valuepacket is granted only for SigScheme-internals */
 #define SCM_ENTYPE_VALUEPACKET(o)    SCM_SAL_ENTYPE_VALUEPACKET(o)
+#define SCM_ENTYPE_FREECELL(o)          SCM_SAL_ENTYPE_FREECELL(o)
+#endif /* SCM_USE_STORAGE_COMPACT */
+
+/* Extraction of a valuepacket is granted only for SigScheme-internals */
 #define SCM_VALUEPACKET_VALUES(o)    SCM_SAL_VALUEPACKET_VALUES(o)
 #if SCM_USE_VALUECONS
 #define SCM_NULLVALUESP(o)           SCM_SAL_NULLVALUESP(o)
@@ -87,7 +92,6 @@ extern "C" {
     SCM_SAL_VALUEPACKET_SET_VALUES((o), (vals))
 #endif /* SCM_USE_VALUECONS */
 
-#define SCM_ENTYPE_FREECELL(o)          SCM_SAL_ENTYPE_FREECELL(o)
 #define SCM_AS_FREECELL(o)              SCM_SAL_AS_FREECELL(o)
 
 #define SCM_FREECELLP(o)                SCM_SAL_FREECELLP(o)

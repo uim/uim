@@ -7,6 +7,7 @@ Requirements and critical bugs:
   - Support constant vector
   - Create immediate objects directly without calling scm_make_*()
   - Refine logical structure and namings
+  - Remove all SCM_ENTYPE_*() macros
 
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
