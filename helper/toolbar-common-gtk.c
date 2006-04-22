@@ -895,7 +895,7 @@ register_icon(const gchar *name)
   icon_set = gtk_icon_set_new_from_pixbuf(pixbuf);
   gtk_icon_factory_add(uim_factory, name, icon_set);
 
-  g_list_append(uim_icon_list, g_strdup(name));
+  uim_icon_list = g_list_append(uim_icon_list, g_strdup(name));
 
   g_string_free(filename, TRUE);
   gtk_icon_set_unref(icon_set);

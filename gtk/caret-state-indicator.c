@@ -32,13 +32,13 @@
 
 #include <gtk/gtk.h>
 #include <string.h>
-#include "caret-state-indicator.h"
 
 #include "config.h"
 #include "uim/uim.h"
 #include "uim/uim-helper.h"
 #include "uim/gettext.h"
 
+#include "caret-state-indicator.h"
 /*
  * caret state indicator is a state indicator nearby the caret.
  */
@@ -168,8 +168,8 @@ caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, co
       frame_list = frame_list->next;
       gtk_container_remove(GTK_CONTAINER(frame), label);
       gtk_container_remove(GTK_CONTAINER(hbox), frame);
-      g_list_remove(list1, label);
-      g_list_remove(list2, frame);
+      list1 = g_list_remove(list1, label);
+      list2 = g_list_remove(list2, frame);
     }
     g_object_set_data(G_OBJECT(window), "labels", list1);
     g_object_set_data(G_OBJECT(window), "frames", list2);

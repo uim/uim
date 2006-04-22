@@ -97,6 +97,7 @@ pushback_input_method(MInputMethod *im,
   nr_input_methods++;
 }
 
+#if 0
 static void
 preedit_start_cb(MInputContext *ic, MSymbol command)
 {
@@ -165,7 +166,7 @@ register_callbacks(void)
   mplist_add(minput_default_driver.callback_list, Minput_candidates_draw,  (void *)candidates_draw_cb);
   mplist_add(minput_default_driver.callback_list, Minput_candidates_done,  (void *)candidates_done_cb);*/
 }
-
+#endif
 static uim_lisp
 init_m17nlib()
 {

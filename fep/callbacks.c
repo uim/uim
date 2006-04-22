@@ -785,7 +785,7 @@ static void make_page_strs(void)
         assert(page_width == 0);
         next = TRUE;
                                                   /* 全角1文字の幅 */
-        if (s_max_width >= cand_label_width + strlen(":") + 2 + strlen(" ") + index_width) {
+        if (s_max_width >= cand_label_width + (int)strlen(":") + 2 + (int)strlen(" ") + index_width) {
           /* 候補 + インデックス */
 
           cand_width = s_max_width - index_width - strlen(" ");
@@ -804,7 +804,7 @@ static void make_page_strs(void)
           }
           cand_width -= strlen(" ");
           cand_width = strhead(cand_str, cand_width);
-          if (cand_width <= cand_label_width + strlen(":")) {
+          if (cand_width <= cand_label_width + (int)strlen(":")) {
             cand_width = 1;
             strcpy(cand_str, " ");
             s_candidate.cand_col[index] = UNDEFINED;
@@ -977,7 +977,7 @@ static void set_candidate(void)
   }
   s_candidate_str = tab2space(uim_candidate_get_cand_str(cand));
   cand_width = strwidth(s_candidate_str);
-  if (s_candidate_col + cand_width + strlen(" ") + index_width > s_max_width) {
+  if (s_candidate_col + cand_width + (int)strlen(" ") + index_width > s_max_width) {
     strhead(s_candidate_str, s_max_width - s_candidate_col - strlen(" ") - index_width);
   }
   uim_candidate_free(cand);

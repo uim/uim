@@ -45,6 +45,9 @@
 #include <locale.h>
 #endif
 #ifdef HAVE_WCHAR_H
+#ifdef __GLIBC__
+#define __USE_XOPEN
+#endif
 #include <wchar.h>
 #endif
 #ifdef HAVE_STRING_H
@@ -161,9 +164,9 @@ int compare_str_rev(const char *str1, const char *str2)
 int strwidth(const char *str)
 {
   int width;
-  int str_byte;
+  size_t str_byte;
   wchar_t *wcstr;
-  int nr_wchars;
+  size_t nr_wchars;
 
   assert(str != NULL);
 
@@ -171,7 +174,7 @@ int strwidth(const char *str)
   if (str_byte <= 0) {
     return 0;
   }
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
+  wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
   nr_wchars = mbstowcs(wcstr, str, str_byte);
   assert(nr_wchars >= 0);
   width = wcswidth(wcstr, nr_wchars);
@@ -220,14 +223,14 @@ int strwidth(const char *str)
  * にしてはいけない．
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
-int byte2width(const char *str, int n)
+int byte2width(const char *str, size_t n)
 {
   int width;
-  int str_byte;
+  size_t str_byte;
   char save_char;
   const char *save_str;
   wchar_t *wcstr;
-  int nr_wchars;
+  size_t nr_wchars;
 
   assert(str != NULL);
 
@@ -239,7 +242,7 @@ int byte2width(const char *str, int n)
   if (str_byte <= 0) {
     return 0;
   }
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
+  wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
 
   if (n > str_byte) {
     n = str_byte;
@@ -248,7 +251,11 @@ int byte2width(const char *str, int n)
   save_char = str[n];
   save_str = str;
   ((char *)str)[n] = '\0';
-  nr_wchars = mbsrtowcs(wcstr, &str, str_byte, NULL);
+#ifdef __GLIBC__
+  nr_wchars = mbsrtowcs(wcstr, (__const char **)&str, str_byte, NULL);
+#else
+  nr_wchars = mbsrtowcs(wcstr, (const char **)&str, str_byte, NULL);
+#endif
   ((char *)save_str)[n] = save_char;
   if (nr_wchars >= 0) {
     width = wcswidth(wcstr, nr_wchars);
@@ -263,7 +270,7 @@ int byte2width(const char *str, int n)
   return width;
 }
 #else
-int byte2width(const char *str, int n)
+int byte2width(const char *str, size_t n)
 {
   int width = 0;
   int byte = 0;
@@ -321,14 +328,14 @@ int byte2width(const char *str, int n)
  * にしてはいけない．
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
-int byte2width2(const char *str, int n)
+int byte2width2(const char *str, size_t n)
 {
   int width;
-  int str_byte;
+  size_t str_byte;
   char save_char;
   const char *save_str;
   wchar_t *wcstr;
-  int nr_wchars;
+  size_t nr_wchars;
   
   assert(str != NULL);
 
@@ -349,12 +356,20 @@ int byte2width2(const char *str, int n)
   save_char = str[n];
   save_str = str;
   ((char *)str)[n] = '\0';
-  nr_wchars = mbsrtowcs(wcstr, &str, str_byte, NULL);
+#ifdef __GLIBC__
+  nr_wchars = mbsrtowcs(wcstr, (__const char **)&str, str_byte, NULL);
+#else
+  nr_wchars = mbsrtowcs(wcstr, (const char **)&str, str_byte, NULL);
+#endif
   ((char *)save_str)[n] = save_char;
   if (nr_wchars >= 0) {
     width = wcswidth(wcstr, nr_wchars);
   } else {
-    mbsrtowcs(wcstr, &str, 1, NULL);
+#ifdef __GLIBC__
+    mbsrtowcs(wcstr, (__const char **)&str, 1, NULL);
+#else
+    mbsrtowcs(wcstr, (const char **)&str, 1, NULL);
+#endif
     /* strを最後まで変換するとNULLになる */
     assert(str != NULL);
     save_char = str[0];

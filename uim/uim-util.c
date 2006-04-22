@@ -446,7 +446,11 @@ eucjp_string_to_list(uim_lisp str_)
 
 static uim_lisp
 string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
-			int cmp(const char *, const char *, size_t))
+#ifdef __GLIBC__
+			int (*cmp)(__const char *, __const char *, size_t))
+#else
+			int (*cmp)(const char *, const char *, size_t))
+#endif
 {
   const char *prefix, *str;
   size_t len;
@@ -502,7 +506,9 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
   uim_bool single_listp;
 
   single_listp = uim_scm_nullp(uim_scm_cdr(lists));
+  rest = rests = uim_scm_null_list();
   res = seed;
+
   if (single_listp) {
     rest = uim_scm_car(lists);
   } else {

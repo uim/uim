@@ -563,7 +563,7 @@ struct point_tag get_cursor_position(void)
       escseq = next_escseq;
       escseq_len = len - (escseq - ibuf);
 
-      if (strlen("\033[0;0R") > escseq_len) {
+      if ((int)strlen("\033[0;0R") > escseq_len) {
         break; /* goto retry */
       }
 

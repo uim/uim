@@ -696,7 +696,11 @@ newcell (long type)
 }
 
 static LISP
+#ifdef __GLIBC__
+fopen_cg (FILE * (*fcn) (__const char *, __const char *), char *name, char *how)
+#else
 fopen_cg (FILE * (*fcn) (const char *, const char *), char *name, char *how)
+#endif
 {
   LISP sym;
   char errmsg[80];

@@ -159,9 +159,9 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  plugin_instance_init = (void (*)(void))dlfunc(library,
+  *(void **)(&plugin_instance_init) = dlfunc(library,
 						"uim_plugin_instance_init");
-  plugin_instance_quit = (void (*)(void))dlfunc(library,
+  *(void **)(&plugin_instance_quit) = dlfunc(library,
 						"uim_plugin_instance_quit");
   if (!plugin_instance_init) {
     fprintf(stderr, "%s plugin init failed\n", plugin_name);

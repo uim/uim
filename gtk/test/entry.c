@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 
+void enter_callback(GtkWidget *, GtkWidget *);
+void entry_toggle_editable(GtkWidget *, GtkWidget *);
+void entry_toggle_visibility(GtkWidget *c, GtkWidget *);
+
 void enter_callback( GtkWidget *widget,
                      GtkWidget *entry )
 {

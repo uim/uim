@@ -110,7 +110,6 @@ static struct uim_custom_key **uim_custom_key_get(const char *custom_sym, const 
 static void uim_custom_key_free(struct uim_custom_key *custom_key);
 static char *extract_key_literal(const struct uim_custom_key *custom_key);
 static char *key_list_to_str(const struct uim_custom_key *const *list, const char *sep);
-void uim_custom_key_list_free(struct uim_custom_key **list);
 
 static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
 static union uim_custom_value *uim_custom_value(const char *custom_sym);
