@@ -28,12 +28,34 @@ See doc/spec.txt and doc/design.txt for furtuer information.
 How to build
 ======================================
 
-You can build SigScheme by simply doing
+At first, you need to run ./configure with some options at the top directory.
 
-$ ./configure
+$ ./configure [--enable-configuration=CONF] [--enable-multibyte=ENC]
+
+(1) --enable-configuration=CONFIGURATION
+
+You can choose the functionality with this option. Please select in the
+following candidates.
+
+  - 'full': compiled with full spec including all supported SRFIs.
+  - 'r5rs': compiled with the functionality only defined in R5RS.
+  - 'siod': compiled in compatible with SIOD(Scheme In One Defun).
+
+(2) --enable-multibyte=ENCODING
+
+By default, SigScheme is built with UTF-8 as default encoding. You can change
+the default encoding with this option. Currently, following encodings are
+supported.
+
+  - 'utf8'
+  - 'euccn'
+  - 'eucjp'
+  - 'euckr'
+  - 'sjis'
+
+Then, run make command at the top directory.
+
 $ make
-
-at the top directory.
 
 
 Installation
