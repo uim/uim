@@ -109,26 +109,26 @@ fi
 # Configure Specs
 #------------------------------------------------------------------------------
 #--------------------------------------
-# Define R5RS Spec
+# Define Full Spec
 #--------------------------------------
-use_format="no"
-use_raw_c_format="no"
-use_use_sscm_format_extension="yes"
+use_format="yes"
+use_raw_c_format="yes"
+use_sscm_format_extension="yes"
 use_sscm_extensions="yes"
 use_legacy_macro="no"
 use_dump="no"
 use_eval_c_string="yes"
 use_srfi1="no"
-use_srfi2="no"
+use_srfi2="yes"
 use_srfi6="yes"
 use_srfi8="yes"
 use_srfi22="yes"
 use_srfi23="yes"
-use_srfi28="no"
+use_srfi28="yes"
 use_srfi34="yes"
 use_srfi38="yes"
-use_srfi48="no"
-use_srfi60="no"
+use_srfi48="yes"
+use_srfi60="yes"
 use_srfi75_named_chars="yes"
 use_srfi75="yes"
 compat_siod="no"
@@ -144,7 +144,7 @@ const_list_literal="yes"
 const_vector_literal="yes"
 accessor_assert="yes"
 use_valuecons="yes"
-use_null_capable_string="yes"
+use_null_capable_string="no"
 use_warning_suppressor="yes"
 
 #--------------------------------------
@@ -157,47 +157,45 @@ Following specs are currently recognized:
 (1)'full': Full Features.
 (2)'r5rs': R5RS features only.
 (3)'siod': SIOD compatible mode.
-Defaultly, 'r5rs' is selected.]),
+Defaultly, 'full' is selected.]),
   [
     case $enable_configuration in
-      r5rs)
-        ;;
       full)
-        use_format="yes"
-        use_raw_c_format="yes"
-        use_use_sscm_format_extension="yes"
-        use_sscm_extensions="yes"
-        use_dump="yes"
-        use_eval_c_string="yes"
-        use_srfi="yes"
-        use_srfi2="yes"
-        use_srfi6="yes"
-        use_srfi8="yes"
+        ;;
+      r5rs)
+        use_format="no"
+        use_raw_c_format="no"
+        use_sscm_format_extension="no"
+        use_sscm_extensions="no"
+        use_dump="no"
+        use_srfi2="no"
+        use_srfi6="no"
+        use_srfi8="no"
         use_srfi22="yes"
-        use_srfi23="yes"
-        use_srfi28="yes"
+        use_srfi23="no"
+        use_srfi28="no"
         use_srfi34="yes"
         use_srfi38="yes"
-        use_srfi48="yes"
-        use_srfi60="yes"
+        use_srfi48="no"
+        use_srfi60="no"
         use_srfi75_named_chars="yes"
         use_srfi75="yes"
         ;;
       siod)
-        use_srfi60="yes"
         compat_siod="yes"
         compat_siod_bugs="yes"
         strict_r5rs="no"
         strict_null_form="no"
+        strict_arg_check="no"
         ;;
       *)
-        echo "unrecognized option: '$enable_configuration'."
+        echo "unrecognized config: '$enable_configuration'."
         exit 1
         ;;
     esac
   ],
   [
-    enable_configuration="r5rs"
+    enable_configuration="full"
   ])
 
 #------------------------------------------------------------------------------
@@ -322,9 +320,9 @@ if test "x$use_raw_c_format" = xyes; then
 fi
 
 # use 'format+'
-AM_CONDITIONAL(USE_USE_SSCM_FORMAT_EXTENSION, test "x$use_use_sscm_format_extension" = xyes)
-if test "x$use_use_sscm_format_extension" = xyes; then
-  CFLAGS="$CFLAGS -DSCM_USE_USE_SSCM_FORMAT_EXTENSION"
+AM_CONDITIONAL(USE_SSCM_FORMAT_EXTENSION, test "x$use_sscm_format_extension" = xyes)
+if test "x$use_sscm_format_extension" = xyes; then
+  CFLAGS="$CFLAGS -DSCM_USE_SSCM_FORMAT_EXTENSION"
 fi
 
 #  use SigScheme-specific extensions
