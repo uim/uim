@@ -450,15 +450,18 @@ Following encodings are available:
 Defaultly, 'utf8' is selected.]),
   [
     case $enable_multibyte in
-      utf8)
+      utf8|utf-8)
+        enable_multibyte="utf8"
         ;;
       euccn)
         ;;
-      eucjp)
+      eucjp|euc-jp)
+        enable_multibyte="eucjp"
         ;;
       euckr)
         ;;
-      sjis)
+      sjis|shift-jis)
+        enable_multibyte="sjis"
         ;;
       *)
         enable_multibyte="utf8"
@@ -466,13 +469,15 @@ Defaultly, 'utf8' is selected.]),
     esac
   ],
   [
-    defaut_encoding="utf8"
+    enable_multibyte="utf8"
   ])
 
 #
 # Support for each encoding will be compiled in if the corresponding
 # macro is defined as nonzero
 #
+# TODO: make these options configurable
+
 AM_CONDITIONAL(USE_MULTIBYTE_CHAR, test "x$use_yes" = xyes)
 if test "x$use_yes" = xyes; then
   CFLAGS="$CFLAGS -DSCM_USE_MULTIBYTE_CHAR"
