@@ -111,6 +111,13 @@ fi
 #--------------------------------------
 # Define Full Spec
 #--------------------------------------
+
+# FIXME:
+# - Complement all variables such as use_continuation, use_char,
+#   use_hygienic_macro and so on
+# - Make all the variables configurable via '--enable' and '--disable', and add
+#   brief description for each vars as original src/config.h had.
+
 use_format="yes"
 use_raw_c_format="yes"
 use_sscm_format_extension="yes"
@@ -137,7 +144,7 @@ compat_siod_bugs="no"
 strict_r5rs="no"
 strict_null_form="no"
 strict_vector_form="yes"
-strict_arg_check="yes"
+strict_argcheck="yes"
 strict_define_placement="yes"
 strict_encoding_check="yes"
 const_list_literal="yes"
@@ -186,7 +193,7 @@ Defaultly, 'full' is selected.]),
         compat_siod_bugs="yes"
         strict_r5rs="no"
         strict_null_form="no"
-        strict_arg_check="no"
+        strict_argcheck="no"
         ;;
       *)
         echo "unrecognized config: '$enable_configuration'."
@@ -208,6 +215,14 @@ use_no="no"
 # R5RS Features
 #--------------------------------------
 
+# FIXME:
+# - Fix '-DSCM_FOO'-style macro definitions with AC_DEFINE(var, val, desc) as
+#   described in "Defining C Preprocessor Symbols" section of autoconf.info.
+#   This CFLAGS-style configuration does not work as expected on
+#   combined-source mode compilation which libuim does.
+# - Make all variables that has "use_yes" or "use_no" conditions such as
+#   USE_CONTINUATION, USE_CHAR and so on configurable
+
 # (cannot be 0 yet) use continuation
 AM_CONDITIONAL(USE_CONTINUATION, test "x$use_yes" = xyes)
 if test "x$use_yes" = xyes; then
@@ -227,9 +242,9 @@ if test "x$use_yes" = xyes; then
 fi
 
 # (not supported yet) use syntax-case; implies SCM_USE_UNHYGIENIC_MACRO
-AM_CONDITIONAL(USE_SYTAX_CASE, test "x$use_no"  = xyes)
+AM_CONDITIONAL(USE_SYNTAX_CASE, test "x$use_no"  = xyes)
 if test "x$use_no"  = xyes; then
-  CFLAGS="$CFLAGS -DSCM_USE_SYTAX_CASE"
+  CFLAGS="$CFLAGS -DSCM_USE_SYNTAX_CASE"
 fi
 
 # (not supported yet) syntactic closure
@@ -442,6 +457,10 @@ fi
 #--------------------------------------
 # Character Encoding Handlers
 #--------------------------------------
+
+# FIXME: Distinguish "enabled encodings" and "default encoding", and make
+# "enabled encodings" multi-specifiable.
+
 AC_ARG_ENABLE(multibyte,
   AC_HELP_STRING([--enable-multibyte=ENCODING],
                  [Choose default encoding by ENCODING.
@@ -549,8 +568,8 @@ if test "x$strict_vector_form" = xyes; then
 fi
 
 # enable strict argument check
-AM_CONDITIONAL(STRICT_ARGCHECK, test "x$strict_arg_check" = xyes)
-if test "x$strict_arg_check" = xyes; then
+AM_CONDITIONAL(STRICT_ARGCHECK, test "x$strict_argcheck" = xyes)
+if test "x$strict_argcheck" = xyes; then
   CFLAGS="$CFLAGS -DSCM_STRICT_ARGCHECK"
 fi
 
@@ -627,13 +646,13 @@ if test "x$use_yes" = xyes; then
   CFLAGS="$CFLAGS -DSCM_GCC4_READY_GC"
 fi
 
-# use int64_t  as scm_int_t
+# use int64_t as scm_int_t
 AM_CONDITIONAL(USE_64BIT_FIXNUM, test "x$use_no"  = xyes)
 if test "x$use_no"  = xyes; then
   CFLAGS="$CFLAGS -DSCM_USE_64BIT_FIXNUM"
 fi
 
-# use int32_t  as scm_int_t
+# use int32_t as scm_int_t
 AM_CONDITIONAL(USE_32BIT_FIXNUM, test "x$use_no"  = xyes)
 if test "x$use_no"  = xyes; then
   CFLAGS="$CFLAGS -DSCM_USE_32BIT_FIXNUM"
@@ -672,12 +691,15 @@ fi
 #--------------------------------------
 # Misc (need to resolve dependency here)
 #--------------------------------------
+# FIXME: make use_number and use_format sensible
 AM_CONDITIONAL(USE_NUMBER, test "x$use_yes" = xyes)
 AM_CONDITIONAL(USE_FORMAT, test "x$use_yes" = xyes)
 
 #--------------------------------------
 # Debug
 #--------------------------------------
+# FIXME: Fix '-DSCM_DEBUG' with AC_DEFINE. see the comment above about
+# AC_DEFINE
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
                  [enable debugging]),

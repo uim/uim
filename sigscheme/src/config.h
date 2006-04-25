@@ -31,6 +31,9 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
+/* FIXME: port all things into configure.in and remove this file */
+
 #ifndef __SIGSCHEME_CONFIG_H
 #define __SIGSCHEME_CONFIG_H
 
