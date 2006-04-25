@@ -9,6 +9,7 @@ AC_CONFIG_HEADER([config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
+AC_PROG_EGREP
 # These programs are only needed on make dist
 AC_PATH_PROGS(RUBY, ruby18 ruby)
 AC_PATH_PROGS(PERL, perl5 perl)
@@ -24,6 +25,8 @@ AX_LIB_GLIBC
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h \
                   strings.h unistd.h])
+AC_CHECK_HEADER([cutter/cutter.h], have_cutter_h=yes, have_cutter_h=no)
+AM_CONDITIONAL(HAVE_CUTTER_H, test "x$have_cutter_h" = xyes)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -64,6 +67,9 @@ AC_CHECK_SIZEOF(intmax_t)
 AC_CHECK_SIZEOF(intptr_t)
 
 # Checks for library functions.
+
+# Enable this iff asprintf(3) or another GNU extension is needed
+#AC_GNU_SOURCE
 
 AC_CHECK_FUNCS([strtoll strtoimax \
                 fileno getcwd getpagesize])
