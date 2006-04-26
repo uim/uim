@@ -16,4 +16,5 @@ all: html
 html: $(ASCIIDOC_HTMLS)
 
 dist-hook:
-	@test -n "$(ASCIIDOC)" || (echo 'asciidoc(1) not found: install AsciiDoc'; test)
+	@test -n "$(ASCIIDOC)"                                          \
+	    || (echo 'asciidoc(1) not found: install AsciiDoc'; exit 1)

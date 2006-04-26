@@ -152,7 +152,7 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 # Internal macros trimmer for combined-source version of SigScheme.
 # All source files are processed regardless of user configuration.
 sigscheme-combined-trim.h: $(DIST_SOURCES)
-	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; test)
+	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; exit 1)
 	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@for src in $^ $>; do                   \
@@ -311,5 +311,5 @@ DISTCLEANFILES = my-stdint.h
 ETAGS_ARGS = sigschemeinternal.h
 
 dist-hook:
-	@test -n "$(RUBY)" || (echo 'ruby(1) not found: install Ruby'; test)
-	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; test)
+	@test -n "$(RUBY)" || (echo 'ruby(1) not found: install Ruby'; exit 1)
+	@test -n "$(PERL)" || (echo 'perl(1) not found: install Perl'; exit 1)
