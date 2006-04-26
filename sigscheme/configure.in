@@ -1,10 +1,8 @@
 AC_PREREQ(2.57)
-
-AC_INIT([sigscheme], [0.5.0], [mover@hct.zaq.ne.jp])
-AM_INIT_AUTOMAKE(1.8.3)
-
-AC_CONFIG_SRCDIR([src/sigscheme.h])
-AC_CONFIG_HEADER([config.h])
+AC_INIT([SigScheme], [0.5.0], [mover@hct.zaq.ne.jp], [sigscheme])
+AC_CONFIG_SRCDIR([src/sigscheme.c])
+AC_CONFIG_HEADERS([config.h])
+AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
 
 # Checks for programs.
 AC_PROG_CC
@@ -16,6 +14,7 @@ AC_PATH_PROGS(PERL, perl5 perl)
 AC_PATH_PROG(ASCIIDOC, asciidoc)
 # The modified version of the C testing framework
 AC_PATH_PROG(CUTTER, cutter)
+AC_PATH_PROGS(MD5, md5 md5sum)
 
 # Checks for libraries.
 
