@@ -1,6 +1,7 @@
 TXTS = design.txt spec.txt style.txt test-c.txt global-obj.txt \
-        gc-protection.txt
-ASCIIDOC_HTMLS = design.html spec.html global-obj.html gc-protection.html
+        gc-protection.txt release.txt
+ASCIIDOC_HTMLS = \
+        design.html spec.html global-obj.html gc-protection.html release.html
 
 BUILT_DIST = $(ASCIIDOC_HTMLS)
 EXTRA_DIST = $(BUILT_DIST) TODO $(TXTS)

@@ -24,16 +24,8 @@ sum: FORCE
 	$(MD5) $(DIST_ARCHIVES) >$(DIST_SUM_LIST)
 
 # To generate ChangeLog for a release properly, a source tree for official
-# release must not be obtained by 'svn export' but 'svn co'.
-#
-# svn cp -r3332 svn+ssh://svn.freedesktop.org/svn/uim/branches/r5rs/sigscheme \
-#               svn+ssh://svn.freedesktop.org/svn/uim/tags/sigscheme-x.y.z
-# cd /tmp
-# svn co http://anonsvn.freedesktop.org/svn/uim/tags/sigscheme-x.y.z
-# cd sigscheme-x.y.z
-# ./autogen.sh
-# ./configure
-# make distcheck sum
+# release must not be obtained by 'svn export' but 'svn co'. See
+# doc/release.txt for further information.
 dist-hook:
 	svn info | $(EGREP) -q "^URL: .+/svn/uim/tags/sigscheme-" \
 	    || (echo "error: not an official release. checkout tagged one"; exit 1)
