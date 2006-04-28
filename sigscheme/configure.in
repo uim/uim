@@ -326,7 +326,7 @@ Following specs are currently recognized:
 (1)'full': Full Features.
 (2)'r5rs': R5RS features only.
 (3)'siod': SIOD compatible mode.
-Defaultly, 'full' is selected.]),
+By default, 'full' is selected.]),
   [
     case $enable_configuration in
       full)
@@ -705,7 +705,7 @@ AC_ARG_ENABLE(multibyte,
                  [Choose default encoding by ENCODING.
 Following encodings are available:
 (1)'utf8' (2)'euccn' (3)'eucjp' (4)'euckr' (5)'sjis'
-Defaultly, 'utf8' is selected.]),
+By default, 'utf8' is selected.]),
   [
     case $enable_multibyte in
       utf8|utf-8)
