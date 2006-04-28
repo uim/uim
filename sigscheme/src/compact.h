@@ -611,8 +611,8 @@ SCM_MISC_DECLARE_TYPE(STRING, L1(1), SCM_MISC_XTYPE(char *),
     } while (0)
 
 
-/* Strings. */
-SCM_MISC_DECLARE_TYPE(STRING, L1(2), SCM_MISC_XTYPE(ScmObj*),
+/* Vectors. */
+SCM_MISC_DECLARE_TYPE(VECTOR, L1(2), SCM_MISC_XTYPE(ScmObj*),
                       SCM_MISC_XALIGN(3), SCM_MISC_YTYPE(scm_int_t));
 
 #define SCM_SAL_MAKE_VECTOR(v, l)    scm_make_vector((v), (l))
