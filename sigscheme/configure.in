@@ -796,13 +796,12 @@ AM_CONDITIONAL(USE_FORMAT, test "x$use_format" = xyes)
 #------------------------------------------------------------------------------
 # Debug
 #------------------------------------------------------------------------------
-# FIXME: Fix '-DSCM_DEBUG' with AC_DEFINE. see the comment above about
-# AC_DEFINE
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
                  [enable debugging]),
   [
-    CFLAGS="$CFLAGS -g -DSCM_DEBUG"
+    CFLAGS="$CFLAGS -g"
+    AC_DEFINE(SCM_DEBUG, 1, [enable debugging mode])
     enable_debug="yes"
   ],
   [
