@@ -34,8 +34,8 @@
 
 /* FIXME: port all things into configure.in and remove this file */
 
-#ifndef __SIGSCHEME_CONFIG_H
-#define __SIGSCHEME_CONFIG_H
+#ifndef __SIGSCHEME_CONFIG_OLD_H
+#define __SIGSCHEME_CONFIG_OLD_H
 
 #ifndef PACKAGE
 #error "don't include src/config.h directly"
@@ -208,4 +208,4 @@
 #define SCM_USE_SRFI6           1
 #endif
 
-#endif /* __SIGSCHEME_CONFIG_H */
+#endif /* __SIGSCHEME_CONFIG_OLD_H */

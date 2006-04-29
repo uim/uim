@@ -822,10 +822,18 @@ AC_ARG_ENABLE(debug,
     enable_debug="no"
   ])
 
+# This include guard is required to prevent being overridden by
+# system-installed config.h on a source that is compiled on
+# !SCM_COMPILING_LIBSSCM such as test-c/test_*.c.
+AH_TOP([#ifndef __SIGSCHEME_CONFIG_H
+#define __SIGSCHEME_CONFIG_H])
+
 # FIXME: temporary solution
 AH_BOTTOM([
 /* FIXME: temporary solution */
-#include "config-old.h"])
+#include "config-old.h"
+
+#endif /* __SIGSCHEME_CONFIG_H */])
 
 echo "--------------------------------------"
 echo "| SigScheme Configuration            |"

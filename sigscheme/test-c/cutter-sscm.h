@@ -22,7 +22,8 @@
 #define UT_USE_MESSAGELESS_ASSERTIONS 1
 #include <cutter/cutter.h>
 
-#include "sigscheme.h"
+#include <config.h> /* include path workaround on !SCM_COMPILING_LIBSSCM */
+#include <sigscheme.h>
 
 
 #undef  UT_INITIALIZER

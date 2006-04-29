@@ -32,14 +32,14 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-#include "cutter-sscm.h"
-
 #define SCM_WRITABLE_STATICLESS_PLATFORM 0
 #define SCM_COMBINED_SOURCE 0
 
-#include "global.h"
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
+#include "cutter-sscm.h"
+
+#include <global.h>
+#include <sigscheme.h>
+#include <sigschemeinternal.h>
 
 SCM_GLOBAL_VARS_BEGIN(exported);
 ScmObj obj_a, obj_b;

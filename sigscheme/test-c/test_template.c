@@ -32,9 +32,10 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+/* must be included prior to any SigScheme headers */
 #include "cutter-sscm.h"
 
-#include "sigscheme.h"
+#include <sigscheme.h>
 
 UT_DEF2("test foo")
 {

@@ -34,8 +34,8 @@
 
 #include "cutter-sscm.h"
 
-#include "sigscheme.h"
-#include "sigschemeinternal.h"
+#include <sigscheme.h>
+#include <sigschemeinternal.h>
 
 int scm_strcasecmp(const char *s1, const char *s2);
 
