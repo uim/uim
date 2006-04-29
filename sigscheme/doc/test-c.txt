@@ -1,49 +1,51 @@
 Unit tests for C
+================
 
-* About
+About
+-----
 
-  The sigscheme/test-c/ directory is existing for unit testing for C. The tests
-  are currently using privately-customized version of Cutter testing
-  framework. Although it is a quick-hacked product, sufficiently works for
-  SigScheme.
+The `sigscheme/test-c/` directory is existing for unit testing for C. The tests
+are currently using privately-customized version of
+http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.en[Cutter]
+testing framework. Although it is a quick-hacked product, sufficiently works
+for SigScheme.
 
-  The private patch can be used and redistributed under the original license of
-  Cutter.
+The private patch can be used and redistributed under the original license of
+Cutter.
 
-* How to use
+How to use
+----------
 
-  1) Download Cutter from following page
+  1. Download Cutter from following page
 
-    English:
-      http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.en
+    - http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.en[English]
+    - http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.ja[Japanese]
 
-    Japanese:
-      http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.ja
+  2. Apply http://websvn.freedesktop.org/uim/branches/r5rs/sigscheme/test-c/cutter-r20-yamaken-extension.diff?view=markup[the private patch] for SigScheme
 
-  2) Apply the private patch for SigScheme
+  3. Install pached version of Cutter
 
-  3) Install pached version of Cutter
-
-  4) Build and run tests
+  4. Build and run tests
 
     $ make all test
 
-* How to write new test
+How to write new test
+---------------------
 
-  1) Copy the template
+  1. Copy the template
 
     $ cp test_template.c test_foo.c
 
     The filename must be test_*.c
 
-  2) Add following lines into Makefile.am and re-configure
+  2. Add following lines into Makefile.am and re-configure
 
     TEST_SRCS               += test_foo.c
     noinst_LTLIBRARIES      += libtest_foo.la
     libtest_foo_la_SOURCES  = test_foo.c cutter-sscm.h
     libtest_foo_la_LIBADD   = $(top_builddir)/src/libsscm.la
 
-  3) Write your own tests into test_foo.c likewise test_template.c
+  3. Write your own tests into test_foo.c likewise test_template.c
 
     UT_DEF2("my test")
     {
@@ -55,7 +57,7 @@ Unit tests for C
 
     See cutter/assersions.h to find appropriate assertion macros.
 
-  4) Configure testsuite
+  4. Configure testsuite
 
     $ make update-suites
 
@@ -72,16 +74,19 @@ Unit tests for C
 
     There is no need to remove the auto-generated fragments on re-update.
 
-  5) Build and run tests
+  5. Build and run tests
 
     $ make all test
 
-* Requirements for testing framework
+Requirements for testing framework
+----------------------------------
 
-  I had tried to use the famous CUnit (http://cunit.sf.net/) at first to test
-  SigScheme, but it did not met my requirements and needs long way to modify to
-  fit to SigScheme. So I searched for other testing frameworks and decided to
-  modify Cutter. Please let me know better solutions if you know.
+I had tried to use the famous http://cunit.sf.net/[CUnit] at first to test
+SigScheme, but it did not met my requirements and needs long way to modify to
+fit to SigScheme. So I searched for other testing frameworks and decided to
+modify
+http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.en[Cutter].
+Please let me know better solutions if you know.
 
   - Written in pure C
 
@@ -94,9 +99,11 @@ Unit tests for C
 
   - Prints the expected and actual values when an assertion failed, as follows
 
-    ./test_format.c:64: - format ~D - 
-    expected: <0>
-     but was: <2147483647>
+----------------------------------------------------------------
+./test_format.c:64: - format ~D - 
+expected: \<0>
+ but was: \<2147483647>
+----------------------------------------------------------------
 
   - Standalone test runner
 
@@ -109,7 +116,7 @@ Unit tests for C
   - It can be inserted SCM_GC_PROTECTED_CALL() on each tests
 
 
-  And some recommendations:
+And some recommendations:
 
   - Small and Simple
 
