@@ -267,11 +267,22 @@ scm_p_lengthstar(ScmObj lst)
     return MAKE_INT(len);
 }
 
-SCM_EXPORT
-ScmObj scm_p_exit(void)
+SCM_EXPORT ScmObj
+scm_p_exit(ScmObj args)
 {
-    DECLARE_FUNCTION("exit", procedure_fixed_0);
+    ScmObj explicit_status;
+    int status;
+    DECLARE_FUNCTION("exit", procedure_variadic_0);
+
+    if (NULLP(args)) {
+        status = EXIT_SUCCESS;
+    } else {
+        explicit_status = POP(args);
+        ASSERT_NO_MORE_ARG(args);
+        ENSURE_INT(explicit_status);
+        status = SCM_INT_VALUE(explicit_status);
+    }
 
     scm_finalize();
-    exit(EXIT_SUCCESS);
+    exit(status);
 }
