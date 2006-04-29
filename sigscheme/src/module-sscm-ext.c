@@ -36,6 +36,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "sigscheme.h"
@@ -264,4 +265,13 @@ scm_p_lengthstar(ScmObj lst)
     }
 
     return MAKE_INT(len);
+}
+
+SCM_EXPORT
+ScmObj scm_p_exit(void)
+{
+    DECLARE_FUNCTION("exit", procedure_fixed_0);
+
+    scm_finalize();
+    exit(EXIT_SUCCESS);
 }

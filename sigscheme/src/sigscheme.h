@@ -1375,6 +1375,7 @@ SCM_EXPORT ScmObj scm_p_require(ScmObj filename);
 SCM_EXPORT ScmObj scm_p_provide(ScmObj feature);
 SCM_EXPORT ScmObj scm_p_providedp(ScmObj feature);
 SCM_EXPORT ScmObj scm_p_lengthstar(ScmObj lst);
+SCM_EXPORT ScmObj scm_p_exit(void);
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 
 #if SCM_COMPAT_SIOD
