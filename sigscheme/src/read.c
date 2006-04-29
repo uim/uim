@@ -112,7 +112,7 @@
  * <digit 16> --> <digit 10> | a | b | c | d | e | f
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <limits.h>
 #include <stdlib.h>

@@ -809,6 +809,11 @@ AC_ARG_ENABLE(debug,
     enable_debug="no"
   ])
 
+# FIXME: temporary solution
+AH_BOTTOM([
+/* FIXME: temporary solution */
+#include "src/config-old.h"])
+
 echo "--------------------------------------"
 echo "| SigScheme Configuration            |"
 echo "--------------------------------------"

@@ -39,7 +39,7 @@
 #ifndef __SCM_SIGSCHEME_COMBINED_H
 #define __SCM_SIGSCHEME_COMBINED_H
 
-#include "config.h"
+#include <config.h>
 /* Since sigscheme-combined.c is intended to be directly included into another
  * package as subordinate code module, these SigScheme-defined macros should be
  * undefined to avoid conflict. */

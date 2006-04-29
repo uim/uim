@@ -1,6 +1,6 @@
 /*===========================================================================
- *  Filename : config.h
- *  About    : build configuration file
+ *  Filename : config-old.h
+ *  About    : build configuration file (going to be removed)
  *
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
@@ -37,8 +37,8 @@
 #ifndef __SIGSCHEME_CONFIG_H
 #define __SIGSCHEME_CONFIG_H
 
-#ifdef HAVE_CONFIG_H
-#  include "../config.h"
+#ifndef PACKAGE
+#error "don't include src/config.h directly"
 #endif
 
 /*===========================================================================

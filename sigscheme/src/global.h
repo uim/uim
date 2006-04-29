@@ -37,7 +37,7 @@
 #ifndef __SCM_GLOBAL_H
 #define __SCM_GLOBAL_H
 
-#include "config.h"
+#include <config.h>
 
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 #include <string.h>

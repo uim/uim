@@ -42,7 +42,7 @@
  *   since SigScheme doesn't have a module or namespace feature (yet)
  */
 
-#include "config.h"
+#include <config.h>
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"

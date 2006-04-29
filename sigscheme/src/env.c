@@ -64,7 +64,7 @@
  *   hand-maid invalid environment objects.
  */
 
-#include "config.h"
+#include <config.h>
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"

@@ -157,7 +157,7 @@ sigscheme-combined-trim.h: $(DIST_SOURCES)
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@for src in $^ $>; do                   \
 	    case $$src in                       \
-	    config.h)          ;;               \
+	    config-old.h)      ;;               \
 	    my-stdint.h)       ;;               \
 	    scmint.h)          ;;               \
 	    encoding.h)        ;;               \
@@ -195,7 +195,7 @@ EXTRA_DIST += dllentry.c
 BUILT_SOURCES = $(BUILT_DIST)
 
 nodist_pkginclude_HEADERS = my-stdint.h
-pkginclude_HEADERS = config.h scmint.h global.h sigscheme.h
+pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c \

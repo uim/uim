@@ -53,7 +53,7 @@
  *   - collects unmarked objects on heaps into the freelist.
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stddef.h>
 #include <stdlib.h>

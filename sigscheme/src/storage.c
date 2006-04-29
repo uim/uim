@@ -32,7 +32,7 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-#include "config.h"
+#include <config.h>
 
 #if !SCM_USE_MULTIBYTE_CHAR
 #include <string.h>

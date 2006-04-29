@@ -34,7 +34,7 @@
 
 /* Only write/ss is provided currently. */
 
-#include "config.h"
+#include <config.h>
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"

@@ -39,7 +39,7 @@
  * safe and simple coding elements.
  */
 
-#include "config.h"
+#include <config.h>
 
 /*=======================================
   File Local Macro Definitions

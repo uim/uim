@@ -41,7 +41,7 @@
  * merge into another file.
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdlib.h>
 #include <stdio.h>  /* for EOF */

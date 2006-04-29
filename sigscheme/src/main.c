@@ -32,7 +32,7 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-#include "config.h"
+#include <config.h>
 
 #if BREW_MAJ_VER  /* FIXME: inappropriate detection method */
 #include "sigscheme-combined.c"

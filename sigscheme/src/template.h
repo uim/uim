@@ -34,7 +34,7 @@
 #ifndef __SCM_FIXME_H
 #define __SCM_FIXME_H
 
-#include "config.h"
+#include <config.h>
 
 /* FIXME: place system #include here */
 

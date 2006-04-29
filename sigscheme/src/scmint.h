@@ -50,7 +50,7 @@
 #ifndef __SCM_SCMINT_H
 #define __SCM_SCMINT_H
 
-#include "config.h"
+#include <config.h>
 
 #include <limits.h>
 #include <stdio.h>  /* for EOF */

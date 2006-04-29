@@ -34,7 +34,7 @@
 #ifndef __SIGSCHEME_H
 #define __SIGSCHEME_H
 
-#include "config.h"
+#include <config.h>
 
 #include <limits.h>
 #include <stddef.h>

@@ -32,7 +32,7 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-#include "config.h"
+#include <config.h>
 
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 #include <string.h>
