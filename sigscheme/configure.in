@@ -191,7 +191,7 @@ use_sscm_extensions="yes"
 use_legacy_macro="no"
 
 # (not supported yet) use storage dump
-use_dump="yes"
+use_dump="no"
 
 # use scm_eval_c_string()
 use_eval_c_string="yes"
@@ -697,7 +697,7 @@ use_eucjp_as_default="yes"
 use_euckr_as_default="yes"
 use_sjis_as_default="yes"
 
-# FIXME: Distinguish "enabled encodings" and "default encoding", and make
+# FIXME: Distinguish "default encoding" from "enabled encodings", and make
 # "enabled encodings" multi-specifiable.
 
 AC_ARG_ENABLE(multibyte,
