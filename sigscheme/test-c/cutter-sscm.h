@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* See doc/test-c.txt for further information about the testing framework. */
+
 #define UT_USE_MESSAGELESS_ASSERTIONS 1
 #include <cutter/cutter.h>
 
