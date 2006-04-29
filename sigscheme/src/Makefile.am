@@ -194,7 +194,7 @@ EXTRA_DIST += dllentry.c
 # See "Built sources" section of automake info.
 BUILT_SOURCES = $(BUILT_DIST)
 
-nodist_pkginclude_HEADERS = my-stdint.h
+nodist_pkginclude_HEADERS = config.h my-stdint.h
 pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \

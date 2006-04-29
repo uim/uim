@@ -34,7 +34,12 @@
 #ifndef __SIGSCHEME_H
 #define __SIGSCHEME_H
 
+/* FIXME: unify to <sigscheme/config.h> */
+#if SCM_COMPILING_LIBSSCM
 #include <config.h>
+#else
+#include <sigscheme/config.h>
+#endif
 
 #include <limits.h>
 #include <stddef.h>

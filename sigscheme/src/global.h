@@ -37,7 +37,12 @@
 #ifndef __SCM_GLOBAL_H
 #define __SCM_GLOBAL_H
 
+/* FIXME: unify to <sigscheme/config.h> */
+#if SCM_COMPILING_LIBSSCM
 #include <config.h>
+#else
+#include <sigscheme/config.h>
+#endif
 
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 #include <string.h>

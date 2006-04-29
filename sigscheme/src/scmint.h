@@ -50,7 +50,12 @@
 #ifndef __SCM_SCMINT_H
 #define __SCM_SCMINT_H
 
+/* FIXME: unify to <sigscheme/config.h> */
+#if SCM_COMPILING_LIBSSCM
 #include <config.h>
+#else
+#include <sigscheme/config.h>
+#endif
 
 #include <limits.h>
 #include <stdio.h>  /* for EOF */
