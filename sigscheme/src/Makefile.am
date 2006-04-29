@@ -157,21 +157,21 @@ sigscheme-combined-trim.h: $(DIST_SOURCES)
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@for src in $^ $>; do                   \
 	    case $$src in                       \
-	    config-old.h)      ;;               \
-	    my-stdint.h)       ;;               \
-	    scmint.h)          ;;               \
-	    encoding.h)        ;;               \
-	    encoding-config.h) ;;               \
-	    scmport.h)         ;;               \
-	    scmport-config.h)  ;;               \
-	    scmport-null.h)    ;;               \
-	    scmport-file.h)    ;;               \
-	    scmport-str.h)     ;;               \
-	    scmport-sbchar.h)  ;;               \
-	    scmport-mbchar.h)  ;;               \
-	    storage-*.h)       ;;               \
-	    sigscheme.h)       ;;               \
-	    main.c)            ;;               \
+	    config-old.h)       ;;              \
+	    sigscheme-stdint.h) ;;              \
+	    scmint.h)           ;;              \
+	    encoding.h)         ;;              \
+	    encoding-config.h)  ;;              \
+	    scmport.h)          ;;              \
+	    scmport-config.h)   ;;              \
+	    scmport-null.h)     ;;              \
+	    scmport-file.h)     ;;              \
+	    scmport-str.h)      ;;              \
+	    scmport-sbchar.h)   ;;              \
+	    scmport-mbchar.h)   ;;              \
+	    storage-*.h)        ;;              \
+	    sigscheme.h)        ;;              \
+	    main.c)             ;;              \
 	    *.h | *.c)                          \
 		echo >>$@;                      \
 		$(PERL) -ne 'BEGIN { print "/* $$ARGV[0] */\n"; } if (s/^\s*#define\s+(\w+).*$$/#undef \1/) { print if (!$$macros{$$1} && $$1 !~ /^__\w+_H$$/); $$macros{$$1} = true; }' $$src >>$@; \
@@ -194,7 +194,7 @@ EXTRA_DIST += dllentry.c
 # See "Built sources" section of automake info.
 BUILT_SOURCES = $(BUILT_DIST)
 
-nodist_pkginclude_HEADERS = config.h my-stdint.h
+nodist_pkginclude_HEADERS = config.h sigscheme-stdint.h
 pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \
@@ -306,7 +306,7 @@ sscm_CFLAGS   = -Wall
 # To enable ruby-and-perl-less build on tarball distribution, we should not
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
 CLEANFILES = sigscheme-combined.c
-DISTCLEANFILES = my-stdint.h
+DISTCLEANFILES = sigscheme-stdint.h
 
 ETAGS_ARGS = sigschemeinternal.h
 

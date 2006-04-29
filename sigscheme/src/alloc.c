@@ -40,7 +40,7 @@
 #include <unistd.h>
 #endif
 
-#include "my-stdint.h"
+#include "sigscheme-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

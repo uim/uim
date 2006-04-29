@@ -46,7 +46,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "my-stdint.h"
+#include "sigscheme-stdint.h"
 #include "scmint.h"
 #include "global.h"
 #include "encoding.h"

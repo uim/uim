@@ -60,7 +60,7 @@
 #include <limits.h>
 #include <stdio.h>  /* for EOF */
 
-#include "my-stdint.h"
+#include "sigscheme-stdint.h"
 
 #ifdef __cplusplus
 extern "C" {
