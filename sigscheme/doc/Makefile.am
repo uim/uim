@@ -4,10 +4,14 @@ ASCIIDOC_HTMLS = \
         design.html spec.html style.html test-c.html global-obj.html \
         gc-protection.html release.html
 
-BUILT_DIST = $(ASCIIDOC_HTMLS)
-EXTRA_DIST = $(BUILT_DIST) TODO $(TXTS)
+EXTRA_DIST = TODO
 
-all: html
+dist_doc_DATA  = $(TXTS)
+dist_html_DATA = $(ASCIIDOC_HTMLS)
+
+MAINTAINERCLEANFILES = $(ASCIIDOC_HTMLS)
+
+.PHONY: clean-html
 
 # xhtml11 backend is supported from AsciiDoc 7.0.0
 .txt.html:
@@ -16,6 +20,8 @@ all: html
 	fi
 
 html: $(ASCIIDOC_HTMLS)
+clean-html:
+	rm -f $(ASCIIDOC_HTMLS)
 
 dist-hook:
 	@test -n "$(ASCIIDOC)"                                          \
