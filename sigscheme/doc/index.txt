@@ -1,0 +1,22 @@
+SigScheme document index
+========================
+
+
+For users
+---------
+
+  - link:design.html[Design of SigScheme]
+  - link:spec.html[Specifications of SigScheme]
+
+For developers
+--------------
+
+  - link:gc-protection.html[GC protection for on-stack objects]
+  - link:global-obj.html[Global object handlings]
+
+For SigScheme developers
+------------------------
+
+  - link:style.html[Coding style]
+  - link:test-c.html[Unit tests for C]
+  - link:release.html[Release management]
