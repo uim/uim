@@ -8,8 +8,8 @@ Index: helper/cutter-update-suite
 ===================================================================
 --- helper/cutter-update-suite	(revision 0)
 +++ helper/cutter-update-suite	(revision 0)
-@@ -0,0 +1,72 @@
-+#! /usr/bin/env ruby -i
+@@ -0,0 +1,75 @@
++#! /usr/bin/env ruby
 +
 +# cutter-update-suite: An testsuite configurator for Cutter
 +# Copyright (C) 2006  YamaKen <yamaken AT bp.iij4u.or.jp>
@@ -64,6 +64,9 @@ Index: helper/cutter-update-suite
 +#   UT_REGISTER(test_2, "test bar")
 +#   UT_REGISTER_END
 +#
++
++# enable in-place edit
++$-i = ''
 +
 +src = ARGF.read
 +

@@ -16,10 +16,9 @@ Cutter.
 How to use
 ----------
 
-  1. Download Cutter from following page
+  1. Check out Cutter revision 20
 
-    - http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.en[English]
-    - http://www.cozmixng.org/~rwiki/?cmd=view;name=Cutter%3A%3AREADME.ja[Japanese]
+    svn co -r20 http://www.cozmixng.org/repos/c/cutter/trunk cutter
 
   2. Apply http://websvn.freedesktop.org/uim/branches/r5rs/sigscheme/test-c/cutter-r20-yamaken-extension.diff?view=markup[the private patch] for SigScheme
 
