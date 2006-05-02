@@ -462,7 +462,7 @@ string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
   str = uim_scm_refer_c_str(str_);
   len = strlen(prefix);
 
-  return cmp(prefix, str, len) ? uim_scm_f() : uim_scm_t();
+  return (*cmp)(prefix, str, len) ? uim_scm_f() : uim_scm_t();
 }
 
 static uim_lisp

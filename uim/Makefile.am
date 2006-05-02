@@ -137,3 +137,5 @@ noinst_PROGRAMS = uim-agent
 
 uim_agent_SOURCES = agent.c
 uim_agent_LDADD   = libuim.la
+
+DISTCLEANFILES = uim-stdint.h

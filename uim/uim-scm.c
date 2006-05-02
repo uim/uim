@@ -256,7 +256,7 @@ uim_scm_gc_protect_stack_internal(void)
   siod_gc_protect_stack(&stack_start);
 
   /* intentionally returns invalidated local address */
-  return (uim_lisp *)&stack_start;
+  return (void *)&stack_start;
 }
 #else /* UIM_SCM_GCC4_READY_GC */
 void

@@ -82,7 +82,7 @@ static void
 pushback_input_method(MInputMethod *im,
 		      char *lib_lang, char *name)
 {
-  char *lang = uim_get_language_code_from_language_name(lib_lang);
+  const char *lang = uim_get_language_code_from_language_name(lib_lang);
 
   im_array = realloc(im_array, 
 		     sizeof(struct im_) * (nr_input_methods + 1));

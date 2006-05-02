@@ -91,11 +91,12 @@ mana_ipc_send_command(int *pid,
 
       while (!feof(*read_fp)) {
         fgets(buf, sizeof(buf), *read_fp);
-        if (buf != NULL)
+        if (buf != NULL) {
           if (strcmp(buf, "err") == 0)
             fprintf(stderr, "mana not found\n");
           else
             fprintf(stderr, "%s", buf);
+	}
       }
 
       *pid = 0;
@@ -214,7 +215,7 @@ static uim_lisp
 eucjp_string_length(uim_lisp str_)
 {
   const unsigned char *str = (const unsigned char *)uim_scm_refer_c_str(str_);
-  int len = strlen(str);
+  int len = strlen((const char *)str);
 
   int ascii = 0;
   int mbyte = 0;

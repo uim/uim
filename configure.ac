@@ -11,6 +11,11 @@ AM_CONFIG_HEADER([uim/config.h])
 CFLAGS=""
 CXXFLAGS=""
 
+# Enable GNU extensions such as asprintf(3), BSD-originated functions,
+# POSIX features and more on glibc (and some other
+# implementations). See features.h. This macro should be placed here.
+AC_GNU_SOURCE
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -217,6 +222,7 @@ AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
+AX_CREATE_STDINT_H(uim/uim-stdint.h)
 
 # Check for type
 AC_CHECK_TYPES(sig_atomic_t, , ,
@@ -803,6 +809,8 @@ AH_BOTTOM([/* Include os specific header. */
 # Add include path
 INCLUDES='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
 AC_SUBST(INCLUDES)
+
+# FIXME: move these checks to front of option handlings
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL

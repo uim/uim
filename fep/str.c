@@ -45,9 +45,6 @@
 #include <locale.h>
 #endif
 #ifdef HAVE_WCHAR_H
-#ifdef __GLIBC__
-#define __USE_XOPEN
-#endif
 #include <wchar.h>
 #endif
 #ifdef HAVE_STRING_H
