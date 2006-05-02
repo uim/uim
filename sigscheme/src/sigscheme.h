@@ -584,9 +584,10 @@ struct ScmStorageConf_ {
 #define SCM_MAKE_VALUEPACKET(vals)        SCM_SAL_MAKE_VALUEPACKET(vals)
 
 #if SCM_USE_HYGIENIC_MACRO
-#define SCM_MAKE_HYGIENIC_MACRO           SCM_SAL_MAKE_HYGIENIC_MACRO
-#define SCM_MAKE_FARSYMBOL                SCM_SAL_MAKE_FARSYMBOL
-#define SCM_MAKE_SUBPAT                   SCM_SAL_MAKE_SUBPAT
+#define SCM_MAKE_HYGIENIC_MACRO(rules, defenv)                               \
+    SCM_SAL_MAKE_HYGIENIC_MACRO((rules), (defenv))
+#define SCM_MAKE_FARSYMBOL(sym, env)      SCM_SAL_MAKE_FARSYMBOL((sym), (env))
+#define SCM_MAKE_SUBPAT(x, meta)          SCM_SAL_MAKE_SUBPAT((x), (meta))
 #endif
 
 /*=======================================

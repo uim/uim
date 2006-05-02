@@ -50,7 +50,7 @@ should also be wrapped as follows.
 #define SCM_CONS(kar, kdr) (Scm_NewCons((kar), (kdr)))
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is intended to endure unconditional safety against rare-cases such as
+This is intended to ensure unconditional safety against rare-cases such as
 follows.
 
 [C]
