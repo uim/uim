@@ -1,11 +1,8 @@
 AC_PREREQ(2.57)
-
 AC_INIT([uim], [1.1.0], [uim@lists.freedesktop.org])
-AM_INIT_AUTOMAKE(1.8.3)
-
-AC_CONFIG_SRCDIR([COPYING])
-
-AM_CONFIG_HEADER([uim/config.h])
+AC_CONFIG_SRCDIR([uim/uim.c])
+AC_CONFIG_HEADERS([uim/config.h])
+AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
 
 # Set empty values to cancel default "-g -O2"
 CFLAGS=""
@@ -24,6 +21,10 @@ AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
+
+# Checks for libraries
+AC_CHECK_LIB(dl,dlopen)
+AC_CHECK_LIB(socket,socket)
 
 dnl ***********************
 dnl *** Tests for iconv ***
@@ -210,12 +211,9 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
 fi
 AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 
-# for uim-fep
-AM_LANGINFO_CODESET
-
-# Checks for header files.
-AC_FUNC_ALLOCA
+# Checks for header files
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h errno.h])
 AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h sys/termios.h wchar.h])
 AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
@@ -224,17 +222,29 @@ AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
 AX_CREATE_STDINT_H(uim/uim-stdint.h)
 
-# Check for type
+# Check for types
+AC_TYPE_SIZE_T
+AC_TYPE_PID_T
+AC_TYPE_SIGNAL
 AC_CHECK_TYPES(sig_atomic_t, , ,
   [ #include <signal.h> ])
 AC_CHECK_TYPES(sig_t, , ,
   [ #include <signal.h> ])
 
-# Checks for library
-AC_CHECK_LIB(dl,dlopen)
-AC_CHECK_LIB(socket,socket)
+# Checks for structures
 
-# Checks for function
+# Checks for compiler characteristics
+AC_C_CONST
+
+# Checks for library functions
+AC_FUNC_REALLOC
+AC_FUNC_ALLOCA
+AC_FUNC_MEMCMP
+AC_FUNC_MMAP
+AC_FUNC_FORK
+AC_FUNC_LSTAT
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
 AC_CHECK_FUNCS(strdup snprintf)
@@ -274,6 +284,9 @@ AC_SEARCH_LIBS(dlfunc,dl,
 
   ])
 
+# for uim-fep
+AM_LANGINFO_CODESET
+
 dnl Solaris 9 needs -lresolv for inet_aton
 NETLIBS=""
 AC_CHECK_FUNC(inet_aton, ,
@@ -286,7 +299,6 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[gettext package name])
 
 AM_GNU_GETTEXT([external], [need-ngettext])
 AM_GNU_GETTEXT_VERSION(0.12)
-
 
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
 if test x$prefix = xNONE; then
@@ -803,30 +815,15 @@ if test x$enable_compat_scm = xyes; then
             [Enable obsolete part of uim-scm API])
 fi
 
+# Checks for system services
+
+
 AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
 
 # Add include path
 INCLUDES='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
 AC_SUBST(INCLUDES)
-
-# FIXME: move these checks to front of option handlings
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_CONST
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-
-# Checks for library functions.
-AC_FUNC_FORK
-AC_FUNC_LSTAT
-AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
-AC_FUNC_MEMCMP
-AC_FUNC_MMAP
-AC_FUNC_REALLOC
-AC_FUNC_SELECT_ARGTYPES
-AC_TYPE_SIGNAL
 
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
