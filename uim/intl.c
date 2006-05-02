@@ -36,7 +36,7 @@
   gettext feature has been added to libuim.  -- YamaKen 2004-01-10
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdlib.h>
 #include <string.h>

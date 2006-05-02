@@ -25,7 +25,7 @@
 #ifndef __SIOD_H__
 #define __SIOD_H__
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 

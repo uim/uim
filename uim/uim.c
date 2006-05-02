@@ -31,7 +31,8 @@
 
 */
 
-#include "config.h"
+#include <config.h>
+
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>

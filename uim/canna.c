@@ -33,7 +33,8 @@
   SUCH DAMAGE.
 */
 
-#include "config.h"
+#include <config.h>
+
 #ifdef HAVE_CANNA_RK_H
 #include <canna/RK.h>
 #include <stdlib.h>

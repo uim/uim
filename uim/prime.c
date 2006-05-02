@@ -30,6 +30,8 @@
   SUCH DAMAGE.
 */
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -43,7 +45,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "config.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "plugin.h"

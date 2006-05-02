@@ -31,7 +31,7 @@
 
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <unistd.h>
 #include <sys/socket.h>

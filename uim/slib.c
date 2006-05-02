@@ -86,7 +86,7 @@
   added inteql for "=" predicate (Jun-19-2005) YamaKen
  */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <stdarg.h>

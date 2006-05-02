@@ -33,6 +33,8 @@
   SUCH DAMAGE.
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <dlfcn.h>
@@ -45,7 +47,6 @@
 #include <errno.h>
 #include <pwd.h>
 
-#include "config.h"
 #include "uim-stdint.h"
 #include "uim.h"
 #include "uim-scm.h"

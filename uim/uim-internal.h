@@ -37,8 +37,9 @@
 extern "C" {
 #endif
 
+#include <config.h>
+
 #include <stdio.h>
-#include "config.h"
 #include "gettext.h"
 #include "uim.h"
 #include "uim-scm.h"
