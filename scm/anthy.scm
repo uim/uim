@@ -485,36 +485,68 @@
 
 (define anthy-proc-transposing-state
   (lambda (ac key key-state)
-    (cond
-     ((anthy-transpose-as-hiragana-key? key key-state)
-      (anthy-context-set-transposing-type! ac anthy-type-hiragana))
+    (let ((rotate-list '())
+	  (state #f))
+      (if (anthy-transpose-as-wide-latin-key? key key-state)
+	  (set! rotate-list (cons anthy-type-wide-latin rotate-list)))
+      (if (anthy-transpose-as-latin-key? key key-state)
+	  (set! rotate-list (cons anthy-type-latin rotate-list)))
+      (if (anthy-transpose-as-hankana-key? key key-state)
+	  (set! rotate-list (cons anthy-type-hankana rotate-list)))
+      (if (anthy-transpose-as-katakana-key? key key-state)
+	  (set! rotate-list (cons anthy-type-katakana rotate-list)))
+      (if (anthy-transpose-as-hiragana-key? key key-state)
+	  (set! rotate-list (cons anthy-type-hiragana rotate-list)))
 
-     ((anthy-transpose-as-katakana-key? key key-state)
-      (anthy-context-set-transposing-type! ac anthy-type-katakana))
+      (if (anthy-context-transposing ac)
+	  (let ((lst (member (anthy-context-transposing-type ac) rotate-list)))
+	    (if (and (not (null? lst))
+		     (not (null? (cdr lst))))
+		(set! state (car (cdr lst)))
+		(set! state (car rotate-list))))
+	  (begin
+	    (anthy-context-set-transposing! ac #t)
+	    (set! state (car rotate-list))))
 
-     ((anthy-transpose-as-hankana-key? key key-state)
-      (anthy-context-set-transposing-type! ac anthy-type-hankana))
-
-     ((anthy-transpose-as-latin-key? key key-state)
-      (if (not (= (anthy-context-input-rule ac)
-                  anthy-input-rule-kana))
-          (anthy-context-set-transposing-type! ac anthy-type-latin)))
-
-     ((anthy-transpose-as-wide-latin-key? key key-state)
-      (if (not (= (anthy-context-input-rule ac)
-                  anthy-input-rule-kana))
-          (anthy-context-set-transposing-type! ac anthy-type-wide-latin)))
-
-     (else
-      (begin
-	; commit
-	(im-commit ac (anthy-transposing-text ac))
-	(anthy-flush ac)
-	(if (not (anthy-commit-key? key key-state))
-	    (begin 
-	      (anthy-context-set-transposing! ac #f)
-	      (anthy-proc-input-state ac key key-state)
-              (anthy-context-set-commit-raw! ac #f))))))))
+      (cond
+       ((= state anthy-type-hiragana)
+	(anthy-context-set-transposing-type! ac anthy-type-hiragana))
+       ((= state anthy-type-katakana)
+	(anthy-context-set-transposing-type! ac anthy-type-katakana))
+       ((= state anthy-type-hankana)
+	(anthy-context-set-transposing-type! ac anthy-type-hankana))
+       ((= state anthy-type-latin)
+	(if (not (= (anthy-context-input-rule ac)
+		    anthy-input-rule-kana))
+	    (anthy-context-set-transposing-type! ac anthy-type-latin)))
+       ((= state anthy-type-wide-latin)
+	(if (not (= (anthy-context-input-rule ac)
+		    anthy-input-rule-kana))
+	    (anthy-context-set-transposing-type! ac anthy-type-wide-latin)))
+       (else
+	(and
+	  ; begin-conv
+	  (if (anthy-begin-conv-key? key key-state)
+	      (begin
+		(anthy-context-set-transposing! ac #f)
+		(anthy-begin-conv ac)
+		#f)
+	      #t)
+	  ; cancel
+	  (if (anthy-cancel-key? key key-state)
+	      (begin
+		(anthy-context-set-transposing! ac #f)
+		#f)
+	      #t)
+	  ; commit
+	  (begin
+	    (im-commit ac (anthy-transposing-text ac))
+	    (anthy-flush ac)
+	    (if (not (anthy-commit-key? key key-state))
+		(begin 
+		  (anthy-context-set-transposing! ac #f)
+		  (anthy-proc-input-state ac key key-state)
+		  (anthy-context-set-commit-raw! ac #f))))))))))
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
@@ -567,9 +599,7 @@
 	    (anthy-transpose-as-hankana-key?    key key-state)
 	    (anthy-transpose-as-latin-key?      key key-state)
 	    (anthy-transpose-as-wide-latin-key? key key-state))
-	(begin
-	  (anthy-context-set-transposing! ac #t)
-	  (anthy-proc-transposing-state ac key key-state)))
+	(anthy-proc-transposing-state ac key key-state))
 
        ;; Commit current preedit string, then toggle hiragana/katakana mode.
        ((anthy-kana-toggle-key? key key-state)
@@ -693,7 +723,7 @@
 (define anthy-context-transposing-state-preedit
   (lambda (ac)
     (let* ((transposing-text (anthy-transposing-text ac)))
-      (list (cons preedit-underline transposing-text)
+      (list (cons preedit-reverse transposing-text)
 	    (cons preedit-cursor "")))))
 
 (define anthy-transposing-text
@@ -916,6 +946,15 @@
 
      ((anthy-prev-candidate-key? key key-state)
       (anthy-move-candidate ac -1))
+
+     ((or (anthy-transpose-as-hiragana-key?   key key-state)
+	  (anthy-transpose-as-katakana-key?   key key-state)
+	  (anthy-transpose-as-hankana-key?    key key-state)
+	  (anthy-transpose-as-latin-key?      key key-state)
+	  (anthy-transpose-as-wide-latin-key? key key-state))
+      (begin
+	(anthy-cancel-conv ac)
+	(anthy-proc-transposing-state ac key key-state)))
 
      ((anthy-cancel-key? key key-state)
       (anthy-cancel-conv ac))
