@@ -37,7 +37,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "siod.h"
+#include "uim-stdint.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
@@ -255,8 +257,9 @@ uim_scm_gc_protect_stack_internal(void)
 
   siod_gc_protect_stack(&stack_start);
 
-  /* intentionally returns invalidated local address */
-  return (void *)&stack_start;
+  /* intentionally returns invalidated local address with a warning
+   * suppression workaround */
+  return (void *)(((uintptr_t)&stack_start | 1) ^ 1);
 }
 #else /* UIM_SCM_GCC4_READY_GC */
 void
