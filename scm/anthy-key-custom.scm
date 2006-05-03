@@ -81,19 +81,19 @@
 	       (_ "[Anthy] convert to fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-transpose-as-hiragana-key '("F6")
+(define-custom 'anthy-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(anthy-keys1)
 	       '(key)
 	       (_ "[Anthy] convert to hiragana")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-transpose-as-katakana-key '("F7")
+(define-custom 'anthy-transpose-as-katakana-key '("F7" "Muhenkan")
                '(anthy-keys1)
 	       '(key)
 	       (_ "[Anthy] convert to katakana")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-transpose-as-hankana-key '("F8")
+(define-custom 'anthy-transpose-as-hankana-key '("F8" "Muhenkan")
                '(anthy-keys1)
 	       '(key)
 	       (_ "[Anthy] convert to halfwidth katakana")
