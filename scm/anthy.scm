@@ -525,28 +525,28 @@
 	    (anthy-context-set-transposing-type! ac anthy-type-wide-latin)))
        (else
 	(and
-	  ; begin-conv
-	  (if (anthy-begin-conv-key? key key-state)
-	      (begin
-		(anthy-context-set-transposing! ac #f)
-		(anthy-begin-conv ac)
-		#f)
-	      #t)
-	  ; cancel
-	  (if (anthy-cancel-key? key key-state)
-	      (begin
-		(anthy-context-set-transposing! ac #f)
-		#f)
-	      #t)
-	  ; commit
-	  (begin
-	    (im-commit ac (anthy-transposing-text ac))
-	    (anthy-flush ac)
-	    (if (not (anthy-commit-key? key key-state))
-		(begin 
-		  (anthy-context-set-transposing! ac #f)
-		  (anthy-proc-input-state ac key key-state)
-		  (anthy-context-set-commit-raw! ac #f))))))))))
+	 ; begin-conv
+	 (if (anthy-begin-conv-key? key key-state)
+	     (begin
+	       (anthy-context-set-transposing! ac #f)
+	       (anthy-begin-conv ac)
+	       #f)
+	     #t)
+	 ; cancel
+	 (if (anthy-cancel-key? key key-state)
+	     (begin
+	       (anthy-context-set-transposing! ac #f)
+	       #f)
+	     #t)
+	 ; commit
+	 (begin
+	   (im-commit ac (anthy-transposing-text ac))
+	   (anthy-flush ac)
+	   (if (not (anthy-commit-key? key key-state))
+	       (begin 
+		 (anthy-context-set-transposing! ac #f)
+		 (anthy-proc-input-state ac key key-state)
+		 (anthy-context-set-commit-raw! ac #f))))))))))
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)

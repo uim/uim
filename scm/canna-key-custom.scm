@@ -69,19 +69,19 @@
 	       (_ "[Canna] shrink segment")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-transpose-as-hiragana-key '("F6")
+(define-custom 'canna-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] convert to hiragana")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-transpose-as-katakana-key '("F7")
+(define-custom 'canna-transpose-as-katakana-key '("F7" "Muhenkan")
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] convert to katakana")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-transpose-as-hankana-key '("F8")
+(define-custom 'canna-transpose-as-hankana-key '("F8" "Muhenkan")
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] convert to halfwidth katakana")

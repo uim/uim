@@ -641,36 +641,68 @@
 
 (define mana-proc-transposing-state
   (lambda (mc key key-state)
-    (cond
-      ((mana-transpose-as-hiragana-key? key key-state)
-       (mana-context-set-transposing-type! mc mana-type-hiragana))
+    (let ((rotate-list '())
+	  (state #f))
+      (if (mana-transpose-as-wide-latin-key? key key-state)
+	  (set! rotate-list (cons mana-type-wide-latin rotate-list)))
+      (if (mana-transpose-as-latin-key? key key-state)
+	  (set! rotate-list (cons mana-type-latin rotate-list)))
+      (if (mana-transpose-as-hankana-key? key key-state)
+	  (set! rotate-list (cons mana-type-hankana rotate-list)))
+      (if (mana-transpose-as-katakana-key? key key-state)
+	  (set! rotate-list (cons mana-type-katakana rotate-list)))
+      (if (mana-transpose-as-hiragana-key? key key-state)
+	  (set! rotate-list (cons mana-type-hiragana rotate-list)))
 
-      ((mana-transpose-as-katakana-key? key key-state)
-       (mana-context-set-transposing-type! mc mana-type-katakana))
+      (if (mana-context-transposing mc)
+	  (let ((lst (member (mana-context-transposing-type mc) rotate-list)))
+	    (if (and (not (null? lst))
+	    	     (not (null? (cdr lst))))
+		(set! state (car (cdr lst)))
+		(set! state (car rotate-list))))
+	  (begin
+	    (mana-context-set-transposing! mc #t)
+	    (set! state (car rotate-list))))
 
-      ((mana-transpose-as-hankana-key? key key-state)
-       (mana-context-set-transposing-type! mc mana-type-hankana))
-
-      ((mana-transpose-as-latin-key? key key-state)
-       (if (not (= (mana-context-input-rule mc)
-                   mana-input-rule-kana))
-           (mana-context-set-transposing-type! mc mana-type-latin)))
-
-      ((mana-transpose-as-wide-latin-key? key key-state)
-       (if (not (= (mana-context-input-rule mc)
-                   mana-input-rule-kana))
-           (mana-context-set-transposing-type! mc mana-type-wide-latin)))
-
-      (else
-        (begin
-          ; commit
-          (im-commit mc (mana-transposing-text mc))
-          (mana-flush mc)
-          (if (not (mana-commit-key? key key-state))
-              (begin 
-                (mana-context-set-transposing! mc #f)
-                (mana-proc-input-state mc key key-state)
-                (mana-context-set-commit-raw! mc #f))))))))
+      (cond
+       ((= state mana-type-hiragana)
+	(mana-context-set-transposing-type! mc mana-type-hiragana))
+       ((= state mana-type-katakana)
+	(mana-context-set-transposing-type! mc mana-type-katakana))
+       ((= state mana-type-hankana)
+	(mana-context-set-transposing-type! mc mana-type-hankana))
+       ((= state mana-type-latin)
+	(if (not (= (mana-context-input-rule mc)
+		    mana-input-rule-kana))
+	    (mana-context-set-transposing-type! mc mana-type-latin)))
+       ((= state mana-type-wide-latin)
+	(if (not (= (mana-context-input-rule mc)
+		    mana-input-rule-kana))
+	    (mana-context-set-transposing-type! mc mana-type-wide-latin)))
+       (else
+	(and
+	 ; begin-conv
+	 (if (mana-begin-conv-key? key key-state)
+	     (begin
+	       (mana-context-set-transposing! mc #f)
+	       (mana-begin-conv mc)
+	       #f)
+	     #t)
+	 ; cancel
+	 (if (mana-cancel-key? key key-state)
+	     (begin
+	       (mana-context-set-transposing! mc #f)
+	       #f
+	     #t)
+	 ; commit
+	(begin
+	  (im-commit mc (mana-transposing-text mc))
+	  (mana-flush mc)
+	  (if (not (mana-commit-key? key key-state))
+	      (begin
+		(mana-context-set-transposing! mc #f)
+		(mana-proc-input-state mc key key-state)
+		(mana-context-set-commit-raw! mc #f)))))))))))
 
 (define mana-proc-input-state-with-preedit
   (lambda (mc key key-state)
@@ -717,15 +749,13 @@
              (mana-make-whole-string mc #t (multi-segment-opposite-kana kana)))
            (mana-flush mc)))
 
-        ;; Transposing状態へ移行
-        ((or (mana-transpose-as-hiragana-key?   key key-state)
-             (mana-transpose-as-katakana-key?   key key-state)
-             (mana-transpose-as-hankana-key?    key key-state)
-             (mana-transpose-as-latin-key?      key key-state)
-             (mana-transpose-as-wide-latin-key? key key-state))
-         (begin
-           (mana-context-set-transposing! mc #t)
-           (mana-proc-transposing-state mc key key-state)))
+	;; Transposing状態へ移行
+	((or (mana-transpose-as-hiragana-key?   key key-state)
+	     (mana-transpose-as-katakana-key?   key key-state)
+	     (mana-transpose-as-hankana-key?    key key-state)
+	     (mana-transpose-as-latin-key?      key key-state)
+	     (mana-transpose-as-wide-latin-key? key key-state))
+	 (mana-proc-transposing-state mc key key-state))
 
         ;; Commit current preedit string, then toggle hiragana/katakana mode.
         ((mana-kana-toggle-key? key key-state)
@@ -849,7 +879,7 @@
 (define mana-context-transposing-state-preedit
   (lambda (mc)
     (let* ((transposing-text (mana-transposing-text mc)))
-      (list (cons preedit-underline transposing-text)
+      (list (cons preedit-reverse transposing-text)
             (cons preedit-cursor "")))))
 
 (define mana-transposing-text
@@ -1067,6 +1097,15 @@
 
       ((mana-prev-candidate-key? key key-state)
        (mana-move-candidate mc -1))
+
+      ((or (mana-transpose-as-hiragana-key?   key key-state)
+	   (mana-transpose-as-katakana-key?   key key-state)
+	   (mana-transpose-as-hankana-key?    key key-state)
+	   (mana-transpose-as-latin-key?      key key-state)
+	   (mana-transpose-as-wide-latin-key? key key-state))
+       (begin
+	 (mana-cancel-conv mc)
+	 (mana-proc-transposing-state mc key key-state)))
 
       ((mana-cancel-key? key key-state)
        (mana-cancel-conv mc))

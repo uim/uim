@@ -81,19 +81,19 @@
 	       (_ "[Mana] convert to fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-transpose-as-hiragana-key '("F6")
+(define-custom 'mana-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(mana-keys1)
 	       '(key)
 	       (_ "[Mana] convert to hiragana")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-transpose-as-katakana-key '("F7")
+(define-custom 'mana-transpose-as-katakana-key '("F7" "Muhenkan")
                '(mana-keys1)
 	       '(key)
 	       (_ "[Mana] convert to katakana")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-transpose-as-hankana-key '("F8")
+(define-custom 'mana-transpose-as-hankana-key '("F8" "Muhenkan")
                '(mana-keys1)
 	       '(key)
 	       (_ "[Mana] convert to halfwidth katakana")

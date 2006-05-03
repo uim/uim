@@ -391,23 +391,53 @@
 
 (define canna-proc-transposing-state
   (lambda (cc key key-state)
-    (cond
-     ((canna-transpose-as-hiragana-key? key key-state)
-      (canna-context-set-transposing-type! cc multi-segment-type-hiragana))
+    (let ((rotate-list '())
+	  (state #f))
+      (if (canna-transpose-as-hankana-key? key key-state)
+	  (set! rotate-list (cons multi-segment-type-hankana rotate-list)))
+      (if (canna-transpose-as-katakana-key? key key-state)
+	  (set! rotate-list (cons multi-segment-type-katakana rotate-list)))
+      (if (canna-transpose-as-hiragana-key? key key-state)
+	  (set! rotate-list (cons multi-segment-type-hiragana rotate-list)))
 
-     ((canna-transpose-as-katakana-key? key key-state)
-      (canna-context-set-transposing-type! cc multi-segment-type-katakana))
+      (if (canna-context-transposing cc)
+	  (let ((lst (member (canna-context-transposing-type cc) rotate-list)))
+	    (if (and (not (null? lst))
+	    	     (not (null? (cdr lst))))
+		(set! state (car (cdr lst)))
+		(set! state (car rotate-list))))
+	  (begin
+	    (canna-context-set-transposing! cc #t)
+	    (set! state (car rotate-list))))
 
-     ((canna-transpose-as-hankana-key? key key-state)
-      (canna-context-set-transposing-type! cc multi-segment-type-hankana))
-
-     (else
-      (begin
+      (cond
+       ((= state multi-segment-type-hiragana)
+	(canna-context-set-transposing-type! cc multi-segment-type-hiragana))
+       ((= state multi-segment-type-katakana)
+	(canna-context-set-transposing-type! cc multi-segment-type-katakana))
+       ((= state multi-segment-type-hankana)
+	(canna-context-set-transposing-type! cc multi-segment-type-hankana))
+       (else
+	(and
+	 ; begin-conv
+	 (if (canna-begin-conv-key? key key-state)
+	     (begin
+	       (canna-context-set-transposing! cc #f)
+	       (canna-begin-conv cc)
+	       #f)
+	     #t)
+	 ; cancel
+	 (if (canna-cancel-key? key key-state)
+	     (begin
+	       (canna-context-set-transposing! cc #f)
+	       #f)
+	     #t)
 	; commit
-	(im-commit cc (canna-transposing-text cc))
-	(canna-flush cc)
-	(if (not (canna-commit-key? key key-state))
-	      (canna-proc-input-state cc key key-state)))))))
+	(begin
+	  (im-commit cc (canna-transposing-text cc))
+	  (canna-flush cc)
+	  (if (not (canna-commit-key? key key-state))
+	      (canna-proc-input-state cc key key-state)))))))))
 
 (define (canna-proc-input-state-with-preedit cc key key-state)
   (let* ((rkc (canna-context-rkc cc))
@@ -469,7 +499,6 @@
           (canna-transpose-as-hankana-key?    key key-state))
       (begin
         (canna-context-confirm-kana! cc)
-        (canna-context-set-transposing! cc #t)
         (canna-proc-transposing-state cc key key-state)))
 
      ;; 現在のかなを確定後、ひらがな/カタカナモードを切り換える
@@ -607,7 +636,7 @@
       (im-clear-preedit cc)
       (im-pushback-preedit
         cc
-        preedit-underline
+	preedit-reverse
         transposing-text)
       (im-pushback-preedit
         cc
@@ -839,6 +868,15 @@
 
      ((canna-prev-candidate-key? key key-state)
       (canna-move-candidate cc -1))
+
+     ((or (canna-transpose-as-hiragana-key? key key-state)
+	  (canna-transpose-as-katakana-key? key key-state)
+	  (canna-transpose-as-hankana-key?  key key-state))
+      (begin
+	(canna-context-set-state! cc #f)
+	(canna-reset-candidate-window cc)
+	(canna-lib-reset-conversion cc-id)
+	(canna-proc-transposing-state cc key key-state)))
 
      ((canna-cancel-key? key key-state)
       (begin
