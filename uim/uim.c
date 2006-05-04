@@ -649,6 +649,9 @@ uim_init_scm(void)
   uim_init_intl_subrs();
   uim_init_util_subrs();
   uim_init_plugin();
+#ifdef ENABLE_ANTHY_STATIC
+  uim_anthy_plugin_instance_init();
+#endif
   uim_init_im_subrs();
   uim_init_key_subrs();
   
@@ -715,6 +718,9 @@ uim_quit(void)
   }
   /**/
   uim_quit_plugin();
+#ifdef ENABLE_ANTHY_STATIC
+  uim_anthy_plugin_instance_quit();
+#endif
   uim_scm_quit();
   free(uim_last_client_encoding);
   uim_last_client_encoding = NULL;

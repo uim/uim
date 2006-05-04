@@ -118,7 +118,7 @@ show_prop(property *prop)
 
   a_printf(" ( l ");
 
-
+  memset(p, 0, sizeof(p));
   buf = (char *)malloc(strlen(prop->list) + 1);
   strcpy(buf, prop->list);
 

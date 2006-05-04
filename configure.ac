@@ -794,20 +794,36 @@ fi
 AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
 
+AC_ARG_ENABLE(anthy-static,
+    AC_HELP_STRING([--enable-anthy-static, TBD ]),
+    [
+        case $enable_anthy_static in
+	yes)
+	    build_anthy_static="yes"
+	    ;;
+	no|*)
+	    build_anthy_static="no"
+	    ;;
+	esac
+    ], [
+	    build_anthy_static="no"
+    ])
+
+AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test x$build_anthy_static = xyes)
 
 # add debugging flags to CFLAGS regardless of GCC=yes or not
 if test x$enable_debug = xyes; then
-	CFLAGS="$CFLAGS -g"
-	CXXFLAGS="$CXXFLAGS -g"
+	CFLAGS="$CFLAGS -g -pipe"
+	CXXFLAGS="$CXXFLAGS -g -pipe"
 else
-	CFLAGS="$CFLAGS -O2"
-	CXXFLAGS="$CXXFLAGS -O2"
+	CFLAGS="$CFLAGS -O2 -pipe"
+	CXXFLAGS="$CXXFLAGS -O2 -pipe"
 fi
 
 # add warning flags to CFLAGS if GCC=yes
 if test x$CC = xgcc; then
-	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security"
+	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare -Werror"
+	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Werror"
 fi
 
 if test x$enable_compat_scm = xyes; then

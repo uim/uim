@@ -673,7 +673,7 @@ candidates_changedp(uim_lisp id_)
   char **old_cands = ic_array[id].old_candidates;
   char **new_cands = ic_array[id].new_candidates;
 
-  if (!same_candidatesp(old_cands, new_cands)) {
+  if (!same_candidatesp((const char **)old_cands, (const char **)new_cands)) {
     return uim_scm_t();
   }
   return uim_scm_f();

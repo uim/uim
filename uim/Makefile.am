@@ -53,11 +53,15 @@ if CANNA
 endif
 
 if ANTHY
+if ENABLE_ANTHY_STATIC
+  libuim_la_SOURCES += anthy.c
+else
   uim_plugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
   libuim_anthy_la_LIBADD = @ANTHY_LIBS@ libuim.la
   libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
+endif
 endif
 
 if MANA
@@ -91,6 +95,11 @@ libuim_la_LDFLAGS = -version-info $(libuim_version) -export-dynamic
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/replace/libreplace.la
 libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
+
+if ENABLE_ANTHY_STATIC
+  libuim_la_LIBADD += @ANTHY_LIBS@
+  libuim_la_CPPFLAGS += -DENABLE_ANTHY_STATIC
+endif
 
 if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1

@@ -38,7 +38,8 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include "uim/config.h"
+#include <uim/config.h>
+#include "uim/uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
@@ -159,7 +160,7 @@ sync_value_bool(GtkCheckButton *button)
   struct uim_custom *custom;
 
   g_signal_handlers_block_by_func(G_OBJECT(button),
-				  (gpointer) custom_check_button_toggled_cb,
+				  (gpointer)(uintptr_t) custom_check_button_toggled_cb,
 				  NULL);
 
   custom_sym = g_object_get_data(G_OBJECT(button), OBJECT_DATA_UIM_CUSTOM_SYM);
@@ -174,7 +175,7 @@ sync_value_bool(GtkCheckButton *button)
   uim_custom_free(custom);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(button),
-				    (gpointer) custom_check_button_toggled_cb,
+				    (gpointer)(uintptr_t) custom_check_button_toggled_cb,
 				    NULL);
 }
 
@@ -242,7 +243,7 @@ sync_value_int(GtkSpinButton *spin)
   GtkAdjustment *adj;
 
   g_signal_handlers_block_by_func(G_OBJECT(spin),
-				  (gpointer) custom_spin_button_value_changed,
+				  (gpointer)(uintptr_t) custom_spin_button_value_changed,
 				  NULL);
 
   adj = gtk_spin_button_get_adjustment(spin);
@@ -264,7 +265,7 @@ sync_value_int(GtkSpinButton *spin)
   uim_custom_free(custom);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(spin),
-				    (gpointer) custom_spin_button_value_changed,
+				    (gpointer)(uintptr_t) custom_spin_button_value_changed,
 				    NULL);
 }
 
@@ -365,7 +366,7 @@ sync_value_string(GtkEntry *entry)
   struct uim_custom *custom;
 
   g_signal_handlers_block_by_func(G_OBJECT(entry),
-				  (gpointer) custom_entry_changed_cb,
+				  (gpointer)(uintptr_t) custom_entry_changed_cb,
 				  NULL);
 
   custom_sym = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM_SYM);
@@ -386,7 +387,7 @@ sync_value_string(GtkEntry *entry)
   uim_custom_free(custom);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(entry),
-				    (gpointer) custom_entry_changed_cb,
+				    (gpointer)(uintptr_t) custom_entry_changed_cb,
 				    NULL);
 }
 
@@ -587,7 +588,7 @@ sync_value_choice(GtkComboBox *combobox)
   }
   
   g_signal_handlers_block_by_func(G_OBJECT(combobox),
-				  (gpointer)custom_combo_box_changed, NULL);
+				  (gpointer)(uintptr_t) custom_combo_box_changed, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combobox))));
   
@@ -605,7 +606,7 @@ sync_value_choice(GtkComboBox *combobox)
   gtk_widget_set_sensitive(GTK_WIDGET(combobox)->parent, custom->is_active);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(combobox),
-				    (gpointer)custom_combo_box_changed, NULL);
+				    (gpointer)(uintptr_t) custom_combo_box_changed, NULL);
 
   uim_custom_free(custom);
 }
@@ -1542,10 +1543,10 @@ grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
 				 &key_pref_win.grabbed_key_state);
 
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
-				       (gpointer) grab_win_key_press_cb,
+				       (gpointer)(uintptr_t) grab_win_key_press_cb,
 				       key_entry);
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
-				       (gpointer) grab_win_key_release_cb,
+				       (gpointer)(uintptr_t) grab_win_key_release_cb,
 				       key_entry);
 
   gtk_dialog_response(GTK_DIALOG(widget), 0);

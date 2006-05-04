@@ -170,12 +170,14 @@ load_configration(const char *filename)
   /* open file and load config */
 }
 
+#if 0
 static void
 save_configration(const char *filename)
 {
   /* open file and save config */
   /* make sure file permission, file owner, etc. */
 }
+#endif
 
 /* Return value must be freed! */
 static char *

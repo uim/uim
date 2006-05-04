@@ -48,7 +48,8 @@
 #include <unistd.h>
 #include <locale.h>
 
-#include "config.h"
+#include <config.h>
+#include "uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-util.h"
 #include "uim/uim-helper.h"
@@ -441,9 +442,9 @@ update_client_widget(IMUIMContext *uic)
   if (new_widget != uic->widget) {
     if (uic->widget) {
       g_signal_handlers_disconnect_by_func(uic->widget,
-		      (gpointer)on_client_widget_hierarchy_changed, uic);
+		      (gpointer)(uintptr_t)on_client_widget_hierarchy_changed, uic);
       g_signal_handlers_disconnect_by_func(uic->widget,
-		      (gpointer)on_client_widget_grab_notify, uic);
+		      (gpointer)(uintptr_t)on_client_widget_grab_notify, uic);
     }
     uic->widget = new_widget;
     if (uic->widget) {
@@ -737,9 +738,9 @@ cand_select_cb(void *ptr, int index)
 
   uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
 
-  g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
-  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
 }
 
 static void
@@ -753,10 +754,10 @@ cand_shift_page_cb(void *ptr, int direction)
 
   uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
 
-  g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
   uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
-  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
 }
 
 static void
@@ -1304,7 +1305,7 @@ im_uim_finalize(GObject *obj)
 
   uim_release_context(uic->uc);
 
-  g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)commit_cb, uic);
+  g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)(uintptr_t)commit_cb, uic);
   g_object_unref(uic->slave);
   parent_class->finalize(obj);
 

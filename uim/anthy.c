@@ -274,8 +274,13 @@ get_nth_prediction(uim_lisp id_, uim_lisp nth_)
 }
 #endif /* HAS_ANTHY_PREDICTION */
 
+#ifndef ENABLE_ANTHY_STATIC
 void
 uim_plugin_instance_init(void)
+#else
+void
+uim_anthy_plugin_instance_init(void)
+#endif
 {
   uim_scm_init_subr_0("anthy-lib-init", init_anthy_lib);
   uim_scm_init_subr_0("anthy-lib-alloc-context", create_context);
@@ -294,8 +299,13 @@ uim_plugin_instance_init(void)
 #endif /* HAS_ANTHY_PREDICTION */
 }
 
+#ifndef ENABLE_ANTHY_STATIC
 void
 uim_plugin_instance_quit(void)
+#else
+void
+uim_anthy_plugin_instance_quit(void)
+#endif
 {
   int i;
 

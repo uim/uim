@@ -160,10 +160,12 @@ static void gc_for_newcell (void);
 static void siod_init (int argc, char **argv, int warnflag, FILE *);
 static void siod_quit (void);
 
+#if 0
 static void set_repl_hooks (void (*puts_f) (char *),
 			    LISP (*read_f) (void),
 			    LISP (*eval_f) (LISP),
 			    void (*print_f) (LISP));
+#endif
 static char *get_c_string (LISP x);
 static char *get_c_string_dim (LISP x, long *);
 static int get_c_int (LISP x);
@@ -177,7 +179,9 @@ static LISP cdr (LISP x);
 static LISP setcar (LISP cell, LISP value);
 static LISP intcons (int x);
 static LISP eql (LISP x, LISP y);
+#if 0
 static LISP inteql (LISP x, LISP y);
+#endif
 static LISP symcons (char *pname, LISP vcell);
 static LISP symbol_boundp (LISP x, LISP env);
 static LISP symbol_value (LISP x, LISP env);
@@ -194,14 +198,18 @@ static void init_subr_1 (const char *name, LISP (*fcn) (LISP));
 static void init_subr_2 (const char *name, LISP (*fcn) (LISP, LISP));
 static void init_subr_2n (const char *name, LISP (*fcn) (LISP, LISP));
 static void init_subr_3 (const char *name, LISP (*fcn) (LISP, LISP, LISP));
+#if 0
 static void init_subr_4 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP));
 static void init_subr_5 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP));
+#endif
 static void init_lsubr (const char *name, LISP (*fcn) (LISP));
 static void init_fsubr (const char *name, LISP (*fcn) (LISP, LISP));
 static void init_msubr (const char *name, LISP (*fcn) (LISP *, LISP *));
 
 static LISP delq (LISP elem, LISP l);
+#if 0
 static void set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *));
+#endif
 static LISP leval (LISP x, LISP env);
 static LISP symbolconc (LISP args);
 static LISP lprin1f (LISP exp, FILE * f);
@@ -225,12 +233,16 @@ static LISP caar (LISP);
 static LISP cdar (LISP);
 static LISP cddr (LISP);
 static LISP siod_true_value (void);
+#if 0
 static LISP siod_false_value (void);
+#endif
 static LISP lapply (LISP fcn, LISP args);
 static LISP listn (long n,...);
 static char *must_malloc (unsigned long size);
 static FILE *get_c_file (LISP p, FILE * deflt);
+#if 0
 static char *last_c_errmsg (int);
+#endif
 static LISP llast_c_errmsg (int);
 static void siod_c_provide(const char *);
 
@@ -1542,6 +1554,7 @@ siod_repl_c_string_entered (void)
 }
 #endif
 
+#if 0
 static void
 set_repl_hooks (void (*puts_f) (char *),
 		LISP (*read_f) (void),
@@ -1553,6 +1566,7 @@ set_repl_hooks (void (*puts_f) (char *),
   repl_eval = eval_f;
   repl_print = print_f;
 }
+#endif
 
 static LISP
 siod_return_value (void)
@@ -2023,6 +2037,7 @@ eql (LISP x, LISP y)
   return (NIL);
 }
 
+#if 0
 static LISP
 inteql (LISP x, LISP y)
 {
@@ -2036,6 +2051,7 @@ inteql (LISP x, LISP y)
     return (sym_t);
   return (NIL);
 }
+#endif
 
 
 static LISP
@@ -2633,7 +2649,7 @@ init_storage (void)
 static void
 init_subr (const char *name, long type, SUBR_FUNC fcn)
 {
-  setvar (rintern (name), subrcons (type, name, fcn), NIL);
+  setvar (rintern (name), subrcons (type, (char *)name, fcn), NIL);
 }
 
 static void
@@ -2666,6 +2682,7 @@ init_subr_3 (const char *name, LISP (*fcn) (LISP, LISP, LISP))
   init_subr (name, tc_subr_3, (SUBR_FUNC) fcn);
 }
 
+#if 0
 static void
 init_subr_4 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP))
 {
@@ -2677,6 +2694,7 @@ init_subr_5 (const char *name, LISP (*fcn) (LISP, LISP, LISP, LISP, LISP))
 {
   init_subr (name, tc_subr_5, (SUBR_FUNC) fcn);
 }
+#endif
 
 static void
 init_lsubr (const char *name, LISP (*fcn) (LISP))
@@ -3106,6 +3124,7 @@ extend_env (LISP actuals, LISP formals, LISP env)
   return (cons (cons (formals, actuals), env));
 }
 
+#if 0
 static void
 set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *))
 {
@@ -3113,6 +3132,7 @@ set_eval_hooks (long type, LISP (*fcn) (LISP, LISP *, LISP *))
   p = get_user_type_hooks (type);
   p->leval = fcn;
 }
+#endif
 
 static LISP
 err_closure_code (LISP tmp)
@@ -4408,6 +4428,7 @@ siod_true_value (void)
   return (sym_t);
 }
 
+#if 0
 static LISP
 siod_false_value (void)
 {
@@ -4428,6 +4449,7 @@ last_c_errmsg (int num)
     }
   return ((char *) errmsg);
 }
+#endif
 
 static LISP
 llast_c_errmsg (int num)
@@ -4567,6 +4589,7 @@ list_ref (LISP list, LISP k)
     return (my_err ("bad arg to list-ref", k));
 }
 
+#if 0
 static uim_lisp
 list_tail(uim_lisp lst, uim_lisp nth_)
 {
@@ -4581,6 +4604,7 @@ list_tail(uim_lisp lst, uim_lisp nth_)
   }
   return lst;
 }
+#endif
 
 static LISP
 llist (LISP l)
