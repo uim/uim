@@ -31,8 +31,6 @@
 
 ;; FIXME:
 ;; - Support the input_mode assumption of mode API
-;; - Fix context-propagate-widget-configuration on dynamic toolbar
-;;   reconfiguration. current-context is needed.
 
 (require "util.scm")
 (require "im.scm")
@@ -151,4 +149,5 @@
 				      widgets))
 			    (alist-delete 'widget_im_switcher widgets eq?))))
       (context-set-widgets! ctx new-widgets)
-      (context-propagate-widget-configuration ctx))))
+      (if (context-focused? ctx)
+	  (context-propagate-widget-configuration ctx)))))

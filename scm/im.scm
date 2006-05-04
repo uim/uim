@@ -232,6 +232,11 @@
     (widgets ())))  ;; may be renamed
 (define-record 'context context-rec-spec)
 
+;; FIXME: implement
+(define context-focused?
+  (lambda (ctx)
+    #t))
+
 (define find-context
   (lambda (id)
     (assv id context-list)))
