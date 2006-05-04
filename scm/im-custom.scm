@@ -61,6 +61,11 @@
 		     (_ "long description will be here."))
 
 ;; subgroup
+(define-custom-group 'menu-imsw
+		     (_ "Menu-based IM switcher")
+		     (_ "long description will be here."))
+
+;; subgroup
 (define-custom-group 'candwin
 		     (_ "Candidate window")
 		     (_ "long description will be here."))
@@ -369,10 +374,32 @@
 		 imsw-reconfigure)
 
 (define-custom 'toolbar-show-action-based-switcher-button? #t
-  '(toolbar buttons)
+  '(toolbar menu-imsw)
   '(boolean)
-  (_ "menu-based input method switcher")
-  (_ "Show the menu-based IM switcher on toolbar."))
+  (_ "Enable menu-based input method switcher")
+  (_ "Show menu-based IM switcher on toolbar."))
+
+;; FIXME: make messages understanable (esp. "Changing way")
+(define-custom 'imsw-propagation 'system-global
+  '(toolbar menu-imsw)
+  (list 'choice
+	(list 'focused-context
+	      (_ "focused text area only")
+	      (_ "uim native"))
+	(list 'app-global
+	      (_ "focused application only")
+	      (_ "Similar to ATOK"))
+	(list 'system-global
+	      (_ "whole desktop")
+	      (_ "Similar to ATOK")))
+  (_ "Changing way")
+  (_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'imsw-propagation
+		 'custom-activity-hooks
+		 (lambda ()
+		   toolbar-show-action-based-switcher-button?))
 
 (define-custom 'toolbar-show-switcher-button? #f
   '(toolbar buttons)

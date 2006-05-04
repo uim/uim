@@ -29,18 +29,10 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;
 
-;; FIXME:
-;; - Support the input_mode assumption of mode API
-
 (require "util.scm")
 (require "im.scm")
 (require "i18n.scm")
 (require "load-action.scm")
-
-;; FIXME: make customizable
-(define imsw-propagation 'focused-context)
-;;(define imsw-propagation 'app-global)
-;;(define imsw-propagation 'system-global)
 
 (define imsw-indication-id-alist
   '())
