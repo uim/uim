@@ -227,7 +227,7 @@ bool XConnection::readToBuf(XClientMessageEvent *ev)
 			       offset, BUF_SIZE - mBuf.len, True,
 			       AnyPropertyType,
 			       &type, &format, &nrItems, &remain,
-			       (unsigned char **)&data);
+			       (unsigned char **)(uintptr_t)&data);
 	    if (!data)
 		return false;
 

@@ -821,8 +821,12 @@ else
 fi
 
 # add warning flags to CFLAGS if GCC=yes
-if test x$CC = xgcc; then
+if test x$ac_cv_c_compiler_gnu = xyes; then
+#if test x$CC = xgcc; then
 	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare -Werror"
+fi
+
+if test x$ac_cv_cxx_compiler_gnu = xyes; then
 	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Werror"
 fi
 

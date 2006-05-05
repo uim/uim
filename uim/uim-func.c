@@ -299,7 +299,7 @@ uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
       fmtchr = *escp++;
       switch (fmtchr) {
       case 'd':
-	va_arg(ap, int);
+	/* va_arg(ap, int); */
 	len += MAX_LENGTH_OF_INT_AS_STR;
 	break;
       case 's':

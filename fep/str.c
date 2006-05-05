@@ -248,11 +248,7 @@ int byte2width(const char *str, size_t n)
   save_char = str[n];
   save_str = str;
   ((char *)str)[n] = '\0';
-#ifdef __GLIBC__
-  nr_wchars = mbsrtowcs(wcstr, (__const char **)&str, str_byte, NULL);
-#else
   nr_wchars = mbsrtowcs(wcstr, (const char **)&str, str_byte, NULL);
-#endif
   ((char *)save_str)[n] = save_char;
   if (nr_wchars >= 0) {
     width = wcswidth(wcstr, nr_wchars);
@@ -353,20 +349,12 @@ int byte2width2(const char *str, size_t n)
   save_char = str[n];
   save_str = str;
   ((char *)str)[n] = '\0';
-#ifdef __GLIBC__
-  nr_wchars = mbsrtowcs(wcstr, (__const char **)&str, str_byte, NULL);
-#else
   nr_wchars = mbsrtowcs(wcstr, (const char **)&str, str_byte, NULL);
-#endif
   ((char *)save_str)[n] = save_char;
   if (nr_wchars >= 0) {
     width = wcswidth(wcstr, nr_wchars);
   } else {
-#ifdef __GLIBC__
-    mbsrtowcs(wcstr, (__const char **)&str, 1, NULL);
-#else
     mbsrtowcs(wcstr, (const char **)&str, 1, NULL);
-#endif
     /* strを最後まで変換するとNULLになる */
     assert(str != NULL);
     save_char = str[0];

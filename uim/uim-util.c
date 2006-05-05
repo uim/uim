@@ -446,11 +446,7 @@ eucjp_string_to_list(uim_lisp str_)
 
 static uim_lisp
 string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
-#ifdef __GLIBC__
-			int (*cmp)(__const char *, __const char *, size_t))
-#else
 			int (*cmp)(const char *, const char *, size_t))
-#endif
 {
   const char *prefix, *str;
   size_t len;

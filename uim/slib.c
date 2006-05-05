@@ -708,11 +708,7 @@ newcell (long type)
 }
 
 static LISP
-#ifdef __GLIBC__
-fopen_cg (FILE * (*fcn) (__const char *, __const char *), char *name, char *how)
-#else
 fopen_cg (FILE * (*fcn) (const char *, const char *), char *name, char *how)
-#endif
 {
   LISP sym;
   char errmsg[80];
@@ -2973,7 +2969,7 @@ gc_mark_and_sweep (void)
       ++heap;
     }
   setjmp (save_regs_gc_mark);
-  mark_locations ((LISP *) save_regs_gc_mark,
+  mark_locations ((LISP *) (uintptr_t)save_regs_gc_mark,
       (LISP *) (((char *) save_regs_gc_mark) + sizeof (save_regs_gc_mark)));
   mark_protected_registers ();
   mark_locations ((LISP *) stack_start_ptr,

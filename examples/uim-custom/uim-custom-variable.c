@@ -33,8 +33,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <uim/uim.h>
-#include <uim/uim-custom.h>
+#include "uim/uim.h"
+#include "uim/uim-custom.h"
 
 static char *
 choice_items_to_str(const struct uim_custom_choice **items, const char *sep)
@@ -96,8 +96,8 @@ inspect_custom(const struct uim_custom *custom)
     break;
   case UCustom_Pathname:
     s_type = "pathname";
-    s_value = custom->value->as_pathname;
-    s_default_value = custom->default_value->as_pathname;
+    s_value = (char *)custom->value->as_pathname;
+    s_default_value = (char *)custom->default_value->as_pathname;
     break;
   case UCustom_Choice:
     s_type = "choice";
@@ -109,7 +109,7 @@ inspect_custom(const struct uim_custom *custom)
 	    custom->default_value->as_choice->symbol,
 	    custom->default_value->as_choice->label);
     s_default_value = buf_default_val;
-    s_range = choice_items_to_str(custom->range->as_choice.valid_items, " ");
+    s_range = choice_items_to_str((const struct uim_custom_choice **)custom->range->as_choice.valid_items, " ");
     break;
   case UCustom_Key:
     s_type = "key";
