@@ -531,7 +531,7 @@
 ;; This returns context.
 (define prime-context-initialize!
   (lambda (context)
-    (print "prime-context-initialize!")
+    ;(print "prime-context-initialize!")
     (if (null? (prime-context-session context))
 	(begin
 	  ;; The prime server is initialized here.
@@ -550,7 +550,7 @@
 ;; uim-contexts and create a new context-data.
 (define prime-context-push
   (lambda (context)
-    (print "prime-context-push")
+    ;(print "prime-context-push")
     (let* ((im (prime-context-im context))
 	   (id (prime-context-id context))
 	   (new-context (prime-context-new2 (prime-context-id context) im)))
@@ -1042,7 +1042,7 @@
 
 (define prime-command-register-mode
   (lambda (context key key-state)
-    (print "prime-command-register-mode")
+    ;(print "prime-command-register-mode")
     (prime-register-mode-on context)))
 
 
@@ -1383,7 +1383,7 @@
 
 (define prime-command-app-mode-start
   (lambda (context key key-state)
-    (print "prime-command-app-mode-start")
+    ;(print "prime-command-app-mode-start")
     (prime-context-set-previous-mode! context (prime-context-mode context))
     (prime-context-set-app-mode-key-list! context
 					  prime-app-mode-end-stroke-list)
@@ -1397,7 +1397,7 @@
 
 (define prime-command-app-mode
   (lambda (context key key-state)
-    (print "prime-command-app-mode")
+    ;(print "prime-command-app-mode")
     (prime-command-app-mode-internal
      context key key-state
      (prime-context-app-mode-key-list context))))
@@ -1926,7 +1926,7 @@
 
 (define prime-register-mode-on
   (lambda (context)
-    (print "prime-register-mode-on")
+    ;(print "prime-register-mode-on")
     (let* ((reading (prime-preedit-get-string-label context))
 	   ;; Header and footer strings for a preedition line.
 	   (current-display-head (prime-context-display-head context))
@@ -1965,7 +1965,7 @@
 
 (define prime-release-handler
   (lambda (context)
-    (print "prime-release-handler")
+    ;(print "prime-release-handler")
     (let ((session (prime-context-session context)))
       (if session
 	  (prime-engine-session-end session)))
@@ -1982,7 +1982,7 @@
 
 (define prime-release-key-handler
   (lambda (context key key-state)
-    (print "prime-release-key-handler")
+    ;(print "prime-release-key-handler")
     (if (or (control-char? key)
 	    (= (prime-context-mode context)
 	       prime-mode-latin))
@@ -1994,7 +1994,7 @@
 
 (define prime-reset-handler
   (lambda (context)
-    (print "prime-reset-handler")
+    ;(print "prime-reset-handler")
     ))
 
 (define prime-mode-set
@@ -2067,7 +2067,7 @@
 
 (define prime-set-candidate-index-handler
   (lambda (context selection-index)
-    (print "prime-set-candidate-index-handler")
+    ;(print "prime-set-candidate-index-handler")
     (if (prime-context-session context)
 	(begin
 	  (if (eq? (prime-context-state context) 'prime-state-segment)
