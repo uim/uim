@@ -41,7 +41,6 @@
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
-#include <glib/gprintf.h>
 
 #include <string.h>
 #include <stdlib.h>
