@@ -287,6 +287,7 @@ uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
 {
   va_list ap;
   int len, size;
+  int tmp;
   const char *sexp_tmpl_end, *escp = sexp_tmpl, *strarg;
   char fmtchr;
 
@@ -299,7 +300,7 @@ uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
       fmtchr = *escp++;
       switch (fmtchr) {
       case 'd':
-	/* va_arg(ap, int); */
+	tmp = va_arg(ap, int);
 	len += MAX_LENGTH_OF_INT_AS_STR;
 	break;
       case 's':
