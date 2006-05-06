@@ -226,7 +226,7 @@ extern "C" {
 #define SCM_GC_PROTECTED_CALL_INTERNAL(exp_ret, ret_type, func, args)        \
     do {                                                                     \
         /* ensure that func is uninlined */                                  \
-        ret_type (*volatile fp)() = (ret_type (*)())&func;                   \
+        ret_type (*volatile fp)() = (ret_type (*)())func;                    \
         ScmObj *stack_start;                                                 \
                                                                              \
         if (0) exp_ret func args;  /* compile-time type check */             \
@@ -546,6 +546,9 @@ struct ScmStorageConf_ {
 /*=======================================
   Object Creators
 =======================================*/
+/* TODO: add this check to all accessor and creator macros. */
+#define SCM_TYPECHECK(x, t)               (0 ? (*(t*)NULL = (x)) : (x))
+
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
 #define SCM_MAKE_INT(val)                 SCM_SAL_MAKE_INT(val)
 #define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS((kar), (kdr))
