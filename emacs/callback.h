@@ -42,7 +42,6 @@
 #include <locale.h>
 
 #include <uim/uim.h>
-#include <uim/uim-helper.h>
 
 #include "debug.h"
 #include "output.h"
@@ -51,8 +50,6 @@
 #include "im.h"
 #include "context.h"
 #include "commit.h"
-#include "helper.h"
-#include "helper-server.h"
 #include "prop.h"
 
 void commit_cb(void *ptr, const char *str);

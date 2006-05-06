@@ -41,13 +41,12 @@
 #include <string.h>
 
 #include <uim/uim.h>
-#include <uim/uim-helper.h>
 
 #include "debug.h"
 #include "output.h"
 
 #include "im.h"
-#include "helper-server.h"
+#include "helper-message.h"
 
 typedef struct property {
   int valid;
@@ -57,7 +56,7 @@ typedef struct property {
 
 property *create_prop(void);
 
-void update_prop_list(property *prop, const char *str);
+void update_prop_list(property *prop, const char *encoding, const char *str);
 
 void announce_prop_list_update(property *prop, const char *encoding);
 

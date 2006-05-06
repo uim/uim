@@ -39,6 +39,9 @@
 /* current focused context */
 uim_agent_context *current;
 
+/* global foscu */
+int focused = 0;
+
 uim_agent_context_list *agent_context_list_head = NULL;
 uim_agent_context_list *agent_context_list_tail = NULL;
 
@@ -165,8 +168,6 @@ switch_context_im_all(const char *im)
   }
 
   free(quot_im_name);
-
-  if (current) uim_prop_list_update(current->context);
 }
 
 
@@ -201,6 +202,7 @@ create_context(const char *encoding, uim_agent_context *ptr)
   uim_set_configuration_changed_cb(context,
 								   configuration_changed_cb);
   
+  /* When are they used? */
   uim_set_im_switch_request_cb(context,
 							   switch_app_global_im_cb,
 							   switch_system_global_im_cb);
@@ -242,7 +244,7 @@ create_uim_agent_context(const char *encoding)
   ret->cand = create_candidate();
   ret->prop = create_prop();
 
-  uim_prop_list_update(ret->context);
+  ret->comstr = (char *)NULL;
 
   return ret;
 }
@@ -310,6 +312,7 @@ release_uim_agent_context(int context_id)
 	  free(ua->encoding);
 	  free(ua->im);
 	  free(ua->prop);
+	  free(ua->comstr);
 
 	  /* rebuild list */
 	  if (ptr->next != NULL)
@@ -345,9 +348,10 @@ set_current_uim_agent_context(uim_agent_context *ua)
 	return -1;
   }
 
-  uim_helper_client_focus_in(ua->context);
+  helper_send_message("focus_in\n");
 
   current = ua;
+  focused = 1;
 
   uim_prop_list_update(ua->context);
 
@@ -358,18 +362,18 @@ set_current_uim_agent_context(uim_agent_context *ua)
 int
 clear_current_uim_agent_context(void)
 {
-  int ret;
 
   debug_printf(DEBUG_NOTE, "unfocused\n");
 
   if (current == NULL || current->context == NULL) return -1;
 
-  ret = current->context_id;
-  uim_helper_client_focus_out(current->context);
+  /*focused = 0;*/
 
-  current = NULL;
+  helper_send_message("focus_out\n");
 
-  return ret;
+  debug_printf(DEBUG_NOTE, " focused %d\n", focused);
+  
+  return current->context_id;
 }
 
 
@@ -393,11 +397,26 @@ update_context_configuration(uim_agent_context *ua)
 
   debug_printf(DEBUG_NOTE, "ua->encoding %s\n", ua->encoding);
 
-  /* switch IM again to update encoding for Emacs...orz */
+  /* switch IM again */
   update_context_encoding(ua);
-
 }
 
+
+int
+show_commit_string_uim_agent_context(uim_agent_context *ua)
+{
+  int ret;
+  if (ua == NULL) {
+	return -1;
+  } else {
+	ret = show_commit_string(ua->comstr);
+	if (ret > 0) {
+	  reset_commit_string(ua->comstr);
+	  ua->comstr = NULL;
+	}
+	return ret;
+  }
+}
 
 int
 show_preedit_uim_agent_context(uim_agent_context *ua)
@@ -414,8 +433,10 @@ show_candidate_uim_agent_context(uim_agent_context *ua)
 {
   if (ua == NULL || !ua->cand->valid)
 	return -1;
-  else
+  else if (focused)
 	return show_candidate(ua->cand);
+  else
+	return 0;
 }
 
 

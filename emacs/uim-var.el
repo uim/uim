@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.7.1")
+(defconst uim-el-version "0.0.8.0")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -81,7 +81,15 @@ Example:
   "Overwrite this variable if uim-el-agent is not in command path.
 
 Example:
-(setq uim-el-agent \"~/uim-el/uim-el-agent/uim-el-agent\")
+(setq uim-el-agent \"~/uim/emacs/uim-el-agent\")
+" )
+
+
+(defvar uim-el-helper-agent "uim-el-helper-agent"
+  "Overwrite this variable if uim-el-helper-agent is not in command path.
+
+Example:
+(setq uim-el-agent \"~/uim/emacs/uim-el-helper-agent\")
 " )
 
 ;; display fences on both edges of preedit
@@ -154,6 +162,15 @@ displayed at the echo area.")
 (defconst uim-el-agent-buffer-name " *uim*"
   "Name of the buffer for communication with uim-el-agent.")
 
+(defvar uim-el-helper-agent-process nil
+  "uim-el-helper-agent process.")
+(defvar uim-el-helper-agent-buffer nil
+  "The buffer for communication with uim-el-helper-agent.")
+(defconst uim-el-helper-agent-buffer-name " *uim-helper*"
+  "Name of the buffer for communication with uim-el-helper-agent.")
+(defvar uim-helper-message ""
+  "Buffer to store message from uim-el-helper-agent.")
+
 
 ;; Timeout related variables (wait output from uim-el-agent)
 (defvar uim-el-agent-timeout 3)
@@ -209,6 +226,9 @@ displayed at the echo area.")
 
 ;; current serial number which is added to message to uim-el-agent
 (defvar uim-communication-serial-number 0)
+
+(defvar uim-last-cmd ""
+  "Command string passed to uim-el-agent at last time.")
 
 
 ;; hook called when the default IM engine has been changed by agent

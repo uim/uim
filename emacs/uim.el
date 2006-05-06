@@ -46,6 +46,7 @@
 
 (require 'uim-preedit)
 (require 'uim-candidate)
+(require 'uim-helper)
 
 
 ;;
@@ -469,6 +470,9 @@
   (let (proc
 	(buffer (get-buffer-create uim-el-agent-buffer-name)) )
 
+    (if (not uim-el-helper-agent-process)
+	(setq uim-el-helper-agent-process (uim-el-helper-agent-start)))
+
     ;; erase buffer
     (save-current-buffer
       (set-buffer buffer) (erase-buffer))
@@ -503,6 +507,9 @@
     (setq uim-el-agent-buffer buffer)
 
     (set-process-sentinel proc 'uim-process-sentinel)
+
+    (message "uim.el: starting uim-el-agent... done")
+
     proc 
     ))
 
@@ -544,8 +551,6 @@
 ;; Update IM list
 ;;
 (defun uim-update-imlist (imlist)
-  ;; imlist: (engine lang_code Language explanation encoding) ...
-
   (setq uim-im-alist 
 	(mapcar '(lambda (x) 
 		   (let ((im (nth 0 x))
@@ -561,7 +566,6 @@
 ;; Update property label
 ;;
 (defun uim-update-label (label)
-  ;; label: ( ("type" "indication_id" "iconic_label" "buttontooltip_string") ... )
   (let ((mode-str ""))
     (mapcar
      '(lambda (x)
@@ -722,7 +726,7 @@
 ;; Wait reply from uim-el-agent
 ;;   Check serial number 
 ;;
-(defun uim-wait-recv(serial)
+(defun uim-wait-recv (serial)
 
   (let (rstr)
 
@@ -763,6 +767,7 @@
 ;; Send message to uim-el-agent and wait return
 ;;
 (defun uim-do-send-recv-cmd (cmd)
+  (setq uim-last-cmd cmd) ;; keep last command
   (let ((serial (uim-get-communication-serial-number)))
     (if (uim-send-cmd cmd serial)
 	(uim-wait-recv serial))))
@@ -1044,7 +1049,7 @@
     (let (;;(inhibit-quit t)
 	  preedit-existed
 	candidate-existed
-	  key commit preedit candidate default im label imlist
+	  key commit preedit candidate default im label imlist helpermsg
 	  )
       
       (uim-debug (format "%s" str))
@@ -1105,6 +1110,9 @@
 		((string= rcode "l") ;; label
 		 (setq label rval)
 		 )
+		  ((string= rcode "h") ;; helper message
+		   (setq helpermsg (append helpermsg rval))
+		   )
 		((string= rcode "L") ;; IM list
 		 (setq imlist rval)
 		 )
@@ -1112,6 +1120,8 @@
 	  )) 
      str)
 
+      (when helpermsg
+	(uim-helper-send-message helpermsg))
 
     (when default
       (uim-update-default-engine default))

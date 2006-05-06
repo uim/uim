@@ -47,6 +47,7 @@
 #include "debug.h"
 #include "prop.h"
 #include "preedit.h"
+#include "commit.h"
 #include "im.h"
 #include "callback.h"
 #include "encoding.h"
@@ -59,6 +60,7 @@ typedef struct uim_agent_context {
   preedit *pe;
   candidate_info *cand;
   property *prop;
+  char *comstr;
 } uim_agent_context;
 
 
@@ -85,6 +87,7 @@ int clear_current_uim_agent_context(void);
 
 void update_context_configuration(uim_agent_context *ua);
 
+int show_commit_string_uim_agent_context(uim_agent_context *ua);
 int show_preedit_uim_agent_context(uim_agent_context *ua);
 int show_candidate_uim_agent_context(uim_agent_context *ua);
 int show_prop_uim_agent_context(uim_agent_context *ua);
@@ -92,6 +95,7 @@ int show_im_uim_agent_context(uim_agent_context *ua);
 
 /* current focused context */
 extern uim_agent_context *current;
+extern int focused;
 
 extern uim_agent_context_list *agent_context_list_head;
 extern uim_agent_context_list *agent_context_list_tail;

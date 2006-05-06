@@ -50,6 +50,7 @@
 #include "prop.h"
 
 static int cmd_release(int context_id);
+static int cmd_helper(int context_id, char *message);
 static int cmd_unfocused(int context_id);
 static int cmd_focused(int context_id);
 static int cmd_hide(int context_id);
@@ -58,20 +59,20 @@ static int cmd_new(int context_id, const char *encoding);
 static int cmd_reset(int context_id);
 static int cmd_change(int context_id, const char *im);
 static int cmd_list(void);
-static int cmd_setenc(const char *im, const char *encoding);
+static int cmd_setenc(char *opt);
 static int cmd_prop(int context_id, const char *prop);
+static int cmd_nop(int context_id);
 static int cmd_error(void);
 
 static void check_default_engine(void);
+
+static void check_prop_list_update(uim_agent_context *ua);
 
 static int process_command(int serial, int cid, char *cmd);
 static int process_keyvector(int serial, int cid,
 							 uim_key ukey, const char *keyname);
 static int analyze_keyvector(char *vector, uim_key *ukey, char *keyname);
-static void wait_until_data_arrival(fd_set *rfds);
-static int take_one_line_from_buffer(char *buf, char *input);
 
-
-/*static int uim_agent_init(void);*/
+void cleanup(void);
 
 #endif

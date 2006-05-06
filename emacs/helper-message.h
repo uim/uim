@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -34,22 +34,17 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "debug.h"
+#ifndef _uim_agent_helper_message_h_included_
+#define _uim_agent_helper_message_h_included_
 
-int debug_level = 0;
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int
-debug_printf(int level, const char *fmt, ...)
-{
-  int ret = 0;
+#include "output.h"
 
-  if (debug_level >= level) {
-	va_list ap;
-	va_start(ap, fmt);
-	ret = vfprintf(stderr, fmt, ap);
-	va_end(ap);  
-  }
+void helper_send_message(const char *message);
+char *helper_message_encode(const char *src);
+char *helper_message_decode(const char *src);
 
-  return ret;
-}
-
+#endif

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -34,22 +34,22 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifndef _uim_helper_agent_h_included_
+#define _uim_helper_agent_h_included_
+
+#include "helper-server.h"
+#include "helper-message.h"
 #include "debug.h"
+#include "output.h"
 
-int debug_level = 0;
+#define DEFAULT_MESSAGE_SIZE 1024
 
-int
-debug_printf(int level, const char *fmt, ...)
-{
-  int ret = 0;
+static int command_exists_in_cmdbuf();
+static int process_command();
+static void process_message(char *msg);
+static void read_command();
+static void wait_data_arrival(fd_set *rfds);
 
-  if (debug_level >= level) {
-	va_list ap;
-	va_start(ap, fmt);
-	ret = vfprintf(stderr, fmt, ap);
-	va_end(ap);  
-  }
+void cleanup(void);
 
-  return ret;
-}
-
+#endif

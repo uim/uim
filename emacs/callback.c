@@ -1,3 +1,4 @@
+
 /*
   Copyright (c) 2005-2006 uim Project http://uim.freedesktop.org/
 
@@ -39,9 +40,11 @@
 void
 commit_cb(void *ptr, const char *str)
 {
+  uim_agent_context *ua = (uim_agent_context *)ptr;
+
   debug_printf(DEBUG_NOTE, "commit_cb\n");
 
-  do_commit(str);
+  ua->comstr = add_commit_string(ua->comstr, str);
 }
 
 
@@ -136,21 +139,19 @@ prop_list_update_cb(void *ptr, const char *str)
 
   debug_printf(DEBUG_NOTE, "prop_list_update_cb\n");
 
-  update_prop_list(ua->prop, str);
+  update_prop_list(ua->prop, ua->encoding, str);
 }
 
 
 void
 configuration_changed_cb(void *ptr)
 {
-
   uim_agent_context *ua = (uim_agent_context *)ptr;
 
   /* configuration of context has changed at uim side */
   debug_printf(DEBUG_NOTE, "configuration_changed_cb\n");
 
   update_context_configuration(ua);
-  
 }
 
 
@@ -171,6 +172,5 @@ switch_system_global_im_cb(void *ptr, const char *name)
   update_default_engine(name);
 
   switch_context_im_all(name);
-  helper_send_im_change_whole_desktop(name);
 }
 

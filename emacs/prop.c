@@ -52,8 +52,9 @@ create_prop()
 }
 
 void
-update_prop_list(property *prop, const char *str)
+update_prop_list(property *prop, const char *encoding, const char *str)
 {
+  debug_printf(DEBUG_NOTE, "update_prop_list\n");
 
   prop->valid = 1;
 
@@ -61,10 +62,7 @@ update_prop_list(property *prop, const char *str)
 
   prop->list = strdup(str);
   
-  debug_printf(DEBUG_NOTE, "prop->list: %s\n", prop->list);  
-
   prop->list_update = 1;
-
 }
 
 
@@ -85,17 +83,12 @@ announce_prop_list_update(property *prop, const char *encoding)
 	+ strlen(prop->list) + 1;
 
   buf = (char *)malloc(len);
-
   snprintf(buf, len, PROP_LIST_FORMAT, encoding, prop->list);
 
-  debug_printf(DEBUG_NOTE, PROP_LIST_FORMAT, encoding, prop->list);
-
-  uim_helper_send_message(helper_fd, buf);
-
+  helper_send_message(buf);
   free(buf);
 
 #undef PROP_LIST_FORMAT
-  
 }
 
 
@@ -104,7 +97,7 @@ show_prop(property *prop)
 {
   char *buf;
   char *head, *tail;
-  char *p[6];
+  char *p[6] = {0};
   char *indication_id = NULL, *iconic_label =NULL, *label_string = NULL;
   int check_leaf = 0;
   
@@ -118,7 +111,6 @@ show_prop(property *prop)
 
   a_printf(" ( l ");
 
-  memset(p, 0, sizeof(p));
   buf = (char *)malloc(strlen(prop->list) + 1);
   strcpy(buf, prop->list);
 

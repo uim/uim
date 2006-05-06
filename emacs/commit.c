@@ -36,10 +36,56 @@
 
 #include "commit.h"
 
-void
-do_commit(const char *str)
+char *
+add_commit_string(char *comstr, const char *str)
 {
-  a_printf("( s ");
-  output_with_escape(str);
-  a_printf(" ) ");
+  int buflen;
+
+  debug_printf(DEBUG_NOTE,
+			   "add_commit_string str: %s\n", str); 
+
+  buflen = (comstr != (char *)NULL) ? strlen(comstr) : 0;
+  
+  if (str != (const char *)NULL) {
+
+	debug_printf(DEBUG_NOTE,
+				 "add_commit_string comstr: len:%d (%p)\n", 
+				 buflen + strlen(str) + 1, comstr); 
+
+	comstr = (char *)realloc(comstr, buflen + strlen(str) + 1);
+	comstr[buflen] = '\0';
+
+	debug_printf(DEBUG_NOTE,
+				 "add_commit_string comstr: %s (%p)\n", comstr, comstr); 
+
+	strcat(comstr, str);
+  }
+
+  debug_printf(DEBUG_NOTE,
+			   "add_commit_string comstr: %s (%p)\n", comstr, comstr); 
+
+  return comstr;
 }
+
+
+int
+show_commit_string(char *comstr)
+{
+  if (!comstr) return -1;
+
+  a_printf("( s ");
+  output_with_escape(comstr);
+  a_printf(" ) ");
+  return 1;
+}
+
+
+void
+reset_commit_string(char *comstr)
+{
+  debug_printf(DEBUG_NOTE,
+			   "reset_commit_string comstr: %p\n", comstr); 
+
+  free(comstr);
+}
+

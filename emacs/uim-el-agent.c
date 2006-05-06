@@ -43,14 +43,12 @@
 #include <unistd.h>
 #include <locale.h>
 
-#include <sys/select.h>
-
 #include <uim/uim.h>
-#include <uim/uim-helper.h>
 #include <uim/uim-util.h>
 #include <uim/uim-im-switcher.h>
 
 #include "uim-el-agent.h"
+
 
 
 /* called when owner buffer is killed  */
@@ -61,25 +59,57 @@ cmd_release(int context_id)
 }
 
 
-
+/* process helper message received by uim-el-helper-agent */
 static int
-cmd_unfocused(int context_id)
+cmd_helper(int context_id, char *helper_message)
 {
-  if (current) {
-	/* keep preedit if exist */
-	if (get_uim_agent_context(context_id) == current) {
-	  show_preedit_uim_agent_context(current);
-	  show_candidate_uim_agent_context(current);
-	}
-	/* unfocus anyway */
-	return clear_current_uim_agent_context();
-  } else {
-	return -1;
-  }
+  uim_agent_context *ua;
 
+  if (focused) {
+	int ret;
+	ua = get_uim_agent_context(context_id);
+	ret = helper_handler(ua, helper_message);
+
+	if (ua) {
+	  show_commit_string_uim_agent_context(current);
+	  show_preedit_uim_agent_context(ua);
+	  show_candidate_uim_agent_context(ua);
+
+	  check_prop_list_update(ua);
+	  check_default_engine();
+	}
+
+	return ret;
+  } else {
+	return 0;
+  }
 }
 
 
+/*
+ * remove Emacs local focus from current context
+ */
+static int
+cmd_unfocused(int context_id)
+{
+  uim_agent_context *ua = get_uim_agent_context(context_id);
+
+  if (ua == current) {
+	/* keep preedit if exists */
+	show_preedit_uim_agent_context(ua);
+	show_candidate_uim_agent_context(ua);
+	check_default_engine();
+	return clear_current_uim_agent_context();
+  } else {
+	/* error */
+	return -1;
+  }
+}
+
+
+/*
+ * set Emacs local focus to the context
+ */
 static int
 cmd_focused(int context_id)
 {
@@ -88,11 +118,13 @@ cmd_focused(int context_id)
   if (set_current_uim_agent_context(ua) > 0) {
 	show_preedit_uim_agent_context(ua);
 	show_candidate_uim_agent_context(ua);
+
+	check_prop_list_update(ua);
+	check_default_engine();
 	return 1;
   } else {
 	return -1;
   }
-
 }
 
 static int
@@ -125,15 +157,24 @@ cmd_show(int context_id)
 static int
 cmd_new(int context_id, const char *encoding)
 {
+
+  uim_agent_context *ua;
+
   if (get_uim_agent_context(context_id)) {
 	debug_printf(DEBUG_WARNING, "context %d already exists\n", context_id);
 	return -1;
-  } else {
-	if (new_uim_agent_context(context_id, encoding) != NULL)
+  }
+
+  ua = new_uim_agent_context(context_id, encoding);
+
+  if (ua) {
+	check_prop_list_update(ua);
+	check_default_engine();
 	  return 1;
-	else
+  } else {
 	  return -1;
   }
+
 }
 
 
@@ -147,7 +188,11 @@ cmd_reset(int context_id)
 	/* before reset, clear preedit and candidate */
 	clear_preedit(ua->pe);
 	clear_candidate(ua->cand);
+
 	uim_reset_context(ua->context);
+
+	check_prop_list_update(ua);
+	check_default_engine();
 	return 1;
   } else {
 	return -1;
@@ -163,10 +208,12 @@ cmd_change(int context_id, const char *im)
   if (im && strlen(im) > 0 
 	  && (ua = get_uim_agent_context(context_id))) {
 
-	set_current_uim_agent_context(ua);
-
 	if (check_im_name(im)) {
 	  switch_context_im(ua, im);
+
+	  check_prop_list_update(ua);
+	  check_default_engine();
+
 	  return 1;
 	} else {
 	  return -1;	 
@@ -190,8 +237,22 @@ cmd_list(void)
 
 
 static int
-cmd_setenc(const char *im, const char *encoding)
+cmd_setenc(char *opt)
 {
+  char *im, *encoding;
+
+  im = opt;
+  if (im == NULL)
+	return -1;
+
+  if ((encoding = strchr(opt, ' ')) == NULL || *(encoding + 1) == '\0') {
+	/* 2nd arg not found */
+	return -1;
+  } else {
+	*encoding = '\0';
+	encoding ++;
+  }
+
   if (set_im_encoding(im, encoding) > 0)
 	return 1;
   else
@@ -220,6 +281,12 @@ cmd_prop(int context_id, const char *prop)
   if (prop && strlen(prop) > 0 &&
 	  (ua = get_uim_agent_context(context_id))) {
 	uim_prop_activate(ua->context, prop);
+
+	show_im_uim_agent_context(ua);
+	show_prop_uim_agent_context(ua);
+	show_preedit_uim_agent_context(ua);
+	show_candidate_uim_agent_context(ua);
+
 	return 1;
   } else {
 	return -1;
@@ -230,12 +297,13 @@ cmd_prop(int context_id, const char *prop)
 static int
 cmd_label(int context_id)
 {
+  uim_agent_context *ua;
 
-  if (current != NULL) {
-	show_im_uim_agent_context(current);
-	show_prop_uim_agent_context(current);
-	show_preedit_uim_agent_context(current);
-	show_candidate_uim_agent_context(current);
+  if ((ua = get_uim_agent_context(context_id))) {
+	show_im_uim_agent_context(ua);
+	show_prop_uim_agent_context(ua);
+	show_preedit_uim_agent_context(ua);
+	show_candidate_uim_agent_context(ua);
 	return 1;
   } else {
 	return -1;
@@ -243,6 +311,23 @@ cmd_label(int context_id)
 }
 
 
+static int
+cmd_nop(int context_id)
+{
+  uim_agent_context *ua = get_uim_agent_context(context_id);
+
+  if (ua) {
+	show_im_uim_agent_context(ua);
+	show_prop_uim_agent_context(ua);
+	show_preedit_uim_agent_context(ua);
+	show_candidate_uim_agent_context(ua);
+	return 1;
+  } else {
+	return -1;
+  }  
+
+  return 1;
+}
 
 static int
 cmd_error(void)
@@ -262,15 +347,17 @@ check_default_engine(void)
 
 
 static void
-check_prop_list_label(void)
+check_prop_list_update(uim_agent_context *ua)
 {
-  if (current == NULL) return;
+  debug_printf(DEBUG_NOTE, "check_prop_list_update\n");
 
-  if (current->prop->list_update) {
-	announce_prop_list_update(current->prop, current->encoding);
-	show_im_uim_agent_context(current);
-	show_prop_uim_agent_context(current);
-	current->prop->list_update = 0;
+  if (ua && ua->prop->list_update) {
+	show_prop_uim_agent_context(ua);
+
+	announce_prop_list_update(ua->prop, ua->encoding);
+	ua->prop->list_update = 0;
+
+	show_im_uim_agent_context(ua);
   }
 }
 
@@ -278,22 +365,23 @@ check_prop_list_label(void)
 static int
 process_command(int serial, int cid, char *cmd)
 {
-  char *opt, *opt2;
+  /*char *opt, *opt2; */
+  char *p, *opt;
   int ret;
+
+  if ((p = strchr(cmd, '\n')))
+	*p = '\0';
+  else
+	return -1;
 
   if ((opt = strchr(cmd, ' '))) {
 	*opt = '\0';
 	opt ++;
-	if ((opt2 = strchr(opt, ' '))) {
-	  *opt2 = '\0';
-	  opt2 ++;
-	} else {
-	  opt2 = NULL;
-	}
   } else {
 	opt = NULL;
-	opt2 = NULL;
   }
+
+  debug_printf(DEBUG_NOTE, "cmd: %s\n", cmd);
 
   if (strcmp(cmd, "RELEASE") == 0)
 	ret = cmd_release(cid);
@@ -311,24 +399,26 @@ process_command(int serial, int cid, char *cmd)
 	ret = cmd_reset(cid);
   else if (strcmp(cmd, "CHANGE") == 0)
   	ret = cmd_change(cid, opt);
-  else if (strcmp(cmd, "LIST") == 0)
-  	ret = cmd_list();
-  else if (strcmp(cmd, "SETENC") == 0)
-  	ret = cmd_setenc(opt, opt2);
-  else if (strcmp(cmd, "GETENC") == 0)
-  	ret = cmd_getenc(opt); /* for debug */
   else if (strcmp(cmd, "PROP") == 0)
   	ret = cmd_prop(cid, opt);
   else if (strcmp(cmd, "LABEL") == 0)
   	ret = cmd_label(cid);
+  else if (strcmp(cmd, "HELPER") == 0)
+	ret = cmd_helper(cid, opt);
+  else if (strcmp(cmd, "NOP") == 0)
+  	ret = cmd_nop(cid);
+  else if (strcmp(cmd, "LIST") == 0)
+  	ret = cmd_list();
+  else if (strcmp(cmd, "SETENC") == 0)
+  	ret = cmd_setenc(opt);
+  else if (strcmp(cmd, "GETENC") == 0)
+  	ret = cmd_getenc(opt); /* for debug */
   else
 	ret = cmd_error();
 
-  check_prop_list_label();
-  check_default_engine();
-
   return ret;
 }
+
 
 
 static int
@@ -459,7 +549,8 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 {
   int ret, ret2;
 
-  if (current == NULL || 
+  if (! focused ||
+	  current == NULL || 
 	  (current != NULL && current->context_id != cid)) {
 
 	if (set_current_uim_agent_context(get_uim_agent_context(cid)) < 0) {
@@ -468,14 +559,20 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 	}
   }
 
+  focused = 1;
+
 
   if (ukey.key >= 0) {
 	/* key input is received by requested context */
+	debug_printf(DEBUG_NOTE, "uim_press_key\n");
 	ret = uim_press_key(current->context, ukey.key, ukey.mod);
 
+	debug_printf(DEBUG_NOTE, "uim_release_key\n");
 	ret2 = uim_release_key(current->context, ukey.key, ukey.mod);
 
 	debug_printf(DEBUG_NOTE, "ret = %d, ret2 = %d\n", ret, ret2);
+
+	show_commit_string_uim_agent_context(current);
 
 	if (ret > 0) {
 	  /* uim did not process the key */
@@ -511,12 +608,15 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 
   } else {
 	/* ukey.key < 0 */
+	show_commit_string_uim_agent_context(current);
 	show_preedit_uim_agent_context(current);
 	show_candidate_uim_agent_context(current);
 	a_printf(" ( n ) "); /* dummy */
   }
 
-  check_prop_list_label();
+  /*show_prop_uim_agent_context(current);*/
+  check_prop_list_update(current);
+
   check_default_engine();
 
   return 1;
@@ -524,53 +624,11 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 
 
 
-static void
-wait_until_data_arrival(fd_set *rfds)
+void
+cleanup(void)
 {
-  int fdmax = STDIN_FILENO;
-
-  if (helper_fd > 0) {
-	FD_ZERO(rfds);
-	FD_SET(helper_fd, rfds);
-	if (helper_fd > fdmax) fdmax = helper_fd;
-  }
-
-  FD_SET(STDIN_FILENO, rfds);
-  
-  if (select(fdmax + 1, rfds, NULL, NULL, NULL) < 0) {
-	debug_printf(DEBUG_ERROR, "select error\n");
-  }
+  uim_quit();
 }
-
-
-static int
-take_one_line_from_buffer(char *buf, char *input)
-{
-  char *p = strchr(buf, '\n'); 
-  int rest; 
-
-  if (!p) {
-	debug_printf(DEBUG_ERROR, "something wrong occured\n");
-	return 0;
-  }
-
-  *p = '\0';
-  strcpy(input, buf);
-
-  rest = strlen(p + 1);
-  memmove(buf, (p + 1), rest);
-
-  return rest;
-}
-
-/*
-static int
-uim_agent_init(void)
-{
-  init_default_engine();
-  return 1;
-}
-*/
 
 
 int
@@ -593,49 +651,22 @@ main(int argc, char *argv[])
 	return -1;
   }
 
-  /*  uim_agent_init();*/
+  atexit(cleanup);
+
 
   a_printf("OK\n");
 
   while (1) {
 	int cid, serial;
 	char *p1, *p2, *c;
-	int offset = 0, more_input = 0;
-	char input[256], buf[256], keyname[32];
+	char buf[2048], keyname[32];
 	uim_key ukey;
-	fd_set rfds;
 
 	fflush(stdout);
 
-	buf[sizeof(buf) - 1] = '\0';
+	fgets(buf, sizeof(buf), stdin);
 
-	if (!more_input) {
-	  check_helper_connection();   /* keep helper connection */
-
-	  wait_until_data_arrival(&rfds);
-
-	  if (FD_ISSET(STDIN_FILENO, &rfds)) {
-		/* read from STDIN if input data exists  */
-		read(STDIN_FILENO, buf + offset, sizeof(buf) - offset - 1);
-	  } else if (FD_ISSET(helper_fd, &rfds)) {
-		/* process helper message only when no input data */
-		output_enable = 0;
-		helper_handler();
-		output_enable = 1;
-	  }
-	}
-
-	if ((p1 = strchr(buf, '\n'))) {
-	  offset = take_one_line_from_buffer(buf, input);
-	  more_input = strchr(buf, '\n') ? 1 : 0;
-	} else {
-	  /* wait \n */
-	  offset = strlen(buf);
-	  more_input = 0;
-	  continue;
-	}
-
-	p1 = input;
+	p1 = buf;
 	serial = -1;
 
 	/*

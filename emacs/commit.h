@@ -37,8 +37,12 @@
 #ifndef _uim_agent_commit_h_included_
 #define _uim_agent_commit_h_included_
 
+#include <stdlib.h>
+
 #include "output.h"
 
-void do_commit(const char *str);
+char *add_commit_string(char *comstr, const char *str);
+int show_commit_string(char *comstr);
+void reset_commit_string(char *comstr);
 
 #endif
