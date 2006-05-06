@@ -93,12 +93,12 @@
 ;;
 (defun uim-vertical-motion (n)
   (if (and uim-emacs
-	   (= emacs-major-version 21))
+	   (>= emacs-major-version 21))
       (uim-vertical-motion-exec n)
     (vertical-motion n)))
 
 ;;
-;; Fill blank at right edge of the window with white pace
+;; Fill blank at right edge of the window with white space
 ;;   The blank appears when a double-width character is
 ;;   inserted into the last one-character-space of the
 ;;   screen-line. (Emacs-21.x with X11 only?)
