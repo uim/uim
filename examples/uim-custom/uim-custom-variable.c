@@ -96,8 +96,8 @@ inspect_custom(const struct uim_custom *custom)
     break;
   case UCustom_Pathname:
     s_type = "pathname";
-    s_value = (char *)custom->value->as_pathname;
-    s_default_value = (char *)custom->default_value->as_pathname;
+    s_value = custom->value->as_pathname->str;
+    s_default_value = custom->default_value->as_pathname->str;
     break;
   case UCustom_Choice:
     s_type = "choice";
