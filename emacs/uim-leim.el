@@ -142,7 +142,7 @@
 	      (if (boundp 'default-input-method)
 		  (setq default-input-method
 			(uim-leim-make-im-name
-			 uim-context-default-im-engine)))))
+			 uim-default-im-engine)))))
 
   (add-hook 'uim-update-current-engine-hook 
 	    (lambda ()
@@ -161,7 +161,7 @@
 	    (lambda ()
 	      (add-hook 'change-major-mode-hook
 			'inactivate-input-method nil t)))
-	       
+
   ;; 
   ;;uim-leim-update-label 
   (add-hook 'uim-update-label-hook
