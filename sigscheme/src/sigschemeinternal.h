@@ -34,6 +34,8 @@
 #ifndef __SIGSCHEMEINTERNAL_H
 #define __SIGSCHEMEINTERNAL_H
 
+#include <config.h>
+
 #include <stddef.h>
 #include <string.h>
 

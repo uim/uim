@@ -40,6 +40,8 @@
 #ifndef __SCM_ENCODING_H
 #define __SCM_ENCODING_H
 
+#include <sigscheme/config.h>
+
 #include <stddef.h>
 
 #include "sigscheme-stdint.h"

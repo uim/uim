@@ -37,12 +37,7 @@
 #ifndef __SCM_GLOBAL_H
 #define __SCM_GLOBAL_H
 
-/* FIXME: unify to <sigscheme/config.h> */
-#if SCM_COMPILING_LIBSSCM
-#include <config.h>
-#else
 #include <sigscheme/config.h>
-#endif
 
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 #include <string.h>
@@ -189,6 +184,7 @@ extern "C" {
 #define SCM_EXTERN(_decl) extern int scm_dummy
 #define SCM_EXPORT static
 
+/* FIXME: reflect SCM_COMBINED_SOURCE */
 #elif defined(__SYMBIAN32__)
 #define SCM_EXTERN(_decl) extern _decl
 #if SCM_COMPILING_LIBSSCM
@@ -201,6 +197,7 @@ extern "C" {
 #define SCM_EXTERN(_decl) extern _decl
 #define SCM_EXPORT extern  /* respect coding style of BREW */
 
+/* FIXME: reflect SCM_COMBINED_SOURCE */
 #elif (defined(_WIN32) || defined(_WIN64))
 #define SCM_EXTERN(_decl) extern _decl
 #if SCM_COMPILING_LIBSSCM

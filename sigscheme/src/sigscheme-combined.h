@@ -39,7 +39,11 @@
 #ifndef __SCM_SIGSCHEME_COMBINED_H
 #define __SCM_SIGSCHEME_COMBINED_H
 
-#include <config.h>
+/* Disable SigScheme-specific feature restrictions for _POSIX_C_SOURCE,
+ * _XOPEN_SOURCE and so on. */
+#define SCM_COMPILING_LIBSSCM 0
+
+#include <sigscheme/config.h>
 /* Since sigscheme-combined.c is intended to be directly included into another
  * package as subordinate code module, these SigScheme-defined macros should be
  * undefined to avoid conflict. */
@@ -51,12 +55,9 @@
 #undef PACKAGE_VERSION
 #undef VERSION
 
-/* Although SigScheme only uses old specifications, client package may need
- * more recent ones such as (_XOPEN_SOURCE == 600). To avoid the function
- * availability problem, undef the SigScheme-restricted values here and back to
- * the system default. */
-#undef _POSIX_C_SOURCE
-#undef _XOPEN_SOURCE
+/* Enable libsscm compiling-time-specific codes. */
+#undef SCM_COMPILING_LIBSSCM
+#define SCM_COMPILING_LIBSSCM 1
 
 #ifdef __cplusplus
 extern "C" {

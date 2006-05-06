@@ -40,9 +40,9 @@
 
 #include "cutter-sscm.h"
 
-#include <sigscheme-stdint.h>
-#include <sigscheme.h>
-#include <sigschemeinternal.h>
+#include <sigscheme/sigscheme-stdint.h>
+#include <sigscheme/sigscheme.h>
+#include "sigschemeinternal.h"
 
 #define MSG_SSCM_DIRECTIVE_HELP                                              \
 "(format+ [<port>] <format-string> [<arg>...])\n"                            \

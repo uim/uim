@@ -37,10 +37,6 @@
 #ifndef __SIGSCHEME_CONFIG_OLD_H
 #define __SIGSCHEME_CONFIG_OLD_H
 
-#ifndef PACKAGE
-#error "don't include src/config.h directly"
-#endif
-
 /*===========================================================================
   R5RS Features
 ===========================================================================*/

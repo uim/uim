@@ -38,8 +38,8 @@
 #include "cutter-sscm.h"
 
 #include <global.h>
-#include <sigscheme.h>
-#include <sigschemeinternal.h>
+#include <sigscheme/sigscheme.h>
+#include "sigschemeinternal.h"
 
 SCM_GLOBAL_VARS_BEGIN(exported);
 ScmObj obj_a, obj_b;

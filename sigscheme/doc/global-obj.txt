@@ -105,7 +105,7 @@ its "all global objects made static" nature.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #include "sigscheme-combined.c"
 
-#include "config.h"
+#include <config.h> /* client's own config.h */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -125,8 +125,8 @@ Requirements:
     since many autoconf-defined macros of SigScheme must appropriately be
     undefined in the file to avoid conflicting with the client-side ones
 
-  - Add include path to `sigscheme/src` since the `sigscheme-combined.c`
-    includes various source files in the directory
+  - Add include path to `sigscheme/include` and `sigscheme/src` since the
+    `sigscheme-combined.c` includes various source files in the directories
 
 Other notes:
 

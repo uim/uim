@@ -92,8 +92,11 @@ libuimincludedir =  $(includedir)/uim
 libuim_la_LDFLAGS = -version-info $(libuim_version) -export-symbols-regex uim.\*
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ \
 		   $(top_builddir)/replace/libreplace.la
+# place -I$(top_srcdir) surely prior to sigscheme dirs
 libuim_la_CPPFLAGS = $(uim_defs) \
-		     -I$(top_srcdir) -I$(top_srcdir)/sigscheme/src \
+		     -I$(top_srcdir) \
+		     -I$(top_srcdir)/sigscheme/include \
+		     -I$(top_srcdir)/sigscheme/src \
 		     -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 

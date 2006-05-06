@@ -35,7 +35,7 @@
 /* must be included prior to any SigScheme headers */
 #include "cutter-sscm.h"
 
-#include <sigscheme.h>
+#include <sigscheme/sigscheme.h>
 
 UT_DEF2("test foo")
 {

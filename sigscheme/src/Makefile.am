@@ -295,12 +295,13 @@ if USE_SRFI60
 endif
 libsscm_la_LIBADD   = $(LIBOBJS)
 libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
-libsscm_la_CPPFLAGS = -DSCM_COMPILING_LIBSSCM=1
+libsscm_la_CPPFLAGS = -I$(top_srcdir)/include -DSCM_COMPILING_LIBSSCM=1
 libsscm_la_CFLAGS   = -Wall
 
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
 sscm_LDADD    = $(top_builddir)/src/libsscm.la
+sscm_CPPFLAGS = -I$(top_srcdir)/include
 sscm_CFLAGS   = -Wall
 
 # To enable ruby-and-perl-less build on tarball distribution, we should not
