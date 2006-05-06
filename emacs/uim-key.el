@@ -80,7 +80,10 @@
 (defun uim-replace-keyvec-with-functionkeymap (keyvec)
   (let ((keys kyevec))
     (while keys
-      (let ((mapto (assq (car keys) function-key-map)))
+      (let ((mapto (or (assq (car keys) function-key-map)
+		       (and (boundp 'local-function-key-map)
+			    (assq (car keys) local-function-key-map)))))
+	
 	(if mapto
 	    (setcar keys mapto)))))
   keyvec)
@@ -192,58 +195,58 @@
 	(setq deactivate-mark nil))
     
     (unwind-protect    
-    (cond ((or (keymapp bind)
+	(cond ((or (keymapp bind)
+		   
+		   (and (not bind)
+			(setq keyvectmp (uim-remove-shift keyvec))
+			(setq keyvec keyvectmp)))
 
-	       (and (not bind)
-		    (setq keyvectmp (uim-remove-shift keyvec))
-		    (setq keyvec keyvectmp)))
+	       (if uim-xemacs
+		   (progn
+		     (setq uim-retry-keys keyvec)
+		     (setq unread-command-events
+			   (cons (aref keyvec 0) unread-command-events))))
 
-	   (if uim-xemacs
-	       (progn
-		 (setq uim-retry-keys keyvec)
-		 (setq unread-command-events
-		       (cons (aref keyvec 0) unread-command-events))))
-
-	   (if uim-emacs
-	       (progn
-		 (setq uim-retry-keys keyvec)
-		 (setq unread-command-events
-		       (nconc (listify-key-sequence keyvec)
-			      unread-command-events))))
-	   )
-	  (count
-	   (setq prefix-arg count)
-	   (uim-command-execute
-	    (uim-getbind (uim-last-onestroke-key keyvec)))
-	   )
-
-	  ((commandp bind)
-	   (if (eq bind 'self-insert-command)
-	       (progn
+	       (if uim-emacs
+		   (progn
+		     (setq uim-retry-keys keyvec)
+		     (setq unread-command-events
+			   (nconc (listify-key-sequence keyvec)
+				  unread-command-events))))
+	       )
+	      (count
+	       (setq prefix-arg count)
+	       (uim-command-execute
+		(uim-getbind (uim-last-onestroke-key keyvec)))
+	       )
+	      
+	      ((commandp bind)
+	       (if (eq bind 'self-insert-command)
+		   (progn
+		     (setq this-command bind)
+		     (setq last-command-char (aref keyvec 0))
+		     (call-interactively bind)
+		     (uim-concat-undo))
 		 (setq this-command bind)
-		 (setq last-command-char (aref keyvec 0))
-		 (call-interactively bind)
-		 (uim-concat-undo))
-	     (setq this-command bind)
-	     (command-execute bind) 
-	     (uim-flush-concat-undo)
-	     ))
-	  (t
-	   (uim-flush-concat-undo)
-	   (if uim-xemacs
-	       (error 'undefined-keystroke-sequence 
-		      (uim-xemacs-make-event 
-		       (uim-convert-char-to-symbolvector 
-			(key-description keyvec))))
-	     (undefined))
-	   )
-	  )
-    (if uim-emacs
-	(setq uim-deactivate-mark deactivate-mark))
+		 (command-execute bind) 
+		 (uim-flush-concat-undo)
+		 ))
+	      (t
+	       (uim-flush-concat-undo)
+	       (if uim-xemacs
+		   (error 'undefined-keystroke-sequence 
+			  (uim-xemacs-make-event 
+			   (uim-convert-char-to-symbolvector 
+			    (key-description keyvec))))
+		 (undefined))
+	       )
+	      )
+      (if uim-emacs
+	  (setq uim-deactivate-mark deactivate-mark))
+      )
     )
   )
-  )
-
+  
 
 
 
@@ -596,7 +599,9 @@
 	    (throw 'fkmap-loop nil)
 	    )
 	(setq keylist (cdr keylist)))
-      (setq ret (lookup-key function-key-map keyvec))
+      (setq ret (or (lookup-key function-key-map keyvec)
+		    (and (boundp 'local-function-key-map)
+			 (lookup-key local-function-key-map keyvec))))
       )
     ret))
 
