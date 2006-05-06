@@ -35,11 +35,11 @@
 #ifndef _uim_h_included_
 #define _uim_h_included_
 
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <stdio.h>
 
 /*
  * A boolean type for uim to explicitly indicate intention about values

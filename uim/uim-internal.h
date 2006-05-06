@@ -33,16 +33,16 @@
 #ifndef _uim_internal_h_included_
 #define _uim_internal_h_included_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <config.h>
 
 #include <stdio.h>
 #include "gettext.h"
 #include "uim.h"
 #include "uim-scm.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct uim_im {
   char *name;
