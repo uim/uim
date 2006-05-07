@@ -47,7 +47,7 @@ SUCH DAMAGE.
 
 #include "qtgettext.h"
 
-#define _FROM_EUCJP(String) QTextCodec::codecForName( "EUC-JP" )->toUnicode(String)
+#define BUSHUDICT_ENCODING	"EUC-JP"
 
 BushuViewWidget::BushuViewWidget( QWidget *parent, const char *name )
         : CharDictViewBase( parent, name )
@@ -98,10 +98,11 @@ void BushuViewWidget::readDict()
     if ( file.open( IO_ReadOnly ) )
     {
         QTextStream stream( &file );
+        stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
         QString line;
         while ( !stream.atEnd() )
         {
-            QString bushuName = QStringList::split( " ", _FROM_EUCJP( stream.readLine() ) ) [ 0 ];
+            QString bushuName = QStringList::split( " ", stream.readLine()  ) [ 0 ];
 
             // insert last
             QListViewItem *lastItem = m_bushuListView->lastItem();
@@ -132,12 +133,13 @@ void BushuViewWidget::slotBushuSelected( QListViewItem *item )
     if ( file.open( IO_ReadOnly ) )
     {
         QTextStream stream( &file );
+        stream.setCodec(QTextCodec::codecForName(BUSHUDICT_ENCODING));
         QString line;
 
         // search selected bushu line by line
         while ( !stream.atEnd() )
         {
-            QStringList chars = QStringList::split( " ", _FROM_EUCJP( stream.readLine() ) );
+            QStringList chars = QStringList::split( " ",  stream.readLine()  );
             QString bushuName = chars[ 0 ];
             if ( selectedBushuName == bushuName )
             {

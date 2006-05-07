@@ -44,7 +44,7 @@ SUCH DAMAGE.
 class UnicodeBlock
 {
 public:
-    UnicodeBlock( const QString &name, ushort startHex, ushort endHex )
+    UnicodeBlock( const QString &name, uint startHex, uint endHex )
     {
         m_name = name;
         m_startHex = startHex;
@@ -52,13 +52,13 @@ public:
     }
 
     QString getName() const { return m_name; }
-    ushort getStartHex() const { return m_startHex; }
-    ushort getEndHex() const { return m_endHex; }
+    uint getStartHex() const { return m_startHex; }
+    uint getEndHex() const { return m_endHex; }
 
 protected:
     QString m_name;
-    ushort m_startHex;
-    ushort m_endHex;
+    uint m_startHex;
+    uint m_endHex;
 };
 
 #define UBLOCK_SIZE 125
@@ -245,7 +245,7 @@ void UnicodeViewWidget::slotUnicodeBlockSelected( QListViewItem *item )
     UnicodeBlock * block = uBlockMap[ item ];
 
     QStringList charList;
-    for ( ushort d = block->getStartHex(); d < block->getEndHex(); d++ )
+    for ( uint d = block->getStartHex(); d < block->getEndHex(); d++ )
     {
         charList.append( QString( QChar( d ) ) );
     }
