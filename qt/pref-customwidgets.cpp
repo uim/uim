@@ -884,7 +884,7 @@ void KeyGrabDialog::keyPressEvent( QKeyEvent *e )
     pressed_keystate = e->state();
 }
 
-void KeyGrabDialog::keyReleaseEvent( QKeyEvent *e )
+void KeyGrabDialog::keyReleaseEvent( QKeyEvent * /* e */ )
 {
     // create keystr
     setKeyStr();

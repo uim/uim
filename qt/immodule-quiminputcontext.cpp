@@ -310,7 +310,7 @@ QUimInputContext * QUimInputContext::focusedIC()
 }
 
 
-void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
+void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont * /* f */)
 {
 #ifdef ENABLE_DEBUG
     // qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
@@ -318,9 +318,9 @@ void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
     cwin->layoutWindow( x, y, w, h );
 }
 
-void QUimInputContext::mouseHandler( int x, QEvent::Type type,
-                                     Qt::ButtonState button,
-                                     Qt::ButtonState state )
+void QUimInputContext::mouseHandler( int /* x */, QEvent::Type type,
+                                     Qt::ButtonState /* button */,
+                                     Qt::ButtonState /* state */ )
 {
     switch ( type )
     {

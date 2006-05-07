@@ -112,17 +112,17 @@ QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 
-void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * e )
+void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * /* e */ )
 {
     isDragging = true;
 }
 
-void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * e )
+void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * /* e */ )
 {
     isDragging = false;
 }
 
-void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * e )
+void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * /* e */ )
 {
     if ( isDragging )
         emit moveTo( QCursor::pos() );

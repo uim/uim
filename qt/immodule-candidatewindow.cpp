@@ -331,7 +331,7 @@ void CandidateWindow::shiftPage( bool forward )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
 }
 
-void CandidateWindow::layoutWindow( int x, int y, int w, int h )
+void CandidateWindow::layoutWindow( int x, int y, int /* w */, int h )
 {
     int destX = x;
     int destY = y + h;
