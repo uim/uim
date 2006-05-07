@@ -168,28 +168,27 @@
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
-	 (define-key uim-escape-map [t] 'uim-process-input)
-	 (define-key uim-mode-map [27] 'uim-escape-map)
-	 (define-key uim-preedit-map [27] 'uim-escape-map)
+ 	 (define-key uim-escape-map [t] 'uim-process-input)
 
-	 (define-key uim-mode-map [escape] nil)
+ 	 (define-key uim-mode-map [27] 'uim-escape-map)
+ 	 (define-key uim-preedit-map [27] 'uim-escape-map)
 
+	 (if (not window-system)
+	     (define-key uim-mode-map [27] 'uim-process-input))
 	 )
 
 	((and uim-emacs (= emacs-major-version 21)) ;;; GNU Emacs-21.x 
-	 (define-key uim-mode-map (vector t) 'uim-process-input)
-	 (define-key uim-preedit-map (vector t) 'uim-process-input)
+	 (define-key uim-mode-map [t] 'uim-process-input)
+	 (define-key uim-preedit-map [t] 'uim-process-input)
 
-	 (define-key uim-mode-map [escape] nil)
+	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
 	((and uim-emacs (= emacs-major-version 22)) ;;; GNU Emacs-22.x
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
-	 (define-key uim-escape-map [t] 'uim-process-input)
-	 (define-key uim-mode-map [27] 'uim-escape-map)
-	 (define-key uim-preedit-map [27] 'uim-escape-map)
+	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
 	)

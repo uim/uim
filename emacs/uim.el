@@ -580,7 +580,7 @@
 
     (setq uim-im-mode-str mode-str)
 
-    (setq uim-mode-line-string 
+    (setq uim-mode-line-string
 	  (concat (if (or uim-show-im-name uim-show-im-mode) " ")
 		  (if uim-show-im-name
 		      uim-im-name-str "")
@@ -630,7 +630,7 @@
 	(uim-do-send-recv-cmd (format "%d SHOW" uim-context-id))))))
 
 
-;; 
+;;
 ;; Reset all uim.el buffer local variables
 ;;
 (defun uim-init-all-local-var ()
@@ -916,8 +916,20 @@
       (setq uim-show-keystrokes nil))
 
   ;; send an input key code to uim-el-agent
-  (let ((keyvec (uim-this-command-keys))
+
+  (if current-prefix-arg
+      (setq uim-prefix-arg current-prefix-arg))
+
+  
+  (if uim-prefix-arg
+      (uim-debug (format "uim-prefix-arg %s" uim-prefix-arg)))
+
+
+  (let ((keyvec (uim-this-command-keys current-prefix-arg))
 	sendkey newvec bypass count mouse)
+
+    (if uim-prefix-arg
+	(setq current-prefix-arg uim-prefix-arg))
 
     (if keyvec
 	(progn
@@ -939,9 +951,11 @@
 			(setq bypass t))
 		       
 		       (current-prefix-arg
-			(uim-debug "with prefix arg")
 			(setq bypass t)
-			(setq count (prefix-numeric-value arg)))
+			;;(setq count (prefix-numeric-value arg))
+			(setq count (prefix-numeric-value current-prefix-arg))
+			(uim-debug (format "with prefix arg: count is %s" count))
+			)
 		       
 		       ((and (not (or uim-preedit-displayed 
 				      uim-candidate-displayed))
@@ -961,10 +975,12 @@
 		 (setq sendkey keyvec)
 		 
 		 (cond (current-prefix-arg
-			;; (uim-debug (format "with prefix arg %s"
-			;; current-prefix-arg))
 			(setq bypass t)
-			(setq count (prefix-numeric-value arg)))
+			(setq count (prefix-numeric-value arg))
+			(setq count (prefix-numeric-value current-prefix-arg))
+			(uim-debug (format "with prefix arg: count is %s"
+					   count))
+			)
 		       ((and (eventp event)
 			     (memq (event-basic-type event) 
 				   '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
@@ -996,13 +1012,39 @@
 				  (eq (aref sendkey 0) 'escape)))))
 	    (uim-debug "bypass")
 	    (setq bypass t))
-		 
+
+
+	  (setq uim-retry-keys nil)
 
 	  (if (not bypass)
 	      (uim-do-send-recv-cmd (format "%d %s" uim-context-id sendkey))
 	    (if mouse
 		(uim-process-mouse-event event)
-	      (uim-process-keyvec uim-last-key-vector count)))
+	      (uim-process-keyvec uim-last-key-vector count)
+
+	      ;; display "ESC ESC ESC" or something
+
+	      (if uim-show-keystrokes
+		  (let (message-log-max keymsg)
+		    (setq keymsg (if uim-prefix-arg-vector
+				     (concat (key-description uim-prefix-arg-vector)
+					     " ")
+				   nil))
+		    (mapcar '(lambda (x)
+			       (setq keymsg (concat keymsg
+						(key-description (vector x))
+						" ")))
+			    (append uim-last-key-vector nil))
+		    (message keymsg))
+		)
+	      ))
+	  
+	  (uim-debug "reset prefix variables")
+	  (setq uim-prefix-arg nil)
+	  (setq uim-prefix-arg-vector nil)
+
+	  (setq uim-prefix-ignore-next nil)
+
 	  )
 
       ;; if keyvec is nil
@@ -1015,7 +1057,9 @@
       ;; display "ESC-" or something
       (if uim-show-keystrokes
 	  (let (message-log-max)
-	    (message (concat (key-description uim-stacked-key-vector) "-"))))
+	    (message (concat (key-description (vconcat uim-prefix-arg-vector
+						       uim-stacked-key-vector))
+			     "-"))))
       )
     )
 
@@ -1048,95 +1092,95 @@
   (catch 'process-agent-output
     (let (;;(inhibit-quit t)
 	  preedit-existed
-	candidate-existed
+	  candidate-existed
 	  key commit preedit candidate default im label imlist helpermsg
 	  )
       
       (uim-debug (format "%s" str))
       
 
-    (let ((modified (buffer-modified-p)))
+      (let ((modified (buffer-modified-p)))
 
-      ;; remove candidate anyway
-      (when uim-candidate-displayed
-	(setq candidate-existed t)
+	;; remove candidate anyway
+	(when uim-candidate-displayed
+	  (setq candidate-existed t)
 	  (let ((inhibit-read-only t))
 	    (uim-remove-candidate))
-	(setq uim-candidate-displayed nil)
+	  (setq uim-candidate-displayed nil)
 	  (uim-goto-char uim-preedit-start))
 
-      ;; remove preedit anyway
-      (when uim-preedit-displayed
-	(setq preedit-existed t)
+	;; remove preedit anyway
+	(when uim-preedit-displayed
+	  (setq preedit-existed t)
 	  (let ((inhibit-read-only t))
 	    (uim-remove-preedit))
-	(setq uim-preedit-displayed nil)
+	  (setq uim-preedit-displayed nil)
 	  (uim-goto-char uim-original-cursor))
 
 	;; restore cursor point
 	(when (and uim-preedit-keymap-enabled uim-original-cursor)
 	  (goto-char uim-original-cursor))
 
-      ;; restore modified flag
-      (set-buffer-modified-p modified))
+	;; restore modified flag
+	(set-buffer-modified-p modified))
 
-    (mapcar 
-     '(lambda (x) 
-	(let ((rcode (car x))
-	      (rval (cdr x)))
+      (mapcar 
+       '(lambda (x) 
+	  (let ((rcode (car x))
+		(rval (cdr x)))
 	
-	  (cond ((string= rcode "n") ;; uim returns key code
-		 (if uim-last-key-vector
-		     (progn
-		       (setq key uim-last-key-vector)
-		       (uim-debug (format "last-key: %s" key)))
-		   (setq key (car rval)))
-		 )
-		((string= rcode "s") ;; commit string
-		 (setq commit (append commit (list (car rval))))
-		 )
-		((string= rcode "c") ;; candidate data
-		 (setq candidate rval)
-		 )
-		((string= rcode "p") ;; preedit
-		 (setq preedit rval)
-		 )
-		((string= rcode "d") ;; default engine
-		 (setq default (car rval))
-		 )
+	    (cond ((string= rcode "n") ;; uim returns key code
+		   (if uim-last-key-vector
+		       (progn
+			 (setq key uim-last-key-vector)
+			 (uim-debug (format "last-key: %s" key)))
+		     (setq key (car rval)))
+		   )
+		  ((string= rcode "s") ;; commit string
+		   (setq commit (append commit (list (car rval))))
+		   )
+		  ((string= rcode "c") ;; candidate data
+		   (setq candidate rval)
+		   )
+		  ((string= rcode "p") ;; preedit
+		   (setq preedit rval)
+		   )
+		  ((string= rcode "d") ;; default engine
+		   (setq default (car rval))
+		   )
 		  ((string= rcode "i") ;; current im
 		   (setq im rval)
 		   )
-		((string= rcode "l") ;; label
-		 (setq label rval)
-		 )
+		  ((string= rcode "l") ;; label
+		   (setq label rval)
+		   )
 		  ((string= rcode "h") ;; helper message
 		   (setq helpermsg (append helpermsg rval))
 		   )
-		((string= rcode "L") ;; IM list
-		 (setq imlist rval)
-		 )
-		)
-	  )) 
-     str)
+		  ((string= rcode "L") ;; IM list
+		   (setq imlist rval)
+		   )
+		  )
+	    )) 
+       str)
 
       (when helpermsg
 	(uim-helper-send-message helpermsg))
 
-    (when default
-      (uim-update-default-engine default))
+      (when default
+	(uim-update-default-engine default))
 
       (when im
 	(uim-update-current-engine im))
 
-    (when label
-      (uim-update-label label))
+      (when label
+	(uim-update-label label))
 
-    (when imlist
-      (uim-update-imlist imlist))
+      (when imlist
+	(uim-update-imlist imlist))
 
 
-    (if commit
+      (if commit
 
 	  ;; insert committed strings
 	  (let ((inhibit-read-only t)
@@ -1144,8 +1188,8 @@
 	    (if uim-buffer-frozen
 		(uim-unfreeze-buffer))
 
-	  (mapcar
-	   '(lambda (x) 
+	    (mapcar
+	     '(lambda (x)
 		(let ((start (point)))
 		  
 		  ;; enable buffer-undo temporarily
@@ -1153,8 +1197,8 @@
 		    (setq buffer-undo-list nil)
 		    (buffer-enable-undo))
 
-	      (insert x)
-	      (uim-debug (format "insert %s" x))
+		  (insert x)
+		  (uim-debug (format "insert %s" x))
 
 		  ;; disable buffer-undo temporarily
 		  (when uim-buffer-undo-list-saved
@@ -1168,20 +1212,20 @@
 		      (setq buffer-undo-list (delatom buffer-undo-list))
 		      )
 
-		      (setq uim-buffer-undo-list
+		    (setq uim-buffer-undo-list
 			  (append buffer-undo-list uim-buffer-undo-list))
 		    (setq buffer-undo-list nil)
 		    (buffer-disable-undo))
 		  )
 		)
-	   commit)
+	     commit)
 
-	  (if auto-fill-function
-	      (funcall auto-fill-function))
+	    (if auto-fill-function
+		(funcall auto-fill-function))
 
 	    (if buffer-frozen
 		(uim-freeze-buffer))
-      )
+	    )
 	)
 
 
@@ -1205,7 +1249,7 @@
 		)
 	      ;; following expressions will not be evaluated
 	      ;; when an error occurs in this function...
-      )
+	      )
 	    (if (not uim-mode)
 		(throw 'process-agent-output t))
 	    ;; save undo hisotry again
@@ -1216,18 +1260,18 @@
       (setq uim-original-cursor (uim-point))
 
 
-    (if (or preedit candidate)
-	;; process preedit/candidate
-	(let ((modified (buffer-modified-p)))
+      (if (or preedit candidate)
+	  ;; process preedit/candidate
+	  (let ((modified (buffer-modified-p)))
 
-	  ;; save undo list if not saved
-	  (when (not uim-buffer-undo-list-saved)
-	    (uim-flush-concat-undo)
+	    ;; save undo list if not saved
+	    (when (not uim-buffer-undo-list-saved)
+	      (uim-flush-concat-undo)
 	      (uim-debug "call save undo 3")
-	    (uim-save-undo))
+	      (uim-save-undo))
 
-	  ;; change keymap and freeze faces at first time
-	  (when (not uim-preedit-keymap-enabled)
+	    ;; change keymap and freeze faces at first time
+	    (when (not uim-preedit-keymap-enabled)
 	      (uim-enter-preedit-mode))
 
 	    (setq uim-preedit-start uim-original-cursor)
@@ -1235,9 +1279,9 @@
 	    (setq uim-preedit-current-sentence-start uim-preedit-start)
 	    (setq uim-preedit-cursor uim-preedit-start)
 
-	  ;; show preedit
+	    ;; show preedit
 	    (when preedit
-		(setq uim-preedit-displayed t)
+	      (setq uim-preedit-displayed t)
 	      (let ((inhibit-read-only t))
 		(uim-insert-preedit preedit)
 		))
@@ -1246,11 +1290,11 @@
 
 	    (setq uim-candidate-cursor (uim-point))
 
-	  ;; show candidate
+	    ;; show candidate
 	    (when (and candidate
 		       (uim-check-candidate-space)
 		       (eq uim-focused-buffer (current-buffer)))
-		(setq uim-candidate-displayed t)
+	      (setq uim-candidate-displayed t)
 	      (setq uim-candidate-start uim-preedit-current-sentence-start)
 	      (setq uim-candidate-vofs uim-preedit-overlap)
 	      (let ((inhibit-read-only t))
@@ -1259,40 +1303,40 @@
 	    (uim-goto-char uim-candidate-cursor)
 
 	    (set-buffer-modified-p modified)
-	  )
+	    )
 
-      ;; no preedit/candidate
+	;; no preedit/candidate
 
 	;; restore undo-list if saved
-      (when uim-buffer-undo-list-saved
+	(when uim-buffer-undo-list-saved
 	  (uim-debug "call restore undo 3")
-	(uim-restore-undo))
+	  (uim-restore-undo))
 
-      ;; no raw-key and no preedit/candidate
-      (when uim-preedit-keymap-enabled
+	;; no raw-key and no preedit/candidate
+	(when uim-preedit-keymap-enabled
 	  (uim-leave-preedit-mode))
 
-      )
+	)
 
-    ;; scroll buffer after candidate removed
-    ;;  recenter if buffer is force scrolled at candidate displaying
-    (when (and candidate-existed
-	       (not uim-candidate-displayed) 
-	       uim-window-force-scrolled) 
-      (uim-debug "recenter: window-force-scrolled is true")
-      (setq uim-window-force-scrolled nil)
-      (recenter))
+      ;; scroll buffer after candidate removed
+      ;;  recenter if buffer is force scrolled at candidate displaying
+      (when (and candidate-existed
+		 (not uim-candidate-displayed) 
+		 uim-window-force-scrolled) 
+	(uim-debug "recenter: window-force-scrolled is true")
+	(setq uim-window-force-scrolled nil)
+	(recenter))
 
 
-    (if (not uim-send-recv-again)
-	(when label 
-	  (setq uim-send-recv-again t)
-	  (uim-update-im-label))
-      (setq uim-send-recv-again nil))
+      (if (not uim-send-recv-again)
+	  (when label 
+	    (setq uim-send-recv-again t)
+	    (uim-update-im-label))
+	(setq uim-send-recv-again nil))
 
       (uim-debug (format "uim-original-cursor %s" uim-original-cursor))
       (uim-debug "process-agent-output done")
-    ))
+      ))
   )
 
 

@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.8.0")
+(defconst uim-el-version "0.0.8.1")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -249,6 +249,20 @@ displayed at the echo area.")
 (defvar uim-last-key-vector nil
   "Recent key vector.")
 
+(defvar uim-prefix-arg nil
+  "Recent current-prefix-arg value.")
+
+;;(defvar uim-prefix-arg-vector-length 0)
+
+;; unprocessed keys
+(defvar uim-stacked-key-vector nil)
+(defvar uim-prefix-arg-vector nil)
+(defvar uim-prefix-ignore-next nil)
+
+;; if non-nil, pressed keys are displayed at echo region
+(defvar uim-show-keystrokes nil)
+
+
 (defvar uim-retry-keys nil)
 
 (defvar uim-local-var '())
@@ -299,12 +313,6 @@ displayed at the echo area.")
 
 ;; code to decode output of uim-el-agent
 (uim-deflocalvar uim-decoding-code nil)
-
-;; unprocessed keys
-(uim-deflocalvar uim-stacked-key-vector nil)
-
-;; if non-nil, pressed keys are displayed at echo region
-(uim-deflocalvar uim-show-keystrokes nil)
 
 (uim-deflocalvar uim-minor-mode-map-alist nil)
 
