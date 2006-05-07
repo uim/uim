@@ -45,10 +45,12 @@
 
 #include "debug.h"
 #include "output.h"
+#include "uim-el-types.h"
+#include "context.h"
 #include "candidate.h"
 #include "preedit.h"
+#include "helper.h"
 #include "im.h"
-#include "context.h"
 #include "commit.h"
 #include "prop.h"
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2005-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -34,28 +34,78 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _uim_agent_candidate_h_included_
-#define _uim_agent_candidate_h_included_
+#ifndef _uim_el_types_h_included_
+#define _uim_el_types_h_included_
 
-#include <stdlib.h>
-#include <string.h>
+typedef struct candidate {
+  char *str;
+  char *label;
+} candidate;
 
-#include <uim/uim.h>
 
-#include "debug.h"
-#include "output.h"
+typedef struct candidate_info {
+  int valid;
+  int num;
+  int disp_limit;
+  int index;
+  candidate *cand_array;
+} candidate_info;
 
-#include "uim-el-types.h"
 
-candidate_info *create_candidate(void);
+typedef struct im_encoding {
+  char *im;                  /* IM name */
+  char *encoding;            /* Encoding name (in uim-encoding.h) */
+  struct im_encoding *next;
+} im_encoding;
 
-int new_candidate(uim_context context, candidate_info *cand,
-				  int num, int limit);
-void clear_candidate(candidate_info *cand);
 
-int show_candidate(candidate_info *cand);
+typedef struct uim_key{
+  int mod;
+  int key;
+} uim_key;
 
-void shift_candidate_page(uim_context context, candidate_info *cand, 
-						  int direction);
+
+typedef struct preedit_buffer {
+  char *str;
+  int attr;
+  unsigned cursor;
+  struct preedit_buffer *next;
+} preedit_buffer;
+
+
+typedef struct preedit {
+  int valid;
+  int length;
+  preedit_buffer *head;
+  preedit_buffer *tail;
+  /*  candidate_info *cand;*/
+} preedit;
+
+
+typedef struct property {
+  int valid;
+  int list_update;
+  char *list;
+} property;
+
+
+typedef struct uim_agent_context {
+  uim_context context;
+  int context_id;
+  char *encoding;
+  char *im;
+  preedit *pe;
+  candidate_info *cand;
+  property *prop;
+  char *comstr;
+} uim_agent_context;
+
+
+typedef struct uim_agent_context_list {
+  uim_agent_context *agent_context;
+  struct uim_agent_context_list *next;
+  struct uim_agent_context_list *prev;
+} uim_agent_context_list;
+
 
 #endif

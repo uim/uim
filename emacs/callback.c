@@ -172,5 +172,7 @@ switch_system_global_im_cb(void *ptr, const char *name)
   update_default_engine(name);
 
   switch_context_im_all(name);
+
+  helper_send_im_change_whole_desktop(name);
 }
 

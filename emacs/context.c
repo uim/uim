@@ -202,7 +202,6 @@ create_context(const char *encoding, uim_agent_context *ptr)
   uim_set_configuration_changed_cb(context,
 								   configuration_changed_cb);
   
-  /* When are they used? */
   uim_set_im_switch_request_cb(context,
 							   switch_app_global_im_cb,
 							   switch_system_global_im_cb);

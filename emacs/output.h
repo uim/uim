@@ -43,8 +43,6 @@
 
 #include "debug.h"
 
-int a_putchar(int c);
-
 #define a_printf printf
 #define a_putchar putchar
 

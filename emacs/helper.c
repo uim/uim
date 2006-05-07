@@ -254,12 +254,42 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 		  }
 		}
 	  }
+  } else if (strcmp("custom_reload_notify", message) == 0) {
+
+	debug_printf(DEBUG_NOTE, "reload\n");
+
+	uim_prop_reload_configs();
 
 	} else {
+
 	  debug_printf(DEBUG_WARNING, " undefined helper message: %s\n", message);
+
 	}
 
   return 1;
 }
 
 
+
+
+void
+helper_send_im_change_whole_desktop(const char *name)
+{
+  int len = 0;
+  char *buf;
+
+#define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
+
+  len += strlen(HEADER_FORMAT);
+  len += name ? strlen(name) : 0;
+
+  buf = (char *)malloc(sizeof(char) * len);
+
+  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+
+  helper_send_message(buf);
+
+  free(buf);
+
+#undef HEADER_FORMAT
+ }

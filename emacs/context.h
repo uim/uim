@@ -45,31 +45,14 @@
 #include <uim/uim-im-switcher.h>
 
 #include "debug.h"
+#include "uim-el-types.h"
+
 #include "prop.h"
 #include "preedit.h"
 #include "commit.h"
 #include "im.h"
 #include "callback.h"
 #include "encoding.h"
-
-typedef struct uim_agent_context {
-  uim_context context;
-  int context_id;
-  char *encoding;
-  char *im;
-  preedit *pe;
-  candidate_info *cand;
-  property *prop;
-  char *comstr;
-} uim_agent_context;
-
-
-typedef struct uim_agent_context_list {
-  uim_agent_context *agent_context;
-  struct uim_agent_context_list *next;
-  struct uim_agent_context_list *prev;
-} uim_agent_context_list;
-
 
 uim_context create_context(const char *encoding, uim_agent_context *ptr);
 

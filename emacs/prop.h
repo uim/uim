@@ -45,14 +45,10 @@
 #include "debug.h"
 #include "output.h"
 
+#include "uim-el-types.h"
+
 #include "im.h"
 #include "helper-message.h"
-
-typedef struct property {
-  int valid;
-  int list_update;
-  char *list;
-} property;
 
 property *create_prop(void);
 

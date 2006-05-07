@@ -44,11 +44,7 @@
 
 #include "debug.h"
 
-typedef struct im_encoding {
-  char *im;                  /* IM name */
-  char *encoding;            /* Encoding name (in uim-encoding.h) */
-  struct im_encoding *next;
-} im_encoding;
+#include "uim-el-types.h"
 
 extern im_encoding *im_enc_list_head, *im_enc_list_tail;
 

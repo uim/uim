@@ -39,6 +39,7 @@
 
 #include "debug.h"
 #include "output.h"
+#include "uim-el-types.h"
 #include "candidate.h"
 #include "preedit.h"
 #include "context.h"

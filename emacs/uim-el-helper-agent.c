@@ -173,6 +173,10 @@ process_message(char *msg)
 		}
 	  }
 
+	} else if (strcmp("custom_reload_notify", msg) == 0) {
+
+	  printf("custom_reload_notify\n");
+
 	} else {
 
 	  debug_printf(DEBUG_NOTE, "other message %s\n", msg);

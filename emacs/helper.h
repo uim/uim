@@ -47,6 +47,7 @@
 #include <uim/uim-im-switcher.h>
 
 #include "debug.h"
+#include "uim-el-types.h"
 
 #include "context.h"
 #include "encoding.h"
@@ -54,5 +55,6 @@
 #include "helper-message.h"
 
 int helper_handler(uim_agent_context *ua, char *helper_message);
+void helper_send_im_change_whole_desktop(const char *name);
 
 #endif
