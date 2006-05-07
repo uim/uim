@@ -1,5 +1,5 @@
 List of indication-id appeared in current and future uim
-distribution. Make icons for them.
+distribution. Make icons for them. '+' sign indicates 'done'.
 
 * uim
   im_switcher
@@ -11,37 +11,37 @@ distribution. Make icons for them.
   unknown
 
 * input modes
-  direct_input
-  off
-  on
-  ja_direct
-  ja_hiragana
-  ja_katakana
-  ja_halfwidth_katakana
-  ja_halfwidth_alnum
-  ja_fullwidth_alnum
-  ja_romaji
-  ja_kana
-  ja_azik
-  ja_nicola
+  + direct_input
+  + off
+  + on
+  + ja_direct
+  + ja_hiragana
+  + ja_katakana
+  + ja_halfwidth_katakana
+  + ja_halfwidth_alnum
+  + ja_fullwidth_alnum
+  + ja_romaji
+  + ja_kana
+  + ja_azik
+  + ja_nicola
   ja_phone
-  ja_pocketbell
+  + ja_pocketbell
   ko_direct
   ko_hangulchar
   ko_hangulword
-  prime_mode_application
+  + prime_mode_application
 
 * input methods
   py
   pyunihan
   pinyin-big5
-  anthy
-  canna
+  + anthy
+  + canna
   mana
-  prime
-  skk
-  tcode
-  tutcode
+  + prime
+  + skk
+  + tcode
+  + tutcode
   byeoru
   hangul2
   hangul3

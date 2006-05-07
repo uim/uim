@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.43"
+   version="1.0"
+   sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
+   sodipodi:docname="prime_mode_application.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="17.6875"
+     inkscape:cx="24"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2241"
+     showgrid="true"
+     inkscape:grid-points="false"
+     gridspacingx="1.5px"
+     gridspacingy="1.5px"
+     gridempspacing="2"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="1398"
+     inkscape:window-height="1020"
+     inkscape:window-x="0"
+     inkscape:window-y="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2241">
+      <path
+         id="path1307"
+         d="M 7.5,43.5 L 7.5,46.5 L 43.5,46.5 L 43.5,43.5"
+         style="opacity:0.703125;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#2d4461;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="opacity:0.703125;fill:#2d4461;fill-opacity:1;fill-rule:evenodd;stroke:#2d4461;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3999"
+         width="3.0000019"
+         height="3.0000041"
+         x="24"
+         y="42"
+         rx="0"
+         ry="0" />
+      <g
+         id="g1441"
+         transform="matrix(4e-2,0,0,-4e-2,19.32086,36.12221)">
+        <path
+           id="path1443"
+           d="M 89,748 L 219,748 L 204,228 L 104,228 L 89,748 z M 94,23 L 94,153 L 214,153 L 214,23 L 94,23 z "
+           style="fill:currentColor" />
+      </g>
+    </g>
+  </g>
+</svg>
