@@ -12,7 +12,7 @@ uim_el_agent_SOURCES = uim-el-agent.c debug.c output.c context.c preedit.c \
  key.c candidate.c encoding.c im.c callback.c commit.c \
  helper.c prop.c helper-message.c callback.h candidate.h commit.h context.h \
  debug.h encoding.h helper.h im.h key.h output.h preedit.h \
- prop.h uim-el-agent.h helper-message.h
+ prop.h uim-el-agent.h helper-message.h uim-el-types.h
 
 uim_el_helper_agent_SOURCES = uim-el-helper-agent.c uim-el-helper-agent.h \
  helper-message.c helper-message.h helper-server.c helper-server.h output.c \
