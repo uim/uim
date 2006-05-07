@@ -56,6 +56,7 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-compat-scm.h"
+#include "uim/uim-stdint.h"
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H
@@ -226,7 +227,7 @@ XimServer::setupConnection(bool useDefaultIM)
     XGetWindowProperty(XimServer::gDpy, DefaultRootWindow(XimServer::gDpy),
 		       xim_servers, 0, 8192 ,False,
 		       XA_ATOM, &type, &format,
-		       &nr_prop, &nr_bytes, (unsigned char **)&prop);
+		       &nr_prop, &nr_bytes, (unsigned char **)(uintptr_t)&prop);
     int i;
     if (type != XA_ATOM || format != 32)
 	mode = PropModeReplace;
