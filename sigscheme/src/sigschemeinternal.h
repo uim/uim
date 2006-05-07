@@ -735,7 +735,6 @@ SCM_DECLARE_EXPORTED_VARS(storage);
 
 /* symbol.c */
 /* Only permitted to storage-gc.c */
-#if SCM_USE_VALUECONS
 SCM_GLOBAL_VARS_BEGIN(symbol);
 ScmObj *scm_symbol_hash;
 size_t scm_symbol_hash_size;
@@ -743,7 +742,6 @@ SCM_GLOBAL_VARS_END(symbol);
 #define scm_symbol_hash      SCM_GLOBAL_VAR(symbol, scm_symbol_hash)
 #define scm_symbol_hash_size SCM_GLOBAL_VAR(symbol, scm_symbol_hash_size)
 SCM_DECLARE_EXPORTED_VARS(symbol);
-#endif
 
 /*=======================================
   Function Declarations
