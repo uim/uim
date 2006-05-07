@@ -116,10 +116,6 @@
 #error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
 #endif
 
-#if (SCM_USE_INT || SCM_USE_RATIONAL || SCM_USE_REAL || SCM_USE_COMPLEX)
-#define SCM_USE_NUMBER          1
-#endif
-
 #if SCM_STRICT_R5RS
 #undef SCM_STRICT_NULL_FORM
 #define SCM_STRICT_NULL_FORM    1
@@ -146,12 +142,6 @@
 #define SCM_USE_UNHYGIENIC_MACRO 1
 #endif /* SCM_USE_SYNTAX_CASE */
 
-#if (SCM_USE_SRFI28 || SCM_USE_SRFI48                                        \
-     || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT)
-#undef SCM_USE_FORMAT
-#define SCM_USE_FORMAT          1
-#endif /* (SCM_USE_SRFI28 || SCM_USE_SRFI48
-           || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT) */
 #if SCM_USE_SSCM_FORMAT_EXTENSION
 #undef SCM_USE_SRFI48
 #define SCM_USE_SRFI48          1

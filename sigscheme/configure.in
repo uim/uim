@@ -819,13 +819,48 @@ if test "x$enable_multibyte" = xsjis; then
 fi
 
 #------------------------------------------------------------------------------
-# Misc (need to resolve dependency here)
+# Dependency Resolution
 #------------------------------------------------------------------------------
-use_number="yes"
-use_format="yes"
-
+# SCM_USE_NUMBER
+# if (SCM_USE_INT || SCM_USE_RATIONAL || SCM_USE_REAL || SCM_USE_COMPLEX)
+use_number="no"
+if test "x$use_int" = xyes; then
+  use_number="yes"
+fi
+if test "x$use_rational" = xyes; then
+  use_number="yes"
+fi
+if test "x$use_real" = xyes; then
+  use_number="yes"
+fi
+if test "x$use_complex" = xyes; then
+  use_number="yes"
+fi
 AM_CONDITIONAL(USE_NUMBER, test "x$use_number" = xyes)
+if test "x$use_number" = xyes; then
+  AC_DEFINE(SCM_USE_NUMBER, 1, [use number])
+fi
+
+# SCM_USE_FORMAT
+# if (SCM_USE_SRFI28 || SCM_USE_SRFI48
+#     || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT)
+use_format="no"
+if test "x$use_srfi28" = xyes; then
+  use_format="yes"
+fi
+if test "x$use_srfi48" = xyes; then
+  use_format="yes"
+fi
+if test "x$use_sscm_format_extension" = xyes; then
+  use_format="yes"
+fi
+if test "x$use_raw_c_format" = xyes; then
+  use_format="yes"
+fi
 AM_CONDITIONAL(USE_FORMAT, test "x$use_format" = xyes)
+if test "x$use_format" = xyes; then
+  AC_DEFINE(SCM_USE_FORMAT, 1, [use format])
+fi
 
 #------------------------------------------------------------------------------
 # Debug
