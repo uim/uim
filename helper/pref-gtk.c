@@ -230,10 +230,11 @@ quit_confirm(void)
   }
 }
 
-static void
+static gint
 delete_event_cb(GtkWidget *widget, gpointer data)
 {
   quit_confirm();
+  return TRUE;
 }
 
 static GtkWidget *
