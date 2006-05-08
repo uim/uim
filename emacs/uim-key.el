@@ -610,8 +610,16 @@
 	   (setq uim-stacked-key-vector nil)
 	   )
 	  ((or (and uim-preedit-keymap-enabled
+		      (or 
+		       (and (or (eq (car-safe (aref uim-stacked-key-vector 0))
+				    'menu-bar)
+				(eq (car-safe (aref uim-stacked-key-vector 0))
+				    'tool-bar))
+			    (keymapp (uim-getbind uim-stacked-key-vector)))
+
 		    (and fmap-continue  ;; wait ESC- key vector
-			 (uim-is-start-with-escape uim-stacked-key-vector)))
+			    (uim-is-start-with-escape uim-stacked-key-vector))
+		       ))
 	       
 	       (and (not uim-preedit-keymap-enabled)
 		    (or (and fmap-continue 

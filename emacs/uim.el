@@ -899,8 +899,6 @@
 
  
 
-
-
 ;;
 ;; Process inputted key
 ;;
@@ -1016,6 +1014,11 @@
 
 	  (setq uim-retry-keys nil)
 
+	  (unwind-protect
+	      (if (and uim-preedit-keymap-enabled
+		       (or (eq (car-safe (aref sendkey 0)) 'menu-bar)
+			   (eq (car-safe (aref sendkey 0)) 'tool-bar)))
+		  (uim-do-send-recv-cmd (format "%d NOP" uim-context-id))
 	  (if (not bypass)
 	      (uim-do-send-recv-cmd (format "%d %s" uim-context-id sendkey))
 	    (if mouse
@@ -1037,13 +1040,15 @@
 			    (append uim-last-key-vector nil))
 		    (message keymsg))
 		)
-	      ))
+		    )))
 	  
+	    (progn
 	  (uim-debug "reset prefix variables")
 	  (setq uim-prefix-arg nil)
 	  (setq uim-prefix-arg-vector nil)
-
 	  (setq uim-prefix-ignore-next nil)
+	      )
+	    )
 
 	  )
 
@@ -1060,8 +1065,7 @@
 	    (message (concat (key-description (vconcat uim-prefix-arg-vector
 						       uim-stacked-key-vector))
 			     "-"))))
-      )
-    )
+      ))
 
   (if uim-emacs
       (setq deactivate-mark uim-deactivate-mark))

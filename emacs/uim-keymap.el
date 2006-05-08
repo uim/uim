@@ -105,8 +105,6 @@
   (define-key uim-mode-map [vertical-scroll-bar] nil)
   (define-key uim-mode-map [mode-line] nil)
   (define-key uim-mode-map [vertical-line] nil)
-  (define-key uim-mode-map [menu-bar] nil)
-  (define-key uim-mode-map [tool-bar] nil)
 
   (define-key uim-mode-map [mouse-movement] nil)
   (define-key uim-mode-map [scroll-bar-movement] nil)
@@ -121,8 +119,6 @@
   (define-key uim-preedit-map [vertical-scroll-bar] 'ignore)
   (define-key uim-preedit-map [mode-line] nil)
   (define-key uim-preedit-map [vertical-line] nil) 
-  (define-key uim-preedit-map [menu-bar] 'ignore) 
-  (define-key uim-preedit-map [tool-bar] 'ignore) 
 
   (define-key uim-preedit-map [mouse-movement] nil)
   (define-key uim-preedit-map [scroll-bar-movement] nil)
