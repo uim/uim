@@ -50,5 +50,6 @@ preedit *create_preedit(void);
 void add_preedit(preedit *pe, int attr, const char *str);
 void clear_preedit(preedit *pe);
 int show_preedit(preedit *pe);
+int show_preedit_force(preedit *pe);
 
 #endif

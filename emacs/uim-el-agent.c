@@ -170,9 +170,9 @@ cmd_new(int context_id, const char *encoding)
   if (ua) {
 	check_prop_list_update(ua);
 	check_default_engine();
-	  return 1;
+	return 1;
   } else {
-	  return -1;
+	return -1;
   }
 
 }
@@ -601,11 +601,9 @@ process_keyvector(int serial, int cid, uim_key ukey, const char *keyname)
 		a_printf(" ( n [%d] ) ", ukey.key);
 	  }
 			
-	} else {
-	  show_preedit_uim_agent_context(current);
-	  show_candidate_uim_agent_context(current);
 	}
-
+	show_preedit_uim_agent_context(current);
+	show_candidate_uim_agent_context(current);
   } else {
 	/* ukey.key < 0 */
 	show_commit_string_uim_agent_context(current);

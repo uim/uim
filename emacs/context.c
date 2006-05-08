@@ -201,7 +201,7 @@ create_context(const char *encoding, uim_agent_context *ptr)
 
   uim_set_configuration_changed_cb(context,
 								   configuration_changed_cb);
-  
+
   uim_set_im_switch_request_cb(context,
 							   switch_app_global_im_cb,
 							   switch_system_global_im_cb);
@@ -420,7 +420,9 @@ show_commit_string_uim_agent_context(uim_agent_context *ua)
 int
 show_preedit_uim_agent_context(uim_agent_context *ua)
 {
-  if (ua == NULL || !ua->pe->valid) 
+  if (ua && ua->cand->valid)
+	show_preedit_force(ua->pe);
+  else if (ua == NULL || !ua->pe->valid) 
 	return -1;
   else
 	return show_preedit(ua->pe);
@@ -444,7 +446,7 @@ show_prop_uim_agent_context(uim_agent_context *ua)
 {
   if (ua == NULL || !ua->prop->valid)
 	return -1;
-  else
+  else 
 	return show_prop(ua->prop);
 }
 
