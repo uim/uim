@@ -137,7 +137,7 @@ QSize CharGridView::sizeHint( void ) const
     return QSize( numCols() * cellWidth(), numRows() * cellHeight() );
 }
 
-void CharGridView::resizeEvent( QResizeEvent * e )
+void CharGridView::resizeEvent( QResizeEvent * /* e */ )
 {
     updateCharGridView();
 }
