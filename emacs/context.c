@@ -421,7 +421,7 @@ int
 show_preedit_uim_agent_context(uim_agent_context *ua)
 {
   if (ua && ua->cand->valid)
-	show_preedit_force(ua->pe);
+	return show_preedit_force(ua->pe);
   else if (ua == NULL || !ua->pe->valid) 
 	return -1;
   else
