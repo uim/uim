@@ -180,10 +180,9 @@
 	(setq deactivate-mark nil))
     
     (unwind-protect    
-	(cond ((or (keymapp bind)
-		   (and (not bind)
-			(setq keyvectmp (uim-remove-shift keyvec))
-			(setq keyvec keyvectmp)))
+	(cond ((and (or (keymapp bind) (not bind))
+		    (setq keyvectmp (uim-remove-shift keyvec))
+		    (setq keyvec keyvectmp))
 
 	       (if uim-xemacs
 		   (progn
@@ -259,7 +258,7 @@
 				     (if x
 					 (list (car x) ["" nil :active nil])
 				       nil))
-				  current-menubar))
+				      current-menubar))
 	))
   )
 
