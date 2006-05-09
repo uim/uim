@@ -30,6 +30,7 @@
   SUCH DAMAGE.
 
 */
+#include <config.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -42,6 +43,11 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "uim.h"
 #include "uim-helper.h"
 #include "uim-internal.h"

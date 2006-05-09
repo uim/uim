@@ -1,5 +1,4 @@
-/*
-
+/* 
   Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
@@ -53,6 +52,9 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 #include "uim-scm.h"
 #include "uim-helper.h"

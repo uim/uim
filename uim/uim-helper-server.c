@@ -31,6 +31,7 @@
   SUCH DAMAGE.
 
 */
+#include <config.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -46,6 +47,10 @@
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "uim.h"
 #include "uim-helper.h"
 

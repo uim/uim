@@ -31,11 +31,21 @@
 
 */
 
+#include <config.h>
+
 #include <ctype.h>
 #include <iconv.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-encoding.h"
