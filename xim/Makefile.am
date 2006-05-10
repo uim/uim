@@ -5,7 +5,7 @@ if XIM
 bin_PROGRAMS = uim-xim
 uim_xim_LDFLAGS =  @X_LIBS@
 uim_xim_LDADD =  -lXext -lX11 $(top_builddir)/uim/libuim.la
-uim_xim_CPPFLAGS = -I$(top_srcdir)
+uim_xim_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_xim_CFLAGS = @X_CFLAGS@ -Wall
 uim_xim_CXXFLAGS = @X_CFLAGS@ -Wall
 man1_MANS = uim-xim.1
