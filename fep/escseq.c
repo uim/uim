@@ -149,9 +149,6 @@ static const char *attr2escseq(const struct attribute_tag *attr);
 static void set_attr(const char *str, int len);
 static int my_putchar(int c);
 
-#if defined(DEBUG) && DEBUG > 1
-static void print_attr(struct attribute_tag *attr);
-#endif
 
 void init_escseq(const struct attribute_tag *attr_uim)
 {
@@ -1232,12 +1229,3 @@ static int my_putchar(int c)
   write(g_win_out, &ch, 1);
   return c;
 }
-
-#if defined(DEBUG) && DEBUG > 1
-static void print_attr(struct attribute_tag *attr)
-{
-  debug(("underline = %d standout = %d bold = %d blink = %d fore = %d back = %d\n",
-      attr->underline, attr->standout, attr->bold, attr->blink,
-      attr->foreground, attr->background));
-}
-#endif

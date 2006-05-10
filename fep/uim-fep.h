@@ -98,6 +98,7 @@ void done(int exit_value);
 #define debug_write2(str, len) _debug_write(str, len)
 #define debug_write(str, len) _debug_write(str, len)
 void _debug(const char *fmt, ...);
+void _debug_write(const char *str, int len);
 
 #elif DEBUG == 2
 #define debug2(arg)
@@ -106,6 +107,7 @@ void _debug(const char *fmt, ...);
 #define debug_write(str, len) _debug_write(str, len)
 
 void _debug(const char *fmt, ...);
+void _debug_write(const char *str, int len);
 #else
 #define debug2(arg)
 #define debug(arg)

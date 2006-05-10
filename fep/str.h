@@ -37,10 +37,8 @@
 void init_str(void);
 const char *get_enc(void);
 int compare_str(char *str1, char *str2);
-int compare_str_rev(const char *str1, const char *str2);
+int compare_str_rev(char *str1, char *str2);
 int strwidth(const char *str);
-int byte2width(const char *str, size_t n);
-int byte2width2(const char *str, size_t n);
 int *width2byte(const char *str, int n);
 int *width2byte2(const char *str, int n);
 int strhead(char *str, int n);
