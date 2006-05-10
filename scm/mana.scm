@@ -72,9 +72,13 @@
   (lambda (kaki yomi)
     (mana-eval (list 'mana-add-new-word kaki yomi))))
 
+(define mana-learn
+  (lambda (yomi state pos len path)
+    (mana-eval (list 'mana-learn yomi state pos len (list 'quote path)))))
+
 (define mana-eval
   (lambda (val)
-    (mana-lib-eval (mana-list->string val))))
+    (mana-lib-eval (string-append (mana-list->string val) "\n"))))
 
 (define mana-list->string
   (lambda (lst)
@@ -86,10 +90,12 @@
                                    (string-escape elem))
                                   ((number? elem)
                                    (number->string elem))
+                                  ((list? elem)
+                                   (mana-list->string elem))
                                   (else
                                     "")))
                               lst)))
-      (string-append "(" (string-join " " canonicalized) ")\n"))))
+      (string-append "(" (string-join " " canonicalized) ")"))))
 
 (define mana-set-string!
   (lambda (mc yomi yomi-len)
@@ -111,17 +117,26 @@
         (apply mana-segment-new segment))
       best-path)))
 
-(define mana-get-nth-candidate
+(define mana-get-nth-path
   (lambda (mc seg-idx cand-idx)
     (let* ((segment-list (mana-context-segment-list mc))
-           (segment (list-ref segment-list seg-idx)))
-      (if (= cand-idx 0)
-          (mana-segment-first-candidate segment)
-          (begin
-            (if (null? (mana-segment-candidate-list segment))
-                (mana-set-candidate-list! mc seg-idx))
-            (list-ref (mana-segment-candidate-list segment)
-                      cand-idx))))))
+           (segment (list-ref segment-list seg-idx))
+           (pos (mana-segment-pos segment))
+           (len (mana-segment-len segment)))
+      (list
+        (if (= cand-idx 0)
+            (mana-segment-first-candidate segment)
+            (begin
+              (if (null? (mana-segment-candidate-list segment))
+                  (mana-set-candidate-list! mc seg-idx))
+              (list-ref (mana-segment-candidate-list segment)
+                        cand-idx)))
+        pos len))))
+
+
+(define mana-get-nth-candidate
+  (lambda (mc seg-idx cand-idx)
+    (car (mana-get-nth-path mc seg-idx cand-idx))))
 
 (define mana-get-nr-candidates
   (lambda (mc seg-idx)
@@ -947,14 +962,14 @@
              (cons preedit-underline
                    (string-append-map-ustr-latter extract-kana preconv-str)))))))
 
-(define mana-get-commit-string
+(define mana-get-commit-path
   (lambda (mc)
     (let (
           (segments (mana-context-segments mc)))
-      (string-append-map (lambda (seg-idx cand-idx)
-                           (mana-get-nth-candidate mc seg-idx cand-idx))
-                         (iota (ustr-length segments))
-                         (ustr-whole-seq segments)))))
+      (map (lambda (seg-idx cand-idx)
+             (mana-get-nth-path mc seg-idx cand-idx))
+           (iota (ustr-length segments))
+           (ustr-whole-seq segments)))))
 
 (define mana-commit-string
   (lambda (mc)
@@ -962,10 +977,14 @@
 
 (define mana-do-commit
   (lambda (mc)
-    (im-commit mc (mana-get-commit-string mc))
-    (mana-commit-string mc)
-    (mana-reset-candidate-window mc)
-    (mana-flush mc)))
+    (let ((path (mana-get-commit-path mc))
+          (yomi (mana-context-yomi mc))
+          (yomi-len (mana-context-yomi-len mc)))
+      (mana-learn (mana-context-yomi mc) 0 0 yomi-len path)
+      (im-commit mc (string-append-map car path))
+      (mana-commit-string mc)
+      (mana-reset-candidate-window mc)
+      (mana-flush mc))))
 
 (define mana-correct-segment-cursor
   (lambda (segments)
