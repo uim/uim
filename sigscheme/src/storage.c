@@ -108,7 +108,9 @@ static ScmObj scm_make_string_internal(char *str, scm_int_t len,
 SCM_EXPORT void
 scm_init_storage(const ScmStorageConf *conf)
 {
+#if SCM_USE_VALUECONS
     SCM_GLOBAL_VARS_INIT(storage);
+#endif
 #if SCM_USE_STORAGE_FATTY
     SCM_GLOBAL_VARS_INIT(storage_fatty);
     SCM_GLOBAL_VARS_INIT(static_storage_fatty);
@@ -182,51 +184,33 @@ scm_make_cons(ScmObj kar, ScmObj kdr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmCons);
-#else
-    SCM_ENTYPE_CONS(obj);
-#endif
-    SCM_CONS_SET_MUTABLE(obj);
-    SET_CAR(obj, kar);
-    SET_CDR(obj, kdr);
-
+    SCM_CONS_INIT(obj, kar, kdr);
     return obj;
 }
 
+#if SCM_SAL_HAS_IMMUTABLE_CONS
 SCM_EXPORT ScmObj
 scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
 {
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmCons);
-#else
-    SCM_ENTYPE_CONS(obj);
-#endif
-    SCM_CONS_SET_IMMUTABLE(obj);
-    SET_CAR(obj, kar);
-    SET_CDR(obj, kdr);
-
+    SCM_IMMUTABLE_CONS_INIT(obj, kar, kdr);
     return obj;
 }
+#endif /* has immutable cons */
 
+#if !SCM_SAL_HAS_IMMEDIATE_INT_ONLY
 SCM_EXPORT ScmObj
 scm_make_int(scm_int_t val)
 {
     ScmObj obj;
 
-#if SCM_USE_STORAGE_FATTY
     obj = scm_alloc_cell();
-    SCM_ENTYPE(obj, ScmInt);
-#else
-    SCM_ENTYPE_INT(obj);
-#endif
-    SCM_INT_SET_VALUE(obj, val);
-
+    SCM_INT_INIT(obj, val);
     return obj;
 }
+#endif /* not SCM_SAL_HAS_IMMEDIATE_INT_ONLY */
 
 SCM_EXPORT ScmObj
 scm_make_symbol(char *name, ScmObj val)
@@ -234,47 +218,30 @@ scm_make_symbol(char *name, ScmObj val)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmSymbol);
-#else
-    SCM_ENTYPE_SYMBOL(obj);
-#endif
-    SCM_SYMBOL_SET_NAME(obj, name);
-    SCM_SYMBOL_SET_VCELL(obj, val);
-
+    SCM_SYMBOL_INIT(obj, val, name);
     return obj;
 }
 
+#if !SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY
 SCM_EXPORT ScmObj
 scm_make_char(scm_ichar_t val)
 {
     ScmObj obj;
 
-#if SCM_USE_STORAGE_FATTY
     obj = scm_alloc_cell();
-    SCM_ENTYPE(obj, ScmChar);
-#else
-    SCM_ENTYPE_CHAR(obj);
-#endif
-    SCM_CHAR_SET_VALUE(obj, val);
-
+    SCM_CHAR_INIT(obj, val);
     return obj;
 }
+#endif /* not SCM_SAL_HAS_IMMEDIATE_INT_ONLY */
 
 #if SCM_USE_HYGIENIC_MACRO
 SCM_EXPORT ScmObj
-scm_make_hygienic_macro(ScmObj rules, ScmObj env)
+scm_make_hmacro(ScmObj rules, ScmObj env)
 {
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmMacro);
-#else
-    SCM_ENTYPE_MACRO(obj);
-#endif
-    SCM_HMACRO_SET_RULES(obj, rules);
-    SCM_HMACRO_SET_ENV(obj, scm_pack_env(env));
+    SCM_HMACRO_INIT(obj, rules, scm_pack_env(env));
     return obj;
 }
 
@@ -288,13 +255,7 @@ scm_make_farsymbol(ScmObj sym, ScmPackedEnv env)
         scm_macro_bad_scope(sym);
 #endif
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmFarsymbol);
-#else
-    SCM_ENTYPE_FARSYMBOL(obj);
-#endif
-    SCM_FARSYMBOL_SET_SYM(obj, sym);
-    SCM_FARSYMBOL_SET_ENV(obj, env);
+    SCM_FARSYMBOL_INIT(obj, sym, env);
     return obj;
 }
 
@@ -304,17 +265,10 @@ scm_make_subpat(ScmObj x, scm_int_t meta)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmSubpat);
-#else
-    SCM_ENTYPE_SUBPAT(obj);
-#endif
-    SCM_SUBPAT_SET_OBJ(obj, x);
-    SCM_SUBPAT_SET_META(obj, meta);
-
+    SCM_SUBPAT_INIT(obj, x, meta);
     return obj;
 }
-#endif
+#endif /* SCM_USE_HYGIENIC_MACRO */
 
 static ScmObj
 scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
@@ -332,18 +286,7 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
     }
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmString);
-#else
-    SCM_ENTYPE_STRING(obj);
-#endif
-    SCM_STRING_SET_STR(obj, str);
-    SCM_STRING_SET_LEN(obj, len);
-
-    if (is_immutable)
-        SCM_STRING_SET_IMMUTABLE(obj);
-    else
-        SCM_STRING_SET_MUTABLE(obj);
+    SCM_STRING_INIT(obj, str, len, !is_immutable);
 
     return obj;
 }
@@ -378,14 +321,7 @@ scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmFunc);
-#else
-    SCM_ENTYPE_FUNC(obj);
-#endif
-    SCM_FUNC_SET_TYPECODE(obj, type);
-    SCM_FUNC_SET_CFUNC(obj, func);
-
+    SCM_FUNC_INIT(obj, func, type);
     return obj;
 }
 
@@ -395,14 +331,7 @@ scm_make_closure(ScmObj exp, ScmObj env)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmClosure);
-#else
-    SCM_ENTYPE_CLOSURE(obj);
-#endif
-    SCM_CLOSURE_SET_EXP(obj, exp);
-    SCM_CLOSURE_SET_ENV(obj, env);
-
+    SCM_CLOSURE_INIT(obj, exp, env);
     return obj;
 }
 
@@ -412,15 +341,7 @@ scm_make_vector(ScmObj *vec, scm_int_t len)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmVector);
-#else
-    SCM_ENTYPE_VECTOR(obj);
-#endif
-    SCM_VECTOR_SET_VEC(obj, vec);
-    SCM_VECTOR_SET_LEN(obj, len);
-    SCM_VECTOR_SET_MUTABLE(obj);
-
+    SCM_MUTABLE_VECTOR_INIT(obj, vec, len);
     return obj;
 }
 
@@ -429,7 +350,7 @@ scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 {
     ScmObj obj;
 
-    /* Since this function is rarely used, the inefficiency is not problem */
+    /* Since this function is rarely used, the inefficiency is not a problem */
     obj = scm_make_vector(vec, len);
     SCM_VECTOR_SET_IMMUTABLE(obj);
 
@@ -442,20 +363,13 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmPort);
-#else
-    SCM_ENTYPE_PORT(obj);
-#endif
 
     if (flag & SCM_PORTFLAG_INPUT)
         flag |= SCM_PORTFLAG_LIVE_INPUT;
     if (flag & SCM_PORTFLAG_OUTPUT)
         flag |= SCM_PORTFLAG_LIVE_OUTPUT;
-    SCM_PORT_SET_FLAG(obj, flag);
 
-    SCM_PORT_SET_IMPL(obj, cport);
-
+    SCM_PORT_INIT(obj, cport, flag);
     return obj;
 }
 
@@ -465,14 +379,7 @@ scm_make_continuation(void)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmContinuation);
-#else
-    SCM_ENTYPE_CONTINUATION(obj);
-#endif
-    SCM_CONTINUATION_SET_OPAQUE(obj, INVALID_CONTINUATION_OPAQUE);
-    SCM_CONTINUATION_SET_TAG(obj, 0);
-
+    SCM_CONTINUATION_INIT(obj, INVALID_CONTINUATION_OPAQUE, 0);
     return obj;
 }
 
@@ -483,13 +390,7 @@ scm_make_value_packet(ScmObj values)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmValuePacket);
-#else
-    SCM_ENTYPE_VALUEPACKET(obj);
-#endif
-    SCM_VALUEPACKET_SET_VALUES(obj, values);
-
+    SCM_VALUEPACKET_INIT(obj, values);
     return obj;
 }
 #endif
@@ -501,13 +402,7 @@ scm_make_cpointer(void *ptr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmCPointer);
-#else
-    SCM_ENTYPE_C_POINTER(obj);
-#endif
-    SCM_C_POINTER_SET_VALUE(obj, ptr);
-
+    SCM_C_POINTER_INIT(obj, ptr);
     return obj;
 }
 
@@ -517,13 +412,7 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-#if SCM_USE_STORAGE_FATTY
-    SCM_ENTYPE(obj, ScmCFuncPointer);
-#else
-    SCM_ENTYPE_C_FUNCPOINTER(obj);
-#endif
-    SCM_C_FUNCPOINTER_SET_VALUE(obj, ptr);
-
+    SCM_C_FUNCPOINTER_INIT(obj, ptr);
     return obj;
 }
 #endif /* SCM_USE_SSCM_EXTENSIONS */
@@ -532,15 +421,14 @@ scm_make_cfunc_pointer(ScmCFunc ptr)
 SCM_EXPORT enum ScmObjType
 scm_type(ScmObj obj)
 {
-    scm_uintobj_t tag = SCM_TAG(obj);
-    switch (tag) {
-    case SCM_TAG_CONS:
+    switch (SCM_PTAG(obj)) {
+    case SCM_PTAG_CONS:
         return ScmCons;
 
-    case SCM_TAG_CLOSURE:
+    case SCM_PTAG_CLOSURE:
         return ScmClosure;
 
-    case SCM_TAG_OTHERS:
+    case SCM_PTAG_MISC:
         if (SYMBOLP(obj))
             return ScmSymbol;
         else if (STRINGP(obj))
@@ -565,7 +453,7 @@ scm_type(ScmObj obj)
             return ScmFreeCell;
         PLAIN_ERR(" invalid others object: ptr = ~P", (void *)obj);
 
-    case SCM_TAG_IMM:
+    case SCM_PTAG_IMM:
         if (INTP(obj))
             return ScmInt;
         else if (CHARP(obj))

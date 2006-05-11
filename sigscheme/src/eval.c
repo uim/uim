@@ -245,7 +245,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     int mand_count, i;
     scm_int_t variadic_len;
     /* The +2 is for rest and env/eval_state. */
-    void *argbuf[SCM_FUNCTYPE_MAND_MAX + 2];
+    ScmObj argbuf[SCM_FUNCTYPE_MAND_MAX + 2];
     DECLARE_INTERNAL_FUNCTION("(function call)");
 
     env = eval_state->env;
@@ -313,9 +313,9 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         ASSERT_NO_MORE_ARG(args);
     }
 
-    if (type & SCM_FUNCTYPE_TAIL_REC) {
+    if (type & SCM_FUNCTYPE_TAILREC) {
         eval_state->ret_type = SCM_VALTYPE_NEED_EVAL;
-        argbuf[i++] = eval_state;
+        argbuf[i++] = (ScmObj)eval_state;
     } else {
         eval_state->ret_type = SCM_VALTYPE_AS_IS;
         if (type & SCM_FUNCTYPE_SYNTAX)
@@ -326,29 +326,44 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     case 0:
         return (*func)();
     case 1:
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)((void*)argbuf[0]);
         return (*func)(argbuf[0]);
     case 2:
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)(argbuf[0], (void*)argbuf[0]);
         return (*func)(argbuf[0], argbuf[1]);
-#if SCM_FUNCTYPE_MAND_MAX >= 1
     case 3:
+#if SCM_FUNCTYPE_MAND_MAX >= 1
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)(argbuf[0], argbuf[1], (void*)argbuf[0]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2]);
 #endif
-#if SCM_FUNCTYPE_MAND_MAX >= 2
     case 4:
+#if SCM_FUNCTYPE_MAND_MAX >= 2
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], (void*)argbuf[0]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3]);
 #endif
-#if SCM_FUNCTYPE_MAND_MAX >= 3
     case 5:
+#if SCM_FUNCTYPE_MAND_MAX >= 3
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], (void*)argbuf[0]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4]);
 #endif
-#if SCM_FUNCTYPE_MAND_MAX >= 4
     case 6:
+#if SCM_FUNCTYPE_MAND_MAX >= 4
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], (void*)argbuf[0]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5]);
 #endif
-#if SCM_FUNCTYPE_MAND_MAX >= 5
     case 7:
+#if SCM_FUNCTYPE_MAND_MAX >= 5
+        if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], (void*)argbuf[0]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6]);
 #endif
+
     default:
         SCM_ASSERT(scm_false);
         return SCM_INVALID;

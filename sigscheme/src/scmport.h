@@ -208,6 +208,9 @@ SCM_EXPORT char *ScmBaseCharPort_inspect(ScmBaseCharPort *port,
                                          const char *header);
 SCM_EXPORT int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
+SCM_EXPORT ScmObj scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag);
+
+
 #ifdef __cplusplus
 }
 #endif

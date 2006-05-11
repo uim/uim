@@ -308,8 +308,7 @@ enum ScmObjType {
  * Function types:
  *
  * Function objects must tag themselves with proper information so
- * that the evaluator can correctly invoke them.  See doc/invocation
- * for details.
+ * that the evaluator can correctly invoke them.
  */
 #define SCM_FUNCTYPE_MAND_MAX 5
 enum ScmFuncTypeCode {
@@ -320,84 +319,84 @@ enum ScmFuncTypeCode {
 
     SCM_FUNCTYPE_FIXED     = 0 << (SCM_FUNCTYPE_MAND_BITS + 1),
     SCM_FUNCTYPE_VARIADIC  = 1 << (SCM_FUNCTYPE_MAND_BITS + 1),
-    SCM_FUNCTYPE_TAIL_REC  = 1 << (SCM_FUNCTYPE_MAND_BITS + 2),
+    SCM_FUNCTYPE_TAILREC   = 1 << (SCM_FUNCTYPE_MAND_BITS + 2),
 
     SCM_FUNCTYPE_ODDBALL   = 1 << (SCM_FUNCTYPE_MAND_BITS + 10),
 
     /* Compound types. */
     SCM_PROCEDURE_FIXED             = SCM_FUNCTYPE_FIXED,
-    SCM_PROCEDURE_FIXED_TAIL_REC    = SCM_FUNCTYPE_TAIL_REC,
+    SCM_PROCEDURE_FIXED_TAILREC     = SCM_FUNCTYPE_TAILREC,
     SCM_PROCEDURE_VARIADIC          = SCM_FUNCTYPE_VARIADIC,
-    SCM_PROCEDURE_VARIADIC_TAIL_REC = (SCM_FUNCTYPE_VARIADIC
-                                       | SCM_FUNCTYPE_TAIL_REC),
+    SCM_PROCEDURE_VARIADIC_TAILREC  = (SCM_FUNCTYPE_VARIADIC
+                                       | SCM_FUNCTYPE_TAILREC),
 
     SCM_SYNTAX_FIXED             = (SCM_FUNCTYPE_SYNTAX
                                     | SCM_PROCEDURE_FIXED),
-    SCM_SYNTAX_FIXED_TAIL_REC    = (SCM_FUNCTYPE_SYNTAX
-                                    | SCM_PROCEDURE_FIXED_TAIL_REC),
+    SCM_SYNTAX_FIXED_TAILREC     = (SCM_FUNCTYPE_SYNTAX
+                                    | SCM_PROCEDURE_FIXED_TAILREC),
     SCM_SYNTAX_VARIADIC          = (SCM_FUNCTYPE_SYNTAX
                                     | SCM_PROCEDURE_VARIADIC),
-    SCM_SYNTAX_VARIADIC_TAIL_REC = (SCM_FUNCTYPE_SYNTAX
-                                    | SCM_PROCEDURE_VARIADIC_TAIL_REC),
+    SCM_SYNTAX_VARIADIC_TAILREC  = (SCM_FUNCTYPE_SYNTAX
+                                    | SCM_PROCEDURE_VARIADIC_TAILREC),
 
     /* Proper combinations */
-    SCM_SYNTAX_FIXED_0               = (SCM_SYNTAX_FIXED                | 0),
-    SCM_SYNTAX_FIXED_TAILREC_0       = (SCM_SYNTAX_FIXED_TAIL_REC       | 0),
-    SCM_SYNTAX_VARIADIC_0            = (SCM_SYNTAX_VARIADIC             | 0),
-    SCM_SYNTAX_VARIADIC_TAILREC_0    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 0),
-    SCM_PROCEDURE_FIXED_0            = (SCM_PROCEDURE_FIXED             | 0),
-    SCM_PROCEDURE_FIXED_TAILREC_0    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 0),
-    SCM_PROCEDURE_VARIADIC_0         = (SCM_PROCEDURE_VARIADIC          | 0),
-    SCM_PROCEDURE_VARIADIC_TAILREC_0 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 0),
+    SCM_SYNTAX_FIXED_0               = (SCM_SYNTAX_FIXED               | 0),
+    SCM_SYNTAX_FIXED_TAILREC_0       = (SCM_SYNTAX_FIXED_TAILREC       | 0),
+    SCM_SYNTAX_VARIADIC_0            = (SCM_SYNTAX_VARIADIC            | 0),
+    SCM_SYNTAX_VARIADIC_TAILREC_0    = (SCM_SYNTAX_VARIADIC_TAILREC    | 0),
+    SCM_PROCEDURE_FIXED_0            = (SCM_PROCEDURE_FIXED            | 0),
+    SCM_PROCEDURE_FIXED_TAILREC_0    = (SCM_PROCEDURE_FIXED_TAILREC    | 0),
+    SCM_PROCEDURE_VARIADIC_0         = (SCM_PROCEDURE_VARIADIC         | 0),
+    SCM_PROCEDURE_VARIADIC_TAILREC_0 = (SCM_PROCEDURE_VARIADIC_TAILREC | 0),
 #if SCM_FUNCTYPE_MAND_MAX >= 1
-    SCM_SYNTAX_FIXED_1               = (SCM_SYNTAX_FIXED                | 1),
-    SCM_SYNTAX_FIXED_TAILREC_1       = (SCM_SYNTAX_FIXED_TAIL_REC       | 1),
-    SCM_SYNTAX_VARIADIC_1            = (SCM_SYNTAX_VARIADIC             | 1),
-    SCM_SYNTAX_VARIADIC_TAILREC_1    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 1),
-    SCM_PROCEDURE_FIXED_1            = (SCM_PROCEDURE_FIXED             | 1),
-    SCM_PROCEDURE_FIXED_TAILREC_1    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 1),
-    SCM_PROCEDURE_VARIADIC_1         = (SCM_PROCEDURE_VARIADIC          | 1),
-    SCM_PROCEDURE_VARIADIC_TAILREC_1 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 1),
+    SCM_SYNTAX_FIXED_1               = (SCM_SYNTAX_FIXED               | 1),
+    SCM_SYNTAX_FIXED_TAILREC_1       = (SCM_SYNTAX_FIXED_TAILREC       | 1),
+    SCM_SYNTAX_VARIADIC_1            = (SCM_SYNTAX_VARIADIC            | 1),
+    SCM_SYNTAX_VARIADIC_TAILREC_1    = (SCM_SYNTAX_VARIADIC_TAILREC    | 1),
+    SCM_PROCEDURE_FIXED_1            = (SCM_PROCEDURE_FIXED            | 1),
+    SCM_PROCEDURE_FIXED_TAILREC_1    = (SCM_PROCEDURE_FIXED_TAILREC    | 1),
+    SCM_PROCEDURE_VARIADIC_1         = (SCM_PROCEDURE_VARIADIC         | 1),
+    SCM_PROCEDURE_VARIADIC_TAILREC_1 = (SCM_PROCEDURE_VARIADIC_TAILREC | 1),
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 2
-    SCM_SYNTAX_FIXED_2               = (SCM_SYNTAX_FIXED                | 2),
-    SCM_SYNTAX_FIXED_TAILREC_2       = (SCM_SYNTAX_FIXED_TAIL_REC       | 2),
-    SCM_SYNTAX_VARIADIC_2            = (SCM_SYNTAX_VARIADIC             | 2),
-    SCM_SYNTAX_VARIADIC_TAILREC_2    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 2),
-    SCM_PROCEDURE_FIXED_2            = (SCM_PROCEDURE_FIXED             | 2),
-    SCM_PROCEDURE_FIXED_TAILREC_2    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 2),
-    SCM_PROCEDURE_VARIADIC_2         = (SCM_PROCEDURE_VARIADIC          | 2),
-    SCM_PROCEDURE_VARIADIC_TAILREC_2 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 2),
+    SCM_SYNTAX_FIXED_2               = (SCM_SYNTAX_FIXED               | 2),
+    SCM_SYNTAX_FIXED_TAILREC_2       = (SCM_SYNTAX_FIXED_TAILREC       | 2),
+    SCM_SYNTAX_VARIADIC_2            = (SCM_SYNTAX_VARIADIC            | 2),
+    SCM_SYNTAX_VARIADIC_TAILREC_2    = (SCM_SYNTAX_VARIADIC_TAILREC    | 2),
+    SCM_PROCEDURE_FIXED_2            = (SCM_PROCEDURE_FIXED            | 2),
+    SCM_PROCEDURE_FIXED_TAILREC_2    = (SCM_PROCEDURE_FIXED_TAILREC    | 2),
+    SCM_PROCEDURE_VARIADIC_2         = (SCM_PROCEDURE_VARIADIC         | 2),
+    SCM_PROCEDURE_VARIADIC_TAILREC_2 = (SCM_PROCEDURE_VARIADIC_TAILREC | 2),
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 3
-    SCM_SYNTAX_FIXED_3               = (SCM_SYNTAX_FIXED                | 3),
-    SCM_SYNTAX_FIXED_TAILREC_3       = (SCM_SYNTAX_FIXED_TAIL_REC       | 3),
-    SCM_SYNTAX_VARIADIC_3            = (SCM_SYNTAX_VARIADIC             | 3),
-    SCM_SYNTAX_VARIADIC_TAILREC_3    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 3),
-    SCM_PROCEDURE_FIXED_3            = (SCM_PROCEDURE_FIXED             | 3),
-    SCM_PROCEDURE_FIXED_TAILREC_3    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 3),
-    SCM_PROCEDURE_VARIADIC_3         = (SCM_PROCEDURE_VARIADIC          | 3),
-    SCM_PROCEDURE_VARIADIC_TAILREC_3 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 3),
+    SCM_SYNTAX_FIXED_3               = (SCM_SYNTAX_FIXED               | 3),
+    SCM_SYNTAX_FIXED_TAILREC_3       = (SCM_SYNTAX_FIXED_TAILREC       | 3),
+    SCM_SYNTAX_VARIADIC_3            = (SCM_SYNTAX_VARIADIC            | 3),
+    SCM_SYNTAX_VARIADIC_TAILREC_3    = (SCM_SYNTAX_VARIADIC_TAILREC    | 3),
+    SCM_PROCEDURE_FIXED_3            = (SCM_PROCEDURE_FIXED            | 3),
+    SCM_PROCEDURE_FIXED_TAILREC_3    = (SCM_PROCEDURE_FIXED_TAILREC    | 3),
+    SCM_PROCEDURE_VARIADIC_3         = (SCM_PROCEDURE_VARIADIC         | 3),
+    SCM_PROCEDURE_VARIADIC_TAILREC_3 = (SCM_PROCEDURE_VARIADIC_TAILREC | 3),
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 4
-    SCM_SYNTAX_FIXED_4               = (SCM_SYNTAX_FIXED                | 4),
-    SCM_SYNTAX_FIXED_TAILREC_4       = (SCM_SYNTAX_FIXED_TAIL_REC       | 4),
-    SCM_SYNTAX_VARIADIC_4            = (SCM_SYNTAX_VARIADIC             | 4),
-    SCM_SYNTAX_VARIADIC_TAILREC_4    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 4),
-    SCM_PROCEDURE_FIXED_4            = (SCM_PROCEDURE_FIXED             | 4),
-    SCM_PROCEDURE_FIXED_TAILREC_4    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 4),
-    SCM_PROCEDURE_VARIADIC_4         = (SCM_PROCEDURE_VARIADIC          | 4),
-    SCM_PROCEDURE_VARIADIC_TAILREC_4 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 4),
+    SCM_SYNTAX_FIXED_4               = (SCM_SYNTAX_FIXED               | 4),
+    SCM_SYNTAX_FIXED_TAILREC_4       = (SCM_SYNTAX_FIXED_TAILREC       | 4),
+    SCM_SYNTAX_VARIADIC_4            = (SCM_SYNTAX_VARIADIC            | 4),
+    SCM_SYNTAX_VARIADIC_TAILREC_4    = (SCM_SYNTAX_VARIADIC_TAILREC    | 4),
+    SCM_PROCEDURE_FIXED_4            = (SCM_PROCEDURE_FIXED            | 4),
+    SCM_PROCEDURE_FIXED_TAILREC_4    = (SCM_PROCEDURE_FIXED_TAILREC    | 4),
+    SCM_PROCEDURE_VARIADIC_4         = (SCM_PROCEDURE_VARIADIC         | 4),
+    SCM_PROCEDURE_VARIADIC_TAILREC_4 = (SCM_PROCEDURE_VARIADIC_TAILREC | 4),
 #endif
 #if SCM_FUNCTYPE_MAND_MAX >= 5
-    SCM_SYNTAX_FIXED_5               = (SCM_SYNTAX_FIXED                | 5),
-    SCM_SYNTAX_FIXED_TAILREC_5       = (SCM_SYNTAX_FIXED_TAIL_REC       | 5),
-    SCM_SYNTAX_VARIADIC_5            = (SCM_SYNTAX_VARIADIC             | 5),
-    SCM_SYNTAX_VARIADIC_TAILREC_5    = (SCM_SYNTAX_VARIADIC_TAIL_REC    | 5),
-    SCM_PROCEDURE_FIXED_5            = (SCM_PROCEDURE_FIXED             | 5),
-    SCM_PROCEDURE_FIXED_TAILREC_5    = (SCM_PROCEDURE_FIXED_TAIL_REC    | 5),
-    SCM_PROCEDURE_VARIADIC_5         = (SCM_PROCEDURE_VARIADIC          | 5),
-    SCM_PROCEDURE_VARIADIC_TAILREC_5 = (SCM_PROCEDURE_VARIADIC_TAIL_REC | 5),
+    SCM_SYNTAX_FIXED_5               = (SCM_SYNTAX_FIXED               | 5),
+    SCM_SYNTAX_FIXED_TAILREC_5       = (SCM_SYNTAX_FIXED_TAILREC       | 5),
+    SCM_SYNTAX_VARIADIC_5            = (SCM_SYNTAX_VARIADIC            | 5),
+    SCM_SYNTAX_VARIADIC_TAILREC_5    = (SCM_SYNTAX_VARIADIC_TAILREC    | 5),
+    SCM_PROCEDURE_FIXED_5            = (SCM_PROCEDURE_FIXED            | 5),
+    SCM_PROCEDURE_FIXED_TAILREC_5    = (SCM_PROCEDURE_FIXED_TAILREC    | 5),
+    SCM_PROCEDURE_VARIADIC_5         = (SCM_PROCEDURE_VARIADIC         | 5),
+    SCM_PROCEDURE_VARIADIC_TAILREC_5 = (SCM_PROCEDURE_VARIADIC_TAILREC | 5),
 #endif
 
     /* Special type. */
@@ -542,7 +541,19 @@ struct ScmStorageConf_ {
   Object Creators
 =======================================*/
 /* TODO: add this check to all accessor and creator macros. */
-#define SCM_TYPECHECK(x, t)               (0 ? (*(t*)NULL = (x)) : (x))
+#define SCM_TYPESAFE_MACRO(macro, rettype, types, args) \
+    (0 ? (*(rettype (*)types)0)args                     \
+       : 0 ? ((*(rettype*)NULL) = macro args)           \
+           : macro args)
+
+/* For macros enclosed in do-while(0). */
+#define SCM_TYPESAFE_MACRO_VOID(macro, types, args)     \
+    do {                                                \
+        if (0)                                          \
+            (*(void (*)types)NULL) args;                \
+        else                                            \
+            macro args;                                 \
+    } while (0)
 
 #define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
 #define SCM_MAKE_INT(val)                 SCM_SAL_MAKE_INT(val)
@@ -582,8 +593,8 @@ struct ScmStorageConf_ {
 #define SCM_MAKE_VALUEPACKET(vals)        SCM_SAL_MAKE_VALUEPACKET(vals)
 
 #if SCM_USE_HYGIENIC_MACRO
-#define SCM_MAKE_HYGIENIC_MACRO(rules, defenv)                               \
-    SCM_SAL_MAKE_HYGIENIC_MACRO((rules), (defenv))
+#define SCM_MAKE_HMACRO(rules, defenv)          \
+    SCM_SAL_MAKE_HMACRO((rules), (defenv))
 #define SCM_MAKE_FARSYMBOL(sym, env)      SCM_SAL_MAKE_FARSYMBOL((sym), (env))
 #define SCM_MAKE_SUBPAT(x, meta)          SCM_SAL_MAKE_SUBPAT((x), (meta))
 #endif
@@ -680,7 +691,11 @@ struct ScmStorageConf_ {
 #define SCM_VECTOR_MUTABLEP(o)          SCM_SAL_VECTOR_MUTABLEP(o)
 #define SCM_VECTOR_SET_MUTABLE(o)       SCM_SAL_VECTOR_SET_MUTABLE(o)
 #define SCM_VECTOR_SET_IMMUTABLE(o)     SCM_SAL_VECTOR_SET_IMMUTABLE(o)
+#if 0
 #define SCM_VECTOR_VALID_INDEXP(o, i)   SCM_SAL_VECTOR_VALID_INDEXP((o), (i))
+#else
+#define SCM_VECTOR_VALID_INDEXP(o, i)   (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
+#endif
 
 #define SCM_PORTP(o)                    SCM_SAL_PORTP(o)
 #define SCM_PORT_FLAG(o)                SCM_SAL_PORT_FLAG(o)

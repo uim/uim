@@ -87,7 +87,7 @@ static size_t l_heap_size, l_heap_alloc_threshold;
 static size_t l_n_heaps, l_n_heaps_max;
 static ScmObjHeap *l_heaps;
 static ScmCell *l_heaps_lowest, *l_heaps_highest;
-static ScmObj l_freelist;
+static ScmCell *l_freelist;
 
 static jmp_buf l_save_regs_buf;
 static ScmObj *l_stack_start_pointer;
@@ -168,10 +168,10 @@ scm_alloc_cell(void)
 {
     ScmObj ret = SCM_FALSE;
 
-    if (NULLP(l_freelist))
+    if (!l_freelist)
         gc_mark_and_sweep();
 
-    ret = l_freelist;
+    ret = (ScmObj)l_freelist;
     l_freelist = SCM_FREECELL_NEXT(l_freelist);
 
     return ret;
@@ -295,7 +295,7 @@ initialize_heap(const ScmStorageConf *conf)
     l_n_heaps = 0;
     l_heaps = NULL;
     l_heaps_lowest = l_heaps_highest = NULL;
-    l_freelist = SCM_NULL;
+    l_freelist = NULL;
 
     /* preallocate heaps */
     for (i = 0; i < conf->n_heaps_init; i++)
@@ -360,16 +360,17 @@ gc_mark_and_sweep(void)
     }
 }
 
+
 #if SCM_USE_STORAGE_COMPACT
 static void
 mark_obj(ScmObj obj)
 {
-    scm_int_t i;
-    scm_uintobj_t tag;
+    scm_int_t i, len;
+    ScmObj *vec;
 
 mark_loop:
     /* no need to mark immediates */
-    if (!SCM_CANBE_MARKED(obj))
+    if (SCM_IMMP(obj))
         return;
 
     /* avoid cyclic marking */
@@ -380,25 +381,39 @@ mark_loop:
     SCM_MARK(obj);
 
     /* mark recursively */
-    tag = SCM_TAG(obj);
-    switch (tag) {
-    case SCM_TAG_CONS:
+    switch (SCM_PTAG(obj)) {
+    case SCM_PTAG_CONS:
+        /* CONS accessors bypass tag manipulation by default so we
+         * have to do it specially here. */
+        obj = SCM_DROP_GCBIT(obj);
         mark_obj(SCM_CONS_CAR(obj));
         obj = SCM_CONS_CDR(obj);
         goto mark_loop;
 
-    case SCM_TAG_CLOSURE:
+    case SCM_PTAG_CLOSURE:
         mark_obj(SCM_CLOSURE_EXP(obj));
         obj = SCM_CLOSURE_ENV(obj);
         goto mark_loop;
 
-    case SCM_TAG_OTHERS:
+    case SCM_PTAG_MISC:
         if (SYMBOLP(obj)) {
             obj = SCM_SYMBOL_VCELL(obj);
             goto mark_loop;
+#if SCM_USE_HYGIENIC_MACRO
+        } else if (SCM_WRAPPERP(obj)) { /* Macro-related wrapper. */
+            obj = SCM_WRAPPER_OBJ(obj);
+            goto mark_loop;
+#endif /* SCM_USE_HYGIENIC_MACRO */
+
+        /* Alert: objects that store a non-ScmObj in obj_x must
+         * explicitly drop the GC bit here.  This currently applies
+         * only to vectors. */
         } else if (VECTORP(obj)) {
-            for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
-                mark_obj(SCM_VECTOR_VEC(obj)[i]);
+            len = SCM_VECTOR_LEN(obj);
+            vec = SCM_VECTOR_VEC(obj);
+            vec = (ScmObj*)SCM_DROP_GCBIT((scm_intobj_t)vec);
+            for (i = 0; i < len; i++) {
+                mark_obj(vec[i]);
             }
         } else if (VALUEPACKETP(obj)) {
             obj = SCM_VALUEPACKET_VALUES(obj);
@@ -496,11 +511,11 @@ within_heapp(ScmObj obj)
     size_t i;
 
 #if SCM_USE_STORAGE_COMPACT
-    if (!SCM_CANBE_MARKED(obj))
+    if (SCM_IMMP(obj))
         return scm_false;
     /* The pointer on the stack is 'tagged' to represent its types.
      * So we need to ignore the tag to get its real pointer value. */
-    ptr = (ScmCell *)SCM_STRIP_TAG_INFO(obj);
+    ptr = SCM_UNTAG_PTR(obj);
 #else /* SCM_USE_STORAGE_COMPACT */
     ptr = obj;
 #endif /* SCM_USE_STORAGE_COMPACT */
@@ -517,8 +532,8 @@ within_heapp(ScmObj obj)
         heap = l_heaps[i];
         if (heap && &heap[0] <= ptr && ptr < &heap[l_heap_size]) {
 #if SCM_USE_STORAGE_COMPACT
-            /* Check the consistency between obj's tag and ptr->cdr's GC bit. */
-            if (!SCM_HAS_VALID_CDR_GCBITP(obj, ptr->cdr))
+            /* Check the consistency between obj's tag and *ptr. */
+            if (!SCM_TAG_CONSISTENTP(obj, *ptr))
                 return scm_false;
 #endif /* SCM_USE_STORAGE_COMPACT */
             return scm_true;
@@ -614,29 +629,17 @@ static void
 free_cell(ScmCell *cell)
 {
 #if SCM_USE_STORAGE_COMPACT
-    if (SCM_NEED_SWEEPP(cell)) {
-        if (SCM_SWEEP_PHASE_SYMBOLP(cell)) {
-            if (SCM_SYMBOL_NAME(cell))
-                free(SCM_SYMBOL_NAME(cell));
-        } else if (SCM_SWEEP_PHASE_STRINGP(cell)) {
-            if (SCM_STRING_STR(cell))
-                free(SCM_STRING_STR(cell));
-        } else if (SCM_SWEEP_PHASE_VECTORP(cell)) {
-            if (SCM_VECTOR_VEC(cell))
-                free(SCM_VECTOR_VEC(cell));
-        } else if (SCM_SWEEP_PHASE_PORTP(cell)) {
-            if (SCM_PORT_IMPL(cell))
-                scm_port_close(cell);
-        } else if (SCM_SWEEP_PHASE_CONTINUATIONP(cell)) {
-            /*
-             * Since continuation object is not so many, destructing the object by
-             * function call will not cost high. This function interface makes
-             * continuation module substitution easy without preparing
-             * module-specific header file which contains the module-specific
-             * destruction macro.
-             */
-            scm_destruct_continuation(cell);
-        }
+    if (SCM_CELL_MISCP(*cell)) {
+        if (SCM_CELL_SYMBOLP(*cell))
+            SCM_CELL_SYMBOL_FIN(*cell);
+        else if (SCM_CELL_STRINGP(*cell))
+            SCM_CELL_STRING_FIN(*cell);
+        else if (SCM_CELL_VECTORP(*cell))
+            SCM_CELL_VECTOR_FIN(*cell);
+        else if (SCM_CELL_PORTP(*cell))
+            SCM_CELL_PORT_FIN(*cell);
+        else if (SCM_CELL_CONTINUATIONP(*cell))
+            SCM_CELL_CONTINUATION_FIN(*cell);
     }
 #else /* SCM_USE_STORAGE_COMPACT */
     switch (SCM_TYPE(cell)) {
@@ -693,7 +696,8 @@ gc_sweep(void)
     size_t i, sum_collected, n_collected;
     ScmObjHeap heap;
     ScmCell *cell;
-    ScmObj obj, new_freelist;
+    ScmObj obj;
+    ScmCell *new_freelist;
 
     new_freelist = l_freelist; /* l_freelist remains on manual GC */
 
@@ -704,6 +708,9 @@ gc_sweep(void)
 
         for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++) {
             /* FIXME: is this safe for SCM_USE_STORAGE_COMPACT? */
+            /* Yes, but it's probably cleaner to change SCM_MARKEDP()
+             * et al to SCM_CELL_MARKEDP() etc and take care of
+             * dereferencing in this file.  -- Jun Inoue */
             obj = (ScmObj)cell;
 
             if (SCM_MARKEDP(obj)) {
@@ -711,7 +718,7 @@ gc_sweep(void)
             } else {
                 free_cell(cell);
                 SCM_RECLAIM_CELL(cell, new_freelist);
-                new_freelist = obj;
+                new_freelist = cell;
                 n_collected++;
             }
         }

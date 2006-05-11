@@ -281,7 +281,7 @@ scm_p_char_upcase(ScmObj ch)
     ENSURE_CHAR(ch);
 
     val = SCM_CHAR_VALUE(ch);
-    SCM_CHAR_SET_VALUE(ch, ICHAR_UPCASE(val));
+    ch  = MAKE_CHAR(ICHAR_UPCASE(val));
 
     return ch;
 }
@@ -295,7 +295,7 @@ scm_p_char_downcase(ScmObj ch)
     ENSURE_CHAR(ch);
 
     val = SCM_CHAR_VALUE(ch);
-    SCM_CHAR_SET_VALUE(ch, ICHAR_DOWNCASE(val));
+    ch  = MAKE_CHAR(ICHAR_DOWNCASE(val));
 
     return ch;
 }

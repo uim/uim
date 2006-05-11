@@ -112,7 +112,124 @@ extern "C" {
 #define SCM_MARK(o)      SCM_SAL_MARK(o)
 #define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
 
-/* Prefix-less Abbreviation Names For Convenient Internal Use */
+
+/* Initializers are available to the allocator only.  Use SCM_MAKE_*
+ * from user code. */
+#define SCM_CONS_INIT(obj, kar, kdr)                    \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CONS_INIT,          \
+                            (ScmObj, ScmObj, ScmObj),   \
+                            ((obj), (kar), (kdr)))
+
+#define SCM_IMMUTABLE_CONS_INIT(obj, kar, kdr)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_IMMUTABLE_CONS_INIT,        \
+                            (ScmObj, ScmObj, ScmObj),           \
+                            (obj, kar, kdr))
+
+#define SCM_CLOSURE_INIT(obj, exp, env)                 \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CLOSURE_INIT,       \
+                            (ScmObj, ScmObj, ScmObj),   \
+                            (obj, exp, env))
+
+#if !SCM_HAS_IMMEDIATE_CHAR_ONLY
+#define SCM_CHAR_INIT(o, val)                           \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CHAR_INIT,          \
+                            (ScmObj, scm_ichar_t),      \
+                            (o, val))
+#endif
+
+#if !SCM_HAS_IMMEDIATE_INT_ONLY
+#define SCM_INT_INIT(o, val)                            \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_INT_INIT,           \
+                            (ScmObj, scm_ichar_t),      \
+                            (o, val))
+#endif
+
+#define SCM_SYMBOL_INIT(obj, val, nam)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SYMBOL_INIT,        \
+                            (ScmObj, ScmObj, char*),    \
+                            (obj, val, nam))
+
+#define SCM_STRING_INIT(obj, str, len, mutp)                            \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_STRING_INIT,                        \
+                            (ScmObj, char*, scm_int_t, scm_bool),       \
+                            (obj, str, len, mutp))
+
+#define SCM_MUTABLE_STRING_INIT(obj, str, len)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_MUTABLE_STRING_INIT,        \
+                            (ScmObj, char*, scm_int_t),         \
+                            (obj, str, len))
+
+#define SCM_IMMUTABLE_STRING_INIT(obj, str, len)                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_IMMUTABLE_STRING_INIT,      \
+                            (ScmObj, char*, scm_int_t),         \
+                            (obj, str, len))
+
+#define SCM_FUNC_INIT(obj, type, func)                                   \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_FUNC_INIT,                           \
+                            (ScmObj, ScmFuncType, enum ScmFuncTypeCode), \
+                            (obj, type, func))
+#define SCM_VECTOR_INIT(obj, vec, len)                          \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_VECTOR_INIT,                \
+                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (obj, vec, len))
+
+#define SCM_MUTABLE_VECTOR_INIT(obj, vec, len)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_MUTABLE_VECTOR_INIT,        \
+                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (obj, vec, len))
+
+#define SCM_IMMUTABLE_VECTOR_INIT(obj, vec, len)                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_IMMUTABLE_VECTOR_INIT,      \
+                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (obj, vec, len))
+#define SCM_PORT_INIT(obj, cport, flag)                         \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_PORT_INIT,                  \
+                            (ScmObj, struct ScmCharPort_*,      \
+                             enum ScmPortFlag),                 \
+                            (obj, cport, flag))
+#define SCM_CONTINUATION_INIT(obj, oq, tag)             \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CONTINUATION_INIT,  \
+                            (ScmObj, void*, scm_int_t), \
+                            (obj, oq, tag))
+
+#if SCM_USE_SSCM_EXTENSIONS
+/* SCM_C_POINTER_INIT(obj, void *ptr) */
+#define SCM_C_POINTER_INIT(obj, ptr)                    \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_C_POINTER_INIT,     \
+                            (ScmObj, void*),            \
+                            (obj, ptr))
+/* SCM_C_FUNCPOINTER_INIT(obj, ScmCFunc ptr) */
+#define SCM_C_FUNCPOINTER_INIT(obj, ptr)                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_C_FUNCPOINTER_INIT, \
+                            (ScmObj, ScmCFunc),         \
+                            (obj, ptr))
+#endif /* SCM_USE_SSCM_EXTENSIONS */
+#define SCM_VALUEPACKET_INIT(obj, vals)                 \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_VALUEPACKET_INIT,   \
+                            (ScmObj, ScmObj),           \
+                            (obj, vals))
+
+#define SCM_HMACRO_INIT(o, r, e)                                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_HMACRO_INIT,                \
+                            (ScmObj, ScmObj, ScmPackedEnv),     \
+                            (o, r, e))
+
+#define SCM_FARSYMBOL_INIT(o, s, e)                             \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_FARSYMBOL_INIT,             \
+                            (ScmObj, ScmObj, ScmPackedEnv),     \
+                            (o, s, e))
+
+#define SCM_SUBPAT_INIT(o, x, m)                                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SUBPAT_INIT,                \
+                            (ScmObj, ScmObj, scm_int_t),        \
+                            (o, x, m))
+
+
+
+
+/* Prefix-less Abbreviation Names For Convenient Internal Use (TODO:
+ * generate these automatically and maybe put them in an optional
+ * public header file.) */
 #define SYM_QUOTE            SCM_SYM_QUOTE
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
 #define SYM_UNQUOTE          SCM_SYM_UNQUOTE
@@ -176,7 +293,7 @@ extern "C" {
 #define MAKE_VALUEPACKET              SCM_MAKE_VALUEPACKET
 
 #if SCM_USE_HYGIENIC_MACRO
-#define MAKE_HYGIENIC_MACRO           SCM_MAKE_HYGIENIC_MACRO
+#define MAKE_HMACRO                   SCM_MAKE_HMACRO
 #define MAKE_FARSYMBOL                SCM_MAKE_FARSYMBOL
 #define MAKE_SUBPAT                   SCM_MAKE_SUBPAT
 #define HMACROP        SCM_HMACROP
@@ -244,9 +361,9 @@ extern "C" {
 #define VALIDP(obj)   (!EQ((obj), SCM_INVALID))
 
 /* Declares the current function name as seen by Scheme codes.  TYPE
- * is ignored, but we may use it in the future to implement a stub
- * generator.  This macro can be invoked only at the beginning of a
- * function body, right after local variable declarations. */
+ * is ignored, but we use it to implement a stub generator.  This
+ * macro can be invoked only at the beginning of a function body,
+ * right after local variable declarations. */
 #define DECLARE_FUNCTION(func_name, type)                                    \
     const char *SCM_MANGLE(name);                                            \
     ScmObj SCM_MANGLE(tmp);                                                  \
@@ -319,7 +436,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 
 /* Like POP(), but signals an error if no argument is available. */
 #define MUST_POP_ARG(_lst)                                                   \
-    (CONSP(_lst) ? POP(_lst) : (ERR("missing argument(s)"), NULL))
+    (CONSP(_lst) ? POP(_lst) : (ERR("missing argument(s)"), SCM_NULL))
 
 #define FOR_EACH_WHILE(_kar, _lst, _cond)                                    \
     while ((_cond) && ((_kar) = CAR((_lst)), (_lst) = CDR(_lst), 1))

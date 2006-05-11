@@ -32,11 +32,9 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-#include <stdlib.h>
-
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
-
+#include <stdlib.h>
 
 /* ------------------------------
  *  Definitions
@@ -155,6 +153,7 @@ scm_p_set_macro_debug_flagsx(ScmObj new_mode)
 static const struct scm_func_registration_info dbg_funcs[] = {
     { "set-macro-debug-flags!", scm_p_set_macro_debug_flagsx,
       SCM_PROCEDURE_FIXED_1 },
+    { NULL, NULL, SCM_FUNCTYPE_INVALID }
 };
 
 static void
@@ -323,7 +322,7 @@ scm_s_syntax_rules(ScmObj args, ScmObj env)
         SCM_QUEUE_ADD(q, CONS(pat, tmpl));
     }
 
-    return MAKE_HYGIENIC_MACRO(compiled_rules, env);
+    return MAKE_HMACRO(compiled_rules, env);
 }
 
 SCM_EXPORT ScmObj

@@ -73,6 +73,8 @@ typedef struct ScmCell_ ScmCell;
 typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
 
+#define SIZEOF_SCMOBJ SIZEOF_VOID_P
+
 typedef ScmObj (*ScmFuncType)();
 
 struct ScmCell_ {
@@ -253,7 +255,7 @@ struct ScmCell_ {
 #define SCM_SAL_MAKE_VALUEPACKET(vals) (scm_make_value_packet(vals))
 #endif /* SCM_USE_VALUECONS */
 #if SCM_USE_HYGIENIC_MACRO
-#define SCM_SAL_MAKE_HYGIENIC_MACRO           scm_make_hygienic_macro
+#define SCM_SAL_MAKE_HMACRO                   scm_make_hmacro
 #define SCM_SAL_MAKE_FARSYMBOL                scm_make_farsymbol
 #define SCM_SAL_MAKE_SUBPAT                   scm_make_subpat
 #endif /* SCM_USE_HYGIENIC_MACRO */
@@ -274,8 +276,11 @@ SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 SCM_EXPORT ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
 SCM_EXPORT ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
+#if 0
+/* Declared in scmport.h. */
 SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
                                 enum ScmPortFlag flag);
+#endif
 SCM_EXPORT ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
 SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);
@@ -285,7 +290,7 @@ SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
 SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
 #endif
 #if SCM_USE_HYGIENIC_MACRO
-SCM_EXPORT ScmObj scm_make_hygienic_macro(ScmObj rules, ScmObj defenv);
+SCM_EXPORT ScmObj scm_make_hmacro(ScmObj rules, ScmObj defenv);
 SCM_EXPORT ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
 SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #endif
@@ -306,6 +311,8 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_INTP(o)                (SCM_TYPE(o) == ScmInt)
 #define SCM_SAL_INT_VALUE(o)           (SCM_AS_INT(o)->obj.integer.value)
 #define SCM_SAL_INT_SET_VALUE(o, val)  (SCM_INT_VALUE(o) = (val))
+#define SCM_SAL_INT_INIT(o, val)       (SCM_ENTYPE((o), ScmInt),        \
+                                        SCM_INT_SET_VALUE((o), (val)))
 
 #define SCM_SAL_CONSP(o)               (SCM_TYPE(o) == ScmCons)
 #if SCM_DEBUG
@@ -321,16 +328,31 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_CONS_MUTABLEP(o)       (SCM_MUTABLEP(o))
 #define SCM_SAL_CONS_SET_MUTABLE(o)    (SCM_SET_MUTABLE(o))
 #define SCM_SAL_CONS_SET_IMMUTABLE(o)  (SCM_SET_IMMUTABLE(o))
+#define SCM_SAL_CONS_INIT(o, kar, kdr)          \
+    (SCM_ENTYPE((o), ScmCons),                  \
+     SCM_CONS_SET_CAR((o), (kar)),              \
+     SCM_CONS_SET_CDR((o), (kdr)),              \
+     SCM_CONS_SET_MUTABLE(o))
+#define SCM_SAL_IMMUTABLE_CONS_INIT(o, kar, kdr)        \
+    (SCM_ENTYPE((o), ScmCons),                          \
+     SCM_CONS_SET_CAR((o), (kar)),                      \
+     SCM_CONS_SET_CDR((o), (kdr)),                      \
+     SCM_CONS_SET_IMMUTABLE(o))
 
 #define SCM_SAL_SYMBOLP(o)             (SCM_TYPE(o) == ScmSymbol)
 #define SCM_SAL_SYMBOL_NAME(o)         (SCM_AS_SYMBOL(o)->obj.symbol.name)
 #define SCM_SAL_SYMBOL_SET_NAME(o, _name)  (SCM_SYMBOL_NAME(o) = (_name))
 #define SCM_SAL_SYMBOL_VCELL(o)        (SCM_AS_SYMBOL(o)->obj.symbol.value)
 #define SCM_SAL_SYMBOL_SET_VCELL(o, vcell) (SCM_SYMBOL_VCELL(o) = (vcell))
+#define SCM_SAL_SYMBOL_INIT(o, v, n)   (SCM_ENTYPE((o), ScmSymbol),     \
+                                        SCM_SYMBOL_SET_VCELL((o), (v)), \
+                                        SCM_SYMBOL_SET_NAME((o), (n)))
 
 #define SCM_SAL_CHARP(o)               (SCM_TYPE(o) == ScmChar)
 #define SCM_SAL_CHAR_VALUE(o)          (SCM_AS_CHAR(o)->obj.character.value)
 #define SCM_SAL_CHAR_SET_VALUE(o, val) (SCM_CHAR_VALUE(o) = (val))
+#define SCM_SAL_CHAR_INIT(o, val)      (SCM_ENTYPE((o), ScmChar),       \
+                                        SCM_CHAR_SET_VALUE((o), (val)))
 
 #define SCM_SAL_STRINGP(o)              (SCM_TYPE(o) == ScmString)
 #define SCM_SAL_STRING_STR(o)           (SCM_AS_STRING(o)->obj.string.str)
@@ -340,6 +362,16 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_STRING_MUTABLEP(o)      (SCM_MUTABLEP(o))
 #define SCM_SAL_STRING_SET_MUTABLE(o)   (SCM_SET_MUTABLE(o))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o) (SCM_SET_IMMUTABLE(o))
+#define SCM_SAL_STRING_INIT(o, s, l, mutp)      \
+    (SCM_ENTYPE((o), ScmString),                \
+     SCM_STRING_SET_STR((o), (s)),              \
+     SCM_STRING_SET_LEN((o), (l)),              \
+     mutp ? SCM_STRING_SET_MUTABLE(o)           \
+          : SCM_STRING_SET_IMMUTABLE(o))
+#define SCM_SAL_MUTABLE_STRING_INIT(o, s, l)            \
+    SCM_SAL_STRING_INIT((o), (s), (l), scm_true)
+#define SCM_SAL_IMMUTABLE_STRING_INIT(o, s, l)          \
+    SCM_SAL_STRING_INIT((o), (s), (l), scm_false)
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_FUNC_TYPECODE(o)           (SCM_AS_FUNC(o)->obj.function.type)
@@ -347,12 +379,18 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_FUNC_CFUNC(o)              (SCM_AS_FUNC(o)->obj.function.ptr)
 #define SCM_SAL_FUNC_SET_CFUNC(o, func)                                      \
     (SCM_FUNC_CFUNC(o) = (ScmFuncType)(func))
+#define SCM_SAL_FUNC_INIT(o, f, t) (SCM_ENTYPE((o), ScmFunc),           \
+                                    SCM_FUNC_SET_CFUNC((o), (f)),       \
+                                    SCM_FUNC_SET_TYPECODE((o), (t)))
 
 #define SCM_SAL_CLOSUREP(o)               (SCM_TYPE(o) == ScmClosure)
 #define SCM_SAL_CLOSURE_EXP(o)            (SCM_AS_CLOSURE(o)->obj.closure.exp)
 #define SCM_SAL_CLOSURE_SET_EXP(o, exp)   (SCM_CLOSURE_EXP(o) = (exp))
 #define SCM_SAL_CLOSURE_ENV(o)            (SCM_AS_CLOSURE(o)->obj.closure.env)
 #define SCM_SAL_CLOSURE_SET_ENV(o, env)   (SCM_CLOSURE_ENV(o) = (env))
+#define SCM_SAL_CLOSURE_INIT(o, x, e)     (SCM_ENTYPE((o), ScmClosure),       \
+                                           SCM_CLOSURE_SET_EXP((o), (x)), \
+                                           SCM_CLOSURE_SET_ENV((o), (e)))
 
 #define SCM_SAL_VECTORP(o)                (SCM_TYPE(o) == ScmVector)
 #define SCM_SAL_VECTOR_VEC(o)             (SCM_AS_VECTOR(o)->obj.vector.vec)
@@ -363,12 +401,25 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_VECTOR_SET_MUTABLE(o)     (SCM_SET_MUTABLE(o))
 #define SCM_SAL_VECTOR_SET_IMMUTABLE(o)   (SCM_SET_IMMUTABLE(o))
 #define SCM_SAL_VECTOR_VALID_INDEXP(o, i) (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
+#define SCM_SAL_VECTOR_INIT(o, v, l, mutp)      \
+    (SCM_ENTYPE((o), ScmVector),                \
+     SCM_VECTOR_SET_VEC((o), (v)),              \
+     SCM_VECTOR_SET_LEN((o), (l)),              \
+     mutp ? SCM_VECTOR_SET_MUTABLE(o)           \
+          : SCM_VECTOR_SET_IMMUTABLE(o))
+#define SCM_SAL_MUTABLE_VECTOR_INIT(o, v, l)            \
+    SCM_SAL_VECTOR_INIT((o), (v), (l), scm_true)
+#define SCM_SAL_IMMUTABLE_VECTOR_INIT(o, v, l)          \
+    SCM_SAL_VECTOR_INIT((o), (v), (l), scm_false)
 
 #define SCM_SAL_PORTP(o)               (SCM_TYPE(o) == ScmPort)
 #define SCM_SAL_PORT_FLAG(o)           (SCM_AS_PORT(o)->obj.port.flag)
 #define SCM_SAL_PORT_SET_FLAG(o, flag) (SCM_PORT_FLAG(o) = (flag))
 #define SCM_SAL_PORT_IMPL(o)           (SCM_AS_PORT(o)->obj.port.impl)
 #define SCM_SAL_PORT_SET_IMPL(o, impl) (SCM_PORT_IMPL(o) = (impl))
+#define SCM_SAL_PORT_INIT(o, i, f)     (SCM_ENTYPE((o), ScmPort),        \
+                                        SCM_PORT_SET_IMPL((o), (i)), \
+                                        SCM_PORT_SET_FLAG((o), (f)))
 
 #define SCM_SAL_CONTINUATIONP(o)       (SCM_TYPE(o) == ScmContinuation)
 #define SCM_SAL_CONTINUATION_OPAQUE(o)                                       \
@@ -379,6 +430,10 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
     (SCM_AS_CONTINUATION(o)->obj.continuation.tag)
 #define SCM_SAL_CONTINUATION_SET_TAG(o, val)                                 \
     (SCM_CONTINUATION_TAG(o) = (val))
+#define SCM_SAL_CONTINUATION_INIT(o, v, t)      \
+    (SCM_ENTYPE((o), ScmContinuation),          \
+     SCM_SAL_CONTINUATION_SET_OPAQUE((o), (v)), \
+     SCM_SAL_CONTINUATION_SET_TAG((o), (t)))
 
 #if SCM_USE_VALUECONS
 /* to modify a VALUECONS, rewrite its type to cons by SCM_ENTYPE(vcons,
@@ -394,6 +449,8 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_VALUEPACKET_VALUES(o)                                        \
     (SCM_AS_VALUEPACKET(o)->obj.value_packet.lst)
 #define SCM_SAL_VALUEPACKET_SET_VALUES(o, v) (SCM_VALUEPACKET_VALUES(o) = (v))
+#define SCM_SAL_VALUEPACKET_INIT(o, v) (SCM_ENTYPE((o), ScmValuePacket),      \
+                                        SCM_VALUEPACKET_SET_VALUES((o), (v)))
 #endif /* SCM_USE_VALUECONS */
 
 #if SCM_USE_HYGIENIC_MACRO || SCM_USE_UNHYGIENIC_MACRO
@@ -407,18 +464,27 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_HMACRO_SET_RULES(o, r) (SCM_SAL_HMACRO_RULES(o) = (r))
 #define SCM_SAL_HMACRO_ENV(o)          (SCM_AS_HMACRO(o)->obj.hmacro.env)
 #define SCM_SAL_HMACRO_SET_ENV(o, e)   (SCM_SAL_HMACRO_ENV(o) = (e))
+#define SCM_SAL_HMACRO_INIT(o, r, e)   (SCM_ENTYPE((o), ScmMacro),      \
+                                        SCM_HMACRO_SET_RULES((o), (r)), \
+                                        SCM_HMACRO_SET_ENV((o), (e)))
 
 #define SCM_SAL_FARSYMBOLP(o)           (SCM_TYPE(o) == ScmFarsymbol)
 #define SCM_SAL_FARSYMBOL_SYM(o)        (SCM_AS_FARSYMBOL(o)->obj.farsym.sym)
 #define SCM_SAL_FARSYMBOL_SET_SYM(o, s) (SCM_SAL_FARSYMBOL_SYM(o) = (s))
 #define SCM_SAL_FARSYMBOL_ENV(o)        (SCM_AS_FARSYMBOL(o)->obj.farsym.env)
 #define SCM_SAL_FARSYMBOL_SET_ENV(o, e) (SCM_SAL_FARSYMBOL_ENV(o) = (e))
+#define SCM_SAL_FARSYMBOL_INIT(o, s, e) (SCM_ENTYPE((o), ScmFarsymbol),   \
+                                         SCM_FARSYMBOL_SET_SYM((o), (s)), \
+                                         SCM_FARSYMBOL_SET_ENV((o), (e)))
 
 #define SCM_SAL_SUBPATP(o)              (SCM_TYPE(o) == ScmSubpat)
 #define SCM_SAL_SUBPAT_OBJ(o)           (SCM_AS_SUBPAT(o)->obj.subpat.obj)
 #define SCM_SAL_SUBPAT_META(o)          (SCM_AS_SUBPAT(o)->obj.subpat.meta)
 #define SCM_SAL_SUBPAT_SET_OBJ(o, x)    (SCM_SAL_SUBPAT_OBJ(o) = (x))
 #define SCM_SAL_SUBPAT_SET_META(o, m)   (SCM_SAL_SUBPAT_META(o) = (m))
+#define SCM_SAL_SUBPAT_INIT(o, x, m)    (SCM_ENTYPE((o), ScmSubpat),    \
+                                         SCM_SUBPAT_SET_OBJ((o), (x)),  \
+                                         SCM_SUBPAT_SET_META((o), (m)))
 #endif /* SCM_USE_HYGIENIC_MACRO */
 
 /*===========================================================================
@@ -434,11 +500,17 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
     (SCM_AS_C_POINTER(o)->obj.c_pointer.value)
 #define SCM_SAL_C_POINTER_SET_VALUE(o, ptr)                                  \
     (SCM_C_POINTER_VALUE(o) = (ptr))
+#define SCM_SAL_C_POINTER_INIT(o, ptr)          \
+    (SCM_ENTYPE((o), ScmCPointer),              \
+     SCM_C_POINTER_SET_VALUE((o), (ptr)))
 #define SCM_SAL_C_FUNCPOINTERP(o)       (SCM_TYPE(o) == ScmCFuncPointer)
 #define SCM_SAL_C_FUNCPOINTER_VALUE(o)                                       \
     (SCM_AS_C_FUNCPOINTER(o)->obj.c_func_pointer.value)
 #define SCM_SAL_C_FUNCPOINTER_SET_VALUE(o, ptr)                              \
     (SCM_C_FUNCPOINTER_VALUE(o) = (ptr))
+#define SCM_SAL_C_FUNCPOINTER_INIT(o, ptr)      \
+    (SCM_ENTYPE((o), ScmCFuncPointer),          \
+     SCM_C_FUNCPOINTER_SET_VALUE((o), (ptr)))
 
 /*===========================================================================
   GC Related Operations
