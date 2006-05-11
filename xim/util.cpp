@@ -472,7 +472,7 @@ static void fmtstr(char *buffer, size_t *currlen, size_t maxlen,
     printf("fmtstr min=%d max=%d s=[%s]\n", min, max, value);
 #endif
     if (value == 0) {
-	value = "<NULL>";
+	value = (char *)"<NULL>";
     }
 
     for (strln = 0; value[strln]; ++strln); /* strlen */

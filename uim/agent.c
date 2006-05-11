@@ -100,7 +100,7 @@ main(int argc, char **argv)
   while (1) {
     char buf[32];
     fgets(buf, 32, stdin);
-    if (isalpha(buf[0])) {
+    if (isalpha((unsigned char)buf[0])) {
       uim_press_key(ac->uc, buf[0], 0);
     } else {
       uim_press_key(ac->uc, UKey_Return, 0);

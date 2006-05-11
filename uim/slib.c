@@ -831,7 +831,7 @@ vload (char *fname, long cflag, long rflag)
   if ((start = strstr (buffer, key)))
     {
       for (end = &start[strlen (key)];
-	   *end && isalnum (*end);
+	   *end && isalnum ((unsigned char)*end);
 	   ++end);
       j = end - start;
       memmove (buffer, start, j);
@@ -4064,7 +4064,7 @@ lreadtk (char *buffer, long j)
   if (*p == '-')
     p += 1;
   adigit = 0;
-  while (isdigit (*p))
+  while (isdigit ((unsigned char)*p))
     {
       p += 1;
       adigit = 1;
@@ -4072,7 +4072,7 @@ lreadtk (char *buffer, long j)
   if (*p == '.')
     {
       p += 1;
-      while (isdigit (*p))
+      while (isdigit ((unsigned char)*p))
 	{
 	  p += 1;
 	  adigit = 1;
@@ -4085,11 +4085,11 @@ lreadtk (char *buffer, long j)
       p += 1;
       if (*p == '-' || *p == '+')
 	p += 1;
-      if (!isdigit (*p))
+      if (!isdigit ((unsigned char)*p))
 	goto a_symbol;
       else
 	p += 1;
-      while (isdigit (*p))
+      while (isdigit ((unsigned char)*p))
 	p += 1;
     }
   if (*p)
