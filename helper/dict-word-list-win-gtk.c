@@ -489,13 +489,15 @@ static void
 help_about_action_cb(GtkAction *action, WordListWindow *window)
 {
   GtkWidget *about_dialog, *label1;
-  gchar about_name[] = {
-    N_("<span size=\"20000\">uim-dict " VERSION "</span>\n\n"
-       "<span size=\"14000\">"
-       "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-       "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
-       "All rights reserved.</span>\n")
-  };
+  gchar *about_name;
+  const gchar *name = N_("uim-dict");
+  const gchar *copyright = N_(
+    "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
+    "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
+    "All rights reserved.");
+
+  about_name = g_strdup_printf(
+       "<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
 
   about_dialog = gtk_dialog_new_with_buttons(_("About uim-dict"), NULL,
 					     GTK_DIALOG_MODAL,
@@ -505,7 +507,8 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
 
   label1 = gtk_label_new(NULL);
   gtk_widget_show(label1);
-  gtk_label_set_markup(GTK_LABEL(label1), _(about_name));
+  gtk_label_set_markup(GTK_LABEL(label1), about_name);
+  g_free(about_name);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(about_dialog)->vbox),
 		     label1, FALSE, FALSE, 0);
 
