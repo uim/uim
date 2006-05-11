@@ -1,0 +1,22 @@
+Index: configure.in
+===================================================================
+--- configure.in	(revision 3380)
++++ configure.in	(working copy)
+@@ -13,7 +13,7 @@
+ AC_PATH_PROGS(PERL, perl5 perl)
+ AC_PATH_PROG(ASCIIDOC, asciidoc)
+ # The modified version of the C testing framework
+-AC_PATH_PROG(CUTTER, cutter)
++AC_PATH_PROG(SH, sh)
+ AC_PATH_PROGS(MD5, md5 md5sum)
+ 
+ # Checks for libraries.
+@@ -24,8 +24,6 @@
+ AC_HEADER_STDC
+ AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h \
+                   strings.h unistd.h])
+-AC_CHECK_HEADER([cutter/cutter.h], have_cutter_h=yes, have_cutter_h=no)
+-AM_CONDITIONAL(HAVE_CUTTER_H, test "x$have_cutter_h" = xyes)
+ 
+ # Checks for typedefs, structures, and compiler characteristics.
+ AC_C_CONST

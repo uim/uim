@@ -1,0 +1,18 @@
+AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/src
+AM_LDFLAGS  = -rpath $(libdir)
+LIBS        = $(top_builddir)/src/libsscm.la
+
+SUFFIXES= -coll.o -coll.c
+CLEANFILES= *-coll.c
+
+# FIXME: how do I make this rule depend on collect.sh (is it
+# possible)?
+.c-coll.c:
+	$(SH) ./collect.sh $< > $@ || { rm -f $@; false; }
+
+
+# Name your test suite with a -coll suffix if you want it processed
+# with collect.sh.  Leave the suffix out if you don't want some script
+# messing around with your masterpiece.
+TESTS= test-storage-coll test-storage-compact-coll
+check_PROGRAMS= test-storage-coll test-storage-compact-coll test-minishell

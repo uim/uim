@@ -1,0 +1,340 @@
+/*=====================================================================-*-c-*-
+ *  Filename : sscm-test.h
+ *  About    : scheme C-level testing utilities
+ *
+ *  Copyright (C) 2006 Jun Inoue <jun.lambda@gmail.com>
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *  3. Neither the name of authors nor the names of its contributors
+ *     may be used to endorse or promote products derived from this software
+ *     without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS
+ *  IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ *  PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+===========================================================================*/
+
+#ifndef SSCM_TEST_H
+#define SSCM_TEST_H
+
+
+#include <sigscheme/sigscheme.h>
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct _tst_suite_info tst_suite_info;
+typedef struct _tst_case_info tst_case_info;
+
+/* ------------------------------
+ * Output
+ */
+
+static char *
+tst_format(const char *msg, ...)
+{
+    va_list va;
+    char *buf;
+    int len;
+    va_start(va, msg);
+
+    len = vsnprintf(NULL, 0, msg, va);
+    if (len < 0)
+        abort();
+    buf = malloc (len + 1);
+    if (!buf)
+        abort();
+    vsnprintf (buf, len + 1, msg, va);
+
+    va_end(va);
+    return buf;
+}
+
+static void
+tst_puts(tst_suite_info *_, tst_case_info *__, const char *msg)
+{
+    fputs (msg, stderr);
+}
+
+
+
+/* ------------------------------
+ * Test case
+ */
+
+struct _tst_case_info {
+    void (*fn)(tst_suite_info*, tst_case_info*);
+    const char *desc;
+    int done;
+    int succ;
+    int fail;
+    int abortp;
+};
+
+
+#define TST_TRAMPOLINE(id) id##_
+
+/* If you're preprocessing with collect.sh, this macro and its
+ * arguments has to be written in one line.  C macros can't be used in
+ * either argument.  ID is the function name of the test case, DSC is
+ * a description of the test case and must be a string
+ * literal. */
+#define TST_CASE(id, dsc)                               \
+static void id(tst_suite_info *, tst_case_info *, int); \
+static void                                             \
+TST_TRAMPOLINE(id)(tst_suite_info *TST_SUITE_INFO,      \
+                   tst_case_info  *TST_CASE_INFO)       \
+{                                                       \
+    TST_CASE_INFO->desc = dsc;                          \
+    id(TST_SUITE_INFO, TST_CASE_INFO, 0);               \
+}                                                       \
+static void                                             \
+id(tst_suite_info *TST_SUITE_INFO,                      \
+   tst_case_info *TST_CASE_INFO,                        \
+   int TST_FAILED)
+
+
+/* ------------------------------
+ * Invocation
+ */
+
+struct _tst_suite_info {
+    void (*logger)(tst_suite_info *, tst_case_info *, const char *);
+    tst_case_info *results;
+    struct {
+        int cases;
+        int done;               /* Number of individual tests. */
+        int succ;
+        int fail;
+        int aborts;
+    } stats;
+};
+
+#define TST_DEFAULT_SUITE_SETUP                 \
+    {                                           \
+        tst_puts, NULL, {0}                     \
+    }
+
+#define TST_DEFAULT_SUITE_CLEANUP(suite)        \
+    do {                                        \
+        free((suite).results);                  \
+    } while(0)
+
+
+#ifdef TST_EXCLUDE_THIS
+#define TST_LIST_BEGIN()                        \
+int                                             \
+main ()                                         \
+{                                               \
+    puts ("Nothing to test.");                  \
+    return 0;                                   \
+}
+#define TST_REGISTER(fn)        /* Empty */
+#define TST_LIST_END()          /* Empty */
+
+#else  /* !defined (TST_EXCLUDE_THIS) */
+
+#define TST_RUN(fn, s, c)  SCM_GC_PROTECTED_CALL_VOID((fn), ((s), (c)))
+
+
+#define TST_LIST_BEGIN()                                \
+/* Returns 1 if any test case fails, otherwise 0. */    \
+static int                                              \
+tst_main(tst_suite_info *suite)                         \
+{                                                       \
+    tst_case_info cases[] = {
+
+#define TST_REGISTER(fn) { TST_TRAMPOLINE(fn) },
+
+#define TST_LIST_END()                                          \
+        { 0 } /* Dummy in case no test case is present. */      \
+    };                                                          \
+    size_t i;                                                   \
+                                                                \
+    for (i = 0; cases[i].fn; i++) {                             \
+        TST_RUN(cases[i].fn, suite, &cases[i]);                 \
+        tst_analyze(suite, &cases[i]);                          \
+    }                                                           \
+    tst_summarize(suite);                                       \
+                                                                \
+    suite->results = malloc(sizeof(cases));                     \
+    memcpy(suite->results, cases, sizeof(cases));               \
+                                                                \
+    return !!suite->stats.fail;                                 \
+}                                                               \
+TST_MAIN()
+
+#ifdef TST_HAVE_MAIN
+#define TST_MAIN()              /* Empty. */
+#else  /* not have main() */
+#define TST_MAIN()                                      \
+int                                                     \
+main(int argc, char *argv[])                            \
+{                                                       \
+    tst_suite_info suite = TST_DEFAULT_SUITE_SETUP;     \
+    scm_initialize(NULL);                               \
+    tst_main(&suite);                                   \
+    scm_finalize();                                     \
+    TST_DEFAULT_SUITE_CLEANUP(suite);                   \
+    return !!suite.stats.fail;                          \
+}
+#endif /* not have main() */
+
+
+static void
+tst_analyze(tst_suite_info *suite, tst_case_info *result)
+{
+    suite->stats.done += result->done;
+    suite->stats.succ += result->succ;
+    suite->stats.fail += result->fail;
+    ++suite->stats.cases;
+    if (result->abortp) {
+        ++suite->stats.aborts;
+        suite->logger(suite, result,
+                      tst_format("* ABORTED: %s\n", result->desc));
+    } else {
+        suite->logger(suite, result,
+                      tst_format("%s: %s\n",
+                                 result->fail ? "* FAILED"
+                                              : "    OK",
+                                 result->desc));
+    }
+}
+
+static void
+tst_summarize(tst_suite_info *suite)
+{
+    suite->logger(suite, NULL,
+                  tst_format("%d test cases, %d aborted.  %d individual "
+                             "tests, %d succeeded and %d failed.\n",
+                             suite->stats.cases, suite->stats.aborts,
+                             suite->stats.done,
+                             suite->stats.succ, suite->stats.fail));
+}
+
+
+
+#endif /* !defined (TST_EXCLUDE_THIS) */
+
+
+
+/* ------------------------------
+ * Tests
+ */
+#define TST_LOG(msg)  TST_SUITE_INFO->logger(TST_SUITE_INFO,    \
+                                             TST_CASE_INFO,     \
+                                             msg)
+#define TST_FAIL(msg) (++TST_CASE_INFO->done,   \
+                       ++TST_CASE_INFO->fail,   \
+                       TST_LOG(msg),            \
+                       TST_FAILED = 1,          \
+                       0)
+#define TST_SUCC()    (++TST_CASE_INFO->done,   \
+                       ++TST_CASE_INFO->succ,   \
+                       TST_FAILED = 0,          \
+                       1)
+
+#define TST_ABORT()   do { TST_CASE_INFO->abortp = 1; return; } while (0)
+
+#define TST_ASSERT(cond) if (!(cond)) TST_ABORT()
+
+#define TST_COND(cond, desc)                            \
+    (((cond)                                            \
+      ||                                                \
+      TST_FAIL(tst_format(__FILE__ ":%d: %s failed.\n", \
+                          __LINE__, desc)))             \
+     && TST_SUCC())
+
+#define TST_EQUALITY(eqp, type, fmt, expect, actual, desc)      \
+do {                                                            \
+    type _x = (expect);                                         \
+    type _a = (actual);                                         \
+    if (!eqp(_x, _a)) {                                         \
+        TST_FAIL(tst_format(__FILE__ ":%d: %s failed.\n"        \
+                            "  expected: " fmt "\n"             \
+                            "  but got : " fmt "\n",            \
+                            __LINE__, desc, _x, _a));           \
+    } else {                                                    \
+        TST_SUCC();                                             \
+    }                                                           \
+} while (0)
+
+/* Comparators. */
+#define TST_C_EQUAL(a, b)    ((a) == (b))
+#define TST_STR_EQUAL(a, b)  (!strcmp((a), (b)))
+
+
+/* Equality tests. */
+#if HAVE_INTMAX_T
+#define TST_EQ_INT(x, a, desc)  TST_EQUALITY(TST_C_EQUAL, intmax_t, \
+                                             "%jd", x, a, desc)
+#define TST_EQ_UINT(x, a, desc) TST_EQUALITY(TST_C_EQUAL, uintmax_t, \
+                                             "%ujd", x, a, desc)
+#define TST_NEQ_INT(x, a, desc)  TST_EQUALITY(!TST_C_EQUAL, intmax_t, \
+                                              "%jd", x, a, desc)
+#define TST_NEQ_UINT(x, a, desc) TST_EQUALITY(!TST_C_EQUAL, uintmax_t, \
+                                              "%ujd", x, a, desc)
+#else  /* not have intmax_t */
+#define TST_EQ_INT(x, a, desc)  TST_EQUALITY(TST_C_EQUAL, long, \
+                                             "%ld", x, a, desc)
+#define TST_EQ_UINT(x, a, desc) TST_EQUALITY(TST_C_EQUAL, unsigned long, \
+                                             "%uld", x, a, desc)
+#define TST_NEQ_INT(x, a, desc)  TST_EQUALITY(!TST_C_EQUAL, long, \
+                                             "%ld", x, a, desc)
+#define TST_NEQ_UINT(x, a, desc) TST_EQUALITY(!TST_C_EQUAL, unsigned long, \
+                                             "%uld", x, a, desc)
+#endif /* not have intmax_t */
+
+#define TST_EQ_STR(x, a, desc)  TST_EQUALITY(TST_STR_EQUAL, char*,      \
+                                             "%s", x, a, desc)
+#define TST_NEQ_STR(x, a, desc)  TST_EQUALITY(!TST_STR_EQUAL, char*,    \
+                                              "%s", x, a, desc)
+#define TST_EQ_PTR(x, a, desc)  TST_EQUALITY(TST_C_EQUAL, void*,        \
+                                             "%p", x, a, desc)
+#define TST_NEQ_PTR(x, a, desc)  TST_EQUALITY(!TST_C_EQUAL, void*,      \
+                                              "%p", x, a, desc)
+#define TST_EQ_OBJ(x, a, desc)  TST_EQUALITY(SCM_EQ, scm_uintobj_t,     \
+                                             "%lx", (scm_uintobj_t)x,   \
+                                             (scm_uintobj_t)a, desc)
+#define TST_NEQ_OBJ(x, a, desc)  TST_EQUALITY(!SCM_EQ, scm_uintobj_t,   \
+                                              "%lx", (scm_uintobj_t)x,  \
+                                              (scm_uintobj_t)a, desc)
+
+/* Function pointers are a bit tricky. */
+typedef void (*tst_funcptr_t)();
+#define TST_EQ_FPTR(x, a, desc)                                         \
+    TST_EQUALITY(TST_C_EQUAL, tst_funcptr_t, "%p",                      \
+                 (0 ? (tst_funcptr_t)((x) == (a)) /* Typecheck */       \
+                    : (tst_funcptr_t)(x)),                              \
+                 (tst_funcptr_t)(a), desc)
+
+#define TST_NEQ_FPTR(x, a, desc)                                        \
+    TST_EQUALITY(!TST_C_EQUAL, tst_funcptr_t, "%p",                     \
+                 (0 ? (tst_funcptr_t)((x) == (a)) /* Typecheck */       \
+                    : (tst_funcptr_t)(x)),                              \
+                 (tst_funcptr_t)(a), desc)
+
+#define TST_EQ  TST_EQ_OBJ
+#define TST_NEQ TST_NEQ_OBJ
+
+
+#endif /* !def SSCM_TEST_H */
