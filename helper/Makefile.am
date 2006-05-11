@@ -5,10 +5,10 @@ helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 if APPLET
 libexec_PROGRAMS =  uim-toolbar-applet
 
-uim_toolbar_applet_LDADD = @GNOME2_LIBS@ @GTK2_LIBS@ @APPLET_LIBS@ \
+uim_toolbar_applet_LDADD = @GTK2_LIBS@ @APPLET_LIBS@ \
 			   $(top_builddir)/uim/libuim.la
 uim_toolbar_applet_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
-uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_CFLAGS@ @GNOME2_CFLAGS@ -Wall
+uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_CFLAGS@
 
 uim_toolbar_applet_SOURCES = toolbar-applet-gnome.c toolbar-common-gtk.c
 
