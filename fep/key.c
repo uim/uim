@@ -109,7 +109,7 @@ int tty2key_state(char key)
   if (key >= 'A' && key <= 'Z') {
     key_state += UMod_Shift;
   }
-  if (key >= 0 && key <= 31) {
+  if (key <= 31) {
     key_state +=  UMod_Control;
   }
   return key_state;
