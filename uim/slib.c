@@ -102,6 +102,9 @@
 #if HAVE_SYS_TIMES_H
 #include <sys/times.h>
 #endif
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 #include "siod.h"
 
