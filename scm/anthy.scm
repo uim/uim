@@ -947,6 +947,7 @@
      ((anthy-prev-candidate-key? key key-state)
       (anthy-move-candidate ac -1))
 
+     ;; FIXME: don't cancel conversion
      ((or (anthy-transpose-as-hiragana-key?   key key-state)
 	  (anthy-transpose-as-katakana-key?   key key-state)
 	  (anthy-transpose-as-hankana-key?    key key-state)
