@@ -30,7 +30,7 @@
   SUCH DAMAGE.
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <ctype.h>
