@@ -15,19 +15,28 @@ HEADER_FILES = \
 	toolbar-common-uimstateindicator.h \
 	toolbar-standalone-qt.h \
 	candwin-qt.h \
-	switcher-qt.h \
+	switcher-qt.h
+if PREF
+HEADER_FILES += \
 	pref-customwidgets.h \
 	pref-kseparator.h \
 	pref-qt.h
+endif
+
 MOC_FILES = \
 	toolbar-common-quimhelpertoolbar.moc \
 	toolbar-common-uimstateindicator.moc \
 	toolbar-standalone-qt.moc \
 	candwin-qt.moc \
-	switcher-qt.moc \
+	switcher-qt.moc
+if PREF
+MOC_FILES += \
 	pref-customwidgets.moc \
 	pref-kseparator.moc \
 	pref-qt.moc
+endif
+
+if PREF
 UI_TMP_FILES = \
 	pref-olisteditformbase.cpp \
 	pref-olisteditformbase.h \
@@ -35,13 +44,17 @@ UI_TMP_FILES = \
 	pref-keyeditformbase.cpp \
 	pref-keyeditformbase.h \
 	pref-keyeditformbase.moc
+endif
 
 noinst_HEADERS = $(HEADER_FILES)
 
 bin_PROGRAMS = \
 	uim-toolbar-qt \
-	uim-im-switcher-qt \
+	uim-im-switcher-qt
+if PREF
+bin_PROGRAMS += \
 	uim-pref-qt
+endif
 
 libexec_PROGRAMS = uim-candwin-qt
 
@@ -114,6 +127,7 @@ endif
 
 
 # Pref
+if PREF
 nodist_uim_pref_qt_SOURCES = \
 	pref-olisteditformbase.cpp \
 	pref-olisteditformbase.h \
@@ -147,6 +161,7 @@ pref-keyeditformbase.cpp: pref-keyeditformbase.h pref-keyeditformbase.moc
 	mv pref-keyeditformbase.cpp.tmp pref-keyeditformbase.cpp
 pref-keyeditformbase.h:
 	$(UIC) $(top_srcdir)/qt/pref-keyeditformbase.ui -o pref-keyeditformbase.h
+endif
 
 CLEANFILES = \
 	$(MOC_FILES) \

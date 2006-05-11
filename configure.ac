@@ -62,7 +62,8 @@ AC_SUBST(M17NLIB_LIBS)
 
 AC_ARG_WITH(scim,
   AC_HELP_STRING([--with-scim],
-                 [build against SCIM (too experimental)]),
+                 [build against SCIM (too experimental)
+		  @<:@default=no@:>@]),
   [
     case $with_scim in
       no)
@@ -116,7 +117,8 @@ AC_SUBST(ANTHY_CFLAGS)
 # *** Tests for Canna ***
 # ***********************
 AC_ARG_WITH(canna,
-	AS_HELP_STRING([--with-canna], [Build with libcanna]),
+	AS_HELP_STRING([--with-canna], [Build with libcanna
+					@<:@default=no@:>@]),
 	[
 	if test "x$with_canna" = "xyes"; then
 		AC_CHECK_HEADERS([canna/RK.h],
@@ -133,7 +135,8 @@ AC_ARG_WITH(canna,
 # *** Tests for Mana ***
 # ***********************
 AC_ARG_WITH(mana,
-	AS_HELP_STRING([--with-mana], [Build a plugin for Mana]),
+	AS_HELP_STRING([--with-mana], [Build a plugin for Mana
+				       @<:@default=yes@:>@]),
 	[
 	if test "x$with_mana" = "xyes"; then
 	        AC_CHECK_PROG(MANA, mana, mana)
@@ -158,7 +161,8 @@ AC_ARG_WITH(mana,
 # *** Tests for PRIME ***
 # ***********************
 AC_ARG_WITH(prime,
-	AS_HELP_STRING([--with-prime], [Build a plugin for PRIME]),
+	AS_HELP_STRING([--with-prime], [Build a plugin for PRIME
+					@<:@default=yes@:>@]),
 	[
 	if test "x$with_prime" = "xyes"; then
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
@@ -348,39 +352,16 @@ AC_ARG_WITH(gtk2,
   [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
     PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2_4="yes",use_gtk2_4="no") ])
 
-AC_ARG_WITH(gnome2,
-  AC_HELP_STRING([--without-gnome2],
-                 [don't build against Gnome2 (experimental)]),
-  [
-    case $with_gnome2 in
-      no)
-        use_gnome2="no"
-      ;;
-      yes|*)
-        if test x$use_gtk2 = xyes ; then
-          PKG_CHECK_MODULES(GNOME2, libgnome-2.0, use_gnome2="yes",use_gnome2="no")
-        else
-          use_gnome2="no"
-        fi
-      ;;
-    esac
-  ],
-  [ PKG_CHECK_MODULES(GNOME2, libgnome-2.0, use_gnome2="yes",use_gnome2="no") ])
-
 AC_ARG_ENABLE(applet,
   AC_HELP_STRING([--disable-applet],
-                 [disable uim_helper_applet for Gnome (experimental)]),
+                 [disable uim applet for Gnome panel]),
   [
     case $enable_applet in
       no)
         use_applet="no"
       ;;
       yes|*)
-        if test x$use_gnome2 = xyes ; then
-          PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
-        else
-          use_applet="no"
-        fi
+        PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
       ;;
     esac
   ],
@@ -391,7 +372,8 @@ dnl *** Check for Qt Library ***
 dnl ****************************
 AC_ARG_WITH(qt,
   AC_HELP_STRING([--with-qt],
-                 [build with qt helper applications]),
+                 [build qt helper applications
+		  @<:@default=no@:>@]),
   [
     case $with_qt in
       no)
@@ -408,7 +390,8 @@ AC_ARG_WITH(qt,
 
 AC_ARG_WITH(qt-immodule,
   AC_HELP_STRING([--with-qt-immodule],
-                 [Build qt-immodule extension]),
+                 [Build qt-immodule extension
+		  @<:@default=no@:>@]),
   [
     case $with_qtimmodule in
       no)
@@ -426,21 +409,22 @@ AC_ARG_WITH(qt-immodule,
 
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
-  AC_HELP_STRING([--default-toolkit],
-                 [Determine default toolkit]),
-  [],
+  AC_HELP_STRING([--enable-default-toolkit],
+                 [Determine default toolkit (gtk or qt)
+		  @<:@default=gtk@:>@]),
   [
-  if test x"$enable_default_toolkit" = "xgtk" && test x"use_gtk2" = "xyes"; then
+  if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
      default_toolkit="gtk"
   fi
-  if test x"$enable_default_toolkit" = "xqt" && test x"use_qt" = "xyes"; then
+  if test x"$enable_default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
      default_toolkit="qt"
   fi
-  ])
+  ],
+  [])
 
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
-                 [enable debugging]),
+                 [enable debugging @<:@default=no@:>@]),
   [],
   [
     enable_debug="no"
@@ -512,7 +496,8 @@ AC_ARG_ENABLE(emacs,
 
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],
-                 [enable uim-dict (a dictionary utility for uim, broken)]),
+                 [build dictionary utility for uim (broken)
+		  @<:@default=no@:>@]),
   [
     case $enable_dict in
       no)
@@ -576,7 +561,8 @@ AC_SUBST(EBLIB_LIBS)
 # This code was based on openssh-4.1p1
 
 AC_ARG_WITH(libedit,
-AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support]),
+AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
+				      @<:@default=yes@:>@]),
   [
    if test "x$with_libedit" != "xno"; then
         use_libedit="yes"
@@ -614,7 +600,6 @@ AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
-AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
 AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
@@ -636,10 +621,6 @@ AC_SUBST(GTK_BINARY_VERSION)
 if test x$use_gtk2 = xyes ; then
 AC_DEFINE(USE_GTK2, 1, [use gtk2])
 fi
-
-#if test x$use_gnome2 = xyes ; then
-#AC_DEFINE(USE_GNOME2, 1, [use gnome2])
-#fi
 
 if test x$use_qt = xyes ; then
     # minimum version
@@ -795,8 +776,48 @@ fi
 AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
 
+AC_ARG_ENABLE(pref,
+  AC_HELP_STRING([--enable-pref],
+		 [build graphical utility to edit user settings
+		  @<:@default=yes@:>@]),
+[
+    case $enable_pref in
+      no)
+        use_pref="no"
+	;;
+      yes|*)
+	if test x"$default_toolkit" = "xgtk" && \
+	   test x"$use_gtk2" = "xyes"; then
+	  echo "use pref"
+	  use_pref="yes"
+	else
+	  if test x"$default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
+	    use_pref="yes"
+	  else
+	    use_pref="no"
+	    AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
+	  fi
+	fi
+	;;
+    esac ],
+  [
+    if test x"$default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
+      use_pref="yes"
+    else
+      if test x"$default_toolkit" = "xqt" && \
+         test x"$use_qt" = "xyes"; then
+	use_pref="yes"
+      else
+	use_pref="no"
+	AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
+      fi
+    fi
+  ])
+AM_CONDITIONAL(PREF, test x"$use_pref" = "xyes")
+
 AC_ARG_ENABLE(anthy-static,
-    AC_HELP_STRING([--enable-anthy-static, TBD ]),
+    AC_HELP_STRING([--enable-anthy-static],
+		   [@<:@default=no@:>@]),
     [
         case $enable_anthy_static in
 	yes)
@@ -824,12 +845,30 @@ fi
 # add warning flags to CFLAGS if GCC=yes
 if test x$ac_cv_c_compiler_gnu = xyes; then
 #if test x$CC = xgcc; then
-	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare -Werror"
+	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
 fi
 
 if test x$ac_cv_cxx_compiler_gnu = xyes; then
-	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Werror"
+	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security"
 fi
+
+AC_ARG_ENABLE(warnings-into-error,
+    AC_HELP_STRING([--enable-warnings-into-error],
+		   [Treat compiler warnings as error @<:@default=yes@:>@]),
+    [
+        case $enable_warnings_into_error in
+	no)
+	    ;;
+	yes|*)
+	    CFLAGS="$CFLAGS -Werror"
+	    CXXFLAGS="$CXXFLAGS -Werror"
+	    ;;
+	esac
+    ], [
+	    CFLAGS="$CFLAGS -Werror"
+	    CXXFLAGS="$CXXFLAGS -Werror"
+    ])
+
 
 if test x$enable_compat_scm = xyes; then
   AC_DEFINE(UIM_COMPAT_SCM, 1,
@@ -889,13 +928,13 @@ Configure Result :
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
    Gtk+            : ${use_gtk2}
-   Gnome           : ${use_gnome2}
    Gnome Applet    : ${use_applet}
    Qt              : ${use_qt}
    Qt immodule     : ${use_qtimmodule}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
+   Pref            : ${use_pref}
    DICT            : ${use_dict}
    EB              : ${use_eb}
    libedit         : ${use_libedit}

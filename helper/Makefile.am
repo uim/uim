@@ -41,8 +41,10 @@ if DICT
 bin_PROGRAMS += uim-dict-gtk
 endif
 
+if PREF
 if GTK2_4
 bin_PROGRAMS += uim-pref-gtk
+endif
 endif
 
 uim_candwin_gtk_SOURCES  = candwin-gtk.c \
@@ -73,6 +75,7 @@ uim_input_pad_ja_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la
 uim_input_pad_ja_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
 uim_input_pad_ja_CFLAGS   = @GTK2_CFLAGS@ -Wall
 
+if PREF
 if GTK2_4
 uim_pref_gtk_SOURCES  = pref-gtk.c \
 			pref-gtk-custom-widgets.c pref-gtk-custom-widgets.h \
@@ -81,6 +84,7 @@ uim_pref_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-custom.la \
 			$(top_builddir)/uim/libuim.la
 uim_pref_gtk_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 uim_pref_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
+endif
 endif
 
 if DICT
