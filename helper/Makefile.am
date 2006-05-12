@@ -1,4 +1,4 @@
-EXTRA_DIST = GNOME_UimApplet.server.in.in 
+EXTRA_DIST = GNOME_UimApplet.server.in.in $(uim_dict_ui_DATA)
 
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
@@ -91,8 +91,10 @@ if DICT
 if ANTHY
 uim_dict_gtk_SOURCES  = dict-main-gtk.c dict-anthy.c dict-anthy.h dict-canna.c dict-canna.h dict-word-win-gtk.c dict-word-win-gtk.h dict-word-list-win-gtk.c dict-word-list-win-gtk.h dict-util.c dict-util.h dict-word-list-view-gtk.c dict-word-list-view-gtk.h dict-word.c dict-word.h dict-dict.c dict-dict.h dict-cclass-dialog.c dict-cclass-dialog.h
 uim_dict_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim.la @ANTHY_LIBS@
-uim_dict_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+uim_dict_gtk_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 uim_dict_gtk_CFLAGS   = @GTK2_CFLAGS@
+uim_dict_uidir = $(datadir)/uim/helperdata
+uim_dict_ui_DATA = uim-dict-ui.xml
 endif
 endif
 

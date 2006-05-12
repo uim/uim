@@ -102,42 +102,6 @@ GtkActionEntry menu_action_entries[] = {
 };
 static guint n_menu_action_entries = G_N_ELEMENTS(menu_action_entries);
 
-static const char ui_info[] =
-"<ui>"
-"  <menubar name='MainMenu'>"
-"    <menu action='FileMenu'>"
-"      <menuitem action='Quit' />"
-"    </menu>"
-"    <menu action='EditMenu'>"
-"      <menuitem action='AddWord' />"
-"      <menuitem action='EditWord' />"
-"      <menuitem action='RemoveWord' />"
-"    </menu>"
-"    <menu action='OptionMenu'>"
-#if 0
-"      <menuitem action='Anthy' />"
-"      <menuitem action='SKK' />"
-"      <menuitem action='Canna' />"
-"      <menuitem action='PRIME' />"
-"      <menuitem action='IntegrationMode' />"
-"      <menuitem action='uim' />"
-#endif
-"    </menu>"
-"    <menu action='HelpMenu'>"
-"      <menuitem action='About' />"
-"    </menu>"
-"  </menubar>"
-"  <toolbar name='MainToolbar'>"
-"    <toolitem action='AddWord' />"
-"    <toolitem action='EditWord' />"
-"    <toolitem action='RemoveWord' />"
-"  </toolbar>"
-"  <popup name=\"WordListPopup\">"
-"    <menuitem action=\"EditWord\" />"
-"    <menuitem action=\"RemoveWord\" />"
-"  </popup>"
-"</ui>";
-
 #define ACTIVATE_ACTION(window, action_name)				       \
 {									       \
   GtkAction *action;							       \
@@ -245,7 +209,9 @@ word_list_window_init (WordListWindow *window)
    gtk_window_add_accel_group(GTK_WINDOW(window),
 			     gtk_ui_manager_get_accel_group(ui));
 
-  gtk_ui_manager_add_ui_from_string(ui, ui_info, -1, NULL);
+  gtk_ui_manager_add_ui_from_file(ui,
+				  UIM_DATADIR "/helperdata/uim-dict-ui.xml",
+				  NULL);
   gtk_ui_manager_ensure_update(ui);
 
   window->word_list = word_list = word_list_view_new();
