@@ -839,7 +839,7 @@ custom_file_path(const char *group, pid_t pid)
 
   custom_dir = uim_conf_path(custom_subdir);
   if (pid) {
-    UIM_EVAL_FSTRING3(NULL, "\"%s/.custom-%s.scm.%ld\"", custom_dir, group, (long)pid);
+    UIM_EVAL_FSTRING3(NULL, "\"%s/.custom-%s.scm.%d\"", custom_dir, group, (int)pid);
   } else {
     UIM_EVAL_FSTRING2(NULL, "\"%s/custom-%s.scm\"", custom_dir, group);
   }
