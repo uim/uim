@@ -496,7 +496,7 @@ AC_ARG_ENABLE(emacs,
 
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],
-                 [build dictionary utility for uim (broken)
+                 [build dictionary utility for uim (supporting anthy only for now)
 		  @<:@default=no@:>@]),
   [
     case $enable_dict in
