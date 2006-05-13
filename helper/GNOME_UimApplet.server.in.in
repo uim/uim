@@ -21,7 +21,7 @@
                 <item value="IDL:Bonobo/Unknown:1.0"/>
         </oaf_attribute>
         <oaf_attribute name="name" type="string" _value="uim Applet"/>
-        <oaf_attribute name="description" type="string" _value="uim applet for the GNOME2 panel"/>
+        <oaf_attribute name="description" type="string" _value="Indicate the state of uim's input method"/>
         <oaf_attribute name="panel:category" type="string" _value="Utility"/>
         <oaf_attribute name="panel:icon" type="string" value="@UIM_PIXMAPSDIR@/uim-icon.png"/>
 </oaf_server>

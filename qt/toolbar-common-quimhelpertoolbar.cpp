@@ -50,11 +50,12 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
 
     m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
     m_preficon = QPixmap( ICONDIR + "/configure-qt.png");
+    m_dicticon = QPixmap( ICONDIR + "/uim-dict.png");
 
     m_contextMenu = new QPopupMenu( this );
     m_contextMenu->insertItem( m_swicon,   _("Switch input method"), this, SLOT(slotExecImSwitcher()) );
     m_contextMenu->insertItem( m_preficon, _("Preference"), this, SLOT(slotExecPref()) );
-    m_contextMenu->insertItem( _("Japanese dictionary editor"), this, SLOT(slotExecDict()) );
+    m_contextMenu->insertItem( m_dicticon, _("Japanese dictionary editor"), this, SLOT(slotExecDict()) );
     m_contextMenu->insertItem( _("Input pad"), this, SLOT(slotExecInputPad()) );
     m_contextMenu->insertItem( _("Handwriting input pad"), this, SLOT(slotExecHandwritingInputPad()) );
     m_contextMenu->insertItem( _("Help"), this, SLOT(slotExecHelp()) );
@@ -136,7 +137,10 @@ void QUimHelperToolbar::addExecDictButton()
         return;
 
     QToolButton *dictButton = new QHelperToolbarButton( this );
-    dictButton->setText( "Dic" );
+    if( !m_dicticon.isNull() )
+        dictButton->setPixmap( m_dicticon );
+    else
+        dictButton->setText( "Dic" );
 
     QObject::connect( dictButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecDict() ) );

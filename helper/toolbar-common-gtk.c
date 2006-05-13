@@ -101,7 +101,7 @@ static struct _CommandEntry command_entry[] = {
   {
     N_("Japanese dictionary editor"),
     "Dic",
-    NULL,
+    "uim-dict",
     "uim-dict-gtk &",
     "toolbar-show-dict-button?",
     UIM_FALSE
@@ -915,6 +915,7 @@ init_icon(void)
 
   register_icon("switcher-icon");
   register_icon("uim-icon");
+  register_icon("uim-dict");
   register_icon("null");
 }
 

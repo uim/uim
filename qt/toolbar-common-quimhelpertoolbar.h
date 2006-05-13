@@ -74,6 +74,7 @@ signals:
 protected:
     QPixmap m_swicon;
     QPixmap m_preficon;
+    QPixmap m_dicticon;
     QPopupMenu *m_contextMenu;
 };
 

@@ -18,3 +18,8 @@ ja_halfwidth_alnum.svg, ja_fullwidth_alnum.svg,
 prime_mode_application.svg,
 ja_romaji.svg, ja_kana.svg, ja_azik.svg, ja_nicola.svg, ja_pocketbell.svg:
   YamaKen <yamaken AT bp.iij4u.or.jp>
+
+# uim-dict.svg is based on
+# http://commons.wikimedia.org/wiki/Image:X-office-address-book.svg
+uim-dict.svg
+  Etsushi Kato <ek.kato@gmail.com>

@@ -13,6 +13,9 @@ SVGS += direct_input.svg on.svg off.svg \
 # Japanese kana input methods
 SVGS += ja_romaji.svg ja_kana.svg ja_azik.svg ja_nicola.svg ja_pocketbell.svg
 
+# Tools
+SVGS += uim-dict.svg
+
 SVG_PNGS = direct.png skk.png tcode.png tutcode.png \
            direct_input.png on.png off.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
@@ -20,7 +23,8 @@ SVG_PNGS = direct.png skk.png tcode.png tutcode.png \
            ja_halfwidth_alnum.png ja_fullwidth_alnum.png \
            prime_mode_application.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_nicola.png \
-           ja_pocketbell.png
+           ja_pocketbell.png \
+	   uim-dict.png
 
 NATIVE_PNGS = switcher-icon.png configure-qt.png uim-icon.png null.png \
               anthy.png canna.png prime.png
