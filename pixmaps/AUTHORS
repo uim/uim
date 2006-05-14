@@ -23,3 +23,9 @@ ja_romaji.svg, ja_kana.svg, ja_azik.svg, ja_nicola.svg, ja_pocketbell.svg:
 # http://commons.wikimedia.org/wiki/Image:X-office-address-book.svg
 uim-dict.svg
   Etsushi Kato <ek.kato@gmail.com>
+
+# ko_direct.svg is based on ja_fullwidth_alnum.svg.
+# byeoru.svg, ko_hangulchar.svg, ko_hangulword have glyphs from
+# the UnYetgul font by Koaunghi Un, http://kldp.net/projects/unfonts.
+byeoru.svg, ko_direct.svg, ko_hangulchar.svg, ko_hangulword.svg:
+  Jae-hyeon Park <jhyeon AT gmail.com>

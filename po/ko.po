@@ -724,25 +724,25 @@ msgstr ""
 #: scm/generic-custom.lisp:42 scm/mana-custom.lisp:71 scm/skk-custom.lisp:58
 #: scm/spellcheck-custom.lisp:47
 msgid "Use candidate window"
-msgstr ""
+msgstr "후보창을 사용"
 
 #: scm/anthy-custom.lisp:77 scm/canna-custom.lisp:81
 #: scm/generic-custom.lisp:48 scm/mana-custom.lisp:77 scm/skk-custom.lisp:84
 #: scm/spellcheck-custom.lisp:53
 msgid "Conversion key press count to show candidate window"
-msgstr ""
+msgstr "후보창을 표시하기까지 변환키를 누르는 횟수"
 
 #: scm/anthy-custom.lisp:83 scm/canna-custom.lisp:87
 #: scm/generic-custom.lisp:54 scm/mana-custom.lisp:83 scm/prime-custom.lisp:92
 #: scm/skk-custom.lisp:90
 msgid "Number of candidates in candidate window at a time"
-msgstr ""
+msgstr "후보창에 한번에 표시하는 후보의 수"
 
 #: scm/anthy-custom.lisp:89 scm/canna-custom.lisp:93
 #: scm/generic-custom.lisp:60 scm/mana-custom.lisp:89
 #: scm/prime-custom.lisp:128
 msgid "Select candidate by numeral keys"
-msgstr ""
+msgstr "숫자키로 후보를 선택"
 
 #: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:123
 #: scm/mana-custom.lisp:119 scm/prime-custom.lisp:160 scm/skk-custom.lisp:168
@@ -1478,7 +1478,7 @@ msgstr ""
 
 #: scm/generic-custom.lisp:36
 msgid "Other input methods"
-msgstr "다른 입력기"
+msgstr "기타 입력기"
 
 #: scm/generic-key-custom.lisp:36
 msgid "Global key bindings 1"
@@ -1614,7 +1614,7 @@ msgstr "버튼"
 
 #: scm/im-custom.lisp:65
 msgid "Candidate window"
-msgstr "후보 창"
+msgstr "후보창"
 
 #: scm/im-custom.lisp:70
 msgid "Annotation"
@@ -1702,7 +1702,7 @@ msgstr "편집영역의 오른쪽 끝"
 
 #: scm/im-custom.lisp:346
 msgid "Candidate window position"
-msgstr "후보 창의 위치"
+msgstr "후보창의 위치"
 
 #: scm/im-custom.lisp:352
 msgid "Enable lazy input method loading for fast startup"

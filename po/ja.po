@@ -1351,7 +1351,7 @@ msgstr "[Byeoru] オフ"
 
 #: scm/byeoru-key-custom.lisp:61
 msgid "[Byeoru] convert Hangul to Chinese"
-msgstr "[Byeoru] ハングルから中国語へ変換"
+msgstr "[Byeoru] ハングルから漢字へ変換"
 
 #: scm/byeoru-key-custom.lisp:67
 msgid "[Byeoru] confirm conversion"
