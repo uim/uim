@@ -53,7 +53,7 @@
  *
  * level:
  * A number associated with every subpattern, namely the number of
- * ellipses that affects the subpattern.  e.g. the pvar x in the
+ * ellipses that affect the subpattern.  e.g. the pvar x in the
  * template ((x ...) ... y ...) is at level 2.
  *
  * <literals>:
@@ -89,8 +89,32 @@
  * contracted for disambiguation.  FIXME: Any better name?
  */
 
-/* Tentative. */
-#define SYM_ELLIPSIS scm_intern("...")
+#if SCM_DEBUG_MACRO
+enum dbg_flag {
+    DBG_COMPILER     = 1 << 0,
+    DBG_MATCHER      = 1 << 1,
+    DBG_TRANSCRIPTOR = 1 << 2,
+    DBG_FUNCALL      = 1 << 3,
+    DBG_PVAR         = 1 << 4,
+    DBG_RETURN       = 1 << 5,
+    DBG_UNWRAP       = 1 << 6,
+    DBG_EXPANDER     = 1 << 7
+};
+#endif
+
+SCM_GLOBAL_VARS_BEGIN(static_macro);
+#define static
+#if SCM_DEBUG_MACRO
+static enum dbg_flag l_debug_mode;
+#endif
+static ScmObj sym_ellipsis;     /* Currently has no use outside this file. */
+#undef static
+SCM_GLOBAL_VARS_END(static_macro);
+#define l_debug_mode SCM_GLOBAL_VAR(static_macro, l_debug_mode)
+#define sym_ellipsis SCM_GLOBAL_VAR(static_macro, sym_ellipsis)
+SCM_DEFINE_STATIC_VARS(static_macro);
+
+#define SYM_ELLIPSIS     sym_ellipsis
 #define SYM_SYNTAX_RULES scm_intern("syntax-rules")
 
 #define ELLIPSISP(o) EQ((o), SYM_ELLIPSIS)
@@ -110,24 +134,6 @@
 #define INIT_DBG() init_dbg()
 #define DEFINE(name, init)  (SCM_SYMBOL_SET_VCELL(scm_intern((name)), (init)))
 #include <stdarg.h>
-enum dbg_flag {
-    DBG_COMPILER     = 1 << 0,
-    DBG_MATCHER      = 1 << 1,
-    DBG_TRANSCRIPTOR = 1 << 2,
-    DBG_FUNCALL      = 1 << 3,
-    DBG_PVAR         = 1 << 4,
-    DBG_RETURN       = 1 << 5,
-    DBG_UNWRAP       = 1 << 6,
-    DBG_EXPANDER     = 1 << 7
-};
-
-SCM_GLOBAL_VARS_BEGIN(static_macro);
-#define static
-static enum dbg_flag l_debug_mode;
-#undef static
-SCM_GLOBAL_VARS_END(static_macro);
-#define l_debug_mode SCM_GLOBAL_VAR(static_macro, l_debug_mode)
-SCM_DEFINE_STATIC_VARS(static_macro);
 
 static void
 dbg_print(enum dbg_flag mask, const char *fmt, ...)
@@ -159,7 +165,6 @@ static const struct scm_func_registration_info dbg_funcs[] = {
 static void
 init_dbg(void)
 {
-    SCM_GLOBAL_VARS_INIT(static_macro);
     l_debug_mode = 0;
 
     DEFINE("%debug-macro-compiler", MAKE_INT(DBG_COMPILER));
@@ -214,6 +219,8 @@ scm_init_macro(void)
     scm_define_alias("let-syntax", "let");
     scm_define_alias("letrec-syntax", "letrec");
     scm_define_alias("define-syntax", "define");
+    SCM_GLOBAL_VARS_INIT(static_macro);
+    sym_ellipsis = scm_intern("...");
     INIT_DBG();
 }
 
