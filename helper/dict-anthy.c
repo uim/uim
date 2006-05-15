@@ -83,8 +83,8 @@ static const char *identifiers[] = {
 static int
 dict_anthy_init(void)
 {
-    anthy_dic_util_init();
-    return 0;
+  anthy_dic_util_init();
+  return 0;
 }
 
 static int
@@ -97,56 +97,54 @@ dict_anthy_exit(void)
 static int
 dict_anthy_read_priv_dic_list(uim_word **head)
 {
-    char phon[100], desc[100], cclass_code[100];
-    int ret = 0;
+  char phon[100], desc[100], cclass_native[100];
+  int ret = 0;
 
-    if (anthy_priv_dic_select_first_entry() == -1) {
-	*head = NULL;
-	return -1;
+  if (anthy_priv_dic_select_first_entry() == -1) {
+    *head = NULL;
+    return -1;
+  }
+
+  while (ret == 0) {
+    if (anthy_priv_dic_get_index(phon, sizeof(phon))
+	&& anthy_priv_dic_get_wtype(cclass_native,
+				    sizeof(cclass_native))
+	&& anthy_priv_dic_get_word(desc, sizeof(desc))) {
+      gint pos;
+      const char *cclass_code = NULL;
+
+      for (pos = 0; pos < NR_POS; pos++) {
+	cclass_code = find_desc_from_code_with_type(cclass_native, pos);
+	if (cclass_code)
+	  break;
+      }
+
+      word_append(head, WORD_TYPE_ANTHY, "EUC-JP",
+		  phon, desc, cclass_code, cclass_native,
+		  anthy_priv_dic_get_freq(),
+		  0, NULL);
     }
-
-    while (ret == 0) {
-	if (anthy_priv_dic_get_index(phon, sizeof(phon))
-	   && anthy_priv_dic_get_wtype(cclass_code, sizeof(cclass_code))
-	   && anthy_priv_dic_get_word(desc, sizeof(desc))) {
-	    gint pos;
-	    char *cclass_desc = NULL;
-
-	    for (pos = 0; pos < NR_POS; pos++) {
-	        cclass_desc = find_desc_from_code(cclass_code, pos);
-		if (cclass_desc) break;
-	    }
-
-	    word_append(head, WORD_TYPE_ANTHY,
-			"EUC-JP",
-			phon, desc, cclass_desc,
-			anthy_priv_dic_get_freq(),
-			0, NULL);
-	}
-	ret = anthy_priv_dic_select_next_entry();
-    }
-    return 0;
+    ret = anthy_priv_dic_select_next_entry();
+  }
+  return 0;
 }
 
 static int
 dict_anthy_add_priv_dic_with_flags(char *phon, char *desc,
 				   char *cclass_code, int freq)
 {
-    if ((strlen(phon) == 0) ||
-       (strlen(desc) == 0) ||
-       (strlen(cclass_code) == 0)) {
-	return -1;
-    }
+  if ((strlen(phon) == 0) || (strlen(desc) == 0) ||
+      (strlen(cclass_code) == 0)) {
+    return -1;
+  }
 
-    return anthy_priv_dic_add_entry(phon, desc,
-					    cclass_code, freq);
+  return anthy_priv_dic_add_entry(phon, desc, cclass_code, freq);
 }
 
 static int
 dict_anthy_delete_priv_dic(char *phon, char *desc, char *cclass_code)
 {
-    return anthy_priv_dic_add_entry(phon, desc,
-					    cclass_code, 0);
+  return anthy_priv_dic_add_entry(phon, desc, cclass_code, 0);
 }
 
 static uim_dict *
@@ -203,9 +201,8 @@ uim_dict_anthy_add_word(uim_dict *dict, uim_word *word)
   if (dict == NULL || word == NULL)
     return -1;
 
-  /* FIXME! refresh word list */
   ret = dict_anthy_add_priv_dic_with_flags(word->phon, word->desc,
-					   word->cclass_code, word->freq);
+					   word->cclass_native, word->freq);
 
   return ret;
 }
@@ -225,9 +222,9 @@ uim_dict_anthy_remove_word(uim_dict *dict, uim_word *word)
     return 0;
 
   ret = dict_anthy_delete_priv_dic(word->phon, word->desc,
-				   word->cclass_code);
+				   word->cclass_native);
 
-  return ret;
+  return ret ? 0 : 1;
 }
 
 static void

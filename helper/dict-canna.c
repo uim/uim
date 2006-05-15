@@ -289,7 +289,22 @@ unsigned int nr_verb_code = sizeof(verb_code) / sizeof(category_code);
 unsigned int nr_adjective_code = sizeof(adjective_code) / sizeof(category_code);
 unsigned int nr_etc_code = sizeof(etc_code) / sizeof(category_code);
 
-char *find_desc_from_code(const char *code, int type) {
+const char *find_desc_from_code(const char *code)
+{
+  int pos;
+  const char *cclass_desc = NULL;
+
+  for (pos = 0; pos < NR_POS; pos++) {
+    cclass_desc = find_desc_from_code_with_type(code, pos);
+    if (cclass_desc)
+      break;
+  }
+
+  return cclass_desc;
+}
+
+/* short cut of find_desc_from_code */
+const char *find_desc_from_code_with_type(const char *code, int type) {
   /* need to be more smart */
   int i = 0, j = 0;
   char *pos = NULL;
@@ -322,7 +337,7 @@ char *find_desc_from_code(const char *code, int type) {
   return pos;
 }
 
-char *find_code_from_desc(const char *pos, int type) {
+const char *find_code_from_desc(const char *desc, int type) {
     /* need to be more smart */
     int i = 0, j = 0;
     char *code = NULL;
@@ -345,7 +360,7 @@ char *find_code_from_desc(const char *pos, int type) {
 
     do {
       for (j = 0; j < num[i]; j++) {
-	if (strcmp(pos, (category[i])[j].desc) == 0
+	if (strcmp(desc, (category[i])[j].desc) == 0
 	   && ((category[i])[j].type & type) == type)
 	  code = strdup((category[i])[j].code);
       }
@@ -359,10 +374,10 @@ int
 find_cclass_type_from_code (const char *code)
 {
   int pos;
-  char *cclass_desc = NULL;
+  const char *cclass_desc = NULL;
 
   for (pos = 0; pos < NR_POS; pos++) {
-    cclass_desc = find_desc_from_code(code, pos);
+    cclass_desc = find_desc_from_code_with_type(code, pos);
     if (cclass_desc)
       return pos;
   }
@@ -374,7 +389,7 @@ int
 find_cclass_type_from_desc (const char *desc)
 {
   int pos;
-  char *cclass_code = NULL;
+  const char *cclass_code = NULL;
 
   for (pos = 0; pos < NR_POS; pos++) {
     cclass_code = find_code_from_desc(desc, pos);

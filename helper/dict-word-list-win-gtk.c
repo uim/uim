@@ -387,6 +387,7 @@ edit_remove_word_action_cb(GtkAction *action, WordListWindow *window)
     ret = uim_dict_remove_word(WORD_LIST_VIEW(window->word_list)->dict, w);
 
     if (ret) {
+      word_list_view_refresh(WORD_LIST_VIEW(window->word_list));
       dialog = gtk_message_dialog_new(NULL,
 				      GTK_DIALOG_MODAL,
 				      GTK_MESSAGE_INFO,
@@ -424,6 +425,8 @@ edit_edit_word_action_cb(GtkAction *action, WordListWindow *window)
     gtk_window_set_transient_for(GTK_WINDOW(widget), GTK_WINDOW(window));
     gtk_window_set_position(GTK_WINDOW(widget), GTK_WIN_POS_CENTER_ON_PARENT);
     word_window_set_word(WORD_WINDOW(widget), list->data);
+    g_signal_connect(G_OBJECT(widget), "word-added",
+    		     G_CALLBACK(wordwin_response_cb), window);
 
     gtk_widget_show(widget);
   }

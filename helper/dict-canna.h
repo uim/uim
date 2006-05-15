@@ -96,9 +96,9 @@ enum {
 };
 
 typedef struct _category_code {
-  char *code;
-  char *desc;
-  char *example;
+  const char *code;
+  const char *desc;
+  const char *example;
   int   flag;
   int   type;
 } category_code;
@@ -121,8 +121,9 @@ int    cannadic_import            (const char *, int);
 int    cannadic_export            (const char *, int);
 GList *cannadic_parse_line_glist  (unsigned char *buf, GList *list);
 #endif
-char  *find_desc_from_code        (const char *code, int type);
-char  *find_code_from_desc        (const char *desc, int type);
+const char  *find_desc_from_code        (const char *code);
+const char  *find_desc_from_code_with_type        (const char *code, int type);
+const char  *find_code_from_desc        (const char *desc, int type);
 int    find_cclass_type_from_code (const char *code);
 int    find_cclass_type_from_desc (const char *desc);
 

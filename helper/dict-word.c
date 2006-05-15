@@ -39,7 +39,9 @@
 void word_append(uim_word **head, uim_word_type type,
 		 char *charset,
 		 char *phon, char *desc,
-		 char *cclass_code, int freq,
+		 const char *cclass_code,
+		 const char *cclass_native,
+		 int freq,
 		 int okuri, char *annotation)
 {
     uim_word *entry, *pos;
@@ -67,6 +69,11 @@ void word_append(uim_word **head, uim_word_type type,
 	    entry->cclass_code = strdup(cclass_code);
 	} else
 	    entry->cclass_code = strdup("");
+
+	if (cclass_native != NULL) {
+	    entry->cclass_native = strdup(cclass_native);
+	} else
+	    entry->cclass_native = strdup("");
 
 	entry->freq = freq;
 

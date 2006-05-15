@@ -425,7 +425,7 @@ word_window_add(WordWindow *window)
 {
   gboolean valid;
   const char *utf8_phonetic, *utf8_literal, *utf8_cclass_desc;
-  char *phonetic, *literal, *cclass_desc, *cclass_code = NULL;
+  char *phonetic, *literal, *cclass_desc, *cclass_native = NULL;
   gint freq, ret, pos_id;
   GtkWidget *dialog;
 
@@ -446,9 +446,9 @@ word_window_add(WordWindow *window)
   cclass_desc = charset_convert(utf8_cclass_desc, "UTF-8", window->dict->charset);
 
   if (cclass_desc)
-	  cclass_code = find_code_from_desc(cclass_desc, pos_id);
-  if (!cclass_code)
-	  cclass_code = g_strdup("");
+	  cclass_native = g_strdup(find_code_from_desc(cclass_desc, pos_id));
+  if (!cclass_native)
+	  cclass_native = g_strdup("");
 
   if (phonetic != NULL && literal != NULL) {
 #if 1 /* FIXME! */
@@ -458,7 +458,8 @@ word_window_add(WordWindow *window)
     word->charset     = window->dict->charset;
     word->phon        = phonetic;
     word->desc        = literal;
-    word->cclass_code = cclass_code;
+    word->cclass_code = cclass_desc;
+    word->cclass_native = cclass_native;
     word->freq        = freq;
 
     word->okuri          = 0;
@@ -473,7 +474,7 @@ word_window_add(WordWindow *window)
 #if 1 /* FIXME! */
     g_free(phonetic);
     g_free(literal);
-    g_free(cclass_code);
+    g_free(cclass_desc);
     g_free(word);
 #endif
   } else {
@@ -612,7 +613,8 @@ word_window_cclass_reset (WordWindow *window)
 {
   GtkEntry *entry;
   gint type;
-  gchar *desc, *utf8_desc;
+  const gchar *desc;
+  gchar *utf8_desc;
 
   g_return_if_fail(IS_WORD_WINDOW(window));
   g_return_if_fail(window->dict);
@@ -660,13 +662,14 @@ static void
 button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
 {
   int type;
-  char *cclass_code, *cclass_desc, *utf8_cclass_desc;
+  char *cclass_code, *utf8_cclass_desc;
+  const char *cclass_desc;
 
   type = gtk_combo_box_get_active(GTK_COMBO_BOX(window->combobox_pos_broad));
   cclass_code = cclass_dialog(type, SUPPORT_ANTHY);
   if (!cclass_code) return;
 
-  cclass_desc = find_desc_from_code(cclass_code, type);
+  cclass_desc = find_desc_from_code_with_type(cclass_code, type);
 
   /* FIXME!! cclass_desc is encoded in UTF-8 */
   if (cclass_desc) {
@@ -677,6 +680,5 @@ button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
 
   gtk_entry_set_text(GTK_ENTRY(window->cclass_code), utf8_cclass_desc);
 
-  g_free(cclass_desc);
   g_free(utf8_cclass_desc);
 }
