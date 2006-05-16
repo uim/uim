@@ -31,6 +31,8 @@
 */
 /**/
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <anthy/anthy.h>
 
 #include "uim-scm.h"
@@ -38,6 +40,10 @@
 #include "plugin.h"
 
 #define MAX_CONTEXT 256
+
+/* handle anthy's version scheme like 7100b */
+static char *libanthy_version_major;
+static char libanthy_version_minor[2];
 
 static struct context {
   anthy_context_t ac;
@@ -53,23 +59,60 @@ get_anthy_context(int id)
 }
 
 static uim_lisp
+anthy_version()
+{
+  return uim_scm_cons(uim_scm_make_str(libanthy_version_major), uim_scm_make_str(libanthy_version_minor));
+}
+
+static void
+get_libanthy_version()
+{
+  const char *str;
+
+  free(libanthy_version_major);
+
+  str = anthy_get_version_string();
+
+  if (!str || (!strcmp(str, "(unknown)"))) {
+    libanthy_version_major = strdup("-1");
+    libanthy_version_minor[0] = '\0';
+  } else {
+    int len;
+
+    len = strlen(str);
+    if (isalpha(str[len - 1])) {
+      libanthy_version_major = malloc(len);
+      strncpy(libanthy_version_major, str, len - 1);
+      libanthy_version_major[len - 1] = '\0';
+      libanthy_version_minor[0] = str[len - 1];
+      libanthy_version_minor[1] = '\0';
+    } else {
+      libanthy_version_major = strdup(str);
+      libanthy_version_minor[0] = '\0';
+    }
+  }
+}
+
+static uim_lisp
 init_anthy_lib(void)
 {
   int i;
-  if (context_slot) {
+
+  if (context_slot)
     return uim_scm_t();
-  }
-  if (anthy_init() == -1) {
+
+  if (anthy_init() == -1)
     return uim_scm_f();
-  }
-  context_slot = malloc(sizeof(struct context) *
-			MAX_CONTEXT);
-  if (!context_slot) {
+
+  get_libanthy_version();
+
+  context_slot = malloc(sizeof(struct context) * MAX_CONTEXT);
+  if (!context_slot)
     return uim_scm_f();
-  }
-  for (i = 0; i < MAX_CONTEXT; i++) {
+
+  for (i = 0; i < MAX_CONTEXT; i++)
     context_slot[i].ac = NULL;
-  }
+
   return uim_scm_t();
 }
 
@@ -159,24 +202,30 @@ get_nr_candidates(uim_lisp id_, uim_lisp nth_)
 static uim_lisp
 get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
 {
-  int id = uim_scm_c_int(id_);
-  int seg = uim_scm_c_int(seg_);
-  int nth  = uim_scm_c_int(nth_);
-  int buflen;
+  int id, seg, nth, buflen;
   char *buf;
   uim_lisp buf_;
-  anthy_context_t ac = get_anthy_context(id);
-  if (!ac) {
+  anthy_context_t ac;
+  
+  id = uim_scm_c_int(id_);
+  seg = uim_scm_c_int(seg_);
+  nth  = uim_scm_c_int(nth_);
+  ac = get_anthy_context(id);
+
+  if (!ac)
     return uim_scm_f();
-  }
+
   buflen = anthy_get_segment(ac, seg, nth, NULL, 0);
   if (buflen == -1) {
+    fprintf(stderr, "buflen == -1\n");
     return uim_scm_f();
   }
-  buf = malloc(buflen+1);
-  anthy_get_segment(ac, seg, nth, buf, buflen+1);
+  fprintf(stderr, "buflen %d\n", buflen);
+  buf = malloc(buflen + 1);
+  anthy_get_segment(ac, seg, nth, buf, buflen + 1);
   buf_ = uim_scm_make_str(buf);
   free(buf);
+
   return buf_;
 }
 
@@ -292,6 +341,7 @@ uim_anthy_plugin_instance_init(void)
   uim_scm_init_subr_2("anthy-lib-get-segment-length", get_segment_length);
   uim_scm_init_subr_3("anthy-lib-resize-segment", resize_segment);
   uim_scm_init_subr_3("anthy-lib-commit-segment", commit_segment);
+  uim_scm_init_subr_0("anthy-lib-get-anthy-version", anthy_version);
 #ifdef HAS_ANTHY_PREDICTION
   uim_scm_init_subr_2("anthy-lib-set-prediction-src-string", set_prediction_src_string);
   uim_scm_init_subr_1("anthy-lib-get-nr-predictions", get_nr_predictions);

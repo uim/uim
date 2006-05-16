@@ -43,6 +43,7 @@
 ;;; implementations
 
 (define anthy-lib-initialized? #f)
+(define anthy-lib-version #f)
 
 (define anthy-type-hiragana   0)
 (define anthy-type-katakana   1)
@@ -239,7 +240,9 @@
    (let ((ac (anthy-context-new-internal id im))
 	 (rkc (rk-context-new ja-rk-rule #t #f)))
      (if (symbol-bound? 'anthy-lib-init)
-	 (set! anthy-lib-initialized? (anthy-lib-init)))
+         (begin
+	   (set! anthy-lib-initialized? (anthy-lib-init))
+	   (set! anthy-lib-version (anthy-lib-get-anthy-version))))
      (if anthy-lib-initialized?
 	 (anthy-context-set-ac-id! ac (anthy-lib-alloc-context)))
      (anthy-context-set-widgets! ac anthy-widgets)
@@ -845,8 +848,9 @@
 	   (segments (anthy-context-segments ac))
 	   (cur-seg (ustr-cursor-pos segments))
 	   (max (anthy-lib-get-nr-candidates ac-id cur-seg))
-	   (n (+ (ustr-cursor-frontside segments)
-		 offset))
+	   (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
+		  0
+		  (+ (ustr-cursor-frontside segments) offset)))
 	   (compensated-n (cond
 			   ((>= n max)
 			    0)
@@ -901,6 +905,30 @@
 	  (anthy-context-set-candidate-window! ac #f)))
     (anthy-context-set-candidate-op-count! ac 0)))
 
+(define anthy-set-segment-transposing
+  (lambda (ac key key-state)
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (segments (anthy-context-segments ac))
+	   (cur-seg (ustr-cursor-pos segments))
+	   (n (ustr-cursor-frontside segments)))
+      (if (and
+	   anthy-lib-version
+	   (>= (string->number (car anthy-lib-version)) 7710))
+	  ;; anthy-7710 and upward
+	  (begin
+	    (anthy-reset-candidate-window ac)
+	    (anthy-context-set-candidate-op-count! ac 0)
+	    (cond
+	     ((anthy-transpose-as-hiragana-key? key key-state)
+	       (ustr-cursor-set-frontside! segments -3))
+	     ((anthy-transpose-as-katakana-key? key key-state)
+	       (ustr-cursor-set-frontside! segments -2))))
+	  ;; below anthy-7710
+	  (begin
+	    ;; FIXME: don't cancel conversion
+	    (anthy-cancel-conv ac)
+	    (anthy-proc-transposing-state ac key key-state))))))
+
 (define anthy-proc-converting-state
   (lambda (ac key key-state)
     (cond
@@ -947,10 +975,12 @@
      ((anthy-prev-candidate-key? key key-state)
       (anthy-move-candidate ac -1))
 
-     ;; FIXME: don't cancel conversion
      ((or (anthy-transpose-as-hiragana-key?   key key-state)
-	  (anthy-transpose-as-katakana-key?   key key-state)
-	  (anthy-transpose-as-hankana-key?    key key-state)
+	  (anthy-transpose-as-katakana-key?   key key-state))
+	(anthy-set-segment-transposing ac key key-state))
+
+     ;; FIXME: don't cancel conversion
+     ((or (anthy-transpose-as-hankana-key?    key key-state)
 	  (anthy-transpose-as-latin-key?      key key-state)
 	  (anthy-transpose-as-wide-latin-key? key key-state))
       (begin
