@@ -37,7 +37,6 @@
 (defun uim-helper-send-message (helperstr)
   (mapcar
    '(lambda (x)
-      (uim-debug (format "-> hepler: %s" x))
       (process-send-string uim-el-helper-agent-process (concat x "\n"))
       )
    helperstr)
@@ -47,15 +46,11 @@
 (defun uim-helper-handler (msg)
   (let* ((message (substring msg 0 (- (length msg) 1)))
 	 (cmd (format "%d HELPER %s" uim-context-id message)))
-    (cond ((string= message "focus_in")
-	   (if (not (string= cmd uim-last-cmd))
-	       (uim-do-send-recv-cmd cmd)))
-	  ((or (eq (string-match "prop_activate" message) 0)
+    (cond ((or (eq (string-match "prop_activate" message) 0)
 	       (eq (string-match "im_change_whole_desktop" message) 0)
 	       (eq (string-match "im_change_this_text_area_only" message) 0))
 	   (uim-do-send-recv-cmd cmd)
 	   ;; update all buffer
-	   (uim-debug "all nop")
 	   (save-current-buffer
 	     (mapcar
 	      '(lambda (x)
@@ -70,22 +65,20 @@
   )
 
 
-(defun uim-helper-message-processor ()
-  (let (eom msg)
-    (while (setq eom (string-match "\n" uim-helper-message))
-      (setq msg (substring uim-helper-message 0 (+ eom 1)))
-      (setq uim-helper-message (substring uim-helper-message (+ eom 1)))
-      (if (> (length msg) 0)
-	  (uim-helper-handler msg))
-      )
-    )
-  )
-
 
 (defun uim-helper-filter (process output)
   (let ((inhibit-quit t))
+    (uim-debug "*** uim-helper-filter")
     (setq uim-helper-message (concat uim-helper-message output))
-    (uim-helper-message-processor)
+    (let (eom msg)
+      (while (setq eom (string-match "\n" uim-helper-message))
+	(setq msg (substring uim-helper-message 0 (+ eom 1)))
+	(uim-debug (format "*** loop %s" msg))
+	(setq uim-helper-message (substring uim-helper-message (+ eom 1)))
+	(if (> (length msg) 0)
+	    (uim-helper-handler msg))
+	)
+      )
     )
   )
 

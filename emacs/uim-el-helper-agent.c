@@ -54,6 +54,7 @@
 char* cmdbuf = NULL;
 unsigned cmdbuf_len = 0;
 
+int focused = 0;
 
 static int
 command_exists_in_cmdbuf()
@@ -79,6 +80,10 @@ process_command()
   /* send command to helper-server */
   cmd = helper_message_decode(cmdbuf);
   uim_helper_send_message(helper_fd, cmd);
+
+  if (strcmp(cmd, "focus_in\n") == 0)
+	focused = 1;
+
   free(cmd);
 
   rest = strlen(p + 1);
@@ -109,7 +114,10 @@ process_message(char *msg)
 
 	if (strcmp("focus_in", msg) == 0) {
 
-	  printf("focus_in\n");
+	  if (focused)
+		printf("focus_in\n");
+
+	  focused = 0;
 
 	} else if (strcmp("prop_activate", msg) == 0) { 
 
