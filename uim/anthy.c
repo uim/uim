@@ -216,11 +216,9 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
     return uim_scm_f();
 
   buflen = anthy_get_segment(ac, seg, nth, NULL, 0);
-  if (buflen == -1) {
-    fprintf(stderr, "buflen == -1\n");
+  if (buflen == -1)
     return uim_scm_f();
-  }
-  fprintf(stderr, "buflen %d\n", buflen);
+
   buf = malloc(buflen + 1);
   anthy_get_segment(ac, seg, nth, buf, buflen + 1);
   buf_ = uim_scm_make_str(buf);
