@@ -576,8 +576,8 @@ uim_scm_init(const char *verbose_level)
   }
 
   if (verbose_level) {
-    if (isdigit((unsigned char)verbose_level[0])) {
-      if (isdigit((unsigned char)verbose_level[1]))
+    if (isdigit((int)verbose_level[0])) {
+      if (isdigit((int)verbose_level[1]))
 	verbose_argv[2] = '9';	/* SIOD's max verbose level is 5 */
       else
 	verbose_argv[2] = verbose_level[0];
