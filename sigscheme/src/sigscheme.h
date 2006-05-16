@@ -691,11 +691,7 @@ struct ScmStorageConf_ {
 #define SCM_VECTOR_MUTABLEP(o)          SCM_SAL_VECTOR_MUTABLEP(o)
 #define SCM_VECTOR_SET_MUTABLE(o)       SCM_SAL_VECTOR_SET_MUTABLE(o)
 #define SCM_VECTOR_SET_IMMUTABLE(o)     SCM_SAL_VECTOR_SET_IMMUTABLE(o)
-#if 0
-#define SCM_VECTOR_VALID_INDEXP(o, i)   SCM_SAL_VECTOR_VALID_INDEXP((o), (i))
-#else
 #define SCM_VECTOR_VALID_INDEXP(o, i)   (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
-#endif
 
 #define SCM_PORTP(o)                    SCM_SAL_PORTP(o)
 #define SCM_PORT_FLAG(o)                SCM_SAL_PORT_FLAG(o)

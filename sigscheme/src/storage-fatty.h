@@ -400,7 +400,6 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_VECTOR_MUTABLEP(o)        (SCM_MUTABLEP(o))
 #define SCM_SAL_VECTOR_SET_MUTABLE(o)     (SCM_SET_MUTABLE(o))
 #define SCM_SAL_VECTOR_SET_IMMUTABLE(o)   (SCM_SET_IMMUTABLE(o))
-#define SCM_SAL_VECTOR_VALID_INDEXP(o, i) (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
 #define SCM_SAL_VECTOR_INIT(o, v, l, mutp)      \
     (SCM_ENTYPE((o), ScmVector),                \
      SCM_VECTOR_SET_VEC((o), (v)),              \
