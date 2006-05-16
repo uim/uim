@@ -363,6 +363,8 @@
   (lambda ()
     (if toolbar-show-action-based-switcher-button?
 	(require "im-switcher.scm"))
+    ;; Since context-list is empty on start-up, imsw-register-widget
+    ;; is not called here.
     (if (symbol-bound? 'context-refresh-switcher-widget!)
 	(for-each context-refresh-switcher-widget!
 		  context-list))))

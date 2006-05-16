@@ -98,19 +98,22 @@
 	   (bind-textdomain-codeset (gettext-package) #f))
       (locale-codeset (locale-new ""))))
 
+;; This procedure must be called after all IM entries are prepared in
+;; im-list. So the invocation is defferred to
+;; imsw-add-im-switcher-widget or context-refresh-switcher-widget!.
 (define imsw-register-widget
   (lambda ()
-    (let ((acts (imsw-actions)))
-      (register-widget 'widget_im_switcher
-		       (activity-indicator-new acts)
-		       (actions-new acts)))))
+    (or (assq 'widget_im_switcher widget-proto-list)
+	(let ((acts (imsw-actions)))
+	  (register-widget 'widget_im_switcher
+			   (activity-indicator-new acts)
+			   (actions-new acts))))))
 
 (define imsw-add-im-switcher-widget
   (lambda (widget-id-list)
     (if toolbar-show-action-based-switcher-button?
 	(begin
-	  (or (assq 'widget_im_switcher widget-proto-list)
-	      (imsw-register-widget))
+	  (imsw-register-widget)
 	  (if (memq 'widget_im_switcher widget-id-list)
 	      widget-id-list
 	      (cons 'widget_im_switcher widget-id-list)
@@ -135,10 +138,12 @@
   (lambda (ctx)
     (let* ((widgets (context-widgets ctx))
 	   (new-widgets (if toolbar-show-action-based-switcher-button?
-			    (if (assq 'widget_im_switcher widgets)
-				widgets
-				(cons (widget-new 'widget_im_switcher ctx)
-				      widgets))
+			    (begin
+			      (imsw-register-widget)
+			      (if (assq 'widget_im_switcher widgets)
+				  widgets
+				  (cons (widget-new 'widget_im_switcher ctx)
+					widgets)))
 			    (alist-delete 'widget_im_switcher widgets eq?))))
       (context-set-widgets! ctx new-widgets)
       (if (context-focused? ctx)
