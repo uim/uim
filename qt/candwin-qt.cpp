@@ -30,6 +30,8 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qwidget.h>
@@ -45,7 +47,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "uim/config.h"
 
 #include "qtgettext.h"
 #include "candwin-qt.h"

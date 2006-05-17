@@ -31,6 +31,8 @@
 
 */
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 
 #include <locale.h>
@@ -40,7 +42,6 @@
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
-#include "uim/config.h"
 #include "uim/gettext.h"
 
 

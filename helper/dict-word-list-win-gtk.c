@@ -31,9 +31,10 @@
 
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
-#include "uim/config.h"
 #include "uim/gettext.h"
 #include "dict-word.h"
 #include "dict-anthy.h"

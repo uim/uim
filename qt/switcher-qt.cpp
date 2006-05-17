@@ -30,6 +30,8 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "switcher-qt.h"
 
 #include <qapplication.h>
@@ -46,7 +48,6 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include "uim/config.h"
 #include "qtgettext.h"
 
 #define NAME_COLUMN 0

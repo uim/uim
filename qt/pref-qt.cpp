@@ -30,6 +30,8 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "pref-qt.h"
 #include "pref-customwidgets.h"
 #include "pref-kseparator.h"
@@ -57,7 +59,6 @@
 #include <qmessagebox.h>
 #include <qsettings.h>
 
-#include "uim/config.h"
 #include "qtgettext.h"
 
 #include <stdlib.h>

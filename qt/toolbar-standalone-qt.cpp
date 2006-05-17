@@ -30,6 +30,8 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "toolbar-standalone-qt.h"
 #include "toolbar-common-quimhelpertoolbar.h"
 
@@ -42,7 +44,6 @@
 #include <locale.h>
 
 #include "uim/uim.h"
-#include "uim/config.h"
 #include "qtgettext.h"
 
 UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )

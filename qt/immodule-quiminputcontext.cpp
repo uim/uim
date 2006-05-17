@@ -30,6 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "immodule-quiminputcontext.h"
 
 #include <qnamespace.h>
@@ -43,8 +45,6 @@ SUCH DAMAGE.
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include "uim/config.h"
 
 #include "immodule-candidatewindow.h"
 #include "immodule-qhelpermanager.h"

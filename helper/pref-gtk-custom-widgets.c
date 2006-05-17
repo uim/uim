@@ -31,6 +31,8 @@
 
 */
 
+#include <config.h>
+
 #include <pref-gtk-custom-widgets.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -38,7 +40,6 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include <uim/config.h>
 #include "uim/uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-custom.h"

@@ -30,7 +30,8 @@
  SUCH DAMAGE.
 
 */
-#include "uim/config.h"
+#include <config.h>
+
 #include "toolbar-common-uimstateindicator.h"
 
 #include <qsocketnotifier.h>

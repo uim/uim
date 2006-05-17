@@ -31,13 +31,14 @@
  *  SUCH DAMAGE.
  */
  
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <stdio.h>
 
 #include "dict-cclass-dialog.h"
 #include "dict-canna.h"
 #include "dict-util.h"
-#include "uim/config.h"
 #include "uim/gettext.h"
 
 
