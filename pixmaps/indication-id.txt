@@ -26,9 +26,9 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   + ja_nicola
   ja_phone
   + ja_pocketbell
-  ko_direct
-  ko_hangulchar
-  ko_hangulword
+  + ko_direct
+  + ko_hangulchar
+  + ko_hangulword
   + prime_mode_application
 
 * input methods
@@ -42,7 +42,7 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   + skk
   + tcode
   + tutcode
-  byeoru
+  + byeoru
   hangul2
   hangul3
   romaja

@@ -44,3 +44,8 @@ EXTRA_DIST = indication-id.txt
 
 clean-svgpng:
 	rm -f $(SVG_PNGS)
+
+# rsvg(1) is required to make a distribution, but does not for build
+# and install from a tarball distribution.
+dist-hook:
+	@test -n "$(RSVG)" || (echo 'rsvg(1) not found: install it'; exit 1)

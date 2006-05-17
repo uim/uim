@@ -17,7 +17,6 @@ The requirements for building uim is listed below.
     * gnome-panel (need to build GNOME applet indicator)
     * Qt >= 3.3.2 (need to build qt tools. you also need to apply
       immodule patch to build qt immodule)
-    * rsvg (need to convert icons with svg format)
 
 Compilation
 ===========
