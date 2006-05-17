@@ -31,9 +31,10 @@
  *  SUCH DAMAGE.
  */
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 
-#include "uim/config.h"
 #include "uim/gettext.h"
 
 #include "dict-word-list-view-gtk.h"
