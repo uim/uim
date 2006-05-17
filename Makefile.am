@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = m4 doc replace uim scm gtk qt xim helper po test fep emacs \
 	examples pixmaps
-EXTRA_DIST = uim.spec.in \
+EXTRA_DIST = RELNOTE uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in ChangeLog.old uim.desktop autogen.sh
 

@@ -2,16 +2,16 @@ Overview of changes from 1.0.x to 1.1.0
 ==
 * New features
   o Main features
-    - Context originated IM switching and icon support with toolbar
-      (YamaKen, Etsushi)
+    - icon support for toolbar (Etsushi, YamaKen)
+    - menu-based quick IM switching from toolbar (YamaKen, Etsushi)
 
   o IM related
     - Anthy, Canna, Mana
-      - Hiragana, Katakana, Hankaku rotate transposing with "Muhenkan"
-        key (Shun-ichi TAHARA)
+      - circular Hiragana, Katakana, Hankaku-kana conversion with
+	"Muhenkan" key (Shun-ichi TAHARA)
     - Mana
-      - Support word learning with mana-0.2.0 (Shun-ichi TAHARA,
-        Masanari)
+      - support conversion-result learning with mana-0.2.0 (Shun-ichi
+        TAHARA, Masanari)
 
 * Fixes
   o Minor
@@ -32,28 +32,34 @@ Overview of changes from 1.0.x to 1.1.0
       - distinguish directories and regular files on pathname custom
 	widget (Etsushi, YamaKen)
 
-    - gtk+ immodule
+    - GTK+ immodule
       - enable <Alt>, <Meta>, <Super>, and <Hyper> modifier key
 	handling on X11 (bug #2468, Etsushi)
-      - don't use key snooper to improve short cut key handling
-	(Etsushi)
+      - disuse key snooper to improve shortcut key handling (Etsushi)
     - uim-xim
-      - fix event handling with flushplayer plugin (Etsushi)
+      - fix event handling with flashplayer plugin (Etsushi)
     - uim-fep
-      - fix "commit_string" handling (Konosuke, Masanari)
-    - uim-el
-      - handle "commit_string" from helper programs (Konosuke)
+      - fix "commit_string" handling and make uim-input-ja working
+        again (Konosuke, Masanari)
+    - uim.el
+      - handle "commit_string" from helper programs and make
+        uim-input-ja working (Konosuke)
 
 * Others
-  - improve code buildability with checking -Werror flag
+  - improve code properness with -Werror flag
 
-  - new icons for input state indicator in the toolbar (YamaKen)
+  - contributed and new input method icons (SHIMODA Hiroshi, FUJITA
+    Yuji, Jae-hyeon, YamaKen)
 
-  - strip multiplexed IM name on iconic-label of input mode of skk and
+  - new icons for input state indicator in the toolbar (YamaKen,
+    Jae-hyeon)
+
+  - strip IM name multiplexed in iconic-label of input modes of skk and
     tutcode that confuses users (YamaKen)
 
   - update translations
-    -ja (Daichi Kawahata, YamaKen)
+    - ja (Daichi Kawahata, YamaKen)
+    - ko (Jae-hyeon)
 
 Overview of changes from 1.0.0 to 1.0.1
 ==
