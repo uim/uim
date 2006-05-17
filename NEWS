@@ -1,9 +1,26 @@
 Overview of changes from 1.0.x to 1.1.0
 ==
 * New features
+  o Main features
+    - Context originated IM switching and icon support with toolbar
+      (YamaKen, Etsushi)
+
+  o IM related
+    - Anthy, Canna, Mana
+      - Hiragana, Katakana, Hankaku rotate transposing with "Muhenkan"
+        key (Shun-ichi TAHARA)
+    - Mana
+      - Support word learning with mana-0.2.0 (Shun-ichi TAHARA,
+        Masanari)
 
 * Fixes
   o Minor
+    - general
+      - handle 'Kanji' and 'Hiragana_Katakana' keys (Shun-ichi TAHARA)
+
+    - uim-dict-gtk
+      - refresh the word list when removing and updating the existing
+        items (Etsushi)
     - uim-im-switcher-gtk
       - respond to the cursor movement from keyboard (Etsushi)
     - uim-pref-gtk
@@ -11,7 +28,6 @@ Overview of changes from 1.0.x to 1.1.0
 	capture widget (Etsushi)
       - distinguish directories and regular files on pathname custom
 	widget (Etsushi, YamaKen)
-
     - uim-pref-qt
       - distinguish directories and regular files on pathname custom
 	widget (Etsushi, YamaKen)
@@ -23,8 +39,16 @@ Overview of changes from 1.0.x to 1.1.0
 	(Etsushi)
     - uim-xim
       - fix event handling with flushplayer plugin (Etsushi)
+    - uim-fep
+      - fix "commit_string" handling (Konosuke, Masanari)
+    - uim-el
+      - handle "commit_string" from helper programs (Konosuke)
 
 * Others
+  - improve code buildability with checking -Werror flag
+
+  - new icons for input state indicator in the toolbar (YamaKen)
+
   - strip multiplexed IM name on iconic-label of input mode of skk and
     tutcode that confuses users (YamaKen)
 
