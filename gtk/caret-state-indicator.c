@@ -30,10 +30,11 @@
   SUCH DAMAGE.
 */
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <string.h>
 
-#include "config.h"
 #include "uim/uim.h"
 #include "uim/uim-helper.h"
 #include "uim/gettext.h"

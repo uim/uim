@@ -35,7 +35,7 @@
  * uimのコールバック関数
  */
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #ifndef DEBUG
 #define NDEBUG

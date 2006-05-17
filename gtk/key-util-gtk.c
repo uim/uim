@@ -35,6 +35,8 @@
  * key conversion utility for uim-gtk
  */
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef GDK_WINDOWING_X11
@@ -43,7 +45,6 @@
 #include <X11/keysym.h>
 #endif
 
-#include "config.h"
 #include "uim/uim.h"
 
 #include "key-util-gtk.h"

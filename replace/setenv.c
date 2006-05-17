@@ -27,10 +27,10 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
 #if !defined(HAVE_SETENV) || !defined(HAVE_UNSETENV)
 
 static char *__findenv(const char *name, int *offset);
