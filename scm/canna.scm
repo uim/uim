@@ -164,7 +164,7 @@
 (register-action 'action_canna_azik
 		 (lambda (cc)
 		   '(ja_azik
-		     "Ａ"
+		     "Ｚ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))
 		 (lambda (cc)

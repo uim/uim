@@ -350,7 +350,7 @@
                  ;;                                          mana-kana-input-method-indication-alist)
                  (lambda (mc)
                    '(ja_azik
-                      "Ａ"
+                      "Ｚ"
                       "AZIK"
                       "AZIK拡張ローマ字入力モード"))
                  (lambda (mc)

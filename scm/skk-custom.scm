@@ -197,7 +197,7 @@
 	 (N_ "Romaji input mode"))
    (list 'action_skk_azik
 	 'ja_azik
-	 "£Á"
+	 "£Ú"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))
 

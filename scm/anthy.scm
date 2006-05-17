@@ -187,7 +187,7 @@
 ;;					     anthy-kana-input-method-indication-alist)
 		 (lambda (ac)
 		   '(ja_azik
-		     "Ａ"
+		     "Ｚ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))
 		 (lambda (ac)

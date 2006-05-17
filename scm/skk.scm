@@ -253,7 +253,7 @@
 (register-action 'action_skk_azik
 		 (lambda (sc)
 		   '(ja_azik
-		     "Ａ"
+		     "Ｚ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))
 		 (lambda (sc)

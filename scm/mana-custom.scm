@@ -153,7 +153,7 @@
 	 (N_ "Kana input mode"))
    (list 'action_mana_azik
 	 'ja_azik
-	 "£Á"
+	 "£Ú"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))
 
