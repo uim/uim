@@ -106,6 +106,8 @@ void word_free_list(uim_word *head) {
 	    free(pos->desc);
 	if (pos->cclass_code != NULL)
 	    free(pos->cclass_code);
+	if (pos->cclass_native != NULL)
+	    free(pos->cclass_native);
 	if (pos->annotation != NULL)
 	    free(pos->annotation);
 
