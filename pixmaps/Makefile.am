@@ -28,14 +28,18 @@ SVG_PNGS = direct.png skk.png tcode.png tutcode.png byeoru.png \
            ja_pocketbell.png \
 	   uim-dict.png
 
-NATIVE_PNGS = switcher-icon.png configure-qt.png uim-icon.png null.png \
+NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png \
+              switcher-icon.png configure-qt.png \
               anthy.png canna.png prime.png
 
-PNGS = $(NATIVE_PNGS) $(SVG_PNGS)
+PNGS = $(NATIVE_PNGS) $(SVG_PNGS) uim-icon.png
 
 dist_pixmaps_DATA = $(PNGS) $(SVGS)
 
 EXTRA_DIST = indication-id.txt
+
+uim-icon.png: uim-icon48.png
+	cp $< $@
 
 .svg.png:
 	if test -n "$(RSVG)"; then		\
