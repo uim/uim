@@ -307,6 +307,14 @@
   (_ "Alternative input method")
   (_ "long description will be here."))
 
+(custom-add-hook 'toggle-im-alt-im
+		 'custom-set-hooks
+		 (lambda ()
+		   (for-each (lambda (ctx)
+			       (reset-toggle-context! (context-id ctx) ctx))
+			     context-list)))
+
+
 ;; activity dependency
 (custom-add-hook 'toggle-im-key
 		 'custom-activity-hooks

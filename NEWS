@@ -1,9 +1,13 @@
 Overview of changes from 1.0.x to 1.1.0
 ==
 * New features
-  o Main features
+  o Major
     - icon support for toolbar (Etsushi, YamaKen)
     - menu-based quick IM switching from toolbar (YamaKen, Etsushi)
+
+  o Minor
+    - hotkey-based IM toggle has been able to hold per-context state
+      (YamaKen)
 
   o IM related
     - Anthy, Canna, Mana

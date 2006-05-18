@@ -197,29 +197,30 @@
   (lambda (id name)
     (im-switch-im id (next-im name))))
 
-;; im-toggle
-(define toggle-im-preserved-im #f)
-(define toggle-im-preserved-widget-states '())
-(define toggle-im-alt-preserved-widget-states '())
-
+;; FIXME: Input states are kept only if the state is appeared in the
+;; toolbar.
 (define toggle-im
-  (lambda (id name)
-    (let ((widget-states (context-current-widget-states (find-context id))))
-      (if (eq? name toggle-im-alt-im)
-	  (begin
-	    (set! toggle-im-alt-preserved-widget-states widget-states)
-	    (if toggle-im-preserved-im
-		(begin
-		  (im-switch-im id toggle-im-preserved-im)
-		  (context-update-widget-states!
-		   (find-context id)
-		   toggle-im-preserved-widget-states))))
-	  (begin
-	    (set! toggle-im-preserved-im name)
-	    (set! toggle-im-preserved-widget-states widget-states)
-	    (im-switch-im id toggle-im-alt-im)
-	    (context-update-widget-states! (find-context id)
-	    			  toggle-im-alt-preserved-widget-states))))))
+  (lambda (id c)
+    (let* ((cur-state (toggle-state-new (context-primary-im? c)
+					(im-name (context-im c))
+					(context-current-widget-states c)))
+	   (saved-state (context-toggle-state c)))
+      (im-switch-im id (if saved-state
+			   (toggle-state-im-name saved-state)
+			   toggle-im-alt-im))
+      ;; retrieve new context replaced by im-switch-im
+      (let ((c (find-context id)))
+	(if saved-state
+	    (let ((orig-wstates (toggle-state-widget-states saved-state)))
+	      (context-update-widget-states! c orig-wstates)))
+	(context-set-toggle-state! c cur-state)))))
+
+(define reset-toggle-context!
+  (lambda (id ctx)
+    (if (not (context-primary-im? ctx))
+	(toggle-im id ctx))
+    ;; ctx may be expired by the toggle-im
+    (context-set-toggle-state! (find-context id) #f)))
 
 ;;
 ;; context-management
@@ -227,14 +228,33 @@
 (define context-list ())
 
 (define context-rec-spec
-  '((id      #f)  ;; must be first member
-    (im      #f)
-    (widgets ())))  ;; may be renamed
+  '((id           #f)  ;; must be first member
+    (im           #f)
+    (widgets      ())  ;; may be renamed
+    (toggle-state #f)))
 (define-record 'context context-rec-spec)
+
+(define toggle-state-rec-spec
+  '((primary?      #f)
+    (im-name       #f)
+    (widget-states ())))
+(define-record 'toggle-state toggle-state-rec-spec)
+
+(define context-primary-im?
+  (lambda (c)
+    (let ((toggle-state (context-toggle-state c)))
+      (or (not toggle-state)
+	  (not (toggle-state-primary? toggle-state))))))
+
+(define context-primary-im-name
+  (lambda (c)
+    (if (context-primary-im? c)
+	(im-name (context-im c))
+	(toggle-state-im-name (context-toggle-state c)))))
 
 ;; FIXME: implement
 (define context-focused?
-  (lambda (ctx)
+  (lambda (c)
     #t))
 
 (define find-context
@@ -300,7 +320,7 @@
       (cond
        ((and enable-im-toggle?
 	     (toggle-im-key? key state))
-	(toggle-im id (im-name im)))
+	(toggle-im id c))
        ((and enable-im-switch
 	     (switch-im-key? key state))
 	(switch-im id (im-name im)))

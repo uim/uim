@@ -134,17 +134,35 @@
      target-im-name
      (imsw-add-im-switcher-widget widget-id-list))))
 
+(define context-update-widget-states-orig context-update-widget-states!)
+(define context-update-widget-states!
+  (lambda (context act-ids)
+    (if toolbar-show-action-based-switcher-button?
+	(for-each widget-activate!
+		  (cdr (context-widgets context))
+		  (cdr act-ids))
+	(context-update-widget-states-orig context act-ids))))
+
+(define widgets-refresh-switcher-widget
+  (lambda (widgets ctx)
+    (if toolbar-show-action-based-switcher-button?
+	(begin
+	  (imsw-register-widget)
+	  (if (assq 'widget_im_switcher widgets)
+	      widgets
+	      (cons (widget-new 'widget_im_switcher ctx)
+		    widgets)))
+	(alist-delete 'widget_im_switcher widgets eq?))))
+
 (define context-refresh-switcher-widget!
   (lambda (ctx)
-    (let* ((widgets (context-widgets ctx))
-	   (new-widgets (if toolbar-show-action-based-switcher-button?
-			    (begin
-			      (imsw-register-widget)
-			      (if (assq 'widget_im_switcher widgets)
-				  widgets
-				  (cons (widget-new 'widget_im_switcher ctx)
-					widgets)))
-			    (alist-delete 'widget_im_switcher widgets eq?))))
-      (context-set-widgets! ctx new-widgets)
+    (let ((toggle-state (context-toggle-state ctx))
+	  (widgets (context-widgets ctx)))
+      (context-set-widgets! ctx (widgets-refresh-switcher-widget widgets ctx))
+      (if toggle-state
+	  (let ((alt-widgets (toggle-state-widget-states toggle-state)))
+	    (toggle-state-set-widget-states!
+	     toggle-state
+	     (widgets-refresh-switcher-widget alt-widgets ctx))))
       (if (context-focused? ctx)
 	  (context-propagate-widget-configuration ctx)))))
