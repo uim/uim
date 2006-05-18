@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-24 02:22+0900\n"
+"POT-Creation-Date: 2006-05-19 05:32+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,324 +17,321 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Utility"
+msgid "Indicate the state of uim's input method"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:2
-msgid "uim Applet"
+msgid "Utility"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
-msgid "uim Applet Factory"
+msgid "uim Applet"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:4
-msgid "uim applet factory"
+msgid "uim Applet Factory"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:5
-msgid "uim applet for the GNOME2 panel"
+msgid "uim applet factory"
 msgstr ""
 
-#: helper/dict-anthy.c:78 helper/dict-main-gtk.c:161
-#: helper/dict-word-list-win-gtk.c:272
+#: helper/dict-anthy.c:80 helper/dict-main-gtk.c:162
+#: helper/dict-word-list-win-gtk.c:239
 msgid "Anthy private dictionary"
 msgstr ""
 
 #. construct dialog
-#: helper/dict-cclass-dialog.c:67 helper/dict-cclass-dialog.c:104
-#: helper/dict-word-list-view-gtk.c:264
+#: helper/dict-cclass-dialog.c:68 helper/dict-cclass-dialog.c:105
+#: helper/dict-word-list-view-gtk.c:266
 msgid "Part of Speech"
 msgstr ""
 
-#: helper/dict-cclass-dialog.c:113
+#: helper/dict-cclass-dialog.c:114
 msgid "Example"
 msgstr ""
 
-#: helper/dict-main-gtk.c:226
+#: helper/dict-main-gtk.c:227
 #, c-format
 msgid "Error:%s\n"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:130
+#: helper/dict-word-list-view-gtk.c:131
 msgid "Show part of speech column"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:131 helper/dict-word-list-view-gtk.c:140
-#: helper/dict-word-list-view-gtk.c:148 helper/dict-word-list-view-gtk.c:155
-#: helper/dict-word-list-view-gtk.c:163 helper/dict-word-list-view-gtk.c:164
+#: helper/dict-word-list-view-gtk.c:132 helper/dict-word-list-view-gtk.c:141
+#: helper/dict-word-list-view-gtk.c:149 helper/dict-word-list-view-gtk.c:156
+#: helper/dict-word-list-view-gtk.c:164 helper/dict-word-list-view-gtk.c:165
 msgid "to be written"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:139
+#: helper/dict-word-list-view-gtk.c:140
 msgid "Show freq column"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:147
+#: helper/dict-word-list-view-gtk.c:148
 msgid "Show okuri column"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:156
+#: helper/dict-word-list-view-gtk.c:157
 msgid "to be written "
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:200
+#: helper/dict-word-list-view-gtk.c:202
 msgid "Word Type"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:218
+#: helper/dict-word-list-view-gtk.c:220
 msgid "Phonetic"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:248
+#: helper/dict-word-list-view-gtk.c:250
 msgid "Literal"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:280
+#: helper/dict-word-list-view-gtk.c:282
 msgid "Frequency"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:291
+#: helper/dict-word-list-view-gtk.c:293
 msgid "Okuri"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:86
+#: helper/dict-word-list-win-gtk.c:87
 msgid "_File"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:87
+#: helper/dict-word-list-win-gtk.c:88
 msgid "_Edit"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:88
+#: helper/dict-word-list-win-gtk.c:89
 msgid "_Option"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:89
+#: helper/dict-word-list-win-gtk.c:90
 msgid "_Help"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:90
+#: helper/dict-word-list-win-gtk.c:91
 msgid "_Quit"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:91
+#: helper/dict-word-list-win-gtk.c:92
 msgid "Quit uim-dict"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:92
+#: helper/dict-word-list-win-gtk.c:93
 msgid "A_dd..."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:93
+#: helper/dict-word-list-win-gtk.c:94
 msgid "Add a new word"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:94
+#: helper/dict-word-list-win-gtk.c:95
 msgid "_Remove..."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:95
+#: helper/dict-word-list-win-gtk.c:96
 msgid "Remove the selected word"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:96
+#: helper/dict-word-list-win-gtk.c:97
 msgid "_Edit..."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:97
+#: helper/dict-word-list-win-gtk.c:98
 msgid "Edit the selected word"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:98
+#: helper/dict-word-list-win-gtk.c:99
 msgid "_Popup Menu"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:99
+#: helper/dict-word-list-win-gtk.c:100
 msgid "Show popup menu"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:100
+#: helper/dict-word-list-win-gtk.c:101
 msgid "_About"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:101 helper/dict-word-list-win-gtk.c:500
+#: helper/dict-word-list-win-gtk.c:102 helper/dict-word-list-win-gtk.c:472
 msgid "About uim-dict"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:205
+#: helper/dict-word-list-win-gtk.c:170
 msgid "Couldn't open a library for manipulating the dictionary.\n"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:226
+#: helper/dict-word-list-win-gtk.c:191
 msgid "Edit the dictionary"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:280
+#: helper/dict-word-list-win-gtk.c:247
 #, c-format
 msgid "%s"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:394
+#: helper/dict-word-list-win-gtk.c:361
 msgid "Are you sure to remove seleted words?"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:400
+#: helper/dict-word-list-win-gtk.c:367
 msgid "Are you sure to remove the selected word?"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:428
+#: helper/dict-word-list-win-gtk.c:396
 msgid "Word deletion succeded."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:434
+#: helper/dict-word-list-win-gtk.c:402
 msgid "Word deletion failed."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:493
-msgid "<span size=\"20000\">uim-dict "
+#: helper/dict-word-list-win-gtk.c:463
+msgid "uim-dict"
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:493
+#: helper/dict-word-list-win-gtk.c:465
 msgid ""
-"</span>\n"
-"\n"
-"<span size=\"14000\">Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin."
-"net&gt;\n"
+"Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
 "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
-"All rights reserved.</span>\n"
-msgstr ""
-
-#: helper/dict-word-win-gtk.c:50
-msgid "Substantive"
+"All rights reserved."
 msgstr ""
 
 #: helper/dict-word-win-gtk.c:51
-msgid "Verb"
+msgid "Substantive"
 msgstr ""
 
 #: helper/dict-word-win-gtk.c:52
-msgid "Adjective"
+msgid "Verb"
 msgstr ""
 
 #: helper/dict-word-win-gtk.c:53
-msgid "Adverb"
+msgid "Adjective"
 msgstr ""
 
 #: helper/dict-word-win-gtk.c:54
+msgid "Adverb"
+msgstr ""
+
+#: helper/dict-word-win-gtk.c:55
 msgid "Etc"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:145
+#: helper/dict-word-win-gtk.c:146
 msgid "Necessary infomation"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:165
+#: helper/dict-word-win-gtk.c:166
 msgid "Additional infomation"
 msgstr ""
 
 #. action area
-#: helper/dict-word-win-gtk.c:179
+#: helper/dict-word-win-gtk.c:180
 msgid "continuance"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:191
+#: helper/dict-word-win-gtk.c:192
 msgid "Add"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:197
+#: helper/dict-word-win-gtk.c:198
 msgid "Clear"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:204
+#: helper/dict-word-win-gtk.c:205
 msgid "Add a word"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:243
+#: helper/dict-word-win-gtk.c:244
 #, c-format
 msgid "Edit the word (%s)"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:246
+#: helper/dict-word-win-gtk.c:247
 #, c-format
 msgid "Add a word (%s)"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:268
+#: helper/dict-word-win-gtk.c:269
 msgid "_Phonetic:"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:278
+#: helper/dict-word-win-gtk.c:279
 msgid "_Literal:"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:288
+#: helper/dict-word-win-gtk.c:289
 msgid "Part of _Speech:"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:318
+#: helper/dict-word-win-gtk.c:319
 msgid "_Frequency:"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:349
+#: helper/dict-word-win-gtk.c:350
 msgid "Part of Speech(_narrow):"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:362
+#: helper/dict-word-win-gtk.c:363
 msgid "_Browse..."
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:488
+#: helper/dict-word-win-gtk.c:490
 msgid "Word registration failed."
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:495
+#: helper/dict-word-win-gtk.c:497
 msgid "Word registration succeded."
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:523
+#: helper/dict-word-win-gtk.c:525
 msgid "Phonetic is emtpy!"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:538
+#: helper/dict-word-win-gtk.c:540
 msgid "Literal is emtpy!"
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:556
+#: helper/dict-word-win-gtk.c:558
 msgid "Part of speech is emtpy!"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:102
+#: helper/im-switcher-gtk.c:282 qt/switcher-qt.cpp:103
 msgid "InputMethodName"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:103
+#: helper/im-switcher-gtk.c:291 qt/switcher-qt.cpp:104
 msgid "Language"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:104
+#: helper/im-switcher-gtk.c:300 qt/switcher-qt.cpp:105
 msgid "Description"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:70
+#: helper/im-switcher-gtk.c:331 qt/switcher-qt.cpp:71
 msgid "uim input method switcher"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:108
-msgid "Changing way"
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:404
+msgid "Effective coverage"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109
-msgid "Change whole desktop"
+#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:396
+msgid "whole desktop"
 msgstr ""
 
-#. default is "Change whole desktop"
-#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:112
-msgid "Change this application only"
+#. default is "whole desktop"
+#: helper/im-switcher-gtk.c:369 qt/switcher-qt.cpp:113
+msgid "current application only"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:114
-msgid "Change this text area only"
+#: helper/im-switcher-gtk.c:370 qt/switcher-qt.cpp:115
+msgid "current text area only"
 msgstr ""
 
 #: helper/input-pad-ja.c:371
@@ -389,57 +386,57 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:443
+#: helper/pref-gtk-custom-widgets.c:445
 msgid "Specify file"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:491 helper/pref-gtk-custom-widgets.c:495
+#: helper/pref-gtk-custom-widgets.c:493 helper/pref-gtk-custom-widgets.c:497
 #: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
 msgid "Select..."
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1188
+#: helper/pref-gtk-custom-widgets.c:1190
 msgid "Enabled"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1214
+#: helper/pref-gtk-custom-widgets.c:1216
 msgid "Enabled items"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1292
+#: helper/pref-gtk-custom-widgets.c:1294
 msgid "Disabled"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1318
+#: helper/pref-gtk-custom-widgets.c:1320
 msgid "Disabled items"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1356 helper/pref-gtk-custom-widgets.c:1966
+#: helper/pref-gtk-custom-widgets.c:1358 helper/pref-gtk-custom-widgets.c:1974
 msgid "Edit..."
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1583 qt/pref-customwidgets.cpp:875
+#: helper/pref-gtk-custom-widgets.c:1591 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1584
+#: helper/pref-gtk-custom-widgets.c:1592
 msgid "Grabbing keys"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1805
+#: helper/pref-gtk-custom-widgets.c:1813
 #, c-format
 msgid "%s - key configuration"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1842
+#: helper/pref-gtk-custom-widgets.c:1850
 msgid "Key preference"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1888
+#: helper/pref-gtk-custom-widgets.c:1896
 msgid "Key:"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1911
+#: helper/pref-gtk-custom-widgets.c:1919
 msgid "Grab..."
 msgstr ""
 
@@ -449,38 +446,38 @@ msgid ""
 "Save?"
 msgstr ""
 
-#: helper/pref-gtk.c:217 qt/pref-qt.cpp:263
+#: helper/pref-gtk.c:217 qt/pref-qt.cpp:264
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
 msgstr ""
 
-#: helper/pref-gtk.c:256 qt/pref-qt.cpp:138
+#: helper/pref-gtk.c:257 qt/pref-qt.cpp:139
 msgid "Group"
 msgstr ""
 
 #. Defaults button
-#: helper/pref-gtk.c:348
+#: helper/pref-gtk.c:349
 msgid "_Defaults"
 msgstr ""
 
-#: helper/pref-gtk.c:353
+#: helper/pref-gtk.c:354
 msgid "Revert all changes to default"
 msgstr ""
 
-#: helper/pref-gtk.c:363
+#: helper/pref-gtk.c:364
 msgid "Apply all changes"
 msgstr ""
 
-#: helper/pref-gtk.c:371
+#: helper/pref-gtk.c:372
 msgid "Quit this application without applying changes"
 msgstr ""
 
-#: helper/pref-gtk.c:382
+#: helper/pref-gtk.c:383
 msgid "Quit this application with applying changes"
 msgstr ""
 
-#: helper/pref-gtk.c:531 qt/pref-qt.cpp:106
+#: helper/pref-gtk.c:532 qt/pref-qt.cpp:107
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -489,44 +486,43 @@ msgid ""
 msgstr ""
 
 #. Feel free to put your names here translators
-#: helper/toolbar-applet-gnome.c:125
+#: helper/toolbar-applet-gnome.c:121
 msgid "TRANSLATORS"
 msgstr ""
 
-#. icon = gdk_pixbuf_new_from_xpm_data(ICON_APPLET);
-#: helper/toolbar-applet-gnome.c:129
-msgid "Uim Applet for GNOME"
+#: helper/toolbar-applet-gnome.c:124
+msgid "Uim Applet"
 msgstr ""
 
-#: helper/toolbar-applet-gnome.c:130
+#: helper/toolbar-applet-gnome.c:126
 msgid "Applet for indicate uim's status"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:63 qt/toolbar-common-quimhelpertoolbar.cpp:55
+#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Switch input method"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:69 qt/toolbar-common-quimhelpertoolbar.cpp:56
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Preference"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:75 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Japanese dictionary editor"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:81 qt/toolbar-common-quimhelpertoolbar.cpp:58
+#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:87 qt/toolbar-common-quimhelpertoolbar.cpp:59
+#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Handwriting input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
+#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Help"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
+#: helper/toolbar-common-gtk.c:847 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -543,83 +539,83 @@ msgstr ""
 msgid "Key Grab Dialog"
 msgstr ""
 
-#: qt/pref-qt.cpp:114
+#: qt/pref-qt.cpp:115
 msgid "~/.uim exists!"
 msgstr ""
 
-#: qt/pref-qt.cpp:156
+#: qt/pref-qt.cpp:157
 msgid "Defaults"
 msgstr ""
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:351
-#: qt/switcher-qt.cpp:119
+#: qt/pref-qt.cpp:160 qt/pref-qt.cpp:247 qt/pref-qt.cpp:352
+#: qt/switcher-qt.cpp:120
 msgid "OK"
 msgstr ""
 
-#: qt/pref-qt.cpp:162
+#: qt/pref-qt.cpp:163
 msgid "Apply"
 msgstr ""
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
+#: qt/pref-qt.cpp:167 qt/pref-qt.cpp:248 qt/switcher-qt.cpp:125
 msgid "Cancel"
 msgstr ""
 
-#: qt/pref-qt.cpp:244
+#: qt/pref-qt.cpp:245
 msgid "Save Confirm"
 msgstr ""
 
-#: qt/pref-qt.cpp:245
+#: qt/pref-qt.cpp:246
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: qt/pref-qt.cpp:262
+#: qt/pref-qt.cpp:263
 msgid "Quit Confirm"
 msgstr ""
 
-#: qt/pref-qt.cpp:265
+#: qt/pref-qt.cpp:266
 msgid "Yes"
 msgstr ""
 
-#: qt/pref-qt.cpp:266
+#: qt/pref-qt.cpp:267
 msgid "No"
 msgstr ""
 
-#: qt/pref-qt.cpp:347
+#: qt/pref-qt.cpp:348
 msgid "Show this dialog on startup"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
-#: scm/action.lisp:548
+#: qt/toolbar-common-quimhelpertoolbar.cpp:100 scm/action.lisp:536
+#: scm/action.lisp:537
 msgid "exec im-switcher"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:123
+#: qt/toolbar-common-quimhelpertoolbar.cpp:124
 msgid "exec Preference Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:143
+#: qt/toolbar-common-quimhelpertoolbar.cpp:147
 msgid "exec Japanese dictionary Tool Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:163
+#: qt/toolbar-common-quimhelpertoolbar.cpp:167
 msgid "exec Input Pad Tool Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:183
+#: qt/toolbar-common-quimhelpertoolbar.cpp:187
 msgid "exec Handwriting Input Pad Tool Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:202
+#: qt/toolbar-common-quimhelpertoolbar.cpp:206
 msgid "exec Help Application"
 msgstr ""
 
-#: scm/action.lisp:502 scm/action.lisp:503
+#: scm/action.lisp:491 scm/action.lisp:492
 msgid "unknown"
 msgstr ""
 
-#: scm/action.lisp:542
+#: scm/action.lisp:531
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
@@ -665,15 +661,15 @@ msgstr ""
 #: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
 #: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
 #: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
-#: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
-#: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
-#: scm/im-custom.lisp:347 scm/im-custom.lisp:353 scm/im-custom.lisp:360
-#: scm/im-custom.lisp:366 scm/im-custom.lisp:372 scm/im-custom.lisp:378
-#: scm/im-custom.lisp:384 scm/im-custom.lisp:390 scm/im-custom.lisp:396
-#: scm/im-custom.lisp:414 scm/im-custom.lisp:420 scm/im-custom.lisp:427
-#: scm/im-custom.lisp:437 scm/im-custom.lisp:441 scm/im-custom.lisp:447
-#: scm/im-custom.lisp:453 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:106 scm/im-custom.lisp:111 scm/im-custom.lisp:122
+#: scm/im-custom.lisp:132 scm/im-custom.lisp:234 scm/im-custom.lisp:288
+#: scm/im-custom.lisp:294 scm/im-custom.lisp:300 scm/im-custom.lisp:308
+#: scm/im-custom.lisp:336 scm/im-custom.lisp:357 scm/im-custom.lisp:363
+#: scm/im-custom.lisp:423 scm/im-custom.lisp:429 scm/im-custom.lisp:435
+#: scm/im-custom.lisp:441 scm/im-custom.lisp:447 scm/im-custom.lisp:453
+#: scm/im-custom.lisp:471 scm/im-custom.lisp:477 scm/im-custom.lisp:484
+#: scm/im-custom.lisp:494 scm/im-custom.lisp:498 scm/im-custom.lisp:504
+#: scm/im-custom.lisp:510 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -704,7 +700,7 @@ msgstr ""
 msgid "long description will be here."
 msgstr ""
 
-#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:80
+#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:85
 #: scm/mana-custom.lisp:56
 msgid "Segment separator"
 msgstr ""
@@ -1430,19 +1426,19 @@ msgstr ""
 msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr ""
 
-#: scm/custom.lisp:756
+#: scm/custom.lisp:752
 msgid "-"
 msgstr ""
 
-#: scm/custom.lisp:757
+#: scm/custom.lisp:753
 msgid "Main settings of this group"
 msgstr ""
 
-#: scm/custom.lisp:760
+#: scm/custom.lisp:756
 msgid "Hidden settings"
 msgstr ""
 
-#: scm/custom.lisp:761
+#: scm/custom.lisp:757
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
@@ -1601,162 +1597,208 @@ msgid "Buttons"
 msgstr ""
 
 #: scm/im-custom.lisp:65
-msgid "Candidate window"
+msgid "Menu-based IM switcher"
 msgstr ""
 
 #: scm/im-custom.lisp:70
-msgid "Annotation"
+msgid "Candidate window"
 msgstr ""
 
 #: scm/im-custom.lisp:75
+msgid "Annotation"
+msgstr ""
+
+#: scm/im-custom.lisp:80
 msgid "Dictionary"
 msgstr ""
 
-#: scm/im-custom.lisp:85
+#: scm/im-custom.lisp:90
 msgid "Mode transition"
 msgstr ""
 
-#: scm/im-custom.lisp:90
+#: scm/im-custom.lisp:95
 msgid "Special operation"
 msgstr ""
 
-#: scm/im-custom.lisp:95 scm/im-custom.lisp:126
+#: scm/im-custom.lisp:100 scm/im-custom.lisp:131
 msgid "Default input method"
 msgstr ""
 
-#: scm/im-custom.lisp:100
+#: scm/im-custom.lisp:105
 msgid "Input method deployment"
 msgstr ""
 
-#: scm/im-custom.lisp:105
+#: scm/im-custom.lisp:110
 msgid "Visual preference"
 msgstr ""
 
-#: scm/im-custom.lisp:116
+#: scm/im-custom.lisp:121
 msgid "Specify default IM"
 msgstr ""
 
-#: scm/im-custom.lisp:228
+#: scm/im-custom.lisp:233
 msgid "Enabled input methods"
 msgstr ""
 
-#: scm/im-custom.lisp:285
+#: scm/im-custom.lisp:287
 msgid "Input method toggle"
 msgstr ""
 
-#: scm/im-custom.lisp:291
+#: scm/im-custom.lisp:293
 msgid "Enable input method toggle by hot keys"
 msgstr ""
 
-#: scm/im-custom.lisp:297
+#: scm/im-custom.lisp:299
 msgid "Input method toggle key"
 msgstr ""
 
-#: scm/im-custom.lisp:305
+#: scm/im-custom.lisp:307
 msgid "Alternative input method"
 msgstr ""
 
-#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim"
 msgstr ""
 
-#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim native"
 msgstr ""
 
-#: scm/im-custom.lisp:324
+#: scm/im-custom.lisp:334
 msgid "ATOK like"
 msgstr ""
 
-#: scm/im-custom.lisp:324
+#: scm/im-custom.lisp:334
 msgid "Similar to ATOK"
 msgstr ""
 
-#: scm/im-custom.lisp:325
+#: scm/im-custom.lisp:335
 msgid "Preedit color"
 msgstr ""
 
-#: scm/im-custom.lisp:338 scm/im-custom.lisp:339
+#: scm/im-custom.lisp:348 scm/im-custom.lisp:349
 msgid "Adjacent to cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:341 scm/im-custom.lisp:342
+#: scm/im-custom.lisp:351 scm/im-custom.lisp:352
 msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:344 scm/im-custom.lisp:345
+#: scm/im-custom.lisp:354 scm/im-custom.lisp:355
 msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:346
+#: scm/im-custom.lisp:356
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/im-custom.lisp:352
+#: scm/im-custom.lisp:362
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
-#: scm/im-custom.lisp:359
-msgid "input method switcher"
-msgstr ""
-
-#: scm/im-custom.lisp:365
-msgid "preference tool"
-msgstr ""
-
-#: scm/im-custom.lisp:371
-msgid "Japanese dictionary tool"
-msgstr ""
-
-#: scm/im-custom.lisp:377
-msgid "input pad"
-msgstr ""
-
-#: scm/im-custom.lisp:383
-msgid "handwriting-input pad"
-msgstr ""
-
 #: scm/im-custom.lisp:389
-msgid "help"
+msgid "Enable menu-based input method switcher"
 msgstr ""
 
-#: scm/im-custom.lisp:395
-msgid "Show input mode nearby cursor"
+#: scm/im-custom.lisp:390
+msgid "Show menu-based IM switcher on toolbar."
 msgstr ""
 
-#: scm/im-custom.lisp:401
-msgid "Time length for showing input mode nearby the cursor"
+#: scm/im-custom.lisp:397
+msgid "All input method of text areas on the system are changed."
+msgstr ""
+
+#: scm/im-custom.lisp:399
+msgid "focused application only"
+msgstr ""
+
+#: scm/im-custom.lisp:400
+msgid ""
+"Only the input method of the focused application is changed. Other text "
+"areas remain untouched."
 msgstr ""
 
 #: scm/im-custom.lisp:402
-msgid "Set 0 to show indicator always."
+msgid "focused text area only"
 msgstr ""
 
-#: scm/im-custom.lisp:413
-msgid "EB library"
+#: scm/im-custom.lisp:403
+msgid ""
+"Only the input method of the focused text area is changed. Other text areas "
+"remain untouched."
 msgstr ""
 
-#: scm/im-custom.lisp:419
-msgid "Use EB library to search annotations"
+#: scm/im-custom.lisp:405
+msgid "Specify where the IM switching takes effect."
 msgstr ""
 
-#: scm/im-custom.lisp:426
-msgid "The directory which contains EB dictionary file"
+#: scm/im-custom.lisp:416
+msgid "full-featured input method switcher"
 msgstr ""
 
-#: scm/im-custom.lisp:436
-msgid "XIM"
+#: scm/im-custom.lisp:417
+msgid ""
+"Show the button on toolbar that invokes uim-im-switcher application for IM "
+"switching."
+msgstr ""
+
+#: scm/im-custom.lisp:422
+msgid "preference tool"
+msgstr ""
+
+#: scm/im-custom.lisp:428
+msgid "Japanese dictionary tool"
+msgstr ""
+
+#: scm/im-custom.lisp:434
+msgid "input pad"
 msgstr ""
 
 #: scm/im-custom.lisp:440
-msgid "Preedit settings of XIM"
+msgid "handwriting-input pad"
 msgstr ""
 
 #: scm/im-custom.lisp:446
-msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
+msgid "help"
 msgstr ""
 
 #: scm/im-custom.lisp:452
+msgid "Show input mode nearby cursor"
+msgstr ""
+
+#: scm/im-custom.lisp:458
+msgid "Time length for showing input mode nearby the cursor"
+msgstr ""
+
+#: scm/im-custom.lisp:459
+msgid "Set 0 to show indicator always."
+msgstr ""
+
+#: scm/im-custom.lisp:470
+msgid "EB library"
+msgstr ""
+
+#: scm/im-custom.lisp:476
+msgid "Use EB library to search annotations"
+msgstr ""
+
+#: scm/im-custom.lisp:483
+msgid "The directory which contains EB dictionary file"
+msgstr ""
+
+#: scm/im-custom.lisp:493
+msgid "XIM"
+msgstr ""
+
+#: scm/im-custom.lisp:497
+msgid "Preedit settings of XIM"
+msgstr ""
+
+#: scm/im-custom.lisp:503
+msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
+msgstr ""
+
+#: scm/im-custom.lisp:509
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
@@ -1772,7 +1814,7 @@ msgstr ""
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 
-#: scm/m17nlib.lisp:338
+#: scm/m17nlib.lisp:340
 msgid "An input method provided by the m17n library"
 msgstr ""
 
@@ -1997,6 +2039,14 @@ msgstr ""
 msgid "PRIME on"
 msgstr ""
 
+#: scm/prime-custom.lisp:175
+msgid "Peculiar"
+msgstr ""
+
+#: scm/prime-custom.lisp:176
+msgid "Application specific input mode"
+msgstr ""
+
 #: scm/prime-key-custom.lisp:60
 msgid "PRIME key bindings 1"
 msgstr ""
@@ -2121,7 +2171,7 @@ msgstr ""
 msgid "Pinyin input method (Traditional Chinese version)"
 msgstr ""
 
-#: scm/scim.lisp:336
+#: scm/scim.lisp:338
 msgid "An input method provided by the scim library"
 msgstr ""
 
@@ -2439,11 +2489,11 @@ msgid "VIetnamese Quoted-Readable"
 msgstr ""
 
 #: uim.desktop.in.in.h:1
-msgid "Input method settings"
+msgid "Customize uim input method environment"
 msgstr ""
 
 #: uim.desktop.in.in.h:2
-msgid "Preference of uim"
+msgid "Input Method (uim)"
 msgstr ""
 
 #.

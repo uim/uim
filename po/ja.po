@@ -50,7 +50,8 @@
 # emacs        → emacs (コマンドとして)
 # Vi, vi       → vi    (固有名詞、コマンド共)
 #
-# input method → 入力方式
+# input method → 入力方式 (ただし、デスクトップ環境を構築する機構としての
+#                 input methodを指す場合等は「入力メソッド」も用いる)
 # preedit      → 編集領域
 # commit       → 確定
 # candidate    → 候補
@@ -98,341 +99,332 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-01-24 02:22+0900\n"
-"PO-Revision-Date: 2006-01-24 02:25+0900\n"
+"POT-Creation-Date: 2006-05-19 05:32+0900\n"
+"PO-Revision-Date: 2006-05-19 06:42+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
-"Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: helper/GNOME_UimApplet.server.in.in.h:1
+msgid "Indicate the state of uim's input method"
+msgstr ""
+
+#: helper/GNOME_UimApplet.server.in.in.h:2
 msgid "Utility"
 msgstr "ユーティリティ"
 
-#: helper/GNOME_UimApplet.server.in.in.h:2
+#: helper/GNOME_UimApplet.server.in.in.h:3
 msgid "uim Applet"
 msgstr "uimアプレット"
 
-#: helper/GNOME_UimApplet.server.in.in.h:3
+#: helper/GNOME_UimApplet.server.in.in.h:4
 msgid "uim Applet Factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: helper/GNOME_UimApplet.server.in.in.h:4
+#: helper/GNOME_UimApplet.server.in.in.h:5
 msgid "uim applet factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: helper/GNOME_UimApplet.server.in.in.h:5
-msgid "uim applet for the GNOME2 panel"
-msgstr "GNOMEパネル用のuimアプレット"
-
-#: helper/dict-anthy.c:78 helper/dict-main-gtk.c:161
-#: helper/dict-word-list-win-gtk.c:272
+#: helper/dict-anthy.c:80 helper/dict-main-gtk.c:162
+#: helper/dict-word-list-win-gtk.c:239
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
 #. construct dialog
-#: helper/dict-cclass-dialog.c:67 helper/dict-cclass-dialog.c:104
-#: helper/dict-word-list-view-gtk.c:264
+#: helper/dict-cclass-dialog.c:68 helper/dict-cclass-dialog.c:105
+#: helper/dict-word-list-view-gtk.c:266
 msgid "Part of Speech"
 msgstr "品詞"
 
-#: helper/dict-cclass-dialog.c:113
+#: helper/dict-cclass-dialog.c:114
 msgid "Example"
 msgstr "例"
 
-#: helper/dict-main-gtk.c:226
+#: helper/dict-main-gtk.c:227
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
 
-#: helper/dict-word-list-view-gtk.c:130
+#: helper/dict-word-list-view-gtk.c:131
 msgid "Show part of speech column"
 msgstr "品詞欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:131 helper/dict-word-list-view-gtk.c:140
-#: helper/dict-word-list-view-gtk.c:148 helper/dict-word-list-view-gtk.c:155
-#: helper/dict-word-list-view-gtk.c:163 helper/dict-word-list-view-gtk.c:164
+#: helper/dict-word-list-view-gtk.c:132 helper/dict-word-list-view-gtk.c:141
+#: helper/dict-word-list-view-gtk.c:149 helper/dict-word-list-view-gtk.c:156
+#: helper/dict-word-list-view-gtk.c:164 helper/dict-word-list-view-gtk.c:165
 msgid "to be written"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:139
+#: helper/dict-word-list-view-gtk.c:140
 msgid "Show freq column"
 msgstr "使用頻度欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:147
+#: helper/dict-word-list-view-gtk.c:148
 msgid "Show okuri column"
 msgstr "送り仮名欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:156
+#: helper/dict-word-list-view-gtk.c:157
 msgid "to be written "
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:200
+#: helper/dict-word-list-view-gtk.c:202
 msgid "Word Type"
 msgstr "単語の種類"
 
-#: helper/dict-word-list-view-gtk.c:218
+#: helper/dict-word-list-view-gtk.c:220
 msgid "Phonetic"
 msgstr "読み方"
 
-#: helper/dict-word-list-view-gtk.c:248
+#: helper/dict-word-list-view-gtk.c:250
 msgid "Literal"
 msgstr "書き方"
 
-#: helper/dict-word-list-view-gtk.c:280
+#: helper/dict-word-list-view-gtk.c:282
 msgid "Frequency"
 msgstr "使用頻度"
 
-#: helper/dict-word-list-view-gtk.c:291
+#: helper/dict-word-list-view-gtk.c:293
 msgid "Okuri"
 msgstr "送り仮名"
 
-#: helper/dict-word-list-win-gtk.c:86
+#: helper/dict-word-list-win-gtk.c:87
 msgid "_File"
 msgstr "ファイル(_F)"
 
-#: helper/dict-word-list-win-gtk.c:87
+#: helper/dict-word-list-win-gtk.c:88
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: helper/dict-word-list-win-gtk.c:88
+#: helper/dict-word-list-win-gtk.c:89
 msgid "_Option"
 msgstr "オプション(_O)"
 
-#: helper/dict-word-list-win-gtk.c:89
+#: helper/dict-word-list-win-gtk.c:90
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: helper/dict-word-list-win-gtk.c:90
+#: helper/dict-word-list-win-gtk.c:91
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: helper/dict-word-list-win-gtk.c:91
+#: helper/dict-word-list-win-gtk.c:92
 msgid "Quit uim-dict"
 msgstr "uim-dict を終了します"
 
-#: helper/dict-word-list-win-gtk.c:92
+#: helper/dict-word-list-win-gtk.c:93
 msgid "A_dd..."
 msgstr "追加(_D)..."
 
-#: helper/dict-word-list-win-gtk.c:93
+#: helper/dict-word-list-win-gtk.c:94
 msgid "Add a new word"
 msgstr "新しい単語を追加します"
 
-#: helper/dict-word-list-win-gtk.c:94
+#: helper/dict-word-list-win-gtk.c:95
 msgid "_Remove..."
 msgstr "削除(_R)..."
 
-#: helper/dict-word-list-win-gtk.c:95
+#: helper/dict-word-list-win-gtk.c:96
 msgid "Remove the selected word"
 msgstr "選択した単語を削除します"
 
-#: helper/dict-word-list-win-gtk.c:96
+#: helper/dict-word-list-win-gtk.c:97
 msgid "_Edit..."
 msgstr "編集(_E)..."
 
-#: helper/dict-word-list-win-gtk.c:97
+#: helper/dict-word-list-win-gtk.c:98
 msgid "Edit the selected word"
 msgstr "選択した単語を編集します"
 
-#: helper/dict-word-list-win-gtk.c:98
+#: helper/dict-word-list-win-gtk.c:99
 msgid "_Popup Menu"
 msgstr "ポップアップメニュー(_P)"
 
-#: helper/dict-word-list-win-gtk.c:99
+#: helper/dict-word-list-win-gtk.c:100
 msgid "Show popup menu"
 msgstr "ポップアップ・メニューを表示します"
 
-#: helper/dict-word-list-win-gtk.c:100
+#: helper/dict-word-list-win-gtk.c:101
 msgid "_About"
 msgstr "このプログラムについて(_A)"
 
-#: helper/dict-word-list-win-gtk.c:101 helper/dict-word-list-win-gtk.c:500
+#: helper/dict-word-list-win-gtk.c:102 helper/dict-word-list-win-gtk.c:472
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
 # NOTE: libanthydic.so を指す
-#: helper/dict-word-list-win-gtk.c:205
+#: helper/dict-word-list-win-gtk.c:170
 msgid "Couldn't open a library for manipulating the dictionary.\n"
 msgstr "辞書を操作するライブラリを開けませんでした。\n"
 
-#: helper/dict-word-list-win-gtk.c:226
+#: helper/dict-word-list-win-gtk.c:191
 msgid "Edit the dictionary"
 msgstr "辞書の編集"
 
-#: helper/dict-word-list-win-gtk.c:280
+#: helper/dict-word-list-win-gtk.c:247
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: helper/dict-word-list-win-gtk.c:394
+#: helper/dict-word-list-win-gtk.c:361
 msgid "Are you sure to remove seleted words?"
 msgstr "選択した複数の単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:400
+#: helper/dict-word-list-win-gtk.c:367
 msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:428
+#: helper/dict-word-list-win-gtk.c:396
 msgid "Word deletion succeded."
 msgstr "単語の削除に成功しました。"
 
-#: helper/dict-word-list-win-gtk.c:434
+#: helper/dict-word-list-win-gtk.c:402
 msgid "Word deletion failed."
 msgstr "単語の削除に失敗しました。"
 
-#: helper/dict-word-list-win-gtk.c:493
-msgid "<span size=\"20000\">uim-dict "
-msgstr "<span size=\"20000\">uim-dict "
+#: helper/dict-word-list-win-gtk.c:463
+msgid "uim-dict"
+msgstr "uim-dict"
 
-#: helper/dict-word-list-win-gtk.c:493
+#: helper/dict-word-list-win-gtk.c:465
 msgid ""
-"</span>\n"
-"\n"
-"<span size=\"14000\">Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin."
-"net&gt;\n"
+"Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
 "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
-"All rights reserved.</span>\n"
+"All rights reserved."
 msgstr ""
-"</span>\n"
-"\n"
-"<span size=\"14000\">Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin."
-"net&gt;\n"
-"Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
-"All rights reserved.</span>\n"
 
-#: helper/dict-word-win-gtk.c:50
+#: helper/dict-word-win-gtk.c:51
 msgid "Substantive"
 msgstr "名詞"
 
-#: helper/dict-word-win-gtk.c:51
+#: helper/dict-word-win-gtk.c:52
 msgid "Verb"
 msgstr "動詞"
 
-#: helper/dict-word-win-gtk.c:52
+#: helper/dict-word-win-gtk.c:53
 msgid "Adjective"
 msgstr "形容詞"
 
-#: helper/dict-word-win-gtk.c:53
+#: helper/dict-word-win-gtk.c:54
 msgid "Adverb"
 msgstr "副詞"
 
-#: helper/dict-word-win-gtk.c:54
+#: helper/dict-word-win-gtk.c:55
 msgid "Etc"
 msgstr "その他"
 
-#: helper/dict-word-win-gtk.c:145
+#: helper/dict-word-win-gtk.c:146
 msgid "Necessary infomation"
 msgstr "必須項目"
 
-#: helper/dict-word-win-gtk.c:165
+#: helper/dict-word-win-gtk.c:166
 msgid "Additional infomation"
 msgstr "追加項目"
 
 #. action area
-#: helper/dict-word-win-gtk.c:179
+#: helper/dict-word-win-gtk.c:180
 msgid "continuance"
 msgstr "連続"
 
-#: helper/dict-word-win-gtk.c:191
+#: helper/dict-word-win-gtk.c:192
 msgid "Add"
 msgstr "追加"
 
-#: helper/dict-word-win-gtk.c:197
+#: helper/dict-word-win-gtk.c:198
 msgid "Clear"
 msgstr "消去"
 
-#: helper/dict-word-win-gtk.c:204
+#: helper/dict-word-win-gtk.c:205
 msgid "Add a word"
 msgstr "単語を追加"
 
-#: helper/dict-word-win-gtk.c:243
+#: helper/dict-word-win-gtk.c:244
 #, c-format
 msgid "Edit the word (%s)"
 msgstr "単語 (%s) を編集"
 
-#: helper/dict-word-win-gtk.c:246
+#: helper/dict-word-win-gtk.c:247
 #, c-format
 msgid "Add a word (%s)"
 msgstr "単語 (%s) を追加"
 
-#: helper/dict-word-win-gtk.c:268
+#: helper/dict-word-win-gtk.c:269
 msgid "_Phonetic:"
 msgstr "読み方(_P):"
 
-#: helper/dict-word-win-gtk.c:278
+#: helper/dict-word-win-gtk.c:279
 msgid "_Literal:"
 msgstr "書き方(_L):"
 
-#: helper/dict-word-win-gtk.c:288
+#: helper/dict-word-win-gtk.c:289
 msgid "Part of _Speech:"
 msgstr "品詞(_S):"
 
-#: helper/dict-word-win-gtk.c:318
+#: helper/dict-word-win-gtk.c:319
 msgid "_Frequency:"
 msgstr "頻度(_F):"
 
-#: helper/dict-word-win-gtk.c:349
+#: helper/dict-word-win-gtk.c:350
 msgid "Part of Speech(_narrow):"
 msgstr "品詞(狭義)(_N):"
 
-#: helper/dict-word-win-gtk.c:362
+#: helper/dict-word-win-gtk.c:363
 msgid "_Browse..."
 msgstr "参照(_B)..."
 
-#: helper/dict-word-win-gtk.c:488
+#: helper/dict-word-win-gtk.c:490
 msgid "Word registration failed."
 msgstr "単語の登録に失敗しました。"
 
-#: helper/dict-word-win-gtk.c:495
+#: helper/dict-word-win-gtk.c:497
 msgid "Word registration succeded."
 msgstr "単語の登録に成功しました。"
 
-#: helper/dict-word-win-gtk.c:523
+#: helper/dict-word-win-gtk.c:525
 msgid "Phonetic is emtpy!"
 msgstr "読み方が入力されていません！"
 
-#: helper/dict-word-win-gtk.c:538
+#: helper/dict-word-win-gtk.c:540
 msgid "Literal is emtpy!"
 msgstr "書き方が入力されていません！"
 
-#: helper/dict-word-win-gtk.c:556
+#: helper/dict-word-win-gtk.c:558
 msgid "Part of speech is emtpy!"
 msgstr "品詞が入力されていません！"
 
-#: helper/im-switcher-gtk.c:274 qt/switcher-qt.cpp:102
+#: helper/im-switcher-gtk.c:282 qt/switcher-qt.cpp:103
 msgid "InputMethodName"
 msgstr "入力方式名"
 
-#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:103
+#: helper/im-switcher-gtk.c:291 qt/switcher-qt.cpp:104
 msgid "Language"
 msgstr "言語名"
 
-#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:104
+#: helper/im-switcher-gtk.c:300 qt/switcher-qt.cpp:105
 msgid "Description"
 msgstr "説明"
 
-#: helper/im-switcher-gtk.c:323 qt/switcher-qt.cpp:70
+#: helper/im-switcher-gtk.c:331 qt/switcher-qt.cpp:71
 msgid "uim input method switcher"
-msgstr "uim 入力方式スイッチャー"
+msgstr "uim 入力方式切り換え"
 
-#: helper/im-switcher-gtk.c:352 qt/switcher-qt.cpp:108
-msgid "Changing way"
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:404
+msgid "Effective coverage"
 msgstr "変更の適用範囲"
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109
-msgid "Change whole desktop"
+#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:396
+msgid "whole desktop"
 msgstr "デスクトップ全体"
 
-#. default is "Change whole desktop"
-#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:112
-msgid "Change this application only"
-msgstr "このアプリケーションのみ"
+#. default is "whole desktop"
+#: helper/im-switcher-gtk.c:369 qt/switcher-qt.cpp:113
+msgid "current application only"
+msgstr "現在のアプリケーションのみ"
 
-#: helper/im-switcher-gtk.c:362 qt/switcher-qt.cpp:114
-msgid "Change this text area only"
-msgstr "このテキスト領域のみ"
+#: helper/im-switcher-gtk.c:370 qt/switcher-qt.cpp:115
+msgid "current text area only"
+msgstr "現在のテキスト領域のみ"
 
 #: helper/input-pad-ja.c:371
 msgid "ja-pad"
@@ -486,57 +478,57 @@ msgstr "学術記号"
 msgid "line"
 msgstr "罫線"
 
-#: helper/pref-gtk-custom-widgets.c:443
+#: helper/pref-gtk-custom-widgets.c:445
 msgid "Specify file"
 msgstr "ファイルを指定して下さい"
 
-#: helper/pref-gtk-custom-widgets.c:491 helper/pref-gtk-custom-widgets.c:495
+#: helper/pref-gtk-custom-widgets.c:493 helper/pref-gtk-custom-widgets.c:497
 #: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
 msgid "Select..."
 msgstr "選択..."
 
-#: helper/pref-gtk-custom-widgets.c:1188
+#: helper/pref-gtk-custom-widgets.c:1190
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk-custom-widgets.c:1214
+#: helper/pref-gtk-custom-widgets.c:1216
 msgid "Enabled items"
 msgstr "有効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1292
+#: helper/pref-gtk-custom-widgets.c:1294
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk-custom-widgets.c:1318
+#: helper/pref-gtk-custom-widgets.c:1320
 msgid "Disabled items"
 msgstr "無効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1356 helper/pref-gtk-custom-widgets.c:1966
+#: helper/pref-gtk-custom-widgets.c:1358 helper/pref-gtk-custom-widgets.c:1974
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1583 qt/pref-customwidgets.cpp:875
+#: helper/pref-gtk-custom-widgets.c:1591 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1584
+#: helper/pref-gtk-custom-widgets.c:1592
 msgid "Grabbing keys"
 msgstr "キーを取得中"
 
-#: helper/pref-gtk-custom-widgets.c:1805
+#: helper/pref-gtk-custom-widgets.c:1813
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1842
+#: helper/pref-gtk-custom-widgets.c:1850
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1888
+#: helper/pref-gtk-custom-widgets.c:1896
 msgid "Key:"
 msgstr "キー:"
 
-#: helper/pref-gtk-custom-widgets.c:1911
+#: helper/pref-gtk-custom-widgets.c:1919
 msgid "Grab..."
 msgstr "取得..."
 
@@ -548,7 +540,7 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "保存しますか？"
 
-#: helper/pref-gtk.c:217 qt/pref-qt.cpp:263
+#: helper/pref-gtk.c:217 qt/pref-qt.cpp:264
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -556,32 +548,32 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "本当に終了しますか？"
 
-#: helper/pref-gtk.c:256 qt/pref-qt.cpp:138
+#: helper/pref-gtk.c:257 qt/pref-qt.cpp:139
 msgid "Group"
 msgstr "グループ"
 
 #. Defaults button
-#: helper/pref-gtk.c:348
+#: helper/pref-gtk.c:349
 msgid "_Defaults"
 msgstr "標準(_D)"
 
-#: helper/pref-gtk.c:353
+#: helper/pref-gtk.c:354
 msgid "Revert all changes to default"
 msgstr "全ての変更を標準に戻す"
 
-#: helper/pref-gtk.c:363
+#: helper/pref-gtk.c:364
 msgid "Apply all changes"
 msgstr "全ての設定変更を適用"
 
-#: helper/pref-gtk.c:371
+#: helper/pref-gtk.c:372
 msgid "Quit this application without applying changes"
 msgstr "設定変更を適用せず終了"
 
-#: helper/pref-gtk.c:382
+#: helper/pref-gtk.c:383
 msgid "Quit this application with applying changes"
 msgstr "設定を保存して終了"
 
-#: helper/pref-gtk.c:531 qt/pref-qt.cpp:106
+#: helper/pref-gtk.c:532 qt/pref-qt.cpp:107
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -594,46 +586,45 @@ msgstr ""
 "設定が反映されない場合は、このファイルの内容を確認して下さい。"
 
 #. Feel free to put your names here translators
-#: helper/toolbar-applet-gnome.c:125
+#: helper/toolbar-applet-gnome.c:121
 msgid "TRANSLATORS"
 msgstr ""
 "TOKUNAGA Hiroyuki <tkng@xem.jp>\n"
 "Daichi Kawahata <daichik@users.sourceforge.net>"
 
-#. icon = gdk_pixbuf_new_from_xpm_data(ICON_APPLET);
-#: helper/toolbar-applet-gnome.c:129
-msgid "Uim Applet for GNOME"
+#: helper/toolbar-applet-gnome.c:124
+msgid "Uim Applet"
 msgstr "uimアプレット"
 
-#: helper/toolbar-applet-gnome.c:130
+#: helper/toolbar-applet-gnome.c:126
 msgid "Applet for indicate uim's status"
 msgstr "uimの状態を示すアプレット"
 
-#: helper/toolbar-common-gtk.c:63 qt/toolbar-common-quimhelpertoolbar.cpp:55
+#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
 msgid "Switch input method"
 msgstr "入力方式の切り換え"
 
-#: helper/toolbar-common-gtk.c:69 qt/toolbar-common-quimhelpertoolbar.cpp:56
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Preference"
 msgstr "設定"
 
-#: helper/toolbar-common-gtk.c:75 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Japanese dictionary editor"
 msgstr "日本語辞書ツール"
 
-#: helper/toolbar-common-gtk.c:81 qt/toolbar-common-quimhelpertoolbar.cpp:58
+#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Input pad"
 msgstr "入力パッド"
 
-#: helper/toolbar-common-gtk.c:87 qt/toolbar-common-quimhelpertoolbar.cpp:59
+#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Handwriting input pad"
 msgstr "手書き入力パッド"
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
+#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Help"
 msgstr "ヘルプ"
 
-#: helper/toolbar-common-gtk.c:593 qt/toolbar-common-quimhelpertoolbar.cpp:61
+#: helper/toolbar-common-gtk.c:847 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Quit this toolbar"
 msgstr "終了"
 
@@ -650,32 +641,32 @@ msgstr "編集"
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
-#: qt/pref-qt.cpp:114
+#: qt/pref-qt.cpp:115
 msgid "~/.uim exists!"
 msgstr "~/.uim が存在します！"
 
-#: qt/pref-qt.cpp:156
+#: qt/pref-qt.cpp:157
 msgid "Defaults"
 msgstr "標準"
 
-#: qt/pref-qt.cpp:159 qt/pref-qt.cpp:246 qt/pref-qt.cpp:351
-#: qt/switcher-qt.cpp:119
+#: qt/pref-qt.cpp:160 qt/pref-qt.cpp:247 qt/pref-qt.cpp:352
+#: qt/switcher-qt.cpp:120
 msgid "OK"
 msgstr "OK"
 
-#: qt/pref-qt.cpp:162
+#: qt/pref-qt.cpp:163
 msgid "Apply"
 msgstr "適用"
 
-#: qt/pref-qt.cpp:166 qt/pref-qt.cpp:247 qt/switcher-qt.cpp:124
+#: qt/pref-qt.cpp:167 qt/pref-qt.cpp:248 qt/switcher-qt.cpp:125
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: qt/pref-qt.cpp:244
+#: qt/pref-qt.cpp:245
 msgid "Save Confirm"
 msgstr "保存確認"
 
-#: qt/pref-qt.cpp:245
+#: qt/pref-qt.cpp:246
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -683,53 +674,53 @@ msgstr ""
 "値が変更されました。\n"
 "保存しますか？"
 
-#: qt/pref-qt.cpp:262
+#: qt/pref-qt.cpp:263
 msgid "Quit Confirm"
 msgstr "終了確認"
 
-#: qt/pref-qt.cpp:265
+#: qt/pref-qt.cpp:266
 msgid "Yes"
 msgstr "はい"
 
-#: qt/pref-qt.cpp:266
+#: qt/pref-qt.cpp:267
 msgid "No"
 msgstr "いいえ"
 
-#: qt/pref-qt.cpp:347
+#: qt/pref-qt.cpp:348
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
 # FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
-#: qt/toolbar-common-quimhelpertoolbar.cpp:99 scm/action.lisp:547
-#: scm/action.lisp:548
+#: qt/toolbar-common-quimhelpertoolbar.cpp:100 scm/action.lisp:536
+#: scm/action.lisp:537
 msgid "exec im-switcher"
 msgstr "入力方式の切り換え"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:123
+#: qt/toolbar-common-quimhelpertoolbar.cpp:124
 msgid "exec Preference Application"
 msgstr "設定ツールの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:143
+#: qt/toolbar-common-quimhelpertoolbar.cpp:147
 msgid "exec Japanese dictionary Tool Application"
 msgstr "日本語辞書ツールの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:163
+#: qt/toolbar-common-quimhelpertoolbar.cpp:167
 msgid "exec Input Pad Tool Application"
 msgstr "入力パッドの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:183
+#: qt/toolbar-common-quimhelpertoolbar.cpp:187
 msgid "exec Handwriting Input Pad Tool Application"
 msgstr "手書き入力パッドの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:202
+#: qt/toolbar-common-quimhelpertoolbar.cpp:206
 msgid "exec Help Application"
 msgstr "ヘルプの起動"
 
-#: scm/action.lisp:502 scm/action.lisp:503
+#: scm/action.lisp:491 scm/action.lisp:492
 msgid "unknown"
 msgstr "不明"
 
-#: scm/action.lisp:542
+#: scm/action.lisp:531
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr "日本語かな漢字変換エンジン、例"
 
@@ -775,15 +766,15 @@ msgstr "文節区切りを表示"
 #: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
 #: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
 #: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:106 scm/im-custom.lisp:117 scm/im-custom.lisp:127
-#: scm/im-custom.lisp:229 scm/im-custom.lisp:286 scm/im-custom.lisp:292
-#: scm/im-custom.lisp:298 scm/im-custom.lisp:306 scm/im-custom.lisp:326
-#: scm/im-custom.lisp:347 scm/im-custom.lisp:353 scm/im-custom.lisp:360
-#: scm/im-custom.lisp:366 scm/im-custom.lisp:372 scm/im-custom.lisp:378
-#: scm/im-custom.lisp:384 scm/im-custom.lisp:390 scm/im-custom.lisp:396
-#: scm/im-custom.lisp:414 scm/im-custom.lisp:420 scm/im-custom.lisp:427
-#: scm/im-custom.lisp:437 scm/im-custom.lisp:441 scm/im-custom.lisp:447
-#: scm/im-custom.lisp:453 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:106 scm/im-custom.lisp:111 scm/im-custom.lisp:122
+#: scm/im-custom.lisp:132 scm/im-custom.lisp:234 scm/im-custom.lisp:288
+#: scm/im-custom.lisp:294 scm/im-custom.lisp:300 scm/im-custom.lisp:308
+#: scm/im-custom.lisp:336 scm/im-custom.lisp:357 scm/im-custom.lisp:363
+#: scm/im-custom.lisp:423 scm/im-custom.lisp:429 scm/im-custom.lisp:435
+#: scm/im-custom.lisp:441 scm/im-custom.lisp:447 scm/im-custom.lisp:453
+#: scm/im-custom.lisp:471 scm/im-custom.lisp:477 scm/im-custom.lisp:484
+#: scm/im-custom.lisp:494 scm/im-custom.lisp:498 scm/im-custom.lisp:504
+#: scm/im-custom.lisp:510 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -814,7 +805,7 @@ msgstr "文節区切りを表示"
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
-#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:80
+#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:85
 #: scm/mana-custom.lisp:56
 msgid "Segment separator"
 msgstr "文節区切り"
@@ -1545,19 +1536,19 @@ msgstr "[Canna] 右に移動"
 msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr "[Canna] vi協調モードでESCとして扱うキー"
 
-#: scm/custom.lisp:756
+#: scm/custom.lisp:752
 msgid "-"
 msgstr "-"
 
-#: scm/custom.lisp:757
+#: scm/custom.lisp:753
 msgid "Main settings of this group"
 msgstr "このグループのメイン設定"
 
-#: scm/custom.lisp:760
+#: scm/custom.lisp:756
 msgid "Hidden settings"
 msgstr "隠し設定"
 
-#: scm/custom.lisp:761
+#: scm/custom.lisp:757
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
@@ -1718,164 +1709,210 @@ msgid "Buttons"
 msgstr "ボタン"
 
 #: scm/im-custom.lisp:65
+msgid "Menu-based IM switcher"
+msgstr "入力方式切り換えメニュー"
+
+#: scm/im-custom.lisp:70
 msgid "Candidate window"
 msgstr "候補ウィンドウ"
 
-#: scm/im-custom.lisp:70
+#: scm/im-custom.lisp:75
 msgid "Annotation"
 msgstr "註釈"
 
-#: scm/im-custom.lisp:75
+#: scm/im-custom.lisp:80
 msgid "Dictionary"
 msgstr "辞書"
 
-#: scm/im-custom.lisp:85
+#: scm/im-custom.lisp:90
 msgid "Mode transition"
 msgstr "モード遷移"
 
-#: scm/im-custom.lisp:90
+#: scm/im-custom.lisp:95
 msgid "Special operation"
 msgstr "特殊操作"
 
-#: scm/im-custom.lisp:95 scm/im-custom.lisp:126
+#: scm/im-custom.lisp:100 scm/im-custom.lisp:131
 msgid "Default input method"
 msgstr "標準の入力方式"
 
-#: scm/im-custom.lisp:100
+#: scm/im-custom.lisp:105
 msgid "Input method deployment"
 msgstr "入力方式の利用準備"
 
-#: scm/im-custom.lisp:105
+#: scm/im-custom.lisp:110
 msgid "Visual preference"
 msgstr "視覚設定"
 
-#: scm/im-custom.lisp:116
+#: scm/im-custom.lisp:121
 msgid "Specify default IM"
 msgstr "標準の入力方式を指定"
 
-#: scm/im-custom.lisp:228
+#: scm/im-custom.lisp:233
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.lisp:285
+#: scm/im-custom.lisp:287
 msgid "Input method toggle"
 msgstr "入力方式の一時切り換え"
 
-#: scm/im-custom.lisp:291
+#: scm/im-custom.lisp:293
 msgid "Enable input method toggle by hot keys"
 msgstr "ホットキーによる入力方式の正副一時切り換えを有効にする"
 
-#: scm/im-custom.lisp:297
+#: scm/im-custom.lisp:299
 msgid "Input method toggle key"
 msgstr "一時切り換えキー"
 
-#: scm/im-custom.lisp:305
+#: scm/im-custom.lisp:307
 msgid "Alternative input method"
 msgstr "副入力方式"
 
-#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:323 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.lisp:324
+#: scm/im-custom.lisp:334
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:324
+#: scm/im-custom.lisp:334
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:325
+#: scm/im-custom.lisp:335
 msgid "Preedit color"
 msgstr "編集領域の配色"
 
-#: scm/im-custom.lisp:338 scm/im-custom.lisp:339
+#: scm/im-custom.lisp:348 scm/im-custom.lisp:349
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: scm/im-custom.lisp:341 scm/im-custom.lisp:342
+#: scm/im-custom.lisp:351 scm/im-custom.lisp:352
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.lisp:344 scm/im-custom.lisp:345
+#: scm/im-custom.lisp:354 scm/im-custom.lisp:355
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
 # 「候補ウィンドウの位置」では何を規定する位置なのか不明瞭な印象を受ける。具体例
 # が出たら追記する事 -- YamaKen 2005-12-07 
-#: scm/im-custom.lisp:346
+#: scm/im-custom.lisp:356
 msgid "Candidate window position"
 msgstr "候補ウィンドウの表示位置"
 
-#: scm/im-custom.lisp:352
+#: scm/im-custom.lisp:362
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/im-custom.lisp:359
-msgid "input method switcher"
-msgstr "入力方式の切り換え"
+#: scm/im-custom.lisp:389
+msgid "Enable menu-based input method switcher"
+msgstr "入力方式切り換えメニューを有効にする"
 
-#: scm/im-custom.lisp:365
+#: scm/im-custom.lisp:390
+msgid "Show menu-based IM switcher on toolbar."
+msgstr "ツールバーに入力方式切り換えメニューを表示"
+
+#: scm/im-custom.lisp:397
+msgid "All input method of text areas on the system are changed."
+msgstr "全てのテキスト領域の入力方式が変更されます。"
+
+#: scm/im-custom.lisp:399
+msgid "focused application only"
+msgstr "フォーカスされたアプリケーションのみ"
+
+#: scm/im-custom.lisp:400
+msgid ""
+"Only the input method of the focused application is changed. Other text "
+"areas remain untouched."
+msgstr "フォーカスされたアプリケーションのみの入力方式が変更されます。他のテキスト領域はそのままです。"
+
+#: scm/im-custom.lisp:402
+msgid "focused text area only"
+msgstr "フォーカスされたテキスト領域のみ"
+
+#: scm/im-custom.lisp:403
+msgid ""
+"Only the input method of the focused text area is changed. Other text areas "
+"remain untouched."
+msgstr "フォーカスされたテスト領域のみの入力方式が変更されます。他のテキスト領域はそのままです。"
+
+#: scm/im-custom.lisp:405
+msgid "Specify where the IM switching takes effect."
+msgstr "入力方式の切り換えを有効にする範囲を指定します。"
+
+#: scm/im-custom.lisp:416
+msgid "full-featured input method switcher"
+msgstr "フル機能の入力方式切り換えアプリケーション"
+
+#: scm/im-custom.lisp:417
+msgid ""
+"Show the button on toolbar that invokes uim-im-switcher application for IM "
+"switching."
+msgstr "ツールバーにuim入力方式切り換えアプリケーションを起動するボタンを表示します。"
+
+#: scm/im-custom.lisp:422
 msgid "preference tool"
 msgstr "設定"
 
-#: scm/im-custom.lisp:371
+#: scm/im-custom.lisp:428
 msgid "Japanese dictionary tool"
 msgstr "日本語辞書ツール"
 
-#: scm/im-custom.lisp:377
+#: scm/im-custom.lisp:434
 msgid "input pad"
 msgstr "入力パッド"
 
-#: scm/im-custom.lisp:383
+#: scm/im-custom.lisp:440
 msgid "handwriting-input pad"
 msgstr "手書き入力パッド"
 
-#: scm/im-custom.lisp:389
+#: scm/im-custom.lisp:446
 msgid "help"
 msgstr "ヘルプ"
 
-#: scm/im-custom.lisp:395
+#: scm/im-custom.lisp:452
 msgid "Show input mode nearby cursor"
 msgstr "カーソルの側に入力モードを表示"
 
-#: scm/im-custom.lisp:401
+#: scm/im-custom.lisp:458
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "カーソルの側に入力モードを表示する時間"
 
-#: scm/im-custom.lisp:402
+#: scm/im-custom.lisp:459
 msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
-#: scm/im-custom.lisp:413
+#: scm/im-custom.lisp:470
 msgid "EB library"
 msgstr "EBライブラリ"
 
-#: scm/im-custom.lisp:419
+#: scm/im-custom.lisp:476
 msgid "Use EB library to search annotations"
 msgstr "註釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.lisp:426
+#: scm/im-custom.lisp:483
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: scm/im-custom.lisp:436
+#: scm/im-custom.lisp:493
 msgid "XIM"
 msgstr "XIM"
 
-#: scm/im-custom.lisp:440
+#: scm/im-custom.lisp:497
 msgid "Preedit settings of XIM"
 msgstr "XIMの編集領域"
 
-#: scm/im-custom.lisp:446
+#: scm/im-custom.lisp:503
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "編集領域のフォントにアンチエイリアスをかける"
 
-#: scm/im-custom.lisp:452
+#: scm/im-custom.lisp:509
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
 
@@ -1891,7 +1928,7 @@ msgstr "ラテン文字"
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力方式"
 
-#: scm/m17nlib.lisp:338
+#: scm/m17nlib.lisp:340
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
@@ -2116,6 +2153,14 @@ msgstr "PRIME オフ"
 msgid "PRIME on"
 msgstr "PRIME オン"
 
+#: scm/prime-custom.lisp:175
+msgid "Peculiar"
+msgstr ""
+
+#: scm/prime-custom.lisp:176
+msgid "Application specific input mode"
+msgstr "アプリケーション特有の入力モード"
+
 #: scm/prime-key-custom.lisp:60
 msgid "PRIME key bindings 1"
 msgstr "PRIME キー設定1"
@@ -2240,7 +2285,7 @@ msgstr "ピンイン (繁体字)"
 msgid "Pinyin input method (Traditional Chinese version)"
 msgstr "ピンイン入力方式 (繁体字版)"
 
-#: scm/scim.lisp:336
+#: scm/scim.lisp:338
 msgid "An input method provided by the scim library"
 msgstr "SCIMライブラリが提供する入力方式"
 
@@ -2558,12 +2603,12 @@ msgid "VIetnamese Quoted-Readable"
 msgstr "VIetnamese Quoted-Readable"
 
 #: uim.desktop.in.in.h:1
-msgid "Input method settings"
-msgstr "入力方式の設定"
+msgid "Customize uim input method environment"
+msgstr "入力メソッド環境 (uim) を設定します"
 
 #: uim.desktop.in.in.h:2
-msgid "Preference of uim"
-msgstr "uimの設定"
+msgid "Input Method (uim)"
+msgstr "入力メソッド (uim)"
 
 # FIXME: http://ja.wikipedia.org/wiki/ISO_639 の表で使われている表記に同期
 # する。Wikipedia側が不適切と思われる場合はそちらも修正する
@@ -3182,6 +3227,3 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
-
-#~ msgid "File"
-#~ msgstr "ファイル"
