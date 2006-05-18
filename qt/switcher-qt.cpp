@@ -104,15 +104,15 @@ void UimImSwitcher::createGUI()
     listview->addColumn( _( "Language" ) );
     listview->addColumn( _( "Description" ) );
 
-    /* radio buttons for changing way*/
+    /* radio buttons for the switcher coverage */
     QRadioButton *button;
-    vbGroup = new QVButtonGroup( _( "Changing way" ), this );
-    button = new QRadioButton( _( "Change whole desktop" ), vbGroup );
+    vbGroup = new QVButtonGroup( _( "Effective coverage" ), this );
+    button = new QRadioButton( _( "whole desktop" ), vbGroup );
     vbGroup->insert( button, ID_CHANGE_WHOLE_DESKTOP );
-    button->setChecked( TRUE ); // default is "Change whole desktop"
-    button = new QRadioButton( _( "Change this application only" ), vbGroup );
+    button->setChecked( TRUE ); // default is "whole desktop"
+    button = new QRadioButton( _( "current application only" ), vbGroup );
     vbGroup->insert( button, ID_CHANGE_THIS_APPLICATION_ONLY );
-    button = new QRadioButton( _( "Change this text area only" ), vbGroup );
+    button = new QRadioButton( _( "current text area only" ), vbGroup );
     vbGroup->insert( button, ID_CHANGE_THIS_TEXT_AREA_ONLY );
 
     /* cancel & ok button */

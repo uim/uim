@@ -389,24 +389,23 @@
   (_ "Enable menu-based input method switcher")
   (_ "Show menu-based IM switcher on toolbar."))
 
-;; FIXME: make messages understanable (esp. "Changing way")
-(define-custom 'imsw-propagation 'system-global
+(define-custom 'imsw-coverage 'system-global
   '(toolbar menu-imsw)
   (list 'choice
-	(list 'focused-context
-	      (_ "focused text area only")
-	      (_ "uim native"))
-	(list 'app-global
-	      (_ "focused application only")
-	      (_ "Similar to ATOK"))
 	(list 'system-global
 	      (_ "whole desktop")
-	      (_ "Similar to ATOK")))
-  (_ "Changing way")
-  (_ "long description will be here."))
+	      (_ "All input method of text areas on the system are changed."))
+	(list 'app-global
+	      (_ "focused application only")
+	      (_ "Only the input method of the focused application is changed. Other text areas remain untouched."))
+	(list 'focused-context
+	      (_ "focused text area only")
+	      (_ "Only the input method of the focused text area is changed. Other text areas remain untouched.")))
+  (_ "Effective coverage")
+  (_ "Specify where the IM switching takes effect."))
 
 ;; activity dependency
-(custom-add-hook 'imsw-propagation
+(custom-add-hook 'imsw-coverage
 		 'custom-activity-hooks
 		 (lambda ()
 		   toolbar-show-action-based-switcher-button?))

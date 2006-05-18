@@ -81,7 +81,7 @@
 
 			       (lambda (ctx) ;; action handler
 				 (im-switch-im ctx idname)
-				 (case imsw-propagation
+				 (case imsw-coverage
 				   ((focused-context)
 				    #t)
 

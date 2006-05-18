@@ -59,7 +59,7 @@ parse_helper_str_im_list(const char *im_list_str_new);
 static void
 check_helper_connection(void);
 
-static gint changing_way;
+static gint coverage;
 GtkWidget *radio0, *radio1, *radio2;
 
 
@@ -79,6 +79,12 @@ enum
   LANG_COLUMN,
   DESC_COLUMN,
   NUM_COLUMNS
+};
+
+enum switcher_coverage {
+  IMSW_COVERAGE_WHOLE_DESKTOP,
+  IMSW_COVERAGE_THIS_APPLICATION_ONLY,
+  IMSW_COVERAGE_THIS_TEXT_AREA_ONLY
 };
 
 /* Configration:
@@ -217,29 +223,28 @@ send_message_im_change(const gchar *type)
 }
 
 static void
-toggle_changing_way(GtkToggleButton *togglebutton, gpointer user_data)
+toggle_coverage(GtkToggleButton *togglebutton, gpointer user_data)
 {
   if (gtk_toggle_button_get_active((GtkToggleButton *)radio0)) {
-    changing_way = 0;
+    coverage = IMSW_COVERAGE_WHOLE_DESKTOP;
   } else if (gtk_toggle_button_get_active((GtkToggleButton *)radio1)) {
-    changing_way = 1;
+    coverage = IMSW_COVERAGE_THIS_APPLICATION_ONLY;
   } else  if (gtk_toggle_button_get_active((GtkToggleButton *)radio2)) {
-    changing_way = 2;
+    coverage = IMSW_COVERAGE_THIS_TEXT_AREA_ONLY;
   }
 }
 
 static void
 change_input_method(GtkButton *button, gpointer user_data)
 {
-  int i = changing_way;
-  switch (i) {
-  case 0:
+  switch (coverage) {
+  case IMSW_COVERAGE_WHOLE_DESKTOP:
     send_message_im_change("im_change_whole_desktop\n");
     break;
-  case 1:
+  case IMSW_COVERAGE_THIS_APPLICATION_ONLY:
     send_message_im_change("im_change_this_application_only\n");
     break;
-  case 2:
+  case IMSW_COVERAGE_THIS_TEXT_AREA_ONLY:
     send_message_im_change("im_change_this_text_area_only\n");
     break;
   }
@@ -352,7 +357,7 @@ create_switcher(void)
   gtk_box_pack_start (GTK_BOX (vbox1), hbox, TRUE, TRUE, 0);
 
 
-  frame = gtk_frame_new(_("Changing way"));
+  frame = gtk_frame_new(_("Effective coverage"));
   gtk_frame_set_label_align(GTK_FRAME(frame), 0.015, 0.5);
 
   gtk_box_pack_start(GTK_BOX(vbox3), frame, FALSE, FALSE, 6);
@@ -360,17 +365,17 @@ create_switcher(void)
   gtk_container_set_border_width(GTK_CONTAINER(vbox2), 10);
   gtk_container_add(GTK_CONTAINER(frame), vbox2);
 
-  radio0 = gtk_radio_button_new_with_label(NULL, _("Change whole desktop"));
-  radio1 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this application only"));
-  radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this text area only"));
+  radio0 = gtk_radio_button_new_with_label(NULL, _("whole desktop"));
+  radio1 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("current application only"));
+  radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("current text area only"));
 
   gtk_box_pack_start(GTK_BOX(vbox2), radio0, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox2), radio1, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox2), radio2, FALSE, FALSE, 0);
 
-  g_signal_connect(G_OBJECT(radio0), "toggled", G_CALLBACK(toggle_changing_way), NULL);
-  g_signal_connect(G_OBJECT(radio1), "toggled", G_CALLBACK(toggle_changing_way), NULL);
-  g_signal_connect(G_OBJECT(radio2), "toggled", G_CALLBACK(toggle_changing_way), NULL);
+  g_signal_connect(G_OBJECT(radio0), "toggled", G_CALLBACK(toggle_coverage), NULL);
+  g_signal_connect(G_OBJECT(radio1), "toggled", G_CALLBACK(toggle_coverage), NULL);
+  g_signal_connect(G_OBJECT(radio2), "toggled", G_CALLBACK(toggle_coverage), NULL);
 
   /* set radio0 (Change whole desktop) as default */
   gtk_toggle_button_set_active((GtkToggleButton *)radio0, TRUE);
