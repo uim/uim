@@ -34,6 +34,8 @@
 /*
  * gtk+-immodule
  */
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <gtk/gtkimcontext.h>
 #include <gtk/gtkimmodule.h>
@@ -48,7 +50,6 @@
 #include <unistd.h>
 #include <locale.h>
 
-#include <config.h>
 #include "uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-util.h"

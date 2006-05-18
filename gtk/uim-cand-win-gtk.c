@@ -31,11 +31,12 @@
 
 */
 
+#include <config.h>
+
 #include "uim-cand-win-gtk.h"
 #include <string.h>
 #include <uim/uim.h>
 #include <uim/uim-compat-scm.h>
-#include "uim/config.h"
 #if HAVE_EBLIB
 #include "uim-eb.h"
 #endif /* HAVE_EBLIB */
