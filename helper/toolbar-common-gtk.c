@@ -617,8 +617,8 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     if (cols && cols[0]) {
       if (!strcmp("branch", cols[0]) && has_n_strs(cols, 4)) {
 	indication_id = cols[1];
-	iconic_label  = cols[2];
-	tooltip_str   = cols[3];
+	iconic_label  = safe_gettext(cols[2]);
+	tooltip_str   = safe_gettext(cols[3]);
 	button = prop_button_create(widget,
 				    indication_id, iconic_label, tooltip_str);
 	append_prop_button(widget, button);
@@ -685,7 +685,8 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
   GtkWidget *button;
   guint i;
   gchar **cols;
-  gchar *charset, *indication_id, *iconic_label, *tooltip_str;
+  gchar *charset;
+  const gchar *indication_id, *iconic_label, *tooltip_str;
   GList *prop_buttons;
 
   for (i = 0; lines[i] && strcmp("", lines[i]); i++)
@@ -715,8 +716,8 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
     
     if (has_n_strs(cols, 3)) {
       indication_id = cols[0];
-      iconic_label  = cols[1];
-      tooltip_str   = cols[2];
+      iconic_label  = safe_gettext(cols[1]);
+      tooltip_str   = safe_gettext(cols[2]);
       button = g_list_nth_data(prop_buttons, i - 2);
 
       if (register_icon(indication_id)) {
