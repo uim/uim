@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="256"
-     inkscape:cx="18.47257"
-     inkscape:cy="40.759429"
+     inkscape:zoom="16.958333"
+     inkscape:cx="24"
+     inkscape:cy="24"
      inkscape:document-units="px"
      inkscape:current-layer="g2241"
      showgrid="true"
@@ -38,8 +38,8 @@
      inkscape:grid-bbox="false"
      inkscape:window-width="989"
      inkscape:window-height="985"
-     inkscape:window-x="190"
-     inkscape:window-y="0" />
+     inkscape:window-x="189"
+     inkscape:window-y="-1" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -60,27 +60,11 @@
       <path
          id="path1307"
          d="M 7.5,43.5 L 7.5,46.5 L 43.5,46.5 L 43.5,43.5"
-         style="opacity:0.703125;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#2d4461;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      <rect
-         style="opacity:0.703125;fill:#2d4461;fill-opacity:1;fill-rule:evenodd;stroke:#2d4461;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="rect3999"
-         width="3.0000019"
-         height="3.0000041"
-         x="24"
-         y="42"
-         rx="0"
-         ry="0" />
-      <text
-         xml:space="preserve"
-         style="font-size:45.22993469;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:M+ 1p"
-         x="7.2530713"
-         y="39.331696"
-         id="text1307"
-         sodipodi:linespacing="100%"><tspan
-           sodipodi:role="line"
-           id="tspan1309"
-           x="7.2530713"
-           y="39.331696" /></text>
+         style="opacity:0.7;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#2d4461;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path1308"
+         d="M 25.5,43.5 L 25.5,43.50001"
+         style="opacity:0.7;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#2d4461;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
       <g
          id="g1624"
          transform="matrix(4.3e-2,0,0,-4.4e-2,3.382064,36.49365)">
