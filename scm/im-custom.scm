@@ -189,7 +189,7 @@
 (define usable-im-list
   (lambda ()
     (let ((imlist (filter (lambda (name)
-			    (memq name system-available-im-list))
+			    (memq name installed-im-list))
 			  enabled-im-list)))
 	 (if (not (null? imlist))
 	     imlist

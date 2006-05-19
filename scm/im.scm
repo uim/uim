@@ -58,11 +58,11 @@
 ;;
 (define im-list ())
 
+(define installed-im-list ())
 ;; enabled-im-list cannot be changed once libuim has been
 ;; initialized. This limitation may be removed after uim 0.4.6.
 ;;   -- YamaKen 2005-01-25
 (define enabled-im-list ())
-(define system-available-im-list ())
 
 (define-record 'im
   (list

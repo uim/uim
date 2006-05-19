@@ -150,7 +150,7 @@
   (lambda (module-list)
     (set! installed-im-module-list (map symbol->string module-list))
     (try-require "custom.scm")
-    (set! enabled-im-list (prepare-installed-im-list))
+    (set! installed-im-list (prepare-installed-im-list))
     (write-installed-modules.scm
      (string-append
       ";; The described order of input methods affects which IM is preferred\n"
@@ -159,10 +159,10 @@
       "(define installed-im-module-list "
       (custom-list-as-literal installed-im-module-list)
       ")\n"
-      "(define enabled-im-list "
-      (custom-list-as-literal enabled-im-list)
+      "(define installed-im-list "
+      (custom-list-as-literal installed-im-list)
       ")\n"
-      "(define system-available-im-list enabled-im-list)\n"))))
+      "(define enabled-im-list installed-im-list)\n"))))
 
 
 (prealloc-heaps-for-heavy-job)
