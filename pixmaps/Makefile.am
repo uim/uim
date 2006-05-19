@@ -17,6 +17,20 @@ SVGS += ja_romaji.svg ja_kana.svg ja_azik.svg ja_nicola.svg ja_pocketbell.svg
 # Tools
 SVGS += uim-dict.svg
 
+# input method substitutions
+IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
+                mana.svg \
+                hangul2.svg hangul3.svg romaja.svg \
+                viqr.svg ipa-x-sampa.svg latin.svg \
+                scim.svg
+SVGS += im_subst.svg $(IM_SUBST_SVGS)
+
+IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
+                mana.png \
+                hangul2.png hangul3.png romaja.png \
+                viqr.png ipa-x-sampa.png latin.png \
+                scim.png
+
 SVG_PNGS = direct.png skk.png tcode.png tutcode.png byeoru.png \
            direct_input.png on.png off.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
@@ -26,9 +40,9 @@ SVG_PNGS = direct.png skk.png tcode.png tutcode.png byeoru.png \
 	   ko_direct.png ko_hangulchar.png ko_hangulword.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_nicola.png \
            ja_pocketbell.png \
-	   uim-dict.png
+	   uim-dict.png $(IM_SUBST_PNGS)
 
-NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png \
+NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png \
               switcher-icon.png configure-qt.png \
               anthy.png canna.png prime.png
 
@@ -39,6 +53,9 @@ dist_pixmaps_DATA = $(PNGS) $(SVGS)
 EXTRA_DIST = indication-id.txt
 
 uim-icon.png: uim-icon48.png
+	cp $< $@
+
+$(IM_SUBST_SVGS): im_subst.svg
 	cp $< $@
 
 .svg.png:
