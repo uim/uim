@@ -8,6 +8,15 @@ uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
 lib_LTLIBRARIES = libuim.la libuim-custom.la
 
+# Although uim only needs *.so for the plugins, whether *.la is
+# installed or not is system-dependent and uim leaves it untouched. It
+# will installed with normal libtool, or may not installed depending
+# on the ltmain the system uses. For example, FreeBSD's libtool does
+# not. Likewise it, *.a is also untouched other than libtool's
+# package-global 'static' configuration since no partial disabling of
+# static libraaries is supported by libtool. And no violent rm of *.a
+# and *.la is performed to avoid system-dependent unexpected
+# result. It's libtool's responsibility.  -- YamaKen 2006-05-20
 uim_plugin_LTLIBRARIES = 
 uim_plugindir = $(pkglibdir)/plugin
 
