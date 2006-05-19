@@ -1,15 +1,14 @@
-scmdir = $(datadir)/uim
+scmdir = $(pkgdatadir)
 
 MOSTLYCLEANFILES = $(GENERATED_SCM_FILES)
-EXTRA_DIST = $(SCM_FILES)
-scm_DATA = $(SCM_FILES) $(GENERATED_SCM_FILES)
+dist_scm_DATA = $(SCM_FILES)
+scm_DATA = $(GENERATED_SCM_FILES)
 GENERATED_SCM_FILES = installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  im-switcher.scm \
  default.scm \
  util.scm key.scm ustr.scm action.scm load-action.scm i18n.scm \
  uim-sh.scm uim-db.scm custom.scm custom-rt.scm \
- manage-modules.scm \
  direct.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
@@ -59,20 +58,12 @@ if SCIM
   module_names += "scim"
 endif
 
+UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
+UIM_MODULE_MANAGER_ENV = \
+        LIBUIM_SCM_FILES=$(top_srcdir)/scm \
+        LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs
 
-# TODO: resolve dependency to $(top_builddir)/uim/uim-module-manager
-# in a proper way
-installed-modules.scm: $(SCM_FILES)
-	$(MAKE) -C $(top_builddir)/uim uim-module-manager && \
-	LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
-	  $(top_builddir)/uim/uim-module-manager \
+installed-modules.scm loader.scm: $(SCM_FILES)
+	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \
+	$(UIM_MODULE_MANAGER_ENV) $(UIM_MODULE_MANAGER) \
 	    --path $(top_builddir)/scm --register $(module_names)
-
-# Maybe redundant...
-loader.scm: $(SCM_FILES)
-	$(MAKE) -C $(top_builddir)/uim uim-module-manager && \
-	LIBUIM_SCM_FILES=`(cd $(top_srcdir) && pwd)`/scm LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs \
-	  $(top_builddir)/uim/uim-module-manager \
-	    --path $(top_builddir)/scm --register $(module_names)
-
-# $(ECHO) $(ECHO_N) >$@

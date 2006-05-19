@@ -248,5 +248,5 @@ main(int argc, char *argv[]) {
 
   uim_quit();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

@@ -186,34 +186,6 @@
 ;; Enabled IM list
 ;;
 
-(define custom-installed-im-list
-  (lambda ()
-    (let ((orig-enabled-im-list enabled-im-list)
-	  (orig-require require))
-      (set! enabled-im-list ())  ;; enable all IMs
-      ;; XXX temporary solution to register all IM in a file
-      (set! require
-	    (lambda (file)
-	      (let* ((file-sym (string->symbol file))
-		     (loaded-sym (symbolconc '* file-sym '-loaded*))
-		     (reloaded-sym (symbolconc '* file-sym '-reloaded*)))
-		(cond
-		 ((symbol-bound? reloaded-sym)
-		  loaded-sym)
-		 ((try-load file)
-		  (eval (list 'define loaded-sym #t)
-			(interaction-environment))
-		  (eval (list 'define reloaded-sym #t)
-			(interaction-environment))
-		  loaded-sym)
-		 (else
-		  #f)))))
-      (for-each require-module installed-im-module-list)
-      (set! require orig-require)
-      (set! enabled-im-list orig-enabled-im-list)
-      (custom-im-list-as-choice-rec (reverse
-				     (alist-delete 'direct im-list eq?))))))
-
 (define usable-im-list
   (lambda ()
     (let ((imlist (filter (lambda (name)
@@ -228,7 +200,7 @@
   (cons
    'ordered-list
    (if custom-full-featured?
-       (custom-installed-im-list)
+       (custom-im-list-as-choice-rec (alist-delete 'direct stub-im-list))
        ()))
   (_ "Enabled input methods")
   (_ "long description will be here."))
@@ -303,7 +275,9 @@
   '(global im-toggle)
   (cons
    'choice
-   (custom-im-list-as-choice-rec (reverse im-list)))
+   (if custom-full-featured?
+       (custom-im-list-as-choice-rec stub-im-list)
+       ()))
   (_ "Alternative input method")
   (_ "long description will be here."))
 
@@ -513,3 +487,7 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   uim-xim-use-xft-font?))
+
+
+(if custom-full-featured?
+    (for-each require-module installed-im-module-list))
