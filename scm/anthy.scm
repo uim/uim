@@ -55,6 +55,10 @@
 (define anthy-input-rule-kana 1)
 (define anthy-input-rule-azik 2)
 
+(define anthy-candidate-type-katakana -2)
+(define anthy-candidate-type-hiragana -3)
+(define anthy-candidate-type-hankana -4) ;; XXX not yet supported
+
 (define anthy-prepare-activation
   (lambda (ac)
     (anthy-flush ac)
@@ -915,14 +919,29 @@
 	   anthy-version
 	   (>= (string->number (car anthy-version)) 7710))
 	  ;; anthy-7710 and upward
-	  (begin
+	  (let ((rotate-list '())
+		(state #f)
+		(idx (ustr-cursor-frontside segments)))
 	    (anthy-reset-candidate-window ac)
 	    (anthy-context-set-candidate-op-count! ac 0)
-	    (cond
-	     ((anthy-transpose-as-hiragana-key? key key-state)
-	       (ustr-cursor-set-frontside! segments -3))
-	     ((anthy-transpose-as-katakana-key? key key-state)
-	       (ustr-cursor-set-frontside! segments -2))))
+
+	    ;; XXX should handle hankana when anthy support it
+	    (if (anthy-transpose-as-katakana-key? key key-state)
+		(set! rotate-list (cons anthy-candidate-type-katakana
+					rotate-list)))
+	    (if (anthy-transpose-as-hiragana-key? key key-state)
+		(set! rotate-list (cons anthy-candidate-type-hiragana
+					rotate-list)))
+	    (if (or
+		 (= idx anthy-candidate-type-hiragana)
+		 (= idx anthy-candidate-type-katakana))
+		(let ((lst (member idx rotate-list)))
+		  (if (and (not (null? lst))
+			   (not (null? (cdr lst))))
+		      (set! state (car (cdr lst)))
+		      (set! state (car rotate-list))))
+		(set! state (car rotate-list)))
+	     (ustr-cursor-set-frontside! segments state))
 	  ;; below anthy-7710
 	  (begin
 	    ;; FIXME: don't cancel conversion
