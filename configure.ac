@@ -173,6 +173,7 @@ AC_ARG_WITH(prime,
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
 ])
 
+PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
 AC_PATH_XTRA
 
 use_xim="no"
@@ -325,9 +326,12 @@ LOCALEDIR=`eval echo ${datadir}/locale`
 localedir=$LOCALEDIR
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
-# define XLIB directory
-AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
-
+# define XLIB directory for Compose file
+if test "x$x11_use_new_dir" = "xyes"; then
+  AC_DEFINE_UNQUOTED(XLIB_DIR, "`pkg-config x11 --variable=prefix`/share", [X11 Library Directory])
+else
+  AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
+fi
 AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${DATADIR}/${PACKAGE}/pixmaps", [pixmaps directory])
 uim_pixmapsdir="${DATADIR}/${PACKAGE}/pixmaps"
 AC_SUBST(uim_pixmapsdir)
