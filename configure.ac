@@ -791,8 +791,7 @@ AC_ARG_ENABLE(pref,
 	;;
       yes|*)
 	if test x"$default_toolkit" = "xgtk" && \
-	   test x"$use_gtk2" = "xyes"; then
-	  echo "use pref"
+	   test x"$use_gtk2_4" = "xyes"; then
 	  use_pref="yes"
 	else
 	  if test x"$default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
@@ -805,7 +804,7 @@ AC_ARG_ENABLE(pref,
 	;;
     esac ],
   [
-    if test x"$default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
+    if test x"$default_toolkit" = "xgtk" && test x"$use_gtk2_4" = "xyes"; then
       use_pref="yes"
     else
       if test x"$default_toolkit" = "xqt" && \
