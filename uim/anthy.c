@@ -42,8 +42,8 @@
 #define MAX_CONTEXT 256
 
 /* handle anthy's version scheme like 7100b */
-static char *libanthy_version_major;
-static char libanthy_version_minor[2];
+static char *anthy_version_major;
+static char anthy_version_minor[2];
 
 static struct context {
   anthy_context_t ac;
@@ -61,34 +61,35 @@ get_anthy_context(int id)
 static uim_lisp
 anthy_version()
 {
-  return uim_scm_cons(uim_scm_make_str(libanthy_version_major), uim_scm_make_str(libanthy_version_minor));
+  return uim_scm_cons(uim_scm_make_str(anthy_version_major),
+		      uim_scm_make_str(anthy_version_minor));
 }
 
 static void
-get_libanthy_version()
+get_anthy_version()
 {
   const char *str;
 
-  free(libanthy_version_major);
+  free(anthy_version_major);
 
   str = anthy_get_version_string();
 
   if (!str || (!strcmp(str, "(unknown)"))) {
-    libanthy_version_major = strdup("-1");
-    libanthy_version_minor[0] = '\0';
+    anthy_version_major = strdup("-1");
+    anthy_version_minor[0] = '\0';
   } else {
     int len;
 
     len = strlen(str);
     if (isalpha(str[len - 1])) {
-      libanthy_version_major = malloc(len);
-      strncpy(libanthy_version_major, str, len - 1);
-      libanthy_version_major[len - 1] = '\0';
-      libanthy_version_minor[0] = str[len - 1];
-      libanthy_version_minor[1] = '\0';
+      anthy_version_major = malloc(len);
+      strncpy(anthy_version_major, str, len - 1);
+      anthy_version_major[len - 1] = '\0';
+      anthy_version_minor[0] = str[len - 1];
+      anthy_version_minor[1] = '\0';
     } else {
-      libanthy_version_major = strdup(str);
-      libanthy_version_minor[0] = '\0';
+      anthy_version_major = strdup(str);
+      anthy_version_minor[0] = '\0';
     }
   }
 }
@@ -104,7 +105,7 @@ init_anthy_lib(void)
   if (anthy_init() == -1)
     return uim_scm_f();
 
-  get_libanthy_version();
+  get_anthy_version();
 
   context_slot = malloc(sizeof(struct context) * MAX_CONTEXT);
   if (!context_slot)

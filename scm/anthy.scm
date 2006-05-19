@@ -43,7 +43,7 @@
 ;;; implementations
 
 (define anthy-lib-initialized? #f)
-(define anthy-lib-version #f)
+(define anthy-version #f)
 
 (define anthy-type-hiragana   0)
 (define anthy-type-katakana   1)
@@ -242,7 +242,7 @@
      (if (symbol-bound? 'anthy-lib-init)
          (begin
 	   (set! anthy-lib-initialized? (anthy-lib-init))
-	   (set! anthy-lib-version (anthy-lib-get-anthy-version))))
+	   (set! anthy-version (anthy-lib-get-anthy-version))))
      (if anthy-lib-initialized?
 	 (anthy-context-set-ac-id! ac (anthy-lib-alloc-context)))
      (anthy-context-set-widgets! ac anthy-widgets)
@@ -912,8 +912,8 @@
 	   (cur-seg (ustr-cursor-pos segments))
 	   (n (ustr-cursor-frontside segments)))
       (if (and
-	   anthy-lib-version
-	   (>= (string->number (car anthy-lib-version)) 7710))
+	   anthy-version
+	   (>= (string->number (car anthy-version)) 7710))
 	  ;; anthy-7710 and upward
 	  (begin
 	    (anthy-reset-candidate-window ac)
