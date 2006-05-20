@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-19 05:32+0900\n"
+"POT-Creation-Date: 2006-05-20 08:56+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicate the state of uim's input method"
+msgid "Indicates and control the state of input method"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:2
-msgid "Utility"
+msgid "Input Method Indicator (uim)"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
-msgid "uim Applet"
+msgid "Utility"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:4
@@ -317,11 +317,11 @@ msgstr ""
 msgid "uim input method switcher"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:404
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:378
 msgid "Effective coverage"
 msgstr ""
 
-#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:396
+#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:370
 msgid "whole desktop"
 msgstr ""
 
@@ -522,7 +522,7 @@ msgstr ""
 msgid "Help"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:847 qt/toolbar-common-quimhelpertoolbar.cpp:62
+#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -662,14 +662,14 @@ msgstr ""
 #: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
 #: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
 #: scm/im-custom.lisp:106 scm/im-custom.lisp:111 scm/im-custom.lisp:122
-#: scm/im-custom.lisp:132 scm/im-custom.lisp:234 scm/im-custom.lisp:288
-#: scm/im-custom.lisp:294 scm/im-custom.lisp:300 scm/im-custom.lisp:308
-#: scm/im-custom.lisp:336 scm/im-custom.lisp:357 scm/im-custom.lisp:363
-#: scm/im-custom.lisp:423 scm/im-custom.lisp:429 scm/im-custom.lisp:435
-#: scm/im-custom.lisp:441 scm/im-custom.lisp:447 scm/im-custom.lisp:453
-#: scm/im-custom.lisp:471 scm/im-custom.lisp:477 scm/im-custom.lisp:484
-#: scm/im-custom.lisp:494 scm/im-custom.lisp:498 scm/im-custom.lisp:504
-#: scm/im-custom.lisp:510 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:132 scm/im-custom.lisp:206 scm/im-custom.lisp:260
+#: scm/im-custom.lisp:266 scm/im-custom.lisp:272 scm/im-custom.lisp:282
+#: scm/im-custom.lisp:310 scm/im-custom.lisp:331 scm/im-custom.lisp:337
+#: scm/im-custom.lisp:397 scm/im-custom.lisp:403 scm/im-custom.lisp:409
+#: scm/im-custom.lisp:415 scm/im-custom.lisp:421 scm/im-custom.lisp:427
+#: scm/im-custom.lisp:445 scm/im-custom.lisp:451 scm/im-custom.lisp:458
+#: scm/im-custom.lisp:468 scm/im-custom.lisp:472 scm/im-custom.lisp:478
+#: scm/im-custom.lisp:484 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -1636,169 +1636,169 @@ msgstr ""
 msgid "Specify default IM"
 msgstr ""
 
-#: scm/im-custom.lisp:233
+#: scm/im-custom.lisp:205
 msgid "Enabled input methods"
 msgstr ""
 
-#: scm/im-custom.lisp:287
+#: scm/im-custom.lisp:259
 msgid "Input method toggle"
 msgstr ""
 
-#: scm/im-custom.lisp:293
+#: scm/im-custom.lisp:265
 msgid "Enable input method toggle by hot keys"
 msgstr ""
 
-#: scm/im-custom.lisp:299
+#: scm/im-custom.lisp:271
 msgid "Input method toggle key"
 msgstr ""
 
-#: scm/im-custom.lisp:307
+#: scm/im-custom.lisp:281
 msgid "Alternative input method"
 msgstr ""
 
-#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:307 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim"
 msgstr ""
 
-#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:307 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim native"
 msgstr ""
 
-#: scm/im-custom.lisp:334
+#: scm/im-custom.lisp:308
 msgid "ATOK like"
 msgstr ""
 
-#: scm/im-custom.lisp:334
+#: scm/im-custom.lisp:308
 msgid "Similar to ATOK"
 msgstr ""
 
-#: scm/im-custom.lisp:335
+#: scm/im-custom.lisp:309
 msgid "Preedit color"
 msgstr ""
 
-#: scm/im-custom.lisp:348 scm/im-custom.lisp:349
+#: scm/im-custom.lisp:322 scm/im-custom.lisp:323
 msgid "Adjacent to cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:351 scm/im-custom.lisp:352
+#: scm/im-custom.lisp:325 scm/im-custom.lisp:326
 msgid "Left end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:354 scm/im-custom.lisp:355
+#: scm/im-custom.lisp:328 scm/im-custom.lisp:329
 msgid "Right end of preedit area"
 msgstr ""
 
-#: scm/im-custom.lisp:356
+#: scm/im-custom.lisp:330
 msgid "Candidate window position"
 msgstr ""
 
-#: scm/im-custom.lisp:362
+#: scm/im-custom.lisp:336
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
-#: scm/im-custom.lisp:389
+#: scm/im-custom.lisp:363
 msgid "Enable menu-based input method switcher"
 msgstr ""
 
-#: scm/im-custom.lisp:390
+#: scm/im-custom.lisp:364
 msgid "Show menu-based IM switcher on toolbar."
 msgstr ""
 
-#: scm/im-custom.lisp:397
+#: scm/im-custom.lisp:371
 msgid "All input method of text areas on the system are changed."
 msgstr ""
 
-#: scm/im-custom.lisp:399
+#: scm/im-custom.lisp:373
 msgid "focused application only"
 msgstr ""
 
-#: scm/im-custom.lisp:400
+#: scm/im-custom.lisp:374
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
 msgstr ""
 
-#: scm/im-custom.lisp:402
+#: scm/im-custom.lisp:376
 msgid "focused text area only"
 msgstr ""
 
-#: scm/im-custom.lisp:403
+#: scm/im-custom.lisp:377
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
 msgstr ""
 
-#: scm/im-custom.lisp:405
+#: scm/im-custom.lisp:379
 msgid "Specify where the IM switching takes effect."
 msgstr ""
 
-#: scm/im-custom.lisp:416
+#: scm/im-custom.lisp:390
 msgid "full-featured input method switcher"
 msgstr ""
 
-#: scm/im-custom.lisp:417
+#: scm/im-custom.lisp:391
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr ""
 
-#: scm/im-custom.lisp:422
+#: scm/im-custom.lisp:396
 msgid "preference tool"
 msgstr ""
 
-#: scm/im-custom.lisp:428
+#: scm/im-custom.lisp:402
 msgid "Japanese dictionary tool"
 msgstr ""
 
-#: scm/im-custom.lisp:434
+#: scm/im-custom.lisp:408
 msgid "input pad"
 msgstr ""
 
-#: scm/im-custom.lisp:440
+#: scm/im-custom.lisp:414
 msgid "handwriting-input pad"
 msgstr ""
 
-#: scm/im-custom.lisp:446
+#: scm/im-custom.lisp:420
 msgid "help"
 msgstr ""
 
-#: scm/im-custom.lisp:452
+#: scm/im-custom.lisp:426
 msgid "Show input mode nearby cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:458
+#: scm/im-custom.lisp:432
 msgid "Time length for showing input mode nearby the cursor"
 msgstr ""
 
-#: scm/im-custom.lisp:459
+#: scm/im-custom.lisp:433
 msgid "Set 0 to show indicator always."
 msgstr ""
 
-#: scm/im-custom.lisp:470
+#: scm/im-custom.lisp:444
 msgid "EB library"
 msgstr ""
 
-#: scm/im-custom.lisp:476
+#: scm/im-custom.lisp:450
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: scm/im-custom.lisp:483
+#: scm/im-custom.lisp:457
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: scm/im-custom.lisp:493
+#: scm/im-custom.lisp:467
 msgid "XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:497
+#: scm/im-custom.lisp:471
 msgid "Preedit settings of XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:503
+#: scm/im-custom.lisp:477
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: scm/im-custom.lisp:509
+#: scm/im-custom.lisp:483
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 

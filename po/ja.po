@@ -99,25 +99,27 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-19 05:32+0900\n"
-"PO-Revision-Date: 2006-05-19 06:42+0900\n"
+"POT-Creation-Date: 2006-05-20 08:56+0900\n"
+"PO-Revision-Date: 2006-05-20 09:03+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+# 他のGNOMEアプレットのですます調に合わせた
 #: helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicate the state of uim's input method"
-msgstr ""
+msgid "Indicates and control the state of input method"
+msgstr "入力メソッドの状態を表示・制御します"
 
+# 「表示器」は他のGNOMEアプレットの訳語に従った
 #: helper/GNOME_UimApplet.server.in.in.h:2
-msgid "Utility"
-msgstr "ユーティリティ"
+msgid "Input Method Indicator (uim)"
+msgstr "入力メソッド表示器 (uim)"
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
-msgid "uim Applet"
-msgstr "uimアプレット"
+msgid "Utility"
+msgstr "ユーティリティ"
 
 #: helper/GNOME_UimApplet.server.in.in.h:4
 msgid "uim Applet Factory"
@@ -409,11 +411,11 @@ msgstr "説明"
 msgid "uim input method switcher"
 msgstr "uim 入力方式切り換え"
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:404
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:378
 msgid "Effective coverage"
 msgstr "変更の適用範囲"
 
-#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:396
+#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:370
 msgid "whole desktop"
 msgstr "デスクトップ全体"
 
@@ -624,7 +626,7 @@ msgstr "手書き入力パッド"
 msgid "Help"
 msgstr "ヘルプ"
 
-#: helper/toolbar-common-gtk.c:847 qt/toolbar-common-quimhelpertoolbar.cpp:62
+#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Quit this toolbar"
 msgstr "終了"
 
@@ -767,14 +769,14 @@ msgstr "文節区切りを表示"
 #: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
 #: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
 #: scm/im-custom.lisp:106 scm/im-custom.lisp:111 scm/im-custom.lisp:122
-#: scm/im-custom.lisp:132 scm/im-custom.lisp:234 scm/im-custom.lisp:288
-#: scm/im-custom.lisp:294 scm/im-custom.lisp:300 scm/im-custom.lisp:308
-#: scm/im-custom.lisp:336 scm/im-custom.lisp:357 scm/im-custom.lisp:363
-#: scm/im-custom.lisp:423 scm/im-custom.lisp:429 scm/im-custom.lisp:435
-#: scm/im-custom.lisp:441 scm/im-custom.lisp:447 scm/im-custom.lisp:453
-#: scm/im-custom.lisp:471 scm/im-custom.lisp:477 scm/im-custom.lisp:484
-#: scm/im-custom.lisp:494 scm/im-custom.lisp:498 scm/im-custom.lisp:504
-#: scm/im-custom.lisp:510 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
+#: scm/im-custom.lisp:132 scm/im-custom.lisp:206 scm/im-custom.lisp:260
+#: scm/im-custom.lisp:266 scm/im-custom.lisp:272 scm/im-custom.lisp:282
+#: scm/im-custom.lisp:310 scm/im-custom.lisp:331 scm/im-custom.lisp:337
+#: scm/im-custom.lisp:397 scm/im-custom.lisp:403 scm/im-custom.lisp:409
+#: scm/im-custom.lisp:415 scm/im-custom.lisp:421 scm/im-custom.lisp:427
+#: scm/im-custom.lisp:445 scm/im-custom.lisp:451 scm/im-custom.lisp:458
+#: scm/im-custom.lisp:468 scm/im-custom.lisp:472 scm/im-custom.lisp:478
+#: scm/im-custom.lisp:484 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
 #: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
 #: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
 #: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
@@ -1748,171 +1750,176 @@ msgstr "視覚設定"
 msgid "Specify default IM"
 msgstr "標準の入力方式を指定"
 
-#: scm/im-custom.lisp:233
+#: scm/im-custom.lisp:205
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.lisp:287
+#: scm/im-custom.lisp:259
 msgid "Input method toggle"
 msgstr "入力方式の一時切り換え"
 
-#: scm/im-custom.lisp:293
+#: scm/im-custom.lisp:265
 msgid "Enable input method toggle by hot keys"
 msgstr "ホットキーによる入力方式の正副一時切り換えを有効にする"
 
-#: scm/im-custom.lisp:299
+#: scm/im-custom.lisp:271
 msgid "Input method toggle key"
 msgstr "一時切り換えキー"
 
-#: scm/im-custom.lisp:307
+#: scm/im-custom.lisp:281
 msgid "Alternative input method"
 msgstr "副入力方式"
 
-#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:307 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.lisp:333 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
+#: scm/im-custom.lisp:307 scm/skk-custom.lisp:70 scm/skk-custom.lisp:375
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.lisp:334
+#: scm/im-custom.lisp:308
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:334
+#: scm/im-custom.lisp:308
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.lisp:335
+#: scm/im-custom.lisp:309
 msgid "Preedit color"
 msgstr "編集領域の配色"
 
-#: scm/im-custom.lisp:348 scm/im-custom.lisp:349
+#: scm/im-custom.lisp:322 scm/im-custom.lisp:323
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: scm/im-custom.lisp:351 scm/im-custom.lisp:352
+#: scm/im-custom.lisp:325 scm/im-custom.lisp:326
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.lisp:354 scm/im-custom.lisp:355
+#: scm/im-custom.lisp:328 scm/im-custom.lisp:329
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
 # 「候補ウィンドウの位置」では何を規定する位置なのか不明瞭な印象を受ける。具体例
 # が出たら追記する事 -- YamaKen 2005-12-07 
-#: scm/im-custom.lisp:356
+#: scm/im-custom.lisp:330
 msgid "Candidate window position"
 msgstr "候補ウィンドウの表示位置"
 
-#: scm/im-custom.lisp:362
+#: scm/im-custom.lisp:336
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/im-custom.lisp:389
+#: scm/im-custom.lisp:363
 msgid "Enable menu-based input method switcher"
 msgstr "入力方式切り換えメニューを有効にする"
 
-#: scm/im-custom.lisp:390
+#: scm/im-custom.lisp:364
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "ツールバーに入力方式切り換えメニューを表示"
 
-#: scm/im-custom.lisp:397
+#: scm/im-custom.lisp:371
 msgid "All input method of text areas on the system are changed."
 msgstr "全てのテキスト領域の入力方式が変更されます。"
 
-#: scm/im-custom.lisp:399
+#: scm/im-custom.lisp:373
 msgid "focused application only"
 msgstr "フォーカスされたアプリケーションのみ"
 
-#: scm/im-custom.lisp:400
+#: scm/im-custom.lisp:374
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
-msgstr "フォーカスされたアプリケーションのみの入力方式が変更されます。他のテキスト領域はそのままです。"
+msgstr ""
+"フォーカスされたアプリケーションのみの入力方式が変更されます。他のテキスト領"
+"域はそのままです。"
 
-#: scm/im-custom.lisp:402
+#: scm/im-custom.lisp:376
 msgid "focused text area only"
 msgstr "フォーカスされたテキスト領域のみ"
 
-#: scm/im-custom.lisp:403
+#: scm/im-custom.lisp:377
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
-msgstr "フォーカスされたテスト領域のみの入力方式が変更されます。他のテキスト領域はそのままです。"
+msgstr ""
+"フォーカスされたテスト領域のみの入力方式が変更されます。他のテキスト領域はそ"
+"のままです。"
 
-#: scm/im-custom.lisp:405
+#: scm/im-custom.lisp:379
 msgid "Specify where the IM switching takes effect."
 msgstr "入力方式の切り換えを有効にする範囲を指定します。"
 
-#: scm/im-custom.lisp:416
+#: scm/im-custom.lisp:390
 msgid "full-featured input method switcher"
 msgstr "フル機能の入力方式切り換えアプリケーション"
 
-#: scm/im-custom.lisp:417
+#: scm/im-custom.lisp:391
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
-msgstr "ツールバーにuim入力方式切り換えアプリケーションを起動するボタンを表示します。"
+msgstr ""
+"ツールバーにuim入力方式切り換えアプリケーションを起動するボタンを表示します。"
 
-#: scm/im-custom.lisp:422
+#: scm/im-custom.lisp:396
 msgid "preference tool"
 msgstr "設定"
 
-#: scm/im-custom.lisp:428
+#: scm/im-custom.lisp:402
 msgid "Japanese dictionary tool"
 msgstr "日本語辞書ツール"
 
-#: scm/im-custom.lisp:434
+#: scm/im-custom.lisp:408
 msgid "input pad"
 msgstr "入力パッド"
 
-#: scm/im-custom.lisp:440
+#: scm/im-custom.lisp:414
 msgid "handwriting-input pad"
 msgstr "手書き入力パッド"
 
-#: scm/im-custom.lisp:446
+#: scm/im-custom.lisp:420
 msgid "help"
 msgstr "ヘルプ"
 
-#: scm/im-custom.lisp:452
+#: scm/im-custom.lisp:426
 msgid "Show input mode nearby cursor"
 msgstr "カーソルの側に入力モードを表示"
 
-#: scm/im-custom.lisp:458
+#: scm/im-custom.lisp:432
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "カーソルの側に入力モードを表示する時間"
 
-#: scm/im-custom.lisp:459
+#: scm/im-custom.lisp:433
 msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
-#: scm/im-custom.lisp:470
+#: scm/im-custom.lisp:444
 msgid "EB library"
 msgstr "EBライブラリ"
 
-#: scm/im-custom.lisp:476
+#: scm/im-custom.lisp:450
 msgid "Use EB library to search annotations"
 msgstr "註釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.lisp:483
+#: scm/im-custom.lisp:457
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: scm/im-custom.lisp:493
+#: scm/im-custom.lisp:467
 msgid "XIM"
 msgstr "XIM"
 
-#: scm/im-custom.lisp:497
+#: scm/im-custom.lisp:471
 msgid "Preedit settings of XIM"
 msgstr "XIMの編集領域"
 
-#: scm/im-custom.lisp:503
+#: scm/im-custom.lisp:477
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "編集領域のフォントにアンチエイリアスをかける"
 
-#: scm/im-custom.lisp:509
+#: scm/im-custom.lisp:483
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
 
@@ -3227,3 +3234,6 @@ msgstr "ヨルバ語"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "ズール語"
+
+#~ msgid "uim Applet"
+#~ msgstr "uimアプレット"
