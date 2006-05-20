@@ -1,0 +1,20 @@
+Some icons are imported from scim-imengine-icons 1.0.0 under its
+3-clause BSD license. See COPYING of this directory.
+
+  http://prdownloads.sourceforge.jp/scim-imengine/18883/scim-imengine-icons-1.0.0.tar.gz
+
+Other icons are also licensed and reusable under the same BSD
+license.
+
+But when you make a new icon or delivertive work based on these icons,
+it should also be feedbacked to the scim-imengine project to share the
+reusable works. Although these icons are licensed under the BSDL,
+original scim-imengine-icons are also offer LGPL as an alternative
+license. The dual-license scheme is selected to reduce license
+indication botherings by selecting same license of user's own software
+package although the BSDL covers all purpose. We should offer same
+convenience to the scim-imengine project.
+
+If something is not clear, contact uim@freedesktop.org
+
+  -- YamaKen 2006-05-20

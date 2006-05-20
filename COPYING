@@ -29,7 +29,7 @@ You can use, modify, distribute and sell this package under the terms of BSD lic
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 
-But there are five exceptions.
+But there are six exceptions.
 
   * scm/PY-old.scm is come from emacs, so you can use, modify,
      distribute and sell this under the terms of GPL *only*.
@@ -48,6 +48,10 @@ But there are five exceptions.
   * qt/chardict/chardict-kseparator.{cpp,h} is come from kdeui, so you
     can use, modify, distribute and sell uim-chardict-qt under the
     terms of LGPL *only*.
+
+  * pixmaps/*.{svg,png} are also licensed under the 3-clause BSD
+    license, but has different copyright holders. See
+    pixmaps/{COPYING,README,AUTHORS} for further information.
 
 This Package uses a scheme system SIOD, and the license is as follows:
 /* Scheme In One Defun, but in C this time.
