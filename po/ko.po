@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 11:12+0900\n"
+"POT-Creation-Date: 2006-05-21 15:49+0900\n"
 "PO-Revision-Date: 2006-05-21 11:22+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -21,9 +21,8 @@ msgid "Indicates and control the state of input method"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:2
-#, fuzzy
 msgid "Input Method Indicator (uim)"
-msgstr "입력기 이름"
+msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
 msgid "Utility"
@@ -320,23 +319,20 @@ msgstr "uim 입력기 전환"
 
 #: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:378
 msgid "Effective coverage"
-msgstr ""
+msgstr "적용범위"
 
 #: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:370
-#, fuzzy
 msgid "whole desktop"
 msgstr "데스크탑 전체"
 
 #. default is "whole desktop"
 #: helper/im-switcher-gtk.c:369 qt/switcher-qt.cpp:113
-#, fuzzy
 msgid "current application only"
-msgstr "이 응용프로그램만"
+msgstr "현재 응용프로그램만"
 
 #: helper/im-switcher-gtk.c:370 qt/switcher-qt.cpp:115
-#, fuzzy
 msgid "current text area only"
-msgstr "이 텍스트영역만"
+msgstr "현재 텍스트영역만"
 
 #: helper/input-pad-ja.c:371
 msgid "ja-pad"
@@ -396,9 +392,8 @@ msgstr "파일을 지정하십시오"
 
 #: helper/pref-gtk-custom-widgets.c:493 helper/pref-gtk-custom-widgets.c:497
 #: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
-#, fuzzy
 msgid "Select..."
-msgstr "파일..."
+msgstr "선택..."
 
 #: helper/pref-gtk-custom-widgets.c:1190
 msgid "Enabled"
@@ -508,7 +503,7 @@ msgid "uim Applet"
 msgstr "uim 애플릿"
 
 #: helper/toolbar-applet-gnome.c:126
-msgid "Applet for indicate uim's status"
+msgid "Applet for indicating uim's status"
 msgstr "uim 상태 표시 애플릿"
 
 #: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
@@ -1247,7 +1242,7 @@ msgid "[Byeoru] off"
 msgstr "[벼루] 영문모드로"
 
 #: scm/byeoru-key-custom.lisp:61
-msgid "[Byeoru] convert Hangul to Chinese"
+msgid "[Byeoru] convert Hangul to Chinese characters"
 msgstr "[벼루] 한자 및 기호"
 
 #: scm/byeoru-key-custom.lisp:67
@@ -1613,9 +1608,8 @@ msgid "Buttons"
 msgstr "버튼"
 
 #: scm/im-custom.lisp:65
-#, fuzzy
 msgid "Menu-based IM switcher"
-msgstr "입력기 전환"
+msgstr "입력기 전환 메뉴"
 
 #: scm/im-custom.lisp:70
 msgid "Candidate window"
@@ -1714,23 +1708,20 @@ msgid "Enable lazy input method loading for fast startup"
 msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
 #: scm/im-custom.lisp:363
-#, fuzzy
 msgid "Enable menu-based input method switcher"
-msgstr "uim 입력기 전환"
+msgstr "uim 입력기 전환 메뉴를 사용"
 
 #: scm/im-custom.lisp:364
-#, fuzzy
 msgid "Show menu-based IM switcher on toolbar."
-msgstr "입력기 전환 버튼을 표시"
+msgstr "툴바에 입력기 전환 메뉴를 표시"
 
 #: scm/im-custom.lisp:371
 msgid "All input method of text areas on the system are changed."
 msgstr ""
 
 #: scm/im-custom.lisp:373
-#, fuzzy
 msgid "focused application only"
-msgstr "이 응용프로그램만"
+msgstr "포커스된 응용프로그램만"
 
 #: scm/im-custom.lisp:374
 msgid ""
@@ -1739,9 +1730,8 @@ msgid ""
 msgstr ""
 
 #: scm/im-custom.lisp:376
-#, fuzzy
 msgid "focused text area only"
-msgstr "이 텍스트영역만"
+msgstr "포커스된 텍스트영역만"
 
 #: scm/im-custom.lisp:377
 msgid ""
@@ -1754,9 +1744,8 @@ msgid "Specify where the IM switching takes effect."
 msgstr ""
 
 #: scm/im-custom.lisp:390
-#, fuzzy
 msgid "full-featured input method switcher"
-msgstr "uim 입력기 전환"
+msgstr "기능이 완비된 uim 입력기 전환 프로그램"
 
 #: scm/im-custom.lisp:391
 msgid ""
@@ -2511,14 +2500,12 @@ msgid "VIetnamese Quoted-Readable"
 msgstr ""
 
 #: uim.desktop.in.in.h:1
-#, fuzzy
 msgid "Customize uim input method environment"
-msgstr "uim 입력기 전환"
+msgstr "uim 환경설정"
 
 #: uim.desktop.in.in.h:2
-#, fuzzy
 msgid "Input Method (uim)"
-msgstr "입력기 이름"
+msgstr "입력기 (uim)"
 
 #.
 #.

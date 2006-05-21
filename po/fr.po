@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 11:12+0900\n"
+"POT-Creation-Date: 2006-05-21 15:49+0900\n"
 "PO-Revision-Date: 2006-05-21 11:21+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -497,7 +497,7 @@ msgid "uim Applet"
 msgstr "Apliquette uim"
 
 #: helper/toolbar-applet-gnome.c:126
-msgid "Applet for indicate uim's status"
+msgid "Applet for indicating uim's status"
 msgstr ""
 
 #: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
@@ -1233,7 +1233,7 @@ msgid "[Byeoru] off"
 msgstr ""
 
 #: scm/byeoru-key-custom.lisp:61
-msgid "[Byeoru] convert Hangul to Chinese"
+msgid "[Byeoru] convert Hangul to Chinese characters"
 msgstr ""
 
 #: scm/byeoru-key-custom.lisp:67

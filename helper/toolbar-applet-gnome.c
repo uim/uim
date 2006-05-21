@@ -123,7 +123,7 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
 
   dialog = gnome_about_new(_("uim Applet"), VERSION,
 			   "Copyright \xc2\xa9 2003-2006 uim Project.",
-			   _("Applet for indicate uim's status"),
+			   _("Applet for indicating uim's status"),
 			   authors,
 			   NULL,
 			   strcmp("TRANSLATORS", translators) ? translators
