@@ -93,7 +93,7 @@ display_help_dialog(BonoboUIComponent *uic, gpointer data,
 {
   GError *error = NULL;
 
-  gnome_help_display("Uim", NULL, &error);
+  gnome_help_display("uim", NULL, &error);
 
   if (error) {
     GtkWidget *dialog;
@@ -121,7 +121,7 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
   gchar *translators = _("TRANSLATORS");
   icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
 
-  dialog = gnome_about_new(_("Uim Applet"), VERSION,
+  dialog = gnome_about_new(_("uim Applet"), VERSION,
 			   "Copyright \xc2\xa9 2003-2006 uim Project.",
 			   _("Applet for indicate uim's status"),
 			   authors,

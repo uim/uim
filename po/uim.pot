@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-20 08:56+0900\n"
+"POT-Creation-Date: 2006-05-21 11:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -491,7 +491,7 @@ msgid "TRANSLATORS"
 msgstr ""
 
 #: helper/toolbar-applet-gnome.c:124
-msgid "Uim Applet"
+msgid "uim Applet"
 msgstr ""
 
 #: helper/toolbar-applet-gnome.c:126

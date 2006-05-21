@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-20 08:56+0900\n"
-"PO-Revision-Date: 2005-12-07 22:31+0900\n"
+"POT-Creation-Date: 2006-05-21 11:12+0900\n"
+"PO-Revision-Date: 2006-05-21 11:22+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -504,8 +504,7 @@ msgid "TRANSLATORS"
 msgstr "Jae-hyeon Park <jhyeon@gmail.com>"
 
 #: helper/toolbar-applet-gnome.c:124
-#, fuzzy
-msgid "Uim Applet"
+msgid "uim Applet"
 msgstr "uim 애플릿"
 
 #: helper/toolbar-applet-gnome.c:126
@@ -3135,9 +3134,6 @@ msgstr ""
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr ""
-
-#~ msgid "uim Applet"
-#~ msgstr "uim 애플릿"
 
 #~ msgid "uim applet for the GNOME2 panel"
 #~ msgstr "GNOME 패널용 uim 애플릿"

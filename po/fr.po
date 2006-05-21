@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-20 08:56+0900\n"
-"PO-Revision-Date: 2005-02-21 15:52+0100\n"
+"POT-Creation-Date: 2006-05-21 11:12+0900\n"
+"PO-Revision-Date: 2006-05-21 11:21+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -493,9 +493,8 @@ msgid "TRANSLATORS"
 msgstr ""
 
 #: helper/toolbar-applet-gnome.c:124
-#, fuzzy
-msgid "Uim Applet"
-msgstr "Apliquette UIM"
+msgid "uim Applet"
+msgstr "Apliquette uim"
 
 #: helper/toolbar-applet-gnome.c:126
 msgid "Applet for indicate uim's status"
@@ -3116,9 +3115,6 @@ msgstr "Yoruba"
 #: uim/iso-639-1.def:185
 msgid "Zulu"
 msgstr "Zoulou"
-
-#~ msgid "uim Applet"
-#~ msgstr "Apliquette UIM"
 
 #~ msgid "<span size=\"20000\">uim-dict "
 #~ msgstr "<span size=\\\"20000\\\">uim-dict "
