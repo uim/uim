@@ -858,7 +858,7 @@ fi
 
 AC_ARG_ENABLE(warnings-into-error,
     AC_HELP_STRING([--enable-warnings-into-error],
-		   [Treat compiler warnings as error @<:@default=yes@:>@]),
+		   [Treat compiler warnings as error @<:@default=no if !debug@:>@]),
     [
         case $enable_warnings_into_error in
 	no)
@@ -869,8 +869,10 @@ AC_ARG_ENABLE(warnings-into-error,
 	    ;;
 	esac
     ], [
-	    CFLAGS="$CFLAGS -Werror"
-	    CXXFLAGS="$CXXFLAGS -Werror"
+	    if test x$enable_debug = xyes; then
+	      CFLAGS="$CFLAGS -Werror"
+	      CXXFLAGS="$CXXFLAGS -Werror"
+	    fi
     ])
 
 
