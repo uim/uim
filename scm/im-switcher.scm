@@ -63,35 +63,36 @@
 ;; independent.
 (define imsw-actions
   (lambda ()
-    (map (lambda (name)
-	   (let* ((im (assq name im-list))
-		  (idname (im-name im))
-		  (act-name (symbolconc 'action_imsw_ idname))
-		  (indication (list (imsw-indication-id idname)
-				    (imsw-iconic-label idname)
-				    (im-name-label im)
-				    (im-short-desc im))))
-	     (register-action act-name
-			      (lambda (ctx) ;; indication handler
-				indication)
+    (filter-map
+     (lambda (idname)
+       (let ((im (assq idname im-list)))
+	 (and im
+	      (let* ((act-name (symbolconc 'action_imsw_ idname))
+		     (indication (list (imsw-indication-id idname)
+				       (imsw-iconic-label idname)
+				       (im-name-label im)
+				       (im-short-desc im))))
+		(register-action act-name
+				 (lambda (ctx) ;; indication handler
+				   indication)
 
-			      (lambda (ctx) ;; activity predicate
-				(eq? (im-name (context-im ctx))
-				     idname))
+				 (lambda (ctx) ;; activity predicate
+				   (eq? (im-name (context-im ctx))
+					idname))
 
-			      (lambda (ctx) ;; action handler
-				(im-switch-im ctx idname)
-				(case imsw-coverage
-				  ((focused-context)
-				   #t)
+				 (lambda (ctx) ;; action handler
+				   (im-switch-im ctx idname)
+				   (case imsw-coverage
+				     ((focused-context)
+				      #t)
 
-				  ((app-global)
-				   (im-switch-app-global-im ctx idname))
+				     ((app-global)
+				      (im-switch-app-global-im ctx idname))
 
-				  ((system-global)
-				   (im-switch-system-global-im ctx idname)))))
-	     act-name))
-	 enabled-im-list))) 
+				     ((system-global)
+				      (im-switch-system-global-im ctx idname)))))
+		act-name))
+	 enabled-im-list)))))
 
 (define imsw-widget-codeset
   (or (and (feature? 'nls)

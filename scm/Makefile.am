@@ -60,8 +60,8 @@ endif
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
-        LIBUIM_SCM_FILES=$(top_srcdir)/scm \
-        LIBUIM_PLUGIN_LIB_DIR=$(top_builddir)/uim/.libs
+        LIBUIM_SCM_FILES=$(abs_srcdir) \
+        LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs
 
 installed-modules.scm loader.scm: $(SCM_FILES)
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \

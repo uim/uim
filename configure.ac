@@ -894,6 +894,10 @@ AC_SUBST(INCLUDES)
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 
+AC_SUBST(abs_srcdir)
+AC_SUBST(abs_builddir)
+AC_SUBST(abs_top_srcdir)
+AC_SUBST(abs_top_builddir)
 
 AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
