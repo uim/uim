@@ -56,7 +56,7 @@ embedded_cb(GtkWidget *widget, gpointer user_data)
 }
 
 
-int 
+int
 main(int argc, char *argv[])
 {
   GtkWidget *icon;
@@ -68,7 +68,7 @@ main(int argc, char *argv[])
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   gtk_set_locale();
-  
+
   uim_init();
 
   gtk_init(&argc, &argv);

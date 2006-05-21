@@ -52,7 +52,7 @@ typedef enum _uim_word_type {
     WORD_TYPE_PRIME
 } uim_word_type;
 
-/* 
+/*
  *  - ハッシュテーブルか何かでデータを管理し，charsetとphonとdesc以外の
  *    全てのメンバーを隠したほうが良いかもしれない．
  *    全てのデータは関数経由でアクセス

@@ -73,9 +73,9 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   gdk_pointer_grab(widget->window, FALSE,
 		   GDK_BUTTON_RELEASE_MASK |
 		   GDK_POINTER_MOTION_MASK,
-		   NULL, 
+		   NULL,
 		   cursor, event->time);
-  gdk_cursor_destroy (cursor); 
+  gdk_cursor_destroy (cursor);
 
   gtk_window_get_position(GTK_WINDOW(widget),
 			  &window_drag_start_x,
@@ -156,7 +156,7 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
 		   rect, widget, "handlebox",
 		   widget->allocation.x, widget->allocation.y,
-		   widget->allocation.width, widget->allocation.height, 
+		   widget->allocation.width, widget->allocation.height,
 		   GTK_ORIENTATION_VERTICAL);
 
   return FALSE;
@@ -179,14 +179,14 @@ size_request_cb(GtkWidget *widget, GtkRequisition *req, gpointer data)
   if (GTK_WIDGET_MAPPED(widget)) {
     gint width, height;
     gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
-    
+
     if (width != req->width || height != req->height) {
       gtk_window_resize(GTK_WINDOW(widget), req->width, req->height);
     }
   }
 }
 
-int 
+int
 main (int argc, char *argv[])
 {
   GtkWidget *toolbar;
@@ -203,7 +203,7 @@ main (int argc, char *argv[])
   uim_init();
 
   gtk_set_locale();
-  
+
   gtk_init(&argc, &argv);
 
   window = gtk_window_new(GTK_WINDOW_POPUP);

@@ -197,7 +197,7 @@ get_selected_im_name(void)
   gchar *str_data;
   if (gtk_tree_selection_get_selected (sel, &model, &iter) == TRUE) {
     store = GTK_TREE_STORE(model);
-    gtk_tree_model_get (model, &iter, 
+    gtk_tree_model_get (model, &iter,
 			NAME_COLUMN, &str_data,
 			-1);
     return str_data;
@@ -274,7 +274,7 @@ create_switcher_treeview(void)
 				   G_TYPE_STRING,
 				   G_TYPE_STRING,
 				   G_TYPE_STRING);
-  
+
   switcher_tree_view = gtk_tree_view_new();
 
   /* column 0 */
@@ -286,7 +286,7 @@ create_switcher_treeview(void)
   gtk_tree_view_column_set_sort_column_id(column, 0);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
 
-  /* column 1 */  
+  /* column 1 */
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes(_("Language"),
 						    renderer,
@@ -294,7 +294,7 @@ create_switcher_treeview(void)
 						    NULL);
   gtk_tree_view_column_set_sort_column_id(column, 1);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
-  
+
   /* column 2 */
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes(_("Description"),
@@ -303,7 +303,7 @@ create_switcher_treeview(void)
 						    NULL);
   gtk_tree_view_column_set_sort_column_id(column, 2);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
-  
+
   gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), GTK_TREE_MODEL(tree_store));
 
   g_object_unref (tree_store);
@@ -311,7 +311,7 @@ create_switcher_treeview(void)
   /* expand all rows after the treeview widget has been realized */
   g_signal_connect (G_OBJECT(switcher_tree_view), "realize",
 		    G_CALLBACK (gtk_tree_view_expand_all), NULL);
-  
+
   return switcher_tree_view;
 }
 
@@ -405,7 +405,7 @@ create_switcher(void)
     gtk_window_set_default_size(GTK_WINDOW(switcher_win),
 				gdk_screen_get_width(scr)  / 2,
 				gdk_screen_get_height(scr) / 2);
-    
+
     gtk_window_set_position(GTK_WINDOW(switcher_win),
 			    GTK_WIN_POS_CENTER_ALWAYS);
   }
@@ -419,7 +419,7 @@ static gboolean
 reload_im_list(GtkWindow *window, gpointer user_data)
 {
   check_helper_connection();
-  uim_helper_send_message(uim_fd, "im_list_get\n"); 
+  uim_helper_send_message(uim_fd, "im_list_get\n");
 
   return FALSE;
 }
@@ -476,19 +476,19 @@ parse_helper_str_im_list(const char *im_list_str_new)
       if (info[3] && (strcmp(info[3], "") != 0)) {
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree_store),
 				       &iter);
-	
+
       }
     }
     g_strfreev(info);
   }
-  gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), 
+  gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view),
 			  GTK_TREE_MODEL(tree_store));
-  
+
   if (path != NULL) {
     gtk_tree_view_set_cursor(GTK_TREE_VIEW(switcher_tree_view),
 			     path, NULL, FALSE);
   }
-  
+
   g_free(im_list_str_old); im_list_str_old = g_strdup(im_list_str_new);
   g_strfreev(lines);
 }
@@ -533,13 +533,13 @@ check_helper_connection(void)
 
 int
 main(int argc, char *argv[])
-{  
+{
   gint result;
   setlocale(LC_ALL, "");
   gtk_set_locale();
   bindtextdomain( PACKAGE, LOCALEDIR );
   textdomain( PACKAGE );
-  bind_textdomain_codeset( PACKAGE, "UTF-8"); 
+  bind_textdomain_codeset( PACKAGE, "UTF-8");
   parse_arg(argc, argv);
 
   gtk_init(&argc, &argv);
@@ -553,7 +553,7 @@ main(int argc, char *argv[])
 
   /* connect to uim helper message bus */
   uim_fd = -1;
-  check_helper_connection();  
+  check_helper_connection();
 
   /* To load input method list */
   uim_helper_send_message(uim_fd, "im_list_get\n");

@@ -126,7 +126,7 @@ word_window_class_init (WordWindowClass *klass)
 
 static void
 word_window_init(WordWindow *window)
-{  
+{
   GtkWidget *hbox;
   GtkWidget *vbox1, *vbox2;
   GtkWidget *label;

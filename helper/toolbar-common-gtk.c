@@ -191,29 +191,29 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
 {
   gint sc_height, sc_width, menu_width, menu_height, button_height;
   GtkRequisition requisition;
-  
+
   g_return_if_fail(x && y);
   g_return_if_fail(GTK_IS_BUTTON(button));
-  
+
   gdk_window_get_origin(button->window, x, y);
   gdk_drawable_get_size(button->window, NULL, &button_height);
-  
+
   if (GTK_WIDGET_NO_WINDOW(button))
     *x += button->allocation.x;
-  
+
   sc_height = gdk_screen_get_height(gdk_screen_get_default());
   sc_width = gdk_screen_get_width(gdk_screen_get_default());
-  
+
   gtk_widget_size_request(GTK_WIDGET(menu), &requisition);
 
   menu_width = requisition.width;
   menu_height = requisition.height;
-  
+
   if (*y + button_height + menu_height < sc_height)
     *y = *y + button_height;
   else
     *y = *y - menu_height;
-  
+
   if (*x + menu_width > sc_width)
     *x = sc_width - menu_width;
 }
@@ -236,9 +236,9 @@ right_click_menu_activated(GtkMenu *menu_item, gpointer data)
 static gboolean
 right_button_pressed(GtkButton *button, GdkEventButton *event, gpointer data)
 {
-  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL, 
+  gtk_menu_popup(GTK_MENU(right_click_menu), NULL, NULL,
 		 (GtkMenuPositionFunc)calc_menu_position,
-		 (gpointer)button, event->button, 
+		 (gpointer)button, event->button,
 		 gtk_get_current_event_time());
 
   return FALSE;
@@ -248,7 +248,7 @@ static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data)
 {
   GString *msg;
-  
+
   msg = g_string_new((gchar *)g_object_get_data(G_OBJECT(menu_item),
 		     "prop_action"));
   g_string_prepend(msg, "prop_activate\n");
@@ -349,15 +349,15 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     i++;
   }
 
-  gtk_menu_popup(GTK_MENU(prop_menu), NULL, NULL, 
+  gtk_menu_popup(GTK_MENU(prop_menu), NULL, NULL,
 		 (GtkMenuPositionFunc)calc_menu_position,
-		 (gpointer)prop_button, event->button, 
+		 (gpointer)prop_button, event->button,
 		 gtk_get_current_event_time());
 }
 
 static gboolean
 button_pressed(GtkButton *button, GdkEventButton *event, GtkWidget *widget)
-{ 
+{
   gint toolbar_type, button_type;
 
   switch (event->button) {
@@ -405,9 +405,9 @@ prop_button_released(GtkButton *button, GdkEventButton *event,
 
 static void
 tool_button_clicked_cb(GtkButton *tool_button, GtkWidget *widget)
-{ 
+{
   const gchar *command;
-  
+
   command = g_object_get_data(G_OBJECT(tool_button), OBJECT_DATA_COMMAND);
   if (command)
     system(command);
@@ -440,7 +440,7 @@ prop_data_flush(gpointer data)
   g_object_set_data(G_OBJECT(data), "prop_label", NULL);
   g_object_set_data(G_OBJECT(data), "prop_tooltip", NULL);
   g_object_set_data(G_OBJECT(data), "prop_action", NULL);
-  g_object_set_data(G_OBJECT(data), "prop_state", NULL);  
+  g_object_set_data(G_OBJECT(data), "prop_state", NULL);
 }
 
 static void
@@ -465,7 +465,7 @@ prop_button_create(GtkWidget *widget, const gchar *icon_name,
   GtkWidget *button;
   GtkTooltips *tooltip;
   GtkSizeGroup *sg;
-  
+
   sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
 
   if (register_icon(icon_name)) {
@@ -504,13 +504,13 @@ prop_button_append_menu(GtkWidget *button,
   tooltip_list = g_object_get_data(G_OBJECT(button), "prop_tooltip");
   action_list = g_object_get_data(G_OBJECT(button), "prop_action");
   state_list = g_object_get_data(G_OBJECT(button), "prop_state");
-  
+
   icon_list = g_list_append(icon_list, g_strdup(icon_name));
   label_list = g_list_append(label_list, g_strdup(label));
   tooltip_list = g_list_append(tooltip_list, g_strdup(tooltip));
   action_list = g_list_append(action_list, g_strdup(action));
   state_list = g_list_append(state_list, g_strdup(state));
-  
+
   g_object_set_data(G_OBJECT(button), "prop_icon", icon_list);
   g_object_set_data(G_OBJECT(button), "prop_label", label_list);
   g_object_set_data(G_OBJECT(button), "prop_tooltip", tooltip_list);
@@ -557,7 +557,7 @@ get_charset(gchar *line)
   if (tokens && tokens[0] && tokens[1] && !strcmp("charset", tokens[0]))
     charset = g_strdup(tokens[1]);
   g_strfreev(tokens);
-  
+
   return charset;
 }
 
@@ -568,7 +568,7 @@ convert_charset(const gchar *charset, const gchar *str)
     return NULL;
 
   return g_convert(str, strlen(str),
-		   "UTF-8", charset, 
+		   "UTF-8", charset,
 		   NULL, /* gsize *bytes_read */
 		   NULL, /* size *bytes_written */
 		   NULL); /* GError **error */
@@ -613,7 +613,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
     } else {
       cols = g_strsplit(lines[i], "\t", 0);
     }
-    
+
     if (cols && cols[0]) {
       if (!strcmp("branch", cols[0]) && has_n_strs(cols, 4)) {
 	indication_id = cols[1];
@@ -636,7 +636,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
       g_strfreev(cols);
     }
   }
-  
+
   /* create tool buttons */
   /* FIXME! command menu and buttons should be customizable. */
   for (i = 0; i < command_entry_len; i++) {
@@ -697,7 +697,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
     uim_helper_client_get_prop_list();
     return;
   }
-  
+
   charset = get_charset(lines[1]);
 
   for (i = 2; lines[i] && strcmp("", lines[i]); i++) {
@@ -713,7 +713,7 @@ helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
     } else {
       cols = g_strsplit(lines[i], "\t", 0);
     }
-    
+
     if (has_n_strs(cols, 3)) {
       indication_id = cols[0];
       iconic_label  = safe_gettext(cols[1]);
@@ -838,7 +838,7 @@ right_click_menu_create(void)
     }
 
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-    g_signal_connect(G_OBJECT(menu_item), "activate", 
+    g_signal_connect(G_OBJECT(menu_item), "activate",
 		     G_CALLBACK(right_click_menu_activated),
 		     (gpointer)command_entry[i].command);
   }
@@ -848,7 +848,7 @@ right_click_menu_create(void)
   menu_item = gtk_image_menu_item_new_with_label(_("Quit this toolbar"));
   gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menu_item), img);
   gtk_menu_shell_append(GTK_MENU_SHELL(menu), menu_item);
-  g_signal_connect(G_OBJECT(menu_item), "activate", 
+  g_signal_connect(G_OBJECT(menu_item), "activate",
 		   G_CALLBACK(right_click_menu_quit_activated), NULL);
 
   gtk_widget_show_all(menu);
@@ -937,7 +937,7 @@ toolbar_new(gint type)
   prop_menu = gtk_menu_new();
   right_click_menu = right_click_menu_create();
   sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
-  
+
   /* prop menu button */
   button = gtk_button_new_with_label(" x");
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
@@ -954,7 +954,7 @@ toolbar_new(gint type)
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_SIZE_GROUP, sg);
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_TOOLBAR_TYPE,
 		    GINT_TO_POINTER(type));
-  
+
   helper_toolbar_check_custom();
 
   uim_fd = -1;
@@ -966,7 +966,7 @@ toolbar_new(gint type)
     uim_toolbar_get_im_list();
   }
 
-  return hbox; 
+  return hbox;
 }
 
 GtkWidget *

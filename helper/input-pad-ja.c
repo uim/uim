@@ -283,7 +283,7 @@ buttontable_create(gchar **table, int len)
       button = gtk_button_new_with_label(table[i*BUTTON_H_ALIGN + j]);
       g_signal_connect(button, "clicked",
 		       G_CALLBACK(padbutton_clicked), "button");
-      
+
       gtk_table_attach_defaults(GTK_TABLE(_table),
 				button,
 				j, j + 1,
@@ -385,7 +385,7 @@ static GtkWidget *
 input_table_create(gchar *localename)
 {
   GtkWidget *notebook;
-  
+
   notebook = gtk_notebook_new();
   gtk_notebook_set_scrollable(GTK_NOTEBOOK(notebook), TRUE);
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),

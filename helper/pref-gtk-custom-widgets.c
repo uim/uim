@@ -448,9 +448,9 @@ custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 					NULL);
-  
+
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-    char *filename;    
+    char *filename;
     filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
     if (filename) {
       gtk_entry_set_text(GTK_ENTRY(entry), filename);
@@ -471,7 +471,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   const char *button_label;
 
   hbox = gtk_hbox_new(FALSE, 8);
- 
+
   label = gtk_label_new(custom->label);
   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -587,18 +587,18 @@ sync_value_choice(GtkComboBox *combobox)
     uim_custom_free(custom);
     return;
   }
-  
+
   g_signal_handlers_block_by_func(G_OBJECT(combobox),
 				  (gpointer)(uintptr_t) custom_combo_box_changed, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combobox))));
-  
+
   default_symbol = custom->value->as_choice->symbol;
 
   while (*item) {
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), (*item)->label);
     if (!strcmp(default_symbol, (*item)->symbol))
-      default_index = i;    
+      default_index = i;
     i++;
     item++;
   }
@@ -637,7 +637,7 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
   g_object_set_data_full(G_OBJECT(combobox),
 			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
 			 (GDestroyNotify) g_free);
-  
+
   sync_value_choice(GTK_COMBO_BOX(combobox));
 
   g_signal_connect(G_OBJECT(combobox), "changed",
@@ -1052,7 +1052,7 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
     custom->value->as_olist[num - 1]->desc   = choice->desc   ? strdup(choice->desc)   : NULL;
     custom->value->as_olist[num] = NULL;
   }
-  
+
   urv = uim_custom_set(custom);
 
   if (urv != UIM_FALSE) {
@@ -1976,7 +1976,7 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_key_clicked_cb), entry);
   uim_custom_cb_add(custom->symbol, entry, update_custom_type_key_cb);
-  
+
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
 

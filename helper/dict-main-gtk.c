@@ -80,7 +80,7 @@ fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
 {
   char *tmp;
   int fd = g_io_channel_unix_get_fd(channel);
-  
+
   uim_helper_read_proc(fd);
   while ((tmp = uim_helper_get_message())) {
     /* parse_helper_str(tmp); */
@@ -210,13 +210,13 @@ create_window(void)
 
 int
 main(int argc, char *argv[])
-{  
+{
   gint result;
   setlocale(LC_ALL, "");
   gtk_set_locale();
   bindtextdomain(PACKAGE, LOCALEDIR);
   textdomain(PACKAGE);
-  bind_textdomain_codeset(PACKAGE, "UTF-8"); 
+  bind_textdomain_codeset(PACKAGE, "UTF-8");
   parse_arg(argc, argv);
 
   gtk_init(&argc, &argv);
@@ -230,7 +230,7 @@ main(int argc, char *argv[])
 
   /* connect to uim helper message bus */
   uim_fd = -1;
-  check_helper_connection();  
+  check_helper_connection();
 
   gtk_main ();
 

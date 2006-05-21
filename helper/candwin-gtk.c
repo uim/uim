@@ -303,30 +303,30 @@ static void
 candidate_window_init(UIMCandidateWindow *cwin)
 {
   GtkCellRenderer *renderer;
-  GtkTreeViewColumn *column; 
+  GtkTreeViewColumn *column;
   GtkWidget *scrolled_window;
   GtkWidget *vbox;
   GtkWidget *frame;
   GtkTreeSelection *selection;
   GdkRectangle cursor_location;
-  
+
   vbox = gtk_vbox_new(FALSE, 0);
   frame = gtk_frame_new(NULL);
 
   cwin->stores = g_ptr_array_new();
-  
+
   gtk_window_set_default_size(GTK_WINDOW(cwin),
 		  CANDWIN_DEFAULT_WIDTH, -1);
-  
+
 
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				 GTK_POLICY_NEVER,
 				 GTK_POLICY_NEVER);
   gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
-  
+
   cwin->view = gtk_tree_view_new();
-  g_signal_connect(G_OBJECT(cwin->view), "destroy", 
+  g_signal_connect(G_OBJECT(cwin->view), "destroy",
   		   G_CALLBACK(cb_tree_view_destroy), cwin->stores);
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(cwin->view), TRUE);
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(cwin->view), FALSE);
@@ -335,7 +335,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   gtk_container_add(GTK_CONTAINER(frame), vbox);
   gtk_container_add(GTK_CONTAINER(cwin), frame);
   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
-    
+
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cwin->view));
 
   gtk_tree_selection_set_select_function(selection,
@@ -353,7 +353,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
 						    NULL);
   gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  
+
   renderer = gtk_cell_renderer_text_new();
   g_object_set(renderer, "scale", 1.2, NULL);
   /* g_object_set(renderer, "size-points", 20.0, NULL); */
@@ -364,13 +364,13 @@ candidate_window_init(UIMCandidateWindow *cwin)
 						    NULL);
   gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  
+
   cwin->num_label = gtk_label_new("");
 
   gtk_box_pack_start(GTK_BOX(vbox), cwin->num_label, FALSE, FALSE, 0);
 
 #if 0
-  g_signal_connect(G_OBJECT(cwin->view), "button-press-event", 
+  g_signal_connect(G_OBJECT(cwin->view), "button-press-event",
   		   G_CALLBACK(tree_view_button_press), cwin);
 #endif
 
@@ -424,11 +424,11 @@ candwin_activate(gchar **str)
       break;
     }
     utf8_str = g_convert(str[i],
-			 -1, 
+			 -1,
 			 "UTF-8",
 			 charset,
 			 &rbytes, &wbytes, NULL);
-    
+
     candidates = g_slist_append(candidates, utf8_str);
     j++;
   }
