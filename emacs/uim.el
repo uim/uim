@@ -670,7 +670,7 @@
 ;; 
 (defun uim-send-cmd (cmd serial)
 
-  (uim-debug (concat (format "%s " serial) cmd ))
+  (uim-debug (concat (format "%s " serial) cmd " (" (current-time-string) ")"))
 
   ;; check process status and start if it's not running
   (if (not uim-el-agent-process)
@@ -728,7 +728,12 @@
 ;;
 (defun uim-wait-recv (serial)
 
-  (let (rstr)
+  (let (rstr
+	(helper-filter (process-filter uim-el-helper-agent-process)))
+
+    (set-process-filter uim-el-helper-agent-process nil)
+
+    (uim-debug "wait recv")
 
     (let ((start (nth 1 (current-time)))
 	  (accept uim-el-agent-accept-timeout))
@@ -746,6 +751,16 @@
 	  ;; double the accepting time if waiting again
 	  (setq accept (* accept 2)))))
 
+    (save-current-buffer
+      (set-buffer uim-el-helper-agent-buffer)
+      (when (> (buffer-size) 0)
+	(setq uim-helper-message 
+	      (concat uim-helper-message
+		      (buffer-substring 1 (point-max))))
+	(erase-buffer)))
+    (set-process-filter uim-el-helper-agent-process helper-filter)
+
+    (unwind-protect
     (cond ((not (process-status uim-el-agent-process))
 	   ;; uim-el-agent is dead
 	   (message "uim.el: state of uim-el-agent has been changed (died?)"))
@@ -760,7 +775,11 @@
 	   ;;   rstr: ( serial# context-id (...) )
 	   (uim-process-agent-output (cddr (read rstr)))
 	   )
-	  )))
+	      )
+      (uim-helper-message-processor)
+      )
+    )
+  )
 
 
 ;;

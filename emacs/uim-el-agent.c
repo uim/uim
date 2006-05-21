@@ -743,6 +743,8 @@ main(int argc, char *argv[])
 	} else if (*p1 >= 'A' && *p1 <= 'Z') {
 	  /* command */
 
+	  if (strncmp(p1, "QUIT", 4) == 0) goto QUIT;
+
 	  a_printf("( %d %d ", serial, cid);
 	  if (process_command(serial, cid, p1) < 0) {
 		debug_printf(DEBUG_WARNING, "command error\n");
@@ -764,6 +766,7 @@ main(int argc, char *argv[])
 	fflush(stdout);
   }
 
+ QUIT:
 
   uim_quit();
   return 0;

@@ -65,28 +65,29 @@
   )
 
 
-
-(defun uim-helper-filter (process output)
-  (let ((inhibit-quit t))
-    (uim-debug "*** uim-helper-filter")
-    (setq uim-helper-message (concat uim-helper-message output))
+(defun uim-helper-message-processor ()
+  (uim-debug "uim-helper-message-processor")
     (let (eom msg)
       (while (setq eom (string-match "\n" uim-helper-message))
 	(setq msg (substring uim-helper-message 0 (+ eom 1)))
-	(uim-debug (format "*** loop %s" msg))
 	(setq uim-helper-message (substring uim-helper-message (+ eom 1)))
 	(if (> (length msg) 0)
 	    (uim-helper-handler msg))
 	)
       )
     )
+
+(defun uim-helper-filter (process output)
+  (let ((inhibit-quit t))
+    (uim-debug "*** uim-helper-filter")
+    (setq uim-helper-message (concat uim-helper-message output))
+    (uim-helper-message-processor)
+    )
   )
 
 
 (defun uim-helper-process-sentinel (proc stat)
-
   (message "uim.el: %s" stat)
-
   (setq uim-el-helper-agent-process nil)
   )
 
