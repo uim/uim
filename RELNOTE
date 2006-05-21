@@ -1,20 +1,84 @@
-uim 1.1.0 Release Note
-======================
-
-FIXME
+uim 1.1.0-alpha Release Note
+============================
 
 About This Release
 ------------------
 
-  - See NEWS
-  - See doc/COMPATIBILITY
+This distribution of uim 1.1.0-alpha is a preview release for testing
+purpose. Since it may contain serious unknown problems, it should not
+be used for important works. For such situations, use our latest
+stable release uim 1.0.1.
+
+Please report us if you find a problem.
+
+Mailinglist: uim@freedesktop.org
+Bug tracking system: http://bugs.freedesktop.org/
 
 
-Note for Packagers and System Integrators
------------------------------------------
+What's New
+----------
 
-  - helper protocol incompatibility
+Following features are highlight of this release. See NEWS for all
+changes.
+
+  - icon support for toolbar
+  - menu-based quick IM switching from toolbar
+
+And for developers writing uim-related software, there are some major
+interface changes must be followed. Please update your codes (with
+UIM_VERSION_REQUIRE()).
+
+  - Add icon support to helper protocol
+  - Context-originated IM switching of other contexts
+
+See doc/COMPATIBILITY for the details and other compatibility issues.
+
+
+Notes for Packagers and System Integrators
+------------------------------------------
+
+  - Due to the helper protocol incompatibility, 3rd party input-state
+    indicators (aka applets) and bridges must be updated to newer
+    version that supports the new protocol. Handle version dependency
+    carefully
+
+  - Static library building has been disabled by default. Enable it
+    explicitly if needed
 
 
 Future Direction
 ----------------
+
+The version 1.0 was bumped as the termination of the development
+direction of the ex-leader. After then, the design and development
+policies, and thus goals and direction are changed to the new
+leader's. Though the 1.1 signals little about the changes, the next
+milestones show where we go. It is a way to achieve simple, easily
+extensible and high code-quality input method environment.
+
+  - uim 1.2.0
+
+    Release for internal improvement. No user-visible changes other
+    than resource consumption reduction.
+
+    The non-standard-conformant Scheme interpreter of libuim will be
+    replaced with newly developed SigScheme to make a room for next
+    leap.
+
+
+  - uim 1.3.0
+
+    Release for internal simplification. No user-visible changes.
+
+    The complicated C part of uim which prevents extensions, design
+    improvements and automated input method tests will be turned into
+    Scheme codes or optimized out.
+
+
+  - uim 1.4.0 and later
+
+    The time for drastic reconstruction. Many user-visible changes.
+
+    The bridge and IM interface will be revised for better focus and
+    reset handlings, and the composer framework will be introduced for
+    extensible IM development.
