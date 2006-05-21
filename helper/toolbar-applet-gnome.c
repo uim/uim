@@ -155,7 +155,9 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
   gtk_widget_show_all(GTK_WIDGET(applet));
 
   panel_applet_setup_menu(applet, uim_menu_xml, uim_menu_verbs, toolbar);
+#if LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET
   panel_applet_set_background_widget(applet, GTK_WIDGET(applet));
+#endif
 
   return TRUE;
 }

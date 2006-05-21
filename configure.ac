@@ -329,7 +329,7 @@ AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
 # define XLIB directory for Compose file
 if test "x$x11_use_new_dir" = "xyes"; then
-  AC_DEFINE_UNQUOTED(XLIB_DIR, "`pkg-config x11 --variable=prefix`/share", [X11 Library Directory])
+  AC_DEFINE_UNQUOTED(XLIB_DIR, "`$PKG_CONFIG x11 --variable=prefix`/share", [X11 Library Directory])
 else
   AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
 fi
@@ -367,10 +367,18 @@ AC_ARG_ENABLE(applet,
       ;;
       yes|*)
         PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
+        PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no") ])
+  [
+    PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
+    PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
+  ])
+
+if test x"$panelapplet_have_set_background_api" = xyes; then
+  AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
+fi
 
 dnl ****************************
 dnl *** Check for Qt Library ***
@@ -620,7 +628,7 @@ AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 AC_PROG_INTLTOOL([0.31], [no-xml])
 
 
-GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
+GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
 AC_SUBST(GTK_BINARY_VERSION)
 
 if test x$use_gtk2 = xyes ; then
