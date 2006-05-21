@@ -41,6 +41,15 @@
 extern "C" {
 #endif
 
+#define UIM_VERSION_MAJOR      (1)
+#define UIM_VERSION_MINOR      (1)
+#define UIM_VERSION_PATCHLEVEL (0)
+#define UIM_VERSION_REQUIRE(major, minor, patchlevel)			     \
+  ((major) < UIM_VERSION_MAJOR						     \
+   || ((major) == UIM_VERSION_MAJOR && (minor) < UIM_VERSION_MINOR)	     \
+   || ((major) == UIM_VERSION_MAJOR && (minor) == UIM_VERSION_MINOR	     \
+       && (patchlevel) <= UIM_VERSION_PATCHLEVEL))
+
 /*
  * A boolean type for uim to explicitly indicate intention about values
  *

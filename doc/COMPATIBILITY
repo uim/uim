@@ -57,6 +57,25 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Version numbers for conditional compilation
+Affects: Bridge developers, Helper program developers
+Updates: C API
+Version: 1.1.0
+Revision: ac3460
+Date: 2006-05-21
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (new) UIM_VERSION_MAJOR
+  (new) UIM_VERSION_MINOR
+  (new) UIM_VERSION_PATCHLEVEL
+  (new) UIM_VERSION_REQUIRE()
+Description:
+  To absorb API and helper protocol incompatibility, provide the version
+  numbers to allow conditional compilation for 3rd party uim-related
+  softwares.
+------------------------------------------------------------------------------
 Summary: Deprecate truth predicates for uim-scm
 Affects: uim developers, IM developers
 Updates: C API (uim-scm)
@@ -106,6 +125,7 @@ Revision: ac3147, ac3148, ac3150, ac3151
 Date: 2006-02-24
 Modifier: YamaKen, Etsushi
 Related: action-based IM switcher
+         "Version numbers for conditional compilation"
 URL:
 Changes:
   (new) uim_set_im_switch_request_cb()
@@ -124,6 +144,7 @@ Revision: ac3122, ac3123, ac3125, ac3131
 Date: 2006-02-20
 Modifier: Etsushi, YamaKen
 Related: "Add icon support to helper protocol"
+         "Version numbers for conditional compilation"
 URL:
 Changes:
     (removed) "prop_label_get"
@@ -147,7 +168,7 @@ Version: 1.1.0
 Revision: ac3110
 Date: 2006-02-18
 Modifier: YamaKen
-Related:
+Related: "Version numbers for conditional compilation"
 URL:
   http://lists.freedesktop.org/archives/uim/2006-February/001434.html
 Changes:
