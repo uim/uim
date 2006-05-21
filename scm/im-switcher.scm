@@ -91,8 +91,8 @@
 
 				     ((system-global)
 				      (im-switch-system-global-im ctx idname)))))
-		act-name))
-	 enabled-im-list)))))
+		act-name))))
+     enabled-im-list)))
 
 (define imsw-widget-codeset
   (or (and (feature? 'nls)
