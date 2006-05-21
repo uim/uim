@@ -1,7 +1,9 @@
 pixmapsdir =  $(datadir)/uim/pixmaps
 
+SVGS = unknown.svg
+
 # input methods
-SVGS = direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg
+SVGS += direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg
 
 # input modes
 SVGS += direct_input.svg on.svg off.svg \
@@ -31,7 +33,8 @@ IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 viqr.png ipa-x-sampa.png latin.png \
                 scim.png
 
-SVG_PNGS = direct.png skk.png tcode.png tutcode.png byeoru.png \
+SVG_PNGS = unknown.png \
+           direct.png skk.png tcode.png tutcode.png byeoru.png \
            direct_input.png on.png off.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
            ja_halfwidth_katakana.png \

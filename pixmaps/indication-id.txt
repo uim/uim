@@ -8,7 +8,7 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   input_pad
   handwriting_pad
   help
-  unknown
+  + unknown
 
 * input modes
   + direct_input
