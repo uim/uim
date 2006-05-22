@@ -95,7 +95,7 @@ pushback_input_method(MInputMethod *im, char *lib_lang, char *name)
   const char *lang;
   
   if (!strcmp(lib_lang, "t"))
-    lang = "*";
+    lang = "";
   else
     lang = lib_lang;
 
@@ -435,7 +435,7 @@ get_input_method_name(uim_lisp nth_)
   if (nth < nr_input_methods) {
     char *name = alloca(strlen(im_array[nth].name) + 20);
 
-    if (!strcmp(im_array[nth].lang, "*"))
+    if (!strcmp(im_array[nth].lang, ""))
       sprintf(name, "m17n-%s", im_array[nth].name);
     else
       sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
@@ -513,7 +513,7 @@ find_im_by_name(const char *name)
   for (i = 0; i < nr_input_methods; i++) {
     char buf[100];
 
-    if (!strcmp(im_array[i].lang, "*"))
+    if (!strcmp(im_array[i].lang, ""))
       snprintf(buf, 100, "%s", im_array[i].name);
     else
       snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
