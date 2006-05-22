@@ -483,14 +483,23 @@ get_input_method_short_desc(uim_lisp nth_)
 	*p = '\0';
       len = strlen(str);
 
+      /*
+       * Workaround for the descriptions which lack period.
+       * Also we avoid the description with non English words.
+       * See https://bugs.freedesktop.org/show_bug.cgi?id=6972
+       */
       for (i = 0; i < len; i++) {
-	if (str[i] == '\n'
-#ifdef HAVE_ISASCII
-	    || !isascii((int)str[i]))
-#else
-	    || ((int)str[i] & ~0x7f))
-#endif
+	if (str[i] == '\n')
 	  str[i] = ' ';
+#ifdef HAVE_ISASCII
+	else if (!isascii((int)str[i])) {
+#else
+	else if ((int)str[i] & ~0x7f) {
+#endif
+	  free(str);
+	  str = NULL;
+	  break;
+	}
       }
       m17n_object_unref(desc);
     }
