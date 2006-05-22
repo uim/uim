@@ -47,6 +47,10 @@
 
 #include "../gtk/key-util-gtk.h"
 
+#define DEFAULT_OLIST_WINDOW_WIDTH    480
+#define DEFAULT_OLIST_WINDOW_HEIGHT   350
+#define DEFAULT_KEYCONF_WINDOW_WIDTH  280
+#define DEFAULT_KEYCONF_WINDOW_HEIGHT 220
 #define OBJECT_DATA_UIM_CUSTOM_SYM    "uim-pref-gtk::uim-custom-sym"
 
 extern gboolean uim_pref_gtk_value_changed;
@@ -1171,7 +1175,9 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   uim_custom_free(custom);
 
   olist_pref_win.window = dialog;
-  gtk_window_set_default_size(GTK_WINDOW(dialog), 400, 250);
+  gtk_window_set_default_size(GTK_WINDOW(dialog),
+			      DEFAULT_OLIST_WINDOW_WIDTH,
+			      DEFAULT_OLIST_WINDOW_HEIGHT);
   g_signal_connect(G_OBJECT(dialog), "response",
 		   G_CALLBACK(olist_pref_dialog_response_cb), olist_entry);
 
@@ -1820,7 +1826,9 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
     GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
     NULL);
   key_pref_win.window = dialog;
-  gtk_window_set_default_size(GTK_WINDOW(dialog), 280, 220);
+  gtk_window_set_default_size(GTK_WINDOW(dialog),
+			      DEFAULT_KEYCONF_WINDOW_WIDTH,
+			      DEFAULT_KEYCONF_WINDOW_HEIGHT);
   g_signal_connect(G_OBJECT(dialog), "response",
 		   G_CALLBACK(key_pref_dialog_response_cb), key_entry);
 
