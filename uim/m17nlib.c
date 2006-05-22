@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <m17n.h>
+#include "gettext.h"
 #include "uim-scm.h"
 #include "uim-util.h"
 #include "plugin.h"
@@ -491,7 +492,7 @@ get_input_method_short_desc(uim_lisp nth_)
       ret = uim_scm_make_str(str);
       free(str);
     } else {
-      ret = uim_scm_make_str("An input method provided by the m17n library");
+      ret = uim_scm_make_str(N_("An input method provided by the m17n library"));
     }
   } else
     ret = uim_scm_f();

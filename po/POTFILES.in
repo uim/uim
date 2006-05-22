@@ -49,3 +49,4 @@ scm/tutcode.scm
 scm/viqr.scm
 uim.desktop.in.in
 uim/iso-639-1.def
+uim/m17nlib.c

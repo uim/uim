@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-21 15:49+0900\n"
+"POT-Creation-Date: 2006-05-22 23:30+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1814,10 +1814,6 @@ msgstr ""
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 
-#: scm/m17nlib.lisp:340
-msgid "An input method provided by the m17n library"
-msgstr ""
-
 #: scm/mana-custom.lisp:35
 msgid "Mana"
 msgstr ""
@@ -3109,4 +3105,8 @@ msgstr ""
 
 #: uim/iso-639-1.def:185
 msgid "Zulu"
+msgstr ""
+
+#: uim/m17nlib.c:495
+msgid "An input method provided by the m17n library"
 msgstr ""
