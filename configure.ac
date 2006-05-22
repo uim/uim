@@ -51,7 +51,7 @@ AC_ARG_WITH(m17nlib,
                  [Don't build against m17nlib]),
   [
   if test "x$with_m17nlib" = "xyes"; then
-    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.0, use_m17nlib="yes",use_m17nlib="no")
+    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1, use_m17nlib="yes",use_m17nlib="no")
     AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
     if test -n "$M17NDB"; then
       m17n_db_dir=`$M17NDB`
@@ -59,7 +59,7 @@ AC_ARG_WITH(m17nlib,
   fi
   ],
   [
-    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.0, use_m17nlib="yes",use_m17nlib="no")
+    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1, use_m17nlib="yes",use_m17nlib="no")
     AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
     if test -n "$M17NDB"; then
       m17n_db_dir=`$M17NDB`
@@ -268,6 +268,7 @@ AC_CHECK_FUNCS(asprintf vasprintf vsnprintf)
 AC_REPLACE_FUNCS(getpeereid strsep setenv unsetenv)
 AC_CHECK_FUNCS(getpid stat mkdir chmod)
 AC_CHECK_FUNCS(execv execvp)
+AC_CHECK_FUNCS(isascii)
 AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
 AC_TRY_RUN([
 #include <sys/types.h>

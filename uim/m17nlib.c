@@ -35,6 +35,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <m17n.h>
 #include "gettext.h"
 #include "uim-scm.h"
@@ -462,15 +463,16 @@ static uim_lisp
 get_input_method_short_desc(uim_lisp nth_)
 {
   int nth;
-  MText *desc;
   char *str = NULL, *p;
   uim_lisp ret;
 
   nth = uim_scm_c_int(nth_);
 
   if (nth < nr_input_methods) {
-    MInputMethod *im = im_array[nth].im;
+    MInputMethod *im;
+    MText *desc;
 
+    im = im_array[nth].im;
     desc = minput_get_description(im->language, im->name);
     if (desc) {
       int i, len;
@@ -482,7 +484,12 @@ get_input_method_short_desc(uim_lisp nth_)
       len = strlen(str);
 
       for (i = 0; i < len; i++) {
-	if (str[i] == '\n')
+	if (str[i] == '\n'
+#ifdef HAVE_ISASCII
+	    || !isascii((int)str[i]))
+#else
+	    || ((int)str[i] & ~0x7f))
+#endif
 	  str[i] = ' ';
       }
       m17n_object_unref(desc);
