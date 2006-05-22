@@ -42,7 +42,7 @@
 
 static int m17nlib_ok;
 static MConverter *converter;
-static char buffer_for_converter[1024]; /* Currently, if preedit strings or
+static char buffer_for_converter[4096]; /* Currently, if preedit strings or
 					   candidate strings over this buffer
 					   size, they will simply ignore. */
 
@@ -94,16 +94,15 @@ pushback_input_method(MInputMethod *im, char *lib_lang, char *name)
 {
   const char *lang;
   
-  lang = uim_get_language_code_from_language_name(lib_lang);
-  im_array = realloc(im_array, sizeof(struct im_) * (nr_input_methods + 1));
+  if (!strcmp(lib_lang, "t"))
+    lang = "*";
+  else
+    lang = lib_lang;
 
+  im_array = realloc(im_array, sizeof(struct im_) * (nr_input_methods + 1));
   im_array[nr_input_methods].im = im;
   im_array[nr_input_methods].name = strdup(name);
-
-  if (lang != NULL)
-    im_array[nr_input_methods].lang = strdup(lang);
-  else
-    im_array[nr_input_methods].lang = NULL;
+  im_array[nr_input_methods].lang = strdup(lang);
 
   nr_input_methods++;
 }
@@ -204,10 +203,9 @@ init_m17nlib()
     if (tag[1] != Mnil) {
       MInputMethod *im = minput_open_im(tag[1], tag[2], NULL);
 
-      if (im) {
-	MSymbol lang = msymbol_get(im->language, Mlanguage);
-	pushback_input_method(im, msymbol_name(lang), msymbol_name(im->name));
-      }
+      if (im)
+	pushback_input_method(im, msymbol_name(im->language),
+			      msymbol_name(im->name));
     }
   }
 #if 0
@@ -437,10 +435,10 @@ get_input_method_name(uim_lisp nth_)
   if (nth < nr_input_methods) {
     char *name = alloca(strlen(im_array[nth].name) + 20);
 
-    if (im_array[nth].lang != NULL)
-      sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
-    else
+    if (!strcmp(im_array[nth].lang, "*"))
       sprintf(name, "m17n-%s", im_array[nth].name);
+    else
+      sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
 
     return uim_scm_make_str(name);
   }
@@ -453,16 +451,52 @@ get_input_method_lang(uim_lisp nth_)
 {
   int nth = uim_scm_c_int(nth_);
 
-  if (nth < nr_input_methods) {
-    char *lang = im_array[nth].lang;
-
-    if (lang != NULL)
-      return uim_scm_make_str(lang);
-    else
-      return uim_scm_make_str("unknown");
-  }
+  if (nth < nr_input_methods)
+    return uim_scm_make_str(im_array[nth].lang);
 
   return uim_scm_f();
+}
+
+static uim_lisp
+get_input_method_short_desc(uim_lisp nth_)
+{
+  int nth;
+  MText *desc;
+  char *str = NULL, *p;
+  uim_lisp ret;
+
+  nth = uim_scm_c_int(nth_);
+
+  if (nth < nr_input_methods) {
+    MInputMethod *im = im_array[nth].im;
+
+    desc = minput_get_description(im->language, im->name);
+    if (desc) {
+      int i, len;
+
+      str = convert_mtext2str(desc);
+      p = strchr(str, '.');
+      if (p)
+	*p = '\0';
+      len = strlen(str);
+
+      for (i = 0; i < len; i++) {
+	if (str[i] == '\n')
+	  str[i] = ' ';
+      }
+      m17n_object_unref(desc);
+    }
+
+    if (str) {
+      ret = uim_scm_make_str(str);
+      free(str);
+    } else {
+      ret = uim_scm_make_str("An input method provided by the m17n library");
+    }
+  } else
+    ret = uim_scm_f();
+
+  return ret;
 }
 
 static MInputMethod *
@@ -479,7 +513,7 @@ find_im_by_name(const char *name)
   for (i = 0; i < nr_input_methods; i++) {
     char buf[100];
 
-    if (im_array[i].lang == NULL)
+    if (!strcmp(im_array[i].lang, "*"))
       snprintf(buf, 100, "%s", im_array[i].name);
     else
       snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
@@ -624,10 +658,10 @@ calc_cands_num(int id)
   while (mplist_value(group) != Mnil) {
     if (mplist_key(group) == Mtext) {
       for (; mplist_key(group) != Mnil; group = mplist_next(group))
-        result += mtext_len(mplist_value(group));
+	result += mtext_len(mplist_value(group));
     } else {
       for (; mplist_key(group) != Mnil; group = mplist_next(group))
-        result += mplist_length(mplist_value(group));
+	result += mplist_length(mplist_value(group));
     }
   }
 
@@ -673,17 +707,17 @@ fill_new_candidates(uim_lisp id_)
     for (i = 0; mplist_key(group) != Mnil; group = mplist_next(group)) {
       int j;
       for (j = 0; j < mtext_len(mplist_value(group)); j++, i++) {
-          produced = mtext();
-          mtext_cat_char(produced, mtext_ref_char(mplist_value(group), j));
-          new_cands[i] = convert_mtext2str(produced);
-          m17n_object_unref(produced);
+	  produced = mtext();
+	  mtext_cat_char(produced, mtext_ref_char(mplist_value(group), j));
+	  new_cands[i] = convert_mtext2str(produced);
+	  m17n_object_unref(produced);
       }
     }
   } else {
     for (i = 0; mplist_key(group) != Mnil; group = mplist_next(group)) {
 
       for (elm = mplist_value(group); mplist_key(elm) != Mnil;
-           elm = mplist_next(elm),i++) {
+	   elm = mplist_next(elm),i++) {
 	produced = mplist_value(elm);
 	new_cands[i] = convert_mtext2str(produced);
       }
@@ -770,6 +804,8 @@ uim_plugin_instance_init(void)
 		      get_input_method_lang);
   uim_scm_init_subr_1("m17nlib-lib-nth-input-method-name",
 		      get_input_method_name);
+  uim_scm_init_subr_1("m17nlib-lib-nth-input-method-short-desc",
+		      get_input_method_short_desc);
   uim_scm_init_subr_1("m17nlib-lib-alloc-context", alloc_id);
   uim_scm_init_subr_1("m17nlib-lib-free-context", free_id);
   uim_scm_init_subr_2("m17nlib-lib-push-symbol-key", push_symbol_key);

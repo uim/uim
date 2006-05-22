@@ -73,3 +73,10 @@ clean-svgpng:
 # and install from a tarball distribution.
 dist-hook:
 	@test -n "$(RSVG)" || (echo 'rsvg(1) not found: install it'; exit 1)
+
+if M17NLIB
+install-data-hook:
+	for f in $(m17n_db_dir)/icons/*.png; do \
+	  $(LN_S) -f "$$f" $(DESTDIR)$(pkgdatadir)/pixmaps/m17n-`basename "$$f"`; \
+	done
+endif

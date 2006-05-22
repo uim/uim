@@ -337,7 +337,7 @@
 	       (m17nlib-lib-nth-input-method-lang i)
 	       "UTF-8"
 	       (m17nlib-lib-nth-input-method-name i)
-	       (N_ "An input method provided by the m17n library")
+	       (m17nlib-lib-nth-input-method-short-desc i)
 	       (m17nlib-lib-nth-input-method-name i)
 	       m17nlib-init-handler
 	       m17nlib-release-handler

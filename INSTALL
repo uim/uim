@@ -12,7 +12,7 @@ The requirements for building uim is listed below.
     * mana (need to use Japanese mana module. version >= 0.2.0 is
       recommended).
     * PRIME >= 0.8.5.2 (need to use Japanese PRIME module)
-    * m17nlib >= 1.2 (need to use uim-m17nlib bridge)
+    * m17nlib >= 1.3 (need to use uim-m17nlib bridge)
     * GTK+ >= 2.4 (need to build gtk tools and gtk immodule)
     * gnome-panel (need to build GNOME applet indicator)
     * Qt >= 3.3.2 (need to build qt tools. you also need to apply
