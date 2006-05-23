@@ -489,8 +489,10 @@ get_input_method_short_desc(uim_lisp nth_)
        * See https://bugs.freedesktop.org/show_bug.cgi?id=6972
        */
       for (i = 0; i < len; i++) {
-	if (str[i] == '\n')
-	  str[i] = ' ';
+	if (str[i] == '\n') {
+	  str[i] = '\0';
+	  break;
+	}
 #ifdef HAVE_ISASCII
 	else if (!isascii((int)str[i])) {
 #else
