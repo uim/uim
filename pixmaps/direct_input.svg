@@ -70,6 +70,16 @@
         <dc:title>direct_input.svg</dc:title>
         <dc:date>2006-05-23</dc:date>
         <dc:description>Input mode icon for direct input.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
       </cc:Work>
     </rdf:RDF>
   </metadata>
