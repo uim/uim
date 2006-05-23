@@ -16,7 +16,7 @@
    inkscape:version="0.43"
    version="1.0"
    sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
-   sodipodi:docname="skk3.svg">
+   sodipodi:docname="skk.svg">
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -25,6 +25,25 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>skk.svg</dc:title>
+        <dc:date>2006-05-23</dc:date>
+        <dc:description>Input method icon for SKK.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ja</dc:language>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -68,7 +87,7 @@
      inkscape:grid-bbox="false"
      inkscape:window-width="969"
      inkscape:window-height="1022"
-     inkscape:window-x="368"
+     inkscape:window-x="307"
      inkscape:window-y="-1"
      gridempspacing="2"
      gridspacingx="1.5px"

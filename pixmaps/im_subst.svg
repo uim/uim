@@ -15,7 +15,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.43"
    version="1.0"
-   sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
+   sodipodi:docbase="/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
    sodipodi:docname="im_subst.svg">
   <defs
      id="defs4" />
@@ -39,8 +39,8 @@
      gridempspacing="2"
      inkscape:window-width="869"
      inkscape:window-height="871"
-     inkscape:window-x="341"
-     inkscape:window-y="36" />
+     inkscape:window-x="340"
+     inkscape:window-y="35" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -49,6 +49,29 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>im_subst.svg</dc:title>
+        <dc:date>2006-05-23</dc:date>
+        <dc:description>Substitutional input method icon for uim.</dc:description>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>SHIMODA Hiroshi &lt;piroATp.club.ne.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
       </cc:Work>
     </rdf:RDF>
   </metadata>
