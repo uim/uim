@@ -480,10 +480,12 @@ void InputContext::switch_system_global_im(const char *name)
 
 void InputContext::review_im(const char *engine)
 {
-    char *locale;
+    char *locale, *prev_engine;
     const char *client_locale, *engine_locales;
     const char *encoding;
 
+    prev_engine = mEngineName;
+    mEngineName = strdup(engine);
     encoding = mXic->get_encoding();
     client_locale = mXic->get_lang_region();
     engine_locales = compose_localenames_from_im_lang(get_im_lang_from_engine(engine));
@@ -498,16 +500,11 @@ void InputContext::review_im(const char *engine)
 	setlocale(LC_CTYPE, locale);
 	free(mLocaleName);
 	mLocaleName = locale;
-	free(mEngineName);
-	mEngineName = strdup(engine);
     } else {
 	if (!is_locale_included(engine_locales, client_locale))
-	    changeContext(mEngineName);
-	else {
-	    free(mEngineName);
-	    mEngineName = strdup(engine);
-	}
+	    changeContext(prev_engine);
     }
+    free(prev_engine);
 }
 
 void
