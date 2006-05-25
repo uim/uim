@@ -46,7 +46,7 @@ SVG_PNGS = unknown.png \
 	   uim-dict.png $(IM_SUBST_PNGS)
 
 NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png \
-              switcher-icon.png configure-qt.png \
+              switcher-icon.png \
               anthy.png canna.png prime.png
 
 PNGS = $(NATIVE_PNGS) $(SVG_PNGS) uim-icon.png

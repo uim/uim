@@ -784,6 +784,14 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
+if test "x$use_qt" == "xyes"; then
+    KDE_ICONDIR=`kde-config --expandvars --install icon`
+    if test -z "$KDE_ICONDIR"; then
+      KDE_ICONDIR="$prefix/share/icons"
+    fi
+    AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
+fi
+
 if test x$use_qtimmodule = xyes ; then
     AC_MSG_CHECKING(for qt-immodule patch)
     # Check for immodule for Qt patch

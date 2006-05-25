@@ -42,6 +42,7 @@
 #include "qtgettext.h"
 
 static const QString ICONDIR = UIM_PIXMAPSDIR;
+static const QString ACTION_ICONDIR = KDE_ICONDIR "/crystalsvg/32x32/actions";
 
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
     : QHBox( parent, name, f )
@@ -49,7 +50,7 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
     new UimStateIndicator( this );
 
     m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
-    m_preficon = QPixmap( ICONDIR + "/configure-qt.png");
+    m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
     m_dicticon = QPixmap( ICONDIR + "/uim-dict.png");
 
     m_contextMenu = new QPopupMenu( this );
