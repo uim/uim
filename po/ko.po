@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 1.0.0\n"
+"Project-Id-Version: uim 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-22 23:30+0900\n"
+"POT-Creation-Date: 2006-05-26 12:00+0900\n"
 "PO-Revision-Date: 2006-05-21 11:22+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -386,57 +386,57 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:445
+#: helper/pref-gtk-custom-widgets.c:449
 msgid "Specify file"
 msgstr "파일을 지정하십시오"
 
-#: helper/pref-gtk-custom-widgets.c:493 helper/pref-gtk-custom-widgets.c:497
+#: helper/pref-gtk-custom-widgets.c:497 helper/pref-gtk-custom-widgets.c:501
 #: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
 msgid "Select..."
 msgstr "선택..."
 
-#: helper/pref-gtk-custom-widgets.c:1190
+#: helper/pref-gtk-custom-widgets.c:1196
 msgid "Enabled"
 msgstr "유효"
 
-#: helper/pref-gtk-custom-widgets.c:1216
+#: helper/pref-gtk-custom-widgets.c:1222
 msgid "Enabled items"
 msgstr "유효한 항목"
 
-#: helper/pref-gtk-custom-widgets.c:1294
+#: helper/pref-gtk-custom-widgets.c:1300
 msgid "Disabled"
 msgstr "무효"
 
-#: helper/pref-gtk-custom-widgets.c:1320
+#: helper/pref-gtk-custom-widgets.c:1326
 msgid "Disabled items"
 msgstr "무효인 항목"
 
-#: helper/pref-gtk-custom-widgets.c:1358 helper/pref-gtk-custom-widgets.c:1974
+#: helper/pref-gtk-custom-widgets.c:1364 helper/pref-gtk-custom-widgets.c:1982
 msgid "Edit..."
 msgstr "편집..."
 
-#: helper/pref-gtk-custom-widgets.c:1591 qt/pref-customwidgets.cpp:875
+#: helper/pref-gtk-custom-widgets.c:1597 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1592
+#: helper/pref-gtk-custom-widgets.c:1598
 msgid "Grabbing keys"
 msgstr "키를 잡고 있는 중"
 
-#: helper/pref-gtk-custom-widgets.c:1813
+#: helper/pref-gtk-custom-widgets.c:1819
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - 키 설정"
 
-#: helper/pref-gtk-custom-widgets.c:1850
+#: helper/pref-gtk-custom-widgets.c:1858
 msgid "Key preference"
 msgstr "키 설정"
 
-#: helper/pref-gtk-custom-widgets.c:1896
+#: helper/pref-gtk-custom-widgets.c:1904
 msgid "Key:"
 msgstr "키:"
 
-#: helper/pref-gtk-custom-widgets.c:1919
+#: helper/pref-gtk-custom-widgets.c:1927
 msgid "Grab..."
 msgstr "잡기..."
 
@@ -506,31 +506,31 @@ msgstr "uim 애플릿"
 msgid "Applet for indicating uim's status"
 msgstr "uim 상태 표시 애플릿"
 
-#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
+#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Switch input method"
 msgstr "입력기 전환"
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Preference"
 msgstr "설정"
 
-#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:58
+#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Japanese dictionary editor"
 msgstr "일본어 사전 도구"
 
-#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:59
+#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Input pad"
 msgstr "입력 패드"
 
-#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:60
+#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Handwriting input pad"
 msgstr "손글씨 입력 패드"
 
-#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:61
+#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Help"
 msgstr "도움말"
 
-#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:62
+#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:63
 msgid "Quit this toolbar"
 msgstr "종료"
 
@@ -596,28 +596,28 @@ msgstr ""
 msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:100 scm/action.lisp:536
+#: qt/toolbar-common-quimhelpertoolbar.cpp:101 scm/action.lisp:536
 #: scm/action.lisp:537
 msgid "exec im-switcher"
 msgstr "입력기 전환"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:124
+#: qt/toolbar-common-quimhelpertoolbar.cpp:125
 msgid "exec Preference Application"
 msgstr "설정 도구 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:147
+#: qt/toolbar-common-quimhelpertoolbar.cpp:148
 msgid "exec Japanese dictionary Tool Application"
 msgstr "일본어 사전 도구 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:167
+#: qt/toolbar-common-quimhelpertoolbar.cpp:168
 msgid "exec Input Pad Tool Application"
 msgstr "입력 패드 도구 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:187
+#: qt/toolbar-common-quimhelpertoolbar.cpp:188
 msgid "exec Handwriting Input Pad Tool Application"
 msgstr "손글씨 입력 패드 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:206
+#: qt/toolbar-common-quimhelpertoolbar.cpp:207
 msgid "exec Help Application"
 msgstr "도움말"
 
@@ -3118,7 +3118,7 @@ msgstr ""
 msgid "Zulu"
 msgstr ""
 
-#: uim/m17nlib.c:495
+#: uim/m17nlib.c:513
 msgid "An input method provided by the m17n library"
 msgstr ""
 

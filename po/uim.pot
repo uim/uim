@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-22 23:30+0900\n"
+"POT-Creation-Date: 2006-05-26 12:00+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -386,57 +386,57 @@ msgstr ""
 msgid "line"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:445
+#: helper/pref-gtk-custom-widgets.c:449
 msgid "Specify file"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:493 helper/pref-gtk-custom-widgets.c:497
+#: helper/pref-gtk-custom-widgets.c:497 helper/pref-gtk-custom-widgets.c:501
 #: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
 msgid "Select..."
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1190
+#: helper/pref-gtk-custom-widgets.c:1196
 msgid "Enabled"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1216
+#: helper/pref-gtk-custom-widgets.c:1222
 msgid "Enabled items"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1294
+#: helper/pref-gtk-custom-widgets.c:1300
 msgid "Disabled"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1320
+#: helper/pref-gtk-custom-widgets.c:1326
 msgid "Disabled items"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1358 helper/pref-gtk-custom-widgets.c:1974
+#: helper/pref-gtk-custom-widgets.c:1364 helper/pref-gtk-custom-widgets.c:1982
 msgid "Edit..."
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1591 qt/pref-customwidgets.cpp:875
+#: helper/pref-gtk-custom-widgets.c:1597 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1592
+#: helper/pref-gtk-custom-widgets.c:1598
 msgid "Grabbing keys"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1813
+#: helper/pref-gtk-custom-widgets.c:1819
 #, c-format
 msgid "%s - key configuration"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1850
+#: helper/pref-gtk-custom-widgets.c:1858
 msgid "Key preference"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1896
+#: helper/pref-gtk-custom-widgets.c:1904
 msgid "Key:"
 msgstr ""
 
-#: helper/pref-gtk-custom-widgets.c:1919
+#: helper/pref-gtk-custom-widgets.c:1927
 msgid "Grab..."
 msgstr ""
 
@@ -498,31 +498,31 @@ msgstr ""
 msgid "Applet for indicating uim's status"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
+#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Switch input method"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Preference"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:58
+#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Japanese dictionary editor"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:59
+#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:60
+#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Handwriting input pad"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:61
+#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Help"
 msgstr ""
 
-#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:62
+#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:63
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -586,28 +586,28 @@ msgstr ""
 msgid "Show this dialog on startup"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:100 scm/action.lisp:536
+#: qt/toolbar-common-quimhelpertoolbar.cpp:101 scm/action.lisp:536
 #: scm/action.lisp:537
 msgid "exec im-switcher"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:124
+#: qt/toolbar-common-quimhelpertoolbar.cpp:125
 msgid "exec Preference Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:147
+#: qt/toolbar-common-quimhelpertoolbar.cpp:148
 msgid "exec Japanese dictionary Tool Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:167
+#: qt/toolbar-common-quimhelpertoolbar.cpp:168
 msgid "exec Input Pad Tool Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:187
+#: qt/toolbar-common-quimhelpertoolbar.cpp:188
 msgid "exec Handwriting Input Pad Tool Application"
 msgstr ""
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:206
+#: qt/toolbar-common-quimhelpertoolbar.cpp:207
 msgid "exec Help Application"
 msgstr ""
 
@@ -3107,6 +3107,6 @@ msgstr ""
 msgid "Zulu"
 msgstr ""
 
-#: uim/m17nlib.c:495
+#: uim/m17nlib.c:513
 msgid "An input method provided by the m17n library"
 msgstr ""
