@@ -97,9 +97,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 1.0.0\n"
+"Project-Id-Version: uim 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-22 23:30+0900\n"
+"POT-Creation-Date: 2006-05-26 12:00+0900\n"
 "PO-Revision-Date: 2006-05-21 11:14+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -480,57 +480,57 @@ msgstr "学術記号"
 msgid "line"
 msgstr "罫線"
 
-#: helper/pref-gtk-custom-widgets.c:445
+#: helper/pref-gtk-custom-widgets.c:449
 msgid "Specify file"
 msgstr "ファイルを指定して下さい"
 
-#: helper/pref-gtk-custom-widgets.c:493 helper/pref-gtk-custom-widgets.c:497
+#: helper/pref-gtk-custom-widgets.c:497 helper/pref-gtk-custom-widgets.c:501
 #: qt/pref-customwidgets.cpp:181 qt/pref-customwidgets.cpp:185
 msgid "Select..."
 msgstr "選択..."
 
-#: helper/pref-gtk-custom-widgets.c:1190
+#: helper/pref-gtk-custom-widgets.c:1196
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk-custom-widgets.c:1216
+#: helper/pref-gtk-custom-widgets.c:1222
 msgid "Enabled items"
 msgstr "有効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1294
+#: helper/pref-gtk-custom-widgets.c:1300
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk-custom-widgets.c:1320
+#: helper/pref-gtk-custom-widgets.c:1326
 msgid "Disabled items"
 msgstr "無効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1358 helper/pref-gtk-custom-widgets.c:1974
+#: helper/pref-gtk-custom-widgets.c:1364 helper/pref-gtk-custom-widgets.c:1982
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1591 qt/pref-customwidgets.cpp:875
+#: helper/pref-gtk-custom-widgets.c:1597 qt/pref-customwidgets.cpp:875
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1592
+#: helper/pref-gtk-custom-widgets.c:1598
 msgid "Grabbing keys"
 msgstr "キーを取得中"
 
-#: helper/pref-gtk-custom-widgets.c:1813
+#: helper/pref-gtk-custom-widgets.c:1819
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1850
+#: helper/pref-gtk-custom-widgets.c:1858
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1896
+#: helper/pref-gtk-custom-widgets.c:1904
 msgid "Key:"
 msgstr "キー:"
 
-#: helper/pref-gtk-custom-widgets.c:1919
+#: helper/pref-gtk-custom-widgets.c:1927
 msgid "Grab..."
 msgstr "取得..."
 
@@ -602,31 +602,31 @@ msgstr "uimアプレット"
 msgid "Applet for indicating uim's status"
 msgstr "uimの状態を示すアプレット"
 
-#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:56
+#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:57
 msgid "Switch input method"
 msgstr "入力方式の切り換え"
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:58
 msgid "Preference"
 msgstr "設定"
 
-#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:58
+#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Japanese dictionary editor"
 msgstr "日本語辞書ツール"
 
-#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:59
+#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Input pad"
 msgstr "入力パッド"
 
-#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:60
+#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Handwriting input pad"
 msgstr "手書き入力パッド"
 
-#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:61
+#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Help"
 msgstr "ヘルプ"
 
-#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:62
+#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:63
 msgid "Quit this toolbar"
 msgstr "終了"
 
@@ -693,28 +693,28 @@ msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
 # FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
-#: qt/toolbar-common-quimhelpertoolbar.cpp:100 scm/action.lisp:536
+#: qt/toolbar-common-quimhelpertoolbar.cpp:101 scm/action.lisp:536
 #: scm/action.lisp:537
 msgid "exec im-switcher"
 msgstr "入力方式の切り換え"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:124
+#: qt/toolbar-common-quimhelpertoolbar.cpp:125
 msgid "exec Preference Application"
 msgstr "設定ツールの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:147
+#: qt/toolbar-common-quimhelpertoolbar.cpp:148
 msgid "exec Japanese dictionary Tool Application"
 msgstr "日本語辞書ツールの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:167
+#: qt/toolbar-common-quimhelpertoolbar.cpp:168
 msgid "exec Input Pad Tool Application"
 msgstr "入力パッドの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:187
+#: qt/toolbar-common-quimhelpertoolbar.cpp:188
 msgid "exec Handwriting Input Pad Tool Application"
 msgstr "手書き入力パッドの起動"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:206
+#: qt/toolbar-common-quimhelpertoolbar.cpp:207
 msgid "exec Help Application"
 msgstr "ヘルプの起動"
 
@@ -3231,6 +3231,6 @@ msgstr "ヨルバ語"
 msgid "Zulu"
 msgstr "ズール語"
 
-#: uim/m17nlib.c:495
+#: uim/m17nlib.c:513
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
