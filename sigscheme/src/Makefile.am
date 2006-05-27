@@ -67,6 +67,7 @@ func-tables: $(FUNC_TABLES)
 clean-func-tables:
 	rm -f $(FUNC_TABLES)
 
+if MAINTAINER_MODE
 functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_core_func_info_table" \
 	  $(SSCM_PROC_SRCS)
@@ -99,6 +100,7 @@ functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi60_func_info_table" $<
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
+endif
 
 # Optional and not built by 'make all'. Build explicitly with 'make combined'
 # if needed. This target does not use non-standard scripting languages for
@@ -149,6 +151,7 @@ sigscheme-combined.c: $(libsscm_la_SOURCES)
 	done
 	@echo '#endif /* SCM_USE_AGGREGATED_GLOBAL_VARS */' >>$@
 
+if MAINTAINER_MODE
 # Internal macros trimmer for combined-source version of SigScheme.
 # All source files are processed regardless of user configuration.
 sigscheme-combined-trim.h: $(DIST_SOURCES)
@@ -178,6 +181,7 @@ sigscheme-combined-trim.h: $(DIST_SOURCES)
 		;;                              \
 	    esac                                \
 	done
+endif
 
 BUILT_DIST = $(FUNC_TABLES) sigscheme-combined-trim.h
 
@@ -308,6 +312,7 @@ sscm_CFLAGS   = -Wall
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
 CLEANFILES = sigscheme-combined.c
 DISTCLEANFILES = sigscheme-stdint.h
+MAINTAINERCLEANFILES = $(BUILT_DIST)
 
 ETAGS_ARGS = sigschemeinternal.h
 

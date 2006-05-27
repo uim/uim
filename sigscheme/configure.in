@@ -123,6 +123,7 @@ if test x$CC = xgcc; then
   CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
 fi
 
+AM_MAINTAINER_MODE
 
 AC_ARG_ENABLE(docdir,
   AC_HELP_STRING([--enable-docdir=DIR],
