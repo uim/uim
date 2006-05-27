@@ -180,7 +180,7 @@ size_request_cb(GtkWidget *widget, GtkRequisition *req, gpointer data)
     gint width, height;
     gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
 
-    if (width != req->width || height != req->height) {
+    if (width > req->width) {
       gtk_window_resize(GTK_WINDOW(widget), req->width, req->height);
     }
   }
