@@ -55,6 +55,129 @@
     } while (/* CONSTCOND */ 0)
 #endif /* SCM_USE_STORAGE_FATTY */
 
+/* FIXME: SCM_*_INIT() macros should not be a SAL interface because it taints
+ * the SAL abstraction model with an unwanted restriction. It should be an
+ * internal interface of storage-compact and storage-fatty.
+ *
+ * Since the INIT() interface assumes that any cell of a storage is generic and
+ * non-colored, and requires 'all-purpose' cell allocation ability. The
+ * assumption prevents various optimized implementations such as type-by-type
+ * heap or freelist, and preallocated constant objects sharing. Even if the
+ * examples sound not so attractive, we should keep SAL interface abstract to
+ * allow implementing any experimental ideas as best as possible. Since one of
+ * the most crucial development motivations of SigScheme and SAL is gaining
+ * maximum storage optimization capability based on platform-by-platform system
+ * characteristics (especially on embedded platforms), the restriction is
+ * difficult to accept.  -- YamaKen 2006-05-30  */
+#define SCM_CONS_INIT(obj, kar, kdr)                    \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CONS_INIT,          \
+                            (ScmObj, ScmObj, ScmObj),   \
+                            ((obj), (kar), (kdr)))
+
+#define SCM_IMMUTABLE_CONS_INIT(obj, kar, kdr)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_IMMUTABLE_CONS_INIT,        \
+                            (ScmObj, ScmObj, ScmObj),           \
+                            (obj, kar, kdr))
+
+#define SCM_CLOSURE_INIT(obj, exp, env)                 \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CLOSURE_INIT,       \
+                            (ScmObj, ScmObj, ScmObj),   \
+                            (obj, exp, env))
+
+#if !SCM_HAS_IMMEDIATE_CHAR_ONLY
+#define SCM_CHAR_INIT(o, val)                           \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CHAR_INIT,          \
+                            (ScmObj, scm_ichar_t),      \
+                            (o, val))
+#endif
+
+#if !SCM_HAS_IMMEDIATE_INT_ONLY
+#define SCM_INT_INIT(o, val)                            \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_INT_INIT,           \
+                            (ScmObj, scm_int_t),        \
+                            (o, val))
+#endif
+
+#define SCM_SYMBOL_INIT(obj, nam, val)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SYMBOL_INIT,        \
+                            (ScmObj, char*, ScmObj),    \
+                            (obj, nam, val))
+
+#define SCM_STRING_INIT(obj, str, len, mutp)                            \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_STRING_INIT,                        \
+                            (ScmObj, char*, scm_int_t, scm_bool),       \
+                            (obj, str, len, mutp))
+
+#define SCM_MUTABLE_STRING_INIT(obj, str, len)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_MUTABLE_STRING_INIT,        \
+                            (ScmObj, char*, scm_int_t),         \
+                            (obj, str, len))
+
+#define SCM_IMMUTABLE_STRING_INIT(obj, str, len)                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_IMMUTABLE_STRING_INIT,      \
+                            (ScmObj, char*, scm_int_t),         \
+                            (obj, str, len))
+
+#define SCM_FUNC_INIT(obj, type, func)                                   \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_FUNC_INIT,                           \
+                            (ScmObj, enum ScmFuncTypeCode, ScmFuncType), \
+                            (obj, type, func))
+#define SCM_VECTOR_INIT(obj, vec, len)                          \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_VECTOR_INIT,                \
+                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (obj, vec, len))
+
+#define SCM_MUTABLE_VECTOR_INIT(obj, vec, len)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_MUTABLE_VECTOR_INIT,        \
+                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (obj, vec, len))
+
+#define SCM_IMMUTABLE_VECTOR_INIT(obj, vec, len)                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_IMMUTABLE_VECTOR_INIT,      \
+                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (obj, vec, len))
+#define SCM_PORT_INIT(obj, cport, flag)                         \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_PORT_INIT,                  \
+                            (ScmObj, struct ScmCharPort_*,      \
+                             enum ScmPortFlag),                 \
+                            (obj, cport, flag))
+#define SCM_CONTINUATION_INIT(obj, oq, tag)             \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CONTINUATION_INIT,  \
+                            (ScmObj, void*, scm_int_t), \
+                            (obj, oq, tag))
+
+#if SCM_USE_SSCM_EXTENSIONS
+/* SCM_C_POINTER_INIT(obj, void *ptr) */
+#define SCM_C_POINTER_INIT(obj, ptr)                    \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_C_POINTER_INIT,     \
+                            (ScmObj, void*),            \
+                            (obj, ptr))
+/* SCM_C_FUNCPOINTER_INIT(obj, ScmCFunc ptr) */
+#define SCM_C_FUNCPOINTER_INIT(obj, ptr)                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_C_FUNCPOINTER_INIT, \
+                            (ScmObj, ScmCFunc),         \
+                            (obj, ptr))
+#endif /* SCM_USE_SSCM_EXTENSIONS */
+#define SCM_VALUEPACKET_INIT(obj, vals)                 \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_VALUEPACKET_INIT,   \
+                            (ScmObj, ScmObj),           \
+                            (obj, vals))
+
+#define SCM_HMACRO_INIT(o, r, e)                                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_HMACRO_INIT,                \
+                            (ScmObj, ScmObj, ScmPackedEnv),     \
+                            (o, r, e))
+
+#define SCM_FARSYMBOL_INIT(o, s, e)                             \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_FARSYMBOL_INIT,             \
+                            (ScmObj, ScmObj, ScmPackedEnv),     \
+                            (o, s, e))
+
+#define SCM_SUBPAT_INIT(o, x, m)                                \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SUBPAT_INIT,                \
+                            (ScmObj, ScmObj, scm_int_t),        \
+                            (o, x, m))
+
 /*=======================================
   File Local Type Definitions
 =======================================*/
