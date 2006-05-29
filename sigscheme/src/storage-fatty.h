@@ -276,11 +276,8 @@ SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 SCM_EXPORT ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
 SCM_EXPORT ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
-#if 0
-/* Declared in scmport.h. */
 SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
                                 enum ScmPortFlag flag);
-#endif
 SCM_EXPORT ScmObj scm_make_continuation(void);
 #if !SCM_USE_VALUECONS
 SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);

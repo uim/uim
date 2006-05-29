@@ -705,16 +705,12 @@ SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 
 /* Ports. */
 struct ScmCharPort_;
-/*
- * ISO C forbids forward references on enums.
- * enum ScmPortFlag;
- * SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
- *                                 enum ScmPortFlag flag);
- */
 
 SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3), SCM_MISC_XTYPE(struct ScmCharPort_*),
                       SCM_MISC_XALIGN(3), /* FIXME! */
                       SCM_MISC_YTYPE(int /* enum ScmPortFlag */));
+SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
+                                enum ScmPortFlag flag);
 #define SCM_SAL_MAKE_PORT           scm_make_port
 
 #define SCM_PORT_PTR(o)             SCM_MISC_PTR((o), PORT)
@@ -860,7 +856,7 @@ SCM_EXPORT ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
  * be coordinated with storage-gc.c.
  */
 #define SCM_MTAG_FREECELL         SCM_MAKE_MTAG_L2(7, 3)
-#define SCM_SAL_FREECELL_NEXT(o)  ((ScmCell*)SCM_X(o))
+#define SCM_SAL_FREECELL_NEXT(o)  (SCM_X(o))
 #define SCM_SAL_FREECELLP(o)      (SCM_Y(o) == SCM_MTAG_FREECELL)
 #define SCM_SAL_RECLAIM_CELL(o, next)                           \
     (SCM_SET_X((o), (ScmObj)(next)), SCM_SET_Y((o), SCM_MTAG_FREECELL))

@@ -87,7 +87,12 @@ static size_t l_heap_size, l_heap_alloc_threshold;
 static size_t l_n_heaps, l_n_heaps_max;
 static ScmObjHeap *l_heaps;
 static ScmCell *l_heaps_lowest, *l_heaps_highest;
-static ScmCell *l_freelist;
+/* Do not declare the type of l_freelist as ScmCell *, because the freelist
+ * head should be capable of non-pointer cell reference such as heap number &
+ * cell index pair. Although it costs NULLP() on every cell allocation, source
+ * reusability takes precedence over such little performance gain.
+ *   -- YamaKen 2006-05-29 */
+static ScmObj l_freelist;
 
 static jmp_buf l_save_regs_buf;
 static ScmObj *l_stack_start_pointer;
@@ -168,10 +173,10 @@ scm_alloc_cell(void)
 {
     ScmObj ret = SCM_FALSE;
 
-    if (!l_freelist)
+    if (NULLP(l_freelist))
         gc_mark_and_sweep();
 
-    ret = (ScmObj)l_freelist;
+    ret = l_freelist;
     l_freelist = SCM_FREECELL_NEXT(l_freelist);
 
     return ret;
@@ -295,7 +300,7 @@ initialize_heap(const ScmStorageConf *conf)
     l_n_heaps = 0;
     l_heaps = NULL;
     l_heaps_lowest = l_heaps_highest = NULL;
-    l_freelist = NULL;
+    l_freelist = SCM_NULL;
 
     /* preallocate heaps */
     for (i = 0; i < conf->n_heaps_init; i++)
@@ -325,7 +330,7 @@ add_heap(void)
     for (cell = &heap[0]; cell < &heap[l_heap_size - 1]; cell++)
         SCM_RECLAIM_CELL(cell, cell + 1);
     SCM_RECLAIM_CELL(cell, l_freelist);
-    l_freelist = heap;
+    l_freelist = (ScmObj)heap;
 }
 
 static void
@@ -696,10 +701,11 @@ gc_sweep(void)
     size_t i, sum_collected, n_collected;
     ScmObjHeap heap;
     ScmCell *cell;
-    ScmObj obj;
-    ScmCell *new_freelist;
+    ScmObj obj, new_freelist;
 
-    new_freelist = l_freelist; /* l_freelist remains on manual GC */
+    /* Because l_freelist may not be exhausted on manual GC, do not assume that
+     * l_freelist is null here. -- YamaKen */
+    new_freelist = l_freelist;
 
     sum_collected = 0;
     for (i = 0; i < l_n_heaps; i++) {
@@ -718,7 +724,7 @@ gc_sweep(void)
             } else {
                 free_cell(cell);
                 SCM_RECLAIM_CELL(cell, new_freelist);
-                new_freelist = cell;
+                new_freelist = (ScmObj)cell;
                 n_collected++;
             }
         }
