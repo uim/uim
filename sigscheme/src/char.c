@@ -269,7 +269,7 @@ scm_p_integer2char(ScmObj n)
 #endif
         ERR("invalid char value: #x~MX", SCM_INT_VALUE(n));
 
-    return MAKE_CHAR(val);
+    return MAKE_CHAR((scm_ichar_t)val);
 }
 
 SCM_EXPORT ScmObj

@@ -542,8 +542,8 @@ struct ScmStorageConf_ {
 =======================================*/
 /* TODO: add this check to all accessor and creator macros. */
 #define SCM_TYPESAFE_MACRO(macro, rettype, types, args) \
-    (0 ? (*(rettype (*)types)0)args                     \
-       : 0 ? ((*(rettype*)NULL) = macro args)           \
+    (0 ? (*(rettype (*)types)NULL)args                  \
+       : 0 ? ((*(rettype *)NULL) = macro args)          \
            : macro args)
 
 /* For macros enclosed in do-while(0). */
@@ -555,49 +555,158 @@ struct ScmStorageConf_ {
             macro args;                                 \
     } while (0)
 
-#define SCM_MAKE_BOOL(x)                  ((x) ? SCM_TRUE : SCM_FALSE)
-#define SCM_MAKE_INT(val)                 SCM_SAL_MAKE_INT(val)
-#define SCM_MAKE_CONS(kar, kdr)           SCM_SAL_MAKE_CONS((kar), (kdr))
-#define SCM_MAKE_IMMUTABLE_CONS(kar, kdr)                                    \
-    SCM_SAL_MAKE_IMMUTABLE_CONS((kar), (kdr))
-#define SCM_MAKE_SYMBOL(name, val)        SCM_SAL_MAKE_SYMBOL((name), (val))
-#define SCM_MAKE_CHAR(val)                SCM_SAL_MAKE_CHAR(val)
+#define SCM_MAKE_BOOL(x)                                                     \
+    SCM_TYPESAFE_MACRO(SCM_MAKE_BOOL_INTERNAL,                               \
+                       ScmObj,                                               \
+                       (ScmObj),                                             \
+                       (x))
+#define SCM_MAKE_BOOL_INTERNAL(x) ((x) ? SCM_TRUE : SCM_FALSE)
 
+#define SCM_MAKE_CONS(kar, kdr)                                              \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_CONS,                                    \
+                       ScmObj,                                               \
+                       (ScmObj, ScmObj),                                     \
+                       ((kar), (kdr)))
+
+#define SCM_MAKE_IMMUTABLE_CONS(kar, kdr)                                    \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_IMMUTABLE_CONS,                          \
+                       ScmObj,                                               \
+                       (ScmObj, ScmObj),                                     \
+                       ((kar), (kdr)))
+
+#if SCM_USE_NUMBER
+#define SCM_MAKE_INT(val)                                                    \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_INT,                                     \
+                       ScmObj,                                               \
+                       (scm_int_t),                                          \
+                       (val))
+#endif /* SCM_USE_NUMBER */
+
+#if SCM_USE_CHAR
+#define SCM_MAKE_CHAR(val)                                                   \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_CHAR,                                    \
+                       ScmObj,                                               \
+                       (scm_ichar_t),                                        \
+                       (val))
+#endif /* SCM_USE_CHAR */
+
+#define SCM_MAKE_SYMBOL(name, val)                                           \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_SYMBOL,                                  \
+                       ScmObj,                                               \
+                       (char *, ScmObj),                                     \
+                       ((name), (val)))
+
+#if SCM_USE_STRING
 #define SCM_MAKE_STRING(str, len)                                            \
-    SCM_SAL_MAKE_STRING((str), (len))
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_STRING,                                  \
+                       ScmObj,                                               \
+                       (char *, scm_int_t),                                  \
+                       ((str), (len)))
+
 #define SCM_MAKE_STRING_COPYING(str, len)                                    \
-    SCM_SAL_MAKE_STRING_COPYING((str), (len))
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_STRING_COPYING,                          \
+                       ScmObj,                                               \
+                       (const char *, scm_int_t),                            \
+                       ((str), (len)))
+
 #define SCM_MAKE_IMMUTABLE_STRING(str, len)                                  \
-    SCM_SAL_MAKE_IMMUTABLE_STRING((str), (len))
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_IMMUTABLE_STRING,                        \
+                       ScmObj,                                               \
+                       (char *, scm_int_t),                                  \
+                       ((str), (len)))
+
 #define SCM_MAKE_IMMUTABLE_STRING_COPYING(str, len)                          \
-    SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING((str), (len))
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING,                \
+                       ScmObj,                                               \
+                       (const char *, scm_int_t),                            \
+                       ((str), (len)))
+
 #define SCM_CONST_STRING(str)                                                \
     SCM_MAKE_IMMUTABLE_STRING_COPYING((str), SCM_STRLEN_UNKNOWN)
 #define SCM_STRLEN_UNKNOWN -1
+#endif /* SCM_USE_STRING */
 
-/* SCM_MAKE_FUNC(enum ScmFuncTypeCode type, ScmFuncType func) */
-#define SCM_MAKE_FUNC(type, func)         SCM_SAL_MAKE_FUNC((type), (func))
-#define SCM_MAKE_CLOSURE(exp, env)        SCM_SAL_MAKE_CLOSURE((exp), (env))
-/* SCM_MAKE_VECTOR(ScmObj *vec, scm_int_t len) */
-#define SCM_MAKE_VECTOR(vec, len)         SCM_SAL_MAKE_VECTOR((vec), (len))
+#define SCM_MAKE_FUNC(type, func)                                            \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_FUNC,                                    \
+                       ScmObj,                                               \
+                       (enum ScmFuncTypeCode, ScmFuncType),                  \
+                       ((type), (func)))
+
+#define SCM_MAKE_CLOSURE(exp, env)                                           \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_CLOSURE,                                 \
+                       ScmObj,                                               \
+                       (ScmObj, ScmObj),                                     \
+                       ((exp), (env)))
+
+#if SCM_USE_VECTOR
+#define SCM_MAKE_VECTOR(vec, len)                                            \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_VECTOR,                                  \
+                       ScmObj,                                               \
+                       (ScmObj *, scm_int_t),                                \
+                       ((vec), (len)))
+
 #define SCM_MAKE_IMMUTABLE_VECTOR(vec, len)                                  \
-    SCM_SAL_MAKE_IMMUTABLE_VECTOR((vec), (len))
-#define SCM_MAKE_PORT(cport, flag)        SCM_SAL_MAKE_PORT((cport), (flag))
-#define SCM_MAKE_CONTINUATION()           SCM_SAL_MAKE_CONTINUATION()
-#if SCM_USE_SSCM_EXTENSIONS
-/* SCM_MAKE_C_POINTER(void *ptr) */
-#define SCM_MAKE_C_POINTER(ptr)           SCM_SAL_MAKE_C_POINTER(ptr)
-/* SCM_MAKE_C_FUNCPOINTER(ScmCFunc ptr) */
-#define SCM_MAKE_C_FUNCPOINTER(ptr)       SCM_SAL_MAKE_C_FUNCPOINTER(ptr)
-#endif /* SCM_USE_SSCM_EXTENSIONS */
-#define SCM_MAKE_VALUEPACKET(vals)        SCM_SAL_MAKE_VALUEPACKET(vals)
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_IMMUTABLE_VECTOR,                        \
+                       ScmObj,                                               \
+                       (ScmObj *, scm_int_t),                                \
+                       ((vec), (len)))
+#endif /* SCM_USE_VECTOR */
+
+#if SCM_USE_CONTINUATION
+#define SCM_MAKE_CONTINUATION()                                              \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_CONTINUATION,                            \
+                       ScmObj,                                               \
+                       (void),                                               \
+                       ())
+#endif /* SCM_USE_CONTINUATION */
+
+#define SCM_MAKE_VALUEPACKET(vals)                                           \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_VALUEPACKET,                             \
+                       ScmObj,                                               \
+                       (ScmObj),                                             \
+                       (vals))
+
+#if SCM_USE_PORT
+#define SCM_MAKE_PORT(cport, flag)                                           \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_PORT,                                    \
+                       ScmObj,                                               \
+                       (struct ScmCharPort_ *, enum ScmPortFlag),            \
+                       ((cport), (flag)))
+#endif /* SCM_USE_PORT */
 
 #if SCM_USE_HYGIENIC_MACRO
-#define SCM_MAKE_HMACRO(rules, defenv)          \
-    SCM_SAL_MAKE_HMACRO((rules), (defenv))
-#define SCM_MAKE_FARSYMBOL(sym, env)      SCM_SAL_MAKE_FARSYMBOL((sym), (env))
-#define SCM_MAKE_SUBPAT(x, meta)          SCM_SAL_MAKE_SUBPAT((x), (meta))
-#endif
+#define SCM_MAKE_HMACRO(r, e)                                                \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_HMACRO,                                  \
+                       ScmObj,                                               \
+                       (ScmObj, ScmPackedEnv),                               \
+                       ((r), (e)))
+
+#define SCM_MAKE_FARSYMBOL(s, e)                                             \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_FARSYMBOL,                               \
+                       ScmObj,                                               \
+                       (ScmObj, ScmPackedEnv),                               \
+                       ((s), (e)))
+
+#define SCM_MAKE_SUBPAT(x, m)                                                \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_SUBPAT,                                  \
+                       ScmObj,                                               \
+                       (ScmObj, scm_int_t),                                  \
+                       ((x), (m)))
+#endif /* SCM_USE_HYGIENIC_MACRO */
+
+#if SCM_USE_SSCM_EXTENSIONS
+#define SCM_MAKE_C_POINTER(ptr)                                              \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_C_POINTER,                               \
+                       ScmObj,                                               \
+                       (void *),                                             \
+                       (ptr))
+
+#define SCM_MAKE_C_FUNCPOINTER(ptr)                                          \
+    SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_C_FUNCPOINTER,                           \
+                       ScmObj,                                               \
+                       (ScmCFunc),                                           \
+                       (ptr))
+#endif /* SCM_USE_SSCM_EXTENSIONS */
 
 /*=======================================
   Object Accessors

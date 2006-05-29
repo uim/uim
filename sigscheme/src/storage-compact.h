@@ -319,7 +319,8 @@ SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 #define SCM_ITAG_MASK_CHAR      SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_CHAR)
 #define SCM_CHAR_VAL_OFFSET     (SCM_IMMID_OFFSET + SCM_IMMID_WIDTH_CHAR)
 #define SCM_SAL_CHARP(o)        (((o) & SCM_ITAG_MASK_CHAR) == SCM_ITAG_CHAR)
-#define SCM_SAL_MAKE_CHAR(c)    (((c) << SCM_CHAR_VAL_OFFSET) | SCM_ITAG_CHAR)
+#define SCM_SAL_MAKE_CHAR(c)                                                 \
+    ((ScmObj)(((c) << SCM_CHAR_VAL_OFFSET) | SCM_ITAG_CHAR))
 /* FIXME: this should be cast to something along the lines of scm_char_t. */
 #define SCM_SAL_CHAR_VALUE(o)   ((int)(SCM_AS_CHAR(o) >> SCM_CHAR_VAL_OFFSET))
 
