@@ -673,7 +673,7 @@ struct ScmStorageConf_ {
 #define SCM_MAKE_HMACRO(r, e)                                                \
     SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_HMACRO,                                  \
                        ScmObj,                                               \
-                       (ScmObj, ScmPackedEnv),                               \
+                       (ScmObj, ScmObj),                                     \
                        ((r), (e)))
 
 #define SCM_MAKE_FARSYMBOL(s, e)                                             \
