@@ -107,10 +107,18 @@ extern "C" {
  * and chain it into freelist. */
 #define SCM_RECLAIM_CELL(cell, next)    SCM_SAL_RECLAIM_CELL((cell), (next))
 
+#if 0
+/* for future cleanup */
+#define SCM_CELL_MARKEDP(cell)   SCM_SAL_CELL_MARKEDP(cell)
+#define SCM_CELL_UNMARKEDP(cell) SCM_SAL_CELL_UNMARKEDP(cell)
+#define SCM_CELL_MARK(cell)      SCM_SAL_CELL_MARK(cell)
+#define SCM_CELL_UNMARK(cell)    SCM_SAL_CELL_UNMARK(cell)
+#else
 #define SCM_MARKEDP(o)   SCM_SAL_MARKEDP(o)
 #define SCM_UNMARKEDP(o) SCM_SAL_UNMARKEDP(o)
 #define SCM_MARK(o)      SCM_SAL_MARK(o)
 #define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
+#endif
 
 
 /* Initializers are available to the allocator only.  Use SCM_MAKE_*

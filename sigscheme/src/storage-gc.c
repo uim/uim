@@ -703,8 +703,8 @@ gc_sweep(void)
     ScmCell *cell;
     ScmObj obj, new_freelist;
 
-    /* Because l_freelist may not be exhausted on manual GC, do not assume that
-     * l_freelist is null here. -- YamaKen */
+    /* Because l_freelist may not be exhausted on an user-instructed GC, do not
+     * assume that l_freelist is null here. -- YamaKen */
     new_freelist = l_freelist;
 
     sum_collected = 0;
