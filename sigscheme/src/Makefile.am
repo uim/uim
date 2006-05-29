@@ -207,9 +207,9 @@ libsscm_la_SOURCES = \
         module.c \
         sigschemeinternal.h sigscheme.c
 if USE_STORAGE_COMPACT
-  pkginclude_HEADERS += storage-compact.h
+  pkginclude_HEADERS += storage-common.h storage-compact.h
 else
-  pkginclude_HEADERS += storage-fatty.h
+  pkginclude_HEADERS += storage-common.h storage-fatty.h
 endif
 if USE_CONTINUATION
   libsscm_la_SOURCES += continuation.c

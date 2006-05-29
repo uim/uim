@@ -228,69 +228,11 @@ struct ScmCell_ {
 /*=======================================
   Object Creators
 =======================================*/
-#define SCM_SAL_MAKE_INT                      scm_make_int
-#define SCM_SAL_MAKE_CONS                     scm_make_cons
-#define SCM_SAL_MAKE_IMMUTABLE_CONS           scm_make_immutable_cons
-#define SCM_SAL_MAKE_SYMBOL                   scm_make_symbol
-#define SCM_SAL_MAKE_CHAR                     scm_make_char
-#define SCM_SAL_MAKE_STRING                   scm_make_string
-#define SCM_SAL_MAKE_STRING_COPYING           scm_make_string_copying
-#define SCM_SAL_MAKE_IMMUTABLE_STRING         scm_make_immutable_string
-#define SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
-#define SCM_SAL_MAKE_FUNC                     scm_make_func
-#define SCM_SAL_MAKE_CLOSURE                  scm_make_closure
-#define SCM_SAL_MAKE_VECTOR                   scm_make_vector
-#define SCM_SAL_MAKE_IMMUTABLE_VECTOR         scm_make_immutable_vector
-#define SCM_SAL_MAKE_PORT                     scm_make_port
-#define SCM_SAL_MAKE_CONTINUATION             scm_make_continuation
-#if SCM_USE_SSCM_EXTENSIONS
-#define SCM_SAL_MAKE_C_POINTER                scm_make_cpointer
-#define SCM_SAL_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
-#endif /* SCM_USE_SSCM_EXTENSIONS */
 #if SCM_USE_VALUECONS
 #define SCM_SAL_MAKE_VALUEPACKET(vals)                                       \
     (NULLP(vals) ? scm_null_values                                           \
                  : (SCM_ENTYPE(vals, ScmValuePacket), (vals)))
-#else /* SCM_USE_VALUECONS */
-#define SCM_SAL_MAKE_VALUEPACKET(vals) (scm_make_value_packet(vals))
 #endif /* SCM_USE_VALUECONS */
-#if SCM_USE_HYGIENIC_MACRO
-#define SCM_SAL_MAKE_HMACRO                   scm_make_hmacro
-#define SCM_SAL_MAKE_FARSYMBOL                scm_make_farsymbol
-#define SCM_SAL_MAKE_SUBPAT                   scm_make_subpat
-#endif /* SCM_USE_HYGIENIC_MACRO */
-
-/* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
- * allow flexible object allocation. */
-SCM_EXPORT ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
-SCM_EXPORT ScmObj scm_make_immutable_cons(ScmObj kar, ScmObj kdr);
-SCM_EXPORT ScmObj scm_make_int(scm_int_t val);
-SCM_EXPORT ScmObj scm_make_symbol(char *name, ScmObj val);
-SCM_EXPORT ScmObj scm_make_char(scm_ichar_t val);
-SCM_EXPORT ScmObj scm_make_immutable_string(char *str, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_immutable_string_copying(const char *str,
-                                                    scm_int_t len);
-SCM_EXPORT ScmObj scm_make_string(char *str, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_string_copying(const char *str, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
-SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
-SCM_EXPORT ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
-                                enum ScmPortFlag flag);
-SCM_EXPORT ScmObj scm_make_continuation(void);
-#if !SCM_USE_VALUECONS
-SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);
-#endif
-#if SCM_USE_SSCM_EXTENSIONS
-SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
-SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
-#endif
-#if SCM_USE_HYGIENIC_MACRO
-SCM_EXPORT ScmObj scm_make_hmacro(ScmObj rules, ScmObj defenv);
-SCM_EXPORT ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
-SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
-#endif
 
 /*=======================================
    Accessors For Scheme Objects
@@ -534,19 +476,6 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_UNMARK(o)    ((o)->attr.v.gcmark = scm_false)
 
 /*===========================================================================
-  Environment Specifiers
-===========================================================================*/
-#define SCM_SAL_INTERACTION_ENV SCM_NULL
-/*
- * Current implementation cannot handle scheme-report-environment and
- * null-environment properly. Be careful to use these environemnts.
- */
-#define SCM_SAL_R5RS_ENV        SCM_INTERACTION_ENV
-#define SCM_SAL_NULL_ENV        SCM_INTERACTION_ENV
-
-#define SCM_SAL_ENVP(env) (NULLP(env) || CONSP(env))
-
-/*===========================================================================
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
 ===========================================================================*/
@@ -596,28 +525,10 @@ SCM_GLOBAL_VARS_END(storage_fatty);
 #define scm_const_undef   SCM_GLOBAL_VAR(storage_fatty, scm_const_undef)
 SCM_DECLARE_EXPORTED_VARS(storage_fatty);
 
-/*===========================================================================
-  Predefined Symbols
-===========================================================================*/
-/* for list construction */
-#define SCM_SAL_SYM_QUOTE            scm_sym_quote
-#define SCM_SAL_SYM_QUASIQUOTE       scm_sym_quasiquote
-#define SCM_SAL_SYM_UNQUOTE          scm_sym_unquote
-#define SCM_SAL_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
-
-/* syntax.c */
-SCM_GLOBAL_VARS_BEGIN(syntax);
-ScmObj scm_sym_quote, scm_sym_quasiquote;
-ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
-SCM_GLOBAL_VARS_END(syntax);
-#define scm_sym_quote            SCM_GLOBAL_VAR(syntax, scm_sym_quote)
-#define scm_sym_quasiquote       SCM_GLOBAL_VAR(syntax, scm_sym_quasiquote)
-#define scm_sym_unquote          SCM_GLOBAL_VAR(syntax, scm_sym_unquote)
-#define scm_sym_unquote_splicing SCM_GLOBAL_VAR(syntax, scm_sym_unquote_splicing)
-SCM_DECLARE_EXPORTED_VARS(syntax);
-
 #ifdef __cplusplus
 }
 #endif
+
+#include "storage-common.h"
 
 #endif /* __STORAGE_FATTY_H */

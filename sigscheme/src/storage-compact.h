@@ -251,9 +251,6 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_PTAG_CONS                  SCM_MAKE_PTAG(0)
 /* Bypass ptag stripping. */
 #define SCM_CONS_PTR(o)                SCM_PTR(SCM_AS_CONS(o))
-SCM_EXPORT ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
-#define SCM_SAL_MAKE_CONS              scm_make_cons
-#define SCM_SAL_MAKE_IMMUTABLE_CONS    scm_make_cons
 
 #define SCM_SAL_CONSP(o)               (SCM_PTAG(o) == SCM_PTAG_CONS)
 #define SCM_SAL_CONS_CAR(o)            SCM_X(SCM_CONS_PTR(o))
@@ -268,8 +265,6 @@ SCM_EXPORT ScmObj scm_make_cons(ScmObj kar, ScmObj kdr);
 /* Closures. */
 #define SCM_PTAG_CLOSURE               SCM_MAKE_PTAG(1)
 #define SCM_CLOSURE_PTR(o)             SCM_UNTAG_PTR(SCM_AS_CLOSURE(o))
-SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
-#define SCM_SAL_MAKE_CLOSURE           scm_make_closure
 
 #define SCM_SAL_CLOSUREP(o)            (SCM_PTAG(o) == SCM_PTAG_CLOSURE)
 #define SCM_SAL_CLOSURE_EXP(o)         SCM_X(SCM_CLOSURE_PTR(o))
@@ -557,8 +552,6 @@ SCM_EXPORT ScmObj scm_make_closure(ScmObj exp, ScmObj env);
 /* Symbols. */
 SCM_MISC_DECLARE_TYPE(SYMBOL, L1(0), SCM_MISC_XTYPE(ScmObj),
                       SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(char *));
-SCM_EXPORT ScmObj scm_make_symbol(char *name, ScmObj val);
-#define SCM_SAL_MAKE_SYMBOL            scm_make_symbol
 
 #define SCM_SYMBOL_PTR(o)              SCM_MISC_PTR((o), SYMBOL)
 #define SCM_SYMBOL_NAME_ALIGN          SCM_MTAG_WIDTH(SCM_MISC_SYMBOL_LV)
@@ -588,15 +581,6 @@ SCM_EXPORT ScmObj scm_make_symbol(char *name, ScmObj val);
 /* Strings. */
 SCM_MISC_DECLARE_TYPE(STRING, L1(1), SCM_MISC_XTYPE(char *),
                       SCM_MISC_XALIGN(1), SCM_MISC_YTYPE(scm_int_t));
-SCM_EXPORT ScmObj scm_make_string(char *str, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_string_copying(const char *str, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_immutable_string(char *str, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_immutable_string_copying(const char *str,
-                                                    scm_int_t len);
-#define SCM_SAL_MAKE_STRING         scm_make_string
-#define SCM_SAL_MAKE_STRING_COPYING scm_make_string_copying
-#define SCM_SAL_MAKE_IMMUTABLE_STRING scm_make_immutable_string_copying
-#define SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
 
 #define SCM_STRING_PTR(o)            SCM_MISC_PTR((o), STRING)
 #define SCM_SAL_STRINGP(o)           SCM_MISC_TYPEP((o), STRING)
@@ -634,10 +618,6 @@ SCM_EXPORT ScmObj scm_make_immutable_string_copying(const char *str,
 /* Vectors. */
 SCM_MISC_DECLARE_TYPE(VECTOR, L1(2), SCM_MISC_XTYPE(ScmObj*),
                       SCM_MISC_XALIGN(3), SCM_MISC_YTYPE(scm_int_t));
-SCM_EXPORT ScmObj scm_make_vector(ScmObj *vec, scm_int_t len);
-SCM_EXPORT ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
-#define SCM_SAL_MAKE_VECTOR           scm_make_vector
-#define SCM_SAL_MAKE_IMMUTABLE_VECTOR scm_make_immutable_vector
 
 #define SCM_VECTOR_PTR(o)         SCM_MISC_PTR((o), VECTOR)
 #define SCM_SAL_VECTORP(o)        SCM_MISC_TYPEP((o), VECTOR)
@@ -675,12 +655,9 @@ SCM_EXPORT ScmObj scm_make_immutable_vector(ScmObj *vec, scm_int_t len);
 /* Multiple Values. */
 SCM_MISC_DECLARE_TYPE(VALUEPACKET, L2(0, 3), SCM_MISC_XTYPE(ScmObj),
                       SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_Y_UNUSED);
-#if !SCM_USE_VALUECONS
-SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);
-#else  /* SCM_USE_VALUECONS */
-#error "Not supported."
-#endif /* SCM_USE_VALUECONS */
-#define SCM_SAL_MAKE_VALUEPACKET       scm_make_value_packet
+#if SCM_USE_VALUECONS
+#error "SCM_USE_VALUECONS is not supported by storage-compact."
+#endif
 
 #define SCM_VALUEPACKET_PTR(o)         SCM_MISC_PTR((o), VALUEPACKET)
 #define SCM_SAL_VALUEPACKETP(o)        SCM_MISC_TYPEP((o), VALUEPACKET)
@@ -693,9 +670,7 @@ SCM_EXPORT ScmObj scm_make_value_packet(ScmObj values);
 SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3), SCM_MISC_XTYPE(ScmFuncType),
                       SCM_MISC_XALIGN(0),
                       SCM_MISC_YTYPE(enum ScmFuncTypeCode));
-SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 
-#define SCM_SAL_MAKE_FUNC               scm_make_func
 #define SCM_FUNC_PTR(o)                 SCM_MISC_PTR((o), FUNC)
 #define SCM_SAL_FUNCP(o)                SCM_MISC_TYPEP((o), FUNC)
 #define SCM_SAL_FUNC_CFUNC(o)           SCM_MISC_X((o), FUNC)
@@ -710,9 +685,6 @@ struct ScmCharPort_;
 SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3), SCM_MISC_XTYPE(struct ScmCharPort_*),
                       SCM_MISC_XALIGN(3), /* FIXME! */
                       SCM_MISC_YTYPE(int /* enum ScmPortFlag */));
-SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
-                                enum ScmPortFlag flag);
-#define SCM_SAL_MAKE_PORT           scm_make_port
 
 #define SCM_PORT_PTR(o)             SCM_MISC_PTR((o), PORT)
 #define SCM_SAL_PORTP(o)            SCM_MISC_TYPEP((o), PORT)
@@ -734,8 +706,6 @@ SCM_EXPORT ScmObj scm_make_port(struct ScmCharPort_ *cport,
 /* Continuation. */
 SCM_MISC_DECLARE_TYPE(CONTINUATION, L2(3, 3), SCM_MISC_XTYPE(void*),
                       SCM_MISC_XALIGN(1), SCM_MISC_YTYPE(scm_int_t));
-SCM_EXPORT ScmObj scm_make_continuation(void);
-#define SCM_SAL_MAKE_CONTINUATION         scm_make_continuation
 
 #define SCM_CONTINUATION_PTR(o)           SCM_MISC_PTR((o), CONTINUATION)
 #define SCM_SAL_CONTINUATIONP(o)          SCM_MISC_TYPEP((o), CONTINUATION)
@@ -762,8 +732,6 @@ SCM_EXPORT ScmObj scm_make_continuation(void);
 /* C datum pointer */
 SCM_MISC_DECLARE_TYPE(C_POINTER, L3(0, 4, 3), SCM_MISC_XTYPE(void*),
                       SCM_MISC_XALIGN(0), SCM_MISC_Y_UNUSED);
-SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
-#define SCM_SAL_MAKE_C_POINTER       scm_make_cpointer
 
 #define SCM_C_POINTER_PTR(o)              SCM_MISC_PTR((o), C_POINTER)
 #define SCM_SAL_C_POINTERP(o)             SCM_MISC_TYPEP((o), C_POINTER)
@@ -774,8 +742,6 @@ SCM_EXPORT ScmObj scm_make_cpointer(void *ptr);
 /* C function pointer */
 SCM_MISC_DECLARE_TYPE(C_FUNCPOINTER, L3(1, 4, 3), SCM_MISC_XTYPE(ScmCFunc),
                       SCM_MISC_XALIGN(0), SCM_MISC_Y_UNUSED);
-SCM_EXPORT ScmObj scm_make_cfunc_pointer(ScmCFunc ptr);
-#define SCM_SAL_MAKE_C_FUNCPOINTER     scm_make_cfunc_pointer
 
 #define SCM_C_FUNCPOINTER_PTR(o)       SCM_MISC_PTR((o), C_FUNCPOINTER)
 #define SCM_SAL_C_FUNCPOINTERP(o)      SCM_MISC_TYPEP((o), C_FUNCPOINTER)
@@ -807,9 +773,7 @@ SCM_MISC_DECLARE_TYPE(WRAPPER, L2(5, 3), SCM_MISC_XTYPE(ScmObj),
 /* Compiled repeatable subpattern or subtemplate. */
 SCM_MISC_DECLARE_TYPE(SUBPAT, L3(0, 5, 3), SCM_MISC_XTYPE(ScmObj),
                       SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(scm_int_t));
-SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 
-#define SCM_SAL_MAKE_SUBPAT           scm_make_subpat
 #define SCM_SUBPAT_PTR(o)             SCM_MISC_PTR((o), SUBPAT)
 #define SCM_SAL_SUBPATP(o)            SCM_MISC_TYPEP((o), SUBPAT)
 #define SCM_SAL_SUBPAT_OBJ(o)         SCM_MISC_X((o), SUBPAT)
@@ -821,9 +785,7 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 /* Compiled macro. */
 SCM_MISC_DECLARE_TYPE(HMACRO, L3(1, 5, 3), SCM_MISC_XTYPE(ScmObj),
                       SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(ScmPackedEnv));
-SCM_EXPORT ScmObj scm_make_hmacro(ScmObj rules, ScmObj defenv);
 
-#define SCM_SAL_MAKE_HMACRO            scm_make_hmacro
 #define SCM_HMACRO_PTR(o)              SCM_MISC_PTR((o), HMACRO)
 #define SCM_SAL_HMACROP(o)             SCM_MISC_TYPEP((o), HMACRO)
 #define SCM_SAL_HMACRO_RULES(o)        SCM_MISC_X((o), HMACRO)
@@ -835,9 +797,7 @@ SCM_EXPORT ScmObj scm_make_hmacro(ScmObj rules, ScmObj defenv);
 /* Far symbol. */
 SCM_MISC_DECLARE_TYPE(FARSYMBOL, L3(2, 5, 3), SCM_MISC_XTYPE(ScmObj),
                       SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(ScmPackedEnv));
-SCM_EXPORT ScmObj scm_make_farsymbol(ScmObj sym, ScmPackedEnv env);
 
-#define SCM_SAL_MAKE_FARSYMBOL          scm_make_farsymbol
 #define SCM_FARSYMBOL_PTR(o)            SCM_MISC_PTR((o), FARSYMBOL)
 #define SCM_SAL_FARSYMBOLP(o)           SCM_MISC_TYPEP((o), FARSYMBOL)
 #define SCM_SAL_FARSYMBOL_SYM(o)        SCM_MISC_X((o), FARSYMBOL)
@@ -910,19 +870,6 @@ SCM_EXPORT enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_VECLEN_MAX  SCM_INT_MAX
 
 /*===========================================================================
-  Environment Specifiers
-===========================================================================*/
-#define SCM_SAL_INTERACTION_ENV SCM_NULL
-/*
- * Current implementation cannot handle scheme-report-environment and
- * null-environment properly. Be careful to use these environemnts.
- */
-#define SCM_SAL_R5RS_ENV  SCM_INTERACTION_ENV
-#define SCM_SAL_NULL_ENV  SCM_INTERACTION_ENV
-
-#define SCM_SAL_ENVP(env) (NULLP(env) || CONSP(env))
-
-/*===========================================================================
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
 ===========================================================================*/
@@ -939,28 +886,10 @@ typedef ScmObj *ScmRef;
 /* RFC: Is there a better name? */
 #define SCM_SAL_SET(ref, obj) (*(ref) = (ScmObj)(obj))
 
-/*===========================================================================
-  Predefined Symbols
-===========================================================================*/
-/* for list construction */
-#define SCM_SAL_SYM_QUOTE            scm_sym_quote
-#define SCM_SAL_SYM_QUASIQUOTE       scm_sym_quasiquote
-#define SCM_SAL_SYM_UNQUOTE          scm_sym_unquote
-#define SCM_SAL_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
-
-/* syntax.c */
-SCM_GLOBAL_VARS_BEGIN(syntax);
-ScmObj scm_sym_quote, scm_sym_quasiquote;
-ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
-SCM_GLOBAL_VARS_END(syntax);
-#define scm_sym_quote            SCM_GLOBAL_VAR(syntax, scm_sym_quote)
-#define scm_sym_quasiquote       SCM_GLOBAL_VAR(syntax, scm_sym_quasiquote)
-#define scm_sym_unquote          SCM_GLOBAL_VAR(syntax, scm_sym_unquote)
-#define scm_sym_unquote_splicing SCM_GLOBAL_VAR(syntax, scm_sym_unquote_splicing)
-SCM_DECLARE_EXPORTED_VARS(syntax);
-
 #ifdef __cplusplus
 }
 #endif
+
+#include "storage-common.h"
 
 #endif /* __STORAGE_COMPACT_H */

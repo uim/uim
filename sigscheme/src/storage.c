@@ -291,6 +291,7 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
     return obj;
 }
 
+#if SCM_SAL_HAS_IMMUTABLE_STRING
 SCM_EXPORT ScmObj
 scm_make_immutable_string(char *str, scm_int_t len)
 {
@@ -302,6 +303,7 @@ scm_make_immutable_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_true);
 }
+#endif /* SCM_SAL_HAS_IMMUTABLE_STRING */
 
 SCM_EXPORT ScmObj
 scm_make_string(char *str, scm_int_t len)
@@ -345,6 +347,7 @@ scm_make_vector(ScmObj *vec, scm_int_t len)
     return obj;
 }
 
+#if SCM_SAL_HAS_IMMUTABLE_VECTOR
 SCM_EXPORT ScmObj
 scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 {
@@ -356,6 +359,7 @@ scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 
     return obj;
 }
+#endif /* SCM_SAL_HAS_IMMUTABLE_VECTOR */
 
 SCM_EXPORT ScmObj
 scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
