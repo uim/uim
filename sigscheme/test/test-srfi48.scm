@@ -206,6 +206,21 @@
          (symbol-bound? 'least-fixnum))
     (let ((greatest (number->string (greatest-fixnum))))
       (cond
+       ((string=? greatest "134217727")
+        (tn "format 28bit fixnum")
+        (assert-equal? (tn)
+                       "-134217728"
+                       (format "~d" (least-fixnum)))
+        (assert-equal? (tn)
+                       "111111111111111111111111111"
+                       (format "~b" (greatest-fixnum)))
+        (assert-equal? (tn)
+                       "-1000000000000000000000000000"
+                       (format "~b" (least-fixnum)))
+        (assert-equal? (tn)
+                       "-111111111111111111111111111"
+                       (format "~b" (+ (least-fixnum) 1))))
+
        ((string=? greatest "2147483647")
         (tn "format 32bit fixnum")
         (assert-equal? (tn)
@@ -219,6 +234,21 @@
                        (format "~b" (least-fixnum)))
         (assert-equal? (tn)
                        "-1111111111111111111111111111111"
+                       (format "~b" (+ (least-fixnum) 1))))
+
+       ((string=? greatest "576460752303423487")
+        (tn "format 60bit fixnum")
+        (assert-equal? (tn)
+                       "-576460752303423488"
+                       (format "~d" (least-fixnum)))
+        (assert-equal? (tn)
+                       "11111111111111111111111111111111111111111111111111111111111"
+                       (format "~b" (greatest-fixnum)))
+        (assert-equal? (tn)
+                       "-100000000000000000000000000000000000000000000000000000000000"
+                       (format "~b" (least-fixnum)))
+        (assert-equal? (tn)
+                       "-11111111111111111111111111111111111111111111111111111111111"
                        (format "~b" (+ (least-fixnum) 1))))
 
        ((string=? greatest "9223372036854775807")
