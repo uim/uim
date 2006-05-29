@@ -218,7 +218,7 @@ scm_make_symbol(char *name, ScmObj val)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-    SCM_SYMBOL_INIT(obj, val, name);
+    SCM_SYMBOL_INIT(obj, name, val);
     return obj;
 }
 
@@ -321,7 +321,7 @@ scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
     ScmObj obj;
 
     obj = scm_alloc_cell();
-    SCM_FUNC_INIT(obj, func, type);
+    SCM_FUNC_INIT(obj, type, func);
     return obj;
 }
 

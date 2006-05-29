@@ -572,7 +572,7 @@ SCM_EXPORT ScmObj scm_make_symbol(char *name, ScmObj val);
     ((char*)(SCM_Y(SCM_SYMBOL_PTR(o)) & ~SCM_MTAG_SYMBOL))
 #define SCM_SAL_SYMBOL_SET_NAME(o, n)                           \
     SCM_SET_Y(SCM_SYMBOL_PTR(o), (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL)
-#define SCM_SAL_SYMBOL_INIT(o, c, n)                    \
+#define SCM_SAL_SYMBOL_INIT(o, n, c)                    \
     SCM_INIT((o),                                       \
              (c),                                       \
              (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL,      \
@@ -701,7 +701,7 @@ SCM_EXPORT ScmObj scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func);
 #define SCM_SAL_FUNC_TYPECODE(o)        SCM_MISC_Y((o), FUNC)
 #define SCM_SAL_FUNC_SET_CFUNC(o, f)    SCM_MISC_SET_X((o), (f), FUNC)
 #define SCM_SAL_FUNC_SET_TYPECODE(o, t) SCM_MISC_SET_Y((o), (t), FUNC)
-#define SCM_SAL_FUNC_INIT(o, f, t)      SCM_MISC_INIT((o), (f), (t), FUNC)
+#define SCM_SAL_FUNC_INIT(o, t, f)      SCM_MISC_INIT((o), (f), (t), FUNC)
 
 /* Ports. */
 struct ScmCharPort_;

@@ -148,14 +148,14 @@ extern "C" {
 #if !SCM_HAS_IMMEDIATE_INT_ONLY
 #define SCM_INT_INIT(o, val)                            \
     SCM_TYPESAFE_MACRO_VOID(SCM_SAL_INT_INIT,           \
-                            (ScmObj, scm_ichar_t),      \
+                            (ScmObj, scm_int_t),        \
                             (o, val))
 #endif
 
-#define SCM_SYMBOL_INIT(obj, val, nam)                  \
+#define SCM_SYMBOL_INIT(obj, nam, val)                  \
     SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SYMBOL_INIT,        \
-                            (ScmObj, ScmObj, char*),    \
-                            (obj, val, nam))
+                            (ScmObj, char*, ScmObj),    \
+                            (obj, nam, val))
 
 #define SCM_STRING_INIT(obj, str, len, mutp)                            \
     SCM_TYPESAFE_MACRO_VOID(SCM_SAL_STRING_INIT,                        \
@@ -174,7 +174,7 @@ extern "C" {
 
 #define SCM_FUNC_INIT(obj, type, func)                                   \
     SCM_TYPESAFE_MACRO_VOID(SCM_SAL_FUNC_INIT,                           \
-                            (ScmObj, ScmFuncType, enum ScmFuncTypeCode), \
+                            (ScmObj, enum ScmFuncTypeCode, ScmFuncType), \
                             (obj, type, func))
 #define SCM_VECTOR_INIT(obj, vec, len)                          \
     SCM_TYPESAFE_MACRO_VOID(SCM_SAL_VECTOR_INIT,                \

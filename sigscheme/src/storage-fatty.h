@@ -341,9 +341,9 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_SYMBOL_SET_NAME(o, _name)  (SCM_SYMBOL_NAME(o) = (_name))
 #define SCM_SAL_SYMBOL_VCELL(o)        (SCM_AS_SYMBOL(o)->obj.symbol.value)
 #define SCM_SAL_SYMBOL_SET_VCELL(o, vcell) (SCM_SYMBOL_VCELL(o) = (vcell))
-#define SCM_SAL_SYMBOL_INIT(o, v, n)   (SCM_ENTYPE((o), ScmSymbol),     \
-                                        SCM_SYMBOL_SET_VCELL((o), (v)), \
-                                        SCM_SYMBOL_SET_NAME((o), (n)))
+#define SCM_SAL_SYMBOL_INIT(o, n, v)   (SCM_ENTYPE((o), ScmSymbol),     \
+                                        SCM_SYMBOL_SET_NAME((o), (n)),  \
+                                        SCM_SYMBOL_SET_VCELL((o), (v)))
 
 #define SCM_SAL_CHARP(o)               (SCM_TYPE(o) == ScmChar)
 #define SCM_SAL_CHAR_VALUE(o)          (SCM_AS_CHAR(o)->obj.character.value)
@@ -376,9 +376,9 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_FUNC_CFUNC(o)              (SCM_AS_FUNC(o)->obj.function.ptr)
 #define SCM_SAL_FUNC_SET_CFUNC(o, func)                                      \
     (SCM_FUNC_CFUNC(o) = (ScmFuncType)(func))
-#define SCM_SAL_FUNC_INIT(o, f, t) (SCM_ENTYPE((o), ScmFunc),           \
-                                    SCM_FUNC_SET_CFUNC((o), (f)),       \
-                                    SCM_FUNC_SET_TYPECODE((o), (t)))
+#define SCM_SAL_FUNC_INIT(o, t, f) (SCM_ENTYPE((o), ScmFunc),           \
+                                    SCM_FUNC_SET_TYPECODE((o), (t)),    \
+                                    SCM_FUNC_SET_CFUNC((o), (f)))       \
 
 #define SCM_SAL_CLOSUREP(o)               (SCM_TYPE(o) == ScmClosure)
 #define SCM_SAL_CLOSURE_EXP(o)            (SCM_AS_CLOSURE(o)->obj.closure.exp)
