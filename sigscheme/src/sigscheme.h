@@ -555,12 +555,7 @@ struct ScmStorageConf_ {
             macro args;                                 \
     } while (0)
 
-#define SCM_MAKE_BOOL(x)                                                     \
-    SCM_TYPESAFE_MACRO(SCM_MAKE_BOOL_INTERNAL,                               \
-                       ScmObj,                                               \
-                       (ScmObj),                                             \
-                       (x))
-#define SCM_MAKE_BOOL_INTERNAL(x) ((x) ? SCM_TRUE : SCM_FALSE)
+#define SCM_MAKE_BOOL(x) ((x) ? SCM_TRUE : SCM_FALSE)
 
 #define SCM_MAKE_CONS(kar, kdr)                                              \
     SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_CONS,                                    \
