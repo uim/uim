@@ -299,8 +299,8 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_ITAG_MASK_INT        SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_INT)
 #define SCM_INT_VAL_OFFSET       (SCM_IMMID_OFFSET + SCM_IMMID_WIDTH_INT)
 #define SCM_SAL_INTP(o)          (((o) & SCM_ITAG_MASK_INT) == SCM_ITAG_INT)
-#define SCM_SAL_MAKE_INT(i)      ((ScmObj)((i) << SCM_INT_VAL_OFFSET)   \
-                                  | SCM_ITAG_INT)
+#define SCM_SAL_MAKE_INT(i)      ((ScmObj)(((i) << SCM_INT_VAL_OFFSET)   \
+                                           | SCM_ITAG_INT))
 #define SCM_SAL_INT_VALUE(o)     ((scm_int_t)                           \
                                   SCM_ARSHIFT(SCM_AS_INT(o),            \
                                               SCM_INT_VAL_OFFSET))
@@ -314,10 +314,10 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_ITAG_MASK_CHAR      SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_CHAR)
 #define SCM_CHAR_VAL_OFFSET     (SCM_IMMID_OFFSET + SCM_IMMID_WIDTH_CHAR)
 #define SCM_SAL_CHARP(o)        (((o) & SCM_ITAG_MASK_CHAR) == SCM_ITAG_CHAR)
-#define SCM_SAL_MAKE_CHAR(c)                                                 \
-    ((ScmObj)(((c) << SCM_CHAR_VAL_OFFSET) | SCM_ITAG_CHAR))
-/* FIXME: this should be cast to something along the lines of scm_char_t. */
-#define SCM_SAL_CHAR_VALUE(o)   ((int)(SCM_AS_CHAR(o) >> SCM_CHAR_VAL_OFFSET))
+#define SCM_SAL_MAKE_CHAR(c)    ((ScmObj)(((c) << SCM_CHAR_VAL_OFFSET)       \
+                                          | SCM_ITAG_CHAR))
+#define SCM_SAL_CHAR_VALUE(o)   ((scm_ichar_t)                               \
+                                 (SCM_AS_CHAR(o) >> SCM_CHAR_VAL_OFFSET))
 
 /* Singleton constants. */
 #define SCM_IMMID_CONST         SCM_MAKE_IMMID(3)
@@ -326,7 +326,8 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_ITAG_MASK_CONST     SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_CONST)
 /* #define SCM_ITAG_MASK_CONST */
 #define SCM_CONST_VAL_OFFSET    SCM_MAKE_VAL_OFFSET(SCM_IMMID_WIDTH_CONST)
-#define SCM_MAKE_CONST(i)       ((i) << SCM_CONST_VAL_OFFSET | SCM_ITAG_CONST)
+#define SCM_MAKE_CONST(i)       ((ScmObj)((i) << SCM_CONST_VAL_OFFSET        \
+                                          | SCM_ITAG_CONST))
 #define SCM_SAL_CONSTANTP(o)    (((o) & SCM_ITAG_MASK_CONST) == SCM_ITAG_CONST)
 
 #define SCM_SAL_NULL        SCM_MAKE_CONST(0)

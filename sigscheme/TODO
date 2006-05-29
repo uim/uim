@@ -1,19 +1,10 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Object representation compaction ([Anthy-dev 2353], [Anthy-dev 2360])
+* Object representation compaction
   - Make all tests passed without error or SEGV
-  - Support 64bit models
-  - Support constant vector
-  - Create immediate objects directly without calling scm_make_*()
-  - Refine logical structure and namings
-  - Remove all SCM_ENTYPE_*() macros
 
-* Fix all side-effective expression in macros
-  - All files except for operations-srfi1.c, storage-compact.h and
-    test-compact.c are checked
-
-* Clear license, copyright and changes information
+* Clear license, copyright and changes information ([Anthy-dev 2933])
   - scm_length() in list.c
   - "Shiro Kawai" part of read.c
   - slib.scm
@@ -26,20 +17,23 @@ Requirements and critical bugs:
   - Check pointer alignment to ensure stack GC workable
     * for example, gcc -Os on x86 breaks the alignment
 
-* Confirm R5RS and SRFI conformance for each function implementation
-
 * Confirm public API
+  - Move some interfaces from sigschemeinternal.h to sigscheme.h
   - Evaluate SRFI-50 (although withdrawn)
 
-* Make 64bit-safe
-  - Write tests
-  - Make the tests passed on actual 64bit environment with fatty representation
-  - Modify storage-compact.h
-  - Make the tests passed on actual 64bit environment with compact
-    representation
+* Confirm R5RS and SRFI conformance for each function implementation
+
+* Fix all side-effective expression in macros
+  - All files except for operations-srfi1.c, storage-compact.h and
+    test-compact.c are checked
 
 * Confirm appropriate workaround for the GCC's noinline attribute vanishing
   problem on Linux environments
+
+* Make 64bit-safe
+  - Write tests
+  - Make the tests passed on actual 64bit environment with storage-fatty
+  - Make the tests passed on actual 64bit environment with storage-compact
 
 * grep "FIXME" and fix them
 
