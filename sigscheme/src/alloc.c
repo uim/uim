@@ -48,6 +48,8 @@
   File Local Macro Definitions
 =======================================*/
 #define ALIGN_CELL (sizeof(ScmCell))
+/* 8-bytes alignment (not ScmCell alignment) is required by storage-compact. */
+#define ALIGN_HEAP (0x3)
 
 /*=======================================
   File Local Type Definitions
@@ -64,6 +66,9 @@
 /*=======================================
   Function Definitions
 =======================================*/
+/* Allocates ScmCell-aligned (32-bit pointer) or ScmObj-aligned (64-bit
+ * pointer) memory for heaps. 8-bytes alignment (not ScmCell alignment) is
+ * required by storage-compact. */
 SCM_EXPORT void *
 scm_malloc_aligned(size_t size)
 {
@@ -81,7 +86,7 @@ scm_malloc_aligned(size_t size)
      */
     posix_memalign(&p, ALIGN_CELL, size);
 #elif (HAVE_PAGE_ALIGNED_MALLOC && HAVE_GETPAGESIZE)
-    if ((size_t)getpagesize() <= size || size <= sizeof(void *))
+    if ((size_t)getpagesize() <= size)
         p = scm_malloc(size);
     else
         PLAIN_ERR("cannot ensure memory alignment");
@@ -94,17 +99,20 @@ scm_malloc_aligned(size_t size)
      * -- 
      * ekato Jan 23 2006
      */
-    if ((ALIGN_CELL % 16 == 0) || (ALIGN_CELL % 8 == 0)
-        || (ALIGN_CELL % 4 == 0) || (ALIGN_CELL % 2 == 0))
+    if (ALIGN_HEAP <= 16)
         p = malloc(size);
     else
         PLAIN_ERR("cannot ensure memory alignment");
 #else
-#error "This platform is not supported yet"
+    /* Assumes that malloc(3) returns at least 8-bytes aligned pointer. */
+    if (ALIGN_HEAP <= 8)
+        p = malloc(size);
+    else
+        PLAIN_ERR("cannot ensure memory alignment");
 #endif
     SCM_ENSURE_ALLOCATED(p);
     /* heaps must be aligned to sizeof(ScmCell) */
-    SCM_ASSERT(!((uintptr_t)p % ALIGN_CELL));
+    SCM_ASSERT(!((uintptr_t)p & ALIGN_HEAP));
 
     return p;
 }
@@ -160,6 +168,29 @@ scm_strdup(const char *str)
 
     return copied;
 }
+
+#if 0
+/* For 'name' slot of symbol object on storage-compact. If your malloc(3) does
+ * not ensure 8-bytes alignment, Complete this function and hook this into
+ * symbol object creation and modification.  -- YamaKen 2006-05-30 */
+SCM_EXPORT char *
+scm_align_str(char *str)
+{
+    char *copied;
+    size_t size;
+
+    /* Use ScmCell-alignment to ensure at least 8-bytes aligned. */
+    if ((uintptr_t)ptr % ALIGN_CELL) {
+        size = strlen(str) + sizeof("");
+        copied = scm_malloc_aligned8(size);
+        strcpy(copied, str);
+        free(str);
+        return copied;
+    } else {
+        return ptr;
+    }
+}
+#endif
 
 /*=======================================
    Extendable Local Buffer
