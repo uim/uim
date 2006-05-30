@@ -49,7 +49,7 @@
 =======================================*/
 #define ALIGN_CELL (sizeof(ScmCell))
 /* 8-bytes alignment (not ScmCell alignment) is required by storage-compact. */
-#define ALIGN_HEAP (0x3)
+#define ALIGN_HEAP 8
 
 /*=======================================
   File Local Type Definitions
@@ -112,7 +112,7 @@ scm_malloc_aligned(size_t size)
 #endif
     SCM_ENSURE_ALLOCATED(p);
     /* heaps must be aligned to sizeof(ScmCell) */
-    SCM_ASSERT(!((uintptr_t)p & ALIGN_HEAP));
+    SCM_ASSERT(!((uintptr_t)p % ALIGN_HEAP));
 
     return p;
 }
