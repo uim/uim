@@ -35,7 +35,7 @@
 (require "generic.scm")
 
 (define-key latin-backspace-key? '("backspace" "<Control>h"))
-(define-key latin-commit-key? "return" 32)  ; 32 = space
+(define-key latin-commit-key? "return")
 (define-key latin-multi-key? '("Multi_key"))
 
 (define latin-compose-rule '(
@@ -655,12 +655,15 @@
        ((latin-backspace-key? key state)
 	(if (not (rk-backspace rkc))
 	    (latin-commit-raw pc)))
-       
+
        ((latin-commit-key? key state)
 	(latin-commit pc))
-       
+
        ((or (symbol? key)
-	    (= 32 key)) ; space
+	    (and
+	     (= 32 key) ; space
+	     (not (string-find (rk-expect rkc) " "))))
+	(latin-commit pc)
 	(latin-commit-raw pc)
 	(latin-context-flush pc))
 
@@ -672,7 +675,6 @@
 		    (latin-commit pc))))
 	  (if res
 	      (begin
-		(print res)
 		(im-commit pc (list-ref res 0))
 		(latin-context-set-composing?! pc #f)
 		(rk-flush rkc)))
