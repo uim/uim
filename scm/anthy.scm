@@ -917,17 +917,15 @@
 	   (n (ustr-cursor-frontside segments)))
       (if (and
 	   anthy-version
-	   (>= (string->number (car anthy-version)) 7710))
-	  ;; anthy-7710 and upward
+	   (>= (string->number (car anthy-version)) 7802))
+	  ;; anthy-7802 and upward
 	  (let ((rotate-list '())
 		(state #f)
 		(idx (ustr-cursor-frontside segments)))
 	    (anthy-reset-candidate-window ac)
 	    (anthy-context-set-candidate-op-count! ac 0)
 
-	    (if (and
-		 (>= (string->number (car anthy-version)) 7802)
-		 (anthy-transpose-as-hankana-key? key key-state))
+	    (if (anthy-transpose-as-hankana-key? key key-state)
 		(set! rotate-list (cons anthy-candidate-type-hankana
 					rotate-list)))
 	    (if (anthy-transpose-as-katakana-key? key key-state)
@@ -947,7 +945,7 @@
 		      (set! state (car rotate-list))))
 		(set! state (car rotate-list)))
 	     (ustr-cursor-set-frontside! segments state))
-	  ;; below anthy-7710
+	  ;; below anthy-7802
 	  (begin
 	    ;; FIXME: don't cancel conversion
 	    (anthy-cancel-conv ac)
