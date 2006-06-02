@@ -3,7 +3,7 @@ Overview of changes from 1.1.0-alpha to 1.1.0-beta
 * New features
   o Minor
     - Anthy
-      - hakaku katakana conversion with Anthy-7802 (Etsushi)
+      - hankaku katakana conversion with Anthy-7802 (Etsushi)
     
 * Fixes
   o Minor
