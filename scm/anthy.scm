@@ -57,7 +57,7 @@
 
 (define anthy-candidate-type-katakana -2)
 (define anthy-candidate-type-hiragana -3)
-(define anthy-candidate-type-hankana -4) ;; XXX not yet supported
+(define anthy-candidate-type-hankana -4)
 
 (define anthy-prepare-activation
   (lambda (ac)
@@ -925,7 +925,11 @@
 	    (anthy-reset-candidate-window ac)
 	    (anthy-context-set-candidate-op-count! ac 0)
 
-	    ;; XXX should handle hankana when anthy support it
+	    (if (and
+		 (>= (string->number (car anthy-version)) 7802)
+		 (anthy-transpose-as-hankana-key? key key-state))
+		(set! rotate-list (cons anthy-candidate-type-hankana
+					rotate-list)))
 	    (if (anthy-transpose-as-katakana-key? key key-state)
 		(set! rotate-list (cons anthy-candidate-type-katakana
 					rotate-list)))
@@ -934,7 +938,8 @@
 					rotate-list)))
 	    (if (or
 		 (= idx anthy-candidate-type-hiragana)
-		 (= idx anthy-candidate-type-katakana))
+		 (= idx anthy-candidate-type-katakana)
+		 (= idx anthy-candidate-type-hankana))
 		(let ((lst (member idx rotate-list)))
 		  (if (and (not (null? lst))
 			   (not (null? (cdr lst))))
@@ -994,13 +999,13 @@
      ((anthy-prev-candidate-key? key key-state)
       (anthy-move-candidate ac -1))
 
-     ((or (anthy-transpose-as-hiragana-key?   key key-state)
-	  (anthy-transpose-as-katakana-key?   key key-state))
+     ((or (anthy-transpose-as-hiragana-key? key key-state)
+	  (anthy-transpose-as-katakana-key? key key-state)
+	  (anthy-transpose-as-hankana-key? key key-state))
 	(anthy-set-segment-transposing ac key key-state))
 
      ;; FIXME: don't cancel conversion
-     ((or (anthy-transpose-as-hankana-key?    key key-state)
-	  (anthy-transpose-as-latin-key?      key key-state)
+     ((or (anthy-transpose-as-latin-key? key key-state)
 	  (anthy-transpose-as-wide-latin-key? key key-state))
       (begin
 	(anthy-cancel-conv ac)
