@@ -6,7 +6,7 @@ The requirements for building uim is listed below.
 
     * iconv(3)
     * curses (need to build uim-fep)
-    * Anthy (need to use Japanese Anthy module. version >= 7716 is
+    * Anthy (need to use Japanese Anthy module. version >= 7802 is
       recommended)
     * Canna (need to use Japanese Canna module)
     * mana (need to use Japanese mana module. version >= 0.2.0 is

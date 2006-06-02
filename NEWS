@@ -1,4 +1,19 @@
-Overview of changes from 1.0.x to 1.1.0
+Overview of changes from 1.1.0-alpha to 1.1.0-beta
+==
+* New features
+  o Minor
+    - Anthy
+      - hakaku katakana conversion with Anthy-7802 (Etsushi)
+    
+* Fixes
+  o Minor
+    - uim-toolbar-gtk
+      - prevent startup hang in a rare case (Etsushi)
+
+    - Latin IM
+      - update table (Etsushi)
+
+Overview of changes from 1.0.x to 1.1.0-alpha
 ==
 * New features
   o Major
