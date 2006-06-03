@@ -784,7 +784,7 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
-if test "x$use_qt" == "xyes"; then
+if test "x$use_qt" = "xyes"; then
     KDE_ICONDIR=`kde-config --expandvars --install icon`
     if test -z "$KDE_ICONDIR"; then
       KDE_ICONDIR="$prefix/share/icons"
