@@ -77,6 +77,8 @@ dist-hook:
 if M17NLIB
 install-data-hook:
 	for f in $(m17n_db_dir)/icons/*.png; do \
-	  $(LN_S) -f "$$f" $(DESTDIR)$(pkgdatadir)/pixmaps/m17n-`basename "$$f"`; \
+	  if test -f "$$f"; then \
+	    $(LN_S) -f "$$f" $(DESTDIR)$(pkgdatadir)/pixmaps/m17n-`basename "$$f"`; \
+	  fi \
 	done
 endif
