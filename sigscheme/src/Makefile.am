@@ -105,7 +105,7 @@ endif
 # Optional and not built by 'make all'. Build explicitly with 'make combined'
 # if needed. This target does not use non-standard scripting languages for
 # portability.
-sigscheme-combined.c: $(libsscm_la_SOURCES)
+sigscheme-combined.c: $(libsscm_la_SOURCES) config.h
 	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@echo >>$@
