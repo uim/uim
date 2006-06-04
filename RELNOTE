@@ -1,13 +1,10 @@
-uim 1.1.0-beta Release Note
-===========================
+uim 1.1.0 Release Note
+======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.1.0-beta is a preview release for testing
-purpose. Since it may contain serious unknown problems, it should not
-be used for important works. For such situations, use our latest
-stable release uim 1.0.1.
+This distribution of uim 1.1.0 is latest stable release of uim.
 
 Please report us if you find a problem.
 
