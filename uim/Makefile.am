@@ -151,9 +151,12 @@ uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim.la $(top_builddir)/replace/libreplace.la
 uim_module_manager_SOURCES = uim-module-manager.c
 
-noinst_PROGRAMS = uim-agent
+noinst_PROGRAMS = uim-agent test-gc
 
 uim_agent_SOURCES = agent.c
 uim_agent_LDADD   = libuim.la
+
+test_gc_SOURCES = test-gc.c
+test_gc_LDADD   = libuim.la
 
 DISTCLEANFILES = uim-stdint.h

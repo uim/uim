@@ -78,7 +78,9 @@ static FILE *uim_output = NULL;
 
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in uim-scm.h */
-uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(void)
+uim_lisp *(*volatile uim_scm_gc_current_stack_ptr)(void)
+  = &uim_scm_gc_current_stack_internal;
+uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(uim_lisp *)
   = &uim_scm_gc_protect_stack_internal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
@@ -246,8 +248,13 @@ uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 }
 
 #if UIM_SCM_GCC4_READY_GC
+/* uim_scm_gc_current_stack_internal() is separated from
+ * uim_scm_gc_protect_stack_internal() to avoid returning inaccurate
+ * stack-start address. Don't add any code fragments such as
+ * assertions or printfs to this function. It may alter the stack address.
+ *   -- YamaKen 2006-06-04 */
 uim_lisp *
-uim_scm_gc_protect_stack_internal(void)
+uim_scm_gc_current_stack_internal(void)
 {
   /*
    * &stack_start will be relocated to start of the frame of subsequent
@@ -255,11 +262,17 @@ uim_scm_gc_protect_stack_internal(void)
    */
   LISP stack_start;
 
-  siod_gc_protect_stack(&stack_start);
-
   /* intentionally returns invalidated local address with a warning
    * suppression workaround */
   return (void *)(((uintptr_t)&stack_start | 1) ^ 1);
+}
+
+uim_lisp *
+uim_scm_gc_protect_stack_internal(uim_lisp *stack_start)
+{
+  siod_gc_protect_stack((LISP *)stack_start);
+
+  return (uim_lisp *)stack_start_ptr;
 }
 #else /* UIM_SCM_GCC4_READY_GC */
 void
