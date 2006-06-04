@@ -14,18 +14,22 @@ Requirements and critical bugs:
 * Autoconfiscate the SigScheme package (don't rely on uim's configure)
   - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC
+  - [uim] Add --disable-install to disable installation of libsscm that
+    specially configured for libuim. Only the combined-source is needed for uim
   - Check pointer alignment to ensure stack GC workable
     * for example, gcc -Os on x86 breaks the alignment
 
 * Confirm public API
   - Move some interfaces from sigschemeinternal.h to sigscheme.h
+  - Rename the boolean predicates
   - Evaluate SRFI-50 (although withdrawn)
 
 * Confirm R5RS and SRFI conformance for each function implementation
 
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
-    test-compact.c are checked
+    test-compact.c are checked once. But since considerable codes are added or
+    modified, we should recheck all file
 
 * Confirm appropriate workaround for the GCC's noinline attribute vanishing
   problem on Linux environments
@@ -120,12 +124,22 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
+* Finish error handling
+  - Make error loop handling robust
+  - [uim] Add fatal error recovery hook
+  - Fix the SEGV by infinite error loop on (+ 3333333333333333333333333333)
+    reported by kzk (not reproduced on YamaKen's env)
+
+* Evaluate experimental/test-c and adopt it as standard if reasonable
+
 * Write test for tail expression of all tail-recursive syntaxes
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to
   test-tail-rec.scm
 
 * Write tests for SRFI-75
+  - Investigate the withdrawn status of SRFI-75, and decide temporary API to
+    handle unicode data until R6RS
 
 * Add integer->char and char->integer procedures with multibyte support
   - Write test
