@@ -16,8 +16,6 @@ Requirements and critical bugs:
   - [uim] configure sigscheme subdir by top-level configure like GCC
   - [uim] Add --disable-install to disable installation of libsscm that
     specially configured for libuim. Only the combined-source is needed for uim
-  - Check pointer alignment to ensure stack GC workable
-    * for example, gcc -Os on x86 breaks the alignment
 
 * Confirm public API
   - Move some interfaces from sigschemeinternal.h to sigscheme.h

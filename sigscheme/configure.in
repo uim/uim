@@ -34,8 +34,12 @@ AC_C_VOLATILE
 #AC_C_LONG_DOUBLE
 AC_C_CHAR_UNSIGNED
 AC_C_BIGENDIAN
-AC_C_STRINGIZE
+AX_C_DATA_ALIGNED
+if test "x$ax_cv_c_data_aligned" = xno; then
+  AC_MSG_ERROR([C data types are not aligned on this environment. omit -Os if you are using gcc.])
+fi
 AX_C___ATTRIBUTE__
+AC_C_STRINGIZE
 
 AX_CREATE_STDINT_H(src/sigscheme-stdint.h)
 AC_TYPE_SIZE_T

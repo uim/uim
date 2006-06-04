@@ -109,7 +109,6 @@ union data {
         char c[9];
         void *p;
     } c9p;
-
 };
 
 struct offsettable_data {
