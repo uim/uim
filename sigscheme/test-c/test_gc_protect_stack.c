@@ -175,7 +175,8 @@ suite_init(utest_info *uinfo)
 
 UT_DEF2(test_1, "void (*)(void)")
 {
-    stack_start_protected = scm_gc_protect_stack(NULL);
+    stack_start_protected = scm_gc_current_stack();
+    scm_gc_protect_stack(stack_start_protected);
     (*fvv_internal)();
     scm_gc_unprotect_stack(stack_start_protected);
 
@@ -184,7 +185,8 @@ UT_DEF2(test_1, "void (*)(void)")
 
 UT_DEF2(test_2, "int (*)(void)")
 {
-    stack_start_protected = scm_gc_protect_stack(NULL);
+    stack_start_protected = scm_gc_current_stack();
+    scm_gc_protect_stack(stack_start_protected);
     (*fiv_internal)();
     scm_gc_unprotect_stack(stack_start_protected);
 
@@ -193,7 +195,8 @@ UT_DEF2(test_2, "int (*)(void)")
 
 UT_DEF2(test_3, "void (*)(int)")
 {
-    stack_start_protected = scm_gc_protect_stack(NULL);
+    stack_start_protected = scm_gc_current_stack();
+    scm_gc_protect_stack(stack_start_protected);
     (*fvi_internal)(0);
     scm_gc_unprotect_stack(stack_start_protected);
 
@@ -202,7 +205,8 @@ UT_DEF2(test_3, "void (*)(int)")
 
 UT_DEF2(test_4, "int (*)(int)")
 {
-    stack_start_protected = scm_gc_protect_stack(NULL);
+    stack_start_protected = scm_gc_current_stack();
+    scm_gc_protect_stack(stack_start_protected);
     (*fii_internal)(0);
     scm_gc_unprotect_stack(stack_start_protected);
 
@@ -211,20 +215,22 @@ UT_DEF2(test_4, "int (*)(int)")
 
 UT_DEF2(test_5, "ScmObj *(*)(ScmObj *)")
 {
-    stack_start_protected = scm_gc_protect_stack(NULL);
+    stack_start_protected = scm_gc_current_stack();
+    scm_gc_protect_stack(stack_start_protected);
     (*fspsp_internal)(NULL);
     scm_gc_unprotect_stack(stack_start_protected);
 
-    UT_ASSERT_EQUAL_PTR(stack_start_protected, stack_start_actual);
+    TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
 UT_DEF2(test_6, "ScmObj *(*)(ScmObj *) (2)")
 {
-    stack_start_protected = scm_gc_protect_stack(NULL);
+    stack_start_protected = scm_gc_current_stack();
+    scm_gc_protect_stack(stack_start_protected);
     (*fspsp2_internal)(NULL);
     scm_gc_unprotect_stack(stack_start_protected);
 
-    UT_ASSERT_EQUAL_PTR(stack_start_protected, stack_start_actual);
+    TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
 UT_REGISTER_BEGIN("scm_gc_protect_stack()")

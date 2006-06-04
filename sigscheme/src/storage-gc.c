@@ -248,8 +248,12 @@ scm_gc_unprotect(ScmObj *var)
   C Stack Protection
 ===========================================================================*/
 #if SCM_GCC4_READY_GC
+/* scm_gc_current_stack() is separated from scm_gc_protect_stack_internal() to
+ * avoid returning inaccurate stack-start address. Don't add any code fragments
+ * such as SCM_ASSERT() to this function. It may alter the stack address.
+ *   -- YamaKen 2006-06-04 */
 SCM_EXPORT ScmObj *
-scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
+scm_gc_current_stack(void)
 {
     /*
      * &stack_start will be relocated to start of the frame of subsequent
@@ -257,16 +261,22 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
      */
     ScmObj stack_start;
 
-    if (!designated_stack_start)
-        designated_stack_start = &stack_start;
+    /* intentionally returns invalidated local address with a warning
+     * suppression workaround */
+    return (ScmObj *)(((uintptr_t)&stack_start | 1) ^ 1);
+}
+
+SCM_EXPORT ScmObj *
+scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
+{
+    SCM_ASSERT(designated_stack_start);
 
     if (!l_stack_start_pointer)
         l_stack_start_pointer = designated_stack_start;
 
     SCM_ASSERT(SCMOBJ_ALIGNEDP(l_stack_start_pointer));
 
-    /* may intentionally be an invalidated local address */
-    return designated_stack_start;
+    return l_stack_start_pointer;
 }
 
 #else /* SCM_GCC4_READY_GC */

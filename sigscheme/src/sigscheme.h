@@ -225,7 +225,8 @@ extern "C" {
         ScmObj *stack_start;                                                 \
                                                                              \
         if (0) exp_ret func args;  /* compile-time type check */             \
-        stack_start = scm_gc_protect_stack(NULL);                            \
+        stack_start = scm_gc_current_stack();                                \
+        scm_gc_protect_stack(stack_start);                                   \
         exp_ret (*fp)args;                                                   \
         scm_gc_unprotect_stack(stack_start);                                 \
     } while (/* CONSTCOND */ 0)
@@ -1156,6 +1157,7 @@ SCM_EXPORT void scm_gc_unprotect(ScmObj *var);
 #define scm_gc_protect_stack (*scm_gc_protect_stack_fp)
 #endif /* __GNUC__ */
 
+SCM_EXPORT ScmObj *scm_gc_current_stack(void);
 SCM_EXPORT ScmObj *scm_gc_protect_stack_internal(ScmObj *designated_stack_start) SCM_NOINLINE;
 #else /* SCM_GCC4_READY_GC */
 SCM_EXPORT void scm_gc_protect_stack(ScmObj *stack_start);
