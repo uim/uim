@@ -12,6 +12,9 @@ AC_PROG_EGREP
 AC_PATH_PROGS(RUBY, ruby18 ruby)
 AC_PATH_PROGS(PERL, perl5 perl)
 AC_PATH_PROG(ASCIIDOC, asciidoc)
+# GNU sed for test-c2/collect.sh
+AC_PATH_PROGS(GSED, gsed sed)
+AC_PATH_PROG(SH, sh)
 # The modified version of the C testing framework
 AC_PATH_PROG(CUTTER, cutter)
 AC_PATH_PROGS(MD5, md5 md5sum)
@@ -907,8 +910,10 @@ AC_CONFIG_FILES([Makefile
                  test/Makefile
                  test-c/Makefile
                  test-c2/Makefile
+                 test-c2/collect.sh
                  bench/Makefile])
 
+AC_SUBST(GSED)
 AC_SUBST(docdir)
 AC_SUBST(htmldir)
 AC_SUBST(objdir)
