@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-26 12:00+0900\n"
+"POT-Creation-Date: 2006-06-04 10:45+0900\n"
 "PO-Revision-Date: 2006-05-21 11:21+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -1805,11 +1805,11 @@ msgstr ""
 msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr ""
 
-#: scm/latin.lisp:720
+#: scm/latin.lisp:940
 msgid "Latin characters"
 msgstr "Caractères latins"
 
-#: scm/latin.lisp:721
+#: scm/latin.lisp:941
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 

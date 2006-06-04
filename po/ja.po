@@ -99,8 +99,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-05-26 12:00+0900\n"
-"PO-Revision-Date: 2006-05-21 11:14+0900\n"
+"POT-Creation-Date: 2006-06-04 10:45+0900\n"
+"PO-Revision-Date: 2006-06-04 10:49+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -1854,14 +1854,13 @@ msgstr "入力方式の切り換えを有効にする範囲を指定します。
 
 #: scm/im-custom.lisp:390
 msgid "full-featured input method switcher"
-msgstr "フル機能の入力方式切り換えアプリケーション"
+msgstr "フル機能の入力方式切り換えツール"
 
 #: scm/im-custom.lisp:391
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
-msgstr ""
-"ツールバーにuim入力方式切り換えアプリケーションを起動するボタンを表示します。"
+msgstr "ツールバーにuim入力方式切り換えツールを起動するボタンを表示します。"
 
 #: scm/im-custom.lisp:396
 msgid "preference tool"
@@ -1927,11 +1926,11 @@ msgstr "編集領域で使用されるフォント名 (アンチエイリアス�
 msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr "国際音声記号 (拡張SAM音声記号)"
 
-#: scm/latin.lisp:720
+#: scm/latin.lisp:940
 msgid "Latin characters"
 msgstr "ラテン文字"
 
-#: scm/latin.lisp:721
+#: scm/latin.lisp:941
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力方式"
 
