@@ -159,37 +159,38 @@ main(void)
   fspv_internal = fspv;
   fspsp_internal = fspsp;
 
-#if 0
   stack_start_protected = uim_scm_gc_current_stack();
   uim_scm_gc_protect_stack(stack_start_protected);
-#else
-  stack_start_protected = uim_scm_gc_protect_stack();
-#endif
   (*fvv_internal)();
   uim_scm_gc_unprotect_stack(stack_start_protected);
   TEST_STACK_START(stack_start_protected, stack_start_actual);
 
-  stack_start_protected = uim_scm_gc_protect_stack();
+  stack_start_protected = uim_scm_gc_current_stack();
+  uim_scm_gc_protect_stack(stack_start_protected);
   (*fiv_internal)();
   uim_scm_gc_unprotect_stack(stack_start_protected);
   TEST_STACK_START(stack_start_protected, stack_start_actual);
 
-  stack_start_protected = uim_scm_gc_protect_stack();
+  stack_start_protected = uim_scm_gc_current_stack();
+  uim_scm_gc_protect_stack(stack_start_protected);
   (*fvi_internal)(0);
   uim_scm_gc_unprotect_stack(stack_start_protected);
   TEST_STACK_START(stack_start_protected, stack_start_actual);
 
-  stack_start_protected = uim_scm_gc_protect_stack();
+  stack_start_protected = uim_scm_gc_current_stack();
+  uim_scm_gc_protect_stack(stack_start_protected);
   (*fii_internal)(0);
   uim_scm_gc_unprotect_stack(stack_start_protected);
   TEST_STACK_START(stack_start_protected, stack_start_actual);
 
-  stack_start_protected = uim_scm_gc_protect_stack();
+  stack_start_protected = uim_scm_gc_current_stack();
+  uim_scm_gc_protect_stack(stack_start_protected);
   (*fspv_internal)();
   uim_scm_gc_unprotect_stack(stack_start_protected);
   TEST_STACK_START(stack_start_protected, stack_start_actual);
 
-  stack_start_protected = uim_scm_gc_protect_stack();
+  stack_start_protected = uim_scm_gc_current_stack();
+  uim_scm_gc_protect_stack(stack_start_protected);
   (*fspsp_internal)((uim_lisp *)NULL);
   uim_scm_gc_unprotect_stack(stack_start_protected);
   TEST_STACK_START(stack_start_protected, stack_start_actual);
