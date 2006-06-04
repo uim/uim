@@ -11,6 +11,9 @@ if HAVE_CUTTER_H
 noinst_LTLIBRARIES += libtest_gc_protect_stack.la
 libtest_gc_protect_stack_la_SOURCES = test_gc_protect_stack.c cutter-sscm.h
 
+noinst_LTLIBRARIES += libtest_alignment.la
+libtest_alignment_la_SOURCES = test_alignment.c cutter-sscm.h
+
 noinst_LTLIBRARIES            += libtest_strcasecmp.la
 libtest_strcasecmp_la_SOURCES = test_strcasecmp.c cutter-sscm.h
 
