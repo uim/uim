@@ -98,7 +98,7 @@ typedef void (*uim_func_ptr)(void);
  * Don't access this variables directly. Use
  * UIM_SCM_GC_PROTECTED_CALL*() instead.
  */
-extern uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(void);
+extern uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(uim_lisp *);
 #endif /* UIM_SCM_GCC4_READY_GC */
 
 
@@ -144,7 +144,8 @@ uim_scm_set_lib_path(const char *path);
         uim_lisp *stack_start;                                               \
                                                                              \
         if (0) exp_ret func args;  /* compile-time type check */             \
-        stack_start = uim_scm_gc_protect_stack();                            \
+        stack_start = uim_scm_gc_current_stack();                            \
+        uim_scm_gc_protect_stack(stack_start);                               \
         exp_ret (*fp)args;                                                   \
         uim_scm_gc_unprotect_stack(stack_start);                             \
     } while (/* CONSTCOND */ 0)
@@ -168,7 +169,9 @@ void
 uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
 
 uim_lisp *
-uim_scm_gc_protect_stack_internal(void) UIM_SCM_NOINLINE;
+uim_scm_gc_current_stack(void);
+uim_lisp *
+uim_scm_gc_protect_stack_internal(uim_lisp *stack_start) UIM_SCM_NOINLINE;
 #else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect(uim_lisp *location);

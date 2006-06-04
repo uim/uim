@@ -74,7 +74,7 @@ static FILE *uim_output = NULL;
 
 #if UIM_SCM_GCC4_READY_GC
 /* See also the comment about these variables in uim-scm.h */
-uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(void)
+uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(uim_lisp *)
   = &uim_scm_gc_protect_stack_internal;
 #endif /* UIM_SCM_GCC4_READY_GC */
 
@@ -289,16 +289,23 @@ uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
 
 #if UIM_SCM_GCC4_READY_GC
 uim_lisp *
-uim_scm_gc_protect_stack_internal(void)
+uim_scm_gc_current_stack(void)
 {
   /*
    * &stack_start will be relocated to start of the frame of subsequent
    * function call
    */
-  ScmObj stack_start;
+  uim_lisp stack_start;
 
-  /* intentionally returns invalidated local address */
-  return (uim_lisp *)scm_gc_protect_stack(&stack_start);
+  /* intentionally returns invalidated local address with a warning
+   * suppression workaround */
+  return (uim_lisp *)(((uintptr_t)&stack_start | 1) ^ 1);
+}
+
+uim_lisp *
+uim_scm_gc_protect_stack_internal(uim_lisp *stack_start)
+{
+  return (uim_lisp *)scm_gc_protect_stack((ScmObj*)stack_start);
 }
 #else /* UIM_SCM_GCC4_READY_GC */
 void
