@@ -175,17 +175,33 @@
 
 
 (define m17nlib-construct-modifier
-  (lambda (key-state)
+  (lambda (key key-state)
     (let ((key-str ""))
-      (if (shift-key-mask key-state)
+      (if (and
+	   (shift-key-mask key-state)
+	   (not (char-graphic? key)))
 	  (set! key-str (string-append "S-" key-str)))
-      (if (control-key-mask key-state)
+      (if (and
+	   (control-key-mask key-state)
+	   (char-printable? key))
 	  (set! key-str (string-append "C-" key-str)))
       (if (alt-key-mask key-state)
 	  (set! key-str (string-append "A-" key-str)))
       (if (meta-key-mask key-state)
 	  (set! key-str (string-append "M-" key-str)))
+      (if (super-key-mask key-state)
+	  (set! key-str (string-append "s-" key-str)))
+      (if (hyper-key-mask key-state)
+	  (set! key-str (string-append "H-" key-str)))
       key-str)))
+
+(define m17nlib-construct-key
+  (lambda (key key-state)
+    (if (symbol? key)
+	 (cdr (assq key m17nlib-key-translation-alist))
+	 (if (control-key-mask key-state)
+	     (charcode->string (char-upcase key))
+	     (charcode->string key)))))
 
 (define m17nlib-proc-direct-state
   (lambda (mc key key-state)
@@ -243,10 +259,8 @@
 (define m17nlib-translate-ukey-to-mkey
   (lambda (key key-state)
     (string-append 
-     (m17nlib-construct-modifier key-state)
-     (if (symbol? key)
-	 (cdr (assq key m17nlib-key-translation-alist))
-	 (charcode->string key)))))
+     (m17nlib-construct-modifier key key-state)
+     (m17nlib-construct-key key key-state))))
 
 (define m17nlib-init-handler
   (lambda (id im arg)
@@ -258,8 +272,8 @@
 
 (define m17nlib-push-key
   (lambda (mc key key-state)
-    (let* ((mid (m17nlib-context-mc-id mc))
-	   (mkey (m17nlib-translate-ukey-to-mkey key key-state)))
+    (let ((mid (m17nlib-context-mc-id mc))
+	  (mkey (m17nlib-translate-ukey-to-mkey key key-state)))
       (m17nlib-lib-push-symbol-key mid mkey))))
 
 (define m17nlib-press-key-handler
