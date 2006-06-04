@@ -618,7 +618,7 @@ SCM_MISC_DECLARE_TYPE(STRING, L1(1), SCM_MISC_XTYPE(char *),
 
 /* Vectors. */
 SCM_MISC_DECLARE_TYPE(VECTOR, L1(2), SCM_MISC_XTYPE(ScmObj*),
-                      SCM_MISC_XALIGN(3), SCM_MISC_YTYPE(scm_int_t));
+                      SCM_MISC_XALIGN(2), SCM_MISC_YTYPE(scm_int_t));
 
 #define SCM_VECTOR_PTR(o)         SCM_MISC_PTR((o), VECTOR)
 #define SCM_SAL_VECTORP(o)        SCM_MISC_TYPEP((o), VECTOR)
@@ -684,7 +684,7 @@ SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3), SCM_MISC_XTYPE(ScmFuncType),
 struct ScmCharPort_;
 
 SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3), SCM_MISC_XTYPE(struct ScmCharPort_*),
-                      SCM_MISC_XALIGN(3), /* FIXME! */
+                      SCM_MISC_XALIGN(2),
                       SCM_MISC_YTYPE(int /* enum ScmPortFlag */));
 
 #define SCM_PORT_PTR(o)             SCM_MISC_PTR((o), PORT)
