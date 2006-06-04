@@ -120,10 +120,6 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* GCC4-optimization-proof stack protection
-  - Write test
-  - Make SCM_GCC4_READY_GC default
-
 * Write test for tail expression of all tail-recursive syntaxes
 
 * Add tests for proper tail recursion with 'apply' and 'guard' to

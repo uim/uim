@@ -201,7 +201,6 @@ extern "C" {
     } while (/* CONSTCOND */ 0)
 #endif
 
-#if SCM_GCC4_READY_GC
 /*
  * Function caller with protecting Scheme objects on stack from GC
  *
@@ -230,8 +229,6 @@ extern "C" {
         exp_ret (*fp)args;                                                   \
         scm_gc_unprotect_stack(stack_start);                                 \
     } while (/* CONSTCOND */ 0)
-
-#endif /* SCM_GCC4_READY_GC */
 
 #if SCM_USE_PORT
 #define SCM_ENSURE_LIVE_PORT(port)                                           \
@@ -1095,7 +1092,6 @@ typedef ScmObj (*scm_procedure_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmOb
   Variable Declarations
 =======================================*/
 /* storage-gc.c */
-#if SCM_GCC4_READY_GC
 /*
  * The variable to ensure that a call of scm_gc_protect_stack() is
  * uninlined in portable way through (*f)().
@@ -1109,7 +1105,6 @@ SCM_GLOBAL_VARS_END(gc);
 SCM_DECLARE_EXPORTED_VARS(gc);
 #define scm_gc_current_stack_fp SCM_GLOBAL_VAR(gc, scm_gc_current_stack_fp)
 #define scm_gc_protect_stack_fp SCM_GLOBAL_VAR(gc, scm_gc_protect_stack_fp)
-#endif /* SCM_GCC4_READY_GC */
 
 /*=======================================
   Function Declarations
@@ -1148,7 +1143,6 @@ SCM_EXPORT char *scm_strdup(const char *str);
 SCM_EXPORT void scm_gc_protect(ScmObj *var);
 SCM_EXPORT void scm_gc_protect_with_init(ScmObj *var, ScmObj init_val);
 SCM_EXPORT void scm_gc_unprotect(ScmObj *var);
-#if SCM_GCC4_READY_GC
 /*
  * Ordinary programs should not call these functions directly. Use
  * SCM_GC_PROTECTED_CALL*() instead.
@@ -1160,12 +1154,8 @@ SCM_EXPORT void scm_gc_unprotect(ScmObj *var);
 #define scm_gc_current_stack (*scm_gc_current_stack_fp)
 #define scm_gc_protect_stack (*scm_gc_protect_stack_fp)
 #endif /* __GNUC__ */
-
 SCM_EXPORT ScmObj *scm_gc_current_stack_internal(void) SCM_NOINLINE;
 SCM_EXPORT ScmObj *scm_gc_protect_stack_internal(ScmObj *designated_stack_start) SCM_NOINLINE;
-#else /* SCM_GCC4_READY_GC */
-SCM_EXPORT void scm_gc_protect_stack(ScmObj *stack_start);
-#endif /* SCM_GCC4_READY_GC */
 SCM_EXPORT void scm_gc_unprotect_stack(ScmObj *stack_start);
 
 /* symbol.c */

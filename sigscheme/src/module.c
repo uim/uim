@@ -167,19 +167,8 @@ SCM_EXPORT scm_bool
 scm_use(const char *feature)
 {
     scm_bool ok;
-#if !SCM_GCC4_READY_GC
-    ScmObj stack_start;
-#endif
 
-#if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL(ok, scm_bool, scm_use_internal, (feature));
-#else
-    scm_gc_protect_stack(&stack_start);
-
-    ok = scm_use_internal(feature);
-
-    scm_gc_unprotect_stack(&stack_start);
-#endif
 
     return ok;
 }

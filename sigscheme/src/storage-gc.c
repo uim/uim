@@ -77,9 +77,7 @@ typedef ScmCell *ScmObjHeap;
 /*=======================================
   Variable Definitions
 =======================================*/
-#if SCM_GCC4_READY_GC
 SCM_DEFINE_EXPORTED_VARS(gc);
-#endif /* SCM_GCC4_READY_GC */
 
 SCM_GLOBAL_VARS_BEGIN(static_gc);
 #define static
@@ -248,7 +246,6 @@ scm_gc_unprotect(ScmObj *var)
 /*===========================================================================
   C Stack Protection
 ===========================================================================*/
-#if SCM_GCC4_READY_GC
 /* scm_gc_current_stack_internal() is separated from
  * scm_gc_protect_stack_internal() to avoid returning inaccurate stack-start
  * address. Don't add any code fragments such as SCM_ASSERT() to this
@@ -279,16 +276,6 @@ scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
 
     return l_stack_start_pointer;
 }
-
-#else /* SCM_GCC4_READY_GC */
-
-SCM_EXPORT void
-scm_gc_protect_stack(ScmObj *stack_start)
-{
-    if (!l_stack_start_pointer)
-        l_stack_start_pointer = stack_start;
-}
-#endif /* SCM_GCC4_READY_GC */
 
 SCM_EXPORT void
 scm_gc_unprotect_stack(ScmObj *stack_start)

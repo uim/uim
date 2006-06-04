@@ -108,19 +108,7 @@ static scm_bool show_promptp(void);
 static void
 repl(void)
 {
-#if !SCM_GCC4_READY_GC
-    ScmObj stack_start = NULL;
-#endif
-
-#if !SCM_GCC4_READY_GC
-    scm_gc_protect_stack(&stack_start);
-#endif
-
     repl_loop();
-
-#if !SCM_GCC4_READY_GC
-    scm_gc_unprotect_stack(&stack_start);
-#endif
 }
 
 static void
@@ -258,11 +246,7 @@ main(int argc, char **argv)
     if (filename) {
         scm_load(filename);
     } else {
-#if SCM_GCC4_READY_GC
         SCM_GC_PROTECTED_CALL_VOID(repl, ());
-#else
-        repl();
-#endif
         /* ERR("usage: sscm <filename>"); */
     }
 

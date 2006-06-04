@@ -125,19 +125,7 @@ scm_p_load_path(void)
 SCM_EXPORT void
 scm_load(const char *filename)
 {
-#if !SCM_GCC4_READY_GC
-    ScmObj stack_start;
-#endif
-
-#if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL_VOID(scm_load_internal, (filename));
-#else
-    scm_gc_protect_stack(&stack_start);
-
-    scm_load_internal(filename);
-
-    scm_gc_unprotect_stack(&stack_start);
-#endif
 }
 
 static void

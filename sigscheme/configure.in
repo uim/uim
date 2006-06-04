@@ -327,9 +327,6 @@ use_storage_fatty="yes"
 # the 'compact' implementation
 use_storage_compact="no"
 
-# use experimental gcc4-ready stack protection
-gcc4_ready_gc="yes"
-
 # use int64_t as scm_int_t
 use_64bit_fixnum="no"
 
@@ -675,11 +672,6 @@ fi
 AM_CONDITIONAL(USE_STORAGE_COMPACT, test "x$use_storage_compact" = xyes)
 if test "x$use_storage_compact" = xyes; then
   AC_DEFINE(SCM_USE_STORAGE_COMPACT, 1, [use the 'compact' implementation])
-fi
-
-AM_CONDITIONAL(GCC4_READY_GC, test "x$gcc4_ready_gc" = xyes)
-if test "x$gcc4_ready_gc" = xyes; then
-  AC_DEFINE(SCM_GCC4_READY_GC, 1, [use experimental gcc4-ready stack protection])
 fi
 
 AM_CONDITIONAL(USE_64BIT_FIXNUM, test "x$use_64bit_fixnum" = xyes)

@@ -97,15 +97,7 @@ scm_initialize(const ScmStorageConf *storage_conf)
 {
     SCM_AGGREGATED_GLOBAL_VARS_INIT();
 
-#if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, (storage_conf));
-#else
-    ScmObj stack_start;
-
-    scm_gc_protect_stack(&stack_start);
-    scm_initialize_internal();
-    scm_gc_unprotect_stack(&stack_start);
-#endif
 }
 
 static void
@@ -211,22 +203,9 @@ scm_finalize()
 SCM_EXPORT ScmObj
 scm_eval_c_string(const char *exp)
 {
-#if !SCM_GCC4_READY_GC
-    ScmObj stack_start;
-#endif
     ScmObj ret;
 
-#if SCM_GCC4_READY_GC
     SCM_GC_PROTECTED_CALL(ret, ScmObj, scm_eval_c_string_internal, (exp));
-#else
-    /* start protecting stack */
-    scm_gc_protect_stack(&stack_start);
-
-    ret = scm_eval_c_string_internal(exp);
-
-    /* now no need to protect stack */
-    scm_gc_unprotect_stack(&stack_start);
-#endif
 
     return ret;
 }
