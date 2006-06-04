@@ -177,6 +177,7 @@ UT_DEF2(test_1, "void (*)(void)")
 {
     stack_start_protected = scm_gc_protect_stack(NULL);
     (*fvv_internal)();
+    scm_gc_unprotect_stack(stack_start_protected);
 
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
@@ -185,6 +186,7 @@ UT_DEF2(test_2, "int (*)(void)")
 {
     stack_start_protected = scm_gc_protect_stack(NULL);
     (*fiv_internal)();
+    scm_gc_unprotect_stack(stack_start_protected);
 
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
@@ -193,6 +195,7 @@ UT_DEF2(test_3, "void (*)(int)")
 {
     stack_start_protected = scm_gc_protect_stack(NULL);
     (*fvi_internal)(0);
+    scm_gc_unprotect_stack(stack_start_protected);
 
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
@@ -201,6 +204,7 @@ UT_DEF2(test_4, "int (*)(int)")
 {
     stack_start_protected = scm_gc_protect_stack(NULL);
     (*fii_internal)(0);
+    scm_gc_unprotect_stack(stack_start_protected);
 
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
@@ -209,6 +213,7 @@ UT_DEF2(test_5, "ScmObj *(*)(ScmObj *)")
 {
     stack_start_protected = scm_gc_protect_stack(NULL);
     (*fspsp_internal)(NULL);
+    scm_gc_unprotect_stack(stack_start_protected);
 
     UT_ASSERT_EQUAL_PTR(stack_start_protected, stack_start_actual);
 }
@@ -217,6 +222,7 @@ UT_DEF2(test_6, "ScmObj *(*)(ScmObj *) (2)")
 {
     stack_start_protected = scm_gc_protect_stack(NULL);
     (*fspsp2_internal)(NULL);
+    scm_gc_unprotect_stack(stack_start_protected);
 
     UT_ASSERT_EQUAL_PTR(stack_start_protected, stack_start_actual);
 }
