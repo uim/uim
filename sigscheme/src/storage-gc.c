@@ -153,6 +153,7 @@ scm_init_gc(const ScmStorageConf *conf)
     SCM_GLOBAL_VARS_INIT(gc);
     SCM_GLOBAL_VARS_INIT(static_gc);
 
+    scm_gc_current_stack_fp = scm_gc_current_stack_internal;
     scm_gc_protect_stack_fp = scm_gc_protect_stack_internal;
 
     initialize_heap(conf);
@@ -248,12 +249,12 @@ scm_gc_unprotect(ScmObj *var)
   C Stack Protection
 ===========================================================================*/
 #if SCM_GCC4_READY_GC
-/* scm_gc_current_stack() is separated from scm_gc_protect_stack_internal() to
- * avoid returning inaccurate stack-start address. Don't add any code fragments
- * such as SCM_ASSERT() to this function. It may alter the stack address.
- *   -- YamaKen 2006-06-04 */
+/* scm_gc_current_stack_internal() is separated from
+ * scm_gc_protect_stack_internal() to avoid returning inaccurate stack-start
+ * address. Don't add any code fragments such as SCM_ASSERT() to this
+ * function. It may alter the stack address.  -- YamaKen 2006-06-04 */
 SCM_EXPORT ScmObj *
-scm_gc_current_stack(void)
+scm_gc_current_stack_internal(void)
 {
     /*
      * &stack_start will be relocated to start of the frame of subsequent
