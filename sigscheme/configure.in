@@ -906,6 +906,7 @@ AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  test/Makefile
                  test-c/Makefile
+                 test-c2/Makefile
                  bench/Makefile])
 
 AC_SUBST(docdir)
