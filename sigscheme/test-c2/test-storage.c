@@ -121,7 +121,12 @@ TST_CASE("eq? and constants")
     TST_EXPR(VALIDP(SCM_FALSE));
     TST_EXPR(FALSEP(SCM_FALSE));
     TST_EXPR(!FALSEP(SCM_TRUE));
+#if SCM_COMPAT_SIOD_BUGS
+    TST_EXPR(NULLP(SCM_FALSE));
+    TST_EXPR(FALSEP(SCM_NULL));
+#else
     TST_EXPR(!FALSEP(SCM_NULL));
+#endif
     TST_EXPR(!FALSEP(SCM_EOF));
     TST_EXPR(EOFP(SCM_EOF));
 
@@ -174,6 +179,10 @@ TST_CASE("closure")
 TST_CASE("int")
 {
     ScmObj obj;
+    /* for suppressing compiler warning on intentional overflowed/underflowed
+     * value */
+    volatile scm_int_t scm_int_min = SCM_INT_MIN;
+    volatile scm_int_t scm_int_max = SCM_INT_MAX;
 
 #define INT_TST(tst, val)                       \
     tst(obj, INT,                               \
@@ -182,16 +191,19 @@ TST_CASE("int")
     INT_TST(TST_INIT1, 1);
     INT_TST(TST_INIT1, SCM_INT_MIN);
     INT_TST(TST_INIT1, SCM_INT_MAX);
-    /* Does anyone know how to shut the compiler up? */
-    obj = SCM_MAKE_INT(SCM_INT_MIN - 1);
+    obj = SCM_MAKE_INT(scm_int_min - 1);
     TST_COND(INTP(obj), "INTP() on underflowed int");
-    obj = SCM_MAKE_INT(SCM_INT_MAX + 1);
+    obj = SCM_MAKE_INT(scm_int_max + 1);
     TST_COND(INTP(obj), "INTP() on overflowed int");
 }
 
 TST_CASE("char")
 {
     ScmObj obj;
+    /* for suppressing compiler warning on intentional overflowed/underflowed
+     * value */
+    volatile scm_ichar_t scm_char_min = SCM_CHAR_MIN;
+    volatile scm_ichar_t scm_char_max = SCM_CHAR_MAX;
 
 #define CHAR_TST(tst, val)                      \
     tst(obj, CHAR,                              \
@@ -200,9 +212,9 @@ TST_CASE("char")
     CHAR_TST(TST_INIT1, 0);
     CHAR_TST(TST_INIT1, SCM_CHAR_MIN);
     CHAR_TST(TST_INIT1, SCM_CHAR_MAX);
-    obj = SCM_MAKE_CHAR(SCM_CHAR_MIN - 1);
+    obj = SCM_MAKE_CHAR(scm_char_min - 1);
     TST_COND(CHARP(obj), "CHARP() on underflowed char");
-    obj = SCM_MAKE_CHAR(SCM_CHAR_MAX + 1);
+    obj = SCM_MAKE_CHAR(scm_char_max + 1);
     TST_COND(CHARP(obj), "CHARP() on overflowed char");
 }
 

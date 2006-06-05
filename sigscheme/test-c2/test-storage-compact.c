@@ -44,14 +44,27 @@
 
 #if SCM_USE_STORAGE_COMPACT
 
+/* temporary workaround. see the comment of storage.c */
+#if 1
+#define SCM_CONS_INIT(obj, kar, kdr)                    \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CONS_INIT,          \
+                            (ScmObj, ScmObj, ScmObj),   \
+                            ((obj), (kar), (kdr)))
+
+#define SCM_SYMBOL_INIT(obj, nam, val)                  \
+    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SYMBOL_INIT,        \
+                            (ScmObj, char*, ScmObj),    \
+                            ((obj), (nam), (val)))
+#endif
+
 TST_CASE("tag-consistent?")
 {
     ScmCell *cell;
     ScmObj obj;
 
-    cell = scm_malloc_aligned(sizeof(*cell));
+    cell = malloc_aligned_8(sizeof(*cell));
     obj = (ScmObj)cell;
-    SCM_SYMBOL_INIT(obj, SCM_NULL, NULL);
+    SCM_SYMBOL_INIT(obj, NULL, SCM_NULL);
     TST_COND(SCM_CELL_MISCP(*cell), "cell-misc?");
     TST_COND(SCM_CELL_SYMBOLP(*cell), "cell-symbol?");
     TST_COND(SCM_SYMBOLP(obj), "init -> symbol?");
@@ -111,7 +124,7 @@ TST_CASE("cell type predicates")
              && cell_types_disjunct(SCM_UNTAG_PTR(obj)),        \
              "CELL_" #typ "P()")
 
-    vec = scm_malloc_aligned(sizeof(ScmObj) * 3);
+    vec = malloc_aligned_8(sizeof(ScmObj) * 3);
     vec[0] = SCM_NULL;
     vec[1] = SCM_MAKE_INT(8);
     vec[2] = SCM_FALSE;

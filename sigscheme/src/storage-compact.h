@@ -333,7 +333,11 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_SAL_NULL        SCM_MAKE_CONST(0)
 #define SCM_SAL_INVALID     SCM_MAKE_CONST(1)
 #define SCM_SAL_UNBOUND     SCM_MAKE_CONST(2)
+#if SCM_COMPAT_SIOD_BUGS
+#define SCM_SAL_FALSE       SCM_SAL_NULL
+#else
 #define SCM_SAL_FALSE       SCM_MAKE_CONST(3)
+#endif
 #define SCM_SAL_TRUE        SCM_MAKE_CONST(4)
 #define SCM_SAL_EOF         SCM_MAKE_CONST(5)
 #define SCM_SAL_UNDEF       SCM_MAKE_CONST(6)

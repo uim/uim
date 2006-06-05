@@ -32,13 +32,28 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+#define ALIGN_HEAP 8
+
+static void *
+malloc_aligned_8(size_t size)
+{
+    void *ret;
+#if HAVE_PAGE_ALIGNED_MALLOC
+    /* workaround for page-sized scm_malloc_aligned() */
+    ret = scm_malloc(size);
+    SCM_ASSERT(!((uintptr_t)ret % ALIGN_HEAP));
+#else
+    ret = scm_malloc_aligned(size);
+#endif
+    return ret;
+}
 
 static void *
 aligned_dup(void *p, size_t size)
 {
     void *ret;
-    ret = scm_malloc_aligned (size);
+
+    ret = malloc_aligned_8(size);
     memcpy(ret, p, size);
     return ret;
 }
-
