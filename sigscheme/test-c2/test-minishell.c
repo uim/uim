@@ -31,6 +31,8 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+#include <stdlib.h>
+
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 
@@ -42,13 +44,14 @@ main ()
     for (;;) {
         ScmObj in = scm_p_current_input_port();
         ScmObj out = scm_p_current_output_port();
-        scm_format(out, SCM_FMT_NONE, "ssmini> ");
-        sexp = scm_p_read(LIST_1(in));
+        scm_port_puts(out, "ssmini> ");
+        sexp = scm_read(in);
         if (SCM_EOFP(sexp))
             break;
         sexp = scm_eval(sexp, SCM_INTERACTION_ENV);
         SCM_WRITE_SS(out, sexp);
+        scm_port_newline(out);
     }
     scm_finalize();
-    return 0;
+    return EXIT_SUCCESS;
 }
