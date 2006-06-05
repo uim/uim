@@ -129,8 +129,6 @@ Assigned to YamaKen:
 * Finish error handling
   - Make error loop handling robust
   - [uim] Add fatal error recovery hook
-  - Fix the SEGV by infinite error loop on (+ 3333333333333333333333333333)
-    reported by kzk (not reproduced on YamaKen's env)
 
 * Write test for tail expression of all tail-recursive syntaxes
 

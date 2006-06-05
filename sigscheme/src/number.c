@@ -530,11 +530,25 @@ scm_string2number(const char *str, int radix, scm_bool *err)
 #error "This platform is not supported"
 #endif
 
-    if (errno == ERANGE || n < SCM_INT_MIN || SCM_INT_MAX < n)
-        ERR("fixnum limit exceeded: ~MD", n);
-
     empty_strp = (end == str);  /* apply the first rule above */
     *err = (empty_strp || *end);
+
+    /*
+     * glibc warning: Although the manpage describes the behavior as follows,
+     * ERANGE is returned for "". The description "may be set to [EINVAL]" is
+     * really 'may'. And the ISO C standard does not define errno for the
+     * case. So we should not depend on the assumption that ERANGE is returned
+     * only when overflow/underflow is occurred.
+     *
+     * quoted from glibc 2.3:
+     *   RETURN VALUE
+     *     Upon successful completion, these functions shall return the
+     *     converted value, if any. If no conversion could be performed, 0
+     *     shall be returned and errno may be set to [EINVAL].
+     */
+    if ((errno == ERANGE && !empty_strp) || n < SCM_INT_MIN || SCM_INT_MAX < n)
+        ERR("fixnum limit exceeded: ~MD", n);
+
     return n;
 }
 
