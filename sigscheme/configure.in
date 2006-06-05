@@ -326,13 +326,34 @@ use_warning_suppressor="yes"
 # Storage configurations
 #--------------------------------------
 #
-# Storage layer implementation: choose exclusively. (fatty or compact)
+# Storage layer implementation: choose exclusively.
 #
-# the 'fatty' implementation
-use_storage_fatty="yes"
-
-# the 'compact' implementation
-use_storage_compact="no"
+# FIXME: set other storage-dependent configurations
+AC_ARG_WITH(storage,
+  AC_HELP_STRING([--with-storage=IMPL],
+                 [Choose the storage-layer implementation for SigScheme to use.
+                 IMPL={fatty|compact}  (default: fatty)
+                 fatty:   full-featured but memory consumptive
+                 compact: consumes half of fatty but has some limitations]),
+  [
+    case $with_storage in
+      fatty)
+        use_storage_fatty="yes"
+        use_storage_compact="no"
+        ;;
+      compact)
+        use_storage_fatty="no"
+        use_storage_compact="yes"
+        ;;
+      *)
+        AC_MSG_ERROR([unknown storage implementation])
+        ;;
+    esac
+  ],
+  [
+    use_storage_fatty="yes"
+    use_storage_compact="no"
+  ])
 
 # use int64_t as scm_int_t
 use_64bit_fixnum="no"
@@ -365,6 +386,7 @@ Following specs are currently recognized:
 (1)'full': Full Features.
 (2)'r5rs': R5RS features only.
 (3)'siod': SIOD compatible mode.
+(4)'dev':  For developers.
 By default, 'full' is selected.]),
   [
     case $enable_configuration in
@@ -395,6 +417,13 @@ By default, 'full' is selected.]),
         strict_r5rs="no"
         strict_null_form="no"
         strict_argcheck="no"
+        ;;
+      dev)
+        compat_siod="yes"
+        compat_siod_bugs="yes"
+        strict_r5rs="no"
+        strict_null_form="no"
+        strict_argcheck="yes"
         ;;
       *)
         echo "unrecognized config: '$enable_configuration'."
