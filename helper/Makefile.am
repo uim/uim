@@ -1,4 +1,4 @@
-EXTRA_DIST = GNOME_UimApplet.server.in.in $(uim_dict_ui_DATA)
+EXTRA_DIST = GNOME_UimApplet.server.in.in uim-dict-ui.xml
 
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
