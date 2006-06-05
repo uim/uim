@@ -5,6 +5,13 @@ Overview of changes from 1.1.0-beta to 1.1.0
     - libuim
       - fix a GC corruption that causes SEGV (YamaKen)
 
+  o Minor
+    - m17n-lib IM
+      - fix key handling with modifier keys (Etsushi)
+
+* Others
+  - tidy up automake/autoconf related scripts
+
 Overview of changes from 1.1.0-alpha to 1.1.0-beta
 ==
 * New features
