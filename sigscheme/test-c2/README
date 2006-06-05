@@ -1,6 +1,4 @@
-Experimental unittest utilities for tests at the C level.  Patch
-configure.in with sscm-test-configure-in.diff and move this directory
-to $(top_srcdir)/test-c.
+Experimental unittest utilities for tests at the C level.
 
 Using the testing utilities should be straightforward.  Generally, a
 test suite looks like this:
