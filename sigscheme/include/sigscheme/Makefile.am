@@ -24,7 +24,7 @@ encoding.h: $(top_srcdir)/src/encoding.h
 sigscheme.h: $(top_srcdir)/src/sigscheme.h
 	rm -f $@
 	$(LN_S) $< $@
-storage-common.h: $(top_srcdir)/src/storage-fatty.h
+storage-common.h: $(top_srcdir)/src/storage-common.h
 	rm -f $@
 	$(LN_S) $< $@
 storage-fatty.h: $(top_srcdir)/src/storage-fatty.h
