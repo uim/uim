@@ -170,6 +170,7 @@ tst_main(tst_suite_info *suite)                         \
     };                                                          \
     size_t i;                                                   \
                                                                 \
+    puts("testing " __FILE__ "...");                                    \
     for (i = 0; cases[i].fn; i++) {                             \
         TST_RUN(cases[i].fn, suite, &cases[i]);                 \
         tst_analyze(suite, &cases[i]);                          \
