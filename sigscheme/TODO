@@ -1,9 +1,6 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Object representation compaction
-  - Make all tests passed without error or SEGV
-
 * Clear license, copyright and changes information ([Anthy-dev 2933])
   - scm_length() in list.c
   - "Shiro Kawai" part of read.c
@@ -96,6 +93,13 @@ Performance improvements:
 ==============================================================================
 Logical simplifications:
 
+* (not required for now) Reorganize unit test for C
+  - Remove GNU sed dependency of test-c2/collect.sh.in
+  - Separate SigScheme-dependent part and generic part of test-c2, and
+    generalize the framework as usable for uim
+  - Port Cutter-based tests to the new framework
+  - Name 'the testing framework'
+
 * (not required for now) Reorganize list (argument) extraction API
 
 * (not required for now) Reorganize encoding and char codec API
@@ -127,8 +131,6 @@ Assigned to YamaKen:
   - [uim] Add fatal error recovery hook
   - Fix the SEGV by infinite error loop on (+ 3333333333333333333333333333)
     reported by kzk (not reproduced on YamaKen's env)
-
-* Evaluate experimental/test-c and adopt it as standard if reasonable
 
 * Write test for tail expression of all tail-recursive syntaxes
 
