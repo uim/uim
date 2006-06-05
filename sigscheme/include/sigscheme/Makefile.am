@@ -1,7 +1,7 @@
 BUILT_SOURCES = \
         config.h sigscheme-stdint.h \
         config-old.h scmint.h global.h encoding.h sigscheme.h \
-        storage-fatty.h storage-compact.h
+        storage-common.h storage-fatty.h storage-compact.h
 
 config.h: $(top_builddir)/src/config.h
 	rm -f $@
@@ -22,6 +22,9 @@ encoding.h: $(top_srcdir)/src/encoding.h
 	rm -f $@
 	$(LN_S) $< $@
 sigscheme.h: $(top_srcdir)/src/sigscheme.h
+	rm -f $@
+	$(LN_S) $< $@
+storage-common.h: $(top_srcdir)/src/storage-fatty.h
 	rm -f $@
 	$(LN_S) $< $@
 storage-fatty.h: $(top_srcdir)/src/storage-fatty.h

@@ -2,13 +2,17 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/src
 AM_LDFLAGS  = -rpath $(libdir)
 LIBS        = $(top_builddir)/src/libsscm.la
 
+EXTRA_DIST= sscm-test.h utils.c test-storage.c test-storage-compact.c
+
 SUFFIXES= -coll.o -coll.c
 CLEANFILES= *-coll.c
 
+if MAINTAINER_MODE
 # FIXME: how do I make this rule depend on collect.sh (is it
 # possible)?
 .c-coll.c:
 	$(SH) ./collect.sh $< > $@ || { rm -f $@; false; }
+endif
 
 
 # Name your test suite with a -coll suffix if you want it processed
