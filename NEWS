@@ -8,6 +8,7 @@ Overview of changes from 1.1.0-beta to 1.1.0
   o Minor
     - Qt immodule
       - proper deadkey and compose key handling (bug #3988, Etsushi)
+      - adapted to the menu-based IM switcher (Etsushi)
 
     - m17n-lib IM
       - fix key handling with modifier keys (Etsushi)
