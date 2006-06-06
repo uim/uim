@@ -133,6 +133,7 @@ uim_helper_server_LIBS =
 uim_helper_server_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_helper_server_CFLAGS =
 uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c
+uim_helper_server_LDADD = $(top_builddir)/replace/libreplace.la
 
 uim_sh_LIBS =
 uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)

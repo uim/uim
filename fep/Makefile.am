@@ -11,5 +11,6 @@ uim_fep_CFLAGS =
 uim_fep_LDADD = $(top_builddir)/uim/libuim.la @FEP_LIBADD@
 
 uim_fep_tick_SOURCES = uim-fep-tick.c uim-fep.h udsock.c udsock.h
+uim_fep_tick_LDADD = $(top_builddir)/replace/libreplace.la
 
 endif
