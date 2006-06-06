@@ -77,7 +77,7 @@ const char *usersockname(const char *file)
     struct passwd *pw = getpwuid(getuid());
     snprintf(filebuf, UNIX_PATH_MAX, "uim-fep-%s", pw->pw_name);
   } else {
-    strlcpy(filebuf, file, UNIX_PATH_MAX - 1);
+    strlcpy(filebuf, file, UNIX_PATH_MAX);
   }
   if (getenv("TMP")) {
     snprintf(buf, UNIX_PATH_MAX, "%s/%s", getenv("TMP"), filebuf);
@@ -93,7 +93,7 @@ void init_sendsocket(const char *sock_path)
   s_send_sockfd = socket(PF_UNIX, SOCK_DGRAM, 0);
   memset(&s_servaddr, 0, sizeof(s_servaddr));
   s_servaddr.sun_family = AF_UNIX;
-  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
+  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX);
 }
 
 void sendline(const char *buf)
@@ -112,7 +112,7 @@ void init_recvsocket(const char *sock_path)
   s_recv_sockfd = socket(PF_UNIX, SOCK_DGRAM, 0);
   memset(&s_servaddr, 0, sizeof(s_servaddr));
   s_servaddr.sun_family = AF_UNIX;
-  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
+  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX);
   if (bind(s_recv_sockfd, (struct sockaddr *)&s_servaddr, sizeof(s_servaddr)) < 0) {
     perror(sock_path);
     exit(EXIT_FAILURE);

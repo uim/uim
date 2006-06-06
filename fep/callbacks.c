@@ -498,7 +498,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
       int first_char_byte = rval[0];
       int first_char_width = rval[1];
       char *first_char = malloc(first_char_byte + 1);
-      strlcpy(first_char, str, first_char_byte);
+      strlcpy(first_char, str, first_char_byte + 1);
       cursor = FALSE;
       pushback_cb(NULL, attr - UPreeditAttr_Reverse, first_char);
       free(first_char);

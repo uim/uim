@@ -4187,7 +4187,7 @@ load (LISP fname, LISP cflag, LISP rflag)
   char *s1, *s2;
   s1 = get_c_string_dim(fname, &len);
   s2 = alloca(len + 1);
-  strlcpy(s2, s1, len);
+  strlcpy(s2, s1, len + 1);
   return (vload (s2, NULLP (cflag) ? 0 : 1,
 		 1));
 }

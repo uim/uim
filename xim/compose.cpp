@@ -422,7 +422,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
     if (!mb)
 	return 0;
     len = strlen(mb);
-    strlcpy(buf, mb, len);
+    strlcpy(buf, mb, MB_LEN_MAX + 1);
     free(mb);
 
     return len;

@@ -282,7 +282,7 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
 	return NULL;
     }
 
-    strlcpy(convstr, outbuf, outbufsize - outbytesleft);
+    strlcpy(convstr, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);
     return convstr;
 }

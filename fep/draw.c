@@ -438,7 +438,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
         }
         goto end_candidate;
       } else if (g_opt.status_type == BACKTICK) {
-        strlcpy(s_candbuf, statusline_str, CANDSIZE - 1);
+        strlcpy(s_candbuf, statusline_str, CANDSIZE);
       }
     }
     if (prev_candidate_col != candidate_col) {
@@ -464,7 +464,7 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
           put_uim_str(candidate_str, UPreeditAttr_Reverse);
         } else if (g_opt.status_type == BACKTICK) {
           int byte;
-          strlcpy(s_candbuf, statusline_str, CANDSIZE - 1);
+          strlcpy(s_candbuf, statusline_str, CANDSIZE);
           byte = (width2byte(statusline_str, candidate_col))[0] + strlen(candidate_str);
           if (0 <= byte && byte <= CANDSIZE - 1) {
             s_candbuf[byte] = ']';
@@ -566,7 +566,7 @@ end_candidate:
         }
 
       } else if (g_opt.status_type == BACKTICK) {
-        strlcpy(s_modebuf, mode_str, sizeof(s_modebuf) - 1);
+        strlcpy(s_modebuf, mode_str, sizeof(s_modebuf));
       }
     }
   }

@@ -891,7 +891,7 @@ char *InputContext::get_caret_state_label_from_prop_list(const char *str)
 	    q = strchr(p, '\t');
 	    len = q - p;
 	    if (q && len < 10) {
-		strlcpy(label, p, len);
+		strlcpy(label, p, 10);
 		if (!state_label) {
 		    state_label_len = len;
 		    state_label = strdup(label);
