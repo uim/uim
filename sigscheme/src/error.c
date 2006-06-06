@@ -63,7 +63,7 @@ SCM_DEFINE_EXPORTED_VARS(error);
 SCM_GLOBAL_VARS_BEGIN(static_error);
 #define static
 static int l_debug_mask;
-static scm_bool l_srfi34_is_provided, l_fatal_error_looped;
+static scm_bool l_srfi34_is_provided, l_error_looped, l_fatal_error_looped;
 static void (*l_cb_fatal_error)(void);
 
 static ScmObj l_err_obj_tag, l_str_srfi34;
@@ -71,6 +71,7 @@ static ScmObj l_err_obj_tag, l_str_srfi34;
 SCM_GLOBAL_VARS_END(static_error);
 #define l_debug_mask         SCM_GLOBAL_VAR(static_error, l_debug_mask)
 #define l_srfi34_is_provided SCM_GLOBAL_VAR(static_error, l_srfi34_is_provided)
+#define l_error_looped       SCM_GLOBAL_VAR(static_error, l_error_looped)
 #define l_fatal_error_looped SCM_GLOBAL_VAR(static_error, l_fatal_error_looped)
 #define l_cb_fatal_error     SCM_GLOBAL_VAR(static_error, l_cb_fatal_error)
 #define l_err_obj_tag        SCM_GLOBAL_VAR(static_error, l_err_obj_tag)
@@ -225,7 +226,7 @@ scm_fatal_error(const char *msg)
 {
     /* don't use Scheme-level ports here */
     if (msg) {
-        fputs(SCM_ERR_HEADER, stderr);
+        fputs(SCM_ERR_HEADER "fatal: ", stderr);
         fputs(msg, stderr);
         fputs(SCM_NEWLINE_STR, stderr);
     }
@@ -330,6 +331,12 @@ scm_error_internal(const char *func_name, ScmObj obj,
 {
     ScmObj reason, err_obj;
 
+    if (l_error_looped)
+        scm_fatal_error("bug: double error on preparing error object");
+
+    /* It is supposed that no continuation switching occurs on this guarded
+     * duration. So the global variable based guard works properly. */
+    l_error_looped = scm_true;
     reason = scm_vformat(SCM_FALSE, SCM_FMT_INTERNAL, msg, args);
     if (func_name) {
         reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
@@ -338,6 +345,7 @@ scm_error_internal(const char *func_name, ScmObj obj,
 
     err_obj = scm_make_error_obj(reason,
                                  (EQ(obj, NO_ERR_OBJ)) ? SCM_NULL : LIST_1(obj));
+    l_error_looped = scm_false;
 
     scm_raise_error(err_obj);
     /* NOTREACHED */

@@ -127,7 +127,6 @@ Assigned to Kazuki:
 Assigned to YamaKen:
 
 * Finish error handling
-  - Make error loop handling robust
   - [uim] Add fatal error recovery hook
 
 * Write test for tail expression of all tail-recursive syntaxes
