@@ -36,7 +36,7 @@
 
 (define-key latin-backspace-key? '("backspace" "<Control>h"))
 (define-key latin-commit-key? "return")
-(define-key latin-multi-key? '("Multi_key"))
+(define-key latin-multi-key? '("<IgnoreShift>Multi_key"))
 
 ;; latin-compose-rule is generated from key sequences in
 ;; /usr/share/X11/locale/en_US.UTF-8/Compose which begin with Multi_key
