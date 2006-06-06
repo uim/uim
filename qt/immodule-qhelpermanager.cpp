@@ -168,6 +168,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     QUimInputContext * cc;
     QStringList list = QStringList::split( "\n", str );
     QString im_name = list[ 1 ];
+    QString im_name_sym = "'" + im_name;
 
     if ( str.startsWith( "im_change_this_text_area_only" ) )
     {
@@ -184,6 +185,9 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         {
             uim_switch_im( cc->uimContext(), ( const char* ) im_name );
             cc->readIMConf();
+            uim_prop_update_custom( cc->uimContext(),
+	                            "custom-preserved-default-im-name",
+				    ( const char* ) im_name_sym );
         }
     }
     else if ( str.startsWith( "im_change_this_application_only" ) )
@@ -194,6 +198,9 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             {
                 uim_switch_im( cc->uimContext(), ( const char* ) im_name );
                 cc->readIMConf();
+                uim_prop_update_custom( cc->uimContext(),
+                                        "custom-preserved-default-im-name",
+                                        ( const char* ) im_name_sym );
             }
         }
     }
@@ -225,6 +232,14 @@ void QUimHelperManager::sendImList()
     }
 
     uim_helper_send_message( im_uim_fd, ( const char* ) msg.utf8() );
+}
+
+void QUimHelperManager::send_im_change_whole_desktop( const char *name )
+{
+    QString msg;
+
+    msg.sprintf("im_change_whole_desktop\n%s\n", name);
+    uim_helper_send_message( im_uim_fd, ( const char* ) msg );
 }
 
 void QUimHelperManager::helper_disconnect_cb()

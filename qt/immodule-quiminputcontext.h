@@ -36,9 +36,10 @@ SUCH DAMAGE.
 #include <qinputcontext.h>
 #include <qptrlist.h>
 
-#include <uim/uim.h>
-#include <uim/uim-util.h>
-#include <uim/uim-helper.h>
+#include "uim/uim.h"
+#include "uim/uim-util.h"
+#include "uim/uim-helper.h"
+#include "uim/uim-im-switcher.h"
 
 class CandidateWindow;
 class QUimHelperManager;
@@ -104,6 +105,9 @@ private:
     static void cand_select_cb( void *ptr, int index );
     static void cand_shift_page_cb( void* ptr, int index );
     static void cand_deactivate_cb( void *ptr );
+    //imsw
+    static void switch_app_global_im_cb( void *ptr, const char *str );
+    static void switch_system_global_im_cb( void *ptr, const char *str );
     /* real functions for callbacks (correspond order) */
     //preedit
     void clearPreedit();
@@ -113,6 +117,9 @@ private:
     void candidateActivate( int nr, int displayLimit );
     void candidateSelect( int index );
     void candidateDeactivate();
+    //imsw
+    void switch_app_global_im( const char *str );
+    void switch_system_global_im( const char *str );
 
 protected:
     QString m_imname;

@@ -55,6 +55,7 @@ public:
     static void helper_disconnect_cb();
     static void update_prop_list_cb( void *ptr, const char *str );
     static void update_prop_label_cb( void *ptr, const char *str );
+    static void send_im_change_whole_desktop( const char *str );
 
 public slots:
     void slotStdinActivated( int );
