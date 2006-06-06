@@ -53,6 +53,16 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
+#define SCM_ERR_HEADER "ERROR: "
+
+#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
+#define SCM_ERRMSG_IMPROPER_ARGS                                             \
+    "proper list required for function call but got"
+#define SCM_ERRMSG_NULL_IN_STRING                                            \
+    "null character in a middle of string is not enabled"
+
+#define INVALID_CONTINUATION_OPAQUE  NULL
+
 /* trace stack for debugging */
 #define MAKE_TRACE_FRAME(obj, env) CONS((obj), (env))
 #define TRACE_FRAME_OBJ CAR
@@ -95,10 +105,23 @@ extern "C" {
 #define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
 #endif
 
+#define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
+#define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
+#define STRING_EQUALP(str1, str2)                                            \
+    (EQ((str1), (str2))                                                      \
+     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
+         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
 
-/* Prefix-less Abbreviation Names For Convenient Internal Use (TODO:
- * generate these automatically and maybe put them in an optional
- * public header file.) */
+/* result encoders for scm_length() */
+#define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
+#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
+#define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
+
+/*=======================================
+  Prefix-less Abbreviation Names
+=======================================*/
+/* TODO: generate these automatically and maybe put them in an optional public
+ * header file. */
 #define SYM_QUOTE            SCM_SYM_QUOTE
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
 #define SYM_UNQUOTE          SCM_SYM_UNQUOTE
@@ -165,9 +188,6 @@ extern "C" {
 #define MAKE_HMACRO                   SCM_MAKE_HMACRO
 #define MAKE_FARSYMBOL                SCM_MAKE_FARSYMBOL
 #define MAKE_SUBPAT                   SCM_MAKE_SUBPAT
-#define HMACROP        SCM_HMACROP
-#define FARSYMBOLP     SCM_FARSYMBOLP
-#define SUBPATP        SCM_SUBPATP
 #endif /* SCM_USE_HYGIENIC_MACRO */
 
 #define NUMBERP        SCM_NUMBERP
@@ -187,6 +207,11 @@ extern "C" {
 #define NULLVALUESP    SCM_NULLVALUESP
 #endif /* SCM_USE_VALUECONS */
 #define VALUEPACKETP   SCM_VALUEPACKETP
+#if SCM_USE_HYGIENIC_MACRO
+#define HMACROP        SCM_HMACROP
+#define FARSYMBOLP     SCM_FARSYMBOLP
+#define SUBPATP        SCM_SUBPATP
+#endif /* SCM_USE_HYGIENIC_MACRO */
 #define FREECELLP      SCM_FREECELLP
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
@@ -208,6 +233,7 @@ extern "C" {
 #define CDBG           SCM_CDBG
 #define DBG            SCM_DBG
 
+#define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
 #define ENSURE_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
 #define CHECK_PROPER_LIST_TERMINATION  SCM_CHECK_PROPER_LIST_TERMINATION
 
@@ -222,6 +248,17 @@ extern "C" {
  * SCM_EOF
  * SCM_UNBOUND
  * SCM_UNDEF
+ */
+
+/*=======================================
+  Utils for Procedure Implementation
+=======================================*/
+/*
+ * TODO: export these macros to sigscheme.h after:
+ *
+ * - Argument type information is encoded into ScmFuncTypeCode
+ * - Dynamically loadable binary module which allows user-written procedure is
+ *   provided
  */
 
 /* Obscures identifier ID. */
@@ -380,26 +417,6 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
      || (ERR("stateless character codec required but got: ~S",               \
              SCM_CHARCODEC_ENCODING(codec)), 0))
 #endif /* SCM_USE_MULTIBYTE_CHAR */
-
-#define ENSURE_ALLOCATED SCM_ENSURE_ALLOCATED
-
-/* Macros For Handling Continuation Object */
-#define INVALID_CONTINUATION_OPAQUE  NULL
-
-/* error handlings */
-#define SCM_ERR_HEADER "ERROR: "
-
-#define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
-#define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
-#define STRING_EQUALP(str1, str2)                                            \
-    (EQ((str1), (str2))                                                      \
-     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
-         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
-
-/* result encoders for scm_length() */
-#define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
-#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
-#define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
 
 /*=======================================
   Characters
@@ -804,10 +821,8 @@ SCM_EXPORT scm_int_t scm_validate_formals(ScmObj formals);
 SCM_EXPORT scm_int_t scm_validate_actuals(ScmObj actuals);
 
 /* eval.c */
-SCM_EXPORT ScmObj scm_symbol_value(ScmObj var, ScmObj env);
 SCM_EXPORT ScmObj scm_tailcall(ScmObj proc, ScmObj args,
                                ScmEvalState *eval_state);
-SCM_EXPORT ScmObj scm_eval(ScmObj obj, ScmObj env);
 
 /* syntax.c */
 SCM_EXPORT void scm_init_syntax(void);
@@ -831,8 +846,6 @@ SCM_EXPORT void scm_init_error(void);
 
 /* list.c */
 SCM_EXPORT scm_int_t scm_finite_length(ScmObj lst);
-SCM_EXPORT scm_int_t scm_length(ScmObj lst);
-SCM_EXPORT ScmObj scm_list_tail(ScmObj lst, scm_int_t k);
 
 /* number.c */
 SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,

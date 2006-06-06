@@ -15,7 +15,6 @@ Requirements and critical bugs:
     specially configured for libuim. Only the combined-source is needed for uim
 
 * Confirm public API
-  - Move some interfaces from sigschemeinternal.h to sigscheme.h
   - Rename the boolean predicates
   - Evaluate SRFI-50 (although withdrawn)
 
@@ -54,8 +53,7 @@ Extensions: (not required for now)
 
 * Make Symbian OS and BREW support working (patches are welcome)
 
-* Support SRFI-75 style symbol escaping such as |-sym|
-  - Obsolete leading '-' handling in read_number_or_symbol() with it
+* Dynamically loadable binary module which allows user-written procedure
 
 * Introduce dynamic environment for internal use
   - Fix continuation-unsafe current-{input,output}-port handling with it
@@ -69,9 +67,6 @@ Extensions: (not required for now)
 * Implement a record type
   - Evaluate SRFI-9 and SRFI-76
   - Make a comparison with uim's define-record
-
-* Make unittest.scm closer to SRFI-64 "A Scheme API for test suites" if
-  reasonable
 
 * Implement numbers other than integer
   - Define SAL accessors considering SRFI-50 and other implementations
@@ -91,14 +86,26 @@ Performance improvements:
   - Make UCS2 selectable as canonical internal code
 
 ==============================================================================
-Logical simplifications:
+Properness improvements: (not required for now)
 
-* (not required for now) Reorganize unit test for C
+* Support SRFI-75 style symbol escaping such as |-sym|
+  - Obsolete leading '-' handling in read_number_or_symbol() with it
+
+* Reorganize unit test for C
   - Remove GNU sed dependency of test-c2/collect.sh.in
   - Separate SigScheme-dependent part and generic part of test-c2, and
-    generalize the framework as usable for uim
-  - Port Cutter-based tests to the new framework
-  - Name 'the testing framework'
+    generalize the unit testing utils as usable for uim
+  - Port the Cutter-based tests under test-c/ to the new testing utils
+  - Name 'the testing utils'
+
+* Make unittest.scm closer to SRFI-64 "A Scheme API for test suites" if
+  reasonable
+
+==============================================================================
+Logical simplifications:
+
+* (not required for now) Encode argument type information into ScmFuncTypeCode
+  to remove ENSURE_*() from each procedure implementation
 
 * (not required for now) Reorganize list (argument) extraction API
 

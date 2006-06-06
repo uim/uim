@@ -53,6 +53,8 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
+#define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
+
 /* An empty definition is generally not a good idea.  (Consider for
  * example (FOO(), bar) where FOO() expands to only whitespaces.)
  * Simply using 0 prompts warnings everywhere, so we cast it to void.
@@ -63,13 +65,6 @@ extern "C" {
 #ifndef SCM_EMPTY_EXPR
 #define SCM_EMPTY_EXPR ((void)0)
 #endif
-
-#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
-#define SCM_ERRMSG_MEMORY_EXHAUSTED    "memory exhausted"
-#define SCM_ERRMSG_IMPROPER_ARGS                                             \
-    "proper list required for function call but got"
-#define SCM_ERRMSG_NULL_IN_STRING                                            \
-    "null character in a middle of string is not enabled"
 
 /* FIXME: Confirm appropriate workaround about the noinline attribute vanishing
  * problem for Linux environments */
@@ -1184,6 +1179,8 @@ SCM_EXPORT ScmObj scm_p_inspect_error(ScmObj err_obj);
 SCM_EXPORT ScmObj scm_p_backtrace(void);
 
 /* eval.c */
+SCM_EXPORT ScmObj scm_symbol_value(ScmObj var, ScmObj env);
+SCM_EXPORT ScmObj scm_eval(ScmObj obj, ScmObj env);
 SCM_EXPORT ScmObj scm_call(ScmObj proc, ScmObj args);
 SCM_EXPORT ScmObj scm_p_eval(ScmObj obj, ScmObj env);
 SCM_EXPORT ScmObj scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest,
@@ -1238,6 +1235,8 @@ SCM_EXPORT ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk,
                                      ScmObj after);
 
 /* list.c */
+SCM_EXPORT scm_int_t scm_length(ScmObj lst);
+SCM_EXPORT ScmObj scm_list_tail(ScmObj lst, scm_int_t k);
 SCM_EXPORT ScmObj scm_p_car(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_cdr(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_pairp(ScmObj obj);
