@@ -51,73 +51,6 @@ extern "C" {
 #endif
 
 /*=======================================
-  Macro Definitions
-=======================================*/
-#define SCM_ERR_HEADER "ERROR: "
-
-#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
-#define SCM_ERRMSG_IMPROPER_ARGS                                             \
-    "proper list required for function call but got"
-#define SCM_ERRMSG_NULL_IN_STRING                                            \
-    "null character in a middle of string is not enabled"
-
-#define INVALID_CONTINUATION_OPAQUE  NULL
-
-/* trace stack for debugging */
-#define MAKE_TRACE_FRAME(obj, env) CONS((obj), (env))
-#define TRACE_FRAME_OBJ CAR
-#define TRACE_FRAME_ENV CDR
-
-/* Extraction of a valuepacket is granted only for SigScheme-internals */
-#define SCM_VALUEPACKET_VALUES(o)    SCM_SAL_VALUEPACKET_VALUES(o)
-#if SCM_USE_VALUECONS
-#define SCM_NULLVALUESP(o)           SCM_SAL_NULLVALUESP(o)
-#define SCM_VALUECONS_CAR(o)         SCM_SAL_VALUECONS_CAR(o)
-#define SCM_VALUECONS_CDR(o)         SCM_SAL_VALUECONS_CDR(o)
-#else /* SCM_USE_VALUECONS */
-#define SCM_VALUEPACKET_SET_VALUES(o, vals)                                  \
-    SCM_SAL_VALUEPACKET_SET_VALUES((o), (vals))
-#endif /* SCM_USE_VALUECONS */
-
-#define SCM_AS_FREECELL(o)              SCM_SAL_AS_FREECELL(o)
-
-#define SCM_FREECELLP(o)                SCM_SAL_FREECELLP(o)
-#define SCM_FREECELL_NEXT(o)            SCM_SAL_FREECELL_NEXT(o)
-#define SCM_FREECELL_FREESLOT(o)        SCM_SAL_FREECELL_FREESLOT(o)
-#define SCM_FREECELL_SET_NEXT(o, next)  SCM_SAL_FREECELL_SET_NEXT((o), (next))
-#define SCM_FREECELL_SET_FREESLOT(o, v) SCM_SAL_FREECELL_SET_FREESLOT((o), (v))
-#define SCM_FREECELL_CLEAR_FREESLOT(o)  SCM_SAL_FREECELL_CLEAR_FREESLOT((o))
-
-/* For optimized operation: Cleanup a destructed ScmCell *cell to a freecell
- * and chain it into freelist. */
-#define SCM_RECLAIM_CELL(cell, next)    SCM_SAL_RECLAIM_CELL((cell), (next))
-
-#if 0
-/* for future cleanup */
-#define SCM_CELL_MARKEDP(cell)   SCM_SAL_CELL_MARKEDP(cell)
-#define SCM_CELL_UNMARKEDP(cell) SCM_SAL_CELL_UNMARKEDP(cell)
-#define SCM_CELL_MARK(cell)      SCM_SAL_CELL_MARK(cell)
-#define SCM_CELL_UNMARK(cell)    SCM_SAL_CELL_UNMARK(cell)
-#else
-#define SCM_MARKEDP(o)   SCM_SAL_MARKEDP(o)
-#define SCM_UNMARKEDP(o) SCM_SAL_UNMARKEDP(o)
-#define SCM_MARK(o)      SCM_SAL_MARK(o)
-#define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
-#endif
-
-#define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
-#define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
-#define STRING_EQUALP(str1, str2)                                            \
-    (EQ((str1), (str2))                                                      \
-     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
-         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
-
-/* result encoders for scm_length() */
-#define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
-#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
-#define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
-
-/*=======================================
   Prefix-less Abbreviation Names
 =======================================*/
 /* TODO: generate these automatically and maybe put them in an optional public
@@ -249,6 +182,73 @@ extern "C" {
  * SCM_UNBOUND
  * SCM_UNDEF
  */
+
+/*=======================================
+  Macro Definitions
+=======================================*/
+#define SCM_ERR_HEADER "ERROR: "
+
+#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
+#define SCM_ERRMSG_IMPROPER_ARGS                                             \
+    "proper list required for function call but got"
+#define SCM_ERRMSG_NULL_IN_STRING                                            \
+    "null character in a middle of string is not enabled"
+
+#define INVALID_CONTINUATION_OPAQUE  NULL
+
+/* trace stack for debugging */
+#define MAKE_TRACE_FRAME(obj, env) CONS((obj), (env))
+#define TRACE_FRAME_OBJ CAR
+#define TRACE_FRAME_ENV CDR
+
+/* Extraction of a valuepacket is granted only for SigScheme-internals */
+#define SCM_VALUEPACKET_VALUES(o)    SCM_SAL_VALUEPACKET_VALUES(o)
+#if SCM_USE_VALUECONS
+#define SCM_NULLVALUESP(o)           SCM_SAL_NULLVALUESP(o)
+#define SCM_VALUECONS_CAR(o)         SCM_SAL_VALUECONS_CAR(o)
+#define SCM_VALUECONS_CDR(o)         SCM_SAL_VALUECONS_CDR(o)
+#else /* SCM_USE_VALUECONS */
+#define SCM_VALUEPACKET_SET_VALUES(o, vals)                                  \
+    SCM_SAL_VALUEPACKET_SET_VALUES((o), (vals))
+#endif /* SCM_USE_VALUECONS */
+
+#define SCM_AS_FREECELL(o)              SCM_SAL_AS_FREECELL(o)
+
+#define SCM_FREECELLP(o)                SCM_SAL_FREECELLP(o)
+#define SCM_FREECELL_NEXT(o)            SCM_SAL_FREECELL_NEXT(o)
+#define SCM_FREECELL_FREESLOT(o)        SCM_SAL_FREECELL_FREESLOT(o)
+#define SCM_FREECELL_SET_NEXT(o, next)  SCM_SAL_FREECELL_SET_NEXT((o), (next))
+#define SCM_FREECELL_SET_FREESLOT(o, v) SCM_SAL_FREECELL_SET_FREESLOT((o), (v))
+#define SCM_FREECELL_CLEAR_FREESLOT(o)  SCM_SAL_FREECELL_CLEAR_FREESLOT((o))
+
+/* For optimized operation: Cleanup a destructed ScmCell *cell to a freecell
+ * and chain it into freelist. */
+#define SCM_RECLAIM_CELL(cell, next)    SCM_SAL_RECLAIM_CELL((cell), (next))
+
+#if 0
+/* for future cleanup */
+#define SCM_CELL_MARKEDP(cell)   SCM_SAL_CELL_MARKEDP(cell)
+#define SCM_CELL_UNMARKEDP(cell) SCM_SAL_CELL_UNMARKEDP(cell)
+#define SCM_CELL_MARK(cell)      SCM_SAL_CELL_MARK(cell)
+#define SCM_CELL_UNMARK(cell)    SCM_SAL_CELL_UNMARK(cell)
+#else
+#define SCM_MARKEDP(o)   SCM_SAL_MARKEDP(o)
+#define SCM_UNMARKEDP(o) SCM_SAL_UNMARKEDP(o)
+#define SCM_MARK(o)      SCM_SAL_MARK(o)
+#define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
+#endif
+
+#define EQVP(a, b)   (NFALSEP(scm_p_eqvp((a), (b))))
+#define EQUALP(a, b) (NFALSEP(scm_p_equalp((a), (b))))
+#define STRING_EQUALP(str1, str2)                                            \
+    (EQ((str1), (str2))                                                      \
+     || (SCM_STRING_LEN(str1) == SCM_STRING_LEN(str2)  /* rough rejection */ \
+         && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
+
+/* result encoders for scm_length() */
+#define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
+#define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
+#define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
 
 /*=======================================
   Utils for Procedure Implementation
