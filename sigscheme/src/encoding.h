@@ -150,10 +150,12 @@ typedef int ScmMultibyteState;
    stack or register, so we'll make liberal use of space. */
 typedef struct {
 #if 0
+#if 0
     /* will be changed to this */
     const scm_byte_t *start;
 #else
     const char *start;
+#endif
 #endif
     size_t size;
     int flag;

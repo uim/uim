@@ -346,17 +346,29 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
 #define ENSURE_IDENTIFIER(obj) ENSURE_TYPE(IDENTIFIERP, "identifier", (obj))
 
+#if SCM_HAS_IMMUTABLE_CONS
 #define ENSURE_MUTABLE_CONS(kons)                                            \
     (SCM_CONS_MUTABLEP(kons)                                                 \
      || (ERR_OBJ("attempted to modify immutable pair", kons), 1))
+#else /* SCM_HAS_IMMUTABLE_CONS */
+#define ENSURE_MUTABLE_CONS(kons) SCM_EMPTY_EXPR
+#endif /* SCM_HAS_IMMUTABLE_CONS */
 
+#if SCM_HAS_IMMUTABLE_STRING
 #define ENSURE_MUTABLE_STRING(str)                                           \
     (SCM_STRING_MUTABLEP(str)                                                \
      || (ERR_OBJ("attempted to modify immutable string", str), 1))
+#else /* SCM_HAS_IMMUTABLE_STRING */
+#define ENSURE_MUTABLE_STRING(str) SCM_EMPTY_EXPR
+#endif /* SCM_HAS_IMMUTABLE_STRING */
 
+#if SCM_HAS_IMMUTABLE_VECTOR
 #define ENSURE_MUTABLE_VECTOR(vec)                                           \
     (SCM_VECTOR_MUTABLEP(vec)                                                \
      || (ERR_OBJ("attempted to modify immutable vector", vec), 1))
+#else /* SCM_HAS_IMMUTABLE_VECTOR */
+#define ENSURE_MUTABLE_VECTOR(vec) SCM_EMPTY_EXPR
+#endif /* SCM_HAS_IMMUTABLE_VECTOR */
 
 #if SCM_USE_MULTIBYTE_CHAR
 #define ENSURE_STATEFUL_CODEC(codec)                                         \

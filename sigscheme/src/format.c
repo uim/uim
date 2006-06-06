@@ -159,11 +159,14 @@ typedef const char *format_string_t;
 
 #define FORMAT_STR_SKIP_CHAR(fmt) (FORMAT_STR_READ(fmt), 0)
 
-enum format_arg_type {
+enum format_args_type {
     ARG_VA_LIST,
     ARG_SCM_LIST
 };
 
+#if 0
+/* Since this definition requires C99 va_copy() to work properly, the
+ * alternative implementation is used to maximize portability. */
 struct format_args {
     enum format_arg_type type;
     union {
@@ -171,10 +174,16 @@ struct format_args {
         ScmObj scm;
     } lst;
 };
+#else
+union format_args {
+    va_list va;
+    ScmObj scm;
+};
+#endif
 
-#define POP_FORMAT_ARG(args)                                                 \
-    (((args)->type == ARG_VA_LIST) ? va_arg((args)->lst.va, ScmObj)          \
-                                   : MUST_POP_ARG((args)->lst.scm))
+#define POP_FORMAT_ARG(type, args)                                           \
+    (((type) == ARG_VA_LIST) ? va_arg((args)->va, ScmObj)                    \
+                             : MUST_POP_ARG((args)->scm))
 
 /*=======================================
   Variable Definitions
@@ -207,10 +216,13 @@ static scm_ichar_t format_raw_c_directive(ScmObj port,
 static scm_ichar_t format_directive(ScmObj port, scm_ichar_t last_ch,
                                     enum ScmFormatCapability fcap,
                                     format_string_t *fmt,
-                                    struct format_args *args);
+                                    enum format_args_type args_type,
+                                    union format_args *args);
 #endif
 static ScmObj format_internal(ScmObj port, enum ScmFormatCapability fcap,
-                              const char *fmt, struct format_args *args);
+                              const char *fmt,
+                              enum format_args_type args_type,
+                              union format_args *args);
 
 /*=======================================
   Function Definitions
@@ -475,7 +487,8 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 static scm_ichar_t
 format_directive(ScmObj port, scm_ichar_t last_ch,
                  enum ScmFormatCapability fcap,
-                 format_string_t *fmt, struct format_args *args)
+                 format_string_t *fmt,
+                 enum format_args_type args_type, union format_args *args)
 {
     const void *orig_pos;
     char directive;
@@ -502,7 +515,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
         radix = -1;
         switch (directive) {
         case 'f': /* Fixed */
-            obj = POP_FORMAT_ARG(args);
+            obj = POP_FORMAT_ARG(args_type, args);
             if (STRINGP(obj)) {
                 for (i = SCM_STRING_LEN(obj); i < vfmt.width; i++)
                     scm_port_put_char(port, ' ');  /* ignore leading zero */
@@ -534,7 +547,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
             break;
         }
         if (radix > 0 && (!prefixedp || (fcap & SCM_FMT_PREFIXED_RADIX))) {
-            obj = POP_FORMAT_ARG(args);
+            obj = POP_FORMAT_ARG(args_type, args);
             ENSURE_INT(obj);
             format_int(port, vfmt, SCM_INT_VALUE(obj), radix);
             goto fin;
@@ -548,11 +561,11 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
     if (fcap & SCM_FMT_SRFI28) {
         switch (directive) {
         case 'a': /* Any */
-            scm_display(port, POP_FORMAT_ARG(args));
+            scm_display(port, POP_FORMAT_ARG(args_type, args));
             goto fin;
 
         case 's': /* Slashified */
-            scm_write(port, POP_FORMAT_ARG(args));
+            scm_write(port, POP_FORMAT_ARG(args_type, args));
             goto fin;
 
         case '%': /* Newline */
@@ -573,18 +586,18 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
     if (fcap & SCM_FMT_SRFI48_ADDENDUM) {
         switch (directive) {
         case 'w': /* WriteCircular */
-            scm_write_ss(port, POP_FORMAT_ARG(args));
+            scm_write_ss(port, POP_FORMAT_ARG(args_type, args));
             goto fin;
 
         case 'y': /* Yuppify */
-            scm_pretty_print(port, POP_FORMAT_ARG(args));
+            scm_pretty_print(port, POP_FORMAT_ARG(args_type, args));
             goto fin;
 
         case 'k': /* Indirection (backward compatability) */
         case '?': /* Indirection */
-            indirect_fmt = POP_FORMAT_ARG(args);
+            indirect_fmt = POP_FORMAT_ARG(args_type, args);
             ENSURE_STRING(indirect_fmt);
-            indirect_args = POP_FORMAT_ARG(args);
+            indirect_args = POP_FORMAT_ARG(args_type, args);
             ENSURE_LIST(indirect_args);
             scm_lformat(port,
                         fcap & ~SCM_FMT_RAW_C,
@@ -592,7 +605,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
             goto fin;
 
         case 'c': /* Character */
-            obj = POP_FORMAT_ARG(args);
+            obj = POP_FORMAT_ARG(args_type, args);
             ENSURE_CHAR(obj);
             scm_port_put_char(port, SCM_CHAR_VALUE(obj));
             goto fin;
@@ -638,7 +651,8 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
 
 static ScmObj
 format_internal(ScmObj port, enum ScmFormatCapability fcap,
-                const char *fmt, struct format_args *args)
+                const char *fmt,
+                enum format_args_type args_type, union format_args *args)
 {
     scm_ichar_t c, last_c, handled;
     format_string_t cur;
@@ -664,8 +678,8 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
         if (c == '~') {
 #if SCM_USE_RAW_C_FORMAT
             if (fcap & SCM_FMT_RAW_C) {
-                SCM_ASSERT(args->type == ARG_VA_LIST);
-                handled = format_raw_c_directive(port, &cur, &args->lst.va);
+                SCM_ASSERT(args_type == ARG_VA_LIST);
+                handled = format_raw_c_directive(port, &cur, &args->va);
                 if (handled) {
                     last_c = handled;
                     continue;
@@ -675,9 +689,10 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
 #endif /* SCM_USE_RAW_C_FORMAT */
 #if SCM_USE_SRFI28
             if (fcap & (SCM_FMT_SRFI28 | SCM_FMT_SRFI48 | SCM_FMT_SSCM)) {
-                SCM_ASSERT(args->type == ARG_VA_LIST
-                           || args->type == ARG_SCM_LIST);
-                last_c = format_directive(port, last_c, fcap, &cur, args);
+                SCM_ASSERT(args_type == ARG_VA_LIST
+                           || args_type == ARG_SCM_LIST);
+                last_c = format_directive(port, last_c, fcap, &cur,
+                                          args_type, args);
                 continue;
             }
 #endif /* SCM_USE_SRFI28 */
@@ -688,8 +703,8 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
         }
     }
 
-    if (args->type == ARG_SCM_LIST)
-        ENSURE_NO_MORE_ARG(args->lst.scm);
+    if (args_type == ARG_SCM_LIST)
+        ENSURE_NO_MORE_ARG(args->scm);
     return (implicit_portp) ? scm_p_srfi6_get_output_string(port) : SCM_UNDEF;
 }
 
@@ -697,22 +712,17 @@ SCM_EXPORT ScmObj
 scm_lformat(ScmObj port,
             enum ScmFormatCapability fcap, const char *fmt, ScmObj scm_args)
 {
-    struct format_args args;
-
-    args.type = ARG_SCM_LIST;
-    args.lst.scm = scm_args;
-    return format_internal(port, fcap, fmt, &args);
+    return format_internal(port, fcap, fmt,
+                           ARG_SCM_LIST, (union format_args *)&scm_args);
 }
 
 SCM_EXPORT ScmObj
 scm_vformat(ScmObj port,
             enum ScmFormatCapability fcap, const char *fmt, va_list c_args)
 {
-    struct format_args args;
-
-    args.type = ARG_VA_LIST;
-    args.lst.va = c_args;
-    return format_internal(port, fcap, fmt, &args);
+    return format_internal(port, fcap, fmt,
+                           ARG_VA_LIST,
+                           (union format_args *)(uintptr_t)&c_args);
 }
 
 SCM_EXPORT ScmObj

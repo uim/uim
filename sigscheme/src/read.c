@@ -375,7 +375,7 @@ scm_read_char(ScmObj port)
 }
 
 
-static int
+static scm_ichar_t
 skip_comment_and_space(ScmObj port)
 {
     scm_ichar_t c;
