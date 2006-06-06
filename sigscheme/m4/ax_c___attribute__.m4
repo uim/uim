@@ -20,6 +20,7 @@ dnl
 dnl LBL autoconf macros
 dnl
 dnl Taken from libpcap -- Jun Inoue (May 7, 2006)
+dnl Add __noinline__ and __unused__ -- YamaKen (Jun 6, 2006)
 dnl
 
 
@@ -34,10 +35,24 @@ AC_COMPILE_IFELSE(
   AC_LANG_SOURCE([[
 #include <stdlib.h>
 
-static void foo(void) __attribute__ ((noreturn));
+static void f_noreturn(void) __attribute__ ((__noreturn__));
+static int  f_noinline(void) __attribute__ ((__noinline__));
+static void f_unused(void)   __attribute__ ((__unused__));
 
 static void
-foo(void)
+f_noreturn(void)
+{
+  exit(1);
+}
+
+static int
+f_noinline(void)
+{
+  return 1;
+}
+
+static void
+f_unused(void)
 {
   exit(1);
 }
@@ -45,14 +60,16 @@ foo(void)
 int
 main(int argc, char **argv)
 {
-  foo();
+  if (f_noinline())
+    f_noreturn();
+  return 0;
 }
   ]]),
 ac_cv___attribute__=yes,
 ac_cv___attribute__=no)])
 if test "$ac_cv___attribute__" = "yes"; then
   AC_DEFINE(HAVE___ATTRIBUTE__, 1, [define if your compiler has __attribute__])
-  V_DEFS="$V_DEFS -D_U_=\"__attribute__((unused))\""
+  V_DEFS="$V_DEFS -D_U_=\"__attribute__((__unused__))\""
 else
   V_DEFS="$V_DEFS -D_U_=\"\""
 fi

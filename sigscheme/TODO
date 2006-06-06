@@ -20,18 +20,15 @@ Requirements and critical bugs:
 
 * Confirm R5RS and SRFI conformance for each function implementation
 
-* Fix all side-effective expression in macros
-  - All files except for operations-srfi1.c, storage-compact.h and
-    test-compact.c are checked once. But since considerable codes are added or
-    modified, we should recheck all file
-
-* Confirm appropriate workaround for the GCC's noinline attribute vanishing
-  problem on Linux environments
-
 * Make 64bit-safe
   - Write tests
   - Make the tests passed on actual 64bit environment with storage-fatty
   - Make the tests passed on actual 64bit environment with storage-compact
+
+* Fix all side-effective expression in macros
+  - All files except for operations-srfi1.c, storage-compact.h and
+    test-compact.c are checked once. But since considerable amount of codes are
+    added or modified, we should recheck all file
 
 * grep "FIXME" and fix them
 

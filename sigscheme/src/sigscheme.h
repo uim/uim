@@ -66,11 +66,11 @@ extern "C" {
 #define SCM_EMPTY_EXPR ((void)0)
 #endif
 
-/* FIXME: Confirm appropriate workaround about the noinline attribute vanishing
- * problem for Linux environments */
 #if HAVE___ATTRIBUTE__
-#define SCM_NOINLINE __attribute__((noinline))
-#define SCM_NORETURN __attribute__((noreturn))
+/* As a workaround for the noinline attribute vanishing bug on some Linux
+ * distributions, we use ((__noinline__)) instead of ((noinline)). */
+#define SCM_NOINLINE __attribute__((__noinline__))
+#define SCM_NORETURN __attribute__((__noreturn__))
 #else /* HAVE___ATTRIBUTE__ */
 #define SCM_NOINLINE
 #define SCM_NORETURN
