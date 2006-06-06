@@ -54,7 +54,7 @@ public:
     virtual void setHolderWidget( QWidget *w );
 #endif
 
-    virtual bool filterEvent( QEvent *event );
+    virtual bool filterEvent( const QEvent *event );
 
 signals:
     void imEventGenerated( QWidget *, QIMEvent * );
