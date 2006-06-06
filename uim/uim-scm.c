@@ -69,7 +69,7 @@ static uim_lisp uim_scm_eval_internal(uim_lisp obj);
 static uim_lisp uim_scm_eval_c_string_internal(const char *str);
 #endif
 
-static int uim_siod_fatal;
+static uim_bool sscm_is_exit_with_fatal_error;
 static FILE *uim_output = NULL;
 
 #if UIM_SCM_GCC4_READY_GC
@@ -325,7 +325,7 @@ uim_scm_gc_protect_stack(uim_lisp *stack_start)
 uim_bool
 uim_scm_is_alive(void)
 {
-  return (!uim_siod_fatal);
+  return (!sscm_is_exit_with_fatal_error);
 }
 
 long
@@ -579,9 +579,10 @@ uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_l
 static void
 exit_hook(void)
 {
-#if 0
-  uim_siod_fatal = 1;
-#endif
+  sscm_is_exit_with_fatal_error = UIM_TRUE;
+  /* FIXME: Add longjmp() to outermost uim API call, and make all API
+   * calls uim_scm_is_alive()-sensitive. It should be fixed on uim
+   * 1.3.  -- YamaKen 2006-06-06 */
 }
 
 void
@@ -614,6 +615,7 @@ uim_scm_init(const char *verbose_level)
   storage_conf.n_heaps_init         = 1;
   storage_conf.symbol_hash_size     = 1024;
   scm_initialize(&storage_conf);
+  scm_set_fatal_error_callback(exit_hook);
 
   /* GC safe */
   output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
@@ -635,5 +637,6 @@ void
 uim_scm_quit(void)
 {
   scm_finalize();
+  sscm_is_exit_with_fatal_error = UIM_FALSE;
   uim_output = NULL;
 }
