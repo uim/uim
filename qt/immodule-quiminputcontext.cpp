@@ -136,6 +136,11 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
     uim_set_prop_list_update_cb( uc, QUimHelperManager::update_prop_list_cb );
     uim_set_prop_label_update_cb( uc, QUimHelperManager::update_prop_label_cb );
+
+    uim_set_im_switch_request_cb( uc,
+                                  QUimInputContext::switch_app_global_im_cb,
+                                  QUimInputContext::switch_system_global_im_cb);
+
     uim_prop_list_update( uc );
 
     return uc;
@@ -453,6 +458,18 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
     ic->candidateDeactivate();
 }
 
+void QUimInputContext::switch_app_global_im_cb( void *ptr, const char *name )
+{
+    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    ic->switch_app_global_im( name );
+}
+
+void QUimInputContext::switch_system_global_im_cb( void *ptr, const char *name )
+{
+    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    ic->switch_system_global_im( name );
+}
+
 void QUimInputContext::commitString( const QString& str )
 {
     if ( !isComposing() )
@@ -620,6 +637,29 @@ void QUimInputContext::candidateDeactivate()
     cwin->deactivateCandwin();
 
     candwinIsActive = false;
+}
+
+void QUimInputContext::switch_app_global_im( const char *name )
+{
+    QUimInputContext *cc;
+    QString im_name_sym;
+
+    im_name_sym.sprintf( "'%s", name);
+
+    for ( cc = contextList.first(); cc; cc = contextList.next() )
+    {
+        if (cc != this) {
+            uim_switch_im( cc->uimContext(), name );
+            cc->readIMConf();
+        }
+    }
+    uim_prop_update_custom(this->uimContext(), "custom-preserved-default-im-name", ( const char* ) im_name_sym );
+}
+
+void QUimInputContext::switch_system_global_im( const char *name )
+{
+    switch_app_global_im( name );
+    QUimHelperManager::send_im_change_whole_desktop( name );
 }
 
 void QUimInputContext::createUimInfo()
