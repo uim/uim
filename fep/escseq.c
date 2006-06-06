@@ -784,7 +784,7 @@ static const char *attr2escseq(const struct attribute_tag *attr)
       && attr->foreground == FALSE && attr->background == FALSE) {
     return NULL;
   }
-  strcpy(escseq, "\033[");
+  strlcpy(escseq, "\033[", sizeof(escseq));
   if (attr->underline && s_enter_underline_num != NULL) {
     add_semicolon = TRUE;
     strcat(escseq, s_enter_underline_num);

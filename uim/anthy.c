@@ -83,10 +83,8 @@ get_anthy_version()
     len = strlen(str);
     if (isalpha(str[len - 1])) {
       anthy_version_major = malloc(len);
-      strncpy(anthy_version_major, str, len - 1);
-      anthy_version_major[len - 1] = '\0';
-      anthy_version_minor[0] = str[len - 1];
-      anthy_version_minor[1] = '\0';
+      strlcpy(anthy_version_major, str, len - 1);
+      strlcpy(anthy_version_minor, str[len - 1], sizeof(anthy_version_minor));
     } else {
       anthy_version_major = strdup(str);
       anthy_version_minor[0] = '\0';

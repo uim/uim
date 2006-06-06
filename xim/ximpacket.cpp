@@ -192,7 +192,7 @@ private:
     void init(char *s, int len) {
 	m_len = len;
 	m_str = (char *)malloc(len + 1);
-	strncpy(m_str, s, len);
+	strlcpy(m_str, s, len);
     }
     int m_len;
     char *m_str;

@@ -83,7 +83,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 
   bzero(&server, sizeof(server));
   server.sun_family = PF_UNIX;
-  strcpy(server.sun_path, path);
+  strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
   free(path);
   

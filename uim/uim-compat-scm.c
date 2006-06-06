@@ -59,8 +59,7 @@ uim_get_c_string(uim_lisp str)
   char *buf;
   s = get_c_string_dim((LISP)str, &len);
   buf = (char *)malloc(sizeof(char)*(len + 1));
-  strncpy(buf, s, len);
-  buf[len] = 0;
+  strlcpy(buf, s, len);
   return buf;
 }
 

@@ -732,14 +732,14 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 
       if (r == '\n') {
 	line = realloc(line, strlen(line) + n + 1);
-	strncat(line, buf, n);
+	strlcat(line, buf, n);
 	break;
       }
 
       buf[n] = r;
       if (n == SKK_SERV_BUFSIZ - 1) {
 	line = realloc(line, strlen(line) + n + 2);
-	strncat(line, buf, n + 1);
+	strlcat(line, buf, n + 1);
 	n = 0;
       } else {
 	n++;
@@ -780,7 +780,7 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   len = calc_line_len(p);
   line = malloc(len + 1);
   line[0] = '\0';
-  strncat(line, p, len);
+  strlcat(line, p, len);
   sl = compose_line(di, s, okuri_head, line);
   free(line);
   return sl;
@@ -1000,8 +1000,7 @@ get_purged_words(const char *str)
 	  words = realloc(words, sizeof(char *) * nr);
 	else
 	  words = malloc(sizeof(char *));
-	strncpy(orig, word, len);
-	orig[len] = '\0';
+	strlcpy(orig, word, len);
 
 	expanded_word = expand_str(orig);
 	if (expanded_word)
@@ -1132,8 +1131,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
 	  numstr = malloc(numlen + 1);
 	else
 	  numstr = realloc(numstr, numlen + 1);
-	strncpy(numstr, &str[start], numlen);
-	numstr[numlen] = '\0';
+	strlcpy(numstr, &str[start], numlen);
 	lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
       }
       prev_is_num = 0;
@@ -1149,8 +1147,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
       numstr = malloc(numlen + 1);
     else
       numstr = realloc(numstr, numlen + 1);
-    strncpy(numstr, &str[start], numlen);
-    numstr[numlen] = '\0';
+    strlcpy(numstr, &str[start], numlen);
     lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
   }
   free(numstr);
@@ -3259,8 +3256,7 @@ eval_candidate_with_concat(const char *cand)
   /* get quoted str  */
   len = (q - p + 1) - strlen("(concat \"\")");
   str = malloc(len + 1);
-  strncpy(str, p + strlen("(concat \""), len);
-  str[len] = '\0';
+  strlcpy(str, p + strlen("(concat \""), len);
 
   expanded_str = expand_str(str);
   if (!expanded_str) {
@@ -3274,8 +3270,7 @@ eval_candidate_with_concat(const char *cand)
     str = realloc(str, len + 1);
 
   if (p != cand) {
-    strncpy(str, cand, p - cand);
-    str[p - cand] = '\0';
+    strlcpy(str, cand, p - cand);
     strcat(str, expanded_str);
   } else {
     strcpy(str, expanded_str);

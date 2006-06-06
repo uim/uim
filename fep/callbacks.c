@@ -498,8 +498,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
       int first_char_byte = rval[0];
       int first_char_width = rval[1];
       char *first_char = malloc(first_char_byte + 1);
-      strncpy(first_char, str, first_char_byte);
-      first_char[first_char_byte] = '\0';
+      strlcpy(first_char, str, first_char_byte);
       cursor = FALSE;
       pushback_cb(NULL, attr - UPreeditAttr_Reverse, first_char);
       free(first_char);
@@ -806,7 +805,7 @@ static void make_page_strs(void)
           cand_width = strhead(cand_str, cand_width);
           if (cand_width <= cand_label_width + (int)strlen(":")) {
             cand_width = 1;
-            strcpy(cand_str, " ");
+            strlcpy(cand_str, " ", cand_byte + 1);
             s_candidate.cand_col[index] = UNDEFINED;
           } else {
             cand_byte = strlen(cand_str);

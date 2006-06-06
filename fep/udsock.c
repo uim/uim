@@ -75,12 +75,9 @@ const char *usersockname(const char *file)
   }
   if (file == NULL) {
     struct passwd *pw = getpwuid(getuid());
-    /* snprintfは'\0'を付けてくれる */
     snprintf(filebuf, UNIX_PATH_MAX, "uim-fep-%s", pw->pw_name);
   } else {
-    /* strncpyは'\0'を付けない */
-    strncpy(filebuf, file, UNIX_PATH_MAX - 1);
-    filebuf[UNIX_PATH_MAX - 1] = '\0';
+    strlcpy(filebuf, file, UNIX_PATH_MAX - 1);
   }
   if (getenv("TMP")) {
     snprintf(buf, UNIX_PATH_MAX, "%s/%s", getenv("TMP"), filebuf);
@@ -96,7 +93,7 @@ void init_sendsocket(const char *sock_path)
   s_send_sockfd = socket(PF_UNIX, SOCK_DGRAM, 0);
   memset(&s_servaddr, 0, sizeof(s_servaddr));
   s_servaddr.sun_family = AF_UNIX;
-  strncpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
+  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
 }
 
 void sendline(const char *buf)
@@ -115,7 +112,7 @@ void init_recvsocket(const char *sock_path)
   s_recv_sockfd = socket(PF_UNIX, SOCK_DGRAM, 0);
   memset(&s_servaddr, 0, sizeof(s_servaddr));
   s_servaddr.sun_family = AF_UNIX;
-  strncpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
+  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX - 1);
   if (bind(s_recv_sockfd, (struct sockaddr *)&s_servaddr, sizeof(s_servaddr)) < 0) {
     perror(sock_path);
     exit(EXIT_FAILURE);

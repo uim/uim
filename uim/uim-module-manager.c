@@ -74,8 +74,8 @@ concat(const char *a, const char *b)
     return NULL;
   len = strlen(a) + strlen(b) + 1;
   dest = malloc(len);
-  dest = strcpy(dest, a);
-  strcat(dest, b);
+  dest = strlcpy(dest, a, len);
+  strlcat(dest, b, len);
   return dest;
 }
 

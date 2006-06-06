@@ -71,7 +71,7 @@ prime_init_ud(char *path)
 
   bzero(&server, sizeof(server));
   server.sun_family = PF_UNIX;
-  strcpy(server.sun_path, path);
+  strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {

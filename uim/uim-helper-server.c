@@ -99,7 +99,7 @@ init_server_fd(char *path)
 
   bzero(&myhost, sizeof(myhost));
   myhost.sun_family = PF_UNIX;
-  strcpy(myhost.sun_path, path);
+  strlcpy(myhost.sun_path, path, sizeof(myhost.sun_path));
 
   foo = bind(fd, (struct sockaddr *)&myhost, SUN_LEN(&myhost));
   if (foo < -1) {
