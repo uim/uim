@@ -376,7 +376,7 @@ uim_strsplit(const char *splittee, const char *splitter)
     }
     /* store */
     res[i] = malloc(sizeof(char) * (len + 1));
-    strlcpy(res[i], cur, len);
+    strlcpy(res[i], cur, len + 1);
     cur = tmp;
   }
   /**/
