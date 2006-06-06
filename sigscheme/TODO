@@ -15,8 +15,7 @@ Requirements and critical bugs:
     specially configured for libuim. Only the combined-source is needed for uim
 
 * Confirm public API
-  - Rename the boolean predicates
-  - Evaluate SRFI-50 (although withdrawn)
+  - Rename the boolean predicates (TRUEP, FALSEP)
 
 * Confirm R5RS and SRFI conformance for each function implementation
 
@@ -95,8 +94,8 @@ Properness improvements: (not required for now)
   - Port the Cutter-based tests under test-c/ to the new testing utils
   - Name 'the testing utils'
 
-* Make unittest.scm closer to SRFI-64 "A Scheme API for test suites" if
-  reasonable
+* Make unittest.scm closer to SRFI-64 "A Scheme API for test suites" and
+  SRFI-73 "Lightweight testing" if reasonable
 
 ==============================================================================
 Logical simplifications:

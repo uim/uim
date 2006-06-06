@@ -63,7 +63,12 @@ extern "C" {
 #define EQ             SCM_EQ
 #define NULLP          SCM_NULLP
 #define FALSEP         SCM_FALSEP
+#if 0
+/* FIXME: Change to this */
+#define TRUEP          SCM_TRUEP
+#else
 #define NFALSEP        SCM_NFALSEP
+#endif
 #define EOFP           SCM_EOFP
 
 #define CAR            SCM_CAR

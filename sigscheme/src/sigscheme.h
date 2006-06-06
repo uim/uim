@@ -928,7 +928,12 @@ struct ScmStorageConf_ {
 #define SCM_EQ(a, b)   (SCM_SAL_EQ((a), (b)))
 #define SCM_NULLP(o)   (SCM_EQ((o),  SCM_NULL))
 #define SCM_FALSEP(o)  (SCM_EQ((o),  SCM_FALSE))
+#if 0
+/* FIXME: Change to this */
+#define SCM_TRUEP(o)   (!SCM_FALSEP(o))
+#else
 #define SCM_NFALSEP(o) (!SCM_EQ((o), SCM_FALSE))
+#endif
 #define SCM_EOFP(o)    (SCM_EQ((o),  SCM_EOF))
 
 /*===========================================================================
