@@ -742,6 +742,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 	line = realloc(line, strlen(line) + n + 2);
 	strlcat(line, buf, strlen(line) + n + 2);
 	n = 0;
+	bzero(buf, SKK_SERV_BUFSIZ);
       } else {
 	n++;
       }
