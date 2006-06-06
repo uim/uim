@@ -6,6 +6,9 @@ Overview of changes from 1.1.0-beta to 1.1.0
       - fix a GC corruption that causes SEGV (YamaKen)
 
   o Minor
+    - Qt immodule
+      - proper deadkey and compose key handling (bug #3988, Etsushi)
+
     - m17n-lib IM
       - fix key handling with modifier keys (Etsushi)
 

@@ -89,7 +89,7 @@ void QUimInputContextWithSlave::setHolderWidget( QWidget *w )
 }
 #endif
 
-bool QUimInputContextWithSlave::filterEvent( QEvent *event )
+bool QUimInputContextWithSlave::filterEvent( const QEvent *event )
 {
     // when isComposing==false, event is forwarded to slave ic
     if ( ! isComposing() && slave && slave->filterEvent( event ) )
