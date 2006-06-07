@@ -1208,7 +1208,7 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     }
     iconv_close(cd);
 
-    strlcpy(utf8, outbuf, outbufsize - outbytesleft);
+    strlcpy(utf8, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);
 
     return outbufsize - outbytesleft;
