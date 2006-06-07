@@ -697,7 +697,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 {
   char r;
   struct skk_line *sl;
-  int n = 0, ret;
+  int n = 0, ret, len;
   char buf[SKK_SERV_BUFSIZ];
   char *line;
   char *idx = alloca(strlen(s) + 2);
@@ -734,15 +734,18 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
       }
 
       if (r == '\n') {
-	line = realloc(line, strlen(line) + n + 1);
-	strlcat(line, buf, n + 1);
+	len = strlen(line) + n;
+	line = realloc(line, len + 1);
+	strlcat(line, buf, len + 1);
 	break;
       }
 
       buf[n] = r;
-      if (n == SKK_SERV_BUFSIZ - 1) {
-	line = realloc(line, strlen(line) + n + 2);
-	strlcat(line, buf, n + 2);
+      buf[n + 1] = '\0';
+      if (n == SKK_SERV_BUFSIZ - 2) {
+	len = strlen(line) + n + 1;
+	line = realloc(line, len + 1);
+	strlcat(line, buf, len + 1);
 	n = 0;
       } else {
 	n++;
@@ -782,7 +785,9 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   p = find_line(di, n);
   len = calc_line_len(p);
   line = malloc(len + 1);
-  strlcpy(line, p, len + 1);
+  /* strncat is used intentionally because *p is too long string */
+  line[0] = '\0';
+  strncat(line, p, len);
   sl = compose_line(di, s, okuri_head, line);
   free(line);
   return sl;
