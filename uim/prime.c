@@ -44,6 +44,9 @@
 #include <pwd.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
 
 #include "uim-scm.h"
 #include "uim-compat-scm.h"

@@ -263,8 +263,12 @@ AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
-AC_CHECK_FUNCS(strdup snprintf)
-AC_CHECK_FUNCS(asprintf vasprintf vsnprintf)
+# BSD functions
+AC_CHECK_FUNCS(bzero strdup)
+# GNU functions
+AC_CHECK_FUNCS(asprintf vasprintf)
+# C99 functions
+AC_CHECK_FUNCS(snprintf vsnprintf)
 AC_REPLACE_FUNCS(getpeereid strsep setenv unsetenv strlcpy strlcat)
 AC_CHECK_FUNCS(getpid stat mkdir chmod)
 AC_CHECK_FUNCS(execv execvp)
