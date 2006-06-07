@@ -702,7 +702,6 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   char *line;
   char *idx = alloca(strlen(s) + 2);
 
-  bzero(buf, SKK_SERV_BUFSIZ);
   if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
       if (!((di->skkserv_state |= open_skkserv(di->skkserv_portnum)) &
 			      SKK_SERV_CONNECTED))
@@ -736,16 +735,15 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 
       if (r == '\n') {
 	line = realloc(line, strlen(line) + n + 1);
-	strlcat(line, buf, strlen(line) + n + 1);
+	strlcat(line, buf, n + 1);
 	break;
       }
 
       buf[n] = r;
       if (n == SKK_SERV_BUFSIZ - 1) {
 	line = realloc(line, strlen(line) + n + 2);
-	strlcat(line, buf, strlen(line) + n + 2);
+	strlcat(line, buf, n + 2);
 	n = 0;
-	bzero(buf, SKK_SERV_BUFSIZ);
       } else {
 	n++;
       }
@@ -784,8 +782,7 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   p = find_line(di, n);
   len = calc_line_len(p);
   line = malloc(len + 1);
-  line[0] = '\0';
-  strlcat(line, p, len + 1);
+  strlcpy(line, p, len + 1);
   sl = compose_line(di, s, okuri_head, line);
   free(line);
   return sl;
