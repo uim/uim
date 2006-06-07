@@ -703,7 +703,7 @@ static scm_bool
 match_reppat(match_context *ctx, ScmObj arg, ScmObj form)
 {
     ScmObj pat, sub_save, accum, reppat;
-    scm_int_t i;
+    scm_int_t i = 0;  /* the value is needed only to suppress warning */
 
     DBG_PRINT((DBG_MATCHER | DBG_FUNCALL, "match_reppat: ~s =~~ ~s\n",
                form, arg));

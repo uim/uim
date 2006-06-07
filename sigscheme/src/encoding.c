@@ -63,8 +63,8 @@ typedef unsigned char uchar;
 /*=======================================
   File Local Functions
 =======================================*/
-static scm_bool pred_always_true(void);
-static scm_bool pred_always_false(void);
+static scm_bool pred_always_true(void) SCM_UNUSED;
+static scm_bool pred_always_false(void) SCM_UNUSED;
 
 #if SCM_USE_EUCJP
 static const char *eucjp_encoding(void);

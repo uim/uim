@@ -207,7 +207,7 @@ scm_s_use(ScmObj feature, ScmObj env)
     ENSURE_SYMBOL(feature);
 
     c_feature_str = SCM_SYMBOL_NAME(feature);
-    if (mod = lookup_module_info(c_feature_str)) {
+    if ((mod = lookup_module_info(c_feature_str))) {
         feature_str = CONST_STRING(c_feature_str);
         if (!scm_providedp(feature_str)) {
             (*mod->initializer)();

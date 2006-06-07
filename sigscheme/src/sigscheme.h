@@ -71,9 +71,11 @@ extern "C" {
  * distributions, we use ((__noinline__)) instead of ((noinline)). */
 #define SCM_NOINLINE __attribute__((__noinline__))
 #define SCM_NORETURN __attribute__((__noreturn__))
+#define SCM_UNUSED   __attribute__((__unused__))
 #else /* HAVE___ATTRIBUTE__ */
 #define SCM_NOINLINE
 #define SCM_NORETURN
+#define SCM_UNUSED
 #endif /* HAVE___ATTRIBUTE__ */
 
 /* RFC: better names for the debug printing */
