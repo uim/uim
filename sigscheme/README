@@ -4,7 +4,7 @@ What's SigScheme
 SigScheme is a R5RS Scheme interpreter for embedded use.
 
   Homepage:
-    http://221.112.61.214/~kzk/software/sigscheme/
+    http://kzk9.net/software/sigscheme/
 
   Anonymous svn repository:
     http://anonsvn.freedesktop.org/svn/uim/branches/r5rs/sigscheme/
