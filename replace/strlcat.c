@@ -42,9 +42,9 @@ strlcat(dst, src, siz)
 	size_t dlen;
 
 	if (dst == NULL)
-		return;
+		return 0;
 	if (src == NULL)
-		return;
+		return 0;
 
 	/* Find the end of dst and adjust bytes left but don't go past end */
 	while (n-- != 0 && *d != '\0')

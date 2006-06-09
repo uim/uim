@@ -39,9 +39,9 @@ strlcpy(dst, src, siz)
 	size_t n = siz;
 
 	if (dst == NULL)
-		return;
+		return 0;
 	if (src == NULL)
-		return;
+		return 0;
 
 	/* Copy as many bytes as will fit */
 	if (n != 0 && --n != 0) {
