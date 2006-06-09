@@ -175,7 +175,7 @@ srfi34_providedp(void)
 {
     if (!l_srfi34_is_provided) {
         /* expensive */
-        l_srfi34_is_provided = NFALSEP(scm_p_providedp(l_str_srfi34));
+        l_srfi34_is_provided = scm_providedp(l_str_srfi34);
     }
     return l_srfi34_is_provided;
 }

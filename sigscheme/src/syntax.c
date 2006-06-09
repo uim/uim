@@ -325,7 +325,7 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
       (if <test> <consequent> <alternate>)
     =======================================================================*/
 
-    if (test = EVAL(test, env), NFALSEP(test)) {
+    if (test = EVAL(test, env), TRUEP(test)) {
 #if SCM_STRICT_ARGCHECK
         SAFE_POP(rest);
         ASSERT_NO_MORE_ARG(rest);
@@ -424,7 +424,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
                 ASSERT_NO_MORE_ARG(args);
             } else {
                 test = scm_p_memv(case_key, test);
-                test = (NFALSEP(test)) ? case_key : SCM_FALSE;
+                test = (TRUEP(test)) ? case_key : SCM_FALSE;
             }
         } else if (EQ(test, l_sym_else)) {
             ASSERT_NO_MORE_ARG(args);
@@ -432,7 +432,7 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
             test = EVAL(test, env);
         }
 
-        if (NFALSEP(test)) {
+        if (TRUEP(test)) {
             /*
              * if the selected <clause> contains only the <test> and no
              * <expression>s, then the value of the <test> is returned as the
@@ -547,7 +547,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 
     FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, eval_state->env);
-        if (!FALSEP(val)) {
+        if (TRUEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_VALTYPE_AS_IS;
             return val;
@@ -913,7 +913,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
         ENSURE_SYMBOL(var);
         /* R5RS: It is an error for a <variable> to appear more than once in
          * the list of `do' variables. */
-        if (NFALSEP(scm_p_memq(var, formals)))
+        if (TRUEP(scm_p_memq(var, formals)))
             ERR_OBJ("duplicate variable", var);
 
         if (!CONSP(binding))

@@ -520,7 +520,7 @@ compile_rec(compilation_context *ctx, ScmObj form, scm_int_t level)
          */
         if (ctx->mode.pattern) {
             if (FALSEP(scm_p_memq(form, ctx->literals))) {
-                if (!FALSEP(scm_p_memq(form, ctx->pvars.syms)))
+                if (TRUEP(scm_p_memq(form, ctx->pvars.syms)))
                     ERR_OBJ("duplicate pattern variable", form);
                 ctx->pvars.syms = CONS(form, ctx->pvars.syms);
                 ctx->pvars.vals = CONS(MAKE_INT(level), ctx->pvars.vals);
@@ -691,7 +691,7 @@ match_rec(match_context *ctx, ScmObj pat, ScmObj form)
         return scm_true;
     }
 
-    if (!FALSEP(scm_p_equalp(pat, form)))
+    if (TRUEP(scm_p_equalp(pat, form)))
         return scm_true;
     MISMATCH("wrong atom", pat_save, form_save);
     /* Not reached. */

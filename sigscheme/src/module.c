@@ -160,7 +160,7 @@ scm_provide(ScmObj feature)
 SCM_EXPORT scm_bool
 scm_providedp(ScmObj feature)
 {
-    return NFALSEP(scm_p_member(feature, l_features));
+    return TRUEP(scm_p_member(feature, l_features));
 }
 
 SCM_EXPORT scm_bool
@@ -181,7 +181,7 @@ scm_use_internal(const char *feature)
     SCM_ASSERT(feature);
 
     ok = scm_s_use(scm_intern(feature), SCM_INTERACTION_ENV);
-    return NFALSEP(ok);
+    return TRUEP(ok);
 }
 
 /*

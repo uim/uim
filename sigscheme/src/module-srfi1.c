@@ -182,7 +182,7 @@ scm_p_srfi1_list_copy(ScmObj lst)
 
         /* then create new cons */
         obj = CONS(obj, SCM_NULL);
-        if (!FALSEP(tail)) {
+        if (TRUEP(tail)) {
             SET_CDR(tail, obj);
             tail = obj;
         } else {
@@ -221,14 +221,14 @@ scm_p_srfi1_iota(ScmObj scm_count, ScmObj args)
     if (!NULLP(args))
         scm_start = CAR(args);
 
-    if (!FALSEP(scm_start) && !NULLP(CDR(args)))
+    if (TRUEP(scm_start) && !NULLP(CDR(args)))
         scm_step = CAR(CDR(args));
 
     /* param type check */
     ENSURE_INT(scm_count);
-    if (!FALSEP(scm_start))
+    if (TRUEP(scm_start))
         ENSURE_INT(scm_start);
-    if (!FALSEP(scm_step))
+    if (TRUEP(scm_step))
         ENSURE_INT(scm_step);
 
     /* now create list */

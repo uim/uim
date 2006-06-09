@@ -14,9 +14,6 @@ Requirements and critical bugs:
   - [uim] Add --disable-install to disable installation of libsscm that
     specially configured for libuim. Only the combined-source is needed for uim
 
-* Confirm public API
-  - Rename the boolean predicates (TRUEP, FALSEP)
-
 * Confirm R5RS and SRFI conformance for each function implementation
 
 * Make 64bit-safe

@@ -219,7 +219,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     case ScmFunc:
         scm_port_puts(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
         sym = scm_symbol_bound_to(obj);
-        if (NFALSEP(sym))
+        if (TRUEP(sym))
             scm_display(port, sym);
         else
             scm_format(port, SCM_FMT_RAW_C, "~P", (void *)obj);
