@@ -29,11 +29,9 @@
 ;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;; $Id: euc-jp.scm,v 1.6 2001/05/03 19:05:39 shirok Exp $
-
 ;; ChangeLog
 ;;
-;; 2005-08-18 kzk     Copied from Gauche 0.8.5? and adapted to SigScheme
+;; 2005-08-18 kzk     Copied from Gauche 0.8.5 and adapted to SigScheme
 
 (load "./test/unittest-gauche.scm")
 

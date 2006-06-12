@@ -41,6 +41,9 @@
 ;;;
 ;;; This code is in the public domain.
 
+;; ChangeLog
+;;
+;; 2005-07-28 kzk     Copied from SLIB 3a2 and adapted to SigScheme
 
 ;; FIXME: broken (in r3599)
 
