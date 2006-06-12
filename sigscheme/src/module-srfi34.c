@@ -2,7 +2,7 @@
  *  Filename : module-srfi34.c
  *  About    : SRFI-34 Exception Handling for Programs
  *
- *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
+ *  Copyright (C) 2005-2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *

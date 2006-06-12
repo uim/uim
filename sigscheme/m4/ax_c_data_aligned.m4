@@ -3,7 +3,7 @@ dnl
 dnl Checks whether data types are properly aligned.
 dnl
 dnl @category C
-dnl @author YamaKen <yamaken AT bp.iij4u.or.jp>
+dnl @author YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
 dnl @version 2006-06-04
 dnl @license AllPermissive
 

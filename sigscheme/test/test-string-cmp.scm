@@ -1,7 +1,7 @@
 ;;  Filename : test-string-cmp.scm
 ;;  About    : unit test for R5RS string
 ;;
-;;  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>
+;;  Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
 ;;
 ;;  All rights reserved.
 ;;

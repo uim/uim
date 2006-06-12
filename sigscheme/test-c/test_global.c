@@ -2,7 +2,7 @@
  *  Filename : test_global.c
  *  About    : unit test for global object handlings
  *
- *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>
+ *  Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *

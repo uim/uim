@@ -2,7 +2,7 @@
  *  Filename : scmport-sbchar.h
  *  About    : A ScmCharPort implementation for singlebyte character stream
  *
- *  Copyright (C) 2005-2006 YamaKen <yamaken AT bp.iij4u.or.jp>
+ *  Copyright (C) 2005-2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *

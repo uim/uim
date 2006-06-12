@@ -2,7 +2,7 @@
  *  Filename : test_gc_protect_stack.c
  *  About    : unit test for scm_gc_protect_stack()
  *
- *  Copyright (C) 2006 YamaKen <yamaken AT bp.iij4u.or.jp>
+ *  Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *
