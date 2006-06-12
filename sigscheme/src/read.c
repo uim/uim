@@ -2,7 +2,7 @@
  *  Filename : read.c
  *  About    : S-Expression reader
  *
- *  Copyright (C) 2000-2001 Shiro Kawai <shiro AT acm.org>
+ *  Copyright (C) 2000-2005 Shiro Kawai <shiro AT acm.org>
  *  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
  *
  *  All rights reserved.
@@ -32,6 +32,19 @@
  *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
+
+/*
+ * ChangeLog
+ *
+ * 2005-06-18 kzk      Copied from read.c of Gauche 0.8.5 and modified for
+ *                     SigScheme.
+ * 2005-11-01
+ *    ...
+ * 2006-02-03 YamaKen  Add SRFI-75 support, introduce safe and low-consumptive
+ *                     stack management, table-based char classification, and
+ *                     overall rewrite.
+ *
+ */
 
 /* TODO: replace with character class sequence expression-based tokenizer */
 
