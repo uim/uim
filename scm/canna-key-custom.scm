@@ -105,7 +105,7 @@
 	       (_ "[Canna] halfwidth katakana mode")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-kana-toggle-key '("<IgnoreCase>q")  ;; "q"
+(define-custom 'canna-kana-toggle-key '()
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] toggle hiragana/katakana mode")
