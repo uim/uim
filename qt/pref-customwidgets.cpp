@@ -726,8 +726,6 @@ void CustomKeyEdit::slotKeyButtonClicked()
     if( d->exec() == KeyEditForm::Accepted )
     {
         const QStringList keyStrList = d->getKeyStrList();
-        if( keyStrList.isEmpty() )
-            return;
 
         /* free old items */
         int num = 0;
