@@ -86,7 +86,7 @@ $ cd /tmp
 $ svn co http://anonsvn.freedesktop.org/svn/uim/tags/sigscheme-x.y.z
 $ cd sigscheme-x.y.z
 $ ./autogen.sh
-$ ./configure
+$ ./configure --enable-maintainer-mode
 $ make distcheck sum
 ----------------------------------------------------------------
 

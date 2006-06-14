@@ -1,5 +1,5 @@
 What's SigScheme
-======================================
+----------------
 
 SigScheme is a R5RS Scheme interpreter for embedded use.
 
@@ -12,11 +12,16 @@ SigScheme is a R5RS Scheme interpreter for embedded use.
   Web access to the repository:
     http://websvn.freedesktop.org/uim/branches/r5rs/sigscheme/
 
+Please report us if you find a problem.
+
+Mailinglist: uim@freedesktop.org
+
 
 Features
-======================================
+--------
 
 - Conforms to R5RS basically (not fully compatible)
+- R5RS hygienic macros
 - Supports Following SRFIs
   - SRFI-2  : And-let*
   - SRFI-6  : Basic String Ports
@@ -34,8 +39,9 @@ Features
 
 See doc/spec.txt and doc/design.txt for furtuer information.
 
+
 How to build
-======================================
+------------
 
 At first, you need to run ./configure with some options at the top directory.
 
@@ -68,13 +74,13 @@ $ make
 
 
 Installation
-======================================
+------------
 
 $ make install
 
 
 How to use
-======================================
+----------
 
 To run SigScheme in interactive mode, type as follows.
 
@@ -86,6 +92,6 @@ $ sscm filename
 
 
 Acknowledgements
-======================================
+----------------
 
 Part of this software is funded by IPA (http://www.ipa.go.jp/)
