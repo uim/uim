@@ -223,6 +223,8 @@ word_list_view_init(WordListView *view)
 					"text", WORD_LIST_PHON,
 					"editable", WORD_LIST_EDITABLE,
 					NULL);
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_PHON);
+    gtk_tree_view_column_set_resizable(column, TRUE);
 
     /*
     column = gtk_tree_view_column_new_with_attributes("Phonetic", renderer,
@@ -248,6 +250,8 @@ word_list_view_init(WordListView *view)
     gtk_tree_view_append_column(view->view, column);
     gtk_tree_view_column_set_title(column, _("Literal"));
     gtk_tree_view_column_set_visible(column, TRUE);
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_DESC);
+    gtk_tree_view_column_set_resizable(column, TRUE);
     view->desc_column = column;
 
     /* CClass (part of speech) Code */
@@ -263,6 +267,8 @@ word_list_view_init(WordListView *view)
 						      NULL);
     gtk_tree_view_column_set_visible(column, FALSE);
     gtk_tree_view_column_set_title(column, _("Part of Speech"));
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_CCLASS_CODE);
+    gtk_tree_view_column_set_resizable(column, TRUE);
     gtk_tree_view_append_column(view->view, column);
     view->cclass_code_column = column;
 
@@ -279,6 +285,8 @@ word_list_view_init(WordListView *view)
 						      NULL);
     gtk_tree_view_column_set_visible(column, FALSE);
     gtk_tree_view_column_set_title(column, _("Frequency"));
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_FREQ);
+    gtk_tree_view_column_set_resizable(column, TRUE);
     gtk_tree_view_append_column(view->view, column);
     view->freq_column = column;
 
@@ -288,9 +296,11 @@ word_list_view_init(WordListView *view)
 						      "text", WORD_LIST_OKURI,
 						      "editable", WORD_LIST_EDITABLE,
 						      NULL);
-    gtk_tree_view_append_column(view->view, column);
     gtk_tree_view_column_set_title(column, _("Okuri"));
     gtk_tree_view_column_set_visible(column, FALSE);
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_OKURI);
+    gtk_tree_view_column_set_resizable(column, TRUE);
+    gtk_tree_view_append_column(view->view, column);
     view->okuri_column = column;
 
     store = gtk_list_store_new(WORD_LIST_N_COLUMNS,
