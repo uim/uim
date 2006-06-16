@@ -181,6 +181,30 @@ create_window_anthy(void)
   return window;
 }
 
+static GtkWidget *
+create_window_canna(void)
+{
+  GtkWidget *window;
+  uim_dict *dict;
+
+  if (ae_mode == MODE_EDIT) {
+    window = word_list_window_new(IM_CANNA);
+  } else {
+    dict = uim_dict_open(N_("Canna private dictionary"));
+    if (!dict) {
+	    fprintf(stderr, "uim_dict_open() canna NULL\n");
+      return NULL;
+    }
+    window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
+    uim_dict_unref(dict);
+  }
+
+  gtk_widget_show(window);
+
+  return window;
+}
+
+
 static void
 window_destroy_cb(GtkWidget *widget, gpointer data)
 {
@@ -197,7 +221,7 @@ create_window(void)
     window = create_window_anthy();
     break;
   case IM_CANNA:
-    /* window = create_window_canna(); */
+    window = create_window_canna();
     break;
   case IM_SKK:
     /* create_window_skk();*/

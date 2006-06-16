@@ -317,6 +317,10 @@ dict_set_property(GObject *object, guint prop_id, const GValue *value,
     case DICT_ENUM_DICTIONARY_TYPE_ANTHY:
       dict = uim_dict_open(N_("Anthy private dictionary"));
       break;
+    case DICT_ENUM_DICTIONARY_TYPE_CANNA:
+      word_list_view_set_visible_freq_column(WORD_LIST_VIEW(window->word_list), FALSE);
+      dict = uim_dict_open(N_("Canna private dictionary"));
+      break;
     default:
       break;
     }

@@ -39,10 +39,16 @@
 #ifdef USE_ANTHY
 extern uim_dict_class uim_dict_class_anthy;
 #endif
+#ifdef USE_CANNA
+extern uim_dict_class uim_dict_class_canna;
+#endif
 
 static uim_dict_class *classes[] = {
 #ifdef USE_ANTHY
   &uim_dict_class_anthy,
+#endif
+#ifdef USE_CANNA
+  &uim_dict_class_canna,
 #endif
 };
 static unsigned int nr_classes = sizeof(classes) / sizeof(uim_dict_class *);

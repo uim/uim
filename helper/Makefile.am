@@ -99,6 +99,11 @@ uim_dict_gtk_SOURCES  += dict-anthy.c dict-anthy.h
 uim_dict_gtk_LDADD    += @ANTHY_LIBS@
 uim_dict_gtk_CPPFLAGS += -DUSE_ANTHY
 endif
+if CANNA
+uim_dict_gtk_SOURCES  += dict-canna.c dict-canna.h
+uim_dict_gtk_LDADD    += -lcanna
+uim_dict_gtk_CPPFLAGS += -DUSE_CANNA
+endif
 endif
 
 endif

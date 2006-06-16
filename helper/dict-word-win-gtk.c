@@ -230,6 +230,7 @@ word_window_new(WordWindowType mode, uim_dict *dict)
 {
   GtkWidget *widget;
   gchar title[256];
+  gint type;
 
   g_return_val_if_fail(dict, NULL);
 
@@ -249,6 +250,9 @@ word_window_new(WordWindowType mode, uim_dict *dict)
   }
 
   gtk_window_set_title(GTK_WINDOW(widget), title);
+  type = dict_identifier_to_word_type(dict->identifier);
+  if (type == WORD_TYPE_CANNA)
+    gtk_widget_set_sensitive(WORD_WINDOW(widget)->freq, FALSE);
 #endif
 
   return widget;
@@ -430,6 +434,7 @@ word_window_add(WordWindow *window)
   char *phonetic, *literal, *cclass_desc, *cclass_native = NULL;
   gint freq, ret, pos_id;
   GtkWidget *dialog;
+  uim_word_type type;
 
   g_return_if_fail(IS_WORD_WINDOW(window));
   g_return_if_fail(window->dict);
@@ -446,6 +451,7 @@ word_window_add(WordWindow *window)
   phonetic    = charset_convert(utf8_phonetic,    "UTF-8", window->dict->charset);
   literal     = charset_convert(utf8_literal,     "UTF-8", window->dict->charset);
   cclass_desc = charset_convert(utf8_cclass_desc, "UTF-8", window->dict->charset);
+  type = dict_identifier_to_word_type(window->dict->identifier);
 
   if (cclass_desc)
 	  cclass_native = g_strdup(find_code_from_desc(cclass_desc, pos_id));
@@ -456,7 +462,7 @@ word_window_add(WordWindow *window)
 #if 1 /* FIXME! */
     uim_word *word = malloc(sizeof(uim_word));
 
-    word->type        = WORD_TYPE_ANTHY;
+    word->type        = type;
     word->charset     = window->dict->charset;
     word->phon        = phonetic;
     word->desc        = literal;
@@ -666,9 +672,12 @@ button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
   int type;
   char *cclass_code, *utf8_cclass_desc;
   const char *cclass_desc;
+  gint system;
+
+  system = dict_identifier_to_support_type(window->dict->identifier);
 
   type = gtk_combo_box_get_active(GTK_COMBO_BOX(window->combobox_pos_broad));
-  cclass_code = cclass_dialog(type, SUPPORT_ANTHY);
+  cclass_code = cclass_dialog(type, system);
   if (!cclass_code) return;
 
   cclass_desc = find_desc_from_code_with_type(cclass_code, type);
