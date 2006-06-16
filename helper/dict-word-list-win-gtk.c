@@ -605,9 +605,6 @@ word_list_key_press_cb(GtkWidget *widget, GdkEventKey *event,
 		       WordListWindow *window)
 {
   switch (event->keyval) {
-  case GDK_Return:
-    ACTIVATE_ACTION(window, "EditWord");
-    break;
   case GDK_Delete:
     ACTIVATE_ACTION(window, "RemoveWord");
     break;
