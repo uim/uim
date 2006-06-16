@@ -69,6 +69,10 @@ static void help_about_action_cb        (GtkAction      *action,
 static gboolean word_list_button_press_cb  (GtkWidget      *widget,
 					    GdkEventButton *event,
 					    WordListWindow *window);
+static gboolean word_list_row_activated_cb(GtkWidget *widget,
+					   GtkTreePath *path,
+					   GtkTreeViewColumn *column,
+					   WordListWindow *window);
 static gboolean word_list_key_press_cb     (GtkWidget      *widget,
 					    GdkEventKey    *event,
 					    WordListWindow *window);
@@ -238,7 +242,7 @@ word_list_window_init (WordListWindow *window)
   g_signal_connect(ui, "add_widget",
 		   G_CALLBACK(add_widget_cb),
 		   vbox);
-   gtk_window_add_accel_group(GTK_WINDOW(window),
+  gtk_window_add_accel_group(GTK_WINDOW(window),
 			     gtk_ui_manager_get_accel_group(ui));
 
   gtk_ui_manager_add_ui_from_file(ui,
@@ -255,6 +259,9 @@ word_list_window_init (WordListWindow *window)
   g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
 		   "button-press-event",
 		   G_CALLBACK(word_list_button_press_cb), window);
+  g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
+		   "row-activated",
+		   G_CALLBACK(word_list_row_activated_cb), window);
   g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
 		   "key-press-event",
 		   G_CALLBACK(word_list_key_press_cb), window);
@@ -290,7 +297,7 @@ word_list_window_dispose(GObject *object)
 
 static void
 dict_get_property(GObject *object, guint prop_id, GValue *value,
-                  GParamSpec *pspec)
+		  GParamSpec *pspec)
 {
   switch (prop_id) {
   case PROP_DICTIONARY_TYPE:
@@ -303,7 +310,7 @@ dict_get_property(GObject *object, guint prop_id, GValue *value,
 
 static void
 dict_set_property(GObject *object, guint prop_id, const GValue *value,
-                  GParamSpec *pspec)
+		  GParamSpec *pspec)
 {
   WordListWindow *window = WORD_LIST_WINDOW(object);
   uim_dict *dict = NULL;
@@ -573,9 +580,7 @@ static gboolean
 word_list_button_press_cb(GtkWidget *widget, GdkEventButton *event,
 			  WordListWindow *window)
 {
-  if ((event->button == 1 && event->type == GDK_2BUTTON_PRESS) ||
-      (event->button == 2 && event->type == GDK_BUTTON_PRESS))
-  {
+  if (event->button == 2 && event->type == GDK_BUTTON_PRESS) {
     ACTIVATE_ACTION(window, "EditWord");
   } else if (event->button == 3) {
     current_button_event = event;
@@ -584,6 +589,15 @@ word_list_button_press_cb(GtkWidget *widget, GdkEventButton *event,
   }
 
   return FALSE;
+}
+
+static gboolean
+word_list_row_activated_cb(GtkWidget *widget, GtkTreePath *path,
+			   GtkTreeViewColumn *column, WordListWindow *window)
+{
+    ACTIVATE_ACTION(window, "EditWord");
+
+    return FALSE;
 }
 
 static gboolean
