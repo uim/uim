@@ -160,7 +160,7 @@ dict_enum_dictionary_type_get_type(void)
       { DICT_ENUM_DICTIONARY_TYPE_UNKOWN, "DICT_ENUM_DICTIONARY_TYPE_UNKOWN", "unknown" },
       { 0, NULL, NULL }
     };
-    etype = g_enum_register_static("DictEnumInputMethod", values);
+    etype = g_enum_register_static("DictEnumDictionaryType", values);
   }
   return etype;
 }
@@ -180,9 +180,9 @@ word_list_window_class_init (WordListWindowClass *klass)
 
   g_object_class_install_property(object_class,
   				  PROP_DICTIONARY_TYPE,
-				  g_param_spec_enum("input-method",
-				  		    _("input method name"),
-						    _("input method name"),
+				  g_param_spec_enum("dictionary-type",
+				  		    _("dictionary type"),
+						    _("dictionary type"),
 						    DICT_TYPE_ENUM_DICTIONARY_TYPE,
 						    DICT_ENUM_DICTIONARY_TYPE_ANTHY,
 						    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
@@ -345,7 +345,7 @@ dict_get_dictionary_type(GtkWidget *window)
 GtkWidget *word_list_window_new(int type)
 {
   return GTK_WIDGET(g_object_new(WORD_LIST_WINDOW_TYPE,
-				 "input-method", type, NULL));
+				 "dictionary-type", type, NULL));
 }
 
 static void
