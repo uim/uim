@@ -99,7 +99,7 @@
 	       (_ "[Canna] fullwidth alphanumeric mode")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-hankaku-kana-key '("<IgnoreCase><Control>q")
+(define-custom 'canna-hankaku-kana-key '()
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] halfwidth katakana mode")
