@@ -1,5 +1,4 @@
 /*
- *  $Id:$
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
  *                2005-2006 uim Project http://uim.freedesktop.org/
  *
@@ -76,8 +75,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __CANNADIC_H__
-#define __CANNADIC_H__
+#ifndef __dict_canna_cclass_h_included__
+#define __dict_canna_cclass_h_included__
 
 #include <glib.h>
 #include "dict-word.h"
@@ -127,4 +126,4 @@ const char  *find_code_from_desc        (const char *desc, int type);
 int    find_cclass_type_from_code (const char *code);
 int    find_cclass_type_from_desc (const char *desc);
 
-#endif /* __CANNADIC_H__ */
+#endif /* __dict_canna_cclass_h_included__ */

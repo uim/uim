@@ -79,6 +79,9 @@ static void word_list_selection_changed_cb (GtkTreeSelection *selection,
 static void wordwin_response_cb            (WordWindow     *dialog,
 					    WordListWindow *window);
 
+static void dict_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
+static void dict_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
+
 GtkWindowClass *parent_class = NULL;
 GdkEventButton *current_button_event = NULL;
 
@@ -144,6 +147,24 @@ GType word_list_window_get_type(void) {
   return type;
 }
 
+GType
+dict_enum_dictionary_type_get_type(void)
+{
+  static GType etype = 0;
+  if (etype == 0) {
+    static const GEnumValue values[] = {
+      { DICT_ENUM_DICTIONARY_TYPE_ANTHY, "DICT_ENUM_DICTIONARY_TYPE_ANTHY", "anthy" },
+      { DICT_ENUM_DICTIONARY_TYPE_CANNA, "DICT_ENUM_DICTIONARY_TYPE_CANNA", "canna" },
+      { DICT_ENUM_DICTIONARY_TYPE_SKK, "DICT_ENUM_DICTIONARY_TYPE_SKK", "skk" },
+      { DICT_ENUM_DICTIONARY_TYPE_PRIME, "DICT_ENUM_DICTIONARY_TYPE_PRIME", "prime" },
+      { DICT_ENUM_DICTIONARY_TYPE_UNKOWN, "DICT_ENUM_DICTIONARY_TYPE_UNKOWN", "unknown" },
+      { 0, NULL, NULL }
+    };
+    etype = g_enum_register_static("DictEnumInputMethod", values);
+  }
+  return etype;
+}
+
 static void
 word_list_window_class_init (WordListWindowClass *klass)
 {
@@ -153,6 +174,18 @@ word_list_window_class_init (WordListWindowClass *klass)
   object_class = (GObjectClass *) klass;
 
   object_class->dispose = word_list_window_dispose;
+
+  object_class->get_property = dict_get_property;
+  object_class->set_property = dict_set_property;
+
+  g_object_class_install_property(object_class,
+  				  PROP_DICTIONARY_TYPE,
+				  g_param_spec_enum("input-method",
+				  		    _("input method name"),
+						    _("input method name"),
+						    DICT_TYPE_ENUM_DICTIONARY_TYPE,
+						    DICT_ENUM_DICTIONARY_TYPE_ANTHY,
+						    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
 
 static gchar *
@@ -183,8 +216,6 @@ word_list_window_init (WordListWindow *window)
   GtkWidget *word_list, *vbox, *statusbar;
   GtkUIManager *ui;
   GtkActionGroup *actions;
-  uim_dict *dict = NULL;
-  gchar message[128];
 
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   gtk_window_set_default_size(GTK_WINDOW(window), 600, 450);
@@ -235,18 +266,6 @@ word_list_window_init (WordListWindow *window)
   gtk_box_pack_start(GTK_BOX(vbox), statusbar, FALSE, FALSE, 0);
   gtk_widget_show(statusbar);
 
-#if 1 /* FIXME! currently the identifier of Anthy is hard coded */
-  dict = uim_dict_open(N_("Anthy private dictionary"));
-  if (!dict) {
-    warn_dict_open();
-    exit(EXIT_FAILURE);
-  }
-#endif
-  word_list_view_set_dict(WORD_LIST_VIEW(word_list), dict);
-
-  g_snprintf(message, sizeof(message), _("%s"), _(dict->identifier));
-  gtk_statusbar_push(GTK_STATUSBAR(window->statusbar), 0, _(dict->identifier));
-
   word_list_window_set_sensitive(window);
 }
 
@@ -269,13 +288,64 @@ word_list_window_dispose(GObject *object)
     G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
-GtkWidget *word_list_window_new(void)
+static void
+dict_get_property(GObject *object, guint prop_id, GValue *value,
+                  GParamSpec *pspec)
 {
-  GtkWidget *widget;
+  switch (prop_id) {
+  case PROP_DICTIONARY_TYPE:
+    g_value_set_enum(value, dict_get_dictionary_type(GTK_WIDGET(object)));
+    break;
+  default:
+    break;
+  }
+}
 
-  widget = GTK_WIDGET(g_object_new(WORD_LIST_WINDOW_TYPE, NULL));
+static void
+dict_set_property(GObject *object, guint prop_id, const GValue *value,
+                  GParamSpec *pspec)
+{
+  WordListWindow *window = WORD_LIST_WINDOW(object);
+  uim_dict *dict = NULL;
+  gchar message[128];
 
-  return widget;
+  switch (prop_id) {
+  case PROP_DICTIONARY_TYPE:
+    window->dictionary_type = g_value_get_enum(value);
+
+    switch (window->dictionary_type) {
+    case DICT_ENUM_DICTIONARY_TYPE_ANTHY:
+      dict = uim_dict_open(N_("Anthy private dictionary"));
+      break;
+    default:
+      break;
+    }
+    if (!dict) {
+      warn_dict_open();
+      exit(EXIT_FAILURE);
+    }
+    word_list_view_set_dict(WORD_LIST_VIEW(window->word_list), dict);
+
+    g_snprintf(message, sizeof(message), _("%s"), _(dict->identifier));
+    gtk_statusbar_push(GTK_STATUSBAR(window->statusbar), 0, _(dict->identifier));
+   break;
+  default:
+    break;
+  }
+}
+
+DictEnumDictionaryType
+dict_get_dictionary_type(GtkWidget *window)
+{
+  WordListWindow *w = (WordListWindow *)window;
+
+  return w->dictionary_type;
+}
+
+GtkWidget *word_list_window_new(int type)
+{
+  return GTK_WIDGET(g_object_new(WORD_LIST_WINDOW_TYPE,
+				 "input-method", type, NULL));
 }
 
 static void

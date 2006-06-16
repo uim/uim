@@ -35,7 +35,8 @@
 
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "uim/gettext.h"
+
+#include "gettext.h"
 
 #include "dict-util.h"
 #include "dict-anthy.h"
@@ -479,10 +480,10 @@ word_window_add(WordWindow *window)
     g_free(word);
 #endif
   } else {
-    ret = -1;
+    ret = 0;
   }
 
-  if (ret == -1) {
+  if (ret == 0) {
     dialog = gtk_message_dialog_new(NULL,
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,

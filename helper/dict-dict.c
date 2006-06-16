@@ -36,10 +36,14 @@
 #include "dict-dict.h"
 
 /* FIXME! use function */
+#ifdef USE_ANTHY
 extern uim_dict_class uim_dict_class_anthy;
+#endif
 
 static uim_dict_class *classes[] = {
+#ifdef USE_ANTHY
   &uim_dict_class_anthy,
+#endif
 };
 static unsigned int nr_classes = sizeof(classes) / sizeof(uim_dict_class *);
 
@@ -94,20 +98,22 @@ uim_dict_unref(uim_dict *dict)
     uim_dict_close(dict);
 }
 
+/* fail: 0, success: 1 */
 int
 uim_dict_add_word(uim_dict *dict, uim_word *word)
 {
   if (!dict)
-    return -1;
+    return 0;
 
   if (!dict->funcs || !dict->funcs->add_word) {
     /* warning? */
-    return -1;
+    return 0;
   }
 
   return dict->funcs->add_word(dict, word);
 }
 
+/* fail: 0, success: 1 */
 int
 uim_dict_change_word(uim_dict *dict, uim_word *word)
 {
@@ -122,6 +128,7 @@ uim_dict_change_word(uim_dict *dict, uim_word *word)
   return dict->funcs->change_word(dict, word);
 }
 
+/* fail: 0, success: 1 */
 int
 uim_dict_remove_word(uim_dict *dict, uim_word *word)
 {

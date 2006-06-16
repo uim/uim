@@ -41,9 +41,9 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include <uim/uim.h>
-#include <uim/uim-helper.h>
-#include "uim/gettext.h"
+#include "uim.h"
+#include "uim-helper.h"
+#include "gettext.h"
 
 #include "dict-word-win-gtk.h"
 #include "dict-word-list-win-gtk.h"
@@ -119,7 +119,7 @@ parse_arg(int argc, char *argv[])
 
   ae_mode = MODE_EDIT;
 
-  while ((ch = getopt(argc, argv, "aei:")) != -1)
+  while ((ch = getopt(argc, argv, "aehi:")) != -1)
   {
     switch (ch) {
     case 'a':
@@ -140,6 +140,16 @@ parse_arg(int argc, char *argv[])
       else
 	input_method = IM_ANTHY;
       break;
+    case 'h':
+      fprintf(stderr, "Usage: uim-dict-gtk [OPTION...]\n");
+      fprintf(stderr, "\n");
+      fprintf(stderr, "Options:\n");
+      fprintf(stderr, " -h            Show this help\n");
+      fprintf(stderr, " -i [IM]       Open a dictionary for IM [anthy, canna]\n");
+      fprintf(stderr, " -e            Start with editing mode (default)\n");
+      fprintf(stderr, " -a            Start with adding mode\n");
+      exit(1);
+      break;
     default:
       ae_mode = MODE_EDIT;
       /* input_method = get_current_im(); */
@@ -157,7 +167,7 @@ create_window_anthy(void)
   uim_dict *dict;
 
   if (ae_mode == MODE_EDIT) {
-    window = word_list_window_new();
+    window = word_list_window_new(IM_ANTHY);
   } else {
     dict = uim_dict_open(N_("Anthy private dictionary"));
     if (!dict)

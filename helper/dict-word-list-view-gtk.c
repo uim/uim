@@ -35,11 +35,10 @@
 
 #include <gtk/gtk.h>
 
-#include "uim/gettext.h"
+#include "gettext.h"
 
 #include "dict-word-list-view-gtk.h"
 #include "dict-util.h"
-
 
 #include <stdlib.h>
 #include <string.h>

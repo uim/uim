@@ -1,5 +1,4 @@
 /*
- *  $Id:$
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
  *                2005-2006 uim Project http://uim.freedesktop.org/
  *
@@ -76,8 +75,10 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <config.h>
+
 #include <string.h>
-#include "dict-canna.h"
+#include "dict-canna-cclass.h"
 
 category_code substantive_code[]= {
   { "#T00", "名詞(な,さ,する,語幹,格助接続)"  , "共通,孝行", 31, 3 },
