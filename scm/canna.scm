@@ -952,10 +952,10 @@
 (define (canna-reset-handler cc)
   (if (canna-context-on cc)
       (begin
-        (canna-flush cc)
-        (if (canna-context-state cc)
-          (let ((cc-id (canna-context-cc-id cc)))
-            (canna-lib-reset-conversion cc-id))))))
+	(if (canna-context-state cc)
+	  (let ((cc-id (canna-context-cc-id cc)))
+	    (canna-lib-reset-conversion cc-id)))
+	(canna-flush cc))))
 
 ;;;
 (define (canna-get-candidate-handler cc idx accel-enum-hint)
