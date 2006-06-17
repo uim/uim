@@ -560,6 +560,14 @@ popup_menu_action_cb(GtkAction *action, WordListWindow *window)
   }
 }
 
+#if GTK_CHECK_VERSION(2, 6, 0)
+static void
+activate_url(GtkAboutDialog *about, const gchar *link, gpointer data)
+{
+  g_print("show url %s\n", link);
+}
+#endif
+
 static void
 help_about_action_cb(GtkAction *action, WordListWindow *window)
 {
@@ -568,14 +576,14 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
   GdkPixbuf *pixbuf, *transparent;
   const gchar *filename = UIM_PIXMAPSDIR "/uim-dict.png";
   const gchar *authors[] = {
-    "Masahito Omote",
+    "Masahito Omote <omote@utyuuzin.net>",
     "Takuro Ashie",
     "Etsushi Kato",
     NULL
   };
   const gchar *copyright = N_(
-    "Copyright 2003-2004 Masahito Omote <omote@utyuuzin.net>;\n"
-    "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
+    "Copyright (C) 2003-2004 Masahito Omote\n"
+    "Copyright (C) 2004-2006 uim Project\n"
     "All rights reserved.");
 
   transparent = NULL;
@@ -585,10 +593,12 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
     g_object_unref(pixbuf);
   }
   
+  gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
   gtk_show_about_dialog (GTK_WINDOW(window),
 			 "name", name,
 			 "version", VERSION,
 			 "copyright", copyright,
+			 "website", "http://uim.freedesktop.org",
 			 "authors", authors,
 			 "logo", transparent,
 			 NULL);

@@ -236,6 +236,23 @@ create_window(void)
   return 0;
 }
 
+static void
+setup_default_icon()
+{
+  GdkPixbuf *pixbuf;
+
+  pixbuf = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-dict.png", NULL);
+  if (pixbuf) {
+    GList *list;
+
+    list = NULL;
+    list = g_list_append(list, pixbuf);
+    gtk_window_set_default_icon_list(list);
+    g_list_free(list);
+    g_object_unref(pixbuf);
+  }
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -249,6 +266,7 @@ main(int argc, char *argv[])
   parse_arg(argc, argv);
 
   gtk_init(&argc, &argv);
+  setup_default_icon();
 
   result = create_window();
 

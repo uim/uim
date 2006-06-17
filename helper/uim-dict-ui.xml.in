@@ -45,6 +45,7 @@
         <menuitem action="Prime"/>
 	-->
       </menu>
+      <separator/>
       <menuitem action="Quit"/>
     </menu>
     <menu action="EditMenu">
