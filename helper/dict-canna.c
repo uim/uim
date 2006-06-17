@@ -244,7 +244,11 @@ dict_canna_add_entry_to_priv_dic(char *phon, char *desc, char *cclass_native, in
   status = RkMountDic(g_context_num, dicname, 0);
 
   if (status == 0) {
-    if ((asprintf(&entry, "%s %s %s\n", phon, cclass_native, desc)) > 0) {
+    int len;
+    len = strlen(phon) + strlen(cclass_native) + strlen(desc) + 4;
+    entry = malloc(len);
+    if (entry) {
+      snprintf(entry, len, "%s %s %s\n", phon, cclass_native, desc);
       status = RkDefineDic(g_context_num, dicname, entry);
       free(entry);
     }
@@ -268,7 +272,11 @@ dict_canna_delete_entry_from_priv_dic(char *phon, char *desc,
   status = RkMountDic(g_context_num, dicname, 0);
 
   if (status == 0) {
-    if ((asprintf(&entry, "%s %s %s\n", phon, cclass_native, desc)) > 0) {
+    int len;
+    len = strlen(phon) + strlen(cclass_native) + strlen(desc) + 4;
+    entry = malloc(len);
+    if (entry) {
+      snprintf(entry, len, "%s %s %s\n", phon, cclass_native, desc);
       status = RkDeleteDic(g_context_num, dicname, entry);
       free(entry);
     }
