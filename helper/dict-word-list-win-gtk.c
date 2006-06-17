@@ -564,7 +564,7 @@ popup_menu_action_cb(GtkAction *action, WordListWindow *window)
 static void
 activate_url(GtkAboutDialog *about, const gchar *link, gpointer data)
 {
-  g_print("show url %s\n", link);
+  /* g_print("show url %s\n", link); */
 }
 #endif
 
