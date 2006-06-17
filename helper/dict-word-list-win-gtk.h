@@ -36,13 +36,7 @@
 
 #include <gtk/gtk.h>
 
-typedef enum {
-  DICT_ENUM_DICTIONARY_TYPE_ANTHY,
-  DICT_ENUM_DICTIONARY_TYPE_CANNA,
-  DICT_ENUM_DICTIONARY_TYPE_SKK,
-  DICT_ENUM_DICTIONARY_TYPE_PRIME,
-  DICT_ENUM_DICTIONARY_TYPE_UNKOWN
-} DictEnumDictionaryType;
+void dict_window_destroy_cb(GtkWidget *widget, gpointer data);
 
 G_BEGIN_DECLS
 

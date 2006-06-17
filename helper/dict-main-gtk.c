@@ -47,25 +47,17 @@
 
 #include "dict-word-win-gtk.h"
 #include "dict-word-list-win-gtk.h"
+#include "dict-word-list-view-gtk.h"
 
 static unsigned int read_tag;
 static int uim_fd;  /* file descriptor to connect helper message bus */
 static int ae_mode; /* add mode or edit mode */
-static int input_method;
+static int g_startup_dictionary;
 
 enum {
   MODE_EDIT,
   MODE_ADD,
   NR_MODE
-};
-
-/* should be implemeted as loadable module */
-enum {
-  IM_ANTHY,
-  IM_CANNA,
-  IM_SKK,
-  IM_PRIME,
-  NR_IM
 };
 
 static void
@@ -130,15 +122,15 @@ parse_arg(int argc, char *argv[])
       break;
     case 'i':
       if (!strcmp(optarg, "anthy"))
-	input_method = IM_ANTHY;
+	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_ANTHY;
       else if (!strcmp(optarg, "canna"))
-	input_method = IM_CANNA;
+	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_CANNA;
       else if (!strcmp(optarg, "prime"))
-	input_method = IM_PRIME;
+	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_PRIME;
       else if (!strcmp(optarg, "skk"))
-	input_method = IM_SKK;
+	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_SKK;
       else
-	input_method = IM_ANTHY;
+	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_ANTHY;
       break;
     case 'h':
       fprintf(stderr, "Usage: uim-dict-gtk [OPTION...]\n");
@@ -152,7 +144,7 @@ parse_arg(int argc, char *argv[])
       break;
     default:
       ae_mode = MODE_EDIT;
-      /* input_method = get_current_im(); */
+      /* g_startup_dictionary = get_current_im(); */
     }
   }
 
@@ -167,13 +159,14 @@ create_window_anthy(void)
   uim_dict *dict;
 
   if (ae_mode == MODE_EDIT) {
-    window = word_list_window_new(IM_ANTHY);
+    window = word_list_window_new(DICT_ENUM_DICTIONARY_TYPE_ANTHY);
+    if (WORD_LIST_VIEW(WORD_LIST_WINDOW(window)->word_list)->dict == NULL)
+      return NULL;
   } else {
     dict = uim_dict_open(N_("Anthy private dictionary"));
     if (!dict)
       return NULL;
     window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
-    uim_dict_unref(dict);
   }
 
   gtk_widget_show(window);
@@ -188,7 +181,9 @@ create_window_canna(void)
   uim_dict *dict;
 
   if (ae_mode == MODE_EDIT) {
-    window = word_list_window_new(IM_CANNA);
+    window = word_list_window_new(DICT_ENUM_DICTIONARY_TYPE_CANNA);
+    if (WORD_LIST_VIEW(WORD_LIST_WINDOW(window)->word_list)->dict == NULL)
+      return NULL;
   } else {
     dict = uim_dict_open(N_("Canna private dictionary"));
     if (!dict) {
@@ -196,7 +191,6 @@ create_window_canna(void)
       return NULL;
     }
     window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
-    uim_dict_unref(dict);
   }
 
   gtk_widget_show(window);
@@ -205,8 +199,8 @@ create_window_canna(void)
 }
 
 
-static void
-window_destroy_cb(GtkWidget *widget, gpointer data)
+void
+dict_window_destroy_cb(GtkWidget *widget, gpointer data)
 {
   gtk_main_quit();
 }
@@ -216,18 +210,18 @@ create_window(void)
 {
   GtkWidget *window = NULL;
 
-  switch (input_method) {
-  case IM_ANTHY:
+  switch (g_startup_dictionary) {
+  case DICT_ENUM_DICTIONARY_TYPE_ANTHY:
     window = create_window_anthy();
     break;
-  case IM_CANNA:
+  case DICT_ENUM_DICTIONARY_TYPE_CANNA:
     window = create_window_canna();
     break;
-  case IM_SKK:
-    /* create_window_skk();*/
-    break;
-  case IM_PRIME:
+  case DICT_ENUM_DICTIONARY_TYPE_PRIME:
     /* create_window_prime();*/
+    break;
+  case DICT_ENUM_DICTIONARY_TYPE_SKK:
+    /* create_window_skk();*/
     break;
   default:
     return -1;
@@ -237,7 +231,7 @@ create_window(void)
     return -1;
 
   g_signal_connect(G_OBJECT(window), "destroy",
-		   G_CALLBACK(window_destroy_cb), NULL);
+		   G_CALLBACK(dict_window_destroy_cb), NULL);
 
   return 0;
 }
@@ -246,6 +240,7 @@ int
 main(int argc, char *argv[])
 {
   gint result;
+
   setlocale(LC_ALL, "");
   gtk_set_locale();
   bindtextdomain(PACKAGE, LOCALEDIR);

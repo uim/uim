@@ -90,7 +90,16 @@ dict_anthy_init(void)
 static int
 dict_anthy_exit(void)
 {
+  /*
+   * With anthy-7811, anthy_parse_word_lin() causes segmentation fault once
+   * anthy_dic_util_quit() and anthy_dic_util_init() have been used to restart
+   * the library.  To avoid this, we don't call anthy_dic_util_quit() even when
+   * the ref_count of uim_dict_anthy become 0.
+   */
+#if 0
   anthy_dic_util_quit();
+#endif
+
   return 0;
 }
 
@@ -185,7 +194,7 @@ uim_dict_anthy_open(const char *identifier)
   dict->identifier = strdup(identifier);
   dict->filename   = NULL;
   dict->charset    = strdup("EUC-JP");
-  dict->ref_count  = 1;
+  dict->ref_count  = 0; /* at this point, no window refers this */
   dict->word_list  = NULL;
 
   dict_anthy_read_priv_dic_list(&dict->word_list);

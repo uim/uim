@@ -342,16 +342,16 @@ word_list_view_finalize(GObject *object)
 static void
 word_list_view_destroy(GtkObject *object)
 {
-    WordListView *view = WORD_LIST_VIEW(object);
+   WordListView *view = WORD_LIST_VIEW(object);
 
-    if (view->dict) {
-      uim_dict_unref(view->dict);
-      view->dict = NULL;
-    }
+   if (view->dict) {
+     uim_dict_unref(view->dict);
+     view->dict = NULL;
+   }
 
-    if (GTK_OBJECT_CLASS(parent_class)->destroy) {
-	GTK_OBJECT_CLASS(parent_class)->destroy(object);
-    }
+   if (GTK_OBJECT_CLASS(parent_class)->destroy) {
+     GTK_OBJECT_CLASS(parent_class)->destroy(object);
+   }
 }
 
 /*

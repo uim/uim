@@ -35,7 +35,10 @@
 
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
-#include "uim/gettext.h"
+
+#include "gettext.h"
+#include "uim-stdint.h"
+
 #include "dict-word.h"
 #include "dict-anthy.h"
 #include "dict-word-list-view-gtk.h"
@@ -64,6 +67,8 @@ static void popup_menu_action_cb        (GtkAction      *action,
 					 WordListWindow *window);
 static void help_about_action_cb        (GtkAction      *action,
 					 WordListWindow *window);
+static void activate_radio_action(GtkAction *action, GtkRadioAction *current,
+				  gpointer data);
 
 /* call back functions for WordListView */
 static gboolean word_list_button_press_cb  (GtkWidget      *widget,
@@ -91,7 +96,8 @@ GdkEventButton *current_button_event = NULL;
 
 /* Main menu*/
 GtkActionEntry menu_action_entries[] = {
-    { "FileMenu",   NULL, N_("_File")   },
+    { "DictionaryMenu", NULL, N_("_Dictionary") },
+    { "SelectMenu", NULL, N_("_Select") },
     { "EditMenu",   NULL, N_("_Edit")   },
     { "OptionMenu", NULL, N_("_Option") },
     { "HelpMenu",   NULL, N_("_Help")   },
@@ -109,6 +115,16 @@ GtkActionEntry menu_action_entries[] = {
       N_("About uim-dict"),           G_CALLBACK(help_about_action_cb) },
 };
 static guint n_menu_action_entries = G_N_ELEMENTS(menu_action_entries);
+
+static GtkRadioActionEntry dictionary_entries[] = {
+  { "Anthy", NULL,
+    "_Anthy", NULL,
+    "Anthy private dictionary", DICT_ENUM_DICTIONARY_TYPE_ANTHY },
+  { "Canna", NULL,
+    "_Canna", NULL,
+    "Canna private dictionary", DICT_ENUM_DICTIONARY_TYPE_CANNA },
+};
+static guint n_dictionary_entries = G_N_ELEMENTS(dictionary_entries);
 
 #define ACTIVATE_ACTION(window, action_name)				       \
 {									       \
@@ -204,7 +220,7 @@ warn_dict_open()
   GtkWidget *dialog;
   const gchar *message;
 
-  message = N_("Couldn't open a library for manipulating the dictionary.\n");
+  message = N_("Couldn't open the dictionary.\n");
   dialog = gtk_message_dialog_new(NULL,
 		  		  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_WARNING,
@@ -236,6 +252,12 @@ word_list_window_init (WordListWindow *window)
 #endif
   gtk_action_group_add_actions(actions, menu_action_entries,
 			       n_menu_action_entries, window);
+
+  gtk_action_group_add_radio_actions(actions, dictionary_entries,
+				     n_dictionary_entries,
+				     DICT_ENUM_DICTIONARY_TYPE_ANTHY,
+				     G_CALLBACK(activate_radio_action),
+				     window);
 
   window->ui_manager = ui = gtk_ui_manager_new();
   gtk_ui_manager_insert_action_group(ui, actions, 0);
@@ -320,6 +342,8 @@ dict_set_property(GObject *object, guint prop_id, const GValue *value,
   case PROP_DICTIONARY_TYPE:
     window->dictionary_type = g_value_get_enum(value);
 
+    ACTIVATE_ACTION(window, dictionary_entries[window->dictionary_type].name);
+
     switch (window->dictionary_type) {
     case DICT_ENUM_DICTIONARY_TYPE_ANTHY:
       dict = uim_dict_open(N_("Anthy private dictionary"));
@@ -333,13 +357,13 @@ dict_set_property(GObject *object, guint prop_id, const GValue *value,
     }
     if (!dict) {
       warn_dict_open();
-      exit(EXIT_FAILURE);
+      break;
     }
     word_list_view_set_dict(WORD_LIST_VIEW(window->word_list), dict);
 
     g_snprintf(message, sizeof(message), _("%s"), _(dict->identifier));
     gtk_statusbar_push(GTK_STATUSBAR(window->statusbar), 0, _(dict->identifier));
-   break;
+    break;
   default:
     break;
   }
@@ -539,16 +563,44 @@ popup_menu_action_cb(GtkAction *action, WordListWindow *window)
 static void
 help_about_action_cb(GtkAction *action, WordListWindow *window)
 {
-  GtkWidget *about_dialog, *label1;
-  gchar *about_name;
   const gchar *name = N_("uim-dict");
+#if GTK_CHECK_VERSION(2, 6, 0)
+  GdkPixbuf *pixbuf, *transparent;
+  const gchar *filename = UIM_PIXMAPSDIR "/uim-dict.png";
+  const gchar *authors[] = {
+    "Masahito Omote",
+    "Takuro Ashie",
+    "Etsushi Kato",
+    NULL
+  };
+  const gchar *copyright = N_(
+    "Copyright 2003-2004 Masahito Omote <omote@utyuuzin.net>;\n"
+    "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
+    "All rights reserved.");
+
+  transparent = NULL;
+  pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
+  if (pixbuf) {
+    transparent = gdk_pixbuf_add_alpha(pixbuf, TRUE, 0xff, 0xff, 0xff);
+    g_object_unref(pixbuf);
+  }
+  
+  gtk_show_about_dialog (GTK_WINDOW(window),
+			 "name", name,
+			 "version", VERSION,
+			 "copyright", copyright,
+			 "authors", authors,
+			 "logo", transparent,
+			 NULL);
+  g_object_unref(transparent);
+#else
+  GtkWidget *about_dialog, *label1;
   const gchar *copyright = N_(
     "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
     "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
     "All rights reserved.");
-
-  about_name = g_strdup_printf(
-       "<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
+  gchar *about_name =
+    g_strdup_printf("<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
 
   about_dialog = gtk_dialog_new_with_buttons(_("About uim-dict"), NULL,
 					     GTK_DIALOG_MODAL,
@@ -570,8 +622,46 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
   gtk_dialog_run(GTK_DIALOG(about_dialog));
 
   gtk_widget_destroy(about_dialog);
+#endif
 }
 
+static void
+activate_radio_action(GtkAction *action, GtkRadioAction *current,
+		      gpointer data)
+{
+  WordListWindow *window;
+  const gchar *name, *typename;
+  gboolean active;
+  guint value;
+
+  window = WORD_LIST_WINDOW(data);
+  name = gtk_action_get_name(GTK_ACTION(current));
+  typename = G_OBJECT_TYPE_NAME(GTK_ACTION(current));
+  active = gtk_toggle_action_get_active(GTK_TOGGLE_ACTION(current));
+  value = gtk_radio_action_get_current_value(GTK_RADIO_ACTION(current));
+
+  if (active) {
+    if (value != window->dictionary_type) {
+      GtkWidget *newwin;
+
+      newwin = word_list_window_new(value);
+
+      /* quit */
+      if (WORD_LIST_VIEW(WORD_LIST_WINDOW(newwin)->word_list)->dict == NULL) {
+        gtk_main_quit();
+      }
+
+      g_signal_handlers_disconnect_by_func(G_OBJECT(window),
+					   (gpointer)(uintptr_t)dict_window_destroy_cb,
+					   NULL);
+      gtk_widget_destroy(GTK_WIDGET(window));
+
+      g_signal_connect(G_OBJECT(newwin), "destroy",
+		       G_CALLBACK(dict_window_destroy_cb), NULL);
+      gtk_widget_show(newwin);
+    }
+  }
+}
 
 /*
  * call back functions for WordListView

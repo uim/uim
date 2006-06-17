@@ -512,8 +512,10 @@ word_window_add(WordWindow *window)
   word_window_clear(window);
 
   /* do not destroy the window when the continuance check box is checked */
-  if (!word_window_is_continuance_mode(window))
+  if (!word_window_is_continuance_mode(window)) {
     gtk_idle_add(idle_wordwin_destroy, window);
+    uim_dict_unref(window->dict);
+  }
 }
 
 static gboolean
@@ -574,10 +576,11 @@ word_window_validate_values(WordWindow *window)
 }
 
 static gboolean
-idle_wordwin_destroy (gpointer data)
+idle_wordwin_destroy(gpointer data)
 {
-	gtk_widget_destroy(GTK_WIDGET(data));
-	return FALSE;
+  gtk_widget_destroy(GTK_WIDGET(data));
+
+  return FALSE;
 }
 
 
@@ -597,6 +600,7 @@ word_window_response(GtkDialog *dialog, gint arg)
     break;
   case GTK_RESPONSE_CLOSE:
     gtk_idle_add(idle_wordwin_destroy, dialog);
+    uim_dict_unref(WORD_WINDOW(dialog)->dict);
     break;
   default:
     break;

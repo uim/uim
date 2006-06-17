@@ -301,7 +301,7 @@ uim_dict_canna_open(const char *identifier)
   dict->identifier = strdup(identifier);
   dict->filename = NULL;
   dict->charset = strdup("EUC-JP");
-  dict->ref_count = 1;
+  dict->ref_count = 0; /* at this point, no window refers this */
   dict->word_list = NULL;
 
   status = dict_canna_read_priv_dic_list(&dict->word_list);
