@@ -275,15 +275,17 @@
   (canna-context-set-state! cc #f))
 
 (define (canna-update-preedit cc)
-  (if (canna-context-on cc)
-      (if (canna-context-transposing cc)
-          (canna-context-transposing-state-preedit cc)
-          (if (canna-context-state cc)
-              (canna-compose-state-preedit cc)
-              (canna-input-state-preedit cc)))
-      (begin
-	(im-clear-preedit cc)
-	(im-update-preedit cc))))
+  (if (not (canna-context-commit-raw cc))
+      (if (canna-context-on cc)
+	  (if (canna-context-transposing cc)
+	      (canna-context-transposing-state-preedit cc)
+	      (if (canna-context-state cc)
+		  (canna-compose-state-preedit cc)
+		  (canna-input-state-preedit cc)))
+	  (begin
+	    (im-clear-preedit cc)
+	    (im-update-preedit cc))))
+      (canna-context-set-commit-raw! cc #f))
 
 (define (canna-append-string cc str)
   (and str
