@@ -37,5 +37,6 @@
 
 #define CANNA_DEFAULT_PRIV_DICNAME	"user"
 #define CANNA_PRIV_DIC_BUFLEN	1024
+#define CANNA_STD_CONTEXT	0
 
 #endif /* __CANNADIC_H__ */
