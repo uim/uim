@@ -235,6 +235,7 @@ dict_canna_add_entry_to_priv_dic(char *phon, char *desc, char *cclass_native, in
   if (strlen(phon) == 0 || strlen(desc) == 0 || strlen(cclass_native) == 0)
     return 0;
 
+  RkInitialize(g_cannaserver);
   status = RkMountDic(CANNA_STD_CONTEXT, dicname, 0);
 
   if (status == 0) {
@@ -248,6 +249,7 @@ dict_canna_add_entry_to_priv_dic(char *phon, char *desc, char *cclass_native, in
     }
     RkUnmountDic(CANNA_STD_CONTEXT, dicname);
   } 
+  RkFinalize();
 
   return status ? 0 : 1;
 }
@@ -263,6 +265,7 @@ dict_canna_delete_entry_from_priv_dic(char *phon, char *desc,
   if (strlen(phon) == 0 || strlen(desc) == 0 || strlen(cclass_native) == 0)
     return 0;
 
+  RkInitialize(g_cannaserver);
   status = RkMountDic(CANNA_STD_CONTEXT, dicname, 0);
 
   if (status == 0) {
@@ -276,6 +279,7 @@ dict_canna_delete_entry_from_priv_dic(char *phon, char *desc,
     }
     RkUnmountDic(CANNA_STD_CONTEXT, dicname);
   } 
+  RkFinalize();
 
   return status ? 0 : 1;
 }
@@ -296,8 +300,10 @@ uim_dict_canna_open(const char *identifier)
     return NULL;
 
   dict = malloc(sizeof(uim_dict));
-  if (!dict)
+  if (!dict) {
+    RkFinalize();
     return NULL;
+  }
 
   dict->funcs = &uim_dict_class_canna;
   dict->identifier = strdup(identifier);
@@ -311,9 +317,11 @@ uim_dict_canna_open(const char *identifier)
   if (status == -2) {
     if (dict_canna_create_priv_dic() < 0) {
       free(dict);
+      RkFinalize();
       return NULL;
     }
   }
+  RkFinalize();
 
   return dict;
 }
@@ -369,6 +377,9 @@ uim_dict_canna_refresh(uim_dict *dict)
 
   dict->word_list = NULL;
   word_free_list(dict->word_list);
+
+  RkInitialize(g_cannaserver);
   dict_canna_read_priv_dic_list(&dict->word_list);
+  RkFinalize();
 }
 
