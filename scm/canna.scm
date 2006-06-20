@@ -315,14 +315,15 @@
                                                           multi-segment-type-hiragana))))
       (if (and (number? cc-id)
                (> (string-length preconv-str) 0))
-          (begin
-            (canna-context-set-index-list!
-              cc
-              (multi-segment-make-index-list
-                (canna-lib-begin-conversion cc-id preconv-str) #f))
-            (canna-context-set-state! cc #t)
-            (canna-context-set-cur-seg! cc 0)
-            (rk-flush (canna-context-rkc cc)))))))
+	  (let ((num (canna-lib-begin-conversion cc-id preconv-str)))
+	    (if num
+		(begin
+		  (canna-context-set-index-list!
+		    cc
+		    (multi-segment-make-index-list num '()))
+		  (canna-context-set-state! cc #t)
+		  (canna-context-set-cur-seg! cc 0)
+		  (rk-flush (canna-context-rkc cc)))))))))
 
 (define (canna-proc-input-state-no-preedit cc key key-state)
   (let
