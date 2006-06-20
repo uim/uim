@@ -78,7 +78,6 @@
 #ifndef __dict_canna_cclass_h_included__
 #define __dict_canna_cclass_h_included__
 
-#include <glib.h>
 #include "dict-word.h"
 
 #define SUPPORT_ANTHY (1 << 0)

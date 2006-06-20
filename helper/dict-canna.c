@@ -46,7 +46,8 @@
 #include "dict-canna.h"
 #include "dict-canna-cclass.h"
 
-extern int RkGetWordTextDic(int, unsigned char *, unsigned char *, unsigned char *, int);
+extern int RkGetWordTextDic(int, unsigned char *, unsigned char *,
+			    unsigned char *, int);
 extern int RkCreateDic(int, unsigned char *, int);
 
 static char *g_cannaserver;
@@ -122,7 +123,8 @@ dict_canna_get_priv_dic_dir()
 }
 
 static void
-canna_word_append(uim_word **head, char *phon, char *cclass_native, char *desc, int freq)
+canna_word_append(uim_word **head, char *phon, char *cclass_native, char *desc,
+		  int freq)
 {
   int pos;
   const char *cclass_code = NULL;
@@ -210,7 +212,8 @@ dict_canna_read_priv_dic_list(uim_word **head)
   if (!(dirname = dict_canna_get_priv_dic_dir()))
     return status;
 
-  status = RkGetWordTextDic(CANNA_STD_CONTEXT, (unsigned char *)dirname, dicname, buf, CANNA_PRIV_DIC_BUFLEN);
+  status = RkGetWordTextDic(CANNA_STD_CONTEXT, (unsigned char *)dirname,
+			    dicname, buf, CANNA_PRIV_DIC_BUFLEN);
 
   if (status == -2)
     return status;
@@ -218,7 +221,8 @@ dict_canna_read_priv_dic_list(uim_word **head)
 
   while (status > 0)  {
     parse_canna_priv_dic_buf((char *)buf, head);
-    status = RkGetWordTextDic(CANNA_STD_CONTEXT, (unsigned char *)"", (unsigned char *)"", buf, CANNA_PRIV_DIC_BUFLEN);
+    status = RkGetWordTextDic(CANNA_STD_CONTEXT, (unsigned char *)"",
+			      (unsigned char *)"", buf, CANNA_PRIV_DIC_BUFLEN);
   }
   free(dirname);
 
@@ -226,7 +230,8 @@ dict_canna_read_priv_dic_list(uim_word **head)
 }
 
 static int
-dict_canna_add_entry_to_priv_dic(char *phon, char *desc, char *cclass_native, int freq)
+dict_canna_add_entry_to_priv_dic(char *phon, char *desc, char *cclass_native,
+				 int freq)
 {
   int status;
   char dicname[] = CANNA_DEFAULT_PRIV_DICNAME;
@@ -368,7 +373,6 @@ uim_dict_canna_remove_word(uim_dict *dict, uim_word *word)
 				      word->cclass_native);
 }
 
-
 static void
 uim_dict_canna_refresh(uim_dict *dict)
 {
@@ -382,4 +386,3 @@ uim_dict_canna_refresh(uim_dict *dict)
   dict_canna_read_priv_dic_list(&dict->word_list);
   RkFinalize();
 }
-
