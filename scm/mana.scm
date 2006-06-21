@@ -218,6 +218,9 @@
 (define mana-input-rule-kana 1)
 (define mana-input-rule-azik 2)
 
+;; I don't think the key needs to be customizable.
+(define-key mana-space-key? '(" "))
+
 (define mana-prepare-activation
   (lambda (mc)
     (mana-flush mc)
@@ -631,6 +634,11 @@
         (direct
           (im-commit mc direct))
 
+	;; spcae key => commit
+	((mana-space-key? key key-state)
+	 (im-commit mc (list-ref '("¡¡" "¡¡" " ")
+				 (mana-context-kana-mode mc))))
+	 
         ((symbol? key)
          (mana-commit-raw mc))
 
@@ -646,7 +654,7 @@
                                      res)
                   (ustr-insert-elem! (mana-context-raw-ustr mc)
                                      key-str))
-                (if (not (rk-pending rkc))
+                (if (null? (rk-context-seq rkc))
                     (mana-commit-raw mc)))))))))
 
 (define mana-has-preedit?
@@ -1152,8 +1160,7 @@
 (define mana-proc-wide-latin
   (lambda (mc key key-state)
     (let* ((char (charcode->string key))
-           (w (or (ja-direct char)
-                  (ja-wide char))))
+           (w (ja-wide char)))
       (cond
         ((and mana-use-with-vi?
               (mana-vi-escape-key? key key-state))

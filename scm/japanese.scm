@@ -558,6 +558,7 @@
     ("?" "¡©")
     ("/" "¡¿")
     ("_"  "¡²")
+    (" " "¡¡")
     ))
 
 ;;
@@ -600,14 +601,11 @@
 
 (define ja-default-small-tsu-roma "xtu")
 
-;; What's intended? The name "ja-direct-rule" makes me confused
-;; because it acts in non-direct modes. This rule makes
-;; uim-anthy improper as always sending zenkaku-space in
-;; hanakaku-kana mode. This seems to be used to "always commit
-;; zenkaku-space regardless input mode". If it's true, This rule
-;; should be able to be disabled. -- YamaKen
+;; "ja-direct-rule" seems to be used to commit a character immediately
+;; even when japanese-context (i.e. preedit mode) is on.  I don't think the
+;; rule is needed normally.  So I leave it null by default.  -- ekato
 (define ja-direct-rule
-  '((" " "¡¡")
+  '(
     ))
 
 ;;

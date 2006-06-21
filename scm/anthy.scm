@@ -59,6 +59,9 @@
 (define anthy-candidate-type-hiragana -3)
 (define anthy-candidate-type-hankana -4)
 
+;; I don't think the key needs to be customizable.
+(define-key anthy-space-key? '(" "))
+
 (define anthy-prepare-activation
   (lambda (ac)
     (anthy-flush ac)
@@ -467,6 +470,11 @@
        (direct
 	(im-commit ac direct))
 
+       ;; spcae key => commit
+       ((anthy-space-key? key key-state)
+	(im-commit ac (list-ref '("¡¡" "¡¡" " ")
+				(anthy-context-kana-mode ac))))
+
        ((symbol? key)
 	(anthy-commit-raw ac))
 
@@ -482,7 +490,7 @@
 				   res)
 		(ustr-insert-elem! (anthy-context-raw-ustr ac)
 				   key-str))
-	      (if (not (rk-pending rkc))
+	      (if (null? (rk-context-seq rkc))
                   (anthy-commit-raw ac)))))))))
 
 (define anthy-has-preedit?
@@ -1035,8 +1043,7 @@
 (define anthy-proc-wide-latin
   (lambda (ac key key-state)
     (let* ((char (charcode->string key))
-	   (w (or (ja-direct char)
-		  (ja-wide char))))
+	   (w (ja-wide char)))
       (cond
        ((and anthy-use-with-vi?
              (anthy-vi-escape-key? key key-state))

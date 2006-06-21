@@ -45,6 +45,9 @@
 (define canna-input-rule-kana 1)
 (define canna-input-rule-azik 2)
 
+;; I don't think the key needs to be customizable.
+(define-key canna-space-key? '(" "))
+
 (define canna-prepare-activation
   (lambda (cc)
     (if (canna-context-state cc)
@@ -372,6 +375,10 @@
      (direct
       (im-commit cc direct))
 
+     ;; space key
+     ((canna-space-key? key key-state)
+      (im-commit cc (list-ref '("¡¡" "¡¡" " ") (canna-context-kana-mode cc))))
+
      ((symbol? key)
       (canna-commit-raw cc))
 
@@ -383,8 +390,8 @@
 	     (res (rk-push-key! rkc key-str)))
 	(if res
 	    (canna-append-string cc res)
-	    (if (not (rk-pending rkc)
-		       (canna-commit-raw cc)))))))))
+	    (if (null? (rk-context-seq rkc))
+		(canna-commit-raw cc))))))))
 
 (define (canna-has-preedit? cc)
   (or
@@ -906,8 +913,7 @@
 
 (define (canna-proc-wide-latin cc key key-state)
   (let* ((char (charcode->string key))
-	 (w (or (ja-direct char)
-		(ja-wide char))))
+	 (w (ja-wide char)))
     (cond
      ((and canna-use-with-vi?
            (canna-vi-escape-key? key key-state))
