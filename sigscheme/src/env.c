@@ -61,7 +61,7 @@
  *   ordinary code only use (interaction-environment) and other R5RS
  *   environment specifiers. Since these 'trusted' specifiers can cheaply be
  *   identified, the validation cost is also. The validation can reject any
- *   hand-maid invalid environment objects.
+ *   handmade invalid environment objects.
  */
 
 #include <config.h>
