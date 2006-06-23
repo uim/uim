@@ -114,11 +114,19 @@ SCM_DEFINE_STATIC_VARS(static_write);
 =======================================*/
 static void write_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 static void write_obj(ScmObj port, ScmObj obj, enum OutputType otype);
+#if SCM_USE_CHAR
 static void write_char(ScmObj port, ScmObj obj, enum OutputType otype);
+#endif
+#if SCM_USE_STRING
 static void write_string(ScmObj port, ScmObj obj, enum OutputType otype);
+#endif
 static void write_list(ScmObj port, ScmObj lst, enum OutputType otype);
+#if SCM_USE_VECTOR
 static void write_vector(ScmObj port, ScmObj vec, enum OutputType otype);
+#endif
+#if SCM_USE_PORT
 static void write_port(ScmObj port, ScmObj obj, enum OutputType otype);
+#endif
 static void write_constant(ScmObj port, ScmObj obj, enum  OutputType otype);
 static void write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype);
 
@@ -198,9 +206,11 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     }
 #endif
     switch (SCM_TYPE(obj)) {
+#if SCM_USE_INT
     case ScmInt:
         scm_format(port, SCM_FMT_RAW_C, "~MD", SCM_INT_VALUE(obj));
         break;
+#endif
     case ScmCons:
         if (ERROBJP(obj))
             write_errobj(port, obj, otype);
@@ -210,12 +220,16 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     case ScmSymbol:
         scm_port_puts(port, SCM_SYMBOL_NAME(obj));
         break;
+#if SCM_USE_CHAR
     case ScmChar:
         write_char(port, obj, otype);
         break;
+#endif
+#if SCM_USE_STRING
     case ScmString:
         write_string(port, obj, otype);
         break;
+#endif
     case ScmFunc:
         scm_port_puts(port, (SCM_SYNTAXP(obj)) ? "#<syntax " : "#<subr ");
         sym = scm_symbol_bound_to(obj);
@@ -261,15 +275,21 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         write_obj(port, SCM_CLOSURE_EXP(obj), otype);
         scm_port_put_char(port, '>');
         break;
+#if SCM_USE_VECTOR
     case ScmVector:
         write_vector(port, obj, otype);
         break;
+#endif
+#if SCM_USE_PORT
     case ScmPort:
         write_port(port, obj, otype);
         break;
+#endif
+#if SCM_USE_CONTINUATION
     case ScmContinuation:
         scm_format(port, SCM_FMT_RAW_C, "#<continuation ~P>", (void *)obj);
         break;
+#endif
     case ScmValuePacket:
         scm_port_puts(port, "#<values ");
         if (NULLP(SCM_VALUEPACKET_VALUES(obj)))
@@ -289,6 +309,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
     case ScmConstant:
         write_constant(port, obj, otype);
         break;
+#if SCM_USE_SSCM_EXTENSIONS
     case ScmCPointer:
         scm_format(port, SCM_FMT_RAW_C,
                    "#<c_pointer ~P>", SCM_C_POINTER_VALUE(obj));
@@ -298,11 +319,13 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
                    "#<c_func_pointer ~P>",
                    (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
+#endif
     default:
         SCM_ASSERT(scm_false);
     }
 }
 
+#if SCM_USE_CHAR
 static void
 write_char(ScmObj port, ScmObj obj, enum OutputType otype)
 {
@@ -335,7 +358,9 @@ write_char(ScmObj port, ScmObj obj, enum OutputType otype)
         SCM_ASSERT(scm_false);
     }
 }
+#endif /* SCM_USE_CHAR */
 
+#if SCM_USE_STRING
 static void
 write_string(ScmObj port, ScmObj obj, enum OutputType otype)
 {
@@ -396,6 +421,7 @@ write_string(ScmObj port, ScmObj obj, enum OutputType otype)
         SCM_ASSERT(scm_false);
     }
 }
+#endif /* SCM_USE_STRING */
 
 static void
 write_list(ScmObj port, ScmObj lst, enum OutputType otype)
@@ -458,6 +484,7 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
         scm_port_put_char(port, ')');
 }
 
+#if SCM_USE_VECTOR
 static void
 write_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 {
@@ -476,7 +503,9 @@ write_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 
     scm_port_put_char(port, ')');
 }
+#endif /* SCM_USE_VECTOR */
 
+#if SCM_USE_PORT
 static void
 write_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
@@ -503,6 +532,7 @@ write_port(ScmObj port, ScmObj obj, enum OutputType otype)
 
     scm_port_put_char(port, '>');
 }
+#endif /* SCM_USE_PORT */
 
 static void
 write_constant(ScmObj port, ScmObj obj, enum  OutputType otype)

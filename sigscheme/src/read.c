@@ -344,14 +344,20 @@ static ScmObj read_list(ScmObj port, scm_ichar_t closeParen);
 #if SCM_USE_SRFI75
 static scm_ichar_t parse_unicode_sequence(const char *seq, int len);
 static scm_ichar_t read_unicode_sequence(ScmObj port, char prefix);
-#endif
+#endif /* SCM_USE_SRFI75 */
+#if SCM_USE_CHAR
 static ScmObj read_char(ScmObj port);
+#endif /* SCM_USE_CHAR */
+#if SCM_USE_STRING
 static ScmObj read_string(ScmObj port);
+#endif /* SCM_USE_STRING */
 static ScmObj read_symbol(ScmObj port);
 static ScmObj read_number_or_symbol(ScmObj port);
+#if SCM_USE_NUMBER
 static ScmObj parse_number(ScmObj port,
                            char *buf, size_t buf_size, char prefix);
 static ScmObj read_number(ScmObj port, char prefix);
+#endif /* SCM_USE_NUMBER */
 static ScmObj read_quote(ScmObj port, ScmObj quoter);
 
 /*=======================================
@@ -518,8 +524,10 @@ read_sexpression(ScmObj port)
         case '(':
             return read_list(port, ')');
 
+#if SCM_USE_STRING
         case '\"':
             return read_string(port);
+#endif
 
         case '\'':
             return read_quote(port, SYM_QUOTE);
@@ -531,16 +539,22 @@ read_sexpression(ScmObj port)
                 return SCM_TRUE;
             case 'f':
                 return SCM_FALSE;
+#if SCM_USE_VECTOR
             case '(':
                 ret = scm_p_list2vector(read_list(port, ')'));
 #if SCM_CONST_VECTOR_LITERAL
                 SCM_VECTOR_SET_IMMUTABLE(ret);
 #endif
                 return ret;
+#endif /* SCM_USE_VECTOR */
+#if SCM_USE_CHAR
             case '\\':
                 return read_char(port);
+#endif
+#if SCM_USE_NUMBER
             case 'b': case 'o': case 'd': case 'x':
                 return read_number(port, c);
+#endif
             case EOF:
                 ERR("EOF in #");
             default:
@@ -725,6 +739,7 @@ read_unicode_sequence(ScmObj port, char prefix)
 }
 #endif /* SCM_USE_SRFI75 */
 
+#if SCM_USE_CHAR
 static ScmObj
 read_char(ScmObj port)
 {
@@ -776,7 +791,9 @@ read_char(ScmObj port)
     }
     ERR("invalid character literal: #\\~S", buf);
 }
+#endif /* SCM_USE_CHAR */
 
+#if SCM_USE_STRING
 static ScmObj
 read_string(ScmObj port)
 {
@@ -867,6 +884,7 @@ read_string(ScmObj port)
     ERR("too long string: \"~S\"", LBUF_BUF(lbuf));
     /* NOTREACHED */
 }
+#endif /* SCM_USE_STRING */
 
 static ScmObj
 read_symbol(ScmObj port)
@@ -913,6 +931,7 @@ read_number_or_symbol(ScmObj port)
     SCM_ASSERT(ICHAR_ASCII_CLASS(c)
                & (SCM_CH_DIGIT | SCM_CH_PECULIAR_IDENTIFIER_CAND));
 
+#if SCM_USE_NUMBER
     if (ICHAR_NUMERICP(c))
         return read_number(port, 'd');
 
@@ -934,6 +953,7 @@ read_number_or_symbol(ScmObj port)
 
         return parse_number(port, buf, sizeof(buf), 'd');
     }
+#endif /* SCM_USE_NUMBER */
 
     if (c == '.') {
         read_token(port, &err, buf, sizeof(buf), SCM_CH_DELIMITER);
@@ -950,6 +970,7 @@ read_number_or_symbol(ScmObj port)
     return read_symbol(port);
 }
 
+#if SCM_USE_NUMBER
 /* reads 'b123' part of #b123 */
 static ScmObj
 parse_number(ScmObj port, char *buf, size_t buf_size, char prefix)
@@ -990,6 +1011,7 @@ read_number(ScmObj port, char prefix)
 
     return parse_number(port, buf, sizeof(buf), prefix);
 }
+#endif /* SCM_USE_NUMBER */
 
 static ScmObj
 read_quote(ScmObj port, ScmObj quoter)

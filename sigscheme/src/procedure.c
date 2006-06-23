@@ -335,6 +335,7 @@ scm_p_force(ScmObj closure)
     return scm_call(closure, SCM_NULL);
 }
 
+#if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj
 scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 {
@@ -345,6 +346,7 @@ scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 
     return scm_call_with_current_continuation(proc, eval_state);
 }
+#endif /* SCM_USE_CONTINUATION */
 
 SCM_EXPORT ScmObj
 scm_p_values(ScmObj args)
@@ -383,6 +385,7 @@ scm_p_call_with_values(ScmObj producer, ScmObj consumer,
     return scm_tailcall(consumer, vals, eval_state);
 }
 
+#if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj
 scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
@@ -394,3 +397,4 @@ scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 
     return scm_dynamic_wind(before, thunk, after);
 }
+#endif /* SCM_USE_CONTINUATION */

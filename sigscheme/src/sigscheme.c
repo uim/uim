@@ -75,6 +75,35 @@ SCM_GLOBAL_VARS_END(static_sigscheme);
     SCM_GLOBAL_VAR(static_sigscheme, l_scm_return_value_cache)
 SCM_DEFINE_STATIC_VARS(static_sigscheme);
 
+static const char *const builtin_features[] = {
+    "sigscheme",
+#if SCM_STRICT_R5RS
+    "strict-r5rs",
+#endif
+#if SCM_STRICT_ARGCHECK
+    "strict-argcheck",
+#endif
+#if (SCM_CONST_LIST_LITERAL && SCM_HAS_IMMUTABLE_CONS)
+    "const-list-literal",
+#endif
+#if (SCM_CONST_VECTOR_LITERAL && SCM_HAS_IMMUTABLE_VECTOR)
+    "const-vector-literal",
+#endif
+#if SCM_COMPAT_SIOD_BUGS
+    "siod-bugs",
+#endif
+#if SCM_USE_NULL_CAPABLE_STRING
+    "null-capable-string",
+#endif
+#if SCM_HAS_IMMEDIATE_CHAR_ONLY
+    "immediate-char-only",
+#endif
+#if SCM_HAS_IMMEDIATE_NUMBER_ONLY
+    "immediate-number-only",
+#endif
+    NULL
+};
+
 /*=======================================
   File Local Function Declarations
 =======================================*/
@@ -103,6 +132,8 @@ scm_initialize(const ScmStorageConf *storage_conf)
 static void
 scm_initialize_internal(const ScmStorageConf *storage_conf)
 {
+    const char *const *feature;
+
     /*=======================================================================
       Core
     =======================================================================*/
@@ -116,7 +147,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     scm_set_debug_categories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
                              | scm_predefined_debug_categories());
 
+#if SCM_USE_PORT
     scm_init_port();
+#endif
 #if SCM_USE_WRITER
     scm_init_writer();
 #endif
@@ -154,32 +187,10 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     /*=======================================================================
       Fixing up
     =======================================================================*/
-    /* to evaluate SigScheme-dependent codes conditionally */
-    scm_provide(CONST_STRING("sigscheme"));
-#if SCM_STRICT_R5RS
-    scm_provide(CONST_STRING("strict-r5rs"));
-#endif
-#if SCM_STRICT_ARGCHECK
-    scm_provide(CONST_STRING("strict-argcheck"));
-#endif
-#if (SCM_CONST_LIST_LITERAL && SCM_HAS_IMMUTABLE_CONS)
-    scm_provide(CONST_STRING("const-list-literal"));
-#endif
-#if (SCM_CONST_VECTOR_LITERAL && SCM_HAS_IMMUTABLE_VECTOR)
-    scm_provide(CONST_STRING("const-vector-literal"));
-#endif
-#if SCM_COMPAT_SIOD_BUGS
-    scm_provide(CONST_STRING("siod-bugs"));
-#endif
-#if SCM_USE_NULL_CAPABLE_STRING
-    scm_provide(CONST_STRING("null-capable-string"));
-#endif
-#if SCM_HAS_IMMEDIATE_CHAR_ONLY
-    scm_provide(CONST_STRING("immediate-char-only"));
-#endif
-#if SCM_HAS_IMMEDIATE_NUMBER_ONLY
-    scm_provide(CONST_STRING("immediate-number-only"));
-#endif
+    /* to evaluate SigScheme-dependent scheme codes conditionally */
+    for (feature = &builtin_features[0]; *feature; feature++)
+        scm_provide(CONST_STRING(*feature));
+
     /* Since SCM_SAL_PTR_BITS may use sizeof() instead of autoconf SIZEOF
      * macro, #if is not safe here. */
     if (SCM_PTR_BITS == 64)

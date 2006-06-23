@@ -504,7 +504,7 @@ struct ScmStorageConf_ {
 #define SCM_HAS_IMMUTABLE_VECTOR SCM_SAL_HAS_IMMUTABLE_VECTOR
 
 /* for optimization */
-#define SCM_HAS_IMMEDIATE_CHAR_ONLY     SCM_SAL_HAS_IMMEDIATE_CHAR
+#define SCM_HAS_IMMEDIATE_CHAR_ONLY     SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY
 #define SCM_HAS_IMMEDIATE_NUMBER_ONLY   SCM_SAL_HAS_IMMEDIATE_NUMBER_ONLY
 #define SCM_HAS_IMMEDIATE_INT_ONLY      SCM_SAL_HAS_IMMEDIATE_INT_ONLY
 #define SCM_HAS_IMMEDIATE_RATIONAL_ONLY SCM_SAL_HAS_IMMEDIATE_RATIONAL_ONLY
@@ -564,13 +564,13 @@ struct ScmStorageConf_ {
                        (ScmObj, ScmObj),                                     \
                        ((kar), (kdr)))
 
-#if SCM_USE_NUMBER
+#if SCM_USE_INT
 #define SCM_MAKE_INT(val)                                                    \
     SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_INT,                                     \
                        ScmObj,                                               \
                        (scm_int_t),                                          \
                        (val))
-#endif /* SCM_USE_NUMBER */
+#endif /* SCM_USE_INT */
 
 #if SCM_USE_CHAR
 #define SCM_MAKE_CHAR(val)                                                   \
@@ -724,17 +724,19 @@ struct ScmStorageConf_ {
 #define SCM_AS_VALUEPACKET(o)   (SCM_ASSERT_TYPE(SCM_VALUEPACKETP(o),   (o)))
 #define SCM_AS_C_POINTER(o)     (SCM_ASSERT_TYPE(SCM_C_POINTERP(o),     (o)))
 #define SCM_AS_C_FUNCPOINTER(o) (SCM_ASSERT_TYPE(SCM_C_FUNCPOINTERP(o), (o)))
-#if SCM_USE_HYGIENIC_MACRO
 #define SCM_AS_HMACRO(o)        (SCM_ASSERT_TYPE(SCM_HMACROP(o),        (o)))
 #define SCM_AS_FARSYMBOL(o)     (SCM_ASSERT_TYPE(SCM_FARSYMBOLP(o),     (o)))
 #define SCM_AS_SUBPAT(o)        (SCM_ASSERT_TYPE(SCM_SUBPATP(o),        (o)))
-#endif
 
+#if SCM_USE_NUMBER
 #define SCM_NUMBERP(o)                  SCM_SAL_NUMBERP(o)
 
+#if SCM_USE_INT
 #define SCM_INTP(o)                     SCM_SAL_INTP(o)
 #define SCM_INT_VALUE(o)                SCM_SAL_INT_VALUE(o)
 #define SCM_INT_SET_VALUE(o, val)       SCM_SAL_INT_SET_VALUE((o), (val))
+#endif /* SCM_USE_INT */
+#endif /* SCM_USE_NUMBER */
 
 #define SCM_CONSP(o)                    SCM_SAL_CONSP(o)
 #define SCM_CONS_CAR(o)                 SCM_SAL_CONS_CAR(o)
@@ -751,10 +753,13 @@ struct ScmStorageConf_ {
 #define SCM_SYMBOL_SET_NAME(o, name)    SCM_SAL_SYMBOL_SET_NAME((o), (name))
 #define SCM_SYMBOL_SET_VCELL(o, val)    SCM_SAL_SYMBOL_SET_VCELL((o), (val))
 
+#if SCM_USE_CHAR
 #define SCM_CHARP(o)                    SCM_SAL_CHARP(o)
 #define SCM_CHAR_VALUE(o)               SCM_SAL_CHAR_VALUE(o)
 #define SCM_CHAR_SET_VALUE(o, val)      SCM_SAL_CHAR_SET_VALUE((o), (val))
+#endif /* SCM_USE_CHAR */
 
+#if SCM_USE_STRING
 #define SCM_STRINGP(o)                  SCM_SAL_STRINGP(o)
 #define SCM_STRING_STR(o)               SCM_SAL_STRING_STR(o)
 #define SCM_STRING_LEN(o)               SCM_SAL_STRING_LEN(o)
@@ -763,6 +768,7 @@ struct ScmStorageConf_ {
 #define SCM_STRING_MUTABLEP(o)          SCM_SAL_STRING_MUTABLEP(o)
 #define SCM_STRING_SET_MUTABLE(o)       SCM_SAL_STRING_SET_MUTABLE(o)
 #define SCM_STRING_SET_IMMUTABLE(o)     SCM_SAL_STRING_SET_IMMUTABLE(o)
+#endif /* SCM_USE_STRING */
 
 #define SCM_FUNCP(o)                    SCM_SAL_FUNCP(o)
 #define SCM_FUNC_TYPECODE(o)            SCM_SAL_FUNC_TYPECODE(o)
@@ -782,6 +788,7 @@ struct ScmStorageConf_ {
 #define SCM_CLOSURE_ENV(o)              SCM_SAL_CLOSURE_ENV(o)
 #define SCM_CLOSURE_SET_ENV(o, env)     SCM_SAL_CLOSURE_SET_ENV((o), (env))
 
+#if SCM_USE_VECTOR
 #define SCM_VECTORP(o)                  SCM_SAL_VECTORP(o)
 #define SCM_VECTOR_VEC(o)               SCM_SAL_VECTOR_VEC(o)
 #define SCM_VECTOR_LEN(o)               SCM_SAL_VECTOR_LEN(o)
@@ -791,13 +798,17 @@ struct ScmStorageConf_ {
 #define SCM_VECTOR_SET_MUTABLE(o)       SCM_SAL_VECTOR_SET_MUTABLE(o)
 #define SCM_VECTOR_SET_IMMUTABLE(o)     SCM_SAL_VECTOR_SET_IMMUTABLE(o)
 #define SCM_VECTOR_VALID_INDEXP(o, i)   (0 <= (i) && (i) < SCM_VECTOR_LEN(o))
+#endif /* SCM_USE_VECTOR */
 
+#if SCM_USE_PORT
 #define SCM_PORTP(o)                    SCM_SAL_PORTP(o)
 #define SCM_PORT_FLAG(o)                SCM_SAL_PORT_FLAG(o)
 #define SCM_PORT_IMPL(o)                SCM_SAL_PORT_IMPL(o)
 #define SCM_PORT_SET_FLAG(o, flag)      SCM_SAL_PORT_SET_FLAG((o), (flag))
 #define SCM_PORT_SET_IMPL(o, impl)      SCM_SAL_PORT_SET_IMPL((o), (impl))
+#endif /* SCM_USE_PORT */
 
+#if SCM_USE_CONTINUATION
 #define SCM_CONTINUATIONP(o)            SCM_SAL_CONTINUATIONP(o)
 #define SCM_CONTINUATION_OPAQUE(o)      SCM_SAL_CONTINUATION_OPAQUE(o)
 #define SCM_CONTINUATION_TAG(o)         SCM_SAL_CONTINUATION_TAG(o)
@@ -805,11 +816,13 @@ struct ScmStorageConf_ {
     SCM_SAL_CONTINUATION_SET_OPAQUE((o), (val))
 #define SCM_CONTINUATION_SET_TAG(o, val)                                     \
     SCM_SAL_CONTINUATION_SET_TAG((o), (val))
+#endif /* SCM_USE_CONTINUATION */
 
 #define SCM_VALUEPACKETP(o)             SCM_SAL_VALUEPACKETP(o)
 
 #define SCM_CONSTANTP(o)                SCM_SAL_CONSTANTP(o)
 
+#if SCM_USE_SSCM_EXTENSIONS
 #define SCM_C_POINTERP(o)               SCM_SAL_C_POINTERP(o)
 #define SCM_C_POINTER_VALUE(o)          SCM_SAL_C_POINTER_VALUE(o)
 #define SCM_C_POINTER_SET_VALUE(o, ptr) SCM_SAL_C_POINTER_SET_VALUE((o), (ptr))
@@ -818,6 +831,7 @@ struct ScmStorageConf_ {
 #define SCM_C_FUNCPOINTER_VALUE(o)      SCM_SAL_C_FUNCPOINTER_VALUE(o)
 #define SCM_C_FUNCPOINTER_SET_VALUE(o, funcptr)                              \
     SCM_SAL_C_FUNCPOINTER_SET_VALUE((o), (funcptr))
+#endif /* SCM_USE_SSCM_EXTENSIONS */
 
 #if SCM_USE_HYGIENIC_MACRO
 #define SCM_HMACROP(o)                  SCM_SAL_HMACROP(o)
@@ -980,6 +994,7 @@ struct ScmEvalState_ {
 /*=======================================
    Format Strings
 =======================================*/
+#if SCM_USE_FORMAT
 enum ScmFormatCapability {
     SCM_FMT_NONE            = 0,
     SCM_FMT_RAW_C           = 1 << 0,  /* take raw C values from va_list */
@@ -1015,6 +1030,7 @@ struct ScmValueFormat_ {
 
 #define SCM_VALUE_FORMAT_SPECIFIEDP(vfmt)                                    \
     (vfmt.width > 0 || vfmt.frac_width > 0 || vfmt.pad != ' ' || !vfmt.signedp)
+#endif /* SCM_USE_FORMAT */
 
 /*=======================================
   Function types
@@ -1229,12 +1245,16 @@ SCM_EXPORT ScmObj scm_p_procedurep(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_map(ScmObj proc, ScmObj args);
 SCM_EXPORT ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
 SCM_EXPORT ScmObj scm_p_force(ScmObj closure);
+#if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
+#endif
 SCM_EXPORT ScmObj scm_p_values(ScmObj args);
 SCM_EXPORT ScmObj scm_p_call_with_values(ScmObj producer, ScmObj consumer,
                                          ScmEvalState *eval_state);
+#if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk,
                                      ScmObj after);
+#endif
 
 /* list.c */
 SCM_EXPORT scm_int_t scm_length(ScmObj lst);

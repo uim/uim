@@ -520,13 +520,17 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
                 for (i = SCM_STRING_LEN(obj); i < vfmt.width; i++)
                     scm_port_put_char(port, ' ');  /* ignore leading zero */
                 scm_display(port, obj);
-            } else {
-                if (!INTP(obj))
-                    ERR_OBJ("integer or string required but got", obj);
-                format_int(port, vfmt, SCM_INT_VALUE(obj), 10);
+                goto fin;
             }
-            goto fin;
+#if SCM_USE_INT
+            if (INTP(obj)) {
+                format_int(port, vfmt, SCM_INT_VALUE(obj), 10);
+                goto fin;
+            }
+#endif /* SCM_USE_INT */
+            ERR_OBJ("integer or string required but got", obj);
 
+#if SCM_USE_INT
         case 'd': /* Decimal */
             radix = 10;
             break;
@@ -542,14 +546,19 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
         case 'b': /* Binary */
             radix = 2;
             break;
+#endif /* SCM_USE_INT */
 
         default:
             break;
         }
         if (radix > 0 && (!prefixedp || (fcap & SCM_FMT_PREFIXED_RADIX))) {
             obj = POP_FORMAT_ARG(args_type, args);
+#if SCM_USE_INT
             ENSURE_INT(obj);
             format_int(port, vfmt, SCM_INT_VALUE(obj), radix);
+#else /* SCM_USE_INT */
+            ERR("integer feature is not enabled");
+#endif /* SCM_USE_INT */
             goto fin;
         }
     }
@@ -585,9 +594,11 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
 #if SCM_USE_SRFI48
     if (fcap & SCM_FMT_SRFI48_ADDENDUM) {
         switch (directive) {
+#if SCM_USE_SRFI38
         case 'w': /* WriteCircular */
             scm_write_ss(port, POP_FORMAT_ARG(args_type, args));
             goto fin;
+#endif /* SCM_USE_SRFI38 */
 
         case 'y': /* Yuppify */
             scm_pretty_print(port, POP_FORMAT_ARG(args_type, args));
@@ -604,11 +615,13 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
                         SCM_STRING_STR(indirect_fmt), indirect_args);
             goto fin;
 
+#if SCM_USE_CHAR
         case 'c': /* Character */
             obj = POP_FORMAT_ARG(args_type, args);
             ENSURE_CHAR(obj);
             scm_port_put_char(port, SCM_CHAR_VALUE(obj));
             goto fin;
+#endif /* SCM_USE_CHAR */
 
         case 't': /* Tab */
             scm_port_put_char(port, '\t');

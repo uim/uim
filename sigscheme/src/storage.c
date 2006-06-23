@@ -259,7 +259,9 @@ scm_init_storage(const ScmStorageConf *conf)
     SCM_ENTYPE(scm_null_values, ScmValuePacket);
 #endif
 
+#if SCM_USE_CONTINUATION
     scm_init_continuation();
+#endif
     scm_init_symbol(conf);
 }
 
@@ -267,7 +269,9 @@ SCM_EXPORT void
 scm_fin_storage(void)
 {
     scm_fin_symbol();
+#if SCM_USE_CONTINUATION
     scm_fin_continuation();
+#endif
     scm_fin_gc();
 
     SCM_GLOBAL_VARS_FIN(storage);
@@ -311,7 +315,7 @@ scm_make_cons(ScmObj kar, ScmObj kdr)
     return obj;
 }
 
-#if SCM_SAL_HAS_IMMUTABLE_CONS
+#if SCM_HAS_IMMUTABLE_CONS
 SCM_EXPORT ScmObj
 scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
 {
@@ -323,7 +327,7 @@ scm_make_immutable_cons(ScmObj kar, ScmObj kdr)
 }
 #endif /* has immutable cons */
 
-#if !SCM_SAL_HAS_IMMEDIATE_INT_ONLY
+#if (SCM_USE_INT && !SCM_HAS_IMMEDIATE_INT_ONLY)
 SCM_EXPORT ScmObj
 scm_make_int(scm_int_t val)
 {
@@ -333,7 +337,7 @@ scm_make_int(scm_int_t val)
     SCM_INT_INIT(obj, val);
     return obj;
 }
-#endif /* not SCM_SAL_HAS_IMMEDIATE_INT_ONLY */
+#endif /* (SCM_USE_INT && !SCM_HAS_IMMEDIATE_INT_ONLY) */
 
 SCM_EXPORT ScmObj
 scm_make_symbol(char *name, ScmObj val)
@@ -345,7 +349,7 @@ scm_make_symbol(char *name, ScmObj val)
     return obj;
 }
 
-#if !SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY
+#if (SCM_USE_CHAR && !SCM_HAS_IMMEDIATE_CHAR_ONLY)
 SCM_EXPORT ScmObj
 scm_make_char(scm_ichar_t val)
 {
@@ -355,7 +359,7 @@ scm_make_char(scm_ichar_t val)
     SCM_CHAR_INIT(obj, val);
     return obj;
 }
-#endif /* not SCM_SAL_HAS_IMMEDIATE_INT_ONLY */
+#endif /* (SCM_USE_CHAR && !SCM_HAS_IMMEDIATE_CHAR_ONLY) */
 
 #if SCM_USE_HYGIENIC_MACRO
 SCM_EXPORT ScmObj
@@ -393,6 +397,7 @@ scm_make_subpat(ScmObj x, scm_int_t meta)
 }
 #endif /* SCM_USE_HYGIENIC_MACRO */
 
+#if SCM_USE_STRING
 static ScmObj
 scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
 {
@@ -414,7 +419,7 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
     return obj;
 }
 
-#if SCM_SAL_HAS_IMMUTABLE_STRING
+#if SCM_HAS_IMMUTABLE_STRING
 SCM_EXPORT ScmObj
 scm_make_immutable_string(char *str, scm_int_t len)
 {
@@ -426,7 +431,7 @@ scm_make_immutable_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_true);
 }
-#endif /* SCM_SAL_HAS_IMMUTABLE_STRING */
+#endif /* SCM_HAS_IMMUTABLE_STRING */
 
 SCM_EXPORT ScmObj
 scm_make_string(char *str, scm_int_t len)
@@ -439,6 +444,7 @@ scm_make_string_copying(const char *str, scm_int_t len)
 {
     return scm_make_string_internal(scm_strdup(str), len, scm_false);
 }
+#endif /* SCM_USE_STRING */
 
 SCM_EXPORT ScmObj
 scm_make_func(enum ScmFuncTypeCode type, ScmFuncType func)
@@ -460,6 +466,7 @@ scm_make_closure(ScmObj exp, ScmObj env)
     return obj;
 }
 
+#if SCM_USE_VECTOR
 SCM_EXPORT ScmObj
 scm_make_vector(ScmObj *vec, scm_int_t len)
 {
@@ -470,7 +477,7 @@ scm_make_vector(ScmObj *vec, scm_int_t len)
     return obj;
 }
 
-#if SCM_SAL_HAS_IMMUTABLE_VECTOR
+#if SCM_HAS_IMMUTABLE_VECTOR
 SCM_EXPORT ScmObj
 scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 {
@@ -482,8 +489,10 @@ scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 
     return obj;
 }
-#endif /* SCM_SAL_HAS_IMMUTABLE_VECTOR */
+#endif /* SCM_HAS_IMMUTABLE_VECTOR */
+#endif /* SCM_USE_VECTOR */
 
+#if SCM_USE_PORT
 SCM_EXPORT ScmObj
 scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 {
@@ -499,7 +508,9 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
     SCM_PORT_INIT(obj, cport, flag);
     return obj;
 }
+#endif /* SCM_USE_PORT */
 
+#if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj
 scm_make_continuation(void)
 {
@@ -509,6 +520,7 @@ scm_make_continuation(void)
     SCM_CONTINUATION_INIT(obj, INVALID_CONTINUATION_OPAQUE, 0);
     return obj;
 }
+#endif /* SCM_USE_CONTINUATION */
 
 #if !SCM_USE_VALUECONS
 SCM_EXPORT ScmObj
@@ -558,34 +570,48 @@ scm_type(ScmObj obj)
     case SCM_PTAG_MISC:
         if (SYMBOLP(obj))
             return ScmSymbol;
+#if SCM_USE_STRING
         else if (STRINGP(obj))
             return ScmString;
+#endif
+#if SCM_USE_VECTOR
         else if (VECTORP(obj))
             return ScmVector;
+#endif
         else if (VALUEPACKETP(obj))
             return ScmValuePacket;
         else if (FUNCP(obj))
             return ScmFunc;
+#if SCM_USE_PORT
         else if (PORTP(obj))
             return ScmPort;
+#endif
+#if SCM_USE_CONTINUATION
         else if (CONTINUATIONP(obj))
             return ScmContinuation;
+#endif
         else if (SCM_CONSTANTP(obj))
             return ScmConstant;
+#if SCM_USE_SSCM_EXTENSIONS
         else if (C_POINTERP(obj))
             return ScmCPointer;
         else if (C_FUNCPOINTERP(obj))
             return ScmCFuncPointer;
+#endif
         else if (FREECELLP(obj))
             return ScmFreeCell;
         PLAIN_ERR(" invalid others object: ptr = ~P", (void *)obj);
 
     case SCM_PTAG_IMM:
+#if SCM_USE_INT
         if (INTP(obj))
             return ScmInt;
-        else if (CHARP(obj))
+#endif
+#if SCM_USE_CHAR
+        if (CHARP(obj))
             return ScmChar;
-        else if (SCM_CONSTANTP(obj))
+#endif
+        if (SCM_CONSTANTP(obj))
             return ScmConstant;
         PLAIN_ERR("invalid imm object: ptr = ~P", (void *)obj);
 

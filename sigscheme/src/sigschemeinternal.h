@@ -111,17 +111,13 @@ extern "C" {
 #define MAKE_IMMUTABLE_VECTOR         SCM_MAKE_IMMUTABLE_VECTOR
 #define MAKE_PORT                     SCM_MAKE_PORT
 #define MAKE_CONTINUATION             SCM_MAKE_CONTINUATION
-#if SCM_USE_SSCM_EXTENSIONS
 #define MAKE_C_POINTER                SCM_MAKE_C_POINTER
 #define MAKE_C_FUNCPOINTER            SCM_MAKE_C_FUNCPOINTER
-#endif /* SCM_USE_SSCM_EXTENSIONS */
 #define MAKE_VALUEPACKET              SCM_MAKE_VALUEPACKET
 
-#if SCM_USE_HYGIENIC_MACRO
 #define MAKE_HMACRO                   SCM_MAKE_HMACRO
 #define MAKE_FARSYMBOL                SCM_MAKE_FARSYMBOL
 #define MAKE_SUBPAT                   SCM_MAKE_SUBPAT
-#endif /* SCM_USE_HYGIENIC_MACRO */
 
 #define NUMBERP        SCM_NUMBERP
 #define INTP           SCM_INTP
@@ -136,15 +132,11 @@ extern "C" {
 #define VECTORP        SCM_VECTORP
 #define PORTP          SCM_PORTP
 #define CONTINUATIONP  SCM_CONTINUATIONP
-#if SCM_USE_VALUECONS
 #define NULLVALUESP    SCM_NULLVALUESP
-#endif /* SCM_USE_VALUECONS */
 #define VALUEPACKETP   SCM_VALUEPACKETP
-#if SCM_USE_HYGIENIC_MACRO
 #define HMACROP        SCM_HMACROP
 #define FARSYMBOLP     SCM_FARSYMBOLP
 #define SUBPATP        SCM_SUBPATP
-#endif /* SCM_USE_HYGIENIC_MACRO */
 #define FREECELLP      SCM_FREECELLP
 #define C_POINTERP     SCM_C_POINTERP
 #define C_FUNCPOINTERP SCM_C_FUNCPOINTERP
@@ -777,6 +769,7 @@ SCM_EXPORT void scm_fin_gc(void);
 SCM_EXPORT ScmObj scm_alloc_cell(void);
 
 /* continuation.c */
+#if SCM_USE_CONTINUATION
 SCM_EXPORT void scm_init_continuation(void);
 SCM_EXPORT void scm_fin_continuation(void);
 SCM_EXPORT void scm_destruct_continuation(ScmObj cont);
@@ -787,6 +780,7 @@ SCM_EXPORT ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
 SCM_EXPORT void scm_push_trace_frame(ScmObj obj, ScmObj env);
 SCM_EXPORT void scm_pop_trace_frame(void);
 SCM_EXPORT ScmObj scm_trace_stack(void);
+#endif /* SCM_USE_CONTINUATION */
 
 /* symbol.c */
 SCM_EXPORT void scm_init_symbol(const ScmStorageConf *conf);
@@ -835,11 +829,13 @@ SCM_EXPORT translator_ret scm_listran(sequence_translator *t, tr_msg msg,
                                       ScmObj obj);
 
 /* macro.c */
+#if SCM_USE_HYGIENIC_MACRO
 SCM_EXPORT void scm_init_macro(void);
 SCM_EXPORT ScmObj scm_expand_macro(ScmObj macro, ScmObj args,
                                    ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_p_reversex(ScmObj in); /* To be relocated. */
 SCM_EXPORT void scm_macro_bad_scope(ScmObj sym);
+#endif /* SCM_USE_HYGIENIC_MACRO */
 
 /* error.c */
 SCM_EXPORT void scm_init_error(void);
@@ -848,23 +844,33 @@ SCM_EXPORT void scm_init_error(void);
 SCM_EXPORT scm_int_t scm_finite_length(ScmObj lst);
 
 /* number.c */
+#if SCM_USE_NUMBER
 SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
                                        scm_bool *err);
+#endif /* SCM_USE_NUMBER */
 
 /* port.c */
+#if SCM_USE_PORT
 SCM_EXPORT void scm_init_port(void);
 SCM_EXPORT ScmObj scm_prepare_port(ScmObj args, ScmObj default_port);
 SCM_EXPORT ScmCharPort *scm_make_char_port(ScmBytePort *bport);
+#endif /* SCM_USE_PORT */
 
 /* write.c */
+#if SCM_USE_WRITER
 SCM_EXPORT void scm_init_writer(void);
 SCM_EXPORT void scm_display_errobj_ss(ScmObj port, ScmObj errobj);
+#endif /* SCM_USE_WRITER */
 
 /* format.c */
+#if SCM_USE_FORMAT
 SCM_EXPORT void scm_init_format(void);
+#endif /* SCM_USE_FORMAT */
 
 /* load.c */
+#if SCM_USE_LOAD
 SCM_EXPORT void scm_init_load(void);
+#endif /* SCM_USE_LOAD */
 
 /* module.c */
 SCM_EXPORT void scm_init_module(void);
