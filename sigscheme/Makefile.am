@@ -6,7 +6,7 @@ TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
 DIST_SUM_LIST = $(PACKAGE)-$(VERSION).md5
 
 EXTRA_DIST = \
-        TODO autogen.sh \
+        TODO QALog autogen.sh \
         compare-scm.sh runbench.sh runtest.sh runtest-tail-rec.sh
 
 DISTCLEANFILES = tools/gnuify-changelog.pl $(DIST_SUM_LIST)

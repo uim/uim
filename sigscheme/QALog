@@ -1,0 +1,914 @@
+Quality Assurance Log
+=====================
+
+The file for developer's own quality management.
+
+
+Checkpoints
+-----------
+
+- Specification conformance check by eyes
+
+  Whether conforms to the expected specification (R5RS, SRFI, or
+  SigScheme-local specs such as SAL).
+
+- Specification conformance check by tests
+
+  Ensure the conformance by tests.
+
+- General code review (logic, structure, meaning etc)
+
+- 64-bit model capability check by eyes
+
+  Whether the codes are capable of ILP32(LL64), LP64, LLP64 and ILP64.
+
+- 64-bit model capability check by tests
+
+  Ensure the capability by tests.
+
+- Coding style check (doc/style.txt)
+
+- Normal case tests
+
+- Corner case tests
+
+
+Format and Examples
+-------------------
+
+- Free format log
+
+  Record significant achievements to 'Log' section in ChangeLog format
+
+2006-06-06 YamaKen <yamaken AT bp.iij4u.or.jp>
+	
+	* general code review for all core files
+
+
+- Status record template
+
+file:              
+category:          
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+  * The unit for status recording is file. Check all functions in a file at a
+    time
+  * category = (base|core|semicore|r5rs|srfi|opt|ext|other)
+  * record comma separated username@revision for each checkpoints
+  * don't overwrite per-user checkpoints. i.e. record as "yamaken@r3499,
+    yamaken@3670" instead of recording latest "yamaken@3670" only
+  * don't fold each line
+  * '-' means "unneeded"
+  * blank field means "unchecked"
+
+- Examples
+
+file:              scmint.h
+category:          base
+spec by eyes:      -
+spec by tests:     -
+generic review:    yamaken@r3499, ekato@r3499
+64-bit by eyes:    yamaken@r3499, ekato@r3499
+64-bit by tests:   
+coding style:      yamaken@r3499
+normal case tests: 
+corner case tests: 
+
+file:              syntax.c
+category:          r5rs
+spec by eyes:      yamaken@r3499, yamaken@3670
+spec by tests:     
+generic review:    yamaken@r3499
+64-bit by eyes:    yamaken@r3499
+64-bit by tests:   -
+coding style:      yamaken@r3499
+normal case tests: 
+corner case tests: 
+
+- Summarization
+
+  $ tools/summarize_quality.rb QALog
+
+
+Categorized File List
+---------------------
+
+- SigScheme-independent base libraries (base)
+
+  * scmint.h
+  * scmport.h
+  * scmport-config.h
+  * scmport-null.h
+  * scmport-null.c
+  * scmport-file.c
+  * scmport-file.h
+  * scmport-str.h
+  * scmport-str.c
+  * scmport-basechar.c
+  * scmport-mbchar.h
+  * scmport-mbchar.c
+  * scmport-sbchar.h
+  * scmport-sbchar.c
+  * encoding.h
+  * encoding-config.h
+  * encoding.c
+  * global.h
+  * global-aggregated.c
+
+- Core (core)
+
+  * config-old.h
+  * sigscheme.h
+  * sigschemeinternal.h
+  * storage-common.h
+  * storage-fatty.h
+  * storage-compact.h
+  * storage.c
+  * storage-gc.c
+  * strcasecmp.c
+  * alloc.c
+  * error.c
+  * env.c
+  * symbol.c
+  * continuation.c
+  * eval.c
+  * module.c
+  * sigscheme.c
+
+- Semi-core (semicore)
+
+  * port.c
+  * read.c
+  * write.c
+  * load.c
+  * format.c
+
+- R5RS Syntaxes and Procedures (r5rs)
+
+  * syntax.c
+  * procedure.c
+  * number.c
+  * list.c
+  * deep-cadrs.c
+  * char.c
+  * string.c
+  * vector.c
+  * macro.c
+
+- SRFIs (srfi)
+
+  * module-srfi1.c
+  * module-srfi2.c
+  * module-srfi6.c
+  * module-srfi8.c
+  * module-srfi23.c
+  * module-srfi28.c
+  * module-srfi34.c
+  * module-srfi38.c
+  * module-srfi48.c
+  * module-srfi60.c
+
+- Optional Features (opt)
+
+  * module-sscm-ext.c
+  * module-siod.c
+
+- Others (other)
+
+  * main.c
+  * sigscheme-combined.h
+  * dllentry.c
+
+
+Status
+------
+
+file:              scmint.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-config.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-null.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-null.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-file.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-file.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-str.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-str.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-basechar.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-mbchar.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-mbchar.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-sbchar.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              scmport-sbchar.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              encoding.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              encoding-config.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              encoding.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              global.h
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              global-aggregated.c
+category:          base
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              config-old.h
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              sigscheme.h
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              sigschemeinternal.h
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              storage-common.h
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              storage-fatty.h
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              storage-compact.h
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              storage.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              storage-gc.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              strcasecmp.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              alloc.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              error.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              env.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              symbol.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              continuation.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              eval.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              sigscheme.c
+category:          core
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              port.c
+category:          semicore
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              read.c
+category:          semicore
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              write.c
+category:          semicore
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              load.c
+category:          semicore
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              format.c
+category:          semicore
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              syntax.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              procedure.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              number.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              list.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              deep-cadrs.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              char.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              string.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              vector.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              macro.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi1.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi2.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi6.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi8.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi23.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi28.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi34.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi38.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi48.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-srfi60.c
+category:          srfi
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-sscm-ext.c
+category:          opt
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              module-siod.c
+category:          opt
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              main.c
+category:          other
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              sigscheme-combined.h
+category:          other
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              dllentry.c
+category:          other
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+
+Log
+---
+
+2006-06-24 YamaKen <yamaken AT bp.iij4u.or.jp>
+	
+	* Create this file and define record formats.
