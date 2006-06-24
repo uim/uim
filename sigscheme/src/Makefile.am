@@ -28,6 +28,16 @@ FUNC_TABLES = \
         functable-srfi48.c \
         functable-srfi60.c
 
+R5RS_SYNTAX_SRCS = syntax.c
+if USE_QUASIQUOTE
+  R5RS_SYNTAX_SRCS += qquote.c
+endif
+# FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
+# SCM_USE_LEGACY_MACRO
+if USE_HYGIENIC_MACRO
+  R5RS_SYNTAX_SRCS += macro.c
+endif
+
 SSCM_PROC_SRCS = error.c module.c
 R5RS_PROC_SRCS = eval.c procedure.c list.c
 if USE_NUMBER
@@ -71,8 +81,9 @@ if MAINTAINER_MODE
 functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_core_func_info_table" \
 	  $(SSCM_PROC_SRCS)
-functable-r5rs-syntax.c: syntax.c macro.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_syntax_func_info_table" syntax.c macro.c
+functable-r5rs-syntax.c: $(R5RS_SYNTAX_SRCS) $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_syntax_func_info_table" \
+	  $(R5RS_SYNTAX_SRCS)
 functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_procedure_func_info_table" \
 	  $(R5RS_PROC_SRCS)
@@ -203,8 +214,8 @@ pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c \
-        error.c symbol.c env.c eval.c syntax.c procedure.c list.c \
-        module.c \
+        error.c symbol.c env.c module.c \
+	$(R5RS_SYNTAX_SRCS) $(R5RS_PROC_SRCS) \
         sigschemeinternal.h sigscheme.c
 if USE_STORAGE_COMPACT
   pkginclude_HEADERS += storage-common.h storage-compact.h
@@ -214,26 +225,9 @@ endif
 if USE_CONTINUATION
   libsscm_la_SOURCES += continuation.c
 endif
-# FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
-# SCM_USE_LEGACY_MACRO
-if USE_HYGIENIC_MACRO
-  libsscm_la_SOURCES += macro.c
-endif
-if USE_NUMBER
-  libsscm_la_SOURCES += number.c
-endif
-if USE_CHAR
-  libsscm_la_SOURCES += char.c
-endif
-if USE_STRING
-  libsscm_la_SOURCES += string.c
-endif
-if USE_VECTOR
-  libsscm_la_SOURCES += vector.c
-endif
 if USE_PORT
   libsscm_la_SOURCES += \
-        port.c scmport.h scmport-config.h \
+        scmport.h scmport-config.h \
         scmport-file.h scmport-file.c \
         scmport-basechar.c
 if USE_MULTIBYTE_CHAR
@@ -241,18 +235,6 @@ if USE_MULTIBYTE_CHAR
 else
     libsscm_la_SOURCES += scmport-sbchar.h scmport-sbchar.c
 endif
-endif
-if USE_READER
-  libsscm_la_SOURCES += read.c
-endif
-if USE_WRITER
-  libsscm_la_SOURCES += write.c
-endif
-if USE_LOAD
-  libsscm_la_SOURCES += load.c
-endif
-if USE_DEEP_CADRS
-  libsscm_la_SOURCES += deep-cadrs.c
 endif
 if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h

@@ -1230,10 +1230,14 @@ SCM_EXPORT ScmObj scm_s_begin(ScmObj args, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
                            ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_delay(ScmObj expr, ScmObj env);
+SCM_EXPORT ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
+
+#if SCM_USE_QUASIQUOTE
+/* qquote.c */
 SCM_EXPORT ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);
 SCM_EXPORT ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
 SCM_EXPORT ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
-SCM_EXPORT ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
+#endif /* SCM_USE_QUASIQUOTE */
 
 /* procedure.c */
 SCM_EXPORT ScmObj scm_p_eqp(ScmObj obj1, ScmObj obj2);
