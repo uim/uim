@@ -920,8 +920,11 @@ struct ScmStorageConf_ {
 ===========================================================================*/
 #define SCM_INVALID_REF       SCM_SAL_INVALID_REF
 
+/* refer car slot of a cons cell */
 #define SCM_REF_CAR(kons)     SCM_SAL_REF_CAR(kons)
+/* refer cdr slot of a cons cell */
 #define SCM_REF_CDR(kons)     SCM_SAL_REF_CDR(kons)
+/* refer an off-heap object */
 #define SCM_REF_OFF_HEAP(obj) SCM_SAL_REF_OFF_HEAP(obj)
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */

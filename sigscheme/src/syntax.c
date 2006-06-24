@@ -180,6 +180,7 @@ scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj)
     RETURN_OBJECT(SCM_INVALID);
 }
 
+#if SCM_USE_VECTOR
 #define REPLACED_INDEX(i) (i)
 /* '- 1' allows zero as spliced index */
 #define SPLICED_INDEX(i)  (-(i) - 1)
@@ -269,6 +270,8 @@ scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 
 #undef REPLACED_INDEX
 #undef SPLICED_INDEX
+#endif /* SCM_USE_VECTOR */
+
 #undef RETURN_OBJECT
 #undef RETURN_BOOLEAN
 

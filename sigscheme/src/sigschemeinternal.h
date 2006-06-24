@@ -455,11 +455,11 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
   List Constructor
 =======================================*/
 typedef ScmRef ScmQueue;
-#define SCM_QUEUE_INVALIDATE(_q) ((_q) = NULL)
-#define SCM_QUEUE_VALIDP(_q)     (_q)
+#define SCM_QUEUE_INVALIDATE(_q)     ((_q) = SCM_INVALID_REF)
+#define SCM_QUEUE_VALIDP(_q)         ((_q) != SCM_INVALID_REF)
 #define SCM_QUEUE_POINT_TO(_q, _out) ((_q) = SCM_REF_OFF_HEAP(_out))
-#define SCM_QUEUE_ADD(_q, _dat) (SET((_q), LIST_1(_dat)),                    \
-                                 (_q) = REF_CDR(DEREF(_q)))
+#define SCM_QUEUE_ADD(_q, _dat)      (SET((_q), LIST_1(_dat)),               \
+                                      (_q) = REF_CDR(DEREF(_q)))
 #define SCM_QUEUE_CONST_ADD(_q, _dat)                                        \
     (SET((_q), IMMUTABLE_CONS((_dat), SCM_NULL)),                            \
      (_q) = REF_CDR(DEREF(_q)))
@@ -486,12 +486,12 @@ typedef ScmRef ScmQueue;
  * Then, traverse over the `copy' by successively and alternately
  * calling TR_GET_ELM() and TR_NEXT().  If an item returned by
  * TR_GET_ELM() should be replaced, then call TR_EXECUTE() with the
- * message TR_REPLACE or TR_SPLICE (see their definition for details).
- * When TR_ENDP() returns true, stop and obtain the duplicate with
- * TR_EXTRACT().  TR_CALL() is a low-level construct that doesn't
- * demultiplex the return value.  Usually you would want TR_EXECUTE()
- * instead.  The only exception is if you expect a boolean to be
- * returned (those that test true for TR_BOOL_MSG_P()).
+ * message TR_MSG_REPLACE or TR_MSG_SPLICE (see their definition for
+ * details).  When TR_ENDP() returns true, stop and obtain the
+ * duplicate with TR_EXTRACT().  TR_CALL() is a low-level construct
+ * that doesn't demultiplex the return value.  Usually you would want
+ * TR_EXECUTE() instead.  The only exception is if you expect a
+ * boolean to be returned (those that test true for TR_BOOL_MSG_P()).
  *
  * The last cdr of an improper list is *not* considered a part of the
  * list and will be treated just like the () of a proper list.  In
@@ -612,6 +612,7 @@ union _translator_ret {
 #define TRL_EXECUTE(_t, _p)   (SCM_ASSERT(!TR_BOOL_MSG_P((_p).msg)),          \
                                scm_listran(&(_t), (_p).msg, (_p).obj).object)
 
+#if SCM_USE_VECTOR
 /* Vector-specific macros. */
 #define TRV_INIT(_t, _in)  ((_t).u.vec.diff = SCM_NULL,                 \
                             SCM_QUEUE_POINT_TO((_t).u.vec.q,            \
@@ -628,6 +629,7 @@ union _translator_ret {
 #define TRV_EXTRACT(_t)    (TRV_CALL((_t), TR_MSG_EXTRACT, SCM_INVALID).object)
 #define TRV_EXECUTE(_t, _p)  (TRV_CALL((_t), (_p).msg, (_p).obj).object)
 #define TRV_CALL(_t, _m, _o) (scm_vectran(&(_t), (_m), (_o)))
+#endif /* SCM_USE_VECTOR */
 
 /* Polymorphic macros. */
 #define TR_CALL(_t, _msg, _o) ((*(_t).trans)(&(_t), (_msg), (_o)))
