@@ -257,7 +257,7 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_SAL_CONS_CDR(o)            SCM_Y(SCM_CONS_PTR(o))
 #define SCM_SAL_CONS_SET_CAR(o, kar)   SCM_SET_X(SCM_CONS_PTR(o), (kar))
 #define SCM_SAL_CONS_SET_CDR(o, kdr)   SCM_SET_Y(SCM_CONS_PTR(o), (kdr))
-#define SCM_SAL_CONS_INIT(o, ar, dr)   SCM_INIT((o), (ar), (dr), SCM_PTAG_CONS)
+#define SCM_ISAL_CONS_INIT(o, ar, dr)  SCM_INIT((o), (ar), (dr), SCM_PTAG_CONS)
 #define SCM_SAL_CONS_MUTABLEP(o)       scm_true
 #define SCM_SAL_CONS_SET_MUTABLE(o)    SCM_EMPTY_EXPR
 #define SCM_SAL_CONS_SET_IMMUTABLE(o)  SCM_EMPTY_EXPR
@@ -271,7 +271,7 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_SAL_CLOSURE_ENV(o)         SCM_Y(SCM_CLOSURE_PTR(o))
 #define SCM_SAL_CLOSURE_SET_EXP(o, c)  SCM_SET_X(SCM_CLOSURE_PTR(o), (c))
 #define SCM_SAL_CLOSURE_SET_ENV(o, e)  SCM_SET_Y(SCM_CLOSURE_PTR(o), (e))
-#define SCM_SAL_CLOSURE_INIT(o, c, e)  SCM_INIT((o), (c), (e),          \
+#define SCM_ISAL_CLOSURE_INIT(o, c, e) SCM_INIT((o), (c), (e),          \
                                                 SCM_PTAG_CLOSURE)
 /* ------------------------------------------------------------
  * Immediate types (ones that fit on the pointer including type tags).
@@ -571,7 +571,7 @@ SCM_MISC_DECLARE_TYPE(SYMBOL, L1(0), SCM_MISC_XTYPE(ScmObj),
     ((char*)(SCM_Y(SCM_SYMBOL_PTR(o)) & ~SCM_MTAG_SYMBOL))
 #define SCM_SAL_SYMBOL_SET_NAME(o, n)                           \
     SCM_SET_Y(SCM_SYMBOL_PTR(o), (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL)
-#define SCM_SAL_SYMBOL_INIT(o, n, c)                    \
+#define SCM_ISAL_SYMBOL_INIT(o, n, c)                   \
     SCM_INIT((o),                                       \
              (c),                                       \
              (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL,      \
@@ -604,11 +604,11 @@ SCM_MISC_DECLARE_TYPE(STRING, L1(1), SCM_MISC_XTYPE(char *),
 #define SCM_SAL_STRING_SET_STR(o, s) SCM_MISC_SET_X((o), (s), STRING)
 #define SCM_SAL_STRING_SET_LEN(o, l)                                    \
     SCM_MISC_SET_Y((o), ((l) << 1) | SCM_STRING_MUTABILITY(o), STRING)
-#define SCM_SAL_MUTABLE_STRING_INIT(o, s, l)                             \
+#define SCM_ISAL_MUTABLE_STRING_INIT(o, s, l)                            \
     SCM_MISC_INIT((o), (s), ((l) << 1) | SCM_STRING_MUTABLE_BIT, STRING)
-#define SCM_SAL_IMMUTABLE_STRING_INIT(o, s, l)  \
+#define SCM_ISAL_IMMUTABLE_STRING_INIT(o, s, l)  \
     SCM_MISC_INIT((o), (s), ((l) << 1), STRING)
-#define SCM_SAL_STRING_INIT(o, s, l, mut)                               \
+#define SCM_ISAL_STRING_INIT(o, s, l, mut)                              \
     SCM_MISC_INIT((o), (s),                                             \
                   ((l) << 1) | ((mut) ? SCM_STRING_MUTABLE_BIT : 0),    \
                   STRING)
@@ -642,14 +642,14 @@ SCM_MISC_DECLARE_TYPE(VECTOR, L1(2), SCM_MISC_XTYPE(ScmObj*),
 #define SCM_SAL_VECTOR_SET_VEC(o, s) SCM_MISC_SET_X((o), (s), VECTOR)
 #define SCM_SAL_VECTOR_SET_LEN(o, l)                                    \
     SCM_MISC_SET_Y((o), ((l) << 1) | SCM_VECTOR_MUTABILITY(o), VECTOR)
-#define SCM_SAL_VECTOR_INIT(o, s, l, mut)                               \
+#define SCM_ISAL_VECTOR_INIT(o, s, l, mut)                              \
     SCM_MISC_INIT((o), (s),                                             \
                   ((l) << 1) | ((mut) ? SCM_VECTOR_MUTABLE_BIT : 0),    \
                   VECTOR)
-#define SCM_SAL_MUTABLE_VECTOR_INIT(o, s, l)            \
-    SCM_SAL_VECTOR_INIT((o), (s), (l), scm_true)
-#define SCM_SAL_IMMUTABLE_VECTOR_INIT(o, s, l)          \
-    SCM_SAL_VECTOR_INIT((o), (s), (l), scm_false)
+#define SCM_ISAL_MUTABLE_VECTOR_INIT(o, s, l)            \
+    SCM_ISAL_VECTOR_INIT((o), (s), (l), scm_true)
+#define SCM_ISAL_IMMUTABLE_VECTOR_INIT(o, s, l)          \
+    SCM_ISAL_VECTOR_INIT((o), (s), (l), scm_false)
 #define SCM_CELL_VECTORP(c)      SCM_MISC_CELL_TYPEP((c), VECTOR)
 #define SCM_CELL_VECTOR_FIN(c)                                  \
     do {                                                        \
@@ -669,7 +669,7 @@ SCM_MISC_DECLARE_TYPE(VALUEPACKET, L2(0, 3), SCM_MISC_XTYPE(ScmObj),
 #define SCM_SAL_VALUEPACKET_VALUES(o)  SCM_MISC_X((o), VALUEPACKET)
 #define SCM_SAL_VALUEPACKET_SET_VALUES(o, v)    \
     SCM_MISC_SET_X((o), (v), VALUEPACKET)
-#define SCM_SAL_VALUEPACKET_INIT(o, v) SCM_MISC_INIT((o), (v), 0, VALUEPACKET)
+#define SCM_ISAL_VALUEPACKET_INIT(o, v) SCM_MISC_INIT((o), (v), 0, VALUEPACKET)
 
 /* Builtin functions. */
 SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3), SCM_MISC_XTYPE(ScmFuncType),
@@ -682,7 +682,7 @@ SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3), SCM_MISC_XTYPE(ScmFuncType),
 #define SCM_SAL_FUNC_TYPECODE(o)        SCM_MISC_Y((o), FUNC)
 #define SCM_SAL_FUNC_SET_CFUNC(o, f)    SCM_MISC_SET_X((o), (f), FUNC)
 #define SCM_SAL_FUNC_SET_TYPECODE(o, t) SCM_MISC_SET_Y((o), (t), FUNC)
-#define SCM_SAL_FUNC_INIT(o, t, f)      SCM_MISC_INIT((o), (f), (t), FUNC)
+#define SCM_ISAL_FUNC_INIT(o, t, f)     SCM_MISC_INIT((o), (f), (t), FUNC)
 
 /* Ports. */
 struct ScmCharPort_;
@@ -697,7 +697,7 @@ SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3), SCM_MISC_XTYPE(struct ScmCharPort_*),
 #define SCM_SAL_PORT_FLAG(o)        ((enum ScmPortFlag)SCM_MISC_Y((o), PORT))
 #define SCM_SAL_PORT_SET_IMPL(o, i) SCM_MISC_SET_X((o), (i), PORT)
 #define SCM_SAL_PORT_SET_FLAG(o, f) SCM_MISC_SET_Y((o), (f), PORT)
-#define SCM_SAL_PORT_INIT(o, i, f)  SCM_MISC_INIT((o), (i), (f), PORT)
+#define SCM_ISAL_PORT_INIT(o, i, f) SCM_MISC_INIT((o), (i), (f), PORT)
 #define SCM_CELL_PORTP(c)           SCM_MISC_CELL_TYPEP((c), PORT)
 #define SCM_CELL_PORT_FIN(c)                            \
     do {                                                \
@@ -720,7 +720,7 @@ SCM_MISC_DECLARE_TYPE(CONTINUATION, L2(3, 3), SCM_MISC_XTYPE(void*),
                                                              CONTINUATION)
 #define SCM_SAL_CONTINUATION_SET_TAG(o, a)    SCM_MISC_SET_Y((o), (a),     \
                                                              CONTINUATION)
-#define SCM_SAL_CONTINUATION_INIT(o, a, t)      \
+#define SCM_ISAL_CONTINUATION_INIT(o, a, t)     \
     SCM_MISC_INIT((o), (a), (t), CONTINUATION)
 #define SCM_CELL_CONTINUATIONP(c)         SCM_MISC_CELL_TYPEP(c, CONTINUATION)
 /*
@@ -742,7 +742,7 @@ SCM_MISC_DECLARE_TYPE(C_POINTER, L3(0, 4, 3), SCM_MISC_XTYPE(void*),
 #define SCM_SAL_C_POINTERP(o)             SCM_MISC_TYPEP((o), C_POINTER)
 #define SCM_SAL_C_POINTER_VALUE(o)        SCM_MISC_X((o), C_POINTER)
 #define SCM_SAL_C_POINTER_SET_VALUE(o, p) SCM_MISC_SET_X((o), (p), C_POINTER)
-#define SCM_SAL_C_POINTER_INIT(o, p)      SCM_MISC_INIT((o), (p), 0, C_POINTER)
+#define SCM_ISAL_C_POINTER_INIT(o, p)     SCM_MISC_INIT((o), (p), 0, C_POINTER)
 
 /* C function pointer */
 SCM_MISC_DECLARE_TYPE(C_FUNCPOINTER, L3(1, 4, 3), SCM_MISC_XTYPE(ScmCFunc),
@@ -753,7 +753,7 @@ SCM_MISC_DECLARE_TYPE(C_FUNCPOINTER, L3(1, 4, 3), SCM_MISC_XTYPE(ScmCFunc),
 #define SCM_SAL_C_FUNCPOINTER_VALUE(o) SCM_MISC_X((o), C_FUNCPOINTER)
 #define SCM_SAL_C_FUNCPOINTER_SET_VALUE(o, f)   \
     SCM_MISC_SET_X((o), (f), C_FUNCPOINTER)
-#define SCM_SAL_C_FUNCPOINTER_INIT(o, f)        \
+#define SCM_ISAL_C_FUNCPOINTER_INIT(o, f)       \
     SCM_MISC_INIT((o), (f), 0, C_FUNCPOINTER)
 
 #endif /* SCM_USE_SSCM_EXTENSIONS */
@@ -785,7 +785,7 @@ SCM_MISC_DECLARE_TYPE(SUBPAT, L3(0, 5, 3), SCM_MISC_XTYPE(ScmObj),
 #define SCM_SAL_SUBPAT_SET_OBJ(o, p)  SCM_MISC_SET_X((o), (p), SUBPAT)
 #define SCM_SAL_SUBPAT_META(o)        SCM_MISC_Y((o), SUBPAT)
 #define SCM_SAL_SUBPAT_SET_META(o, m) SCM_MISC_SET_Y((o), (m), SUBPAT)
-#define SCM_SAL_SUBPAT_INIT(o, p, m)  SCM_MISC_INIT((o), (p), (m), SUBPAT)
+#define SCM_ISAL_SUBPAT_INIT(o, p, m) SCM_MISC_INIT((o), (p), (m), SUBPAT)
 
 /* Compiled macro. */
 SCM_MISC_DECLARE_TYPE(HMACRO, L3(1, 5, 3), SCM_MISC_XTYPE(ScmObj),
@@ -797,7 +797,7 @@ SCM_MISC_DECLARE_TYPE(HMACRO, L3(1, 5, 3), SCM_MISC_XTYPE(ScmObj),
 #define SCM_SAL_HMACRO_ENV(o)          SCM_MISC_Y((o), HMACRO)
 #define SCM_SAL_HMACRO_SET_RULES(o, r) SCM_MISC_SET_X((o), (r), HMACRO)
 #define SCM_SAL_HMACRO_SET_ENV(o, e)   SCM_MISC_SET_Y((o), (e), HMACRO)
-#define SCM_SAL_HMACRO_INIT(o, r, e)   SCM_MISC_INIT((o), (r), (e), HMACRO)
+#define SCM_ISAL_HMACRO_INIT(o, r, e)  SCM_MISC_INIT((o), (r), (e), HMACRO)
 
 /* Far symbol. */
 SCM_MISC_DECLARE_TYPE(FARSYMBOL, L3(2, 5, 3), SCM_MISC_XTYPE(ScmObj),
@@ -809,7 +809,7 @@ SCM_MISC_DECLARE_TYPE(FARSYMBOL, L3(2, 5, 3), SCM_MISC_XTYPE(ScmObj),
 #define SCM_SAL_FARSYMBOL_ENV(o)        SCM_MISC_Y((o), FARSYMBOL)
 #define SCM_SAL_FARSYMBOL_SET_SYM(o, s) SCM_MISC_SET_X((o), (s), FARSYMBOL)
 #define SCM_SAL_FARSYMBOL_SET_ENV(o, e) SCM_MISC_SET_Y((o), (e), FARSYMBOL)
-#define SCM_SAL_FARSYMBOL_INIT(o, s, e) SCM_MISC_INIT((o), (s), (e), FARSYMBOL)
+#define SCM_ISAL_FARSYMBOL_INIT(o, s, e) SCM_MISC_INIT((o), (s), (e), FARSYMBOL)
 
 #endif /* SCM_USE_HYGIENIC_MACRO */
 

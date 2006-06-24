@@ -250,7 +250,7 @@ struct ScmCell_ {
 #define SCM_SAL_INTP(o)                (SCM_TYPE(o) == ScmInt)
 #define SCM_SAL_INT_VALUE(o)           (SCM_AS_INT(o)->obj.integer.value)
 #define SCM_SAL_INT_SET_VALUE(o, val)  (SCM_INT_VALUE(o) = (val))
-#define SCM_SAL_INT_INIT(o, val)       (SCM_ENTYPE((o), ScmInt),        \
+#define SCM_ISAL_INT_INIT(o, val)      (SCM_ENTYPE((o), ScmInt),        \
                                         SCM_INT_SET_VALUE((o), (val)))
 
 #define SCM_SAL_CONSP(o)               (SCM_TYPE(o) == ScmCons)
@@ -267,12 +267,12 @@ struct ScmCell_ {
 #define SCM_SAL_CONS_MUTABLEP(o)       (SCM_MUTABLEP(o))
 #define SCM_SAL_CONS_SET_MUTABLE(o)    (SCM_SET_MUTABLE(o))
 #define SCM_SAL_CONS_SET_IMMUTABLE(o)  (SCM_SET_IMMUTABLE(o))
-#define SCM_SAL_CONS_INIT(o, kar, kdr)          \
+#define SCM_ISAL_CONS_INIT(o, kar, kdr)         \
     (SCM_ENTYPE((o), ScmCons),                  \
      SCM_CONS_SET_CAR((o), (kar)),              \
      SCM_CONS_SET_CDR((o), (kdr)),              \
      SCM_CONS_SET_MUTABLE(o))
-#define SCM_SAL_IMMUTABLE_CONS_INIT(o, kar, kdr)        \
+#define SCM_ISAL_IMMUTABLE_CONS_INIT(o, kar, kdr)       \
     (SCM_ENTYPE((o), ScmCons),                          \
      SCM_CONS_SET_CAR((o), (kar)),                      \
      SCM_CONS_SET_CDR((o), (kdr)),                      \
@@ -283,14 +283,14 @@ struct ScmCell_ {
 #define SCM_SAL_SYMBOL_SET_NAME(o, _name)  (SCM_SYMBOL_NAME(o) = (_name))
 #define SCM_SAL_SYMBOL_VCELL(o)        (SCM_AS_SYMBOL(o)->obj.symbol.value)
 #define SCM_SAL_SYMBOL_SET_VCELL(o, vcell) (SCM_SYMBOL_VCELL(o) = (vcell))
-#define SCM_SAL_SYMBOL_INIT(o, n, v)   (SCM_ENTYPE((o), ScmSymbol),     \
+#define SCM_ISAL_SYMBOL_INIT(o, n, v)  (SCM_ENTYPE((o), ScmSymbol),     \
                                         SCM_SYMBOL_SET_NAME((o), (n)),  \
                                         SCM_SYMBOL_SET_VCELL((o), (v)))
 
 #define SCM_SAL_CHARP(o)               (SCM_TYPE(o) == ScmChar)
 #define SCM_SAL_CHAR_VALUE(o)          (SCM_AS_CHAR(o)->obj.character.value)
 #define SCM_SAL_CHAR_SET_VALUE(o, val) (SCM_CHAR_VALUE(o) = (val))
-#define SCM_SAL_CHAR_INIT(o, val)      (SCM_ENTYPE((o), ScmChar),       \
+#define SCM_ISAL_CHAR_INIT(o, val)     (SCM_ENTYPE((o), ScmChar),       \
                                         SCM_CHAR_SET_VALUE((o), (val)))
 
 #define SCM_SAL_STRINGP(o)              (SCM_TYPE(o) == ScmString)
@@ -301,16 +301,16 @@ struct ScmCell_ {
 #define SCM_SAL_STRING_MUTABLEP(o)      (SCM_MUTABLEP(o))
 #define SCM_SAL_STRING_SET_MUTABLE(o)   (SCM_SET_MUTABLE(o))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o) (SCM_SET_IMMUTABLE(o))
-#define SCM_SAL_STRING_INIT(o, s, l, mutp)      \
+#define SCM_ISAL_STRING_INIT(o, s, l, mutp)     \
     (SCM_ENTYPE((o), ScmString),                \
      SCM_STRING_SET_STR((o), (s)),              \
      SCM_STRING_SET_LEN((o), (l)),              \
      mutp ? SCM_STRING_SET_MUTABLE(o)           \
           : SCM_STRING_SET_IMMUTABLE(o))
-#define SCM_SAL_MUTABLE_STRING_INIT(o, s, l)            \
-    SCM_SAL_STRING_INIT((o), (s), (l), scm_true)
-#define SCM_SAL_IMMUTABLE_STRING_INIT(o, s, l)          \
-    SCM_SAL_STRING_INIT((o), (s), (l), scm_false)
+#define SCM_ISAL_MUTABLE_STRING_INIT(o, s, l)           \
+    SCM_ISAL_STRING_INIT((o), (s), (l), scm_true)
+#define SCM_ISAL_IMMUTABLE_STRING_INIT(o, s, l)         \
+    SCM_ISAL_STRING_INIT((o), (s), (l), scm_false)
 
 #define SCM_SAL_FUNCP(o)                   (SCM_TYPE(o) == ScmFunc)
 #define SCM_SAL_FUNC_TYPECODE(o)           (SCM_AS_FUNC(o)->obj.function.type)
@@ -318,16 +318,16 @@ struct ScmCell_ {
 #define SCM_SAL_FUNC_CFUNC(o)              (SCM_AS_FUNC(o)->obj.function.ptr)
 #define SCM_SAL_FUNC_SET_CFUNC(o, func)                                      \
     (SCM_FUNC_CFUNC(o) = (ScmFuncType)(func))
-#define SCM_SAL_FUNC_INIT(o, t, f) (SCM_ENTYPE((o), ScmFunc),           \
-                                    SCM_FUNC_SET_TYPECODE((o), (t)),    \
-                                    SCM_FUNC_SET_CFUNC((o), (f)))       \
+#define SCM_ISAL_FUNC_INIT(o, t, f) (SCM_ENTYPE((o), ScmFunc),           \
+                                     SCM_FUNC_SET_TYPECODE((o), (t)),    \
+                                     SCM_FUNC_SET_CFUNC((o), (f)))       \
 
 #define SCM_SAL_CLOSUREP(o)               (SCM_TYPE(o) == ScmClosure)
 #define SCM_SAL_CLOSURE_EXP(o)            (SCM_AS_CLOSURE(o)->obj.closure.exp)
 #define SCM_SAL_CLOSURE_SET_EXP(o, exp)   (SCM_CLOSURE_EXP(o) = (exp))
 #define SCM_SAL_CLOSURE_ENV(o)            (SCM_AS_CLOSURE(o)->obj.closure.env)
 #define SCM_SAL_CLOSURE_SET_ENV(o, env)   (SCM_CLOSURE_ENV(o) = (env))
-#define SCM_SAL_CLOSURE_INIT(o, x, e)     (SCM_ENTYPE((o), ScmClosure),       \
+#define SCM_ISAL_CLOSURE_INIT(o, x, e)    (SCM_ENTYPE((o), ScmClosure),       \
                                            SCM_CLOSURE_SET_EXP((o), (x)), \
                                            SCM_CLOSURE_SET_ENV((o), (e)))
 
@@ -339,24 +339,24 @@ struct ScmCell_ {
 #define SCM_SAL_VECTOR_MUTABLEP(o)        (SCM_MUTABLEP(o))
 #define SCM_SAL_VECTOR_SET_MUTABLE(o)     (SCM_SET_MUTABLE(o))
 #define SCM_SAL_VECTOR_SET_IMMUTABLE(o)   (SCM_SET_IMMUTABLE(o))
-#define SCM_SAL_VECTOR_INIT(o, v, l, mutp)      \
+#define SCM_ISAL_VECTOR_INIT(o, v, l, mutp)     \
     (SCM_ENTYPE((o), ScmVector),                \
      SCM_VECTOR_SET_VEC((o), (v)),              \
      SCM_VECTOR_SET_LEN((o), (l)),              \
      mutp ? SCM_VECTOR_SET_MUTABLE(o)           \
           : SCM_VECTOR_SET_IMMUTABLE(o))
-#define SCM_SAL_MUTABLE_VECTOR_INIT(o, v, l)            \
-    SCM_SAL_VECTOR_INIT((o), (v), (l), scm_true)
-#define SCM_SAL_IMMUTABLE_VECTOR_INIT(o, v, l)          \
-    SCM_SAL_VECTOR_INIT((o), (v), (l), scm_false)
+#define SCM_ISAL_MUTABLE_VECTOR_INIT(o, v, l)           \
+    SCM_ISAL_VECTOR_INIT((o), (v), (l), scm_true)
+#define SCM_ISAL_IMMUTABLE_VECTOR_INIT(o, v, l)         \
+    SCM_ISAL_VECTOR_INIT((o), (v), (l), scm_false)
 
 #define SCM_SAL_PORTP(o)               (SCM_TYPE(o) == ScmPort)
 #define SCM_SAL_PORT_FLAG(o)           (SCM_AS_PORT(o)->obj.port.flag)
 #define SCM_SAL_PORT_SET_FLAG(o, flag) (SCM_PORT_FLAG(o) = (flag))
 #define SCM_SAL_PORT_IMPL(o)           (SCM_AS_PORT(o)->obj.port.impl)
 #define SCM_SAL_PORT_SET_IMPL(o, impl) (SCM_PORT_IMPL(o) = (impl))
-#define SCM_SAL_PORT_INIT(o, i, f)     (SCM_ENTYPE((o), ScmPort),        \
-                                        SCM_PORT_SET_IMPL((o), (i)), \
+#define SCM_ISAL_PORT_INIT(o, i, f)    (SCM_ENTYPE((o), ScmPort),        \
+                                        SCM_PORT_SET_IMPL((o), (i)),     \
                                         SCM_PORT_SET_FLAG((o), (f)))
 
 #define SCM_SAL_CONTINUATIONP(o)       (SCM_TYPE(o) == ScmContinuation)
@@ -368,7 +368,7 @@ struct ScmCell_ {
     (SCM_AS_CONTINUATION(o)->obj.continuation.tag)
 #define SCM_SAL_CONTINUATION_SET_TAG(o, val)                                 \
     (SCM_CONTINUATION_TAG(o) = (val))
-#define SCM_SAL_CONTINUATION_INIT(o, v, t)      \
+#define SCM_ISAL_CONTINUATION_INIT(o, v, t)     \
     (SCM_ENTYPE((o), ScmContinuation),          \
      SCM_SAL_CONTINUATION_SET_OPAQUE((o), (v)), \
      SCM_SAL_CONTINUATION_SET_TAG((o), (t)))
@@ -387,8 +387,8 @@ struct ScmCell_ {
 #define SCM_SAL_VALUEPACKET_VALUES(o)                                        \
     (SCM_AS_VALUEPACKET(o)->obj.value_packet.lst)
 #define SCM_SAL_VALUEPACKET_SET_VALUES(o, v) (SCM_VALUEPACKET_VALUES(o) = (v))
-#define SCM_SAL_VALUEPACKET_INIT(o, v) (SCM_ENTYPE((o), ScmValuePacket),      \
-                                        SCM_VALUEPACKET_SET_VALUES((o), (v)))
+#define SCM_ISAL_VALUEPACKET_INIT(o, v) (SCM_ENTYPE((o), ScmValuePacket),     \
+                                         SCM_VALUEPACKET_SET_VALUES((o), (v)))
 #endif /* SCM_USE_VALUECONS */
 
 #if SCM_USE_HYGIENIC_MACRO || SCM_USE_UNHYGIENIC_MACRO
@@ -402,7 +402,7 @@ struct ScmCell_ {
 #define SCM_SAL_HMACRO_SET_RULES(o, r) (SCM_SAL_HMACRO_RULES(o) = (r))
 #define SCM_SAL_HMACRO_ENV(o)          (SCM_AS_HMACRO(o)->obj.hmacro.env)
 #define SCM_SAL_HMACRO_SET_ENV(o, e)   (SCM_SAL_HMACRO_ENV(o) = (e))
-#define SCM_SAL_HMACRO_INIT(o, r, e)   (SCM_ENTYPE((o), ScmMacro),      \
+#define SCM_ISAL_HMACRO_INIT(o, r, e)  (SCM_ENTYPE((o), ScmMacro),      \
                                         SCM_HMACRO_SET_RULES((o), (r)), \
                                         SCM_HMACRO_SET_ENV((o), (e)))
 
@@ -411,16 +411,16 @@ struct ScmCell_ {
 #define SCM_SAL_FARSYMBOL_SET_SYM(o, s) (SCM_SAL_FARSYMBOL_SYM(o) = (s))
 #define SCM_SAL_FARSYMBOL_ENV(o)        (SCM_AS_FARSYMBOL(o)->obj.farsym.env)
 #define SCM_SAL_FARSYMBOL_SET_ENV(o, e) (SCM_SAL_FARSYMBOL_ENV(o) = (e))
-#define SCM_SAL_FARSYMBOL_INIT(o, s, e) (SCM_ENTYPE((o), ScmFarsymbol),   \
-                                         SCM_FARSYMBOL_SET_SYM((o), (s)), \
-                                         SCM_FARSYMBOL_SET_ENV((o), (e)))
+#define SCM_ISAL_FARSYMBOL_INIT(o, s, e) (SCM_ENTYPE((o), ScmFarsymbol),   \
+                                          SCM_FARSYMBOL_SET_SYM((o), (s)), \
+                                          SCM_FARSYMBOL_SET_ENV((o), (e)))
 
 #define SCM_SAL_SUBPATP(o)              (SCM_TYPE(o) == ScmSubpat)
 #define SCM_SAL_SUBPAT_OBJ(o)           (SCM_AS_SUBPAT(o)->obj.subpat.obj)
 #define SCM_SAL_SUBPAT_META(o)          (SCM_AS_SUBPAT(o)->obj.subpat.meta)
 #define SCM_SAL_SUBPAT_SET_OBJ(o, x)    (SCM_SAL_SUBPAT_OBJ(o) = (x))
 #define SCM_SAL_SUBPAT_SET_META(o, m)   (SCM_SAL_SUBPAT_META(o) = (m))
-#define SCM_SAL_SUBPAT_INIT(o, x, m)    (SCM_ENTYPE((o), ScmSubpat),    \
+#define SCM_ISAL_SUBPAT_INIT(o, x, m)   (SCM_ENTYPE((o), ScmSubpat),    \
                                          SCM_SUBPAT_SET_OBJ((o), (x)),  \
                                          SCM_SUBPAT_SET_META((o), (m)))
 #endif /* SCM_USE_HYGIENIC_MACRO */
@@ -438,7 +438,7 @@ struct ScmCell_ {
     (SCM_AS_C_POINTER(o)->obj.c_pointer.value)
 #define SCM_SAL_C_POINTER_SET_VALUE(o, ptr)                                  \
     (SCM_C_POINTER_VALUE(o) = (ptr))
-#define SCM_SAL_C_POINTER_INIT(o, ptr)          \
+#define SCM_ISAL_C_POINTER_INIT(o, ptr)         \
     (SCM_ENTYPE((o), ScmCPointer),              \
      SCM_C_POINTER_SET_VALUE((o), (ptr)))
 #define SCM_SAL_C_FUNCPOINTERP(o)       (SCM_TYPE(o) == ScmCFuncPointer)
@@ -446,7 +446,7 @@ struct ScmCell_ {
     (SCM_AS_C_FUNCPOINTER(o)->obj.c_func_pointer.value)
 #define SCM_SAL_C_FUNCPOINTER_SET_VALUE(o, ptr)                              \
     (SCM_C_FUNCPOINTER_VALUE(o) = (ptr))
-#define SCM_SAL_C_FUNCPOINTER_INIT(o, ptr)      \
+#define SCM_ISAL_C_FUNCPOINTER_INIT(o, ptr)     \
     (SCM_ENTYPE((o), ScmCFuncPointer),          \
      SCM_C_FUNCPOINTER_SET_VALUE((o), (ptr)))
 
