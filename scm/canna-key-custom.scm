@@ -69,6 +69,18 @@
 	       (_ "[Canna] shrink segment")
 	       (_ "long description will be here"))
 
+(define-custom 'canna-transpose-as-latin-key '("F10")
+	       '(canna-keys1)
+	       '(key)
+	       (_ "[Canna] convert to halfwidth alphanumeric")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-transpose-as-wide-latin-key '("F9")
+	       '(canna-keys1)
+	       '(key)
+	       (_ "[Canna] convert to fullwidth alphanumeric")
+	       (_ "long description will be here"))
+
 (define-custom 'canna-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(canna-keys1)
 	       '(key)
