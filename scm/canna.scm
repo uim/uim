@@ -816,7 +816,10 @@
 		(if (> cand-idx canna-candidate-type-katakana)
 		    (canna-lib-commit-segment cc-id seg-idx cand-idx)))
 	      (iota (ustr-length segments))
-	      (ustr-whole-seq segments))))
+	      (ustr-whole-seq segments))
+    (if (every (lambda (x) (<= x canna-candidate-type-katakana))
+	       (ustr-whole-seq segments))
+	(canna-lib-reset-conversion cc-id))))
 
 (define (canna-do-commit cc)
     (im-commit cc (canna-get-commit-string cc))
