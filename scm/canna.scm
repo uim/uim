@@ -312,25 +312,7 @@
 
 (define canna-make-whole-raw-string
   (lambda (cc wide?)
-    (let* ((rkc (canna-context-rkc cc))
-	   (pending (rk-pending rkc))
-	   (residual-kana (rk-push-key-last! rkc))
-	   (raw-str (canna-context-raw-ustr cc))
-	   (right-str (ustr-latter-seq raw-str))
-	   (left-str (ustr-former-seq raw-str)))
-      (canna-make-raw-string
-       (append left-str
-	       (if (null? residual-kana)
-		   (begin
-		     (if (null? right-str)
-			 (list pending)
-			 (append right-str (list pending))))
-		   (begin
-		     (rk-flush rkc)
-		     (if (null? right-str)
-			 (list pending)
-			 (append right-str (list pending))))))
-       wide?))))
+    (canna-make-raw-string (canna-get-raw-str-seq cc) wide?)))
 
 (define (canna-init-handler id im arg)
   (if (not canna-init-lib-ok?)
@@ -721,6 +703,19 @@
        ((= transposing-type canna-type-wide-latin)
 	(canna-make-whole-raw-string cc #t))))))
 
+(define canna-get-raw-str-seq
+  (lambda (cc)
+    (let* ((rkc (canna-context-rkc cc))
+	   (pending (rk-pending rkc))
+	   (residual-kana (rk-peek-terminal-match rkc))
+	   (raw-str (canna-context-raw-ustr cc))
+	   (right-str (ustr-latter-seq raw-str))
+	   (left-str (ustr-former-seq raw-str)))
+     (append left-str
+	     (if (not (null? residual-kana))
+		 (list pending))
+	      right-str))))
+
 (define canna-get-raw-candidate
   (lambda (cc cc-id seg-idx cand-idx)
     (let* ((preconv
@@ -730,9 +725,7 @@
 	   (unconv (if unconv-candidate
 		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
-	   (raw-str (reverse
-		     (append (ustr-former-seq (canna-context-raw-ustr cc))
-			     (ustr-latter-seq (canna-context-raw-ustr cc))))))
+	   (raw-str (reverse (canna-get-raw-str-seq cc))))
       (cond
        ((= cand-idx canna-candidate-type-hiragana)
 	(string-list-concat unconv))

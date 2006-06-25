@@ -133,6 +133,19 @@
                         cand-idx)))
         pos len))))
 
+(define mana-get-raw-str-seq
+  (lambda (mc)
+    (let* ((rkc (mana-context-rkc mc))
+	   (pending (rk-pending rkc))
+	   (residual-kana (rk-peek-terminal-match rkc))
+	   (raw-str (mana-context-raw-ustr mc))
+	   (right-str (ustr-latter-seq raw-str))
+	   (left-str (ustr-former-seq raw-str)))
+     (append left-str
+	     (if (not (null? residual-kana))
+		 (list pending))
+	     right-str))))
+
 (define mana-get-raw-candidate
   (lambda (mc seg-idx cand-idx)
     (let* ((yomi (mana-context-yomi mc))
@@ -146,9 +159,7 @@
 				(string-to-list yomi)
 				(- (- yomi-len 1) (+ pos (- len 1)))
 				(- (- yomi-len 1) pos))))
-	   (raw-str (reverse
-		     (append (ustr-former-seq (mana-context-raw-ustr mc))
-			     (ustr-latter-seq (mana-context-raw-ustr mc))))))
+	   (raw-str (reverse (mana-get-raw-str-seq mc))))
      (cond
       ((= cand-idx mana-candidate-type-hiragana)
        (string-list-concat unconv))
@@ -542,25 +553,7 @@
 
 (define mana-make-whole-raw-string
   (lambda (mc wide?)
-    (let* ((rkc (mana-context-rkc mc))
-	   (pending (rk-pending rkc))
-	   (residual-kana (rk-push-key-last! rkc))
-	   (raw-str (mana-context-raw-ustr mc))
-	   (right-str (ustr-latter-seq raw-str))
-	   (left-str (ustr-former-seq raw-str)))
-      (mana-make-raw-string
-       (append left-str
-	       (if (null? residual-kana)
-		   (begin
-		     (if (null? right-str)
-			 (list pending)
-			 (append right-str (list pending))))
-		   (begin
-		     (rk-flush rkc)
-		     (if (null? right-str)
-			 (list pending)
-			 (append right-str (list pending))))))
-       wide?))))
+    (mana-make-raw-string (mana-get-raw-str-seq mc) wide?)))
 
 (define mana-init-handler
   (lambda (id im arg)
