@@ -16,7 +16,7 @@ Checkpoints
 
   Ensure the conformance by tests.
 
-- General code review (logic, structure, meaning etc)
+- General code review (logic, structure, meaning, validity etc)
 
 - 64-bit model capability check by eyes
 
@@ -27,6 +27,9 @@ Checkpoints
   Ensure the capability by tests.
 
 - Coding style check (doc/style.txt)
+
+  Don't forget checking duplicate evaluation of side-effective expression on
+  macro invocation.
 
 - Normal case tests
 
@@ -160,6 +163,7 @@ Categorized File List
   * char.c
   * string.c
   * vector.c
+  * qquote.c
   * macro.c
 
 - SRFIs (srfi)
@@ -729,6 +733,17 @@ coding style:
 normal case tests: 
 corner case tests: 
 
+file:              qquote.c
+category:          r5rs
+spec by eyes:      yamaken@r3649
+spec by tests:     yamaken@r3649
+generic review:    yamaken@r3649
+64-bit by eyes:    yamaken@r3649
+64-bit by tests:   
+coding style:      yamaken@r3649
+normal case tests: yamaken@r3649
+corner case tests: yamaken@r3649
+
 file:              macro.c
 category:          r5rs
 spec by eyes:      
@@ -908,6 +923,17 @@ corner case tests:
 
 Log
 ---
+
+2006-06-25 YamaKen <yamaken AT bp.iij4u.or.jp>
+	
+	* qquote.c
+          - QA done @r3649 except for "64-bit by tests"
+          - Specs have been validated against R5RS "4.2.6 Quasiquotation" and
+            "7.1.4 Quasiquotations"
+          - Fix some bugs including a destructive one
+          - An unquote-splicing behavior is different to some other
+            implementations, but I believe that this implementation is
+            proper. See "unquote-splicing nested" of test-quote.scm
 
 2006-06-24 YamaKen <yamaken AT bp.iij4u.or.jp>
 	

@@ -124,19 +124,24 @@
 (assert-equal? (tn) '(quote 1)      `'1)
 (assert-equal? (tn) '(quasiquote 1) ``1)
 (assert-equal? (tn) '(quote 1)      `',1)
+(assert-equal? (tn) '()      `())
 (assert-equal? (tn) '('1)    `('1))
 (assert-equal? (tn) '(`1)    `(`1))
 (assert-equal? (tn) '(1)     `(,1))
 (assert-equal? (tn) '('1)    `(',1))
+(assert-equal? (tn) '(1)     `(,'1))
+(assert-equal? (tn) '(1)     `(,`1))
 (assert-equal? (tn) '((quote 1))      `('1))
 (assert-equal? (tn) '((quasiquote 1)) `(`1))
 (assert-equal? (tn) '(1)              `(,1))
 (assert-equal? (tn) '((quote 1))      `(',1))
-(assert-equal? (tn) '()      `(,@()))
-(assert-equal? (tn) '()      `(,@(list)))
-(assert-equal? (tn) '(1)     `(,@(list 1)))
-(assert-equal? (tn) '(1 2)   `(,@(list 1 2)))
-(assert-equal? (tn) '(1 2 3) `(,@(list 1 2 3)))
+(assert-equal? (tn) '#()      `#())
+(assert-equal? (tn) '#('1)    `#('1))
+(assert-equal? (tn) '#(`1)    `#(`1))
+(assert-equal? (tn) '#(1)     `#(,1))
+(assert-equal? (tn) '#('1)    `#(',1))
+(assert-equal? (tn) '#(1)     `#(,'1))
+(assert-equal? (tn) '#(1)     `#(,`1))
 
 (tn "quasiquote nested")
 (assert-equal? (tn)
@@ -160,6 +165,92 @@
 (assert-equal? (tn)
                '((quasiquote q) (q q (quasiquote (unquote q))))
                `(`q ,`(q ,`q `,,`q)))
+
+(tn "unquote-splicing nested")
+(assert-equal? (tn) '(1 2)
+               `(,@(list 1 2)))
+(assert-equal? (tn) '(quasiquote ((unquote-splicing (list 1 2))))
+               ``(,@(list 1 2)))
+(assert-equal? (tn) '(quasiquote (unquote (1 2)))
+               ``,(,@(list 1 2)))
+
+;; These tests show implementation-dependent behavior. But I believe that
+;; SigScheme's implementation is conforming to following R5RS specification
+;; better. Let me know if I'm misunderstanding.  -- YamaKen 2006-06-25
+;;
+;; R5RS: 7.1.4 Quasiquotations
+;;
+;; In <quasiquotation>s, a <list qq template D> can sometimes be confused with
+;; either an <unquotation D> or a <splicing unquotation D>. The interpretation
+;; as an <unquotation> or <splicing unquotation D> takes precedence.
+
+;; Guile, Gauche, Bigloo, SCM
+;;(assert-equal? (tn)
+;;               '(quasiquote ((unquote (unquote-splicing (list 1 2)))))
+;;               ``(,,@(list 1 2)))
+;;(assert-equal? (tn)
+;;               '(quasiquote ((unquote (unquote-splicing (list 1 2)))))
+;;               (quasiquote
+;;                (quasiquote
+;;                 ((unquote (unquote-splicing (list 1 2)))))))
+;; SigScheme, Scheme48
+(assert-equal? (tn)
+               '(quasiquote ((unquote 1 2)))
+               ``(,,@(list 1 2)))
+(assert-equal? (tn)
+               '(quasiquote ((unquote 1 2)))
+               (quasiquote
+                (quasiquote
+                 ((unquote (unquote-splicing (list 1 2)))))))
+
+(assert-equal? (tn) '(quasiquote (list 1 2 (unquote-splicing (list 1 2))))
+               ``(list 1 2 ,@(list 1 2)))
+;; Guile, Gauche, Bigloo, SCM
+;;(assert-equal? (tn)
+;;               '(quasiquote
+;;                 (list 1 2 (unquote (unquote-splicing (list 1 2)))))
+;;               ``(list 1 2 ,,@(list 1 2)))
+;;(assert-equal? (tn)
+;;               '(quasiquote
+;;                 (list 1 2 (unquote (unquote-splicing (list 1 2)))))
+;;               (quasiquote
+;;                (quasiquote
+;;                 (list 1 2 (unquote (unquote-splicing (list 1 2)))))))
+;; SigScheme, Scheme48
+(assert-equal? (tn)
+               '(quasiquote (list 1 2 (unquote 1 2)))
+               ``(list 1 2 ,,@(list 1 2)))
+(assert-equal? (tn)
+               '(quasiquote (list 1 2 (unquote 1 2)))
+               (quasiquote
+                (quasiquote
+                 (list 1 2 (unquote (unquote-splicing (list 1 2)))))))
+
+;; Guile, Gauche, Bigloo, SCM
+;;(assert-equal? (tn)
+;;               '((+ 1 2)
+;;                 3
+;;                 (list (+ 1 2) 3 1 2)
+;;                 `(list (+ 1 2) ,(+ 1 2) ,@(list 1 2))
+;;                 `(list ,(+ 1 2) ,3 ,,@(list 1 2)))
+;;               `((+ 1 2)
+;;                 ,(+ 1 2)
+;;                 (list (+ 1 2) ,(+ 1 2) ,@(list 1 2))
+;;                 `(list (+ 1 2) ,(+ 1 2) ,@(list 1 2))
+;;                 `(list ,(+ 1 2) ,,(+ 1 2) ,,@(list 1 2))))
+;; SigScheme, Scheme48
+(assert-equal? (tn)
+               '((+ 1 2)
+                 3
+                 (list (+ 1 2) 3 1 2)
+                 `(list (+ 1 2) ,(+ 1 2) ,@(list 1 2))
+                 `(list ,(+ 1 2) ,3 (unquote 1 2)))
+               `((+ 1 2)
+                 ,(+ 1 2)
+                 (list (+ 1 2) ,(+ 1 2) ,@(list 1 2))
+                 `(list (+ 1 2) ,(+ 1 2) ,@(list 1 2))
+                 `(list ,(+ 1 2) ,,(+ 1 2) ,,@(list 1 2))))
+
 
 ;; R5RS allows these forms to be an error
 (tn "quasiquote implementation-dependent form")
@@ -261,7 +352,95 @@
 (assert-error  (tn) (lambda ()        `(0 . (unquote-splicing (+ 1 2)))))
 (assert-error  (tn) (lambda ()        `(0 . (unquote-splicing #(1 2)))))
 
+(tn "unquote valid form")
+(assert-equal? (tn) 1     `,1)
+(assert-equal? (tn) ',1   ',1)
+(assert-equal? (tn) '(quasiquote 1)           ``1)
+(assert-equal? (tn) '(quasiquote (unquote 1)) ``,1)
+(assert-equal? (tn) '(quasiquote (unquote 1)) ``,,1)
+(assert-equal? (tn) '(quasiquote (+ 1 2))           ``(+ 1 2))
+(assert-equal? (tn) '(quasiquote (unquote (+ 1 2))) ``,(+ 1 2))
+(assert-equal? (tn) '(quasiquote (unquote 3))       ``,,(+ 1 2))
+(assert-equal? (tn) '(quasiquote (list 1 2 (+ 1 2)))
+               ``(list 1 2 (+ 1 2)))
+(assert-equal? (tn) '(quasiquote (unquote (list 1 2 (+ 1 2))))
+               ``,(list 1 2 (+ 1 2)))
+(assert-equal? (tn) '(quasiquote (unquote (1 2 3)))
+               ``,,(list 1 2 (+ 1 2)))
+(assert-equal? (tn) '(quasiquote (list 1 2 (unquote (+ 1 2))))
+               ``(list 1 2 ,(+ 1 2)))
+(assert-equal? (tn) '(quasiquote (list 1 2 (unquote 3)))
+               ``(list 1 2 ,,(+ 1 2)))
+(assert-equal? (tn) '(quasiquote (list 1 2))           ``(list 1 2))
+(assert-equal? (tn) '(quasiquote (unquote (list 1 2))) ``,(list 1 2))
+(assert-equal? (tn) '(quasiquote (unquote (1 2)))      ``,,(list 1 2))
+(assert-equal? (tn) 1 `,`,1)
+(assert-equal? (tn) 3 `,(+ 1 2))
+(assert-equal? (tn) ',(+ 1 2) ',(+ 1 2))
+(assert-equal? (tn) '(+ 1 2) (cadr ',(+ 1 2)))
+(assert-equal? (tn) '(quasiquote (unquote 3)) ``,,(+ 1 2))
+(assert-equal? (tn) 3     `,`,(+ 1 2))
+;; list
+(assert-equal? (tn) '(1)  `(,1))
+(assert-equal? (tn) '(quasiquote ((unquote 1))) ``(,,1))
+(assert-equal? (tn) '(1)  `(,`,1))
+(assert-equal? (tn)
+               '(quasiquote (quasiquote ((unquote (unquote 1)))))
+               ```(,,,1))
+(assert-equal? (tn) '(3)  `(,(+ 1 2)))
+(assert-equal? (tn) '(quasiquote ((unquote 3))) ``(,,(+ 1 2)))
+;; vector
+(assert-equal? (tn) '#(1)  `#(,1))
+(assert-equal? (tn) '(quasiquote #((unquote 1))) ``#(,,1))
+(assert-equal? (tn) '#(1)  `#(,`,1))
+(assert-equal? (tn)
+               '(quasiquote (quasiquote #((unquote (unquote 1)))))
+               ```#(,,,1))
+(assert-equal? (tn) '#(3)  `#(,(+ 1 2)))
+(assert-equal? (tn) '(quasiquote #((unquote 3))) ``#(,,(+ 1 2)))
+
 (tn "unquote invalid form")
+(assert-error (tn) (lambda () ,1))
+(assert-error (tn) (lambda () ,,1))
+(assert-error (tn) (lambda () `,,1))
+(assert-error (tn) (lambda () ,(+ 1 2)))
+(assert-error (tn) (lambda () ,,(+ 1 2)))
+(assert-error (tn) (lambda () `,,(+ 1 2)))
+(assert-error (tn) (lambda () `(,,1)))
+(assert-error (tn) (lambda () ``(,,,1)))
+(assert-error (tn) (lambda () `(,,(+ 1 2))))
+(assert-error (tn) (lambda () ``(,,,(+ 1 2))))
+(assert-error (tn) (lambda () `#(,,1)))
+(assert-error (tn) (lambda () ``#(,,,1)))
+(assert-error (tn) (lambda () `#(,,(+ 1 2))))
+(assert-error (tn) (lambda () ``#(,,,(+ 1 2))))
+
+(tn "unquote-splicing valid form")
+(assert-equal? (tn) '()      `(,@()))
+(assert-equal? (tn) '()      `(,@() ,@()))
+(assert-equal? (tn) '()      `(,@() ,@() ,@()))
+(assert-equal? (tn) '(0)     `(0 ,@()))
+(assert-equal? (tn) '(1)     `(,@() 1))
+(assert-equal? (tn) '(0 1)   `(0 ,@() 1))
+(assert-equal? (tn) '()      `(,@(list)))
+(assert-equal? (tn) '(1)     `(,@(list 1)))
+(assert-equal? (tn) '(1 2)   `(,@(list 1 2)))
+(assert-equal? (tn) '(1 2 3) `(,@(list 1 2 3)))
+(assert-equal? (tn) '(0 1 2 3) `(0 ,@(list 1 2 3)))
+(assert-equal? (tn) '(1 2 3 4) `(,@(list 1 2 3) 4))
+(assert-equal? (tn) '(0 1 2 3 4) `(0 ,@(list 1 2 3) 4))
+(assert-equal? (tn) '(1 2 3) `(,@((lambda () '(1 2 3)))))
+(assert-equal? (tn) '(0 1 2 3 4) `(0 ,@((lambda () '(1 2 3))) 4))
+(assert-equal? (tn) '#()      `#(,@()))
+(assert-equal? (tn) '#()      `#(,@() ,@()))
+(assert-equal? (tn) '#()      `#(,@() ,@() ,@()))
+(assert-equal? (tn) '#(0)     `#(0 ,@()))
+(assert-equal? (tn) '#(1)     `#(,@() 1))
+(assert-equal? (tn) '#(0 1)   `#(0 ,@() 1))
+;; negative growth for vectran
+(assert-equal? (tn) '#(0 1)   `#(0 ,@() ,@() ,@() ,@() 1 ,@()))
+(assert-equal? (tn) '#(1 2 3) `#(,@((lambda () '(1 2 3)))))
+(assert-equal? (tn) '#(0 1 2 3 4) `#(0 ,@((lambda () '(1 2 3))) 4))
 
 (tn "unquote-splicing invalid form")
 (define sym 'sym)
@@ -271,6 +450,16 @@
 (assert-error (tn) (lambda () `,@(list 1)))
 (assert-error (tn) (lambda () `,@(list 1 2)))
 (assert-error (tn) (lambda () `,@(list 1 2 3)))
+(assert-error (tn) (lambda () `(,@(,@()))))
+(assert-error (tn) (lambda () `(,@(`,@()))))
+(assert-error (tn) (lambda () `(,@(,1))))
+(assert-error (tn) (lambda () `(,@(`(,,1)))))
+(assert-error (tn) (lambda () `#(,@(,@()))))
+(assert-error (tn) (lambda () `#(,@(`,@()))))
+(assert-error (tn) (lambda () `#(,@(,1))))
+(assert-error (tn) (lambda () `#(,@(`(,,1)))))
+(assert-error (tn) (lambda () `(0 ,@((lambda () '(1 2 . 3))) 4)))
+(assert-error (tn) (lambda () `#(0 ,@((lambda () '(1 2 . 3))) 4)))
 (assert-error (tn) (lambda () `,@#t))
 (assert-error (tn) (lambda () `,@1))
 (assert-error (tn) (lambda () `,@1))

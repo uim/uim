@@ -61,7 +61,6 @@
  * for other purpose including macro
  * (http://d.hatena.ne.jp/jun0/20060403#1144019957), all codes have been made
  * qquote.c local. separate this again as generic utility if needed.
-
  *   -- YamaKen 2006-06-24 */
 
 /*
@@ -161,8 +160,8 @@ struct _vector_translator {
     ScmObj src;
     ScmObj diff;
     ScmQueue q;                 /* Points to diff. */
-    int index;                  /* Current position. */
-    int growth;
+    scm_int_t index;            /* Current position. */
+    scm_int_t growth;
 };
 
 struct _sequence_translator {
@@ -233,10 +232,12 @@ union _translator_ret {
   Function Definitions
 =======================================*/
 
-static translator_ret scm_vectran(sequence_translator *t, tr_msg msg,
-                                  ScmObj obj);
 static translator_ret scm_listran(sequence_translator *t, tr_msg msg,
                                   ScmObj obj);
+#if SCM_USE_VECTOR
+static translator_ret scm_vectran(sequence_translator *t, tr_msg msg,
+                                  ScmObj obj);
+#endif
 static tr_param qquote_internal(ScmObj input, ScmObj env, scm_int_t nest);
 
 
@@ -290,7 +291,7 @@ scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 
         if (msg != TRL_MSG_SET_SUBLS) {
             SCM_QUEUE_APPEND(t->u.lst.q, obj);
-#if SCM_STRICT_R5RS
+#if SCM_STRICT_ARGCHECK
             if (!NULLP(SCM_QUEUE_TERMINATOR(t->u.lst.q)))
                 ERR_OBJ(ERRMSG_BAD_SPLICE_LIST, obj);
 #endif
@@ -316,6 +317,7 @@ scm_listran(sequence_translator *t, tr_msg msg, ScmObj obj)
 static translator_ret
 scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 {
+    ScmObj subst_rec, subst_index;
     scm_int_t splice_len;
     scm_int_t change_index;
     DECLARE_INTERNAL_FUNCTION("(vector translator)");
@@ -336,10 +338,11 @@ scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
 
     case TR_MSG_SPLICE:
         splice_len = scm_length(obj);
-#if SCM_STRICT_R5RS
+        /* obj MUST be a proper list regardless of strictness
+         * configuration. Otherwise the encoded length feeds broken execution.
+         *   -- YamaKen 2006-06-25 */
         if (!SCM_LISTLEN_PROPERP(splice_len))
             ERR_OBJ(ERRMSG_BAD_SPLICE_LIST, obj);
-#endif
         t->u.vec.growth += splice_len - 1;
         change_index = SPLICED_INDEX(t->u.vec.index);
         goto record_change;
@@ -348,7 +351,9 @@ scm_vectran(sequence_translator *t, tr_msg msg, ScmObj obj)
         change_index = REPLACED_INDEX(t->u.vec.index);
 
       record_change:
-        SCM_QUEUE_ADD(t->u.vec.q, CONS(MAKE_INT(change_index), obj));
+        subst_index = MAKE_INT(change_index);
+        subst_rec = CONS(subst_index, obj);
+        SCM_QUEUE_ADD(t->u.vec.q, subst_rec);
         break;
 
     case TR_MSG_EXTRACT:
@@ -419,13 +424,21 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
     tr_param my_result;
     DECLARE_INTERNAL_FUNCTION("quasiquote");
 
+    /*
+     * syntax: quasiquote <qq template>
+     * syntax: `<qq template>
+     */
+
+#if SCM_USE_VECTOR
     if (VECTORP(input)) {
         for (TRV_INIT(tr, input); !TRV_ENDP(tr); TRV_NEXT(tr)) {
             obj = TRV_GET_ELM(tr);
             tmp_result = qquote_internal(obj, env, nest);
-            TRV_EXECUTE(tr, tmp_result);
+            (void)TRV_EXECUTE(tr, tmp_result);
         }
-    } else if (CONSP(input)) {
+    } else
+#endif
+    if (CONSP(input)) {
         /* This implementation adopt "minimum mercy" interpretation depending
          * on the R5RS specification cited below, to simplify the code.
          *
@@ -438,6 +451,14 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
             form = TRL_GET_SUBLS(tr);
             obj = CAR(form);
             unwrapped = SCM_UNWRAP_KEYWORD(obj);
+            /*
+             * R5RS: 7.1.4 Quasiquotations
+             *
+             * In <quasiquotation>s, a <list qq template D> can sometimes be
+             * confused with either an <unquotation D> or a <splicing
+             * unquotation D>. The interpretation as an <unquotation> or
+             * <splicing unquotation D> takes precedence.
+             */
             if (EQ(unwrapped, SYM_QUASIQUOTE)) {
                 /* FORM == `x */
                 if (args = CDR(form), !LIST_1_P(args))
@@ -450,7 +471,6 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                     ERR_OBJ("invalid unquote form", form);
 
                 if (--nest == 0) {
-                    form = TRL_GET_SUBLS(tr);
                     obj = EVAL(CAR(args), env);
                     TRL_SET_SUBLS(tr, obj);
                     my_result.obj = TRL_EXTRACT(tr);
@@ -470,8 +490,10 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                      * at-sign (@), then the following expression must
                      * evaluate to a list */
                     obj = EVAL(CAR(args), env);
+                    /* Properness check of the list is performed on splice
+                     * operation of (lis|vec)tran(). */
                     if (!LISTP(obj))
-                        ERR(",@<x> must evaluate to a list");
+                        ERR(",@<x> must evaluate to a proper list");
 
                     my_result.obj = obj;
                     my_result.msg = TR_MSG_SPLICE;
@@ -479,12 +501,13 @@ qquote_internal(ScmObj input, ScmObj env, scm_int_t nest)
                 }
             }
             tmp_result = qquote_internal(obj, env, nest);
-            TRL_EXECUTE(tr, tmp_result);
+            (void)TRL_EXECUTE(tr, tmp_result);
         }
         /* Interpret the tail if an improper list. */
         if (!NULLP(TRL_GET_SUBLS(tr))) {
             tmp_result = qquote_internal(TRL_GET_SUBLS(tr), env, nest);
-            if (tmp_result.msg != TR_MSG_NOP)
+            SCM_ASSERT(tmp_result.msg != TR_MSG_SPLICE);
+            if (tmp_result.msg == TR_MSG_REPLACE)
                 TRL_SET_SUBLS(tr, tmp_result.obj);
         }
     } else {
@@ -527,6 +550,8 @@ scm_s_quasiquote(ScmObj datum, ScmObj env)
         return ret.obj;
     default:
         SCM_ASSERT(scm_false);
+        /* NOTREACHED */
+        return SCM_FALSE;
     }
 }
 
