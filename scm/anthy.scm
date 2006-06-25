@@ -344,25 +344,7 @@
 
 (define anthy-make-whole-raw-string
   (lambda (ac wide?)
-    (let* ((rkc (anthy-context-rkc ac))
-	   (pending (rk-pending rkc))
-	   (residual-kana (rk-push-key-last! rkc))
-	   (raw-str (anthy-context-raw-ustr ac))
-	   (right-str (ustr-latter-seq raw-str))
-	   (left-str (ustr-former-seq raw-str)))
-      (anthy-make-raw-string
-       (append left-str
-	       (if (null? residual-kana)
-		   (begin
-		     (if (null? right-str)
-			 (list pending)
-			 (append right-str (list pending))))
-		   (begin
-		     (rk-flush rkc)
-		     (if (null? right-str)
-			 (list pending)
-			 (append right-str (list pending))))))
-       wide?))))
+    (anthy-make-raw-string (anthy-get-raw-str-seq ac) wide?)))
 
 (define anthy-init-handler
   (lambda (id im arg)
@@ -787,6 +769,19 @@
 	(anthy-make-whole-raw-string ac #t))
        ))))
 
+(define anthy-get-raw-str-seq
+  (lambda (ac)
+    (let* ((rkc (anthy-context-rkc ac))
+	   (pending (rk-pending rkc))
+	   (residual-kana (rk-peek-terminal-match rkc))
+	   (raw-str (anthy-context-raw-ustr ac))
+	   (right-str (ustr-latter-seq raw-str))
+	   (left-str (ustr-former-seq raw-str)))
+      (append left-str
+	      (if (not (null? residual-kana))
+		  (list pending))
+	      right-str))))
+
 (define anthy-get-raw-candidate
   (lambda (ac ac-id seg-idx cand-idx)
     (let* ((preconv
@@ -796,9 +791,7 @@
 	   (unconv (if unconv-candidate
 		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
-	   (raw-str (reverse
-		     (append (ustr-former-seq (anthy-context-raw-ustr ac))
-			     (ustr-latter-seq (anthy-context-raw-ustr ac))))))
+	   (raw-str (reverse (anthy-get-raw-str-seq ac))))
       (if (not (null? unconv))
 	  (if (member (car unconv) preconv)
 	      (let ((start (list-seq-contained? preconv unconv))
