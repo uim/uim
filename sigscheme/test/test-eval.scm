@@ -53,7 +53,7 @@
 
 (if (provided? "sigscheme")
     (begin
-      (tn "eval with hand-maid env")
+      (tn "eval with handmade env")
       ;; single frame
       (assert-equal? (tn) 10 (eval '(+ x y)
                                    '(((x y) . (4 6)))))
@@ -75,7 +75,7 @@
                                    '((lst . (4 6 8 10 12 14))
                                      ((z) . (5)))))
 
-      (tn "eval with invalid hand-maid env")
+      (tn "eval with invalid handmade env")
       ;; improper frame list
       (assert-error  (tn) (lambda ()
                             (eval '(+ 1 2)
