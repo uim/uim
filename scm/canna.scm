@@ -627,11 +627,14 @@
 		     (rk-expect rkc)
 		     (charcode->string
 		      (if (= rule canna-input-rule-kana)
-		          key
+			  key
 			  (to-lower-char key))))))
-	  (let ((residual-kana (rk-push-key-last! rkc)))
+	  (let ((pend (rk-pending rkc))
+		(residual-kana (rk-push-key-last! rkc)))
 	    (if residual-kana
-	        (ustr-insert-elem! preconv-str residual-kana))))
+		(begin
+		  (ustr-insert-elem! preconv-str residual-kana)
+		  (ustr-insert-elem! raw-str pend)))))
 
       (let* ((key-str (charcode->string
 			(if (= rule canna-input-rule-kana)
