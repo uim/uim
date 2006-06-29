@@ -117,19 +117,19 @@ helper_send_im_list(void)
 
 
 
-static void
+static int
 helper_im_changed(char *request, char *engine_name)
 {
 
   debug_printf(DEBUG_NOTE, "helper_im_changed: %s\n", engine_name);
 
-  if (strcmp(request, "im_change_this_text_area_only") == 0) {
+  if (focused && strcmp(request, "im_change_this_text_area_only") == 0) {
 
     if (current)
 	  switch_context_im(current, engine_name);
 
   } else if (strcmp(request, "im_change_whole_desktop") == 0 
-			 || strcmp(request, "im_change_this_application_only") == 0) {
+			 || (focused && strcmp(request, "im_change_this_application_only") == 0)) {
 
 	/* change default */
 	update_default_engine(engine_name);
@@ -137,7 +137,12 @@ helper_im_changed(char *request, char *engine_name)
 	/* check focus state when change IM of current application */
 	if (strcmp(request, "im_change_whole_desktop") == 0 || current)
 	  switch_context_im_all(engine_name);
+  } else {
+
+    return 0;
   }
+
+  return 1;
 }
 
 
@@ -152,7 +157,7 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 
   debug_printf(DEBUG_NOTE, " message \"%s\"\n", message);
 
-  if (strcmp("focus_in", message) == 0) {
+  if (focused && strcmp("focus_in", message) == 0) {
 
 	/* some other window is focused */
 
@@ -160,7 +165,7 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 
 	focused = 0;
 
-  } else if (strncmp("prop_activate", message, 13) == 0) {
+  } else if (focused && strncmp("prop_activate", message, 13) == 0) {
 
 	debug_printf(DEBUG_NOTE, " prop_activate\n"); 
 	
@@ -176,7 +181,8 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 		}
 	  }
 
-  } else if (strcmp("prop_list_get", message) == 0) { 
+
+  } else if (focused && strcmp("prop_list_get", message) == 0) { 
 
 	debug_printf(DEBUG_NOTE, " prop_list_get\n");
 
@@ -190,16 +196,16 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 	if ((p = strchr(message, ' ')) != NULL) {
 	  *p = '\0';
 	  engine = p + 1;
-	  helper_im_changed(message, engine);
+	  return helper_im_changed(message, engine);
 	}
 
-  } else if (strcmp("im_list_get", message) == 0) {
+  } else if (focused && strcmp("im_list_get", message) == 0) {
 
 		debug_printf(DEBUG_NOTE, " im_list_get\n");
 
 		helper_send_im_list();
 		
-  } else if (strncmp("commit_string", message, 13) == 0) { 
+  } else if (focused && strncmp("commit_string", message, 13) == 0) {
 
 	char *encoding, *str;
 
@@ -230,7 +236,7 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 		  free(str);
 
 		}
-	  }
+	    }
 	  }
 
   } else if (strncmp("prop_update_custom", message, 18) == 0) {
@@ -263,6 +269,7 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 	} else {
 
 	  debug_printf(DEBUG_WARNING, " undefined helper message: %s\n", message);
+	  return 0;
 
 	}
 
