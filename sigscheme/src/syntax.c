@@ -394,122 +394,6 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
 /*
- * Valid placement for definitions
- *
- * Definitions on SigScheme is strictly conformed to the three rule specified
- * in R5RS (see below), when SCM_STRICT_DEFINE_PLACEMENT is enabled. All
- * conditions that are not specified by the rules cause syntax error.
- *
- * 5.2 Definitions
- *
- * Definitions are valid in some, but not all, contexts where expressions are
- * allowed. They are valid only at the top level of a <program> and at the
- * beginning of a <body>.
- *
- * 5.2.2 Internal definitions
- *
- * Definitions may occur at the beginning of a <body> (that is, the body of a
- * lambda, let, let*, letrec, let-syntax, or letrec-syntax expression or that
- * of a definition of an appropriate form).
- *
- * Wherever an internal definition may occur (begin <definition1> ...) is
- * equivalent to the sequence of definitions that form the body of the begin.
- */
-
-#if SCM_STRICT_DEFINE_PLACEMENT
-static ScmObj
-filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
-                   ScmQueue *def_expq)
-{
-    ScmObj exp, var, sym, begin_rest, lambda_formals, lambda_body;
-    DECLARE_INTERNAL_FUNCTION("(body)");
-
-    for (; CONSP(body); POP(body)) {
-        exp = CAR(body);
-        if (!CONSP(exp))
-            break;
-        sym = POP(exp);
-        if (EQ(sym, l_sym_begin)) {
-            begin_rest = filter_definitions(exp, formals, actuals, def_expq);
-            if (CONSP(begin_rest))
-                return CONS(CONS(l_sym_begin, begin_rest), CDR(body));
-            ASSERT_NO_MORE_ARG(begin_rest);
-        } else if (EQ(sym, l_sym_define)) {
-            var = MUST_POP_ARG(exp);
-            if (IDENTIFIERP(var)) {
-                /* (define <variable> <expression>) */
-                if (!LIST_1_P(exp))
-                    ERR_OBJ("exactly 1 arg required but got", exp);
-                exp = CAR(exp);
-            } else if (CONSP(var)) {
-                /* (define (<variable> . <formals>) <body>) */
-                sym            = CAR(var);
-                lambda_formals = CDR(var);
-                lambda_body    = exp;
-
-                ENSURE_SYMBOL(sym);
-                var = sym;
-                exp = CONS(l_syn_lambda, CONS(lambda_formals, lambda_body));
-            } else {
-                ERR_OBJ("syntax error", var);
-            }
-            *formals = CONS(var, *formals);
-            *actuals = CONS(SCM_UNBOUND, *actuals);
-            SCM_QUEUE_ADD(*def_expq, exp);
-        } else {
-            break;
-        }
-    }
-
-    return body;
-}
-#endif
-
-/* <body> part of let, let*, letrec and lambda. This function performs strict
- * form validation for internal definitions as specified in R5RS (5.2.2
- * Internal definitions). */
-/* TODO: Reform as a read-time syntax translator */
-SCM_EXPORT ScmObj
-scm_s_body(ScmObj body, ScmEvalState *eval_state)
-{
-#if SCM_STRICT_DEFINE_PLACEMENT
-    ScmQueue def_expq;
-    ScmObj env, formals, actuals, def_exps, exp;
-#endif
-    DECLARE_INTERNAL_FUNCTION("(body)" /* , syntax_variadic_tailrec_0 */);
-
-#if SCM_STRICT_DEFINE_PLACEMENT
-    if (NO_MORE_ARG(body)) {
-        eval_state->ret_type = SCM_VALTYPE_AS_IS;
-        return SCM_UNDEF;
-    }
-
-    /* extend env by placeholder frame for subsequent internal definitions */
-    env = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
-
-    /* collect internal definitions */
-    def_exps = formals = actuals = SCM_NULL;
-    SCM_QUEUE_POINT_TO(def_expq, def_exps);
-    body = filter_definitions(body, &formals, &actuals, &def_expq);
-
-    /* inject the unbound variables into the frame to make the variable
-     * references invalid through the evaluation */
-    env = scm_replace_environment(formals, actuals, env);
-
-    /* eval the definitions and fill the placeholder frame with the results */
-    actuals = SCM_NULL;
-    FOR_EACH (exp, def_exps) {
-        exp = EVAL(exp, env);
-        actuals = CONS(exp, actuals);
-    }
-    eval_state->env = scm_update_environment(actuals, env);
-
-    /* eval rest of the body */
-#endif
-    return scm_s_begin(body, eval_state);
-}
-
-/*
  * FIXME:
  * - Write the test for the named let spec:
  *   <init>s should be evaluated in an environment where <procname> is not
@@ -687,6 +571,121 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
     return SCM_FALSE;
 }
 
+/*
+ * Valid placement for definitions
+ *
+ * Definitions on SigScheme is strictly conformed to the three rule specified
+ * in R5RS (see below), when SCM_STRICT_DEFINE_PLACEMENT is enabled. All
+ * conditions that are not specified by the rules cause syntax error.
+ *
+ * 5.2 Definitions
+ *
+ * Definitions are valid in some, but not all, contexts where expressions are
+ * allowed. They are valid only at the top level of a <program> and at the
+ * beginning of a <body>.
+ *
+ * 5.2.2 Internal definitions
+ *
+ * Definitions may occur at the beginning of a <body> (that is, the body of a
+ * lambda, let, let*, letrec, let-syntax, or letrec-syntax expression or that
+ * of a definition of an appropriate form).
+ *
+ * Wherever an internal definition may occur (begin <definition1> ...) is
+ * equivalent to the sequence of definitions that form the body of the begin.
+ */
+
+#if SCM_STRICT_DEFINE_PLACEMENT
+static ScmObj
+filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
+                   ScmQueue *def_expq)
+{
+    ScmObj exp, var, sym, begin_rest, lambda_formals, lambda_body;
+    DECLARE_INTERNAL_FUNCTION("(body)");
+
+    for (; CONSP(body); POP(body)) {
+        exp = CAR(body);
+        if (!CONSP(exp))
+            break;
+        sym = POP(exp);
+        if (EQ(sym, l_sym_begin)) {
+            begin_rest = filter_definitions(exp, formals, actuals, def_expq);
+            if (CONSP(begin_rest))
+                return CONS(CONS(l_sym_begin, begin_rest), CDR(body));
+            ASSERT_NO_MORE_ARG(begin_rest);
+        } else if (EQ(sym, l_sym_define)) {
+            var = MUST_POP_ARG(exp);
+            if (IDENTIFIERP(var)) {
+                /* (define <variable> <expression>) */
+                if (!LIST_1_P(exp))
+                    ERR_OBJ("exactly 1 arg required but got", exp);
+                exp = CAR(exp);
+            } else if (CONSP(var)) {
+                /* (define (<variable> . <formals>) <body>) */
+                sym            = CAR(var);
+                lambda_formals = CDR(var);
+                lambda_body    = exp;
+
+                ENSURE_SYMBOL(sym);
+                var = sym;
+                exp = CONS(l_syn_lambda, CONS(lambda_formals, lambda_body));
+            } else {
+                ERR_OBJ("syntax error", var);
+            }
+            *formals = CONS(var, *formals);
+            *actuals = CONS(SCM_UNBOUND, *actuals);
+            SCM_QUEUE_ADD(*def_expq, exp);
+        } else {
+            break;
+        }
+    }
+
+    return body;
+}
+#endif
+
+/* <body> part of let, let*, letrec and lambda. This function performs strict
+ * form validation for internal definitions as specified in R5RS (5.2.2
+ * Internal definitions). */
+/* TODO: Reform as a read-time syntax translator */
+SCM_EXPORT ScmObj
+scm_s_body(ScmObj body, ScmEvalState *eval_state)
+{
+#if SCM_STRICT_DEFINE_PLACEMENT
+    ScmQueue def_expq;
+    ScmObj env, formals, actuals, def_exps, exp;
+#endif
+    DECLARE_INTERNAL_FUNCTION("(body)" /* , syntax_variadic_tailrec_0 */);
+
+#if SCM_STRICT_DEFINE_PLACEMENT
+    if (NO_MORE_ARG(body)) {
+        eval_state->ret_type = SCM_VALTYPE_AS_IS;
+        return SCM_UNDEF;
+    }
+
+    /* extend env by placeholder frame for subsequent internal definitions */
+    env = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
+
+    /* collect internal definitions */
+    def_exps = formals = actuals = SCM_NULL;
+    SCM_QUEUE_POINT_TO(def_expq, def_exps);
+    body = filter_definitions(body, &formals, &actuals, &def_expq);
+
+    /* inject the unbound variables into the frame to make the variable
+     * references invalid through the evaluation */
+    env = scm_replace_environment(formals, actuals, env);
+
+    /* eval the definitions and fill the placeholder frame with the results */
+    actuals = SCM_NULL;
+    FOR_EACH (exp, def_exps) {
+        exp = EVAL(exp, env);
+        actuals = CONS(exp, actuals);
+    }
+    eval_state->env = scm_update_environment(actuals, env);
+
+    /* eval rest of the body */
+#endif
+    return scm_s_begin(body, eval_state);
+}
 
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
