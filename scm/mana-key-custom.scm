@@ -197,7 +197,7 @@
 (define-custom 'mana-ascii-mode-off-key '()
 	       '(mana-keys2)
 	       '(key)
-	       (_ "[Mana] ASCII input of with preedit")
+	       (_ "[Mana] ASCII input off with preedit")
 	       (_ "long description will be here"))
 
 ;;
