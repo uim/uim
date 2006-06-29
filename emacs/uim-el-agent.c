@@ -64,25 +64,23 @@ static int
 cmd_helper(int context_id, char *helper_message)
 {
   uim_agent_context *ua;
+  int ret;
 
-  if (focused) {
-	int ret;
-	ua = get_uim_agent_context(context_id);
-	ret = helper_handler(ua, helper_message);
+  ua = get_uim_agent_context(context_id);
+  ret = helper_handler(ua, helper_message);
 
-	if (ua) {
-	  show_commit_string_uim_agent_context(current);
-	  show_preedit_uim_agent_context(ua);
-	  show_candidate_uim_agent_context(ua);
+  if (ua && ret) {
+    show_commit_string_uim_agent_context(current);
+    show_preedit_uim_agent_context(ua);
+    show_candidate_uim_agent_context(ua);
 
-	  check_prop_list_update(ua);
-	  check_default_engine();
-	}
+    check_prop_list_update(ua);
+    check_default_engine();
 
-	return ret;
-  } else {
-	return 0;
+    return ret;
   }
+
+  return 0;
 }
 
 
