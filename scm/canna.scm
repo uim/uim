@@ -78,12 +78,15 @@
 
 		 (lambda (cc) ;; activity predicate
 		   (and (canna-context-on cc)
+		        (not (canna-context-ascii-with-preedit cc))
 			(= (canna-context-kana-mode cc)
 			   canna-type-hiragana)))
 
 		 (lambda (cc) ;; action handler
-		   (canna-prepare-activation cc)
+		   (if (not (canna-context-on cc))
+		       (canna-prepare-activation cc))
 		   (canna-context-set-on! cc #t)
+		   (canna-context-set-ascii-with-preedit! cc #f)
 		   (canna-context-change-kana-mode! cc
 						 canna-type-hiragana)))
 
@@ -95,11 +98,14 @@
 		     "カタカナ入力モード"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
+		        (not (canna-context-ascii-with-preedit cc))
 			(= (canna-context-kana-mode cc)
 			   canna-type-katakana)))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (if (not (canna-context-on cc))
+		       (canna-prepare-activation cc))
 		   (canna-context-set-on! cc #t)
+		   (canna-context-set-ascii-with-preedit! cc #f)
 		   (canna-context-change-kana-mode! cc canna-type-katakana)))
 
 (register-action 'action_canna_hankana
@@ -110,12 +116,30 @@
 		     "半角カタカナ入力モード"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
-			(= (canna-context-kana-mode cc)
-			   canna-type-hankana)))
+			(not (canna-context-ascii-with-preedit cc))
+			(= (canna-context-kana-mode cc) canna-type-hankana)))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (if (not (canna-context-on cc))
+		       (canna-prepare-activation cc))
 		   (canna-context-set-on! cc #t)
+		   (canna-context-set-ascii-with-preedit! cc #f)
 		   (canna-context-change-kana-mode! cc canna-type-hankana)))
+
+(register-action 'action_canna_ascii_with_preedit
+		 (lambda (cc) ;; indication handler
+		   '(ja_ascii_with_preedit
+		     "aA"
+		     "英数変換"
+		     "英数変換モード"))
+		 (lambda (cc) ;; activity predicate
+		   (and (canna-context-on cc)
+			(canna-context-ascii-with-preedit cc)))
+		 (lambda (cc) ;; action handler
+		   (if (not (canna-context-on cc))
+		       (begin
+		         (canna-prepare-activation cc)
+		         (canna-context-set-on! cc #t)))
+		   (canna-context-set-ascii-with-preedit! cc #t)))
 
 (register-action 'action_canna_direct
 		 (lambda (cc)
@@ -220,6 +244,7 @@
     (list 'candidate-op-count ())
     (list 'wide-latin         #f)
     (list 'kana-mode          canna-type-hiragana)
+    (list 'ascii-with-preedit #f)
     (list 'commit-raw         #t)
     (list 'input-rule         canna-input-rule-roma)
     (list 'raw-ustr	      #f))))
@@ -250,6 +275,22 @@
   (let* ((kana (canna-context-kana-mode cc))
 	 (opposite-kana (ja-opposite-kana kana)))
     (canna-context-change-kana-mode! cc opposite-kana)))
+
+(define (canna-toggle-ascii-with-preedit? cc key key-state)
+  (let ((state (canna-context-ascii-with-preedit cc)))
+    (cond
+     ((and
+       state
+       (canna-ascii-mode-off-key? key key-state))
+      (canna-context-set-ascii-with-preedit! cc #f)
+      #t)
+     ((and
+       (not state)
+       (canna-ascii-mode-on-key? key key-state))
+      (canna-context-set-ascii-with-preedit! cc #t)
+      #t)
+     (else
+      #f))))
 
 (define canna-context-change-kana-mode!
   (lambda (cc kana-mode)
@@ -333,6 +374,7 @@
   (ustr-clear! (canna-context-segments cc))
   (canna-context-set-state! cc #f)
   (canna-context-set-transposing! cc #f)
+  (canna-context-set-ascii-with-preedit! cc #f)
   (if (canna-context-candidate-window cc)
         (im-deactivate-candidate-selector cc))
   (canna-context-set-candidate-window! cc #f)
@@ -417,6 +459,8 @@
      ((canna-kana-toggle-key? key key-state)
       (canna-context-kana-toggle cc))
      
+     ((canna-toggle-ascii-with-preedit? cc key key-state))
+
      ;; modifiers (except shift) => ignore
      ((and (modifier-key-mask key-state)
 	   (not (shift-key-mask key-state)))
@@ -434,17 +478,22 @@
       (canna-commit-raw cc))
 
      (else
-      (let* ((key-str (charcode->string
-		       (if (= rule canna-input-rule-kana)
-			   key
-			   (to-lower-char key))))
-	     (res (rk-push-key! rkc key-str)))
-	(if res
-	    (begin
-	      (ustr-insert-elem! (canna-context-preconv-ustr cc) res)
-	      (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
-	    (if (null? (rk-context-seq rkc))
-		(canna-commit-raw cc))))))))
+      (if (canna-context-ascii-with-preedit cc)
+          (let ((key-str (charcode->string key)))
+	    (ustr-insert-elem! (canna-context-preconv-ustr cc)
+			       (list key-str key-str key-str))
+	    (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
+	  (let* ((key-str (charcode->string
+		           (if (= rule canna-input-rule-kana)
+			       key
+			       (to-lower-char key))))
+	         (res (rk-push-key! rkc key-str)))
+	    (if res
+	        (begin
+	          (ustr-insert-elem! (canna-context-preconv-ustr cc) res)
+	          (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
+	        (if (null? (rk-context-seq rkc))
+		    (canna-commit-raw cc)))))))))
 
 (define (canna-has-preedit? cc)
   (or (not (ustr-empty? (canna-context-preconv-ustr cc)))
@@ -521,7 +570,11 @@
 	(kana (canna-context-kana-mode cc)))
     (cond
      ;; begin conversion
-     ((canna-begin-conv-key? key key-state)
+     ((or 
+       (and (canna-begin-conv-key? key key-state)
+	    (not (canna-context-ascii-with-preedit cc)))
+       (and (canna-begin-conv-with-ascii-mode-key? key key-state)
+	    (canna-context-ascii-with-preedit cc)))
       (canna-begin-conv cc))
 
      ;; backspace
@@ -531,7 +584,12 @@
 	    (ustr-cursor-delete-backside! preconv-str)
 	    (ustr-cursor-delete-backside! raw-str)
 	    ;; fix to valid roma
-	    (if (= (canna-context-input-rule cc) canna-input-rule-roma)
+	    (if (and
+		 (= (canna-context-input-rule cc) canna-input-rule-roma)
+		 (not (null? (ustr-former-seq preconv-str)))
+		 (not (char-printable?
+		       (string->char
+			(car (last (ustr-former-seq preconv-str)))))))
 	        (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
 
      ;; delete
@@ -579,6 +637,8 @@
 	(canna-flush cc)
 	(canna-context-kana-toggle cc)))
 
+     ((canna-toggle-ascii-with-preedit? cc key key-state))
+
      ;; cancel
      ((canna-cancel-key? key key-state)
       (canna-flush cc))
@@ -622,7 +682,8 @@
 
      (else
       ;; handle "n1" sequence as "ん1"
-      (if (and (not (alphabet-char? key))
+      (if (and (not (canna-context-ascii-with-preedit cc))
+	       (not (alphabet-char? key))
 	       (not (string-find
 		     (rk-expect rkc)
 		     (charcode->string
@@ -636,30 +697,40 @@
 		  (ustr-insert-elem! preconv-str residual-kana)
 		  (ustr-insert-elem! raw-str pend)))))
 
-      (let* ((key-str (charcode->string
-			(if (= rule canna-input-rule-kana)
-			    key
-			    (to-lower-char key))))
-	     (pend (rk-pending rkc))
-	     (res (rk-push-key! rkc key-str)))
-
-	(if (and res
-		 (or (list? (car res))
-		     (not (string=? (car res) ""))))
-	    (let ((next-pend (rk-pending rkc)))
-	      (if (list? (car res))
-		  (ustr-insert-seq!  preconv-str res)
-		  (ustr-insert-elem! preconv-str res))
-	      (if (and next-pend
-		       (not (string=? next-pend "")))
-		  (ustr-insert-elem! raw-str pend)
-		  (if (list? (car res))
-		      (begin
-			(ustr-insert-elem! raw-str pend)
-			(ustr-insert-elem! raw-str key-str))
-		      (ustr-insert-elem!
-		       raw-str
-		       (string-append pend key-str)))))))))))
+      (if (canna-context-ascii-with-preedit cc)
+          (let ((key-str (charcode->string key))
+	        (pend (rk-pending rkc))
+		(residual-kana (rk-peek-terminal-match rkc)))
+	    (rk-flush rkc) ;; OK to reset rkc here.
+	    (if residual-kana
+	        (begin
+		  (ustr-insert-elem! preconv-str residual-kana)
+		  (ustr-insert-elem! raw-str pend)))
+	    (ustr-insert-elem! preconv-str (list key-str key-str key-str))
+	    (ustr-insert-elem! raw-str key-str))
+	  (let* ((key-str (charcode->string
+			   (if (= rule canna-input-rule-kana)
+			       key
+			       (to-lower-char key))))
+	         (pend (rk-pending rkc))
+	         (res (rk-push-key! rkc key-str)))
+	    (if (and res
+		     (or (list? (car res))
+		         (not (string=? (car res) ""))))
+	        (let ((next-pend (rk-pending rkc)))
+	          (if (list? (car res))
+		      (ustr-insert-seq!  preconv-str res)
+		      (ustr-insert-elem! preconv-str res))
+	          (if (and next-pend
+		           (not (string=? next-pend "")))
+		      (ustr-insert-elem! raw-str pend)
+		      (if (list? (car res))
+		          (begin
+			    (ustr-insert-elem! raw-str pend)
+			    (ustr-insert-elem! raw-str key-str))
+		          (ustr-insert-elem!
+		           raw-str
+		           (string-append pend key-str))))))))))))
 
 (define canna-context-confirm-kana!
   (lambda (cc)
@@ -1013,6 +1084,9 @@
       #f)
 
      ((symbol? key)
+      #f)
+
+     ((canna-begin-conv-with-ascii-mode-key? key key-state)
       #f)
 
      (else

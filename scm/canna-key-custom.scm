@@ -145,6 +145,13 @@
 	       (_ "[Canna] begin conversion")
 	       (_ "long description will be here"))
 
+(define-custom 'canna-begin-conv-with-ascii-mode-key '("<Shift> ")
+               '(canna-keys2)
+	       '(key)
+	       (_ "[Canna] begin conversion in ASCII mode")
+	       (_ "long description will be here"))
+
+
 (define-custom 'canna-commit-key '(generic-commit-key)
                '(canna-keys2)
 	       '(key)
@@ -179,6 +186,18 @@
                '(canna-keys2)
 	       '(key)
 	       (_ "[Canna] previous page of candidate window")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-ascii-mode-on-key '()
+               '(canna-keys2)
+	       '(key)
+	       (_ "[Canna] ASCII input on with preedit")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-ascii-mode-off-key '()
+               '(canna-keys2)
+	       '(key)
+	       (_ "[Canna] ASCII input off with preedit")
 	       (_ "long description will be here"))
 
 ;;

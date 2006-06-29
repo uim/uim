@@ -124,7 +124,6 @@
 	       (_ "[Mana] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
-
 ;;
 ;; overriding generic keys
 ;;
@@ -145,6 +144,12 @@
                '(mana-keys2)
 	       '(key)
 	       (_ "[Mana] begin conversion")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-begin-conv-with-ascii-mode-key '("<Shift> ")
+               '(mana-keys2)
+	       '(key)
+	       (_ "[Mana] begin conversion in ascii mode")
 	       (_ "long description will be here"))
 
 (define-custom 'mana-commit-key '(generic-commit-key)
@@ -181,6 +186,18 @@
                '(mana-keys2)
 	       '(key)
 	       (_ "[Mana] previous page of candidate window")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-ascii-mode-on-key '()
+	       '(mana-keys2)
+	       '(key)
+	       (_ "[Mana] ASCII input on with preedit")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-ascii-mode-off-key '()
+	       '(mana-keys2)
+	       '(key)
+	       (_ "[Mana] ASCII input of with preedit")
 	       (_ "long description will be here"))
 
 ;;

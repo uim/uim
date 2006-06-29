@@ -80,12 +80,15 @@
 
 		 (lambda (ac) ;; activity predicate
 		   (and (anthy-context-on ac)
+			(not (anthy-context-ascii-with-preedit ac))
 			(= (anthy-context-kana-mode ac)
 			   anthy-type-hiragana)))
 
 		 (lambda (ac) ;; action handler
-		   (anthy-prepare-activation ac)
+		   (if (not (anthy-context-on ac))
+		       (anthy-prepare-activation ac))
 		   (anthy-context-set-on! ac #t)
+		   (anthy-context-set-ascii-with-preedit! ac #f)
                    (anthy-context-change-kana-mode! ac anthy-type-hiragana)))
 
 (register-action 'action_anthy_katakana
@@ -98,11 +101,14 @@
 		     "カタカナ入力モード"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
+			(not (anthy-context-ascii-with-preedit ac))
 			(= (anthy-context-kana-mode ac)
 			   anthy-type-katakana)))
 		 (lambda (ac)
-		   (anthy-prepare-activation ac)
+		   (if (not (anthy-context-on ac))
+		       (anthy-prepare-activation ac))
 		   (anthy-context-set-on! ac #t)
+		   (anthy-context-set-ascii-with-preedit! ac #f)
                    (anthy-context-change-kana-mode! ac anthy-type-katakana)))
 
 (register-action 'action_anthy_hankana
@@ -115,12 +121,31 @@
 		     "半角カタカナ入力モード"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
+			(not (anthy-context-ascii-with-preedit ac))
 			(= (anthy-context-kana-mode ac)
 			   anthy-type-hankana)))
 		 (lambda (ac)
-		   (anthy-prepare-activation ac)
+		   (if (not (anthy-context-on ac))
+		       (anthy-prepare-activation ac))
 		   (anthy-context-set-on! ac #t)
+		   (anthy-context-set-ascii-with-preedit! ac #f)
                    (anthy-context-change-kana-mode! ac anthy-type-hankana)))
+
+(register-action 'action_anthy_ascii_with_preedit
+		 (lambda (ac)
+		   '(ja_ascii_with_preedit
+		     "aA"
+		     "英数変換"
+		     "英数変換モード"))
+		 (lambda (ac)
+		   (and (anthy-context-on ac)
+			(anthy-context-ascii-with-preedit ac)))
+		 (lambda (ac)
+		   (if (not (anthy-context-on ac))
+		       (begin
+			 (anthy-prepare-activation ac)
+			 (anthy-context-set-on! ac #t)))
+		   (anthy-context-set-ascii-with-preedit! ac #t)))
 
 (register-action 'action_anthy_direct
 ;;		 (indication-alist-indicator 'action_anthy_direct
@@ -238,6 +263,7 @@
     (list 'candidate-op-count 0)
     (list 'wide-latin         #f)
     (list 'kana-mode          anthy-type-hiragana)
+    (list 'ascii-with-preedit #f)
     (list 'commit-raw         #t)
     (list 'input-rule         anthy-input-rule-roma)
     (list 'raw-ustr           #f))))
@@ -280,6 +306,23 @@
     (let* ((kana (anthy-context-kana-mode ac))
 	   (opposite-kana (ja-opposite-kana kana)))
       (anthy-context-change-kana-mode! ac opposite-kana))))
+
+(define anthy-toggle-ascii-with-preedit?
+  (lambda (ac key key-state)
+    (let ((state (anthy-context-ascii-with-preedit ac)))
+      (cond
+       ((and
+	  state
+	  (anthy-ascii-mode-off-key? key key-state))
+	 (anthy-context-set-ascii-with-preedit! ac #f)
+	 #t)
+       ((and
+	 (not state)
+	 (anthy-ascii-mode-on-key? key key-state))
+	(anthy-context-set-ascii-with-preedit! ac #t)
+	#t)
+       (else
+        #f)))))
 
 (define anthy-context-change-kana-mode!
   (lambda (ac kana-mode)
@@ -363,6 +406,7 @@
     (ustr-clear! (anthy-context-raw-ustr ac))
     (ustr-clear! (anthy-context-segments ac))
     (anthy-context-set-transposing! ac #f)
+    (anthy-context-set-ascii-with-preedit! ac #f)
     (anthy-context-set-converting! ac #f)
     (if (anthy-context-candidate-window ac)
 	  (im-deactivate-candidate-selector ac))
@@ -456,6 +500,8 @@
        ((anthy-kana-toggle-key? key key-state)
 	(anthy-context-kana-toggle ac))
 
+       ((anthy-toggle-ascii-with-preedit? ac key key-state))
+
        ;; modifiers (except shift) => ignore
        ((and (modifier-key-mask key-state)
 	     (not (shift-key-mask key-state)))
@@ -474,19 +520,24 @@
 	(anthy-commit-raw ac))
 
        (else
-	(let* ((key-str (charcode->string
-			 (if (= rule anthy-input-rule-kana)
-			     key
-			     (to-lower-char key))))
-	       (res (rk-push-key! rkc key-str)))
-	  (if res
-              (begin
-		(ustr-insert-elem! (anthy-context-preconv-ustr ac)
-				   res)
-		(ustr-insert-elem! (anthy-context-raw-ustr ac)
-				   key-str))
-	      (if (null? (rk-context-seq rkc))
-                  (anthy-commit-raw ac)))))))))
+	(if (anthy-context-ascii-with-preedit ac)
+	    (let ((key-str (charcode->string key)))
+	      (ustr-insert-elem! (anthy-context-preconv-ustr ac)
+				 (list key-str key-str key-str))
+	      (ustr-insert-elem! (anthy-context-raw-ustr ac) key-str))
+	    (let* ((key-str (charcode->string
+			     (if (= rule anthy-input-rule-kana)
+				 key
+				 (to-lower-char key))))
+		   (res (rk-push-key! rkc key-str)))
+	      (if res
+		  (begin
+		    (ustr-insert-elem! (anthy-context-preconv-ustr ac)
+				       res)
+		    (ustr-insert-elem! (anthy-context-raw-ustr ac)
+				       key-str))
+		  (if (null? (rk-context-seq rkc))
+		      (anthy-commit-raw ac))))))))))
 
 (define anthy-has-preedit?
   (lambda (ac)
@@ -568,7 +619,11 @@
       (cond
 
        ;; begin conversion
-       ((anthy-begin-conv-key? key key-state)
+       ((or
+	 (and (anthy-begin-conv-key? key key-state)
+	      (not (anthy-context-ascii-with-preedit ac)))
+	 (and (anthy-begin-conv-with-ascii-mode-key? key key-state)
+	      (anthy-context-ascii-with-preedit ac)))
 	(anthy-begin-conv ac))
        
        ;; backspace
@@ -578,7 +633,12 @@
 	      (ustr-cursor-delete-backside! preconv-str)
 	      (ustr-cursor-delete-backside! raw-str)
 	      ;; fix to valid roma
-	      (if (= (anthy-context-input-rule ac) anthy-input-rule-roma)
+	      (if (and
+		   (= (anthy-context-input-rule ac) anthy-input-rule-roma)
+		   (not (null? (ustr-former-seq preconv-str)))
+		   (not (char-printable?	;; check for kana
+			 (string->char
+			  (car (last (ustr-former-seq preconv-str)))))))
 		  (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
 
        ;; delete
@@ -625,6 +685,8 @@
 	   (anthy-make-whole-string ac #t kana))
 	  (anthy-flush ac)
 	  (anthy-context-kana-toggle ac)))
+
+       ((anthy-toggle-ascii-with-preedit? ac key key-state))
 
        ;; cancel
        ((anthy-cancel-key? key key-state)
@@ -681,7 +743,8 @@
 
        (else	
 	;; handle "n1" sequence as "ん1"
-	(if (and (not (alphabet-char? key))
+	(if (and (not (anthy-context-ascii-with-preedit ac))
+		 (not (alphabet-char? key))
 		 (not (string-find
 		       (rk-expect rkc)
 		       (charcode->string
@@ -695,30 +758,40 @@
 		    (ustr-insert-elem! preconv-str residual-kana)
 		    (ustr-insert-elem! raw-str pend)))))
 
-	(let* ((key-str (charcode->string 
-			 (if (= rule anthy-input-rule-kana)
-			     key
-			     (to-lower-char key))))
-	       (pend (rk-pending rkc))
-	       (res (rk-push-key! rkc key-str)))
-
-	  (if (and res
-		   (or (list? (car res))
-		       (not (string=? (car res) ""))))
-              (let ((next-pend (rk-pending rkc)))
-		(if (list? (car res))
-		    (ustr-insert-seq!  preconv-str res)
-		    (ustr-insert-elem! preconv-str res))
-		(if (and next-pend
-			 (not (string=? next-pend "")))
-		    (ustr-insert-elem! raw-str pend)
+	(if (anthy-context-ascii-with-preedit ac)
+	    (let ((key-str (charcode->string key))
+		  (pend (rk-pending rkc))
+		  (residual-kana (rk-peek-terminal-match rkc)))
+	      (rk-flush rkc) ;; OK to reset rkc here.
+	      (if residual-kana
+		  (begin
+		    (ustr-insert-elem! preconv-str residual-kana)
+		    (ustr-insert-elem! raw-str pend)))
+	      (ustr-insert-elem! preconv-str (list key-str key-str key-str))
+	      (ustr-insert-elem! raw-str key-str))
+	    (let* ((key-str (charcode->string 
+			     (if (= rule anthy-input-rule-kana)
+				 key
+				 (to-lower-char key))))
+		   (pend (rk-pending rkc))
+		   (res (rk-push-key! rkc key-str)))
+	      (if (and res
+		       (or (list? (car res))
+			   (not (string=? (car res) ""))))
+		  (let ((next-pend (rk-pending rkc)))
 		    (if (list? (car res))
-			(begin
-			  (ustr-insert-elem! raw-str pend)
-			  (ustr-insert-elem! raw-str key-str))
-			(ustr-insert-elem!
-			 raw-str
-			 (string-append pend key-str))))))))))))
+			(ustr-insert-seq!  preconv-str res)
+			(ustr-insert-elem! preconv-str res))
+		    (if (and next-pend
+			     (not (string=? next-pend "")))
+			(ustr-insert-elem! raw-str pend)
+			(if (list? (car res))
+			    (begin
+			      (ustr-insert-elem! raw-str pend)
+			      (ustr-insert-elem! raw-str key-str))
+			    (ustr-insert-elem!
+			     raw-str
+			     (string-append pend key-str)))))))))))))
 
 (define anthy-context-confirm-kana!
   (lambda (ac)
@@ -1089,6 +1162,9 @@
       #f)  ;; use #f rather than () to conform to R5RS
 
      ((symbol? key)
+      #f)
+
+     ((anthy-begin-conv-with-ascii-mode-key? key key-state)
       #f)
 
      (else

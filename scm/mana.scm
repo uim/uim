@@ -291,12 +291,15 @@
 
                  (lambda (mc) ;; activity predicate
                    (and (mana-context-on mc)
+			(not (mana-context-ascii-with-preedit mc))
                         (= (mana-context-kana-mode mc)
                            mana-type-hiragana)))
 
                  (lambda (mc) ;; action handler
-                   (mana-prepare-activation mc)
+		   (if (not (mana-context-on mc))
+		       (mana-prepare-activation mc))
                    (mana-context-set-on! mc #t)
+		   (mana-context-set-ascii-with-preedit! mc #f)
                    (mana-context-change-kana-mode! mc mana-type-hiragana)))
 
 (register-action 'action_mana_katakana
@@ -309,11 +312,14 @@
                       "カタカナ入力モード"))
                  (lambda (mc)
                    (and (mana-context-on mc)
+			(not (mana-context-ascii-with-preedit mc))
                         (= (mana-context-kana-mode mc)
                            mana-type-katakana)))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
+		   (if (not (mana-context-on mc))
+		       (mana-prepare-activation mc))
                    (mana-context-set-on! mc #t)
+		   (mana-context-set-ascii-with-preedit! mc #f)
                    (mana-context-change-kana-mode! mc mana-type-katakana)))
 
 (register-action 'action_mana_hankana
@@ -326,12 +332,31 @@
                       "半角カタカナ入力モード"))
                  (lambda (mc)
                    (and (mana-context-on mc)
+			(not (mana-context-ascii-with-preedit mc))
                         (= (mana-context-kana-mode mc)
                            mana-type-hankana)))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
+		   (if (not (mana-context-on mc))
+		       (mana-prepare-activation mc))
                    (mana-context-set-on! mc #t)
+		   (mana-context-set-ascii-with-preedit! mc #f)
                    (mana-context-change-kana-mode! mc mana-type-hankana)))
+
+(register-action 'action_mana_ascii_with_preedit
+		 (lambda (mc)
+		   '(ja_ascii_with_preedit
+		     "aA"
+		     "英数変換"
+		     "英数変換モード"))
+		 (lambda (mc)
+		   (and (mana-context-on mc)
+			(mana-context-ascii-with-preedit mc)))
+		 (lambda (mc)
+		   (if (not (mana-context-on mc))
+		       (begin
+			 (mana-prepare-activation mc)
+			 (mana-context-set-on! mc #t)))
+		   (mana-context-set-ascii-with-preedit! mc #t)))
 
 (register-action 'action_mana_direct
                  ;;              (indication-alist-indicator 'action_mana_direct
@@ -452,6 +477,7 @@
       (list 'candidate-op-count 0)
       (list 'wide-latin         #f)
       (list 'kana-mode          mana-type-hiragana)
+      (list 'ascii-with-preedit #f)
       (list 'commit-raw         #t)
       (list 'input-rule         mana-input-rule-roma)
       (list 'raw-ustr           #f))))
@@ -490,6 +516,23 @@
     (let* ((kana (mana-context-kana-mode mc))
 	   (opposite-kana (ja-opposite-kana kana)))
       (mana-context-change-kana-mode! mc opposite-kana))))
+
+(define mana-toggle-ascii-with-preedit?
+  (lambda (mc key key-state)
+    (let ((state (mana-context-ascii-with-preedit mc)))
+      (cond
+       ((and
+         state
+	 (mana-ascii-mode-off-key? key key-state))
+	(mana-context-set-ascii-with-preedit! mc #f)
+	#t)
+       ((and
+         (not state)
+	 (mana-ascii-mode-off-key? key key-state))
+	(mana-context-set-ascii-with-preedit! mc #t)
+	#t)
+       (else
+        #f)))))
 
 (define mana-context-change-kana-mode!
   (lambda (mc kana-mode)
@@ -570,6 +613,7 @@
     (ustr-clear! (mana-context-raw-ustr mc))
     (ustr-clear! (mana-context-segments mc))
     (mana-context-set-transposing! mc #f)
+    (mana-context-set-ascii-with-preedit! mc #f)
     (mana-context-set-converting! mc #f)
     (mana-context-set-nr-segments! mc 0)
     (mana-context-set-segment-list! mc '())
@@ -671,6 +715,8 @@
         ((mana-kana-toggle-key? key key-state)
          (mana-context-kana-toggle mc))
 
+	((mana-toggle-ascii-with-preedit? mc key key-state))
+
         ;; modifiers (except shift) => ignore
         ((and (modifier-key-mask key-state)
               (not (shift-key-mask key-state)))
@@ -689,19 +735,24 @@
          (mana-commit-raw mc))
 
         (else
-          (let* ((key-str (charcode->string
-                            (if (= rule mana-input-rule-kana)
-                                key
-                                (to-lower-char key))))
-                 (res (rk-push-key! rkc key-str)))
-            (if res
-                (begin
-                  (ustr-insert-elem! (mana-context-preconv-ustr mc)
-                                     res)
-                  (ustr-insert-elem! (mana-context-raw-ustr mc)
-                                     key-str))
-                (if (null? (rk-context-seq rkc))
-                    (mana-commit-raw mc)))))))))
+	 (if (mana-context-ascii-with-preedit mc)
+	     (let ((key-str (charcode->string key)))
+	       (ustr-insert-elem! (mana-context-preconv-ustr mc)
+				  (list key-str key-str key-str))
+	       (ustr-insert-elem! (mana-context-raw-ustr mc) key-str))
+	     (let* ((key-str (charcode->string
+			      (if (= rule mana-input-rule-kana)
+				  key
+				  (to-lower-char key))))
+		    (res (rk-push-key! rkc key-str)))
+	       (if res
+		   (begin
+		     (ustr-insert-elem! (mana-context-preconv-ustr mc)
+					res)
+		     (ustr-insert-elem! (mana-context-raw-ustr mc)
+					key-str))
+		   (if (null? (rk-context-seq rkc))
+		       (mana-commit-raw mc))))))))))
 
 (define mana-has-preedit?
   (lambda (mc)
@@ -783,8 +834,12 @@
       (cond
 
         ;; begin conversion
-        ((mana-begin-conv-key? key key-state)
-         (mana-begin-conv mc))
+       ((or
+	 (and (mana-begin-conv-key? key key-state)
+	      (not (mana-context-ascii-with-preedit mc)))
+	 (and (mana-begin-conv-with-ascii-mode-key? key key-state)
+	      (mana-context-ascii-with-preedit mc)))
+	(mana-begin-conv mc))
 
         ;; backspace
         ((mana-backspace-key? key key-state)
@@ -793,7 +848,12 @@
                (ustr-cursor-delete-backside! preconv-str)
                (ustr-cursor-delete-backside! raw-str)
 	       ;; fix to valid roma
-	       (if (= (mana-context-input-rule mc) mana-input-rule-roma)
+	       (if (and
+		    (= (mana-context-input-rule mc) mana-input-rule-roma)
+		    (not (null? (ustr-former-seq preconv-str)))
+		    (not (char-printable?	;; check for kana
+			  (string->char
+			   (car (last (ustr-former-seq preconv-str)))))))
 		   (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
 
         ;; delete
@@ -840,6 +900,8 @@
              (mana-make-whole-string mc #t kana))
            (mana-flush mc)
            (mana-context-kana-toggle mc)))
+
+	((mana-toggle-ascii-with-preedit? mc key key-state))
 
         ;; cancel
         ((mana-cancel-key? key key-state)
@@ -896,7 +958,8 @@
 
         (else
 	  ;; handle "n1" sequence as "ん1"
-	  (if (and (not (alphabet-char? key))
+	  (if (and (not (mana-context-ascii-with-preedit mc))
+		   (not (alphabet-char? key))
 		   (not (string-find
 			 (rk-expect rkc)
 			 (charcode->string
@@ -910,30 +973,40 @@
 		      (ustr-insert-elem! preconv-str residual-kana)
 		      (ustr-insert-elem! raw-str pend)))))
 
-          (let* ((key-str (charcode->string 
-                            (if (= rule mana-input-rule-kana)
-                                key
-                                (to-lower-char key))))
-                 (pend (rk-pending rkc))
-                 (res (rk-push-key! rkc key-str)))
-
-            (if (and res
-                     (or (list? (car res))
-                         (not (string=? (car res) ""))))
-                (let ((next-pend (rk-pending rkc)))
-                  (if (list? (car res))
-                      (ustr-insert-seq!  preconv-str res)
-                      (ustr-insert-elem! preconv-str res))
-                  (if (and next-pend
-                           (not (string=? next-pend "")))
-                      (ustr-insert-elem! raw-str pend)
+	  (if (mana-context-ascii-with-preedit mc)
+	      (let ((key-str (charcode->string key))
+		    (pend (rk-pending rkc))
+		    (residual-kana (rk-peek-terminal-match rkc)))
+		(rk-flush rkc) ;; OK to reset rkc here.
+		(if residual-kana
+		    (begin
+		      (ustr-insert-elem! preconv-str residual-kana)
+		      (ustr-insert-elem! raw-str pend)))
+		(ustr-insert-elem! preconv-str (list key-str key-str key-str))
+		(ustr-insert-elem! raw-str key-str))
+	      (let* ((key-str (charcode->string 
+			       (if (= rule mana-input-rule-kana)
+				   key
+				   (to-lower-char key))))
+		     (pend (rk-pending rkc))
+		     (res (rk-push-key! rkc key-str)))
+		(if (and res
+			 (or (list? (car res))
+			     (not (string=? (car res) ""))))
+		    (let ((next-pend (rk-pending rkc)))
 		      (if (list? (car res))
-		          (begin
-			    (ustr-insert-elem! raw-str pend)
-			    (ustr-insert-elem! raw-str key-str))
-                          (ustr-insert-elem!
-			   raw-str
-			   (string-append pend key-str))))))))))))
+			  (ustr-insert-seq!  preconv-str res)
+			  (ustr-insert-elem! preconv-str res))
+		      (if (and next-pend
+			       (not (string=? next-pend "")))
+			  (ustr-insert-elem! raw-str pend)
+			  (if (list? (car res))
+			      (begin
+				(ustr-insert-elem! raw-str pend)
+				(ustr-insert-elem! raw-str key-str))
+			      (ustr-insert-elem!
+			       raw-str
+			       (string-append pend key-str)))))))))))))
 
 (define mana-context-confirm-kana!
   (lambda (mc)
@@ -1258,6 +1331,9 @@
        #f)  ;; use #f rather than () to conform to R5RS
 
       ((symbol? key)
+       #f)
+
+      ((mana-begin-conv-with-ascii-mode-key? key key-state)
        #f)
 
       (else
