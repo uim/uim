@@ -325,7 +325,7 @@ add_heap(void)
         l_heaps_lowest = &heap[0];
 
     /* link in order */
-    for (cell = &heap[0]; cell < &heap[l_heap_size - 1]; cell++)
+    for (cell = &heap[0]; cell < &heap[l_heap_size]; cell++)
         SCM_RECLAIM_CELL(cell, cell + 1);
     SCM_RECLAIM_CELL(cell, l_freelist);
     l_freelist = (ScmObj)heap;
