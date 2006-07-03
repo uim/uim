@@ -54,14 +54,14 @@
 #
 #
 # (4) Define automake conditionals and config.h macros in accordance with the
-#     shell variables. To avoid human errors and keep maintainability high, the
-#     shell variable definitions part (3) and this definitions part (4) must be
-#     separated. i.e. collect all shell variable definitions into one big
-#     section, and collect all automake conditionals and config.h macros
-#     definitions part into another one big section.
+#     shell variables. To avoid human errors and keep maintainability high on
+#     dependency editing, the shell variable definitions part (3) and this
+#     definitions part (4) must be separated. i.e. collect all shell variable
+#     definitions into one big section, and collect all automake conditionals
+#     and config.h macros definitions part into another one big section.
 #
+#   AM_CONDITIONAL(USE_INTERNAL_DEFINITIONS, test "x$enable_internal_definitions" = xyes)
 #   if test "x$enable_internal_definitions" = xyes; then
-#     AM_CONDITIONAL(USE_INTERNAL_DEFINITIONS, true)
 #     AC_DEFINE(SCM_USE_INTERNAL_DEFINITIONS, 1, [enable internal definitions])
 #   fi
 
