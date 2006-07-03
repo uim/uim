@@ -49,7 +49,8 @@ typedef enum _uim_word_type {
     WORD_TYPE_ANTHY,
     WORD_TYPE_CANNA,
     WORD_TYPE_SKK,
-    WORD_TYPE_PRIME
+    WORD_TYPE_PRIME,
+    WORD_TYPE_UNKNOWN
 } uim_word_type;
 
 /*
@@ -99,4 +100,6 @@ void      word_append    (uim_word **head, uim_word_type type,
 void      word_free_list (uim_word *head);
 uim_word *word_last      (uim_word *list);
 
+uim_word_type dict_identifier_to_word_type(char *identifier);
+int dict_identifier_to_support_type(char *identifier);
 #endif /* __dict_word_h_included__ */

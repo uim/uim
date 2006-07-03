@@ -213,8 +213,7 @@ _update_status(struct canna_context *cc)
   cc->max_cand_num_list = malloc(sizeof(int) * cc->segment_num);
   for (i = 0; i < cc->segment_num; i++) {
     RkGoTo(cc->rk_context_id, i);
-    if (RkGetStat(cc->rk_context_id, &stat) == 0)
-    {
+    if (RkGetStat(cc->rk_context_id, &stat) == 0) {
       cc->max_cand_num_list[i] = stat.maxcand;
     } else {
       cc->max_cand_num_list[i] = -1;
@@ -280,6 +279,26 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
   len = RkGetKanji(cc->rk_context_id, (unsigned char *)buf, BUFSIZE);
 #ifdef UIM_CANNA_DEBUG
   printf("nth: %d, kanji: %s\n", nth, buf);
+#endif
+  return uim_scm_make_str(buf);
+}
+
+static uim_lisp
+get_unconv_candidate(uim_lisp id_, uim_lisp seg_)
+{
+  int id = uim_scm_c_int(id_);
+  int seg = uim_scm_c_int(seg_);
+  struct canna_context *cc = get_canna_context(id);
+  char buf[BUFSIZE];
+  int len;
+
+  if (cc == NULL)
+    return uim_scm_f();
+
+  RkGoTo(cc->rk_context_id, seg);
+  len = RkGetYomi(cc->rk_context_id, (unsigned char *)buf, BUFSIZE);
+#ifdef UIM_CANNA_DEBUG
+  fprintf(stderr, "yomi: %s\n", buf);
 #endif
   return uim_scm_make_str(buf);
 }
@@ -388,6 +407,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_0("canna-lib-alloc-context", create_context);
   uim_scm_init_subr_1("canna-lib-release-context", release_context);
   uim_scm_init_subr_3("canna-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_subr_2("canna-lib-get-unconv-candidate", get_unconv_candidate);
   uim_scm_init_subr_1("canna-lib-get-nr-segments",get_nr_segments);
   uim_scm_init_subr_2("canna-lib-get-nr-candidates", get_nr_candidate);
   uim_scm_init_subr_3("canna-lib-resize-segment", resize_segment);

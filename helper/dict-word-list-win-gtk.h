@@ -36,6 +36,8 @@
 
 #include <gtk/gtk.h>
 
+void dict_window_destroy_cb(GtkWidget *widget, gpointer data);
+
 G_BEGIN_DECLS
 
 #define WORD_LIST_WINDOW_TYPE		(word_list_window_get_type())
@@ -54,6 +56,7 @@ struct _WordListWindow {
   GtkWidget      *statusbar;
   GtkActionGroup *action_group;
   GtkUIManager   *ui_manager;
+  DictEnumDictionaryType dictionary_type;
 };
 
 struct _WordListWindowClass {
@@ -61,8 +64,19 @@ struct _WordListWindowClass {
 };
 
 GType      word_list_window_get_type (void);
-GtkWidget *word_list_window_new      (void);
+GtkWidget *word_list_window_new      (int type);
 
 G_END_DECLS
+
+enum {
+  PROP_0,
+  PROP_DICTIONARY_TYPE,
+  PROP_LAST
+};
+
+GType dict_enum_dictionary_type_get_type (void);
+#define DICT_TYPE_ENUM_DICTIONARY_TYPE dict_enum_dictionary_type_get_type ()
+
+DictEnumDictionaryType dict_get_dictionary_type(GtkWidget *window);
 
 #endif /* __dict_anthy_word_list_gtk_h_includeded__ */

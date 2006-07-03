@@ -30,6 +30,8 @@
   SUCH DAMAGE.
 */
 /**/
+#include <config.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -229,6 +231,12 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
 }
 
 static uim_lisp
+get_unconv_candidate(uim_lisp id_, uim_lisp seg_)
+{
+  return get_nth_candidate(id_, seg_, uim_scm_make_int(NTH_UNCONVERTED_CANDIDATE));
+}
+
+static uim_lisp
 get_segment_length(uim_lisp id_, uim_lisp nth_)
 {
   int id, nth;
@@ -337,6 +345,7 @@ uim_anthy_plugin_instance_init(void)
   uim_scm_init_subr_1("anthy-lib-get-nr-segments",get_nr_segments);
   uim_scm_init_subr_2("anthy-lib-get-nr-candidates", get_nr_candidates);
   uim_scm_init_subr_3("anthy-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_subr_2("anthy-lib-get-unconv-candidate", get_unconv_candidate);
   uim_scm_init_subr_2("anthy-lib-get-segment-length", get_segment_length);
   uim_scm_init_subr_3("anthy-lib-resize-segment", resize_segment);
   uim_scm_init_subr_3("anthy-lib-commit-segment", commit_segment);

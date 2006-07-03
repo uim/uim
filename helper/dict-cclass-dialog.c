@@ -37,9 +37,10 @@
 #include <stdio.h>
 
 #include "dict-cclass-dialog.h"
-#include "dict-canna.h"
+#include "dict-canna-cclass.h"
 #include "dict-util.h"
-#include "uim/gettext.h"
+
+#include "gettext.h"
 
 
 enum {

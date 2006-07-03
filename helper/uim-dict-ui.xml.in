@@ -32,8 +32,21 @@
 
 <ui>
   <menubar name="MainMenu">
-    <menu action="FileMenu">
-      <menuitem action="Quit" />
+    <menu action="DictionaryMenu">
+      <menu action="SelectMenu">
+@UI_XML_ANTHY_START@
+        <menuitem action="Anthy"/>
+@UI_XML_ANTHY_END@
+@UI_XML_CANNA_START@
+        <menuitem action="Canna"/>
+@UI_XML_CANNA_END@
+	<!--
+        <menuitem action="SKK"/>
+        <menuitem action="Prime"/>
+	-->
+      </menu>
+      <separator/>
+      <menuitem action="Quit"/>
     </menu>
     <menu action="EditMenu">
       <menuitem action="AddWord" />
