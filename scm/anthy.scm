@@ -58,11 +58,6 @@
 (define anthy-candidate-type-katakana -2)
 (define anthy-candidate-type-hiragana -3)
 (define anthy-candidate-type-hankana -4)
-(define anthy-candidate-type-latin -5) ; not defined in Anthy
-(define anthy-candidate-type-wide-latin -6) ; not defined in Anthy
-
-;; I don't think the key needs to be customizable.
-(define-key anthy-space-key? '(" "))
 
 (define anthy-prepare-activation
   (lambda (ac)
@@ -80,15 +75,12 @@
 
 		 (lambda (ac) ;; activity predicate
 		   (and (anthy-context-on ac)
-			(not (anthy-context-ascii-with-preedit ac))
 			(= (anthy-context-kana-mode ac)
 			   anthy-type-hiragana)))
 
 		 (lambda (ac) ;; action handler
-		   (if (not (anthy-context-on ac))
-		       (anthy-prepare-activation ac))
+		   (anthy-prepare-activation ac)
 		   (anthy-context-set-on! ac #t)
-		   (anthy-context-set-ascii-with-preedit! ac #f)
                    (anthy-context-change-kana-mode! ac anthy-type-hiragana)))
 
 (register-action 'action_anthy_katakana
@@ -101,14 +93,11 @@
 		     "カタカナ入力モード"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
-			(not (anthy-context-ascii-with-preedit ac))
 			(= (anthy-context-kana-mode ac)
 			   anthy-type-katakana)))
 		 (lambda (ac)
-		   (if (not (anthy-context-on ac))
-		       (anthy-prepare-activation ac))
+		   (anthy-prepare-activation ac)
 		   (anthy-context-set-on! ac #t)
-		   (anthy-context-set-ascii-with-preedit! ac #f)
                    (anthy-context-change-kana-mode! ac anthy-type-katakana)))
 
 (register-action 'action_anthy_hankana
@@ -121,31 +110,12 @@
 		     "半角カタカナ入力モード"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
-			(not (anthy-context-ascii-with-preedit ac))
 			(= (anthy-context-kana-mode ac)
 			   anthy-type-hankana)))
 		 (lambda (ac)
-		   (if (not (anthy-context-on ac))
-		       (anthy-prepare-activation ac))
+		   (anthy-prepare-activation ac)
 		   (anthy-context-set-on! ac #t)
-		   (anthy-context-set-ascii-with-preedit! ac #f)
                    (anthy-context-change-kana-mode! ac anthy-type-hankana)))
-
-(register-action 'action_anthy_ascii_with_preedit
-		 (lambda (ac)
-		   '(ja_ascii_with_preedit
-		     "aA"
-		     "英数変換"
-		     "英数変換モード"))
-		 (lambda (ac)
-		   (and (anthy-context-on ac)
-			(anthy-context-ascii-with-preedit ac)))
-		 (lambda (ac)
-		   (if (not (anthy-context-on ac))
-		       (begin
-			 (anthy-prepare-activation ac)
-			 (anthy-context-set-on! ac #t)))
-		   (anthy-context-set-ascii-with-preedit! ac #t)))
 
 (register-action 'action_anthy_direct
 ;;		 (indication-alist-indicator 'action_anthy_direct
@@ -263,7 +233,6 @@
     (list 'candidate-op-count 0)
     (list 'wide-latin         #f)
     (list 'kana-mode          anthy-type-hiragana)
-    (list 'ascii-with-preedit #f)
     (list 'commit-raw         #t)
     (list 'input-rule         anthy-input-rule-roma)
     (list 'raw-ustr           #f))))
@@ -304,25 +273,8 @@
 (define anthy-context-kana-toggle
   (lambda (ac)
     (let* ((kana (anthy-context-kana-mode ac))
-	   (opposite-kana (ja-opposite-kana kana)))
+	   (opposite-kana (multi-segment-opposite-kana kana)))
       (anthy-context-change-kana-mode! ac opposite-kana))))
-
-(define anthy-toggle-ascii-with-preedit?
-  (lambda (ac key key-state)
-    (let ((state (anthy-context-ascii-with-preedit ac)))
-      (cond
-       ((and
-	  state
-	  (anthy-ascii-mode-off-key? key key-state))
-	 (anthy-context-set-ascii-with-preedit! ac #f)
-	 #t)
-       ((and
-	 (not state)
-	 (anthy-ascii-mode-on-key? key key-state))
-	(anthy-context-set-ascii-with-preedit! ac #t)
-	#t)
-       (else
-        #f)))))
 
 (define anthy-context-change-kana-mode!
   (lambda (ac kana-mode)
@@ -350,44 +302,51 @@
 		(lambda (entry) (car entry))
 		(lambda (entry) (list-ref entry kana)))))
 
-      (if (= rule anthy-input-rule-kana)
-	  (ja-make-kana-str
-	   (ja-make-kana-str-list
-	    (string-to-list
-	     (string-append
-	      (string-append-map-ustr-former extract-kana preconv-str)
-	      (if convert-pending-into-kana?
-		  (if residual-kana
-		      (extract-kana residual-kana)
-		      pending)
-		  pending)
-	      (string-append-map-ustr-latter extract-kana preconv-str))))
-	   kana)
-	  (string-append
-	   (string-append-map-ustr-former extract-kana preconv-str)
-	   (if convert-pending-into-kana?
-	       (if residual-kana
-		   (extract-kana residual-kana)
-		   "")
-	       pending)
-	   (string-append-map-ustr-latter extract-kana preconv-str))))))
+      (string-append
+       (string-append-map-ustr-former extract-kana preconv-str)
+       (if convert-pending-into-kana?
+	   (if residual-kana
+	       (extract-kana residual-kana)
+	       (if (= rule anthy-input-rule-kana)
+		   pending
+		   ""))
+	   pending)
+       (string-append-map-ustr-latter extract-kana preconv-str)))))
 
 (define anthy-make-raw-string
   (lambda (raw-str-list wide?)
     (if (not (null? raw-str-list))
-	(if wide?
-	    (string-append
-	     (ja-string-list-to-wide-alphabet
-	      (string-to-list (car raw-str-list)))
-	     (anthy-make-raw-string (cdr raw-str-list) wide?))
-	    (string-append
-	     (car raw-str-list)
-	     (anthy-make-raw-string (cdr raw-str-list) wide?)))
-	"")))
+        (if wide?
+            (string-append
+             (ja-string-list-to-wide-alphabet (string-to-list (car raw-str-list)))
+             (anthy-make-raw-string (cdr raw-str-list) wide?))
+            (string-append
+             (car raw-str-list)
+             (anthy-make-raw-string (cdr raw-str-list) wide?)))
+        "")))
 
 (define anthy-make-whole-raw-string
   (lambda (ac wide?)
-    (anthy-make-raw-string (anthy-get-raw-str-seq ac) wide?)))
+    (let* ((rkc (anthy-context-rkc ac))
+	   (pending (rk-pending rkc))
+           (residual-kana (rk-push-key-last! rkc))
+	   (raw-str (anthy-context-raw-ustr ac))
+	   (right-str (ustr-latter-seq raw-str))
+	   (left-str (ustr-former-seq raw-str)))
+      (anthy-make-raw-string
+       (ja-raw-string-list-to-valid-roma
+        (append left-str
+                (if (null? residual-kana)
+		    (begin
+		      (if (null? right-str)
+			  (list pending)
+			  (append right-str (list pending))))
+                    (begin
+                      (rk-flush rkc)
+                      (if (null? right-str)
+                          (list pending)
+			  (append right-str (list pending)))))))
+       wide?))))
 
 (define anthy-init-handler
   (lambda (id im arg)
@@ -406,7 +365,6 @@
     (ustr-clear! (anthy-context-raw-ustr ac))
     (ustr-clear! (anthy-context-segments ac))
     (anthy-context-set-transposing! ac #f)
-    (anthy-context-set-ascii-with-preedit! ac #f)
     (anthy-context-set-converting! ac #f)
     (if (anthy-context-candidate-window ac)
 	  (im-deactivate-candidate-selector ac))
@@ -500,8 +458,6 @@
        ((anthy-kana-toggle-key? key key-state)
 	(anthy-context-kana-toggle ac))
 
-       ((anthy-toggle-ascii-with-preedit? ac key key-state))
-
        ;; modifiers (except shift) => ignore
        ((and (modifier-key-mask key-state)
 	     (not (shift-key-mask key-state)))
@@ -511,32 +467,23 @@
        (direct
 	(im-commit ac direct))
 
-       ;; spcae key => commit
-       ((anthy-space-key? key key-state)
-	(im-commit ac (list-ref ja-space (anthy-context-kana-mode ac))))
-
        ((symbol? key)
 	(anthy-commit-raw ac))
 
        (else
-	(if (anthy-context-ascii-with-preedit ac)
-	    (let ((key-str (charcode->string key)))
-	      (ustr-insert-elem! (anthy-context-preconv-ustr ac)
-				 (list key-str key-str key-str))
-	      (ustr-insert-elem! (anthy-context-raw-ustr ac) key-str))
-	    (let* ((key-str (charcode->string
-			     (if (= rule anthy-input-rule-kana)
-				 key
-				 (to-lower-char key))))
-		   (res (rk-push-key! rkc key-str)))
-	      (if res
-		  (begin
-		    (ustr-insert-elem! (anthy-context-preconv-ustr ac)
-				       res)
-		    (ustr-insert-elem! (anthy-context-raw-ustr ac)
-				       key-str))
-		  (if (null? (rk-context-seq rkc))
-		      (anthy-commit-raw ac))))))))))
+	(let* ((key-str (charcode->string
+			 (if (= rule anthy-input-rule-kana)
+			     key
+			     (to-lower-char key))))
+	       (res (rk-push-key! rkc key-str)))
+	  (if res
+              (begin
+		(ustr-insert-elem! (anthy-context-preconv-ustr ac)
+				   res)
+		(ustr-insert-elem! (anthy-context-raw-ustr ac)
+				   key-str))
+	      (if (not (rk-pending rkc))
+                  (anthy-commit-raw ac)))))))))
 
 (define anthy-has-preedit?
   (lambda (ac)
@@ -618,11 +565,7 @@
       (cond
 
        ;; begin conversion
-       ((or
-	 (and (anthy-begin-conv-key? key key-state)
-	      (not (anthy-context-ascii-with-preedit ac)))
-	 (and (anthy-begin-conv-with-ascii-mode-key? key key-state)
-	      (anthy-context-ascii-with-preedit ac)))
+       ((anthy-begin-conv-key? key key-state)
 	(anthy-begin-conv ac))
        
        ;; backspace
@@ -630,15 +573,7 @@
 	(if (not (rk-backspace rkc))
             (begin
 	      (ustr-cursor-delete-backside! preconv-str)
-	      (ustr-cursor-delete-backside! raw-str)
-	      ;; fix to valid roma
-	      (if (and
-		   (= (anthy-context-input-rule ac) anthy-input-rule-roma)
-		   (not (null? (ustr-former-seq preconv-str)))
-		   (not (char-printable?	;; check for kana
-			 (string->char
-			  (car (last (ustr-former-seq preconv-str)))))))
-		  (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
+	      (ustr-cursor-delete-backside! raw-str))))
 
        ;; delete
        ((anthy-delete-key? key key-state)
@@ -662,18 +597,15 @@
 	(begin
 	  (im-commit
 	   ac
-	   (anthy-make-whole-string ac #t (ja-opposite-kana kana)))
+	   (anthy-make-whole-string ac #t (multi-segment-opposite-kana kana)))
 	  (anthy-flush ac)))
 
        ;; Transposing状態へ移行
        ((or (anthy-transpose-as-hiragana-key?   key key-state)
 	    (anthy-transpose-as-katakana-key?   key key-state)
 	    (anthy-transpose-as-hankana-key?    key key-state)
-	    (and
-	     (not (= (anthy-context-input-rule ac) anthy-input-rule-kana ))
-	     (or
-	      (anthy-transpose-as-latin-key?      key key-state)
-	      (anthy-transpose-as-wide-latin-key? key key-state))))
+	    (anthy-transpose-as-latin-key?      key key-state)
+	    (anthy-transpose-as-wide-latin-key? key key-state))
 	(anthy-proc-transposing-state ac key key-state))
 
        ;; Commit current preedit string, then toggle hiragana/katakana mode.
@@ -684,8 +616,6 @@
 	   (anthy-make-whole-string ac #t kana))
 	  (anthy-flush ac)
 	  (anthy-context-kana-toggle ac)))
-
-       ((anthy-toggle-ascii-with-preedit? ac key key-state))
 
        ;; cancel
        ((anthy-cancel-key? key key-state)
@@ -723,8 +653,7 @@
        ;;     is kana mode.
        ((anthy-beginning-of-preedit-key? key key-state)
 	(anthy-context-confirm-kana! ac)
-	(ustr-cursor-move-beginning! preconv-str)
-	(ustr-cursor-move-beginning! raw-str))
+	(ustr-cursor-move-beginning! preconv-str))
 
        ;; end-of-preedit
        ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
@@ -732,8 +661,7 @@
        ;;     is kana mode.
        ((anthy-end-of-preedit-key? key key-state)
 	(anthy-context-confirm-kana! ac)
-	(ustr-cursor-move-end! preconv-str)
-	(ustr-cursor-move-end! raw-str))
+	(ustr-cursor-move-end! preconv-str))
 
        ;; modifiers (except shift) => ignore
        ((and (modifier-key-mask key-state)
@@ -742,55 +670,36 @@
 
        (else	
 	;; handle "n1" sequence as "ん1"
-	(if (and (not (anthy-context-ascii-with-preedit ac))
-		 (not (alphabet-char? key))
+	(if (and (not (alphabet-char? key))
 		 (not (string-find
 		       (rk-expect rkc)
 		       (charcode->string
 		        (if (= rule anthy-input-rule-kana)
 			    key
 			    (to-lower-char key))))))
-	    (let ((pend (rk-pending rkc))
-		  (residual-kana (rk-push-key-last! rkc)))
+	    (let ((residual-kana (rk-push-key-last! rkc)))
 	      (if residual-kana
-		  (begin
-		    (ustr-insert-elem! preconv-str residual-kana)
-		    (ustr-insert-elem! raw-str pend)))))
+		  (ustr-insert-elem! preconv-str residual-kana))))
 
-	(if (anthy-context-ascii-with-preedit ac)
-	    (let ((key-str (charcode->string key))
-		  (pend (rk-pending rkc))
-		  (residual-kana (rk-peek-terminal-match rkc)))
-	      (rk-flush rkc) ;; OK to reset rkc here.
-	      (if residual-kana
-		  (begin
-		    (ustr-insert-elem! preconv-str residual-kana)
-		    (ustr-insert-elem! raw-str pend)))
-	      (ustr-insert-elem! preconv-str (list key-str key-str key-str))
-	      (ustr-insert-elem! raw-str key-str))
-	    (let* ((key-str (charcode->string 
-			     (if (= rule anthy-input-rule-kana)
-				 key
-				 (to-lower-char key))))
-		   (pend (rk-pending rkc))
-		   (res (rk-push-key! rkc key-str)))
-	      (if (and res
-		       (or (list? (car res))
-			   (not (string=? (car res) ""))))
-		  (let ((next-pend (rk-pending rkc)))
-		    (if (list? (car res))
-			(ustr-insert-seq!  preconv-str res)
-			(ustr-insert-elem! preconv-str res))
-		    (if (and next-pend
-			     (not (string=? next-pend "")))
-			(ustr-insert-elem! raw-str pend)
-			(if (list? (car res))
-			    (begin
-			      (ustr-insert-elem! raw-str pend)
-			      (ustr-insert-elem! raw-str key-str))
-			    (ustr-insert-elem!
-			     raw-str
-			     (string-append pend key-str)))))))))))))
+	(let* ((key-str (charcode->string 
+			 (if (= rule anthy-input-rule-kana)
+			     key
+			     (to-lower-char key))))
+	       (pend (rk-pending rkc))
+	       (res (rk-push-key! rkc key-str)))
+
+	  (if (and res
+		   (or (list? (car res))
+		       (not (string=? (car res) ""))))
+              (let ((next-pend (rk-pending rkc)))
+		(if (list? (car res))
+		    (ustr-insert-seq!  preconv-str res)
+		    (ustr-insert-elem! preconv-str res))
+		(if (and next-pend
+			 (not (string=? next-pend "")))
+		    (ustr-insert-elem! raw-str pend)
+		    (ustr-insert-elem! raw-str (string-append pend key-str))))
+	      )))))))
 
 (define anthy-context-confirm-kana!
   (lambda (ac)
@@ -829,13 +738,13 @@
     (let* ((transposing-type (anthy-context-transposing-type ac)))
       (cond
        ((= transposing-type anthy-type-hiragana)
-	(anthy-make-whole-string ac #t anthy-type-hiragana))
+	(anthy-make-whole-string ac #t multi-segment-type-hiragana))
 
        ((= transposing-type anthy-type-katakana)
-	(anthy-make-whole-string ac #t anthy-type-katakana))
+	(anthy-make-whole-string ac #t multi-segment-type-katakana))
 
        ((= transposing-type anthy-type-hankana)
-	(anthy-make-whole-string ac #t anthy-type-hankana))
+	(anthy-make-whole-string ac #t multi-segment-type-hankana))
 
        ((= transposing-type anthy-type-latin)
 	(anthy-make-whole-raw-string ac #f))
@@ -843,41 +752,6 @@
        ((= transposing-type anthy-type-wide-latin)
 	(anthy-make-whole-raw-string ac #t))
        ))))
-
-(define anthy-get-raw-str-seq
-  (lambda (ac)
-    (let* ((rkc (anthy-context-rkc ac))
-	   (pending (rk-pending rkc))
-	   (residual-kana (rk-peek-terminal-match rkc))
-	   (raw-str (anthy-context-raw-ustr ac))
-	   (right-str (ustr-latter-seq raw-str))
-	   (left-str (ustr-former-seq raw-str)))
-      (append left-str
-	      (if (not (null? residual-kana))
-		  (list pending))
-	      right-str))))
-
-(define anthy-get-raw-candidate
-  (lambda (ac ac-id seg-idx cand-idx)
-    (let* ((preconv
-	    (ja-join-vu (string-to-list
-			 (anthy-make-whole-string ac #t anthy-type-hiragana))))
-	   (unconv-candidate (anthy-lib-get-unconv-candidate ac-id seg-idx))
-	   (unconv (if unconv-candidate
-		       (ja-join-vu (string-to-list unconv-candidate))
-		       '()))
-	   (raw-str (reverse (anthy-get-raw-str-seq ac))))
-      (if (not (null? unconv))
-	  (if (member (car unconv) preconv)
-	      (let ((start (list-seq-contained? preconv unconv))
-		    (len (length unconv)))
-		(if start
-		    (anthy-make-raw-string
-		     (reverse (sublist raw-str start (+ start (- len 1))))
-		     (if (= cand-idx anthy-candidate-type-latin) #f #t))
-		    "??")) ;; FIXME
-	      "???") ;; FIXME
-	  "????")))) ;; shouldn't happen
 
 (define anthy-converting-state-preedit
   (lambda (ac)
@@ -891,9 +765,7 @@
 			  (bit-or preedit-reverse
 				  preedit-cursor)
 			  preedit-underline))
-		(cand (if (> cand-idx anthy-candidate-type-latin)
-			  (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx)
-			  (anthy-get-raw-candidate ac ac-id seg-idx cand-idx)))
+		(cand (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
 		(seg (list (cons attr cand))))
 	   (if (and separator
 		    (< 0 seg-idx))
@@ -931,11 +803,7 @@
     (let ((ac-id (anthy-context-ac-id ac))
 	  (segments (anthy-context-segments ac)))
       (string-append-map (lambda (seg-idx cand-idx)
-			   (if (> cand-idx anthy-candidate-type-latin)
-			       (anthy-lib-get-nth-candidate
-				ac-id seg-idx cand-idx)
-			       (anthy-get-raw-candidate
-				ac ac-id seg-idx cand-idx)))
+			   (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx))
 			 (iota (ustr-length segments))
 			 (ustr-whole-seq segments)))))
 
@@ -944,8 +812,7 @@
     (let ((ac-id (anthy-context-ac-id ac))
 	  (segments (anthy-context-segments ac)))
       (for-each (lambda (seg-idx cand-idx)
-		  (if (> cand-idx anthy-candidate-type-latin)
-		      (anthy-lib-commit-segment ac-id seg-idx cand-idx)))
+		  (anthy-lib-commit-segment ac-id seg-idx cand-idx))
 		(iota (ustr-length segments))
 		(ustr-whole-seq segments)))))
 
@@ -1044,7 +911,10 @@
 
 (define anthy-set-segment-transposing
   (lambda (ac key key-state)
-    (let ((segments (anthy-context-segments ac)))
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (segments (anthy-context-segments ac))
+	   (cur-seg (ustr-cursor-pos segments))
+	   (n (ustr-cursor-frontside segments)))
       (if (and
 	   anthy-version
 	   (>= (string->number (car anthy-version)) 7802))
@@ -1055,12 +925,6 @@
 	    (anthy-reset-candidate-window ac)
 	    (anthy-context-set-candidate-op-count! ac 0)
 
-	    (if (anthy-transpose-as-wide-latin-key? key key-state)
-		(set! rotate-list (cons anthy-candidate-type-wide-latin
-					rotate-list)))
-	    (if (anthy-transpose-as-latin-key? key key-state)
-		(set! rotate-list (cons anthy-candidate-type-latin
-					rotate-list)))
 	    (if (anthy-transpose-as-hankana-key? key key-state)
 		(set! rotate-list (cons anthy-candidate-type-hankana
 					rotate-list)))
@@ -1073,9 +937,7 @@
 	    (if (or
 		 (= idx anthy-candidate-type-hiragana)
 		 (= idx anthy-candidate-type-katakana)
-		 (= idx anthy-candidate-type-hankana)
-		 (= idx anthy-candidate-type-latin)
-		 (= idx anthy-candidate-type-wide-latin))
+		 (= idx anthy-candidate-type-hankana))
 		(let ((lst (member idx rotate-list)))
 		  (if (and (not (null? lst))
 			   (not (null? (cdr lst))))
@@ -1137,13 +999,15 @@
 
      ((or (anthy-transpose-as-hiragana-key? key key-state)
 	  (anthy-transpose-as-katakana-key? key key-state)
-	  (anthy-transpose-as-hankana-key? key key-state)
-	  (and
-	   (not (= (anthy-context-input-rule ac) anthy-input-rule-kana))
-	   (or
-	    (anthy-transpose-as-latin-key? key key-state)
-	    (anthy-transpose-as-wide-latin-key? key key-state))))
+	  (anthy-transpose-as-hankana-key? key key-state))
 	(anthy-set-segment-transposing ac key key-state))
+
+     ;; FIXME: don't cancel conversion
+     ((or (anthy-transpose-as-latin-key? key key-state)
+	  (anthy-transpose-as-wide-latin-key? key key-state))
+      (begin
+	(anthy-cancel-conv ac)
+	(anthy-proc-transposing-state ac key key-state)))
 
      ((anthy-cancel-key? key key-state)
       (anthy-cancel-conv ac))
@@ -1163,9 +1027,6 @@
      ((symbol? key)
       #f)
 
-     ((anthy-begin-conv-with-ascii-mode-key? key key-state)
-      #f)
-
      (else
       (begin
 	(anthy-do-commit ac)
@@ -1174,7 +1035,8 @@
 (define anthy-proc-wide-latin
   (lambda (ac key key-state)
     (let* ((char (charcode->string key))
-	   (w (ja-wide char)))
+	   (w (or (ja-direct char)
+		  (ja-wide char))))
       (cond
        ((and anthy-use-with-vi?
              (anthy-vi-escape-key? key key-state))

@@ -31,8 +31,6 @@
  *  SUCH DAMAGE.
  */
 
-#include <config.h>
-
 #include <dlfcn.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,9 +39,9 @@
 
 #include <anthy/dicutil.h>
 
-#include "gettext.h"
+#include "uim/gettext.h"
 #include "dict-anthy.h"
-#include "dict-canna-cclass.h"
+#include "dict-canna.h"
 
 static uim_dict *uim_dict_anthy_open        (const char *identifier);
 static void      uim_dict_anthy_close       (uim_dict *dict);
@@ -92,16 +90,7 @@ dict_anthy_init(void)
 static int
 dict_anthy_exit(void)
 {
-  /*
-   * With anthy-7811, anthy_parse_word_lin() causes segmentation fault once
-   * anthy_dic_util_quit() and anthy_dic_util_init() have been used to restart
-   * the library.  To avoid this, we don't call anthy_dic_util_quit() even when
-   * the ref_count of uim_dict_anthy become 0.
-   */
-#if 0
   anthy_dic_util_quit();
-#endif
-
   return 0;
 }
 
@@ -144,34 +133,18 @@ static int
 dict_anthy_add_priv_dic_with_flags(char *phon, char *desc,
 				   char *cclass_code, int freq)
 {
-  int status;
-
   if ((strlen(phon) == 0) || (strlen(desc) == 0) ||
       (strlen(cclass_code) == 0)) {
-    return 0;
+    return -1;
   }
 
-  status = anthy_priv_dic_add_entry(phon, desc, cclass_code, freq);
-
-  switch (status) {
-  case ANTHY_DIC_UTIL_OK:
-  case ANTHY_DIC_UTIL_DUPLICATE:
-    status = 1;
-    break;
-  default:
-    status = 0; 
-  }
-
-  return status;
+  return anthy_priv_dic_add_entry(phon, desc, cclass_code, freq);
 }
 
 static int
 dict_anthy_delete_priv_dic(char *phon, char *desc, char *cclass_code)
 {
-  int status;
-
-  status = anthy_priv_dic_add_entry(phon, desc, cclass_code, 0);
-  return status ? 0 : 1;
+  return anthy_priv_dic_add_entry(phon, desc, cclass_code, 0);
 }
 
 static uim_dict *
@@ -179,13 +152,13 @@ uim_dict_anthy_open(const char *identifier)
 {
   uim_dict *dict;
 
+  if (dict_anthy_init() == -1)
+    return NULL;
+
   if (identifier == NULL)
     return NULL;
 
   if (strcmp(identifier, identifiers[0]) != 0)
-    return NULL;
-
-  if (dict_anthy_init() == -1)
     return NULL;
 
   dict = malloc(sizeof(uim_dict));
@@ -196,7 +169,7 @@ uim_dict_anthy_open(const char *identifier)
   dict->identifier = strdup(identifier);
   dict->filename   = NULL;
   dict->charset    = strdup("EUC-JP");
-  dict->ref_count  = 0; /* at this point, no window refers this */
+  dict->ref_count  = 1;
   dict->word_list  = NULL;
 
   dict_anthy_read_priv_dic_list(&dict->word_list);
@@ -226,7 +199,7 @@ uim_dict_anthy_add_word(uim_dict *dict, uim_word *word)
   int ret;
 
   if (dict == NULL || word == NULL)
-    return 0;
+    return -1;
 
   ret = dict_anthy_add_priv_dic_with_flags(word->phon, word->desc,
 					   word->cclass_native, word->freq);
@@ -237,17 +210,21 @@ uim_dict_anthy_add_word(uim_dict *dict, uim_word *word)
 static int
 uim_dict_anthy_change_word(uim_dict *dict, uim_word *word)
 {
-  return 0;
+  return -1;
 }
 
 static int
 uim_dict_anthy_remove_word(uim_dict *dict, uim_word *word)
 {
+  int ret;
+
   if (dict == NULL)
     return 0;
 
-  return dict_anthy_delete_priv_dic(word->phon, word->desc,
-				    word->cclass_native);
+  ret = dict_anthy_delete_priv_dic(word->phon, word->desc,
+				   word->cclass_native);
+
+  return ret ? 0 : 1;
 }
 
 static void

@@ -35,7 +35,7 @@
 #define __dict_cclass_dialog_h_included__
 
 #include <gtk/gtk.h>
-#include "dict-canna-cclass.h"
+#include "dict-canna.h"
 
 gchar *cclass_dialog(gint cclass_type, gint system);
 

@@ -124,6 +124,7 @@
 	       (_ "[Anthy] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
+
 ;;
 ;; overriding generic keys
 ;;
@@ -144,12 +145,6 @@
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] begin conversion")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-begin-conv-with-ascii-mode-key '("<Shift> ")
-               '(anthy-keys2)
-	       '(key)
-	       (_ "[Anthy] begin conversion in ascii mode")
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-commit-key '(generic-commit-key)
@@ -186,18 +181,6 @@
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] previous page of candidate window")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-ascii-mode-on-key '()
-               '(anthy-keys2)
-	       '(key)
-	       (_ "[Anthy] ASCII input on with preedit")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-ascii-mode-off-key '()
-               '(anthy-keys2)
-	       '(key)
-	       (_ "[Anthy] ASCII input off with preedit")
 	       (_ "long description will be here"))
 
 ;;

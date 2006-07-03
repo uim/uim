@@ -10,7 +10,6 @@ SVGS += direct_input.svg on.svg off.svg \
         ja_direct.svg ja_hiragana.svg ja_katakana.svg \
         ja_halfwidth_katakana.svg \
         ja_halfwidth_alnum.svg ja_fullwidth_alnum.svg \
-        ja_ascii_with_preedit.svg \
         prime_mode_application.svg \
 	ko_direct.svg ko_hangulchar.svg ko_hangulword.svg
 
@@ -40,7 +39,6 @@ SVG_PNGS = unknown.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
            ja_halfwidth_katakana.png \
            ja_halfwidth_alnum.png ja_fullwidth_alnum.png \
-           ja_ascii_with_preedit.png \
            prime_mode_application.png \
 	   ko_direct.png ko_hangulchar.png ko_hangulword.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_nicola.png \

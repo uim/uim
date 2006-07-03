@@ -41,23 +41,31 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "uim.h"
-#include "uim-helper.h"
-#include "gettext.h"
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+#include "uim/gettext.h"
 
 #include "dict-word-win-gtk.h"
 #include "dict-word-list-win-gtk.h"
-#include "dict-word-list-view-gtk.h"
 
 static unsigned int read_tag;
 static int uim_fd;  /* file descriptor to connect helper message bus */
 static int ae_mode; /* add mode or edit mode */
-static int g_startup_dictionary;
+static int input_method;
 
 enum {
   MODE_EDIT,
   MODE_ADD,
   NR_MODE
+};
+
+/* should be implemeted as loadable module */
+enum {
+  IM_ANTHY,
+  IM_CANNA,
+  IM_SKK,
+  IM_PRIME,
+  NR_IM
 };
 
 static void
@@ -111,7 +119,7 @@ parse_arg(int argc, char *argv[])
 
   ae_mode = MODE_EDIT;
 
-  while ((ch = getopt(argc, argv, "aehi:")) != -1)
+  while ((ch = getopt(argc, argv, "aei:")) != -1)
   {
     switch (ch) {
     case 'a':
@@ -122,29 +130,19 @@ parse_arg(int argc, char *argv[])
       break;
     case 'i':
       if (!strcmp(optarg, "anthy"))
-	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_ANTHY;
+	input_method = IM_ANTHY;
       else if (!strcmp(optarg, "canna"))
-	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_CANNA;
+	input_method = IM_CANNA;
       else if (!strcmp(optarg, "prime"))
-	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_PRIME;
+	input_method = IM_PRIME;
       else if (!strcmp(optarg, "skk"))
-	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_SKK;
+	input_method = IM_SKK;
       else
-	g_startup_dictionary = DICT_ENUM_DICTIONARY_TYPE_ANTHY;
-      break;
-    case 'h':
-      fprintf(stderr, "Usage: uim-dict-gtk [OPTION...]\n");
-      fprintf(stderr, "\n");
-      fprintf(stderr, "Options:\n");
-      fprintf(stderr, " -h            Show this help\n");
-      fprintf(stderr, " -i [IM]       Open a dictionary for IM [anthy, canna]\n");
-      fprintf(stderr, " -e            Start with editing mode (default)\n");
-      fprintf(stderr, " -a            Start with adding mode\n");
-      exit(1);
+	input_method = IM_ANTHY;
       break;
     default:
       ae_mode = MODE_EDIT;
-      /* g_startup_dictionary = get_current_im(); */
+      /* input_method = get_current_im(); */
     }
   }
 
@@ -159,14 +157,13 @@ create_window_anthy(void)
   uim_dict *dict;
 
   if (ae_mode == MODE_EDIT) {
-    window = word_list_window_new(DICT_ENUM_DICTIONARY_TYPE_ANTHY);
-    if (WORD_LIST_VIEW(WORD_LIST_WINDOW(window)->word_list)->dict == NULL)
-      return NULL;
+    window = word_list_window_new();
   } else {
     dict = uim_dict_open(N_("Anthy private dictionary"));
     if (!dict)
       return NULL;
     window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
+    uim_dict_unref(dict);
   }
 
   gtk_widget_show(window);
@@ -174,33 +171,8 @@ create_window_anthy(void)
   return window;
 }
 
-static GtkWidget *
-create_window_canna(void)
-{
-  GtkWidget *window;
-  uim_dict *dict;
-
-  if (ae_mode == MODE_EDIT) {
-    window = word_list_window_new(DICT_ENUM_DICTIONARY_TYPE_CANNA);
-    if (WORD_LIST_VIEW(WORD_LIST_WINDOW(window)->word_list)->dict == NULL)
-      return NULL;
-  } else {
-    dict = uim_dict_open(N_("Canna private dictionary"));
-    if (!dict) {
-	    fprintf(stderr, "uim_dict_open() canna NULL\n");
-      return NULL;
-    }
-    window = word_window_new(WORD_WINDOW_MODE_ADD, dict);
-  }
-
-  gtk_widget_show(window);
-
-  return window;
-}
-
-
-void
-dict_window_destroy_cb(GtkWidget *widget, gpointer data)
+static void
+window_destroy_cb(GtkWidget *widget, gpointer data)
 {
   gtk_main_quit();
 }
@@ -210,18 +182,18 @@ create_window(void)
 {
   GtkWidget *window = NULL;
 
-  switch (g_startup_dictionary) {
-  case DICT_ENUM_DICTIONARY_TYPE_ANTHY:
+  switch (input_method) {
+  case IM_ANTHY:
     window = create_window_anthy();
     break;
-  case DICT_ENUM_DICTIONARY_TYPE_CANNA:
-    window = create_window_canna();
+  case IM_CANNA:
+    /* window = create_window_canna(); */
     break;
-  case DICT_ENUM_DICTIONARY_TYPE_PRIME:
-    /* create_window_prime();*/
-    break;
-  case DICT_ENUM_DICTIONARY_TYPE_SKK:
+  case IM_SKK:
     /* create_window_skk();*/
+    break;
+  case IM_PRIME:
+    /* create_window_prime();*/
     break;
   default:
     return -1;
@@ -231,33 +203,15 @@ create_window(void)
     return -1;
 
   g_signal_connect(G_OBJECT(window), "destroy",
-		   G_CALLBACK(dict_window_destroy_cb), NULL);
+		   G_CALLBACK(window_destroy_cb), NULL);
 
   return 0;
-}
-
-static void
-setup_default_icon()
-{
-  GdkPixbuf *pixbuf;
-
-  pixbuf = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-dict.png", NULL);
-  if (pixbuf) {
-    GList *list;
-
-    list = NULL;
-    list = g_list_append(list, pixbuf);
-    gtk_window_set_default_icon_list(list);
-    g_list_free(list);
-    g_object_unref(pixbuf);
-  }
 }
 
 int
 main(int argc, char *argv[])
 {
   gint result;
-
   setlocale(LC_ALL, "");
   gtk_set_locale();
   bindtextdomain(PACKAGE, LOCALEDIR);
@@ -266,7 +220,6 @@ main(int argc, char *argv[])
   parse_arg(argc, argv);
 
   gtk_init(&argc, &argv);
-  setup_default_icon();
 
   result = create_window();
 

@@ -133,11 +133,6 @@
 	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
-   (list 'action_anthy_ascii_with_preedit
-	 'ja_ascii_with_preedit
-	 "aA"
-	 (N_ "ASCII with preedit")
-	 (N_ "ASCII with preedit mode"))
    (list 'action_anthy_zenkaku
 	 'ja_fullwidth_alnum
 	 "£Á"

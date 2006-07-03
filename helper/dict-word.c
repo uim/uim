@@ -31,15 +31,10 @@
  *  SUCH DAMAGE.
  */
 
-#include <config.h>
-
 #include <stdlib.h>
 #include <string.h>
 
-#include "gettext.h"
-
 #include "dict-word.h"
-#include "dict-canna-cclass.h"
 
 void word_append(uim_word **head, uim_word_type type,
 		 char *charset,
@@ -129,34 +124,4 @@ uim_word *word_last(uim_word *list) {
 	}
     }
     return list;
-}
-
-uim_word_type
-dict_identifier_to_word_type(char *identifier)
-{
-  uim_word_type type;
-
-  if (!strcmp(identifier, N_("Anthy private dictionary")))
-    type = WORD_TYPE_ANTHY;
-  else if (!strcmp(identifier, N_("Canna private dictionary")))
-    type = WORD_TYPE_CANNA;
-  else
-    type = WORD_TYPE_ANTHY; /* XXX */
-    
-  return type;
-}
-
-int
-dict_identifier_to_support_type(char *identifier)
-{
-  int type;
-
-  if (!strcmp(identifier, N_("Anthy private dictionary")))
-    type = SUPPORT_ANTHY;
-  else if (!strcmp(identifier, N_("Canna private dictionary")))
-    type = SUPPORT_CANNA;
-  else
-    type = SUPPORT_ANTHY; /* XXX */
-    
-  return type;
 }

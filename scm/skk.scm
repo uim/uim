@@ -1994,7 +1994,8 @@
 (define skk-proc-state-wide-latin
   (lambda (c key key-state)
     (let* ((char (charcode->string key))
-	   (w (ja-wide char))
+	   (w (or (ja-direct char)
+		  (ja-wide char)))
 	   (sc (skk-find-descendant-context c)))
       (if skk-use-with-vi?
 	  (if (skk-vi-escape-key? key key-state)

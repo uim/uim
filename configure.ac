@@ -615,26 +615,6 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
      LDFLAGS=$saved_LDFLAGS
 fi
 
-dnl for uim-dict.xml.in
-if test "x$use_anthy" = "xyes"; then
-  UI_XML_ANTHY_START=""
-  UI_XML_ANTHY_END=""
-else
-  UI_XML_ANTHY_START="<!--"
-  UI_XML_ANTHY_END="-->"
-fi
-if test "x$use_canna" = "xyes"; then
-  UI_XML_CANNA_START=""
-  UI_XML_CANNA_END=""
-else
-  UI_XML_CANNA_START="<!--"
-  UI_XML_CANNA_END="-->"
-fi
-AC_SUBST(UI_XML_ANTHY_START)
-AC_SUBST(UI_XML_ANTHY_END)
-AC_SUBST(UI_XML_CANNA_START)
-AC_SUBST(UI_XML_CANNA_END)
-
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
@@ -953,7 +933,6 @@ AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
 		 m4/Makefile
 		 helper/Makefile
-		 helper/uim-dict-ui.xml
 		 doc/Makefile
 		 uim/Makefile
 		 scm/Makefile

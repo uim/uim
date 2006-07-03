@@ -69,18 +69,6 @@
 	       (_ "[Canna] shrink segment")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-transpose-as-latin-key '("F10")
-	       '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] convert to halfwidth alphanumeric")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-transpose-as-wide-latin-key '("F9")
-	       '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] convert to fullwidth alphanumeric")
-	       (_ "long description will be here"))
-
 (define-custom 'canna-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(canna-keys1)
 	       '(key)
@@ -111,7 +99,7 @@
 	       (_ "[Canna] fullwidth alphanumeric mode")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-hankaku-kana-key '()
+(define-custom 'canna-hankaku-kana-key '("<IgnoreCase><Control>q")
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] halfwidth katakana mode")
@@ -144,13 +132,6 @@
 	       '(key)
 	       (_ "[Canna] begin conversion")
 	       (_ "long description will be here"))
-
-(define-custom 'canna-begin-conv-with-ascii-mode-key '("<Shift> ")
-               '(canna-keys2)
-	       '(key)
-	       (_ "[Canna] begin conversion in ASCII mode")
-	       (_ "long description will be here"))
-
 
 (define-custom 'canna-commit-key '(generic-commit-key)
                '(canna-keys2)
@@ -186,18 +167,6 @@
                '(canna-keys2)
 	       '(key)
 	       (_ "[Canna] previous page of candidate window")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-ascii-mode-on-key '()
-               '(canna-keys2)
-	       '(key)
-	       (_ "[Canna] ASCII input on with preedit")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-ascii-mode-off-key '()
-               '(canna-keys2)
-	       '(key)
-	       (_ "[Canna] ASCII input off with preedit")
 	       (_ "long description will be here"))
 
 ;;

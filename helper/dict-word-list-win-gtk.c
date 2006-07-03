@@ -35,10 +35,7 @@
 
 #include <stdlib.h>
 #include <gdk/gdkkeysyms.h>
-
-#include "gettext.h"
-#include "uim-stdint.h"
-
+#include "uim/gettext.h"
 #include "dict-word.h"
 #include "dict-anthy.h"
 #include "dict-word-list-view-gtk.h"
@@ -67,17 +64,11 @@ static void popup_menu_action_cb        (GtkAction      *action,
 					 WordListWindow *window);
 static void help_about_action_cb        (GtkAction      *action,
 					 WordListWindow *window);
-static void activate_radio_action(GtkAction *action, GtkRadioAction *current,
-				  gpointer data);
 
 /* call back functions for WordListView */
 static gboolean word_list_button_press_cb  (GtkWidget      *widget,
 					    GdkEventButton *event,
 					    WordListWindow *window);
-static gboolean word_list_row_activated_cb(GtkWidget *widget,
-					   GtkTreePath *path,
-					   GtkTreeViewColumn *column,
-					   WordListWindow *window);
 static gboolean word_list_key_press_cb     (GtkWidget      *widget,
 					    GdkEventKey    *event,
 					    WordListWindow *window);
@@ -88,16 +79,12 @@ static void word_list_selection_changed_cb (GtkTreeSelection *selection,
 static void wordwin_response_cb            (WordWindow     *dialog,
 					    WordListWindow *window);
 
-static void dict_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
-static void dict_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
-
 GtkWindowClass *parent_class = NULL;
 GdkEventButton *current_button_event = NULL;
 
 /* Main menu*/
 GtkActionEntry menu_action_entries[] = {
-    { "DictionaryMenu", NULL, N_("_Dictionary") },
-    { "SelectMenu", NULL, N_("_Select") },
+    { "FileMenu",   NULL, N_("_File")   },
     { "EditMenu",   NULL, N_("_Edit")   },
     { "OptionMenu", NULL, N_("_Option") },
     { "HelpMenu",   NULL, N_("_Help")   },
@@ -115,16 +102,6 @@ GtkActionEntry menu_action_entries[] = {
       N_("About uim-dict"),           G_CALLBACK(help_about_action_cb) },
 };
 static guint n_menu_action_entries = G_N_ELEMENTS(menu_action_entries);
-
-static GtkRadioActionEntry dictionary_entries[] = {
-  { "Anthy", NULL,
-    "_Anthy", NULL,
-    "Anthy private dictionary", DICT_ENUM_DICTIONARY_TYPE_ANTHY },
-  { "Canna", NULL,
-    "_Canna", NULL,
-    "Canna private dictionary", DICT_ENUM_DICTIONARY_TYPE_CANNA },
-};
-static guint n_dictionary_entries = G_N_ELEMENTS(dictionary_entries);
 
 #define ACTIVATE_ACTION(window, action_name)				       \
 {									       \
@@ -167,24 +144,6 @@ GType word_list_window_get_type(void) {
   return type;
 }
 
-GType
-dict_enum_dictionary_type_get_type(void)
-{
-  static GType etype = 0;
-  if (etype == 0) {
-    static const GEnumValue values[] = {
-      { DICT_ENUM_DICTIONARY_TYPE_ANTHY, "DICT_ENUM_DICTIONARY_TYPE_ANTHY", "anthy" },
-      { DICT_ENUM_DICTIONARY_TYPE_CANNA, "DICT_ENUM_DICTIONARY_TYPE_CANNA", "canna" },
-      { DICT_ENUM_DICTIONARY_TYPE_SKK, "DICT_ENUM_DICTIONARY_TYPE_SKK", "skk" },
-      { DICT_ENUM_DICTIONARY_TYPE_PRIME, "DICT_ENUM_DICTIONARY_TYPE_PRIME", "prime" },
-      { DICT_ENUM_DICTIONARY_TYPE_UNKOWN, "DICT_ENUM_DICTIONARY_TYPE_UNKOWN", "unknown" },
-      { 0, NULL, NULL }
-    };
-    etype = g_enum_register_static("DictEnumDictionaryType", values);
-  }
-  return etype;
-}
-
 static void
 word_list_window_class_init (WordListWindowClass *klass)
 {
@@ -194,18 +153,6 @@ word_list_window_class_init (WordListWindowClass *klass)
   object_class = (GObjectClass *) klass;
 
   object_class->dispose = word_list_window_dispose;
-
-  object_class->get_property = dict_get_property;
-  object_class->set_property = dict_set_property;
-
-  g_object_class_install_property(object_class,
-  				  PROP_DICTIONARY_TYPE,
-				  g_param_spec_enum("dictionary-type",
-				  		    _("dictionary type"),
-						    _("dictionary type"),
-						    DICT_TYPE_ENUM_DICTIONARY_TYPE,
-						    DICT_ENUM_DICTIONARY_TYPE_ANTHY,
-						    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
 
 static gchar *
@@ -220,7 +167,7 @@ warn_dict_open()
   GtkWidget *dialog;
   const gchar *message;
 
-  message = N_("Couldn't open the dictionary.\n");
+  message = N_("Couldn't open a library for manipulating the dictionary.\n");
   dialog = gtk_message_dialog_new(NULL,
 		  		  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_WARNING,
@@ -236,6 +183,8 @@ word_list_window_init (WordListWindow *window)
   GtkWidget *word_list, *vbox, *statusbar;
   GtkUIManager *ui;
   GtkActionGroup *actions;
+  uim_dict *dict = NULL;
+  gchar message[128];
 
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
   gtk_window_set_default_size(GTK_WINDOW(window), 600, 450);
@@ -253,18 +202,12 @@ word_list_window_init (WordListWindow *window)
   gtk_action_group_add_actions(actions, menu_action_entries,
 			       n_menu_action_entries, window);
 
-  gtk_action_group_add_radio_actions(actions, dictionary_entries,
-				     n_dictionary_entries,
-				     DICT_ENUM_DICTIONARY_TYPE_ANTHY,
-				     G_CALLBACK(activate_radio_action),
-				     window);
-
   window->ui_manager = ui = gtk_ui_manager_new();
   gtk_ui_manager_insert_action_group(ui, actions, 0);
   g_signal_connect(ui, "add_widget",
 		   G_CALLBACK(add_widget_cb),
 		   vbox);
-  gtk_window_add_accel_group(GTK_WINDOW(window),
+   gtk_window_add_accel_group(GTK_WINDOW(window),
 			     gtk_ui_manager_get_accel_group(ui));
 
   gtk_ui_manager_add_ui_from_file(ui,
@@ -282,9 +225,6 @@ word_list_window_init (WordListWindow *window)
 		   "button-press-event",
 		   G_CALLBACK(word_list_button_press_cb), window);
   g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
-		   "row-activated",
-		   G_CALLBACK(word_list_row_activated_cb), window);
-  g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
 		   "key-press-event",
 		   G_CALLBACK(word_list_key_press_cb), window);
   g_signal_connect(G_OBJECT(WORD_LIST_VIEW(window->word_list)->selection),
@@ -294,6 +234,18 @@ word_list_window_init (WordListWindow *window)
   window->statusbar = statusbar = gtk_statusbar_new();
   gtk_box_pack_start(GTK_BOX(vbox), statusbar, FALSE, FALSE, 0);
   gtk_widget_show(statusbar);
+
+#if 1 /* FIXME! currently the identifier of Anthy is hard coded */
+  dict = uim_dict_open(N_("Anthy private dictionary"));
+  if (!dict) {
+    warn_dict_open();
+    exit(EXIT_FAILURE);
+  }
+#endif
+  word_list_view_set_dict(WORD_LIST_VIEW(word_list), dict);
+
+  g_snprintf(message, sizeof(message), _("%s"), _(dict->identifier));
+  gtk_statusbar_push(GTK_STATUSBAR(window->statusbar), 0, _(dict->identifier));
 
   word_list_window_set_sensitive(window);
 }
@@ -317,70 +269,13 @@ word_list_window_dispose(GObject *object)
     G_OBJECT_CLASS(parent_class)->dispose(object);
 }
 
-static void
-dict_get_property(GObject *object, guint prop_id, GValue *value,
-		  GParamSpec *pspec)
+GtkWidget *word_list_window_new(void)
 {
-  switch (prop_id) {
-  case PROP_DICTIONARY_TYPE:
-    g_value_set_enum(value, dict_get_dictionary_type(GTK_WIDGET(object)));
-    break;
-  default:
-    break;
-  }
-}
+  GtkWidget *widget;
 
-static void
-dict_set_property(GObject *object, guint prop_id, const GValue *value,
-		  GParamSpec *pspec)
-{
-  WordListWindow *window = WORD_LIST_WINDOW(object);
-  uim_dict *dict = NULL;
-  gchar message[128];
+  widget = GTK_WIDGET(g_object_new(WORD_LIST_WINDOW_TYPE, NULL));
 
-  switch (prop_id) {
-  case PROP_DICTIONARY_TYPE:
-    window->dictionary_type = g_value_get_enum(value);
-
-    ACTIVATE_ACTION(window, dictionary_entries[window->dictionary_type].name);
-
-    switch (window->dictionary_type) {
-    case DICT_ENUM_DICTIONARY_TYPE_ANTHY:
-      dict = uim_dict_open(N_("Anthy private dictionary"));
-      break;
-    case DICT_ENUM_DICTIONARY_TYPE_CANNA:
-      word_list_view_set_visible_freq_column(WORD_LIST_VIEW(window->word_list), FALSE);
-      dict = uim_dict_open(N_("Canna private dictionary"));
-      break;
-    default:
-      break;
-    }
-    if (!dict) {
-      warn_dict_open();
-      break;
-    }
-    word_list_view_set_dict(WORD_LIST_VIEW(window->word_list), dict);
-
-    g_snprintf(message, sizeof(message), _("%s"), _(dict->identifier));
-    gtk_statusbar_push(GTK_STATUSBAR(window->statusbar), 0, _(dict->identifier));
-    break;
-  default:
-    break;
-  }
-}
-
-DictEnumDictionaryType
-dict_get_dictionary_type(GtkWidget *window)
-{
-  WordListWindow *w = (WordListWindow *)window;
-
-  return w->dictionary_type;
-}
-
-GtkWidget *word_list_window_new(int type)
-{
-  return GTK_WIDGET(g_object_new(WORD_LIST_WINDOW_TYPE,
-				 "dictionary-type", type, NULL));
+  return widget;
 }
 
 static void
@@ -560,57 +455,19 @@ popup_menu_action_cb(GtkAction *action, WordListWindow *window)
   }
 }
 
-#if GTK_CHECK_VERSION(2, 6, 0)
-static void
-activate_url(GtkAboutDialog *about, const gchar *link, gpointer data)
-{
-  /* g_print("show url %s\n", link); */
-}
-#endif
-
 static void
 help_about_action_cb(GtkAction *action, WordListWindow *window)
 {
-  const gchar *name = N_("uim-dict");
-#if GTK_CHECK_VERSION(2, 6, 0)
-  GdkPixbuf *pixbuf, *transparent;
-  const gchar *filename = UIM_PIXMAPSDIR "/uim-dict.png";
-  const gchar *authors[] = {
-    "Masahito Omote <omote@utyuuzin.net>",
-    "Takuro Ashie",
-    "Etsushi Kato",
-    NULL
-  };
-  const gchar *copyright = N_(
-    "Copyright (C) 2003-2004 Masahito Omote\n"
-    "Copyright (C) 2004-2006 uim Project\n"
-    "All rights reserved.");
-
-  transparent = NULL;
-  pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
-  if (pixbuf) {
-    transparent = gdk_pixbuf_add_alpha(pixbuf, TRUE, 0xff, 0xff, 0xff);
-    g_object_unref(pixbuf);
-  }
-  
-  gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
-  gtk_show_about_dialog (GTK_WINDOW(window),
-			 "name", name,
-			 "version", VERSION,
-			 "copyright", copyright,
-			 "website", "http://uim.freedesktop.org",
-			 "authors", authors,
-			 "logo", transparent,
-			 NULL);
-  g_object_unref(transparent);
-#else
   GtkWidget *about_dialog, *label1;
+  gchar *about_name;
+  const gchar *name = N_("uim-dict");
   const gchar *copyright = N_(
     "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
     "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
     "All rights reserved.");
-  gchar *about_name =
-    g_strdup_printf("<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
+
+  about_name = g_strdup_printf(
+       "<span size=\"20000\">%s %s </span>\n\n<span size=\"14000\">%s </span>\n", _(name), VERSION, _(copyright));
 
   about_dialog = gtk_dialog_new_with_buttons(_("About uim-dict"), NULL,
 					     GTK_DIALOG_MODAL,
@@ -632,46 +489,8 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
   gtk_dialog_run(GTK_DIALOG(about_dialog));
 
   gtk_widget_destroy(about_dialog);
-#endif
 }
 
-static void
-activate_radio_action(GtkAction *action, GtkRadioAction *current,
-		      gpointer data)
-{
-  WordListWindow *window;
-  const gchar *name, *typename;
-  gboolean active;
-  guint value;
-
-  window = WORD_LIST_WINDOW(data);
-  name = gtk_action_get_name(GTK_ACTION(current));
-  typename = G_OBJECT_TYPE_NAME(GTK_ACTION(current));
-  active = gtk_toggle_action_get_active(GTK_TOGGLE_ACTION(current));
-  value = gtk_radio_action_get_current_value(GTK_RADIO_ACTION(current));
-
-  if (active) {
-    if (value != window->dictionary_type) {
-      GtkWidget *newwin;
-
-      newwin = word_list_window_new(value);
-
-      /* quit */
-      if (WORD_LIST_VIEW(WORD_LIST_WINDOW(newwin)->word_list)->dict == NULL) {
-        gtk_main_quit();
-      }
-
-      g_signal_handlers_disconnect_by_func(G_OBJECT(window),
-					   (gpointer)(uintptr_t)dict_window_destroy_cb,
-					   NULL);
-      gtk_widget_destroy(GTK_WIDGET(window));
-
-      g_signal_connect(G_OBJECT(newwin), "destroy",
-		       G_CALLBACK(dict_window_destroy_cb), NULL);
-      gtk_widget_show(newwin);
-    }
-  }
-}
 
 /*
  * call back functions for WordListView
@@ -680,7 +499,9 @@ static gboolean
 word_list_button_press_cb(GtkWidget *widget, GdkEventButton *event,
 			  WordListWindow *window)
 {
-  if (event->button == 2 && event->type == GDK_BUTTON_PRESS) {
+  if ((event->button == 1 && event->type == GDK_2BUTTON_PRESS) ||
+      (event->button == 2 && event->type == GDK_BUTTON_PRESS))
+  {
     ACTIVATE_ACTION(window, "EditWord");
   } else if (event->button == 3) {
     current_button_event = event;
@@ -692,19 +513,13 @@ word_list_button_press_cb(GtkWidget *widget, GdkEventButton *event,
 }
 
 static gboolean
-word_list_row_activated_cb(GtkWidget *widget, GtkTreePath *path,
-			   GtkTreeViewColumn *column, WordListWindow *window)
-{
-    ACTIVATE_ACTION(window, "EditWord");
-
-    return FALSE;
-}
-
-static gboolean
 word_list_key_press_cb(GtkWidget *widget, GdkEventKey *event,
 		       WordListWindow *window)
 {
   switch (event->keyval) {
+  case GDK_Return:
+    ACTIVATE_ACTION(window, "EditWord");
+    break;
   case GDK_Delete:
     ACTIVATE_ACTION(window, "RemoveWord");
     break;
