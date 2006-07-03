@@ -728,8 +728,7 @@
 
 	;; spcae key => commit
 	((mana-space-key? key key-state)
-	 (im-commit mc (list-ref '("¡¡" "¡¡" " ")
-				 (mana-context-kana-mode mc))))
+	 (im-commit mc (list-ref ja-space (mana-context-kana-mode mc))))
 	 
         ((symbol? key)
          (mana-commit-raw mc))

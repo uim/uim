@@ -513,8 +513,7 @@
 
        ;; spcae key => commit
        ((anthy-space-key? key key-state)
-	(im-commit ac (list-ref '("¡¡" "¡¡" " ")
-				(anthy-context-kana-mode ac))))
+	(im-commit ac (list-ref ja-space (anthy-context-kana-mode ac))))
 
        ((symbol? key)
 	(anthy-commit-raw ac))

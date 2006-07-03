@@ -472,7 +472,7 @@
 
      ;; space key
      ((canna-space-key? key key-state)
-      (im-commit cc (list-ref '("¡¡" "¡¡" " ") (canna-context-kana-mode cc))))
+      (im-commit cc (list-ref ja-space (canna-context-kana-mode cc))))
 
      ((symbol? key)
       (canna-commit-raw cc))

@@ -638,6 +638,9 @@
   '(
     ))
 
+(define ja-space
+  '("¡¡" "¡¡" " "))
+
 ;;
 (define ja-find-rec
   (lambda (c rule)
