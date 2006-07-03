@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.43"
+   version="1.0"
+   sodipodi:docbase="/home/kato"
+   sodipodi:docname="ja_ascii_with_preedit.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="16.958333"
+     inkscape:cx="24"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2241"
+     showgrid="true"
+     inkscape:grid-points="false"
+     gridspacingx="1.5px"
+     gridspacingy="1.5px"
+     gridempspacing="2"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="989"
+     inkscape:window-height="933"
+     inkscape:window-x="100"
+     inkscape:window-y="30" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>ja_ascii_with_preedit.svg</dc:title>
+        <dc:date>2006-07-03</dc:date>
+        <dc:description>Input mode icon for ASCII input with preedit.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ja</dc:language>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2241">
+      <path
+         id="path1307"
+         d="M 7.5,43.5 L 7.5,46.5 L 43.5,46.5 L 43.5,43.5"
+         style="opacity:0.703125;fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#2d4461;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <rect
+         style="opacity:0.703125;fill:#2d4461;fill-opacity:1;fill-rule:evenodd;stroke:#2d4461;stroke-width:0;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3999"
+         width="3.0000019"
+         height="3.0000041"
+         x="24"
+         y="42"
+         rx="0"
+         ry="0" />
+      <g
+         id="g1880"
+         transform="matrix(2.883006e-2,0,0,-4.3e-2,24.81954,36.10915)">
+        <path
+           id="path1882"
+           d="M 1.500961,16.62865 L 277.34048,746.62865 L 397.70681,746.62865 L 673.54633,16.62865 L 557.19221,16.62865 L 488.98462,211.62865 L 186.06268,211.62865 L 117.85509,16.62865 L 1.500961,16.62865 z M 217.15731,298.62865 L 457.88998,298.62865 L 338.5267,638.62865 L 336.52059,638.62865 L 217.15731,298.62865 z "
+           style="fill:currentColor" />
+      </g>
+      <path
+         style="font-size:10.9237318px;font-style:normal;font-weight:normal;line-height:125%;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         d="M 18.187312,24.911039 C 15.901458,24.911049 14.317769,25.226478 13.436238,25.857328 C 12.554696,26.488197 12.113928,27.564368 12.113933,29.085845 C 12.113928,30.298091 12.441942,31.262935 13.097974,31.980379 C 13.764246,32.68546 14.666283,33.037999 15.804088,33.037997 C 17.372394,33.037999 18.62807,32.37003 19.571121,31.034089 C 20.524397,29.685786 21.001042,27.898353 21.001055,25.671781 L 21.001055,24.911039 L 18.187312,24.911039 M 23.830174,23.500882 L 23.830174,35.357333 L 21.001055,35.357333 L 21.001055,32.203035 C 20.355265,33.464757 19.550608,34.398675 18.587079,35.004794 C 17.623528,35.598544 16.44473,35.895419 15.050681,35.89542 C 13.287601,35.895419 11.883294,35.30167 10.837754,34.114169 C 9.802458,32.914301 9.284812,31.312413 9.2848138,29.308502 C 9.284812,26.970618 9.930588,25.207924 11.222145,24.020413 C 12.523945,22.832925 14.461275,22.239175 17.034139,22.239162 L 21.001055,22.239162 L 21.001055,21.905177 C 21.001042,20.334228 20.570525,19.121989 19.709501,18.268456 C 18.858704,17.402588 17.659406,16.969646 16.1116,16.969627 C 15.127551,16.969646 14.169138,17.111899 13.236355,17.396386 C 12.303561,17.680909 11.406649,18.107666 10.545617,18.67666 L 10.545617,15.522361 C 11.580906,15.03996 12.585448,14.681235 13.559244,14.446189 C 14.533027,14.198814 15.481191,14.075116 16.403738,14.075095 C 18.894581,14.075116 20.755032,14.854412 21.985097,16.412987 C 23.215133,17.971598 23.830158,20.334228 23.830174,23.500882"
+         id="text1319" />
+    </g>
+  </g>
+</svg>
