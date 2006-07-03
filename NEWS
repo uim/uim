@@ -1,3 +1,35 @@
+Overview of changes from 1.1.0 to 1.1.1-beta
+==
+* New features
+  - uim-dict-gtk
+    - Support Canna private dictionary.
+
+  - Anthy
+    - Enable latin and wide-latin conversion with a specific segment using 10
+      and F9 keys.
+    - Add ASCII input conversion mode.
+  - Canna
+  - Mana
+    - Enable hiragana, katakana, half-width katakana, Latin and wide-Latin
+      conversion with a specific segment using function keys.
+    - Add ASCII input conversion mode.
+
+* Fixes
+  - Anthy
+    - Don't commit full-width space on half-width katakana mode (bug #502).
+    - Don't hang in latin conversion with incomplete roma-kana sequence.
+  - Canna
+    - Don't commit full-width space on half-width katakana mode.
+    - Fix key bindings for using kana input rule.
+    - Improve preedit handing on direct mode.
+    - Fix IM context reset.
+    - Don't hang even when Canna server disconnect.
+  - Mana
+    - Don't commit full-width space on half-width katakana mode.
+
+  - uim-pref-qt
+    - Enable to remove all the key binding setting.
+
 Overview of changes from 1.1.0-beta to 1.1.0
 ==
 * Fixes
