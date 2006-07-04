@@ -211,8 +211,12 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
 
   if (*y + button_height + menu_height < sc_height)
     *y = *y + button_height;
-  else
-    *y = *y - menu_height;
+  else {
+    if (*y + button_height < sc_height / 2)
+      *y = *y + button_height;
+    else
+      *y = *y - menu_height;
+  }
 
   if (*x + menu_width > sc_width)
     *x = sc_width - menu_width;
