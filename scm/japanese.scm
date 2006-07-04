@@ -673,9 +673,11 @@
                 ;;   Should we check matched record from ja-rk-rule?:
                 ;;   (if (hoge-find-rec (string-append head-str next-str))
                 (let ((next-head (car (reverse (string-to-list next-str)))))
-                 (if (or (ja-vowel? next-str)
+                 (if (and
+		      (not (null? next-head))
+		      (or (ja-vowel? next-str)
                          (string=? "y" next-head)
-                         (string=? "n" next-head))
+                         (string=? "n" next-head)))
                     "nn"
                     head-str)))
             (if (or (null? next-str) (string=? next-str ""))
