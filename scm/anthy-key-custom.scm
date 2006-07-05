@@ -112,13 +112,13 @@
 ;; overriding generic keys
 ;;
 
-(define-custom 'anthy-on-key '("<IgnoreCase><Control>j" generic-on-key)
+(define-custom 'anthy-on-key '(generic-on-key)
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] on")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-off-key '("<IgnoreCase><Control>j" generic-off-key)
+(define-custom 'anthy-off-key '(generic-off-key)
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] off")
