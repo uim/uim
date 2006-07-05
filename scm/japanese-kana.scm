@@ -446,7 +446,7 @@
     ((("¡×"). ())("¡×"))
     ))
 
-(define ja-kana-hankana-rule
+(define ja-kana-halfkana-rule
   '(
     ((("#"). ("Ž§"))())
     ((("E"). ("Ž¨"))())
@@ -653,3 +653,6 @@
     ((("Ž¢"). ())("Ž¢"))
     ((("Ž£"). ())("Ž£"))
     ))
+
+;; for backward compatibility
+(define ja-kana-hankana-rule ja-kana-halfkana-rule)

@@ -768,11 +768,17 @@
 	(append (list (ja-find-kana-list-from-rule ja-rk-rule-basic (car sl)))
 		(ja-make-kana-str-list (cdr sl))))))
 
-(define ja-type-hiragana   0)
-(define ja-type-katakana   1)
-(define ja-type-hankana    2)
-(define ja-type-latin      3)
-(define ja-type-wide-latin 4)
+(define ja-type-direct	       -1)
+(define ja-type-hiragana	0)
+(define ja-type-katakana	1)
+(define ja-type-halfkana	2)
+(define ja-type-halfwidth-alnum	3)
+(define ja-type-fullwidth-alnum	4)
+
+;; backward compatiblity
+(define ja-type-hankana    ja-type-halfkana)
+(define ja-type-latin      ja-type-halfwidth-alnum)
+(define ja-type-wide-latin ja-type-fullwidth-alnum)
 
 (define ja-opposite-kana
   (lambda (kana)
@@ -781,7 +787,7 @@
       ja-type-katakana)
      ((= kana ja-type-katakana)
       ja-type-hiragana)
-     ((= kana ja-type-hankana)
+     ((= kana ja-type-halfkana)
       ja-type-hiragana))))
 
 ;; getting required type of kana string from above kana-str-list
@@ -798,7 +804,7 @@
 	       (caar l))
 	      ((= type ja-type-katakana)
 	       (car (cdar l)))
-	      ((= type ja-type-hankana)
+	      ((= type ja-type-halfkana)
 	       (cadr (cdar l)))))))
       (if (not (null? sl))
 	  (string-append (ja-make-kana-str (cdr sl) type)

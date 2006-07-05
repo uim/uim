@@ -44,6 +44,9 @@
 		     (_ "Anthy key bindings 3")
 		     (_ "long description will be here."))
 
+(define-custom-group 'anthy-keys4
+		     (_ "Anthy key bindings 4")
+		     (_ "long description will be here."))
 
 (define-custom 'anthy-next-segment-key '(generic-go-right-key)
                '(anthy-keys1)
@@ -69,18 +72,6 @@
 	       (_ "[Anthy] shrink segment")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-transpose-as-latin-key '("F10")
-               '(anthy-keys1)
-	       '(key)
-	       (_ "[Anthy] convert to halfwidth alphanumeric")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-transpose-as-wide-latin-key '("F9")
-               '(anthy-keys1)
-	       '(key)
-	       (_ "[Anthy] convert to fullwidth alphanumeric")
-	       (_ "long description will be here"))
-
 (define-custom 'anthy-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(anthy-keys1)
 	       '(key)
@@ -93,35 +84,28 @@
 	       (_ "[Anthy] convert to katakana")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-transpose-as-hankana-key '("F8" "Muhenkan")
+(define-custom 'anthy-transpose-as-halfkana-key '("F8" "Muhenkan")
                '(anthy-keys1)
 	       '(key)
 	       (_ "[Anthy] convert to halfwidth katakana")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-transpose-as-halfwidth-alnum-key '("F10")
+               '(anthy-keys1)
+	       '(key)
+	       (_ "[Anthy] convert to halfwidth alphanumeric")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-transpose-as-fullwidth-alnum-key '("F9")
+               '(anthy-keys1)
+	       '(key)
+	       (_ "[Anthy] convert to fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-commit-as-opposite-kana-key '()
                '(anthy-keys1)
 	       '(key)
 	       (_ "[Anthy] commit as transposed kana")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-wide-latin-key '()
-               '(anthy-keys1)
-	       '(key)
-	       (_ "[Anthy] fullwidth alphanumeric mode")
-	       (_ "long description will be here"))
-
-;(define-custom 'anthy-hankaku-kana-key '("<IgnoreCase><Control>q")
-(define-custom 'anthy-hankaku-kana-key '()
-               '(anthy-keys1)
-	       '(key)
-	       (_ "[Anthy] halfwidth katakana mode")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-kana-toggle-key '()
-               '(anthy-keys1)
-	       '(key)
-	       (_ "[Anthy] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
 ;;
@@ -134,7 +118,7 @@
 	       (_ "[Anthy] on")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-latin-key '("<IgnoreCase><Control>j" generic-off-key)
+(define-custom 'anthy-off-key '("<IgnoreCase><Control>j" generic-off-key)
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] off")
@@ -144,12 +128,6 @@
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] begin conversion")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-begin-conv-with-ascii-mode-key '("<Shift> ")
-               '(anthy-keys2)
-	       '(key)
-	       (_ "[Anthy] begin conversion in ascii mode")
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-commit-key '(generic-commit-key)
@@ -186,18 +164,6 @@
                '(anthy-keys2)
 	       '(key)
 	       (_ "[Anthy] previous page of candidate window")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-ascii-mode-on-key '()
-               '(anthy-keys2)
-	       '(key)
-	       (_ "[Anthy] ASCII input on with preedit")
-	       (_ "long description will be here"))
-
-(define-custom 'anthy-ascii-mode-off-key '()
-               '(anthy-keys2)
-	       '(key)
-	       (_ "[Anthy] ASCII input off with preedit")
 	       (_ "long description will be here"))
 
 ;;
@@ -256,4 +222,50 @@
                '(anthy-keys3)
 	       '(key)
 	       (_ "[Anthy] ESC keys on vi-cooperative mode")
+	       (_ "long description will be here"))
+
+;;
+;; ja advanced
+;;
+
+(define-custom 'anthy-hiragana-key '("<Shift>F6")
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] hiragana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-katakana-key '("<Shift>F7")
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-halfkana-key '("<Shift>F8")
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] halfwidth katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-halfwidth-alnum-key '("<Shift>F10")
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] halfwidth alphanumeric mode")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-fullwidth-alnum-key '("<Shift>F9")
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] fullwidth alphanumeric mode")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-kana-toggle-key '()
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] toggle hiragana/katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'anthy-alkana-toggle-key '()
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))
