@@ -584,13 +584,14 @@
 
        ;; kill
        ((anthy-kill-key? key key-state)
-	(ustr-clear-latter! preconv-str))
+	(ustr-clear-latter! preconv-str)
+	(ustr-clear-latter! raw-str))
        
        ;; kill-backward
        ((anthy-kill-backward-key? key key-state)
-	(begin
-	  (rk-flush rkc)
-	  (ustr-clear-former! preconv-str)))
+	(rk-flush rkc)
+	(ustr-clear-former! preconv-str)
+	(ustr-clear-former! raw-str))
 
        ;; 現在とは逆のかなモードでかなを確定する
        ((anthy-commit-as-opposite-kana-key? key key-state)
