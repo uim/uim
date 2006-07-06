@@ -173,7 +173,8 @@
 		    ac (anthy-context-kana-mode ac))
 		   (anthy-context-set-on! ac #t)
 		   (anthy-context-set-alnum! ac #t)
-		   (anthy-context-set-alnum-type! ac anthy-type-halfwidth-alnum)))
+		   (anthy-context-set-alnum-type!
+		    ac anthy-type-halfwidth-alnum)))
 
 (register-action 'action_anthy_direct
 ;;		 (indication-alist-indicator 'action_anthy_direct
@@ -205,8 +206,10 @@
 		 (lambda (ac)
 		   (anthy-prepare-input-mode-activation
 		    ac (anthy-context-kana-mode ac))
+		   (anthy-context-set-on! ac #t)
 		   (anthy-context-set-alnum! ac #t)
-		   (anthy-context-set-alnum-type! ac anthy-type-fullwidth-alnum)))
+		   (anthy-context-set-alnum-type!
+		    ac anthy-type-fullwidth-alnum)))
 
 (register-action 'action_anthy_roma
 ;;		 (indication-alist-indicator 'action_anthy_roma
