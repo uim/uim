@@ -1,10 +1,10 @@
-uim 1.1.0 Release Note
+uim 1.1.1 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.1.0 is latest stable release of uim.
+This distribution of uim 1.1.1 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -14,33 +14,7 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-
-Following features are highlight of this release. See NEWS for all
-changes.
-
-  - icon support for toolbar
-  - menu-based quick IM switching from toolbar
-
-And for developers writing uim-related software, there are some major
-interface changes must be followed. Please update your codes (with
-UIM_VERSION_REQUIRE()).
-
-  - Add icon support to helper protocol
-  - Context-originated IM switching of other contexts
-
-See doc/COMPATIBILITY for the details and other compatibility issues.
-
-
-Notes for Packagers and System Integrators
-------------------------------------------
-
-  - Due to the helper protocol incompatibility, 3rd party input-state
-    indicators (aka applets) and bridges must be updated to newer
-    version that supports the new protocol. Handle version dependency
-    carefully
-
-  - Static library building has been disabled by default. Enable it
-    explicitly if needed
+Just a few bug fixes.  See NEWS for the details.
 
 
 Future Direction
@@ -53,7 +27,7 @@ leader's. Though the 1.1 signals little about the changes, the next
 milestones show where we go. It is a way to achieve simple, easily
 extensible and high code-quality input method environment.
 
-  - uim 1.2.0
+  - uim 1.3.0
 
     Release for internal improvement. No user-visible changes other
     than resource consumption reduction.
@@ -63,7 +37,7 @@ extensible and high code-quality input method environment.
     leap.
 
 
-  - uim 1.3.0
+  - uim 1.4.0
 
     Release for internal simplification. No user-visible changes.
 
@@ -72,7 +46,7 @@ extensible and high code-quality input method environment.
     Scheme codes or optimized out.
 
 
-  - uim 1.4.0 and later
+  - uim 1.5.0 and later
 
     The time for drastic reconstruction. Many user-visible changes.
 
