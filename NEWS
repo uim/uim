@@ -12,12 +12,12 @@ Overview of changes from 1.1.0 to 1.1.1
     - Don't hang if Canna server close the connection.
   
   - uim.el
-    - Reflect updated custom setting on-the-fly even without focus.
+    - Reflect updated custom preference on-the-fly even without focus.
 
   - uim-pref-qt
-    - Enable to remove all the key binding settings.
+    - Enable to remove all the key bindings in a setting.
   - uim-toolbar-gtk
-    - Fix menu position if the menu is too large.
+    - Fix the position of the menu if it is too large.
 
 Overview of changes from 1.1.0-beta to 1.1.0
 ==
