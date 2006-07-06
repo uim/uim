@@ -241,7 +241,7 @@ static LISP siod_false_value (void);
 #endif
 static LISP lapply (LISP fcn, LISP args);
 static LISP listn (long n,...);
-static char *must_malloc (unsigned long size);
+static void *must_malloc (unsigned long size);
 static FILE *get_c_file (LISP p, FILE * deflt);
 #if 0
 static char *last_c_errmsg (int);
@@ -2158,12 +2158,12 @@ symbol_to_string (LISP x, LISP env)
 }
 
 
-static char *
+static void *
 must_malloc (unsigned long size)
 {
-  char *tmp;
-  tmp = (char *) malloc ((size) ? size : 1);
-  if (tmp == (char *) NULL)
+  void *tmp;
+  tmp = (void *) malloc ((size) ? size : 1);
+  if (tmp == (void *) NULL)
     my_err ("failed to allocate storage from system", NIL);
   return (tmp);
 }
@@ -2973,7 +2973,7 @@ gc_mark_and_sweep (void)
     }
   setjmp (save_regs_gc_mark);
   mark_locations ((LISP *) (uintptr_t)save_regs_gc_mark,
-      (LISP *) (((char *) save_regs_gc_mark) + sizeof (save_regs_gc_mark)));
+      (LISP *) (((uintptr_t) save_regs_gc_mark) + sizeof (save_regs_gc_mark)));
   mark_protected_registers ();
   mark_locations ((LISP *) stack_start_ptr,
 		  (LISP *) & stack_end);
