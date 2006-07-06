@@ -665,12 +665,14 @@
 
        ;; kill
      ((canna-kill-key? key key-state)
-      (ustr-clear-latter! preconv-str))
+      (ustr-clear-latter! preconv-str)
+      (ustr-clear-latter! raw-str))
      
      ;; kill-backward
      ((canna-kill-backward-key? key key-state)
       (rk-flush rkc)
-      (ustr-clear-former! preconv-str))
+      (ustr-clear-former! preconv-str)
+      (ustr-clear-former! raw-str))
        
      ;; 現在とは逆のかなモードでかなを確定する
      ((and
