@@ -659,14 +659,12 @@ im_return_str_list(uim_lisp str_list_)
   /*XXX: This fixed length array is negligence */
   int i;
 
-  if (uim_return_str_list) {
-    for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
-      if (uim_return_str_list[i]) {
-	free(uim_return_str_list[i]);
-	uim_return_str_list[i] = NULL;
-      } else {
-	break;
-      }
+  for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
+    if (uim_return_str_list[i]) {
+      free(uim_return_str_list[i]);
+      uim_return_str_list[i] = NULL;
+    } else {
+      break;
     }
   }
 
