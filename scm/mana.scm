@@ -165,8 +165,8 @@
        (string-list-concat unconv))
       ((= cand-idx mana-candidate-type-katakana)
        (ja-make-kana-str (ja-make-kana-str-list unconv) mana-type-katakana))
-      ((= cand-idx mana-candidate-type-hankana)
-       (ja-make-kana-str (ja-make-kana-str-list unconv) mana-type-hankana))
+      ((= cand-idx mana-candidate-type-halfkana)
+       (ja-make-kana-str (ja-make-kana-str-list unconv) mana-type-halfkana))
       (else
        (if (not (null? unconv))
 	   (if (member (car unconv) preconv)
@@ -175,7 +175,9 @@
 		 (if start
 		     (mana-make-raw-string
 		      (reverse (sublist raw-str start (+ start (- len 1))))
-		      (if (= cand-idx mana-candidate-type-latin) #f #t))
+		      (if (= cand-idx mana-candidate-type-halfwidth-alnum)
+			  #f
+			  #t))
 		     "??")) ;; FIXME
 	       "???") ;; FIXME
 	   "????"))))))
@@ -256,11 +258,12 @@
 
 (define mana-lib-initialized? #f)
 
-(define mana-type-hiragana   ja-type-hiragana)
-(define mana-type-katakana   ja-type-katakana)
-(define mana-type-hankana    ja-type-hankana)
-(define mana-type-latin      ja-type-latin)
-(define mana-type-wide-latin ja-type-wide-latin)
+(define mana-type-direct          ja-type-direct)
+(define mana-type-hiragana        ja-type-hiragana)
+(define mana-type-katakana        ja-type-katakana)
+(define mana-type-halfkana        ja-type-halfkana)
+(define mana-type-halfwidth-alnum ja-type-halfwidth-alnum)
+(define mana-type-fullwidth-alnum ja-type-fullwidth-alnum)
 
 (define mana-input-rule-roma 0)
 (define mana-input-rule-kana 1)
@@ -268,17 +271,45 @@
 
 (define mana-candidate-type-katakana -2)
 (define mana-candidate-type-hiragana -3)
-(define mana-candidate-type-hankana -4)
-(define mana-candidate-type-latin -5)
-(define mana-candidate-type-wide-latin -6)
+(define mana-candidate-type-halfkana -4)
+(define mana-candidate-type-halfwidth-alnum -5)
+(define mana-candidate-type-fullwidth-alnum -6)
 
 ;; I don't think the key needs to be customizable.
 (define-key mana-space-key? '(" "))
 
-(define mana-prepare-activation
+(define mana-prepare-input-rule-activation
   (lambda (mc)
+    (cond
+     ((mana-context-converting mc)
+      (mana-do-commit mc))
+     ((mana-context-transposing mc)
+      (im-commit mc (mana-transposint-text mc)))
+     ((and
+       (mana-context-on mc)
+       (mana-has-preedit? mc))
+      (im-commit
+       mc (mana-make-whole-string mc #t (mana-context-kana-mode mc)))))
     (mana-flush mc)
     (mana-update-preedit mc)))
+
+(define mana-prepare-input-mode-activation
+  (lambda (mc new-mode)
+    (let ((old-kana (mana-context-kana-mode mc)))
+      (cond
+       ((mana-context-converting mc)
+	(mana-do-commit mc))
+       ((mana-context-transposing mc)
+	(im-commit mc (mana-transposint-text mc))
+	(mana-flush mc))
+       ((and
+	 (mana-context-on mc)
+	 (mana-has-preedit? mc)
+	 (not (= old-kana new-mode)))
+	(im-commit
+	 mc (mana-make-whole-string mc #t (mana-context-kana-mode mc)))
+	(mana-flush mc)))
+    (mana-update-preedit mc))))
 
 (register-action 'action_mana_hiragana
                  ;;              (indication-alist-indicator 'action_mana_hiragana
@@ -291,15 +322,14 @@
 
                  (lambda (mc) ;; activity predicate
                    (and (mana-context-on mc)
-			(not (mana-context-ascii-with-preedit mc))
+			(not (mana-context-alnum mc))
                         (= (mana-context-kana-mode mc)
                            mana-type-hiragana)))
 
                  (lambda (mc) ;; action handler
-		   (if (not (mana-context-on mc))
-		       (mana-prepare-activation mc))
+		   (mana-prepare-input-mode-activation mc mana-type-hiragana)
                    (mana-context-set-on! mc #t)
-		   (mana-context-set-ascii-with-preedit! mc #f)
+		   (mana-context-set-alnum! mc #f)
                    (mana-context-change-kana-mode! mc mana-type-hiragana)))
 
 (register-action 'action_mana_katakana
@@ -312,18 +342,17 @@
                       "カタカナ入力モード"))
                  (lambda (mc)
                    (and (mana-context-on mc)
-			(not (mana-context-ascii-with-preedit mc))
+			(not (mana-context-alnum mc))
                         (= (mana-context-kana-mode mc)
                            mana-type-katakana)))
                  (lambda (mc)
-		   (if (not (mana-context-on mc))
-		       (mana-prepare-activation mc))
+		   (mana-prepare-input-mode-activation mc mana-type-katakana)
                    (mana-context-set-on! mc #t)
-		   (mana-context-set-ascii-with-preedit! mc #f)
+		   (mana-context-set-alnum! mc #f)
                    (mana-context-change-kana-mode! mc mana-type-katakana)))
 
-(register-action 'action_mana_hankana
-                 ;;              (indication-alist-indicator 'action_mana_hankana
+(register-action 'action_mana_halfkana
+                 ;;              (indication-alist-indicator 'action_mana_halfkana
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
                    '(ja_halfwidth_katakana
@@ -332,50 +361,50 @@
                       "半角カタカナ入力モード"))
                  (lambda (mc)
                    (and (mana-context-on mc)
-			(not (mana-context-ascii-with-preedit mc))
+			(not (mana-context-alnum mc))
                         (= (mana-context-kana-mode mc)
-                           mana-type-hankana)))
+                           mana-type-halfkana)))
                  (lambda (mc)
-		   (if (not (mana-context-on mc))
-		       (mana-prepare-activation mc))
+		   (mana-prepare-input-mode-activation mc mana-type-halfkana)
                    (mana-context-set-on! mc #t)
-		   (mana-context-set-ascii-with-preedit! mc #f)
-                   (mana-context-change-kana-mode! mc mana-type-hankana)))
+		   (mana-context-set-alnum! mc #f)
+                   (mana-context-change-kana-mode! mc mana-type-halfkana)))
 
-(register-action 'action_mana_ascii_with_preedit
+(register-action 'action_mana_halfwidth_alnum
 		 (lambda (mc)
-		   '(ja_ascii_with_preedit
-		     "aA"
-		     "英数変換"
-		     "英数変換モード"))
+		   '(ja_halfwidth_alnum
+		     "a"
+		     "半角英数"
+		     "半角英数入力モード"))
 		 (lambda (mc)
 		   (and (mana-context-on mc)
-			(mana-context-ascii-with-preedit mc)))
+			(mana-context-alnum mc)
+			(= (mana-context-alnum-type mc)
+			   mana-type-halfwidth-alnum)))
 		 (lambda (mc)
-		   (if (not (mana-context-on mc))
-		       (begin
-			 (mana-prepare-activation mc)
-			 (mana-context-set-on! mc #t)))
-		   (mana-context-set-ascii-with-preedit! mc #t)))
+		   (mana-prepare-input-mode-activation
+		    mc (mana-context-kana-mode mc))
+		   (mana-context-set-on! mc #t)
+		   (mana-context-set-alnum! mc #t)
+		   (mana-context-set-alnum-type!
+		    mc mana-type-halfwidth-alnum)))
 
 (register-action 'action_mana_direct
                  ;;              (indication-alist-indicator 'action_mana_direct
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
                    '(ja_direct
-                      "a"
+                      "-"
                       "直接入力"
                       "直接(無変換)入力モード"))
                  (lambda (mc)
-                   (and (not (mana-context-on mc))
-                        (not (mana-context-wide-latin mc))))
+                   (not (mana-context-on mc)))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
-                   (mana-context-set-on! mc #f)
-                   (mana-context-set-wide-latin! mc #f)))
+                   (mana-prepare-input-mode-activation mc mana-type-direct)
+                   (mana-context-set-on! mc #f)))
 
-(register-action 'action_mana_zenkaku
-                 ;;              (indication-alist-indicator 'action_mana_zenkaku
+(register-action 'action_mana_fullwidth_alnum
+                 ;;              (indication-alist-indicator 'action_mana_fullwidth_alnum
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
                    '(ja_fullwidth_alnum
@@ -383,12 +412,17 @@
                       "全角英数"
                       "全角英数入力モード"))
                  (lambda (mc)
-                   (and (not (mana-context-on mc))
-                        (mana-context-wide-latin mc)))
+                   (and (mana-context-on mc)
+                        (mana-context-alnum mc)
+			(= (mana-context-alnum-type mc)
+			   mana-type-fullwidth-alnum)))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
-                   (mana-context-set-on! mc #f)
-                   (mana-context-set-wide-latin! mc #t)))
+                   (mana-prepare-input-mode-activation
+		    mc (mana-context-kana-mode mc))
+                   (mana-context-set-on! mc #t)
+		   (mana-context-set-alnum! mc #t)
+                   (mana-context-set-alnum-type!
+		    mc mana-type-fullwidth-alnum)))
 
 (register-action 'action_mana_roma
                  ;;              (indication-alist-indicator 'action_mana_roma
@@ -402,7 +436,7 @@
                    (= (mana-context-input-rule mc)
                       mana-input-rule-roma))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
+                   (mana-prepare-input-rule-activation mc)
                    (rk-context-set-rule! (mana-context-rkc mc)
                                          ja-rk-rule)
                    (mana-context-set-input-rule! mc mana-input-rule-roma)))
@@ -419,12 +453,14 @@
                    (= (mana-context-input-rule mc)
                       mana-input-rule-kana))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
+                   (mana-prepare-input-rule-activation mc)
                    (mana-context-set-input-rule! mc mana-input-rule-kana)
-                   (mana-context-change-kana-mode! mc (mana-context-kana-mode mc))
+                   (mana-context-change-kana-mode!
+		    mc (mana-context-kana-mode mc))
+		   (mana-context-set-alnum! mc #f)
                    ;;(define-key mana-kana-toggle-key? "")
-                   ;;(define-key mana-latin-key? generic-on-key?)
-                   ;;(define-key mana-wide-latin-key? "")
+                   ;;(define-key mana-on-key? generic-on-key?)
+                   ;;(define-key mana-fullwidth-alnum-key? "")
                    ))
 
 (register-action 'action_mana_azik
@@ -439,7 +475,7 @@
                    (= (mana-context-input-rule mc)
                       mana-input-rule-azik))
                  (lambda (mc)
-                   (mana-prepare-activation mc)
+                   (mana-prepare-input-rule-activation mc)
                    (rk-context-set-rule! (mana-context-rkc mc)
                                          ja-azik-rule)
                    (mana-context-set-input-rule! mc mana-input-rule-azik)))
@@ -475,9 +511,9 @@
       (list 'segments           #f) ;; ustr of candidate indices
       (list 'candidate-window   #f)
       (list 'candidate-op-count 0)
-      (list 'wide-latin         #f)
       (list 'kana-mode          mana-type-hiragana)
-      (list 'ascii-with-preedit #f)
+      (list 'alnum              #f)
+      (list 'alnum-type         mana-type-halfwidth-alnum)
       (list 'commit-raw         #t)
       (list 'input-rule         mana-input-rule-roma)
       (list 'raw-ustr           #f))))
@@ -517,33 +553,21 @@
 	   (opposite-kana (ja-opposite-kana kana)))
       (mana-context-change-kana-mode! mc opposite-kana))))
 
-(define mana-toggle-ascii-with-preedit?
-  (lambda (mc key key-state)
-    (let ((state (mana-context-ascii-with-preedit mc)))
-      (cond
-       ((and
-         state
-	 (mana-ascii-mode-off-key? key key-state))
-	(mana-context-set-ascii-with-preedit! mc #f)
-	#t)
-       ((and
-         (not state)
-	 (mana-ascii-mode-off-key? key key-state))
-	(mana-context-set-ascii-with-preedit! mc #t)
-	#t)
-       (else
-        #f)))))
-
+(define mana-context-alkana-toggle
+  (lambda (mc)
+    (let ((alnum-state (mana-context-alnum mc)))
+      (mana-context-set-alnum! mc (not alnum-state)))))
+	
 (define mana-context-change-kana-mode!
   (lambda (mc kana-mode)
     (if (= (mana-context-input-rule mc)
            mana-input-rule-kana)
         (rk-context-set-rule!
-          (mana-context-rkc mc)
-          (cond
-            ((= kana-mode mana-type-hiragana) ja-kana-hiragana-rule)
-            ((= kana-mode mana-type-katakana) ja-kana-katakana-rule)
-            ((= kana-mode mana-type-hankana)  ja-kana-hankana-rule))))
+	 (mana-context-rkc mc)
+	 (cond
+	  ((= kana-mode mana-type-hiragana) ja-kana-hiragana-rule)
+	  ((= kana-mode mana-type-katakana) ja-kana-katakana-rule)
+	  ((= kana-mode mana-type-halfkana)  ja-kana-halfkana-rule))))
     (mana-context-set-kana-mode! mc kana-mode)))
 
 ;; TODO: generarize as multi-segment procedure
@@ -613,7 +637,6 @@
     (ustr-clear! (mana-context-raw-ustr mc))
     (ustr-clear! (mana-context-segments mc))
     (mana-context-set-transposing! mc #f)
-    (mana-context-set-ascii-with-preedit! mc #f)
     (mana-context-set-converting! mc #f)
     (mana-context-set-nr-segments! mc 0)
     (mana-context-set-segment-list! mc '())
@@ -625,10 +648,45 @@
     (mana-context-set-candidate-op-count! mc 0)))
 
 (define mana-begin-input
-  (lambda (mc)
-    (mana-context-set-on! mc #t)
-    (rk-flush (mana-context-rkc mc))
-    (mana-context-set-converting! mc #f)))
+  (lambda (mc key key-state)
+    (if (cond
+	 ((mana-on-key? key key-state)
+	  #t)
+	 ((mana-hiragana-key? key key-state)
+	  (mana-context-set-kana-mode! mc mana-type-hiragana)
+	  (mana-context-set-alnum! mc #f)
+	  #t)
+	 ((mana-katakana-key? key key-state)
+	  (mana-context-set-kana-mode! mc mana-type-katakana)
+	  (mana-context-set-alnum! mc #f)
+	  #t)
+	 ((mana-halfkana-key? key key-state)
+	  (mana-context-set-kana-mode! mc mana-type-halfkana)
+	  (mana-context-set-alnum! mc #f)
+	  #t)
+	 ((mana-halfwidth-alnum-key? key key-state)
+	  (mana-context-set-alnum-type mc mana-type-halfwidth-alnum)
+	  (mana-context-set-alnum! mc #t)
+	  #t)
+	 ((mana-fullwidth-alnum-key? key key-state)
+	  (mana-context-set-alnum-type mc mana-type-fullwidth-alnum)
+	  (mana-context-set-alnum! mc #t)
+	  #t)
+	 ((mana-kana-toggle-key? key key-state)
+	  (mana-context-kana-toggle mc)
+	  (mana-context-set-alnum! mc #f)
+	  #t)
+	 ((mana-alkana-toggle-key? key key-state)
+	  (mana-context-alkana-toggle mc)
+	  #t)
+	 (else
+	  #f))
+	(begin
+	  (mana-context-set-on! mc #t)
+	  (rk-flush (mana-context-rkc mc))
+	  (mana-context-set-converting! mc #f)
+	  #t)
+	#f)))
 
 (define mana-update-preedit
   (lambda (mc)
@@ -645,8 +703,7 @@
 
 (define mana-proc-raw-state
   (lambda (mc key key-state)
-    (if (mana-on-key? key key-state)
-        (mana-begin-input mc)
+    (if (not (mana-begin-input mc key key-state))
         (mana-commit-raw mc))))
 
 (define mana-begin-conv
@@ -685,23 +742,13 @@
       (cond
         ((and mana-use-with-vi?
               (mana-vi-escape-key? key key-state))
-         (begin
-           (mana-flush mc)
-           (mana-context-set-on! mc #f)
-           (mana-context-set-wide-latin! mc #f)
-           (mana-commit-raw mc)))
+	 (mana-flush mc)
+	 (mana-context-set-on! mc #f)
+	 (mana-commit-raw mc))
 
-        ((mana-wide-latin-key? key key-state)
-         (begin
-           (mana-flush mc)
-           (mana-context-set-on! mc #f)
-           (mana-context-set-wide-latin! mc #t)))
-
-        ((mana-latin-key? key key-state)
-         (begin
-           (mana-flush mc)
-           (mana-context-set-on! mc #f)
-           (mana-context-set-wide-latin! mc #f)))
+        ((mana-off-key? key key-state)
+	 (mana-flush mc)
+	 (mana-context-set-on! mc #f))
 
         ((mana-backspace-key? key key-state)
          (mana-commit-raw mc))
@@ -709,13 +756,33 @@
         ((mana-delete-key? key key-state)
          (mana-commit-raw mc))
 
-        ((mana-hankaku-kana-key? key key-state)
-         (mana-context-change-kana-mode! mc mana-type-hankana))
+	((mana-hiragana-key? key key-state)
+	 (mana-context-change-kana-mode! mc mana-type-hiragana)
+	 (man-context-set-alnum! mc #f))
 
-        ((mana-kana-toggle-key? key key-state)
+	((mana-katakana-key? key key-state)
+	 (mana-context-change-kana-mode! mc mana-type-katakana)
+	 (man-context-set-alnum! mc #f))
+
+	((mana-halfkana-key? key key-state)
+	 (mana-context-change-kana-mode! mc mana-type-halfkana)
+	 (man-context-set-alnum! mc #f))
+
+	((mana-halfwidth-alnum-key? key key-state)
+	 (mana-context-set-alnum-type! mc mana-type-halfwidth-alnum)
+	 (mana-context-set-alnum! mc #t))
+
+	((mana-fullwidth-alnum-key? key key-state)
+	 (mana-context-set-alnum-type! mc mana-type-fullwidth-alnum)
+	 (mana-context-set-alnum! mc #t))
+
+	((and
+	  (not (mana-context-alnum mc))
+	  (mana-kana-toggle-key? key key-state))
          (mana-context-kana-toggle mc))
 
-	((mana-toggle-ascii-with-preedit? mc key key-state))
+	((mana-alkana-toggle-key? key key-state)
+	 (mana-context-alkana-toggle mc))
 
         ;; modifiers (except shift) => ignore
         ((and (modifier-key-mask key-state)
@@ -734,10 +801,14 @@
          (mana-commit-raw mc))
 
         (else
-	 (if (mana-context-ascii-with-preedit mc)
+	 (if (mana-context-alnum mc)
 	     (let ((key-str (charcode->string key)))
 	       (ustr-insert-elem! (mana-context-preconv-ustr mc)
-				  (list key-str key-str key-str))
+				  (if (= (mana-context-alnum-type mc)
+					 mana-type-halfwidth-alnum)
+				      (list key-str key-str key-str)
+				      (list (ja-wide key-str) (ja-wide key-str)
+					    (ja-wide key-str))))
 	       (ustr-insert-elem! (mana-context-raw-ustr mc) key-str))
 	     (let* ((key-str (charcode->string
 			      (if (= rule mana-input-rule-kana)
@@ -762,12 +833,12 @@
   (lambda (mc key key-state)
     (let ((rotate-list '())
 	  (state #f))
-      (if (mana-transpose-as-wide-latin-key? key key-state)
-	  (set! rotate-list (cons mana-type-wide-latin rotate-list)))
-      (if (mana-transpose-as-latin-key? key key-state)
-	  (set! rotate-list (cons mana-type-latin rotate-list)))
-      (if (mana-transpose-as-hankana-key? key key-state)
-	  (set! rotate-list (cons mana-type-hankana rotate-list)))
+      (if (mana-transpose-as-fullwidth-alnum-key? key key-state)
+	  (set! rotate-list (cons mana-type-fullwidth-alnum rotate-list)))
+      (if (mana-transpose-as-halfwidth-alnum-key? key key-state)
+	  (set! rotate-list (cons mana-type-halfwidth-alnum rotate-list)))
+      (if (mana-transpose-as-halfkana-key? key key-state)
+	  (set! rotate-list (cons mana-type-halfkana rotate-list)))
       (if (mana-transpose-as-katakana-key? key key-state)
 	  (set! rotate-list (cons mana-type-katakana rotate-list)))
       (if (mana-transpose-as-hiragana-key? key key-state)
@@ -788,16 +859,16 @@
 	(mana-context-set-transposing-type! mc mana-type-hiragana))
        ((= state mana-type-katakana)
 	(mana-context-set-transposing-type! mc mana-type-katakana))
-       ((= state mana-type-hankana)
-	(mana-context-set-transposing-type! mc mana-type-hankana))
-       ((= state mana-type-latin)
+       ((= state mana-type-halfkana)
+	(mana-context-set-transposing-type! mc mana-type-halfkana))
+       ((= state mana-type-halfwidth-alnum)
 	(if (not (= (mana-context-input-rule mc)
 		    mana-input-rule-kana))
-	    (mana-context-set-transposing-type! mc mana-type-latin)))
-       ((= state mana-type-wide-latin)
+	    (mana-context-set-transposing-type! mc mana-type-halfwidth-alnum)))
+       ((= state mana-type-fullwidth-alnum)
 	(if (not (= (mana-context-input-rule mc)
 		    mana-input-rule-kana))
-	    (mana-context-set-transposing-type! mc mana-type-wide-latin)))
+	    (mana-context-set-transposing-type! mc mana-type-fullwidth-alnum)))
        (else
 	(and
 	 ; begin-conv
@@ -832,180 +903,211 @@
           (rule (mana-context-input-rule mc)))
       (cond
 
-        ;; begin conversion
-       ((or
-	 (and (mana-begin-conv-key? key key-state)
-	      (not (mana-context-ascii-with-preedit mc)))
-	 (and (mana-begin-conv-with-ascii-mode-key? key key-state)
-	      (mana-context-ascii-with-preedit mc)))
+       ;; begin conversion
+       ((mana-begin-conv-key? key key-state)
 	(mana-begin-conv mc))
 
-        ;; backspace
-        ((mana-backspace-key? key key-state)
-         (if (not (rk-backspace rkc))
-             (begin
-               (ustr-cursor-delete-backside! preconv-str)
-               (ustr-cursor-delete-backside! raw-str)
-	       ;; fix to valid roma
-	       (if (and
-		    (= (mana-context-input-rule mc) mana-input-rule-roma)
-		    (not (null? (ustr-former-seq preconv-str)))
-		    (not (char-printable?	;; check for kana
-			  (string->char
-			   (car (last (ustr-former-seq preconv-str)))))))
-		   (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
+       ;; backspace
+       ((mana-backspace-key? key key-state)
+	(if (not (rk-backspace rkc))
+	    (begin
+	      (ustr-cursor-delete-backside! preconv-str)
+	      (ustr-cursor-delete-backside! raw-str)
+	      ;; fix to valid roma
+	      (if (and
+		   (= (mana-context-input-rule mc) mana-input-rule-roma)
+		   (not (null? (ustr-former-seq preconv-str)))
+		   (not (char-printable?	;; check for kana
+			 (string->char
+			  (car (last (ustr-former-seq preconv-str)))))))
+		  (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
 
-        ;; delete
-        ((mana-delete-key? key key-state)
-         (if (not (rk-delete rkc))
-             (begin
-               (ustr-cursor-delete-frontside! preconv-str)
-               (ustr-cursor-delete-frontside! raw-str))))
+       ;; delete
+       ((mana-delete-key? key key-state)
+	(if (not (rk-delete rkc))
+	    (begin
+	      (ustr-cursor-delete-frontside! preconv-str)
+	      (ustr-cursor-delete-frontside! raw-str))))
 
-        ;; kill
-        ((mana-kill-key? key key-state)
-         (ustr-clear-latter! preconv-str))
+       ;; kill
+       ((mana-kill-key? key key-state)
+	(ustr-clear-latter! preconv-str))
 
-        ;; kill-backward
-        ((mana-kill-backward-key? key key-state)
-         (begin
-           (rk-flush rkc)
-           (ustr-clear-former! preconv-str)))
+       ;; kill-backward
+       ((mana-kill-backward-key? key key-state)
+	(rk-flush rkc)
+	(ustr-clear-former! preconv-str))
 
-        ;; 現在とは逆のかなモードでかなを確定する
-        ((mana-commit-as-opposite-kana-key? key key-state)
-         (begin
-           (im-commit
-             mc
-             (mana-make-whole-string mc #t (ja-opposite-kana kana)))
-           (mana-flush mc)))
+       ;; 現在とは逆のかなモードでかなを確定する
+       ((and
+	 (not (mana-context-alnum mc))
+	 (mana-commit-as-opposite-kana-key? key key-state))
+	(im-commit mc (mana-make-whole-string mc #t (ja-opposite-kana kana)))
+	(mana-flush mc))
 
-	;; Transposing状態へ移行
-	((or (mana-transpose-as-hiragana-key?   key key-state)
-	     (mana-transpose-as-katakana-key?   key key-state)
-	     (mana-transpose-as-hankana-key?    key key-state)
-	     (and
-	      (not (= (mana-context-input-rule mc) mana-input-rule-kana))
-	      (or
-	       (mana-transpose-as-latin-key?      key key-state)
-	       (mana-transpose-as-wide-latin-key? key key-state))))
-	 (mana-proc-transposing-state mc key key-state))
+       ;; Transposing状態へ移行
+       ((or (mana-transpose-as-hiragana-key? key key-state)
+	    (mana-transpose-as-katakana-key? key key-state)
+	    (mana-transpose-as-halfkana-key? key key-state)
+	    (and
+	     (not (= (mana-context-input-rule mc) mana-input-rule-kana))
+	     (or
+	      (mana-transpose-as-halfwidth-alnum-key? key key-state)
+	      (mana-transpose-as-fullwidth-alnum-key? key key-state))))
+	(mana-proc-transposing-state mc key key-state))
 
-        ;; Commit current preedit string, then toggle hiragana/katakana mode.
-        ((mana-kana-toggle-key? key key-state)
-         (begin
-           (im-commit
-             mc
-             (mana-make-whole-string mc #t kana))
-           (mana-flush mc)
-           (mana-context-kana-toggle mc)))
+       ((mana-hiragana-key? key key-state)
+	(if (not (= kana mana-type-hiragana))
+	    (begin
+	      (im-commit mc (mana-make-whole-string mc #t kana))
+	      (mana-flush mc)))
+	(mana-context-set-kana-mode! mc mana-type-hiragana)
+	(mana-context-set-alnum! mc #f))
 
-	((mana-toggle-ascii-with-preedit? mc key key-state))
+       ((mana-katakana-key? key key-state)
+	(if (not (= kana mana-type-katakana))
+	    (begin
+	      (im-commit mc (mana-make-whole-string mc #t kana))
+	      (mana-flush mc)))
+	(mana-context-set-kana-mode! mc mana-type-katakana)
+	(mana-context-set-alnum! mc #f))
 
-        ;; cancel
-        ((mana-cancel-key? key key-state)
-         (mana-flush mc))
+       ((mana-halfkana-key? key key-state)
+	(if (not (= kana mana-type-halfkana))
+	    (begin
+	      (im-commit mc (mana-make-whole-string mc #t kana))
+	      (mana-flush mc)))
+	(mana-context-set-kana-mode! mc mana-type-halfkana)
+	(mana-context-set-alnum! mc #f))
 
-        ;; commit
-        ((mana-commit-key? key key-state)
-         (begin
-           (im-commit
-             mc
-             (mana-make-whole-string mc #t kana))
-           (mana-flush mc)))
+       ((mana-halfwidth-alnum-key? key key-state)
+	(mana-context-set-alnum-type! mc mana-type-halfwidth-alnum)
+	(mana-context-set-alnum! mc #t))
 
-        ;; left
-        ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
-        ;;   * We should restore pending state of rk-context when the input-rule
-        ;;     is kana mode.
-        ((mana-go-left-key? key key-state)
-         (mana-context-confirm-kana! mc)
-         (ustr-cursor-move-backward! preconv-str)
-         (ustr-cursor-move-backward! raw-str))
+       ((mana-fullwidth-alnum-key? key key-state)
+	(mana-context-set-alnum-type! mc mana-type-fullwidth-alnum)
+	(mana-context-set-alnum! mc #t))
 
-        ;; right
-        ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
-        ;;   * We should restore pending state of rk-context when the input-rule
-        ;;     is kana mode.
-        ((mana-go-right-key? key key-state)
-         (mana-context-confirm-kana! mc)
-         (ustr-cursor-move-forward! preconv-str)
-         (ustr-cursor-move-forward! raw-str))
+       ;; Commit current preedit string, then toggle hiragana/katakana mode.
+       ((and
+	 (not (mana-context-alnum mc))
+	 (mana-kana-toggle-key? key key-state))
+	(im-commit mc (mana-make-whole-string mc #t kana))
+	(mana-flush mc)
+	(mana-context-kana-toggle mc))
 
-        ;; beginning-of-preedit
-        ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
-        ;;   * We should restore pending state of rk-context when the input-rule
-        ;;     is kana mode.
-        ((mana-beginning-of-preedit-key? key key-state)
-         (mana-context-confirm-kana! mc)
-         (ustr-cursor-move-beginning! preconv-str)
-         (ustr-cursor-move-beginning! raw-str))
+       ((mana-alkana-toggle-key? key key-state)
+	(mana-context-alkana-toggle mc))
 
-        ;; end-of-preedit
-        ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
-        ;;   * We should restore pending state of rk-context when the input-rule
-        ;;     is kana mode.
-        ((mana-end-of-preedit-key? key key-state)
-         (mana-context-confirm-kana! mc)
-         (ustr-cursor-move-end! preconv-str)
-         (ustr-cursor-move-end! raw-str))
+       ;; cancel
+       ((mana-cancel-key? key key-state)
+	(mana-flush mc))
 
-        ;; modifiers (except shift) => ignore
-        ((and (modifier-key-mask key-state)
-              (not (shift-key-mask key-state)))
-         #f)
+       ;; commit
+       ((mana-commit-key? key key-state)
+	(begin
+	  (im-commit
+	   mc
+	   (mana-make-whole-string mc #t kana))
+	  (mana-flush mc)))
 
-        (else
-	  ;; handle "n1" sequence as "ん1"
-	  (if (and (not (mana-context-ascii-with-preedit mc))
-		   (not (alphabet-char? key))
-		   (not (string-find
-			 (rk-expect rkc)
-			 (charcode->string
-			  (if (= rule mana-input-rule-kana)
-			      key
-			      (to-lower-char key))))))
-	      (let ((pend (rk-pending rkc))
-		    (residual-kana (rk-push-key-last! rkc)))
-		(if residual-kana
-		    (begin
-		      (ustr-insert-elem! preconv-str residual-kana)
-		      (ustr-insert-elem! raw-str pend)))))
+       ;; left
+       ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
+       ;;   * We should restore pending state of rk-context when the input-rule
+       ;;     is kana mode.
+       ((mana-go-left-key? key key-state)
+	(mana-context-confirm-kana! mc)
+	(ustr-cursor-move-backward! preconv-str)
+	(ustr-cursor-move-backward! raw-str))
 
-	  (if (mana-context-ascii-with-preedit mc)
-	      (let ((key-str (charcode->string key))
-		    (pend (rk-pending rkc))
-		    (residual-kana (rk-peek-terminal-match rkc)))
-		(rk-flush rkc) ;; OK to reset rkc here.
-		(if residual-kana
-		    (begin
-		      (ustr-insert-elem! preconv-str residual-kana)
-		      (ustr-insert-elem! raw-str pend)))
-		(ustr-insert-elem! preconv-str (list key-str key-str key-str))
-		(ustr-insert-elem! raw-str key-str))
-	      (let* ((key-str (charcode->string 
-			       (if (= rule mana-input-rule-kana)
-				   key
-				   (to-lower-char key))))
-		     (pend (rk-pending rkc))
-		     (res (rk-push-key! rkc key-str)))
-		(if (and res
-			 (or (list? (car res))
-			     (not (string=? (car res) ""))))
-		    (let ((next-pend (rk-pending rkc)))
-		      (if (list? (car res))
-			  (ustr-insert-seq!  preconv-str res)
-			  (ustr-insert-elem! preconv-str res))
-		      (if (and next-pend
-			       (not (string=? next-pend "")))
-			  (ustr-insert-elem! raw-str pend)
-			  (if (list? (car res))
-			      (begin
-				(ustr-insert-elem! raw-str pend)
-				(ustr-insert-elem! raw-str key-str))
-			      (ustr-insert-elem!
-			       raw-str
-			       (string-append pend key-str)))))))))))))
+       ;; right
+       ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
+       ;;   * We should restore pending state of rk-context when the input-rule
+       ;;     is kana mode.
+       ((mana-go-right-key? key key-state)
+	(mana-context-confirm-kana! mc)
+	(ustr-cursor-move-forward! preconv-str)
+	(ustr-cursor-move-forward! raw-str))
+
+       ;; beginning-of-preedit
+       ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
+       ;;   * We should restore pending state of rk-context when the input-rule
+       ;;     is kana mode.
+       ((mana-beginning-of-preedit-key? key key-state)
+	(mana-context-confirm-kana! mc)
+	(ustr-cursor-move-beginning! preconv-str)
+	(ustr-cursor-move-beginning! raw-str))
+
+       ;; end-of-preedit
+       ;; 2004-08-27 Takuro Ashie <ashie@homa.ne.jp>
+       ;;   * We should restore pending state of rk-context when the input-rule
+       ;;     is kana mode.
+       ((mana-end-of-preedit-key? key key-state)
+	(mana-context-confirm-kana! mc)
+	(ustr-cursor-move-end! preconv-str)
+	(ustr-cursor-move-end! raw-str))
+
+       ;; modifiers (except shift) => ignore
+       ((and (modifier-key-mask key-state)
+	     (not (shift-key-mask key-state)))
+	#f)
+
+       (else
+	;; handle "n1" sequence as "ん1"
+	(if (and (not (mana-context-alnum mc))
+		 (not (alphabet-char? key))
+		 (not (string-find
+		       (rk-expect rkc)
+		       (charcode->string
+			(if (= rule mana-input-rule-kana)
+			    key
+			    (to-lower-char key))))))
+	    (let ((pend (rk-pending rkc))
+		  (residual-kana (rk-push-key-last! rkc)))
+	      (if residual-kana
+		  (begin
+		    (ustr-insert-elem! preconv-str residual-kana)
+		    (ustr-insert-elem! raw-str pend)))))
+
+	(if (mana-context-alnum mc)
+	    (let ((key-str (charcode->string key))
+		  (pend (rk-pending rkc))
+		  (residual-kana (rk-peek-terminal-match rkc)))
+	      (rk-flush rkc) ;; OK to reset rkc here.
+	      (if residual-kana
+		  (begin
+		    (ustr-insert-elem! preconv-str residual-kana)
+		    (ustr-insert-elem! raw-str pend)))
+	      (ustr-insert-elem! preconv-str
+				 (if (= (mana-context-alnum-type mc)
+					mana-type-halfwidth-alnum)
+				     (list key-str key-str key-str)
+				     (list (ja-wide key-str) (ja-wide key-str)
+					   (ja-wide key-str))))
+	      (ustr-insert-elem! raw-str key-str))
+	    (let* ((key-str (charcode->string 
+			     (if (= rule mana-input-rule-kana)
+				 key
+				 (to-lower-char key))))
+		   (pend (rk-pending rkc))
+		   (res (rk-push-key! rkc key-str)))
+	      (if (and res
+		       (or (list? (car res))
+			   (not (string=? (car res) ""))))
+		  (let ((next-pend (rk-pending rkc)))
+		    (if (list? (car res))
+			(ustr-insert-seq!  preconv-str res)
+			(ustr-insert-elem! preconv-str res))
+		    (if (and next-pend
+			     (not (string=? next-pend "")))
+			(ustr-insert-elem! raw-str pend)
+			(if (list? (car res))
+			    (begin
+			      (ustr-insert-elem! raw-str pend)
+			      (ustr-insert-elem! raw-str key-str))
+			    (ustr-insert-elem!
+			     raw-str
+			     (string-append pend key-str)))))))))))))
 
 (define mana-context-confirm-kana!
   (lambda (mc)
@@ -1043,21 +1145,16 @@
   (lambda (mc)
     (let* ((transposing-type (mana-context-transposing-type mc)))
       (cond
-        ((= transposing-type mana-type-hiragana)
-         (mana-make-whole-string mc #t mana-type-hiragana))
-
-        ((= transposing-type mana-type-katakana)
-         (mana-make-whole-string mc #t mana-type-katakana))
-
-        ((= transposing-type mana-type-hankana)
-         (mana-make-whole-string mc #t mana-type-hankana))
-
-        ((= transposing-type mana-type-latin)
-         (mana-make-whole-raw-string mc #f))
-
-        ((= transposing-type mana-type-wide-latin)
-         (mana-make-whole-raw-string mc #t))
-        ))))
+       ((= transposing-type mana-type-hiragana)
+	(mana-make-whole-string mc #t mana-type-hiragana))
+       ((= transposing-type mana-type-katakana)
+	(mana-make-whole-string mc #t mana-type-katakana))
+       ((= transposing-type mana-type-halfkana)
+	(mana-make-whole-string mc #t mana-type-halfkana))
+       ((= transposing-type mana-type-halfwidth-alnum)
+	(mana-make-whole-raw-string mc #f))
+       ((= transposing-type mana-type-fullwidth-alnum)
+	(mana-make-whole-raw-string mc #t))))))
 
 (define mana-converting-state-preedit
   (lambda (mc)
@@ -1229,14 +1326,14 @@
 	(mana-reset-candidate-window mc)
 	(mana-context-set-candidate-op-count! mc 0)
 
-	(if (mana-transpose-as-wide-latin-key? key key-state)
-	    (set! rotate-list (cons mana-candidate-type-wide-latin
+	(if (mana-transpose-as-fullwidth-alnum-key? key key-state)
+	    (set! rotate-list (cons mana-candidate-type-fullwidth-alnum
 				    rotate-list)))
-	(if (mana-transpose-as-latin-key? key key-state)
-	    (set! rotate-list (cons mana-candidate-type-latin
+	(if (mana-transpose-as-halfwidth-alnum-key? key key-state)
+	    (set! rotate-list (cons mana-candidate-type-halfwidth-alnum
 				    rotate-list)))
-	(if (mana-transpose-as-hankana-key? key key-state)
-	    (set! rotate-list (cons mana-candidate-type-hankana
+	(if (mana-transpose-as-halfkana-key? key key-state)
+	    (set! rotate-list (cons mana-candidate-type-halfkana
 				    rotate-list)))
 	(if (mana-transpose-as-katakana-key? key key-state)
 	    (set! rotate-list (cons mana-candidate-type-katakana
@@ -1247,9 +1344,9 @@
 	(if (or
 	     (= idx mana-candidate-type-hiragana)
 	     (= idx mana-candidate-type-katakana)
-	     (= idx mana-candidate-type-hankana)
-	     (= idx mana-candidate-type-latin)
-	     (= idx mana-candidate-type-wide-latin))
+	     (= idx mana-candidate-type-halfkana)
+	     (= idx mana-candidate-type-halfwidth-alnum)
+	     (= idx mana-candidate-type-fullwidth-alnum))
 	    (let ((lst (member idx rotate-list)))
 	      (if (and (not (null? lst))
 		       (not (null? (cdr lst))))
@@ -1304,14 +1401,14 @@
       ((mana-prev-candidate-key? key key-state)
        (mana-move-candidate mc -1))
 
-      ((or (mana-transpose-as-hiragana-key?   key key-state)
-	   (mana-transpose-as-katakana-key?   key key-state)
-	   (mana-transpose-as-hankana-key?    key key-state)
+      ((or (mana-transpose-as-hiragana-key? key key-state)
+	   (mana-transpose-as-katakana-key? key key-state)
+	   (mana-transpose-as-halfkana-key? key key-state)
 	   (and
 	    (not (= (mana-context-input-rule mc) mana-input-rule-kana))
 	    (or
-	     (mana-transpose-as-latin-key?      key key-state)
-	     (mana-transpose-as-wide-latin-key? key key-state))))
+	     (mana-transpose-as-halfwidth-alnum-key? key key-state)
+	     (mana-transpose-as-fullwidth-alnum-key? key key-state))))
        (mana-set-segment-transposing mc key key-state))
 
       ((mana-cancel-key? key key-state)
@@ -1332,37 +1429,10 @@
       ((symbol? key)
        #f)
 
-      ((mana-begin-conv-with-ascii-mode-key? key key-state)
-       #f)
-
       (else
         (begin
           (mana-do-commit mc)
           (mana-proc-input-state mc key key-state))))))
-
-(define mana-proc-wide-latin
-  (lambda (mc key key-state)
-    (let* ((char (charcode->string key))
-           (w (ja-wide char)))
-      (cond
-        ((and mana-use-with-vi?
-              (mana-vi-escape-key? key key-state))
-         (begin
-           (mana-flush mc)
-           (mana-context-set-wide-latin! mc #f)
-           (mana-commit-raw mc)))
-
-        ((mana-on-key? key key-state)
-         (mana-flush mc)
-         (mana-context-set-on! mc #t))
-        ((and (modifier-key-mask key-state)
-              (not (shift-key-mask key-state)))
-         (mana-commit-raw mc))
-        (w
-          (im-commit mc w))
-        (else
-          (mana-commit-raw mc)))
-      ())))
 
 (define mana-press-key-handler
   (lambda (mc key key-state)
@@ -1374,9 +1444,7 @@
                 (if (mana-context-converting mc)
                     (mana-proc-converting-state mc key key-state)
                     (mana-proc-input-state mc key key-state)))
-            (if (mana-context-wide-latin mc)
-                (mana-proc-wide-latin mc key key-state)
-                (mana-proc-raw-state mc key key-state))))
+	    (mana-proc-raw-state mc key key-state)))
     ;; preedit
     (mana-update-preedit mc)))
 
@@ -1384,8 +1452,7 @@
 (define mana-release-key-handler
   (lambda (mc key key-state)
     (if (or (control-char? key)
-            (and (not (mana-context-on mc))
-                 (not (mana-context-wide-latin mc))))
+            (not (mana-context-on mc)))
         ;; don't discard key release event for apps
         (mana-commit-raw mc))))
 
