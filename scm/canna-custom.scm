@@ -119,7 +119,7 @@
   (list
    (list 'action_canna_direct
 	 'ja_direct
-	 "a"
+	 "-"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_canna_hiragana
@@ -132,18 +132,18 @@
 	 "¥¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
-   (list 'action_canna_hankana
+   (list 'action_canna_halfkana
 	 'ja_halfwidth_katakana
 	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
-   (list 'action_canna_ascii_with_preedit
-	 'ja_ascii_with_preedit
-	 "aA"
-	 (N_ "ASCII with preedit")
-	 (N_ "ASCII with preedit mode"))
+   (list 'action_canna_halfwidth_alnum
+	 'ja_halfwidth_alnum
+	 "a"
+	 (N_ "Halfwidth Alphanumeric")
+	 (N_ "Halfwidth Alphanumeric input mode"))
 
-   (list 'action_canna_zenkaku
+   (list 'action_canna_fullwidth_alnum
 	 'ja_fullwidth_alnum
 	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")

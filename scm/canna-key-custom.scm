@@ -44,6 +44,9 @@
 		     (_ "Canna key bindings 3")
 		     (_ "long description will be here."))
 
+(define-custom-group 'canna-keys4
+		     (_ "Canna key bindings 4")
+		     (_ "long description will be here."))
 
 (define-custom 'canna-next-segment-key '(generic-go-right-key)
                '(canna-keys1)
@@ -69,18 +72,6 @@
 	       (_ "[Canna] shrink segment")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-transpose-as-latin-key '("F10")
-	       '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] convert to halfwidth alphanumeric")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-transpose-as-wide-latin-key '("F9")
-	       '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] convert to fullwidth alphanumeric")
-	       (_ "long description will be here"))
-
 (define-custom 'canna-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(canna-keys1)
 	       '(key)
@@ -93,10 +84,22 @@
 	       (_ "[Canna] convert to katakana")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-transpose-as-hankana-key '("F8" "Muhenkan")
+(define-custom 'canna-transpose-as-halfkana-key '("F8" "Muhenkan")
                '(canna-keys1)
 	       '(key)
 	       (_ "[Canna] convert to halfwidth katakana")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-transpose-as-halfwidth-alnum-key '("F10")
+	       '(canna-keys1)
+	       '(key)
+	       (_ "[Canna] convert to halfwidth alphanumeric")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-transpose-as-fullwidth-alnum-key '("F9")
+	       '(canna-keys1)
+	       '(key)
+	       (_ "[Canna] convert to fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
 (define-custom 'canna-commit-as-opposite-kana-key '("<IgnoreCase><Shift>q")  ;; "Q"
@@ -117,12 +120,6 @@
 	       (_ "[Canna] halfwidth katakana mode")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-kana-toggle-key '()
-               '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] toggle hiragana/katakana mode")
-	       (_ "long description will be here"))
-
 ;;
 ;; overriding generic keys
 ;;
@@ -132,8 +129,8 @@
 	       (_ "[Canna] on")
 	       (_ "long description will be here"))
 
-;;(define-custom 'canna-latin-key '("l" generic-on-key)
-(define-custom 'canna-latin-key '("<Control>\\" generic-off-key)
+;;(define-custom 'canna-off-key '("l" generic-on-key)
+(define-custom 'canna-off-key '("<Control>\\" generic-off-key)
                '(canna-keys2)
 	       '(key)
 	       (_ "[Canna] off")
@@ -144,13 +141,6 @@
 	       '(key)
 	       (_ "[Canna] begin conversion")
 	       (_ "long description will be here"))
-
-(define-custom 'canna-begin-conv-with-ascii-mode-key '("<Shift> ")
-               '(canna-keys2)
-	       '(key)
-	       (_ "[Canna] begin conversion in ASCII mode")
-	       (_ "long description will be here"))
-
 
 (define-custom 'canna-commit-key '(generic-commit-key)
                '(canna-keys2)
@@ -186,18 +176,6 @@
                '(canna-keys2)
 	       '(key)
 	       (_ "[Canna] previous page of candidate window")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-ascii-mode-on-key '()
-               '(canna-keys2)
-	       '(key)
-	       (_ "[Canna] ASCII input on with preedit")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-ascii-mode-off-key '()
-               '(canna-keys2)
-	       '(key)
-	       (_ "[Canna] ASCII input off with preedit")
 	       (_ "long description will be here"))
 
 ;;
@@ -255,4 +233,50 @@
                '(canna-keys3)
 	       '(key)
 	       (_ "[Canna] ESC keys on vi-cooperative mode")
+	       (_ "long description will be here"))
+
+;;
+;; ja advanced
+;;
+
+(define-custom 'canna-hiragana-key '("<Shift>F6")
+	       '(canna-keys4)
+	       '(key)
+	       (_ "[Canna] hiragana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-katakana-key '("<Shift>F7")
+	       '(canna-keys4)
+	       '(key)
+	       (_ "[Canna] katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-halfkana-key '("<Shift>F8")
+	       '(canna-keys4)
+	       '(key)
+	       (_ "[Canna] halfwidth katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-halfwidth-alnum-key '("<Shift>F10")
+	       '(canna-keys4)
+	       '(key)
+	       (_ "[Canna] halfwidth alphanumeric mode")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-fullwidth-alnum-key '("<Shift>F9")
+	       '(canna-keys4)
+	       '(key)
+	       (_ "[Canna] fullwidth alphanumeric mode")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-kana-toggle-key '()
+               '(canna-keys4)
+	       '(key)
+	       (_ "[Canna] toggle hiragana/katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'canna-alkana-toggle-key '()
+'(canna-keys4)
+	       '(key)
+	       (_ "[Canna] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))
