@@ -653,6 +653,3 @@
     ((("Ž¢"). ())("Ž¢"))
     ((("Ž£"). ())("Ž£"))
     ))
-
-;; for backward compatibility
-(define ja-kana-hankana-rule ja-kana-halfkana-rule)
