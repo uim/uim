@@ -1,3 +1,26 @@
+Overview of changes from 1.1.0 to 1.1.1
+==
+* Fixes
+  - Anthy
+  - Mana
+    - Fix hang in latin conversion with incomplete roma-kana sequence,
+      but the behavior is still corrupted and won't fix in 1.1 series.
+  - Canna
+    - Fix key bindings for kana input rule.
+    - Improve preedit handing on direct mode.
+    - Fix IM context reset.
+    - Don't hang if Canna server close the connection.
+  
+  - uim.el
+    - Reflect updated custom preferences on-the-fly even without focus.
+
+  - uim-pref-qt
+    - Enable to remove all the key bindings in a setting.
+  - uim-toolbar-gtk
+  - uim-toolbar-gtk-systray
+  - uim-toolbar-applet
+    - Fix the position of the menu if it is too large.
+
 Overview of changes from 1.1.0-beta to 1.1.0
 ==
 * Fixes
