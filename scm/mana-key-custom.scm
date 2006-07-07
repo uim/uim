@@ -108,19 +108,6 @@
 	       (_ "[Mana] commit as transposed kana")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-wide-latin-key '()
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] fullwidth alphanumeric mode")
-	       (_ "long description will be here"))
-
-;(define-custom 'mana-hankaku-kana-key '("<IgnoreCase><Control>q")
-(define-custom 'mana-hankaku-kana-key '()
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] halfwidth katakana mode")
-	       (_ "long description will be here"))
-
 ;;
 ;; overriding generic keys
 ;;

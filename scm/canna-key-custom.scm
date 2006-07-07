@@ -108,18 +108,6 @@
 	       (_ "[Canna] commit as transposed kana")
 	       (_ "long description will be here"))
 
-(define-custom 'canna-wide-latin-key '("<IgnoreCase><Shift>l")  ;; "L"
-               '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] fullwidth alphanumeric mode")
-	       (_ "long description will be here"))
-
-(define-custom 'canna-hankaku-kana-key '()
-               '(canna-keys1)
-	       '(key)
-	       (_ "[Canna] halfwidth katakana mode")
-	       (_ "long description will be here"))
-
 ;;
 ;; overriding generic keys
 ;;
