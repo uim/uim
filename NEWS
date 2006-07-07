@@ -12,7 +12,7 @@ Overview of changes from 1.1.0 to 1.1.1
     - Don't hang if Canna server close the connection.
   
   - uim.el
-    - Reflect updated custom preference on-the-fly even without focus.
+    - Reflect updated custom preferences on-the-fly even without focus.
 
   - uim-pref-qt
     - Enable to remove all the key bindings in a setting.
