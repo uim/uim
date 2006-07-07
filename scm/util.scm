@@ -748,60 +748,6 @@
 	      segments)
     (im-update-preedit context)))
 
-;; functions for multiple segments input method. used to unify
-;; common features of multi-segment IMs such as Canna and Anthy
-(define multi-segment-type-hiragana 0)
-(define multi-segment-type-katakana 1)
-(define multi-segment-type-hankana 2)
-
-(define multi-segment-make-index-list
-  (lambda (n old-lst)
-    (let ((old-lst-len (length old-lst)))
-      (if (< n old-lst-len)
-	  (truncate-list old-lst n)
-	  (append old-lst
-		  (make-list (- n
-				old-lst-len)
-			     0))))))
-
-(define multi-segment-make-string
-  (lambda (sl dir type)
-    (let ((get-str-by-type
-	   (lambda (l)
-	     (cond
-	      ((= type multi-segment-type-hiragana)
-	       (caar l))
-	      ((= type multi-segment-type-katakana)
-	       (car (cdar l)))
-	      ((= type multi-segment-type-hankana)
-	       (cadr (cdar l)))))))
-      (if (not (null? sl))
-	  (if dir
-	      (string-append (multi-segment-make-string (cdr sl) dir type)
-			     (get-str-by-type sl))
-	      (string-append (get-str-by-type sl)
-			     (multi-segment-make-string (cdr sl) dir type)))
-	  ""))))
-
-(define multi-segment-make-left-string
-  (lambda (sl kana)
-    (multi-segment-make-string sl #t kana)))
-
-(define multi-segment-make-right-string
-  (lambda (sl kana)
-    (multi-segment-make-string sl #f kana)))
-
-(define multi-segment-opposite-kana
-  (lambda (kana)
-    (cond
-     ((= kana multi-segment-type-hiragana)
-      multi-segment-type-katakana)
-     ((= kana multi-segment-type-katakana)
-      multi-segment-type-hiragana)
-     ((= kana multi-segment-type-hankana)
-      multi-segment-type-hiragana))))
-
-
 ;; FIXME: write test.
 (define ucs-to-utf8-string
   (lambda (ucs)
