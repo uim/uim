@@ -194,4 +194,17 @@
 #define SCM_USE_SRFI6           1
 #endif
 
+
+/*===========================================================================
+  New configuration variables (FIXME: autoconf support needed)
+===========================================================================*/
+/* FIXME: remove SCM_STRICT_DEFINE_PLACEMENT and replace with
+ * SCM_USE_INTERNAL_DEFINITIONS */
+#if SCM_STRICT_DEFINE_PLACEMENT
+#undef SCM_STRICT_DEFINE_PLACEMENT
+#define SCM_USE_INTERNAL_DEFINITIONS 1
+#endif
+
+#define SCM_STRICT_TOPLEVEL_DEFINITIONS 1
+
 #endif /* __SIGSCHEME_CONFIG_OLD_H */

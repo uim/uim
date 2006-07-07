@@ -131,6 +131,7 @@ SCM_DEFINE_STATIC_VARS(static_srfi34);
   File Local Function Declarations
 =======================================*/
 static ScmObj raw_quote(ScmObj datum, ScmObj env);
+static ScmObj enclose(ScmObj exp, ScmObj env);
 static ScmObj set_cur_handlers(ScmObj handlers, ScmObj env);
 static ScmObj with_exception_handlers(ScmObj new_handlers, ScmObj thunk);
 static ScmObj guard_internal(ScmObj q_guard_k, ScmObj env);
@@ -238,6 +239,13 @@ raw_quote(ScmObj datum, ScmObj env)
     DECLARE_PRIVATE_FUNCTION("raw_quote", syntax_fixed_1);
 
     return datum;
+}
+
+static ScmObj
+enclose(ScmObj exp, ScmObj env)
+{
+    /* (lambda () exp) */
+    return MAKE_CLOSURE(SCM_LIST_2(SCM_NULL, exp), env);
 }
 
 static ScmObj
@@ -366,7 +374,6 @@ guard_handler(ScmObj q_condition, ScmEvalState *eval_state)
     return scm_call(ret, SCM_NULL);
 }
 
-/* assumes that scm_s_delay() returns a closure */
 static ScmObj
 delay(ScmObj evaled_obj, ScmObj env)
 {
@@ -374,16 +381,15 @@ delay(ScmObj evaled_obj, ScmObj env)
 
     if (VALUEPACKETP(evaled_obj)) {
         vals = SCM_VALUEPACKET_VALUES(evaled_obj);
-        return scm_s_delay(LIST_3(l_syn_apply,
-                                  l_proc_values,
-                                  LIST_2(l_syn_raw_quote, vals)),
-                           env);
+        return enclose(LIST_3(l_syn_apply,
+                              l_proc_values,
+                              LIST_2(l_syn_raw_quote, vals)),
+                       env);
     } else {
-        return scm_s_delay(LIST_2(l_syn_raw_quote, evaled_obj), env);
+        return enclose(LIST_2(l_syn_raw_quote, evaled_obj), env);
     }
 }
 
-/* assumes that scm_s_delay() returns a closure */
 static ScmObj
 guard_handler_body(ScmObj q_handler_k, ScmObj env)
 {
@@ -406,15 +412,15 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
                                       LIST_1(condition),
                                       lex_env);
     SCM_EVAL_STATE_INIT1(eval_state, cond_env);
-    caught = scm_s_cond_internal(clauses, SCM_INVALID, &eval_state);
+    caught = scm_s_cond_internal(clauses, &eval_state);
 
     if (VALIDP(caught)) {
         if (eval_state.ret_type == SCM_VALTYPE_NEED_EVAL)
             caught = EVAL(caught, cond_env);
         scm_call_continuation(guard_k, delay(caught, cond_env));
     } else {
-        reraise = scm_s_delay(LIST_2(l_sym_raise, LIST_2(SYM_QUOTE, condition)),
-                              cond_env);
+        reraise = enclose(LIST_2(l_sym_raise, LIST_2(SYM_QUOTE, condition)),
+                          cond_env);
         scm_call_continuation(handler_k, reraise);
     }
     /* NOTREACHED */

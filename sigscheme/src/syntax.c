@@ -40,7 +40,28 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define ERRMSG_BAD_DEFINE_PLACEMENT "bad define placement"
+#define ERRMSG_CLAUSE_REQUIRED     "at least 1 clause required"
+#define ERRMSG_EXPRESSION_REQUIRED "at least 1 expression required"
+#define ERRMSG_INVALID_BINDINGS    "invalid bindings form"
+#define ERRMSG_INVALID_BINDING     "invalid binding form"
+#define ERRMSG_SYNTAX_AS_VALUE     "syntactic keyword is passed as value"
+#define ERRMSG_DUPLICATE_VARNAME   "duplicate variable name"
+#define ERRMSG_BAD_DEFINE_FORM     "bad definition form"
+
+#if SCM_USE_INTERNAL_DEFINITIONS
+#define ERRMSG_BAD_DEFINE_PLACEMENT "definitions are valid only at toplevel" \
+                                    " or beginning of a binding construct"
+#else
+#define ERRMSG_BAD_DEFINE_PLACEMENT "internal definitions feature is disabled"
+#endif
+
+/* FIXME: temporary hack */
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+#define FORBID_TOPLEVEL_DEFINITIONS(env)                                     \
+    (EQ((env), SCM_INTERACTION_ENV) ? SCM_INTERACTION_ENV_INDEFINABLE : (env))
+#else
+#define FORBID_TOPLEVEL_DEFINITIONS(env) (env)
+#endif
 
 /*=======================================
   File Local Type Definitions
@@ -55,10 +76,10 @@ SCM_DEFINE_EXPORTED_VARS(syntax);
 
 SCM_GLOBAL_VARS_BEGIN(static_syntax);
 #define static
-static ScmObj l_sym_else, l_sym_yields;
-#if SCM_STRICT_DEFINE_PLACEMENT
-static ScmObj l_sym_define, l_sym_begin, l_syn_lambda;
-#endif /* SCM_STRICT_DEFINE_PLACEMENT */
+static ScmObj l_sym_else, l_sym_yields, l_sym_define;
+#if SCM_USE_INTERNAL_DEFINITIONS
+static ScmObj l_sym_begin, l_syn_lambda;
+#endif /* SCM_USE_INTERNAL_DEFINITIONS */
 #undef static
 SCM_GLOBAL_VARS_END(static_syntax);
 #define l_sym_else   SCM_GLOBAL_VAR(static_syntax, l_sym_else)
@@ -71,7 +92,7 @@ SCM_DEFINE_STATIC_VARS(static_syntax);
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if SCM_STRICT_DEFINE_PLACEMENT
+#if SCM_USE_INTERNAL_DEFINITIONS
 static ScmObj filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
                                  ScmQueue *def_expq);
 #endif
@@ -95,8 +116,8 @@ scm_init_syntax(void)
 
     l_sym_else   = scm_intern("else");
     l_sym_yields = scm_intern("=>");
-#if SCM_STRICT_DEFINE_PLACEMENT
     l_sym_define = scm_intern("define");
+#if SCM_USE_INTERNAL_DEFINITIONS
     l_sym_begin  = scm_intern("begin");
     scm_gc_protect_with_init(&l_syn_lambda,
                              scm_symbol_value(scm_intern("lambda"),
@@ -129,14 +150,21 @@ scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env)
 #if SCM_STRICT_ARGCHECK
     if (SCM_LISTLEN_ERRORP(scm_validate_formals(formals)))
         ERR_OBJ("bad formals", formals);
+
+    /* Keeping variable name unique is user's responsibility. R5RS: "It is an
+     * error for a <variable> to appear more than once in <formals>.". */
 #else
     /* Crashless no-validation:
      * Regard any non-list object as symbol. Since the lookup operation search
      * for a variable by EQ, this is safe although loosely allows
      * R5RS-incompatible code. */
 #endif
+
+    /* Internal definitions-only body such as ((define foo bar)) is
+     * invalid. But since checking it here is inefficient, it is deferred to
+     * scm_s_body() on being called. */
     if (!CONSP(body))
-        ERR_OBJ("at least one expression required", body);
+        ERR_OBJ(ERRMSG_EXPRESSION_REQUIRED, body);
 
     return MAKE_CLOSURE(CONS(formals, body), env);
 }
@@ -174,7 +202,7 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
 }
 
 /*===========================================================================
-  R5RS : 4.1 Primitive expression types : 4.1.6 Assignment
+  R5RS : 4.1 Primitive expression types : 4.1.6 Assignments
 ===========================================================================*/
 SCM_EXPORT ScmObj
 scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
@@ -187,16 +215,13 @@ scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
 
     evaled = EVAL(exp, env);
     locally_bound = scm_lookup_environment(sym, env);
-    if (locally_bound == SCM_INVALID_REF) {
-        /* Not found in the environment
-           If symbol is not bound, error occurs */
+    if (locally_bound != SCM_INVALID_REF) {
+        SET(locally_bound, evaled);
+    } else {
         if (!SCM_SYMBOL_BOUNDP(sym))
             ERR_OBJ("unbound variable", sym);
 
         SCM_SYMBOL_SET_VCELL(sym, evaled);
-    } else {
-        /* found in the environment*/
-        SET(locally_bound, evaled);
     }
 
 #if SCM_STRICT_R5RS
@@ -213,80 +238,60 @@ scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.1 Conditionals
 ===========================================================================*/
-/* body of 'cond' and also invoked from 'case' and 'guard' of SRFI-34 */
+/* body of 'cond' and 'guard' of SRFI-34 */
 SCM_EXPORT ScmObj
-scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
+scm_s_cond_internal(ScmObj clauses, ScmEvalState *eval_state)
 {
     ScmObj env, clause, test, exps, proc;
     DECLARE_INTERNAL_FUNCTION("cond" /* , syntax_variadic_tailrec_0 */);
 
     env = eval_state->env;
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+    eval_state->nest = SCM_NEST_COMMAND;
+#endif
 
     /*
-     * (cond <clause1> <clause2> ...)
+     * (cond <cond clause>+)
+     * (cond <cond clause>* (else <sequence>))
      *
-     * <clause> should be the form:
-     *     (<test> <expression1> <expression2> ...)
-     *
-     * <clause> may be of the form
-     *     (<test> => <expression>)
-     *
-     * last <clause> may be of the form
-     *     (else <expression1> <expression2> ...)
+     * <cond clause> --> (<test> <sequence>)
+     *       | (<test>)
+     *       | (<test> => <recipient>)
+     * <recipient> --> <expression>
+     * <test> --> <expression>
+     * <sequence> --> <command>* <expression>
+     * <command> --> <expression>
      */
 
-    /* dirty hack to replace internal function name */
-    if (VALIDP(case_key))
-        SCM_MANGLE(name) = "case";
-
-    if (NO_MORE_ARG(args))
-        ERR("syntax error: at least one clause required");
+    if (NO_MORE_ARG(clauses))
+        ERR(ERRMSG_CLAUSE_REQUIRED);
 
     /* looping in each clause */
-    FOR_EACH (clause, args) {
+    FOR_EACH (clause, clauses) {
         if (!CONSP(clause))
             ERR_OBJ("bad clause", clause);
 
         test = CAR(clause);
         exps = CDR(clause);
 
-        if (VALIDP(case_key)) {
-            test = SCM_UNWRAP_SYNTAX(test);
-            if (EQ(test, l_sym_else)) {
-                ASSERT_NO_MORE_ARG(args);
-            } else {
-                test = scm_p_memv(case_key, test);
-                test = (TRUEP(test)) ? case_key : SCM_FALSE;
-            }
-        } else if (EQ(test, l_sym_else)) {
-            ASSERT_NO_MORE_ARG(args);
-        } else {
-            test = EVAL(test, env);
+#if 0
+        test = SCM_UNWRAP_SYNTAX(test);  /* FIXME: needed? */
+#endif
+        if (EQ(test, l_sym_else)) {
+            ASSERT_NO_MORE_ARG(clauses);
+            return scm_s_begin(exps, eval_state);
         }
-
-        if (TRUEP(test)) {
+        
+        if (test = EVAL(test, env), TRUEP(test)) {
             /*
              * if the selected <clause> contains only the <test> and no
              * <expression>s, then the value of the <test> is returned as the
              * result.
              */
             if (NULLP(exps)) {
-                if (EQ(test, l_sym_else)) {
-                    ERR_OBJ("bad clause: else with no expressions", clause);
-                } else {
-                    eval_state->ret_type = SCM_VALTYPE_AS_IS;
-                    return test;
-                }
+                eval_state->ret_type = SCM_VALTYPE_AS_IS;
+                return test;
             }
-
-            /*
-             * Handle the case like follows.
-             *
-             * (case 1
-             *   ((1) . 2))
-             */
-            if (!CONSP(exps))
-                ERR_OBJ("bad dot clause", clause);
 
             /*
              * If the selected <clause> uses the => alternate form, then the
@@ -295,23 +300,27 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
              * of the <test> and the value returned by this procedure is
              * returned by the cond expression.
              */
-            if (EQ(l_sym_yields, CAR(exps)) && CONSP(CDR(exps))
-                && !EQ(test, l_sym_else))
-            {
-                if (!NULLP(CDDR(exps)))
-                    ERR_OBJ("bad clause", clause);
+            if (EQ(l_sym_yields, CAR(exps)) && LIST_2_P(exps)) {
                 proc = EVAL(CADR(exps), env);
                 if (!PROCEDUREP(proc))
                     ERR_OBJ("exp after => must be a procedure but got", proc);
 
-                eval_state->ret_type = SCM_VALTYPE_AS_IS;
-                return scm_call(proc, LIST_1(test));
+                /*
+                 * R5RS: 3.5 Proper tail recursion
+                 *
+                 * If a `cond' expression is in a tail context, and has a
+                 * clause of the form `(<expression1> => <expression2>)' then
+                 * the (implied) call to the procedure that results from the
+                 * evaluation of <expression2> is in a tail
+                 * context. <expression2> itself is not in a tail context.
+                 */
+                return LIST_2(proc, LIST_2(SYM_QUOTE, test));
             }
 
             return scm_s_begin(exps, eval_state);
         }
     }
-    ASSERT_NO_MORE_ARG(args);
+    ASSERT_NO_MORE_ARG(clauses);
 
     /*
      * To distinguish unmatched status from SCM_UNDEF from a clause, pure
@@ -322,39 +331,80 @@ scm_s_cond_internal(ScmObj args, ScmObj case_key, ScmEvalState *eval_state)
 }
 
 SCM_EXPORT ScmObj
-scm_s_cond(ScmObj args, ScmEvalState *eval_state)
+scm_s_cond(ScmObj clauses, ScmEvalState *eval_state)
 {
     ScmObj ret;
     DECLARE_FUNCTION("cond", syntax_variadic_tailrec_0);
 
-    ret = scm_s_cond_internal(args, SCM_INVALID, eval_state);
+    ret = scm_s_cond_internal(clauses, eval_state);
     return (VALIDP(ret)) ? ret : SCM_UNDEF;
 }
 
 SCM_EXPORT ScmObj
 scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
 {
-    ScmObj ret;
+    ScmObj clause, test, exps;
     DECLARE_FUNCTION("case", syntax_variadic_tailrec_1);
 
+    /*
+     * (case <expression>
+     *   <case clause>+)
+     *
+     * (case <expression>
+     *   <case clause>*
+     *   (else <sequence>))
+     *
+     * <case clause> --> ((<datum>*) <sequence>)
+     * <sequence> --> <command>* <expression>
+     * <command> --> <expression>
+     * <Datum> is what the read procedure (see section 6.6.2 Input)
+     * successfully parses.
+     */
+
+    if (NO_MORE_ARG(clauses))
+        ERR(ERRMSG_CLAUSE_REQUIRED);
+
     key = EVAL(key, eval_state->env);
-    ret = scm_s_cond_internal(clauses, key, eval_state);
-    return (VALIDP(ret)) ? ret : SCM_UNDEF;
+
+    FOR_EACH (clause, clauses) {
+        if (!CONSP(clause))
+            ERR_OBJ("bad clause", clause);
+
+        test = CAR(clause);
+        exps = CDR(clause);
+
+        test = SCM_UNWRAP_SYNTAX(test);
+        if (EQ(test, l_sym_else))
+            ASSERT_NO_MORE_ARG(clauses);
+        else
+            test = scm_p_memv(key, test);
+
+        if (TRUEP(test)) {
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+            eval_state->nest = SCM_NEST_COMMAND;
+#endif
+            return scm_s_begin(exps, eval_state);
+        }
+    }
+    ASSERT_NO_MORE_ARG(clauses);
+
+    return SCM_UNDEF;
 }
 
 SCM_EXPORT ScmObj
 scm_s_and(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj expr, val;
+    ScmObj expr, val, env;
     DECLARE_FUNCTION("and", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args)) {
         eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_TRUE;
     }
+    env = FORBID_TOPLEVEL_DEFINITIONS(eval_state->env);
 
     FOR_EACH_BUTLAST (expr, args) {
-        val = EVAL(expr, eval_state->env);
+        val = EVAL(expr, env);
         if (FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_VALTYPE_AS_IS;
@@ -369,16 +419,17 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
 SCM_EXPORT ScmObj
 scm_s_or(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj expr, val;
+    ScmObj expr, val, env;
     DECLARE_FUNCTION("or", syntax_variadic_tailrec_0);
 
     if (NO_MORE_ARG(args)) {
         eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_FALSE;
     }
+    env = FORBID_TOPLEVEL_DEFINITIONS(eval_state->env);
 
     FOR_EACH_BUTLAST (expr, args) {
-        val = EVAL(expr, eval_state->env);
+        val = EVAL(expr, env);
         if (TRUEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_VALTYPE_AS_IS;
@@ -393,58 +444,45 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.2 Binding constructs
 ===========================================================================*/
-/*
- * FIXME:
- * - Write the test for the named let spec:
- *   <init>s should be evaluated in an environment where <procname> is not
- *   bound to the closure.  <procname>'s scope must not penetrate to the
- *   surrounding environment.
- */
 SCM_EXPORT ScmObj
-scm_s_let(ScmObj args, ScmEvalState *eval_state)
+scm_s_let(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env, named_let_sym, proc, bindings, binding, body;
-    ScmObj formals, var, actuals, val;
+    ScmObj env, named_let_sym, proc, binding;
+    ScmObj formals, var, actuals, val, exp;
     ScmQueue varq, valq;
-    DECLARE_FUNCTION("let", syntax_variadic_tailrec_0);
+    DECLARE_FUNCTION("let", syntax_variadic_tailrec_1);
 
     env = eval_state->env;
     named_let_sym = SCM_FALSE;
-    formals = SCM_NULL;
-    actuals = SCM_NULL;
 
     /*=======================================================================
       normal let:
 
-      (let <bindings> <body>)
-      <bindings> == ((<variable1> <init1>)
-                     (<variable2> <init2>)
-                     ...)
-    =======================================================================*/
-    /*=======================================================================
+        (let (<binding spec>*) <body>)
+
       named let:
 
-      (let <procname> <bindings> <body>)
-      <bindings> == ((<variable1> <init1>)
-                     (<variable2> <init2>)
-                     ...)
-    =======================================================================*/
+        (let <variable> (<binding spec>*) <body>)
 
-    if (!CONSP(args))
-        ERR("invalid form");
-    bindings = POP(args);
+      <binding spec> --> (<variable> <expression>)
+      <body> --> <definition>* <sequence>
+      <definition> --> (define <variable> <expression>)
+            | (define (<variable> <def formals>) <body>)
+            | (begin <definition>*)
+      <sequence> --> <command>* <expression>
+      <command> --> <expression>
+    =======================================================================*/
 
     /* named let */
     if (IDENTIFIERP(bindings)) {
         named_let_sym = bindings;
 
-        if (!CONSP(args))
+        if (!CONSP(body))
             ERR("invalid named let form");
-        bindings = POP(args);
+        bindings = POP(body);
     }
 
-    body = args;
-
+    formals = actuals = SCM_NULL;
     SCM_QUEUE_POINT_TO(varq, formals);
     SCM_QUEUE_POINT_TO(valq, actuals);
     FOR_EACH (binding, bindings) {
@@ -455,14 +493,24 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 #endif
 
         if (!LIST_2_P(binding) || !IDENTIFIERP(var = CAR(binding)))
-            ERR_OBJ("invalid binding form", binding);
-        val = EVAL(CADR(binding), env);
+            ERR_OBJ(ERRMSG_INVALID_BINDING, binding);
+#if SCM_STRICT_ARGCHECK
+        /* Optional check. Keeping variable name unique is user's
+         * responsibility. R5RS: "It is an error for a <variable> to appear
+         * more than once in the list of variables being bound." */
+        if (TRUEP(scm_p_memq(var, formals)))
+            ERR_OBJ(ERRMSG_DUPLICATE_VARNAME, var);
+#endif
+        exp = CADR(binding);
+        val = EVAL(exp, env);
+        if (SYNTAXP(val))
+            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
 
         SCM_QUEUE_ADD(varq, var);
         SCM_QUEUE_ADD(valq, val);
     }
     if (!NULLP(bindings))
-        ERR_OBJ("invalid bindings form", bindings);
+        ERR_OBJ(ERRMSG_INVALID_BINDINGS, bindings);
 
     env = scm_extend_environment(formals, actuals, env);
 
@@ -470,6 +518,7 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
     if (IDENTIFIERP(named_let_sym)) {
         proc = MAKE_CLOSURE(CONS(formals, body), env);
         env = scm_add_environment(named_let_sym, proc, env);
+        SCM_CLOSURE_SET_ENV(proc, env);
     }
 
     eval_state->env = env;
@@ -479,77 +528,84 @@ scm_s_let(ScmObj args, ScmEvalState *eval_state)
 SCM_EXPORT ScmObj
 scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj env, var, val, binding;
+    ScmObj env, var, val, exp, binding;
     DECLARE_FUNCTION("let*", syntax_variadic_tailrec_1);
 
     env = eval_state->env;
 
     /*=======================================================================
-      (let* <bindings> <body>)
-      <bindings> == ((<variable1> <init1>)
-                     (<variable2> <init2>)
-                     ...)
+      (let* (<binding spec>*) <body>)
+
+      <binding spec> --> (<variable> <expression>)
+      <body> --> <definition>* <sequence>
+      <definition> --> (define <variable> <expression>)
+            | (define (<variable> <def formals>) <body>)
+            | (begin <definition>*)
+      <sequence> --> <command>* <expression>
+      <command> --> <expression>
     =======================================================================*/
 
-    if (CONSP(bindings)) {
-        FOR_EACH (binding, bindings) {
+    FOR_EACH (binding, bindings) {
 #if SCM_COMPAT_SIOD_BUGS
-            /* temporary solution. the inefficiency is not a problem */
-            if (LIST_1_P(binding))
-                binding = LIST_2(CAR(binding), SCM_FALSE);
+        /* temporary solution. the inefficiency is not a problem */
+        if (LIST_1_P(binding))
+            binding = LIST_2(CAR(binding), SCM_FALSE);
 #endif
 
-            if (!LIST_2_P(binding) || !IDENTIFIERP(var = CAR(binding)))
-                goto err;
-            val = EVAL(CADR(binding), env);
+        if (!LIST_2_P(binding) || !IDENTIFIERP(var = CAR(binding)))
+            ERR_OBJ(ERRMSG_INVALID_BINDING, binding);
 
-            /* extend env for each variable */
-            env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
-        }
-        if (!NULLP(bindings))
-            goto err;
-    } else if (NULLP(bindings)) {
-        env = scm_extend_environment(SCM_NULL, SCM_NULL, env);
-    } else {
-        goto err;
+        exp = CADR(binding);
+        val = EVAL(exp, env);
+        if (SYNTAXP(val))
+            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+
+        /* extend env for each variable */
+        env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
     }
+    if (!NULLP(bindings))
+        ERR_OBJ(ERRMSG_INVALID_BINDINGS, bindings);
 
     eval_state->env = env;
-
     return scm_s_body(body, eval_state);
-
- err:
-    ERR_OBJ("invalid bindings form", bindings);
-    /* NOTREACHED */
-    return SCM_FALSE;
 }
 
 SCM_EXPORT ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj binding, formals, actuals, var, val;
+    ScmObj binding, formals, actuals, var, val, exp, env;
     DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
 
     /*=======================================================================
-      (letrec <bindings> <body>)
-      <bindings> == ((<variable1> <init1>)
-                     (<variable2> <init2>)
-                     ...)
+      (letrec (<binding spec>*) <body>)
+
+      <binding spec> --> (<variable> <expression>)
+      <body> --> <definition>* <sequence>
+      <definition> --> (define <variable> <expression>)
+            | (define (<variable> <def formals>) <body>)
+            | (begin <definition>*)
+      <sequence> --> <command>* <expression>
+      <command> --> <expression>
     =======================================================================*/
 
-    if (!LISTP(bindings))
-        goto err;
-
     /* extend env by placeholder frame for subsequent lambda evaluations */
-    eval_state->env
-        = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
+    env = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
 
-    formals = SCM_NULL;
-    actuals = SCM_NULL;
+    formals = actuals = SCM_NULL;
     FOR_EACH (binding, bindings) {
         if (!LIST_2_P(binding) || !IDENTIFIERP(var = CAR(binding)))
-            goto err;
-        val = EVAL(CADR(binding), eval_state->env);
+            ERR_OBJ(ERRMSG_INVALID_BINDING, binding);
+#if SCM_STRICT_ARGCHECK
+        /* Optional check. Keeping variable name unique is user's
+         * responsibility. R5RS: "It is an error for a <variable> to appear
+         * more than once in the list of variables being bound." */
+        if (TRUEP(scm_p_memq(var, formals)))
+            ERR_OBJ(ERRMSG_DUPLICATE_VARNAME, var);
+#endif
+        exp = CADR(binding);
+        val = EVAL(exp, env);
+        if (SYNTAXP(val))
+            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
 
         /* construct formals and actuals list: any <init> must not refer a
          * <variable> at this time */
@@ -557,25 +613,19 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
         actuals = CONS(val, actuals);
     }
     if (!NULLP(bindings))
-        goto err;
+        ERR_OBJ(ERRMSG_INVALID_BINDINGS, bindings);
 
     /* fill the placeholder frame */
-    eval_state->env
-        = scm_replace_environment(formals, actuals, eval_state->env);
+    eval_state->env = scm_replace_environment(formals, actuals, env);
 
     return scm_s_body(body, eval_state);
-
- err:
-    ERR_OBJ("invalid bindings form", bindings);
-    /* NOTREACHED */
-    return SCM_FALSE;
 }
 
 /*
  * Valid placement for definitions
  *
  * Definitions on SigScheme is strictly conformed to the three rule specified
- * in R5RS (see below), when SCM_STRICT_DEFINE_PLACEMENT is enabled. All
+ * in R5RS (see below), when SCM_USE_INTERNAL_DEFINITIONS is enabled. All
  * conditions that are not specified by the rules cause syntax error.
  *
  * 5.2 Definitions
@@ -592,9 +642,15 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
  *
  * Wherever an internal definition may occur (begin <definition1> ...) is
  * equivalent to the sequence of definitions that form the body of the begin.
+ *
+ * 7.1.6 Programs and definitions
+ *
+ * <definition> --> (define <variable> <expression>)
+ *       | (define (<variable> <def formals>) <body>)
+ *       | (begin <definition>*)
  */
 
-#if SCM_STRICT_DEFINE_PLACEMENT
+#if SCM_USE_INTERNAL_DEFINITIONS
 static ScmObj
 filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
                    ScmQueue *def_expq)
@@ -609,15 +665,20 @@ filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
         sym = POP(exp);
         if (EQ(sym, l_sym_begin)) {
             begin_rest = filter_definitions(exp, formals, actuals, def_expq);
-            if (CONSP(begin_rest))
-                return CONS(CONS(l_sym_begin, begin_rest), CDR(body));
-            ASSERT_NO_MORE_ARG(begin_rest);
+            if (!NULLP(begin_rest)) {
+                /* no definitions found */
+                if (begin_rest == exp)
+                    return body;
+
+                ERR_OBJ("definitions and expressions intermixed", CAR(body));
+            }
+            /* '(begin)' is a valid R5RS definition form */
         } else if (EQ(sym, l_sym_define)) {
             var = MUST_POP_ARG(exp);
             if (IDENTIFIERP(var)) {
                 /* (define <variable> <expression>) */
                 if (!LIST_1_P(exp))
-                    ERR_OBJ("exactly 1 arg required but got", exp);
+                    ERR_OBJ(ERRMSG_BAD_DEFINE_FORM, CAR(body));
                 exp = CAR(exp);
             } else if (CONSP(var)) {
                 /* (define (<variable> . <formals>) <body>) */
@@ -629,7 +690,7 @@ filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
                 var = sym;
                 exp = CONS(l_syn_lambda, CONS(lambda_formals, lambda_body));
             } else {
-                ERR_OBJ("syntax error", var);
+                ERR_OBJ(ERRMSG_BAD_DEFINE_FORM, CAR(body));
             }
             *formals = CONS(var, *formals);
             *actuals = CONS(SCM_UNBOUND, *actuals);
@@ -641,51 +702,45 @@ filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
 
     return body;
 }
-#endif
 
 /* <body> part of let, let*, letrec and lambda. This function performs strict
- * form validation for internal definitions as specified in R5RS (5.2.2
- * Internal definitions). */
-/* TODO: Reform as a read-time syntax translator */
+ * form validation for internal definitions as specified in R5RS ("5.2.2
+ * Internal definitions" and "7.1.6 Programs and definitions"). */
+/* TODO: Introduce compilation phase and reorganize into compile-time syntax
+ * transformer */
 SCM_EXPORT ScmObj
 scm_s_body(ScmObj body, ScmEvalState *eval_state)
 {
-#if SCM_STRICT_DEFINE_PLACEMENT
     ScmQueue def_expq;
-    ScmObj env, formals, actuals, def_exps, exp;
-#endif
+    ScmObj env, formals, actuals, def_exps, exp, val;
     DECLARE_INTERNAL_FUNCTION("(body)" /* , syntax_variadic_tailrec_0 */);
 
-#if SCM_STRICT_DEFINE_PLACEMENT
-    if (NO_MORE_ARG(body)) {
-        eval_state->ret_type = SCM_VALTYPE_AS_IS;
-        return SCM_UNDEF;
+    if (CONSP(body)) {
+        /* collect internal definitions */
+        def_exps = formals = actuals = SCM_NULL;
+        SCM_QUEUE_POINT_TO(def_expq, def_exps);
+        body = filter_definitions(body, &formals, &actuals, &def_expq);
+
+        if (!NULLP(def_exps)) {
+            /* extend env with the unbound variables */
+            env = scm_extend_environment(formals, actuals, eval_state->env);
+
+            /* eval the definitions and fill the variables with the results as
+             * if letrec */
+            actuals = SCM_NULL;
+            FOR_EACH (exp, def_exps) {
+                val = EVAL(exp, env);
+                if (SYNTAXP(val))
+                    ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+                actuals = CONS(val, actuals);
+            }
+            eval_state->env = scm_update_environment(actuals, env);
+        }
     }
-
-    /* extend env by placeholder frame for subsequent internal definitions */
-    env = scm_extend_environment(SCM_NULL, SCM_NULL, eval_state->env);
-
-    /* collect internal definitions */
-    def_exps = formals = actuals = SCM_NULL;
-    SCM_QUEUE_POINT_TO(def_expq, def_exps);
-    body = filter_definitions(body, &formals, &actuals, &def_expq);
-
-    /* inject the unbound variables into the frame to make the variable
-     * references invalid through the evaluation */
-    env = scm_replace_environment(formals, actuals, env);
-
-    /* eval the definitions and fill the placeholder frame with the results */
-    actuals = SCM_NULL;
-    FOR_EACH (exp, def_exps) {
-        exp = EVAL(exp, env);
-        actuals = CONS(exp, actuals);
-    }
-    eval_state->env = scm_update_environment(actuals, env);
-
     /* eval rest of the body */
-#endif
     return scm_s_begin(body, eval_state);
 }
+#endif /* SCM_USE_INTERNAL_DEFINITIONS */
 
 /*===========================================================================
   R5RS : 4.2 Derived expression types : 4.2.3 Sequencing
@@ -693,19 +748,30 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
 SCM_EXPORT ScmObj
 scm_s_begin(ScmObj args, ScmEvalState *eval_state)
 {
-    ScmObj expr;
+    ScmObj expr, env;
     DECLARE_FUNCTION("begin", syntax_variadic_tailrec_0);
 
-    if (NO_MORE_ARG(args)) {
-        eval_state->ret_type = SCM_VALTYPE_AS_IS;
-        return SCM_UNDEF;
+    if (SCM_DEFINABLE_TOPLEVELP(eval_state)) {
+        if (!CONSP(args)) {
+            /* '(begin)' */
+            ASSERT_NO_MORE_ARG(args);
+            eval_state->ret_type = SCM_VALTYPE_AS_IS;
+            return SCM_UNDEF;
+        }
+        env = eval_state->env;
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+        eval_state->nest = SCM_NEST_RETTYPE_BEGIN;
+#endif
+    } else {
+        if (!CONSP(args))
+            ERR(ERRMSG_EXPRESSION_REQUIRED);
+        env = FORBID_TOPLEVEL_DEFINITIONS(eval_state->env);
     }
 
     FOR_EACH_BUTLAST (expr, args)
-        EVAL(expr, eval_state->env);
+        EVAL(expr, env);
     ASSERT_NO_MORE_ARG(args);
 
-    /* Return tail expression. */
     return expr;
 }
 
@@ -717,13 +783,13 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
          ScmEvalState *eval_state)
 {
     ScmQueue stepq;
-    ScmObj env, rest, rest_commands, val, termp;
+    ScmObj env, orig_env, rest, rest_commands, val, termp;
     ScmObj formals, actuals, steps;
     ScmObj binding, var, init, step;
     ScmObj test, exps, command;
     DECLARE_FUNCTION("do", syntax_variadic_tailrec_2);
 
-    env = eval_state->env;
+    orig_env = eval_state->env;
 
     /*
      * (do ((<variable1> <init1> <step1>)
@@ -734,6 +800,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
      */
 
     /* extract bindings ((<variable> <init> <step>) ...) */
+    env = FORBID_TOPLEVEL_DEFINITIONS(orig_env);
     formals = actuals = steps = SCM_NULL;
     SCM_QUEUE_POINT_TO(stepq, steps);
     rest = bindings;
@@ -742,10 +809,13 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
             goto err;
         var  = POP(binding);
         ENSURE_SYMBOL(var);
-        /* R5RS: It is an error for a <variable> to appear more than once in
-         * the list of `do' variables. */
+#if SCM_STRICT_ARGCHECK
+        /* Optional check. Keeping variable name unique is user's
+         * responsibility. R5RS: "It is an error for a <variable> to appear
+         * more than once in the list of `do' variables.". */
         if (TRUEP(scm_p_memq(var, formals)))
-            ERR_OBJ("duplicate variable", var);
+            ERR_OBJ(ERRMSG_DUPLICATE_VARNAME, var);
+#endif
 
         if (!CONSP(binding))
             goto err;
@@ -756,6 +826,8 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
             goto err;
 
         init = EVAL(init, env);
+        if (SYNTAXP(init))
+            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, init);
         formals = CONS(var, formals);
         actuals = CONS(init, actuals);
         SCM_QUEUE_ADD(stepq, step);
@@ -772,7 +844,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
     /* iteration phase */
     rest_commands = commands;
     /* extend env by <init>s */
-    env = scm_extend_environment(formals, actuals, env);
+    env = scm_extend_environment(formals, actuals, orig_env);
     while (termp = EVAL(test, env), FALSEP(termp)) {
         rest_commands = commands;
         FOR_EACH (command, rest_commands)
@@ -785,14 +857,13 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
         rest = steps;
         FOR_EACH (step, rest) {
             val = EVAL(step, env);
+            if (SYNTAXP(val))
+                ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, val);
             actuals = CONS(val, actuals);
         }
-#if SCM_STRICT_DEFINE_PLACEMENT
-        env = scm_update_environment(actuals, env);
-#else
-        /* silently discards new bindings from invalid internal definitions */
-        env = scm_replace_environment(formals, actuals, env);
-#endif
+        /* the envs for each iteration must be isolated and not be
+         * overwritten */
+        env = scm_extend_environment(formals, actuals, orig_env);
     }
 #if SCM_STRICT_ARGCHECK
     /* no iteration occurred */
@@ -807,25 +878,16 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
         eval_state->ret_type = SCM_VALTYPE_AS_IS;
         return SCM_UNDEF;
     } else {
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+        eval_state->nest = SCM_NEST_COMMAND;
+#endif
         return scm_s_begin(exps, eval_state);
     }
 
  err:
-    ERR_OBJ("invalid bindings form", bindings);
+    ERR_OBJ(ERRMSG_INVALID_BINDINGS, bindings);
     /* NOTREACHED */
     return SCM_FALSE;
-}
-
-/*===========================================================================
-  R5RS : 4.2 Derived expression types : 4.2.5 Delayed evaluation
-===========================================================================*/
-SCM_EXPORT ScmObj
-scm_s_delay(ScmObj expr, ScmObj env)
-{
-    DECLARE_FUNCTION("delay", syntax_fixed_1);
-
-    /* (lambda () exp) */
-    return MAKE_CLOSURE(SCM_LIST_2(SCM_NULL, expr), env);
 }
 
 /*=======================================
@@ -835,34 +897,42 @@ static void
 define_internal(ScmObj var, ScmObj exp, ScmObj env)
 {
     ScmObj val;
+    DECLARE_INTERNAL_FUNCTION("define");
 
+    SCM_ASSERT(SYMBOLP(var) || SYMBOLP(SCM_FARSYMBOL_SYM(var)));
+    var = SCM_UNWRAP_KEYWORD(var);
     val = EVAL(exp, env);
-    if (scm_toplevel_environmentp(env)) {
-        SCM_ASSERT(SYMBOLP(var) || SYMBOLP(SCM_FARSYMBOL_SYM(var)));
-        SCM_SYMBOL_SET_VCELL(SCM_UNWRAP_KEYWORD(var), val);
-    } else {
-#if SCM_STRICT_DEFINE_PLACEMENT
-        /* internal definitions are handled as a virtual letrec in
-         * scm_s_body() */
-        PLAIN_ERR(ERRMSG_BAD_DEFINE_PLACEMENT);
-#else
-        env = scm_add_environment(var, val, env);
-#endif
-    }
+    if (SYNTAXP(val))
+        ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+    SCM_SYMBOL_SET_VCELL(var, val);
 }
 
+/* To test ScmNestState, scm_s_define() needs eval_state although this is not a
+ * tail-recursive syntax */
 SCM_EXPORT ScmObj
-scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
+scm_s_define(ScmObj var, ScmObj rest, ScmEvalState *eval_state)
 {
-    ScmObj procname, body, formals, proc;
-    DECLARE_FUNCTION("define", syntax_variadic_1);
+    ScmObj procname, body, formals, proc, env;
+    DECLARE_FUNCTION("define", syntax_variadic_tailrec_1);
+
+    /* internal definitions are handled as a virtual letrec in
+     * scm_s_body() */
+    if (!SCM_DEFINABLE_TOPLEVELP(eval_state)) {
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+        if (scm_toplevel_environmentp(eval_state->env))
+            ERR_OBJ("toplevel definition is not allowed here", var);
+        else
+#endif
+            ERR_OBJ(ERRMSG_BAD_DEFINE_PLACEMENT, var);
+    }
+    env = eval_state->env;
 
     /*=======================================================================
       (define <variable> <expression>)
     =======================================================================*/
     if (IDENTIFIERP(var)) {
         if (!LIST_1_P(rest))
-            ERR_OBJ("exactly 1 arg required but got", rest);
+            goto err;
 
         define_internal(var, CAR(rest), env);
     }
@@ -871,7 +941,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
       (define (<variable> . <formals>) <body>)
 
       => (define <variable>
-             (lambda (<formals>) <body>))
+             (lambda <formals> <body>))
     =======================================================================*/
     else if (CONSP(var)) {
         procname = CAR(var);
@@ -882,12 +952,19 @@ scm_s_define(ScmObj var, ScmObj rest, ScmObj env)
         proc = scm_s_lambda(formals, body, env);
         define_internal(procname, proc, env);
     } else {
-        ERR_OBJ("syntax error", var);
+        goto err;
     }
 
+    eval_state->ret_type = SCM_VALTYPE_AS_IS;
 #if SCM_STRICT_R5RS
     return SCM_UNDEF;
 #else
     return var;
 #endif
+
+ err:
+    ERR_OBJ(ERRMSG_BAD_DEFINE_FORM,
+            CONS(l_sym_define, CONS(var, rest)));
+    /* NOTREACHED */
+    return SCM_FALSE;
 }

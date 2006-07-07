@@ -318,6 +318,7 @@ scm_die(const char *msg, const char *filename, int line)
 {
     ScmObj reason;
 
+    /* FIXME: don't use format */
     /* reason will implicitly be freed via the object on GC */
     reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
                         "~S: (file: ~S, line: ~D)", msg, filename, line);

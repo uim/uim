@@ -4,11 +4,14 @@ EXTRA_DIST = unittest.scm unittest-bigloo.scm unittest-gauche.scm
 # Native tests of SigScheme
 EXTRA_DIST += \
         test-apply.scm \
+        test-begin.scm \
         test-char-cmp.scm \
         test-char.scm \
         test-continuation.scm \
         test-define.scm \
+        test-define-internal.scm \
         test-delay-force.scm \
+        test-do.scm \
         test-enc-eucgeneric.scm \
         test-enc-eucjp.scm \
         test-enc-sjis.scm \
@@ -17,6 +20,8 @@ EXTRA_DIST += \
         test-eval.scm \
         test-exp.scm \
         test-formatplus.scm \
+        test-lambda.scm \
+        test-let.scm \
         test-list.scm \
         test-map.scm \
         test-num.scm \

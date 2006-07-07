@@ -102,6 +102,16 @@ scm_p_symbol_boundp(ScmObj sym, ScmObj rest)
     return MAKE_BOOL(ref != SCM_INVALID_REF || SCM_SYMBOL_BOUNDP(sym));
 }
 
+SCM_EXPORT ScmObj
+scm_p_current_environment(ScmEvalState *eval_state)
+{
+    DECLARE_FUNCTION("%%current-environment", procedure_fixed_tailrec_0);
+
+    eval_state->ret_type = SCM_VALTYPE_AS_IS;
+
+    return eval_state->env;
+}
+
 /* SRFI-77 compatible */
 SCM_EXPORT ScmObj
 scm_p_least_fixnum(void)

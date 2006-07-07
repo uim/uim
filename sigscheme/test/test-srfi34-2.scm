@@ -32,11 +32,6 @@
 
 (load "./test/unittest.scm")
 
-(cond-expand
- (sigscheme
-  (use srfi-34))
- (else #t))
-
 ;; All tests in this file are passed against r2143 (new repository)
 
 ;;(set! *test-track-progress* #t)

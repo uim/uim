@@ -41,113 +41,15 @@
 (define ef #f)
 
 
-;; lambda
-(assert-equal? "basic lambda test1" 8 ((lambda (x) (+ x x)) 4))
-(define reverse-subtract
-  (lambda (x y) (- y x)))
-(assert-equal? "basic lambda test2" 3 (reverse-subtract 7 10))
-(define add4
-  (let ((x 4))
-    (lambda (y) (+ x y))))
-(assert-equal? "basic lambda test3" 10 (add4 6))
-(assert-equal? "basic lambda test4" '(3 4 5 6) ((lambda x x) 3 4 5 6))
-(assert-equal? "basic lambda test5" '(5) ((lambda (x y . z) z) 3 4 5))
-(assert-equal? "basic lambda test6" '(5 6) ((lambda (x y . z) z) 3 4 5 6))
-(assert-equal? "basic lambda test7" 1 ((lambda (x . y) x) 1))
-(assert-equal? "basic lambda test8" '() ((lambda (x . y) y) 1))
-(assert-equal? "basic lambda test9" 1 ((lambda (x y . z) x) 1 2))
-(assert-equal? "basic lambda test10" 2 ((lambda (x y . z) y) 1 2))
-(assert-equal? "basic lambda test11" '() ((lambda (x y . z) z) 1 2))
-
-(if (and (provided? "sigscheme")
-         (provided? "strict-argcheck"))
-    (begin
-      (tn "lambda invalid formals: boolean as an arg")
-      (assert-error (tn) (lambda () (lambda (#t) #t)))
-      (assert-error (tn) (lambda () (lambda (x #t) #t)))
-      (assert-error (tn) (lambda () (lambda (#t x) #t)))
-      (assert-error (tn) (lambda () (lambda (x . #t) #t)))
-      (assert-error (tn) (lambda () (lambda (#t . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y #t) #t)))
-      (assert-error (tn) (lambda () (lambda (x y . #t) #t)))
-      (assert-error (tn) (lambda () (lambda (x #t y) #t)))
-      (assert-error (tn) (lambda () (lambda (x #t . y) #t)))
-      (tn "lambda invalid formals: intger as an arg")
-      (assert-error (tn) (lambda () (lambda (1) #t)))
-      (assert-error (tn) (lambda () (lambda (x 1) #t)))
-      (assert-error (tn) (lambda () (lambda (1 x) #t)))
-      (assert-error (tn) (lambda () (lambda (x . 1) #t)))
-      (assert-error (tn) (lambda () (lambda (1 . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y 1) #t)))
-      (assert-error (tn) (lambda () (lambda (x y . 1) #t)))
-      (assert-error (tn) (lambda () (lambda (x 1 y) #t)))
-      (assert-error (tn) (lambda () (lambda (x 1 . y) #t)))
-      (tn "lambda invalid formals: null as an arg")
-      (assert-error (tn) (lambda () (lambda (()) #t)))
-      (assert-error (tn) (lambda () (lambda (x ()) #t)))
-      (assert-error (tn) (lambda () (lambda (() x) #t)))
-      (assert-true  (tn)            (lambda (x . ()) #t))
-      (assert-error (tn) (lambda () (lambda (() . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y ()) #t)))
-      (assert-true  (tn)            (lambda (x y . ()) #t))
-      (assert-error (tn) (lambda () (lambda (x () y) #t)))
-      (assert-error (tn) (lambda () (lambda (x () . y) #t)))
-      (tn "lambda invalid formals: pair as an arg")
-      (assert-error (tn) (lambda () (lambda ((a)) #t)))
-      (assert-error (tn) (lambda () (lambda (x (a)) #t)))
-      (assert-error (tn) (lambda () (lambda ((a) x) #t)))
-      (assert-true  (tn)            (lambda (x . (a)) #t))
-      (assert-error (tn) (lambda () (lambda ((a) . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y (a)) #t)))
-      (assert-true  (tn)            (lambda (x y . (a)) #t))
-      (assert-error (tn) (lambda () (lambda (x (a) y) #t)))
-      (assert-error (tn) (lambda () (lambda (x (a) . y) #t)))
-      (tn "lambda invalid formals: char as an arg")
-      (assert-error (tn) (lambda () (lambda (#\a) #t)))
-      (assert-error (tn) (lambda () (lambda (x #\a) #t)))
-      (assert-error (tn) (lambda () (lambda (#\a x) #t)))
-      (assert-error (tn) (lambda () (lambda (x . #\a) #t)))
-      (assert-error (tn) (lambda () (lambda (#\a . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y #\a) #t)))
-      (assert-error (tn) (lambda () (lambda (x y . #\a) #t)))
-      (assert-error (tn) (lambda () (lambda (x #\a y) #t)))
-      (assert-error (tn) (lambda () (lambda (x #\a . y) #t)))
-      (tn "lambda invalid formals: string as an arg")
-      (assert-error (tn) (lambda () (lambda ("a") #t)))
-      (assert-error (tn) (lambda () (lambda (x "a") #t)))
-      (assert-error (tn) (lambda () (lambda ("a" x) #t)))
-      (assert-error (tn) (lambda () (lambda (x . "a") #t)))
-      (assert-error (tn) (lambda () (lambda ("a" . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y "a") #t)))
-      (assert-error (tn) (lambda () (lambda (x y . "a") #t)))
-      (assert-error (tn) (lambda () (lambda (x "a" y) #t)))
-      (assert-error (tn) (lambda () (lambda (x "a" . y) #t)))
-      (tn "lambda invalid formals: vector as an arg")
-      (assert-error (tn) (lambda () (lambda (#(a)) #t)))
-      (assert-error (tn) (lambda () (lambda (x #(a)) #t)))
-      (assert-error (tn) (lambda () (lambda (#(a) x) #t)))
-      (assert-error (tn) (lambda () (lambda (x . #(a)) #t)))
-      (assert-error (tn) (lambda () (lambda (#(a) . x) #t)))
-      (assert-error (tn) (lambda () (lambda (x y #(a)) #t)))
-      (assert-error (tn) (lambda () (lambda (x y . #(a)) #t)))
-      (assert-error (tn) (lambda () (lambda (x #(a) y) #t)))
-      (assert-error (tn) (lambda () (lambda (x #(a) . y) #t)))))
-
 ;;
 ;; if
 ;;
-(assert-error "if invalid form #1"
-	      (lambda ()
-		(if)))
-(assert-error "if invalid form #2"
-	      (lambda ()
-		(if #t)))
-(assert-error "if invalid form #3"
-	      (lambda ()
-		(if #t 'true 'false 'excessive)))
-(assert-error "if invalid form #4"
-	      (lambda ()
-		(if #f 'true 'false 'excessive)))
+(tn "if invalid form")
+(assert-error  (tn) (lambda () (if)))
+(assert-error  (tn) (lambda () (if #t)))
+(assert-error  (tn) (lambda () (if #f)))
+(assert-error  (tn) (lambda () (if #t 'true 'false 'excessive)))
+(assert-error  (tn) (lambda () (if #f 'true 'false 'excessive)))
 
 (assert-equal? "if test1" 'true  (if #t 'true 'false))
 (assert-equal? "if test2" 'true  (if #t 'true))
@@ -158,243 +60,329 @@
 (assert-equal? "if test5" 'true  (if tee 'true 'false))
 (assert-equal? "if test6" 'false (if ef 'true 'false))
 
+;;
+;; set!
+;;
+(tn "set! invalid form")
+(define test-var #f)
+(assert-error  (tn) (lambda () (set!)))
+(assert-error  (tn) (lambda () (set! test-unbound)))
+(assert-error  (tn) (lambda () (set! test-var)))
+(assert-error  (tn) (lambda () (set! test-var #t #t)))
+(assert-error  (tn) (lambda () (set! 1 #t)))
+
+(tn "set!")
+(assert-true   (tn) (set! test-var 'foo))
+(assert-equal? (tn) 'foo test-var)
+(assert-true   (tn) (let ((test-var #f))
+                      (set! test-var 'bar)))
+(assert-equal? (tn) 'foo test-var)
+(assert-true   (tn) (let ((test-var #f))
+                      (let ((test-var2 #f))
+                        (set! test-var 'baz))
+                      (assert-equal? (tn) 'baz test-var)))
+(assert-equal? (tn) 'foo test-var)
+(assert-error  (tn) (lambda () (set! test-unbound 'foo)))
+(assert-error  (tn) (lambda ()
+                      (let ((test-var #f))
+                        (set! test-unbound 'foo))))
 
 ;;
 ;; cond
 ;;
-(assert-error  "cond invalid form #1"
-               (lambda ()
-                 (cond)))
-(assert-error  "cond invalid form #2"
-               (lambda ()
-                 (cond
-                  ())))
-(assert-error  "cond invalid form #3"
-               (lambda ()
-                 (cond
-                  ()
-                  (else #t))))
+(tn "cond invalid form")
+;; 'cond' must contain at least one clause
+(assert-error  (tn) (lambda ()
+                      (cond)))
+;; empty clause
+(assert-error  (tn) (lambda ()
+                      (cond
+                       ())))
+;; empty clause with 'else'
+(assert-error  (tn) (lambda ()
+                      (cond
+                       ()
+                       (else #t))))
 ;; 'else' followed by another caluse
-(assert-error  "cond invalid form #4"
-               (lambda ()
-                 (cond
-                  (else #t)
-                  (#t))))
-;; not specified in R5RS, but SigScheme should cause error
-(if (provided? "sigscheme")
-    (assert-error  "cond invalid form #5"
-                   (lambda ()
-                     (cond
-                      (else)))))
-(assert-error  "cond invalid form #6"
-               (lambda ()
-                 (cond
-                  (#t =>))))
-(assert-error  "cond invalid form #7"
-               (lambda ()
-                 (cond
-                  (#t =>)
-                  (else #t))))
-(assert-error  "cond invalid form #8"
-               (lambda ()
-                 (cond
-                  (else =>))))
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (else #t)
+                       (#t))))
+;; 'else' clause must contain at least one expression (7.1.3 Expressions)
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (else))))
+;; '=>' is interpreted as unbound symbol if not followed by <exp>
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (#t =>))))
+;; '=>' is interpreted as unbound symbol
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (=>))))
+;; evaluation of '=>' causes error even if 'else' clause exists
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (#t =>)
+                       (else #t))))
+;; '=>' is interpreted as unbound symbol even if in 'else' clause
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (else =>))))
+;; '=>' is interpreted as unbound symbol even if in 'else' clause
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (else => 1 3))))
 ;; not a procedure
-(assert-error  "cond invalid form #9"
-               (lambda ()
-                 (cond
-                  (#t => #t))))
-(assert-error  "cond invalid form #10"
-               (lambda ()
-                 (cond
-                  (#t => #f))))
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (#t => #t))))
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (#t => #f))))
 ;; procedure but argument number mismatch
-(assert-error  "cond invalid form #11"
-               (lambda ()
-                 (cond
-                  (#t => eq?))))
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (#t => eq?))))
 ;; not a procedure but a syntax
-(assert-error  "cond invalid form #12"
-               (lambda ()
-                 (cond
-                  (#t => delay))))
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (#t => delay))))
 ;; '=>' is not applicable at 'else' clause
-(assert-error  "cond invalid form #13"
-               (lambda ()
-                 (cond
-                  (else => values))))
+(assert-error  (tn) (lambda ()
+                      (cond
+                       (else => values))))
 
+(tn "cond unspecified behavior")
 ;; not specified in R5RS, but SigScheme surely returns #<undef>
 (if (provided? "sigscheme")
-    (assert-equal?  "cond unspecified behavior #1"
+    (assert-equal?  (tn)
                     (undef)
                     (cond
                      (#f))))
 (if (provided? "sigscheme")
-    (assert-equal?  "cond unspecified behavior #2"
+    (assert-equal?  (tn)
                     (undef)
                     (cond
                      ((even? 3) #f)
                      ((positive? -1) #f))))
 
+
+(tn "cond")
 ;; R5RS: If the selected <clause> contains only the <test> and no
 ;; <expression>s, then the value of the <test> is returned as the result.
-(assert-equal?  "cond"
+(assert-equal?  (tn)
                 #t
                 (cond
                  (#t)))
-(assert-equal?  "cond"
+(assert-equal?  (tn)
                 3
                 (cond
                  (#f)
                  (3)))
-(assert-equal?  "cond"
+(assert-equal?  (tn)
+                3
+                (cond
+                 ((not #t))
+                 ((+ 1 2))))
+(assert-equal?  (tn)
                 3
                 (cond
                  (#f)
                  (3)
                  (4)))
 
-(assert-equal? "cond"
+(assert-equal? (tn)
                'greater
                (cond
                 ((> 3 2) 'greater)
                 ((< 3 2) 'less)))
-(assert-equal? "cond"
+(assert-equal? (tn)
                'equal
                (cond
                 ((> 3 3) 'greater)
                 ((< 3 3) 'less)
                 (else 'equal)))
-(assert-equal? "cond"
+(assert-equal? (tn)
                #t
                (cond
                 ((> 3 2))
                 ((< 3 4) 'less)
                 (else 'equal)))
-(assert-equal? "cond"
+(assert-equal? (tn)
                2
                (cond
                 ((assv 'b '((a 1) (b 2))) => cadr)
                 (else #f)))
-(assert-equal? "cond"
+(assert-equal? (tn)
+               2
+               (cond
+                ((assv 'b '((a 1) (b 2))) => (car (list cadr cdar)))
+                (else #f)))
+(assert-equal? (tn)
                #f
                (cond
                 ((assv 'c '((a 1) (b 2))) => cadr)
                 (else #f)))
-(assert-equal? "cond"
+(assert-equal? (tn)
                'greater1
                (cond
                 ((> 3 2) 'greater0 'greater1)
                 (else #f)))
+;; single 'else' clause is allowed
+(assert-equal? (tn)
+               'else
+               (cond
+                (else 'else)))
+;; '=>' is interpreted as ordinary symbol if not followed by exactly one <exp>
+(assert-equal? (tn)
+               'defined
+               (let ((=> 'defined))
+                 (cond
+                  (#t =>))))
+(assert-equal? (tn)
+               3
+               (let ((=> 'defined))
+                 (cond
+                  (#t => 1 3))))
+
 
 ;;
 ;; case
 ;;
-(assert-error  "case invalid form #1"
+(tn "case invalid form")
+(assert-error  (tn)
                (lambda ()
                  (case)))
-(assert-error  "case invalid form #2"
+(assert-error  (tn)
                (lambda ()
                  (case 'key)))
-(assert-error  "case invalid form #3"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                    ())))
-(assert-error  "case invalid form #4"
+;; case requires at least one <exp> in a clause
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                   ((key)))))
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                   ((1 key)))))
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                    (1))))
-(assert-error  "case invalid form #5"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                    ((1 . 2)))))
+;; not a ((<datum> ...) <exp>...) style clause
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                   (1 'matched))))
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                   (key 'matched))))
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                   (#(key) 'matched))))
 
 (if (provided? "sigscheme")
     (begin
       ;; improper clause does not cause error if not evaled
-      (assert-equal? "case invalid form #6"
+      (assert-equal? (tn)
                      (undef)
                      (case 'key
                        ((1) . 2)))
-      (assert-equal?  "case invalid form #7"
+      (assert-equal?  (tn)
                       (undef)
                       (case 'key
                         ((1) #t . 2)))
       ;; causes error when evaled
-      (assert-error  "case invalid form #6"
+      (assert-error  (tn)
                      (lambda ()
                        (case 1
                          ((1) . 2))))
-      (assert-error  "case invalid form #7"
+      (assert-error  (tn)
                      (lambda ()
                        (case 1
                          ((1) #t . 2))))))
 
-(assert-error  "case invalid form #8"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   ()
                   (else #t))))
 ;; 'else' followed by another caluse
-(assert-error  "case invalid form #9"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   (else #t)
                   (#t))))
 ;; not specified in R5RS, but SigScheme should cause error
 (if (provided? "sigscheme")
-    (assert-error  "case invalid form #10"
+    (assert-error  (tn)
                    (lambda ()
                      (case 'key
                       (else)))))
-(assert-error  "case invalid form #11"
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                  (=>))))
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   (#t =>))))
-(assert-error  "case invalid form #12"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   (#t =>)
                   (else #t))))
-(assert-error  "case invalid form #13"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   (else =>))))
-(assert-error  "case invalid form #14"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   (else => symbol?))))
-(assert-error  "case invalid form #15"
+(assert-error  (tn)
                (lambda ()
                  (case 'key
                   (else => #t))))
-;; not a procedure
-(assert-error  "case invalid form #16"
+;; (<exp1> => <exp2>) clause is not supported by 'case'
+(assert-error  (tn)
                (lambda ()
                  (case 'key
-                  (#t => #t))))
-(assert-error  "case invalid form #17"
+                  ((key) => values))))
+(assert-error  (tn)
                (lambda ()
                  (case 'key
-                  (#t => #f))))
-;; procedure but argument number mismatch
-(assert-error  "case invalid form #18"
+                  ((key) => eq?))))
+(assert-error  (tn)
                (lambda ()
                  (case 'key
-                  (#t => eq?))))
-;; not a procedure but a syntax
-(assert-error  "case invalid form #19"
+                  ((key) => delay))))
+(assert-error  (tn)
                (lambda ()
                  (case 'key
-                  (#t => delay))))
+                  ((key) => #t))))
+(assert-error  (tn)
+               (lambda ()
+                 (case 'key
+                  ((key) => #f))))
 
 ;; not specified in R5RS, but SigScheme surely returns #<undef>
 (if (provided? "sigscheme")
     (assert-equal?  "case unspecified behavior #1"
                     (undef)
                     (case 'key
-                      ((#f)))))
+                      ((#f) #f))))
 (if (provided? "sigscheme")
     (assert-equal?  "case unspecified behavior #2"
                     (undef)
@@ -402,64 +390,53 @@
                       ((foo) #f)
                       ((bar) #f))))
 
-;; R5RS: If the selected <clause> contains only the <test> and no
-;; <expression>s, then the value of the <test> is returned as the result.
-(assert-equal?  "case"
-                'key
-                (case 'key
-                  ((key))))
-(assert-equal?  "case"
-                'key
-                (case 'key
-                  ((#f))
-                  ((key))))
-(assert-equal?  "case"
-                'key
-                (case 'key
-                  ((#f))
-                  ((key))
-                  ((foo))))
-(assert-equal? "case"
+(tn "case")
+(assert-equal? (tn)
                'odd
                (case 3
                  ((1 3 5) 'odd)
                  ((2 4 6) 'even)))
-(assert-equal? "case"
+(assert-equal? (tn)
                'unknown
                (case 0
                  ((1 3 5) 'odd)
                  ((2 4 6) 'even)
                  (else 'unknown)))
-(assert-equal? "case"
+(assert-equal? (tn)
                'odd
                (case (+ 1 2)
                  ((1 3 5) 'odd)
                  ((2 4 6) 'even)
                  (else 'unknown)))
-(assert-equal? "case"
-               3
-               (case 3
-                 ((1 3 5))
-                 ((2 4 6) 'even)
-                 (else 'unknown)))
-(assert-equal? "case"
-               -3
-               (case 3
-                 ((1 3 5) => -)
-                 ((2 4 6) 'even)
-                 (else 'unknown)))
-(assert-equal? "case"
-               'unknown
-               (case 0
-                 ((1 3 5) => -)
-                 ((2 4 6) 'even)
-                 (else 'unknown)))
-(assert-equal? "case"
+(assert-equal? (tn)
                'second
                (case 3
                  ((1 3 5) 'first 'second)
                  ((2 4 6) 'even)
                  (else 'unknown)))
+(assert-equal? (tn)
+               'second
+               (case (+ 1 2)
+                 ((1 3 5) 'first 'second)
+                 ((2 4 6) 'even)
+                 (else 'unknown)))
+(assert-equal? (tn)
+               'third
+               (case 'key
+                 ((1 foo 5) 'first 'second)
+                 ((2 key 6) 'third)
+                 (else 'unknown)))
+(assert-equal? (tn)
+               'third
+               (case (cadr '(foo key bar))
+                 ((1 foo 5) 'first 'second)
+                 ((2 key 6) 'third)
+                 (else 'unknown)))
+;; single 'else' clause is allowed
+(assert-equal? (tn)
+               'else
+               (case 'key
+                (else 'else)))
 
 (assert-equal? "basic case check1" 'case1 (case 1
 					 ((1) 'case1)
@@ -482,189 +459,31 @@
 ;;
 ;; and
 ;;
-(assert-equal? "and test 1" #t (and (= 2 2) (> 2 1)))
-(assert-equal? "and test 2" #f (and (= 2 2) (< 2 1)))
-(assert-equal? "and test 3" '(f g) (and 1 2 'c '(f g)))
-(assert-equal? "and test 4" #t (and))
-(assert-equal? "and test 5" #f (and #t #f))
+(tn "and")
+(assert-error  (tn) (lambda () (and . #t)))
+(assert-error  (tn) (lambda () (and #t . #t)))
+(assert-equal? (tn) #t (and))
+(assert-equal? (tn) #t (and (= 2 2) (> 2 1)))
+(assert-equal? (tn) #f (and (= 2 2) (< 2 1)))
+(assert-equal? (tn) '(f g) (and 1 2 'c '(f g)))
+(assert-equal? (tn) #f (and #t #f))
+(assert-equal? (tn) 3  (and #t (+ 1 2)))
+(assert-equal? (tn) #f (and #t (not 3) (+ 1 2)))
 
 ;;
 ;; or
 ;;
-(assert-equal? "or test1" #t (or (= 2 2) (> 2 1)))
-(assert-equal? "or test2" #t (or (= 2 2) (< 2 1)))
-(assert-equal? "or test3" #f (or #f #f #f))
-(assert-equal? "or test4" '(b c) (or (memq 'b '(a b c))
-				     (/ 3 0)))
-;;
-;; let
-;;
-(assert-error  "let invalid form #1"
-               (lambda ()
-                 (let)))
-(assert-error  "let invalid form #2"
-               (lambda ()
-                 (let a)))
-(assert-error  "let invalid form #3"
-               (lambda ()
-                 (let (a 1))))
-(if (provided? "siod-bugs")
-    (assert-equal? "let invalid form #4"
-                   (undef)
-                   (let ((a))))
-    (assert-error  "let invalid form #4"
-                   (lambda ()
-                     (let ((a))))))
-(assert-error  "let invalid form #5"
-               (lambda ()
-                 (let ((a 1 'excessive)))))
-(assert-error  "let invalid form #6"
-               (lambda ()
-                 (let ((a 1) . (b 2)))))
-(assert-error  "let invalid form #7"
-               (lambda ()
-                 (let ((a . 1)))))
-(assert-error  "let invalid form #8"
-               (lambda ()
-                 (let ((a  1)) . a)))
-(assert-error  "let invalid form #9"
-               (lambda ()
-                 (let (1) #t)))
-
-(assert-equal? "basic let test1" 0 (let ((n 0))
-				 n))
-(assert-equal? "basic let test2" 1 (let ((n 0))
-				  (set! n 1)
-                                  n))
-(assert-equal? "basic let test3" 1 (let ((n 0))
-				  (set! n (+ n 1))
-                                  n))
-(assert-equal? "basic let test4" 3 (let ((n1 2)
-                                         (n2 1))
-                                     (+ n1 n2)))
-(define count
-  (let ((n 0))
-    (lambda ()
-      (set! n (+ n 1))
-      n)))
-
-(assert-equal? "lexical scope test1" 1 (count))
-(assert-equal? "lexical scope test2" 2 (count))
-
-(define a 3)
-(define (lexical-test)
-  (let ((a 1))
-    (assert-equal? "lexical scope test3" 1 a)
-    (let* ((a 2))
-      (assert-equal? "lexical scope test4" 2 a))
-    (assert-equal? "lexical scope test5" 1 a)))
-(lexical-test)
-
-(assert-equal? "named let test"
-               '((6 1 3) (-5 -2))
-               (let loop ((numbers '(3 -2 1 6 -5))
-                          (nonneg '())
-                          (neg '()))
-                 (cond ((null? numbers) (list nonneg neg))
-                       ((>= (car numbers) 0)
-                        (loop (cdr numbers)
-                              (cons (car numbers) nonneg)
-                              neg))
-                       ((< (car numbers) 0)
-                        (loop (cdr numbers)
-                              nonneg
-                              (cons (car numbers) neg))))))
-
-;;
-;; let*
-;;
-(assert-error  "let* invalid form #1"
-               (lambda ()
-                 (let*)))
-(assert-error  "let* invalid form #2"
-               (lambda ()
-                 (let* a)))
-(assert-error  "let* invalid form #3"
-               (lambda ()
-                 (let* (a 1))))
-(if (provided? "siod-bugs")
-    (assert-equal? "let* invalid form #4"
-                   (undef)
-                   (let* ((a))))
-    (assert-error  "let* invalid form #4"
-                   (lambda ()
-                     (let* ((a))))))
-(assert-error  "let* invalid form #5"
-               (lambda ()
-                 (let* ((a 1 'excessive)))))
-(assert-error  "let* invalid form #6"
-               (lambda ()
-                 (let* ((a 1) . (b 2)))))
-(assert-error  "let* invalid form #7"
-               (lambda ()
-                 (let* ((a . 1)))))
-(assert-error  "let* invalid form #8"
-               (lambda ()
-                 (let* ((a  1)) . a)))
-(assert-error  "let invalid form #9"
-               (lambda ()
-                 (let* (1) #t)))
-
-(assert-equal? "basic let* test1" 70 (let ((x 2) (y 3))
-				    (let* ((x 7)
-					   (z (+ x y)))
-				      (* z x))))
-
-;;
-;; letrec
-;;
-(assert-error  "letrec invalid form #1"
-               (lambda ()
-                 (letrec)))
-(assert-error  "letrec invalid form #2"
-               (lambda ()
-                 (letrec a)))
-(assert-error  "letrec invalid form #3"
-               (lambda ()
-                 (letrec (a 1))))
-(assert-error  "letrec invalid form #4"
-               (lambda ()
-                 (letrec ((a)))))
-(assert-error  "letrec invalid form #5"
-               (lambda ()
-                 (letrec ((a 1 'excessive)))))
-(assert-error  "letrec invalid form #6"
-               (lambda ()
-                 (letrec ((a 1) . (b 2)))))
-(assert-error  "letrec invalid form #7"
-               (lambda ()
-                 (letrec ((a . 1)))))
-(assert-error  "letrec invalid form #8"
-               (lambda ()
-                 (letrec ((a  1)) . a)))
-(assert-error  "let invalid form #9"
-               (lambda ()
-                 (letrec (1) #t)))
-
-(assert-equal? "basic letrec test1"
-               #t
-               (letrec ((even?
-                         (lambda (n)
-                           (if (zero? n)
-                               #t
-                               (odd? (- n 1)))))
-                        (odd?
-                         (lambda (n)
-                           (if (zero? n)
-                               #f
-                               (even? (- n 1))))))
-                 (even? 88)))
-
-(assert-equal? "basic letrec test2"
-               "aiueo"
-               (letrec ((a (lambda () b))
-                        (b "aiueo"))
-                 (a)))
+(tn "or")
+(assert-error  (tn) (lambda () (or . #t)))
+(assert-error  (tn) (lambda () (or #t . #t)))
+(assert-equal? (tn) #f (or))
+(assert-equal? (tn) #t (or (= 2 2) (> 2 1)))
+(assert-equal? (tn) #t (or (= 2 2) (< 2 1)))
+(assert-equal? (tn) #f (or #f #f #f))
+(assert-equal? (tn) '(b c) (or (memq 'b '(a b c))
+                               (/ 3 0)))
+(assert-equal? (tn) 3  (or #f (+ 1 2)))
+(assert-equal? (tn) 3  (or #f (not 3) (+ 1 2) (not 4)))
 
 (define mularg-apply
   (letrec ((apply-2 apply)
@@ -682,297 +501,6 @@
                                       (letrec ((letrec-a 1)
                                                (letrec-b letrec-a))
                                         letrec-b)))
-;;
-;; begin
-;;
-(define x 0)
-(assert-equal? "basic begin test1" 6 (begin
-				    (set! x 5)
-				    (+ x 1)))
-(assert-equal? "basic begin test2" 0 (begin
-				    0))
-(assert-equal? "basic begin test3" 1 (begin
-				    0
-				    1))
-(assert-equal? "basic begin test4" 1 (begin
-				    (define n 0)
-				    (set! n 1)
-                                    n))
-
-;;
-;; do
-;;
-(if (or (symbol-bound? 'v)
-        (symbol-bound? 'w)
-        (symbol-bound? 'i)
-        (symbol-bound? 'evaled))
-    (error "global variables for 'do' tests are tainted"))
-
-(tn "do invalid form")
-(assert-error  (tn) (lambda ()
-                      (do)))
-(assert-error  (tn) (lambda ()
-                      (do v)))
-(assert-error  (tn) (lambda ()
-                      (do (v 1))))
-(assert-error  (tn) (lambda ()
-                      (do ((v 1))
-                          )))
-(assert-error  (tn) (lambda ()
-                      (do ((v))
-                          'eval)))
-(assert-error  (tn) (lambda ()
-                      (do ((v 1))
-                          'unknow-value)))
-(assert-error  (tn) (lambda ()
-                      (do ((v 1 2 'excessive))
-                          'eval)))
-(tn "do invalid form: no test")
-(assert-error  (tn) (lambda ()
-                      (do ((v 1))
-                          ()
-                        'eval)))
-(tn "do invalid form: non-list test form")
-(assert-error  (tn) (lambda ()
-                      (do ((v 1))
-                          'test
-                        'eval)))
-(assert-error  (tn) (lambda ()
-                      (do ((v 1))
-                          1
-                        'eval)))
-(tn "do invalid form: non-list bindings form")
-(assert-error  (tn) (lambda ()
-                      (do 'bindings
-                          (#t #t)
-                        'eval)))
-(assert-error  (tn) (lambda ()
-                      (do 1
-                          (#t #t)
-                        'eval)))
-(tn "do invalid form: non-symbol variable name")
-(assert-error  (tn) (lambda ()
-                      (do ((1 1))
-                          (#t #t)
-                        #t)))
-(assert-error  (tn) (lambda ()
-                      (do ((#t 1))
-                          (#t #t)
-                        #t)))
-(assert-error  (tn) (lambda ()
-                      (do (("a" 1))
-                          (#t #t)
-                        #t)))
-(tn "do invalid form: duplicate variable name")
-(assert-error  (tn) (lambda ()
-                      (do ((v 1)
-                           (v 2))
-                          (#t #t)
-                        #t)))
-(assert-error  (tn) (lambda ()
-                      (do ((v 1)
-                           (w 0)
-                           (v 2))
-                          (#t #t)
-                        #t)))
-(tn "do invalid form: improper binding")
-(assert-error  (tn) (lambda ()
-                      (do ((v . 1))
-                          (#t #t)
-                        #t)))
-(assert-error  (tn) (lambda ()
-                      (do ((v  1 . v))
-                          (#t #t)
-                        #t)))
-(assert-error  (tn) (lambda ()
-                      (do ((v  1) . 1)
-                          (#t #t)
-                        #t)))
-(tn "do invalid form: improper exps")
-(assert-error  (tn) (lambda ()
-                      (do ((v  1))
-                          (#t . #t)
-                        #t)))
-(assert-error  (tn) (lambda ()
-                      (do ((v  1))
-                          (#t #t . #t)
-                        #t)))
-(tn "do invalid form: improper commands")
-(assert-error  (tn) (lambda ()
-                      (do ((v  1))
-                          (#t #t)
-                        #t . #t)))
-(assert-error  (tn) (lambda ()
-                      (do ((v  1 (+ v 1)))
-                          ((= v 2) #t)
-                        #t . #t)))
-
-(tn "do valid form: no bindings")
-(assert-true   (tn) (lambda ()
-                      (do ()
-                          (#t #t)
-                        'foo)))
-(assert-true   (tn) (lambda ()
-                      (do ()
-                          (#t)
-                        'foo)))
-(assert-true   (tn) (lambda ()
-                      (do ()
-                          (#t #t)
-                        )))
-(assert-true   (tn) (lambda ()
-                      (do ()
-                          (#t)
-                        )))
-(tn "do valid form: no commands")
-(assert-true   (tn) (lambda ()
-                      (do ((v 1))
-                          (#t #t)
-                        )))
-(assert-true   (tn) (lambda ()
-                      (do ((v 1))
-                          (#t)
-                        )))
-(tn "do valid form: no exps")
-(if (provided? "sigscheme")
-    (assert-equal? (tn)
-                   (undef)
-                   (do ((v 1))
-                       (#t)
-                     'foo)))
-
-(tn "do inter-iteration variable isolation")
-(assert-equal? (tn)
-               '(2 1 0)
-               (do ((v '() (cons i v))
-                    (i 0 (+ i 1)))
-                   ((= i 3) v)
-                 ))
-(assert-equal? (tn)
-               '(2 1 0)
-               (do ((i 0 (+ i 1))
-                    (v '() (cons i v)))
-                   ((= i 3) v)
-                 ))
-
-(tn "do initialize-time variable isolation")  
-(assert-error (tn) (lambda () (do ((v 1)
-                                   (w v))
-                                  (#t #t)
-                                )))
-(assert-error (tn) (lambda () (do ((w v)
-                                   (v 1))
-                                  (#t #t)
-                                )))
-
-(tn "do exp is evaluated exactly once")
-(assert-equal? (tn)
-               '(+ v w)
-               (do ((v 1)
-                    (w 2))
-                   (#t '(+ v w))
-                 ))
-
-(tn "do iteration count")
-(assert-equal? (tn)
-               0
-               (do ((i 0 (+ i 1))
-                    (evaled 0))
-                   (#t evaled)
-                 (set! evaled (+ evaled 1))))
-(assert-equal? (tn)
-               0
-               (do ((i 0 (+ i 1))
-                    (evaled 0))
-                   ((= i 0) evaled)
-                 (set! evaled (+ evaled 1))))
-(assert-equal? (tn)
-               1
-               (do ((i 0 (+ i 1))
-                    (evaled 0))
-                   ((= i 1) evaled)
-                 (set! evaled (+ evaled 1))))
-(assert-equal? (tn)
-               2
-               (do ((i 0 (+ i 1))
-                    (evaled 0))
-                   ((= i 2) evaled)
-                 (set! evaled (+ evaled 1))))
-
-(tn "do variable update")
-(assert-equal? (tn)
-               10
-               (do ((v 1)
-                    (w 2))
-                   (#t (set! v (+ v 1))
-                       (set! w (+ w v))
-                       (set! v (+ v w))
-                       (+ w v))
-                 ))
-(assert-equal? (tn)
-               16
-               (do ((i 0 (+ i 1))
-                    (v 1)
-                    (w 2))
-                   ((= i 1)
-                    (set! v (+ v 1))
-                    (set! w (+ w v))
-                    (set! v (+ v w))
-                    (+ w v))
-                 (set! v 3)))
-(assert-equal? (tn)
-               20
-               (do ((i 0 (+ i 1))
-                    (v 1)
-                    (w 2))
-                   ((= i 1)
-                    (set! v (+ v 1))
-                    (set! w (+ w v))
-                    (set! v (+ v w))
-                    (+ w v))
-                 (set! v 3)
-                 (set! w 4)))
-
-(assert-equal? "do test1" '#(0 1 2 3 4) (do ((vec (make-vector 5))
-					     (i 0 (+ i 1)))
-					    ((= i 5) vec)
-					  (vector-set! vec i i)))
-(assert-equal? "do test2" 25 (let ((x '(1 3 5 7 9)))
-			       (do ((x x (cdr x))
-				    (sum 0 (+ sum (car x))))
-				   ((null? x) sum))))
-
-(define (expt-do x n)
-  (do ((i 0 (+ i 1))
-       (y 1))
-      ((= i n) y)
-    (set! y (* x y))))
-(assert-equal? "do test3" 1024 (expt-do 2 10))
-
-(define (nreverse rev-it)
-  (do ((reved '() rev-it)
-       (rev-cdr (cdr rev-it) (cdr rev-cdr))
-       (rev-it rev-it rev-cdr))
-      ((begin
-	 (set-cdr! rev-it reved)
-	 (null? rev-cdr))
-       rev-it)))
-(assert-equal? "do test4" '(c b a) (nreverse (list 'a 'b 'c)))
-(assert-equal? "do test5"
-               '((5 6) (3 4) (1 2))
-               (nreverse (list '(1 2) '(3 4) '(5 6))))
-
-;; scm_s_do() has been changed as specified in R5RS. -- YamaKen 2006-01-11
-;; R5RS: If no <expression>s are present, then the value of the `do' expression
-;; is unspecified.
-;;(assert-equal? "do test6" 1  (do ((a 1)) (a) 'some))
-;;(assert-equal? "do test7" #t (do ((a 1)) (#t) 'some))
-(if (provided? "sigscheme")
-    (begin
-      (assert-equal? "do test6" (undef) (do ((a 1)) (a) 'some))
-      (assert-equal? "do test7" (undef) (do ((a 1)) (#t) 'some))))
-;; (do ((a 1)) 'eval) => (do ((a 1)) (quote eval))
-(assert-equal? "do test8" eval (do ((a 1)) 'eval))
 
 ;;
 ;; procedure?

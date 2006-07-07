@@ -1,3 +1,46 @@
+Overview of changes from 0.6.1 to 0.7.0
+==
+
+* New features
+
+  - "internal definitions" and "strict toplevel definitions validation"
+    features have been configurable
+
+  - Add optional duplicate variable check to 'let', 'let*', 'letrec' and 'do'
+    (it is not required by R5RS)
+
+* Fixes
+
+  - [R5RS] Fix invalid acceptance of definition form on where neither toplevel
+    nor internal definition is allowed
+
+  - [R5RS] Fix invalid acceptance of 'begin' that contains definitions and
+    expressions intermixed
+
+  - [R5RS] Fix invalid acceptance of <body> that contains definitions and
+    expressions intermixed on 'let', 'let*', 'letrec' and function form
+    'define'
+
+  - [R5RS] Fix invalid no-expressions <body> acceptance of 'let', 'let*',
+    'letrec' and function form 'define'
+
+  - [R5RS] Fix invalid acceptance of binding syntactic keyword as value on
+    'define', 'let', 'let*', 'letrec' and 'do'
+
+  - [R5RS] Fix broken per-iteration env isolation of 'do'
+
+  - [R5RS] Fix proper tail recursion incapability of '=>' form of 'cond'
+
+  - [R5RS] Fix invalid acceptance of cond-like '=>' form of 'case' which is not
+    defined in R5RS
+
+  - [R5RS] Remove 'delay' and 'force' since they are completely broken
+
+  - Fix broken evaluation of quasiquoted vectors splicing with improper list
+
+  - Fix 64-bit capability of quasiquoted vectors
+
+
 Overview of changes from 0.5.0 (r3097 + private modifications) to 0.6.1
 ==
 * New features

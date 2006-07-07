@@ -18,18 +18,18 @@ Checkpoints
 
 - General code review (logic, structure, meaning, validity etc)
 
-- 64-bit model capability check by eyes
+- 64-bit data model capability check by eyes
 
-  Whether the codes are capable of ILP32(LL64), LP64, LLP64 and ILP64.
+  Whether the codes are capable of LL64(ILP32), LP64, LLP64 and ILP64.
 
-- 64-bit model capability check by tests
+- 64-bit data model capability check by tests
 
   Ensure the capability by tests.
 
 - Coding style check (doc/style.txt)
 
   Don't forget checking duplicate evaluation of side-effective expression on
-  macro invocation.
+  macro invocations.
 
 - Normal case tests
 
@@ -44,8 +44,8 @@ Format and Examples
   Record significant achievements to 'Log' section in ChangeLog format
 
 2006-06-06 YamaKen <yamaken AT bp.iij4u.or.jp>
-	
-	* general code review for all core files
+
+        * general code review for all core files
 
 
 - Status record template
@@ -165,6 +165,7 @@ Categorized File List
   * vector.c
   * qquote.c
   * macro.c
+  * promise.c
 
 - SRFIs (srfi)
 
@@ -647,14 +648,14 @@ corner case tests:
 
 file:              syntax.c
 category:          r5rs
-spec by eyes:      
-spec by tests:     
-generic review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3704
+spec by tests:     yamaken@r3704
+generic review:    yamaken@r3704
+64-bit by eyes:    yamaken@r3704
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3704
+normal case tests: yamaken@r3704
+corner case tests: yamaken@r3704
 
 file:              procedure.c
 category:          r5rs
@@ -745,6 +746,17 @@ normal case tests: yamaken@r3649
 corner case tests: yamaken@r3649
 
 file:              macro.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+generic review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              promise.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
@@ -924,9 +936,103 @@ corner case tests:
 Log
 ---
 
+2006-07-08 YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * syntax.c
+          - QA done @r3704 except for "64-bit by tests" and hygienic macros
+            capability and proper tail recursion capability of '=>' form of
+            'cond'
+          - [R5RS] Fix invalid acceptance of definition form on where neither
+            toplevel nor internal definition is allowed
+          - [R5RS] Fix invalid acceptance of 'begin' that contains definitions
+            and expressions intermixed
+          - [R5RS] Fix invalid acceptance of <body> that contains definitions
+            and expressions intermixed on 'let', 'let*', 'letrec' and function
+            form 'define'
+          - [R5RS] Fix invalid no-expressions <body> acceptance of 'let',
+            'let*', 'letrec' and function form 'define'
+          - [R5RS] Fix invalid acceptance of binding syntactic keyword as value
+            on 'define', 'let', 'let*', 'letrec' and 'do'
+          - Add optional duplicate variable check to 'let', 'let*', 'letrec'
+            and 'do' (it is not required by R5RS)
+          - [R5RS] Fix broken per-iteration env isolation of 'do'
+          - [R5RS] Fix proper tail recursion incapability of '=>' form of
+            'cond'
+          - [R5RS] Fix invalid acceptance of cond-like '=>' form of 'case'
+            which is not defined in R5RS
+          - [R5RS] Remove 'delay' and 'force' since they are completely broken
+
+          Details:
+          - Accept '(begin)' as valid internal and toplevel definition as
+            defined in "7.1.6 Programs and definitions" of R5RS, and reject as
+            expression as defined in "7.1.3 Expressions". This behavior is
+            strictly conforms to R5RS and same as Scheme48 1.3. (i.e. '(begin)'
+            is valid only at where definitions are allowed)
+          - Remove broken internal definition on
+            !SCM_STRICT_DEFINE_PLACEMENT. Since it breaks the R5RS internal
+            definitions semantics, the macro is replaced with
+            SCM_USE_INTERNAL_DEFINITIONS and the feature is made exclusively
+            selectable from only 'completely valid' or 'disabled'. The broken
+            internal definitions have been withdrawn
+          - I found that 'delay' implementation is completely misunderstood and
+            broken. So the implementation of 'delay' and 'force' are rewritten
+            as "not implemented yet" error generator and separated into
+            a placeholder file promise.c
+          - Add test-let.scm, test-lambda.scm, test-begin.scm,
+            test-define-internal.scm, test-do.scm and complete all required
+            tests I'm aware of
+          - Add and fix various tests to test-exp.scm, test-syntax.scm and
+            test-define.scm
+          - Specs have been validated against following R5RS sections:
+            * quote
+              "3.3 External representations"
+              "4.1.2 Literal expressions"
+              "7.1.3 Expressions"
+            * lambda
+              "4.1.4 Procedures"
+              "7.1.3 Expressions"
+              "5.2.2 Internal definitions"
+              "7.1.6 Programs and definitions"
+            * if
+              "4.1.5 Conditionals"
+              "7.1.3 Expressions"
+            * set!
+              "4.1.6 Assignments"
+              "7.1.3 Expressions"
+            * cond, case, and, or
+              "3.5 Proper tail recursion"
+              "4.2.1 Conditionals"
+              "7.1.3 Expressions"
+            * let, named lfet, let*, letrec
+              "4.2.2 Binding constructs"
+              "4.2.4 Iteration"
+              "5.2.2 Internal definitions"
+              "7.1.3 Expressions"
+              "7.1.6 Programs and definitions"
+            * begin
+              "4.2.3 Sequencing"
+              "5.2.2 Internal definitions"
+              "7.1.3 Expressions"
+              "7.1.6 Programs and definitions"
+            * do
+              "4.2.4 Iteration"
+              "7.1.3 Expressions"
+            * define
+              "3.1 Variables; syntactic keywords; and regions"
+              "4.1.1 Variable references"
+              "4.2.3 Sequencing"
+              "4.3 Macros"
+              "5.1 Programs"
+              "5.2 Definitions"
+              "5.2.1 Top level definitions"
+              "5.2.2 Internal definitions"
+              "7.1.1 Lexical structure"
+              "7.1.3 Expressions"
+              "7.1.6 Programs and definitions"
+
 2006-06-25 YamaKen <yamaken AT bp.iij4u.or.jp>
-	
-	* qquote.c
+
+        * qquote.c
           - QA done @r3649 except for "64-bit by tests"
           - Specs have been validated against R5RS "4.2.6 Quasiquotation" and
             "7.1.4 Quasiquotations"
@@ -936,5 +1042,5 @@ Log
             proper. See "unquote-splicing nested" of test-quote.scm
 
 2006-06-24 YamaKen <yamaken AT bp.iij4u.or.jp>
-	
-	* Create this file and define record formats.
+
+        * Create this file and define record formats.

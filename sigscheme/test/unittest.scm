@@ -30,16 +30,17 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(if (provided? "sigscheme")
-    (eval '(begin
-             (define cond-expand cond)
-             (define sigscheme #t))
-          (interaction-environment)))
-
-(cond-expand
- (sigscheme
-  (use srfi-34))
- (else #t))
+;;;; defining a syntax as value is invalid
+;;(if (provided? "sigscheme")
+;;    (eval '(begin
+;;             (define cond-expand cond)
+;;             (define sigscheme #t))
+;;          (interaction-environment)))
+;;
+;;(cond-expand
+;; (sigscheme
+;;  (use srfi-34))
+;; (else #t))
 
 (define *test-track-progress* #f)  ;; for locationg SEGV point
 (define *total-testsuites* 1)  ;; TODO: introduce test suites and defaults to 0

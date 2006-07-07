@@ -325,16 +325,6 @@ scm_p_for_each(ScmObj proc, ScmObj args)
     return SCM_UNDEF;
 }
 
-SCM_EXPORT ScmObj
-scm_p_force(ScmObj closure)
-{
-    DECLARE_FUNCTION("force", procedure_fixed_1);
-
-    ENSURE_CLOSURE(closure);
-
-    return scm_call(closure, SCM_NULL);
-}
-
 #if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj
 scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)

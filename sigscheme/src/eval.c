@@ -388,20 +388,41 @@ scm_eval(ScmObj obj, ScmObj env)
 {
     ScmEvalState state;
 
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+    /* FIXME: temporary hack */
+    if (EQ(env, SCM_INTERACTION_ENV_INDEFINABLE)) {
+        env = SCM_INTERACTION_ENV;
+        SCM_EVAL_STATE_INIT1(state, env);
+        state.nest = SCM_NEST_COMMAND;
+    } else if (EQ(env, SCM_INTERACTION_ENV)) {
+        SCM_EVAL_STATE_INIT1(state, env);
+        state.nest = SCM_NEST_PROGRAM;
+    } else {
+        SCM_EVAL_STATE_INIT1(state, env);
+    }
+#else
+    /* intentionally does not use SCM_EVAL_STATE_INIT() to avoid overhead */
+    state.env = env;
+#endif
+
 #if SCM_DEBUG
     scm_push_trace_frame(obj, env);
 #endif
-
-    /* intentionally does not use SCM_EVAL_STATE_INIT() to avoid overhead */
-    state.env = env;
 
 eval_loop:
     if (IDENTIFIERP(obj)) {
         obj = scm_symbol_value(obj, state.env);
     } else if (CONSP(obj)) {
         obj = call(CAR(obj), CDR(obj), &state, SCM_VALTYPE_NEED_EVAL);
-        if (state.ret_type == SCM_VALTYPE_NEED_EVAL)
+        if (state.ret_type == SCM_VALTYPE_NEED_EVAL) {
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+            if (state.nest == SCM_NEST_RETTYPE_BEGIN)
+                state.nest = SCM_NEST_COMMAND_OR_DEFINITION;
+            else
+                state.nest = SCM_NEST_COMMAND;
+#endif
             goto eval_loop;
+        }
     }
 #if SCM_STRICT_NULL_FORM
     /* () is allowed by default for efficiency */

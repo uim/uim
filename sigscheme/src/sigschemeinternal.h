@@ -186,6 +186,11 @@ extern "C" {
 #define SCM_ERRMSG_NULL_IN_STRING                                            \
     "null character in a middle of string is not enabled"
 
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+/* FIXME: temporary hack. SCM_EOF is only used as an unique ID. */
+#define SCM_INTERACTION_ENV_INDEFINABLE SCM_EOF
+#endif
+
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
 /* trace stack for debugging */
@@ -655,8 +660,12 @@ SCM_EXPORT ScmObj scm_tailcall(ScmObj proc, ScmObj args,
 
 /* syntax.c */
 SCM_EXPORT void scm_init_syntax(void);
+#if SCM_USE_INTERNAL_DEFINITIONS
 SCM_EXPORT ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
-SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj args, ScmObj case_key,
+#else
+#define scm_s_body scm_s_begin
+#endif
+SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj clauses,
                                       ScmEvalState *eval_state);
 
 /* macro.c */

@@ -32,11 +32,6 @@
 
 (load "./test/unittest.scm")
 
-(cond-expand
- (sigscheme
-  (use srfi-34))
- (else #t))
-
 (use srfi-8)
 
 ;; All tests in this file are passed against r2183 (new repository)

@@ -37,6 +37,9 @@ endif
 if USE_HYGIENIC_MACRO
   R5RS_SYNTAX_SRCS += macro.c
 endif
+if USE_PROMISE
+  R5RS_SYNTAX_SRCS += promise.c
+endif
 
 SSCM_PROC_SRCS = error.c module.c
 R5RS_PROC_SRCS = eval.c procedure.c list.c

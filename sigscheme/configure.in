@@ -249,6 +249,9 @@ use_syntax_case="no"
 # (not supported yet) syntactic closure
 use_unhygienic_macro="no"
 
+# use promise
+use_promise="yes"
+
 # (cannot be 0 yet) use integer numbers
 use_int="yes"
 
@@ -604,6 +607,14 @@ dnl   [])
 AM_CONDITIONAL(USE_UNHYGIENIC_MACRO, test "x$use_unhygienic_macro" = xyes)
 if test "x$use_unhygienic_macro" = xyes; then
   AC_DEFINE(SCM_USE_UNHYGIENIC_MACRO, 1, [syntactic closure])
+fi
+
+#
+# PROMISE
+#
+AM_CONDITIONAL(USE_PROMISE, test "x$use_promise" = xyes)
+if test "x$use_promise" = xyes; then
+  AC_DEFINE(SCM_USE_PROMISE, 1, [use promise])
 fi
 
 #

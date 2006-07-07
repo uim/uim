@@ -8,6 +8,7 @@ Requirements and critical bugs:
     specially configured for libuim. Only the combined-source is needed for uim
 
 * Confirm R5RS and SRFI conformance for each function implementation
+  - Complete 'r5rs' and 'srfi' categories of QALog
 
 * Make 64bit-safe
   - Write tests
@@ -121,8 +122,8 @@ Assigned to YamaKen:
 
 * Write test for tail expression of all tail-recursive syntaxes
 
-* Add tests for proper tail recursion with 'apply' and 'guard' to
-  test-tail-rec.scm
+* Add tests for proper tail recursion with 'apply', 'guard' and '(<exp1> =>
+  <exp2>)' clause of 'cond' to test-tail-rec.scm
 
 * Write tests for SRFI-75
   - Investigate the withdrawn status of SRFI-75, and decide temporary API to

@@ -112,6 +112,9 @@ scm_initialize_siod(void)
 
     scm_register_funcs(scm_siod_func_info_table);
 
+    scm_use("sscm-ext");
+    scm_define_alias("the-environment", "%%current-environment");
+
     scm_use("srfi-60");
     scm_define_alias("bit-and", "logand");
     scm_define_alias("bit-or",  "logior");
@@ -181,16 +184,6 @@ scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
         return SCM_TRUE;
 
     return SCM_FALSE;
-}
-
-SCM_EXPORT ScmObj
-scm_p_the_environment(ScmEvalState *eval_state)
-{
-    DECLARE_FUNCTION("the-environment", procedure_fixed_tailrec_0);
-
-    eval_state->ret_type = SCM_VALTYPE_AS_IS;
-
-    return eval_state->env;
 }
 
 SCM_EXPORT ScmObj

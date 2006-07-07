@@ -396,21 +396,22 @@ scm_symbol_value(ScmObj var, ScmObj env)
 
     SCM_ASSERT(IDENTIFIERP(var));
 
-    /* first, lookup the environment */
     ref = scm_lookup_environment(var, env);
     if (ref != SCM_INVALID_REF) {
-        /* variable is found in environment, so returns its value */
-        return DEREF(ref);
+        /* Found in the environment. Since scm_s_body() may produce unbound
+         * variables as internal definitions, subsequent error check is
+         * required. */
+        val = DEREF(ref);
+    } else {
+        /* Fallback to top-level binding. */
+#if SCM_USE_HYGIENIC_MACRO
+        if (FARSYMBOLP(var))
+            var = SCM_FARSYMBOL_SYM(var);
+        SCM_ASSERT(SYMBOLP(var));
+#endif
+        val = SCM_SYMBOL_VCELL(var);
     }
 
-#if SCM_USE_HYGIENIC_MACRO
-    if (FARSYMBOLP(var))
-        var = SCM_FARSYMBOL_SYM(var);
-    SCM_ASSERT(SYMBOLP(var));
-#endif
-
-    /* finally, look at the VCELL */
-    val = SCM_SYMBOL_VCELL(var);
     if (EQ(val, SCM_UNBOUND))
         ERR_OBJ("unbound variable", var);
 
@@ -490,6 +491,14 @@ scm_validate_formals(ScmObj formals)
 #if SCM_STRICT_ARGCHECK
     scm_int_t len;
     DECLARE_INTERNAL_FUNCTION("scm_validate_formals");
+
+    /*
+     * SigScheme does not perform the check for duplicate variable name in
+     * formals. It is an user's responsibility.
+     *
+     * R5RS: 4.1.4 Procedures
+     * It is an error for a <variable> to appear more than once in <formals>.
+     */
 
     /* This loop goes infinite if the formals is circular. SigSchme expects
      * that user codes are sane here. */

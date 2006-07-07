@@ -77,11 +77,26 @@ SCM_DEFINE_STATIC_VARS(static_sigscheme);
 
 static const char *const builtin_features[] = {
     "sigscheme",
+#if SCM_USE_INTERNAL_DEFINITIONS
+    "internal-definitions",
+#endif
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+    "strict-toplevel-definitions",
+#endif
 #if SCM_STRICT_R5RS
     "strict-r5rs",
 #endif
 #if SCM_STRICT_ARGCHECK
     "strict-argcheck",
+#endif
+#if SCM_STRICT_NULL_FORM
+    "strict-null-form",
+#endif
+#if SCM_STRICT_VECTOR_FORM
+    "strict-vector-form",
+#endif
+#if SCM_STRICT_ENCODING_CHECK
+    "strict-encoding-check",
 #endif
 #if (SCM_CONST_LIST_LITERAL && SCM_HAS_IMMUTABLE_CONS)
     "const-list-literal",

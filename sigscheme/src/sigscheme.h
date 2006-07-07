@@ -106,10 +106,16 @@ extern "C" {
  */
 
 #if SCM_DEBUG
+#if 0
+#define SCM_ASSERTION_MSG(cond) ("assertion failed at " "'" #cond "'")
+#else
+#define SCM_ASSERTION_MSG(cond) "assertion failed"
+#endif
+
 #if SCM_CHICKEN_DEBUG
 /* allows survival recovery */
 #define SCM_ASSERT(cond)                                                     \
-    ((cond) || (scm_die("assertion failed", __FILE__, __LINE__), 1))
+    ((cond) || (scm_die(SCM_ASSERTION_MSG(cond), __FILE__, __LINE__), 1))
 #else /* SCM_CHICKEN_DEBUG */
 #include <assert.h>
 #define SCM_ASSERT(cond) (assert(cond))
@@ -967,25 +973,66 @@ enum ScmValueType {
     SCM_VALTYPE_NEED_EVAL = scm_true
 };
 
+/*
+ * for strict top-level definitions
+ *
+ * R5RS: 7.1.6 Programs and definitions
+ *
+ * <program> --> <command or definition>*
+ * <command or definition> --> <command>
+ *     | <definition>
+ *     | <syntax definition>
+ *     | (begin <command or definition>+)
+ * <definition> --> (define <variable> <expression>)
+ *       | (define (<variable> <def formals>) <body>)
+ *       | (begin <definition>*)
+ * <command> --> <expression>
+ */
+enum ScmNestState {
+    SCM_NEST_PROGRAM,
+    SCM_NEST_COMMAND_OR_DEFINITION,
+    SCM_NEST_COMMAND,
+    SCM_NEST_RETTYPE_BEGIN
+};
+
+/* whether top-level 'define' can be performed */
+#if SCM_STRICT_TOPLEVEL_DEFINITIONS
+#define SCM_DEFINABLE_TOPLEVELP(eval_state)                                  \
+    (!EQ((eval_state)->env, SCM_INTERACTION_ENV_INDEFINABLE)                 \
+     && scm_toplevel_environmentp((eval_state)->env)                         \
+     && ((eval_state)->nest == SCM_NEST_PROGRAM                              \
+         || (eval_state)->nest == SCM_NEST_COMMAND_OR_DEFINITION))
+#else
+#define SCM_DEFINABLE_TOPLEVELP(eval_state)                                  \
+    (scm_toplevel_environmentp((eval_state)->env))
+#endif
+
 typedef struct ScmEvalState_ ScmEvalState;
 struct ScmEvalState_ {
     ScmObj env;
     enum ScmValueType ret_type;
+    enum ScmNestState nest;
 };
 
 /* Use these constructors instead of manually initialize each members because
  * another member may be added. Such member will implicitly be initialized
  * properly as long as the constructors are used. */
 #define SCM_EVAL_STATE_INIT(state)                                           \
-    SCM_EVAL_STATE_INIT2((state), SCM_INTERACTION_ENV, SCM_VALTYPE_NEED_EVAL)
+    SCM_EVAL_STATE_INIT1((state), SCM_INTERACTION_ENV)
 
 #define SCM_EVAL_STATE_INIT1(state, env)                                     \
     SCM_EVAL_STATE_INIT2((state), (env), SCM_VALTYPE_NEED_EVAL)
 
-#define SCM_EVAL_STATE_INIT2(state, _env, _ret_type)                         \
+#define SCM_EVAL_STATE_INIT2(state, env, ret_type)                           \
+    SCM_EVAL_STATE_INIT3((state), (env), (ret_type),                         \
+                         (SCM_EQ((env), SCM_INTERACTION_ENV))                \
+                          ? SCM_NEST_PROGRAM : SCM_NEST_COMMAND)
+
+#define SCM_EVAL_STATE_INIT3(state, _env, _ret_type, _nest)                  \
     do {                                                                     \
         (state).env      = (_env);                                           \
         (state).ret_type = (_ret_type);                                      \
+        (state).nest = (_nest);                                              \
     } while (/* CONSTCOND */ 0)
 
 #define SCM_FINISH_TAILREC_CALL(obj, eval_state)                             \
@@ -1216,12 +1263,13 @@ SCM_EXPORT ScmObj scm_s_lambda(ScmObj formals, ScmObj body, ScmObj env);
 SCM_EXPORT ScmObj scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest,
                            ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_setx(ScmObj var, ScmObj val, ScmObj env);
-SCM_EXPORT ScmObj scm_s_cond(ScmObj args, ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_cond(ScmObj clauses, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_case(ScmObj key, ScmObj args,
                              ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_and(ScmObj args, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_or(ScmObj args, ScmEvalState *eval_state);
-SCM_EXPORT ScmObj scm_s_let(ScmObj args, ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_let(ScmObj bindings, ScmObj body,
+                            ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_letstar(ScmObj bindings, ScmObj body,
                                 ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_letrec(ScmObj bindings, ScmObj body,
@@ -1229,8 +1277,8 @@ SCM_EXPORT ScmObj scm_s_letrec(ScmObj bindings, ScmObj body,
 SCM_EXPORT ScmObj scm_s_begin(ScmObj args, ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
                            ScmEvalState *eval_state);
-SCM_EXPORT ScmObj scm_s_delay(ScmObj expr, ScmObj env);
-SCM_EXPORT ScmObj scm_s_define(ScmObj var, ScmObj rest, ScmObj env);
+SCM_EXPORT ScmObj scm_s_define(ScmObj var, ScmObj rest,
+                               ScmEvalState *eval_state);
 
 #if SCM_USE_QUASIQUOTE
 /* qquote.c */
@@ -1238,6 +1286,12 @@ SCM_EXPORT ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);
 SCM_EXPORT ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
 SCM_EXPORT ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
 #endif /* SCM_USE_QUASIQUOTE */
+
+/* promise.c */
+#if SCM_USE_PROMISE
+SCM_EXPORT ScmObj scm_s_delay(ScmObj exp, ScmObj env);
+SCM_EXPORT ScmObj scm_p_force(ScmObj promise);
+#endif /* SCM_USE_PROMISE */
 
 /* procedure.c */
 SCM_EXPORT ScmObj scm_p_eqp(ScmObj obj1, ScmObj obj2);
@@ -1251,7 +1305,6 @@ SCM_EXPORT ScmObj scm_p_string2symbol(ScmObj str);
 SCM_EXPORT ScmObj scm_p_procedurep(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_map(ScmObj proc, ScmObj args);
 SCM_EXPORT ScmObj scm_p_for_each(ScmObj proc, ScmObj args);
-SCM_EXPORT ScmObj scm_p_force(ScmObj closure);
 #if SCM_USE_CONTINUATION
 SCM_EXPORT ScmObj scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state);
 #endif
@@ -1510,6 +1563,7 @@ SCM_EXPORT ScmObj scm_format(ScmObj port, enum ScmFormatCapability fcap,
 /* module-sscm-ext.c */
 SCM_EXPORT void scm_initialize_sscm_extensions(void);
 SCM_EXPORT ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
+SCM_EXPORT ScmObj scm_p_current_environment(ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_p_least_fixnum(void);
 SCM_EXPORT ScmObj scm_p_greatest_fixnum(void);
 SCM_EXPORT ScmObj scm_p_load_path(void);
@@ -1527,7 +1581,6 @@ SCM_EXPORT void   scm_initialize_siod(void);
 SCM_EXPORT ScmObj scm_p_symbol_value(ScmObj var);
 SCM_EXPORT ScmObj scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
 SCM_EXPORT ScmObj scm_p_siod_equal(ScmObj obj1, ScmObj obj2);
-SCM_EXPORT ScmObj scm_p_the_environment(ScmEvalState *eval_state);
 SCM_EXPORT ScmObj scm_p_closure_code(ScmObj closure);
 SCM_EXPORT ScmObj scm_p_verbose(ScmObj args);
 SCM_EXPORT ScmObj scm_p_eof_val(void);

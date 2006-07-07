@@ -51,8 +51,8 @@ print <<EOT
 +-------- specification conformance check by eyes
 |+------- specification conformance check by tests
 ||+------ general code review (logic, structure, meaning, validity etc)
-|||+----- 64-bit model capability check by eyes
-||||+---- 64-bit model capability check by tests
+|||+----- 64-bit data model capability check by eyes
+||||+---- 64-bit data model capability check by tests
 |||||+--- coding style check (doc/style.txt)
 ||||||+-- normal case tests
 |||||||+- corner case tests
