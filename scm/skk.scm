@@ -207,7 +207,7 @@
 
 (register-action 'action_skk_latin
 		 (lambda (sc)
-		   '(ja_direct
+		   '(ja_halfwidth_alnum
 		     "a"
 		     "直接入力"
 		     "直接(無変換)入力モード"))

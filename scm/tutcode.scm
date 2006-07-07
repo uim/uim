@@ -79,7 +79,7 @@
 
 (register-action 'action_tutcode_direct
 		 (lambda (tc)
-		   '(ja_direct
+		   '(ja_halfwidth_alnum
 		     "a"
 		     "直接入力"
 		     "直接入力モード"))

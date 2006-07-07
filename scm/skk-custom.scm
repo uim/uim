@@ -163,7 +163,7 @@
 (define skk-input-mode-indication-alist
   (list
    (list 'action_skk_latin
-	 'ja_direct
+	 'ja_halfwidth_alnum
 	 "a"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
