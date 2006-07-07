@@ -1280,8 +1280,8 @@ SCM_EXPORT ScmObj scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
 SCM_EXPORT ScmObj scm_s_define(ScmObj var, ScmObj rest,
                                ScmEvalState *eval_state);
 
-#if SCM_USE_QUASIQUOTE
 /* qquote.c */
+#if SCM_USE_QUASIQUOTE
 SCM_EXPORT ScmObj scm_s_quasiquote(ScmObj datum, ScmObj env);
 SCM_EXPORT ScmObj scm_s_unquote(ScmObj dummy, ScmObj env);
 SCM_EXPORT ScmObj scm_s_unquote_splicing(ScmObj dummy, ScmObj env);
@@ -1346,8 +1346,8 @@ SCM_EXPORT ScmObj scm_p_assq(ScmObj obj, ScmObj alist);
 SCM_EXPORT ScmObj scm_p_assv(ScmObj obj, ScmObj alist);
 SCM_EXPORT ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 
-#if SCM_USE_NUMBER
 /* number.c */
+#if SCM_USE_NUMBER
 SCM_EXPORT char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
 SCM_EXPORT ScmObj scm_p_add(ScmObj left, ScmObj right,
                             enum ScmReductionState *state);
@@ -1386,8 +1386,8 @@ SCM_EXPORT ScmObj scm_p_number2string (ScmObj num, ScmObj args);
 SCM_EXPORT ScmObj scm_p_string2number(ScmObj str, ScmObj args);
 #endif /* SCM_USE_NUMBER */
 
-#if SCM_USE_CHAR
 /* char.c */
+#if SCM_USE_CHAR
 SCM_EXPORT ScmObj scm_p_charp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_char_equalp(ScmObj ch1, ScmObj ch2);
 SCM_EXPORT ScmObj scm_p_char_lessp(ScmObj ch1, ScmObj ch2);
@@ -1410,8 +1410,8 @@ SCM_EXPORT ScmObj scm_p_char_upcase(ScmObj ch);
 SCM_EXPORT ScmObj scm_p_char_downcase(ScmObj ch);
 #endif /* SCM_USE_CHAR */
 
-#if SCM_USE_STRING
 /* string.c */
+#if SCM_USE_STRING
 SCM_EXPORT ScmObj scm_p_stringp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_make_string(ScmObj length, ScmObj args);
 SCM_EXPORT ScmObj scm_p_string(ScmObj args);
@@ -1436,8 +1436,8 @@ SCM_EXPORT ScmObj scm_p_string_copy(ScmObj str);
 SCM_EXPORT ScmObj scm_p_string_fillx(ScmObj str, ScmObj ch);
 #endif /* SCM_USE_STRING */
 
-#if SCM_USE_VECTOR
 /* vector.c */
+#if SCM_USE_VECTOR
 SCM_EXPORT ScmObj scm_p_vectorp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_make_vector(ScmObj scm_len, ScmObj args);
 SCM_EXPORT ScmObj scm_p_vector(ScmObj args);
@@ -1449,8 +1449,8 @@ SCM_EXPORT ScmObj scm_p_list2vector(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_vector_fillx(ScmObj vec, ScmObj fill);
 #endif /* SCM_USE_VECTOR */
 
-#if SCM_USE_DEEP_CADRS
 /* deep-cadrs.c */
+#if SCM_USE_DEEP_CADRS
 SCM_EXPORT ScmObj scm_p_caaar(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_caadr(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_cadar(ScmObj lst);
@@ -1486,8 +1486,8 @@ SCM_EXPORT ScmObj scm_unwrap_syntaxx(ScmObj obj);
 SCM_EXPORT ScmObj scm_unwrap_keyword(ScmObj obj);
 #endif
 
-#if SCM_USE_PORT
 /* port.c */
+#if SCM_USE_PORT
 SCM_EXPORT ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                                             enum ScmPortFlag flag);
 SCM_EXPORT int scm_port_close(ScmObj port);
@@ -1520,15 +1520,15 @@ SCM_EXPORT ScmObj scm_p_newline(ScmObj args);
 SCM_EXPORT ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
 #endif /* SCM_USE_PORT */
 
-#if SCM_USE_READER
 /* read.c */
+#if SCM_USE_READER
 SCM_EXPORT ScmObj scm_read(ScmObj port);
 SCM_EXPORT ScmObj scm_read_char(ScmObj port);
 SCM_EXPORT ScmObj scm_p_read(ScmObj args);
 #endif /* SCM_USE_READER */
 
-#if SCM_USE_WRITER
 /* write.c */
+#if SCM_USE_WRITER
 SCM_EXPORT void scm_write(ScmObj port, ScmObj obj);
 SCM_EXPORT void scm_display(ScmObj port, ScmObj obj);
 #if SCM_USE_SRFI38
@@ -1538,15 +1538,15 @@ SCM_EXPORT ScmObj scm_p_write(ScmObj obj, ScmObj args);
 SCM_EXPORT ScmObj scm_p_display(ScmObj obj, ScmObj args);
 #endif /* SCM_USE_WRITER */
 
-#if SCM_USE_LOAD
 /* load.c */
+#if SCM_USE_LOAD
 SCM_EXPORT void scm_set_lib_path(const char *path);
 SCM_EXPORT void scm_load(const char *filename);
 SCM_EXPORT ScmObj scm_p_load(ScmObj filename);
 #endif /* SCM_USE_LOAD */
 
-#if SCM_USE_FORMAT
 /* format.c */
+#if SCM_USE_FORMAT
 SCM_EXPORT void scm_pretty_print(ScmObj port, ScmObj obj);
 SCM_EXPORT ScmObj scm_lformat(ScmObj port, enum ScmFormatCapability fcap,
                               const char *fmt, ScmObj scm_args);
@@ -1559,8 +1559,8 @@ SCM_EXPORT ScmObj scm_format(ScmObj port, enum ScmFormatCapability fcap,
 /*===========================================================================
    SigScheme: Optional Funtions
 ===========================================================================*/
-#if SCM_USE_SSCM_EXTENSIONS
 /* module-sscm-ext.c */
+#if SCM_USE_SSCM_EXTENSIONS
 SCM_EXPORT void scm_initialize_sscm_extensions(void);
 SCM_EXPORT ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
 SCM_EXPORT ScmObj scm_p_current_environment(ScmEvalState *eval_state);
@@ -1575,8 +1575,8 @@ SCM_EXPORT ScmObj scm_p_lengthstar(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_exit(ScmObj args) SCM_NORETURN;
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 
-#if SCM_COMPAT_SIOD
 /* module-siod.c */
+#if SCM_COMPAT_SIOD
 SCM_EXPORT void   scm_initialize_siod(void);
 SCM_EXPORT ScmObj scm_p_symbol_value(ScmObj var);
 SCM_EXPORT ScmObj scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
@@ -1589,8 +1589,8 @@ SCM_EXPORT long   scm_get_verbose_level(void);
 SCM_EXPORT void   scm_set_verbose_level(long level);
 #endif /* SCM_COMPAT_SIOD */
 
-#if SCM_USE_SRFI1
 /* module-srfi1.c */
+#if SCM_USE_SRFI1
 SCM_EXPORT void   scm_initialize_srfi1(void);
 SCM_EXPORT ScmObj scm_p_srfi1_xcons(ScmObj a, ScmObj b);
 SCM_EXPORT ScmObj scm_p_srfi1_consstar(ScmObj args);
@@ -1630,42 +1630,42 @@ SCM_EXPORT ScmObj scm_p_srfi1_lengthplus(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_srfi1_concatenate(ScmObj args);
 #endif
 
-#if SCM_USE_SRFI2
 /* module-srfi2.c */
+#if SCM_USE_SRFI2
 SCM_EXPORT void   scm_initialize_srfi2(void);
 SCM_EXPORT ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body,
                                           ScmEvalState *eval_state);
 #endif
 
-#if SCM_USE_SRFI6
 /* module-srfi6.c */
+#if SCM_USE_SRFI6
 SCM_EXPORT void   scm_initialize_srfi6(void);
 SCM_EXPORT ScmObj scm_p_srfi6_open_input_string(ScmObj str);
 SCM_EXPORT ScmObj scm_p_srfi6_open_output_string(void);
 SCM_EXPORT ScmObj scm_p_srfi6_get_output_string(ScmObj port);
 #endif
 
-#if SCM_USE_SRFI8
 /* module-srfi8.c */
+#if SCM_USE_SRFI8
 SCM_EXPORT void   scm_initialize_srfi8(void);
 SCM_EXPORT ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                                       ScmEvalState *eval_state);
 #endif
 
-#if SCM_USE_SRFI23
 /* module-srfi23.c */
+#if SCM_USE_SRFI23
 SCM_EXPORT void   scm_initialize_srfi23(void);
 SCM_EXPORT ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 #endif
 
-#if SCM_USE_SRFI28
 /* module-srfi28.c */
+#if SCM_USE_SRFI28
 SCM_EXPORT void   scm_initialize_srfi28(void);
 SCM_EXPORT ScmObj scm_p_srfi28_format(ScmObj fmt, ScmObj objs);
 #endif
 
-#if SCM_USE_SRFI34
 /* module-srfi34.c */
+#if SCM_USE_SRFI34
 SCM_EXPORT void   scm_initialize_srfi34(void);
 SCM_EXPORT ScmObj scm_p_srfi34_with_exception_handler(ScmObj handler,
                                                       ScmObj thunk);
@@ -1674,22 +1674,22 @@ SCM_EXPORT ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
 SCM_EXPORT ScmObj scm_p_srfi34_raise(ScmObj obj);
 #endif
 
-#if SCM_USE_SRFI38
 /* module-srfi38.c */
+#if SCM_USE_SRFI38
 SCM_EXPORT void   scm_initialize_srfi38(void);
 SCM_EXPORT ScmObj scm_p_srfi38_write_with_shared_structure(ScmObj obj,
                                                            ScmObj args);
 #endif
 
-#if SCM_USE_SRFI48
 /* module-srfi48.c */
+#if SCM_USE_SRFI48
 SCM_EXPORT void   scm_initialize_srfi48(void);
 SCM_EXPORT ScmObj scm_p_srfi48_format(ScmObj fmt_or_port, ScmObj rest);
 SCM_EXPORT ScmObj scm_p_formatplus(ScmObj fmt_or_port, ScmObj rest);
 #endif
 
-#if SCM_USE_SRFI60
 /* module-srfi60.c */
+#if SCM_USE_SRFI60
 SCM_EXPORT void   scm_initialize_srfi60(void);
 SCM_EXPORT ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
                                       enum ScmReductionState *state);
