@@ -758,15 +758,15 @@
 
 	((mana-hiragana-key? key key-state)
 	 (mana-context-change-kana-mode! mc mana-type-hiragana)
-	 (man-context-set-alnum! mc #f))
+	 (mana-context-set-alnum! mc #f))
 
 	((mana-katakana-key? key key-state)
 	 (mana-context-change-kana-mode! mc mana-type-katakana)
-	 (man-context-set-alnum! mc #f))
+	 (mana-context-set-alnum! mc #f))
 
 	((mana-halfkana-key? key key-state)
 	 (mana-context-change-kana-mode! mc mana-type-halfkana)
-	 (man-context-set-alnum! mc #f))
+	 (mana-context-set-alnum! mc #f))
 
 	((mana-halfwidth-alnum-key? key key-state)
 	 (mana-context-set-alnum-type! mc mana-type-halfwidth-alnum)
