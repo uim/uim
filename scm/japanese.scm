@@ -761,7 +761,7 @@
 	    (list "゛" "゛" "ﾞ")
 	    (list str str str)))))
 
-;; get (("じ" "ジ" "ｼﾞ") ("ん" "ン" "ﾝ") ("か" "カ" "ｶ")) from ("じ" "ん" "か")
+;; (("じ" "ジ" "ｼﾞ") ("ん" "ン" "ﾝ") ("か" "カ" "ｶ")) from ("じ" "ん" "か")
 (define ja-make-kana-str-list
   (lambda (sl)
     (if (not (null? sl))
@@ -775,11 +775,6 @@
 (define ja-type-halfwidth-alnum	3)
 (define ja-type-fullwidth-alnum	4)
 
-;; backward compatiblity
-(define ja-type-hankana    ja-type-halfkana)
-(define ja-type-latin      ja-type-halfwidth-alnum)
-(define ja-type-wide-latin ja-type-fullwidth-alnum)
-
 (define ja-opposite-kana
   (lambda (kana)
     (cond
@@ -791,7 +786,7 @@
       ja-type-hiragana))))
 
 ;; getting required type of kana string from above kana-str-list
-;; (ja-mek-kena-str
+;; (ja-make-kana-str
 ;;  (("じ" "ジ" "ｼﾞ") ("ん" "ン" "ﾝ") ("か" "カ" "ｶ"))
 ;;  ja-type-katakana)
 ;;  -> "カンジ"
