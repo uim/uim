@@ -50,7 +50,7 @@
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <dc:creator>
           <cc:Agent>
-            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
           </cc:Agent>
         </dc:creator>
         <dc:title>ja_halfwidth_alnum.svg</dc:title>
@@ -58,7 +58,7 @@
         <dc:description>Input mode icon for Japanese halfwidth alpha-numeric.</dc:description>
         <dc:rights>
           <cc:Agent>
-            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
           </cc:Agent>
         </dc:rights>
         <dc:publisher>

@@ -1,4 +1,4 @@
-pixmapsdir =  $(datadir)/uim/pixmaps
+pixmapsdir = @uim_pixmapsdir@
 
 SVGS = unknown.svg
 

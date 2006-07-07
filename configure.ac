@@ -329,14 +329,16 @@ if test x$exec_prefix = xNONE; then
    exec_prefix=$prefix
 fi
 
-LIBDIR=`eval echo ${libdir}`
+# FIXME: complicated directory handlings  -- YamaKen 2006-07-08
+# FIXME: double eval workaround for datarootdir
+LIBDIR=`eval eval echo ${libdir}`
 AC_DEFINE_UNQUOTED(LIBDIR, "$LIBDIR", [libraries dir])
-DATADIR=`eval echo ${datadir}`
+DATADIR=`eval eval echo ${datadir}`
 AC_DEFINE_UNQUOTED(DATADIR, "$DATADIR", [read-only architecture-independent data dir])
 UIM_LIBEXECDIR=`eval echo "${libexecdir}"`
 AC_DEFINE_UNQUOTED(UIM_LIBEXECDIR, "$UIM_LIBEXECDIR", [libexec dir])
 # we should use more safe macro such as AC_EXPAND_DIR
-LOCALEDIR=`eval echo ${datadir}/locale`
+LOCALEDIR=`eval eval echo ${datadir}/locale`
 # backward compatibility
 localedir=$LOCALEDIR
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
@@ -347,8 +349,8 @@ if test "x$x11_use_new_dir" = "xyes"; then
 else
   AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
 fi
-AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${DATADIR}/${PACKAGE}/pixmaps", [pixmaps directory])
-uim_pixmapsdir="${DATADIR}/${PACKAGE}/pixmaps"
+uim_pixmapsdir=`eval eval echo ${datadir}/${PACKAGE_TARNAME}/pixmaps`
+AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${uim_pixmapsdir}", [pixmaps directory])
 AC_SUBST(uim_pixmapsdir)
 
 dnl *****************************

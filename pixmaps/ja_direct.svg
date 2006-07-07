@@ -14,7 +14,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.43"
    version="1.0"
-   sodipodi:docbase="/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
+   sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
    sodipodi:docname="ja_direct.svg">
   <defs
      id="defs4" />
@@ -31,14 +31,14 @@
      inkscape:document-units="px"
      inkscape:current-layer="g2241"
      showgrid="true"
-     inkscape:grid-points="false"
+     inkscape:grid-points="true"
      gridspacingx="1.5px"
      gridspacingy="1.5px"
      gridempspacing="2"
      inkscape:grid-bbox="false"
      inkscape:window-width="989"
      inkscape:window-height="985"
-     inkscape:window-x="376"
+     inkscape:window-x="0"
      inkscape:window-y="0" />
   <metadata
      id="metadata7">
@@ -50,7 +50,7 @@
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
         <dc:creator>
           <cc:Agent>
-            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
           </cc:Agent>
         </dc:creator>
         <dc:title>ja_direct.svg</dc:title>
@@ -58,7 +58,7 @@
         <dc:description>Input mode icon for Japanese direct input.</dc:description>
         <dc:rights>
           <cc:Agent>
-            <dc:title>YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
           </cc:Agent>
         </dc:rights>
         <dc:publisher>
@@ -89,14 +89,11 @@
          y="42"
          rx="0"
          ry="0" />
-      <g
-         id="g1880"
-         transform="matrix(2.883006e-2,0,0,-4.3e-2,24.81954,36.10915)">
-        <path
-           id="path1882"
-           d="M 1.500961,16.62865 L 277.34048,746.62865 L 397.70681,746.62865 L 673.54633,16.62865 L 557.19221,16.62865 L 488.98462,211.62865 L 186.06268,211.62865 L 117.85509,16.62865 L 1.500961,16.62865 z M 217.15731,298.62865 L 457.88998,298.62865 L 338.5267,638.62865 L 336.52059,638.62865 L 217.15731,298.62865 z "
-           style="fill:currentColor" />
-      </g>
+      <path
+         style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:6;stroke-linecap:round;stroke-linejoin:miter;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 36,21 L 15,21"
+         id="path9301"
+         sodipodi:nodetypes="cc" />
     </g>
   </g>
 </svg>

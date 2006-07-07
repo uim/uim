@@ -11,7 +11,7 @@
 
 %hackers = ( "tkng"     => 'TOKUNAGA Hiroyuki <tkng@xem.jp>',
 	     "yusuke"   => 'Yusuke TABATA <yusuke@w5.dion.ne.jp>',
-	     "yamaken"  => 'YAMAMOTO Kengo / Yamaken <yamaken@bp.iij4u.or.jp>',
+	     "yamaken"  => 'YAMAMOTO Kengo / YamaKen <yamaken@bp.iij4u.or.jp>',
 	     "omote"    => 'Masahito Omote <omote@utyuuzin.net>',
 	     "kzk"      => 'kzk <mover@hct.zaq.ne.jp>',
 	     "makeinu"  => 'Takuro Ashie <ashie@homa.ne.jp>',
