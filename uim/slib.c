@@ -1000,7 +1000,7 @@ strcons (long length, const char *data)
   s->type = tc_string;
   if (length == -1)
     length = strlen (data);
-  s->storage_as.string.data = must_malloc (length + 1);
+  s->storage_as.string.data = (char *) must_malloc (length + 1);
   s->storage_as.string.dim = length;
   if (data)
     memcpy (s->storage_as.string.data, data, length);
@@ -1418,7 +1418,7 @@ dbg_expand_file_name (LISP fl)
   if ((fname[0] != '/'))
     {
       len = strlen (siod_lib) + strlen (fname) + 2;
-      fnbuf = must_malloc (len);
+      fnbuf = (char *) must_malloc (len);
       strcpy (fnbuf, siod_lib);
       strcat (fnbuf, "/");
       strcat (fnbuf, fname);
