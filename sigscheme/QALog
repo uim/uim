@@ -54,7 +54,7 @@ file:
 category:          
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -77,7 +77,7 @@ file:              scmint.h
 category:          base
 spec by eyes:      -
 spec by tests:     -
-generic review:    yamaken@r3499, ekato@r3499
+general review:    yamaken@r3499, ekato@r3499
 64-bit by eyes:    yamaken@r3499, ekato@r3499
 64-bit by tests:   
 coding style:      yamaken@r3499
@@ -88,7 +88,7 @@ file:              syntax.c
 category:          r5rs
 spec by eyes:      yamaken@r3499, yamaken@3670
 spec by tests:     
-generic review:    yamaken@r3499
+general review:    yamaken@r3499
 64-bit by eyes:    yamaken@r3499
 64-bit by tests:   -
 coding style:      yamaken@r3499
@@ -199,7 +199,7 @@ file:              scmint.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -210,7 +210,7 @@ file:              scmport.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -221,7 +221,7 @@ file:              scmport-config.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -232,7 +232,7 @@ file:              scmport-null.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -243,7 +243,7 @@ file:              scmport-null.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -254,7 +254,7 @@ file:              scmport-file.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -265,7 +265,7 @@ file:              scmport-file.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -276,7 +276,7 @@ file:              scmport-str.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -287,7 +287,7 @@ file:              scmport-str.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -298,7 +298,7 @@ file:              scmport-basechar.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -309,7 +309,7 @@ file:              scmport-mbchar.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -320,7 +320,7 @@ file:              scmport-mbchar.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -331,7 +331,7 @@ file:              scmport-sbchar.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -342,7 +342,7 @@ file:              scmport-sbchar.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -353,7 +353,7 @@ file:              encoding.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -364,7 +364,7 @@ file:              encoding-config.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -375,7 +375,7 @@ file:              encoding.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -386,7 +386,7 @@ file:              global.h
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -397,7 +397,7 @@ file:              global-aggregated.c
 category:          base
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -408,7 +408,7 @@ file:              config-old.h
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -419,7 +419,7 @@ file:              sigscheme.h
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -430,7 +430,7 @@ file:              sigschemeinternal.h
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -441,7 +441,7 @@ file:              storage-common.h
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -452,7 +452,7 @@ file:              storage-fatty.h
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -463,7 +463,7 @@ file:              storage-compact.h
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -474,7 +474,7 @@ file:              storage.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -485,7 +485,7 @@ file:              storage-gc.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -496,7 +496,7 @@ file:              strcasecmp.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -507,7 +507,7 @@ file:              alloc.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -518,7 +518,7 @@ file:              error.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -529,7 +529,7 @@ file:              env.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -540,7 +540,7 @@ file:              symbol.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -551,7 +551,7 @@ file:              continuation.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -562,7 +562,7 @@ file:              eval.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -573,7 +573,7 @@ file:              module.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -584,7 +584,7 @@ file:              sigscheme.c
 category:          core
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -595,7 +595,7 @@ file:              port.c
 category:          semicore
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -606,7 +606,7 @@ file:              read.c
 category:          semicore
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -617,7 +617,7 @@ file:              write.c
 category:          semicore
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -628,7 +628,7 @@ file:              load.c
 category:          semicore
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -639,7 +639,7 @@ file:              format.c
 category:          semicore
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -650,7 +650,7 @@ file:              syntax.c
 category:          r5rs
 spec by eyes:      yamaken@r3704
 spec by tests:     yamaken@r3704
-generic review:    yamaken@r3704
+general review:    yamaken@r3704
 64-bit by eyes:    yamaken@r3704
 64-bit by tests:   
 coding style:      yamaken@r3704
@@ -661,7 +661,7 @@ file:              procedure.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -672,7 +672,7 @@ file:              number.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -683,7 +683,7 @@ file:              list.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -694,7 +694,7 @@ file:              deep-cadrs.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -705,7 +705,7 @@ file:              char.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -716,7 +716,7 @@ file:              string.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -727,7 +727,7 @@ file:              vector.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -738,7 +738,7 @@ file:              qquote.c
 category:          r5rs
 spec by eyes:      yamaken@r3649
 spec by tests:     yamaken@r3649
-generic review:    yamaken@r3649
+general review:    yamaken@r3649
 64-bit by eyes:    yamaken@r3649
 64-bit by tests:   
 coding style:      yamaken@r3649
@@ -749,7 +749,7 @@ file:              macro.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -760,7 +760,7 @@ file:              promise.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -771,7 +771,7 @@ file:              module-srfi1.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -782,7 +782,7 @@ file:              module-srfi2.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -793,7 +793,7 @@ file:              module-srfi6.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -804,7 +804,7 @@ file:              module-srfi8.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -815,7 +815,7 @@ file:              module-srfi23.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -826,7 +826,7 @@ file:              module-srfi28.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -837,7 +837,7 @@ file:              module-srfi34.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -848,7 +848,7 @@ file:              module-srfi38.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -859,7 +859,7 @@ file:              module-srfi48.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -870,7 +870,7 @@ file:              module-srfi60.c
 category:          srfi
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -881,7 +881,7 @@ file:              module-sscm-ext.c
 category:          opt
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -892,7 +892,7 @@ file:              module-siod.c
 category:          opt
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -903,7 +903,7 @@ file:              main.c
 category:          other
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -914,7 +914,7 @@ file:              sigscheme-combined.h
 category:          other
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
@@ -925,7 +925,7 @@ file:              dllentry.c
 category:          other
 spec by eyes:      
 spec by tests:     
-generic review:    
+general review:    
 64-bit by eyes:    
 64-bit by tests:   
 coding style:      
