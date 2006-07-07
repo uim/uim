@@ -95,10 +95,6 @@ coding style:      yamaken@r3499
 normal case tests: 
 corner case tests: 
 
-- Summarization
-
-  $ tools/summarize_quality.rb QALog
-
 
 Categorized File List
 ---------------------
@@ -190,6 +186,91 @@ Categorized File List
   * main.c
   * sigscheme-combined.h
   * dllentry.c
+
+
+Status Summary
+--------------
+
+  $ tools/summarize_quality.rb QALog
+
+----------------------------------------------------------------
++-------- specification conformance check by eyes
+|+------- specification conformance check by tests
+||+------ general code review (logic, structure, meaning, validity etc)
+|||+----- 64-bit data model capability check by eyes
+||||+---- 64-bit data model capability check by tests
+|||||+--- coding style check (doc/style.txt)
+||||||+-- normal case tests
+|||||||+- corner case tests
+||||||||
+         base scmint.h
+         base scmport.h
+         base scmport-config.h
+         base scmport-null.h
+         base scmport-null.c
+         base scmport-file.c
+         base scmport-file.h
+         base scmport-str.h
+         base scmport-str.c
+         base scmport-basechar.c
+         base scmport-mbchar.h
+         base scmport-mbchar.c
+         base scmport-sbchar.h
+         base scmport-sbchar.c
+         base encoding.h
+         base encoding-config.h
+         base encoding.c
+         base global.h
+         base global-aggregated.c
+         core config-old.h
+         core sigscheme.h
+         core sigschemeinternal.h
+         core storage-common.h
+         core storage-fatty.h
+         core storage-compact.h
+         core storage.c
+         core storage-gc.c
+         core strcasecmp.c
+         core alloc.c
+         core error.c
+         core env.c
+         core symbol.c
+         core continuation.c
+         core eval.c
+         core module.c
+         core sigscheme.c
+         semicore port.c
+         semicore read.c
+         semicore write.c
+         semicore load.c
+         semicore format.c
+yyyy yyy r5rs syntax.c
+         r5rs procedure.c
+         r5rs number.c
+         r5rs list.c
+         r5rs deep-cadrs.c
+         r5rs char.c
+         r5rs string.c
+         r5rs vector.c
+yyyy yyy r5rs qquote.c
+         r5rs macro.c
+         r5rs promise.c
+         srfi module-srfi1.c
+         srfi module-srfi2.c
+         srfi module-srfi6.c
+         srfi module-srfi8.c
+         srfi module-srfi23.c
+         srfi module-srfi28.c
+         srfi module-srfi34.c
+         srfi module-srfi38.c
+         srfi module-srfi48.c
+         srfi module-srfi60.c
+         opt module-sscm-ext.c
+         opt module-siod.c
+         other main.c
+         other sigscheme-combined.h
+         other dllentry.c
+----------------------------------------------------------------
 
 
 Status
