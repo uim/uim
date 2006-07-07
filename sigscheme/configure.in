@@ -75,6 +75,7 @@ AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_LIBTOOL
+AC_PROG_LN_S
 AC_PROG_EGREP
 # These programs are only needed on make dist
 AC_PATH_PROGS(RUBY, ruby18 ruby)
@@ -192,11 +193,6 @@ AC_DEFINE(SCM_ENCODING_USE_WITH_SIGSCHEME, 1,
   [Define to 1 to adapt encoding.c to SigScheme.])
 AC_DEFINE(SCM_SCMPORT_USE_WITH_SIGSCHEME, 1,
   [Define to 1 to adapt scmport*.[hc] to SigScheme.])
-
-# Default Compiler Option for gcc
-if test x$CC = xgcc; then
-  CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-fi
 
 AM_MAINTAINER_MODE
 
@@ -1836,14 +1832,20 @@ AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
                  [enable debugging]),
   [
-    CFLAGS="$CFLAGS -g"
     AC_DEFINE(SCM_DEBUG, 1, [enable debugging mode])
     enable_debug="yes"
   ],
   [
-    CFLAGS="$CFLAGS -O2"
     enable_debug="no"
   ])
+
+# Default Compiler Option for gcc
+if test x$CC = xgcc; then
+  if test x$enable_debug = xyes; then
+    CFLAGS="$CFLAGS -g"
+  fi
+  CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
+fi
 
 # This include guard is required to prevent being overridden by
 # system-installed config.h on a source that is compiled on
