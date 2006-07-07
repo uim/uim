@@ -10,6 +10,14 @@ Requirements and critical bugs:
 * Confirm R5RS and SRFI conformance for each function implementation
   - Complete 'r5rs' and 'srfi' categories of QALog
 
+* Fix low-level bugs
+  - Broken GC on Cygwin
+  - Improper ScmObj alignment on stack of m68k
+
+* 'make check'-ready tests to make testable via Debian bulid servers
+  - Fix SCM_SAL_*_INIT() with SCM_ISAL_*_INIT()
+  - Port the Cutter-based tests under test-c/ to the new testing utils
+
 * Make 64bit-safe
   - Write tests
   - Make the tests passed on actual 64bit environment with storage-fatty
@@ -66,6 +74,9 @@ Extensions: (not required for now)
 ==============================================================================
 Performance improvements:
 
+* (not required for now) Introduce SCM_QNULL for (quote ()) to reduce cons cell
+  consumption, and support shortcuts for it in read.c and eval.c
+
 * (not required for now) Simplify read.c by table-based tokenizer
 
 * (not required for now) Support string of constant-width char
@@ -82,7 +93,6 @@ Properness improvements: (not required for now)
   - Remove GNU sed dependency of test-c2/collect.sh.in
   - Separate SigScheme-dependent part and generic part of test-c2, and
     generalize the unit testing utils as usable for uim
-  - Port the Cutter-based tests under test-c/ to the new testing utils
   - Name 'the testing utils'
 
 * Make unittest.scm closer to SRFI-64 "A Scheme API for test suites" and
