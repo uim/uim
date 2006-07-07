@@ -825,9 +825,7 @@
     (require "japanese-kana.scm")
     (set! ja-rk-rule ja-kana-hiragana-rule)
     (set! using-kana-table? #t)
-    (define-key anthy-kana-toggle-key? "")
-    (define-key anthy-latin-key? generic-on-key?)
-    (define-key anthy-wide-latin-key? "")
+    ;(define-key anthy-kana-toggle-key? "")
     ))
 
 (define load-azik-table
