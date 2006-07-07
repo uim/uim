@@ -178,7 +178,7 @@
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
    (list 'action_skk_hankana
-	 'ja_halfwidth_katakana
+	 'ja_halfkana
 	 "±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))

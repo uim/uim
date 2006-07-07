@@ -133,7 +133,7 @@
 
 (register-action 'action_canna_halfkana
 		 (lambda (cc)
-		   '(ja_halfwidth_katakana
+		   '(ja_halfkana
 		     "ｱ"
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))

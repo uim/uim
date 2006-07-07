@@ -355,7 +355,7 @@
                  ;;              (indication-alist-indicator 'action_mana_halfkana
                  ;;                                          mana-input-mode-indication-alist)
                  (lambda (mc)
-                   '(ja_halfwidth_katakana
+                   '(ja_halfkana
                       "ｱ"
                       "半角カタカナ"
                       "半角カタカナ入力モード"))
