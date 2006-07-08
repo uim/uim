@@ -297,7 +297,8 @@ initialize_heap(const ScmStorageConf *conf)
     l_n_heaps_max          = conf->n_heaps_max;
     l_n_heaps = 0;
     l_heaps = NULL;
-    l_heaps_lowest = l_heaps_highest = NULL;
+    l_heaps_lowest = (void *)~0;
+    l_heaps_highest = NULL;
     l_freelist = SCM_NULL;
 
     /* preallocate heaps */
