@@ -36,6 +36,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#if (HAVE_MEMALIGN && HAVE_MALLOC_H)
+#include <malloc.h>
+#endif
 #if HAVE_GETPAGESIZE
 #include <unistd.h>
 #endif
@@ -63,9 +66,8 @@
 /*=======================================
   Function Definitions
 =======================================*/
-/* Allocates ScmCell-aligned (32-bit pointer) or ScmObj-aligned (64-bit
- * pointer) memory for heaps. 8-bytes alignment (not ScmCell alignment) is
- * required by storage-compact. */
+/* Allocates SCM_ALIGN_CELL-byte aligned memory for heaps. */
+/* TODO: Align to more large size to fit better to cache, MMU and DRAM pages */
 SCM_EXPORT void *
 scm_malloc_aligned(size_t size)
 {
@@ -82,6 +84,12 @@ scm_malloc_aligned(size_t size)
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
     posix_memalign(&p, sizeof(ScmCell), size);
+#elif HAVE_MEMALIGN
+    SCM_ASSERT(!(sizeof(ScmCell) % sizeof(void *)));
+    SCM_ASSERT(sizeof(ScmCell) == 8
+               || sizeof(ScmCell) == 16
+               || sizeof(ScmCell) == 32);
+    p = memalign(sizeof(ScmCell), size);
 #elif (HAVE_PAGE_ALIGNED_MALLOC && HAVE_GETPAGESIZE)
     if ((size_t)getpagesize() <= size)
         p = scm_malloc(size);

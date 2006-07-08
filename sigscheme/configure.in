@@ -147,6 +147,7 @@ AC_CHECK_SIZEOF(intptr_t)
 #AC_GNU_SOURCE
 
 AC_CHECK_FUNCS([strtoll strtoimax \
+                memalign \
                 fileno getcwd getpagesize])
 
 AC_CHECK_FUNCS(posix_memalign,
