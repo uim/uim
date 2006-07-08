@@ -12,6 +12,9 @@ AC_DEFUN([AX_C_DATA_ALIGNED], [
     ax_cv_c_data_aligned,
     [AC_TRY_RUN([
 #include <stdlib.h>
+#include <stdio.h>
+
+#define DEBUG_PRINT 0
 
 #define MY_ASSERT(cond) if (!(cond)) return EXIT_FAILURE
 
@@ -111,9 +114,93 @@ struct offsettable_data {
 };
 
 int
+long_aligned_pad0(void)
+{
+  long l0;
+  long l1;
+
+#if DEBUG_PRINT
+  /* l0 = 0xafaddca4, l1 = 0xafaddca0 */
+  /* the long variables are always aligned on -O0, -O1, -O2, -O3 and -Os */
+  printf("l0 = %p, l1 = %p\n", &l0, &l1);
+#endif
+
+  return !((size_t)&l0 % sizeof(long) || (size_t)&l1 % sizeof(long));
+}
+
+int
+long_aligned_pad1(void)
+{
+  long l0;
+  char c;
+  long l1;
+
+#if DEBUG_PRINT
+  /* gcc 4.1 on i386 reorders variables if -O2 */
+  /* the long variables are always aligned on -O0, -O1, -O2, -O3 and -Os */
+  /* l0 = 0xafaddca0, c = 0xafaddca7, l1 = 0xafaddc9c */
+  printf("l0 = %p, c = %p, l1 = %p\n", &l0, &c, &l1);
+#endif
+
+  return !((size_t)&l0 % sizeof(long) || (size_t)&l1 % sizeof(long));
+}
+
+int
+long_aligned_pad2(void)
+{
+  long l0;
+  char c[2];
+  long l1;
+
+#if DEBUG_PRINT
+  /* gcc 4.1 on i386 reorders variables if -O2 */
+  /* and the long variables are always aligned on -O0, -O1, -O2, -O3 and -Os */
+  /* l0 = 0xafaddca0, c = 0xafaddca6, l1 = 0xafaddc9c */
+  printf("l0 = %p, c = %p, l1 = %p\n", &l0, &c, &l1);
+#endif
+
+  return !((size_t)&l0 % sizeof(long) || (size_t)&l1 % sizeof(long));
+}
+
+int
+long_aligned_pad3(void)
+{
+  long l0;
+  char c[3];
+  long l1;
+
+#if DEBUG_PRINT
+  /* gcc 4.1 on i386 reorders variables if -O2 */
+  /* and the long variables are always aligned on -O0, -O1, -O2, -O3 and -Os */
+  /* l0 = 0xafaddca0, c = 0xafaddca5, l1 = 0xafaddc9c */
+  printf("l0 = %p, c = %p, l1 = %p\n", &l0, &c, &l1);
+#endif
+
+  return !((size_t)&l0 % sizeof(long) || (size_t)&l1 % sizeof(long));
+}
+
+int
+long_aligned_pad4(void)
+{
+  long l0;
+  char c[4];
+  long l1;
+
+#if DEBUG_PRINT
+  /* gcc 4.1 on i386: specified order even if -O2 if sizes do not differ */
+  /* and the long variables are always aligned on -O0, -O1, -O2, -O3 and -Os */
+  /* l0 = 0xafaddca4, c = 0xafaddca0, l1 = 0xafaddc9c */
+  printf("l0 = %p, c = %p, l1 = %p\n", &l0, &c, &l1);
+#endif
+
+  return !((size_t)&l0 % sizeof(long) || (size_t)&l1 % sizeof(long));
+}
+
+int
 main(int argc, char **argv)
 {
   struct offsettable_data od;
+  int ok;
 
   TEST_ALIGNMENT(od, 0);
   TEST_ALIGNMENT(od, 1);
@@ -123,6 +210,21 @@ main(int argc, char **argv)
   TEST_ALIGNMENT(od, 5);
   TEST_ALIGNMENT(od, 6);
   TEST_ALIGNMENT(od, 7);
+
+  ok = long_aligned_pad0();
+  if (!ok) return EXIT_FAILURE;
+
+  ok = long_aligned_pad1();
+  if (!ok) return EXIT_FAILURE;
+
+  ok = long_aligned_pad2();
+  if (!ok) return EXIT_FAILURE;
+
+  ok = long_aligned_pad3();
+  if (!ok) return EXIT_FAILURE;
+
+  ok = long_aligned_pad4();
+  if (!ok) return EXIT_FAILURE;
 
   return EXIT_SUCCESS;
 }
