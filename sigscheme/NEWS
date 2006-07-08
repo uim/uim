@@ -11,6 +11,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
 * Fixes
 
+  - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin
+
   - [R5RS] Fix invalid acceptance of definition form on where neither toplevel
     nor internal definition is allowed
 

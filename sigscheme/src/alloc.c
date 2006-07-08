@@ -47,9 +47,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define ALIGN_CELL (sizeof(ScmCell))
-/* 8-bytes alignment (not ScmCell alignment) is required by storage-compact. */
-#define ALIGN_HEAP 8
 
 /*=======================================
   File Local Type Definitions
@@ -84,7 +81,7 @@ scm_malloc_aligned(size_t size)
      *     SUSv3.  The function memalign() appears in SunOS 4.1.3 but not in
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
-    posix_memalign(&p, ALIGN_CELL, size);
+    posix_memalign(&p, sizeof(ScmCell), size);
 #elif (HAVE_PAGE_ALIGNED_MALLOC && HAVE_GETPAGESIZE)
     if ((size_t)getpagesize() <= size)
         p = scm_malloc(size);
@@ -99,20 +96,20 @@ scm_malloc_aligned(size_t size)
      * -- 
      * ekato Jan 23 2006
      */
-    if (ALIGN_HEAP <= 16)
+    if (SCM_ALIGN_CELL <= 16)
         p = malloc(size);
     else
         PLAIN_ERR("cannot ensure memory alignment");
 #else
-    /* Assumes that malloc(3) returns at least 8-bytes aligned pointer. */
-    if (ALIGN_HEAP <= 8)
+    /* Assumes that malloc(3) returns at least 8-byte aligned pointer. */
+    if (SCM_ALIGN_CELL <= 8)
         p = malloc(size);
     else
         PLAIN_ERR("cannot ensure memory alignment");
 #endif
     SCM_ENSURE_ALLOCATED(p);
-    /* heaps must be aligned to sizeof(ScmCell) */
-    SCM_ASSERT(!((uintptr_t)p % ALIGN_HEAP));
+    /* heaps must be aligned to SCM_ALIGN_CELL (at least 8-byte) */
+    SCM_ASSERT(!((uintptr_t)p % SCM_ALIGN_CELL));
 
     return p;
 }
@@ -180,7 +177,7 @@ scm_align_str(char *str)
     size_t size;
 
     /* Use ScmCell-alignment to ensure at least 8-bytes aligned. */
-    if ((uintptr_t)ptr % ALIGN_CELL) {
+    if ((uintptr_t)ptr % sizeof(ScmCell)) {
         size = strlen(str) + sizeof("");
         copied = scm_malloc_aligned8(size);
         strcpy(copied, str);
