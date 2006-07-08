@@ -287,13 +287,16 @@
     (list 'on                 #f)
     (list 'converting         #f)
     (list 'transposing        #f)
-    (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'ac-id              #f) ;; anthy-context-id
     (list 'preconv-ustr       #f) ;; preedit strings
     (list 'rkc                #f)
     (list 'segments           #f) ;; ustr of candidate indices
     (list 'candidate-window   #f)
     (list 'candidate-op-count 0)
+    (list 'transposing-type   0)
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
     (list 'kana-mode          anthy-type-hiragana)
     (list 'alnum              #f)
     (list 'alnum-type         anthy-type-halfwidth-alnum)
@@ -428,9 +431,13 @@
     (ustr-clear! (anthy-context-segments ac))
     (anthy-context-set-transposing! ac #f)
     (anthy-context-set-converting! ac #f)
-    (if (anthy-context-candidate-window ac)
-	  (im-deactivate-candidate-selector ac))
+    (anthy-context-set-predicting! ac #f)
+    (if (or
+         (anthy-context-candidate-window ac)
+         (anthy-context-prediction-window ac))
+	(im-deactivate-candidate-selector ac))
     (anthy-context-set-candidate-window! ac #f)
+    (anthy-context-set-prediction-window! ac #f)
     (anthy-context-set-candidate-op-count! ac 0)))
 
 (define anthy-begin-input
@@ -599,10 +606,8 @@
 		   (res (rk-push-key! rkc key-str)))
 	      (if res
 		  (begin
-		    (ustr-insert-elem! (anthy-context-preconv-ustr ac)
-				       res)
-		    (ustr-insert-elem! (anthy-context-raw-ustr ac)
-				       key-str))
+		    (ustr-insert-elem! (anthy-context-preconv-ustr ac) res)
+		    (ustr-insert-elem! (anthy-context-raw-ustr ac) key-str))
 		  (if (null? (rk-context-seq rkc))
 		      (anthy-commit-raw ac))))))))))
 
@@ -646,11 +651,13 @@
        ((= state anthy-type-halfwidth-alnum)
 	(if (not (= (anthy-context-input-rule ac)
 		    anthy-input-rule-kana))
-	    (anthy-context-set-transposing-type! ac anthy-type-halfwidth-alnum)))
+	    (anthy-context-set-transposing-type!
+	     ac anthy-type-halfwidth-alnum)))
        ((= state anthy-type-fullwidth-alnum)
 	(if (not (= (anthy-context-input-rule ac)
 		    anthy-input-rule-kana))
-	    (anthy-context-set-transposing-type! ac anthy-type-fullwidth-alnum)))
+	    (anthy-context-set-transposing-type!
+	     ac anthy-type-fullwidth-alnum)))
        (else
 	(and
 	 ; begin-conv
@@ -676,6 +683,97 @@
 		 (anthy-proc-input-state ac key key-state)
 		 (anthy-context-set-commit-raw! ac #f))))))))))
 
+(define anthy-move-prediction
+  (lambda (ac offset)
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (nr (anthy-lib-get-nr-predictions ac-id))
+	   (idx (anthy-context-prediction-index ac))
+	   (n (if (not idx)
+		  0 
+		  (+ idx offset)))
+	   (compensated-n (cond
+			   ((>= n nr)
+			    0)
+			   ((< n 0)
+			    (- nr 1))
+			   (else
+			    n))))
+      (im-select-candidate ac compensated-n)
+      (anthy-context-set-prediction-index! ac compensated-n))))
+
+(define anthy-move-prediction-in-page
+  (lambda (ac numeralc)
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (nr (anthy-lib-get-nr-predictions ac-id))
+	   (idx (anthy-context-prediction-index ac))
+	   (n (if (not idx)
+		  0
+		  idx))
+	   (cur-page (if (= anthy-nr-candidate-max 0)
+			 0
+			 (quotient n anthy-nr-candidate-max)))
+	   (pageidx (- (numeral-char->number numeralc) 1))
+	   (compensated-pageidx (cond
+				 ((< pageidx 0) ; pressing key_0
+				  (+ pageidx 10))
+				 (else
+				  pageidx)))
+	   (idx (+ (* cur-page anthy-nr-candidate-max) compensated-pageidx))
+	   (compensated-idx (cond
+			     ((>= idx nr)
+			      (- nr 1))
+			     (else
+			      idx))))
+      (anthy-context-set-prediction-index! ac compensated-idx)
+      (im-select-candidate ac compensated-idx))))
+
+(define anthy-prediction-keys-handled?
+  (lambda (ac key key-state)
+    (if (anthy-context-prediction-window ac)
+	(cond
+	 ((anthy-next-prediction-key? key key-state)
+	  (anthy-move-prediction ac 1)
+	  (anthy-context-set-predicting! ac #t)
+	  #t)
+	 ((and
+	   anthy-select-prediction-by-numeral-key?
+	   (numeral-char? key))
+	  (anthy-move-prediction-in-page ac key)
+	  (anthy-context-set-predicting! ac #t)
+	  #t)
+	 ((and
+	   (anthy-context-prediction-index ac)
+	   (anthy-prev-page-key? key key-state))
+	  (im-shift-page-candidate ac #f)
+	  (anthy-context-set-predicting! ac #t))
+	 ((and
+	   (anthy-context-prediction-index ac)
+	   (anthy-next-page-key? key key-state))
+	  (im-shift-page-candidate ac #t)
+	  (anthy-context-set-predicting! ac #t))
+	 (else
+	  (anthy-context-set-predicting! ac #f)
+	  #f))
+	 (begin
+	   (anthy-context-set-predicting! ac #f)
+	   #f))))
+
+(define anthy-proc-prediction-state
+  (lambda (ac key key-state)
+    (cond
+     ;; prediction index change
+     ((anthy-prediction-keys-handled? ac key key-state))
+
+     ;; cancel
+     ((anthy-cancel-key? key key-state)
+      (anthy-reset-prediction-window ac))
+
+     ;; commit
+     ((anthy-commit-key? key key-state)
+      (anthy-do-commit-prediction ac))
+     (else	
+      (anthy-proc-input-state ac key key-state)))))
+
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
     (let ((preconv-str (anthy-context-preconv-ustr ac))
@@ -687,8 +785,12 @@
 
        ;; begin conversion
        ((anthy-begin-conv-key? key key-state)
+	(anthy-reset-prediction-window ac)
 	(anthy-begin-conv ac))
        
+       ;; prediction
+       ((anthy-prediction-keys-handled? ac key key-state))
+
        ;; backspace
        ((anthy-backspace-key? key key-state)
 	(if (not (rk-backspace rkc))
@@ -741,6 +843,7 @@
 	     (or
 	      (anthy-transpose-as-halfwidth-alnum-key? key key-state)
 	      (anthy-transpose-as-fullwidth-alnum-key? key key-state))))
+	(anthy-reset-prediction-window ac)
 	(anthy-proc-transposing-state ac key key-state))
 
        ((anthy-hiragana-key? key key-state)
@@ -909,11 +1012,44 @@
 		  (ustr-insert-elem! preconv-str residual-kana)
 		  (rk-flush rkc)))))))
 
+(define anthy-reset-prediction-window
+  (lambda (ac)
+    (if (anthy-context-prediction-window ac)
+        (im-deactivate-candidate-selector ac))
+    (anthy-context-set-prediction-window! ac #f)
+    (anthy-context-set-prediction-index! ac #f)))
+
+(define anthy-check-prediction
+  (lambda (ac)
+    (if (and
+	 (not (anthy-context-converting ac))
+	 (not (anthy-context-transposing ac))
+	 (not (anthy-context-predicting ac)))
+	(let ((preconv-str
+	       (anthy-make-whole-string ac #t (anthy-context-kana-mode ac)))
+	      (ac-id (anthy-context-ac-id ac)))
+	  (if (not (string=? preconv-str ""))
+	      (begin
+		(anthy-lib-set-prediction-src-string ac-id preconv-str)
+		(let ((nr (anthy-lib-get-nr-predictions ac-id)))
+		  (if (and
+		       nr
+		       (> nr 0))
+		      (begin
+			(im-activate-candidate-selector
+			 ac nr anthy-nr-candidate-max)
+			(anthy-context-set-prediction-window! ac #t))
+		      (anthy-reset-prediction-window ac))))
+	      (anthy-reset-prediction-window ac))))))
+
 (define anthy-proc-input-state
   (lambda (ac key key-state)
     (if (anthy-has-preedit? ac)
 	(anthy-proc-input-state-with-preedit ac key key-state)
-	(anthy-proc-input-state-no-preedit ac key key-state))))
+	(anthy-proc-input-state-no-preedit ac key key-state))
+    (if (and
+         anthy-use-prediction?)
+	 (anthy-check-prediction ac))))
 
 (define anthy-separator
   (lambda (ac)
@@ -1063,6 +1199,23 @@
     (im-commit ac (anthy-get-commit-string ac))
     (anthy-commit-string ac)
     (anthy-reset-candidate-window ac)
+    (anthy-flush ac)))
+
+(define anthy-get-prediction-string
+  (lambda (ac)
+    (let ((ac-id (anthy-context-ac-id ac)))
+      (anthy-lib-get-nth-prediction
+       ac-id (anthy-context-prediction-index ac)))))
+
+(define anthy-learn-prediction-string
+  (lambda (ac)
+   ))
+
+(define anthy-do-commit-prediction
+  (lambda (ac)
+    (im-commit ac (anthy-get-prediction-string ac))
+    (anthy-learn-prediction-string ac)
+    (anthy-reset-prediction-window ac)
     (anthy-flush ac)))
 
 (define anthy-correct-segment-cursor
@@ -1286,7 +1439,9 @@
 		(anthy-proc-transposing-state ac key key-state)
 		(if (anthy-context-converting ac)
 		    (anthy-proc-converting-state ac key key-state)
-		    (anthy-proc-input-state ac key key-state)))
+		    (if (anthy-context-predicting ac)
+		        (anthy-proc-prediction-state ac key key-state)
+		        (anthy-proc-input-state ac key key-state))))
 	    (anthy-proc-raw-state ac key key-state)))
     ;; preedit
     (anthy-update-preedit ac)))
@@ -1311,14 +1466,19 @@
   (lambda (ac idx accel-enum-hint)
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (cur-seg (ustr-cursor-pos (anthy-context-segments ac)))
-	   (cand (anthy-lib-get-nth-candidate ac-id cur-seg idx)))
+	   (cand (if (anthy-context-converting ac)
+	             (anthy-lib-get-nth-candidate ac-id cur-seg idx)
+	             (anthy-lib-get-nth-prediction ac-id idx))))
       (list cand (digit->string (+ idx 1)) ""))))
 
 (define anthy-set-candidate-index-handler
   (lambda (ac idx)
-    (ustr-cursor-set-frontside! (anthy-context-segments ac) idx)
-;    (anthy-move-segment ac 1)
-    (anthy-update-preedit ac)))
+    (cond
+     ((anthy-context-converting ac)
+       (ustr-cursor-set-frontside! (anthy-context-segments ac) idx)
+       (anthy-update-preedit ac))
+     ((anthy-context-predicting ac)
+       (anthy-context-set-prediction-index! ac idx)))))
 
 (anthy-configure-widgets)
 

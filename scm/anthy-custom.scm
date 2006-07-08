@@ -39,6 +39,13 @@
                      (ugettext anthy-im-name-label)
                      (ugettext anthy-im-short-desc))
 
+(define-custom-group 'anthy-advanced
+		     (_ "Anthy (advanced)")
+		     (_ "Advanced settings for Anthy"))
+
+(define-custom-group 'prediction
+		     (_ "Prediction")
+		     (_ "long description will be here."))
 
 ;;
 ;; segment separator
@@ -289,7 +296,35 @@
 		   (anthy-configure-widgets)))
 
 (define-custom 'anthy-use-with-vi? #f
-  '(anthy special-op)
+  '(anthy-advanced special-op)
   '(boolean)
   (_ "Enable vi-cooperative mode")
   (_ "long description will be here."))
+
+(define-custom 'anthy-use-prediction? #f
+  '(anthy-advanced prediction)
+  '(boolean)
+  (_ "Enable input prediction")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-select-prediction-by-numeral-key? #f
+  '(anthy-advanced prediction)
+  '(boolean)
+  (_ "Select prediction candidate by numeral keys")
+  (_ "long description will be here."))
+
+(custom-add-hook 'anthy-use-candidate-window?
+		 'custom-get-hooks
+		 (lambda ()
+		   (if (not anthy-use-candidate-window?)
+		       (set! anthy-use-prediction? #f))))
+
+(custom-add-hook 'anthy-use-prediction?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-candidate-window?))
+
+(custom-add-hook 'anthy-select-prediction-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-prediction?))

@@ -269,3 +269,9 @@
 	       '(key)
 	       (_ "[Anthy] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))
+
+(define-custom 'anthy-next-prediction-key '("tab")
+               '(anthy-keys4)
+	       '(key)
+	       (_ "[Anthy] Select next prediction candidate")
+	       (_ "long description will be here"))

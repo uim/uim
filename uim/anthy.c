@@ -277,10 +277,10 @@ commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
   return uim_scm_f();
 }
 
-#ifdef HAS_ANTHY_PREDICTION
 static uim_lisp
 set_prediction_src_string(uim_lisp id_, uim_lisp str_)
 {
+#ifdef HAS_ANTHY_PREDICTION
   int id = uim_scm_c_int(id_);
   const char *str = uim_scm_refer_c_str(str_);
   anthy_context_t ac = get_anthy_context(id);
@@ -289,11 +289,15 @@ set_prediction_src_string(uim_lisp id_, uim_lisp str_)
   }
   anthy_set_prediction_string(ac, str);
   return uim_scm_f();
+#else
+  return uim_scm_f();
+#endif
 }
 
 static uim_lisp
 get_nr_predictions(uim_lisp id_)
 {
+#ifdef HAS_ANTHY_PREDICTION
   int id = uim_scm_c_int(id_);
   anthy_context_t ac = get_anthy_context(id);
   struct anthy_prediction_stat ps;
@@ -302,11 +306,15 @@ get_nr_predictions(uim_lisp id_)
   }
   anthy_get_prediction_stat(ac, &ps);
   return uim_scm_make_int(ps.nr_prediction);
+#else
+  return uim_scm_f();
+#endif
 }
 
 static uim_lisp
 get_nth_prediction(uim_lisp id_, uim_lisp nth_)
 {
+#ifdef HAS_ANTHY_PREDICTION
   int id  = uim_scm_c_int(id_);
   int nth = uim_scm_c_int(nth_); 
   int buflen;
@@ -325,8 +333,10 @@ get_nth_prediction(uim_lisp id_, uim_lisp nth_)
   buf_ = uim_scm_make_str(buf);
   free(buf);
   return buf_;
+#else
+    return uim_scm_f();
+#endif
 }
-#endif /* HAS_ANTHY_PREDICTION */
 
 #ifndef ENABLE_ANTHY_STATIC
 void
@@ -348,11 +358,9 @@ uim_anthy_plugin_instance_init(void)
   uim_scm_init_subr_3("anthy-lib-resize-segment", resize_segment);
   uim_scm_init_subr_3("anthy-lib-commit-segment", commit_segment);
   uim_scm_init_subr_0("anthy-lib-get-anthy-version", anthy_version);
-#ifdef HAS_ANTHY_PREDICTION
   uim_scm_init_subr_2("anthy-lib-set-prediction-src-string", set_prediction_src_string);
   uim_scm_init_subr_1("anthy-lib-get-nr-predictions", get_nr_predictions);
   uim_scm_init_subr_2("anthy-lib-get-nth-prediction", get_nth_prediction);
-#endif /* HAS_ANTHY_PREDICTION */
 }
 
 #ifndef ENABLE_ANTHY_STATIC
