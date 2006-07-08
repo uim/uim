@@ -4,7 +4,7 @@ dnl Checks whether data types are properly aligned.
 dnl
 dnl @category C
 dnl @author YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
-dnl @version 2006-06-04
+dnl @version 2006-07-08
 dnl @license AllPermissive
 
 AC_DEFUN([AX_C_DATA_ALIGNED], [
