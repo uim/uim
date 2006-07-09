@@ -729,34 +729,26 @@
 
 (define anthy-prediction-keys-handled?
   (lambda (ac key key-state)
-    (if (anthy-context-prediction-window ac)
-	(cond
-	 ((anthy-next-prediction-key? key key-state)
-	  (anthy-move-prediction ac 1)
-	  (anthy-context-set-predicting! ac #t)
-	  #t)
-	 ((and
-	   anthy-select-prediction-by-numeral-key?
-	   (numeral-char? key))
-	  (anthy-move-prediction-in-page ac key)
-	  (anthy-context-set-predicting! ac #t)
-	  #t)
-	 ((and
-	   (anthy-context-prediction-index ac)
-	   (anthy-prev-page-key? key key-state))
-	  (im-shift-page-candidate ac #f)
-	  (anthy-context-set-predicting! ac #t))
-	 ((and
-	   (anthy-context-prediction-index ac)
-	   (anthy-next-page-key? key key-state))
-	  (im-shift-page-candidate ac #t)
-	  (anthy-context-set-predicting! ac #t))
-	 (else
-	  (anthy-context-set-predicting! ac #f)
-	  #f))
-	 (begin
-	   (anthy-context-set-predicting! ac #f)
-	   #f))))
+    (cond
+     ((anthy-next-prediction-key? key key-state)
+      (anthy-move-prediction ac 1)
+      #t)
+     ((and
+       anthy-select-prediction-by-numeral-key?
+       (numeral-char? key))
+      (anthy-move-prediction-in-page ac key)
+      #t)
+     ((and
+       (anthy-context-prediction-index ac)
+       (anthy-prev-page-key? key key-state))
+      (im-shift-page-candidate ac #f))
+     ((and
+       (anthy-context-prediction-index ac)
+       (anthy-next-page-key? key key-state))
+      (im-shift-page-candidate ac #t))
+     (else
+      (anthy-context-set-predicting! ac #f)
+      #f))))
 
 (define anthy-proc-prediction-state
   (lambda (ac key key-state)
@@ -769,7 +761,9 @@
       (anthy-reset-prediction-window ac))
 
      ;; commit
-     ((anthy-commit-key? key key-state)
+     ((and
+       (anthy-context-prediction-index ac)
+       (anthy-commit-key? key key-state))
       (anthy-do-commit-prediction ac))
      (else	
       (anthy-proc-input-state ac key key-state)))))
@@ -788,9 +782,6 @@
 	(anthy-reset-prediction-window ac)
 	(anthy-begin-conv ac))
        
-       ;; prediction
-       ((anthy-prediction-keys-handled? ac key key-state))
-
        ;; backspace
        ((anthy-backspace-key? key key-state)
 	(if (not (rk-backspace rkc))
@@ -1038,7 +1029,8 @@
 		      (begin
 			(im-activate-candidate-selector
 			 ac nr anthy-nr-candidate-max)
-			(anthy-context-set-prediction-window! ac #t))
+			(anthy-context-set-prediction-window! ac #t)
+			(anthy-context-set-predicting! ac #t))
 		      (anthy-reset-prediction-window ac))))
 	      (anthy-reset-prediction-window ac))))))
 
