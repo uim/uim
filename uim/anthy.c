@@ -334,7 +334,25 @@ get_nth_prediction(uim_lisp id_, uim_lisp nth_)
   free(buf);
   return buf_;
 #else
+  return uim_scm_f();
+#endif
+}
+
+static uim_lisp
+commit_nth_prediction(uim_lisp id_, uim_lisp nth_)
+{
+#ifdef HAS_ANTHY_PREDICTION_COMMIT /* not yet */
+  int id  = uim_scm_c_int(id_);
+  int nth = uim_scm_c_int(nth_); 
+  anthy_context_t ac = get_anthy_context(id);
+
+  if (!ac) {
     return uim_scm_f();
+  }
+
+  return anthy_commit_prediction(ac, nth) ? uim_scm_f() : uim_scm_t();
+#else
+  return uim_scm_f();
 #endif
 }
 
@@ -361,6 +379,8 @@ uim_anthy_plugin_instance_init(void)
   uim_scm_init_subr_2("anthy-lib-set-prediction-src-string", set_prediction_src_string);
   uim_scm_init_subr_1("anthy-lib-get-nr-predictions", get_nr_predictions);
   uim_scm_init_subr_2("anthy-lib-get-nth-prediction", get_nth_prediction);
+  uim_scm_init_subr_2("anthy-lib-commit-nth-prediction",
+		      commit_nth_prediction);
 }
 
 #ifndef ENABLE_ANTHY_STATIC

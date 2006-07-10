@@ -733,6 +733,9 @@
      ((anthy-next-prediction-key? key key-state)
       (anthy-move-prediction ac 1)
       #t)
+     ((anthy-prev-prediction-key? key key-state)
+      (anthy-move-prediction ac -1)
+      #t)
      ((and
        anthy-select-prediction-by-numeral-key?
        (numeral-char? key))
@@ -1201,7 +1204,9 @@
 
 (define anthy-learn-prediction-string
   (lambda (ac)
-   ))
+    (let ((ac-id (anthy-context-ac-id ac)))
+      (anthy-lib-commit-nth-prediction
+       ac-id (anthy-context-prediction-index ac)))))
 
 (define anthy-do-commit-prediction
   (lambda (ac)
