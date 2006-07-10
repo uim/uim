@@ -47,12 +47,12 @@
 /* temporary workaround. see the comment of storage.c */
 #if 1
 #define SCM_CONS_INIT(obj, kar, kdr)                    \
-    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_CONS_INIT,          \
+    SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_CONS_INIT,         \
                             (ScmObj, ScmObj, ScmObj),   \
                             ((obj), (kar), (kdr)))
 
 #define SCM_SYMBOL_INIT(obj, nam, val)                  \
-    SCM_TYPESAFE_MACRO_VOID(SCM_SAL_SYMBOL_INIT,        \
+    SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_SYMBOL_INIT,       \
                             (ScmObj, char*, ScmObj),    \
                             ((obj), (nam), (val)))
 #endif

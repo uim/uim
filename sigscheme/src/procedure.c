@@ -74,6 +74,14 @@ scm_p_eqp(ScmObj obj1, ScmObj obj2)
 SCM_EXPORT ScmObj
 scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 {
+#if SCM_HAS_EQVP
+
+#define scm_p_eqvp error_eqvp_recursed__ /* Safety measure. */
+    return EQVP(obj1, obj2);
+#undef scm_p_eqvp
+
+#else  /* don't have inlined EQVP() */
+
 #if (!(SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY))
     enum ScmObjType type;
 #endif
@@ -107,6 +115,8 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 #endif /* (!(SCM_HAS_IMMEDIATE_NUMBER_ONLY && SCM_HAS_IMMEDIATE_CHAR_ONLY)) */
 
     return SCM_FALSE;
+
+#endif /* don't have inlined EQVP() */
 }
 
 SCM_EXPORT ScmObj

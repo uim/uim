@@ -242,7 +242,7 @@ extern "C" {
 #define SCM_UNMARK(o)    SCM_SAL_UNMARK(o)
 #endif
 
-#define EQVP(a, b)   (TRUEP(scm_p_eqvp((a), (b))))
+#define EQVP(a, b)   (SCM_EQVP((a), (b)))
 #define EQUALP(a, b) (TRUEP(scm_p_equalp((a), (b))))
 #define STRING_EQUALP(str1, str2)                                            \
     (EQ((str1), (str2))                                                      \

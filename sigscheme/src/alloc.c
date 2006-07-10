@@ -42,6 +42,9 @@
 #if HAVE_GETPAGESIZE
 #include <unistd.h>
 #endif
+#if HAVE_MEMALIGN
+#include <malloc.h>
+#endif
 
 #include "sigscheme-stdint.h"
 #include "sigscheme.h"
@@ -101,7 +104,7 @@ scm_malloc_aligned(size_t size)
      * memory allocations are guaranteed to be page-aligned.  See
      * http://developer.apple.com/documentation/Performance/Conceptual/
      * ManagingMemory/Articles/MemoryAlloc.html
-     * -- 
+     * --
      * ekato Jan 23 2006
      */
     if (SCM_ALIGN_CELL <= 16)

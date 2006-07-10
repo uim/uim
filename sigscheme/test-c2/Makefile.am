@@ -18,5 +18,5 @@ endif
 # Name your test suite with a -coll suffix if you want it processed
 # with collect.sh.  Leave the suffix out if you don't want some script
 # messing around with your masterpiece.
-TESTS= test-storage-coll test-storage-compact-coll
-check_PROGRAMS= test-storage-coll test-storage-compact-coll test-minishell
+TESTS= test-gc-coll test-storage-coll test-storage-compact-coll
+check_PROGRAMS= test-gc-coll test-storage-coll test-storage-compact-coll test-minishell

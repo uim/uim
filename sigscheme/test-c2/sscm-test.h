@@ -93,24 +93,31 @@ struct _tst_case_info {
 
 #define TST_TRAMPOLINE(id) id##_
 
+/* Add TST_PARAMS_DECL to the params list of auxiliary functions if
+ * you need to use TST_*() macros in them.  Call those functions with
+ * TST_PARAMS in the corresponding position. */
+#define TST_PARAMS_DECL    tst_suite_info *TST_SUITE_INFO,      \
+                           tst_case_info  *TST_CASE_INFO,       \
+                           int TST_FAILED
+#define TST_PARAMS         TST_SUITE_INFO, TST_CASE_INFO, TST_FAILED
+
 /* If you're preprocessing with collect.sh, this macro and its
  * arguments has to be written in one line.  C macros can't be used in
  * either argument.  ID is the function name of the test case, DSC is
  * a description of the test case and must be a string
  * literal. */
 #define TST_CASE(id, dsc)                               \
-static void id(tst_suite_info *, tst_case_info *, int); \
+static void id(TST_PARAMS_DECL);                        \
 static void                                             \
 TST_TRAMPOLINE(id)(tst_suite_info *TST_SUITE_INFO,      \
                    tst_case_info  *TST_CASE_INFO)       \
 {                                                       \
+    int TST_FAILED = 0;                                 \
     TST_CASE_INFO->desc = dsc;                          \
-    id(TST_SUITE_INFO, TST_CASE_INFO, 0);               \
+    id(TST_PARAMS);                                     \
 }                                                       \
 static void                                             \
-id(tst_suite_info *TST_SUITE_INFO,                      \
-   tst_case_info *TST_CASE_INFO,                        \
-   int TST_FAILED)
+id(TST_PARAMS_DECL)
 
 
 /* ------------------------------
@@ -155,6 +162,7 @@ main ()                                         \
 
 #define TST_RUN(fn, s, c)  SCM_GC_PROTECTED_CALL_VOID((fn), ((s), (c)))
 
+static int tst_main(tst_suite_info *suite);
 
 #define TST_LIST_BEGIN()                                \
 /* Returns 1 if any test case fails, otherwise 0. */    \

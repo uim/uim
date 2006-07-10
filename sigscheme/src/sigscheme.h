@@ -541,6 +541,9 @@ struct ScmStorageConf_ {
 #define SCM_VECLEN_MAX  SCM_SAL_VECLEN_MAX
 #define SCM_VECLEN_MIN  0
 
+/* inlined eqv? */
+#define SCM_HAS_EQVP    SCM_SAL_HAS_EQVP
+
 /*=======================================
   Object Creators
 =======================================*/
@@ -958,6 +961,12 @@ struct ScmStorageConf_ {
 #define SCM_FALSEP(o)  (SCM_EQ((o),  SCM_FALSE))
 #define SCM_TRUEP(o)   (!SCM_FALSEP(o))
 #define SCM_EOFP(o)    (SCM_EQ((o),  SCM_EOF))
+
+#if SCM_HAS_EQVP
+#define SCM_EQVP(a, b) SCM_SAL_EQVP((a), (b))
+#else  /* don't have inlined eqv? */
+#define SCM_EQVP(a, b) SCM_TRUEP(scm_p_eqvp((a), (b)))
+#endif /* don't have inlined eqv? */
 
 /*===========================================================================
   Predefined Symbols
