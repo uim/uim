@@ -582,7 +582,7 @@
 
       (if (canna-context-transposing cc)
 	  (let ((lst (member (canna-context-transposing-type cc) rotate-list)))
-	    (if (and (not (null? lst))
+	    (if (and lst
 	    	     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
 		(set! state (car rotate-list))))
@@ -607,6 +607,13 @@
 	     cc canna-type-fullwidth-alnum)))
        (else
 	(and
+	 ; commit
+	 (if (canna-commit-key? key key-state)
+	     (begin
+	       (im-commit cc (canna-transposing-text cc))
+	       (canna-flush cc)
+	       #f)
+	     #t)
 	 ; begin-conv
 	 (if (canna-begin-conv-key? key key-state)
 	     (begin
@@ -615,20 +622,35 @@
 	       #f)
 	     #t)
 	 ; cancel
-	 (if (canna-cancel-key? key key-state)
+	 (if (or
+	      (canna-cancel-key? key key-state)
+	      (canna-backspace-key? key key-state))
 	     (begin
 	       (canna-context-set-transposing! cc #f)
 	       #f)
 	     #t)
-	; commit
-	(begin
-	  (im-commit cc (canna-transposing-text cc))
-	  (canna-flush cc)
-	  (if (not (canna-commit-key? key key-state))
-	      (begin
-	        (canna-context-set-transposing! cc #f)
-		(canna-proc-input-state cc key key-state)
-		(canna-context-set-commit-raw! cc #f))))))))))
+	 ; ignore
+	 (if (or
+	      (canna-prev-page-key? key key-state)
+	      (canna-next-page-key? key key-state)
+	      (canna-extend-segment-key? key key-state)
+	      (canna-shrink-segment-key? key key-state)
+	      (canna-next-segment-key? key key-state)
+	      (canna-beginning-of-preedit-key? key key-state)
+	      (canna-end-of-preedit-key? key key-state)
+	      (canna-next-candidate-key? key key-state)
+	      (canna-prev-candidate-key? key key-state)
+	      (and
+	       (modifier-key-mask key-state)
+	       (not (shift-key-mask key-state)))
+	      (symbol? key))
+	     #f
+	     #t)
+	 ; implicit commit
+	 (begin
+	   (im-commit cc (canna-transposing-text cc))
+	   (canna-flush cc)
+	   (canna-proc-input-state cc key key-state))))))))
 
 (define (canna-proc-input-state-with-preedit cc key key-state)
   (let ((preconv-str (canna-context-preconv-ustr cc))

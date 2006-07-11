@@ -846,7 +846,7 @@
 
       (if (mana-context-transposing mc)
 	  (let ((lst (member (mana-context-transposing-type mc) rotate-list)))
-	    (if (and (not (null? lst))
+	    (if (and lst
 	    	     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
 		(set! state (car rotate-list))))
@@ -871,6 +871,13 @@
 	    (mana-context-set-transposing-type! mc mana-type-fullwidth-alnum)))
        (else
 	(and
+	 ; commit
+	 (if (mana-commit-key? key key-state)
+	     (begin
+	       (im-commit mc (mana-transposing-text mc))
+	       (mana-flush mc)
+	       #f)
+	     #t)
 	 ; begin-conv
 	 (if (mana-begin-conv-key? key key-state)
 	     (begin
@@ -879,20 +886,35 @@
 	       #f)
 	     #t)
 	 ; cancel
-	 (if (mana-cancel-key? key key-state)
+	 (if (or
+	      (mana-cancel-key? key key-state)
+	      (mana-backspace-key? key key-state))
 	     (begin
 	       (mana-context-set-transposing! mc #f)
-	       #f
+	       #f)
 	     #t)
-	 ; commit
-	(begin
-	  (im-commit mc (mana-transposing-text mc))
-	  (mana-flush mc)
-	  (if (not (mana-commit-key? key key-state))
-	      (begin
-		(mana-context-set-transposing! mc #f)
-		(mana-proc-input-state mc key key-state)
-		(mana-context-set-commit-raw! mc #f)))))))))))
+	 ; ignore
+	 (if (or
+	      (mana-prev-page-key? key key-state)
+	      (mana-next-page-key? key key-state)
+	      (mana-extend-segment-key? key key-state)
+	      (mana-shrink-segment-key? key key-state)
+	      (mana-next-segment-key? key key-state)
+	      (mana-prev-segment-key? key key-state)
+	      (mana-beginning-of-preedit-key? key key-state)
+	      (mana-end-of-preedit-key? key key-state)
+	      (mana-next-candidate-key? key key-state)
+	      (mana-prev-candidate-key? key key-state)
+	      (and (modifier-key-mask key-state)
+		   (not (shift-key-mask key-state)))
+	      (symbol? key))
+	     #f
+	     #t)
+	 ; implicit commit
+	 (begin
+	   (im-commit mc (mana-transposing-text mc))
+	   (mana-flush mc)
+	   (mana-proc-input-state mc key key-state))))))))
 
 (define mana-proc-input-state-with-preedit
   (lambda (mc key key-state)

@@ -633,7 +633,7 @@
 
       (if (anthy-context-transposing ac)
 	  (let ((lst (member (anthy-context-transposing-type ac) rotate-list)))
-	    (if (and (not (null? lst))
+	    (if (and lst
 		     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
 		(set! state (car rotate-list))))
@@ -660,6 +660,13 @@
 	     ac anthy-type-fullwidth-alnum)))
        (else
 	(and
+	 ; commit
+	 (if (anthy-commit-key? key key-state)
+	     (begin
+	       (im-commit ac (anthy-transposing-text ac))
+	       (anthy-flush ac)
+	       #f)
+	     #t)
 	 ; begin-conv
 	 (if (anthy-begin-conv-key? key key-state)
 	     (begin
@@ -668,20 +675,35 @@
 	       #f)
 	     #t)
 	 ; cancel
-	 (if (anthy-cancel-key? key key-state)
+	 (if (or
+	      (anthy-cancel-key? key key-state)
+	      (anthy-backspace-key? key key-state))
 	     (begin
 	       (anthy-context-set-transposing! ac #f)
 	       #f)
 	     #t)
-	 ; commit
+	 ; ignore
+	 (if (or
+	      (anthy-prev-page-key? key key-state)
+	      (anthy-next-page-key? key key-state)
+	      (anthy-extend-segment-key? key key-state)
+	      (anthy-shrink-segment-key? key key-state)
+	      (anthy-next-segment-key? key key-state)
+	      (anthy-prev-segment-key? key key-state)
+	      (anthy-beginning-of-preedit-key? key key-state)
+	      (anthy-end-of-preedit-key? key key-state)
+	      (anthy-next-candidate-key? key key-state)
+	      (anthy-prev-candidate-key? key key-state)
+	      (and (modifier-key-mask key-state)
+		   (not (shift-key-mask key-state)))
+	      (symbol? key))
+	     #f
+	     #t)
+	 ; implicit commit
 	 (begin
 	   (im-commit ac (anthy-transposing-text ac))
 	   (anthy-flush ac)
-	   (if (not (anthy-commit-key? key key-state))
-	       (begin 
-		 (anthy-context-set-transposing! ac #f)
-		 (anthy-proc-input-state ac key key-state)
-		 (anthy-context-set-commit-raw! ac #f))))))))))
+	   (anthy-proc-input-state ac key key-state))))))))
 
 (define anthy-move-prediction
   (lambda (ac offset)
