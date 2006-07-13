@@ -1,4 +1,4 @@
-;;; anthy-custom.scm: Customization variables for anthy.scm
+;;; anthy-key-custom.scm: Customization variables for anthy.scm
 ;;;
 ;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 ;;;
@@ -259,25 +259,25 @@
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-kana-toggle-key '()
-               '(anthy-keys4 mode-transition)
+               '(anthy-keys4 advanced)
 	       '(key)
 	       (_ "[Anthy] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-alkana-toggle-key '()
-               '(anthy-keys4 mode-transition)
+               '(anthy-keys4 advanced)
 	       '(key)
 	       (_ "[Anthy] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n")
-               '(anthy-keys4)
+               '(anthy-keys4 prediction)
 	       '(key)
 	       (_ "[Anthy] Next prediction candidate")
 	       (_ "long description will be here"))
 
 (define-custom 'anthy-prev-prediction-key '(generic-prev-candidate-key)
-               '(anthy-keys4)
+               '(anthy-keys4 prediction)
 	       '(key)
 	       (_ "[Anthy] Previous prediction candidate")
 	       (_ "long description will be here"))

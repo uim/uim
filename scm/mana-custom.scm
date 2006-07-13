@@ -39,6 +39,9 @@
                      (ugettext mana-im-name-label)
                      (ugettext mana-im-short-desc))
 
+(define-custom-group 'mana-advanced
+                     (_ "Mana (advanced)")
+                     (_ "Advanced settings for Mana"))
 
 ;;
 ;; segment separator
@@ -289,7 +292,13 @@
 		   (mana-configure-widgets)))
 
 (define-custom 'mana-use-with-vi? #f
-  '(mana special-op)
+  '(mana-advanced special-op)
   '(boolean)
   (_ "Enable vi-cooperative mode")
+  (_ "long description will be here."))
+
+(define-custom 'mana-use-mode-transition-keys-in-off-mode? #f
+  '(mana-advanced mode-transition)
+  '(boolean)
+  (_ "Enable input mode transition keys in direct (off state) input mode")
   (_ "long description will be here."))

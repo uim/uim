@@ -43,6 +43,9 @@
 		     (_ "Canna server")
 		     (_ "long description will be here."))
 
+(define-custom-group 'canna-advanced
+		     (_ "Canna (advanced)")
+		     (_ "long description will be here."))
 
 ;;
 ;; segment separator
@@ -305,13 +308,13 @@
 
 ;; warning: must be defined before custom-preserved-canna-server-name
 (define-custom 'custom-activate-canna-server-name? #f
-  '(cannaserver)
+  '(canna-advanced cannaserver)
   '(boolean)
   (_ "Specify Canna server")
   (_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
-  '(cannaserver)
+  '(canna-advanced cannaserver)
   '(string ".*")
   (_ "Canna server name")
   (_ "long description will be here."))
@@ -368,7 +371,13 @@
 		 custom-hook-literalize-preserved-canna-server-name)
 
 (define-custom 'canna-use-with-vi? #f
-  '(canna special-op)
+  '(canna-advanced special-op)
   '(boolean)
   (_ "Enable vi-cooperative mode")
+  (_ "long description will be here."))
+
+(define-custom 'canna-use-mode-transition-keys-in-off-mode? #f
+  '(canna-advanced mode-transition)
+  '(boolean)
+  (_ "Enable input mode transition keys in direct (off state) input mode")
   (_ "long description will be here."))

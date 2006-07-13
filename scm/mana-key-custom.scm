@@ -1,4 +1,4 @@
-;;; mana-custom.scm: Customization variables for mana.scm
+;;; mana-key-custom.scm: Customization variables for mana.scm
 ;;;
 ;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 ;;;
@@ -257,13 +257,13 @@
 	       (_ "long description will be here"))
 
 (define-custom 'mana-kana-toggle-key '()
-	       '(mana-keys4 mode-transition)
+	       '(mana-keys4 advanced)
 	       '(key)
 	       (_ "[Mana] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
 (define-custom 'mana-alkana-toggle-key '()
-	       '(mana-keys4 mode-transition)
+	       '(mana-keys4 advanced)
 	       '(key)
 	       (_ "[Mana] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))

@@ -1,4 +1,4 @@
-;;; canna-custom.scm: Customization variables for canna.scm
+;;; canna-key-custom.scm: Customization variables for canna.scm
 ;;;
 ;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 ;;;
@@ -258,13 +258,13 @@
 	       (_ "long description will be here"))
 
 (define-custom 'canna-kana-toggle-key '()
-               '(canna-keys4 mode-transition)
+               '(canna-keys4 advanced)
 	       '(key)
 	       (_ "[Canna] toggle hiragana/katakana mode")
 	       (_ "long description will be here"))
 
 (define-custom 'canna-alkana-toggle-key '()
-	       '(canna-keys4 mode-transition)
+	       '(canna-keys4 advanced)
 	       '(key)
 	       (_ "[Canna] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))

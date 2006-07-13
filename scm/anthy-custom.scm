@@ -295,12 +295,6 @@
 		 (lambda ()
 		   (anthy-configure-widgets)))
 
-(define-custom 'anthy-use-with-vi? #f
-  '(anthy-advanced special-op)
-  '(boolean)
-  (_ "Enable vi-cooperative mode")
-  (_ "long description will be here."))
-
 (define-custom 'anthy-use-prediction? #f
   '(anthy-advanced prediction)
   '(boolean)
@@ -328,3 +322,15 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   anthy-use-prediction?))
+
+(define-custom 'anthy-use-with-vi? #f
+  '(anthy-advanced special-op)
+  '(boolean)
+  (_ "Enable vi-cooperative mode")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-use-mode-transition-keys-in-off-mode? #f
+  '(anthy-advanced mode-transition)
+  '(boolean)
+  (_ "Enable input mode transition keys in direct (off state) input mode")
+  (_ "long description will be here."))
