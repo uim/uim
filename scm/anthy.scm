@@ -494,7 +494,9 @@
 				(anthy-context-transposing-state-preedit ac)
 				(if (anthy-context-converting ac)
 				    (anthy-converting-state-preedit ac)
-				    (anthy-input-state-preedit ac)))
+				    (if (anthy-context-predicting ac)
+				        (anthy-predicting-state-preedit ac)
+				        (anthy-input-state-preedit ac))))
 			    ())))
 	  (context-update-preedit ac segments))
 	(anthy-context-set-commit-raw! ac #f))))
@@ -777,7 +779,6 @@
        (anthy-next-page-key? key key-state))
       (im-shift-page-candidate ac #t))
      (else
-      (anthy-context-set-predicting! ac #f)
       #f))))
 
 (define anthy-proc-prediction-state
@@ -795,8 +796,56 @@
        (anthy-context-prediction-index ac)
        (anthy-commit-key? key key-state))
       (anthy-do-commit-prediction ac))
-     (else	
-      (anthy-proc-input-state ac key key-state)))))
+     (else
+      (if (and
+	   anthy-use-implicit-commit-prediction?
+	   (anthy-context-prediction-index ac))
+	  (cond
+	    ((or
+	      ;; check keys used in anthy-proc-input-state-with-preedit
+	      (anthy-begin-conv-key? key key-state)
+	      (anthy-backspace-key? key key-state)
+	      (anthy-delete-key? key key-state)
+	      (anthy-kill-key? key key-state)
+	      (anthy-kill-backward-key? key key-state)
+	      (and
+	       (not (anthy-context-alnum ac))
+	       (anthy-commit-as-opposite-kana-key? key key-state))
+	      (anthy-transpose-as-hiragana-key? key key-state)
+	      (anthy-transpose-as-katakana-key? key key-state)
+	      (anthy-transpose-as-halfkana-key? key key-state)
+	      (and
+	       (not (= (anthy-context-input-rule ac) anthy-input-rule-kana))
+	       (or
+		(anthy-transpose-as-halfwidth-alnum-key? key key-state)
+		(anthy-transpose-as-fullwidth-alnum-key? key key-state)))
+	      (anthy-hiragana-key? key key-state)
+	      (anthy-katakana-key? key key-state)
+	      (anthy-halfkana-key? key key-state)
+	      (anthy-halfwidth-alnum-key? key key-state)
+	      (anthy-fullwidth-alnum-key? key key-state)
+	      (and
+	       (not (anthy-context-alnum ac))
+	       (anthy-kana-toggle-key? key key-state))
+	      (anthy-alkana-toggle-key? key key-state)
+	      (anthy-go-left-key? key key-state)
+	      (anthy-go-right-key? key key-state)
+	      (anthy-beginning-of-preedit-key? key key-state)
+	      (anthy-end-of-preedit-key? key key-state)
+	      (and
+	       (modifier-key-mask key-state)
+	       (not (shift-key-mask key-state))))
+	     ;; go back to unselected prediction
+	     (anthy-reset-prediction-window ac)
+	     (anthy-check-prediction ac))
+	    (else
+	     ;; implicit commit
+	     (anthy-do-commit-prediction ac)
+	     (anthy-proc-input-state ac key key-state)))
+	  (begin
+	    (anthy-context-set-predicting! ac #f)
+	    (anthy-context-set-prediction-index! ac #f)
+	    (anthy-proc-input-state ac key key-state)))))))
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
@@ -1037,6 +1086,7 @@
   (lambda (ac)
     (if (anthy-context-prediction-window ac)
         (im-deactivate-candidate-selector ac))
+    (anthy-context-set-predicting! ac #f)
     (anthy-context-set-prediction-window! ac #f)
     (anthy-context-set-prediction-index! ac #f)))
 
@@ -1083,7 +1133,7 @@
 
 (define anthy-context-transposing-state-preedit
   (lambda (ac)
-    (let* ((transposing-text (anthy-transposing-text ac)))
+    (let ((transposing-text (anthy-transposing-text ac)))
       (list (cons preedit-reverse transposing-text)
 	    (cons preedit-cursor "")))))
 
@@ -1143,6 +1193,16 @@
 		    "??")) ;; FIXME
 	      "???") ;; FIXME
 	  "????")))) ;; shouldn't happen
+
+(define anthy-predicting-state-preedit
+  (lambda (ac)
+    (if (or 
+	 (not anthy-use-implicit-commit-prediction?)
+	 (not (anthy-context-prediction-index ac)))
+        (anthy-input-state-preedit ac)
+	(let ((cand (anthy-get-prediction-string ac)))
+	  (list (cons preedit-reverse cand)
+		(cons preedit-cursor ""))))))
 
 (define anthy-converting-state-preedit
   (lambda (ac)

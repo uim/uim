@@ -307,6 +307,12 @@
   (_ "Select prediction candidate by numeral keys")
   (_ "long description will be here."))
 
+(define-custom 'anthy-use-implicit-commit-prediction? #t
+  '(anthy-advanced prediction)
+  '(boolean)
+  (_ "Show selected prediction candidate in preedit area")
+  (_ "long description will be here."))
+
 (custom-add-hook 'anthy-use-candidate-window?
 		 'custom-get-hooks
 		 (lambda ()
