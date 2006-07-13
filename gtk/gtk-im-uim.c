@@ -483,6 +483,20 @@ index_changed_cb(UIMCandWinGtk *cwin, IMUIMContext *uic)
   uim_set_candidate_index(uic->uc, uim_cand_win_gtk_get_index(cwin));
 }
 
+static void
+layout_candwin(IMUIMContext *uic)
+{
+  gint x, y, width, height, depth;
+
+  g_return_if_fail(uic);
+
+  if (uic->win && uic->cwin) {
+    gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+    gdk_window_get_origin(uic->win, &x, &y);
+    uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+  }
+}
+
 static GdkFilterReturn
 toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
 {
@@ -491,13 +505,8 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
   if (!uic)
     return GDK_FILTER_CONTINUE;
 
-  if (uic->cwin && uic->cwin_is_active) {
-    gint x, y, width, height, depth;
-
-    gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-    gdk_window_get_origin(uic->win, &x, &y);
-    uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
-  }
+  if (uic->cwin_is_active)
+    layout_candwin(uic);
 
   return GDK_FILTER_CONTINUE;
 }
@@ -660,45 +669,10 @@ update_prop_list_cb(void *ptr, const char *str)
   }
 }
 
-#if 0
-static void
-update_prop_label_cb(void *ptr, const char *str)
-{
-  IMUIMContext *uic = (IMUIMContext *)ptr;
-  GString *prop_label;
-  gint x, y;
-  uim_bool show_state;
-
-  if (uic != focused_context || disable_focused_context)
-    return;
-
-  prop_label = g_string_new("");
-  g_string_printf(prop_label, "prop_label_update\ncharset=UTF-8\n%s", str);
-
-  uim_helper_send_message(im_uim_fd, prop_label->str);
-  g_string_free(prop_label, TRUE);
-
-  show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-  if (show_state && uic->win) {
-    gint timeout;
-
-    gdk_window_get_origin(uic->win, &x, &y);
-    caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
-    timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
-
-    if (timeout != 0)
-      caret_state_indicator_set_timeout(uic->caret_state_indicator,
-					timeout * 1000);
-    gtk_widget_show_all(uic->caret_state_indicator);
-  }
-}
-#endif
-
 static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint x, y, width, height, depth;
   GSList *list = NULL;
   uim_candidate cand;
   gint i;
@@ -715,9 +689,7 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
   g_slist_foreach(list, (GFunc)uim_candidate_free, NULL);
   g_slist_free(list);
 
-  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-  gdk_window_get_origin(uic->win, &x, &y);
-  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+  layout_candwin(uic);
   gtk_widget_show(GTK_WIDGET(uic->cwin));
 
   if (uic->win) {
@@ -732,12 +704,8 @@ static void
 cand_select_cb(void *ptr, int index)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint x, y, width, height, depth;
 
-  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-  gdk_window_get_origin(uic->win, &x, &y);
-
-  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+  layout_candwin(uic);
 
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
@@ -748,12 +716,8 @@ static void
 cand_shift_page_cb(void *ptr, int direction)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint x, y, width, height, depth;
 
-  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-  gdk_window_get_origin(uic->win, &x, &y);
-
-  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+  layout_candwin(uic);
 
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
@@ -973,6 +937,17 @@ commit_string_from_other_process(const gchar *str)
 }
 
 static void
+update_candwin_pos_type()
+{
+  IMUIMContext *cc;
+
+  for (cc = context_list.next; cc != &context_list; cc = cc->next) {
+    if (cc->cwin)
+      uim_cand_win_gtk_get_window_pos_type(cc->cwin);
+  }
+}
+
+static void
 parse_helper_str(const char *str)
 {
   gchar **lines;
@@ -986,19 +961,18 @@ parse_helper_str(const char *str)
     if (lines && lines[0] && lines[1] && lines[2]) {
       for (cc = context_list.next; cc != &context_list; cc = cc->next) {
 	uim_prop_update_custom(cc->uc, lines[1], lines[2]);
+	if (!strcmp(lines[1], "candidate-window-position"))
+	  update_candwin_pos_type();
 	break;  /* all custom variables are global */
       }
       g_strfreev(lines);
     }
   } else if (g_str_has_prefix(str, "custom_reload_notify") == TRUE) {
     uim_prop_reload_configs();
+    update_candwin_pos_type();
   } else if (focused_context && !disable_focused_context) {
     if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);
-#if 0
-    } else if (g_str_has_prefix(str, "prop_label_get") == TRUE) {
-      uim_prop_label_update(focused_context->uc);
-#endif
     } else if (g_str_has_prefix(str, "prop_activate") == TRUE) {
       lines = g_strsplit(str, "\n", 0);
       if (lines && lines[0]) {
@@ -1129,6 +1103,9 @@ im_uim_set_cursor_location(GtkIMContext *ic, GdkRectangle *area)
   uic->preedit_pos = *area;
   uim_cand_win_gtk_set_cursor_location(uic->cwin, area);
   caret_state_indicator_set_cursor_location(uic->caret_state_indicator, area);
+
+  if (uic->cwin_is_active)
+    layout_candwin(uic);
 }
 
 static void
@@ -1155,9 +1132,6 @@ im_uim_focus_in(GtkIMContext *ic)
   uim_helper_client_focus_in(uic->uc);
 
   uim_prop_list_update(uic->uc);
-#if 0
-  uim_prop_label_update(uic->uc);
-#endif
 
   for (cc = context_list.next; cc != &context_list; cc = cc->next) {
     if (cc != uic && cc->cwin)
@@ -1366,7 +1340,6 @@ im_module_create(const gchar *context_id)
 
   uim_set_preedit_cb(uic->uc, clear_cb, pushback_cb, update_cb);
   uim_set_prop_list_update_cb(uic->uc, update_prop_list_cb);
-  /* uim_set_prop_label_update_cb(uic->uc, update_prop_label_cb); */
   uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
 				cand_shift_page_cb, cand_deactivate_cb);
   uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);

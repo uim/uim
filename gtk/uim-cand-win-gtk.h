@@ -119,6 +119,7 @@ void		uim_cand_win_gtk_layout			(UIMCandWinGtk *cwin,
 							 gint topwin_height);
 void		uim_cand_win_gtk_set_cursor_location	(UIMCandWinGtk *cwin,
 							 GdkRectangle *area);
+void		uim_cand_win_gtk_get_window_pos_type	(UIMCandWinGtk *cwin);
 
 G_END_DECLS
 

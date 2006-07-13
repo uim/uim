@@ -35,6 +35,7 @@
 
 #include "uim-cand-win-gtk.h"
 #include <string.h>
+#include <stdlib.h>
 #include <uim/uim.h>
 #include <uim/uim-compat-scm.h>
 #if HAVE_EBLIB
@@ -135,6 +136,22 @@ uim_cand_win_gtk_class_init (UIMCandWinGtkClass *klass)
   widget_class->unmap = uim_cand_win_gtk_unmap;
 }
 
+void
+uim_cand_win_gtk_get_window_pos_type(UIMCandWinGtk *cwin)
+{
+  char *win_pos;
+
+  win_pos = uim_symbol_value_str("candidate-window-position");
+  if (win_pos && !strcmp(win_pos, "left")) {
+    cwin->position = UIM_CAND_WIN_POS_LEFT;
+  } else if (win_pos && !strcmp(win_pos, "right")) {
+    cwin->position = UIM_CAND_WIN_POS_RIGHT;
+  } else {
+    cwin->position = UIM_CAND_WIN_POS_CARET;
+  }
+  free(win_pos);
+}
+
 static void
 uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
 {
@@ -156,7 +173,7 @@ uim_cand_win_gtk_init (UIMCandWinGtk *cwin)
   cwin->candidate_index = -1;
   cwin->page_index = 0;
 
-  cwin->position = UIM_CAND_WIN_POS_CARET;
+  uim_cand_win_gtk_get_window_pos_type(cwin);
 
   cwin->cursor.x = cwin->cursor.y = 0;
   cwin->cursor.width = cwin->cursor.height = 0;
@@ -448,19 +465,8 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 				GSList *candidates)
 {
   gint i, nr_stores = 1;
-  gchar *win_pos;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
-
-  win_pos = uim_symbol_value_str("candidate-window-position");
-  if (win_pos && !strcmp(win_pos, "left")) {
-    cwin->position = UIM_CAND_WIN_POS_LEFT;
-  } else if (win_pos && !strcmp(win_pos, "right")) {
-    cwin->position = UIM_CAND_WIN_POS_RIGHT;
-  } else {
-    cwin->position = UIM_CAND_WIN_POS_CARET;
-  }
-  g_free(win_pos);
 
   if (cwin->stores == NULL)
     cwin->stores = g_ptr_array_new();
@@ -707,12 +713,17 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
   sc_he = gdk_screen_get_height(gdk_screen_get_default ());
   sc_wi = gdk_screen_get_width (gdk_screen_get_default ());
 
-  if (cwin->position == UIM_CAND_WIN_POS_LEFT) {
+  /* FIXME */
+  switch (cwin->position) {
+  case UIM_CAND_WIN_POS_LEFT:
     cursor_x = 0;
-  } else if (cwin->position == UIM_CAND_WIN_POS_RIGHT) {
+    break;
+  case UIM_CAND_WIN_POS_RIGHT:
     cursor_x = topwin_width - cw_wi;
-  } else {
+    break;
+  default:
     cursor_x = cwin->cursor.x;
+    break;
   }
   cursor_y = cwin->cursor.y;
 
@@ -722,13 +733,13 @@ uim_cand_win_gtk_layout(UIMCandWinGtk *cwin,
     x = topwin_x + cursor_x;
   }
 
-  if (sc_he <  topwin_y + cursor_y +  cwin->cursor.height + cw_he ) {
+  if (sc_he <  topwin_y + cursor_y +  cwin->cursor.height + cw_he) {
     y = topwin_y + cursor_y - cw_he;
   } else {
     y = topwin_y + cursor_y +  cwin->cursor.height;
   }
 
-  gtk_window_move(GTK_WINDOW(cwin), x, y );
+  gtk_window_move(GTK_WINDOW(cwin), x, y);
 
   uim_cand_win_gtk_layout_sub_window(cwin);
 }
