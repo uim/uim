@@ -1046,7 +1046,10 @@
        ;; modifiers (except shift) => ignore
        ((and (modifier-key-mask key-state)
 	     (not (shift-key-mask key-state)))
-	  #f)
+	#f)
+
+       ((symbol? key)
+        #f)
 
        (else	
 	;; handle "n1" sequence as "¤ó1"
