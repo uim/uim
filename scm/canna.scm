@@ -425,11 +425,11 @@
 	   (canna-context-set-alnum! cc #t)
 	   #t)
 	  ((canna-kana-toggle-key? key key-state)
-	   (canna-context-kana-toggle ac)
-	   (canna-context-set-alnum! ac #f)
+	   (canna-context-kana-toggle cc)
+	   (canna-context-set-alnum! cc #f)
 	   #t)
 	  ((canna-alkana-toggle-key? key key-state)
-	   (canna-context-alkana-toggle ac)
+	   (canna-context-alkana-toggle cc)
 	   #t)
 	  (else
 	   #f))))
@@ -505,7 +505,7 @@
        (not
         (and
 	 (= (canna-context-kana-mode cc) canna-type-hiragana)
-	 (not (canna-context-alnum)))))
+	 (not (canna-context-alnum cc)))))
       (canna-context-change-kana-mode! cc canna-type-hiragana)
       (canna-context-set-alnum! cc #f))
 
@@ -514,7 +514,7 @@
        (not
         (and
 	 (= (canna-context-kana-mode cc) canna-type-katakana)
-	 (not (canna-context-alnum)))))
+	 (not (canna-context-alnum cc)))))
       (canna-context-change-kana-mode! cc canna-type-katakana)
       (canna-context-set-alnum! cc #f))
      
@@ -523,7 +523,7 @@
        (not
         (and
 	 (= (canna-context-kana-mode cc) canna-type-halfkana)
-	 (not (canna-context-alnum)))))
+	 (not (canna-context-alnum cc)))))
       (canna-context-change-kana-mode! cc canna-type-halfkana)
       (canna-context-set-alnum! cc #f))
      
@@ -532,7 +532,7 @@
        (not
         (and
 	 (= (canna-context-alnum-type cc) canna-type-halfwidth-alnum)
-	 (canna-context-alnum ac))))
+	 (canna-context-alnum cc))))
       (canna-context-set-alnum-type! cc canna-type-halfwidth-alnum)
       (canna-context-set-alnum! cc #t))
      
@@ -541,7 +541,7 @@
        (not
         (and
 	 (= (canna-context-alnum-type cc) canna-type-fullwidth-alnum)
-	 (canna-context-alnum ac))))
+	 (canna-context-alnum cc))))
       (canna-context-set-alnum-type! cc canna-type-fullwidth-alnum)
       (canna-context-set-alnum! cc #t))
      
