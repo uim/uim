@@ -329,6 +329,11 @@
 		 (lambda ()
 		   anthy-use-prediction?))
 
+(custom-add-hook 'anthy-use-implicit-commit-prediction?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-prediction?))
+
 (define-custom 'anthy-use-with-vi? #f
   '(anthy-advanced special-op)
   '(boolean)
