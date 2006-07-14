@@ -500,23 +500,48 @@
      ((canna-delete-key? key key-state)
       (canna-commit-raw cc))
 
-     ((canna-hiragana-key? key key-state)
+     ((and
+       (canna-hiragana-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-kana-mode cc) canna-type-hiragana)
+	 (not (anthy-context-alnum)))))
       (canna-context-change-kana-mode! cc canna-type-hiragana)
       (canna-context-set-alnum! cc #f))
 
-     ((canna-katakana-key? key key-state)
+     ((and
+       (canna-katakana-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-kana-mode cc) canna-type-katakana)
+	 (not (anthy-context-alnum)))))
       (canna-context-change-kana-mode! cc canna-type-katakana)
       (canna-context-set-alnum! cc #f))
      
-     ((canna-halfkana-key? key key-state)
+     ((and
+       (canna-halfkana-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-kana-mode cc) canna-type-halfkana)
+	 (not (anthy-context-alnum)))))
       (canna-context-change-kana-mode! cc canna-type-halfkana)
       (canna-context-set-alnum! cc #f))
      
-     ((canna-halfwidth-alnum-key? key key-state)
+     ((and
+       (canna-halfwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) anthy-type-halfwidth-alnum)
+	 (canna-context-alnum ac))))
       (canna-context-set-alnum-type! cc canna-type-halfwidth-alnum)
       (canna-context-set-alnum! cc #t))
      
-     ((canna-fullwidth-alnum-key? key key-state)
+     ((and
+       (canna-fullwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) anthy-type-fullwidth-alnum)
+	 (canna-context-alnum ac))))
       (canna-context-set-alnum-type! cc canna-type-fullwidth-alnum)
       (canna-context-set-alnum! cc #t))
      
@@ -743,11 +768,21 @@
       (canna-context-set-kana-mode! cc canna-type-halfkana)
       (canna-context-set-alnum! cc #f))
 
-     ((canna-halfwidth-alnum-key? key key-state)
+     ((and
+       (canna-halfwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) canna-type-halfwidth-alnum)
+	 (canna-context-alnum cc))))
       (canna-context-set-alnum-type! cc canna-type-halfwidth-alnum)
       (canna-context-set-alnum! cc #t))
 
-     ((canna-fullwidth-alnum-key? key key-state)
+     ((and
+       (canna-fullwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) canna-type-fullwidth-alnum)
+	 (canna-context-alnum cc))))
       (canna-context-set-alnum-type! cc canna-type-fullwidth-alnum)
       (canna-context-set-alnum! cc #t))
 

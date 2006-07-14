@@ -552,23 +552,48 @@
        ((anthy-delete-key? key key-state)
 	(anthy-commit-raw ac))
        
-       ((anthy-hiragana-key? key key-state)
+       ((and
+         (anthy-hiragana-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-kana-mode ac) anthy-type-hiragana)
+	   (not (anthy-context-alnum ac)))))
 	(anthy-context-change-kana-mode! ac anthy-type-hiragana)
 	(anthy-context-set-alnum! ac #f))
 
-       ((anthy-katakana-key? key key-state)
+       ((and
+         (anthy-katakana-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-kana-mode ac) anthy-type-katakana)
+	   (not (anthy-context-alnum ac)))))
 	(anthy-context-change-kana-mode! ac anthy-type-katakana)
 	(anthy-context-set-alnum! ac #f))
 
-       ((anthy-halfkana-key? key key-state)
+       ((and
+         (anthy-halfkana-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-kana-mode ac) anthy-type-halfkana)
+	   (not (anthy-context-alnum ac)))))
 	(anthy-context-change-kana-mode! ac anthy-type-halfkana)
 	(anthy-context-set-alnum! ac #f))
 
-       ((anthy-halfwidth-alnum-key? key key-state)
+       ((and
+         (anthy-halfwidth-alnum-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-alnum-type ac) anthy-type-halfwidth-alnum)
+	   (anthy-context-alnum ac))))
 	(anthy-context-set-alnum-type! ac anthy-type-halfwidth-alnum)
 	(anthy-context-set-alnum! ac #t))
 
-       ((anthy-fullwidth-alnum-key? key key-state)
+       ((and
+         (anthy-fullwidth-alnum-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-alnum-type ac) anthy-type-fullwidth-alnum)
+	   (anthy-context-alnum ac))))
 	(anthy-context-set-alnum-type! ac anthy-type-fullwidth-alnum)
 	(anthy-context-set-alnum! ac #t))
 
@@ -940,11 +965,21 @@
 	(anthy-context-set-kana-mode! ac anthy-type-halfkana)
 	(anthy-context-set-alnum! ac #f))
 
-       ((anthy-halfwidth-alnum-key? key key-state)
+       ((and
+         (anthy-halfwidth-alnum-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-alnum-type ac) anthy-type-halfwidth-alnum)
+	   (anthy-context-alnum ac))))
 	(anthy-context-set-alnum-type! ac anthy-type-halfwidth-alnum)
 	(anthy-context-set-alnum! ac #t))
 
-       ((anthy-fullwidth-alnum-key? key key-state)
+       ((and
+         (anthy-fullwidth-alnum-key? key key-state)
+	 (not
+	  (and
+	   (= (anthy-context-alnum-type ac) anthy-type-fullwidth-alnum)
+	   (anthy-context-alnum ac))))
 	(anthy-context-set-alnum-type! ac anthy-type-fullwidth-alnum)
 	(anthy-context-set-alnum! ac #t))
 

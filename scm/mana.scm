@@ -761,23 +761,48 @@
         ((mana-delete-key? key key-state)
          (mana-commit-raw mc))
 
-	((mana-hiragana-key? key key-state)
+	((and
+	  (mana-hiragana-key? key key-state)
+	  (not
+	   (and
+	    (= (mana-context-kana-mode mc) mana-type-hiragana)
+	    (not (mana-context-alnum mc)))))
 	 (mana-context-change-kana-mode! mc mana-type-hiragana)
 	 (mana-context-set-alnum! mc #f))
 
-	((mana-katakana-key? key key-state)
+	((and
+	  (mana-katakana-key? key key-state)
+	  (not
+	   (and
+	    (= (mana-context-kana-mode mc) mana-type-katakana)
+	    (not (mana-context-alnum mc)))))
 	 (mana-context-change-kana-mode! mc mana-type-katakana)
 	 (mana-context-set-alnum! mc #f))
 
-	((mana-halfkana-key? key key-state)
+	((and
+	  (mana-halfkana-key? key key-state)
+	  (not
+	   (and
+	    (= (mana-context-kana-mode mc) mana-type-halfkana)
+	    (not (mana-context-alnum mc)))))
 	 (mana-context-change-kana-mode! mc mana-type-halfkana)
 	 (mana-context-set-alnum! mc #f))
 
-	((mana-halfwidth-alnum-key? key key-state)
+	((and
+	  (mana-halfwidth-alnum-key? key key-state)
+	  (not
+	   (and
+	    (= (mana-context-alnum-type mc) mana-type-halfwidth-alnum)
+	    (mana-context-alnum mc))))
 	 (mana-context-set-alnum-type! mc mana-type-halfwidth-alnum)
 	 (mana-context-set-alnum! mc #t))
 
-	((mana-fullwidth-alnum-key? key key-state)
+	((and
+	  (mana-fullwidth-alnum-key? key key-state)
+	  (not
+	   (and
+	    (= (mana-context-alnum-type mc) mana-type-fullwidth-alnum)
+	    (mana-context-alnum mc))))
 	 (mana-context-set-alnum-type! mc mana-type-fullwidth-alnum)
 	 (mana-context-set-alnum! mc #t))
 
@@ -1009,11 +1034,21 @@
 	(mana-context-set-kana-mode! mc mana-type-halfkana)
 	(mana-context-set-alnum! mc #f))
 
-       ((mana-halfwidth-alnum-key? key key-state)
+       ((and
+         (mana-halfwidth-alnum-key? key key-state)
+	 (not
+	  (and
+	   (= (mana-context-alnum-type mc) mana-type-halfwidth-alnum)
+	   (mana-context-alnum mc))))
 	(mana-context-set-alnum-type! mc mana-type-halfwidth-alnum)
 	(mana-context-set-alnum! mc #t))
 
-       ((mana-fullwidth-alnum-key? key key-state)
+       ((and
+         (mana-fullwidth-alnum-key? key key-state)
+	 (not
+	  (and
+	   (= (mana-context-alnum-type mc) mana-type-fullwidth-alnum)
+	   (mana-context-alnum mc))))
 	(mana-context-set-alnum-type! mc mana-type-fullwidth-alnum)
 	(mana-context-set-alnum! mc #t))
 
