@@ -97,9 +97,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 1.1.0\n"
+"Project-Id-Version: uim 1.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-04 10:45+0900\n"
+"POT-Creation-Date: 2006-07-15 05:42+0900\n"
 "PO-Revision-Date: 2006-06-04 10:49+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -129,269 +129,287 @@ msgstr "uimアプレット・ファクトリ"
 msgid "uim applet factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: helper/dict-anthy.c:80 helper/dict-main-gtk.c:162
-#: helper/dict-word-list-win-gtk.c:239
+#: helper/dict-anthy.c:82 helper/dict-main-gtk.c:166
+#: helper/dict-word-list-win-gtk.c:349
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
 #. construct dialog
-#: helper/dict-cclass-dialog.c:68 helper/dict-cclass-dialog.c:105
-#: helper/dict-word-list-view-gtk.c:266
+#: helper/dict-cclass-dialog.c:69 helper/dict-cclass-dialog.c:106
+#: helper/dict-word-list-view-gtk.c:269
 msgid "Part of Speech"
 msgstr "品詞"
 
-#: helper/dict-cclass-dialog.c:114
+#: helper/dict-cclass-dialog.c:115
 msgid "Example"
 msgstr "例"
 
-#: helper/dict-main-gtk.c:227
+#: helper/dict-main-gtk.c:188 helper/dict-word-list-win-gtk.c:353
+msgid "Canna private dictionary"
+msgstr "Canna個人辞書"
+
+#: helper/dict-main-gtk.c:274
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
 
-#: helper/dict-word-list-view-gtk.c:131
+#: helper/dict-word-list-view-gtk.c:130
 msgid "Show part of speech column"
 msgstr "品詞欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:132 helper/dict-word-list-view-gtk.c:141
-#: helper/dict-word-list-view-gtk.c:149 helper/dict-word-list-view-gtk.c:156
-#: helper/dict-word-list-view-gtk.c:164 helper/dict-word-list-view-gtk.c:165
+#: helper/dict-word-list-view-gtk.c:131 helper/dict-word-list-view-gtk.c:140
+#: helper/dict-word-list-view-gtk.c:148 helper/dict-word-list-view-gtk.c:155
+#: helper/dict-word-list-view-gtk.c:163 helper/dict-word-list-view-gtk.c:164
 msgid "to be written"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:140
+#: helper/dict-word-list-view-gtk.c:139
 msgid "Show freq column"
 msgstr "使用頻度欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:148
+#: helper/dict-word-list-view-gtk.c:147
 msgid "Show okuri column"
 msgstr "送り仮名欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:157
+#: helper/dict-word-list-view-gtk.c:156
 msgid "to be written "
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:202
+#: helper/dict-word-list-view-gtk.c:201
 msgid "Word Type"
 msgstr "単語の種類"
 
-#: helper/dict-word-list-view-gtk.c:220
+#: helper/dict-word-list-view-gtk.c:219
 msgid "Phonetic"
 msgstr "読み方"
 
-#: helper/dict-word-list-view-gtk.c:250
+#: helper/dict-word-list-view-gtk.c:251
 msgid "Literal"
 msgstr "書き方"
 
-#: helper/dict-word-list-view-gtk.c:282
+#: helper/dict-word-list-view-gtk.c:287
 msgid "Frequency"
 msgstr "使用頻度"
 
-#: helper/dict-word-list-view-gtk.c:293
+#: helper/dict-word-list-view-gtk.c:299
 msgid "Okuri"
 msgstr "送り仮名"
 
-#: helper/dict-word-list-win-gtk.c:87
-msgid "_File"
-msgstr "ファイル(_F)"
+#: helper/dict-word-list-win-gtk.c:99
+msgid "_Dictionary"
+msgstr "辞書"
 
-#: helper/dict-word-list-win-gtk.c:88
+#: helper/dict-word-list-win-gtk.c:100
+msgid "_Select"
+msgstr "選択..."
+
+#: helper/dict-word-list-win-gtk.c:101
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: helper/dict-word-list-win-gtk.c:89
+#: helper/dict-word-list-win-gtk.c:102
 msgid "_Option"
 msgstr "オプション(_O)"
 
-#: helper/dict-word-list-win-gtk.c:90
+#: helper/dict-word-list-win-gtk.c:103
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: helper/dict-word-list-win-gtk.c:91
+#: helper/dict-word-list-win-gtk.c:104
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: helper/dict-word-list-win-gtk.c:92
+#: helper/dict-word-list-win-gtk.c:105
 msgid "Quit uim-dict"
 msgstr "uim-dict を終了します"
 
-#: helper/dict-word-list-win-gtk.c:93
+#: helper/dict-word-list-win-gtk.c:106
 msgid "A_dd..."
 msgstr "追加(_D)..."
 
-#: helper/dict-word-list-win-gtk.c:94
+#: helper/dict-word-list-win-gtk.c:107
 msgid "Add a new word"
 msgstr "新しい単語を追加します"
 
-#: helper/dict-word-list-win-gtk.c:95
+#: helper/dict-word-list-win-gtk.c:108
 msgid "_Remove..."
 msgstr "削除(_R)..."
 
-#: helper/dict-word-list-win-gtk.c:96
+#: helper/dict-word-list-win-gtk.c:109
 msgid "Remove the selected word"
 msgstr "選択した単語を削除します"
 
-#: helper/dict-word-list-win-gtk.c:97
+#: helper/dict-word-list-win-gtk.c:110
 msgid "_Edit..."
 msgstr "編集(_E)..."
 
-#: helper/dict-word-list-win-gtk.c:98
+#: helper/dict-word-list-win-gtk.c:111
 msgid "Edit the selected word"
 msgstr "選択した単語を編集します"
 
-#: helper/dict-word-list-win-gtk.c:99
+#: helper/dict-word-list-win-gtk.c:112
 msgid "_Popup Menu"
 msgstr "ポップアップメニュー(_P)"
 
-#: helper/dict-word-list-win-gtk.c:100
+#: helper/dict-word-list-win-gtk.c:113
 msgid "Show popup menu"
 msgstr "ポップアップ・メニューを表示します"
 
-#: helper/dict-word-list-win-gtk.c:101
+#: helper/dict-word-list-win-gtk.c:114
 msgid "_About"
 msgstr "このプログラムについて(_A)"
 
-#: helper/dict-word-list-win-gtk.c:102 helper/dict-word-list-win-gtk.c:472
+#: helper/dict-word-list-win-gtk.c:115 helper/dict-word-list-win-gtk.c:615
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
-# NOTE: libanthydic.so を指す
-#: helper/dict-word-list-win-gtk.c:170
-msgid "Couldn't open a library for manipulating the dictionary.\n"
-msgstr "辞書を操作するライブラリを開けませんでした。\n"
+#: helper/dict-word-list-win-gtk.c:204 helper/dict-word-list-win-gtk.c:205
+msgid "dictionary type"
+msgstr "辞書の種類"
 
-#: helper/dict-word-list-win-gtk.c:191
+#: helper/dict-word-list-win-gtk.c:223
+msgid "Couldn't open the dictionary.\n"
+msgstr "辞書を開くことができません。\n"
+
+#: helper/dict-word-list-win-gtk.c:242
 msgid "Edit the dictionary"
 msgstr "辞書の編集"
 
-#: helper/dict-word-list-win-gtk.c:247
+#: helper/dict-word-list-win-gtk.c:364
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: helper/dict-word-list-win-gtk.c:361
+#: helper/dict-word-list-win-gtk.c:466
 msgid "Are you sure to remove seleted words?"
 msgstr "選択した複数の単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:367
+#: helper/dict-word-list-win-gtk.c:472
 msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:396
+#: helper/dict-word-list-win-gtk.c:501
 msgid "Word deletion succeded."
 msgstr "単語の削除に成功しました。"
 
-#: helper/dict-word-list-win-gtk.c:402
+#: helper/dict-word-list-win-gtk.c:507
 msgid "Word deletion failed."
 msgstr "単語の削除に失敗しました。"
 
-#: helper/dict-word-list-win-gtk.c:463
+#: helper/dict-word-list-win-gtk.c:574
 msgid "uim-dict"
 msgstr "uim-dict"
 
-#: helper/dict-word-list-win-gtk.c:465
+#: helper/dict-word-list-win-gtk.c:585
+msgid ""
+"Copyright (C) 2003-2004 Masahito Omote\n"
+"Copyright (C) 2004-2006 uim Project\n"
+"All rights reserved."
+msgstr ""
+
+#: helper/dict-word-list-win-gtk.c:609
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
 "Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
 "All rights reserved."
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:51
+#: helper/dict-word-win-gtk.c:52
 msgid "Substantive"
 msgstr "名詞"
 
-#: helper/dict-word-win-gtk.c:52
+#: helper/dict-word-win-gtk.c:53
 msgid "Verb"
 msgstr "動詞"
 
-#: helper/dict-word-win-gtk.c:53
+#: helper/dict-word-win-gtk.c:54
 msgid "Adjective"
 msgstr "形容詞"
 
-#: helper/dict-word-win-gtk.c:54
+#: helper/dict-word-win-gtk.c:55
 msgid "Adverb"
 msgstr "副詞"
 
-#: helper/dict-word-win-gtk.c:55
+#: helper/dict-word-win-gtk.c:56
 msgid "Etc"
 msgstr "その他"
 
-#: helper/dict-word-win-gtk.c:146
+#: helper/dict-word-win-gtk.c:147
 msgid "Necessary infomation"
 msgstr "必須項目"
 
-#: helper/dict-word-win-gtk.c:166
+#: helper/dict-word-win-gtk.c:167
 msgid "Additional infomation"
 msgstr "追加項目"
 
 #. action area
-#: helper/dict-word-win-gtk.c:180
+#: helper/dict-word-win-gtk.c:181
 msgid "continuance"
 msgstr "連続"
 
-#: helper/dict-word-win-gtk.c:192
+#: helper/dict-word-win-gtk.c:193
 msgid "Add"
 msgstr "追加"
 
-#: helper/dict-word-win-gtk.c:198
+#: helper/dict-word-win-gtk.c:199
 msgid "Clear"
 msgstr "消去"
 
-#: helper/dict-word-win-gtk.c:205
+#: helper/dict-word-win-gtk.c:206
 msgid "Add a word"
 msgstr "単語を追加"
 
-#: helper/dict-word-win-gtk.c:244
+#: helper/dict-word-win-gtk.c:246
 #, c-format
 msgid "Edit the word (%s)"
 msgstr "単語 (%s) を編集"
 
-#: helper/dict-word-win-gtk.c:247
+#: helper/dict-word-win-gtk.c:249
 #, c-format
 msgid "Add a word (%s)"
 msgstr "単語 (%s) を追加"
 
-#: helper/dict-word-win-gtk.c:269
+#: helper/dict-word-win-gtk.c:274
 msgid "_Phonetic:"
 msgstr "読み方(_P):"
 
-#: helper/dict-word-win-gtk.c:279
+#: helper/dict-word-win-gtk.c:284
 msgid "_Literal:"
 msgstr "書き方(_L):"
 
-#: helper/dict-word-win-gtk.c:289
+#: helper/dict-word-win-gtk.c:294
 msgid "Part of _Speech:"
 msgstr "品詞(_S):"
 
-#: helper/dict-word-win-gtk.c:319
+#: helper/dict-word-win-gtk.c:324
 msgid "_Frequency:"
 msgstr "頻度(_F):"
 
-#: helper/dict-word-win-gtk.c:350
+#: helper/dict-word-win-gtk.c:355
 msgid "Part of Speech(_narrow):"
 msgstr "品詞(狭義)(_N):"
 
-#: helper/dict-word-win-gtk.c:363
+#: helper/dict-word-win-gtk.c:368
 msgid "_Browse..."
 msgstr "参照(_B)..."
 
-#: helper/dict-word-win-gtk.c:490
+#: helper/dict-word-win-gtk.c:497
 msgid "Word registration failed."
 msgstr "単語の登録に失敗しました。"
 
-#: helper/dict-word-win-gtk.c:497
+#: helper/dict-word-win-gtk.c:504
 msgid "Word registration succeded."
 msgstr "単語の登録に成功しました。"
 
-#: helper/dict-word-win-gtk.c:525
+#: helper/dict-word-win-gtk.c:534
 msgid "Phonetic is emtpy!"
 msgstr "読み方が入力されていません！"
 
-#: helper/dict-word-win-gtk.c:540
+#: helper/dict-word-win-gtk.c:549
 msgid "Literal is emtpy!"
 msgstr "書き方が入力されていません！"
 
-#: helper/dict-word-win-gtk.c:558
+#: helper/dict-word-win-gtk.c:567
 msgid "Part of speech is emtpy!"
 msgstr "品詞が入力されていません！"
 
@@ -509,7 +527,7 @@ msgstr "無効なアイテム"
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1597 qt/pref-customwidgets.cpp:875
+#: helper/pref-gtk-custom-widgets.c:1597 qt/pref-customwidgets.cpp:873
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
@@ -626,7 +644,7 @@ msgstr "手書き入力パッド"
 msgid "Help"
 msgstr "ヘルプ"
 
-#: helper/toolbar-common-gtk.c:848 qt/toolbar-common-quimhelpertoolbar.cpp:63
+#: helper/toolbar-common-gtk.c:852 qt/toolbar-common-quimhelpertoolbar.cpp:63
 msgid "Quit this toolbar"
 msgstr "終了"
 
@@ -639,7 +657,7 @@ msgstr "ジオメトリ文字列 '%s' を解析できません"
 msgid "Edit"
 msgstr "編集"
 
-#: qt/pref-customwidgets.cpp:878
+#: qt/pref-customwidgets.cpp:876
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
@@ -734,17 +752,28 @@ msgstr "Anthy"
 msgid "A multi-segment kana-kanji conversion engine"
 msgstr "連文節かな漢字変換エンジン"
 
-#: scm/anthy-custom.lisp:50 scm/canna-custom.lisp:54 scm/mana-custom.lisp:50
-msgid "Show segment separator"
-msgstr "文節区切りを表示"
+#: scm/anthy-custom.lisp:43
+msgid "Anthy (advanced)"
+msgstr "Anthy (高度)"
 
-#: scm/anthy-custom.lisp:51 scm/anthy-custom.lisp:57 scm/anthy-custom.lisp:72
-#: scm/anthy-custom.lisp:78 scm/anthy-custom.lisp:84 scm/anthy-custom.lisp:90
-#: scm/anthy-custom.lisp:173 scm/anthy-custom.lisp:192
-#: scm/anthy-custom.lisp:201 scm/anthy-custom.lisp:243
-#: scm/anthy-custom.lisp:252 scm/anthy-custom.lisp:290
-#: scm/anthy-key-custom.lisp:37 scm/anthy-key-custom.lisp:41
-#: scm/anthy-key-custom.lisp:45 scm/byeoru-custom.lisp:81
+#: scm/anthy-custom.lisp:44
+msgid "Advanced settings for Anthy"
+msgstr "Anthyの高度な設定"
+
+#: scm/anthy-custom.lisp:47
+msgid "Prediction"
+msgstr "予測入力"
+
+#: scm/anthy-custom.lisp:48 scm/anthy-custom.lisp:58 scm/anthy-custom.lisp:64
+#: scm/anthy-custom.lisp:79 scm/anthy-custom.lisp:85 scm/anthy-custom.lisp:91
+#: scm/anthy-custom.lisp:97 scm/anthy-custom.lisp:185
+#: scm/anthy-custom.lisp:204 scm/anthy-custom.lisp:213
+#: scm/anthy-custom.lisp:255 scm/anthy-custom.lisp:264
+#: scm/anthy-custom.lisp:302 scm/anthy-custom.lisp:308
+#: scm/anthy-custom.lisp:314 scm/anthy-custom.lisp:336
+#: scm/anthy-custom.lisp:342 scm/anthy-key-custom.lisp:37
+#: scm/anthy-key-custom.lisp:41 scm/anthy-key-custom.lisp:45
+#: scm/anthy-key-custom.lisp:49 scm/byeoru-custom.lisp:81
 #: scm/byeoru-custom.lisp:85 scm/byeoru-custom.lisp:89
 #: scm/byeoru-custom.lisp:104 scm/byeoru-custom.lisp:111
 #: scm/byeoru-custom.lisp:114 scm/byeoru-custom.lisp:117
@@ -753,35 +782,37 @@ msgstr "文節区切りを表示"
 #: scm/byeoru-custom.lisp:154 scm/byeoru-custom.lisp:160
 #: scm/byeoru-custom.lisp:167 scm/byeoru-key-custom.lisp:39
 #: scm/byeoru-key-custom.lisp:43 scm/canna-custom.lisp:44
-#: scm/canna-custom.lisp:55 scm/canna-custom.lisp:61 scm/canna-custom.lisp:76
-#: scm/canna-custom.lisp:82 scm/canna-custom.lisp:88 scm/canna-custom.lisp:94
-#: scm/canna-custom.lisp:177 scm/canna-custom.lisp:196
-#: scm/canna-custom.lisp:205 scm/canna-custom.lisp:247
-#: scm/canna-custom.lisp:256 scm/canna-custom.lisp:305
-#: scm/canna-custom.lisp:311 scm/canna-custom.lisp:368
+#: scm/canna-custom.lisp:48 scm/canna-custom.lisp:58 scm/canna-custom.lisp:64
+#: scm/canna-custom.lisp:79 scm/canna-custom.lisp:85 scm/canna-custom.lisp:91
+#: scm/canna-custom.lisp:97 scm/canna-custom.lisp:186
+#: scm/canna-custom.lisp:205 scm/canna-custom.lisp:214
+#: scm/canna-custom.lisp:256 scm/canna-custom.lisp:265
+#: scm/canna-custom.lisp:314 scm/canna-custom.lisp:320
+#: scm/canna-custom.lisp:377 scm/canna-custom.lisp:383
 #: scm/canna-key-custom.lisp:37 scm/canna-key-custom.lisp:41
-#: scm/canna-key-custom.lisp:45 scm/generic-custom.lisp:37
-#: scm/generic-custom.lisp:43 scm/generic-custom.lisp:49
-#: scm/generic-custom.lisp:55 scm/generic-custom.lisp:61
-#: scm/generic-key-custom.lisp:37 scm/generic-key-custom.lisp:41
-#: scm/im-custom.lisp:47 scm/im-custom.lisp:51 scm/im-custom.lisp:56
-#: scm/im-custom.lisp:61 scm/im-custom.lisp:66 scm/im-custom.lisp:71
-#: scm/im-custom.lisp:76 scm/im-custom.lisp:81 scm/im-custom.lisp:86
-#: scm/im-custom.lisp:91 scm/im-custom.lisp:96 scm/im-custom.lisp:101
-#: scm/im-custom.lisp:106 scm/im-custom.lisp:111 scm/im-custom.lisp:122
-#: scm/im-custom.lisp:132 scm/im-custom.lisp:206 scm/im-custom.lisp:260
-#: scm/im-custom.lisp:266 scm/im-custom.lisp:272 scm/im-custom.lisp:282
-#: scm/im-custom.lisp:310 scm/im-custom.lisp:331 scm/im-custom.lisp:337
-#: scm/im-custom.lisp:397 scm/im-custom.lisp:403 scm/im-custom.lisp:409
-#: scm/im-custom.lisp:415 scm/im-custom.lisp:421 scm/im-custom.lisp:427
-#: scm/im-custom.lisp:445 scm/im-custom.lisp:451 scm/im-custom.lisp:458
-#: scm/im-custom.lisp:468 scm/im-custom.lisp:472 scm/im-custom.lisp:478
-#: scm/im-custom.lisp:484 scm/mana-custom.lisp:51 scm/mana-custom.lisp:57
-#: scm/mana-custom.lisp:72 scm/mana-custom.lisp:78 scm/mana-custom.lisp:84
-#: scm/mana-custom.lisp:90 scm/mana-custom.lisp:173 scm/mana-custom.lisp:192
-#: scm/mana-custom.lisp:201 scm/mana-custom.lisp:243 scm/mana-custom.lisp:252
-#: scm/mana-custom.lisp:290 scm/mana-key-custom.lisp:37
-#: scm/mana-key-custom.lisp:41 scm/mana-key-custom.lisp:45
+#: scm/canna-key-custom.lisp:45 scm/canna-key-custom.lisp:49
+#: scm/generic-custom.lisp:37 scm/generic-custom.lisp:43
+#: scm/generic-custom.lisp:49 scm/generic-custom.lisp:55
+#: scm/generic-custom.lisp:61 scm/generic-key-custom.lisp:37
+#: scm/generic-key-custom.lisp:41 scm/im-custom.lisp:47 scm/im-custom.lisp:51
+#: scm/im-custom.lisp:56 scm/im-custom.lisp:61 scm/im-custom.lisp:66
+#: scm/im-custom.lisp:71 scm/im-custom.lisp:76 scm/im-custom.lisp:81
+#: scm/im-custom.lisp:86 scm/im-custom.lisp:91 scm/im-custom.lisp:96
+#: scm/im-custom.lisp:101 scm/im-custom.lisp:106 scm/im-custom.lisp:111
+#: scm/im-custom.lisp:122 scm/im-custom.lisp:132 scm/im-custom.lisp:206
+#: scm/im-custom.lisp:260 scm/im-custom.lisp:266 scm/im-custom.lisp:272
+#: scm/im-custom.lisp:282 scm/im-custom.lisp:310 scm/im-custom.lisp:331
+#: scm/im-custom.lisp:337 scm/im-custom.lisp:397 scm/im-custom.lisp:403
+#: scm/im-custom.lisp:409 scm/im-custom.lisp:415 scm/im-custom.lisp:421
+#: scm/im-custom.lisp:427 scm/im-custom.lisp:445 scm/im-custom.lisp:451
+#: scm/im-custom.lisp:458 scm/im-custom.lisp:468 scm/im-custom.lisp:472
+#: scm/im-custom.lisp:478 scm/im-custom.lisp:484 scm/mana-custom.lisp:54
+#: scm/mana-custom.lisp:60 scm/mana-custom.lisp:75 scm/mana-custom.lisp:81
+#: scm/mana-custom.lisp:87 scm/mana-custom.lisp:93 scm/mana-custom.lisp:181
+#: scm/mana-custom.lisp:200 scm/mana-custom.lisp:209 scm/mana-custom.lisp:251
+#: scm/mana-custom.lisp:260 scm/mana-custom.lisp:298 scm/mana-custom.lisp:304
+#: scm/mana-key-custom.lisp:37 scm/mana-key-custom.lisp:41
+#: scm/mana-key-custom.lisp:45 scm/mana-key-custom.lisp:49
 #: scm/prime-custom.lisp:55 scm/prime-custom.lisp:61 scm/prime-custom.lisp:69
 #: scm/prime-custom.lisp:75 scm/prime-custom.lisp:93 scm/prime-custom.lisp:99
 #: scm/prime-custom.lisp:106 scm/prime-custom.lisp:113
@@ -807,160 +838,191 @@ msgstr "文節区切りを表示"
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
-#: scm/anthy-custom.lisp:56 scm/canna-custom.lisp:60 scm/im-custom.lisp:85
-#: scm/mana-custom.lisp:56
+#: scm/anthy-custom.lisp:57 scm/canna-custom.lisp:57 scm/mana-custom.lisp:53
+msgid "Show segment separator"
+msgstr "文節区切りを表示"
+
+#: scm/anthy-custom.lisp:63 scm/canna-custom.lisp:63 scm/im-custom.lisp:85
+#: scm/mana-custom.lisp:59
 msgid "Segment separator"
 msgstr "文節区切り"
 
-#: scm/anthy-custom.lisp:71 scm/canna-custom.lisp:75
-#: scm/generic-custom.lisp:42 scm/mana-custom.lisp:71 scm/skk-custom.lisp:58
+#: scm/anthy-custom.lisp:78 scm/canna-custom.lisp:78
+#: scm/generic-custom.lisp:42 scm/mana-custom.lisp:74 scm/skk-custom.lisp:58
 #: scm/spellcheck-custom.lisp:47
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
-#: scm/anthy-custom.lisp:77 scm/canna-custom.lisp:81
-#: scm/generic-custom.lisp:48 scm/mana-custom.lisp:77 scm/skk-custom.lisp:84
+#: scm/anthy-custom.lisp:84 scm/canna-custom.lisp:84
+#: scm/generic-custom.lisp:48 scm/mana-custom.lisp:80 scm/skk-custom.lisp:84
 #: scm/spellcheck-custom.lisp:53
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
 
-#: scm/anthy-custom.lisp:83 scm/canna-custom.lisp:87
-#: scm/generic-custom.lisp:54 scm/mana-custom.lisp:83 scm/prime-custom.lisp:92
+#: scm/anthy-custom.lisp:90 scm/canna-custom.lisp:90
+#: scm/generic-custom.lisp:54 scm/mana-custom.lisp:86 scm/prime-custom.lisp:92
 #: scm/skk-custom.lisp:90
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
 
-#: scm/anthy-custom.lisp:89 scm/canna-custom.lisp:93
-#: scm/generic-custom.lisp:60 scm/mana-custom.lisp:89
+#: scm/anthy-custom.lisp:96 scm/canna-custom.lisp:96
+#: scm/generic-custom.lisp:60 scm/mana-custom.lisp:92
 #: scm/prime-custom.lisp:128
 msgid "Select candidate by numeral keys"
 msgstr "数字キーで候補を選択する"
 
-#: scm/anthy-custom.lisp:119 scm/canna-custom.lisp:123
-#: scm/mana-custom.lisp:119 scm/prime-custom.lisp:160 scm/skk-custom.lisp:168
+#: scm/anthy-custom.lisp:126 scm/canna-custom.lisp:126
+#: scm/mana-custom.lisp:122 scm/prime-custom.lisp:160 scm/skk-custom.lisp:168
 msgid "Direct input"
 msgstr "直接入力"
 
-#: scm/anthy-custom.lisp:120 scm/canna-custom.lisp:124
-#: scm/mana-custom.lisp:120 scm/skk-custom.lisp:169
+#: scm/anthy-custom.lisp:127 scm/canna-custom.lisp:127
+#: scm/mana-custom.lisp:123 scm/skk-custom.lisp:169
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
-#: scm/anthy-custom.lisp:124 scm/canna-custom.lisp:128
-#: scm/mana-custom.lisp:124 scm/skk-custom.lisp:173
+#: scm/anthy-custom.lisp:131 scm/canna-custom.lisp:131
+#: scm/mana-custom.lisp:127 scm/skk-custom.lisp:173
 msgid "Hiragana"
 msgstr "ひらがな"
 
-#: scm/anthy-custom.lisp:125 scm/canna-custom.lisp:129
-#: scm/mana-custom.lisp:125 scm/skk-custom.lisp:174
+#: scm/anthy-custom.lisp:132 scm/canna-custom.lisp:132
+#: scm/mana-custom.lisp:128 scm/skk-custom.lisp:174
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
 
-#: scm/anthy-custom.lisp:129 scm/canna-custom.lisp:133
-#: scm/mana-custom.lisp:129 scm/skk-custom.lisp:178
+#: scm/anthy-custom.lisp:136 scm/canna-custom.lisp:136
+#: scm/mana-custom.lisp:132 scm/skk-custom.lisp:178
 msgid "Katakana"
 msgstr "カタカナ"
 
-#: scm/anthy-custom.lisp:130 scm/canna-custom.lisp:134
-#: scm/mana-custom.lisp:130 scm/skk-custom.lisp:179
+#: scm/anthy-custom.lisp:137 scm/canna-custom.lisp:137
+#: scm/mana-custom.lisp:133 scm/skk-custom.lisp:179
 msgid "Katakana input mode"
 msgstr "カタカナ入力モード"
 
-#: scm/anthy-custom.lisp:134 scm/canna-custom.lisp:138
-#: scm/mana-custom.lisp:134 scm/skk-custom.lisp:183
+#: scm/anthy-custom.lisp:141 scm/canna-custom.lisp:141
+#: scm/mana-custom.lisp:137 scm/skk-custom.lisp:183
 msgid "Halfwidth Katakana"
 msgstr "半角カタカナ"
 
-#: scm/anthy-custom.lisp:135 scm/canna-custom.lisp:139
-#: scm/mana-custom.lisp:135 scm/skk-custom.lisp:184
+#: scm/anthy-custom.lisp:142 scm/canna-custom.lisp:142
+#: scm/mana-custom.lisp:138 scm/skk-custom.lisp:184
 msgid "Halfwidth Katakana input mode"
 msgstr "半角カタカナ入力モード"
 
-#: scm/anthy-custom.lisp:139 scm/canna-custom.lisp:143
-#: scm/mana-custom.lisp:139 scm/prime-custom.lisp:170 scm/skk-custom.lisp:188
+#: scm/anthy-custom.lisp:146 scm/canna-custom.lisp:146
+#: scm/mana-custom.lisp:142
+msgid "Halfwidth Alphanumeric"
+msgstr "半角英数"
+
+#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:147
+#: scm/mana-custom.lisp:143
+msgid "Halfwidth Alphanumeric input mode"
+msgstr "半額英数字入力モード"
+
+#: scm/anthy-custom.lisp:151 scm/canna-custom.lisp:152
+#: scm/mana-custom.lisp:147 scm/prime-custom.lisp:170 scm/skk-custom.lisp:188
 msgid "Fullwidth Alphanumeric"
 msgstr "全角英数"
 
-#: scm/anthy-custom.lisp:140 scm/canna-custom.lisp:144
-#: scm/mana-custom.lisp:140 scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
+#: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:153
+#: scm/mana-custom.lisp:148 scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric input mode"
 msgstr "全角英数字入力モード"
 
-#: scm/anthy-custom.lisp:147 scm/canna-custom.lisp:151
-#: scm/mana-custom.lisp:147 scm/skk-custom.lisp:196
+#: scm/anthy-custom.lisp:159 scm/canna-custom.lisp:160
+#: scm/mana-custom.lisp:155 scm/skk-custom.lisp:196
 msgid "Romaji"
 msgstr "ローマ字"
 
-#: scm/anthy-custom.lisp:148 scm/canna-custom.lisp:152
-#: scm/mana-custom.lisp:148 scm/skk-custom.lisp:197
+#: scm/anthy-custom.lisp:160 scm/canna-custom.lisp:161
+#: scm/mana-custom.lisp:156 scm/skk-custom.lisp:197
 msgid "Romaji input mode"
 msgstr "ローマ字入力モード"
 
-#: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:156
-#: scm/mana-custom.lisp:152
+#: scm/anthy-custom.lisp:164 scm/canna-custom.lisp:165
+#: scm/mana-custom.lisp:160
 msgid "Kana"
 msgstr "かな"
 
-#: scm/anthy-custom.lisp:153 scm/canna-custom.lisp:157
-#: scm/mana-custom.lisp:153
+#: scm/anthy-custom.lisp:165 scm/canna-custom.lisp:166
+#: scm/mana-custom.lisp:161
 msgid "Kana input mode"
 msgstr "かな入力モード"
 
-#: scm/anthy-custom.lisp:157 scm/canna-custom.lisp:161
-#: scm/mana-custom.lisp:157 scm/skk-custom.lisp:201
+#: scm/anthy-custom.lisp:169 scm/canna-custom.lisp:170
+#: scm/mana-custom.lisp:165 scm/skk-custom.lisp:201
 msgid "AZIK"
 msgstr "AZIK"
 
-#: scm/anthy-custom.lisp:158 scm/canna-custom.lisp:162
-#: scm/mana-custom.lisp:158 scm/skk-custom.lisp:202
+#: scm/anthy-custom.lisp:170 scm/canna-custom.lisp:171
+#: scm/mana-custom.lisp:166 scm/skk-custom.lisp:202
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
-#: scm/anthy-custom.lisp:167 scm/anthy-custom.lisp:168
-#: scm/canna-custom.lisp:171 scm/canna-custom.lisp:172
-#: scm/mana-custom.lisp:167 scm/mana-custom.lisp:168 scm/skk-custom.lisp:211
+#: scm/anthy-custom.lisp:179 scm/anthy-custom.lisp:180
+#: scm/canna-custom.lisp:180 scm/canna-custom.lisp:181
+#: scm/mana-custom.lisp:175 scm/mana-custom.lisp:176 scm/skk-custom.lisp:211
 #: scm/skk-custom.lisp:212
 msgid "Input mode"
 msgstr "入力モード"
 
-#: scm/anthy-custom.lisp:170 scm/anthy-custom.lisp:171
-#: scm/canna-custom.lisp:174 scm/canna-custom.lisp:175
-#: scm/mana-custom.lisp:170 scm/mana-custom.lisp:171 scm/skk-custom.lisp:214
+#: scm/anthy-custom.lisp:182 scm/anthy-custom.lisp:183
+#: scm/canna-custom.lisp:183 scm/canna-custom.lisp:184
+#: scm/mana-custom.lisp:178 scm/mana-custom.lisp:179 scm/skk-custom.lisp:214
 #: scm/skk-custom.lisp:215
 msgid "Kana input method"
 msgstr "かな入力方式"
 
 # 「ツールバー上に表示するボタン」だと単に「ツールバー上への表示用途」というカテ
 # ゴリの限定の意に誤読されるので採用しない
-#: scm/anthy-custom.lisp:172 scm/canna-custom.lisp:176
-#: scm/mana-custom.lisp:172 scm/skk-custom.lisp:216
+#: scm/anthy-custom.lisp:184 scm/canna-custom.lisp:185
+#: scm/mana-custom.lisp:180 scm/skk-custom.lisp:216
 msgid "Enabled toolbar buttons"
 msgstr "有効にするボタン"
 
-#: scm/anthy-custom.lisp:191 scm/canna-custom.lisp:195
-#: scm/mana-custom.lisp:191 scm/skk-custom.lisp:235
+#: scm/anthy-custom.lisp:203 scm/canna-custom.lisp:204
+#: scm/mana-custom.lisp:199 scm/skk-custom.lisp:235
 msgid "Default input mode"
 msgstr "標準の入力モード"
 
-#: scm/anthy-custom.lisp:200 scm/canna-custom.lisp:204
-#: scm/mana-custom.lisp:200 scm/skk-custom.lisp:244
+#: scm/anthy-custom.lisp:212 scm/canna-custom.lisp:213
+#: scm/mana-custom.lisp:208 scm/skk-custom.lisp:244
 msgid "Input mode menu items"
 msgstr "入力モードのメニュー項目"
 
-#: scm/anthy-custom.lisp:242 scm/canna-custom.lisp:246
-#: scm/mana-custom.lisp:242 scm/skk-custom.lisp:275
+#: scm/anthy-custom.lisp:254 scm/canna-custom.lisp:255
+#: scm/mana-custom.lisp:250 scm/skk-custom.lisp:275
 msgid "Default kana input method"
 msgstr "標準のかな入力方式"
 
-#: scm/anthy-custom.lisp:251 scm/canna-custom.lisp:255
-#: scm/mana-custom.lisp:251 scm/skk-custom.lisp:284
+#: scm/anthy-custom.lisp:263 scm/canna-custom.lisp:264
+#: scm/mana-custom.lisp:259 scm/skk-custom.lisp:284
 msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
-#: scm/anthy-custom.lisp:289 scm/canna-custom.lisp:367
-#: scm/mana-custom.lisp:289 scm/prime-custom.lisp:134 scm/skk-custom.lisp:442
+#: scm/anthy-custom.lisp:301
+msgid "Enable input prediction"
+msgstr "予測入力を有効にする"
+
+#: scm/anthy-custom.lisp:307
+msgid "Select prediction candidate by numeral keys"
+msgstr "数字キーで予測候補を選択する"
+
+#: scm/anthy-custom.lisp:313
+msgid "Show selected prediction candidate in preedit area"
+msgstr "編集領域内に選んだ予測候補を表示する"
+
+#: scm/anthy-custom.lisp:335 scm/canna-custom.lisp:376
+#: scm/mana-custom.lisp:297 scm/prime-custom.lisp:134 scm/skk-custom.lisp:442
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
+
+#: scm/anthy-custom.lisp:341 scm/canna-custom.lisp:382
+#: scm/mana-custom.lisp:303
+msgid "Enable input mode transition keys in direct (off state) input mode"
+msgstr "直接入力モード(off状態)時も入力モード切り替えキーを有効にする"
 
 #: scm/anthy-key-custom.lisp:36
 msgid "Anthy key bindings 1"
@@ -974,26 +1036,33 @@ msgstr "Anthy キー設定2"
 msgid "Anthy key bindings 3"
 msgstr "Anthy キー設定3"
 
-#: scm/anthy-key-custom.lisp:51
+#: scm/anthy-key-custom.lisp:48
+msgid "Anthy key bindings 4"
+msgstr "Anthy キー設定4"
+
+#: scm/anthy-key-custom.lisp:54
 msgid "[Anthy] next segment"
 msgstr "[Anthy] 次文節"
 
-#: scm/anthy-key-custom.lisp:52 scm/anthy-key-custom.lisp:58
-#: scm/anthy-key-custom.lisp:64 scm/anthy-key-custom.lisp:70
-#: scm/anthy-key-custom.lisp:76 scm/anthy-key-custom.lisp:82
-#: scm/anthy-key-custom.lisp:88 scm/anthy-key-custom.lisp:94
-#: scm/anthy-key-custom.lisp:100 scm/anthy-key-custom.lisp:106
-#: scm/anthy-key-custom.lisp:112 scm/anthy-key-custom.lisp:119
-#: scm/anthy-key-custom.lisp:125 scm/anthy-key-custom.lisp:136
-#: scm/anthy-key-custom.lisp:142 scm/anthy-key-custom.lisp:148
-#: scm/anthy-key-custom.lisp:154 scm/anthy-key-custom.lisp:160
-#: scm/anthy-key-custom.lisp:166 scm/anthy-key-custom.lisp:172
-#: scm/anthy-key-custom.lisp:178 scm/anthy-key-custom.lisp:184
-#: scm/anthy-key-custom.lisp:194 scm/anthy-key-custom.lisp:200
-#: scm/anthy-key-custom.lisp:206 scm/anthy-key-custom.lisp:212
-#: scm/anthy-key-custom.lisp:218 scm/anthy-key-custom.lisp:224
-#: scm/anthy-key-custom.lisp:230 scm/anthy-key-custom.lisp:236
-#: scm/anthy-key-custom.lisp:242 scm/byeoru-key-custom.lisp:50
+#: scm/anthy-key-custom.lisp:55 scm/anthy-key-custom.lisp:61
+#: scm/anthy-key-custom.lisp:67 scm/anthy-key-custom.lisp:73
+#: scm/anthy-key-custom.lisp:79 scm/anthy-key-custom.lisp:85
+#: scm/anthy-key-custom.lisp:91 scm/anthy-key-custom.lisp:97
+#: scm/anthy-key-custom.lisp:103 scm/anthy-key-custom.lisp:109
+#: scm/anthy-key-custom.lisp:119 scm/anthy-key-custom.lisp:125
+#: scm/anthy-key-custom.lisp:131 scm/anthy-key-custom.lisp:137
+#: scm/anthy-key-custom.lisp:143 scm/anthy-key-custom.lisp:149
+#: scm/anthy-key-custom.lisp:155 scm/anthy-key-custom.lisp:161
+#: scm/anthy-key-custom.lisp:167 scm/anthy-key-custom.lisp:177
+#: scm/anthy-key-custom.lisp:183 scm/anthy-key-custom.lisp:189
+#: scm/anthy-key-custom.lisp:195 scm/anthy-key-custom.lisp:201
+#: scm/anthy-key-custom.lisp:207 scm/anthy-key-custom.lisp:213
+#: scm/anthy-key-custom.lisp:219 scm/anthy-key-custom.lisp:225
+#: scm/anthy-key-custom.lisp:235 scm/anthy-key-custom.lisp:241
+#: scm/anthy-key-custom.lisp:247 scm/anthy-key-custom.lisp:253
+#: scm/anthy-key-custom.lisp:259 scm/anthy-key-custom.lisp:265
+#: scm/anthy-key-custom.lisp:271 scm/anthy-key-custom.lisp:277
+#: scm/anthy-key-custom.lisp:283 scm/byeoru-key-custom.lisp:50
 #: scm/byeoru-key-custom.lisp:56 scm/byeoru-key-custom.lisp:62
 #: scm/byeoru-key-custom.lisp:68 scm/byeoru-key-custom.lisp:74
 #: scm/byeoru-key-custom.lisp:80 scm/byeoru-key-custom.lisp:86
@@ -1001,21 +1070,24 @@ msgstr "[Anthy] 次文節"
 #: scm/byeoru-key-custom.lisp:104 scm/byeoru-key-custom.lisp:110
 #: scm/byeoru-key-custom.lisp:116 scm/byeoru-key-custom.lisp:122
 #: scm/byeoru-key-custom.lisp:128 scm/byeoru-key-custom.lisp:134
-#: scm/canna-key-custom.lisp:52 scm/canna-key-custom.lisp:58
-#: scm/canna-key-custom.lisp:64 scm/canna-key-custom.lisp:70
-#: scm/canna-key-custom.lisp:76 scm/canna-key-custom.lisp:82
-#: scm/canna-key-custom.lisp:88 scm/canna-key-custom.lisp:94
-#: scm/canna-key-custom.lisp:100 scm/canna-key-custom.lisp:106
-#: scm/canna-key-custom.lisp:112 scm/canna-key-custom.lisp:121
-#: scm/canna-key-custom.lisp:128 scm/canna-key-custom.lisp:134
-#: scm/canna-key-custom.lisp:140 scm/canna-key-custom.lisp:146
-#: scm/canna-key-custom.lisp:152 scm/canna-key-custom.lisp:158
-#: scm/canna-key-custom.lisp:164 scm/canna-key-custom.lisp:170
-#: scm/canna-key-custom.lisp:179 scm/canna-key-custom.lisp:185
-#: scm/canna-key-custom.lisp:191 scm/canna-key-custom.lisp:197
-#: scm/canna-key-custom.lisp:203 scm/canna-key-custom.lisp:209
-#: scm/canna-key-custom.lisp:215 scm/canna-key-custom.lisp:221
-#: scm/canna-key-custom.lisp:227 scm/generic-key-custom.lisp:48
+#: scm/canna-key-custom.lisp:55 scm/canna-key-custom.lisp:61
+#: scm/canna-key-custom.lisp:67 scm/canna-key-custom.lisp:73
+#: scm/canna-key-custom.lisp:79 scm/canna-key-custom.lisp:85
+#: scm/canna-key-custom.lisp:91 scm/canna-key-custom.lisp:97
+#: scm/canna-key-custom.lisp:103 scm/canna-key-custom.lisp:109
+#: scm/canna-key-custom.lisp:118 scm/canna-key-custom.lisp:125
+#: scm/canna-key-custom.lisp:131 scm/canna-key-custom.lisp:137
+#: scm/canna-key-custom.lisp:143 scm/canna-key-custom.lisp:149
+#: scm/canna-key-custom.lisp:155 scm/canna-key-custom.lisp:161
+#: scm/canna-key-custom.lisp:167 scm/canna-key-custom.lisp:176
+#: scm/canna-key-custom.lisp:182 scm/canna-key-custom.lisp:188
+#: scm/canna-key-custom.lisp:194 scm/canna-key-custom.lisp:200
+#: scm/canna-key-custom.lisp:206 scm/canna-key-custom.lisp:212
+#: scm/canna-key-custom.lisp:218 scm/canna-key-custom.lisp:224
+#: scm/canna-key-custom.lisp:234 scm/canna-key-custom.lisp:240
+#: scm/canna-key-custom.lisp:246 scm/canna-key-custom.lisp:252
+#: scm/canna-key-custom.lisp:258 scm/canna-key-custom.lisp:264
+#: scm/canna-key-custom.lisp:270 scm/generic-key-custom.lisp:48
 #: scm/generic-key-custom.lisp:54 scm/generic-key-custom.lisp:60
 #: scm/generic-key-custom.lisp:66 scm/generic-key-custom.lisp:72
 #: scm/generic-key-custom.lisp:78 scm/generic-key-custom.lisp:84
@@ -1024,22 +1096,24 @@ msgstr "[Anthy] 次文節"
 #: scm/generic-key-custom.lisp:118 scm/generic-key-custom.lisp:124
 #: scm/generic-key-custom.lisp:130 scm/generic-key-custom.lisp:136
 #: scm/generic-key-custom.lisp:142 scm/generic-key-custom.lisp:148
-#: scm/generic-key-custom.lisp:154 scm/mana-key-custom.lisp:52
-#: scm/mana-key-custom.lisp:58 scm/mana-key-custom.lisp:64
-#: scm/mana-key-custom.lisp:70 scm/mana-key-custom.lisp:76
-#: scm/mana-key-custom.lisp:82 scm/mana-key-custom.lisp:88
-#: scm/mana-key-custom.lisp:94 scm/mana-key-custom.lisp:100
-#: scm/mana-key-custom.lisp:106 scm/mana-key-custom.lisp:112
-#: scm/mana-key-custom.lisp:119 scm/mana-key-custom.lisp:125
-#: scm/mana-key-custom.lisp:136 scm/mana-key-custom.lisp:142
-#: scm/mana-key-custom.lisp:148 scm/mana-key-custom.lisp:154
-#: scm/mana-key-custom.lisp:160 scm/mana-key-custom.lisp:166
-#: scm/mana-key-custom.lisp:172 scm/mana-key-custom.lisp:178
-#: scm/mana-key-custom.lisp:184 scm/mana-key-custom.lisp:194
-#: scm/mana-key-custom.lisp:200 scm/mana-key-custom.lisp:206
-#: scm/mana-key-custom.lisp:212 scm/mana-key-custom.lisp:218
-#: scm/mana-key-custom.lisp:224 scm/mana-key-custom.lisp:230
-#: scm/mana-key-custom.lisp:236 scm/mana-key-custom.lisp:242
+#: scm/generic-key-custom.lisp:154 scm/mana-key-custom.lisp:55
+#: scm/mana-key-custom.lisp:61 scm/mana-key-custom.lisp:67
+#: scm/mana-key-custom.lisp:73 scm/mana-key-custom.lisp:79
+#: scm/mana-key-custom.lisp:85 scm/mana-key-custom.lisp:91
+#: scm/mana-key-custom.lisp:97 scm/mana-key-custom.lisp:103
+#: scm/mana-key-custom.lisp:109 scm/mana-key-custom.lisp:119
+#: scm/mana-key-custom.lisp:125 scm/mana-key-custom.lisp:131
+#: scm/mana-key-custom.lisp:137 scm/mana-key-custom.lisp:143
+#: scm/mana-key-custom.lisp:149 scm/mana-key-custom.lisp:155
+#: scm/mana-key-custom.lisp:161 scm/mana-key-custom.lisp:167
+#: scm/mana-key-custom.lisp:177 scm/mana-key-custom.lisp:183
+#: scm/mana-key-custom.lisp:189 scm/mana-key-custom.lisp:195
+#: scm/mana-key-custom.lisp:201 scm/mana-key-custom.lisp:207
+#: scm/mana-key-custom.lisp:213 scm/mana-key-custom.lisp:219
+#: scm/mana-key-custom.lisp:225 scm/mana-key-custom.lisp:233
+#: scm/mana-key-custom.lisp:239 scm/mana-key-custom.lisp:245
+#: scm/mana-key-custom.lisp:251 scm/mana-key-custom.lisp:257
+#: scm/mana-key-custom.lisp:263 scm/mana-key-custom.lisp:269
 #: scm/prime-key-custom.lisp:76 scm/prime-key-custom.lisp:82
 #: scm/prime-key-custom.lisp:88 scm/prime-key-custom.lisp:94
 #: scm/prime-key-custom.lisp:100 scm/prime-key-custom.lisp:106
@@ -1071,125 +1145,149 @@ msgstr "[Anthy] 次文節"
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
-#: scm/anthy-key-custom.lisp:57
+#: scm/anthy-key-custom.lisp:60
 msgid "[Anthy] previous segment"
 msgstr "[Anthy] 前文節"
 
-#: scm/anthy-key-custom.lisp:63
+#: scm/anthy-key-custom.lisp:66
 msgid "[Anthy] extend segment"
 msgstr "[Anthy] 文節を伸ばす"
 
-#: scm/anthy-key-custom.lisp:69
+#: scm/anthy-key-custom.lisp:72
 msgid "[Anthy] shrink segment"
 msgstr "[Anthy] 文節を縮める"
 
-#: scm/anthy-key-custom.lisp:75
-msgid "[Anthy] convert to halfwidth alphanumeric"
-msgstr "[Anthy] 半角英数字に変換"
-
-#: scm/anthy-key-custom.lisp:81
-msgid "[Anthy] convert to fullwidth alphanumeric"
-msgstr "[Anthy] 全角英数字に変換"
-
-#: scm/anthy-key-custom.lisp:87
+#: scm/anthy-key-custom.lisp:78
 msgid "[Anthy] convert to hiragana"
 msgstr "[Anthy] ひらがなに変換"
 
-#: scm/anthy-key-custom.lisp:93
+#: scm/anthy-key-custom.lisp:84
 msgid "[Anthy] convert to katakana"
 msgstr "[Anthy] カタカナに変換"
 
-#: scm/anthy-key-custom.lisp:99
+#: scm/anthy-key-custom.lisp:90
 msgid "[Anthy] convert to halfwidth katakana"
 msgstr "[Anthy] 半角カタカナに変換"
 
-#: scm/anthy-key-custom.lisp:105
+#: scm/anthy-key-custom.lisp:96
+msgid "[Anthy] convert to halfwidth alphanumeric"
+msgstr "[Anthy] 半角英数字に変換"
+
+#: scm/anthy-key-custom.lisp:102
+msgid "[Anthy] convert to fullwidth alphanumeric"
+msgstr "[Anthy] 全角英数字に変換"
+
+#: scm/anthy-key-custom.lisp:108
 msgid "[Anthy] commit as transposed kana"
 msgstr "[Anthy] かな/カナ反転確定"
 
-#: scm/anthy-key-custom.lisp:111
-msgid "[Anthy] fullwidth alphanumeric mode"
-msgstr "[Anthy] 全角英数入力モード"
-
 #: scm/anthy-key-custom.lisp:118
-msgid "[Anthy] halfwidth katakana mode"
-msgstr "[Anthy] 半角カタカナ入力モード"
-
-#: scm/anthy-key-custom.lisp:124
-msgid "[Anthy] toggle hiragana/katakana mode"
-msgstr "[Anthy] ひらがな/カタカナ入力モードを反転"
-
-#: scm/anthy-key-custom.lisp:135
 msgid "[Anthy] on"
 msgstr "[Anthy] オン"
 
-#: scm/anthy-key-custom.lisp:141
+#: scm/anthy-key-custom.lisp:124
 msgid "[Anthy] off"
 msgstr "[Anthy] オフ"
 
-#: scm/anthy-key-custom.lisp:147
+#: scm/anthy-key-custom.lisp:130
 msgid "[Anthy] begin conversion"
 msgstr "[Anthy] 変換開始"
 
-#: scm/anthy-key-custom.lisp:153
+#: scm/anthy-key-custom.lisp:136
 msgid "[Anthy] commit"
 msgstr "[Anthy] 確定"
 
-#: scm/anthy-key-custom.lisp:159
+#: scm/anthy-key-custom.lisp:142
 msgid "[Anthy] cancel"
 msgstr "[Anthy] キャンセル"
 
-#: scm/anthy-key-custom.lisp:165
+#: scm/anthy-key-custom.lisp:148
 msgid "[Anthy] next candidate"
 msgstr "[Anthy] 次候補"
 
-#: scm/anthy-key-custom.lisp:171
+#: scm/anthy-key-custom.lisp:154
 msgid "[Anthy] previous candidate"
 msgstr "[Anthy] 前候補"
 
-#: scm/anthy-key-custom.lisp:177
+#: scm/anthy-key-custom.lisp:160
 msgid "[Anthy] next page of candidate window"
 msgstr "[Anthy] 候補ウィンドウの次ページ"
 
-#: scm/anthy-key-custom.lisp:183
+#: scm/anthy-key-custom.lisp:166
 msgid "[Anthy] previous page of candidate window"
 msgstr "[Anthy] 候補ウィンドウの前ページ"
 
-#: scm/anthy-key-custom.lisp:193
+#: scm/anthy-key-custom.lisp:176
 msgid "[Anthy] beginning of preedit"
 msgstr "[Anthy] 編集領域の先頭"
 
-#: scm/anthy-key-custom.lisp:199
+#: scm/anthy-key-custom.lisp:182
 msgid "[Anthy] end of preedit"
 msgstr "[Anthy] 編集領域の末尾"
 
-#: scm/anthy-key-custom.lisp:205
+#: scm/anthy-key-custom.lisp:188
 msgid "[Anthy] erase after cursor"
 msgstr "[Anthy] カーソル以降を消去"
 
-#: scm/anthy-key-custom.lisp:211
+#: scm/anthy-key-custom.lisp:194
 msgid "[Anthy] erase before cursor"
 msgstr "[Anthy] カーソル以前を消去"
 
-#: scm/anthy-key-custom.lisp:217
+#: scm/anthy-key-custom.lisp:200
 msgid "[Anthy] backspace"
 msgstr "[Anthy] バックスペース"
 
-#: scm/anthy-key-custom.lisp:223
+#: scm/anthy-key-custom.lisp:206
 msgid "[Anthy] delete"
 msgstr "[Anthy] デリート"
 
-#: scm/anthy-key-custom.lisp:229
+#: scm/anthy-key-custom.lisp:212
 msgid "[Anthy] go left"
 msgstr "[Anthy] 左に移動"
 
-#: scm/anthy-key-custom.lisp:235
+#: scm/anthy-key-custom.lisp:218
 msgid "[Anthy] go right"
 msgstr "[Anthy] 右に移動"
 
-#: scm/anthy-key-custom.lisp:241
+#: scm/anthy-key-custom.lisp:224
 msgid "[Anthy] ESC keys on vi-cooperative mode"
 msgstr "[Anthy] vi協調モードでESCとして扱うキー"
+
+#: scm/anthy-key-custom.lisp:234
+msgid "[Anthy] hiragana mode"
+msgstr "[Anthy] ひらがな入力モード"
+
+#: scm/anthy-key-custom.lisp:240
+msgid "[Anthy] katakana mode"
+msgstr "[Anthy] カタカナ入力モード"
+
+#: scm/anthy-key-custom.lisp:246
+msgid "[Anthy] halfwidth katakana mode"
+msgstr "[Anthy] 半角カタカナ入力モード"
+
+#: scm/anthy-key-custom.lisp:252
+msgid "[Anthy] halfwidth alphanumeric mode"
+msgstr "[Anthy] 半角英数入力モード"
+
+#: scm/anthy-key-custom.lisp:258
+msgid "[Anthy] fullwidth alphanumeric mode"
+msgstr "[Anthy] 全角英数入力モード"
+
+#: scm/anthy-key-custom.lisp:264
+msgid "[Anthy] toggle hiragana/katakana mode"
+msgstr "[Anthy] ひらがな/カタカナ入力モードを反転"
+
+#: scm/anthy-key-custom.lisp:270
+msgid "[Anthy] toggle kana/alphanumeric mode"
+msgstr "[Anthy] かな/英数入力モードを反転"
+
+#: scm/anthy-key-custom.lisp:276
+msgid "[Anthy] Next prediction candidate"
+msgstr "[Anthy] 次予測候補"
+
+#: scm/anthy-key-custom.lisp:282
+msgid "[Anthy] Previous prediction candidate"
+msgstr "[Anthy] 前予測候補"
 
 #: scm/byeoru-custom.lisp:37
 msgid "Byeoru"
@@ -1402,11 +1500,15 @@ msgstr "Canna"
 msgid "Canna server"
 msgstr "Canna サーバ"
 
-#: scm/canna-custom.lisp:304
+#: scm/canna-custom.lisp:47
+msgid "Canna (advanced)"
+msgstr "Canna (高度)"
+
+#: scm/canna-custom.lisp:313
 msgid "Specify Canna server"
 msgstr "Cannaサーバを指定する"
 
-#: scm/canna-custom.lisp:310
+#: scm/canna-custom.lisp:319
 msgid "Canna server name"
 msgstr "Cannaサーバ名"
 
@@ -1422,121 +1524,149 @@ msgstr "Canna キー設定2"
 msgid "Canna key bindings 3"
 msgstr "Canna キー設定3"
 
-#: scm/canna-key-custom.lisp:51
+#: scm/canna-key-custom.lisp:48
+msgid "Canna key bindings 4"
+msgstr "Canna キー設定4"
+
+#: scm/canna-key-custom.lisp:54
 msgid "[Canna] next segment"
 msgstr "[Canna] 次の文節"
 
-#: scm/canna-key-custom.lisp:57
+#: scm/canna-key-custom.lisp:60
 msgid "[Canna] previous segment"
 msgstr "[Canna] 前の文節"
 
-#: scm/canna-key-custom.lisp:63
+#: scm/canna-key-custom.lisp:66
 msgid "[Canna] extend segment"
 msgstr "[Canna] 文節を伸ばす"
 
-#: scm/canna-key-custom.lisp:69
+#: scm/canna-key-custom.lisp:72
 msgid "[Canna] shrink segment"
 msgstr "[Canna] 文節を縮める"
 
-#: scm/canna-key-custom.lisp:75
+#: scm/canna-key-custom.lisp:78
 msgid "[Canna] convert to hiragana"
 msgstr "[Canna] ひらがなに変換"
 
-#: scm/canna-key-custom.lisp:81
+#: scm/canna-key-custom.lisp:84
 msgid "[Canna] convert to katakana"
 msgstr "[Canna] カタカナに変換"
 
-#: scm/canna-key-custom.lisp:87
+#: scm/canna-key-custom.lisp:90
 msgid "[Canna] convert to halfwidth katakana"
 msgstr "[Canna] 半角カタカナに変換"
 
-#: scm/canna-key-custom.lisp:93
+#: scm/canna-key-custom.lisp:96
+msgid "[Canna] convert to halfwidth alphanumeric"
+msgstr "[Canna] 半角英数字に変換"
+
+#: scm/canna-key-custom.lisp:102
+msgid "[Canna] convert to fullwidth alphanumeric"
+msgstr "[Canna] 全角英数字に変換"
+
+#: scm/canna-key-custom.lisp:108
 msgid "[Canna] commit as transposed kana"
 msgstr "[Canna] かな/カナ反転確定"
 
-#: scm/canna-key-custom.lisp:99
-msgid "[Canna] fullwidth alphanumeric mode"
-msgstr "[Canna] 全角英数入力モード"
-
-#: scm/canna-key-custom.lisp:105
-msgid "[Canna] halfwidth katakana mode"
-msgstr "[Canna] 半角カタカナ入力モード"
-
-#: scm/canna-key-custom.lisp:111
-msgid "[Canna] toggle hiragana/katakana mode"
-msgstr "[Canna] ひらがな/カタカナ入力モードを反転"
-
-#: scm/canna-key-custom.lisp:120
+#: scm/canna-key-custom.lisp:117
 msgid "[Canna] on"
 msgstr "[Canna] オン"
 
-#: scm/canna-key-custom.lisp:127
+#: scm/canna-key-custom.lisp:124
 msgid "[Canna] off"
 msgstr "[Canna] オフ"
 
-#: scm/canna-key-custom.lisp:133
+#: scm/canna-key-custom.lisp:130
 msgid "[Canna] begin conversion"
 msgstr "[Canna] 変換開始"
 
-#: scm/canna-key-custom.lisp:139
+#: scm/canna-key-custom.lisp:136
 msgid "[Canna] commit"
 msgstr "[Canna] 確定"
 
-#: scm/canna-key-custom.lisp:145
+#: scm/canna-key-custom.lisp:142
 msgid "[Canna] cancel"
 msgstr "[Canna] キャンセル"
 
-#: scm/canna-key-custom.lisp:151
+#: scm/canna-key-custom.lisp:148
 msgid "[Canna] next candidate"
 msgstr "[Canna] 次候補"
 
-#: scm/canna-key-custom.lisp:157
+#: scm/canna-key-custom.lisp:154
 msgid "[Canna] previous candidate"
 msgstr "[Canna] 前候補"
 
-#: scm/canna-key-custom.lisp:163
+#: scm/canna-key-custom.lisp:160
 msgid "[Canna] next page of candidate window"
 msgstr "[Canna] 候補ウィンドウの次ページ"
 
-#: scm/canna-key-custom.lisp:169
+#: scm/canna-key-custom.lisp:166
 msgid "[Canna] previous page of candidate window"
 msgstr "[Canna] 候補ウィンドウの前ページ"
 
-#: scm/canna-key-custom.lisp:178
+#: scm/canna-key-custom.lisp:175
 msgid "[Canna] beginning of preedit"
 msgstr "[Canna] 編集領域の先頭"
 
-#: scm/canna-key-custom.lisp:184
+#: scm/canna-key-custom.lisp:181
 msgid "[Canna] end of preedit"
 msgstr "[Canna] 編集領域の末尾"
 
-#: scm/canna-key-custom.lisp:190
+#: scm/canna-key-custom.lisp:187
 msgid "[Canna] erase after cursor"
 msgstr "[Canna] カーソル以降を消去"
 
-#: scm/canna-key-custom.lisp:196
+#: scm/canna-key-custom.lisp:193
 msgid "[Canna] erase before cursor"
 msgstr "[Canna] カーソル以前を消去"
 
-#: scm/canna-key-custom.lisp:202
+#: scm/canna-key-custom.lisp:199
 msgid "[Canna] backspace"
 msgstr "[Canna] バックスペース"
 
-#: scm/canna-key-custom.lisp:208
+#: scm/canna-key-custom.lisp:205
 msgid "[Canna] delete"
 msgstr "[Canna] デリート"
 
-#: scm/canna-key-custom.lisp:214
+#: scm/canna-key-custom.lisp:211
 msgid "[Canna] go left"
 msgstr "[Canna] 左に移動"
 
-#: scm/canna-key-custom.lisp:220
+#: scm/canna-key-custom.lisp:217
 msgid "[Canna] go right"
 msgstr "[Canna] 右に移動"
 
-#: scm/canna-key-custom.lisp:226
+#: scm/canna-key-custom.lisp:223
 msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr "[Canna] vi協調モードでESCとして扱うキー"
+
+#: scm/canna-key-custom.lisp:233
+msgid "[Canna] hiragana mode"
+msgstr "[Canna] ひらがな入力モード"
+
+#: scm/canna-key-custom.lisp:239
+msgid "[Canna] katakana mode"
+msgstr "[Canna] カタカナ入力モード"
+
+#: scm/canna-key-custom.lisp:245
+msgid "[Canna] halfwidth katakana mode"
+msgstr "[Canna] 半角カタカナ入力モード"
+
+#: scm/canna-key-custom.lisp:251
+msgid "[Canna] halfwidth alphanumeric mode"
+msgstr "[Canna] 半角英数入力モード"
+
+#: scm/canna-key-custom.lisp:257
+msgid "[Canna] fullwidth alphanumeric mode"
+msgstr "[Canna] 全角英数入力モード"
+
+#: scm/canna-key-custom.lisp:263
+msgid "[Canna] toggle hiragana/katakana mode"
+msgstr "[Canna] ひらがな/カタカナ入力モードを反転"
+
+#: scm/canna-key-custom.lisp:269
+msgid "[Canna] toggle kana/alphanumeric mode"
+msgstr "[Canna] かな/英数入力モードを反転"
 
 #: scm/custom.lisp:752
 msgid "-"
@@ -1938,6 +2068,14 @@ msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力
 msgid "Mana"
 msgstr "Mana"
 
+#: scm/mana-custom.lisp:43
+msgid "Mana (advanced)"
+msgstr "Mana (高度)"
+
+#: scm/mana-custom.lisp:44
+msgid "Advanced settings for Mana"
+msgstr "Manaの詳細設定"
+
 #: scm/mana-key-custom.lisp:36
 msgid "Mana key bindings 1"
 msgstr "Mana キー設定1"
@@ -1950,129 +2088,149 @@ msgstr "Mana キー設定2"
 msgid "Mana key bindings 3"
 msgstr "Mana キー設定3"
 
-#: scm/mana-key-custom.lisp:51
+#: scm/mana-key-custom.lisp:48
+msgid "Mana key bindings 4"
+msgstr "Mana キー設定4"
+
+#: scm/mana-key-custom.lisp:54
 msgid "[Mana] next segment"
 msgstr "[Mana] 次文節"
 
-#: scm/mana-key-custom.lisp:57
+#: scm/mana-key-custom.lisp:60
 msgid "[Mana] previous segment"
 msgstr "[Mana] 前文節"
 
-#: scm/mana-key-custom.lisp:63
+#: scm/mana-key-custom.lisp:66
 msgid "[Mana] extend segment"
 msgstr "[Mana] 文節を伸ばす"
 
-#: scm/mana-key-custom.lisp:69
+#: scm/mana-key-custom.lisp:72
 msgid "[Mana] shrink segment"
 msgstr "[Mana] 文節を縮める"
 
-#: scm/mana-key-custom.lisp:75
-msgid "[Mana] convert to halfwidth alphanumeric"
-msgstr "[Mana] 半角英数字に変換"
-
-#: scm/mana-key-custom.lisp:81
-msgid "[Mana] convert to fullwidth alphanumeric"
-msgstr "[Mana] 全角英数字に変換"
-
-#: scm/mana-key-custom.lisp:87
+#: scm/mana-key-custom.lisp:78
 msgid "[Mana] convert to hiragana"
 msgstr "[Mana] ひらがなに変換"
 
-#: scm/mana-key-custom.lisp:93
+#: scm/mana-key-custom.lisp:84
 msgid "[Mana] convert to katakana"
 msgstr "[Mana] カタカナに変換"
 
-#: scm/mana-key-custom.lisp:99
+#: scm/mana-key-custom.lisp:90
 msgid "[Mana] convert to halfwidth katakana"
 msgstr "[Mana] 半角カタカナに変換"
 
-#: scm/mana-key-custom.lisp:105
+#: scm/mana-key-custom.lisp:96
+msgid "[Mana] convert to halfwidth alphanumeric"
+msgstr "[Mana] 半角英数字に変換"
+
+#: scm/mana-key-custom.lisp:102
+msgid "[Mana] convert to fullwidth alphanumeric"
+msgstr "[Mana] 全角英数字に変換"
+
+#: scm/mana-key-custom.lisp:108
 msgid "[Mana] commit as transposed kana"
 msgstr "[Mana] かな/カナ反転確定"
 
-#: scm/mana-key-custom.lisp:111
-msgid "[Mana] fullwidth alphanumeric mode"
-msgstr "[Mana] 全角英数字入力モード"
-
 #: scm/mana-key-custom.lisp:118
-msgid "[Mana] halfwidth katakana mode"
-msgstr "[Mana] 半角カタカナ入力モード"
-
-#: scm/mana-key-custom.lisp:124
-msgid "[Mana] toggle hiragana/katakana mode"
-msgstr "[Mana] ひらがな/カタカナ入力モードを反転"
-
-#: scm/mana-key-custom.lisp:135
 msgid "[Mana] on"
 msgstr "[Mana] オン"
 
-#: scm/mana-key-custom.lisp:141
+#: scm/mana-key-custom.lisp:124
 msgid "[Mana] off"
 msgstr "[Mana] オフ"
 
-#: scm/mana-key-custom.lisp:147
+#: scm/mana-key-custom.lisp:130
 msgid "[Mana] begin conversion"
 msgstr "[Mana] 変換開始"
 
-#: scm/mana-key-custom.lisp:153
+#: scm/mana-key-custom.lisp:136
 msgid "[Mana] commit"
 msgstr "[Mana] 確定"
 
-#: scm/mana-key-custom.lisp:159
+#: scm/mana-key-custom.lisp:142
 msgid "[Mana] cancel"
 msgstr "[Mana] キャンセル"
 
-#: scm/mana-key-custom.lisp:165
+#: scm/mana-key-custom.lisp:148
 msgid "[Mana] next candidate"
 msgstr "[Mana] 次候補"
 
-#: scm/mana-key-custom.lisp:171
+#: scm/mana-key-custom.lisp:154
 msgid "[Mana] previous candidate"
 msgstr "[Mana] 前候補"
 
-#: scm/mana-key-custom.lisp:177
+#: scm/mana-key-custom.lisp:160
 msgid "[Mana] next page of candidate window"
 msgstr "[Mana] 候補ウィンドウの次ページ"
 
-#: scm/mana-key-custom.lisp:183
+#: scm/mana-key-custom.lisp:166
 msgid "[Mana] previous page of candidate window"
 msgstr "[Mana] 候補ウィンドウの前ページ"
 
-#: scm/mana-key-custom.lisp:193
+#: scm/mana-key-custom.lisp:176
 msgid "[Mana] beginning of preedit"
 msgstr "[Mana] 編集領域の先頭"
 
-#: scm/mana-key-custom.lisp:199
+#: scm/mana-key-custom.lisp:182
 msgid "[Mana] end of preedit"
 msgstr "[Mana] 編集領域の末尾"
 
-#: scm/mana-key-custom.lisp:205
+#: scm/mana-key-custom.lisp:188
 msgid "[Mana] erase after cursor"
 msgstr "[Mana] カーソル以降を消去"
 
-#: scm/mana-key-custom.lisp:211
+#: scm/mana-key-custom.lisp:194
 msgid "[Mana] erase before cursor"
 msgstr "[Mana] カーソル以前を消去"
 
-#: scm/mana-key-custom.lisp:217
+#: scm/mana-key-custom.lisp:200
 msgid "[Mana] backspace"
 msgstr "[Mana] バックスペース"
 
-#: scm/mana-key-custom.lisp:223
+#: scm/mana-key-custom.lisp:206
 msgid "[Mana] delete"
 msgstr "[Mana] デリート"
 
-#: scm/mana-key-custom.lisp:229
+#: scm/mana-key-custom.lisp:212
 msgid "[Mana] go left"
 msgstr "[Mana] 左に移動"
 
-#: scm/mana-key-custom.lisp:235
+#: scm/mana-key-custom.lisp:218
 msgid "[Mana] go right"
 msgstr "[Mana] 右に移動"
 
-#: scm/mana-key-custom.lisp:241
+#: scm/mana-key-custom.lisp:224
 msgid "[Mana] ESC keys on vi-cooperative mode"
 msgstr "[Mana] vi協調モードでESCとして扱うキー"
+
+#: scm/mana-key-custom.lisp:232
+msgid "[Mana] hiragana mode"
+msgstr "[Mana] ひらがな入力モード"
+
+#: scm/mana-key-custom.lisp:238
+msgid "[Mana] katakana mode"
+msgstr "[Mana] カタカナ入力モード"
+
+#: scm/mana-key-custom.lisp:244
+msgid "[Mana] halfwidth katakana mode"
+msgstr "[Mana] 半角カタカナ入力モード"
+
+#: scm/mana-key-custom.lisp:250
+msgid "[Mana] halfwidth alphanumeric mode"
+msgstr "[Mana] 半角英数字入力モード"
+
+#: scm/mana-key-custom.lisp:256
+msgid "[Mana] fullwidth alphanumeric mode"
+msgstr "[Mana] 全角英数字入力モード"
+
+#: scm/mana-key-custom.lisp:262
+msgid "[Mana] toggle hiragana/katakana mode"
+msgstr "[Mana] ひらがな/カタカナ入力モードを反転"
+
+#: scm/mana-key-custom.lisp:268
+msgid "[Mana] toggle kana/alphanumeric mode"
+msgstr "[Mana] かな/英数入力モードを反転"
 
 #: scm/prime-custom.lisp:34
 msgid "PRIME"
