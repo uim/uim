@@ -341,7 +341,7 @@ get_nth_prediction(uim_lisp id_, uim_lisp nth_)
 static uim_lisp
 commit_nth_prediction(uim_lisp id_, uim_lisp nth_)
 {
-#ifdef HAS_ANTHY_PREDICTION_COMMIT /* not yet */
+#ifdef HAS_ANTHY_COMMIT_PREDICTION
   int id  = uim_scm_c_int(id_);
   int nth = uim_scm_c_int(nth_); 
   anthy_context_t ac = get_anthy_context(id);
