@@ -795,12 +795,6 @@
 (define latin-im-rule
   (append ascii-rule latin-compose-rule))
 
-(define latin-init-handler
-  (lambda (id im arg)
-    (latin-context-new id im)))
-
-;;; implementations
-
 (define ascii-rule
   (map (compose (lambda (entry)
 		  (list (list entry) entry))
@@ -808,45 +802,83 @@
 		charcode->string)
        (iota 127 32)))
 
+;; widgets and actions
+
+;; widgets
+(define latin-widgets '(widget_latin_input_mode))
+
+;; default activity for each widgets
+(define default-widget_latin_input_mode 'action_latin_input)
+
+;; actions of widget_latin_input_mode
+(define latin-input-mode-actions
+  '(action_latin_input))
+
+;;; implementations
+
+(register-action 'action_latin_input
+		 (lambda (lc)
+		   (list
+		    'on
+		    "O"
+		    (N_ "Latin")
+		    (N_ "Latin Input Mode")))
+		 (lambda (lc)
+		   #t)
+		 #f) ;; no action handler
+
+;; Update widget definitions based on action configurations. The
+;; procedure is needed for on-the-fly reconfiguration involving the
+;; custom API
+(define latin-configure-widgets
+  (lambda ()
+    (register-widget 'widget_latin_input_mode
+		     (activity-indicator-new latin-input-mode-actions)
+		     (actions-new latin-input-mode-actions))))
+
 (define latin-context-rec-spec
   (append
    context-rec-spec
    '((rk-context         #f)
-     (rk-nth             0)
      (composing?         #f)
-     (on                 #f)
-     (raw-commit         #f)
-     (converting         #f))))
+     (raw-commit         #t))))
+
 (define-record 'latin-context latin-context-rec-spec)
 (define latin-context-new-internal latin-context-new)
 
 (define latin-context-new
   (lambda (id im)
-    (let ((gc (latin-context-new-internal id im))
+    (let ((lc (latin-context-new-internal id im))
 	  (rkc (rk-context-new latin-im-rule #f #f)))
-      (latin-context-set-rk-context! gc rkc)
-      gc)))
+      (latin-context-set-widgets! lc latin-widgets)
+      (latin-context-set-rk-context! lc rkc)
+      lc)))
+
+(define latin-init-handler
+  (lambda (id im arg)
+    (latin-context-new id im)))
 
 (define latin-context-flush
-  (lambda (pc)
-    (latin-context-set-rk-nth! pc 0)
-    (latin-context-set-converting! pc #f)))
+  (lambda (lc)
+    (rk-flush (latin-context-rk-context lc))
+    (latin-context-set-composing?! lc #f)))
 
 (define latin-update-preedit
   (lambda (pc)
-    (let* ((rkc (latin-context-rk-context pc))
-	   (cs (rk-current-seq rkc))
-	   (n (latin-context-rk-nth pc)))
-      (im-clear-preedit pc)
-      (im-pushback-preedit
-       pc preedit-underline
-       (if cs
-	   (nth n (cadr cs))
-	   (rk-pending rkc)))
-      (im-pushback-preedit
-       pc preedit-cursor "")
-
-      (im-update-preedit pc))))
+    (if (not (latin-context-raw-commit pc))
+	(let* ((rkc (latin-context-rk-context pc))
+	       (cs (rk-current-seq rkc)))
+	  (im-clear-preedit pc)
+	  (im-pushback-preedit pc
+			       preedit-underline
+			       (if cs
+				   (nth 0 (cadr cs))
+				   (rk-pending rkc)))
+	  (im-pushback-preedit pc
+			       preedit-cursor
+			       "")
+	  (im-update-preedit pc))
+	(latin-context-set-raw-commit! pc #f))))
 
 (define latin-commit-raw
   (lambda (pc)
@@ -854,20 +886,17 @@
     (latin-context-set-raw-commit! pc #t)))
 
 (define latin-commit
-  (lambda (pc)
-    (let* ((rkc (latin-context-rk-context pc))
+  (lambda (lc)
+    (let* ((rkc (latin-context-rk-context lc))
 	   (cs (rk-current-seq rkc)))
-      (if (= (length (cadr cs)) 1)
-	  (im-commit pc (car (cadr cs))))
-      (latin-context-set-composing?! pc #f)
-      (rk-flush rkc))))
+      (if cs
+	  (im-commit lc (car (cadr cs)))
+	  (im-commit lc (rk-pending rkc)))
+      (latin-context-flush lc))))
 
 (define latin-proc-composing-state
   (lambda (pc key state)
-    (let* ((rkc (latin-context-rk-context pc))
-	   (n (latin-context-rk-nth pc))
-	   (cs (cadr (rk-current-seq rkc)))
-	   (res))
+    (let ((rkc (latin-context-rk-context pc)))
       (cond
        ((latin-backspace-key? key state)
 	(if (not (rk-backspace rkc))
@@ -881,7 +910,7 @@
 	     (= 32 key) ; space
 	     (not (string-find (rk-expect rkc) " "))))
 	(latin-commit pc)
-	(latin-commit-raw pc)
+	(im-commit-raw pc)
 	(latin-context-flush pc))
 
        (else
@@ -892,11 +921,9 @@
 		     (= (length (cadr cs)) 1)
 		     (not (= (length (car (car cs))) 1)))
 		    (latin-commit pc))))
+	  ;; reset invalid sequence
 	  (if res
-	      (begin
-		(latin-context-set-composing?! pc #f)
-		(rk-flush rkc)))
-	  ))))))
+	      (latin-context-flush pc))))))))
 
 (define latin-proc-raw-state
   (lambda (pc key state)
@@ -916,22 +943,15 @@
 (define latin-release-key-handler
   (lambda (pc key state)
     (if (or (control-char? key)
-	    (not (latin-context-on pc)))
+	    (not (latin-context-composing? pc)))
 	;; don't discard key release event for apps
 	(latin-commit-raw pc))))
 
 (define latin-reset-handler
-  (lambda (pc)
-    (let ((rkc (latin-context-rk-context pc)))
-      (rk-flush rkc))))
+  (lambda (lc)
+    (latin-context-flush lc)))
 
-(define latin-get-candidate-handler
-  (lambda (pc idx accel-enum-hint)
-    ()))
-
-(define latin-set-candidate-index-handler
-  (lambda (pc idx)
-    ()))
+(latin-configure-widgets)
 
 (register-im
  'latin
