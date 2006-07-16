@@ -525,10 +525,10 @@ within_heapp(ScmObj obj)
 #endif /* SCM_USE_STORAGE_COMPACT */
     /*
      * Reject by rough conditions:
-     * - heaps must be aligned to SCM_ALIGN_CELL (at least 8-byte)
+     * - heaps must be aligned to sizeof(ScmCell)
      * - ptr is pointing to outside the enclosure which contain all heaps
      */
-    if (((uintptr_t)ptr % SCM_ALIGN_CELL)
+    if (((uintptr_t)ptr % sizeof(ScmCell))
         || (ptr < l_heaps_lowest || l_heaps_highest <= ptr))
         return scm_false;
 

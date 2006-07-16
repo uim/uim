@@ -69,7 +69,7 @@
 /*=======================================
   Function Definitions
 =======================================*/
-/* Allocates SCM_ALIGN_CELL-byte aligned memory for heaps. */
+/* Allocates sizeof(ScmCell)-byte aligned memory for heaps. */
 /* TODO: Align to more large size to fit better to cache, MMU and DRAM pages */
 SCM_EXPORT void *
 scm_malloc_aligned(size_t size)
@@ -111,20 +111,21 @@ scm_malloc_aligned(size_t size)
      * --
      * ekato Jan 23 2006
      */
-    if (SCM_ALIGN_CELL <= 16)
+    if (sizeof(ScmCell) <= 16)
         p = malloc(size);
     else
         PLAIN_ERR("cannot ensure memory alignment");
 #else
-    /* Assumes that malloc(3) returns at least 8-byte aligned pointer. */
-    if (SCM_ALIGN_CELL <= 8)
+    /* Assumes that malloc(3) returns at least 8-byte aligned pointer. 64-bit
+     * pointers cannot be handled by this method. */
+    if (sizeof(ScmCell) <= 8)
         p = malloc(size);
     else
         PLAIN_ERR("cannot ensure memory alignment");
 #endif
     SCM_ENSURE_ALLOCATED(p);
-    /* heaps must be aligned to SCM_ALIGN_CELL (at least 8-byte) */
-    SCM_ASSERT(!((uintptr_t)p % SCM_ALIGN_CELL));
+    /* heaps must be aligned to ScmCell */
+    SCM_ASSERT(!((uintptr_t)p % sizeof(ScmCell)));
 
     return p;
 }

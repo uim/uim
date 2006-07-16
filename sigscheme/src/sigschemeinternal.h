@@ -186,13 +186,6 @@ extern "C" {
 #define SCM_ERRMSG_NULL_IN_STRING                                            \
     "null character in a middle of string is not enabled"
 
-/* Any ScmCell in heap is SCM_ALIGN_CELL-byte aligned. And since some
- * implementation of malloc(3) returns 8-byte aligned memory (e.g. Cygwin's
- * dlmalloc), keep this value 8 is reasonable. So GC and any memory-related
- * codes must not assume that ScmCell is aligned to sizeof(ScmCell)-byte. Use
- * SCM_ALIGN_CELL instead.  -- YamaKen 2006-07-08 */
-#define SCM_ALIGN_CELL 8
-
 #if SCM_STRICT_TOPLEVEL_DEFINITIONS
 /* FIXME: temporary hack. SCM_EOF is only used as an unique ID. */
 #define SCM_INTERACTION_ENV_INDEFINABLE SCM_EOF
