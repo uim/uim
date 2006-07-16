@@ -77,6 +77,8 @@ scm_malloc_aligned(size_t size)
     void *p;
 
 #if HAVE_POSIX_MEMALIGN
+    int err;
+
     /*
      * Cited from manpage of posix_memalign(3) of glibc:
      *
@@ -86,7 +88,9 @@ scm_malloc_aligned(size_t size)
      *     SUSv3.  The function memalign() appears in SunOS 4.1.3 but not in
      *     BSD 4.4.  The function posix_memalign() comes from POSIX 1003.1d.
      */
-    posix_memalign(&p, sizeof(ScmCell), size);
+    err = posix_memalign(&p, sizeof(ScmCell), size);
+    if (err)
+        p = NULL;
 #elif HAVE_MEMALIGN
     SCM_ASSERT(!(sizeof(ScmCell) % sizeof(void *)));
     SCM_ASSERT(sizeof(ScmCell) == 8
