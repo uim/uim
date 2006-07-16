@@ -798,11 +798,13 @@
      ((and
        (anthy-context-prediction-index ac)
        (anthy-prev-page-key? key key-state))
-      (im-shift-page-candidate ac #f))
+      (im-shift-page-candidate ac #f)
+      #t)
      ((and
        (anthy-context-prediction-index ac)
        (anthy-next-page-key? key key-state))
-      (im-shift-page-candidate ac #t))
+      (im-shift-page-candidate ac #t)
+      #t)
      (else
       #f))))
 
