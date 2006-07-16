@@ -820,7 +820,7 @@
 		 (lambda (lc)
 		   (list
 		    'on
-		    "O"
+		    "L"
 		    (N_ "Latin")
 		    (N_ "Latin Input Mode")))
 		 (lambda (lc)
@@ -864,26 +864,26 @@
     (latin-context-set-composing?! lc #f)))
 
 (define latin-update-preedit
-  (lambda (pc)
-    (if (not (latin-context-raw-commit pc))
-	(let* ((rkc (latin-context-rk-context pc))
+  (lambda (lc)
+    (if (not (latin-context-raw-commit lc))
+	(let* ((rkc (latin-context-rk-context lc))
 	       (cs (rk-current-seq rkc)))
-	  (im-clear-preedit pc)
-	  (im-pushback-preedit pc
+	  (im-clear-preedit lc)
+	  (im-pushback-preedit lc
 			       preedit-underline
 			       (if cs
 				   (nth 0 (cadr cs))
 				   (rk-pending rkc)))
-	  (im-pushback-preedit pc
+	  (im-pushback-preedit lc
 			       preedit-cursor
 			       "")
-	  (im-update-preedit pc))
-	(latin-context-set-raw-commit! pc #f))))
+	  (im-update-preedit lc))
+	(latin-context-set-raw-commit! lc #f))))
 
 (define latin-commit-raw
-  (lambda (pc)
-    (im-commit-raw pc)
-    (latin-context-set-raw-commit! pc #t)))
+  (lambda (lc)
+    (im-commit-raw lc)
+    (latin-context-set-raw-commit! lc #t)))
 
 (define latin-commit
   (lambda (lc)
@@ -895,23 +895,23 @@
       (latin-context-flush lc))))
 
 (define latin-proc-composing-state
-  (lambda (pc key state)
-    (let ((rkc (latin-context-rk-context pc)))
+  (lambda (lc key state)
+    (let ((rkc (latin-context-rk-context lc)))
       (cond
        ((latin-backspace-key? key state)
 	(if (not (rk-backspace rkc))
-	    (latin-commit-raw pc)))
+	    (latin-commit-raw lc)))
 
        ((latin-commit-key? key state)
-	(latin-commit pc))
+	(latin-commit lc))
 
        ((or (symbol? key)
 	    (and
 	     (= 32 key) ; space
 	     (not (string-find (rk-expect rkc) " "))))
-	(latin-commit pc)
-	(im-commit-raw pc)
-	(latin-context-flush pc))
+	(latin-commit lc)
+	(im-commit-raw lc)
+	(latin-context-flush lc))
 
        (else
 	(let ((res (rk-push-key! rkc (charcode->string key))))
@@ -920,32 +920,32 @@
 		(if (and
 		     (= (length (cadr cs)) 1)
 		     (not (= (length (car (car cs))) 1)))
-		    (latin-commit pc))))
+		    (latin-commit lc))))
 	  ;; reset invalid sequence
 	  (if res
-	      (latin-context-flush pc))))))))
+	      (latin-context-flush lc))))))))
 
 (define latin-proc-raw-state
-  (lambda (pc key state)
+  (lambda (lc key state)
     (if (latin-multi-key? key state)
-	(latin-context-set-composing?! pc #t)
-	(latin-commit-raw pc))))
+	(latin-context-set-composing?! lc #t)
+	(latin-commit-raw lc))))
 
 (define latin-press-key-handler
-  (lambda (pc key state)
+  (lambda (lc key state)
     (if (control-char? key)
-	(im-commit-raw pc)
-	(if (latin-context-composing? pc)
-	    (latin-proc-composing-state pc key state)
-	    (latin-proc-raw-state pc key state)))
-    (latin-update-preedit pc)))
+	(im-commit-raw lc)
+	(if (latin-context-composing? lc)
+	    (latin-proc-composing-state lc key state)
+	    (latin-proc-raw-state lc key state)))
+    (latin-update-preedit lc)))
 
 (define latin-release-key-handler
-  (lambda (pc key state)
+  (lambda (lc key state)
     (if (or (control-char? key)
-	    (not (latin-context-composing? pc)))
+	    (not (latin-context-composing? lc)))
 	;; don't discard key release event for apps
-	(latin-commit-raw pc))))
+	(latin-commit-raw lc))))
 
 (define latin-reset-handler
   (lambda (lc)
