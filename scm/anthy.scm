@@ -784,12 +784,33 @@
 				     p-idx
 				     (remainder p-idx
 						anthy-nr-candidate-max)))))
-      (if compensated-idx
+      (if (and
+	   compensated-idx
+	   (not (= compensated-pageidx selected-pageidx)))
 	  (begin
 	    (anthy-context-set-prediction-index! ac compensated-idx)
 	    (im-select-candidate ac compensated-idx)
 	    #t)
 	  #f))))
+    
+(define anthy-prediction-select-non-existing-index?
+  (lambda (ac numeralc)
+    (let* ((ac-id (anthy-context-ac-id ac))
+	   (nr (anthy-lib-get-nr-predictions ac-id))
+	   (p-idx (anthy-context-prediction-index ac))
+	   (cur-page (if (= anthy-nr-candidate-max 0)
+			 0
+			 (quotient p-idx anthy-nr-candidate-max)))
+	   (pageidx (- (numeral-char->number numeralc) 1))
+	   (compensated-pageidx (cond
+				 ((< pageidx 0) ; pressing key_0
+				  (+ pageidx 10))
+				 (else
+				  pageidx)))
+	   (idx (+ (* cur-page anthy-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+	#t
+	#f))))
 
 (define anthy-prediction-keys-handled?
   (lambda (ac key key-state)
@@ -825,7 +846,11 @@
 
      ;; cancel
      ((anthy-cancel-key? key key-state)
-      (anthy-reset-prediction-window ac))
+      (if (anthy-context-prediction-index ac)
+	  (anthy-reset-prediction-window ac)
+	  (begin
+	    (anthy-reset-prediction-window ac)
+	    (anthy-proc-input-state ac key key-state))))
 
      ;; commit
      ((and
@@ -874,6 +899,13 @@
 	     ;; go back to unselected prediction
 	     (anthy-reset-prediction-window ac)
 	     (anthy-check-prediction ac))
+	    ((and
+	      (numeral-char? key)
+	      anthy-select-prediction-by-numeral-key?
+	      (not (anthy-prediction-select-non-existing-index? ac key)))
+	     (anthy-context-set-predicting! ac #f)
+	     (anthy-context-set-prediction-index! ac #f)
+	     (anthy-proc-input-state ac key key-state))
 	    (else
 	     ;; implicit commit
 	     (anthy-do-commit-prediction ac)
