@@ -28,25 +28,47 @@
   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
-
 */
 
-/*
- * key utility for uim-gtk
- */
+// -*- C++ -*-
+#ifndef _QUIMINPUT_CONTEXT_COMPOSE_H_
+#define _QUIMINPUT_CONTEXT_COMPOSE_H_
 
-#ifndef _key_util_gtk_h_included_
-#define _key_util_gtk_h_included_
+#include <X11/X.h>
+#undef KeyPress
+#undef KeyRelease
 
-/*
- * Initialize modifier key mappings.
- */
-void im_uim_init_modifier_keys(void);
+typedef struct _DefTree {
+    struct _DefTree *next;		/* another Key definition */
+    struct _DefTree *succession;	/* successive Key Sequence */
+					/* Key definitions */
+    unsigned modifier_mask;
+    unsigned modifier;
+    KeySym keysym;			/* leaf only */
+    char *mb;
+    char *utf8;				/* make from mb */
+    KeySym ks;
+} DefTree;
 
-/*
- * Get ukey and umod from gdk's GdkEventKey->keyval and GdkEventKey->state.
- * This function should be called at both key press and release events.
- */
-void im_uim_convert_keyevent(GdkEventKey *key, int *ukey, int *umod);
+class QUimInputContext;
+class Compose {
+public:
+    Compose(DefTree *, QUimInputContext *);
+    ~Compose();
+    bool handle_qkey(QKeyEvent *event);
+    void reset();
+private:
+    bool handleKey(KeySym xkeysym, int xstate, bool is_push);
+    QUimInputContext *m_ic;
+    DefTree *m_top;
+    DefTree *m_context;
+    DefTree *m_composed;
+};
 
 #endif
+/*
+ * Local variables:
+ *  c-indent-level: 4
+ *  c-basic-offset: 4
+ * End:
+ */

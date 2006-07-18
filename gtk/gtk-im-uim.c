@@ -58,19 +58,23 @@
 #include "uim/gettext.h"
 #include "uim/uim-compat-scm.h"
 
+#include "gtk-im-uim.h"
 #include "uim-cand-win-gtk.h"
 #include "caret-state-indicator.h"
 #include "key-util-gtk.h"
-
-/* select either of these two, or filter key event will be used */
-#define IM_UIM_USE_SNOOPER	0
-#define IM_UIM_USE_TOPLEVEL	1
+#ifdef GDK_WINDOWING_X11
+#include "compose.h"
+#endif
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts);
 void im_module_exit(void);
 void im_module_init(GTypeModule *type_module);
+
+#ifdef GDK_WINDOWING_X11
+extern int compose_handle_key(GdkEventKey *key, IMUIMContext *uic);
+#endif
 
 #define NR_CANDIDATES 20
 #define DEFAULT_SEPARATOR_STR "|"
@@ -79,39 +83,6 @@ struct preedit_segment {
   int attr;
   char *str;
 };
-
-typedef struct _IMUIMContext {
-  struct _GtkIMContext parent;
-  struct _GtkIMContext *slave;
-  uim_context uc;
-  UIMCandWinGtk *cwin;
-  gboolean cwin_is_active;
-  int nr_psegs;
-  int prev_preedit_len;
-  struct preedit_segment *pseg;
-
-  GdkWindow *win;
-
-  GtkWidget *caret_state_indicator;
-  GdkRectangle preedit_pos;
-
-  /* following two members are used when use_preedit == FALSE */
-  GtkWidget *preedit_window;
-  gulong preedit_handler_id;
-
-#if IM_UIM_USE_TOPLEVEL
-  GtkWidget *widget;
-  /*
-   * event_rec is used to check the incoming event is already handled
-   * in our toplevel handler.  Some widgets (e.g. OOo2.0's vcl plugin)
-   * have already connected key press/release event handlers to the
-   * toplevel window before our handler attempts to connect.
-   */
-  GdkEventKey event_rec;
-#endif
-
-  struct _IMUIMContext *prev, *next;
-} IMUIMContext;
 
 static int im_uim_fd = -1;
 static unsigned int read_tag;
@@ -183,8 +154,8 @@ static const GtkIMContextInfo *im_uim_info_list = {
 
 /* gtk's string handling */
 
-static void
-commit_string(void *ptr, const char *str)
+void
+im_uim_commit_string(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   uim_bool show_state;
@@ -1037,6 +1008,7 @@ static gboolean
 im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
+  int rv;
 
 #if IM_UIM_USE_SNOOPER
   if (!snooper_installed) {
@@ -1046,7 +1018,7 @@ im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 #else
   if (TRUE) {
 #endif
-    int rv, kv, mod;
+    int kv, mod;
 
     im_uim_convert_keyevent(key, &kv, &mod);
 
@@ -1055,13 +1027,26 @@ im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
     else
       rv = uim_press_key(uic->uc, kv, mod);
 
-    if (rv)
-      return gtk_im_context_filter_keypress(uic->slave, key);
+    if (rv) {
+#ifdef GDK_WINDOWING_X11
+      rv = compose_handle_key(key, uic);
+      if (rv)
+#endif
+        return gtk_im_context_filter_keypress(uic->slave, key);
+    }
 
     return TRUE;
   }
 
+#ifdef GDK_WINDOWING_X11
+  rv = compose_handle_key(key, uic);
+  if (rv)
+    return gtk_im_context_filter_keypress(uic->slave, key);
+
+  return TRUE;
+#else
   return gtk_im_context_filter_keypress(uic->slave, key);
+#endif
 }
 
 static void
@@ -1170,6 +1155,9 @@ im_uim_reset(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
   uim_reset_context(uic->uc);
+#ifdef GDK_WINDOWING_X11
+  im_uim_compose_reset(uic->compose);
+#endif
 }
 
 static void
@@ -1288,6 +1276,9 @@ im_uim_finalize(GObject *obj)
     focused_context = NULL;
     disable_focused_context = TRUE;
   }
+#ifdef GDK_WINDOWING_X11
+  free(uic->compose);
+#endif
 }
 
 static void
@@ -1330,7 +1321,7 @@ im_module_create(const gchar *context_id)
   uic->uc = uim_create_context(uic, "UTF-8",
 			       NULL, im_name,
 			       uim_iconv,
-			       commit_string);
+			       im_uim_commit_string);
   if (uic->uc == NULL) {
     parent_class->finalize(obj);
     return NULL;
@@ -1348,6 +1339,10 @@ im_module_create(const gchar *context_id)
 			       switch_system_global_im_cb);
 
   uim_prop_list_update(uic->uc);
+
+#ifdef GDK_WINDOWING_X11
+  uic->compose = im_uim_compose_new();
+#endif
 
   /* slave exists for using gtk+'s table based input method */
   uic->slave = g_object_new(GTK_TYPE_IM_CONTEXT_SIMPLE, NULL);
@@ -1449,6 +1444,9 @@ im_module_init(GTypeModule *type_module)
 #endif
 
   im_uim_init_modifier_keys();
+#ifdef GDK_WINDOWING_X11
+  im_uim_create_compose_tree();
+#endif
 }
 
 void
@@ -1459,6 +1457,9 @@ im_module_exit(void)
 
 #if IM_UIM_USE_SNOOPER
   gtk_key_snooper_remove(snooper_id);
+#endif
+#ifdef GDK_WINDOWING_X11
+  im_uim_release_compose_tree();
 #endif
   uim_quit();
 }

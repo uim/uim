@@ -16,9 +16,10 @@ im_uim_la_LIBADD = $(top_builddir)/uim/libuim.la $(EBLIB_LIBS)
 
 
 IM_UIM_SOURCES = \
-	gtk-im-uim.c key-util-gtk.c key-util-gtk.h \
+	gtk-im-uim.c gtk-im-uim.h key-util-gtk.c key-util-gtk.h \
 	uim-cand-win-gtk.c uim-cand-win-gtk.h \
-	caret-state-indicator.c caret-state-indicator.h
+	caret-state-indicator.c caret-state-indicator.h \
+	compose.c compose.h
 
 if EB
 IM_UIM_SOURCES += uim-eb.c uim-eb.h

@@ -49,6 +49,10 @@ SUCH DAMAGE.
 #include "immodule-candidatewindow.h"
 #include "immodule-qhelpermanager.h"
 
+#ifdef Q_WS_X11
+#include "immodule-quiminputcontext_compose.h"
+#endif
+
 #define DEFAULT_SEPARATOR_STR "|"
 
 QUimInputContext *focusedInputContext = NULL;
@@ -58,6 +62,9 @@ QPtrList<QUimInputContext> contextList;
 QValueList<UIMInfo> uimInfo;
 
 QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
+#ifdef Q_WS_X11
+DefTree *QUimInputContext::mTreeTop = NULL;
+#endif
 
 // I think that current index-based query API of uim for language and
 // input method name is useless and should be redesigned. I will
@@ -86,6 +93,12 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     if ( !m_HelperManager )
         m_HelperManager = new QUimHelperManager();
 
+#ifdef Q_WS_X11
+    if ( !mTreeTop )
+        create_compose_tree();
+    mCompose = new Compose( mTreeTop, this );
+#endif
+
     createUimInfo();
 
     // read configuration
@@ -108,6 +121,10 @@ QUimInputContext::~QUimInputContext()
         focusedInputContext = NULL;
         disableFocusedContext = true;
     }
+
+#ifdef Q_WS_X11
+    delete mCompose;
+#endif
 }
 
 uim_context QUimInputContext::createUimContext( const char *imname )
@@ -168,7 +185,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         modifier |= UMod_Control;
     if ( keyevent->state() & Qt::AltButton )
         modifier |= UMod_Alt;
-#if defined(_WS_X11_)
+#if defined(Q_WS_X11)
     if ( keyevent->state() & Qt::MetaButton )
         modifier |= UMod_Meta;
 #endif
@@ -255,14 +272,24 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     if ( type == QEvent::KeyPress )
     {
         notFiltered = uim_press_key( m_uc, key, modifier );
+#ifdef Q_WS_X11
         if ( notFiltered )
-            return FALSE;
+            return mCompose->handle_qkey( keyevent );
+#else
+        if ( notFiltered )
+	    return FALSE;
+#endif
     }
     else if ( type == QEvent::KeyRelease )
     {
         notFiltered = uim_release_key( m_uc, key, modifier );
+#ifdef Q_WS_X11
+        if ( notFiltered )
+            return mCompose->handle_qkey( keyevent );
+#else
         if ( notFiltered )
             return FALSE;
+#endif
     }
 
     return TRUE;
@@ -354,6 +381,9 @@ void QUimInputContext::reset()
     candwinIsActive = FALSE;
     cwin->hide();
     uim_reset_context( m_uc );
+#ifdef Q_WS_X11
+    mCompose->reset();
+#endif
 }
 
 QString QUimInputContext::identifierName()

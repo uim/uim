@@ -32,21 +32,62 @@
 */
 
 /*
- * key utility for uim-gtk
+ * gtk+-immodule
  */
+#include <config.h>
 
-#ifndef _key_util_gtk_h_included_
-#define _key_util_gtk_h_included_
-
-/*
- * Initialize modifier key mappings.
- */
-void im_uim_init_modifier_keys(void);
-
-/*
- * Get ukey and umod from gdk's GdkEventKey->keyval and GdkEventKey->state.
- * This function should be called at both key press and release events.
- */
-void im_uim_convert_keyevent(GdkEventKey *key, int *ukey, int *umod);
-
+#include <gtk/gtk.h>
+#include <gtk/gtkimcontext.h>
+#include <gtk/gtkimmodule.h>
+#ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
 #endif
+
+#include "uim/uim.h"
+
+#include "uim-cand-win-gtk.h"
+#ifdef GDK_WINDOWING_X11
+#include "compose.h"
+#endif
+
+/* select either of these two, or filter key event will be used */
+#define IM_UIM_USE_SNOOPER      0
+#define IM_UIM_USE_TOPLEVEL     1
+
+typedef struct _IMUIMContext {
+  struct _GtkIMContext parent;
+  struct _GtkIMContext *slave;
+  uim_context uc;
+  UIMCandWinGtk *cwin;
+  gboolean cwin_is_active;
+  int nr_psegs;
+  int prev_preedit_len;
+  struct preedit_segment *pseg;
+
+  GdkWindow *win;
+
+  GtkWidget *caret_state_indicator;
+  GdkRectangle preedit_pos;
+
+  /* following two members are used when use_preedit == FALSE */
+  GtkWidget *preedit_window;
+  gulong preedit_handler_id;
+
+#if IM_UIM_USE_TOPLEVEL
+  GtkWidget *widget;
+  /*
+   * event_rec is used to check the incoming event is already handled
+   * in our toplevel handler.  Some widgets (e.g. OOo2.0's vcl plugin)
+   * have already connected key press/release event handlers to the
+   * toplevel window before our handler attempts to connect.
+   */
+  GdkEventKey event_rec;
+#endif
+#ifdef GDK_WINDOWING_X11
+  Compose *compose;
+#endif
+
+  struct _IMUIMContext *prev, *next;
+} IMUIMContext;
+
+void im_uim_commit_string(void *ptr, const char *str);

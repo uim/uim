@@ -66,6 +66,7 @@ extradir = $(QT_PLUGINSDIR)/inputmethods
 noinst_HEADERS += \
 	immodule-candidatewindow.h immodule-qhelpermanager.h \
 	immodule-quiminputcontext.h immodule-quiminputcontext_with_slave.h \
+	immodule-quiminputcontext_compose.h \
 	immodule-subwindow.h
 MOC_FILES += \
 	immodule-candidatewindow.moc immodule-qhelpermanager.moc \
@@ -77,6 +78,8 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-candidatewindow.h    immodule-qhelpermanager.h \
 	immodule-quiminputcontext.cpp immodule-quiminputcontext_with_slave.cpp \
 	immodule-quiminputcontext.h   immodule-quiminputcontext_with_slave.h \
+	immodule-quiminputcontext_compose.cpp \
+	immodule-quiminputcontext_compose.h \
 	immodule-subwindow.cpp immodule-subwindow.h
 libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
 libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
