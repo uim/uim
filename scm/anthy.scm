@@ -1241,8 +1241,7 @@
 	 (not (anthy-context-prediction-index ac)))
         (anthy-input-state-preedit ac)
 	(let ((cand (anthy-get-prediction-string ac)))
-	  (list (cons preedit-cursor "")
-		(cons preedit-reverse cand))))))
+	  (list (cons (bit-or preedit-reverse preedit-cursor) cand))))))
 
 (define anthy-converting-state-preedit
   (lambda (ac)
@@ -1602,7 +1601,8 @@
        (ustr-cursor-set-frontside! (anthy-context-segments ac) idx)
        (anthy-update-preedit ac))
      ((anthy-context-predicting ac)
-       (anthy-context-set-prediction-index! ac idx)))))
+       (anthy-context-set-prediction-index! ac idx)
+       (anthy-update-preedit ac)))))
 
 (anthy-configure-widgets)
 
