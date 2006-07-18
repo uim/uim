@@ -759,10 +759,10 @@
   (lambda (ac numeralc)
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (nr (anthy-lib-get-nr-predictions ac-id))
-	   (idx (anthy-context-prediction-index ac))
-	   (n (if (not idx)
+	   (p-idx (anthy-context-prediction-index ac))
+	   (n (if (not p-idx)
 		  0
-		  idx))
+		  p-idx))
 	   (cur-page (if (= anthy-nr-candidate-max 0)
 			 0
 			 (quotient n anthy-nr-candidate-max)))
@@ -775,11 +775,21 @@
 	   (idx (+ (* cur-page anthy-nr-candidate-max) compensated-pageidx))
 	   (compensated-idx (cond
 			     ((>= idx nr)
-			      (- nr 1))
+			      #f)
 			     (else
-			      idx))))
-      (anthy-context-set-prediction-index! ac compensated-idx)
-      (im-select-candidate ac compensated-idx))))
+			      idx)))
+	   (selected-pageidx (if (not p-idx)
+				 #f
+				 (if (= anthy-nr-candidate-max 0)
+				     p-idx
+				     (remainder p-idx
+						anthy-nr-candidate-max)))))
+      (if compensated-idx
+	  (begin
+	    (anthy-context-set-prediction-index! ac compensated-idx)
+	    (im-select-candidate ac compensated-idx)
+	    #t)
+	  #f))))
 
 (define anthy-prediction-keys-handled?
   (lambda (ac key key-state)
@@ -793,8 +803,7 @@
      ((and
        anthy-select-prediction-by-numeral-key?
        (numeral-char? key))
-      (anthy-move-prediction-in-page ac key)
-      #t)
+      (anthy-move-prediction-in-page ac key))
      ((and
        (anthy-context-prediction-index ac)
        (anthy-prev-page-key? key key-state))
