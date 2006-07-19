@@ -4,10 +4,6 @@ AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
 AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
 
-# Set empty values to cancel default "-g -O2"
-CFLAGS=""
-CXXFLAGS=""
-
 # Enable GNU extensions such as asprintf(3), BSD-originated functions,
 # POSIX features and more on glibc (and some other
 # implementations). See features.h. This macro should be placed here.
