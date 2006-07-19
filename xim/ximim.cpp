@@ -421,7 +421,8 @@ void XimIM::set_encoding(const char *encoding)
 
     // workaround for Solaris 10 (bug #7558)
     char *p;
-    if (!strcasecmp(encoding, "EUC") && mLangRegion && (p = strchr(mLangRegion, '_'))) {
+    if (!strcasecmp(encoding, "EUC") && mLangRegion &&
+	(p = strchr(mLangRegion, '_'))) {
 	mEncoding = (char *)malloc(3 + strlen(p + 1) + 1);
 	if (mEncoding)
 	    sprintf(mEncoding, "euc%s", p + 1);
@@ -431,7 +432,7 @@ void XimIM::set_encoding(const char *encoding)
 
     // set iconv environment
     if (mLocale)
-      delete mLocale;
+	delete mLocale;
     mLocale = createLocale(mEncoding);
 }
 
