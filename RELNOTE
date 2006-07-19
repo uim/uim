@@ -7,7 +7,7 @@ About This Release
 This distribution of uim 1.2.0-alpha is a preview release for testing
 purpose. Since it may contain serious unknown problems, it should not
 be used for important works. For such situations, use our latest
-stable release uim 1.1.0.
+stable release uim 1.1.1.
 
 Please report us if you find a problem.
 
@@ -18,14 +18,62 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
-FIXME: Describe about the input-mode reorganization
+Following features are highlight of this release. See NEWS for all
+changes.
+
+  - All X11 Compose key sequences and user defined one in ~/.XCompose
+    are available in gtk+ and Qt bridge.
+  - Input-mode and some of the key definition of Japanese
+    multi-segment IM have been reorganized.  See "Notes for Anthy,
+    Canna, and Mana Users" section.
 
 
 Notes for Anthy, Canna and Mana Users
 -------------------------------------
 
-FIXME: Describe about the input-mode reorganization and required
-user-side updating using uim-pref.
+Now input-mode is reorganized to distinguish on/off state logically.
+See figure below about input-mode on Anthy for example.
+
+
+                              anthy-kana-toggle-key
+                                        |
+                      +- ja_hiragana  <--+     -+
+       anthy-on-key   |                  |      |
+                      |  ja_katakana  <--+      |<--+
+            -->       |                         |   |
+ja_direct             |  ja_halfwidth_katakana -+   | anthy-alkana-toggle-key
+            <--       |                             |
+                      |  ja_halfwidth_alnum    -+   |
+       anthy-off-key  |                         |<--+
+                      +- ja_fullwidth_alnum    -+
+                      
+
+Users of these IM need to update per-user config with uim-pref.  Here
+is the list which is needed to be reconfigured.
+
+  - Key definitions
+    - off key
+    - convert to halfwidth alphanumeric key
+    - convert to fullwidth alphanumeric key
+    - convert to halfwidth katakana key
+    - halfwidth katakana mode key
+
+  - Input mode menu items in Toolbar
+    - Re-enable Halfwidth Katakana, Halfwidth Alphanumeric, Fullwidth
+      Alphanumeric mode
+
+Note that "C-j" combination in off key is removed by default, so make
+sure to update the user config if one uses "C-j" as a off key in daily
+use.  Also users who customized off key also definitly need to set the
+config after upgrade to 1.2.0.
+
+
+Note about inputting white space in input mode on.
+
+  - If one set 'ja-direct-rule in ~/.uim to customize type of white
+    space (full-width or half-width) in Japanese mode is on, please
+    remove the setting.  In uim 1.2.0, the type of white space in
+    preedit mode on is defined in 'ja-space.  See japanese.scm.
 
 
 Future Direction
