@@ -270,7 +270,7 @@
 	       (_ "[Anthy] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))
 
-(define-custom 'anthy-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n")
+(define-custom 'anthy-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
                '(anthy-keys4 prediction)
 	       '(key)
 	       (_ "[Anthy] Next prediction candidate")
