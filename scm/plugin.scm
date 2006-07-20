@@ -130,11 +130,12 @@
 	  (if (not (getenv "LIBUIM_VANILLA"))
 	      (let ((orig-module-list installed-im-module-list)
 		    (orig-enabled-list enabled-im-list))
-		(and (try-load user-conf-file)
-		     (set! installed-im-module-list
-			   (append orig-module-list installed-im-module-list))
-		     (set! enabled-im-list
-			   (append orig-enabled-list enabled-im-list)))))))))
+		(if (try-load user-conf-file)
+		    (begin
+		      (set! installed-im-module-list
+			    (append orig-module-list installed-im-module-list))
+		      (set! enabled-im-list
+			    (append orig-enabled-list enabled-im-list))))))))))
 
 
 ;; TODO: write test
