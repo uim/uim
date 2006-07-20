@@ -138,7 +138,6 @@ private:
     static const char *get_encoding( void );
     static char *get_lang_region( void );
 
-    bool check_compose( void );
     Compose *mCompose;
 #endif
 
