@@ -63,17 +63,17 @@ is the list which is needed to be reconfigured.
       Alphanumeric mode
 
 Note that "C-j" combination in off key is removed by default, so make
-sure to update the user config if one uses "C-j" as a off key in daily
-use.  Also users who customized off key also definitly need to set the
-config after upgrade to 1.2.0.
+sure to update user config if "C-j" is used as a off key for daily use.
+Also users who customized off key should update the config just after
+upgrade to 1.2.0.
 
 
-Note about inputting white space in input mode on.
+Note about inputting white space
 
-  - If one set 'ja-direct-rule in ~/.uim to customize type of white
-    space (full-width or half-width) in Japanese mode is on, please
-    remove the setting.  In uim 1.2.0, the type of white space in
-    preedit mode on is defined in 'ja-space.  See japanese.scm.
+  - If one set 'ja-direct-rule in ~/.uim to customize the type of
+    white space (full-width or half-width) with Japanese mode is on,
+    please remove the setting.  In uim 1.2.0, the type of white space
+    is defined in 'ja-space.  See comment in japanese.scm.
 
 
 Future Direction

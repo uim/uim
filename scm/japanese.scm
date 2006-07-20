@@ -638,6 +638,7 @@
   '(
     ))
 
+;; space on (hiragana katakana halfkana) input mode
 (define ja-space
   '("¡¡" "¡¡" " "))
 

@@ -6,14 +6,14 @@ Overview of changes from 1.1.x to 1.2.0-alpha
     - Half-width and full-width alphanumeric conversion with a specific
       segment.
     - Add half-width alphanumeric input mode.
-    - Change definition of some input mode transition keys.
+    - Change definition of some input-mode transition keys.
 
   - Canna
   - Mana
     - Hiragana, katakana, half-width katakana, half- and full-width
       alphanumeric conversion with a specific segment.
     - Add half-width alphanumeric input mode.
-    - Change definition of some input mode transition keys.
+    - Change definition of some input-mode transition keys.
 
   - uim-dict-gtk
     - Support Canna private dictionary.
@@ -26,6 +26,8 @@ Overview of changes from 1.1.x to 1.2.0-alpha
   - Anthy, Canan, Mana
     - Don't insert full-width space on half-width katakana mode (bug #502).
 
+  - uim-xim
+    - Support ja (EUC) locale in Solaris 10 (bug #7558, KIHARA Hideto).
 
 Overview of changes from 1.1.0 to 1.1.1
 ==
