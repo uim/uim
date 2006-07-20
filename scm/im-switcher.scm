@@ -63,6 +63,8 @@
 ;; independent.
 (define imsw-actions
   (lambda ()
+    (if (not (memq 'direct enabled-im-list))
+	(set! enabled-im-list (append enabled-im-list '(direct))))
     (filter-map
      (lambda (idname)
        (let ((im (assq idname im-list)))
