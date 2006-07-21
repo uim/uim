@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-15 05:42+0900\n"
+"POT-Creation-Date: 2006-07-21 18:03+0900\n"
 "PO-Revision-Date: 2006-05-21 11:22+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -336,11 +336,11 @@ msgstr "설명"
 msgid "uim input method switcher"
 msgstr "uim 입력기 전환"
 
-#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:378
+#: helper/im-switcher-gtk.c:360 qt/switcher-qt.cpp:109 scm/im-custom.lisp:380
 msgid "Effective coverage"
 msgstr "적용범위"
 
-#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:370
+#: helper/im-switcher-gtk.c:368 qt/switcher-qt.cpp:110 scm/im-custom.lisp:372
 msgid "whole desktop"
 msgstr "데스크탑 전체"
 
@@ -430,32 +430,32 @@ msgstr "무효"
 msgid "Disabled items"
 msgstr "무효인 항목"
 
-#: helper/pref-gtk-custom-widgets.c:1364 helper/pref-gtk-custom-widgets.c:1982
+#: helper/pref-gtk-custom-widgets.c:1364 helper/pref-gtk-custom-widgets.c:2015
 msgid "Edit..."
 msgstr "편집..."
 
-#: helper/pref-gtk-custom-widgets.c:1597 qt/pref-customwidgets.cpp:873
+#: helper/pref-gtk-custom-widgets.c:1630 qt/pref-customwidgets.cpp:873
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "잡을 키를 누르십시오 (예 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1598
+#: helper/pref-gtk-custom-widgets.c:1631
 msgid "Grabbing keys"
 msgstr "키를 잡고 있는 중"
 
-#: helper/pref-gtk-custom-widgets.c:1819
+#: helper/pref-gtk-custom-widgets.c:1852
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - 키 설정"
 
-#: helper/pref-gtk-custom-widgets.c:1858
+#: helper/pref-gtk-custom-widgets.c:1891
 msgid "Key preference"
 msgstr "키 설정"
 
-#: helper/pref-gtk-custom-widgets.c:1904
+#: helper/pref-gtk-custom-widgets.c:1937
 msgid "Key:"
 msgstr "키:"
 
-#: helper/pref-gtk-custom-widgets.c:1927
+#: helper/pref-gtk-custom-widgets.c:1960
 msgid "Grab..."
 msgstr "잡기..."
 
@@ -674,8 +674,8 @@ msgstr ""
 #: scm/anthy-custom.lisp:204 scm/anthy-custom.lisp:213
 #: scm/anthy-custom.lisp:255 scm/anthy-custom.lisp:264
 #: scm/anthy-custom.lisp:302 scm/anthy-custom.lisp:308
-#: scm/anthy-custom.lisp:314 scm/anthy-custom.lisp:336
-#: scm/anthy-custom.lisp:342 scm/anthy-key-custom.lisp:37
+#: scm/anthy-custom.lisp:314 scm/anthy-custom.lisp:341
+#: scm/anthy-custom.lisp:347 scm/anthy-key-custom.lisp:37
 #: scm/anthy-key-custom.lisp:41 scm/anthy-key-custom.lisp:45
 #: scm/anthy-key-custom.lisp:49 scm/byeoru-custom.lisp:81
 #: scm/byeoru-custom.lisp:85 scm/byeoru-custom.lisp:89
@@ -706,11 +706,11 @@ msgstr ""
 #: scm/im-custom.lisp:122 scm/im-custom.lisp:132 scm/im-custom.lisp:206
 #: scm/im-custom.lisp:260 scm/im-custom.lisp:266 scm/im-custom.lisp:272
 #: scm/im-custom.lisp:282 scm/im-custom.lisp:310 scm/im-custom.lisp:331
-#: scm/im-custom.lisp:337 scm/im-custom.lisp:397 scm/im-custom.lisp:403
-#: scm/im-custom.lisp:409 scm/im-custom.lisp:415 scm/im-custom.lisp:421
-#: scm/im-custom.lisp:427 scm/im-custom.lisp:445 scm/im-custom.lisp:451
-#: scm/im-custom.lisp:458 scm/im-custom.lisp:468 scm/im-custom.lisp:472
-#: scm/im-custom.lisp:478 scm/im-custom.lisp:484 scm/mana-custom.lisp:54
+#: scm/im-custom.lisp:337 scm/im-custom.lisp:399 scm/im-custom.lisp:405
+#: scm/im-custom.lisp:411 scm/im-custom.lisp:417 scm/im-custom.lisp:423
+#: scm/im-custom.lisp:429 scm/im-custom.lisp:447 scm/im-custom.lisp:453
+#: scm/im-custom.lisp:460 scm/im-custom.lisp:470 scm/im-custom.lisp:474
+#: scm/im-custom.lisp:480 scm/im-custom.lisp:486 scm/mana-custom.lisp:54
 #: scm/mana-custom.lisp:60 scm/mana-custom.lisp:75 scm/mana-custom.lisp:81
 #: scm/mana-custom.lisp:87 scm/mana-custom.lisp:93 scm/mana-custom.lisp:181
 #: scm/mana-custom.lisp:200 scm/mana-custom.lisp:209 scm/mana-custom.lisp:251
@@ -916,12 +916,12 @@ msgstr ""
 msgid "Show selected prediction candidate in preedit area"
 msgstr ""
 
-#: scm/anthy-custom.lisp:335 scm/canna-custom.lisp:376
+#: scm/anthy-custom.lisp:340 scm/canna-custom.lisp:376
 #: scm/mana-custom.lisp:297 scm/prime-custom.lisp:134 scm/skk-custom.lisp:442
 msgid "Enable vi-cooperative mode"
 msgstr ""
 
-#: scm/anthy-custom.lisp:341 scm/canna-custom.lisp:382
+#: scm/anthy-custom.lisp:346 scm/canna-custom.lisp:382
 #: scm/mana-custom.lisp:303
 msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr ""
@@ -1838,109 +1838,109 @@ msgstr "후보창의 위치"
 msgid "Enable lazy input method loading for fast startup"
 msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
-#: scm/im-custom.lisp:363
+#: scm/im-custom.lisp:365
 msgid "Enable menu-based input method switcher"
 msgstr "uim 입력기 전환 메뉴를 사용"
 
-#: scm/im-custom.lisp:364
+#: scm/im-custom.lisp:366
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "툴바에 입력기 전환 메뉴를 표시"
 
-#: scm/im-custom.lisp:371
+#: scm/im-custom.lisp:373
 msgid "All input method of text areas on the system are changed."
 msgstr ""
 
-#: scm/im-custom.lisp:373
+#: scm/im-custom.lisp:375
 msgid "focused application only"
 msgstr "포커스된 응용프로그램만"
 
-#: scm/im-custom.lisp:374
+#: scm/im-custom.lisp:376
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
 msgstr ""
 
-#: scm/im-custom.lisp:376
+#: scm/im-custom.lisp:378
 msgid "focused text area only"
 msgstr "포커스된 텍스트영역만"
 
-#: scm/im-custom.lisp:377
+#: scm/im-custom.lisp:379
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
 msgstr ""
 
-#: scm/im-custom.lisp:379
+#: scm/im-custom.lisp:381
 msgid "Specify where the IM switching takes effect."
 msgstr ""
 
-#: scm/im-custom.lisp:390
+#: scm/im-custom.lisp:392
 msgid "full-featured input method switcher"
 msgstr "기능이 완비된 uim 입력기 전환 프로그램"
 
-#: scm/im-custom.lisp:391
+#: scm/im-custom.lisp:393
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr ""
 
-#: scm/im-custom.lisp:396
+#: scm/im-custom.lisp:398
 msgid "preference tool"
 msgstr "설정"
 
-#: scm/im-custom.lisp:402
+#: scm/im-custom.lisp:404
 msgid "Japanese dictionary tool"
 msgstr "일본어 사전 도구"
 
-#: scm/im-custom.lisp:408
+#: scm/im-custom.lisp:410
 msgid "input pad"
 msgstr "입력 패드"
 
-#: scm/im-custom.lisp:414
+#: scm/im-custom.lisp:416
 msgid "handwriting-input pad"
 msgstr "손글씨 입력 패드"
 
-#: scm/im-custom.lisp:420
+#: scm/im-custom.lisp:422
 msgid "help"
 msgstr "도움말"
 
-#: scm/im-custom.lisp:426
+#: scm/im-custom.lisp:428
 msgid "Show input mode nearby cursor"
 msgstr "입력 모드를 커서 근처에 표시"
 
-#: scm/im-custom.lisp:432
+#: scm/im-custom.lisp:434
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "커서 근처에 입력 모드를 표시하는 시간"
 
-#: scm/im-custom.lisp:433
+#: scm/im-custom.lisp:435
 msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
-#: scm/im-custom.lisp:444
+#: scm/im-custom.lisp:446
 msgid "EB library"
 msgstr ""
 
-#: scm/im-custom.lisp:450
+#: scm/im-custom.lisp:452
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: scm/im-custom.lisp:457
+#: scm/im-custom.lisp:459
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: scm/im-custom.lisp:467
+#: scm/im-custom.lisp:469
 msgid "XIM"
 msgstr ""
 
-#: scm/im-custom.lisp:471
+#: scm/im-custom.lisp:473
 msgid "Preedit settings of XIM"
 msgstr "XIM 편집영역"
 
-#: scm/im-custom.lisp:477
+#: scm/im-custom.lisp:479
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: scm/im-custom.lisp:483
+#: scm/im-custom.lisp:485
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
@@ -1948,11 +1948,19 @@ msgstr ""
 msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr ""
 
-#: scm/latin.lisp:940
+#: scm/latin.lisp:824
+msgid "Latin compose"
+msgstr ""
+
+#: scm/latin.lisp:825
+msgid "Latin Compose Mode"
+msgstr ""
+
+#: scm/latin.lisp:960
 msgid "Latin characters"
 msgstr ""
 
-#: scm/latin.lisp:941
+#: scm/latin.lisp:961
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 

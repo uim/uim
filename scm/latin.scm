@@ -821,8 +821,8 @@
 		   (list
 		    'on
 		    "L"
-		    (N_ "Latin")
-		    (N_ "Latin Input Mode")))
+		    (N_ "Latin compose")
+		    (N_ "Latin Compose Mode")))
 		 (lambda (lc)
 		   #t)
 		 #f) ;; no action handler
