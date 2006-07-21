@@ -248,26 +248,59 @@ void print_key(int key, int key_state)
     case UKey_Insert:
       printf("insert");
       break;
-    case UKey_Zenkaku_Hankaku:
-      printf("zenkaku-hankaku");
-      break;
     case UKey_Multi_key:
       printf("Multi_key");
       break;
     case UKey_Mode_switch:
       printf("Mode_switch");
       break;
-    case UKey_Henkan_Mode:
-      printf("Henkan_Mode");
+    case UKey_Kanji:
+      printf("Kanji");
       break;
     case UKey_Muhenkan:
       printf("Muhenkan");
       break;
-    case UKey_Kanji:
-      printf("Kanji");
+    case UKey_Henkan_Mode:
+      printf("Henkan_Mode");
+      break;
+    case UKey_Romaji:
+      printf("romaji");
+      break;
+    case UKey_Hiragana:
+      printf("hiragana");
+      break;
+    case UKey_Katakana:
+      printf("katakana");
       break;
     case UKey_Hiragana_Katakana:
       printf("hiragana-katakana");
+      break;
+    case UKey_Zenkaku:
+      printf("zenkaku");
+      break;
+    case UKey_Hankaku:
+      printf("hankaku");
+      break;
+    case UKey_Zenkaku_Hankaku:
+      printf("zenkaku-hankaku");
+      break;
+    case UKey_Touroku:
+      printf("touroku");
+      break;
+    case UKey_Massyo:
+      printf("massyo");
+      break;
+    case UKey_Kana_Lock:
+      printf("kana-lock");
+      break;
+    case UKey_Kana_Shift:
+      printf("kana-shift");
+      break;
+    case UKey_Eisu_Shift:
+      printf("eisu-shift");
+      break;
+    case UKey_Eisu_toggle:
+      printf("eisu-toggle");
       break;
     case UKey_F1:
       printf("F1");

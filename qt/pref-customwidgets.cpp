@@ -957,26 +957,59 @@ void KeyGrabDialog::setKeyStr()
         keystr += "end";
         break;
 #ifdef QT_IMMODULE
-    case Qt::Key_Zenkaku_Hankaku:
-        keystr += "zenkaku-hankaku";
-        break;
     case Qt::Key_Multi_key:
         keystr += "Multi_key";
         break;
     case Qt::Key_Mode_switch:
         keystr += "Mode_switch";
         break;
-    case Qt::Key_Henkan:
-        keystr += "Henkan_Mode";
+    case Qt::Key_Kanji:
+        keystr += "Kanji";
         break;
     case Qt::Key_Muhenkan:
         keystr += "Muhenkan";
         break;
-    case Qt::Key_Kanji:
-        keystr += "Kanji";
+    case Qt::Key_Henkan:
+        keystr += "Henkan_Mode";
+        break;
+    case Qt::Key_Romaji:
+        keystr += "romaji";
+        break;
+    case Qt::Key_Hiragana:
+        keystr += "hiragana";
+        break;
+    case Qt::Key_Katakana:
+        keystr += "katakana";
         break;
     case Qt::Key_Hiragana_Katakana:
         keystr += "hiragana-katakana";
+        break;
+    case Qt::Key_Zenkaku:
+        keystr += "zenkaku";
+        break;
+    case Qt::Key_Hankaku:
+        keystr += "hankaku";
+        break;
+    case Qt::Key_Zenkaku_Hankaku:
+        keystr += "zenkaku-hankaku";
+        break;
+    case Qt::Key_Touroku:
+        keystr += "touroku";
+        break;
+    case Qt::Key_Massyo:
+        keystr += "massyo";
+        break;
+    case Qt::Key_Kana_Lock:
+        keystr += "kana-lock";
+        break;
+    case Qt::Key_Kana_Shift:
+        keystr += "kana-shift";
+        break;
+    case Qt::Key_Eisu_Shift:
+        keystr += "eisu-shift";
+        break;
+    case Qt::Key_Eisu_toggle:
+        keystr += "eisu-toggle";
         break;
 #endif /* Def: QT_IMMODULE */
     case Qt::Key_Shift:

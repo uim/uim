@@ -1467,26 +1467,59 @@ key_pref_set_value(gint ukey, gint umod)
   case UKey_End:
     g_string_append(keystr, "end");
     break;
-  case UKey_Zenkaku_Hankaku:
-    g_string_append(keystr, "zenkaku-hankaku");
-    break;
   case UKey_Multi_key:
     g_string_append(keystr, "Multi_key");
     break;
   case UKey_Mode_switch:
     g_string_append(keystr, "Mode_switch");
     break;
-  case UKey_Henkan_Mode:
-    g_string_append(keystr, "Henkan_Mode");
+  case UKey_Kanji:
+    g_string_append(keystr, "Kanji");
     break;
   case UKey_Muhenkan:
     g_string_append(keystr, "Muhenkan");
     break;
-  case UKey_Kanji:
-    g_string_append(keystr, "Kanji");
+  case UKey_Henkan_Mode:
+    g_string_append(keystr, "Henkan_Mode");
+    break;
+  case UKey_Romaji:
+    g_string_append(keystr, "romaji");
+    break;
+  case UKey_Hiragana:
+    g_string_append(keystr, "hiragana");
+    break;
+  case UKey_Katakana:
+    g_string_append(keystr, "katakana");
     break;
   case UKey_Hiragana_Katakana:
     g_string_append(keystr, "hiragana-katakana");
+    break;
+  case UKey_Zenkaku:
+    g_string_append(keystr, "zenkaku");
+    break;
+  case UKey_Hankaku:
+    g_string_append(keystr, "hankaku");
+    break;
+  case UKey_Zenkaku_Hankaku:
+    g_string_append(keystr, "zenkaku-hankaku");
+    break;
+  case UKey_Touroku:
+    g_string_append(keystr, "touroku");
+    break;
+  case UKey_Massyo:
+    g_string_append(keystr, "massyo");
+    break;
+  case UKey_Kana_Lock:
+    g_string_append(keystr, "kana-lock");
+    break;
+  case UKey_Kana_Shift:
+    g_string_append(keystr, "kana-shift");
+    break;
+  case UKey_Eisu_Shift:
+    g_string_append(keystr, "eisu-shift");
+    break;
+  case UKey_Eisu_toggle:
+    g_string_append(keystr, "eisu-toggle");
     break;
   case UKey_Shift_key:
     g_string_append(keystr, "Shift_key");

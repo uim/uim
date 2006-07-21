@@ -124,26 +124,59 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
     case GDK_End:
       *ukey = UKey_End;
       break;
-    case GDK_Kanji:
-      *ukey = UKey_Kanji;
-      break;
-    case GDK_Zenkaku_Hankaku:
-      *ukey = UKey_Zenkaku_Hankaku;
-      break;
-    case GDK_Hiragana_Katakana:
-      *ukey = UKey_Hiragana_Katakana;
-      break;
     case GDK_Multi_key:
       *ukey = UKey_Multi_key;
       break;
     case GDK_Mode_switch:
       *ukey = UKey_Mode_switch;
       break;
-    case GDK_Henkan_Mode:
-      *ukey = UKey_Henkan_Mode;
+    case GDK_Kanji:
+      *ukey = UKey_Kanji;
       break;
     case GDK_Muhenkan:
       *ukey = UKey_Muhenkan;
+      break;
+    case GDK_Henkan_Mode:
+      *ukey = UKey_Henkan_Mode;
+      break;
+    case GDK_Romaji:
+      *ukey = UKey_Romaji;
+      break;
+    case GDK_Hiragana:
+      *ukey = UKey_Hiragana;
+      break;
+    case GDK_Katakana:
+      *ukey = UKey_Katakana;
+      break;
+    case GDK_Hiragana_Katakana:
+      *ukey = UKey_Hiragana_Katakana;
+      break;
+    case GDK_Zenkaku:
+      *ukey = UKey_Zenkaku;
+      break;
+    case GDK_Hankaku:
+      *ukey = UKey_Hankaku;
+      break;
+    case GDK_Zenkaku_Hankaku:
+      *ukey = UKey_Zenkaku_Hankaku;
+      break;
+    case GDK_Touroku:
+      *ukey = UKey_Touroku;
+      break;
+    case GDK_Massyo:
+      *ukey = UKey_Massyo;
+      break;
+    case GDK_Kana_Lock:
+      *ukey = UKey_Kana_Lock;
+      break;
+    case GDK_Kana_Shift:
+      *ukey = UKey_Kana_Shift;
+      break;
+    case GDK_Eisu_Shift:
+      *ukey = UKey_Eisu_Shift;
+      break;
+    case GDK_Eisu_toggle:
+      *ukey = UKey_Eisu_toggle;
       break;
     case GDK_Shift_L:
     case GDK_Shift_R:

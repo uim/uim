@@ -220,15 +220,26 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         case Qt::Key_Next: key = UKey_Next; break;
         case Qt::Key_Home: key = UKey_Home; break;
         case Qt::Key_End: key = UKey_End; break;
-        case Qt::Key_Zenkaku_Hankaku: key = UKey_Zenkaku_Hankaku; break;
         case Qt::Key_Multi_key: key = UKey_Multi_key; break;
 #if defined(_WS_X11_)
         case Qt::Key_Mode_switch: key = UKey_Mode_switch; break;
 #endif
-        case Qt::Key_Henkan: key = UKey_Henkan_Mode; break;
-        case Qt::Key_Muhenkan: key = UKey_Muhenkan; break;
         case Qt::Key_Kanji: key = UKey_Kanji; break;
+        case Qt::Key_Muhenkan: key = UKey_Muhenkan; break;
+        case Qt::Key_Henkan: key = UKey_Henkan_Mode; break;
+        case Qt::Key_Romaji: key = UKey_Romaji; break;
+        case Qt::Key_Hiragana: key = UKey_Hiragana; break;
+        case Qt::Key_Katakana: key = UKey_Katakana; break;
         case Qt::Key_Hiragana_Katakana: key = UKey_Hiragana_Katakana; break;
+        case Qt::Key_Zenkaku: key = UKey_Zenkaku; break;
+        case Qt::Key_Hankaku: key = UKey_Hankaku; break;
+        case Qt::Key_Zenkaku_Hankaku: key = UKey_Zenkaku_Hankaku; break;
+        case Qt::Key_Touroku: key = UKey_Touroku; break;
+        case Qt::Key_Massyo: key = UKey_Massyo; break;
+        case Qt::Key_Kana_Lock: key = UKey_Kana_Lock; break;
+        case Qt::Key_Kana_Shift: key = UKey_Kana_Shift; break;
+        case Qt::Key_Eisu_Shift: key = UKey_Eisu_Shift; break;
+        case Qt::Key_Eisu_toggle: key = UKey_Eisu_toggle; break;
         case Qt::Key_F1: key = UKey_F1; break;
         case Qt::Key_F2: key = UKey_F2; break;
         case Qt::Key_F3: key = UKey_F3; break;

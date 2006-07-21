@@ -94,13 +94,24 @@ enum UKey {
   UKey_Next , /* page down */
   UKey_Home,
   UKey_End,
-  UKey_Zenkaku_Hankaku, /* zenkaku/hankaku toggle */
   UKey_Multi_key, /* multi-key character compose */
   UKey_Mode_switch, /* charcter set switch */
-  UKey_Henkan_Mode, /* start/stop conversion */
-  UKey_Muhenkan, /* cancel conversion */
   UKey_Kanji, /* kanji, kanji convert */
+  UKey_Muhenkan, /* cancel conversion */
+  UKey_Henkan_Mode, /* start/stop conversion */
+  UKey_Romaji,
+  UKey_Hiragana,
+  UKey_Katakana,
   UKey_Hiragana_Katakana, /* hiragana/katakana toggle */
+  UKey_Zenkaku,
+  UKey_Hankaku,
+  UKey_Zenkaku_Hankaku, /* zenkaku/hankaku toggle */
+  UKey_Touroku,
+  UKey_Massyo,
+  UKey_Kana_Lock,
+  UKey_Kana_Shift,
+  UKey_Eisu_Shift, /* alphanumeric shift */
+  UKey_Eisu_toggle, /* alphanumeric toggle */
   UKey_F1,
   UKey_F2,
   UKey_F3,
