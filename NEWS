@@ -29,6 +29,9 @@ Overview of changes from 1.1.x to 1.2.0-alpha
   - uim-xim
     - Support ja (EUC) locale in Solaris 10 (bug #7558, KIHARA Hideto).
 
+  - general
+    - Handle several input mode keys in Japanese keyboard.
+
 Overview of changes from 1.1.0 to 1.1.1
 ==
 * Fixes
