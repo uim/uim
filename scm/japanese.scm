@@ -638,9 +638,9 @@
   '(
     ))
 
-;; space on (hiragana katakana halfkana) input mode
+;; space on (hiragana katakana halfkana halfwidth-alnum fullwidth-alnum) mode
 (define ja-space
-  '("　" "　" " "))
+  '("　" "　" " " " " "　"))
 
 ;;
 (define ja-find-rec
