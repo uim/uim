@@ -66,7 +66,8 @@ UimApplet::UimApplet(const QString& configFile, Type type, int actions,
 UimApplet::~UimApplet()
 {
     delete toolbar;
-    uim_quit();
+    // Don't call uim_quit() since kicker may have IM contexts of uim.
+    // uim_quit();
 }
 
 int UimApplet::widthForHeight(int /* h */) const
