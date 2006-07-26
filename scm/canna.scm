@@ -564,7 +564,9 @@
 
      ;; space key
      ((canna-space-key? key key-state)
-      (im-commit cc (list-ref ja-space (canna-context-kana-mode cc))))
+      (if (canna-context-alnum cc)
+	  (im-commit cc (list-ref ja-space (canna-context-alnum-type cc)))
+	  (im-commit cc (list-ref ja-space (canna-context-kana-mode cc)))))
 
      ((symbol? key)
       (canna-commit-raw cc))
