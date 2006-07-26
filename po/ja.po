@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-21 18:03+0900\n"
+"POT-Creation-Date: 2006-07-27 03:09+0900\n"
 "PO-Revision-Date: 2006-06-04 10:49+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -129,10 +129,15 @@ msgstr "uimアプレット・ファクトリ"
 msgid "uim applet factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: helper/dict-anthy.c:82 helper/dict-main-gtk.c:166
-#: helper/dict-word-list-win-gtk.c:349
+#: helper/dict-anthy.c:82 helper/dict-main-gtk.c:166 helper/dict-word.c:139
+#: helper/dict-word.c:154 helper/dict-word-list-win-gtk.c:349
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
+
+#: helper/dict-canna.c:86 helper/dict-main-gtk.c:188 helper/dict-word.c:141
+#: helper/dict-word.c:156 helper/dict-word-list-win-gtk.c:353
+msgid "Canna private dictionary"
+msgstr "Canna個人辞書"
 
 #. construct dialog
 #: helper/dict-cclass-dialog.c:69 helper/dict-cclass-dialog.c:106
@@ -143,10 +148,6 @@ msgstr "品詞"
 #: helper/dict-cclass-dialog.c:115
 msgid "Example"
 msgstr "例"
-
-#: helper/dict-main-gtk.c:188 helper/dict-word-list-win-gtk.c:353
-msgid "Canna private dictionary"
-msgstr "Canna個人辞書"
 
 #: helper/dict-main-gtk.c:274
 #, c-format

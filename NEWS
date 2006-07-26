@@ -1,3 +1,15 @@
+Overview of changes from 1.2.0-alpha to 1.2.0-beta
+==
+* Fixes
+  o Minor
+    - Anthy
+    - Canna
+    - Mana
+      - Commit appropriate space letter in halfwidth_alnum input mode.
+
+    - Qt immodule
+      - Fix getting default IM in some environments.
+
 Overview of changes from 1.1.x to 1.2.0-alpha
 ==
 * New features

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-21 18:03+0900\n"
+"POT-Creation-Date: 2006-07-27 03:09+0900\n"
 "PO-Revision-Date: 2006-05-21 11:22+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -36,9 +36,14 @@ msgstr ""
 msgid "uim applet factory"
 msgstr ""
 
-#: helper/dict-anthy.c:82 helper/dict-main-gtk.c:166
-#: helper/dict-word-list-win-gtk.c:349
+#: helper/dict-anthy.c:82 helper/dict-main-gtk.c:166 helper/dict-word.c:139
+#: helper/dict-word.c:154 helper/dict-word-list-win-gtk.c:349
 msgid "Anthy private dictionary"
+msgstr ""
+
+#: helper/dict-canna.c:86 helper/dict-main-gtk.c:188 helper/dict-word.c:141
+#: helper/dict-word.c:156 helper/dict-word-list-win-gtk.c:353
+msgid "Canna private dictionary"
 msgstr ""
 
 #. construct dialog
@@ -49,10 +54,6 @@ msgstr ""
 
 #: helper/dict-cclass-dialog.c:115
 msgid "Example"
-msgstr ""
-
-#: helper/dict-main-gtk.c:188 helper/dict-word-list-win-gtk.c:353
-msgid "Canna private dictionary"
 msgstr ""
 
 #: helper/dict-main-gtk.c:274
