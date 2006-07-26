@@ -66,7 +66,7 @@ public:
         QString imname = QString::null;
         if ( QString::compare( key, "uim" ) == 0 )
         {
-            imname = uim_get_default_im_name( setlocale( LC_ALL, NULL ) );
+            imname = uim_get_default_im_name( setlocale( LC_CTYPE, NULL ) );
             QStringList langs = languages( "uim" );
             QUimInputContext *uic = new QUimInputContextWithSlave( imname, langs[ 0 ] );
             return uic;
