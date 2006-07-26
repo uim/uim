@@ -74,8 +74,8 @@ clean-svgpng:
 dist-hook:
 	@test -n "$(RSVG)" || (echo 'rsvg(1) not found: install it'; exit 1)
 
-if M17NLIB
 install-data-hook:
+if M17NLIB
 	for f in $(m17n_db_dir)/icons/*.png; do \
 	  if test -f "$$f"; then \
 	    $(LN_S) -f "$$f" $(DESTDIR)$(pkgdatadir)/pixmaps/m17n-`basename "$$f"`; \
