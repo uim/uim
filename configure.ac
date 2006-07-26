@@ -850,6 +850,8 @@ case "$enable_kde_applet" in
       else
 	use_applet_kde="no"
       fi
+    else
+      use_applet_kde="no"
     fi
     ;;
 esac
