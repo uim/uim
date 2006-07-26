@@ -369,22 +369,22 @@ AC_ARG_WITH(gtk2,
   [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
     PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2_4="yes",use_gtk2_4="no") ])
 
-AC_ARG_ENABLE(applet,
-  AC_HELP_STRING([--disable-applet],
+AC_ARG_ENABLE(gnome-applet,
+  AC_HELP_STRING([--disable-gnome-applet],
                  [disable uim applet for Gnome panel]),
   [
-    case $enable_applet in
+    case $enable_gnome_applet in
       no)
-        use_applet="no"
+        use_applet_gnome="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
+        PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
         PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
       ;;
     esac
   ],
   [
-    PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
+    PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
     PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
   ])
 
@@ -645,7 +645,7 @@ AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
-AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
+AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
@@ -806,13 +806,57 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
+AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
 if test "x$use_qt" = "xyes"; then
-    KDE_ICONDIR=`kde-config --expandvars --install icon`
+    if test "x$KDE_CONFIG" != "xno"; then
+	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
+    fi
     if test -z "$KDE_ICONDIR"; then
       KDE_ICONDIR="$prefix/share/icons"
     fi
     AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
 fi
+
+dnl *********************************
+dnl *** test for KDE applet.. XXX ***
+dnl *********************************
+AC_ARG_ENABLE(kde-applet,
+  AC_HELP_STRING([--enable-kde-applet],
+  		 [build uim applet for KDE panel]),
+		 enable_kde_applet=$enableval,
+		 enable_kde_applet=yes)
+case "$enable_kde_applet" in
+  no)
+    use_applet_kde="no"
+    ;;
+  yes|*)
+    if test "x$use_qt" = "xyes"; then
+      if test "x$KDE_CONFIG" != "xno"; then
+	KDE_PREFIX=`kde-config --prefix`
+	KDE_LIB_DIR=`kde-config --expandvars --install lib`
+	KDE_DATA_DIR=`kde-config --expandvars --install data`
+	saved_cppflags="${CPPFLAGS}"
+	CPPFLAGS="-I${KDE_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADER([${KDE_PREFIX}/include/kde/kpanelapplet.h],
+			[use_applet_kde="yes" KDE_INCLUDE_DIR="${KDE_PREFIX}/include/kde"], [use_applet_kde="no"])
+	if test "x$use_applet_kde" = "xno"; then
+	  CPPFLAGS="-I${KDE_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
+	  AC_CHECK_HEADER([${KDE_PREFIX}/include/kglobal.h],
+	  		  [use_applet_kde="yes" KDE_INCLUDE_DIR="${KDE_PREFIX}/include"], [use_applet_kde="no"])
+	fi
+	CPPFLAGS="${saved_cppflags}"
+	AC_LANG_POP(C++)
+      else
+	use_applet_kde="no"
+      fi
+    fi
+    ;;
+esac
+AC_SUBST(KDE_PREFIX)
+AC_SUBST(KDE_LIB_DIR)
+AC_SUBST(KDE_DATA_DIR)
+AC_SUBST(KDE_INCLUDE_DIR)
 
 if test x$use_qtimmodule = xyes ; then
     AC_MSG_CHECKING(for qt-immodule patch)
@@ -828,6 +872,7 @@ fi
 
 AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
+AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
 
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--enable-pref],
@@ -962,6 +1007,7 @@ AC_CONFIG_FILES([Makefile
 		 qt/chardict/Makefile
 		 qt/chardict/po/Makefile.in
 		 qt/test/Makefile
+		 qt/uimapplet.desktop
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
@@ -987,9 +1033,10 @@ Configure Result :
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
    Gtk+            : ${use_gtk2}
-   Gnome Applet    : ${use_applet}
+   Gnome Applet    : ${use_applet_gnome}
    Qt              : ${use_qt}
    Qt immodule     : ${use_qtimmodule}
+   KDE Applet      : ${use_applet_kde}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
    XIM             : ${use_xim}

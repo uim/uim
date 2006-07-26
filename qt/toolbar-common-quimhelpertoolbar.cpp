@@ -47,7 +47,7 @@ static const QString ACTION_ICONDIR = KDE_ICONDIR "/crystalsvg/32x32/actions";
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
     : QHBox( parent, name, f )
 {
-    new UimStateIndicator( this );
+    m_indicator = new UimStateIndicator( this );
 
     m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
     m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
@@ -61,6 +61,7 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
     m_contextMenu->insertItem( _("Handwriting input pad"), this, SLOT(slotExecHandwritingInputPad()) );
     m_contextMenu->insertItem( _("Help"), this, SLOT(slotExecHelp()) );
     m_contextMenu->insertItem( _("Quit this toolbar"), this, SIGNAL(quitToolbar()) );
+    m_nr_exec_buttons = 0;
 
     // toolbar buttons    
     addExecImSwitcherButton();
@@ -73,6 +74,12 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
 
 QUimHelperToolbar::~QUimHelperToolbar()
 {
+    delete m_indicator;
+}
+
+int QUimHelperToolbar::getNumButtons()
+{
+    return m_indicator->getNumButtons() + m_nr_exec_buttons;
 }
 
 void QUimHelperToolbar::contextMenuEvent( QContextMenuEvent * e )
@@ -99,6 +106,7 @@ void QUimHelperToolbar::addExecImSwitcherButton()
     QObject::connect( swButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecImSwitcher() ) );
     QToolTip::add( swButton, _( "exec im-switcher" ) );
+    ++m_nr_exec_buttons;
 }
 
 
@@ -123,6 +131,7 @@ void QUimHelperToolbar::addExecPrefButton()
     QObject::connect( prefButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecPref() ) );
     QToolTip::add( prefButton, _( "exec Preference Application" ) );
+    ++m_nr_exec_buttons;
 }
 
 void QUimHelperToolbar::slotExecPref()
@@ -146,6 +155,7 @@ void QUimHelperToolbar::addExecDictButton()
     QObject::connect( dictButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecDict() ) );
     QToolTip::add( dictButton, _( "exec Japanese dictionary Tool Application" ) );
+    ++m_nr_exec_buttons;
 }
 
 void QUimHelperToolbar::slotExecDict()
@@ -166,6 +176,7 @@ void QUimHelperToolbar::addExecInputPadButton()
     QObject::connect( inputpadButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecInputPad() ) );
     QToolTip::add( inputpadButton, _( "exec Input Pad Tool Application" ) );
+    ++m_nr_exec_buttons;
 }
 
 void QUimHelperToolbar::slotExecInputPad()
@@ -186,6 +197,7 @@ void QUimHelperToolbar::addExecHandwritingInputPadButton()
     QObject::connect( inputpadButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecHandwritingInputPad() ) );
     QToolTip::add( inputpadButton, _( "exec Handwriting Input Pad Tool Application" ) );
+    ++m_nr_exec_buttons;
 }
 
 void QUimHelperToolbar::slotExecHandwritingInputPad()
@@ -205,6 +217,7 @@ void QUimHelperToolbar::addExecHelpButton()
     QObject::connect( helpButton, SIGNAL( clicked() ),
                       this, SLOT( slotExecHelp() ) );
     QToolTip::add( helpButton, _( "exec Help Application" ) );
+    ++m_nr_exec_buttons;
 }
 
 void QUimHelperToolbar::slotExecHelp()

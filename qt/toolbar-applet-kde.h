@@ -1,6 +1,6 @@
 /*
 
- Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+ Copyright (c) 2006 uim Project http://uim.freedesktop.org/
 
  All rights reserved.
 
@@ -30,58 +30,41 @@
  SUCH DAMAGE.
 
 */
-#ifndef _QUIM_HELPER_TOOLBAR_H_
-#define _QUIM_HELPER_TOOLBAR_H_
 
-#include <qhbox.h>
-#include <qevent.h>
-#include <qpopupmenu.h>
-#include <qpixmap.h>
+#ifndef __toolbar_applet_kde_h__
+#define __toolbar_applet_kde_h__
 
-class UimStateIndicator;
+#include <kpanelapplet.h>
 
-class QUimHelperToolbar : public QHBox
+#include "toolbar-common-quimhelpertoolbar.h"
+
+class UimToolbar : public QUimHelperToolbar
 {
     Q_OBJECT
 
 public:
-    QUimHelperToolbar( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
-    ~QUimHelperToolbar();
+    UimToolbar(QWidget *parent = 0, const char *name = 0, WFlags f = 0);
+    ~UimToolbar();
 
-public slots:    
-    void slotExecPref();
-
-protected:
-    // right click
-    virtual void contextMenuEvent ( QContextMenuEvent * e );
-
-protected:
-    void addExecImSwitcherButton();
-    void addExecPrefButton();
-    void addExecDictButton();
-    void addExecInputPadButton();
-    void addExecHandwritingInputPadButton();
-    void addExecHelpButton();    
-
-    int getNumButtons();
-protected slots:
-    void slotExecImSwitcher();
-    void slotExecDict();
-    void slotExecInputPad();
-    void slotExecHandwritingInputPad();
-    void slotExecHelp();    
-
-signals:
-    void quitToolbar();
-
-protected:
-    UimStateIndicator *m_indicator;
-    QPixmap m_swicon;
-    QPixmap m_preficon;
-    QPixmap m_dicticon;
-    QPopupMenu *m_contextMenu;
-    int m_nr_exec_buttons;
+    int preferedWidthForHeight();
 };
 
+class UimApplet : public KPanelApplet
+{
+    Q_OBJECT
+
+public:
+    UimApplet(const QString& configFile, Type t = Normal, int actions = 0,
+	      QWidget *parent = 0, const char *name = 0);
+    ~UimApplet();
+
+    int widthForHeight(int h) const;
+    int heightForWidth(int w) const;
+    void preferences();
+    void resizeEvent(QResizeEvent *);
+
+protected:
+    UimToolbar *toolbar;
+};
 
 #endif

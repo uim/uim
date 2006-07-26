@@ -72,8 +72,14 @@ UimStateIndicator::~UimStateIndicator()
 {
     if ( notifier )
         delete notifier;
+    notifier = NULL;
 
     buttons.clear();
+}
+
+int UimStateIndicator::getNumButtons()
+{
+    return buttons.count();
 }
 
 void UimStateIndicator::checkHelperConnection()

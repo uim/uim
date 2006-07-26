@@ -2,13 +2,13 @@ EXTRA_DIST = GNOME_UimApplet.server.in.in uim-dict-ui.xml.in
 
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
-if APPLET
+if APPLET_GNOME
 libexec_PROGRAMS =  uim-toolbar-applet
 
-uim_toolbar_applet_LDADD = @GTK2_LIBS@ @APPLET_LIBS@ \
+uim_toolbar_applet_LDADD = @GTK2_LIBS@ @APPLET_GNOME_LIBS@ \
 			   $(top_builddir)/uim/libuim.la
 uim_toolbar_applet_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
-uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_CFLAGS@
+uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_GNOME_CFLAGS@
 
 uim_toolbar_applet_SOURCES = toolbar-applet-gnome.c toolbar-common-gtk.c
 
@@ -31,7 +31,7 @@ endif
 if GTK2
 bin_PROGRAMS = uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk \
 	       uim-input-pad-ja
-if APPLET
+if APPLET_GNOME
 libexec_PROGRAMS += uim-candwin-gtk
 else
 libexec_PROGRAMS = uim-candwin-gtk

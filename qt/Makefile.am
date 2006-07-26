@@ -1,5 +1,6 @@
 SUBDIRS = chardict test
-EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui
+EXTRA_DIST = pref-keyeditformbase.ui  pref-olisteditformbase.ui \
+	     uimapplet.desktop.in
 
 if QT
 INCLUDES += -I$(top_srcdir) -I$(top_builddir)
@@ -22,6 +23,10 @@ HEADER_FILES += \
 	pref-kseparator.h \
 	pref-qt.h
 endif
+if APPLET_KDE
+HEADER_FILES += \
+	toolbar-applet-kde.h
+endif
 
 MOC_FILES = \
 	toolbar-common-quimhelpertoolbar.moc \
@@ -34,6 +39,10 @@ MOC_FILES += \
 	pref-customwidgets.moc \
 	pref-kseparator.moc \
 	pref-qt.moc
+endif
+if APPLET_KDE
+MOC_FILES += \
+	toolbar-applet-kde.moc
 endif
 
 if PREF
@@ -57,6 +66,14 @@ bin_PROGRAMS += \
 endif
 
 libexec_PROGRAMS = uim-candwin-qt
+
+if APPLET_KDE
+applet_LTLIBRARIES = uim_panelapplet.la
+appletdir = @KDE_LIB_DIR@/kde3
+
+lnkdir = @KDE_DATA_DIR@/kicker/applets
+lnk_DATA = uimapplet.desktop
+endif
 
 # Immodule
 if QT_IMMODULE
@@ -109,6 +126,16 @@ uim_toolbar_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_toolbar_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_toolbar_qt_LDADD    = $(top_builddir)/uim/libuim.la ./libtoolbarcommon.la
 toolbar-standalone-qt.cpp: toolbar-standalone-qt.moc
+
+# Toolbar applet
+if APPLET_KDE
+uim_panelapplet_la_SOURCES = toolbar-applet-kde.cpp toolbar-applet-kde.h qtgettext.h \
+			 toolbar-common-quimhelpertoolbar.h toolbar-common-uimstateindicator.h
+uim_panelapplet_la_CXXFLAGS = -I@KDE_INCLUDE_DIR@ $(QT_CXXFLAGS)
+uim_panelapplet_la_LDFLAGS  = -avoid-version -module -no-undefined -Wl,--no-undefined -Wl,--allow-shlib-undefined -L@KDE_LIB_DIR@ $(QT_LDFLAGS)
+uim_panelapplet_la_LIBADD   = $(top_builddir)/uim/libuim.la libtoolbarcommon.la  -lkdeui -lkdecore 
+toolbar-applet-kde.cpp: toolbar-applet-kde.moc
+endif
 
 # Candidate Window
 uim_candwin_qt_SOURCES  = candwin-qt.cpp candwin-qt.h qtgettext.h
