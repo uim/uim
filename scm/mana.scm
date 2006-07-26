@@ -826,7 +826,10 @@
 	;; spcae key => commit
 	((mana-space-key? key key-state)
 	 (if (mana-context-alnum mc)
-	     (im-commit mc (list-ref ja-space (mana-context-alnum-type mc)))
+	     (im-commit mc (list-ref
+			    ja-alnum-space
+			    (- (mana-context-alnum-type mc)
+			       mana-type-halfwidth-alnum)))
 	     (im-commit mc (list-ref ja-space (mana-context-kana-mode mc)))))
 	 
         ((symbol? key)
