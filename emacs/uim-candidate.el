@@ -402,10 +402,6 @@
 	      (candlabel (nth 1 x))
 	      (candstr (nth 2 x)))
 
-	  ;; separate appendix (for prime...)
-	  (if (string-match "\t" candstr)
-	      (setq candstr (substring candstr (match-end 0))))
-
 	  (setq candlabel 
 		(concat (make-string (- uim-max-candlabel 
 					(string-width candlabel)) 32)
@@ -417,7 +413,7 @@
 	    (let (candlabelpad)
 	      (while t
 		(let* ((trunc (truncate-string-to-width candstr
-						      truncwidth nil))
+							truncwidth nil))
 		       (width-truncated (string-width trunc))
 		       )
 		
@@ -490,6 +486,23 @@
 ;;
 (defun uim-show-candidate (candidate)
 
+
+  ;; separate appendix (for prime...)
+  (setq candidate
+	(cons (car candidate)
+	      (mapcar
+	       '(lambda (x)
+		  (let ((selected (nth 0 x))
+			(candlabel (nth 1 x))
+			(candstr (nth 2 x)))
+
+		    ;; separate appendix (for prime...)
+		    (if (string-match "\t" candstr) 
+			(setq candstr (substring candstr 0 (match-beginning 0))))
+		    (list selected candlabel candstr)
+		    )
+		  ) (cdr candidate))))
+	
   (setq uim-max-candlabel 
 	(eval (cons 'max 
 		    (mapcar '(lambda (x) (string-width (nth 1 x)))
