@@ -108,6 +108,11 @@ Example:
 preedit string in vertical direction.  Otherwise, it is 
 displayed at the echo area.")
 
+;; display appendix or not
+(defvar uim-candidate-display-appendix t
+  "If the value is non-nil, appendixes are displayed with candidates."
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 

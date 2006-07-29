@@ -494,11 +494,20 @@
 	       '(lambda (x)
 		  (let ((selected (nth 0 x))
 			(candlabel (nth 1 x))
-			(candstr (nth 2 x)))
-
+			(candstr (nth 2 x))
+			eom)
+		    
 		    ;; separate appendix (for prime...)
-		    (if (string-match "\t" candstr) 
-			(setq candstr (substring candstr 0 (match-beginning 0))))
+		    (if (not uim-candidate-display-appendix)
+			(when (string-match "\t" candstr)
+			  (setq candstr (substring candstr 0 
+						   (match-beginning 0))))
+		      (while (setq eom (string-match "\t" candstr))
+			(setq candstr
+			      (concat (substring candstr 0 eom)
+				      " "
+				      (substring candstr (+ eom 1))))))
+   
 		    (list selected candlabel candstr)
 		    )
 		  ) (cdr candidate))))
