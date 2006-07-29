@@ -146,7 +146,7 @@ static void parse_canna_priv_dic_buf(char *buf, uim_word **head)
 {
   char *p, *q, *r, *s;
   char *phon, *desc, *cclass_native;
-  int len, freq;
+  int len, freq = 1;
 
   phon = desc = cclass_native = NULL;
   len = strlen(buf);
