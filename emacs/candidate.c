@@ -57,7 +57,7 @@ new_candidate(uim_context context, candidate_info *cand, int num, int limit)
 
   cand->valid = 1;
 
-  cand->index = 0; 
+  cand->index = -1;
   cand->disp_limit = limit;
   cand->num = num;
 
