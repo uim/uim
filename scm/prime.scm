@@ -2003,6 +2003,9 @@
     ;; FIXME: I don't wanna use prime-context-session here.
     ;; FIXME: (2005-02-25) <Hiroyuki Komatsu>
     ;; If the session is #f, the PRIME mode has never been turned on.
+    (if (not (prime-context-session context))
+        (prime-context-initialize! context))
+
     (if (prime-context-session context)
 	(begin
 	  (prime-preedit-reset! context)
