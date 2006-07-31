@@ -68,7 +68,7 @@ char *strsep(char **stringp, const char *delim);
 #endif
 
 #ifndef HAVE_STRLCPY
-#define stlcpy	uim_strlcpy
+#define strlcpy	uim_strlcpy
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
 
