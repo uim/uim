@@ -909,6 +909,8 @@ void KeyGrabDialog::setKeyStr()
         keystr += "<Control>";
     if( mod & Qt::AltButton )
         keystr += "<Alt>";
+    if( mod & Qt::MetaButton )
+        keystr += "<Meta>";
 
     switch( keyval ) {
     case Qt::Key_Space:
