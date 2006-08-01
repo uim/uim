@@ -149,7 +149,7 @@ endif
 uim_module_manager_LIBS =
 uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"
 uim_module_manager_CFLAGS =
-uim_module_manager_LDADD = libuim.la $(top_builddir)/replace/libreplace.la
+uim_module_manager_LDADD = libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
 
 noinst_PROGRAMS = uim-agent test-gc

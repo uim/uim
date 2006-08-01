@@ -123,10 +123,6 @@ uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim.la
 switcher-qt.cpp: switcher-qt.moc
-if NEED_SETENV_C
-uim_im_switcher_qt_SOURCES += $(top_srcdir)/replace/os_dep.h
-uim_im_switcher_qt_LDADD   += $(top_builddir)/replace/libreplace.la
-endif
 
 
 # Pref
