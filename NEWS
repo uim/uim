@@ -1,3 +1,20 @@
+Overview of changes from 1.2.0-beta to 1.2.0
+==
+* Fixes
+  o Minor
+    - Prime
+      - Fix initialization of the context upon IM switch (Konosuke).
+
+    - uim-pref-qt
+      - Handle Meta modifier.
+
+    - uim.el
+      - Fix displaying candidates in input prediction (Konosuke).
+      - Fix displaying candidates with appendix on uim-prime (Konosuke).
+
+* Others
+  - Bump libuim version.
+
 Overview of changes from 1.2.0-alpha to 1.2.0-beta
 ==
 * Fixes
