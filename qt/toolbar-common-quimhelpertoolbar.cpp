@@ -74,7 +74,6 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
 
 QUimHelperToolbar::~QUimHelperToolbar()
 {
-    delete m_indicator;
 }
 
 int QUimHelperToolbar::getNumButtons()
