@@ -98,17 +98,17 @@ void UimStateIndicator::parseHelperStr( const QString& str )
     {
         if ( lines[ 0 ] == "prop_list_update" )
             propListUpdate( lines );
-        else if ( lines[ 0 ] == "prop_label_update" )
-            propLabelUpdate( lines );
     }
 }
 
 void UimStateIndicator::propListUpdate( const QStringList& lines )
 {
-    if ( !buttons.isEmpty() )
-        buttons.clear();
-
+    QPtrList<QHelperToolbarButton> tmp_button_list;
+    QHelperToolbarButton *old_button;
     QHelperPopupMenu *popupMenu = NULL;
+
+    tmp_button_list = buttons;
+    old_button = tmp_button_list.first();
 
     QStringList::ConstIterator it = lines.begin();
     const QStringList::ConstIterator end = lines.end();
@@ -125,23 +125,32 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     delete fallbackButton;
                     fallbackButton = NULL;
                 }
-                // create popup
-                popupMenu = new QHelperPopupMenu( 0 );
-                popupMenu->setCheckable( true );
 
                 // create button
-                QHelperToolbarButton *button = new QHelperToolbarButton( this );
+                QHelperToolbarButton *button;
+                if (old_button) {
+                    button = old_button;
+                    delete button->popup();
+                } else {
+                    button = new QHelperToolbarButton( this );
+                    buttons.append( button );
+                }
                 QPixmap icon = QPixmap(ICONDIR + "/" + fields[1] + ".png");
                 if (!icon.isNull())
                     button->setPixmap(icon);
                 else
                     button->setText( fields[ 2 ] );
                 QToolTip::add( button, fields[ 3 ] );
+
+                // create popup
+                popupMenu = new QHelperPopupMenu( button );
+                popupMenu->setCheckable( true );
                 button->setPopup( popupMenu );
                 button->setPopupDelay( 50 );
+
                 button->show();
 
-                buttons.append( button );
+                old_button = tmp_button_list.next();
             }
             else if ( fields[ 0 ].startsWith( "leaf" ) )
             {
@@ -159,33 +168,13 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
             }
         }
     }
-}
 
-void UimStateIndicator::propLabelUpdate( const QStringList& lines )
-{
-    unsigned int i = 0;
-    while ( !lines[ i ].isEmpty() )
-        i++;
+    while (old_button) {
+        QHelperToolbarButton *next;
 
-    if ( buttons.isEmpty() || buttons.count() != i - 2 )
-    {
-        uim_helper_client_get_prop_list();
-        return ;
-    }
-
-    i = 1;
-    while ( !lines[ i ].isEmpty() )
-    {
-        const QStringList fields = QStringList::split( "\t", lines[ i ] );
-        if ( !fields.isEmpty() && !fields[ 0 ].isEmpty() && !fields[ 1 ].isEmpty() )
-        {
-            // set button label
-            buttons.at( i - 2 ) ->setText( fields[ 0 ] );
-            // set tooltip
-            QToolTip::add( buttons.at( i - 2 ), fields[ 1 ] );
-        }
-
-        i++;
+        next = tmp_button_list.next();
+        buttons.remove(old_button);       
+        old_button = next;
     }
 }
 

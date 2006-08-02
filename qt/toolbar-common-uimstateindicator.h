@@ -59,7 +59,6 @@ protected:
 
     void parseHelperStr( const QString& str );
     void propListUpdate( const QStringList& lines );
-    void propLabelUpdate( const QStringList& lines );
 
     static void helper_disconnect_cb();
 
