@@ -7,6 +7,8 @@ Overview of changes from 1.2.0-beta to 1.2.0
 
     - uim-pref-qt
       - Handle Meta modifier.
+    - uim-toolbar-qt
+      - Fix to shrink toolbar when any of the buttons are removed.
 
     - uim.el
       - Fix displaying candidates in input prediction (Konosuke).
