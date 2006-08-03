@@ -61,6 +61,7 @@ UimApplet::UimApplet(const QString& configFile, Type type, int actions,
     setBackgroundMode(QWidget::X11ParentRelative);
     toolbar = new UimToolbar(this);
     toolbar->show();
+    QObject::connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
 }
 
 UimApplet::~UimApplet()
@@ -88,10 +89,10 @@ void UimApplet::preferences()
     toolbar->slotExecPref();
 }
 
-void UimApplet::resizeEvent(QResizeEvent *ev)
+void UimApplet::slotToolbarResized()
 {
-    toolbar->resize(size());
-    KPanelApplet::resizeEvent(ev);
+    toolbar->resize(QSize(toolbar->preferedWidthForHeight(), size().height()));
+    updateLayout();
 }
 
 UimToolbar::UimToolbar(QWidget *parent, const char *name, WFlags f)

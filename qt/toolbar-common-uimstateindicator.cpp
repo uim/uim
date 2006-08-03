@@ -112,6 +112,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
     QPtrList<QHelperToolbarButton> tmp_button_list;
     QHelperToolbarButton *old_button;
     QHelperPopupMenu *popupMenu = NULL;
+    bool size_changed = false;
 
     tmp_button_list = buttons;
     old_button = tmp_button_list.first();
@@ -140,6 +141,7 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 } else {
                     button = new QHelperToolbarButton( this );
                     buttons.append( button );
+                    size_changed = true;
                 }
                 QPixmap icon = QPixmap(ICONDIR + "/" + fields[1] + ".png");
                 if (!icon.isNull())
@@ -175,6 +177,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         }
     }
 
+    if (old_button)
+        size_changed = true;
+
     while (old_button) {
         QHelperToolbarButton *next;
 
@@ -182,6 +187,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         buttons.remove(old_button);       
         old_button = next;
     }
+
+    if (size_changed)
+        emit indicatorResized();
 }
 
 void UimStateIndicator::helper_disconnect_cb()

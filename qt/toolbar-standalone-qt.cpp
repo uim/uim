@@ -59,6 +59,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
     QUimHelperToolbar *b = new QUimHelperToolbar( this );
     b->adjustSize();
     b->show();
+    QObject::connect( b, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
 
     // Move
     int panelHeight = 64; // FIXME!
@@ -80,6 +81,12 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
 UimStandaloneToolbar::~UimStandaloneToolbar()
 {
     uim_quit();
+}
+
+void
+UimStandaloneToolbar::slotToolbarResized()
+{
+    adjustSize();
 }
 
 UimToolbarDraggingHandler::UimToolbarDraggingHandler( QWidget *parent,

@@ -61,7 +61,9 @@ public:
     int widthForHeight(int h) const;
     int heightForWidth(int w) const;
     void preferences();
-    void resizeEvent(QResizeEvent *);
+
+protected slots:
+    void slotToolbarResized();
 
 protected:
     UimToolbar *toolbar;

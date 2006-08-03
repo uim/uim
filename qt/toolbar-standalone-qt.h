@@ -45,6 +45,9 @@ class UimStandaloneToolbar : public QHBox
 public:
     UimStandaloneToolbar( QWidget *paret = 0, const char *name = 0 );
     ~UimStandaloneToolbar();
+
+protected slots:
+    void slotToolbarResized();
 };
 
 class UimToolbarDraggingHandler : public QFrame

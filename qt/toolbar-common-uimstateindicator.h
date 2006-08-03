@@ -64,6 +64,9 @@ protected:
 
     static void helper_disconnect_cb();
 
+signals:
+    void indicatorResized();
+
 public slots:
     void slotStdinActivated( int socket );
 

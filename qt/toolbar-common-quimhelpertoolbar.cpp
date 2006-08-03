@@ -49,6 +49,8 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
 {
     m_indicator = new UimStateIndicator( this );
 
+    QObject::connect( m_indicator, SIGNAL( indicatorResized() ), this, SLOT( slotIndicatorResized() ) );
+
     m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
     m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
     m_dicticon = QPixmap( ICONDIR + "/uim-dict.png");
@@ -88,6 +90,11 @@ void QUimHelperToolbar::contextMenuEvent( QContextMenuEvent * e )
         m_contextMenu->move( e->globalPos() );
         m_contextMenu->exec();
     }
+}
+
+void QUimHelperToolbar::slotIndicatorResized()
+{
+    emit toolbarResized();
 }
 
 void QUimHelperToolbar::addExecImSwitcherButton()

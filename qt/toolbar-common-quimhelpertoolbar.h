@@ -71,8 +71,10 @@ protected slots:
     void slotExecHandwritingInputPad();
     void slotExecHelp();    
 
+    void slotIndicatorResized();
 signals:
     void quitToolbar();
+    void toolbarResized();
 
 protected:
     UimStateIndicator *m_indicator;
