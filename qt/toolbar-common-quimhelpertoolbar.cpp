@@ -47,7 +47,9 @@ static const QString ACTION_ICONDIR = KDE_ICONDIR "/crystalsvg/32x32/actions";
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
     : QHBox( parent, name, f )
 {
-    new UimStateIndicator( this );
+    UimStateIndicator *indicator = new UimStateIndicator( this );
+
+    QObject::connect( indicator, SIGNAL( indicatorResized() ), this, SLOT( slotIndicatorResized() ) );
 
     m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
     m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
@@ -82,6 +84,11 @@ void QUimHelperToolbar::contextMenuEvent( QContextMenuEvent * e )
         m_contextMenu->move( e->globalPos() );
         m_contextMenu->exec();
     }
+}
+
+void QUimHelperToolbar::slotIndicatorResized()
+{
+    emit toolbarResized();
 }
 
 void QUimHelperToolbar::addExecImSwitcherButton()
