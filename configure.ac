@@ -822,7 +822,8 @@ dnl *** test for KDE applet.. XXX ***
 dnl *********************************
 AC_ARG_ENABLE(kde-applet,
   AC_HELP_STRING([--enable-kde-applet],
-  		 [build uim applet for KDE panel]),
+  		 [build uim applet for KDE panel
+		  @<:@default=yes@:>@]),
 		 enable_kde_applet=$enableval,
 		 enable_kde_applet=yes)
 case "$enable_kde_applet" in
