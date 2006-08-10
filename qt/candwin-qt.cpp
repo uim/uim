@@ -111,8 +111,9 @@ CandidateWindow::~CandidateWindow()
 
 void CandidateWindow::activateCand( const QStringList &list )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: activateCand()" );
-
+#endif
     /**
      * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
      */
@@ -187,8 +188,9 @@ void CandidateWindow::activateCand( const QStringList &list )
 }
 void CandidateWindow::selectCand( const QStringList &list )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: selectCand()" );
-
+#endif
     const int index = list[ 1 ].toInt();
     setIndex( index );
 
@@ -197,8 +199,9 @@ void CandidateWindow::selectCand( const QStringList &list )
 
 void CandidateWindow::moveCand( const QStringList &list )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: moveCand()" );
-
+#endif
     if ( list[ 1 ].isEmpty() || list[ 2 ].isEmpty() )
         return ;
 
@@ -234,15 +237,17 @@ void CandidateWindow::moveCand( const QStringList &list )
 
 void CandidateWindow::showCand()
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: showCand()" );
-
+#endif
     if ( isActive )
         show();
 }
 void CandidateWindow::deactivateCand()
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: deactivateCand()" );
-
+#endif
     hide();
     isActive = false;
 }
@@ -277,8 +282,9 @@ void CandidateWindow::slotStdinActivated( int fd )
 
 void CandidateWindow::strParse( const QString& str )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "str = %s", ( const char* ) str.local8Bit() );
-
+#endif
     QStringList list = QStringList::split( "\n", str );
 
     QStringList::Iterator it = list.begin();
@@ -314,8 +320,9 @@ void CandidateWindow::slotCandidateSelected( QListViewItem * item )
 
 void CandidateWindow::adjustCandidateWindowSize()
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "adjustCandidateWindowSize()" );
-
+#endif
     int width = 0;
     int height = 0;
     QListViewItem *item = cList->firstChild();
@@ -373,7 +380,7 @@ void CandidateWindow::setPage( int page )
         if ( candidateIndex >= 0 )
             newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
         else
-            newindex = newpage * displayLimit;
+            newindex = -1;
     }
     else
     {
@@ -412,8 +419,9 @@ void CandidateWindow::setPage( int page )
 
 void CandidateWindow::setIndex( int index )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "setIndex : index = %d", index );
-
+#endif
     // validity check
     if ( index < 0 )
         candidateIndex = nrCandidates - 1;
