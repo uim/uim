@@ -1735,10 +1735,11 @@
 	#f)  ;; Do nothing.
 
        (else
-	;; Store the current preedition into the context
-	(prime-context-set-preedit-line!
-	 context
-	 (prime-engine-edit-get-preedition session))
+	(if (not (= (prime-context-mode context) prime-mode-latin))
+	    ;; Store the current preedition into the context
+	    (prime-context-set-preedit-line!
+	     context
+	     (prime-engine-edit-get-preedition session)))
 
 	(prime-update-state context)
 	(prime-update-preedit context)
