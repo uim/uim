@@ -203,7 +203,7 @@ void CandidateWindow::setPage( int page )
         if ( candidateIndex >= 0 )
             newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
         else
-            newindex = newpage * displayLimit;
+            newindex = -1;
     }
     else
     {

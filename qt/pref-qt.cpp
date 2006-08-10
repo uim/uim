@@ -75,7 +75,9 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
         checkDotUimFile();        
         setupWidgets();
     } else {
+#if defined(ENABLE_DEBUG)
         qDebug("uim_custom_enable() failed.");
+#endif
         uim_quit();
         QApplication::exit( -1 );
     }
@@ -292,7 +294,9 @@ void UimPrefDialog::slotApply()
     if( !m_isValueChanged )
         return;
 
+#if defined(ENABLE_DEBUG)
     qDebug("start saving....");
+#endif
 
     uim_custom_save();
     uim_custom_broadcast_reload_request();
@@ -366,7 +370,9 @@ void QConfirmDialog::showOnStart( bool isShowOnStart )
     QSettings settings;
     settings.writeEntry( m_confname, isShowOnStart );
 
+#if defined(ENABLE_DEBUG)
     qDebug("show on start = %d", isShowOnStart );
+#endif
 }
 
 
