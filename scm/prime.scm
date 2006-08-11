@@ -353,6 +353,7 @@
     (prime-commit-key?         . prime-command-modify-commit)
     (prime-next-candidate-key? . prime-command-segment-next)
     (prime-prev-candidate-key? . prime-command-segment-prev)
+    (prime-cand-select-key?    . prime-command-segment-select)
     (prime-go-left-edge-key?   . prime-command-modify-cursor-left-edge)
     (prime-go-right-edge-key?  . prime-command-modify-cursor-right-edge)
     (prime-go-left-key?        . prime-command-modify-cursor-left)
@@ -657,6 +658,29 @@
     (prime-context-set-nth! context 0)
     ))
 
+(define prime-candidates-get-nth
+  (lambda (context index-no)
+    (if (>= index-no (prime-candidates-get-length context))
+	#f
+	(let ((state (prime-context-state context)))
+	  (if (= state 'prime-state-segment)
+	      (car (nth index-no (prime-context-segment-candidates context)))
+	      (car (nth index-no (prime-context-candidates context))))))))
+
+(define prime-candidates-get-length
+  (lambda (context)
+    (let ((state (prime-context-state context)))
+      (if (= state 'prime-state-segment)
+	  (length (prime-context-segment-candidates context))
+	  (length (prime-context-candidates context))))))
+
+(define prime-candidates-get-index
+  (lambda (context)
+    (let ((state (prime-context-state context)))
+      (if (= state 'prime-state-segment)
+	  (prime-context-segment-nth context)
+	  (prime-context-nth context)))))
+
 (define prime-get-nth-candidate
   (lambda (context n)
     (if (>= n (prime-get-nr-candidates context))
@@ -735,12 +759,15 @@
 ;;;; prime-uim:
 ;;;; ------------------------------------------------------------
 
+;; This returns a pair of the beginning index and the end index of displayed
+;; candidates.
 (define prime-uim-candwin-get-range
   (lambda (context)
-    (let* ((beginning (* (/ (prime-context-nth context) prime-nr-candidate-max)
+    (let* ((beginning (* (/ (prime-candidates-get-index context)
+			    prime-nr-candidate-max)
 			 prime-nr-candidate-max))
 	   (end       (min (+ beginning prime-nr-candidate-max)
-			   (prime-get-nr-candidates context))))
+			   (prime-candidates-get-length context))))
       (cons beginning end))))
 
 ;;;; ------------------------------------------------------------
@@ -1096,9 +1123,22 @@
     (let* ((nth0 (number->candidate-index (numeral-char->number key)))
 	   (cand-range (prime-uim-candwin-get-range context))
 	   (nth (min (+ (car cand-range) nth0) (cdr cand-range)))
-	   (cand (prime-get-nth-candidate context nth)))
+	   (cand (prime-candidates-get-nth context nth)))
       (if cand
 	  (prime-commit-candidate context nth))
+      )))
+
+;; FIXME: Integrate into the above prime-command-conv-select.
+;; FIXME: <Hiroyuki Komatsu> (2005-03-30)
+(define prime-command-segment-select
+  (lambda (context key key-state)
+    (let* ((nth0 (number->candidate-index (numeral-char->number key)))
+	   (cand-range (prime-uim-candwin-get-range context))
+	   (nth (min (+ (car cand-range) nth0) (cdr cand-range)))
+	   (cand (prime-candidates-get-nth context nth)))
+      ;(print cand-range)
+      (if cand
+	  (prime-commit-segment-nth context nth))
       )))
 
 (define prime-command-conv-input
