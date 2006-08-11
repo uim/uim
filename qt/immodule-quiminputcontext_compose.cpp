@@ -97,7 +97,14 @@ bool Compose::handle_qkey(QKeyEvent *event)
 	    if (isalpha(ascii))
 	    	xkeysym = ascii;
 	    else
-	    	xkeysym = qkey;
+		if ((qstate & Qt::ControlButton) &&
+		    (ascii >= 0x01 && ascii <= 0x1a))
+		    if (qstate & Qt::ShiftButton)
+			xkeysym = ascii + 0x40;
+		    else
+			xkeysym = ascii + 0x60;
+		else
+	    	    xkeysym = qkey;
 	} else {
             xkeysym = qkey;
 	}

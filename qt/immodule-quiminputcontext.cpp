@@ -200,7 +200,14 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         }
         else
         {
-            key = qkey;
+            if ( keyevent->state() & Qt::ControlButton &&
+                 ( ascii >= 0x01 && ascii <= 0x1a ) )
+                if ( keyevent->state() & Qt::ShiftButton )
+                    key = ascii + 0x40;
+                else
+                    key = ascii + 0x60;
+            else
+                key = qkey;
         }
     }
     else
