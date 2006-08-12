@@ -68,7 +68,7 @@
   (_ "Space character")
   (_ "long description will be here."))
 
-(define-custom 'prime-use-unixdomain? #f
+(define-custom 'prime-use-unixdomain? #t
   '(prime advanced)
   '(boolean)
   (_ "Use UNIX domain socket to communicate with PRIME")
