@@ -128,6 +128,15 @@ prime_get_ud_path(void)
   return path;
 }
 
+static void
+clear_prime_fd()
+{
+  close(prime_fd);
+  prime_fd = -1;
+  free(prime_ud_path);
+  prime_ud_path = NULL;
+}
+
 static char *
 prime_read_msg_from_ud(int fd)
 {
@@ -149,6 +158,7 @@ prime_read_msg_from_ud(int fd)
     if (rc <= 0) {
       fprintf(stderr, "disconnected\n");
       free(read_buf);
+      clear_prime_fd();
       return NULL;
     }
     read_buf = (char *)realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
@@ -186,10 +196,8 @@ prime_send_command(uim_lisp str_)
   if (use_unix_domain_socket) {
     prime_write_msg_to_ud(prime_fd, str);
     result = prime_read_msg_from_ud(prime_fd);
-    /* 
-     * if (!result)
-     *   prime_fd = prime_init_ud(prime_ud_path);
-     */
+    if (!result)
+      return uim_scm_make_str("error\n\t\n\n");
   } else {
     int len = strlen(str);
     char *buf = malloc(len + 2);
@@ -197,10 +205,9 @@ prime_send_command(uim_lisp str_)
     result = uim_ipc_send_command(&prime_pid, &primer, &primew, prime_command,
 				  buf);
     free(buf);
+    if (!result)
+      return uim_scm_make_str("");
   }
-
-  if (!result)
-    return uim_scm_make_str("");
 
   ret = uim_scm_make_str(result);
   free(result);
@@ -262,10 +269,7 @@ uim_plugin_instance_quit(void)
 {
   if (use_unix_domain_socket && prime_fd != -1) {
     prime_write_msg_to_ud(prime_fd, "close\n");
-    close(prime_fd);
-    prime_fd = -1;
-    free(prime_ud_path);
-    prime_ud_path = NULL;
+    clear_prime_fd();
     use_unix_domain_socket = UIM_FALSE;
   } else {
     if (primew) {
