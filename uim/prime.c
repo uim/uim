@@ -90,7 +90,7 @@ prime_init_ud(char *path)
   }
 #endif
 
-  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1) {
+  if (connect(fd, (struct sockaddr *)&server, sizeof(server)) == -1) {
     close(fd);
     /* fprintf(stderr, "connect failed\n"); */
     return -1;
@@ -131,11 +131,15 @@ prime_get_ud_path(void)
 static char *
 prime_read_msg_from_ud(int fd)
 {
-  char *read_buf = strdup("");
+  char *read_buf;
   char buf[BUFFER_SIZE];
   int rc, len = 0;
 
   if (fd == -1)
+    return NULL;
+
+  read_buf  = strdup("");
+  if (!read_buf)
     return NULL;
 
   for (;;) {
@@ -144,9 +148,12 @@ prime_read_msg_from_ud(int fd)
     
     if (rc <= 0) {
       fprintf(stderr, "disconnected\n");
+      free(read_buf);
       return NULL;
     }
     read_buf = (char *)realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
+    if (!read_buf)
+      return NULL;
     strcat(read_buf, buf);
     len += rc;
 
@@ -209,7 +216,7 @@ prime_lib_init(uim_lisp use_udp_)
   use_unix_domain_socket = uim_scm_c_bool(use_udp_);
 
   if (use_unix_domain_socket) {
-    if (prime_fd > 0)
+    if (prime_fd != -1)
       return uim_scm_t();
 
     prime_ud_path = prime_get_ud_path();
@@ -233,10 +240,7 @@ prime_lib_init(uim_lisp use_udp_)
       }
     }
 
-    if (prime_fd == -1)
-      return uim_scm_f();
-    else
-      return uim_scm_t();
+    return (prime_fd == -1) ? uim_scm_f() : uim_scm_t();
   } else {
     if (prime_pid == 0)
       prime_pid = uim_ipc_open_command(prime_pid, &primer, &primew,
@@ -256,8 +260,9 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
-  if (use_unix_domain_socket && prime_fd > 0) {
+  if (use_unix_domain_socket && prime_fd != -1) {
     prime_write_msg_to_ud(prime_fd, "close\n");
+    close(prime_fd);
     prime_fd = -1;
     free(prime_ud_path);
     prime_ud_path = NULL;
