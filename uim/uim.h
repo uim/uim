@@ -610,22 +610,6 @@ uim_set_im_switch_request_cb(uim_context uc,
 			     void (*sw_app_im_cb)(void *ptr, const char *name),
 			     void (*sw_system_im_cb)(void *ptr, const char *name));
 
-#ifdef USE_CURSOR_GEOMETRY_IN_IM
-/*
- * Set callback function to be called when information on cursor
- * geometry is required.
- *
- * @param uc input context
- * @param cursor_geometry_cb called when cursor geometry is required.
- *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
- *        2nd argument "v" is vertical coordinate of the cursor point.
- *        3rd argument "h" is horizontal coordinate of the cursor point.
- */
-void
-uim_set_cursor_geometry_cb(uim_context uc,
-				 void (*cursor_geometry_cb)(void *ptr, int *v, int *h));
-#endif
-
 /* Utility functions */
 int
 uim_ipc_open_command(int old_pid, FILE **read_handler, FILE **write_handler, const char *command);

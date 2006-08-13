@@ -718,7 +718,7 @@ switch_im(uim_lisp id_, uim_lisp name_)
   const char *name;
 
   uc = retrieve_uim_context(id_);
-  name = uim_scm_refer_c_str(name_);
+  name= uim_scm_refer_c_str(name_);
 
   uim_switch_im(uc, name);
   if (uc->configuration_changed_cb)
@@ -757,20 +757,6 @@ switch_system_global_im(uim_lisp id_, uim_lisp name_)
   return uim_scm_t();
 }
 
-#ifdef USE_CURSOR_GEOMETRY_IN_IM
-static uim_lisp
-im_request_cursor_geometry(uim_lisp id_)
-{
-  int v, h;
-  uim_context uc = retrieve_uim_context(id_);
-  if (uc->cursor_geometry_cb) {
-    uc->cursor_geometry_cb(uc->ptr, &v, &h);
-    return uim_scm_cons(uim_scm_make_int(v), uim_scm_make_int(h));
-  }
-  return uim_scm_f();
-}
-#endif
-
 void
 uim_init_im_subrs(void)
 {
@@ -808,7 +794,4 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_2("im-switch-im", switch_im);
   uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);
   uim_scm_init_subr_2("im-switch-system-global-im", switch_system_global_im);
-#ifdef USE_CURSOR_GEOMETRY_IN_IM
-  uim_scm_init_subr_1("im-request-cursor-geometry", im_request_cursor_geometry);
-#endif
 }

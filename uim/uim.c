@@ -166,10 +166,6 @@ uim_create_context(void *ptr,
   uc->switch_app_global_im_cb = NULL;
   uc->switch_system_global_im_cb = NULL;
   /**/
-#ifdef USE_CURSOR_GEOMETRY_IN_IM
-  uc->cursor_geometry_cb = NULL;
-#endif
-  /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
   /**/
@@ -227,15 +223,6 @@ uim_set_im_switch_request_cb(uim_context uc,
   uc->switch_app_global_im_cb = sw_app_im_cb;
   uc->switch_system_global_im_cb = sw_system_im_cb;
 }
-
-#ifdef USE_CURSOR_GEOMETRY_IN_IM
-void
-uim_set_cursor_geometry_cb(uim_context uc,
-		void (*cursor_geometry_cb)(void *ptr, int *v, int *h))
-{
-  uc->cursor_geometry_cb = cursor_geometry_cb;
-}
-#endif
 
 void
 uim_switch_im(uim_context uc, const char *engine)
