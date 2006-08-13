@@ -59,9 +59,11 @@ static FILE *primer, *primew;
 static int prime_pid = 0;
 
 static char *prime_command = "prime";
+
 static char *prime_ud_path;
 static int prime_fd = -1;
 static uim_bool use_unix_domain_socket;
+#define PRIME_UNIX_SOCKET_PREFIX	"/tmp/uim-prime-"
 
 static int
 prime_init_ud(char *path)
@@ -118,9 +120,9 @@ prime_get_ud_path(void)
     login = strdup(pw->pw_name);
   }
 
-  len = strlen(login) + strlen("/tmp/uim-prime-") + 1;
+  len = strlen(login) + strlen(PRIME_UNIX_SOCKET_PREFIX) + 1;
   path = (char *)malloc(len);
-  snprintf(path, len, "/tmp/uim-prime-%s", login);
+  snprintf(path, len, PRIME_UNIX_SOCKET_PREFIX"%s", login);
 
   if (pw)
     free(login);
@@ -156,7 +158,10 @@ prime_read_msg_from_ud(int fd)
     buf[rc] = '\0';
     
     if (rc <= 0) {
-      fprintf(stderr, "disconnected\n");
+      perror("disconnected");
+      if (errno == EAGAIN || errno == EINTR)
+	continue;
+
       free(read_buf);
       clear_prime_fd();
       return NULL;
@@ -251,7 +256,7 @@ prime_lib_init(uim_lisp use_udp_)
   } else {
     if (prime_pid == 0)
       prime_pid = uim_ipc_open_command(prime_pid, &primer, &primew,
-				       prime_command );
+				       prime_command);
 
     return prime_pid ? uim_scm_t() : uim_scm_f();
   }

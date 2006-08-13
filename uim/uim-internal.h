@@ -117,6 +117,10 @@ struct uim_context_ {
   /* switch IM */
   void (*switch_app_global_im_cb)(void *ptr, const char *name);
   void (*switch_system_global_im_cb)(void *ptr, const char *name);
+#ifdef USE_CURSOR_GEOMETRY_IN_IM
+  /* cursor geometry */
+  void (*cursor_geometry_cb)(void *ptr, int *v, int *h);
+#endif
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;
