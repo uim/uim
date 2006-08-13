@@ -429,9 +429,10 @@ candwin_activate(gchar **str)
 			 charset,
 			 &rbytes, &wbytes, NULL);
 
-    candidates = g_slist_append(candidates, utf8_str);
+    candidates = g_slist_prepend(candidates, utf8_str);
     j++;
   }
+  candidates = g_slist_reverse(candidates);
 
   cwin->candidate_index = -1;
   cwin->nr_candidates = j - 1;
