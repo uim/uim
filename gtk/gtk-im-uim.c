@@ -652,8 +652,9 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
 
   for (i = 0; i < nr; i++) {
     cand = uim_get_candidate(uic->uc, i, display_limit ? i % display_limit : i);
-    list = g_slist_append(list, cand);
+    list = g_slist_prepend(list, cand);
   }
+  list = g_slist_reverse(list);
 
   uim_cand_win_gtk_set_candidates(uic->cwin, display_limit, list);
 
