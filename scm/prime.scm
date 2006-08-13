@@ -1587,6 +1587,8 @@
   (lambda ()
     (let ((typing-method (prime-engine-get-env-typing-method)))
       (cond
+       ((eq? typing-method 'unknown)
+        #f)
        ((string=? typing-method "kana")
 	(prime-dont-use-numeral-key-to-select-cand))
        ((string=? typing-method "tcode")
