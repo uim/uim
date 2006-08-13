@@ -1,3 +1,18 @@
+Overview of changes from 1.2.0 to 1.2.1
+==
+* Fixes
+  - Prime
+    - Sync prime.scm with prime-1.0.0.1.
+    - Improve connection using unix domain socket.
+    - Use unix domain socket connection by default.
+
+  - uim-candwin-qt
+    - Fix displaying candidates in input prediction.
+
+  - Qt immodule
+    - Fix displaying candidates in input prediction.
+    - Fix key handling with contol modifier.
+
 Overview of changes from 1.2.0-beta to 1.2.0
 ==
 * Fixes
