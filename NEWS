@@ -11,7 +11,7 @@ Overview of changes from 1.2.0 to 1.2.1
 
   - Qt immodule
     - Fix displaying candidates in input prediction.
-    - Fix key handling with contol modifier.
+    - Fix key handling with control modifier.
 
 Overview of changes from 1.2.0-beta to 1.2.0
 ==
