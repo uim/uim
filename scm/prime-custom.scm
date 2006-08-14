@@ -185,6 +185,11 @@
 	 "дв"
 	 (N_ "Japanese")
 	 (N_ "PRIME on"))
+   (list 'action_prime_mode_english
+	 'ja_halfwidth_alnum
+	 "A"
+	 (N_ "English")
+	 (N_ "PRIME on"))
    (list 'action_prime_mode_wide_latin
 	 'ja_fullwidth_alnum
 	 "г┴"

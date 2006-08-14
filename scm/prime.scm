@@ -437,10 +437,27 @@
 		     "日本語"
 		     "PRIMEをオン"))
 		 (lambda (context)
-		   (= (prime-context-mode context)
-		      prime-mode-hiragana))
+		   (and
+		    (eq? (prime-context-language context) 'Japanese)
+		    (= (prime-context-mode context) prime-mode-hiragana)))
 		 (lambda (context)
+		   (prime-mode-language-set context 'Japanese)
 		   (prime-mode-set context prime-mode-hiragana)))
+
+(register-action 'action_prime_mode_english
+		 (lambda (context)
+		   '(ja_halfwidth_alnum
+		     "A"
+		     "英語"
+		     "PRIMEをオン"))
+		 (lambda (context)
+		   (and
+		    (eq? (prime-context-language context) 'English)
+		    (= (prime-context-mode context) prime-mode-hiragana)))
+		 (lambda (context)
+		   (prime-mode-language-set context 'English)
+		   (prime-mode-set context prime-mode-hiragana)))
+
 
 (register-action 'action_prime_mode_wide_latin
 		 (lambda (context)
