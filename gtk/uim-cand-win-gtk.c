@@ -524,7 +524,7 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 			   COLUMN_ANNOTATION, NULL, /*uim_candidate_get_annotation(cand),*/
 			   TERMINATOR);
       } else {
-#if 1
+#if 0
         /*
 	 * 2004-07-22 Takuro Ashie <ashie@good-day.co.jp>
 	 *
