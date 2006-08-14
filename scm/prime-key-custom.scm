@@ -55,6 +55,10 @@
 ;;(define-key prime-typing-mode-hankana-key?    "F8")
 ;;(define-key prime-typing-mode-wideascii-key?  "F9")
 ;;(define-key prime-typing-mode-ascii-key?      "F10")
+;;(define-key prime-expand-segment-key? '("<Control>o" "<Shift>right"))
+;;(define-key prime-shrink-segment-key? '("<Control>i" "<Shift>left"))
+;;(define-key prime-english-next-candidate-key? '("<Control>i" "tab" generic-next-candidate-key?))
+;;(define-key prime-english-direct-key? '("." "," ":" ";" "(" ")" "\"" "'" "!" "?"))
 
 (define-custom-group 'prime-keys1
 		     (_ "PRIME key bindings 1")
@@ -205,4 +209,28 @@
                '(prime-keys3)
 	       '(key)
 	       (_ "[PRIME] go right")
+	       (_ "long description will be here"))
+
+(define-custom 'prime-shrink-segment-key '("<IgnoreCase><Control>i" "<Shift>left")
+	       '(prime-keys3)
+	       '(key)
+	       (_ "[PRIME] shrink segment")
+	       (_ "long description will be here"))
+
+(define-custom 'prime-expand-segment-key '("<IgnoreCase><Control>o" "<Shift>right")
+	       '(prime-keys3)
+	       '(key)
+	       (_ "[PRIME] extend segment")
+	       (_ "long description will be here"))
+
+(define-custom 'prime-english-next-candidate-key '("<IgnoreCase><Control>i" "tab" generic-next-candidate-key)
+	       '(prime-keys3 english)
+	       '(key)
+	       (_ "[PRIME] next candidate in English mode")
+	       (_ "long description will be here"))
+
+(define-custom 'prime-english-direct-key '("." "," ":" ";" "(" ")" "\"" "'" "!" "?")
+	       '(prime-keys3 english)
+	       '(key)
+	       (_ "[PRIME] Direct key in English mode")
 	       (_ "long description will be here"))

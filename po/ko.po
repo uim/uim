@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-07-27 03:09+0900\n"
+"POT-Creation-Date: 2006-08-14 13:10+0900\n"
 "PO-Revision-Date: 2006-05-21 11:22+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -468,7 +468,7 @@ msgstr ""
 "바뀐 내용이 있습니다.\n"
 "저장하시겠습니까?"
 
-#: helper/pref-gtk.c:217 qt/pref-qt.cpp:264
+#: helper/pref-gtk.c:217 qt/pref-qt.cpp:266
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -476,7 +476,7 @@ msgstr ""
 "바뀐 내용이 있습니다.\n"
 "정말로 종료하시겠습니까?"
 
-#: helper/pref-gtk.c:257 qt/pref-qt.cpp:139
+#: helper/pref-gtk.c:257 qt/pref-qt.cpp:141
 msgid "Group"
 msgstr "그룹"
 
@@ -501,7 +501,7 @@ msgstr "바뀐 설정을 버리고 종료"
 msgid "Quit this application with applying changes"
 msgstr "바뀐 설정을 저장하고 종료"
 
-#: helper/pref-gtk.c:532 qt/pref-qt.cpp:107
+#: helper/pref-gtk.c:532 qt/pref-qt.cpp:109
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -526,31 +526,31 @@ msgstr "uim 애플릿"
 msgid "Applet for indicating uim's status"
 msgstr "uim 상태 표시 애플릿"
 
-#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:57
+#: helper/toolbar-common-gtk.c:84 qt/toolbar-common-quimhelpertoolbar.cpp:59
 msgid "Switch input method"
 msgstr "입력기 전환"
 
-#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:58
+#: helper/toolbar-common-gtk.c:93 qt/toolbar-common-quimhelpertoolbar.cpp:60
 msgid "Preference"
 msgstr "설정"
 
-#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:59
+#: helper/toolbar-common-gtk.c:102 qt/toolbar-common-quimhelpertoolbar.cpp:61
 msgid "Japanese dictionary editor"
 msgstr "일본어 사전 도구"
 
-#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:60
+#: helper/toolbar-common-gtk.c:111 qt/toolbar-common-quimhelpertoolbar.cpp:62
 msgid "Input pad"
 msgstr "입력 패드"
 
-#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:61
+#: helper/toolbar-common-gtk.c:120 qt/toolbar-common-quimhelpertoolbar.cpp:63
 msgid "Handwriting input pad"
 msgstr "손글씨 입력 패드"
 
-#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:62
+#: helper/toolbar-common-gtk.c:129 qt/toolbar-common-quimhelpertoolbar.cpp:64
 msgid "Help"
 msgstr "도움말"
 
-#: helper/toolbar-common-gtk.c:852 qt/toolbar-common-quimhelpertoolbar.cpp:63
+#: helper/toolbar-common-gtk.c:852 qt/toolbar-common-quimhelpertoolbar.cpp:65
 msgid "Quit this toolbar"
 msgstr "종료"
 
@@ -567,32 +567,32 @@ msgstr "편집"
 msgid "Key Grab Dialog"
 msgstr "키 잡기 대화창"
 
-#: qt/pref-qt.cpp:115
+#: qt/pref-qt.cpp:117
 msgid "~/.uim exists!"
 msgstr "~/.uim 가 있습니다!"
 
-#: qt/pref-qt.cpp:157
+#: qt/pref-qt.cpp:159
 msgid "Defaults"
 msgstr "디폴트"
 
-#: qt/pref-qt.cpp:160 qt/pref-qt.cpp:247 qt/pref-qt.cpp:352
+#: qt/pref-qt.cpp:162 qt/pref-qt.cpp:249 qt/pref-qt.cpp:356
 #: qt/switcher-qt.cpp:120
 msgid "OK"
 msgstr "확인"
 
-#: qt/pref-qt.cpp:163
+#: qt/pref-qt.cpp:165
 msgid "Apply"
 msgstr ""
 
-#: qt/pref-qt.cpp:167 qt/pref-qt.cpp:248 qt/switcher-qt.cpp:125
+#: qt/pref-qt.cpp:169 qt/pref-qt.cpp:250 qt/switcher-qt.cpp:125
 msgid "Cancel"
 msgstr "취소"
 
-#: qt/pref-qt.cpp:245
+#: qt/pref-qt.cpp:247
 msgid "Save Confirm"
 msgstr "저장 확인"
 
-#: qt/pref-qt.cpp:246
+#: qt/pref-qt.cpp:248
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -600,44 +600,44 @@ msgstr ""
 "내용이 바뀌었습니다.\n"
 "저장하시겠습니까?"
 
-#: qt/pref-qt.cpp:263
+#: qt/pref-qt.cpp:265
 msgid "Quit Confirm"
 msgstr ""
 
-#: qt/pref-qt.cpp:266
+#: qt/pref-qt.cpp:268
 msgid "Yes"
 msgstr ""
 
-#: qt/pref-qt.cpp:267
+#: qt/pref-qt.cpp:269
 msgid "No"
 msgstr ""
 
-#: qt/pref-qt.cpp:348
+#: qt/pref-qt.cpp:352
 msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:101 scm/action.lisp:536
+#: qt/toolbar-common-quimhelpertoolbar.cpp:108 scm/action.lisp:536
 #: scm/action.lisp:537
 msgid "exec im-switcher"
 msgstr "입력기 전환"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:125
+#: qt/toolbar-common-quimhelpertoolbar.cpp:132
 msgid "exec Preference Application"
 msgstr "설정 도구 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:148
+#: qt/toolbar-common-quimhelpertoolbar.cpp:155
 msgid "exec Japanese dictionary Tool Application"
 msgstr "일본어 사전 도구 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:168
+#: qt/toolbar-common-quimhelpertoolbar.cpp:175
 msgid "exec Input Pad Tool Application"
 msgstr "입력 패드 도구 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:188
+#: qt/toolbar-common-quimhelpertoolbar.cpp:195
 msgid "exec Handwriting Input Pad Tool Application"
 msgstr "손글씨 입력 패드 실행"
 
-#: qt/toolbar-common-quimhelpertoolbar.cpp:207
+#: qt/toolbar-common-quimhelpertoolbar.cpp:214
 msgid "exec Help Application"
 msgstr "도움말"
 
@@ -718,13 +718,14 @@ msgstr ""
 #: scm/mana-custom.lisp:260 scm/mana-custom.lisp:298 scm/mana-custom.lisp:304
 #: scm/mana-key-custom.lisp:37 scm/mana-key-custom.lisp:41
 #: scm/mana-key-custom.lisp:45 scm/mana-key-custom.lisp:49
-#: scm/prime-custom.lisp:55 scm/prime-custom.lisp:61 scm/prime-custom.lisp:69
-#: scm/prime-custom.lisp:75 scm/prime-custom.lisp:93 scm/prime-custom.lisp:99
-#: scm/prime-custom.lisp:106 scm/prime-custom.lisp:113
-#: scm/prime-custom.lisp:121 scm/prime-custom.lisp:129
-#: scm/prime-custom.lisp:135 scm/prime-custom.lisp:141
-#: scm/prime-key-custom.lisp:61 scm/prime-key-custom.lisp:65
-#: scm/prime-key-custom.lisp:69 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
+#: scm/prime-custom.lisp:64 scm/prime-custom.lisp:70 scm/prime-custom.lisp:76
+#: scm/prime-custom.lisp:84 scm/prime-custom.lisp:90 scm/prime-custom.lisp:96
+#: scm/prime-custom.lisp:114 scm/prime-custom.lisp:120
+#: scm/prime-custom.lisp:127 scm/prime-custom.lisp:134
+#: scm/prime-custom.lisp:142 scm/prime-custom.lisp:150
+#: scm/prime-custom.lisp:156 scm/prime-custom.lisp:162
+#: scm/prime-key-custom.lisp:65 scm/prime-key-custom.lisp:69
+#: scm/prime-key-custom.lisp:73 scm/skk-custom.lisp:59 scm/skk-custom.lisp:65
 #: scm/skk-custom.lisp:73 scm/skk-custom.lisp:79 scm/skk-custom.lisp:85
 #: scm/skk-custom.lisp:91 scm/skk-custom.lisp:217 scm/skk-custom.lisp:236
 #: scm/skk-custom.lisp:245 scm/skk-custom.lisp:276 scm/skk-custom.lisp:285
@@ -765,19 +766,19 @@ msgid "Conversion key press count to show candidate window"
 msgstr "후보창을 표시하기까지 변환키를 누르는 횟수"
 
 #: scm/anthy-custom.lisp:90 scm/canna-custom.lisp:90
-#: scm/generic-custom.lisp:54 scm/mana-custom.lisp:86 scm/prime-custom.lisp:92
-#: scm/skk-custom.lisp:90
+#: scm/generic-custom.lisp:54 scm/mana-custom.lisp:86
+#: scm/prime-custom.lisp:113 scm/skk-custom.lisp:90
 msgid "Number of candidates in candidate window at a time"
 msgstr "후보창에 한번에 표시하는 후보의 수"
 
 #: scm/anthy-custom.lisp:96 scm/canna-custom.lisp:96
 #: scm/generic-custom.lisp:60 scm/mana-custom.lisp:92
-#: scm/prime-custom.lisp:128
+#: scm/prime-custom.lisp:149
 msgid "Select candidate by numeral keys"
 msgstr "숫자키로 후보를 선택"
 
 #: scm/anthy-custom.lisp:126 scm/canna-custom.lisp:126
-#: scm/mana-custom.lisp:122 scm/prime-custom.lisp:160 scm/skk-custom.lisp:168
+#: scm/mana-custom.lisp:122 scm/prime-custom.lisp:181 scm/skk-custom.lisp:168
 msgid "Direct input"
 msgstr ""
 
@@ -827,12 +828,12 @@ msgid "Halfwidth Alphanumeric input mode"
 msgstr ""
 
 #: scm/anthy-custom.lisp:151 scm/canna-custom.lisp:152
-#: scm/mana-custom.lisp:147 scm/prime-custom.lisp:170 scm/skk-custom.lisp:188
+#: scm/mana-custom.lisp:147 scm/prime-custom.lisp:191 scm/skk-custom.lisp:188
 msgid "Fullwidth Alphanumeric"
 msgstr ""
 
 #: scm/anthy-custom.lisp:152 scm/canna-custom.lisp:153
-#: scm/mana-custom.lisp:148 scm/prime-custom.lisp:171 scm/skk-custom.lisp:189
+#: scm/mana-custom.lisp:148 scm/prime-custom.lisp:192 scm/skk-custom.lisp:189
 msgid "Fullwidth Alphanumeric input mode"
 msgstr ""
 
@@ -918,7 +919,7 @@ msgid "Show selected prediction candidate in preedit area"
 msgstr ""
 
 #: scm/anthy-custom.lisp:340 scm/canna-custom.lisp:376
-#: scm/mana-custom.lisp:297 scm/prime-custom.lisp:134 scm/skk-custom.lisp:442
+#: scm/mana-custom.lisp:297 scm/prime-custom.lisp:155 scm/skk-custom.lisp:442
 msgid "Enable vi-cooperative mode"
 msgstr ""
 
@@ -1017,17 +1018,19 @@ msgstr ""
 #: scm/mana-key-custom.lisp:239 scm/mana-key-custom.lisp:245
 #: scm/mana-key-custom.lisp:251 scm/mana-key-custom.lisp:257
 #: scm/mana-key-custom.lisp:263 scm/mana-key-custom.lisp:269
-#: scm/prime-key-custom.lisp:76 scm/prime-key-custom.lisp:82
-#: scm/prime-key-custom.lisp:88 scm/prime-key-custom.lisp:94
-#: scm/prime-key-custom.lisp:100 scm/prime-key-custom.lisp:106
-#: scm/prime-key-custom.lisp:115 scm/prime-key-custom.lisp:121
-#: scm/prime-key-custom.lisp:127 scm/prime-key-custom.lisp:133
-#: scm/prime-key-custom.lisp:139 scm/prime-key-custom.lisp:145
-#: scm/prime-key-custom.lisp:151 scm/prime-key-custom.lisp:157
-#: scm/prime-key-custom.lisp:163 scm/prime-key-custom.lisp:169
-#: scm/prime-key-custom.lisp:178 scm/prime-key-custom.lisp:184
-#: scm/prime-key-custom.lisp:190 scm/prime-key-custom.lisp:196
-#: scm/prime-key-custom.lisp:202 scm/prime-key-custom.lisp:208
+#: scm/prime-key-custom.lisp:80 scm/prime-key-custom.lisp:86
+#: scm/prime-key-custom.lisp:92 scm/prime-key-custom.lisp:98
+#: scm/prime-key-custom.lisp:104 scm/prime-key-custom.lisp:110
+#: scm/prime-key-custom.lisp:119 scm/prime-key-custom.lisp:125
+#: scm/prime-key-custom.lisp:131 scm/prime-key-custom.lisp:137
+#: scm/prime-key-custom.lisp:143 scm/prime-key-custom.lisp:149
+#: scm/prime-key-custom.lisp:155 scm/prime-key-custom.lisp:161
+#: scm/prime-key-custom.lisp:167 scm/prime-key-custom.lisp:173
+#: scm/prime-key-custom.lisp:182 scm/prime-key-custom.lisp:188
+#: scm/prime-key-custom.lisp:194 scm/prime-key-custom.lisp:200
+#: scm/prime-key-custom.lisp:206 scm/prime-key-custom.lisp:212
+#: scm/prime-key-custom.lisp:218 scm/prime-key-custom.lisp:224
+#: scm/prime-key-custom.lisp:230 scm/prime-key-custom.lisp:236
 #: scm/skk-key-custom.lisp:93 scm/skk-key-custom.lisp:99
 #: scm/skk-key-custom.lisp:105 scm/skk-key-custom.lisp:111
 #: scm/skk-key-custom.lisp:117 scm/skk-key-custom.lisp:123
@@ -2149,177 +2152,213 @@ msgstr ""
 msgid "Advanced settings for PRIME"
 msgstr ""
 
-#: scm/prime-custom.lisp:46 scm/prime-custom.lisp:52 scm/prime-custom.lisp:165
+#: scm/prime-custom.lisp:46
+msgid "Language choice"
+msgstr ""
+
+#: scm/prime-custom.lisp:47
+msgid "Language settings"
+msgstr ""
+
+#: scm/prime-custom.lisp:50 scm/prime-custom.lisp:61 scm/prime-custom.lisp:186
 #: uim/iso-639-1.def:105
 msgid "Japanese"
 msgstr ""
 
-#: scm/prime-custom.lisp:47
+#: scm/prime-custom.lisp:51
 msgid "Japanese specific settings"
 msgstr ""
 
-#: scm/prime-custom.lisp:53 uim/iso-639-1.def:74
+#: scm/prime-custom.lisp:54 scm/prime-custom.lisp:62 uim/iso-639-1.def:74
 msgid "English"
 msgstr ""
 
-#: scm/prime-custom.lisp:54
+#: scm/prime-custom.lisp:55
+msgid "English specific settings"
+msgstr ""
+
+#: scm/prime-custom.lisp:63
 msgid "Default language"
 msgstr ""
 
-#: scm/prime-custom.lisp:60
+#: scm/prime-custom.lisp:69
+msgid "Language toggle key"
+msgstr ""
+
+#: scm/prime-custom.lisp:75
 msgid "Enable auto register mode"
 msgstr ""
 
-#: scm/prime-custom.lisp:66
+#: scm/prime-custom.lisp:81
 msgid "Wide width (Zenkaku)"
 msgstr ""
 
-#: scm/prime-custom.lisp:67
+#: scm/prime-custom.lisp:82
 msgid "Half width (Hankaku)"
 msgstr ""
 
-#: scm/prime-custom.lisp:68
+#: scm/prime-custom.lisp:83
 msgid "Space character"
 msgstr ""
 
-#: scm/prime-custom.lisp:74
+#: scm/prime-custom.lisp:89
+msgid "Alternative space character key"
+msgstr ""
+
+#: scm/prime-custom.lisp:95
 msgid "Use UNIX domain socket to communicate with PRIME"
 msgstr ""
 
-#: scm/prime-custom.lisp:98 scm/spellcheck-custom.lisp:65
+#: scm/prime-custom.lisp:119 scm/spellcheck-custom.lisp:65
 msgid "Always showing candidate window"
 msgstr ""
 
-#: scm/prime-custom.lisp:105
+#: scm/prime-custom.lisp:126
 msgid "Show usage examples of candidate words"
 msgstr ""
 
-#: scm/prime-custom.lisp:112
+#: scm/prime-custom.lisp:133
 msgid "Show candidate annotations"
 msgstr ""
 
-#: scm/prime-custom.lisp:120
+#: scm/prime-custom.lisp:141
 msgid "Show candidate forms"
 msgstr ""
 
-#: scm/prime-custom.lisp:140
+#: scm/prime-custom.lisp:161
 msgid "Enable pseudo mode cursor"
 msgstr ""
 
-#: scm/prime-custom.lisp:161
+#: scm/prime-custom.lisp:182
 msgid "PRIME off"
 msgstr ""
 
-#: scm/prime-custom.lisp:166
+#: scm/prime-custom.lisp:187
 msgid "PRIME on"
 msgstr ""
 
-#: scm/prime-custom.lisp:175
+#: scm/prime-custom.lisp:196
 msgid "Peculiar"
 msgstr ""
 
-#: scm/prime-custom.lisp:176
+#: scm/prime-custom.lisp:197
 msgid "Application specific input mode"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:60
+#: scm/prime-key-custom.lisp:64
 msgid "PRIME key bindings 1"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:64
+#: scm/prime-key-custom.lisp:68
 msgid "PRIME key bindings 2"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:68
+#: scm/prime-key-custom.lisp:72
 msgid "PRIME key bindings 3"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:75
+#: scm/prime-key-custom.lisp:79
 msgid "[PRIME] prime-register-key"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:81
+#: scm/prime-key-custom.lisp:85
 msgid "[PRIME] prime-typing-mode-hiragana-key"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:87
+#: scm/prime-key-custom.lisp:91
 msgid "[PRIME] prime-typing-mode-katakana-key"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:93
+#: scm/prime-key-custom.lisp:97
 msgid "[PRIME] prime-typing-mode-hankana-key"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:99
+#: scm/prime-key-custom.lisp:103
 msgid "[PRIME] prime-typing-mode-wideascii-key"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:105
+#: scm/prime-key-custom.lisp:109
 msgid "[PRIME] prime-typing-mode-ascii-key"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:114
+#: scm/prime-key-custom.lisp:118
 msgid "[PRIME] on"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:120
+#: scm/prime-key-custom.lisp:124
 msgid "[PRIME] off"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:126
+#: scm/prime-key-custom.lisp:130
 msgid "[PRIME] fullwidth alphanumeric mode"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:132
+#: scm/prime-key-custom.lisp:136
 msgid "[PRIME] begin conversion"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:138
+#: scm/prime-key-custom.lisp:142
 msgid "[PRIME] commit"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:144
+#: scm/prime-key-custom.lisp:148
 msgid "[PRIME] cancel"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:150
+#: scm/prime-key-custom.lisp:154
 msgid "[PRIME] next candidate"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:156
+#: scm/prime-key-custom.lisp:160
 msgid "[PRIME] previous candidate"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:162
+#: scm/prime-key-custom.lisp:166
 msgid "[PRIME] next page of candidate window"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:168
+#: scm/prime-key-custom.lisp:172
 msgid "[PRIME] previous page of candidate window"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:177
+#: scm/prime-key-custom.lisp:181
 msgid "[PRIME] beginning of preedit"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:183
+#: scm/prime-key-custom.lisp:187
 msgid "[PRIME] end of preedit"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:189
+#: scm/prime-key-custom.lisp:193
 msgid "[PRIME] backspace"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:195
+#: scm/prime-key-custom.lisp:199
 msgid "[PRIME] delete"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:201
+#: scm/prime-key-custom.lisp:205
 msgid "[PRIME] go left"
 msgstr ""
 
-#: scm/prime-key-custom.lisp:207
+#: scm/prime-key-custom.lisp:211
 msgid "[PRIME] go right"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:217
+msgid "[PRIME] shrink segment"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:223
+msgid "[PRIME] extend segment"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:229
+msgid "[PRIME] next candidate in English mode"
+msgstr ""
+
+#: scm/prime-key-custom.lisp:235
+msgid "[PRIME] Direct key in English mode"
 msgstr ""
 
 #: scm/pyload.lisp:42

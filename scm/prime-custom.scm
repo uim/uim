@@ -42,16 +42,31 @@
   (_ "PRIME (advanced)")
   (_ "Advanced settings for PRIME"))
 
+(define-custom-group 'language
+  (_ "Language choice")
+  (_ "Language settings"))
+
 (define-custom-group 'japanese
   (_ "Japanese")
   (_ "Japanese specific settings"))
 
+(define-custom-group 'english
+  (_ "English")
+  (_ "English specific settings"))
+
+
 (define-custom 'prime-custom-default-language 'Japanese
-  '(prime)
+  '(prime language)
   (list 'choice
 	(list 'Japanese (_ "Japanese") (_ "Japanese"))
 	(list 'English  (_ "English")  (_ "English")))
   (_ "Default language")
+  (_ "long description will be here."))
+
+(define-custom 'prime-language-toggle-key '("F11")
+  '(prime language)
+  '(key)
+  (_ "Language toggle key")
   (_ "long description will be here."))
 
 (define-custom 'prime-auto-register-mode? #t
@@ -66,6 +81,12 @@
 	(list 'wide (_ "Wide width (Zenkaku)") (_ "Wide width (Zenkaku)"))
 	(list 'half (_ "Half width (Hankaku)") (_ "Half width (Hankaku)")))
   (_ "Space character")
+  (_ "long description will be here."))
+
+(define-custom 'prime-altspace-key '("<Control> " "<Alt> ")
+  '(prime japanese)
+  '(key)
+  (_ "Alternative space character key")
   (_ "long description will be here."))
 
 (define-custom 'prime-use-unixdomain? #t

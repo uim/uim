@@ -55,19 +55,9 @@
 	    (and (numeral-char? key)
 		 (control-key-mask key-state))))))
 
-;; key
-(define-key prime-language-toggle-key?  "F11")
-(define-key prime-expand-segment-key? '("<Control>o" "<Shift>right"))
-(define-key prime-shrink-segment-key? '("<Control>i" "<Shift>left"))
-
+;; keys without custom
 (define-key prime-escape-key?         '("escape" "<Control>["))
 (define-key prime-space-key?          '(" "))
-(define-key prime-altspace-key?       '("<Control> " "<Alt> "))
-
-(define-key prime-english-next-candidate-key? '("<Control>i" "tab"
-						generic-next-candidate-key?))
-(define-key prime-english-direct-key? '("." "," ":" ";" "(" ")" "\"" "'"
-					"!" "?"))
 
 ;;;; If you're a Vi user, modify the lines below.
 (if prime-custom-app-mode-vi?
