@@ -198,10 +198,13 @@
 (define m17nlib-construct-key
   (lambda (key key-state)
     (if (symbol? key)
-	 (cdr (assq key m17nlib-key-translation-alist))
-	 (if (control-key-mask key-state)
-	     (charcode->string (char-upcase key))
-	     (charcode->string key)))))
+	(let ((mkey (assq key m17nlib-key-translation-alist)))
+	  (if mkey
+	      (cdr mkey)
+	      ""))
+	(if (control-key-mask key-state)
+	    (charcode->string (char-upcase key))
+	    (charcode->string key)))))
 
 (define m17nlib-proc-direct-state
   (lambda (mc key key-state)
