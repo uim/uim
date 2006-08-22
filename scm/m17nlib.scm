@@ -169,7 +169,7 @@
 	     mc (m17nlib-lib-get-candidate-index mid))
 	    (m17nlib-context-set-showing-candidate! mc #t)))
 
-      (if (and showing-candidate?
+      (if (and (m17nlib-context-showing-candidate mc)
 	       (m17nlib-lib-candidate-show? mid))
 	  (im-select-candidate mc (m17nlib-lib-get-candidate-index mid))))))
 
