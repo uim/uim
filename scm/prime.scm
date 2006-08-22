@@ -1778,13 +1778,16 @@
 
 (define prime-update-key-press
   (lambda (context)
-    (let ((session (prime-context-session context)))
+    (let ((session (prime-context-session context))
+	  (mode (prime-context-mode context)))
       (cond
        ((null? session)
 	#f)  ;; Do nothing.
 
        (else
-	(if (not (= (prime-context-mode context) prime-mode-latin))
+	(if (and
+	     (not (= mode prime-mode-latin))
+	     (not (= mode prime-mode-application)))
 	    ;; Store the current preedition into the context
 	    (prime-context-set-preedit-line!
 	     context
