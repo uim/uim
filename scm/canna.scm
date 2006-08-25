@@ -58,6 +58,8 @@
 (define canna-candidate-type-halfkana -4)
 (define canna-candidate-type-halfwidth-alnum -5)
 (define canna-candidate-type-fullwidth-alnum -6)
+(define canna-candidate-type-upper-halfwidth-alnum -7)
+(define canna-candidate-type-upper-fullwidth-alnum -8)
 
 ;; I don't think the key needs to be customizable.
 (define-key canna-space-key? '(" "))
@@ -357,21 +359,32 @@
            (string-append-map-ustr-latter extract-kana preconv-str))))))
 
 (define canna-make-raw-string
-  (lambda (raw-str-list wide?)
+  (lambda (raw-str-list wide? upper?)
     (if (not (null? raw-str-list))
 	(if wide?
 	    (string-append
 	     (ja-string-list-to-wide-alphabet
-	      (string-to-list (car raw-str-list)))
-	     (canna-make-raw-string (cdr raw-str-list) wide?))
+	      (if upper?
+		  (map charcode->string
+		       (map char-upcase
+			    (map string->charcode
+				 (string-to-list (car raw-str-list)))))
+		  (string-to-list (car raw-str-list))))
+	     (canna-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
-	     (car raw-str-list)
-	     (canna-make-raw-string (cdr raw-str-list) wide?)))
+	     (if upper?
+		 (string-list-concat
+		  (map charcode->string
+		       (map char-upcase
+			    (map string->charcode
+				 (string-to-list (car raw-str-list))))))
+		 (car raw-str-list))
+	     (canna-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
 
 (define canna-make-whole-raw-string
-  (lambda (cc wide?)
-    (canna-make-raw-string (canna-get-raw-str-seq cc) wide?)))
+  (lambda (cc wide? upper?)
+    (canna-make-raw-string (canna-get-raw-str-seq cc) wide? upper?)))
 
 (define (canna-init-handler id im arg)
   (if (not canna-init-lib-ok?)
@@ -600,6 +613,20 @@
   (or (not (ustr-empty? (canna-context-preconv-ustr cc)))
       (> (string-length (rk-pending (canna-context-rkc cc))) 0)))
 
+(define canna-rotate-transposing-alnum-type
+  (lambda (cur-type state)
+    (cond
+     ((and
+       (= cur-type canna-type-halfwidth-alnum)
+       (= state canna-type-halfwidth-alnum))
+      canna-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= cur-type canna-type-fullwidth-alnum)
+       (= state canna-type-fullwidth-alnum))
+      canna-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
 (define canna-proc-transposing-state
   (lambda (cc key key-state)
     (let ((rotate-list '())
@@ -620,26 +647,26 @@
 	    (if (and lst
 	    	     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
-		(set! state (car rotate-list))))
+		(set! state (canna-rotate-transposing-alnum-type
+			     (canna-context-transposing-type cc)
+			     (car rotate-list)))))
 	  (begin
 	    (canna-context-set-transposing! cc #t)
 	    (set! state (car rotate-list))))
 
       (cond
-       ((= state canna-type-hiragana)
-	(canna-context-set-transposing-type! cc canna-type-hiragana))
-       ((= state canna-type-katakana)
-	(canna-context-set-transposing-type! cc canna-type-katakana))
-       ((= state canna-type-halfkana)
-	(canna-context-set-transposing-type! cc canna-type-halfkana))
-       ((= state canna-type-halfwidth-alnum)
+       ((or
+	 (= state canna-type-hiragana)
+	 (= state canna-type-katakana)
+	 (= state canna-type-halfkana))
+	(canna-context-set-transposing-type! cc state))
+       ((or
+	 (= state canna-type-halfwidth-alnum)
+	 (= state canna-candidate-type-upper-halfwidth-alnum)
+	 (= state canna-type-fullwidth-alnum)
+	 (= state canna-candidate-type-upper-fullwidth-alnum))
 	(if (not (= (canna-context-input-rule cc) canna-input-rule-kana))
-	    (canna-context-set-transposing-type!
-	     cc canna-type-halfwidth-alnum)))
-       ((= state canna-type-fullwidth-alnum)
-	(if (not (= (canna-context-input-rule cc) canna-input-rule-kana))
-	    (canna-context-set-transposing-type!
-	     cc canna-type-fullwidth-alnum)))
+	    (canna-context-set-transposing-type! cc state)))
        (else
 	(and
 	 ; commit
@@ -937,16 +964,19 @@
   (lambda (cc)
     (let ((transposing-type (canna-context-transposing-type cc)))
       (cond
-       ((= transposing-type canna-type-hiragana)
-	(canna-make-whole-string cc #t canna-type-hiragana))
-       ((= transposing-type canna-type-katakana)
-	(canna-make-whole-string cc #t canna-type-katakana))
-       ((= transposing-type canna-type-halfkana)
-	(canna-make-whole-string cc #t canna-type-halfkana))
+       ((or
+	 (= transposing-type canna-type-hiragana)
+	 (= transposing-type canna-type-katakana)
+	 (= transposing-type canna-type-halfkana))
+	(canna-make-whole-string cc #t transposing-type))
        ((= transposing-type canna-type-halfwidth-alnum)
-	(canna-make-whole-raw-string cc #f))
+	(canna-make-whole-raw-string cc #f #f))
+       ((= transposing-type canna-candidate-type-upper-halfwidth-alnum)
+	(canna-make-whole-raw-string cc #f #t))
        ((= transposing-type canna-type-fullwidth-alnum)
-	(canna-make-whole-raw-string cc #t))))))
+	(canna-make-whole-raw-string cc #t #f))
+       ((= transposing-type canna-candidate-type-upper-fullwidth-alnum)
+	(canna-make-whole-raw-string cc #t #t))))))
 
 (define canna-get-raw-str-seq
   (lambda (cc)
@@ -986,7 +1016,15 @@
 		  (if start
 		      (canna-make-raw-string
 		       (reverse (sublist raw-str start (+ start (- len 1))))
-		       (if (= cand-idx canna-candidate-type-halfwidth-alnum)
+		       (if (or
+			    (= cand-idx canna-candidate-type-halfwidth-alnum)
+			    (= cand-idx
+			       canna-candidate-type-upper-halfwidth-alnum))
+			   #f
+			   #t)
+		       (if (or
+			    (= cand-idx canna-candidate-type-halfwidth-alnum)
+			    (= cand-idx canna-candidate-type-fullwidth-alnum))
 			   #f
 			   #t))
 		      "??")) ;; FIXME
@@ -1150,6 +1188,20 @@
 	(canna-context-set-candidate-window! cc #f)))
   (canna-context-set-candidate-op-count! cc 0))
 
+(define canna-rotate-segment-transposing-alnum-type
+  (lambda (idx state)
+    (cond
+     ((and
+       (= idx canna-candidate-type-halfwidth-alnum)
+       (= state canna-candidate-type-halfwidth-alnum))
+      canna-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= idx canna-candidate-type-fullwidth-alnum)
+       (= state canna-candidate-type-fullwidth-alnum))
+      canna-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
 (define canna-set-segment-transposing
   (lambda (cc key key-state)
     (let ((segments (canna-context-segments cc)))
@@ -1179,12 +1231,15 @@
 	     (= idx canna-candidate-type-katakana)
 	     (= idx canna-candidate-type-halfkana)
 	     (= idx canna-candidate-type-halfwidth-alnum)
-	     (= idx canna-candidate-type-fullwidth-alnum))
+	     (= idx canna-candidate-type-fullwidth-alnum)
+	     (= idx canna-candidate-type-upper-halfwidth-alnum)
+	     (= idx canna-candidate-type-upper-fullwidth-alnum))
 	    (let ((lst (member idx rotate-list)))
-	      (if (and (not (null? lst))
+	      (if (and lst
 		       (not (null? (cdr lst))))
 		  (set! state (car (cdr lst)))
-		  (set! state (car rotate-list))))
+		  (set! state (canna-rotate-segment-transposing-alnum-type
+			       idx (car rotate-list)))))
 	    (set! state (car rotate-list)))
 	(ustr-cursor-set-frontside! segments state)))))
 

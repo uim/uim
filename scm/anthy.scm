@@ -45,12 +45,12 @@
 (define anthy-lib-initialized? #f)
 (define anthy-version #f)
 
-(define anthy-type-direct         -1)
-(define anthy-type-hiragana        0)
-(define anthy-type-katakana        1)
-(define anthy-type-halfkana        2)
-(define anthy-type-halfwidth-alnum 3)
-(define anthy-type-fullwidth-alnum 4)
+(define anthy-type-direct          ja-type-direct)
+(define anthy-type-hiragana        ja-type-hiragana)
+(define anthy-type-katakana        ja-type-katakana)
+(define anthy-type-halfkana        ja-type-halfkana)
+(define anthy-type-halfwidth-alnum ja-type-halfwidth-alnum)
+(define anthy-type-fullwidth-alnum ja-type-fullwidth-alnum)
 
 (define anthy-input-rule-roma 0)
 (define anthy-input-rule-kana 1)
@@ -59,8 +59,11 @@
 (define anthy-candidate-type-katakana -2)
 (define anthy-candidate-type-hiragana -3)
 (define anthy-candidate-type-halfkana -4)
-(define anthy-candidate-type-halfwidth-alnum -5) ; not defined in Anthy
-(define anthy-candidate-type-fullwidth-alnum -6) ; not defined in Anthy
+;; below are not defined in Anthy
+(define anthy-candidate-type-halfwidth-alnum -5)
+(define anthy-candidate-type-fullwidth-alnum -6)
+(define anthy-candidate-type-upper-halfwidth-alnum -7)
+(define anthy-candidate-type-upper-fullwidth-alnum -8)
 
 ;; I don't think the key needs to be customizable.
 (define-key anthy-space-key? '(" "))
@@ -397,21 +400,32 @@
 	   (string-append-map-ustr-latter extract-kana preconv-str))))))
 
 (define anthy-make-raw-string
-  (lambda (raw-str-list wide?)
+  (lambda (raw-str-list wide? upper?)
     (if (not (null? raw-str-list))
 	(if wide?
 	    (string-append
 	     (ja-string-list-to-wide-alphabet
-	      (string-to-list (car raw-str-list)))
-	     (anthy-make-raw-string (cdr raw-str-list) wide?))
+	      (if upper?
+		  (map charcode->string
+		       (map char-upcase
+			    (map string->charcode
+				 (string-to-list (car raw-str-list)))))
+		  (string-to-list (car raw-str-list))))
+	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
-	     (car raw-str-list)
-	     (anthy-make-raw-string (cdr raw-str-list) wide?)))
+	     (if upper?
+		 (string-list-concat
+		  (map charcode->string
+		       (map char-upcase
+			    (map string->charcode
+				 (string-to-list (car raw-str-list))))))
+		 (car raw-str-list))
+	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
 
 (define anthy-make-whole-raw-string
-  (lambda (ac wide?)
-    (anthy-make-raw-string (anthy-get-raw-str-seq ac) wide?)))
+  (lambda (ac wide? upper?)
+    (anthy-make-raw-string (anthy-get-raw-str-seq ac) wide? upper?)))
 
 (define anthy-init-handler
   (lambda (id im arg)
@@ -653,6 +667,20 @@
     (or (not (ustr-empty? (anthy-context-preconv-ustr ac)))
 	(> (string-length (rk-pending (anthy-context-rkc ac))) 0))))
 
+(define anthy-rotate-transposing-alnum-type
+  (lambda (cur-type state)
+    (cond
+     ((and
+       (= cur-type anthy-type-halfwidth-alnum)
+       (= state anthy-type-halfwidth-alnum))
+      anthy-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= cur-type anthy-type-fullwidth-alnum)
+       (= state anthy-type-fullwidth-alnum))
+      anthy-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
 (define anthy-proc-transposing-state
   (lambda (ac key key-state)
     (let ((rotate-list '())
@@ -673,28 +701,26 @@
 	    (if (and lst
 		     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
-		(set! state (car rotate-list))))
+		(set! state (anthy-rotate-transposing-alnum-type
+			     (anthy-context-transposing-type ac)
+			     (car rotate-list)))))
 	  (begin
 	    (anthy-context-set-transposing! ac #t)
 	    (set! state (car rotate-list))))
 
       (cond
-       ((= state anthy-type-hiragana)
-	(anthy-context-set-transposing-type! ac anthy-type-hiragana))
-       ((= state anthy-type-katakana)
-	(anthy-context-set-transposing-type! ac anthy-type-katakana))
-       ((= state anthy-type-halfkana)
-	(anthy-context-set-transposing-type! ac anthy-type-halfkana))
-       ((= state anthy-type-halfwidth-alnum)
-	(if (not (= (anthy-context-input-rule ac)
-		    anthy-input-rule-kana))
-	    (anthy-context-set-transposing-type!
-	     ac anthy-type-halfwidth-alnum)))
-       ((= state anthy-type-fullwidth-alnum)
-	(if (not (= (anthy-context-input-rule ac)
-		    anthy-input-rule-kana))
-	    (anthy-context-set-transposing-type!
-	     ac anthy-type-fullwidth-alnum)))
+       ((or
+	 (= state anthy-type-hiragana)
+	 (= state anthy-type-katakana)
+	 (= state anthy-type-halfkana))
+	(anthy-context-set-transposing-type! ac state))
+       ((or
+	 (= state anthy-type-halfwidth-alnum)
+	 (= state anthy-candidate-type-upper-halfwidth-alnum)
+	 (= state anthy-type-fullwidth-alnum)
+	 (= state anthy-candidate-type-upper-fullwidth-alnum))
+	(if (not (= (anthy-context-input-rule ac) anthy-input-rule-kana))
+	    (anthy-context-set-transposing-type! ac state)))
        (else
 	(and
 	 ; commit
@@ -1227,21 +1253,19 @@
   (lambda (ac)
     (let* ((transposing-type (anthy-context-transposing-type ac)))
       (cond
-       ((= transposing-type anthy-type-hiragana)
-	(anthy-make-whole-string ac #t anthy-type-hiragana))
-
-       ((= transposing-type anthy-type-katakana)
-	(anthy-make-whole-string ac #t anthy-type-katakana))
-
-       ((= transposing-type anthy-type-halfkana)
-	(anthy-make-whole-string ac #t anthy-type-halfkana))
-
+       ((or
+	 (= transposing-type anthy-type-hiragana)
+	 (= transposing-type anthy-type-katakana)
+	 (= transposing-type anthy-type-halfkana))
+	(anthy-make-whole-string ac #t transposing-type))
        ((= transposing-type anthy-type-halfwidth-alnum)
-	(anthy-make-whole-raw-string ac #f))
-
+	(anthy-make-whole-raw-string ac #f #f))
+       ((= transposing-type anthy-candidate-type-upper-halfwidth-alnum)
+	(anthy-make-whole-raw-string ac #f #t))
        ((= transposing-type anthy-type-fullwidth-alnum)
-	(anthy-make-whole-raw-string ac #t))
-       ))))
+	(anthy-make-whole-raw-string ac #t #f))
+       ((= transposing-type anthy-candidate-type-upper-fullwidth-alnum)
+	(anthy-make-whole-raw-string ac #t #t))))))
 
 (define anthy-get-raw-str-seq
   (lambda (ac)
@@ -1273,7 +1297,15 @@
 		(if start
 		    (anthy-make-raw-string
 		     (reverse (sublist raw-str start (+ start (- len 1))))
-		     (if (= cand-idx anthy-candidate-type-halfwidth-alnum)
+		     (if (or
+			  (= cand-idx anthy-candidate-type-halfwidth-alnum)
+			  (= cand-idx
+			     anthy-candidate-type-upper-halfwidth-alnum))
+			 #f
+			 #t)
+		     (if (or
+			  (= cand-idx anthy-candidate-type-halfwidth-alnum)
+			  (= cand-idx anthy-candidate-type-fullwidth-alnum))
 			 #f
 			 #t))
 		    "??")) ;; FIXME
@@ -1473,6 +1505,20 @@
 	  (anthy-context-set-candidate-window! ac #f)))
     (anthy-context-set-candidate-op-count! ac 0)))
 
+(define anthy-rotate-segment-transposing-alnum-type
+  (lambda (idx state)
+    (cond
+     ((and
+       (= idx anthy-candidate-type-halfwidth-alnum)
+       (= state anthy-candidate-type-halfwidth-alnum))
+      anthy-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= idx anthy-candidate-type-fullwidth-alnum)
+       (= state anthy-candidate-type-fullwidth-alnum))
+      anthy-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
 (define anthy-set-segment-transposing
   (lambda (ac key key-state)
     (let ((segments (anthy-context-segments ac)))
@@ -1506,12 +1552,15 @@
 		 (= idx anthy-candidate-type-katakana)
 		 (= idx anthy-candidate-type-halfkana)
 		 (= idx anthy-candidate-type-halfwidth-alnum)
-		 (= idx anthy-candidate-type-fullwidth-alnum))
+		 (= idx anthy-candidate-type-fullwidth-alnum)
+		 (= idx anthy-candidate-type-upper-halfwidth-alnum)
+		 (= idx anthy-candidate-type-upper-fullwidth-alnum))
 		(let ((lst (member idx rotate-list)))
-		  (if (and (not (null? lst))
+		  (if (and lst
 			   (not (null? (cdr lst))))
 		      (set! state (car (cdr lst)))
-		      (set! state (car rotate-list))))
+		      (set! state (anthy-rotate-segment-transposing-alnum-type
+				   idx (car rotate-list)))))
 		(set! state (car rotate-list)))
 	     (ustr-cursor-set-frontside! segments state))
 	  ;; below anthy-7802

@@ -175,7 +175,15 @@
 		 (if start
 		     (mana-make-raw-string
 		      (reverse (sublist raw-str start (+ start (- len 1))))
-		      (if (= cand-idx mana-candidate-type-halfwidth-alnum)
+		      (if (or
+			   (= cand-idx mana-candidate-type-halfwidth-alnum)
+			   (= cand-idx
+			      mana-candidate-type-upper-halfwidth-alnum))
+			  #f
+			  #t)
+		      (if (or
+			   (= cand-idx mana-candidate-type-halfwidth-alnum)
+			   (= cand-idx mana-candidate-type-fullwidth-alnum))
 			  #f
 			  #t))
 		     "??")) ;; FIXME
@@ -274,6 +282,8 @@
 (define mana-candidate-type-halfkana -4)
 (define mana-candidate-type-halfwidth-alnum -5)
 (define mana-candidate-type-fullwidth-alnum -6)
+(define mana-candidate-type-upper-halfwidth-alnum -7)
+(define mana-candidate-type-upper-fullwidth-alnum -8)
 
 ;; I don't think the key needs to be customizable.
 (define-key mana-space-key? '(" "))
@@ -607,20 +617,32 @@
 	   (string-append-map-ustr-latter extract-kana preconv-str))))))
 
 (define mana-make-raw-string
-  (lambda (raw-str-list wide?)
+  (lambda (raw-str-list wide? upper?)
     (if (not (null? raw-str-list))
         (if wide?
             (string-append
-              (ja-string-list-to-wide-alphabet (string-to-list (car raw-str-list)))
-              (mana-make-raw-string (cdr raw-str-list) wide?))
+	      (ja-string-list-to-wide-alphabet 
+		(if upper?
+		    (map charcode->string
+			 (map char-upcase
+			      (map string->charcode
+				   (string-to-list (car raw-str-list)))))
+		    (string-to-list (car raw-str-list))))
+	      (mana-make-raw-string (cdr raw-str-list) wide? upper?))
             (string-append
-              (car raw-str-list)
-              (mana-make-raw-string (cdr raw-str-list) wide?)))
+	      (if upper?
+		  (string-list-concat
+		   (map charcode->string
+			(map char-upcase
+			     (map string->charcode
+				  (string-to-list (car raw-str-list))))))
+		  (car raw-str-list))
+              (mana-make-raw-string (cdr raw-str-list) wide? upper?)))
         "")))
 
 (define mana-make-whole-raw-string
-  (lambda (mc wide?)
-    (mana-make-raw-string (mana-get-raw-str-seq mc) wide?)))
+  (lambda (mc wide? upper?)
+    (mana-make-raw-string (mana-get-raw-str-seq mc) wide? upper?)))
 
 (define mana-init-handler
   (lambda (id im arg)
@@ -864,6 +886,20 @@
     (or (not (ustr-empty? (mana-context-preconv-ustr mc)))
         (> (string-length (rk-pending (mana-context-rkc mc))) 0))))
 
+(define mana-rotate-transposing-alnum-type
+  (lambda (cur-type state)
+    (cond
+     ((and
+       (= cur-type mana-type-halfwidth-alnum)
+       (= state mana-type-halfwidth-alnum))
+      mana-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= cur-type mana-type-fullwidth-alnum)
+       (= state mana-type-fullwidth-alnum))
+      mana-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
 (define mana-proc-transposing-state
   (lambda (mc key key-state)
     (let ((rotate-list '())
@@ -884,26 +920,27 @@
 	    (if (and lst
 	    	     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
-		(set! state (car rotate-list))))
+		(set! state (mana-rotate-transposing-alnum-type
+			     (mana-context-transposing-type mc)
+			     (car rotate-list)))))
 	  (begin
 	    (mana-context-set-transposing! mc #t)
 	    (set! state (car rotate-list))))
 
       (cond
-       ((= state mana-type-hiragana)
-	(mana-context-set-transposing-type! mc mana-type-hiragana))
-       ((= state mana-type-katakana)
-	(mana-context-set-transposing-type! mc mana-type-katakana))
-       ((= state mana-type-halfkana)
-	(mana-context-set-transposing-type! mc mana-type-halfkana))
-       ((= state mana-type-halfwidth-alnum)
+       ((or
+	 (= state mana-type-hiragana)
+	 (= state mana-type-katakana)
+	 (= state mana-type-halfkana))
+	(mana-context-set-transposing-type! mc state))
+       ((or
+	 (= state mana-type-halfwidth-alnum)
+	 (= state mana-candidate-type-upper-halfwidth-alnum)
+	 (= state mana-type-fullwidth-alnum)
+	 (= state mana-candidate-type-upper-fullwidth-alnum))
 	(if (not (= (mana-context-input-rule mc)
 		    mana-input-rule-kana))
-	    (mana-context-set-transposing-type! mc mana-type-halfwidth-alnum)))
-       ((= state mana-type-fullwidth-alnum)
-	(if (not (= (mana-context-input-rule mc)
-		    mana-input-rule-kana))
-	    (mana-context-set-transposing-type! mc mana-type-fullwidth-alnum)))
+	    (mana-context-set-transposing-type! mc state)))
        (else
 	(and
 	 ; commit
@@ -1217,16 +1254,19 @@
   (lambda (mc)
     (let* ((transposing-type (mana-context-transposing-type mc)))
       (cond
-       ((= transposing-type mana-type-hiragana)
-	(mana-make-whole-string mc #t mana-type-hiragana))
-       ((= transposing-type mana-type-katakana)
-	(mana-make-whole-string mc #t mana-type-katakana))
-       ((= transposing-type mana-type-halfkana)
-	(mana-make-whole-string mc #t mana-type-halfkana))
+       ((or
+	 (= transposing-type mana-type-hiragana)
+	 (= transposing-type mana-type-katakana)
+	 (= transposing-type mana-type-halfkana))
+	(mana-make-whole-string mc #t transposing-type))
        ((= transposing-type mana-type-halfwidth-alnum)
-	(mana-make-whole-raw-string mc #f))
+	(mana-make-whole-raw-string mc #f #f))
+       ((= transposing-type mana-candidate-type-upper-halfwidth-alnum)
+	(mana-make-whole-raw-string mc #f #t))
        ((= transposing-type mana-type-fullwidth-alnum)
-	(mana-make-whole-raw-string mc #t))))))
+	(mana-make-whole-raw-string mc #t #f))
+       ((= transposing-type mana-candidate-type-upper-fullwidth-alnum)
+	(mana-make-whole-raw-string mc #t #t))))))
 
 (define mana-converting-state-preedit
   (lambda (mc)
@@ -1389,6 +1429,20 @@
           (mana-context-set-candidate-window! mc #f)))
     (mana-context-set-candidate-op-count! mc 0)))
 
+(define mana-rotate-segment-transposing-alnum-type
+  (lambda (idx state)
+    (cond
+     ((and
+       (= idx mana-candidate-type-halfwidth-alnum)
+       (= state mana-candidate-type-halfwidth-alnum))
+      mana-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= idx mana-candidate-type-fullwidth-alnum)
+       (= state mana-candidate-type-fullwidth-alnum))
+      mana-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
 (define mana-set-segment-transposing
   (lambda (mc key key-state)
     (let ((segments (mana-context-segments mc)))
@@ -1418,12 +1472,15 @@
 	     (= idx mana-candidate-type-katakana)
 	     (= idx mana-candidate-type-halfkana)
 	     (= idx mana-candidate-type-halfwidth-alnum)
-	     (= idx mana-candidate-type-fullwidth-alnum))
+	     (= idx mana-candidate-type-fullwidth-alnum)
+	     (= idx mana-candidate-type-upper-halfwidth-alnum)
+	     (= idx mana-candidate-type-upper-fullwidth-alnum))
 	    (let ((lst (member idx rotate-list)))
-	      (if (and (not (null? lst))
+	      (if (and lst
 		       (not (null? (cdr lst))))
 		  (set! state (car (cdr lst)))
-		  (set! state (car rotate-list))))
+		  (set! state (mana-rotate-segment-transposing-alnum-type
+		               idx (car rotate-list)))))
 	    (set! state (car rotate-list)))
 	(ustr-cursor-set-frontside! segments state)))))
 
