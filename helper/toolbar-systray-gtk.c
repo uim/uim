@@ -53,6 +53,8 @@ embedded_cb(GtkWidget *widget, gpointer user_data)
   uim_toolbar_check_helper_connection(user_data);
   uim_helper_client_get_prop_list();
   uim_toolbar_get_im_list();
+
+  gtk_widget_show_all(user_data);
 }
 
 
@@ -77,8 +79,6 @@ main(int argc, char *argv[])
 
   icon = uim_toolbar_trayicon_new();
   g_signal_connect(G_OBJECT(tray), "embedded", G_CALLBACK(embedded_cb), icon);
-
-  gtk_widget_show_all(icon);
 
   gtk_container_add(GTK_CONTAINER(tray), icon);
   gtk_widget_show(GTK_WIDGET (tray));
