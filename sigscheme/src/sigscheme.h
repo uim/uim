@@ -460,13 +460,18 @@ typedef scm_int_t ScmPackedEnv;
 /*
  * Interface to an implementation for the Storage Abstraction Layer:
  *
- * A storage implementation defines following types.
+ * A storage implementation defines following types:
  *
  * typedef <hidden> ScmCell;
  * typedef <hidden> ScmObj;
  * typedef <hidden> ScmRef;
  *
  * typedef ScmObj (*ScmFuncType)();
+ *
+ * And following macros:
+ *
+ * SIZEOF_SCMOBJ
+ *
  */
 #if SCM_USE_STORAGE_FATTY
 #include "storage-fatty.h"
