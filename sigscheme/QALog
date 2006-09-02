@@ -236,7 +236,7 @@ Status Summary
          core env.c
          core symbol.c
          core continuation.c
-         core eval.c
+yyyy  yy core eval.c
          core module.c
          core sigscheme.c
          semicore port.c
@@ -641,14 +641,14 @@ corner case tests:
 
 file:              eval.c
 category:          core
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3865
+spec by tests:     yamaken@r3865
+general review:    yamaken@r3865
+64-bit by eyes:    yamaken@r3865
 64-bit by tests:   
 coding style:      
-normal case tests: 
-corner case tests: 
+normal case tests: yamaken@r3865
+corner case tests: yamaken@r3865
 
 file:              module.c
 category:          core
@@ -1016,6 +1016,38 @@ corner case tests:
 
 Log
 ---
+
+2006-09-02  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * eval.c
+
+          Details:
+          - Fix a critical bug of 'call' appears on a minor build
+            configuration
+          - Add tests for 'eval' returns multiple values,
+            scheme-report-environment and null-environment to test-eval.scm
+          - Add tests for 'apply' invalid forms, single-argument,
+            multi-aruguments and returns multiple values to test-apply.scm
+          - Specs have been validated against following R5RS sections:
+            * apply
+              "4.1.3 Procedure calls"
+              "6.4 Control features"
+            * eval
+              "4.1.1 Variable references"
+              "4.1.2 Literal expressions"
+              "4.1.3 Procedure calls"
+              "4.1.4 Procedures"
+              "6.4 Control features" (continuation, multiple values)
+              "6.5 Eval"
+            * interaction-environment
+              "6.5 Eval"
+
+          - Specs have been validated against following R5RS sections, but not
+            conformed yet although tests are written for the future:
+            * scheme-report-environment
+              "6.5 Eval"
+            * null-environment
+              "6.5 Eval"
 
 2006-07-08 YamaKen <yamaken AT bp.iij4u.or.jp>
 

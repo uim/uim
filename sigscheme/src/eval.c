@@ -40,8 +40,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define SCM_ERRMSG_WRONG_NR_ARG " Wrong number of arguments "
-#define SCM_ERRMSG_NON_R5RS_ENV " the environment is not conformed to R5RS"
+#define SCM_ERRMSG_NON_R5RS_ENV "the environment is not conformed to R5RS"
 
 /*=======================================
   File Local Type Definitions
@@ -104,8 +103,7 @@ scm_call(ScmObj proc, ScmObj args)
 static ScmObj
 reduce(ScmObj (*func)(), ScmObj args, ScmObj env, enum ScmValueType need_eval)
 {
-    ScmObj left;
-    ScmObj right;
+    ScmObj left, right;
     enum ScmReductionState state;
     DECLARE_INTERNAL_FUNCTION("(reduction)");
 
@@ -161,7 +159,7 @@ static ScmObj
 call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
              enum ScmValueType need_eval)
 {
-    ScmObj formals, body, proc_env;
+    ScmObj exp, formals, body, proc_env;
     scm_int_t formals_len, args_len;
     DECLARE_INTERNAL_FUNCTION("call_closure");
 
@@ -176,8 +174,9 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
      *   (2) (<variable1> <variable2> ...)
      *   (3) (<variable1> <variable2> ... <variable n-1> . <variable n>)
      */
-    formals  = CAR(SCM_CLOSURE_EXP(proc));
-    body     = CDR(SCM_CLOSURE_EXP(proc));
+    exp      = SCM_CLOSURE_EXP(proc);
+    formals  = CAR(exp);
+    body     = CDR(exp);
     proc_env = SCM_CLOSURE_ENV(proc);
     if (need_eval) {
         args = map_eval(args, &args_len, eval_state->env);
@@ -189,9 +188,8 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 
     if (IDENTIFIERP(formals)) {
         /* (1) <variable> */
-        eval_state->env = scm_extend_environment(LIST_1(formals),
-                                                 LIST_1(args),
-                                                 proc_env);
+        formals = LIST_1(formals);
+        args    = LIST_1(args);
     } else if (CONSP(formals)) {
         /*
          * (2) (<variable1> <variable2> ...)
@@ -204,8 +202,6 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         formals_len = scm_finite_length(formals);
         if (!scm_valid_environment_extension_lengthp(formals_len, args_len))
             goto err_improper;
-
-        eval_state->env = scm_extend_environment(formals, args, proc_env);
     } else if (NULLP(formals)) {
         /*
          * (2') <variable> is '()
@@ -213,11 +209,12 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         if (args_len)
             goto err_improper;
 
-        eval_state->env = scm_extend_environment(SCM_NULL, SCM_NULL, proc_env);
+        formals = args = SCM_NULL;
     } else {
         SCM_ASSERT(scm_false);
     }
 
+    eval_state->env = scm_extend_environment(formals, args, proc_env);
     eval_state->ret_type = SCM_VALTYPE_NEED_EVAL;
     return scm_s_body(body, eval_state);
 
@@ -227,11 +224,8 @@ call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 
 /**
  * @param proc The procedure or syntax to call.
- *
  * @param args The argument list.
- *
  * @param eval_state The calling evaluator's state.
- *
  * @param need_eval Indicates that @a args need be evaluated.
  */
 static ScmObj
@@ -331,36 +325,36 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         return (*func)(argbuf[0]);
     case 2:
         if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
-            return (*func)(argbuf[0], (void*)argbuf[0]);
+            return (*func)(argbuf[0], (void*)argbuf[1]);
         return (*func)(argbuf[0], argbuf[1]);
     case 3:
 #if SCM_FUNCTYPE_MAND_MAX >= 1
         if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
-            return (*func)(argbuf[0], argbuf[1], (void*)argbuf[0]);
+            return (*func)(argbuf[0], argbuf[1], (void*)argbuf[2]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2]);
 #endif
     case 4:
 #if SCM_FUNCTYPE_MAND_MAX >= 2
         if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
-            return (*func)(argbuf[0], argbuf[1], argbuf[2], (void*)argbuf[0]);
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], (void*)argbuf[3]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3]);
 #endif
     case 5:
 #if SCM_FUNCTYPE_MAND_MAX >= 3
         if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
-            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], (void*)argbuf[0]);
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], (void*)argbuf[4]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4]);
 #endif
     case 6:
 #if SCM_FUNCTYPE_MAND_MAX >= 4
         if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
-            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], (void*)argbuf[0]);
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], (void*)argbuf[5]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5]);
 #endif
     case 7:
 #if SCM_FUNCTYPE_MAND_MAX >= 5
         if ((sizeof(void*) < sizeof(ScmObj)) && (type & SCM_FUNCTYPE_TAILREC))
-            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], (void*)argbuf[0]);
+            return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], (void*)argbuf[6]);
         return (*func)(argbuf[0], argbuf[1], argbuf[2], argbuf[3], argbuf[4], argbuf[5], argbuf[6]);
 #endif
 
@@ -514,7 +508,7 @@ scm_p_scheme_report_environment(ScmObj version)
     ERR(SCM_ERRMSG_NON_R5RS_ENV);
 #else
     CDBG((SCM_DBG_COMPAT,
-          "scheme-report-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
+          "scheme-report-environment: warning: " SCM_ERRMSG_NON_R5RS_ENV));
 #endif
 
     return SCM_R5RS_ENV;
@@ -533,7 +527,7 @@ scm_p_null_environment(ScmObj version)
     ERR(SCM_ERRMSG_NON_R5RS_ENV);
 #else
     CDBG((SCM_DBG_COMPAT,
-          "null-environment: warning:" SCM_ERRMSG_NON_R5RS_ENV));
+          "null-environment: warning: " SCM_ERRMSG_NON_R5RS_ENV));
 #endif
 
     return SCM_NULL_ENV;

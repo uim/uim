@@ -51,6 +51,102 @@
 (assert-error  (tn) (lambda ()
                       (eval '(+ 1 2) #\a)))
 
+;; R5RS: 4.1.3 Procedure calls
+;; > Procedure calls may return any number of values (see values in section see
+;; > section 6.4 Control features). With the exception of `values' the
+;; > procedures available in the initial environment return one value or, for
+;; > procedures such as `apply', pass on the values returned by a call to one
+;; > of their arguments.
+;; SigScheme apply this specification for 'eval' also.  -- YamaKen 2006-09-02
+(tn "eval that returns multiple values")
+(call-with-values
+    (lambda ()
+      (eval '(values 1 2 3)
+            (interaction-environment)))
+  (lambda vals
+    (assert-equal? (tn) '(1 2 3) vals)))
+(call-with-values
+    (lambda ()
+      (eval '(apply values '(1 2 3))
+            (interaction-environment)))
+  (lambda vals
+    (assert-equal? (tn) '(1 2 3) vals)))
+
+(tn "scheme-report-environment")
+(if (provided? "sigscheme")
+    (begin
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  (scheme-report-environment 4))))
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  (scheme-report-environment 6))))))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2)
+                            (scheme-report-environment 'symbol))))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2)
+                            (scheme-report-environment "string"))))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2)
+                            (scheme-report-environment #\a))))
+(assert-equal? (tn) 3 (eval '(+ 1 2)
+                            (scheme-report-environment 5)))
+;; R5RS: 6.5 Eval
+;; `eval' is not allowed to create new bindings in the environments associated
+;; with `null-environment' or `scheme-report-environment'.
+;; FIXME: SigScheme does not support this yet.
+(if (and #f (provided? "sigscheme"))
+    (begin
+      (assert-error  (tn) (lambda ()
+                            ;; Although other implementations evaluate this
+                            ;; expression without error (with or without 'foo'
+                            ;; defined), SigScheme will adopt this behavior.
+                            (eval '(define foo 1)
+                                  (scheme-report-environment 5))))
+      (assert-error  (tn) (lambda ()
+                            (eval 'use
+                                  (scheme-report-environment 5))))))
+
+(tn "null-environment")
+(if (and #f (provided? "sigscheme"))
+    (begin
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  (null-environment 4))))
+      (assert-error  (tn) (lambda ()
+                            (eval '(+ 1 2)
+                                  (null-environment 6))))))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2)
+                            (null-environment 'symbol))))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2)
+                            (null-environment "string"))))
+(assert-error  (tn) (lambda ()
+                      (eval '(+ 1 2)
+                            (null-environment #\a))))
+(assert-equal? (tn) 3 (eval '(+ 1 2)
+                            (null-environment 5)))
+;; R5RS: 6.5 Eval
+;; `eval' is not allowed to create new bindings in the environments associated
+;; with `null-environment' or `scheme-report-environment'.
+;; FIXME: SigScheme does not support this yet.
+(if (and #f (provided? "sigscheme"))
+    (begin
+      (assert-error  (tn) (lambda ()
+                            ;; Although other implementations evaluate this
+                            ;; expression without error (with or without 'foo'
+                            ;; defined), SigScheme will adopt this behavior.
+                            (eval '(define foo 1)
+                                  (null-environment 5))))
+      (assert-error  (tn) (lambda ()
+                            (eval 'use
+                                  (null-environment 5))))
+      (assert-error  (tn) (lambda ()
+                            (eval 'procedure?
+                                  (null-environment 5))))))
+
 (if (provided? "sigscheme")
     (begin
       (tn "eval with handmade env")

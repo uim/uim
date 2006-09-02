@@ -32,6 +32,43 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
+
+(tn "apply invalid form")
+(assert-error  (tn) (lambda () (apply #f '())))
+(assert-error  (tn) (lambda () (apply and '())))
+(assert-error  (tn) (lambda () (apply +)))
+(assert-error  (tn) (lambda () (apply + 1)))
+(assert-error  (tn) (lambda () (apply + 1 2)))
+(assert-error  (tn) (lambda () (apply + 1 2 3)))
+(assert-error  (tn) (lambda () (apply + 1 2 . 3)))
+
+(tn "apply single-argument")
+(assert-equal? (tn) 0 (apply + '()))
+(assert-equal? (tn) 1 (apply + '(1)))
+(assert-equal? (tn) 3 (apply + '(1 2)))
+(assert-equal? (tn) 6 (apply + '(1 2 3)))
+
+(tn "apply multi-arguments")
+(assert-equal? (tn) 1 (apply + 1 '()))
+(assert-equal? (tn) 3 (apply + 1 2 '()))
+(assert-equal? (tn) 3 (apply + 1 '(2)))
+(assert-equal? (tn) 6 (apply + 1 2 3 '()))
+(assert-equal? (tn) 6 (apply + 1 2 '(3)))
+(assert-equal? (tn) 6 (apply + 1 '(2 3)))
+;; Further tests exist on bigloo-apply.scm
+
+(tn "apply that returns multiple values")
+(call-with-values
+    (lambda () (apply values '(1 2 3)))
+  (lambda vals
+    (assert-equal? (tn) '(1 2 3) vals)))
+(call-with-values
+    (lambda () (apply values 1 2 '(3)))
+  (lambda vals
+    (assert-equal? (tn) '(1 2 3) vals)))
+      
+
 ;; check apply
 (assert-equal? "apply check1" #t (apply = '(1 1 1)))
 (assert-equal? "apply check2" 6  (apply + `(1 2 ,(+ 1 2))))
