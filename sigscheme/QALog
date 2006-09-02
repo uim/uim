@@ -236,7 +236,7 @@ Status Summary
          core env.c
          core symbol.c
          core continuation.c
-yyyy  yy core eval.c
+yyyy yyy core eval.c
          core module.c
          core sigscheme.c
          semicore port.c
@@ -646,7 +646,7 @@ spec by tests:     yamaken@r3865
 general review:    yamaken@r3865
 64-bit by eyes:    yamaken@r3865
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3866
 normal case tests: yamaken@r3865
 corner case tests: yamaken@r3865
 
@@ -1020,6 +1020,8 @@ Log
 2006-09-02  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * eval.c
+          - QA done @r3865 and @r3866 except for "64-bit by tests" and
+            hygienic macros capability
 
           Details:
           - Fix a critical bug of 'call' appears on a minor build
