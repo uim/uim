@@ -525,6 +525,15 @@
 
     (uim-debug (format "keyvec %s" keyvec))
 
+    ;; workaround for Emacs22
+    ;;  detect and convert odd double key vector into single
+    ;;  vector (ex. [1 1] to [1])
+    (if (and  (>= (length  keyvec) 2)
+	      (not (uim-getbind keyvec)))
+	(progn
+	  (uim-debug "*** wrong key vector detected (Emacs22's bug?)")
+	  (setq keyvec (vector (aref keyvec 0)))))
+
     ;; translate key vector with function-key-map
 
     (let (fmap key replaced)
