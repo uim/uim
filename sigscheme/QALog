@@ -1017,6 +1017,25 @@ corner case tests:
 Log
 ---
 
+2006-09-05  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * procedure.c
+          - QA done for eq?, eqv? and equal? @r3868 except for "64-bit by
+            tests" and hygienic macros capability. Other parts of procedure.c
+            is not validated yet
+
+          Details:
+          - Fix a critical bug of 'scm_type' of storage-compact
+          - Deprecate test-equation.scm since R5RS specification is not
+            reflected well, and test cases are considerably insufficient
+          - Add test-{eq,eqv,equal}.scm and complete all required tests I'm
+            aware of
+          - Specs have been validated against following R5RS sections:
+            * eq?, eqv?, equal?
+              "6.1 Equivalence predicates"
+              "2. Lexical conventions"
+              "2.1 Identifiers"
+
 2006-09-02  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * eval.c

@@ -157,6 +157,11 @@
   (lambda ()
     (for-each values '())))
 
+;; SigScheme and Gauche surely returns #<eof>
+(define eof
+  (lambda ()
+    (string-read "")))
+
 (define obj->literal
   (lambda (obj)
     (use srfi-6)

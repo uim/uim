@@ -33,6 +33,9 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+;; THIS TEST HAS BEEN DEPRECATED. USE test-{eq,eqv,equal}.scm INSTEAD.
+;;   -- YamaKen 2006-09-04
+
 (load "test/unittest.scm")
 
 (define closure1 (lambda (x) x))

@@ -603,9 +603,17 @@ scm_type(ScmObj obj)
         else if (C_FUNCPOINTERP(obj))
             return ScmCFuncPointer;
 #endif
+#if SCM_USE_HYGIENIC_MACRO
+        else if (HMACROP(obj))
+            return ScmMacro;
+        else if (FARSYMBOLP(obj))
+            return ScmFarsymbol;
+        else if (SUBPATP(obj))
+            return ScmSubpat;
+#endif
         else if (FREECELLP(obj))
             return ScmFreeCell;
-        PLAIN_ERR(" invalid others object: ptr = ~P", (void *)obj);
+        PLAIN_ERR(" invalid misc object: ptr = ~P", (void *)obj);
 
     case SCM_PTAG_IMM:
 #if SCM_USE_INT
