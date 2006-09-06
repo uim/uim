@@ -1017,6 +1017,18 @@ corner case tests:
 Log
 ---
 
+2006-09-07  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * procedure.c
+          - QA done for 'not' and boolean? @r3869. Rest parts of procedure.c is
+            not validated yet
+
+          Details:
+          - Add test-bool.scm and complete all required tests I'm aware of
+          - Specs have been validated against following R5RS sections:
+            * not, boolean?
+              "6.3.1 Booleans"
+
 2006-09-05  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * procedure.c
