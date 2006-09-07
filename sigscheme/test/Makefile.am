@@ -5,18 +5,20 @@ EXTRA_DIST = unittest.scm unittest-bigloo.scm unittest-gauche.scm
 EXTRA_DIST += \
         test-apply.scm \
         test-begin.scm \
+        test-bool.scm \
         test-char-cmp.scm \
         test-char.scm \
         test-continuation.scm \
         test-define.scm \
         test-define-internal.scm \
-        test-delay-force.scm \
         test-do.scm \
         test-enc-eucgeneric.scm \
         test-enc-eucjp.scm \
         test-enc-sjis.scm \
         test-enc-utf8.scm \
-        test-equation.scm \
+        test-eq.scm \
+        test-eqv.scm \
+        test-equal.scm \
         test-eval.scm \
         test-exp.scm \
         test-formatplus.scm \
@@ -31,8 +33,8 @@ EXTRA_DIST += \
         test-srfi6.scm \
         test-srfi8.scm \
         test-srfi28.scm \
-        test-srfi34-2.scm \
         test-srfi34.scm \
+        test-srfi34-2.scm \
         test-srfi38.scm \
         test-srfi48.scm \
         test-srfi60.scm \
