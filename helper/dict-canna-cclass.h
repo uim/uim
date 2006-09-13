@@ -102,15 +102,15 @@ typedef struct _category_code {
 } category_code;
 
 extern category_code substantive_code[];
-extern category_code adverb_code[];
 extern category_code verb_code[];
 extern category_code adjective_code[];
+extern category_code adverb_code[];
 extern category_code etc_code[];
 
 extern unsigned int nr_substantive_code;
-extern unsigned int nr_adverb_code;
 extern unsigned int nr_verb_code;
 extern unsigned int nr_adjective_code;
+extern unsigned int nr_adverb_code;
 extern unsigned int nr_etc_code;
 
 #if 0

@@ -328,8 +328,7 @@ const char *find_desc_from_code_with_type(const char *code, int type) {
 
   do {
     for (j = 0; j < num[i]; j++) {
-      if (strcmp(code, (category[i])[j].code) == 0
-	 && ((category[i])[j].type & type) == type)
+      if ((i == type ) && !strcmp(code, (category[i])[j].code))
 	pos = strdup((category[i])[j].desc);
     }
     i++;
@@ -361,8 +360,7 @@ const char *find_code_from_desc(const char *desc, int type) {
 
     do {
       for (j = 0; j < num[i]; j++) {
-	if (strcmp(desc, (category[i])[j].desc) == 0
-	   && ((category[i])[j].type & type) == type)
+	if ((i == type) && !strcmp(desc, (category[i])[j].desc))
 	  code = strdup((category[i])[j].code);
       }
       i++;

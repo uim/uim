@@ -394,12 +394,13 @@ word_window_set_word (WordWindow *window, uim_word *w)
   gtk_entry_set_text(GTK_ENTRY(window->desc), literal);
   adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(window->freq));
   gtk_adjustment_set_value(adj, w->freq);
-  gtk_entry_set_text(GTK_ENTRY(window->cclass_code), cclass);
 
   cclass_type = find_cclass_type_from_desc(w->cclass_code);
   if (cclass_type >= 0)
     gtk_combo_box_set_active(GTK_COMBO_BOX(window->combobox_pos_broad),
 			     cclass_type);
+
+  gtk_entry_set_text(GTK_ENTRY(window->cclass_code), cclass);
 
   g_free(phonetic);
   g_free(literal);
@@ -651,7 +652,7 @@ word_window_cclass_reset (WordWindow *window)
     break;
   case POS_SUBSTANTIVE:
   default:
-    desc =  substantive_code[0].desc;
+    desc = substantive_code[0].desc;
     break;
   }
 
