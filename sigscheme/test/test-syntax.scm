@@ -121,6 +121,7 @@
 (assert-true (tn) (symbol? (string-read "a-")))
 (assert-true (tn) (symbol? (string-read "a@")))
 (assert-true (tn) (symbol? (string-read "a1")))
+;; SigScheme allows initial hyphen by default.
 (if (and (provided? "sigscheme")
          (not (provided? "strict-r5rs")))
     (assert-true (tn) (symbol? (string-read "-a"))))

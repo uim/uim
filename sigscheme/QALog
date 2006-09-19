@@ -1017,6 +1017,23 @@ corner case tests:
 Log
 ---
 
+2006-09-20  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * procedure.c
+          - QA done for symbol?, symbol->string, string->symbol and general
+            symbol comparisons @r3873. Rest parts of procedure.c is not
+            validated yet
+
+          Details:
+          - Add test-symbol.scm and complete all required tests I'm aware of
+          - Specs have been validated against following R5RS sections:
+            * symbol?, symbol->string, string->symbol
+              "2. Lexical conventions"
+              "2.1 Identifiers"
+              "4.1.2 Literal expressions"
+              "6.3.3 Symbols"
+              "7.1.1 Lexical structure"
+
 2006-09-07  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * procedure.c
