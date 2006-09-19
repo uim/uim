@@ -503,17 +503,6 @@
                                         letrec-b)))
 
 ;;
-;; procedure?
-;;
-(assert-true  "procedure? #1" (procedure? even?))
-(assert-true  "procedure? #2" (procedure? (lambda (x) x)))
-(assert-true  "procedure? #3" (procedure? (call-with-current-continuation
-                                           (lambda (c)
-                                             c))))
-(assert-false "procedure? #4" (procedure? if))
-(assert-false "procedure? #5" (procedure? quote))
-
-;;
 ;; call-with-values
 ;;
 ;; from R5RS
