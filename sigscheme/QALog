@@ -1027,6 +1027,9 @@ Log
             validated yet
           - QA done for map and for-each @r3875 and @r3876. Rest parts of
             procedure.c is not validated yet
+          - QA done for values and call-with-values @r3877 except for proper
+            tail-recursion test of call-with-values. Rest parts of procedure.c
+            is not validated yet
           - [R5RS] Fix improper list acceptance on single-arg map
 
           Details:
@@ -1043,6 +1046,10 @@ Log
               "6.3.3 Symbols"
               "7.1.1 Lexical structure"
             * procedure?, map, for-each
+              "6.4 Control features"
+            * values, call-with-values
+              "3.5 Proper tail recursion"
+              "4.1.3 Procedure calls"
               "6.4 Control features"
 
 2006-09-07  YamaKen <yamaken AT bp.iij4u.or.jp>

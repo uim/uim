@@ -387,9 +387,6 @@ scm_p_call_with_values(ScmObj producer, ScmObj consumer,
     ScmObj vals;
     DECLARE_FUNCTION("call-with-values", procedure_fixed_tailrec_2);
 
-    ENSURE_PROCEDURE(producer);
-    ENSURE_PROCEDURE(consumer);
-
     vals = scm_call(producer, SCM_NULL);
 
     if (!VALUEPACKETP(vals)) {

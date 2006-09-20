@@ -503,66 +503,6 @@
                                         letrec-b)))
 
 ;;
-;; call-with-values
-;;
-;; from R5RS
-(assert-equal? "call-with-values #1"
-               5
-	       (call-with-values (lambda () (values 4 5))
-		 (lambda (a b) b)))
-(assert-equal? "call-with-values #2"
-               4
-	       (call-with-values (lambda () (values 4))
-		 (lambda (x) x)))
-(assert-equal? "call-with-values #3"
-               'ok
-	       (call-with-values (lambda () (values))
-		 (lambda () 'ok)))
-(assert-equal? "call-with-values #4" -1 (call-with-values * -))
-
-(assert-equal? "call-with-values #5"
-               5
-	       (apply call-with-values (list (lambda () (values 4 5))
-                                             (lambda (a b) b))))
-(assert-equal? "call-with-values #6"
-               4
-	       (apply call-with-values (list (lambda () (values 4))
-                                             (lambda (x) x))))
-(assert-equal? "call-with-values #7"
-               'ok
-	       (apply call-with-values (list (lambda () (values))
-                                             (lambda () 'ok))))
-(assert-equal? "call-with-values #8" -1 (apply call-with-values (list * -)))
-
-;; test whether the variable properly bound
-(assert-equal? "call-with-values #9"
-               1
-               ((lambda (n)
-                  (call-with-values
-                      (lambda () (values 2 3 n))
-                    (lambda (dummy1 dummy2 n2)
-                      n2)))
-                1))
-
-;;
-;; values
-;;
-(assert-true   "values #1" (number? (values 5)))
-(assert-false  "values #2" (number? (values 'five)))
-(assert-equal? "values #3"
-               '((eval-counter 1) (eval-counter 1))
-               (call-with-values
-                   (lambda () (values (eval-counter 0) (eval-counter 0)))
-                 (lambda x x)))
-
-;; not asserted, just make sure we don't blow up
-(begin (values 1 2 3) 'ignore)
-
-(assert-error "multiple values at invalid place"
-              (lambda ()
-                (write (values))))
-
-;;
 ;; dynamic-wind
 ;;
 (define dynwind-res '())
