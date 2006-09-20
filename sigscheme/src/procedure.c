@@ -40,6 +40,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define ERRMSG_UNEVEN_MAP_ARGS "uneven-length lists are passed as arguments"
 
 /*=======================================
   File Local Type Definitions
@@ -54,7 +55,7 @@ SCM_DEFINE_EXPORTED_VARS(procedure);
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmObj map_single_arg(ScmObj proc, ScmObj args);
+static ScmObj map_single_arg(ScmObj proc, ScmObj lst);
 static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
 
 /*=======================================
@@ -291,6 +292,7 @@ map_single_arg(ScmObj proc, ScmObj lst)
         elm = scm_call(proc, LIST_1(elm));
         SCM_QUEUE_ADD(q, elm);
     }
+    NO_MORE_ARG(lst);
 
     return ret;
 }
@@ -313,7 +315,7 @@ map_multiple_args(ScmObj proc, ScmObj args)
             if (CONSP(arg))
                 SCM_QUEUE_ADD(argq, CAR(arg));
             else if (NULLP(arg))
-                return ret;
+                goto finish;
             else
                 ERR_OBJ("invalid argument", arg);
             /* pop destructively */
@@ -323,6 +325,22 @@ map_multiple_args(ScmObj proc, ScmObj args)
         elm = scm_call(proc, map_args);
         SCM_QUEUE_ADD(retq, elm);
     }
+
+ finish:
+#if SCM_STRICT_ARGCHECK
+    /* R5RS: 6.4 Control features
+     * > If more than one list is given, then they must all be the same length.
+     * SigScheme rejects such user-error explicitly. */
+    if (!EQ(args, rest_args))
+        ERR(ERRMSG_UNEVEN_MAP_ARGS);
+    FOR_EACH (arg, args) {
+        if (!NULLP(arg))
+            ERR(ERRMSG_UNEVEN_MAP_ARGS);
+    }
+    NO_MORE_ARG(args);
+#endif
+
+    return ret;
 }
 
 SCM_EXPORT ScmObj

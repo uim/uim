@@ -1025,10 +1025,16 @@ Log
             validated yet
           - QA done for procedure? @r3874. Rest parts of procedure.c is not
             validated yet
+          - QA done for map and for-each @r3875. Rest parts of procedure.c is
+            not validated yet
+          - [R5RS] Fix improper list acceptance on single-arg map
 
           Details:
-          - Add test-symbol.scm, test-misc.scm and complete all required tests
-            I'm aware of
+          - Add uneven-length lists rejection (as error) on multiple-args
+            map. Although such forms are not allowed by R5RS, causing the error
+            is SigScheme-specific implementation
+          - Add test-symbol.scm, test-misc.scm, test-map-2.scm and complete all
+            required tests I'm aware of
           - Specs have been validated against following R5RS sections:
             * symbol?, symbol->string, string->symbol
               "2. Lexical conventions"
@@ -1036,7 +1042,7 @@ Log
               "4.1.2 Literal expressions"
               "6.3.3 Symbols"
               "7.1.1 Lexical structure"
-            * procedure?
+            * procedure?, map, for-each
               "6.4 Control features"
 
 2006-09-07  YamaKen <yamaken AT bp.iij4u.or.jp>
