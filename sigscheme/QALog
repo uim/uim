@@ -1025,8 +1025,8 @@ Log
             validated yet
           - QA done for procedure? @r3874. Rest parts of procedure.c is not
             validated yet
-          - QA done for map and for-each @r3875. Rest parts of procedure.c is
-            not validated yet
+          - QA done for map and for-each @r3875 and @r3876. Rest parts of
+            procedure.c is not validated yet
           - [R5RS] Fix improper list acceptance on single-arg map
 
           Details:

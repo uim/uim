@@ -56,7 +56,7 @@ SCM_DEFINE_EXPORTED_VARS(procedure);
   File Local Function Declarations
 =======================================*/
 static ScmObj map_single_arg(ScmObj proc, ScmObj lst);
-static ScmObj map_multiple_args(ScmObj proc, ScmObj args);
+static ScmObj map_multiple_args(ScmObj proc, ScmObj lsts);
 
 /*=======================================
   Function Definitions
@@ -298,10 +298,10 @@ map_single_arg(ScmObj proc, ScmObj lst)
 }
 
 static ScmObj
-map_multiple_args(ScmObj proc, ScmObj args)
+map_multiple_args(ScmObj proc, ScmObj lsts)
 {
     ScmQueue retq, argq;
-    ScmObj ret, elm, map_args, rest_args, arg;
+    ScmObj ret, elm, map_args, rest_lsts, lst;
     DECLARE_INTERNAL_FUNCTION("map");
 
     ret = SCM_NULL;
@@ -310,16 +310,16 @@ map_multiple_args(ScmObj proc, ScmObj args)
         /* slice args */
         map_args = SCM_NULL;
         SCM_QUEUE_POINT_TO(argq, map_args);
-        for (rest_args = args; CONSP(rest_args); rest_args = CDR(rest_args)) {
-            arg = CAR(rest_args);
-            if (CONSP(arg))
-                SCM_QUEUE_ADD(argq, CAR(arg));
-            else if (NULLP(arg))
+        for (rest_lsts = lsts; CONSP(rest_lsts); rest_lsts = CDR(rest_lsts)) {
+            lst = CAR(rest_lsts);
+            if (CONSP(lst))
+                SCM_QUEUE_ADD(argq, CAR(lst));
+            else if (NULLP(lst))
                 goto finish;
             else
-                ERR_OBJ("invalid argument", arg);
+                ERR_OBJ("invalid argument", lst);
             /* pop destructively */
-            SET_CAR(rest_args, CDR(arg));
+            SET_CAR(rest_lsts, CDR(lst));
         }
 
         elm = scm_call(proc, map_args);
@@ -331,13 +331,13 @@ map_multiple_args(ScmObj proc, ScmObj args)
     /* R5RS: 6.4 Control features
      * > If more than one list is given, then they must all be the same length.
      * SigScheme rejects such user-error explicitly. */
-    if (!EQ(args, rest_args))
+    if (!EQ(lsts, rest_lsts))
         ERR(ERRMSG_UNEVEN_MAP_ARGS);
-    FOR_EACH (arg, args) {
-        if (!NULLP(arg))
+    FOR_EACH (lst, lsts) {
+        if (!NULLP(lst))
             ERR(ERRMSG_UNEVEN_MAP_ARGS);
     }
-    NO_MORE_ARG(args);
+    NO_MORE_ARG(lsts);
 #endif
 
     return ret;
