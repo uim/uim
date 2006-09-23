@@ -346,14 +346,14 @@
   (_ "long description will be here."))
 
 (define-custom 'skk-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-jisyo")
+  (string-append (or (getenv "HOME") "") "/.skk-jisyo")
   '(skk-dict)
   '(pathname regular-file)
   (_ "Personal dictionary file")
   (_ "long description will be here."))
 
 (define-custom 'skk-uim-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-uim-jisyo")
+  (string-append (or (getenv "HOME") "") "/.skk-uim-jisyo")
   '(skk-dict)
   '(pathname regular-file)
   (_ "Personal dictionary file (dedicated to uim)")

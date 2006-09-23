@@ -61,7 +61,7 @@
 (define custom-file-path
   (lambda (gsym)
     (let* ((group-name (symbol->string gsym))
-	   (path (string-append (getenv "HOME")
+	   (path (string-append (or (getenv "HOME") "")
 				"/.uim.d/customs/custom-"
 				group-name
 				".scm")))
