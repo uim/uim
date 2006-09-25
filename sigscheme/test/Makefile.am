@@ -21,15 +21,15 @@ EXTRA_DIST += \
         test-eqv.scm \
         test-equal.scm \
         test-eval.scm \
-        test-exp.scm \
         test-formal-syntax.scm \
         test-formatplus.scm \
         test-lambda.scm \
         test-let.scm \
         test-list.scm \
-        test-map-2.scm \
+        test-map.scm \
         test-misc.scm \
         test-num.scm \
+        test-obsolete.scm \
         test-quote.scm \
         test-srfi1.scm \
         test-srfi2.scm \

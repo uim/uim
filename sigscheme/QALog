@@ -1042,6 +1042,15 @@ Log
               "3.5 Proper tail recursion"
               "6.4 Control features"
 
+        * test/
+          - Some test-*.scm have been renamed as follows. Take care of the
+            renamings to dig into old logs
+
+            * test-syntax.scm -> test-formal-syntax.scm
+            * test-exp.scm    -> test-syntax.scm   (R5RS syntaxes)
+            * test-exp.scm    -> test-obsolete.scm (obsolete tests)
+            * test-map-2.scm  -> test-map.scm
+
 2006-09-20  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * procedure.c

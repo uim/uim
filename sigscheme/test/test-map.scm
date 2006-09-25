@@ -1,5 +1,5 @@
-;;  Filename : test-map-2.scm
-;;  About    : unit tests for R5RS map
+;;  Filename : test-map.scm
+;;  About    : unit tests for R5RS map and for-each
 ;;
 ;;  Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
 ;;

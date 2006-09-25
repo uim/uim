@@ -1,5 +1,5 @@
-;;  Filename : test-exp.scm
-;;  About    : unit test for R5RS expressions
+;;  Filename : test-obsolete.scm
+;;  About    : unit tests for obsolete miscellaneous R5RS things
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
 ;;
