@@ -27,7 +27,6 @@ EXTRA_DIST += \
         test-lambda.scm \
         test-let.scm \
         test-list.scm \
-        test-map.scm \
         test-map-2.scm \
         test-misc.scm \
         test-num.scm \

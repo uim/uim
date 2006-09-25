@@ -72,4 +72,15 @@
                                         letrec-b)))
 
 
+(assert-equal? "basic map test1" '(2 2 2) (map cadr '((1 2) (1 2) (1 2))))
+(assert-equal? "basic map test2" '(2 4 6) (map + '(1 2 3) '(1 2 3)))
+(assert-equal? "basic map test3" '(2 4 6) (map (lambda (x y) (+ x y))
+						'(1 2 3) '(1 2 3)))
+
+(define (callee a)
+  (assert-equal? "basic map test4" '(1 2) a))
+
+(map callee '((1 2)))
+
+
 (total-report)
