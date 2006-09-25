@@ -1,8 +1,8 @@
 #! /usr/bin/env sscm -C UTF-8
 ;; -*- buffer-file-coding-system: utf-8 -*-
 
-;;  Filename : test-syntax.scm
-;;  About    : unit test for R5RS syntax
+;;  Filename : test-formal-syntax.scm
+;;  About    : unit test for R5RS formal syntax
 ;;
 ;;  Copyright (C) 2005-2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
 ;;
@@ -37,8 +37,6 @@
 
 (define tn test-name)
 (define *test-track-progress* #f)
-
-;; All tests in this file are passed against r2302 (new repository)
 
 ;; See "7.1 Formal syntax" of R5RS
 

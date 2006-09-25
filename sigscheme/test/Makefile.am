@@ -22,6 +22,7 @@ EXTRA_DIST += \
         test-equal.scm \
         test-eval.scm \
         test-exp.scm \
+        test-formal-syntax.scm \
         test-formatplus.scm \
         test-lambda.scm \
         test-let.scm \
@@ -45,7 +46,6 @@ EXTRA_DIST += \
         test-string.scm \
         test-symbol.scm \
         test-syntax-rules.scm \
-        test-syntax.scm \
         test-tail-rec.scm \
         test-values.scm \
         test-vector.scm
