@@ -406,19 +406,19 @@
 	    (string-append
 	     (ja-string-list-to-wide-alphabet
 	      (if upper?
-		  (map charcode->string
-		       (map char-upcase
-			    (map string->charcode
-				 (string-to-list (car raw-str-list)))))
+		  (map
+		   (lambda (x)
+		     (charcode->string (char-upcase (string->charcode x))))
+		   (string-to-list (car raw-str-list)))
 		  (string-to-list (car raw-str-list))))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?))
 	    (string-append
 	     (if upper?
 		 (string-list-concat
-		  (map charcode->string
-		       (map char-upcase
-			    (map string->charcode
-				 (string-to-list (car raw-str-list))))))
+		  (map
+		   (lambda (x)
+		     (charcode->string (char-upcase (string->charcode x))))
+		   (string-to-list (car raw-str-list))))
 		 (car raw-str-list))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?)))
 	"")))
