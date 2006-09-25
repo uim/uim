@@ -35,7 +35,9 @@ R5RS conformance
 Proper tail recursion
 ~~~~~~~~~~~~~~~~~~~~~
 
-Supported.
+Supported. But the conformance of `eval` procedure is uncertain. See the
+comments of `scm_p_eval()` and `rec-by-eval` of `test-tail-rec.scm` for further
+information about `eval`.
 
 Continuations
 ~~~~~~~~~~~~~

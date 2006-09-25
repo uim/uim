@@ -67,16 +67,6 @@ static ScmObj map_eval(ScmObj args, scm_int_t *args_len, ScmObj env);
 /*=======================================
   Function Definitions
 =======================================*/
-/* A wrapper for call() for internal proper tail recursion */
-SCM_EXPORT ScmObj
-scm_tailcall(ScmObj proc, ScmObj args, ScmEvalState *eval_state)
-{
-    SCM_ASSERT(PROPER_LISTP(args));
-
-    eval_state->ret_type = SCM_VALTYPE_AS_IS;
-    return call(proc, args, eval_state, SCM_VALTYPE_AS_IS);
-}
-
 /* Wrapper for call().  Just like scm_p_apply(), except ARGS is used
  * as given---nothing special is done about the last item in the
  * list. */
@@ -232,7 +222,7 @@ static ScmObj
 call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
      enum ScmValueType need_eval)
 {
-    ScmObj env;
+    ScmObj env, vals;
     ScmObj (*func)();
     enum ScmFuncTypeCode type;
     scm_bool syntaxp;
@@ -247,7 +237,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
     if (need_eval)
         proc = EVAL(proc, env);
 
-    if (!FUNCP(proc)) {
+    while (!FUNCP(proc)) {
         if (CLOSUREP(proc))
             return call_closure(proc, args, eval_state, need_eval);
 #if SCM_USE_HYGIENIC_MACRO
@@ -257,11 +247,33 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
             return scm_expand_macro(proc, args, eval_state);
         }
 #endif
+        /* Since scm_values_applier is a continuation, this block must precedes
+         * CONTINUATIONP(). */
+        if (EQ(proc, scm_values_applier)) {
+            if (!need_eval)
+                ERR("invalid multiple values application");
+            proc = MUST_POP_ARG(args);
+            vals = MUST_POP_ARG(args);
+            NO_MORE_ARG(args);
+
+            if (!VALUEPACKETP(vals)) {
+                /* got back a single value */
+                args = LIST_1(vals);
+            } else {
+                /* extract */
+                args = SCM_VALUEPACKET_VALUES(vals);
+            }
+            /* the values and the consumer must be both already evaluated
+             * though need_eval == scm_true */
+            need_eval = scm_false;
+            continue;
+        }
         if (CONTINUATIONP(proc)) {
             call_continuation(proc, args, eval_state, need_eval);
             /* NOTREACHED */
         }
         ERR_OBJ("procedure or syntax required but got", proc);
+        /* NOTREACHED */
     }
 
     /* We have a C function. */
@@ -367,6 +379,18 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
 /*===========================================================================
   S-Expression Evaluation
 ===========================================================================*/
+/*
+ * FIXME: I'm not sure what we should do with 'eval' to conform to following
+ * specification. See also 'rec-by-eval' of test-tail-rec.scm.
+ *   -- YamaKen 2006-09-25
+ *
+ * R5RS: 3.5 Proper tail recursion
+ * > Certain built-in procedures are also required to perform tail calls. The
+ * > first argument passed to apply and to call-with-current-continuation, and
+ * > the second argument passed to call-with-values, must be called via a tail
+ * > call.  Similarly, eval must evaluate its argument as if it were in tail
+ * > position within the eval procedure.
+ */
 SCM_EXPORT ScmObj
 scm_p_eval(ScmObj obj, ScmObj env)
 {
@@ -456,6 +480,9 @@ scm_p_apply(ScmObj proc, ScmObj arg0, ScmObj rest, ScmEvalState *eval_state)
 
     ENSURE_LIST(last);
 
+    /* Since any tail recursive procedures called here return a tail expression
+     * with SCM_VALTYPE_NEED_EVAL, evaluate such proc with call() does not
+     * break proper tail recursion of 'apply'.  -- YamaKen 2006-09-25 */
     return call(proc, args, eval_state, SCM_VALTYPE_AS_IS);
 }
 

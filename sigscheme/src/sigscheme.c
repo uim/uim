@@ -183,6 +183,11 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     /*=======================================================================
       Register Built-in Functions
     =======================================================================*/
+    /* pseudo procedure to deliver multiple values to an arbitrary procedure
+     * (assigns an invalid continuation as unique ID) */
+    scm_gc_protect_with_init((ScmObj *)&scm_values_applier,
+                             MAKE_CONTINUATION());
+
     /* SigScheme-specific core syntaxes and procedures */
     scm_register_funcs(scm_sscm_core_func_info_table);
 
@@ -210,6 +215,10 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
      * macro, #if is not safe here. */
     if (SCM_PTR_BITS == 64)
         scm_provide(CONST_STRING("64bit-addr"));
+
+#if SCM_NESTED_CONTINUATION_ONLY
+    scm_provide(CONST_STRING("nested-continuation-only"));
+#endif
 
     l_scm_initialized = scm_true;
 }

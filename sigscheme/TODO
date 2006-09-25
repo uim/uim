@@ -130,10 +130,7 @@ Assigned to Kazuki:
 ==============================================================================
 Assigned to YamaKen:
 
-* Write test for tail expression of all tail-recursive syntaxes
-
-* Add tests for proper tail recursion with 'apply', 'guard' and '(<exp1> =>
-  <exp2>)' clause of 'cond' to test-tail-rec.scm
+* Add tests for proper tail recursion with 'guard' to test-tail-rec.scm
 
 * Write tests for SRFI-75
   - Investigate the withdrawn status of SRFI-75, and decide temporary API to

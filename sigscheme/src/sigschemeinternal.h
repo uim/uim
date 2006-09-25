@@ -191,6 +191,10 @@ extern "C" {
 #define SCM_INTERACTION_ENV_INDEFINABLE SCM_EOF
 #endif
 
+/* specifies whether the storage abstraction layer can only handle nested
+ * (stacked) continuation or R5RS-conformant full implementation. But current
+ * implementation only supports '1'. */
+#define SCM_NESTED_CONTINUATION_ONLY 1
 #define INVALID_CONTINUATION_OPAQUE  NULL
 
 /* trace stack for debugging */
@@ -548,8 +552,10 @@ struct ScmSpecialCharInfo_ {
 /* procedure.c */
 SCM_GLOBAL_VARS_BEGIN(procedure);
 ScmCharCodec *scm_identifier_codec;
+ScmObj scm_values_applier;
 SCM_GLOBAL_VARS_END(procedure);
 #define scm_identifier_codec SCM_GLOBAL_VAR(procedure, scm_identifier_codec)
+#define scm_values_applier   SCM_GLOBAL_VAR(procedure, scm_values_applier)
 SCM_DECLARE_EXPORTED_VARS(procedure);
 
 /* port.c */
@@ -617,8 +623,10 @@ SCM_EXPORT ScmObj scm_call_with_current_continuation(ScmObj proc,
                                                      ScmEvalState *eval_state);
 SCM_EXPORT void scm_call_continuation(ScmObj cont, ScmObj ret) SCM_NORETURN;
 SCM_EXPORT ScmObj scm_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after);
+#if SCM_DEBUG
 SCM_EXPORT void scm_push_trace_frame(ScmObj obj, ScmObj env);
 SCM_EXPORT void scm_pop_trace_frame(void);
+#endif /* SCM_DEBUG */
 SCM_EXPORT ScmObj scm_trace_stack(void);
 #endif /* SCM_USE_CONTINUATION */
 
@@ -653,10 +661,6 @@ SCM_EXPORT scm_bool scm_valid_environment_extensionp(ScmObj formals,
 SCM_EXPORT scm_bool scm_valid_environment_extension_lengthp(scm_int_t formals_len, scm_int_t actuals_len);
 SCM_EXPORT scm_int_t scm_validate_formals(ScmObj formals);
 SCM_EXPORT scm_int_t scm_validate_actuals(ScmObj actuals);
-
-/* eval.c */
-SCM_EXPORT ScmObj scm_tailcall(ScmObj proc, ScmObj args,
-                               ScmEvalState *eval_state);
 
 /* syntax.c */
 SCM_EXPORT void scm_init_syntax(void);

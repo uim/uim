@@ -360,8 +360,6 @@ scm_p_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
     DECLARE_FUNCTION("call-with-current-continuation",
                      procedure_fixed_tailrec_1);
 
-    ENSURE_PROCEDURE(proc);
-
     return scm_call_with_current_continuation(proc, eval_state);
 }
 #endif /* SCM_USE_CONTINUATION */
@@ -389,15 +387,7 @@ scm_p_call_with_values(ScmObj producer, ScmObj consumer,
 
     vals = scm_call(producer, SCM_NULL);
 
-    if (!VALUEPACKETP(vals)) {
-        /* got back a single value */
-        vals = LIST_1(vals);
-    } else {
-        /* extract */
-        vals = SCM_VALUEPACKET_VALUES(vals);
-    }
-
-    return scm_tailcall(consumer, vals, eval_state);
+    return LIST_3(scm_values_applier, consumer, vals);
 }
 
 #if SCM_USE_CONTINUATION
@@ -406,6 +396,8 @@ scm_p_dynamic_wind(ScmObj before, ScmObj thunk, ScmObj after)
 {
     DECLARE_FUNCTION("dynamic-wind", procedure_fixed_3);
 
+    /* To reject non-procedure arguments before evaluating any other
+     * arguments, ensure the types here instead of call(). */
     ENSURE_PROCEDURE(before);
     ENSURE_PROCEDURE(thunk);
     ENSURE_PROCEDURE(after);

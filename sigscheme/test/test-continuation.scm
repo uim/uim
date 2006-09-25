@@ -32,15 +32,34 @@
 
 (load "./test/unittest.scm")
 
+(define tn test-name)
 (define call/cc call-with-current-continuation)
 
-(assert-equal? "call/cc #1" -3  (call-with-current-continuation
-				 (lambda (exit)
-				   (for-each (lambda (x)
-					       (if (negative? x)
-						   (exit x)))
-					     '(54 0 37 -3 245 19))
-				   #t)))
+(tn "call/cc invalid forms")
+;; no procedure
+(assert-error  (tn) (lambda ()
+                      (call-with-current-continuation)))
+;; not a procedure
+(assert-error  (tn) (lambda ()
+                      (call-with-current-continuation #t)))
+;; excessive
+(assert-error  (tn) (lambda ()
+                      (call-with-current-continuation procedure? #t)))
+
+(tn "call/cc")
+;; not applicable
+(assert-error  (tn) (lambda ()
+                      (call-with-current-continuation +)))
+
+(assert-equal? (tn)
+               -3
+               (call-with-current-continuation
+                (lambda (exit)
+                  (for-each (lambda (x)
+                              (if (negative? x)
+                                  (exit x)))
+                            '(54 0 37 -3 245 19))
+                  #t)))
 
 (define list-length
   (lambda (obj)
@@ -55,28 +74,28 @@
 			  (return #f))))))
       (re obj))))))
 
-(assert-equal? "call/cc #2" 4  (list-length '(1 2 3 4)))
-(assert-equal? "call/cc #3" #f (list-length '(a b . c)))
+(assert-equal? (tn) 4  (list-length '(1 2 3 4)))
+(assert-equal? (tn) #f (list-length '(a b . c)))
 
 ;; function written in C as proc
-(assert-true   "call/cc #4" (call/cc procedure?))
+(assert-true   (tn) (call/cc procedure?))
 
 ;; another continuation as proc
-(assert-true   "call/cc #5" (procedure? (call/cc (lambda (c) (call/cc c)))))
+(assert-true   (tn) (procedure? (call/cc (lambda (c) (call/cc c)))))
 
-(assert-equal? "call/cc #6" 'ret-call/cc
+(assert-equal? (tn) 'ret-call/cc
 	       (call-with-current-continuation
 		(lambda (k)
 		  'ret-call/cc)))
 
-(assert-equal? "call/cc #7" 'ret-call/cc
+(assert-equal? (tn) 'ret-call/cc
 	       (call-with-current-continuation
 		(lambda (k)
 		  (k 'ret-call/cc))))
 
 ;; Call an expired continuation. Current SigScheme cause an error due to its
 ;; setjmp/longjmp implementation.
-(assert-error  "call/cc #8"
+(assert-error  (tn)
                (lambda ()
                  (let ((res (call-with-current-continuation
                              (lambda (k)
@@ -90,23 +109,33 @@
 ;; continuation to the original call to call-with-current-continuation.
 ;; Except for continuations created by the `call-with-values' procedure, all
 ;; continuations take exactly one value.
-(assert-error "call/cc #9"
+(assert-error (tn)
               (lambda ()
                 (call-with-current-continuation
                  (lambda (k)
                    (k (values 1 2))))))
 
-(assert-error "call/cc #10"
+(assert-error (tn)
               (lambda ()
                 (call-with-current-continuation
                  (lambda (k)
                    (k (values))))))
 
 ;; one value is OK
-(assert-equal? "call/cc #11"
+(assert-equal? (tn)
                1
                (call-with-current-continuation
                 (lambda (k)
                   (k (values 1)))))
+
+(tn "call/cc SigScheme-specific behavior")
+(if (and (provided? "sigscheme")
+         (provided? "nested-continuation-only"))
+    ;; expired continuation
+    (assert-error  (tn) (lambda ()
+                          ((call/cc (lambda (c) c))
+                           procedure?)))
+    (assert-true   (tn) ((call/cc (lambda (c) c))
+                         procedure?)))
 
 (total-report)

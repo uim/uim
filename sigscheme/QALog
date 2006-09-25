@@ -235,7 +235,7 @@ Status Summary
          core error.c
          core env.c
          core symbol.c
-         core continuation.c
+yyyy yyy core continuation.c
 yyyy yyy core eval.c
          core module.c
          core sigscheme.c
@@ -245,7 +245,7 @@ yyyy yyy core eval.c
          semicore load.c
          semicore format.c
 yyyy yyy r5rs syntax.c
-         r5rs procedure.c
+yyyy yyy r5rs procedure.c
          r5rs number.c
          r5rs list.c
          r5rs deep-cadrs.c
@@ -630,14 +630,14 @@ corner case tests:
 
 file:              continuation.c
 category:          core
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3880
+spec by tests:     yamaken@r3880
+general review:    yamaken@r3880
+64-bit by eyes:    yamaken@r3880
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3880
+normal case tests: yamaken@r3880
+corner case tests: yamaken@r3880
 
 file:              eval.c
 category:          core
@@ -740,14 +740,14 @@ corner case tests: yamaken@r3704
 
 file:              procedure.c
 category:          r5rs
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3880
+spec by tests:     yamaken@r3880
+general review:    yamaken@r3880
+64-bit by eyes:    yamaken@r3880
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3880
+normal case tests: yamaken@r3880
+corner case tests: yamaken@r3880
 
 file:              number.c
 category:          r5rs
@@ -1016,6 +1016,31 @@ corner case tests:
 
 Log
 ---
+
+2006-09-25  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * procedure.c
+        * continuation.c
+        * eval.c
+          - QA done for call-with-current-continuation and dynamic-wind
+            together with all parts of procedure.c and continuation.c @r3880
+            except for "64-bit by tests"
+          - [R5RS] Fix improper tail recursion of call-with-values on a corner
+            case
+          - [R5RS] Proper tail recursion conformance of 'eval' has been marked
+            as 'uncertain'
+
+          Details:
+          - Add various tests to test-continuation.scm, test-dyn-extent.scm and
+            test-tail-rec.scm and complete all required tests I'm aware of
+          - All proper tail recursion conformance (including '=>' clause of
+            'cond' and 'apply') are tested except for R5RS 'eval' and SRFI-34
+            'guard'. See the comments of scm_p_eval() and rec-by-eval for
+            further information about 'eval'
+          - Specs have been validated against following R5RS sections:
+            * call-with-current-continuation, dynamic-wind, call-with-values
+              "3.5 Proper tail recursion"
+              "6.4 Control features"
 
 2006-09-20  YamaKen <yamaken AT bp.iij4u.or.jp>
 

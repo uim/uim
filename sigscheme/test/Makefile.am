@@ -12,6 +12,7 @@ EXTRA_DIST += \
         test-define.scm \
         test-define-internal.scm \
         test-do.scm \
+        test-dyn-extent.scm \
         test-enc-eucgeneric.scm \
         test-enc-eucjp.scm \
         test-enc-sjis.scm \
@@ -26,6 +27,8 @@ EXTRA_DIST += \
         test-let.scm \
         test-list.scm \
         test-map.scm \
+        test-map-2.scm \
+        test-misc.scm \
         test-num.scm \
         test-quote.scm \
         test-srfi1.scm \
@@ -40,9 +43,11 @@ EXTRA_DIST += \
         test-srfi60.scm \
         test-string-cmp.scm \
         test-string.scm \
+        test-symbol.scm \
         test-syntax-rules.scm \
         test-syntax.scm \
         test-tail-rec.scm \
+        test-values.scm \
         test-vector.scm
 
 # Imported foreign tests

@@ -1,7 +1,7 @@
 ;;  Filename : test-tail-rec.scm
 ;;  About    : unit test for the proper tail recursion
 ;;
-;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
+;;  Copyright (C) 2005-2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
 ;;
 ;;  All rights reserved.
 ;;
@@ -36,7 +36,7 @@
 ;; This file is provided to test the proper tail recursion functionality. See
 ;; "3.5 Proper tail recursion" of R5RS for the accurate specification.
 ;;
-;; This test must be run as follows to take effect.
+;; This test must be run as follows to take effect. Use runtest-tail-rec.sh.
 ;;
 ;; $ (ulimit -s 128 && ulimit -d 2048 && ./sscm test/test-tail-rec.scm || echo 'exploded')
 ;;
@@ -44,8 +44,11 @@
 ;;
 ;; $ (ulimit -s 128 && ulimit -d 2048 && gosh -I. test/test-tail-rec.scm || echo 'exploded')
 
-(load "test/unittest.scm")
+(use srfi-8)
 
+(load "./test/unittest.scm")
+
+(define test-eval?         #f)
 (define test-and?          #t)  ;; #t is required to conform to R5RS
 (define test-or?           #t)  ;; #t is required to conform to R5RS
 (define test-improper-and? #f)  ;; R5RS compliant implementation explodes if #t
@@ -53,7 +56,7 @@
 
 (define KB 1024)
 (define heap-limit (* 2048 KB))  ;; specify this by ulimit -d
-(define cell-size 8)  ;; 16 is actual size of current SigScheme implementation
+(define cell-size 8)             ;; minimum cell size (32-bit storage-compact)
 (define explosive-count (/ heap-limit cell-size))
 
 (define assert-orig assert)
@@ -64,6 +67,27 @@
     (display err-msg)
     (assert-orig test-name err-msg exp)
     (display " ...OK\n")))
+
+
+(define rec-by-eval
+  (lambda (cnt)
+    (if (zero? cnt)
+        'succeeded
+        (eval (list 'rec-by-eval (- cnt 1))
+              (interaction-environment)))))
+
+
+(define rec-by-apply
+  (lambda (cnt)
+    (if (zero? cnt)
+        'succeeded
+        (apply rec-by-apply (list (- cnt 1))))))
+
+(define rec-by-apply-with-apply
+  (lambda (cnt)
+    (if (zero? cnt)
+        'succeeded
+        (apply apply (list rec-by-apply-with-apply (list (- cnt 1)))))))
 
 
 (define rec-by-if-consequent
@@ -231,6 +255,17 @@
       'dummy)
      ((positive? cnt)
       (rec-by-cond-3rd (- cnt 1)))
+     (else
+      'dummy))))
+
+(define rec-by-cond-3rd-with-=>
+  (lambda (cnt)
+    (cond
+     ((zero? cnt)
+      'succeeded)
+     ((negative? cnt)
+      'dummy)
+     ((- cnt 1) => rec-by-cond-3rd-with-=>)
      (else
       'dummy))))
 
@@ -707,6 +742,21 @@
 	(rec-improper-infinite (- cnt 1)))
     'dummy))
 
+;; eval
+;; SigScheme, Guile 1.6.7 and Gauche 0.8.6 fail. Should we make this test
+;; passed?  -- YamaKen 2006-09-25
+(if test-eval?
+    (assert-equal? "proper tail recursion by eval"
+                   'succeeded
+                   (rec-by-eval explosive-count)))
+
+;; apply
+(assert-equal? "proper tail recursion by apply"
+	       'succeeded
+	       (rec-by-apply explosive-count))
+(assert-equal? "proper tail recursion by apply with apply"
+	       'succeeded
+	       (rec-by-apply-with-apply explosive-count))
 
 ;; if
 (assert-equal? "proper tail recursion by if-consequent"
@@ -762,6 +812,9 @@
 (assert-equal? "proper tail recursion by 3rd clause of cond"
 	       'succeeded
 	       (rec-by-cond-3rd explosive-count))
+(assert-equal? "proper tail recursion by 3rd clause of cond with => expression"
+	       'succeeded
+	       (rec-by-cond-3rd-with-=> explosive-count))
 (assert-equal? "proper tail recursion by last clause of cond"
 	       'succeeded
 	       (rec-by-cond-last explosive-count))
@@ -977,19 +1030,21 @@
 
 ;; call/cc
 
-;; SigScheme cannot run this test as proper tail recursion. The stack will
-;; grown.
-;;(assert-equal? "proper tail recursion by call/cc"
-;;               'succeeded
-;;               (rec-continuation explosive-count))
+;; Current SigScheme implementation cannot run this test as proper tail
+;; recursion. The stack grows.
+(if (not (and (provided? "sigscheme")
+              (provided? "nested-continuation-only")))
+    (assert-equal? "proper tail recursion by call/cc"
+                   'succeeded
+                   (rec-continuation explosive-count)))
 
 ;; call-with-values
-(assert-equal? "proper tail recursion by call-with-values"
+(assert-equal? "proper tail recursion by call-with-values #1"
                'succeeded
                (rec-call-with-values explosive-count))
 
 ;; call-with-values
-(assert-equal? "proper tail recursion by call-with-values (2)"
+(assert-equal? "proper tail recursion by call-with-values #2"
                'succeeded
                (rec-call-with-values-2 explosive-count))
 
@@ -998,16 +1053,14 @@
                'succeeded
                (rec-receive explosive-count))
 
-;; This test is succeeded if [OK]-exploded message sequence has been
-;; printed as follows.
+;; This test is succeeded if reported as follows.
 ;;
-;; [OK]
-;;
-;; check intentional 'exploded' message printed below
+;; OK: 1 tests, ?? assertions, ?? successes, 0 failures, 0 errors
+;; All normal tests have been passed.
 ;; <system dependent ulimit exceeded error message>
-;; exploded
+;; All tests finished successfully only if the message "All normal tests have been passed" and subsequent segmentation fault message are printed above.
 (total-report)
-(display "check intentional 'correctly exploded' message printed below")
+(display "All normal tests have been passed.")
 (newline)
 
 ;; test whether the explosive-count is actually explosive
@@ -1015,7 +1068,4 @@
 	       'succeeded
 	       (rec-improper-infinite explosive-count))
 
-;; infinite loop
-(assert-equal? "proper infinite tail recursion"
-	       'succeeded
-	       (rec-proper-infinite 0))
+;; test failed if reached here
