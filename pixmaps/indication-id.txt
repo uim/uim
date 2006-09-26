@@ -2,7 +2,7 @@ List of indication-id appeared in current and future uim
 distribution. Make icons for them. '+' sign indicates 'done'.
 
 * uim
-  im_switcher
+  + im_switcher
   preference
   dictionary_tool
   input_pad
@@ -52,48 +52,6 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   latin
 
 * input methods (m17n library)
-  m17n-am-sera
-  m17n-as-itrans
-  m17n-bn-itrans
-  m17n-bo-wylie
-  m17n-dv-phonetic
-  m17n-el-kbd
-  m17n-en-ispell
-  m17n-ar-kbd
-  m17n-fa-isiri
-  m17n-gu-itrans
-  m17n-he-kbd
-  m17n-hi-itrans
-  m17n-hr-kbd
-  m17n-hy-kbd
-  m17n-ja-anthy
-  m17n-ja-tcode
-  m17n-ka-kdb
-  m17n-kk-arabic
-  m17n-kk-kbd
-  m17n-km-yannis
-  m17n-kn-itrans
-  m17n-ko-hangul2
-  m17n-ko-romaja
-  m17n-lo-lrt
-  m17n-ml-itrans
-  m17n-my-kdb
-  m17n-or-itrans
-  m17n-pa-itrans
-  m17n-ru-yawerty
-  m17n-si-samanala
-  m17n-sk-kbd
-  m17n-sr-kbd
-  m17n-ta-itrans
-  m17n-te-itrans
-  m17n-th-kesmanee
-  m17n-vi-telex
-  m17n-vi-viqr
-  m17n-zh-py
-  m17n-zh-pinyin
-  m17n-latn-post
-  m17n-latn-pre
-  m17n-syrc-phonetic
-  m17n-bopo-kbd
-  m17n-unicode
-  m17n-rfc1345
+  + m17n-*
+
+All icons that m17n-db provide can be used via uim.

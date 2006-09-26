@@ -51,7 +51,7 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
 
     QObject::connect( m_indicator, SIGNAL( indicatorResized() ), this, SLOT( slotIndicatorResized() ) );
 
-    m_swicon = QPixmap( ICONDIR + "/switcher-icon.png" );
+    m_swicon = QPixmap( ICONDIR + "/im_switcher.png" );
     m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
     m_dicticon = QPixmap( ICONDIR + "/uim-dict.png");
 

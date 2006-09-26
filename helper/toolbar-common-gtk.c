@@ -83,7 +83,7 @@ static struct _CommandEntry command_entry[] = {
   {
     N_("Switch input method"),
     NULL,
-    "switcher-icon",
+    "im_switcher",
     "uim-im-switcher-gtk &",
     "toolbar-show-switcher-button?",
     UIM_FALSE
@@ -918,7 +918,7 @@ init_icon(void)
   uim_factory = gtk_icon_factory_new();
   gtk_icon_factory_add_default(uim_factory);
 
-  register_icon("switcher-icon");
+  register_icon("im_switcher");
   register_icon("uim-icon");
   register_icon("uim-dict");
   register_icon("null");

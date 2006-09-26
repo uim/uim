@@ -17,7 +17,7 @@ SVGS += direct_input.svg on.svg off.svg \
 SVGS += ja_romaji.svg ja_kana.svg ja_azik.svg ja_nicola.svg ja_pocketbell.svg
 
 # Tools
-SVGS += uim-dict.svg
+SVGS += im_switcher.svg uim-dict.svg
 
 # input method substitutions
 IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
@@ -43,17 +43,31 @@ SVG_PNGS = unknown.png \
 	   ko_direct.png ko_hangulchar.png ko_hangulword.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_nicola.png \
            ja_pocketbell.png \
-	   uim-dict.png $(IM_SUBST_PNGS)
+	   im_switcher.png uim-dict.png $(IM_SUBST_PNGS)
 
-NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png \
-              switcher-icon.png \
-              anthy.png canna.png prime.png
+NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png
 
-PNGS = $(NATIVE_PNGS) $(SVG_PNGS) uim-icon.png
+SCIM_PNGS = scim-anthy.png scim-canna.png scim-prime.png \
+	    scim-skk.png scim-wnn.png
+SCIM_ORIGINATED_PNGS = anthy.png canna.png prime.png
 
-dist_pixmaps_DATA = $(PNGS) $(SVGS)
+GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
 
-EXTRA_DIST = indication-id.txt
+PNGS = $(NATIVE_PNGS) $(GENERATED_PNGS)
+
+EXTRA_DIST = COPYING.BSDL COPYING.LGPL LIST indication-id.txt $(SCIM_PNGS)
+
+dist_pixmaps_DATA = $(SVGS) $(PNGS)
+
+MAINTAINERCLEANFILES = $(GENERATED_PNGS)
+
+if MAINTAINER_MODE
+anthy.png: scim-anthy.png
+	cp $< $@
+canna.png: scim-canna.png
+	cp $< $@
+prime.png: scim-prime.png
+	cp $< $@
 
 uim-icon.png: uim-icon48.png
 	cp $< $@
@@ -65,9 +79,12 @@ $(IM_SUBST_SVGS): im_subst.svg
 	if test -n "$(RSVG)"; then		\
 	    $(RSVG) -w48 -h48 -fpng $< $@;	\
 	fi
+endif
 
 clean-svgpng:
 	rm -f $(SVG_PNGS)
+clean-genpng:
+	rm -f $(GENERATED_PNGS)
 
 # rsvg(1) is required to make a distribution, but does not for build
 # and install from a tarball distribution.

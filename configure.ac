@@ -20,6 +20,8 @@ AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PATH_PROG(RSVG, rsvg)
 
+AM_MAINTAINER_MODE
+
 # Checks for libraries
 AC_CHECK_LIB(dl,dlopen)
 AC_CHECK_LIB(socket,socket)

@@ -51,7 +51,7 @@ But there are six exceptions.
 
   * pixmaps/*.{svg,png} are also licensed under the 3-clause BSD
     license, but has different copyright holders. See
-    pixmaps/{COPYING,README,AUTHORS} for further information.
+    pixmaps/{COPYING.BSDL,README,AUTHORS} for further information.
 
 This Package uses a scheme system SIOD, and the license is as follows:
 /* Scheme In One Defun, but in C this time.

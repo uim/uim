@@ -62,7 +62,7 @@ static const BonoboUIVerb uim_menu_verbs[] = {
 static const char uim_menu_xml[] =
   "<popup name=\"button3\">\n"
   "   <menuitem name=\"Switcher Item\" verb=\"UimExecSwitcher\" _label=\"Switch input method\"\n"
-  "             pixtype=\"filename\" pixname=\""UIM_PIXMAPSDIR"/switcher-icon.png\"/>\n"
+  "             pixtype=\"filename\" pixname=\""UIM_PIXMAPSDIR"/im_switcher.png\"/>\n"
   "   <menuitem name=\"Pref Item\" verb=\"UimExecPref\" _label=\"Preference\"\n"
   "             pixtype=\"stock\" pixname=\"preferences\"/>\n"
   "   <menuitem name=\"About Item\" verb=\"UimAbout\" _label=\"About ...\"\n"
