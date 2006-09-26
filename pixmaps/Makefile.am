@@ -25,7 +25,8 @@ IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 hangul2.svg hangul3.svg romaja.svg \
                 viqr.svg ipa-x-sampa.svg latin.svg \
                 scim.svg
-SVGS += im_subst.svg $(IM_SUBST_SVGS)
+GENERATED_SVGS = $(IM_SUBST_SVGS)
+SVGS += im_subst.svg $(GENERATED_SVGS)
 
 IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 mana.png \
@@ -59,7 +60,7 @@ EXTRA_DIST = COPYING.BSDL COPYING.LGPL LIST indication-id.txt $(SCIM_PNGS)
 
 dist_pixmaps_DATA = $(SVGS) $(PNGS)
 
-MAINTAINERCLEANFILES = $(GENERATED_PNGS)
+MAINTAINERCLEANFILES = $(GENERATED_PNGS) $(GENERATED_SVGS)
 
 if MAINTAINER_MODE
 anthy.png: scim-anthy.png
@@ -83,6 +84,8 @@ endif
 
 clean-svgpng:
 	rm -f $(SVG_PNGS)
+clean-gensvg:
+	rm -f $(GENERATED_SVGS)
 clean-genpng:
 	rm -f $(GENERATED_PNGS)
 
