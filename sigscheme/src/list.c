@@ -96,6 +96,22 @@
   R5RS : 6.3 Other data types : 6.3.2 Pairs and lists
 ===========================================================================*/
 SCM_EXPORT ScmObj
+scm_p_pairp(ScmObj obj)
+{
+    DECLARE_FUNCTION("pair?", procedure_fixed_1);
+
+    return MAKE_BOOL(CONSP(obj));
+}
+
+SCM_EXPORT ScmObj
+scm_p_cons(ScmObj car, ScmObj cdr)
+{
+    DECLARE_FUNCTION("cons", procedure_fixed_2);
+
+    return CONS(car, cdr);
+}
+
+SCM_EXPORT ScmObj
 scm_p_car(ScmObj obj)
 {
     DECLARE_FUNCTION("car", procedure_fixed_1);
@@ -121,22 +137,6 @@ scm_p_cdr(ScmObj obj)
     ENSURE_CONS(obj);
 
     return CDR(obj);
-}
-
-SCM_EXPORT ScmObj
-scm_p_pairp(ScmObj obj)
-{
-    DECLARE_FUNCTION("pair?", procedure_fixed_1);
-
-    return MAKE_BOOL(CONSP(obj));
-}
-
-SCM_EXPORT ScmObj
-scm_p_cons(ScmObj car, ScmObj cdr)
-{
-    DECLARE_FUNCTION("cons", procedure_fixed_2);
-
-    return CONS(car, cdr);
 }
 
 SCM_EXPORT ScmObj
@@ -222,14 +222,6 @@ scm_p_cdddr(ScmObj lst)
 }
 
 SCM_EXPORT ScmObj
-scm_p_list(ScmObj args)
-{
-    DECLARE_FUNCTION("list", procedure_variadic_0);
-
-    return args;
-}
-
-SCM_EXPORT ScmObj
 scm_p_nullp(ScmObj obj)
 {
     DECLARE_FUNCTION("null?", procedure_fixed_1);
@@ -249,6 +241,14 @@ scm_p_listp(ScmObj obj)
         return SCM_FALSE;
 
     return MAKE_BOOL(PROPER_LISTP(obj));
+}
+
+SCM_EXPORT ScmObj
+scm_p_list(ScmObj args)
+{
+    DECLARE_FUNCTION("list", procedure_variadic_0);
+
+    return args;
 }
 
 #define TERMINATOR_LEN 1

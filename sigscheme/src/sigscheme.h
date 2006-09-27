@@ -1336,10 +1336,10 @@ SCM_EXPORT ScmObj scm_p_dynamic_wind(ScmObj before, ScmObj thunk,
 /* list.c */
 SCM_EXPORT scm_int_t scm_length(ScmObj lst);
 SCM_EXPORT ScmObj scm_list_tail(ScmObj lst, scm_int_t k);
-SCM_EXPORT ScmObj scm_p_car(ScmObj obj);
-SCM_EXPORT ScmObj scm_p_cdr(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_pairp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_cons(ScmObj car, ScmObj cdr);
+SCM_EXPORT ScmObj scm_p_car(ScmObj obj);
+SCM_EXPORT ScmObj scm_p_cdr(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_set_carx(ScmObj pair, ScmObj car);
 SCM_EXPORT ScmObj scm_p_set_cdrx(ScmObj pair, ScmObj cdr);
 SCM_EXPORT ScmObj scm_p_caar(ScmObj lst);
@@ -1348,9 +1348,9 @@ SCM_EXPORT ScmObj scm_p_cdar(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_cddr(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_caddr(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_cdddr(ScmObj lst);
-SCM_EXPORT ScmObj scm_p_list(ScmObj args);
 SCM_EXPORT ScmObj scm_p_nullp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_listp(ScmObj obj);
+SCM_EXPORT ScmObj scm_p_list(ScmObj args);
 SCM_EXPORT ScmObj scm_p_length(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_append(ScmObj args);
 SCM_EXPORT ScmObj scm_p_reverse(ScmObj lst);
