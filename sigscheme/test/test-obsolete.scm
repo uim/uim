@@ -83,4 +83,18 @@
 (map callee '((1 2)))
 
 
+; numbers in various radices
+(assert-true "binary number test1" (= #b1111 15))
+(assert-true "binary number test2" (= #b010  2))
+(assert-true "binary number test3" (= #b0    0))
+(assert-true "binary number test4" (= #b-1   -1))
+(assert-true "binary number test5" (= #b-10  -2))
+(assert-true "binary number test6" (= #b-010 -2))
+(assert-true "octal number test1"  (= #o077  63))
+(assert-true "octal number test2"  (= #o361  241))
+(assert-true "decimal number test1" (= #d3900 3900))
+(assert-true "decimal number test2" (= #d18782 18782))
+(assert-true "hexadecimal test1" (= #xffff 65535))
+(assert-true "hexadecimal test2" (= #x0A7b 2683))
+
 (total-report)

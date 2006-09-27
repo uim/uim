@@ -34,38 +34,38 @@
 
 (define tn test-name)
 
-;; vector
-(assert-equal? "vector test" '#()        (vector))
-(assert-equal? "vector test" '#(a)       (vector 'a))
-(assert-equal? "vector test" '#(a b c d) (vector 'a 'b 'c 'd))
+(tn "vector")
+(assert-equal? (tn) '#()        (vector))
+(assert-equal? (tn) '#(a)       (vector 'a))
+(assert-equal? (tn) '#(a b c d) (vector 'a 'b 'c 'd))
 
-;; vector?
-(assert-true "vector? test" (vector? '#()))
-(assert-true "vector? test" (vector? '#(a)))
-(assert-true "vector? test" (vector? '#(a b c d)))
+(tn "vector?")
+(assert-true   (tn) (vector? '#()))
+(assert-true   (tn) (vector? '#(a)))
+(assert-true   (tn) (vector? '#(a b c d)))
 
-;; make-vector
-(assert-equal? "make-vector test" '#() (make-vector 0 #f))
-(assert-equal? "make-vector test" '#() (make-vector 0 '()))
-(assert-equal? "make-vector test" '#(#f)    (make-vector 1 #f))
-(assert-equal? "make-vector test" '#(#f #f) (make-vector 2 #f))
-(assert-equal? "make-vector test" '#(#(a b) #(a b)) (make-vector 2 '#(a b)))
-(assert-error  "make-vector test" (lambda ()
-				   (make-vector -1 #f)))
+(tn "make-vector")
+(assert-equal? (tn) '#() (make-vector 0 #f))
+(assert-equal? (tn) '#() (make-vector 0 '()))
+(assert-equal? (tn) '#(#f)    (make-vector 1 #f))
+(assert-equal? (tn) '#(#f #f) (make-vector 2 #f))
+(assert-equal? (tn) '#(#(a b) #(a b)) (make-vector 2 '#(a b)))
+(assert-error  (tn) (lambda ()
+                      (make-vector -1 #f)))
 
-;; vector-length
-(assert-equal? "vector-length test" 0 (vector-length '#()))
-(assert-equal? "vector-length test" 1 (vector-length '#(a)))
-(assert-equal? "vector-length test" 2 (vector-length '#(a b)))
+(tn "vector-length")
+(assert-equal? (tn) 0 (vector-length '#()))
+(assert-equal? (tn) 1 (vector-length '#(a)))
+(assert-equal? (tn) 2 (vector-length '#(a b)))
 
-;; vector-ref
-(assert-equal? "vector-ref test" 'a (vector-ref '#(a b c d e) 0))
-(assert-equal? "vector-ref test" 'c (vector-ref '#(a b c d e) 2))
-(assert-equal? "vector-ref test" 'e (vector-ref '#(a b c d e) 4))
-(assert-error  "vector-ref test" (lambda ()
-				   (vector-ref '#() -1)))
-(assert-error  "vector-ref test" (lambda ()
-				   (vector-ref '#() 1)))
+(tn "vector-ref")
+(assert-equal? (tn) 'a (vector-ref '#(a b c d e) 0))
+(assert-equal? (tn) 'c (vector-ref '#(a b c d e) 2))
+(assert-equal? (tn) 'e (vector-ref '#(a b c d e) 4))
+(assert-error  (tn) (lambda ()
+                      (vector-ref '#() -1)))
+(assert-error  (tn) (lambda ()
+                      (vector-ref '#() 1)))
 
 ;; vector-set!
 (tn "vector-set!")
@@ -129,17 +129,16 @@
                        (vector-set! tmpvec 4 #t)
                        tmpvec))))
 
-;; vector->list
-(assert-equal? "vector->list test" '()    (vector->list '#()))
-(assert-equal? "vector->list test" '(a)   (vector->list '#(a)))
-(assert-equal? "vector->list test" '(a b) (vector->list '#(a b)))
+(tn "vector->list")
+(assert-equal? (tn) '()    (vector->list '#()))
+(assert-equal? (tn) '(a)   (vector->list '#(a)))
+(assert-equal? (tn) '(a b) (vector->list '#(a b)))
 
-;; list->vector
-(assert-equal? "list->vector test" '#()    (list->vector '()))
-(assert-equal? "list->vector test" '#(a)   (list->vector '(a)))
-(assert-equal? "list->vector test" '#(a b) (list->vector '(a b)))
+(tn "list->vector")
+(assert-equal? (tn) '#()    (list->vector '()))
+(assert-equal? (tn) '#(a)   (list->vector '(a)))
+(assert-equal? (tn) '#(a b) (list->vector '(a b)))
 
-;; vector-fill!
 (tn "vector-fill!")
 (assert-equal? (tn)
 	       '#()

@@ -13,11 +13,13 @@ MAINTAINERCLEANFILES = $(ASCIIDOC_HTMLS)
 
 .PHONY: clean-html
 
+if MAINTAINER_MODE
 # xhtml11 backend is supported from AsciiDoc 7.0.0
 .txt.html:
 	if test -n "$(ASCIIDOC)"; then          \
 	    $(ASCIIDOC) -b xhtml11 -n -o $@ $<; \
 	fi
+endif
 
 html: $(ASCIIDOC_HTMLS)
 clean-html:

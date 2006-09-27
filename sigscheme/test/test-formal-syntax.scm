@@ -137,6 +137,8 @@
 (assert-true (tn) (integer? (string-read "#d-1")))
 (assert-true (tn) (integer? (string-eval "'#d+1")))
 (assert-true (tn) (integer? (string-eval "'#d-1")))
+;; FIXME: add maximum and minimum integers
+;; FIXME: add binary, octal and hexadecimal numbers
 
 (tn "invalid dot pair")
 (assert-parse-error (tn) "( . )")

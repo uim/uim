@@ -46,26 +46,26 @@
 (define lst cdr0)
 
 
-; pair?
-(assert-true "pair? test1" (pair? '(a . b)))
-(assert-true "pair? test2" (pair? '(a b c)))
-(assert-equal? "pair? test3" #f (pair? '()))
-(assert-equal? "pair? test4" #f (pair? '#(a b)))
+(tn "pair?")
+(assert-true   (tn) (pair? '(a . b)))
+(assert-true   (tn) (pair? '(a b c)))
+(assert-equal? (tn) #f (pair? '()))
+(assert-equal? (tn) #f (pair? '#(a b)))
 
-; cons
-(assert-equal? "cons test1" '(a) (cons 'a '()))
-(assert-equal? "cons test2" '((a) b c d) (cons '(a) '(b c d)))
-(assert-equal? "cons test3" '(a . 3) (cons 'a 3))
-(assert-equal? "cons test4" '((a b) . c) (cons '(a b) 'c))
+(tn "cons")
+(assert-equal? (tn) '(a) (cons 'a '()))
+(assert-equal? (tn) '((a) b c d) (cons '(a) '(b c d)))
+(assert-equal? (tn) '(a . 3) (cons 'a 3))
+(assert-equal? (tn) '((a b) . c) (cons '(a b) 'c))
 
-; car
-(assert-equal? "car test1" 'a (car '(a b c)))
-(assert-equal? "car test2" '(a) (car '((a) b c)))
-(assert-equal? "car test3" 1 (car '(1 . 2)))
+(tn "car")
+(assert-equal? (tn) 'a (car '(a b c)))
+(assert-equal? (tn) '(a) (car '((a) b c)))
+(assert-equal? (tn) 1 (car '(1 . 2)))
 
-; cdr
-(assert-equal? "cdr test1" '(b c d) (cdr '((a) b c d)))
-(assert-equal? "cdr test2" 2 (cdr '(1 . 2)))
+(tn "cdr")
+(assert-equal? (tn) '(b c d) (cdr '((a) b c d)))
+(assert-equal? (tn) 2 (cdr '(1 . 2)))
 
 (tn "set-car!")
 (define my-set-car!
@@ -113,45 +113,44 @@
       (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 1) 2))
       (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 1 . 2) 2))))
 
-; null?
-(assert-true "null? test1" (null? '()))
-(assert-equal? "null? test2" #f (null? "aiueo"))
+(tn "null?")
+(assert-true   (tn) (null? '()))
+(assert-equal? (tn) #f (null? "aiueo"))
 
-; list?
-(assert-true "list? test1" (list? '(a b c)))
-(assert-true "list? test2" (list? '()))
-(assert-false "list? test3" (list? '(a . b)))
-(assert-false "list? test4" (list? '(a b . c)))
-(assert-false "list? test5" (let ((x (list 'a)))
-			      (set-cdr! x x)
-			      (list? x)))
+(tn "list?")
+(assert-true  (tn) (list? '(a b c)))
+(assert-true  (tn) (list? '()))
+(assert-false (tn) (list? '(a . b)))
+(assert-false (tn) (list? '(a b . c)))
+(assert-false (tn) (let ((x (list 'a)))
+                     (set-cdr! x x)
+                     (list? x)))
 
-; list
-(assert-equal? "list test1" '(a 7 c) (list 'a (+ 3 4) 'c))
-(assert-equal? "list test2" '() (list))
+(tn "list?")
+(assert-equal? (tn) '(a 7 c) (list 'a (+ 3 4) 'c))
+(assert-equal? (tn) '() (list))
 
-; length
-(assert-equal? "length test1" 3 (length '(a b c)))
-(assert-equal? "length test2" 3 (length '(a (b) (c d e))))
-(assert-equal? "length test2" 0 (length '()))
+(tn "length")
+(assert-equal? (tn) 3 (length '(a b c)))
+(assert-equal? (tn) 3 (length '(a (b) (c d e))))
+(assert-equal? (tn) 0 (length '()))
 
-; append
-(assert-equal? "append test1" '(x y) (append '(x) '(y)))
-(assert-equal? "append test2" '(a b c d) (append '(a) '(b c d)))
-(assert-equal? "append test3" '(a (b) (c)) (append '(a (b)) '((c))))
+(tn "append")
+(assert-equal? (tn) '(x y) (append '(x) '(y)))
+(assert-equal? (tn) '(a b c d) (append '(a) '(b c d)))
+(assert-equal? (tn) '(a (b) (c)) (append '(a (b)) '((c))))
 (define w '(n o))
 (define x '(d o))
 (define y '(car))
 (define z '(why))
-(assert-equal? "append test4" '(n o d o car why . ta) (append w x y () z 'ta))
-(assert-equal? "append test5" '(n o) w)	; test non-destructiveness
-(assert-eq? "append test6" x (cdr (append '((Calpis hosi-)) x))) ; share last
+(assert-equal? (tn) '(n o d o car why . ta) (append w x y () z 'ta))
+(assert-equal? (tn) '(n o) w)	; test non-destructiveness
+(assert-eq?    (tn) x (cdr (append '((Calpis hosi-)) x))) ; share last
 
-; reverse
-(assert-equal? "reverse test1" '(c b a) (reverse '(a b c)))
-(assert-equal? "reverse test2" '((e (f)) d (b c) a) (reverse '(a (b c) d (e (f)))))
+(tn "reverse")
+(assert-equal? (tn) '(c b a) (reverse '(a b c)))
+(assert-equal? (tn) '((e (f)) d (b c) a) (reverse '(a (b c) d (e (f)))))
 
-; list-tail
 (tn "list-tail")
 (assert-equal? (tn) '(a b c) (list-tail '(a b c) 0))
 (assert-equal? (tn) '(b c) (list-tail '(a b c) 1))
@@ -169,32 +168,32 @@
 (assert-error  (tn) (lambda () (list-tail lst 5)))
 (assert-error  (tn) (lambda () (list-tail lst -1)))
 
-; list-ref
-(assert-equal? "list-ref test1" 'c (list-ref '(a b c d) 2))
-(assert-eq?    "list-ref test2" elm0 (list-ref lst 0))
-(assert-eq?    "list-ref test3" elm1 (list-ref lst 1))
-(assert-eq?    "list-ref test4" elm2 (list-ref lst 2))
-(assert-eq?    "list-ref test5" elm3 (list-ref lst 3))
-(assert-error  "list-ref test6" (lambda () (list-ref lst 4)))
+(tn "list-ref")
+(assert-equal? (tn) 'c (list-ref '(a b c d) 2))
+(assert-eq?    (tn) elm0 (list-ref lst 0))
+(assert-eq?    (tn) elm1 (list-ref lst 1))
+(assert-eq?    (tn) elm2 (list-ref lst 2))
+(assert-eq?    (tn) elm3 (list-ref lst 3))
+(assert-error  (tn) (lambda () (list-ref lst 4)))
 
-; memq
-(assert-equal? "memq test1" '(a b c) (memq 'a '(a b c)))
-(assert-equal? "memq test2" '(b c) (memq 'b '(a b c)))
-(assert-equal? "memq test3" #f (memq 'a '(b c d)))
-(assert-equal? "memq test4" #f (memq (list 'a) '(b (a) c)))
+(tn "memq")
+(assert-equal? (tn) '(a b c) (memq 'a '(a b c)))
+(assert-equal? (tn) '(b c) (memq 'b '(a b c)))
+(assert-equal? (tn) #f (memq 'a '(b c d)))
+(assert-equal? (tn) #f (memq (list 'a) '(b (a) c)))
 
-; member
-(assert-equal? "member test1" '((a) c) (member (list 'a) '(b (a) c)))
+(tn "member")
+(assert-equal? (tn) '((a) c) (member (list 'a) '(b (a) c)))
 
-; assq
+(tn "assq")
 (define e '((a 1) (b 2) (c 3)))
-(assert-equal? "assq test1" '(a 1) (assq 'a e))
-(assert-equal? "assq test2" '(b 2) (assq 'b e))
-(assert-equal? "assq test3" #f (assq 'd e))
-(assert-equal? "assq test4" #f (assq (list 'a) '(((a)) ((b)) ((c)))))
+(assert-equal? (tn) '(a 1) (assq 'a e))
+(assert-equal? (tn) '(b 2) (assq 'b e))
+(assert-equal? (tn) #f (assq 'd e))
+(assert-equal? (tn) #f (assq (list 'a) '(((a)) ((b)) ((c)))))
 
-; assoc
-(assert-equal? "assoc test1" '((a)) (assoc (list 'a) '(((a)) ((b)) ((c)))))
+(tn "assoc")
+(assert-equal? (tn) '((a)) (assoc (list 'a) '(((a)) ((b)) ((c)))))
 
 (define lst1 (list 1))
 (set-cdr! lst1 lst1)
