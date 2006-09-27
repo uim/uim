@@ -72,6 +72,7 @@
 (assert-true   (tn) (call-with-current-continuation procedure?))
 (assert-false  (tn) (procedure? (current-output-port)))
 (assert-false  (tn) (procedure? '(#t . #t)))
+(assert-false  (tn) (procedure? (cons #t #t)))
 (assert-false  (tn) (procedure? '(0 1 2)))
 (assert-false  (tn) (procedure? (list 0 1 2)))
 (assert-false  (tn) (procedure? '#()))

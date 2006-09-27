@@ -155,6 +155,7 @@
    (assert-false  (tn) (symbol? k))))
 (assert-false  (tn) (symbol? (current-output-port)))
 (assert-false  (tn) (symbol? '(#t . #t)))
+(assert-false  (tn) (symbol? (cons #t #t)))
 (assert-false  (tn) (symbol? '(0 1 2)))
 (assert-false  (tn) (symbol? (list 0 1 2)))
 (assert-false  (tn) (symbol? '#()))
