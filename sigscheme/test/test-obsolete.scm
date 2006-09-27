@@ -97,4 +97,10 @@
 (assert-true "hexadecimal test1" (= #xffff 65535))
 (assert-true "hexadecimal test2" (= #x0A7b 2683))
 
+(tn "pair?")
+(assert-true   (tn) (pair? '(a . b)))
+(assert-true   (tn) (pair? '(a b c)))
+(assert-equal? (tn) #f (pair? '()))
+(assert-equal? (tn) #f (pair? '#(a b)))
+
 (total-report)

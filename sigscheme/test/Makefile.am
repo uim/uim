@@ -30,6 +30,7 @@ EXTRA_DIST += \
         test-misc.scm \
         test-num.scm \
         test-obsolete.scm \
+        test-pair.scm \
         test-quote.scm \
         test-srfi1.scm \
         test-srfi2.scm \

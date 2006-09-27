@@ -46,73 +46,6 @@
 (define lst cdr0)
 
 
-(tn "pair?")
-(assert-true   (tn) (pair? '(a . b)))
-(assert-true   (tn) (pair? '(a b c)))
-(assert-equal? (tn) #f (pair? '()))
-(assert-equal? (tn) #f (pair? '#(a b)))
-
-(tn "cons")
-(assert-equal? (tn) '(a) (cons 'a '()))
-(assert-equal? (tn) '((a) b c d) (cons '(a) '(b c d)))
-(assert-equal? (tn) '(a . 3) (cons 'a 3))
-(assert-equal? (tn) '((a b) . c) (cons '(a b) 'c))
-
-(tn "car")
-(assert-equal? (tn) 'a (car '(a b c)))
-(assert-equal? (tn) '(a) (car '((a) b c)))
-(assert-equal? (tn) 1 (car '(1 . 2)))
-
-(tn "cdr")
-(assert-equal? (tn) '(b c d) (cdr '((a) b c d)))
-(assert-equal? (tn) 2 (cdr '(1 . 2)))
-
-(tn "set-car!")
-(define my-set-car!
-  (lambda (kons x)
-    (set-car! kons x)
-    kons))
-(assert-error  (tn) (lambda()  (my-set-car! (list) 2)))
-(assert-equal? (tn) '(2)       (my-set-car! (list 0) 2))
-(assert-equal? (tn) '(2 . 1)   (my-set-car! (cons 0 1) 2))
-(assert-equal? (tn) '(2 1)     (my-set-car! (list 0 1) 2))
-(assert-equal? (tn) '(2 1 . 2) (my-set-car! (cons 0 '(1 . 2)) 2))
-(if (and (provided? "sigscheme")
-         (provided? "const-list-literal"))
-    (begin
-      (assert-error  (tn) (lambda () (my-set-car! '(0) 2)))
-      (assert-error  (tn) (lambda () (my-set-car! '(0 . 1) 2)))
-      (assert-error  (tn) (lambda () (my-set-car! '(0 1) 2)))
-      (assert-error  (tn) (lambda () (my-set-car! '(0 1 . 2) 2))))
-    (begin
-      (assert-equal? (tn) '(2)       (my-set-car! '(0) 2))
-      (assert-equal? (tn) '(2 . 1)   (my-set-car! '(0 . 1) 2))
-      (assert-equal? (tn) '(2 1)     (my-set-car! '(0 1) 2))
-      (assert-equal? (tn) '(2 1 . 2) (my-set-car! '(0 1 . 2) 2))))
-
-(tn "set-cdr!")
-(define my-set-cdr!
-  (lambda (kons x)
-    (set-cdr! kons x)
-    kons))
-(assert-error  (tn) (lambda()  (my-set-cdr! (list) 2)))
-(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (list 0) 2))
-(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (cons 0 1) 2))
-(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (list 0 1) 2))
-(assert-equal? (tn) '(0 . 2)   (my-set-cdr! (cons 0 '(1 . 2)) 2))
-(if (and (provided? "sigscheme")
-         (provided? "const-list-literal"))
-    (begin
-      (assert-error  (tn) (lambda () (my-set-cdr! '(0) 2)))
-      (assert-error  (tn) (lambda () (my-set-cdr! '(0 . 1) 2)))
-      (assert-error  (tn) (lambda () (my-set-cdr! '(0 1) 2)))
-      (assert-error  (tn) (lambda () (my-set-cdr! '(0 1 . 2) 2))))
-    (begin
-      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0) 2))
-      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 . 1) 2))
-      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 1) 2))
-      (assert-equal? (tn) '(0 . 2) (my-set-cdr! '(0 1 . 2) 2))))
-
 (tn "null?")
 (assert-true   (tn) (null? '()))
 (assert-equal? (tn) #f (null? "aiueo"))
@@ -126,7 +59,7 @@
                       (set-cdr! x x)
                       (list? x)))
 
-(tn "list?")
+(tn "list")
 (assert-equal? (tn) '(a 7 c) (list 'a (+ 3 4) 'c))
 (assert-equal? (tn) '() (list))
 

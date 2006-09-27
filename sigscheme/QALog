@@ -248,7 +248,7 @@ yyyy yyy r5rs syntax.c
 yyyy yyy r5rs procedure.c
          r5rs number.c
          r5rs list.c
-         r5rs deep-cadrs.c
+yyyy yyy r5rs deep-cadrs.c
          r5rs char.c
          r5rs string.c
          r5rs vector.c
@@ -773,14 +773,14 @@ corner case tests:
 
 file:              deep-cadrs.c
 category:          r5rs
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3892
+spec by tests:     yamaken@r3892
+general review:    yamaken@r3892
+64-bit by eyes:    yamaken@r3892
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3892
+normal case tests: yamaken@r3892
+corner case tests: yamaken@r3892
 
 file:              char.c
 category:          r5rs
@@ -1016,6 +1016,27 @@ corner case tests:
 
 Log
 ---
+
+2006-09-27  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * list.c
+        * deep-cadrs.c
+          - QA done for pair?, cons, car, cdr, set-car!, set-cdr! and all
+            c[ad]+r procedures @r3892 except for "64-bit by tests". Rest parts
+            of list.c is not validated yet
+
+          Details:
+          - Add test-pair.scm (some tests that I wrote and R5RS examples are
+            moved from test-list.scm) and complete all required tests I'm aware
+            of
+          - Specs have been validated against following R5RS sections:
+            * pair?, cons, car, cdr, set-car!, set-cdr!, caar, cadr, cdar,
+              cddr, caddr, cdddr, caaar, caadr, cadar, cdaar, cdadr, cddar,
+              caaaar, caaadr, caadar, caaddr, cadaar, cadadr, caddar, cadddr,
+              cdaaar, cdaadr, cdadar, cdaddr, cddaar, cddadr, cdddar, cddddr
+              "3.3 External representations"
+              "3.4 Storage model"
+              "6.3.2 Pairs and lists"
 
 2006-09-25  YamaKen <yamaken AT bp.iij4u.or.jp>
 

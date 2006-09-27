@@ -61,7 +61,7 @@ scm_p_caaar(ScmObj lst)
 {
     DECLARE_FUNCTION("caaar", procedure_fixed_1);
 
-    return scm_p_car( scm_p_car( scm_p_car(lst) ));
+    return scm_p_car(scm_p_car(scm_p_car(lst)));
 }
 
 SCM_EXPORT ScmObj
@@ -69,7 +69,7 @@ scm_p_caadr(ScmObj lst)
 {
     DECLARE_FUNCTION("caadr", procedure_fixed_1);
 
-    return scm_p_car( scm_p_car( scm_p_cdr(lst) ));
+    return scm_p_car(scm_p_car(scm_p_cdr(lst)));
 }
 
 SCM_EXPORT ScmObj
@@ -77,7 +77,7 @@ scm_p_cadar(ScmObj lst)
 {
     DECLARE_FUNCTION("cadar", procedure_fixed_1);
 
-    return scm_p_car( scm_p_cdr( scm_p_car(lst) ));
+    return scm_p_car(scm_p_cdr(scm_p_car(lst)));
 }
 
 SCM_EXPORT ScmObj
@@ -85,7 +85,7 @@ scm_p_cdaar(ScmObj lst)
 {
     DECLARE_FUNCTION("cdaar", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_car( scm_p_car(lst) ));
+    return scm_p_cdr(scm_p_car(scm_p_car(lst)));
 }
 
 SCM_EXPORT ScmObj
@@ -93,7 +93,7 @@ scm_p_cdadr(ScmObj lst)
 {
     DECLARE_FUNCTION("cdadr", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_car( scm_p_cdr(lst) ));
+    return scm_p_cdr(scm_p_car(scm_p_cdr(lst)));
 }
 
 SCM_EXPORT ScmObj
@@ -101,7 +101,7 @@ scm_p_cddar(ScmObj lst)
 {
     DECLARE_FUNCTION("cddar", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_cdr( scm_p_car(lst) ));
+    return scm_p_cdr(scm_p_cdr(scm_p_car(lst)));
 }
 
 SCM_EXPORT ScmObj
@@ -109,7 +109,7 @@ scm_p_caaaar(ScmObj lst)
 {
     DECLARE_FUNCTION("caaaar", procedure_fixed_1);
 
-    return scm_p_car( scm_p_car( scm_p_car( scm_p_car(lst) )));
+    return scm_p_car(scm_p_car(scm_p_car(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -117,7 +117,7 @@ scm_p_caaadr(ScmObj lst)
 {
     DECLARE_FUNCTION("caaadr", procedure_fixed_1);
 
-    return scm_p_car( scm_p_car( scm_p_car( scm_p_cdr(lst) )));
+    return scm_p_car(scm_p_car(scm_p_car(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -125,7 +125,7 @@ scm_p_caadar(ScmObj lst)
 {
     DECLARE_FUNCTION("caadar", procedure_fixed_1);
 
-    return scm_p_car( scm_p_car( scm_p_cdr( scm_p_car(lst) )));
+    return scm_p_car(scm_p_car(scm_p_cdr(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -133,7 +133,7 @@ scm_p_caaddr(ScmObj lst)
 {
     DECLARE_FUNCTION("caaddr", procedure_fixed_1);
 
-    return scm_p_car( scm_p_car( scm_p_cdr( scm_p_cdr(lst) )));
+    return scm_p_car(scm_p_car(scm_p_cdr(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -141,7 +141,7 @@ scm_p_cadaar(ScmObj lst)
 {
     DECLARE_FUNCTION("cadaar", procedure_fixed_1);
 
-    return scm_p_car( scm_p_cdr( scm_p_car( scm_p_car(lst) )));
+    return scm_p_car(scm_p_cdr(scm_p_car(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -149,7 +149,7 @@ scm_p_cadadr(ScmObj lst)
 {
     DECLARE_FUNCTION("cadadr", procedure_fixed_1);
 
-    return scm_p_car( scm_p_cdr( scm_p_car( scm_p_cdr(lst) )));
+    return scm_p_car(scm_p_cdr(scm_p_car(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -157,7 +157,7 @@ scm_p_caddar(ScmObj lst)
 {
     DECLARE_FUNCTION("caddar", procedure_fixed_1);
 
-    return scm_p_car( scm_p_cdr( scm_p_cdr( scm_p_car(lst) )));
+    return scm_p_car(scm_p_cdr(scm_p_cdr(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -165,7 +165,7 @@ scm_p_cadddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cadddr", procedure_fixed_1);
 
-    return scm_p_car( scm_p_cdr( scm_p_cdr( scm_p_cdr(lst) )));
+    return scm_p_car(scm_p_cdr(scm_p_cdr(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -173,7 +173,7 @@ scm_p_cdaaar(ScmObj lst)
 {
     DECLARE_FUNCTION("cdaaar", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_car( scm_p_car( scm_p_car(lst) )));
+    return scm_p_cdr(scm_p_car(scm_p_car(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -181,7 +181,7 @@ scm_p_cdaadr(ScmObj lst)
 {
     DECLARE_FUNCTION("cdaadr", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_car( scm_p_car( scm_p_cdr(lst) )));
+    return scm_p_cdr(scm_p_car(scm_p_car(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -189,7 +189,7 @@ scm_p_cdadar(ScmObj lst)
 {
     DECLARE_FUNCTION("cdadar", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_car( scm_p_cdr( scm_p_car(lst) )));
+    return scm_p_cdr(scm_p_car(scm_p_cdr(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -197,7 +197,7 @@ scm_p_cdaddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cdaddr", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_car( scm_p_cdr( scm_p_cdr(lst) )));
+    return scm_p_cdr(scm_p_car(scm_p_cdr(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -205,7 +205,7 @@ scm_p_cddaar(ScmObj lst)
 {
     DECLARE_FUNCTION("cddaar", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_cdr( scm_p_car( scm_p_car(lst) )));
+    return scm_p_cdr(scm_p_cdr(scm_p_car(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -213,7 +213,7 @@ scm_p_cddadr(ScmObj lst)
 {
     DECLARE_FUNCTION("cddadr", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_cdr( scm_p_car( scm_p_cdr(lst) )));
+    return scm_p_cdr(scm_p_cdr(scm_p_car(scm_p_cdr(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -221,7 +221,7 @@ scm_p_cdddar(ScmObj lst)
 {
     DECLARE_FUNCTION("cdddar", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_cdr( scm_p_cdr( scm_p_car(lst) )));
+    return scm_p_cdr(scm_p_cdr(scm_p_cdr(scm_p_car(lst))));
 }
 
 SCM_EXPORT ScmObj
@@ -229,5 +229,5 @@ scm_p_cddddr(ScmObj lst)
 {
     DECLARE_FUNCTION("cddddr", procedure_fixed_1);
 
-    return scm_p_cdr( scm_p_cdr( scm_p_cdr( scm_p_cdr(lst) )));
+    return scm_p_cdr(scm_p_cdr(scm_p_cdr(scm_p_cdr(lst))));
 }
