@@ -1028,6 +1028,23 @@ Log
             * null?, list?
               "6.3.2 Pairs and lists"
 
+        * test-bool.scm
+          - Fix boolean? tests. Since the predicates must return exact #t if
+            true as described in "6.3.1 Booleans" of R5RS, assert-true is
+            insufficient
+        * test-misc.scm
+          - Likewise for procedure? with "6.4 Control features"
+        * test-pair.scm
+          - Likewise for pair? with "6.3.2 Pairs and lists"
+        * test-symbol.scm
+          Likewise for symbol? with "6.3.3 Symbols"
+        * test-eq.scm
+          Likewise for eq? with "6.1 Equivalence predicates"
+        * test-eqv.scm
+          Likewise for eq? with "6.1 Equivalence predicates"
+        * test-equal.scm
+          Likewise for eq? with "6.1 Equivalence predicates"
+
 2006-09-27  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * list.c
