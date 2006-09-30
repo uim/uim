@@ -1017,6 +1017,17 @@ corner case tests:
 Log
 ---
 
+2006-09-30  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * list.c
+          - QA done for null?, list? @r3893 except for "64-bit by tests". Rest
+            parts of list.c is not validated yet
+
+          Details:
+          - Specs have been validated against following R5RS sections:
+            * null?, list?
+              "6.3.2 Pairs and lists"
+
 2006-09-27  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * list.c
