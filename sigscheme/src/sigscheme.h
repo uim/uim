@@ -244,6 +244,9 @@ extern "C" {
 
 #if SCM_USE_WRITER
 #define SCM_WRITE_SS(port, obj) ((*scm_write_ss_func)(port, obj))
+/* Assumes that scm_write_ss_func only holds either scm_write or
+ * scm_write_ss. */
+#define SCM_WRITE_SS_ENABLEDP() (scm_write_ss_func != scm_write)
 #endif
 
 /*===========================================================================

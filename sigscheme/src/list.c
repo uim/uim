@@ -314,8 +314,11 @@ scm_p_length(ScmObj obj)
     DECLARE_FUNCTION("length", procedure_fixed_1);
 
     len = scm_length(obj);
-    if (!SCM_LISTLEN_PROPERP(len))
+    if (!SCM_LISTLEN_PROPERP(len)) {
+        if (SCM_LISTLEN_CIRCULARP(len) && !SCM_WRITE_SS_ENABLEDP())
+            ERR("proper list required but got a circular list");
         ERR_OBJ("proper list required but got", obj);
+    }
 
     return MAKE_INT(len);
 }

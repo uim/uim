@@ -2,7 +2,9 @@ AM_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/src
 AM_LDFLAGS  = -rpath $(libdir)
 LIBS        = $(top_builddir)/src/libsscm.la
 
-EXTRA_DIST= sscm-test.h utils.c test-storage.c test-storage-compact.c
+EXTRA_DIST= sscm-test.h utils.c \
+            test-gc.c test-storage.c test-storage-compact.c \
+            test-length.c
 
 SUFFIXES= -coll.o -coll.c
 CLEANFILES= *-coll.c
@@ -18,5 +20,6 @@ endif
 # Name your test suite with a -coll suffix if you want it processed
 # with collect.sh.  Leave the suffix out if you don't want some script
 # messing around with your masterpiece.
-TESTS= test-gc-coll test-storage-coll test-storage-compact-coll
-check_PROGRAMS= test-gc-coll test-storage-coll test-storage-compact-coll test-minishell
+TESTS= test-gc-coll test-storage-coll test-storage-compact-coll \
+       test-length-coll
+check_PROGRAMS= $(TESTS) test-minishell

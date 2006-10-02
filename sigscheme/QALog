@@ -736,7 +736,7 @@ general review:    yamaken@r3704
 64-bit by tests:   
 coding style:      yamaken@r3704
 normal case tests: yamaken@r3704
-corner case tests: yamaken@r3704
+corner case tests: yamaken@r3896
 
 file:              procedure.c
 category:          r5rs
@@ -1016,6 +1016,30 @@ corner case tests:
 
 Log
 ---
+2006-10-02  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * list.c
+        * sigscheme.h
+        * syntax.c
+          - QA done for 'length' @r3896 except for "64-bit by tests". Rest
+            parts of list.c is not validated yet
+          - QA done for 'length'-related macros of sigscheme.h @r3896. Rest
+            parts of sigscheme.h is not validated yet
+          - Fix infinite loop of 'quote' triggered by (error a-circular-list)
+
+          Details:
+          - Add tests for 'length' to test-list.scm and complete all required
+            'length'-related tests I'm aware of
+          - Add test-length.c and complete all required 'length'-related tests
+            I'm aware of
+          - (scm_s_quote): Fix infinite loop of SCM_UNWRAP_SYNTAX() by error
+            objects that contain circular list
+          - (scm_p_length): Fix passing circular list into error object when
+            SRFI-38 is not enabled
+          - Specs have been validated against following R5RS sections:
+            * length
+              "6.3.2 Pairs and lists"
+              "Improper Lists" section of SRFI-1
 
 2006-09-30  YamaKen <yamaken AT bp.iij4u.or.jp>
 

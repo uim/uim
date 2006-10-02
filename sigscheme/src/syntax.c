@@ -136,6 +136,15 @@ scm_s_quote(ScmObj datum, ScmObj env)
 {
     DECLARE_FUNCTION("quote", syntax_fixed_1);
 
+#if SCM_USE_HYGIENIC_MACRO
+    /* Passing objects that contain a circular list to SCM_UNWRAP_SYNTAX()
+     * causes infinite loop. For instance, (error circular-list) raises it via
+     * the error object which contains the circular list.
+     *   -- YamaKen 2006-10-02 */
+    if (ERROBJP(datum))
+        return datum;
+#endif
+
     return SCM_UNWRAP_SYNTAX(datum);
 }
 
