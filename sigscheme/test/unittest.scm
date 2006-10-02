@@ -101,6 +101,13 @@
             (report-error err-msg)
             #f)))))
 
+(define test-skip
+  (lambda (reason)
+    (display "SKIP: ")
+    (display reason)
+    (newline)
+    (exit 0)))
+
 ;;
 ;; assertions for test writers
 ;;
@@ -193,6 +200,3 @@
             (set! name (car args))
             (set! serial 0)
             #f)))))
-
-(define (eval-counter n)
-  (list 'eval-counter (+ n 1)))
