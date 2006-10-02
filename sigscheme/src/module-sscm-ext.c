@@ -248,6 +248,15 @@ scm_p_file_existsp(ScmObj filepath)
 
 /* to avoid being typo of length+, this procedure did not name as length++ */
 /* FIXME: replace with a SRFI or de facto standard equivalent if exist */
+/*
+ * Dotted list length is returned as follows:
+ *
+ * list            SRFI-1 dotted length    length* result
+ * 'term                    0                    -1
+ * '(1 . term)              1                    -2
+ * '(1 2 . term)            2                    -3
+ * '(1 2 3 . term)          3                    -4
+ */
 SCM_EXPORT ScmObj
 scm_p_lengthstar(ScmObj lst)
 {
@@ -257,7 +266,7 @@ scm_p_lengthstar(ScmObj lst)
     len = scm_length(lst);
     if (!SCM_LISTLEN_PROPERP(len)) { /* make fast path for proper list */
         if (SCM_LISTLEN_DOTTEDP(len))
-            len = -SCM_LISTLEN_DOTTED(len);
+            len = -SCM_LISTLEN_DOTTED(len) - 1;
         else if (SCM_LISTLEN_CIRCULARP(len))
             return SCM_FALSE;
     }

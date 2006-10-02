@@ -247,7 +247,9 @@ extern "C" {
          && strcmp(SCM_STRING_STR(str1), SCM_STRING_STR(str2)) == 0))
 
 /* result encoders for scm_length() */
-#define SCM_LISTLEN_ENCODE_DOTTED(len)   (-(len))
+/* Dotted list length (follows SRFI-1 definition) is encoded as
+ * (-length - 1) */
+#define SCM_LISTLEN_ENCODE_DOTTED(len)   (~(len))  /* (-len - 1) */
 #define SCM_LISTLEN_ENCODE_CIRCULAR(len) (SCM_INT_T_MIN)
 #define SCM_LISTLEN_ENCODE_ERROR         SCM_LISTLEN_ENCODE_CIRCULAR
 

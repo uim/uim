@@ -131,21 +131,11 @@ TST_CASE("SCM_LISTLEN_ERRORP")
 
 TST_CASE("SCM_LISTLEN_DOTTED")
 {
-    TST_TN_EQ_INT(-(SCM_INT_T_MIN + 1),
-                  SCM_LISTLEN_DOTTED(SCM_INT_T_MIN + 1));
-    TST_TN_EQ_INT(3, SCM_LISTLEN_DOTTED(-3));
-    TST_TN_EQ_INT(2, SCM_LISTLEN_DOTTED(-2));
-    TST_TN_EQ_INT(1, SCM_LISTLEN_DOTTED(-1));
-    /* passing values out of range results unspecified value */
-}
-
-TST_CASE("SCM_LISTLEN_BEFORE_DOT")
-{
     TST_TN_EQ_INT(-(SCM_INT_T_MIN + 2),
-                  SCM_LISTLEN_BEFORE_DOT(SCM_INT_T_MIN + 1));
-    TST_TN_EQ_INT(2, SCM_LISTLEN_BEFORE_DOT(-3));
-    TST_TN_EQ_INT(1, SCM_LISTLEN_BEFORE_DOT(-2));
-    TST_TN_EQ_INT(0, SCM_LISTLEN_BEFORE_DOT(-1));
+                  SCM_LISTLEN_DOTTED(SCM_INT_T_MIN + 1));
+    TST_TN_EQ_INT(2, SCM_LISTLEN_DOTTED(-3));
+    TST_TN_EQ_INT(1, SCM_LISTLEN_DOTTED(-2));
+    TST_TN_EQ_INT(0, SCM_LISTLEN_DOTTED(-1));
     /* passing values out of range results unspecified value */
 }
 
@@ -153,7 +143,7 @@ TST_CASE("SCM_LISTLEN_ENCODE_DOTTED")
 {
     scm_int_t max_dotted_len, encoded_max_dotted_len;
 
-    max_dotted_len = -(SCM_INT_T_MIN + 1);
+    max_dotted_len = -(SCM_INT_T_MIN + 2);
     encoded_max_dotted_len = SCM_LISTLEN_ENCODE_DOTTED(max_dotted_len);
     TST_TN_EQ_INT(max_dotted_len,
                   SCM_LISTLEN_DOTTED(encoded_max_dotted_len));
@@ -161,6 +151,7 @@ TST_CASE("SCM_LISTLEN_ENCODE_DOTTED")
     TST_TN_EQ_INT(3, SCM_LISTLEN_DOTTED(SCM_LISTLEN_ENCODE_DOTTED(3)));
     TST_TN_EQ_INT(2, SCM_LISTLEN_DOTTED(SCM_LISTLEN_ENCODE_DOTTED(2)));
     TST_TN_EQ_INT(1, SCM_LISTLEN_DOTTED(SCM_LISTLEN_ENCODE_DOTTED(1)));
+    TST_TN_EQ_INT(0, SCM_LISTLEN_DOTTED(SCM_LISTLEN_ENCODE_DOTTED(0)));
     /* passing values out of range results unspecified value */
 }
 
@@ -260,11 +251,11 @@ TST_CASE("SCM_DOTTED_LISTP")
     TST_TN_FALSE(SCM_DOTTED_LISTP(CONS(e, CONS(e, SCM_NULL))));
     TST_TN_FALSE(SCM_DOTTED_LISTP(CONS(e, CONS(e, CONS(e, SCM_NULL)))));
     /* improper lists */
-    TST_TN_FALSE(SCM_DOTTED_LISTP(SCM_TRUE));
+    TST_TN_TRUE (SCM_DOTTED_LISTP(SCM_TRUE));
     TST_TN_TRUE (SCM_DOTTED_LISTP(CONS(e, SCM_TRUE)));
     TST_TN_TRUE (SCM_DOTTED_LISTP(CONS(e, CONS(e, SCM_TRUE))));
     TST_TN_TRUE (SCM_DOTTED_LISTP(CONS(e, CONS(e, CONS(e, SCM_TRUE)))));
-    TST_TN_FALSE(SCM_DOTTED_LISTP(n));
+    TST_TN_TRUE (SCM_DOTTED_LISTP(n));
     TST_TN_TRUE (SCM_DOTTED_LISTP(CONS(e, n)));
     TST_TN_TRUE (SCM_DOTTED_LISTP(CONS(e, CONS(e, n))));
     TST_TN_TRUE (SCM_DOTTED_LISTP(CONS(e, CONS(e, CONS(e, n)))));
@@ -313,7 +304,7 @@ TST_CASE("scm_finite_length")
     TST_TN_EQ_INT(1, scm_finite_length(CONS(e, SCM_NULL)));
     TST_TN_EQ_INT(2, scm_finite_length(CONS(e, CONS(e, SCM_NULL))));
     TST_TN_EQ_INT(3, scm_finite_length(CONS(e, CONS(e, CONS(e, SCM_NULL)))));
-    /* improper lists */
+    /* improper lists: encoded as (SRFI-1 dotted length - 1) */
     TST_TN_EQ_INT(-1, scm_finite_length(SCM_TRUE));
     TST_TN_EQ_INT(-2, scm_finite_length(CONS(e, SCM_TRUE)));
     TST_TN_EQ_INT(-3, scm_finite_length(CONS(e, CONS(e, SCM_TRUE))));
@@ -337,7 +328,7 @@ TST_CASE("scm_length")
     TST_TN_EQ_INT(1, scm_length(CONS(e, SCM_NULL)));
     TST_TN_EQ_INT(2, scm_length(CONS(e, CONS(e, SCM_NULL))));
     TST_TN_EQ_INT(3, scm_length(CONS(e, CONS(e, CONS(e, SCM_NULL)))));
-    /* improper lists */
+    /* improper lists: encoded as (SRFI-1 dotted length - 1) */
     TST_TN_EQ_INT(-1, scm_length(SCM_TRUE));
     TST_TN_EQ_INT(-2, scm_length(CONS(e, SCM_TRUE)));
     TST_TN_EQ_INT(-3, scm_length(CONS(e, CONS(e, SCM_TRUE))));

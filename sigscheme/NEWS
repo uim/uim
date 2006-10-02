@@ -9,6 +9,12 @@ Overview of changes from 0.6.1 to 0.7.0
   - Add optional duplicate variable check to 'let', 'let*', 'letrec' and 'do'
     (it is not required by R5RS)
 
+* Specification changes
+
+  - Definition of dotted list length is changed to SRFI-1's from
+    SigScheme-speciific one. SCM_LISTLEN_DOTTED(), SCM_DOTTED_LISTP() and other
+    dotted list-related macros and functions have been changed so
+
 * Fixes
 
   - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin

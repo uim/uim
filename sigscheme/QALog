@@ -1044,6 +1044,12 @@ Log
               "6.3.2 Pairs and lists"
               "Improper Lists" section of SRFI-1
 
+        * sigscheme/src/sigschemeinternal.h
+        * sigscheme/src/sigscheme.h
+        * sigscheme/src/list.c
+          - Definition of dotted list length is changed to SRFI-1's from
+            SigScheme-speciific one @r3898. See svn log for further information
+
 2006-09-30  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * list.c

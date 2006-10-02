@@ -251,8 +251,6 @@ scm_p_list(ScmObj args)
     return args;
 }
 
-#define TERMINATOR_LEN 1
-
 /* scm_length() for non-circular list */
 SCM_EXPORT scm_int_t
 scm_finite_length(ScmObj lst)
@@ -265,7 +263,7 @@ scm_finite_length(ScmObj lst)
     if (NULLP(lst))
         return len;
     else
-        return SCM_LISTLEN_ENCODE_DOTTED(len + TERMINATOR_LEN);
+        return SCM_LISTLEN_ENCODE_DOTTED(len);
 }
 
 /*
@@ -273,6 +271,7 @@ scm_finite_length(ScmObj lst)
  *
  * 2005-08-12 kzk      Copied from Scm_Length() of Gauche 0.8.5.
  * 2006-01-05 YamaKen  Return dotted list length and circular indication.
+ * 2006-10-02 YamaKen  Change dotted list length definition to SRFI-1's.
  *
  */
 /* Returns -1 as one length improper list for non-list obj. */
@@ -280,32 +279,30 @@ SCM_EXPORT scm_int_t
 scm_length(ScmObj lst)
 {
     ScmObj slow;
-    scm_int_t proper_len;
+    scm_int_t len;
 
-    for (proper_len = 0, slow = lst;;) {
+    for (len = 0, slow = lst;;) {
         if (NULLP(lst)) break;
         if (!CONSP(lst))
-            return SCM_LISTLEN_ENCODE_DOTTED(proper_len + TERMINATOR_LEN);
-        if (proper_len != 0 && lst == slow)
-            return SCM_LISTLEN_ENCODE_CIRCULAR(proper_len);
+            return SCM_LISTLEN_ENCODE_DOTTED(len);
+        if (len != 0 && lst == slow)
+            return SCM_LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
-        proper_len++;
+        len++;
         if (NULLP(lst)) break;
         if (!CONSP(lst))
-            return SCM_LISTLEN_ENCODE_DOTTED(proper_len + TERMINATOR_LEN);
+            return SCM_LISTLEN_ENCODE_DOTTED(len);
         if (lst == slow)
-            return SCM_LISTLEN_ENCODE_CIRCULAR(proper_len);
+            return SCM_LISTLEN_ENCODE_CIRCULAR(len);
 
         lst = CDR(lst);
         slow = CDR(slow);
-        proper_len++;
+        len++;
     }
 
-    return proper_len;
+    return len;
 }
-
-#undef TERMINATOR_LEN
 
 SCM_EXPORT ScmObj
 scm_p_length(ScmObj obj)

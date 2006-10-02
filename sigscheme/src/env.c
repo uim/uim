@@ -479,7 +479,7 @@ scm_valid_environment_extension_lengthp(scm_int_t formals_len,
     if (SCM_LISTLEN_ERRORP(formals_len) || !SCM_LISTLEN_PROPERP(actuals_len))
         return scm_false;
     if (SCM_LISTLEN_DOTTEDP(formals_len)) {
-        formals_len = SCM_LISTLEN_BEFORE_DOT(formals_len);
+        formals_len = SCM_LISTLEN_DOTTED(formals_len);
         return (formals_len <= actuals_len);
     }
     return (formals_len == actuals_len);
@@ -510,7 +510,7 @@ scm_validate_formals(ScmObj formals)
         return len;
     /* dotted list allowed */
     if (IDENTIFIERP(formals))
-        return SCM_LISTLEN_ENCODE_DOTTED(len + 1);
+        return SCM_LISTLEN_ENCODE_DOTTED(len);
     return SCM_LISTLEN_ENCODE_ERROR(len);
 #else
     /* Crashless loose validation:
