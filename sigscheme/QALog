@@ -1020,11 +1020,14 @@ Log
 
         * list.c
         * sigscheme.h
+        * sigschemeinternal.h
         * syntax.c
           - QA done for 'length' @r3896 except for "64-bit by tests". Rest
             parts of list.c is not validated yet
           - QA done for 'length'-related macros of sigscheme.h @r3896. Rest
             parts of sigscheme.h is not validated yet
+          - QA done for 'length'-related macros of sigschemeinternal.h
+            @r3897. Rest parts of sigschemeinternal.h is not validated yet
           - Fix infinite loop of 'quote' triggered by (error a-circular-list)
 
           Details:
