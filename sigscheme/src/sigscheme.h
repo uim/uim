@@ -129,17 +129,9 @@ extern "C" {
 #define SCM_ENSURE(cond)                                                     \
     ((cond) || (scm_die("invalid condition", __FILE__, __LINE__), 1))
 
-#define SCM_ENSURE_PROPER_LIST_TERMINATION(term, lst)                        \
-    (NULLP(term) || (ERR_OBJ("proper list required but got", (lst)), 1))
-
-#if SCM_STRICT_ARGCHECK
-#define SCM_CHECK_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
-#else
-#define SCM_CHECK_PROPER_LIST_TERMINATION(term, lst)
-#endif
-
 #define SCM_ENSURE_ALLOCATED(p)                                              \
     ((p) || (scm_fatal_error(SCM_ERRMSG_MEMORY_EXHAUSTED), 1))
+
 
 #define SCM_VALID_ENVP(obj)    (scm_valid_environmentp(env))
 

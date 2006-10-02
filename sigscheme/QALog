@@ -1016,6 +1016,22 @@ corner case tests:
 
 Log
 ---
+2006-10-03  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * list.c
+          - QA done for 'append', 'reverse', 'list-tail', 'list-ref' @r3901
+            except for "64-bit by tests". Rest parts of list.c is not validated
+            yet
+          - Fix broken improper tail handling of 'list-ref'
+          - Fix improper list acceptance of 'reverse'
+
+          Details:
+          - Complete all required tests for these procedures I'm aware of in
+            test-list.scm
+          - Specs have been validated against following R5RS sections:
+            * append, reverse, list-tail, list-ref
+              "6.3.2 Pairs and lists"
+
 2006-10-02  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * list.c

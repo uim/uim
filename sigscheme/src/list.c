@@ -336,7 +336,7 @@ scm_p_append(ScmObj args)
     FOR_EACH_BUTLAST (lst, args) {
         FOR_EACH (elm, lst)
             SCM_QUEUE_ADD(q, elm);
-        ENSURE_PROPER_LIST_TERMINATION(lst, args);
+        CHECK_PROPER_LIST_TERMINATION(lst, args);
     }
     /* append the last argument */
     SCM_QUEUE_SLOPPY_APPEND(q, lst);
@@ -347,12 +347,14 @@ scm_p_append(ScmObj args)
 SCM_EXPORT ScmObj
 scm_p_reverse(ScmObj lst)
 {
-    ScmObj ret, elm;
+    ScmObj ret, elm, rest;
     DECLARE_FUNCTION("reverse", procedure_fixed_1);
 
     ret = SCM_NULL;
-    FOR_EACH (elm, lst)
+    rest = lst;
+    FOR_EACH (elm, rest)
         ret = CONS(elm, ret);
+    CHECK_PROPER_LIST_TERMINATION(rest, lst);
 
     return ret;
 }
@@ -379,7 +381,7 @@ scm_p_list_tail(ScmObj lst, ScmObj k)
 
     ret = scm_list_tail(lst, SCM_INT_VALUE(k));
     if (!VALIDP(ret))
-        ERR_OBJ("out of range or invalid list", LIST_2(lst, k));
+        ERR_OBJ("out of range", k);
 
     return ret;
 }
@@ -393,8 +395,8 @@ scm_p_list_ref(ScmObj lst, ScmObj k)
     ENSURE_INT(k);
 
     tail = scm_list_tail(lst, SCM_INT_VALUE(k));
-    if (!VALIDP(tail) || NULLP(tail))
-        ERR_OBJ("out of range or invalid list", LIST_2(lst, k));
+    if (!VALIDP(tail) || !CONSP(tail))
+        ERR_OBJ("out of range", k);
 
     return CAR(tail);
 }

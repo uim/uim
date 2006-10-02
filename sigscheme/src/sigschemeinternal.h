@@ -311,6 +311,15 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
  * the error port. */
 #define ERR_OBJ(msg, obj) scm_error_obj(SCM_MANGLE(name), (msg), (obj))
 
+#define SCM_ENSURE_PROPER_LIST_TERMINATION(term, lst)                        \
+    (NULLP(term) || (ERR_OBJ("proper list required but got", (lst)), 1))
+
+#if SCM_STRICT_ARGCHECK
+#define SCM_CHECK_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
+#else
+#define SCM_CHECK_PROPER_LIST_TERMINATION(term, lst)
+#endif
+
 /* ASSERT_NO_MORE_ARG() asserts that the variadic argument list has
  * been exhausted.  The assertion is implicit in NO_MORE_ARG(), so
  * usually you don't have to call it explicitly.
