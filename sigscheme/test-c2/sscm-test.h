@@ -240,6 +240,18 @@ tst_summarize(tst_suite_info *suite)
                              suite->stats.succ, suite->stats.fail));
 }
 
+static int tst_count;
+
+static const char *
+tst_name(const char *testcase_desc, int serial)
+{
+    static char *name = NULL;
+
+    free(name);
+    name = tst_format("%s #%d", testcase_desc, serial);
+
+    return name;
+}
 
 
 #endif /* !defined (TST_EXCLUDE_THIS) */
@@ -262,6 +274,8 @@ tst_summarize(tst_suite_info *suite)
                        TST_FAILED = 0,          \
                        1)
 
+#define TST_NAME() (tst_name(TST_CASE_INFO->desc, TST_CASE_INFO->done + 1))
+
 #define TST_ABORT()   do { TST_CASE_INFO->abortp = 1; return; } while (0)
 
 #define TST_ASSERT(cond) if (!(cond)) TST_ABORT()
@@ -272,6 +286,9 @@ tst_summarize(tst_suite_info *suite)
       TST_FAIL(tst_format(__FILE__ ":%d: %s failed.\n", \
                           __LINE__, desc)))             \
      && TST_SUCC())
+
+#define TST_TRUE(exp, desc)  TST_COND((exp), desc)
+#define TST_FALSE(exp, desc) TST_COND(!(exp), desc)
 
 #define TST_EQUALITY(eqp, type, fmt, expect, actual, desc)      \
 do {                                                            \
@@ -345,5 +362,29 @@ typedef void (*tst_funcptr_t)();
 #define TST_EQ  TST_EQ_OBJ
 #define TST_NEQ TST_NEQ_OBJ
 
+
+/* tests with auto-generated description */
+#define TST_TN_SAVE   (tst_count = TST_CASE_INFO->done + 1)
+#define TST_TN_NAME() (tst_name(TST_CASE_INFO->desc, tst_count))
+
+/* Since TST_FOO(..., tst_name(TST_CASE_INFO->desc, TST_CASE_INFO->done + 1))
+ * returns incorrect serial number, it is saved before evaluating
+ * TST_FAIL() or TST_SUCC(). */
+#define TST_TN_TRUE(exp)      TST_TN_SAVE; TST_TRUE((exp), TST_TN_NAME())
+#define TST_TN_FALSE(exp)     TST_TN_SAVE; TST_FALSE((exp), TST_TN_NAME())
+#define TST_TN_EQ_INT(x, a)   TST_TN_SAVE; TST_EQ_INT((x), (a), TST_TN_NAME())
+#define TST_TN_EQ_UINT(x, a)  TST_TN_SAVE; TST_EQ_UINT((x), (a), TST_TN_NAME())
+#define TST_TN_NEQ_INT(x, a)  TST_TN_SAVE; TST_NEQ_INT((x), (a), TST_TN_NAME())
+#define TST_TN_NEQ_UINT(x, a) TST_TN_SAVE; TST_NEQ_UINT((x), (a), TST_TN_NAME())
+#define TST_TN_EQ_STR(x, a)   TST_TN_SAVE; TST_EQ_STR((x), (a), TST_TN_NAME())
+#define TST_TN_NEQ_STR(x, a)  TST_TN_SAVE; TST_NEQ_STR((x), (a), TST_TN_NAME())
+#define TST_TN_EQ_PTR(x, a)   TST_TN_SAVE; TST_EQ_PTR((x), (a), TST_TN_NAME())
+#define TST_TN_NEQ_PTR(x, a)  TST_TN_SAVE; TST_NEQ_PTR((x), (a), TST_TN_NAME())
+#define TST_TN_EQ_OBJ(x, a)   TST_TN_SAVE; TST_EQ_OBJ((x), (a), TST_TN_NAME())
+#define TST_TN_NEQ_OBJ(x, a)  TST_TN_SAVE; TST_NEQ_OBJ((x), (a), TST_TN_NAME())
+#define TST_TN_EQ_FPTR(x, a)  TST_TN_SAVE; TST_EQ_FPTR((x), (a), TST_TN_NAME())
+#define TST_TN_NEQ_FPTR(x, a) TST_TN_SAVE; TST_NEQ_FPTR((x), (a), TST_TN_NAME())
+#define TST_TN_EQ  TST_TN_EQ_OBJ
+#define TST_TN_NEQ TST_TN_NEQ_OBJ
 
 #endif /* !def SSCM_TEST_H */
