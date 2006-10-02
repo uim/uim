@@ -193,7 +193,14 @@ extern "C" {
 #define SCM_LISTLEN_ERRORP          SCM_LISTLEN_CIRCULARP
 #define SCM_LISTLEN_DOTTEDP(len)    ((len) < 0                               \
                                      && !SCM_LISTLEN_CIRCULARP(len))
-#define SCM_LISTLEN_DOTTED(len)     (~(len))  /* -(len) - 1 */
+#define SCM_LISTLEN_DOTTED(len)                                              \
+    (SCM_ASSERT(SCM_LISTLEN_DOTTEDP(len)), ~(len))  /* -(len) - 1 */
+
+#define SCM_LISTLEN_PROPER_MAX      (SCM_INT_T_MAX)
+#define SCM_LISTLEN_DOTTED_MAX      (-(SCM_INT_T_MIN + 2))
+#define SCM_LISTLEN_MAX                                                      \
+    ((SCM_LISTLEN_DOTTED_MAX < SCM_LISTLEN_PROPER_MAX)                       \
+     ? SCM_LISTLEN_PROPER_MAX : SCM_LISTLEN_DOTTED_MAX)
 
 #define SCM_EVAL(obj, env) (scm_eval((obj), (env)))
 
