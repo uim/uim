@@ -136,6 +136,7 @@ uim_create_context(void *ptr,
   uc->encoding = strdup(enc);
   uc->conv_if = conv;
   uc->conv = NULL;
+  uc->reverse_conv = NULL;
   /**/
   uc->nr_modes = 0;
   uc->modes = NULL;
@@ -171,6 +172,10 @@ uim_create_context(void *ptr,
   /**/
   uc->psegs = NULL;
   uc->nr_psegs = 0;
+  
+  uc->surrounding.text = NULL;
+  uc->surrounding.cursor_pos = 0;
+  uc->surrounding.len = 0;
 
   if (!lang) {
     lang = "#f";
@@ -274,6 +279,8 @@ uim_release_context(uim_context uc)
   if (uc->conv) {
     uc->conv_if->release(uc->conv);
   }
+  if (uc->reverse_conv)
+    uc->conv_if->release(uc->reverse_conv);
   uim_release_preedit_segments(uc);
   for (i = 0; i < uc->nr_modes; i++) {
     free(uc->modes[i]);
@@ -618,7 +625,7 @@ uim_set_candidate_index(uim_context uc, int nth)
 
 void
 uim_set_surrounding_text_cb(uim_context uc,
-			    void (*request_cb)(void *ptr),
+			    int (*request_cb)(void *ptr),
 			    int (*delete_cb)(void *ptr, int offset, int len))
 {
   uc->request_surrounding_text_cb = request_cb;
@@ -629,6 +636,10 @@ void
 uim_set_surrounding_text(uim_context uc, const char *text,
 			 int cursor_pos, int len)
 {
+  free(uc->surrounding.text);
+  uc->surrounding.text = strdup(text);
+  uc->surrounding.cursor_pos = cursor_pos;
+  uc->surrounding.len = len;
 }
 
 static void

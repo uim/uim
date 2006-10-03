@@ -458,11 +458,17 @@ im_set_encoding(uim_lisp id, uim_lisp enc)
   if (uc->conv) {
     uc->conv_if->release(uc->conv);
   }
+  if (uc->reverse_conv) {
+    uc->conv_if->release(uc->reverse_conv);
+  }
   if (!strcmp(uc->encoding, e)) {
-    uc->conv = 0;
+    uc->conv = NULL;
+    uc->reverse_conv = NULL;
     return uim_scm_f();
   }
   uc->conv = uc->conv_if->create(uc->encoding, e);
+  uc->reverse_conv = uc->conv_if->create(e, uc->encoding);
+
   return uim_scm_f();
 }
 
@@ -687,28 +693,49 @@ static uim_lisp
 im_request_surrounding(uim_lisp id_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  if (!uc->request_surrounding_text_cb) {
+  int ret;
+
+  if (!uc->request_surrounding_text_cb)
     return uim_scm_f();
-  }
-  if (uc->request_surrounding_text_cb) {
-    uc->request_surrounding_text_cb(uc->ptr);
-  }
-  return uim_scm_t();
+  ret = uc->request_surrounding_text_cb(uc->ptr);
+
+  return ret ? uim_scm_f() : uim_scm_t();
+}
+
+static uim_lisp
+im_get_surrounding(uim_lisp id_)
+{
+  uim_context uc;
+  int pos, len;
+  const char *text;
+  char *im_text;
+
+  uc = retrieve_uim_context(id_);
+  pos = uc->surrounding.cursor_pos;
+  len = uc->surrounding.len;
+  text = uc->surrounding.text;
+
+  im_text = uc->conv_if->convert(uc->reverse_conv, text);
+  UIM_EVAL_FSTRING3(uc, "(list \"%s\" %d %d)", im_text, pos, len);
+  free(im_text);
+
+  return uim_scm_return_value();
 }
 
 static uim_lisp
 im_delete_surrounding(uim_lisp id_, uim_lisp offset_, uim_lisp len_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int offset = uim_scm_c_int(offset_);
-  int len = uim_scm_c_int(len_);
-  if (!uc->delete_surrounding_text_cb) {
+  int offset, len, ret;
+
+  offset = uim_scm_c_int(offset_);
+  len = uim_scm_c_int(len_);
+
+  if (!uc->delete_surrounding_text_cb)
     return uim_scm_f();
-  }
-  if (uc->delete_surrounding_text_cb) {
-    uc->delete_surrounding_text_cb(uc->ptr, offset, len);
-  }
-  return uim_scm_t();
+  ret = uc->delete_surrounding_text_cb(uc->ptr, offset, len);
+
+  return ret ? uim_scm_f() : uim_scm_t();
 }
 
 static uim_lisp
@@ -789,6 +816,7 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
   /**/
   uim_scm_init_subr_1("im-request-surrounding", im_request_surrounding);
+  uim_scm_init_subr_1("im-get-surrounding", im_get_surrounding);
   uim_scm_init_subr_3("im-delete-surrounding", im_delete_surrounding);
   /**/
   uim_scm_init_subr_2("im-switch-im", switch_im);

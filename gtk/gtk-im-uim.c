@@ -762,7 +762,42 @@ switch_system_global_im_cb(void *ptr, const char *name)
   g_string_free(msg, TRUE);
 }
 
+static int
+request_surrounding_text_cb(void *ptr)
+{
+  IMUIMContext *uic;
+  gchar *text, *former;
+  gint cursor_index;
+  gboolean success;
+  int len, pos;
 
+  uic = (IMUIMContext *)ptr;
+  success = gtk_im_context_get_surrounding(GTK_IM_CONTEXT(uic), &text,
+					   &cursor_index);
+  if (!success)
+    return 1;
+
+  former = g_strndup(text, cursor_index);
+  len = g_utf8_strlen(text, -1);
+  pos = g_utf8_strlen(former, -1);
+  g_free(former);
+  uim_set_surrounding_text(uic->uc, text, pos, len);
+  g_free(text);
+
+  return 0;
+}
+
+static int
+delete_surrouding_text_cb(void *ptr, int offset, int n_chars)
+{
+  IMUIMContext *uic;
+  gboolean success;
+
+  uic = (IMUIMContext *)ptr;
+  success = gtk_im_context_delete_surrounding(GTK_IM_CONTEXT(uic), offset,
+					      n_chars);
+  return success ? 0 : 1;
+}
 
 /* uim helper related */
 
@@ -1338,6 +1373,8 @@ im_module_create(const gchar *context_id)
   uim_set_im_switch_request_cb(uic->uc,
 			       switch_app_global_im_cb,
 			       switch_system_global_im_cb);
+  uim_set_surrounding_text_cb(uic->uc, request_surrounding_text_cb,
+  				       delete_surrouding_text_cb);
 
   uim_prop_list_update(uic->uc);
 

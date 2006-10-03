@@ -544,17 +544,21 @@ void
 uim_set_mode_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr));
 
-/* surrounding text (experimental, ask yusuke)*/
+/* surrounding text */
 /**
  * Set callback functions to be called when input methods want to get or
  * delete surrounding text.
  * @param uc input context
- * @param request_cb called when input methods want to get surrounding text. user can call uim_set_surrounding text to reply this request.
- * @param delete_cb called when input methods want to delete surrounding text. 'offset characters in the left of cursor and 'len - 'offset characters will be deleted. User should return 0 when it succeed.
+ * @param request_cb called when input methods want to get surrounding text. user can call uim_set_surrounding text to reply this request. User should return 0 when it succeed.
+ *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
+ * @param delete_cb called when input methods want to delete surrounding text. User should return 0 when it succeed.
+ *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
+ *        2nd argument "offset" is the number of characters from cursor; a negative value means start before the cursor.
+ *        3rd argument "len" characters will be deleted.
  */
 void
 uim_set_surrounding_text_cb(uim_context uc,
-			    void (*request_cb)(void *ptr),
+			    int (*request_cb)(void *ptr),
 			    int (*delete_cb)(void *ptr, int offset, int len));
 /**
  * Set surrounding text as a reply to request callback.
