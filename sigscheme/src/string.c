@@ -72,14 +72,6 @@ static int string_cmp(const char *funcname,
   R5RS : 6.3 Other data types : 6.3.5 Strings
 ===========================================================================*/
 SCM_EXPORT ScmObj
-scm_p_stringp(ScmObj obj)
-{
-    DECLARE_FUNCTION("string?", procedure_fixed_1);
-
-    return MAKE_BOOL(STRINGP(obj));
-}
-
-SCM_EXPORT ScmObj
 scm_p_make_string(ScmObj length, ScmObj args)
 {
     ScmObj filler;
@@ -149,23 +141,6 @@ scm_p_string(ScmObj args)
     DECLARE_FUNCTION("string", procedure_variadic_0);
 
     return scm_p_list2string(args);
-}
-
-SCM_EXPORT ScmObj
-scm_p_string_length(ScmObj str)
-{
-    scm_int_t len;
-    DECLARE_FUNCTION("string-length", procedure_fixed_1);
-
-    ENSURE_STRING(str);
-
-#if SCM_USE_MULTIBYTE_CHAR
-    len = scm_mb_bare_c_strlen(scm_current_char_codec, SCM_STRING_STR(str));
-#else
-    len = SCM_STRING_LEN(str);
-#endif
-
-    return MAKE_INT(len);
 }
 
 SCM_EXPORT ScmObj
@@ -327,17 +302,6 @@ string_cmp(const char *funcname,
 }
 
 SCM_EXPORT ScmObj
-scm_p_stringequalp(ScmObj str1, ScmObj str2)
-{
-    DECLARE_FUNCTION("string=?", procedure_fixed_2);
-
-    ENSURE_STRING(str1);
-    ENSURE_STRING(str2);
-
-    return MAKE_BOOL(STRING_EQUALP(str1, str2));
-}
-
-SCM_EXPORT ScmObj
 scm_p_string_ci_equalp(ScmObj str1, ScmObj str2)
 {
     DECLARE_FUNCTION("string-ci=?", procedure_fixed_2);
@@ -466,51 +430,6 @@ scm_p_substring(ScmObj str, ScmObj start, ScmObj end)
 #endif
 }
 
-/* FIXME: support stateful encoding */
-SCM_EXPORT ScmObj
-scm_p_string_append(ScmObj args)
-{
-    ScmObj rest, str;
-    size_t byte_len;
-    scm_int_t mb_len;
-    char  *new_str, *dst;
-    const char *src;
-    DECLARE_FUNCTION("string-append", procedure_variadic_0);
-
-    if (NULLP(args))
-        return MAKE_STRING_COPYING("", 0);
-
-    /* count total size of the new string */
-    byte_len = mb_len = 0;
-    rest = args;
-    FOR_EACH (str, rest) {
-        ENSURE_STRING(str);
-        mb_len   += SCM_STRING_LEN(str);
-#if SCM_USE_MULTIBYTE_CHAR
-        byte_len += strlen(SCM_STRING_STR(str));
-#else
-        byte_len = mb_len;
-#endif
-    }
-
-    new_str = scm_malloc(byte_len + sizeof(""));
-
-    /* copy all strings into new_str */
-    dst = new_str;
-    FOR_EACH (str, args) {
-        for (src = SCM_STRING_STR(str); *src;)
-            *dst++ = *src++;
-    }
-    *dst = '\0';
-
-#if SCM_USE_NULL_CAPABLE_STRING
-    /* each string is chopped at first null and the result is incorrect */
-    return MAKE_STRING(new_str, STRLEN_UNKNOWN);
-#else
-    return MAKE_STRING(new_str, mb_len);
-#endif
-}
-
 SCM_EXPORT ScmObj
 scm_p_string2list(ScmObj str)
 {
@@ -612,21 +531,6 @@ scm_p_list2string(ScmObj lst)
 #endif
 
     return MAKE_STRING(str, len);
-}
-
-SCM_EXPORT ScmObj
-scm_p_string_copy(ScmObj str)
-{
-    DECLARE_FUNCTION("string-copy", procedure_fixed_1);
-
-    ENSURE_STRING(str);
-
-#if SCM_USE_NULL_CAPABLE_STRING
-    /* result is truncated at first null and incorrect */
-    return MAKE_STRING_COPYING(SCM_STRING_STR(str), STRLEN_UNKNOWN);
-#else
-    return MAKE_STRING_COPYING(SCM_STRING_STR(str), SCM_STRING_LEN(str));
-#endif
 }
 
 SCM_EXPORT ScmObj

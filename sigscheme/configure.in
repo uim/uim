@@ -269,6 +269,9 @@ use_char="yes"
 # (cannot be 0 yet) use string
 use_string="yes"
 
+# (cannot be 0 yet) use core procedures of R5RS string
+use_string_core="yes"
+
 # (cannot be 0 yet) use vector
 use_vector="yes"
 
@@ -734,6 +737,14 @@ dnl   [])
 AM_CONDITIONAL(USE_STRING, test "x$use_string" = xyes)
 if test "x$use_string" = xyes; then
   AC_DEFINE(SCM_USE_STRING, 1, [use string])
+fi
+
+#
+# STRING_CORE
+#
+AM_CONDITIONAL(USE_STRING_CORE, test "x$use_string_core" = xyes)
+if test "x$use_string_core" = xyes; then
+  AC_DEFINE(SCM_USE_STRING_CORE, 1, [use core procedures of R5RS string])
 fi
 
 #

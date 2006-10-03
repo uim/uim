@@ -157,6 +157,7 @@ Categorized File List
   * list.c
   * deep-cadrs.c
   * char.c
+  * string-core.c
   * string.c
   * vector.c
   * qquote.c
@@ -250,6 +251,7 @@ yyyy yyy r5rs procedure.c
 yyyy yyy r5rs list.c
 yyyy yyy r5rs deep-cadrs.c
          r5rs char.c
+         r5rs string-core.c
          r5rs string.c
          r5rs vector.c
 yyyy yyy r5rs qquote.c
@@ -783,6 +785,17 @@ normal case tests: yamaken@r3892
 corner case tests: yamaken@r3892
 
 file:              char.c
+category:          r5rs
+spec by eyes:      
+spec by tests:     
+general review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              string-core.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
