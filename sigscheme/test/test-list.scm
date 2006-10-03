@@ -182,6 +182,8 @@
 (assert-equal? (tn) '(7 a c) (list (+ 3 4) 'a 'c))
 (assert-equal? (tn) '(a 7 c) (list 'a (+ 3 4) 'c))
 (assert-equal? (tn) '(a c 7) (list 'a 'c (+ 3 4)))
+(assert-error  (tn) (lambda () (list . 0)))
+(assert-error  (tn) (lambda () (list 0 . 1)))
 
 (tn "length proper lists")
 (assert-equal? (tn) 0 (length '()))
@@ -317,25 +319,6 @@
 (assert-error  (tn) (lambda () (list-ref 'a 0)))
 (assert-error  (tn) (lambda () (list-ref 'a 1)))
 (assert-error  (tn) (lambda () (list-ref 'a -1)))
-
-(tn "memq")
-(assert-equal? (tn) '(a b c) (memq 'a '(a b c)))
-(assert-equal? (tn) '(b c) (memq 'b '(a b c)))
-(assert-equal? (tn) #f (memq 'a '(b c d)))
-(assert-equal? (tn) #f (memq (list 'a) '(b (a) c)))
-
-(tn "member")
-(assert-equal? (tn) '((a) c) (member (list 'a) '(b (a) c)))
-
-(tn "assq")
-(define e '((a 1) (b 2) (c 3)))
-(assert-equal? (tn) '(a 1) (assq 'a e))
-(assert-equal? (tn) '(b 2) (assq 'b e))
-(assert-equal? (tn) #f (assq 'd e))
-(assert-equal? (tn) #f (assq (list 'a) '(((a)) ((b)) ((c)))))
-
-(tn "assoc")
-(assert-equal? (tn) '((a)) (assoc (list 'a) '(((a)) ((b)) ((c)))))
 
 (if (provided? "sigscheme")
     (begin

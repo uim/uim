@@ -403,10 +403,12 @@ scm_p_list_ref(ScmObj lst, ScmObj k)
 
 #define MEMBER_BODY(obj, lst, cmp)                                           \
     do {                                                                     \
-        for (; CONSP(lst); lst = CDR(lst))                                   \
-            if (cmp(obj, CAR(lst)))                                          \
-                return lst;                                                  \
-        CHECK_PROPER_LIST_TERMINATION(lst, lst);                             \
+        ScmObj rest;                                                         \
+                                                                             \
+        for (rest = lst; CONSP(rest); rest = CDR(rest))                      \
+            if (cmp(obj, CAR(rest)))                                         \
+                return rest;                                                 \
+        CHECK_PROPER_LIST_TERMINATION(rest, lst);                            \
         return SCM_FALSE;                                                    \
     } while (/* CONSTCOND */ 0)
 
@@ -442,15 +444,16 @@ scm_p_member(ScmObj obj, ScmObj lst)
 
 #define ASSOC_BODY(obj, alist, cmp)                                          \
     do {                                                                     \
-        ScmObj pair, key;                                                    \
+        ScmObj pair, key, rest;                                              \
                                                                              \
-        FOR_EACH (pair, alist) {                                             \
+        rest = alist;                                                        \
+        FOR_EACH (pair, rest) {                                              \
             ENSURE_CONS(pair);                                               \
             key = CAR(pair);                                                 \
             if (cmp(key, obj))                                               \
                 return pair;                                                 \
         }                                                                    \
-        CHECK_PROPER_LIST_TERMINATION(alist, alist);                         \
+        CHECK_PROPER_LIST_TERMINATION(rest, alist);                          \
         return SCM_FALSE;                                                    \
     } while (/* CONSTCOND */ 0)
 
