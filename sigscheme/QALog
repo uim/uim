@@ -763,13 +763,13 @@ corner case tests:
 file:              list.c
 category:          r5rs
 spec by eyes:      yamaken@r3902
-spec by tests:     yamaken@r3902
+spec by tests:     yamaken@r3903
 general review:    yamaken@r3902
 64-bit by eyes:    yamaken@r3902
 64-bit by tests:   
 coding style:      yamaken@r3902
-normal case tests: yamaken@r3902
-corner case tests: yamaken@r3902
+normal case tests: yamaken@r3903
+corner case tests: yamaken@r3903
 
 file:              deep-cadrs.c
 category:          r5rs
@@ -1024,6 +1024,8 @@ Log
             yet
           - QA done for 'memq', 'memv', 'member', 'assq', 'assv', 'assoc'
             and all list.c @r3902 except for "64-bit by tests"
+          - QA done again for all c[ad]+r procedures @r3903 with fixed
+            test-pair.scm
           - Fix broken improper tail handling of 'list-ref'
           - Fix improper list acceptance of 'reverse'
 

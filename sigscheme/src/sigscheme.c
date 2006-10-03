@@ -104,6 +104,9 @@ static const char *const builtin_features[] = {
 #if (SCM_CONST_VECTOR_LITERAL && SCM_HAS_IMMUTABLE_VECTOR)
     "const-vector-literal",
 #endif
+#if SCM_USE_DEEP_CADRS
+    "deep-cadrs",
+#endif
 #if SCM_COMPAT_SIOD
     "compat-siod",
 #endif

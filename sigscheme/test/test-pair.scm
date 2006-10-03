@@ -36,6 +36,7 @@
 (load "./test/unittest.scm")
 
 (define tn test-name)
+(define *test-track-progress* #f)
 
 (tn "pair?")
 (assert-eq? (tn) #f (pair? #f))
@@ -266,8 +267,8 @@
 (assert-equal? "cddr"   '((12 . 13) . (14 . 15)) (cddr tree))
 (assert-equal? "caddr"  '(12 . 13) (caddr tree))
 (assert-equal? "cdddr"  '(14 . 15) (cdddr tree))
-(if (not (and (provided? "sigscheme")
-              (provided? "deep-cadrs")))
+(if (or (not (provided? "sigscheme"))
+        (provided? "deep-cadrs"))
     (begin
       (assert-equal? "caaar"  '(0  . 1)  (caaar tree))
       (assert-equal? "caadr"  '(8  . 9)  (caadr tree))
@@ -301,8 +302,8 @@
       (assert-equal? "cddr empty list"   '() (cddr '()))
       (assert-equal? "caddr empty list"  '() (caddr '()))
       (assert-equal? "cdddr empty list"  '() (cdddr '()))
-      (if (not (and (provided? "sigscheme")
-                    (provided? "deep-cadrs")))
+      (if (or (not (provided? "sigscheme"))
+              (provided? "deep-cadrs"))
           (begin
             (assert-equal? "caaar empty list"  '() (caaar '()))
             (assert-equal? "caadr empty list"  '() (caadr '()))
@@ -333,8 +334,8 @@
       (assert-error  "cddr empty list"   (lambda () (cddr '())))
       (assert-error  "caddr empty list"  (lambda () (caddr '())))
       (assert-error  "cdddr empty list"  (lambda () (cdddr '())))
-      (if (not (and (provided? "sigscheme")
-                    (provided? "deep-cadrs")))
+      (if (or (not (provided? "sigscheme"))
+              (provided? "deep-cadrs"))
           (begin
             (assert-error  "caaar empty list"  (lambda () (caaar '())))
             (assert-error  "caadr empty list"  (lambda () (caadr '())))
@@ -365,8 +366,8 @@
 (assert-error  "cddr insufficient list"   (lambda () (cddr '(0 . 1))))
 (assert-error  "caddr insufficient list"  (lambda () (caddr '(0 . 1))))
 (assert-error  "cdddr insufficient list"  (lambda () (cdddr '(0 . 1))))
-(if (not (and (provided? "sigscheme")
-              (provided? "deep-cadrs")))
+(if (or (not (provided? "sigscheme"))
+        (provided? "deep-cadrs"))
     (begin
       (assert-error  "caaar insufficient list"  (lambda () (caaar '(0 . 1))))
       (assert-error  "caadr insufficient list"  (lambda () (caadr '(0 . 1))))
@@ -397,8 +398,8 @@
 (assert-error  "cddr invalid object"   (lambda () (cddr #t)))
 (assert-error  "caddr invalid object"  (lambda () (caddr #t)))
 (assert-error  "cdddr invalid object"  (lambda () (cdddr #t)))
-(if (not (and (provided? "sigscheme")
-              (provided? "deep-cadrs")))
+(if (or (not (provided? "sigscheme"))
+        (provided? "deep-cadrs"))
     (begin
       (assert-error  "caaar invalid object"  (lambda () (caaar #t)))
       (assert-error  "caadr invalid object"  (lambda () (caadr #t)))
