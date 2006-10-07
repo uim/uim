@@ -53,6 +53,26 @@
 		     preedit-cursor
 		     preedit-separator))))
 
+(define text-area-id-alist
+  '((primary   . 1)
+    (selection . 2)
+    (clipboard . 4)))
+
+(define text-origin-alist
+  '((cursor    . 1)
+    (beginning . 2)
+    (end       . 3)))
+
+(define text-extent-alist
+  '((full       . -2)
+    (paragraph  . -3)
+    (sentence   . -5)
+    (word       . -9)
+    (char-frags . -17)
+    (disp-rect  . -33)
+    (disp-line  . -65)
+    (line       . -129)))
+
 ;;
 ;; im-management
 ;;
@@ -81,6 +101,7 @@
    (list 'get-candidate-handler       list)
    (list 'set-candidate-index-handler list)
    (list 'prop-activate-handler       list)
+   (list 'input-string-handler        list)
    (list 'module-name                 "")))
 
 (define im-custom-set-handler
@@ -351,6 +372,10 @@
 (define prop-activate-handler
   (lambda (id message)
     (invoke-handler im-prop-activate-handler id message)))
+
+(define input-string-handler
+  (lambda (id str)
+    (invoke-handler im-input-string-handler id str)))
 
 (define custom-set-handler
   (lambda (id custom-sym custom-val)

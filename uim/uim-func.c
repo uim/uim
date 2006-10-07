@@ -690,52 +690,54 @@ im_return_str_list(uim_lisp str_list_)
 }
 
 static uim_lisp
-im_request_surrounding(uim_lisp id_)
+im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
+		uim_lisp former_len_, uim_lisp latter_len_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int ret;
+  int err, former_len, latter_len;
+  enum UTextArea text_id;
+  enum UTextOrigin origin;
+  char *former, *latter;
 
-  if (!uc->request_surrounding_text_cb)
+  if (!uc->acquire_text_cb)
     return uim_scm_f();
-  ret = uc->request_surrounding_text_cb(uc->ptr);
 
-  return ret ? uim_scm_f() : uim_scm_t();
-}
+  /* FIXME: lacking codes */
 
-static uim_lisp
-im_get_surrounding(uim_lisp id_)
-{
-  uim_context uc;
-  int pos, len;
-  const char *text;
-  char *im_text;
+  err = uc->acquire_text_cb(uc->ptr, text_id, origin, former_len, latter_len,
+			    &former, &latter);
 
-  uc = retrieve_uim_context(id_);
-  pos = uc->surrounding.cursor_pos;
-  len = uc->surrounding.len;
-  text = uc->surrounding.text;
+  /* FIXME: lacking codes */
 
-  im_text = uc->conv_if->convert(uc->reverse_conv, text);
-  UIM_EVAL_FSTRING3(uc, "(list \"%s\" %d %d)", im_text, pos, len);
-  free(im_text);
+  /* FIXME: string->list is not applied here for each text part. This
+   * interface should be revised when SigScheme has been introduced to
+   * uim. Until then, perform character separation by each input methods if
+   * needed.  -- YamaKen 2006-10-07 */
+  /* FIXME: print '() instead of '("") if the string is empty or NULL */
+  UIM_EVAL_FSTRING3(uc, "(ustr-new '(\"%s\") '(\"%s\"))", former, latter);
 
   return uim_scm_return_value();
 }
 
 static uim_lisp
-im_delete_surrounding(uim_lisp id_, uim_lisp offset_, uim_lisp len_)
+im_delete_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
+	       uim_lisp former_len_, uim_lisp latter_len_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int offset, len, ret;
+  int err, former_len, latter_len;
+  enum UTextArea text_id;
+  enum UTextOrigin origin;
 
-  offset = uim_scm_c_int(offset_);
-  len = uim_scm_c_int(len_);
+  former_len = uim_scm_c_int(former_len_);
+  latter_len = uim_scm_c_int(latter_len_);
+  text_id = /* FIXME */;
+  origin = /* FIXME */;
 
-  if (!uc->delete_surrounding_text_cb)
+  if (!uc->delete_text_cb)
     return uim_scm_f();
-  ret = uc->delete_surrounding_text_cb(uc->ptr, offset, len);
+  err = uc->delete_text_cb(uc->ptr, text_id, origin, former_len, latter_len);
 
-  return ret ? uim_scm_f() : uim_scm_t();
+  return uim_scm_make_bool(err);
 }
 
 static uim_lisp
@@ -815,9 +817,8 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_2("im-shift-page-candidate", im_shift_page_candidate);
   uim_scm_init_subr_1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
   /**/
-  uim_scm_init_subr_1("im-request-surrounding", im_request_surrounding);
-  uim_scm_init_subr_1("im-get-surrounding", im_get_surrounding);
-  uim_scm_init_subr_3("im-delete-surrounding", im_delete_surrounding);
+  uim_scm_init_subr_5("im-acquire-text", im_acquire_text);
+  uim_scm_init_subr_5("im-delete-text", im_delete_text);
   /**/
   uim_scm_init_subr_2("im-switch-im", switch_im);
   uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);

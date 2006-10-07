@@ -209,6 +209,77 @@ enum UPreeditAttr {
   UPreeditAttr_Separator = 8
 };
 
+/* Cursor of clipboard text is always positioned at end. */
+enum UTextArea {
+  UTextArea_Unspecified = 0,
+  UTextArea_Primary     = 1,  /* primary text area which IM commits to */
+  UTextArea_Selection   = 2,  /* user-selected region of primary text area */
+  UTextArea_Clipboard   = 4   /* clipboard text */
+};
+
+enum UTextOrigin {
+  UTextOrigin_Unspecified = 0,
+  UTextOrigin_Cursor      = 1,  /* current position of the cursor */
+  UTextOrigin_Beginning   = 2,  /* beginning of the text */
+  UTextOrigin_End         = 3   /* end of the text */
+};
+
+/*
+ * Text extent specifiers
+ *
+ * All bridges that support the text acquisition API must implement the
+ * handlings for these 'required' text extent specifiers.
+ *
+ *   required:
+ *     - zero and positive numbers
+ *     - UTextExtent_Full
+ *     - UTextExtent_Line
+ *
+ * Zero and positive numbers are interpreted as string length (counted in
+ * characters).
+ *
+ *
+ * Following language-specific extent specifiers are recommended to be
+ * implemented although experimental. Input methods that use these specifiers
+ * should separate the features based on the specifiers as "experimental
+ * features" and off by default.  And do not assume correct result is always
+ * returned. These specifiers may be re-categorized as 'required' when we have
+ * been well-experimented and it is considered as appropriate.
+ *
+ *   recommended:
+ *     - UTextExtent_Paragraph
+ *     - UTextExtent_Sentence
+ *     - UTextExtent_Word
+ *
+ *
+ * These specifiers are experimental and reserved for future use.
+ *
+ *   experimental:
+ *     - UTextExtent_CharFrags
+ *     - UTextExtent_DispRect
+ *     - UTextExtent_DispLine
+ *
+ * UTextExtent_CharFrags stands for "character fragments" such as Thai
+ * combining marks, Hangul jamo, Japanese voiced consonant marks etc. It is
+ * supposed to be used for the "surrounding text" acquisition. Bridges should
+ * supply only such combinable characters if this specifier is passed.
+ */
+enum UTextExtent {
+  UTextExtent_Unspecified = -1,  /* invalid */
+
+  /* logical extents */
+  UTextExtent_Full      = -2,   /* beginning or end of the whole text */
+  UTextExtent_Paragraph = -3,   /* the paragraph which the origin is included */
+  UTextExtent_Sentence  = -5,   /* the sentence which the origin is included */
+  UTextExtent_Word      = -9,   /* the word which the origin is included */
+  UTextExtent_CharFrags = -17,  /* character fragments around the origin */
+
+  /* physical extents */
+  UTextExtent_DispRect  = -33,  /* the text region displayed in the widget */
+  UTextExtent_DispLine  = -65,  /* displayed line (eol: linebreak) */
+  UTextExtent_Line      = -129  /* real line      (eol: newline char) */
+};
+
 /* abstracting platform-dependent character code conversion method */
 struct uim_code_converter {
   int  (*is_convertible)(const char *tocode, const char *fromcode);
@@ -544,32 +615,96 @@ void
 uim_set_mode_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr));
 
-/* surrounding text */
+/* text acquisition */
+/*
+ * Consideration about text update interface
+ *
+ * In under-development composer framework, a single commit event of a
+ * composer instance can commit a text, update the preedit, and delete
+ * surrounding texts atomically to reduce text flicker. But because
+ * introducing this interface to current uim breaks backward compatibility
+ * completely, adding separated surrounding text deletion interface is better
+ * solution at now.  -- YamaKen 2006-10-07
+ *
+ * http://anonsvn.freedesktop.org/svn/uim/branches/composer/scm/event.scm
+ *
+ * (define-event 'commit
+ *   upward-event-rec-spec
+ *   '((utext           ())   ;; can include cursor position info
+ *     (preedit-updated #t)   ;; can also update preedit as atomic event
+ *     (former-del-len  0)    ;; for surrounding text operation
+ *     (latter-del-len  0)))  ;; for surrounding text operation
+ */
 /**
- * Set callback functions to be called when input methods want to get or
- * delete surrounding text.
+ * Set callback functions for text acquisition and modification.
+ *
+ * All "former_len" and "latter_len" can be specified by zero, positive
+ * numbers or enum UTextExtent. The text length is counted in singlebyte or
+ * multibyte characters (not counted in bytes). Bridges may return a string
+ * shorter than requested only if the text is actually shorter than the
+ * requested length. Otherwise exact length string must be returned (FIXME: is
+ * this specification possible for GTK+?  gtk_im_context_get_surrounding()
+ * cannot satisfy it).
+ *
+ * Both @a acquire_cb and @a delete_cb returns zero if succeeded, otherwise
+ * returns a negative integer if the bridge does not support the specified
+ * text operation.
+ *
  * @param uc input context
- * @param request_cb called when input methods want to get surrounding text. user can call uim_set_surrounding text to reply this request. User should return 0 when it succeed.
- *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
- * @param delete_cb called when input methods want to delete surrounding text. User should return 0 when it succeed.
- *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
- *        2nd argument "offset" is the number of characters from cursor; a negative value means start before the cursor.
- *        3rd argument "len" characters will be deleted.
+ * @param acquire_cb called back when the input context want to acquire a
+ *        bridge-side text.
+ *        1st argument "ptr" passes back the 1st argument of
+ *                     uim_create_context.
+ *        2nd argument "text_id" specifies a textarea having target text.
+ *        3rd argument "origin" specifies the origin which former_len and
+ *                     latter_len refers.
+ *        4th argument "former_len" specifies length of the text preceding the
+ *                     text origin to be acquired.
+ *        5th argument "latter_len" specifies length of the text following the
+ *                     text origin to be acquired.
+ *        6th argument "former" passes a pointer reference to receive the
+ *                     former part of the acquired text. The returned pointer
+ *                     may be NULL and object ownership is transferred to
+ *                     libuim.
+ *        7th argument "latter" passes a pointer reference to receive the
+ *                     latter part of the acquired text. The returned pointer
+ *                     may be NULL and object ownership is transferred to
+ *                     libuim.
+ * @param delete_cb called back when the input context want to delete a
+ *        bridge-side text.
+ *        1st argument "ptr" passes back the 1st argument of
+ *                     uim_create_context.
+ *        2nd argument "text_id" specifies a textarea which is going to be
+ *                     operated on.
+ *        3rd argument "origin" specifies the origin which former_len and
+ *                     latter_len refers.
+ *        4th argument "former_len" specifies length of the text preceding the
+ *                     text origin to be deleted.
+ *        5th argument "latter_len" specifies length of the text following the
+ *                     text origin to be deleted.
  */
 void
-uim_set_surrounding_text_cb(uim_context uc,
-			    int (*request_cb)(void *ptr),
-			    int (*delete_cb)(void *ptr, int offset, int len));
+uim_set_text_acquisition_cb(uim_context uc,
+			    int (*acquire_cb)(void *ptr,
+					      enum UTextArea text_id,
+					      enum UTextOrigin origin,
+					      int former_len, int latter_len,
+					      char **former, char **latter),
+			    int (*delete_cb)(void *ptr,
+					     enum UTextArea text_id,
+					     enum UTextOrigin origin,
+					     int former_len, int latter_len));
+
 /**
- * Set surrounding text as a reply to request callback.
- * @param uc input context
- * @param text text around cursor
- * @param cursor_pos position of cursor in text. This should be number of actual characters at the left of cursor, not bytes.
- * @param len number of characters in text
+ * Input arbitrary string into input context.
+ *
+ * @param uc the input context tied with the text area.
+ * @param str the string to be input into.
+ *
+ * @return true if @a str is accepted (consumed) by the input context.
  */
-void
-uim_set_surrounding_text(uim_context uc, const char *text,
-			 int cursor_pos, int len);
+uim_bool
+uim_input_string(uim_context uc, const char *str);
 
 /*
  * Set callback function to be called when configuration of input
