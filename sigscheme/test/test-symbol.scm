@@ -129,7 +129,6 @@
 (assert-eq? (tn) #f (symbol? -3))
 (assert-eq? (tn) #t (symbol? 'symbol))
 (assert-eq? (tn) #t (symbol? 'SYMBOL))
-;; FIXME: provide "utf-8"
 (if (and (provided? "sigscheme")
          (provided? "utf-8"))
     (assert-eq? (tn) #t (symbol? (string-read "日本語シンボル"))))

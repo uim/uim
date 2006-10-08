@@ -122,6 +122,12 @@ static const char *const builtin_features[] = {
 #if SCM_HAS_IMMEDIATE_NUMBER_ONLY
     "immediate-number-only",
 #endif
+#if SCM_USE_MULTIBYTE_CHAR
+    "multibyte-char",
+#endif
+#if SCM_USE_UTF8
+    "utf-8",
+#endif
     NULL
 };
 

@@ -251,7 +251,7 @@ yyyy yyy r5rs procedure.c
 yyyy yyy r5rs list.c
 yyyy yyy r5rs deep-cadrs.c
          r5rs char.c
-         r5rs string-core.c
+yyyy yyy r5rs string-core.c
          r5rs string.c
          r5rs vector.c
 yyyy yyy r5rs qquote.c
@@ -797,14 +797,14 @@ corner case tests:
 
 file:              string-core.c
 category:          r5rs
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3911
+spec by tests:     yamaken@r3911
+general review:    yamaken@r3911
+64-bit by eyes:    yamaken@r3911
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3911
+normal case tests: yamaken@r3911
+corner case tests: yamaken@r3911
 
 file:              string.c
 category:          r5rs
@@ -1029,6 +1029,18 @@ corner case tests:
 
 Log
 ---
+2006-10-09  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * string-core.c
+          - QA done @r3911 except for "64-bit by tests"
+
+          Details:
+          - Complete all required tests for these procedures I'm aware of in
+            test-string-core.scm
+          - Specs have been validated against following R5RS sections:
+            * string?, string-length, string=?, string-append, string-copy
+              "6.3.5 Strings"
+
 2006-10-03  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * list.c
