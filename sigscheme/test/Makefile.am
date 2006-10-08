@@ -45,6 +45,8 @@ EXTRA_DIST += \
         test-srfi48.scm \
         test-srfi60.scm \
         test-string-cmp.scm \
+        test-string-core.scm \
+        test-string-null.scm \
         test-string.scm \
         test-symbol.scm \
         test-syntax-rules.scm \

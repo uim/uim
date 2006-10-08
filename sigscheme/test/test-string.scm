@@ -30,10 +30,16 @@
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+;; See also test-string-{core,null}.scm
+
 (load "./test/unittest.scm")
 
 (define tn test-name)
 (define cp string-copy)
+
+(if (and (provided? "sigscheme")
+         (not (symbol-bound? 'make-string)))
+    (test-skip "string part of R5RS is not enabled"))
 
 ;;
 ;; All procedures that take a string as argument are tested with
@@ -42,14 +48,6 @@
 ;; See "3.4 Storage model" of R5RS
 ;;
 
-
-(tn "string? immutable")
-(assert-true (tn) (string? ""))
-(assert-true (tn) (string? "abcde"))
-(assert-true (tn) (string? (symbol->string 'foo)))
-(tn "string? mutable")
-(assert-true (tn) (string? (cp "")))
-(assert-true (tn) (string? (cp "abcde")))
 
 (tn "make-string")
 (assert-equal? (tn) ""   (make-string 0))
@@ -107,34 +105,6 @@
 (assert-error  (tn) (lambda ()
                       (string-set! (cp "abcdef")  6 #\z)))
 
-(tn "string-length immutable")
-(assert-equal? (tn) 0 (string-length ""))
-(assert-equal? (tn) 5 (string-length "abcde"))
-(assert-equal? (tn) 1 (string-length "\\"))
-(assert-equal? (tn) 2 (string-length "\\\\"))
-(assert-equal? (tn) 3 (string-length "\\\\\\"))
-(tn "string-length mutable")
-(assert-equal? (tn) 0 (string-length (cp "")))
-(assert-equal? (tn) 5 (string-length (cp "abcde")))
-(assert-equal? (tn) 1 (string-length (cp "\\")))
-(assert-equal? (tn) 2 (string-length (cp "\\\\")))
-(assert-equal? (tn) 3 (string-length (cp "\\\\\\")))
-
-(tn "string=? immutable")
-(assert-true (tn) (string=? "" ""))
-(assert-true (tn) (string=? "abcde" "abcde"))
-(assert-true (tn) (string=? "foo" "foo"))
-(assert-true (tn) (string=? "foo" (symbol->string 'foo)))
-(assert-true (tn) (string=? (symbol->string 'foo) "foo"))
-(assert-true (tn) (string=? (symbol->string 'foo) (symbol->string 'foo)))
-(tn "string=? mutable")
-(assert-true (tn) (string=? (cp "") (cp "")))
-(assert-true (tn) (string=? (cp "foo") (cp "foo")))
-(tn "string=? mixed")
-(assert-true (tn) (string=? (cp "") ""))
-(assert-true (tn) (string=? (cp "foo") "foo"))
-(assert-true (tn) (string=? (cp "foo") (symbol->string 'foo)))
-
 (tn "substring immutable")
 (assert-error  (tn) (lambda () (substring "foo" 0 -1)))
 (assert-equal? (tn) ""    (substring "foo" 0 0))
@@ -163,36 +133,6 @@
                       (substring (cp "abcde") -1 -1)))
 (assert-error  (tn) (lambda ()
                       (substring (cp "abcde") 2 1)))
-
-(tn "string-append immutable")
-(assert-equal? (tn) ""       (string-append ""))
-(assert-equal? (tn) ""       (string-append "" ""))
-(assert-equal? (tn) ""       (string-append "" "" ""))
-(assert-equal? (tn) "a"      (string-append "a"))
-(assert-equal? (tn) "ab"     (string-append "a" "b"))
-(assert-equal? (tn) "abc"    (string-append "a" "b" "c"))
-(assert-equal? (tn) "ab"     (string-append "ab"))
-(assert-equal? (tn) "abcd"   (string-append "ab" "cd"))
-(assert-equal? (tn) "abcdef" (string-append "ab" "cd" "ef"))
-(tn "string-append mutable")
-(assert-equal? (tn) ""       (string-append (cp "")))
-(assert-equal? (tn) ""       (string-append (cp "") (cp "")))
-(assert-equal? (tn) ""       (string-append (cp "") (cp "") (cp "")))
-(assert-equal? (tn) "a"      (string-append (cp "a")))
-(assert-equal? (tn) "ab"     (string-append (cp "a") (cp "b")))
-(assert-equal? (tn) "abc"    (string-append (cp "a") (cp "b") (cp "c")))
-(assert-equal? (tn) "ab"     (string-append (cp "ab")))
-(assert-equal? (tn) "abcd"   (string-append (cp "ab") (cp "cd")))
-(assert-equal? (tn) "abcdef" (string-append (cp "ab") (cp "cd") (cp "ef")))
-(tn "string-append mixed")
-(assert-equal? (tn) ""    (string-append (cp "") ""))
-(assert-equal? (tn) "ab"  (string-append (cp "a") "b"))
-(assert-equal? (tn) "abc" (string-append "a" (cp "b") (cp "c")))
-(assert-equal? (tn) "abc" (string-append (cp "a") "b" (cp "c")))
-(assert-equal? (tn) "abc" (string-append (cp "a") (cp "b") "c"))
-(assert-equal? (tn) "abc" (string-append "a" "b" (cp "c")))
-(assert-equal? (tn) "abc" (string-append "a" (cp "b") "c"))
-(assert-equal? (tn) "abc" (string-append (cp "a") "b" "c"))
 
 (tn "string->list immutable")
 (assert-equal? (tn) '()                (string->list ""))
@@ -272,11 +212,6 @@
                  (string-fill! tmpstr #\\)
                  tmpstr))
 
-(tn "string-copy")
-(assert-equal? (tn) ""   (string-copy ""))
-(assert-equal? (tn) "a"  (string-copy "a"))
-(assert-equal? (tn) "ab" (string-copy "ab"))
-
 (tn "symbol->string")
 (assert-equal? (tn) "a"  (symbol->string 'a))
 (assert-equal? (tn) "ab" (symbol->string 'ab))
@@ -311,9 +246,7 @@
 
 ;; R6RS(SRFI-75) compliant
 (tn "R6RS escape sequence")
-;;(assert-equal? (tn) (integer->string 0)         "\x00")  ;; 0
-;;(assert-equal? (tn) (list->string '(#\nul))     "\x00")  ;; 0
-;;(assert-equal? (tn) '(#\nul)  (string->list    "\x00"))  ;; 0
+;; See also test-string-null.scm for "\x00" tests
 (assert-equal? (tn) (integer->string 7)           "\a")  ;; 97
 (assert-equal? (tn) (list->string '(#\alarm))     "\a")  ;; 97
 (assert-equal? (tn) '(#\alarm)  (string->list    "\a"))  ;; 97
@@ -437,7 +370,7 @@
 
 ;; raw control chars
 (tn "raw control char in string literal")
-;;(assert-equal? (tn) (integer->string   0) " ")  ;; 0
+;; See also test-string-null.scm for " " (charcode 0) test
 (assert-equal? (tn) (integer->string   1) "")  ;; 1
 (assert-equal? (tn) (integer->string   2) "")  ;; 2
 (assert-equal? (tn) (integer->string   3) "")  ;; 3
@@ -474,7 +407,7 @@
 
 ;; escaped raw control chars
 (tn "escaped raw control char in string literal")
-;;(assert-parse-error (tn) "\"\\ \"")  ;; 0  ;; cannot read by string port
+;; See also test-string-null.scm for " " (charcode 0) test
 (assert-parse-error (tn) "\"\\\"")  ;; 1
 (assert-parse-error (tn) "\"\\\"")  ;; 2
 (assert-parse-error (tn) "\"\\\"")  ;; 3
