@@ -33,117 +33,108 @@
 (load "./test/unittest.scm")
 
 (define tn test-name)
+(define cp string-copy)
 
 ;;
-;; All procedures which take the string as argument is tested with
-;; both immutable string and mutable string.
+;; All procedures that take a string as argument are tested with
+;; both immutable and mutable string.
 ;;
 ;; See "3.4 Storage model" of R5RS
 ;;
 
 
-;; check string?
-;;;; immutable
-(assert-true "string? immutable" (string? ""))
-(assert-true "string? immutable" (string? "abcde"))
-(assert-true "string? immutable" (string? (symbol->string 'foo)))
-;;;; mutable
-(assert-true "string? mutable" (string? (string-copy "")))
-(assert-true "string? mutable" (string? (string-copy "abcde")))
+(tn "string? immutable")
+(assert-true (tn) (string? ""))
+(assert-true (tn) (string? "abcde"))
+(assert-true (tn) (string? (symbol->string 'foo)))
+(tn "string? mutable")
+(assert-true (tn) (string? (cp "")))
+(assert-true (tn) (string? (cp "abcde")))
 
+(tn "make-string")
+(assert-equal? (tn) ""   (make-string 0))
+(assert-equal? (tn) " "  (make-string 1))
+(assert-equal? (tn) "  " (make-string 2))
+(assert-equal? (tn) ""   (make-string 0 #\a))
+(assert-equal? (tn) "a"  (make-string 1 #\a))
+(assert-equal? (tn) "aa" (make-string 2 #\a))
 
-;; check make-string
-(assert-equal? "make-string check" ""   (make-string 0))
-(assert-equal? "make-string check" " "  (make-string 1))
-(assert-equal? "make-string check" "  " (make-string 2))
-(assert-equal? "make-string check" ""   (make-string 0 #\a))
-(assert-equal? "make-string check" "a"  (make-string 1 #\a))
-(assert-equal? "make-string check" "aa" (make-string 2 #\a))
+(tn "string-ref immutable")
+(assert-equal? (tn) #\a (string-ref "abcde" 0))
+(assert-equal? (tn) #\e (string-ref "abcde" 4))
+(assert-error  (tn) (lambda ()
+                      (string-ref "abcde" -1)))
+(assert-error  (tn) (lambda ()
+                      (string-ref "abcde" 5)))
+(tn "string-ref mutable")
+(assert-equal? (tn) #\a (string-ref (cp "abcde") 0))
+(assert-equal? (tn) #\e (string-ref (cp "abcde") 4))
+(assert-error  (tn) (lambda ()
+                      (string-ref (cp "abcde") -1)))
+(assert-error  (tn) (lambda ()
+                      (string-ref (cp "abcde") 5)))
 
-
-;; check string-ref
-;;;; immutable
-(assert-equal? "string-ref immutable" #\a (string-ref "abcde" 0))
-(assert-equal? "string-ref immutable" #\e (string-ref "abcde" 4))
-(assert-error  "string-ref immutable" (lambda ()
-					(string-ref "abcde" -1)))
-(assert-error  "string-ref immutable" (lambda ()
-					(string-ref "abcde" 5)))
-;;;; mutable
-(assert-equal? "string-ref mutable" #\a (string-ref (string-copy "abcde") 0))
-(assert-equal? "string-ref mutable" #\e (string-ref (string-copy "abcde") 4))
-(assert-error  "string-ref mutable" (lambda ()
-				      (string-ref (string-copy "abcde") -1)))
-(assert-error  "string-ref mutable" (lambda ()
-				      (string-ref (string-copy "abcde") 5)))
-
-
-;; check string-set!
-;;;; immutable
-(assert-error "string-set! immutable" (lambda ()
-					(string-set! "foo" 0 #\b)))
-(assert-error "string-set! immutable" (lambda ()
-					(string-set! (symbol->string 'foo) 0 #\b)))
-(assert-error "string-set! immutable" (lambda ()
-					(define immutable-str "foo")
-					(string-set! immutable-str 0 #\b)
-					immutable-str))
-;;;; mutable
-(assert-equal? "string-set! mutable" "zbcdef"
+(tn "string-set! immutable")
+(assert-error (tn) (lambda ()
+                     (string-set! "foo" 0 #\b)))
+(assert-error (tn) (lambda ()
+                     (string-set! (symbol->string 'foo) 0 #\b)))
+(assert-error (tn) (lambda ()
+                     (define immutable-str "foo")
+                     (string-set! immutable-str 0 #\b)
+                     immutable-str))
+(tn "string-set! mutable")
+(assert-equal? (tn)
+               "zbcdef"
 	       (begin
-		 (define tmpstr (string-copy "abcdef"))
+		 (define tmpstr (cp "abcdef"))
 		 (string-set! tmpstr 0 #\z)
 		 tmpstr))
-(assert-equal? "string-set! mutable" "abzdef"
+(assert-equal? (tn)
+               "abzdef"
 	       (begin
-		 (define tmpstr (string-copy "abcdef"))
+		 (define tmpstr (cp "abcdef"))
 		 (string-set! tmpstr 2 #\z)
 		 tmpstr))
-(assert-equal? "string-set! mutable" "abcdez"
+(assert-equal? (tn)
+               "abcdez"
 	       (begin
-		 (define tmpstr (string-copy "abcdef"))
+		 (define tmpstr (cp "abcdef"))
 		 (string-set! tmpstr 5 #\z)
 		 tmpstr))
-(assert-error  "string-set! mutable" (lambda ()
-				       (string-set! (string-copy "abcdef") -1 #\z)))
-(assert-error  "string-set! mutable" (lambda ()
-				       (string-set! (string-copy "abcdef")  6 #\z)))
+(assert-error  (tn) (lambda ()
+                      (string-set! (cp "abcdef") -1 #\z)))
+(assert-error  (tn) (lambda ()
+                      (string-set! (cp "abcdef")  6 #\z)))
 
+(tn "string-length immutable")
+(assert-equal? (tn) 0 (string-length ""))
+(assert-equal? (tn) 5 (string-length "abcde"))
+(assert-equal? (tn) 1 (string-length "\\"))
+(assert-equal? (tn) 2 (string-length "\\\\"))
+(assert-equal? (tn) 3 (string-length "\\\\\\"))
+(tn "string-length mutable")
+(assert-equal? (tn) 0 (string-length (cp "")))
+(assert-equal? (tn) 5 (string-length (cp "abcde")))
+(assert-equal? (tn) 1 (string-length (cp "\\")))
+(assert-equal? (tn) 2 (string-length (cp "\\\\")))
+(assert-equal? (tn) 3 (string-length (cp "\\\\\\")))
 
-;; check string-length
-;;;; immutable
-(assert-equal? "string-length immutable" 0 (string-length ""))
-(assert-equal? "string-length immutable" 5 (string-length "abcde"))
-(assert-equal? "string-length immutable" 1 (string-length "\\"))
-(assert-equal? "string-length immutable" 2 (string-length "\\\\"))
-(assert-equal? "string-length immutable" 3 (string-length "\\\\\\"))
-;;;; mutable
-(assert-equal? "string-length mutable" 0 (string-length (string-copy "")))
-(assert-equal? "string-length mutable" 5 (string-length (string-copy "abcde")))
-(assert-equal? "string-length mutable" 1 (string-length (string-copy "\\")))
-(assert-equal? "string-length mutable" 2 (string-length (string-copy "\\\\")))
-(assert-equal? "string-length mutable" 3 (string-length (string-copy "\\\\\\")))
+(tn "string=? immutable")
+(assert-true (tn) (string=? "" ""))
+(assert-true (tn) (string=? "abcde" "abcde"))
+(assert-true (tn) (string=? "foo" "foo"))
+(assert-true (tn) (string=? "foo" (symbol->string 'foo)))
+(assert-true (tn) (string=? (symbol->string 'foo) "foo"))
+(assert-true (tn) (string=? (symbol->string 'foo) (symbol->string 'foo)))
+(tn "string=? mutable")
+(assert-true (tn) (string=? (cp "") (cp "")))
+(assert-true (tn) (string=? (cp "foo") (cp "foo")))
+(tn "string=? mixed")
+(assert-true (tn) (string=? (cp "") ""))
+(assert-true (tn) (string=? (cp "foo") "foo"))
+(assert-true (tn) (string=? (cp "foo") (symbol->string 'foo)))
 
-
-;; string=? check
-;;;; immutable
-(assert-true "string=? immutable" (string=? "" ""))
-(assert-true "string=? immutable" (string=? "abcde" "abcde"))
-(assert-true "string=? immutable" (string=? "foo" "foo"))
-(assert-true "string=? immutable" (string=? "foo" (symbol->string 'foo)))
-(assert-true "string=? immutable" (string=? (symbol->string 'foo) "foo"))
-(assert-true "string=? immutable" (string=? (symbol->string 'foo) (symbol->string 'foo)))
-;;;; mutable
-(assert-true "string=? mutable" (string=? (string-copy "") (string-copy "")))
-(assert-true "string=? mutable" (string=? (string-copy "foo") (string-copy "foo")))
-;;;; mixed
-(assert-true "string=? mixed" (string=? (string-copy "") ""))
-(assert-true "string=? mixed" (string=? (string-copy "foo") "foo"))
-(assert-true "string=? mixed" (string=? (string-copy "foo") (symbol->string 'foo)))
-
-
-;; substring check
-;;;; immutable
 (tn "substring immutable")
 (assert-error  (tn) (lambda () (substring "foo" 0 -1)))
 (assert-equal? (tn) ""    (substring "foo" 0 0))
@@ -159,144 +150,144 @@
 (assert-error  (tn) (lambda () (substring "foo" 4 3)))
 (assert-error  (tn) (lambda () (substring "foo" 4 4)))
 (assert-equal? (tn) "foo" (substring (symbol->string 'foo) 0 3))
-;;;; mutable
-(assert-equal? "substring mutable" ""    (substring (string-copy "abcde") 0 0))
-(assert-equal? "substring mutable" "a"   (substring (string-copy "abcde") 0 1))
-(assert-equal? "substring mutable" "bc"  (substring (string-copy "abcde") 1 3))
-(assert-equal? "substring mutable" "bcd" (substring (string-copy "abcde") 1 4))
-(assert-error  "substring mutable" (lambda ()
-				     (substring (string-copy "abcde") 1 -1)))
-(assert-error  "substring mutable" (lambda ()
-				     (substring (string-copy "abcde") -1 1)))
-(assert-error  "substring mutable" (lambda ()
-				     (substring (string-copy "abcde") -1 -1)))
-(assert-error  "substring mutable" (lambda ()
-				     (substring (string-copy "abcde") 2 1)))
+(tn "substring mutable")
+(assert-equal? (tn) ""    (substring (cp "abcde") 0 0))
+(assert-equal? (tn) "a"   (substring (cp "abcde") 0 1))
+(assert-equal? (tn) "bc"  (substring (cp "abcde") 1 3))
+(assert-equal? (tn) "bcd" (substring (cp "abcde") 1 4))
+(assert-error  (tn) (lambda ()
+                      (substring (cp "abcde") 1 -1)))
+(assert-error  (tn) (lambda ()
+                      (substring (cp "abcde") -1 1)))
+(assert-error  (tn) (lambda ()
+                      (substring (cp "abcde") -1 -1)))
+(assert-error  (tn) (lambda ()
+                      (substring (cp "abcde") 2 1)))
 
+(tn "string-append immutable")
+(assert-equal? (tn) ""       (string-append ""))
+(assert-equal? (tn) ""       (string-append "" ""))
+(assert-equal? (tn) ""       (string-append "" "" ""))
+(assert-equal? (tn) "a"      (string-append "a"))
+(assert-equal? (tn) "ab"     (string-append "a" "b"))
+(assert-equal? (tn) "abc"    (string-append "a" "b" "c"))
+(assert-equal? (tn) "ab"     (string-append "ab"))
+(assert-equal? (tn) "abcd"   (string-append "ab" "cd"))
+(assert-equal? (tn) "abcdef" (string-append "ab" "cd" "ef"))
+(tn "string-append mutable")
+(assert-equal? (tn) ""       (string-append (cp "")))
+(assert-equal? (tn) ""       (string-append (cp "") (cp "")))
+(assert-equal? (tn) ""       (string-append (cp "") (cp "") (cp "")))
+(assert-equal? (tn) "a"      (string-append (cp "a")))
+(assert-equal? (tn) "ab"     (string-append (cp "a") (cp "b")))
+(assert-equal? (tn) "abc"    (string-append (cp "a") (cp "b") (cp "c")))
+(assert-equal? (tn) "ab"     (string-append (cp "ab")))
+(assert-equal? (tn) "abcd"   (string-append (cp "ab") (cp "cd")))
+(assert-equal? (tn) "abcdef" (string-append (cp "ab") (cp "cd") (cp "ef")))
+(tn "string-append mixed")
+(assert-equal? (tn) ""    (string-append (cp "") ""))
+(assert-equal? (tn) "ab"  (string-append (cp "a") "b"))
+(assert-equal? (tn) "abc" (string-append "a" (cp "b") (cp "c")))
+(assert-equal? (tn) "abc" (string-append (cp "a") "b" (cp "c")))
+(assert-equal? (tn) "abc" (string-append (cp "a") (cp "b") "c"))
+(assert-equal? (tn) "abc" (string-append "a" "b" (cp "c")))
+(assert-equal? (tn) "abc" (string-append "a" (cp "b") "c"))
+(assert-equal? (tn) "abc" (string-append (cp "a") "b" "c"))
 
-;; string-append check
-;;;; immutable
-(assert-equal? "string-append immutable" ""       (string-append ""))
-(assert-equal? "string-append immutable" ""       (string-append "" ""))
-(assert-equal? "string-append immutable" ""       (string-append "" "" ""))
-(assert-equal? "string-append immutable" "a"      (string-append "a"))
-(assert-equal? "string-append immutable" "ab"     (string-append "a" "b"))
-(assert-equal? "string-append immutable" "abc"    (string-append "a" "b" "c"))
-(assert-equal? "string-append immutable" "ab"     (string-append "ab"))
-(assert-equal? "string-append immutable" "abcd"   (string-append "ab" "cd"))
-(assert-equal? "string-append immutable" "abcdef" (string-append "ab" "cd" "ef"))
-;;;; mutable
-(assert-equal? "string-append mutable" ""       (string-append (string-copy "")))
-(assert-equal? "string-append mutable" ""       (string-append (string-copy "") (string-copy "")))
-(assert-equal? "string-append mutable" ""       (string-append (string-copy "") (string-copy "") (string-copy "")))
-(assert-equal? "string-append mutable" "a"      (string-append (string-copy "a")))
-(assert-equal? "string-append mutable" "ab"     (string-append (string-copy "a") (string-copy "b")))
-(assert-equal? "string-append mutable" "abc"    (string-append (string-copy "a") (string-copy "b") (string-copy "c")))
-(assert-equal? "string-append mutable" "ab"     (string-append (string-copy "ab")))
-(assert-equal? "string-append mutable" "abcd"   (string-append (string-copy "ab") (string-copy "cd")))
-(assert-equal? "string-append mutable" "abcdef" (string-append (string-copy "ab") (string-copy "cd") (string-copy "ef")))
-;;; mixed
-(assert-equal? "string-append mixed" ""    (string-append (string-copy "") ""))
-(assert-equal? "string-append mixed" "ab"  (string-append (string-copy "a") "b"))
-(assert-equal? "string-append mixed" "abc" (string-append "a" (string-copy "b") (string-copy "c")))
-(assert-equal? "string-append mixed" "abc" (string-append (string-copy "a") "b" (string-copy "c")))
-(assert-equal? "string-append mixed" "abc" (string-append (string-copy "a") (string-copy "b") "c"))
-(assert-equal? "string-append mixed" "abc" (string-append "a" "b" (string-copy "c")))
-(assert-equal? "string-append mixed" "abc" (string-append "a" (string-copy "b") "c"))
-(assert-equal? "string-append mixed" "abc" (string-append (string-copy "a") "b" "c"))
+(tn "string->list immutable")
+(assert-equal? (tn) '()                (string->list ""))
+(assert-equal? (tn) '(#\\)             (string->list "\\"))
+(assert-equal? (tn) '(#\\ #\\)         (string->list "\\\\"))
+(assert-equal? (tn) '(#\\ #\\ #\\)     (string->list "\\\\\\"))
+;;(assert-equal? (tn) '(#\tab)           (string->list "\t"))
+(assert-equal? (tn) '(#\	)      (string->list "\t"))
+;;(assert-equal? (tn) '(#\return)        (string->list "\r"))
+(assert-equal? (tn) '(#\)            (string->list "\r"))
+(assert-equal? (tn) '(#\ #\)       (string->list "\r\r"))
+(assert-equal? (tn) '(#\newline)           (string->list "\n"))
+(assert-equal? (tn) '(#\newline #\newline) (string->list "\n\n"))
+(assert-equal? (tn) '(#\space)         (string->list " "))
+(assert-equal? (tn) '(#\space #\space) (string->list "  "))
+(assert-equal? (tn) '(#\")             (string->list "\""))
+(assert-equal? (tn) '(#\" #\")         (string->list "\"\""))
+(tn "string->list mutable")
+(assert-equal? (tn) '()                    (string->list (cp "")))
+(assert-equal? (tn) '(#\\)                 (string->list (cp "\\")))
+(assert-equal? (tn) '(#\\ #\\)             (string->list (cp "\\\\")))
+(assert-equal? (tn) '(#\\ #\\ #\\)         (string->list (cp "\\\\\\")))
+;;(assert-equal? (tn) '(#\tab)           (string->list (cp "\t")))
+(assert-equal? (tn) '(#\	)            (string->list (cp "\t")))
+;;(assert-equal? (tn) '(#\return)        (string->list (cp "\r")))
+(assert-equal? (tn) '(#\)                (string->list (cp "\r")))
+(assert-equal? (tn) '(#\ #\)           (string->list (cp "\r\r")))
+(assert-equal? (tn) '(#\newline)           (string->list (cp "\n")))
+(assert-equal? (tn) '(#\newline #\newline) (string->list (cp "\n\n")))
+(assert-equal? (tn) '(#\space)             (string->list (cp " ")))
+(assert-equal? (tn) '(#\space #\space)     (string->list (cp "  ")))
+(assert-equal? (tn) '(#\")                 (string->list (cp "\"")))
+(assert-equal? (tn) '(#\" #\")             (string->list (cp "\"\"")))
 
-
-;; string->list
-;;;; immutable
-(assert-equal? "string->list immutable" '()                (string->list ""))
-(assert-equal? "string->list immutable" '(#\\)             (string->list "\\"))
-(assert-equal? "string->list immutable" '(#\\ #\\)         (string->list "\\\\"))
-(assert-equal? "string->list immutable" '(#\\ #\\ #\\)     (string->list "\\\\\\"))
-;;(assert-equal? "string->list immutable" '(#\tab)           (string->list "\t"))
-(assert-equal? "string->list immutable" '(#\	)      (string->list "\t"))
-;;(assert-equal? "string->list immutable" '(#\return)        (string->list "\r"))
-(assert-equal? "string->list immutable" '(#\)            (string->list "\r"))
-(assert-equal? "string->list immutable" '(#\ #\)       (string->list "\r\r"))
-(assert-equal? "string->list immutable" '(#\newline)           (string->list "\n"))
-(assert-equal? "string->list immutable" '(#\newline #\newline) (string->list "\n\n"))
-(assert-equal? "string->list immutable" '(#\space)         (string->list " "))
-(assert-equal? "string->list immutable" '(#\space #\space) (string->list "  "))
-(assert-equal? "string->list immutable" '(#\")             (string->list "\""))
-(assert-equal? "string->list immutable" '(#\" #\")         (string->list "\"\""))
-;;;; mutable
-(assert-equal? "string->list mutable" '()                    (string->list (string-copy "")))
-(assert-equal? "string->list mutable" '(#\\)                 (string->list (string-copy "\\")))
-(assert-equal? "string->list mutable" '(#\\ #\\)             (string->list (string-copy "\\\\")))
-(assert-equal? "string->list mutable" '(#\\ #\\ #\\)         (string->list (string-copy "\\\\\\")))
-;;(assert-equal? "string->list mutable" '(#\tab)           (string->list (string-copy "\t")))
-(assert-equal? "string->list mutable" '(#\	)            (string->list (string-copy "\t")))
-;;(assert-equal? "string->list mutable" '(#\return)        (string->list (string-copy "\r")))
-(assert-equal? "string->list mutable" '(#\)                (string->list (string-copy "\r")))
-(assert-equal? "string->list mutable" '(#\ #\)           (string->list (string-copy "\r\r")))
-(assert-equal? "string->list mutable" '(#\newline)           (string->list (string-copy "\n")))
-(assert-equal? "string->list mutable" '(#\newline #\newline) (string->list (string-copy "\n\n")))
-(assert-equal? "string->list mutable" '(#\space)             (string->list (string-copy " ")))
-(assert-equal? "string->list mutable" '(#\space #\space)     (string->list (string-copy "  ")))
-(assert-equal? "string->list mutable" '(#\")                 (string->list (string-copy "\"")))
-(assert-equal? "string->list mutable" '(#\" #\")             (string->list (string-copy "\"\"")))
-
-;; list->string
-(assert-equal? "list->string check" ""     (list->string '()))
-(assert-equal? "list->string check" "\\"     (list->string '(#\\)))
-(assert-equal? "list->string check" "\\\\"   (list->string '(#\\ #\\)))
-(assert-equal? "list->string check" "\\\\\\" (list->string '(#\\ #\\ #\\)))
-(assert-equal? "list->string check" "\t" (list->string '(#\	)))
-;;(assert-equal? "list->string check" "\t" (list->string '(#\tab)))
-(assert-equal? "list->string check" "\r" (list->string '(#\)))
-;;(assert-equal? "list->string check" "\r" (list->string '(#\return)))
-(assert-equal? "list->string check" "\n" (list->string '(#\
+(tn "list->string")
+(assert-equal? (tn) ""     (list->string '()))
+(assert-equal? (tn) "\\"     (list->string '(#\\)))
+(assert-equal? (tn) "\\\\"   (list->string '(#\\ #\\)))
+(assert-equal? (tn) "\\\\\\" (list->string '(#\\ #\\ #\\)))
+(assert-equal? (tn) "\t" (list->string '(#\	)))
+;;(assert-equal? (tn) "\t" (list->string '(#\tab)))
+(assert-equal? (tn) "\r" (list->string '(#\)))
+;;(assert-equal? (tn) "\r" (list->string '(#\return)))
+(assert-equal? (tn) "\n" (list->string '(#\
 )))
-(assert-equal? "list->string check" "\n" (list->string '(#\newline)))
-(assert-equal? "list->string check" " " (list->string '(#\ )))
-(assert-equal? "list->string check" " " (list->string '(#\space)))
-(assert-equal? "list->string check" " " (list->string '(#\ )))
-(assert-equal? "list->string check" "\"" (list->string '(#\")))
-(assert-equal? "list->string check" "\"a\"" (list->string '(#\" #\a #\")))
+(assert-equal? (tn) "\n" (list->string '(#\newline)))
+(assert-equal? (tn) " " (list->string '(#\ )))
+(assert-equal? (tn) " " (list->string '(#\space)))
+(assert-equal? (tn) " " (list->string '(#\ )))
+(assert-equal? (tn) "\"" (list->string '(#\")))
+(assert-equal? (tn) "\"a\"" (list->string '(#\" #\a #\")))
 
-;; string-fill!
-;;;; immutable
-(assert-error "string-fill! immutable" (lambda ()
-					 (string-fill! "" #\j)))
-(assert-error "string-fill! immutable" (lambda ()
-					 (string-fill! "foo" #\j)))
-(assert-error "string-fill! immutable" (lambda ()
-					 (string-fill! (string->symbol 'foo) #\j)))
-;;;; mutable
-(assert-equal? "string-fill! mutable" "" (begin
-					   (define tmpstr (string-copy ""))
-					   (string-fill! tmpstr #\j)
-					   tmpstr))
-(assert-equal? "string-fill! mutable" "jjjjj" (begin
-						(define tmpstr (string-copy "abcde"))
-						(string-fill! tmpstr #\j)
-						tmpstr))
-(assert-equal? "string-fill! mutable" "\\\\\\" (begin
-						 (define tmpstr (string-copy "abc"))
-						 (string-fill! tmpstr #\\)
-						 tmpstr))
+(tn "string-fill! immutable")
+(assert-error (tn) (lambda ()
+                     (string-fill! "" #\j)))
+(assert-error (tn) (lambda ()
+                     (string-fill! "foo" #\j)))
+(assert-error (tn) (lambda ()
+                     (string-fill! (string->symbol 'foo) #\j)))
+(tn "string-fill! mutable")
+(assert-equal? (tn)
+               ""
+               (begin
+                 (define tmpstr (cp ""))
+                 (string-fill! tmpstr #\j)
+                 tmpstr))
+(assert-equal? (tn)
+               "jjjjj"
+               (begin
+                 (define tmpstr (cp "abcde"))
+                 (string-fill! tmpstr #\j)
+                 tmpstr))
+(assert-equal? (tn)
+               "\\\\\\"
+               (begin
+                 (define tmpstr (cp "abc"))
+                 (string-fill! tmpstr #\\)
+                 tmpstr))
 
-;; string-copy
-(assert-equal? "string copy check" ""   (string-copy ""))
-(assert-equal? "string copy check" "a"  (string-copy "a"))
-(assert-equal? "string copy check" "ab" (string-copy "ab"))
+(tn "string-copy")
+(assert-equal? (tn) ""   (string-copy ""))
+(assert-equal? (tn) "a"  (string-copy "a"))
+(assert-equal? (tn) "ab" (string-copy "ab"))
 
-;; symbol->string
-(assert-equal? "symbol->string check" "a"  (symbol->string 'a))
-(assert-equal? "symbol->string check" "ab" (symbol->string 'ab))
+(tn "symbol->string")
+(assert-equal? (tn) "a"  (symbol->string 'a))
+(assert-equal? (tn) "ab" (symbol->string 'ab))
 
-;; string->symbol
 ;; TODO: need to investigate (string->symbol "") behavior
-;;;; immutable
-(assert-equal? "string->symbol immutable" 'a  (string->symbol "a"))
-(assert-equal? "string->symbol immutable" 'ab (string->symbol "ab"))
-;;;; mutable
-(assert-equal? "string->symbol mutable" 'a  (string->symbol (string-copy "a")))
-(assert-equal? "string->symbol mutable" 'ab (string->symbol (string-copy "ab")))
+(tn "string->symbol immutable")
+(assert-equal? (tn) 'a  (string->symbol "a"))
+(assert-equal? (tn) 'ab (string->symbol "ab"))
+(tn "string->symbol mutable")
+(assert-equal? (tn) 'a  (string->symbol (cp "a")))
+(assert-equal? (tn) 'ab (string->symbol (cp "ab")))
 
 ;;
 ;; escape sequences
@@ -307,21 +298,22 @@
     (list->string (list (integer->char i)))))
 
 ;; R5RS compliant
-(assert-equal? "R5RS escape sequence" (integer->string 34)        "\"")  ;; 34
-(assert-equal? "R5RS escape sequence" (list->string '(#\"))       "\"")  ;; 34
-(assert-equal? "R5RS escape sequence" '(#\")       (string->list "\""))  ;; 34
-(assert-equal? "R5RS escape sequence" (integer->string 92)        "\\")  ;; 92
-(assert-equal? "R5RS escape sequence" (list->string '(#\\))       "\\")  ;; 92
-(assert-equal? "R5RS escape sequence" '(#\\)       (string->list "\\"))  ;; 92
-(assert-equal? "R5RS escape sequence" (integer->string 10)        "\n")  ;; 110
-(assert-equal? "R5RS escape sequence" (list->string '(#\newline)) "\n")  ;; 110
-(assert-equal? "R5RS escape sequence" '(#\newline) (string->list "\n"))  ;; 110
+(tn "R5RS escape sequence")
+(assert-equal? (tn) (integer->string 34)        "\"")  ;; 34
+(assert-equal? (tn) (list->string '(#\"))       "\"")  ;; 34
+(assert-equal? (tn) '(#\")       (string->list "\""))  ;; 34
+(assert-equal? (tn) (integer->string 92)        "\\")  ;; 92
+(assert-equal? (tn) (list->string '(#\\))       "\\")  ;; 92
+(assert-equal? (tn) '(#\\)       (string->list "\\"))  ;; 92
+(assert-equal? (tn) (integer->string 10)        "\n")  ;; 110
+(assert-equal? (tn) (list->string '(#\newline)) "\n")  ;; 110
+(assert-equal? (tn) '(#\newline) (string->list "\n"))  ;; 110
 
 ;; R6RS(SRFI-75) compliant
 (tn "R6RS escape sequence")
-(assert-equal? (tn) (integer->string 0)         "\x00")  ;; 0
-(assert-equal? (tn) (list->string '(#\nul))     "\x00")  ;; 0
-(assert-equal? (tn) '(#\nul)  (string->list    "\x00"))  ;; 0
+;;(assert-equal? (tn) (integer->string 0)         "\x00")  ;; 0
+;;(assert-equal? (tn) (list->string '(#\nul))     "\x00")  ;; 0
+;;(assert-equal? (tn) '(#\nul)  (string->list    "\x00"))  ;; 0
 (assert-equal? (tn) (integer->string 7)           "\a")  ;; 97
 (assert-equal? (tn) (list->string '(#\alarm))     "\a")  ;; 97
 (assert-equal? (tn) '(#\alarm)  (string->list    "\a"))  ;; 97
@@ -345,106 +337,107 @@
 ;; All these conventional escape sequences should cause parse error as defined
 ;; in SRFI-75: "Any other character in a string after a backslash is an
 ;; error".
-;;                                                      "\0"   ;; 0
-(assert-parse-error "conventional escape sequence" "\"\\ \"")  ;; 32
-(assert-parse-error "conventional escape sequence" "\"\\!\"")  ;; 33
-;;                                                      "\""   ;; 34
-(assert-parse-error "conventional escape sequence" "\"\\#\"")  ;; 35
-(assert-parse-error "conventional escape sequence" "\"\\$\"")  ;; 36
-(assert-parse-error "conventional escape sequence" "\"\\%\"")  ;; 37
-(assert-parse-error "conventional escape sequence" "\"\\&\"")  ;; 38
-(assert-parse-error "conventional escape sequence" "\"\\'\"")  ;; 39
-(assert-parse-error "conventional escape sequence" "\"\\(\"")  ;; 40
-(assert-parse-error "conventional escape sequence" "\"\\)\"")  ;; 41
-(assert-parse-error "conventional escape sequence" "\"\\*\"")  ;; 42
-(assert-parse-error "conventional escape sequence" "\"\\+\"")  ;; 43
-(assert-parse-error "conventional escape sequence" "\"\\,\"")  ;; 44
-(assert-parse-error "conventional escape sequence" "\"\\-\"")  ;; 45
-(assert-parse-error "conventional escape sequence" "\"\\.\"")  ;; 46
-(assert-parse-error "conventional escape sequence" "\"\\/\"")  ;; 47
-(assert-parse-error "conventional escape sequence" "\"\\0\"")  ;; 48
-(assert-parse-error "conventional escape sequence" "\"\\1\"")  ;; 49
-(assert-parse-error "conventional escape sequence" "\"\\2\"")  ;; 50
-(assert-parse-error "conventional escape sequence" "\"\\3\"")  ;; 51
-(assert-parse-error "conventional escape sequence" "\"\\4\"")  ;; 52
-(assert-parse-error "conventional escape sequence" "\"\\5\"")  ;; 53
-(assert-parse-error "conventional escape sequence" "\"\\6\"")  ;; 54
-(assert-parse-error "conventional escape sequence" "\"\\7\"")  ;; 55
-(assert-parse-error "conventional escape sequence" "\"\\8\"")  ;; 56
-(assert-parse-error "conventional escape sequence" "\"\\9\"")  ;; 57
-(assert-parse-error "conventional escape sequence" "\"\\:\"")  ;; 58
-(assert-parse-error "conventional escape sequence" "\"\\;\"")  ;; 59
-(assert-parse-error "conventional escape sequence" "\"\\<\"")  ;; 60
-(assert-parse-error "conventional escape sequence" "\"\\=\"")  ;; 61
-(assert-parse-error "conventional escape sequence" "\"\\>\"")  ;; 62
-(assert-parse-error "conventional escape sequence" "\"\\?\"")  ;; 63
-(assert-parse-error "conventional escape sequence" "\"\\@\"")  ;; 64
-(assert-parse-error "conventional escape sequence" "\"\\A\"")  ;; 65
-(assert-parse-error "conventional escape sequence" "\"\\B\"")  ;; 66
-(assert-parse-error "conventional escape sequence" "\"\\C\"")  ;; 67
-(assert-parse-error "conventional escape sequence" "\"\\D\"")  ;; 68
-(assert-parse-error "conventional escape sequence" "\"\\E\"")  ;; 69
-(assert-parse-error "conventional escape sequence" "\"\\F\"")  ;; 70
-(assert-parse-error "conventional escape sequence" "\"\\G\"")  ;; 71
-(assert-parse-error "conventional escape sequence" "\"\\H\"")  ;; 72
-(assert-parse-error "conventional escape sequence" "\"\\I\"")  ;; 73
-(assert-parse-error "conventional escape sequence" "\"\\J\"")  ;; 74
-(assert-parse-error "conventional escape sequence" "\"\\K\"")  ;; 75
-(assert-parse-error "conventional escape sequence" "\"\\L\"")  ;; 76
-(assert-parse-error "conventional escape sequence" "\"\\M\"")  ;; 77
-(assert-parse-error "conventional escape sequence" "\"\\N\"")  ;; 78
-(assert-parse-error "conventional escape sequence" "\"\\O\"")  ;; 79
-(assert-parse-error "conventional escape sequence" "\"\\P\"")  ;; 80
-(assert-parse-error "conventional escape sequence" "\"\\Q\"")  ;; 81
-(assert-parse-error "conventional escape sequence" "\"\\R\"")  ;; 82
-(assert-parse-error "conventional escape sequence" "\"\\S\"")  ;; 83
-(assert-parse-error "conventional escape sequence" "\"\\T\"")  ;; 84
-(assert-parse-error "conventional escape sequence" "\"\\U\"")  ;; 85
-(assert-parse-error "conventional escape sequence" "\"\\V\"")  ;; 86
-(assert-parse-error "conventional escape sequence" "\"\\W\"")  ;; 87
-(assert-parse-error "conventional escape sequence" "\"\\X\"")  ;; 88
-(assert-parse-error "conventional escape sequence" "\"\\Y\"")  ;; 89
-(assert-parse-error "conventional escape sequence" "\"\\Z\"")  ;; 90
-(assert-parse-error "conventional escape sequence" "\"\\[\"")  ;; 91
-;;                                                      "\\"   ;; 92
-(assert-parse-error "conventional escape sequence" "\"\\]\"")  ;; 93
-(assert-parse-error "conventional escape sequence" "\"\\^\"")  ;; 94
-(assert-parse-error "conventional escape sequence" "\"\\_\"")  ;; 95
-(assert-parse-error "conventional escape sequence" "\"\\`\"")  ;; 96
-;;                                                      "\a"   ;; 97
-;;                                                      "\b"   ;; 98
-(assert-parse-error "conventional escape sequence" "\"\\c\"")  ;; 99
-(assert-parse-error "conventional escape sequence" "\"\\d\"")  ;; 100
-(assert-parse-error "conventional escape sequence" "\"\\e\"")  ;; 101
-;;                                                      "\f"   ;; 102
-(assert-parse-error "conventional escape sequence" "\"\\g\"")  ;; 103
-(assert-parse-error "conventional escape sequence" "\"\\h\"")  ;; 104
-(assert-parse-error "conventional escape sequence" "\"\\i\"")  ;; 105
-(assert-parse-error "conventional escape sequence" "\"\\j\"")  ;; 106
-(assert-parse-error "conventional escape sequence" "\"\\k\"")  ;; 107
-(assert-parse-error "conventional escape sequence" "\"\\l\"")  ;; 108
-(assert-parse-error "conventional escape sequence" "\"\\m\"")  ;; 109
-;;                                                      "\n"   ;; 110
-(assert-parse-error "conventional escape sequence" "\"\\o\"")  ;; 111
-(assert-parse-error "conventional escape sequence" "\"\\p\"")  ;; 112
-(assert-parse-error "conventional escape sequence" "\"\\q\"")  ;; 113
-;;                                                      "\r"   ;; 114
-(assert-parse-error "conventional escape sequence" "\"\\s\"")  ;; 115
-;;                                                      "\t"   ;; 116
-(assert-parse-error "conventional escape sequence" "\"\\u\"")  ;; 117
-;;                                                      "\v"   ;; 118
-(assert-parse-error "conventional escape sequence" "\"\\w\"")  ;; 119
-(assert-parse-error "conventional escape sequence" "\"\\x\"")  ;; 120
-(assert-parse-error "conventional escape sequence" "\"\\y\"")  ;; 121
-(assert-parse-error "conventional escape sequence" "\"\\z\"")  ;; 122
-(assert-parse-error "conventional escape sequence" "\"\\{\"")  ;; 123
-;;                                                      "\|"   ;; 124
-(assert-parse-error "conventional escape sequence" "\"\\}\"")  ;; 125
-(assert-parse-error "conventional escape sequence" "\"\\~\"")  ;; 126
+(tn "conventional escape sequence")
+;;                            "\0"   ;; 0
+(assert-parse-error (tn) "\"\\ \"")  ;; 32
+(assert-parse-error (tn) "\"\\!\"")  ;; 33
+;;                            "\""   ;; 34
+(assert-parse-error (tn) "\"\\#\"")  ;; 35
+(assert-parse-error (tn) "\"\\$\"")  ;; 36
+(assert-parse-error (tn) "\"\\%\"")  ;; 37
+(assert-parse-error (tn) "\"\\&\"")  ;; 38
+(assert-parse-error (tn) "\"\\'\"")  ;; 39
+(assert-parse-error (tn) "\"\\(\"")  ;; 40
+(assert-parse-error (tn) "\"\\)\"")  ;; 41
+(assert-parse-error (tn) "\"\\*\"")  ;; 42
+(assert-parse-error (tn) "\"\\+\"")  ;; 43
+(assert-parse-error (tn) "\"\\,\"")  ;; 44
+(assert-parse-error (tn) "\"\\-\"")  ;; 45
+(assert-parse-error (tn) "\"\\.\"")  ;; 46
+(assert-parse-error (tn) "\"\\/\"")  ;; 47
+(assert-parse-error (tn) "\"\\0\"")  ;; 48
+(assert-parse-error (tn) "\"\\1\"")  ;; 49
+(assert-parse-error (tn) "\"\\2\"")  ;; 50
+(assert-parse-error (tn) "\"\\3\"")  ;; 51
+(assert-parse-error (tn) "\"\\4\"")  ;; 52
+(assert-parse-error (tn) "\"\\5\"")  ;; 53
+(assert-parse-error (tn) "\"\\6\"")  ;; 54
+(assert-parse-error (tn) "\"\\7\"")  ;; 55
+(assert-parse-error (tn) "\"\\8\"")  ;; 56
+(assert-parse-error (tn) "\"\\9\"")  ;; 57
+(assert-parse-error (tn) "\"\\:\"")  ;; 58
+(assert-parse-error (tn) "\"\\;\"")  ;; 59
+(assert-parse-error (tn) "\"\\<\"")  ;; 60
+(assert-parse-error (tn) "\"\\=\"")  ;; 61
+(assert-parse-error (tn) "\"\\>\"")  ;; 62
+(assert-parse-error (tn) "\"\\?\"")  ;; 63
+(assert-parse-error (tn) "\"\\@\"")  ;; 64
+(assert-parse-error (tn) "\"\\A\"")  ;; 65
+(assert-parse-error (tn) "\"\\B\"")  ;; 66
+(assert-parse-error (tn) "\"\\C\"")  ;; 67
+(assert-parse-error (tn) "\"\\D\"")  ;; 68
+(assert-parse-error (tn) "\"\\E\"")  ;; 69
+(assert-parse-error (tn) "\"\\F\"")  ;; 70
+(assert-parse-error (tn) "\"\\G\"")  ;; 71
+(assert-parse-error (tn) "\"\\H\"")  ;; 72
+(assert-parse-error (tn) "\"\\I\"")  ;; 73
+(assert-parse-error (tn) "\"\\J\"")  ;; 74
+(assert-parse-error (tn) "\"\\K\"")  ;; 75
+(assert-parse-error (tn) "\"\\L\"")  ;; 76
+(assert-parse-error (tn) "\"\\M\"")  ;; 77
+(assert-parse-error (tn) "\"\\N\"")  ;; 78
+(assert-parse-error (tn) "\"\\O\"")  ;; 79
+(assert-parse-error (tn) "\"\\P\"")  ;; 80
+(assert-parse-error (tn) "\"\\Q\"")  ;; 81
+(assert-parse-error (tn) "\"\\R\"")  ;; 82
+(assert-parse-error (tn) "\"\\S\"")  ;; 83
+(assert-parse-error (tn) "\"\\T\"")  ;; 84
+(assert-parse-error (tn) "\"\\U\"")  ;; 85
+(assert-parse-error (tn) "\"\\V\"")  ;; 86
+(assert-parse-error (tn) "\"\\W\"")  ;; 87
+(assert-parse-error (tn) "\"\\X\"")  ;; 88
+(assert-parse-error (tn) "\"\\Y\"")  ;; 89
+(assert-parse-error (tn) "\"\\Z\"")  ;; 90
+(assert-parse-error (tn) "\"\\[\"")  ;; 91
+;;                            "\\"   ;; 92
+(assert-parse-error (tn) "\"\\]\"")  ;; 93
+(assert-parse-error (tn) "\"\\^\"")  ;; 94
+(assert-parse-error (tn) "\"\\_\"")  ;; 95
+(assert-parse-error (tn) "\"\\`\"")  ;; 96
+;;                            "\a"   ;; 97
+;;                            "\b"   ;; 98
+(assert-parse-error (tn) "\"\\c\"")  ;; 99
+(assert-parse-error (tn) "\"\\d\"")  ;; 100
+(assert-parse-error (tn) "\"\\e\"")  ;; 101
+;;                            "\f"   ;; 102
+(assert-parse-error (tn) "\"\\g\"")  ;; 103
+(assert-parse-error (tn) "\"\\h\"")  ;; 104
+(assert-parse-error (tn) "\"\\i\"")  ;; 105
+(assert-parse-error (tn) "\"\\j\"")  ;; 106
+(assert-parse-error (tn) "\"\\k\"")  ;; 107
+(assert-parse-error (tn) "\"\\l\"")  ;; 108
+(assert-parse-error (tn) "\"\\m\"")  ;; 109
+;;                            "\n"   ;; 110
+(assert-parse-error (tn) "\"\\o\"")  ;; 111
+(assert-parse-error (tn) "\"\\p\"")  ;; 112
+(assert-parse-error (tn) "\"\\q\"")  ;; 113
+;;                            "\r"   ;; 114
+(assert-parse-error (tn) "\"\\s\"")  ;; 115
+;;                            "\t"   ;; 116
+(assert-parse-error (tn) "\"\\u\"")  ;; 117
+;;                            "\v"   ;; 118
+(assert-parse-error (tn) "\"\\w\"")  ;; 119
+(assert-parse-error (tn) "\"\\x\"")  ;; 120
+(assert-parse-error (tn) "\"\\y\"")  ;; 121
+(assert-parse-error (tn) "\"\\z\"")  ;; 122
+(assert-parse-error (tn) "\"\\{\"")  ;; 123
+;;                            "\|"   ;; 124
+(assert-parse-error (tn) "\"\\}\"")  ;; 125
+(assert-parse-error (tn) "\"\\~\"")  ;; 126
 
 ;; raw control chars
 (tn "raw control char in string literal")
-(assert-equal? (tn) (integer->string   0) " ")  ;; 0
+;;(assert-equal? (tn) (integer->string   0) " ")  ;; 0
 (assert-equal? (tn) (integer->string   1) "")  ;; 1
 (assert-equal? (tn) (integer->string   2) "")  ;; 2
 (assert-equal? (tn) (integer->string   3) "")  ;; 3
@@ -480,39 +473,40 @@
 (assert-equal? (tn) (integer->string 127) "")  ;; 127
 
 ;; escaped raw control chars
-;;(assert-parse-error "escaped raw control char in string literal" "\"\\ \"")  ;; 0  ;; cannot read by string port
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 1
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 2
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 3
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 4
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 5
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 6
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 7
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 8  ;; DON'T EDIT THIS LINE!
-(assert-parse-error "escaped raw control char in string literal" "\"\\	\"")  ;; 9
-(assert-parse-error "escaped raw control char in string literal" "\"\\
+(tn "escaped raw control char in string literal")
+;;(assert-parse-error (tn) "\"\\ \"")  ;; 0  ;; cannot read by string port
+(assert-parse-error (tn) "\"\\\"")  ;; 1
+(assert-parse-error (tn) "\"\\\"")  ;; 2
+(assert-parse-error (tn) "\"\\\"")  ;; 3
+(assert-parse-error (tn) "\"\\\"")  ;; 4
+(assert-parse-error (tn) "\"\\\"")  ;; 5
+(assert-parse-error (tn) "\"\\\"")  ;; 6
+(assert-parse-error (tn) "\"\\\"")  ;; 7
+(assert-parse-error (tn) "\"\\\"")  ;; 8  ;; DON'T EDIT THIS LINE!
+(assert-parse-error (tn) "\"\\	\"")  ;; 9
+(assert-parse-error (tn) "\"\\
 \"")  ;; 10  ;; DON'T EDIT THIS LINE!
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 11
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 12
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 13  ;; DON'T EDIT THIS LINE!
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 14
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 15
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 16
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 17
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 18
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 19
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 20
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 21
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 22
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 23
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 24
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 25  ;; DON'T EDIT THIS LINE!
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 26
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 27
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 28
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 29
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 30
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 31
-(assert-parse-error "escaped raw control char in string literal" "\"\\\"")  ;; 127
+(assert-parse-error (tn) "\"\\\"")  ;; 11
+(assert-parse-error (tn) "\"\\\"")  ;; 12
+(assert-parse-error (tn) "\"\\\"")  ;; 13  ;; DON'T EDIT THIS LINE!
+(assert-parse-error (tn) "\"\\\"")  ;; 14
+(assert-parse-error (tn) "\"\\\"")  ;; 15
+(assert-parse-error (tn) "\"\\\"")  ;; 16
+(assert-parse-error (tn) "\"\\\"")  ;; 17
+(assert-parse-error (tn) "\"\\\"")  ;; 18
+(assert-parse-error (tn) "\"\\\"")  ;; 19
+(assert-parse-error (tn) "\"\\\"")  ;; 20
+(assert-parse-error (tn) "\"\\\"")  ;; 21
+(assert-parse-error (tn) "\"\\\"")  ;; 22
+(assert-parse-error (tn) "\"\\\"")  ;; 23
+(assert-parse-error (tn) "\"\\\"")  ;; 24
+(assert-parse-error (tn) "\"\\\"")  ;; 25  ;; DON'T EDIT THIS LINE!
+(assert-parse-error (tn) "\"\\\"")  ;; 26
+(assert-parse-error (tn) "\"\\\"")  ;; 27
+(assert-parse-error (tn) "\"\\\"")  ;; 28
+(assert-parse-error (tn) "\"\\\"")  ;; 29
+(assert-parse-error (tn) "\"\\\"")  ;; 30
+(assert-parse-error (tn) "\"\\\"")  ;; 31
+(assert-parse-error (tn) "\"\\\"")  ;; 127
 
 (total-report)
