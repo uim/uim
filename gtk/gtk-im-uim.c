@@ -862,12 +862,16 @@ delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
     if (former_req_len > 0) {
       offset = -former_req_len;
       n_chars = former_req_len;
-    } else {
+    } else if (former_req_len == 0) {
       offset = 0;
       n_chars = 0;
-    }
+    } else
+      return -1;
+
     if (latter_req_len > 0)
       n_chars += latter_req_len;
+    else if (latter_req_len < 0)
+      return -1;
     break;
   case UTextOrigin_Beginning:
   case UTextOrigin_End:
