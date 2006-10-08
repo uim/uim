@@ -392,26 +392,26 @@
 
 (define im-acquire-text
   (lambda (c id origin former-len latter-len)
-    (let ((text-id (cdr (assoc id text-area-id-alist)))
-          (text-origin (cdr (assoc origin text-origin-alist)))
+    (let ((text-id (cdr (assq id text-area-id-alist)))
+          (text-origin (cdr (assq origin text-origin-alist)))
 	  (text-extent-former (if (symbol? former-len)
-				  (cdr (assoc former-len text-extent-alist))
+				  (cdr (assq former-len text-extent-alist))
 				  former-len))
 	  (text-extent-latter (if (symbol? latter-len)
-				  (cdr (assoc latter-len text-extent-alist))
+				  (cdr (assq latter-len text-extent-alist))
 				  latter-len)))
       (im-acquire-text-internal
-       c text-id text-origin extent-former extent-latter))))
+       c text-id text-origin text-extent-former text-extent-latter))))
 
 (define im-delete-text
   (lambda (c id origin former-len latter-len)
-    (let ((text-id (cdr (assoc id text-area-id-alist)))
-          (text-origin (cdr (assoc origin text-origin-alist)))
+    (let ((text-id (cdr (assq id text-area-id-alist)))
+          (text-origin (cdr (assq origin text-origin-alist)))
 	  (text-extent-former (if (symbol? former-len)
-				  (cdr (assoc former-len text-extent-alist))
+				  (cdr (assq former-len text-extent-alist))
 				  former-len))
 	  (text-extent-latter (if (symbol? latter-len)
-				  (cdr (assoc latter-len text-extent-alist))
+				  (cdr (assq latter-len text-extent-alist))
 				  latter-len)))
       (im-delete-text-internal
        c text-id text-origin text-extent-former text-extent-latter))))
