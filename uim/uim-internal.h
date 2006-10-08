@@ -76,8 +76,8 @@ struct uim_context_ {
   int is_enable;
 
   struct uim_code_converter *conv_if;
-  void *conv;
-  void *reverse_conv;
+  void *outbound_conv;
+  void *inbound_conv;
   char *current_im_name;
   char *short_desc;
   char *encoding;

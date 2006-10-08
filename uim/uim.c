@@ -135,8 +135,8 @@ uim_create_context(void *ptr,
   uc->short_desc = NULL;
   uc->encoding = strdup(enc);
   uc->conv_if = conv;
-  uc->conv = NULL;
-  uc->reverse_conv = NULL;
+  uc->outbound_conv = NULL;
+  uc->inbound_conv = NULL;
   /**/
   uc->nr_modes = 0;
   uc->modes = NULL;
@@ -272,11 +272,10 @@ uim_release_context(uim_context uc)
 
   UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
   put_context_id(uc);
-  if (uc->conv) {
-    uc->conv_if->release(uc->conv);
-  }
-  if (uc->reverse_conv)
-    uc->conv_if->release(uc->reverse_conv);
+  if (uc->outbound_conv)
+    uc->conv_if->release(uc->outbound_conv);
+  if (uc->inbound_conv)
+    uc->conv_if->release(uc->inbound_conv);
   uim_release_preedit_segments(uc);
   for (i = 0; i < uc->nr_modes; i++) {
     free(uc->modes[i]);
@@ -564,15 +563,15 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 		    uc->id, index, accel_enumeration_hint);
 
   if (uim_return_str_list[0] && uim_return_str_list[1]) {
-    cand->str = uc->conv_if->convert(uc->conv, uim_return_str_list[0]);
-    cand->heading_label = uc->conv_if->convert(uc->conv, uim_return_str_list[1]);    
+    cand->str = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[0]);
+    cand->heading_label = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[1]);    
   } else {
     cand->str = NULL;
     cand->heading_label = NULL;
   }
 
   if (uim_return_str_list[2]) {
-    cand->annotation = uc->conv_if->convert(uc->conv, uim_return_str_list[2]);
+    cand->annotation = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[2]);
   }
 
   return cand;

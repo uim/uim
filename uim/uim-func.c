@@ -375,7 +375,7 @@ im_pushback_preedit(uim_lisp id_, uim_lisp attr_, uim_lisp str_)
   }
   {
     char *s;
-    s = uc->conv_if->convert(uc->conv, str);
+    s = uc->conv_if->convert(uc->outbound_conv, str);
     pushback_preedit_segment(uc, attr, s);
   }
   return uim_scm_f();
@@ -399,7 +399,7 @@ im_commit(uim_lisp id, uim_lisp str_)
     str = uim_scm_refer_c_str(str_);
     {
       char *s;
-      s = uc->conv_if->convert(uc->conv, str);
+      s = uc->conv_if->convert(uc->outbound_conv, str);
       if (uc->commit_cb) {
 	uc->commit_cb(uc->ptr, s);
       }
@@ -455,19 +455,19 @@ im_set_encoding(uim_lisp id, uim_lisp enc)
   if (!uc)
     return uim_scm_f();
 
-  if (uc->conv) {
-    uc->conv_if->release(uc->conv);
+  if (uc->outbound_conv) {
+    uc->conv_if->release(uc->outbound_conv);
   }
-  if (uc->reverse_conv) {
-    uc->conv_if->release(uc->reverse_conv);
+  if (uc->inbound_conv) {
+    uc->conv_if->release(uc->inbound_conv);
   }
   if (!strcmp(uc->encoding, e)) {
-    uc->conv = NULL;
-    uc->reverse_conv = NULL;
+    uc->outbound_conv = NULL;
+    uc->inbound_conv = NULL;
     return uim_scm_f();
   }
-  uc->conv = uc->conv_if->create(uc->encoding, e);
-  uc->reverse_conv = uc->conv_if->create(e, uc->encoding);
+  uc->outbound_conv = uc->conv_if->create(uc->encoding, e);
+  uc->inbound_conv = uc->conv_if->create(e, uc->encoding);
 
   return uim_scm_f();
 }
@@ -507,7 +507,7 @@ im_pushback_mode_list(uim_lisp id, uim_lisp str)
   uc->modes = realloc(uc->modes,
 		      sizeof(char *)*(uc->nr_modes+1));
   s = uim_scm_refer_c_str(str);
-  uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->conv, s);
+  uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->outbound_conv, s);
   uc->nr_modes ++;
   return uim_scm_f();
 }
@@ -538,7 +538,7 @@ im_update_prop_list(uim_lisp id, uim_lisp prop_)
   if (uc && uc->propstr)
     free(uc->propstr);
       
-  uc->propstr = uc->conv_if->convert(uc->conv, prop);
+  uc->propstr = uc->conv_if->convert(uc->outbound_conv, prop);
 
   if (uc->prop_list_update_cb)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
@@ -716,8 +716,8 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
    * uim. Until then, perform character separation by each input methods if
    * needed.  -- YamaKen 2006-10-07 */
   /* FIXME: print '() instead of '("") if the string is empty or NULL */
-  im_former = uc->conv_if->convert(uc->reverse_conv, former);
-  im_latter = uc->conv_if->convert(uc->reverse_conv, latter);
+  im_former = uc->conv_if->convert(uc->inbound_conv, former);
+  im_latter = uc->conv_if->convert(uc->inbound_conv, latter);
   UIM_EVAL_FSTRING2(uc, "(ustr-new '(\"%s\") '(\"%s\"))", im_former, im_latter);
   free(former);
   free(latter);
