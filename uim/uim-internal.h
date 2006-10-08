@@ -67,12 +67,6 @@ struct preedit_segment {
   char *str;
 };
 
-struct surrounding_text {
-  char *text;
-  int cursor_pos;
-  int len;
-};
-
 struct uim_context_ {
   /* cookier pointer */
   void *ptr;
@@ -116,9 +110,9 @@ struct uim_context_ {
   void (*candidate_selector_select_cb)(void *ptr, int index);
   void (*candidate_selector_shift_page_cb)(void *ptr, int direction);
   void (*candidate_selector_deactivate_cb)(void *ptr);
-  /* surrounding text */
-  int (*request_surrounding_text_cb)(void *ptr);
-  int (*delete_surrounding_text_cb)(void *ptr, int offset, int len);
+  /* text acquisition */
+  int (*acquire_text_cb)(void *ptr, enum UTextArea text_id, enum UTextOrigin origin, int former_len, int latter_len, char **former, char **latter);
+  int (*delete_text_cb)(void *ptr, enum UTextArea text_id, enum UTextOrigin origin, int former_len, int latter_len);
   /* configuration changed */
   void (*configuration_changed_cb)(void *ptr);
   /* switch IM */
@@ -127,7 +121,6 @@ struct uim_context_ {
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;
-  struct surrounding_text surrounding;
 };
 
 #ifdef ENABLE_NLS

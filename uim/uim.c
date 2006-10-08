@@ -159,8 +159,8 @@ uim_create_context(void *ptr,
   uc->candidate_selector_shift_page_cb = NULL;
   uc->candidate_selector_deactivate_cb = NULL;
   /**/
-  uc->request_surrounding_text_cb = NULL;
-  uc->delete_surrounding_text_cb = NULL;
+  uc->acquire_text_cb = NULL;
+  uc->delete_text_cb = NULL;
   /**/
   uc->configuration_changed_cb = NULL;
   /**/
@@ -173,10 +173,6 @@ uim_create_context(void *ptr,
   uc->psegs = NULL;
   uc->nr_psegs = 0;
   
-  uc->surrounding.text = NULL;
-  uc->surrounding.cursor_pos = 0;
-  uc->surrounding.len = 0;
-
   if (!lang) {
     lang = "#f";
   }
@@ -624,22 +620,25 @@ uim_set_candidate_index(uim_context uc, int nth)
 }
 
 void
-uim_set_surrounding_text_cb(uim_context uc,
-			    int (*request_cb)(void *ptr),
-			    int (*delete_cb)(void *ptr, int offset, int len))
+uim_set_text_acquisition_cb(uim_context uc,
+			    int (*acquire_cb)(void *ptr,
+					      enum UTextArea text_id,
+					      enum UTextOrigin origin,
+					      int former_len, int latter_len,
+					      char **former, char **latter),
+			    int (*delete_cb)(void *ptr, enum UTextArea text_id,
+				    	     enum UTextOrigin origin,
+					     int former_len, int latter_len))
 {
-  uc->request_surrounding_text_cb = request_cb;
-  uc->delete_surrounding_text_cb = delete_cb;
+  uc->acquire_text_cb = acquire_cb;
+  uc->delete_text_cb = delete_cb;
 }
 
-void
-uim_set_surrounding_text(uim_context uc, const char *text,
-			 int cursor_pos, int len)
+uim_bool
+uim_input_string(uim_context uc, const char *str)
 {
-  free(uc->surrounding.text);
-  uc->surrounding.text = strdup(text);
-  uc->surrounding.cursor_pos = cursor_pos;
-  uc->surrounding.len = len;
+  /* FIXME */
+  return UIM_FALSE;
 }
 
 static void

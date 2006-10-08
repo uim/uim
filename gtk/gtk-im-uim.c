@@ -763,40 +763,91 @@ switch_system_global_im_cb(void *ptr, const char *name)
 }
 
 static int
-request_surrounding_text_cb(void *ptr)
+acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+		int former_req_len, int latter_req_len, char **former,
+		char **latter)
 {
   IMUIMContext *uic;
-  gchar *text, *former;
-  gint cursor_index;
+  gchar *text, *former_start;
+  gint cursor_index, len, precedence_len, following_len;
   gboolean success;
-  int len, pos;
+  int offset;
 
   uic = (IMUIMContext *)ptr;
+
+  switch (text_id) {
+  case UTextArea_Primary:
+    break;
+  case UTextArea_Selection:
+  case UTextArea_Clipboard:
+    /* FIXME */
+    return -1;
+  case UTextArea_Unspecified:
+  default:
+    return -1;
+  }
+
+  /* cursor_index is represented with byte index */
   success = gtk_im_context_get_surrounding(GTK_IM_CONTEXT(uic), &text,
 					   &cursor_index);
   if (!success)
-    return 1;
+    return -1;
 
-  former = g_strndup(text, cursor_index);
-  len = g_utf8_strlen(text, -1);
-  pos = g_utf8_strlen(former, -1);
-  g_free(former);
-  uim_set_surrounding_text(uic->uc, text, pos, len);
+  len = strlen(text);
+
+  precedence_len = g_utf8_strlen(text, cursor_index);
+  following_len = g_utf8_strlen(text + cursor_index, strlen(text) -
+				cursor_index);
+
+  switch (origin) {
+  case UTextOrigin_Cursor:
+
+    if (former_req_len >= 0 && precedence_len > former_req_len)
+      offset = precedence_len - former_req_len;
+    else
+      offset = 0;
+    former_start = g_utf8_offset_to_pointer(text, offset);
+    *former = g_strndup(former_start, text - former_start + cursor_index);
+
+    if (latter_req_len >= 0 && following_len > latter_req_len)
+      offset = strlen(g_utf8_offset_to_pointer(text, precedence_len +
+					       latter_req_len));
+    else
+      offset = 0;
+    *latter = g_strndup(text + cursor_index, len - cursor_index - offset);
+    break;
+  case UTextOrigin_Beginning:
+    *former = NULL;
+    *latter = g_strdup(text); 
+    break;
+  case UTextOrigin_End:
+    *former = g_strdup(text);
+    *latter = NULL;
+    break;
+  case UTextOrigin_Unspecified:
+  default:
+    *former = NULL;
+    *latter = NULL;
+    g_free(text);
+    return -1;
+  }
   g_free(text);
 
   return 0;
 }
 
 static int
-delete_surrouding_text_cb(void *ptr, int offset, int n_chars)
+delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+		int former_len, int latter_len)
 {
   IMUIMContext *uic;
   gboolean success;
+  gint offset, n_chars;
 
   uic = (IMUIMContext *)ptr;
   success = gtk_im_context_delete_surrounding(GTK_IM_CONTEXT(uic), offset,
 					      n_chars);
-  return success ? 0 : 1;
+  return success ? 0 : -1;
 }
 
 /* uim helper related */
@@ -1373,8 +1424,8 @@ im_module_create(const gchar *context_id)
   uim_set_im_switch_request_cb(uic->uc,
 			       switch_app_global_im_cb,
 			       switch_system_global_im_cb);
-  uim_set_surrounding_text_cb(uic->uc, request_surrounding_text_cb,
-  				       delete_surrouding_text_cb);
+  uim_set_text_acquisition_cb(uic->uc, acquire_text_cb,
+  				      delete_text_cb);
 
   uim_prop_list_update(uic->uc);
 
