@@ -801,7 +801,6 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 
   switch (origin) {
   case UTextOrigin_Cursor:
-
     if (former_req_len >= 0 && precedence_len > former_req_len)
       offset = precedence_len - former_req_len;
     else
@@ -838,13 +837,44 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 
 static int
 delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
-		int former_len, int latter_len)
+		int former_req_len, int latter_req_len)
 {
   IMUIMContext *uic;
   gboolean success;
   gint offset, n_chars;
 
   uic = (IMUIMContext *)ptr;
+
+  switch (text_id) {
+  case UTextArea_Primary:
+    break;
+  case UTextArea_Selection:
+    /* FIXME */
+    return -1;
+  case UTextArea_Clipboard:
+  case UTextArea_Unspecified:
+  default:
+    return -1;
+  }
+
+  switch (origin) {
+  case UTextOrigin_Cursor:
+    if (former_req_len > 0) {
+      offset = -former_req_len;
+      n_chars = former_req_len;
+    } else {
+      offset = 0;
+      n_chars = 0;
+    }
+    if (latter_req_len > 0)
+      n_chars += latter_req_len;
+    break;
+  case UTextOrigin_Beginning:
+  case UTextOrigin_End:
+  case UTextOrigin_Unspecified:
+  default:
+    return -1;
+  }
   success = gtk_im_context_delete_surrounding(GTK_IM_CONTEXT(uic), offset,
 					      n_chars);
   return success ? 0 : -1;
