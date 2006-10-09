@@ -829,6 +829,9 @@ acquire_selection_text(void *ptr, enum UTextOrigin origin, int former_req_len,
   int offset;
 
   /* FIXME */
+  *former = NULL;
+  *latter = NULL;
+
   return -1;
 }
 
@@ -843,6 +846,9 @@ acquire_clipboard_text(void *ptr, enum UTextOrigin origin, int former_req_len,
   int offset;
 
   /* FIXME */
+  *former = NULL;
+  *latter = NULL;
+
   return -1;
 }
 
@@ -868,6 +874,8 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
     break;
   case UTextArea_Unspecified:
   default:
+    *former = NULL;
+    *latter = NULL;
     err = -1;
   }
 
