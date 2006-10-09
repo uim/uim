@@ -767,10 +767,10 @@ acquire_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
 		     int latter_req_len, char **former, char **latter)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gchar *text, *former_start;
+  gchar *text, *former_start, *p;
   gint cursor_index, len, precedence_len, following_len;
   gboolean success;
-  int offset;
+  int offset, err = 0;
 
   /* cursor_index is represented with byte index */
   success = gtk_im_context_get_surrounding(GTK_IM_CONTEXT(uic), &text,
@@ -797,59 +797,106 @@ acquire_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
     else
       offset = 0;
     *latter = g_strndup(text + cursor_index, len - cursor_index - offset);
+    if (latter_req_len == UTextExtent_Line) {
+      gchar *p = strchr(*latter, '\n');
+      if (p)
+	*p = '\0';
+    }
     break;
   case UTextOrigin_Beginning:
     *former = NULL;
-    *latter = g_strdup(text); 
+    if (latter_req_len >= 0 &&
+	(precedence_len + following_len) > latter_req_len)
+      offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
+    else
+      offset = 0;
+    *latter = g_strndup(text, len - offset); 
+    if (latter_req_len == UTextExtent_Line &&
+	(p = strchr(*latter, '\n')))
+      *p = '\0';
     break;
   case UTextOrigin_End:
-    *former = g_strdup(text);
+    if (former_req_len >= 0 &&
+	(precedence_len + following_len) > former_req_len)
+      offset = precedence_len + following_len - former_req_len;
+    else
+      offset = 0;
+    former_start = g_utf8_offset_to_pointer(text, offset);
+    if (former_req_len == UTextExtent_Line &&
+	(p = strrchr(former_start, '\n')))
+      *former = g_strdup(p + 1);
+    else
+      *former = g_strndup(former_start, text + len - former_start);
     *latter = NULL;
     break;
   case UTextOrigin_Unspecified:
   default:
-    *former = NULL;
-    *latter = NULL;
-    g_free(text);
-    return -1;
+    err = -1;
   }
   g_free(text);
 
-  return 0;
+  return err;
 }
 
 static int
-acquire_selection_text(void *ptr, enum UTextOrigin origin, int former_req_len,
-		       int latter_req_len, char **former, char **latter)
+acquire_clipboard_text(void *ptr, enum UTextArea text_id,
+		      enum UTextOrigin origin, int former_req_len,
+		      int latter_req_len, char **former, char **latter)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gchar *text, *former_start;
-  gint cursor_index, len, precedence_len, following_len;
-  gboolean success;
-  int offset;
+  gchar *former_start, *text;
+  gint len, text_len;
+  int offset, err = 0;
+  GdkAtom selection;
 
-  /* FIXME */
-  *former = NULL;
-  *latter = NULL;
+  switch (text_id) {
+  case UTextArea_Selection:
+    selection = GDK_SELECTION_PRIMARY;
+    break;
+  case UTextArea_Clipboard:
+    selection = GDK_SELECTION_CLIPBOARD;
+    break;
+  default:
+    return -1;
+  }
 
-  return -1;
-}
+  text = gtk_clipboard_wait_for_text(gtk_widget_get_clipboard(GTK_WIDGET(uic->widget), selection));
 
-static int
-acquire_clipboard_text(void *ptr, enum UTextOrigin origin, int former_req_len,
-		       int latter_req_len, char **former, char **latter)
-{
-  IMUIMContext *uic = (IMUIMContext *)ptr;
-  gchar *text, *former_start;
-  gint cursor_index, len, precedence_len, following_len;
-  gboolean success;
-  int offset;
+  if (!text)
+    return -1;
 
-  /* FIXME */
-  *former = NULL;
-  *latter = NULL;
+  len = strlen(text);
+  text_len = g_utf8_strlen(text, -1);
 
-  return -1;
+  switch (origin) {
+  case UTextOrigin_Beginning:
+    *former = NULL;
+    if (latter_req_len >= 0  && latter_req_len < text_len)
+      offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
+    else
+      offset = 0;
+    /* Do I need to examine UTextExtent_Line for selection/clipboard? */
+    *latter = g_strndup(text, len - offset);
+    break;
+  case UTextOrigin_End:
+    if (former_req_len >= 0  && former_req_len < text_len)
+      offset = text_len - former_req_len;
+    else
+      offset = 0;
+    /* Do I need to examine UTextExtent_Line for selection/clipboard? */
+    former_start = g_utf8_offset_to_pointer(text, offset);
+    *former = g_strndup(former_start, text + len - former_start);
+    *latter = NULL;
+    break;
+  case UTextOrigin_Cursor:
+  case UTextOrigin_Unspecified:
+  default:
+    err = -1;
+    break;
+  }
+  g_free(text);
+
+  return err;
 }
 
 static int
@@ -865,17 +912,12 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 			       former, latter);
     break;
   case UTextArea_Selection:
-    err = acquire_selection_text(ptr, origin, former_req_len, latter_req_len,
-				 former, latter);
-    break;
   case UTextArea_Clipboard:
-    err = acquire_clipboard_text(ptr, origin, former_req_len, latter_req_len,
-				 former, latter);
+    err = acquire_clipboard_text(ptr, text_id, origin, former_req_len,
+				 latter_req_len, former, latter);
     break;
   case UTextArea_Unspecified:
   default:
-    *former = NULL;
-    *latter = NULL;
     err = -1;
   }
 
@@ -883,27 +925,17 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 }
 
 static int
-delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
-		int former_req_len, int latter_req_len)
+delete_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
+		    int latter_req_len)
 {
-  IMUIMContext *uic;
+  IMUIMContext *uic = (IMUIMContext *)ptr;
   gboolean success;
   gint offset, n_chars;
-
-  uic = (IMUIMContext *)ptr;
-
-  switch (text_id) {
-  case UTextArea_Primary:
-    break;
-  case UTextArea_Selection:
-    /* FIXME */
-    return -1;
-  case UTextArea_Clipboard:
-  case UTextArea_Unspecified:
-  default:
-    return -1;
-  }
-
+  /*
+   * In GTK+, only delete_surrounding_text is supported. It means
+   * explicit value for former_len and latter_len is required and
+   * its origin must be the cursor.
+   */
   switch (origin) {
   case UTextOrigin_Cursor:
     if (former_req_len > 0) {
@@ -913,12 +945,12 @@ delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
       offset = 0;
       n_chars = 0;
     } else
-      return -1;
+      return -1; /* It doesn't support UTextExtent_{Full,Line}. */
 
     if (latter_req_len > 0)
       n_chars += latter_req_len;
     else if (latter_req_len < 0)
-      return -1;
+      return -1; /* It doesn't support UTextExtent_{Full,Line}. */
     break;
   case UTextOrigin_Beginning:
   case UTextOrigin_End:
@@ -929,6 +961,40 @@ delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
   success = gtk_im_context_delete_surrounding(GTK_IM_CONTEXT(uic), offset,
 					      n_chars);
   return success ? 0 : -1;
+}
+
+static int
+delete_selection_text(void *ptr, enum UTextOrigin origin, int former_req_len,
+		      int latter_req_len)
+{
+  /*
+   * How can we delete a selected text in GTK+?
+   * Maybe just commit a new text will delete the selection.
+   */
+  
+  return 0;
+}
+
+static int
+delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+		int former_req_len, int latter_req_len)
+{
+  int err;
+
+  switch (text_id) {
+  case UTextArea_Primary:
+    err = delete_primary_text(ptr, origin, former_req_len, latter_req_len);
+    break;
+  case UTextArea_Selection:
+    err = delete_selection_text(ptr, origin, former_req_len, latter_req_len);
+    break;
+  case UTextArea_Clipboard:
+  case UTextArea_Unspecified:
+  default:
+    err = -1;
+  }
+
+  return err;
 }
 
 /* uim helper related */
