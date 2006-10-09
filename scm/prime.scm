@@ -2150,4 +2150,5 @@
  prime-get-candidate-handler        ;; get-candidate
  prime-set-candidate-index-handler  ;; set-candidate-index
  context-prop-activate-handler      ;; prop
+ #f
 ) 

@@ -130,7 +130,7 @@
 (define register-im
   (lambda (name lang encoding name-label short-desc init-arg init release
 		mode key-press key-release reset
-		get-candidate set-candidate-index prop)
+		get-candidate set-candidate-index prop input-string)
     (and (or (null? enabled-im-list)  ;; bootstrap
 	     (memq name enabled-im-list)
 	     (eq? name 'direct))  ;; direct IM must always be enabled
@@ -138,7 +138,7 @@
 			   init-arg init release
 			   mode key-press key-release reset
 			   get-candidate set-candidate-index prop
-			   currently-loading-module-name)))
+			   input-string currently-loading-module-name)))
 	   (set! im-list (alist-replace im im-list))
 	   (normalize-im-list)
 	   (im-register-im name lang encoding short-desc)))))

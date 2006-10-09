@@ -1377,4 +1377,6 @@
  canna-reset-handler
  canna-get-candidate-handler
  canna-set-candidate-index-handler
- context-prop-activate-handler)
+ context-prop-activate-handler
+ #f
+ )

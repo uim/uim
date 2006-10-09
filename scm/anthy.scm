@@ -1717,4 +1717,5 @@
  anthy-get-candidate-handler
  anthy-set-candidate-index-handler
  context-prop-activate-handler
+ #f
 )

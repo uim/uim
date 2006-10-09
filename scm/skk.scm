@@ -2138,4 +2138,5 @@
  skk-reset-handler
  skk-get-candidate-handler
  skk-set-candidate-index-handler
- context-prop-activate-handler)
+ context-prop-activate-handler
+ #f)

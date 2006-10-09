@@ -1854,4 +1854,5 @@
  byeoru-get-candidate-handler
  byeoru-set-candidate-index-handler
  context-prop-activate-handler
+ #f
 )

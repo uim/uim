@@ -346,6 +346,7 @@
 	       scim-get-candidate-handler
 	       scim-set-candidate-index-handler
 	       context-prop-activate-handler
+	       #f
 	       ))
 	      (scim-register (+ i 1) nr-im))
 	())))

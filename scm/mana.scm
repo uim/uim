@@ -1624,4 +1624,5 @@
   mana-get-candidate-handler
   mana-set-candidate-index-handler
   context-prop-activate-handler
+  #f
   )

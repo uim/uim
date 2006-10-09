@@ -83,7 +83,9 @@
      generic-reset-handler
      generic-get-candidate-handler
      generic-set-candidate-index-handler
-     context-prop-activate-handler)))
+     context-prop-activate-handler
+     #f
+     )))
     
 (define hangul2-init-handler
   (lambda (id im arg)

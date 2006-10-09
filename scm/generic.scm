@@ -486,6 +486,7 @@
      generic-reset-handler
      generic-get-candidate-handler
      generic-set-candidate-index-handler
-     context-prop-activate-handler)))
+     context-prop-activate-handler
+     #f)))
 
 (generic-configure-widgets)

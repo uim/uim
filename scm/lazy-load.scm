@@ -70,6 +70,7 @@
 	   #f ;; get-candidate-handler
 	   #f ;; set-candidate-index-handler
 	   #f ;; prop-activate-handler
+	   #f ;; input-string-handler
 	   )
 	  (im-set-module-name! (retrieve-im name) module-name)))))
 
