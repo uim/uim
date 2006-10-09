@@ -763,29 +763,14 @@ switch_system_global_im_cb(void *ptr, const char *name)
 }
 
 static int
-acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
-		int former_req_len, int latter_req_len, char **former,
-		char **latter)
+acquire_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
+		     int latter_req_len, char **former, char **latter)
 {
-  IMUIMContext *uic;
+  IMUIMContext *uic = (IMUIMContext *)ptr;
   gchar *text, *former_start;
   gint cursor_index, len, precedence_len, following_len;
   gboolean success;
   int offset;
-
-  uic = (IMUIMContext *)ptr;
-
-  switch (text_id) {
-  case UTextArea_Primary:
-    break;
-  case UTextArea_Selection:
-  case UTextArea_Clipboard:
-    /* FIXME */
-    return -1;
-  case UTextArea_Unspecified:
-  default:
-    return -1;
-  }
 
   /* cursor_index is represented with byte index */
   success = gtk_im_context_get_surrounding(GTK_IM_CONTEXT(uic), &text,
@@ -794,11 +779,9 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
     return -1;
 
   len = strlen(text);
-
   precedence_len = g_utf8_strlen(text, cursor_index);
   following_len = g_utf8_strlen(text + cursor_index, strlen(text) -
 				cursor_index);
-
   switch (origin) {
   case UTextOrigin_Cursor:
     if (former_req_len >= 0 && precedence_len > former_req_len)
@@ -833,6 +816,62 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
   g_free(text);
 
   return 0;
+}
+
+static int
+acquire_selection_text(void *ptr, enum UTextOrigin origin, int former_req_len,
+		       int latter_req_len, char **former, char **latter)
+{
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+  gchar *text, *former_start;
+  gint cursor_index, len, precedence_len, following_len;
+  gboolean success;
+  int offset;
+
+  /* FIXME */
+  return -1;
+}
+
+static int
+acquire_clipboard_text(void *ptr, enum UTextOrigin origin, int former_req_len,
+		       int latter_req_len, char **former, char **latter)
+{
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+  gchar *text, *former_start;
+  gint cursor_index, len, precedence_len, following_len;
+  gboolean success;
+  int offset;
+
+  /* FIXME */
+  return -1;
+}
+
+static int
+acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+		int former_req_len, int latter_req_len, char **former,
+		char **latter)
+{
+  int err;
+
+  switch (text_id) {
+  case UTextArea_Primary:
+    err = acquire_primary_text(ptr, origin, former_req_len, latter_req_len,
+			       former, latter);
+    break;
+  case UTextArea_Selection:
+    err = acquire_selection_text(ptr, origin, former_req_len, latter_req_len,
+				 former, latter);
+    break;
+  case UTextArea_Clipboard:
+    err = acquire_clipboard_text(ptr, origin, former_req_len, latter_req_len,
+				 former, latter);
+    break;
+  case UTextArea_Unspecified:
+  default:
+    err = -1;
+  }
+
+  return err;
 }
 
 static int
