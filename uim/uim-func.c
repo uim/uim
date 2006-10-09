@@ -698,6 +698,7 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
   enum UTextArea text_id;
   enum UTextOrigin origin;
   char *former, *latter, *im_former, *im_latter;
+  uim_bool is_former_null = UIM_TRUE, is_latter_null = UIM_TRUE;
 
   if (!uc->acquire_text_cb)
     return uim_scm_f();
@@ -710,15 +711,32 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
 
   err = uc->acquire_text_cb(uc->ptr, text_id, origin, former_len, latter_len,
 			    &former, &latter);
+  if (err)
+    return uim_scm_f();
 
   /* FIXME: string->list is not applied here for each text part. This
    * interface should be revised when SigScheme has been introduced to
    * uim. Until then, perform character separation by each input methods if
    * needed.  -- YamaKen 2006-10-07 */
-  /* FIXME: print '() instead of '("") if the string is empty or NULL */
   im_former = uc->conv_if->convert(uc->inbound_conv, former);
   im_latter = uc->conv_if->convert(uc->inbound_conv, latter);
-  UIM_EVAL_FSTRING2(uc, "(ustr-new '(\"%s\") '(\"%s\"))", im_former, im_latter);
+
+  if (im_former && strcmp(im_former, ""))
+    is_former_null = UIM_FALSE;
+  if (im_latter && strcmp(im_latter, ""))
+    is_latter_null = UIM_FALSE;
+
+  /* UIM_EVAL_*STRING* macro needs bracket around if .. else */
+  if (is_former_null && is_latter_null) {
+    uim_eval_string(uc, "(ustr-new '() '())");
+  } else if (is_former_null && !is_latter_null) {
+    UIM_EVAL_FSTRING1(uc, "(ustr-new '() '(\"%s\"))", im_latter);
+  } else if (!is_former_null && is_latter_null) {
+    UIM_EVAL_FSTRING1(uc, "(ustr-new '(\"%s\") '())", im_former);
+  } else {
+    UIM_EVAL_FSTRING2(uc, "(ustr-new '(\"%s\") '(\"%s\"))", im_former,
+		      im_latter);
+  }
   free(former);
   free(latter);
   free(im_former);
