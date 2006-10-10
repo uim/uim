@@ -726,7 +726,7 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
   if (im_latter && strcmp(im_latter, ""))
     is_latter_null = UIM_FALSE;
 
-  /* UIM_EVAL_*STRING* macro needs bracket around if .. else */
+  /* UIM_EVAL_*STRING* macro needs brace around if .. else */
   if (is_former_null && is_latter_null) {
     uim_eval_string(uc, "(ustr-new '() '())");
   } else if (is_former_null && !is_latter_null) {
