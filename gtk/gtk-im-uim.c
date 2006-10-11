@@ -763,14 +763,95 @@ switch_system_global_im_cb(void *ptr, const char *name)
 }
 
 static int
-acquire_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
-		     int latter_req_len, char **former, char **latter)
+acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
+			     int former_req_len, int latter_req_len,
+			     char **former, char **latter)
 {
-  IMUIMContext *uic = (IMUIMContext *)ptr;
+  GtkTextIter current, start, end;
+
+  if (!text_view->buffer)
+    return -1;
+
+  gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
+				   gtk_text_buffer_get_mark(text_view->buffer,
+							    "insert"));
+  switch (origin) {
+  case UTextOrigin_Cursor:
+    start = current;
+    end = current;
+    if (former_req_len >= 0) {
+      gtk_text_iter_backward_chars(&start, former_req_len);
+    } else {
+      if (former_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+      else if (former_req_len == UTextExtent_Line)
+	gtk_text_view_backward_display_line_start(text_view, &start);
+    }
+    *former = gtk_text_iter_get_slice(&start, &current);
+    if (latter_req_len >= 0)
+      gtk_text_iter_forward_chars(&end, latter_req_len);
+    else {
+      if (latter_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+      else if (former_req_len == UTextExtent_Line)
+	gtk_text_view_forward_display_line_end(text_view, &end);
+    }
+    *latter = gtk_text_iter_get_slice(&current, &end);
+    break;
+  case UTextOrigin_Beginning:
+    *former = NULL;
+    gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+    end = start;
+    if (latter_req_len >= 0)
+      gtk_text_iter_forward_chars(&end, latter_req_len);
+    else {
+      if (latter_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+      else if (latter_req_len == UTextExtent_Line)
+	gtk_text_view_forward_display_line_end(text_view, &end);
+    }
+    *latter = gtk_text_iter_get_slice(&start, &end);
+    break;
+  case UTextOrigin_End:
+    gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+    start = end;
+    if (former_req_len >= 0) {
+      gtk_text_iter_backward_chars(&start, former_req_len);
+    } else {
+      if (former_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+      else if (former_req_len == UTextExtent_Line)
+	gtk_text_view_backward_display_line_start(text_view, &start);
+    }
+    *former = gtk_text_iter_get_slice(&start, &end);
+    *latter = NULL;
+    break;
+  case UTextOrigin_Unspecified:
+  default:
+    return -1;
+  }
+
+  return 0;
+}
+
+static int
+acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
+		     int former_req_len, int latter_req_len,
+		     char **former, char **latter)
+{
   gchar *text, *former_start, *p;
   gint cursor_index, len, precedence_len, following_len;
   gboolean success;
   int offset, err = 0;
+
+  /*
+   * We may try a specific way for GtkTextView since
+   * gtk_im_context_get_surrounding cannot get text with multiple lines.
+   */
+  if (GTK_IS_TEXT_VIEW(uic->widget))
+    return acquire_text_in_gtk_text_view(GTK_TEXT_VIEW(uic->widget), origin,
+					 former_req_len, latter_req_len,
+					 former, latter);
 
   /* cursor_index is represented with byte index */
   success = gtk_im_context_get_surrounding(GTK_IM_CONTEXT(uic), &text,
@@ -832,6 +913,7 @@ acquire_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
   case UTextOrigin_Unspecified:
   default:
     err = -1;
+    break;
   }
   g_free(text);
 
@@ -839,28 +921,43 @@ acquire_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
 }
 
 static int
-acquire_clipboard_text(void *ptr, enum UTextArea text_id,
-		      enum UTextOrigin origin, int former_req_len,
-		      int latter_req_len, char **former, char **latter)
+acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
+		       int former_req_len, int latter_req_len,
+		       char **former, char **latter)
 {
-  IMUIMContext *uic = (IMUIMContext *)ptr;
-  gchar *former_start, *text;
+  gchar *former_start, *text = NULL, *p;
   gint len, text_len;
   int offset, err = 0;
-  GdkAtom selection;
+  gboolean start_from_beginning = FALSE;
 
-  switch (text_id) {
-  case UTextArea_Selection:
-    selection = GDK_SELECTION_PRIMARY;
-    break;
-  case UTextArea_Clipboard:
-    selection = GDK_SELECTION_CLIPBOARD;
-    break;
-  default:
-    return -1;
+  if (GTK_IS_ENTRY(uic->widget)) {
+    gint start, end, current;
+    if (gtk_editable_get_selection_bounds(GTK_EDITABLE(uic->widget),
+					  &start, &end)) {
+      text = gtk_editable_get_chars(GTK_EDITABLE(uic->widget), start, end);
+      current = GTK_ENTRY(uic->widget)->current_pos;
+      if (current == start)
+	start_from_beginning = TRUE;
+    }
+  } else if (GTK_IS_TEXT_VIEW(uic->widget)) {
+    GtkTextIter start, end, current;
+    if (GTK_TEXT_VIEW(uic->widget)->buffer &&
+	gtk_text_buffer_get_selection_bounds(GTK_TEXT_VIEW(uic->widget)->buffer, &start, &end)) {
+      text = gtk_text_iter_get_visible_text(&start, &end);
+      gtk_text_buffer_get_iter_at_mark(GTK_TEXT_VIEW(uic->widget)->buffer,
+				       &current,
+				       gtk_text_buffer_get_mark(GTK_TEXT_VIEW(uic->widget)->buffer, "insert"));
+      if (gtk_text_iter_compare(&start, &current) == 0)
+	start_from_beginning = TRUE;
+    }
+  } else {
+    /*
+     * We use GDK_SELECTION_PRIMARY for the rest of widget, which means it is
+     * impossible to guarantee whether the obtained one is the selected text on
+     * the target application.
+     */ 
+    text = gtk_clipboard_wait_for_text(gtk_widget_get_clipboard(GTK_WIDGET(uic->widget), GDK_SELECTION_PRIMARY));
   }
-
-  text = gtk_clipboard_wait_for_text(gtk_widget_get_clipboard(GTK_WIDGET(uic->widget), selection));
 
   if (!text)
     return -1;
@@ -868,26 +965,71 @@ acquire_clipboard_text(void *ptr, enum UTextArea text_id,
   len = strlen(text);
   text_len = g_utf8_strlen(text, -1);
 
-  switch (origin) {
-  case UTextOrigin_Beginning:
+  if (origin == UTextOrigin_Beginning ||
+      (origin == UTextOrigin_Cursor && start_from_beginning)) {
     *former = NULL;
     if (latter_req_len >= 0  && latter_req_len < text_len)
       offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
     else
       offset = 0;
-    /* Do I need to examine UTextExtent_Line for selection/clipboard? */
     *latter = g_strndup(text, len - offset);
-    break;
+    if (latter_req_len == UTextExtent_Line &&
+	(p = strchr(*latter, '\n')))
+      *p = '\0';
+  } else if (origin == UTextOrigin_End ||
+	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
+    if (former_req_len >= 0  && former_req_len < text_len)
+      offset = text_len - former_req_len;
+    else
+      offset = 0;
+    former_start = g_utf8_offset_to_pointer(text, offset);
+    if (former_req_len == UTextExtent_Line &&
+	(p = strrchr(former_start, '\n')))
+      *former = g_strdup(p + 1);
+    else
+      *former = g_strndup(former_start, text + len - former_start);
+    *latter = NULL;
+  } else {
+    err = -1;
+  }
+  g_free(text);
+
+  return err;
+}
+
+static int
+acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
+		       int former_req_len, int latter_req_len,
+		       char **former, char **latter)
+{
+  gchar *former_start, *text = NULL, *p;
+  gint len, text_len;
+  int offset, err = 0;
+
+  text = gtk_clipboard_wait_for_text(gtk_widget_get_clipboard(GTK_WIDGET(uic->widget), GDK_SELECTION_CLIPBOARD));
+
+  if (!text)
+    return -1;
+
+  len = strlen(text);
+  text_len = g_utf8_strlen(text, -1);
+
+  /* only UTextOrigin_End is used for UTextArea_Clipboard */
+  switch (origin) {
   case UTextOrigin_End:
     if (former_req_len >= 0  && former_req_len < text_len)
       offset = text_len - former_req_len;
     else
       offset = 0;
-    /* Do I need to examine UTextExtent_Line for selection/clipboard? */
     former_start = g_utf8_offset_to_pointer(text, offset);
-    *former = g_strndup(former_start, text + len - former_start);
+    if (former_req_len == UTextExtent_Line &&
+	(p = strrchr(former_start, '\n')))
+      *former = g_strdup(p + 1);
+    else
+      *former = g_strndup(former_start, text + len - former_start);
     *latter = NULL;
     break;
+  case UTextOrigin_Beginning:
   case UTextOrigin_Cursor:
   case UTextOrigin_Unspecified:
   default:
@@ -905,16 +1047,20 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 		char **latter)
 {
   int err;
+  IMUIMContext *uic = (IMUIMContext *)ptr;
 
   switch (text_id) {
   case UTextArea_Primary:
-    err = acquire_primary_text(ptr, origin, former_req_len, latter_req_len,
+    err = acquire_primary_text(uic, origin, former_req_len, latter_req_len,
 			       former, latter);
     break;
   case UTextArea_Selection:
+    err = acquire_selection_text(uic, origin, former_req_len, latter_req_len,
+				 former, latter);
+    break;
   case UTextArea_Clipboard:
-    err = acquire_clipboard_text(ptr, text_id, origin, former_req_len,
-				 latter_req_len, former, latter);
+    err = acquire_clipboard_text(uic, origin, former_req_len, latter_req_len,
+				 former, latter);
     break;
   case UTextArea_Unspecified:
   default:
@@ -925,32 +1071,145 @@ acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 }
 
 static int
+delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
+			 int former_req_len, int latter_req_len)
+{
+  gint start_pos, end_pos, current_pos;
+
+  current_pos = entry->current_pos;
+  switch (origin) {
+  case UTextOrigin_Cursor:
+    if (former_req_len >= 0) {
+      start_pos = current_pos - former_req_len;
+    } else
+      start_pos = 0;
+    if (latter_req_len >= 0)
+      end_pos = current_pos + latter_req_len;
+    else
+      end_pos = entry->text_length;
+    break;
+  case UTextOrigin_Beginning:
+    start_pos = 0;
+    if (latter_req_len >= 0)
+      end_pos = latter_req_len;
+    else
+      end_pos = entry->text_length;
+    break;
+  case UTextOrigin_End:
+    if (former_req_len >= 0)
+      start_pos = entry->text_length - former_req_len;
+    else
+      start_pos = 0;
+    end_pos = entry->text_length;
+    break;
+  case UTextOrigin_Unspecified:
+  default:
+    return -1;
+  }
+  gtk_editable_delete_text(GTK_EDITABLE(entry), start_pos, end_pos);
+
+  return 0;
+}
+
+static int
+delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
+			     int former_req_len, int latter_req_len)
+{
+  GtkTextIter current, start, end;
+
+  if (!text_view->buffer)
+    return -1;
+
+  gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
+				   gtk_text_buffer_get_mark(text_view->buffer,
+							    "insert"));
+  start = current;
+  end = current;
+  switch (origin) {
+  case UTextOrigin_Cursor:
+    if (former_req_len >= 0) {
+      gtk_text_iter_backward_chars(&start, former_req_len);
+    } else {
+      if (former_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+      else if (former_req_len == UTextExtent_Line)
+	gtk_text_view_backward_display_line_start(text_view, &start);
+    }
+    if (latter_req_len >= 0)
+      gtk_text_iter_forward_chars(&end, latter_req_len);
+    else {
+      if (latter_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+      else if (latter_req_len == UTextExtent_Line)
+	gtk_text_view_forward_display_line_end(text_view, &end);
+    }
+    break;
+  case UTextOrigin_Beginning:
+    gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+    end = start;
+    if (latter_req_len >= 0)
+      gtk_text_iter_forward_chars(&end, latter_req_len);
+    else {
+      if (latter_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+      else if (former_req_len == UTextExtent_Line)
+	gtk_text_view_forward_display_line_end(text_view, &end);
+    }
+    break;
+  case UTextOrigin_End:
+    gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+    start = end;
+    if (former_req_len >= 0) {
+      gtk_text_iter_backward_chars(&start, former_req_len);
+    } else {
+      if (former_req_len == UTextExtent_Full)
+	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+      else if (former_req_len == UTextExtent_Line)
+	gtk_text_view_backward_display_line_start(text_view, &start);
+    }
+    break;
+  case UTextOrigin_Unspecified:
+  default:
+    return -1;
+  }
+  gtk_text_buffer_delete_interactive(text_view->buffer, &start, &end,
+				     text_view->editable);
+
+  return 0;
+}
+
+static int
 delete_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
 		    int latter_req_len)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   gboolean success;
   gint offset, n_chars;
+
+  /* specific widgets handling */
+  if (GTK_IS_ENTRY(uic->widget))
+    return delete_text_in_gtk_entry(GTK_ENTRY(uic->widget), origin,
+				    former_req_len, latter_req_len);
+  else if (GTK_IS_TEXT_VIEW(uic->widget))
+    return delete_text_in_gtk_text_view(GTK_TEXT_VIEW(uic->widget), origin,
+					former_req_len, latter_req_len);
   /*
-   * In GTK+, only delete_surrounding_text is supported. It means
-   * explicit value for former_len and latter_len is required and
-   * its origin must be the cursor.
+   * For the rest of widget, we use delete_surrounding, which  means explicit
+   * value for former_len and latter_len is required and its origin must be the
+   * cursor.
    */
+  offset = n_chars = 0;
   switch (origin) {
   case UTextOrigin_Cursor:
-    if (former_req_len > 0) {
+    if (former_req_len >= 0) {
       offset = -former_req_len;
       n_chars = former_req_len;
-    } else if (former_req_len == 0) {
-      offset = 0;
-      n_chars = 0;
     } else
-      return -1; /* It doesn't support UTextExtent_{Full,Line}. */
-
-    if (latter_req_len > 0)
+	return -1;
+    if (latter_req_len >= 0)
       n_chars += latter_req_len;
-    else if (latter_req_len < 0)
-      return -1; /* It doesn't support UTextExtent_{Full,Line}. */
+    else
+      return -1;
     break;
   case UTextOrigin_Beginning:
   case UTextOrigin_End:
@@ -964,12 +1223,112 @@ delete_primary_text(void *ptr, enum UTextOrigin origin, int former_req_len,
 }
 
 static int
+delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
+			 int former_req_len, int latter_req_len)
+{
+  gint start, end, current_pos;
+  gboolean start_from_beginning = FALSE;
+
+  if (!gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &start, &end))
+    return -1;
+
+  current_pos = entry->current_pos;
+  if (current_pos == start)
+    start_from_beginning = TRUE;
+
+  if (origin == UTextOrigin_Beginning ||
+      (origin == UTextOrigin_Cursor && start_from_beginning)) {
+    if (latter_req_len >= 0 && latter_req_len < end - start)
+      end = start + latter_req_len;
+  } else if (origin == UTextOrigin_End ||
+	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
+    if (former_req_len >= 0 && former_req_len < end - start)
+      start = end - former_req_len;
+  } else {
+    return -1;
+  }
+  gtk_editable_delete_text(GTK_EDITABLE(entry), start, end);
+
+  return 0;
+}
+
+static int
+delete_selection_in_gtk_text_view(GtkTextView *text_view,
+				  enum UTextOrigin origin, int former_req_len,
+				  int latter_req_len)
+{
+  GtkTextIter current, start, end, tmp_start, tmp_end;
+  gboolean start_from_beginning = FALSE;
+
+  if (!text_view->buffer)
+    return -1;
+
+  if (gtk_text_buffer_get_selection_bounds(text_view->buffer, &start, &end)) {
+    gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
+				     gtk_text_buffer_get_mark(text_view->buffer, "insert"));
+    if (gtk_text_iter_compare(&start, &current) == 0)
+      start_from_beginning = TRUE;
+  } else {
+    return -1;
+  }
+
+  if (origin == UTextOrigin_Beginning ||
+      (origin == UTextOrigin_Cursor && start_from_beginning)) {
+    tmp_start = start;
+    tmp_end = start;
+    if (latter_req_len >= 0) {
+      gtk_text_iter_forward_chars(&tmp_end, latter_req_len);
+      if (gtk_text_iter_compare(&tmp_end, &end) < 0)
+	end = tmp_end;
+    } else {
+      if (former_req_len == UTextExtent_Line) {
+	gtk_text_view_forward_display_line_end(text_view, &tmp_end);
+	if (gtk_text_iter_compare(&tmp_end, &end) < 0)
+	  end = tmp_end;
+      }
+    }
+  } else if (origin == UTextOrigin_End ||
+	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
+    tmp_start = end;
+    tmp_end = end;
+    if (former_req_len >= 0) {
+      gtk_text_iter_backward_chars(&tmp_start, former_req_len);
+      if (gtk_text_iter_compare(&tmp_start, &start) > 0)
+	start = tmp_start;
+    } else {
+      if (former_req_len == UTextExtent_Line) {
+	gtk_text_view_backward_display_line_start(text_view, &tmp_start);
+	if (gtk_text_iter_compare(&tmp_start, &start) > 0)
+	  start = tmp_start;
+      }
+    }
+  } else {
+    return -1;
+  }
+
+  gtk_text_buffer_delete_interactive(text_view->buffer, &start, &end,
+				     text_view->editable);
+
+  return 0;
+}
+
+static int
 delete_selection_text(void *ptr, enum UTextOrigin origin, int former_req_len,
 		      int latter_req_len)
 {
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+
+  /* specific widgets handling */
+  if (GTK_IS_ENTRY(uic->widget))
+    return delete_selection_in_gtk_entry(GTK_ENTRY(uic->widget), origin,
+				    former_req_len, latter_req_len);
+  else if (GTK_IS_TEXT_VIEW(uic->widget))
+    return delete_selection_in_gtk_text_view(GTK_TEXT_VIEW(uic->widget), origin,
+					former_req_len, latter_req_len);
   /*
-   * How can we delete a selected text in GTK+?
-   * Maybe just commit a new text will delete the selection.
+   * How can we delete a selected text?
+   * We just expect the selected text will be overridden by a newly committed
+   * text.
    */
   
   return 0;
@@ -1571,8 +1930,7 @@ im_module_create(const gchar *context_id)
   uim_set_im_switch_request_cb(uic->uc,
 			       switch_app_global_im_cb,
 			       switch_system_global_im_cb);
-  uim_set_text_acquisition_cb(uic->uc, acquire_text_cb,
-  				      delete_text_cb);
+  uim_set_text_acquisition_cb(uic->uc, acquire_text_cb, delete_text_cb);
 
   uim_prop_list_update(uic->uc);
 
