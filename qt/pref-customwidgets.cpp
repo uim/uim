@@ -878,6 +878,7 @@ KeyGrabDialog::KeyGrabDialog( QWidget *parent, const char *name )
 
 void KeyGrabDialog::keyPressEvent( QKeyEvent *e )
 {
+    // XXX should treat unicode keys with e->text()
     pressed_keyval = e->key();
     pressed_keystate = e->state();
 }
@@ -962,6 +963,18 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Multi_key:
         keystr += "Multi_key";
         break;
+    case Qt::Key_Codeinput:
+        keystr += "codeinput";
+        break;
+    case Qt::Key_SingleCandidate:
+        keystr += "singlecandidate";
+        break;
+    case Qt::Key_MultipleCandidate:
+        keystr += "multiplecandidate";
+        break;
+    case Qt::Key_PreviousCandidate:
+        keystr += "previouscandidate";
+        break;
     case Qt::Key_Mode_switch:
         keystr += "Mode_switch";
         break;
@@ -1013,7 +1026,98 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Eisu_toggle:
         keystr += "eisu-toggle";
         break;
+    case Qt::Key_Hangul:
+        keystr += "hangul";
+        break;
+    case Qt::Key_Hangul_Start:
+        keystr += "hangul-start";
+        break;
+    case Qt::Key_Hangul_End:
+        keystr += "hangul-end";
+        break;
+    case Qt::Key_Hangul_Hanja:
+        keystr += "hangul-hanja";
+        break;
+    case Qt::Key_Hangul_Jamo:
+        keystr += "hangul-jamo";
+        break;
+    case Qt::Key_Hangul_Romaja:
+        keystr += "hangul-romaja";
+        break;
+    case Qt::Key_Hangul_Jeonja:
+        keystr += "hangul-jeonja";
+        break;
+    case Qt::Key_Hangul_Banja:
+        keystr += "hangul-banja";
+        break;
+    case Qt::Key_Hangul_PreHanja:
+        keystr += "hangul-prehanja";
+        break;
+    case Qt::Key_Hangul_PostHanja:
+        keystr += "hangul-prosthanja";
+        break;
+    case Qt::Key_Hangul_Special:
+        keystr += "hangul-special";
+        break;
 #endif /* Def: QT_IMMODULE */
+
+    case Qt::Key_Dead_Grave:
+        keystr += "dead-grave";
+        break;
+    case Qt::Key_Dead_Acute:
+        keystr += "dead-acute";
+        break;
+    case Qt::Key_Dead_Circumflex:
+        keystr += "dead-circumflex";
+        break;
+    case Qt::Key_Dead_Tilde:
+        keystr += "dead-tilde";
+        break;
+    case Qt::Key_Dead_Macron:
+        keystr += "dead-macron";
+        break;
+    case Qt::Key_Dead_Breve:
+        keystr += "dead-breve";
+        break;
+    case Qt::Key_Dead_Abovedot:
+        keystr += "dead-abovedot";
+        break;
+    case Qt::Key_Dead_Diaeresis:
+        keystr += "dead-diaeresis";
+        break;
+    case Qt::Key_Dead_Abovering:
+        keystr += "dead-abovering";
+        break;
+    case Qt::Key_Dead_Doubleacute:
+        keystr += "dead-doubleacute";
+        break;
+    case Qt::Key_Dead_Caron:
+        keystr += "dead-caron";
+        break;
+    case Qt::Key_Dead_Cedilla:
+        keystr += "dead-cedilla";
+        break;
+    case Qt::Key_Dead_Ogonek:
+        keystr += "dead-ogonek";
+        break;
+    case Qt::Key_Dead_Iota:
+        keystr += "dead-iota";
+        break;
+    case Qt::Key_Dead_Voiced_Sound:
+        keystr += "dead-voiced-sound";
+        break;
+    case Qt::Key_Dead_Semivoiced_Sound:
+        keystr += "dead-semivoiced-sound";
+        break;
+    case Qt::Key_Dead_Belowdot:
+        keystr += "dead-belowdot";
+        break;
+    case Qt::Key_Dead_Hook:
+        keystr += "dead-hook";
+        break;
+    case Qt::Key_Dead_Horn:
+        keystr += "dead-horn";
+        break;
     case Qt::Key_Shift:
         keystr += "Shift_key";
         break;

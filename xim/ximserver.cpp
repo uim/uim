@@ -1076,14 +1076,23 @@ void keyState::check_key(keyEventX *x)
 	mKey = x->key_sym;
     else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
 	mKey = x->key_sym - XK_F1 + UKey_F1;
-    else if (x->key_sym >= 0xfe50 && x->key_sym <= 0xfe62)
-	mKey = UKey_Other; // Don't forward deadkeys to libuim.
+    else if (x->key_sym >= XK_dead_grave && x->key_sym <= XK_dead_horn)
+	mKey = x->key_sym - XK_dead_grave + UKey_Dead_Grave;
+    else if (x->key_sym >= XK_Kanji && x->key_sym <= XK_Eisu_toggle)
+	mKey = x->key_sym - XK_Kanji + UKey_Kanji;
+    else if (x->key_sym >= XK_Hangul && x->key_sym <= XK_Hangul_Special)
+	mKey = x->key_sym - XK_Hangul + UKey_Hangul;
+    else if (x->key_sym >= XK_kana_fullstop && x->key_sym <= XK_semivoicedsound)
+	mKey = x->key_sym - XK_kana_fullstop + UKey_Kana_Fullstop;
     else {
 	switch (x->key_sym) {
+	case XK_yen: mKey = UKey_Yen; break;
 	case XK_BackSpace: mKey = UKey_Backspace; break;
 	case XK_Delete: mKey = UKey_Delete; break;
+	case XK_Insert: mKey = UKey_Insert; break;
 	case XK_Escape: mKey = UKey_Escape; break;
-	case XK_Tab: mKey = UKey_Tab; break;
+	case XK_Tab:
+	case XK_ISO_Left_Tab: mKey = UKey_Tab; break;
 	case XK_Return: mKey = UKey_Return; break;
 	case XK_Left: mKey = UKey_Left; break;
 	case XK_Up: mKey = UKey_Up; break;
@@ -1094,23 +1103,11 @@ void keyState::check_key(keyEventX *x)
 	case XK_Home: mKey = UKey_Home; break;
 	case XK_End: mKey = UKey_End; break;
 	case XK_Multi_key: mKey = UKey_Multi_key; break;
+	case XK_Codeinput: mKey = UKey_Codeinput; break;
+	case XK_SingleCandidate: mKey = UKey_SingleCandidate; break;
+	case XK_MultipleCandidate: mKey = UKey_MultipleCandidate; break;
+	case XK_PreviousCandidate: mKey = UKey_PreviousCandidate; break;
 	case XK_Mode_switch: mKey = UKey_Mode_switch; break;
-	case XK_Kanji: mKey = UKey_Kanji; break;
-	case XK_Muhenkan: mKey = UKey_Muhenkan; break;
-	case XK_Henkan_Mode: mKey = UKey_Henkan_Mode; break;
-	case XK_Romaji: mKey = UKey_Romaji; break;
-	case XK_Hiragana: mKey = UKey_Hiragana; break;
-	case XK_Katakana: mKey = UKey_Katakana; break;
-	case XK_Hiragana_Katakana: mKey = UKey_Hiragana_Katakana; break;
-	case XK_Zenkaku: mKey = UKey_Zenkaku; break;
-	case XK_Hankaku: mKey = UKey_Hankaku; break;
-	case XK_Zenkaku_Hankaku: mKey = UKey_Zenkaku_Hankaku; break;
-	case XK_Touroku: mKey = UKey_Touroku; break;
-	case XK_Massyo: mKey = UKey_Massyo; break;
-	case XK_Kana_Lock: mKey = UKey_Kana_Lock; break;
-	case XK_Kana_Shift: mKey = UKey_Kana_Shift; break;
-	case XK_Eisu_Shift: mKey = UKey_Eisu_Shift; break;
-	case XK_Eisu_toggle: mKey = UKey_Eisu_toggle; break;
 	case XK_Shift_L: mKey = UKey_Shift_key; break;
 	case XK_Shift_R: mKey = UKey_Shift_key; break;
 	case XK_Control_L: mKey = UKey_Control_key; break;

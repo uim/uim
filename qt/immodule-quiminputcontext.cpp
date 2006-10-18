@@ -65,6 +65,7 @@ QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
 #ifdef Q_WS_X11
 DefTree *QUimInputContext::mTreeTop = NULL;
 #endif
+static int katakanaUnicodeToSym(ushort c);
 
 // I think that current index-based query API of uim for language and
 // input method name is useless and should be redesigned. I will
@@ -210,79 +211,69 @@ bool QUimInputContext::filterEvent( const QEvent *event )
                 key = qkey;
         }
     }
+    else if ( qkey == Qt::Key_unknown )
+    {
+        QString text = keyevent->text();
+        if (text)
+        {
+            const QChar *s = text.unicode();
+            ushort c = (*s).unicode();
+            if ( c == 0x00A5 )
+            {
+                key = UKey_Yen;
+            }
+            else
+            {
+                if ( ! ( key = katakanaUnicodeToSym( c ) ) )
+                    key = UKey_Other;
+            }
+        }
+        else
+        {
+            key = UKey_Other;
+        }
+    }
     else
     {
-        switch ( qkey )
+        if ( qkey >= Qt::Key_F1 && qkey <= Qt::Key_F35 )
         {
-        case Qt::Key_Tab: key = UKey_Tab; break;
-        case Qt::Key_BackSpace: key = UKey_Backspace; break;
-        case Qt::Key_Escape: key = UKey_Escape; break;
-        case Qt::Key_Delete: key = UKey_Delete; break;
-        case Qt::Key_Return: key = UKey_Return; break;
-        case Qt::Key_Left: key = UKey_Left; break;
-        case Qt::Key_Up: key = UKey_Up; break;
-        case Qt::Key_Right: key = UKey_Right; break;
-        case Qt::Key_Down: key = UKey_Down; break;
-        case Qt::Key_Prior: key = UKey_Prior; break;
-        case Qt::Key_Next: key = UKey_Next; break;
-        case Qt::Key_Home: key = UKey_Home; break;
-        case Qt::Key_End: key = UKey_End; break;
-        case Qt::Key_Multi_key: key = UKey_Multi_key; break;
+            key = qkey - Qt::Key_F1 + UKey_F1;
+        }
+        else if ( qkey >= Qt::Key_Dead_Grave && qkey <= Qt::Key_Dead_Horn )
+        {
+            key = qkey - Qt::Key_Dead_Grave + UKey_Dead_Grave;
+        }
+        else if ( qkey >= Qt::Key_Kanji && qkey <= Qt::Key_Eisu_toggle )
+        {
+            key = qkey - Qt::Key_Kanji + UKey_Kanji;
+        }
+        else if ( qkey >= Qt::Key_Hangul && qkey <= Qt::Key_Hangul_Special )
+        {
+            key = qkey - Qt::Key_Hangul + UKey_Hangul;
+        }
+        else
+        {
+            switch ( qkey )
+            {
+            case Qt::Key_Tab: key = UKey_Tab; break;
+            case Qt::Key_BackSpace: key = UKey_Backspace; break;
+            case Qt::Key_Escape: key = UKey_Escape; break;
+            case Qt::Key_Delete: key = UKey_Delete; break;
+            case Qt::Key_Return: key = UKey_Return; break;
+            case Qt::Key_Left: key = UKey_Left; break;
+            case Qt::Key_Up: key = UKey_Up; break;
+            case Qt::Key_Right: key = UKey_Right; break;
+            case Qt::Key_Down: key = UKey_Down; break;
+            case Qt::Key_Prior: key = UKey_Prior; break;
+            case Qt::Key_Next: key = UKey_Next; break;
+            case Qt::Key_Home: key = UKey_Home; break;
+            case Qt::Key_End: key = UKey_End; break;
+            case Qt::Key_Multi_key: key = UKey_Multi_key; break;
 #if defined(_WS_X11_)
-        case Qt::Key_Mode_switch: key = UKey_Mode_switch; break;
+            case Qt::Key_Mode_switch: key = UKey_Mode_switch; break;
 #endif
-        case Qt::Key_Kanji: key = UKey_Kanji; break;
-        case Qt::Key_Muhenkan: key = UKey_Muhenkan; break;
-        case Qt::Key_Henkan: key = UKey_Henkan_Mode; break;
-        case Qt::Key_Romaji: key = UKey_Romaji; break;
-        case Qt::Key_Hiragana: key = UKey_Hiragana; break;
-        case Qt::Key_Katakana: key = UKey_Katakana; break;
-        case Qt::Key_Hiragana_Katakana: key = UKey_Hiragana_Katakana; break;
-        case Qt::Key_Zenkaku: key = UKey_Zenkaku; break;
-        case Qt::Key_Hankaku: key = UKey_Hankaku; break;
-        case Qt::Key_Zenkaku_Hankaku: key = UKey_Zenkaku_Hankaku; break;
-        case Qt::Key_Touroku: key = UKey_Touroku; break;
-        case Qt::Key_Massyo: key = UKey_Massyo; break;
-        case Qt::Key_Kana_Lock: key = UKey_Kana_Lock; break;
-        case Qt::Key_Kana_Shift: key = UKey_Kana_Shift; break;
-        case Qt::Key_Eisu_Shift: key = UKey_Eisu_Shift; break;
-        case Qt::Key_Eisu_toggle: key = UKey_Eisu_toggle; break;
-        case Qt::Key_F1: key = UKey_F1; break;
-        case Qt::Key_F2: key = UKey_F2; break;
-        case Qt::Key_F3: key = UKey_F3; break;
-        case Qt::Key_F4: key = UKey_F4; break;
-        case Qt::Key_F5: key = UKey_F5; break;
-        case Qt::Key_F6: key = UKey_F6; break;
-        case Qt::Key_F7: key = UKey_F7; break;
-        case Qt::Key_F8: key = UKey_F8; break;
-        case Qt::Key_F9: key = UKey_F9; break;
-        case Qt::Key_F10: key = UKey_F10; break;
-        case Qt::Key_F11: key = UKey_F11; break;
-        case Qt::Key_F12: key = UKey_F12; break;
-        case Qt::Key_F13: key = UKey_F13; break;
-        case Qt::Key_F14: key = UKey_F14; break;
-        case Qt::Key_F15: key = UKey_F15; break;
-        case Qt::Key_F16: key = UKey_F16; break;
-        case Qt::Key_F17: key = UKey_F17; break;
-        case Qt::Key_F18: key = UKey_F18; break;
-        case Qt::Key_F19: key = UKey_F19; break;
-        case Qt::Key_F20: key = UKey_F20; break;
-        case Qt::Key_F21: key = UKey_F21; break;
-        case Qt::Key_F22: key = UKey_F22; break;
-        case Qt::Key_F23: key = UKey_F23; break;
-        case Qt::Key_F24: key = UKey_F24; break;
-        case Qt::Key_F25: key = UKey_F25; break;
-        case Qt::Key_F26: key = UKey_F26; break;
-        case Qt::Key_F27: key = UKey_F27; break;
-        case Qt::Key_F28: key = UKey_F28; break;
-        case Qt::Key_F29: key = UKey_F29; break;
-        case Qt::Key_F30: key = UKey_F30; break;
-        case Qt::Key_F31: key = UKey_F31; break;
-        case Qt::Key_F32: key = UKey_F32; break;
-        case Qt::Key_F33: key = UKey_F33; break;
-        case Qt::Key_F34: key = UKey_F34; break;
-        case Qt::Key_F35: key = UKey_F35; break;
-        default: key = UKey_Other;
+            default: key = UKey_Other;
+            }
         }
     }
 
@@ -295,7 +286,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             return mCompose->handle_qkey( keyevent );
 #else
         if ( notFiltered )
-	    return FALSE;
+            return FALSE;
 #endif
     }
     else if ( type == QEvent::KeyRelease )
@@ -742,6 +733,81 @@ void QUimInputContext::readIMConf()
     else
         cwin->setAlwaysLeftPosition( false );
     free( leftp );
+}
+
+static int katakanaUnicodeToSym(ushort c) {
+    int sym;
+
+    switch (c) {
+    case 0x3002: sym = UKey_Kana_Fullstop; break;
+    case 0x300C: sym = UKey_Kana_Openingbracket; break;
+    case 0x300D: sym = UKey_Kana_Closingbracket; break;
+    case 0x3001: sym = UKey_Kana_Comma; break;
+    case 0x30FB: sym = UKey_Kana_Conjunctive; break;
+    case 0x30F2: sym = UKey_Kana_WO; break;
+    case 0x30A1: sym = UKey_Kana_a; break;
+    case 0x30A3: sym = UKey_Kana_i; break;
+    case 0x30A5: sym = UKey_Kana_u; break;
+    case 0x30A7: sym = UKey_Kana_e; break;
+    case 0x30A9: sym = UKey_Kana_o; break;
+    case 0x30E3: sym = UKey_Kana_ya; break;
+    case 0x30E5: sym = UKey_Kana_yu; break;
+    case 0x30E7: sym = UKey_Kana_yo; break;
+    case 0x30C3: sym = UKey_Kana_tsu; break;
+    case 0x30FC: sym = UKey_Prolongedsound; break;
+    case 0x30A2: sym = UKey_Kana_A; break;
+    case 0x30A4: sym = UKey_Kana_I; break;
+    case 0x30A6: sym = UKey_Kana_U; break;
+    case 0x30A8: sym = UKey_Kana_E; break;
+    case 0x30AA: sym = UKey_Kana_O; break;
+    case 0x30AB: sym = UKey_Kana_KA; break;
+    case 0x30AD: sym = UKey_Kana_KI; break;
+    case 0x30AF: sym = UKey_Kana_KU; break;
+    case 0x30B1: sym = UKey_Kana_KE; break;
+    case 0x30B3: sym = UKey_Kana_KO; break;
+    case 0x30B5: sym = UKey_Kana_SA; break;
+    case 0x30B7: sym = UKey_Kana_SHI; break;
+    case 0x30B9: sym = UKey_Kana_SU; break;
+    case 0x30BB: sym = UKey_Kana_SE; break;
+    case 0x30BD: sym = UKey_Kana_SO; break;
+    case 0x30BF: sym = UKey_Kana_TA; break;
+    case 0x30C1: sym = UKey_Kana_CHI; break;
+    case 0x30C4: sym = UKey_Kana_TU; break;
+    case 0x30C6: sym = UKey_Kana_TE; break;
+    case 0x30C8: sym = UKey_Kana_TO; break;
+    case 0x30CA: sym = UKey_Kana_NA; break;
+    case 0x30CB: sym = UKey_Kana_NI; break;
+    case 0x30CC: sym = UKey_Kana_NU; break;
+    case 0x30CD: sym = UKey_Kana_NE; break;
+    case 0x30CE: sym = UKey_Kana_NO; break;
+    case 0x30CF: sym = UKey_Kana_HA; break;
+    case 0x30D2: sym = UKey_Kana_HI; break;
+    case 0x30D5: sym = UKey_Kana_FU; break;
+    case 0x30D8: sym = UKey_Kana_HE; break;
+    case 0x30DB: sym = UKey_Kana_HO; break;
+    case 0x30DE: sym = UKey_Kana_MA; break;
+    case 0x30DF: sym = UKey_Kana_MI; break;
+    case 0x30E0: sym = UKey_Kana_MU; break;
+    case 0x30E1: sym = UKey_Kana_ME; break;
+    case 0x30E2: sym = UKey_Kana_MO; break;
+    case 0x30E4: sym = UKey_Kana_YA; break;
+    case 0x30E6: sym = UKey_Kana_YU; break;
+    case 0x30E8: sym = UKey_Kana_YO; break;
+    case 0x30E9: sym = UKey_Kana_RA; break;
+    case 0x30EA: sym = UKey_Kana_RI; break;
+    case 0x30EB: sym = UKey_Kana_RU; break;
+    case 0x30EC: sym = UKey_Kana_RE; break;
+    case 0x30ED: sym = UKey_Kana_RO; break;
+    case 0x30EF: sym = UKey_Kana_WA; break;
+    case 0x30F3: sym = UKey_Kana_N; break;
+    case 0x309B: sym = UKey_Voicedsound; break;
+    case 0x309C: sym = UKey_Semivoicedsound; break;
+    default:
+        sym = 0;
+        break;
+    }
+
+    return sym;
 }
 
 #include "immodule-quiminputcontext.moc"
