@@ -1425,6 +1425,9 @@ key_pref_set_value(gint ukey, gint umod)
      */
     g_string_append(keystr, "space");
     break;
+  case UKey_Yen:
+    g_string_append(keystr, "yen");
+    break;
   case UKey_Backspace:
     g_string_append(keystr, "backspace");
     break;
@@ -1469,6 +1472,18 @@ key_pref_set_value(gint ukey, gint umod)
     break;
   case UKey_Multi_key:
     g_string_append(keystr, "Multi_key");
+    break;
+  case UKey_Codeinput:
+    g_string_append(keystr, "codeinput");
+    break;
+  case UKey_SingleCandidate:
+    g_string_append(keystr, "singlecandidate");
+    break;
+  case UKey_MultipleCandidate:
+    g_string_append(keystr, "multiplecandidate");
+    break;
+  case UKey_PreviousCandidate:
+    g_string_append(keystr, "previouscandidate");
     break;
   case UKey_Mode_switch:
     g_string_append(keystr, "Mode_switch");
@@ -1521,6 +1536,103 @@ key_pref_set_value(gint ukey, gint umod)
   case UKey_Eisu_toggle:
     g_string_append(keystr, "eisu-toggle");
     break;
+  case UKey_Hangul:
+    g_string_append(keystr, "hangul");
+    break;
+  case UKey_Hangul_Start:
+    g_string_append(keystr, "hangul-start");
+    break;
+  case UKey_Hangul_End:
+    g_string_append(keystr, "hangul-end");
+    break;
+  case UKey_Hangul_Hanja:
+    g_string_append(keystr, "hangul-hanja");
+    break;
+  case UKey_Hangul_Jamo:
+    g_string_append(keystr, "hangul-jamo");
+    break;
+  case UKey_Hangul_Romaja:
+    g_string_append(keystr, "hangul-romaja");
+    break;
+  case UKey_Hangul_Codeinput:
+    g_string_append(keystr, "hangul-codeinput");
+    break;
+  case UKey_Hangul_Jeonja:
+    g_string_append(keystr, "hangul-jeonja");
+    break;
+  case UKey_Hangul_Banja:
+    g_string_append(keystr, "hangul-banja");
+    break;
+  case UKey_Hangul_PreHanja:
+    g_string_append(keystr, "hangul-prehanja");
+    break;
+  case UKey_Hangul_PostHanja:
+    g_string_append(keystr, "hangul-posthanja");
+    break;
+  case UKey_Hangul_SingleCandidate:
+    g_string_append(keystr, "hangul-singlecandidate");
+    break;
+  case UKey_Hangul_MultipleCandidate:
+    g_string_append(keystr, "hangul-multiplecandidate");
+    break;
+  case UKey_Hangul_PreviousCandidate:
+    g_string_append(keystr, "hangul-previouscandidate");
+    break;
+  case UKey_Hangul_Special:
+    g_string_append(keystr, "hangul-special");
+    break;
+  case UKey_Dead_Grave:
+    g_string_append(keystr, "dead-grave");
+    break;
+  case UKey_Dead_Acute:
+    g_string_append(keystr, "dead-acute");
+    break;
+  case UKey_Dead_Circumflex:
+    g_string_append(keystr, "dead-circumflex");
+    break;
+  case UKey_Dead_Tilde:
+    g_string_append(keystr, "dead-tilde");
+    break;
+  case UKey_Dead_Macron:
+    g_string_append(keystr, "dead-macron");
+    break;
+  case UKey_Dead_Breve:
+    g_string_append(keystr, "dead-breve");
+    break;
+  case UKey_Dead_Abovering:
+    g_string_append(keystr, "dead-abovering");
+    break;
+  case UKey_Dead_Doubleacute:
+    g_string_append(keystr, "dead-doubleacute");
+    break;
+  case UKey_Dead_Caron:
+    g_string_append(keystr, "dead-caron");
+    break;
+  case UKey_Dead_Cedilla:
+    g_string_append(keystr, "dead-cedilla");
+    break;
+  case UKey_Dead_Ogonek:
+    g_string_append(keystr, "dead-ogonek");
+    break;
+  case UKey_Dead_Iota:
+    g_string_append(keystr, "dead-iota");
+    break;
+  case UKey_Dead_Voiced_Sound:
+    g_string_append(keystr, "dead-voiced-sound");
+    break;
+  case UKey_Dead_Semivoiced_Sound:
+    g_string_append(keystr, "dead-semivoiced-sound");
+    break;
+  case UKey_Dead_Belowdot:
+    g_string_append(keystr, "dead-belowdot");
+    break;
+  case UKey_Dead_Hook:
+    g_string_append(keystr, "dead-hook");
+    break;
+  case UKey_Dead_Horn:
+    g_string_append(keystr, "dead-horn");
+    break;
+
   case UKey_Shift_key:
     g_string_append(keystr, "Shift_key");
     break;
