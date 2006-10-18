@@ -220,7 +220,7 @@ enum UKey {
   UKey_Kana_SE,
   UKey_Kana_SO,
   UKey_Kana_TA,
-  UKey_Kana_TI,
+  UKey_Kana_CHI,
   UKey_Kana_TU,
   UKey_Kana_TE,
   UKey_Kana_TO,

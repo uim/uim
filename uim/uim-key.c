@@ -188,7 +188,7 @@ static struct key_entry key_tab[] = {
   {UKey_Kana_SE, "kana-SE"},
   {UKey_Kana_SO, "kana-SO"},
   {UKey_Kana_TA, "kana-TA"},
-  {UKey_Kana_TI, "kana-TI"},
+  {UKey_Kana_CHI, "kana-CHI"},
   {UKey_Kana_TU, "kana-TU"},
   {UKey_Kana_TE, "kana-TE"},
   {UKey_Kana_TO, "kana-TO"},
