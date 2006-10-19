@@ -295,7 +295,7 @@ static const char *
 get_sym(int key)
 {
   int i;
-  char *res = NULL;
+  const char *res = NULL;
   for (i = 0; key_tab[i].key; i++) {
     if (key_tab[i].key == key) {
       res = key_tab[i].str;

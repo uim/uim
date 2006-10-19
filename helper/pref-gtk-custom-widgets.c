@@ -46,6 +46,7 @@
 #include "uim/gettext.h"
 
 #include "../gtk/key-util-gtk.h"
+#include "pref-gtk-keytab.h"
 
 #define DEFAULT_OLIST_WINDOW_WIDTH    480
 #define DEFAULT_OLIST_WINDOW_HEIGHT   350
@@ -1396,6 +1397,7 @@ static void
 key_pref_set_value(gint ukey, gint umod)
 {
   GString *keystr;
+  const char *sym;
 
   keystr = g_string_new("");
   /*
@@ -1425,241 +1427,15 @@ key_pref_set_value(gint ukey, gint umod)
      */
     g_string_append(keystr, "space");
     break;
-  case UKey_Yen:
-    g_string_append(keystr, "yen");
-    break;
-  case UKey_Backspace:
-    g_string_append(keystr, "backspace");
-    break;
-  case UKey_Delete:
-    g_string_append(keystr, "delete");
-    break;
-  case UKey_Insert:
-    g_string_append(keystr, "insert");
-    break;
-  case UKey_Escape:
-    g_string_append(keystr, "escape");
-    break;
-  case UKey_Tab:
-    g_string_append(keystr, "tab");
-    break;
-  case UKey_Return:
-    g_string_append(keystr, "return");
-    break;
-  case UKey_Left:
-    g_string_append(keystr, "left");
-    break;
-  case UKey_Up:
-    g_string_append(keystr, "up");
-    break;
-  case UKey_Right:
-    g_string_append(keystr, "right");
-    break;
-  case UKey_Down:
-    g_string_append(keystr, "down");
-    break;
-  case UKey_Prior:
-    g_string_append(keystr, "prior");
-    break;
-  case UKey_Next:
-    g_string_append(keystr, "next");
-    break;
-  case UKey_Home:
-    g_string_append(keystr, "home");
-    break;
-  case UKey_End:
-    g_string_append(keystr, "end");
-    break;
-  case UKey_Multi_key:
-    g_string_append(keystr, "Multi_key");
-    break;
-  case UKey_Codeinput:
-    g_string_append(keystr, "codeinput");
-    break;
-  case UKey_SingleCandidate:
-    g_string_append(keystr, "singlecandidate");
-    break;
-  case UKey_MultipleCandidate:
-    g_string_append(keystr, "multiplecandidate");
-    break;
-  case UKey_PreviousCandidate:
-    g_string_append(keystr, "previouscandidate");
-    break;
-  case UKey_Mode_switch:
-    g_string_append(keystr, "Mode_switch");
-    break;
-  case UKey_Kanji:
-    g_string_append(keystr, "Kanji");
-    break;
-  case UKey_Muhenkan:
-    g_string_append(keystr, "Muhenkan");
-    break;
-  case UKey_Henkan_Mode:
-    g_string_append(keystr, "Henkan_Mode");
-    break;
-  case UKey_Romaji:
-    g_string_append(keystr, "romaji");
-    break;
-  case UKey_Hiragana:
-    g_string_append(keystr, "hiragana");
-    break;
-  case UKey_Katakana:
-    g_string_append(keystr, "katakana");
-    break;
-  case UKey_Hiragana_Katakana:
-    g_string_append(keystr, "hiragana-katakana");
-    break;
-  case UKey_Zenkaku:
-    g_string_append(keystr, "zenkaku");
-    break;
-  case UKey_Hankaku:
-    g_string_append(keystr, "hankaku");
-    break;
-  case UKey_Zenkaku_Hankaku:
-    g_string_append(keystr, "zenkaku-hankaku");
-    break;
-  case UKey_Touroku:
-    g_string_append(keystr, "touroku");
-    break;
-  case UKey_Massyo:
-    g_string_append(keystr, "massyo");
-    break;
-  case UKey_Kana_Lock:
-    g_string_append(keystr, "kana-lock");
-    break;
-  case UKey_Kana_Shift:
-    g_string_append(keystr, "kana-shift");
-    break;
-  case UKey_Eisu_Shift:
-    g_string_append(keystr, "eisu-shift");
-    break;
-  case UKey_Eisu_toggle:
-    g_string_append(keystr, "eisu-toggle");
-    break;
-  case UKey_Hangul:
-    g_string_append(keystr, "hangul");
-    break;
-  case UKey_Hangul_Start:
-    g_string_append(keystr, "hangul-start");
-    break;
-  case UKey_Hangul_End:
-    g_string_append(keystr, "hangul-end");
-    break;
-  case UKey_Hangul_Hanja:
-    g_string_append(keystr, "hangul-hanja");
-    break;
-  case UKey_Hangul_Jamo:
-    g_string_append(keystr, "hangul-jamo");
-    break;
-  case UKey_Hangul_Romaja:
-    g_string_append(keystr, "hangul-romaja");
-    break;
-  case UKey_Hangul_Codeinput:
-    g_string_append(keystr, "hangul-codeinput");
-    break;
-  case UKey_Hangul_Jeonja:
-    g_string_append(keystr, "hangul-jeonja");
-    break;
-  case UKey_Hangul_Banja:
-    g_string_append(keystr, "hangul-banja");
-    break;
-  case UKey_Hangul_PreHanja:
-    g_string_append(keystr, "hangul-prehanja");
-    break;
-  case UKey_Hangul_PostHanja:
-    g_string_append(keystr, "hangul-posthanja");
-    break;
-  case UKey_Hangul_SingleCandidate:
-    g_string_append(keystr, "hangul-singlecandidate");
-    break;
-  case UKey_Hangul_MultipleCandidate:
-    g_string_append(keystr, "hangul-multiplecandidate");
-    break;
-  case UKey_Hangul_PreviousCandidate:
-    g_string_append(keystr, "hangul-previouscandidate");
-    break;
-  case UKey_Hangul_Special:
-    g_string_append(keystr, "hangul-special");
-    break;
-  case UKey_Dead_Grave:
-    g_string_append(keystr, "dead-grave");
-    break;
-  case UKey_Dead_Acute:
-    g_string_append(keystr, "dead-acute");
-    break;
-  case UKey_Dead_Circumflex:
-    g_string_append(keystr, "dead-circumflex");
-    break;
-  case UKey_Dead_Tilde:
-    g_string_append(keystr, "dead-tilde");
-    break;
-  case UKey_Dead_Macron:
-    g_string_append(keystr, "dead-macron");
-    break;
-  case UKey_Dead_Breve:
-    g_string_append(keystr, "dead-breve");
-    break;
-  case UKey_Dead_Abovering:
-    g_string_append(keystr, "dead-abovering");
-    break;
-  case UKey_Dead_Doubleacute:
-    g_string_append(keystr, "dead-doubleacute");
-    break;
-  case UKey_Dead_Caron:
-    g_string_append(keystr, "dead-caron");
-    break;
-  case UKey_Dead_Cedilla:
-    g_string_append(keystr, "dead-cedilla");
-    break;
-  case UKey_Dead_Ogonek:
-    g_string_append(keystr, "dead-ogonek");
-    break;
-  case UKey_Dead_Iota:
-    g_string_append(keystr, "dead-iota");
-    break;
-  case UKey_Dead_Voiced_Sound:
-    g_string_append(keystr, "dead-voiced-sound");
-    break;
-  case UKey_Dead_Semivoiced_Sound:
-    g_string_append(keystr, "dead-semivoiced-sound");
-    break;
-  case UKey_Dead_Belowdot:
-    g_string_append(keystr, "dead-belowdot");
-    break;
-  case UKey_Dead_Hook:
-    g_string_append(keystr, "dead-hook");
-    break;
-  case UKey_Dead_Horn:
-    g_string_append(keystr, "dead-horn");
-    break;
-
-  case UKey_Shift_key:
-    g_string_append(keystr, "Shift_key");
-    break;
-  case UKey_Control_key:
-    g_string_append(keystr, "Control_key");
-    break;
-  case UKey_Alt_key:
-    g_string_append(keystr, "Alt_key");
-    break;
-  case UKey_Meta_key:
-    g_string_append(keystr, "Meta_key");
-    break;
-  case UKey_Super_key:
-    g_string_append(keystr, "Super_key");
-    break;
-  case UKey_Hyper_key:
-    g_string_append(keystr, "Hyper_key");
-    break;
   default:
-    if (ukey >= UKey_F1 && ukey <= UKey_F35) {
-      g_string_append_printf(keystr, "F%d", ukey - UKey_F1 + 1);
 #if 0
-    } else if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9) {
+    if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9) {
       g_string_append_printf(keystr, "%d", keyval - GDK_KP_0 + UKey_0);
 #endif
-    } else if (ukey < 256) {
+    if (ukey < 128) {
       g_string_append_printf(keystr, "%c", ukey);
+    } else if ((sym = uim_pref_get_keysym(ukey))) {
+      g_string_append(keystr, sym);
     } else {
       /* UKey_Other */
     }
