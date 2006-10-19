@@ -65,7 +65,7 @@ QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
 #ifdef Q_WS_X11
 DefTree *QUimInputContext::mTreeTop = NULL;
 #endif
-static int katakanaUnicodeToSym(ushort c);
+static int unicodeToUKey(ushort c);
 
 // I think that current index-based query API of uim for language and
 // input method name is useless and should be redesigned. I will
@@ -214,19 +214,10 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     else if ( qkey == Qt::Key_unknown )
     {
         QString text = keyevent->text();
-        if (text)
+        if ( !text.isNull() )
         {
-            const QChar *s = text.unicode();
-            ushort c = (*s).unicode();
-            if ( c == 0x00A5 )
-            {
-                key = UKey_Yen;
-            }
-            else
-            {
-                if ( ! ( key = katakanaUnicodeToSym( c ) ) )
-                    key = UKey_Other;
-            }
+            QChar s = text.at(0);
+            key = unicodeToUKey ( s.unicode() );
         }
         else
         {
@@ -735,10 +726,11 @@ void QUimInputContext::readIMConf()
     free( leftp );
 }
 
-static int katakanaUnicodeToSym(ushort c) {
+static int unicodeToUKey (ushort c) {
     int sym;
 
     switch (c) {
+    case 0x00A5: sym = UKey_Yen; break;
     case 0x3002: sym = UKey_Kana_Fullstop; break;
     case 0x300C: sym = UKey_Kana_Openingbracket; break;
     case 0x300D: sym = UKey_Kana_Closingbracket; break;
@@ -803,7 +795,7 @@ static int katakanaUnicodeToSym(ushort c) {
     case 0x309B: sym = UKey_Voicedsound; break;
     case 0x309C: sym = UKey_Semivoicedsound; break;
     default:
-        sym = 0;
+        sym = UKey_Other;
         break;
     }
 
