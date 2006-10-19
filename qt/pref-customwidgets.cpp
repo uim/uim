@@ -40,6 +40,7 @@
 #define _FU8(String) QString::fromUtf8(String)
 
 #define DEBUG_KEY_EDIT 0
+static QString unicodeKeyToSymStr( QChar c );
 
 CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name )
     : QCheckBox( parent, name ),
@@ -867,6 +868,7 @@ KeyGrabDialog::KeyGrabDialog( QWidget *parent, const char *name )
     : QDialog( parent, name ),
       pressed_keyval( 0 ),
       pressed_keystate( Qt::NoButton ),
+      pressed_unichar ( 0 ),
       m_keystr( 0 )
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout( this );
@@ -878,9 +880,9 @@ KeyGrabDialog::KeyGrabDialog( QWidget *parent, const char *name )
 
 void KeyGrabDialog::keyPressEvent( QKeyEvent *e )
 {
-    // XXX should treat unicode keys with e->text()
     pressed_keyval = e->key();
     pressed_keystate = e->state();
+    pressed_unichar = e->text().at(0);
 }
 
 void KeyGrabDialog::keyReleaseEvent( QKeyEvent * /* e */ )
@@ -1060,7 +1062,6 @@ void KeyGrabDialog::setKeyStr()
         keystr += "hangul-special";
         break;
 #endif /* Def: QT_IMMODULE */
-
     case Qt::Key_Dead_Grave:
         keystr += "dead-grave";
         break;
@@ -1138,6 +1139,9 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Hyper_R:
         keystr += "Hyper_key";
         break;
+    case Qt::Key_unknown:
+        keystr += unicodeKeyToSymStr ( pressed_unichar );
+        break;
     default:
         if( keyval >= Qt::Key_F1 && keyval <= Qt::Key_F35 )
         {
@@ -1159,6 +1163,21 @@ void KeyGrabDialog::setKeyStr()
 
     m_keystr = keystr;
         
+}
+
+static QString unicodeKeyToSymStr ( QChar c )
+{
+    QString str = QString::null;
+
+    switch ( c.unicode() ) {
+    case 0x00A5:
+        str = "yen";
+        break;
+    default:
+        break;
+    }
+
+    return str;
 }
 
 #include "pref-customwidgets.moc"

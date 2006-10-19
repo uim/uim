@@ -299,6 +299,7 @@ protected:
 protected:
     int pressed_keyval;
     ButtonState pressed_keystate;
+    QChar pressed_unichar;
     QString m_keystr; 
 };
 
