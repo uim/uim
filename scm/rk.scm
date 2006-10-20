@@ -141,6 +141,17 @@
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
+       ;; If the sequence contains only non-representable keysyms after
+       ;; the deletion, flush them.
+       (if (and
+	    (not (null? (rk-context-seq context)))
+	    (null? (remove
+		    (lambda (x)
+		     (and
+		      (intern-key-symbol x)
+		      (not (symbol-bound? (string->symbol x)))))
+		    (rk-context-seq context))))
+	   (rk-flush context))
        #t)
      #f)))
  
@@ -152,6 +163,18 @@
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
+       ;; If the sequence contains only non-representable keysyms after
+       ;; the deletion, flush them.
+       (if (and
+	    (not (null? (rk-context-seq context)))
+	    (null? (remove
+		    (lambda (x)
+		     (and
+		      (intern-key-symbol x)
+		      (not (symbol-bound? (string->symbol x)))))
+		    (rk-context-seq context))))
+	   (rk-flush context))
+
        #t)
      #f)))
 
@@ -282,4 +305,10 @@
 (define rk-pending
   (lambda (c)
     (string-list-concat
-     (rk-context-seq c))))
+     ;; remove keysyms not representable in IM
+     (filter-map
+      (lambda (x) (if (intern-key-symbol x)
+		      (if (symbol-bound? (string->symbol x))
+		          (symbol-value (string->symbol x)))
+		      x))
+      (rk-context-seq c)))))
