@@ -63,6 +63,7 @@
     ((("?"). ())("¡©" "¡©" "?"))
     ((("/"). ())("¡¿" "¡¿" "/"))
     ((("_"). ())("¡²" "¡²" "_"))
+    ((("yen"). ())("¡ï" "¡ï" "¡ï")) ;; XXX
 
     ((("1"). ())("1" "1" "1"))
     ((("2"). ())("2" "2" "2"))
@@ -542,6 +543,7 @@
     ("=" "¡á")
     ("^" "¡°")
     ("\\" "¡À")
+    ("yen" "¡ï")
     ("|" "¡Ã")
     ("`" "¡Æ")
     ("@" "¡÷")
@@ -658,7 +660,8 @@
 
 (define ja-wide
   (lambda (c)
-    (ja-find-rec c ja-wide-rule)))
+    (or (ja-find-rec c ja-wide-rule)
+        c)))
 
 (define ja-direct
   (lambda (c)
@@ -836,6 +839,10 @@
     (define-key skk-kana-toggle-key? "@")
     (define-key skk-kanji-mode-key? "`")
     ))
+
+(define japanese-roma-set-yen-representation
+  (lambda ()
+    (set-symbol-value! 'yen "¡ï"))) ;; XXX
 
 ;;
 (require "rk.scm")
