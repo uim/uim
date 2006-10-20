@@ -764,7 +764,7 @@ static int unicodeToUKey (ushort c) {
     case 0x30BD: sym = UKey_Kana_SO; break;
     case 0x30BF: sym = UKey_Kana_TA; break;
     case 0x30C1: sym = UKey_Kana_CHI; break;
-    case 0x30C4: sym = UKey_Kana_TU; break;
+    case 0x30C4: sym = UKey_Kana_TSU; break;
     case 0x30C6: sym = UKey_Kana_TE; break;
     case 0x30C8: sym = UKey_Kana_TO; break;
     case 0x30CA: sym = UKey_Kana_NA; break;

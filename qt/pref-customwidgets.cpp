@@ -1204,7 +1204,7 @@ static QString unicodeKeyToSymStr ( QChar c )
     case 0x30BD: str = "kana-SO"; break;
     case 0x30BF: str = "kana-TA"; break;
     case 0x30C1: str = "kana-CHI"; break;
-    case 0x30C4: str = "kana-TU"; break;
+    case 0x30C4: str = "kana-TSU"; break;
     case 0x30C6: str = "kana-TE"; break;
     case 0x30C8: str = "kana-TO"; break;
     case 0x30CA: str = "kana-NA"; break;
@@ -1232,8 +1232,8 @@ static QString unicodeKeyToSymStr ( QChar c )
     case 0x30ED: str = "kana-RO"; break;
     case 0x30EF: str = "kana-WA"; break;
     case 0x30F3: str = "kana-N"; break;
-    case 0x309B: str = "kana-voicedsound"; break;
-    case 0x309C: str = "kana-semivoicedsound"; break;
+    case 0x309B: str = "voicedsound"; break;
+    case 0x309C: str = "semivoicedsound"; break;
     default:
         break;
     }
