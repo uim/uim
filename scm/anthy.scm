@@ -229,6 +229,7 @@
 		   (anthy-prepare-input-rule-activation ac)
 		   (rk-context-set-rule! (anthy-context-rkc ac)
 					 ja-rk-rule)
+		   (japanese-roma-set-yen-representation)
 		   (anthy-context-set-input-rule! ac anthy-input-rule-roma)))
 
 (register-action 'action_anthy_kana
@@ -247,6 +248,7 @@
 		   (anthy-context-set-input-rule! ac anthy-input-rule-kana)
 		   (anthy-context-change-kana-mode! ac (anthy-context-kana-mode ac))
 		   (anthy-context-set-alnum! ac #f)
+		   (japanese-roma-set-yen-representation)
 		   ;;(define-key anthy-kana-toggle-key? "")
 		   ;;(define-key anthy-on-key? generic-on-key?)
 		   ;;(define-key anthy-fullwidth-alnum-key? "")
@@ -267,6 +269,7 @@
 		   (anthy-prepare-input-rule-activation ac)
 		   (rk-context-set-rule! (anthy-context-rkc ac)
 					 ja-azik-rule)
+		   (japanese-roma-set-yen-representation)
 		   (anthy-context-set-input-rule! ac anthy-input-rule-azik)))
 
 ;; Update widget definitions based on action configurations. The
@@ -408,7 +411,9 @@
 	      (if upper?
 		  (map
 		   (lambda (x)
-		     (charcode->string (char-upcase (string->charcode x))))
+		     (if (char-alphabetic? (string->charcode x))
+			 (charcode->string (char-upcase (string->charcode x)))
+			 x))
 		   (string-to-list (car raw-str-list)))
 		  (string-to-list (car raw-str-list))))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?))
@@ -417,7 +422,9 @@
 		 (string-list-concat
 		  (map
 		   (lambda (x)
-		     (charcode->string (char-upcase (string->charcode x))))
+		     (if (char-alphabetic? (string->charcode x))
+			 (charcode->string (char-upcase (string->charcode x)))
+			 x))
 		   (string-to-list (car raw-str-list))))
 		 (car raw-str-list))
 	     (anthy-make-raw-string (cdr raw-str-list) wide? upper?)))
@@ -544,6 +551,41 @@
     (anthy-context-set-converting! ac #f)
     (ustr-clear! (anthy-context-segments ac))))
 
+(define kana-keys?
+  (lambda (key)
+    (if (not (symbol? key))
+	#f
+	(cond
+	 ((eq? 'prolongedsound key)
+	  #t)
+	 ((eq? 'voicedsound key)
+	  #t)
+	 ((eq? 'semivoicedsound key)
+	  #t)
+	 ((eq? 'kana-lock key)
+	  #f)
+	 ((eq? 'kana-shift key)
+	  #f)
+	 (else
+	   (let ((name (symbol->string key)))
+	     (if (> (string-length name) 5)
+		 (let ((keysym-head
+			(string-list-concat
+		       (list-head (reverse (string-to-list name)) 5))))
+		   (if (string=? keysym-head "-anak") ;; reverse
+		       #t
+		       #f))
+		 #f)))))))
+
+(define anthy-non-composing-symbol?
+  (lambda (ac key)
+    (if (and
+	 (symbol? key)
+	 (not (kana-keys? key))
+	 (not (eq? key 'yen)))
+	#t
+	#f)))
+
 (define anthy-proc-input-state-no-preedit
   (lambda (ac key key-state)
     (let ((rkc (anthy-context-rkc ac))
@@ -637,28 +679,41 @@
 			      anthy-type-halfwidth-alnum)))
 	    (im-commit ac (list-ref ja-space (anthy-context-kana-mode ac)))))
 
-       ((symbol? key)
+       ((anthy-non-composing-symbol? ac key)
 	(anthy-commit-raw ac))
 
        (else
 	(if (anthy-context-alnum ac)
-	    (let ((key-str (charcode->string key)))
+	    (let ((key-str (if (symbol? key)
+			       (if (symbol-bound? key)
+				   (symbol-value key)
+				   "?") ;; shouldn't happen
+			       (charcode->string key))))
 	      (ustr-insert-elem! (anthy-context-preconv-ustr ac)
 				 (if (= (anthy-context-alnum-type ac)
-				        anthy-type-halfwidth-alnum)
+					anthy-type-halfwidth-alnum)
 				     (list key-str key-str key-str)
 				     (list (ja-wide key-str) (ja-wide key-str)
-				           (ja-wide key-str))))
+					   (ja-wide key-str))))
 	      (ustr-insert-elem! (anthy-context-raw-ustr ac) key-str))
-	    (let* ((key-str (charcode->string
-			     (if (= rule anthy-input-rule-kana)
-				 key
-				 (to-lower-char key))))
+	    (let* ((key-str (if (= rule anthy-input-rule-kana)
+	    			(if (symbol? key)
+				    (symbol->string key)
+				    (charcode->string key))
+				(if (symbol? key)
+				    (symbol->string key)
+				    (charcode->string (to-lower-char key)))))
 		   (res (rk-push-key! rkc key-str)))
 	      (if res
 		  (begin
 		    (ustr-insert-elem! (anthy-context-preconv-ustr ac) res)
-		    (ustr-insert-elem! (anthy-context-raw-ustr ac) key-str))
+		    (ustr-insert-elem! (anthy-context-raw-ustr ac)
+				       (if (and (intern-key-symbol key-str)
+						(symbol-bound?
+						 (string->symbol key-str)))
+					   (symbol-value
+					    (string->symbol key-str))
+					   key-str)))
 		  (if (null? (rk-context-seq rkc))
 		      (anthy-commit-raw ac))))))))))
 
@@ -759,7 +814,7 @@
 	      (anthy-prev-candidate-key? key key-state)
 	      (and (modifier-key-mask key-state)
 		   (not (shift-key-mask key-state)))
-	      (symbol? key))
+	      (anthy-non-composing-symbol? ac key))
 	     #f
 	     #t)
 	 ; implicit commit
@@ -1122,8 +1177,8 @@
 	     (not (shift-key-mask key-state)))
 	#f)
 
-       ((symbol? key)
-        #f)
+       ((anthy-non-composing-symbol? ac key)
+	#f)
 
        (else	
 	;; handle "n1" sequence as "¤ó1"
@@ -1131,10 +1186,13 @@
 		 (not (alphabet-char? key))
 		 (not (string-find
 		       (rk-expect rkc)
-		       (charcode->string
-		        (if (= rule anthy-input-rule-kana)
-			    key
-			    (to-lower-char key))))))
+		       (if (= rule anthy-input-rule-kana)
+			   (if (symbol? key)
+			       (symbol->string key)
+			       (charcode->string key))
+			   (if (symbol? key)
+			       (symbol->string key)
+			       (charcode->string (to-lower-char key)))))))
 	    (let ((pend (rk-pending rkc))
 		  (residual-kana (rk-push-key-last! rkc)))
 	      (if residual-kana
@@ -1143,7 +1201,11 @@
 		    (ustr-insert-elem! raw-str pend)))))
 
 	(if (anthy-context-alnum ac)
-	    (let ((key-str (charcode->string key))
+	    (let ((key-str (if (symbol? key)
+			       (if (symbol-bound? key)
+				   (symbol-value key)
+				   "?") ;; shouldn't happen
+			       (charcode->string key)))
 		  (pend (rk-pending rkc))
 		  (residual-kana (rk-peek-terminal-match rkc)))
 	      (rk-flush rkc) ;; OK to reset rkc here.
@@ -1158,10 +1220,13 @@
 				     (list (ja-wide key-str) (ja-wide key-str)
 					   (ja-wide key-str))))
 	      (ustr-insert-elem! raw-str key-str))
-	    (let* ((key-str (charcode->string 
-			     (if (= rule anthy-input-rule-kana)
-				 key
-				 (to-lower-char key))))
+	    (let* ((key-str (if (= rule anthy-input-rule-kana)
+	    			(if (symbol? key)
+				    (symbol->string key)
+				    (charcode->string key))
+				(if (symbol? key)
+				    (symbol->string key)
+				    (charcode->string (to-lower-char key)))))
 		   (pend (rk-pending rkc))
 		   (res (rk-push-key! rkc key-str)))
 	      (if (and res
@@ -1177,10 +1242,22 @@
 			(if (list? (car res))
 			    (begin
 			      (ustr-insert-elem! raw-str pend)
-			      (ustr-insert-elem! raw-str key-str))
+			      (ustr-insert-elem!
+			       raw-str (if (and (intern-key-symbol key-str)
+						(symbol-bound?
+						 (string->symbol key-str)))
+					   (symbol-value
+					    (string->symbol key-str))
+					   key-str)))
 			    (ustr-insert-elem!
 			     raw-str
-			     (string-append pend key-str)))))))))))))
+			     (string-append
+			      pend
+			      (if (and
+				   (intern-key-symbol key-str)
+				   (symbol-bound? (string->symbol key-str)))
+				  (symbol-value (string->symbol key-str))
+				  key-str))))))))))))))
 
 (define anthy-context-confirm-kana!
   (lambda (ac)
@@ -1640,7 +1717,7 @@
 	   (not (shift-key-mask key-state)))
       #f)  ;; use #f rather than () to conform to R5RS
 
-     ((symbol? key)
+     ((anthy-non-composing-symbol? ac key)
       #f)
 
      (else
