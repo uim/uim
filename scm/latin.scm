@@ -1694,6 +1694,7 @@
        (eq? 'Multi_key key)
        (dead-keys? key))
       (latin-context-set-composing?! lc #t)
+      (latin-context-set-raw-commit! lc #f)
       (latin-proc-composing-state lc key state))
      (else
       (latin-commit-raw lc)))))
