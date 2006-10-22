@@ -556,12 +556,6 @@
     (if (not (symbol? key))
 	#f
 	(cond
-	 ((eq? 'prolongedsound key)
-	  #t)
-	 ((eq? 'voicedsound key)
-	  #t)
-	 ((eq? 'semivoicedsound key)
-	  #t)
 	 ((eq? 'kana-lock key)
 	  #f)
 	 ((eq? 'kana-shift key)

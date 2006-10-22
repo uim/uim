@@ -732,8 +732,8 @@ static int unicodeToUKey (ushort c) {
     switch (c) {
     case 0x00A5: sym = UKey_Yen; break;
     case 0x3002: sym = UKey_Kana_Fullstop; break;
-    case 0x300C: sym = UKey_Kana_Openingbracket; break;
-    case 0x300D: sym = UKey_Kana_Closingbracket; break;
+    case 0x300C: sym = UKey_Kana_OpeningBracket; break;
+    case 0x300D: sym = UKey_Kana_ClosingBracket; break;
     case 0x3001: sym = UKey_Kana_Comma; break;
     case 0x30FB: sym = UKey_Kana_Conjunctive; break;
     case 0x30F2: sym = UKey_Kana_WO; break;
@@ -746,7 +746,7 @@ static int unicodeToUKey (ushort c) {
     case 0x30E5: sym = UKey_Kana_yu; break;
     case 0x30E7: sym = UKey_Kana_yo; break;
     case 0x30C3: sym = UKey_Kana_tsu; break;
-    case 0x30FC: sym = UKey_Prolongedsound; break;
+    case 0x30FC: sym = UKey_Kana_ProlongedSound; break;
     case 0x30A2: sym = UKey_Kana_A; break;
     case 0x30A4: sym = UKey_Kana_I; break;
     case 0x30A6: sym = UKey_Kana_U; break;
@@ -792,8 +792,8 @@ static int unicodeToUKey (ushort c) {
     case 0x30ED: sym = UKey_Kana_RO; break;
     case 0x30EF: sym = UKey_Kana_WA; break;
     case 0x30F3: sym = UKey_Kana_N; break;
-    case 0x309B: sym = UKey_Voicedsound; break;
-    case 0x309C: sym = UKey_Semivoicedsound; break;
+    case 0x309B: sym = UKey_Kana_VoicedSound; break;
+    case 0x309C: sym = UKey_Kana_SemivoicedSound; break;
     default:
         sym = UKey_Other;
         break;

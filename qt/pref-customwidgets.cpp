@@ -969,13 +969,13 @@ void KeyGrabDialog::setKeyStr()
         keystr += "codeinput";
         break;
     case Qt::Key_SingleCandidate:
-        keystr += "singlecandidate";
+        keystr += "single-candidate";
         break;
     case Qt::Key_MultipleCandidate:
-        keystr += "multiplecandidate";
+        keystr += "multiple-candidate";
         break;
     case Qt::Key_PreviousCandidate:
-        keystr += "previouscandidate";
+        keystr += "previous-candidate";
         break;
     case Qt::Key_Mode_switch:
         keystr += "Mode_switch";
@@ -1172,8 +1172,8 @@ static QString unicodeKeyToSymStr ( QChar c )
     switch ( c.unicode() ) {
     case 0x00A5: str = "yen"; break;
     case 0x3002: str = "kana-fullstop"; break;
-    case 0x300C: str = "kana-openingbracket"; break;
-    case 0x300D: str = "kana-closingbracket"; break;
+    case 0x300C: str = "kana-opening-bracket"; break;
+    case 0x300D: str = "kana-closing-bracket"; break;
     case 0x3001: str = "kana-comma"; break;
     case 0x30FB: str = "kana-conjunctive"; break;
     case 0x30F2: str = "kana-WO"; break;
@@ -1186,7 +1186,7 @@ static QString unicodeKeyToSymStr ( QChar c )
     case 0x30E5: str = "kana-yu"; break;
     case 0x30E7: str = "kana-yo"; break;
     case 0x30C3: str = "kana-tsu"; break;
-    case 0x30FC: str = "prolongedsound"; break;
+    case 0x30FC: str = "kana-prolonged-sound"; break;
     case 0x30A2: str = "kana-A"; break;
     case 0x30A4: str = "kana-I"; break;
     case 0x30A6: str = "kana-U"; break;
@@ -1232,8 +1232,8 @@ static QString unicodeKeyToSymStr ( QChar c )
     case 0x30ED: str = "kana-RO"; break;
     case 0x30EF: str = "kana-WA"; break;
     case 0x30F3: str = "kana-N"; break;
-    case 0x309B: str = "voicedsound"; break;
-    case 0x309C: str = "semivoicedsound"; break;
+    case 0x309B: str = "kana-voiced-sound"; break;
+    case 0x309C: str = "kana-semivoiced-sound"; break;
     default:
         break;
     }
