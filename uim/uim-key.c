@@ -40,6 +40,12 @@
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
 
+
+#define KEYBUF_SIZE (sizeof("'hangul-multiple-candidate     "))
+
+#define ISASCII(c) (0 <= (c) && (c) <= 127)
+
+
 struct key_entry {
   int key;
   const char *str;
@@ -63,9 +69,9 @@ static struct key_entry key_tab[] = {
   {UKey_Insert, "insert"},
   {UKey_Multi_key, "Multi_key"},
   {UKey_Codeinput, "codeinput"},
-  {UKey_SingleCandidate, "singlecandidate"},
-  {UKey_MultipleCandidate, "multiplecandidate"},
-  {UKey_PreviousCandidate, "previouscandidate"},
+  {UKey_SingleCandidate, "single-candidate"},
+  {UKey_MultipleCandidate, "multiple-candidate"},
+  {UKey_PreviousCandidate, "previous-candidate"},
   {UKey_Mode_switch, "Mode_switch"},
   {UKey_Kanji, "Kanji"},
   {UKey_Muhenkan, "Muhenkan"},
@@ -95,9 +101,9 @@ static struct key_entry key_tab[] = {
   {UKey_Hangul_Banja, "hangul-banja"},
   {UKey_Hangul_PreHanja, "hangul-prehanja"},
   {UKey_Hangul_PostHanja, "hangul-posthanja"},
-  {UKey_Hangul_SingleCandidate, "hangul-singlecandidate"},
-  {UKey_Hangul_MultipleCandidate, "hangul-multiplecandidate"},
-  {UKey_Hangul_PreviousCandidate, "hangul-previouscandidate"},
+  {UKey_Hangul_SingleCandidate, "hangul-single-candidate"},
+  {UKey_Hangul_MultipleCandidate, "hangul-multiple-candidate"},
+  {UKey_Hangul_PreviousCandidate, "hangul-previous-candidate"},
   {UKey_Hangul_Special, "hangul-special"},
 
   {UKey_F1, "F1"},
@@ -150,15 +156,15 @@ static struct key_entry key_tab[] = {
   {UKey_Dead_Cedilla, "dead-cedilla"},
   {UKey_Dead_Ogonek, "dead-ogonek"},
   {UKey_Dead_Iota, "dead-iota"},
-  {UKey_Dead_Voiced_Sound, "dead-voiced-sound"},
-  {UKey_Dead_Semivoiced_Sound, "dead-semivoiced-sound"},
+  {UKey_Dead_VoicedSound, "dead-voiced-sound"},
+  {UKey_Dead_SemivoicedSound, "dead-semivoiced-sound"},
   {UKey_Dead_Belowdot, "dead-belowdot"},
   {UKey_Dead_Hook, "dead-hook"},
   {UKey_Dead_Horn, "dead-horn"},
 
   {UKey_Kana_Fullstop, "kana-fullstop"},
-  {UKey_Kana_Openingbracket, "kana-openingbracket"},
-  {UKey_Kana_Closingbracket, "kana-closingbracket"},
+  {UKey_Kana_OpeningBracket, "kana-opening-bracket"},
+  {UKey_Kana_ClosingBracket, "kana-closing-bracket"},
   {UKey_Kana_Comma, "kana-comma"},
   {UKey_Kana_Conjunctive, "kana-conjunctive"},
   {UKey_Kana_WO, "kana-WO"},
@@ -171,7 +177,7 @@ static struct key_entry key_tab[] = {
   {UKey_Kana_yu, "kana-yu"},
   {UKey_Kana_yo, "kana-yo"},
   {UKey_Kana_tsu, "kana-tsu"},
-  {UKey_Prolongedsound, "prolongedsound"},
+  {UKey_Kana_ProlongedSound, "kana-prolonged-sound"},
   {UKey_Kana_A, "kana-A"},
   {UKey_Kana_I, "kana-I"},
   {UKey_Kana_U, "kana-U"},
@@ -217,8 +223,8 @@ static struct key_entry key_tab[] = {
   {UKey_Kana_RO, "kana-RO"},
   {UKey_Kana_WA, "kana-WA"},
   {UKey_Kana_N, "kana-N"},
-  {UKey_Voicedsound, "voicedsound"},
-  {UKey_Semivoicedsound, "semivoicedsound"},
+  {UKey_Kana_VoicedSound, "kana-voiced-sound"},
+  {UKey_Kana_SemivoicedSound, "kana-semivoiced-sound"},
 
   {UKey_Private1, "Private1"},
   {UKey_Private2, "Private2"},
@@ -308,13 +314,15 @@ get_sym(int key)
 static int
 keycode_to_sym(int key, char *buf)
 {
-  if (key < 128) {
-    snprintf(buf, 32, "%d", key);
+  const char *s;
+
+  if (ISASCII(key)) {
+    snprintf(buf, KEYBUF_SIZE, "%d", key);
   } else {
-    const char *s = get_sym(key);
+    s = get_sym(key);
     if (!s)
       return -1;
-    snprintf(buf, 32, "'%s", s);
+    snprintf(buf, KEYBUF_SIZE, "'%s", s);
   }
   return 0;
 }
@@ -322,7 +330,7 @@ keycode_to_sym(int key, char *buf)
 static void
 handle_key(uim_context uc, const char *p, int key, int state)
 {
-  char keybuf[32];
+  char keybuf[KEYBUF_SIZE];
   int rv;
 
   rv = keycode_to_sym(key, keybuf);

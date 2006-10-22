@@ -104,6 +104,7 @@ enum UKey {
   UKey_Kanji, /* kanji, kanji convert */
   UKey_Muhenkan, /* cancel conversion */
   UKey_Henkan_Mode, /* start/stop conversion */
+  UKey_Henkan = UKey_Henkan_Mode, /* alias for Henkan_Mode */
   UKey_Romaji,
   UKey_Hiragana,
   UKey_Katakana,
@@ -182,15 +183,15 @@ enum UKey {
   UKey_Dead_Cedilla,
   UKey_Dead_Ogonek,
   UKey_Dead_Iota,
-  UKey_Dead_Voiced_Sound,
-  UKey_Dead_Semivoiced_Sound,
+  UKey_Dead_VoicedSound,
+  UKey_Dead_SemivoicedSound,
   UKey_Dead_Belowdot,
   UKey_Dead_Hook,
   UKey_Dead_Horn,
   /* Kana keys */
   UKey_Kana_Fullstop,
-  UKey_Kana_Openingbracket,
-  UKey_Kana_Closingbracket,
+  UKey_Kana_OpeningBracket,
+  UKey_Kana_ClosingBracket,
   UKey_Kana_Comma,
   UKey_Kana_Conjunctive,
   UKey_Kana_WO,
@@ -203,7 +204,7 @@ enum UKey {
   UKey_Kana_yu,
   UKey_Kana_yo,
   UKey_Kana_tsu,
-  UKey_Prolongedsound,
+  UKey_Kana_ProlongedSound,
   UKey_Kana_A,
   UKey_Kana_I,
   UKey_Kana_U,
@@ -249,8 +250,8 @@ enum UKey {
   UKey_Kana_RO,
   UKey_Kana_WA,
   UKey_Kana_N,
-  UKey_Voicedsound,
-  UKey_Semivoicedsound,
+  UKey_Kana_VoicedSound,
+  UKey_Kana_SemivoicedSound,
   /* non-standard platform specific keys (e.g. Zaurus PDA) */
   UKey_Private1,
   UKey_Private2,
