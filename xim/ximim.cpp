@@ -322,8 +322,12 @@ void XimIM_impl::forward_event(RxPacket *p)
 	k.press = (k.ev.type == KeyPress);
 	k.key_sym = ks;
 
-	if (ic)
+	if (ic) {
+	    InputContext *focusedContext = InputContext::focusedContext();
+	    if (!focusedContext)
+		ic->setFocus(); // workaround for some buggy applications
 	    ic->OnKeyEvent(k);
+	}
 	if (!(g_option_mask & OPT_ON_DEMAND_SYNC))
 	    send_sync_reply(icid);
 	break;
