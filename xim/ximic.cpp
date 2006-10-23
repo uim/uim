@@ -220,8 +220,14 @@ void icxatr::set_atr(int id, C8 *val, int o)
 
 	free(font_set_name);
 	font_set_name = strdup(new_fsn);
-	if (use_xft() == false)
+	if (use_xft() == false) {
 	    font_set = get_font_set(font_set_name, m_locale);
+	    if (!font_set) {
+		free(font_set_name);
+		font_set_name = NULL;
+		return; // Don't set atr mask
+	    }
+	}
     }
     break;
     case ICA_Area:
