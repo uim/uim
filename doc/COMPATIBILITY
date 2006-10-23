@@ -60,6 +60,23 @@ The changes are described below in most recently updated order.
 Summary: Add new key definition
 Affects: Bridge developers, Helper program developers
 Updates: libuim ABI
+Version: 1.3.0
+Revision: ac3923, ac3936, ac3937
+Date: 2006-10-21, 2006-10-23
+Modifier: Etsushi, YamaKen
+Related:
+URL: http://lists.freedesktop.org/archives/uim/2006-October/001567.html
+Changes:
+  (update) UKey
+  (update) key_tab
+Description:
+  Add dead keys, kana keys, and some keys on international keyboard.
+  These keys are added at the bottom of enum UKey to avoid backward ABI
+  incompatibility.
+------------------------------------------------------------------------------
+Summary: Add new key definition
+Affects: Bridge developers, Helper program developers
+Updates: libuim ABI
 Version: 1.2.0
 Revision: ac3765
 Date: 2006-07-21
