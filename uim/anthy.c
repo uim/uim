@@ -43,9 +43,9 @@
 
 #define MAX_CONTEXT 256
 
-/* handle anthy's version scheme like 7100b */
+/* handle anthy's version scheme like 7100b, 8158memm */
 static char *anthy_version_major;
-static char anthy_version_minor[2];
+static char *anthy_version_minor;
 
 static struct context {
   anthy_context_t ac;
@@ -73,23 +73,30 @@ get_anthy_version()
   const char *str;
 
   free(anthy_version_major);
+  free(anthy_version_minor);
 
   str = anthy_get_version_string();
 
   if (!str || (!strcmp(str, "(unknown)"))) {
     anthy_version_major = strdup("-1");
-    anthy_version_minor[0] = '\0';
+    anthy_version_minor = strdup("");
   } else {
-    int len;
+    int len, i;
 
     len = strlen(str);
-    if (isalpha(str[len - 1])) {
-      anthy_version_major = malloc(len);
-      strlcpy(anthy_version_major, str, len);
-      strlcpy(anthy_version_minor, &str[len - 1], sizeof(anthy_version_minor));
+    for (i = 0; str[i] != '\0'; i++) {
+      if (isalpha(str[i]))
+        break;
+    }
+
+    if (i != len) {
+      anthy_version_major = malloc(i + 1);
+      anthy_version_minor = malloc(len - i + 1);
+      strlcpy(anthy_version_major, str, i + 1);
+      strlcpy(anthy_version_minor, &str[i], len - i + 1);
     } else {
       anthy_version_major = strdup(str);
-      anthy_version_minor[0] = '\0';
+      anthy_version_minor = strdup("");
     }
   }
 }
