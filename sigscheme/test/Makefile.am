@@ -31,6 +31,11 @@ EXTRA_DIST += \
         test-member.scm \
         test-misc.scm \
         test-num.scm \
+        test-number-arith.scm \
+        test-number-cmp.scm \
+        test-number-conv.scm \
+        test-number-literal.scm \
+        test-number-pred.scm \
         test-obsolete.scm \
         test-pair.scm \
         test-quote.scm \

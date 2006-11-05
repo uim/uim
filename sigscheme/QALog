@@ -247,7 +247,7 @@ yyyy yyy core eval.c
          semicore format.c
 yyyy yyy r5rs syntax.c
 yyyy yyy r5rs procedure.c
-         r5rs number.c
+yyyy yyy r5rs number.c
 yyyy yyy r5rs list.c
 yyyy yyy r5rs deep-cadrs.c
          r5rs char.c
@@ -753,14 +753,14 @@ corner case tests: yamaken@r3880
 
 file:              number.c
 category:          r5rs
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3943
+spec by tests:     yamaken@r3943
+general review:    yamaken@r3943
+64-bit by eyes:    yamaken@r3943
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3943
+normal case tests: yamaken@r3943
+corner case tests: yamaken@r3943
 
 file:              list.c
 category:          r5rs
@@ -1029,6 +1029,45 @@ corner case tests:
 
 Log
 ---
+2006-11-05  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * number.c
+          - QA done @r3943 except for "64-bit by tests". And all required tests
+            for 64-bit configuration itself are also written, but since both
+            storage-compact and fatty produces SEGV when displaying an integer
+            on LP64 env, debug needed
+          - [R5RS] Fix broken result of 'modulo' on no-remainder cases
+          - Fix missized-cast of 'quotient' which results a broken value on
+            64-bit configurations
+          - [R5RS] Reject invalid number strings such as "0xa" and " 1" on
+            'string->number'
+          - [R5RS] Reject invalid number literals such as "#x0xa"
+          - (INT_LITERAL_LEN_MAX): Fix '0' prefix incapability on a
+            maximum-length binary number literal. See "R5RS conformance:
+            Numbers: Literals" subsection of doc/spec.txt for further details
+
+          Details:
+          - Add test-number-{arith,cmp,conv,literal,pred}.scm and complete all
+            required tests for these procedures I'm aware of
+
+          - Specs have been validated against following R5RS sections:
+            * +, *, -, /, number?, integer?, =, <, <=, >, >=, zero?, positive?,
+              negative?, odd?, even?, max, min, abs, quotient, modulo,
+              remainder, number->string, string->number
+              "6.2 Numbers"
+              "6.2.1 Numerical types"
+              "6.2.2 Exactness"
+              "6.2.3 Implementation restrictions"
+              "6.2.4 Syntax of numerical constants"
+              "6.2.5 Numerical operations"
+              "6.2.6 Numerical input and output"
+              "7.1.1 Lexical structure"
+          - Arithmetic behaviors and rounding specs for integers are validated
+            against following ISO/IEC 9899:1999(E) standard:
+            * /, quotient, remainder
+              "6.3.1.4 Real floating and integer"
+              "6.5.5 Multiplicative operators"
+
 2006-10-09  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * string-core.c

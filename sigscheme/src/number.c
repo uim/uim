@@ -37,6 +37,9 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <errno.h>
+#if SCM_STRICT_ARGCHECK
+#include <string.h>
+#endif
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
@@ -44,6 +47,13 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define ERRMSG_DIV_BY_ZERO     "division by zero"
+#define ERRMSG_FIXNUM_OVERFLOW "fixnum overflow"
+#define ERRMSG_REQ_1_ARG       "at least 1 argument required"
+
+#define VALID_RADIXP(r) ((r) == 2 || (r) == 8 || (r) == 10 || (r) == 16)
+#define INT_VALID_VALUEP(i) (SCM_INT_MIN <= (i) && (i) <= SCM_INT_MAX)
+#define INT_OUT_OF_RANGEP(i) (!INT_VALID_VALUEP(i))
 
 /*=======================================
   File Local Type Definitions
@@ -56,7 +66,9 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
+#if SCM_USE_STRING_CORE
 static int prepare_radix(const char *funcname, ScmObj args);
+#endif
 
 /*=======================================
   Function Definitions
@@ -72,19 +84,24 @@ static int prepare_radix(const char *funcname, ScmObj args);
 SCM_EXPORT ScmObj
 scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    scm_int_t result;
+    scm_int_t result, l, r;
     DECLARE_FUNCTION("+", reduction_operator);
 
-    result = 0;
+    result = l = 0;
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
         ENSURE_INT(left);
-        result = SCM_INT_VALUE(left);
+        l = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
         ENSURE_INT(right);
-        result += SCM_INT_VALUE(right);
+        r = SCM_INT_VALUE(right);
+        result = l + r;
+        if (INT_OUT_OF_RANGEP(result)
+            || (r > 0 && result < l)
+            || (r < 0 && result > l))
+            ERR(ERRMSG_FIXNUM_OVERFLOW);
         /* Fall through. */
     case SCM_REDUCE_0:
         break;
@@ -95,6 +112,7 @@ scm_p_add(ScmObj left, ScmObj right, enum ScmReductionState *state)
     return MAKE_INT(result);
 }
 
+/* no overflow check */
 SCM_EXPORT ScmObj
 scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
@@ -124,23 +142,28 @@ scm_p_multiply(ScmObj left, ScmObj right, enum ScmReductionState *state)
 SCM_EXPORT ScmObj
 scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    scm_int_t result;
+    scm_int_t result, l, r;
     DECLARE_FUNCTION("-", reduction_operator);
 
-    result = 0;
+    result = l = 0;
     switch (*state) {
     case SCM_REDUCE_PARTWAY:
     case SCM_REDUCE_LAST:
         ENSURE_INT(left);
-        result = SCM_INT_VALUE(left);
+        l = SCM_INT_VALUE(left);
         /* Fall through. */
     case SCM_REDUCE_1:
         ENSURE_INT(right);
-        result -= SCM_INT_VALUE(right);
+        r = SCM_INT_VALUE(right);
+        result = l - r;
+        if (INT_OUT_OF_RANGEP(result)
+            || (r > 0 && result > l)
+            || (r < 0 && result < l))
+            ERR(ERRMSG_FIXNUM_OVERFLOW);
         break;
 
     case SCM_REDUCE_0:
-        ERR("at least 1 argument required");
+        ERR(ERRMSG_REQ_1_ARG);
     default:
         SCM_ASSERT(scm_false);
     }
@@ -150,7 +173,7 @@ scm_p_subtract(ScmObj left, ScmObj right, enum ScmReductionState *state)
 SCM_EXPORT ScmObj
 scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
-    scm_int_t result;
+    scm_int_t result, val;
     DECLARE_FUNCTION("/", reduction_operator);
 
     result = 1;
@@ -162,12 +185,14 @@ scm_p_divide(ScmObj left, ScmObj right, enum ScmReductionState *state)
         /* Fall through. */
     case SCM_REDUCE_1:
         ENSURE_INT(right);
-        if (SCM_INT_VALUE(right) == 0)
-            ERR("division by zero");
-        result /= SCM_INT_VALUE(right);
+        val = SCM_INT_VALUE(right);
+        if (val == 0)
+            ERR(ERRMSG_DIV_BY_ZERO);
+        result /= val;
         break;
+
     case SCM_REDUCE_0:
-        ERR("at least 1 argument required");
+        ERR(ERRMSG_REQ_1_ARG);
     default:
         SCM_ASSERT(scm_false);
     }
@@ -200,13 +225,14 @@ scm_p_integerp(ScmObj obj)
         ENSURE_INT(left);                                                    \
         ENSURE_INT(right);                                                   \
         if (SCM_INT_VALUE(left) op SCM_INT_VALUE(right))                     \
-            return *state == SCM_REDUCE_LAST ? SCM_TRUE : right;             \
+            return (*state == SCM_REDUCE_LAST) ? SCM_TRUE : right;           \
         *state = SCM_REDUCE_STOP;                                            \
-        return SCM_FALSE;                                                    \
+        break;                                                               \
+                                                                             \
     default:                                                                 \
         SCM_ASSERT(scm_false);                                               \
     }                                                                        \
-    return SCM_INVALID
+    return SCM_FALSE
 
 SCM_EXPORT ScmObj
 scm_p_equal(ScmObj left, ScmObj right, enum ScmReductionState *state)
@@ -306,7 +332,7 @@ scm_p_max(ScmObj left, ScmObj right, enum ScmReductionState *state)
     DECLARE_FUNCTION("max", reduction_operator);
 
     if (*state == SCM_REDUCE_0)
-        ERR("at least 1 argument required");
+        ERR(ERRMSG_REQ_1_ARG);
     ENSURE_INT(left);
     ENSURE_INT(right);
 
@@ -319,7 +345,7 @@ scm_p_min(ScmObj left, ScmObj right, enum ScmReductionState *state)
     DECLARE_FUNCTION("min", reduction_operator);
 
     if (*state == SCM_REDUCE_0)
-        ERR("at least 1 argument required");
+        ERR(ERRMSG_REQ_1_ARG);
     ENSURE_INT(left);
     ENSURE_INT(right);
 
@@ -336,6 +362,8 @@ scm_p_abs(ScmObj _n)
     ENSURE_INT(_n);
 
     n = SCM_INT_VALUE(_n);
+    if (n == SCM_INT_MIN)
+        ERR(ERRMSG_FIXNUM_OVERFLOW);
 
     return (n < 0) ? MAKE_INT(-n) : _n;
 }
@@ -351,11 +379,20 @@ scm_p_quotient(ScmObj _n1, ScmObj _n2)
 
     n1 = SCM_INT_VALUE(_n1);
     n2 = SCM_INT_VALUE(_n2);
-
     if (n2 == 0)
-        ERR("division by zero");
+        ERR(ERRMSG_DIV_BY_ZERO);
 
-    return MAKE_INT((int)(n1 / n2));
+    /*
+     * ISO/IEC 9899:1999(E):
+     *
+     * 6.3.1.4 Real floating and integer
+     * 
+     * 1 When a finite value of real floating type is converted to an integer
+     *   type other than _Bool, the fractional part is discarded (i.e., the
+     *   value is truncated toward zero). If the value of the integral part
+     *   cannot be represented by the integer type, the behavior is undefined.
+     */    
+    return MAKE_INT((scm_int_t)(n1 / n2));
 }
 
 SCM_EXPORT ScmObj
@@ -369,16 +406,12 @@ scm_p_modulo(ScmObj _n1, ScmObj _n2)
 
     n1 = SCM_INT_VALUE(_n1);
     n2 = SCM_INT_VALUE(_n2);
-
     if (n2 == 0)
-        ERR("division by zero");
+        ERR(ERRMSG_DIV_BY_ZERO);
 
-    rem  = n1 % n2;
-    if (n1 < 0 && n2 > 0) {
+    rem = n1 % n2;
+    if (rem && ((n1 < 0 && 0 < n2) || (n2 < 0 && 0 < n1)))
         rem += n2;
-    } else if (n1 > 0 && n2 < 0) {
-        rem += n2;
-    }
 
     return MAKE_INT(rem);
 }
@@ -394,9 +427,8 @@ scm_p_remainder(ScmObj _n1, ScmObj _n2)
 
     n1 = SCM_INT_VALUE(_n1);
     n2 = SCM_INT_VALUE(_n2);
-
     if (n2 == 0)
-        ERR("division by zero");
+        ERR(ERRMSG_DIV_BY_ZERO);
 
     return MAKE_INT(n1 % n2);
 }
@@ -404,7 +436,7 @@ scm_p_remainder(ScmObj _n1, ScmObj _n2)
 /*===========================================================================
   R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
 ===========================================================================*/
-
+#if SCM_USE_STRING_CORE
 static int
 prepare_radix(const char *funcname, ScmObj args)
 {
@@ -424,7 +456,7 @@ prepare_radix(const char *funcname, ScmObj args)
         ASSERT_NO_MORE_ARG(args);
         ENSURE_INT(radix);
         r = SCM_INT_VALUE(radix);
-        if (!(r == 2 || r == 8 || r == 10 || r == 16))
+        if (!VALID_RADIXP(r))
             ERR_OBJ("invalid radix", radix);
     }
 
@@ -436,12 +468,12 @@ scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix)
 {
     char buf[sizeof("-") + sizeof(uintmax_t) * CHAR_BIT];
     char *p, *end, *str;
-    uintmax_t un;  /* must be unsinged to be capable of -INT_MIN */
+    uintmax_t un;  /* must be unsigned to be capable of -INT_MIN */
     int digit, sign_len, pad_len, len;
     scm_bool neg;
     DECLARE_INTERNAL_FUNCTION("scm_int2string");
 
-    SCM_ASSERT(radix == 2 || radix == 8 || radix == 10 || radix == 16);
+    SCM_ASSERT(VALID_RADIXP(radix));
     neg = (vfmt.signedp && ((intmax_t)n < 0));
     un = (neg) ? (uintmax_t)-(intmax_t)n : n;
 
@@ -488,6 +520,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
 
     return MAKE_STRING(str, SCM_STRLEN_UNKNOWN);
 }
+#endif /* SCM_USE_STRING_CORE */
 
 SCM_EXPORT scm_int_t
 scm_string2number(const char *str, int radix, scm_bool *err)
@@ -496,6 +529,10 @@ scm_string2number(const char *str, int radix, scm_bool *err)
     char *end;
     scm_bool empty_strp;
     DECLARE_INTERNAL_FUNCTION("string->number");
+
+    SCM_ASSERT(str);
+    SCM_ASSERT(VALID_RADIXP(radix));
+    SCM_ASSERT(err);
 
     /* R5RS:
      *
@@ -520,11 +557,17 @@ scm_string2number(const char *str, int radix, scm_bool *err)
      *   #f whenever a decimal point is used.
      */
 
+#if SCM_STRICT_ARGCHECK
+    /* Reject "0xa", " 1" etc. */
+    if ((*err = str[strspn(str, "0123456789abcdefABCDEF-+")]))
+        return 0;
+#endif /* SCM_STRICT_ARGCHECK */
+
 #if (SIZEOF_SCM_INT_T <= SIZEOF_LONG)
     n = (scm_int_t)strtol(str, &end, radix);
 #elif (HAVE_STRTOLL && SIZEOF_SCM_INT_T <= SIZEOF_LONG_LONG)
     n = (scm_int_t)strtoll(str, &end, radix);
-#elif (HAVE_STRTOIMAX && Sizeof_SCM_INT_T <= SIZEOF_INTMAX_T)
+#elif (HAVE_STRTOIMAX && SIZEOF_SCM_INT_T <= SIZEOF_INTMAX_T)
     n = (scm_int_t)strtoimax(str, &end, radix);
 #else
 #error "This platform is not supported"
@@ -546,12 +589,13 @@ scm_string2number(const char *str, int radix, scm_bool *err)
      *     converted value, if any. If no conversion could be performed, 0
      *     shall be returned and errno may be set to [EINVAL].
      */
-    if ((errno == ERANGE && !empty_strp) || n < SCM_INT_MIN || SCM_INT_MAX < n)
-        ERR("fixnum limit exceeded: ~MD", n);
+    if ((errno == ERANGE && !empty_strp) || INT_OUT_OF_RANGEP(n))
+        ERR(ERRMSG_FIXNUM_OVERFLOW ": ~S (radix ~D)", str, radix);
 
     return n;
 }
 
+#if SCM_USE_STRING_CORE
 SCM_EXPORT ScmObj
 scm_p_string2number(ScmObj str, ScmObj args)
 {
@@ -569,3 +613,4 @@ scm_p_string2number(ScmObj str, ScmObj args)
     ret = scm_string2number(c_str, r, &err);
     return (err) ? SCM_FALSE : MAKE_INT(ret);
 }
+#endif /* SCM_USE_STRING_CORE */

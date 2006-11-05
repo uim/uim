@@ -56,7 +56,75 @@ The hygienic macros are fully supported.
 Numbers
 ~~~~~~~
 
-Only integer part is implemented.
+SigScheme supports only the integer part of the numerical tower.
+
+Literals
+^^^^^^^^
+
+SigScheme recognizes only these limited part of numerical forms of "7.1.1
+Lexical structure" section of R5RS. Other valid R5RS forms for numbers produce
+errors.
+
+----------------------------------------------------------------
+  <number> --> <num 2>| <num 8>
+       | <num 10>| <num 16>
+  
+  <num R> --> <prefix R> <complex R>
+  <complex R> --> <real R>
+  <real R> --> <sign> <ureal R>
+  <ureal R> --> <uinteger R>
+  <uinteger R> --> <digit R>+ #*   ;; '#' must not occur
+  <prefix R> --> <radix R>
+
+  <sign> --> <empty>  | + |  -
+  <radix 2> --> #b
+  <radix 8> --> #o
+  <radix 10> --> <empty> | #d
+  <radix 16> --> #x
+  <digit 2> --> 0 | 1
+  <digit 8> --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+  <digit 10> --> <digit>
+  <digit 16> --> <digit 10> | a | b | c | d | e | f 
+  <digit> --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+----------------------------------------------------------------
+
+SigScheme accepts only lower case alphabets as radices as follows. But
+hexadecimal digits can be written as either lower or upper.
+
+----------------------------------------------------------------
+  #b11  ==>  3
+  #B11  ==>  error
+  #xa1  ==>  161
+  #Xa1  ==>  error
+  #xAb  ==>  171
+----------------------------------------------------------------
+
+SigScheme uses a fixed-size buffer for number literals parsing. Due to the
+implementation, it can accept only one optional '0' prefix for maximum-length
+binary number literals. Two or more '0' prefixes causes an error as follows.
+
+----------------------------------------------------------------
+  ;; storage-compact on ILP32 env
+
+  (greatest-fixnum)                      ==> 2147483647
+  #b11111111000000001111111100000000     ==> 4278255360
+  #b011111111000000001111111100000000    ==> 4278255360
+  #b0011111111000000001111111100000000   ==> error
+  #b00011111111000000001111111100000000  ==> error
+----------------------------------------------------------------
+
+Optional procedures
+^^^^^^^^^^^^^^^^^^^
+
+The procedures '-' and '/' support following optional form.
+
+----------------------------------------------------------------
+  6.2.5 Numerical operations
+
+  optional procedure: - z1 z2 ...
+  optional procedure: / z1 z2 ...
+----------------------------------------------------------------
+
 
 Characters
 ~~~~~~~~~~

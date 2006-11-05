@@ -39,6 +39,7 @@
 (define *test-track-progress* #f)
 
 ;; See "7.1 Formal syntax" of R5RS
+;; See also test-number-literal.scm
 
 (assert-parse-error "invalid boolean" "#F")
 (assert-parse-error "invalid boolean" "#T")
@@ -123,22 +124,6 @@
 (if (and (provided? "sigscheme")
          (not (provided? "strict-r5rs")))
     (assert-true (tn) (symbol? (string-read "-a"))))
-
-(tn "integer")
-(assert-true (tn) (integer? (string-read "1")))
-(assert-true (tn) (integer? (string-read "1")))
-(assert-true (tn) (integer? (string-read "+1")))
-(assert-true (tn) (integer? (string-read "-1")))
-(assert-true (tn) (integer? (string-eval "'+1")))
-(assert-true (tn) (integer? (string-eval "'-1")))
-(assert-true (tn) (integer? (string-read "#d1")))
-(assert-true (tn) (integer? (string-read "#d1")))
-(assert-true (tn) (integer? (string-read "#d+1")))
-(assert-true (tn) (integer? (string-read "#d-1")))
-(assert-true (tn) (integer? (string-eval "'#d+1")))
-(assert-true (tn) (integer? (string-eval "'#d-1")))
-;; FIXME: add maximum and minimum integers
-;; FIXME: add binary, octal and hexadecimal numbers
 
 (tn "invalid dot pair")
 (assert-parse-error (tn) "( . )")

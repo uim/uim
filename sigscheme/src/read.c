@@ -149,7 +149,7 @@
 #define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
 
 /* #b-010101... */
-#define INT_LITERAL_LEN_MAX (sizeof((char)'-') + SCM_INT_BITS)
+#define INT_LITERAL_LEN_MAX (sizeof("-0") + SCM_INT_BITS - sizeof(""))
 
 #define DISCARD_LOOKAHEAD(port) (scm_port_get_char(port))
 
@@ -552,6 +552,7 @@ read_sexpression(ScmObj port)
                 return read_char(port);
 #endif
 #if SCM_USE_NUMBER
+            /* TODO: support exactness prefixes 'i' and 'e' */
             case 'b': case 'o': case 'd': case 'x':
                 return read_number(port, c);
 #endif

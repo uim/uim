@@ -1077,13 +1077,14 @@ enum ScmFormatCapability {
     SCM_FMT_SRFI28          = 1 << 1,
     SCM_FMT_SRFI48_ADDENDUM = 1 << 2,
     SCM_FMT_LEADING_ZEROS   = 1 << 3,  /* padding with zeros "00034" */
-    SCM_FMT_PREFIXED_RADIX  = 1 << 4,  /* "8x" 65536 => "    ffff" */
+    SCM_FMT_PREFIXED_RADIX  = 1 << 4,  /* "8x" 65535 => "    ffff" */
 
     SCM_FMT_SRFI48        = (SCM_FMT_SRFI28 | SCM_FMT_SRFI48_ADDENDUM),
     SCM_FMT_SSCM_ADDENDUM = (SCM_FMT_LEADING_ZEROS | SCM_FMT_PREFIXED_RADIX),
     SCM_FMT_SSCM          = (SCM_FMT_SRFI48 | SCM_FMT_SSCM_ADDENDUM),
     SCM_FMT_INTERNAL      = (SCM_FMT_RAW_C | SCM_FMT_SSCM)
 };
+#endif /* SCM_USE_FORMAT */
 
 typedef struct ScmValueFormat_ ScmValueFormat;
 struct ScmValueFormat_ {
@@ -1106,7 +1107,6 @@ struct ScmValueFormat_ {
 
 #define SCM_VALUE_FORMAT_SPECIFIEDP(vfmt)                                    \
     (vfmt.width > 0 || vfmt.frac_width > 0 || vfmt.pad != ' ' || !vfmt.signedp)
-#endif /* SCM_USE_FORMAT */
 
 /*=======================================
   Function types
@@ -1374,7 +1374,9 @@ SCM_EXPORT ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 
 /* number.c */
 #if SCM_USE_NUMBER
+#if SCM_USE_STRING_CORE
 SCM_EXPORT char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
+#endif /* SCM_USE_STRING_CORE */
 SCM_EXPORT ScmObj scm_p_add(ScmObj left, ScmObj right,
                             enum ScmReductionState *state);
 SCM_EXPORT ScmObj scm_p_subtract(ScmObj left, ScmObj right,
@@ -1408,8 +1410,10 @@ SCM_EXPORT ScmObj scm_p_abs(ScmObj _n);
 SCM_EXPORT ScmObj scm_p_quotient(ScmObj _n1, ScmObj _n2);
 SCM_EXPORT ScmObj scm_p_modulo(ScmObj _n1, ScmObj _n2);
 SCM_EXPORT ScmObj scm_p_remainder(ScmObj _n1, ScmObj _n2);
-SCM_EXPORT ScmObj scm_p_number2string (ScmObj num, ScmObj args);
+#if SCM_USE_STRING_CORE
+SCM_EXPORT ScmObj scm_p_number2string(ScmObj num, ScmObj args);
 SCM_EXPORT ScmObj scm_p_string2number(ScmObj str, ScmObj args);
+#endif /* SCM_USE_STRING_CORE */
 #endif /* SCM_USE_NUMBER */
 
 /* char.c */

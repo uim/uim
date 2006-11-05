@@ -112,6 +112,10 @@
 ;; assertions for test writers
 ;;
 
+(define assert-fail
+  (lambda (test-name err-msg)
+    (assert test-name err-msg #f)))
+
 (define assert-true
   (lambda (test-name exp)
     (assert test-name test-name exp)))
@@ -132,6 +136,8 @@
 
 (define assert-error
   (lambda (test-name proc)
+    (or (procedure? proc)
+        (error "assert-error: procedure required but got" proc))
     (let ((errored (guard (err
                            (else
                             #t))
@@ -200,3 +206,20 @@
             (set! name (car args))
             (set! serial 0)
             #f)))))
+
+;;
+;; implementation information
+;;
+
+(define sigscheme? (provided? "sigscheme"))
+
+(define fixnum-bits
+  (let* ((greatest (and (symbol-bound? 'greatest-fixnum)
+                        (number->string (greatest-fixnum))))
+         (b (assoc greatest
+                   '(("134217727"           . 28)
+                     ("2147483647"          . 32)
+                     ("576460752303423487"  . 60)
+                     ("9223372036854775807" . 64)))))
+    (and b
+         (cdr b))))
