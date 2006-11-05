@@ -495,7 +495,7 @@ typedef ScmRef ScmQueue;
 /*=======================================
   Local Buffer Allocator
 =======================================*/
-/* don't touch inside directly */
+/* don't touch member variables directly */
 #define ScmLBuf(T)                                                           \
     struct ScmLBuf_##T##_ {                                                  \
         T *buf;                                                              \
@@ -542,7 +542,7 @@ SCM_EXPORT void scm_lbuf_extend(struct ScmLBuf_void_ *lbuf,
 
 /*
  * extended size functions:
- * define your own version if more optimized version is needed
+ * define your own one if more optimized version is needed
  */
 SCM_EXPORT size_t scm_lbuf_f_linear(struct ScmLBuf_void_ *lbuf);
 SCM_EXPORT size_t scm_lbuf_f_exponential(struct ScmLBuf_void_ *lbuf);

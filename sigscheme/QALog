@@ -232,7 +232,7 @@ Status Summary
          core storage.c
          core storage-gc.c
          core strcasecmp.c
-         core alloc.c
+y yy y   core alloc.c
          core error.c
          core env.c
          core symbol.c
@@ -588,12 +588,12 @@ corner case tests:
 
 file:              alloc.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r3945
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3945
+64-bit by eyes:    yamaken@r3945
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3945
 normal case tests: 
 corner case tests: 
 
@@ -1029,6 +1029,12 @@ corner case tests:
 
 Log
 ---
+2006-11-06  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * alloc.c
+        * sigschemeinternal.h (LBUF part)
+          - QA done @r3945 by eyes
+
 2006-11-05  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * module-srfi60.c

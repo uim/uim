@@ -42,9 +42,6 @@
 #if HAVE_GETPAGESIZE
 #include <unistd.h>
 #endif
-#if HAVE_MEMALIGN
-#include <malloc.h>
-#endif
 
 #include "sigscheme-stdint.h"
 #include "sigscheme.h"
@@ -123,7 +120,7 @@ scm_malloc_aligned(size_t size)
     else
         PLAIN_ERR("cannot ensure memory alignment");
 #endif
-    SCM_ENSURE_ALLOCATED(p);
+    ENSURE_ALLOCATED(p);
     /* heaps must be aligned to ScmCell */
     SCM_ASSERT(!((uintptr_t)p % sizeof(ScmCell)));
 
