@@ -2,7 +2,7 @@
  *  Filename : module-srfi60.c
  *  About    : SRFI-60 Integers as Bits
  *
- *  Copyright (C) 2005-2006 YamaKen
+ *  Copyright (C) 2005-2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
  *
  *  All rights reserved.
  *
@@ -40,17 +40,17 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define BITWISE_OPERATION_BODY(op, left, right)                              \
+#define BITWISE_OPERATION_BODY(op, left, right, ridentity)                   \
     do {                                                                     \
         scm_int_t result;                                                    \
                                                                              \
-        result = 0;                                                          \
+        result = (ridentity);                                                \
         switch (*state) {                                                    \
         case SCM_REDUCE_0:                                                   \
             break;                                                           \
         case SCM_REDUCE_1:                                                   \
             ENSURE_INT(right);                                               \
-            return right;                                                    \
+            return (right);                                                  \
         case SCM_REDUCE_PARTWAY:                                             \
         case SCM_REDUCE_LAST:                                                \
             ENSURE_INT(left);                                                \
@@ -84,6 +84,7 @@ scm_initialize_srfi60(void)
 {
     scm_register_funcs(scm_srfi60_func_info_table);
 
+    /* SRFI-33 aliases */
     scm_define_alias("bitwise-and",   "logand");
     scm_define_alias("bitwise-ior",   "logior");
     scm_define_alias("bitwise-xor",   "logxor");
@@ -98,7 +99,7 @@ scm_p_srfi60_logand(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logand", reduction_operator);
 
-    BITWISE_OPERATION_BODY(&, left, right);
+    BITWISE_OPERATION_BODY(&, left, right, -1);
 }
 
 SCM_EXPORT ScmObj
@@ -106,7 +107,7 @@ scm_p_srfi60_logior(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logior", reduction_operator);
 
-    BITWISE_OPERATION_BODY(|, left, right);
+    BITWISE_OPERATION_BODY(|, left, right, 0);
 }
 
 SCM_EXPORT ScmObj
@@ -114,7 +115,7 @@ scm_p_srfi60_logxor(ScmObj left, ScmObj right, enum ScmReductionState *state)
 {
     DECLARE_FUNCTION("logxor", reduction_operator);
 
-    BITWISE_OPERATION_BODY(^, left, right);
+    BITWISE_OPERATION_BODY(^, left, right, 0);
 }
 
 SCM_EXPORT ScmObj

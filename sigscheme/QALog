@@ -266,7 +266,7 @@ yyyy yyy r5rs qquote.c
          srfi module-srfi34.c
          srfi module-srfi38.c
          srfi module-srfi48.c
-         srfi module-srfi60.c
+yyyyyyyy srfi module-srfi60.c
          opt module-sscm-ext.c
          opt module-siod.c
          other main.c
@@ -962,14 +962,14 @@ corner case tests:
 
 file:              module-srfi60.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
-64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+spec by eyes:      yamaken@r3944
+spec by tests:     yamaken@r3944
+general review:    yamaken@r3944
+64-bit by eyes:    yamaken@r3944
+64-bit by tests:   yamaken@r3944
+coding style:      yamaken@r3944
+normal case tests: yamaken@r3944
+corner case tests: yamaken@r3944
 
 file:              module-sscm-ext.c
 category:          opt
@@ -1031,6 +1031,19 @@ Log
 ---
 2006-11-05  YamaKen <yamaken AT bp.iij4u.or.jp>
 
+        * module-srfi60.c
+          - QA done @r3944
+          - [SRFI-60] Fix invalid result of (logand). Now it returns -1 as same
+            as the reference implementation
+
+          Details:
+          - Complete all required tests for currently provided SRFI-60
+            procedures I'm aware of
+          - Specs have been validated against SRFI-60:
+            * bitwise-and, logand, bitwise-ior, logior, bitwise-xor, logxor,
+              bitwise-not, lognot, bitwise-merge, bitwise-if, any-bits-set?,
+              logtest
+
         * number.c
           - QA done @r3943 except for "64-bit by tests". And all required tests
             for 64-bit configuration itself are also written, but since both
@@ -1049,7 +1062,6 @@ Log
           Details:
           - Add test-number-{arith,cmp,conv,literal,pred}.scm and complete all
             required tests for these procedures I'm aware of
-
           - Specs have been validated against following R5RS sections:
             * +, *, -, /, number?, integer?, =, <, <=, >, >=, zero?, positive?,
               negative?, odd?, even?, max, min, abs, quotient, modulo,
