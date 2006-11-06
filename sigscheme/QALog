@@ -599,12 +599,12 @@ corner case tests:
 
 file:              error.c
 category:          core
-spec by eyes:      yamaken@r3949
+spec by eyes:      yamaken@r3950
 spec by tests:     
-general review:    yamaken@r3949
-64-bit by eyes:    yamaken@r3949
+general review:    yamaken@r3950
+64-bit by eyes:    yamaken@r3950
 64-bit by tests:   
-coding style:      yamaken@r3949
+coding style:      yamaken@r3950
 normal case tests: 
 corner case tests: 
 
@@ -1032,7 +1032,7 @@ Log
 2006-11-07  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * error.c
-          - QA done @r3949 by eyes
+          - QA done @r3950 by eyes
 
 2006-11-06  YamaKen <yamaken AT bp.iij4u.or.jp>
 
