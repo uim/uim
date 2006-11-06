@@ -235,7 +235,7 @@ Status Summary
 y yy y   core alloc.c
          core error.c
 y yy y   core env.c
-         core symbol.c
+y y  y   core symbol.c
 yyyy yyy core continuation.c
 yyyy yyy core eval.c
          core module.c
@@ -621,12 +621,12 @@ corner case tests:
 
 file:              symbol.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r3947
 spec by tests:     
-general review:    
+general review:    yamaken@r3947
 64-bit by eyes:    
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3947
 normal case tests: 
 corner case tests: 
 
@@ -1030,6 +1030,9 @@ corner case tests:
 Log
 ---
 2006-11-06  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * symbol.c
+          - QA done @r3947 by eyes
 
         * env.c
           - QA done @r3946 by eyes except for #if SCM_USE_HYGIENIC_MACRO part.

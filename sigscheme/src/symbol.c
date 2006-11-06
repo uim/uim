@@ -74,7 +74,7 @@ scm_intern(const char *name)
 #if (SCM_USE_SRFI75 && SCM_STRICT_ARGCHECK)
 #if 0
     /* FIXME: detect error correctly */
-    if (scm_mb_bare_c_strlen(scm_identifier_codec, name) < 0)
+    if (scm_mb_bare_c_strlen(scm_identifier_codec, name) <= 0)
         ERR("invalid string for identifier: ~S", name);
 #endif
 #endif
@@ -140,6 +140,7 @@ initialize_symbol_hash(const ScmStorageConf *conf)
     size_t i;
 
     scm_symbol_hash_size = conf->symbol_hash_size;
+    SCM_ASSERT(scm_symbol_hash_size <= (UINT32_MAX / sizeof(ScmObj)));
     scm_symbol_hash      = scm_malloc(sizeof(ScmObj) * scm_symbol_hash_size);
 
     for (i = 0; i < scm_symbol_hash_size; i++)
