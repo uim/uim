@@ -235,7 +235,7 @@ Status Summary
 y yy y   core alloc.c
          core error.c
 y yy y   core env.c
-y y  y   core symbol.c
+y yy y   core symbol.c
 yyyy yyy core continuation.c
 yyyy yyy core eval.c
          core module.c
@@ -624,7 +624,7 @@ category:          core
 spec by eyes:      yamaken@r3947
 spec by tests:     
 general review:    yamaken@r3947
-64-bit by eyes:    
+64-bit by eyes:    yamaken@r3947
 64-bit by tests:   
 coding style:      yamaken@r3947
 normal case tests: 
