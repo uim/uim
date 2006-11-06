@@ -234,7 +234,7 @@ Status Summary
          core strcasecmp.c
 y yy y   core alloc.c
          core error.c
-         core env.c
+y yy y   core env.c
          core symbol.c
 yyyy yyy core continuation.c
 yyyy yyy core eval.c
@@ -610,12 +610,12 @@ corner case tests:
 
 file:              env.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r3946
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3946
+64-bit by eyes:    yamaken@r3946
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3946
 normal case tests: 
 corner case tests: 
 
@@ -1030,6 +1030,11 @@ corner case tests:
 Log
 ---
 2006-11-06  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * env.c
+          - QA done @r3946 by eyes except for #if SCM_USE_HYGIENIC_MACRO part.
+            It must be validated together when QA for the macro feature is
+            performed
 
         * alloc.c
         * sigschemeinternal.h (LBUF part)

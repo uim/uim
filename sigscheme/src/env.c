@@ -33,18 +33,18 @@
 ===========================================================================*/
 
 /*
- *   Environment is a list formed as below.
+ *   SigScheme's environment object is a list formed as below.
  *
- *     Frame = (cons (var1 var2 var3 ...)
+ *     frame = (cons (var1 var2 var3 ...)
  *                   (val1 val2 val3 ...))
- *     Env   = (Frame1 Frame2 Frame3 ...)
+ *     env   = (frame1 frame2 frame3 ...)
  *
  *   Other 2 forms are also used to handle dotted args.
  *
- *     Frame = (cons (var1 var2 var3 . rest1)
+ *     frame = (cons (var1 var2 var3 . rest1)
  *                   (val1 val2 val3 var4 var5 ...))
  *
- *     Frame = (cons rest2
+ *     frame = (cons rest2
  *                   (val1 val2 val3 var4 var5 ...))
  *
  *   In this case, rest1 is bound to (var4 var5 ...) and rest2 is bound to
@@ -213,7 +213,7 @@ scm_wrap_identifier(ScmObj id, ScmPackedEnv depth, ScmObj env)
 #endif /* SCM_USE_HYGIENIC_MACRO */
 
 /**
- * Construct new frame on an env
+ * Construct a new frame on an env
  *
  * @a formals and @a actuals must be valid.
  *
@@ -237,7 +237,7 @@ scm_extend_environment(ScmObj formals, ScmObj actuals, ScmObj env)
 }
 
 /**
- * Replace entire content of newest frame of an env
+ * Replace entire content of recentmost frame of an env
  *
  * The environment must be replaced with returned one in caller side even if
  * this implementation returns identical to the one passed. This rule is
@@ -261,7 +261,7 @@ scm_replace_environment(ScmObj formals, ScmObj actuals, ScmObj env)
 }
 
 /**
- * Replace all actuals of newest frame of an env
+ * Replace all actuals of recentmost frame of an env
  *
  * The environment must be replaced with returned one in caller side even if
  * this implementation returns identical to the one passed. This rule is
@@ -283,7 +283,7 @@ scm_update_environment(ScmObj actuals, ScmObj env)
     return env;
 }
 
-/** Add a binding to newest frame of an env */
+/** Add a binding to recentmost frame of an env */
 SCM_EXPORT ScmObj
 scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
 {
@@ -293,7 +293,7 @@ scm_add_environment(ScmObj var, ScmObj val, ScmObj env)
     SCM_ASSERT(IDENTIFIERP(var));
     SCM_ASSERT(VALID_ENVP(env));
 
-    /* add (var, val) pair to most recent frame of the env */
+    /* add (var, val) pair to recentmost frame of the env */
     if (NULLP(env)) {
         frame = CONS(LIST_1(var), LIST_1(val));
         env = LIST_1(frame);
@@ -535,6 +535,6 @@ scm_validate_actuals(ScmObj actuals)
     len = scm_finite_length(actuals);
 #endif
     if (SCM_LISTLEN_DOTTEDP(len))
-        len = SCM_LISTLEN_ENCODE_ERROR(len);
+        return SCM_LISTLEN_ENCODE_ERROR(len);
     return len;
 }
