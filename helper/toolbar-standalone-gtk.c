@@ -68,23 +68,40 @@ static gboolean
 button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
   GdkCursor *cursor;
+  GtkWidget *toolbar;
+  gint height, width;
 
-  cursor = gdk_cursor_new (GDK_CROSSHAIR);
-  gdk_pointer_grab(widget->window, FALSE,
-		   GDK_BUTTON_RELEASE_MASK |
-		   GDK_POINTER_MOTION_MASK,
-		   NULL,
-		   cursor, event->time);
-  gdk_cursor_destroy (cursor);
+  switch (event->type) {
+  case GDK_BUTTON_PRESS:
+    cursor = gdk_cursor_new(GDK_CROSSHAIR);
+    gdk_pointer_grab(widget->window, FALSE,
+		     GDK_BUTTON_RELEASE_MASK |
+		     GDK_POINTER_MOTION_MASK,
+		     NULL,
+		     cursor, event->time);
+    gdk_cursor_destroy(cursor);
 
-  gtk_window_get_position(GTK_WINDOW(widget),
-			  &window_drag_start_x,
-			  &window_drag_start_y);
-
-  pointer_drag_start_x = (gint) event->x_root;
-  pointer_drag_start_y = (gint) event->y_root;
-
-  toolbar_dragging = TRUE;
+    gtk_window_get_position(GTK_WINDOW(widget),
+		    	    &window_drag_start_x,
+			    &window_drag_start_y);
+    pointer_drag_start_x = (gint)event->x_root;
+    pointer_drag_start_y = (gint)event->y_root;
+    toolbar_dragging = TRUE;
+    break;
+  case GDK_2BUTTON_PRESS:
+    toolbar = GTK_WIDGET(data);
+    if (GTK_WIDGET_VISIBLE(toolbar)) {
+      gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
+      gtk_widget_hide(toolbar);
+    } else {
+      height = -1;
+      gtk_widget_show(toolbar);
+    }
+    gtk_widget_set_size_request(widget, -1, height);
+    break;
+  default:
+    break;
+  }
 
   return FALSE;
 }
@@ -138,6 +155,9 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
 static gboolean
 button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
+  if (!toolbar_dragging) 
+    return FALSE;
+
   gdk_pointer_ungrab(event->time);
 
   pointer_drag_start_x = -1;
@@ -216,18 +236,6 @@ main (int argc, char *argv[])
 
   gtk_widget_add_events(window, GDK_BUTTON_PRESS_MASK);
 
-  g_signal_connect(G_OBJECT (window), "delete_event",
-		   G_CALLBACK (delete_event), NULL);
-
-  g_signal_connect(G_OBJECT(window), "button-press-event",
-		   G_CALLBACK(button_press_event_cb), NULL);
-  g_signal_connect(G_OBJECT(window), "button-release-event",
-		   G_CALLBACK(button_release_event_cb), NULL);
-  g_signal_connect(G_OBJECT(window), "motion-notify-event",
-		   G_CALLBACK(motion_notify_event_cb), NULL);
-  g_signal_connect(G_OBJECT(window), "size-allocate",
-		   G_CALLBACK(size_allocate_cb), NULL);
-
   frame = gtk_frame_new(NULL);
   gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
   gtk_container_add (GTK_CONTAINER (window), frame);
@@ -236,13 +244,25 @@ main (int argc, char *argv[])
   gtk_container_add (GTK_CONTAINER (frame), hbox);
 
   handle = gtk_drawing_area_new();
-  g_signal_connect(G_OBJECT (handle), "expose-event",
-		   G_CALLBACK (handle_expose_event_cb), NULL);
   gtk_widget_set_size_request(handle, 8, -1);
   gtk_box_pack_start(GTK_BOX (hbox), handle, FALSE, FALSE, 0);
 
   toolbar = (GtkWidget*)uim_toolbar_standalone_new();
   gtk_box_pack_start(GTK_BOX (hbox), toolbar, FALSE, FALSE, 0);
+
+  g_signal_connect(G_OBJECT(handle), "expose-event",
+		   G_CALLBACK (handle_expose_event_cb), NULL);
+
+  g_signal_connect(G_OBJECT(window), "delete_event",
+		   G_CALLBACK (delete_event), NULL);
+  g_signal_connect(G_OBJECT(window), "button-press-event",
+		   G_CALLBACK(button_press_event_cb), toolbar);
+  g_signal_connect(G_OBJECT(window), "button-release-event",
+		   G_CALLBACK(button_release_event_cb), NULL);
+  g_signal_connect(G_OBJECT(window), "motion-notify-event",
+		   G_CALLBACK(motion_notify_event_cb), NULL);
+  g_signal_connect(G_OBJECT(window), "size-allocate",
+		   G_CALLBACK(size_allocate_cb), NULL);
   g_signal_connect(G_OBJECT(window), "size-request",
 		   G_CALLBACK(size_request_cb), NULL);
 
