@@ -49,6 +49,10 @@
 
 #define NO_ERR_OBJ l_err_obj_tag
 
+#define UNBOUNDP(var, env)                                                   \
+    (scm_lookup_environment(var, env) == SCM_INVALID_REF                     \
+     && !SCM_SYMBOL_BOUNDP(var))
+
 /*=======================================
   File Local Type Definitions
 =======================================*/
@@ -62,11 +66,11 @@ SCM_DEFINE_EXPORTED_VARS(error);
 
 SCM_GLOBAL_VARS_BEGIN(static_error);
 #define static
-static int l_debug_mask;
+static enum ScmDebugCategory l_debug_mask;
 static scm_bool l_srfi34_is_provided, l_error_looped, l_fatal_error_looped;
 static void (*l_cb_fatal_error)(void);
 
-static ScmObj l_err_obj_tag, l_str_srfi34;
+static ScmObj l_err_obj_tag;
 #undef static
 SCM_GLOBAL_VARS_END(static_error);
 #define l_debug_mask         SCM_GLOBAL_VAR(static_error, l_debug_mask)
@@ -75,7 +79,6 @@ SCM_GLOBAL_VARS_END(static_error);
 #define l_fatal_error_looped SCM_GLOBAL_VAR(static_error, l_fatal_error_looped)
 #define l_cb_fatal_error     SCM_GLOBAL_VAR(static_error, l_cb_fatal_error)
 #define l_err_obj_tag        SCM_GLOBAL_VAR(static_error, l_err_obj_tag)
-#define l_str_srfi34         SCM_GLOBAL_VAR(static_error, l_str_srfi34)
 SCM_DEFINE_STATIC_VARS(static_error);
 
 /*=======================================
@@ -84,7 +87,7 @@ SCM_DEFINE_STATIC_VARS(static_error);
 static scm_bool srfi34_providedp(void);
 static void scm_error_internal(const char *func_name, ScmObj obj,
                                const char *msg, va_list args) SCM_NORETURN;
-#if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
+#if (SCM_USE_BACKTRACE && SCM_DEBUG_BACKTRACE_VAL)
 static void show_arg(ScmObj arg, ScmObj env);
 #endif
 
@@ -102,29 +105,28 @@ scm_init_error(void)
     /* allocate a cons cell as unique ID */
     scm_gc_protect_with_init(&l_err_obj_tag, CONS(SCM_UNDEF, SCM_UNDEF));
 
-    scm_gc_protect_with_init(&l_str_srfi34, CONST_STRING("srfi-34"));
     l_srfi34_is_provided = scm_false;
-
     l_fatal_error_looped = scm_false;
 }
 
-SCM_EXPORT int
+SCM_EXPORT enum ScmDebugCategory
 scm_debug_categories(void)
 {
     return l_debug_mask;
 }
 
 SCM_EXPORT void
-scm_set_debug_categories(int categories)
+scm_set_debug_categories(enum ScmDebugCategory categories)
 {
     l_debug_mask = categories;
 }
 
-SCM_EXPORT int
+SCM_EXPORT enum ScmDebugCategory
 scm_predefined_debug_categories(void)
 {
+    return (SCM_DBG_NONE
 #if SCM_DEBUG
-    return (SCM_DBG_DEVEL | SCM_DBG_COMPAT | SCM_DBG_OTHER
+            | SCM_DBG_DEVEL | SCM_DBG_COMPAT | SCM_DBG_OTHER
 #if SCM_DEBUG_PARSER
             | SCM_DBG_PARSER
 #endif
@@ -137,14 +139,13 @@ scm_predefined_debug_categories(void)
 #if SCM_DEBUG_MACRO
             | SCM_DBG_MACRO
 #endif
-            );
-#else /* SCM_DEBUG */
-    return SCM_DBG_NONE;
 #endif /* SCM_DEBUG */
+            );
 }
 
+#if SCM_DEBUG
 SCM_EXPORT void
-scm_categorized_debug(int category, const char *msg, ...)
+scm_categorized_debug(enum ScmDebugCategory category, const char *msg, ...)
 {
     va_list va;
 
@@ -168,6 +169,7 @@ scm_debug(const char *msg, ...)
     }
     va_end(va);
 }
+#endif /* SCM_DEBUG */
 
 #if SCM_USE_SRFI34
 static scm_bool
@@ -175,7 +177,7 @@ srfi34_providedp(void)
 {
     if (!l_srfi34_is_provided) {
         /* expensive */
-        l_srfi34_is_provided = scm_providedp(l_str_srfi34);
+        l_srfi34_is_provided = scm_providedp(CONST_STRING("srfi-34"));
     }
     return l_srfi34_is_provided;
 }
@@ -290,15 +292,16 @@ scm_p_inspect_error(ScmObj err_obj)
             scm_display(scm_err, err_obj);
 #endif
         } else {
-            scm_port_puts(scm_err, SCM_ERRMSG_UNHANDLED_EXCEPTION);
-            scm_port_puts(scm_err, ": ");
+            scm_port_puts(scm_err, SCM_ERRMSG_UNHANDLED_EXCEPTION ": ");
             SCM_WRITE_SS(scm_err, err_obj);
         }
         scm_port_newline(scm_err);
     }
 
+#if SCM_USE_BACKTRACE
     if (scm_debug_categories() & SCM_DBG_BACKTRACE)
         scm_show_backtrace(trace_stack);
+#endif
 
     return SCM_UNDEF;
 }
@@ -316,13 +319,16 @@ scm_p_backtrace(void)
 SCM_EXPORT void
 scm_die(const char *msg, const char *filename, int line)
 {
+#if SCM_DEBUG
     ScmObj reason;
 
-    /* FIXME: don't use format */
     /* reason will implicitly be freed via the object on GC */
     reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
                         "~S: (file: ~S, line: ~D)", msg, filename, line);
     scm_fatal_error(SCM_STRING_STR(reason));
+#else
+    scm_fatal_error(msg);
+#endif
     /* NOTREACHED */
 }
 
@@ -338,11 +344,15 @@ scm_error_internal(const char *func_name, ScmObj obj,
     /* It is supposed that no continuation switching occurs on this guarded
      * duration. So the global variable based guard works properly. */
     l_error_looped = scm_true;
+#if SCM_USE_FORMAT
     reason = scm_vformat(SCM_FALSE, SCM_FMT_INTERNAL, msg, args);
     if (func_name) {
         reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
                             "in ~S: ~S", func_name, SCM_STRING_STR(reason));
     }
+#else
+    reason = CONST_STRING(msg);
+#endif
 
     err_obj = scm_make_error_obj(reason,
                                  (EQ(obj, NO_ERR_OBJ)) ? SCM_NULL : LIST_1(obj));
@@ -396,28 +406,22 @@ scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
     /* NOTREACHED */
 }
 
-#if (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL)
+#if (SCM_USE_BACKTRACE && SCM_DEBUG_BACKTRACE_VAL)
 static void
 show_arg(ScmObj arg, ScmObj env)
 {
-#define UNBOUNDP(var, env)                                                   \
-    (scm_lookup_environment(var, env) == SCM_INVALID_REF                     \
-     && !SCM_SYMBOL_BOUNDP(var))
-
     if (SYMBOLP(arg) && !UNBOUNDP(arg, env)) {
         scm_format(scm_err, SCM_FMT_RAW_C, "  - [~S]: ", SCM_SYMBOL_NAME(arg));
         SCM_WRITE_SS(scm_err, scm_symbol_value(arg, env));
         scm_port_newline(scm_err);
     }
-
-#undef UNBOUNDP
 }
-#endif /* (SCM_DEBUG && SCM_DEBUG_BACKTRACE_VAL) */
+#endif /* (SCM_USE_BACKTRACE && SCM_DEBUG_BACKTRACE_VAL) */
 
 SCM_EXPORT void
 scm_show_backtrace(ScmObj trace_stack)
 {
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
     ScmObj frame, env, obj, elm;
     DECLARE_INTERNAL_FUNCTION("scm_show_backtrace");
 
@@ -463,5 +467,5 @@ scm_show_backtrace(ScmObj trace_stack)
     scm_port_puts(scm_err, SCM_BACKTRACE_SEP);
     scm_port_newline(scm_err);
 #endif /* SCM_DEBUG_BACKTRACE_SEP */
-#endif /* SCM_DEBUG */
+#endif /* SCM_USE_BACKTRACE */
 }

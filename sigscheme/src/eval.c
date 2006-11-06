@@ -423,7 +423,7 @@ scm_eval(ScmObj obj, ScmObj env)
     state.env = env;
 #endif
 
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
     scm_push_trace_frame(obj, env);
 #endif
 
@@ -452,7 +452,7 @@ eval_loop:
         PLAIN_ERR("eval: #() is not a valid R5RS form. use '#() instead");
 #endif
 
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
     scm_pop_trace_frame();
 #endif
     return obj;

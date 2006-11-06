@@ -342,7 +342,7 @@ scm_call_continuation(ScmObj cont, ScmObj ret)
 /*===========================================================================
   Trace Stack
 ===========================================================================*/
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
 SCM_EXPORT void
 scm_push_trace_frame(ScmObj obj, ScmObj env)
 {
@@ -359,7 +359,7 @@ scm_pop_trace_frame(void)
 
     l_trace_stack = CDR(l_trace_stack);
 }
-#endif /* SCM_DEBUG */
+#endif /* SCM_USE_BACKTRACE */
 
 SCM_EXPORT ScmObj
 scm_trace_stack(void)

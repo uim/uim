@@ -207,4 +207,8 @@
 
 #define SCM_STRICT_TOPLEVEL_DEFINITIONS 1
 
+#define SCM_USE_BACKTRACE 1  /* does not require SCM_DEBUG */
+/* SCM_DEBUG requires SCM_USE_FORMAT */
+/* SCM_DEBUG_BACKTRACE_VAL requires SCM_USE_FORMAT */
+
 #endif /* __SIGSCHEME_CONFIG_OLD_H */

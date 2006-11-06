@@ -233,7 +233,7 @@ Status Summary
          core storage-gc.c
          core strcasecmp.c
 y yy y   core alloc.c
-         core error.c
+y yy y   core error.c
 y yy y   core env.c
 y yy y   core symbol.c
 yyyy yyy core continuation.c
@@ -599,12 +599,12 @@ corner case tests:
 
 file:              error.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r3949
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3949
+64-bit by eyes:    yamaken@r3949
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3949
 normal case tests: 
 corner case tests: 
 
@@ -1029,6 +1029,11 @@ corner case tests:
 
 Log
 ---
+2006-11-07  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * error.c
+          - QA done @r3949 by eyes
+
 2006-11-06  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * symbol.c

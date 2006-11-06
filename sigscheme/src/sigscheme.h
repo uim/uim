@@ -1252,16 +1252,19 @@ SCM_EXPORT ScmObj scm_intern(const char *name);
 SCM_EXPORT ScmObj scm_symbol_bound_to(ScmObj obj);
 
 /* error.c */
-SCM_EXPORT int  scm_debug_categories(void);
-SCM_EXPORT void scm_set_debug_categories(int categories);
-SCM_EXPORT int  scm_predefined_debug_categories(void);
-SCM_EXPORT void scm_categorized_debug(int category, const char *msg, ...);
+SCM_EXPORT enum ScmDebugCategory scm_debug_categories(void);
+SCM_EXPORT void scm_set_debug_categories(enum ScmDebugCategory categories);
+SCM_EXPORT enum ScmDebugCategory scm_predefined_debug_categories(void);
+#if SCM_DEBUG
+SCM_EXPORT void scm_categorized_debug(enum ScmDebugCategory category,
+                                      const char *msg, ...);
 SCM_EXPORT void scm_debug(const char *msg, ...);
+#endif /* SCM_DEBUG */
 SCM_EXPORT void scm_die(const char *msg, const char *filename, int line) SCM_NORETURN;
 SCM_EXPORT void scm_plain_error(const char *msg, ...) SCM_NORETURN;
 SCM_EXPORT void scm_error(const char *funcname, const char *msg, ...) SCM_NORETURN;
 SCM_EXPORT void scm_error_obj(const char *funcname, const char *msg,
-                   ScmObj obj) SCM_NORETURN;
+                              ScmObj obj) SCM_NORETURN;
 SCM_EXPORT void scm_show_backtrace(ScmObj trace_stack);
 SCM_EXPORT ScmObj scm_make_error_obj(ScmObj reason, ScmObj objs);
 SCM_EXPORT void scm_raise_error(ScmObj err_obj) SCM_NORETURN;
