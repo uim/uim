@@ -145,6 +145,9 @@ void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * /* e */ )
 {
     isDragging = true;
     grabMouse( QCursor( Qt::SizeAllCursor) );
+
+    offsetX = QCursor::pos().x() - this->parentWidget()->x();
+    offsetY = QCursor::pos().y() - this->parentWidget()->y();
 }
 
 void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * /* e */ )
@@ -155,8 +158,11 @@ void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * /* e */ )
 
 void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * /* e */ )
 {
-    if ( isDragging )
-        emit moveTo( QCursor::pos() );
+    if ( isDragging ) {
+        QPoint pos = QCursor::pos();
+        pos -= QPoint(offsetX, offsetY);
+        emit moveTo( pos );
+    }
 }
 
 void UimToolbarDraggingHandler::mouseDoubleClickEvent( QMouseEvent * /* e */ )

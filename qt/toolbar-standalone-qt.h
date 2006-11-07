@@ -79,6 +79,8 @@ protected:
 
 private:
     bool isDragging;
+    int offsetX;
+    int offsetY;
 };
 
 #endif  /* _UIM_TOOLBAR_DRAGGING_HANDLER_H_ */
