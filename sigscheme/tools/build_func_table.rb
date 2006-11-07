@@ -64,8 +64,7 @@ def build_table(table_name, src_files)
     },
     terminal_entry,
     table_footer,
-    "\n"
-  ].flatten.join("\n")
+  ].flatten.join("\n") + "\n"
 end
 
 def file_header(table_filename)
