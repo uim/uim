@@ -34,6 +34,7 @@
 
 #include "toolbar-standalone-qt.h"
 #include "toolbar-common-quimhelpertoolbar.h"
+#include "toolbar-common-uimstateindicator.h"
 
 #include <qapplication.h>
 #include <qpoint.h>
@@ -45,6 +46,8 @@
 
 #include "uim/uim.h"
 #include "qtgettext.h"
+
+#define TOOLBAR_MARGIN_SIZE	2
 
 UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
     : QHBox( parent, name, Qt::WStyle_NoBorder | Qt::WX11BypassWM )
@@ -63,6 +66,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
     toolbar->adjustSize();
     toolbar->show();
     QObject::connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
+    toolbar->setMargin(TOOLBAR_MARGIN_SIZE);
 
     // Move
     int panelHeight = 64; // FIXME!
@@ -127,7 +131,7 @@ QSize UimToolbarDraggingHandler::sizeHint() const
     int width, height;
     
     width = style().pixelMetric( QStyle::PM_DockWindowSeparatorExtent, this );
-    height = 25; // BUTTON_SIZE in toolbar-common-uimstateindicator.h
+    height = BUTTON_SIZE + TOOLBAR_MARGIN_SIZE * 2;
 
     return QSize( width, height );
 }

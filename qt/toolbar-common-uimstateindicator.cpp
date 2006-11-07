@@ -40,6 +40,7 @@
 #include <qstringlist.h>
 #include <qpoint.h>
 #include <qtooltip.h>
+#include <qimage.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -144,8 +145,11 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     size_changed = true;
                 }
                 QPixmap icon = QPixmap(ICONDIR + "/" + fields[1] + ".png");
+                QImage image = icon.convertToImage();
+                QPixmap scaledIcon = image.smoothScale(ICON_SIZE, ICON_SIZE);
+
                 if (!icon.isNull())
-                    button->setPixmap(icon);
+                    button->setPixmap(scaledIcon);
                 else
                     button->setText( fields[ 2 ] );
                 QToolTip::add( button, fields[ 3 ] );
@@ -249,9 +253,11 @@ int QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
 {
     int id;
     QPixmap icon = QPixmap(ICONDIR + "/" + indicationIdStr + ".png");
+    QImage image = icon.convertToImage();
+    QPixmap scaledIcon = image.smoothScale(ICON_SIZE, ICON_SIZE);
 
     if (!icon.isNull())
-        id = insertItem( icon, menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
+        id = insertItem( scaledIcon, menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
     else
         id = insertItem( menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
 

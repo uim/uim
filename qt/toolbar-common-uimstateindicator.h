@@ -41,7 +41,8 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
-#define BUTTON_SIZE 25
+#define BUTTON_SIZE 26
+#define ICON_SIZE	16
 
 class QHelperToolbarButton;
 class QHelperPopupMenu;

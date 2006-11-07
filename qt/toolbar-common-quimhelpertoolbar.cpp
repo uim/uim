@@ -35,6 +35,7 @@
 
 #include <qtooltip.h>
 #include <qtoolbutton.h>
+#include <qimage.h>
 
 #include <stdlib.h>
 
@@ -51,9 +52,15 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
 
     QObject::connect( m_indicator, SIGNAL( indicatorResized() ), this, SLOT( slotIndicatorResized() ) );
 
-    m_swicon = QPixmap( ICONDIR + "/im_switcher.png" );
-    m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
-    m_dicticon = QPixmap( ICONDIR + "/uim-dict.png");
+    QPixmap swicon = QPixmap( ICONDIR + "/im_switcher.png" );
+    QPixmap preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
+    QPixmap dicticon = QPixmap( ICONDIR + "/uim-dict.png");
+    QImage swimage = swicon.convertToImage();
+    QImage prefimage = preficon.convertToImage();
+    QImage dictimage = dicticon.convertToImage();
+    m_swicon = swimage.smoothScale(ICON_SIZE, ICON_SIZE);
+    m_preficon = prefimage.smoothScale(ICON_SIZE, ICON_SIZE);
+    m_dicticon = dictimage.smoothScale(ICON_SIZE, ICON_SIZE);
 
     m_contextMenu = new QPopupMenu( this );
     m_contextMenu->insertItem( m_swicon,   _("Switch input method"), this, SLOT(slotExecImSwitcher()) );
