@@ -61,7 +61,7 @@ parse_options(gint argc, gchar **argv)
 static void
 delete_event(GtkWidget *widget, gpointer data)
 {
-  gtk_main_quit ();
+  gtk_main_quit();
 }
 
 static gboolean
@@ -73,7 +73,7 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 
   switch (event->type) {
   case GDK_BUTTON_PRESS:
-    cursor = gdk_cursor_new(GDK_CROSSHAIR);
+    cursor = gdk_cursor_new(GDK_FLEUR);
     gdk_pointer_grab(widget->window, FALSE,
 		     GDK_BUTTON_RELEASE_MASK |
 		     GDK_POINTER_MOTION_MASK,
@@ -109,24 +109,24 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 static void
 helper_win_set_position(GtkWidget *window, gint x, gint y)
 {
-    gint wx = x, wy = y;
-    gint w, h, sc_w, sc_h;
+  gint wx = x, wy = y;
+  gint w, h, sc_w, sc_h;
 
-    sc_w = gdk_screen_width();
-    sc_h = gdk_screen_height();
+  sc_w = gdk_screen_width();
+  sc_h = gdk_screen_height();
 
-    gdk_window_get_size(window->window, &w, &h);
+  gdk_window_get_size(window->window, &w, &h);
 
-    if (wx < 0)
-      wx = 0;
-    else if (wx > sc_w - w)
-      wx = sc_w - w;
-    if (wy < 0)
-      wy = 0;
-    else if (wy > sc_h - h)
-      wy = sc_h -h;
+  if (wx < 0)
+    wx = 0;
+  else if (wx > sc_w - w)
+    wx = sc_w - w;
+  if (wy < 0)
+    wy = 0;
+  else if (wy > sc_h - h)
+    wy = sc_h -h;
 
-    gtk_window_move(GTK_WINDOW(window), wx, wy);
+  gtk_window_move(GTK_WINDOW(window), wx, wy);
 }
 
 static gboolean
@@ -141,8 +141,8 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
 
     gdk_window_get_size(widget->window, &w, &h);
 
-    wx = window_drag_start_x + ((gint) event->x_root - pointer_drag_start_x);
-    wy = window_drag_start_y + ((gint) event->y_root - pointer_drag_start_y);
+    wx = window_drag_start_x + ((gint)event->x_root - pointer_drag_start_x);
+    wy = window_drag_start_y + ((gint)event->y_root - pointer_drag_start_y);
 
     helper_win_set_position(widget, wx, wy);
 
@@ -155,7 +155,7 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
 static gboolean
 button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 {
-  if (!toolbar_dragging) 
+  if (!toolbar_dragging)
     return FALSE;
 
   gdk_pointer_ungrab(event->time);
@@ -207,7 +207,7 @@ size_request_cb(GtkWidget *widget, GtkRequisition *req, gpointer data)
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
   GtkWidget *toolbar;
   GtkWidget *window;
@@ -216,9 +216,9 @@ main (int argc, char *argv[])
   GtkWidget *frame;
 
   setlocale(LC_ALL, "");
-  bindtextdomain( PACKAGE, LOCALEDIR );
-  textdomain( PACKAGE );
-  bind_textdomain_codeset( PACKAGE, "UTF-8");
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
+  bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   uim_init();
 
@@ -231,30 +231,30 @@ main (int argc, char *argv[])
   gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_DOCK);
 
   gtk_window_set_skip_taskbar_hint(GTK_WINDOW(window), TRUE);
-  gtk_window_set_decorated (GTK_WINDOW(window), FALSE);
+  gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
   gtk_window_stick(GTK_WINDOW(window));
 
   gtk_widget_add_events(window, GDK_BUTTON_PRESS_MASK);
 
   frame = gtk_frame_new(NULL);
   gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_OUT);
-  gtk_container_add (GTK_CONTAINER (window), frame);
+  gtk_container_add(GTK_CONTAINER(window), frame);
 
-  hbox = gtk_hbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (frame), hbox);
+  hbox = gtk_hbox_new(FALSE, 0);
+  gtk_container_add(GTK_CONTAINER(frame), hbox);
 
   handle = gtk_drawing_area_new();
   gtk_widget_set_size_request(handle, 8, -1);
-  gtk_box_pack_start(GTK_BOX (hbox), handle, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), handle, FALSE, FALSE, 0);
 
   toolbar = (GtkWidget*)uim_toolbar_standalone_new();
-  gtk_box_pack_start(GTK_BOX (hbox), toolbar, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
 
   g_signal_connect(G_OBJECT(handle), "expose-event",
-		   G_CALLBACK (handle_expose_event_cb), NULL);
+		   G_CALLBACK(handle_expose_event_cb), NULL);
 
   g_signal_connect(G_OBJECT(window), "delete_event",
-		   G_CALLBACK (delete_event), NULL);
+		   G_CALLBACK(delete_event), NULL);
   g_signal_connect(G_OBJECT(window), "button-press-event",
 		   G_CALLBACK(button_press_event_cb), toolbar);
   g_signal_connect(G_OBJECT(window), "button-release-event",
@@ -266,10 +266,10 @@ main (int argc, char *argv[])
   g_signal_connect(G_OBJECT(window), "size-request",
 		   G_CALLBACK(size_request_cb), NULL);
 
-  gtk_widget_show_all(GTK_WIDGET (window));
+  gtk_widget_show_all(GTK_WIDGET(window));
 
   if (argc > 1) {
-    if (!gtk_window_parse_geometry(GTK_WINDOW (window), argv[1])) {
+    if (!gtk_window_parse_geometry(GTK_WINDOW(window), argv[1])) {
 
 #if GLIB_CHECK_VERSION(2, 6, 0)
       parse_options(argc, argv);
