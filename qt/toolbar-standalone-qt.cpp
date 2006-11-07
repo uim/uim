@@ -55,11 +55,14 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
     UimToolbarDraggingHandler *h = new UimToolbarDraggingHandler( this );
     h->adjustSize();
     h->show();
+    QObject::connect( h, SIGNAL( handleDoubleClicked() ),
+                      this, SLOT( slotToolbarDoubleClicked() ) );
+
     
-    QUimHelperToolbar *b = new QUimHelperToolbar( this );
-    b->adjustSize();
-    b->show();
-    QObject::connect( b, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
+    toolbar = new QUimHelperToolbar( this );
+    toolbar->adjustSize();
+    toolbar->show();
+    QObject::connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
 
     // Move
     int panelHeight = 64; // FIXME!
@@ -73,7 +76,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
                       this, SLOT( move( const QPoint & ) ) );
 
     // Quit
-    QObject::connect( b, SIGNAL( quitToolbar() ),
+    QObject::connect( toolbar, SIGNAL( quitToolbar() ),
                       qApp, SLOT( quit() ) );
 
     show();
@@ -86,6 +89,16 @@ UimStandaloneToolbar::~UimStandaloneToolbar()
 void
 UimStandaloneToolbar::slotToolbarResized()
 {
+    adjustSize();
+}
+
+void
+UimStandaloneToolbar::slotToolbarDoubleClicked()
+{
+    if (toolbar->isVisible())
+      toolbar->hide();
+    else
+      toolbar->show();
     adjustSize();
 }
 
@@ -111,8 +124,12 @@ void UimToolbarDraggingHandler::drawContents( QPainter* p )
 
 QSize UimToolbarDraggingHandler::sizeHint() const
 {
-    const int dim = style().pixelMetric( QStyle::PM_DockWindowSeparatorExtent, this );
-    return QSize( dim, 0 );
+    int width, height;
+    
+    width = style().pixelMetric( QStyle::PM_DockWindowSeparatorExtent, this );
+    height = 25; // BUTTON_SIZE in toolbar-common-uimstateindicator.h
+
+    return QSize( width, height );
 }
 
 QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
@@ -123,17 +140,25 @@ QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
 void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * /* e */ )
 {
     isDragging = true;
+    grabMouse( QCursor( Qt::SizeAllCursor) );
 }
 
 void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * /* e */ )
 {
     isDragging = false;
+    releaseMouse();
 }
 
 void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * /* e */ )
 {
     if ( isDragging )
         emit moveTo( QCursor::pos() );
+}
+
+void UimToolbarDraggingHandler::mouseDoubleClickEvent( QMouseEvent * /* e */ )
+{
+    isDragging = false;
+    emit handleDoubleClicked();
 }
 
 int main( int argc, char *argv[] )
