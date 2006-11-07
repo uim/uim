@@ -389,17 +389,19 @@ SRFI-1  List Library
 
 Although a C implementation `module-srfi1.c` is existing, it is still broken
 and should not use for production codes. To get SRFI-1 working with SigScheme,
-use SLIB version of the library (will made available after some preparations).
+use SLIB version of the library (will be made available after some
+preparations).
 
 
 SRFI-23 Error Reporting Mechanism
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The `error` procedure throws a SigScheme-specific error object in cooperate
-with "SRFI-34 Exception Handling for Programs". Since the error objects are
-represented as a list, be careful on catching an exception based on its type.
-If you want to distinguish the error objects from ordinary lists, use
-SigScheme-specific `%%error-object?` predicate.
+If srfi-34 is provided, the `error` procedure throws a SigScheme-specific error
+object in cooperate with "SRFI-34 Exception Handling for Programs". Otherwise
+it simply calls scm_fatal_error(). Since the error objects are represented as a
+list, be careful on catching an exception based on its type.  If you want to
+distinguish the error objects from ordinary lists, use SigScheme-specific
+`%%error-object?` predicate.
 
 .Error objects are also caught as a list
 ================================================================

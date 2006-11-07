@@ -178,7 +178,7 @@ extern "C" {
 /*=======================================
   Macro Definitions
 =======================================*/
-#define SCM_ERR_HEADER "ERROR: "
+#define SCM_ERR_HEADER "Error: "
 
 #define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define SCM_ERRMSG_IMPROPER_ARGS                                             \

@@ -261,7 +261,7 @@ yyyy yyy r5rs qquote.c
          srfi module-srfi2.c
          srfi module-srfi6.c
          srfi module-srfi8.c
-         srfi module-srfi23.c
+yyyy yy  srfi module-srfi23.c
          srfi module-srfi28.c
          srfi module-srfi34.c
          srfi module-srfi38.c
@@ -907,13 +907,13 @@ corner case tests:
 
 file:              module-srfi23.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3953
+spec by tests:     yamaken@r3953
+general review:    yamaken@r3953
+64-bit by eyes:    yamaken@r3953
 64-bit by tests:   
-coding style:      
-normal case tests: 
+coding style:      yamaken@r3953
+normal case tests: yamaken@r3953
 corner case tests: 
 
 file:              module-srfi28.c
@@ -1030,6 +1030,17 @@ corner case tests:
 Log
 ---
 2006-11-07  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * module-srfi23.c
+          - QA done @r3953 by eyes
+          - [SRFI-23] Display error message and optional objects as same as the
+            reference implementation of SRFI-23
+
+          Details:
+          - Perform some tests for normal and invalid cases by hand, since it
+            cannot be checked by assert-error
+          - Specs have been validated against SRFI-23:
+            * error
 
         * error.c
           - QA done @r3950 by eyes

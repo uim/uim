@@ -581,8 +581,6 @@ write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype)
 
     case AS_DISPLAY:
         scm_display(port, reason);
-        if (CONSP(objs))
-            scm_port_put_char(port, ':');
         break;
 
     default:
