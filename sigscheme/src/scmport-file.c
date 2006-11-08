@@ -120,6 +120,9 @@ fileport_new_internal(FILE *file, const char *aux_info, scm_bool ownership)
 {
     ScmFilePort *port;
 
+    SCM_PORT_ASSERT(file);
+    SCM_PORT_ASSERT(aux_info);
+
     port = SCM_PORT_MALLOC(sizeof(ScmFilePort));
 
     port->vptr = ScmFilePort_vptr;

@@ -111,10 +111,10 @@ Categorized File List
   * scmport-str.h
   * scmport-str.c
   * scmport-basechar.c
-  * scmport-mbchar.h
-  * scmport-mbchar.c
   * scmport-sbchar.h
   * scmport-sbchar.c
+  * scmport-mbchar.h
+  * scmport-mbchar.c
   * encoding.h
   * encoding-config.h
   * encoding.c
@@ -205,19 +205,19 @@ Status Summary
 |||||||+- corner case tests
 ||||||||
 y yy y   base scmint.h
-         base scmport.h
-         base scmport-config.h
-         base scmport-null.h
-         base scmport-null.c
-         base scmport-file.c
-         base scmport-file.h
-         base scmport-str.h
-         base scmport-str.c
-         base scmport-basechar.c
+y yy y   base scmport.h
+y yy y   base scmport-config.h
+y yy y   base scmport-null.h
+y yy y   base scmport-null.c
+y yy y   base scmport-file.c
+y yy y   base scmport-file.h
+y yy y   base scmport-str.h
+y yy y   base scmport-str.c
+y yy y   base scmport-basechar.c
+y yy y   base scmport-sbchar.h
+y yy y   base scmport-sbchar.c
          base scmport-mbchar.h
          base scmport-mbchar.c
-         base scmport-sbchar.h
-         base scmport-sbchar.c
          base encoding.h
          base encoding-config.h
          base encoding.c
@@ -291,100 +291,122 @@ corner case tests:
 
 file:              scmport.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-config.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-null.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-null.c
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-file.c
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-file.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-str.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-str.c
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
 file:              scmport-basechar.c
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3963
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3963
+normal case tests: 
+corner case tests: 
+
+file:              scmport-sbchar.h
+category:          base
+spec by eyes:      yamaken@r3963
+spec by tests:     
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
+64-bit by tests:   
+coding style:      yamaken@r3963
+normal case tests: 
+corner case tests: 
+
+file:              scmport-sbchar.c
+category:          base
+spec by eyes:      yamaken@r3963
+spec by tests:     
+general review:    yamaken@r3963
+64-bit by eyes:    yamaken@r3963
+64-bit by tests:   
+coding style:      yamaken@r3963
 normal case tests: 
 corner case tests: 
 
@@ -400,28 +422,6 @@ normal case tests:
 corner case tests: 
 
 file:              scmport-mbchar.c
-category:          base
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
-64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
-
-file:              scmport-sbchar.h
-category:          base
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
-64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
-
-file:              scmport-sbchar.c
 category:          base
 spec by eyes:      
 spec by tests:     
@@ -1030,6 +1030,21 @@ corner case tests:
 Log
 ---
 2006-11-09  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+       * scmport.h
+       * scmport-config.h
+       * scmport-null.h
+       * scmport-null.c
+       * scmport-file.h
+       * scmport-file.c
+       * scmport-str.h
+       * scmport-str.c
+       * scmport-basechar.c
+       * scmport-sbchar.h
+       * scmport-sbchar.c
+          - QA done @r3963
+          - Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
+            which may cause SEGV
 
         * scmint.h
           - QA done @r3961

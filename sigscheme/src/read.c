@@ -599,16 +599,21 @@ read_list(ScmObj port, scm_ichar_t closeParen)
 {
     ScmObj lst, elm, cdr;
     ScmQueue q;
+#if SCM_DEBUG
     ScmBaseCharPort *basecport;
+    size_t start_line, cur_line;
+#endif
     scm_ichar_t c;
-    int err, start_line, cur_line;
+    int err;
     char dot_buf[sizeof("...")];
     DECLARE_INTERNAL_FUNCTION("read");
 
+#if SCM_DEBUG
     CDBG((SCM_DBG_PARSER, "read_list"));
     basecport = SCM_PORT_TRY_DYNAMIC_CAST(ScmBaseCharPort,
                                           SCM_PORT_IMPL(port));
-    start_line = (basecport) ? ScmBaseCharPort_line_number(basecport) : -1;
+    start_line = (basecport) ? ScmBaseCharPort_line_number(basecport) : 0;
+#endif
 
     for (lst = SCM_NULL, SCM_QUEUE_POINT_TO(q, lst);
          ;
@@ -624,13 +629,14 @@ read_list(ScmObj port, scm_ichar_t closeParen)
         CDBG((SCM_DBG_PARSER, "read_list c = [~C]", c));
 
         if (c == EOF) {
-            if (basecport) {
+#if SCM_DEBUG
+            if (basecport && start_line) {
                 cur_line = ScmBaseCharPort_line_number(basecport);
-                ERR("EOF inside list at line ~D (starting from line ~D)",
+                ERR("EOF inside list at line ~ZU (started from line ~ZU)",
                     cur_line, start_line);
-            } else {
+            } else
+#endif
                 ERR("EOF inside list");
-            }
         } else if (c == closeParen) {
             DISCARD_LOOKAHEAD(port);
             return lst;

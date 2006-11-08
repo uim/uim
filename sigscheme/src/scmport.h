@@ -41,11 +41,16 @@
 #define __SCM_SCMPORT_H
 
 #include <stddef.h>
+#if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
+#include <assert.h>
+#endif
 
 #include "sigscheme-stdint.h"
 #include "scmint.h"
 #include "global.h"
+#if SCM_USE_MULTIBYTE_CHAR
 #include "encoding.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,6 +63,12 @@ extern "C" {
 #define SCM_DEBUG_PORT 0
 #endif
 
+#if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
+#define SCM_PORT_ASSERT(exp) (assert(exp))
+#else
+#define SCM_PORT_ASSERT(exp) SCM_EMPTY_EXPR
+#endif
+
 #define SCM_PORT_ERROR_INVALID_TYPE(klass, port, type)                       \
     SCM_##klass##PORT_ERROR((port), #type ": invalid object is passed to")
 #define SCM_PORT_ERROR_INVALID_OPERATION(klass, port, type)                  \
@@ -66,7 +77,7 @@ extern "C" {
     SCM_##klass##PORT_ERROR((port), #type ": Out of memory")
 
 /*
- * To allow safe method invocation (contains from subclasses), all non-standard
+ * To allow safe method invocation (includes from subclasses), all non-standard
  * method must call SCM_PORT_*DYNAMIC_CAST() explicitly.
  */
 #define SCM_CHARPORT_DYNAMIC_CAST(type, obj)                                 \
@@ -81,10 +92,15 @@ extern "C" {
 
 #define SCM_CHARPORT_CLOSE(cport)        ((*(cport)->vptr->close)(cport))
 #define SCM_CHARPORT_CODEC(cport)        ((*(cport)->vptr->codec)(cport))
+#if SCM_USE_MULTIBYTE_CHAR
 #define SCM_CHARPORT_ENCODING(cport)                                         \
     (SCM_CHARCODEC_ENCODING(SCM_CHARPORT_CODEC(cport)))
 #define SCM_CHARPORT_CCS(cport)                                              \
     (SCM_CHARCODEC_CCS(SCM_CHARPORT_CODEC(cport)))
+#else /* SCM_USE_MULTIBYTE_CHAR */
+#define SCM_CHARPORT_ENCODING(cport) ("ISO-8859-1")
+#define SCM_CHARPORT_CCS(cport)      (SCM_CCS_UNKNOWN)
+#endif /* SCM_USE_MULTIBYTE_CHAR */
 #define SCM_CHARPORT_INSPECT(cport)      ((*(cport)->vptr->inspect)(cport))
 #define SCM_CHARPORT_GET_CHAR(cport)     ((*(cport)->vptr->get_char)(cport))
 #define SCM_CHARPORT_PEEK_CHAR(cport)    ((*(cport)->vptr->peek_char)(cport))
@@ -109,6 +125,11 @@ extern "C" {
 /*=======================================
   Type Definitions
 =======================================*/
+#if !SCM_USE_MULTIBYTE_CHAR
+#define ScmCharCodec void
+#define SCM_CCS_UNKNOWN 0
+#endif
+
 typedef struct ScmCharPortVTbl_ ScmCharPortVTbl;
 typedef struct ScmCharPort_     ScmCharPort;
 typedef struct ScmBaseCharPort_ ScmBaseCharPort;
@@ -127,7 +148,7 @@ typedef char *(*ScmCharPortMethod_inspect)(ScmCharPort *cport);
 /* input */
 typedef scm_ichar_t (*ScmCharPortMethod_get_char)(ScmCharPort *cport);
 typedef scm_ichar_t (*ScmCharPortMethod_peek_char)(ScmCharPort *cport);
-typedef scm_bool (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
+typedef scm_bool    (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
 
 /* output */
 typedef int (*ScmCharPortMethod_puts)(ScmCharPort *cport, const char *str);
@@ -155,7 +176,7 @@ struct ScmBaseCharPort_ {  /* inherits ScmCharPort */
     const ScmCharPortVTbl *vptr;
 
     ScmBytePort *bport;  /* protected */
-    int linenum;         /* protected */
+    size_t linenum;      /* protected */
 };
 
 /*
@@ -169,13 +190,13 @@ typedef char *(*ScmBytePortMethod_inspect)(ScmBytePort *bport);
 /* input */
 typedef scm_ichar_t (*ScmBytePortMethod_get_byte)(ScmBytePort *bport);
 typedef scm_ichar_t (*ScmBytePortMethod_peek_byte)(ScmBytePort *bport);
-typedef scm_bool (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
+typedef scm_bool    (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
 
 /* output */
-typedef int (*ScmBytePortMethod_puts)(ScmBytePort *bport, const char *str);
+typedef int    (*ScmBytePortMethod_puts)(ScmBytePort *bport, const char *str);
 typedef size_t (*ScmBytePortMethod_write)(ScmBytePort *bport,
                                           size_t nbytes, const char *buf);
-typedef int (*ScmBytePortMethod_flush)(ScmBytePort *bport);
+typedef int    (*ScmBytePortMethod_flush)(ScmBytePort *bport);
 
 struct ScmBytePortVTbl_ {
     ScmBytePortMethod_dyn_cast    dyn_cast;
@@ -206,7 +227,7 @@ SCM_EXPORT void ScmBaseCharPort_construct(ScmBaseCharPort *port,
                                           ScmBytePort *bport);
 SCM_EXPORT char *ScmBaseCharPort_inspect(ScmBaseCharPort *port,
                                          const char *header);
-SCM_EXPORT int ScmBaseCharPort_line_number(ScmBaseCharPort *port);
+SCM_EXPORT size_t ScmBaseCharPort_line_number(ScmBaseCharPort *port);
 
 
 #ifdef __cplusplus

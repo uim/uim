@@ -95,7 +95,7 @@ AX_LIB_GLIBC
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h \
-                  strings.h unistd.h])
+                  strings.h unistd.h assert.h])
 AC_CHECK_HEADER([cutter/cutter.h], have_cutter_h=yes, have_cutter_h=no)
 AM_CONDITIONAL(HAVE_CUTTER_H, test "x$have_cutter_h" = xyes)
 

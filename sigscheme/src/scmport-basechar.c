@@ -101,7 +101,7 @@ ScmBaseCharPort_construct(ScmBaseCharPort *port, const ScmCharPortVTbl *vptr,
 #if SCM_DEBUG
     port->linenum = 1;
 #else
-    port->linenum = -1;
+    port->linenum = 0;
 #endif
 }
 
@@ -123,7 +123,7 @@ ScmBaseCharPort_inspect(ScmBaseCharPort *port, const char *header)
     return combined;
 }
 
-SCM_EXPORT int
+SCM_EXPORT size_t
 ScmBaseCharPort_line_number(ScmBaseCharPort *port)
 {
     return port->linenum;

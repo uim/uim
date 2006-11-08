@@ -68,7 +68,7 @@ struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
     ScmBytePort *bport;  /* protected */
-    int linenum;         /* protected */
+    size_t linenum;      /* protected */
 
     ScmCharCodec *codec;
     ScmMultibyteState state;

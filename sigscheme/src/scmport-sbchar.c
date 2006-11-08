@@ -58,6 +58,7 @@ struct ScmSingleByteCharPort_ {  /* inherits ScmBaseCharPort */
     const ScmCharPortVTbl *vptr;
 
     ScmBytePort *bport;  /* protected */
+    size_t linenum;      /* protected */
 };
 
 /*=======================================
@@ -105,7 +106,11 @@ scm_sbcport_init(void)
     vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 
+#if SCM_USE_MULTIBYTE_CHAR
     l_sbc_codec = scm_mb_find_codec("ISO-8859-1");
+#else
+    l_sbc_codec = NULL;
+#endif
 }
 
 SCM_EXPORT void
@@ -152,5 +157,5 @@ sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch)
     char buf[1];
 
     buf[0] = ch;
-    return SCM_BYTEPORT_WRITE(port->bport, sizeof(char), buf);
+    return SCM_BYTEPORT_WRITE(port->bport, sizeof(buf), buf);
 }

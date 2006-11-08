@@ -162,6 +162,8 @@ istrport_new(char *str, scm_bool ownership, ScmInputStrPort_finalizer finalize)
 {
     ScmInputStrPort *port;
 
+    SCM_PORT_ASSERT(str);
+
     port = SCM_PORT_MALLOC(sizeof(ScmInputStrPort));
 
     port->vptr = ScmInputStrPort_vptr;
@@ -387,6 +389,8 @@ ostrport_flush(ScmOutputStrPort *port)
 static size_t
 ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
 {
+    SCM_PORT_ASSERT(str);
+
     /* extend the buffer */
     if (port->buf_size - port->cur < len + sizeof("")) {
         if (!port->buf_size)

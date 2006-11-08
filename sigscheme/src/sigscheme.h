@@ -115,17 +115,19 @@ extern "C" {
 #define SCM_ASSERTION_MSG(cond) "assertion failed"
 #endif
 
-#if SCM_CHICKEN_DEBUG
+#if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
+#include <assert.h>
+#define SCM_ASSERT(cond) (assert(cond))
+#else
 /* allows survival recovery */
 #define SCM_ASSERT(cond)                                                     \
     ((cond) || (scm_die(SCM_ASSERTION_MSG(cond), __FILE__, __LINE__), 1))
-#else /* SCM_CHICKEN_DEBUG */
-#include <assert.h>
-#define SCM_ASSERT(cond) (assert(cond))
-#endif /* SCM_CHICKEN_DEBUG */
+#endif
+
 #else /* SCM_DEBUG */
 #define SCM_ASSERT(cond) SCM_EMPTY_EXPR
 #endif /* SCM_DEBUG */
+
 #define SCM_ENSURE(cond)                                                     \
     ((cond) || (scm_die("invalid condition", __FILE__, __LINE__), 1))
 

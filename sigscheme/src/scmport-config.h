@@ -59,8 +59,8 @@ extern "C" {
 #else /* SCM_SCMPORT_USE_WITH_SIGSCHEME */
 /* Allocation error handling in the macros is strongly recommended. */
 #define SCM_PORT_MALLOC(size)          (malloc(size))
-#define SCM_PORT_CALLOC(number, size)  (calloc(number, size))
-#define SCM_PORT_REALLOC(ptr, size)    (realloc(ptr, size))
+#define SCM_PORT_CALLOC(number, size)  (calloc((number), (size)))
+#define SCM_PORT_REALLOC(ptr, size)    (realloc((ptr), (size)))
 /* FIXME: Support platforms lacking strdup(3) */
 #define SCM_PORT_STRDUP(str)           (strdup(str))
 
