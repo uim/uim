@@ -79,7 +79,7 @@ class QHelperToolbarButton : public QToolButton
 {
 public:
     QHelperToolbarButton( QWidget *parent = 0, const char *name = 0 )
-        : QToolButton( parent, name ){}
+        : QToolButton( parent, name ){ setAutoRaise( TRUE ); }
 
     QSize sizeHint() const
     {
