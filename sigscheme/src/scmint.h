@@ -72,12 +72,12 @@ extern "C" {
   Type Definitions
 =======================================*/
 /*
- * My own Boolean type
+ * Our own Boolean type
  *
  * libsscm does not use C99 stdbool, its autoconf equivalent or popular
  * combination of {int, TRUE, FALSE}, to avoid system-dependent ABI
- * incompatibility (such as size difference) and client-dependent problem (such
- * as an unexpected assumption about TRUE value).
+ * incompatibility (such as size difference) and client-dependent problems
+ * (such as an unexpected assumption about TRUE value).
  *
  * The definition use plain typedef and macro definition to avoid
  * misrecognition about the usage of the type, such as enum-related ones.
@@ -218,7 +218,7 @@ typedef scm_uint_t           scm_uintobj_t;
  * The type is used to pass a Scheme-level character object in C codes.
  *
  * It is distinguished from the element of fixed-width character string
- * (scm_wchar_t). This integer type is defined as broad as capable of any
+ * (scm_wchar_t). This integer type is defined as wide as capable of any
  * multibyte char, and not configurable, to keep ABI stable regardless of
  * configuration about scm_wchar_t.
  *
@@ -265,8 +265,10 @@ typedef scm_byte_t         scm_wchar_t;
       && SIZEOF_SCM_INTOBJ_T == SIZEOF_SCM_UINTOBJ_T                         \
       && SIZEOF_SCM_INTREF_T <= SIZEOF_SCM_INTOBJ_T                          \
       && SIZEOF_SCM_INT_T    <= SIZEOF_SCM_INTOBJ_T                          \
-      && (   SIZEOF_SCM_INTREF_T <= SIZEOF_SCM_INT_T                         \
-          || SIZEOF_SCM_INTREF_T >= SIZEOF_SCM_INT_T)                        \
+      && ((SIZEOF_SCM_UINTREF_T <= SIZEOF_SCM_UINT_T                         \
+           && SIZEOF_SCM_UINTOBJ_T == SIZEOF_SCM_UINT_T)                     \
+          || (SIZEOF_SCM_UINTREF_T > SIZEOF_SCM_UINT_T                       \
+              && SIZEOF_SCM_UINTOBJ_T == SIZEOF_SCM_UINTREF_T))              \
       && SIZEOF_SCM_WCHAR_T  <= SIZEOF_SCM_ICHAR_T                           \
       && SIZEOF_SCM_ICHAR_T  <= SIZEOF_SCM_INT_T)
 #error "size constraints of primitive types are broken"

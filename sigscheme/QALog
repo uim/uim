@@ -204,7 +204,7 @@ Status Summary
 ||||||+-- normal case tests
 |||||||+- corner case tests
 ||||||||
-         base scmint.h
+y yy y   base scmint.h
          base scmport.h
          base scmport-config.h
          base scmport-null.h
@@ -280,12 +280,12 @@ Status
 
 file:              scmint.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r3961
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3961
+64-bit by eyes:    yamaken@r3961
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3961
 normal case tests: 
 corner case tests: 
 
@@ -1029,6 +1029,11 @@ corner case tests:
 
 Log
 ---
+2006-11-09  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * scmint.h
+          - QA done @r3961
+
 2006-11-08  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * module-srfi34.c
