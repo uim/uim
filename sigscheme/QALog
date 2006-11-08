@@ -1029,6 +1029,19 @@ corner case tests:
 
 Log
 ---
+2006-11-08  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * module-srfi34.c
+          - QA done @r3959
+          - [SRFI-34] Add current handler to error object to behave as same as
+            the reference implementation of SRFI-34 'raise'
+
+          Details:
+          - Perform some tests by hand, since it cannot be checked by
+            assert-error
+          - Specs have been validated against SRFI-34:
+            * with-exception-handler, guard, raise
+
 2006-11-07  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * module-srfi23.c
