@@ -292,7 +292,7 @@ scm_p_inspect_error(ScmObj err_obj)
             scm_display(scm_err, err_obj);
 #endif
         } else {
-            scm_port_puts(scm_err, SCM_ERRMSG_UNHANDLED_EXCEPTION ": ");
+            scm_port_puts(scm_err, ERRMSG_UNHANDLED_EXCEPTION ": ");
             SCM_WRITE_SS(scm_err, err_obj);
         }
         scm_port_newline(scm_err);

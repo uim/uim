@@ -36,7 +36,7 @@
  * This file implements C-version of the reference implementation written in
  * the SRFI-34 specification. All parts are written in C since:
  *
- * - SigScheme doesn't have a hygienic-macros feature (yet)
+ * - SigScheme's hygienic-macros feature is not efficient yet
  *
  * - To avoid namespace pollution (with-exception-handlers, guard-aux, etc),
  *   since SigScheme doesn't have a module or namespace feature (yet)
@@ -52,7 +52,6 @@
 =======================================*/
 #define USE_WITH_SIGSCHEME_FATAL_ERROR 1
 
-#define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define ERRMSG_HANDLER_RETURNED    "handler returned"
 #define ERRMSG_FALLBACK_EXHAUSTED  "fallback handler exhausted"
 
@@ -158,7 +157,7 @@ scm_initialize_srfi34(void)
          var < &vars[N_GLOBAL_SCMOBJ];
          var++)
     {
-        scm_gc_protect_with_init(var, SCM_FALSE);
+        scm_gc_protect_with_init(var, SCM_UNDEF);
     }
 
     l_errmsg_unhandled_exception = CONST_STRING(ERRMSG_UNHANDLED_EXCEPTION);
@@ -176,9 +175,12 @@ scm_initialize_srfi34(void)
     l_sym_handler_k  = scm_intern("handler-k");
 
     /* prepare procedures and syntaxes */
-    l_syn_apply   = scm_symbol_value(scm_intern("apply"),  SCM_INTERACTION_ENV);
-    l_proc_values = scm_symbol_value(scm_intern("values"), SCM_INTERACTION_ENV);
+    l_syn_apply
+        = scm_symbol_value(scm_intern("apply"),  SCM_INTERACTION_ENV);
+    l_proc_values
+        = scm_symbol_value(scm_intern("values"), SCM_INTERACTION_ENV);
 
+    SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &raw_quote);
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &set_cur_handlers);
     SCM_ASSERT_FUNCTYPE(scm_procedure_fixed_2,      &with_exception_handlers);
     SCM_ASSERT_FUNCTYPE(scm_syntax_fixed_1,         &guard_internal);
@@ -201,6 +203,11 @@ scm_initialize_srfi34(void)
     l_syn_guard_body
         = MAKE_FUNC(SCM_SYNTAX_FIXED_TAILREC_0, &guard_body);
 
+    /*
+     * The 'error' procedure should not be invoked directly by
+     * scm_p_srfi23_error(), to allow dynamic redifinition, and keep SRFI-23
+     * implementation abstract.
+     */
 #if USE_WITH_SIGSCHEME_FATAL_ERROR
     l_proc_fallback_handler
         = scm_s_lambda(LIST_1(l_sym_condition),
@@ -214,11 +221,6 @@ scm_initialize_srfi34(void)
                                             l_sym_condition))),
                        SCM_INTERACTION_ENV);
 #else /* USE_WITH_SIGSCHEME_FATAL_ERROR */
-    /*
-     * The 'error' procedure should not be invoked directly by
-     * scm_p_srfi23_error(), to allow dynamic redifinition, and keep SRFI-23
-     * implementation abstract.
-     */
     l_proc_fallback_handler
         = scm_s_lambda(LIST_1(l_sym_condition),
                        LIST_1(LIST_3(l_sym_error,
@@ -244,8 +246,7 @@ raw_quote(ScmObj datum, ScmObj env)
 static ScmObj
 enclose(ScmObj exp, ScmObj env)
 {
-    /* (lambda () exp) */
-    return MAKE_CLOSURE(SCM_LIST_2(SCM_NULL, exp), env);
+    return scm_s_lambda(SCM_NULL, LIST_1(exp), env);
 }
 
 static ScmObj
@@ -311,8 +312,9 @@ scm_p_srfi34_raise(ScmObj obj)
     obj = LIST_2(SYM_QUOTE, obj);
     thunk = scm_s_lambda(SCM_NULL,
                          LIST_2(LIST_2(handler, obj),
-                                LIST_3(l_sym_error,
-                                       l_errmsg_handler_returned, obj)),
+                                LIST_4(l_sym_error,
+                                       l_errmsg_handler_returned,
+                                       handler, obj)),
                          SCM_INTERACTION_ENV);
     return with_exception_handlers(rest_handlers, thunk);
 }
@@ -408,9 +410,8 @@ guard_handler_body(ScmObj q_handler_k, ScmObj env)
     sym_var = CAR(cond_catch);
     clauses = CDR(cond_catch);
     ENSURE_SYMBOL(sym_var);
-    cond_env = scm_extend_environment(LIST_1(sym_var),
-                                      LIST_1(condition),
-                                      lex_env);
+    cond_env
+        = scm_extend_environment(LIST_1(sym_var), LIST_1(condition), lex_env);
     SCM_EVAL_STATE_INIT1(eval_state, cond_env);
     caught = scm_s_cond_internal(clauses, &eval_state);
 

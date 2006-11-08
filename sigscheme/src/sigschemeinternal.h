@@ -180,7 +180,7 @@ extern "C" {
 =======================================*/
 #define SCM_ERR_HEADER "Error: "
 
-#define SCM_ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
+#define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define SCM_ERRMSG_IMPROPER_ARGS                                             \
     "proper list required for function call but got"
 #define SCM_ERRMSG_NULL_IN_STRING                                            \

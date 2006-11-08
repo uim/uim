@@ -32,9 +32,9 @@
 
 (load "./test/unittest.scm")
 
-;; All tests in this file are passed against r2143 (new repository)
+(define tn test-name)
 
-;;(set! *test-track-progress* #t)
+(set! *test-track-progress* #f)
 
 ;; these tests are ported from "Examples" section of SRFI-34
 
@@ -45,9 +45,11 @@
     (newline)
     (display "   actual print: ")))
 
+(tn "Examples of SRFI-34 document")
+
 ;;PRINTS: condition: an-error
 (print-expected "condition: an-error")
-(assert-equal? "Examples of SRFI-34 document #1"
+(assert-equal? (tn)
                'exception
                (call-with-current-continuation
                 (lambda (k)
@@ -64,7 +66,7 @@
 ;; returned is not specified in SRFI-34, SigScheme should produce an error to
 ;; prevent being misused by users.
 (print-expected "something went wrong")
-(assert-error "Examples of SRFI-34 document #2"
+(assert-error (tn)
               (lambda ()
                 (call-with-current-continuation
                  (lambda (k)
@@ -77,7 +79,7 @@
 
 ;;PRINTS: condition: an-error
 (print-expected "condition: an-error")
-(assert-equal? "Examples of SRFI-34 document #3"
+(assert-equal? (tn)
                'exception
                (guard (condition
                        (else
@@ -89,7 +91,7 @@
 
 ;;PRINTS: something went wrong
 (print-expected "something went wrong")
-(assert-equal? "Examples of SRFI-34 document #4"
+(assert-equal? (tn)
                'dont-care
                (guard (condition
                        (else
@@ -98,7 +100,7 @@
                         'dont-care))
                  (+ 1 (raise 'an-error))))
 
-(assert-equal? "Examples of SRFI-34 document #5"
+(assert-equal? (tn)
                'positive
                (call-with-current-continuation
                 (lambda (k)
@@ -111,7 +113,7 @@
                               ((negative? condition) 'negative))
                         (raise 1)))))))
 
-(assert-equal? "Examples of SRFI-34 document #6"
+(assert-equal? (tn)
                'negative
                (call-with-current-continuation
                 (lambda (k)
@@ -126,7 +128,7 @@
 
 ;;PRINTS: reraised 0
 (print-expected "reraised 0")
-(assert-equal? "Examples of SRFI-34 document #7"
+(assert-equal? (tn)
                'zero
                (call-with-current-continuation
                 (lambda (k)
@@ -139,14 +141,14 @@
                               ((negative? condition) 'negative))
                         (raise 0)))))))
 
-(assert-equal? "Examples of SRFI-34 document #8"
+(assert-equal? (tn)
                42
                (guard (condition
                        ((assq 'a condition) => cdr)
                        ((assq 'b condition)))
                  (raise (list (cons 'a 42)))))
 
-(assert-equal? "Examples of SRFI-34 document #9"
+(assert-equal? (tn)
                '(b . 23)
                (guard (condition
                        ((assq 'a condition) => cdr)

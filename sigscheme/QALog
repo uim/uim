@@ -263,7 +263,7 @@ yyyy yyy r5rs qquote.c
          srfi module-srfi8.c
 yyyy yy  srfi module-srfi23.c
          srfi module-srfi28.c
-         srfi module-srfi34.c
+yyyy yyy srfi module-srfi34.c
          srfi module-srfi38.c
          srfi module-srfi48.c
 yyyyyyyy srfi module-srfi60.c
@@ -929,14 +929,14 @@ corner case tests:
 
 file:              module-srfi34.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3959
+spec by tests:     yamaken@r3959
+general review:    yamaken@r3959
+64-bit by eyes:    yamaken@r3959
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3959
+normal case tests: yamaken@r3959
+corner case tests: yamaken@r3959
 
 file:              module-srfi38.c
 category:          srfi

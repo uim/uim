@@ -34,9 +34,7 @@
 
 (use srfi-8)
 
-;; All tests in this file are passed against r2183 (new repository)
-
-;;(set! *test-track-progress* #t)
+(set! *test-track-progress* #f)
 
 (define tn test-name)
 
@@ -54,7 +52,12 @@
 ;;
 
 (tn "raise")
-
+;; no arg
+(assert-error (tn) (lambda ()
+                     (raise)))
+;; multiple values are not allowed
+(assert-error (tn) (lambda ()
+                     (raise (values 1 2 3))))
 ;; no guard or raw exception handler
 (assert-error (tn) (lambda ()
                      (raise 'exception)))
@@ -72,7 +75,7 @@
                           (lambda ()
                             (+ 1 (raise 'obj))))))
 
-;; handler a procedure but takes 2 arguments
+;; handler is a procedure but takes 2 arguments
 (my-assert-error (tn) (lambda ()
                         (with-exception-handler
                             eq?
@@ -86,7 +89,7 @@
                               'a-handler-must-not-return)
                           'an-error)))
 
-;; handler a procedure but takes an argument
+;; thunk is a procedure but takes an argument
 (my-assert-error (tn) (lambda ()
                         (with-exception-handler
                             (lambda (x)
@@ -98,7 +101,7 @@
 
 ;; Although the behavior when a handler returned is not specified in SRFI-34,
 ;; SigScheme should produce an error to prevent being misused by users.
-(if (provided? "sigscheme")
+(if sigscheme?
     (my-assert-error (tn) (lambda ()
                             (with-exception-handler
                                 (lambda (x)
@@ -130,14 +133,28 @@
                  (lambda ()
                    'success)))
 
+;; multiple values are allowed for thunk
+(assert-equal? (tn)
+               '(1 2 3)
+               (receive vals
+                   (with-exception-handler
+                       (lambda (x)
+                         'not-reaches-here)
+                     (lambda ()
+                       (values 1 2 3)))
+                 vals))
 
+
+;;
 ;; guard
+;;
+
 (tn "guard")
 (assert-equal? (tn)
                'exception
 	       (guard (condition
 		       (else
-			(assert-equal? "guard #2" 'an-error condition)
+			(assert-equal? (tn) 'an-error condition)
 			'exception))
                  (+ 1 (raise 'an-error))))
 
@@ -184,10 +201,10 @@
 
 ;; not matched against => and fall through to else
 (assert-equal? (tn)
-               #f
+               'else
                (guard (condition
                        ((assv condition '((a 1) (b 2))) => cadr)
-                       (else #f))
+                       (else 'else))
                  (raise 'c)))
 
 ;;
