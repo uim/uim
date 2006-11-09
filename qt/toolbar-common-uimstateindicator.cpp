@@ -194,6 +194,8 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
 
     if (size_changed)
         emit indicatorResized();
+
+    this->parentWidget()->show();
 }
 
 void UimStateIndicator::helper_disconnect_cb()
