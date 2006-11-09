@@ -190,6 +190,9 @@ enum UKey {
   UKey_Hyper_key,
   UKey_Insert,
 
+  /* These new keys added at uim 1.3.0 are placed here to keep (virtually)
+   * backward-compatible ABI. It will be relocated to appropriate place when
+   * an backward-incompatible ABI change has occur. */
   UKey_Codeinput,
   UKey_SingleCandidate,
   UKey_MultipleCandidate,
@@ -346,7 +349,7 @@ enum UTextOrigin {
  *     - UTextExtent_Line
  *
  * Zero and positive numbers are interpreted as string length (counted in
- * characters).
+ * characters, not bytes).
  *
  *
  * Following language-specific extent specifiers are recommended to be
@@ -751,14 +754,14 @@ uim_set_mode_list_update_cb(uim_context uc,
  * All "former_len" and "latter_len" can be specified by zero, positive
  * numbers or enum UTextExtent. The text length is counted in singlebyte or
  * multibyte characters (not counted in bytes). Bridges may return a string
- * shorter than requested only if the text is actually shorter than the
- * requested length. Otherwise exact length string must be returned (FIXME: is
- * this specification possible for GTK+?  gtk_im_context_get_surrounding()
- * cannot satisfy it).
+ * shorter than requested if the text is actually shorter than the requested
+ * length, or the target textarea does not have the text acquisition
+ * ability. Otherwise exact length string must be returned.
  *
  * Both @a acquire_cb and @a delete_cb returns zero if succeeded, otherwise
  * returns a negative integer if the bridge does not support the specified
- * text operation.
+ * text operation. But even if zero is returned, actual length of acquired
+ * strings cannot be assumed (i.e. may be shorter than requested).
  *
  * @param uc input context
  * @param acquire_cb called back when the input context want to acquire a

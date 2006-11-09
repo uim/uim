@@ -58,6 +58,5 @@ Roadmap
 
     The time for drastic reconstruction. Many user-visible changes.
 
-    The bridge and IM interface will be revised for better focus and
-    reset handlings, and the composer framework will be introduced for
-    extensible IM development.
+    The composer framework will be introduced for extensible IM
+    development.

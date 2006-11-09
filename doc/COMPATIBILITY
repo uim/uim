@@ -57,6 +57,47 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Text acquisition and injection API
+Affects: Bridge developers, IM developers
+Updates: C API, Scheme API, libuim ABI
+Version: 1.3.0
+Revision: ac3907, ac3910-ac3922
+Date: 2006-10-02 - 2006-10-11
+Modifier: YamaKen, Etsushi
+Related: surrounding text API
+URL:
+  http://lists.freedesktop.org/archives/uim/2006-October/001535.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001542.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001544.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001547.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001551.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001553.html
+  http://lists.sourceforge.jp/mailman/archives/scim-imengine-dev/2006-November/001412.html (Japanese)
+Changes:
+      (new) enum UTextArea
+      (new) enum UTextOrigin
+      (new) enum UTextExtent
+      (new) uim_set_text_acquisition_cb()
+      (new) uim_input_string()
+  (removed) uim_set_surrounding_text_cb()
+  (removed) uim_set_surrounding_text()
+      (new) input-string-handler
+      (new) im-acquire-text
+      (new) im-delete-text
+  (removed) im-request-surrounding
+  (removed) im-delete-surrounding
+Description:
+  The experimental surrounding text API (never used until now) has
+  been replaced with general text acquisition API. It allows to
+  acquire arbitrary length string of the entire text of the textarea
+  which input context is placed, clipboard, and selection text. The
+  feature can be used as surrounding text processing, re-conversion of
+  Japanese text, pasting clipboard text into preedit, and possibly
+  pluggable full-screen editor for applications.
+  
+  Since the obsoleted surrounding text API was never used, The removal
+  of the API is not regarded as backward-incompatible ABI break.
+------------------------------------------------------------------------------
 Summary: Add new key definition
 Affects: Bridge developers, Helper program developers
 Updates: libuim ABI
