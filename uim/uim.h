@@ -450,13 +450,63 @@ void
 uim_release_context(uim_context uc);
 
 /**
- * Reset input context.
- * Pending string might be committed and preedit string might be erased. (Not yet implemented so)
+ * Reset input context to neutral state.
  *
- * @param uc input context to reset
+ * Internal state that considered as 'global' may be kept. This handler MUST
+ * NOT commit a string and/or update the preedit.  If a preedit string is
+ * existing on a GUI toolkit-level reset, the bridge is responsible to clear
+ * it.
+ *
+ * @param uc input context to be reset
  */
 void
 uim_reset_context(uim_context uc);
+
+/**
+ * Notify input context that the textarea is being focused in.
+ *
+ * The input context may commit a string and/or update the preedit.
+ *
+ * @param uc input context
+ */
+void
+uim_focus_in_context(uim_context uc);
+
+/**
+ * Notify input context that the textarea is being focused out.
+ *
+ * The input context may commit a string and/or update the preedit.
+ *
+ * @param uc input context
+ */
+void
+uim_focus_out_context(uim_context uc);
+
+/**
+ * Notify input context that the input point has been relocated.
+ *
+ * This notifies an input context that the input point (textarea and/or cursor
+ * position) has been relocated. The input context may commit a string and/or
+ * update the preedit.
+ *
+ * @param uc input context
+ */
+void
+uim_place_context(uim_context uc);
+
+/**
+ * Notify input context that the input at the position has been discontinued.
+ *
+ * This notifies an input context that input at current input point (textarea
+ * and/or cursor position) has been discontinued. The input context may commit
+ * a string, but must not update/clear the preedit. Bridge-level preedit must
+ * be cleared by bridge itself (uim-level preedit may be preserved for
+ * subsequent 'place' handler call).
+ *
+ * @param uc input context
+ */
+void
+uim_displace_context(uim_context uc);
 
 /**
  * Set callback functions to be called when the preedit string changes.

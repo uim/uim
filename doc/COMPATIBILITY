@@ -57,6 +57,41 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Focus activity and input position relocation notifications
+Affects: Bridge developers, IM developers
+Updates: C API, Scheme API
+Version: 1.3.0
+Revision: ac3966, 
+Date: 2006-10-09 -
+Modifier: YamaKen, Etsushi
+Related: bug #7729
+URL:
+  http://lists.freedesktop.org/archives/uim/2006-October/001548.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001559.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001566.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001573.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001576.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001581.html
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2005-October/002571.html (Japanese)
+Changes:
+   (update) uim_reset_context()
+      (new) uim_focus_in_context()
+      (new) uim_focus_out_context()
+      (new) uim_place_context()
+      (new) uim_displace_context()
+      (new) focus-in-handler
+      (new) focus-out-handler
+      (new) place-handler
+      (new) displace-handler
+Description:
+  The focus activity and input position relocation notifications are
+  required to handle some IM-specific convenient behaviors, such as
+  reset context at focus-out (latin IMs), auto-commit pending preedit
+  string at cursor relocation (Hangul IMs), and preedit relocation
+  between textareas (Japanese IMs). See the discussions of URL: for
+  further information. The requirements for the reset handler is also
+  redefined to be matched with the other new handlers.
+------------------------------------------------------------------------------
 Summary: Text acquisition and injection API
 Affects: Bridge developers, IM developers
 Updates: C API, Scheme API, libuim ABI

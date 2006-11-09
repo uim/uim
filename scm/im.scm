@@ -102,6 +102,10 @@
    (list 'set-candidate-index-handler list)
    (list 'prop-activate-handler       list)
    (list 'input-string-handler        list)
+   (list 'focus-in-handler            list)
+   (list 'focus-out-handler           list)
+   (list 'place-handler               list)
+   (list 'displace-handler            list)
    (list 'module-name                 "")))
 
 (define im-custom-set-handler
@@ -130,7 +134,8 @@
 (define register-im
   (lambda (name lang encoding name-label short-desc init-arg init release
 		mode key-press key-release reset
-		get-candidate set-candidate-index prop input-string)
+		get-candidate set-candidate-index prop input-string
+		focus-in focus-out place displace)
     (and (or (null? enabled-im-list)  ;; bootstrap
 	     (memq name enabled-im-list)
 	     (eq? name 'direct))  ;; direct IM must always be enabled
@@ -138,7 +143,8 @@
 			   init-arg init release
 			   mode key-press key-release reset
 			   get-candidate set-candidate-index prop
-			   input-string currently-loading-module-name)))
+			   input-string focus-in focus-out place displace
+			   currently-loading-module-name)))
 	   (set! im-list (alist-replace im im-list))
 	   (normalize-im-list)
 	   (im-register-im name lang encoding short-desc)))))
@@ -364,6 +370,22 @@
 (define reset-handler
   (lambda (id)
     (invoke-handler im-reset-handler id)))
+
+(define focus-in-handler
+  (lambda (id)
+    (invoke-handler im-focus-in-handler id)))
+
+(define focus-out-handler
+  (lambda (id)
+    (invoke-handler im-focus-out-handler id)))
+
+(define place-handler
+  (lambda (id)
+    (invoke-handler im-place-handler id)))
+
+(define displace-handler
+  (lambda (id)
+    (invoke-handler im-displace-handler id)))
 
 (define mode-handler
   (lambda (id mode)
