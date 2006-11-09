@@ -1014,8 +1014,9 @@ acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
   len = strlen(text);
   text_len = g_utf8_strlen(text, -1);
 
-  /* only UTextOrigin_End is used for UTextArea_Clipboard */
+  /* treat cursor position is virtually at the end for UTextArea_Clipboard */
   switch (origin) {
+  case UTextOrigin_Cursor:
   case UTextOrigin_End:
     if (former_req_len >= 0  && former_req_len < text_len)
       offset = text_len - former_req_len;
@@ -1030,7 +1031,17 @@ acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
     *latter = NULL;
     break;
   case UTextOrigin_Beginning:
-  case UTextOrigin_Cursor:
+    if (latter_req_len >= 0  && latter_req_len < text_len)
+      offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
+    else {
+      if (latter_req_len == UTextExtent_Line && (p = strchr(text, '\n')))
+        offset = text + len - (p - 1);
+      else
+        offset = 0;
+    }
+    *latter = g_strndup(text, len - offset);
+    *former = NULL;
+    break;
   case UTextOrigin_Unspecified:
   default:
     err = -1;
