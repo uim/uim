@@ -559,4 +559,8 @@
  spell-get-candidate-handler
  spell-set-candidate-index-handler
  #f
+ #f
+ #f
+ #f
+ #f
  #f)

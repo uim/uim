@@ -255,7 +255,12 @@
  tutcode-get-candidate-handler
  tutcode-set-candidate-index-handler
  context-prop-activate-handler
- #f)
+ #f
+ #f
+ #f
+ #f
+ #f
+ )
 
 ;;; キー配列テーブルの定義。QWERTYキーボード用。
 (define tutcode-rule

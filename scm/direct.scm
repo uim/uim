@@ -141,4 +141,8 @@
  direct-set-candidate-index-handler
  context-prop-activate-handler
  #f
+ #f
+ #f
+ #f
+ #f
  )
