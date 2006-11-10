@@ -71,6 +71,10 @@
 	   #f ;; set-candidate-index-handler
 	   #f ;; prop-activate-handler
 	   #f ;; input-string-handler
+	   #f ;; focus-in-handler
+	   #f ;; focus-out-handler
+	   #f ;; place-handler
+	   #f ;; displace-handler
 	   )
 	  (im-set-module-name! (retrieve-im name) module-name)))))
 
