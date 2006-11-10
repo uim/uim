@@ -452,10 +452,10 @@ uim_release_context(uim_context uc);
 /**
  * Reset input context to neutral state.
  *
- * Internal state that considered as 'global' may be kept. This handler MUST
- * NOT commit a string and/or update the preedit.  If a preedit string is
- * existing on a GUI toolkit-level reset, the bridge is responsible to clear
- * it.
+ * This handler MUST NOT commit a string and/or update the preedit. If a
+ * preedit string is existing on a GUI toolkit-level reset, the bridge is
+ * responsible to clear it. Internal state that considered as 'global' is
+ * permitted to be kept.
  *
  * @param uc input context to be reset
  */
@@ -465,7 +465,8 @@ uim_reset_context(uim_context uc);
 /**
  * Notify input context that the textarea is being focused in.
  *
- * The input context may commit a string and/or update the preedit.
+ * The input context is permitted to commit a string and/or update the
+ * preedit.
  *
  * @param uc input context
  */
@@ -475,7 +476,8 @@ uim_focus_in_context(uim_context uc);
 /**
  * Notify input context that the textarea is being focused out.
  *
- * The input context may commit a string and/or update the preedit.
+ * The input context is permitted to commit a string and/or update the
+ * preedit.
  *
  * @param uc input context
  */
@@ -486,8 +488,8 @@ uim_focus_out_context(uim_context uc);
  * Notify input context that the input point has been relocated.
  *
  * This notifies an input context that the input point (textarea and/or cursor
- * position) has been relocated. The input context may commit a string and/or
- * update the preedit.
+ * position) has been relocated. The input context is permitted to commit a
+ * string and/or update the preedit.
  *
  * @param uc input context
  */
@@ -498,10 +500,11 @@ uim_place_context(uim_context uc);
  * Notify input context that the input at the position has been discontinued.
  *
  * This notifies an input context that input at current input point (textarea
- * and/or cursor position) has been discontinued. The input context may commit
- * a string, but must not update/clear the preedit. Bridge-level preedit must
- * be cleared by bridge itself (uim-level preedit may be preserved for
- * subsequent 'place' handler call).
+ * and/or cursor position) has been discontinued. The input context is
+ * permitted to commit a string, but must not update/clear the
+ * preedit. Bridge-level preedit must be cleared by bridge itself. uim-level
+ * preedit is permitted to be preserved for subsequent 'place' handler call,
+ * or else silently cleared.
  *
  * @param uc input context
  */
