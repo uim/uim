@@ -444,10 +444,9 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 }
 
 int
-im_uim_delete_primary_text(void *ptr, enum UTextOrigin origin,
+im_uim_delete_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 			   int former_req_len, int latter_req_len)
 {
-  IMUIMContext *uic = (IMUIMContext *)ptr;
   gboolean success;
   gint offset, n_chars;
 
@@ -578,11 +577,9 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
 }
 
 int
-im_uim_delete_selection_text(void *ptr, enum UTextOrigin origin,
+im_uim_delete_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
 			     int former_req_len, int latter_req_len)
 {
-  IMUIMContext *uic = (IMUIMContext *)ptr;
-
   /* specific widgets handling */
   if (GTK_IS_ENTRY(uic->widget))
     return delete_selection_in_gtk_entry(GTK_ENTRY(uic->widget), origin,

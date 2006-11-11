@@ -797,14 +797,15 @@ delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
 		int former_req_len, int latter_req_len)
 {
   int err;
+  IMUIMContext *uic = (IMUIMContext *)ptr;
 
   switch (text_id) {
   case UTextArea_Primary:
-    err = im_uim_delete_primary_text(ptr, origin, former_req_len,
+    err = im_uim_delete_primary_text(uic, origin, former_req_len,
 				     latter_req_len);
     break;
   case UTextArea_Selection:
-    err = im_uim_delete_selection_text(ptr, origin, former_req_len,
+    err = im_uim_delete_selection_text(uic, origin, former_req_len,
 				       latter_req_len);
     break;
   case UTextArea_Clipboard:

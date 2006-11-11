@@ -50,10 +50,10 @@ int im_uim_acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
 				  int former_req_len, int latter_req_len,
 				  char **former, char **latter);
 
-int im_uim_delete_primary_text(void *ptr, enum UTextOrigin origin,
+int im_uim_delete_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 			       int former_req_len, int latter_req_len);
 
-int im_uim_delete_selection_text(void *ptr, enum UTextOrigin origin,
+int im_uim_delete_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
 				 int former_req_len, int latter_req_len);
 
 #endif
