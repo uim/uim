@@ -79,7 +79,11 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
     *ukey = keyval - GDK_F1 + UKey_F1;
   else if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9)
     *ukey = keyval - GDK_KP_0 + UKey_0;
+#if GTK_CHECK_VERSION(2, 6, 0)
   else if (keyval >= GDK_dead_grave && keyval <= GDK_dead_horn)
+#else
+  else if (keyval >= GDK_dead_grave && keyval <= GDK_dead_belowdot)
+#endif
     *ukey = keyval - GDK_dead_grave + UKey_Dead_Grave;
   else if (keyval >= GDK_Kanji && keyval <= GDK_Eisu_toggle)
     *ukey = keyval - GDK_Kanji + UKey_Kanji;
