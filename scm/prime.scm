@@ -181,7 +181,7 @@
    (prime-backspace-key?      . prime-command-fund-backspace)
    (prime-delete-key?         . prime-command-fund-delete)
    (prime-cancel-key?         . prime-command-fund-cancel)
-   (prime-commit-key?         . prime-command-child-commit)
+   (prime-commit-key?         . prime-command-child-finish)
    (prime-go-left-key?        . prime-command-fund-cursor-left)
    (prime-go-right-key?       . prime-command-fund-cursor-right)
    (prime-go-left-edge-key?   . prime-command-fund-cursor-left-edge)
