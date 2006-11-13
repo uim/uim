@@ -593,5 +593,5 @@ im_uim_delete_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
    * text.
    */
   
-  return 0;
+  return -1;
 }
