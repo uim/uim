@@ -318,7 +318,7 @@ im_uim_acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
       offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
     else {
       if (latter_req_len == UTextExtent_Line && (p = strchr(text, '\n')))
-        offset = text + len - (p - 1);
+        offset = text + len - p;
       else
         offset = 0;
     }
