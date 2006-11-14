@@ -48,6 +48,7 @@ SUCH DAMAGE.
 
 #include "immodule-candidatewindow.h"
 #include "immodule-qhelpermanager.h"
+#include "immodule-qtextutil.h"
 
 #ifdef Q_WS_X11
 #include "immodule-quiminputcontext_compose.h"
@@ -99,6 +100,7 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
         create_compose_tree();
     mCompose = new Compose( mTreeTop, this );
 #endif
+    mTextUtil = new QUimTextUtil( this );
 
     createUimInfo();
 
@@ -158,6 +160,10 @@ uim_context QUimInputContext::createUimContext( const char *imname )
     uim_set_im_switch_request_cb( uc,
                                   QUimInputContext::switch_app_global_im_cb,
                                   QUimInputContext::switch_system_global_im_cb);
+
+    uim_set_text_acquisition_cb( uc,
+                                 QUimTextUtil::acquire_text_cb,
+                                 QUimTextUtil::delete_text_cb);
 
     uim_prop_list_update( uc );
 
@@ -585,8 +591,10 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
+#if 0
     if ( cwin->isAlwaysLeftPosition() )
         return 0;
+#endif
 
     int cursorPos = 0;
     QPtrList<PreeditSegment>::ConstIterator seg = psegs.begin();

@@ -84,10 +84,12 @@ noinst_HEADERS += \
 	immodule-candidatewindow.h immodule-qhelpermanager.h \
 	immodule-quiminputcontext.h immodule-quiminputcontext_with_slave.h \
 	immodule-quiminputcontext_compose.h \
+	immodule-qtextutil.h \
 	immodule-subwindow.h
 MOC_FILES += \
 	immodule-candidatewindow.moc immodule-qhelpermanager.moc \
 	immodule-quiminputcontext.moc immodule-quiminputcontext_with_slave.moc \
+	immodule-qtextutil.moc \
 	immodule-subwindow.moc
 
 libquiminputcontextplugin_la_SOURCES = \
@@ -97,6 +99,7 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-quiminputcontext.h   immodule-quiminputcontext_with_slave.h \
 	immodule-quiminputcontext_compose.cpp \
 	immodule-quiminputcontext_compose.h \
+	immodule-qtextutil.cpp immodule-qtextutil.h \
 	immodule-subwindow.cpp immodule-subwindow.h
 libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
 libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
@@ -106,6 +109,7 @@ immodule-candidatewindow.cpp: immodule-candidatewindow.moc
 immodule-qhelpermanager.cpp: immodule-qhelpermanager.moc
 immodule-quiminputcontext.cpp: immodule-quiminputcontext.moc
 immodule-quiminputcontext_with_slave.cpp: immodule-quiminputcontext_with_slave.moc
+immodule-qtextutil.cpp: immodule-qtextutil.moc
 immodule-subwindow.cpp: immodule-subwindow.moc
 endif
 

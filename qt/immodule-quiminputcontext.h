@@ -47,6 +47,7 @@ class QUimHelperManager;
 typedef struct _DefTree DefTree;
 class Compose;
 #endif
+class QUimTextUtil;
 
 class PreeditSegment
 {
@@ -88,14 +89,17 @@ public:
 
     void readIMConf();
 
+    QUimTextUtil *textUtil() { return mTextUtil; }
+
+    QString getPreeditString();
+    int getPreeditCursorPosition();
+
 protected:
     uim_context createUimContext( const char *imname );
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
 
     void createUimInfo();
 private:
-    QString getPreeditString();
-    int getPreeditCursorPosition();
     int getPreeditSelectionLength();
 
     /* callbacks for uim */
@@ -140,6 +144,7 @@ private:
 
     Compose *mCompose;
 #endif
+    QUimTextUtil *mTextUtil;
 
 protected:
     QString m_imname;
