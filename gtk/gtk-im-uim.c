@@ -1371,6 +1371,10 @@ im_module_create(const gchar *context_id)
 
   obj = g_object_new(type_im_uim, NULL);
   uic = IM_UIM_CONTEXT(obj);
+
+  if(uic == NULL)
+    return NULL;
+
   im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));
   uic->uc = uim_create_context(uic, "UTF-8",
 			       NULL, im_name,
