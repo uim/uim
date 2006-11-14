@@ -69,6 +69,8 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
+      else
+	return -1;
     }
     *former = gtk_text_iter_get_slice(&start, &current);
     if (latter_req_len >= 0)
@@ -78,6 +80,10 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
+      else {
+	g_free(*former);
+	return -1;
+      }
     }
     *latter = gtk_text_iter_get_slice(&current, &end);
     break;
@@ -92,6 +98,8 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
       else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
+      else
+        return -1;
     }
     *latter = gtk_text_iter_get_slice(&start, &end);
     break;
@@ -105,6 +113,8 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
+      else
+	return -1;
     }
     *former = gtk_text_iter_get_slice(&start, &end);
     *latter = NULL;
@@ -148,18 +158,33 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 				cursor_index);
   switch (origin) {
   case UTextOrigin_Cursor:
-    if (former_req_len >= 0 && precedence_len > former_req_len)
-      offset = precedence_len - former_req_len;
-    else
-      offset = 0;
+    offset = 0;
+    if (former_req_len >= 0) {
+      if (precedence_len > former_req_len)
+        offset = precedence_len - former_req_len;
+    } else {
+      if (!(former_req_len == UTextExtent_Line ||
+	    former_req_len == UTextExtent_Full)) {
+	g_free(text);
+	return -1;
+      }
+    }
     former_start = g_utf8_offset_to_pointer(text, offset);
     *former = g_strndup(former_start, text - former_start + cursor_index);
 
-    if (latter_req_len >= 0 && following_len > latter_req_len)
-      offset = strlen(g_utf8_offset_to_pointer(text, precedence_len +
-					       latter_req_len));
-    else
-      offset = 0;
+    offset = 0;
+    if (latter_req_len >= 0) {
+      if (following_len > latter_req_len)
+	offset = strlen(g_utf8_offset_to_pointer(text, precedence_len +
+						 latter_req_len));
+    } else {
+      if (!(latter_req_len == UTextExtent_Line ||
+	    latter_req_len == UTextExtent_Full)) {
+	g_free(text);
+	g_free(*former);
+	return -1;
+      }
+    }
     *latter = g_strndup(text + cursor_index, len - cursor_index - offset);
     if (latter_req_len == UTextExtent_Line) {
       gchar *p = strchr(*latter, '\n');
@@ -169,22 +194,34 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
     break;
   case UTextOrigin_Beginning:
     *former = NULL;
-    if (latter_req_len >= 0 &&
-	(precedence_len + following_len) > latter_req_len)
-      offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
-    else
-      offset = 0;
+    offset = 0;
+    if (latter_req_len >= 0) {
+      if ((precedence_len + following_len) > latter_req_len)
+	offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
+    } else {
+      if (!(latter_req_len == UTextExtent_Line ||
+	    latter_req_len == UTextExtent_Full)) {
+	g_free(text);
+	return -1;
+      }
+    }
     *latter = g_strndup(text, len - offset); 
     if (latter_req_len == UTextExtent_Line &&
 	(p = strchr(*latter, '\n')))
       *p = '\0';
     break;
   case UTextOrigin_End:
-    if (former_req_len >= 0 &&
-	(precedence_len + following_len) > former_req_len)
-      offset = precedence_len + following_len - former_req_len;
-    else
-      offset = 0;
+    offset = 0;
+    if (former_req_len >= 0) {
+      if ((precedence_len + following_len) > former_req_len)
+        offset = precedence_len + following_len - former_req_len;
+    } else {
+      if (!(former_req_len == UTextExtent_Line ||
+	    former_req_len == UTextExtent_Full)) {
+	g_free(text);
+	return -1;
+      }
+    }
     former_start = g_utf8_offset_to_pointer(text, offset);
     if (former_req_len == UTextExtent_Line &&
 	(p = strrchr(former_start, '\n')))
@@ -251,20 +288,34 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
   if (origin == UTextOrigin_Beginning ||
       (origin == UTextOrigin_Cursor && start_from_beginning)) {
     *former = NULL;
-    if (latter_req_len >= 0  && latter_req_len < text_len)
-      offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
-    else
-      offset = 0;
+    offset = 0;
+    if (latter_req_len >= 0) {
+      if (latter_req_len < text_len)
+	offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
+    } else {
+      if (!(latter_req_len == UTextExtent_Line ||
+	    latter_req_len == UTextExtent_Full)) {
+	g_free(text);
+	return -1;
+      }
+    }
     *latter = g_strndup(text, len - offset);
     if (latter_req_len == UTextExtent_Line &&
 	(p = strchr(*latter, '\n')))
       *p = '\0';
   } else if (origin == UTextOrigin_End ||
 	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
-    if (former_req_len >= 0  && former_req_len < text_len)
-      offset = text_len - former_req_len;
-    else
-      offset = 0;
+    offset = 0;
+    if (former_req_len >= 0) {
+      if (former_req_len < text_len)
+	offset = text_len - former_req_len;
+    } else {
+      if (!(former_req_len == UTextExtent_Line ||
+	    former_req_len == UTextExtent_Full)) {
+	g_free(text);
+	return -1;
+      }
+    }
     former_start = g_utf8_offset_to_pointer(text, offset);
     if (former_req_len == UTextExtent_Line &&
 	(p = strrchr(former_start, '\n')))
@@ -301,10 +352,17 @@ im_uim_acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
   switch (origin) {
   case UTextOrigin_Cursor:
   case UTextOrigin_End:
-    if (former_req_len >= 0  && former_req_len < text_len)
-      offset = text_len - former_req_len;
-    else
-      offset = 0;
+    offset = 0;
+    if (former_req_len >= 0) {
+      if (former_req_len < text_len)
+	offset = text_len - former_req_len;
+    } else {
+      if (!(former_req_len == UTextExtent_Line ||
+	    former_req_len == UTextExtent_Full)) {
+	g_free(text);
+	return -1;
+      }
+    }
     former_start = g_utf8_offset_to_pointer(text, offset);
     if (former_req_len == UTextExtent_Line &&
 	(p = strrchr(former_start, '\n')))
@@ -314,13 +372,18 @@ im_uim_acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
     *latter = NULL;
     break;
   case UTextOrigin_Beginning:
-    if (latter_req_len >= 0  && latter_req_len < text_len)
-      offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
-    else {
+    offset = 0;
+    if (latter_req_len >= 0) {
+      if (latter_req_len < text_len)
+	offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
+    } else {
+      if (!(latter_req_len == UTextExtent_Full ||
+	    latter_req_len == UTextExtent_Line)) {
+	g_free(text);
+	return -1;
+      }
       if (latter_req_len == UTextExtent_Line && (p = strchr(text, '\n')))
         offset = text + len - p;
-      else
-        offset = 0;
     }
     *latter = g_strndup(text, len - offset);
     *former = NULL;
@@ -346,25 +409,41 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
   case UTextOrigin_Cursor:
     if (former_req_len >= 0) {
       start_pos = current_pos - former_req_len;
-    } else
+    } else {
+      if (!(former_req_len == UTextExtent_Full ||
+	    former_req_len == UTextExtent_Line))
+	return -1;
       start_pos = 0;
+    }
     if (latter_req_len >= 0)
       end_pos = current_pos + latter_req_len;
-    else
+    else {
+      if (!(latter_req_len == UTextExtent_Full ||
+	    latter_req_len == UTextExtent_Line))
+	return -1;
       end_pos = entry->text_length;
+    }
     break;
   case UTextOrigin_Beginning:
     start_pos = 0;
     if (latter_req_len >= 0)
       end_pos = latter_req_len;
-    else
+    else {
+      if (!(latter_req_len == UTextExtent_Full ||
+	    latter_req_len == UTextExtent_Line))
+	return -1;
       end_pos = entry->text_length;
+    }
     break;
   case UTextOrigin_End:
     if (former_req_len >= 0)
       start_pos = entry->text_length - former_req_len;
-    else
+    else {
+      if (!(former_req_len == UTextExtent_Full ||
+	    former_req_len == UTextExtent_Line))
+	return -1;
       start_pos = 0;
+    }
     end_pos = entry->text_length;
     break;
   case UTextOrigin_Unspecified:
@@ -399,6 +478,8 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
+      else
+	return -1;
     }
     if (latter_req_len >= 0)
       gtk_text_iter_forward_chars(&end, latter_req_len);
@@ -407,6 +488,8 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
       else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
+      else
+	return -1;
     }
     break;
   case UTextOrigin_Beginning:
@@ -419,6 +502,8 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
+      else
+	return -1;
     }
     break;
   case UTextOrigin_End:
@@ -431,6 +516,8 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
+      else
+	return -1;
     }
     break;
   case UTextOrigin_Unspecified:
@@ -502,12 +589,24 @@ delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
 
   if (origin == UTextOrigin_Beginning ||
       (origin == UTextOrigin_Cursor && start_from_beginning)) {
-    if (latter_req_len >= 0 && latter_req_len < end - start)
-      end = start + latter_req_len;
+    if (latter_req_len >= 0) {
+      if (latter_req_len < end - start)
+	end = start + latter_req_len;
+    } else {
+      if (!(latter_req_len == UTextExtent_Full ||
+	    latter_req_len == UTextExtent_Line))	
+	return -1;
+    }
   } else if (origin == UTextOrigin_End ||
 	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
-    if (former_req_len >= 0 && former_req_len < end - start)
-      start = end - former_req_len;
+    if (former_req_len >= 0) {
+      if (former_req_len < end - start)
+	start = end - former_req_len;
+    } else {
+      if (!(former_req_len == UTextExtent_Full ||
+	    former_req_len == UTextExtent_Line))	
+	return -1;
+    }
   } else {
     return -1;
   }
@@ -549,6 +648,9 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
 	gtk_text_view_forward_display_line_end(text_view, &tmp_end);
 	if (gtk_text_iter_compare(&tmp_end, &end) < 0)
 	  end = tmp_end;
+      } else {
+	if (!(former_req_len == UTextExtent_Full))
+	  return -1;
       }
     }
   } else if (origin == UTextOrigin_End ||
@@ -564,6 +666,9 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
 	gtk_text_view_backward_display_line_start(text_view, &tmp_start);
 	if (gtk_text_iter_compare(&tmp_start, &start) > 0)
 	  start = tmp_start;
+      } else {
+	if (!(former_req_len == UTextExtent_Full))
+	  return -1;
       }
     }
   } else {
