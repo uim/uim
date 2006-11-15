@@ -94,6 +94,9 @@ public:
     QString getPreeditString();
     int getPreeditCursorPosition();
 
+    void saveContext();
+    void restoreContext();
+
 protected:
     uim_context createUimContext( const char *imname );
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func

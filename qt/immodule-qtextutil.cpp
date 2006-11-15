@@ -726,10 +726,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
     preedit_cursor_pos = mIc->getPreeditCursorPosition();
     n_para = edit->paragraphs();
 
-    // FIXME
-    // QTextEdit doesn't seem to handle text deletion with preedit string
-    if ( preedit_len > 0 )
-        return -1;
+    mIc->saveContext();
 
     switch ( origin ) {
     case UTextOrigin_Cursor:
@@ -748,6 +745,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 start_para = 0;
                 start_index = 0;
             } else {
+                mIc->restoreContext();
                 return -1;
             }
         }
@@ -761,6 +759,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
+                mIc->restoreContext();
                 return -1;
             }
         }
@@ -782,6 +781,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
+                mIc->restoreContext();
                 return -1;
             }
         }
@@ -803,6 +803,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 start_para = 0;
                 start_index = 0;
             } else {
+                mIc->restoreContext();
                 return -1;
             }
         }
@@ -810,11 +811,13 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     case UTextOrigin_Unspecified:
     default:
+        mIc->restoreContext();
         return -1;
     }
     edit->setSelection( start_para, start_index, end_para, end_index, 1 );
     edit->removeSelectedText( 1 );
     edit->setCursorPosition( start_para, start_index );
+    mIc->restoreContext();
 
     return 0; 
 }

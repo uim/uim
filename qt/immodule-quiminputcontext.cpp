@@ -558,6 +558,17 @@ void QUimInputContext::updatePreedit()
     preeditString = newString;
 }
 
+void QUimInputContext::saveContext()
+{
+    // just send IMEnd and keep preedit string
+    sendIMEvent( QEvent::IMEnd );
+}
+
+void QUimInputContext::restoreContext()
+{
+    updatePreedit();
+}
+
 bool QUimInputContext::isPreeditRelocationEnabled()
 {
     return ( language() == "ja" );
