@@ -430,7 +430,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
     QLineEdit *edit = (QLineEdit *)mWidget;
     QString text;
     int len, offset, start, current;
-    bool start_from_beginning = false;
+    bool cursor_at_beginning = false;
 
     if ( ! edit->hasSelectedText() )
         return -1;
@@ -439,13 +439,13 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
     start = edit->selectionStart();
 
     if ( current == start )
-        start_from_beginning = true;
+        cursor_at_beginning = true;
 
     text = edit->selectedText();
     len = text.length();
 
     if ( origin == UTextOrigin_Beginning ||
-         ( origin == UTextOrigin_Cursor && start_from_beginning ) ) {
+         ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
         *former = NULL;
         offset = 0;
         if ( latter_req_len >= 0 ) {
@@ -457,7 +457,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
         }
         *latter = strdup( text.left( len - offset ).utf8() );
     } else if ( origin == UTextOrigin_End ||
-                ( origin == UTextOrigin_Cursor && !start_from_beginning ) ) {
+                ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
         offset = 0;
         if ( former_req_len >= 0 ) {
             if ( len > former_req_len )
@@ -486,7 +486,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
     int len, offset, newline;
     int start_para, start_index, end_para, end_index;
     int para, index;
-    bool start_from_beginning = false;
+    bool cursor_at_beginning = false;
     TextFormat format;
 
     if ( ! edit->hasSelectedText() )
@@ -499,13 +499,13 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
     edit->getSelection(&start_para, &start_index, &end_para, &end_index, 0 );
 
     if ( para == start_para && index == start_index )
-        start_from_beginning = true;
+        cursor_at_beginning = true;
 
     text = edit->selectedText();
     len = text.length();
 
     if ( origin == UTextOrigin_Beginning ||
-         ( origin == UTextOrigin_Cursor && start_from_beginning ) ) {
+         ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
         *former = NULL;
         offset = 0;
         if ( latter_req_len >= 0 ) {
@@ -522,7 +522,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
         }
         *latter = strdup( text.left( len - offset ).utf8() );
     } else if ( origin == UTextOrigin_End ||
-                ( origin == UTextOrigin_Cursor && !start_from_beginning ) ) {
+                ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
         offset = 0;
         if ( former_req_len >= 0 ) {
             if ( len > former_req_len )
@@ -854,7 +854,7 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
     QLineEdit *edit = (QLineEdit *)mWidget;
     QString text;
     int len, start, end, current;
-    bool start_from_beginning = false;
+    bool cursor_at_beginning = false;
 
     if ( ! edit->hasSelectedText() )
         return -1;
@@ -862,14 +862,14 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
     current = edit->cursorPosition();
     start = edit->selectionStart();
     if ( current == start )
-        start_from_beginning = true;
+        cursor_at_beginning = true;
 
     text = edit->selectedText();
     len = text.length();
     end = start + len;
 
     if ( origin == UTextOrigin_Beginning ||
-         ( origin == UTextOrigin_Cursor && start_from_beginning ) ) {
+         ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
         if ( latter_req_len >= 0 ) {
             if ( len > latter_req_len )
                 end = start + latter_req_len;
@@ -878,7 +878,7 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
                 return -1;
         }
     } else if ( origin == UTextOrigin_End ||
-                ( origin == UTextOrigin_Cursor && !start_from_beginning ) ) {
+                ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
         if ( former_req_len >= 0 ) {
             if ( len > former_req_len )
                 start = end - former_req_len;
@@ -906,7 +906,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
     int para, index;
     int sel_para_from, sel_index_from, sel_para_to, sel_index_to;
     int start_para, start_index, end_para, end_index;
-    bool start_from_beginning = false;
+    bool cursor_at_beginning = false;
 
     if ( ! edit->hasSelectedText() )
         return -1;
@@ -915,7 +915,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
     edit->getSelection( &sel_para_from, &sel_index_from, &sel_para_to, &sel_index_to, 0 );
 
     if ( para == sel_para_from && index == sel_index_from )
-        start_from_beginning = true;
+        cursor_at_beginning = true;
 
     text = edit->selectedText();
     len = text.length();
@@ -926,7 +926,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
     end_index = sel_index_to;
 
     if ( origin == UTextOrigin_Beginning ||
-         ( origin == UTextOrigin_Cursor && start_from_beginning ) ) {
+         ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
         edit->setCursorPosition( sel_para_from, sel_index_from );
         if ( latter_req_len >= 0 ) {
             if ( len > latter_req_len ) {
@@ -945,7 +945,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
             }
         }
     } else if ( origin == UTextOrigin_End ||
-                ( origin == UTextOrigin_Cursor && !start_from_beginning ) ) {
+                ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
         if ( former_req_len >= 0 ) {
             if ( len > former_req_len ) {
                 start_para = sel_para_to;
