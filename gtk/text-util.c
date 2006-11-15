@@ -644,7 +644,7 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
       if (gtk_text_iter_compare(&tmp_end, &end) < 0)
 	end = tmp_end;
     } else {
-      if (former_req_len == UTextExtent_Line) {
+      if (latter_req_len == UTextExtent_Line) {
 	gtk_text_view_forward_display_line_end(text_view, &tmp_end);
 	if (gtk_text_iter_compare(&tmp_end, &end) < 0)
 	  end = tmp_end;

@@ -956,7 +956,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
 
             if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) ) {
                 start_para = sel_para_to;
-                start_index = sel_index_to - ( len - ( newline + 1 ) );
+                start_index = 0;
             }
         }
     } else {
