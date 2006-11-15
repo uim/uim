@@ -293,9 +293,9 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
             for ( i = 0; i < latter_req_len; i++ )
                 QTextEditPositionForward( &end_para, &end_index );
         } else {
-            if ( former_req_len == UTextExtent_Line ) {
+            if ( latter_req_len == UTextExtent_Line ) {
                 end_index = edit->paragraphLength( end_para );
-            } else if ( former_req_len == UTextExtent_Full ) {
+            } else if ( latter_req_len == UTextExtent_Full ) {
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
@@ -755,9 +755,9 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
             for ( i = 0; i < latter_req_len; i++ )
                 QTextEditPositionForward( &end_para, &end_index );
         } else {
-            if ( former_req_len == UTextExtent_Line ) {
+            if ( latter_req_len == UTextExtent_Line ) {
                 end_index = edit->paragraphLength( end_para );
-            } else if ( former_req_len == UTextExtent_Full ) {
+            } else if ( latter_req_len == UTextExtent_Full ) {
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
