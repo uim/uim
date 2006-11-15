@@ -561,7 +561,8 @@ void QUimInputContext::updatePreedit()
 void QUimInputContext::saveContext()
 {
     // just send IMEnd and keep preedit string
-    sendIMEvent( QEvent::IMEnd );
+    if ( isComposing() )
+        sendIMEvent( QEvent::IMEnd );
 }
 
 void QUimInputContext::restoreContext()
