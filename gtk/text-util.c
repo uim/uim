@@ -47,8 +47,8 @@
 
 static int
 acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
-			     int former_req_len, int latter_req_len,
-			     char **former, char **latter)
+			      int former_req_len, int latter_req_len,
+			      char **former, char **latter)
 {
   GtkTextIter current, start, end;
 
@@ -62,6 +62,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
   case UTextOrigin_Cursor:
     start = current;
     end = current;
+
     if (former_req_len >= 0) {
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
@@ -73,6 +74,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	return -1;
     }
     *former = gtk_text_iter_get_slice(&start, &current);
+
     if (latter_req_len >= 0)
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
@@ -87,10 +89,13 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     }
     *latter = gtk_text_iter_get_slice(&current, &end);
     break;
+
   case UTextOrigin_Beginning:
-    *former = NULL;
     gtk_text_buffer_get_start_iter(text_view->buffer, &start);
     end = start;
+
+    *former = NULL;
+
     if (latter_req_len >= 0)
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
@@ -103,9 +108,11 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     }
     *latter = gtk_text_iter_get_slice(&start, &end);
     break;
+
   case UTextOrigin_End:
     gtk_text_buffer_get_end_iter(text_view->buffer, &end);
     start = end;
+
     if (former_req_len >= 0) {
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
@@ -117,8 +124,10 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	return -1;
     }
     *former = gtk_text_iter_get_slice(&start, &end);
+
     *latter = NULL;
     break;
+
   case UTextOrigin_Unspecified:
   default:
     return -1;
@@ -129,8 +138,8 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 
 int
 im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
-		     int former_req_len, int latter_req_len,
-		     char **former, char **latter)
+			    int former_req_len, int latter_req_len,
+			    char **former, char **latter)
 {
   gchar *text, *former_start, *p;
   gint cursor_index, len, precedence_len, following_len;
@@ -192,8 +201,10 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 	*p = '\0';
     }
     break;
+
   case UTextOrigin_Beginning:
     *former = NULL;
+
     offset = 0;
     if (latter_req_len >= 0) {
       if ((precedence_len + following_len) > latter_req_len)
@@ -210,6 +221,7 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 	(p = strchr(*latter, '\n')))
       *p = '\0';
     break;
+
   case UTextOrigin_End:
     offset = 0;
     if (former_req_len >= 0) {
@@ -228,8 +240,10 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
       *former = g_strdup(p + 1);
     else
       *former = g_strndup(former_start, text + len - former_start);
+
     *latter = NULL;
     break;
+
   case UTextOrigin_Unspecified:
   default:
     err = -1;
@@ -242,25 +256,27 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 
 int
 im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
-		       int former_req_len, int latter_req_len,
-		       char **former, char **latter)
+			      int former_req_len, int latter_req_len,
+			      char **former, char **latter)
 {
   gchar *former_start, *text = NULL, *p;
   gint len, text_len;
   int offset, err = 0;
-  gboolean start_from_beginning = FALSE;
+  gboolean cursor_at_beginning = FALSE;
 
   if (GTK_IS_ENTRY(uic->widget)) {
     gint start, end, current;
+
     if (gtk_editable_get_selection_bounds(GTK_EDITABLE(uic->widget),
 					  &start, &end)) {
       text = gtk_editable_get_chars(GTK_EDITABLE(uic->widget), start, end);
       current = GTK_ENTRY(uic->widget)->current_pos;
       if (current == start)
-	start_from_beginning = TRUE;
+	cursor_at_beginning = TRUE;
     }
   } else if (GTK_IS_TEXT_VIEW(uic->widget)) {
     GtkTextIter start, end, current;
+
     if (GTK_TEXT_VIEW(uic->widget)->buffer &&
 	gtk_text_buffer_get_selection_bounds(GTK_TEXT_VIEW(uic->widget)->buffer, &start, &end)) {
       text = gtk_text_iter_get_visible_text(&start, &end);
@@ -268,7 +284,7 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
 				       &current,
 				       gtk_text_buffer_get_mark(GTK_TEXT_VIEW(uic->widget)->buffer, "insert"));
       if (gtk_text_iter_compare(&start, &current) == 0)
-	start_from_beginning = TRUE;
+	cursor_at_beginning = TRUE;
     }
   } else {
     /*
@@ -286,8 +302,9 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
   text_len = g_utf8_strlen(text, -1);
 
   if (origin == UTextOrigin_Beginning ||
-      (origin == UTextOrigin_Cursor && start_from_beginning)) {
+      (origin == UTextOrigin_Cursor && cursor_at_beginning)) {
     *former = NULL;
+
     offset = 0;
     if (latter_req_len >= 0) {
       if (latter_req_len < text_len)
@@ -300,11 +317,11 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
       }
     }
     *latter = g_strndup(text, len - offset);
-    if (latter_req_len == UTextExtent_Line &&
-	(p = strchr(*latter, '\n')))
+    if (latter_req_len == UTextExtent_Line && (p = strchr(*latter, '\n')))
       *p = '\0';
+
   } else if (origin == UTextOrigin_End ||
-	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
+	     (origin == UTextOrigin_Cursor && !cursor_at_beginning)) {
     offset = 0;
     if (former_req_len >= 0) {
       if (former_req_len < text_len)
@@ -322,7 +339,9 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
       *former = g_strdup(p + 1);
     else
       *former = g_strndup(former_start, text + len - former_start);
+
     *latter = NULL;
+
   } else {
     err = -1;
   }
@@ -405,6 +424,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
   gint start_pos, end_pos, current_pos;
 
   current_pos = entry->current_pos;
+
   switch (origin) {
   case UTextOrigin_Cursor:
     if (former_req_len >= 0) {
@@ -415,6 +435,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
 	return -1;
       start_pos = 0;
     }
+
     if (latter_req_len >= 0)
       end_pos = current_pos + latter_req_len;
     else {
@@ -424,8 +445,10 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
       end_pos = entry->text_length;
     }
     break;
+
   case UTextOrigin_Beginning:
     start_pos = 0;
+
     if (latter_req_len >= 0)
       end_pos = latter_req_len;
     else {
@@ -435,6 +458,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
       end_pos = entry->text_length;
     }
     break;
+
   case UTextOrigin_End:
     if (former_req_len >= 0)
       start_pos = entry->text_length - former_req_len;
@@ -444,12 +468,15 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
 	return -1;
       start_pos = 0;
     }
+
     end_pos = entry->text_length;
     break;
+
   case UTextOrigin_Unspecified:
   default:
     return -1;
   }
+
   gtk_editable_delete_text(GTK_EDITABLE(entry), start_pos, end_pos);
 
   return 0;
@@ -469,6 +496,7 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 							    "insert"));
   start = current;
   end = current;
+
   switch (origin) {
   case UTextOrigin_Cursor:
     if (former_req_len >= 0) {
@@ -481,6 +509,7 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
       else
 	return -1;
     }
+
     if (latter_req_len >= 0)
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
@@ -492,9 +521,11 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	return -1;
     }
     break;
+
   case UTextOrigin_Beginning:
     gtk_text_buffer_get_start_iter(text_view->buffer, &start);
     end = start;
+
     if (latter_req_len >= 0)
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
@@ -506,9 +537,11 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	return -1;
     }
     break;
+
   case UTextOrigin_End:
     gtk_text_buffer_get_end_iter(text_view->buffer, &end);
     start = end;
+
     if (former_req_len >= 0) {
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
@@ -520,10 +553,12 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 	return -1;
     }
     break;
+
   case UTextOrigin_Unspecified:
   default:
     return -1;
   }
+
   gtk_text_buffer_delete_interactive(text_view->buffer, &start, &end,
 				     text_view->editable);
 
@@ -550,24 +585,29 @@ im_uim_delete_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
    * cursor.
    */
   offset = n_chars = 0;
+
   switch (origin) {
   case UTextOrigin_Cursor:
     if (former_req_len >= 0) {
       offset = -former_req_len;
       n_chars = former_req_len;
-    } else
+    } else {
 	return -1;
+    }
+
     if (latter_req_len >= 0)
       n_chars += latter_req_len;
     else
       return -1;
     break;
+
   case UTextOrigin_Beginning:
   case UTextOrigin_End:
   case UTextOrigin_Unspecified:
   default:
     return -1;
   }
+
   success = gtk_im_context_delete_surrounding(GTK_IM_CONTEXT(uic), offset,
 					      n_chars);
   return success ? 0 : -1;
@@ -575,20 +615,20 @@ im_uim_delete_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 
 static int
 delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
-			 int former_req_len, int latter_req_len)
+			      int former_req_len, int latter_req_len)
 {
   gint start, end, current_pos;
-  gboolean start_from_beginning = FALSE;
+  gboolean cursor_at_beginning = FALSE;
 
   if (!gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &start, &end))
     return -1;
 
   current_pos = entry->current_pos;
   if (current_pos == start)
-    start_from_beginning = TRUE;
+    cursor_at_beginning = TRUE;
 
   if (origin == UTextOrigin_Beginning ||
-      (origin == UTextOrigin_Cursor && start_from_beginning)) {
+      (origin == UTextOrigin_Cursor && cursor_at_beginning)) {
     if (latter_req_len >= 0) {
       if (latter_req_len < end - start)
 	end = start + latter_req_len;
@@ -598,7 +638,7 @@ delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
 	return -1;
     }
   } else if (origin == UTextOrigin_End ||
-	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
+	     (origin == UTextOrigin_Cursor && !cursor_at_beginning)) {
     if (former_req_len >= 0) {
       if (former_req_len < end - start)
 	start = end - former_req_len;
@@ -610,6 +650,7 @@ delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
   } else {
     return -1;
   }
+
   gtk_editable_delete_text(GTK_EDITABLE(entry), start, end);
 
   return 0;
@@ -621,7 +662,7 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
 				  int latter_req_len)
 {
   GtkTextIter current, start, end, tmp_start, tmp_end;
-  gboolean start_from_beginning = FALSE;
+  gboolean cursor_at_beginning = FALSE;
 
   if (!text_view->buffer)
     return -1;
@@ -630,15 +671,16 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
     gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
 				     gtk_text_buffer_get_mark(text_view->buffer, "insert"));
     if (gtk_text_iter_compare(&start, &current) == 0)
-      start_from_beginning = TRUE;
+      cursor_at_beginning = TRUE;
   } else {
     return -1;
   }
 
   if (origin == UTextOrigin_Beginning ||
-      (origin == UTextOrigin_Cursor && start_from_beginning)) {
+      (origin == UTextOrigin_Cursor && cursor_at_beginning)) {
     tmp_start = start;
     tmp_end = start;
+
     if (latter_req_len >= 0) {
       gtk_text_iter_forward_chars(&tmp_end, latter_req_len);
       if (gtk_text_iter_compare(&tmp_end, &end) < 0)
@@ -653,10 +695,12 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
 	  return -1;
       }
     }
+
   } else if (origin == UTextOrigin_End ||
-	     (origin == UTextOrigin_Cursor && !start_from_beginning)) {
+	     (origin == UTextOrigin_Cursor && !cursor_at_beginning)) {
     tmp_start = end;
     tmp_end = end;
+
     if (former_req_len >= 0) {
       gtk_text_iter_backward_chars(&tmp_start, former_req_len);
       if (gtk_text_iter_compare(&tmp_start, &start) > 0)
@@ -671,6 +715,7 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
 	  return -1;
       }
     }
+
   } else {
     return -1;
   }
