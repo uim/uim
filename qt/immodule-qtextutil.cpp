@@ -250,6 +250,10 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
     int n_para;
     int preedit_len, preedit_cursor_pos;
     int sel_start_para, sel_start_index, sel_end_para, sel_end_index;
+    TextFormat format;
+
+    format = edit->textFormat();
+    edit->setTextFormat( Qt::PlainText );
 
     edit->getCursorPosition( &para, &index ); // including preedit string
 
@@ -278,6 +282,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 start_para = 0;
                 start_index = 0;
             } else {
+                edit->setTextFormat( format );
                 return -1;
             }
         }
@@ -294,6 +299,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
+                edit->setTextFormat( format );
                 return -1;
             }
         }
@@ -320,6 +326,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
+                edit->setTextFormat( format );
                 return -1;
             }
         }
@@ -352,6 +359,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 start_para = 0;
                 start_index = 0;
             } else {
+                edit->setTextFormat( format );
                 return -1;
             }
         }
@@ -372,6 +380,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     case UTextOrigin_Unspecified:
     default:
+        edit->setTextFormat( format );
         return -1;
     }
 
@@ -383,6 +392,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     edit->setCursorPosition( para, index );
 
+    edit->setTextFormat( format );
     return 0; 
 }
 
@@ -477,9 +487,13 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
     int start_para, start_index, end_para, end_index;
     int para, index;
     bool start_from_beginning = false;
+    TextFormat format;
 
     if ( ! edit->hasSelectedText() )
         return -1;
+
+    format = edit->textFormat();
+    edit->setTextFormat( Qt::PlainText );
 
     edit->getCursorPosition( &para, &index );
     edit->getSelection(&start_para, &start_index, &end_para, &end_index, 0 );
@@ -498,8 +512,10 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( len > latter_req_len )
                 offset = len - latter_req_len;
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) ) {
+                edit->setTextFormat( format );
                 return -1;
+            }
 
             if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find( '\n' ) ) != -1 ) )
                 offset = len - newline;
@@ -512,8 +528,10 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( len > former_req_len )
                 offset = len - former_req_len;
         } else {
-            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) ) {
+                edit->setTextFormat( format );
                 return -1;
+            }
 
             if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) )
                 offset = newline + 1;
@@ -521,9 +539,11 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
         *former = strdup( text.mid( offset, len - offset ).utf8() );
         *latter = NULL;
     } else {
+        edit->setTextFormat( format );
         return -1;
     }
 
+    edit->setTextFormat( format );
     return 0;
 }
 
