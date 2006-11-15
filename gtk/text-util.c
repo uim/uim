@@ -78,7 +78,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     else {
       if (latter_req_len == UTextExtent_Full)
 	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
-      else if (former_req_len == UTextExtent_Line)
+      else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
       else {
 	g_free(*former);
