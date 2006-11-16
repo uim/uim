@@ -102,8 +102,12 @@ private:
 
     void QTextEditPositionForward( int *para, int *index );
 
+    void savePreedit();
+    void restorePreedit();
+
     QWidget *mWidget;
     QUimInputContext *mIc;
+    bool mPreeditSaved;
 };
 
 #endif

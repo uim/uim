@@ -46,6 +46,7 @@ QUimTextUtil::QUimTextUtil( QObject *parent )
         : QObject( parent )
 {
     mIc = (QUimInputContext *)parent;
+    mPreeditSaved = false;
 }
 
 QUimTextUtil::~QUimTextUtil()
@@ -718,21 +719,17 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
     int i;
     int start_para, start_index, end_para, end_index, para, index;
     int n_para;
-    int preedit_len, preedit_cursor_pos;
+
+    savePreedit();
 
     edit->getCursorPosition( &para, &index );
-
-    preedit_len = mIc->getPreeditString().length();
-    preedit_cursor_pos = mIc->getPreeditCursorPosition();
     n_para = edit->paragraphs();
-
-    mIc->saveContext();
 
     switch ( origin ) {
     case UTextOrigin_Cursor:
-        start_index = index - preedit_cursor_pos;
+        start_index = index;
         start_para = para;
-        end_index = start_index + preedit_len;
+        end_index = start_index;
         end_para = para;
 
         if ( former_req_len >= 0 ) {
@@ -745,7 +742,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 start_para = 0;
                 start_index = 0;
             } else {
-                mIc->restoreContext();
+                restorePreedit();
                 return -1;
             }
         }
@@ -759,7 +756,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
-                mIc->restoreContext();
+                restorePreedit();
                 return -1;
             }
         }
@@ -781,7 +778,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 end_para = n_para - 1;
                 end_index = edit->paragraphLength( end_para );
             } else {
-                mIc->restoreContext();
+                restorePreedit();
                 return -1;
             }
         }
@@ -803,7 +800,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                 start_para = 0;
                 start_index = 0;
             } else {
-                mIc->restoreContext();
+                restorePreedit();
                 return -1;
             }
         }
@@ -811,13 +808,13 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     case UTextOrigin_Unspecified:
     default:
-        mIc->restoreContext();
+        restorePreedit();
         return -1;
     }
     edit->setSelection( start_para, start_index, end_para, end_index, 1 );
     edit->removeSelectedText( 1 );
     edit->setCursorPosition( start_para, start_index );
-    mIc->restoreContext();
+    restorePreedit();
 
     return 0; 
 }
@@ -982,8 +979,13 @@ QUimTextUtil::QTextEditPositionBackward( int *cursor_para, int *cursor_index )
     current_para = *cursor_para;
     current_index = *cursor_index;
 
-    preedit_len = mIc->getPreeditString().length();
-    preedit_cursor_pos = mIc->getPreeditCursorPosition();
+    if ( ! mPreeditSaved ) {
+        preedit_len = mIc->getPreeditString().length();
+        preedit_cursor_pos = mIc->getPreeditCursorPosition();
+    } else {
+        preedit_len = 0;
+        preedit_cursor_pos = 0;
+    }
     edit->getCursorPosition( &para, &index );
 
     if ( current_para == para && current_index > ( index - preedit_cursor_pos ) && ( current_index <= ( index - preedit_cursor_pos + preedit_len ) ) )
@@ -1016,8 +1018,13 @@ QUimTextUtil::QTextEditPositionForward( int *cursor_para, int *cursor_index )
     current_index = *cursor_index;
 
     current_para_len = edit->paragraphLength( current_para );
-    preedit_len = mIc->getPreeditString().length();
-    preedit_cursor_pos = mIc->getPreeditCursorPosition();
+    if ( ! mPreeditSaved ) {
+        preedit_len = mIc->getPreeditString().length();
+        preedit_cursor_pos = mIc->getPreeditCursorPosition();
+    } else {
+        preedit_len = 0;
+        preedit_cursor_pos = 0;
+    }
     edit->getCursorPosition( &para, &index );
 
     if ( current_para == para && current_index >= ( index - preedit_cursor_pos ) && current_index < ( index - preedit_cursor_pos + preedit_len ) )
@@ -1039,5 +1046,16 @@ QUimTextUtil::QTextEditPositionForward( int *cursor_para, int *cursor_index )
     *cursor_index = current_index;
 }
 
+void QUimTextUtil::savePreedit()
+{
+    mIc->saveContext();
+    mPreeditSaved = true;
+}
+
+void QUimTextUtil::restorePreedit()
+{
+    mIc->restoreContext();
+    mPreeditSaved = false;
+}
 
 #include "immodule-qtextutil.moc"
