@@ -81,6 +81,9 @@ protected:
     QPixmap m_swicon;
     QPixmap m_preficon;
     QPixmap m_dicticon;
+    QPixmap m_padicon;
+    QPixmap m_handicon;
+    QPixmap m_helpicon;
     QPopupMenu *m_contextMenu;
     int m_nr_exec_buttons;
 };
