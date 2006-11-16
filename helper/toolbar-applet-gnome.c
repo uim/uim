@@ -46,6 +46,10 @@ PanelApplet *uimapplet;
 
 static void exec_switcher(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 static void exec_pref(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
+static void exec_dic(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
+static void exec_pad(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
+static void exec_hand(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
+static void exec_help(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 static void display_about_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 
 extern GtkWidget *uim_toolbar_applet_new(void);
@@ -54,6 +58,10 @@ extern GtkWidget *uim_toolbar_applet_new(void);
 static const BonoboUIVerb uim_menu_verbs[] = {
   BONOBO_UI_VERB("UimExecSwitcher", exec_switcher),
   BONOBO_UI_VERB("UimExecPref", exec_pref),
+  BONOBO_UI_VERB("UimExecDic", exec_dic),
+  BONOBO_UI_VERB("UimExecPad", exec_pad),
+  BONOBO_UI_VERB("UimExecHand", exec_hand),
+  BONOBO_UI_VERB("UimExecHelp", exec_help),
   BONOBO_UI_VERB("UimAbout", display_about_dialog),
   BONOBO_UI_VERB_END
 };
@@ -65,6 +73,14 @@ static const char uim_menu_xml[] =
   "             pixtype=\"filename\" pixname=\""UIM_PIXMAPSDIR"/im_switcher.png\"/>\n"
   "   <menuitem name=\"Pref Item\" verb=\"UimExecPref\" _label=\"Preference\"\n"
   "             pixtype=\"stock\" pixname=\"preferences\"/>\n"
+  "   <menuitem name=\"Dic Item\" verb=\"UimExecDic\" _label=\"Japanese dictionary editor\"\n"
+  "             pixtype=\"filename\" pixname=\""UIM_PIXMAPSDIR"/uim-dict.png\"/>\n"
+  "   <menuitem name=\"Pad Item\" verb=\"UimExecPad\" _label=\"Input pad\"\n"
+  "             pixtype=\"stock\" pixname=\"bold\"/>\n"
+  "   <menuitem name=\"Hand Item\" verb=\"UimExecHand\" _label=\"Handwriting input pad\"\n"
+  "             pixtype=\"stock\" pixname=\"edit\"/>\n"
+  "   <menuitem name=\"Help Item\" verb=\"UimExecHelp\" _label=\"Help\"\n"
+  "             pixtype=\"stock\" pixname=\"help\"/>\n"
   "   <menuitem name=\"About Item\" verb=\"UimAbout\" _label=\"About ...\"\n"
   "             pixtype=\"stock\" pixname=\"gnome-stock-about\"/>\n"
   "</popup>\n";
@@ -81,6 +97,30 @@ static void
 exec_pref(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
   system("uim-pref-gtk &");
+}
+
+static void
+exec_dic(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+{
+  system("uim-dict-gtk &");
+}
+
+static void
+exec_pad(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+{
+  system("uim-input-pad-ja &");
+}
+
+static void
+exec_hand(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+{
+  system("uim-tomoe-gtk &");
+}
+
+static void
+exec_help(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
+{
+  system("uim-help &");
 }
 
 

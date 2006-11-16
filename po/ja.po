@@ -467,14 +467,6 @@ msgstr "英数"
 msgid "symbol"
 msgstr "記号"
 
-#: helper/input-pad-ja.c:405
-msgid "bracket"
-msgstr "括弧記号"
-
-#: helper/input-pad-ja.c:408
-msgid "arrow"
-msgstr "矢印"
-
 #: helper/input-pad-ja.c:411
 msgid "omission"
 msgstr "省略記号"
@@ -482,10 +474,6 @@ msgstr "省略記号"
 #: helper/input-pad-ja.c:414
 msgid "unit"
 msgstr "単位記号"
-
-#: helper/input-pad-ja.c:417
-msgid "dot"
-msgstr "点"
 
 #: helper/input-pad-ja.c:420
 msgid "number"
@@ -496,6 +484,14 @@ msgid "academic"
 msgstr "学術記号"
 
 #: helper/input-pad-ja.c:426
+msgid "greek"
+msgstr "ギリシャ語"
+
+#: helper/input-pad-ja.c:429
+msgid "cyrillic"
+msgstr "ロシア語"
+
+#: helper/input-pad-ja.c:432
 msgid "line"
 msgstr "罫線"
 

@@ -100,7 +100,7 @@ static struct _CommandEntry command_entry[] = {
 
   {
     N_("Japanese dictionary editor"),
-    "Dic",
+    NULL,
     "uim-dict",
     "uim-dict-gtk &",
     "toolbar-show-dict-button?",
@@ -109,8 +109,8 @@ static struct _CommandEntry command_entry[] = {
 
   {
     N_("Input pad"),
-    "Pad",
     NULL,
+    GTK_STOCK_BOLD,
     "uim-input-pad-ja &",
     "toolbar-show-input-pad-button?",
     UIM_FALSE
@@ -118,8 +118,8 @@ static struct _CommandEntry command_entry[] = {
 
   {
     N_("Handwriting input pad"),
-    "Hand",
     NULL,
+    GTK_STOCK_EDIT,
     "uim-tomoe-gtk &",
     "toolbar-show-handwriting-input-pad-button?",
     UIM_FALSE
@@ -684,69 +684,6 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 }
 
 static void
-helper_toolbar_prop_label_update(GtkWidget *widget, gchar **lines)
-{
-  GtkWidget *button;
-  guint i;
-  gchar **cols;
-  gchar *charset;
-  const gchar *indication_id, *iconic_label, *tooltip_str;
-  GList *prop_buttons;
-
-  for (i = 0; lines[i] && strcmp("", lines[i]); i++)
-    continue;
-
-  prop_buttons = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_PROP_BUTTONS);
-  if (!prop_buttons || (i - 2) != g_list_length(prop_buttons)) {
-    uim_helper_client_get_prop_list();
-    return;
-  }
-
-  charset = get_charset(lines[1]);
-
-  for (i = 2; lines[i] && strcmp("", lines[i]); i++) {
-    if (charset) {
-      gchar *utf8_str;
-      utf8_str = g_convert(lines[i], strlen(lines[i]),
-			   "UTF-8", charset,
-			   NULL, /* gsize *bytes_read */
-			   NULL, /*size *bytes_written */
-			   NULL); /* GError **error*/
-      cols = g_strsplit(utf8_str, "\t", 0);
-      g_free(utf8_str);
-    } else {
-      cols = g_strsplit(lines[i], "\t", 0);
-    }
-
-    if (has_n_strs(cols, 3)) {
-      indication_id = cols[0];
-      iconic_label  = safe_gettext(cols[1]);
-      tooltip_str   = safe_gettext(cols[2]);
-      button = g_list_nth_data(prop_buttons, i - 2);
-
-      if (register_icon(indication_id)) {
-	GtkWidget *img = gtk_image_new_from_stock(indication_id,
-						  GTK_ICON_SIZE_MENU);
-#if GTK_CHECK_VERSION(2, 6, 0)
-	gtk_button_set_image(GTK_BUTTON(button), img);
-#else
-	GList *children = gtk_container_get_children(GTK_CONTAINER(button));
-	if (children)
-	  gtk_container_remove(GTK_CONTAINER(button), children->data);
-	g_list_free(children);
-	gtk_container_add(GTK_CONTAINER(button), img);
-#endif
-      } else {
-	gtk_button_set_label(GTK_BUTTON(button), iconic_label);
-      }
-    }
-    g_strfreev(cols);
-  }
-
-  g_free(charset);
-}
-
-static void
 helper_toolbar_check_custom()
 {
   guint i;
@@ -765,8 +702,6 @@ helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
   if (lines && lines[0]) {
     if (!strcmp("prop_list_update", lines[0]))
       helper_toolbar_prop_list_update(widget, lines);
-    else if (!strcmp("prop_label_update", lines[0]))
-      helper_toolbar_prop_label_update(widget, lines);
     else if (!strcmp("custom_reload_notify", lines[0])) {
       uim_prop_reload_configs();
       helper_toolbar_check_custom();
@@ -943,7 +878,13 @@ toolbar_new(gint type)
   sg = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 
   /* prop menu button */
-  button = gtk_button_new_with_label(" x");
+  if (register_icon("uim-icon")) {
+    GtkWidget *img = gtk_image_new_from_stock("uim-icon", GTK_ICON_SIZE_MENU);
+    button = gtk_button_new();
+    gtk_container_add(GTK_CONTAINER(button), img);
+  } else {
+    button = gtk_button_new_with_label(" x");
+  }
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button-press-event",
