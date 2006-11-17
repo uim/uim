@@ -1529,16 +1529,16 @@ SCM_EXPORT ScmObj scm_unwrap_keyword(ScmObj obj);
 #if SCM_USE_PORT
 SCM_EXPORT ScmObj scm_make_shared_file_port(FILE *file, const char *aux_info,
                                             enum ScmPortFlag flag);
-SCM_EXPORT int scm_port_close(ScmObj port);
+SCM_EXPORT void scm_port_close(ScmObj port);
 SCM_EXPORT ScmCharCodec *scm_port_codec(ScmObj port);
 SCM_EXPORT char *scm_port_inspect(ScmObj port);
-SCM_EXPORT int scm_port_get_char(ScmObj port);
-SCM_EXPORT int scm_port_peek_char(ScmObj port);
+SCM_EXPORT scm_ichar_t scm_port_get_char(ScmObj port);
+SCM_EXPORT scm_ichar_t scm_port_peek_char(ScmObj port);
 SCM_EXPORT scm_bool scm_port_char_readyp(ScmObj port);
-SCM_EXPORT int scm_port_puts(ScmObj port, const char *str);
-SCM_EXPORT int scm_port_put_char(ScmObj port, scm_ichar_t ch);
-SCM_EXPORT int scm_port_newline(ScmObj port);
-SCM_EXPORT int scm_port_flush(ScmObj port);
+SCM_EXPORT void scm_port_puts(ScmObj port, const char *str);
+SCM_EXPORT void scm_port_put_char(ScmObj port, scm_ichar_t ch);
+SCM_EXPORT void scm_port_newline(ScmObj port);
+SCM_EXPORT void scm_port_flush(ScmObj port);
 SCM_EXPORT ScmObj scm_p_call_with_input_file(ScmObj filepath, ScmObj proc);
 SCM_EXPORT ScmObj scm_p_call_with_output_file(ScmObj filepath, ScmObj proc);
 SCM_EXPORT ScmObj scm_p_input_portp(ScmObj obj);

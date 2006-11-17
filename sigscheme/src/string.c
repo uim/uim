@@ -166,7 +166,7 @@ scm_p_string_ref(ScmObj str, ScmObj k)
 
     ch = SCM_CHARCODEC_STR2INT(scm_current_char_codec, SCM_MBS_GET_STR(mbs),
                                SCM_MBS_GET_SIZE(mbs), SCM_MBS_GET_STATE(mbs));
-    if (ch == EOF)
+    if (ch == SCM_ICHAR_EOF)
         ERR("invalid char sequence");
 #else
     ch = ((unsigned char *)SCM_STRING_STR(str))[idx];

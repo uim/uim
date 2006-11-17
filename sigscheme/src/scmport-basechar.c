@@ -61,15 +61,15 @@
 =======================================*/
 static ScmCharPort *basecport_dyn_cast(ScmCharPort *cport,
                                        const ScmCharPortVTbl *dst_vptr);
-static int basecport_close(ScmBaseCharPort *port);
+static void basecport_close(ScmBaseCharPort *port);
 static ScmCharCodec *basecport_codec(ScmBaseCharPort *port);
 static char *basecport_inspect(ScmBaseCharPort *port);
 static scm_ichar_t basecport_get_char(ScmBaseCharPort *port);
 static scm_ichar_t basecport_peek_char(ScmBaseCharPort *port);
 static scm_bool basecport_char_readyp(ScmBaseCharPort *port);
-static int basecport_puts(ScmBaseCharPort *port, const char *str);
-static int basecport_put_char(ScmBaseCharPort *port, scm_ichar_t ch);
-static int basecport_flush(ScmBaseCharPort *port);
+static void basecport_puts(ScmBaseCharPort *port, const char *str);
+static void basecport_put_char(ScmBaseCharPort *port, scm_ichar_t ch);
+static void basecport_flush(ScmBaseCharPort *port);
 
 /*=======================================
   Variable Definitions
@@ -135,15 +135,11 @@ basecport_dyn_cast(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr)
     return (dst_vptr == ScmBaseCharPort_vptr) ? cport : NULL;
 }
 
-static int
+static void
 basecport_close(ScmBaseCharPort *port)
 {
-    int err;
-
-    err = SCM_BYTEPORT_CLOSE(port->bport);
+    SCM_BYTEPORT_CLOSE(port->bport);
     free(port);
-
-    return err;
 }
 
 static ScmCharCodec *
@@ -185,21 +181,21 @@ basecport_char_readyp(ScmBaseCharPort *port)
     return SCM_BYTEPORT_BYTE_READYP(port->bport);
 }
 
-static int
+static void
 basecport_puts(ScmBaseCharPort *port, const char *str)
 {
-    return SCM_BYTEPORT_PUTS(port->bport, str);
+    SCM_BYTEPORT_PUTS(port->bport, str);
 }
 
-static int
+static void
 basecport_put_char(ScmBaseCharPort *port, scm_ichar_t ch)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(CHAR, port, ScmBaseCharPort);
     /* NOTREACHED */
 }
 
-static int
+static void
 basecport_flush(ScmBaseCharPort *port)
 {
-    return SCM_BYTEPORT_FLUSH(port->bport);
+    SCM_BYTEPORT_FLUSH(port->bport);
 }

@@ -74,6 +74,8 @@ scm_initialize_srfi6(void)
 static void
 istrport_finalize(char **str, scm_bool ownership, void **opaque)
 {
+    SCM_ASSERT(!ownership);
+
     scm_gc_unprotect((ScmObj *)opaque);
 }
 

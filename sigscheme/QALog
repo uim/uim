@@ -240,7 +240,7 @@ yyyy yyy core continuation.c
 yyyy yyy core eval.c
          core module.c
          core sigscheme.c
-         semicore port.c
+y yy y   semicore port.c
          semicore read.c
          semicore write.c
          semicore load.c
@@ -259,7 +259,7 @@ yyyy yyy r5rs qquote.c
          r5rs promise.c
          srfi module-srfi1.c
          srfi module-srfi2.c
-         srfi module-srfi6.c
+yyyy yyy srfi module-srfi6.c
          srfi module-srfi8.c
 yyyy yy  srfi module-srfi23.c
          srfi module-srfi28.c
@@ -280,7 +280,7 @@ Status
 
 file:              scmint.h
 category:          base
-spec by eyes:      yamaken@r3961
+spec by eyes:      yamaken@r3961, yamaken@r3992
 spec by tests:     
 general review:    yamaken@r3961
 64-bit by eyes:    yamaken@r3961
@@ -291,12 +291,12 @@ corner case tests:
 
 file:              scmport.h
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r3992
 spec by tests:     
-general review:    yamaken@r3963
-64-bit by eyes:    yamaken@r3963
+general review:    yamaken@r3963, yamaken@r3992
+64-bit by eyes:    yamaken@r3963, yamaken@r3992
 64-bit by tests:   
-coding style:      yamaken@r3963
+coding style:      yamaken@r3963, yamaken@r3992
 normal case tests: 
 corner case tests: 
 
@@ -324,23 +324,23 @@ corner case tests:
 
 file:              scmport-null.c
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r3992
 spec by tests:     
-general review:    yamaken@r3963
-64-bit by eyes:    yamaken@r3963
+general review:    yamaken@r3963, yamaken@r3992
+64-bit by eyes:    yamaken@r3963, yamaken@r3992
 64-bit by tests:   
-coding style:      yamaken@r3963
+coding style:      yamaken@r3963, yamaken@r3992
 normal case tests: 
 corner case tests: 
 
 file:              scmport-file.c
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r3992
 spec by tests:     
-general review:    yamaken@r3963
-64-bit by eyes:    yamaken@r3963
+general review:    yamaken@r3963, yamaken@r3992
+64-bit by eyes:    yamaken@r3963, yamaken@r3992
 64-bit by tests:   
-coding style:      yamaken@r3963
+coding style:      yamaken@r3963, yamaken@r3992
 normal case tests: 
 corner case tests: 
 
@@ -368,23 +368,23 @@ corner case tests:
 
 file:              scmport-str.c
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r3992
 spec by tests:     
-general review:    yamaken@r3963
-64-bit by eyes:    yamaken@r3963
+general review:    yamaken@r3963, yamaken@r3992
+64-bit by eyes:    yamaken@r3963, yamaken@r3992
 64-bit by tests:   
-coding style:      yamaken@r3963
+coding style:      yamaken@r3963, yamaken@r3992
 normal case tests: 
 corner case tests: 
 
 file:              scmport-basechar.c
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r3992
 spec by tests:     
-general review:    yamaken@r3963
-64-bit by eyes:    yamaken@r3963
+general review:    yamaken@r3963, yamaken@r3992
+64-bit by eyes:    yamaken@r3963, yamaken@r3992
 64-bit by tests:   
-coding style:      yamaken@r3963
+coding style:      yamaken@r3963, yamaken@r3992
 normal case tests: 
 corner case tests: 
 
@@ -401,12 +401,12 @@ corner case tests:
 
 file:              scmport-sbchar.c
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r3992
 spec by tests:     
-general review:    yamaken@r3963
-64-bit by eyes:    yamaken@r3963
+general review:    yamaken@r3963, yamaken@r3992
+64-bit by eyes:    yamaken@r3963, yamaken@r3992
 64-bit by tests:   
-coding style:      yamaken@r3963
+coding style:      yamaken@r3963, yamaken@r3992
 normal case tests: 
 corner case tests: 
 
@@ -676,12 +676,12 @@ corner case tests:
 
 file:              port.c
 category:          semicore
-spec by eyes:      
+spec by eyes:      yamaken@r3992
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r3992
+64-bit by eyes:    yamaken@r3992
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r3992
 normal case tests: 
 corner case tests: 
 
@@ -885,14 +885,14 @@ corner case tests:
 
 file:              module-srfi6.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r3992
+spec by tests:     yamaken@r3992
+general review:    yamaken@r3992
+64-bit by eyes:    yamaken@r3992
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r3992
+normal case tests: yamaken@r3992
+corner case tests: yamaken@r3992
 
 file:              module-srfi8.c
 category:          srfi
@@ -1029,6 +1029,45 @@ corner case tests:
 
 Log
 ---
+2006-11-18  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * scmport.h
+        * scmport-null.c
+        * scmport-file.c
+        * scmport-str.c
+        * scmport-basechar.c
+        * scmport-sbchar.c
+        * scmport-mbchar.c
+        * scmint.h
+          - QA done again @r3992 by eyes
+          - Change the low-level port API to fix the design error about error
+            handling (get_byte() and peek_byte() were not able to detect read
+            error)
+          - Fix broken sign extention for 8-bit char on string port read
+
+        * port.c
+          - QA done @r3992 by eyes
+          - Add lacking or incomplete error handlings for port operations
+
+          Details:
+          - Specs have been validated against following R5RS sections:
+            * call-with-input-file, call-with-output-file, input-port?,
+              output-port?, current-input-port, current-output-port,
+              with-input-from-file, with-output-to-file, open-input-file,
+              open-output-file, read-char, peek-char, eof-object?, char-ready?,
+              newline, write-char
+              "6.6.1 Ports"
+              "6.6.2 Input"
+              "6.6.3 Output"
+
+        * module-srfi6.c
+          - QA done @r3992
+
+          Details:
+          - Add some tests to test-srfi6.scm
+          - Specs have been validated against SRFI-6:
+            * open-input-string, open-output-string, get-output-string
+
 2006-11-09  YamaKen <yamaken AT bp.iij4u.or.jp>
 
        * scmport.h
@@ -1046,7 +1085,7 @@ Log
           - Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
             which may cause SEGV
 
-        * scmint.h
+       * scmint.h
           - QA done @r3961
 
 2006-11-08  YamaKen <yamaken AT bp.iij4u.or.jp>

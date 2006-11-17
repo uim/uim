@@ -68,7 +68,7 @@ static ScmCharPort *sbcport_dyn_cast(ScmCharPort *cport,
                                      const ScmCharPortVTbl *dst_vptr);
 static ScmCharCodec *sbcport_codec(ScmSingleByteCharPort *port);
 static char *sbcport_inspect(ScmSingleByteCharPort *port);
-static int sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
+static void sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch);
 
 /*=======================================
   Variable Definitions
@@ -151,11 +151,11 @@ sbcport_inspect(ScmSingleByteCharPort *port)
     return ScmBaseCharPort_inspect((ScmBaseCharPort *)port, "sb");
 }
 
-static int
+static void
 sbcport_put_char(ScmSingleByteCharPort *port, scm_ichar_t ch)
 {
     char buf[1];
 
     buf[0] = ch;
-    return SCM_BYTEPORT_WRITE(port->bport, sizeof(buf), buf);
+    SCM_BYTEPORT_WRITE(port->bport, sizeof(buf), buf);
 }

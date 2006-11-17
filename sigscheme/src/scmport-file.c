@@ -73,18 +73,19 @@ struct ScmFilePort_ {  /* inherits ScmBytePort */
 =======================================*/
 static ScmBytePort *fileport_new_internal(FILE *file, const char *aux_info,
                                           scm_bool ownership);
+static ScmBytePort *fileport_open_internal(const char *path, const char *mode);
+static scm_ichar_t fixup_read_char(FILE *f, int c);
 
 static ScmBytePort *fileport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
-static int fileport_close(ScmFilePort *bport);
+static void fileport_close(ScmFilePort *bport);
 static char *fileport_inspect(ScmFilePort *port);
 static scm_ichar_t fileport_get_byte(ScmFilePort *bport);
 static scm_ichar_t fileport_peek_byte(ScmFilePort *bport);
 static scm_bool fileport_byte_readyp(ScmFilePort *bport);
-static int fileport_puts(ScmFilePort *bport, const char *str);
-static size_t fileport_write(ScmFilePort *bport,
-                             size_t nbytes, const char *buf);
-static int fileport_flush(ScmFilePort *bport);
+static void fileport_puts(ScmFilePort *bport, const char *str);
+static void fileport_write(ScmFilePort *bport, size_t nbytes, const char *buf);
+static void fileport_flush(ScmFilePort *bport);
 
 /*=======================================
   Variable Definitions
@@ -145,22 +146,33 @@ ScmFilePort_new_shared(FILE *file, const char *aux_info)
     return fileport_new_internal(file, aux_info, scm_false);
 }
 
-SCM_EXPORT ScmBytePort *
-ScmFilePort_open_input_file(const char *path)
+static ScmBytePort *
+fileport_open_internal(const char *path, const char *mode)
 {
     FILE *file;
 
-    file = fopen(path, "rb");
+    file = fopen(path, mode);
+    /* FIXME: Raise error by SCM_BYTEPORT_ERROR(). Returning NULL as error
+     * indicator is a temporary solution to display filename to user. */
+#if 1
     return (file) ? ScmFilePort_new(file, path) : NULL;
+#else
+    if (!file)
+        SCM_BYTEPORT_ERROR(NULL, SCM_ERRMSG_OPEN_PORT);
+    return ScmFilePort_new(file, path);
+#endif
+}
+
+SCM_EXPORT ScmBytePort *
+ScmFilePort_open_input_file(const char *path)
+{
+    return fileport_open_internal(path, "rb");
 }
 
 SCM_EXPORT ScmBytePort *
 ScmFilePort_open_output_file(const char *path)
 {
-    FILE *file;
-
-    file = fopen(path, "wb");
-    return (file) ? ScmFilePort_new(file, path) : NULL;
+    return fileport_open_internal(path, "wb");
 }
 
 static ScmBytePort *
@@ -169,7 +181,7 @@ fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
     return (dst_vptr == ScmFilePort_vptr) ? bport : NULL;
 }
 
-static int
+static void
 fileport_close(ScmFilePort *port)
 {
     int err;
@@ -177,8 +189,8 @@ fileport_close(ScmFilePort *port)
     err = (port->ownership) ? fclose(port->file) : OK;
     free(port->aux_info);
     free(port);
-
-    return err;
+    if (err)
+        SCM_BYTEPORT_ERROR(NULL, SCM_ERRMSG_CLOSE_PORT);
 }
 
 static char *
@@ -198,18 +210,41 @@ fileport_inspect(ScmFilePort *port)
 }
 
 static scm_ichar_t
+fixup_read_char(FILE *f, int c)
+{
+    if (c == EOF) {
+        if (ferror(f)) {
+            clearerr(f);
+            SCM_BYTEPORT_ERROR(port, SCM_ERRMSG_READ_FROM_PORT);
+        }
+        return SCM_ICHAR_EOF;
+    }
+
+    return (scm_ichar_t)c;
+}
+
+static scm_ichar_t
 fileport_get_byte(ScmFilePort *port)
 {
-    return getc(port->file);
+    int c;
+
+    c = fgetc(port->file);
+    return fixup_read_char(port->file, c);
 }
 
 static scm_ichar_t
 fileport_peek_byte(ScmFilePort *port)
 {
-    scm_ichar_t ch;
+    int c;
+    scm_ichar_t ic;
 
-    ch = getc(port->file);
-    return ungetc(ch, port->file);
+    ic = fileport_get_byte(port);
+    if (ic != SCM_ICHAR_EOF) {
+        c = ungetc(ic, port->file);
+        ic = fixup_read_char(port->file, c);
+    }
+
+    return ic;
 }
 
 static scm_bool
@@ -224,20 +259,32 @@ fileport_byte_readyp(ScmFilePort *port)
     return scm_true;
 }
 
-static int
+static void
 fileport_puts(ScmFilePort *port, const char *str)
 {
-    return fputs(str, port->file);
+    int err;
+
+    err = fputs(str, port->file);
+    if (err)
+        SCM_BYTEPORT_ERROR(port, SCM_ERRMSG_WRITE_TO_PORT);
 }
 
-static size_t
+static void
 fileport_write(ScmFilePort *port, size_t nbytes, const char *buf)
 {
-    return fwrite(buf, sizeof(char), nbytes, port->file);
+    size_t written_objs;
+
+    written_objs = fwrite(buf, sizeof(char), nbytes, port->file);
+    if (written_objs != nbytes)
+        SCM_BYTEPORT_ERROR(port, SCM_ERRMSG_WRITE_TO_PORT);
 }
 
-static int
+static void
 fileport_flush(ScmFilePort *port)
 {
-    return fflush(port->file);
+    int err;
+
+    err = fflush(port->file);
+    if (err)
+        SCM_BYTEPORT_ERROR(port, SCM_ERRMSG_WRITE_TO_PORT);
 }

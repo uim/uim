@@ -433,7 +433,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 /*=======================================
   Characters
 =======================================*/
-/* accepts EOF */
+/* accepts SCM_ICHAR_EOF */
 #define ICHAR_ASCIIP(c)      (0 <= (c) && (c) <= 127)
 #define ICHAR_CONTROLP(c)    ((0 <= (c) && (c) <= 31) || (c) == 127)
 #define ICHAR_WHITESPACEP(c) ((c) == ' ' || ('\t' <= (c) && (c) <= '\r'))

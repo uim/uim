@@ -51,7 +51,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define OK 0
 
 /*=======================================
   File Local Type Definitions
@@ -63,15 +62,13 @@ typedef ScmBytePort ScmNullPort;
 =======================================*/
 static ScmBytePort *nullport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
-static int nullport_close(ScmNullPort *bport);
+static void nullport_close(ScmNullPort *bport);
 static char *nullport_inspect(ScmNullPort *port);
 static scm_ichar_t nullport_get_byte(ScmNullPort *bport);
-static scm_ichar_t nullport_peek_byte(ScmNullPort *bport);
 static scm_bool nullport_byte_readyp(ScmNullPort *bport);
-static int nullport_puts(ScmNullPort *bport, const char *str);
-static size_t nullport_write(ScmNullPort *bport,
-                             size_t nbytes, const char *buf);
-static int nullport_flush(ScmNullPort *bport);
+static void nullport_puts(ScmNullPort *bport, const char *str);
+static void nullport_write(ScmNullPort *bport, size_t nbytes, const char *buf);
+static void nullport_flush(ScmNullPort *bport);
 
 /*=======================================
   Variable Definitions
@@ -81,7 +78,7 @@ static const ScmBytePortVTbl ScmNullPort_vtbl = {
     (ScmBytePortMethod_close)      &nullport_close,
     (ScmBytePortMethod_inspect)    &nullport_inspect,
     (ScmBytePortMethod_get_byte)   &nullport_get_byte,
-    (ScmBytePortMethod_peek_byte)  &nullport_peek_byte,
+    (ScmBytePortMethod_peek_byte)  &nullport_get_byte,
     (ScmBytePortMethod_byte_readyp)&nullport_byte_readyp,
     (ScmBytePortMethod_puts)       &nullport_puts,
     (ScmBytePortMethod_write)      &nullport_write,
@@ -120,10 +117,9 @@ nullport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
     return (dst_vptr == ScmNullPort_vptr) ? bport : NULL;
 }
 
-static int
+static void
 nullport_close(ScmNullPort *port)
 {
-    return OK;
 }
 
 static char *
@@ -135,13 +131,7 @@ nullport_inspect(ScmNullPort *port)
 static scm_ichar_t
 nullport_get_byte(ScmNullPort *port)
 {
-    return EOF;
-}
-
-static scm_ichar_t
-nullport_peek_byte(ScmNullPort *port)
-{
-    return EOF;
+    return SCM_ICHAR_EOF;
 }
 
 static scm_bool
@@ -150,20 +140,17 @@ nullport_byte_readyp(ScmNullPort *port)
     return scm_true;
 }
 
-static int
+static void
 nullport_puts(ScmNullPort *port, const char *str)
 {
-    return 0;
 }
 
-static size_t
+static void
 nullport_write(ScmNullPort *port, size_t nbytes, const char *buf)
 {
-    return nbytes;
 }
 
-static int
+static void
 nullport_flush(ScmNullPort *port)
 {
-    return OK;
 }

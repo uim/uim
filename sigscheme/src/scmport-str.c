@@ -52,7 +52,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define OK 0
 
 /*=======================================
   File Local Type Definitions
@@ -63,8 +62,8 @@ typedef struct ScmOutputStrPort_ ScmOutputStrPort;
 struct ScmInputStrPort_ {  /* inherits ScmBytePort */
     const ScmBytePortVTbl *vptr;
 
-    char *str;
-    const char *cur;
+    scm_byte_t *str;
+    const scm_byte_t *cur;
     scm_bool has_str_ownership;
     void *opaque;  /* client-specific opaque information */
     ScmInputStrPort_finalizer finalize;
@@ -73,7 +72,7 @@ struct ScmInputStrPort_ {  /* inherits ScmBytePort */
 struct ScmOutputStrPort_ {  /* inherits ScmBytePort */
     const ScmBytePortVTbl *vptr;
 
-    char *str;
+    scm_byte_t *str;
     size_t cur;       /* offset to terminal '\0' */
     size_t buf_size;
     void *opaque;     /* client-specific opaque information */
@@ -83,35 +82,40 @@ struct ScmOutputStrPort_ {  /* inherits ScmBytePort */
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static ScmBytePort *istrport_new(char *str, scm_bool ownership,
+/* input port */
+static ScmBytePort *istrport_new(scm_byte_t *str, scm_bool ownership,
                                  ScmInputStrPort_finalizer finalize);
+static void istrport_finalize(char **str, scm_bool ownership, void **opaque);
 
 static ScmBytePort *istrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
-static int istrport_close(ScmInputStrPort *port);
+static void istrport_close(ScmInputStrPort *port);
 static char *istrport_inspect(ScmInputStrPort *port);
 static scm_ichar_t istrport_get_byte(ScmInputStrPort *port);
 static scm_ichar_t istrport_peek_byte(ScmInputStrPort *port);
 static scm_bool istrport_byte_readyp(ScmInputStrPort *port);
-static int istrport_puts(ScmInputStrPort *port, const char *str);
-static size_t istrport_write(ScmInputStrPort *port,
-                             size_t nbytes, const char *buf);
-static int istrport_flush(ScmInputStrPort *port);
+static void istrport_puts(ScmInputStrPort *port, const char *str);
+static void istrport_write(ScmInputStrPort *port,
+                           size_t nbytes, const char *buf);
+static void istrport_flush(ScmInputStrPort *port);
+
+/* output port */
+static void ostrport_finalize(char **str, size_t buf_size, void **opaque);
 
 static ScmBytePort *ostrport_dyn_cast(ScmBytePort *bport,
                                       const ScmBytePortVTbl *dest_vptr);
-static int ostrport_close(ScmOutputStrPort *port);
+static void ostrport_close(ScmOutputStrPort *port);
 static char *ostrport_inspect(ScmOutputStrPort *port);
 static scm_ichar_t ostrport_get_byte(ScmOutputStrPort *port);
 static scm_ichar_t ostrport_peek_byte(ScmOutputStrPort *port);
 static scm_bool ostrport_byte_readyp(ScmOutputStrPort *port);
-static int ostrport_puts(ScmOutputStrPort *port, const char *str);
-static size_t ostrport_write(ScmOutputStrPort *port,
-                             size_t nbytes, const char *buf);
-static int ostrport_flush(ScmOutputStrPort *port);
+static void ostrport_puts(ScmOutputStrPort *port, const char *str);
+static void ostrport_write(ScmOutputStrPort *port,
+                           size_t nbytes, const char *buf);
+static void ostrport_flush(ScmOutputStrPort *port);
 
-static size_t ostrport_append(ScmOutputStrPort *port,
-                              size_t len, const char *str);
+static void ostrport_append(ScmOutputStrPort *port,
+                            size_t len, const scm_byte_t *str);
 
 /*=======================================
   Variable Definitions
@@ -158,7 +162,8 @@ scm_strport_init(void)
 }
 
 static ScmBytePort *
-istrport_new(char *str, scm_bool ownership, ScmInputStrPort_finalizer finalize)
+istrport_new(scm_byte_t *str, scm_bool ownership,
+             ScmInputStrPort_finalizer finalize)
 {
     ScmInputStrPort *port;
 
@@ -170,7 +175,7 @@ istrport_new(char *str, scm_bool ownership, ScmInputStrPort_finalizer finalize)
     port->cur = port->str = str;
     port->has_str_ownership = ownership;
     port->opaque = NULL;
-    port->finalize = finalize;
+    port->finalize = (finalize) ? finalize : &istrport_finalize;
 
     return (ScmBytePort *)port;
 }
@@ -178,21 +183,22 @@ istrport_new(char *str, scm_bool ownership, ScmInputStrPort_finalizer finalize)
 SCM_EXPORT ScmBytePort *
 ScmInputStrPort_new(char *str, ScmInputStrPort_finalizer finalize)
 {
-    return istrport_new(str, scm_true, finalize);
+    return istrport_new((scm_byte_t *)str, scm_true, finalize);
 }
 
 SCM_EXPORT ScmBytePort *
 ScmInputStrPort_new_copying(const char *str,
                             ScmInputStrPort_finalizer finalize)
 {
-    return istrport_new(SCM_PORT_STRDUP(str), scm_true, finalize);
+    return istrport_new((scm_byte_t *)SCM_PORT_STRDUP(str),
+                        scm_true, finalize);
 }
 
 SCM_EXPORT ScmBytePort *
 ScmInputStrPort_new_const(const char *str, ScmInputStrPort_finalizer finalize)
 {
     /* str is actually treated as const */
-    return istrport_new((char *)str, scm_false, finalize);
+    return istrport_new((scm_byte_t *)str, scm_false, finalize);
 }
 
 SCM_EXPORT void **
@@ -211,19 +217,22 @@ istrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
     return (dst_vptr == ScmInputStrPort_vptr) ? bport : NULL;
 }
 
-static int
+/* default finalizer */
+static void
+istrport_finalize(char **str, scm_bool ownership, void **opaque)
+{
+    if (ownership)
+        free(*str);
+}
+
+static void
 istrport_close(ScmInputStrPort *port)
 {
-    if (port->finalize) {
-        /* custom finalizer be responsible for freeing port->str */
-        (*port->finalize)(&port->str, port->has_str_ownership, &port->opaque);
-    } else {
-        if (port->has_str_ownership)
-            free(port->str);
-    }
-    free(port);
+    SCM_PORT_ASSERT(port->finalize);
 
-    return OK;
+    (*port->finalize)((char **)&port->str,
+                      port->has_str_ownership, &port->opaque);
+    free(port);
 }
 
 static char *
@@ -235,13 +244,13 @@ istrport_inspect(ScmInputStrPort *port)
 static scm_ichar_t
 istrport_get_byte(ScmInputStrPort *port)
 {
-    return (*port->cur) ? *port->cur++ : EOF;
+    return (*port->cur) ? *port->cur++ : SCM_ICHAR_EOF;
 }
 
 static scm_ichar_t
 istrport_peek_byte(ScmInputStrPort *port)
 {
-    return (*port->cur) ? *port->cur : EOF;
+    return (*port->cur) ? *port->cur : SCM_ICHAR_EOF;
 }
 
 static scm_bool
@@ -250,21 +259,21 @@ istrport_byte_readyp(ScmInputStrPort *port)
     return scm_true;
 }
 
-static int
+static void
 istrport_puts(ScmInputStrPort *port, const char *str)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
     /* NOTREACHED */
 }
 
-static size_t
+static void
 istrport_write(ScmInputStrPort *port, size_t nbytes, const char *buf)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
     /* NOTREACHED */
 }
 
-static int
+static void
 istrport_flush(ScmInputStrPort *port)
 {
     SCM_PORT_ERROR_INVALID_OPERATION(BYTE, port, ScmInputStrPort);
@@ -284,7 +293,7 @@ ScmOutputStrPort_new(ScmOutputStrPort_finalizer finalize)
     port->cur = 0;
     port->buf_size = 0;
     port->opaque = NULL;
-    port->finalize = finalize;
+    port->finalize = (finalize) ? finalize : &ostrport_finalize;
 
     return (ScmBytePort *)port;
 }
@@ -296,7 +305,7 @@ ScmOutputStrPort_str(ScmBytePort *bport)
 
     port = SCM_BYTEPORT_DYNAMIC_CAST(ScmOutputStrPort, bport);
 
-    return (port->str) ? port->str : "";
+    return (port->str) ? (const char *)port->str : "";
 }
 
 SCM_EXPORT size_t
@@ -325,18 +334,19 @@ ostrport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
     return (dst_vptr == ScmOutputStrPort_vptr) ? bport : NULL;
 }
 
-static int
+static void
+ostrport_finalize(char **str, size_t buf_size, void **opaque)
+{
+    free(*str);
+}
+
+static void
 ostrport_close(ScmOutputStrPort *port)
 {
-    if (port->finalize) {
-        /* custom finalizer be responsible for freeing port->str */
-        (*port->finalize)(&port->str, port->buf_size, &port->opaque);
-    } else {
-        free(port->str);
-    }
-    free(port);
+    SCM_PORT_ASSERT(port->finalize);
 
-    return OK;
+    (*port->finalize)((char **)&port->str, port->buf_size, &port->opaque);
+    free(port);
 }
 
 static char *
@@ -366,28 +376,25 @@ ostrport_byte_readyp(ScmOutputStrPort *port)
     /* NOTREACHED */
 }
 
-static int
+static void
 ostrport_puts(ScmOutputStrPort *port, const char *str)
 {
-    ostrport_append(port, strlen(str), str);
-
-    return OK;
+    ostrport_append(port, strlen(str), (const scm_byte_t *)str);
 }
 
-static size_t
+static void
 ostrport_write(ScmOutputStrPort *port, size_t nbytes, const char *buf)
 {
-    return ostrport_append(port, nbytes, buf);
+    ostrport_append(port, nbytes, (const scm_byte_t *)buf);
 }
 
-static int
+static void
 ostrport_flush(ScmOutputStrPort *port)
 {
-    return OK;
 }
 
-static size_t
-ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
+static void
+ostrport_append(ScmOutputStrPort *port, size_t len, const scm_byte_t *str)
 {
     SCM_PORT_ASSERT(str);
 
@@ -403,6 +410,4 @@ ostrport_append(ScmOutputStrPort *port, size_t len, const char *str)
     memcpy(port->str + port->cur, str, len);
     port->cur += len;
     port->str[port->cur] = '\0';
-
-    return len + sizeof("");
 }

@@ -1,5 +1,5 @@
-;;  Filename : test-exp.scm
-;;  About    : unit test for R5RS expressions
+;;  Filename : test-srfi6.scm
+;;  About    : unit test for SRFI-6 Basic String Ports
 ;;
 ;;  Copyright (C) 2005-2006 Kazuki Ohta <mover AT hct.zaq.ne.jp>
 ;;
@@ -34,30 +34,70 @@
 
 (use srfi-6)
 
+(define tn test-name)
 
+;;
 ;; open-input-string
-;;;; immutable
+;;
+
+(tn "open-input-string invalid forms")
+(assert-error  (tn) (lambda () (open-input-string)))
+(assert-error  (tn) (lambda () (open-input-string '())))
+(assert-error  (tn) (lambda () (open-input-string (current-input-port))))
+(assert-error  (tn) (lambda () (open-input-string "" "")))
+
+;; immutable
 (define p
   (open-input-string "(a . (b . (c . ()))) 34"))
 
-(assert-true   "open-input-string immutable" (input-port? p))
-(assert-equal? "open-input-string immutable" '(a b c) (read p))
-(assert-equal? "open-input-string immutable" 34 (read p))
-;;;; mutable
+(tn "open-input-string immutable")
+(assert-true   (tn) (input-port? p))
+(assert-equal? (tn) '(a b c) (read p))
+(assert-equal? (tn) 34 (read p))
+(assert-true   (tn) (eof-object? (read p)))
+(assert-true   (tn) (eof-object? (read-char (open-input-string ""))))
+
+;; mutable
 (define p2
   (open-input-string (string-copy "(a . (b . (c . ()))) 34")))
 
-(assert-true   "open-input-string mutable" (input-port? p2))
-(assert-equal? "open-input-string mutable" '(a b c) (read p2))
-(assert-equal? "open-input-string mutable" 34 (read p2))
+(tn "open-input-string mutable")
+(assert-true   (tn) (input-port? p2))
+(assert-equal? (tn) '(a b c) (read p2))
+(assert-equal? (tn) 34 (read p2))
+(assert-true   (tn) (eof-object? (read p2)))
+(assert-true   (tn) (eof-object? (read-char
+                                  (open-input-string (string-copy "")))))
 
+;;
 ;; open-output-string and get-output-string
-(assert-equal? "output string test 1" "a(b c)" (let ((q (open-output-string))
-						     (x '(a b c)))
-						 (write (car x) q)
-						 (write (cdr x) q)
-						 (get-output-string q)))
-(assert-equal? "output string test 2" "" (get-output-string
-                                          (open-output-string)))
+;;
+
+(tn "open-output-string invalid forms")
+(assert-error  (tn) (lambda () (open-output-string '())))
+(assert-error  (tn) (lambda () (open-output-string (current-input-port))))
+(assert-error  (tn) (lambda () (open-output-string "")))
+
+(tn "get-output-string invalid forms")
+(assert-error  (tn) (lambda () (get-output-string)))
+(assert-error  (tn) (lambda () (get-output-string (current-output-port))))
+
+(tn "output string")
+(assert-equal? (tn)
+               "a(b c)"
+               (let ((q (open-output-string))
+                     (x '(a b c)))
+                 (write (car x) q)
+                 (write (cdr x) q)
+                 (get-output-string q)))
+(assert-equal? (tn)
+               "aB"
+               (let ((q (open-output-string)))
+                 (write-char #\a q)
+                 (write-char #\B q)
+                 (get-output-string q)))
+(assert-equal? (tn)
+               ""
+               (get-output-string (open-output-string)))
 
 (total-report)

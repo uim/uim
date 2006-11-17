@@ -85,7 +85,7 @@ static char *mbcport_inspect(ScmMultiByteCharPort *port);
 static scm_ichar_t mbcport_get_char(ScmMultiByteCharPort *port);
 static scm_ichar_t mbcport_peek_char(ScmMultiByteCharPort *port);
 static scm_bool mbcport_char_readyp(ScmMultiByteCharPort *port);
-static int mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch);
+static void mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch);
 
 static ScmMultibyteCharInfo mbcport_fill_rbuf(ScmMultiByteCharPort *port,
                                               scm_bool blockp);
@@ -221,7 +221,7 @@ mbcport_peek_char(ScmMultiByteCharPort *port)
         ch = SCM_CHARCODEC_STR2INT(port->codec, (char *)port->rbuf, size,
                                    port->state);
     else
-        ch = EOF;
+        ch = SCM_ICHAR_EOF;
 
     return ch;
 }
@@ -235,9 +235,10 @@ mbcport_char_readyp(ScmMultiByteCharPort *port)
     return !SCM_MBCINFO_INCOMPLETEP(mbc);
 }
 
-static int
+static void
 mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch)
 {
+    size_t size;
     char *end;
     char wbuf[SCM_MB_MAX_LEN + sizeof("")];
 
@@ -245,7 +246,8 @@ mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch)
     end = SCM_CHARCODEC_INT2STR(port->codec, wbuf, ch, port->state);
     if (!end)
         SCM_CHARPORT_ERROR(port, "ScmMultibyteCharPort: invalid character");
-    return SCM_BYTEPORT_WRITE(port->bport, end - wbuf, wbuf);
+    size = end - wbuf;
+    SCM_BYTEPORT_WRITE(port->bport, size, wbuf);
 }
 
 static ScmMultibyteCharInfo
@@ -273,7 +275,7 @@ mbcport_fill_rbuf(ScmMultiByteCharPort *port, scm_bool blockp)
 
         byte = SCM_BYTEPORT_GET_BYTE(port->bport);
         SCM_MBCINFO_SET_STATE(mbc, SCM_MBS_GET_STATE(mbs));
-        if (byte == EOF) {
+        if (byte == SCM_ICHAR_EOF) {
             SCM_MBCINFO_INIT(mbc);
             port->rbuf[0] = '\0';
 #if HANDLE_MBC_START

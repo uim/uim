@@ -53,7 +53,6 @@
 #include <sigscheme/config.h>
 
 #include <limits.h>
-#include <stdio.h>  /* for EOF */
 
 #include "sigscheme-stdint.h"
 
@@ -229,9 +228,7 @@ typedef int_fast32_t       scm_ichar_t;
 #define SIZEOF_SCM_ICHAR_T SIZEOF_INT_FAST32_T
 #define SCM_ICHAR_T_MAX    INT_FAST32_MAX
 #define SCM_ICHAR_T_MIN    INT_FAST32_MIN
-#if (EOF < SCM_ICHAR_T_MIN || SCM_ICHAR_T_MAX < EOF)
-#error "scm_ichar_t cannot represent EOF on this platform"
-#endif
+#define SCM_ICHAR_EOF      (-1)
 
 /*
  * Definitive byte type

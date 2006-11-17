@@ -63,6 +63,11 @@ extern "C" {
 #define SCM_DEBUG_PORT 0
 #endif
 
+#define SCM_ERRMSG_OPEN_PORT      "failed to open port"
+#define SCM_ERRMSG_CLOSE_PORT     "failed to close port"
+#define SCM_ERRMSG_READ_FROM_PORT "failed to read from port"
+#define SCM_ERRMSG_WRITE_TO_PORT  "failed to write to port"
+
 #if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
 #define SCM_PORT_ASSERT(exp) (assert(exp))
 #else
@@ -140,7 +145,7 @@ typedef struct ScmBytePort_     ScmBytePort;
  * char port
  */
 typedef ScmCharPort *(*ScmCharPortMethod_dyn_cast)(ScmCharPort *cport, const ScmCharPortVTbl *dst_vptr);
-typedef int (*ScmCharPortMethod_close)(ScmCharPort *cport);
+typedef void (*ScmCharPortMethod_close)(ScmCharPort *cport);
 typedef ScmCharCodec *(*ScmCharPortMethod_codec)(ScmCharPort *cport);
 /* returns brief information */
 typedef char *(*ScmCharPortMethod_inspect)(ScmCharPort *cport);
@@ -151,9 +156,9 @@ typedef scm_ichar_t (*ScmCharPortMethod_peek_char)(ScmCharPort *cport);
 typedef scm_bool    (*ScmCharPortMethod_char_readyp)(ScmCharPort *cport);
 
 /* output */
-typedef int (*ScmCharPortMethod_puts)(ScmCharPort *cport, const char *str);
-typedef int (*ScmCharPortMethod_put_char)(ScmCharPort *cport, scm_ichar_t ch);
-typedef int (*ScmCharPortMethod_flush)(ScmCharPort *cport);
+typedef void (*ScmCharPortMethod_puts)(ScmCharPort *cport, const char *str);
+typedef void (*ScmCharPortMethod_put_char)(ScmCharPort *cport, scm_ichar_t ch);
+typedef void (*ScmCharPortMethod_flush)(ScmCharPort *cport);
 
 struct ScmCharPortVTbl_ {
     ScmCharPortMethod_dyn_cast    dyn_cast;
@@ -183,7 +188,7 @@ struct ScmBaseCharPort_ {  /* inherits ScmCharPort */
  * byte port
  */
 typedef ScmBytePort *(*ScmBytePortMethod_dyn_cast)(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr);
-typedef int (*ScmBytePortMethod_close)(ScmBytePort *bport);
+typedef void (*ScmBytePortMethod_close)(ScmBytePort *bport);
 /* returns brief information */
 typedef char *(*ScmBytePortMethod_inspect)(ScmBytePort *bport);
 
@@ -193,10 +198,10 @@ typedef scm_ichar_t (*ScmBytePortMethod_peek_byte)(ScmBytePort *bport);
 typedef scm_bool    (*ScmBytePortMethod_byte_readyp)(ScmBytePort *bport);
 
 /* output */
-typedef int    (*ScmBytePortMethod_puts)(ScmBytePort *bport, const char *str);
-typedef size_t (*ScmBytePortMethod_write)(ScmBytePort *bport,
-                                          size_t nbytes, const char *buf);
-typedef int    (*ScmBytePortMethod_flush)(ScmBytePort *bport);
+typedef void (*ScmBytePortMethod_puts)(ScmBytePort *bport, const char *str);
+typedef void (*ScmBytePortMethod_write)(ScmBytePort *bport,
+                                        size_t nbytes, const char *buf);
+typedef void (*ScmBytePortMethod_flush)(ScmBytePort *bport);
 
 struct ScmBytePortVTbl_ {
     ScmBytePortMethod_dyn_cast    dyn_cast;

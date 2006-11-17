@@ -153,7 +153,7 @@
 
 #define DISCARD_LOOKAHEAD(port) (scm_port_get_char(port))
 
-/* accepts EOF */
+/* accepts SCM_ICHAR_EOF */
 #define ICHAR_ASCII_CLASS(c)                                                 \
     (ICHAR_ASCIIP(c) ? scm_char_class_table[c] : SCM_CH_INVALID)
 #define ICHAR_CLASS(c)                                                       \
@@ -406,14 +406,14 @@ skip_comment_and_space(ScmObj port)
         case LEX_ST_NORMAL:
             if (c == ';')
                 state = LEX_ST_COMMENT;
-            else if (!ICHAR_WHITESPACEP(c) || c == EOF)
+            else if (!ICHAR_WHITESPACEP(c) || c == SCM_ICHAR_EOF)
                 return c;  /* peeked */
             break;
 
         case LEX_ST_COMMENT:
             if (c == '\n' || c == '\r')
                 state = LEX_ST_NORMAL;
-            else if (c == EOF)
+            else if (c == SCM_ICHAR_EOF)
                 return c;  /* peeked */
             break;
         }
@@ -430,7 +430,7 @@ read_sequence(ScmObj port, char *buf, int len)
 
     for (p = buf; p < &buf[len]; p++) {
         c = scm_port_get_char(port);
-        if (c == EOF)
+        if (c == SCM_ICHAR_EOF)
             ERR("unexpected EOF");
         if (!ICHAR_ASCIIP(c))
             ERR("unexpected non-ASCII char");
@@ -456,10 +456,10 @@ read_token(ScmObj port, int *err,
         CDBG((SCM_DBG_PARSER, "c = ~C", c));
 
         if (p == buf) {
-            if (c == EOF)
+            if (c == SCM_ICHAR_EOF)
                 ERR("unexpected EOF at a token");
         } else {
-            if (ch_class & delim || c == EOF) {
+            if (ch_class & delim || c == SCM_ICHAR_EOF) {
                 *err = OK;
                 break;
             }
@@ -556,7 +556,7 @@ read_sexpression(ScmObj port)
             case 'b': case 'o': case 'd': case 'x':
                 return read_number(port, c);
 #endif
-            case EOF:
+            case SCM_ICHAR_EOF:
                 ERR("EOF in #");
             default:
                 ERR("Unsupported # notation: ~C", c);
@@ -569,7 +569,7 @@ read_sexpression(ScmObj port)
         case ',':
             c = scm_port_peek_char(port);
             switch (c) {
-            case EOF:
+            case SCM_ICHAR_EOF:
                 ERR("EOF in unquote");
                 /* NOTREACHED */
 
@@ -585,7 +585,7 @@ read_sexpression(ScmObj port)
             ERR("unexpected ')'");
             /* NOTREACHED */
 
-        case EOF:
+        case SCM_ICHAR_EOF:
             return SCM_EOF;
 
         default:
@@ -628,7 +628,7 @@ read_list(ScmObj port, scm_ichar_t closeParen)
 
         CDBG((SCM_DBG_PARSER, "read_list c = [~C]", c));
 
-        if (c == EOF) {
+        if (c == SCM_ICHAR_EOF) {
 #if SCM_DEBUG
             if (basecport && start_line) {
                 cur_line = ScmBaseCharPort_line_number(basecport);
@@ -764,7 +764,7 @@ read_char(ScmObj port)
     /* plain char (multibyte-ready) */
     c = scm_port_get_char(port);
     next = scm_port_peek_char(port);
-    if (ICHAR_ASCII_CLASS(next) & SCM_CH_DELIMITER || next == EOF)
+    if (ICHAR_ASCII_CLASS(next) & SCM_CH_DELIMITER || next == SCM_ICHAR_EOF)
         return MAKE_CHAR(c);
 #if SCM_USE_SRFI75
     else if (!ICHAR_ASCIIP(c))
@@ -829,7 +829,7 @@ read_string(ScmObj port)
         CDBG((SCM_DBG_PARSER, "read_string c = ~C", c));
 
         switch (c) {
-        case EOF:
+        case SCM_ICHAR_EOF:
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
             *p = '\0';
             ERR("EOF in string: \"~S<eof>", LBUF_BUF(lbuf));

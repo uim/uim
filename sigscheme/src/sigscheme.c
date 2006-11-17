@@ -215,6 +215,9 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
 #if SCM_USE_SSCM_EXTENSIONS
     scm_use("sscm-ext");
 #endif
+#if SCM_USE_EVAL_C_STRING
+    scm_use("srfi-6");
+#endif
 
     /*=======================================================================
       Fixing up

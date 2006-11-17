@@ -49,6 +49,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define ERRMSG_CANNOT_OPEN_FILE "cannot open file"
 
 /*=======================================
   File Local Type Definitions
@@ -153,32 +154,26 @@ scm_make_shared_file_port(FILE *file, const char *aux_info,
     ScmBytePort *bport;
     ScmCharPort *cport;
 
-    /* GC safe */
     bport = ScmFilePort_new_shared(file, aux_info);
     cport = scm_make_char_port(bport);
     return MAKE_PORT(cport, flag);
 }
 
-SCM_EXPORT int
+SCM_EXPORT void
 scm_port_newline(ScmObj port)
 {
-    int err;
-
-    err = scm_port_puts(port, SCM_NEWLINE_STR);
+    scm_port_puts(port, SCM_NEWLINE_STR);
     scm_port_flush(port);  /* required */
-
-    return err;
 }
 
-SCM_EXPORT int
+SCM_EXPORT void
 scm_port_close(ScmObj port)
 {
-    int err;
+    SCM_ASSERT(SCM_PORTP(port));
+    SCM_ASSERT(SCM_PORT_IMPL(port));
 
-    err = SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port));
+    SCM_CHARPORT_CLOSE(SCM_PORT_IMPL(port));
     SCM_PORT_SET_IMPL(port, NULL);
-
-    return err;
 }
 
 SCM_EXPORT ScmCharCodec *
@@ -195,14 +190,14 @@ scm_port_inspect(ScmObj port)
     return SCM_CHARPORT_INSPECT(SCM_PORT_IMPL(port));
 }
 
-SCM_EXPORT int
+SCM_EXPORT scm_ichar_t
 scm_port_get_char(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
     return SCM_CHARPORT_GET_CHAR(SCM_PORT_IMPL(port));
 }
 
-SCM_EXPORT int
+SCM_EXPORT scm_ichar_t
 scm_port_peek_char(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
@@ -216,25 +211,25 @@ scm_port_char_readyp(ScmObj port)
     return SCM_CHARPORT_CHAR_READYP(SCM_PORT_IMPL(port));
 }
 
-SCM_EXPORT int
+SCM_EXPORT void
 scm_port_puts(ScmObj port, const char *str)
 {
     SCM_ENSURE_LIVE_PORT(port);
-    return SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str);
+    SCM_CHARPORT_PUTS(SCM_PORT_IMPL(port), str);
 }
 
-SCM_EXPORT int
+SCM_EXPORT void
 scm_port_put_char(ScmObj port, scm_ichar_t ch)
 {
     SCM_ENSURE_LIVE_PORT(port);
-    return SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch);
+    SCM_CHARPORT_PUT_CHAR(SCM_PORT_IMPL(port), ch);
 }
 
-SCM_EXPORT int
+SCM_EXPORT void
 scm_port_flush(ScmObj port)
 {
     SCM_ENSURE_LIVE_PORT(port);
-    return SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port));
+    SCM_CHARPORT_FLUSH(SCM_PORT_IMPL(port));
 }
 
 /*=======================================
@@ -315,6 +310,7 @@ scm_p_current_output_port(void)
     return scm_out;
 }
 
+/* TODO: dynamic environment for scm_in (although R5RS does not require it) */
 SCM_EXPORT ScmObj
 scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
 {
@@ -335,6 +331,7 @@ scm_p_with_input_from_file(ScmObj filepath, ScmObj thunk)
     return ret;
 }
 
+/* TODO: dynamic environment for scm_out (although R5RS does not require it) */
 SCM_EXPORT ScmObj
 scm_p_with_output_to_file(ScmObj filepath, ScmObj thunk)
 {
@@ -366,7 +363,7 @@ scm_p_open_input_file(ScmObj filepath)
 
     bport = ScmFilePort_open_input_file(SCM_STRING_STR(filepath));
     if (!bport)
-        ERR_OBJ("cannot open file ", filepath);
+        ERR_OBJ(ERRMSG_CANNOT_OPEN_FILE, filepath);
     cport = scm_make_char_port(bport);
 
     return MAKE_PORT(cport, SCM_PORTFLAG_INPUT);
@@ -383,7 +380,7 @@ scm_p_open_output_file(ScmObj filepath)
 
     bport = ScmFilePort_open_output_file(SCM_STRING_STR(filepath));
     if (!bport)
-        ERR_OBJ("cannot open file ", filepath);
+        ERR_OBJ(ERRMSG_CANNOT_OPEN_FILE, filepath);
     cport = scm_make_char_port(bport);
 
     return MAKE_PORT(cport, SCM_PORTFLAG_OUTPUT);
@@ -436,7 +433,7 @@ scm_p_read_char(ScmObj args)
     port = scm_prepare_port(args, scm_in);
 
     ch = scm_port_get_char(port);
-    if (ch == EOF)
+    if (ch == SCM_ICHAR_EOF)
         return SCM_EOF;
 
     return MAKE_CHAR(ch);
@@ -452,7 +449,7 @@ scm_p_peek_char(ScmObj args)
     port = scm_prepare_port(args, scm_in);
 
     ch = scm_port_peek_char(port);
-    if (ch == EOF)
+    if (ch == SCM_ICHAR_EOF)
         return SCM_EOF;
 
     return MAKE_CHAR(ch);

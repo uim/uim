@@ -44,7 +44,6 @@
 #include <config.h>
 
 #include <stdlib.h>
-#include <stdio.h>  /* for EOF */
 #include <string.h>
 
 #include "scmint.h"
@@ -360,7 +359,7 @@ scm_charcodec_read_char(ScmCharCodec *codec, ScmMultibyteString *mbs,
                                SCM_MBS_GET_STR(*mbs),
                                SCM_MBCINFO_GET_SIZE(mbc),
                                state);
-    if (ch == EOF)
+    if (ch == SCM_ICHAR_EOF)
         SCM_ENCODING_ERROR("scm_charcodec_read_char: invalid char sequence");
 
     SCM_MBS_SKIP_CHAR(*mbs, mbc);
@@ -535,7 +534,7 @@ eucjp_str2int(const uchar *src, size_t len, ScmMultibyteState state)
         break;
 
     default:
-        return EOF;
+        return SCM_ICHAR_EOF;
     }
 
     return ch;
@@ -601,7 +600,7 @@ dbc_str2int(const uchar *src, size_t len, ScmMultibyteState state)
         break;
 
     default:
-        return EOF;
+        return SCM_ICHAR_EOF;
     }
 
     return ch;
@@ -850,7 +849,7 @@ utf8_str2int(const uchar *src, size_t len, ScmMultibyteState state)
         break;
 
     default:
-        return EOF;
+        return SCM_ICHAR_EOF;
     }
 
     return ch;
@@ -1036,7 +1035,7 @@ unibyte_str2int(const uchar *src, size_t len, ScmMultibyteState state)
 {
 #if SCM_STRICT_ENCODING_CHECK
     if (len != 1)
-        return EOF;
+        return SCM_ICHAR_EOF;
 #endif
     return src[0];
 }
