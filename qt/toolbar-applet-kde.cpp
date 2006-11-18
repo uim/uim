@@ -41,12 +41,14 @@
 #include "toolbar-common-uimstateindicator.h"
 
 #include "uim.h"
+#include "qtgettext.h"
 
 extern "C"
 {
     KDE_EXPORT KPanelApplet* init(QWidget *parent, const QString& configFile)
     {
-	KGlobal::locale()->insertCatalogue("uimapplet");
+	bindtextdomain( PACKAGE, LOCALEDIR );
+	bind_textdomain_codeset( PACKAGE, "UTF-8" );
 
 	return new UimApplet(configFile, KPanelApplet::Normal,
 			     KPanelApplet::Preferences, parent, "uimapplet");
