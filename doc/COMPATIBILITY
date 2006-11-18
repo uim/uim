@@ -61,7 +61,7 @@ Summary: Focus activity and input position relocation notifications
 Affects: Bridge developers, IM developers
 Updates: C API, Scheme API
 Version: 1.3.0
-Revision: ac3966, 
+Revision: ac3966, ac3968-ac3970
 Date: 2006-10-09 -
 Modifier: YamaKen, Etsushi
 Related: bug #7729
@@ -72,6 +72,13 @@ URL:
   http://lists.freedesktop.org/archives/uim/2006-November/001573.html
   http://lists.freedesktop.org/archives/uim/2006-November/001576.html
   http://lists.freedesktop.org/archives/uim/2006-November/001581.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001584.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001591.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001602.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001606.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001609.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001613.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001614.html
   http://lists.sourceforge.jp/mailman/archives/anthy-dev/2005-October/002571.html (Japanese)
 Changes:
    (update) uim_reset_context()
@@ -96,8 +103,8 @@ Summary: Text acquisition and injection API
 Affects: Bridge developers, IM developers
 Updates: C API, Scheme API, libuim ABI
 Version: 1.3.0
-Revision: ac3907, ac3910-ac3922
-Date: 2006-10-02 - 2006-10-11
+Revision: ac3907, ac3910-ac3922, ac3967, ac3971-ac3989
+Date: 2006-10-02 - 2006-10-11, 2006-11-10 - 2006-11-16
 Modifier: YamaKen, Etsushi
 Related: surrounding text API
 URL:
@@ -107,6 +114,9 @@ URL:
   http://lists.freedesktop.org/archives/uim/2006-October/001547.html
   http://lists.freedesktop.org/archives/uim/2006-October/001551.html
   http://lists.freedesktop.org/archives/uim/2006-October/001553.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001583.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001605.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001608.html
   http://lists.sourceforge.jp/mailman/archives/scim-imengine-dev/2006-November/001412.html (Japanese)
 Changes:
       (new) enum UTextArea
