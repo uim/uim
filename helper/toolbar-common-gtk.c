@@ -118,8 +118,12 @@ static struct _CommandEntry command_entry[] = {
 
   {
     N_("Handwriting input pad"),
-    NULL,
+    "H",
+#if GTK_CHECK_VERSION(2, 6, 0)
     GTK_STOCK_EDIT,
+#else
+    NULL,
+#endif
     "uim-tomoe-gtk &",
     "toolbar-show-handwriting-input-pad-button?",
     UIM_FALSE
