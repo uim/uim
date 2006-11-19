@@ -39,6 +39,7 @@
     (let ((orig-enabled-im-list enabled-im-list)
 	  (orig-require require))
       (set! enabled-im-list ())  ;; enable all IMs
+      (set! im-list ()) ;; reset im-list
       ;; XXX temporary solution to register all IM in a file
       (set! require
 	    (lambda (file)
