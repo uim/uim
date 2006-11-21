@@ -172,8 +172,7 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
       if (precedence_len > former_req_len)
         offset = precedence_len - former_req_len;
     } else {
-      if (!(former_req_len == UTextExtent_Line ||
-	    former_req_len == UTextExtent_Full)) {
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -187,8 +186,7 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 	offset = strlen(g_utf8_offset_to_pointer(text, precedence_len +
 						 latter_req_len));
     } else {
-      if (!(latter_req_len == UTextExtent_Line ||
-	    latter_req_len == UTextExtent_Full)) {
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	g_free(*former);
 	return -1;
@@ -210,8 +208,7 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
       if ((precedence_len + following_len) > latter_req_len)
 	offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
     } else {
-      if (!(latter_req_len == UTextExtent_Line ||
-	    latter_req_len == UTextExtent_Full)) {
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -228,8 +225,7 @@ im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
       if ((precedence_len + following_len) > former_req_len)
         offset = precedence_len + following_len - former_req_len;
     } else {
-      if (!(former_req_len == UTextExtent_Line ||
-	    former_req_len == UTextExtent_Full)) {
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -310,8 +306,7 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
       if (latter_req_len < text_len)
 	offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
     } else {
-      if (!(latter_req_len == UTextExtent_Line ||
-	    latter_req_len == UTextExtent_Full)) {
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -327,8 +322,7 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
       if (former_req_len < text_len)
 	offset = text_len - former_req_len;
     } else {
-      if (!(former_req_len == UTextExtent_Line ||
-	    former_req_len == UTextExtent_Full)) {
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -376,8 +370,7 @@ im_uim_acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
       if (former_req_len < text_len)
 	offset = text_len - former_req_len;
     } else {
-      if (!(former_req_len == UTextExtent_Line ||
-	    former_req_len == UTextExtent_Full)) {
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -396,8 +389,7 @@ im_uim_acquire_clipboard_text(IMUIMContext *uic, enum UTextOrigin origin,
       if (latter_req_len < text_len)
 	offset = text + len - g_utf8_offset_to_pointer(text, latter_req_len);
     } else {
-      if (!(latter_req_len == UTextExtent_Full ||
-	    latter_req_len == UTextExtent_Line)) {
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full))) {
 	g_free(text);
 	return -1;
       }
@@ -430,8 +422,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
     if (former_req_len >= 0) {
       start_pos = current_pos - former_req_len;
     } else {
-      if (!(former_req_len == UTextExtent_Full ||
-	    former_req_len == UTextExtent_Line))
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
       start_pos = 0;
     }
@@ -439,8 +430,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
     if (latter_req_len >= 0)
       end_pos = current_pos + latter_req_len;
     else {
-      if (!(latter_req_len == UTextExtent_Full ||
-	    latter_req_len == UTextExtent_Line))
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
       end_pos = entry->text_length;
     }
@@ -452,8 +442,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
     if (latter_req_len >= 0)
       end_pos = latter_req_len;
     else {
-      if (!(latter_req_len == UTextExtent_Full ||
-	    latter_req_len == UTextExtent_Line))
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
       end_pos = entry->text_length;
     }
@@ -463,8 +452,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
     if (former_req_len >= 0)
       start_pos = entry->text_length - former_req_len;
     else {
-      if (!(former_req_len == UTextExtent_Full ||
-	    former_req_len == UTextExtent_Line))
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
       start_pos = 0;
     }
@@ -633,8 +621,7 @@ delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
       if (latter_req_len < end - start)
 	end = start + latter_req_len;
     } else {
-      if (!(latter_req_len == UTextExtent_Full ||
-	    latter_req_len == UTextExtent_Line))	
+      if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
     }
   } else if (origin == UTextOrigin_End ||
@@ -643,8 +630,7 @@ delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
       if (former_req_len < end - start)
 	start = end - former_req_len;
     } else {
-      if (!(former_req_len == UTextExtent_Full ||
-	    former_req_len == UTextExtent_Line))	
+      if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
     }
   } else {

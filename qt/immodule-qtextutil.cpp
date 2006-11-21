@@ -163,7 +163,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
             if ( precedence_len > former_req_len )
               offset = precedence_len - former_req_len;
         } else {
-            if (! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
         *former = strdup( text.mid( offset, precedence_len - offset ).utf8() );
@@ -173,7 +173,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
             if ( following_len > latter_req_len )
                 offset = following_len - latter_req_len;
         } else {
-            if (! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) ) {
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) ) {
                 free( *former );
                 return -1;
             }
@@ -195,7 +195,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
                 text = former_text + latter_text;
             }
         } else {
-            if (! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             former_text = text.left( precedence_len );
@@ -218,7 +218,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
                 text = former_text + latter_text;
             }
         } else {
-            if (! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             former_text = text.left( precedence_len );
@@ -453,7 +453,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
             if ( len > latter_req_len )
                 offset = len - latter_req_len;
         } else {
-            if (! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
         *latter = strdup( text.left( len - offset ).utf8() );
@@ -464,7 +464,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
             if ( len > former_req_len )
                 offset = len - former_req_len;
         } else {
-            if (! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
         *former = strdup( text.mid( offset, len - offset ).utf8() );
@@ -513,7 +513,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( len > latter_req_len )
                 offset = len - latter_req_len;
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) ) {
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) ) {
                 edit->setTextFormat( format );
                 return -1;
             }
@@ -529,7 +529,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( len > former_req_len )
                 offset = len - former_req_len;
         } else {
-            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) ) {
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) ) {
                 edit->setTextFormat( format );
                 return -1;
             }
@@ -571,7 +571,7 @@ QUimTextUtil::acquireClipboardText( enum UTextOrigin origin,
             if ( former_req_len < len )
                 offset = len - former_req_len;
         } else {
-            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) )
@@ -588,7 +588,7 @@ QUimTextUtil::acquireClipboardText( enum UTextOrigin origin,
             if ( latter_req_len < len )
                 offset = len - latter_req_len;
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find( '\n' ) ) != -1 ) )
@@ -658,7 +658,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
             if ( precedence_len > former_req_len )
                 former_del_start = precedence_len - former_req_len;
         } else {
-            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
         latter_del_end = len;
@@ -666,7 +666,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
             if ( following_len > latter_req_len )
                 latter_del_end = precedence_len + preedit_len + latter_req_len;
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
         break;
@@ -682,7 +682,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
                     latter_del_end = len;
             }
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
             latter_del_end = len;
         }
@@ -692,7 +692,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
         former_del_start = precedence_len;
         latter_del_end = len;
         if ( former_req_len < 0 ) {
-            if (! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             former_del_start = 0;
@@ -871,7 +871,7 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
             if ( len > latter_req_len )
                 end = start + latter_req_len;
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
     } else if ( origin == UTextOrigin_End ||
@@ -880,7 +880,7 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
             if ( len > former_req_len )
                 start = end - former_req_len;
         } else {
-            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
     } else {
@@ -933,7 +933,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                     QTextEditPositionForward( &end_para, &end_index );
             }
         } else {
-            if ( ! ( latter_req_len == UTextExtent_Line || latter_req_len == UTextExtent_Full ) )
+            if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find('\n') ) != -1 ) ) {
@@ -951,7 +951,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                     QTextEditPositionBackward( &start_para, &start_index );
             }
         } else {
-            if ( ! ( former_req_len == UTextExtent_Line || former_req_len == UTextExtent_Full ) )
+            if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
             if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) ) {
