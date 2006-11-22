@@ -106,11 +106,7 @@ scm_sbcport_init(void)
     vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
 
-#if SCM_USE_MULTIBYTE_CHAR
     l_sbc_codec = scm_mb_find_codec("ISO-8859-1");
-#else
-    l_sbc_codec = NULL;
-#endif
 }
 
 SCM_EXPORT void

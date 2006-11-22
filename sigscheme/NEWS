@@ -48,6 +48,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix 64-bit capability of quasiquoted vectors
 
+  - Fix incomplete singlebyte charater support
+
 
 Overview of changes from 0.5.0 (r3097 + private modifications) to 0.6.1
 ==

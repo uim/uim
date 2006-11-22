@@ -41,7 +41,11 @@
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#if SCM_USE_MULTIBYTE_CHAR
 #include "encoding.h"
+#else
+#include "encoding-dummy.h"
+#endif
 
 /*=======================================
   File Local Macro Definitions
@@ -410,13 +414,8 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
 
     SCM_ASSERT(str);
 
-    if (len == STRLEN_UNKNOWN) {
-#if SCM_USE_MULTIBYTE_CHAR
+    if (len == STRLEN_UNKNOWN)
         len = scm_mb_bare_c_strlen(scm_current_char_codec, str);
-#else
-        len = strlen(str);
-#endif
-    }
 
     obj = scm_alloc_cell();
     SCM_STRING_INIT(obj, str, len, !is_immutable);

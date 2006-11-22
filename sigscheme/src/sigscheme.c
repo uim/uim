@@ -40,7 +40,11 @@
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
+#if SCM_USE_MULTIBYTE_CHAR
 #include "encoding.h"
+#else
+#include "encoding-dummy.h"
+#endif
 #if SCM_USE_EVAL_C_STRING
 #include "scmport-config.h"
 #include "scmport.h"
@@ -297,8 +301,10 @@ scm_interpret_argv(char **argv)
 {
     char **argp, **rest;
     const char *encoding;
+#if SCM_USE_MULTIBYTE_CHAR
     ScmCharCodec *specified_codec;
     ScmObj err_obj;
+#endif
     DECLARE_INTERNAL_FUNCTION("scm_interpret_argv");
 
     encoding = NULL;
@@ -341,7 +347,7 @@ scm_interpret_argv(char **argv)
         }
         scm_current_char_codec = specified_codec;
 #else
-        fprintf(stderr, SCM_ERR_HEADER "encoding switching is not supported on this build\n");
+        fprintf(stderr, SCM_ERR_HEADER "character encoding switching is not supported on this build\n");
 #endif
     }
 

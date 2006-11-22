@@ -291,7 +291,7 @@ corner case tests:
 
 file:              scmport.h
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r3999
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -401,7 +401,7 @@ corner case tests:
 
 file:              scmport-sbchar.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r3999
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992

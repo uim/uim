@@ -409,7 +409,9 @@ write_string(ScmObj port, ScmObj obj, enum OutputType otype)
             continue2:
                 ;
             }
+#if SCM_USE_MULTIBYTE_CHAR
         }
+#endif
         scm_port_put_char(port, '\"'); /* closing doublequote */
         break;
 

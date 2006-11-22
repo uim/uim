@@ -41,7 +41,11 @@
 
 #include "global.h"
 #include "sigscheme.h"
+#if SCM_USE_MULTIBYTE_CHAR
 #include "encoding.h"
+#else
+#include "encoding-dummy.h"
+#endif
 #if SCM_USE_PORT
 #include "scmport.h"
 #endif

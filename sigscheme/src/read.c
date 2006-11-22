@@ -443,7 +443,9 @@ static size_t
 read_token(ScmObj port, int *err,
            char *buf, size_t buf_size, enum ScmCharClass delim)
 {
+#if SCM_USE_SRFI75
     ScmCharCodec *codec;
+#endif
     enum ScmCharClass ch_class;
     scm_ichar_t c;
     size_t len;
@@ -751,7 +753,9 @@ static ScmObj
 read_char(ScmObj port)
 {
     const ScmSpecialCharInfo *info;
+#if SCM_USE_SRFI75
     ScmCharCodec *codec;
+#endif
     size_t len;
     scm_ichar_t c, next;
 #if SCM_USE_SRFI75
@@ -876,8 +880,12 @@ read_string(ScmObj port)
         default:
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
             p = &LBUF_BUF(lbuf)[offset];
+#if SCM_USE_MULTIBYTE_CHAR
             /* FIXME: support stateful encoding */
             p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
+#else
+            *p++ = c;
+#endif
             if (!p)
                 ERR("invalid char in string: 0x~MX", (scm_int_t)c);
             break;

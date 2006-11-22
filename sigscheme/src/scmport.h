@@ -50,6 +50,8 @@
 #include "global.h"
 #if SCM_USE_MULTIBYTE_CHAR
 #include "encoding.h"
+#else
+#include "encoding-dummy.h"
 #endif
 
 #ifdef __cplusplus
@@ -104,7 +106,7 @@ extern "C" {
     (SCM_CHARCODEC_CCS(SCM_CHARPORT_CODEC(cport)))
 #else /* SCM_USE_MULTIBYTE_CHAR */
 #define SCM_CHARPORT_ENCODING(cport) ("ISO-8859-1")
-#define SCM_CHARPORT_CCS(cport)      (SCM_CCS_UNKNOWN)
+#define SCM_CHARPORT_CCS(cport)      (SCM_CCS_ISO8859_1)
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 #define SCM_CHARPORT_INSPECT(cport)      ((*(cport)->vptr->inspect)(cport))
 #define SCM_CHARPORT_GET_CHAR(cport)     ((*(cport)->vptr->get_char)(cport))
@@ -130,11 +132,6 @@ extern "C" {
 /*=======================================
   Type Definitions
 =======================================*/
-#if !SCM_USE_MULTIBYTE_CHAR
-#define ScmCharCodec void
-#define SCM_CCS_UNKNOWN 0
-#endif
-
 typedef struct ScmCharPortVTbl_ ScmCharPortVTbl;
 typedef struct ScmCharPort_     ScmCharPort;
 typedef struct ScmBaseCharPort_ ScmBaseCharPort;
