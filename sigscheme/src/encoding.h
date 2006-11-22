@@ -56,6 +56,7 @@ extern "C" {
   Macro Definitions
 =======================================*/
 #define SCM_MB_MAX_LEN 4
+#define SCM_MB_CHAR_BUF_SIZE (SCM_MB_MAX_LEN + sizeof(""))
 
 #define SCM_HAS_2OCT_WCHAR 0
 #define SCM_HAS_4OCT_WCHAR 0

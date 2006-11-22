@@ -143,8 +143,6 @@
 #define OK 0
 #define TOKEN_BUF_EXCEEDED (-1)
 
-#define MB_MAX_SIZE (SCM_MB_MAX_LEN + sizeof(""))
-
 /* can accept "backspace" of R5RS and "U0010FFFF" of SRFI-75 */
 #define CHAR_LITERAL_LEN_MAX (sizeof("backspace") - sizeof(""))
 
@@ -853,7 +851,8 @@ read_string(ScmObj port)
                 if (c != 'x' && SCM_CHARCODEC_CCS(codec) != SCM_CCS_UCS4)
                     ERR_OBJ("Unicode char sequence on non-Unicode port", port);
                 c = read_unicode_sequence(port, c);
-                LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
+                LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING,
+                            offset + SCM_MB_CHAR_BUF_SIZE);
                 p = &LBUF_BUF(lbuf)[offset];
                 p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
                 if (!p)
@@ -878,7 +877,8 @@ read_string(ScmObj port)
             break;
 
         default:
-            LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + MB_MAX_SIZE);
+            LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING,
+                        offset + SCM_MB_CHAR_BUF_SIZE);
             p = &LBUF_BUF(lbuf)[offset];
 #if SCM_USE_MULTIBYTE_CHAR
             /* FIXME: support stateful encoding */
@@ -922,7 +922,8 @@ read_symbol(ScmObj port)
         if (err != TOKEN_BUF_EXCEEDED)
             break;
         offset += tail_len;
-        LBUF_EXTEND(lbuf, SCM_LBUF_F_SYMBOL, LBUF_SIZE(lbuf) + MB_MAX_SIZE);
+        LBUF_EXTEND(lbuf, SCM_LBUF_F_SYMBOL,
+                    LBUF_SIZE(lbuf) + SCM_MB_CHAR_BUF_SIZE);
     }
 
     sym = scm_intern(LBUF_BUF(lbuf));

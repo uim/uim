@@ -72,7 +72,7 @@ struct ScmMultiByteCharPort_ {  /* inherits ScmBaseCharPort */
 
     ScmCharCodec *codec;
     ScmMultibyteState state;
-    scm_byte_t rbuf[SCM_MB_MAX_LEN + sizeof("")];
+    scm_byte_t rbuf[SCM_MB_CHAR_BUF_SIZE];
 };
 
 /*=======================================
@@ -240,7 +240,7 @@ mbcport_put_char(ScmMultiByteCharPort *port, scm_ichar_t ch)
 {
     size_t size;
     char *end;
-    char wbuf[SCM_MB_MAX_LEN + sizeof("")];
+    char wbuf[SCM_MB_CHAR_BUF_SIZE];
 
     /* FIXME: set updated state to port->state */
     end = SCM_CHARCODEC_INT2STR(port->codec, wbuf, ch, port->state);

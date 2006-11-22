@@ -457,7 +457,7 @@ static int
 eucjp_char_len(scm_ichar_t ch)
 {
     uchar *end;
-    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar buf[SCM_MB_CHAR_BUF_SIZE];
 
     end = eucjp_int2str(buf, ch, SCM_MB_STATELESS);
 
@@ -613,7 +613,7 @@ static int
 euc_char_len(scm_ichar_t ch)
 {
     uchar *end;
-    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar buf[SCM_MB_CHAR_BUF_SIZE];
 
     end = euc_int2str(buf, ch, SCM_MB_STATELESS);
 
@@ -776,7 +776,7 @@ static int
 utf8_char_len(scm_ichar_t ch)
 {
     uchar *end;
-    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar buf[SCM_MB_CHAR_BUF_SIZE];
 
     end = utf8_int2str(buf, ch, SCM_MB_STATELESS);
 
@@ -934,7 +934,7 @@ static int
 sjis_char_len(scm_ichar_t ch)
 {
     uchar *end;
-    uchar buf[SCM_MB_MAX_LEN + sizeof("")];
+    uchar buf[SCM_MB_CHAR_BUF_SIZE];
 
     end = sjis_int2str(buf, ch, SCM_MB_STATELESS);
 

@@ -56,6 +56,7 @@ extern "C" {
   Macro Definitions
 =======================================*/
 #define SCM_MB_MAX_LEN 1
+#define SCM_MB_CHAR_BUF_SIZE (SCM_MB_MAX_LEN + sizeof(""))
 
 #define scm_encoding_init()              SCM_EMPTY_EXPR
 #define scm_mb_bare_c_strlen(codec, str) strlen(str)

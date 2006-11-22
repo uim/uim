@@ -81,7 +81,7 @@ scm_p_make_string(ScmObj length, ScmObj args)
     char *str, *dst;
 #if SCM_USE_MULTIBYTE_CHAR
     const char *next;
-    char ch_str[SCM_MB_MAX_LEN + sizeof("")];
+    char ch_str[SCM_MB_CHAR_BUF_SIZE];
 #endif
     DECLARE_FUNCTION("make-string", procedure_variadic_1);
 
@@ -186,7 +186,7 @@ scm_p_string_setx(ScmObj str, ScmObj k, ScmObj ch)
     size_t prefix_len, suffix_len, new_str_len;
     const char *suffix_src, *ch_end;
     char *new_str, *suffix_dst;
-    char ch_buf[SCM_MB_MAX_LEN + sizeof("")];
+    char ch_buf[SCM_MB_CHAR_BUF_SIZE];
     ScmMultibyteString mbs_ch;
 #endif
     DECLARE_FUNCTION("string-set!", procedure_fixed_3);
@@ -541,7 +541,7 @@ scm_p_string_fillx(ScmObj str, ScmObj ch)
 #if SCM_USE_MULTIBYTE_CHAR
     int ch_len;
     char *new_str;
-    char ch_str[SCM_MB_MAX_LEN + sizeof("")];
+    char ch_str[SCM_MB_CHAR_BUF_SIZE];
     const char *next;
 #else
     scm_ichar_t ch_val;
