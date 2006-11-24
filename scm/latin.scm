@@ -1719,6 +1719,29 @@
   (lambda (lc)
     (latin-context-flush lc)))
 
+(define latin-focus-in-handler
+  (lambda (lc)
+    ))
+
+(define latin-focus-out-handler
+  (lambda (lc)
+    (latin-context-flush lc)
+    (im-clear-preedit lc)
+    (im-update-preedit lc)))
+
+(define latin-place-handler
+  (lambda (lc)
+    (im-clear-preedit lc)
+    (im-update-preedit lc)))
+
+(define latin-displace-handler
+  (lambda (lc)
+    (let* ((rkc (latin-context-rk-context lc))
+	   (pend (rk-pending rkc)))
+      (if pend
+	  (im-commit lc pend))
+      (latin-context-flush lc))))
+
 (latin-configure-widgets)
 
 (register-im
@@ -1738,8 +1761,8 @@
  #f
  context-prop-activate-handler
  #f
- #f
- #f
- #f
- #f
+ latin-focus-in-handler
+ latin-focus-out-handler
+ latin-place-handler
+ latin-displace-handler
 )
