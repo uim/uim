@@ -318,7 +318,8 @@ void QUimInputContext::setFocus()
 
     uim_helper_client_focus_in( m_uc );
     uim_prop_list_update( m_uc );
-    uim_prop_label_update( m_uc );
+
+    uim_focus_in_context( m_uc );
 }
 
 void QUimInputContext::unsetFocus()
@@ -327,13 +328,7 @@ void QUimInputContext::unsetFocus()
     qDebug( "QUimInputContext: %p->unsetFocus(), focusWidget()=%p",
             this, focusWidget() );
 #endif
-
-    // Don't reset Japanese input context here. Japanese input context
-    // sometimes contains a whole paragraph and has minutes of
-    // lifetime different to ephemeral one in other languages. The
-    // input context should be survived until focused again.
-    if ( ! isPreeditPreservationEnabled() )
-        reset();
+    uim_focus_out_context( m_uc );
 
     cwin->hide();
 
@@ -383,7 +378,6 @@ void QUimInputContext::reset()
 #endif
 
     QInputContext::reset();
-    preeditString = QString::null;
     candwinIsActive = FALSE;
     cwin->hide();
     uim_reset_context( m_uc );
@@ -394,7 +388,7 @@ void QUimInputContext::reset()
 
 QString QUimInputContext::identifierName()
 {
-    return ( QString( "uim-" ) + m_imname );
+    return QString( "uim" );
 }
 
 QString QUimInputContext::language()
@@ -513,12 +507,11 @@ void QUimInputContext::commitString( const QString& str )
         sendIMEvent( QEvent::IMStart );
     }
 
-    preeditString = QString::null;
     sendIMEvent( QEvent::IMEnd, str );
 }
 void QUimInputContext::clearPreedit()
 {
-    if( !psegs.isEmpty() )
+    if ( !psegs.isEmpty() )
         psegs.clear();
 }
 
@@ -534,7 +527,7 @@ void QUimInputContext::updatePreedit()
     int cursor = getPreeditCursorPosition();
     int selLength = getPreeditSelectionLength();
 
-    if ( newString.isEmpty() && preeditString.isEmpty() && ! isComposing() )
+    if ( newString.isEmpty() && ! isComposing() )
         return ;
 
     // Activating the IM
@@ -554,8 +547,6 @@ void QUimInputContext::updatePreedit()
     // empty string.
     if ( newString.isEmpty() && isComposing() )
         sendIMEvent( QEvent::IMEnd );
-
-    preeditString = newString;
 }
 
 void QUimInputContext::saveContext()
@@ -571,11 +562,6 @@ void QUimInputContext::restoreContext()
 }
 
 bool QUimInputContext::isPreeditRelocationEnabled()
-{
-    return ( language() == "ja" );
-}
-
-bool QUimInputContext::isPreeditPreservationEnabled()
 {
     return ( language() == "ja" );
 }

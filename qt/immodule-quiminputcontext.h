@@ -99,9 +99,8 @@ public:
 
 protected:
     uim_context createUimContext( const char *imname );
-    virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
-
     void createUimInfo();
+
 private:
     int getPreeditSelectionLength();
 
@@ -156,7 +155,6 @@ protected:
     bool candwinIsActive;
 
     QPtrList<PreeditSegment> psegs;
-    QString preeditString;
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;
