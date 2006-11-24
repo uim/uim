@@ -542,11 +542,13 @@ InputContext::focusIn()
     uim_prop_label_update(mUc);	
     if (hasActiveCandwin())
 	candidate_update();
+    uim_focus_in_context(mUc);
 }
 
 void
 InputContext::focusOut()
 {
+    uim_focus_out_context(mUc);
     uim_helper_client_focus_out(mUc);
     if (mFocusedContext == this) {
 	Canddisp *disp = canddisp_singleton();
