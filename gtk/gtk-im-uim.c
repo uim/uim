@@ -1167,9 +1167,7 @@ im_uim_focus_in(GtkIMContext *ic)
 #endif
 
   check_helper_connection();
-
   uim_helper_client_focus_in(uic->uc);
-
   uim_prop_list_update(uic->uc);
 
   for (cc = context_list.next; cc != &context_list; cc = cc->next) {
@@ -1179,6 +1177,8 @@ im_uim_focus_in(GtkIMContext *ic)
 
   if (uic->cwin && uic->cwin_is_active)
     gtk_widget_show(GTK_WIDGET(uic->cwin));
+
+  uim_focus_in_context(uic->uc);
 }
 
 static void
@@ -1194,6 +1194,8 @@ im_uim_focus_out(GtkIMContext *ic)
 #elif IM_UIM_USE_TOPLEVEL
   remove_cur_toplevel();
 #endif
+
+  uim_focus_out_context(uic->uc);
 
   check_helper_connection();
   uim_helper_client_focus_out(uic->uc);
