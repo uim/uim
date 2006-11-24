@@ -210,6 +210,30 @@ uim_reset_context(uim_context uc)
 }
 
 void
+uim_focus_in_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(focus-in-handler %d)", uc->id);
+}
+
+void
+uim_focus_out_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(focus-out-handler %d)", uc->id);
+}
+
+void
+uim_place_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(place-handler %d)", uc->id);
+}
+
+void
+uim_displace_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(displace-handler %d)", uc->id);
+}
+
+void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {
