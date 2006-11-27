@@ -33,14 +33,17 @@ SUCH DAMAGE.
 #include <config.h>
 #include <stdlib.h>
 
-#include "immodule-qtextutil.h"
-#include "immodule-quiminputcontext.h"
-
 #include <qwidget.h>
 #include <qlineedit.h>
 #include <qtextedit.h>
 #include <qapplication.h>
 #include <qclipboard.h>
+
+#include "uim/uim.h"
+
+#include "immodule-qtextutil.h"
+#include "immodule-quiminputcontext.h"
+
 
 QUimTextUtil::QUimTextUtil( QObject *parent )
         : QObject( parent )

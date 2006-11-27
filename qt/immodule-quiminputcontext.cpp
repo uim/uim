@@ -32,8 +32,6 @@ SUCH DAMAGE.
 */
 #include <config.h>
 
-#include "immodule-quiminputcontext.h"
-
 #include <qnamespace.h>
 #include <qevent.h>
 #include <qglobal.h>
@@ -46,10 +44,16 @@ SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 
+#include "uim/uim.h"
+#include "uim/uim-helper.h"
+#include "uim/uim-im-switcher.h"
+
+#include "immodule-quiminputcontext.h"
 #include "immodule-candidatewindow.h"
 #include "immodule-qhelpermanager.h"
+#include "immodule-quiminfomanager.h"
+#include "immodule-plugin.h"
 #include "immodule-qtextutil.h"
-
 #ifdef Q_WS_X11
 #include "immodule-quiminputcontext_compose.h"
 #endif
@@ -60,7 +64,6 @@ QUimInputContext *focusedInputContext = NULL;
 bool disableFocusedContext = false;
 
 QPtrList<QUimInputContext> contextList;
-QValueList<UIMInfo> uimInfo;
 
 QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
 #ifdef Q_WS_X11
@@ -101,8 +104,6 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     mCompose = new Compose( mTreeTop, this );
 #endif
     mTextUtil = new QUimTextUtil( this );
-
-    createUimInfo();
 
     // read configuration
     readIMConf();
@@ -342,6 +343,26 @@ QUimInputContext * QUimInputContext::focusedIC()
     return focusedInputContext;
 }
 
+void QUimInputContext::reloadUim()
+{
+    QUimInputContext *ic;
+    QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
+
+    for ( ic = contextList.first(); ic; ic = contextList.next() )
+    {
+        ic->reset();
+        uim_release_context( ic->m_uc );
+    }
+
+    uim_quit();
+    uim_init();
+    infoManager->initUimInfo();
+
+    for ( ic = contextList.first(); ic; ic = contextList.next() )
+    {
+        ic->m_uc = ic->createUimContext( ic->m_imname );
+    }
+}
 
 void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont * /* f */)
 {
@@ -696,30 +717,6 @@ void QUimInputContext::switch_system_global_im( const char *name )
 {
     switch_app_global_im( name );
     QUimHelperManager::send_im_change_whole_desktop( name );
-}
-
-void QUimInputContext::createUimInfo()
-{
-    if ( !uimInfo.isEmpty() )
-        return ;
-
-    uim_context tmp_uc = uim_create_context( NULL, "UTF-8", NULL, NULL, uim_iconv, NULL );
-    struct UIMInfo ui;
-    int nr = uim_get_nr_im( tmp_uc );
-    for ( int i = 0; i < nr; i++ )
-    {
-        ui.name = uim_get_im_name( tmp_uc, i );
-        /* return value of uim_get_im_language() is an ISO 639-1
-           compatible language code such as "ja". Since it is unfriendly
-           for human reading, we convert it into friendly one by
-           uim_get_language_name_from_locale() here */
-        const char *langcode = uim_get_im_language( tmp_uc, i );
-        ui.lang = uim_get_language_name_from_locale( langcode );
-        ui.short_desc = uim_get_im_short_desc( tmp_uc, i );
-
-        uimInfo.append( ui );
-    }
-    uim_release_context( tmp_uc );
 }
 
 void QUimInputContext::readIMConf()

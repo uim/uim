@@ -40,6 +40,8 @@
 #include <locale.h>
 #include <errno.h>
 
+#include "uim/uim.h"
+
 #include "immodule-quiminputcontext.h"
 #include "immodule-quiminputcontext_compose.h"
 

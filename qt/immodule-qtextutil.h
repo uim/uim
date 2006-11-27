@@ -33,12 +33,6 @@ SUCH DAMAGE.
 #ifndef _IMMODULE_QTEXT_UTIL_H_
 #define _IMMODULE_QTEXT_UTIL_H_
 
-#include <config.h>
-#include "uim/uim.h"
-
-#include <qtextedit.h>
-#include <qlineedit.h>
-
 class QUimInputContext;
 
 class QUimTextUtil : QObject

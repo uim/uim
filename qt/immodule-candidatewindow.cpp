@@ -30,7 +30,7 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include "immodule-candidatewindow.h"
+#include <config.h>
 
 #include <qapplication.h>
 #include <qlabel.h>
@@ -38,6 +38,9 @@ SUCH DAMAGE.
 #include <qfontmetrics.h>
 #include <qevent.h>
 
+#include "uim/uim.h"
+
+#include "immodule-candidatewindow.h"
 #include "immodule-quiminputcontext.h"
 #include "immodule-subwindow.h"
 

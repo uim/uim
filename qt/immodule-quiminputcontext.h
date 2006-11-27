@@ -36,10 +36,7 @@ SUCH DAMAGE.
 #include <qinputcontext.h>
 #include <qptrlist.h>
 
-#include "uim/uim.h"
-#include "uim/uim-util.h"
-#include "uim/uim-helper.h"
-#include "uim/uim-im-switcher.h"
+class QString;
 
 class CandidateWindow;
 class QUimHelperManager;
@@ -84,6 +81,7 @@ public:
     uim_context uimContext() { return m_uc; }
 
     static QUimInputContext *focusedIC();
+    static void reloadUim();
 
     void commitString( const QString& str );
 
@@ -99,7 +97,6 @@ public:
 
 protected:
     uim_context createUimContext( const char *imname );
-    void createUimInfo();
 
 private:
     int getPreeditSelectionLength();
@@ -158,13 +155,6 @@ protected:
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;
-};
-
-struct UIMInfo
-{
-    const char *lang;
-    const char *name;
-    const char *short_desc;
 };
 
 #endif /* Not def: _QUIMINPUT_CONTEXT_H_ */
