@@ -1214,6 +1214,8 @@ im_uim_reset(GtkIMContext *ic)
 #ifdef GDK_WINDOWING_X11
   im_uim_compose_reset(uic->compose);
 #endif
+  clear_cb(uic);
+  update_cb(uic);
 }
 
 static void
@@ -1471,7 +1473,7 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
 
     if (rv)
       return FALSE;
-#if 0
+#if 1
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
     else if (GTK_IS_ENTRY(uic->widget)) {

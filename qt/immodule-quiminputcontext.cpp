@@ -405,6 +405,8 @@ void QUimInputContext::reset()
 #ifdef Q_WS_X11
     mCompose->reset();
 #endif
+    clearPreedit();
+    updatePreedit();
 }
 
 QString QUimInputContext::identifierName()

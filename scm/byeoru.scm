@@ -1812,6 +1812,15 @@
 	(byeoru-clear! bc)
 	(byeoru-update-preedit bc))))
 
+(define (byeoru-focus-out-handler bc)
+;;    (ustr-insert-elem! (byeoru-context-word-ustr bc) "R!")
+  (if (byeoru-context-on bc)
+      (begin
+	(byeoru-flush-automata bc)
+	(byeoru-commit bc (byeoru-make-whole-string bc))
+	(byeoru-clear! bc)
+	(byeoru-update-preedit bc))))
+
 (define (byeoru-get-candidate-handler bc idx accel-enum-hint)
   (let* ((cands (byeoru-context-cands bc))
 	 (cand (nth idx cands)))
@@ -1856,7 +1865,7 @@
  context-prop-activate-handler
  #f
  #f
- #f
+ byeoru-focus-out-handler
  #f
  #f
 )
