@@ -163,11 +163,13 @@ void QUimHelperManager::parseHelperStr( const QString &str )
     }
     else if ( str.startsWith( "custom_reload_notify" ) )
     {
-#if 0
+#if 1
         uim_prop_reload_configs();
 #else
         // Use QUimInputContext::reloadUim() since uim_prop_reload_configs
         // cannot update IM list of libuim yet (bug #2412).
+        // But disabled since uim_quit() and uim_init() in reloadUim() 
+        // causes some problems for uim-pref-qt.
         QUimInputContext::reloadUim();
 #endif
     }
