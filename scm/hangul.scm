@@ -76,7 +76,7 @@
      short-desc
      init-arg
      generic-init-handler
-     #f ;; reset-handler
+     #f ;; release-handler
      context-mode-handler
      hangul-key-press-handler
      generic-key-release-handler
@@ -85,10 +85,10 @@
      generic-set-candidate-index-handler
      context-prop-activate-handler
      #f
-     #f
-     #f
-     #f
-     #f
+     generic-focus-in-handler
+     generic-focus-out-handler
+     generic-place-handler
+     generic-displace-handler
      )))
     
 (define hangul2-init-handler

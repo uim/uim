@@ -232,7 +232,19 @@
 (define (tutcode-init-handler id im arg)
   (tutcode-context-new id im))
 
-(define (tutcode-reset-handler tc) #f)
+(define (tutcode-reset-handler tc)
+  (let ((rkc (tutcode-context-rk-context tc)))
+    (rk-flush rkc)))
+
+(define (tutcode-focus-in-handler tc) #f)
+
+(define (tutcode-focus-out-handler tc)
+  (let ((rkc (tutcode-context-rk-context tc)))
+    (rk-flush rkc)))
+
+(define tutcode-place-handler tutcode-focus-in-handler)
+(define tutcode-displace-handler tutcode-focus-out-handler)
+
 (define (tutcode-get-candidate-handler tc idx) #f)
 (define (tutcode-set-candidate-index-handler tc idx) #f)
 
@@ -256,10 +268,10 @@
  tutcode-set-candidate-index-handler
  context-prop-activate-handler
  #f
- #f
- #f
- #f
- #f
+ tutcode-focus-in-handler
+ tutcode-focus-out-handler
+ tutcode-place-handler
+ tutcode-displace-handler
  )
 
 ;;; キー配列テーブルの定義。QWERTYキーボード用。

@@ -452,6 +452,30 @@
     (let ((rkc (generic-context-rk-context pc)))
       (rk-flush rkc))))
 
+(define generic-focus-in-handler
+  (lambda (pc)
+    #f))
+
+(define generic-focus-out-handler
+  (lambda (pc)
+    (let* ((rkc (generic-context-rk-context pc))
+	   (cs (rk-current-seq rkc)))
+      (cond
+       ((> (length (cadr cs)) 0) ;; commit
+	 (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
+	 (im-deactivate-candidate-selector pc)
+	 (rk-flush rkc)
+	 (generic-context-flush pc)
+	 (generic-update-preedit pc))
+       ((not (string=? (rk-pending rkc) "")) ;; flush pending rk
+	 (rk-flush rkc)
+	 (generic-context-flush pc)
+	 (generic-update-preedit pc))
+	 ))))
+
+(define generic-place-handler generic-focus-in-handler)
+(define generic-displace-handler generic-focus-out-handler)
+
 (define generic-get-candidate-handler
   (lambda (pc idx accel-enum-hint)
     (let* ((rkc (generic-context-rk-context pc))
@@ -488,9 +512,10 @@
      generic-set-candidate-index-handler
      context-prop-activate-handler
      #f
-     #f
-     #f
-     #f
-     #f)))
+     generic-focus-in-handler
+     generic-focus-out-handler
+     generic-place-handler
+     generic-displace-handler
+     )))
 
 (generic-configure-widgets)
