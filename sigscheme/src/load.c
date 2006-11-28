@@ -264,12 +264,12 @@ parse_script_prelude(ScmObj port)
     line_len = p - line;
 
     if (line[0] != '#' || line[1] != '!') {
-        PLAIN_ERR("Invalid UNIX script prelude");
+        PLAIN_ERR("invalid UNIX script prelude");
     }
 #if 1
     /* strict check */
     if (line[2] != ' ') {
-        PLAIN_ERR("Invalid UNIX script prelude: "
+        PLAIN_ERR("invalid UNIX script prelude: "
                   "SRFI-22 requires a space after hash-bang sequence");
     }
 #endif

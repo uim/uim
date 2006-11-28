@@ -446,26 +446,6 @@ skip_comment_and_space(ScmObj port)
     }
 }
 
-#if SCM_USE_SRFI75
-static void
-read_sequence(ScmObj port, char *buf, int len)
-{
-    scm_ichar_t c;
-    char *p;
-    DECLARE_INTERNAL_FUNCTION("read");
-
-    for (p = buf; p < &buf[len]; p++) {
-        c = scm_port_get_char(port);
-        if (c == SCM_ICHAR_EOF)
-            ERR("unexpected EOF");
-        if (!ICHAR_ASCIIP(c))
-            ERR("unexpected non-ASCII char");
-        *p = c;
-    }
-    buf[len] = '\0';
-}
-#endif /* SCM_USE_SRFI75 */
-
 static size_t
 read_token(ScmObj port, int *err,
            char *buf, size_t buf_size, enum ScmCharClass delim)
@@ -765,6 +745,24 @@ parse_unicode_sequence(const char *seq, int len)
         ERR("invalid Unicode value: 0x~MX", (scm_int_t)c);
 
     return c;
+}
+
+static void
+read_sequence(ScmObj port, char *buf, int len)
+{
+    scm_ichar_t c;
+    char *p;
+    DECLARE_INTERNAL_FUNCTION("read");
+
+    for (p = buf; p < &buf[len]; p++) {
+        c = scm_port_get_char(port);
+        if (c == SCM_ICHAR_EOF)
+            ERR("unexpected EOF");
+        if (!ICHAR_ASCIIP(c))
+            ERR("unexpected non-ASCII char");
+        *p = c;
+    }
+    buf[len] = '\0';
 }
 
 static scm_ichar_t

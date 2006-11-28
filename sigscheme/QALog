@@ -688,7 +688,7 @@ corner case tests:
 file:              read.c
 category:          semicore
 spec by eyes:      yamaken@r4012
-spec by tests:     yamaken@r4012, yamaken@r4014
+spec by tests:     yamaken@r4012, yamaken@r4014, yamaken@r4015
 general review:    yamaken@r4012
 64-bit by eyes:    yamaken@r4012
 64-bit by tests:   
