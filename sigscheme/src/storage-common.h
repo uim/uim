@@ -156,25 +156,6 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 
 #define SCM_SAL_ENVP(env) (NULLP(env) || CONSP(env))
 
-/*===========================================================================
-  Predefined Symbols
-===========================================================================*/
-/* for list construction */
-#define SCM_SAL_SYM_QUOTE            scm_sym_quote
-#define SCM_SAL_SYM_QUASIQUOTE       scm_sym_quasiquote
-#define SCM_SAL_SYM_UNQUOTE          scm_sym_unquote
-#define SCM_SAL_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
-
-/* syntax.c */
-SCM_GLOBAL_VARS_BEGIN(syntax);
-ScmObj scm_sym_quote, scm_sym_quasiquote;
-ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
-SCM_GLOBAL_VARS_END(syntax);
-#define scm_sym_quote            SCM_GLOBAL_VAR(syntax, scm_sym_quote)
-#define scm_sym_quasiquote       SCM_GLOBAL_VAR(syntax, scm_sym_quasiquote)
-#define scm_sym_unquote          SCM_GLOBAL_VAR(syntax, scm_sym_unquote)
-#define scm_sym_unquote_splicing SCM_GLOBAL_VAR(syntax, scm_sym_unquote_splicing)
-SCM_DECLARE_EXPORTED_VARS(syntax);
 
 #ifdef __cplusplus
 }

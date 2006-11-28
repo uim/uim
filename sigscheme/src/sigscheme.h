@@ -992,10 +992,11 @@ struct ScmStorageConf_ {
   Predefined Symbols
 ===========================================================================*/
 /* for list construction */
-#define SCM_SYM_QUOTE            SCM_SAL_SYM_QUOTE
-#define SCM_SYM_QUASIQUOTE       SCM_SAL_SYM_QUASIQUOTE
-#define SCM_SYM_UNQUOTE          SCM_SAL_SYM_UNQUOTE
-#define SCM_SYM_UNQUOTE_SPLICING SCM_SAL_SYM_UNQUOTE_SPLICING
+/* Don't use scm_sym_* directly. */
+#define SCM_SYM_QUOTE            scm_sym_quote
+#define SCM_SYM_QUASIQUOTE       scm_sym_quasiquote
+#define SCM_SYM_UNQUOTE          scm_sym_unquote
+#define SCM_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
 
 /*=======================================
    Evaluator's State
@@ -1186,6 +1187,18 @@ typedef ScmObj (*scm_procedure_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmOb
 /*=======================================
   Variable Declarations
 =======================================*/
+/* syntax.c */
+/* Don't use scm_sym_* directly. Use SCM_SYM_* instead. */
+SCM_GLOBAL_VARS_BEGIN(syntax);
+ScmObj scm_sym_quote, scm_sym_quasiquote;
+ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+SCM_GLOBAL_VARS_END(syntax);
+#define scm_sym_quote            SCM_GLOBAL_VAR(syntax, scm_sym_quote)
+#define scm_sym_quasiquote       SCM_GLOBAL_VAR(syntax, scm_sym_quasiquote)
+#define scm_sym_unquote          SCM_GLOBAL_VAR(syntax, scm_sym_unquote)
+#define scm_sym_unquote_splicing SCM_GLOBAL_VAR(syntax, scm_sym_unquote_splicing)
+SCM_DECLARE_EXPORTED_VARS(syntax);
+
 /* storage-gc.c */
 /*
  * The variable to ensure that a call of scm_gc_protect_stack() is
