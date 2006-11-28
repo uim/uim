@@ -1566,7 +1566,6 @@ SCM_EXPORT ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
 /* read.c */
 #if SCM_USE_READER
 SCM_EXPORT ScmObj scm_read(ScmObj port);
-SCM_EXPORT ScmObj scm_read_char(ScmObj port);
 SCM_EXPORT ScmObj scm_p_read(ScmObj args);
 #endif /* SCM_USE_READER */
 

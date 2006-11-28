@@ -34,6 +34,17 @@
 ===========================================================================*/
 
 /*
+ * FIXME: Replace obsoleted SRFI-75 with latest R6RS specifications once it has
+ * been stabilized.  -- YamaKen 2006-11-28
+ *
+ * - Remove #\uXXXX and #\UXXXXXXXX literals
+ * - Support variable-length #\xXX literal
+ * - Support character category validation for identifiers
+ * - Disable #\newline on R6RS-compatible mode
+ * - Confirm symbol escape syntax (not defined in R6RS yet)
+ */
+
+/*
  * ChangeLog
  *
  * 2005-06-18 kzk      Copied from read.c of Gauche 0.8.5 and modified for
@@ -125,6 +136,33 @@
  * <digit 16> --> <digit 10> | a | b | c | d | e | f
  */
 
+/*
+ * Although R5RS defined number literals as above, SigScheme only supports
+ * these truncated forms. See "R5RS conformance: Numbers: Literals" section of
+ * doc/spec.txt.
+ *
+ * <number> --> <num 2>| <num 8>
+ *      | <num 10>| <num 16>
+ * 
+ * <num R> --> <prefix R> <complex R>
+ * <complex R> --> <real R>
+ * <real R> --> <sign> <ureal R>
+ * <ureal R> --> <uinteger R>
+ * <uinteger R> --> <digit R>+ #*   ;; '#' must not occur
+ * <prefix R> --> <radix R>
+ *
+ * <sign> --> <empty>  | + |  -
+ * <radix 2> --> #b
+ * <radix 8> --> #o
+ * <radix 10> --> <empty> | #d
+ * <radix 16> --> #x
+ * <digit 2> --> 0 | 1
+ * <digit 8> --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+ * <digit 10> --> <digit>
+ * <digit 16> --> <digit 10> | a | b | c | d | e | f 
+ * <digit> --> 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+ */
+
 #include <config.h>
 
 #include <limits.h>
@@ -157,6 +195,8 @@
 #define ICHAR_CLASS(c)                                                       \
     ((127 < (c)) ? SCM_CH_NONASCII                                           \
                  : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
+
+#define SYM_ELLIPSIS (scm_intern("..."))
 
 /*=======================================
   File Local Type Definitions
@@ -333,13 +373,13 @@ static const unsigned char scm_char_class_table[] = {
   File Local Function Declarations
 =======================================*/
 static scm_ichar_t skip_comment_and_space(ScmObj port);
-static void   read_sequence(ScmObj port, char *buf, int len);
 static size_t read_token(ScmObj port, int *err,
                          char *buf, size_t buf_size, enum ScmCharClass delim);
 
 static ScmObj read_sexpression(ScmObj port);
-static ScmObj read_list(ScmObj port, scm_ichar_t closeParen);
+static ScmObj read_list(ScmObj port, scm_ichar_t closing_paren);
 #if SCM_USE_SRFI75
+static void        read_sequence(ScmObj port, char *buf, int len);
 static scm_ichar_t parse_unicode_sequence(const char *seq, int len);
 static scm_ichar_t read_unicode_sequence(ScmObj port, char prefix);
 #endif /* SCM_USE_SRFI75 */
@@ -350,13 +390,13 @@ static ScmObj read_char(ScmObj port);
 static ScmObj read_string(ScmObj port);
 #endif /* SCM_USE_STRING */
 static ScmObj read_symbol(ScmObj port);
-static ScmObj read_number_or_symbol(ScmObj port);
+static ScmObj read_number_or_peculiar(ScmObj port);
 #if SCM_USE_NUMBER
 static ScmObj parse_number(ScmObj port,
                            char *buf, size_t buf_size, char prefix);
 static ScmObj read_number(ScmObj port, char prefix);
 #endif /* SCM_USE_NUMBER */
-static ScmObj read_quote(ScmObj port, ScmObj quoter);
+static ScmObj read_quoted(ScmObj port, ScmObj quoter);
 
 /*=======================================
   Function Definitions
@@ -380,17 +420,6 @@ scm_read(ScmObj port)
 
     return sexp;
 }
-
-SCM_EXPORT ScmObj
-scm_read_char(ScmObj port)
-{
-    DECLARE_INTERNAL_FUNCTION("scm_read_char");
-
-    ENSURE_PORT(port);
-
-    return read_char(port);
-}
-
 
 static scm_ichar_t
 skip_comment_and_space(ScmObj port)
@@ -419,6 +448,7 @@ skip_comment_and_space(ScmObj port)
     }
 }
 
+#if SCM_USE_SRFI75
 static void
 read_sequence(ScmObj port, char *buf, int len)
 {
@@ -436,6 +466,7 @@ read_sequence(ScmObj port, char *buf, int len)
     }
     buf[len] = '\0';
 }
+#endif /* SCM_USE_SRFI75 */
 
 static size_t
 read_token(ScmObj port, int *err,
@@ -516,9 +547,11 @@ read_sexpression(ScmObj port)
             return read_symbol(port);
 
         if (ch_class & (SCM_CH_DIGIT | SCM_CH_PECULIAR_IDENTIFIER_CAND))
-            return read_number_or_symbol(port);
+            return read_number_or_peculiar(port);
 
         /* case labels are ordered by appearance rate and penalty cost */
+        SCM_ASSERT(ch_class == SCM_CH_TOKEN_INITIAL || c == SCM_ICHAR_EOF);
+        SCM_ASSERT(c != ';');
         DISCARD_LOOKAHEAD(port);
         switch (c) {
         case '(':
@@ -530,7 +563,7 @@ read_sexpression(ScmObj port)
 #endif
 
         case '\'':
-            return read_quote(port, SYM_QUOTE);
+            return read_quoted(port, SYM_QUOTE);
 
         case '#':
             c = scm_port_get_char(port);
@@ -558,13 +591,15 @@ read_sexpression(ScmObj port)
 #endif
             case SCM_ICHAR_EOF:
                 ERR("EOF in #");
+                /* NOTREACHED */
             default:
-                ERR("Unsupported # notation: ~C", c);
+                ERR("unsupported # notation: ~C", c);
+                /* NOTREACHED */
             }
-            break;
+            /* NOTREACHED */
 
         case '`':
-            return read_quote(port, SYM_QUASIQUOTE);
+            return read_quoted(port, SYM_QUASIQUOTE);
 
         case ',':
             c = scm_port_peek_char(port);
@@ -575,11 +610,12 @@ read_sexpression(ScmObj port)
 
             case '@':
                 DISCARD_LOOKAHEAD(port);
-                return read_quote(port, SYM_UNQUOTE_SPLICING);
+                return read_quoted(port, SYM_UNQUOTE_SPLICING);
 
             default:
-                return read_quote(port, SYM_UNQUOTE);
+                return read_quoted(port, SYM_UNQUOTE);
             }
+            /* NOTREACHED */
 
         case ')':
             ERR("unexpected ')'");
@@ -588,6 +624,14 @@ read_sexpression(ScmObj port)
         case SCM_ICHAR_EOF:
             return SCM_EOF;
 
+        case '|':
+        case '[':
+        case ']':
+        case '{':
+        case '}':
+            ERR("reserved notation: ~C", c);
+            /* NOTREACHED */
+
         default:
             SCM_ASSERT(scm_false);
         }
@@ -595,7 +639,7 @@ read_sexpression(ScmObj port)
 }
 
 static ScmObj
-read_list(ScmObj port, scm_ichar_t closeParen)
+read_list(ScmObj port, scm_ichar_t closing_paren)
 {
     ScmObj lst, elm, cdr;
     ScmQueue q;
@@ -637,14 +681,13 @@ read_list(ScmObj port, scm_ichar_t closeParen)
             } else
 #endif
                 ERR("EOF inside list");
-        } else if (c == closeParen) {
+        } else if (c == closing_paren) {
             DISCARD_LOOKAHEAD(port);
             return lst;
         } else if (c == '.') {
             /* Since expressions that beginning with a dot are limited to '.',
-             * '...' and numbers in R5RS (See "7.1.1 Lexical structure"), fixed
-             * size buffer can safely buffer them.
-             */
+             * '...' and numbers in R5RS (See "7.1.1 Lexical structure"), the
+             * fixed size buffer can safely buffer them. */
             read_token(port, &err, dot_buf, sizeof(dot_buf), SCM_CH_DELIMITER);
 
             if (dot_buf[1] == '\0') {
@@ -654,8 +697,7 @@ read_list(ScmObj port, scm_ichar_t closeParen)
                  * (e.g. '("foo"."bar") is parsed as 3 element list which 2nd
                  * elem is dot as symbol). To avoid introducing such
                  * incompatibility problem into codes of SigScheme users,
-                 * require explicit whitespace around the dot.
-                 */
+                 * require explicit whitespace around the dot. */
                 c = scm_port_peek_char(port);
                 if (!ICHAR_WHITESPACEP(c))
                     ERR("implicit dot delimitation is disabled to avoid compatibility problem");
@@ -666,13 +708,13 @@ read_list(ScmObj port, scm_ichar_t closeParen)
                 cdr = read_sexpression(port);
                 c = skip_comment_and_space(port);
                 DISCARD_LOOKAHEAD(port);
-                if (c != ')')
+                if (c != closing_paren)
                     ERR("bad dot syntax");
 
                 SCM_QUEUE_SLOPPY_APPEND(q, cdr);
                 return lst;
             } else if (strcmp(dot_buf, "...") == 0) {
-                elm = scm_intern(dot_buf);
+                elm = SYM_ELLIPSIS;
             } else {
                 ERR("bad dot syntax");
             }
@@ -763,7 +805,7 @@ read_char(ScmObj port)
     char buf[CHAR_LITERAL_LEN_MAX + sizeof("")];
     DECLARE_INTERNAL_FUNCTION("read");
 
-    /* plain char (multibyte-ready) */
+    /* raw char (multibyte-ready) */
     c = scm_port_get_char(port);
     next = scm_port_peek_char(port);
     if (ICHAR_ASCII_CLASS(next) & SCM_CH_DELIMITER || next == SCM_ICHAR_EOF)
@@ -832,14 +874,13 @@ read_string(ScmObj port)
 
         switch (c) {
         case SCM_ICHAR_EOF:
-            LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
-            *p = '\0';
-            ERR("EOF in string: \"~S<eof>", LBUF_BUF(lbuf));
-            break;
+            LBUF_FREE(lbuf);
+            ERR("EOF in string");
+            /* NOTREACHED */
 
         case '\"':
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING, offset + 1);
-            *p = '\0';
+            LBUF_BUF(lbuf)[offset] = '\0';
             obj = MAKE_IMMUTABLE_STRING_COPYING(LBUF_BUF(lbuf), len);
             LBUF_FREE(lbuf);
             return obj;
@@ -880,14 +921,14 @@ read_string(ScmObj port)
             LBUF_EXTEND(lbuf, SCM_LBUF_F_STRING,
                         offset + SCM_MB_CHAR_BUF_SIZE);
             p = &LBUF_BUF(lbuf)[offset];
-#if SCM_USE_MULTIBYTE_CHAR
+#if SCM_USE_SRFI75
             /* FIXME: support stateful encoding */
             p = SCM_CHARCODEC_INT2STR(codec, p, c, SCM_MB_STATELESS);
+            if (!p)
+                ERR("invalid char in string: 0x~MX", (scm_int_t)c);
 #else
             *p++ = c;
 #endif
-            if (!p)
-                ERR("invalid char in string: 0x~MX", (scm_int_t)c);
             break;
         }
 #if !SCM_USE_NULL_CAPABLE_STRING
@@ -895,8 +936,10 @@ read_string(ScmObj port)
             ERR(SCM_ERRMSG_NULL_IN_STRING);
 #endif
     }
+#if 0
     LBUF_END(lbuf)[-1] = '\0';
     ERR("too long string: \"~S\"", LBUF_BUF(lbuf));
+#endif
     /* NOTREACHED */
 }
 #endif /* SCM_USE_STRING */
@@ -933,7 +976,7 @@ read_symbol(ScmObj port)
 }
 
 static ScmObj
-read_number_or_symbol(ScmObj port)
+read_number_or_peculiar(ScmObj port)
 {
     scm_ichar_t c;
     int err;
@@ -956,16 +999,9 @@ read_number_or_symbol(ScmObj port)
         if (err == TOKEN_BUF_EXCEEDED)
             ERR("invalid number literal");
 
-
-        if (!buf[1]                           /* '+' or '-' */
-#if !SCM_STRICT_R5RS
-            /* FIXME: Obsolete with SRFI-75 style '|-sym| */
-            || (c == '-' && ICHAR_ALPHABETICP(buf[1]))  /* '-sym' */
-#endif
-            )
-        {
+        /* '+' or '-' */
+        if (!buf[1])
             return scm_intern(buf);
-        }
 
         return parse_number(port, buf, sizeof(buf), 'd');
     }
@@ -974,7 +1010,7 @@ read_number_or_symbol(ScmObj port)
     if (c == '.') {
         read_token(port, &err, buf, sizeof(buf), SCM_CH_DELIMITER);
         if (strcmp(buf, "...") == 0)
-            return scm_intern(buf);
+            return SYM_ELLIPSIS;
         /* TODO: support numeric expressions when the numeric tower is
            implemented */
         ERR("invalid identifier: ~S", buf);
@@ -1030,7 +1066,7 @@ read_number(ScmObj port, char prefix)
 #endif /* SCM_USE_NUMBER */
 
 static ScmObj
-read_quote(ScmObj port, ScmObj quoter)
+read_quoted(ScmObj port, ScmObj quoter)
 {
     return SCM_LIST_2(quoter, read_sexpression(port));
 }

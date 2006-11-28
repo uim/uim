@@ -246,10 +246,13 @@
 (assert-equal? (tn) "a-"  (symbol->string 'a-))
 (assert-equal? (tn) "a@"  (symbol->string 'a@))
 (assert-equal? (tn) "a1"  (symbol->string 'a1))
-;; SigScheme allows initial hyphen by default.
-(if (and (provided? "sigscheme")
-         (not (provided? "strict-r5rs")))
-    (assert-equal? (tn) "-a" (symbol->string '-a)))
+;; SigScheme 0.7.0 and later disallows initial hyphen of an identifier. Use
+;; string->symbol to acquire identifiers that beginning with hypen.
+(if sigscheme?
+    (begin
+      (assert-error  (tn) (lambda ()
+                            (symbol? (string-read "(symbol->string '-a)"))))
+      (assert-equal? (tn) "-a" (symbol->string (string->symbol "-a")))))
 
 ;;
 ;; string->symbol
@@ -317,6 +320,7 @@
 (assert-true   (tn) (symbol? (string->symbol "-@")))
 (assert-true   (tn) (symbol? (string->symbol "@")))
 (assert-true   (tn) (symbol? (string->symbol "1a")))
+(assert-true   (tn) (symbol? (string->symbol "-a")))
 
 (assert-true   (tn) (symbol? (string->symbol ";")))
 (assert-true   (tn) (symbol? (string->symbol "'")))

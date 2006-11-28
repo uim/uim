@@ -687,14 +687,14 @@ corner case tests:
 
 file:              read.c
 category:          semicore
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r4012
+spec by tests:     yamaken@r4012
+general review:    yamaken@r4012
+64-bit by eyes:    yamaken@r4012
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r4012
+normal case tests: yamaken@r4012
+corner case tests: yamaken@r4012
 
 file:              write.c
 category:          semicore
@@ -1029,6 +1029,37 @@ corner case tests:
 
 Log
 ---
+2006-11-29  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * read.c
+          - QA done @r4012 except for "64-bit by tests" and SRFI-75 supports
+
+          Details:
+          - Since SRFI-75 had already been obsoleted, SCM_USE_SRFI75 parts are
+            not validated deeply. It will be replaced with stable R6RS
+            implementation once the specifications have been stabilized
+          - Complete all required tests for these procedures I'm aware of in
+            test-{formal-syntax,symbol,string,char,number-literal}.scm except
+            for SRFI-75 -related ones
+          - Specs have been validated against following R5RS sections:
+            * read
+              "2. Lexical conventions"
+              "2.1 Identifiers"
+              "2.2 Whitespace and comments"
+              "2.3 Other notations"
+              "6.6.2 Input"
+              "7.1.1 Lexical structure"
+              "7.1.2 External representations"
+              "7.1.5 Transformers"
+          - Character literals specs have been briefly checked (but not
+            conformed) against following R6RS sections:
+              "3  Lexical syntax and read syntax"
+              "3.2  Lexical syntax"
+              "3.2.1  Formal account"
+              "3.2.3  Identifiers"
+              "3.2.5  Characters"
+              "3.2.6  Strings"
+
 2006-11-18  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * scmport.h

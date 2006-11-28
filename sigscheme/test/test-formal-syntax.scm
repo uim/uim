@@ -41,11 +41,18 @@
 ;; See "7.1 Formal syntax" of R5RS
 ;; See also test-number-literal.scm
 
-(assert-parse-error "invalid boolean" "#F")
-(assert-parse-error "invalid boolean" "#T")
+(tn "invalid boolean")
+(if sigscheme?
+    (begin
+      (assert-parse-error (tn) "#F")
+      (assert-parse-error (tn) "#T"))
+    (begin
+      (assert-true (tn) (boolean? (string-read "#F")))
+      (assert-true (tn) (boolean? (string-read "#T")))))
 
-(assert-true "boolean" (boolean? (string-read "#f")))
-(assert-true "boolean" (boolean? (string-read "#t")))
+(tn "boolean")
+(assert-true (tn) (boolean? (string-read "#f")))
+(assert-true (tn) (boolean? (string-read "#t")))
 
 (tn "invalid identifier")
 (assert-parse-error (tn) "#")
@@ -62,6 +69,7 @@
 (assert-parse-error (tn) "-@")
 (assert-parse-error (tn) "@")
 (assert-parse-error (tn) "1a")
+(assert-parse-error (tn) "-a")
 
 (tn "special initial identifier")
 (assert-true (tn) (symbol? (string-read "!")))
@@ -120,10 +128,11 @@
 (assert-true (tn) (symbol? (string-read "a-")))
 (assert-true (tn) (symbol? (string-read "a@")))
 (assert-true (tn) (symbol? (string-read "a1")))
-;; SigScheme allows initial hyphen by default.
-(if (and (provided? "sigscheme")
-         (not (provided? "strict-r5rs")))
-    (assert-true (tn) (symbol? (string-read "-a"))))
+;; SigScheme 0.7.0 and later disallows initial hyphen of an identifier.
+(if sigscheme?
+    (begin
+      (assert-error (tn) (lambda () (symbol? (string-read "-a"))))
+      (assert-true  (tn)            (symbol? (string->symbol "-a")))))
 
 (tn "invalid dot pair")
 (assert-parse-error (tn) "( . )")

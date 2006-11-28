@@ -15,7 +15,14 @@ Overview of changes from 0.6.1 to 0.7.0
     SigScheme-speciific one. SCM_LISTLEN_DOTTED(), SCM_DOTTED_LISTP() and other
     dotted list-related macros and functions have been changed so
 
+  - Remove initial hyphen support for symbols (such as '-sym). Use
+    (string->symbol "-sym") instead
+
 * Fixes
+
+  - Fix potential SEGV on long string parsing
+
+  - Fix possible crash on parsing R5RS-reserved chars |[]{}
 
   - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin
 

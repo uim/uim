@@ -130,7 +130,7 @@ Characters
 ~~~~~~~~~~
 
 All character category-sensitive procedures and predicates (such as
-char-upcase) work correctly only in ASCII range. i.e. Neigher Unicode
+char-upcase) work correctly only in ASCII range. i.e. Neither Unicode
 processing specified in SRFI-75 nor other non-Unicode multibyte character
 processing are supported in such procedures/predicates.
 
@@ -512,9 +512,27 @@ And the others listed below are not.
 SRFI-75 R6RS Unicode data
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  - quoted-symbol by vertical bar (|) is not supported yet
+SRFI-75 is partially implemented. But since SRFI-75 had already been obsoleted,
+it is not validated deeply. It will be replaced with stable R6RS implementation
+once the specifications have been stabilized
 
-FIXME
+Current SRFI-75 status
+^^^^^^^^^^^^^^^^^^^^^^
+
+  - Supports Unicode character literals such as #\λ
+  - Supports #xXX, #\uXXXX and #\UXXXXXXXX literals
+  - Supports Unicode identifiers (lacks character category validation)
+  - Supports all named chars such as #\backspace, #\esc, and #\nul
+  - Quoted-symbol by vertical bar (such as '|-symbol|) is not supported
+
+TODOs
+^^^^^
+
+  - Remove #\uXXXX and #\UXXXXXXXX literals
+  - Support variable-length #\xXX literal
+  - Support character category validation for identifiers
+  - Disable #\newline on R6RS-compatible mode
+  - Confirm symbol escape syntax (not defined in R6RS yet)
 
 
 SIOD compatibility
