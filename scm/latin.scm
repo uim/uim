@@ -1721,7 +1721,7 @@
 
 (define latin-focus-in-handler
   (lambda (lc)
-    ))
+    #f))
 
 (define latin-focus-out-handler
   (lambda (lc)
