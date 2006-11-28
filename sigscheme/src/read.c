@@ -196,8 +196,6 @@
     ((127 < (c)) ? SCM_CH_NONASCII                                           \
                  : (((c) < 0) ? SCM_CH_INVALID : scm_char_class_table[c]))
 
-#define SYM_ELLIPSIS (scm_intern("..."))
-
 /*=======================================
   File Local Type Definitions
 =======================================*/

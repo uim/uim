@@ -107,14 +107,12 @@ SCM_GLOBAL_VARS_BEGIN(static_macro);
 #if SCM_DEBUG_MACRO
 static enum dbg_flag l_debug_mode;
 #endif
-static ScmObj sym_ellipsis;     /* Currently has no use outside this file. */
+static int l_dummy;
 #undef static
 SCM_GLOBAL_VARS_END(static_macro);
 #define l_debug_mode SCM_GLOBAL_VAR(static_macro, l_debug_mode)
-#define sym_ellipsis SCM_GLOBAL_VAR(static_macro, sym_ellipsis)
 SCM_DEFINE_STATIC_VARS(static_macro);
 
-#define SYM_ELLIPSIS     sym_ellipsis
 #define SYM_SYNTAX_RULES scm_intern("syntax-rules")
 
 #define ELLIPSISP(o) EQ((o), SYM_ELLIPSIS)
@@ -220,7 +218,6 @@ scm_init_macro(void)
     scm_define_alias("letrec-syntax", "letrec");
     scm_define_alias("define-syntax", "define");
     SCM_GLOBAL_VARS_INIT(static_macro);
-    sym_ellipsis = scm_intern("...");
     INIT_DBG();
 }
 

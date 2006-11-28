@@ -113,6 +113,7 @@ scm_init_syntax(void)
     scm_sym_quasiquote       = scm_intern("quasiquote");
     scm_sym_unquote          = scm_intern("unquote");
     scm_sym_unquote_splicing = scm_intern("unquote-splicing");
+    scm_sym_ellipsis         = scm_intern("...");
 
     l_sym_else   = scm_intern("else");
     l_sym_yields = scm_intern("=>");

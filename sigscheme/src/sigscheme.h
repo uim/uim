@@ -997,6 +997,7 @@ struct ScmStorageConf_ {
 #define SCM_SYM_QUASIQUOTE       scm_sym_quasiquote
 #define SCM_SYM_UNQUOTE          scm_sym_unquote
 #define SCM_SYM_UNQUOTE_SPLICING scm_sym_unquote_splicing
+#define SCM_SYM_ELLIPSIS         scm_sym_ellipsis
 
 /*=======================================
    Evaluator's State
@@ -1192,11 +1193,13 @@ typedef ScmObj (*scm_procedure_variadic_tailrec_5)(ScmObj, ScmObj, ScmObj, ScmOb
 SCM_GLOBAL_VARS_BEGIN(syntax);
 ScmObj scm_sym_quote, scm_sym_quasiquote;
 ScmObj scm_sym_unquote, scm_sym_unquote_splicing;
+ScmObj scm_sym_ellipsis;
 SCM_GLOBAL_VARS_END(syntax);
 #define scm_sym_quote            SCM_GLOBAL_VAR(syntax, scm_sym_quote)
 #define scm_sym_quasiquote       SCM_GLOBAL_VAR(syntax, scm_sym_quasiquote)
 #define scm_sym_unquote          SCM_GLOBAL_VAR(syntax, scm_sym_unquote)
 #define scm_sym_unquote_splicing SCM_GLOBAL_VAR(syntax, scm_sym_unquote_splicing)
+#define scm_sym_ellipsis         SCM_GLOBAL_VAR(syntax, scm_sym_ellipsis)
 SCM_DECLARE_EXPORTED_VARS(syntax);
 
 /* storage-gc.c */

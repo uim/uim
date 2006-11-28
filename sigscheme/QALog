@@ -241,7 +241,7 @@ yyyy yyy core eval.c
          core module.c
          core sigscheme.c
 y yy y   semicore port.c
-         semicore read.c
+yyyy yyy semicore read.c
          semicore write.c
          semicore load.c
          semicore format.c
@@ -688,7 +688,7 @@ corner case tests:
 file:              read.c
 category:          semicore
 spec by eyes:      yamaken@r4012
-spec by tests:     yamaken@r4012
+spec by tests:     yamaken@r4012, yamaken@r4014
 general review:    yamaken@r4012
 64-bit by eyes:    yamaken@r4012
 64-bit by tests:   
@@ -732,7 +732,7 @@ corner case tests:
 file:              syntax.c
 category:          r5rs
 spec by eyes:      yamaken@r3704
-spec by tests:     yamaken@r3704
+spec by tests:     yamaken@r3704, yamaken@r4014
 general review:    yamaken@r3704
 64-bit by eyes:    yamaken@r3704
 64-bit by tests:   

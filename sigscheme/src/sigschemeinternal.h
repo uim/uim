@@ -59,10 +59,12 @@ extern "C" {
 =======================================*/
 /* TODO: generate these automatically and maybe put them in an optional public
  * header file. */
+
 #define SYM_QUOTE            SCM_SYM_QUOTE
 #define SYM_QUASIQUOTE       SCM_SYM_QUASIQUOTE
 #define SYM_UNQUOTE          SCM_SYM_UNQUOTE
 #define SYM_UNQUOTE_SPLICING SCM_SYM_UNQUOTE_SPLICING
+#define SYM_ELLIPSIS         SCM_SYM_ELLIPSIS
 
 #define EQ             SCM_EQ
 #define NULLP          SCM_NULLP
