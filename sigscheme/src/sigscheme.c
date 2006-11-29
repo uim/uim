@@ -243,6 +243,7 @@ scm_finalize()
 #if SCM_USE_LOAD
     scm_fin_load();
 #endif
+    scm_fin_module();
     scm_fin_storage();
     l_scm_initialized = scm_false;
 

@@ -238,7 +238,7 @@ y yy y   core env.c
 y yy y   core symbol.c
 yyyy yyy core continuation.c
 yyyy yyy core eval.c
-         core module.c
+y yy y   core module.c
 y yy y   core sigscheme.c
 y yy y   semicore port.c
 yyyy yyy semicore read.c
@@ -654,18 +654,18 @@ corner case tests: yamaken@r3865
 
 file:              module.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4019
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4019
+64-bit by eyes:    yamaken@r4019
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4019
 normal case tests: 
 corner case tests: 
 
 file:              sigscheme.c
 category:          core
-spec by eyes:      yamaken@r4017
+spec by eyes:      yamaken@r4017, yamaken@r4019
 spec by tests:     
 general review:    yamaken@r4017
 64-bit by eyes:    yamaken@r4017
@@ -1031,9 +1031,12 @@ Log
 ---
 2006-11-30  YamaKen <yamaken AT bp.iij4u.or.jp>
 
+        * module.c
+          - QA done @r4019 by eyes
+
         * load.c
         * sigscheme.c
-          - QA done @r4017 except for "64-bit by tests"
+          - QA done @r4017 by eyes
           - (scm_set_lib_path): Change to holding copied library path string
           - Fix possible crash on parsing script prelude longer than 64 chars
           - Fix possible crash on parsing script prelude that only has

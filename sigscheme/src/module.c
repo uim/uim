@@ -59,9 +59,11 @@ struct module_info {
 SCM_GLOBAL_VARS_BEGIN(static_module);
 #define static
 static ScmObj l_features;
+static ScmObj l_provided_modules;
 #undef static
 SCM_GLOBAL_VARS_END(static_module);
-#define l_features SCM_GLOBAL_VAR(static_module, l_features)
+#define l_features         SCM_GLOBAL_VAR(static_module, l_features)
+#define l_provided_modules SCM_GLOBAL_VAR(static_module, l_provided_modules)
 SCM_DEFINE_STATIC_VARS(static_module);
 
 static const struct module_info module_info_table[] = {
@@ -132,29 +134,33 @@ scm_init_module(void)
     SCM_GLOBAL_VARS_INIT(static_module);
 
     scm_gc_protect_with_init(&l_features, SCM_NULL);
+    scm_gc_protect_with_init(&l_provided_modules, SCM_NULL);
 }
 
 SCM_EXPORT void
 scm_fin_module(void)
 {
-#if 0
     const struct module_info *mod;
-    ScmObj feature;
+    const char *c_mod_name;
+    ScmObj mod_name;
 
-    /* FIXME: possible crash by a bogus provided string */
-    FOR_EACH (feature, features) {
-        ENSURE_STRING(feature);
-        if (mod = lookup_module_info(STRING_STR(feature)) && mod->finalizer)
+    FOR_EACH (mod_name, l_provided_modules) {
+        SCM_ASSERT(STRINGP(mod_name));
+        c_mod_name = SCM_STRING_STR(mod_name);
+        if ((mod = lookup_module_info(c_mod_name)) && mod->finalizer)
             (*mod->finalizer)();
     }
-#endif
+
     SCM_GLOBAL_VARS_FIN(static_module);
 }
 
 SCM_EXPORT void
 scm_provide(ScmObj feature)
 {
+    SCM_ASSERT(STRINGP(feature));
+
     l_features = CONS(feature, l_features);
+    l_provided_modules = CONS(feature, l_provided_modules);
 }
 
 SCM_EXPORT scm_bool

@@ -1236,7 +1236,7 @@ SCM_EXPORT scm_bool scm_providedp(ScmObj feature);
 SCM_EXPORT scm_bool scm_use(const char *feature);
 SCM_EXPORT ScmObj scm_s_use(ScmObj feature, ScmObj env);
 SCM_EXPORT ScmObj scm_register_func(const char *name, ScmFuncType func,
-                         enum ScmFuncTypeCode type);
+                                    enum ScmFuncTypeCode type);
 SCM_EXPORT void scm_register_funcs(const struct scm_func_registration_info *table);
 SCM_EXPORT void scm_define_alias(const char *newsym, const char *sym);
 
