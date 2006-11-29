@@ -56,7 +56,7 @@
 #undef VERSION
 
 /* Enable libsscm compiling-time-specific codes. */
-#undef SCM_COMPILING_LIBSSCM
+#undef  SCM_COMPILING_LIBSSCM
 #define SCM_COMPILING_LIBSSCM 1
 
 #ifdef __cplusplus

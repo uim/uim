@@ -270,7 +270,7 @@ yyyyyyyy srfi module-srfi60.c
 y yy y   opt module-sscm-ext.c
 y yy y   opt module-siod.c
          other main.c
-         other sigscheme-combined.h
+y yy y   other sigscheme-combined.h
          other dllentry.c
 ----------------------------------------------------------------
 
@@ -1006,12 +1006,12 @@ corner case tests:
 
 file:              sigscheme-combined.h
 category:          other
-spec by eyes:      
+spec by eyes:      yamaken@r4022
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4022
+64-bit by eyes:    yamaken@r4022
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4022
 normal case tests: 
 corner case tests: 
 
@@ -1030,6 +1030,9 @@ corner case tests:
 Log
 ---
 2006-11-30  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * sigscheme-combined.h
+          - QA done @r4022 by eyes
 
         * module-siod.c
           - QA done @r4021 by eyes
