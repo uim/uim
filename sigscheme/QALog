@@ -1258,8 +1258,8 @@ Log
             yet
           - QA done for 'memq', 'memv', 'member', 'assq', 'assv', 'assoc'
             and all list.c @r3902 except for "64-bit by tests"
-          - Fix broken improper tail handling of 'list-ref'
-          - Fix improper list acceptance of 'reverse'
+          - [R5RS] Fix broken improper tail handling of 'list-ref'
+          - [R5RS] Fix improper list acceptance of 'reverse'
 
           Details:
           - Complete all required tests for these procedures I'm aware of in

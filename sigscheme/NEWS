@@ -11,6 +11,18 @@ Overview of changes from 0.6.1 to 0.7.0
 
 * Specification changes
 
+  - [R5RS] Remove 'delay' and 'force' (temporarily) since they are completely
+    broken
+
+  - [R5RS] Proper tail recursion conformance of 'eval' has been marked as
+    'uncertain'
+
+  - [SRFI-23] Display error message and optional objects as same as the
+    reference implementation of SRFI-23
+
+  - [SRFI-34] Add 'current handler' to error object to behave as same as the
+    reference implementation of SRFI-34 'raise'
+
   - Definition of dotted list length is changed to SRFI-1's from
     SigScheme-speciific one. SCM_LISTLEN_DOTTED(), SCM_DOTTED_LISTP() and other
     dotted list-related macros and functions have been changed so
@@ -19,6 +31,11 @@ Overview of changes from 0.6.1 to 0.7.0
     (string->symbol "-sym") instead
 
   - (scm_set_lib_path): Change to holding copied library path string
+
+  - (scm_return_value): Removed
+
+  - Change the low-level port API to fix the design error about error handling
+    (get_byte() and peek_byte() were not able to detect read error)
 
 * Fixes
 
@@ -35,6 +52,9 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix a broken error handling on character encoding switching when
     !SCM_USE_MULTIBYTE_CHAR
+
+  - Fix infinite loop on raising error objects that contain circular list when
+    SCM_USE_HYGIENIC_MACRO
 
   - [R5RS] Fix invalid acceptance of definition form on where neither toplevel
     nor internal definition is allowed
@@ -59,13 +79,50 @@ Overview of changes from 0.6.1 to 0.7.0
   - [R5RS] Fix invalid acceptance of cond-like '=>' form of 'case' which is not
     defined in R5RS
 
-  - [R5RS] Remove 'delay' and 'force' since they are completely broken
+  - [R5RS] Fix broken result of 'modulo' on no-remainder cases
+
+  - [R5RS] Fix improper list acceptance on single-arg map
+
+  - [R5RS] Fix improper tail recursion of call-with-values on a corner case
+
+  - [R5RS] Fix broken improper tail handling of 'list-ref'
+
+  - [R5RS] Fix improper list acceptance of 'reverse'
+
+  - [R5RS] Reject invalid number strings such as "0xa" and " 1" on
+    'string->number'
+
+  - [R5RS] Reject invalid number literals such as "#x0xa"
+
+  - [SRFI-60] Fix invalid result of (logand). Now it returns -1 as same
+    as the reference implementation
+
+  - Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
+    which may cause SEGV
+
+  - Add lacking or incomplete error handlings for port operations
+
+  - Fix incomplete singlebyte charater support
+
+  - Fix broken sign extention for 8-bit char on string port read
+
+  - Fix missized-cast of 'quotient' which results a broken value on 64-bit
+    configurations
 
   - Fix broken evaluation of quasiquoted vectors splicing with improper list
 
   - Fix 64-bit capability of quasiquoted vectors
 
-  - Fix incomplete singlebyte charater support
+  - Fix passing circular list into error object when SRFI-38 is not enabled
+
+  - Fix '0' prefix incapability on a maximum-length binary number literal. See
+    "R5RS conformance: Numbers: Literals" subsection of doc/spec.txt for
+    further details
+
+  - Fix a broken type handling appeares on (equal? macro1 macro2) on
+    storage-compact
+
+  - Fix broken procedure invocation appears on a minor build configuration
 
   - Fix acceptable pathname length of a script name of sscm command previously
     one char lesser than maximum
