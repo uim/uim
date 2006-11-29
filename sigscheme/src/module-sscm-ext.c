@@ -112,7 +112,16 @@ scm_p_current_environment(ScmEvalState *eval_state)
     return eval_state->env;
 }
 
-/* SRFI-77 compatible */
+/* R6RS (R5.91RS) compatible */
+SCM_EXPORT ScmObj
+scm_p_fixnum_width(void)
+{
+    DECLARE_FUNCTION("fixnum-width", procedure_fixed_0);
+
+    return MAKE_INT(SCM_INT_BITS);
+}
+
+/* R6RS (R5.91RS) compatible */
 SCM_EXPORT ScmObj
 scm_p_least_fixnum(void)
 {
@@ -121,7 +130,7 @@ scm_p_least_fixnum(void)
     return MAKE_INT(SCM_INT_MIN);
 }
 
-/* SRFI-77 compatible */
+/* R6RS (R5.91RS) compatible */
 SCM_EXPORT ScmObj
 scm_p_greatest_fixnum(void)
 {

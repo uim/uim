@@ -1597,6 +1597,7 @@ SCM_EXPORT ScmObj scm_p_display(ScmObj obj, ScmObj args);
 #if SCM_USE_LOAD
 SCM_EXPORT void scm_set_lib_path(const char *path);
 SCM_EXPORT void scm_load(const char *filename);
+SCM_EXPORT ScmObj scm_p_load_path(void);
 SCM_EXPORT ScmObj scm_p_load(ScmObj filename);
 #endif /* SCM_USE_LOAD */
 
@@ -1617,12 +1618,12 @@ SCM_EXPORT ScmObj scm_format(ScmObj port, enum ScmFormatCapability fcap,
 /* module-sscm-ext.c */
 #if SCM_USE_SSCM_EXTENSIONS
 SCM_EXPORT void scm_initialize_sscm_extensions(void);
+SCM_EXPORT void scm_require(const char *filename);
 SCM_EXPORT ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
 SCM_EXPORT ScmObj scm_p_current_environment(ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_p_fixnum_width(void);
 SCM_EXPORT ScmObj scm_p_least_fixnum(void);
 SCM_EXPORT ScmObj scm_p_greatest_fixnum(void);
-SCM_EXPORT ScmObj scm_p_load_path(void);
-SCM_EXPORT void scm_require(const char *filename);
 SCM_EXPORT ScmObj scm_p_require(ScmObj filename);
 SCM_EXPORT ScmObj scm_p_provide(ScmObj feature);
 SCM_EXPORT ScmObj scm_p_providedp(ScmObj feature);

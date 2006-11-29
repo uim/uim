@@ -213,13 +213,5 @@
 
 (define sigscheme? (provided? "sigscheme"))
 
-(define fixnum-bits
-  (let* ((greatest (and (symbol-bound? 'greatest-fixnum)
-                        (number->string (greatest-fixnum))))
-         (b (assoc greatest
-                   '(("134217727"           . 28)
-                     ("2147483647"          . 32)
-                     ("576460752303423487"  . 60)
-                     ("9223372036854775807" . 64)))))
-    (and b
-         (cdr b))))
+(define fixnum-bits (and (symbol-bound? 'fixnum-width)
+                         (fixnum-width)))

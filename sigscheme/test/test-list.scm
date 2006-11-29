@@ -320,7 +320,7 @@
 (assert-error  (tn) (lambda () (list-ref 'a 1)))
 (assert-error  (tn) (lambda () (list-ref 'a -1)))
 
-(if (provided? "sigscheme")
+(if sigscheme?
     (begin
       (use sscm)
       (tn "length* proper list")
@@ -336,9 +336,9 @@
       (assert-equal? (tn) -4 (length* '(1 2 3 . 4)))
       (assert-equal? (tn) -5 (length* '(1 2 3 4 . 5)))
       (tn "length* circular list")
-      (assert-false (tn) (length* clst1))
-      (assert-false (tn) (length* clst2))
-      (assert-false (tn) (length* clst3))
-      (assert-false (tn) (length* clst4))))
+      (assert-eq?    (tn) #f (length* clst1))
+      (assert-eq?    (tn) #f (length* clst2))
+      (assert-eq?    (tn) #f (length* clst3))
+      (assert-eq?    (tn) #f (length* clst4))))
 
 (total-report)

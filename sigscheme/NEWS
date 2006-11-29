@@ -9,6 +9,8 @@ Overview of changes from 0.6.1 to 0.7.0
   - Add optional duplicate variable check to 'let', 'let*', 'letrec' and 'do'
     (it is not required by R5RS)
 
+  - [R6RS] R6RS (R5.91RS) compatible 'fixnum-width' procedure
+
 * Specification changes
 
   - [R5RS] Remove 'delay' and 'force' (temporarily) since they are completely
@@ -22,6 +24,9 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - [SRFI-34] Add 'current handler' to error object to behave as same as the
     reference implementation of SRFI-34 'raise'
+
+  - [SRFI-77, R6RS] The SRFI-77 procedures 'least-fixnum' and 'greatest-fixnum'
+    have been upgraded to R6RS (R5.91RS) (nothing is actually changed)
 
   - Definition of dotted list length is changed to SRFI-1's from
     SigScheme-speciific one. SCM_LISTLEN_DOTTED(), SCM_DOTTED_LISTP() and other

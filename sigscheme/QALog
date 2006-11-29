@@ -267,7 +267,7 @@ yyyy yyy srfi module-srfi34.c
          srfi module-srfi38.c
          srfi module-srfi48.c
 yyyyyyyy srfi module-srfi60.c
-         opt module-sscm-ext.c
+y yy y   opt module-sscm-ext.c
          opt module-siod.c
          other main.c
          other sigscheme-combined.h
@@ -973,12 +973,12 @@ corner case tests: yamaken@r3944
 
 file:              module-sscm-ext.c
 category:          opt
-spec by eyes:      
+spec by eyes:      yamaken@r4020
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4020
+64-bit by eyes:    yamaken@r4020
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4020
 normal case tests: 
 corner case tests: 
 
@@ -1030,6 +1030,17 @@ corner case tests:
 Log
 ---
 2006-11-30  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * module-sscm-ext.c
+          - QA done @r4020 by eyes
+
+          Details:
+          - 'length*' is validated with test-list.scm
+          - These procedure specs have been validated against following R6RS
+            (R5.91RS) sections:
+            * fixnum-width, least-fixnum, greatest-fixnum
+              "16.3  Fixnums"
+              "16.3.1  Quotient-ring fixnum operations"
 
         * module.c
           - QA done @r4019 by eyes

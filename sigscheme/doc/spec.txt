@@ -24,9 +24,9 @@ as like GNU Emacs' 28-bit tagged pointer does.
 Integer range
 ~~~~~~~~~~~~~
 
-Only supports fixnum, and its range is varied by the user-selected
-underlying storage implementation. The range can be known via SRFI-77
-compatible `(least-fixnum)` and `(greatest-fixnum)`.
+Only supports fixnum, and its range is varied by the user-selected underlying
+storage implementation. The range can be known via R6RS (R5.91RS) compatible
+`(fixnum-width)`, `(least-fixnum)` and `(greatest-fixnum)`.
 
 
 R5RS conformance
