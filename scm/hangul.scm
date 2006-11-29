@@ -38,7 +38,7 @@
 	 (generic-next-candidate-key? non-existent-key?)
 	 (generic-prev-candidate-key? non-existent-key?)
 	 (generic-commit-key?
-	  (make-key-predicate '(" " generic-return-key?)))
+	  (make-key-predicate '(generic-return-key?)))
 	 (generic-proc-input-state-with-preedit-with-this-env
 	  (%%enclose-another-env generic-proc-input-state-with-preedit
 				 (the-environment))))
@@ -50,7 +50,7 @@
 	 (generic-next-candidate-key? non-existent-key?)
 	 (generic-prev-candidate-key? non-existent-key?)
 	 (generic-commit-key?
-	  (make-key-predicate '(" " generic-return-key?)))
+	  (make-key-predicate '(generic-return-key?)))
 	 (generic-proc-input-state-with-preedit
 	  hangul-proc-on-mode-with-preedit)
 	 (generic-proc-input-state-with-this-env

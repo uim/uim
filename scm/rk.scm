@@ -95,16 +95,16 @@
        (if (not tail-partial)
 	   (begin
 	     (set! res (cadr (rk-lib-find-seq (reverse longest-head) rule)))
-	     (if (and
-		  res
-		  longest-tail)
-	         (rk-context-set-seq!
-	          rkc
-	          (reverse
-	           (truncate-list (reverse seq)
-			          (- (length seq)
-				     (length longest-head)))))
-		 (rk-context-set-seq! rkc '())) ;; no match in rule
+	     (let ((tail (reverse (truncate-list (reverse seq)
+						 (- (length seq)
+						    (length longest-head))))))
+	       (if (and
+		    res
+		    (or
+		     longest-tail
+		     (rk-lib-find-partial-seq tail rule)))
+		   (rk-context-set-seq! rkc tail)
+		   (rk-context-set-seq! rkc '()))) ;; no match in rule
 	     #f)
 	   #t)
        (begin
