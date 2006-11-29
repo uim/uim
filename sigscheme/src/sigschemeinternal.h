@@ -731,6 +731,7 @@ SCM_EXPORT void scm_init_format(void);
 /* load.c */
 #if SCM_USE_LOAD
 SCM_EXPORT void scm_init_load(void);
+SCM_EXPORT void scm_fin_load(void);
 #endif /* SCM_USE_LOAD */
 
 /* module.c */

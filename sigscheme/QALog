@@ -239,11 +239,11 @@ y yy y   core symbol.c
 yyyy yyy core continuation.c
 yyyy yyy core eval.c
          core module.c
-         core sigscheme.c
+y yy y   core sigscheme.c
 y yy y   semicore port.c
 yyyy yyy semicore read.c
          semicore write.c
-         semicore load.c
+y yy y   semicore load.c
          semicore format.c
 yyyy yyy r5rs syntax.c
 yyyy yyy r5rs procedure.c
@@ -665,12 +665,12 @@ corner case tests:
 
 file:              sigscheme.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4017
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4017
+64-bit by eyes:    yamaken@r4017
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4017
 normal case tests: 
 corner case tests: 
 
@@ -709,12 +709,12 @@ corner case tests:
 
 file:              load.c
 category:          semicore
-spec by eyes:      
+spec by eyes:      yamaken@r4017
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4017
+64-bit by eyes:    yamaken@r4017
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4017
 normal case tests: 
 corner case tests: 
 
@@ -1029,10 +1029,35 @@ corner case tests:
 
 Log
 ---
+2006-11-30  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * load.c
+        * sigscheme.c
+          - QA done @r4017 except for "64-bit by tests"
+          - (scm_set_lib_path): Change to holding copied library path string
+          - Fix possible crash on parsing script prelude longer than 64 chars
+          - Fix possible crash on parsing script prelude that only has
+            "#! /usr/bin/env"
+          - Fix a broken error handling on character encoding switching when
+            !SCM_USE_MULTIBYTE_CHAR
+          - Fix acceptable pathname length of a script name of sscm command
+            previously one char lesser than maximum
+
+          Details:
+          - Specs have been validated against following R5RS sections:
+            * load
+              "6.6.4 System interface"
+          - Specs have been validated against SRFI-22:
+            * load
+
 2006-11-29  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * read.c
           - QA done @r4012 except for "64-bit by tests" and SRFI-75 supports
+          - Remove initial hyphen support for symbols (such as '-sym). Use
+            (string->symbol "-sym") instead
+          - Fix potential SEGV on long string parsing
+          - Fix possible crash on parsing R5RS-reserved chars |[]{}
 
           Details:
           - Since SRFI-75 had already been obsoleted, SCM_USE_SRFI75 parts are

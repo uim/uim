@@ -68,7 +68,7 @@
 =======================================*/
 SCM_GLOBAL_VARS_BEGIN(static_load);
 #define static
-static const char *l_scm_lib_path;
+static char *l_scm_lib_path;
 #undef static
 SCM_GLOBAL_VARS_END(static_load);
 #define l_scm_lib_path SCM_GLOBAL_VAR(static_load, l_scm_lib_path)
@@ -78,7 +78,7 @@ SCM_DEFINE_STATIC_VARS(static_load);
   File Local Function Declarations
 =======================================*/
 static void scm_load_internal(const char *filename);
-static char *find_path(const char *c_filename);
+static char *find_path(const char *filename);
 static scm_bool file_existsp(const char *filepath);
 #if SCM_USE_SRFI22
 static void interpret_script_prelude(ScmObj port);
@@ -94,6 +94,14 @@ scm_init_load(void)
     SCM_GLOBAL_VARS_INIT(static_load);
 }
 
+SCM_EXPORT void
+scm_fin_load(void)
+{
+    free(l_scm_lib_path);
+
+    SCM_GLOBAL_VARS_FIN(static_load);
+}
+
 /* Don't provide any Scheme procedure to call this function, to avoid security
  * problems. User modification of the value or relative path capability may
  * cause arbitrary C code injection by plugin spoofing when future SigScheme
@@ -107,7 +115,8 @@ scm_set_lib_path(const char *path)
     if (!ABSOLUTE_PATHP(path))
         ERR("library path must be absolute but got: ~S", path);
 
-    l_scm_lib_path = path;
+    free(l_scm_lib_path);
+    l_scm_lib_path = (path) ? scm_strdup(path) : NULL;
 }
 
 /* SigScheme specific procedure (SIOD compatible) */
@@ -196,14 +205,16 @@ find_path(const char *filename)
 }
 
 static scm_bool
-file_existsp(const char *c_filepath)
+file_existsp(const char *filepath)
 {
     FILE *f;
 
-    if (!ABSOLUTE_PATHP(c_filepath))
+    SCM_ASSERT(filepath);
+
+    if (!ABSOLUTE_PATHP(filepath))
         return scm_false;
 
-    f = fopen(c_filepath, "r");
+    f = fopen(filepath, "r");
     if (f) {
         fclose(f);
         return scm_true;
@@ -259,7 +270,7 @@ parse_script_prelude(ScmObj port)
         }
         *p = c;
     }
-    if (*p)
+    if (p == &line[SCRIPT_PRELUDE_MAXLEN])
         PLAIN_ERR("too long UNIX script prelude (max 64)");
     line_len = p - line;
 
@@ -277,7 +288,7 @@ parse_script_prelude(ScmObj port)
     argv = scm_malloc(sizeof(char *));
     argv[0] = NULL;
     argc = 0;
-    for (p = &line[3]; p < &line[line_len]; p += len + 1) {
+    for (p = &line[3]; p < &line[line_len]; p += len + sizeof((char)'\0')) {
         p += strspn(p, SCRIPT_PRELUDE_DELIM);
         len = strcspn(p, SCRIPT_PRELUDE_DELIM);
         if (!len)

@@ -66,9 +66,9 @@ static void uim_scm_error_internal(const char *msg, uim_lisp errobj);
 static int uim_scm_c_int_internal(uim_lisp integer);
 static const char *uim_scm_refer_c_str_internal(uim_lisp str);
 static uim_lisp uim_scm_eval_internal(uim_lisp obj);
-static uim_lisp uim_scm_eval_c_string_internal(const char *str);
 #endif
 
+static uim_lisp last_val;
 static uim_bool sscm_is_exit_with_fatal_error;
 static FILE *uim_output = NULL;
 
@@ -447,27 +447,17 @@ uim_scm_eval_internal(uim_lisp obj)
 
 uim_lisp
 uim_scm_eval_c_string(const char *str)
-#if UIM_SCM_GCC4_READY_GC
 {
-  uim_lisp ret;
+  last_val = (uim_lisp)scm_eval_c_string(str);
 
-  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, uim_scm_eval_c_string_internal, (str));
-
-  return ret;
-}
-
-static uim_lisp
-uim_scm_eval_c_string_internal(const char *str)
-#endif
-{
-  return (uim_lisp)scm_eval_c_string(str);
+  return last_val;
 }
 
 uim_lisp
 uim_scm_return_value(void)
 {
   /* FIXME: This function should be removed. */
-  return (uim_lisp)scm_return_value();
+  return last_val;
 }
 
 uim_lisp
@@ -630,6 +620,7 @@ uim_scm_init(const char *verbose_level)
   scm_use("srfi-34");
   scm_use("siod");
 
+  uim_scm_gc_protect(&last_val);
   uim_scm_set_verbose_level(vlevel);
 }
 

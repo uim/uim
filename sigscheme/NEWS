@@ -18,6 +18,8 @@ Overview of changes from 0.6.1 to 0.7.0
   - Remove initial hyphen support for symbols (such as '-sym). Use
     (string->symbol "-sym") instead
 
+  - (scm_set_lib_path): Change to holding copied library path string
+
 * Fixes
 
   - Fix potential SEGV on long string parsing
@@ -25,6 +27,14 @@ Overview of changes from 0.6.1 to 0.7.0
   - Fix possible crash on parsing R5RS-reserved chars |[]{}
 
   - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin
+
+  - Fix possible crash on parsing script prelude longer than 64 chars
+
+  - Fix possible crash on parsing script prelude that only has
+    "#! /usr/bin/env"
+
+  - Fix a broken error handling on character encoding switching when
+    !SCM_USE_MULTIBYTE_CHAR
 
   - [R5RS] Fix invalid acceptance of definition form on where neither toplevel
     nor internal definition is allowed
@@ -56,6 +66,9 @@ Overview of changes from 0.6.1 to 0.7.0
   - Fix 64-bit capability of quasiquoted vectors
 
   - Fix incomplete singlebyte charater support
+
+  - Fix acceptable pathname length of a script name of sscm command previously
+    one char lesser than maximum
 
 
 Overview of changes from 0.5.0 (r3097 + private modifications) to 0.6.1

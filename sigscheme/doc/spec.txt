@@ -393,6 +393,22 @@ use SLIB version of the library (will be made available after some
 preparations).
 
 
+SRFI-22 Running Scheme Scripts on Unix
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SigScheme only supports the prelude line interpretation. All options written in
+the line are applied as same as commandline invocation of sscm. But the `main`
+procedure invocation is not supported (yet).
+
+.Prelude line is interpreted as follows
+================================================================
+  #! /usr/bin/env sscm -C UTF-8
+  ...
+
+  ==> Character encoding for the file is changed to UTF-8 temporarily.
+================================================================
+
+
 SRFI-23 Error Reporting Mechanism
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

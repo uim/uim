@@ -230,7 +230,7 @@ main(int argc, char **argv)
      * - add library path specifying way for users
      * - support non-UNIX platforms
      */
-    if (!getcwd(sscm.lib_path, MAXPATHLEN))
+    if (!getcwd(sscm.lib_path, MAXPATHLEN + sizeof("")))
         return EXIT_FAILURE;
     scm_set_lib_path(sscm.lib_path);
 

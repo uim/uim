@@ -1229,9 +1229,6 @@ SCM_EXPORT void scm_finalize(void);
 #if SCM_USE_EVAL_C_STRING
 SCM_EXPORT ScmObj scm_eval_c_string(const char *exp);
 #endif
-#if SCM_COMPAT_SIOD
-SCM_EXPORT ScmObj scm_return_value(void);
-#endif
 
 /* module.c */
 SCM_EXPORT void scm_provide(ScmObj feature);

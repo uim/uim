@@ -54,6 +54,9 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+#define ERRMSG_UNSUPPORTED_ENCODING "unsupported encoding"
+#define ERRMSG_CODEC_SW_NOT_SUPPORTED                                        \
+    "character encoding switching is not supported on this build"
 
 /*=======================================
   File Local Type Definitions
@@ -68,15 +71,9 @@
 SCM_GLOBAL_VARS_BEGIN(static_sigscheme);
 #define static
 static scm_bool l_scm_initialized;
-
-#if SCM_COMPAT_SIOD
-static ScmObj l_scm_return_value_cache;
-#endif /* SCM_COMPAT_SIOD */
 #undef static
 SCM_GLOBAL_VARS_END(static_sigscheme);
 #define l_scm_initialized SCM_GLOBAL_VAR(static_sigscheme, l_scm_initialized)
-#define l_scm_return_value_cache                                             \
-    SCM_GLOBAL_VAR(static_sigscheme, l_scm_return_value_cache)
 SCM_DEFINE_STATIC_VARS(static_sigscheme);
 
 static const char *const builtin_features[] = {
@@ -86,6 +83,9 @@ static const char *const builtin_features[] = {
 #endif
 #if SCM_STRICT_TOPLEVEL_DEFINITIONS
     "strict-toplevel-definitions",
+#endif
+#if SCM_NESTED_CONTINUATION_ONLY
+    "nested-continuation-only",
 #endif
 #if SCM_STRICT_R5RS
     "strict-r5rs",
@@ -201,8 +201,7 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     =======================================================================*/
     /* pseudo procedure to deliver multiple values to an arbitrary procedure
      * (assigns an invalid continuation as unique ID) */
-    scm_gc_protect_with_init((ScmObj *)&scm_values_applier,
-                             MAKE_CONTINUATION());
+    scm_gc_protect_with_init(&scm_values_applier, MAKE_CONTINUATION());
 
     /* SigScheme-specific core syntaxes and procedures */
     scm_register_funcs(scm_sscm_core_func_info_table);
@@ -235,16 +234,15 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     if (SCM_PTR_BITS == 64)
         scm_provide(CONST_STRING("64bit-addr"));
 
-#if SCM_NESTED_CONTINUATION_ONLY
-    scm_provide(CONST_STRING("nested-continuation-only"));
-#endif
-
     l_scm_initialized = scm_true;
 }
 
 SCM_EXPORT void
 scm_finalize()
 {
+#if SCM_USE_LOAD
+    scm_fin_load();
+#endif
     scm_fin_storage();
     l_scm_initialized = scm_false;
 
@@ -278,21 +276,9 @@ scm_eval_c_string_internal(const char *exp)
     ret = scm_read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);
 
-#if SCM_COMPAT_SIOD
-    l_scm_return_value_cache = ret;
-#endif
-
     return ret;
 }
 #endif /* SCM_USE_EVAL_C_STRING */
-
-#if SCM_COMPAT_SIOD
-SCM_EXPORT ScmObj
-scm_return_value(void)
-{
-    return l_scm_return_value_cache;
-}
-#endif
 
 /* TODO: parse properly */
 /* don't access ScmObj if (!l_scm_initialized) */
@@ -308,18 +294,23 @@ scm_interpret_argv(char **argv)
     DECLARE_INTERNAL_FUNCTION("scm_interpret_argv");
 
     encoding = NULL;
-    argp = (strcmp(argv[0], "/usr/bin/env") == 0) ? &argv[2] : &argv[1];
+    argp = &argv[0];
+    if (strcmp(argv[0], "/usr/bin/env") == 0)
+        argp++;
+    if (*argp)
+        argp++;  /* skip executable name */
 
+    /* parse options */
     for (; *argp; argp++) {
-        /* script name appeared */
-        if (*argp[0] != '-')
-            break;
+        if ((*argp)[0] != '-')
+            break;  /* script name appeared */
 
         /* character encoding */
         if (strcmp(*argp, "-C") == 0) {
             encoding = *++argp;
-            if (!*argp) {
+            if (!encoding) {
                 if (l_scm_initialized) {
+                    scm_free_argv(argv);
                     ERR("no encoding name specified");
                 } else {
                     fputs(SCM_ERR_HEADER "no encoding name specified\n",
@@ -331,6 +322,7 @@ scm_interpret_argv(char **argv)
     }
     rest = argp;
 
+    /* apply options */
     if (encoding) {
 #if SCM_USE_MULTIBYTE_CHAR
         specified_codec = scm_mb_find_codec(encoding);
@@ -338,16 +330,23 @@ scm_interpret_argv(char **argv)
             if (l_scm_initialized) {
                 err_obj = CONST_STRING(encoding);
                 scm_free_argv(argv);
-                ERR_OBJ("unsupported encoding", err_obj);
+                ERR_OBJ(ERRMSG_UNSUPPORTED_ENCODING, err_obj);
             } else {
-                fprintf(stderr, SCM_ERR_HEADER "unsupported encoding: %s\n",
+                fprintf(stderr,
+                        SCM_ERR_HEADER ERRMSG_UNSUPPORTED_ENCODING ": %s\n",
                         encoding);
                 exit(EXIT_FAILURE);
             }
         }
         scm_current_char_codec = specified_codec;
 #else
-        fprintf(stderr, SCM_ERR_HEADER "character encoding switching is not supported on this build\n");
+        if (l_scm_initialized) {
+            scm_free_argv(argv);
+            PLAIN_ERR(ERRMSG_CODEC_SW_NOT_SUPPORTED);
+        } else {
+            fprintf(stderr, SCM_ERR_HEADER ERRMSG_CODEC_SW_NOT_SUPPORTED "\n");
+            exit(EXIT_FAILURE);
+        }
 #endif
     }
 
