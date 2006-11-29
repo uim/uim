@@ -129,6 +129,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix broken procedure invocation appears on a minor build configuration
 
+  - Fix broken body result of %%closure-code when body-length == 1
+
   - Fix acceptable pathname length of a script name of sscm command previously
     one char lesser than maximum
 

@@ -178,14 +178,13 @@ scm_p_siod_equal(ScmObj obj1, ScmObj obj2)
 
     if (EQ(obj1, obj2))
         return SCM_TRUE;
-    else if (!INTP(obj1) || !INTP(obj2))
-        return SCM_FALSE;
-    else if (SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2))
-        return SCM_TRUE;
 
-    return SCM_FALSE;
+    if (!INTP(obj1) || !INTP(obj2))
+        return SCM_FALSE;
+    return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 }
 
+/* TODO: remove this once uim has been revised */
 SCM_EXPORT ScmObj
 scm_p_closure_code(ScmObj closure)
 {
@@ -195,11 +194,8 @@ scm_p_closure_code(ScmObj closure)
     ENSURE_CLOSURE(closure);
 
     exp = SCM_CLOSURE_EXP(closure);
-    if (NULLP(CDDR(exp))) {
-        body = CADR(exp);
-    } else {
-        body = CONS(scm_intern("begin"), CDR(exp));
-    }
+    /* make SIOD-compatible 'begin' -prefixed body */
+    body = CONS(scm_intern("begin"), CDR(exp));
 
     return CONS(CAR(exp), body);
 }
