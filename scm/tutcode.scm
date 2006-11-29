@@ -181,7 +181,7 @@
       ((not (member (charcode->string key) (rk-expect rkc)))
        (rk-flush rkc)
        (im-commit-raw pc))
-      (#t	; `else' is not supported by uim's scheme interpreter
+      (else
        (set! res (rk-push-key! rkc (charcode->string key)))))
     (if res
 	(im-commit pc

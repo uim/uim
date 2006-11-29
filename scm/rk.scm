@@ -95,12 +95,16 @@
        (if (not tail-partial)
 	   (begin
 	     (set! res (cadr (rk-lib-find-seq (reverse longest-head) rule)))
-	     (rk-context-set-seq!
-	      rkc
-	      (reverse
-	       (truncate-list (reverse seq)
-			      (- (length seq)
-				 (length longest-head)))))
+	     (if (and
+		  res
+		  longest-tail)
+	         (rk-context-set-seq!
+	          rkc
+	          (reverse
+	           (truncate-list (reverse seq)
+			          (- (length seq)
+				     (length longest-head)))))
+		 (rk-context-set-seq! rkc '())) ;; no match in rule
 	     #f)
 	   #t)
        (begin
@@ -110,13 +114,17 @@
 ;;
 (define rk-partial-seq?
   (lambda (rkc s)
-    (rk-lib-find-partial-seq
-     (reverse s) (rk-context-rule rkc))))
+    (if (null? s)
+        #f
+        (rk-lib-find-partial-seq (reverse s) (rk-context-rule rkc)))))
+
 ;; API
 (define rk-partial?
   (lambda (rkc)
     (if (rk-context-back-match rkc)
-	#t
+	(if (rk-context-seq rkc)
+	    #t
+	    #f)
 	(rk-partial-seq?
 	 rkc
 	 (rk-context-seq rkc)))))
