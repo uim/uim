@@ -147,12 +147,6 @@
     (im-commit-raw pc)
     (generic-context-set-raw-commit! pc #t)))
 
-;; Currently not used.  See generic-proc-input-state-with-preedit.
-;;(define generic-commit-raw-with-preedit-update
-;;  (lambda (pc)
-;;    (im-commit-raw pc)
-;;    (generic-context-set-raw-commit! pc #f)))
-
 (define generic-commit
   (lambda (pc)
     (let* ((rkc (generic-context-rk-context pc))
@@ -235,15 +229,13 @@
       (generic-context-flush pc)
       #f)
      ((symbol? key)
-      ;;Just ignore these key while having preedit
-      ;;(generic-commit-raw-with-preedit-update pc)
-      ;;(generic-context-flush pc)
+      (generic-commit pc)
+      (im-commit-raw pc)
       #f)
      ((and (modifier-key-mask state)
 	   (not (shift-key-mask state)))
-      ;;Just ignore these key while having preedit
-      ;;(generic-commit-raw-with-preedit-update pc)
-      ;;(generic-context-flush pc)
+      (generic-commit pc)
+      (im-commit-raw pc)
       #f)
      (else
       #t))))
@@ -307,6 +299,12 @@
 		 (generic-context-set-candidate-op-count!
 		  pc
 		  (+ 1 (generic-context-candidate-op-count pc)))
+		 (if (and
+                      (= (generic-context-candidate-op-count pc)
+                         generic-candidate-op-count)
+                      generic-use-candidate-window?)
+                     (im-activate-candidate-selector
+		      pc (length cs) generic-nr-candidate-max))
 		 (if (>= (generic-context-candidate-op-count pc)
 			 generic-candidate-op-count)
 		     (im-select-candidate pc n))
@@ -377,9 +375,8 @@
 	   #t)
        (if (symbol? key)
 	   (begin
-	     ;;Just ignore these key while having preedit
-	     ;;(generic-commit pc)
-	     ;;(im-commit-raw pc)
+	     (generic-commit pc)
+	     (im-commit-raw pc)
 	     #f)
 	   #t)
        (if (and generic-commit-candidate-by-numeral-key?
@@ -391,9 +388,8 @@
        (if (and (modifier-key-mask state)
 		(not (shift-key-mask state)))
 	   (begin
-	     ;;Just ignore these key while having preedit
-	     ;;(generic-commit pc)
-	     ;;(im-commit-raw pc)
+	     (generic-commit pc)
+	     (im-commit-raw pc)
 	     #f)
 	   #t)
        (let ((cs (rk-current-seq rkc)))

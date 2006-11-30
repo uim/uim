@@ -310,7 +310,26 @@
 
 (define m17nlib-reset-handler
   (lambda (mc)
-    #f))
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-reset"))))
+
+(define m17nlib-focus-in-handler
+  (lambda (mc)
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-focus-in")
+      (m17nlib-update-preedit mc))))
+
+(define m17nlib-focus-out-handler
+  (lambda (mc)
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-focus-out")
+      (m17nlib-update-preedit mc))))
+
+(define m17nlib-displace-handler
+  (lambda (mc)
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-focus-move")
+      (m17nlib-update-preedit mc))))
 
 (define m17nlib-get-candidate-handler
   (lambda (mc idx accel-enum-hint)
@@ -366,10 +385,10 @@
 	       m17nlib-set-candidate-index-handler
 	       context-prop-activate-handler
 	       #f
+	       m17nlib-focus-in-handler
+	       m17nlib-focus-out-handler
 	       #f
-	       #f
-	       #f
-	       #f
+	       m17nlib-displace-handler
 	       ))
 	      (m17nlib-register (+ i 1) nr-im))
 	())))

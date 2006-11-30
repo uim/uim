@@ -594,7 +594,7 @@ push_symbol_key(uim_lisp id_, uim_lisp key_)
   key = msymbol(uim_scm_c_str(key_));
 
   if (key == Mnil)
-    return uim_scm_t();
+    return uim_scm_f();
 
   if (minput_filter(ic, key, NULL) == 1)
     return uim_scm_t();
