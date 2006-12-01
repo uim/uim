@@ -98,16 +98,15 @@ const char *get_enc(void)
 #ifdef HAVE_LANGINFO_CODESET
   return nl_langinfo(CODESET);
 #else
+  char *locale;
+
+  locale = setlocale(LC_CTYPE, NULL);
+  assert(locale != NULL);
 
   if (strcasecmp(locale, "ja") == 0) {
     return "EUC-JP";
   } else {
-
-    const char *locale;
     char *ptr;
-
-    locale = setlocale(LC_CTYPE, NULL);
-    assert(locale != NULL);
     ptr = strstr(locale, ".");
     return ptr != NULL ? ptr + 1 : "UTF-8";
   }
