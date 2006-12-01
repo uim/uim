@@ -657,10 +657,57 @@ uim_set_text_acquisition_cb(uim_context uc,
   uc->delete_text_cb = delete_cb;
 }
 
+static char *
+escape_string(const char *str)
+{
+  const char *p;
+  char buf[BUFSIZ]; /* XXX */
+  int i = 0;
+  
+  for (p = str; *p != '\0'; p++) {
+    switch (*p) {
+    case '\\':
+    case '\n':
+    case '\r':
+    case '\t':
+    case '\f':
+    case '\a':
+    case '\b':
+    case '\v':
+    case '"':
+      buf[i++] = '\\';
+      buf[i] = *p;
+      break;
+    default:
+      buf[i] = *p;
+      break;
+    }
+    i++;
+    if (i == BUFSIZ - 1)
+      break;
+  }
+  buf[i] = '\0';
+
+  return strdup(buf);
+}
+
 uim_bool
 uim_input_string(uim_context uc, const char *str)
 {
-  /* FIXME */
+  char *conv, *s;
+
+  conv = uc->conv_if->convert(uc->inbound_conv, str);
+  if (conv) {
+    s = escape_string(conv);
+    if (s)
+      UIM_EVAL_FSTRING2(uc, "(input-string-handler %d \"%s\")", uc->id, s);
+    free(conv);
+    free(s);
+
+    /* FIXME: handle return value properly. */
+    return UIM_TRUE;
+  }
+
   return UIM_FALSE;
 }
 
