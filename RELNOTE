@@ -17,8 +17,16 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Bug fix for uim-prime using UNIX domain socket connection.  See NEWS
-for the detailed changes.
+
+  - Text acquisition and focus-related APIs
+
+  - Dead keys support for the latin IM
+
+  - Experimental Kana keyboard support
+
+  - Flash Player 9 plugin workaround for uim-xim
+
+See NEWS for the fully detailed changes.
 
 
 Notes for Packagers and System Integrators
@@ -38,7 +46,8 @@ Roadmap
   - uim 1.4.0
 
     Release for internal improvement. No user-visible changes other
-    than resource consumption reduction.
+    than resource consumption reduction. This release plan will not be
+    deferred anymore.
 
     The non-standard-conformant Scheme interpreter of libuim will be
     replaced with newly developed SigScheme to make a room for next

@@ -6,7 +6,8 @@ Overview of changes from 1.2.x to 1.3.0-alpha
     - Add text acquisition API and support it in GTK+ and Qt bridges
     - Add text injection API (uim_input_string())
     - Support focus-in and focus-out handler in IM context
-    - More keysym support
+    - More keysyms support
+    - See doc/COMPATIBILITY for further details
 
   - Anthy
     - Kana keyboard support (experimental)
@@ -22,16 +23,16 @@ Overview of changes from 1.2.x to 1.3.0-alpha
 
   - uim-pref-gtk
   - uim-pref-qt
-    - Support more keysym in key editor
+    - Support more keysyms in key editor
 
   - GTK+ bridge
   - Qt bridge
   - XIM bridge
-    - More keysym support
+    - More keysyms support
 
 * Fixes
   - Prime
-    - Fix key handling in word registration mode (#8984)
+    - Fix key handling in word registration mode (bug #8984)
   - Tcode
     - Update compose table
   - Generic (Tcode, Hangul, PY)
@@ -50,7 +51,7 @@ Overview of changes from 1.2.x to 1.3.0-alpha
     - Fix for preedit relocation with Japanese IM 
   - XIM bridge
     - Fix for java applications with incorrect font setting
-    - Workaround for FlashPlayer9 plugin
+    - Workaround for Flash Player 9 plugin
 
 * Others
   - Input method icons
