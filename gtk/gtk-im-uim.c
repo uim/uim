@@ -363,21 +363,6 @@ update_cur_toplevel(IMUIMContext *uic)
     remove_cur_toplevel();
 }
 
-static GtkWidget *
-widget_for_window(GdkWindow *window)
-{
-  while (window) {
-    gpointer user_data;
-    gdk_window_get_user_data(window, &user_data);
-    if (user_data)
-      return user_data;
-
-    window = gdk_window_get_parent(window);
-  }
-
-  return NULL;
-}
-
 static void
 on_client_widget_hierarchy_changed(GtkWidget *widget, GtkWidget *old_toplevel, IMUIMContext *uic)
 {
@@ -406,12 +391,29 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
 
   return FALSE;
 }
+#endif /* IM_UIM_USE_TOPLEVEL */
+
+static GtkWidget *
+widget_for_window(GdkWindow *window)
+{
+  while (window) {
+    gpointer user_data;
+    gdk_window_get_user_data(window, &user_data);
+    if (user_data)
+      return user_data;
+
+    window = gdk_window_get_parent(window);
+  }
+
+  return NULL;
+}
 
 static void
 update_client_widget(IMUIMContext *uic)
 {
   GtkWidget *new_widget = widget_for_window(uic->win);
 
+#if IM_UIM_USE_TOPLEVEL
   if (new_widget != uic->widget) {
     if (uic->widget) {
       g_signal_handlers_disconnect_by_func(uic->widget,
@@ -429,8 +431,10 @@ update_client_widget(IMUIMContext *uic)
 
     update_cur_toplevel(uic);
   }
+#else /* IM_UIM_USE_TOPLEVEL */
+  uic->widget = new_widget;
+#endif
 }
-#endif /* IM_UIM_USE_TOPLEVEL */
 
 
 
@@ -1271,17 +1275,15 @@ im_uim_set_client_window(GtkIMContext *ic, GdkWindow *w)
       g_object_unref(uic->win);
     uic->win = NULL;
   }
-#if IM_UIM_USE_TOPLEVEL
   update_client_widget(uic);
-#endif
 }
 
 static void
 im_uim_init(IMUIMContext *uic)
 {
   uic->win = NULL;
-#if IM_UIM_USE_TOPLEVEL
   uic->widget = NULL;
+#if IM_UIM_USE_TOPLEVEL
   init_event_key_rec(&uic->event_rec);
 #endif
   uic->caret_state_indicator = NULL;
@@ -1388,7 +1390,7 @@ im_module_create(const gchar *context_id)
   obj = g_object_new(type_im_uim, NULL);
   uic = IM_UIM_CONTEXT(obj);
 
-  if(uic == NULL)
+  if (!uic)
     return NULL;
 
   im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));

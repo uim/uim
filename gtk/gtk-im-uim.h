@@ -73,8 +73,8 @@ typedef struct _IMUIMContext {
   GtkWidget *preedit_window;
   gulong preedit_handler_id;
 
-#if IM_UIM_USE_TOPLEVEL
   GtkWidget *widget;
+#if IM_UIM_USE_TOPLEVEL
   /*
    * event_rec is used to check the incoming event is already handled
    * in our toplevel handler.  Some widgets (e.g. OOo2.0's vcl plugin)
