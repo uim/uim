@@ -1206,15 +1206,25 @@ im_uim_focus_out(GtkIMContext *ic)
   gtk_widget_hide(uic->caret_state_indicator);
 }
 
+#define WORKAROUND_BROKEN_RESET_IN_GTK	1
 static void
 im_uim_reset(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
+#if !defined(WORKAROUND_BROKEN_RESET_IN_GTK)
   uim_reset_context(uic->uc);
+#else
+  if (uic == focused_context) {
+    uim_focus_out_context(uic->uc);
+    uim_focus_in_context(uic->uc);
+  } else {
+    uim_reset_context(uic->uc);
+  }
+#endif
 #ifdef GDK_WINDOWING_X11
   im_uim_compose_reset(uic->compose);
 #endif
-#if 0
+#if !defined(WORKAROUND_BROKEN_RESET_IN_GTK)
   clear_cb(uic);
   update_cb(uic);
 #endif
@@ -1475,14 +1485,13 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
 
     if (rv)
       return FALSE;
-#if 0
+
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
     else if (GTK_IS_ENTRY(uic->widget)) {
       if (GTK_ENTRY(uic->widget)->editable)
 	GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
     }
-#endif
     return TRUE;
   }
 
