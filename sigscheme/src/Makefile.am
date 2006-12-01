@@ -181,6 +181,7 @@ sigscheme-combined-trim.h: $(DIST_SOURCES)
 	    sigscheme-stdint.h) ;;              \
 	    scmint.h)           ;;              \
 	    encoding.h)         ;;              \
+	    encoding-dummy.h)   ;;              \
 	    encoding-config.h)  ;;              \
 	    scmport.h)          ;;              \
 	    scmport-config.h)   ;;              \

@@ -11,6 +11,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - [R6RS] R6RS (R5.91RS) compatible 'fixnum-width' procedure
 
+  - SSCM_VERSION_REQUIRE() macro
+
 * Specification changes
 
   - [R5RS] Remove 'delay' and 'force' (temporarily) since they are completely

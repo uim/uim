@@ -116,6 +116,7 @@ Categorized File List
   * scmport-mbchar.h
   * scmport-mbchar.c
   * encoding.h
+  * encoding-dummy.h
   * encoding-config.h
   * encoding.c
   * global.h
@@ -219,6 +220,7 @@ y yy y   base scmport-sbchar.c
          base scmport-mbchar.h
          base scmport-mbchar.c
          base encoding.h
+         base encoding-dummy.h
          base encoding-config.h
          base encoding.c
          base global.h
@@ -433,6 +435,17 @@ normal case tests:
 corner case tests: 
 
 file:              encoding.h
+category:          base
+spec by eyes:      
+spec by tests:     
+general review:    
+64-bit by eyes:    
+64-bit by tests:   
+coding style:      
+normal case tests: 
+corner case tests: 
+
+file:              encoding-dummy.h
 category:          base
 spec by eyes:      
 spec by tests:     
@@ -1029,7 +1042,7 @@ corner case tests:
 
 Log
 ---
-2006-12-01  YamaKen <yamaken AT bp.iij4u.or.jp>
+2006-12-02  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * write.c
         * module-srfi38.c
