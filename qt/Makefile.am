@@ -93,7 +93,8 @@ MOC_FILES += \
 	immodule-subwindow.moc
 
 libquiminputcontextplugin_la_SOURCES = \
-	immodule-candidatewindow.cpp  immodule-qhelpermanager.cpp immodule-plugin.cpp \
+	immodule-candidatewindow.cpp  immodule-qhelpermanager.cpp \
+	immodule-plugin.cpp immodule-plugin.h \
 	immodule-candidatewindow.h    immodule-qhelpermanager.h \
 	immodule-quiminputcontext.cpp immodule-quiminputcontext_with_slave.cpp \
 	immodule-quiminputcontext.h   immodule-quiminputcontext_with_slave.h \
