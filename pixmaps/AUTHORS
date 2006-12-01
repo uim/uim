@@ -16,7 +16,7 @@ scim-wnn.png:
 #
 # uim-gray.png and im_subst.svg is derived from uim-icon64.png
 unknown.svg,
-direct.svg, skk.svg, tcode.svg, tutcode.svg,
+direct.svg, skk.svg, tcode.svg, trycode.svg tutcode.svg,
 direct_input.svg, on.svg, off.svg,
 ja_direct.svg, ja_hiragana.svg, ja_katakana.svg,
 ja_halfkana.svg,

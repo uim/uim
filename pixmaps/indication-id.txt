@@ -41,6 +41,7 @@ distribution. Make icons for them. '+' sign indicates 'done'.
   + prime
   + skk
   + tcode
+  + trycode
   + tutcode
   + byeoru
   hangul2
