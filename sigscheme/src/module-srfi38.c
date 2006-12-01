@@ -79,7 +79,11 @@ scm_p_srfi38_write_with_shared_structure(ScmObj obj, ScmObj args)
     ScmObj port;
     DECLARE_FUNCTION("write-with-shared-structure", procedure_variadic_1);
 
+    /* Omit optarg as same as the reference implementation. */
+    if (CONSP(args) && CONSP(CDR(args)))
+        args = LIST_1(CAR(args));
     port = scm_prepare_port(args, scm_out);
+
     scm_write_ss(port, obj);
     return SCM_UNDEF;
 }

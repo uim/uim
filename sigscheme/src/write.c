@@ -58,9 +58,10 @@
      || ERROBJP(obj))
 #define OCCUPIED(ent)      (!EQ((ent)->key, SCM_INVALID))
 #define HASH_EMPTY(table)  (!(table).used)
+/* datum index */
 #define DEFINING_DATUM     (-1)
 #define NONDEFINING_DATUM  0
-#define GET_DEFINDEX(x)    ((unsigned)(x) >> 1)
+/* flags */
 #define HASH_INSERT    1 /* insert key if it's not registered yet */
 #define HASH_FIND      0
 #endif /* SCM_USE_SRFI38 */
@@ -69,16 +70,17 @@
   File Local Type Definitions
 =======================================*/
 enum OutputType {
-    AS_WRITE,   /* string is enclosed by ", char is written using #\ notation */
-    AS_DISPLAY, /* string and char is written as-is */
-    UNKNOWN
+    UNKNOWN,
+    AS_WRITE,  /* string is enclosed by ", char is written using #\ notation */
+    AS_DISPLAY /* string and char is written as-is */
 };
 
 #if SCM_USE_SRFI38
 typedef size_t hashval_t;
+
 typedef struct {
     ScmObj key;
-    int datum;
+    scm_intobj_t datum;
 } hash_entry;
 
 typedef struct {
@@ -89,7 +91,7 @@ typedef struct {
 
 typedef struct {
     hash_table seen; /* a table of seen objects */
-    int next_index;  /* the next index to use for #N# */
+    scm_intobj_t next_index;  /* the next index to use for #N# */
 } write_ss_context;
 #endif /* SCM_USE_SRFI38 */
 
@@ -112,23 +114,21 @@ SCM_DEFINE_STATIC_VARS(static_write);
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void write_internal(ScmObj port, ScmObj obj, enum OutputType otype);
-static void write_obj(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_internal (ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_obj      (ScmObj port, ScmObj obj, enum OutputType otype);
 #if SCM_USE_CHAR
-static void write_char(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_char     (ScmObj port, ScmObj obj, enum OutputType otype);
 #endif
 #if SCM_USE_STRING
-static void write_string(ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_string   (ScmObj port, ScmObj obj, enum OutputType otype);
 #endif
-static void write_list(ScmObj port, ScmObj lst, enum OutputType otype);
+static void write_list     (ScmObj port, ScmObj lst, enum OutputType otype);
 #if SCM_USE_VECTOR
-static void write_vector(ScmObj port, ScmObj vec, enum OutputType otype);
+static void write_vector   (ScmObj port, ScmObj vec, enum OutputType otype);
 #endif
-#if SCM_USE_PORT
-static void write_port(ScmObj port, ScmObj obj, enum OutputType otype);
-#endif
-static void write_constant(ScmObj port, ScmObj obj, enum  OutputType otype);
-static void write_errobj(ScmObj port, ScmObj obj, enum  OutputType otype);
+static void write_port     (ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_constant (ScmObj port, ScmObj obj, enum OutputType otype);
+static void write_errobj   (ScmObj port, ScmObj obj, enum OutputType otype);
 
 #if SCM_USE_HYGIENIC_MACRO
 static void write_farsymbol(ScmObj port, ScmObj obj, enum OutputType otype);
@@ -136,9 +136,10 @@ static void write_farsymbol(ScmObj port, ScmObj obj, enum OutputType otype);
 
 #if SCM_USE_SRFI38
 static void hash_grow(hash_table *tab);
-static hash_entry *hash_lookup(hash_table *tab, ScmObj key, int datum, int flag);
+static hash_entry *hash_lookup(hash_table *tab,
+                               ScmObj key, scm_intobj_t datum, int flag);
 static void write_ss_scan(ScmObj obj, write_ss_context *ctx);
-static int  get_shared_index(ScmObj obj);
+static scm_intobj_t get_shared_index(ScmObj obj);
 static void write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype);
 #endif /* SCM_USE_SRFI38 */
 
@@ -179,7 +180,7 @@ write_internal(ScmObj port, ScmObj obj, enum OutputType otype)
     ENSURE_PORT(port);
     SCM_ENSURE_LIVE_PORT(port);
     if (!(SCM_PORT_FLAG(port) & SCM_PORTFLAG_OUTPUT))
-        ERR("output port is required");
+        ERR_OBJ("output port required but got", port);
 
     write_obj(port, obj, otype);
     scm_port_flush(port);
@@ -192,15 +193,15 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 
 #if SCM_USE_SRFI38
     if (INTERESTINGP(obj)) {
-        int index = get_shared_index(obj);
+        scm_intobj_t index = get_shared_index(obj);
         if (index > 0) {
             /* defined datum */
-            scm_format(port, SCM_FMT_RAW_C, "#~D#", index);
+            scm_format(port, SCM_FMT_RAW_C, "#~ZU#", (size_t)index);
             return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            scm_format(port, SCM_FMT_RAW_C, "#~D=", -index);
+            scm_format(port, SCM_FMT_RAW_C, "#~ZU=", (size_t)-index);
             /* Print it; the next time it'll be defined. */
         }
     }
@@ -280,11 +281,9 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
         write_vector(port, obj, otype);
         break;
 #endif
-#if SCM_USE_PORT
     case ScmPort:
         write_port(port, obj, otype);
         break;
-#endif
 #if SCM_USE_CONTINUATION
     case ScmContinuation:
         scm_format(port, SCM_FMT_RAW_C, "#<continuation ~P>", (void *)obj);
@@ -292,10 +291,7 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
 #endif
     case ScmValuePacket:
         scm_port_puts(port, "#<values ");
-        if (NULLP(SCM_VALUEPACKET_VALUES(obj)))
-            scm_port_puts(port, "()");
-        else
-            write_list(port, SCM_VALUEPACKET_VALUES(obj), otype);
+        write_obj(port, SCM_VALUEPACKET_VALUES(obj), otype);
 #if SCM_USE_VALUECONS
 #if SCM_USE_STORAGE_FATTY
         /* SCM_VALUEPACKET_VALUES() changes the type destructively */
@@ -320,6 +316,10 @@ write_obj(ScmObj port, ScmObj obj, enum OutputType otype)
                    (void *)(uintptr_t)SCM_C_FUNCPOINTER_VALUE(obj));
         break;
 #endif
+
+    case ScmRational:
+    case ScmReal:
+    case ScmComplex:
     default:
         SCM_ASSERT(scm_false);
     }
@@ -431,7 +431,7 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
     ScmObj car;
 #if SCM_USE_SRFI38
     size_t necessary_close_parens;
-    int index;
+    scm_intobj_t index;
 #endif
     DECLARE_INTERNAL_FUNCTION("write");
 
@@ -440,10 +440,7 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
   cheap_recursion:
 #endif
 
-    if (NULLP(lst)) {
-        scm_port_puts(port, "()");
-        return;
-    }
+    SCM_ASSERT(CONSP(lst));
 
     scm_port_put_char(port, '(');
 
@@ -460,12 +457,12 @@ write_list(ScmObj port, ScmObj lst, enum OutputType otype)
         index = get_shared_index(lst);
         if (index > 0) {
             /* defined datum */
-            scm_format(port, SCM_FMT_RAW_C, ". #~D#", index);
+            scm_format(port, SCM_FMT_RAW_C, ". #~ZU#", (size_t)index);
             goto close_parens_and_return;
         }
         if (index < 0) {
             /* defining datum, with the new index negated */
-            scm_format(port, SCM_FMT_RAW_C, ". #~D=", -index);
+            scm_format(port, SCM_FMT_RAW_C, ". #~ZU=", (size_t)-index);
             necessary_close_parens++;
             goto cheap_recursion;
         }
@@ -507,7 +504,6 @@ write_vector(ScmObj port, ScmObj vec, enum OutputType otype)
 }
 #endif /* SCM_USE_VECTOR */
 
-#if SCM_USE_PORT
 static void
 write_port(ScmObj port, ScmObj obj, enum OutputType otype)
 {
@@ -516,12 +512,11 @@ write_port(ScmObj port, ScmObj obj, enum OutputType otype)
     scm_port_puts(port, "#<");
 
     /* input or output */
-    /* print "i", "o" or "io" if bidirectional port */
+    /* print "iport", "oport" or "ioport" if bidirectional port */
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_INPUT)
         scm_port_put_char(port, 'i');
     if (SCM_PORT_FLAG(obj) & SCM_PORTFLAG_OUTPUT)
         scm_port_put_char(port, 'o');
-
     scm_port_puts(port, "port");
 
     /* file or string */
@@ -534,7 +529,6 @@ write_port(ScmObj port, ScmObj obj, enum OutputType otype)
 
     scm_port_put_char(port, '>');
 }
-#endif /* SCM_USE_PORT */
 
 static void
 write_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
@@ -548,11 +542,7 @@ write_constant(ScmObj port, ScmObj obj, enum  OutputType otype)
     else if (EQ(obj, SCM_FALSE))
         str = "#f";
     else if (EQ(obj, SCM_EOF))
-#if SCM_COMPAT_SIOD_BUGS
-        str = "(eof)";
-#else
         str = "#<eof>";
-#endif
     else if (EQ(obj, SCM_UNBOUND))
         str = "#<unbound>";
     else if (EQ(obj, SCM_UNDEF))
@@ -636,7 +626,7 @@ hash_grow(hash_table *tab)
  * @return A pointer to the entry, or NULL if not found.
  */
 static hash_entry *
-hash_lookup(hash_table *tab, ScmObj key, int datum, int flag)
+hash_lookup(hash_table *tab, ScmObj key, scm_intobj_t datum, int flag)
 {
     size_t i;
     hashval_t hashval;
@@ -732,6 +722,7 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
 #if SCM_USE_VALUECONS
 #if SCM_USE_STORAGE_FATTY
             if (!SCM_NULLVALUESP(obj)) {
+                /* EQ(obj, SCM_VALUEPACKET_VALUES(obj)) */
                 write_ss_scan(CDR(SCM_VALUEPACKET_VALUES(obj)), ctx);
                 /* SCM_VALUEPACKET_VALUES() changes the type destructively */
                 SCM_ENTYPE(obj, ScmValuePacket);
@@ -761,7 +752,7 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
  *         *additive inverse* of the index.  If obj is nondefining,
  *         return zero.
  */
-static int
+static scm_intobj_t
 get_shared_index(ScmObj obj)
 {
     hash_entry *ent;
@@ -772,7 +763,7 @@ get_shared_index(ScmObj obj)
         if (ent) {
             if (ent->datum == DEFINING_DATUM) {
                 ent->datum = l_write_ss_ctx->next_index++;
-                return - (ent->datum);
+                return -(ent->datum);
             }
             return ent->datum;
         }
@@ -784,7 +775,7 @@ static void
 write_ss_internal(ScmObj port, ScmObj obj, enum OutputType otype)
 {
     write_ss_context ctx = {{0}};
-    unsigned int i;
+    size_t i;
 
     ctx.next_index = 1;
     ctx.seen.size = 1 << 8; /* arbitrary initial size */

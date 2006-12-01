@@ -445,7 +445,7 @@ SRFI-38 External Representation for Data with Shared Structure
 
 Only `write-with-shared-structure` is implemented and
 `read-with-shared-structure` is not. The optional alias `write/ss` described in
-SRFI-38 is also defined.
+SRFI-38 is also defined. The optional `optarg` argument is ignored.
 
 The shared index starts with #1 (not #0).
 

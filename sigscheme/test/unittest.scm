@@ -207,6 +207,14 @@
             (set! serial 0)
             #f)))))
 
+(define print-expected
+  (lambda (expected)
+    (display " expected print: ")
+    (display expected)
+    (newline)
+    (display "   actual print: ")))
+
+
 ;;
 ;; implementation information
 ;;

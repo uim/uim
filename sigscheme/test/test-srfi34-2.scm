@@ -38,13 +38,6 @@
 
 ;; these tests are ported from "Examples" section of SRFI-34
 
-(define print-expected
-  (lambda (expected)
-    (display " expected print: ")
-    (display expected)
-    (newline)
-    (display "   actual print: ")))
-
 (tn "Examples of SRFI-34 document")
 
 ;;PRINTS: condition: an-error

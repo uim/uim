@@ -36,9 +36,31 @@
 (use srfi-38)
 (use srfi-6)
 
-(tn "write/ss invalid form")
-(assert-error (tn) (lambda () (write/ss #f . (current-output-port))))
+(tn "write/ss short-name alias")
+(if sigscheme?
+    (begin
+      (assert-true   (tn) (symbol-bound? 'write/ss))
+      (assert-true   (tn) (string-eval
+                           "(eq? write/ss write-with-shared-structure)"))))
 
+(tn "write/ss invalid form")
+(assert-error  (tn) (lambda ()
+                      (write-with-shared-structure)))
+(assert-error  (tn) (lambda ()
+                      (write-with-shared-structure #f . (current-output-port))))
+(assert-error  (tn) (lambda ()
+                      (write-with-shared-structure #f (current-output-port) . #t)))
+(if sigscheme?
+    (assert-error  (tn) (lambda ()
+                          (write-with-shared-structure
+                           #f (current-output-port) #t . #t))))
+
+(tn "write/ss with implicit port")
+(print-expected "\"abc\"")
+(write-with-shared-structure "abc")
+(newline)
+
+(tn "write/ss with explicit port arg")
 (let* ((outs (open-output-string))
        (s "abc")
        (convolution `(,s 1 #(,s b) ,(list 2) () ,s)))
@@ -47,13 +69,26 @@
   (vector-set! (caddr convolution) 1 (cddr convolution))
   (set-cdr! (cadddr convolution) (cdr convolution))
   (write-with-shared-structure convolution outs)
-  (assert-equal? "srfi38 #1" "#1=(#2=\"abc\" . #3=(#1# . #4=(#(#2# #4#) (2 . #3#) () #2#)))" (get-output-string outs)))
+  (assert-equal? (tn)
+                 "#1=(#2=\"abc\" . #3=(#1# . #4=(#(#2# #4#) (2 . #3#) () #2#)))"
+                 (get-output-string outs)))
 
 (let* ((outs (open-output-string))
        (a-pair (cons 'kar 'kdr))
             (convolution (eval (list 'lambda () a-pair) (scheme-report-environment 5))))
        (set-cdr! a-pair convolution)
        (write-with-shared-structure convolution outs)
-       (assert-equal? "srfi38 #2" "#1=#<closure (() (kar . #1#))>" (get-output-string outs)))
+       (assert-equal? (tn)
+                      "#1=#<closure (() (kar . #1#))>"
+                      (get-output-string outs)))
+
+(tn "write/ss with explicit port arg and optarg")
+(let ((p (open-output-string)))
+  (write-with-shared-structure "abc" p #t)
+  (assert-equal? (tn) "\"abc\"" (get-output-string p)))
+(if sigscheme?
+    (let ((p (open-output-string)))
+      (write-with-shared-structure "abc" p #t #t)  ;; accepts 2+ optarg
+      (assert-equal? (tn) "\"abc\"" (get-output-string p))))
 
 (total-report)

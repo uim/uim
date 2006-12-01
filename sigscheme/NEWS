@@ -99,6 +99,9 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - [R5RS] Reject invalid number literals such as "#x0xa"
 
+  - [SRFI-38] Fix inacceptance of optional 'optarg' argument of
+    'write-with-shared-structure'
+
   - [SRFI-60] Fix invalid result of (logand). Now it returns -1 as same
     as the reference implementation
 
@@ -130,6 +133,8 @@ Overview of changes from 0.6.1 to 0.7.0
   - Fix broken procedure invocation appears on a minor build configuration
 
   - Fix broken body result of %%closure-code when body-length == 1
+
+  - Fix possible datum index overflow of SRFI-38 write/ss on 64-bit platforms
 
   - Fix acceptable pathname length of a script name of sscm command previously
     one char lesser than maximum

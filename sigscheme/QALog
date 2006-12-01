@@ -242,7 +242,7 @@ y yy y   core module.c
 y yy y   core sigscheme.c
 y yy y   semicore port.c
 yyyy yyy semicore read.c
-         semicore write.c
+y yy y   semicore write.c
 y yy y   semicore load.c
          semicore format.c
 yyyy yyy r5rs syntax.c
@@ -264,7 +264,7 @@ yyyy yyy srfi module-srfi6.c
 yyyy yy  srfi module-srfi23.c
          srfi module-srfi28.c
 yyyy yyy srfi module-srfi34.c
-         srfi module-srfi38.c
+yyyy yyy srfi module-srfi38.c
          srfi module-srfi48.c
 yyyyyyyy srfi module-srfi60.c
 y yy y   opt module-sscm-ext.c
@@ -698,12 +698,12 @@ corner case tests: yamaken@r4012
 
 file:              write.c
 category:          semicore
-spec by eyes:      
+spec by eyes:      yamaken@r4041
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4041
+64-bit by eyes:    yamaken@r4041
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4041
 normal case tests: 
 corner case tests: 
 
@@ -940,14 +940,14 @@ corner case tests: yamaken@r3959
 
 file:              module-srfi38.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r4041
+spec by tests:     yamaken@r4041
+general review:    yamaken@r4041
+64-bit by eyes:    yamaken@r4041
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r4041
+normal case tests: yamaken@r4041
+corner case tests: yamaken@r4041
 
 file:              module-srfi48.c
 category:          srfi
@@ -1029,6 +1029,26 @@ corner case tests:
 
 Log
 ---
+2006-12-01  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * write.c
+        * module-srfi38.c
+          - QA done @r4041 except for "64-bit by tests" and #if
+            SCM_USE_HYGIENIC_MACRO
+          - Fix inacceptance of optional 'optarg' argument of
+            'write-with-shared-structure'
+          - Fix possible datum index overflow of SRFI-38 write/ss on 64-bit
+            platforms
+
+          Details:
+          - Complete all required tests for these procedures I'm aware of in
+            test-srfi38.scm
+          - Specs have been validated against following R5RS sections:
+            * write, display
+              "6.6.3 Output"
+          - Specs have been validated against SRFI-38:
+            * write-with-shared-structure
+
 2006-11-30  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * sigscheme-combined.h
