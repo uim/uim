@@ -25,7 +25,7 @@ IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 hangul2.svg hangul3.svg romaja.svg \
                 viqr.svg ipa-x-sampa.svg latin.svg \
                 scim.svg
-GENERATED_SVGS = $(IM_SUBST_SVGS)
+GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg
 SVGS += im_subst.svg $(GENERATED_SVGS)
 
 IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
@@ -35,7 +35,7 @@ IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 scim.png
 
 SVG_PNGS = unknown.png \
-           direct.png skk.png tcode.png tutcode.png byeoru.png \
+           direct.png skk.png tcode.png tutcode.png trycode.png byeoru.png \
            direct_input.png on.png off.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
            ja_halfkana.png \
@@ -52,7 +52,7 @@ SCIM_PNGS = scim-anthy.png scim-canna.png scim-prime.png \
 	    scim-skk.png scim-wnn.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png prime.png
 
-GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png trycode.png
+GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
 
 PNGS = $(NATIVE_PNGS) $(GENERATED_PNGS)
 
@@ -76,7 +76,7 @@ uim-icon.png: uim-icon48.png
 $(IM_SUBST_SVGS): im_subst.svg
 	cp $< $@
 
-trycode.png: tcode.png
+trycode.svg: tcode.svg
 	cp $< $@
 
 .svg.png:
