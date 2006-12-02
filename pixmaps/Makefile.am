@@ -3,7 +3,7 @@ pixmapsdir = @uim_pixmapsdir@
 SVGS = unknown.svg
 
 # input methods
-SVGS += direct.svg skk.svg tcode.svg trycode.svg tutcode.svg byeoru.svg
+SVGS += direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg
 
 # input modes
 SVGS += direct_input.svg on.svg off.svg \
@@ -35,7 +35,7 @@ IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 scim.png
 
 SVG_PNGS = unknown.png \
-           direct.png skk.png tcode.png trycode.png tutcode.png byeoru.png \
+           direct.png skk.png tcode.png tutcode.png byeoru.png \
            direct_input.png on.png off.png \
            ja_direct.png ja_hiragana.png ja_katakana.png \
            ja_halfkana.png \
@@ -52,7 +52,7 @@ SCIM_PNGS = scim-anthy.png scim-canna.png scim-prime.png \
 	    scim-skk.png scim-wnn.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png prime.png
 
-GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
+GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png trycode.png
 
 PNGS = $(NATIVE_PNGS) $(GENERATED_PNGS)
 
@@ -74,6 +74,9 @@ uim-icon.png: uim-icon48.png
 	cp $< $@
 
 $(IM_SUBST_SVGS): im_subst.svg
+	cp $< $@
+
+trycode.png: tcode.png
 	cp $< $@
 
 .svg.png:
