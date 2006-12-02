@@ -13,7 +13,6 @@ Input methods
 
 - skk.svg        (another version for SKK)
 - tcode.svg      (T-Code)
-- trycode.svg    (Try-Code)
 - tutcode.svg    (TUT-Code)
 - byeoru.svg     (Byeoru)
 - direct.svg     ("pass through" input method)
@@ -119,12 +118,6 @@ tcode.svg
 
 The input stroke chart (http://openlab.jp/tcode/intro.html#stroke-table)
 of T-Code.
-
-
-trycode.svg
-~~~~~~~~~
-
-Likewise. Exactly same icon of T-Code is reused although it is a bad idea.
 
 
 tutcode.svg
