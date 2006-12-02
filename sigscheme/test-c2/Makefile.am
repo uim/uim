@@ -4,7 +4,7 @@ LIBS        = $(top_builddir)/src/libsscm.la
 
 EXTRA_DIST= sscm-test.h utils.c \
             test-gc.c test-storage.c test-storage-compact.c \
-            test-length.c
+            test-length.c test-strcasecmp.c
 
 SUFFIXES= -coll.o -coll.c
 CLEANFILES= *-coll.c
@@ -21,5 +21,5 @@ endif
 # with collect.sh.  Leave the suffix out if you don't want some script
 # messing around with your masterpiece.
 TESTS= test-gc-coll test-storage-coll test-storage-compact-coll \
-       test-length-coll
+       test-length-coll test-strcasecmp-coll
 check_PROGRAMS= $(TESTS) test-minishell

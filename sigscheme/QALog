@@ -233,7 +233,7 @@ y yy y   base scmport-sbchar.c
          core storage-compact.h
          core storage.c
          core storage-gc.c
-         core strcasecmp.c
+yyyy yyy core strcasecmp.c
 y yy y   core alloc.c
 y yy y   core error.c
 y yy y   core env.c
@@ -590,14 +590,14 @@ corner case tests:
 
 file:              strcasecmp.c
 category:          core
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r4053
+spec by tests:     yamaken@r4053
+general review:    yamaken@r4053
+64-bit by eyes:    yamaken@r4053
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r4053
+normal case tests: yamaken@r4053
+corner case tests: yamaken@r4053
 
 file:              alloc.c
 category:          core
@@ -1043,6 +1043,13 @@ corner case tests:
 Log
 ---
 2006-12-02  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * strcasecmp.c
+          - QA done @r4053 except for "64-bit by tests"
+
+          Details:
+          - Replace test-c/test_strcasecmp.c with test-c2/test-strcasecmp.c
+          - Complete all required tests for these procedures I'm aware of
 
         * format.c
         * module-srfi28.c
