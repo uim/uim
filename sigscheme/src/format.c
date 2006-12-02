@@ -76,7 +76,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define PRETTY_PRINT_PROCEDURE_NAME "pretty-print"
+#define ERRMSG_INVALID_ESCSEQ "invalid escape sequence"
 
 #define MSG_SRFI48_DIRECTIVE_HELP                                             \
 "(format [<port>] <format-string> [<arg>...])\n"                              \
@@ -126,7 +126,7 @@
 #endif /* SCM_USE_SSCM_FORMAT_EXTENSION */
 
 #define NEWLINE_CHAR                                                         \
-    (SCM_NEWLINE_STR[sizeof(SCM_NEWLINE_STR) - sizeof("") - 1])
+    (SCM_NEWLINE_STR[sizeof(SCM_NEWLINE_STR) - 1 - sizeof("")])
 
 /*=======================================
   File Local Type Definitions
@@ -234,8 +234,7 @@ scm_init_format(void)
 {
     SCM_GLOBAL_VARS_INIT(static_format);
 
-    scm_gc_protect_with_init(&l_sym_pretty_print,
-                             scm_intern(PRETTY_PRINT_PROCEDURE_NAME));
+    scm_gc_protect_with_init(&l_sym_pretty_print, scm_intern("pretty-print"));
 }
 
 #if SCM_USE_MULTIBYTE_CHAR
@@ -246,23 +245,6 @@ format_str_peek(ScmMultibyteString mbs_fmt, const char *caller)
         scm_charcodec_read_char(scm_current_char_codec, &mbs_fmt, caller);
 }
 #endif /* SCM_USE_MULTIBYTE_CHAR */
-
-SCM_EXPORT void
-scm_pretty_print(ScmObj port, ScmObj obj)
-{
-    ScmObj proc_pretty_print;
-    DECLARE_INTERNAL_FUNCTION("scm_pretty_print");
-
-    /* FIXME: search pretty-print in current env */
-    proc_pretty_print = SCM_SYMBOL_VCELL(l_sym_pretty_print);
-
-    if (!EQ(proc_pretty_print, SCM_UNBOUND)) {
-        ENSURE_PROCEDURE(proc_pretty_print);
-        scm_call(proc_pretty_print, LIST_1(obj));
-    } else {
-        scm_write(port, obj);
-    }
-}
 
 static signed char
 read_width(format_string_t *fmt)
@@ -292,6 +274,7 @@ read_width(format_string_t *fmt)
     return ret;
 }
 
+/* ([0-9]+(,[0-9]+)?)? */
 static ScmValueFormat
 read_number_prefix(enum ScmFormatCapability fcap, format_string_t *fmt)
 {
@@ -305,13 +288,19 @@ read_number_prefix(enum ScmFormatCapability fcap, format_string_t *fmt)
     if (c == '0' && (fcap & SCM_FMT_LEADING_ZEROS)) {
         FORMAT_STR_SKIP_CHAR(*fmt);
         vfmt.pad = '0';
+        vfmt.width = 0;
     }
     vfmt.width = read_width(fmt);
     c = FORMAT_STR_PEEK(*fmt);
 
     if (c == ',') {
+        if (vfmt.width < 0)
+            ERR(ERRMSG_INVALID_ESCSEQ ": ~~,");
         FORMAT_STR_SKIP_CHAR(*fmt);
         vfmt.frac_width = read_width(fmt);
+        if (vfmt.frac_width < 0)
+            ERR(ERRMSG_INVALID_ESCSEQ ": ~~~D,~C",
+                (int)vfmt.width, FORMAT_STR_PEEK(*fmt));
     }
 
     return vfmt;
@@ -329,7 +318,7 @@ format_int(ScmObj port, ScmValueFormat vfmt, uintmax_t n, int radix)
 
 #if SCM_USE_RAW_C_FORMAT
 /* returns '\0' if no valid directive handled */
-/* ([CP]|(0?[0-9]+(,0?[0-9]+)?)?(S|[MWQLGJTZ]?[UDXOB])) */
+/* ([CP]|([0-9]+(,[0-9]+)?)?(S|[MWQLGJTZ]?[UDXOB])) */
 static scm_ichar_t
 format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
 {
@@ -449,7 +438,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
     case 'U': /* Unsigned decimal */
         vfmt.signedp = scm_false;
         /* FALLTHROUGH */
-    case 'D': /* Decimal */
+    case 'D': /* signed Decimal */
         radix = 10;
         break;
 
@@ -469,7 +458,7 @@ format_raw_c_directive(ScmObj port, format_string_t *fmt, va_list *args)
         break;
 
     default:
-        /* no internal directives found */
+        /* no raw C directives found */
         if (FORMAT_STR_POS(*fmt) != orig_pos)
             *fmt = orig_fmt;
         return '\0';
@@ -496,7 +485,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
     char directive;
     scm_bool eolp;
 #if SCM_USE_SRFI48
-    ScmObj obj, indirect_fmt, indirect_args;
+    ScmObj obj, indirect_fmt, indirect_args, proc_pretty_print;
     scm_bool prefixedp;
     int radix;
     scm_int_t i;
@@ -603,7 +592,15 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
 #endif /* SCM_USE_SRFI38 */
 
         case 'y': /* Yuppify */
-            scm_pretty_print(port, POP_FORMAT_ARG(args_type, args));
+            proc_pretty_print = SCM_SYMBOL_VCELL(l_sym_pretty_print);
+            if (EQ(proc_pretty_print, SCM_UNBOUND)) {
+                /* called internally when (use srfi-48) is not evaluated yet */
+                scm_write(port, POP_FORMAT_ARG(args_type, args));
+            } else {
+                ENSURE_PROCEDURE(proc_pretty_print);
+                obj = POP_FORMAT_ARG(args_type, args);
+                scm_call(proc_pretty_print, LIST_2(obj, port));
+            }
             goto fin;
 
         case 'k': /* Indirection (backward compatability) */
@@ -656,7 +653,7 @@ format_directive(ScmObj port, scm_ichar_t last_ch,
 
     /* Although SRFI-48 does not specified about unknown directives, the
      * reference implementation treats it as error. */
-    ERR("invalid escape sequence: ~~~C", (scm_ichar_t)directive);
+    ERR(ERRMSG_INVALID_ESCSEQ ": ~~~C", (scm_ichar_t)directive);
 
  fin:
     FORMAT_STR_SKIP_CHAR(*fmt);

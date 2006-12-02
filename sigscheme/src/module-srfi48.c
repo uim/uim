@@ -66,6 +66,7 @@ scm_initialize_srfi48(void)
     scm_init_format();
     scm_register_funcs(scm_srfi48_func_info_table);
 
+    scm_define_alias("pretty-print", "write");
 #if !SCM_USE_SSCM_FORMAT_EXTENSION
     SCM_SYMBOL_SET_VCELL(scm_intern("format+"), SCM_UNBOUND);
 #endif

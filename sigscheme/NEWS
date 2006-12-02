@@ -37,6 +37,8 @@ Overview of changes from 0.6.1 to 0.7.0
   - Remove initial hyphen support for symbols (such as '-sym). Use
     (string->symbol "-sym") instead
 
+  - Remove SIOD-compatible external representation of eof value '(eof)'
+
   - (scm_set_lib_path): Change to holding copied library path string
 
   - (scm_return_value): Removed
@@ -103,6 +105,10 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - [SRFI-38] Fix inacceptance of optional 'optarg' argument of
     'write-with-shared-structure'
+
+  - [SRFI-48] Fix optional port argument inacceptance of 'pretty-print'
+
+  - [SRFI-48] Fix broken number prefix acceptance such as "~,f", "~1,f", "~,1f"
 
   - [SRFI-60] Fix invalid result of (logand). Now it returns -1 as same
     as the reference implementation

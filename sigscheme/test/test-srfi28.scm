@@ -43,6 +43,7 @@
 (assert-error  (tn) (lambda () (format #f)))
 (assert-error  (tn) (lambda () (format #\a)))
 (assert-error  (tn) (lambda () (format "~")))
+(assert-error  (tn) (lambda () (format "a~")))
 (assert-error  (tn) (lambda () (format "a" "a")))
 
 (tn "format unknown directives")

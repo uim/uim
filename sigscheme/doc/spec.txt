@@ -24,9 +24,10 @@ as like GNU Emacs' 28-bit tagged pointer does.
 Integer range
 ~~~~~~~~~~~~~
 
-Only supports fixnum, and its range is varied by the user-selected underlying
-storage implementation. The range can be known via R6RS (R5.91RS) compatible
-`(fixnum-width)`, `(least-fixnum)` and `(greatest-fixnum)`.
+Current implementation only supports fixnum, and its range varies by the
+user-selected underlying storage implementation. The range can be known via
+R6RS (R5.91RS) compatible `(fixnum-width)`, `(least-fixnum)` and
+`(greatest-fixnum)`.
 
 
 R5RS conformance
@@ -440,12 +441,24 @@ distinguish the error objects from ordinary lists, use SigScheme-specific
   #t
 ================================================================
 
+SRFI-28 Basic Format Strings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SigScheme fully supports SRFI-28. A directive-less tilde at end of a format
+string causes an error as same as the reference implementation of SRFI-28.
+
+.SigScheme
+================================================================
+  (format "~")   ==> error
+  (format "a~")  ==> error
+================================================================
+
 SRFI-38 External Representation for Data with Shared Structure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Only `write-with-shared-structure` is implemented and
 `read-with-shared-structure` is not. The optional alias `write/ss` described in
-SRFI-38 is also defined. The optional `optarg` argument is ignored.
+SRFI-38 is also defined. The optional `optarg` argument is simply ignored.
 
 The shared index starts with #1 (not #0).
 
@@ -462,21 +475,41 @@ The shared index starts with #1 (not #0).
 SRFI-48 Intermediate Format Strings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+SigScheme fully supports SRFI-48.
+
 The 'd' part of '~w,dF' directive is acceptable, but completely ignored on
 output format. Since SigScheme only supports integer currently, number is
 always formatted as integer even if the 'd' part is specified.
 
-.proper behavior
+.Proper behavior
 ================================================================
-  (format "~3F"   3)  => "  3"
-  (format "~3,2F" 3)  => "3.00"
+  (format "~3F"   3)  ==> "  3"
+  (format "~3,2F" 3)  ==> "3.00"
 ================================================================
 
 .SigScheme
 ================================================================
-  (format "~3F"   3)  => "  3"
-  (format "~3,2F" 3)  => "  3"
+  (format "~3F"   3)  ==> "  3"
+  (format "~3,2F" 3)  ==> "  3"
 ================================================================
+
+Although the reference implementation of SRFI-48 allows directive-less tilde at
+end of a format string, SigScheme rejects it as an error since it decreases
+user-code portability, and is confusable due to that the behavior is different
+to the reference implementation of SRFI-28.
+
+.Reference implementation of SRFI-48
+================================================================
+  (format "~")   ==> "~"
+  (format "a~")  ==> "a~"
+================================================================
+
+.SigScheme
+================================================================
+  (format "~")   ==> error
+  (format "a~")  ==> error
+================================================================
+
 
 SRFI-60 Integer as Bits
 ~~~~~~~~~~~~~~~~~~~~~~~

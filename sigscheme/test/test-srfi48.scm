@@ -63,6 +63,8 @@
 (assert-error  (tn) (lambda () (format "a"     "~s" "aBc")))
 (assert-error  (tn) (lambda () (format '(0 1)  "~s" '(0 1))))
 (assert-error  (tn) (lambda () (format '#(0 1) "~s" '#(0 1))))
+(assert-error  (tn) (lambda () (format "~")))
+(assert-error  (tn) (lambda () (format "a~")))
 
 (tn "SRFI-48 format explicit port")
 (assert-equal? (tn)
@@ -309,6 +311,9 @@
 (assert-error  (tn) (lambda () (format "~-0,-1f" 1)))
 (assert-error  (tn) (lambda () (format "~-1,-0f" 1)))
 (assert-error  (tn) (lambda () (format "~-1,-1f" 1)))
+(assert-error  (tn) (lambda () (format "~,f"     1)))
+(assert-error  (tn) (lambda () (format "~,1f"    1)))
+(assert-error  (tn) (lambda () (format "~1,f"    1)))
 (assert-equal? (tn) "-100" (format "~f" -100))
 (assert-equal? (tn) "-10"  (format "~f" -10))
 (assert-equal? (tn) "-1"   (format "~f" -1))
@@ -366,6 +371,16 @@
 (assert-equal? (tn) "    1" (format "~5f" 1))
 (assert-equal? (tn) "   10" (format "~5f" 10))
 (assert-equal? (tn) "  100" (format "~5f" 100))
+
+(if (not testing-format+?)
+    (begin
+      (assert-equal? (tn) "-100" (format "~0,0f" -100))
+      (assert-equal? (tn) "-10"  (format "~0,0f" -10))
+      (assert-equal? (tn) "-1"   (format "~0,0f" -1))
+      (assert-equal? (tn) "0"    (format "~0,0f" 0))
+      (assert-equal? (tn) "1"    (format "~0,0f" 1))
+      (assert-equal? (tn) "10"   (format "~0,0f" 10))
+      (assert-equal? (tn) "100"  (format "~0,0f" 100))))
 
 (if (not testing-format+?)
     (begin
@@ -644,6 +659,17 @@
 (assert-equal? (tn)
                "#(#t 123 #\\a \"aBc\" (0))"
                (format "~y" '#(#t 123 #\a "aBc" (0))))
+(tn "format ~y with explicit port to pretty-print")
+(let ((p (open-output-string)))
+  (format p "~y" 123)
+  (assert-equal? (tn) "123" (get-output-string p)))
+(define pretty-print write)
+(let ((p (open-output-string)))
+  (format p "~y" 123)
+  (assert-equal? (tn) "123" (get-output-string p)))
+(define pretty-print #f)
+(let ((p (open-output-string)))
+  (assert-error  (tn) (lambda () (format p "~y" 123))))
 
 (tn "format ~t")
 (assert-error  (tn) (lambda () (format "~t" #t)))

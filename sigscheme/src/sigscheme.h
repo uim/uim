@@ -1612,7 +1612,6 @@ SCM_EXPORT ScmObj scm_p_load(ScmObj filename);
 
 /* format.c */
 #if SCM_USE_FORMAT
-SCM_EXPORT void scm_pretty_print(ScmObj port, ScmObj obj);
 SCM_EXPORT ScmObj scm_lformat(ScmObj port, enum ScmFormatCapability fcap,
                               const char *fmt, ScmObj scm_args);
 SCM_EXPORT ScmObj scm_vformat(ScmObj port, enum ScmFormatCapability fcap,

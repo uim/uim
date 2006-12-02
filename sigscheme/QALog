@@ -246,7 +246,7 @@ y yy y   semicore port.c
 yyyy yyy semicore read.c
 y yy y   semicore write.c
 y yy y   semicore load.c
-         semicore format.c
+yyyy yyy semicore format.c
 yyyy yyy r5rs syntax.c
 yyyy yyy r5rs procedure.c
 yyyy yyy r5rs number.c
@@ -264,10 +264,10 @@ yyyy yyy r5rs qquote.c
 yyyy yyy srfi module-srfi6.c
          srfi module-srfi8.c
 yyyy yy  srfi module-srfi23.c
-         srfi module-srfi28.c
+yyyy yyy srfi module-srfi28.c
 yyyy yyy srfi module-srfi34.c
 yyyy yyy srfi module-srfi38.c
-         srfi module-srfi48.c
+yyyy yyy srfi module-srfi48.c
 yyyyyyyy srfi module-srfi60.c
 y yy y   opt module-sscm-ext.c
 y yy y   opt module-siod.c
@@ -733,14 +733,14 @@ corner case tests:
 
 file:              format.c
 category:          semicore
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r4052
+spec by tests:     yamaken@r4052
+general review:    yamaken@r4052
+64-bit by eyes:    yamaken@r4052
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r4052
+normal case tests: yamaken@r4052
+corner case tests: yamaken@r4052
 
 file:              syntax.c
 category:          r5rs
@@ -931,14 +931,14 @@ corner case tests:
 
 file:              module-srfi28.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r4052
+spec by tests:     yamaken@r4052
+general review:    yamaken@r4052
+64-bit by eyes:    yamaken@r4052
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r4052
+normal case tests: yamaken@r4052
+corner case tests: yamaken@r4052
 
 file:              module-srfi34.c
 category:          srfi
@@ -964,14 +964,14 @@ corner case tests: yamaken@r4041
 
 file:              module-srfi48.c
 category:          srfi
-spec by eyes:      
-spec by tests:     
-general review:    
-64-bit by eyes:    
+spec by eyes:      yamaken@r4052
+spec by tests:     yamaken@r4052
+general review:    yamaken@r4052
+64-bit by eyes:    yamaken@r4052
 64-bit by tests:   
-coding style:      
-normal case tests: 
-corner case tests: 
+coding style:      yamaken@r4052
+normal case tests: yamaken@r4052
+corner case tests: yamaken@r4052
 
 file:              module-srfi60.c
 category:          srfi
@@ -1043,6 +1043,19 @@ corner case tests:
 Log
 ---
 2006-12-02  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * format.c
+        * module-srfi28.c
+        * module-srfi48.c
+          - QA done @r4052 except for "64-bit by tests" and #if
+            SCM_USE_MULTIBYTE_CHAR
+          Details:
+          - Complete all required tests for these procedures I'm aware of in
+            test-srfi{28,48}.scm and test-c/test_format.c
+          - Specs have been validated against SRFI-28:
+            * format
+          - Specs have been validated against SRFI-48:
+            * format, pretty-print
 
         * write.c
         * module-srfi38.c
