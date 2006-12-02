@@ -9,6 +9,13 @@ uim_toolbar_applet_LDADD = @GTK2_LIBS@ @APPLET_GNOME_LIBS@ \
 			   $(top_builddir)/uim/libuim.la
 uim_toolbar_applet_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 uim_toolbar_applet_CFLAGS = @GTK2_CFLAGS@ @APPLET_GNOME_CFLAGS@
+if GCC
+# to cancel "-std=gnu89 -pedantic -Werror" and accept the string
+# uim_menu_xml longer than ISO C 89 maximum length (509)
+CFLAGS += -Wno-error
+# recent version of gcc has the option to suppress the warning
+#uim_toolbar_applet_CFLAGS += -Wno-overlength-strings
+endif
 
 uim_toolbar_applet_SOURCES = toolbar-applet-gnome.c toolbar-common-gtk.c
 
