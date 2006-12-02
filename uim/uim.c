@@ -675,8 +675,12 @@ escape_string(const char *str)
     case '\b':
     case '\v':
     case '"':
-      buf[i++] = '\\';
-      buf[i] = *p;
+      if (i < BUFSIZ - 2) {
+        buf[i++] = '\\';
+        buf[i] = *p;
+      } else {
+        buf[i] = '\0';
+      }
       break;
     default:
       buf[i] = *p;
