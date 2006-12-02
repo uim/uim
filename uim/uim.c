@@ -657,56 +657,46 @@ uim_set_text_acquisition_cb(uim_context uc,
   uc->delete_text_cb = delete_cb;
 }
 
-static char *
-escape_string(const char *str)
+void
+uim_internal_escape_string(char *str)
 {
-  const char *p;
-  char buf[BUFSIZ]; /* XXX */
-  int i = 0;
+  char *p;
+  int len;
   
+  if (!str)
+    return;
+
+  len = strlen(str);
+
   for (p = str; *p != '\0'; p++) {
     switch (*p) {
-    case '\\':
-    case '\n':
-    case '\r':
-    case '\t':
-    case '\f':
-    case '\a':
-    case '\b':
-    case '\v':
     case '"':
-      if (i < BUFSIZ - 2) {
-        buf[i++] = '\\';
-        buf[i] = *p;
-      } else {
-        buf[i] = '\0';
-      }
+    case '\\':
+      str = realloc(str, len + 1);
+      if (!str)
+        return;
+      memmove(p + 1, p, str + len - p + 1);
+      *p = '\\';
+      len++;
+      p++;
       break;
     default:
-      buf[i] = *p;
       break;
     }
-    i++;
-    if (i == BUFSIZ - 1)
-      break;
   }
-  buf[i] = '\0';
-
-  return strdup(buf);
 }
 
 uim_bool
 uim_input_string(uim_context uc, const char *str)
 {
-  char *conv, *s;
+  char *conv;
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
-    s = escape_string(conv);
-    if (s)
-      UIM_EVAL_FSTRING2(uc, "(input-string-handler %d \"%s\")", uc->id, s);
+    uim_internal_escape_string(conv);
+    if (conv)
+      UIM_EVAL_FSTRING2(uc, "(input-string-handler %d \"%s\")", uc->id, conv);
     free(conv);
-    free(s);
 
     /* FIXME: handle return value properly. */
     return UIM_TRUE;
