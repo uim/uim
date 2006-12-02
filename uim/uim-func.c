@@ -720,6 +720,8 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
    * needed.  -- YamaKen 2006-10-07 */
   im_former = uc->conv_if->convert(uc->inbound_conv, former);
   im_latter = uc->conv_if->convert(uc->inbound_conv, latter);
+  uim_internal_escape_string(im_former);
+  uim_internal_escape_string(im_latter);
 
   if (im_former && strcmp(im_former, ""))
     is_former_null = UIM_FALSE;

@@ -272,6 +272,7 @@ extern struct uim_im *uim_im_array;
 extern int uim_nr_im;
 extern char *uim_last_client_encoding;
 
+void uim_internal_escape_string(char *str);
 #ifdef __cplusplus
 }
 #endif
