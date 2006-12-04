@@ -672,7 +672,7 @@ uim_internal_escape_string(char *str)
     switch (*p) {
     case '"':
     case '\\':
-      str = realloc(str, len + 1);
+      str = realloc(str, len + 2);
       if (!str)
         return;
       memmove(p + 1, p, str + len - p + 1);
