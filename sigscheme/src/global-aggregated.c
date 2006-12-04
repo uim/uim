@@ -49,6 +49,7 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
+SCM_DECLARE_AGGREGATED_GLOBAL_VARS();
 
 /*=======================================
   File Local Type Definitions
@@ -57,6 +58,7 @@
 /*=======================================
   Variable Definitions
 =======================================*/
+SCM_DEFINE_AGGREGATED_GLOBAL_VARS();
 
 /*=======================================
   File Local Function Declarations
@@ -80,7 +82,7 @@
  * http://www.symbian.com/developer/techlib/v8.1adocs/doc_source/reference/reference-cpp/N101BA/ThreadsAndProcesses/DllClass.html
  * http://www.symbian.com/developer/techlib/v70docs/SDL_v7.0/doc_source/reference/cpp/ThreadsAndProcesses/DllClass.html
  */
-void
+SCM_EXPORT void
 scm_aggregated_global_vars_init(void)
 {
     struct scm_g_aggregated *vars;
@@ -93,7 +95,7 @@ scm_aggregated_global_vars_init(void)
         exit(EXIT_FAILURE);    /* FIXME: more appropriate handling */
 }
 
-void
+SCM_EXPORT void
 scm_aggregated_global_vars_fin(void)
 {
     free(SCM_AGGREGATED_GLOBAL_VARS_INSTANCE());
@@ -123,7 +125,7 @@ scm_aggregated_global_vars_fin(void)
  * } CMyApplet;
  */
 
-void
+SCM_EXPORT void
 scm_aggregated_global_vars_init(void)
 {
     MEMSET(SCM_AGGREGATED_GLOBAL_VARS_INSTANCE(),
@@ -131,7 +133,7 @@ scm_aggregated_global_vars_init(void)
 }
 
 #elif SCM_HAVE_WRITABLE_GLOBAL_VARS
-void
+SCM_EXPORT void
 scm_aggregated_global_vars_init(void)
 {
     memset(&scm_g_aggregated_instance, 0, sizeof(struct scm_g_aggregated));

@@ -223,8 +223,8 @@ y yy y   base scmport-sbchar.c
          base encoding-dummy.h
          base encoding-config.h
          base encoding.c
-         base global.h
-         base global-aggregated.c
+y yy y   base global.h
+y yy y   base global-aggregated.c
          core config-old.h
          core sigscheme.h
          core sigschemeinternal.h
@@ -403,7 +403,7 @@ corner case tests:
 
 file:              scmport-sbchar.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r3999
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r3999, yamaken@r4060
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -480,23 +480,23 @@ corner case tests:
 
 file:              global.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r4060
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4060
+64-bit by eyes:    yamaken@r4060
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4060
 normal case tests: 
 corner case tests: 
 
 file:              global-aggregated.c
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@r4060
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4060
+64-bit by eyes:    yamaken@r4060
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4060
 normal case tests: 
 corner case tests: 
 
@@ -1042,6 +1042,14 @@ corner case tests:
 
 Log
 ---
+2006-12-05  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * global.h
+        * global-aggregated.c
+          - QA done @r4060 by eyes
+          - Fix broken aggregated global variables handling
+          - Fix writable static data feature dependency
+
 2006-12-02  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * strcasecmp.c

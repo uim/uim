@@ -85,8 +85,7 @@ SCM_GLOBAL_VARS_END(static_scmport_sbchar);
     SCM_GLOBAL_VAR(static_scmport_sbchar, l_ScmSingleByteCharPort_vtbl)
 SCM_DEFINE_STATIC_VARS(static_scmport_sbchar);
 
-SCM_EXPORT const ScmCharPortVTbl *ScmSingleByteCharPort_vptr
-    = &l_ScmSingleByteCharPort_vtbl;
+SCM_EXPORT const ScmCharPortVTbl *ScmSingleByteCharPort_vptr;
 
 /*=======================================
   Function Definitions
@@ -105,6 +104,7 @@ scm_sbcport_init(void)
     vptr->codec    = (ScmCharPortMethod_codec)&sbcport_codec;
     vptr->inspect  = (ScmCharPortMethod_inspect)&sbcport_inspect;
     vptr->put_char = (ScmCharPortMethod_put_char)&sbcport_put_char;
+    ScmSingleByteCharPort_vptr = vptr;
 
     l_sbc_codec = scm_mb_find_codec("ISO-8859-1");
 }

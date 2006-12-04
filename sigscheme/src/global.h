@@ -79,8 +79,8 @@ extern "C" {
 #if (defined(__SYMBIAN32__) && !defined(EKA2))
 /*** EXPERIMENTAL AND NOT TESTED ***/
 
-#define SCM_DECLARE_AGGREGATED_GLOBAL_VARS() extern int dummy
-#define SCM_DEFINE_AGGREGATED_GLOBAL_VARS()  extern int dummy
+#define SCM_DECLARE_AGGREGATED_GLOBAL_VARS() extern int scm_g_dummy
+#define SCM_DEFINE_AGGREGATED_GLOBAL_VARS()  extern int scm_g_dummy
 
 #define SCM_AGGREGATED_GLOBAL_VARS_INIT() (scm_aggregated_global_vars_init())
 #define SCM_AGGREGATED_GLOBAL_VARS_FIN()  (scm_aggregated_global_vars_fin())
@@ -90,8 +90,8 @@ extern "C" {
 #elif BREW_MAJ_VER  /* FIXME: inappropriate detection method */
 /*** EXPERIMENTAL AND NOT TESTED ***/
 
-#define SCM_DECLARE_AGGREGATED_GLOBAL_VARS() extern int dummy
-#define SCM_DEFINE_AGGREGATED_GLOBAL_VARS()  extern int dummy
+#define SCM_DECLARE_AGGREGATED_GLOBAL_VARS() extern int scm_g_dummy
+#define SCM_DEFINE_AGGREGATED_GLOBAL_VARS()  extern int scm_g_dummy
 
 #define SCM_AGGREGATED_GLOBAL_VARS_INIT() (scm_aggregated_global_vars_init())
 #define SCM_AGGREGATED_GLOBAL_VARS_FIN()  SCM_EMPTY_EXPR
@@ -100,11 +100,11 @@ extern "C" {
 
 #elif SCM_HAVE_WRITABLE_GLOBAL_VARS
 #define SCM_DECLARE_AGGREGATED_GLOBAL_VARS()                                 \
-    extern struct scm_g_aggregated scm_g_aggregated_instance;
+    SCM_EXTERN(struct scm_g_aggregated scm_g_aggregated_instance)
 #define SCM_DEFINE_AGGREGATED_GLOBAL_VARS()                                  \
     /* dummy statement to prevent static prefix */                           \
     struct scm_g_dummy_aggregated_define { int dummy; };                     \
-    struct scm_g_aggregated scm_g_aggregated_instance
+    SCM_EXPORT struct scm_g_aggregated scm_g_aggregated_instance
 
 #define SCM_AGGREGATED_GLOBAL_VARS_INIT() (scm_aggregated_global_vars_init())
 #define SCM_AGGREGATED_GLOBAL_VARS_FIN()  SCM_EMPTY_EXPR
@@ -119,22 +119,22 @@ extern "C" {
 #define SCM_GLOBAL_VARS_INIT(_namespace)   SCM_EMPTY_EXPR
 #define SCM_GLOBAL_VARS_FIN(_namespace)    SCM_EMPTY_EXPR
 
-#define SCM_GLOBAL_VARS_INSTANCE(_namespace) (scm_g_instance_##_namespace())
+#define SCM_GLOBAL_VARS_INSTANCE(_namespace) (*scm_g_instance_##_namespace())
 
 #define SCM_DEFINE_GLOBAL_VARS_INSTANCE_ACCESSOR(_namespace)                 \
-    struct scm_g_##_namespace *                                              \
+    SCM_EXPORT struct scm_g_##_namespace *                                   \
     scm_g_instance_##_namespace(void)                                        \
     {                                                                        \
         return &SCM_AGGREGATED_GLOBAL_VARS_INSTANCE()._namespace;            \
     }                                                                        \
-    extern int dummy
+    extern int scm_g_dummy
 
 #else /* SCM_USE_AGGREGATED_GLOBAL_VARS */
 
 #define SCM_DECLARE_AGGREGATED_GLOBAL_VARS()                                 \
-    extern int dummy
+    extern int scm_g_dummy
 #define SCM_DEFINE_AGGREGATED_GLOBAL_VARS()                                  \
-    extern int dummy
+    extern int scm_g_dummy
 
 #define SCM_AGGREGATED_GLOBAL_VARS_INIT() SCM_EMPTY_EXPR
 #define SCM_AGGREGATED_GLOBAL_VARS_FIN()  SCM_EMPTY_EXPR
@@ -163,25 +163,30 @@ extern "C" {
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
     SCM_EXPORT struct scm_g_##_namespace *scm_g_instance_##_namespace(void)
 #define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
-    extern int dummy
-#elif SCM_COMBINED_SOURCE
+    extern int scm_g_dummy
+#if !SCM_COMBINED_SOURCE
+#error "(SCM_USE_AGGREGATED_GLOBAL_VARS && !SCM_COMBINED_SOURCE) is not supported"
+#endif /* SCM_COMBINED_SOURCE */
+#else /* SCM_USE_AGGREGATED_GLOBAL_VARS */
+#if SCM_COMBINED_SOURCE
 /* define at declaration in the header file */
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
     SCM_DEFINE_STATIC_VARS(_namespace)
 #define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
     /* dummy statement to prevent static prefix */                           \
     struct scm_g_dummy_##_namespace { int dummy; }
-#else
+#else /* SCM_COMBINED_SOURCE */
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
-    extern struct scm_g_##_namespace scm_g_instance_##_namespace
+    SCM_EXTERN(struct scm_g_##_namespace scm_g_instance_##_namespace)
 #define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
     /* dummy statement to prevent static prefix */                           \
     struct scm_g_dummy_##_namespace { int dummy; };                          \
-    struct scm_g_##_namespace scm_g_instance_##_namespace
-#endif
+    SCM_EXPORT struct scm_g_##_namespace scm_g_instance_##_namespace
+#endif /* SCM_COMBINED_SOURCE */
+#endif /* SCM_USE_AGGREGATED_GLOBAL_VARS */
 
 #if (SCM_COMBINED_SOURCE && !SCM_EXPORT_API)
-#define SCM_EXTERN(_decl) extern int scm_dummy
+#define SCM_EXTERN(_decl) extern int scm_g_dummy
 #define SCM_EXPORT static
 
 /* FIXME: reflect SCM_COMBINED_SOURCE */

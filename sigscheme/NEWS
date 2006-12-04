@@ -147,6 +147,10 @@ Overview of changes from 0.6.1 to 0.7.0
   - Fix acceptable pathname length of a script name of sscm command previously
     one char lesser than maximum
 
+  - Fix broken aggregated global variables handling
+
+  - Fix writable static data feature dependency
+
 
 Overview of changes from 0.5.0 (r3097 + private modifications) to 0.6.1
 ==

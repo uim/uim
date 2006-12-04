@@ -102,8 +102,7 @@ SCM_GLOBAL_VARS_END(static_scmport_mbchar);
         SCM_GLOBAL_VAR(static_scmport_mbchar, l_ScmMultiByteCharPort_vtbl)
 SCM_DEFINE_STATIC_VARS(static_scmport_mbchar);
 
-SCM_EXPORT const ScmCharPortVTbl *const ScmMultiByteCharPort_vptr
-    = &l_ScmMultiByteCharPort_vtbl;
+SCM_EXPORT const ScmCharPortVTbl *ScmMultiByteCharPort_vptr;
 
 /*=======================================
   Function Definitions
@@ -125,6 +124,7 @@ scm_mbcport_init(void)
     vptr->peek_char   = (ScmCharPortMethod_peek_char)&mbcport_peek_char;
     vptr->char_readyp = (ScmCharPortMethod_char_readyp)&mbcport_char_readyp;
     vptr->put_char    = (ScmCharPortMethod_put_char)&mbcport_put_char;
+    ScmMultiByteCharPort_vptr = vptr;
 }
 
 SCM_EXPORT void
