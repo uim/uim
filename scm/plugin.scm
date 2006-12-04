@@ -42,7 +42,7 @@
 	(filter string?
 		(append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
 			      (if home-dir
-				  (string-append home-dir ".uim.d/plugin")
+				  (string-append home-dir "/.uim.d/plugin")
 				  '())
 			      (string-append (sys-pkglibdir) "/plugin"))
 			;; XXX
