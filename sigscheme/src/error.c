@@ -348,7 +348,9 @@ scm_error_internal(const char *func_name, ScmObj obj,
     reason = scm_vformat(SCM_FALSE, SCM_FMT_INTERNAL, msg, args);
     if (func_name) {
         reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
-                            "in ~S: ~S", func_name, SCM_STRING_STR(reason));
+                            "in ~S: ~S~S",
+                            func_name, SCM_STRING_STR(reason),
+                            (EQ(obj, NO_ERR_OBJ) ? "" : ":"));
     }
 #else
     reason = CONST_STRING(msg);

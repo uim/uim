@@ -612,7 +612,7 @@ corner case tests:
 
 file:              error.c
 category:          core
-spec by eyes:      yamaken@r3950
+spec by eyes:      yamaken@r3950, yamaken@r4062
 spec by tests:     
 general review:    yamaken@r3950
 64-bit by eyes:    yamaken@r3950

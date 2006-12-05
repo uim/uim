@@ -316,11 +316,11 @@ apprication could disable it.
 .SCM_STRICT_ARGCHECK enabled
 ================================================================
   sscm> (car '(1 2) 3 4)
-  ERROR: in (function call): superfluous argument(s): (3 4)
+  Error: in (function call): superfluous argument(s): (3 4)
   sscm> (symbol? 'foo . #t)
-  ERROR: in (function call): improper argument list terminator: #t
+  Error: in (function call): improper argument list terminator: #t
   sscm> (+ 3 4 . 5)
-  ERROR: in (reduction): improper argument list terminator: 5
+  Error: in (reduction): improper argument list terminator: 5
 ================================================================
 
 .SCM_STRICT_ARGCHECK disabled
