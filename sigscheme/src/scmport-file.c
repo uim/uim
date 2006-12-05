@@ -184,12 +184,12 @@ fileport_dyn_cast(ScmBytePort *bport, const ScmBytePortVTbl *dst_vptr)
 static void
 fileport_close(ScmFilePort *port)
 {
-    int err;
+    int ret;
 
-    err = (port->ownership) ? fclose(port->file) : OK;
+    ret = (port->ownership) ? fclose(port->file) : OK;
     free(port->aux_info);
     free(port);
-    if (err)
+    if (ret == EOF)
         SCM_BYTEPORT_ERROR(NULL, SCM_ERRMSG_CLOSE_PORT);
 }
 
@@ -262,10 +262,10 @@ fileport_byte_readyp(ScmFilePort *port)
 static void
 fileport_puts(ScmFilePort *port, const char *str)
 {
-    int err;
+    int ret;
 
-    err = fputs(str, port->file);
-    if (err)
+    ret = fputs(str, port->file);
+    if (ret == EOF)
         SCM_BYTEPORT_ERROR(port, SCM_ERRMSG_WRITE_TO_PORT);
 }
 
@@ -282,9 +282,9 @@ fileport_write(ScmFilePort *port, size_t nbytes, const char *buf)
 static void
 fileport_flush(ScmFilePort *port)
 {
-    int err;
+    int ret;
 
-    err = fflush(port->file);
-    if (err)
+    ret = fflush(port->file);
+    if (ret == EOF)
         SCM_BYTEPORT_ERROR(port, SCM_ERRMSG_WRITE_TO_PORT);
 }

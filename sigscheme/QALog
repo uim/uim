@@ -326,7 +326,7 @@ corner case tests:
 
 file:              scmport-null.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r4068
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -337,7 +337,7 @@ corner case tests:
 
 file:              scmport-file.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r4068
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -348,7 +348,7 @@ corner case tests:
 
 file:              scmport-file.h
 category:          base
-spec by eyes:      yamaken@r3963
+spec by eyes:      yamaken@r3963, yamaken@r4068
 spec by tests:     
 general review:    yamaken@r3963
 64-bit by eyes:    yamaken@r3963
@@ -370,7 +370,7 @@ corner case tests:
 
 file:              scmport-str.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r4068
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -381,7 +381,7 @@ corner case tests:
 
 file:              scmport-basechar.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r4068
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -403,7 +403,7 @@ corner case tests:
 
 file:              scmport-sbchar.c
 category:          base
-spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r3999, yamaken@r4060
+spec by eyes:      yamaken@r3963, yamaken@r3992, yamaken@r3999, yamaken@r4060, yamaken@r4068
 spec by tests:     
 general review:    yamaken@r3963, yamaken@r3992
 64-bit by eyes:    yamaken@r3963, yamaken@r3992
@@ -1043,6 +1043,11 @@ corner case tests:
 Log
 ---
 2006-12-06  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * scmport-file.c
+          - QA done again @r4068 by eyes and hand tests
+          - Fix *BSD-dependent error detection for fputs(3) with ISO 9899:1999
+          - Check again other std C functions against ISO 9899:1999
 
         * encoding-dummy.h
           - QA done @r4067 by eyes
