@@ -226,8 +226,8 @@ y yy y   base scmport-sbchar.c
 y yy y   base global.h
 y yy y   base global-aggregated.c
          core config-old.h
-         core sigscheme.h
-         core sigschemeinternal.h
+y yy y   core sigscheme.h
+y yy y   core sigschemeinternal.h
          core storage-common.h
          core storage-fatty.h
          core storage-compact.h
@@ -513,23 +513,23 @@ corner case tests:
 
 file:              sigscheme.h
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4061
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4061
+64-bit by eyes:    yamaken@r4061
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4061
 normal case tests: 
 corner case tests: 
 
 file:              sigschemeinternal.h
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4061
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4061
+64-bit by eyes:    yamaken@r4061
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4061
 normal case tests: 
 corner case tests: 
 
@@ -1043,6 +1043,10 @@ corner case tests:
 Log
 ---
 2006-12-05  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * sigscheme.h
+        * sigschemeinternal.h
+          - QA done @r4061 by eyes
 
         * global.h
         * global-aggregated.c

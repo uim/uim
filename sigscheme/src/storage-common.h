@@ -85,7 +85,7 @@ extern "C" {
 #define SCM_SAL_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
 #endif /* SCM_USE_SSCM_EXTENSIONS */
 #ifndef SCM_SAL_MAKE_VALUEPACKET
-#define SCM_SAL_MAKE_VALUEPACKET             scm_make_value_packet
+#define SCM_SAL_MAKE_VALUEPACKET              scm_make_value_packet
 #endif /* SCM_SAL_MAKE_VALUEPACKET */
 #if SCM_USE_HYGIENIC_MACRO
 #define SCM_SAL_MAKE_HMACRO                   scm_make_hmacro

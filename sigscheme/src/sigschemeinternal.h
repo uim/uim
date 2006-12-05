@@ -323,7 +323,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #if SCM_STRICT_ARGCHECK
 #define SCM_CHECK_PROPER_LIST_TERMINATION SCM_ENSURE_PROPER_LIST_TERMINATION
 #else
-#define SCM_CHECK_PROPER_LIST_TERMINATION(term, lst)
+#define SCM_CHECK_PROPER_LIST_TERMINATION(term, lst) SCM_EMPTY_EXPR
 #endif
 
 /* ASSERT_NO_MORE_ARG() asserts that the variadic argument list has
@@ -380,31 +380,31 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
     SCM_ASSERT(CONSP(_lst));                                                 \
     while ((_elm) = POP(_lst), CONSP(_lst))
 
-#define ENSURE_TYPE(pred, typename, obj)                                     \
-    (pred(obj) || (ERR_OBJ(typename " required but got", (obj)), 1))
+#define ENSURE_TYPE(pred, _typename, obj)                                    \
+    (pred(obj) || (ERR_OBJ(_typename " required but got", (obj)), 1))
 
-#define ENSURE_INT(obj)     ENSURE_TYPE(INTP, "integer", (obj))
-#define ENSURE_CONS(obj)    ENSURE_TYPE(CONSP, "pair", (obj))
-#define ENSURE_SYMBOL(obj)  ENSURE_TYPE(SYMBOLP, "symbol", (obj))
-#define ENSURE_CHAR(obj)    ENSURE_TYPE(CHARP, "character", (obj))
-#define ENSURE_STRING(obj)  ENSURE_TYPE(STRINGP, "string", (obj))
-#define ENSURE_FUNC(obj)    ENSURE_TYPE(FUNCP, "function", (obj))
-#define ENSURE_CLOSURE(obj) ENSURE_TYPE(CLOSUREP, "closure", (obj))
-#define ENSURE_VECTOR(obj)  ENSURE_TYPE(VECTORP, "vector", (obj))
-#define ENSURE_PORT(obj)    ENSURE_TYPE(PORTP, "port", (obj))
-#define ENSURE_CONTINUATION(obj) ENSURE_TYPE(CONTINUATIONP, "continuation", (obj))
-#define ENSURE_PROCEDURE(obj) ENSURE_TYPE(PROCEDUREP, "procedure", (obj))
-#define ENSURE_ENV(obj)     ENSURE_TYPE(ENVP, "environment specifier", (obj))
-#define ENSURE_VALID_ENV(obj)                                                \
-    ENSURE_TYPE(VALID_ENVP, "valid environment specifier", (obj))
-#define ENSURE_ERROBJ(obj)  ENSURE_TYPE(ERROBJP, "error object", (obj))
-#define ENSURE_LIST(obj)    ENSURE_TYPE(LISTP, "list", (obj))
-#define ENSURE_IDENTIFIER(obj) ENSURE_TYPE(IDENTIFIERP, "identifier", (obj))
+#define ENSURE_INT(o)          ENSURE_TYPE(INTP,          "integer",      (o))
+#define ENSURE_CONS(o)         ENSURE_TYPE(CONSP,         "pair",         (o))
+#define ENSURE_SYMBOL(o)       ENSURE_TYPE(SYMBOLP,       "symbol",       (o))
+#define ENSURE_CHAR(o)         ENSURE_TYPE(CHARP,         "character",    (o))
+#define ENSURE_STRING(o)       ENSURE_TYPE(STRINGP,       "string",       (o))
+#define ENSURE_FUNC(o)         ENSURE_TYPE(FUNCP,         "function",     (o))
+#define ENSURE_CLOSURE(o)      ENSURE_TYPE(CLOSUREP,      "closure",      (o))
+#define ENSURE_VECTOR(o)       ENSURE_TYPE(VECTORP,       "vector",       (o))
+#define ENSURE_PORT(o)         ENSURE_TYPE(PORTP,         "port",         (o))
+#define ENSURE_CONTINUATION(o) ENSURE_TYPE(CONTINUATIONP, "continuation", (o))
+#define ENSURE_PROCEDURE(o)    ENSURE_TYPE(PROCEDUREP,    "procedure",    (o))
+#define ENSURE_ENV(o)          ENSURE_TYPE(ENVP, "environment specifier", (o))
+#define ENSURE_VALID_ENV(o)                                                \
+    ENSURE_TYPE(VALID_ENVP, "valid environment specifier", (o))
+#define ENSURE_ERROBJ(o)       ENSURE_TYPE(ERROBJP,       "error object", (o))
+#define ENSURE_LIST(o)         ENSURE_TYPE(LISTP,         "list",         (o))
+#define ENSURE_IDENTIFIER(o)   ENSURE_TYPE(IDENTIFIERP,   "identifier",   (o))
 
 #if SCM_HAS_IMMUTABLE_CONS
 #define ENSURE_MUTABLE_CONS(kons)                                            \
     (SCM_CONS_MUTABLEP(kons)                                                 \
-     || (ERR_OBJ("attempted to modify immutable pair", kons), 1))
+     || (ERR_OBJ("attempted to modify immutable pair", (kons)), 1))
 #else /* SCM_HAS_IMMUTABLE_CONS */
 #define ENSURE_MUTABLE_CONS(kons) SCM_EMPTY_EXPR
 #endif /* SCM_HAS_IMMUTABLE_CONS */
@@ -412,7 +412,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #if SCM_HAS_IMMUTABLE_STRING
 #define ENSURE_MUTABLE_STRING(str)                                           \
     (SCM_STRING_MUTABLEP(str)                                                \
-     || (ERR_OBJ("attempted to modify immutable string", str), 1))
+     || (ERR_OBJ("attempted to modify immutable string", (str)), 1))
 #else /* SCM_HAS_IMMUTABLE_STRING */
 #define ENSURE_MUTABLE_STRING(str) SCM_EMPTY_EXPR
 #endif /* SCM_HAS_IMMUTABLE_STRING */
@@ -420,7 +420,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #if SCM_HAS_IMMUTABLE_VECTOR
 #define ENSURE_MUTABLE_VECTOR(vec)                                           \
     (SCM_VECTOR_MUTABLEP(vec)                                                \
-     || (ERR_OBJ("attempted to modify immutable vector", vec), 1))
+     || (ERR_OBJ("attempted to modify immutable vector", (vec)), 1))
 #else /* SCM_HAS_IMMUTABLE_VECTOR */
 #define ENSURE_MUTABLE_VECTOR(vec) SCM_EMPTY_EXPR
 #endif /* SCM_HAS_IMMUTABLE_VECTOR */
@@ -440,6 +440,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
   Characters
 =======================================*/
 /* accepts SCM_ICHAR_EOF */
+/* assumes ASCII */
 #define ICHAR_ASCIIP(c)      (0 <= (c) && (c) <= 127)
 #define ICHAR_CONTROLP(c)    ((0 <= (c) && (c) <= 31) || (c) == 127)
 #define ICHAR_WHITESPACEP(c) ((c) == ' ' || ('\t' <= (c) && (c) <= '\r'))
@@ -447,7 +448,7 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #define ICHAR_HEXA_NUMERICP(c) (ICHAR_NUMERICP(c)                            \
                                 || ('a' <= (c) && (c) <= 'f')                \
                                 || ('A' <= (c) && (c) <= 'F'))
-#define ICHAR_ALPHABETICP(c) (ICHAR_UPPER_CASEP(c) || ICHAR_LOWER_CASEP(c))
+#define ICHAR_ALPHABETICP(c) (ICHAR_LOWER_CASEP(c) || ICHAR_UPPER_CASEP(c))
 #define ICHAR_UPPER_CASEP(c) ('A' <= (c) && (c) <= 'Z')
 #define ICHAR_LOWER_CASEP(c) ('a' <= (c) && (c) <= 'z')
 
@@ -704,12 +705,6 @@ SCM_EXPORT void scm_init_error(void);
 /* list.c */
 SCM_EXPORT scm_int_t scm_finite_length(ScmObj lst);
 
-/* number.c */
-#if SCM_USE_NUMBER
-SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
-                                       scm_bool *err);
-#endif /* SCM_USE_NUMBER */
-
 /* port.c */
 #if SCM_USE_PORT
 SCM_EXPORT void scm_init_port(void);
@@ -741,6 +736,71 @@ SCM_EXPORT void scm_fin_module(void);
 /* sigscheme.c */
 SCM_EXPORT char **scm_interpret_argv(char **argv);
 SCM_EXPORT void scm_free_argv(char **argv);
+
+/*
+ * modules
+ */
+
+/* module-sscm-ext.c */
+#if SCM_USE_SSCM_EXTENSIONS
+SCM_EXPORT void scm_initialize_sscm_extensions(void);
+#endif
+
+/* module-siod.c */
+#if SCM_COMPAT_SIOD
+SCM_EXPORT void scm_initialize_siod(void);
+#endif
+
+/* module-srfi1.c */
+#if SCM_USE_SRFI1
+SCM_EXPORT void scm_initialize_srfi1(void);
+#endif
+
+/* module-srfi2.c */
+#if SCM_USE_SRFI2
+SCM_EXPORT void scm_initialize_srfi2(void);
+#endif
+
+/* module-srfi6.c */
+#if SCM_USE_SRFI6
+SCM_EXPORT void scm_initialize_srfi6(void);
+#endif
+
+/* module-srfi8.c */
+#if SCM_USE_SRFI8
+SCM_EXPORT void scm_initialize_srfi8(void);
+#endif
+
+/* module-srfi23.c */
+#if SCM_USE_SRFI23
+SCM_EXPORT void scm_initialize_srfi23(void);
+#endif
+
+/* module-srfi28.c */
+#if SCM_USE_SRFI28
+SCM_EXPORT void scm_initialize_srfi28(void);
+#endif
+
+/* module-srfi34.c */
+#if SCM_USE_SRFI34
+SCM_EXPORT void scm_initialize_srfi34(void);
+#endif
+
+/* module-srfi38.c */
+#if SCM_USE_SRFI38
+SCM_EXPORT void scm_initialize_srfi38(void);
+#endif
+
+/* module-srfi48.c */
+#if SCM_USE_SRFI48
+SCM_EXPORT void scm_initialize_srfi48(void);
+#endif
+
+/* module-srfi60.c */
+#if SCM_USE_SRFI60
+SCM_EXPORT void scm_initialize_srfi60(void);
+#endif
+
 
 #ifdef __cplusplus
 }

@@ -86,7 +86,7 @@ extern "C" {
 #define SCM_NORETURN __attribute__((__noreturn__))
 #define SCM_UNUSED   __attribute__((__unused__))
 /* size-less ((__aligned__)) may not be sufficient for m68k */
-#define SCM_SCMOBJ_ALIGNED __attribute__((__aligned__ (sizeof(ScmObj))))
+#define SCM_SCMOBJ_ALIGNED __attribute__((__aligned__ (SIZEOF_SCMOBJ)))
 #else /* HAVE___ATTRIBUTE__ */
 #define SCM_NOINLINE
 #define SCM_NORETURN
@@ -95,6 +95,7 @@ extern "C" {
 #endif /* HAVE___ATTRIBUTE__ */
 
 /* RFC: better names for the debug printing */
+/* SCM_DBG((a, b, c)) */
 #if SCM_DEBUG
 #define SCM_CDBG(args) (scm_categorized_debug args)
 #define SCM_DBG(args)  (scm_debug args)
@@ -260,11 +261,11 @@ extern "C" {
 #if SCM_USE_PORT
 #define SCM_ENSURE_LIVE_PORT(port)                                           \
     (SCM_PORT_IMPL(port)                                                     \
-     || (scm_error_obj("(unknown)", "operated on closed port", port), 1))
+     || (scm_error_obj("(unknown)", "operated on closed port", (port)), 1))
 #endif
 
 #if SCM_USE_WRITER
-#define SCM_WRITE_SS(port, obj) ((*scm_write_ss_func)(port, obj))
+#define SCM_WRITE_SS(port, obj) ((*scm_write_ss_func)((port), (obj)))
 /* Assumes that scm_write_ss_func only holds either scm_write or
  * scm_write_ss. */
 #define SCM_WRITE_SS_ENABLEDP() (scm_write_ss_func != scm_write)
@@ -426,6 +427,9 @@ enum ScmFuncTypeCode {
     SCM_PROCEDURE_VARIADIC_5         = (SCM_PROCEDURE_VARIADIC         | 5),
     SCM_PROCEDURE_VARIADIC_TAILREC_5 = (SCM_PROCEDURE_VARIADIC_TAILREC | 5),
 #endif
+#if SCM_FUNCTYPE_MAND_MAX >= 6
+#error "SCM_FUNCTYPE_MAND_MAX must not exceed 5"
+#endif
 
     /* Special type. */
     SCM_REDUCTION_OPERATOR = SCM_FUNCTYPE_ODDBALL,
@@ -449,9 +453,9 @@ enum ScmPortFlag {
     SCM_PORTFLAG_LIVE_OUTPUT = 1 << 2,
     SCM_PORTFLAG_LIVE_INPUT  = 1 << 3,
 
-    SCM_PORTFLAG_DIR_MASK = (SCM_PORTFLAG_OUTPUT | SCM_PORTFLAG_INPUT),
-    SCM_PORTFLAG_ALIVENESS_MASK = (SCM_PORTFLAG_LIVE_OUTPUT
-                                   | SCM_PORTFLAG_LIVE_INPUT)
+    SCM_PORTFLAG_DIR_MASK = (SCM_PORTFLAG_INPUT | SCM_PORTFLAG_OUTPUT),
+    SCM_PORTFLAG_ALIVENESS_MASK = (SCM_PORTFLAG_LIVE_INPUT
+                                   | SCM_PORTFLAG_LIVE_OUTPUT)
 };
 
 typedef void (*ScmCFunc)(void);
@@ -654,7 +658,7 @@ struct ScmStorageConf_ {
 
 #define SCM_CONST_STRING(str)                                                \
     SCM_MAKE_IMMUTABLE_STRING_COPYING((str), SCM_STRLEN_UNKNOWN)
-#define SCM_STRLEN_UNKNOWN -1
+#define SCM_STRLEN_UNKNOWN (-1)
 #endif /* SCM_USE_STRING */
 
 #define SCM_MAKE_FUNC(type, func)                                            \
@@ -825,8 +829,8 @@ struct ScmStorageConf_ {
 
 #define SCM_CLOSUREP(o)                 SCM_SAL_CLOSUREP(o)
 #define SCM_CLOSURE_EXP(o)              SCM_SAL_CLOSURE_EXP(o)
-#define SCM_CLOSURE_SET_EXP(o, exp)     SCM_SAL_CLOSURE_SET_EXP((o), (exp))
 #define SCM_CLOSURE_ENV(o)              SCM_SAL_CLOSURE_ENV(o)
+#define SCM_CLOSURE_SET_EXP(o, exp)     SCM_SAL_CLOSURE_SET_EXP((o), (exp))
 #define SCM_CLOSURE_SET_ENV(o, env)     SCM_SAL_CLOSURE_SET_ENV((o), (env))
 
 #if SCM_USE_VECTOR
@@ -877,13 +881,13 @@ struct ScmStorageConf_ {
 #if SCM_USE_HYGIENIC_MACRO
 #define SCM_HMACROP(o)                  SCM_SAL_HMACROP(o)
 #define SCM_HMACRO_RULES(o)             SCM_SAL_HMACRO_RULES(o)
-#define SCM_HMACRO_SET_RULES(o, r)      SCM_SAL_HMACRO_SET_RULES((o), (r))
 #define SCM_HMACRO_ENV(o)               SCM_SAL_HMACRO_ENV(o)
+#define SCM_HMACRO_SET_RULES(o, r)      SCM_SAL_HMACRO_SET_RULES((o), (r))
 #define SCM_HMACRO_SET_ENV(o, e)        SCM_SAL_HMACRO_SET_ENV((o), (e))
 #define SCM_FARSYMBOLP(o)               SCM_SAL_FARSYMBOLP(o)
 #define SCM_FARSYMBOL_SYM(o)            SCM_SAL_FARSYMBOL_SYM(o)
-#define SCM_FARSYMBOL_SET_SYM(o, s)     SCM_SAL_FARSYMBOL_SET_SYM((o), (s))
 #define SCM_FARSYMBOL_ENV(o)            SCM_SAL_FARSYMBOL_ENV(o)
+#define SCM_FARSYMBOL_SET_SYM(o, s)     SCM_SAL_FARSYMBOL_SET_SYM((o), (s))
 #define SCM_FARSYMBOL_SET_ENV(o, e)     SCM_SAL_FARSYMBOL_SET_ENV((o), (e))
 #define SCM_SUBPATP(o)                  SCM_SAL_SUBPATP(o)
 #define SCM_SUBPAT_OBJ(o)               SCM_SAL_SUBPAT_OBJ(o)
@@ -986,10 +990,10 @@ struct ScmStorageConf_ {
 #define SCM_UNDEF   SCM_SAL_UNDEF
 
 #define SCM_EQ(a, b)   (SCM_SAL_EQ((a), (b)))
-#define SCM_NULLP(o)   (SCM_EQ((o),  SCM_NULL))
-#define SCM_FALSEP(o)  (SCM_EQ((o),  SCM_FALSE))
+#define SCM_NULLP(o)   (SCM_EQ((o), SCM_NULL))
+#define SCM_FALSEP(o)  (SCM_EQ((o), SCM_FALSE))
 #define SCM_TRUEP(o)   (!SCM_FALSEP(o))
-#define SCM_EOFP(o)    (SCM_EQ((o),  SCM_EOF))
+#define SCM_EOFP(o)    (SCM_EQ((o), SCM_EOF))
 
 #if SCM_HAS_EQVP
 #define SCM_EQVP(a, b) SCM_SAL_EQVP((a), (b))
@@ -1112,18 +1116,19 @@ struct ScmValueFormat_ {
 };
 
 #define SCM_VALUE_FORMAT_INIT(vfmt)                                          \
-    SCM_VALUE_FORMAT_INIT4(vfmt, -1, -1, ' ', scm_true)
+    SCM_VALUE_FORMAT_INIT4((vfmt), -1, -1, ' ', scm_true)
 
 #define SCM_VALUE_FORMAT_INIT4(vfmt, w, fw, p, s)                            \
     do {                                                                     \
-        vfmt.width = w;                                                      \
-        vfmt.frac_width = fw;                                                \
-        vfmt.pad = p;                                                        \
-        vfmt.signedp = s;                                                    \
+        (vfmt).width = (w);                                                  \
+        (vfmt).frac_width = (fw);                                            \
+        (vfmt).pad = (p);                                                    \
+        (vfmt).signedp = (s);                                                \
     } while (/* CONSTCOND */ 0)
 
 #define SCM_VALUE_FORMAT_SPECIFIEDP(vfmt)                                    \
-    (vfmt.width > 0 || vfmt.frac_width > 0 || vfmt.pad != ' ' || !vfmt.signedp)
+    ((vfmt).width > 0 || (vfmt).frac_width > 0 || (vfmt).pad != ' '          \
+     || !(vfmt).signedp)
 
 /*=======================================
   Function types
@@ -1408,6 +1413,8 @@ SCM_EXPORT ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 #if SCM_USE_STRING_CORE
 SCM_EXPORT char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
 #endif /* SCM_USE_STRING_CORE */
+SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
+                                       scm_bool *err);
 SCM_EXPORT ScmObj scm_p_add(ScmObj left, ScmObj right,
                             enum ScmReductionState *state);
 SCM_EXPORT ScmObj scm_p_subtract(ScmObj left, ScmObj right,
@@ -1625,7 +1632,6 @@ SCM_EXPORT ScmObj scm_format(ScmObj port, enum ScmFormatCapability fcap,
 ===========================================================================*/
 /* module-sscm-ext.c */
 #if SCM_USE_SSCM_EXTENSIONS
-SCM_EXPORT void scm_initialize_sscm_extensions(void);
 SCM_EXPORT void scm_require(const char *filename);
 SCM_EXPORT ScmObj scm_p_symbol_boundp(ScmObj sym, ScmObj rest);
 SCM_EXPORT ScmObj scm_p_current_environment(ScmEvalState *eval_state);
@@ -1641,7 +1647,6 @@ SCM_EXPORT ScmObj scm_p_exit(ScmObj args) SCM_NORETURN;
 
 /* module-siod.c */
 #if SCM_COMPAT_SIOD
-SCM_EXPORT void   scm_initialize_siod(void);
 SCM_EXPORT ScmObj scm_p_symbol_value(ScmObj var);
 SCM_EXPORT ScmObj scm_p_set_symbol_valuex(ScmObj var, ScmObj val);
 SCM_EXPORT ScmObj scm_p_siod_equal(ScmObj obj1, ScmObj obj2);
@@ -1655,7 +1660,6 @@ SCM_EXPORT void   scm_set_verbose_level(long level);
 
 /* module-srfi1.c */
 #if SCM_USE_SRFI1
-SCM_EXPORT void   scm_initialize_srfi1(void);
 SCM_EXPORT ScmObj scm_p_srfi1_xcons(ScmObj a, ScmObj b);
 SCM_EXPORT ScmObj scm_p_srfi1_consstar(ScmObj args);
 SCM_EXPORT ScmObj scm_p_srfi1_make_list(ScmObj length, ScmObj args);
@@ -1692,18 +1696,16 @@ SCM_EXPORT ScmObj scm_p_srfi1_last(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_srfi1_last_pair(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_srfi1_lengthplus(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_srfi1_concatenate(ScmObj args);
-#endif
+#endif /* SCM_USE_SRFI1 */
 
 /* module-srfi2.c */
 #if SCM_USE_SRFI2
-SCM_EXPORT void   scm_initialize_srfi2(void);
 SCM_EXPORT ScmObj scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body,
                                           ScmEvalState *eval_state);
 #endif
 
 /* module-srfi6.c */
 #if SCM_USE_SRFI6
-SCM_EXPORT void   scm_initialize_srfi6(void);
 SCM_EXPORT ScmObj scm_p_srfi6_open_input_string(ScmObj str);
 SCM_EXPORT ScmObj scm_p_srfi6_open_output_string(void);
 SCM_EXPORT ScmObj scm_p_srfi6_get_output_string(ScmObj port);
@@ -1711,26 +1713,22 @@ SCM_EXPORT ScmObj scm_p_srfi6_get_output_string(ScmObj port);
 
 /* module-srfi8.c */
 #if SCM_USE_SRFI8
-SCM_EXPORT void   scm_initialize_srfi8(void);
 SCM_EXPORT ScmObj scm_s_srfi8_receive(ScmObj formals, ScmObj expr, ScmObj body,
                                       ScmEvalState *eval_state);
 #endif
 
 /* module-srfi23.c */
 #if SCM_USE_SRFI23
-SCM_EXPORT void   scm_initialize_srfi23(void);
 SCM_EXPORT ScmObj scm_p_srfi23_error(ScmObj reason, ScmObj args);
 #endif
 
 /* module-srfi28.c */
 #if SCM_USE_SRFI28
-SCM_EXPORT void   scm_initialize_srfi28(void);
 SCM_EXPORT ScmObj scm_p_srfi28_format(ScmObj fmt, ScmObj objs);
 #endif
 
 /* module-srfi34.c */
 #if SCM_USE_SRFI34
-SCM_EXPORT void   scm_initialize_srfi34(void);
 SCM_EXPORT ScmObj scm_p_srfi34_with_exception_handler(ScmObj handler,
                                                       ScmObj thunk);
 SCM_EXPORT ScmObj scm_s_srfi34_guard(ScmObj cond_catch, ScmObj body,
@@ -1740,21 +1738,18 @@ SCM_EXPORT ScmObj scm_p_srfi34_raise(ScmObj obj);
 
 /* module-srfi38.c */
 #if SCM_USE_SRFI38
-SCM_EXPORT void   scm_initialize_srfi38(void);
 SCM_EXPORT ScmObj scm_p_srfi38_write_with_shared_structure(ScmObj obj,
                                                            ScmObj args);
 #endif
 
 /* module-srfi48.c */
 #if SCM_USE_SRFI48
-SCM_EXPORT void   scm_initialize_srfi48(void);
 SCM_EXPORT ScmObj scm_p_srfi48_format(ScmObj fmt_or_port, ScmObj rest);
 SCM_EXPORT ScmObj scm_p_formatplus(ScmObj fmt_or_port, ScmObj rest);
 #endif
 
 /* module-srfi60.c */
 #if SCM_USE_SRFI60
-SCM_EXPORT void   scm_initialize_srfi60(void);
 SCM_EXPORT ScmObj scm_p_srfi60_logand(ScmObj left, ScmObj right,
                                       enum ScmReductionState *state);
 SCM_EXPORT ScmObj scm_p_srfi60_logior(ScmObj left, ScmObj right,
