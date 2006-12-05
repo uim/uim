@@ -252,6 +252,10 @@ static struct key_entry key_tab[] = {
   {UKey_Meta_key, "Meta_key"},
   {UKey_Super_key, "Super_key"},
   {UKey_Hyper_key, "Hyper_key"},
+
+  {UKey_Caps_Lock, "caps-lock"},
+  {UKey_Num_Lock, "num-lock"},
+  {UKey_Scroll_Lock, "scroll-lock"},
   /*  {UKey_Other, "other"},*/
   {0, 0}
 };

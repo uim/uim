@@ -267,9 +267,18 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             case Qt::Key_Home: key = UKey_Home; break;
             case Qt::Key_End: key = UKey_End; break;
             case Qt::Key_Multi_key: key = UKey_Multi_key; break;
-#if defined(_WS_X11_)
             case Qt::Key_Mode_switch: key = UKey_Mode_switch; break;
-#endif
+            case Qt::Key_Codeinput: key = UKey_Codeinput; break;
+            case Qt::Key_SingleCandidate: key = UKey_SingleCandidate; break;
+            case Qt::Key_MultipleCandidate: key = UKey_MultipleCandidate; break;
+            case Qt::Key_PreviousCandidate: key = UKey_PreviousCandidate; break;
+            case Qt::Key_Shift: key = UKey_Shift_key; break;
+            case Qt::Key_Control: key = UKey_Control_key; break;
+            case Qt::Key_Alt: key = UKey_Alt_key; break;
+            case Qt::Key_Meta: key = UKey_Meta_key; break;
+            case Qt::Key_CapsLock: key = UKey_Caps_Lock; break;
+            case Qt::Key_NumLock: key = UKey_Num_Lock; break;
+            case Qt::Key_ScrollLock: key = UKey_Scroll_Lock; break;
             default: key = UKey_Other;
             }
         }

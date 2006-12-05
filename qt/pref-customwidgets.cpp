@@ -1139,6 +1139,15 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Hyper_R:
         keystr += "Hyper_key";
         break;
+    case Qt::Key_CapsLock:
+        keystr += "caps-lock";
+        break;
+    case Qt::Key_NumLock:
+        keystr += "num-lock";
+        break;
+    case Qt::Key_ScrollLock:
+        keystr += "scroll-lock";
+        break;
     case Qt::Key_unknown:
         keystr += unicodeKeyToSymStr ( pressed_unichar );
         break;

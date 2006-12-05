@@ -214,6 +214,15 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
 #endif
       *ukey = UKey_Hyper_key;
       break;
+    case GDK_Caps_Lock:
+      *ukey = UKey_Caps_Lock;
+      break;
+    case GDK_Num_Lock:
+      *ukey = UKey_Num_Lock;
+      break;
+    case GDK_Scroll_Lock:
+      *ukey = UKey_Scroll_Lock;
+      break;
     default:
       *ukey = UKey_Other;
      break;
