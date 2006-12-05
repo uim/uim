@@ -1122,6 +1122,9 @@ void keyState::check_key(keyEventX *x)
 	case XK_Super_R: mKey = UKey_Super_key; break;
 	case XK_Hyper_L: mKey = UKey_Hyper_key; break;
 	case XK_Hyper_R: mKey = UKey_Hyper_key; break;
+	case XK_Caps_Lock: mKey = UKey_Caps_Lock; break;
+	case XK_Num_Lock: mKey = UKey_Num_Lock; break;
+	case XK_Scroll_Lock: mKey = UKey_Scroll_Lock; break;
 	default:
 	    mKey = UKey_Other;
 	}

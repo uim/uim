@@ -300,6 +300,10 @@ enum UKey {
   UKey_Kana_VoicedSound,
   UKey_Kana_SemivoicedSound,
 
+  UKey_Caps_Lock,
+  UKey_Num_Lock,
+  UKey_Scroll_Lock,
+
   UKey_Other = 1000
 };
   
