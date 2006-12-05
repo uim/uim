@@ -220,7 +220,7 @@ y yy y   base scmport-sbchar.c
          base scmport-mbchar.h
          base scmport-mbchar.c
          base encoding.h
-         base encoding-dummy.h
+y yy y   base encoding-dummy.h
          base encoding-config.h
          base encoding.c
 y yy y   base global.h
@@ -447,12 +447,12 @@ corner case tests:
 
 file:              encoding-dummy.h
 category:          base
-spec by eyes:      
+spec by eyes:      yamaken@4067
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@4067
+64-bit by eyes:    yamaken@4067
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@4067
 normal case tests: 
 corner case tests: 
 
@@ -678,7 +678,7 @@ corner case tests:
 
 file:              sigscheme.c
 category:          core
-spec by eyes:      yamaken@r4017, yamaken@r4019
+spec by eyes:      yamaken@r4017, yamaken@r4019, yamaken@r4066
 spec by tests:     
 general review:    yamaken@r4017
 64-bit by eyes:    yamaken@r4017
@@ -1042,6 +1042,11 @@ corner case tests:
 
 Log
 ---
+2006-12-06  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * encoding-dummy.h
+          - QA done @r4067 by eyes
+
 2006-12-05  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * storage-fatty.h

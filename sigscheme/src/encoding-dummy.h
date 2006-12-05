@@ -60,7 +60,7 @@ extern "C" {
 
 #define scm_encoding_init()              SCM_EMPTY_EXPR
 #define scm_mb_bare_c_strlen(codec, str) strlen(str)
-#define scm_mb_find_codec(encoding)      NULL
+#define scm_mb_find_codec(encoding)      (NULL)
 
 /*=======================================
   Type Definitions
