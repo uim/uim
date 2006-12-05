@@ -92,11 +92,10 @@ static ScmCell *l_heaps_lowest, *l_heaps_highest;
  *   -- YamaKen 2006-05-29 */
 static ScmObj l_freelist;
 
-static jmp_buf l_save_regs_buf;
 static ScmObj *l_stack_start_pointer;
-
 static ScmObj **l_protected_vars;
 static size_t l_protected_vars_size, l_n_empty_protected_vars;
+static jmp_buf l_save_regs_buf;
 #undef static
 SCM_GLOBAL_VARS_END(static_gc);
 #define l_heap_size            SCM_GLOBAL_VAR(static_gc, l_heap_size)
@@ -107,12 +106,12 @@ SCM_GLOBAL_VARS_END(static_gc);
 #define l_heaps_lowest         SCM_GLOBAL_VAR(static_gc, l_heaps_lowest)
 #define l_heaps_highest        SCM_GLOBAL_VAR(static_gc, l_heaps_highest)
 #define l_freelist             SCM_GLOBAL_VAR(static_gc, l_freelist)
-#define l_save_regs_buf        SCM_GLOBAL_VAR(static_gc, l_save_regs_buf)
 #define l_stack_start_pointer  SCM_GLOBAL_VAR(static_gc, l_stack_start_pointer)
 #define l_protected_vars       SCM_GLOBAL_VAR(static_gc, l_protected_vars)
 #define l_protected_vars_size  SCM_GLOBAL_VAR(static_gc, l_protected_vars_size)
 #define l_n_empty_protected_vars                                             \
     SCM_GLOBAL_VAR(static_gc, l_n_empty_protected_vars)
+#define l_save_regs_buf        SCM_GLOBAL_VAR(static_gc, l_save_regs_buf)
 SCM_DEFINE_STATIC_VARS(static_gc);
 
 /*=======================================
@@ -163,14 +162,14 @@ scm_fin_gc(void)
     finalize_heap();
     finalize_protected_var();
 
-    SCM_GLOBAL_VARS_FIN(gc);
     SCM_GLOBAL_VARS_FIN(static_gc);
+    SCM_GLOBAL_VARS_FIN(gc);
 }
 
 SCM_EXPORT ScmObj
 scm_alloc_cell(void)
 {
-    ScmObj ret = SCM_FALSE;
+    ScmObj ret;
 
     if (NULLP(l_freelist))
         gc_mark_and_sweep();
@@ -329,6 +328,7 @@ add_heap(void)
     for (cell = &heap[0]; cell < &heap[l_heap_size - 1]; cell++)
         SCM_RECLAIM_CELL(cell, cell + 1);
     SCM_RECLAIM_CELL(cell, l_freelist);
+    /* assumes that (ScmCell *) can be being ScmObj */
     l_freelist = (ScmObj)heap;
 }
 
@@ -359,7 +359,7 @@ gc_mark_and_sweep(void)
     n_collected = gc_sweep();
 
     if (n_collected < l_heap_alloc_threshold) {
-        CDBG((SCM_DBG_GC, "Cannot sweep the object, allocating new heap."));
+        CDBG((SCM_DBG_GC, "enough number of free cells cannot be collected. allocating new heap."));
         add_heap();
     }
 }
@@ -415,7 +415,7 @@ mark_loop:
         } else if (VECTORP(obj)) {
             len = SCM_VECTOR_LEN(obj);
             vec = SCM_VECTOR_VEC(obj);
-            vec = (ScmObj*)SCM_DROP_GCBIT((scm_intobj_t)vec);
+            vec = (ScmObj *)SCM_DROP_GCBIT((scm_intobj_t)vec);
             for (i = 0; i < len; i++) {
                 mark_obj(vec[i]);
             }
@@ -429,7 +429,7 @@ mark_loop:
         break;
     }
 }
-#else /* SCM_USE_STORAGE_COMPACT */
+#elif SCM_USE_STORAGE_FATTY
 static void
 mark_obj(ScmObj obj)
 {
@@ -498,7 +498,9 @@ mark_loop:
         break;
     }
 }
-#endif /* SCM_USE_STORAGE_COMPACT */
+#else
+#error "mark_obj() is not implemented for this storage"
+#endif
 
 static void
 finalize_protected_var(void)
@@ -526,7 +528,7 @@ within_heapp(ScmObj obj)
     /*
      * Reject by rough conditions:
      * - heaps must be aligned to sizeof(ScmCell)
-     * - ptr is pointing to outside the enclosure which contain all heaps
+     * - ptr is pointing to outside of the enclosure which covers all heaps
      */
     if (((uintptr_t)ptr % sizeof(ScmCell))
         || (ptr < l_heaps_lowest || l_heaps_highest <= ptr))
@@ -623,7 +625,7 @@ gc_mark(void)
     gc_mark_locations_n((ScmObj *)l_save_regs_buf, N_REGS_IN_JMP_BUF);
     gc_mark_locations(l_stack_start_pointer, &stack_end);
 
-    /* performed after above two because of cache pollution */
+    /* performed after above two to avoid cache pollution */
     gc_mark_protected_var();
     if (scm_symbol_hash)
         gc_mark_definite_locations_n(scm_symbol_hash, scm_symbol_hash_size);
@@ -687,6 +689,19 @@ free_cell(ScmCell *cell)
 
     case ScmFunc:
     case ScmConstant:
+    case ScmValuePacket:
+    case ScmMacro:
+    case ScmFarsymbol:
+    case ScmSubpat:
+    case ScmCFuncPointer:
+    case ScmCPointer:
+        break;
+#if SCM_DEBUG
+    case ScmRational:
+    case ScmReal:
+    case ScmComplex:
+        SCM_ASSERT(scm_false);
+#endif
     case ScmFreeCell:
     default:
         break;

@@ -135,6 +135,8 @@ Overview of changes from 0.6.1 to 0.7.0
     "R5RS conformance: Numbers: Literals" subsection of doc/spec.txt for
     further details
 
+  - Fix possible crash of the broken GC protection on initialization
+
   - Fix a broken type handling appeares on (equal? macro1 macro2) on
     storage-compact
 

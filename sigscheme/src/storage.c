@@ -34,9 +34,6 @@
 
 #include <config.h>
 
-#if !SCM_USE_MULTIBYTE_CHAR
-#include <string.h>
-#endif
 #include <stdlib.h>
 
 #include "sigscheme.h"
@@ -59,9 +56,9 @@
     } while (/* CONSTCOND */ 0)
 #endif /* SCM_USE_STORAGE_FATTY */
 
-/* FIXME: SCM_*_INIT() macros should not be a SAL interface because it taints
- * the SAL abstraction model with an unwanted restriction. It should be an
- * internal interface of storage-compact and storage-fatty.
+/* SCM_*_INIT() macros should not be a SAL interface because it taints the SAL
+ * abstraction model with an unwanted restriction. It should be an internal
+ * interface of storage-compact and storage-fatty.
  *
  * Since the INIT() interface assumes that any cell of a storage is generic and
  * non-colored, and requires 'all-purpose' cell allocation ability. The
@@ -91,37 +88,37 @@
                             ((obj), (exp), (env)))
 
 #if !SCM_HAS_IMMEDIATE_CHAR_ONLY
-#define SCM_CHAR_INIT(o, val)                           \
+#define SCM_CHAR_INIT(obj, val)                         \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_CHAR_INIT,         \
                             (ScmObj, scm_ichar_t),      \
-                            ((o), (val)))
+                            ((obj), (val)))
 #endif
 
 #if !SCM_HAS_IMMEDIATE_INT_ONLY
-#define SCM_INT_INIT(o, val)                            \
+#define SCM_INT_INIT(obj, val)                          \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_INT_INIT,          \
                             (ScmObj, scm_int_t),        \
-                            ((o), (val)))
+                            ((obj), (val)))
 #endif
 
-#define SCM_SYMBOL_INIT(obj, nam, val)                  \
+#define SCM_SYMBOL_INIT(obj, name, val)                 \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_SYMBOL_INIT,       \
-                            (ScmObj, char*, ScmObj),    \
-                            ((obj), (nam), (val)))
+                            (ScmObj, char *, ScmObj),   \
+                            ((obj), (name), (val)))
 
 #define SCM_STRING_INIT(obj, str, len, mutp)                            \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_STRING_INIT,                       \
-                            (ScmObj, char*, scm_int_t, scm_bool),       \
+                            (ScmObj, char *, scm_int_t, scm_bool),      \
                             ((obj), (str), (len), (mutp)))
 
 #define SCM_MUTABLE_STRING_INIT(obj, str, len)                  \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_MUTABLE_STRING_INIT,       \
-                            (ScmObj, char*, scm_int_t),         \
+                            (ScmObj, char *, scm_int_t),        \
                             ((obj), (str), (len)))
 
 #define SCM_IMMUTABLE_STRING_INIT(obj, str, len)                \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_IMMUTABLE_STRING_INIT,     \
-                            (ScmObj, char*, scm_int_t),         \
+                            (ScmObj, char *, scm_int_t),        \
                             ((obj), (str), (len)))
 
 #define SCM_FUNC_INIT(obj, type, func)                                   \
@@ -131,35 +128,35 @@
 
 #define SCM_VECTOR_INIT(obj, vec, len)                          \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_VECTOR_INIT,               \
-                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (ScmObj, ScmObj *, scm_int_t),      \
                             ((obj), (vec), (len)))
 
 #define SCM_MUTABLE_VECTOR_INIT(obj, vec, len)                  \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_MUTABLE_VECTOR_INIT,       \
-                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (ScmObj, ScmObj *, scm_int_t),      \
                             ((obj), (vec), (len)))
 
 #define SCM_IMMUTABLE_VECTOR_INIT(obj, vec, len)                \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_IMMUTABLE_VECTOR_INIT,     \
-                            (ScmObj, ScmObj*, scm_int_t),       \
+                            (ScmObj, ScmObj *, scm_int_t),      \
                             ((obj), (vec), (len)))
 
 #define SCM_PORT_INIT(obj, cport, flag)                         \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_PORT_INIT,                 \
-                            (ScmObj, struct ScmCharPort_*,      \
+                            (ScmObj, struct ScmCharPort_ *,     \
                              enum ScmPortFlag),                 \
                             ((obj), (cport), (flag)))
 
-#define SCM_CONTINUATION_INIT(obj, oq, tag)             \
-    SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_CONTINUATION_INIT, \
-                            (ScmObj, void*, scm_int_t), \
-                            ((obj), (oq), (tag)))
+#define SCM_CONTINUATION_INIT(obj, opaque, tag)          \
+    SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_CONTINUATION_INIT,  \
+                            (ScmObj, void *, scm_int_t), \
+                            ((obj), (opaque), (tag)))
 
 #if SCM_USE_SSCM_EXTENSIONS
 /* SCM_C_POINTER_INIT(obj, void *ptr) */
 #define SCM_C_POINTER_INIT(obj, ptr)                    \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_C_POINTER_INIT,    \
-                            (ScmObj, void*),            \
+                            (ScmObj, void *),           \
                             ((obj), (ptr)))
 /* SCM_C_FUNCPOINTER_INIT(obj, ScmCFunc ptr) */
 #define SCM_C_FUNCPOINTER_INIT(obj, ptr)                 \
@@ -172,20 +169,20 @@
                             (ScmObj, ScmObj),           \
                             ((obj), (vals)))
 
-#define SCM_HMACRO_INIT(o, r, e)                                \
+#define SCM_HMACRO_INIT(obj, r, e)                              \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_HMACRO_INIT,               \
                             (ScmObj, ScmObj, ScmPackedEnv),     \
-                            ((o), (r), (e)))
+                            ((obj), (r), (e)))
 
-#define SCM_FARSYMBOL_INIT(o, s, e)                             \
+#define SCM_FARSYMBOL_INIT(obj, s, e)                           \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_FARSYMBOL_INIT,            \
                             (ScmObj, ScmObj, ScmPackedEnv),     \
-                            ((o), (s), (e)))
+                            ((obj), (s), (e)))
 
-#define SCM_SUBPAT_INIT(o, x, m)                                \
+#define SCM_SUBPAT_INIT(obj, x, m)                              \
     SCM_TYPESAFE_MACRO_VOID(SCM_ISAL_SUBPAT_INIT,               \
                             (ScmObj, ScmObj, scm_int_t),        \
-                            ((o), (x), (m)))
+                            ((obj), (x), (m)))
 
 /*=======================================
   File Local Type Definitions
@@ -230,9 +227,13 @@ static const ScmStorageConf default_storage_conf = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
+#if SCM_USE_STORAGE_FATTY
 static void initialize_special_constants(void);
+#endif
+#if SCM_USE_STRING
 static ScmObj scm_make_string_internal(char *str, scm_int_t len,
-                                       scm_bool is_immutable);
+                                       scm_bool immutablep);
+#endif
 
 /*=======================================
   Function Definitions
@@ -246,24 +247,17 @@ scm_init_storage(const ScmStorageConf *conf)
 #if SCM_USE_STORAGE_FATTY
     SCM_GLOBAL_VARS_INIT(storage_fatty);
     SCM_GLOBAL_VARS_INIT(static_storage_fatty);
+
+    initialize_special_constants();
 #endif
 
     if (!conf)
         conf = &default_storage_conf;
-
-    initialize_special_constants();
-
     scm_init_gc(conf);
 
-#if 0 && (SCM_COMPAT_SIOD_BUGS && SCM_USE_STORAGE_FATTY)
-    scm_gc_protect_with_init(&scm_const_true, MAKE_INT(1));
-#endif
-
 #if SCM_USE_VALUECONS
-    /*
-     * To keep storage model abstract, the cell is allocated from a heap
-     * instead of directly construct ScmCell
-     */
+    /* To keep storage model abstract, the cell is allocated from a heap
+     * instead of directly construct ScmCell. */
     scm_gc_protect_with_init(&scm_null_values, CONS(SCM_NULL, SCM_NULL));
     SCM_ENTYPE(scm_null_values, ScmValuePacket);
 #endif
@@ -283,11 +277,11 @@ scm_fin_storage(void)
 #endif
     scm_fin_gc();
 
-    SCM_GLOBAL_VARS_FIN(storage);
 #if SCM_USE_STORAGE_FATTY
-    SCM_GLOBAL_VARS_FIN(storage_fatty);
     SCM_GLOBAL_VARS_FIN(static_storage_fatty);
+    SCM_GLOBAL_VARS_FIN(storage_fatty);
 #endif
+    SCM_GLOBAL_VARS_FIN(storage);
 }
 
 /*===========================================================================
@@ -298,18 +292,18 @@ scm_fin_storage(void)
  * initialization is encapsulated in this file. Upper layers must only use
  * abstract interfaces such as SCM_NULL and SCM_NULLP().
  */
+#if SCM_USE_STORAGE_FATTY
 static void
 initialize_special_constants(void)
 {
-#if SCM_USE_STORAGE_FATTY
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_null,    l_null_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_true,    l_true_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_false,   l_false_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_eof,     l_eof_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_unbound, l_unbound_cell);
     SCM_CONSTANT_BIND_SUBSTANCE(scm_const_undef,   l_undef_cell);
-#endif /* SCM_USE_STORAGE_FATTY */
 }
+#endif /* SCM_USE_STORAGE_FATTY */
 
 /*===========================================================================
   Object Allocators
@@ -408,7 +402,7 @@ scm_make_subpat(ScmObj x, scm_int_t meta)
 
 #if SCM_USE_STRING
 static ScmObj
-scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
+scm_make_string_internal(char *str, scm_int_t len, scm_bool immutablep)
 {
     ScmObj obj;
 
@@ -418,7 +412,7 @@ scm_make_string_internal(char *str, scm_int_t len, scm_bool is_immutable)
         len = scm_mb_bare_c_strlen(scm_current_char_codec, str);
 
     obj = scm_alloc_cell();
-    SCM_STRING_INIT(obj, str, len, !is_immutable);
+    SCM_STRING_INIT(obj, str, len, !immutablep);
 
     return obj;
 }
@@ -487,10 +481,8 @@ scm_make_immutable_vector(ScmObj *vec, scm_int_t len)
 {
     ScmObj obj;
 
-    /* Since this function is rarely used, the inefficiency is not a problem */
-    obj = scm_make_vector(vec, len);
-    SCM_VECTOR_SET_IMMUTABLE(obj);
-
+    obj = scm_alloc_cell();
+    SCM_IMMUTABLE_VECTOR_INIT(obj, vec, len);
     return obj;
 }
 #endif /* SCM_HAS_IMMUTABLE_VECTOR */
@@ -612,7 +604,7 @@ scm_type(ScmObj obj)
 #endif
         else if (FREECELLP(obj))
             return ScmFreeCell;
-        PLAIN_ERR(" invalid misc object: ptr = ~P", (void *)obj);
+        PLAIN_ERR("invalid misc object: ptr = ~P", (void *)obj);
 
     case SCM_PTAG_IMM:
 #if SCM_USE_INT

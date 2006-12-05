@@ -40,7 +40,7 @@
  */
 
 /*
- * storage-fatty.h: An storage implementation with fatty represenation
+ * storage-fatty.h: A storage implementation with fatty represenation
  *
  * This is the most simple storage implementation for SigScheme. The features
  * are below.
@@ -93,10 +93,7 @@ struct ScmCell_ {
 
     /*
      * Pointer members should be placed first for efficient alignment when
-     * strict alignment is not forced by the compiler/processor. (e.g. A 64-bit
-     * pointer placed on a 32-bit aligned address on amd64 with gcc -Os. The
-     * arch does not cause error even if a data is not aligned although it
-     * affects performence)
+     * strict alignment is not forced by the compiler/processor.
      */
     union {
         struct {
@@ -280,9 +277,9 @@ struct ScmCell_ {
 
 #define SCM_SAL_SYMBOLP(o)             (SCM_TYPE(o) == ScmSymbol)
 #define SCM_SAL_SYMBOL_NAME(o)         (SCM_AS_SYMBOL(o)->obj.symbol.name)
-#define SCM_SAL_SYMBOL_SET_NAME(o, _name)  (SCM_SYMBOL_NAME(o) = (_name))
+#define SCM_SAL_SYMBOL_SET_NAME(o, name) (SCM_SYMBOL_NAME(o) = (name))
 #define SCM_SAL_SYMBOL_VCELL(o)        (SCM_AS_SYMBOL(o)->obj.symbol.value)
-#define SCM_SAL_SYMBOL_SET_VCELL(o, vcell) (SCM_SYMBOL_VCELL(o) = (vcell))
+#define SCM_SAL_SYMBOL_SET_VCELL(o, val) (SCM_SYMBOL_VCELL(o) = (val))
 #define SCM_ISAL_SYMBOL_INIT(o, n, v)  (SCM_ENTYPE((o), ScmSymbol),     \
                                         SCM_SYMBOL_SET_NAME((o), (n)),  \
                                         SCM_SYMBOL_SET_VCELL((o), (v)))
@@ -297,7 +294,7 @@ struct ScmCell_ {
 #define SCM_SAL_STRING_STR(o)           (SCM_AS_STRING(o)->obj.string.str)
 #define SCM_SAL_STRING_SET_STR(o, val)  (SCM_STRING_STR(o) = (val))
 #define SCM_SAL_STRING_LEN(o)           (SCM_AS_STRING(o)->obj.string.len)
-#define SCM_SAL_STRING_SET_LEN(o, _len) (SCM_STRING_LEN(o) = (_len))
+#define SCM_SAL_STRING_SET_LEN(o, len)  (SCM_STRING_LEN(o) = (len))
 #define SCM_SAL_STRING_MUTABLEP(o)      (SCM_MUTABLEP(o))
 #define SCM_SAL_STRING_SET_MUTABLE(o)   (SCM_SET_MUTABLE(o))
 #define SCM_SAL_STRING_SET_IMMUTABLE(o) (SCM_SET_IMMUTABLE(o))
@@ -391,9 +388,9 @@ struct ScmCell_ {
                                          SCM_VALUEPACKET_SET_VALUES((o), (v)))
 #endif /* SCM_USE_VALUECONS */
 
-#if SCM_USE_HYGIENIC_MACRO || SCM_USE_UNHYGIENIC_MACRO
+#if (SCM_USE_HYGIENIC_MACRO || SCM_USE_UNHYGIENIC_MACRO)
 #define SCM_SAL_MACROP(o)              (SCM_TYPE(o) == ScmMacro)
-#if SCM_USE_HYGIENIC_MACRO && SCM_USE_UNHYGIENIC_MACRO
+#if (SCM_USE_HYGIENIC_MACRO && SCM_USE_UNHYGIENIC_MACRO)
 #define SCM_SAL_HMACROP(o)             (SCM_SAL_MACROP(o) && /* TODO */)
 #else  /* not SCM_USE_UNHYGIENIC_MACRO */
 #define SCM_SAL_HMACROP(o)             (SCM_SAL_MACROP(o))
@@ -464,7 +461,7 @@ struct ScmCell_ {
 
 #define SCM_SAL_RECLAIM_CELL(cell, next)                                     \
     do {                                                                     \
-        SCM_ENTYPE(cell, ScmFreeCell);                                       \
+        SCM_ENTYPE((cell), ScmFreeCell);                                     \
         SCM_UNMARK(cell);                                                    \
         SCM_FREECELL_SET_NEXT((cell), (next));                               \
         SCM_FREECELL_CLEAR_FREESLOT(cell);                                   \
@@ -479,7 +476,7 @@ struct ScmCell_ {
   Abstract ScmObj Reference For Storage-Representation Independent Efficient
   List Operations
 ===========================================================================*/
-#define SCM_SAL_INVALID_REF   NULL
+#define SCM_SAL_INVALID_REF   (NULL)
 
 #define SCM_SAL_REF_CAR(kons)     (&SCM_AS_CONS(kons)->obj.cons.car)
 #define SCM_SAL_REF_CDR(kons)     (&SCM_AS_CONS(kons)->obj.cons.cdr)
@@ -498,7 +495,7 @@ struct ScmCell_ {
 /*===========================================================================
   Special Constants and Predicates
 ===========================================================================*/
-#define SCM_SAL_INVALID  NULL
+#define SCM_SAL_INVALID  (NULL)
 #define SCM_SAL_NULL     scm_const_null
 #define SCM_SAL_TRUE     scm_const_true
 #if SCM_COMPAT_SIOD_BUGS

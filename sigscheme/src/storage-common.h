@@ -50,48 +50,60 @@ extern "C" {
 =======================================*/
 #if !SCM_SAL_HAS_IMMEDIATE_INT_ONLY
 #define SCM_SAL_MAKE_INT                      scm_make_int
-#endif /* !SCM_SAL_HAS_IMMEDIATE_INT_ONLY */
+#endif
+
 #define SCM_SAL_MAKE_CONS                     scm_make_cons
+
 #if SCM_SAL_HAS_IMMUTABLE_CONS
 #define SCM_SAL_MAKE_IMMUTABLE_CONS           scm_make_immutable_cons
-#else /* SCM_SAL_HAS_IMMUTABLE_CONS */
+#else
 #define SCM_SAL_MAKE_IMMUTABLE_CONS           scm_make_cons
-#endif /* SCM_SAL_HAS_IMMUTABLE_CONS */
+#endif
+
 #define SCM_SAL_MAKE_SYMBOL                   scm_make_symbol
+
 #if !SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY
 #define SCM_SAL_MAKE_CHAR                     scm_make_char
-#endif /* !SCM_SAL_HAS_IMMEDIATE_CHAR_ONLY */
+#endif
+
 #define SCM_SAL_MAKE_STRING                   scm_make_string
 #define SCM_SAL_MAKE_STRING_COPYING           scm_make_string_copying
+
 #if SCM_SAL_HAS_IMMUTABLE_STRING
 #define SCM_SAL_MAKE_IMMUTABLE_STRING         scm_make_immutable_string
 #define SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING scm_make_immutable_string_copying
-#else /* SCM_SAL_HAS_IMMUTABLE_STRING */
+#else
 #define SCM_SAL_MAKE_IMMUTABLE_STRING         scm_make_string
 #define SCM_SAL_MAKE_IMMUTABLE_STRING_COPYING scm_make_string_copying
-#endif /* SCM_SAL_HAS_IMMUTABLE_STRING */
+#endif
+
 #define SCM_SAL_MAKE_FUNC                     scm_make_func
 #define SCM_SAL_MAKE_CLOSURE                  scm_make_closure
 #define SCM_SAL_MAKE_VECTOR                   scm_make_vector
+
 #if SCM_SAL_HAS_IMMUTABLE_VECTOR
 #define SCM_SAL_MAKE_IMMUTABLE_VECTOR         scm_make_immutable_vector
-#else /* SCM_SAL_HAS_IMMUTABLE_VECTOR */
+#else
 #define SCM_SAL_MAKE_IMMUTABLE_VECTOR         scm_make_vector
-#endif /* SCM_SAL_HAS_IMMUTABLE_VECTOR */
+#endif
+
 #define SCM_SAL_MAKE_PORT                     scm_make_port
 #define SCM_SAL_MAKE_CONTINUATION             scm_make_continuation
+
 #if SCM_USE_SSCM_EXTENSIONS
 #define SCM_SAL_MAKE_C_POINTER                scm_make_cpointer
 #define SCM_SAL_MAKE_C_FUNCPOINTER            scm_make_cfunc_pointer
-#endif /* SCM_USE_SSCM_EXTENSIONS */
+#endif
+
 #ifndef SCM_SAL_MAKE_VALUEPACKET
 #define SCM_SAL_MAKE_VALUEPACKET              scm_make_value_packet
-#endif /* SCM_SAL_MAKE_VALUEPACKET */
+#endif
+
 #if SCM_USE_HYGIENIC_MACRO
 #define SCM_SAL_MAKE_HMACRO                   scm_make_hmacro
 #define SCM_SAL_MAKE_FARSYMBOL                scm_make_farsymbol
 #define SCM_SAL_MAKE_SUBPAT                   scm_make_subpat
-#endif /* SCM_USE_HYGIENIC_MACRO */
+#endif
 
 /* Don't use these functions directly. Use SCM_MAKE_*() or MAKE_*() instead to
  * allow flexible object allocation. */
@@ -154,6 +166,7 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 #define SCM_SAL_R5RS_ENV        SCM_INTERACTION_ENV
 #define SCM_SAL_NULL_ENV        SCM_INTERACTION_ENV
 
+/* test NULLP() first for average performance */
 #define SCM_SAL_ENVP(env) (NULLP(env) || CONSP(env))
 
 

@@ -228,11 +228,11 @@ y yy y   base global-aggregated.c
          core config-old.h
 y yy y   core sigscheme.h
 y yy y   core sigschemeinternal.h
-         core storage-common.h
-         core storage-fatty.h
+y yy y   core storage-common.h
+y yy y   core storage-fatty.h
          core storage-compact.h
-         core storage.c
-         core storage-gc.c
+y yy y   core storage.c
+y yy y   core storage-gc.c
 yyyy yyy core strcasecmp.c
 y yy y   core alloc.c
 y yy y   core error.c
@@ -535,23 +535,23 @@ corner case tests:
 
 file:              storage-common.h
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4066
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4066
+64-bit by eyes:    yamaken@r4066
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4066
 normal case tests: 
 corner case tests: 
 
 file:              storage-fatty.h
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4066
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4066
+64-bit by eyes:    yamaken@r4066
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4066
 normal case tests: 
 corner case tests: 
 
@@ -568,23 +568,23 @@ corner case tests:
 
 file:              storage.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4066
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4066
+64-bit by eyes:    yamaken@r4066
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4066
 normal case tests: 
 corner case tests: 
 
 file:              storage-gc.c
 category:          core
-spec by eyes:      
+spec by eyes:      yamaken@r4066
 spec by tests:     
-general review:    
-64-bit by eyes:    
+general review:    yamaken@r4066
+64-bit by eyes:    yamaken@r4066
 64-bit by tests:   
-coding style:      
+coding style:      yamaken@r4066
 normal case tests: 
 corner case tests: 
 
@@ -1043,6 +1043,13 @@ corner case tests:
 Log
 ---
 2006-12-05  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * storage-fatty.h
+        * storage-common.h
+        * storage.c
+        * storage-gc.c
+          - QA done @r4066 by eyes except for #if SCM_USE_HYGIENIC_MACRO
+          - Fix possible crash of the broken GC protection on initialization
 
         * sigscheme.h
         * sigschemeinternal.h

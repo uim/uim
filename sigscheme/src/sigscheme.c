@@ -138,7 +138,7 @@ static const char *const builtin_features[] = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void scm_initialize_internal(const ScmStorageConf *storage_conf);
+static void scm_initialize_internal(void);
 #if SCM_USE_EVAL_C_STRING
 static ScmObj scm_eval_c_string_internal(const char *exp);
 #endif
@@ -157,11 +157,16 @@ scm_initialize(const ScmStorageConf *storage_conf)
 {
     SCM_AGGREGATED_GLOBAL_VARS_INIT();
 
-    SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, (storage_conf));
+    scm_encoding_init();
+    scm_init_storage(storage_conf);
+
+    SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, ());
+
+    l_scm_initialized = scm_true;
 }
 
 static void
-scm_initialize_internal(const ScmStorageConf *storage_conf)
+scm_initialize_internal(void)
 {
     const char *const *feature;
 
@@ -170,9 +175,6 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
     =======================================================================*/
     SCM_GLOBAL_VARS_INIT(procedure);
     SCM_GLOBAL_VARS_INIT(static_sigscheme);
-
-    scm_encoding_init();
-    scm_init_storage(storage_conf);
 
     scm_init_error();
     scm_set_debug_categories(SCM_DBG_ERRMSG | SCM_DBG_BACKTRACE
@@ -233,8 +235,6 @@ scm_initialize_internal(const ScmStorageConf *storage_conf)
      * macro, #if is not safe here. */
     if (SCM_PTR_BITS == 64)
         scm_provide(CONST_STRING("64bit-addr"));
-
-    l_scm_initialized = scm_true;
 }
 
 SCM_EXPORT void
