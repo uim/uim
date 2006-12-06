@@ -144,14 +144,15 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     buttons.append( button );
                     size_changed = true;
                 }
-                QPixmap icon = QPixmap(ICONDIR + "/" + fields[1] + ".png");
-                QImage image = icon.convertToImage();
-                QPixmap scaledIcon = image.smoothScale(ICON_SIZE, ICON_SIZE);
-
-                if (!icon.isNull())
-                    button->setPixmap(scaledIcon);
-                else
+                QPixmap icon = QPixmap( ICONDIR + "/" + fields[1] + ".png" );
+                if (!icon.isNull()) {
+                    QImage image = icon.convertToImage();
+                    QPixmap scaledIcon = image.smoothScale( ICON_SIZE,
+                                                            ICON_SIZE );
+                    button->setPixmap( scaledIcon );
+                } else {
                     button->setText( fields[ 2 ] );
+                }
                 QToolTip::add( button, fields[ 3 ] );
 
                 // create popup
@@ -254,14 +255,16 @@ int QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
                                         const QString &menucommandStr )
 {
     int id;
-    QPixmap icon = QPixmap(ICONDIR + "/" + indicationIdStr + ".png");
-    QImage image = icon.convertToImage();
-    QPixmap scaledIcon = image.smoothScale(ICON_SIZE, ICON_SIZE);
+    QPixmap icon = QPixmap( ICONDIR + "/" + indicationIdStr + ".png" );
 
-    if (!icon.isNull())
-        id = insertItem( scaledIcon, menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
-    else
+    if (!icon.isNull()) {
+        QImage image = icon.convertToImage();
+        QPixmap scaledIcon = image.smoothScale( ICON_SIZE, ICON_SIZE );
+        id = insertItem( scaledIcon, menulabelStr, this,
+                         SLOT( slotMenuActivated( int ) ) );
+    } else {
         id = insertItem( menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
+    }
 
     setWhatsThis( id, menutooltipStr );
     msgDict.insert( id, new QString( menucommandStr ) );
