@@ -15,8 +15,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
 * Specification changes
 
-  - [R5RS] Remove 'delay' and 'force' (temporarily) since they are completely
-    broken
+  - [R5RS] Remove 'delay' and 'force' (temporarily) since they completely
+    violates R5RS definitions
 
   - [R5RS] Proper tail recursion conformance of 'eval' has been marked as
     'uncertain'
@@ -55,6 +55,9 @@ Overview of changes from 0.6.1 to 0.7.0
   - Fix possible crash on parsing R5RS-reserved chars |[]{}
 
   - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin
+
+  - Fix broken out of range error detection of string->number which fails every
+    conversion once after the error has occurred
 
   - Fix possible crash on parsing script prelude longer than 64 chars
 

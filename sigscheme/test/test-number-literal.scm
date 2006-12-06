@@ -244,12 +244,12 @@
 (if (>= fixnum-bits 60)
     (begin
       (tn "integer binary 64-bit")
-      (string-eval "(assert-equal? (tn)  956397711204 (string-read  \"#b01011011010001011111010\"))")
-      (string-eval "(assert-equal? (tn)  956397711204 (string-read   \"#b1011011010001011111010\"))")
-      (string-eval "(assert-equal? (tn)  956397711204 (string-read  \"#b+1011011010001011111010\"))")
-      (string-eval "(assert-equal? (tn)  956397711204 (string-read \"#b+01011011010001011111010\"))")
-      (string-eval "(assert-equal? (tn) -956397711204 (string-read  \"#b-1011011010001011111010\"))")
-      (string-eval "(assert-equal? (tn) -956397711204 (string-read \"#b-01011011010001011111010\"))")))
+      (string-eval "(assert-equal? (tn)  956397711204 (string-read  \"#b01101111010101101101111101110111101100100\"))")
+      (string-eval "(assert-equal? (tn)  956397711204 (string-read   \"#b1101111010101101101111101110111101100100\"))")
+      (string-eval "(assert-equal? (tn)  956397711204 (string-read  \"#b+1101111010101101101111101110111101100100\"))")
+      (string-eval "(assert-equal? (tn)  956397711204 (string-read \"#b+01101111010101101101111101110111101100100\"))")
+      (string-eval "(assert-equal? (tn) -956397711204 (string-read  \"#b-1101111010101101101111101110111101100100\"))")
+      (string-eval "(assert-equal? (tn) -956397711204 (string-read \"#b-01101111010101101101111101110111101100100\"))")))
 (case fixnum-bits
   ((28)
    (tn "integer limit implicit decimal")

@@ -563,6 +563,7 @@ scm_string2number(const char *str, int radix, scm_bool *err)
         return 0;
 #endif /* SCM_STRICT_ARGCHECK */
 
+    errno = 0;
 #if (SIZEOF_SCM_INT_T <= SIZEOF_LONG)
     n = (scm_int_t)strtol(str, &end, radix);
 #elif (HAVE_STRTOLL && SIZEOF_SCM_INT_T <= SIZEOF_LONG_LONG)
