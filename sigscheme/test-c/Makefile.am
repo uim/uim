@@ -16,9 +16,6 @@ libtest_alignment_la_SOURCES = test_alignment.c cutter-sscm.h
 
 noinst_LTLIBRARIES         += libtest_global.la
 libtest_global_la_SOURCES  = test_global.c cutter-sscm.h
-
-noinst_LTLIBRARIES         += libtest_format.la
-libtest_format_la_SOURCES  = test_format.c cutter-sscm.h
 endif
 
 .PHONY: test update-suites
