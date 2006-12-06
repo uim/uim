@@ -41,6 +41,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 typedef struct _tst_suite_info tst_suite_info;
 typedef struct _tst_case_info tst_case_info;
@@ -55,17 +56,29 @@ tst_format(const char *msg, ...)
     va_list va;
     char *buf;
     int len;
-    va_start(va, msg);
 
+    va_start(va, msg);
     len = vsnprintf(NULL, 0, msg, va);
     if (len < 0)
         abort();
+    va_end(va);
+
+    /*
+     * C99: 7.15 Variable arguments <stdarg.h>
+     *
+     * The object ap may be passed as an argument to another function; if that
+     * function invokes the va_arg macro with parameter ap, the value of ap in
+     * the calling function is indeterminate and shall be passed to the va_end
+     * macro prior to any further reference to ap.
+     */
+    /* x86_64-unknown-linux-gnu crashes if this va_start() is not invoked */
+    va_start(va, msg);
     buf = malloc (len + 1);
     if (!buf)
         abort();
     vsnprintf (buf, len + 1, msg, va);
-
     va_end(va);
+
     return buf;
 }
 

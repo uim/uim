@@ -7,9 +7,10 @@ EXTRA_DIST= sscm-test.h utils.c \
             test-length.c test-strcasecmp.c
 
 SUFFIXES= -coll.o -coll.c
-CLEANFILES= *-coll.c
 
 if MAINTAINER_MODE
+CLEANFILES= *-coll.c
+
 # FIXME: how do I make this rule depend on collect.sh (is it
 # possible)?
 .c-coll.c:
@@ -23,3 +24,7 @@ endif
 TESTS= test-gc-coll test-storage-coll test-storage-compact-coll \
        test-length-coll test-strcasecmp-coll
 check_PROGRAMS= $(TESTS) test-minishell
+
+# GNU version of sed is needed to run collect.sh
+dist-hook:
+	@test -n "$(GSED)" || (echo 'GNU sed(1) not found: install it'; exit 1)
