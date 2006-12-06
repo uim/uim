@@ -186,19 +186,13 @@ TST_CASE("format ~S")
 TST_CASE("format ~P")
 {
 #if P32
-    TST_TN_EQ_STR("0x00000000",
-                           STR(format("~P", (void *)NULL)));
-    TST_TN_EQ_STR("0xffffffff",
-                           STR(format("~P", (void *)~0UL)));
-    TST_TN_EQ_STR("0x00012abc",
-                           STR(format("~P", (void *)0x12ABC)));
+    TST_TN_EQ_STR("0x00000000", STR(format("~P", (void *)NULL)));
+    TST_TN_EQ_STR("0xffffffff", STR(format("~P", (void *)~0UL)));
+    TST_TN_EQ_STR("0x00012abc", STR(format("~P", (void *)0x12ABC)));
 #elif P64
-    TST_TN_EQ_STR("0x0000000000000000",
-                           STR(format("~P", (void *)NULL)));
-    TST_TN_EQ_STR("0xffffffffffffffff",
-                           STR(format("~P", (void *)~0UL)));
-    TST_TN_EQ_STR("0x0000000000012abc",
-                           STR(format("~P", (void *)0x12ABC)));
+    TST_TN_EQ_STR("0x0000000000000000", STR(format("~P", (void *)NULL)));
+    TST_TN_EQ_STR("0xffffffffffffffff", STR(format("~P", (void *)~0UL)));
+    TST_TN_EQ_STR("0x0000000000012abc", STR(format("~P", (void *)0x12ABC)));
 #endif
 }
 
@@ -237,9 +231,9 @@ TST_CASE("format ~D")
     TST_TN_EQ_STR("100",  STR(format("~3D",  100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127D", 123)));
+                  STR(format("~127D", 123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127D", 123)));
+                  STR(format("~0127D", 123)));
 }
 
 TST_CASE("format ~U")
@@ -299,9 +293,9 @@ TST_CASE("format ~U")
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127U", 123)));
+                  STR(format("~127U", 123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127U", 123)));
+                  STR(format("~0127U", 123)));
 }
 
 TST_CASE("format ~X")
@@ -361,9 +355,9 @@ TST_CASE("format ~X")
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127X", 0x1ac)));
+                  STR(format("~127X", 0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127X", 0x1ac)));
+                  STR(format("~0127X", 0x1ac)));
 }
 
 TST_CASE("format ~O")
@@ -423,9 +417,9 @@ TST_CASE("format ~O")
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127O", 0123)));
+                  STR(format("~127O", 0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127O", 0123)));
+                  STR(format("~0127O", 0123)));
 }
 
 TST_CASE("format ~B")
@@ -452,66 +446,66 @@ TST_CASE("format ~B")
 
 #if I32
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~B", -100)));
+                  STR(format("~B", -100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~B", -10)));
+                  STR(format("~B", -10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~B", -1)));
+                  STR(format("~B", -1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0B", -100)));
+                  STR(format("~0B", -100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0B", -10)));
+                  STR(format("~0B", -10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0B", -1)));
+                  STR(format("~0B", -1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05B", -100)));
+                  STR(format("~05B", -100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05B", -10)));
+                  STR(format("~05B", -10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05B", -1)));
+                  STR(format("~05B", -1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5B", -100)));
+                  STR(format("~5B", -100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5B", -10)));
+                  STR(format("~5B", -10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5B", -1)));
+                  STR(format("~5B", -1)));
 #elif I64
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~B", -100)));
+                  STR(format("~B", -100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~B", -10)));
+                  STR(format("~B", -10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~B", -1)));
+                  STR(format("~B", -1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~0B", -100)));
+                  STR(format("~0B", -100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~0B", -10)));
+                  STR(format("~0B", -10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~0B", -1)));
+                  STR(format("~0B", -1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~05B", -100)));
+                  STR(format("~05B", -100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~05B", -10)));
+                  STR(format("~05B", -10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~05B", -1)));
+                  STR(format("~05B", -1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~5B", -100)));
+                  STR(format("~5B", -100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~5B", -10)));
+                  STR(format("~5B", -10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~5B", -1)));
+                  STR(format("~5B", -1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127B", 0x5)));
+                  STR(format("~127B", 0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127B", 0x5)));
+                  STR(format("~0127B", 0x5)));
 }
 
 TST_CASE("format ~WD")
@@ -549,9 +543,9 @@ TST_CASE("format ~WD")
     TST_TN_EQ_STR("100",  STR(format("~3WD",  (int32_t)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127WD", (int32_t)123)));
+                  STR(format("~127WD", (int32_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127WD", (int32_t)123)));
+                  STR(format("~0127WD", (int32_t)123)));
 }
 
 TST_CASE("format ~WU")
@@ -593,9 +587,9 @@ TST_CASE("format ~WU")
     TST_TN_EQ_STR("4294967295", STR(format("~3WU",  (int32_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127WU", (int32_t)123)));
+                  STR(format("~127WU", (int32_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127WU", (int32_t)123)));
+                  STR(format("~0127WU", (int32_t)123)));
 }
 
 TST_CASE("format ~WX")
@@ -637,9 +631,9 @@ TST_CASE("format ~WX")
     TST_TN_EQ_STR("ffffffff", STR(format("~3WX",  (int32_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127WX", (int32_t)0x1ac)));
+                  STR(format("~127WX", (int32_t)0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127WX", (int32_t)0x1ac)));
+                  STR(format("~0127WX", (int32_t)0x1ac)));
 }
 
 TST_CASE("format ~WO")
@@ -681,9 +675,9 @@ TST_CASE("format ~WO")
     TST_TN_EQ_STR("37777777777", STR(format("~3WO",  (int32_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127WO", (int32_t)0123)));
+                  STR(format("~127WO", (int32_t)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127WO", (int32_t)0123)));
+                  STR(format("~0127WO", (int32_t)0123)));
 }
 
 TST_CASE("format ~WB")
@@ -709,37 +703,37 @@ TST_CASE("format ~WB")
     TST_TN_EQ_STR("1100100", STR(format("~5WB",  (int32_t)100)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~WB", (int32_t)-100)));
+                  STR(format("~WB", (int32_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~WB", (int32_t)-10)));
+                  STR(format("~WB", (int32_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~WB", (int32_t)-1)));
+                  STR(format("~WB", (int32_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0WB", (int32_t)-100)));
+                  STR(format("~0WB", (int32_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0WB", (int32_t)-10)));
+                  STR(format("~0WB", (int32_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0WB", (int32_t)-1)));
+                  STR(format("~0WB", (int32_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05WB", (int32_t)-100)));
+                  STR(format("~05WB", (int32_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05WB", (int32_t)-10)));
+                  STR(format("~05WB", (int32_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05WB", (int32_t)-1)));
+                  STR(format("~05WB", (int32_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5WB", (int32_t)-100)));
+                  STR(format("~5WB", (int32_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5WB", (int32_t)-10)));
+                  STR(format("~5WB", (int32_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5WB", (int32_t)-1)));
+                  STR(format("~5WB", (int32_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127WB", (int32_t)0x5)));
+                  STR(format("~127WB", (int32_t)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127WB", (int32_t)0x5)));
+                  STR(format("~0127WB", (int32_t)0x5)));
 }
 
 TST_CASE("format ~MD")
@@ -777,9 +771,9 @@ TST_CASE("format ~MD")
     TST_TN_EQ_STR("100",  STR(format("~3MD",  (scm_int_t)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127MD", (scm_int_t)123)));
+                  STR(format("~127MD", (scm_int_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127MD", (scm_int_t)123)));
+                  STR(format("~0127MD", (scm_int_t)123)));
 }
 
 TST_CASE("format ~MU")
@@ -821,9 +815,9 @@ TST_CASE("format ~MU")
     TST_TN_EQ_STR("4294967295", STR(format("~3MU",  (scm_int_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127MU", (scm_int_t)123)));
+                  STR(format("~127MU", (scm_int_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127MU", (scm_int_t)123)));
+                  STR(format("~0127MU", (scm_int_t)123)));
 }
 
 TST_CASE("format ~MX")
@@ -865,9 +859,9 @@ TST_CASE("format ~MX")
     TST_TN_EQ_STR("ffffffff", STR(format("~3MX",  (scm_int_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127MX", (scm_int_t)0x1ac)));
+                  STR(format("~127MX", (scm_int_t)0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127MX", (scm_int_t)0x1ac)));
+                  STR(format("~0127MX", (scm_int_t)0x1ac)));
 }
 
 TST_CASE("format ~MO")
@@ -909,9 +903,9 @@ TST_CASE("format ~MO")
     TST_TN_EQ_STR("37777777777", STR(format("~3MO",  (scm_int_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127MO", (scm_int_t)0123)));
+                  STR(format("~127MO", (scm_int_t)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127MO", (scm_int_t)0123)));
+                  STR(format("~0127MO", (scm_int_t)0123)));
 }
 
 TST_CASE("format ~MB")
@@ -937,37 +931,37 @@ TST_CASE("format ~MB")
     TST_TN_EQ_STR("1100100", STR(format("~5MB",  (scm_int_t)100)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~MB", (scm_int_t)-100)));
+                  STR(format("~MB", (scm_int_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~MB", (scm_int_t)-10)));
+                  STR(format("~MB", (scm_int_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~MB", (scm_int_t)-1)));
+                  STR(format("~MB", (scm_int_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0MB", (scm_int_t)-100)));
+                  STR(format("~0MB", (scm_int_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0MB", (scm_int_t)-10)));
+                  STR(format("~0MB", (scm_int_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0MB", (scm_int_t)-1)));
+                  STR(format("~0MB", (scm_int_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05MB", (scm_int_t)-100)));
+                  STR(format("~05MB", (scm_int_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05MB", (scm_int_t)-10)));
+                  STR(format("~05MB", (scm_int_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05MB", (scm_int_t)-1)));
+                  STR(format("~05MB", (scm_int_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5MB", (scm_int_t)-100)));
+                  STR(format("~5MB", (scm_int_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5MB", (scm_int_t)-10)));
+                  STR(format("~5MB", (scm_int_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5MB", (scm_int_t)-1)));
+                  STR(format("~5MB", (scm_int_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127MB", (scm_int_t)0x5)));
+                  STR(format("~127MB", (scm_int_t)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127MB", (scm_int_t)0x5)));
+                  STR(format("~0127MB", (scm_int_t)0x5)));
 }
 
 TST_CASE("format ~QD")
@@ -1005,9 +999,9 @@ TST_CASE("format ~QD")
     TST_TN_EQ_STR("100",  STR(format("~3QD",  (int64_t)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127QD", (int64_t)123)));
+                  STR(format("~127QD", (int64_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127QD", (int64_t)123)));
+                  STR(format("~0127QD", (int64_t)123)));
 }
 
 TST_CASE("format ~QU")
@@ -1032,38 +1026,26 @@ TST_CASE("format ~QU")
     TST_TN_EQ_STR(" 10",  STR(format("~3QU",  (int64_t)10)));
     TST_TN_EQ_STR("100",  STR(format("~3QU",  (int64_t)100)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~QU",   (int64_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~QU",   (int64_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~QU",   (int64_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~QU",   (int64_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~QU",   (int64_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~QU",   (int64_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~0QU",  (int64_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~0QU",  (int64_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~0QU",  (int64_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~0QU",  (int64_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~0QU",  (int64_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~0QU",  (int64_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~03QU", (int64_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~03QU", (int64_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~03QU", (int64_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~03QU", (int64_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~03QU", (int64_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~03QU", (int64_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~3QU",  (int64_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~3QU",  (int64_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~3QU",  (int64_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~3QU",  (int64_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~3QU",  (int64_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~3QU",  (int64_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127QU", (int64_t)123)));
+                  STR(format("~127QU", (int64_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127QU", (int64_t)123)));
+                  STR(format("~0127QU", (int64_t)123)));
 }
 
 TST_CASE("format ~QX")
@@ -1088,33 +1070,21 @@ TST_CASE("format ~QX")
     TST_TN_EQ_STR("  a",  STR(format("~3QX",  (int64_t)10)));
     TST_TN_EQ_STR(" 64",  STR(format("~3QX",  (int64_t)100)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~QX",   (int64_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~QX",   (int64_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~QX",   (int64_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~QX",   (int64_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~QX",   (int64_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~QX",   (int64_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~0QX",  (int64_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~0QX",  (int64_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~0QX",  (int64_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~0QX",  (int64_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~0QX",  (int64_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~0QX",  (int64_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~03QX", (int64_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~03QX", (int64_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~03QX", (int64_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~03QX", (int64_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~03QX", (int64_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~03QX", (int64_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~3QX",  (int64_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~3QX",  (int64_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~3QX",  (int64_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~3QX",  (int64_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~3QX",  (int64_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~3QX",  (int64_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
                            STR(format("~127QX", (int64_t)0x1ac)));
@@ -1145,37 +1115,37 @@ TST_CASE("format ~QO")
     TST_TN_EQ_STR("144",  STR(format("~3QO",  (int64_t)100)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~QO",   (int64_t)-100)));
+                  STR(format("~QO",   (int64_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~QO",   (int64_t)-10)));
+                  STR(format("~QO",   (int64_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~QO",   (int64_t)-1)));
+                  STR(format("~QO",   (int64_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~0QO",  (int64_t)-100)));
+                  STR(format("~0QO",  (int64_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~0QO",  (int64_t)-10)));
+                  STR(format("~0QO",  (int64_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~0QO",  (int64_t)-1)));
+                  STR(format("~0QO",  (int64_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~03QO", (int64_t)-100)));
+                  STR(format("~03QO", (int64_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~03QO", (int64_t)-10)));
+                  STR(format("~03QO", (int64_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~03QO", (int64_t)-1)));
+                  STR(format("~03QO", (int64_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~3QO",  (int64_t)-100)));
+                  STR(format("~3QO",  (int64_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~3QO",  (int64_t)-10)));
+                  STR(format("~3QO",  (int64_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~3QO",  (int64_t)-1)));
+                  STR(format("~3QO",  (int64_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127QO", (int64_t)0123)));
+                  STR(format("~127QO", (int64_t)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127QO", (int64_t)0123)));
+                  STR(format("~0127QO", (int64_t)0123)));
 }
 
 TST_CASE("format ~QB")
@@ -1201,37 +1171,37 @@ TST_CASE("format ~QB")
     TST_TN_EQ_STR("1100100", STR(format("~5QB",  (int64_t)100)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~QB", (int64_t)-100)));
+                  STR(format("~QB", (int64_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~QB", (int64_t)-10)));
+                  STR(format("~QB", (int64_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~QB", (int64_t)-1)));
+                  STR(format("~QB", (int64_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~0QB", (int64_t)-100)));
+                  STR(format("~0QB", (int64_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~0QB", (int64_t)-10)));
+                  STR(format("~0QB", (int64_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~0QB", (int64_t)-1)));
+                  STR(format("~0QB", (int64_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~05QB", (int64_t)-100)));
+                  STR(format("~05QB", (int64_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~05QB", (int64_t)-10)));
+                  STR(format("~05QB", (int64_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~05QB", (int64_t)-1)));
+                  STR(format("~05QB", (int64_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~5QB", (int64_t)-100)));
+                  STR(format("~5QB", (int64_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~5QB", (int64_t)-10)));
+                  STR(format("~5QB", (int64_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~5QB", (int64_t)-1)));
+                  STR(format("~5QB", (int64_t)-1)));
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127QB", (int64_t)0x5)));
+                  STR(format("~127QB", (int64_t)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127QB", (int64_t)0x5)));
+                  STR(format("~0127QB", (int64_t)0x5)));
 }
 
 TST_CASE("format ~LD")
@@ -1269,9 +1239,9 @@ TST_CASE("format ~LD")
     TST_TN_EQ_STR("100",  STR(format("~3LD",  (long)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127LD", (long)123)));
+                  STR(format("~127LD", (long)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127LD", (long)123)));
+                  STR(format("~0127LD", (long)123)));
 }
 
 TST_CASE("format ~LU")
@@ -1313,39 +1283,27 @@ TST_CASE("format ~LU")
     TST_TN_EQ_STR("4294967286", STR(format("~3LU",  (long)-10)));
     TST_TN_EQ_STR("4294967295", STR(format("~3LU",  (long)-1)));
 #elif L64
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~LU",   (long)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~LU",   (long)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~LU",   (long)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~LU",   (long)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~LU",   (long)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~LU",   (long)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~0LU",  (long)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~0LU",  (long)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~0LU",  (long)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~0LU",  (long)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~0LU",  (long)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~0LU",  (long)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~03LU", (long)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~03LU", (long)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~03LU", (long)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~03LU", (long)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~03LU", (long)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~03LU", (long)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~3LU",  (long)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~3LU",  (long)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~3LU",  (long)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~3LU",  (long)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~3LU",  (long)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~3LU",  (long)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127LU", (long)123)));
+                  STR(format("~127LU", (long)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127LU", (long)123)));
+                  STR(format("~0127LU", (long)123)));
 }
 
 TST_CASE("format ~LX")
@@ -1387,39 +1345,27 @@ TST_CASE("format ~LX")
     TST_TN_EQ_STR("fffffff6", STR(format("~3LX",  (long)-10)));
     TST_TN_EQ_STR("ffffffff", STR(format("~3LX",  (long)-1)));
 #elif L64
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~LX",   (long)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~LX",   (long)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~LX",   (long)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~LX",   (long)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~LX",   (long)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~LX",   (long)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~0LX",  (long)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~0LX",  (long)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~0LX",  (long)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~0LX",  (long)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~0LX",  (long)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~0LX",  (long)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~03LX", (long)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~03LX", (long)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~03LX", (long)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~03LX", (long)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~03LX", (long)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~03LX", (long)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~3LX",  (long)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~3LX",  (long)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~3LX",  (long)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~3LX",  (long)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~3LX",  (long)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~3LX",  (long)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127LX", (long)0x1ac)));
+                  STR(format("~127LX", (long)0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127LX", (long)0x1ac)));
+                  STR(format("~0127LX", (long)0x1ac)));
 }
 
 TST_CASE("format ~LO")
@@ -1461,39 +1407,27 @@ TST_CASE("format ~LO")
     TST_TN_EQ_STR("37777777766", STR(format("~3LO",  (long)-10)));
     TST_TN_EQ_STR("37777777777", STR(format("~3LO",  (long)-1)));
 #elif L64
-    TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~LO",   (long)-100)));
-    TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~LO",   (long)-10)));
-    TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~LO",   (long)-1)));
+    TST_TN_EQ_STR("1777777777777777777634", STR(format("~LO",   (long)-100)));
+    TST_TN_EQ_STR("1777777777777777777766", STR(format("~LO",   (long)-10)));
+    TST_TN_EQ_STR("1777777777777777777777", STR(format("~LO",   (long)-1)));
 
-    TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~0LO",  (long)-100)));
-    TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~0LO",  (long)-10)));
-    TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~0LO",  (long)-1)));
+    TST_TN_EQ_STR("1777777777777777777634", STR(format("~0LO",  (long)-100)));
+    TST_TN_EQ_STR("1777777777777777777766", STR(format("~0LO",  (long)-10)));
+    TST_TN_EQ_STR("1777777777777777777777", STR(format("~0LO",  (long)-1)));
 
-    TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~03LO", (long)-100)));
-    TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~03LO", (long)-10)));
-    TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~03LO", (long)-1)));
+    TST_TN_EQ_STR("1777777777777777777634", STR(format("~03LO", (long)-100)));
+    TST_TN_EQ_STR("1777777777777777777766", STR(format("~03LO", (long)-10)));
+    TST_TN_EQ_STR("1777777777777777777777", STR(format("~03LO", (long)-1)));
 
-    TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~3LO",  (long)-100)));
-    TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~3LO",  (long)-10)));
-    TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~3LO",  (long)-1)));
+    TST_TN_EQ_STR("1777777777777777777634", STR(format("~3LO",  (long)-100)));
+    TST_TN_EQ_STR("1777777777777777777766", STR(format("~3LO",  (long)-10)));
+    TST_TN_EQ_STR("1777777777777777777777", STR(format("~3LO",  (long)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127LO", (long)0123)));
+                  STR(format("~127LO", (long)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127LO", (long)0123)));
+                  STR(format("~0127LO", (long)0123)));
 }
 
 TST_CASE("format ~LB")
@@ -1520,66 +1454,66 @@ TST_CASE("format ~LB")
 
 #if L32
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~LB", (long)-100)));
+                  STR(format("~LB", (long)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~LB", (long)-10)));
+                  STR(format("~LB", (long)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~LB", (long)-1)));
+                  STR(format("~LB", (long)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0LB", (long)-100)));
+                  STR(format("~0LB", (long)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0LB", (long)-10)));
+                  STR(format("~0LB", (long)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0LB", (long)-1)));
+                  STR(format("~0LB", (long)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05LB", (long)-100)));
+                  STR(format("~05LB", (long)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05LB", (long)-10)));
+                  STR(format("~05LB", (long)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05LB", (long)-1)));
+                  STR(format("~05LB", (long)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5LB", (long)-100)));
+                  STR(format("~5LB", (long)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5LB", (long)-10)));
+                  STR(format("~5LB", (long)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5LB", (long)-1)));
+                  STR(format("~5LB", (long)-1)));
 #elif L64
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~LB", (long)-100)));
+                  STR(format("~LB", (long)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~LB", (long)-10)));
+                  STR(format("~LB", (long)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~LB", (long)-1)));
+                  STR(format("~LB", (long)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~0LB", (long)-100)));
+                  STR(format("~0LB", (long)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~0LB", (long)-10)));
+                  STR(format("~0LB", (long)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~0LB", (long)-1)));
+                  STR(format("~0LB", (long)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~05LB", (long)-100)));
+                  STR(format("~05LB", (long)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~05LB", (long)-10)));
+                  STR(format("~05LB", (long)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~05LB", (long)-1)));
+                  STR(format("~05LB", (long)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~5LB", (long)-100)));
+                  STR(format("~5LB", (long)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~5LB", (long)-10)));
+                  STR(format("~5LB", (long)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~5LB", (long)-1)));
+                  STR(format("~5LB", (long)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127LB", (long)0x5)));
+                  STR(format("~127LB", (long)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127LB", (long)0x5)));
+                  STR(format("~0127LB", (long)0x5)));
 }
 
 TST_CASE("format ~JD")
@@ -1617,9 +1551,9 @@ TST_CASE("format ~JD")
     TST_TN_EQ_STR("100",  STR(format("~3JD",  (intmax_t)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127JD", (intmax_t)123)));
+                  STR(format("~127JD", (intmax_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127JD", (intmax_t)123)));
+                  STR(format("~0127JD", (intmax_t)123)));
 }
 
 TST_CASE("format ~JU")
@@ -1661,39 +1595,27 @@ TST_CASE("format ~JU")
     TST_TN_EQ_STR("4294967286", STR(format("~3JU",  (intmax_t)-10)));
     TST_TN_EQ_STR("4294967295", STR(format("~3JU",  (intmax_t)-1)));
 #elif IMAX64
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~JU",   (intmax_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~JU",   (intmax_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~JU",   (intmax_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~JU",  (intmax_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~JU",  (intmax_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~JU",  (intmax_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~0JU",  (intmax_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~0JU",  (intmax_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~0JU",  (intmax_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~0JU", (intmax_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~0JU", (intmax_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~0JU", (intmax_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~03JU", (intmax_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~03JU", (intmax_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~03JU", (intmax_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~03JU",(intmax_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~03JU",(intmax_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~03JU",(intmax_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~3JU",  (intmax_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~3JU",  (intmax_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~3JU",  (intmax_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~3JU", (intmax_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~3JU", (intmax_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~3JU", (intmax_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127JU", (intmax_t)123)));
+                  STR(format("~127JU", (intmax_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127JU", (intmax_t)123)));
+                  STR(format("~0127JU", (intmax_t)123)));
 }
 
 TST_CASE("format ~JX")
@@ -1735,39 +1657,27 @@ TST_CASE("format ~JX")
     TST_TN_EQ_STR("fffffff6", STR(format("~3JX",  (intmax_t)-10)));
     TST_TN_EQ_STR("ffffffff", STR(format("~3JX",  (intmax_t)-1)));
 #elif IMAX64
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~JX",   (intmax_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~JX",   (intmax_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~JX",   (intmax_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~JX",   (intmax_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~JX",   (intmax_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~JX",   (intmax_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~0JX",  (intmax_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~0JX",  (intmax_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~0JX",  (intmax_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~0JX",  (intmax_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~0JX",  (intmax_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~0JX",  (intmax_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~03JX", (intmax_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~03JX", (intmax_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~03JX", (intmax_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~03JX", (intmax_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~03JX", (intmax_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~03JX", (intmax_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~3JX",  (intmax_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~3JX",  (intmax_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~3JX",  (intmax_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~3JX",  (intmax_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~3JX",  (intmax_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~3JX",  (intmax_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127JX", (intmax_t)0x1ac)));
+                  STR(format("~127JX", (intmax_t)0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127JX", (intmax_t)0x1ac)));
+                  STR(format("~0127JX", (intmax_t)0x1ac)));
 }
 
 TST_CASE("format ~JO")
@@ -1810,38 +1720,38 @@ TST_CASE("format ~JO")
     TST_TN_EQ_STR("37777777777", STR(format("~3JO",  (intmax_t)-1)));
 #elif IMAX64
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~JO",   (intmax_t)-100)));
+                  STR(format("~JO",   (intmax_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~JO",   (intmax_t)-10)));
+                  STR(format("~JO",   (intmax_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~JO",   (intmax_t)-1)));
+                  STR(format("~JO",   (intmax_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~0JO",  (intmax_t)-100)));
+                  STR(format("~0JO",  (intmax_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~0JO",  (intmax_t)-10)));
+                  STR(format("~0JO",  (intmax_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~0JO",  (intmax_t)-1)));
+                  STR(format("~0JO",  (intmax_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~03JO", (intmax_t)-100)));
+                  STR(format("~03JO", (intmax_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~03JO", (intmax_t)-10)));
+                  STR(format("~03JO", (intmax_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~03JO", (intmax_t)-1)));
+                  STR(format("~03JO", (intmax_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~3JO",  (intmax_t)-100)));
+                  STR(format("~3JO",  (intmax_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~3JO",  (intmax_t)-10)));
+                  STR(format("~3JO",  (intmax_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~3JO",  (intmax_t)-1)));
+                  STR(format("~3JO",  (intmax_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127JO", (intmax_t)0123)));
+                  STR(format("~127JO", (intmax_t)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127JO", (intmax_t)0123)));
+                  STR(format("~0127JO", (intmax_t)0123)));
 }
 
 TST_CASE("format ~JB")
@@ -1868,66 +1778,66 @@ TST_CASE("format ~JB")
 
 #if IMAX32
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~JB", (intmax_t)-100)));
+                  STR(format("~JB", (intmax_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~JB", (intmax_t)-10)));
+                  STR(format("~JB", (intmax_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~JB", (intmax_t)-1)));
+                  STR(format("~JB", (intmax_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0JB", (intmax_t)-100)));
+                  STR(format("~0JB", (intmax_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0JB", (intmax_t)-10)));
+                  STR(format("~0JB", (intmax_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0JB", (intmax_t)-1)));
+                  STR(format("~0JB", (intmax_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05JB", (intmax_t)-100)));
+                  STR(format("~05JB", (intmax_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05JB", (intmax_t)-10)));
+                  STR(format("~05JB", (intmax_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05JB", (intmax_t)-1)));
+                  STR(format("~05JB", (intmax_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5JB", (intmax_t)-100)));
+                  STR(format("~5JB", (intmax_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5JB", (intmax_t)-10)));
+                  STR(format("~5JB", (intmax_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5JB", (intmax_t)-1)));
+                  STR(format("~5JB", (intmax_t)-1)));
 #elif IMAX64
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~JB", (intmax_t)-100)));
+                  STR(format("~JB", (intmax_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~JB", (intmax_t)-10)));
+                  STR(format("~JB", (intmax_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~JB", (intmax_t)-1)));
+                  STR(format("~JB", (intmax_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~0JB", (intmax_t)-100)));
+                  STR(format("~0JB", (intmax_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~0JB", (intmax_t)-10)));
+                  STR(format("~0JB", (intmax_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~0JB", (intmax_t)-1)));
+                  STR(format("~0JB", (intmax_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~05JB", (intmax_t)-100)));
+                  STR(format("~05JB", (intmax_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~05JB", (intmax_t)-10)));
+                  STR(format("~05JB", (intmax_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~05JB", (intmax_t)-1)));
+                  STR(format("~05JB", (intmax_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~5JB", (intmax_t)-100)));
+                  STR(format("~5JB", (intmax_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~5JB", (intmax_t)-10)));
+                  STR(format("~5JB", (intmax_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~5JB", (intmax_t)-1)));
+                  STR(format("~5JB", (intmax_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127JB", (intmax_t)0x5)));
+                  STR(format("~127JB", (intmax_t)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127JB", (intmax_t)0x5)));
+                  STR(format("~0127JB", (intmax_t)0x5)));
 }
 
 TST_CASE("format ~TD")
@@ -1965,9 +1875,9 @@ TST_CASE("format ~TD")
     TST_TN_EQ_STR("100",  STR(format("~3TD",  (ptrdiff_t)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127TD", (ptrdiff_t)123)));
+                  STR(format("~127TD", (ptrdiff_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127TD", (ptrdiff_t)123)));
+                  STR(format("~0127TD", (ptrdiff_t)123)));
 }
 
 TST_CASE("format ~TU")
@@ -2010,38 +1920,38 @@ TST_CASE("format ~TU")
     TST_TN_EQ_STR("4294967295", STR(format("~3TU",  (ptrdiff_t)-1)));
 #elif PDIFF64
     TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~TU",   (ptrdiff_t)-100)));
+                  STR(format("~TU",   (ptrdiff_t)-100)));
     TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~TU",   (ptrdiff_t)-10)));
+                  STR(format("~TU",   (ptrdiff_t)-10)));
     TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~TU",   (ptrdiff_t)-1)));
+                  STR(format("~TU",   (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~0TU",  (ptrdiff_t)-100)));
+                  STR(format("~0TU",  (ptrdiff_t)-100)));
     TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~0TU",  (ptrdiff_t)-10)));
+                  STR(format("~0TU",  (ptrdiff_t)-10)));
     TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~0TU",  (ptrdiff_t)-1)));
+                  STR(format("~0TU",  (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~03TU", (ptrdiff_t)-100)));
+                  STR(format("~03TU", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~03TU", (ptrdiff_t)-10)));
+                  STR(format("~03TU", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~03TU", (ptrdiff_t)-1)));
+                  STR(format("~03TU", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~3TU",  (ptrdiff_t)-100)));
+                  STR(format("~3TU",  (ptrdiff_t)-100)));
     TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~3TU",  (ptrdiff_t)-10)));
+                  STR(format("~3TU",  (ptrdiff_t)-10)));
     TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~3TU",  (ptrdiff_t)-1)));
+                  STR(format("~3TU",  (ptrdiff_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127TU", (ptrdiff_t)123)));
+                  STR(format("~127TU", (ptrdiff_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127TU", (ptrdiff_t)123)));
+                  STR(format("~0127TU", (ptrdiff_t)123)));
 }
 
 TST_CASE("format ~TX")
@@ -2083,39 +1993,27 @@ TST_CASE("format ~TX")
     TST_TN_EQ_STR("fffffff6", STR(format("~3TX",  (ptrdiff_t)-10)));
     TST_TN_EQ_STR("ffffffff", STR(format("~3TX",  (ptrdiff_t)-1)));
 #elif PDIFF64
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~TX",   (ptrdiff_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~TX",   (ptrdiff_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~TX",   (ptrdiff_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~TX",   (ptrdiff_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~TX",   (ptrdiff_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~TX",   (ptrdiff_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~0TX",  (ptrdiff_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~0TX",  (ptrdiff_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~0TX",  (ptrdiff_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~0TX",  (ptrdiff_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~0TX",  (ptrdiff_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~0TX",  (ptrdiff_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~03TX", (ptrdiff_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~03TX", (ptrdiff_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~03TX", (ptrdiff_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~03TX", (ptrdiff_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~03TX", (ptrdiff_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~03TX", (ptrdiff_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~3TX",  (ptrdiff_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~3TX",  (ptrdiff_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~3TX",  (ptrdiff_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~3TX",  (ptrdiff_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~3TX",  (ptrdiff_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~3TX",  (ptrdiff_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127TX", (ptrdiff_t)0x1ac)));
+                  STR(format("~127TX", (ptrdiff_t)0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127TX", (ptrdiff_t)0x1ac)));
+                  STR(format("~0127TX", (ptrdiff_t)0x1ac)));
 }
 
 TST_CASE("format ~TO")
@@ -2158,38 +2056,38 @@ TST_CASE("format ~TO")
     TST_TN_EQ_STR("37777777777", STR(format("~3TO",  (ptrdiff_t)-1)));
 #elif PDIFF64
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~TO",   (ptrdiff_t)-100)));
+                  STR(format("~TO",   (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~TO",   (ptrdiff_t)-10)));
+                  STR(format("~TO",   (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~TO",   (ptrdiff_t)-1)));
+                  STR(format("~TO",   (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~0TO",  (ptrdiff_t)-100)));
+                  STR(format("~0TO",  (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~0TO",  (ptrdiff_t)-10)));
+                  STR(format("~0TO",  (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~0TO",  (ptrdiff_t)-1)));
+                  STR(format("~0TO",  (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~03TO", (ptrdiff_t)-100)));
+                  STR(format("~03TO", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~03TO", (ptrdiff_t)-10)));
+                  STR(format("~03TO", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~03TO", (ptrdiff_t)-1)));
+                  STR(format("~03TO", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~3TO",  (ptrdiff_t)-100)));
+                  STR(format("~3TO",  (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~3TO",  (ptrdiff_t)-10)));
+                  STR(format("~3TO",  (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~3TO",  (ptrdiff_t)-1)));
+                  STR(format("~3TO",  (ptrdiff_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127TO", (ptrdiff_t)0123)));
+                  STR(format("~127TO", (ptrdiff_t)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127TO", (ptrdiff_t)0123)));
+                  STR(format("~0127TO", (ptrdiff_t)0123)));
 }
 
 TST_CASE("format ~TB")
@@ -2216,66 +2114,66 @@ TST_CASE("format ~TB")
 
 #if PDIFF32
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~TB", (ptrdiff_t)-100)));
+                  STR(format("~TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~TB", (ptrdiff_t)-10)));
+                  STR(format("~TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~TB", (ptrdiff_t)-1)));
+                  STR(format("~TB", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0TB", (ptrdiff_t)-100)));
+                  STR(format("~0TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0TB", (ptrdiff_t)-10)));
+                  STR(format("~0TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0TB", (ptrdiff_t)-1)));
+                  STR(format("~0TB", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05TB", (ptrdiff_t)-100)));
+                  STR(format("~05TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05TB", (ptrdiff_t)-10)));
+                  STR(format("~05TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05TB", (ptrdiff_t)-1)));
+                  STR(format("~05TB", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5TB", (ptrdiff_t)-100)));
+                  STR(format("~5TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5TB", (ptrdiff_t)-10)));
+                  STR(format("~5TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5TB", (ptrdiff_t)-1)));
+                  STR(format("~5TB", (ptrdiff_t)-1)));
 #elif PDIFF64
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~TB", (ptrdiff_t)-100)));
+                  STR(format("~TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~TB", (ptrdiff_t)-10)));
+                  STR(format("~TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~TB", (ptrdiff_t)-1)));
+                  STR(format("~TB", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~0TB", (ptrdiff_t)-100)));
+                  STR(format("~0TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~0TB", (ptrdiff_t)-10)));
+                  STR(format("~0TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~0TB", (ptrdiff_t)-1)));
+                  STR(format("~0TB", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~05TB", (ptrdiff_t)-100)));
+                  STR(format("~05TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~05TB", (ptrdiff_t)-10)));
+                  STR(format("~05TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~05TB", (ptrdiff_t)-1)));
+                  STR(format("~05TB", (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~5TB", (ptrdiff_t)-100)));
+                  STR(format("~5TB", (ptrdiff_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~5TB", (ptrdiff_t)-10)));
+                  STR(format("~5TB", (ptrdiff_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~5TB", (ptrdiff_t)-1)));
+                  STR(format("~5TB", (ptrdiff_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127TB", (ptrdiff_t)0x5)));
+                  STR(format("~127TB", (ptrdiff_t)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127TB", (ptrdiff_t)0x5)));
+                  STR(format("~0127TB", (ptrdiff_t)0x5)));
 }
 
 TST_CASE("format ~ZD")
@@ -2313,9 +2211,9 @@ TST_CASE("format ~ZD")
     TST_TN_EQ_STR("100",  STR(format("~3ZD",  (size_t)100)));
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127ZD", (size_t)123)));
+                  STR(format("~127ZD", (size_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127ZD", (size_t)123)));
+                  STR(format("~0127ZD", (size_t)123)));
 }
 
 TST_CASE("format ~ZU")
@@ -2357,39 +2255,27 @@ TST_CASE("format ~ZU")
     TST_TN_EQ_STR("4294967286", STR(format("~3ZU",  (size_t)-10)));
     TST_TN_EQ_STR("4294967295", STR(format("~3ZU",  (size_t)-1)));
 #elif P64
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~ZU",   (size_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~ZU",   (size_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~ZU",   (size_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~ZU",   (size_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~ZU",   (size_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~ZU",   (size_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~0ZU",  (size_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~0ZU",  (size_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~0ZU",  (size_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~0ZU",  (size_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~0ZU",  (size_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~0ZU",  (size_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~03ZU", (size_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~03ZU", (size_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~03ZU", (size_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~03ZU", (size_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~03ZU", (size_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~03ZU", (size_t)-1)));
 
-    TST_TN_EQ_STR("18446744073709551516",
-                           STR(format("~3ZU",  (size_t)-100)));
-    TST_TN_EQ_STR("18446744073709551606",
-                           STR(format("~3ZU",  (size_t)-10)));
-    TST_TN_EQ_STR("18446744073709551615",
-                           STR(format("~3ZU",  (size_t)-1)));
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~3ZU",  (size_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~3ZU",  (size_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~3ZU",  (size_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127ZU", (size_t)123)));
+                  STR(format("~127ZU", (size_t)123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127ZU", (size_t)123)));
+                  STR(format("~0127ZU", (size_t)123)));
 }
 
 TST_CASE("format ~ZX")
@@ -2433,42 +2319,29 @@ TST_CASE("format ~ZX")
     TST_TN_EQ_STR("fffffff6", STR(format("~3ZX",  (size_t)-10)));
     TST_TN_EQ_STR("ffffffff", STR(format("~3ZX",  (size_t)-1)));
 #elif P64
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~ZX",   ~(size_t)0)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~ZX",   ~(size_t)0)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~ZX",   (size_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~ZX",   (size_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~ZX",   (size_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~ZX",   (size_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~ZX",   (size_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~ZX",   (size_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~0ZX",  (size_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~0ZX",  (size_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~0ZX",  (size_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~0ZX",  (size_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~0ZX",  (size_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~0ZX",  (size_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~03ZX", (size_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~03ZX", (size_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~03ZX", (size_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~03ZX", (size_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~03ZX", (size_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~03ZX", (size_t)-1)));
 
-    TST_TN_EQ_STR("ffffffffffffff9c",
-                           STR(format("~3ZX",  (size_t)-100)));
-    TST_TN_EQ_STR("fffffffffffffff6",
-                           STR(format("~3ZX",  (size_t)-10)));
-    TST_TN_EQ_STR("ffffffffffffffff",
-                           STR(format("~3ZX",  (size_t)-1)));
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~3ZX",  (size_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~3ZX",  (size_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~3ZX",  (size_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
-                           STR(format("~127ZX", (size_t)0x1ac)));
+                  STR(format("~127ZX", (size_t)0x1ac)));
     TST_TN_EQ_STR("00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ac",
-                           STR(format("~0127ZX", (size_t)0x1ac)));
+                  STR(format("~0127ZX", (size_t)0x1ac)));
 }
 
 TST_CASE("format ~ZO")
@@ -2511,38 +2384,38 @@ TST_CASE("format ~ZO")
     TST_TN_EQ_STR("37777777777", STR(format("~3ZO",  (size_t)-1)));
 #elif P64
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~ZO",   (size_t)-100)));
+                  STR(format("~ZO",   (size_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~ZO",   (size_t)-10)));
+                  STR(format("~ZO",   (size_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~ZO",   (size_t)-1)));
+                  STR(format("~ZO",   (size_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~0ZO",  (size_t)-100)));
+                  STR(format("~0ZO",  (size_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~0ZO",  (size_t)-10)));
+                  STR(format("~0ZO",  (size_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~0ZO",  (size_t)-1)));
+                  STR(format("~0ZO",  (size_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~03ZO", (size_t)-100)));
+                  STR(format("~03ZO", (size_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~03ZO", (size_t)-10)));
+                  STR(format("~03ZO", (size_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~03ZO", (size_t)-1)));
+                  STR(format("~03ZO", (size_t)-1)));
 
     TST_TN_EQ_STR("1777777777777777777634",
-                           STR(format("~3ZO",  (size_t)-100)));
+                  STR(format("~3ZO",  (size_t)-100)));
     TST_TN_EQ_STR("1777777777777777777766",
-                           STR(format("~3ZO",  (size_t)-10)));
+                  STR(format("~3ZO",  (size_t)-10)));
     TST_TN_EQ_STR("1777777777777777777777",
-                           STR(format("~3ZO",  (size_t)-1)));
+                  STR(format("~3ZO",  (size_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
-                           STR(format("~127ZO", (size_t)0123)));
+                  STR(format("~127ZO", (size_t)0123)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123",
-                           STR(format("~0127ZO", (size_t)0123)));
+                  STR(format("~0127ZO", (size_t)0123)));
 }
 
 TST_CASE("format ~ZB")
@@ -2569,66 +2442,66 @@ TST_CASE("format ~ZB")
 
 #if P32
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~ZB", (size_t)-100)));
+                  STR(format("~ZB", (size_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~ZB", (size_t)-10)));
+                  STR(format("~ZB", (size_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~ZB", (size_t)-1)));
+                  STR(format("~ZB", (size_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~0ZB", (size_t)-100)));
+                  STR(format("~0ZB", (size_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~0ZB", (size_t)-10)));
+                  STR(format("~0ZB", (size_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~0ZB", (size_t)-1)));
+                  STR(format("~0ZB", (size_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~05ZB", (size_t)-100)));
+                  STR(format("~05ZB", (size_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~05ZB", (size_t)-10)));
+                  STR(format("~05ZB", (size_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~05ZB", (size_t)-1)));
+                  STR(format("~05ZB", (size_t)-1)));
 
     TST_TN_EQ_STR("11111111111111111111111110011100",
-                           STR(format("~5ZB", (size_t)-100)));
+                  STR(format("~5ZB", (size_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
-                           STR(format("~5ZB", (size_t)-10)));
+                  STR(format("~5ZB", (size_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
-                           STR(format("~5ZB", (size_t)-1)));
+                  STR(format("~5ZB", (size_t)-1)));
 #elif P64
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~ZB", (size_t)-100)));
+                  STR(format("~ZB", (size_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~ZB", (size_t)-10)));
+                  STR(format("~ZB", (size_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~ZB", (size_t)-1)));
+                  STR(format("~ZB", (size_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~0ZB", (size_t)-100)));
+                  STR(format("~0ZB", (size_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~0ZB", (size_t)-10)));
+                  STR(format("~0ZB", (size_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~0ZB", (size_t)-1)));
+                  STR(format("~0ZB", (size_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~05ZB", (size_t)-100)));
+                  STR(format("~05ZB", (size_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~05ZB", (size_t)-10)));
+                  STR(format("~05ZB", (size_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~05ZB", (size_t)-1)));
+                  STR(format("~05ZB", (size_t)-1)));
 
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
-                           STR(format("~5ZB", (size_t)-100)));
+                  STR(format("~5ZB", (size_t)-100)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
-                           STR(format("~5ZB", (size_t)-10)));
+                  STR(format("~5ZB", (size_t)-10)));
     TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
-                           STR(format("~5ZB", (size_t)-1)));
+                  STR(format("~5ZB", (size_t)-1)));
 #endif
 
     TST_TN_EQ_STR("                                                                                                                            101",
-                           STR(format("~127ZB", (size_t)0x5)));
+                  STR(format("~127ZB", (size_t)0x5)));
     TST_TN_EQ_STR("0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101",
-                           STR(format("~0127ZB", (size_t)0x5)));
+                  STR(format("~0127ZB", (size_t)0x5)));
 }
 
 TST_CASE("format ~c")
@@ -2977,102 +2850,84 @@ TST_CASE("format ~y")
 
 TST_CASE("format ~?")
 {
-    TST_TN_EQ_STR("~",
-                           STR(format("~k", CONST_STRING("~~"), SCM_NULL)));
-    TST_TN_EQ_STR(" ",
-                           STR(format("~k", CONST_STRING("~_"), SCM_NULL)));
-    TST_TN_EQ_STR("\n",
-                           STR(format("~k", CONST_STRING("~%"), SCM_NULL)));
-    TST_TN_EQ_STR("\n",
-                           STR(format("~k", CONST_STRING("~&"), SCM_NULL)));
+    TST_TN_EQ_STR("~",  STR(format("~k", CONST_STRING("~~"), SCM_NULL)));
+    TST_TN_EQ_STR(" ",  STR(format("~k", CONST_STRING("~_"), SCM_NULL)));
+    TST_TN_EQ_STR("\n", STR(format("~k", CONST_STRING("~%"), SCM_NULL)));
+    TST_TN_EQ_STR("\n", STR(format("~k", CONST_STRING("~&"), SCM_NULL)));
 #if 0
     /* hard to be this on current port implementation */
-    TST_TN_EQ_STR("\n",
-                           STR(format("~?",
+    TST_TN_EQ_STR("\n",    STR(format("~?",
                                       CONST_STRING("~%~?"),
                                       LIST_2(CONST_STRING("~&"), SCM_NULL))));
 #else
-    TST_TN_EQ_STR("\n\n",
-                           STR(format("~?",
+    TST_TN_EQ_STR("\n\n",  STR(format("~?",
                                       CONST_STRING("~%~?"),
                                       LIST_2(CONST_STRING("~&"), SCM_NULL))));
 #endif
-    TST_TN_EQ_STR("\n \n",
-                           STR(format("~?",
+    TST_TN_EQ_STR("\n \n", STR(format("~?",
                                       CONST_STRING("~% ~?"),
                                       LIST_2(CONST_STRING("~&"), SCM_NULL))));
-    TST_TN_EQ_STR("\n \n",
-                           STR(format("~?",
+    TST_TN_EQ_STR("\n \n", STR(format("~?",
                                       CONST_STRING("~%~?"),
                                       LIST_2(CONST_STRING(" ~&"), SCM_NULL))));
-    TST_TN_EQ_STR("aBc",
-                           STR(format("~?",
+    TST_TN_EQ_STR("aBc",   STR(format("~?",
                                       CONST_STRING("aBc"), SCM_NULL)));
-    TST_TN_EQ_STR("0aBc1",
-                           STR(format("~?",
+    TST_TN_EQ_STR("0aBc1", STR(format("~?",
                                       CONST_STRING("0~a1"),
                                       LIST_1(CONST_STRING("aBc")))));
     TST_TN_EQ_STR("02aBc31",
-                           STR(format("~?",
-                                      CONST_STRING("0~?1"),
-                                      LIST_2(CONST_STRING("2~a3"),
-                                             LIST_1(CONST_STRING("aBc"))))));
+                  STR(format("~?",
+                             CONST_STRING("0~?1"),
+                             LIST_2(CONST_STRING("2~a3"),
+                                    LIST_1(CONST_STRING("aBc"))))));
     TST_TN_EQ_STR("024aBc531",
-                           STR(format("~?",
-                                      CONST_STRING("0~?1"),
-                                      LIST_2(CONST_STRING("2~?3"),
-                                             LIST_2(CONST_STRING("4~a5"),
-                                                    LIST_1(CONST_STRING("aBc")))))));
-    TST_TN_EQ_STR("#t",
-                           STR(format("~?",
+                  STR(format("~?",
+                             CONST_STRING("0~?1"),
+                             LIST_2(CONST_STRING("2~?3"),
+                                    LIST_2(CONST_STRING("4~a5"),
+                                           LIST_1(CONST_STRING("aBc")))))));
+    TST_TN_EQ_STR("#t",    STR(format("~?",
                                       CONST_STRING("~w"),
                                       LIST_1(SCM_TRUE))));
-    TST_TN_EQ_STR("123",
-                           STR(format("~?",
+    TST_TN_EQ_STR("123",   STR(format("~?",
                                       CONST_STRING("~w"),
                                       LIST_1(MAKE_INT(123)))));
-    TST_TN_EQ_STR("#\\a",
-                           STR(format("~?",
+    TST_TN_EQ_STR("#\\a",  STR(format("~?",
                                       CONST_STRING("~w"),
                                       LIST_1(MAKE_CHAR('a')))));
-    TST_TN_EQ_STR("\"\"",
-                           STR(format("~?",
+    TST_TN_EQ_STR("\"\"",  STR(format("~?",
                                       CONST_STRING("~w"),
                                       LIST_1(CONST_STRING("")))));
     TST_TN_EQ_STR("\"\\\"\"",
-                           STR(format("~?",
-                                      CONST_STRING("~w"),
-                                      LIST_1(CONST_STRING("\"")))));
+                  STR(format("~?",
+                             CONST_STRING("~w"),
+                             LIST_1(CONST_STRING("\"")))));
     TST_TN_EQ_STR("\"aBc\"",
-                           STR(format("~?",
-                                      CONST_STRING("~w"),
-                                      LIST_1(CONST_STRING("aBc")))));
+                  STR(format("~?",
+                             CONST_STRING("~w"),
+                             LIST_1(CONST_STRING("aBc")))));
     TST_TN_EQ_STR("(#t 123 #\\a \"aBc\" (0))",
-                           STR(format("~?",
-                                      CONST_STRING("~w"), LIST_1(lst))));
+                  STR(format("~?",
+                             CONST_STRING("~w"), LIST_1(lst))));
     /* SigScheme starts the index with 1 */
     TST_TN_EQ_STR("#1=(0 1 . #1#)",
-                           STR(format("~?",
-                                      CONST_STRING("~w"), LIST_1(clst))));
+                  STR(format("~?",
+                             CONST_STRING("~w"), LIST_1(clst))));
 }
 
 TST_CASE("format ~k")
 {
-    TST_TN_EQ_STR("~",
-                           STR(format("~k", CONST_STRING("~~"), SCM_NULL)));
-    TST_TN_EQ_STR(" ",
-                           STR(format("~k", CONST_STRING("~_"), SCM_NULL)));
-    TST_TN_EQ_STR("\n",
-                           STR(format("~k", CONST_STRING("~%"), SCM_NULL)));
-    TST_TN_EQ_STR("\n",
-                           STR(format("~k", CONST_STRING("~&"), SCM_NULL)));
+    TST_TN_EQ_STR("~",  STR(format("~k", CONST_STRING("~~"), SCM_NULL)));
+    TST_TN_EQ_STR(" ",  STR(format("~k", CONST_STRING("~_"), SCM_NULL)));
+    TST_TN_EQ_STR("\n", STR(format("~k", CONST_STRING("~%"), SCM_NULL)));
+    TST_TN_EQ_STR("\n", STR(format("~k", CONST_STRING("~&"), SCM_NULL)));
 
     TST_TN_EQ_STR("024aBc531",
-                           STR(format("~k",
-                                      CONST_STRING("0~k1"),
-                                      LIST_2(CONST_STRING("2~k3"),
-                                             LIST_2(CONST_STRING("4~a5"),
-                                                    LIST_1(CONST_STRING("aBc")))))));
+                  STR(format("~k",
+                             CONST_STRING("0~k1"),
+                             LIST_2(CONST_STRING("2~k3"),
+                                    LIST_2(CONST_STRING("4~a5"),
+                                           LIST_1(CONST_STRING("aBc")))))));
 }
 
 TST_CASE("format ~h")
@@ -3083,65 +2938,65 @@ TST_CASE("format ~h")
 TST_CASE("format mixed raw C directives")
 {
     TST_TN_EQ_STR("-100 1010a64-01144100-01",
-                           STR(format("~D~5QBa~WX~03JD~3LO~ZU~03TD",
-                                      -100,
-                                      (int64_t)10,
-                                      (int32_t)100,
-                                      (intmax_t)-1,
-                                      (long)100,
-                                      (size_t)100,
-                                      (ptrdiff_t)-1)));
+                  STR(format("~D~5QBa~WX~03JD~3LO~ZU~03TD",
+                             -100,
+                             (int64_t)10,
+                             (int32_t)100,
+                             (intmax_t)-1,
+                             (long)100,
+                             (size_t)100,
+                             (ptrdiff_t)-1)));
 
     TST_TN_EQ_STR("-100 1010aa string64-01144あ100b-01",
-                           STR(format("~D~5QBa~S~WX~03JD~3LO~C~ZU~C~03TD",
-                                      -100,
-                                      (int64_t)10,
-                                      "a string",
-                                      (int32_t)100,
-                                      (intmax_t)-1,
-                                      (long)100,
-                                      (scm_ichar_t)0x3042,
-                                      (size_t)100,
-                                      (scm_ichar_t)'b',
-                                      (ptrdiff_t)-1)));
+                  STR(format("~D~5QBa~S~WX~03JD~3LO~C~ZU~C~03TD",
+                             -100,
+                             (int64_t)10,
+                             "a string",
+                             (int32_t)100,
+                             (intmax_t)-1,
+                             (long)100,
+                             (scm_ichar_t)0x3042,
+                             (size_t)100,
+                             (scm_ichar_t)'b',
+                             (ptrdiff_t)-1)));
 }
 
 TST_CASE("format mixed SRFI directives")
 {
     TST_TN_EQ_STR("~\n", STR(format("~~~%")));
     TST_TN_EQ_STR("slashified: #\\a\nany: a\n",
-                           STR(format("slashified: ~s~%any: ~a~%",
-                                      MAKE_CHAR('a'), MAKE_CHAR('a'))));
+                  STR(format("slashified: ~s~%any: ~a~%",
+                             MAKE_CHAR('a'), MAKE_CHAR('a'))));
 
     TST_TN_EQ_STR("-100 1010aa string64-01144あ100b-01",
-                           STR(format("~d~5ba~a~x~03d~3o~c~d~c~03d",
-                                      MAKE_INT(-100),
-                                      MAKE_INT(10),
-                                      CONST_STRING("a string"),
-                                      MAKE_INT(100),
-                                      MAKE_INT(-1),
-                                      MAKE_INT(100),
-                                      MAKE_CHAR(0x3042),
-                                      MAKE_INT(100),
-                                      MAKE_CHAR('b'),
-                                      MAKE_INT(-1))));
+                  STR(format("~d~5ba~a~x~03d~3o~c~d~c~03d",
+                             MAKE_INT(-100),
+                             MAKE_INT(10),
+                             CONST_STRING("a string"),
+                             MAKE_INT(100),
+                             MAKE_INT(-1),
+                             MAKE_INT(100),
+                             MAKE_CHAR(0x3042),
+                             MAKE_INT(100),
+                             MAKE_CHAR('b'),
+                             MAKE_INT(-1))));
 }
 
 TST_CASE("format mixed SRFI & raw C directives")
 {
     TST_TN_EQ_STR("-100 1010aa string64another string-01144~あ100b-01",
-                           STR(format("~D~5ba~S~WX~a~03JD~3LO~~~c~ZU~C~03TD",
-                                      -100,
-                                      MAKE_INT(10),
-                                      "a string",
-                                      (int32_t)100,
-                                      CONST_STRING("another string"),
-                                      (intmax_t)-1,
-                                      (long)100,
-                                      MAKE_CHAR(0x3042),
-                                      (size_t)100,
-                                      (scm_ichar_t)'b',
-                                      (ptrdiff_t)-1)));
+                  STR(format("~D~5ba~S~WX~a~03JD~3LO~~~c~ZU~C~03TD",
+                             -100,
+                             MAKE_INT(10),
+                             "a string",
+                             (int32_t)100,
+                             CONST_STRING("another string"),
+                             (intmax_t)-1,
+                             (long)100,
+                             MAKE_CHAR(0x3042),
+                             (size_t)100,
+                             (scm_ichar_t)'b',
+                             (ptrdiff_t)-1)));
 }
 
 TST_CASE("format freshline by mixed SRFI & raw C directives")
@@ -3154,20 +3009,20 @@ TST_CASE("format freshline by mixed SRFI & raw C directives")
 #if 0
     /* current implementation does not support these behariors */
     TST_TN_EQ_STR("\n",
-                           STR(format("~C~?",
-                                      (scm_ichar_t)'\n',
-                                      CONST_STRING("~&"), SCM_NULL)));
+                  STR(format("~C~?",
+                             (scm_ichar_t)'\n',
+                             CONST_STRING("~&"), SCM_NULL)));
     TST_TN_EQ_STR("\n\n",
-                           STR(format("~&~C~?",
-                                      (scm_ichar_t)'\n',
-                                      CONST_STRING("~&"), SCM_NULL)));
+                  STR(format("~&~C~?",
+                             (scm_ichar_t)'\n',
+                             CONST_STRING("~&"), SCM_NULL)));
     TST_TN_EQ_STR("\n",
-                           STR(format("~S~?",
-                                      "\n",
-                                      CONST_STRING("~&"), SCM_NULL)));
+                  STR(format("~S~?",
+                             "\n",
+                             CONST_STRING("~&"), SCM_NULL)));
     TST_TN_EQ_STR("\n\n",
-                           STR(format("~&~S~?",
-                                      "\n",
-                                      CONST_STRING("~&"), SCM_NULL)));
+                  STR(format("~&~S~?",
+                             "\n",
+                             CONST_STRING("~&"), SCM_NULL)));
 #endif
 }
