@@ -733,14 +733,14 @@ corner case tests:
 
 file:              format.c
 category:          semicore
-spec by eyes:      yamaken@r4052
-spec by tests:     yamaken@r4052
+spec by eyes:      yamaken@r4052, yamaken@r4070
+spec by tests:     yamaken@r4052, yamaken@r4070
 general review:    yamaken@r4052
 64-bit by eyes:    yamaken@r4052
 64-bit by tests:   
 coding style:      yamaken@r4052
-normal case tests: yamaken@r4052
-corner case tests: yamaken@r4052
+normal case tests: yamaken@r4052, yamaken@r4070
+corner case tests: yamaken@r4052, yamaken@r4070
 
 file:              syntax.c
 category:          r5rs
@@ -1042,6 +1042,12 @@ corner case tests:
 
 Log
 ---
+2006-12-07  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * format.c
+          - QA done again @r4070 except for "64-bit by tests"
+          - Fix broken va_list passing on x86_64 platform
+
 2006-12-06  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * scmport-file.c
