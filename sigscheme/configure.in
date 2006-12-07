@@ -84,8 +84,6 @@ AC_PATH_PROG(ASCIIDOC, asciidoc)
 # GNU sed for test-c2/collect.sh
 AC_PATH_PROGS(GSED, gsed sed)
 AC_PATH_PROG(SH, sh)
-# The modified version of the C testing framework
-AC_PATH_PROG(CUTTER, cutter)
 AC_PATH_PROGS(MD5, md5 md5sum)
 
 # Checks for libraries.
@@ -96,8 +94,6 @@ AX_LIB_GLIBC
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h malloc.h stddef.h stdlib.h string.h \
                   strings.h unistd.h assert.h])
-AC_CHECK_HEADER([cutter/cutter.h], have_cutter_h=yes, have_cutter_h=no)
-AM_CONDITIONAL(HAVE_CUTTER_H, test "x$have_cutter_h" = xyes)
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -1891,7 +1887,6 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  lib/Makefile
                  test/Makefile
-                 test-c/Makefile
                  test-c2/Makefile
                  test-c2/collect.sh
                  bench/Makefile])

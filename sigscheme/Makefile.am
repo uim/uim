@@ -1,4 +1,4 @@
-SUBDIRS = doc m4 tools include src lib test test-c test-c2 bench
+SUBDIRS = doc m4 tools include src lib test test-c2 bench
 
 UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 SSCM_REPOSITORY = $(UIM_REPOSITORY)/branches/r5rs/sigscheme
