@@ -413,6 +413,8 @@ void CandidateWindow::setPage( int page )
     // set index
     if ( newindex != candidateIndex )
         setIndex( newindex );
+    else
+        updateLabel();
 
     // set candwin size
     adjustCandidateWindowSize();
