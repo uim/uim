@@ -81,7 +81,7 @@ AC_PROG_EGREP
 AC_PATH_PROGS(RUBY, ruby18 ruby)
 AC_PATH_PROGS(PERL, perl5 perl)
 AC_PATH_PROG(ASCIIDOC, asciidoc)
-# GNU sed for test-c2/collect.sh
+# GNU sed for test-c/collect.sh
 AC_PATH_PROGS(GSED, gsed sed)
 AC_PATH_PROG(SH, sh)
 AC_PATH_PROGS(MD5, md5 md5sum)
@@ -1859,7 +1859,7 @@ fi
 
 # This include guard is required to prevent being overridden by
 # system-installed config.h on a source that is compiled on
-# !SCM_COMPILING_LIBSSCM such as test-c/test_*.c.
+# !SCM_COMPILING_LIBSSCM such as test-c/test-*.c.
 AH_TOP([#ifndef __SIGSCHEME_CONFIG_H
 #define __SIGSCHEME_CONFIG_H])
 
@@ -1887,8 +1887,8 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  lib/Makefile
                  test/Makefile
-                 test-c2/Makefile
-                 test-c2/collect.sh
+                 test-c/Makefile
+                 test-c/collect.sh
                  bench/Makefile])
 
 AC_SUBST(GSED)

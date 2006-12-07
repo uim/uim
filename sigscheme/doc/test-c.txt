@@ -4,9 +4,9 @@ Unit tests for C
 About
 -----
 
-The `sigscheme/test-c2/` directory is existing for unit testing for C. The
-tests are currently using our own testing framework. See test-c2/README for
-further information.
+The `sigscheme/test-c/` directory is existing for unit testing for C. The tests
+are currently using our own testing framework. See test-c/README for further
+information.
 
 Requirements for testing framework
 ----------------------------------

@@ -13,6 +13,11 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - SSCM_VERSION_REQUIRE() macro
 
+  - The Cutter-based C testing framework has been replaced with the new
+    framework developed by Jun Inoue. Simply type 'make check' to run the
+    tests. All of old contents of test-c/ have been removed, and test-c2/ has
+    been renamed to test-c/. Be careful to read old logs.
+
 * Specification changes
 
   - [R5RS] Remove 'delay' and 'force' (temporarily) since they completely

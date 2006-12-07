@@ -1044,6 +1044,13 @@ Log
 ---
 2006-12-07  YamaKen <yamaken AT bp.iij4u.or.jp>
 
+        * test-c2/
+        * test-c/
+          - @r4086, the Cutter-based C testing framework has been replaced with
+            the new framework developed by Jun Inoue. All of old contents of
+            test-c/ have been removed, and test-c2/ has been renamed to
+            test-c/. Be careful to read old logs.
+
         * syntax.c
         * eval.c
         * continuation.c

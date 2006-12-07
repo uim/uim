@@ -98,8 +98,8 @@ Properness improvements: (not required for now)
 * Support R6RS style symbol escaping such as |-sym|
 
 * Reorganize unit test for C
-  - Remove GNU sed dependency of test-c2/collect.sh.in
-  - Separate SigScheme-dependent part and generic part of test-c2, and
+  - Remove GNU sed dependency of test-c/collect.sh.in
+  - Separate SigScheme-dependent part and generic part of test-c, and
     generalize the unit testing utils as usable for uim
   - Name 'the testing utils'
 
