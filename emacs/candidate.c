@@ -88,14 +88,17 @@ show_candidate(candidate_info *cand)
   }
 
   index = cand->index;
-  page = index / cand->disp_limit;
+  if (cand->disp_limit)
+    page = index / cand->disp_limit;
+  else
+    page = 0;
 
   a_printf("( c ");
 
   a_printf(" ( %d . %d ) ",  cand->index + 1,  cand->num);
 
   for (i = cand->disp_limit * page;
-	   i < cand->disp_limit * (page + 1);
+	   i < (cand->disp_limit ? cand->disp_limit * (page + 1) : cand->num);
 	   i ++) {
 
 	if (i >= cand->num) break;
@@ -149,6 +152,9 @@ shift_candidate_page(uim_context context, candidate_info *cand, int direction)
 
   debug_printf(DEBUG_NOTE, 
 			   "candidate_shift_page_cb (direction: %d)\n", direction);
+
+  if (!cand->disp_limit)
+    return;
 
   index = cand->index;
   
