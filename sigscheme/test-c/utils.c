@@ -34,6 +34,9 @@
 
 #define ALIGN_HEAP 8
 
+static void *malloc_aligned_8(size_t size) SCM_UNUSED;
+static void *aligned_dup(void *p, size_t size) SCM_UNUSED;
+
 static void *
 malloc_aligned_8(size_t size)
 {

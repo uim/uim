@@ -50,6 +50,10 @@ typedef struct _tst_case_info tst_case_info;
  * Output
  */
 
+static char *tst_format(const char *msg, ...) SCM_UNUSED;
+static void tst_puts(tst_suite_info *_, tst_case_info *__,
+                     const char *msg) SCM_UNUSED;
+
 static char *
 tst_format(const char *msg, ...)
 {
