@@ -52,6 +52,7 @@ Extensions: (not required for now)
 
 * Complete operations-srfi1.c and make it production quality if considerable
   benefit exists against SLIB version of SRFI-1 implementation
+  - Import http://www.math.grin.edu/~stone/srfi/srfi-1-tests.ss
 
 * Make Symbian OS and BREW support working (patches are welcome)
 
@@ -92,6 +93,10 @@ Performance improvements:
 
 ==============================================================================
 Properness improvements: (not required for now)
+
+* Import http://sisc.sourceforge.net/r5rs_pitfall.scm
+  - Fix hygienic-macro incapability of module_srfi34.c to catch errors into
+    a failed result in the 'should-be' macro
 
 * Support R6RS style symbol escaping such as |-sym|
 

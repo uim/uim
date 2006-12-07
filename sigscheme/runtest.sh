@@ -10,26 +10,34 @@ if test "x$1" != "x"; then
   exit 0
 fi
 
-echo "[ Run Test ported from Bigloo]"
+run_test () {
+    echo "Running test $1..."
+    $SSCM $1
+    echo
+}
+
+echo "[ Run single ported tests ]"
+for test in test/test-r4rs.scm #test/r5rs_pitfall_sscm.scm
+do
+  run_test $test
+done
+
+echo "[ Run tests ported from Bigloo]"
 for test in test/bigloo-*.scm
 do
-  echo "Running test $test..."
-  $SSCM $test
-  echo
+  run_test $test
 done
 
-echo "[ Run Test ported from Gauche ]"
+echo "[ Run tests ported from Gauche ]"
 for test in test/gauche-*.scm
 do
-  echo "Running test $test..."
-  $SSCM $test
-  echo
+  run_test $test
 done
 
-echo "[ Run SigScheme Test ]"
-for test in `ls test/test-*.scm | grep -v test-tail-rec\.scm`
+echo "[ Run SigScheme tests ]"
+for test in `ls test/test-*.scm | egrep -v 'test-(tail-rec|r4rs)\.scm'`
 do
-  echo "Running test $test..."
-  $SSCM $test
-  echo
+  run_test $test
 done
+
+echo "Run also runtest-tail-rec.sh for proper tail recursions."
