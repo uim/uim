@@ -1,5 +1,5 @@
 /*===========================================================================
- *  Filename : test_global.c
+ *  Filename : test-global.c
  *  About    : unit test for global object handlings
  *
  *  Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
@@ -35,9 +35,9 @@
 #define SCM_WRITABLE_STATICLESS_PLATFORM 0
 #define SCM_COMBINED_SOURCE 0
 
-#include "cutter-sscm.h"
+#include "sscm-test.h"
 
-#include <global.h>
+#include <sigscheme/global.h>
 #include <sigscheme/sigscheme.h>
 #include "sigschemeinternal.h"
 
@@ -60,29 +60,24 @@ SCM_GLOBAL_VARS_END(static);
 #define obj_f SCM_GLOBAL_VAR(static, obj_f)
 SCM_DEFINE_STATIC_VARS(static);
 
-UT_DEF2(test_1, "exported vars")
+TST_CASE("exported vars")
 {
     SCM_GLOBAL_VARS_INIT(exported);
     obj_a = MAKE_INT(1);
     obj_b = MAKE_INT(2);
     obj_c = MAKE_INT(3);
-    UT_ASSERT_EQUAL_INT(1, SCM_INT_VALUE(obj_a));
-    UT_ASSERT_EQUAL_INT(2, SCM_INT_VALUE(obj_b));
-    UT_ASSERT_EQUAL_INT(3, SCM_INT_VALUE(obj_c));
+    TST_TN_EQ_INT(1, SCM_INT_VALUE(obj_a));
+    TST_TN_EQ_INT(2, SCM_INT_VALUE(obj_b));
+    TST_TN_EQ_INT(3, SCM_INT_VALUE(obj_c));
 }
 
-UT_DEF2(test_2, "static vars")
+TST_CASE("static vars")
 {
     SCM_GLOBAL_VARS_INIT(static);
     obj_d = MAKE_INT(4);
     obj_e = MAKE_INT(5);
     obj_f = MAKE_INT(6);
-    UT_ASSERT_EQUAL_INT(4, SCM_INT_VALUE(obj_d));
-    UT_ASSERT_EQUAL_INT(5, SCM_INT_VALUE(obj_e));
-    UT_ASSERT_EQUAL_INT(6, SCM_INT_VALUE(obj_f));
+    TST_TN_EQ_INT(4, SCM_INT_VALUE(obj_d));
+    TST_TN_EQ_INT(5, SCM_INT_VALUE(obj_e));
+    TST_TN_EQ_INT(6, SCM_INT_VALUE(obj_f));
 }
-
-UT_REGISTER_BEGIN("global")
-UT_REGISTER(test_1, "exported vars")
-UT_REGISTER(test_2, "static vars")
-UT_REGISTER_END

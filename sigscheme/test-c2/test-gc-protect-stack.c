@@ -1,5 +1,5 @@
 /*===========================================================================
- *  Filename : test_gc_protect_stack.c
+ *  Filename : test-gc-protect-stack.c
  *  About    : unit test for scm_gc_protect_stack()
  *
  *  Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
@@ -32,8 +32,8 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-/* must be included prior to any SigScheme headers */
-#include "cutter-sscm.h"
+#define TST_HAVE_MAIN 1
+#include "sscm-test.h"
 
 #include <stddef.h>
 #include <sigscheme/sigscheme.h>
@@ -42,9 +42,9 @@
 
 #define TEST_STACK_START(protected, actual)                                  \
     if (stack_dir == STACK_GROWS_DOWNWARDS) {                                \
-        UT_ASSERT(actual <= protected);                                      \
+        TST_TN_TRUE(actual <= protected);                                    \
     } else {                                                                 \
-        UT_ASSERT(actual >= protected);                                      \
+        TST_TN_TRUE(actual >= protected);                                    \
     }
 
 enum stack_growth_dir {
@@ -155,11 +155,11 @@ fspsp2(ScmObj *designated_stack_start)
     return designated_stack_start;
 }
 
-#undef  SSCM_DEFAULT_SUITE_INITIALIZER
-#define SSCM_DEFAULT_SUITE_INITIALIZER
-static bool
-suite_init(utest_info *uinfo)
+int
+main(int argc, char **argv)
 {
+    tst_suite_info suite = TST_DEFAULT_SUITE_SETUP;
+
     scm_initialize(NULL);
 
     stack_dir = probe_stack_growth_dir();
@@ -170,10 +170,15 @@ suite_init(utest_info *uinfo)
     fspsp_internal = fspsp;
     fspsp2_internal = fspsp2;
 
-    return TRUE;
+    tst_main(&suite);
+
+    scm_finalize();
+
+    TST_DEFAULT_SUITE_CLEANUP(suite);
+    return !!suite.stats.fail;
 }
 
-UT_DEF2(test_1, "void (*)(void)")
+TST_CASE("void (*)(void)")
 {
     stack_start_protected = scm_gc_current_stack();
     scm_gc_protect_stack(stack_start_protected);
@@ -183,7 +188,7 @@ UT_DEF2(test_1, "void (*)(void)")
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
-UT_DEF2(test_2, "int (*)(void)")
+TST_CASE("int (*)(void)")
 {
     stack_start_protected = scm_gc_current_stack();
     scm_gc_protect_stack(stack_start_protected);
@@ -193,7 +198,7 @@ UT_DEF2(test_2, "int (*)(void)")
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
-UT_DEF2(test_3, "void (*)(int)")
+TST_CASE("void (*)(int)")
 {
     stack_start_protected = scm_gc_current_stack();
     scm_gc_protect_stack(stack_start_protected);
@@ -203,7 +208,7 @@ UT_DEF2(test_3, "void (*)(int)")
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
-UT_DEF2(test_4, "int (*)(int)")
+TST_CASE("int (*)(int)")
 {
     stack_start_protected = scm_gc_current_stack();
     scm_gc_protect_stack(stack_start_protected);
@@ -213,7 +218,7 @@ UT_DEF2(test_4, "int (*)(int)")
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
-UT_DEF2(test_5, "ScmObj *(*)(ScmObj *)")
+TST_CASE("ScmObj *(*)(ScmObj *)")
 {
     stack_start_protected = scm_gc_current_stack();
     scm_gc_protect_stack(stack_start_protected);
@@ -223,7 +228,7 @@ UT_DEF2(test_5, "ScmObj *(*)(ScmObj *)")
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
 
-UT_DEF2(test_6, "ScmObj *(*)(ScmObj *) (2)")
+TST_CASE("ScmObj *(*)(ScmObj *) (2)")
 {
     stack_start_protected = scm_gc_current_stack();
     scm_gc_protect_stack(stack_start_protected);
@@ -232,12 +237,3 @@ UT_DEF2(test_6, "ScmObj *(*)(ScmObj *) (2)")
 
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
-
-UT_REGISTER_BEGIN("scm_gc_protect_stack()")
-UT_REGISTER(test_1, "void (*)(void)")
-UT_REGISTER(test_2, "int (*)(void)")
-UT_REGISTER(test_3, "void (*)(int)")
-UT_REGISTER(test_4, "int (*)(int)")
-UT_REGISTER(test_5, "ScmObj *(*)(ScmObj *)")
-UT_REGISTER(test_6, "ScmObj *(*)(ScmObj *) (2)")
-UT_REGISTER_END

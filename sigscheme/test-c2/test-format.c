@@ -32,8 +32,6 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
-/* All tests in this file are passed against r3179 (new repository) */
-
 #include <stddef.h>
 #include <stdarg.h>
 #include <string.h>

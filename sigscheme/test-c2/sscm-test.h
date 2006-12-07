@@ -253,7 +253,9 @@ tst_summarize(tst_suite_info *suite)
                              suite->stats.succ, suite->stats.fail));
 }
 
-static int tst_count;
+static int tst_count SCM_UNUSED;
+
+static const char *tst_name(const char *testcase_desc, int serial) SCM_UNUSED;
 
 static const char *
 tst_name(const char *testcase_desc, int serial)

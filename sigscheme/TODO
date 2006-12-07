@@ -14,9 +14,6 @@ Requirements and critical bugs:
 * (yamaken) Confirm R5RS and SRFI conformance for each function implementation
   - Complete 'r5rs' and 'srfi' categories of QALog
 
-* (yamaken) 'make check'-ready tests to make testable via Debian bulid servers
-  - Port the Cutter-based tests under test-c/ to the new testing utils
-
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
     test-compact.c are checked once. But since considerable amount of codes are
