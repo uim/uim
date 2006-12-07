@@ -41,7 +41,7 @@ public:
     Canddisp();
     ~Canddisp();
     void activate(std::vector<const char *>, int display_limit);
-    void select(int index);
+    void select(int index, bool need_hilite);
     void deactivate();
     void show();
     void hide();

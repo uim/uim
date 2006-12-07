@@ -144,12 +144,13 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
     check_connection();
 }
 
-void Canddisp::select(int index)
+void Canddisp::select(int index, bool need_hilite)
 {
     if (!candwin_w)
 	return;
     fprintf(candwin_w, "select\n");
-    fprintf(candwin_w, "%d\n\n", index);
+    fprintf(candwin_w, "%d\n", index);
+    fprintf(candwin_w, "%d\n\n", need_hilite? 1 : 0);
     fflush(candwin_w);
     check_connection();
 }

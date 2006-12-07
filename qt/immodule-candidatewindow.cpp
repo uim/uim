@@ -340,7 +340,7 @@ void CandidateWindow::shiftPage( bool forward )
         else
             cList->setSelected( cList->itemAtIndex( candidateIndex ), true );
     }
-    if ( ic && ic->uimContext() )
+    if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
 }
 

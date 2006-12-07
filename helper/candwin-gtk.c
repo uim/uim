@@ -76,6 +76,7 @@ struct _UIMCandidateWindow {
   GtkWidget *caret_state_indicator;
 
   gboolean is_active;
+  gboolean need_hilite;
 };
 
 struct _UIMCandidateWindowClass {
@@ -377,6 +378,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   cwin->pos_x = 0;
   cwin->pos_y = 0;
   cwin->is_active = FALSE;
+  cwin->need_hilite = FALSE;
   cwin->caret_state_indicator = caret_state_indicator_new();
 
   cursor_location.x = 0;
@@ -437,6 +439,7 @@ candwin_activate(gchar **str)
   cwin->candidate_index = -1;
   cwin->nr_candidates = j - 1;
   cwin->display_limit = display_limit;
+  cwin->need_hilite = FALSE;
 
   if (candidates == NULL)
     return;
@@ -487,8 +490,10 @@ candwin_activate(gchar **str)
 static void
 candwin_update(gchar **str)
 {
-  int index;
+  int index, need_hilite;
   sscanf(str[1], "%d", &index);
+  sscanf(str[2], "%d", &need_hilite);
+  cwin->need_hilite = (need_hilite == 1) ? TRUE : FALSE;
 
   uim_cand_win_gtk_set_index(cwin, index);
 }
@@ -656,7 +661,7 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
   if (cwin->page_index != new_page)
     uim_cand_win_gtk_set_page(cwin, new_page);
 
-  if (cwin->candidate_index >= 0) {
+  if (cwin->candidate_index >= 0 && cwin->need_hilite) {
     GtkTreePath *path;
     gint pos = index;
 
@@ -722,7 +727,8 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
  /* shrink the window */
   gtk_window_resize(GTK_WINDOW(cwin), CANDWIN_DEFAULT_WIDTH, 1);
 
-  uim_cand_win_gtk_set_index(cwin, new_index);
+  if (new_index != -1)
+    uim_cand_win_gtk_set_index(cwin, new_index);
 }
 
 static void

@@ -188,6 +188,7 @@ void CandidateWindow::selectCand( const QStringList &list )
     qDebug( "uim-helper-candwin-qt: selectCand()" );
 #endif
     const int index = list[ 1 ].toInt();
+    needHilite = (list[ 2 ].toInt() == 1) ? TRUE : FALSE;
     setIndex( index );
 
     updateLabel();
@@ -438,7 +439,7 @@ void CandidateWindow::setIndex( int index )
         setPage( newpage );
 
     // select item
-    if ( candidateIndex >= 0 )
+    if ( candidateIndex >= 0 && needHilite )
     {
         int pos = index;
         if ( displayLimit )

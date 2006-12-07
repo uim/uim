@@ -89,6 +89,7 @@ protected:
     int pageIndex;
 
     bool isActive;
+    bool needHilite;
 };
 
 class CandidateListView : public QListView
