@@ -646,7 +646,7 @@ corner case tests:
 file:              continuation.c
 category:          core
 spec by eyes:      yamaken@r3880
-spec by tests:     yamaken@r3880
+spec by tests:     yamaken@r3880, yamaken@4076
 general review:    yamaken@r3880
 64-bit by eyes:    yamaken@r3880
 64-bit by tests:   
@@ -657,7 +657,7 @@ corner case tests: yamaken@r3880
 file:              eval.c
 category:          core
 spec by eyes:      yamaken@r3865
-spec by tests:     yamaken@r3865
+spec by tests:     yamaken@r3865, yamaken@4076
 general review:    yamaken@r3865
 64-bit by eyes:    yamaken@r3865
 64-bit by tests:   
@@ -745,7 +745,7 @@ corner case tests: yamaken@r4052, yamaken@r4070, yamaken@r4075
 file:              syntax.c
 category:          r5rs
 spec by eyes:      yamaken@r3704
-spec by tests:     yamaken@r3704, yamaken@r4014
+spec by tests:     yamaken@r3704, yamaken@r4014, yamaken@4076
 general review:    yamaken@r3704
 64-bit by eyes:    yamaken@r3704
 64-bit by tests:   
@@ -1043,6 +1043,16 @@ corner case tests:
 Log
 ---
 2006-12-07  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * syntax.c
+        * eval.c
+        * continuation.c
+          - QA done again @4076
+
+          Details:
+          - Proper tail recursion conformance tests have been passed with
+            test-tail-rec.scm and runtest-tail-rec.sh on both fatty and compact
+            on x86_64-unknown-linux-gnu and i386-unknown-freebsd
 
         * format.c
           - QA done @r4070, @r4075

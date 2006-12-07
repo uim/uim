@@ -1,32 +1,39 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* Autoconfiscate the SigScheme package (don't rely on uim's configure)
+* (yamaken) Fix low-level bugs
+  - Broken GC on Cygwin
+  - Improper ScmObj alignment on stack of m68k
+
+* (yamaken) Autoconfiscate the SigScheme package
   - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC
   - [uim] Add --disable-install to disable installation of libsscm that
     specially configured for libuim. Only the combined-source is needed for uim
 
-* Confirm R5RS and SRFI conformance for each function implementation
+* (yamaken) Confirm R5RS and SRFI conformance for each function implementation
   - Complete 'r5rs' and 'srfi' categories of QALog
 
-* Fix low-level bugs
-  - Broken GC on Cygwin
-  - Improper ScmObj alignment on stack of m68k
-
-* 'make check'-ready tests to make testable via Debian bulid servers
-  - Fix SCM_SAL_*_INIT() with SCM_ISAL_*_INIT()
+* (yamaken) 'make check'-ready tests to make testable via Debian bulid servers
   - Port the Cutter-based tests under test-c/ to the new testing utils
-
-* Make 64bit-safe
-  - Write tests
-  - Make the tests passed on actual 64bit environment with storage-fatty
-  - Make the tests passed on actual 64bit environment with storage-compact
 
 * Fix all side-effective expression in macros
   - All files except for operations-srfi1.c, storage-compact.h and
     test-compact.c are checked once. But since considerable amount of codes are
     added or modified, we should recheck all file
+
+* Inhibit a mutation on string constants as described in "3.4 Storage model" of
+  R5RS
+  - Write both immutable and mutable case tests for all procedures that accepts
+    a string
+
+* (yamaken) Revise SRFI-75 into R6RS
+  - Wait for stabilized specs
+  - Write test
+
+* (yamaken) Add integer->char and char->integer procedures with multibyte
+  support
+  - Write test
 
 * grep "FIXME" and fix them
 
@@ -65,7 +72,7 @@ Extensions: (not required for now)
 
 * Implement numbers other than integer
   - Define SAL accessors considering SRFI-50 and other implementations
-  - Evaluate SRFI-77 "Preliminary Proposal for R6RS Arithmetic"
+  - Evaluate R6RS Arithmetic
 
 * Add GB18030 to encoding.c
 
@@ -86,8 +93,7 @@ Performance improvements:
 ==============================================================================
 Properness improvements: (not required for now)
 
-* Support SRFI-75 style symbol escaping such as |-sym|
-  - Obsolete leading '-' handling in read_number_or_symbol() with it
+* Support R6RS style symbol escaping such as |-sym|
 
 * Reorganize unit test for C
   - Remove GNU sed dependency of test-c2/collect.sh.in
@@ -118,25 +124,5 @@ Namings and Cosmetic things:
 * Define the coding style for indent(1) and reform *.[ch] by it
 
 * [uim] Rename uim-scm.c to uim-scm-sigscheme.c (after the merger)
-
-==============================================================================
-Assigned to Kazuki:
-
-* Inhibit a mutation on string constants as described in "3.4 Storage model" of
-  R5RS
-  - Write both immutable and mutable case tests for all procedures that accepts
-    a string
-
-==============================================================================
-Assigned to YamaKen:
-
-* Add tests for proper tail recursion with 'guard' to test-tail-rec.scm
-
-* Write tests for SRFI-75
-  - Investigate the withdrawn status of SRFI-75, and decide temporary API to
-    handle unicode data until R6RS
-
-* Add integer->char and char->integer procedures with multibyte support
-  - Write test
 
 ==============================================================================

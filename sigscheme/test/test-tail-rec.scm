@@ -45,6 +45,7 @@
 ;; $ (ulimit -s 128 && ulimit -d 2048 && gosh -I. test/test-tail-rec.scm || echo 'exploded')
 
 (use srfi-8)
+(use srfi-34)
 
 (load "./test/unittest.scm")
 
@@ -53,6 +54,8 @@
 (define test-or?           #t)  ;; #t is required to conform to R5RS
 (define test-improper-and? #f)  ;; R5RS compliant implementation explodes if #t
 (define test-improper-or?  #f)  ;; R5RS compliant implementation explodes if #t
+(define test-with-exception-handler? #f)  ;; improper
+(define test-guard?        #f)  ;; improper
 
 (define KB 1024)
 (define heap-limit (* 2048 KB))  ;; specify this by ulimit -d
@@ -724,6 +727,20 @@
                                     (values producer call-with-values))))))
       (call-with-values producer call-with-values))))
 
+(define rec-with-exception-handler
+  (lambda (n)
+    (if (zero? n)
+	'succeeded
+        (with-exception-handler (lambda (x) (error "handler called"))
+          (rec-with-exception-handler (- n 1))))))
+
+(define rec-guard
+  (lambda (n)
+    (if (zero? n)
+	'succeeded
+        (guard (e (#f #f))
+          (rec-guard (- n 1))))))
+
 (define rec-receive
   (lambda (n)
     (if (zero? n)
@@ -1047,6 +1064,19 @@
 (assert-equal? "proper tail recursion by call-with-values #2"
                'succeeded
                (rec-call-with-values-2 explosive-count))
+
+;; with-exception-handler (not properly recursive because of underlying
+;; dynamic-wind)
+(if test-with-exception-handler?
+    (assert-equal? "improper tail recursion by with-exception-handler"
+                   'succeeded
+                   (rec-with-exception-handler explosive-count)))
+
+;; guard (not properly recursive because of underlying dynamic-wind)
+(if test-guard?
+    (assert-equal? "improper tail recursion by guard"
+                   'succeeded
+                   (rec-guard explosive-count)))
 
 ;; receive
 (assert-equal? "proper tail recursion by receive"
