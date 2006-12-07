@@ -181,6 +181,7 @@ public:
     void configuration_changed();
     void switch_app_global_im(const char *name);
     void switch_system_global_im(const char *name);
+    void set_need_hilite_selected_cand(bool set);
 public:
     static void commit_cb(void *ptr, const char *str);
     static void clear_cb(void *ptr);
@@ -213,6 +214,7 @@ private:
     int mNumPage;
     int current_cand_selection;
     int current_page;
+    bool need_hilite_selected_cand;
     std::vector<const char *> active_candidates;
     char *mEngineName;
     char *mLocaleName;

@@ -73,7 +73,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
 
     //setup CandidateList
     cList = new CandidateListView( this, "candidateListView" );
-    cList->setSorting( 0 );
+    cList->setSorting( -1 );
     cList->setSelectionMode( QListView::Single );
     cList->addColumn( "1" );
     cList->setColumnWidthMode( 0, QListView::Maximum );
@@ -154,10 +154,6 @@ void CandidateWindow::activateCand( const QStringList &list )
         else
             headString = l [ 0 ];
 
-        if ( ( headString.toInt() < 10 && headString.toInt() + displayLimit > 10 )
-                || ( headString.toInt() < 100 && headString.toInt() + displayLimit > 100 ) )
-            headString.prepend( "0" );
-
         d.label = headString;
 
 	// XXX Current prime (0.4.6) may return candidate string
@@ -192,6 +188,7 @@ void CandidateWindow::selectCand( const QStringList &list )
     qDebug( "uim-helper-candwin-qt: selectCand()" );
 #endif
     const int index = list[ 1 ].toInt();
+    needHilite = (list[ 2 ].toInt() == 1) ? TRUE : FALSE;
     setIndex( index );
 
     updateLabel();
@@ -357,7 +354,11 @@ void CandidateWindow::setPage( int page )
 
     // calculate page
     int newpage, lastpage;
-    lastpage = nrCandidates / displayLimit;
+    if ( displayLimit )
+        lastpage = nrCandidates / displayLimit;
+    else
+        lastpage = 0;
+    
     if ( page < 0 )
     {
         newpage = lastpage;
@@ -400,7 +401,7 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
-    for ( int i = 0; i < ncandidates; i++ )
+    for ( int i = ncandidates - 1; i >=0 ; i-- )
     {
         QString headString = stores[ displayLimit * newpage + i ].label;
         QString candString = stores[ displayLimit * newpage + i ].str;
@@ -438,7 +439,7 @@ void CandidateWindow::setIndex( int index )
         setPage( newpage );
 
     // select item
-    if ( candidateIndex >= 0 )
+    if ( candidateIndex >= 0 && needHilite )
     {
         int pos = index;
         if ( displayLimit )

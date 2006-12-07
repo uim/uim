@@ -696,10 +696,13 @@ cand_shift_page_cb(void *ptr, int direction)
 
   layout_candwin(uic);
 
-  g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
+  g_signal_handlers_block_by_func(uic->cwin,
+				  (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
-  uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
-  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
+  if (uic->cwin->candidate_index != -1)
+    uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
+  g_signal_handlers_unblock_by_func(uic->cwin,
+				   (gpointer)(uintptr_t)index_changed_cb, uic);
 }
 
 static void

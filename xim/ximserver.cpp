@@ -609,6 +609,7 @@ void InputContext::candidate_activate_cb(void *ptr, int nr, int display_limit)
 void InputContext::candidate_select_cb(void *ptr, int index)
 {
     InputContext *ic = (InputContext *)ptr;
+    ic->set_need_hilite_selected_cand(true);
     ic->candidate_select(index);
 }
 
@@ -814,6 +815,10 @@ void InputContext::candidate_activate(int nr, int display_limit)
     mDisplayLimit = display_limit;
     if (display_limit)
 	mNumPage = (nr - 1) / display_limit + 1;
+
+    current_cand_selection = 0;
+    current_page = 0;
+    need_hilite_selected_cand = false;
 }
 
 void InputContext::candidate_update()
@@ -821,14 +826,14 @@ void InputContext::candidate_update()
     Canddisp *disp = canddisp_singleton();
 
     disp->activate(active_candidates, mDisplayLimit);
-    disp->select(current_cand_selection);
+    disp->select(current_cand_selection, need_hilite_selected_cand);
     disp->show();
 }
 
 void InputContext::candidate_select(int index)
 {
     Canddisp *disp = canddisp_singleton();
-    disp->select(index);
+    disp->select(index, need_hilite_selected_cand);
     current_cand_selection = index;
     if (mDisplayLimit)
 	current_page = current_cand_selection / mDisplayLimit;
@@ -860,7 +865,8 @@ void InputContext::candidate_shift_page(int direction)
 	    current_cand_selection = new_index;
     }
     candidate_select(current_cand_selection);
-    uim_set_candidate_index(mUc, current_cand_selection);
+    if (need_hilite_selected_cand)
+      uim_set_candidate_index(mUc, current_cand_selection);
 }
 
 void InputContext::candidate_deactivate()
@@ -876,6 +882,11 @@ void InputContext::candidate_deactivate()
 	mCandwinActive = false;
 	current_cand_selection = 0;
     }
+}
+
+void InputContext::set_need_hilite_selected_cand(bool set)
+{
+    need_hilite_selected_cand = set;
 }
 
 char *InputContext::get_caret_state_label_from_prop_list(const char *str)
