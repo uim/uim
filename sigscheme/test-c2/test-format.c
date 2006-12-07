@@ -76,6 +76,9 @@
 #define PDIFF32 (SIZEOF_PTRDIFF_T == SIZEOF_INT32_T)
 #define PDIFF64 (SIZEOF_PTRDIFF_T == SIZEOF_INT64_T)
 
+#define M32 (SIZEOF_SCM_INT_T == SIZEOF_INT32_T)
+#define M64 (SIZEOF_SCM_INT_T == SIZEOF_INT64_T)
+
 #define STR SCM_STRING_STR
 
 static ScmObj lst, clst;
@@ -193,6 +196,8 @@ TST_CASE("format ~P")
     TST_TN_EQ_STR("0x0000000000000000", STR(format("~P", (void *)NULL)));
     TST_TN_EQ_STR("0xffffffffffffffff", STR(format("~P", (void *)~0UL)));
     TST_TN_EQ_STR("0x0000000000012abc", STR(format("~P", (void *)0x12ABC)));
+    TST_TN_EQ_STR("0x000deadbeef12abc",
+                  STR(format("~P", (void *)0xDEADBEEF12ABC)));
 #endif
 }
 
@@ -798,6 +803,7 @@ TST_CASE("format ~MU")
     TST_TN_EQ_STR(" 10",  STR(format("~3MU",  (scm_int_t)10)));
     TST_TN_EQ_STR("100",  STR(format("~3MU",  (scm_int_t)100)));
 
+#if M32
     TST_TN_EQ_STR("4294967196", STR(format("~MU",   (scm_int_t)-100)));
     TST_TN_EQ_STR("4294967286", STR(format("~MU",   (scm_int_t)-10)));
     TST_TN_EQ_STR("4294967295", STR(format("~MU",   (scm_int_t)-1)));
@@ -813,6 +819,23 @@ TST_CASE("format ~MU")
     TST_TN_EQ_STR("4294967196", STR(format("~3MU",  (scm_int_t)-100)));
     TST_TN_EQ_STR("4294967286", STR(format("~3MU",  (scm_int_t)-10)));
     TST_TN_EQ_STR("4294967295", STR(format("~3MU",  (scm_int_t)-1)));
+#elif M64
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~MU",  (scm_int_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~MU",  (scm_int_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~MU",  (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~0MU", (scm_int_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~0MU", (scm_int_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~0MU", (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~03MU",(scm_int_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~03MU",(scm_int_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~03MU",(scm_int_t)-1)));
+
+    TST_TN_EQ_STR("18446744073709551516", STR(format("~3MU", (scm_int_t)-100)));
+    TST_TN_EQ_STR("18446744073709551606", STR(format("~3MU", (scm_int_t)-10)));
+    TST_TN_EQ_STR("18446744073709551615", STR(format("~3MU", (scm_int_t)-1)));
+#endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
                   STR(format("~127MU", (scm_int_t)123)));
@@ -842,6 +865,7 @@ TST_CASE("format ~MX")
     TST_TN_EQ_STR("  a",  STR(format("~3MX",  (scm_int_t)10)));
     TST_TN_EQ_STR(" 64",  STR(format("~3MX",  (scm_int_t)100)));
 
+#if M32
     TST_TN_EQ_STR("ffffff9c", STR(format("~MX",   (scm_int_t)-100)));
     TST_TN_EQ_STR("fffffff6", STR(format("~MX",   (scm_int_t)-10)));
     TST_TN_EQ_STR("ffffffff", STR(format("~MX",   (scm_int_t)-1)));
@@ -857,6 +881,23 @@ TST_CASE("format ~MX")
     TST_TN_EQ_STR("ffffff9c", STR(format("~3MX",  (scm_int_t)-100)));
     TST_TN_EQ_STR("fffffff6", STR(format("~3MX",  (scm_int_t)-10)));
     TST_TN_EQ_STR("ffffffff", STR(format("~3MX",  (scm_int_t)-1)));
+#elif M64
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~MX",   (scm_int_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~MX",   (scm_int_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~MX",   (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~0MX",  (scm_int_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~0MX",  (scm_int_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~0MX",  (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~03MX", (scm_int_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~03MX", (scm_int_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~03MX", (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("ffffffffffffff9c", STR(format("~3MX",  (scm_int_t)-100)));
+    TST_TN_EQ_STR("fffffffffffffff6", STR(format("~3MX",  (scm_int_t)-10)));
+    TST_TN_EQ_STR("ffffffffffffffff", STR(format("~3MX",  (scm_int_t)-1)));
+#endif
 
     TST_TN_EQ_STR("                                                                                                                            1ac",
                   STR(format("~127MX", (scm_int_t)0x1ac)));
@@ -886,6 +927,7 @@ TST_CASE("format ~MO")
     TST_TN_EQ_STR(" 12",  STR(format("~3MO",  (scm_int_t)10)));
     TST_TN_EQ_STR("144",  STR(format("~3MO",  (scm_int_t)100)));
 
+#if M32
     TST_TN_EQ_STR("37777777634", STR(format("~MO",   (scm_int_t)-100)));
     TST_TN_EQ_STR("37777777766", STR(format("~MO",   (scm_int_t)-10)));
     TST_TN_EQ_STR("37777777777", STR(format("~MO",   (scm_int_t)-1)));
@@ -901,6 +943,35 @@ TST_CASE("format ~MO")
     TST_TN_EQ_STR("37777777634", STR(format("~3MO",  (scm_int_t)-100)));
     TST_TN_EQ_STR("37777777766", STR(format("~3MO",  (scm_int_t)-10)));
     TST_TN_EQ_STR("37777777777", STR(format("~3MO",  (scm_int_t)-1)));
+#elif M64
+    TST_TN_EQ_STR("1777777777777777777634",
+                  STR(format("~MO",   (scm_int_t)-100)));
+    TST_TN_EQ_STR("1777777777777777777766",
+                  STR(format("~MO",   (scm_int_t)-10)));
+    TST_TN_EQ_STR("1777777777777777777777",
+                  STR(format("~MO",   (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("1777777777777777777634",
+                  STR(format("~0MO",  (scm_int_t)-100)));
+    TST_TN_EQ_STR("1777777777777777777766",
+                  STR(format("~0MO",  (scm_int_t)-10)));
+    TST_TN_EQ_STR("1777777777777777777777",
+                  STR(format("~0MO",  (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("1777777777777777777634",
+                  STR(format("~03MO", (scm_int_t)-100)));
+    TST_TN_EQ_STR("1777777777777777777766",
+                  STR(format("~03MO", (scm_int_t)-10)));
+    TST_TN_EQ_STR("1777777777777777777777",
+                  STR(format("~03MO", (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("1777777777777777777634",
+                  STR(format("~3MO",  (scm_int_t)-100)));
+    TST_TN_EQ_STR("1777777777777777777766",
+                  STR(format("~3MO",  (scm_int_t)-10)));
+    TST_TN_EQ_STR("1777777777777777777777",
+                  STR(format("~3MO",  (scm_int_t)-1)));
+#endif
 
     TST_TN_EQ_STR("                                                                                                                            123",
                   STR(format("~127MO", (scm_int_t)0123)));
@@ -930,6 +1001,7 @@ TST_CASE("format ~MB")
     TST_TN_EQ_STR(" 1010",   STR(format("~5MB",  (scm_int_t)10)));
     TST_TN_EQ_STR("1100100", STR(format("~5MB",  (scm_int_t)100)));
 
+#if M32
     TST_TN_EQ_STR("11111111111111111111111110011100",
                   STR(format("~MB", (scm_int_t)-100)));
     TST_TN_EQ_STR("11111111111111111111111111110110",
@@ -957,6 +1029,35 @@ TST_CASE("format ~MB")
                   STR(format("~5MB", (scm_int_t)-10)));
     TST_TN_EQ_STR("11111111111111111111111111111111",
                   STR(format("~5MB", (scm_int_t)-1)));
+#elif M64
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
+                  STR(format("~MB", (scm_int_t)-100)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
+                  STR(format("~MB", (scm_int_t)-10)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
+                  STR(format("~MB", (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
+                  STR(format("~0MB", (scm_int_t)-100)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
+                  STR(format("~0MB", (scm_int_t)-10)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
+                  STR(format("~0MB", (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
+                  STR(format("~05MB", (scm_int_t)-100)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
+                  STR(format("~05MB", (scm_int_t)-10)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
+                  STR(format("~05MB", (scm_int_t)-1)));
+
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111110011100",
+                  STR(format("~5MB", (scm_int_t)-100)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111110110",
+                  STR(format("~5MB", (scm_int_t)-10)));
+    TST_TN_EQ_STR("1111111111111111111111111111111111111111111111111111111111111111",
+                  STR(format("~5MB", (scm_int_t)-1)));
+#endif
 
     TST_TN_EQ_STR("                                                                                                                            101",
                   STR(format("~127MB", (scm_int_t)0x5)));

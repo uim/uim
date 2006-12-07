@@ -206,70 +206,69 @@
 
 (if (and (symbol-bound? 'greatest-fixnum)
          (symbol-bound? 'least-fixnum))
-    (let ((greatest (number->string (greatest-fixnum))))
-      (cond
-       ((string=? greatest "134217727")
-        (tn "format 28bit fixnum")
-        (assert-equal? (tn)
-                       "-134217728"
-                       (format "~d" (least-fixnum)))
-        (assert-equal? (tn)
-                       "111111111111111111111111111"
-                       (format "~b" (greatest-fixnum)))
-        (assert-equal? (tn)
-                       "-1000000000000000000000000000"
-                       (format "~b" (least-fixnum)))
-        (assert-equal? (tn)
-                       "-111111111111111111111111111"
-                       (format "~b" (+ (least-fixnum) 1))))
+    (case fixnum-bits
+      ((28)
+       (tn "format 28bit fixnum")
+       (assert-equal? (tn)
+                      "-134217728"
+                      (format "~d" (least-fixnum)))
+       (assert-equal? (tn)
+                      "111111111111111111111111111"
+                      (format "~b" (greatest-fixnum)))
+       (assert-equal? (tn)
+                      "-1000000000000000000000000000"
+                      (format "~b" (least-fixnum)))
+       (assert-equal? (tn)
+                      "-111111111111111111111111111"
+                      (format "~b" (+ (least-fixnum) 1))))
 
-       ((string=? greatest "2147483647")
-        (tn "format 32bit fixnum")
-        (assert-equal? (tn)
-                       "-2147483648"
-                       (format "~d" (least-fixnum)))
-        (assert-equal? (tn)
-                       "1111111111111111111111111111111"
-                       (format "~b" (greatest-fixnum)))
-        (assert-equal? (tn)
-                       "-10000000000000000000000000000000"
-                       (format "~b" (least-fixnum)))
-        (assert-equal? (tn)
-                       "-1111111111111111111111111111111"
-                       (format "~b" (+ (least-fixnum) 1))))
+      ((32)
+       (tn "format 32bit fixnum")
+       (assert-equal? (tn)
+                      "-2147483648"
+                      (format "~d" (least-fixnum)))
+       (assert-equal? (tn)
+                      "1111111111111111111111111111111"
+                      (format "~b" (greatest-fixnum)))
+       (assert-equal? (tn)
+                      "-10000000000000000000000000000000"
+                      (format "~b" (least-fixnum)))
+       (assert-equal? (tn)
+                      "-1111111111111111111111111111111"
+                      (format "~b" (+ (least-fixnum) 1))))
 
-       ((string=? greatest "576460752303423487")
-        (tn "format 60bit fixnum")
-        (assert-equal? (tn)
-                       "-576460752303423488"
-                       (format "~d" (least-fixnum)))
-        (assert-equal? (tn)
-                       "11111111111111111111111111111111111111111111111111111111111"
-                       (format "~b" (greatest-fixnum)))
-        (assert-equal? (tn)
-                       "-100000000000000000000000000000000000000000000000000000000000"
-                       (format "~b" (least-fixnum)))
-        (assert-equal? (tn)
-                       "-11111111111111111111111111111111111111111111111111111111111"
-                       (format "~b" (+ (least-fixnum) 1))))
+      ((60)
+       (tn "format 60bit fixnum")
+       (assert-equal? (tn)
+                      "-576460752303423488"
+                      (format "~d" (least-fixnum)))
+       (assert-equal? (tn)
+                      "11111111111111111111111111111111111111111111111111111111111"
+                      (format "~b" (greatest-fixnum)))
+       (assert-equal? (tn)
+                      "-100000000000000000000000000000000000000000000000000000000000"
+                      (format "~b" (least-fixnum)))
+       (assert-equal? (tn)
+                      "-11111111111111111111111111111111111111111111111111111111111"
+                      (format "~b" (+ (least-fixnum) 1))))
 
-       ((string=? greatest "9223372036854775807")
-        (tn "format 64bit fixnum")
-        (assert-equal? (tn)
-                       "-9223372036854775808"
-                       (format "~d" (least-fixnum)))
-        (assert-equal? (tn)
-                       "111111111111111111111111111111111111111111111111111111111111111"
-                       (format "~b" (greatest-fixnum)))
-        (assert-equal? (tn)
-                       "-1000000000000000000000000000000000000000000000000000000000000000"
-                       (format "~b" (least-fixnum)))
-        (assert-equal? (tn)
-                       "-111111111111111111111111111111111111111111111111111111111111111"
-                       (format "~b" (+ (least-fixnum) 1))))
+      ((64)
+       (tn "format 64bit fixnum")
+       (assert-equal? (tn)
+                      "-9223372036854775808"
+                      (format "~d" (least-fixnum)))
+       (assert-equal? (tn)
+                      "111111111111111111111111111111111111111111111111111111111111111"
+                      (format "~b" (greatest-fixnum)))
+       (assert-equal? (tn)
+                      "-1000000000000000000000000000000000000000000000000000000000000000"
+                      (format "~b" (least-fixnum)))
+       (assert-equal? (tn)
+                      "-111111111111111111111111111111111111111111111111111111111111111"
+                      (format "~b" (+ (least-fixnum) 1))))
 
-       (else
-        (error "unknown int bitwidth")))))
+      (else
+       (error "unknown int bitwidth"))))
 
 (tn "format ~c")
 (assert-error  (tn) (lambda () (format "~c")))

@@ -246,7 +246,7 @@ y yy y   semicore port.c
 yyyy yyy semicore read.c
 y yy y   semicore write.c
 y yy y   semicore load.c
-yyyy yyy semicore format.c
+yyyyyyyy semicore format.c
 yyyy yyy r5rs syntax.c
 yyyy yyy r5rs procedure.c
 yyyyyyyy r5rs number.c
@@ -737,10 +737,10 @@ spec by eyes:      yamaken@r4052, yamaken@r4070
 spec by tests:     yamaken@r4052, yamaken@r4070
 general review:    yamaken@r4052
 64-bit by eyes:    yamaken@r4052
-64-bit by tests:   
+64-bit by tests:   yamaken@r4075
 coding style:      yamaken@r4052
-normal case tests: yamaken@r4052, yamaken@r4070
-corner case tests: yamaken@r4052, yamaken@r4070
+normal case tests: yamaken@r4052, yamaken@r4070, yamaken@r4075
+corner case tests: yamaken@r4052, yamaken@r4070, yamaken@r4075
 
 file:              syntax.c
 category:          r5rs
@@ -1044,6 +1044,16 @@ Log
 ---
 2006-12-07  YamaKen <yamaken AT bp.iij4u.or.jp>
 
+        * format.c
+          - QA done @r4070, @r4075
+          - Fix broken va_list passing on x86_64 platform
+
+          Details:
+          - "64-bit by tests" have been passed with previously written
+            test-c2/test-format.c and test-srfi48.scm with some fixes and
+            additions for the tests, on both fatty and compact on
+            x86_64-unknown-linux-gnu
+
         * number.c
           - QA done @r4071
           - Fix broken out of range error detection of scm_string2number()
@@ -1054,10 +1064,6 @@ Log
             test-number-{arith,cmp,conv,literal}.scm with some trivial fixes
             for the tests, on both fatty and compact on
             x86_64-unknown-linux-gnu
-
-        * format.c
-          - QA done again @r4070 except for "64-bit by tests"
-          - Fix broken va_list passing on x86_64 platform
 
 2006-12-06  YamaKen <yamaken AT bp.iij4u.or.jp>
 
