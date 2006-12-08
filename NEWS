@@ -3,7 +3,7 @@ Overview of changes from 1.3.0-alpha to 1.3.0-beta
 * Fixed
   - libuim
     - Minor fix for text acquisition and injection
-    - Add caps-lock, scrool-lock, and num-lock keysyms
+    - Add caps-lock, scroll-lock, and num-lock keysyms
 
   - Tcode
   - Try-code
