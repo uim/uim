@@ -3,7 +3,7 @@ SUBDIRS = doc m4 tools include src lib test test-c bench
 UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 SSCM_REPOSITORY = $(UIM_REPOSITORY)/branches/r5rs/sigscheme
 TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
-DIST_SUM_LIST = $(PACKAGE)-$(VERSION).md5
+DIST_SUM_LIST = $(PACKAGE)-$(VERSION).sum
 
 EXTRA_DIST = \
         TODO QALog autogen.sh \
@@ -22,13 +22,15 @@ ChangeLog: FORCE
 
 sum: FORCE
 	$(MD5) $(DIST_ARCHIVES) >$(DIST_SUM_LIST)
+	$(SHA1) $(DIST_ARCHIVES) >>$(DIST_SUM_LIST)
 
 # To generate ChangeLog for a release properly, a source tree for official
 # release must not be obtained by 'svn export' but 'svn co'. See
 # doc/release.txt for further information.
 dist-hook:
 	svn info | $(EGREP) -q "^URL: .+/svn/uim/tags/sigscheme-" \
-	    || (echo "error: not an official release. checkout tagged one"; exit 1)
+	    || (echo "error: not an official release. checkout tagged one"; \
+                exit 1)
 
 # for 'svn log'
 distcheck-hook:

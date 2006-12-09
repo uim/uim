@@ -39,14 +39,6 @@ Supplementary explanation (only for help and not legal):
   must be distributed under the terms of the license specified therein.
   Each file indicates its copyright holder in its header.
 
-Major exceptions are:
-
-  - test-c/cutter-r20-yamaken-extension.diff
-  - test-c/cutter-sscm.h
-
-    These files are contained under LGPL2.
-
-
 test/gauche-*.scm and some part of src/read.c and src/list.c are covered by:
 -----------------------------------------------------------------------------
 

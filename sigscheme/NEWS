@@ -53,6 +53,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
 * Fixes
 
+  [R5RS] and [SRFI-n] tags indicate specification conformance fixes.
+
   - Fix crashes by broken va_list passing of format.c on x86_64 platform
 
   - Fix potential SEGV on long string parsing
