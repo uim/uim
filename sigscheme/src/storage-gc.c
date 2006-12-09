@@ -593,8 +593,9 @@ gc_mark_definite_locations_n(ScmObj *start, size_t n)
 static void
 gc_mark_locations(ScmObj *start, ScmObj *end)
 {
-    ptrdiff_t size;
-    ScmObj *tmp;
+    ScmObj *adjusted_start, *tmp;
+    ptrdiff_t len;
+    unsigned int offset;
 
     SCM_ASSERT(SCMOBJ_ALIGNEDP(end));
 
@@ -605,11 +606,24 @@ gc_mark_locations(ScmObj *start, ScmObj *end)
         start = tmp;
     }
 
-    size = end - start;
-
-    CDBG((SCM_DBG_GC, "gc_mark_locations: size = ~TD", size));
-
-    gc_mark_locations_n(start, size);
+    /*
+     * workaround for non-aligned ScmObj on stack:
+     *
+     * Some architectures such as m68k does not align machine-word-size data on
+     * stack with its own size (i.e. 2byte-aligned 4byte-length words are
+     * used). So we scans the stack region (sizeof(ScmObj) / alignof(ScmObj))
+     * times with possible offsets. Since this implementation adopted the
+     * conservative GC strategy, it will not be a problem.
+     *   -- YamaKen 2006-12-09
+     */
+    for (offset = 0; offset < sizeof(ScmObj); offset += ALIGNOF_SCMOBJ) {
+        adjusted_start = (ScmObj *)((char *)start + offset);
+        len = end - adjusted_start;
+        CDBG((SCM_DBG_GC, "gc_mark_locations: start = ~P, end = ~P, len = ~TD, offset = ~U",
+              adjusted_start, end, len, offset));
+        
+        gc_mark_locations_n(adjusted_start, len);
+    }
 }
 
 /*

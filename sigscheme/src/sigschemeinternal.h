@@ -192,6 +192,13 @@ extern "C" {
 #define SCM_ERRMSG_NULL_IN_STRING                                            \
     "null character in a middle of string is not enabled"
 
+#if HAVE___ALIGNOF__
+#define ALIGNOF_SCMOBJ (__alignof__ (ScmObj))
+#else
+/* FIXME: m68k compiled without __alignof__ -ready cc will crash on GC */
+#define ALIGNOF_SCMOBJ SIZEOF_SCMOBJ
+#endif
+
 #if SCM_STRICT_TOPLEVEL_DEFINITIONS
 /* FIXME: temporary hack. SCM_EOF is only used as an unique ID. */
 #define SCM_INTERACTION_ENV_INDEFINABLE SCM_EOF
