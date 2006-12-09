@@ -135,6 +135,7 @@ extern "C" {
 #define SYNTAXP        SCM_SYNTAXP
 #define CLOSUREP       SCM_CLOSUREP
 #define PROCEDUREP     SCM_PROCEDUREP
+#define SYNTACTIC_OBJECTP SCM_SYNTACTIC_OBJECTP
 #define VECTORP        SCM_VECTORP
 #define PORTP          SCM_PORTP
 #define CONTINUATIONP  SCM_CONTINUATIONP
@@ -443,6 +444,18 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
              SCM_CHARCODEC_ENCODING(codec)), 0))
 #endif /* SCM_USE_MULTIBYTE_CHAR */
 
+#if SCM_STRICT_ARGCHECK
+#define CHECK_VALID_EVALED_VALUE(x)                                          \
+    do {                                                                     \
+        if (SYNTACTIC_OBJECTP(x))                                            \
+            ERR_OBJ("syntactic keyword is evaluated as value", x);           \
+        if (VALUEPACKETP(x))                                                 \
+            ERR_OBJ("multiple values are not allowed here", x);              \
+    } while (/* CONSTCOND */ 0)
+#else
+#define CHECK_VALID_EVALED_VALUE(x) SCM_EMPTY_EXPR
+#endif
+
 /*=======================================
   Characters
 =======================================*/
@@ -696,6 +709,14 @@ SCM_EXPORT ScmObj scm_s_body(ScmObj body, ScmEvalState *eval_state);
 #endif
 SCM_EXPORT ScmObj scm_s_cond_internal(ScmObj clauses,
                                       ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_let_internal(enum ScmObjType permitted,
+                                     ScmObj bindings, ScmObj body,
+                                     ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_letrec_internal(enum ScmObjType permitted,
+                                        ScmObj bindings, ScmObj body,
+                                        ScmEvalState *eval_state);
+SCM_EXPORT void scm_s_define_internal(enum ScmObjType permitted,
+                                      ScmObj var, ScmObj exp, ScmObj env);
 
 /* macro.c */
 #if SCM_USE_HYGIENIC_MACRO

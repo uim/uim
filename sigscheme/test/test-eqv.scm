@@ -207,10 +207,10 @@
   (assert-eq? (tn) #t (eqv? plus plus)))
 
 (tn "eqv? syntax")
-(assert-eq? (tn) #t (eqv? if if))
-(assert-eq? (tn) #f (eqv? if set!))
-(assert-eq? (tn) #f (eqv? set! if))
-(assert-eq? (tn) #t (eqv? set! set!))
+(assert-error (tn) (lambda () (eqv? if if)))
+(assert-error (tn) (lambda () (eqv? if set!)))
+(assert-error (tn) (lambda () (eqv? set! if)))
+(assert-error (tn) (lambda () (eqv? set! set!)))
 ;; (define syntax if) is an invalid form
 
 (tn "eqv? macro")
@@ -219,10 +219,11 @@
                            ((_) 'macro1-expanded)))
                  (macro2 (syntax-rules ()
                            ((_) 'macro2-expanded))))
-      (assert-eq? (tn) #t (eqv? macro1 macro1))
-      (assert-eq? (tn) #f (eqv? macro2 macro1))
-      (assert-eq? (tn) #f (eqv? macro1 macro2))
-      (assert-eq? (tn) #t (eqv? macro2 macro2))))
+      ;; syntactic keyword as value
+      (assert-error (tn) (lambda () (eqv? macro1 macro1)))
+      (assert-error (tn) (lambda () (eqv? macro2 macro1)))
+      (assert-error (tn) (lambda () (eqv? macro1 macro2)))
+      (assert-error (tn) (lambda () (eqv? macro2 macro2)))))
 
 (tn "eqv? closure")
 (let ((closure (lambda () #t)))

@@ -101,6 +101,14 @@
                (lambda ()
                  (let (1) #t)))
 
+(tn "let binding syntactic keyword")
+(assert-equal? (tn) 1 (let ((else 1)) else))
+(assert-equal? (tn) 2 (let ((=> 2)) =>))
+(assert-equal? (tn) 3 (let ((unquote 3)) unquote))
+(assert-error  (tn) (lambda () else))
+(assert-error  (tn) (lambda () =>))
+(assert-error  (tn) (lambda () unquote))
+
 (tn "let env isolation")
 (assert-error  (tn)
                (lambda ()
@@ -1066,6 +1074,14 @@
 (assert-error  (tn)
                (lambda ()
                  (let loop (1) #t)))
+
+(tn "named let binding syntactic keyword")
+(assert-equal? (tn) 1 (let loop ((else 1)) else))
+(assert-equal? (tn) 2 (let loop ((=> 2)) =>))
+(assert-equal? (tn) 3 (let loop ((unquote 3)) unquote))
+(assert-error  (tn) (lambda () else))
+(assert-error  (tn) (lambda () =>))
+(assert-error  (tn) (lambda () unquote))
 
 (tn "named let env isolation")
 (assert-error  (tn)
@@ -2095,6 +2111,14 @@
                (lambda ()
                  (let* (1) #t)))
 
+(tn "let* binding syntactic keyword")
+(assert-equal? (tn) 4 (let* ((else 4)) else))
+(assert-equal? (tn) 5 (let* ((=> 5)) =>))
+(assert-equal? (tn) 6 (let* ((unquote 6)) unquote))
+(assert-error  (tn) (lambda () else))
+(assert-error  (tn) (lambda () =>))
+(assert-error  (tn) (lambda () unquote))
+
 (tn "let* env isolation")
 (assert-equal? (tn)
                1
@@ -3047,6 +3071,14 @@
 (assert-error  (tn)
                (lambda ()
                  (letrec (1) #t)))
+
+(tn "letrec binding syntactic keyword")
+(assert-equal? (tn) 7 (letrec ((else 7)) else))
+(assert-equal? (tn) 8 (letrec ((=> 8)) =>))
+(assert-equal? (tn) 9 (letrec ((unquote 9)) unquote))
+(assert-error  (tn) (lambda () else))
+(assert-error  (tn) (lambda () =>))
+(assert-error  (tn) (lambda () unquote))
 
 (tn "letrec env isolation")
 ;; referencing a variable within bindings evaluation is invalid

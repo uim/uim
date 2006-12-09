@@ -89,6 +89,12 @@
 (assert-eq? (tn) #f (null? (lambda () #t)))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (null? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (null? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -143,6 +149,12 @@
 (assert-eq? (tn) #f (list? (lambda () #t)))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (list? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (list? do)))))
 
 (call-with-current-continuation
  (lambda (k)

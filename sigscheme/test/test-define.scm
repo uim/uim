@@ -245,7 +245,23 @@
                    (define syn unquote-splicing)
                    #t)))
 
-(if (and (provided? "sigscheme")
+(tn "define syntactic keyword internally")
+(assert-equal? (tn) 7 ((lambda () (define else 7) else)))
+(assert-equal? (tn) 8 ((lambda () (define => 8) =>)))
+(assert-equal? (tn) 9 ((lambda () (define do 9) do)))
+(assert-error  (tn) (lambda () else))
+(assert-error  (tn) (lambda () =>))
+(assert-error  (tn) (lambda () do))
+
+(tn "define syntactic keyword as top-level variable")
+(define else 3)
+(assert-equal? (tn) 3 else)
+(define => 4)
+(assert-equal? (tn) 4 =>)
+(define do 5)
+(assert-equal? (tn) 5 do)
+
+(if (and sigscheme?
          (provided? "strict-argcheck"))
     (begin
       (tn "define function form: boolean as an arg")

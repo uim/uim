@@ -87,6 +87,14 @@ Overview of changes from 0.6.1 to 0.7.0
     expressions intermixed on 'let', 'let*', 'letrec' and function form
     'define'
 
+  - [R5RS] Fix syntactic keyword to value evaluation that only bound to syntax
+    or macro (i.e. (eq? if and) has been invalidated). But binding syntactic
+    keywords to first-class objects such as (define else 3) and (define do 4)
+    are still allowed
+
+  - [R5RS] Fix first-class binding objects acceptance of let-syntax,
+    letrec-syntax and define-syntax
+
   - [R5RS] Fix invalid no-expressions <body> acceptance of 'let', 'let*',
     'letrec' and function form 'define'
 

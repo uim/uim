@@ -299,10 +299,7 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
         argbuf[i] = MUST_POP_ARG(args);
         if (need_eval)
             argbuf[i] = EVAL(argbuf[i], env);
-#if SCM_STRICT_ARGCHECK
-        if (VALUEPACKETP((ScmObj)argbuf[i]))
-            ERR_OBJ("multiple values are not allowed here", (ScmObj)argbuf[i]);
-#endif
+        CHECK_VALID_EVALED_VALUE((ScmObj)argbuf[i]);
     }
 
     if (type & SCM_FUNCTYPE_VARIADIC) {
@@ -506,10 +503,7 @@ map_eval(ScmObj args, scm_int_t *args_len, ScmObj env)
     FOR_EACH_PAIR (rest, args) {
         len++;
         elm = EVAL(CAR(rest), env);
-#if SCM_STRICT_ARGCHECK
-        if (VALUEPACKETP(elm))
-            ERR_OBJ("multiple values are not allowed here", elm);
-#endif
+        CHECK_VALID_EVALED_VALUE(elm);
         SCM_QUEUE_ADD(q, elm);
     }
     if (!NULLP(rest))

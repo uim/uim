@@ -203,23 +203,23 @@
   (assert-eq? (tn) #t (equal? plus plus)))
 
 (tn "equal? syntax")
-(assert-eq? (tn) #t (equal? if if))
-(assert-eq? (tn) #f (equal? if set!))
-(assert-eq? (tn) #f (equal? set! if))
-(assert-eq? (tn) #t (equal? set! set!))
+(assert-error (tn) (lambda () (equal? if if)))
+(assert-error (tn) (lambda () (equal? if set!)))
+(assert-error (tn) (lambda () (equal? set! if)))
+(assert-error (tn) (lambda () (equal? set! set!)))
 ;; (define syntax if) is an invalid form
 
-;; FIXME
 (tn "equal? macro")
 (if (symbol-bound? 'let-syntax)
     (let-syntax ((macro1 (syntax-rules ()
                            ((_) 'macro1-expanded)))
                  (macro2 (syntax-rules ()
                            ((_) 'macro2-expanded))))
-      (assert-eq? (tn) #t (equal? macro1 macro1))
-      (assert-eq? (tn) #f (equal? macro2 macro1))
-      (assert-eq? (tn) #f (equal? macro1 macro2))
-      (assert-eq? (tn) #t (equal? macro2 macro2))))
+      ;; syntactic keyword as value
+      (assert-error (tn) (lambda () (equal? macro1 macro1)))
+      (assert-error (tn) (lambda () (equal? macro2 macro1)))
+      (assert-error (tn) (lambda () (equal? macro1 macro2)))
+      (assert-error (tn) (lambda () (equal? macro2 macro2)))))
 
 (tn "equal? closure")
 (let ((closure (lambda () #t)))

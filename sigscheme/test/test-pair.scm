@@ -66,6 +66,12 @@
 (assert-eq? (tn) #f (pair? (lambda () #t)))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (pair? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (pair? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -126,6 +132,12 @@
 (assert-error  (tn) (lambda () (car (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (car else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (car do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -179,6 +191,12 @@
 (assert-error  (tn) (lambda () (cdr (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (cdr else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (cdr do)))))
 
 (call-with-current-continuation
  (lambda (k)

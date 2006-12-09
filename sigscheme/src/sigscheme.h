@@ -330,7 +330,10 @@ enum ScmObjType {
     ScmSubpat       = 18,
 
     ScmCFuncPointer = 30,
-    ScmCPointer     = 31
+    ScmCPointer     = 31, 
+
+    /* Classification tag for internal object validations */
+    ScmFirstClassObj = 0  /* intentionally zero */
 };
 
 /*
@@ -826,6 +829,11 @@ struct ScmStorageConf_ {
                             && !(SCM_FUNC_TYPECODE(o) & SCM_FUNCTYPE_SYNTAX)) \
                            || SCM_CLOSUREP(o)                                \
                            || SCM_CONTINUATIONP(o))
+#if SCM_USE_HYGIENIC_MACRO
+#define SCM_SYNTACTIC_OBJECTP(o) (SCM_SYNTAXP(o) || SCM_HMACROP(o))
+#else
+#define SCM_SYNTACTIC_OBJECTP(o) (SCM_SYNTAXP(o))
+#endif
 
 #define SCM_CLOSUREP(o)                 SCM_SAL_CLOSUREP(o)
 #define SCM_CLOSURE_EXP(o)              SCM_SAL_CLOSURE_EXP(o)
@@ -1554,6 +1562,11 @@ SCM_EXPORT ScmObj scm_s_match(ScmObj form, ScmObj patterns,
 SCM_EXPORT ScmObj scm_s_syntax_rules(ScmObj rules, ScmObj env);
 SCM_EXPORT ScmObj scm_s_expand_macro(ScmObj macro, ScmObj args,
                                      ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_let_syntax(ScmObj bindings, ScmObj body,
+                                   ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_letrec_syntax(ScmObj bindings, ScmObj body,
+                                      ScmEvalState *eval_state);
+SCM_EXPORT ScmObj scm_s_define_syntax(ScmObj var, ScmObj macro, ScmObj env);
 SCM_EXPORT ScmObj scm_unwrap_syntaxx(ScmObj obj);
 SCM_EXPORT ScmObj scm_unwrap_keyword(ScmObj obj);
 #endif

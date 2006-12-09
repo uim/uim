@@ -209,14 +209,6 @@ static scm_int_t list_find_index(ScmObj x, ScmObj ls);
 SCM_EXPORT void
 scm_init_macro(void)
 {
-    /* TODO: parameterize EVAL in scm_s_let(), scm_s_letrec() and
-     * scm_s_define(), and call them with EVAL set to
-     * eval_syntax_rules().  We might want to separate macros
-     * namespace from that of objects since macros aren't first-class
-     * objects. */
-    scm_define_alias("let-syntax", "let");
-    scm_define_alias("letrec-syntax", "letrec");
-    scm_define_alias("define-syntax", "define");
     SCM_GLOBAL_VARS_INIT(static_macro);
     INIT_DBG();
 }
@@ -371,6 +363,37 @@ scm_s_match(ScmObj form, ScmObj clauses, ScmEvalState *state)
     return SCM_UNDEF;
 }
 
+/* TODO: parameterize EVAL in scm_s_let(), scm_s_letrec() and scm_s_define(),
+ * and call them with EVAL set to eval_syntax_rules().  We might want to
+ * separate macros namespace from that of objects since macros aren't
+ * first-class objects. */
+SCM_EXPORT ScmObj
+scm_s_let_syntax(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
+{
+    DECLARE_FUNCTION("let-syntax", syntax_variadic_tailrec_1);
+
+    return scm_s_let_internal(ScmMacro, bindings, body, eval_state);
+}
+
+SCM_EXPORT ScmObj
+scm_s_letrec_syntax(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
+{
+    DECLARE_FUNCTION("letrec-syntax", syntax_variadic_tailrec_1);
+
+    return scm_s_letrec_internal(ScmMacro, bindings, body, eval_state);
+}
+
+SCM_EXPORT ScmObj
+scm_s_define_syntax(ScmObj var, ScmObj macro, ScmObj env)
+{
+    DECLARE_FUNCTION("define-syntax", syntax_fixed_2);
+
+    ENSURE_IDENTIFIER(var);
+
+    scm_s_define_internal(ScmMacro, var, macro, env);
+
+    return SCM_UNDEF;
+}
 
 /* ==============================
  * Pattern Compiler

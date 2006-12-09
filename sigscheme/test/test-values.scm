@@ -51,6 +51,27 @@
 (assert-error  (tn) (lambda () (eq? '() (apply values '(1 2)))))
 (assert-error  (tn) (lambda () (eq? '() (values 1 . 2))))
 
+(tn "values disallowed places")
+;; top-level variable
+(assert-error  (tn) (lambda () (eval '(define foo (values 1 2 3))
+                                     (interaction-environment))))
+(define foo 1)
+(assert-error  (tn) (lambda () (eval '(set! foo (values 1 2 3))
+                                     (interaction-environment))))
+;; internal variable
+(assert-error  (tn) (lambda () (define bar (values 1 2 3))))
+;; others
+(assert-error  (tn) (lambda () (let ((bar (values 1 2 3))) #t)))
+(assert-error  (tn) (lambda () (let* ((bar (values 1 2 3))) #t)))
+(assert-error  (tn) (lambda () (letrec ((bar (values 1 2 3))) #t)))
+(assert-error  (tn) (lambda () (if (values 1 2 3) #t)))
+(assert-error  (tn) (lambda () (and (values 1 2 3) #t)))
+(assert-error  (tn) (lambda () (or (values 1 2 3) #t)))
+(assert-error  (tn) (lambda () (cond ((values 1 2 3) #t) (else #t))))
+(assert-error  (tn) (lambda () (case (values 1 2 3) (else #t))))
+(assert-error  (tn) (lambda () (begin (values 1 2 3) #t)))
+(assert-error  (tn) (lambda () ((lambda () (values 1 2 3) #t))))
+
 (tn "values")
 ;; Exactly one value.
 (assert-true   (tn) (eqv? 1 (values 1)))

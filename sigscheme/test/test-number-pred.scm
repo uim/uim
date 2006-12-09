@@ -110,6 +110,12 @@
 (assert-eq? (tn) #f (number? (lambda () #t)))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (number? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (number? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -199,6 +205,12 @@
 (assert-eq? (tn) #f (integer? (lambda () #t)))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (integer? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (integer? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -288,6 +300,12 @@
 (assert-error (tn) (lambda () (zero? (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (zero? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (zero? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -377,6 +395,12 @@
 (assert-error (tn) (lambda () (positive? (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (positive? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (positive? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -466,6 +490,12 @@
 (assert-error (tn) (lambda () (negative? (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (negative? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (negative? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -591,6 +621,12 @@
 (assert-error (tn) (lambda () (odd? (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (odd? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (odd? do)))))
 
 (call-with-current-continuation
  (lambda (k)
@@ -716,6 +752,12 @@
 (assert-error (tn) (lambda () (even? (lambda () #t))))
 
 ;; syntactic keywords should not be appeared as operand
+(if sigscheme?
+    (begin
+      ;; pure syntactic keyword
+      (assert-error (tn) (lambda () (even? else)))
+      ;; expression keyword
+      (assert-error (tn) (lambda () (even? do)))))
 
 (call-with-current-continuation
  (lambda (k)

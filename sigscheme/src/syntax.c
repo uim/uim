@@ -63,6 +63,26 @@
 #define FORBID_TOPLEVEL_DEFINITIONS(env) (env)
 #endif
 
+#if SCM_USE_HYGIENIC_MACRO
+#define CHECK_VALID_BINDEE(permitted_type, bindee)                           \
+    do {                                                                     \
+        if (permitted_type == ScmFirstClassObj)                              \
+            CHECK_VALID_EVALED_VALUE(bindee);                                \
+        else if (permitted_type == ScmMacro)                                 \
+            SCM_ASSERT(HMACROP(bindee));                                     \
+        else                                                                 \
+            SCM_ASSERT(scm_false);                                           \
+    } while (/* CONSTCOND */ 0)
+#else
+#define CHECK_VALID_BINDEE(permitted_type, bindee)                           \
+    do {                                                                     \
+        if (permitted_type == ScmFirstClassObj)                              \
+            CHECK_VALID_EVALED_VALUE(bindee);                                \
+        else                                                                 \
+            SCM_ASSERT(scm_false);                                           \
+    } while (/* CONSTCOND */ 0)
+#endif
+
 /*=======================================
   File Local Type Definitions
 =======================================*/
@@ -96,7 +116,6 @@ SCM_DEFINE_STATIC_VARS(static_syntax);
 static ScmObj filter_definitions(ScmObj body, ScmObj *formals, ScmObj *actuals,
                                  ScmQueue *def_expq);
 #endif
-static void define_internal(ScmObj var, ScmObj exp, ScmObj env);
 
 /*=======================================
   Function Definitions
@@ -195,7 +214,9 @@ scm_s_if(ScmObj test, ScmObj conseq, ScmObj rest, ScmEvalState *eval_state)
       (if <test> <consequent> <alternate>)
     =======================================================================*/
 
-    if (test = EVAL(test, env), TRUEP(test)) {
+    test = EVAL(test, env);
+    CHECK_VALID_EVALED_VALUE(test);
+    if (TRUEP(test)) {
 #if SCM_STRICT_ARGCHECK
         SAFE_POP(rest);
         ASSERT_NO_MORE_ARG(rest);
@@ -224,6 +245,7 @@ scm_s_setx(ScmObj sym, ScmObj exp, ScmObj env)
     ENSURE_SYMBOL(sym);
 
     evaled = EVAL(exp, env);
+    CHECK_VALID_EVALED_VALUE(evaled);
     locally_bound = scm_lookup_environment(sym, env);
     if (locally_bound != SCM_INVALID_REF) {
         SET(locally_bound, evaled);
@@ -292,7 +314,9 @@ scm_s_cond_internal(ScmObj clauses, ScmEvalState *eval_state)
             return scm_s_begin(exps, eval_state);
         }
         
-        if (test = EVAL(test, env), TRUEP(test)) {
+        test = EVAL(test, env);
+        CHECK_VALID_EVALED_VALUE(test);
+        if (TRUEP(test)) {
             /*
              * if the selected <clause> contains only the <test> and no
              * <expression>s, then the value of the <test> is returned as the
@@ -375,6 +399,7 @@ scm_s_case(ScmObj key, ScmObj clauses, ScmEvalState *eval_state)
         ERR(ERRMSG_CLAUSE_REQUIRED);
 
     key = EVAL(key, eval_state->env);
+    CHECK_VALID_EVALED_VALUE(key);
 
     FOR_EACH (clause, clauses) {
         if (!CONSP(clause))
@@ -415,6 +440,7 @@ scm_s_and(ScmObj args, ScmEvalState *eval_state)
 
     FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, env);
+        CHECK_VALID_EVALED_VALUE(val);
         if (FALSEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_VALTYPE_AS_IS;
@@ -440,6 +466,7 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 
     FOR_EACH_BUTLAST (expr, args) {
         val = EVAL(expr, env);
+        CHECK_VALID_EVALED_VALUE(val);
         if (TRUEP(val)) {
             ASSERT_PROPER_ARG_LIST(args);
             eval_state->ret_type = SCM_VALTYPE_AS_IS;
@@ -457,10 +484,19 @@ scm_s_or(ScmObj args, ScmEvalState *eval_state)
 SCM_EXPORT ScmObj
 scm_s_let(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
+    DECLARE_FUNCTION("let", syntax_variadic_tailrec_1);
+
+    return scm_s_let_internal(ScmFirstClassObj, bindings, body, eval_state);
+}
+
+SCM_EXPORT ScmObj
+scm_s_let_internal(enum ScmObjType permitted, ScmObj bindings, ScmObj body,
+                   ScmEvalState *eval_state)
+{
     ScmObj env, named_let_sym, proc, binding;
     ScmObj formals, var, actuals, val, exp;
     ScmQueue varq, valq;
-    DECLARE_FUNCTION("let", syntax_variadic_tailrec_1);
+    DECLARE_INTERNAL_FUNCTION("let" /* , syntax_variadic_tailrec_1 */);
 
     env = eval_state->env;
     named_let_sym = SCM_FALSE;
@@ -513,8 +549,7 @@ scm_s_let(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 #endif
         exp = CADR(binding);
         val = EVAL(exp, env);
-        if (SYNTAXP(val))
-            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+        CHECK_VALID_BINDEE(permitted, val);
 
         SCM_QUEUE_ADD(varq, var);
         SCM_QUEUE_ADD(valq, val);
@@ -567,8 +602,7 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 
         exp = CADR(binding);
         val = EVAL(exp, env);
-        if (SYNTAXP(val))
-            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+        CHECK_VALID_EVALED_VALUE(val);
 
         /* extend env for each variable */
         env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
@@ -583,8 +617,17 @@ scm_s_letstar(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 SCM_EXPORT ScmObj
 scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 {
-    ScmObj binding, formals, actuals, var, val, exp, env;
     DECLARE_FUNCTION("letrec", syntax_variadic_tailrec_1);
+
+    return scm_s_letrec_internal(ScmFirstClassObj, bindings, body, eval_state);
+}
+
+SCM_EXPORT ScmObj
+scm_s_letrec_internal(enum ScmObjType permitted, ScmObj bindings, ScmObj body,
+                      ScmEvalState *eval_state)
+{
+    ScmObj binding, formals, actuals, var, val, exp, env;
+    DECLARE_INTERNAL_FUNCTION("letrec" /* , syntax_variadic_tailrec_1 */);
 
     /*=======================================================================
       (letrec (<binding spec>*) <body>)
@@ -614,8 +657,7 @@ scm_s_letrec(ScmObj bindings, ScmObj body, ScmEvalState *eval_state)
 #endif
         exp = CADR(binding);
         val = EVAL(exp, env);
-        if (SYNTAXP(val))
-            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+        CHECK_VALID_BINDEE(permitted, val);
 
         /* construct formals and actuals list: any <init> must not refer a
          * <variable> at this time */
@@ -740,8 +782,7 @@ scm_s_body(ScmObj body, ScmEvalState *eval_state)
             actuals = SCM_NULL;
             FOR_EACH (exp, def_exps) {
                 val = EVAL(exp, env);
-                if (SYNTAXP(val))
-                    ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+                CHECK_VALID_EVALED_VALUE(val);
                 actuals = CONS(val, actuals);
             }
             eval_state->env = scm_update_environment(actuals, env);
@@ -778,8 +819,10 @@ scm_s_begin(ScmObj args, ScmEvalState *eval_state)
         env = FORBID_TOPLEVEL_DEFINITIONS(eval_state->env);
     }
 
-    FOR_EACH_BUTLAST (expr, args)
-        EVAL(expr, env);
+    FOR_EACH_BUTLAST (expr, args) {
+        expr = EVAL(expr, env);
+        CHECK_VALID_EVALED_VALUE(expr);
+    }
     ASSERT_NO_MORE_ARG(args);
 
     return expr;
@@ -836,8 +879,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
             goto err;
 
         init = EVAL(init, env);
-        if (SYNTAXP(init))
-            ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, init);
+        CHECK_VALID_EVALED_VALUE(init);
         formals = CONS(var, formals);
         actuals = CONS(init, actuals);
         SCM_QUEUE_ADD(stepq, step);
@@ -867,8 +909,7 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
         rest = steps;
         FOR_EACH (step, rest) {
             val = EVAL(step, env);
-            if (SYNTAXP(val))
-                ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, val);
+            CHECK_VALID_EVALED_VALUE(val);
             actuals = CONS(val, actuals);
         }
         /* the envs for each iteration must be isolated and not be
@@ -903,8 +944,9 @@ scm_s_do(ScmObj bindings, ScmObj test_exps, ScmObj commands,
 /*=======================================
   R5RS : 5.2 Definitions
 =======================================*/
-static void
-define_internal(ScmObj var, ScmObj exp, ScmObj env)
+SCM_EXPORT void
+scm_s_define_internal(enum ScmObjType permitted,
+                      ScmObj var, ScmObj exp, ScmObj env)
 {
     ScmObj val;
     DECLARE_INTERNAL_FUNCTION("define");
@@ -912,8 +954,8 @@ define_internal(ScmObj var, ScmObj exp, ScmObj env)
     SCM_ASSERT(SYMBOLP(var) || SYMBOLP(SCM_FARSYMBOL_SYM(var)));
     var = SCM_UNWRAP_KEYWORD(var);
     val = EVAL(exp, env);
-    if (SYNTAXP(val))
-        ERR_OBJ(ERRMSG_SYNTAX_AS_VALUE, exp);
+    CHECK_VALID_BINDEE(permitted, val);
+
     SCM_SYMBOL_SET_VCELL(var, val);
 }
 
@@ -944,7 +986,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmEvalState *eval_state)
         if (!LIST_1_P(rest))
             goto err;
 
-        define_internal(var, CAR(rest), env);
+        scm_s_define_internal(ScmFirstClassObj, var, CAR(rest), env);
     }
 
     /*=======================================================================
@@ -960,7 +1002,7 @@ scm_s_define(ScmObj var, ScmObj rest, ScmEvalState *eval_state)
 
         ENSURE_SYMBOL(procname);
         proc = scm_s_lambda(formals, body, env);
-        define_internal(procname, proc, env);
+        scm_s_define_internal(ScmFirstClassObj, procname, proc, env);
     } else {
         goto err;
     }

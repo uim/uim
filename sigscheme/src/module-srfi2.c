@@ -86,6 +86,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                     /* (<expression>) */
                     exp = CAR(claw);
                     val = EVAL(exp, env);
+                    CHECK_VALID_EVALED_VALUE(val);
                 } else if (IDENTIFIERP(CAR(claw))) {
                     /* (<variable> <expression>) */
                     if (!LIST_2_P(claw))
@@ -93,6 +94,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
                     var = CAR(claw);
                     exp = CADR(claw);
                     val = EVAL(exp, env);
+                    CHECK_VALID_EVALED_VALUE(val);
                     env = scm_extend_environment(LIST_1(var), LIST_1(val), env);
                 } else {
                     goto err;
@@ -100,6 +102,7 @@ scm_s_srfi2_and_letstar(ScmObj claws, ScmObj body, ScmEvalState *eval_state)
             } else if (IDENTIFIERP(claw)) {
                 /* <bound-variable> */
                 val = EVAL(claw, env);
+                CHECK_VALID_EVALED_VALUE(val);
             } else {
                 goto err;
             }
