@@ -26,10 +26,13 @@ EXTRA_DIST += \
         test-formatplus.scm \
         test-lambda.scm \
         test-let.scm \
+        test-letstar.scm \
+        test-letrec.scm \
         test-list.scm \
         test-map.scm \
         test-member.scm \
         test-misc.scm \
+        test-named-let.scm \
         test-num.scm \
         test-number-arith.scm \
         test-number-cmp.scm \
