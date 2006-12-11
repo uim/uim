@@ -58,6 +58,8 @@
 /*=======================================
   Variable Definitions
 =======================================*/
+#include "functable-r5rs-port.c"
+
 SCM_DEFINE_EXPORTED_VARS(port);
 
 #if (SCM_USE_READER || SCM_USE_WRITER)
@@ -99,6 +101,8 @@ SCM_EXPORT void
 scm_init_port(void)
 {
     SCM_GLOBAL_VARS_INIT(port);
+
+    scm_register_funcs(scm_functable_r5rs_port);
 
     scm_fileport_init();
 #if SCM_USE_MULTIBYTE_CHAR

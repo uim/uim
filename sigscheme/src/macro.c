@@ -36,6 +36,8 @@
 #include "sigschemeinternal.h"
 #include <stdlib.h>
 
+#include "functable-r5rs-macro.c"
+
 /* ------------------------------
  *  Definitions
  * ------------------------------
@@ -210,6 +212,9 @@ SCM_EXPORT void
 scm_init_macro(void)
 {
     SCM_GLOBAL_VARS_INIT(static_macro);
+
+    scm_register_funcs(scm_functable_r5rs_macro);
+
     INIT_DBG();
 }
 

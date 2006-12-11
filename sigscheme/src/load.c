@@ -66,6 +66,8 @@
 /*=======================================
   Variable Definitions
 =======================================*/
+#include "functable-r5rs-load.c"
+
 SCM_GLOBAL_VARS_BEGIN(static_load);
 #define static
 static char *l_scm_lib_path;
@@ -92,6 +94,8 @@ SCM_EXPORT void
 scm_init_load(void)
 {
     SCM_GLOBAL_VARS_INIT(static_load);
+
+    scm_register_funcs(scm_functable_r5rs_load);
 }
 
 SCM_EXPORT void

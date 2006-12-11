@@ -66,7 +66,34 @@
   Variable Definitions
 =======================================*/
 #include "functable-sscm-core.c"
-#include "functable-r5rs-procedure.c"
+#include "functable-r5rs-core.c"
+#if SCM_USE_READER
+#include "functable-r5rs-read.c"
+#endif
+#if SCM_USE_QUASIQUOTE
+#include "functable-r5rs-qquote.c"
+#endif
+#if SCM_USE_PROMISE
+#include "functable-r5rs-promise.c"
+#endif
+#if SCM_USE_NUMBER
+#include "functable-r5rs-number.c"
+#endif
+#if SCM_USE_CHAR
+#include "functable-r5rs-char.c"
+#endif
+#if SCM_USE_STRING
+#include "functable-r5rs-string.c"
+#endif
+#if SCM_USE_STRING_PROCEDURE
+#include "functable-r5rs-string-procedure.c"
+#endif
+#if SCM_USE_VECTOR
+#include "functable-r5rs-vector.c"
+#endif
+#if SCM_USE_DEEP_CADRS
+#include "functable-r5rs-deep-cadrs.c"
+#endif
 
 SCM_GLOBAL_VARS_BEGIN(static_sigscheme);
 #define static
@@ -190,6 +217,9 @@ scm_initialize_internal(void)
     /* FIXME: duplicate call with scm_initialize_srfi{28,48}() */
     scm_init_format();
 #endif
+#if SCM_USE_READER
+    scm_register_funcs(scm_functable_r5rs_read);
+#endif
 #if SCM_USE_LOAD
     scm_init_load();
 #endif
@@ -206,16 +236,40 @@ scm_initialize_internal(void)
     scm_gc_protect_with_init(&scm_values_applier, MAKE_CONTINUATION());
 
     /* SigScheme-specific core syntaxes and procedures */
-    scm_register_funcs(scm_sscm_core_func_info_table);
+    scm_register_funcs(scm_functable_sscm_core);
 
     /* R5RS Syntaxes */
     scm_init_syntax();
+#if SCM_USE_QUASIQUOTE
+    scm_register_funcs(scm_functable_r5rs_qquote);
+#endif
 #if SCM_USE_HYGIENIC_MACRO
     scm_init_macro();
 #endif
+#if SCM_USE_PROMISE
+    scm_register_funcs(scm_functable_r5rs_promise);
+#endif
 
     /* R5RS Procedures */
-    scm_register_funcs(scm_r5rs_procedure_func_info_table);
+    scm_register_funcs(scm_functable_r5rs_core);
+#if SCM_USE_NUMBER
+    scm_register_funcs(scm_functable_r5rs_number);
+#endif
+#if SCM_USE_CHAR
+    scm_register_funcs(scm_functable_r5rs_char);
+#endif
+#if SCM_USE_STRING
+    scm_register_funcs(scm_functable_r5rs_string);
+#endif
+#if SCM_USE_STRING_PROCEDURE
+    scm_register_funcs(scm_functable_r5rs_string_procedure);
+#endif
+#if SCM_USE_VECTOR
+    scm_register_funcs(scm_functable_r5rs_vector);
+#endif
+#if SCM_USE_DEEP_CADRS
+    scm_register_funcs(scm_functable_r5rs_deep_cadrs);
+#endif
 
 #if SCM_USE_SSCM_EXTENSIONS
     scm_use("sscm-ext");

@@ -13,8 +13,21 @@ BUILD_FUNCTBL_DEPS = \
 
 FUNC_TABLES = \
         functable-sscm-core.c \
+        functable-r5rs-core.c \
         functable-r5rs-syntax.c \
-        functable-r5rs-procedure.c \
+        functable-r5rs-qquote.c \
+        functable-r5rs-macro.c \
+        functable-r5rs-promise.c \
+        functable-r5rs-number.c \
+        functable-r5rs-char.c \
+        functable-r5rs-string.c \
+        functable-r5rs-string-procedure.c \
+        functable-r5rs-vector.c \
+        functable-r5rs-port.c \
+        functable-r5rs-read.c \
+        functable-r5rs-write.c \
+        functable-r5rs-load.c \
+        functable-r5rs-deep-cadrs.c \
         functable-sscm-ext.c \
         functable-siod.c \
         functable-srfi1.c \
@@ -28,73 +41,49 @@ FUNC_TABLES = \
         functable-srfi48.c \
         functable-srfi60.c
 
-R5RS_SYNTAX_SRCS = syntax.c
-if USE_QUASIQUOTE
-  R5RS_SYNTAX_SRCS += qquote.c
-endif
-# FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
-# SCM_USE_LEGACY_MACRO
-if USE_HYGIENIC_MACRO
-  R5RS_SYNTAX_SRCS += macro.c
-endif
-if USE_PROMISE
-  R5RS_SYNTAX_SRCS += promise.c
-endif
-
-SSCM_PROC_SRCS = error.c module.c
-R5RS_PROC_SRCS = eval.c procedure.c list.c
-if USE_NUMBER
-  R5RS_PROC_SRCS += number.c
-endif
-if USE_CHAR
-  R5RS_PROC_SRCS += char.c
-endif
-if USE_STRING
-  R5RS_PROC_SRCS += string.c
-endif
-if USE_STRING_PROCEDURE
-  R5RS_PROC_SRCS += string-procedure.c
-endif
-if USE_VECTOR
-  R5RS_PROC_SRCS += vector.c
-endif
-if USE_PORT
-  R5RS_PROC_SRCS += port.c
-endif
-if USE_READER
-  R5RS_PROC_SRCS += read.c
-endif
-if USE_WRITER
-  R5RS_PROC_SRCS += write.c
-endif
-if USE_LOAD
-  R5RS_PROC_SRCS += load.c
-endif
-if USE_DEEP_CADRS
-  R5RS_PROC_SRCS += deep-cadrs.c
-endif
-
-.PHONY: lib combined func-tables clean-func-tables clean-built
-lib: libsscm.la
-combined: sigscheme-combined-trim.h sigscheme-combined.c
-clean-combined:
-	rm -f sigscheme-combined-trim.h sigscheme-combined.c
-func-tables: $(FUNC_TABLES)
-clean-func-tables:
-	rm -f $(FUNC_TABLES)
-
 if MAINTAINER_MODE
-functable-sscm-core.c: $(SSCM_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_core_func_info_table" \
-	  $(SSCM_PROC_SRCS)
-functable-r5rs-syntax.c: $(R5RS_SYNTAX_SRCS) $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_syntax_func_info_table" \
-	  $(R5RS_SYNTAX_SRCS)
-functable-r5rs-procedure.c: $(R5RS_PROC_SRCS) $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_r5rs_procedure_func_info_table" \
-	  $(R5RS_PROC_SRCS)
+# Core
+SSCM_CORE_SRCS = error.c module.c
+R5RS_CORE_SRCS = eval.c procedure.c list.c
+functable-sscm-core.c: $(SSCM_CORE_SRCS) $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_sscm_core" $(SSCM_CORE_SRCS)
+functable-r5rs-core.c: $(R5RS_CORE_SRCS) $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_core" $(R5RS_CORE_SRCS)
+# R5RS syntaxes
+functable-r5rs-syntax.c: syntax.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_syntax" $<
+functable-r5rs-qquote.c: qquote.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_qquote" $<
+functable-r5rs-macro.c: macro.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_macro" $<
+functable-r5rs-promise.c: promise.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_promise" $<
+# R5RS procedures
+functable-r5rs-number.c: number.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_number" $<
+functable-r5rs-char.c: char.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_char" $<
+functable-r5rs-string.c: string.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_string" $<
+functable-r5rs-string-procedure.c: string-procedure.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_string_procedure" $<
+functable-r5rs-vector.c: vector.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_vector" $<
+functable-r5rs-port.c: port.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_port" $<
+functable-r5rs-read.c: read.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_read" $<
+functable-r5rs-write.c: write.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_write" $<
+functable-r5rs-load.c: load.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_load" $<
+functable-r5rs-deep-cadrs.c: deep-cadrs.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_deep_cadrs" $<
+# Optional modules
 functable-sscm-ext.c: module-sscm-ext.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_ext_func_info_table" $<
+functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
 functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi1_func_info_table" $<
 functable-srfi2.c: module-srfi2.c $(BUILD_FUNCTBL_DEPS)
@@ -115,8 +104,6 @@ functable-srfi48.c: module-srfi48.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi48_func_info_table" $<
 functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi60_func_info_table" $<
-functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
 endif
 
 # Optional and not built by 'make all'. Build explicitly with 'make combined'
@@ -221,9 +208,9 @@ pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \
         alloc.c storage.c storage-gc.c \
-        error.c symbol.c env.c module.c \
-	$(R5RS_SYNTAX_SRCS) $(R5RS_PROC_SRCS) \
-        sigschemeinternal.h sigscheme.c
+        error.c symbol.c env.c eval.c \
+	syntax.c procedure.c list.c \
+        sigschemeinternal.h module.c sigscheme.c
 if USE_STORAGE_COMPACT
   pkginclude_HEADERS += storage-common.h storage-compact.h
 else
@@ -252,6 +239,49 @@ endif
 if USE_FORMAT
   libsscm_la_SOURCES += format.c
 endif
+if USE_QUASIQUOTE
+  libsscm_la_SOURCES += qquote.c
+endif
+# FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
+# SCM_USE_LEGACY_MACRO
+if USE_HYGIENIC_MACRO
+  libsscm_la_SOURCES += macro.c
+endif
+if USE_PROMISE
+  libsscm_la_SOURCES += promise.c
+endif
+if USE_NUMBER
+  libsscm_la_SOURCES += number.c
+endif
+if USE_CHAR
+  libsscm_la_SOURCES += char.c
+endif
+if USE_STRING
+  libsscm_la_SOURCES += string.c
+endif
+if USE_STRING_PROCEDURE
+  libsscm_la_SOURCES += string-procedure.c
+endif
+if USE_VECTOR
+  libsscm_la_SOURCES += vector.c
+endif
+if USE_PORT
+  libsscm_la_SOURCES += port.c
+endif
+if USE_READER
+  libsscm_la_SOURCES += read.c
+endif
+if USE_WRITER
+  libsscm_la_SOURCES += write.c
+endif
+if USE_LOAD
+  libsscm_la_SOURCES += load.c
+endif
+if USE_DEEP_CADRS
+  libsscm_la_SOURCES += deep-cadrs.c
+endif
+
+# optional modules
 if USE_SSCM_EXTENSIONS
   libsscm_la_SOURCES += module-sscm-ext.c
 endif
@@ -288,6 +318,7 @@ endif
 if USE_SRFI60
   libsscm_la_SOURCES += module-srfi60.c
 endif
+
 libsscm_la_LIBADD   = $(LIBOBJS)
 libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
 libsscm_la_CPPFLAGS = -I$(top_builddir)/include -DSCM_COMPILING_LIBSSCM=1
@@ -306,6 +337,15 @@ DISTCLEANFILES = sigscheme-stdint.h
 MAINTAINERCLEANFILES = $(BUILT_DIST)
 
 ETAGS_ARGS = sigschemeinternal.h
+
+.PHONY: lib combined func-tables clean-func-tables clean-built
+lib: libsscm.la
+combined: sigscheme-combined-trim.h sigscheme-combined.c
+clean-combined:
+	rm -f sigscheme-combined-trim.h sigscheme-combined.c
+func-tables: $(FUNC_TABLES)
+clean-func-tables:
+	rm -f $(FUNC_TABLES)
 
 dist-hook:
 	@test -n "$(RUBY)" || (echo 'ruby(1) not found: install Ruby'; exit 1)

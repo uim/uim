@@ -98,6 +98,8 @@ typedef struct {
 /*=======================================
   Variable Definitions
 =======================================*/
+#include "functable-r5rs-write.c"
+
 SCM_DEFINE_EXPORTED_VARS(write);
 
 #if SCM_USE_SRFI38
@@ -153,6 +155,8 @@ scm_init_writer(void)
 #if SCM_USE_SRFI38
     SCM_GLOBAL_VARS_INIT(static_write);
 #endif
+
+    scm_register_funcs(scm_functable_r5rs_write);
 
     /* To allow re-initialization of the interpreter, this variable must be
      * re-initialized by assignment. Initialized .data section does not work

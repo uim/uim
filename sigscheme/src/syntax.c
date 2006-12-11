@@ -126,7 +126,7 @@ scm_init_syntax(void)
     SCM_GLOBAL_VARS_INIT(syntax);
     SCM_GLOBAL_VARS_INIT(static_syntax);
 
-    scm_register_funcs(scm_r5rs_syntax_func_info_table);
+    scm_register_funcs(scm_functable_r5rs_syntax);
 
     scm_sym_quote            = scm_intern("quote");
     scm_sym_quasiquote       = scm_intern("quasiquote");
