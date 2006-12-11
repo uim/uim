@@ -300,6 +300,13 @@ initialize_heap(const ScmStorageConf *conf)
     l_heaps_highest = NULL;
     l_freelist = SCM_NULL;
 
+#if 1
+    i = SCM_INT_MAX;
+    if (SCM_INT_MAX < l_n_heaps_max * l_heap_size
+        || SCM_INT_MAX < conf->n_heaps_init * l_heap_size)
+        scm_fatal_error("too large heap size specified");
+#endif
+
     /* preallocate heaps */
     for (i = 0; i < conf->n_heaps_init; i++)
         add_heap();

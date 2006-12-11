@@ -175,6 +175,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix writable static data feature dependency
 
+  - Fix broken max heap size configuration
+
   - Fix crashes on 'make check' in test-c2/ on x86_64-unknown-linux-gnu
 
   - Fix unwanted test-c2/*-coll.c removal on --disable-maintainer-mode

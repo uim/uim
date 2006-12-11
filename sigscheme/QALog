@@ -513,7 +513,7 @@ corner case tests:
 
 file:              sigscheme.h
 category:          core
-spec by eyes:      yamaken@r4061, yamaken@r4103
+spec by eyes:      yamaken@r4061, yamaken@r4103, yamaken@r4110
 spec by tests:     
 general review:    yamaken@r4061
 64-bit by eyes:    yamaken@r4061
@@ -579,7 +579,7 @@ corner case tests:
 
 file:              storage-gc.c
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@r4101, yamaken@r4108
+spec by eyes:      yamaken@r4066, yamaken@r4101, yamaken@r4108, yamaken@r4110
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -1043,6 +1043,12 @@ corner case tests:
 Log
 ---
 2006-12-11  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * sigscheme.h
+        * storage-gc.c
+          - QA done again @r4110
+          - Fix broken max heap size configuration
+          - Limit max heap size by countable number of cells
 
         * storage-compact.h
           - QA done @r4109 by eyes and some normal case tests

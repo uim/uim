@@ -529,8 +529,11 @@ struct ScmStorageConf_ {
 
 #ifndef SCM_DEFAULT_N_HEAPS_MAX
 #define SCM_DEFAULT_N_HEAPS_MAX                                              \
-    (((SCM_FULLY_ADDRESSABLEP) ? (uintptr_t)-1 : (1 << SCM_PTR_BITS))        \
-     / (SCM_DEFAULT_HEAP_SIZE * sizeof(ScmCell)))
+    (((SCM_INT_BITS < SCM_PTR_BITS)                                          \
+      ? SCM_INT_MAX                                                          \
+      : ((SCM_FULLY_ADDRESSABLEP)                                            \
+         ? (size_t)(intptr_t)-1 : ((size_t)1 << SCM_PTR_BITS) - 1))          \
+     / SCM_DEFAULT_HEAP_SIZE)
 #endif
 
 /*=======================================
