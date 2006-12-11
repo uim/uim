@@ -1814,6 +1814,12 @@ if test "x$use_number" = xyes; then
   AC_DEFINE(SCM_USE_NUMBER, 1, [use number])
 fi
 
+use_number_io="yes"
+AM_CONDITIONAL(USE_NUMBER_IO, test "x$use_number_io" = xyes)
+if test "x$use_number_io" = xyes; then
+  AC_DEFINE(SCM_USE_NUMBER_IO, 1, [use numeric io])
+fi
+
 # SCM_USE_FORMAT
 # if (SCM_USE_SRFI28 || SCM_USE_SRFI48
 #     || SCM_USE_SSCM_FORMAT_EXTENSION || SCM_USE_RAW_C_FORMAT)

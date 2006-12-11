@@ -79,6 +79,9 @@
 #if SCM_USE_NUMBER
 #include "functable-r5rs-number.c"
 #endif
+#if (SCM_USE_NUMBER_IO && SCM_USE_STRING)
+#include "functable-r5rs-number-io.c"
+#endif
 #if SCM_USE_CHAR
 #include "functable-r5rs-char.c"
 #endif
@@ -254,6 +257,9 @@ scm_initialize_internal(void)
     scm_register_funcs(scm_functable_r5rs_core);
 #if SCM_USE_NUMBER
     scm_register_funcs(scm_functable_r5rs_number);
+#endif
+#if (SCM_USE_NUMBER_IO && SCM_USE_STRING)
+    scm_register_funcs(scm_functable_r5rs_number_io);
 #endif
 #if SCM_USE_CHAR
     scm_register_funcs(scm_functable_r5rs_char);

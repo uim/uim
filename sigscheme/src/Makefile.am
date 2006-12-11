@@ -19,6 +19,7 @@ FUNC_TABLES = \
         functable-r5rs-macro.c \
         functable-r5rs-promise.c \
         functable-r5rs-number.c \
+        functable-r5rs-number-io.c \
         functable-r5rs-char.c \
         functable-r5rs-string.c \
         functable-r5rs-string-procedure.c \
@@ -61,6 +62,8 @@ functable-r5rs-promise.c: promise.c $(BUILD_FUNCTBL_DEPS)
 # R5RS procedures
 functable-r5rs-number.c: number.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_number" $<
+functable-r5rs-number-io.c: number-io.c $(BUILD_FUNCTBL_DEPS)
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_number_io" $<
 functable-r5rs-char.c: char.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_char" $<
 functable-r5rs-string.c: string.c $(BUILD_FUNCTBL_DEPS)
@@ -252,6 +255,9 @@ if USE_PROMISE
 endif
 if USE_NUMBER
   libsscm_la_SOURCES += number.c
+endif
+if USE_NUMBER_IO
+  libsscm_la_SOURCES += number-io.c
 endif
 if USE_CHAR
   libsscm_la_SOURCES += char.c

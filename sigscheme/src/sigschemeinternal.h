@@ -187,6 +187,7 @@ extern "C" {
 =======================================*/
 #define SCM_ERR_HEADER "Error: "
 
+#define ERRMSG_FIXNUM_OVERFLOW     "fixnum overflow"
 #define ERRMSG_UNHANDLED_EXCEPTION "unhandled exception"
 #define SCM_ERRMSG_IMPROPER_ARGS                                             \
     "proper list required for function call but got"
@@ -455,6 +456,12 @@ SCM_EXPORT void scm_error_with_implicit_func(const char *msg, ...) SCM_NORETURN;
 #else
 #define CHECK_VALID_EVALED_VALUE(x) SCM_EMPTY_EXPR
 #endif
+
+/*=======================================
+  Numbers
+=======================================*/
+#define INT_VALID_VALUEP(i)  (SCM_INT_MIN <= (i) && (i) <= SCM_INT_MAX)
+#define INT_OUT_OF_RANGEP(i) (!INT_VALID_VALUEP(i))
 
 /*=======================================
   Characters

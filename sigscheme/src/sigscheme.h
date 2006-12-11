@@ -1421,11 +1421,6 @@ SCM_EXPORT ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 
 /* number.c */
 #if SCM_USE_NUMBER
-#if SCM_USE_STRING
-SCM_EXPORT char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
-#endif /* SCM_USE_STRING */
-SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
-                                       scm_bool *err);
 SCM_EXPORT ScmObj scm_p_add(ScmObj left, ScmObj right,
                             enum ScmReductionState *state);
 SCM_EXPORT ScmObj scm_p_subtract(ScmObj left, ScmObj right,
@@ -1459,11 +1454,18 @@ SCM_EXPORT ScmObj scm_p_abs(ScmObj _n);
 SCM_EXPORT ScmObj scm_p_quotient(ScmObj _n1, ScmObj _n2);
 SCM_EXPORT ScmObj scm_p_modulo(ScmObj _n1, ScmObj _n2);
 SCM_EXPORT ScmObj scm_p_remainder(ScmObj _n1, ScmObj _n2);
+#endif /* SCM_USE_NUMBER */
+
+/* number-io.c */
+#if SCM_USE_NUMBER_IO
+SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
+                                       scm_bool *err);
 #if SCM_USE_STRING
+SCM_EXPORT char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
 SCM_EXPORT ScmObj scm_p_number2string(ScmObj num, ScmObj args);
 SCM_EXPORT ScmObj scm_p_string2number(ScmObj str, ScmObj args);
 #endif /* SCM_USE_STRING */
-#endif /* SCM_USE_NUMBER */
+#endif /* SCM_USE_NUMBER_IO */
 
 /* char.c */
 #if SCM_USE_CHAR
