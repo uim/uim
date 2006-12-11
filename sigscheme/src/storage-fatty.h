@@ -60,7 +60,7 @@
  * exposed to libsscm users via installation of this file. */
 
 #ifdef __cplusplus
-extern "C" {
+/* extern "C" { */
 #endif
 
 /*=======================================
@@ -251,14 +251,9 @@ struct ScmCell_ {
                                         SCM_INT_SET_VALUE((o), (val)))
 
 #define SCM_SAL_CONSP(o)               (SCM_TYPE(o) == ScmCons)
-#if SCM_DEBUG
 /* don't use as lvalue */
 #define SCM_SAL_CONS_CAR(o)            (SCM_AS_CONS(o)->obj.cons.car + 0)
 #define SCM_SAL_CONS_CDR(o)            (SCM_AS_CONS(o)->obj.cons.cdr + 0)
-#else /* SCM_DEBUG */
-#define SCM_SAL_CONS_CAR(o)            (SCM_AS_CONS(o)->obj.cons.car)
-#define SCM_SAL_CONS_CDR(o)            (SCM_AS_CONS(o)->obj.cons.cdr)
-#endif /* SCM_DEBUG */
 #define SCM_SAL_CONS_SET_CAR(o, kar)   (SCM_AS_CONS(o)->obj.cons.car = (kar))
 #define SCM_SAL_CONS_SET_CDR(o, kdr)   (SCM_AS_CONS(o)->obj.cons.cdr = (kdr))
 #define SCM_SAL_CONS_MUTABLEP(o)       (SCM_MUTABLEP(o))
@@ -483,11 +478,7 @@ struct ScmCell_ {
 #define SCM_SAL_REF_OFF_HEAP(obj) (&(obj))
 
 /* SCM_DEREF(ref) is not permitted to be used as lvalue */
-#if SCM_DEBUG
 #define SCM_SAL_DEREF(ref)    (*(ref) + 0)
-#else /* SCM_DEBUG */
-#define SCM_SAL_DEREF(ref)    (*(ref))
-#endif /* SCM_DEBUG */
 
 /* RFC: Is there a better name? */
 #define SCM_SAL_SET(ref, obj) (*(ref) = (obj))
@@ -523,7 +514,7 @@ SCM_GLOBAL_VARS_END(storage_fatty);
 SCM_DECLARE_EXPORTED_VARS(storage_fatty);
 
 #ifdef __cplusplus
-}
+/* } */
 #endif
 
 #include "storage-common.h"

@@ -666,30 +666,30 @@ free_cell(ScmCell *cell)
     case ScmCons:
     case ScmInt:
     case ScmChar:
-    case ScmClosure:
-        break;
-
-    case ScmString:
-        if (SCM_STRING_STR(cell))
-            free(SCM_STRING_STR(cell));
-        break;
-
-    case ScmVector:
-        if (SCM_VECTOR_VEC(cell))
-            free(SCM_VECTOR_VEC(cell));
         break;
 
     case ScmSymbol:
-        if (SCM_SYMBOL_NAME(cell))
-            free(SCM_SYMBOL_NAME(cell));
+        free(SCM_SYMBOL_NAME(cell));
         break;
 
+    case ScmString:
+        free(SCM_STRING_STR(cell));
+        break;
+
+    case ScmFreeCell:
+    case ScmConstant:
+        break;
+
+    case ScmVector:
+        free(SCM_VECTOR_VEC(cell));
+        break;
+
+    /* rarely swept objects */
     case ScmPort:
         if (SCM_PORT_IMPL(cell))
             scm_port_close(cell);
         break;
 
-    /* rarely swept objects */
     case ScmContinuation:
         /*
          * Since continuation object is not so many, destructing the object by
@@ -701,24 +701,22 @@ free_cell(ScmCell *cell)
         scm_destruct_continuation(cell);
         break;
 
+    case ScmClosure:
     case ScmFunc:
-    case ScmConstant:
-    case ScmValuePacket:
     case ScmMacro:
     case ScmFarsymbol:
     case ScmSubpat:
     case ScmCFuncPointer:
     case ScmCPointer:
+    case ScmValuePacket:
         break;
 #if SCM_DEBUG
     case ScmRational:
     case ScmReal:
     case ScmComplex:
-        SCM_ASSERT(scm_false);
 #endif
-    case ScmFreeCell:
     default:
-        break;
+        SCM_ASSERT(scm_false);
     }
 #endif /* SCM_USE_STORAGE_COMPACT */
 }

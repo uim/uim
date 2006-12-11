@@ -42,7 +42,7 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
-extern "C" {
+/* extern "C" { */
 #endif
 
 /*=======================================
@@ -171,7 +171,7 @@ SCM_EXPORT ScmObj scm_make_subpat(ScmObj x, scm_int_t meta);
 
 
 #ifdef __cplusplus
-}
+/* } */
 #endif
 
 #endif /* __STORAGE_COMMON_H */

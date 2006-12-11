@@ -535,7 +535,7 @@ corner case tests:
 
 file:              storage-common.h
 category:          core
-spec by eyes:      yamaken@r4066
+spec by eyes:      yamaken@r4066, yamaken@r4108
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -546,7 +546,7 @@ corner case tests:
 
 file:              storage-fatty.h
 category:          core
-spec by eyes:      yamaken@r4066
+spec by eyes:      yamaken@r4066, yamaken@r4108
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -579,7 +579,7 @@ corner case tests:
 
 file:              storage-gc.c
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@r4101
+spec by eyes:      yamaken@r4066, yamaken@r4101, yamaken@r4108
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
