@@ -334,6 +334,9 @@ TST_CASE("func")
     typedef ScmFuncType FPTR;
     FUNC_TST(TST_INIT2, SCM_SYNTAX_VARIADIC_1, (ScmFuncType)0xdeadbeef);
     FUNC_TST(TST_SET2, SCM_PROCEDURE_FIXED_4, (ScmFuncType)0);
+#if (SIZEOF_SCMOBJ == SIZEOF_INT64_T)
+    FUNC_TST(TST_INIT2, SCM_SYNTAX_VARIADIC_1, (ScmFuncType)0xdeadbeeffeed);
+#endif
 }
 
 TST_CASE(port, "port")
@@ -366,6 +369,9 @@ TST_CASE("continuation")
     TST_COND(SCM_CONTINUATIONP(obj), "CONTINUATIONP() on fresh CONTINUATION");
     CONT_TST(TST_SET2, (void*)0x0deadbee, 0xf00f);
     CONT_TST(TST_SET2, INVALID_CONTINUATION_OPAQUE, 0);
+#if (SIZEOF_SCMOBJ == SIZEOF_INT64_T)
+    CONT_TST(TST_SET2, (void*)0x0deadbeefee, 0xf00f);
+#endif
 }
 
 #if SCM_USE_SSCM_EXTENSIONS
@@ -379,6 +385,10 @@ TST_CASE("C ptr")
 
     CPTR_TST(TST_INIT1, (void*)0xdeadbeef);
     CPTR_TST(TST_SET1, (void*)0xbaddeed);
+#if (SIZEOF_SCMOBJ == SIZEOF_INT64_T)
+    CPTR_TST(TST_INIT1, (void*)0xdeadbeeffeedee);
+    CPTR_TST(TST_SET1, (void*)0xbaddeedbed);
+#endif
 }
 
 TST_CASE("C func ptr")
@@ -392,6 +402,11 @@ TST_CASE("C func ptr")
     typedef ScmCFunc FPTR;
     CFPTR_TST(TST_INIT1, (ScmCFunc)0xdeadbeef);
     CFPTR_TST(TST_SET1, (ScmCFunc)0xbaddeed);
+#if (SIZEOF_SCMOBJ == SIZEOF_INT64_T)
+    /* both MSB and LSB are set */
+    CFPTR_TST(TST_INIT1, (ScmCFunc)0xadeadbeeffedbeef);
+    CFPTR_TST(TST_SET1, (ScmCFunc)0xbaddeedbeddad);
+#endif
 }
 #endif /* use sscm extension mechanism */
 

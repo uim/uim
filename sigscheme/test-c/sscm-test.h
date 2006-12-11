@@ -364,18 +364,19 @@ do {                                                            \
                                               "%lx", (scm_uintobj_t)x,  \
                                               (scm_uintobj_t)a, desc)
 
-/* Function pointers are a bit tricky. */
+/* Function pointers are a bit tricky. The '0UL' is needed to suppress warnings
+ * on 64-bit env. */
 typedef void (*tst_funcptr_t)();
-#define TST_EQ_FPTR(x, a, desc)                                         \
-    TST_EQUALITY(TST_C_EQUAL, tst_funcptr_t, "%p",                      \
-                 (0 ? (tst_funcptr_t)((x) == (a)) /* Typecheck */       \
-                    : (tst_funcptr_t)(x)),                              \
+#define TST_EQ_FPTR(x, a, desc)                                              \
+    TST_EQUALITY(TST_C_EQUAL, tst_funcptr_t, "%p",                           \
+                 (0 ? (tst_funcptr_t)(0UL | ((x) == (a))) /* Typecheck */    \
+                    : (tst_funcptr_t)(x)),                                   \
                  (tst_funcptr_t)(a), desc)
 
-#define TST_NEQ_FPTR(x, a, desc)                                        \
-    TST_EQUALITY(!TST_C_EQUAL, tst_funcptr_t, "%p",                     \
-                 (0 ? (tst_funcptr_t)((x) == (a)) /* Typecheck */       \
-                    : (tst_funcptr_t)(x)),                              \
+#define TST_NEQ_FPTR(x, a, desc)                                             \
+    TST_EQUALITY(!TST_C_EQUAL, tst_funcptr_t, "%p",                          \
+                 (0 ? (tst_funcptr_t)(0UL | ((x) == (a))) /* Typecheck */    \
+                    : (tst_funcptr_t)(x)),                                   \
                  (tst_funcptr_t)(a), desc)
 
 #define TST_EQ  TST_EQ_OBJ

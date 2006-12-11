@@ -1,11 +1,10 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* (yamaken) Fix low-level bugs
-  - Broken GC on Cygwin
-  - Improper ScmObj alignment on stack of m68k
-
 * (yamaken) Autoconfiscate the SigScheme package
+  - Configure HAVE_REFERENCEABLE_PASSED_VA_LIST
+  - Configure HAVE___ALIGNOF__
+  - Configure HAVE_ARITHMETIC_SHIFT
   - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC
   - [uim] Add --disable-install to disable installation of libsscm that

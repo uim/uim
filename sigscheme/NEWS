@@ -63,6 +63,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin
 
+  - Fix broken 64-bit data model capability of storage-compact
+
   - Fix broken out of range error detection of string->number which fails every
     conversion once after the error has occurred
 

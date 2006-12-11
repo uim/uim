@@ -150,6 +150,132 @@ TST_CASE("cell type predicates")
     /* TODO: continuation */
 }
 
+SCM_MISC_DECLARE_TYPE(INTOBJ0, L1(3),
+                      SCM_MISC_XTYPE(scm_intobj_t), SCM_MISC_XALIGN(0),
+                      SCM_MISC_YTYPE(scm_intobj_t));
+#define SCM_AS_INTOBJ0(o) (o)
+#define SCM_INTOBJ0_PTR(o) SCM_MISC_PTR((o), INTOBJ0)
+
+SCM_MISC_DECLARE_TYPE(INTOBJ1, L1(3),
+                      SCM_MISC_XTYPE(scm_intobj_t), SCM_MISC_XALIGN(1),
+                      SCM_MISC_YTYPE(scm_intobj_t));
+#define SCM_AS_INTOBJ1(o) (o)
+#define SCM_INTOBJ1_PTR(o) SCM_MISC_PTR((o), INTOBJ1)
+
+SCM_MISC_DECLARE_TYPE(INTOBJ2, L1(3),
+                      SCM_MISC_XTYPE(scm_intobj_t), SCM_MISC_XALIGN(2),
+                      SCM_MISC_YTYPE(scm_intobj_t));
+#define SCM_AS_INTOBJ2(o) (o)
+#define SCM_INTOBJ2_PTR(o) SCM_MISC_PTR((o), INTOBJ2)
+
+TST_CASE("misc obj fullsize S->X")
+{
+    ScmCell c;
+    ScmObj o;
+
+    TST_TN_FALSE(SCM_MISC_INTOBJ0_XDIRECTP);
+    TST_TN_FALSE(SCM_MISC_INTOBJ0_XSHIFTP);
+    TST_TN_TRUE (SCM_MISC_INTOBJ0_XSPLITP);
+    TST_TN_EQ_INT(1, SCM_MISC_INTOBJ0_XSPILL);
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, -1, 0, INTOBJ0);
+    TST_TN_EQ_INT(-1, SCM_MISC_X(o, INTOBJ0));
+    TST_TN_EQ_INT(0,  SCM_MISC_Y(o, INTOBJ0));
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, 0, -1, INTOBJ0);
+    TST_TN_EQ_INT(0,  SCM_MISC_X(o, INTOBJ0));
+    TST_TN_EQ_INT(-1, SCM_MISC_Y(o, INTOBJ0));
+
+    TST_TN_TRUE (SCM_MISC_INTOBJ1_XDIRECTP);
+    TST_TN_FALSE(SCM_MISC_INTOBJ1_XSHIFTP);
+    TST_TN_FALSE(SCM_MISC_INTOBJ1_XSPLITP);
+    TST_TN_EQ_INT(0, SCM_MISC_INTOBJ1_XSPILL);
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, -1, 0, INTOBJ1);
+    TST_TN_EQ_INT(-1, SCM_MISC_X(o, INTOBJ1));
+    TST_TN_EQ_INT(0,  SCM_MISC_Y(o, INTOBJ1));
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, 0, -1, INTOBJ1);
+    TST_TN_EQ_INT(0,  SCM_MISC_X(o, INTOBJ1));
+    TST_TN_EQ_INT(-1, SCM_MISC_Y(o, INTOBJ1));
+
+    TST_TN_TRUE (SCM_MISC_INTOBJ2_XDIRECTP);
+    TST_TN_FALSE(SCM_MISC_INTOBJ2_XSHIFTP);
+    TST_TN_FALSE(SCM_MISC_INTOBJ2_XSPLITP);
+    TST_TN_EQ_INT(0, SCM_MISC_INTOBJ2_XSPILL);
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, -1, 0, INTOBJ2);
+    TST_TN_EQ_INT(-1, SCM_MISC_X(o, INTOBJ2));
+    TST_TN_EQ_INT(0,  SCM_MISC_Y(o, INTOBJ2));
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, 0, -1, INTOBJ2);
+    TST_TN_EQ_INT(0,  SCM_MISC_X(o, INTOBJ2));
+    TST_TN_EQ_INT(-1, SCM_MISC_Y(o, INTOBJ2));
+}
+
+SCM_MISC_DECLARE_TYPE(SHORT0, L1(3),
+                      SCM_MISC_XTYPE(int16_t), SCM_MISC_XALIGN(0),
+                      SCM_MISC_YTYPE(int16_t));
+#define SCM_AS_SHORT0(o) (o)
+#define SCM_SHORT0_PTR(o) SCM_MISC_PTR((o), SHORT0)
+
+SCM_MISC_DECLARE_TYPE(SHORT1, L1(3),
+                      SCM_MISC_XTYPE(int16_t), SCM_MISC_XALIGN(1),
+                      SCM_MISC_YTYPE(int16_t));
+#define SCM_AS_SHORT1(o) (o)
+#define SCM_SHORT1_PTR(o) SCM_MISC_PTR((o), SHORT1)
+
+SCM_MISC_DECLARE_TYPE(SHORT2, L1(3),
+                      SCM_MISC_XTYPE(int16_t), SCM_MISC_XALIGN(2),
+                      SCM_MISC_YTYPE(int16_t));
+#define SCM_AS_SHORT2(o) (o)
+#define SCM_SHORT2_PTR(o) SCM_MISC_PTR((o), SHORT2)
+
+TST_CASE("misc obj 16-bit S->X")
+{
+    ScmCell c;
+    ScmObj o;
+
+    TST_TN_FALSE(SCM_MISC_SHORT0_XDIRECTP);
+    TST_TN_TRUE (SCM_MISC_SHORT0_XSHIFTP);
+    TST_TN_FALSE(SCM_MISC_SHORT0_XSPLITP);
+    TST_TN_EQ_INT(1, SCM_MISC_SHORT0_XSPILL);
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, -1, 0, SHORT0);
+    TST_TN_EQ_INT(-1, SCM_MISC_X(o, SHORT0));
+    TST_TN_EQ_INT(0,  SCM_MISC_Y(o, SHORT0));
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, 0, -1, SHORT0);
+    TST_TN_EQ_INT(0,  SCM_MISC_X(o, SHORT0));
+    TST_TN_EQ_INT(-1, SCM_MISC_Y(o, SHORT0));
+
+    TST_TN_TRUE (SCM_MISC_SHORT1_XDIRECTP);
+    TST_TN_FALSE(SCM_MISC_SHORT1_XSHIFTP);
+    TST_TN_FALSE(SCM_MISC_SHORT1_XSPLITP);
+    TST_TN_EQ_INT(0, SCM_MISC_SHORT1_XSPILL);
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, -1, 0, SHORT1);
+    TST_TN_EQ_INT(-1, SCM_MISC_X(o, SHORT1));
+    TST_TN_EQ_INT(0,  SCM_MISC_Y(o, SHORT1));
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, 0, -1, SHORT1);
+    TST_TN_EQ_INT(0,  SCM_MISC_X(o, SHORT1));
+    TST_TN_EQ_INT(-1, SCM_MISC_Y(o, SHORT1));
+
+    TST_TN_TRUE (SCM_MISC_SHORT2_XDIRECTP);
+    TST_TN_FALSE(SCM_MISC_SHORT2_XSHIFTP);
+    TST_TN_FALSE(SCM_MISC_SHORT2_XSPLITP);
+    TST_TN_EQ_INT(0, SCM_MISC_SHORT2_XSPILL);
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, -1, 0, SHORT2);
+    TST_TN_EQ_INT(-1, SCM_MISC_X(o, SHORT2));
+    TST_TN_EQ_INT(0,  SCM_MISC_Y(o, SHORT2));
+    o = (ScmObj)&c;
+    SCM_MISC_INIT(o, 0, -1, SHORT2);
+    TST_TN_EQ_INT(0,  SCM_MISC_X(o, SHORT2));
+    TST_TN_EQ_INT(-1, SCM_MISC_Y(o, SHORT2));
+}
+
 
 /* TODO: add tests for the GC algorithm (perhaps by #include'ing a
  * part of storage-gc.c extracted with sed -n '/^gc_mark/,/^}/ p' ) */

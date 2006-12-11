@@ -42,55 +42,90 @@
 /*
  * Object Representation
  *
- * First, we assume ScmObj "S" which contains two ScmObj "X" and "Y" (e.g.
- * ScmObj S { X, Y }).
+ * In following descriptions, we represent that ScmObj "S" points to a ScmCell
+ * on the heap which contains two ScmObj field "X" and "Y" (suppose S = &{ X, Y
+ * }).
  *
- * (0) LSB(Least Significant Bit) of "S" is called G-bit.
+ * (0) LSB of "S" is called G-bit. And bit 1..2 of S is called 'primary tag',
+ *     which roughly distinguishes the type of the object as follows.
  *
- * (1) if S == "...00G", S is ConsCell. G-bit of S->car is used as the
- *     GC mark bit.  S->cdr's G bit is always set to 0, which helps
- *     determine the finalization semantics without a pointer.
+ *           S      |      Type        | content of remainder bits
+ *     -------------+------------------+---------------------------
+ *     .......|00|G : cons cell (pair) : pointer to the cell
+ *     .......|01|G : closure          : pointer to the cell
+ *     .......|10|G : 'misc' object    : pointer to the cell
+ *     .......|11|G : immediate        : value
  *
- * (2) if S == "...01G", S is Closure. G-bit of S->car is used as marking bit
- *     of GC. S->cdr's G bit is always set to 0, which helps determine the
- *     finalization semantics without a pointer.
+ * (1) If S == "...00G", S points to a cons cell (pair). G-bit of S->X is used
+ *     as the GC mark bit. And G bit of S->Y is always set to 0, to help
+ *     determining its own type without the pointer S on the object
+ *     finalization.
  *
- * (4) if S == "...10G", S is other types. Type is separated by the value of
- *     least n bits of S->cdr. S->cdr's G bit is always set to 1, which helps
- *     determine the finalization semantics without a pointer.
+ *          S->X     |     Type     |             content of S->X
+ *     --------------+--------------+------------------------------------------
+ *     ...........|G : cons cell    : car (ScmObj)
  *
- *        S->car   |     Type     |             content of S->car
- *     -------------------------------------------------------------------------
- *     .......|I|G : String       : I bit is used to represent mutable or
- *                                  immutable string. G bit is used to GC mark
- *                                  information (Mutation Bit). The other bits
- *                                  are used to store string pointer value.
- *     .........|G : Otherwise    : LSB is used to GC mark information. The value
- *                                  of each type is stored in the other bits.
+ *          S->Y     |     Type     |             content of S->Y
+ *     --------------+--------------+------------------------------------------
+ *     ...........|0 : cons cell    : cdr (ScmObj)
  *
- *        S->cdr   |     Type     |             content of S->cdr
- *     -------------------------------------------------------------------------
- *     ......|00|1 : Symbol       : symbol name
- *     ......|01|1 : String       : string length
- *     ......|10|1 : Vector       : vector length
- *     ...000|11|1 : Values       : all 0 (for efficiency)
- *     ...001|11|1 : Func         : ScmFuncTypeCode and LSB of stored Func address
- *     ...010|11|1 : Port         : ScmPortDirection
- *     ...011|11|1 : Continuation : tag
- *     ...100|11|1 : Pointer      : pointer type id
- *     .00100|11|1 :  - C Ptr     :
- *     .01100|11|1 :  - C FuncPtr :
- *     .10100|11|1 :  - Reserved  :
- *     .11100|11|1 :  - Reserved  :
- *     ...101|11|1 : Wrapper      : depends on type
-#if SCM_USE_HYGIENIC_MACRO
- *     .00101|11|1 : subpat       : metainformation about the wrapped object
- *     .01101|11|1 : far symbol   : [#if !SCM_USE_UNHYGIENIC_MACRO] env depth
- *     .10101|11|1 : macro        : [#if !SCM_USE_UNHYGIENIC_MACRO] env depth
-#endif / * SCM_USE_HYGIENIC_MACRO * /
- *     .11101|11|1 : Reserved     :
- *     ...110|11|1 : Reserved6    :
- *     ...111|11|1 : FreeCell     : all 0 (for efficiency)
+ * (2) If S == "...01G", S points to a closure. G-bit of S->X is used as the GC
+ *     mark bit. And G bit of S->Y is always set to 0, to help determining its
+ *     own type without the pointer S on the object finalization.
+ *
+ *          S->X     |     Type     |             content of S->X
+ *     --------------+--------------+------------------------------------------
+ *     ...........|G : closure      : exp (ScmObj)
+ *
+ *          S->Y     |     Type     |             content of S->Y
+ *     --------------+--------------+------------------------------------------
+ *     ...........|0 : closure      : env (ScmObj)
+ *
+ * (3) If S == "...10G", S points to a 'miscellaneous' object. Its particular
+ *     type is determined by the value of some lower bits of S->Y. G-bit of
+ *     S->X is used as the GC mark bit. And G bit of S->Y is always set to 1,
+ *     to help determining its own type without the pointer S on the object
+ *     finalization.
+ *
+ *          S->X     |     Type     |             content of S->X
+ *     --------------+--------------+------------------------------------------
+ *     ...........|G : symbol       : symbol value (ScmObj)
+ *     ...........|G : string       : C string (char *)
+ *     ...........|G : vector       : vector objects (ScmObj *)
+ *     ...........|G : valuepacket  : values list (ScmObj)
+ *     ...........|G : func         : function pointer (LSB is stored in S->Y)
+ *     ...........|G : port         : char port instance (ScmCharPort *)
+ *     ...........|G : continuation : opaque (void *)
+ *     ...........|G : pointer
+ *     ...........|G :  - C ptr     : pointer (void *)
+ *     ...........|G :  - C funcptr : function pointer (ScmCFunc)
+ *     ...........|G : wrapper      : abstract obj (ScmObj)
+ *     ...........|G :  - subpat    : object (ScmObj)
+ *     ...........|G :  - far symbol: symbol (ScmObj)
+ *     ...........|G :  - macro     : rules (ScmObj)
+ *     ...........|G : freecell     : next cell (ScmObj)
+ *
+ *          S->Y     |     Type     |             content of S->Y
+ *     --------------+--------------+------------------------------------------
+ *     ........|00|1 : symbol       : symbol name (char *)
+ *     .......M|01|1 : string       : string length, 'mutable' bit M
+ *     .......M|10|1 : vector       : vector length, 'mutable' bit M
+ *     ....|000|11|1 : valuepacket  : unused (all 0 for efficiency)
+ *     ...P|001|11|1 : func         : type code, LSB P of the pointer (S->X)
+ *     ....|010|11|1 : port         : flags (enum ScmPortFlag)
+ *     ....|011|11|1 : continuation : tag (scm_int_t)
+ *     ....|100|11|1 : pointer
+ *     P|00|100|11|1 :  - C ptr     : LSB P of the pointer (S->X)
+ *     P|01|100|11|1 :  - C funcptr : LSB P of the pointer (S->X)
+ *     .|10|100|11|1 :  - (reserved):
+ *     .|11|100|11|1 :  - (reserved):
+ *     ....|101|11|1 : wrapper      : inaccessible
+ *     .|00|101|11|1 :  - subpat    : metainformation about the wrapped object
+ *     .|01|101|11|1 :  - far symbol: [#if !SCM_USE_UNHYGIENIC_MACRO] env depth
+ *     .|10|101|11|1 :  - macro     : [#if !SCM_USE_UNHYGIENIC_MACRO] env depth
+ *     .|11|101|11|1 :  - (reserved):
+ *     ....|110|11|1 : (reserved)   :
+ *     ....|111|11|1 : freecell     : unused (all 0)
  *
  *     Misc. types' tags come in several levels, including the GC bit:
  *
@@ -98,44 +133,46 @@
  *     .|..|ZZZ|ZZ|Z : level 2
  *     .|ZZ|ZZZ|ZZ|Z : level 3
  *
- * (4) if S == "...11G", S is an immediate value. Immediate values are
- *     separated into these types by the value of least 1-5 bits of
- *     ((unsigned int S) >> 3).
+ *     Required data aligments:
  *
- *           S        Type
- *     ......0|11G : Integer
- *     .....01|11G : Char
- *     .....11|11G : Constant
- *     ------------------------------
- *     Constants
- *     .000|11|11G : ()
- *     .001|11|11G : INVALID
- *     .010|11|11G : UNBOUND
- *     .011|11|11G : #f
- *     .100|11|11G : #t
- *     .101|11|11G : EOF
- *     .110|11|11G : UNDEF
+ *       symbol
+ *           name (char *)        : 8 byte (S->Y)
+ *       string
+ *           str (char *)         : 2 byte (S->X)
+ *       vector
+ *           vec (ScmObj *)       : 2 byte (S->X)
+ *       port
+ *           impl (ScmCharPort *) : 2 byte (S->X)
+ *       continuation
+ *           opaque (void *)      : 2 byte (S->X)
+ *       func
+ *           ptr (ScmFuncType)    : 1 byte (S->X)
+ *       C ptr
+ *           value (void *)       : 1 byte (S->X)
+ *       C funcptr
+ *           value (ScmCFunc)     : 1 byte (S->X)
  *
- * Notice:
- *   Some data must be aligned properly for compaction.
- *   Required Alignments are listed below.
+ * (4) If S == "...11G", S is an immediate value. Immediate values are
+ *     separated into these subtypes by the value of bit 3..7 of S.
  *
- * Required Data Aligment:
+ *           S      |   Type
+ *     -------------+------------
+ *     ......0|11|G : integer
+ *     .....01|11|G : char
+ *     .....11|11|G : constant
+ *     .000|11|11|G :  - ()
+ *     .001|11|11|G :  - INVALID
+ *     .010|11|11|G :  - UNBOUND
+ *     .011|11|11|G :  - #f
+ *     .100|11|11|G :  - #t
+ *     .101|11|11|G :  - EOF
+ *     .110|11|11|G :  - UNDEF
  *
- *     Symbol
- *         name (char *)        : 8 byte
- *     String
- *         str (char *)         : 4 byte
- *     Vector
- *         vec (ScmObj *)       : 2 byte
- *     Port
- *         impl (ScmCharPort *) : 2 byte
- *     Continuation
- *         opaque (void *)      : 2 byte
  */
 
 #include <limits.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 /* Don't include scmport.h. The implementations are internal and should not be
  * exposed to libsscm users via installation of this file. */
@@ -146,17 +183,20 @@
 
 
 /* Aux. */
-#define SCM_MAKE_MASK(offset, width) \
-    ((scm_uintobj_t)((1 << ((offset) + (width))) - (1 << (offset))))
+#define SCM_MAKE_MASK(offset, width)                                         \
+    (((scm_uintobj_t)1 << ((offset) + (width)))                              \
+     - ((scm_uintobj_t)1 << (offset)))
+
+#define SCM_SIGNED_TYPEP(t) ((t)(-1) < (t)0)
+#define SCM_SIGN_BIT(x) ((x)                                                 \
+                         & ((scm_uintobj_t)1 << (sizeof(x) * CHAR_BIT - 1)))
 
 #if HAVE_ARITHMETIC_SHIFT
 #define SCM_ARSHIFT(x, n)    ((scm_intobj_t)(x) >> (n))
 #else  /* not HAVE_ARITHMETIC_SHIFT */
 /* Emulate a right arithmetic shift. */
 #define SCM_ARSHIFT(x, n)                                       \
-   (((scm_uintobj_t)(x) >> (n)) |                               \
-    -(((x) & ((scm_uintobj_t)1 << (sizeof(x) * CHAR_BIT - 1)))  \
-      >> (n)))
+   (((scm_uintobj_t)(x) >> (n)) | -(SCM_SIGN_BIT(x) >> (n)))
 #endif /* not HAVE_ARITHMETIC_SHIFT */
 
 
@@ -185,16 +225,17 @@ typedef ScmObj (*ScmFuncType)();
  * P = Primary tag (ptag)
  */
 
-#define SCM_GCBIT_MARKED     1  /* More or less hardcoded. */
-#define SCM_GCBIT_UNMARKED   0  /* Ditto. */
-#define SCM_GCBIT_OFFSET     0  /* Ditto. */
+#define SCM_GCBIT_OFFSET     0  /* More or less hardcoded. */
 #define SCM_GCBIT_WIDTH      1
 #define SCM_GCBIT_MASK       SCM_MAKE_MASK(SCM_GCBIT_OFFSET, SCM_GCBIT_WIDTH)
 #define SCM_GCBIT(o)         ((o) & SCM_GCBIT_MASK)
+#define SCM_GCBIT_MARKED     1  /* More or less hardcoded. */
+#define SCM_GCBIT_UNMARKED   0  /* Ditto. */
+
 #define SCM_PTAG_OFFSET      (SCM_GCBIT_WIDTH + SCM_GCBIT_OFFSET)
 #define SCM_PTAG_WIDTH       2
 #define SCM_PTAG_MASK        SCM_MAKE_MASK(SCM_PTAG_OFFSET, SCM_PTAG_WIDTH)
-#define SCM_MAKE_PTAG(id)    ((id) << SCM_PTAG_OFFSET)
+#define SCM_MAKE_PTAG(id)    ((scm_uintobj_t)(id) << SCM_PTAG_OFFSET)
 #define SCM_PTAG(o)          ((o) & SCM_PTAG_MASK)
 #define SCM_PTAG_SET(o, tag) ((o) = ((o) & ~SCM_PTAG_MASK) | (tag))
 
@@ -204,10 +245,10 @@ typedef ScmObj (*ScmFuncType)();
 
 #define SCM_UNTAGGEDP(o)     (!((o) & (SCM_GCBIT_MASK | SCM_PTAG_MASK)))
 
-#define SCM_UNTAG_PTR(o)     ((ScmCell*)SCM_DROP_TAG(o))
+#define SCM_UNTAG_PTR(o)     ((ScmCell *)SCM_DROP_TAG(o))
 
 /* Raw accessors. */
-#define SCM_PTR(o)      ((ScmCell*)(o))
+#define SCM_PTR(o)      ((ScmCell *)(o))
 #define SCM_X(o)        (SCM_PTR(o)->obj_x)
 #define SCM_Y(o)        (SCM_PTR(o)->obj_y)
 #define SCM_SET_X(o, x) (SCM_X(o) = (x))
@@ -244,11 +285,12 @@ typedef ScmObj (*ScmFuncType)();
  * Pairs and closures are chosen for their prevalence.
  */
 
-/* SCM_GC_VALID_REFP() needs this. */
+/* SCM_TAG_CONSISTENTP() needs this. The PTAG mask value '2' depends on the
+ * hardcoded value of SCM_PTAG_{CONS,CLOSURE}. */
 #define SCM_SYMMETRICP(o)       (!(SCM_PTAG(o) & SCM_MAKE_PTAG(2)))
 
 /* Pairs.  Immutable pairs are not supported. */
-#define SCM_PTAG_CONS                  SCM_MAKE_PTAG(0)
+#define SCM_PTAG_CONS                  SCM_MAKE_PTAG(0)  /* hardcoded */
 /* Bypass ptag stripping. */
 #define SCM_CONS_PTR(o)                SCM_PTR(SCM_AS_CONS(o))
 
@@ -263,7 +305,7 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_SAL_CONS_SET_IMMUTABLE(o)  SCM_EMPTY_EXPR
 
 /* Closures. */
-#define SCM_PTAG_CLOSURE               SCM_MAKE_PTAG(1)
+#define SCM_PTAG_CLOSURE               SCM_MAKE_PTAG(1)  /* hardcoded */
 #define SCM_CLOSURE_PTR(o)             SCM_UNTAG_PTR(SCM_AS_CLOSURE(o))
 
 #define SCM_SAL_CLOSUREP(o)            (SCM_PTAG(o) == SCM_PTAG_CLOSURE)
@@ -286,7 +328,7 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_PTAG_IMM                SCM_MAKE_PTAG(3)
 #define SCM_IMMP(o)                 (SCM_PTAG(o) == SCM_PTAG_IMM)
 #define SCM_IMMID_OFFSET            (SCM_PTAG_OFFSET + SCM_PTAG_WIDTH)
-#define SCM_MAKE_IMMID(val)         ((val) << SCM_IMMID_OFFSET)
+#define SCM_MAKE_IMMID(val)         ((scm_uintobj_t)(val) << SCM_IMMID_OFFSET)
 #define SCM_MAKE_ITAG(id)           ((id) | SCM_PTAG_IMM)
 #define SCM_MAKE_ITAG_MASK(id_w)    SCM_MAKE_MASK(SCM_PTAG_OFFSET,         \
                                                   (id_w) + SCM_PTAG_WIDTH)
@@ -299,8 +341,9 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_ITAG_MASK_INT        SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_INT)
 #define SCM_INT_VAL_OFFSET       (SCM_IMMID_OFFSET + SCM_IMMID_WIDTH_INT)
 #define SCM_SAL_INTP(o)          (((o) & SCM_ITAG_MASK_INT) == SCM_ITAG_INT)
-#define SCM_SAL_MAKE_INT(i)      ((ScmObj)(((i) << SCM_INT_VAL_OFFSET)   \
-                                           | SCM_ITAG_INT))
+#define SCM_SAL_MAKE_INT(i)      ((ScmObj)                                   \
+                                  (((scm_intobj_t)(i) << SCM_INT_VAL_OFFSET) \
+                                   | SCM_ITAG_INT))
 #define SCM_SAL_INT_VALUE(o)     ((scm_int_t)                           \
                                   SCM_ARSHIFT(SCM_AS_INT(o),            \
                                               SCM_INT_VAL_OFFSET))
@@ -314,8 +357,9 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_ITAG_MASK_CHAR      SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_CHAR)
 #define SCM_CHAR_VAL_OFFSET     (SCM_IMMID_OFFSET + SCM_IMMID_WIDTH_CHAR)
 #define SCM_SAL_CHARP(o)        (((o) & SCM_ITAG_MASK_CHAR) == SCM_ITAG_CHAR)
-#define SCM_SAL_MAKE_CHAR(c)    ((ScmObj)(((c) << SCM_CHAR_VAL_OFFSET)       \
-                                          | SCM_ITAG_CHAR))
+#define SCM_SAL_MAKE_CHAR(c)    ((ScmObj)                                     \
+                                 (((scm_uintobj_t)(c) << SCM_CHAR_VAL_OFFSET) \
+                                  | SCM_ITAG_CHAR))
 #define SCM_SAL_CHAR_VALUE(o)   ((scm_ichar_t)                               \
                                  (SCM_AS_CHAR(o) >> SCM_CHAR_VAL_OFFSET))
 
@@ -324,10 +368,10 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_IMMID_WIDTH_CONST   2
 #define SCM_ITAG_CONST          SCM_MAKE_ITAG(SCM_IMMID_CONST)
 #define SCM_ITAG_MASK_CONST     SCM_MAKE_ITAG_MASK(SCM_IMMID_WIDTH_CONST)
-/* #define SCM_ITAG_MASK_CONST */
 #define SCM_CONST_VAL_OFFSET    SCM_MAKE_VAL_OFFSET(SCM_IMMID_WIDTH_CONST)
-#define SCM_MAKE_CONST(i)       ((ScmObj)((i) << SCM_CONST_VAL_OFFSET        \
-                                          | SCM_ITAG_CONST))
+#define SCM_MAKE_CONST(i)       ((ScmObj)                                    \
+                                 ((scm_uintobj_t)(i) << SCM_CONST_VAL_OFFSET \
+                                  | SCM_ITAG_CONST))
 #define SCM_SAL_CONSTANTP(o)    (((o) & SCM_ITAG_MASK_CONST) == SCM_ITAG_CONST)
 
 #define SCM_SAL_NULL        SCM_MAKE_CONST(0)
@@ -341,14 +385,6 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_SAL_TRUE        SCM_MAKE_CONST(4)
 #define SCM_SAL_EOF         SCM_MAKE_CONST(5)
 #define SCM_SAL_UNDEF       SCM_MAKE_CONST(6)
-
-#define SCM_SAL_NULLP(o)    SCM_SAL_EQ((o), SCM_SAL_NULL)
-#define SCM_SAL_VALIDP(o)   (!SCM_SAL_EQ((o), SCM_SAL_INVALID))
-#define SCM_SAL_UNBOUNDP(o) SCM_SAL_EQ((o), SCM_SAL_UNBOUND)
-#define SCM_SAL_FALSEP(o)   SCM_SAL_EQ((o), SCM_SAL_FALSE)
-#define SCM_SAL_TRUEP(o)    SCM_SAL_EQ((o), SCM_SAL_TRUE)
-#define SCM_SAL_EOFP(o)     SCM_SAL_EQ((o), SCM_SAL_EOF)
-#define SCM_SAL_UNDEFP(o)   SCM_SAL_EQ((o), SCM_SAL_UNDEF)
 
 
 /* ------------------------------------------------------------
@@ -386,33 +422,37 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_MTAG_SET(o, lv, t) SCM_SET_Y((o),                                 \
                                          (SCM_Y(o) & ~SCM_MTAG_MASK(lv)) | (t))
 
-#define SCM_MAKE_MTAG_L1(t)                             \
-    (((t) << (SCM_MTAG_OFFSET + SCM_GCBIT_WIDTH))       \
+#define SCM_MAKE_MTAG_L1(t)                                                  \
+    (((scm_uintobj_t)(t) << (SCM_MTAG_OFFSET + SCM_GCBIT_WIDTH))             \
      | SCM_MISC_Y_GCBIT)
-#define SCM_MAKE_MTAG_L2(t2, t1)                        \
-    (((t2) << (SCM_MTAG_OFFSET + SCM_MTAG_L1_WIDTH))    \
+#define SCM_MAKE_MTAG_L2(t2, t1)                                             \
+    (((scm_uintobj_t)(t2) << (SCM_MTAG_OFFSET + SCM_MTAG_L1_WIDTH))          \
      | SCM_MAKE_MTAG_L1(t1))
-#define SCM_MAKE_MTAG_L3(t3, t2, t1)                    \
-    (((t3) << (SCM_MTAG_OFFSET + SCM_MTAG_L2_WIDTH))    \
+#define SCM_MAKE_MTAG_L3(t3, t2, t1)                                         \
+    (((scm_uintobj_t)(t3) << (SCM_MTAG_OFFSET + SCM_MTAG_L2_WIDTH))          \
      | SCM_MAKE_MTAG_L2((t2), (t1)))
 
 
 /* Split X at B bits from LSB, store the upper half in obj_x, and
  * multiplex the remainder with obj_y. */
+/* result must properly be cast to the original type of x by caller */
 #define SCM_MISC_X_SPLITX(o, lv, b)             \
     (SCM_X(o)                                   \
      | ((SCM_Y(o) >> SCM_MTAG_WIDTH(lv))        \
         & SCM_MAKE_MASK(0, (b))))
 
+/* x must properly be extended to sizeof(ScmObj) before this invocation. */
 #define SCM_MISC_SET_X_SPLITX(o, x, lv, b)                                \
-    (SCM_SET_X((o), (x) & ~SCM_MAKE_MASK(0, b)),                          \
+    (SCM_SET_X((o), (x) & ~SCM_MAKE_MASK(0, (b))),                        \
      SCM_SET_Y((o),                                                       \
                (SCM_Y(o) & ~SCM_MAKE_MASK(SCM_MTAG_WIDTH(lv), (b)))       \
                 | (((x) & SCM_MAKE_MASK(0, (b))) << SCM_MTAG_WIDTH(lv))))
 
-#define SCM_MISC_Y_SPLITX(o, ytyp, lv, b)               \
-    SCM_ARSHIFT(SCM_Y(o), (SCM_MTAG_WIDTH(lv) + (b)))
+/* result must properly be cast to the original type of y by caller */
+#define SCM_MISC_Y_SPLITX(o, ytyp, lv, b)                                    \
+    SCM_MISC_RSHIFT_Y(SCM_Y(o), ytyp, (SCM_MTAG_WIDTH(lv) + (b)))
 
+/* y must properly be extended to sizeof(ScmObj) before this invocation. */
 #define SCM_MISC_SET_Y_SPLITX(o, y, lv, b)                      \
     SCM_SET_Y((o),                                              \
               (SCM_Y(o)                                         \
@@ -420,11 +460,13 @@ typedef ScmObj (*ScmFuncType)();
                   | SCM_MAKE_MASK(SCM_MTAG_WIDTH(lv), (b))))    \
               | (y) << (SCM_MTAG_WIDTH(lv) + (b)))
 
-#define SCM_MISC_INIT_SPLITX(o, x, y, lv, tag, b)       \
-    SCM_INIT((o), (x) & ~SCM_MAKE_MASK(0, (b)),         \
-             ((((y) << (b))                             \
-               | ((x) & SCM_MAKE_MASK(0, (b))))         \
-              << SCM_MTAG_WIDTH(lv))                    \
+/* x and y must properly be extended to sizeof(ScmObj) before this
+ * invocation. */
+#define SCM_MISC_INIT_SPLITX(o, x, y, lv, tag, b)                            \
+    SCM_INIT((o),                                                            \
+             (x) & ~SCM_MAKE_MASK(0, (b)),                                   \
+             ((((y) << (b)) | ((x) & SCM_MAKE_MASK(0, (b))))                 \
+              << SCM_MTAG_WIDTH(lv))                                         \
              | (tag), SCM_PTAG_MISC)
 
 
@@ -433,12 +475,13 @@ typedef ScmObj (*ScmFuncType)();
  *
  * name   - Name of the type in uppercase.  STRING, SYMBOL, etc.
  *
- * lv    - The level "invoked" with tag values.  L2(1, 3) for example.
+ * lv     - The level "invoked" with tag values.  L2(1, 3) for example.
  *
- * xtype  - The type to be stored in obj_x.  void*, ScmFuncType, etc.
+ * xtype  - The type to be stored in obj_x.  void *, ScmFuncType, etc.
  *
  * xalign - Base-2 logarithm of the minimum alignment guaranteed for
- *          values stored in x.  0 means not aligned.
+ *          values stored in x.  0 means not aligned (or 1-byte aligned), 2
+ *          means 4-byte aligned, and so on.
  *
  * ytype  - The type to be stored in obj_y.
  */
@@ -448,7 +491,7 @@ typedef ScmObj (*ScmFuncType)();
         SCM_MISC_##name##_X_UNUSED_BITS                                       \
             = (SIZEOF_SCM_INTOBJ_T - sizeof(xtype)) * CHAR_BIT,               \
         SCM_MISC_##name##_XALIGN = (xalign),                                  \
-        SCM_MISC_##name##_XSPILL = SCM_GCBIT_WIDTH - (xalign) < 0             \
+        SCM_MISC_##name##_XSPILL = (SCM_GCBIT_WIDTH - (xalign) < 0)           \
                                    ? 0                                        \
                                    : SCM_GCBIT_WIDTH - (xalign),              \
         SCM_MTAG_##name = SCM_MAKE_MTAG_##lv,                                 \
@@ -462,9 +505,9 @@ typedef ScmObj (*ScmFuncType)();
     typedef xtype SCM_MISC_##name##_XTYPE;                                    \
     typedef ytype SCM_MISC_##name##_YTYPE /* No semicolon here. */
 
-#define SCM_MISC_LEVEL_L1(dummy)      1
-#define SCM_MISC_LEVEL_L2(d1, d2)     2
-#define SCM_MISC_LEVEL_L3(d1, d2, d3) 3
+#define SCM_MISC_LEVEL_L1(t1)         1
+#define SCM_MISC_LEVEL_L2(t2, t1)     2
+#define SCM_MISC_LEVEL_L3(t3, t2, t1) 3
 
 /* Dummies to make the declaration more verbose. */
 #define SCM_MISC_XTYPE(t)       t
@@ -473,33 +516,48 @@ typedef ScmObj (*ScmFuncType)();
 #define SCM_MISC_XALIGN(n)      n
 #define SCM_MISC_XALIGN_SCMOBJ  SCM_GCBIT_WIDTH /* If storing ScmObj. */
 
-#define SCM_MISC_PUT_MTAG(y, typ)                               \
-    (((y) << SCM_MTAG_WIDTH(SCM_MISC_##typ##_LV)) | SCM_MTAG_##typ)
-
-#define SCM_MISC_INIT(o, x, y, typ)                                     \
-    do {                                                                \
-        if (SCM_MISC_##typ##_XDIRECTP)                                  \
-            SCM_INIT((o), (ScmObj)(x),                                  \
-                     SCM_MISC_PUT_MTAG((ScmObj)(y), typ),               \
-                     SCM_PTAG_MISC);                                    \
-        else if (SCM_MISC_##typ##_XSHIFTP)                              \
-            SCM_INIT((o), (ScmObj)(x) << SCM_MISC_##typ##_XSPILL,       \
-                     SCM_MISC_PUT_MTAG((ScmObj)(y), typ),               \
-                     SCM_PTAG_MISC);                                    \
-        else                                                            \
-            SCM_MISC_INIT_SPLITX((o), (ScmObj)(x), (ScmObj)(y),         \
-                                 SCM_MISC_##typ##_LV,                   \
-                                 SCM_MTAG_##typ,                        \
-                                 SCM_MISC_##typ##_XSPILL);              \
+#define SCM_MISC_INIT(o, x, y, typ)                                          \
+    do {                                                                     \
+        if (SCM_MISC_##typ##_XDIRECTP)                                       \
+            SCM_INIT((o),                                                    \
+                     SCM_MISC_CAST_X((x), typ),                              \
+                     SCM_MISC_ENCODE_Y((y), typ),                            \
+                     SCM_PTAG_MISC);                                         \
+        else if (SCM_MISC_##typ##_XSHIFTP)                                   \
+            SCM_INIT((o),                                                    \
+                     SCM_MISC_CAST_X((x), typ) << SCM_MISC_##typ##_XSPILL,   \
+                     SCM_MISC_ENCODE_Y((y), typ),                            \
+                     SCM_PTAG_MISC);                                         \
+        else                                                                 \
+            SCM_MISC_INIT_SPLITX((o),                                        \
+                                 SCM_MISC_CAST_X((x), typ),                  \
+                                 SCM_MISC_CAST_Y((y), typ),                  \
+                                 SCM_MISC_##typ##_LV,                        \
+                                 SCM_MTAG_##typ,                             \
+                                 SCM_MISC_##typ##_XSPILL);                   \
     } while (0)
 
 
-/* The NASSERT macros skip access assertions and tag removal.  This is
- * needed for GC where we don't have ptags on the pointers. */
+/* Cast shorter integer types such as char to ScmObj with proper sign extension
+ * and 64-bit safety. Especially on LP64 env, casting user-written integer
+ * constant by simple (ScmObj)-1 causes information loss. It must be written as
+ * -1L by user, or cast by receiver side by (ScmObj)(scmint_t)-1. This macro
+ * applies latter method safely. Invoke this macro for any X and Y input for
+ * misc object.  -- YamaKen 2006-12-11 */
+#define SCM_MISC_CAST_X(x, typ) ((ScmObj)(SCM_MISC_##typ##_XTYPE)(x))
+#define SCM_MISC_CAST_Y(y, typ) ((ScmObj)(SCM_MISC_##typ##_YTYPE)(y))
+
+#define SCM_MISC_ENCODE_Y(y, typ)                                            \
+    ((SCM_MISC_CAST_Y((y), typ) << SCM_MTAG_WIDTH(SCM_MISC_##typ##_LV))      \
+     | SCM_MTAG_##typ)
 
 /* Does (y) >> (n), paying attention to y's signedness. */
-#define SCM_MISC_RSHIFT(y, t, n)                                \
-    (((t)(-1) < (t)0) ? SCM_ARSHIFT((y), (n)) : (y) >> (n))
+#define SCM_MISC_RSHIFT_Y(y, typ, n)                                         \
+    ((SCM_SIGNED_TYPEP(SCM_MISC_##typ##_YTYPE))                              \
+     ? SCM_ARSHIFT((y), (n)) : (y) >> (n))
+
+/* The NASSERT macros skip access assertions and tag removal.  This is
+ * needed for GC where we don't have ptags on the pointers. */
 
 /* Signedness doesn't matter for XSHIFTP, as the top bits get truncated. */
 #define SCM_MISC_X_NASSERT(o, typ)                      \
@@ -512,29 +570,31 @@ typedef ScmObj (*ScmFuncType)();
                             SCM_MISC_##typ##_LV,        \
                             SCM_MISC_##typ##_XSPILL)))
 
-#define SCM_MISC_SET_X_NASSERT(o, x, typ)                       \
-    (SCM_MISC_##typ##_XDIRECTP                                  \
-     ? SCM_SET_X((o), (ScmObj)(x))                              \
-     : SCM_MISC_##typ##_XSHIFTP                                 \
-       ? SCM_SET_X((o), (ScmObj)(x) << SCM_MISC_##typ##_XSPILL) \
-       : SCM_MISC_SET_X_SPLITX((o), (ScmObj)(x),                \
-                               SCM_MISC_##typ##_LV,             \
+#define SCM_MISC_SET_X_NASSERT(o, x, typ)                                     \
+    (SCM_MISC_##typ##_XDIRECTP                                                \
+     ? SCM_SET_X((o), SCM_MISC_CAST_X((x), typ))                              \
+     : SCM_MISC_##typ##_XSHIFTP                                               \
+       ? SCM_SET_X((o), SCM_MISC_CAST_X((x), typ) << SCM_MISC_##typ##_XSPILL) \
+       : SCM_MISC_SET_X_SPLITX((o), SCM_MISC_CAST_X((x), typ),                \
+                               SCM_MISC_##typ##_LV,                           \
                                SCM_MISC_##typ##_XSPILL))
 
 #define SCM_MISC_Y_NASSERT(o, typ)                                      \
     ((SCM_MISC_##typ##_YTYPE)                                           \
-     (SCM_MISC_RSHIFT(SCM_Y(o), SCM_MISC_##typ##_YTYPE,                 \
-                      (SCM_MISC_##typ##_XSPLITP                         \
-                       && SCM_MISC_##typ##_XSPILL)                      \
-                      + SCM_MTAG_WIDTH(SCM_MISC_##typ##_LV))))
+     (SCM_MISC_##typ##_XSPLITP                                          \
+      ? SCM_MISC_Y_SPLITX((o), typ,                                     \
+                          SCM_MISC_##typ##_LV, SCM_MISC_##typ##_XSPILL) \
+      : SCM_MISC_RSHIFT_Y(SCM_Y(o), typ,                                \
+                          SCM_MTAG_WIDTH(SCM_MISC_##typ##_LV))))
 
 #define SCM_MISC_SET_Y_NASSERT(o, y, typ)                               \
     (SCM_MISC_##typ##_XSPLITP                                           \
-     ? SCM_MISC_SET_Y_SPLITX((o), (ScmObj)(y),                          \
+     ? SCM_MISC_SET_Y_SPLITX((o), SCM_MISC_CAST_Y((y), typ),            \
                              SCM_MISC_##typ##_LV,                       \
                              SCM_MISC_##typ##_XSPILL)                   \
      : SCM_SET_Y((o),                                                   \
-                 (ScmObj)(y) << SCM_MTAG_WIDTH(SCM_MISC_##typ##_LV)     \
+                 (SCM_MISC_CAST_Y((y), typ)                             \
+                  << SCM_MTAG_WIDTH(SCM_MISC_##typ##_LV))               \
                  | SCM_MTAG_##typ))
 
 #define SCM_MISC_X(o, typ)        SCM_MISC_X_NASSERT(SCM_##typ##_PTR(o), typ)
@@ -555,8 +615,9 @@ typedef ScmObj (*ScmFuncType)();
  * And finally, the types....
  */
 /* Symbols. */
-SCM_MISC_DECLARE_TYPE(SYMBOL, L1(0), SCM_MISC_XTYPE(ScmObj),
-                      SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(char *));
+SCM_MISC_DECLARE_TYPE(SYMBOL, L1(0),
+                      SCM_MISC_XTYPE(ScmObj), SCM_MISC_XALIGN_SCMOBJ,
+                      SCM_MISC_YTYPE(char *));
 
 #define SCM_SYMBOL_PTR(o)              SCM_MISC_PTR((o), SYMBOL)
 #define SCM_SYMBOL_NAME_ALIGN          SCM_MTAG_WIDTH(SCM_MISC_SYMBOL_LV)
@@ -567,29 +628,35 @@ SCM_MISC_DECLARE_TYPE(SYMBOL, L1(0), SCM_MISC_XTYPE(ScmObj),
 /* Symbols is the only misc type that has a pointer on Y, which
  * doesn't fit well in the data model of other types.  Hence we treat
  * it rather ad-hocly. */
-#define SCM_SAL_SYMBOL_NAME(o)                                  \
-    ((char*)(SCM_Y(SCM_SYMBOL_PTR(o)) & ~SCM_MTAG_SYMBOL))
-#define SCM_SAL_SYMBOL_SET_NAME(o, n)                           \
-    SCM_SET_Y(SCM_SYMBOL_PTR(o), (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL)
-#define SCM_ISAL_SYMBOL_INIT(o, n, c)                   \
-    SCM_INIT((o),                                       \
-             (c),                                       \
-             (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL,      \
-             SCM_PTAG_MISC)
+#define SCM_ALIGNED_SYMBOL_NAME(n)                                           \
+    (!((uintptr_t)(n) & SCM_MAKE_MASK(0, SCM_SYMBOL_NAME_ALIGN)))
+#define SCM_SAL_SYMBOL_NAME(o)                                               \
+    ((char *)(SCM_Y(SCM_SYMBOL_PTR(o)) & ~SCM_MTAG_SYMBOL))
+#define SCM_SAL_SYMBOL_SET_NAME(o, n)                                        \
+    (SCM_ASSERT(SCM_ALIGNED_SYMBOL_NAME(n)),                                 \
+     SCM_SET_Y(SCM_SYMBOL_PTR(o), (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL))
+#define SCM_ISAL_SYMBOL_INIT(o, n, c)                                        \
+    (SCM_ASSERT(SCM_ALIGNED_SYMBOL_NAME(n)),                                 \
+     SCM_INIT((o),                                                           \
+              (c),                                                           \
+              (scm_uintobj_t)(n) | SCM_MTAG_SYMBOL,                          \
+              SCM_PTAG_MISC))
 #define SCM_CELL_SYMBOLP(c)            SCM_MISC_CELL_TYPEP((c), SYMBOL)
 #define SCM_CELL_SYMBOL_FIN(c)                                               \
-    do {                                                                      \
-        char *_s = (char*)(SCM_Y(&(c)) & ~SCM_MTAG_MASK(SCM_MISC_SYMBOL_LV)); \
-        if (_s) free(_s);                                                     \
+    do {                                                                     \
+        char *_s = (char *)(SCM_Y(&(c)) & ~SCM_MTAG_SYMBOL);                 \
+        free(_s);                                                            \
     } while (0)
 
 /* Strings. */
-SCM_MISC_DECLARE_TYPE(STRING, L1(1), SCM_MISC_XTYPE(char *),
-                      SCM_MISC_XALIGN(1), SCM_MISC_YTYPE(scm_int_t));
+SCM_MISC_DECLARE_TYPE(STRING, L1(1),
+                      SCM_MISC_XTYPE(char *), SCM_MISC_XALIGN(1),
+                      SCM_MISC_YTYPE(scm_int_t));
 
 #define SCM_STRING_PTR(o)            SCM_MISC_PTR((o), STRING)
 #define SCM_SAL_STRINGP(o)           SCM_MISC_TYPEP((o), STRING)
-#define SCM_STRING_MUTABLE_BIT       1
+#define SCM_STRING_MUTABLE_BIT       ((scm_int_t)1)
+#define SCM_STRING_MUTABLE_BIT_WIDTH 1
 #define SCM_STRING_MUTABILITY(o)                           \
     (SCM_MISC_Y((o), STRING) & SCM_STRING_MUTABLE_BIT)
 #define SCM_SAL_STRING_MUTABLEP(o)   SCM_STRING_MUTABILITY(o)
@@ -600,37 +667,43 @@ SCM_MISC_DECLARE_TYPE(STRING, L1(1), SCM_MISC_XTYPE(char *),
     SCM_MISC_SET_Y((o), SCM_MISC_Y((o), STRING) & ~SCM_STRING_MUTABLE_BIT, \
                    STRING)
 #define SCM_SAL_STRING_STR(o)        SCM_MISC_X((o), STRING)
-#define SCM_SAL_STRING_LEN(o)        (SCM_MISC_Y((o), STRING) >> 1)
+#define SCM_SAL_STRING_LEN(o)        (SCM_MISC_Y((o), STRING)                \
+                                      >> SCM_STRING_MUTABLE_BIT_WIDTH)
 #define SCM_SAL_STRING_SET_STR(o, s) SCM_MISC_SET_X((o), (s), STRING)
-#define SCM_SAL_STRING_SET_LEN(o, l)                                    \
-    SCM_MISC_SET_Y((o), ((l) << 1) | SCM_STRING_MUTABILITY(o), STRING)
-#define SCM_ISAL_MUTABLE_STRING_INIT(o, s, l)                            \
-    SCM_MISC_INIT((o), (s), ((l) << 1) | SCM_STRING_MUTABLE_BIT, STRING)
-#define SCM_ISAL_IMMUTABLE_STRING_INIT(o, s, l)  \
-    SCM_MISC_INIT((o), (s), ((l) << 1), STRING)
-#define SCM_ISAL_STRING_INIT(o, s, l, mut)                              \
-    SCM_MISC_INIT((o), (s),                                             \
-                  ((l) << 1) | ((mut) ? SCM_STRING_MUTABLE_BIT : 0),    \
+#define SCM_SAL_STRING_SET_LEN(o, l)                                         \
+    SCM_MISC_SET_Y((o),                                                      \
+                   (((scm_int_t)(l) << SCM_STRING_MUTABLE_BIT_WIDTH)         \
+                    | SCM_STRING_MUTABILITY(o)),                             \
+                   STRING)
+#define SCM_ISAL_STRING_INIT(o, s, l, mut)                                   \
+    SCM_MISC_INIT((o), (s),                                                  \
+                  ((scm_int_t)(l) << SCM_STRING_MUTABLE_BIT_WIDTH)           \
+                  | ((mut) ? SCM_STRING_MUTABLE_BIT : 0),                    \
                   STRING)
+#define SCM_ISAL_MUTABLE_STRING_INIT(o, s, l)                                \
+    SCM_ISAL_STRING_INIT((o), (s), (l), scm_true)
+#define SCM_ISAL_IMMUTABLE_STRING_INIT(o, s, l)                              \
+    SCM_ISAL_STRING_INIT((o), (s), (l), scm_false)
 #define SCM_CELL_STRINGP(c)      SCM_MISC_CELL_TYPEP((c), STRING)
 #define SCM_CELL_STRING_FIN(c)                                  \
     do {                                                        \
-        char *_s = (char*)SCM_MISC_X_NASSERT(&(c), STRING);     \
-        if (_s) free (_s);                                      \
+        char *_s = SCM_MISC_X_NASSERT(&(c), STRING);            \
+        free(_s);                                               \
     } while (0)
 
 
 /* Vectors. */
-SCM_MISC_DECLARE_TYPE(VECTOR, L1(2), SCM_MISC_XTYPE(ScmObj*),
-                      SCM_MISC_XALIGN(2), SCM_MISC_YTYPE(scm_int_t));
+SCM_MISC_DECLARE_TYPE(VECTOR, L1(2),
+                      SCM_MISC_XTYPE(ScmObj *), SCM_MISC_XALIGN(1),
+                      SCM_MISC_YTYPE(scm_int_t));
 
-#define SCM_VECTOR_PTR(o)         SCM_MISC_PTR((o), VECTOR)
-#define SCM_SAL_VECTORP(o)        SCM_MISC_TYPEP((o), VECTOR)
-#define SCM_VECTOR_MUTABLE_BIT    1
+#define SCM_VECTOR_PTR(o)            SCM_MISC_PTR((o), VECTOR)
+#define SCM_SAL_VECTORP(o)           SCM_MISC_TYPEP((o), VECTOR)
+#define SCM_VECTOR_MUTABLE_BIT       ((scm_int_t)1)
+#define SCM_VECTOR_MUTABLE_BIT_WIDTH 1
 #define SCM_VECTOR_MUTABILITY(o)                           \
     (SCM_MISC_Y((o), VECTOR) & SCM_VECTOR_MUTABLE_BIT)
-#define SCM_SAL_VECTOR_MUTABLEP(o)              \
-    SCM_VECTOR_MUTABILITY(o)
+#define SCM_SAL_VECTOR_MUTABLEP(o)   SCM_VECTOR_MUTABILITY(o)
 #define SCM_SAL_VECTOR_SET_MUTABLE(o)                                     \
     SCM_MISC_SET_Y((o), SCM_MISC_Y((o), VECTOR) | SCM_VECTOR_MUTABLE_BIT, \
                    VECTOR)
@@ -638,28 +711,34 @@ SCM_MISC_DECLARE_TYPE(VECTOR, L1(2), SCM_MISC_XTYPE(ScmObj*),
     SCM_MISC_SET_Y((o), SCM_MISC_Y((o), VECTOR) & ~SCM_VECTOR_MUTABLE_BIT, \
                    VECTOR)
 #define SCM_SAL_VECTOR_VEC(o)        SCM_MISC_X((o), VECTOR)
-#define SCM_SAL_VECTOR_LEN(o)        (SCM_MISC_Y((o), VECTOR) >> 1)
-#define SCM_SAL_VECTOR_SET_VEC(o, s) SCM_MISC_SET_X((o), (s), VECTOR)
-#define SCM_SAL_VECTOR_SET_LEN(o, l)                                    \
-    SCM_MISC_SET_Y((o), ((l) << 1) | SCM_VECTOR_MUTABILITY(o), VECTOR)
-#define SCM_ISAL_VECTOR_INIT(o, s, l, mut)                              \
-    SCM_MISC_INIT((o), (s),                                             \
-                  ((l) << 1) | ((mut) ? SCM_VECTOR_MUTABLE_BIT : 0),    \
+#define SCM_SAL_VECTOR_LEN(o)        (SCM_MISC_Y((o), VECTOR)                \
+                                      >> SCM_VECTOR_MUTABLE_BIT_WIDTH)
+#define SCM_SAL_VECTOR_SET_VEC(o, v) SCM_MISC_SET_X((o), (v), VECTOR)
+#define SCM_SAL_VECTOR_SET_LEN(o, l)                                         \
+    SCM_MISC_SET_Y((o),                                                      \
+                   (((scm_int_t)(l) << SCM_VECTOR_MUTABLE_BIT_WIDTH)         \
+                    | SCM_VECTOR_MUTABILITY(o)),                             \
+                   VECTOR)
+#define SCM_ISAL_VECTOR_INIT(o, v, l, mut)                                   \
+    SCM_MISC_INIT((o), (v),                                                  \
+                  (((scm_int_t)(l) << SCM_VECTOR_MUTABLE_BIT_WIDTH)          \
+                   | ((mut) ? SCM_VECTOR_MUTABLE_BIT : 0)),                  \
                   VECTOR)
-#define SCM_ISAL_MUTABLE_VECTOR_INIT(o, s, l)            \
-    SCM_ISAL_VECTOR_INIT((o), (s), (l), scm_true)
-#define SCM_ISAL_IMMUTABLE_VECTOR_INIT(o, s, l)          \
-    SCM_ISAL_VECTOR_INIT((o), (s), (l), scm_false)
+#define SCM_ISAL_MUTABLE_VECTOR_INIT(o, v, l)                                \
+    SCM_ISAL_VECTOR_INIT((o), (v), (l), scm_true)
+#define SCM_ISAL_IMMUTABLE_VECTOR_INIT(o, v, l)                              \
+    SCM_ISAL_VECTOR_INIT((o), (v), (l), scm_false)
 #define SCM_CELL_VECTORP(c)      SCM_MISC_CELL_TYPEP((c), VECTOR)
 #define SCM_CELL_VECTOR_FIN(c)                                  \
     do {                                                        \
         ScmObj *_vec = SCM_MISC_X_NASSERT(&(c), VECTOR);        \
-        if (_vec) free (_vec);                                  \
+        free(_vec);                                             \
     } while (0)
 
 /* Multiple Values. */
-SCM_MISC_DECLARE_TYPE(VALUEPACKET, L2(0, 3), SCM_MISC_XTYPE(ScmObj),
-                      SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_Y_UNUSED);
+SCM_MISC_DECLARE_TYPE(VALUEPACKET, L2(0, 3),
+                      SCM_MISC_XTYPE(ScmObj), SCM_MISC_XALIGN_SCMOBJ,
+                      SCM_MISC_Y_UNUSED);
 #if SCM_USE_VALUECONS
 #error "SCM_USE_VALUECONS is not supported by storage-compact."
 #endif
@@ -672,8 +751,8 @@ SCM_MISC_DECLARE_TYPE(VALUEPACKET, L2(0, 3), SCM_MISC_XTYPE(ScmObj),
 #define SCM_ISAL_VALUEPACKET_INIT(o, v) SCM_MISC_INIT((o), (v), 0, VALUEPACKET)
 
 /* Builtin functions. */
-SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3), SCM_MISC_XTYPE(ScmFuncType),
-                      SCM_MISC_XALIGN(0),
+SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3),
+                      SCM_MISC_XTYPE(ScmFuncType), SCM_MISC_XALIGN(0),
                       SCM_MISC_YTYPE(enum ScmFuncTypeCode));
 
 #define SCM_FUNC_PTR(o)                 SCM_MISC_PTR((o), FUNC)
@@ -687,14 +766,14 @@ SCM_MISC_DECLARE_TYPE(FUNC, L2(1, 3), SCM_MISC_XTYPE(ScmFuncType),
 /* Ports. */
 struct ScmCharPort_;
 
-SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3), SCM_MISC_XTYPE(struct ScmCharPort_*),
-                      SCM_MISC_XALIGN(2),
-                      SCM_MISC_YTYPE(int /* enum ScmPortFlag */));
+SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3),
+                      SCM_MISC_XTYPE(struct ScmCharPort_ *), SCM_MISC_XALIGN(1),
+                      SCM_MISC_YTYPE(enum ScmPortFlag));
 
 #define SCM_PORT_PTR(o)             SCM_MISC_PTR((o), PORT)
 #define SCM_SAL_PORTP(o)            SCM_MISC_TYPEP((o), PORT)
 #define SCM_SAL_PORT_IMPL(o)        SCM_MISC_X((o), PORT)
-#define SCM_SAL_PORT_FLAG(o)        ((enum ScmPortFlag)SCM_MISC_Y((o), PORT))
+#define SCM_SAL_PORT_FLAG(o)        SCM_MISC_Y((o), PORT)
 #define SCM_SAL_PORT_SET_IMPL(o, i) SCM_MISC_SET_X((o), (i), PORT)
 #define SCM_SAL_PORT_SET_FLAG(o, f) SCM_MISC_SET_Y((o), (f), PORT)
 #define SCM_ISAL_PORT_INIT(o, i, f) SCM_MISC_INIT((o), (i), (f), PORT)
@@ -709,20 +788,22 @@ SCM_MISC_DECLARE_TYPE(PORT, L2(2, 3), SCM_MISC_XTYPE(struct ScmCharPort_*),
 
 
 /* Continuation. */
-SCM_MISC_DECLARE_TYPE(CONTINUATION, L2(3, 3), SCM_MISC_XTYPE(void*),
-                      SCM_MISC_XALIGN(1), SCM_MISC_YTYPE(scm_int_t));
+SCM_MISC_DECLARE_TYPE(CONTINUATION, L2(3, 3),
+                      SCM_MISC_XTYPE(void *), SCM_MISC_XALIGN(1),
+                      SCM_MISC_YTYPE(scm_int_t));
 
 #define SCM_CONTINUATION_PTR(o)           SCM_MISC_PTR((o), CONTINUATION)
 #define SCM_SAL_CONTINUATIONP(o)          SCM_MISC_TYPEP((o), CONTINUATION)
 #define SCM_SAL_CONTINUATION_OPAQUE(o)    SCM_MISC_X((o), CONTINUATION)
 #define SCM_SAL_CONTINUATION_TAG(o)       SCM_MISC_Y((o), CONTINUATION)
-#define SCM_SAL_CONTINUATION_SET_OPAQUE(o, a) SCM_MISC_SET_X((o), (a),     \
-                                                             CONTINUATION)
-#define SCM_SAL_CONTINUATION_SET_TAG(o, a)    SCM_MISC_SET_Y((o), (a),     \
-                                                             CONTINUATION)
-#define SCM_ISAL_CONTINUATION_INIT(o, a, t)     \
+#define SCM_SAL_CONTINUATION_SET_OPAQUE(o, a)                                \
+    SCM_MISC_SET_X((o), (a), CONTINUATION)
+#define SCM_SAL_CONTINUATION_SET_TAG(o, t)                                   \
+    SCM_MISC_SET_Y((o), (t), CONTINUATION)
+#define SCM_ISAL_CONTINUATION_INIT(o, a, t)                                  \
     SCM_MISC_INIT((o), (a), (t), CONTINUATION)
-#define SCM_CELL_CONTINUATIONP(c)         SCM_MISC_CELL_TYPEP(c, CONTINUATION)
+#define SCM_CELL_CONTINUATIONP(c)                                            \
+    SCM_MISC_CELL_TYPEP((c), CONTINUATION)
 /*
  * Since continuations aren't so common, the cost of function call for
  * destroying one is acceptable.  In turn, it eases continuation
@@ -735,8 +816,9 @@ SCM_MISC_DECLARE_TYPE(CONTINUATION, L2(3, 3), SCM_MISC_XTYPE(void*),
 #if SCM_USE_SSCM_EXTENSIONS
 
 /* C datum pointer */
-SCM_MISC_DECLARE_TYPE(C_POINTER, L3(0, 4, 3), SCM_MISC_XTYPE(void*),
-                      SCM_MISC_XALIGN(0), SCM_MISC_Y_UNUSED);
+SCM_MISC_DECLARE_TYPE(C_POINTER, L3(0, 4, 3),
+                      SCM_MISC_XTYPE(void *), SCM_MISC_XALIGN(0),
+                      SCM_MISC_Y_UNUSED);
 
 #define SCM_C_POINTER_PTR(o)              SCM_MISC_PTR((o), C_POINTER)
 #define SCM_SAL_C_POINTERP(o)             SCM_MISC_TYPEP((o), C_POINTER)
@@ -745,8 +827,9 @@ SCM_MISC_DECLARE_TYPE(C_POINTER, L3(0, 4, 3), SCM_MISC_XTYPE(void*),
 #define SCM_ISAL_C_POINTER_INIT(o, p)     SCM_MISC_INIT((o), (p), 0, C_POINTER)
 
 /* C function pointer */
-SCM_MISC_DECLARE_TYPE(C_FUNCPOINTER, L3(1, 4, 3), SCM_MISC_XTYPE(ScmCFunc),
-                      SCM_MISC_XALIGN(0), SCM_MISC_Y_UNUSED);
+SCM_MISC_DECLARE_TYPE(C_FUNCPOINTER, L3(1, 4, 3),
+                      SCM_MISC_XTYPE(ScmCFunc), SCM_MISC_XALIGN(0),
+                      SCM_MISC_Y_UNUSED);
 
 #define SCM_C_FUNCPOINTER_PTR(o)       SCM_MISC_PTR((o), C_FUNCPOINTER)
 #define SCM_SAL_C_FUNCPOINTERP(o)      SCM_MISC_TYPEP((o), C_FUNCPOINTER)
@@ -768,28 +851,31 @@ SCM_MISC_DECLARE_TYPE(C_FUNCPOINTER, L3(1, 4, 3), SCM_MISC_XTYPE(ScmCFunc),
 /* Wrapper is an abstract supertype of the macro-related types whose
  * definitions follow.  Wrapper itself is provided for GC and
  * shouldn't be utilized in user code. */
-SCM_MISC_DECLARE_TYPE(WRAPPER, L2(5, 3), SCM_MISC_XTYPE(ScmObj),
-                      SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(scm_int_t));
-#define SCM_WRAPPERP(o)               SCM_MISC_TYPEP((o), WRAPPER)
+SCM_MISC_DECLARE_TYPE(WRAPPER, L2(5, 3),
+                      SCM_MISC_XTYPE(ScmObj), SCM_MISC_XALIGN_SCMOBJ,
+                      SCM_MISC_YTYPE(scm_int_t));
 
+#define SCM_WRAPPERP(o)               SCM_MISC_TYPEP((o), WRAPPER)
 #define SCM_WRAPPER_PTR(o)            SCM_UNTAG_PTR(o)
 #define SCM_WRAPPER_OBJ(o)            SCM_MISC_X((o), WRAPPER)
 
 /* Compiled repeatable subpattern or subtemplate. */
-SCM_MISC_DECLARE_TYPE(SUBPAT, L3(0, 5, 3), SCM_MISC_XTYPE(ScmObj),
-                      SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(scm_int_t));
+SCM_MISC_DECLARE_TYPE(SUBPAT, L3(0, 5, 3),
+                      SCM_MISC_XTYPE(ScmObj), SCM_MISC_XALIGN_SCMOBJ,
+                      SCM_MISC_YTYPE(scm_int_t));
 
 #define SCM_SUBPAT_PTR(o)             SCM_MISC_PTR((o), SUBPAT)
 #define SCM_SAL_SUBPATP(o)            SCM_MISC_TYPEP((o), SUBPAT)
 #define SCM_SAL_SUBPAT_OBJ(o)         SCM_MISC_X((o), SUBPAT)
-#define SCM_SAL_SUBPAT_SET_OBJ(o, p)  SCM_MISC_SET_X((o), (p), SUBPAT)
 #define SCM_SAL_SUBPAT_META(o)        SCM_MISC_Y((o), SUBPAT)
+#define SCM_SAL_SUBPAT_SET_OBJ(o, p)  SCM_MISC_SET_X((o), (p), SUBPAT)
 #define SCM_SAL_SUBPAT_SET_META(o, m) SCM_MISC_SET_Y((o), (m), SUBPAT)
 #define SCM_ISAL_SUBPAT_INIT(o, p, m) SCM_MISC_INIT((o), (p), (m), SUBPAT)
 
 /* Compiled macro. */
-SCM_MISC_DECLARE_TYPE(HMACRO, L3(1, 5, 3), SCM_MISC_XTYPE(ScmObj),
-                      SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(ScmPackedEnv));
+SCM_MISC_DECLARE_TYPE(HMACRO, L3(1, 5, 3),
+                      SCM_MISC_XTYPE(ScmObj), SCM_MISC_XALIGN_SCMOBJ,
+                      SCM_MISC_YTYPE(ScmPackedEnv));
 
 #define SCM_HMACRO_PTR(o)              SCM_MISC_PTR((o), HMACRO)
 #define SCM_SAL_HMACROP(o)             SCM_MISC_TYPEP((o), HMACRO)
@@ -800,8 +886,9 @@ SCM_MISC_DECLARE_TYPE(HMACRO, L3(1, 5, 3), SCM_MISC_XTYPE(ScmObj),
 #define SCM_ISAL_HMACRO_INIT(o, r, e)  SCM_MISC_INIT((o), (r), (e), HMACRO)
 
 /* Far symbol. */
-SCM_MISC_DECLARE_TYPE(FARSYMBOL, L3(2, 5, 3), SCM_MISC_XTYPE(ScmObj),
-                      SCM_MISC_XALIGN_SCMOBJ, SCM_MISC_YTYPE(ScmPackedEnv));
+SCM_MISC_DECLARE_TYPE(FARSYMBOL, L3(2, 5, 3),
+                      SCM_MISC_XTYPE(ScmObj), SCM_MISC_XALIGN_SCMOBJ,
+                      SCM_MISC_YTYPE(ScmPackedEnv));
 
 #define SCM_FARSYMBOL_PTR(o)            SCM_MISC_PTR((o), FARSYMBOL)
 #define SCM_SAL_FARSYMBOLP(o)           SCM_MISC_TYPEP((o), FARSYMBOL)
@@ -859,7 +946,8 @@ SCM_EXPORT enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_PTR_BITS    (sizeof(void *) * CHAR_BIT)
 
 #define SCM_SAL_CHAR_BITS   (SCM_SAL_OBJ_BITS - SCM_CHAR_VAL_OFFSET)
-#define SCM_SAL_CHAR_MAX    ((1 << SCM_SAL_CHAR_BITS) - 1)
+#define SCM_SAL_CHAR_MAX    ((scm_int_t)                                     \
+                             (((scm_uint_t)1 << SCM_SAL_CHAR_BITS) - 1))
 
 #define SCM_SAL_INT_BITS    (SCM_SAL_OBJ_BITS - SCM_INT_VAL_OFFSET)
 #define SCM_SAL_INT_MAX     (SCM_INT_T_MAX >> SCM_INT_VAL_OFFSET)
@@ -892,7 +980,7 @@ typedef ScmObj *ScmRef;
 #define SCM_SAL_SET(ref, obj) (*(ref) = (ScmObj)(obj))
 
 #ifdef __cplusplus
-}
+/* } */
 #endif
 
 #include "storage-common.h"
