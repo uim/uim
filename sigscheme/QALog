@@ -155,11 +155,12 @@ Categorized File List
   * syntax.c
   * procedure.c
   * number.c
+  * number-io.c
   * list.c
   * deep-cadrs.c
   * char.c
-  * string-core.c
   * string.c
+  * string-procedure.c
   * vector.c
   * qquote.c
   * macro.c
@@ -250,11 +251,12 @@ yyyyyyyy semicore format.c
 yyyy yyy r5rs syntax.c
 yyyy yyy r5rs procedure.c
 yyyyyyyy r5rs number.c
+yyyyyyyy r5rs number-io.c
 yyyy yyy r5rs list.c
 yyyy yyy r5rs deep-cadrs.c
          r5rs char.c
-yyyy yyy r5rs string-core.c
-         r5rs string.c
+yyyy yyy r5rs string.c
+         r5rs string-procedure.c
          r5rs vector.c
 yyyy yyy r5rs qquote.c
          r5rs macro.c
@@ -775,6 +777,17 @@ coding style:      yamaken@r3943
 normal case tests: yamaken@r3943, yamaken@r4071
 corner case tests: yamaken@r3943, yamaken@r4071
 
+file:              number-io.c
+category:          r5rs
+spec by eyes:      yamaken@r3943, yamaken@r4071
+spec by tests:     yamaken@r3943, yamaken@r4071
+general review:    yamaken@r3943
+64-bit by eyes:    yamaken@r3943
+64-bit by tests:   yamaken@r4071
+coding style:      yamaken@r3943
+normal case tests: yamaken@r3943, yamaken@r4071
+corner case tests: yamaken@r3943, yamaken@r4071
+
 file:              list.c
 category:          r5rs
 spec by eyes:      yamaken@r3902
@@ -808,7 +821,7 @@ coding style:
 normal case tests: 
 corner case tests: 
 
-file:              string-core.c
+file:              string.c
 category:          r5rs
 spec by eyes:      yamaken@r3911
 spec by tests:     yamaken@r3911
@@ -819,7 +832,7 @@ coding style:      yamaken@r3911
 normal case tests: yamaken@r3911
 corner case tests: yamaken@r3911
 
-file:              string.c
+file:              string-procedure.c
 category:          r5rs
 spec by eyes:      
 spec by tests:     
@@ -1042,6 +1055,21 @@ corner case tests:
 
 Log
 ---
+2006-12-12  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * string-core.c
+        * string.c
+        * string-procedure.c
+        * number.c
+        * number-io.c
+          - File reorganization done @r4112-4118. See svn log
+          - Be careful about this string-related files renaming
+            string.c      -> string-procedure.c
+            string-core.c -> string.c
+          - number-io.c has been split off from number.c
+          - test-number-conv.scm has been renamed to test-number-io.scm
+          - test-let.scm has been split into 4 files
+
 2006-12-11  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * sigscheme.h

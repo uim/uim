@@ -20,20 +20,20 @@ Mailinglist: uim@freedesktop.org
 Features
 --------
 
-- Conforms to R5RS basically (not fully compatible)
+- Conforms to R5RS basically (not fully comformant)
 - R5RS hygienic macros
 - Supports Following SRFIs
   - SRFI-2  : And-let*
   - SRFI-6  : Basic String Ports
   - SRFI-8  : Receive
-  - SRFI-22 : Running Scheme Scripts on Unix
+  - SRFI-22 : Running Scheme Scripts on Unix (partial)
   - SRFI-23 : Error Reporting Mechanism
   - SRFI-28 : Basic Format Strings
   - SRFI-34 : Exception Handling for Programs
   - SRFI-38 : External Representation for Data with Shared Structure (partial)
   - SRFI-48 : Intermediate Format Strings
   - SRFI-60 : Integer as Bits (partial)
-  - SRFI-75 : R6RS Unicode data (partial)
+  - SRFI-75 : R6RS Unicode data (partial and obsolete)
 - Multibyte character support
 - Partial SIOD compatibility
 
