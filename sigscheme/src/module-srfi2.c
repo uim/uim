@@ -61,7 +61,7 @@
 SCM_EXPORT void
 scm_initialize_srfi2(void)
 {
-    scm_register_funcs(scm_srfi2_func_info_table);
+    scm_register_funcs(scm_functable_srfi2);
 }
 
 SCM_EXPORT ScmObj

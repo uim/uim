@@ -81,29 +81,29 @@ functable-r5rs-deep-cadrs.c: deep-cadrs.c $(BUILD_FUNCTBL_DEPS)
 	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_r5rs_deep_cadrs" $<
 # Optional modules
 functable-sscm-ext.c: module-sscm-ext.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_sscm_ext_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_sscm_ext" $<
 functable-siod.c: module-siod.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_siod_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_siod" $<
 functable-srfi1.c: module-srfi1.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi1_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi1" $<
 functable-srfi2.c: module-srfi2.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi2_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi2" $<
 functable-srfi6.c: module-srfi6.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi6_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi6" $<
 functable-srfi8.c: module-srfi8.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi8_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi8" $<
 functable-srfi23.c: module-srfi23.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi23_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi23" $<
 functable-srfi28.c: module-srfi28.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi28_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi28" $<
 functable-srfi34.c: module-srfi34.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi34_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi34" $<
 functable-srfi38.c: module-srfi38.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi38_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi38" $<
 functable-srfi48.c: module-srfi48.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi48_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi48" $<
 functable-srfi60.c: module-srfi60.c $(BUILD_FUNCTBL_DEPS)
-	$(BUILD_FUNCTBL_CMD) $@ "scm_srfi60_func_info_table" $<
+	$(BUILD_FUNCTBL_CMD) $@ "scm_functable_srfi60" $<
 endif
 
 # Optional and not built by 'make all'. Build explicitly with 'make combined'

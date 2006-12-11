@@ -67,7 +67,7 @@ static ScmObj make_loaded_str(const char *filename);
 SCM_EXPORT void
 scm_initialize_sscm_extensions(void)
 {
-    scm_register_funcs(scm_sscm_ext_func_info_table);
+    scm_register_funcs(scm_functable_sscm_ext);
 
     scm_define_alias("call/cc", "call-with-current-continuation");
 }

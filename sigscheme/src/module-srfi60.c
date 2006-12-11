@@ -82,7 +82,7 @@
 SCM_EXPORT void
 scm_initialize_srfi60(void)
 {
-    scm_register_funcs(scm_srfi60_func_info_table);
+    scm_register_funcs(scm_functable_srfi60);
 
     /* SRFI-33 aliases */
     scm_define_alias("bitwise-and",   "logand");

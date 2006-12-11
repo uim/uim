@@ -68,7 +68,7 @@ scm_initialize_srfi6(void)
 {
     scm_strport_init();
 
-    scm_register_funcs(scm_srfi6_func_info_table);
+    scm_register_funcs(scm_functable_srfi6);
 }
 
 static void

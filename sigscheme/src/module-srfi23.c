@@ -60,7 +60,7 @@
 SCM_EXPORT void
 scm_initialize_srfi23(void)
 {
-    scm_register_funcs(scm_srfi23_func_info_table);
+    scm_register_funcs(scm_functable_srfi23);
 }
 
 /*===========================================================================

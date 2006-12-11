@@ -64,7 +64,7 @@ scm_initialize_srfi48(void)
 {
     /* FIXME: duplicate call with scm_initialize_internal() */
     scm_init_format();
-    scm_register_funcs(scm_srfi48_func_info_table);
+    scm_register_funcs(scm_functable_srfi48);
 
     scm_define_alias("pretty-print", "write");
 #if !SCM_USE_SSCM_FORMAT_EXTENSION

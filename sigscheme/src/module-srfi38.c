@@ -62,7 +62,7 @@
 SCM_EXPORT void
 scm_initialize_srfi38(void)
 {
-    scm_register_funcs(scm_srfi38_func_info_table);
+    scm_register_funcs(scm_functable_srfi38);
 
     /* SRFI-38 allows providing (read/ss) and (write/ss) */
     scm_define_alias("write/ss", "write-with-shared-structure");

@@ -110,7 +110,7 @@ scm_initialize_siod(void)
 
     SCM_GLOBAL_VARS_INIT(static_siod);
 
-    scm_register_funcs(scm_siod_func_info_table);
+    scm_register_funcs(scm_functable_siod);
 
     scm_use("sscm-ext");
     scm_define_alias("the-environment", "%%current-environment");
