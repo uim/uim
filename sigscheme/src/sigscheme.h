@@ -1498,8 +1498,8 @@ SCM_EXPORT ScmObj scm_p_string_append(ScmObj args);
 SCM_EXPORT ScmObj scm_p_string_copy(ScmObj str);
 #endif /* SCM_USE_STRING_CORE */
 
-/* string.c */
-#if SCM_USE_STRING
+/* string-procedure.c */
+#if SCM_USE_STRING_PROCEDURE
 SCM_EXPORT ScmObj scm_p_make_string(ScmObj length, ScmObj args);
 SCM_EXPORT ScmObj scm_p_string(ScmObj args);
 SCM_EXPORT ScmObj scm_p_string_ref(ScmObj str, ScmObj k);
@@ -1517,7 +1517,7 @@ SCM_EXPORT ScmObj scm_p_substring(ScmObj str, ScmObj start, ScmObj end);
 SCM_EXPORT ScmObj scm_p_string2list(ScmObj str);
 SCM_EXPORT ScmObj scm_p_list2string(ScmObj lst);
 SCM_EXPORT ScmObj scm_p_string_fillx(ScmObj str, ScmObj ch);
-#endif /* SCM_USE_STRING */
+#endif /* SCM_USE_STRING_PROCEDURE */
 
 /* vector.c */
 #if SCM_USE_VECTOR
