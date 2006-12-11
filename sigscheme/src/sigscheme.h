@@ -532,7 +532,7 @@ struct ScmStorageConf_ {
     (((SCM_INT_BITS < SCM_PTR_BITS)                                          \
       ? SCM_INT_MAX                                                          \
       : ((SCM_FULLY_ADDRESSABLEP)                                            \
-         ? (size_t)(intptr_t)-1 : ((size_t)1 << SCM_PTR_BITS) - 1))          \
+         ? ((size_t)(intptr_t)-1 >> 1) : ((size_t)1 << SCM_PTR_BITS) - 1))   \
      / SCM_DEFAULT_HEAP_SIZE)
 #endif
 
