@@ -1421,9 +1421,9 @@ SCM_EXPORT ScmObj scm_p_assoc(ScmObj obj, ScmObj alist);
 
 /* number.c */
 #if SCM_USE_NUMBER
-#if SCM_USE_STRING_CORE
+#if SCM_USE_STRING
 SCM_EXPORT char *scm_int2string(ScmValueFormat vfmt, uintmax_t n, int radix);
-#endif /* SCM_USE_STRING_CORE */
+#endif /* SCM_USE_STRING */
 SCM_EXPORT scm_int_t scm_string2number(const char *str, int radix,
                                        scm_bool *err);
 SCM_EXPORT ScmObj scm_p_add(ScmObj left, ScmObj right,
@@ -1459,10 +1459,10 @@ SCM_EXPORT ScmObj scm_p_abs(ScmObj _n);
 SCM_EXPORT ScmObj scm_p_quotient(ScmObj _n1, ScmObj _n2);
 SCM_EXPORT ScmObj scm_p_modulo(ScmObj _n1, ScmObj _n2);
 SCM_EXPORT ScmObj scm_p_remainder(ScmObj _n1, ScmObj _n2);
-#if SCM_USE_STRING_CORE
+#if SCM_USE_STRING
 SCM_EXPORT ScmObj scm_p_number2string(ScmObj num, ScmObj args);
 SCM_EXPORT ScmObj scm_p_string2number(ScmObj str, ScmObj args);
-#endif /* SCM_USE_STRING_CORE */
+#endif /* SCM_USE_STRING */
 #endif /* SCM_USE_NUMBER */
 
 /* char.c */
@@ -1489,14 +1489,14 @@ SCM_EXPORT ScmObj scm_p_char_upcase(ScmObj ch);
 SCM_EXPORT ScmObj scm_p_char_downcase(ScmObj ch);
 #endif /* SCM_USE_CHAR */
 
-/* string-core.c */
-#if SCM_USE_STRING_CORE
+/* string.c */
+#if SCM_USE_STRING
 SCM_EXPORT ScmObj scm_p_stringp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_string_length(ScmObj str);
 SCM_EXPORT ScmObj scm_p_stringequalp(ScmObj str1, ScmObj str2);
 SCM_EXPORT ScmObj scm_p_string_append(ScmObj args);
 SCM_EXPORT ScmObj scm_p_string_copy(ScmObj str);
-#endif /* SCM_USE_STRING_CORE */
+#endif /* SCM_USE_STRING */
 
 /* string-procedure.c */
 #if SCM_USE_STRING_PROCEDURE

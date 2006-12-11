@@ -66,7 +66,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-#if SCM_USE_STRING_CORE
+#if SCM_USE_STRING
 static int prepare_radix(const char *funcname, ScmObj args);
 #endif
 
@@ -436,7 +436,7 @@ scm_p_remainder(ScmObj _n1, ScmObj _n2)
 /*===========================================================================
   R5RS : 6.2 Numbers : 6.2.6 Numerical input and output
 ===========================================================================*/
-#if SCM_USE_STRING_CORE
+#if SCM_USE_STRING
 static int
 prepare_radix(const char *funcname, ScmObj args)
 {
@@ -520,7 +520,7 @@ scm_p_number2string(ScmObj num, ScmObj args)
 
     return MAKE_STRING(str, SCM_STRLEN_UNKNOWN);
 }
-#endif /* SCM_USE_STRING_CORE */
+#endif /* SCM_USE_STRING */
 
 SCM_EXPORT scm_int_t
 scm_string2number(const char *str, int radix, scm_bool *err)
@@ -596,7 +596,7 @@ scm_string2number(const char *str, int radix, scm_bool *err)
     return n;
 }
 
-#if SCM_USE_STRING_CORE
+#if SCM_USE_STRING
 SCM_EXPORT ScmObj
 scm_p_string2number(ScmObj str, ScmObj args)
 {
@@ -614,4 +614,4 @@ scm_p_string2number(ScmObj str, ScmObj args)
     ret = scm_string2number(c_str, r, &err);
     return (err) ? SCM_FALSE : MAKE_INT(ret);
 }
-#endif /* SCM_USE_STRING_CORE */
+#endif /* SCM_USE_STRING */

@@ -49,8 +49,8 @@ endif
 if USE_CHAR
   R5RS_PROC_SRCS += char.c
 endif
-if USE_STRING_CORE
-  R5RS_PROC_SRCS += string-core.c
+if USE_STRING
+  R5RS_PROC_SRCS += string.c
 endif
 if USE_STRING_PROCEDURE
   R5RS_PROC_SRCS += string-procedure.c
