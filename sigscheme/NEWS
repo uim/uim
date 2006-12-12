@@ -59,6 +59,9 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix crashes by broken va_list passing of format.c on x86_64 platform
 
+  - Fix crashes by corrupted GC mark on stack on specific platforms that have
+    (alignof(ScmObj) < sizeof(ScmObj)), such as m68k
+
   - Fix potential SEGV on long string parsing
 
   - Fix possible crash on parsing R5RS-reserved chars |[]{}

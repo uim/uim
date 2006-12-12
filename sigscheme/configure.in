@@ -111,11 +111,11 @@ AC_C_CHAR_UNSIGNED
 AC_C_BIGENDIAN
 AX_C_ARITHMETIC_RSHIFT
 AX_C___ATTRIBUTE__
-AX_C___ALIGNOF__
-AX_C_DATA_ALIGNED
-if test "x$ax_cv_c_data_aligned" = xno; then
-  AC_MSG_ERROR([C data types are not aligned as we expected.])
-fi
+#AX_C___ALIGNOF__
+#AX_C_DATA_ALIGNED
+#if test "x$ax_cv_c_data_aligned" = xno; then
+#  AC_MSG_ERROR([C data types are not aligned as we expected.])
+#fi
 AX_C_REFERENCEABLE_PASSED_VA_LIST
 if test "x$ax_cv_c_referenceable_passed_va_list" = xno; then
   # Temporary workaround: Assumes that va_list passed via an arg equals to
@@ -169,6 +169,32 @@ AC_CHECK_SIZEOF(intptr_t)
 #AC_CHECK_SIZEOF(int_fast16_t)
 #AC_CHECK_SIZEOF(int_fast32_t)
 #AC_CHECK_SIZEOF(int_fast64_t)
+
+AC_CHECK_ALIGNOF(char)
+AC_CHECK_ALIGNOF(short)
+AC_CHECK_ALIGNOF(int)
+AC_CHECK_ALIGNOF(long)
+AC_CHECK_ALIGNOF(long long)
+AC_CHECK_ALIGNOF(float)
+AC_CHECK_ALIGNOF(double)
+AC_CHECK_ALIGNOF(long double)
+AC_CHECK_ALIGNOF(void *)
+AC_CHECK_ALIGNOF(size_t)
+
+AC_CHECK_ALIGNOF(int8_t)
+AC_CHECK_ALIGNOF(int16_t)
+AC_CHECK_ALIGNOF(int32_t)
+AC_CHECK_ALIGNOF(int64_t)
+AC_CHECK_ALIGNOF(intmax_t)
+AC_CHECK_ALIGNOF(intptr_t)
+#AC_CHECK_ALIGNOF(int_least8_t)
+#AC_CHECK_ALIGNOF(int_least16_t)
+#AC_CHECK_ALIGNOF(int_least32_t)
+#AC_CHECK_ALIGNOF(int_least64_t)
+#AC_CHECK_ALIGNOF(int_fast8_t)
+#AC_CHECK_ALIGNOF(int_fast16_t)
+#AC_CHECK_ALIGNOF(int_fast32_t)
+#AC_CHECK_ALIGNOF(int_fast64_t)
 
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T

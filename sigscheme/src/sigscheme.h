@@ -500,6 +500,7 @@ typedef scm_int_t ScmPackedEnv;
  *
  * And following macros:
  *
+ * ALIGNOF_SCMOBJ
  * SIZEOF_SCMOBJ
  *
  */
