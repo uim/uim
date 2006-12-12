@@ -2,7 +2,6 @@
 Requirements and critical bugs:
 
 * (yamaken) Autoconfiscate the SigScheme package
-  - Configure HAVE_REFERENCEABLE_PASSED_VA_LIST
   - Configure HAVE___ALIGNOF__
   - Configure HAVE_ARITHMETIC_SHIFT
   - Make most settings in src/config.h configurable with configure options
