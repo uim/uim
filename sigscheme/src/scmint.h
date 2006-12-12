@@ -180,47 +180,47 @@ typedef int scm_bool;
  * The integer type defaults to 64-bit on LP64 platforms.
  */
 #if SCM_USE_64BIT_FIXNUM
-typedef int64_t           scm_int_t;
-typedef uint64_t          scm_uint_t;
+typedef int64_t            scm_int_t;
+typedef uint64_t           scm_uint_t;
 #define ALIGNOF_SCM_INT_T  ALIGNOF_INT64_T
 #define ALIGNOF_SCM_UINT_T ALIGNOF_INT64_T
-#define SIZEOF_SCM_INT_T  SIZEOF_INT64_T
-#define SIZEOF_SCM_UINT_T SIZEOF_INT64_T
-#define SCM_INT_T_MAX     INT64_MAX
-#define SCM_INT_T_MIN     INT64_MIN
-#define SCM_UINT_T_MAX    UINT64_MAX
+#define SIZEOF_SCM_INT_T   SIZEOF_INT64_T
+#define SIZEOF_SCM_UINT_T  SIZEOF_INT64_T
+#define SCM_INT_T_MAX      INT64_MAX
+#define SCM_INT_T_MIN      INT64_MIN
+#define SCM_UINT_T_MAX     UINT64_MAX
 #elif SCM_USE_32BIT_FIXNUM
-typedef int32_t           scm_int_t;
-typedef uint32_t          scm_uint_t;
+typedef int32_t            scm_int_t;
+typedef uint32_t           scm_uint_t;
 #define ALIGNOF_SCM_INT_T  ALIGNOF_INT32_T
 #define ALIGNOF_SCM_UINT_T ALIGNOF_INT32_T
-#define SIZEOF_SCM_INT_T  SIZEOF_INT32_T
-#define SIZEOF_SCM_UINT_T SIZEOF_INT32_T
-#define SCM_INT_T_MAX     INT32_MAX
-#define SCM_INT_T_MIN     INT32_MIN
-#define SCM_UINT_T_MAX    UINT32_MAX
+#define SIZEOF_SCM_INT_T   SIZEOF_INT32_T
+#define SIZEOF_SCM_UINT_T  SIZEOF_INT32_T
+#define SCM_INT_T_MAX      INT32_MAX
+#define SCM_INT_T_MIN      INT32_MIN
+#define SCM_UINT_T_MAX     UINT32_MAX
 #elif SCM_USE_INT_FIXNUM
-typedef int               scm_int_t;
-typedef unsigned int      scm_uint_t;
+typedef int                scm_int_t;
+typedef unsigned int       scm_uint_t;
 #define ALIGNOF_SCM_INT_T  ALIGNOF_INT
 #define ALIGNOF_SCM_UINT_T ALIGNOF_INT
-#define SIZEOF_SCM_INT_T  SIZEOF_INT
-#define SIZEOF_SCM_UINT_T SIZEOF_INT
-#define SCM_INT_T_MAX     INT_MAX
-#define SCM_INT_T_MIN     INT_MIN
-#define SCM_UINT_T_MAX    UINT_MAX
+#define SIZEOF_SCM_INT_T   SIZEOF_INT
+#define SIZEOF_SCM_UINT_T  SIZEOF_INT
+#define SCM_INT_T_MAX      INT_MAX
+#define SCM_INT_T_MIN      INT_MIN
+#define SCM_UINT_T_MAX     UINT_MAX
 #else
 #undef  SCM_USE_LONG_FIXNUM
 #define SCM_USE_LONG_FIXNUM 1
-typedef long              scm_int_t;
-typedef unsigned long     scm_uint_t;
+typedef long               scm_int_t;
+typedef unsigned long      scm_uint_t;
 #define ALIGNOF_SCM_INT_T  ALIGNOF_LONG
 #define ALIGNOF_SCM_UINT_T ALIGNOF_LONG
-#define SIZEOF_SCM_INT_T  SIZEOF_LONG
-#define SIZEOF_SCM_UINT_T SIZEOF_LONG
-#define SCM_INT_T_MAX     LONG_MAX
-#define SCM_INT_T_MIN     LONG_MIN
-#define SCM_UINT_T_MAX    ULONG_MAX
+#define SIZEOF_SCM_INT_T   SIZEOF_LONG
+#define SIZEOF_SCM_UINT_T  SIZEOF_LONG
+#define SCM_INT_T_MAX      LONG_MAX
+#define SCM_INT_T_MIN      LONG_MIN
+#define SCM_UINT_T_MAX     ULONG_MAX
 #endif
 
 /*
@@ -248,28 +248,28 @@ typedef unsigned long     scm_uint_t;
  * The type defaults to direct pointer represenation, so *LP64 gets 64-bit.
  */
 #if SCM_USE_64BIT_SCMREF
-typedef int64_t              scm_intref_t;
-typedef uint64_t             scm_uintref_t;
+typedef int64_t               scm_intref_t;
+typedef uint64_t              scm_uintref_t;
 #define ALIGNOF_SCM_INTREF_T  ALIGNOF_INT64_T
 #define ALIGNOF_SCM_UINTREF_T ALIGNOF_INT64_T
-#define SIZEOF_SCM_INTREF_T  SIZEOF_INT64_T
-#define SIZEOF_SCM_UINTREF_T SIZEOF_INT64_T
+#define SIZEOF_SCM_INTREF_T   SIZEOF_INT64_T
+#define SIZEOF_SCM_UINTREF_T  SIZEOF_INT64_T
 #elif SCM_USE_32BIT_SCMREF
-typedef int32_t              scm_intref_t;
-typedef uint32_t             scm_uintref_t;
+typedef int32_t               scm_intref_t;
+typedef uint32_t              scm_uintref_t;
 #define ALIGNOF_SCM_INTREF_T  ALIGNOF_INT32_T
 #define ALIGNOF_SCM_UINTREF_T ALIGNOF_INT32_T
-#define SIZEOF_SCM_INTREF_T  SIZEOF_INT32_T
-#define SIZEOF_SCM_UINTREF_T SIZEOF_INT32_T
+#define SIZEOF_SCM_INTREF_T   SIZEOF_INT32_T
+#define SIZEOF_SCM_UINTREF_T  SIZEOF_INT32_T
 #else
 #undef  SCM_USE_INTPTR_SCMREF
 #define SCM_USE_INTPTR_SCMREF 1
-typedef intptr_t             scm_intref_t;
-typedef uintptr_t            scm_uintref_t;
+typedef intptr_t              scm_intref_t;
+typedef uintptr_t             scm_uintref_t;
 #define ALIGNOF_SCM_INTREF_T  ALIGNOF_INTPTR_T
 #define ALIGNOF_SCM_UINTREF_T ALIGNOF_INTPTR_T
-#define SIZEOF_SCM_INTREF_T  SIZEOF_INTPTR_T
-#define SIZEOF_SCM_UINTREF_T SIZEOF_INTPTR_T
+#define SIZEOF_SCM_INTREF_T   SIZEOF_INTPTR_T
+#define SIZEOF_SCM_UINTREF_T  SIZEOF_INTPTR_T
 #endif
 
 /*
@@ -289,19 +289,19 @@ typedef uintptr_t            scm_uintref_t;
  * and reference size. And of course alters the ABI.
  */
 #if (SIZEOF_SCM_INT_T < SIZEOF_SCM_INTREF_T)
-typedef scm_intref_t         scm_intobj_t;
-typedef scm_uintref_t        scm_uintobj_t;
+typedef scm_intref_t          scm_intobj_t;
+typedef scm_uintref_t         scm_uintobj_t;
 #define ALIGNOF_SCM_INTOBJ_T  ALIGNOF_SCM_INTREF_T
 #define ALIGNOF_SCM_UINTOBJ_T ALIGNOF_SCM_UINTREF_T
-#define SIZEOF_SCM_INTOBJ_T  SIZEOF_SCM_INTREF_T
-#define SIZEOF_SCM_UINTOBJ_T SIZEOF_SCM_UINTREF_T
+#define SIZEOF_SCM_INTOBJ_T   SIZEOF_SCM_INTREF_T
+#define SIZEOF_SCM_UINTOBJ_T  SIZEOF_SCM_UINTREF_T
 #else
-typedef scm_int_t            scm_intobj_t;
-typedef scm_uint_t           scm_uintobj_t;
+typedef scm_int_t             scm_intobj_t;
+typedef scm_uint_t            scm_uintobj_t;
 #define ALIGNOF_SCM_INTOBJ_T  ALIGNOF_SCM_INT_T
 #define ALIGNOF_SCM_UINTOBJ_T ALIGNOF_SCM_UINT_T
-#define SIZEOF_SCM_INTOBJ_T  SIZEOF_SCM_INT_T
-#define SIZEOF_SCM_UINTOBJ_T SIZEOF_SCM_UINT_T
+#define SIZEOF_SCM_INTOBJ_T   SIZEOF_SCM_INT_T
+#define SIZEOF_SCM_UINTOBJ_T  SIZEOF_SCM_UINT_T
 #endif
 
 /*
@@ -317,12 +317,12 @@ typedef scm_uint_t           scm_uintobj_t;
  * Actual bit width varies for each storage implementation. Refer
  * SCM_CHAR_BITS, SCM_CHAR_MAX and SCM_CHAR_MIN if needed.
  */
-typedef int32_t            scm_ichar_t;
+typedef int32_t             scm_ichar_t;
 #define ALIGNOF_SCM_ICHAR_T ALIGNOF_INT32_T
-#define SIZEOF_SCM_ICHAR_T SIZEOF_INT32_T
-#define SCM_ICHAR_T_MAX    INT32_MAX
-#define SCM_ICHAR_T_MIN    INT32_MIN
-#define SCM_ICHAR_EOF      (-1)
+#define SIZEOF_SCM_ICHAR_T  SIZEOF_INT32_T
+#define SCM_ICHAR_T_MAX     INT32_MAX
+#define SCM_ICHAR_T_MIN     INT32_MIN
+#define SCM_ICHAR_EOF       (-1)
 
 /*
  * Definitive byte type
@@ -331,27 +331,27 @@ typedef int32_t            scm_ichar_t;
  * (for example, ARM compilers treat 'char' as 'unsigned char'), use this type
  * for raw strings and so on.
  */
-typedef unsigned char      scm_byte_t;
+typedef unsigned char       scm_byte_t;
 #define ALIGNOF_SCM_BYTE_T  ALIGNOF_CHAR
-#define SIZEOF_SCM_BYTE_T  SIZEOF_CHAR
-#define SCM_BYTE_T_MAX     UCHAR_MAX
-#define SCM_BYTE_T_MIN     0
+#define SIZEOF_SCM_BYTE_T   SIZEOF_CHAR
+#define SCM_BYTE_T_MAX      UCHAR_MAX
+#define SCM_BYTE_T_MIN      0
 
 /*
  * Constant-width character for strings (not used yet)
  */
 #if SCM_HAS_4OCT_WCHAR
-typedef uint32_t           scm_wchar_t;
+typedef uint32_t            scm_wchar_t;
 #define ALIGNOF_SCM_WCHAR_T ALIGNOF_INT32_T
-#define SIZEOF_SCM_WCHAR_T SIZEOF_INT32_T
+#define SIZEOF_SCM_WCHAR_T  SIZEOF_INT32_T
 #elif SCM_HAS_2OCT_WCHAR
-typedef uint16_t           scm_wchar_t;
+typedef uint16_t            scm_wchar_t;
 #define ALIGNOF_SCM_WCHAR_T ALIGNOF_INT16_T
-#define SIZEOF_SCM_WCHAR_T SIZEOF_INT16_T
+#define SIZEOF_SCM_WCHAR_T  SIZEOF_INT16_T
 #else
-typedef scm_byte_t         scm_wchar_t;
+typedef scm_byte_t          scm_wchar_t;
 #define ALIGNOF_SCM_WCHAR_T ALIGNOF_SCM_BYTE_T
-#define SIZEOF_SCM_WCHAR_T SIZEOF_SCM_BYTE_T
+#define SIZEOF_SCM_WCHAR_T  SIZEOF_SCM_BYTE_T
 #endif
 
 /* size constraints */

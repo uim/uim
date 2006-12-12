@@ -74,7 +74,7 @@ typedef ScmCell *ScmObj;
 typedef ScmObj *ScmRef;
 
 #define ALIGNOF_SCMOBJ ALIGNOF_VOID_P
-#define SIZEOF_SCMOBJ SIZEOF_VOID_P
+#define SIZEOF_SCMOBJ  SIZEOF_VOID_P
 
 typedef ScmObj (*ScmFuncType)();
 

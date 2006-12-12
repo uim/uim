@@ -208,9 +208,9 @@ typedef struct ScmCell_ ScmCell;
 
 /* Note that this is unsigned.  Signed operations are desirable only
  * in a few, specific cases. */
-typedef scm_uintobj_t ScmObj;
+typedef scm_uintobj_t  ScmObj;
 #define ALIGNOF_SCMOBJ ALIGNOF_SCM_INTOBJ_T
-#define SIZEOF_SCMOBJ SIZEOF_SCM_INTOBJ_T
+#define SIZEOF_SCMOBJ  SIZEOF_SCM_INTOBJ_T
 
 struct ScmCell_ {
     /* The field names have some redundancy to avoid conflict with
