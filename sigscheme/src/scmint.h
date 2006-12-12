@@ -52,9 +52,19 @@
 
 #include <sigscheme/config.h>
 
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#if HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+#if HAVE_SYS_INTTYPES_H
+#include <sys/inttypes.h>
+#endif
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 #include <limits.h>
-
-#include "sigscheme-stdint.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,6 +75,71 @@ extern "C" {
 =======================================*/
 #ifndef SCM_EMPTY_EXPR
 #define SCM_EMPTY_EXPR ((void)0)
+#endif
+
+/*=======================================
+  Type Definitions: stdint.h subtitutes
+=======================================*/
+#define SCM_STDINT_MIN(t) ((t)(~(u##t)0))
+#define SCM_STDINT_MAX(t) ((t)((~(u##t)0) >> 1))
+
+/* Note: Since these macros are not pure constant such as (-1LL), testing in
+ * preprocessor directives (such as #if INT32_MAX < LONG_MAX) does not work. */
+#ifndef INT8_MIN
+#define INT8_MIN    SCM_STDINT_MIN(int8_t)
+#endif
+#ifndef INT16_MIN
+#define INT16_MIN   SCM_STDINT_MIN(int16_t)
+#endif
+#ifndef INT32_MIN
+#define INT32_MIN   SCM_STDINT_MIN(int32_t)
+#endif
+#ifndef INT64_MIN
+#define INT64_MIN   SCM_STDINT_MIN(int64_t)
+#endif
+#ifndef INTMAX_MIN
+#define INTMAX_MIN  SCM_STDINT_MIN(intmax_t)
+#endif
+#ifndef INTPTR_MIN
+#define INTPTR_MIN  SCM_STDINT_MIN(intptr_t)
+#endif
+
+#ifndef INT8_MAX
+#define INT8_MAX    SCM_STDINT_MAX(int8_t)
+#endif
+#ifndef INT16_MAX
+#define INT16_MAX   SCM_STDINT_MAX(int16_t)
+#endif
+#ifndef INT32_MAX
+#define INT32_MAX   SCM_STDINT_MAX(int32_t)
+#endif
+#ifndef INT64_MAX
+#define INT64_MAX   SCM_STDINT_MAX(int64_t)
+#endif
+#ifndef INTMAX_MAX
+#define INTMAX_MAX  SCM_STDINT_MAX(intmax_t)
+#endif
+#ifndef INTPTR_MAX
+#define INTPTR_MAX  SCM_STDINT_MAX(intptr_t)
+#endif
+
+#ifndef UINT8_MAX
+#define UINT8_MAX   (~(uint8_t)0)
+#endif
+#ifndef UINT16_MAX
+#define UINT16_MAX  (~(uint16_t)0)
+#endif
+#ifndef UINT32_MAX
+#define UINT32_MAX  (~(uint32_t)0)
+#endif
+#ifndef UINT64_MAX
+#define UINT64_MAX  (~(uint64_t)0)
+#endif
+#ifndef UINTMAX_MAX
+#define UINTMAX_MAX (~(uintmax_t)0)
+#endif
+#ifndef UINTPTR_MAX
+#define UINTPTR_MAX (~(uintptr_t)0)
 #endif
 
 /*=======================================
@@ -224,10 +299,10 @@ typedef scm_uint_t           scm_uintobj_t;
  * Actual bit width varies for each storage implementation. Refer
  * SCM_CHAR_BITS, SCM_CHAR_MAX and SCM_CHAR_MIN if needed.
  */
-typedef int_fast32_t       scm_ichar_t;
-#define SIZEOF_SCM_ICHAR_T SIZEOF_INT_FAST32_T
-#define SCM_ICHAR_T_MAX    INT_FAST32_MAX
-#define SCM_ICHAR_T_MIN    INT_FAST32_MIN
+typedef int32_t            scm_ichar_t;
+#define SIZEOF_SCM_ICHAR_T SIZEOF_INT32_T
+#define SCM_ICHAR_T_MAX    INT32_MAX
+#define SCM_ICHAR_T_MIN    INT32_MIN
 #define SCM_ICHAR_EOF      (-1)
 
 /*

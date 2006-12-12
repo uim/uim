@@ -39,7 +39,6 @@
 #define TST_HAVE_MAIN 1
 #include "sscm-test.h"
 
-#include <sigscheme/sigscheme-stdint.h>
 #include <sigscheme/sigscheme.h>
 #include "sigschemeinternal.h"
 

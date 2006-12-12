@@ -45,7 +45,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "sigscheme-stdint.h"
 #include "scmint.h"
 
 #ifdef __cplusplus

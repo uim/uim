@@ -44,7 +44,6 @@
 
 #include <stddef.h>
 
-#include "sigscheme-stdint.h"
 #include "scmint.h"
 #include "global.h"
 

@@ -43,7 +43,6 @@
 #include <unistd.h>
 #endif
 
-#include "sigscheme-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

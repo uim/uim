@@ -45,7 +45,6 @@
 #include <assert.h>
 #endif
 
-#include "sigscheme-stdint.h"
 #include "scmint.h"
 #include "global.h"
 #if SCM_USE_MULTIBYTE_CHAR

@@ -41,7 +41,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-#include "sigscheme-stdint.h"
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
 

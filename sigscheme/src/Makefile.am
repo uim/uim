@@ -168,7 +168,6 @@ sigscheme-combined-trim.h: $(DIST_SOURCES)
 	@for src in $^ $>; do                   \
 	    case $$src in                       \
 	    config-old.h)       ;;              \
-	    sigscheme-stdint.h) ;;              \
 	    scmint.h)           ;;              \
 	    encoding.h)         ;;              \
 	    encoding-dummy.h)   ;;              \
@@ -206,7 +205,7 @@ EXTRA_DIST += dllentry.c
 # See "Built sources" section of automake info.
 BUILT_SOURCES = $(BUILT_DIST)
 
-nodist_pkginclude_HEADERS = config.h sigscheme-stdint.h
+nodist_pkginclude_HEADERS = config.h
 pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
 libsscm_la_SOURCES = \
@@ -339,7 +338,7 @@ sscm_CFLAGS   = -Wall
 # To enable ruby-and-perl-less build on tarball distribution, we should not
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.
 CLEANFILES = sigscheme-combined.c
-DISTCLEANFILES = sigscheme-stdint.h
+DISTCLEANFILES =
 MAINTAINERCLEANFILES = $(BUILT_DIST)
 
 ETAGS_ARGS = sigschemeinternal.h

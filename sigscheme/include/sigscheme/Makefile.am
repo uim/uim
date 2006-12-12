@@ -1,13 +1,10 @@
 BUILT_SOURCES = \
-        config.h sigscheme-stdint.h \
+        config.h \
         config-old.h scmint.h global.h encoding.h encoding-dummy.h \
         sigscheme.h \
         storage-common.h storage-fatty.h storage-compact.h
 
 config.h: $(top_builddir)/src/config.h
-	rm -f $@
-	$(LN_S) $< $@
-sigscheme-stdint.h: $(top_builddir)/src/sigscheme-stdint.h
 	rm -f $@
 	$(LN_S) $< $@
 config-old.h: $(top_srcdir)/src/config-old.h

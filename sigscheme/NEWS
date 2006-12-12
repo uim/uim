@@ -51,6 +51,8 @@ Overview of changes from 0.6.1 to 0.7.0
   - Change the low-level port API to fix the design error about error handling
     (get_byte() and peek_byte() were not able to detect read error)
 
+  - Withdraw sigscheme-stdint.h. Use scmint.h instead
+
 * Fixes
 
   [R5RS] and [SRFI-n] tags indicate specification conformance fixes.
@@ -78,6 +80,11 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - Fix infinite loop on raising error objects that contain circular list when
     SCM_USE_HYGIENIC_MACRO
+
+  - Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
+    which may cause SEGV
+
+  - Add lacking or incomplete error handlings for port operations
 
   - [R5RS] Fix invalid acceptance of definition form on where neither toplevel
     nor internal definition is allowed
@@ -135,14 +142,12 @@ Overview of changes from 0.6.1 to 0.7.0
   - [SRFI-60] Fix invalid result of (logand). Now it returns -1 as same
     as the reference implementation
 
-  - Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
-    which may cause SEGV
-
-  - Add lacking or incomplete error handlings for port operations
-
   - Fix incomplete singlebyte charater support
 
   - Fix broken sign extention for 8-bit char on string port read
+
+  - Fix compile error on environments that lacks stdint.h -compatible
+    definitions
 
   - Fix missized-cast of 'quotient' which results a broken value on 64-bit
     configurations
