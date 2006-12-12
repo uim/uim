@@ -191,13 +191,13 @@
 #define SCM_SIGN_BIT(x) ((x)                                                 \
                          & ((scm_uintobj_t)1 << (sizeof(x) * CHAR_BIT - 1)))
 
-#if HAVE_ARITHMETIC_SHIFT
-#define SCM_ARSHIFT(x, n)    ((scm_intobj_t)(x) >> (n))
-#else  /* not HAVE_ARITHMETIC_SHIFT */
+#if HAVE_ARITHMETIC_RSHIFT
+#define SCM_ARSHIFT(x, n)    ((scm_uintobj_t)((scm_intobj_t)(x) >> (n)))
+#else  /* not HAVE_ARITHMETIC_RSHIFT */
 /* Emulate a right arithmetic shift. */
 #define SCM_ARSHIFT(x, n)                                       \
    (((scm_uintobj_t)(x) >> (n)) | -(SCM_SIGN_BIT(x) >> (n)))
-#endif /* not HAVE_ARITHMETIC_SHIFT */
+#endif /* not HAVE_ARITHMETIC_RSHIFT */
 
 
 /* ------------------------------------------------------------

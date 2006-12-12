@@ -559,13 +559,13 @@ corner case tests:
 
 file:              storage-compact.h
 category:          core
-spec by eyes:      yamaken@r4103
+spec by eyes:      yamaken@r4103, yamaken@r4123
 spec by tests:     
 general review:    yamaken@r4103
 64-bit by eyes:    yamaken@r4103
 64-bit by tests:   
 coding style:      yamaken@r4103
-normal case tests: yamaken@r4103
+normal case tests: yamaken@r4103, yamaken@r4123
 corner case tests: 
 
 file:              storage.c
