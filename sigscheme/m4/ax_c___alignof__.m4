@@ -17,12 +17,20 @@ struct _st {
   void *p;
 };
 
-int c[__alignof__(char)];
-int s[__alignof__(short)];
-int i[__alignof__(int)];
-int l[__alignof__(long)];
+int  c[__alignof__(char)];
+int  s[__alignof__(short)];
+int  i[__alignof__(int)];
+int  l[__alignof__(long)];
 int vp[__alignof__(void *)];
 int st[__alignof__(struct _st)];
+
+/* test whether ((__alignof__(type)) != 0) */
+int  c2[((__alignof__(char))       > 0) ? 1 : -1];
+int  s2[((__alignof__(short))      > 0) ? 1 : -1];
+int  i2[((__alignof__(int))        > 0) ? 1 : -1];
+int  l2[((__alignof__(long))       > 0) ? 1 : -1];
+int vp2[((__alignof__(void *))     > 0) ? 1 : -1];
+int st2[((__alignof__(struct _st)) > 0) ? 1 : -1];
 
 int
 f(void)
