@@ -2,7 +2,6 @@
 Requirements and critical bugs:
 
 * (yamaken) Autoconfiscate the SigScheme package
-  - Configure HAVE___ALIGNOF__
   - Configure HAVE_ARITHMETIC_SHIFT
   - Make most settings in src/config.h configurable with configure options
   - [uim] configure sigscheme subdir by top-level configure like GCC

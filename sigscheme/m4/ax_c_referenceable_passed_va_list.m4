@@ -40,7 +40,7 @@ dnl @license AllPermissive
 AC_DEFUN([AX_C_REFERENCEABLE_PASSED_VA_LIST], [
   AC_CACHE_CHECK([whether f(va_list va){ &va; } works as expected],
     [ax_cv_c_referenceable_passed_va_list],
-    [AC_LINK_IFELSE([
+    [AC_LINK_IFELSE([[
 #include <stdarg.h>
 
 volatile va_list g_va;
@@ -71,7 +71,7 @@ main(int argc, char *argv[])
 
   return 0;
 }
-      ],
+      ]],
       [ax_cv_c_referenceable_passed_va_list=yes],
       [ax_cv_c_referenceable_passed_va_list=no])])
   if test "x$ax_cv_c_referenceable_passed_va_list" = xyes; then
