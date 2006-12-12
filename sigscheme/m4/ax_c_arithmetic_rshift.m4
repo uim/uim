@@ -1,3 +1,10 @@
+dnl Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
+dnl
+dnl Copying and distribution of this file, with or without modification,
+dnl are permitted in any medium without royalty provided the copyright
+dnl notice and this notice are preserved.
+dnl
+dnl
 dnl @synopsis AX_C_ARITHMETIC_RSHIFT
 dnl
 dnl Checks if the right shift operation is arithmetic.
