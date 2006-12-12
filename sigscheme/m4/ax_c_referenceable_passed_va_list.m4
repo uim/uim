@@ -2,6 +2,8 @@ dnl @synopsis AX_C_REFERENCEABLE_PASSED_VA_LIST
 dnl
 dnl Checks whether f(va_list va){ &va; } works as expected.
 dnl
+dnl This macro uses compile-time detection and so cross-compile ready.
+dnl
 dnl C99 mentioned passing a pointer to va_list to other functions (footnote
 dnl 212 of "7.15 Variable arguments <stdarg.h>"). However, f(va_list va) {
 dnl &va; } produces broken pointer on some environments such as gcc on

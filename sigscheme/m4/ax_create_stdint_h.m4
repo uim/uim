@@ -1,45 +1,87 @@
-dnl @synopsis AX_CREATE_STDINT_H [( HEADER-TO-GENERATE [, HEDERS-TO-CHECK])]
-dnl
-dnl the "ISO C9X: 7.18 Integer types <stdint.h>" section requires the
-dnl existence of an include file <stdint.h> that defines a set of
-dnl typedefs, especially uint8_t,int32_t,uintptr_t. Many older
-dnl installations will not provide this file, but some will have the
-dnl very same definitions in <inttypes.h>. In other enviroments we can
-dnl use the inet-types in <sys/types.h> which would define the typedefs
-dnl int8_t and u_int8_t respectivly.
-dnl
-dnl This macros will create a local "_stdint.h" or the headerfile given
-dnl as an argument. In many cases that file will just "#include
-dnl <stdint.h>" or "#include <inttypes.h>", while in other environments
-dnl it will provide the set of basic 'stdint's definitions/typedefs:
-dnl
-dnl   int8_t,uint8_t,int16_t,uint16_t,int32_t,uint32_t,intptr_t,uintptr_t
-dnl   int_least32_t.. int_fast32_t.. intmax_t
-dnl
-dnl which may or may not rely on the definitions of other files, or
-dnl using the AC_CHECK_SIZEOF macro to determine the actual sizeof each
-dnl type.
-dnl
-dnl if your header files require the stdint-types you will want to
-dnl create an installable file mylib-int.h that all your other
-dnl installable header may include. So if you have a library package
-dnl named "mylib", just use
-dnl
-dnl      AX_CREATE_STDINT_H(mylib-int.h)
-dnl
-dnl in configure.ac and go to install that very header file in
-dnl Makefile.am along with the other headers (mylib.h) - and the
-dnl mylib-specific headers can simply use "#include <mylib-int.h>" to
-dnl obtain the stdint-types.
-dnl
-dnl Remember, if the system already had a valid <stdint.h>, the
-dnl generated file will include it directly. No need for fuzzy
-dnl HAVE_STDINT_H things...
-dnl
-dnl @category C
-dnl @author Guido Draheim <guidod@gmx.de>
-dnl @version 2003-12-07
-dnl @license GPLWithACException
+##### http://autoconf-archive.cryp.to/ax_create_stdint_h.html
+#
+# SYNOPSIS
+#
+#   AX_CREATE_STDINT_H [( HEADER-TO-GENERATE [, HEDERS-TO-CHECK])]
+#
+# DESCRIPTION
+#
+#   the "ISO C9X: 7.18 Integer types <stdint.h>" section requires the
+#   existence of an include file <stdint.h> that defines a set of
+#   typedefs, especially uint8_t,int32_t,uintptr_t. Many older
+#   installations will not provide this file, but some will have the
+#   very same definitions in <inttypes.h>. In other enviroments we can
+#   use the inet-types in <sys/types.h> which would define the typedefs
+#   int8_t and u_int8_t respectivly.
+#
+#   This macros will create a local "_stdint.h" or the headerfile given
+#   as an argument. In many cases that file will just "#include
+#   <stdint.h>" or "#include <inttypes.h>", while in other environments
+#   it will provide the set of basic 'stdint's definitions/typedefs:
+#
+#     int8_t,uint8_t,int16_t,uint16_t,int32_t,uint32_t,intptr_t,uintptr_t
+#     int_least32_t.. int_fast32_t.. intmax_t
+#
+#   which may or may not rely on the definitions of other files, or
+#   using the AC_CHECK_SIZEOF macro to determine the actual sizeof each
+#   type.
+#
+#   if your header files require the stdint-types you will want to
+#   create an installable file mylib-int.h that all your other
+#   installable header may include. So if you have a library package
+#   named "mylib", just use
+#
+#        AX_CREATE_STDINT_H(mylib-int.h)
+#
+#   in configure.ac and go to install that very header file in
+#   Makefile.am along with the other headers (mylib.h) - and the
+#   mylib-specific headers can simply use "#include <mylib-int.h>" to
+#   obtain the stdint-types.
+#
+#   Remember, if the system already had a valid <stdint.h>, the
+#   generated file will include it directly. No need for fuzzy
+#   HAVE_STDINT_H things... (oops, GCC 4.2.x has deliberatly disabled
+#   its stdint.h for non-c99 compilation and the c99-mode is not the
+#   default. Therefore this macro will not use the compiler's stdint.h
+#   - please complain to the GCC developers).
+#
+# LAST MODIFICATION
+#
+#   2006-10-13
+#
+# COPYLEFT
+#
+#   Copyright (c) 2006 Guido U. Draheim <guidod@gmx.de>
+#
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License as
+#   published by the Free Software Foundation; either version 2 of the
+#   License, or (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+#   02111-1307, USA.
+#
+#   As a special exception, the respective Autoconf Macro's copyright
+#   owner gives unlimited permission to copy, distribute and modify the
+#   configure scripts that are the output of Autoconf when processing
+#   the Macro. You need not follow the terms of the GNU General Public
+#   License when using or distributing such scripts, even though
+#   portions of the text of the Macro appear in them. The GNU General
+#   Public License (GPL) does govern all other use of the material that
+#   constitutes the Autoconf Macro.
+#
+#   This special exception to the GPL applies to versions of the
+#   Autoconf Macro released by the Autoconf Macro Archive. When you
+#   make and distribute a modified version of the Autoconf Macro, you
+#   may extend this special exception to the GPL to apply to your
+#   modified version as well.
 
 AC_DEFUN([AX_CHECK_DATA_MODEL],[
    AC_CHECK_SIZEOF(char)
@@ -83,7 +125,8 @@ AC_DEFUN([AX_CHECK_HEADER_STDINT_X],[
 AC_CACHE_CHECK([for stdint uintptr_t], [ac_cv_header_stdint_x],[
  ac_cv_header_stdint_x="" # the 1997 typedefs (inttypes.h)
   AC_MSG_RESULT([(..)])
-  for i in m4_ifval([$1],[$1],[stdint.h inttypes.h sys/inttypes.h]) ; do
+  for i in m4_ifval([$1],[$1],[stdint.h inttypes.h sys/inttypes.h sys/types.h])
+  do
    unset ac_cv_type_uintptr_t
    unset ac_cv_type_uint64_t
    AC_CHECK_TYPE(uintptr_t,[ac_cv_header_stdint_x=$i],continue,[#include <$i>])
@@ -98,7 +141,8 @@ AC_DEFUN([AX_CHECK_HEADER_STDINT_O],[
 AC_CACHE_CHECK([for stdint uint32_t], [ac_cv_header_stdint_o],[
  ac_cv_header_stdint_o="" # the 1995 typedefs (sys/inttypes.h)
   AC_MSG_RESULT([(..)])
-  for i in m4_ifval([$1],[$1],[inttypes.h sys/inttypes.h stdint.h]) ; do
+  for i in m4_ifval([$1],[$1],[inttypes.h sys/inttypes.h sys/types.h stdint.h])
+  do
    unset ac_cv_type_uint32_t
    unset ac_cv_type_uint64_t
    AC_CHECK_TYPE(uint32_t,[ac_cv_header_stdint_o=$i],continue,[#include <$i>])
@@ -140,6 +184,11 @@ AC_TRY_COMPILE([#include <stdint.h>],[int_least32_t v = 0;],
 [ac_cv_stdint_result="(assuming C99 compatible system)"
  ac_cv_header_stdint_t="stdint.h"; ],
 [ac_cv_header_stdint_t=""])
+if test "$GCC" = "yes" && test ".$ac_cv_header_stdint_t" = "."; then
+CFLAGS="-std=c99"
+AC_TRY_COMPILE([#include <stdint.h>],[int_least32_t v = 0;],
+[AC_MSG_WARN(your GCC compiler has a defunct stdint.h for its default-mode)])
+fi
 CXXFLAGS="$old_CXXFLAGS"
 CPPFLAGS="$old_CPPFLAGS"
 CFLAGS="$old_CFLAGS" ])
@@ -560,7 +609,7 @@ typedef unsigned long uintmax_t;
 #define __intptr_t_defined
 /* we encourage using "long" to store pointer values, never use "int" ! */
 #if   _STDINT_LONG_MODEL+0 == 242 || _STDINT_LONG_MODEL+0 == 484
-typedef  unsinged int   uintptr_t;
+typedef  unsigned int   uintptr_t;
 typedef           int    intptr_t;
 #elif _STDINT_LONG_MODEL+0 == 244 || _STDINT_LONG_MODEL+0 == 444
 typedef  unsigned long  uintptr_t;
