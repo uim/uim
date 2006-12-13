@@ -40,7 +40,18 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+
+/* workaround for pre X11R6.7 */
+#ifndef XK_KOREAN
+#define XK_KOREAN
+#endif
+#ifndef XK_KATAKANA
+#define XK_KATAKANA
+#endif
 #include <X11/keysymdef.h>
+#ifndef XK_dead_horn
+#define XK_dead_horn	0xfe62
+#endif
 
 #include "xim.h"
 #include "convdisp.h"
@@ -1089,6 +1100,7 @@ void keyState::check_key(keyEventX *x)
 	mKey = x->key_sym;
     else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
 	mKey = x->key_sym - XK_F1 + UKey_F1;
+    // GTK+ and Qt don't support dead_stroke yet
     else if (x->key_sym >= XK_dead_grave && x->key_sym <= XK_dead_horn)
 	mKey = x->key_sym - XK_dead_grave + UKey_Dead_Grave;
     else if (x->key_sym >= XK_Kanji && x->key_sym <= XK_Eisu_toggle)
