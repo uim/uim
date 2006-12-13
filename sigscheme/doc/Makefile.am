@@ -4,7 +4,7 @@ ASCIIDOC_HTMLS = \
         index.html design.html spec.html style.html test-c.html \
         global-obj.html gc-protection.html release.html
 
-EXTRA_DIST = TODO
+EXTRA_DIST =
 
 dist_doc_DATA  = $(TXTS)
 dist_html_DATA = $(ASCIIDOC_HTMLS)

@@ -946,14 +946,21 @@ SCM_EXPORT enum ScmObjType scm_type(ScmObj obj);
 #define SCM_SAL_OBJ_BITS    (sizeof(ScmObj) * CHAR_BIT)
 #define SCM_SAL_PTR_BITS    (sizeof(void *) * CHAR_BIT)
 
-#define SCM_SAL_CHAR_BITS   (SCM_SAL_OBJ_BITS - SCM_CHAR_VAL_OFFSET)
-#define SCM_SAL_CHAR_MAX    ((scm_int_t)                                     \
-                             (((scm_uint_t)1 << SCM_SAL_CHAR_BITS) - 1))
+#define SCM_SAL_CHAR_BITS   SCM_MIN((SCM_SAL_OBJ_BITS - SCM_CHAR_VAL_OFFSET), \
+                                    (sizeof(scm_ichar_t) * CHAR_BIT))
+#define SCM_SAL_CHAR_MAX    SCM_MIN((scm_ichar_t)                            \
+                                    SCM_MAKE_MASK(0, SCM_SAL_CHAR_BITS),     \
+                                    SCM_ICHAR_T_MAX)
 
-#define SCM_SAL_INT_BITS    (SCM_SAL_OBJ_BITS - SCM_INT_VAL_OFFSET)
-#define SCM_SAL_INT_MAX     (SCM_INT_T_MAX >> SCM_INT_VAL_OFFSET)
-#define SCM_SAL_INT_MIN     ((scm_int_t)                                     \
-                             SCM_ARSHIFT(SCM_INT_T_MIN, SCM_INT_VAL_OFFSET))
+#define SCM_SAL_INT_BITS    SCM_MIN((SCM_SAL_OBJ_BITS - SCM_INT_VAL_OFFSET), \
+                                    (sizeof(scm_int_t) * CHAR_BIT))
+#define SCM_SAL_INT_MAX     SCM_MIN((scm_int_t)                              \
+                                    (SCM_INT_T_MAX >> SCM_INT_VAL_OFFSET),   \
+                                    SCM_INT_T_MAX))
+#define SCM_SAL_INT_MIN     SCM_MAX((scm_int_t)                              \
+                                    SCM_ARSHIFT(SCM_INT_T_MIN,               \
+                                                SCM_INT_VAL_OFFSET),         \
+                                    SCM_INT_T_MIN)
 
 /* string length */
 #define SCM_SAL_STRLEN_BITS SCM_INT_BITS

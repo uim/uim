@@ -200,6 +200,22 @@ scm_initialize_internal(void)
 {
     const char *const *feature;
 
+    /* size constraints */
+    /* FIXME: check at compile-time */
+    if (!((SCM_SAL_PTR_BITS <= SIZEOF_VOID_P * CHAR_BIT)
+          && (SCM_SAL_CHAR_BITS <= SIZEOF_SCM_ICHAR_T * CHAR_BIT)
+          && (SCM_SAL_INT_BITS <= SIZEOF_SCM_INT_T * CHAR_BIT)
+          && (SCM_SAL_STRLEN_BITS <= SCM_SAL_INT_BITS)
+          && (SCM_SAL_VECLEN_BITS <= SCM_SAL_INT_BITS)))
+        scm_fatal_error("bit width constraints of the storage implementation are broken");
+
+    if (!((SCM_SAL_CHAR_MAX <= SCM_ICHAR_T_MAX)
+          && (SCM_INT_T_MIN <= SCM_SAL_INT_MIN
+              && SCM_SAL_INT_MAX <= SCM_INT_T_MAX)
+          && (SCM_SAL_STRLEN_MAX <= SCM_SAL_INT_MAX)
+          && (SCM_SAL_VECLEN_MAX <= SCM_SAL_INT_MAX)))
+        scm_fatal_error("size constraints of the storage implementation are broken");
+
     /*=======================================================================
       Core
     =======================================================================*/

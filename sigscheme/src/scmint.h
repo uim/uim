@@ -369,6 +369,9 @@ typedef scm_byte_t          scm_wchar_t;
 #error "size constraints of primitive types are broken"
 #endif
 
+#define SCM_MAX(a, b) (((a) < (b)) ? (b) : (a))
+#define SCM_MIN(a, b) (((a) > (b)) ? (b) : (a))
+
 /*=======================================
   Variable Declarations
 =======================================*/
