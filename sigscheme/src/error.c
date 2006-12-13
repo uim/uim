@@ -402,7 +402,7 @@ scm_error(const char *func_name, const char *msg, ...)
 SCM_EXPORT void
 scm_error_obj(const char *func_name, const char *msg, ScmObj obj)
 {
-    volatile va_list dummy_va;
+    va_list dummy_va SCM_UNUSED;
 
     scm_error_internal(func_name, obj, msg, dummy_va);
     /* NOTREACHED */
