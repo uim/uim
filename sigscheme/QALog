@@ -284,10 +284,10 @@ Status
 
 file:              scmint.h
 category:          base
-spec by eyes:      yamaken@r3961, yamaken@r3992
+spec by eyes:      yamaken@r3961, yamaken@r3992, yamaken@4134
 spec by tests:     
 general review:    yamaken@r3961
-64-bit by eyes:    yamaken@r3961
+64-bit by eyes:    yamaken@r3961, yamaken@4134
 64-bit by tests:   
 coding style:      yamaken@r3961
 normal case tests: 
@@ -548,7 +548,7 @@ corner case tests:
 
 file:              storage-fatty.h
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@r4108
+spec by eyes:      yamaken@r4066, yamaken@r4108, yamaken@4127
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -559,13 +559,13 @@ corner case tests:
 
 file:              storage-compact.h
 category:          core
-spec by eyes:      yamaken@r4103, yamaken@r4123
+spec by eyes:      yamaken@r4103, yamaken@r4123, yamaken@4135
 spec by tests:     
 general review:    yamaken@r4103
-64-bit by eyes:    yamaken@r4103
+64-bit by eyes:    yamaken@r4103, yamaken@4135
 64-bit by tests:   
 coding style:      yamaken@r4103
-normal case tests: yamaken@r4103, yamaken@r4123
+normal case tests: yamaken@r4103, yamaken@r4123, yamaken@4135
 corner case tests: 
 
 file:              storage.c
@@ -1055,6 +1055,21 @@ corner case tests:
 
 Log
 ---
+2006-12-13  YamaKen <yamaken AT bp.iij4u.or.jp>
+
+        * storage-compact.h
+        * sigscheme.c
+          - QA done again @r4134-4135
+          - Fix bit size exceeding problem of SCM_SAL_*_{BITS,MAX,MIN}
+
+        * sigscheme-stdint.h
+        * scmint.h
+          - QA done again @r4126-4127
+          - sigscheme-stdint.h has been removed and replaced with
+            AC_TYPE_UINTPTR_T and so on of autoconf 2.60
+          - *_MIN and *_MAX are replaced with newly defined macros in scmint.h
+          - Add ALIGNOF_* macros
+
 2006-12-12  YamaKen <yamaken AT bp.iij4u.or.jp>
 
         * string-core.c
