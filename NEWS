@@ -1,3 +1,9 @@
+Overview of changes from 1.3.0-beta to 1.3.0
+==
+* Fixed
+  - XIM bridge
+    - Fix compilation on pre-X11R6.7 environment.
+
 Overview of changes from 1.3.0-alpha to 1.3.0-beta
 ==
 * Fixed
