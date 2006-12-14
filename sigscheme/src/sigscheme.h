@@ -109,7 +109,8 @@ extern "C" {
  * SigScheme uses these three types of condition testers.
  *
  * ASSERT: Asserts a condition that is expected as always true, as a contract
- * programming. No actual check is performed when !SCM_DEBUG.
+ * programming. No actual check is performed when (!SCM_SOFT_ASSERT &&
+ * defined(NDEBUG)).
  *
  * ENSURE: Mandatory runtime check involving uncertain data. An exception is
  * raised if failed. Actual check is always performed regaradless of debug
@@ -121,25 +122,21 @@ extern "C" {
  *
  */
 
-#if SCM_DEBUG
+#if SCM_SOFT_ASSERT
+/* allows recovery from failed assertion */
 #if 0
 #define SCM_ASSERTION_MSG(cond) ("assertion failed at " "'" #cond "'")
 #else
 #define SCM_ASSERTION_MSG(cond) "assertion failed"
 #endif
-
-#if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
+#define SCM_ASSERT(cond)                                                     \
+    ((cond) || (scm_die(SCM_ASSERTION_MSG(cond), __FILE__, __LINE__), 1))
+#elif HAVE_ASSERT_H
 #include <assert.h>
 #define SCM_ASSERT(cond) (assert(cond))
 #else
-/* allows survival recovery */
-#define SCM_ASSERT(cond)                                                     \
-    ((cond) || (scm_die(SCM_ASSERTION_MSG(cond), __FILE__, __LINE__), 1))
-#endif
-
-#else /* SCM_DEBUG */
 #define SCM_ASSERT(cond) SCM_EMPTY_EXPR
-#endif /* SCM_DEBUG */
+#endif
 
 #define SCM_ENSURE(cond)                                                     \
     ((cond) || (scm_die("invalid condition", __FILE__, __LINE__), 1))

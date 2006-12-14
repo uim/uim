@@ -41,7 +41,7 @@
 #define __SCM_SCMPORT_H
 
 #include <stddef.h>
-#if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
+#if (HAVE_ASSERT_H && !SCM_SOFT_ASSERT)
 #include <assert.h>
 #endif
 
@@ -69,7 +69,9 @@ extern "C" {
 #define SCM_ERRMSG_READ_FROM_PORT "failed to read from port"
 #define SCM_ERRMSG_WRITE_TO_PORT  "failed to write to port"
 
-#if (HAVE_ASSERT_H && !SCM_CHICKEN_DEBUG)
+#if SCM_SCMPORT_USE_WITH_SIGSCHEME
+#define SCM_PORT_ASSERT(exp) (SCM_ASSERT(exp))
+#elif HAVE_ASSERT_H
 #define SCM_PORT_ASSERT(exp) (assert(exp))
 #else
 #define SCM_PORT_ASSERT(exp) SCM_EMPTY_EXPR

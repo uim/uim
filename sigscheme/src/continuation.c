@@ -57,7 +57,7 @@ struct continuation_frame {
      */
     volatile ScmObj dyn_ext;
     volatile ScmObj ret_val;
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
     volatile ScmObj trace_stack;
 #endif
     jmp_buf c_env;
@@ -254,7 +254,7 @@ continuation_stack_unwind(ScmObj dest_cont)
 SCM_EXPORT void
 scm_destruct_continuation(ScmObj cont)
 {
-    /* no object to free(3) in this implementation */
+    /* no object to be free(3) in this implementation */
 }
 
 SCM_EXPORT ScmObj
@@ -265,7 +265,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
 
     cont_frame.dyn_ext = l_current_dynamic_extent;
     cont_frame.ret_val = SCM_UNDEF;
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
     cont_frame.trace_stack = l_trace_stack;
 #endif
     cont = MAKE_CONTINUATION();
@@ -278,7 +278,7 @@ scm_call_with_current_continuation(ScmObj proc, ScmEvalState *eval_state)
         /* returned back to the original continuation */
         /* Don't refer cont because it may already be invalidated by
          * continuation_stack_unwind(). */
-#if SCM_DEBUG
+#if SCM_USE_BACKTRACE
         l_trace_stack = cont_frame.trace_stack;
 #endif
 

@@ -75,14 +75,18 @@
 /*===========================================================================
   Debugging
 ===========================================================================*/
-#define SCM_CHICKEN_DEBUG       1  /* allow survival recovery */
+#if SCM_DEBUG
+#define SCM_SOFT_ASSERT         1  /* allow recovery from failed SCM_ASSERT() */
+#else
+#define SCM_SOFT_ASSERT         0
+#endif
 #define SCM_DEBUG_GC            0  /* enable GC debugging */
 #define SCM_DEBUG_PORT          0  /* enable port debugging */
 #define SCM_DEBUG_PARSER        0  /* enable parser debugging */
+#define SCM_DEBUG_MACRO         1  /* debug macro and pattern matching */
 #define SCM_DEBUG_ENCODING      0  /* debug encoding-related functions */
 #define SCM_DEBUG_BACKTRACE_SEP 0  /* enable frame-separator on backtrace */
 #define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
-#define SCM_DEBUG_MACRO         1  /* debug macro and pattern matching */
 
 /*===========================================================================
   Platform Dependency
@@ -104,7 +108,7 @@
 #endif
 
 #if SCM_HAVE_WRITABLE_GLOBAL_VARS
-#if !SCM_USE_AGGREGATED_GLOBAL_VARS
+#ifndef SCM_USE_AGGREGATED_GLOBAL_VARS
 #define SCM_USE_AGGREGATED_GLOBAL_VARS 0
 #endif /* !SCM_USE_AGGREGATED_GLOBAL_VARS */
 #else /* SCM_HAVE_WRITABLE_GLOBAL_VARS */
