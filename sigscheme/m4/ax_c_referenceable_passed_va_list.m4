@@ -1,50 +1,58 @@
-dnl Copyright (C) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
-dnl
-dnl Copying and distribution of this file, with or without modification,
-dnl are permitted in any medium without royalty provided the copyright
-dnl notice and this notice are preserved.
-dnl
-dnl
-dnl @synopsis AX_C_REFERENCEABLE_PASSED_VA_LIST
-dnl
-dnl Checks whether f(va_list va){ &va; } works as expected.
-dnl
-dnl This macro uses compile-time detection and so cross-compile ready.
-dnl
-dnl C99 mentioned passing a pointer to va_list to other functions (footnote
-dnl 212 of "7.15 Variable arguments <stdarg.h>"). However, f(va_list va) {
-dnl &va; } produces broken pointer on some environments such as gcc on
-dnl x86_64, although { va_list va; &va; } works as expected. See the
-dnl detection code of this file and the links below for further information.
-dnl
-dnl   http://www.gnu.org/software/autoconf/manual/html_node/Function-Portability.html
-dnl   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=14557
-dnl   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=20951
-dnl
-dnl Although C99 does not define the operations f(va_list va) { &va; } and
-dnl &va itself as standard (footnotes are declared as "normative part,
-dnl information only"), certain situations need it. This macro provides a
-dnl type detection about va_list implementation to deal with the operation.
-dnl
-dnl Following workaround will probably work on such environments although it
-dnl does not ensure to be safe and portable. At least it is working on
-dnl x86_64-unknown-linux-gnu.
-dnl 
-dnl f(va_list va)
-dnl {
-dnl   va_list *vap;
-dnl 
-dnl #if HAVE_REFERENCEABLE_PASSED_VA_LIST
-dnl     vap = &va;
-dnl #else
-dnl     vap = (va_list *)va;
-dnl #endif
-dnl }
-dnl
-dnl @category C
-dnl @author YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
-dnl @version 2006-12-12
-dnl @license AllPermissive
+##### http://autoconf-archive.cryp.to/ax_c_referenceable_passed_va_list.html
+#
+# SYNOPSIS
+#
+#   AX_C_REFERENCEABLE_PASSED_VA_LIST
+#
+# DESCRIPTION
+#
+#   Checks whether f(va_list va){ &va; } works as expected.
+#
+#   This macro uses compile-time detection and so is cross-compile
+#   ready.
+#
+#   C99 mentioned passing a pointer to va_list to other functions
+#   (footnote 212 of "7.15 Variable arguments <stdarg.h>"). However,
+#   f(va_list va) { &va; } produces broken pointer on some environments
+#   such as gcc on x86_64, although { va_list va; &va; } works as
+#   expected. See the detection code of this file and any of pages
+#   http://www.gnu.org/software/autoconf/manual/html_node/Function-Portability.html,
+#   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=14557, and
+#   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=20951 for further
+#   information.
+#
+#   Although C99 does not define the operations f(va_list va) { &va; }
+#   and &va itself as standard (footnotes are declared as "normative
+#   part, information only"), certain situations need it. This macro
+#   provides a type detection about va_list implementation to deal with
+#   the operation.
+#
+#   Following workaround will probably work on such environments
+#   although it does not ensure to be safe and portable. At least it is
+#   working on x86_64-unknown-linux-gnu:
+#
+#    f(va_list va)
+#    {
+#      va_list *vap;
+#
+#    #if HAVE_REFERENCEABLE_PASSED_VA_LIST
+#        vap = &va;
+#    #else
+#        vap = (va_list *)va;
+#    #endif
+#    }
+#
+# LAST MODIFICATION
+#
+#   2006-12-12
+#
+# COPYLEFT
+#
+#   Copyright (c) 2006 YAMAMOTO Kengo <yamaken AT bp.iij4u.or.jp>
+#
+#   Copying and distribution of this file, with or without
+#   modification, are permitted in any medium without royalty provided
+#   the copyright notice and this notice are preserved.
 
 AC_DEFUN([AX_C_REFERENCEABLE_PASSED_VA_LIST], [
   AC_CACHE_CHECK([whether f(va_list va){ &va; } works as expected],
