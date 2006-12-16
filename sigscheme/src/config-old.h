@@ -38,22 +38,6 @@
 #define __SIGSCHEME_CONFIG_OLD_H
 
 /*===========================================================================
-  R5RS Features
-===========================================================================*/
-
-/*===========================================================================
-  Optional Features
-===========================================================================*/
-
-/*===========================================================================
-  Character Encoding Handlers
-===========================================================================*/
-
-/*===========================================================================
-  Internal Behaviors
-===========================================================================*/
-
-/*===========================================================================
   Storage configurations
 ===========================================================================*/
 
@@ -71,22 +55,6 @@
 #define SCM_DEFAULT_N_HEAPS_INIT         1
 #define SCM_DEFAULT_SYMBOL_HASH_SIZE     0x400
 
-
-/*===========================================================================
-  Debugging
-===========================================================================*/
-#if SCM_DEBUG
-#define SCM_SOFT_ASSERT         1  /* allow recovery from failed SCM_ASSERT() */
-#else
-#define SCM_SOFT_ASSERT         0
-#endif
-#define SCM_DEBUG_GC            0  /* enable GC debugging */
-#define SCM_DEBUG_PORT          0  /* enable port debugging */
-#define SCM_DEBUG_PARSER        0  /* enable parser debugging */
-#define SCM_DEBUG_MACRO         1  /* debug macro and pattern matching */
-#define SCM_DEBUG_ENCODING      0  /* debug encoding-related functions */
-#define SCM_DEBUG_BACKTRACE_SEP 0  /* enable frame-separator on backtrace */
-#define SCM_DEBUG_BACKTRACE_VAL 1  /* enable values printing on backtrace */
 
 /*===========================================================================
   Platform Dependency
@@ -116,103 +84,5 @@
 #define SCM_USE_AGGREGATED_GLOBAL_VARS 1
 #endif /* SCM_HAVE_WRITABLE_GLOBAL_VARS */
 
-#if (!SCM_DEBUG && SCM_USE_NULL_CAPABLE_STRING)
-#error "Don't enable dangerous SCM_USE_NULL_CAPABLE_STRING for production code"
-#endif
-
-#if SCM_STRICT_R5RS
-#undef SCM_STRICT_NULL_FORM
-#define SCM_STRICT_NULL_FORM    1
-#undef SCM_STRICT_VECTOR_FORM
-#define SCM_STRICT_VECTOR_FORM  1
-#undef SCM_STRICT_ARGCHECK
-#define SCM_STRICT_ARGCHECK     1
-#undef SCM_STRICT_DEFINE_PLACEMENT
-#define SCM_STRICT_DEFINE_PLACEMENT 1
-#endif /* SCM_STRICT_R5RS */
-
-#if (SCM_USE_READER || SCM_USE_WRITER)
-#undef SCM_USE_PORT
-#define SCM_USE_PORT            1
-#endif /* (SCM_USE_READER || SCM_USE_WRITER) */
-
-#if SCM_USE_WRITER
-#undef SCM_USE_RAW_C_FORMAT
-#define SCM_USE_RAW_C_FORMAT    1
-#endif /* SCM_USE_WRITER */
-
-#if SCM_USE_SYNTAX_CASE
-#undef SCM_USE_UNHYGIENIC_MACRO
-#define SCM_USE_UNHYGIENIC_MACRO 1
-#endif /* SCM_USE_SYNTAX_CASE */
-
-#if SCM_USE_SSCM_FORMAT_EXTENSION
-#undef SCM_USE_SRFI48
-#define SCM_USE_SRFI48          1
-#endif /* SCM_USE_SSCM_FORMAT_EXTENSION */
-#if SCM_USE_SRFI48
-#undef SCM_USE_SRFI28
-#define SCM_USE_SRFI28          1
-#endif /* USE_SRFI48 */
-
-#if SCM_COMPAT_SIOD
-#undef SCM_USE_SSCM_EXTENSIONS
-#define SCM_USE_SSCM_EXTENSIONS 1
-#undef SCM_USE_SRFI60
-#define SCM_USE_SRFI60          1
-#else /* SCM_COMPAT_SIOD */
-#undef SCM_COMPAT_SIOD_BUGS
-#define SCM_COMPAT_SIOD_BUGS    0
-#endif /* SCM_COMPAT_SIOD */
-
-#if SCM_USE_SRFI34
-#undef SCM_USE_SRFI23
-#define SCM_USE_SRFI23          1
-#endif /* SCM_USE_SRFI34 */
-
-#if SCM_USE_SRFI75
-#define SCM_USE_SRFI75_NAMED_CHARS 1
-#endif
-
-#if SCM_USE_STORAGE_COMPACT
-#undef SCM_USE_VALUECONS
-#define SCM_USE_VALUECONS       0
-#endif /* SCM_USE_STORAGE_COMPACT */
-
-#if (SCM_USE_UTF8 || SCM_USE_EUCCN || SCM_USE_EUCJP || SCM_USE_EUCKR || SCM_USE_SJIS)
-#define SCM_USE_MULTIBYTE_CHAR  1
-#else
-#define SCM_USE_MULTIBYTE_CHAR  0
-#endif
-
-#if (   SCM_USE_UTF8_AS_DEFAULT  && !SCM_USE_UTF8                            \
-     || SCM_USE_EUCCN_AS_DEFAULT && !SCM_USE_EUCCN                           \
-     || SCM_USE_EUCJP_AS_DEFAULT && !SCM_USE_EUCJP                           \
-     || SCM_USE_EUCKR_AS_DEFAULT && !SCM_USE_EUCKR                           \
-     || SCM_USE_SJIS_AS_DEFAULT  && !SCM_USE_SJIS)
-#error "disabled character encoding is chosen as default"
-#endif
-
-#if SCM_USE_EVAL_C_STRING
-#undef SCM_USE_SRFI6
-#define SCM_USE_SRFI6           1
-#endif
-
-
-/*===========================================================================
-  New configuration variables (FIXME: autoconf support needed)
-===========================================================================*/
-/* FIXME: remove SCM_STRICT_DEFINE_PLACEMENT and replace with
- * SCM_USE_INTERNAL_DEFINITIONS */
-#if SCM_STRICT_DEFINE_PLACEMENT
-#undef SCM_STRICT_DEFINE_PLACEMENT
-#define SCM_USE_INTERNAL_DEFINITIONS 1
-#endif
-
-#define SCM_STRICT_TOPLEVEL_DEFINITIONS 1
-
-#define SCM_USE_BACKTRACE 1  /* does not require SCM_DEBUG */
-/* SCM_DEBUG requires SCM_USE_FORMAT */
-/* SCM_DEBUG_BACKTRACE_VAL requires SCM_USE_FORMAT */
 
 #endif /* __SIGSCHEME_CONFIG_OLD_H */

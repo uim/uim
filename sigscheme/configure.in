@@ -229,10 +229,364 @@ AC_ARG_ENABLE(htmldir,
     htmldir=${docdir}/html
   ])
 
-AC_DEFINE(SCM_ENCODING_USE_WITH_SIGSCHEME, 1,
-  [Define to 1 to adapt encoding.c to SigScheme.])
-AC_DEFINE(SCM_SCMPORT_USE_WITH_SIGSCHEME, 1,
-  [Define to 1 to adapt scmport*.[hc] to SigScheme.])
+########################################
+# Configure features with dependencies #
+########################################
+
+AX_FEATURE_CONFIGURATOR
+
+# Default prefixes for shell var, AC_DEFINE, AM_CONDITIONAL
+AX_FEATURE_ID_PREFIX([use_], [SCM_USE_], [USE_])
+
+#
+# Acquire the feature configuration variables from user
+#
+
+# Pseudo feature as base dependency: Features that required to run current
+# SigScheme implementation depends on this.
+AX_FEATURE_VAR_Y(sigscheme, [pseudo feature for dependency resolution])
+
+# Specify a set of default variable settings
+AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
+                        CONF=(regular|full|small|r5rs|siod|dev|uim) @<:@regular@:>@],
+                       [regular], [regular full small r5rs siod dev uim],
+  [
+    case $enable_conf in
+      regular)
+        ;;
+      full)
+        ;;
+      small)
+        ;;
+      r5rs)
+        ;;
+      siod)
+        ;;
+      def)
+        ;;
+      uim)
+        ;;
+      esac
+  ])
+
+# If the variable is preexisting, it is used as default value. explicit
+# --enable or --disable can override it.
+
+# Storage configuration
+AX_FEATURE_ARG_X(storage,   [specify underlying storage implementation.
+                             STORAGE=(compact|fatty) @<:@compact@:>@],
+                            [compact], [compact fatty])
+AX_FEATURE_ARG_X(fixnum,    [specify Scheme integer (fixnum) size.
+                             FIXNUM=(long|int|int32_t|int64_t) @<:@long@:>@],
+                            [long], [long int int32_t int64_t])
+AX_FEATURE_VAR_X(scmref,    [specify scm_intref_t (don't touch)],
+                            [intptr_t], [intptr_t int32_t int64_t])
+AX_FEATURE_VAR_N(valuecons, [valuecons for efficient multiple values handling])
+AX_FEATURE_VAR_N(dump,      [storage dump (not implemented yet)])
+
+# String configuration
+#AX_FEATURE_VAR_N(const-width-string, [strings consist of constant-width characters (not implemented yet)])
+AX_FEATURE_VAR_N(null-capable-string, [null character in a middle of a string (experimental)])
+
+# Character encodings
+AX_FEATURE_VAR_N(multibyte,    [multibyte character encodings])
+AX_FEATURE_ARG_X(default-encoding,
+                               [specify default character encoding.
+                                ENCODING=(utf8|singlebyte|euccn|eucjp|euckr|sjis) @<:@utf8@:>@],
+                               [utf8],
+                               [utf8 singlebyte euccn eucjp euckr sjis])
+AX_FEATURE_ARG_Y(utf8,         [UTF-8 character encoding])
+AX_FEATURE_ARG_N(euccn,        [EUC-CN character encoding])
+AX_FEATURE_ARG_N(eucjp,        [EUC-JP character encoding])
+AX_FEATURE_ARG_N(euckr,        [EUC-KR character encoding])
+AX_FEATURE_ARG_N(sjis,         [Shift_JIS character encoding])
+AX_FEATURE_ARG_Y(strict-encoding-check, [all feasible encoding error checks])
+
+# Other internal SigScheme features
+AX_FEATURE_VAR_N(format,       [intermediate format strings])
+AX_FEATURE_VAR_N(raw-c-format, [internal format which takes raw C values from va_list])
+
+# R5RS behaviors
+AX_FEATURE_ARG_N(strict-r5rs,          [strict R5RS conformance checks])
+AX_FEATURE_ARG_N(const-list-literal,   [immutable list literals])
+AX_FEATURE_ARG_N(const-vector-literal, [immutable vector literals])
+AX_FEATURE_ARG_N(strict-null-form,     [rejecting quote-less ()])
+AX_FEATURE_ARG_Y(strict-vector-form,   [rejecting quote-less vector literal])
+AX_FEATURE_ARG_Y(strict-argcheck,      [strict check for form arguments])
+AX_FEATURE_ARG_Y(strict-toplevel-definitions, [strict check for R5RS top-level definitions])
+AX_FEATURE_ARG_Y(internal-definitions, [R5RS internal definitions])
+
+# R5RS features
+AX_FEATURE_ARG_Y(continuation,   [R5RS continuation])
+AX_FEATURE_ARG_Y(quasiquote,     [R5RS quasiquotation])
+AX_FEATURE_ARG_N(hygienic-macro, [R5RS hygienic macros (experimental)])
+AX_FEATURE_ARG_N(promise,        [R5RS promise (not implemented yet)])
+AX_FEATURE_VAR_N(number,         [R5RS numbers])
+AX_FEATURE_ARG_Y(int,            [R5RS integer numbers])
+AX_FEATURE_VAR_N(rational,       [R5RS rational numbers (not implemented yet)])
+AX_FEATURE_VAR_N(real,           [R5RS real numbers (not implemented yet)])
+AX_FEATURE_VAR_N(complex,        [R5RS complex numbers (not implemented yet)])
+AX_FEATURE_ARG_Y(numeric-io,     [R5RS 'number->string' and 'string->number'])
+AX_FEATURE_ARG_Y(char,           [R5RS characters])
+AX_FEATURE_ARG_Y(string,         [primary procedures of R5RS strings])
+AX_FEATURE_ARG_Y(string-procedures, [rest procedures of R5RS strings])
+AX_FEATURE_ARG_Y(deep-cadrs, [all c@<:@ad@:>@+r procedures defined in R5RS])
+AX_FEATURE_ARG_Y(vector,         [R5RS vectors])
+AX_FEATURE_ARG_Y(port,           [R5RS ports])
+AX_FEATURE_ARG_Y(reader,         [R5RS 'read'])
+AX_FEATURE_ARG_Y(writer,         [R5RS 'write' and 'display'])
+AX_FEATURE_ARG_Y(load,           [R5RS 'load'])
+
+# SRFIs
+AX_FEATURE_ARG_N(srfi1,          [SRFI-1 list library (broken)])
+AX_FEATURE_ARG_Y(srfi2,          [SRFI-2 'and-let*'])
+AX_FEATURE_ARG_Y(srfi6,          [SRFI-6 basic string ports])
+AX_FEATURE_ARG_Y(srfi8,          [SRFI-8 'receive'])
+AX_FEATURE_ARG_Y(srfi22,         [SRFI-22 running scheme scripts on Unix (partial)])
+AX_FEATURE_ARG_Y(srfi23,         [SRFI-23 'error'])
+AX_FEATURE_ARG_Y(srfi28,         [SRFI-28 'format'])
+AX_FEATURE_ARG_Y(srfi34,         [SRFI-34 exception handling for programs])
+AX_FEATURE_ARG_Y(srfi38,         [SRFI-38 'write/ss' ('read/ss' is not provided)])
+AX_FEATURE_ARG_Y(srfi48,         [SRFI-48 'format' (superset of SRFI-28)])
+AX_FEATURE_ARG_Y(srfi60,         [SRFI-60 integers as bits (partial)])
+AX_FEATURE_ARG_Y(srfi75-named-chars, [named characters of SRFI-75 R6RS unicode data])
+AX_FEATURE_ARG_Y(srfi75, [SRFI-75 R6RS unicode data (partial and obsolete)])
+
+# Common Scheme features
+AX_FEATURE_VAR_N(syntax-case,      ['syntax-case' (not implemented yet)])
+AX_FEATURE_VAR_N(unhygienic-macro, [syntactic closure (not implemented yet)])
+AX_FEATURE_VAR_N(legacy-macro,     ['define-macro' (not implemented yet)])
+
+# SigScheme-specific features
+AX_FEATURE_ARG_Y(sscm-extensions,     [SigScheme-specific extensions])
+AX_FEATURE_ARG_Y(sscm-format-extensions, [SigScheme-specific 'format+'])
+AX_FEATURE_ARG_N(compat-siod,         [some SIOD compatible features])
+AX_FEATURE_ARG_N(compat-siod-bugs,    [emulating the buggy behaviors of SIOD])
+AX_FEATURE_ARG_Y(eval-c-string,       [eval_c_string() of libsscm])
+AX_FEATURE_ARG_N(backtrace,           [showing backtrace on error])
+
+# Developer-only debugging features
+AX_FEATURE_ARG_N(debug,               [debug mode])
+AX_FEATURE_ARG_N(debug-port,          [port debugging])
+AX_FEATURE_ARG_N(debug-parser,        [parser debugging])
+AX_FEATURE_ARG_N(debug-macro,         [macro and pattern matching debugging])
+AX_FEATURE_ARG_N(debug-encoding,      [encoding-related functions debugging])
+AX_FEATURE_ARG_N(debug-backtrace-sep, [frame-separator on backtrace])
+AX_FEATURE_ARG_N(debug-backtrace-val, [values printing on backtrace])
+AX_FEATURE_ARG_N(soft-assert,         [recovery from failed SCM_ASSERT()])
+AX_FEATURE_ARG_N(accessor-assert,     [type assertion on Scheme object accessors])
+AX_FEATURE_ARG_Y(warning-suppressor,  [suppressing compiler warnings])
+
+#
+# Resolve dependency of the features
+#
+
+# required if available
+AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES([
+strict_r5rs: const_list_literal const_vector_literal
+])
+
+# recommended dependency (not required)
+AX_FEATURE_RESOLVE_DEPENDENCIES([
+conf_dev: warning_suppressor
+storage_fatty: valuecons const_list_literal const_vector_literal
+debug: accessor_assert strict_argcheck strict_encoding_check
+backtrace: srfi38
+])
+
+# FIXME: format <-> writer cyclic dependency
+AX_FEATURE_RESOLVE_DEPENDENCIES([
+sigscheme: raw_c_format
+backtrace: continuation port writer
+debug: raw_c_format
+debug_backtrace_val: debug backtrace raw_c_format
+
+format: writer port string
+srfi28: format
+srfi48: format srfi28
+sscm_format_extension: format srfi48
+raw_c_format: format
+
+hygienic_macro:
+syntax_case: unhygienic_macro
+string_procedures: string_procedure
+string_procedure: string char
+reader: port
+writer: port raw_c_format
+load: port reader
+sscm_extensions: 
+eval_c_string: reader srfi6
+srfi6: port string
+srfi34: continuation srfi23
+srfi38: writer
+srfi60: int
+srfi75_named_chars: char
+srfi75: char utf8 reader srfi75_named_chars
+
+compat_siod: sscm_extensions srfi60 eval_c_string
+compat_siod_bugs: compat_siod
+strict_r5rs: strict_null_form strict_vector_form strict_argcheck internal_definitions strict_toplevel_definitions
+
+int:        number
+rational:   number
+real:       number
+complex:    number
+numeric_io: number_io
+number_io:  number string
+
+fixnum_long:     long_fixnum
+fixnum_int:      int_fixnum
+fixnum_int32_t:  32bit_fixnum
+fixnum_int64_t:  64bit_fixnum
+scmref_intptr_t: intptr_scmref
+scmref_int32_t:  32bit_scmref
+scmref_int64_t:  64bit_scmref
+
+multibyte: multibyte_char
+utf8:  multibyte_char
+eucjp: multibyte_char
+euckr: multibyte_char
+euccn: multibyte_char
+sjis:  multibyte_char
+default_encoding_utf8:       utf8  utf8_as_default
+default_encoding_singlebyte: singlebyte_as_default
+default_encoding_euccn:      euccn euccn_as_default
+default_encoding_eucjp:      eucjp eucjp_as_default
+default_encoding_euckr:      euckr euckr_as_default
+default_encoding_sjis:       sjis  sjis_as_default
+])
+
+AX_FEATURE_DETECT_CONFLICTS([
+storage_fatty storage_compact
+storage_compact valuecons
+storage_compact const_list_literal
+debug_no null_capable_string
+strict_r5rs siod_bugs
+strict_r5rs strict_vector_form_no
+strict_r5rs strict_null_form_no
+strict_r5rs strict_toplevel_definitions_no
+strict_r5rs internal_definitions_no
+compat_siod_bugs strict_null_form
+long_fixnum int_fixnum 32bit_fixnum 64bit_fixnum
+intptr_scmref 32bit_scmref 64bit_scmref
+utf8_as_default eucjp_as_default euckr_as_default euccn_as_default sjis_as_default
+],
+[if-conflict])
+
+#
+# Define configured results
+#
+
+# Storage configuration
+AX_FEATURE_DEFINE(storage_compact)
+AX_FEATURE_DEFINE(storage_fatty)
+AX_FEATURE_DEFINE(long_fixnum)
+AX_FEATURE_DEFINE(int_fixnum)
+AX_FEATURE_DEFINE(32bit_fixnum)
+AX_FEATURE_DEFINE(64bit_fixnum)
+AX_FEATURE_DEFINE(intptr_scmref)
+AX_FEATURE_DEFINE(32bit_scmref)
+AX_FEATURE_DEFINE(64bit_scmref)
+AX_FEATURE_DEFINE(valuecons)
+AX_FEATURE_DEFINE(dump)
+
+# String configuration
+#AX_FEATURE_DEFINE(const_width_string)
+AX_FEATURE_DEFINE(null_capable_string)
+
+# Character encodings
+AX_FEATURE_DEFINE(multibyte_char)
+AX_FEATURE_DEFINE(utf8)
+AX_FEATURE_DEFINE(euccn)
+AX_FEATURE_DEFINE(eucjp)
+AX_FEATURE_DEFINE(euckr)
+AX_FEATURE_DEFINE(sjis)
+AX_FEATURE_DEFINE(utf8_as_default)
+AX_FEATURE_DEFINE(singlebyte_as_default)
+AX_FEATURE_DEFINE(euccn_as_default)
+AX_FEATURE_DEFINE(eucjp_as_default)
+AX_FEATURE_DEFINE(euckr_as_default)
+AX_FEATURE_DEFINE(sjis_as_default)
+AX_FEATURE_DEFINE(strict_encoding_check, SCM_STRICT_ENCODING_CHECK, STRICT_ENCODING_CHECK)
+
+# Other internal SigScheme features
+AX_FEATURE_DEFINE(format)
+AX_FEATURE_DEFINE(raw_c_format)
+
+# R5RS behaviors
+AX_FEATURE_DEFINE(strict_r5rs,        SCM_STRICT_R5RS,      STRICT_R5RS)
+AX_FEATURE_DEFINE(const_list_literal, SCM_CONST_LIST_LITERAL, CONST_LIST_LITERAL)
+AX_FEATURE_DEFINE(const_vector_literal, SCM_CONST_VECTOR_LITERAL, CONST_VECTOR_LITERAL)
+AX_FEATURE_DEFINE(strict_null_form,   SCM_STRICT_NULL_FORM,  STRICT_NULL_FORM)
+AX_FEATURE_DEFINE(strict_vector_form, SCM_STRICT_VECTOR_FORM, STRICT_VECTOR_FORM)
+AX_FEATURE_DEFINE(strict_argcheck,    SCM_STRICT_ARGCHECK,  STRICT_ARGCHECK)
+AX_FEATURE_DEFINE(strict_toplevel_definitions, SCM_STRICT_TOPLEVEL_DEFINITIONS, STRICT_TOPLEVEL_DEFINITIONS)
+AX_FEATURE_DEFINE(internal_definitions)
+
+# R5RS features
+AX_FEATURE_DEFINE(continuation)
+AX_FEATURE_DEFINE(quasiquote)
+AX_FEATURE_DEFINE(hygienic_macro)
+AX_FEATURE_DEFINE(promise)
+AX_FEATURE_DEFINE(number)
+AX_FEATURE_DEFINE(int)
+AX_FEATURE_DEFINE(rational)
+AX_FEATURE_DEFINE(real)
+AX_FEATURE_DEFINE(complex)
+AX_FEATURE_DEFINE(number_io)
+AX_FEATURE_DEFINE(char)
+AX_FEATURE_DEFINE(string)
+AX_FEATURE_DEFINE(string_procedure)
+AX_FEATURE_DEFINE(deep_cadrs)
+AX_FEATURE_DEFINE(vector)
+AX_FEATURE_DEFINE(port)
+AX_FEATURE_DEFINE(reader)
+AX_FEATURE_DEFINE(writer)
+AX_FEATURE_DEFINE(load)
+
+# SRFIs
+AX_FEATURE_DEFINE(srfi1)
+AX_FEATURE_DEFINE(srfi2)
+AX_FEATURE_DEFINE(srfi6)
+AX_FEATURE_DEFINE(srfi8)
+AX_FEATURE_DEFINE(srfi22)
+AX_FEATURE_DEFINE(srfi23)
+AX_FEATURE_DEFINE(srfi28)
+AX_FEATURE_DEFINE(srfi34)
+AX_FEATURE_DEFINE(srfi38)
+AX_FEATURE_DEFINE(srfi48)
+AX_FEATURE_DEFINE(srfi60)
+AX_FEATURE_DEFINE(srfi75_named_chars)
+AX_FEATURE_DEFINE(srfi75)
+
+# Common Scheme features
+AX_FEATURE_DEFINE(syntax_case)
+AX_FEATURE_DEFINE(unhygienic_macro)
+AX_FEATURE_DEFINE(legacy_macro)
+
+# SigScheme-specific features
+AX_FEATURE_DEFINE(sscm_extensions)
+AX_FEATURE_DEFINE(sscm_format_extension)
+AX_FEATURE_DEFINE(compat_siod,        SCM_COMPAT_SIOD,      COMPAT_SIOD)
+AX_FEATURE_DEFINE(compat_siod_bugs,   SCM_COMPAT_SIOD_BUGS, COMPAT_SIOD_BUGS)
+AX_FEATURE_DEFINE(eval_c_string)
+AX_FEATURE_DEFINE(backtrace)
+
+# Developer-only debugging features
+AX_FEATURE_DEFINE(debug,               SCM_DEBUG,           DEBUG)
+AX_FEATURE_DEFINE(debug_port,          SCM_DEBUG_PORT,      DEBUG_PORT)
+AX_FEATURE_DEFINE(debug_parser,        SCM_DEBUG_PARSER,    DEBUG_PARSER)
+AX_FEATURE_DEFINE(debug_macro,         SCM_DEBUG_MACRO,     DEBUG_MACRO)
+AX_FEATURE_DEFINE(debug_encoding,      SCM_DEBUG_ENCODING,  DEBUG_ENCODING)
+AX_FEATURE_DEFINE(debug_backtrace_sep, SCM_DEBUG_BACKTRACE_SEP, DEBUG_BACKTRACE_SEP)
+AX_FEATURE_DEFINE(debug_backtrace_val, SCM_DEBUG_BACKTRACE_VAL, DEBUG_BACKTRACE_VAL)
+AX_FEATURE_DEFINE(soft_assert,         SCM_SOFT_ASSERT,     SOFT_ASSERT)
+AX_FEATURE_DEFINE(accessor_assert,     SCM_ACCESSOR_ASSERT, ACCESSOR_ASSERT)
+AX_FEATURE_DEFINE(warning_suppressor)
+
+#########
+# Fixup #
+#########
 
 if test "x$enable_debug" = xno; then
   CFLAGS="$CFLAGS -DNDEBUG"
@@ -245,6 +599,15 @@ if test x$CC = xgcc; then
   fi
   CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
 fi
+
+#
+# Hardwired configurations
+#
+
+AC_DEFINE(SCM_ENCODING_USE_WITH_SIGSCHEME, 1,
+  [Define to 1 to adapt encoding.c to SigScheme.])
+AC_DEFINE(SCM_SCMPORT_USE_WITH_SIGSCHEME, 1,
+  [Define to 1 to adapt scmport*.[hc] to SigScheme.])
 
 ###############################
 # Output configuration result #
@@ -262,14 +625,6 @@ AH_BOTTOM([
 #include "config-old.h"
 
 #endif /* __SIGSCHEME_CONFIG_H */])
-
-echo "--------------------------------------"
-echo "| SigScheme Configuration            |"
-echo "--------------------------------------"
-echo "cflags: '$CFLAGS'"
-echo "configuration: '$enable_configuration'"
-echo "encoding: '$enable_multibyte'"
-echo "debug: '$enable_debug'"
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
@@ -290,3 +645,16 @@ AC_SUBST(htmldir)
 AC_SUBST(objdir)
 
 AC_OUTPUT
+
+AC_MSG_RESULT([
+SigScheme has been configured as follows:
+
+base config:      $use_conf
+storage impl:     $use_storage
+fixnum size:      $use_fixnum
+default encoding: $use_default_encoding
+backtrace:        $use_backtrace
+debug:            $use_debug
+
+CFLAGS='$CFLAGS'
+])
