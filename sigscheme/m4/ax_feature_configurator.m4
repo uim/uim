@@ -39,19 +39,19 @@ AC_DEFUN([AX_FEATURE_CONFIGURATOR], [
 
 # AX_FEATURE_VAR_Y(FEATURE, [DESC])
 AC_DEFUN([AX_FEATURE_VAR_Y], [
-  AX_FEATURE_VAR_X([$1], m4_default([$2], [$1]), [yes], [yes])
+  AX_FEATURE_VAR_X([$1], m4_default([$2], [$1]), [yes], [^yes$])
 ])
 
 # AX_FEATURE_VAR_N(FEATURE, [DESC])
 AC_DEFUN([AX_FEATURE_VAR_N], [
-  AX_FEATURE_VAR_X([$1], m4_default([$2], [$1]), [no], [no])
+  AX_FEATURE_VAR_X([$1], m4_default([$2], [$1]), [no], [^no$])
 ])
 
-# AX_FEATURE_VAR_X(FEATURE, DESC, DEFAULT-VAL, VAL-CHOICES)
+# AX_FEATURE_VAR_X(FEATURE, DESC, DEFAULT-VAL, VAL-REGEXP)
 AC_DEFUN([AX_FEATURE_VAR_X], [
   m4_define(AX_FEATURE_DESC_[]AS_TR_CPP([$1]), [$2])
 
-  if echo '[$4]' | $EGREP -q "\b[$3]\b"; then
+  if echo "[$3]" | $EGREP -q "AS_ESCAPE([$4])"; then
     _ax_feature_id=AS_TR_SH([$1])
     _ax_feature_val=AS_VAR_GET(AX_FEATURE_PREFIX_VAR[]$_ax_feature_id)
     if test -z "$_ax_feature_val"; then
@@ -75,15 +75,15 @@ AC_DEFUN([AX_FEATURE_VAR_X], [
 
 # AX_FEATURE_ARG_Y(FEATURE, [DESC])
 AC_DEFUN([AX_FEATURE_ARG_Y], [
-  AX_FEATURE_ARG_X([$1], m4_default([$2], [$1]), [yes], [yes no])
+  AX_FEATURE_ARG_X([$1], m4_default([$2], [$1]), [yes], [^(yes|no)$])
 ])
 
 # AX_FEATURE_ARG_N(FEATURE, [DESC])
 AC_DEFUN([AX_FEATURE_ARG_N], [
-  AX_FEATURE_ARG_X([$1], m4_default([$2], [$1]), [no], [yes no])
+  AX_FEATURE_ARG_X([$1], m4_default([$2], [$1]), [no], [^(yes|no)$])
 ])
 
-# AX_FEATURE_ARG_X(FEATURE, DESC, DEFAULT_VAL, VAL_CHOICES, [ACTION])
+# AX_FEATURE_ARG_X(FEATURE, DESC, DEFAULT-VAL, VAL-REGEXP, [ACTION])
 AC_DEFUN([AX_FEATURE_ARG_X], [
   AC_ARG_ENABLE([$1],
     AS_HELP_STRING(m4_bmatch([$3],

@@ -247,7 +247,7 @@ AX_FEATURE_VAR_Y(sigscheme, [pseudo feature for dependency resolution])
 # Specify a set of default variable settings
 AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
                         CONF=(regular|full|small|r5rs|siod|dev|uim) @<:@regular@:>@],
-                       [regular], [regular full small r5rs siod dev uim],
+                       [regular], [^(regular|full|small|r5rs|siod|dev|uim)$],
   [
     case $enable_conf in
       regular)
@@ -273,12 +273,12 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
 # Storage configuration
 AX_FEATURE_ARG_X(storage,   [specify underlying storage implementation.
                              STORAGE=(compact|fatty) @<:@compact@:>@],
-                            [compact], [compact fatty])
+                            [compact], [^(compact|fatty)$])
 AX_FEATURE_ARG_X(fixnum,    [specify Scheme integer (fixnum) size.
                              FIXNUM=(long|int|int32_t|int64_t) @<:@long@:>@],
-                            [long], [long int int32_t int64_t])
+                            [long], [^(long|int|int32_t|int64_t)$])
 AX_FEATURE_VAR_X(scmref,    [specify scm_intref_t (don't touch)],
-                            [intptr_t], [intptr_t int32_t int64_t])
+                            [intptr_t], [^(intptr_t|int32_t|int64_t)$])
 AX_FEATURE_VAR_N(valuecons, [valuecons for efficient multiple values handling])
 AX_FEATURE_VAR_N(dump,      [storage dump (not implemented yet)])
 
@@ -292,7 +292,7 @@ AX_FEATURE_ARG_X(default-encoding,
                                [specify default character encoding.
                                 ENCODING=(utf8|singlebyte|euccn|eucjp|euckr|sjis) @<:@utf8@:>@],
                                [utf8],
-                               [utf8 singlebyte euccn eucjp euckr sjis])
+                               [^(utf8|singlebyte|euccn|eucjp|euckr|sjis)$])
 AX_FEATURE_ARG_Y(utf8,         [UTF-8 character encoding])
 AX_FEATURE_ARG_N(euccn,        [EUC-CN character encoding])
 AX_FEATURE_ARG_N(eucjp,        [EUC-JP character encoding])
