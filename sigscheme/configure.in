@@ -249,22 +249,220 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
                         CONF=(regular|full|small|r5rs|siod|dev|uim) @<:@regular@:>@],
                        [regular], [^(regular|full|small|r5rs|siod|dev|uim)$],
   [
+    # multibyte char handlings
     case $enable_conf in
-      regular)
+      full|dev)
+        use_utf8=yes
+        use_euccn=yes
+        use_eucjp=yes
+        use_euckr=yes
+        use_sjis=yes
         ;;
-      full)
+      small|siod|uim)
+        use_default_encoding=singlebyte
+        use_utf8=no
+        use_euccn=no
+        use_eucjp=no
+        use_euckr=no
+        use_sjis=no
+        use_strict_encoding_check=no
+        ;;
+    esac
+
+    # R5RS behaviors
+    case $enable_conf in
+      r5rs)
+        use_strict_r5rs=yes
+        ;;
+      full|dev|uim)
+        use_strict_r5rs=no
+        #use_const_list_literal=yes
+        use_const_vector_literal=yes
+        #use_strict_null_form=yes
+        use_strict_vector_form=yes
+        use_strict_argcheck=yes
+        use_strict_toplevel_definitions=yes
+        use_internal_definitions=yes
+        ;;
+      small|siod)
+        use_strict_r5rs=no
+        use_const_list_literal=no
+        use_const_vector_literal=no
+        use_strict_null_form=no
+        use_strict_vector_form=no
+        use_strict_argcheck=no
+        use_strict_toplevel_definitions=no
+        use_internal_definitions=no
+        ;;
+    esac
+
+    # R5RS features
+    case $enable_conf in
+      full|r5rs|dev)
+        use_continuation=yes
+        use_quasiquote=yes
+        use_hygienic_macro=yes
+        use_promise=yes
+        use_int=yes
+        use_numeric_io=yes
+        use_char=yes
+        use_string=yes
+        use_string_procedures=yes
+        use_deep_cadrs=yes
+        use_vector=yes
+        use_port=yes
+        use_reader=yes
+        use_writer=yes
+        use_load=yes
         ;;
       small)
-        ;;
-      r5rs)
+        use_continuation=no
+        use_quasiquote=no
+        use_hygienic_macro=no
+        use_promise=no
+        use_int=yes
+        use_numeric_io=yes
+        use_char=yes
+        use_string=yes
+        use_string_procedures=yes
+        use_deep_cadrs=no
+        use_vector=no
+        use_port=yes
+        use_reader=yes
+        use_writer=yes
+        use_load=yes
         ;;
       siod)
-        ;;
-      def)
+        use_continuation=no
+        use_quasiquote=no
+        use_hygienic_macro=no
+        use_promise=no
+        use_int=yes
+        use_numeric_io=yes
+        use_char=no
+        use_string=yes
+        use_string_procedures=no
+        use_deep_cadrs=no
+        use_vector=no
+        use_port=yes
+        use_reader=yes
+        use_writer=yes
+        use_load=yes
         ;;
       uim)
+        use_continuation=yes
+        use_quasiquote=yes
+        use_hygienic_macro=no
+        use_promise=no
+        use_int=yes
+        use_numeric_io=yes
+        use_char=no
+        use_string=yes
+        use_string_procedures=no
+        use_deep_cadrs=no
+        use_vector=no
+        use_port=yes
+        use_reader=yes
+        use_writer=yes
+        use_load=yes
         ;;
-      esac
+    esac
+
+    # SRFIs and SigScheme-specific extensions
+    case $enable_conf in
+      full|r5rs|dev)
+        use_srfi1=no
+        use_srfi2=yes
+        use_srfi6=yes
+        use_srfi8=yes
+        use_srfi22=yes
+        use_srfi23=yes
+        use_srfi28=yes
+        use_srfi34=yes
+        use_srfi38=yes
+        use_srfi48=yes
+        use_srfi60=yes
+        use_srfi75_named_chars=yes
+        use_srfi75=yes
+        use_sscm_extensions=yes
+        use_sscm_format_extensions=yes
+        use_compat_siod=no
+        use_compat_siod_bugs=no
+        use_eval_c_string=yes
+        ;;
+      small)
+        use_srfi1=no
+        use_srfi2=no
+        use_srfi6=no
+        use_srfi8=no
+        use_srfi22=no
+        use_srfi23=no
+        use_srfi28=no
+        use_srfi34=no
+        use_srfi38=no
+        use_srfi48=no
+        use_srfi60=no
+        use_srfi75_named_chars=no
+        use_srfi75=no
+        use_sscm_extensions=no
+        use_sscm_format_extensions=no
+        use_compat_siod=no
+        use_compat_siod_bugs=no
+        use_eval_c_string=no
+        ;;
+      siod)
+        use_srfi1=no
+        use_srfi2=no
+        use_srfi6=no
+        use_srfi8=no
+        use_srfi22=no
+        use_srfi23=no
+        use_srfi28=no
+        use_srfi34=no
+        use_srfi38=no
+        use_srfi48=no
+        use_srfi60=no
+        use_srfi75_named_chars=no
+        use_srfi75=no
+        use_sscm_extensions=yes
+        use_sscm_format_extensions=no
+        use_compat_siod=yes
+        use_compat_siod_bugs=yes
+        use_eval_c_string=yes
+        ;;
+      uim)
+        use_srfi1=no
+        use_srfi2=no
+        use_srfi6=yes
+        use_srfi8=no
+        use_srfi22=yes
+        use_srfi23=yes
+        use_srfi28=yes
+        use_srfi34=yes
+        use_srfi38=yes
+        use_srfi48=yes
+        use_srfi60=yes
+        use_srfi75_named_chars=no
+        use_srfi75=no
+        use_sscm_extensions=yes
+        use_sscm_format_extensions=yes
+        use_compat_siod=yes
+        use_compat_siod_bugs=yes
+        use_eval_c_string=yes
+        ;;
+    esac
+
+    # Debugging features
+    case $enable_conf in
+      dev)
+        use_backtrace=yes
+        use_debug=yes
+        use_warning_suppressor=yes
+        ;;
+      uim)
+        use_backtrace=yes
+        ;;
+    esac
   ])
 
 # If the variable is preexisting, it is used as default value. explicit
@@ -644,15 +842,90 @@ AC_SUBST(objdir)
 
 AC_OUTPUT
 
-AC_MSG_RESULT([
+AC_MSG_RESULT([[
 SigScheme has been configured as follows:
 
-base config:      $use_conf
-storage impl:     $use_storage
-fixnum size:      $use_fixnum
-default encoding: $use_default_encoding
-backtrace:        $use_backtrace
-debug:            $use_debug
+base config:  $use_conf
 
-CFLAGS='$CFLAGS'
-])
+[Storage configuration]
+Storage impl: $use_storage
+Fixnum size:  $use_fixnum
+
+[Multibyte character handlings]
+Multibyte chars:  ${use_multibyte_char:-no}
+Default encoding: $use_default_encoding
+UTF-8 codec:      $use_utf8
+EUC-CN codec:     $use_euccn
+EUC-JP codec:     $use_eucjp
+EUC-KR codec:     $use_euckr
+Shift_JIS codec:  $use_sjis
+
+[R5RS behaviors]
+Strict R5RS:           $use_strict_r5rs
+Const list literal:    $use_const_list_literal
+Const vector literal:  $use_const_vector_literal
+Strict null form:      $use_strict_null_form
+Strict vector form:    $use_strict_vector_form
+Strict argcheck:       $use_strict_argcheck
+Strict top-level defs: $use_strict_toplevel_definitions
+Internal definitions:  $use_internal_definitions
+
+[R5RS features]
+Continuation:       $use_continuation
+Quasiquote:         $use_quasiquote
+Hygienic macros:    $use_hygienic_macro
+Promise:            $use_promise
+Integer:            $use_int
+Numeric I/O:        ${use_number_io:-no}
+Charcters:          $use_char
+Strings:            $use_string
+String procedures:  ${use_string_procedure:-no}
+Deep c[ad]+r procs: $use_deep_cadrs
+Vectors:            $use_vector
+Ports:              $use_port
+Reader:             $use_reader
+Writer:             $use_writer
+Load:               $use_load
+
+[SRFIs]
+SRFI-1:  $use_srfi1
+SRFI-2:  $use_srfi2
+SRFI-6:  $use_srfi6
+SRFI-8:  $use_srfi8
+SRFI-22: $use_srfi22
+SRFI-23: $use_srfi23
+SRFI-28: $use_srfi28
+SRFI-34: $use_srfi34
+SRFI-38: $use_srfi38
+SRFI-48: $use_srfi48
+SRFI-60: $use_srfi60
+SRFI-75: $use_srfi75
+SRFI-75 named chars: $use_srfi75_named_chars
+
+[SigScheme-specific extensions]
+SigScheme extensions: $use_sscm_extensions
+format+ procedure:    $use_sscm_format_extensions
+SIOD compatibilities: $use_compat_siod
+SIOD bugs emulation:  $use_compat_siod_bugs
+eval_c_string():      $use_eval_c_string
+Backtrace:            $use_backtrace
+
+[Developer-only debugging features]
+Debug:              $use_debug]])
+
+if test "x$use_debug" = xyes; then
+  AC_MSG_RESULT(
+[[Debug port:         $use_debug
+Debug parser:       $use_debug
+Debug macro:        $use_debug
+Debug encoding:     $use_debug
+Soft assert:        $use_soft_assert
+Accessor assert:    $use_accessor_assert
+Warning suppressor: $use_warning_suppressor
+Frame separators on backtrace: $use_debug_backtrace_sep
+Value printings  on backtrace: $use_debug_backtrace_val]])
+fi
+
+AC_MSG_RESULT([[
+[Build information]
+CFLAGS='$CFLAGS']])

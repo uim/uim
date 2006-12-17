@@ -114,7 +114,7 @@ AC_DEFUN([AX_FEATURE_DEFINE], [
               m4_default([$4], AX_FEATURE_DESC_[]AS_TR_CPP([$1])))
   fi
   AM_CONDITIONAL(m4_default([$3], AX_FEATURE_PREFIX_COND[]m4_toupper([$1])),
-                 test "x[]AX_FEATURE_PREFIX_VAR[][$1]" != xno)
+                 test "x${AX_FEATURE_PREFIX_VAR[$1]}" != xno)
 ])
 
 # _AX_FEATURE_OVERRIDE_VALS(DEPENDENT-VAL, FEATURE-LIST)
