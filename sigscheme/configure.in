@@ -384,7 +384,7 @@ dnl AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES([
 dnl strict_r5rs: const_list_literal const_vector_literal
 dnl ])
 
-# recommended dependency (not required)
+# recommended dependencies (not required)
 AX_FEATURE_RESOLVE_DEPENDENCIES([recommended], [
 conf_dev: warning_suppressor
 storage_fatty: valuecons const_list_literal const_vector_literal
@@ -392,7 +392,7 @@ debug: accessor_assert strict_argcheck strict_encoding_check
 backtrace: srfi38
 ])
 
-# FIXME: format <-> writer cyclic dependency
+# required dependencies
 AX_FEATURE_RESOLVE_DEPENDENCIES([required], [
 sigscheme: raw_c_format
 backtrace: continuation port writer
@@ -459,7 +459,7 @@ storage_fatty storage_compact
 storage_compact valuecons
 storage_compact const_list_literal
 debug_no null_capable_string
-strict_r5rs siod_bugs
+strict_r5rs compat_siod_bugs
 strict_r5rs strict_vector_form_no
 strict_r5rs strict_null_form_no
 strict_r5rs strict_toplevel_definitions_no
