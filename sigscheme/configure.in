@@ -379,19 +379,6 @@ AX_FEATURE_ARG_Y(warning-suppressor,  [suppressing compiler warnings])
 # Resolve dependency of the features
 #
 
-# required if available
-dnl AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES([
-dnl strict_r5rs: const_list_literal const_vector_literal
-dnl ])
-
-# recommended dependencies (not required)
-AX_FEATURE_RESOLVE_DEPENDENCIES([recommended], [
-conf_dev: warning_suppressor
-storage_fatty: valuecons const_list_literal const_vector_literal
-debug: accessor_assert strict_argcheck strict_encoding_check
-backtrace: srfi38
-])
-
 # required dependencies
 AX_FEATURE_RESOLVE_DEPENDENCIES([required], [
 sigscheme: raw_c_format
@@ -423,7 +410,7 @@ srfi75: char utf8 reader srfi75_named_chars
 
 compat_siod: sscm_extensions srfi60 eval_c_string
 compat_siod_bugs: compat_siod
-strict_r5rs: strict_null_form strict_vector_form strict_argcheck internal_definitions strict_toplevel_definitions
+strict_r5rs: strict_null_form strict_vector_form strict_argcheck internal_definitions strict_toplevel_definitions const_vector_literal
 
 int:        number
 rational:   number
@@ -453,6 +440,19 @@ default_encoding_eucjp:      eucjp eucjp_as_default
 default_encoding_euckr:      euckr euckr_as_default
 default_encoding_sjis:       sjis  sjis_as_default
 ])
+
+# recommended dependencies (not required)
+AX_FEATURE_RESOLVE_DEPENDENCIES([recommended], [
+conf_dev: warning_suppressor
+storage_fatty: valuecons const_list_literal const_vector_literal
+debug: accessor_assert strict_argcheck strict_encoding_check
+backtrace: srfi38
+])
+
+# required if and only if available
+dnl AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES([
+dnl strict_r5rs: const_list_literal
+dnl ])
 
 AX_FEATURE_DETECT_CONFLICTS([
 storage_fatty storage_compact
