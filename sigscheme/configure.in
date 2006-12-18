@@ -154,6 +154,24 @@ AC_TYPE_SSIZE_T
 #AC_TYPE_SIGNAL
 #AC_TYPE_UID_T
 
+# gnu89 is required only for glibc. -std=c89 is sufficient for other
+# environments.
+AX_CFLAGS_GCC_OPTION([-std=gnu89])
+
+AX_CFLAGS_GCC_OPTION([-pedantic])
+AX_CFLAGS_GCC_OPTION([-Wall])
+AX_CFLAGS_GCC_OPTION([-Wchar-subscripts])
+AX_CFLAGS_GCC_OPTION([-Wmissing-declarations])
+AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
+AX_CFLAGS_GCC_OPTION([-Wmissing-prototypes])
+AX_CFLAGS_GCC_OPTION([-Wnested-externs])
+AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
+AX_CFLAGS_GCC_OPTION([-Wcast-align])
+AX_CFLAGS_GCC_OPTION([-Wsign-compare])
+
+# Suppress warnings about strings longer than ISO C 89 maximum length (509).
+AX_CFLAGS_GCC_OPTION([-Wno-overlength-strings])
+
 #
 # Checks for library functions
 #
@@ -760,18 +778,6 @@ AX_FEATURE_DEFINE(warning_suppressor)
 # Fixup #
 #########
 
-if test "x$enable_debug" = xno; then
-  CFLAGS="$CFLAGS -DNDEBUG"
-fi
-
-# Default Compiler Option for gcc
-if test x$CC = xgcc; then
-  if test x$enable_debug = xyes; then
-    CFLAGS="$CFLAGS -g"
-  fi
-  CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-fi
-
 #
 # Hardwired configurations
 #
@@ -780,6 +786,19 @@ AC_DEFINE(SCM_ENCODING_USE_WITH_SIGSCHEME, 1,
   [Define to 1 to adapt encoding.c to SigScheme.])
 AC_DEFINE(SCM_SCMPORT_USE_WITH_SIGSCHEME, 1,
   [Define to 1 to adapt scmport*.[hc] to SigScheme.])
+
+#
+# Compiler options
+#
+
+# Debugging-related flags
+if test "x$use_debug" = xyes; then
+  if test "x$ac_cv_prog_cc_g" = xyes; then
+    CFLAGS="$CFLAGS -g"
+  fi
+else
+  CFLAGS="$CFLAGS -DNDEBUG"
+fi
 
 ###############################
 # Output configuration result #
