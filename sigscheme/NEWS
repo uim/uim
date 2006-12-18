@@ -3,6 +3,15 @@ Overview of changes from 0.6.1 to 0.7.0
 
 * New features
 
+  - All particular language features and behaviors have become configurable via
+    --enable and --disable options of the configure script, with automated
+    feature dependencies resolution and conflict detection
+
+  - The Cutter-based C testing framework has been replaced with the new
+    framework developed by Jun Inoue. Simply type 'make check' to run the
+    tests. All of old contents of test-c/ have been removed, and test-c2/ has
+    been renamed to test-c/. Be careful to read old logs.
+
   - "internal definitions" and "strict toplevel definitions validation"
     features have been configurable
 
@@ -12,11 +21,6 @@ Overview of changes from 0.6.1 to 0.7.0
   - [R6RS] R6RS (R5.91RS) compatible 'fixnum-width' procedure
 
   - SSCM_VERSION_REQUIRE() macro
-
-  - The Cutter-based C testing framework has been replaced with the new
-    framework developed by Jun Inoue. Simply type 'make check' to run the
-    tests. All of old contents of test-c/ have been removed, and test-c2/ has
-    been renamed to test-c/. Be careful to read old logs.
 
 * Specification changes
 
@@ -52,6 +56,13 @@ Overview of changes from 0.6.1 to 0.7.0
     (get_byte() and peek_byte() were not able to detect read error)
 
   - Withdraw sigscheme-stdint.h. Use scmint.h instead
+
+  - The --enable-configuration=CONF option of the configure is renamed to
+    --enable-conf=CONF
+
+  - The --enable-multibyte=ENCODING option of the configure is replaced with
+    --enable-default-encoding=ENCODING, and --enable-ENCODING options are also
+    added
 
 * Fixes
 
@@ -188,6 +199,11 @@ Overview of changes from 0.6.1 to 0.7.0
   - Fix crashes on 'make check' in test-c2/ on x86_64-unknown-linux-gnu
 
   - Fix unwanted test-c2/*-coll.c removal on --disable-maintainer-mode
+
+* Others
+
+  - The maintainer of the software has been succeeded by YAMAMOTO Kengo a.k.a
+    YamaKen
 
 
 Overview of changes from 0.5.0 (r3097 + private modifications) to 0.6.1
