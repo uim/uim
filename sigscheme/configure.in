@@ -8,6 +8,8 @@ AM_INIT_AUTOMAKE([1.10 dist-bzip2])
 # must be invoked immediately after initialization.
 #AC_GNU_SOURCE
 
+# --enable-maintainer-mode is requied to build svn repository version of
+# SigScheme.
 AM_MAINTAINER_MODE
 
 #
@@ -18,13 +20,14 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_LN_S
 AC_PROG_EGREP
+# Prefers GNU sed if found. GNU sed is required for generating
+# test-c/collect.sh from svn repository version of SigScheme.
+AC_PROG_SED
 
 # These programs are only needed on make dist
 AC_PATH_PROGS(RUBY, ruby18 ruby)
 AC_PATH_PROGS(PERL, perl5 perl)
 AC_PATH_PROG(ASCIIDOC, asciidoc)
-# GNU sed for test-c/collect.sh
-AC_PATH_PROGS(GSED, gsed sed)
 AC_PATH_PROG(SH, sh)
 AC_PATH_PROGS(MD5, md5 md5sum)
 AC_PATH_PROGS(SHA1, sha1 sha1sum)
@@ -571,7 +574,7 @@ AX_FEATURE_ARG_Y(warning-suppressor,  [suppressing compiler warnings])
 # Resolve dependency of the features
 #
 
-# required dependencies
+# Resolve required dependencies
 AX_FEATURE_RESOLVE_DEPENDENCIES([required], [
 sigscheme: raw_c_format
 backtrace: continuation port writer
@@ -633,7 +636,7 @@ default_encoding_euckr:      euckr euckr_as_default
 default_encoding_sjis:       sjis  sjis_as_default
 ])
 
-# recommended dependencies (not required)
+# Resolve recommended dependencies (not required)
 AX_FEATURE_RESOLVE_DEPENDENCIES([recommended], [
 conf_dev: warning_suppressor
 storage_fatty: valuecons const_list_literal const_vector_literal
@@ -641,11 +644,12 @@ debug: accessor_assert strict_argcheck strict_encoding_check
 backtrace: srfi38
 ])
 
-# required if and only if available
+# Resolve weak dependencies required if and only if available
 dnl AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES([
 dnl strict_r5rs: const_list_literal
 dnl ])
 
+# Check conflicts between the features
 AX_FEATURE_DETECT_CONFLICTS([
 storage_fatty storage_compact
 storage_compact valuecons
@@ -829,8 +833,6 @@ AC_CONFIG_FILES([Makefile
                  test-c/Makefile
                  test-c/collect.sh
                  bench/Makefile])
-
-AC_SUBST(GSED)
 
 AC_OUTPUT
 

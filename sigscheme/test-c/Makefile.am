@@ -33,4 +33,7 @@ check_PROGRAMS= $(TESTS) test-minishell
 
 # GNU version of sed is required to run collect.sh
 dist-hook:
-	@test -n "$(GSED)" || (echo 'GNU sed(1) not found: install it'; exit 1)
+	@(test -n "$(SED)"                                              \
+	  && $(SED) --version 2>/dev/null                               \
+	  && $(SED) --version 2>/dev/null | grep GNU)                   \
+	 || (echo 'GNU sed(1) is not found: install it'; exit 1)
