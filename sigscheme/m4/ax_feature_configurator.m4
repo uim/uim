@@ -27,6 +27,12 @@
 # AX_FEATURE_CONFIGURATOR([SH_VAR_PREFIX], [AC_DEF_PREFIX], [AM_COND_PREFIX])
 AC_DEFUN([AX_FEATURE_CONFIGURATOR], [
   AC_PROG_EGREP
+  CHECK_GNU_MAKE()
+  if "x$_cv_gnu_make_command" != "x"; then
+    GMAKE=$_cv_gnu_make_command
+  else
+    AC_MSG_ERROR([GNU make is currently required to run ax_feature_configurator.m4])
+  fi
 
   m4_define([AX_FEATURE_PREFIX_VAR],  m4_default([$1], [use_]))
   m4_define([AX_FEATURE_PREFIX_DEF],  m4_default([$2], [USE_]))
@@ -172,7 +178,7 @@ AC_DEFUN([AX_FEATURE_RESOLVE_DEPENDENCIES], [
     rm -rf confdeps
     mkdir confdeps
     # FIXME: GNU make dependency
-    gmake -s -C confdeps -f - @S|@@ __deps <<'EOT'
+    $GMAKE -s -C confdeps -f - @S|@@ __deps <<'EOT'
 [$2]
 [
 %::
