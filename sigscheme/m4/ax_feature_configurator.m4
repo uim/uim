@@ -32,6 +32,7 @@ AC_DEFUN([AX_FEATURE_CONFIGURATOR], [
   m4_define([AX_FEATURE_PREFIX_DEF],  m4_default([$2], [USE_]))
   m4_define([AX_FEATURE_PREFIX_COND], m4_default([$3], [USE_]))
 
+  ax_feature_state='init'
   ax_feature_list_all=''
   ax_feature_list_explicit=''
   ax_feature_list_implicit=''
@@ -50,6 +51,15 @@ AC_DEFUN([AX_FEATURE_VAR_N], [
 # AX_FEATURE_VAR_X(FEATURE, DESC, DEFAULT-VAL, VAL-REGEXP)
 AC_DEFUN([AX_FEATURE_VAR_X], [
   m4_define(AX_FEATURE_DESC_[]AS_TR_CPP([$1]), [$2])
+
+  case $ax_feature_state in
+    init|seed)
+      ax_feature_state='seed'
+      ;;
+    *)
+      AC_MSG_ERROR([invalid macros layout for ax_feature_configurator.m4])
+      ;;
+  esac
 
   if echo "[$3]" | $EGREP -q "AS_ESCAPE([$4])"; then
     _ax_feature_id=AS_TR_SH([$1])
@@ -108,6 +118,15 @@ AC_DEFUN([AX_FEATURE_ARG_X], [
 
 # AX_FEATURE_DEFINE(FEATURE, [AC_DEF_SYM], [AM_COND_SYM], [DESC])
 AC_DEFUN([AX_FEATURE_DEFINE], [
+  case $ax_feature_state in
+    seed|dep_resolv|weakdep_resolv|conflict_resolv|define)
+      ax_feature_state='define'
+      ;;
+    *)
+      AC_MSG_ERROR([invalid macros layout for ax_feature_configurator.m4])
+      ;;
+  esac
+
   m4_define_default(AX_FEATURE_DESC_[]AS_TR_CPP([$1]),
                     [$1])
   if test "x${AX_FEATURE_PREFIX_VAR[][$1]:-no}" != xno; then
@@ -138,6 +157,15 @@ AC_DEFUN([_AX_FEATURE_OVERRIDE_VALS], [
 
 # AX_FEATURE_RESOLVE_DEPENDENCIES(GROUP, RULESET, [DEPENDENT-VAL])
 AC_DEFUN([AX_FEATURE_RESOLVE_DEPENDENCIES], [
+  case $ax_feature_state in
+    seed|dep_resolv)
+      ax_feature_state='dep_resolv'
+      ;;
+    *)
+      AC_MSG_ERROR([invalid macros layout for ax_feature_configurator.m4])
+      ;;
+  esac
+
   AC_MSG_CHECKING([$1][ dependencies of features])
   _ax_feature_resolve_deps () {
     # FIXME: improper temporary directory handlings
@@ -162,6 +190,15 @@ EOT
 
 # AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES(RULESET)
 AC_DEFUN([AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES], [
+  case $ax_feature_state in
+    seed|dep_resolv|weakdep_resolv)
+      ax_feature_state='weakdep_resolv'
+      ;;
+    *)
+      AC_MSG_ERROR([invalid macros layout for ax_feature_configurator.m4])
+      ;;
+  esac
+
   AX_FEATURE_RESOLVE_DEPENDENCIES([weak], [$1], [weakyes])
 ])
 
@@ -169,6 +206,15 @@ AC_DEFUN([AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES], [
 # FIXME: support IF-CONFLICT handling
 # AX_FEATURE_DETECT_CONFLICTS(RULESET, [IF-CONFLICT])
 AC_DEFUN([AX_FEATURE_DETECT_CONFLICTS], [
+  case $ax_feature_state in
+    seed|dep_resolv|weakdep_resolv|conflict_resolv)
+      ax_feature_state='conflict_resolv'
+      ;;
+    *)
+      AC_MSG_ERROR([invalid macros layout for ax_feature_configurator.m4])
+      ;;
+  esac
+
   AC_MSG_CHECKING([conflicts between features])
   _ax_feature_list_expanded=''
   for feature in $ax_feature_list_all; do
