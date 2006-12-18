@@ -100,12 +100,12 @@ scm_p_eqvp(ScmObj obj1, ScmObj obj2)
 
     /* same type */
     switch (type) {
-#if !SCM_HAS_IMMEDIATE_INT_ONLY
+#if (SCM_USE_INT && !SCM_HAS_IMMEDIATE_INT_ONLY)
     case ScmInt:
         return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 #endif
 
-#if !SCM_HAS_IMMEDIATE_CHAR_ONLY
+#if (SCM_USE_CHAR && !SCM_HAS_IMMEDIATE_CHAR_ONLY)
     case ScmChar:
         return MAKE_BOOL(SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2));
 #endif
@@ -124,8 +124,11 @@ SCM_EXPORT ScmObj
 scm_p_equalp(ScmObj obj1, ScmObj obj2)
 {
     enum ScmObjType type;
-    ScmObj elm1, elm2, *v1, *v2;
+    ScmObj elm1, elm2;
+#if SCM_USE_VECTOR
+    ScmObj *v1, *v2;
     scm_int_t i, len;
+#endif
     DECLARE_FUNCTION("equal?", procedure_fixed_2);
 
     if (EQ(obj1, obj2))
@@ -139,18 +142,20 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
 
     /* same type */
     switch (type) {
-#if !SCM_HAS_IMMEDIATE_INT_ONLY
+#if (SCM_USE_INT && !SCM_HAS_IMMEDIATE_INT_ONLY)
     case ScmInt:
         return MAKE_BOOL(SCM_INT_VALUE(obj1) == SCM_INT_VALUE(obj2));
 #endif
 
-#if !SCM_HAS_IMMEDIATE_CHAR_ONLY
+#if (SCM_USE_CHAR && !SCM_HAS_IMMEDIATE_CHAR_ONLY)
     case ScmChar:
         return MAKE_BOOL(SCM_CHAR_VALUE(obj1) == SCM_CHAR_VALUE(obj2));
 #endif
 
+#if SCM_USE_STRING
     case ScmString:
         return MAKE_BOOL(STRING_EQUALP(obj1, obj2));
+#endif
 
     case ScmCons:
         for (; CONSP(obj1) && CONSP(obj2); obj1 = CDR(obj1), obj2 = CDR(obj2))
@@ -165,6 +170,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
         /* compare last cdr */
         return (EQ(obj1, obj2)) ? SCM_TRUE : scm_p_equalp(obj1, obj2);
 
+#if SCM_USE_VECTOR
     case ScmVector:
         len = SCM_VECTOR_LEN(obj1);
         if (len != SCM_VECTOR_LEN(obj2))
@@ -181,6 +187,7 @@ scm_p_equalp(ScmObj obj1, ScmObj obj2)
                 return SCM_FALSE;
         }
         return SCM_TRUE;
+#endif
 
 #if SCM_USE_SSCM_EXTENSIONS
     case ScmCPointer:

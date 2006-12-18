@@ -51,6 +51,13 @@
 =======================================*/
 #define ERRMSG_CANNOT_OPEN_FILE "cannot open file"
 
+#if !SCM_USE_CHAR
+#define scm_p_read_char   NULL
+#define scm_p_peek_char   NULL
+#define scm_p_char_readyp NULL
+#define scm_p_write_char  NULL
+#endif
+
 /*=======================================
   File Local Type Definitions
 =======================================*/
@@ -103,6 +110,13 @@ scm_init_port(void)
     SCM_GLOBAL_VARS_INIT(port);
 
     scm_register_funcs(scm_functable_r5rs_port);
+
+#if !SCM_USE_CHAR
+    SCM_SYMBOL_SET_VCELL(scm_intern("read-char"), SCM_UNBOUND);
+    SCM_SYMBOL_SET_VCELL(scm_intern("peek-char"), SCM_UNBOUND);
+    SCM_SYMBOL_SET_VCELL(scm_intern("char-ready?"), SCM_UNBOUND);
+    SCM_SYMBOL_SET_VCELL(scm_intern("write-char"), SCM_UNBOUND);
+#endif
 
     scm_fileport_init();
 #if SCM_USE_MULTIBYTE_CHAR
@@ -427,6 +441,7 @@ scm_p_close_output_port(ScmObj port)
 ===========================================================================*/
 /* scm_p_read() is separated into read.c */
 
+#if SCM_USE_CHAR
 SCM_EXPORT ScmObj
 scm_p_read_char(ScmObj args)
 {
@@ -458,6 +473,7 @@ scm_p_peek_char(ScmObj args)
 
     return MAKE_CHAR(ch);
 }
+#endif /* SCM_USE_CHAR */
 
 SCM_EXPORT ScmObj
 scm_p_eof_objectp(ScmObj obj)
@@ -467,6 +483,7 @@ scm_p_eof_objectp(ScmObj obj)
     return MAKE_BOOL(EOFP(obj));
 }
 
+#if SCM_USE_CHAR
 SCM_EXPORT ScmObj
 scm_p_char_readyp(ScmObj args)
 {
@@ -479,6 +496,7 @@ scm_p_char_readyp(ScmObj args)
 
     return MAKE_BOOL(ret);
 }
+#endif /* SCM_USE_CHAR */
 
 /*===========================================================================
   R5RS : 6.6 Input and Output : 6.6.3 Output
@@ -496,6 +514,7 @@ scm_p_newline(ScmObj args)
     return SCM_UNDEF;
 }
 
+#if SCM_USE_CHAR
 SCM_EXPORT ScmObj
 scm_p_write_char(ScmObj obj, ScmObj args)
 {
@@ -508,3 +527,4 @@ scm_p_write_char(ScmObj obj, ScmObj args)
     scm_port_put_char(port, SCM_CHAR_VALUE(obj));
     return SCM_UNDEF;
 }
+#endif /* SCM_USE_CHAR */

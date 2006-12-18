@@ -35,6 +35,7 @@
 #define __SIGSCHEME_H
 
 #include <sigscheme/config.h>
+#define SCM_USE_VALUES_APPLIER 1
 
 #include <limits.h>
 #include <stddef.h>
@@ -690,13 +691,13 @@ struct ScmStorageConf_ {
                        ((vec), (len)))
 #endif /* SCM_USE_VECTOR */
 
-#if SCM_USE_CONTINUATION
+#if (SCM_USE_CONTINUATION || SCM_USE_VALUES_APPLIER)
 #define SCM_MAKE_CONTINUATION()                                              \
     SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_CONTINUATION,                            \
                        ScmObj,                                               \
                        (void),                                               \
                        ())
-#endif /* SCM_USE_CONTINUATION */
+#endif /* (SCM_USE_CONTINUATION || SCM_USE_VALUES_APPLIER) */
 
 #define SCM_MAKE_VALUEPACKET(vals)                                           \
     SCM_TYPESAFE_MACRO(SCM_SAL_MAKE_VALUEPACKET,                             \
@@ -861,7 +862,7 @@ struct ScmStorageConf_ {
 #define SCM_PORT_SET_IMPL(o, impl)      SCM_SAL_PORT_SET_IMPL((o), (impl))
 #endif /* SCM_USE_PORT */
 
-#if SCM_USE_CONTINUATION
+#if (SCM_USE_CONTINUATION || SCM_USE_VALUES_APPLIER)
 #define SCM_CONTINUATIONP(o)            SCM_SAL_CONTINUATIONP(o)
 #define SCM_CONTINUATION_OPAQUE(o)      SCM_SAL_CONTINUATION_OPAQUE(o)
 #define SCM_CONTINUATION_TAG(o)         SCM_SAL_CONTINUATION_TAG(o)
@@ -869,7 +870,7 @@ struct ScmStorageConf_ {
     SCM_SAL_CONTINUATION_SET_OPAQUE((o), (val))
 #define SCM_CONTINUATION_SET_TAG(o, val)                                     \
     SCM_SAL_CONTINUATION_SET_TAG((o), (val))
-#endif /* SCM_USE_CONTINUATION */
+#endif /* (SCM_USE_CONTINUATION || SCM_USE_VALUES_APPLIER) */
 
 #define SCM_VALUEPACKETP(o)             SCM_SAL_VALUEPACKETP(o)
 
@@ -1599,12 +1600,16 @@ SCM_EXPORT ScmObj scm_p_open_input_file(ScmObj filepath);
 SCM_EXPORT ScmObj scm_p_open_output_file(ScmObj filepath);
 SCM_EXPORT ScmObj scm_p_close_input_port(ScmObj port);
 SCM_EXPORT ScmObj scm_p_close_output_port(ScmObj port);
+#if SCM_USE_CHAR
 SCM_EXPORT ScmObj scm_p_read_char(ScmObj args);
 SCM_EXPORT ScmObj scm_p_peek_char(ScmObj args);
-SCM_EXPORT ScmObj scm_p_eof_objectp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_char_readyp(ScmObj args);
+#endif
+SCM_EXPORT ScmObj scm_p_eof_objectp(ScmObj obj);
 SCM_EXPORT ScmObj scm_p_newline(ScmObj args);
+#if SCM_USE_CHAR
 SCM_EXPORT ScmObj scm_p_write_char(ScmObj obj, ScmObj args);
+#endif
 #endif /* SCM_USE_PORT */
 
 /* read.c */

@@ -55,9 +55,11 @@
 =======================================*/
 static ScmObj reduce(ScmObj (*func)(), ScmObj args, ScmObj env,
                      enum ScmValueType need_eval);
+#if SCM_USE_CONTINUATION
 static void call_continuation(ScmObj cont, ScmObj args,
                               ScmEvalState *eval_state,
                               enum ScmValueType need_eval) SCM_NORETURN;
+#endif
 static ScmObj call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
                            enum ScmValueType need_eval);
 static ScmObj call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
@@ -129,6 +131,7 @@ reduce(ScmObj (*func)(), ScmObj args, ScmObj env, enum ScmValueType need_eval)
     return (*func)(left, right, &state);
 }
 
+#if SCM_USE_CONTINUATION
 static void
 call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
                   enum ScmValueType need_eval)
@@ -144,6 +147,7 @@ call_continuation(ScmObj cont, ScmObj args, ScmEvalState *eval_state,
     scm_call_continuation(cont, ret);
     /* NOTREACHED */
 }
+#endif /* SCM_USE_CONTINUATION */
 
 static ScmObj
 call_closure(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
@@ -268,10 +272,12 @@ call(ScmObj proc, ScmObj args, ScmEvalState *eval_state,
             need_eval = scm_false;
             continue;
         }
+#if SCM_USE_CONTINUATION
         if (CONTINUATIONP(proc)) {
             call_continuation(proc, args, eval_state, need_eval);
             /* NOTREACHED */
         }
+#endif
         ERR_OBJ("procedure or syntax required but got", proc);
         /* NOTREACHED */
     }
@@ -444,7 +450,7 @@ eval_loop:
     else if (NULLP(obj))
         PLAIN_ERR("eval: () is not a valid R5RS form. use '() instead");
 #endif
-#if SCM_STRICT_VECTOR_FORM
+#if (SCM_USE_VECTOR && SCM_STRICT_VECTOR_FORM)
     else if (VECTORP(obj))
         PLAIN_ERR("eval: #() is not a valid R5RS form. use '#() instead");
 #endif

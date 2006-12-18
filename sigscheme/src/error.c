@@ -84,7 +84,9 @@ SCM_DEFINE_STATIC_VARS(static_error);
 /*=======================================
   File Local Function Declarations
 =======================================*/
+#if SCM_USE_SRFI34
 static scm_bool srfi34_providedp(void);
+#endif
 static void scm_error_internal(const char *func_name, ScmObj obj,
                                const char *msg, va_list args) SCM_NORETURN;
 #if (SCM_USE_BACKTRACE && SCM_DEBUG_BACKTRACE_VAL)
@@ -344,7 +346,7 @@ scm_error_internal(const char *func_name, ScmObj obj,
     /* It is supposed that no continuation switching occurs on this guarded
      * duration. So the global variable based guard works properly. */
     l_error_looped = scm_true;
-#if SCM_USE_FORMAT
+#if (SCM_USE_FORMAT && SCM_USE_SRFI6)
     reason = scm_vformat(SCM_FALSE, SCM_FMT_INTERNAL, msg, args);
     if (func_name) {
         reason = scm_format(SCM_FALSE, SCM_FMT_RAW_C,
@@ -424,7 +426,10 @@ SCM_EXPORT void
 scm_show_backtrace(ScmObj trace_stack)
 {
 #if SCM_USE_BACKTRACE
-    ScmObj frame, env, obj, elm;
+    ScmObj frame, env, obj;
+#if SCM_DEBUG_BACKTRACE_VAL
+    ScmObj elm;
+#endif
     DECLARE_INTERNAL_FUNCTION("scm_show_backtrace");
 
     if (NULLP(trace_stack))

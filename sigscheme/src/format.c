@@ -660,8 +660,12 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
     DECLARE_INTERNAL_FUNCTION("format");
 
     if (FALSEP(port)) {
+#if SCM_USE_SRFI6
         port = scm_p_srfi6_open_output_string();
         implicit_portp = scm_true;
+#else
+        ERR("format to string needs SRFI-6 feature");
+#endif
     } else if (EQ(port, SCM_TRUE)) {
         port = scm_out;
         implicit_portp = scm_false;
@@ -704,7 +708,11 @@ format_internal(ScmObj port, enum ScmFormatCapability fcap,
 
     if (args.type == ARG_SCM_LIST)
         ENSURE_NO_MORE_ARG(*args.lst.scm);
+#if SCM_USE_SRFI6
     return (implicit_portp) ? scm_p_srfi6_get_output_string(port) : SCM_UNDEF;
+#else
+    return SCM_UNDEF;
+#endif
 }
 
 SCM_EXPORT ScmObj

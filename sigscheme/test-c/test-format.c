@@ -36,8 +36,14 @@
 #include <stdarg.h>
 #include <string.h>
 
+#if (!SCM_USE_CHAR || !SCM_USE_STRING || !SCM_USE_INT)
+#define TST_EXCLUDE_THIS
+#endif
+
 #define TST_HAVE_MAIN 1
 #include "sscm-test.h"
+
+#ifndef TST_EXCLUDE_THIS
 
 #include <sigscheme/sigscheme.h>
 #include "sigschemeinternal.h"
@@ -3124,3 +3130,4 @@ TST_CASE("format freshline by mixed SRFI & raw C directives")
                              CONST_STRING("~&"), SCM_NULL)));
 #endif
 }
+#endif /* !TST_EXCLUDE_THIS */

@@ -58,6 +58,11 @@
 #define ERRMSG_CODEC_SW_NOT_SUPPORTED                                        \
     "character encoding switching is not supported on this build"
 
+#if !SCM_USE_CONTINUATION
+#define scm_p_call_with_current_continuation NULL
+#define scm_p_dynamic_wind                   NULL
+#endif
+
 /*=======================================
   File Local Type Definitions
 =======================================*/
@@ -271,6 +276,10 @@ scm_initialize_internal(void)
 
     /* R5RS Procedures */
     scm_register_funcs(scm_functable_r5rs_core);
+#if !SCM_USE_CONTINUATION
+    SCM_SYMBOL_SET_VCELL(scm_intern("call-with-current-continuation"), SCM_UNBOUND);
+    SCM_SYMBOL_SET_VCELL(scm_intern("call-with-values"), SCM_UNBOUND);
+#endif
 #if SCM_USE_NUMBER
     scm_register_funcs(scm_functable_r5rs_number);
 #endif

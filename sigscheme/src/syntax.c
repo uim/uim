@@ -951,7 +951,11 @@ scm_s_define_internal(enum ScmObjType permitted,
     ScmObj val;
     DECLARE_INTERNAL_FUNCTION("define");
 
+#if SCM_USE_HYGIENIC_MACRO
     SCM_ASSERT(SYMBOLP(var) || SYMBOLP(SCM_FARSYMBOL_SYM(var)));
+#else
+    SCM_ASSERT(SYMBOLP(var));
+#endif
     var = SCM_UNWRAP_KEYWORD(var);
     val = EVAL(exp, env);
     CHECK_VALID_BINDEE(permitted, val);

@@ -117,19 +117,23 @@ TST_CASE("cell type predicates")
 {
     ScmObj obj;
 
+#if SCM_USE_VECTOR
     ScmObj *vec;
+#endif
 
 #define TYPE_TST(typ)                                           \
     TST_COND(SCM_CELL_##typ##P(*SCM_UNTAG_PTR(obj))             \
              && cell_types_disjunct(SCM_UNTAG_PTR(obj)),        \
              "CELL_" #typ "P()")
 
+#if SCM_USE_VECTOR
     vec = malloc_aligned_8(sizeof(ScmObj) * 3);
     vec[0] = SCM_NULL;
     vec[1] = SCM_MAKE_INT(8);
     vec[2] = SCM_FALSE;
     obj = SCM_MAKE_VECTOR(vec, 3);
     TYPE_TST(VECTOR);
+#endif
 
     obj = scm_p_current_input_port();
     TYPE_TST(PORT);

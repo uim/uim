@@ -375,8 +375,10 @@ gc_mark_and_sweep(void)
 static void
 mark_obj(ScmObj obj)
 {
+#if SCM_USE_VECTOR
     scm_int_t i, len;
     ScmObj *vec;
+#endif
 
 mark_loop:
     /* no need to mark immediates */
@@ -414,7 +416,7 @@ mark_loop:
             obj = SCM_WRAPPER_OBJ(obj);
             goto mark_loop;
 #endif /* SCM_USE_HYGIENIC_MACRO */
-
+#if SCM_USE_VECTOR
         /* Alert: objects that store a non-ScmObj in obj_x must
          * explicitly drop the GC bit here.  This currently applies
          * only to vectors. */
@@ -425,6 +427,7 @@ mark_loop:
             for (i = 0; i < len; i++) {
                 mark_obj(vec[i]);
             }
+#endif /* SCM_USE_VECTOR */
         } else if (VALUEPACKETP(obj)) {
             obj = SCM_VALUEPACKET_VALUES(obj);
             goto mark_loop;
@@ -439,7 +442,9 @@ mark_loop:
 static void
 mark_obj(ScmObj obj)
 {
+#if SCM_USE_VECTOR
     scm_int_t i;
+#endif
 
 mark_loop:
     /* no need to mark constants */
@@ -494,11 +499,13 @@ mark_loop:
 #endif
         goto mark_loop;
 
+#if SCM_USE_VECTOR
     case ScmVector:
         for (i = 0; i < SCM_VECTOR_LEN(obj); i++) {
             mark_obj(SCM_VECTOR_VEC(obj)[i]);
         }
         break;
+#endif
 
     default:
         break;
@@ -658,44 +665,63 @@ free_cell(ScmCell *cell)
     if (SCM_CELL_MISCP(*cell)) {
         if (SCM_CELL_SYMBOLP(*cell))
             SCM_CELL_SYMBOL_FIN(*cell);
+#if SCM_USE_STRING
         else if (SCM_CELL_STRINGP(*cell))
             SCM_CELL_STRING_FIN(*cell);
+#endif
+#if SCM_USE_VECTOR
         else if (SCM_CELL_VECTORP(*cell))
             SCM_CELL_VECTOR_FIN(*cell);
+#endif
+#if SCM_USE_PORT
         else if (SCM_CELL_PORTP(*cell))
             SCM_CELL_PORT_FIN(*cell);
+#endif
+#if SCM_USE_CONTINUATION
         else if (SCM_CELL_CONTINUATIONP(*cell))
             SCM_CELL_CONTINUATION_FIN(*cell);
+#endif
     }
 #else /* SCM_USE_STORAGE_COMPACT */
     switch (SCM_TYPE(cell)) {
     case ScmCons:
+#if SCM_USE_INT
     case ScmInt:
+#endif
+#if SCM_USE_CHAR
     case ScmChar:
+#endif
         break;
 
     case ScmSymbol:
         free(SCM_SYMBOL_NAME(cell));
         break;
 
+#if SCM_USE_STRING
     case ScmString:
         free(SCM_STRING_STR(cell));
         break;
+#endif
 
     case ScmFreeCell:
     case ScmConstant:
         break;
 
+#if SCM_USE_VECTOR
     case ScmVector:
         free(SCM_VECTOR_VEC(cell));
         break;
+#endif
 
     /* rarely swept objects */
+#if SCM_USE_PORT
     case ScmPort:
         if (SCM_PORT_IMPL(cell))
             scm_port_close(cell);
         break;
+#endif
 
+#if SCM_USE_CONTINUATION
     case ScmContinuation:
         /*
          * Since continuation object is not so many, destructing the object by
@@ -706,6 +732,7 @@ free_cell(ScmCell *cell)
          */
         scm_destruct_continuation(cell);
         break;
+#endif
 
     case ScmClosure:
     case ScmFunc:

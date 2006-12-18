@@ -227,16 +227,13 @@ if USE_PORT
         scmport-file.h scmport-file.c \
         scmport-basechar.c
 if USE_MULTIBYTE_CHAR
-    libsscm_la_SOURCES += scmport-mbchar.h scmport-mbchar.c
-else
-    libsscm_la_SOURCES += scmport-sbchar.h scmport-sbchar.c
-endif
-endif
-if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h
-  libsscm_la_SOURCES += encoding-config.h encoding.c
+  libsscm_la_SOURCES += encoding-config.h encoding.c \
+                        scmport-mbchar.h scmport-mbchar.c
 else
   pkginclude_HEADERS += encoding-dummy.h
+  libsscm_la_SOURCES += scmport-sbchar.h scmport-sbchar.c
+endif
 endif
 if USE_FORMAT
   libsscm_la_SOURCES += format.c

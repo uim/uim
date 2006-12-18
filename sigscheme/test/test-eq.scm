@@ -36,6 +36,7 @@
 (load "test/unittest.scm")
 
 (define tn test-name)
+(define case-insensitive-symbol? #f)
 
 (tn "eq? invalid form")
 (assert-error  (tn) (lambda () (eq?)))
@@ -116,7 +117,8 @@
 (assert-eq? (tn) #t (eq? 'symbol 'symbol))
 (assert-eq? (tn) #f (eq? 'symbol1 'symbol2))
 (if (and (provided? "sigscheme")
-         (provided? "strict-r5rs"))
+         (provided? "strict-r5rs")
+         case-insensitive-symbol?)
     (begin
       (assert-eq? (tn) #t (eq? 'symbol 'SYMBOL))
       (assert-eq? (tn) #t (eq? 'SYMBOL 'symbol))

@@ -506,7 +506,7 @@ scm_make_port(ScmCharPort *cport, enum ScmPortFlag flag)
 }
 #endif /* SCM_USE_PORT */
 
-#if SCM_USE_CONTINUATION
+#if (SCM_USE_CONTINUATION || SCM_USE_VALUES_APPLIER)
 SCM_EXPORT ScmObj
 scm_make_continuation(void)
 {
@@ -516,7 +516,7 @@ scm_make_continuation(void)
     SCM_CONTINUATION_INIT(obj, INVALID_CONTINUATION_OPAQUE, 0);
     return obj;
 }
-#endif /* SCM_USE_CONTINUATION */
+#endif /* (SCM_USE_CONTINUATION || SCM_USE_VALUES_APPLIER) */
 
 #if !SCM_USE_VALUECONS
 SCM_EXPORT ScmObj

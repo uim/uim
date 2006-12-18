@@ -666,6 +666,8 @@ SCM_EXPORT void scm_push_trace_frame(ScmObj obj, ScmObj env);
 SCM_EXPORT void scm_pop_trace_frame(void);
 #endif /* SCM_USE_BACKTRACE */
 SCM_EXPORT ScmObj scm_trace_stack(void);
+#else /* SCM_USE_CONTINUATION */
+#define scm_trace_stack() SCM_NULL
 #endif /* SCM_USE_CONTINUATION */
 
 /* symbol.c */

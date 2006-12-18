@@ -114,11 +114,11 @@ repl(void)
 static void
 repl_loop(void)
 {
+    ScmObj sexp, result;
+#if SCM_USE_SRFI34
     ScmEvalState eval_state;
     ScmBaseCharPort *cport;
     ScmBytePort *bport;
-    ScmObj sexp, result;
-#if SCM_USE_SRFI34
     ScmObj sym_guard, cond_catch, proc_read, proc_eval, err;
 
     proc_read = scm_symbol_value(scm_intern("read"), SCM_INTERACTION_ENV);

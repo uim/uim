@@ -36,10 +36,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#if (!SCM_USE_CHAR || !SCM_USE_VECTOR)
+#define TST_EXCLUDE_THIS
+#endif
+
 #ifndef EXPAND
 #include "sscm-test.h"
 #include "sigschemeinternal.h"
 #endif
+
+#ifndef TST_EXCLUDE_THIS
 
 #include "utils.c"
 
@@ -483,4 +489,4 @@ TST_CASE(hmacro, "hmacro")
 }
 
 #endif /* use hygienic macro */
-
+#endif /* !TST_EXCLUDE_THIS */

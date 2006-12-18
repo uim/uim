@@ -508,7 +508,9 @@ read_token(ScmObj port, int *err,
 static ScmObj
 read_sexpression(ScmObj port)
 {
+#if SCM_USE_VECTOR
     ScmObj ret;
+#endif
     enum ScmCharClass ch_class;
     scm_ichar_t c;
     DECLARE_INTERNAL_FUNCTION("read");

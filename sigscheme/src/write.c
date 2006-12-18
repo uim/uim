@@ -48,6 +48,14 @@
   File Local Macro Definitions
 =======================================*/
 #if SCM_USE_SRFI38
+#if !SCM_USE_STRING
+#define STRINGP(o)        0
+#define SCM_STRING_LEN(o) 0
+#endif
+#if !SCM_USE_VECTOR
+#undef  VECTORP
+#define VECTORP(o) 0
+#endif
 #define INTERESTINGP(obj)                                                    \
     (CONSP(obj)                                                              \
      || (STRINGP(obj) && SCM_STRING_LEN(obj))                                \
@@ -682,7 +690,9 @@ hash_lookup(hash_table *tab, ScmObj key, scm_intobj_t datum, int flag)
 static void
 write_ss_scan(ScmObj obj, write_ss_context *ctx)
 {
+#if SCM_USE_VECTOR
     scm_int_t i, len;
+#endif
     hash_entry *ent;
     ScmObj err_obj_tag, reason, objs, trace_stack;
     DECLARE_INTERNAL_FUNCTION("write-with-shared-structure");
@@ -738,10 +748,12 @@ write_ss_scan(ScmObj obj, write_ss_context *ctx)
 #endif /* SCM_USE_VALUECONS */
             break;
 
+#if SCM_USE_VECTOR
         case ScmVector:
             for (i = 0, len = SCM_VECTOR_LEN(obj); i < len; i++)
                 write_ss_scan(SCM_VECTOR_VEC(obj)[i], ctx);
             break;
+#endif /* SCM_USE_VECTOR */
 
         default:
             break;
