@@ -59,7 +59,6 @@ AC_C_RESTRICT
 AC_C_INLINE
 
 AC_C_CHAR_UNSIGNED
-AC_C_BIGENDIAN
 AX_C_ARITHMETIC_RSHIFT
 AX_C___ATTRIBUTE__
 #AX_C___ALIGNOF__
@@ -74,6 +73,18 @@ if test "x$ax_cv_c_referenceable_passed_va_list" = xno; then
   AC_DEFINE(HAVE_AUTOREFERRED_PASSED_VA_LIST, 1,
             [Define to 1 if va_list is an array type.])
 fi
+
+AC_C_BIGENDIAN
+if test "x$ac_cv_c_bigendian" = xyes; then
+  ax_c_endian=big
+elif test "x$ac_cv_c_bigendian" = xno; then
+  ax_c_endian=little
+else
+  ax_c_endian=$ac_cv_c_bigendian
+fi
+
+# a submacro of ax_create_stdint_h.m4
+AX_CHECK_DATA_MODEL
 
 AC_TYPE_LONG_LONG_INT
 AC_TYPE_UNSIGNED_LONG_LONG_INT
@@ -156,6 +167,12 @@ AC_TYPE_SSIZE_T
 #AC_TYPE_PID_T
 #AC_TYPE_SIGNAL
 #AC_TYPE_UID_T
+
+if $CC --version >/dev/null 2>/dev/null; then
+  ax_prog_cc_version=`$CC --version | head -n 1`
+else
+  ax_prog_cc_version="unknown"
+fi
 
 # gnu89 is required only for glibc. -std=c89 is sufficient for other
 # environments.
@@ -921,5 +938,15 @@ Value printings  on backtrace: $use_debug_backtrace_val]])
 fi
 
 AC_MSG_RESULT([[
-[Build information]
+[Build information (provide this on bug reports)]
+Package:                $PACKAGE_STRING
+build (compile on):     $ac_cv_build
+host (compile for):     $ac_cv_host
+host data model:        $ac_cv_data_model
+host align (C/S/I/L/P): ${ac_cv_alignof_char}/${ac_cv_alignof_short}/${ac_cv_alignof_int}/${ac_cv_alignof_long}/${ac_cv_alignof_void_p}
+host endian:            $ax_c_endian
+host arithmetic rshift: $ax_cv_c_arithmetic_rshift
+host safe va_list ref:  $ax_cv_c_referenceable_passed_va_list
+Compiler:               $CC
+Compiler version:       $ax_prog_cc_version
 CFLAGS='$CFLAGS']])
