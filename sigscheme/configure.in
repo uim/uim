@@ -604,7 +604,7 @@ srfi34: continuation srfi23
 srfi38: writer
 srfi60: int
 srfi75_named_chars: char
-srfi75: char utf8 reader srfi75_named_chars
+srfi75: char utf8 reader srfi75_named_chars utf8_as_default
 
 compat_siod: sscm_extensions srfi60 eval_c_string
 compat_siod_bugs: compat_siod
@@ -665,7 +665,7 @@ strict_r5rs internal_definitions_no
 compat_siod_bugs strict_null_form
 long_fixnum int_fixnum 32bit_fixnum 64bit_fixnum
 intptr_scmref 32bit_scmref 64bit_scmref
-utf8_as_default eucjp_as_default euckr_as_default euccn_as_default sjis_as_default
+singlebyte_as_default utf8_as_default eucjp_as_default euckr_as_default euccn_as_default sjis_as_default
 ],
 [if-conflict])
 

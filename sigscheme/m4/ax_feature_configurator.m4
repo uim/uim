@@ -95,11 +95,14 @@ AC_DEFUN([AX_FEATURE_ARG_X], [
                              [^yes$], [disable ],
                              [^no$],  [enable ],
                              [])[$2]),
-    [AX_FEATURE_VAR_X([$1], [$2], [${enable_]AS_TR_SH([$1])[}], [$4])],
+    [
+      # clear the predefined variable set by conf=CONF
+      AX_FEATURE_PREFIX_VAR[]AS_TR_SH([$1])=""
+    ],
     [
       [enable_]AS_TR_SH([$1])='AS_TR_SH([$3])'
-      AX_FEATURE_VAR_X([$1], [$2], [${enable_]AS_TR_SH([$1])[}], [$4])
     ])
+  AX_FEATURE_VAR_X([$1], [$2], [${enable_]AS_TR_SH([$1])[}], [$4])
   [$5]
 ])
 
@@ -121,6 +124,9 @@ AC_DEFUN([_AX_FEATURE_OVERRIDE_VALS], [
       _ax_feature_var="AX_FEATURE_PREFIX_VAR[]$feature"
       _ax_feature_val=AS_VAR_GET([$_ax_feature_var])
   
+      if test -z "$_ax_feature_val"; then
+        ax_feature_list_all="$ax_feature_list_all $feature"
+      fi
       if test -z "$_ax_feature_val" -o "x$_ax_feature_val" = xno; then
         AS_VAR_SET([${_ax_feature_var}], [$1])
         AS_VAR_SET([${_ax_feature_var}_][$1], [yes])
@@ -160,7 +166,8 @@ AC_DEFUN([AX_FEATURE_RESOLVE_WEAK_DEPENDENCIES], [
 ])
 
 # FIXME: support weak dependency
-# AX_FEATURE_DETECT_CONFLICTS(RULESET)
+# FIXME: support IF-CONFLICT handling
+# AX_FEATURE_DETECT_CONFLICTS(RULESET, [IF-CONFLICT])
 AC_DEFUN([AX_FEATURE_DETECT_CONFLICTS], [
   AC_MSG_CHECKING([conflicts between features])
   _ax_feature_list_expanded=''
