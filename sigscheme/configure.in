@@ -205,30 +205,6 @@ AH_VERBATIM(_BSD_SOURCE,
 AX_CHECK_PAGE_ALIGNED_MALLOC
 
 
-#
-# Directories
-#
-
-AC_ARG_ENABLE(docdir,
-  AS_HELP_STRING([--enable-docdir=DIR],
-                 [text documentation @<:@DATADIR/sigscheme/doc@:>@]),
-  [
-    docdir=$enable_docdir
-  ],
-  [
-    docdir=${datadir}/${PACKAGE}/doc
-  ])
-
-AC_ARG_ENABLE(htmldir,
-  AS_HELP_STRING([--enable-htmldir=DIR],
-                 [html documentation @<:@DOCDIR/html@:>@]),
-  [
-    htmldir=$enable_htmldir
-  ],
-  [
-    htmldir=${docdir}/html
-  ])
-
 ########################################
 # Configure features with dependencies #
 ########################################
