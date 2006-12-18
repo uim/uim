@@ -27,8 +27,8 @@
 # AX_FEATURE_CONFIGURATOR([SH_VAR_PREFIX], [AC_DEF_PREFIX], [AM_COND_PREFIX])
 AC_DEFUN([AX_FEATURE_CONFIGURATOR], [
   AC_PROG_EGREP
-  CHECK_GNU_MAKE()
-  if "x$_cv_gnu_make_command" != "x"; then
+  CHECK_GNU_MAKE
+  if test "x$_cv_gnu_make_command" != x; then
     GMAKE=$_cv_gnu_make_command
   else
     AC_MSG_ERROR([GNU make is currently required to run ax_feature_configurator.m4])
