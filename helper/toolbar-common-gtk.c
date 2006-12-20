@@ -148,6 +148,7 @@ static unsigned int read_tag;
 static int uim_fd;
 static GtkIconFactory *uim_factory;
 static GList *uim_icon_list;
+static gboolean prop_menu_showing = FALSE;
 
 static const char *safe_gettext(const char *msgid);
 static gboolean has_n_strs(gchar **str_list, guint n);
@@ -265,6 +266,14 @@ prop_menu_activate(GtkMenu *menu_item, gpointer data)
   g_string_free(msg, TRUE);
 }
 
+static gboolean
+prop_menu_shell_deactivate(GtkMenuShell *menu_shell, gpointer data)
+{
+  prop_menu_showing = FALSE;
+
+  return FALSE;
+}
+
 static void
 popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 		GtkWidget *widget)
@@ -357,10 +366,14 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     i++;
   }
 
+  g_signal_connect(G_OBJECT(GTK_MENU_SHELL(prop_menu)), "deactivate",
+		   G_CALLBACK(prop_menu_shell_deactivate), NULL);
+
   gtk_menu_popup(GTK_MENU(prop_menu), NULL, NULL,
 		 (GtkMenuPositionFunc)calc_menu_position,
 		 (gpointer)prop_button, event->button,
 		 gtk_get_current_event_time());
+  prop_menu_showing = TRUE;
 }
 
 static gboolean
@@ -593,6 +606,9 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   const gchar *action_id, *is_selected;
   GList *prop_buttons, *tool_buttons;
   GtkSizeGroup *sg;
+
+  if (prop_menu_showing)
+    return;
 
   charset = get_charset(lines[1]);
 
