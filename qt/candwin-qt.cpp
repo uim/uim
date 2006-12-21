@@ -259,7 +259,7 @@ void CandidateWindow::slotStdinActivated( int fd )
         if ( n == 0 )
         {
             close( fd );
-            QApplication::exit( -1 );
+            exit( 1 );
         }
         if ( n == -1 )
             return ;

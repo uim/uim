@@ -1061,7 +1061,6 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Hangul_Special:
         keystr += "hangul-special";
         break;
-#endif /* Def: QT_IMMODULE */
     case Qt::Key_Dead_Grave:
         keystr += "dead-grave";
         break;
@@ -1119,6 +1118,7 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Dead_Horn:
         keystr += "dead-horn";
         break;
+#endif /* Def: QT_IMMODULE */
     case Qt::Key_Shift:
         keystr += "Shift_key";
         break;

@@ -56,7 +56,14 @@ UimStateIndicator::UimStateIndicator( QWidget *parent, const char *name, WFlags 
     if ( !fallbackButton )
     {
         fallbackButton = new QHelperToolbarButton( this );
-        fallbackButton->setText( "?" );
+        QPixmap icon = QPixmap( ICONDIR + "/" + "uim-icon.png" );
+        if ( !icon.isNull() ) {
+            QImage image = icon.convertToImage();
+            QPixmap scaledIcon = image.smoothScale( ICON_SIZE, ICON_SIZE );
+            fallbackButton->setPixmap( scaledIcon );
+        } else {
+            fallbackButton->setText( "?" );
+        }
         fallbackButton->show();
     }
 
@@ -66,6 +73,7 @@ UimStateIndicator::UimStateIndicator( QWidget *parent, const char *name, WFlags 
     uim_fd = -1;
     checkHelperConnection();
     uim_helper_client_get_prop_list();
+    popupMenuShowing = false;
 }
 
 
@@ -115,6 +123,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
     QHelperPopupMenu *popupMenu = NULL;
     bool size_changed = false;
 
+    if (popupMenuShowing)
+        return;
+
     tmp_button_list = buttons;
     old_button = tmp_button_list.first();
 
@@ -158,6 +169,8 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 // create popup
                 popupMenu = new QHelperPopupMenu( button );
                 popupMenu->setCheckable( true );
+                connect( popupMenu, SIGNAL( aboutToShow() ), this, SLOT( slotPopupMenuAboutToShow() ) );
+                connect( popupMenu, SIGNAL( aboutToHide() ), this, SLOT( slotPopupMenuAboutToHide() ) );
                 button->setPopup( popupMenu );
                 button->setPopupDelay( 50 );
 
@@ -234,6 +247,15 @@ void UimStateIndicator::slotStdinActivated( int /*socket*/ )
     }
 }
 
+void UimStateIndicator::slotPopupMenuAboutToShow()
+{
+    popupMenuShowing = true;
+}
+
+void UimStateIndicator::slotPopupMenuAboutToHide()
+{
+    popupMenuShowing = false;
+}
 
 /**/
 

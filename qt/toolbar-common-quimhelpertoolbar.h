@@ -45,11 +45,12 @@ class QUimHelperToolbar : public QHBox
     Q_OBJECT
 
 public:
-    QUimHelperToolbar( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+    QUimHelperToolbar( QWidget *parent = 0, const char *name = 0, WFlags f = 0, bool isApplet = false );
     ~QUimHelperToolbar();
 
 public slots:    
     void slotExecPref();
+    QPopupMenu *contextMenu();
 
 protected:
     // right click

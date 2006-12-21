@@ -45,7 +45,7 @@
 static const QString ICONDIR = UIM_PIXMAPSDIR;
 static const QString ACTION_ICONDIR = KDE_ICONDIR "/crystalsvg/16x16/actions";
 
-QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f )
+QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags f, bool isApplet )
     : QHBox( parent, name, f )
 {
     m_indicator = new UimStateIndicator( this );
@@ -81,7 +81,8 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, const char *name, WFlags 
     m_contextMenu->insertItem( m_padicon, _("Input pad"), this, SLOT(slotExecInputPad()) );
     m_contextMenu->insertItem( m_handicon, _("Handwriting input pad"), this, SLOT(slotExecHandwritingInputPad()) );
     m_contextMenu->insertItem( m_helpicon, _("Help"), this, SLOT(slotExecHelp()) );
-    m_contextMenu->insertItem( exiticon, _("Quit this toolbar"), this, SIGNAL(quitToolbar()) );
+    if ( !isApplet )
+        m_contextMenu->insertItem( exiticon, _("Quit this toolbar"), this, SIGNAL(quitToolbar()) );
     m_nr_exec_buttons = 0;
 
     // toolbar buttons    
@@ -109,6 +110,12 @@ void QUimHelperToolbar::contextMenuEvent( QContextMenuEvent * e )
         m_contextMenu->move( e->globalPos() );
         m_contextMenu->exec();
     }
+}
+
+QPopupMenu *
+QUimHelperToolbar::contextMenu()
+{
+    return m_contextMenu;
 }
 
 void QUimHelperToolbar::slotIndicatorResized()
