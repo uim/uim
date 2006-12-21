@@ -174,9 +174,13 @@ else
   ax_prog_cc_version="unknown"
 fi
 
-# gnu89 is required only for glibc. -std=c89 is sufficient for other
-# environments.
-AX_CFLAGS_GCC_OPTION([-std=gnu89])
+# -std=gnu89 is required only for (old?) glibc. -std=c89 is sufficient for
+# other environments.
+if test "x$ax_cv_lib_glibc" = xyes; then
+  AX_CFLAGS_GCC_OPTION([-std=gnu89])
+else
+  AX_CFLAGS_GCC_OPTION([-std=c89])
+fi
 
 AX_CFLAGS_GCC_OPTION([-pedantic])
 AX_CFLAGS_GCC_OPTION([-Wall])
@@ -584,6 +588,7 @@ AX_FEATURE_ARG_N(compat-siod,         [some SIOD compatible features])
 AX_FEATURE_ARG_N(compat-siod-bugs,    [emulating the buggy behaviors of SIOD])
 AX_FEATURE_ARG_Y(eval-c-string,       [eval_c_string() of libsscm])
 AX_FEATURE_ARG_N(backtrace,           [showing backtrace on error])
+AX_FEATURE_ARG_Y(shell,               [the 'sscm' interactive shell])
 
 # Developer-only debugging features
 AX_FEATURE_ARG_N(debug,               [debug mode])
@@ -792,6 +797,7 @@ AX_FEATURE_DEFINE(compat_siod,        SCM_COMPAT_SIOD,      COMPAT_SIOD)
 AX_FEATURE_DEFINE(compat_siod_bugs,   SCM_COMPAT_SIOD_BUGS, COMPAT_SIOD_BUGS)
 AX_FEATURE_DEFINE(eval_c_string)
 AX_FEATURE_DEFINE(backtrace)
+AX_FEATURE_DEFINE(shell)
 
 # Developer-only debugging features
 AX_FEATURE_DEFINE(debug,               SCM_DEBUG,           DEBUG)
@@ -804,6 +810,59 @@ AX_FEATURE_DEFINE(debug_backtrace_val, SCM_DEBUG_BACKTRACE_VAL, DEBUG_BACKTRACE_
 AX_FEATURE_DEFINE(soft_assert,         SCM_SOFT_ASSERT,     SOFT_ASSERT)
 AX_FEATURE_DEFINE(accessor_assert,     SCM_ACCESSOR_ASSERT, ACCESSOR_ASSERT)
 AX_FEATURE_DEFINE(warning_suppressor)
+
+AC_SUBST(use_storage)
+AC_SUBST(use_fixnum)
+AC_SUBST(use_multibyte_char)
+AC_SUBST(use_default_encoding)
+AC_SUBST(use_utf8)
+AC_SUBST(use_euccn)
+AC_SUBST(use_eucjp)
+AC_SUBST(use_euckr)
+AC_SUBST(use_sjis)
+AC_SUBST(use_strict_r5rs)
+AC_SUBST(use_const_list_literal)
+AC_SUBST(use_const_vector_literal)
+AC_SUBST(use_strict_null_form)
+AC_SUBST(use_strict_vector_form)
+AC_SUBST(use_strict_argcheck)
+AC_SUBST(use_strict_toplevel_definitions)
+AC_SUBST(use_internal_definitions)
+AC_SUBST(use_continuation)
+AC_SUBST(use_quasiquote)
+AC_SUBST(use_hygienic_macro)
+AC_SUBST(use_promise)
+AC_SUBST(use_int)
+AC_SUBST(use_number_io)
+AC_SUBST(use_char)
+AC_SUBST(use_string)
+AC_SUBST(use_string_procedure)
+AC_SUBST(use_deep_cadrs)
+AC_SUBST(use_vector)
+AC_SUBST(use_port)
+AC_SUBST(use_reader)
+AC_SUBST(use_writer)
+AC_SUBST(use_load)
+AC_SUBST(use_srfi1)
+AC_SUBST(use_srfi2)
+AC_SUBST(use_srfi6)
+AC_SUBST(use_srfi8)
+AC_SUBST(use_srfi22)
+AC_SUBST(use_srfi23)
+AC_SUBST(use_srfi28)
+AC_SUBST(use_srfi34)
+AC_SUBST(use_srfi38)
+AC_SUBST(use_srfi48)
+AC_SUBST(use_srfi60)
+AC_SUBST(use_srfi75)
+AC_SUBST(use_srfi75_named_chars)
+AC_SUBST(use_sscm_extensions)
+AC_SUBST(use_sscm_format_extensions)
+AC_SUBST(use_compat_siod)
+AC_SUBST(use_compat_siod_bugs)
+AC_SUBST(use_eval_c_string)
+AC_SUBST(use_backtrace)
+AC_SUBST(use_debug)
 
 #########
 # Fixup #
@@ -848,7 +907,8 @@ AH_BOTTOM([
 
 #endif /* __SIGSCHEME_CONFIG_H */])
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([sigscheme.pc
+                 Makefile
                  doc/Makefile
                  m4/Makefile
                  tools/Makefile
@@ -930,6 +990,7 @@ SIOD compatibilities: $use_compat_siod
 SIOD bugs emulation:  $use_compat_siod_bugs
 eval_c_string():      $use_eval_c_string
 Backtrace:            $use_backtrace
+Interactive shell:    $use_shell
 
 [Developer-only debugging features]
 Debug:              $use_debug]])
@@ -942,9 +1003,7 @@ Debug macro:        $use_debug
 Debug encoding:     $use_debug
 Soft assert:        $use_soft_assert
 Accessor assert:    $use_accessor_assert
-Warning suppressor: $use_warning_suppressor
-Frame separators on backtrace: $use_debug_backtrace_sep
-Value printings  on backtrace: $use_debug_backtrace_val]])
+Warning suppressor: $use_warning_suppressor]])
 fi
 
 AC_MSG_RESULT([[

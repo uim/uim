@@ -6,10 +6,15 @@ TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
 DIST_SUM_LIST = $(PACKAGE)-$(VERSION).sum
 
 EXTRA_DIST = \
-        TODO QALog autogen.sh \
+        sigscheme.pc.in TODO QALog autogen.sh \
         compare-scm.sh runbench.sh runtest.sh runtest-tail-rec.sh
 
-DISTCLEANFILES = tools/gnuify-changelog.pl $(DIST_SUM_LIST)
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = sigscheme.pc
+
+$(pkgconfig_DATA): config.status
+
+DISTCLEANFILES = sigscheme.pc tools/gnuify-changelog.pl $(DIST_SUM_LIST)
 
 .PHONY: FORCE sum
 FORCE:

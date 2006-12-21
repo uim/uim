@@ -326,11 +326,13 @@ libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
 libsscm_la_CPPFLAGS = -I$(top_builddir)/include -DSCM_COMPILING_LIBSSCM=1
 libsscm_la_CFLAGS   = -Wall
 
+if USE_SHELL
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
 sscm_LDADD    = libsscm.la
 sscm_CPPFLAGS = -I$(top_builddir)/include
-sscm_CFLAGS   = -Wall
+sscm_CFLAGS   =
+endif
 
 # To enable ruby-and-perl-less build on tarball distribution, we should not
 # delete $(FUNC_TABLES) and sigscheme-combined-trim.h here.

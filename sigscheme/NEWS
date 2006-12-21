@@ -22,6 +22,8 @@ Overview of changes from 0.6.1 to 0.7.0
 
   - SSCM_VERSION_REQUIRE() macro
 
+  - Add pkg-config support
+
 * Specification changes
 
   - [R5RS] Remove 'delay' and 'force' (temporarily) since they completely
