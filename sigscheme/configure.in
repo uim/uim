@@ -288,7 +288,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
       r5rs)
         use_strict_r5rs=yes
         ;;
-      full|dev|uim)
+      full|dev)
         use_strict_r5rs=no
         #use_const_list_literal=yes
         use_const_vector_literal=yes
@@ -296,6 +296,16 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
         use_strict_vector_form=yes
         use_strict_argcheck=yes
         use_strict_toplevel_definitions=yes
+        use_internal_definitions=yes
+        ;;
+      uim)
+        use_strict_r5rs=no
+        #use_const_list_literal=yes
+        use_const_vector_literal=yes
+        use_strict_null_form=no
+        use_strict_vector_form=yes
+        use_strict_argcheck=yes
+        use_strict_toplevel_definitions=no
         use_internal_definitions=yes
         ;;
       small|siod)
@@ -456,7 +466,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
         use_srfi38=yes
         use_srfi48=yes
         use_srfi60=yes
-        use_srfi75_named_chars=no
+        use_srfi75_named_chars=yes
         use_srfi75=no
         use_sscm_extensions=yes
         use_sscm_format_extensions=yes
@@ -657,7 +667,7 @@ default_encoding_sjis:       sjis  sjis_as_default
 AX_FEATURE_RESOLVE_DEPENDENCIES([recommended], [
 conf_dev: warning_suppressor
 storage_fatty: valuecons const_list_literal const_vector_literal
-debug: accessor_assert strict_argcheck strict_encoding_check
+debug: soft_assert accessor_assert strict_argcheck strict_encoding_check
 backtrace: srfi38
 ])
 

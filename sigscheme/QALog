@@ -911,7 +911,7 @@ corner case tests:
 
 file:              module-srfi6.c
 category:          srfi
-spec by eyes:      yamaken@r3992
+spec by eyes:      yamaken@r3992, yamaken@r4172
 spec by tests:     yamaken@r3992
 general review:    yamaken@r3992
 64-bit by eyes:    yamaken@r3992

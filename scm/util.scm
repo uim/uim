@@ -34,6 +34,8 @@
 ;(require "slib-mulapply.scm")
 ;(require "slib-srfi-1.scm")
 
+(define hyphen-sym (string->symbol "-"))
+
 ;;
 ;; generic utilities
 ;;
@@ -574,10 +576,10 @@
     (for-each (lambda (spec index)
 		(let* ((elem-sym (list-ref spec 0))
 		       (default  (list-ref spec 1))
-		       (getter-sym (symbolconc rec-sym '- elem-sym))
+		       (getter-sym (symbolconc rec-sym hyphen-sym elem-sym))
 		       (getter (lambda (rec)
 				 (list-ref rec index)))
-		       (setter-sym (symbolconc rec-sym '-set- elem-sym '!))
+		       (setter-sym (symbolconc rec-sym hyphen-sym 'set- elem-sym '!))
 		       (setter (lambda (rec val)
 				 (set-car! (nthcdr index rec)
 					   val))))
@@ -587,7 +589,7 @@
 			(interaction-environment))))
 	      rec-spec
 	      (iota (length rec-spec)))
-    (let ((creator-sym (symbolconc rec-sym '-new))
+    (let ((creator-sym (symbolconc rec-sym hyphen-sym 'new))
 	  (creator (let ((defaults (map cadr rec-spec)))
 		     (lambda init-lst
 		       (cond

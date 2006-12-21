@@ -590,6 +590,7 @@ uim_scm_init(const char *verbose_level)
     vlevel = atoi(verbose_level) % 10;
   }
 
+#if SCM_USE_MULTIBYTE_CHAR
   /* *GC safe operation*
    * 
    * Set the raw unibyte codec which accepts all (multi)byte sequence
@@ -599,6 +600,7 @@ uim_scm_init(const char *verbose_level)
    * "ISO-8859-1" is a dummy name for the codec.
    */
   scm_current_char_codec = scm_mb_find_codec("ISO-8859-1");
+#endif
 
   storage_conf.heap_size            = 16384;
   storage_conf.heap_alloc_threshold = 16384;

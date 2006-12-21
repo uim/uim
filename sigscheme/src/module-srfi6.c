@@ -58,7 +58,8 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void istrport_finalize(char **str, scm_bool ownership, void **opaque);
+static void srfi6_istrport_finalize(char **str, scm_bool ownership,
+                                    void **opaque);
 
 /*=======================================
   Function Definitions
@@ -72,7 +73,7 @@ scm_initialize_srfi6(void)
 }
 
 static void
-istrport_finalize(char **str, scm_bool ownership, void **opaque)
+srfi6_istrport_finalize(char **str, scm_bool ownership, void **opaque)
 {
     SCM_ASSERT(!ownership);
 
@@ -89,7 +90,8 @@ scm_p_srfi6_open_input_string(ScmObj str)
 
     ENSURE_STRING(str);
 
-    bport = ScmInputStrPort_new_const(SCM_STRING_STR(str), istrport_finalize);
+    bport = ScmInputStrPort_new_const(SCM_STRING_STR(str),
+                                      srfi6_istrport_finalize);
     hold_str = (ScmObj *)ScmInputStrPort_ref_opaque(bport);
     scm_gc_protect_with_init(hold_str, str);
     cport = scm_make_char_port(bport);
