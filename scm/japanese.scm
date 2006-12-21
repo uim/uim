@@ -63,6 +63,7 @@
     ((("?"). ())("¡©" "¡©" "?"))
     ((("/"). ())("¡¿" "¡¿" "/"))
     ((("_"). ())("¡²" "¡²" "_"))
+    ((("yen"). ())("¡ï" "¡ï" "¡ï")) ;; XXX
 
     ((("1"). ())("1" "1" "1"))
     ((("2"). ())("2" "2" "2"))
@@ -542,6 +543,7 @@
     ("=" "¡á")
     ("^" "¡°")
     ("\\" "¡À")
+    ("yen" "¡ï")
     ("|" "¡Ã")
     ("`" "¡Æ")
     ("@" "¡÷")
@@ -558,6 +560,7 @@
     ("?" "¡©")
     ("/" "¡¿")
     ("_"  "¡²")
+    (" " "¡¡")
     ))
 
 ;;
@@ -574,41 +577,76 @@
    ("o" "o")
     ))
 
-(define ja-consonant-table
- '(("b" "b")
-   ("c" "c")
-   ("d" "d")
-   ("f" "f")
-   ("g" "g")
-   ("h" "h")
-   ("j" "j")
-   ("k" "k")
-   ("l" "l")
-   ("m" "m")
-   ("n" "n")
-   ("p" "p")
-   ("q" "q")
-   ("r" "r")
-   ("s" "s")
-   ("t" "t")
-   ("v" "v")
-   ("w" "w")
-   ("x" "x")
-   ("y" "y")
-   ("z" "z")
+(define ja-consonant-syllable-table
+ '(("b" "")
+   ("c" "")
+   ("d" "")
+   ("f" "fa")
+   ("g" "")
+   ("h" "")
+   ("j" "ji")
+   ("k" "")
+   ("l" "")
+   ("m" "")
+   ("n" "nn")
+   ("p" "")
+   ("q" "")
+   ("r" "")
+   ("s" "")
+   ("t" "")
+   ("v" "vu")
+   ("w" "wu")
+   ("x" "")
+   ("y" "")
+   ("z" "")
+   ("ky" "ki")
+   ("gy" "gi")
+   ("sy" "si")
+   ("zy" "zi")
+   ("jy" "ji")
+   ("ty" "ti")
+   ("ts" "tu")
+   ("cy" "ti")
+   ("dy" "di")
+   ("ny" "ni")
+   ("hy" "hi")
+   ("fy" "fu")
+   ("by" "bi")
+   ("py" "pi")
+   ("my" "mi")
+   ("ly" "li")
+   ("wh" "wu")
+   ("dh" "de")
+   ("dw" "do")
+   ("kw" "ku")
+   ("sh" "si")
+   ("sw" "su")
+   ("tw" "to")
+   ("th" "te")
+   ("hw" "hu")
+   ("fw" "fu")
+   ("ch" "ti")
+   ("qw" "ku")
+   ("qy" "ku")
+   ("gw" "gu")
    ))
 
-(define ja-default-small-tsu-roma "xtu")
+(define ja-default-small-tsu-roma "ltu")
 
-;; What's intended? The name "ja-direct-rule" makes me confused
-;; because it acts in non-direct modes. This rule makes
-;; uim-anthy improper as always sending zenkaku-space in
-;; hanakaku-kana mode. This seems to be used to "always commit
-;; zenkaku-space regardless input mode". If it's true, This rule
-;; should be able to be disabled. -- YamaKen
+;; "ja-direct-rule" seems to be used to commit a character immediately
+;; even when japanese-context (i.e. preedit mode) is on.  I don't think the
+;; rule is needed normally.  So I leave it null by default.  -- ekato
 (define ja-direct-rule
-  '((" " "¡¡")
+  '(
     ))
+
+;; space on (hiragana katakana halfkana) input mode
+(define ja-space
+  '("¡¡" "¡¡" " "))
+
+;; space on (halfwidth-alnum fullwidth-alnum) input mode
+(define ja-alnum-space
+  '(" " "¡¡"))
 
 ;;
 (define ja-find-rec
@@ -622,19 +660,20 @@
 
 (define ja-wide
   (lambda (c)
-    (ja-find-rec c ja-wide-rule)))
+    (or (ja-find-rec c ja-wide-rule)
+        c)))
 
 (define ja-direct
   (lambda (c)
     (ja-find-rec c ja-direct-rule)))
 
-(define ja-vowel?
+(define ja-vowel
   (lambda (c)
     (ja-find-rec c ja-vowel-table)))
 
-(define ja-consonant?
+(define ja-consonant-to-syllable
   (lambda (c)
-    (ja-find-rec c ja-consonant-table)))
+    (ja-find-rec c ja-consonant-syllable-table)))
 
 ;;
 ;; 2004-08-30 Takuro Ashie <ashie@homa.ne.jp>
@@ -651,50 +690,13 @@
                        (ja-wide (car char-list)))
         "")))
 
-;;
-;; 2004-08-30 Takuro Ashie <ashie@homa.ne.jp>
-;;
-;; ja-raw-string-to-valid-roma
-;;
-;;   Convert a invalid roma consonant to a valid roma consonant
-;;   or valid roma string.
-;;   Please see the comment of ja-raw-string-list-to-valid-roma
-;;   for more detail.
-;;
-(define ja-raw-string-to-valid-roma
-  (lambda (head-str next-str)
-    (if (ja-consonant? head-str)
-        (if (string=? head-str "n")
-            (if (null? next-str)
-                head-str
-                ;; 2004-09-01 Takuro Ashie <ashie@homa.ne.jp>
-                ;;   FIXME!
-                ;;   It's a ad-hoc way.
-                ;;   Should we check matched record from ja-rk-rule?:
-                ;;   (if (hoge-find-rec (string-append head-str next-str))
-                (let ((next-head (car (reverse (string-to-list next-str)))))
-                 (if (or (ja-vowel? next-str)
-                         (string=? "y" next-head)
-                         (string=? "n" next-head))
-                    "nn"
-                    head-str)))
-            (if (or (null? next-str) (string=? next-str ""))
-                ;ja-default-small-tsu-roma
-                head-str
-                (if (ja-vowel? next-str)
-                    ja-default-small-tsu-roma
-                    (car (reverse (string-to-list next-str))))))
-        head-str)))
 
+;; Convert a invalid roma consonant at the end of string-list to a valid roma
+;; consonant or valid roma string.
 ;;
-;; 2004-08-30 Takuro Ashie <ashie@homa.ne.jp>
+;; "Invalid roma string-list" will be generated while editing a preedit string:
 ;;
-;; ja-raw-string-list-to-valid-roma
-;;
-;;   This procedure converts a invalid roma string-list to valid one.
-;;   "Invalid roma string-list" will be generated while editing a preedit string:
-;;
-;;     Convert a "n" which is followed by a vowel (or "ya" "yu"...) to "nn":
+;;     Convert a "n" which is followed by a vowel to "nn":
 ;;       1. at first, type a following string:
 ;;          ("ka" "n" "ki")
 ;;       2: press backspace (or move the cursor):
@@ -715,17 +717,103 @@
 ;;             ("a" "t") -> ("a" "ltu"))
 ;;       4.  On this case, this procedure converts the list to:
 ;;             ("a" "k" "ka" "nn" "be" "-")
-;; 
-(define ja-raw-string-list-to-valid-roma
-  (lambda (raw-str-list)
-    (let ((head-str (car raw-str-list))
-           (next-str (cadr raw-str-list)))
-      (if (or (null? next-str) (string=? next-str ""))
-          (list (ja-raw-string-to-valid-roma head-str next-str))
-          (cons (ja-raw-string-to-valid-roma head-str next-str)
-                (ja-raw-string-list-to-valid-roma (cdr raw-str-list)))))))
+(define ja-fix-deleted-raw-str-to-valid-roma!
+  (lambda (raw-str)
+    (if (not (null? (car raw-str)))
+	(let ((lst (car raw-str)))
+	  (if (ja-consonant-to-syllable (car lst))
+	      (if (= (string-length (ja-consonant-to-syllable (car lst))) 2)
+		  (set-car! lst (ja-consonant-to-syllable (car lst)))
+		  (set-car! lst ja-default-small-tsu-roma)))))))
 
+;; not sure this is the good place and the procedure is well written...
+(define (list-seq-contained? large small)
+  (define (list-seq-partial-equal-internal ll sl n)
+    (let ((len (length sl)))
+      (if (> len (length ll))
+	  #f
+	  (if (= len (length (filter-map equal? ll sl)))
+	      n
+	      (list-seq-partial-equal-internal (cdr ll) sl (+ n 1))))))
+  (if (null? small)
+      #f
+      (list-seq-partial-equal-internal large small 0)))
 
+;; revise string list contains "¤¦¡«"
+;; (("¡«") ("¤¦")) -> ("¤¦¡«")
+(define ja-join-vu
+  (lambda (lst)
+    (let ((sub (member "¡«" lst)))
+      (if (and
+	   sub
+	   (not (null? (cdr sub)))
+	   (string=? (car (cdr sub)) "¤¦"))
+	  (append
+	   (list-head lst (- (length lst) (length sub)))
+	   '("¤¦¡«")
+	   (ja-join-vu (list-tail lst (+ (- (length lst) (length sub)) 2))))
+	  (if (member "¡«" (cdr sub))
+	      (append
+	       (list-head lst (+ (- (length lst) (length sub)) 1))
+	       (ja-join-vu (cdr sub)))
+	      lst)))))
+
+;; get ("¤¢" "¥¢" "Ž±") from "¤¢"
+(define ja-find-kana-list-from-rule
+  (lambda (rule str)
+    (if (not (null? rule))
+	(if (pair? (member str (car (cdr (car rule)))))
+	    (car (cdr (car rule)))
+	    (ja-find-kana-list-from-rule (cdr rule) str))
+        (if (string=?  str "¡«")
+	    (list "¡«" "¡«" "ŽÞ")
+	    (list str str str)))))
+
+;; (("¤¸" "¥¸" "Ž¼ŽÞ") ("¤ó" "¥ó" "ŽÝ") ("¤«" "¥«" "Ž¶")) from ("¤¸" "¤ó" "¤«")
+(define ja-make-kana-str-list
+  (lambda (sl)
+    (if (not (null? sl))
+	(append (list (ja-find-kana-list-from-rule ja-rk-rule-basic (car sl)))
+		(ja-make-kana-str-list (cdr sl))))))
+
+(define ja-type-direct	       -1)
+(define ja-type-hiragana	0)
+(define ja-type-katakana	1)
+(define ja-type-halfkana	2)
+(define ja-type-halfwidth-alnum	3)
+(define ja-type-fullwidth-alnum	4)
+
+(define ja-opposite-kana
+  (lambda (kana)
+    (cond
+     ((= kana ja-type-hiragana)
+      ja-type-katakana)
+     ((= kana ja-type-katakana)
+      ja-type-hiragana)
+     ((= kana ja-type-halfkana)
+      ja-type-hiragana))))
+
+;; getting required type of kana string from above kana-str-list
+;; (ja-make-kana-str
+;;  (("¤¸" "¥¸" "Ž¼ŽÞ") ("¤ó" "¥ó" "ŽÝ") ("¤«" "¥«" "Ž¶"))
+;;  ja-type-katakana)
+;;  -> "¥«¥ó¥¸"
+(define ja-make-kana-str
+  (lambda (sl type)
+    (let ((get-str-by-type
+	   (lambda (l)
+	     (cond
+	      ((= type ja-type-hiragana)
+	       (caar l))
+	      ((= type ja-type-katakana)
+	       (car (cdar l)))
+	      ((= type ja-type-halfkana)
+	       (cadr (cdar l)))))))
+      (if (not (null? sl))
+	  (string-append (ja-make-kana-str (cdr sl) type)
+			 (get-str-by-type sl))
+	  ""))))
+    
 ;;
 ;; 2004-08-30 Takuro Ashie <ashie@homa.ne.jp>
 ;;
@@ -740,9 +828,7 @@
     (require "japanese-kana.scm")
     (set! ja-rk-rule ja-kana-hiragana-rule)
     (set! using-kana-table? #t)
-    (define-key anthy-kana-toggle-key? "")
-    (define-key anthy-latin-key? generic-on-key?)
-    (define-key anthy-wide-latin-key? "")
+    ;(define-key anthy-kana-toggle-key? "")
     ))
 
 (define load-azik-table
@@ -753,6 +839,10 @@
     (define-key skk-kana-toggle-key? "@")
     (define-key skk-kanji-mode-key? "`")
     ))
+
+(define japanese-roma-set-yen-representation
+  (lambda ()
+    (set-symbol-value! 'yen "¡ï"))) ;; XXX
 
 ;;
 (require "rk.scm")

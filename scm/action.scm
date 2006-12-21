@@ -261,7 +261,8 @@
 
 (define indication-compose-label
   (lambda (indication)
-    (string-append (indication-iconic-label indication) "\t"
+    (string-append (symbol->string (indication-id indication)) "\t"
+		   (indication-iconic-label indication) "\t"
 		   (indication-label indication) "\n")))
 
 (define indication-compose-branch
@@ -272,6 +273,7 @@
 (define indication-compose-leaf
   (lambda (indication act-id active?)
     (string-append "leaf\t"
+		   (symbol->string (indication-id indication)) "\t"
 		   (indication-iconic-label indication) "\t"
 		   (indication-label indication) "\t"
 		   (indication-short-desc indication) "\t"
@@ -351,18 +353,6 @@
       (if (not (null? (filter-map widget-update-state! widgets)))
           (context-propagate-widget-states context)))))
 
-(define context-propagate-prop-label-update
-  (lambda (context)
-    (let* ((widgets (context-widgets context))
-	   (active-label (lambda (widget)
-			   (let* ((indicator (widget-indicator widget))
-				  (indication (action-indicate indicator
-							       context)))
-			     (indication-compose-label indication))))
-	   (labels (map active-label widgets))
-	   (message (apply string-append labels)))
-      (im-update-prop-label context message))))
-
 (define context-propagate-prop-list-update
   (lambda (context)
     (let* ((widgets (context-widgets context))
@@ -374,7 +364,6 @@
 ;; API for uim developers
 (define context-propagate-widget-states
   (lambda (context)
-    (context-propagate-prop-label-update context)
     ;; Sending prop_list every time costs all uim participant
     ;; processes slightly heavy resource consumptions. Although it is
     ;; not a problem for the rich desktop environment today, we should
@@ -497,7 +486,7 @@
 ;;
 
 (define fallback-indication
-  (list 'figure_unknown
+  (list 'unknown
 	"?"
 	(N_ "unknown")
 	(N_ "unknown")))
@@ -510,10 +499,10 @@
 
 ;; should be replaced with real separator by helper tool implementations
 (register-action 'action_separator
-		 (list 'figure_separator ;; dummy indication
+		 (list 'separator ;; dummy indication
 		       "--"
 		       "--------"
-		       "should be replaced with real separator")
+		       "")
 		 #f  ;; has no activity
 		 #f) ;; has no handler
 
@@ -536,13 +525,13 @@
 ;;; internal definitions
 
 (define example-im-name-indication
-  (list 'figure_im_name_example
+  (list 'im_name_example
 	"example"
 	"example (ja)"
 	(N_ "Japanese Kana Kanji Conversion Engine, Example")))
 
 (define example-exec-im-switcher-indication
-  (list 'figure_im_switcher
+  (list 'im_switcher
 	"sw"
 	(N_ "exec im-switcher")
 	(N_ "exec im-switcher")))

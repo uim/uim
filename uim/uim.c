@@ -31,7 +31,8 @@
 
 */
 
-#include "config.h"
+#include <config.h>
+
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -59,6 +60,7 @@ char *uim_last_client_encoding;
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
 struct uim_im *uim_im_array;
 int uim_nr_im;
+
 static int uim_initialized;
 
 void
@@ -134,14 +136,14 @@ uim_create_context(void *ptr,
   uc->short_desc = NULL;
   uc->encoding = strdup(enc);
   uc->conv_if = conv;
-  uc->conv = NULL;
+  uc->outbound_conv = NULL;
+  uc->inbound_conv = NULL;
   /**/
   uc->nr_modes = 0;
   uc->modes = NULL;
   uc->mode = 0;
   /**/
   uc->propstr = NULL;
-  uc->proplabelstr = NULL;
   /**/
   uc->preedit_clear_cb = NULL;
   uc->preedit_pushback_cb = NULL;
@@ -152,24 +154,26 @@ uim_create_context(void *ptr,
   uc->mode_update_cb = NULL;
   /**/
   uc->prop_list_update_cb  = NULL;
-  uc->prop_label_update_cb = NULL;
   /**/
   uc->candidate_selector_activate_cb = NULL;
   uc->candidate_selector_select_cb = NULL;
   uc->candidate_selector_shift_page_cb = NULL;
   uc->candidate_selector_deactivate_cb = NULL;
   /**/
-  uc->request_surrounding_text_cb = NULL;
-  uc->delete_surrounding_text_cb = NULL;
+  uc->acquire_text_cb = NULL;
+  uc->delete_text_cb = NULL;
   /**/
   uc->configuration_changed_cb = NULL;
+  /**/
+  uc->switch_app_global_im_cb = NULL;
+  uc->switch_system_global_im_cb = NULL;
   /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
   /**/
   uc->psegs = NULL;
   uc->nr_psegs = 0;
-
+  
   if (!lang) {
     lang = "#f";
   }
@@ -218,10 +222,43 @@ uim_reset_context(uim_context uc)
 }
 
 void
+uim_focus_in_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(focus-in-handler %d)", uc->id);
+}
+
+void
+uim_focus_out_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(focus-out-handler %d)", uc->id);
+}
+
+void
+uim_place_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(place-handler %d)", uc->id);
+}
+
+void
+uim_displace_context(uim_context uc)
+{
+   UIM_EVAL_FSTRING1(uc, "(displace-handler %d)", uc->id);
+}
+
+void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {
   uc->configuration_changed_cb = changed_cb;
+}
+
+void
+uim_set_im_switch_request_cb(uim_context uc,
+			     void (*sw_app_im_cb)(void *ptr, const char *name),
+			     void (*sw_system_im_cb)(void *ptr, const char *name))
+{
+  uc->switch_app_global_im_cb = sw_app_im_cb;
+  uc->switch_system_global_im_cb = sw_system_im_cb;
 }
 
 void
@@ -271,16 +308,16 @@ uim_release_context(uim_context uc)
 
   UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
   put_context_id(uc);
-  if (uc->conv) {
-    uc->conv_if->release(uc->conv);
-  }
+  if (uc->outbound_conv)
+    uc->conv_if->release(uc->outbound_conv);
+  if (uc->inbound_conv)
+    uc->conv_if->release(uc->inbound_conv);
   uim_release_preedit_segments(uc);
   for (i = 0; i < uc->nr_modes; i++) {
     free(uc->modes[i]);
     uc->modes[i] = NULL;
   }
   free(uc->propstr);
-  free(uc->proplabelstr);
   free(uc->modes);
   free(uc->short_desc);
   free(uc->encoding);
@@ -318,7 +355,6 @@ uim_set_mode_list_update_cb(uim_context uc,
   uc->mode_list_update_cb = update_cb;
 }
 
-
 void
 uim_set_prop_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr, const char *str))
@@ -326,14 +362,12 @@ uim_set_prop_list_update_cb(uim_context uc,
   uc->prop_list_update_cb = update_cb;
 }
 
-
+/* Obsolete */
 void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str))
 {
-  uc->prop_label_update_cb = update_cb;
 }
-
 
 void
 uim_prop_activate(uim_context uc, const char *str)
@@ -402,15 +436,14 @@ uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
 void
 uim_prop_list_update(uim_context uc)
 {
-  if (uc && uc->propstr)
+  if (uc && uc->propstr && uc->prop_list_update_cb)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
 }
 
+/* Obsolete */
 void
 uim_prop_label_update(uim_context uc)
 {
-  if (uc && uc->proplabelstr)
-    uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
 }
 
 int
@@ -566,15 +599,15 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 		    uc->id, index, accel_enumeration_hint);
 
   if (uim_return_str_list[0] && uim_return_str_list[1]) {
-    cand->str = uc->conv_if->convert(uc->conv, uim_return_str_list[0]);
-    cand->heading_label = uc->conv_if->convert(uc->conv, uim_return_str_list[1]);    
+    cand->str = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[0]);
+    cand->heading_label = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[1]);    
   } else {
     cand->str = NULL;
     cand->heading_label = NULL;
   }
 
   if (uim_return_str_list[2]) {
-    cand->annotation = uc->conv_if->convert(uc->conv, uim_return_str_list[2]);
+    cand->annotation = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[2]);
   }
 
   return cand;
@@ -622,18 +655,66 @@ uim_set_candidate_index(uim_context uc, int nth)
 }
 
 void
-uim_set_surrounding_text_cb(uim_context uc,
-			    void (*request_cb)(void *ptr),
-			    int (*delete_cb)(void *ptr, int offset, int len))
+uim_set_text_acquisition_cb(uim_context uc,
+			    int (*acquire_cb)(void *ptr,
+					      enum UTextArea text_id,
+					      enum UTextOrigin origin,
+					      int former_len, int latter_len,
+					      char **former, char **latter),
+			    int (*delete_cb)(void *ptr, enum UTextArea text_id,
+				    	     enum UTextOrigin origin,
+					     int former_len, int latter_len))
 {
-  uc->request_surrounding_text_cb = request_cb;
-  uc->delete_surrounding_text_cb = delete_cb;
+  uc->acquire_text_cb = acquire_cb;
+  uc->delete_text_cb = delete_cb;
 }
 
 void
-uim_set_surrounding_text(uim_context uc, const char *text,
-			 int cursor_pos, int len)
+uim_internal_escape_string(char *str)
 {
+  char *p;
+  int len;
+  
+  if (!str)
+    return;
+
+  len = strlen(str);
+
+  for (p = str; *p != '\0'; p++) {
+    switch (*p) {
+    case '"':
+    case '\\':
+      str = realloc(str, len + 2);
+      if (!str)
+        return;
+      memmove(p + 1, p, str + len - p + 1);
+      *p = '\\';
+      len++;
+      p++;
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+uim_bool
+uim_input_string(uim_context uc, const char *str)
+{
+  char *conv;
+
+  conv = uc->conv_if->convert(uc->inbound_conv, str);
+  if (conv) {
+    uim_internal_escape_string(conv);
+    if (conv)
+      UIM_EVAL_FSTRING2(uc, "(input-string-handler %d \"%s\")", uc->id, conv);
+    free(conv);
+
+    /* FIXME: handle return value properly. */
+    return UIM_TRUE;
+  }
+
+  return UIM_FALSE;
 }
 
 static void
@@ -654,6 +735,9 @@ uim_init_scm(void)
   uim_init_intl_subrs();
   uim_init_util_subrs();
   uim_init_plugin();
+#ifdef ENABLE_ANTHY_STATIC
+  uim_anthy_plugin_instance_init();
+#endif
   uim_init_im_subrs();
   uim_init_key_subrs();
   
@@ -720,6 +804,9 @@ uim_quit(void)
   }
   /**/
   uim_quit_plugin();
+#ifdef ENABLE_ANTHY_STATIC
+  uim_anthy_plugin_instance_quit();
+#endif
   uim_scm_quit();
   free(uim_last_client_encoding);
   uim_last_client_encoding = NULL;

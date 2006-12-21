@@ -40,20 +40,21 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <signal.h>
+#include <sys/types.h>
+
 #include <uim/uim.h>
-#include <uim/uim-helper.h>
 #include <uim/uim-im-switcher.h>
 
 #include "debug.h"
+#include "uim-el-types.h"
 
 #include "context.h"
 #include "encoding.h"
 #include "im.h"
-#include "helper-server.h"
+#include "helper-message.h"
 
-void helper_send_im_list(void);
-void helper_im_changed(char *request, char *engine_name);
-
-void helper_handler(void);
+int helper_handler(uim_agent_context *ua, char *helper_message);
+void helper_send_im_change_whole_desktop(const char *name);
 
 #endif

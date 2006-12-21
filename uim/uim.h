@@ -35,11 +35,20 @@
 #ifndef _uim_h_included_
 #define _uim_h_included_
 
+#include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdio.h>
+#define UIM_VERSION_MAJOR      (1)
+#define UIM_VERSION_MINOR      (4)
+#define UIM_VERSION_PATCHLEVEL (0)
+#define UIM_VERSION_REQUIRE(major, minor, patchlevel)			     \
+  ((major) < UIM_VERSION_MAJOR						     \
+   || ((major) == UIM_VERSION_MAJOR && (minor) < UIM_VERSION_MINOR)	     \
+   || ((major) == UIM_VERSION_MAJOR && (minor) == UIM_VERSION_MINOR	     \
+       && (patchlevel) <= UIM_VERSION_PATCHLEVEL))
 
 /*
  * A boolean type for uim to explicitly indicate intention about values
@@ -72,6 +81,7 @@ enum UKey {
   UKey_7 = 55,
   UKey_8 = 56,
   UKey_9 = 57,
+  UKey_Yen = 165,
   UKey_Escape = 256,
   UKey_Tab,
   UKey_Backspace,
@@ -85,11 +95,25 @@ enum UKey {
   UKey_Next , /* page down */
   UKey_Home,
   UKey_End,
-  UKey_Zenkaku_Hankaku, /* zenkaku/hankaku toggle */
   UKey_Multi_key, /* multi-key character compose */
   UKey_Mode_switch, /* charcter set switch */
-  UKey_Henkan_Mode, /* start/stop conversion */
+  UKey_Kanji, /* kanji, kanji convert */
   UKey_Muhenkan, /* cancel conversion */
+  UKey_Henkan_Mode, /* start/stop conversion */
+  UKey_Henkan = UKey_Henkan_Mode, /* alias for Henkan_Mode */
+  UKey_Romaji,
+  UKey_Hiragana,
+  UKey_Katakana,
+  UKey_Hiragana_Katakana, /* hiragana/katakana toggle */
+  UKey_Zenkaku,
+  UKey_Hankaku,
+  UKey_Zenkaku_Hankaku, /* zenkaku/hankaku toggle */
+  UKey_Touroku,
+  UKey_Massyo,
+  UKey_Kana_Lock,
+  UKey_Kana_Shift,
+  UKey_Eisu_Shift, /* alphanumeric shift */
+  UKey_Eisu_toggle, /* alphanumeric toggle */
   UKey_F1,
   UKey_F2,
   UKey_F3,
@@ -165,6 +189,121 @@ enum UKey {
   UKey_Super_key,
   UKey_Hyper_key,
   UKey_Insert,
+
+  /* These new keys added at uim 1.3.0 are placed here to keep (virtually)
+   * backward-compatible ABI. It will be relocated to appropriate place when
+   * an backward-incompatible ABI change has occur. */
+  UKey_Codeinput,
+  UKey_SingleCandidate,
+  UKey_MultipleCandidate,
+  UKey_PreviousCandidate,
+
+  UKey_Hangul,
+  UKey_Hangul_Start,
+  UKey_Hangul_End,
+  UKey_Hangul_Hanja,
+  UKey_Hangul_Jamo,
+  UKey_Hangul_Romaja,
+  UKey_Hangul_Codeinput,
+  UKey_Hangul_Jeonja,
+  UKey_Hangul_Banja,
+  UKey_Hangul_PreHanja,
+  UKey_Hangul_PostHanja,
+  UKey_Hangul_SingleCandidate,
+  UKey_Hangul_MultipleCandidate,
+  UKey_Hangul_PreviousCandidate,
+  UKey_Hangul_Special,
+
+  /* dead keys */
+  UKey_Dead_Grave,
+  UKey_Dead_Acute,
+  UKey_Dead_Circumflex,
+  UKey_Dead_Tilde,
+  UKey_Dead_Macron,
+  UKey_Dead_Breve,
+  UKey_Dead_Abovedot,
+  UKey_Dead_Diaeresis,
+  UKey_Dead_Abovering,
+  UKey_Dead_Doubleacute,
+  UKey_Dead_Caron,
+  UKey_Dead_Cedilla,
+  UKey_Dead_Ogonek,
+  UKey_Dead_Iota,
+  UKey_Dead_VoicedSound,
+  UKey_Dead_SemivoicedSound,
+  UKey_Dead_Belowdot,
+  UKey_Dead_Hook,
+  UKey_Dead_Horn,
+
+  /* Kana keys */
+  UKey_Kana_Fullstop,
+  UKey_Kana_OpeningBracket,
+  UKey_Kana_ClosingBracket,
+  UKey_Kana_Comma,
+  UKey_Kana_Conjunctive,
+  UKey_Kana_WO,
+  UKey_Kana_a,
+  UKey_Kana_i,
+  UKey_Kana_u,
+  UKey_Kana_e,
+  UKey_Kana_o,
+  UKey_Kana_ya,
+  UKey_Kana_yu,
+  UKey_Kana_yo,
+  UKey_Kana_tsu,
+  UKey_Kana_ProlongedSound,
+  UKey_Kana_A,
+  UKey_Kana_I,
+  UKey_Kana_U,
+  UKey_Kana_E,
+  UKey_Kana_O,
+  UKey_Kana_KA,
+  UKey_Kana_KI,
+  UKey_Kana_KU,
+  UKey_Kana_KE,
+  UKey_Kana_KO,
+  UKey_Kana_SA,
+  UKey_Kana_SHI,
+  UKey_Kana_SU,
+  UKey_Kana_SE,
+  UKey_Kana_SO,
+  UKey_Kana_TA,
+  UKey_Kana_CHI,
+  UKey_Kana_TSU,
+  UKey_Kana_TE,
+  UKey_Kana_TO,
+  UKey_Kana_NA,
+  UKey_Kana_NI,
+  UKey_Kana_NU,
+  UKey_Kana_NE,
+  UKey_Kana_NO,
+  UKey_Kana_HA,
+  UKey_Kana_HI,
+  UKey_Kana_FU,
+  UKey_Kana_HE,
+  UKey_Kana_HO,
+  UKey_Kana_MA,
+  UKey_Kana_MI,
+  UKey_Kana_MU,
+  UKey_Kana_ME,
+  UKey_Kana_MO,
+  UKey_Kana_YA,
+  UKey_Kana_YU,
+  UKey_Kana_YO,
+  UKey_Kana_RA,
+  UKey_Kana_RI,
+  UKey_Kana_RU,
+  UKey_Kana_RE,
+  UKey_Kana_RO,
+  UKey_Kana_WA,
+  UKey_Kana_N,
+  UKey_Kana_VoicedSound,
+  UKey_Kana_SemivoicedSound,
+
+  UKey_Caps_Lock,
+  UKey_Num_Lock,
+  UKey_Scroll_Lock,
+
   UKey_Other = 1000
 };
   
@@ -185,6 +324,77 @@ enum UPreeditAttr {
   UPreeditAttr_Reverse = 2,
   UPreeditAttr_Cursor = 4,
   UPreeditAttr_Separator = 8
+};
+
+/* Cursor of clipboard text is always positioned at end. */
+enum UTextArea {
+  UTextArea_Unspecified = 0,
+  UTextArea_Primary     = 1,  /* primary text area which IM commits to */
+  UTextArea_Selection   = 2,  /* user-selected region of primary text area */
+  UTextArea_Clipboard   = 4   /* clipboard text */
+};
+
+enum UTextOrigin {
+  UTextOrigin_Unspecified = 0,
+  UTextOrigin_Cursor      = 1,  /* current position of the cursor */
+  UTextOrigin_Beginning   = 2,  /* beginning of the text */
+  UTextOrigin_End         = 3   /* end of the text */
+};
+
+/*
+ * Text extent specifiers
+ *
+ * All bridges that support the text acquisition API must implement the
+ * handlings for these 'required' text extent specifiers.
+ *
+ *   required:
+ *     - zero and positive numbers
+ *     - UTextExtent_Full
+ *     - UTextExtent_Line
+ *
+ * Zero and positive numbers are interpreted as string length (counted in
+ * characters, not bytes).
+ *
+ *
+ * Following language-specific extent specifiers are recommended to be
+ * implemented although experimental. Input methods that use these specifiers
+ * should separate the features based on the specifiers as "experimental
+ * features" and off by default.  And do not assume correct result is always
+ * returned. These specifiers may be re-categorized as 'required' when we have
+ * been well-experimented and it is considered as appropriate.
+ *
+ *   recommended:
+ *     - UTextExtent_Paragraph
+ *     - UTextExtent_Sentence
+ *     - UTextExtent_Word
+ *
+ *
+ * These specifiers are experimental and reserved for future use.
+ *
+ *   experimental:
+ *     - UTextExtent_CharFrags
+ *     - UTextExtent_DispRect
+ *     - UTextExtent_DispLine
+ *
+ * UTextExtent_CharFrags stands for "character fragments" such as Thai
+ * combining marks, Hangul jamo, Japanese voiced consonant marks etc. It is
+ * supposed to be used for the "surrounding text" acquisition. Bridges should
+ * supply only such combinable characters if this specifier is passed.
+ */
+enum UTextExtent {
+  UTextExtent_Unspecified = -1,  /* invalid */
+
+  /* logical extents */
+  UTextExtent_Full      = -2,   /* beginning or end of the whole text */
+  UTextExtent_Paragraph = -3,   /* the paragraph which the origin is included */
+  UTextExtent_Sentence  = -5,   /* the sentence which the origin is included */
+  UTextExtent_Word      = -9,   /* the word which the origin is included */
+  UTextExtent_CharFrags = -17,  /* character fragments around the origin */
+
+  /* physical extents */
+  UTextExtent_DispRect  = -33,  /* the text region displayed in the widget */
+  UTextExtent_DispLine  = -65,  /* displayed line (eol: linebreak) */
+  UTextExtent_Line      = -129  /* real line      (eol: newline char) */
 };
 
 /* abstracting platform-dependent character code conversion method */
@@ -244,13 +454,66 @@ void
 uim_release_context(uim_context uc);
 
 /**
- * Reset input context.
- * Pending string might be committed and preedit string might be erased. (Not yet implemented so)
+ * Reset input context to neutral state.
  *
- * @param uc input context to reset
+ * This handler MUST NOT commit a string and/or update the preedit. If a
+ * preedit string is existing on a GUI toolkit-level reset, the bridge is
+ * responsible to clear it. Internal state that considered as 'global' is
+ * permitted to be kept.
+ *
+ * @param uc input context to be reset
  */
 void
 uim_reset_context(uim_context uc);
+
+/**
+ * Notify input context that the textarea is being focused in.
+ *
+ * The input context is permitted to commit a string and/or update the
+ * preedit.
+ *
+ * @param uc input context
+ */
+void
+uim_focus_in_context(uim_context uc);
+
+/**
+ * Notify input context that the textarea is being focused out.
+ *
+ * The input context is permitted to commit a string and/or update the
+ * preedit.
+ *
+ * @param uc input context
+ */
+void
+uim_focus_out_context(uim_context uc);
+
+/**
+ * Notify input context that the input point has been relocated.
+ *
+ * This notifies an input context that the input point (textarea and/or cursor
+ * position) has been relocated. The input context is permitted to commit a
+ * string and/or update the preedit.
+ *
+ * @param uc input context
+ */
+void
+uim_place_context(uim_context uc);
+
+/**
+ * Notify input context that the input at the position has been discontinued.
+ *
+ * This notifies an input context that input at current input point (textarea
+ * and/or cursor position) has been discontinued. The input context is
+ * permitted to commit a string, but must not update/clear the
+ * preedit. Bridge-level preedit must be cleared by bridge itself. uim-level
+ * preedit is permitted to be preserved for subsequent 'place' handler call,
+ * or else silently cleared.
+ *
+ * @param uc input context
+ */
+void
+uim_displace_context(uim_context uc);
 
 /**
  * Set callback functions to be called when the preedit string changes.
@@ -485,20 +748,15 @@ void
 uim_prop_list_update(uim_context uc);
 
 /**
- * Set callback function to be called when property list is updated.
- *
- * @param uc input context
- * @param update_cb called when property list is updated.
- *        1st argument "ptr" corresponds to the 1st argument of uim_create_context.
- *        2nd argument is the message to be sent to the helper server with "prop_label_update" command and charset info.
+ * Obsolete. Only existing for Backward compatibility and should not
+ * be called.
  */
 void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str));
 /**
- * Update property label
- *
- * @param uc input context
+ * Obsolete. Only existing for Backward compatibility and should not
+ * be called.
  */
 void
 uim_prop_label_update(uim_context uc);
@@ -527,28 +785,96 @@ void
 uim_set_mode_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr));
 
-/* surrounding text (experimental, ask yusuke)*/
+/* text acquisition */
+/*
+ * Consideration about text update interface
+ *
+ * In under-development composer framework, a single commit event of a
+ * composer instance can commit a text, update the preedit, and delete
+ * surrounding texts atomically to reduce text flicker. But because
+ * introducing this interface to current uim breaks backward compatibility
+ * completely, adding separated surrounding text deletion interface is better
+ * solution at now.  -- YamaKen 2006-10-07
+ *
+ * http://anonsvn.freedesktop.org/svn/uim/branches/composer/scm/event.scm
+ *
+ * (define-event 'commit
+ *   upward-event-rec-spec
+ *   '((utext           ())   ;; can include cursor position info
+ *     (preedit-updated #t)   ;; can also update preedit as atomic event
+ *     (former-del-len  0)    ;; for surrounding text operation
+ *     (latter-del-len  0)))  ;; for surrounding text operation
+ */
 /**
- * Set callback functions to be called when input methods want to get or
- * delete surrounding text.
+ * Set callback functions for text acquisition and modification.
+ *
+ * All "former_len" and "latter_len" can be specified by zero, positive
+ * numbers or enum UTextExtent. The text length is counted in singlebyte or
+ * multibyte characters (not counted in bytes). Bridges may return a string
+ * shorter than requested if the text is actually shorter than the requested
+ * length, or the target textarea does not have the text acquisition
+ * ability. Otherwise exact length string must be returned.
+ *
+ * Both @a acquire_cb and @a delete_cb returns zero if succeeded, otherwise
+ * returns a negative integer if the bridge does not support the specified
+ * text operation. But even if zero is returned, actual length of acquired
+ * strings cannot be assumed (i.e. may be shorter than requested).
+ *
  * @param uc input context
- * @param request_cb called when input methods want to get surrounding text. user can call uim_set_surrounding text to reply this request.
- * @param delete_cb called when input methods want to delete surrounding text. 'offset characters in the left of cursor and 'len - 'offset characters will be deleted. User should return 0 when it succeed.
+ * @param acquire_cb called back when the input context want to acquire a
+ *        bridge-side text.
+ *        1st argument "ptr" passes back the 1st argument of
+ *                     uim_create_context.
+ *        2nd argument "text_id" specifies a textarea having target text.
+ *        3rd argument "origin" specifies the origin which former_len and
+ *                     latter_len refers.
+ *        4th argument "former_len" specifies length of the text preceding the
+ *                     text origin to be acquired.
+ *        5th argument "latter_len" specifies length of the text following the
+ *                     text origin to be acquired.
+ *        6th argument "former" passes a pointer reference to receive the
+ *                     former part of the acquired text. The returned pointer
+ *                     may be NULL and object ownership is transferred to
+ *                     libuim.
+ *        7th argument "latter" passes a pointer reference to receive the
+ *                     latter part of the acquired text. The returned pointer
+ *                     may be NULL and object ownership is transferred to
+ *                     libuim.
+ * @param delete_cb called back when the input context want to delete a
+ *        bridge-side text.
+ *        1st argument "ptr" passes back the 1st argument of
+ *                     uim_create_context.
+ *        2nd argument "text_id" specifies a textarea which is going to be
+ *                     operated on.
+ *        3rd argument "origin" specifies the origin which former_len and
+ *                     latter_len refers.
+ *        4th argument "former_len" specifies length of the text preceding the
+ *                     text origin to be deleted.
+ *        5th argument "latter_len" specifies length of the text following the
+ *                     text origin to be deleted.
  */
 void
-uim_set_surrounding_text_cb(uim_context uc,
-			    void (*request_cb)(void *ptr),
-			    int (*delete_cb)(void *ptr, int offset, int len));
+uim_set_text_acquisition_cb(uim_context uc,
+			    int (*acquire_cb)(void *ptr,
+					      enum UTextArea text_id,
+					      enum UTextOrigin origin,
+					      int former_len, int latter_len,
+					      char **former, char **latter),
+			    int (*delete_cb)(void *ptr,
+					     enum UTextArea text_id,
+					     enum UTextOrigin origin,
+					     int former_len, int latter_len));
+
 /**
- * Set surrounding text as a reply to request callback.
- * @param uc input context
- * @param text text around cursor
- * @param cursor_pos position of cursor in text. This should be number of actual characters at the left of cursor, not bytes.
- * @param len number of characters in text
+ * Input arbitrary string into input context.
+ *
+ * @param uc the input context tied with the text area.
+ * @param str the string to be input into.
+ *
+ * @return true if @a str is accepted (consumed) by the input context.
  */
-void
-uim_set_surrounding_text(uim_context uc, const char *text,
-			 int cursor_pos, int len);
+uim_bool
+uim_input_string(uim_context uc, const char *str);
 
 /*
  * Set callback function to be called when configuration of input
@@ -561,6 +887,37 @@ uim_set_surrounding_text(uim_context uc, const char *text,
 void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr));
+
+/*
+ * Set callback functions called when IM-switching of specific set of context
+ * is requested.
+ *
+ * When the functions are called back, bridges should re-initialize the
+ * specified input contexts with the IM specified by 2nd argument
+ * 'name'. Since the re-initialization method of specified contexts vary for
+ * each IM environment, it is delegated to bridges via the callback. For
+ * example, ordinary desktop system should send the helper message
+ * im_change_whole_desktop in response to @a sw_system_im_cb. But in embedded
+ * systems such as Qtopia, nothing to do with @a sw_system_im_cb since only
+ * one input context is running on the window system and so system-global.
+ *
+ * @param uc input context
+
+ * @param sw_app_im_cb called when re-initialization of all contexts within
+ *        the application that @a uc belongs to, with specified IM is
+ *        requested. 1st argument "ptr" corresponds to the 1st argument of
+ *        uim_create_context, and 2nd "name" is requested idname of IM. The
+ *        originating context is supposed to already be switched, and must not
+ *        switched by the callback.
+ * @param sw_system_im_cb called when re-initialization of all contexts
+ *        running on the system that @a uc is running on, with specified IM is
+ *        requested. The originating context is supposed to already be
+ *        switched.
+ */
+void
+uim_set_im_switch_request_cb(uim_context uc,
+			     void (*sw_app_im_cb)(void *ptr, const char *name),
+			     void (*sw_system_im_cb)(void *ptr, const char *name));
 
 /* Utility functions */
 int

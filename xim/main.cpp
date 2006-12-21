@@ -33,12 +33,8 @@
 // XIM Server supporting CJK languages
 // initialize many modules
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
-#endif
-
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <stdio.h>
@@ -339,7 +335,6 @@ check_pending_xevent(void)
 static void
 xEventRead(int /* fd */, int /* ev */)
 {
-    XFlush(XimServer::gDpy);
     check_pending_xevent();
 }
 

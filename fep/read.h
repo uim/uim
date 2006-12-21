@@ -35,7 +35,7 @@
 #define READ_H
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>

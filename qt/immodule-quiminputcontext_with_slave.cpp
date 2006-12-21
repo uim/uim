@@ -30,9 +30,14 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include "immodule-quiminputcontext_with_slave.h"
+#include <config.h>
 
 #include <qinputcontextfactory.h>
+
+#include "uim/uim.h"
+
+#include "immodule-quiminputcontext.h"
+#include "immodule-quiminputcontext_with_slave.h"
 
 QUimInputContextWithSlave::QUimInputContextWithSlave( const char *imname, const char *lang )
         : QUimInputContext( imname, lang )
@@ -50,7 +55,8 @@ QUimInputContextWithSlave::QUimInputContextWithSlave( const char *imname, const 
 }
 
 QUimInputContextWithSlave::~QUimInputContextWithSlave()
-{}
+{
+}
 
 void QUimInputContextWithSlave::setFocus()
 {
@@ -89,14 +95,16 @@ void QUimInputContextWithSlave::setHolderWidget( QWidget *w )
 }
 #endif
 
-bool QUimInputContextWithSlave::filterEvent( QEvent *event )
+bool QUimInputContextWithSlave::filterEvent( const QEvent *event )
 {
-    // when isComposing==false, event is forwarded to slave ic
-    if ( ! isComposing() && slave && slave->filterEvent( event ) )
+    if ( ! QUimInputContext::filterEvent( event ) ) {
+      if ( ! isComposing() && slave && slave->filterEvent( event ) )
         return true;
+      else
+        return false;
+    }
 
-    // else, event is dealt with uim-qt
-    return QUimInputContext::filterEvent( event );
+    return true;
 }
 
 void QUimInputContextWithSlave::destroyInputContext()

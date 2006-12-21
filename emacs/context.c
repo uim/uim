@@ -39,6 +39,9 @@
 /* current focused context */
 uim_agent_context *current;
 
+/* global foscu */
+int focused = 0;
+
 uim_agent_context_list *agent_context_list_head = NULL;
 uim_agent_context_list *agent_context_list_tail = NULL;
 
@@ -93,19 +96,16 @@ get_uim_agent_context(int id)
 
 
 
-
 uim_agent_context *
-switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
+switch_context_im(uim_agent_context *ua, const char *im)
 {
+  const char *encoding;
+
   debug_printf(DEBUG_NOTE, "switch_context_im\n");
 
-  if (encoding == NULL) {
-	/* unspported engine or not ready for use from Emacs  */
-	debug_printf(DEBUG_WARNING,
-				 "switch_context_im: encoding of %s is NULL\n", im);
-	return ua;
-  }
+  encoding = get_im_encoding(im);
 
+  /* update IM name */
   if (ua->im) free(ua->im);
 
   if (im)
@@ -116,12 +116,10 @@ switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
   if (strcmp(ua->encoding, encoding) == 0) {
 	/* encodings are same */
 
-	debug_printf(DEBUG_NOTE,
-				 "same encoding %s %s\n", ua->im, im);
+	debug_printf(DEBUG_NOTE, "same encoding %s %s\n", ua->im, im);
 
 	update_context_im(ua);
 
-	uim_prop_label_update(ua->context);
 	uim_prop_list_update(ua->context);
 
   } else {
@@ -137,13 +135,40 @@ switch_context_im(uim_agent_context *ua, const char *im, const char *encoding)
 
   }
 
-  uim_prop_label_update(ua->context);
   uim_prop_list_update(ua->context);
 
   return ua;
 
 }
 
+
+void
+switch_context_im_all(const char *im)
+{
+  char *quot_im_name;
+  uim_agent_context_list *ptr;
+
+  /* change default IM  */
+  update_default_engine(im);
+
+  /* check focus state when change IM of current application */
+  quot_im_name = (char *)malloc(strlen(im) + 2);
+  quot_im_name[0] = '\'';
+  quot_im_name[1] = '\0';
+  strcat(quot_im_name, im);
+
+  if (agent_context_list_head)
+	/* update default IM name in libuim? should be called only one time? */
+	uim_prop_update_custom(agent_context_list_head->agent_context->context,
+						   "custom-preserved-default-im-name",
+						   quot_im_name);
+
+  for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
+	switch_context_im(ptr->agent_context, im);
+  }
+
+  free(quot_im_name);
+}
 
 
 
@@ -173,11 +198,14 @@ create_context(const char *encoding, uim_agent_context *ptr)
   uim_set_prop_list_update_cb(context,
 							  prop_list_update_cb);
 
-  uim_set_prop_label_update_cb(context,
-							   prop_label_update_cb);
 
   uim_set_configuration_changed_cb(context,
 								   configuration_changed_cb);
+
+  uim_set_im_switch_request_cb(context,
+							   switch_app_global_im_cb,
+							   switch_system_global_im_cb);
+
   
   return context;
 
@@ -215,7 +243,7 @@ create_uim_agent_context(const char *encoding)
   ret->cand = create_candidate();
   ret->prop = create_prop();
 
-  uim_prop_list_update(ret->context);
+  ret->comstr = (char *)NULL;
 
   return ret;
 }
@@ -283,6 +311,7 @@ release_uim_agent_context(int context_id)
 	  free(ua->encoding);
 	  free(ua->im);
 	  free(ua->prop);
+	  free(ua->comstr);
 
 	  /* rebuild list */
 	  if (ptr->next != NULL)
@@ -318,11 +347,11 @@ set_current_uim_agent_context(uim_agent_context *ua)
 	return -1;
   }
 
-  uim_helper_client_focus_in(ua->context);
+  helper_send_message("focus_in\n");
 
   current = ua;
+  focused = 1;
 
-  uim_prop_label_update(ua->context);
   uim_prop_list_update(ua->context);
 
   return ua->context_id;
@@ -332,18 +361,18 @@ set_current_uim_agent_context(uim_agent_context *ua)
 int
 clear_current_uim_agent_context(void)
 {
-  int ret;
 
   debug_printf(DEBUG_NOTE, "unfocused\n");
 
   if (current == NULL || current->context == NULL) return -1;
 
-  ret = current->context_id;
-  uim_helper_client_focus_out(current->context);
+  /*focused = 0;*/
 
-  current = NULL;
+  helper_send_message("focus_out\n");
 
-  return ret;
+  debug_printf(DEBUG_NOTE, " focused %d\n", focused);
+  
+  return current->context_id;
 }
 
 
@@ -367,16 +396,33 @@ update_context_configuration(uim_agent_context *ua)
 
   debug_printf(DEBUG_NOTE, "ua->encoding %s\n", ua->encoding);
 
-  /* switch IM again to update encoding for Emacs...orz */
+  /* switch IM again */
   update_context_encoding(ua);
-
 }
 
 
 int
+show_commit_string_uim_agent_context(uim_agent_context *ua)
+{
+  int ret;
+  if (ua == NULL) {
+	return -1;
+  } else {
+	ret = show_commit_string(ua->comstr);
+	if (ret > 0) {
+	  reset_commit_string(ua->comstr);
+	  ua->comstr = NULL;
+	}
+	return ret;
+  }
+}
+
+int
 show_preedit_uim_agent_context(uim_agent_context *ua)
 {
-  if (ua == NULL || !ua->pe->valid) 
+  if (ua && ua->cand->valid)
+	return show_preedit_force(ua->pe);
+  else if (ua == NULL || !ua->pe->valid) 
 	return -1;
   else
 	return show_preedit(ua->pe);
@@ -388,8 +434,10 @@ show_candidate_uim_agent_context(uim_agent_context *ua)
 {
   if (ua == NULL || !ua->cand->valid)
 	return -1;
-  else
+  else if (focused)
 	return show_candidate(ua->cand);
+  else
+	return 0;
 }
 
 
@@ -398,7 +446,7 @@ show_prop_uim_agent_context(uim_agent_context *ua)
 {
   if (ua == NULL || !ua->prop->valid)
 	return -1;
-  else
+  else 
 	return show_prop(ua->prop);
 }
 

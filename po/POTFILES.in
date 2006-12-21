@@ -1,7 +1,9 @@
 helper/GNOME_UimApplet.server.in.in
 helper/dict-anthy.c
+helper/dict-canna.c
 helper/dict-cclass-dialog.c
 helper/dict-main-gtk.c
+helper/dict-word.c
 helper/dict-word-list-view-gtk.c
 helper/dict-word-list-win-gtk.c
 helper/dict-word-win-gtk.c
@@ -49,3 +51,4 @@ scm/tutcode.scm
 scm/viqr.scm
 uim.desktop.in.in
 uim/iso-639-1.def
+uim/m17nlib.c

@@ -31,7 +31,7 @@
 
 */
 
-#include "uim/config.h"
+#include <config.h>
 
 #include <glib.h>
 #include <gdk/gdkkeysyms.h>
@@ -177,7 +177,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   gtk_widget_show_all(group_widget);
 
   current_group_widget = group_widget;
-  
+
   free(group_name);
   return TRUE;
 }
@@ -230,10 +230,11 @@ quit_confirm(void)
   }
 }
 
-static void
+static gint
 delete_event_cb(GtkWidget *widget, gpointer data)
 {
   quit_confirm();
+  return TRUE;
 }
 
 static GtkWidget *
@@ -249,7 +250,7 @@ create_pref_treeview(void)
   tree_store = gtk_tree_store_new (NUM_COLUMNS,
 				   G_TYPE_STRING,
 				   GTK_TYPE_WIDGET);
-  
+
   pref_tree_view = gtk_tree_view_new();
 
   renderer = gtk_cell_renderer_text_new();
@@ -259,7 +260,7 @@ create_pref_treeview(void)
 						    NULL);
   gtk_tree_view_column_set_sort_column_id(column, 0);
   gtk_tree_view_append_column(GTK_TREE_VIEW(pref_tree_view), column);
-  
+
   primary_groups = uim_custom_primary_groups();
   for (grp = primary_groups; *grp; grp++) {
     struct uim_custom_group *group = uim_custom_group_get(*grp);
@@ -284,7 +285,7 @@ create_pref_treeview(void)
   first_path = gtk_tree_path_new_from_indices (0, -1);
 
   gtk_tree_view_set_cursor(GTK_TREE_VIEW(pref_tree_view),
-			   first_path, NULL, FALSE);  
+			   first_path, NULL, FALSE);
 
   return pref_tree_view;
 }
@@ -482,7 +483,7 @@ create_pref_window(void)
   GdkPixbuf *icon;
 
   pref_window = window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  
+
   icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR"/uim-icon.png", NULL);
   gtk_window_set_icon(GTK_WINDOW(pref_window), icon);
 
@@ -518,7 +519,7 @@ create_pref_window(void)
     gtk_window_set_default_size(GTK_WINDOW(window), w, h);
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   }
-  
+
   return window;
 }
 
@@ -563,7 +564,7 @@ check_dot_uim_file(void)
   return FALSE;
 }
 
-int 
+int
 main (int argc, char *argv[])
 {
   setlocale(LC_ALL, "");
@@ -572,7 +573,7 @@ main (int argc, char *argv[])
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   gtk_set_locale();
-  
+
   gtk_init(&argc, &argv);
 
   if (uim_init() < 0) {
@@ -584,7 +585,7 @@ main (int argc, char *argv[])
     GtkWidget *pref;
 
     im_uim_init_modifier_keys();
-  
+
     gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
 
     pref = create_pref_window();

@@ -32,7 +32,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #ifndef DEBUG
 #define NDEBUG
@@ -149,9 +149,6 @@ static const char *attr2escseq(const struct attribute_tag *attr);
 static void set_attr(const char *str, int len);
 static int my_putchar(int c);
 
-#if defined(DEBUG) && DEBUG > 1
-static void print_attr(struct attribute_tag *attr);
-#endif
 
 void init_escseq(const struct attribute_tag *attr_uim)
 {
@@ -563,7 +560,7 @@ struct point_tag get_cursor_position(void)
       escseq = next_escseq;
       escseq_len = len - (escseq - ibuf);
 
-      if (strlen("\033[0;0R") > escseq_len) {
+      if ((int)strlen("\033[0;0R") > escseq_len) {
         break; /* goto retry */
       }
 
@@ -787,7 +784,7 @@ static const char *attr2escseq(const struct attribute_tag *attr)
       && attr->foreground == FALSE && attr->background == FALSE) {
     return NULL;
   }
-  strcpy(escseq, "\033[");
+  strlcpy(escseq, "\033[", sizeof(escseq));
   if (attr->underline && s_enter_underline_num != NULL) {
     add_semicolon = TRUE;
     strcat(escseq, s_enter_underline_num);
@@ -1232,12 +1229,3 @@ static int my_putchar(int c)
   write(g_win_out, &ch, 1);
   return c;
 }
-
-#if defined(DEBUG) && DEBUG > 1
-static void print_attr(struct attribute_tag *attr)
-{
-  debug(("underline = %d standout = %d bold = %d blink = %d fore = %d back = %d\n",
-      attr->underline, attr->standout, attr->bold, attr->blink,
-      attr->foreground, attr->background));
-}
-#endif

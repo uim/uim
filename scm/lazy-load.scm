@@ -70,6 +70,11 @@
 	   #f ;; get-candidate-handler
 	   #f ;; set-candidate-index-handler
 	   #f ;; prop-activate-handler
+	   #f ;; input-string-handler
+	   #f ;; focus-in-handler
+	   #f ;; focus-out-handler
+	   #f ;; place-handler
+	   #f ;; displace-handler
 	   )
 	  (im-set-module-name! (retrieve-im name) module-name)))))
 
@@ -82,19 +87,15 @@
       (for-each require-module installed-im-module-list)
       (set! enabled-im-list orig-enabled-im-list))
     (map (lambda (name)
-	   (let* ((im (retrieve-im name))
-		  (name-str (symbol->string name)))
+	   (let ((im (retrieve-im name)))
 	     (string-append
-	      "(if (memq '" name-str " enabled-im-list)\n"
-	      "    (if enable-lazy-loading?\n"
-	      "        (register-stub-im\n"
-	      "         '" name-str "\n"
-	      "         \"" (im-lang im) "\"\n"
-	      "         \"" (im-encoding im) "\"\n"
-	      "         \"" (im-name-label im) "\"\n"
-	      "         \"" (im-short-desc im) "\"\n"
-	      "         \"" (im-module-name im) "\")\n"
-	      "        (require-module \"" (im-module-name im) "\")))\n")))
+	      "    (" (symbol->string name) "\n"
+	      "     \"" (im-lang im) "\"\n"
+	      "     \"" (im-encoding im) "\"\n"
+	      "     \"" (im-name-label im) "\"\n"
+	      "     \"" (im-short-desc im) "\"\n"
+	      "     \"" (im-module-name im) "\")\n"
+	      )))
 	 im-names)))
 
 ;; side effect: invoke require-module for all IM listed in

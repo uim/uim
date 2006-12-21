@@ -31,10 +31,12 @@
 
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "uim/config.h"
-#include "uim/gettext.h"
+
+#include "gettext.h"
 
 #include "dict-util.h"
 #include "dict-anthy.h"
@@ -125,7 +127,7 @@ word_window_class_init (WordWindowClass *klass)
 
 static void
 word_window_init(WordWindow *window)
-{  
+{
   GtkWidget *hbox;
   GtkWidget *vbox1, *vbox2;
   GtkWidget *label;
@@ -228,6 +230,7 @@ word_window_new(WordWindowType mode, uim_dict *dict)
 {
   GtkWidget *widget;
   gchar title[256];
+  gint type;
 
   g_return_val_if_fail(dict, NULL);
 
@@ -247,6 +250,9 @@ word_window_new(WordWindowType mode, uim_dict *dict)
   }
 
   gtk_window_set_title(GTK_WINDOW(widget), title);
+  type = dict_identifier_to_word_type(dict->identifier);
+  if (type == WORD_TYPE_CANNA)
+    gtk_widget_set_sensitive(WORD_WINDOW(widget)->freq, FALSE);
 #endif
 
   return widget;
@@ -388,12 +394,13 @@ word_window_set_word (WordWindow *window, uim_word *w)
   gtk_entry_set_text(GTK_ENTRY(window->desc), literal);
   adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(window->freq));
   gtk_adjustment_set_value(adj, w->freq);
-  gtk_entry_set_text(GTK_ENTRY(window->cclass_code), cclass);
 
   cclass_type = find_cclass_type_from_desc(w->cclass_code);
   if (cclass_type >= 0)
     gtk_combo_box_set_active(GTK_COMBO_BOX(window->combobox_pos_broad),
 			     cclass_type);
+
+  gtk_entry_set_text(GTK_ENTRY(window->cclass_code), cclass);
 
   g_free(phonetic);
   g_free(literal);
@@ -425,9 +432,10 @@ word_window_add(WordWindow *window)
 {
   gboolean valid;
   const char *utf8_phonetic, *utf8_literal, *utf8_cclass_desc;
-  char *phonetic, *literal, *cclass_desc, *cclass_code = NULL;
+  char *phonetic, *literal, *cclass_desc, *cclass_native = NULL;
   gint freq, ret, pos_id;
   GtkWidget *dialog;
+  uim_word_type type;
 
   g_return_if_fail(IS_WORD_WINDOW(window));
   g_return_if_fail(window->dict);
@@ -444,21 +452,23 @@ word_window_add(WordWindow *window)
   phonetic    = charset_convert(utf8_phonetic,    "UTF-8", window->dict->charset);
   literal     = charset_convert(utf8_literal,     "UTF-8", window->dict->charset);
   cclass_desc = charset_convert(utf8_cclass_desc, "UTF-8", window->dict->charset);
+  type = dict_identifier_to_word_type(window->dict->identifier);
 
   if (cclass_desc)
-	  cclass_code = find_code_from_desc(cclass_desc, pos_id);
-  if (!cclass_code)
-	  cclass_code = g_strdup("");
+	  cclass_native = g_strdup(find_code_from_desc(cclass_desc, pos_id));
+  if (!cclass_native)
+	  cclass_native = g_strdup("");
 
   if (phonetic != NULL && literal != NULL) {
 #if 1 /* FIXME! */
     uim_word *word = malloc(sizeof(uim_word));
 
-    word->type        = WORD_TYPE_ANTHY;
+    word->type        = type;
     word->charset     = window->dict->charset;
     word->phon        = phonetic;
     word->desc        = literal;
-    word->cclass_code = cclass_code;
+    word->cclass_code = cclass_desc;
+    word->cclass_native = cclass_native;
     word->freq        = freq;
 
     word->okuri          = 0;
@@ -473,14 +483,14 @@ word_window_add(WordWindow *window)
 #if 1 /* FIXME! */
     g_free(phonetic);
     g_free(literal);
-    g_free(cclass_code);
+    g_free(cclass_desc);
     g_free(word);
 #endif
   } else {
-    ret = -1;
+    ret = 0;
   }
 
-  if (ret == -1) {
+  if (ret == 0) {
     dialog = gtk_message_dialog_new(NULL,
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_ERROR,
@@ -503,8 +513,10 @@ word_window_add(WordWindow *window)
   word_window_clear(window);
 
   /* do not destroy the window when the continuance check box is checked */
-  if (!word_window_is_continuance_mode(window))
+  if (!word_window_is_continuance_mode(window)) {
     gtk_idle_add(idle_wordwin_destroy, window);
+    uim_dict_unref(window->dict);
+  }
 }
 
 static gboolean
@@ -565,10 +577,11 @@ word_window_validate_values(WordWindow *window)
 }
 
 static gboolean
-idle_wordwin_destroy (gpointer data)
+idle_wordwin_destroy(gpointer data)
 {
-	gtk_widget_destroy(GTK_WIDGET(data));
-	return FALSE;
+  gtk_widget_destroy(GTK_WIDGET(data));
+
+  return FALSE;
 }
 
 
@@ -588,6 +601,7 @@ word_window_response(GtkDialog *dialog, gint arg)
     break;
   case GTK_RESPONSE_CLOSE:
     gtk_idle_add(idle_wordwin_destroy, dialog);
+    uim_dict_unref(WORD_WINDOW(dialog)->dict);
     break;
   default:
     break;
@@ -612,7 +626,8 @@ word_window_cclass_reset (WordWindow *window)
 {
   GtkEntry *entry;
   gint type;
-  gchar *desc, *utf8_desc;
+  const gchar *desc;
+  gchar *utf8_desc;
 
   g_return_if_fail(IS_WORD_WINDOW(window));
   g_return_if_fail(window->dict);
@@ -637,7 +652,7 @@ word_window_cclass_reset (WordWindow *window)
     break;
   case POS_SUBSTANTIVE:
   default:
-    desc =  substantive_code[0].desc;
+    desc = substantive_code[0].desc;
     break;
   }
 
@@ -660,13 +675,17 @@ static void
 button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
 {
   int type;
-  char *cclass_code, *cclass_desc, *utf8_cclass_desc;
+  char *cclass_code, *utf8_cclass_desc;
+  const char *cclass_desc;
+  gint system;
+
+  system = dict_identifier_to_support_type(window->dict->identifier);
 
   type = gtk_combo_box_get_active(GTK_COMBO_BOX(window->combobox_pos_broad));
-  cclass_code = cclass_dialog(type, SUPPORT_ANTHY);
+  cclass_code = cclass_dialog(type, system);
   if (!cclass_code) return;
 
-  cclass_desc = find_desc_from_code(cclass_code, type);
+  cclass_desc = find_desc_from_code_with_type(cclass_code, type);
 
   /* FIXME!! cclass_desc is encoded in UTF-8 */
   if (cclass_desc) {
@@ -677,6 +696,5 @@ button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
 
   gtk_entry_set_text(GTK_ENTRY(window->cclass_code), utf8_cclass_desc);
 
-  g_free(cclass_desc);
   g_free(utf8_cclass_desc);
 }

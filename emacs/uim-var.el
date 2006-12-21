@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.6-beta6")
+(defconst uim-el-version "0.0.8.1")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -81,7 +81,15 @@ Example:
   "Overwrite this variable if uim-el-agent is not in command path.
 
 Example:
-(setq uim-el-agent \"~/uim-el/uim-el-agent/uim-el-agent\")
+(setq uim-el-agent \"~/uim/emacs/uim-el-agent\")
+" )
+
+
+(defvar uim-el-helper-agent "uim-el-helper-agent"
+  "Overwrite this variable if uim-el-helper-agent is not in command path.
+
+Example:
+(setq uim-el-agent \"~/uim/emacs/uim-el-helper-agent\")
 " )
 
 ;; display fences on both edges of preedit
@@ -100,6 +108,11 @@ Example:
 preedit string in vertical direction.  Otherwise, it is 
 displayed at the echo area.")
 
+;; display appendix or not
+(defvar uim-candidate-display-appendix t
+  "If the value is non-nil, appendixes are displayed with candidates."
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -111,8 +124,8 @@ displayed at the echo area.")
 (defconst uim-emacs (string-match "^GNU Emacs" (emacs-version)))
 
 ;; Supported languages and encodings
-;; ("Uim-Language" "Emacs-Language" Emacs-encoding "Uim-Encoding")
-(defvar uim-lang-code
+;; ("UIM-Language" "Emacs-Language" Emacs-encoding "UIM-Encoding")
+(defvar uim-lang-code-alist
   '(("Japanese"              "Japanese"     euc-jp      "EUC-JP")
     ("Korean"                "Korean"       euc-kr      "EUC-KR")
     ("Chinese (Simplified)"  "Chinese-GB"   gb2312      "GB2312")
@@ -131,16 +144,6 @@ displayed at the echo area.")
     ("Other"                 "ASCII"        iso-8859-1  "ISO-8859-1")
     ))
 
-
-
-;; Alist of supported languages and encodings
-(defvar uim-lang-code-alist 
-  (mapcar (lambda (x)
-	    (list (nth 0 x)
-		  (cons 'uim-lang (nth 0 x))
-		  (cons 'emacs-lang (nth 1 x))
-		  (cons 'emacs-code (nth 2 x))
-		  (cons 'uim-code (nth 3 x)))) uim-lang-code))
 
 
 ;; Keymaps for minor-mode
@@ -164,6 +167,15 @@ displayed at the echo area.")
 (defconst uim-el-agent-buffer-name " *uim*"
   "Name of the buffer for communication with uim-el-agent.")
 
+(defvar uim-el-helper-agent-process nil
+  "uim-el-helper-agent process.")
+(defvar uim-el-helper-agent-buffer nil
+  "The buffer for communication with uim-el-helper-agent.")
+(defconst uim-el-helper-agent-buffer-name " *uim-helper*"
+  "Name of the buffer for communication with uim-el-helper-agent.")
+(defvar uim-helper-message ""
+  "Buffer to store message from uim-el-helper-agent.")
+
 
 ;; Timeout related variables (wait output from uim-el-agent)
 (defvar uim-el-agent-timeout 3)
@@ -181,7 +193,7 @@ displayed at the echo area.")
 
 ;; List of IM engine 
 ;; (looking up with IM name and obtain its language, encoding and so on)
-(defvar uim-im-list nil)
+(defvar uim-im-alist nil)
 
 ;; Current focused buffer
 ;;  if current-buffer has no Uim context, this should be nil
@@ -220,6 +232,9 @@ displayed at the echo area.")
 ;; current serial number which is added to message to uim-el-agent
 (defvar uim-communication-serial-number 0)
 
+(defvar uim-last-cmd ""
+  "Command string passed to uim-el-agent at last time.")
+
 
 ;; hook called when the default IM engine has been changed by agent
 (defvar uim-update-default-engine-hook nil)
@@ -232,26 +247,63 @@ displayed at the echo area.")
 ;; hook called after reset key map 
 (defvar uim-reset-keymap-hook nil)
 
+(defvar uim-update-label-hook nil)
+
 (defvar uim-send-recv-again nil)
 
 (defvar uim-last-key-vector nil
   "Recent key vector.")
 
+(defvar uim-prefix-arg nil
+  "Recent current-prefix-arg value.")
+
+;;(defvar uim-prefix-arg-vector-length 0)
+
+;; unprocessed keys
+(defvar uim-stacked-key-vector nil)
+(defvar uim-prefix-arg-vector nil)
+(defvar uim-prefix-ignore-next nil)
+
+;; if non-nil, pressed keys are displayed at echo region
+(defvar uim-show-keystrokes nil)
+
+
 (defvar uim-retry-keys nil)
+
+(defvar uim-local-var '())
 
 ;; Macro for setting up buffer-local variable
 (defmacro uim-deflocalvar (var default &optional documentation)
   `(progn
      (defvar ,var ,default
        (format "%s (local\)" ,documentation))
+     (setq uim-local-var (cons (cons ',var ,default) uim-local-var))
      (make-variable-buffer-local ',var)))
 
+
+;; Encoding initialized flag
+(defvar uim-im-initialized nil)
+
+(defvar uim-show-im-mode t
+  "If the value is non-nil, IM mode is displayed on mode-line.")
+
+(defvar uim-show-im-name t
+  "If the value is non-nil, IM name is displayed on mode-line.")
 
 
 ;;; Buffer Local Variables
 
 (uim-deflocalvar uim-mode-line-string " U"
 		 "mode-line string of uim-mode.")
+
+;; IM name label (may not equal to uim-current-im-engine)
+(uim-deflocalvar uim-im-name-str "")
+;; IM's indication ID 
+(uim-deflocalvar uim-im-indication-id "")
+
+;; IM mode indicator
+(uim-deflocalvar uim-im-mode-str "")
+
 
 (uim-deflocalvar uim-initialized nil)
 
@@ -261,24 +313,11 @@ displayed at the echo area.")
 ;; IM name which is used in the buffer
 (uim-deflocalvar uim-current-im-engine nil) 
 
-;; current property label
-(uim-deflocalvar uim-current-prop-label nil)
-
-;; context's encoding of this buffer
-(uim-deflocalvar uim-context-encoding 
-		 (nth 2 (assoc current-language-environment uim-lang-code)))
-
 ;; minor-mode status
 (uim-deflocalvar uim-mode nil)
 
 ;; code to decode output of uim-el-agent
 (uim-deflocalvar uim-decoding-code nil)
-
-;; unprocessed keys
-(uim-deflocalvar uim-stacked-key-vector nil)
-
-;; if non-nil, pressed keys are displayed at echo region
-(uim-deflocalvar uim-show-keystrokes nil)
 
 (uim-deflocalvar uim-minor-mode-map-alist nil)
 

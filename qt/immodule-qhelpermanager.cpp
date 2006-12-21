@@ -30,17 +30,22 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include "immodule-qhelpermanager.h"
-#include "immodule-quiminputcontext.h"
+#include <config.h>
 
 #include <qsocketnotifier.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qtextcodec.h>
 
-#include <uim/uim.h>
-#include <uim/uim-helper.h>
-#include <uim/uim-im-switcher.h>
+#include "uim/uim.h"
+#include "uim/uim-util.h"
+#include "uim/uim-helper.h"
+#include "uim/uim-im-switcher.h"
+
+#include "immodule-qhelpermanager.h"
+#include "immodule-quiminputcontext.h"
+#include "immodule-quiminfomanager.h"
+#include "immodule-plugin.h"
 
 static int im_uim_fd = 0;
 static QSocketNotifier *notifier = NULL;
@@ -49,7 +54,6 @@ extern QUimInputContext *focusedInputContext;
 extern bool disableFocusedContext;
 
 extern QPtrList<QUimInputContext> contextList;
-extern QValueList<UIMInfo> uimInfo;
 
 QUimHelperManager::QUimHelperManager( QObject *parent, const char *name )
         : QObject( parent, name )
@@ -159,7 +163,15 @@ void QUimHelperManager::parseHelperStr( const QString &str )
     }
     else if ( str.startsWith( "custom_reload_notify" ) )
     {
+#if 1
         uim_prop_reload_configs();
+#else
+        // Use QUimInputContext::reloadUim() since uim_prop_reload_configs
+        // cannot update IM list of libuim yet (bug #2412).
+        // But disabled since uim_quit() and uim_init() in reloadUim() 
+        // causes some problems for uim-pref-qt.
+        QUimInputContext::reloadUim();
+#endif
     }
 }
 
@@ -168,6 +180,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     QUimInputContext * cc;
     QStringList list = QStringList::split( "\n", str );
     QString im_name = list[ 1 ];
+    QString im_name_sym = "'" + im_name;
 
     if ( str.startsWith( "im_change_this_text_area_only" ) )
     {
@@ -184,6 +197,9 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         {
             uim_switch_im( cc->uimContext(), ( const char* ) im_name );
             cc->readIMConf();
+            uim_prop_update_custom( cc->uimContext(),
+	                            "custom-preserved-default-im-name",
+				    ( const char* ) im_name_sym );
         }
     }
     else if ( str.startsWith( "im_change_this_application_only" ) )
@@ -194,6 +210,9 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             {
                 uim_switch_im( cc->uimContext(), ( const char* ) im_name );
                 cc->readIMConf();
+                uim_prop_update_custom( cc->uimContext(),
+                                        "custom-preserved-default-im-name",
+                                        ( const char* ) im_name_sym );
             }
         }
     }
@@ -207,14 +226,17 @@ void QUimHelperManager::sendImList()
     QString msg = "im_list\ncharset=UTF-8\n";
     const char* current_im_name = uim_get_current_im_name( focusedInputContext->uimContext() );
 
-    QValueList<UIMInfo>::iterator it;
-    for ( it = uimInfo.begin(); it != uimInfo.end(); ++it )
+    QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
+    QValueList<uimInfo> info = infoManager->getUimInfo();
+    QValueList<uimInfo>::iterator it;
+
+    for ( it = info.begin(); it != info.end(); ++it )
     {
         QString leafstr;
         leafstr.sprintf( "%s\t%s\t%s\t",
-                         ( *it ).name,
-                         ( *it ).lang,
-                         ( *it ).short_desc );
+                         (const char *)( *it ).name,
+                         uim_get_language_name_from_locale( ( *it ).lang ),
+                         (const char *)( *it).short_desc );
 
         if ( QString::compare( ( *it ).name, current_im_name ) == 0 )
             leafstr.append( "selected" );
@@ -225,6 +247,14 @@ void QUimHelperManager::sendImList()
     }
 
     uim_helper_send_message( im_uim_fd, ( const char* ) msg.utf8() );
+}
+
+void QUimHelperManager::send_im_change_whole_desktop( const char *name )
+{
+    QString msg;
+
+    msg.sprintf("im_change_whole_desktop\n%s\n", name);
+    uim_helper_send_message( im_uim_fd, ( const char* ) msg );
 }
 
 void QUimHelperManager::helper_disconnect_cb()

@@ -37,8 +37,7 @@
   (let* ((non-existent-key? (make-single-key-predicate ""))
 	 (generic-next-candidate-key? non-existent-key?)
 	 (generic-prev-candidate-key? non-existent-key?)
-	 (generic-commit-key?
-	  (make-key-predicate '(" " generic-return-key?)))
+	 (generic-commit-key? non-existent-key?)
 	 (generic-proc-input-state-with-preedit-with-this-env
 	  (%%enclose-another-env generic-proc-input-state-with-preedit
 				 (the-environment))))
@@ -49,8 +48,7 @@
   (let* ((non-existent-key? (make-single-key-predicate ""))
 	 (generic-next-candidate-key? non-existent-key?)
 	 (generic-prev-candidate-key? non-existent-key?)
-	 (generic-commit-key?
-	  (make-key-predicate '(" " generic-return-key?)))
+	 (generic-commit-key? non-existent-key?)
 	 (generic-proc-input-state-with-preedit
 	  hangul-proc-on-mode-with-preedit)
 	 (generic-proc-input-state-with-this-env
@@ -76,14 +74,20 @@
      short-desc
      init-arg
      generic-init-handler
-     #f ;; reset-handler
+     #f ;; release-handler
      context-mode-handler
      hangul-key-press-handler
      generic-key-release-handler
      generic-reset-handler
      generic-get-candidate-handler
      generic-set-candidate-index-handler
-     context-prop-activate-handler)))
+     context-prop-activate-handler
+     #f
+     generic-focus-in-handler
+     generic-focus-out-handler
+     generic-place-handler
+     generic-displace-handler
+     )))
     
 (define hangul2-init-handler
   (lambda (id im arg)

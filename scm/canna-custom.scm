@@ -43,6 +43,9 @@
 		     (_ "Canna server")
 		     (_ "long description will be here."))
 
+(define-custom-group 'canna-advanced
+		     (_ "Canna (advanced)")
+		     (_ "long description will be here."))
 
 ;;
 ;; segment separator
@@ -118,27 +121,33 @@
 (define canna-input-mode-indication-alist
   (list
    (list 'action_canna_direct
-	 'figure_ja_direct
-	 "a"
+	 'ja_direct
+	 "-"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_canna_hiragana
-	 'figure_ja_hiragana
+	 'ja_hiragana
 	 "¤¢"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_canna_katakana
-	 'figure_ja_katakana
+	 'ja_katakana
 	 "¥¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
-   (list 'action_canna_hankana
-	 'figure_ja_hankana
+   (list 'action_canna_halfkana
+	 'ja_halfkana
 	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
-   (list 'action_canna_zenkaku
-	 'figure_ja_zenkaku
+   (list 'action_canna_halfwidth_alnum
+	 'ja_halfwidth_alnum
+	 "a"
+	 (N_ "Halfwidth Alphanumeric")
+	 (N_ "Halfwidth Alphanumeric input mode"))
+
+   (list 'action_canna_fullwidth_alnum
+	 'ja_fullwidth_alnum
 	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
@@ -146,18 +155,18 @@
 (define canna-kana-input-method-indication-alist
   (list
    (list 'action_canna_roma
-	 'figure_ja_roma
+	 'ja_romaji
 	 "£Ò"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
    (list 'action_canna_kana
-	 'figure_ja_kana
+	 'ja_kana
 	 "¤«"
 	 (N_ "Kana")
 	 (N_ "Kana input mode"))
    (list 'action_canna_azik
-	 'figure_ja_azik
-	 "£Á"
+	 'ja_azik
+	 "£Ú"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))
 
@@ -299,13 +308,13 @@
 
 ;; warning: must be defined before custom-preserved-canna-server-name
 (define-custom 'custom-activate-canna-server-name? #f
-  '(cannaserver)
+  '(canna-advanced cannaserver)
   '(boolean)
   (_ "Specify Canna server")
   (_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
-  '(cannaserver)
+  '(canna-advanced cannaserver)
   '(string ".*")
   (_ "Canna server name")
   (_ "long description will be here."))
@@ -362,7 +371,13 @@
 		 custom-hook-literalize-preserved-canna-server-name)
 
 (define-custom 'canna-use-with-vi? #f
-  '(canna special-op)
+  '(canna-advanced special-op)
   '(boolean)
   (_ "Enable vi-cooperative mode")
+  (_ "long description will be here."))
+
+(define-custom 'canna-use-mode-transition-keys-in-off-mode? #f
+  '(canna-advanced mode-transition)
+  '(boolean)
+  (_ "Enable input mode transition keys in direct (off state) input mode")
   (_ "long description will be here."))

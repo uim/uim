@@ -98,12 +98,38 @@ convert_keyname_e2u(const char *keyname)
 	return UKey_Insert;
   else if (strcmp("delete", keyname) == 0)
 	return UKey_Delete;
+  else if (strcmp("kanji", keyname) == 0)
+	return UKey_Kanji;
   else if (strcmp("muhenkan", keyname) == 0)
 	return UKey_Muhenkan;
   else if (strcmp("henkan", keyname) == 0)
 	return UKey_Henkan_Mode;
+  else if (strcmp("romaji", keyname) == 0)
+	return UKey_Romaji;
+  else if (strcmp("hiragana", keyname) == 0)
+	return UKey_Hiragana;
+  else if (strcmp("katakana", keyname) == 0)
+	return UKey_Katakana;
+  else if (strcmp("hiragana-katakana", keyname) == 0)
+	return UKey_Hiragana_Katakana;
+  else if (strcmp("zenkaku", keyname) == 0)
+	return UKey_Zenkaku;
+  else if (strcmp("hankaku", keyname) == 0)
+	return UKey_Hankaku;
   else if (strcmp("zenkaku-hankaku", keyname) == 0)
 	return UKey_Zenkaku_Hankaku;
+  else if (strcmp("touroku", keyname) == 0)
+	return UKey_Touroku;
+  else if (strcmp("massyo", keyname) == 0)
+	return UKey_Massyo;
+  else if (strcmp("kana-lock", keyname) == 0)
+	return UKey_Kana_Lock;
+  else if (strcmp("kana-shift", keyname) == 0)
+	return UKey_Kana_Shift;
+  else if (strcmp("eisu-shift", keyname) == 0)
+	return UKey_Eisu_Shift;
+  else if (strcmp("eisu-toggle", keyname) == 0)
+	return UKey_Eisu_toggle;
   else if (strcmp("f1", keyname) == 0)
 	return UKey_F1;
   else if (strcmp("f2", keyname) == 0)

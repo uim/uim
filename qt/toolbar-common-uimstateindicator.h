@@ -41,7 +41,8 @@
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
-#define BUTTON_SIZE 25
+#define BUTTON_SIZE 26
+#define ICON_SIZE	16
 
 class QHelperToolbarButton;
 class QHelperPopupMenu;
@@ -54,27 +55,36 @@ public:
     UimStateIndicator( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
     ~UimStateIndicator();
 
+    int getNumButtons();
+
 protected:
     void checkHelperConnection();
 
     void parseHelperStr( const QString& str );
     void propListUpdate( const QStringList& lines );
-    void propLabelUpdate( const QStringList& lines );
 
     static void helper_disconnect_cb();
+
+signals:
+    void indicatorResized();
 
 public slots:
     void slotStdinActivated( int socket );
 
+private slots:
+    void slotPopupMenuAboutToShow();
+    void slotPopupMenuAboutToHide();
+
 protected:
     QPtrList<QHelperToolbarButton> buttons;
+    bool popupMenuShowing;
 };
 
 class QHelperToolbarButton : public QToolButton
 {
 public:
     QHelperToolbarButton( QWidget *parent = 0, const char *name = 0 )
-        : QToolButton( parent, name ){}
+        : QToolButton( parent, name ){ setAutoRaise( TRUE ); }
 
     QSize sizeHint() const
     {
@@ -90,7 +100,8 @@ public:
     QHelperPopupMenu( QWidget *parent = 0, const char *name = 0 );
     ~QHelperPopupMenu();
 
-    int insertHelperItem( const QString &menulabelStr,
+    int insertHelperItem( const QString &indicationIdStr,
+                          const QString &menulabelStr,
                           const QString &menutooltipStr,
                           const QString &menucommandStr );
 

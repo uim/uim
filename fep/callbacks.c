@@ -35,7 +35,7 @@
  * uimのコールバック関数
  */
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #ifndef DEBUG
 #define NDEBUG
@@ -71,6 +71,8 @@ static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
 
 static void configuration_changed_cb(void *ptr);
+static void switch_app_global_im_cb(void *ptr, const char *name);
+static void switch_system_global_im_cb(void *ptr, const char *name);
 static void activate_cb(void *ptr, int nr, int display_limit);
 static void select_cb(void *ptr, int index);
 static void shift_page_cb(void *ptr, int direction);
@@ -80,7 +82,6 @@ static void pushback_cb(void *ptr, int attr, const char *str);
 static void update_cb(void *ptr);
 static void mode_update_cb(void *ptr, int mode);
 static void prop_list_update_cb(void *ptr, const char *str);
-static void prop_label_update_cb(void *ptr, const char *str);
 static struct preedit_tag *dup_preedit(struct preedit_tag *p);
 static void make_page_strs(void);
 static int numwidth(int n);
@@ -141,8 +142,8 @@ void init_callbacks(void)
   uim_set_preedit_cb(g_context, clear_cb, pushback_cb, update_cb);
   uim_set_mode_cb(g_context, mode_update_cb);
   uim_set_prop_list_update_cb(g_context, prop_list_update_cb);
-  uim_set_prop_label_update_cb(g_context, prop_label_update_cb);
   uim_set_configuration_changed_cb(g_context, configuration_changed_cb);
+  uim_set_im_switch_request_cb(g_context, switch_app_global_im_cb, switch_system_global_im_cb);
   configuration_changed_cb(NULL);
   if (g_opt.status_type != NONE) {
     uim_set_candidate_selector_cb(g_context, activate_cb, select_cb, shift_page_cb, deactivate_cb);
@@ -345,6 +346,28 @@ static void configuration_changed_cb(void *ptr)
   s_im_str = s_im_str != NULL ? s_im_str : "";
 }
 
+static void switch_app_global_im_cb(void *ptr, const char *name)
+{
+}
+
+static void switch_system_global_im_cb(void *ptr, const char *name)
+{
+  char *buf;
+  int len = 0;
+
+#define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
+
+  len += strlen(HEADER_FORMAT);
+  len += name ? strlen(name) : 0;
+
+  buf = malloc(len);
+  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+  uim_helper_send_message(g_helper_fd, buf);
+  free(buf);
+
+#undef HEADER_FORMAT
+}
+
 /*
  * 候補一覧を表示するときに呼ばれる。
  * s_candidate.nr = nr(候補総数)
@@ -475,8 +498,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
       int first_char_byte = rval[0];
       int first_char_width = rval[1];
       char *first_char = malloc(first_char_byte + 1);
-      strncpy(first_char, str, first_char_byte);
-      first_char[first_char_byte] = '\0';
+      strlcpy(first_char, str, first_char_byte + 1);
       cursor = FALSE;
       pushback_cb(NULL, attr - UPreeditAttr_Reverse, first_char);
       free(first_char);
@@ -550,11 +572,15 @@ static void prop_list_update_cb(void *ptr, const char *str)
 
     error = TRUE;
 
-    /* branch = "branch\t" iconic_label "\t" buttontooltip_string "\n" */
+    /* branch = "branch\t" indication_id "\t" iconic_label "\t" label_string "\n" */
     if (!str_has_prefix(line, "branch\t")) {
       break;
     }
     label = line + strlen("branch\t");
+    if ((label = strchr(label, '\t')) == NULL) {
+      break;
+    }
+    label++;
 
     if ((tab = strchr(label, '\t')) == NULL) {
       break;
@@ -569,9 +595,16 @@ static void prop_list_update_cb(void *ptr, const char *str)
     while (str_has_prefix(line, "leaf\t")) {
       char *leaf_label = line + strlen("leaf\t");
 
-      tab = line + strlen("leaf");
+      error = TRUE;
 
-      /* leaf = "leaf\t" iconic_label "\t" menulabel_string "\t" menutooltip_string "\t" menucommand_name "\t" flag "\n" */
+      if ((leaf_label = strchr(leaf_label, '\t')) == NULL) {
+	goto loop_end;
+      }
+      leaf_label++;
+
+      tab = leaf_label - 1;
+
+      /* leaf = "leaf\t" indication_id "\t" iconic_label "\t" label_string "\t" short_desc "\t" action_id "\t" activity "\n" */
       for (i = 0; i < 4; i++) {
         if ((tab = strchr(tab + 1, '\t')) == NULL) {
           goto loop_end;
@@ -585,10 +618,14 @@ static void prop_list_update_cb(void *ptr, const char *str)
 
       error = FALSE;
 
-      label_width = strlen(leaf_label);
+      label_width = strwidth(leaf_label);
       if (label_width > max_label_width) {
         max_label_width = label_width;
       }
+    }
+
+    if (error) {
+      break;
     }
 
     label_width = strwidth(label);
@@ -625,26 +662,6 @@ loop_end:
   uim_helper_send_message(g_helper_fd, message_buf);
   free(message_buf);
   debug(("prop_list_update_cb send message\n"));
-}
-
-static void prop_label_update_cb(void *ptr, const char *str)
-{
-  const char *enc;
-  char *message_buf;
-
-  debug(("prop_label_update_cb\n"));
-  debug2(("str = %s", str));
-
-  if (!g_focus_in) {
-    return;
-  }
-
-  enc = get_enc();
-  message_buf = malloc(strlen("prop_label_update\ncharset=") + strlen(enc) + strlen("\n") + strlen(str) + 1);
-  sprintf(message_buf, "prop_label_update\ncharset=%s\n%s", enc, str);
-  uim_helper_send_message(g_helper_fd, message_buf);
-  free(message_buf);
-  debug(("prop_label_update_cb send message\n"));
 }
 
 /*
@@ -767,7 +784,7 @@ static void make_page_strs(void)
         assert(page_width == 0);
         next = TRUE;
                                                   /* 全角1文字の幅 */
-        if (s_max_width >= cand_label_width + strlen(":") + 2 + strlen(" ") + index_width) {
+        if (s_max_width >= cand_label_width + (int)strlen(":") + 2 + (int)strlen(" ") + index_width) {
           /* 候補 + インデックス */
 
           cand_width = s_max_width - index_width - strlen(" ");
@@ -786,9 +803,9 @@ static void make_page_strs(void)
           }
           cand_width -= strlen(" ");
           cand_width = strhead(cand_str, cand_width);
-          if (cand_width <= cand_label_width + strlen(":")) {
+          if (cand_width <= cand_label_width + (int)strlen(":")) {
             cand_width = 1;
-            strcpy(cand_str, " ");
+            strlcpy(cand_str, " ", cand_byte + 1);
             s_candidate.cand_col[index] = UNDEFINED;
           } else {
             cand_byte = strlen(cand_str);
@@ -959,7 +976,7 @@ static void set_candidate(void)
   }
   s_candidate_str = tab2space(uim_candidate_get_cand_str(cand));
   cand_width = strwidth(s_candidate_str);
-  if (s_candidate_col + cand_width + strlen(" ") + index_width > s_max_width) {
+  if (s_candidate_col + cand_width + (int)strlen(" ") + index_width > s_max_width) {
     strhead(s_candidate_str, s_max_width - s_candidate_col - strlen(" ") - index_width);
   }
   uim_candidate_free(cand);

@@ -38,38 +38,53 @@
 #include <locale.h>
 #include "uim/gettext.h"
 #include "uim/uim.h"
+#include "uim/uim-helper.h"
 #include <gtk/gtk.h>
 #include "eggtrayicon.h"
 
-GtkWidget *uim_helper_trayicon_new(void);
+extern GtkWidget *uim_toolbar_trayicon_new(void);
+extern void uim_toolbar_check_helper_connection(GtkWidget *widget);
+extern void uim_toolbar_get_im_list(void);
 
-int 
-main (int argc, char *argv[])
+
+static void
+embedded_cb(GtkWidget *widget, gpointer user_data)
+{
+  uim_toolbar_check_helper_connection(user_data);
+  uim_helper_client_get_prop_list();
+  uim_toolbar_get_im_list();
+
+  gtk_widget_show_all(user_data);
+}
+
+
+int
+main(int argc, char *argv[])
 {
   GtkWidget *icon;
   EggTrayIcon *tray;
 
   setlocale(LC_ALL, "");
-  bindtextdomain( PACKAGE, LOCALEDIR );
-  textdomain( PACKAGE );
-  bind_textdomain_codeset( PACKAGE, "UTF-8");
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
+  bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   gtk_set_locale();
-  
+
   uim_init();
 
-  gtk_init( &argc, &argv );
+  gtk_init(&argc, &argv);
 
   tray = egg_tray_icon_new("uim");
 
-  icon = uim_helper_trayicon_new();
-
-  gtk_widget_show_all(icon);
+  icon = uim_toolbar_trayicon_new();
+  g_signal_connect(G_OBJECT(tray), "embedded", G_CALLBACK(embedded_cb), icon);
 
   gtk_container_add(GTK_CONTAINER(tray), icon);
   gtk_widget_show(GTK_WIDGET (tray));
 
   gtk_main();
+
+  uim_quit();
   return 0;
 }
-

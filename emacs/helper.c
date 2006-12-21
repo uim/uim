@@ -36,33 +36,41 @@
 
 #include "helper.h"
 
-void
+static void
 helper_send_im_list(void)
 {
   int nim, i;
   int len = 0, buflen;
   char *buf;
   const char *current_im_name;
+  uim_agent_context *ua;
+  int dummy_agent_context = 0;
 
   debug_printf(DEBUG_NOTE, "helper_send_im_list\n");
 
-  if (current == NULL || current->context == NULL) return;
+  /* Use 1st context */
+  if (agent_context_list_head) {
+	ua = agent_context_list_head->agent_context;
+  } else {
+	dummy_agent_context = 1;
+	ua = new_uim_agent_context(1, NULL);
+  }
 
-  nim = uim_get_nr_im(current->context);
+  nim = uim_get_nr_im(ua->context);
 
-  uim_get_current_im_name(current->context);
-  current_im_name = uim_get_current_im_name(current->context);
+  uim_get_current_im_name(ua->context);
+  current_im_name = uim_get_current_im_name(ua->context);
 
 #define HEADER_FORMAT "im_list\ncharset=%s\n"
 
-  len += strlen(HEADER_FORMAT) + strlen(current->encoding);
+  len += strlen(HEADER_FORMAT) + strlen(ua->encoding);
   len += strlen("selected") ;
 
-  for (i = 0; i < uim_get_nr_im(current->context); i++) {
+  for (i = 0; i < uim_get_nr_im(ua->context); i++) {
 	const char *name, *lang, *shortd;
-	name = uim_get_im_name(current->context, i);
-	lang = uim_get_im_language(current->context, i);
-	shortd = uim_get_im_short_desc(current->context, i);
+	name = uim_get_im_name(ua->context, i);
+	lang = uim_get_im_language(ua->context, i);
+	shortd = uim_get_im_short_desc(ua->context, i);
 
 	len += name ? strlen(name) : 0;
 	len += lang ? strlen(lang) : 0;
@@ -70,18 +78,19 @@ helper_send_im_list(void)
 	len += strlen( "\t\t\t\n");
   }
 
-  len++ ;
+  len ++;
 
   buf = (char *)malloc(sizeof(char) * len);
 
-  buflen = snprintf(buf, len, HEADER_FORMAT, current->encoding);
+  buflen = snprintf(buf, len, HEADER_FORMAT, ua->encoding);
 
+#undef HEADER_FORMAT
 
-  for (i = 0 ; i < uim_get_nr_im(current->context); i++) {
+  for (i = 0 ; i < uim_get_nr_im(ua->context); i++) {
 	const char *name, *lang, *shortd;	
-	name = uim_get_im_name(current->context, i);
-	lang = uim_get_im_language(current->context, i);
-	shortd = uim_get_im_short_desc(current->context, i);
+	name = uim_get_im_name(ua->context, i);
+	lang = uim_get_im_language(ua->context, i);
+	shortd = uim_get_im_short_desc(ua->context, i);
 
 	debug_printf(DEBUG_NOTE, " [%d] = %s %s %s\n", i, name, lang, shortd);
 
@@ -95,223 +104,199 @@ helper_send_im_list(void)
 					   == 0 ? "selected" : "");
   }
 
-  uim_helper_send_message(helper_fd, buf);
+  helper_send_message(buf);
 
   debug_printf(DEBUG_NOTE, " im_list = \"%s\"\n", buf);
   
   free(buf);
+
+  if (dummy_agent_context)
+	release_uim_agent_context(1);
+
 }
 
 
 
-void
+static int
 helper_im_changed(char *request, char *engine_name)
 {
-  uim_agent_context_list *ptr;
 
   debug_printf(DEBUG_NOTE, "helper_im_changed: %s\n", engine_name);
 
-  if (strcmp(request, "im_change_this_text_area_only") == 0) {
+  if (focused && strcmp(request, "im_change_this_text_area_only") == 0) {
 
-    if (current) {
-      switch_context_im(current, engine_name, get_im_encoding(engine_name));
-	  if(current->im) free(current->im);
-	  current->im = strdup(engine_name);
-      uim_prop_label_update(current->context);
-      uim_prop_list_update(current->context);
-    }
+    if (current)
+	  switch_context_im(current, engine_name);
 
   } else if (strcmp(request, "im_change_whole_desktop") == 0 
-			 || strcmp(request, "im_change_this_application_only") == 0) {
-
-	char *quot_engine_name;
+			 || (focused && strcmp(request, "im_change_this_application_only") == 0)) {
 
 	/* change default */
 	update_default_engine(engine_name);
 
 	/* check focus state when change IM of current application */
-	if (strcmp(request, "im_change_whole_desktop") == 0 || current) {
-	  quot_engine_name = (char *)malloc(strlen(engine_name) + 2);
-	  quot_engine_name[0] = '\'';
-	  quot_engine_name[1] = '\0';
-	  strcat(quot_engine_name, engine_name);
-	  for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
+	if (strcmp(request, "im_change_whole_desktop") == 0 || current)
+	  switch_context_im_all(engine_name);
+  } else {
 
-		switch_context_im(ptr->agent_context, 
-						  engine_name, get_im_encoding(engine_name));
-
-		uim_prop_update_custom(ptr->agent_context->context,
-							   "custom-preserved-default-im-name",
-							   quot_engine_name);
-
-		if (ptr->agent_context->im) free(ptr->agent_context->im);
-		ptr->agent_context->im = strdup(engine_name);
-		
-		if (current && ptr->agent_context == current) {
-		  uim_prop_label_update(ptr->agent_context->context);
-		  uim_prop_list_update(ptr->agent_context->context);
-		}
-	  }
-	  free(quot_engine_name);
-    }
+    return 0;
   }
+
+  return 1;
 }
 
 
 
 /* handle messages from helper */
-void
-helper_handler(void)
+int
+helper_handler(uim_agent_context *ua, char *helper_message)
 {
-  char *message;
-
-  uim_helper_read_proc(helper_fd);
+  char *p, *message = helper_message;
 
   debug_printf(DEBUG_NOTE, "helper_handler\n");
 
-  while ((message = uim_helper_get_message())) {
+  debug_printf(DEBUG_NOTE, " message \"%s\"\n", message);
 
-    char *line = message;
-    char *eol;
+  if (focused && strcmp("focus_in", message) == 0) {
 
-	int current_exist = (current != NULL && current->context != NULL);
+	/* some other window is focused */
 
-    if ((eol = strchr(line, '\n')) != NULL) {
-	  *eol = '\0';
-    } else {
-	  free(message);
-	  break;
-	}
+	debug_printf(DEBUG_NOTE, " focus_in\n"); 
 
-	debug_printf(DEBUG_NOTE, " message \"%s\"\n", message);
+	focused = 0;
 
-	if (strcmp("prop_list_get", line) == 0) { 
-	  /* for current context */
+  } else if (focused && strncmp("prop_activate", message, 13) == 0) {
 
-	  debug_printf(DEBUG_NOTE, "prop_list_get\n");
-	  if (current_exist)
-		uim_prop_list_update(current->context);
-	  else
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
-		
-	} else if (strcmp("prop_label_get", line) == 0) { 
-	  /* for current context */
-
-	  if (current_exist)
-		uim_prop_label_update(current->context);
-	  else
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
-
-	} else if (strcmp("prop_activate", line) == 0) { 
-	  /* for current context */
-
-	  if (current_exist) {
-		line = eol + 1;
-		if ((eol = strchr(line, '\n')) != NULL) {
-		  *eol = '\0';
-		  uim_prop_activate(current->context, line);
+	debug_printf(DEBUG_NOTE, " prop_activate\n"); 
+	
+	if (ua && ua->context != NULL) {
+	  if ((p = strchr(message, ' ')) != NULL) {
+		*p = '\0';
+		p ++;
+		debug_printf(DEBUG_NOTE, "  %s\n", p);
+		uim_prop_activate(ua->context, p);
 		} else {
 		  debug_printf(DEBUG_WARNING, 
 					   " invalid message(prop_activate): \"%s\"\n", message);
 		}
-	  } else {
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
 	  }
 
-	} else if (strcmp("im_list_get", line) == 0) {
-	  /* for current context */
 
-	  if (current_exist) {
+  } else if (focused && strcmp("prop_list_get", message) == 0) { 
+
+	debug_printf(DEBUG_NOTE, " prop_list_get\n");
+
+	if (ua && ua->context != NULL)
+	  uim_prop_list_update(ua->context);
+
+  } else if (strncmp(message, "im_change_", 10) == 0) {
+
+	char *engine;
+
+	if ((p = strchr(message, ' ')) != NULL) {
+	  *p = '\0';
+	  engine = p + 1;
+	  return helper_im_changed(message, engine);
+	}
+
+  } else if (focused && strcmp("im_list_get", message) == 0) {
+
 		debug_printf(DEBUG_NOTE, " im_list_get\n");
+
 		helper_send_im_list();
-	  } else {
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
-	  }
 		
-	} else if (strncmp("focus_in", line, 8) == 0) {
+  } else if (focused && strncmp("commit_string", message, 13) == 0) {
 
-	  if (current_exist) {
-		debug_printf(DEBUG_NOTE, " focus_in\n"); 
-		if (current) clear_current_uim_agent_context();
-	  } else {
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
-	  }
+	char *encoding, *str;
 
-	} else if (strcmp("commit_string", line) == 0) { /* for current context */
+	debug_printf(DEBUG_NOTE, " commit_string\n");
 
-	  if (current_exist) {
-		line = eol + 1;
-		if ((eol = strchr(line, '\n')) != NULL) {
-		  *eol = '\0';
-		  /* do nothing */
+	if (ua && ua->context != NULL) {
+
+	  if ((p = strchr(message, ' ')) != NULL) {
+		*p = '\0';
+		encoding = p + 1;
+
+		if ((p = strchr(encoding, ' ')) != NULL) {
+		  *p = '\0';
+		  str = helper_message_decode(p + 1);
+		
+		  if (uim_iconv->is_convertible(ua->encoding, encoding)) {
+			char *comstr;
+			void *cd = uim_iconv->create(ua->encoding, encoding);
+			comstr = uim_iconv->convert(cd, str);
+
 		  debug_printf(DEBUG_NOTE, 
-					   " commit_string \"%s\"\n", line);
-		} else {
-		  debug_printf(DEBUG_WARNING, 
-					   " invalid message(commit_string) \"%s\"\n", message);
+						 " commit_string \"%s\"\n", comstr);
+
+			commit_cb(ua, comstr);
+			free(comstr);
+		  }
+
+		  free(str);
+
 		}
-	  } else {
-		debug_printf(DEBUG_NOTE, " ignored helper message: %s\n", message);
+	    }
 	  }
 
-	} else if (strncmp(line, "im_change_", 10) == 0) {
-
-	  char *engine;
-
-	  engine = eol + 1;
-	  if ((eol = strchr(engine, '\n')) != NULL) {
-		*eol = '\0';
-		helper_im_changed(line, engine);
-	  } else {
-		debug_printf(DEBUG_WARNING,
-					 " invalid message(im_change) \"%s\"\n", message);
-	  }
-
-	} else if (strcmp("prop_update_custom", line) == 0) {
+  } else if (strncmp("prop_update_custom", message, 18) == 0) {
 
 	  /* message from uim-pref-{gtk,qt} */
+
 	  char *custom;
 	  char *val;
 
 	  uim_agent_context_list *ptr;
 
-	  line = eol + 1;
-	  custom = line;
+	if ((p = strchr(message, ' ')) != NULL) {
+	  *p = '\0';
+	  custom = p + 1;
 
-	  if ((eol = strchr(line, '\n')) != NULL) {
-		*eol = '\0';
-		val = eol + 1;
-
-		if ((eol = strchr(val, '\n')) != NULL) {
-		  *eol = '\0';
+	  if ((p = strchr(custom, ' ')) != NULL) {
+		*p = '\0';
+		val = p + 1;
 		  for (ptr = agent_context_list_head; ptr != NULL; ptr = ptr->next) {
 			uim_prop_update_custom(ptr->agent_context->context, custom, val);
 		  }
-		} else {
-		  debug_printf(DEBUG_WARNING,
-					   " invalid message val of prop_update_custom: \"%s\"\n",
-					   val);
 		}
-
-	  } else {
-		debug_printf(DEBUG_WARNING,
-					 " invalid message: ",
-					 "custom of prop_update_custom: \"%s\"\n",
-					 line);
 	  }
+  } else if (strcmp("custom_reload_notify", message) == 0) {
 
-	} else if (strcmp("prop_list_update", line) == 0) {
-	  /* ignore */
-	  debug_printf(DEBUG_NOTE, " prop_list_update (helper)\n");
-	} else if ( strcmp("prop_label_update", line) == 0) {
-	  /* ignore */
-	  debug_printf(DEBUG_NOTE, " prop_label_update (helper)\n");
+	debug_printf(DEBUG_NOTE, "reload\n");
+
+	uim_prop_reload_configs();
+
 	} else {
+
 	  debug_printf(DEBUG_WARNING, " undefined helper message: %s\n", message);
+	  return 0;
+
 	}
 
-	free(message);
-  }
+  return 1;
 }
 
 
+
+
+void
+helper_send_im_change_whole_desktop(const char *name)
+{
+  int len = 0;
+  char *buf;
+
+#define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
+
+  len += strlen(HEADER_FORMAT);
+  len += name ? strlen(name) : 0;
+
+  buf = (char *)malloc(sizeof(char) * len);
+
+  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+
+  helper_send_message(buf);
+
+  free(buf);
+
+#undef HEADER_FORMAT
+ }

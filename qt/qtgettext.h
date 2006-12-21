@@ -33,7 +33,7 @@
 #ifndef _QT_GETTEXT_H_
 #define _QT_GETTEXT_H_
 
-#include "uim/config.h"
+#include <config.h>
 #include "uim/gettext.h"
 
 /* NLS can be disabled through the configure --disable-nls option.  */

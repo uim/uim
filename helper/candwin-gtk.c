@@ -38,7 +38,7 @@
 #include <uim/uim-helper.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
-#include <glib/gprintf.h>
+#include <glib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -76,6 +76,7 @@ struct _UIMCandidateWindow {
   GtkWidget *caret_state_indicator;
 
   gboolean is_active;
+  gboolean need_hilite;
 };
 
 struct _UIMCandidateWindowClass {
@@ -303,30 +304,30 @@ static void
 candidate_window_init(UIMCandidateWindow *cwin)
 {
   GtkCellRenderer *renderer;
-  GtkTreeViewColumn *column; 
+  GtkTreeViewColumn *column;
   GtkWidget *scrolled_window;
   GtkWidget *vbox;
   GtkWidget *frame;
   GtkTreeSelection *selection;
   GdkRectangle cursor_location;
-  
+
   vbox = gtk_vbox_new(FALSE, 0);
   frame = gtk_frame_new(NULL);
 
   cwin->stores = g_ptr_array_new();
-  
+
   gtk_window_set_default_size(GTK_WINDOW(cwin),
 		  CANDWIN_DEFAULT_WIDTH, -1);
-  
+
 
   scrolled_window = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_window),
 				 GTK_POLICY_NEVER,
 				 GTK_POLICY_NEVER);
   gtk_box_pack_start(GTK_BOX(vbox), scrolled_window, TRUE, TRUE, 0);
-  
+
   cwin->view = gtk_tree_view_new();
-  g_signal_connect(G_OBJECT(cwin->view), "destroy", 
+  g_signal_connect(G_OBJECT(cwin->view), "destroy",
   		   G_CALLBACK(cb_tree_view_destroy), cwin->stores);
   gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(cwin->view), TRUE);
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(cwin->view), FALSE);
@@ -335,7 +336,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
   gtk_container_add(GTK_CONTAINER(frame), vbox);
   gtk_container_add(GTK_CONTAINER(cwin), frame);
   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
-    
+
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cwin->view));
 
   gtk_tree_selection_set_select_function(selection,
@@ -344,7 +345,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
 					 NULL);
 
   renderer = gtk_cell_renderer_text_new();
-  g_object_set(renderer, "scale", 1.2, NULL);
+  g_object_set(renderer, "scale", 0.8, NULL);
 
   column = gtk_tree_view_column_new_with_attributes("No",
 						    renderer,
@@ -353,7 +354,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
 						    NULL);
   gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  
+
   renderer = gtk_cell_renderer_text_new();
   g_object_set(renderer, "scale", 1.2, NULL);
   /* g_object_set(renderer, "size-points", 20.0, NULL); */
@@ -364,19 +365,20 @@ candidate_window_init(UIMCandidateWindow *cwin)
 						    NULL);
   gtk_tree_view_column_set_sizing(column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
   gtk_tree_view_append_column(GTK_TREE_VIEW(cwin->view), column);
-  
+
   cwin->num_label = gtk_label_new("");
 
   gtk_box_pack_start(GTK_BOX(vbox), cwin->num_label, FALSE, FALSE, 0);
 
 #if 0
-  g_signal_connect(G_OBJECT(cwin->view), "button-press-event", 
+  g_signal_connect(G_OBJECT(cwin->view), "button-press-event",
   		   G_CALLBACK(tree_view_button_press), cwin);
 #endif
 
   cwin->pos_x = 0;
   cwin->pos_y = 0;
   cwin->is_active = FALSE;
+  cwin->need_hilite = FALSE;
   cwin->caret_state_indicator = caret_state_indicator_new();
 
   cursor_location.x = 0;
@@ -424,18 +426,20 @@ candwin_activate(gchar **str)
       break;
     }
     utf8_str = g_convert(str[i],
-			 -1, 
+			 -1,
 			 "UTF-8",
 			 charset,
 			 &rbytes, &wbytes, NULL);
-    
-    candidates = g_slist_append(candidates, utf8_str);
+
+    candidates = g_slist_prepend(candidates, utf8_str);
     j++;
   }
+  candidates = g_slist_reverse(candidates);
 
   cwin->candidate_index = -1;
   cwin->nr_candidates = j - 1;
   cwin->display_limit = display_limit;
+  cwin->need_hilite = FALSE;
 
   if (candidates == NULL)
     return;
@@ -486,8 +490,10 @@ candwin_activate(gchar **str)
 static void
 candwin_update(gchar **str)
 {
-  int index;
+  int index, need_hilite;
   sscanf(str[1], "%d", &index);
+  sscanf(str[2], "%d", &need_hilite);
+  cwin->need_hilite = (need_hilite == 1) ? TRUE : FALSE;
 
   uim_cand_win_gtk_set_index(cwin, index);
 }
@@ -655,7 +661,7 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
   if (cwin->page_index != new_page)
     uim_cand_win_gtk_set_page(cwin, new_page);
 
-  if (cwin->candidate_index >= 0) {
+  if (cwin->candidate_index >= 0 && cwin->need_hilite) {
     GtkTreePath *path;
     gint pos = index;
 
@@ -721,7 +727,8 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
  /* shrink the window */
   gtk_window_resize(GTK_WINDOW(cwin), CANDWIN_DEFAULT_WIDTH, 1);
 
-  uim_cand_win_gtk_set_index(cwin, new_index);
+  if (new_index != -1)
+    uim_cand_win_gtk_set_index(cwin, new_index);
 }
 
 static void

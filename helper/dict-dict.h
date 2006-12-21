@@ -97,4 +97,12 @@ int       uim_dict_change_word (uim_dict *dict, uim_word *word);
 int       uim_dict_remove_word (uim_dict *dict, uim_word *word);
 void      uim_dict_refresh     (uim_dict *dict);
 
+typedef enum {
+  DICT_ENUM_DICTIONARY_TYPE_ANTHY,
+  DICT_ENUM_DICTIONARY_TYPE_CANNA,
+  DICT_ENUM_DICTIONARY_TYPE_SKK,
+  DICT_ENUM_DICTIONARY_TYPE_PRIME,
+  DICT_ENUM_DICTIONARY_TYPE_UNKOWN
+} DictEnumDictionaryType;
+
 #endif /* __dict_dict_h_includeded__ */

@@ -31,15 +31,19 @@
  *  SUCH DAMAGE.
  */
 
+#include <config.h>
+
 #include <dlfcn.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
 
-#include "uim/gettext.h"
+#include <anthy/dicutil.h>
+
+#include "gettext.h"
 #include "dict-anthy.h"
-#include "dict-canna.h"
+#include "dict-canna-cclass.h"
 
 static uim_dict *uim_dict_anthy_open        (const char *identifier);
 static void      uim_dict_anthy_close       (uim_dict *dict);
@@ -78,142 +82,96 @@ static const char *identifiers[] = {
   N_("Anthy private dictionary"),
 };
 
-struct _anthy_dic_api {
-    void        (*util_init)                   (void);
-    void        (*util_set_personality)        (char *);
-    const char *(*util_get_anthydir)           (void);
-
-    void        (*priv_dic_delete)             (void);
-    int         (*priv_dic_select_first_entry) (void);
-    int         (*priv_dic_select_next_entry)  (void);
-    int         (*priv_dic_select_entry)       (char *);
-
-    char       *(*priv_dic_get_index)          (char *, int);
-    int         (*priv_dic_get_freq)           (void);
-    char       *(*priv_dic_get_wtype)          (char *, int);
-    char       *(*priv_dic_get_word)           (char *, int);
-
-    int         (*priv_dic_add_entry)          (char *, char *, char *, int);
-};
-static struct _anthy_dic_api anthy_dic_api;
-static void *anthy_dic_lib;
-
-#ifdef __APPLE__
-  #define ANTHYDIC_DYLIB	"libanthydic.0.dylib"
-#else
-  #define ANTHYDIC_DYLIB	"libanthydic.so.0"
-#endif
-static int
-get_anthydic_api()
-{
-    anthy_dic_lib = dlopen(ANTHYDIC_DYLIB, RTLD_GLOBAL |RTLD_NOW);
-    if (anthy_dic_lib == NULL) {
-	return -1;
-    }
-
-    anthy_dic_api.util_init = dlsym(anthy_dic_lib, "anthy_dic_util_init");
-    anthy_dic_api.util_set_personality = dlsym(anthy_dic_lib, "anthy_dic_util_set_personality");
-    anthy_dic_api.util_get_anthydir = dlsym(anthy_dic_lib, "anthy_dic_util_get_anthydir");
-
-    anthy_dic_api.priv_dic_delete = dlsym(anthy_dic_lib, "anthy_priv_dic_delete");
-    anthy_dic_api.priv_dic_select_first_entry = dlsym(anthy_dic_lib, "anthy_priv_dic_select_first_entry");
-    anthy_dic_api.priv_dic_select_next_entry = dlsym(anthy_dic_lib, "anthy_priv_dic_select_next_entry");
-    anthy_dic_api.priv_dic_select_entry = dlsym(anthy_dic_lib, "anthy_priv_dic_select_entry");
-
-    anthy_dic_api.priv_dic_get_index = dlsym(anthy_dic_lib, "anthy_priv_dic_get_index");
-    anthy_dic_api.priv_dic_get_freq = dlsym(anthy_dic_lib, "anthy_priv_dic_get_freq");
-    anthy_dic_api.priv_dic_get_wtype = dlsym(anthy_dic_lib, "anthy_priv_dic_get_wtype");
-    anthy_dic_api.priv_dic_get_word = dlsym(anthy_dic_lib, "anthy_priv_dic_get_word");
-
-    anthy_dic_api.priv_dic_add_entry = dlsym(anthy_dic_lib, "anthy_priv_dic_add_entry");
-
-    if (!anthy_dic_api.util_init && !anthy_dic_api.util_set_personality
-       && !anthy_dic_api.util_get_anthydir && !anthy_dic_api.priv_dic_delete
-       && !anthy_dic_api.priv_dic_select_first_entry
-       && !anthy_dic_api.priv_dic_select_next_entry
-       && !anthy_dic_api.priv_dic_select_entry
-       && !anthy_dic_api.priv_dic_get_index
-       && !anthy_dic_api.priv_dic_get_freq
-       && !anthy_dic_api.priv_dic_get_wtype
-       && !anthy_dic_api.priv_dic_get_word
-       && !anthy_dic_api.priv_dic_add_entry) {
-	dlclose(anthy_dic_lib);
-	return -1;
-    }
-    return 0;
-}
-
 static int
 dict_anthy_init(void)
 {
-    if (get_anthydic_api() == -1)
-	return -1;
-    anthy_dic_api.util_init();
-    return 0;
+  anthy_dic_util_init();
+  return 0;
 }
 
 static int
 dict_anthy_exit(void)
 {
-    if (anthy_dic_lib)
-	return dlclose(anthy_dic_lib);
-    else
-	return -1;
+  /*
+   * With anthy-7811, anthy_parse_word_lin() causes segmentation fault once
+   * anthy_dic_util_quit() and anthy_dic_util_init() have been used to restart
+   * the library.  To avoid this, we don't call anthy_dic_util_quit() even when
+   * the ref_count of uim_dict_anthy become 0.
+   */
+#if 0
+  anthy_dic_util_quit();
+#endif
+
+  return 0;
 }
 
 static int
 dict_anthy_read_priv_dic_list(uim_word **head)
 {
-    char phon[100], desc[100], cclass_code[100];
-    int ret = 0;
+  char phon[100], desc[100], cclass_native[100];
+  int ret = 0;
 
-    if (anthy_dic_api.priv_dic_select_first_entry() == -1) {
-	*head = NULL;
-	return -1;
+  if (anthy_priv_dic_select_first_entry() == -1) {
+    *head = NULL;
+    return -1;
+  }
+
+  while (ret == 0) {
+    if (anthy_priv_dic_get_index(phon, sizeof(phon))
+	&& anthy_priv_dic_get_wtype(cclass_native,
+				    sizeof(cclass_native))
+	&& anthy_priv_dic_get_word(desc, sizeof(desc))) {
+      gint pos;
+      const char *cclass_code = NULL;
+
+      for (pos = 0; pos < NR_POS; pos++) {
+	cclass_code = find_desc_from_code_with_type(cclass_native, pos);
+	if (cclass_code)
+	  break;
+      }
+
+      word_append(head, WORD_TYPE_ANTHY, "EUC-JP",
+		  phon, desc, cclass_code, cclass_native,
+		  anthy_priv_dic_get_freq(),
+		  0, NULL);
     }
-
-    while (ret == 0) {
-	if (anthy_dic_api.priv_dic_get_index(phon, sizeof(phon))
-	   && anthy_dic_api.priv_dic_get_wtype(cclass_code, sizeof(cclass_code))
-	   && anthy_dic_api.priv_dic_get_word(desc, sizeof(desc))) {
-	    gint pos;
-	    char *cclass_desc = NULL;
-
-	    for (pos = 0; pos < NR_POS; pos++) {
-	        cclass_desc = find_desc_from_code(cclass_code, pos);
-		if (cclass_desc) break;
-	    }
-
-	    word_append(head, WORD_TYPE_ANTHY,
-			"EUC-JP",
-			phon, desc, cclass_desc,
-			anthy_dic_api.priv_dic_get_freq(),
-			0, NULL);
-	}
-	ret = anthy_dic_api.priv_dic_select_next_entry();
-    }
-    return 0;
+    ret = anthy_priv_dic_select_next_entry();
+  }
+  return 0;
 }
 
 static int
 dict_anthy_add_priv_dic_with_flags(char *phon, char *desc,
 				   char *cclass_code, int freq)
 {
-    if ((strlen(phon) == 0) ||
-       (strlen(desc) == 0) ||
-       (strlen(cclass_code) == 0)) {
-	return -1;
-    }
+  int status;
 
-    return anthy_dic_api.priv_dic_add_entry(phon, desc,
-					    cclass_code, freq);
+  if ((strlen(phon) == 0) || (strlen(desc) == 0) ||
+      (strlen(cclass_code) == 0)) {
+    return 0;
+  }
+
+  status = anthy_priv_dic_add_entry(phon, desc, cclass_code, freq);
+
+  switch (status) {
+  case ANTHY_DIC_UTIL_OK:
+  case ANTHY_DIC_UTIL_DUPLICATE:
+    status = 1;
+    break;
+  default:
+    status = 0; 
+  }
+
+  return status;
 }
 
 static int
 dict_anthy_delete_priv_dic(char *phon, char *desc, char *cclass_code)
 {
-    return anthy_dic_api.priv_dic_add_entry(phon, desc,
-					    cclass_code, 0);
+  int status;
+
+  status = anthy_priv_dic_add_entry(phon, desc, cclass_code, 0);
+  return status ? 0 : 1;
 }
 
 static uim_dict *
@@ -221,13 +179,13 @@ uim_dict_anthy_open(const char *identifier)
 {
   uim_dict *dict;
 
-  if (dict_anthy_init() == -1)
-    return NULL;
-
   if (identifier == NULL)
     return NULL;
 
   if (strcmp(identifier, identifiers[0]) != 0)
+    return NULL;
+
+  if (dict_anthy_init() == -1)
     return NULL;
 
   dict = malloc(sizeof(uim_dict));
@@ -238,7 +196,7 @@ uim_dict_anthy_open(const char *identifier)
   dict->identifier = strdup(identifier);
   dict->filename   = NULL;
   dict->charset    = strdup("EUC-JP");
-  dict->ref_count  = 1;
+  dict->ref_count  = 0; /* at this point, no window refers this */
   dict->word_list  = NULL;
 
   dict_anthy_read_priv_dic_list(&dict->word_list);
@@ -258,6 +216,8 @@ uim_dict_anthy_close(uim_dict *dict)
   free(dict->filename);
   free(dict->charset);
   free(dict);
+
+  dict_anthy_exit();
 }
 
 static int
@@ -266,11 +226,10 @@ uim_dict_anthy_add_word(uim_dict *dict, uim_word *word)
   int ret;
 
   if (dict == NULL || word == NULL)
-    return -1;
+    return 0;
 
-  /* FIXME! refresh word list */
   ret = dict_anthy_add_priv_dic_with_flags(word->phon, word->desc,
-					   word->cclass_code, word->freq);
+					   word->cclass_native, word->freq);
 
   return ret;
 }
@@ -278,21 +237,17 @@ uim_dict_anthy_add_word(uim_dict *dict, uim_word *word)
 static int
 uim_dict_anthy_change_word(uim_dict *dict, uim_word *word)
 {
-  return -1;
+  return 0;
 }
 
 static int
 uim_dict_anthy_remove_word(uim_dict *dict, uim_word *word)
 {
-  int ret;
-
   if (dict == NULL)
     return 0;
 
-  ret = dict_anthy_delete_priv_dic(word->phon, word->desc,
-				   word->cclass_code);
-
-  return ret;
+  return dict_anthy_delete_priv_dic(word->phon, word->desc,
+				    word->cclass_native);
 }
 
 static void

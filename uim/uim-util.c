@@ -31,7 +31,7 @@
 
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -376,8 +376,7 @@ uim_strsplit(const char *splittee, const char *splitter)
     }
     /* store */
     res[i] = malloc(sizeof(char) * (len + 1));
-    strncpy(res[i], cur, len);
-    res[i][len] = 0;
+    strlcpy(res[i], cur, len + 1);
     cur = tmp;
   }
   /**/
@@ -446,7 +445,7 @@ eucjp_string_to_list(uim_lisp str_)
 
 static uim_lisp
 string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
-			int cmp(const char *, const char *, size_t))
+			int (*cmp)(const char *, const char *, size_t))
 {
   const char *prefix, *str;
   size_t len;
@@ -458,7 +457,7 @@ string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
   str = uim_scm_refer_c_str(str_);
   len = strlen(prefix);
 
-  return cmp(prefix, str, len) ? uim_scm_f() : uim_scm_t();
+  return (*cmp)(prefix, str, len) ? uim_scm_f() : uim_scm_t();
 }
 
 static uim_lisp
@@ -502,7 +501,9 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
   uim_bool single_listp;
 
   single_listp = uim_scm_nullp(uim_scm_cdr(lists));
+  rest = rests = uim_scm_null_list();
   res = seed;
+
   if (single_listp) {
     rest = uim_scm_car(lists);
   } else {

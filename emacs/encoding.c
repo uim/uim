@@ -127,11 +127,12 @@ get_im_encoding(const char *im)
 
   debug_printf(DEBUG_NOTE, "get_im_encoding %s\n", im);
 
-  if (im_enc != NULL) {
+  if (im_enc && im_enc->encoding) {
 	debug_printf(DEBUG_NOTE, " encoding = %s\n", im_enc->encoding);
 	return im_enc->encoding;
   } else {
 	/*return NULL;*/
+	debug_printf(DEBUG_WARNING, " default encoding (%s)\n", default_encoding);
 	return default_encoding;
   }
 }

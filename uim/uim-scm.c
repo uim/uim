@@ -40,12 +40,13 @@
 /* This file must be included before uim's config.h */
 #include "sigscheme-combined.c"
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "uim-stdint.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"

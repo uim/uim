@@ -33,6 +33,8 @@
   SUCH DAMAGE.
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <dlfcn.h>
@@ -45,7 +47,7 @@
 #include <errno.h>
 #include <pwd.h>
 
-#include "config.h"
+#include "uim-stdint.h"
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
@@ -159,10 +161,10 @@ plugin_load(uim_lisp _name)
     return uim_scm_f();
   }
 
-  plugin_instance_init = (void (*)(void))dlfunc(library,
-						"uim_plugin_instance_init");
-  plugin_instance_quit = (void (*)(void))dlfunc(library,
-						"uim_plugin_instance_quit");
+  plugin_instance_init
+    = (void (*)(void))(uintptr_t)dlfunc(library, "uim_plugin_instance_init");
+  plugin_instance_quit
+    = (void (*)(void))(uintptr_t)dlfunc(library, "uim_plugin_instance_quit");
   if (!plugin_instance_init) {
     fprintf(stderr, "%s plugin init failed\n", plugin_name);
     free(plugin_scm_filename);

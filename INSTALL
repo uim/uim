@@ -6,11 +6,13 @@ The requirements for building uim is listed below.
 
     * iconv(3)
     * curses (need to build uim-fep)
-    * Anthy (need to use Japanese Anthy module)
+    * Anthy (need to use Japanese Anthy module. version >= 7802 is
+      recommended)
     * Canna (need to use Japanese Canna module)
-    * mana (need to use Japanese mana module)
-    * PRIME (need to use Japanese PRIME module)
-    * m17nlib >= 1.2 (need to use uim-m17nlib bridge)
+    * mana (need to use Japanese mana module. version >= 0.2.0 is
+      recommended).
+    * PRIME >= 0.8.5.2 (need to use Japanese PRIME module)
+    * m17nlib >= 1.3.1 (need to use uim-m17nlib bridge)
     * GTK+ >= 2.4 (need to build gtk tools and gtk immodule)
     * gnome-panel (need to build GNOME applet indicator)
     * Qt >= 3.3.2 (need to build qt tools. you also need to apply
@@ -41,7 +43,7 @@ Finally, make and install it.
 
       $ make
       $ su
-      $ make install
+      # make install
 
 By default, uim is installed under /usr/local , but this directory may
 not be on the system search path. Should that be the case, add the

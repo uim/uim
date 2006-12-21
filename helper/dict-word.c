@@ -31,15 +31,22 @@
  *  SUCH DAMAGE.
  */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <string.h>
 
+#include "gettext.h"
+
 #include "dict-word.h"
+#include "dict-canna-cclass.h"
 
 void word_append(uim_word **head, uim_word_type type,
 		 char *charset,
 		 char *phon, char *desc,
-		 char *cclass_code, int freq,
+		 const char *cclass_code,
+		 const char *cclass_native,
+		 int freq,
 		 int okuri, char *annotation)
 {
     uim_word *entry, *pos;
@@ -67,6 +74,11 @@ void word_append(uim_word **head, uim_word_type type,
 	    entry->cclass_code = strdup(cclass_code);
 	} else
 	    entry->cclass_code = strdup("");
+
+	if (cclass_native != NULL) {
+	    entry->cclass_native = strdup(cclass_native);
+	} else
+	    entry->cclass_native = strdup("");
 
 	entry->freq = freq;
 
@@ -99,6 +111,8 @@ void word_free_list(uim_word *head) {
 	    free(pos->desc);
 	if (pos->cclass_code != NULL)
 	    free(pos->cclass_code);
+	if (pos->cclass_native != NULL)
+	    free(pos->cclass_native);
 	if (pos->annotation != NULL)
 	    free(pos->annotation);
 
@@ -115,4 +129,34 @@ uim_word *word_last(uim_word *list) {
 	}
     }
     return list;
+}
+
+uim_word_type
+dict_identifier_to_word_type(char *identifier)
+{
+  uim_word_type type;
+
+  if (!strcmp(identifier, N_("Anthy private dictionary")))
+    type = WORD_TYPE_ANTHY;
+  else if (!strcmp(identifier, N_("Canna private dictionary")))
+    type = WORD_TYPE_CANNA;
+  else
+    type = WORD_TYPE_ANTHY; /* XXX */
+    
+  return type;
+}
+
+int
+dict_identifier_to_support_type(char *identifier)
+{
+  int type;
+
+  if (!strcmp(identifier, N_("Anthy private dictionary")))
+    type = SUPPORT_ANTHY;
+  else if (!strcmp(identifier, N_("Canna private dictionary")))
+    type = SUPPORT_CANNA;
+  else
+    type = SUPPORT_ANTHY; /* XXX */
+    
+  return type;
 }

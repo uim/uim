@@ -156,8 +156,8 @@
 
 (register-action 'action_skk_hiragana
 		 (lambda (sc)
-		   '(figure_ja_hiragana
-		     "え"
+		   '(ja_hiragana
+		     "あ"
 		     "ひらがな"
 		     "ひらがな入力モード"))
 		 (lambda (sc)
@@ -173,8 +173,8 @@
 
 (register-action 'action_skk_katakana
 		 (lambda (sc)
-		   '(figure_ja_katakana
-		     "エ"
+		   '(ja_katakana
+		     "ア"
 		     "カタカナ"
 		     "カタカナ入力モード"))
 		 (lambda (sc)
@@ -190,8 +190,8 @@
 
 (register-action 'action_skk_hankana
 		 (lambda (sc)
-		   '(figure_ja_hankana
-		     "ｴ"
+		   '(ja_halfkana
+		     "ｱ"
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))
 		 (lambda (sc)
@@ -207,8 +207,8 @@
 
 (register-action 'action_skk_latin
 		 (lambda (sc)
-		   '(figure_ja_latin
-		     "s"
+		   '(ja_halfwidth_alnum
+		     "a"
 		     "直接入力"
 		     "直接(無変換)入力モード"))
 		 (lambda (sc)
@@ -222,8 +222,8 @@
 
 (register-action 'action_skk_wide_latin
 		 (lambda (sc)
-		   '(figure_ja_wide_latin
-		     "Ｓ"
+		   '(ja_fullwidth_alnum
+		     "Ａ"
 		     "全角英数"
 		     "全角英数入力モード"))
 		 (lambda (sc)
@@ -237,7 +237,7 @@
 
 (register-action 'action_skk_roma
 		 (lambda (sc)
-		   '(figure_ja_roma
+		   '(ja_romaji
 		     "Ｒ"
 		     "ローマ字"
 		     "ローマ字入力モード"))
@@ -252,8 +252,8 @@
 
 (register-action 'action_skk_azik
 		 (lambda (sc)
-		   '(figure_ja_azik
-		     "Ａ"
+		   '(ja_azik
+		     "Ｚ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))
 		 (lambda (sc)
@@ -1994,8 +1994,7 @@
 (define skk-proc-state-wide-latin
   (lambda (c key key-state)
     (let* ((char (charcode->string key))
-	   (w (or (ja-direct char)
-		  (ja-wide char)))
+	   (w (if (symbol? key) #f (ja-wide char)))
 	   (sc (skk-find-descendant-context c)))
       (if skk-use-with-vi?
 	  (if (skk-vi-escape-key? key key-state)
@@ -2139,4 +2138,10 @@
  skk-reset-handler
  skk-get-candidate-handler
  skk-set-candidate-index-handler
- context-prop-activate-handler)
+ context-prop-activate-handler
+ #f
+ #f
+ #f
+ #f
+ #f
+ )

@@ -40,31 +40,33 @@ extern "C" {
 
 #ifndef HAVE_GETPEEREID
 #include <sys/types.h>
+#define getpeereid	uim_getpeereid
 int getpeereid(int , uid_t *, gid_t *);
 #endif
 
-/*
- * I doubt uim_setenv and uim_unsetenv are really needed. Only libuim and
- * uim-module-manager uses setenv and unsetenv. I choose linking libreplace.la
- * to both of them for OSes not having setenv and unsetenv. If setenv and
- * unsetenv are used in out of the uim, please uncomment.
- *
- * In any cases, we have to upgrade minor version of libuim.
- * -- omote 09/17/2005
- */
 #ifndef HAVE_SETENV
-/* #define setenv	uim_setenv */
+#define setenv	uim_setenv
 int setenv(const char *, const char *, int);
 #endif
 
 #ifndef HAVE_UNSETENV
-/* #define unsetenv	uim_unsetenv */
+#define unsetenv	uim_unsetenv
 void unsetenv(const char *);
 #endif
 
 #ifndef HAVE_STRSEP
 #define strsep	uim_strsep
 char *strsep(char **stringp, const char *delim);
+#endif
+
+#ifndef HAVE_STRLCPY
+#define strlcpy	uim_strlcpy
+size_t strlcpy(char *dst, const char *src, size_t siz);
+#endif
+
+#ifndef HAVE_STRLCAT
+#define strlcat	uim_strlcat
+size_t strlcat(char *dst, const char *src, size_t siz);
 #endif
 
 #ifdef __cplusplus

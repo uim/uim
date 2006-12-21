@@ -1,0 +1,53 @@
+Input method icons
+==================
+
+About this package
+------------------
+
+This project packages a collection of input method icons contributed
+by scim-imengine project, uim project, and other individuals. It is
+dual-licensed under 3-clause BSDL and LGPL to reduce reuse cost.
+
+It is intended that an icon addition or update is committed to the
+inputmethod-icons project first, and then imported to each input
+method projects, to centralize original source repository of the
+icons.
+
+Feel free to use these icons for any projects. And we welcome new
+icons contribution.
+
+
+Contacts
+--------
+
+  Home:
+    http://code.google.com/p/inputmethod-icons/
+
+  Mailing list:
+    http://groups.google.com/group/inputmethod-icons/about
+
+  scim-imengine project:
+    http://sourceforge.jp/projects/scim-imengine/
+
+  uim project:
+    http://uim.freedesktop.org/
+
+
+Notes
+-----
+
+- See the file 'LIST' for categorized icon list
+
+- The icons are currently separated based on project origin as just
+  aggregated. Cross-project folder categorization and uniform namings
+  may be considered only if actually needed
+
+- Creative Commons licenses was once discussed, but not adopted since
+  it only brings bothering to both scim-imengine and uim
+  project. Suggest again if you want
+
+  http://lists.sourceforge.jp/mailman/archives/scim-imengine-dev/2006-May/001092.html (Japanese)
+
+- Use rsvg(1) to convert SVG icons into other formats, as follows
+
+  $ rsvg -w48 -h48 -fpng skk.svg skk.png

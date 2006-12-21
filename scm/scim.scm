@@ -57,7 +57,7 @@
 (register-action 'action_scim_off
 		 (lambda (mc)
 		   (list
-		    'figure_scim_off
+		    'off
 		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
@@ -71,7 +71,7 @@
 		   (let* ((im (scim-context-im mc))
 			  (name (symbol->string (im-name im))))
 		     (list
-		      'figure_scim_on
+		      'on
 		      "O"
 		      (N_ "on")
 		      (string-append name (N_ " Mode")))))
@@ -221,6 +221,8 @@
 		  (Mode_switch     . "")
 		  (Henkan_Mode     . "")
 		  (Muhenkan        . "")
+		  (Kanji           . "")
+		  (hiragana-katakana . "")
 		  (F1              . "F1")
 		  (F2              . "F2")
 		  (F3              . "F3")
@@ -344,6 +346,11 @@
 	       scim-get-candidate-handler
 	       scim-set-candidate-index-handler
 	       context-prop-activate-handler
+	       #f
+	       #f
+	       #f
+	       #f
+	       #f
 	       ))
 	      (scim-register (+ i 1) nr-im))
 	())))

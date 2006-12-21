@@ -1,7 +1,8 @@
-SUBDIRS = po
 EXTRA_DIST = bushu.t
 
 if QT
+SUBDIRS = po
+
 INCLUDES += -I$(top_srcdir) -I$(top_builddir)
 
 HEADER_FILES = \

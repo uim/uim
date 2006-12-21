@@ -36,12 +36,15 @@ SUCH DAMAGE.
 #include <qinputcontext.h>
 #include <qptrlist.h>
 
-#include <uim/uim.h>
-#include <uim/uim-util.h>
-#include <uim/uim-helper.h>
+class QString;
 
 class CandidateWindow;
 class QUimHelperManager;
+#ifdef Q_WS_X11
+typedef struct _DefTree DefTree;
+class Compose;
+#endif
+class QUimTextUtil;
 
 class PreeditSegment
 {
@@ -78,19 +81,24 @@ public:
     uim_context uimContext() { return m_uc; }
 
     static QUimInputContext *focusedIC();
+    static void reloadUim();
 
     void commitString( const QString& str );
 
     void readIMConf();
 
-protected:
-    uim_context createUimContext( const char *imname );
-    virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
+    QUimTextUtil *textUtil() { return mTextUtil; }
 
-    void createUimInfo();
-private:
     QString getPreeditString();
     int getPreeditCursorPosition();
+
+    void saveContext();
+    void restoreContext();
+
+protected:
+    uim_context createUimContext( const char *imname );
+
+private:
     int getPreeditSelectionLength();
 
     /* callbacks for uim */
@@ -104,6 +112,9 @@ private:
     static void cand_select_cb( void *ptr, int index );
     static void cand_shift_page_cb( void* ptr, int index );
     static void cand_deactivate_cb( void *ptr );
+    //imsw
+    static void switch_app_global_im_cb( void *ptr, const char *str );
+    static void switch_system_global_im_cb( void *ptr, const char *str );
     /* real functions for callbacks (correspond order) */
     //preedit
     void clearPreedit();
@@ -113,6 +124,26 @@ private:
     void candidateActivate( int nr, int displayLimit );
     void candidateSelect( int index );
     void candidateDeactivate();
+    //imsw
+    void switch_app_global_im( const char *str );
+    void switch_system_global_im( const char *str );
+
+#ifdef Q_WS_X11
+    // for X11 Compose
+    static DefTree *mTreeTop;
+    static void create_compose_tree( void );
+    static char *get_compose_filename( void );
+    static char *TransFileName( char *name );
+    static void ParseComposeStringFile( FILE *fp );
+    static void FreeComposeTree( DefTree *top );
+    static int parse_compose_line( FILE *fp, char *tokenbuf );
+    static int get_mb_string( char *buf, unsigned int ks );
+    static const char *get_encoding( void );
+    static char *get_lang_region( void );
+
+    Compose *mCompose;
+#endif
+    QUimTextUtil *mTextUtil;
 
 protected:
     QString m_imname;
@@ -121,17 +152,9 @@ protected:
     bool candwinIsActive;
 
     QPtrList<PreeditSegment> psegs;
-    QString preeditString;
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;
-};
-
-struct UIMInfo
-{
-    const char *lang;
-    const char *name;
-    const char *short_desc;
 };
 
 #endif /* Not def: _QUIMINPUT_CONTEXT_H_ */

@@ -45,19 +45,7 @@
 #include "debug.h"
 #include "output.h"
 
-typedef struct candidate {
-  char *str;
-  char *label;
-} candidate;
-
-typedef struct candidate_info {
-  int valid;
-  int num;
-  int disp_limit;
-  int index;
-  candidate *cand_array;
-} candidate_info;
-
+#include "uim-el-types.h"
 
 candidate_info *create_candidate(void);
 

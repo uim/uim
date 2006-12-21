@@ -30,6 +30,8 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "toolbar-common-uimstateindicator.h"
 
 #include <qsocketnotifier.h>
@@ -38,10 +40,12 @@
 #include <qstringlist.h>
 #include <qpoint.h>
 #include <qtooltip.h>
+#include <qimage.h>
 
 #include <string.h>
 #include <stdlib.h>
 
+static const QString ICONDIR = UIM_PIXMAPSDIR;
 static int uim_fd;
 static QHelperToolbarButton *fallbackButton = NULL;
 static QSocketNotifier *notifier = NULL;
@@ -52,7 +56,14 @@ UimStateIndicator::UimStateIndicator( QWidget *parent, const char *name, WFlags 
     if ( !fallbackButton )
     {
         fallbackButton = new QHelperToolbarButton( this );
-        fallbackButton->setText( "?" );
+        QPixmap icon = QPixmap( ICONDIR + "/" + "uim-icon.png" );
+        if ( !icon.isNull() ) {
+            QImage image = icon.convertToImage();
+            QPixmap scaledIcon = image.smoothScale( ICON_SIZE, ICON_SIZE );
+            fallbackButton->setPixmap( scaledIcon );
+        } else {
+            fallbackButton->setText( "?" );
+        }
         fallbackButton->show();
     }
 
@@ -62,6 +73,7 @@ UimStateIndicator::UimStateIndicator( QWidget *parent, const char *name, WFlags 
     uim_fd = -1;
     checkHelperConnection();
     uim_helper_client_get_prop_list();
+    popupMenuShowing = false;
 }
 
 
@@ -69,8 +81,14 @@ UimStateIndicator::~UimStateIndicator()
 {
     if ( notifier )
         delete notifier;
+    notifier = NULL;
 
     buttons.clear();
+}
+
+int UimStateIndicator::getNumButtons()
+{
+    return buttons.count();
 }
 
 void UimStateIndicator::checkHelperConnection()
@@ -95,17 +113,21 @@ void UimStateIndicator::parseHelperStr( const QString& str )
     {
         if ( lines[ 0 ] == "prop_list_update" )
             propListUpdate( lines );
-        else if ( lines[ 0 ] == "prop_label_update" )
-            propLabelUpdate( lines );
     }
 }
 
 void UimStateIndicator::propListUpdate( const QStringList& lines )
 {
-    if ( !buttons.isEmpty() )
-        buttons.clear();
-
+    QPtrList<QHelperToolbarButton> tmp_button_list;
+    QHelperToolbarButton *old_button;
     QHelperPopupMenu *popupMenu = NULL;
+    bool size_changed = false;
+
+    if (popupMenuShowing)
+        return;
+
+    tmp_button_list = buttons;
+    old_button = tmp_button_list.first();
 
     QStringList::ConstIterator it = lines.begin();
     const QStringList::ConstIterator end = lines.end();
@@ -122,63 +144,72 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                     delete fallbackButton;
                     fallbackButton = NULL;
                 }
-                // create popup
-                popupMenu = new QHelperPopupMenu( 0 );
-                popupMenu->setCheckable( true );
 
                 // create button
-                QHelperToolbarButton *button = new QHelperToolbarButton( this );
-                button->setText( fields[ 1 ] );
-                QToolTip::add( button, fields[ 2 ] );
+                QHelperToolbarButton *button;
+                if (old_button) {
+                    button = old_button;
+                    delete button->popup();
+                } else {
+                    button = new QHelperToolbarButton( this );
+                    buttons.append( button );
+                    size_changed = true;
+                }
+                QPixmap icon = QPixmap( ICONDIR + "/" + fields[1] + ".png" );
+                if (!icon.isNull()) {
+                    QImage image = icon.convertToImage();
+                    QPixmap scaledIcon = image.smoothScale( ICON_SIZE,
+                                                            ICON_SIZE );
+                    button->setPixmap( scaledIcon );
+                } else {
+                    button->setText( fields[ 2 ] );
+                }
+                QToolTip::add( button, fields[ 3 ] );
+
+                // create popup
+                popupMenu = new QHelperPopupMenu( button );
+                popupMenu->setCheckable( true );
+                connect( popupMenu, SIGNAL( aboutToShow() ), this, SLOT( slotPopupMenuAboutToShow() ) );
+                connect( popupMenu, SIGNAL( aboutToHide() ), this, SLOT( slotPopupMenuAboutToHide() ) );
                 button->setPopup( popupMenu );
                 button->setPopupDelay( 50 );
+
                 button->show();
 
-                buttons.append( button );
+                old_button = tmp_button_list.next();
             }
             else if ( fields[ 0 ].startsWith( "leaf" ) )
             {
                 if ( popupMenu
-                        && !fields[ 2 ].isEmpty()
+                        && !fields[ 1 ].isEmpty()
                         && !fields[ 3 ].isEmpty()
-                        && !fields[ 4 ].isEmpty() )
+                        && !fields[ 4 ].isEmpty()
+                        && !fields[ 5 ].isEmpty() )
                 {
-                    int id = popupMenu->insertHelperItem( fields[ 2 ], fields[ 3 ], fields[ 4 ] );
+                    int id = popupMenu->insertHelperItem( fields[1], fields[ 3 ], fields[ 4 ], fields[ 5 ] );
                     // check the item which is now used
-                    if ( !fields[ 5 ].isEmpty() && fields[ 5 ] == "*" )
+                    if ( !fields[ 6 ].isEmpty() && fields[ 6 ] == "*" )
                         popupMenu->setItemChecked( id, true );
                 }
             }
         }
     }
-}
 
-void UimStateIndicator::propLabelUpdate( const QStringList& lines )
-{
-    unsigned int i = 0;
-    while ( !lines[ i ].isEmpty() )
-        i++;
+    if (old_button)
+        size_changed = true;
 
-    if ( buttons.isEmpty() || buttons.count() != i - 2 )
-    {
-        uim_helper_client_get_prop_list();
-        return ;
+    while (old_button) {
+        QHelperToolbarButton *next;
+
+        next = tmp_button_list.next();
+        buttons.remove(old_button);       
+        old_button = next;
     }
 
-    i = 1;
-    while ( !lines[ i ].isEmpty() )
-    {
-        const QStringList fields = QStringList::split( "\t", lines[ i ] );
-        if ( !fields.isEmpty() && !fields[ 0 ].isEmpty() && !fields[ 1 ].isEmpty() )
-        {
-            // set button label
-            buttons.at( i - 2 ) ->setText( fields[ 0 ] );
-            // set tooltip
-            QToolTip::add( buttons.at( i - 2 ), fields[ 1 ] );
-        }
+    if (size_changed)
+        emit indicatorResized();
 
-        i++;
-    }
+    this->parentWidget()->show();
 }
 
 void UimStateIndicator::helper_disconnect_cb()
@@ -216,6 +247,15 @@ void UimStateIndicator::slotStdinActivated( int /*socket*/ )
     }
 }
 
+void UimStateIndicator::slotPopupMenuAboutToShow()
+{
+    popupMenuShowing = true;
+}
+
+void UimStateIndicator::slotPopupMenuAboutToHide()
+{
+    popupMenuShowing = false;
+}
 
 /**/
 
@@ -231,11 +271,22 @@ QHelperPopupMenu::~QHelperPopupMenu()
     msgDict.clear();
 }
 
-int QHelperPopupMenu::insertHelperItem( const QString &menulabelStr,
+int QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
+                                        const QString &menulabelStr,
                                         const QString &menutooltipStr,
                                         const QString &menucommandStr )
 {
-    const int id = insertItem( menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
+    int id;
+    QPixmap icon = QPixmap( ICONDIR + "/" + indicationIdStr + ".png" );
+
+    if (!icon.isNull()) {
+        QImage image = icon.convertToImage();
+        QPixmap scaledIcon = image.smoothScale( ICON_SIZE, ICON_SIZE );
+        id = insertItem( scaledIcon, menulabelStr, this,
+                         SLOT( slotMenuActivated( int ) ) );
+    } else {
+        id = insertItem( menulabelStr, this, SLOT( slotMenuActivated( int ) ) );
+    }
 
     setWhatsThis( id, menutooltipStr );
     msgDict.insert( id, new QString( menucommandStr ) );

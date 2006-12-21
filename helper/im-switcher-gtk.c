@@ -31,6 +31,8 @@
 
 */
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 
 #include <locale.h>
@@ -40,7 +42,6 @@
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
-#include "uim/config.h"
 #include "uim/gettext.h"
 
 
@@ -58,7 +59,7 @@ parse_helper_str_im_list(const char *im_list_str_new);
 static void
 check_helper_connection(void);
 
-static gint changing_way;
+static gint coverage;
 GtkWidget *radio0, *radio1, *radio2;
 
 
@@ -78,6 +79,12 @@ enum
   LANG_COLUMN,
   DESC_COLUMN,
   NUM_COLUMNS
+};
+
+enum switcher_coverage {
+  IMSW_COVERAGE_WHOLE_DESKTOP,
+  IMSW_COVERAGE_THIS_APPLICATION_ONLY,
+  IMSW_COVERAGE_THIS_TEXT_AREA_ONLY
 };
 
 /* Configration:
@@ -170,12 +177,14 @@ load_configration(const char *filename)
   /* open file and load config */
 }
 
+#if 0
 static void
 save_configration(const char *filename)
 {
   /* open file and save config */
   /* make sure file permission, file owner, etc. */
 }
+#endif
 
 /* Return value must be freed! */
 static char *
@@ -188,7 +197,7 @@ get_selected_im_name(void)
   gchar *str_data;
   if (gtk_tree_selection_get_selected (sel, &model, &iter) == TRUE) {
     store = GTK_TREE_STORE(model);
-    gtk_tree_model_get (model, &iter, 
+    gtk_tree_model_get (model, &iter,
 			NAME_COLUMN, &str_data,
 			-1);
     return str_data;
@@ -214,29 +223,28 @@ send_message_im_change(const gchar *type)
 }
 
 static void
-toggle_changing_way(GtkToggleButton *togglebutton, gpointer user_data)
+toggle_coverage(GtkToggleButton *togglebutton, gpointer user_data)
 {
   if (gtk_toggle_button_get_active((GtkToggleButton *)radio0)) {
-    changing_way = 0;
+    coverage = IMSW_COVERAGE_WHOLE_DESKTOP;
   } else if (gtk_toggle_button_get_active((GtkToggleButton *)radio1)) {
-    changing_way = 1;
+    coverage = IMSW_COVERAGE_THIS_APPLICATION_ONLY;
   } else  if (gtk_toggle_button_get_active((GtkToggleButton *)radio2)) {
-    changing_way = 2;
+    coverage = IMSW_COVERAGE_THIS_TEXT_AREA_ONLY;
   }
 }
 
 static void
 change_input_method(GtkButton *button, gpointer user_data)
 {
-  int i = changing_way;
-  switch (i) {
-  case 0:
+  switch (coverage) {
+  case IMSW_COVERAGE_WHOLE_DESKTOP:
     send_message_im_change("im_change_whole_desktop\n");
     break;
-  case 1:
+  case IMSW_COVERAGE_THIS_APPLICATION_ONLY:
     send_message_im_change("im_change_this_application_only\n");
     break;
-  case 2:
+  case IMSW_COVERAGE_THIS_TEXT_AREA_ONLY:
     send_message_im_change("im_change_this_text_area_only\n");
     break;
   }
@@ -266,7 +274,7 @@ create_switcher_treeview(void)
 				   G_TYPE_STRING,
 				   G_TYPE_STRING,
 				   G_TYPE_STRING);
-  
+
   switcher_tree_view = gtk_tree_view_new();
 
   /* column 0 */
@@ -278,7 +286,7 @@ create_switcher_treeview(void)
   gtk_tree_view_column_set_sort_column_id(column, 0);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
 
-  /* column 1 */  
+  /* column 1 */
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes(_("Language"),
 						    renderer,
@@ -286,7 +294,7 @@ create_switcher_treeview(void)
 						    NULL);
   gtk_tree_view_column_set_sort_column_id(column, 1);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
-  
+
   /* column 2 */
   renderer = gtk_cell_renderer_text_new();
   column = gtk_tree_view_column_new_with_attributes(_("Description"),
@@ -295,7 +303,7 @@ create_switcher_treeview(void)
 						    NULL);
   gtk_tree_view_column_set_sort_column_id(column, 2);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
-  
+
   gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), GTK_TREE_MODEL(tree_store));
 
   g_object_unref (tree_store);
@@ -303,7 +311,7 @@ create_switcher_treeview(void)
   /* expand all rows after the treeview widget has been realized */
   g_signal_connect (G_OBJECT(switcher_tree_view), "realize",
 		    G_CALLBACK (gtk_tree_view_expand_all), NULL);
-  
+
   return switcher_tree_view;
 }
 
@@ -349,7 +357,7 @@ create_switcher(void)
   gtk_box_pack_start (GTK_BOX (vbox1), hbox, TRUE, TRUE, 0);
 
 
-  frame = gtk_frame_new(_("Changing way"));
+  frame = gtk_frame_new(_("Effective coverage"));
   gtk_frame_set_label_align(GTK_FRAME(frame), 0.015, 0.5);
 
   gtk_box_pack_start(GTK_BOX(vbox3), frame, FALSE, FALSE, 6);
@@ -357,17 +365,17 @@ create_switcher(void)
   gtk_container_set_border_width(GTK_CONTAINER(vbox2), 10);
   gtk_container_add(GTK_CONTAINER(frame), vbox2);
 
-  radio0 = gtk_radio_button_new_with_label(NULL, _("Change whole desktop"));
-  radio1 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this application only"));
-  radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("Change this text area only"));
+  radio0 = gtk_radio_button_new_with_label(NULL, _("whole desktop"));
+  radio1 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("current application only"));
+  radio2 = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(radio0), _("current text area only"));
 
   gtk_box_pack_start(GTK_BOX(vbox2), radio0, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox2), radio1, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox2), radio2, FALSE, FALSE, 0);
 
-  g_signal_connect(G_OBJECT(radio0), "toggled", G_CALLBACK(toggle_changing_way), NULL);
-  g_signal_connect(G_OBJECT(radio1), "toggled", G_CALLBACK(toggle_changing_way), NULL);
-  g_signal_connect(G_OBJECT(radio2), "toggled", G_CALLBACK(toggle_changing_way), NULL);
+  g_signal_connect(G_OBJECT(radio0), "toggled", G_CALLBACK(toggle_coverage), NULL);
+  g_signal_connect(G_OBJECT(radio1), "toggled", G_CALLBACK(toggle_coverage), NULL);
+  g_signal_connect(G_OBJECT(radio2), "toggled", G_CALLBACK(toggle_coverage), NULL);
 
   /* set radio0 (Change whole desktop) as default */
   gtk_toggle_button_set_active((GtkToggleButton *)radio0, TRUE);
@@ -397,7 +405,7 @@ create_switcher(void)
     gtk_window_set_default_size(GTK_WINDOW(switcher_win),
 				gdk_screen_get_width(scr)  / 2,
 				gdk_screen_get_height(scr) / 2);
-    
+
     gtk_window_set_position(GTK_WINDOW(switcher_win),
 			    GTK_WIN_POS_CENTER_ALWAYS);
   }
@@ -411,7 +419,7 @@ static gboolean
 reload_im_list(GtkWindow *window, gpointer user_data)
 {
   check_helper_connection();
-  uim_helper_send_message(uim_fd, "im_list_get\n"); 
+  uim_helper_send_message(uim_fd, "im_list_get\n");
 
   return FALSE;
 }
@@ -468,19 +476,19 @@ parse_helper_str_im_list(const char *im_list_str_new)
       if (info[3] && (strcmp(info[3], "") != 0)) {
 	path = gtk_tree_model_get_path(GTK_TREE_MODEL(tree_store),
 				       &iter);
-	
+
       }
     }
     g_strfreev(info);
   }
-  gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view), 
+  gtk_tree_view_set_model(GTK_TREE_VIEW(switcher_tree_view),
 			  GTK_TREE_MODEL(tree_store));
-  
+
   if (path != NULL) {
     gtk_tree_view_set_cursor(GTK_TREE_VIEW(switcher_tree_view),
 			     path, NULL, FALSE);
   }
-  
+
   g_free(im_list_str_old); im_list_str_old = g_strdup(im_list_str_new);
   g_strfreev(lines);
 }
@@ -525,13 +533,13 @@ check_helper_connection(void)
 
 int
 main(int argc, char *argv[])
-{  
+{
   gint result;
   setlocale(LC_ALL, "");
   gtk_set_locale();
   bindtextdomain( PACKAGE, LOCALEDIR );
   textdomain( PACKAGE );
-  bind_textdomain_codeset( PACKAGE, "UTF-8"); 
+  bind_textdomain_codeset( PACKAGE, "UTF-8");
   parse_arg(argc, argv);
 
   gtk_init(&argc, &argv);
@@ -545,7 +553,7 @@ main(int argc, char *argv[])
 
   /* connect to uim helper message bus */
   uim_fd = -1;
-  check_helper_connection();  
+  check_helper_connection();
 
   /* To load input method list */
   uim_helper_send_message(uim_fd, "im_list_get\n");

@@ -55,19 +55,9 @@
 	    (and (numeral-char? key)
 		 (control-key-mask key-state))))))
 
-;; key
-(define-key prime-language-toggle-key?  "F11")
-(define-key prime-expand-segment-key? '("<Control>o" "<Shift>right"))
-(define-key prime-shrink-segment-key? '("<Control>i" "<Shift>left"))
-
+;; keys without custom
 (define-key prime-escape-key?         '("escape" "<Control>["))
 (define-key prime-space-key?          '(" "))
-(define-key prime-altspace-key?       '("<Control> " "<Alt> "))
-
-(define-key prime-english-next-candidate-key? '("<Control>i" "tab"
-						generic-next-candidate-key?))
-(define-key prime-english-direct-key? '("." "," ":" ";" "(" ")" "\"" "'"
-					"!" "?"))
 
 ;;;; If you're a Vi user, modify the lines below.
 (if prime-custom-app-mode-vi?
@@ -191,7 +181,7 @@
    (prime-backspace-key?      . prime-command-fund-backspace)
    (prime-delete-key?         . prime-command-fund-delete)
    (prime-cancel-key?         . prime-command-fund-cancel)
-   (prime-commit-key?         . prime-command-child-commit)
+   (prime-commit-key?         . prime-command-child-finish)
    (prime-go-left-key?        . prime-command-fund-cursor-left)
    (prime-go-right-key?       . prime-command-fund-cursor-right)
    (prime-go-left-edge-key?   . prime-command-fund-cursor-left-edge)
@@ -353,6 +343,7 @@
     (prime-commit-key?         . prime-command-modify-commit)
     (prime-next-candidate-key? . prime-command-segment-next)
     (prime-prev-candidate-key? . prime-command-segment-prev)
+    (prime-cand-select-key?    . prime-command-segment-select)
     (prime-go-left-edge-key?   . prime-command-modify-cursor-left-edge)
     (prime-go-right-edge-key?  . prime-command-modify-cursor-right-edge)
     (prime-go-left-key?        . prime-command-modify-cursor-left)
@@ -429,7 +420,7 @@
 
 (register-action 'action_prime_mode_latin
 		 (lambda (context)
-		   '(figure_prime_mode_latin
+		   '(ja_direct
 		     "--"
 		     "通常入力"
 		     "PRIMEをオフ"))
@@ -441,19 +432,36 @@
 
 (register-action 'action_prime_mode_hiragana
 		 (lambda (context)
-		   '(figure_prime_mode_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "日本語"
 		     "PRIMEをオン"))
 		 (lambda (context)
-		   (= (prime-context-mode context)
-		      prime-mode-hiragana))
+		   (and
+		    (eq? (prime-context-language context) 'Japanese)
+		    (= (prime-context-mode context) prime-mode-hiragana)))
 		 (lambda (context)
+		   (prime-mode-language-set context 'Japanese)
 		   (prime-mode-set context prime-mode-hiragana)))
+
+(register-action 'action_prime_mode_english
+		 (lambda (context)
+		   '(ja_halfwidth_alnum
+		     "A"
+		     "英語"
+		     "PRIMEをオン"))
+		 (lambda (context)
+		   (and
+		    (eq? (prime-context-language context) 'English)
+		    (= (prime-context-mode context) prime-mode-hiragana)))
+		 (lambda (context)
+		   (prime-mode-language-set context 'English)
+		   (prime-mode-set context prime-mode-hiragana)))
+
 
 (register-action 'action_prime_mode_wide_latin
 		 (lambda (context)
-		   '(figure_prime_mode_wide_latin
+		   '(ja_fullwidth_alnum
 		     "Ａ"
 		     "全角英数"
 		     "全角を入力"))
@@ -465,7 +473,7 @@
 
 (register-action 'action_prime_mode_application
 		 (lambda (context)
-		   '(figure_prime_mode_application
+		   '(prime_mode_application
 		     "！"
 		     "特殊"
 		     "アプリケーション依存"))
@@ -531,7 +539,7 @@
 ;; This returns context.
 (define prime-context-initialize!
   (lambda (context)
-    (print "prime-context-initialize!")
+    ;(print "prime-context-initialize!")
     (if (null? (prime-context-session context))
 	(begin
 	  ;; The prime server is initialized here.
@@ -550,7 +558,7 @@
 ;; uim-contexts and create a new context-data.
 (define prime-context-push
   (lambda (context)
-    (print "prime-context-push")
+    ;(print "prime-context-push")
     (let* ((im (prime-context-im context))
 	   (id (prime-context-id context))
 	   (new-context (prime-context-new2 (prime-context-id context) im)))
@@ -657,6 +665,29 @@
     (prime-context-set-nth! context 0)
     ))
 
+(define prime-candidates-get-nth
+  (lambda (context index-no)
+    (if (>= index-no (prime-candidates-get-length context))
+	#f
+	(let ((state (prime-context-state context)))
+	  (if (= state 'prime-state-segment)
+	      (car (nth index-no (prime-context-segment-candidates context)))
+	      (car (nth index-no (prime-context-candidates context))))))))
+
+(define prime-candidates-get-length
+  (lambda (context)
+    (let ((state (prime-context-state context)))
+      (if (= state 'prime-state-segment)
+	  (length (prime-context-segment-candidates context))
+	  (length (prime-context-candidates context))))))
+
+(define prime-candidates-get-index
+  (lambda (context)
+    (let ((state (prime-context-state context)))
+      (if (= state 'prime-state-segment)
+	  (prime-context-segment-nth context)
+	  (prime-context-nth context)))))
+
 (define prime-get-nth-candidate
   (lambda (context n)
     (if (>= n (prime-get-nr-candidates context))
@@ -735,12 +766,15 @@
 ;;;; prime-uim:
 ;;;; ------------------------------------------------------------
 
+;; This returns a pair of the beginning index and the end index of displayed
+;; candidates.
 (define prime-uim-candwin-get-range
   (lambda (context)
-    (let* ((beginning (* (/ (prime-context-nth context) prime-nr-candidate-max)
+    (let* ((beginning (* (/ (prime-candidates-get-index context)
+			    prime-nr-candidate-max)
 			 prime-nr-candidate-max))
 	   (end       (min (+ beginning prime-nr-candidate-max)
-			   (prime-get-nr-candidates context))))
+			   (prime-candidates-get-length context))))
       (cons beginning end))))
 
 ;;;; ------------------------------------------------------------
@@ -1042,7 +1076,7 @@
 
 (define prime-command-register-mode
   (lambda (context key key-state)
-    (print "prime-command-register-mode")
+    ;(print "prime-command-register-mode")
     (prime-register-mode-on context)))
 
 
@@ -1096,9 +1130,22 @@
     (let* ((nth0 (number->candidate-index (numeral-char->number key)))
 	   (cand-range (prime-uim-candwin-get-range context))
 	   (nth (min (+ (car cand-range) nth0) (cdr cand-range)))
-	   (cand (prime-get-nth-candidate context nth)))
+	   (cand (prime-candidates-get-nth context nth)))
       (if cand
 	  (prime-commit-candidate context nth))
+      )))
+
+;; FIXME: Integrate into the above prime-command-conv-select.
+;; FIXME: <Hiroyuki Komatsu> (2005-03-30)
+(define prime-command-segment-select
+  (lambda (context key key-state)
+    (let* ((nth0 (number->candidate-index (numeral-char->number key)))
+	   (cand-range (prime-uim-candwin-get-range context))
+	   (nth (min (+ (car cand-range) nth0) (cdr cand-range)))
+	   (cand (prime-candidates-get-nth context nth)))
+      ;(print cand-range)
+      (if cand
+	  (prime-commit-segment-nth context nth))
       )))
 
 (define prime-command-conv-input
@@ -1383,7 +1430,7 @@
 
 (define prime-command-app-mode-start
   (lambda (context key key-state)
-    (print "prime-command-app-mode-start")
+    ;(print "prime-command-app-mode-start")
     (prime-context-set-previous-mode! context (prime-context-mode context))
     (prime-context-set-app-mode-key-list! context
 					  prime-app-mode-end-stroke-list)
@@ -1397,7 +1444,7 @@
 
 (define prime-command-app-mode
   (lambda (context key key-state)
-    (print "prime-command-app-mode")
+    ;(print "prime-command-app-mode")
     (prime-command-app-mode-internal
      context key key-state
      (prime-context-app-mode-key-list context))))
@@ -1547,6 +1594,8 @@
   (lambda ()
     (let ((typing-method (prime-engine-get-env-typing-method)))
       (cond
+       ((eq? typing-method 'unknown)
+        #f)
        ((string=? typing-method "kana")
 	(prime-dont-use-numeral-key-to-select-cand))
        ((string=? typing-method "tcode")
@@ -1729,16 +1778,20 @@
 
 (define prime-update-key-press
   (lambda (context)
-    (let ((session (prime-context-session context)))
+    (let ((session (prime-context-session context))
+	  (mode (prime-context-mode context)))
       (cond
        ((null? session)
 	#f)  ;; Do nothing.
 
        (else
-	;; Store the current preedition into the context
-	(prime-context-set-preedit-line!
-	 context
-	 (prime-engine-edit-get-preedition session))
+	(if (and
+	     (not (= mode prime-mode-latin))
+	     (not (= mode prime-mode-application)))
+	    ;; Store the current preedition into the context
+	    (prime-context-set-preedit-line!
+	     context
+	     (prime-engine-edit-get-preedition session)))
 
 	(prime-update-state context)
 	(prime-update-preedit context)
@@ -1926,7 +1979,7 @@
 
 (define prime-register-mode-on
   (lambda (context)
-    (print "prime-register-mode-on")
+    ;(print "prime-register-mode-on")
     (let* ((reading (prime-preedit-get-string-label context))
 	   ;; Header and footer strings for a preedition line.
 	   (current-display-head (prime-context-display-head context))
@@ -1965,7 +2018,7 @@
 
 (define prime-release-handler
   (lambda (context)
-    (print "prime-release-handler")
+    ;(print "prime-release-handler")
     (let ((session (prime-context-session context)))
       (if session
 	  (prime-engine-session-end session)))
@@ -1982,7 +2035,7 @@
 
 (define prime-release-key-handler
   (lambda (context key key-state)
-    (print "prime-release-key-handler")
+    ;(print "prime-release-key-handler")
     (if (or (control-char? key)
 	    (= (prime-context-mode context)
 	       prime-mode-latin))
@@ -1994,7 +2047,7 @@
 
 (define prime-reset-handler
   (lambda (context)
-    (print "prime-reset-handler")
+    ;(print "prime-reset-handler")
     ))
 
 (define prime-mode-set
@@ -2003,6 +2056,9 @@
     ;; FIXME: I don't wanna use prime-context-session here.
     ;; FIXME: (2005-02-25) <Hiroyuki Komatsu>
     ;; If the session is #f, the PRIME mode has never been turned on.
+    (if (not (prime-context-session context))
+        (prime-context-initialize! context))
+
     (if (prime-context-session context)
 	(begin
 	  (prime-preedit-reset! context)
@@ -2067,7 +2123,7 @@
 
 (define prime-set-candidate-index-handler
   (lambda (context selection-index)
-    (print "prime-set-candidate-index-handler")
+    ;(print "prime-set-candidate-index-handler")
     (if (prime-context-session context)
 	(begin
 	  (if (eq? (prime-context-state context) 'prime-state-segment)
@@ -2094,4 +2150,9 @@
  prime-get-candidate-handler        ;; get-candidate
  prime-set-candidate-index-handler  ;; set-candidate-index
  context-prop-activate-handler      ;; prop
+ #f
+ #f
+ #f
+ #f
+ #f
 ) 

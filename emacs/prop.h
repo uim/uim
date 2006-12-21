@@ -41,30 +41,20 @@
 #include <string.h>
 
 #include <uim/uim.h>
-#include <uim/uim-helper.h>
 
 #include "debug.h"
 #include "output.h"
 
-#include "im.h"
-#include "helper-server.h"
+#include "uim-el-types.h"
 
-/* keep only prop_list (prpo_label is buggy...)  */
-typedef struct property {
-  int valid;
-  int list_update;
-  int label_update;
-  char *list;
-  char *label;
-} property;
+#include "im.h"
+#include "helper-message.h"
 
 property *create_prop(void);
 
-void update_prop_list(property *prop, const char *str);
-void update_prop_label(property *prop, const char *str);
+void update_prop_list(property *prop, const char *encoding, const char *str);
 
 void announce_prop_list_update(property *prop, const char *encoding);
-void announce_prop_label_update(property *prop, const char *encoding);
 
 int show_prop(property *prop);
 

@@ -30,14 +30,16 @@
   SUCH DAMAGE.
 */
 
-#include <gtk/gtk.h>
-#include "caret-state-indicator.h"
+#include <config.h>
 
-#include "config.h"
+#include <gtk/gtk.h>
+#include <string.h>
+
 #include "uim/uim.h"
 #include "uim/uim-helper.h"
 #include "uim/gettext.h"
 
+#include "caret-state-indicator.h"
 /*
  * caret state indicator is a state indicator nearby the caret.
  */
@@ -80,12 +82,9 @@ caret_state_indicator_timeout(gpointer data)
 static gint
 caret_state_indicator_paint_window(GtkWidget *window)
 {
-  GtkRequisition req;
-
-  gtk_widget_size_request(window, &req);
   gtk_paint_flat_box(window->style, window->window, GTK_STATE_NORMAL,
 		     GTK_SHADOW_OUT, NULL, GTK_WIDGET(window), "tooltip",
-		     0, 0, DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+		     0, 0, -1, -1);
 
   return FALSE;
 }
@@ -93,12 +92,16 @@ caret_state_indicator_paint_window(GtkWidget *window)
 GtkWidget *
 caret_state_indicator_new(void)
 {
-  GtkWidget *window;
-  GtkWidget *label;
+  GtkWidget *window, *label, *hbox, *frame;
+  GList *label_list = NULL, *frame_list = NULL;
 
   window = gtk_window_new(GTK_WINDOW_POPUP);
   label  = gtk_label_new("");
-  gtk_container_add(GTK_CONTAINER(window), label);
+  frame = gtk_frame_new(NULL);
+  gtk_container_add(GTK_CONTAINER(frame), label);
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), frame, TRUE, TRUE, 0);
+  gtk_container_add(GTK_CONTAINER(window), hbox);
 
   gtk_window_set_default_size(GTK_WINDOW(window),
 			      DEFAULT_WINDOW_WIDTH,
@@ -106,12 +109,16 @@ caret_state_indicator_new(void)
   gtk_widget_set_app_paintable(window, TRUE);
 
   g_signal_connect(window, "expose_event",
-		   G_CALLBACK (caret_state_indicator_paint_window), 
+		   G_CALLBACK(caret_state_indicator_paint_window), 
 		   NULL);
 
   gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);
 
-  g_object_set_data(G_OBJECT(window), "label", label);
+  label_list = g_list_append(label_list, label);
+  frame_list = g_list_append(frame_list, frame);
+  g_object_set_data(G_OBJECT(window), "frames", frame_list);
+  g_object_set_data(G_OBJECT(window), "labels", label_list);
+  g_object_set_data(G_OBJECT(window), "hbox", hbox);
 
   return window;
 }
@@ -119,22 +126,58 @@ caret_state_indicator_new(void)
 void
 caret_state_indicator_update(GtkWidget *window, gint topwin_x, gint topwin_y, const gchar *str)
 {
-  GtkWidget *label;
   gint cursor_x, cursor_y;
 
   g_return_if_fail(window != NULL);
 
-  label = g_object_get_data(G_OBJECT(window), "label");
   cursor_x = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_x"));
   cursor_y = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(window), "cursor_y"));
 
   if (str) {
-    gchar **labels;
+    gchar **cols;
+    GtkWidget *label, *hbox, *frame;
+    GList *label_list, *frame_list, *list1, *list2;
+    gint i;
 
-    labels = g_strsplit(str, "\t", 2);
-    gtk_label_set_text(GTK_LABEL(label), labels[0]);
-    g_strfreev(labels);
+    list1 = label_list = g_object_get_data(G_OBJECT(window), "labels");
+    list2 = frame_list = g_object_get_data(G_OBJECT(window), "frames");
+    hbox = g_object_get_data(G_OBJECT(window), "hbox");
+
+    cols = g_strsplit(str, "\t", 0);
+    for (i = 0; cols[i] && strcmp("", cols[i]); i++) {
+      if (label_list) {
+	label = label_list->data;
+	gtk_label_set_text(GTK_LABEL(label), cols[i]);
+      } else {
+	label = gtk_label_new(cols[i]);
+	frame = gtk_frame_new(NULL);
+	gtk_container_add(GTK_CONTAINER(frame), label);
+	gtk_box_pack_start(GTK_BOX(hbox), frame, TRUE, TRUE, 0);
+	list1 = g_list_append(list1, label);
+	label_list = g_list_find(list1, label);
+	list2 = g_list_append(list2, frame);
+	frame_list = g_list_find(list2, frame);
+      }
+      label_list = label_list->next;
+      frame_list = frame_list->next;
+    }
+
+    while (label_list) {
+      label = label_list->data;
+      frame = frame_list->data;
+      label_list = label_list->next;
+      frame_list = frame_list->next;
+      gtk_container_remove(GTK_CONTAINER(frame), label);
+      gtk_container_remove(GTK_CONTAINER(hbox), frame);
+      list1 = g_list_remove(list1, label);
+      list2 = g_list_remove(list2, frame);
+    }
+    g_object_set_data(G_OBJECT(window), "labels", list1);
+    g_object_set_data(G_OBJECT(window), "frames", list2);
+
+    g_strfreev(cols);
   }
+
   gtk_window_move(GTK_WINDOW(window), topwin_x + cursor_x,
 		  topwin_y + cursor_y + 3);
 }

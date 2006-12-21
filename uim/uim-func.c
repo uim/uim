@@ -31,11 +31,21 @@
 
 */
 
+#include <config.h>
+
 #include <ctype.h>
 #include <iconv.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
+
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-encoding.h"
@@ -287,6 +297,7 @@ uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
 {
   va_list ap;
   int len, size;
+  int tmp;
   const char *sexp_tmpl_end, *escp = sexp_tmpl, *strarg;
   char fmtchr;
 
@@ -299,7 +310,7 @@ uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
       fmtchr = *escp++;
       switch (fmtchr) {
       case 'd':
-	va_arg(ap, int);
+	tmp = va_arg(ap, int);
 	len += MAX_LENGTH_OF_INT_AS_STR;
 	break;
       case 's':
@@ -337,6 +348,7 @@ static uim_context
 retrieve_uim_context(uim_lisp id)
 {
   uim_context uc;
+
   if (uim_scm_consp(id)) {  /* passed as Scheme-side input context */
     id = uim_scm_car(id);
   }
@@ -363,7 +375,7 @@ im_pushback_preedit(uim_lisp id_, uim_lisp attr_, uim_lisp str_)
   }
   {
     char *s;
-    s = uc->conv_if->convert(uc->conv, str);
+    s = uc->conv_if->convert(uc->outbound_conv, str);
     pushback_preedit_segment(uc, attr, s);
   }
   return uim_scm_f();
@@ -387,7 +399,7 @@ im_commit(uim_lisp id, uim_lisp str_)
     str = uim_scm_refer_c_str(str_);
     {
       char *s;
-      s = uc->conv_if->convert(uc->conv, str);
+      s = uc->conv_if->convert(uc->outbound_conv, str);
       if (uc->commit_cb) {
 	uc->commit_cb(uc->ptr, s);
       }
@@ -443,14 +455,20 @@ im_set_encoding(uim_lisp id, uim_lisp enc)
   if (!uc)
     return uim_scm_f();
 
-  if (uc->conv) {
-    uc->conv_if->release(uc->conv);
+  if (uc->outbound_conv) {
+    uc->conv_if->release(uc->outbound_conv);
+  }
+  if (uc->inbound_conv) {
+    uc->conv_if->release(uc->inbound_conv);
   }
   if (!strcmp(uc->encoding, e)) {
-    uc->conv = 0;
+    uc->outbound_conv = NULL;
+    uc->inbound_conv = NULL;
     return uim_scm_f();
   }
-  uc->conv = uc->conv_if->create(uc->encoding, e);
+  uc->outbound_conv = uc->conv_if->create(uc->encoding, e);
+  uc->inbound_conv = uc->conv_if->create(e, uc->encoding);
+
   return uim_scm_f();
 }
 
@@ -489,7 +507,7 @@ im_pushback_mode_list(uim_lisp id, uim_lisp str)
   uc->modes = realloc(uc->modes,
 		      sizeof(char *)*(uc->nr_modes+1));
   s = uim_scm_refer_c_str(str);
-  uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->conv, s);
+  uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->outbound_conv, s);
   uc->nr_modes ++;
   return uim_scm_f();
 }
@@ -520,31 +538,10 @@ im_update_prop_list(uim_lisp id, uim_lisp prop_)
   if (uc && uc->propstr)
     free(uc->propstr);
       
-  uc->propstr = uc->conv_if->convert(uc->conv, prop);
+  uc->propstr = uc->conv_if->convert(uc->outbound_conv, prop);
 
   if (uc->prop_list_update_cb)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
-
-  return uim_scm_f();
-}
-
-
-static uim_lisp
-im_update_prop_label(uim_lisp id, uim_lisp prop_)
-{
-  uim_context uc = retrieve_uim_context(id);
-  const char *prop = uim_scm_refer_c_str(prop_);
-    
-  if (!uc)
-    return uim_scm_f();
-
-  if (uc && uc->proplabelstr)
-    free(uc->proplabelstr);
-  
-  uc->proplabelstr = uc->conv_if->convert(uc->conv, prop);
-
-  if (uc->prop_label_update_cb)
-    uc->prop_label_update_cb(uc->ptr, uc->proplabelstr);
 
   return uim_scm_f();
 }
@@ -668,14 +665,12 @@ im_return_str_list(uim_lisp str_list_)
   /*XXX: This fixed length array is negligence */
   int i;
 
-  if (uim_return_str_list) {
-    for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
-      if (uim_return_str_list[i]) {
-	free(uim_return_str_list[i]);
-	uim_return_str_list[i] = NULL;
-      } else {
-	break;
-      }
+  for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
+    if (uim_return_str_list[i]) {
+      free(uim_return_str_list[i]);
+      uim_return_str_list[i] = NULL;
+    } else {
+      break;
     }
   }
 
@@ -695,42 +690,126 @@ im_return_str_list(uim_lisp str_list_)
 }
 
 static uim_lisp
-im_request_surrounding(uim_lisp id_)
+im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
+		uim_lisp former_len_, uim_lisp latter_len_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  if (!uc->request_surrounding_text_cb) {
+  int err, former_len, latter_len;
+  enum UTextArea text_id;
+  enum UTextOrigin origin;
+  char *former, *latter, *im_former, *im_latter;
+  uim_bool is_former_null = UIM_TRUE, is_latter_null = UIM_TRUE;
+
+  if (!uc->acquire_text_cb)
     return uim_scm_f();
+
+  former_len = uim_scm_c_int(former_len_);
+  latter_len = uim_scm_c_int(latter_len_);
+
+  text_id = uim_scm_c_int(text_id_);
+  origin = uim_scm_c_int(origin_);
+
+  err = uc->acquire_text_cb(uc->ptr, text_id, origin, former_len, latter_len,
+			    &former, &latter);
+  if (err)
+    return uim_scm_f();
+
+  /* FIXME: string->list is not applied here for each text part. This
+   * interface should be revised when SigScheme has been introduced to
+   * uim. Until then, perform character separation by each input methods if
+   * needed.  -- YamaKen 2006-10-07 */
+  im_former = uc->conv_if->convert(uc->inbound_conv, former);
+  im_latter = uc->conv_if->convert(uc->inbound_conv, latter);
+  uim_internal_escape_string(im_former);
+  uim_internal_escape_string(im_latter);
+
+  if (im_former && strcmp(im_former, ""))
+    is_former_null = UIM_FALSE;
+  if (im_latter && strcmp(im_latter, ""))
+    is_latter_null = UIM_FALSE;
+
+  /* UIM_EVAL_*STRING* macro needs brace around if .. else */
+  if (is_former_null && is_latter_null) {
+    uim_eval_string(uc, "(ustr-new '() '())");
+  } else if (is_former_null && !is_latter_null) {
+    UIM_EVAL_FSTRING1(uc, "(ustr-new '() '(\"%s\"))", im_latter);
+  } else if (!is_former_null && is_latter_null) {
+    UIM_EVAL_FSTRING1(uc, "(ustr-new '(\"%s\") '())", im_former);
+  } else {
+    UIM_EVAL_FSTRING2(uc, "(ustr-new '(\"%s\") '(\"%s\"))", im_former,
+		      im_latter);
   }
-  if (uc->request_surrounding_text_cb) {
-    uc->request_surrounding_text_cb(uc->ptr);
-  }
-  return uim_scm_t();
+  free(former);
+  free(latter);
+  free(im_former);
+  free(im_latter);
+
+  return uim_scm_return_value();
 }
 
 static uim_lisp
-im_delete_surrounding(uim_lisp id_, uim_lisp offset_, uim_lisp len_)
+im_delete_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
+	       uim_lisp former_len_, uim_lisp latter_len_)
 {
   uim_context uc = retrieve_uim_context(id_);
-  int offset = uim_scm_c_int(offset_);
-  int len = uim_scm_c_int(len_);
-  if (!uc->delete_surrounding_text_cb) {
-    return uim_scm_f();
-  }
-  if (uc->delete_surrounding_text_cb) {
-    uc->delete_surrounding_text_cb(uc->ptr, offset, len);
-  }
-  return uim_scm_t();
-}
+  int err, former_len, latter_len;
+  enum UTextArea text_id;
+  enum UTextOrigin origin;
 
+  former_len = uim_scm_c_int(former_len_);
+  latter_len = uim_scm_c_int(latter_len_);
+  text_id = uim_scm_c_int(text_id_);
+  origin = uim_scm_c_int(origin_);
+
+  if (!uc->delete_text_cb)
+    return uim_scm_f();
+  err = uc->delete_text_cb(uc->ptr, text_id, origin, former_len, latter_len);
+
+  return uim_scm_make_bool(!err);
+}
 
 static uim_lisp
 switch_im(uim_lisp id_, uim_lisp name_)
 {
-  const char *name= uim_scm_refer_c_str(name_);
-  uim_context uc = uim_find_context(uim_scm_c_int(id_));
+  uim_context uc;
+  const char *name;
+
+  uc = retrieve_uim_context(id_);
+  name= uim_scm_refer_c_str(name_);
+
   uim_switch_im(uc, name);
   if (uc->configuration_changed_cb)
     uc->configuration_changed_cb(uc->ptr);
+
+  return uim_scm_t();
+}
+
+static uim_lisp
+switch_app_global_im(uim_lisp id_, uim_lisp name_)
+{
+  uim_context uc;
+  const char *name;
+
+  uc = retrieve_uim_context(id_);
+  name = uim_scm_refer_c_str(name_);
+
+  if (uc->switch_app_global_im_cb)
+    uc->switch_app_global_im_cb(uc->ptr, name);
+
+  return uim_scm_t();
+}
+
+static uim_lisp
+switch_system_global_im(uim_lisp id_, uim_lisp name_)
+{
+  uim_context uc;
+  const char *name;
+
+  uc = retrieve_uim_context(id_);
+  name = uim_scm_refer_c_str(name_);
+
+  if (uc->switch_system_global_im_cb)
+    uc->switch_system_global_im_cb(uc->ptr, name);
 
   return uim_scm_t();
 }
@@ -757,7 +836,6 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_2("im-pushback-mode-list", im_pushback_mode_list);
   uim_scm_init_subr_1("im-update-mode-list",   im_update_mode_list);
   /**/
-  uim_scm_init_subr_2("im-update-prop-label", im_update_prop_label);
   uim_scm_init_subr_2("im-update-prop-list",  im_update_prop_list);
   /**/
   uim_scm_init_subr_2("im-update-mode", im_update_mode);
@@ -767,8 +845,10 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_2("im-shift-page-candidate", im_shift_page_candidate);
   uim_scm_init_subr_1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
   /**/
-  uim_scm_init_subr_1("im-request-surrounding", im_request_surrounding);
-  uim_scm_init_subr_3("im-delete-surrounding", im_delete_surrounding);
+  uim_scm_init_subr_5("im-acquire-text-internal", im_acquire_text);
+  uim_scm_init_subr_5("im-delete-text-internal", im_delete_text);
   /**/
-  uim_scm_init_subr_2("uim-switch-im", switch_im); /* FIXME: This function name would not be appropriate. */
+  uim_scm_init_subr_2("im-switch-im", switch_im);
+  uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);
+  uim_scm_init_subr_2("im-switch-system-global-im", switch_system_global_im);
 }

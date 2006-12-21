@@ -30,87 +30,104 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include <qapplication.h>
-#include <qinputcontextplugin.h>
-#include <qinputcontext.h>
+#include <config.h>
 
-#include <uim/uim.h>
+#include <qinputcontext.h>
 
 #include <locale.h>
 
-#include "immodule-quiminputcontext_with_slave.h"
+#include "uim/uim.h"
 
-class UimInputContextPlugin : public QInputContextPlugin
+#include "immodule-plugin.h"
+#include "immodule-quiminputcontext_with_slave.h"
+#include "immodule-quiminfomanager.h"
+
+QUimInfoManager *UimInputContextPlugin::infoManager = NULL;
+
+
+UimInputContextPlugin::UimInputContextPlugin()
 {
-public:
-    UimInputContextPlugin() : QInputContextPlugin()
-    {
         uimReady = false;
         uimInit();
-    }
+}
 
-    ~UimInputContextPlugin()
-    {
+UimInputContextPlugin::~UimInputContextPlugin()
+{
         uimQuit();
-    }
+}
 
-    QStringList keys() const
-    {
+QStringList
+UimInputContextPlugin::keys() const
+{
         QStringList imList;
         imList << "uim";
         return imList;
-    }
+}
 
-    QInputContext *create( const QString &key )
-    {
+QInputContext *
+UimInputContextPlugin::create( const QString &key )
+{
         QString imname = QString::null;
         if ( QString::compare( key, "uim" ) == 0 )
         {
-            imname = uim_get_default_im_name( setlocale( LC_ALL, NULL ) );
-            QStringList langs = languages( "uim" );
-            QUimInputContext *uic = new QUimInputContextWithSlave( imname, langs[ 0 ] );
+            imname = uim_get_default_im_name( setlocale( LC_CTYPE, NULL ) );
+            QString lang = infoManager->imLang ( imname );
+            QUimInputContext *uic = new QUimInputContextWithSlave( imname, lang );
             return uic;
         }
 
         return NULL;
-    }
-
-    QStringList languages( const QString &key )
-    {
-        if ( key == QString( "uim" ) )
-            return "ja:ko:zh:*";
-
-        return QStringList();
-    }
-
-    QString displayName( const QString &key )
-    {
-        return QString( key ) + " (" + languages( key ) [ 0 ] + ")";
-    }
-
-    QString description( const QString &key )
-    {
-        return displayName( key ) + ": the universal input method framework";
-    }
-
-protected:
-    void uimInit();
-    void uimQuit();
-
-    bool uimReady;
-};
-
-void UimInputContextPlugin::uimInit()
-{
-    if ( !uim_init() )
-        uimReady = true;
 }
 
-void UimInputContextPlugin::uimQuit()
+QStringList
+UimInputContextPlugin::languages( const QString &key )
+{
+        QStringList langs;
+        if ( key == QString( "uim" ) ) {
+            langs.push_back ( "ja" );
+            langs.push_back ( "ko" );
+            langs.push_back ( "zh" );
+            langs.push_back ( "*" );
+        }
+
+        return langs;
+}
+
+QString
+UimInputContextPlugin::displayName( const QString &key )
+{
+        return QString( key );
+}
+
+QString
+UimInputContextPlugin::description( const QString &key )
+{
+        return displayName( key ) + ": the universal input method framework";
+}
+
+QUimInfoManager *
+UimInputContextPlugin::getQUimInfoManager()
+{
+    return infoManager;
+}
+
+void
+UimInputContextPlugin::uimInit()
+{
+    if ( !uim_init() ) {
+        if (!infoManager)
+            infoManager = new QUimInfoManager();
+        uimReady = true;
+    }
+}
+
+void
+UimInputContextPlugin::uimQuit()
 {
     if ( uimReady )
     {
         uim_quit();
+        delete infoManager;
         uimReady = false;
     }
 }

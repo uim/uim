@@ -32,7 +32,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #include <stdio.h>
 #ifndef DEBUG
@@ -65,22 +65,30 @@
 #include "uim-fep.h"
 #include "str.h"
 
+#define min(a, b) ((a) < (b) ? (a) : (b))
+
 static int s_utf8;
 
-static int min(int a, int b);
+static int str2wcstr(const char *str, wchar_t **wcstr);
+static int byte2width(char *str, int n);
+static int byte2width2(char *str, int n);
 
 void init_str(void)
 {
+  const char *enc;
+
   if (setlocale(LC_CTYPE, "") == NULL) {
     printf("locale not supported\n");
     exit(EXIT_FAILURE);
   }
-  s_utf8 = (strcasecmp(get_enc(), "UTF-8") == 0 || strcasecmp(get_enc(), "UTF8") == 0);
+  
+  enc = get_enc();
+  s_utf8 = (strcasecmp(enc, "UTF-8") == 0 || strcasecmp(enc, "UTF8") == 0);
 }
 
 /*
- * LC_ALL, LC_CTYPE, LANGで設定されているエンコーディングを返す
- * 設定されていない場合は"utf-8"を返す
+ * setlocaleで得られるエンコーディングを返す
+ * 設定されていない場合は"UTF-8"を返す
  */
 const char *get_enc(void)
 {
@@ -90,17 +98,42 @@ const char *get_enc(void)
 #ifdef HAVE_LANGINFO_CODESET
   return nl_langinfo(CODESET);
 #else
-  const char *locale = setlocale(LC_CTYPE, NULL);
+  char *locale;
+
+  locale = setlocale(LC_CTYPE, NULL);
   assert(locale != NULL);
 
   if (strcasecmp(locale, "ja") == 0) {
     return "EUC-JP";
   } else {
-    char *ptr = strstr(locale, ".");
+    char *ptr;
+    ptr = strstr(locale, ".");
     return ptr != NULL ? ptr + 1 : "UTF-8";
   }
 #endif
 #endif
+}
+
+static int str2wcstr(const char *str, wchar_t **wcstr)
+{
+  int str_byte;
+  int nr_wchars;
+
+  assert(str != NULL);
+
+  str_byte = strlen(str);
+
+  if (str_byte == 0) {
+    *wcstr = NULL;
+    return 0;
+  }
+
+  *wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
+  nr_wchars = mbstowcs(*wcstr, str, str_byte);
+  assert((size_t)nr_wchars != (size_t)-1);
+  (*wcstr)[str_byte] = 0;
+
+  return nr_wchars;
 }
 
 /*
@@ -113,8 +146,13 @@ const char *get_enc(void)
 int compare_str(char *str1, char *str2)
 {
   int i;
-  int len1 = strlen(str1);
-  int len2 = strlen(str2);
+  int len1;
+  int len2;
+
+  assert(str1 != NULL && str2 != NULL);
+
+  len1 = strlen(str1);
+  len2 = strlen(str2);
 
   for (i = 0; i < min(len1, len2); i++) {
     if (str1[i] != str2[i]) {
@@ -132,11 +170,18 @@ int compare_str(char *str1, char *str2)
  * compare_str_rev("aあ", "baあ") = 3
  * compare_str_rev("□(0xa2a2)", "あ(0xa4a2)") = 0
  */
-int compare_str_rev(const char *str1, const char *str2)
+int compare_str_rev(char *str1, char *str2)
 {
   int i;
-  int len1 = strlen(str1);
-  int len2 = strlen(str2);
+  int len1;
+  int len2;
+  int width1;
+  int width2;
+
+  assert(str1 != NULL && str2 != NULL);
+
+  len1 = strlen(str1);
+  len2 = strlen(str2);
 
   for (i = 1; i <= min(len1, len2); i++) {
     if (str1[len1 - i] != str2[len2 - i]) {
@@ -144,11 +189,9 @@ int compare_str_rev(const char *str1, const char *str2)
     }
   }
 
-  if (len1 < len2) {
-    return strwidth(str1) - byte2width2(str1, len1 - i + 1);
-  } else {
-    return strwidth(str2) - byte2width2(str2, len2 - i + 1);
-  }
+  width1 = strwidth(str1) - byte2width2((char *)str1, len1 - i + 1);
+  width2 = strwidth(str2) - byte2width2((char *)str2, len2 - i + 1);
+  return (width1 == width2) ? width1 : 0;
 }
 
 /*
@@ -161,21 +204,19 @@ int compare_str_rev(const char *str1, const char *str2)
 int strwidth(const char *str)
 {
   int width;
-  int str_byte;
   wchar_t *wcstr;
   int nr_wchars;
 
   assert(str != NULL);
 
-  str_byte = strlen(str);
-  if (str_byte <= 0) {
+  nr_wchars = str2wcstr(str, &wcstr);
+
+  if (nr_wchars == 0) {
     return 0;
   }
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
-  nr_wchars = mbstowcs(wcstr, str, str_byte);
-  assert(nr_wchars >= 0);
+
   width = wcswidth(wcstr, nr_wchars);
-  assert(width >= 0);
+  assert(width != -1);
   free(wcstr);
   return width;
 }
@@ -183,22 +224,31 @@ int strwidth(const char *str)
 int strwidth(const char *str)
 {
   int width = 0;
-  for (; *str != '\0'; str++) {
+
+  assert(str != NULL);
+
+  while (*str != '\0') {
     if (isascii((unsigned char)*str)) {
       width++;
+      str++;
     } else {
       if (s_utf8) {
         width += 2;
-        str += 2;
+        str += 3;
       } else {
         /* euc-jp */
         if ((unsigned char)*str == 0x8e) {
           /* 半角カタカナ */
           width++;
+          str += 2;
+        } else if ((unsigned char)*str == 0x8f) {
+          /* G3 */
+          width += 2;
+          str += 3;
         } else {
           width += 2;
+          str += 2;
         }
-        str++;
       }
     }
   }
@@ -216,16 +266,14 @@ int strwidth(const char *str)
  * byte2width("ああ", 4) = 2 (utf8)
  * byte2width("ああ", 5) = 2 (utf8)
  * byte2width("ああ", 6) = 4 (utf8)
- * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
- * にしてはいけない．
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
-int byte2width(const char *str, int n)
+static int byte2width(char *str, int n)
 {
   int width;
   int str_byte;
   char save_char;
-  const char *save_str;
+  char *save_str;
   wchar_t *wcstr;
   int nr_wchars;
 
@@ -236,45 +284,50 @@ int byte2width(const char *str, int n)
   }
 
   str_byte = strlen(str);
-  if (str_byte <= 0) {
+  if (str_byte == 0) {
     return 0;
   }
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
 
   if (n > str_byte) {
     n = str_byte;
   }
 
-  save_char = str[n];
+  wcstr = malloc(sizeof(wchar_t) * str_byte);
+
   save_str = str;
-  ((char *)str)[n] = '\0';
-  nr_wchars = mbsrtowcs(wcstr, &str, str_byte, NULL);
-  ((char *)save_str)[n] = save_char;
-  if (nr_wchars >= 0) {
+
+  save_char = str[n];
+  str[n] = '\0';
+  nr_wchars = mbsrtowcs(wcstr, (const char **)&str, str_byte, NULL);
+  save_str[n] = save_char;
+
+  if ((size_t)nr_wchars != (size_t)(-1)) {
     width = wcswidth(wcstr, nr_wchars);
   } else {
     save_char = str[0];
-    ((char *)str)[0] = '\0';
+    str[0] = '\0';
     width = strwidth(save_str);
-    ((char *)str)[0] = save_char;
+    str[0] = save_char;
   }
   free(wcstr);
   assert(width >= 0);
   return width;
 }
 #else
-int byte2width(const char *str, int n)
+static int byte2width(char *str, int n)
 {
   int width = 0;
   int byte = 0;
   int char_width;
   int char_byte;
 
+  assert(str != NULL);
+
   if (n <= 0) {
     return 0;
   }
 
-  for (; *str != '\0'; str++) {
+  while (*str != '\0') {
     if (isascii((unsigned char)*str)) {
       char_width = 1;
       char_byte = 1;
@@ -285,22 +338,28 @@ int byte2width(const char *str, int n)
       } else {
         /* euc-jp */
         if ((unsigned char)*str == 0x8e) {
+          /* 半角カタカナ */
           char_width = 1;
+          char_byte = 2;
+        } else if ((unsigned char)*str == 0x8f) {
+          /* G3 */
+          char_width = 2;
+          char_byte = 3;
         } else {
           char_width = 2;
+          char_byte = 2;
         }
-        char_byte = 2;
       }
     }
-    if (byte + char_byte == n) {
+    byte += char_byte;
+    if (byte == n) {
       width += char_width;
       break;
-    } else if (byte + char_byte > n) {
+    } else if (byte > n) {
       break;
     }
     width += char_width;
-    str += char_byte - 1;
-    byte += char_byte;
+    str += char_byte;
   }
   return width;
 }
@@ -317,16 +376,14 @@ int byte2width(const char *str, int n)
  * byte2width2("ああ", 4) = 4 (utf8)
  * byte2width2("ああ", 5) = 4 (utf8)
  * byte2width2("ああ", 6) = 4 (utf8)
- * const char *strとなっているが，一時的に書換えるのでstrを文字列定数
- * にしてはいけない．
  */
 #if defined(HAVE_WCSWIDTH) && !defined(__CYGWIN32__)
-int byte2width2(const char *str, int n)
+static int byte2width2(char *str, int n)
 {
   int width;
   int str_byte;
   char save_char;
-  const char *save_str;
+  char *save_str;
   wchar_t *wcstr;
   int nr_wchars;
   
@@ -337,48 +394,53 @@ int byte2width2(const char *str, int n)
   }
 
   str_byte = strlen(str);
-  if (str_byte <= 0) {
+  if (str_byte == 0) {
     return 0;
   }
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
 
   if (n > str_byte) {
     n = str_byte;
   }
 
-  save_char = str[n];
+  wcstr = malloc(sizeof(wchar_t) * str_byte);
+
   save_str = str;
-  ((char *)str)[n] = '\0';
-  nr_wchars = mbsrtowcs(wcstr, &str, str_byte, NULL);
-  ((char *)save_str)[n] = save_char;
-  if (nr_wchars >= 0) {
+
+  save_char = str[n];
+  str[n] = '\0';
+  nr_wchars = mbsrtowcs(wcstr, (const char **)&str, str_byte, NULL);
+  save_str[n] = save_char;
+
+  if ((size_t)nr_wchars != (size_t)(-1)) {
     width = wcswidth(wcstr, nr_wchars);
   } else {
-    mbsrtowcs(wcstr, &str, 1, NULL);
+    mbsrtowcs(wcstr, (const char **)&str, 1, NULL);
     /* strを最後まで変換するとNULLになる */
     assert(str != NULL);
     save_char = str[0];
-    ((char *)str)[0] = '\0';
+    str[0] = '\0';
     width = strwidth(save_str);
-    ((char *)str)[0] = save_char;
+    str[0] = save_char;
   }
   free(wcstr);
   assert(width >= 0);
   return width;
 }
 #else
-int byte2width2(const char *str, int n)
+static int byte2width2(char *str, int n)
 {
   int width = 0;
   int byte = 0;
   int char_width;
   int char_byte;
 
+  assert(str != NULL);
+
   if (n <= 0) {
     return 0;
   }
 
-  for (; *str != '\0'; str++) {
+  while (*str != '\0') {
     if (isascii((unsigned char)*str)) {
       char_width = 1;
       char_byte = 1;
@@ -387,21 +449,27 @@ int byte2width2(const char *str, int n)
         char_byte = 3;
         char_width = 2;
       } else {
+        /* euc-jp */
         if ((unsigned char)*str == 0x8e) {
+          /* 半角カタカナ */
           char_width = 1;
+          char_byte = 2;
+        } else if ((unsigned char)*str == 0x8f) {
+          /* G3 */
+          char_width = 2;
+          char_byte = 3;
         } else {
           char_width = 2;
+          char_byte = 2;
         }
-        char_byte = 2;
       }
     }
-    if (byte + char_byte >= n) {
-      width += char_width;
+    byte += char_byte;
+    width += char_width;
+    if (byte >= n) {
       break;
     }
-    width += char_width;
-    str += char_byte - 1;
-    byte += char_byte;
+    str += char_byte;
   }
   return width;
 }
@@ -435,18 +503,17 @@ int *width2byte(const char *str, int n)
   }
 
   str_byte = strlen(str);
-  if (str_byte <= 0) {
+  if (str_byte == 0) {
     rval[0] = rval[1] = 0;
     return rval;
   }
-  wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
 
   if (n > str_byte) {
     n = str_byte;
   }
 
-  nr_wchars = mbstowcs(wcstr, str, str_byte);
-  assert(nr_wchars >= 0);
+  nr_wchars = str2wcstr(str, &wcstr);
+
   for (i = nr_wchars; i >= 0; i--) {
     width = wcswidth(wcstr, i);
     if (width <= n) {
@@ -455,7 +522,7 @@ int *width2byte(const char *str, int n)
       break;
     }
   }
-  assert(str_byte >= 0 && width >= 0);
+  assert((size_t)str_byte != (size_t)-1 && width >= 0);
   rval[0] = str_byte;
   rval[1] = width;
   free(wcstr);
@@ -470,6 +537,8 @@ int *width2byte(const char *str, int n)
   int char_byte;
   static int rval[2];
 
+  assert(str != NULL);
+
   for (; *str != '\0'; str++) {
     if (isascii((unsigned char)*str)) {
       char_width = 1;
@@ -481,10 +550,15 @@ int *width2byte(const char *str, int n)
       } else {
         if ((unsigned char)*str == 0x8e) {
           char_width = 1;
+          char_byte = 2;
+        } else if ((unsigned char)*str == 0x8f) {
+          /* G3 */
+          char_width = 2;
+          char_byte = 3;
         } else {
           char_width = 2;
+          char_byte = 2;
         }
-        char_byte = 2;
       }
     }
     if (width + char_width == n) {
@@ -533,18 +607,17 @@ int *width2byte2(const char *str, int n)
   }
 
   str_byte = strlen(str);
-  if (str_byte <= 0) {
+  if (str_byte == 0) {
     rval[0] = rval[1] = 0;
     return rval;
   }
-  wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
 
   if (n > str_byte) {
     n = str_byte;
   }
 
-  nr_wchars = mbstowcs(wcstr, str, str_byte);
-  assert(nr_wchars >= 0);
+  nr_wchars = str2wcstr(str, &wcstr);
+
   for (i = 0; i <= nr_wchars; i++) {
     width = wcswidth(wcstr, i);
     if (width >= n) {
@@ -553,7 +626,7 @@ int *width2byte2(const char *str, int n)
       break;
     }
   }
-  assert(str_byte >= 0 && width >= 0);
+  assert((size_t)str_byte != (size_t)-1 && width >= 0);
   rval[0] = str_byte;
   rval[1] = width;
   free(wcstr);
@@ -568,6 +641,8 @@ int *width2byte2(const char *str, int n)
   int char_byte;
   static int rval[2];
 
+  assert(str != NULL);
+
   for (; *str != '\0'; str++) {
     if (isascii((unsigned char)*str)) {
       char_width = 1;
@@ -579,10 +654,15 @@ int *width2byte2(const char *str, int n)
       } else {
         if ((unsigned char)*str == 0x8e) {
           char_width = 1;
+          char_byte = 2;
+        } else if ((unsigned char)*str == 0x8f) {
+          /* G3 */
+          char_width = 2;
+          char_byte = 3;
         } else {
           char_width = 2;
+          char_byte = 2;
         }
-        char_byte = 2;
       }
     }
     if (width + char_width >= n) {
@@ -668,11 +748,6 @@ char *strstr_len(const char *haystack, const char *needle, int haystack_len)
     }
   }
   return NULL;
-}
-
-static int min(int a, int b)
-{
-  return a < b ? a : b;
 }
 
 #define TAB_WIDTH 4

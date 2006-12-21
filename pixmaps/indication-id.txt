@@ -1,0 +1,58 @@
+List of indication-id appeared in current and future uim
+distribution. Make icons for them. '+' sign indicates 'done'.
+
+* uim
+  + im_switcher
+  preference
+  dictionary_tool
+  input_pad
+  handwriting_pad
+  help
+  + unknown
+
+* input modes
+  + direct_input
+  + off
+  + on
+  + ja_direct
+  + ja_hiragana
+  + ja_katakana
+  + ja_halfwidth_katakana
+  + ja_halfwidth_alnum
+  + ja_fullwidth_alnum
+  + ja_romaji
+  + ja_kana
+  + ja_azik
+  + ja_nicola
+  ja_phone
+  + ja_pocketbell
+  + ko_direct
+  + ko_hangulchar
+  + ko_hangulword
+  + prime_mode_application
+
+* input methods
+  py
+  pyunihan
+  pinyin-big5
+  + anthy
+  + canna
+  mana
+  + prime
+  + skk
+  + tcode
+  + trycode
+  + tutcode
+  + byeoru
+  hangul2
+  hangul3
+  romaja
+  scim
+  viqr
+  ipa-x-sampa
+  latin
+
+* input methods (m17n library)
+  + m17n-*
+
+All icons that m17n-db provide can be used via uim.

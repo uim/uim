@@ -30,8 +30,11 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include "toolbar-standalone-qt.h"
 #include "toolbar-common-quimhelpertoolbar.h"
+#include "toolbar-common-uimstateindicator.h"
 
 #include <qapplication.h>
 #include <qpoint.h>
@@ -42,8 +45,9 @@
 #include <locale.h>
 
 #include "uim/uim.h"
-#include "uim/config.h"
 #include "qtgettext.h"
+
+#define TOOLBAR_MARGIN_SIZE	2
 
 UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
     : QHBox( parent, name, Qt::WStyle_NoBorder | Qt::WX11BypassWM )
@@ -54,10 +58,15 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
     UimToolbarDraggingHandler *h = new UimToolbarDraggingHandler( this );
     h->adjustSize();
     h->show();
+    QObject::connect( h, SIGNAL( handleDoubleClicked() ),
+                      this, SLOT( slotToolbarDoubleClicked() ) );
+
     
-    QUimHelperToolbar *b = new QUimHelperToolbar( this );
-    b->adjustSize();
-    b->show();
+    toolbar = new QUimHelperToolbar( this );
+    toolbar->adjustSize();
+    toolbar->show();
+    QObject::connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
+    toolbar->setMargin(TOOLBAR_MARGIN_SIZE);
 
     // Move
     int panelHeight = 64; // FIXME!
@@ -71,7 +80,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
                       this, SLOT( move( const QPoint & ) ) );
 
     // Quit
-    QObject::connect( b, SIGNAL( quitToolbar() ),
+    QObject::connect( toolbar, SIGNAL( quitToolbar() ),
                       qApp, SLOT( quit() ) );
 
     show();
@@ -79,6 +88,22 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent, const char *name )
 UimStandaloneToolbar::~UimStandaloneToolbar()
 {
     uim_quit();
+}
+
+void
+UimStandaloneToolbar::slotToolbarResized()
+{
+    adjustSize();
+}
+
+void
+UimStandaloneToolbar::slotToolbarDoubleClicked()
+{
+    if (toolbar->isVisible())
+      toolbar->hide();
+    else
+      toolbar->show();
+    adjustSize();
 }
 
 UimToolbarDraggingHandler::UimToolbarDraggingHandler( QWidget *parent,
@@ -103,8 +128,12 @@ void UimToolbarDraggingHandler::drawContents( QPainter* p )
 
 QSize UimToolbarDraggingHandler::sizeHint() const
 {
-    const int dim = style().pixelMetric( QStyle::PM_DockWindowSeparatorExtent, this );
-    return QSize( dim, 0 );
+    int width, height;
+    
+    width = style().pixelMetric( QStyle::PM_DockWindowSeparatorExtent, this );
+    height = BUTTON_SIZE + TOOLBAR_MARGIN_SIZE * 2;
+
+    return QSize( width, height );
 }
 
 QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
@@ -112,20 +141,34 @@ QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 
-void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * e )
+void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * /* e */ )
 {
     isDragging = true;
+    grabMouse( QCursor( Qt::SizeAllCursor) );
+
+    offsetX = QCursor::pos().x() - this->parentWidget()->x();
+    offsetY = QCursor::pos().y() - this->parentWidget()->y();
 }
 
-void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * e )
+void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * /* e */ )
 {
     isDragging = false;
+    releaseMouse();
 }
 
-void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * e )
+void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * /* e */ )
 {
-    if ( isDragging )
-        emit moveTo( QCursor::pos() );
+    if ( isDragging ) {
+        QPoint pos = QCursor::pos();
+        pos -= QPoint(offsetX, offsetY);
+        emit moveTo( pos );
+    }
+}
+
+void UimToolbarDraggingHandler::mouseDoubleClickEvent( QMouseEvent * /* e */ )
+{
+    isDragging = false;
+    emit handleDoubleClicked();
 }
 
 int main( int argc, char *argv[] )

@@ -46,24 +46,10 @@
 #include "output.h"
 #include "candidate.h"
 
-typedef struct preedit_buffer {
-  char *str;
-  int attr;
-  unsigned cursor;
-  struct preedit_buffer *next;
-} preedit_buffer;
-
-typedef struct preedit {
-  int valid;
-  int length;
-  preedit_buffer *head;
-  preedit_buffer *tail;
-  /*  candidate_info *cand;*/
-} preedit;
-
 preedit *create_preedit(void);
 void add_preedit(preedit *pe, int attr, const char *str);
 void clear_preedit(preedit *pe);
 int show_preedit(preedit *pe);
+int show_preedit_force(preedit *pe);
 
 #endif

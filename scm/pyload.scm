@@ -50,7 +50,7 @@
 
 (generic-register-im
  'pyunihan
- "zh_CN"
+ "zh"
  "UTF-8"
  (N_ "Pinyin (Unicode)")
  (N_ "Pinyin input method (Unicode version)")

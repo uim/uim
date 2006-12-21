@@ -79,8 +79,8 @@
 
 (register-action 'action_tutcode_direct
 		 (lambda (tc)
-		   '(figure_ja_direct
-		     "t"
+		   '(ja_halfwidth_alnum
+		     "a"
 		     "直接入力"
 		     "直接入力モード"))
 		 (lambda (tc)
@@ -91,8 +91,8 @@
 
 (register-action 'action_tutcode_hiragana
 		 (lambda (tc)
-		   '(figure_ja_hiragana
-		     "た"
+		   '(ja_hiragana
+		     "あ"
 		     "ひらがな"
 		     "ひらがなモード"))
 		 (lambda (tc)
@@ -105,8 +105,8 @@
 
 (register-action 'action_tutcode_katakana
 		 (lambda (tc)
-		   '(figure_ja_katakana
-		     "タ"
+		   '(ja_katakana
+		     "ア"
 		     "カタカナ"
 		     "カタカナモード"))
 		 (lambda (tc)
@@ -181,7 +181,7 @@
       ((not (member (charcode->string key) (rk-expect rkc)))
        (rk-flush rkc)
        (im-commit-raw pc))
-      (#t	; `else' is not supported by uim's scheme interpreter
+      (else
        (set! res (rk-push-key! rkc (charcode->string key)))))
     (if res
 	(im-commit pc
@@ -232,7 +232,19 @@
 (define (tutcode-init-handler id im arg)
   (tutcode-context-new id im))
 
-(define (tutcode-reset-handler tc) #f)
+(define (tutcode-reset-handler tc)
+  (let ((rkc (tutcode-context-rk-context tc)))
+    (rk-flush rkc)))
+
+(define (tutcode-focus-in-handler tc) #f)
+
+(define (tutcode-focus-out-handler tc)
+  (let ((rkc (tutcode-context-rk-context tc)))
+    (rk-flush rkc)))
+
+(define tutcode-place-handler tutcode-focus-in-handler)
+(define tutcode-displace-handler tutcode-focus-out-handler)
+
 (define (tutcode-get-candidate-handler tc idx) #f)
 (define (tutcode-set-candidate-index-handler tc idx) #f)
 
@@ -254,7 +266,13 @@
  tutcode-reset-handler
  tutcode-get-candidate-handler
  tutcode-set-candidate-index-handler
- context-prop-activate-handler)
+ context-prop-activate-handler
+ #f
+ tutcode-focus-in-handler
+ tutcode-focus-out-handler
+ tutcode-place-handler
+ tutcode-displace-handler
+ )
 
 ;;; キー配列テーブルの定義。QWERTYキーボード用。
 (define tutcode-rule

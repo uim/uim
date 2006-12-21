@@ -31,6 +31,7 @@
   SUCH DAMAGE.
 
 */
+#include <config.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -46,6 +47,10 @@
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "uim.h"
 #include "uim-helper.h"
 
@@ -94,7 +99,7 @@ init_server_fd(char *path)
 
   bzero(&myhost, sizeof(myhost));
   myhost.sun_family = PF_UNIX;
-  strcpy(myhost.sun_path, path);
+  strlcpy(myhost.sun_path, path, sizeof(myhost.sun_path));
 
   foo = bind(fd, (struct sockaddr *)&myhost, SUN_LEN(&myhost));
   if (foo < -1) {

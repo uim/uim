@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1540 of new repository
+;; This file is tested with revision 3140 of new repository
 
 (use test.unit)
 
@@ -40,6 +40,8 @@
    (lambda ()
      (uim
       '(begin
+	 (custom-set-value! 'toolbar-show-action-based-switcher-button? #f)
+
 	 (require "load-action.scm")
 	 (require "rk.scm")
 	 (require "japanese.scm")
@@ -227,7 +229,7 @@
 	  (actions-new '(action_test_roma
 			 action_test_kana)))
 
-	 (define tc (test-context-new))
+	 (define tc (test-context-new 0 (retrieve-im 'direct)))
 	 (begin (test-context-set-rkc! tc (rk-context-new ja-rk-rule #t #f))
 		#t)
 
@@ -264,7 +266,7 @@
   ("test indicator-new"
    (uim '(begin
 	   (define test-indicator (indicator-new (lambda ()
-						   '(figure_unknown
+						   '(unknown
 						     "?"
 						     "unknown"
 						     "Unknown"))))
@@ -457,7 +459,7 @@
    ;; no activity case
    (uim '(define test-type-invalid 100))
    (uim '(test-context-set-kana-mode! tc test-type-invalid))
-   (assert-equal '(figure_unknown
+   (assert-equal '(unknown
 		   "?"
 		   "unknown"
 		   "unknown")
@@ -812,7 +814,7 @@
 				   (widget-new 'widget_test_null tc))
 				 #t)))
    (assert-true  (uim-bool '(equal? (list #f
-					  '(figure_unknown
+					  '(unknown
 					    "?"
 					    "unknown"
 					    "unknown"))
@@ -1018,7 +1020,7 @@
 
    ;; initial state
    (assert-true  (uim-bool '(equal? (list #f
-					  '(figure_unknown
+					  '(unknown
 					    "?"
 					    "unknown"
 					    "unknown"))
@@ -1027,13 +1029,13 @@
    ;; initial update
    (assert-true  (uim-bool '(widget-update-state! test-null)))
    (assert-true  (uim-bool '(equal? (list #f
-					  '(figure_unknown
+					  '(unknown
 					    "?"
 					    "unknown"
 					    "unknown"))
 				    (widget-state test-null))))
    (assert-true  (uim-bool '(equal? (list #f
-					  '(figure_unknown
+					  '(unknown
 					    "?"
 					    "unknown"
 					    "unknown"))
@@ -1041,13 +1043,13 @@
    ;; subsequent update
    (assert-false (uim-bool '(widget-update-state! test-null)))
    (assert-true  (uim-bool '(equal? (list #f
-					  '(figure_unknown
+					  '(unknown
 					    "?"
 					    "unknown"
 					    "unknown"))
 				    (widget-state test-null))))
    (assert-true  (uim-bool '(equal? (list #f
-					  '(figure_unknown
+					  '(unknown
 					    "?"
 					    "unknown"
 					    "unknown"))
@@ -1063,147 +1065,147 @@
 					     "something"))))
 
   ("test indication-compose-label"
-   (assert-equal "あ\tひらがな\n"
+   (assert-equal "figure_ja_hiragana\tあ\tひらがな\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_hiragana)
 					 tc))))
-   (assert-equal "ア\tカタカナ\n"
+   (assert-equal "figure_ja_katakana\tア\tカタカナ\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_katakana)
 					 tc))))
-   (assert-equal "ｱ\t半角カタカナ\n"
+   (assert-equal "figure_ja_hankana\tｱ\t半角カタカナ\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_hankana)
 					 tc))))
-   (assert-equal "a\t直接入力\n"
+   (assert-equal "figure_ja_direct\ta\t直接入力\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_direct)
 					 tc))))
-   (assert-equal "Ａ\t全角英数\n"
+   (assert-equal "figure_ja_zenkaku\tＡ\t全角英数\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_zenkaku)
 					 tc))))
-   (assert-equal "Ｒ\tローマ字\n"
+   (assert-equal "figure_ja_roma\tＲ\tローマ字\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_roma)
 					 tc))))
-   (assert-equal "か\tかな\n"
+   (assert-equal "figure_ja_kana\tか\tかな\n"
 		 (uim '(indication-compose-label
 			(action-indicate (fetch-action 'action_test_kana)
 					 tc)))))
 
   ("test indication-compose-branch"
-   (assert-equal "branch\tあ\tひらがな\n"
+   (assert-equal "branch\tfigure_ja_hiragana\tあ\tひらがな\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_hiragana)
 					 tc))))
-   (assert-equal "branch\tア\tカタカナ\n"
+   (assert-equal "branch\tfigure_ja_katakana\tア\tカタカナ\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_katakana)
 					 tc))))
-   (assert-equal "branch\tｱ\t半角カタカナ\n"
+   (assert-equal "branch\tfigure_ja_hankana\tｱ\t半角カタカナ\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_hankana)
 					 tc))))
-   (assert-equal "branch\ta\t直接入力\n"
+   (assert-equal "branch\tfigure_ja_direct\ta\t直接入力\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_direct)
 					 tc))))
-   (assert-equal "branch\tＡ\t全角英数\n"
+   (assert-equal "branch\tfigure_ja_zenkaku\tＡ\t全角英数\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_zenkaku)
 					 tc))))
-   (assert-equal "branch\tＲ\tローマ字\n"
+   (assert-equal "branch\tfigure_ja_roma\tＲ\tローマ字\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_roma)
 					 tc))))
-   (assert-equal "branch\tか\tかな\n"
+   (assert-equal "branch\tfigure_ja_kana\tか\tかな\n"
 		 (uim '(indication-compose-branch
 			(action-indicate (fetch-action 'action_test_kana)
 					 tc)))))
 
   ("test indication-compose-leaf"
    ;; inactive leaves
-   (assert-equal "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+   (assert-equal "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_hiragana)
 					 tc)
 			'action_test_hiragana
 			#f)))
-   (assert-equal "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+   (assert-equal "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_katakana)
 					 tc)
 			'action_test_katakana
 			#f)))
-   (assert-equal "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+   (assert-equal "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_hankana)
 					 tc)
 			'action_test_hankana
 			#f)))
-   (assert-equal "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+   (assert-equal "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_direct)
 					 tc)
 			'action_test_direct
 			#f)))
-   (assert-equal "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+   (assert-equal "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_zenkaku)
 					 tc)
 			'action_test_zenkaku
 			#f)))
-   (assert-equal "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
+   (assert-equal "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_roma)
 					 tc)
 			'action_test_roma
 			#f)))
-   (assert-equal "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+   (assert-equal "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_kana)
 					 tc)
 			'action_test_kana
 			#f)))
    ;; active leaves
-   (assert-equal "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t*\n"
+   (assert-equal "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_hiragana)
 					 tc)
 			'action_test_hiragana
 			#t)))
-   (assert-equal "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+   (assert-equal "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_katakana)
 					 tc)
 			'action_test_katakana
 			#t)))
-   (assert-equal "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t*\n"
+   (assert-equal "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_hankana)
 					 tc)
 			'action_test_hankana
 			#t)))
-   (assert-equal "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+   (assert-equal "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_direct)
 					 tc)
 			'action_test_direct
 			#t)))
-   (assert-equal "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n"
+   (assert-equal "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_zenkaku)
 					 tc)
 			'action_test_zenkaku
 			#t)))
-   (assert-equal "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+   (assert-equal "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_roma)
 					 tc)
 			'action_test_roma
 			#t)))
-   (assert-equal "leaf\tか\tかな\tかな入力モード\taction_test_kana\t*\n"
+   (assert-equal "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t*\n"
 		 (uim '(indication-compose-leaf
 			(action-indicate (fetch-action 'action_test_kana)
 					 tc)
@@ -1216,38 +1218,38 @@
 				   (widget-new 'widget_test_input_mode tc))
 				 #t)))
    (assert-equal (string-append
-		  "branch\ta\t直接入力\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+		  "branch\tfigure_ja_direct\ta\t直接入力\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
 		 (uim '(widget-compose-live-branch test-input-mode)))
    (assert-true  (uim-bool '(widget-activate! test-input-mode
 					      'action_test_zenkaku)))
    (assert-equal (string-append
-		  "branch\tＡ\t全角英数\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n")
+		  "branch\tfigure_ja_zenkaku\tＡ\t全角英数\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n")
 		 (uim '(widget-compose-live-branch test-input-mode)))
    ;;; prop_test_kana_input_method
    (assert-true  (uim-bool '(and (define test-kana-input-method
 				   (widget-new 'widget_test_kana_input_method tc))
 				 #t)))
    (assert-equal (string-append
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim '(widget-compose-live-branch test-kana-input-method)))
    (assert-true  (uim-bool '(widget-activate! test-kana-input-method
 					      'action_test_kana)))
    (assert-equal (string-append
-		  "branch\tか\tかな\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t*\n")
+		  "branch\tfigure_ja_kana\tか\tかな\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t*\n")
 		 (uim '(widget-compose-live-branch test-kana-input-method))))
 
   ("test context-init-widgets!"
@@ -1496,61 +1498,6 @@
    (assert-false (uim-bool '(map widget-id test-widget-conf)))
    (assert-false (uim-bool '(map widget-id test-widget-state))))
 
-  ("test context-propagate-prop-label-update"
-   ;; 2 widgets
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_input_mode
-				       widget_test_kana_input_method))
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "a\t直接入力\n"
-				"Ｒ\tローマ字\n")
-		 (uim 'test-prop-label))
-   ;; 2 widgets (updated state)
-   (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-						   (context-widgets tc))
-					     'action_test_katakana)))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "ア\tカタカナ\n"
-				"Ｒ\tローマ字\n")
-		 (uim 'test-prop-label))
-   ;; 2 widgets (without latter activity-indicator)
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_input_mode
-				       widget_test_kana_input_method_without_act_indicator))
-	   #t))
-   (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-						   (context-widgets tc))
-					     'action_test_katakana)))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "ア\tカタカナ\n"
-				"?\tunknown\n")
-		 (uim 'test-prop-label))
-   ;; 2 widgets with non-existent
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_kana_input_method
-				       widget_test_nonexistent
-				       widget_test_input_mode))
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal (string-append "Ｒ\tローマ字\n"
-				"ア\tカタカナ\n")
-		 (uim 'test-prop-label))
-   ;; no widgets
-   (uim '(begin
-	   (context-init-widgets! tc ())
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal "?\tunknown\n"
-		 (uim 'test-prop-label))
-   ;; widget_test_null
-   (uim '(begin
-	   (context-init-widgets! tc '(widget_test_null))
-	   #t))
-   (uim '(context-propagate-prop-label-update tc))
-   (assert-equal "?\tunknown\n"
-		 (uim 'test-prop-label)))
-
   ("test context-propagate-prop-list-update"
    (uim '(begin
 	   (define test-prop-list #f)
@@ -1564,15 +1511,15 @@
 	   #t))
    (uim '(context-propagate-prop-list-update tc))
    (assert-equal (string-append
-		  "branch\ta\t直接入力\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_direct\ta\t直接入力\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
    ;; 2 widgets (updated state)
    (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
@@ -1580,15 +1527,15 @@
 					     'action_test_katakana)))
    (uim '(context-propagate-prop-list-update tc))
    (assert-equal (string-append
-		  "branch\tア\tカタカナ\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
    ;; 2 widgets with non-existent
    (uim '(begin
@@ -1598,29 +1545,29 @@
 	   #t))
    (uim '(context-propagate-prop-list-update tc))
    (assert-equal (string-append
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-		  "branch\tア\tカタカナ\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+		  "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
 		 (uim 'test-prop-list))
    ;; no widgets
    (uim '(begin
 	   (context-init-widgets! tc ())
 	   #t))
    (uim '(context-propagate-prop-list-update tc))
-   (assert-equal "branch\t?\tunknown\n"
+   (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
    ;; widget_test_null
    (uim '(begin
 	   (context-init-widgets! tc '(widget_test_null))
 	   #t))
    (uim '(context-propagate-prop-list-update tc))
-   (assert-equal "branch\t?\tunknown\n"
+   (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list)))
 
   ;; TODO: context-update-mode
@@ -1635,19 +1582,17 @@
 	   (context-propagate-widget-states tc)
 	   #t))
    (assert-equal (string-append
-		  "branch\ta\t直接入力\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_direct\ta\t直接入力\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
-   (assert-equal (string-append "a\t直接入力\n"
-				"Ｒ\tローマ字\n")
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 3
 		 (uim 'test-updated-mode))
    ;; 2 widgets (updated state)
@@ -1658,19 +1603,17 @@
 	   (context-propagate-widget-states tc)
 	   #t))
    (assert-equal (string-append
-		  "branch\tア\tカタカナ\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
-   (assert-equal (string-append "ア\tカタカナ\n"
-				"Ｒ\tローマ字\n")
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 1
 		 (uim 'test-updated-mode))
    ;; 2 widgets with non-existent
@@ -1683,19 +1626,17 @@
 	   (context-propagate-widget-states tc)
 	   #t))
    (assert-equal (string-append
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-		  "branch\tア\tカタカナ\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+		  "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
 		 (uim 'test-prop-list))
-   (assert-equal (string-append "Ｒ\tローマ字\n"
-				"ア\tカタカナ\n")
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 1
 		 (uim 'test-updated-mode))
    ;; no widgets
@@ -1705,10 +1646,9 @@
    (uim '(begin
 	   (context-propagate-widget-states tc)
 	   #t))
-   (assert-equal "branch\t?\tunknown\n"
+   (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
-   (assert-equal "?\tunknown\n"
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 0
 		 (uim 'test-updated-mode))
    ;; widget_test_null
@@ -1718,10 +1658,9 @@
    (uim '(begin
 	   (context-propagate-widget-states tc)
 	   #t))
-   (assert-equal "branch\t?\tunknown\n"
+   (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
-   (assert-equal "?\tunknown\n"
-		 (uim 'test-prop-label))
+   (assert-false (uim-bool 'test-prop-label))
    (assert-equal 0
 		 (uim 'test-updated-mode)))
 
@@ -1736,15 +1675,15 @@
 	   (context-propagate-widget-configuration tc)
 	   #t))
    (assert-equal (string-append
-		  "branch\ta\t直接入力\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_direct\ta\t直接入力\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
    (assert-equal '("ひらがな"
 		   "カタカナ"
@@ -1768,15 +1707,15 @@
 	   (context-propagate-widget-configuration tc)
 	   #t))
    (assert-equal (string-append
-		  "branch\tア\tカタカナ\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+		  "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
 		 (uim 'test-prop-list))
    (assert-equal '("ひらがな"
 		   "カタカナ"
@@ -1802,15 +1741,15 @@
 	   (context-propagate-widget-configuration tc)
 	   #t))
    (assert-equal (string-append
-		  "branch\tＲ\tローマ字\n"
-		  "leaf\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-		  "leaf\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-		  "branch\tア\tカタカナ\n"
-		  "leaf\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-		  "leaf\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-		  "leaf\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-		  "leaf\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-		  "leaf\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+		  "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+		  "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+		  "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+		  "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+		  "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
 		 (uim 'test-prop-list))
    (assert-equal '("ひらがな"
 		   "カタカナ"
@@ -1833,7 +1772,7 @@
    (uim '(begin
 	   (context-propagate-widget-configuration tc)
 	   #t))
-   (assert-equal "branch\t?\tunknown\n"
+   (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
    (assert-equal '("unknown")
 		 (uim 'test-mode-list))
@@ -1848,7 +1787,7 @@
    (uim '(begin
 	   (context-propagate-widget-configuration tc)
 	   #t))
-   (assert-equal "branch\t?\tunknown\n"
+   (assert-equal "branch\tunknown\t?\tunknown\n"
 		 (uim 'test-prop-list))
    (assert-equal '("unknown")
 		 (uim 'test-mode-list))

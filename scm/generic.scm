@@ -66,7 +66,7 @@
 (register-action 'action_generic_off
 		 (lambda (gc)
 		   (list
-		    'figure_generic_off
+		    'off
 		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
@@ -81,7 +81,7 @@
 		   (let* ((im (generic-context-im gc))
 			  (name (symbol->string (im-name im))))
 		     (list
-		      'figure_generic_on
+		      'on
 		      "O"
 		      (N_ "on")
 		      (string-append name (N_ " Mode")))))
@@ -124,7 +124,8 @@
   (lambda (pc)
     (generic-context-set-rk-nth! pc 0)
     (generic-context-set-candidate-op-count! pc 0)
-    (generic-context-set-converting! pc #f)))
+    (generic-context-set-converting! pc #f)
+    (rk-flush (generic-context-rk-context pc))))
 
 (define generic-update-preedit
   (lambda (pc)
@@ -146,12 +147,6 @@
     (im-commit-raw pc)
     (generic-context-set-raw-commit! pc #t)))
 
-;; Currently not used.  See generic-proc-input-state-with-preedit.
-;;(define generic-commit-raw-with-preedit-update
-;;  (lambda (pc)
-;;    (im-commit-raw pc)
-;;    (generic-context-set-raw-commit! pc #f)))
-
 (define generic-commit
   (lambda (pc)
     (let* ((rkc (generic-context-rk-context pc))
@@ -160,12 +155,10 @@
 	  (begin
 	    (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
 	    (im-deactivate-candidate-selector pc)
-	    (rk-flush rkc)
 	    (generic-context-flush pc))
 	  (begin
 	    (im-commit-raw pc)
-	    (rk-flush rkc)
-	    (im-update-preedit pc))))))
+	    (rk-flush rkc))))))
 
 (define generic-commit-by-numkey
   (lambda (pc key)
@@ -187,7 +180,7 @@
 	  (begin
 	    (im-commit pc (nth idx (cadr cs)))
 	    (im-deactivate-candidate-selector pc)
-	    (rk-flush rkc)
+	    (generic-context-flush pc)
 	    #t)
 	  #f))))
 
@@ -195,20 +188,10 @@
   (lambda (pc key state rkc)
     (cond
       ((generic-off-key? key state)
-       (rk-flush rkc)
        (generic-context-set-on! pc #f)
-       #f)
-      ((generic-prev-candidate-key? key state)
-       (generic-commit-raw pc)
-       #f)
-      ((generic-next-candidate-key? key state)
-       (generic-commit-raw pc)
        #f)
       ((generic-backspace-key? key state)
        (generic-commit-raw pc)
-       #f)
-      ((generic-commit-key? key state)
-       (generic-commit pc)
        #f)
       ((symbol? key)
        (generic-commit-raw pc)
@@ -223,48 +206,44 @@
 (define generic-proc-input-state-with-preedit
   (lambda (pc key state rkc)
     (cond
-      ((generic-off-key? key state)
-	(rk-flush rkc)
-	(generic-context-set-on! pc #f)
-	#f)
-      ((generic-prev-candidate-key? key state)
- 	(generic-context-set-converting! pc #t)
- 	(generic-proc-converting-state pc key state)
- 	#f)
-      ((generic-next-candidate-key? key state)
-	(generic-context-set-converting! pc #t)
-	(generic-proc-converting-state pc key state)
-	#f)
-      ((generic-backspace-key? key state)
-	(rk-backspace rkc)
-	(generic-context-set-rk-nth! pc 0)
-	#f)
-      ((generic-commit-key? key state)
-	(generic-commit pc)
-	#f)
-      ((generic-cancel-key? key state)
-	(rk-flush rkc)
-	(generic-context-flush pc)
-	#f)
-      ((symbol? key)
-	;;Just ignore these key while having preedit 
-	;;(generic-commit-raw-with-preedit-update pc)
-	;;(rk-flush rkc)
-	;;(generic-context-flush pc)
-	#f)
-      ((and (modifier-key-mask state)
-	    (not (shift-key-mask state)))
-	;;Just ignore these key while having preedit 
-	;;(generic-commit-raw-with-preedit-update pc)
-	;;(rk-flush rkc)
-	;;(generic-context-flush pc)
-	#f)
-      (else
-	   #t))))
+     ((generic-off-key? key state)
+      (rk-flush rkc)
+      (generic-context-set-on! pc #f)
+      #f)
+     ((generic-prev-candidate-key? key state)
+      (generic-context-set-converting! pc #t)
+      (generic-proc-converting-state pc key state)
+      #f)
+     ((generic-next-candidate-key? key state)
+      (generic-context-set-converting! pc #t)
+      (generic-proc-converting-state pc key state)
+      #f)
+     ((generic-backspace-key? key state)
+      (rk-backspace rkc)
+      (generic-context-set-rk-nth! pc 0)
+      #f)
+     ((generic-commit-key? key state)
+      (generic-commit pc)
+      #f)
+     ((generic-cancel-key? key state)
+      (generic-context-flush pc)
+      #f)
+     ((symbol? key)
+      (generic-commit pc)
+      (im-commit-raw pc)
+      #f)
+     ((and (modifier-key-mask state)
+	   (not (shift-key-mask state)))
+      (generic-commit pc)
+      (im-commit-raw pc)
+      #f)
+     (else
+      #t))))
 
 (define generic-proc-input-state
   (lambda (pc key state)
     (let* ((rkc (generic-context-rk-context pc))
+    	   (seq (rk-context-seq rkc))
 	   (res #f))
       (and
        (if (string=? (rk-pending rkc) "")
@@ -275,24 +254,29 @@
 	       (rk-push-key!
 		rkc
 		(charcode->string key)))
-	 #t))
-      (if (not (rk-partial? rkc))
-	  (let ((cs (rk-current-seq rkc)))
-	    (if (= (length (cadr cs)) 1)
-		(begin
-		  (im-commit pc
-			     (nth (generic-context-rk-nth pc) (cadr cs)))
-		  (generic-context-set-rk-nth! pc 0)
-		  (generic-context-set-candidate-op-count! pc 0)
-		  (im-deactivate-candidate-selector pc)
-		  (rk-flush rkc)))))
-      (if res
-	  (begin
-	    (im-commit pc (nth (generic-context-rk-nth pc) res))
-	    (generic-context-set-rk-nth! pc 0)
-	    (generic-context-set-candidate-op-count! pc 0)
-	    (im-deactivate-candidate-selector pc))
-	  ))))
+         (if res
+	     (begin
+	       (im-commit pc (nth (generic-context-rk-nth pc) res))
+	       (generic-context-set-rk-nth! pc 0)
+	       (generic-context-set-candidate-op-count! pc 0)
+	       (im-deactivate-candidate-selector pc)))
+
+         (if (not (rk-partial? rkc)) ;; exact match or no-match
+	     (let ((cs (rk-current-seq rkc)))
+	       (if (= (length (cadr cs)) 1)
+		   (begin
+		     (im-commit pc
+				(nth (generic-context-rk-nth pc) (cadr cs)))
+		     (generic-context-flush pc)
+		     (im-deactivate-candidate-selector pc)))
+	       ;; commit no-matching key
+	       (if (and
+		    (not cs)
+		    (null? (rk-context-seq rkc))
+		    (or
+		     (null? seq)
+		     res))
+		   (im-commit-raw pc)))))))))
 
 (define generic-proc-converting-state
   (lambda (pc key state)
@@ -315,14 +299,19 @@
 		 (generic-context-set-candidate-op-count!
 		  pc
 		  (+ 1 (generic-context-candidate-op-count pc)))
+		 (if (and
+                      (= (generic-context-candidate-op-count pc)
+                         generic-candidate-op-count)
+                      generic-use-candidate-window?)
+                     (im-activate-candidate-selector
+		      pc (length cs) generic-nr-candidate-max))
 		 (if (>= (generic-context-candidate-op-count pc)
 			 generic-candidate-op-count)
 		     (im-select-candidate pc n))
 		 #f)
 	       (begin
 		 (im-commit-raw pc)
-		 (rk-flush rkc)
-		 (im-update-preedit pc)
+		 (generic-context-flush pc)
 		 #f))
 	   #t)
        (if (generic-next-candidate-key? key state)
@@ -350,8 +339,7 @@
 		 #f)
 	       (begin
 		 (im-commit-raw pc)
-		 (rk-flush rkc)
-		 (im-update-preedit pc)
+		 (generic-context-flush pc)
 		 #f))
 	   #t)
        (if (and (generic-prev-page-key? key state)
@@ -382,15 +370,13 @@
        (if (generic-cancel-key? key state)
 	   (begin
 	     (generic-context-flush pc)
-	     (rk-flush rkc)
 	     (im-deactivate-candidate-selector pc)
-	     (im-update-preedit pc)
 	     #f)
 	   #t)
        (if (symbol? key)
 	   (begin
-	     ;(generic-commit pc)
-	     ;(im-commit-raw pc)
+	     (generic-commit pc)
+	     (im-commit-raw pc)
 	     #f)
 	   #t)
        (if (and generic-commit-candidate-by-numeral-key?
@@ -402,18 +388,17 @@
        (if (and (modifier-key-mask state)
 		(not (shift-key-mask state)))
 	   (begin
-	     ;(generic-commit pc)
-	     ;(im-commit-raw pc)
+	     (generic-commit pc)
+	     (im-commit-raw pc)
 	     #f)
 	   #t)
        (let ((cs (rk-current-seq rkc)))
 	 (if (> (length (cadr cs)) 0)
 	     (im-commit pc
 			(nth (generic-context-rk-nth pc) (cadr cs))))
-	     (generic-context-flush pc)
-	     (im-deactivate-candidate-selector pc)
-	     (rk-flush rkc)
-	     (generic-proc-input-state pc key state)
+	 (generic-context-flush pc)
+	 (im-deactivate-candidate-selector pc)
+	 (generic-proc-input-state pc key state)
 	 )))))
   
 
@@ -452,6 +437,28 @@
     (let ((rkc (generic-context-rk-context pc)))
       (rk-flush rkc))))
 
+(define generic-focus-in-handler
+  (lambda (pc)
+    #f))
+
+(define generic-focus-out-handler
+  (lambda (pc)
+    (let* ((rkc (generic-context-rk-context pc))
+	   (cs (rk-current-seq rkc)))
+      (cond
+       ((> (length (cadr cs)) 0) ;; commit
+	 (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
+	 (im-deactivate-candidate-selector pc)
+	 (generic-context-flush pc)
+	 (generic-update-preedit pc))
+       ((not (string=? (rk-pending rkc) "")) ;; flush pending rk
+	 (generic-context-flush pc)
+	 (generic-update-preedit pc))
+	 ))))
+
+(define generic-place-handler generic-focus-in-handler)
+(define generic-displace-handler generic-focus-out-handler)
+
 (define generic-get-candidate-handler
   (lambda (pc idx accel-enum-hint)
     (let* ((rkc (generic-context-rk-context pc))
@@ -486,6 +493,12 @@
      generic-reset-handler
      generic-get-candidate-handler
      generic-set-candidate-index-handler
-     context-prop-activate-handler)))
+     context-prop-activate-handler
+     #f
+     generic-focus-in-handler
+     generic-focus-out-handler
+     generic-place-handler
+     generic-displace-handler
+     )))
 
 (generic-configure-widgets)

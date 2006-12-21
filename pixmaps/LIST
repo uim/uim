@@ -1,0 +1,134 @@
+Categorized icon list
+=====================
+
+Input methods
+-------------
+
+- scim-anthy.png (Anthy)
+- scim-canna.png (Canna)
+- scim-prime.png (PRIME)
+- taiyaki.xcf    (source of scim-prime.png)
+- scim-skk.png   (SKK)
+- scim-wnn.png   (Wnn)
+
+- skk.svg        (another version for SKK)
+- tcode.svg      (T-Code)
+- tutcode.svg    (TUT-Code)
+- byeoru.svg     (Byeoru)
+- direct.svg     ("pass through" input method)
+- im_subst.svg   (substitutional icon for icon-less uim input methods)
+
+Japanese kana input methods
+---------------------------
+
+- ja_romaji.svg
+- ja_kana.svg
+- ja_azik.svg
+- ja_nicola.svg
+- ja_pocketbell.svg
+
+Input modes
+-----------
+
+- off.svg
+- on.svg
+
+- direct_input.svg
+
+- ja_direct.svg
+- ja_halfwidth_alnum.svg
+- ja_fullwidth_alnum.svg
+- ja_hiragana.svg
+- ja_katakana.svg
+- ja_halfkana.svg
+
+- ko_direct.svg
+- ko_hangulchar.svg
+- ko_hangulword.svg
+
+- prime_mode_application.svg (a special input mode for PRIME)
+
+Tools
+-----
+
+- im_switcher.svg
+- uim-dict.svg
+
+Others
+------
+
+- null.png
+- unknown.svg
+- uim-icon64.png
+- uim-icon48.png
+- uim-gray.png
+
+
+Design origin of each icon
+--------------------------
+
+Input method icons are designed based on these rules.
+
+- Easily identifiable what input method is symbolized
+
+- Easily distinguishable from a list of other input method icons
+
+- Simple detail is perferred to reduce visual recognition cost of
+  users, especially on a situation selecting an item from tens of
+  icons. Appropriately detailed icons make such selection quicker
+  (input method switcher menu is supposed)
+
+
+scim-anthy.png
+~~~~~~~~~~~~~~
+
+The crown symbolizes the enthusiastic origin of the input method
+'Anthy' named by its author Yusuke TABATA. And the icon designer only
+considered its symbolized origin, beauty and visual
+identifiability. No other meaning or functionality was added.
+
+So this icon only indicates that "this icon symbolizes Anthy" to
+users. There is no relation with its functionality or behavior.
+
+
+scim-prime.png
+~~~~~~~~~~~~~~
+
+The taiyaki (http://en.wikipedia.org/wiki/Taiyaki) is the personal
+emblem of the author of PRIME Hiroyuki Komatsu. Since the icon is
+well-known in Japan via his homepage (http://taiyaki.org/), Japanese
+users can easily tie this icon with his product PRIME.
+
+So this icon only indicates that "this icon symbolizes PRIME" to
+users. There is no relation with its functionality or behavior.
+
+
+skk.svg
+~~~~~~~
+
+This is a direct reflection of the well-known conversion-mode
+indicator of SKK
+(http://www.h4.dion.ne.jp/~apricots/uimskk/tutorial.html#con). And the
+cool and dark color is tied with the acute shape and the "for experts"
+image of SKK.
+
+
+tcode.svg
+~~~~~~~~~
+
+The input stroke chart (http://openlab.jp/tcode/intro.html#stroke-table)
+of T-Code.
+
+
+tutcode.svg
+~~~~~~~~~~~
+
+Likewise. Since T-Code and TUT-Code is rarely used simultaneously,
+the exactly same icon is reused although it is a bad idea.
+
+
+im_switcher.svg
+~~~~~~~~~~~~~~~
+
+The situation "Select one item from a list" is iconified. Each bar
+symbolizes an item, and the colored bar stuck out means selected one.

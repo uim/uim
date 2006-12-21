@@ -48,7 +48,7 @@
 (register-action 'action_direct_direct
 		 (lambda (dc)
 		   (list
-		    'figure_direct_direct
+		    'direct_input
 		    "-"
 		    (N_ "direct")
 		    (N_ "Direct Input Mode")))
@@ -139,4 +139,10 @@
  direct-reset-handler
  direct-get-candidate-handler
  direct-set-candidate-index-handler
- context-prop-activate-handler)
+ context-prop-activate-handler
+ #f
+ #f
+ #f
+ #f
+ #f
+ )

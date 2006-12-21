@@ -35,16 +35,17 @@
  * key conversion utility for uim-gtk
  */
 
+#include <config.h>
+
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
-#include <gdk/gdkx.h>
-
 #ifdef GDK_WINDOWING_X11
+#include <gdk/gdkx.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #endif
 
-#include "config.h"
 #include "uim/uim.h"
 
 #include "key-util-gtk.h"
@@ -72,12 +73,24 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
 #endif
 
   /* 1. check key */
-  if (keyval >= GDK_F1 && keyval <= GDK_F35)
+  if (keyval < 256)
+    *ukey = keyval;
+  else if (keyval >= GDK_F1 && keyval <= GDK_F35)
     *ukey = keyval - GDK_F1 + UKey_F1;
   else if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9)
     *ukey = keyval - GDK_KP_0 + UKey_0;
-  else if (keyval < 256)
-    *ukey = keyval;
+#if GTK_CHECK_VERSION(2, 6, 0)
+  else if (keyval >= GDK_dead_grave && keyval <= GDK_dead_horn)
+#else
+  else if (keyval >= GDK_dead_grave && keyval <= GDK_dead_belowdot)
+#endif
+    *ukey = keyval - GDK_dead_grave + UKey_Dead_Grave;
+  else if (keyval >= GDK_Kanji && keyval <= GDK_Eisu_toggle)
+    *ukey = keyval - GDK_Kanji + UKey_Kanji;
+  else if (keyval >= GDK_Hangul && keyval <= GDK_Hangul_Special)
+    *ukey = keyval - GDK_Hangul + UKey_Hangul;
+  else if (keyval >= GDK_kana_fullstop && keyval <= GDK_semivoicedsound)
+    *ukey = keyval - GDK_kana_fullstop + UKey_Kana_Fullstop;
   else {
     switch (keyval) {
     case GDK_BackSpace:
@@ -123,21 +136,23 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
     case GDK_End:
       *ukey = UKey_End;
       break;
-    case GDK_Kanji:
-    case GDK_Zenkaku_Hankaku:
-      *ukey = UKey_Zenkaku_Hankaku;
-      break;
     case GDK_Multi_key:
       *ukey = UKey_Multi_key;
       break;
+    case GDK_Codeinput:
+      *ukey = UKey_Codeinput;
+      break;
+    case GDK_SingleCandidate:
+      *ukey = UKey_SingleCandidate;
+      break;
+    case GDK_MultipleCandidate:
+      *ukey = UKey_MultipleCandidate;
+      break;
+    case GDK_PreviousCandidate:
+      *ukey = UKey_PreviousCandidate;
+      break;
     case GDK_Mode_switch:
       *ukey = UKey_Mode_switch;
-      break;
-    case GDK_Henkan_Mode:
-      *ukey = UKey_Henkan_Mode;
-      break;
-    case GDK_Muhenkan:
-      *ukey = UKey_Muhenkan;
       break;
     case GDK_Shift_L:
     case GDK_Shift_R:
@@ -198,6 +213,15 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
 	g_modifier_state &= ~UMod_Hyper;
 #endif
       *ukey = UKey_Hyper_key;
+      break;
+    case GDK_Caps_Lock:
+      *ukey = UKey_Caps_Lock;
+      break;
+    case GDK_Num_Lock:
+      *ukey = UKey_Num_Lock;
+      break;
+    case GDK_Scroll_Lock:
+      *ukey = UKey_Scroll_Lock;
       break;
     default:
       *ukey = UKey_Other;

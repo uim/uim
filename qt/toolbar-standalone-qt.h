@@ -38,6 +38,7 @@
 #include <qpoint.h>
 #include <qhbox.h>
 
+class QUimHelperToolbar;
 class UimStandaloneToolbar : public QHBox
 {
     Q_OBJECT
@@ -45,6 +46,13 @@ class UimStandaloneToolbar : public QHBox
 public:
     UimStandaloneToolbar( QWidget *paret = 0, const char *name = 0 );
     ~UimStandaloneToolbar();
+
+protected slots:
+    void slotToolbarResized();
+    void slotToolbarDoubleClicked();
+
+private:
+    QUimHelperToolbar *toolbar;
 };
 
 class UimToolbarDraggingHandler : public QFrame
@@ -59,6 +67,7 @@ public:
 
 signals:
     void moveTo( const QPoint & );
+    void handleDoubleClicked();
 
 protected:
     void drawContents( QPainter* );
@@ -66,9 +75,12 @@ protected:
     void mousePressEvent ( QMouseEvent * e );
     void mouseReleaseEvent ( QMouseEvent * e );
     void mouseMoveEvent ( QMouseEvent * e );
+    void mouseDoubleClickEvent ( QMouseEvent * e );
 
 private:
     bool isDragging;
+    int offsetX;
+    int offsetY;
 };
 
 #endif  /* _UIM_TOOLBAR_DRAGGING_HANDLER_H_ */

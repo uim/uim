@@ -47,38 +47,36 @@
 
 #define BUTTON_H_ALIGN 5
 
+/* written in unicode */
 gchar *alphabet_capital[] = {
-  "A", "B", "C", "D", "E",
-  "F", "G", "H", "I", "J",
-  "K", "L", "M", "N", "O",
-  "P", "Q", "R", "S", "T",
-  "U", "V", "W", "X", "Y",
-  "Z", NULL
+  "Ａ", "Ｂ", "Ｃ", "Ｄ", "Ｅ",
+  "Ｆ", "Ｇ", "Ｈ", "Ｉ", "Ｊ",
+  "Ｋ", "Ｌ", "Ｍ", "Ｎ", "Ｏ",
+  "Ｐ", "Ｑ", "Ｒ", "Ｓ", "Ｔ",
+  "Ｕ", "Ｖ", "Ｗ", "Ｘ", "Ｙ",
+  "Ｚ", NULL
 };
 
 gchar *alphabet_small[] = {
-  "a", "b", "c", "d", "e",
-  "f", "g", "h", "i", "j",
-  "k", "l", "m", "n", "o",
-  "p", "q", "r", "s", "t",
-  "u", "v", "w", "x", "y",
-  "z", NULL
+  "ａ", "ｂ", "ｃ", "ｄ", "ｅ",
+  "ｆ", "ｇ", "ｈ", "ｉ", "ｊ",
+  "ｋ", "ｌ", "ｍ", "ｎ", "ｏ",
+  "ｐ", "ｑ", "ｒ", "ｓ", "ｔ",
+  "ｕ", "ｖ", "ｗ", "ｘ", "ｙ",
+  "ｚ", NULL
 };
 
 gchar *numbers[] = {
-  "0", "1", "2", "3", "4",
-  "5", "6", "7", "8", "9",
+  "０", "１", "２", "３", "４",
+  "５", "６", "７", "８", "９",
   NULL
 };
 
 gchar *symbols[] = {
-  "@",  ":", "_", "~", "/",
-  "\\", "(", ")", "'", "\"",
-  "-",  ",", ".", "!", "?",
+  "−", "，", "．", "！", "？",
   NULL
 };
 
-/* written in unicode */
 gchar *katakana[] = {
   "ア", "イ", "ウ", "エ", "オ",
   "カ", "キ", "ク", "ケ", "コ",
@@ -87,19 +85,18 @@ gchar *katakana[] = {
   "ナ", "ニ", "ヌ", "ネ", "ノ",
   "ハ", "ヒ", "フ", "ヘ", "ホ",
   "マ", "ミ", "ム", "メ", "モ",
-  "ヤ", "", "ユ", "", "ヨ",
+  "ヤ", "",   "ユ", "",   "ヨ",
   "ラ", "リ", "ル", "レ", "ロ",
-  "ワ", "ヰ", "", "ヱ", "ヲ",
-  "ン", "", "ヴ", "", "",
+  "ワ", "ヰ", "",   "ヱ", "ヲ",
+  "ン", "ヴ", "",   "゛", "゜",
   "ガ", "ギ", "グ", "ゲ", "ゴ",
   "ザ", "ジ", "ズ", "ゼ", "ゾ",
   "ダ", "ヂ", "ヅ", "デ", "ド",
   "バ", "ビ", "ブ", "ベ", "ボ",
   "パ", "ピ", "プ", "ペ", "ポ",
   "ァ", "ィ", "ゥ", "ェ", "ォ",
-  "ャ", "", "ュ", "", "ョ",
-  "ッ", "（", "）", "「", "」",
-  "ー", "、", "。", "！", "？",
+  "ャ", "",   "ュ", "",   "ョ",
+  "ッ", "ヮ", "ヵ", "ヶ",
   NULL
 };
 
@@ -111,26 +108,34 @@ gchar *hiragana[] = {
   "な", "に", "ぬ", "ね", "の",
   "は", "ひ", "ふ", "へ", "ほ",
   "ま", "み", "む", "め", "も",
-  "や", "", "ゆ", "", "よ",
+  "や", "",   "ゆ", "",   "よ",
   "ら", "り", "る", "れ", "ろ",
-  "わ", "ゐ", "", "ゑ", "を",
-  "ん", "", "う゛", "", "",
+  "わ", "ゐ", "",   "ゑ", "を",
+  "ん", "う゛", "", "゛", "゜",
   "が", "ぎ", "ぐ", "げ", "ご",
   "ざ", "じ", "ず", "ぜ", "ぞ",
   "だ", "ぢ", "づ", "で", "ど",
   "ば", "び", "ぶ", "べ", "ぼ",
   "ぱ", "ぴ", "ぷ", "ぺ", "ぽ",
   "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
-  "ゃ", "", "ゅ", "", "ょ",
-  "っ", "（", "）", "「", "」",
+  "ゃ", "",   "ゅ", "",   "ょ",
+  "っ", "ゎ",
+  NULL
+};
+
+gchar *kana_symbols[] = {
   "ー", "、", "。", "！", "？",
   NULL
 };
 
 gchar *kigou[] = {
-  "○", "●", "◎", "♂", "♀",
-  "☆", "★", "□", "■", "△",
-  "▲", "▽", "▼", "〒",
+  "　", "￣", "＿", "‖", "｜",
+  "♂", "♀", "＃", "＆", "＊",
+  "＠", "※", "〒", "〓", "☆",
+  "★", "○", "●", "◎", "◇",
+  "◆", "□", "■", "△", "▲",
+  "▽", "▼", "♯", "♭", "♪",
+  "§", "†", "‡", "¶", "◯",
   NULL
 };
 
@@ -157,14 +162,16 @@ gchar *omission[] = {
 };
 
 gchar *unit[] = {
-  "℃", "￥", "＄", "£",
-  "％", "㍉", "㌔", "㌢", "㍍",
-  "㌘", "㌧", "㌃", "㌶", "㍑",
-  "㍗", "㌍", "㌦", "㌣", "㌫",
-  "㍊", "㌻", "㎜", "㎝", "㎞",
-  "㎎", "㎏", "㏄", "ℓ",  "㎟",
-  "㎠", "㎡", "㎢", "㎣", "㎤",
-  "㎥", "㎦", "Å", "‰",
+  "℃", "￥", "＄", "¢", "£",
+  "％", "‰", "°", "′", "″",
+  "㍉", "㌔", "㌢", "㍍", "㌘",
+  "㌧", "㌃", "㌶", "㍑", "㍗",
+  "㌍", "㌦", "㌣", "㌫", "㍊",
+  "㌻", "㎜", "㎝", "㎞", "㎎",
+  "㎏", "㏄", "ℓ", "㎟", "㎠",
+  "㎡", "㎢", "㎣", "㎤", "㎥",
+  "㎦", "Å",
+  NULL
 };
 
 gchar *dot[] = {
@@ -172,21 +179,23 @@ gchar *dot[] = {
   "：", "；", "？", "！", "゛",
   "゜", "´", "｀", "¨", "＾",
   "ヽ", "ヾ", "ゝ", "ゞ", "〃",
+  "仝", "々", "〆", "〇", "ー",
+  "―", "‐", "／", "＼", "〜",
   "…", "‥", "°", "′", "″",
   NULL
 };
 
 gchar *academic[] = {
   "＋", "－", "±", "×", "÷",
-  "＝", "≠", "＜", "＞", "≦",
-  "≧", "∞", "∴", "≒", "≡",
-  "∫", "∮", "∑", "√", "⊥",
-  "∠", "∟", "⊿", "∵", "∩",
-  "∪", "∈", "∋", "⊆", "⊇",
-  "⊂", "⊃", "∧", "∨", "￢",
-  "⇒", "⇔", "∀", "∃", "⌒",
-  "∂", "∇", "≪", "≫", "∽",
-  "∝", "∬",
+  "＝", "≠", "≒", "≡", "∽",
+  "＜", "＞", "≦", "≧", "∞",
+  "∴", "∵", "∫", "∬", "∮",
+  "∂", "∇", "≪", "≫", "√",
+  "∝", "∑", "∠", "⊥", "⌒",
+  "∟", "⊿", "∈", "∋", "⊆",
+  "⊇", "⊂", "⊃", "∪", "∩",
+  "∧", "∨", "￢", "⇒", "⇔",
+  "∀", "∃",
   NULL
 };
 
@@ -196,19 +205,61 @@ gchar *number[] = {
   "⑪", "⑫", "⑬", "⑭", "⑮",
   "⑯", "⑰", "⑱", "⑲", "⑳",
   "Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ",
-  "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ", "ⅰ",
-  "ⅱ", "ⅲ", "ⅳ", "ⅴ", "ⅵ",
-  "ⅶ", "ⅷ", "ⅸ", "ⅹ",
+  "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ",
+  "ⅰ", "ⅱ", "ⅲ", "ⅳ", "ⅴ",
+  "ⅵ", "ⅶ", "ⅷ", "ⅸ", "ⅹ",
+  NULL
+};
+
+gchar *greek_capital[] = {
+  "Α", "Β", "Γ", "Δ", "Ε",
+  "Ζ", "Η", "Θ", "Ι", "Κ",
+  "Λ", "Μ", "Ν", "Ξ", "Ο",
+  "Π", "Ρ", "Σ", "Τ", "Υ",
+  "Φ", "Χ", "Ψ", "Ω",
+  NULL
+};
+
+gchar *greek_small[] = {
+  "α", "β", "γ", "δ", "ε",
+  "ζ", "η", "θ", "ι", "κ",
+  "λ", "μ", "ν", "ξ", "ο",
+  "π", "ρ", "σ", "τ", "υ",
+  "φ", "χ", "ψ", "ω",
+  NULL
+};
+
+gchar *cyrillic_capital[] = {
+  "А", "Б", "В", "Г", "Д",
+  "Е", "Ё", "Ж", "З", "И",
+  "Й", "К", "Л", "М", "Н",
+  "О", "П", "Р", "С", "Т",
+  "У", "Ф", "Х", "Ц", "Ч",
+  "Ш", "Щ", "Ъ", "Ы", "Ь",
+  "Э", "Ю", "Я",
+  NULL
+};
+
+gchar *cyrillic_small[] = {
+  "а", "б", "в", "г", "д",
+  "е", "ё", "ж", "з", "и",
+  "й", "к", "л", "м", "н",
+  "о", "п", "р", "с", "т",
+  "у", "ф", "х", "ц", "ч",
+  "ш", "щ", "ъ", "ы", "ь",
+  "э", "ю", "я",
+  NULL
 };
 
 gchar *line[] = {
-  "─", "│", "┌", "┐", "┘",
-  "└", "├", "┬", "┤", "┴",
-  "┴", "┼", "━", "┏", "┓",
-  "┛", "┗", "┣", "┳", "┫",
-  "┻", "╋", "┠", "┯", "┨",
-  "┷", "┿", "┝", "┰", "┥",
-  "┸", "╂",
+  "─", "│", "┼", "",   "",
+  "┌", "┐", "┘", "└", "",
+  "├", "┬", "┤", "┴", "",
+  "━", "┃", "╋", "",   "",
+  "┏", "┓", "┛", "┗", "",
+  "┣", "┳", "┫", "┻", "",
+  "┠", "┯", "┨", "┷", "┿",
+  "┝", "┰", "┥", "┸", "╂",
   NULL
 };
 
@@ -218,6 +269,9 @@ static GtkWidget *buttontable_create(char **table, int tablelen);
 static GtkWidget *create_hiragana_tab(void);
 static GtkWidget *create_katakana_tab(void);
 static GtkWidget *create_eisu_tab(void);
+static GtkWidget *create_symbol_tab(void);
+static GtkWidget *create_greek_tab(void);
+static GtkWidget *create_cyrillic_tab(void);
 
 static void       check_helper_connection(void);
 static void       helper_disconnect_cb(void);
@@ -283,7 +337,7 @@ buttontable_create(gchar **table, int len)
       button = gtk_button_new_with_label(table[i*BUTTON_H_ALIGN + j]);
       g_signal_connect(button, "clicked",
 		       G_CALLBACK(padbutton_clicked), "button");
-      
+
       gtk_table_attach_defaults(GTK_TABLE(_table),
 				button,
 				j, j + 1,
@@ -318,6 +372,9 @@ create_hiragana_tab(void)
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(hiragana, sizeof(hiragana)/sizeof(gchar*)),
 		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(kana_symbols, sizeof(kana_symbols)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
 
   return vbox;
 }
@@ -331,6 +388,9 @@ create_katakana_tab(void)
 
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(katakana, sizeof(katakana)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(kana_symbols, sizeof(kana_symbols)/sizeof(gchar*)),
 		     FALSE, FALSE, 0);
 
   return vbox;
@@ -354,6 +414,66 @@ create_eisu_tab(void)
 		     FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox),
 		     buttontable_create(symbols, sizeof(symbols)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+
+  return vbox;
+
+}
+
+static GtkWidget *
+create_symbol_tab(void)
+{
+  GtkWidget *vbox;
+
+  vbox = gtk_vbox_new(FALSE, 10);
+
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(dot, sizeof(dot)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(kigou, sizeof(kigou)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(bracket, sizeof(bracket)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(arrow, sizeof(arrow)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+
+  return vbox;
+
+}
+
+static GtkWidget *
+create_greek_tab(void)
+{
+  GtkWidget *vbox;
+
+  vbox = gtk_vbox_new(FALSE, 10);
+
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(greek_capital, sizeof(greek_capital)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(greek_small, sizeof(greek_small)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+
+  return vbox;
+
+}
+
+static GtkWidget *
+create_cyrillic_tab(void)
+{
+  GtkWidget *vbox;
+
+  vbox = gtk_vbox_new(FALSE, 10);
+
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(cyrillic_capital, sizeof(cyrillic_capital)/sizeof(gchar*)),
+		     FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox),
+		     buttontable_create(cyrillic_small, sizeof(cyrillic_small)/sizeof(gchar*)),
 		     FALSE, FALSE, 0);
 
   return vbox;
@@ -385,7 +505,7 @@ static GtkWidget *
 input_table_create(gchar *localename)
 {
   GtkWidget *notebook;
-  
+
   notebook = gtk_notebook_new();
   gtk_notebook_set_scrollable(GTK_NOTEBOOK(notebook), TRUE);
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
@@ -398,14 +518,8 @@ input_table_create(gchar *localename)
 			   create_eisu_tab(),
 			   gtk_label_new(_("eisu")));
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-			   create_tab(kigou, sizeof(kigou)/sizeof(gchar*)),
+			   create_symbol_tab(),
 			   gtk_label_new(_("symbol")));
-  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-			   create_tab(bracket, sizeof(bracket)/sizeof(gchar*)),
-			   gtk_label_new(_("bracket")));
-  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-			   create_tab(arrow, sizeof(arrow)/sizeof(gchar*)),
-			   gtk_label_new(_("arrow")));
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
 			   create_tab(omission, sizeof(omission)/sizeof(gchar*)),
 			   gtk_label_new(_("omission")));
@@ -413,14 +527,17 @@ input_table_create(gchar *localename)
 			   create_tab(unit, sizeof(unit)/sizeof(gchar*)),
 			   gtk_label_new(_("unit")));
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-			   create_tab(dot, sizeof(dot)/sizeof(gchar*)),
-			   gtk_label_new(_("dot")));
-  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
 			   create_tab(number, sizeof(number)/sizeof(gchar*)),
 			   gtk_label_new(_("number")));
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
 			   create_tab(academic, sizeof(academic)/sizeof(gchar*)),
 			   gtk_label_new(_("academic")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_greek_tab(),
+			   gtk_label_new(_("greek")));
+  gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+			   create_cyrillic_tab(),
+			   gtk_label_new(_("cyrillic")));
   gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
 			   create_tab(line, sizeof(line)/sizeof(gchar*)),
 			   gtk_label_new(_("line")));

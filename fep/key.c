@@ -32,7 +32,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #ifndef DEBUG
 #define NDEBUG
@@ -109,7 +109,7 @@ int tty2key_state(char key)
   if (key >= 'A' && key <= 'Z') {
     key_state += UMod_Shift;
   }
-  if (key >= 0 && key <= 31) {
+  if (key <= 31) {
     key_state +=  UMod_Control;
   }
   return key_state;
@@ -129,29 +129,29 @@ int *escape_sequence2key(const char *str, int str_len)
   } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_DOWN    )), len > 0) { rval[0] = UKey_Down;
   } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_RIGHT   )), len > 0) { rval[0] = UKey_Right;
   } else if (                         (not_enough += len = strcmp_prefix(str, str_len, _KEY_LEFT    )), len > 0) { rval[0] = UKey_Left;
-  } else if (key_backspace != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_backspace)), len > 0) { rval[0] = UKey_Backspace;
-  } else if (key_dc        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_dc       )), len > 0) { rval[0] = UKey_Delete;    
-  } else if (key_left      != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_left     )), len > 0) { rval[0] = UKey_Left;
-  } else if (key_up        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_up       )), len > 0) { rval[0] = UKey_Up;
-  } else if (key_right     != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_right    )), len > 0) { rval[0] = UKey_Right;
-  } else if (key_down      != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_down     )), len > 0) { rval[0] = UKey_Down;
-  } else if (key_ppage     != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_ppage    )), len > 0) { rval[0] = UKey_Prior;
-  } else if (key_npage     != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_npage    )), len > 0) { rval[0] = UKey_Next;
-  } else if (key_home      != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_home     )), len > 0) { rval[0] = UKey_Home;
-  } else if (key_end       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_end      )), len > 0) { rval[0] = UKey_End;
-  } else if (key_ic        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_ic       )), len > 0) { rval[0] = UKey_Insert;    
-  } else if (key_f1        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f1       )), len > 0) { rval[0] = UKey_F1;
-  } else if (key_f2        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f2       )), len > 0) { rval[0] = UKey_F2;
-  } else if (key_f3        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f3       )), len > 0) { rval[0] = UKey_F3;
-  } else if (key_f4        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f4       )), len > 0) { rval[0] = UKey_F4;
-  } else if (key_f5        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f5       )), len > 0) { rval[0] = UKey_F5;
-  } else if (key_f6        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f6       )), len > 0) { rval[0] = UKey_F6;
-  } else if (key_f7        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f7       )), len > 0) { rval[0] = UKey_F7;
-  } else if (key_f8        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f8       )), len > 0) { rval[0] = UKey_F8;
-  } else if (key_f9        != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f9       )), len > 0) { rval[0] = UKey_F9;
-  } else if (key_f10       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f10      )), len > 0) { rval[0] = UKey_F10;
-  } else if (key_f11       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f11      )), len > 0) { rval[0] = UKey_F11;
-  } else if (key_f12       != NULL && (not_enough += len = strcmp_prefix(str, str_len, key_f12      )), len > 0) { rval[0] = UKey_F12;
+  } else if (key_backspace != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_backspace)), len > 0)) { rval[0] = UKey_Backspace;
+  } else if (key_dc        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_dc       )), len > 0)) { rval[0] = UKey_Delete;    
+  } else if (key_left      != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_left     )), len > 0)) { rval[0] = UKey_Left;
+  } else if (key_up        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_up       )), len > 0)) { rval[0] = UKey_Up;
+  } else if (key_right     != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_right    )), len > 0)) { rval[0] = UKey_Right;
+  } else if (key_down      != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_down     )), len > 0)) { rval[0] = UKey_Down;
+  } else if (key_ppage     != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_ppage    )), len > 0)) { rval[0] = UKey_Prior;
+  } else if (key_npage     != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_npage    )), len > 0)) { rval[0] = UKey_Next;
+  } else if (key_home      != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_home     )), len > 0)) { rval[0] = UKey_Home;
+  } else if (key_end       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_end      )), len > 0)) { rval[0] = UKey_End;
+  } else if (key_ic        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_ic       )), len > 0)) { rval[0] = UKey_Insert;    
+  } else if (key_f1        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f1       )), len > 0)) { rval[0] = UKey_F1;
+  } else if (key_f2        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f2       )), len > 0)) { rval[0] = UKey_F2;
+  } else if (key_f3        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f3       )), len > 0)) { rval[0] = UKey_F3;
+  } else if (key_f4        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f4       )), len > 0)) { rval[0] = UKey_F4;
+  } else if (key_f5        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f5       )), len > 0)) { rval[0] = UKey_F5;
+  } else if (key_f6        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f6       )), len > 0)) { rval[0] = UKey_F6;
+  } else if (key_f7        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f7       )), len > 0)) { rval[0] = UKey_F7;
+  } else if (key_f8        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f8       )), len > 0)) { rval[0] = UKey_F8;
+  } else if (key_f9        != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f9       )), len > 0)) { rval[0] = UKey_F9;
+  } else if (key_f10       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f10      )), len > 0)) { rval[0] = UKey_F10;
+  } else if (key_f11       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f11      )), len > 0)) { rval[0] = UKey_F11;
+  } else if (key_f12       != NULL && ((not_enough += len = strcmp_prefix(str, str_len, key_f12      )), len > 0)) { rval[0] = UKey_F12;
   } else {
     rval[0] = UKey_Other;
     len = not_enough < 0 ? TRUE : FALSE;
@@ -248,20 +248,59 @@ void print_key(int key, int key_state)
     case UKey_Insert:
       printf("insert");
       break;
-    case UKey_Zenkaku_Hankaku:
-      printf("zenkaku-hankaku");
-      break;
     case UKey_Multi_key:
       printf("Multi_key");
       break;
     case UKey_Mode_switch:
       printf("Mode_switch");
       break;
-    case UKey_Henkan_Mode:
-      printf("Henkan_Mode");
+    case UKey_Kanji:
+      printf("Kanji");
       break;
     case UKey_Muhenkan:
       printf("Muhenkan");
+      break;
+    case UKey_Henkan_Mode:
+      printf("Henkan_Mode");
+      break;
+    case UKey_Romaji:
+      printf("romaji");
+      break;
+    case UKey_Hiragana:
+      printf("hiragana");
+      break;
+    case UKey_Katakana:
+      printf("katakana");
+      break;
+    case UKey_Hiragana_Katakana:
+      printf("hiragana-katakana");
+      break;
+    case UKey_Zenkaku:
+      printf("zenkaku");
+      break;
+    case UKey_Hankaku:
+      printf("hankaku");
+      break;
+    case UKey_Zenkaku_Hankaku:
+      printf("zenkaku-hankaku");
+      break;
+    case UKey_Touroku:
+      printf("touroku");
+      break;
+    case UKey_Massyo:
+      printf("massyo");
+      break;
+    case UKey_Kana_Lock:
+      printf("kana-lock");
+      break;
+    case UKey_Kana_Shift:
+      printf("kana-shift");
+      break;
+    case UKey_Eisu_Shift:
+      printf("eisu-shift");
+      break;
+    case UKey_Eisu_toggle:
+      printf("eisu-toggle");
       break;
     case UKey_F1:
       printf("F1");

@@ -32,7 +32,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     buf[len] = '\0';
     if (strcmp(buf, prev_buf) != 0) {
       puts(buf);
-      strcpy(prev_buf, buf);
+      strlcpy(prev_buf, buf, sizeof(prev_buf));
       fflush(stdout);
     }
   }

@@ -33,7 +33,7 @@
 // Handle IM procedure defined in XIM protocol
 
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <string.h>
@@ -322,8 +322,12 @@ void XimIM_impl::forward_event(RxPacket *p)
 	k.press = (k.ev.type == KeyPress);
 	k.key_sym = ks;
 
-	if (ic)
+	if (ic) {
+	    InputContext *focusedContext = InputContext::focusedContext();
+	    if (!focusedContext)
+		ic->setFocus(); // workaround for some buggy applications
 	    ic->OnKeyEvent(k);
+	}
 	if (!(g_option_mask & OPT_ON_DEMAND_SYNC))
 	    send_sync_reply(icid);
 	break;
@@ -422,8 +426,22 @@ void XimIM::set_encoding(const char *encoding)
 
     // set iconv environment
     if (mLocale)
-      delete mLocale;
-    mLocale = createLocale(mEncoding);
+	delete mLocale;
+    // workaround for Solaris 10 (bug #7558)
+    char *p;
+    if (!strcasecmp(encoding, "EUC") && mLangRegion &&
+	(p = strchr(mLangRegion, '_'))) {
+	char *iconv_encoding = (char *)malloc(3 + strlen(p + 1) + 1);
+	if (iconv_encoding) {
+	    sprintf(iconv_encoding, "euc%s", p + 1);
+	    mLocale = createLocale(iconv_encoding);
+	    free(iconv_encoding);
+	} else {
+	    mLocale = createLocale(mEncoding);
+	}
+    } else {
+	mLocale = createLocale(mEncoding);
+    }
 }
 
 const char *XimIM::get_encoding()

@@ -43,10 +43,8 @@
 
 #include "debug.h"
 
-extern int output_enable;
-
-int a_putchar(int c);
-int a_printf(const char *fmt, ...);
+#define a_printf printf
+#define a_putchar putchar
 
 void output_with_escape(const char *str);
 

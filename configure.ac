@@ -1,15 +1,13 @@
 AC_PREREQ(2.57)
+AC_INIT([uim], [1.4.0], [uim@lists.freedesktop.org])
+AC_CONFIG_SRCDIR([uim/uim.c])
+AC_CONFIG_HEADERS([uim/config.h])
+AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
 
-AC_INIT([uim], [1.1.0], [uim@lists.freedesktop.org])
-AM_INIT_AUTOMAKE(1.8.3)
-
-AC_CONFIG_SRCDIR([COPYING])
-
-AM_CONFIG_HEADER([uim/config.h])
-
-# Set empty values to cancel default "-g -O2"
-CFLAGS=""
-CXXFLAGS=""
+# Enable GNU extensions such as asprintf(3), BSD-originated functions,
+# POSIX features and more on glibc (and some other
+# implementations). See features.h. This macro should be placed here.
+AC_GNU_SOURCE
 
 # Checks for programs.
 AC_PROG_CXX
@@ -18,7 +16,15 @@ AC_PROG_CPP
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+AC_PATH_PROG(RSVG, rsvg)
+
+AM_MAINTAINER_MODE
+
+# Checks for libraries
+AC_CHECK_LIB(dl,dlopen)
+AC_CHECK_LIB(socket,socket)
 
 dnl ***********************
 dnl *** Tests for iconv ***
@@ -43,19 +49,29 @@ AC_ARG_WITH(m17nlib,
                  [Don't build against m17nlib]),
   [
   if test "x$with_m17nlib" = "xyes"; then
-    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
+    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1, use_m17nlib="yes",use_m17nlib="no")
+    AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
+    if test -n "$M17NDB"; then
+      m17n_db_dir=`$M17NDB`
+    fi
   fi
   ],
   [
-    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.2.0, use_m17nlib="yes",use_m17nlib="no")
+    PKG_CHECK_MODULES(M17NLIB, m17n-shell >= 1.3.1, use_m17nlib="yes",use_m17nlib="no")
+    AC_CHECK_PROG(M17NDB, m17n-db, m17n-db)
+    if test -n "$M17NDB"; then
+      m17n_db_dir=`$M17NDB`
+    fi
 ])
 
 AC_SUBST(M17NLIB_LIBS)
+AC_SUBST(m17n_db_dir)
 
 
 AC_ARG_WITH(scim,
   AC_HELP_STRING([--with-scim],
-                 [build against SCIM (too experimental)]),
+                 [build against SCIM (too experimental)
+		  @<:@default=no@:>@]),
   [
     case $with_scim in
       no)
@@ -109,7 +125,8 @@ AC_SUBST(ANTHY_CFLAGS)
 # *** Tests for Canna ***
 # ***********************
 AC_ARG_WITH(canna,
-	AS_HELP_STRING([--with-canna], [Build with libcanna]),
+	AS_HELP_STRING([--with-canna], [Build with libcanna
+					@<:@default=no@:>@]),
 	[
 	if test "x$with_canna" = "xyes"; then
 		AC_CHECK_HEADERS([canna/RK.h],
@@ -126,7 +143,8 @@ AC_ARG_WITH(canna,
 # *** Tests for Mana ***
 # ***********************
 AC_ARG_WITH(mana,
-	AS_HELP_STRING([--with-mana], [Build a plugin for Mana]),
+	AS_HELP_STRING([--with-mana], [Build a plugin for Mana
+				       @<:@default=yes@:>@]),
 	[
 	if test "x$with_mana" = "xyes"; then
 	        AC_CHECK_PROG(MANA, mana, mana)
@@ -151,7 +169,8 @@ AC_ARG_WITH(mana,
 # *** Tests for PRIME ***
 # ***********************
 AC_ARG_WITH(prime,
-	AS_HELP_STRING([--with-prime], [Build a plugin for PRIME]),
+	AS_HELP_STRING([--with-prime], [Build a plugin for PRIME
+					@<:@default=yes@:>@]),
 	[
 	if test "x$with_prime" = "xyes"; then
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
@@ -162,6 +181,7 @@ AC_ARG_WITH(prime,
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
 ])
 
+PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
 AC_PATH_XTRA
 
 use_xim="no"
@@ -205,35 +225,52 @@ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0;
 fi
 AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 
-# for uim-fep
-AM_LANGINFO_CODESET
-
-# Checks for header files.
-AC_FUNC_ALLOCA
+# Checks for header files
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h errno.h])
-AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h wchar.h])
+AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h sys/termios.h wchar.h])
 AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
+AX_CREATE_STDINT_H(uim/uim-stdint.h)
 
-# Check for type
+# Check for types
+AC_TYPE_SIZE_T
+AC_TYPE_PID_T
+AC_TYPE_SIGNAL
 AC_CHECK_TYPES(sig_atomic_t, , ,
   [ #include <signal.h> ])
 AC_CHECK_TYPES(sig_t, , ,
   [ #include <signal.h> ])
 
-# Checks for library
-AC_CHECK_LIB(dl,dlopen)
-AC_CHECK_LIB(socket,socket)
+# Checks for structures
 
-# Checks for function
+# Checks for compiler characteristics
+AC_C_CONST
+
+# Checks for library functions
+AC_FUNC_REALLOC
+AC_FUNC_ALLOCA
+AC_FUNC_MEMCMP
+AC_FUNC_MMAP
+AC_FUNC_FORK
+AC_FUNC_LSTAT
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
-AC_CHECK_FUNCS(asprintf vasprintf vsnprintf)
-AC_REPLACE_FUNCS(getpeereid strsep setenv unsetenv)
+# BSD functions
+AC_CHECK_FUNCS(bzero strdup)
+# GNU functions
+AC_CHECK_FUNCS(asprintf vasprintf)
+# C99 functions
+AC_CHECK_FUNCS(snprintf vsnprintf)
+AC_REPLACE_FUNCS(getpeereid strsep setenv unsetenv strlcpy strlcat)
 AC_CHECK_FUNCS(getpid stat mkdir chmod)
+AC_CHECK_FUNCS(execv execvp)
+AC_CHECK_FUNCS(isascii)
 AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
 AC_TRY_RUN([
 #include <sys/types.h>
@@ -266,6 +303,9 @@ AC_SEARCH_LIBS(dlfunc,dl,
 
   ])
 
+# for uim-fep
+AM_LANGINFO_CODESET
+
 dnl Solaris 9 needs -lresolv for inet_aton
 NETLIBS=""
 AC_CHECK_FUNC(inet_aton, ,
@@ -279,7 +319,6 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[gettext package name])
 AM_GNU_GETTEXT([external], [need-ngettext])
 AM_GNU_GETTEXT_VERSION(0.12)
 
-
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
 if test x$prefix = xNONE; then
    prefix=$ac_default_prefix
@@ -288,23 +327,28 @@ if test x$exec_prefix = xNONE; then
    exec_prefix=$prefix
 fi
 
-LIBDIR=`eval echo ${libdir}`
+# FIXME: complicated directory handlings  -- YamaKen 2006-07-08
+# FIXME: double eval workaround for datarootdir
+LIBDIR=`eval eval echo ${libdir}`
 AC_DEFINE_UNQUOTED(LIBDIR, "$LIBDIR", [libraries dir])
-DATADIR=`eval echo ${datadir}`
+DATADIR=`eval eval echo ${datadir}`
 AC_DEFINE_UNQUOTED(DATADIR, "$DATADIR", [read-only architecture-independent data dir])
 UIM_LIBEXECDIR=`eval echo "${libexecdir}"`
 AC_DEFINE_UNQUOTED(UIM_LIBEXECDIR, "$UIM_LIBEXECDIR", [libexec dir])
 # we should use more safe macro such as AC_EXPAND_DIR
-LOCALEDIR=`eval echo ${datadir}/locale`
+LOCALEDIR=`eval eval echo ${datadir}/locale`
 # backward compatibility
 localedir=$LOCALEDIR
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
-# define XLIB directory
-AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
-
-AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${DATADIR}/${PACKAGE}/pixmaps", [pixmaps directory])
-uim_pixmapsdir="${DATADIR}/${PACKAGE}/pixmaps"
+# define XLIB directory for Compose file
+if test "x$x11_use_new_dir" = "xyes"; then
+  AC_DEFINE_UNQUOTED(XLIB_DIR, "`$PKG_CONFIG x11 --variable=prefix`/share", [X11 Library Directory])
+else
+  AC_DEFINE_UNQUOTED(XLIB_DIR, "$x_libraries", [X11 Library Directory])
+fi
+uim_pixmapsdir=`eval eval echo ${datadir}/${PACKAGE_TARNAME}/pixmaps`
+AC_DEFINE_UNQUOTED(UIM_PIXMAPSDIR, "${uim_pixmapsdir}", [pixmaps directory])
 AC_SUBST(uim_pixmapsdir)
 
 dnl *****************************
@@ -327,50 +371,36 @@ AC_ARG_WITH(gtk2,
   [ PKG_CHECK_MODULES(GTK2, gtk+-2.0 >= 2.2.0, use_gtk2="yes",use_gtk2="no")
     PKG_CHECK_MODULES(GTK2_4, gtk+-2.0 >= 2.4.0, use_gtk2_4="yes",use_gtk2_4="no") ])
 
-AC_ARG_WITH(gnome2,
-  AC_HELP_STRING([--without-gnome2],
-                 [don't build against Gnome2 (experimental)]),
+AC_ARG_ENABLE(gnome-applet,
+  AC_HELP_STRING([--disable-gnome-applet],
+                 [disable uim applet for Gnome panel]),
   [
-    case $with_gnome2 in
+    case $enable_gnome_applet in
       no)
-        use_gnome2="no"
+        use_applet_gnome="no"
       ;;
       yes|*)
-        if test x$use_gtk2 = xyes ; then
-          PKG_CHECK_MODULES(GNOME2, libgnome-2.0, use_gnome2="yes",use_gnome2="no")
-        else
-          use_gnome2="no"
-        fi
+        PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
+        PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
       ;;
     esac
   ],
-  [ PKG_CHECK_MODULES(GNOME2, libgnome-2.0, use_gnome2="yes",use_gnome2="no") ])
+  [
+    PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
+    PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
+  ])
 
-AC_ARG_ENABLE(applet,
-  AC_HELP_STRING([--disable-applet],
-                 [disable uim_helper_applet for Gnome (experimental)]),
-  [
-    case $enable_applet in
-      no)
-        use_applet="no"
-      ;;
-      yes|*)
-        if test x$use_gnome2 = xyes ; then
-          PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no")
-        else
-          use_applet="no"
-        fi
-      ;;
-    esac
-  ],
-  [ PKG_CHECK_MODULES(APPLET, libpanelapplet-2.0, use_applet="yes",use_applet="no") ])
+if test x"$panelapplet_have_set_background_api" = xyes; then
+  AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
+fi
 
 dnl ****************************
 dnl *** Check for Qt Library ***
 dnl ****************************
 AC_ARG_WITH(qt,
   AC_HELP_STRING([--with-qt],
-                 [build with qt helper applications]),
+                 [build qt helper applications
+		  @<:@default=no@:>@]),
   [
     case $with_qt in
       no)
@@ -387,7 +417,8 @@ AC_ARG_WITH(qt,
 
 AC_ARG_WITH(qt-immodule,
   AC_HELP_STRING([--with-qt-immodule],
-                 [Build qt-immodule extension]),
+                 [Build qt-immodule extension
+		  @<:@default=no@:>@]),
   [
     case $with_qtimmodule in
       no)
@@ -405,21 +436,22 @@ AC_ARG_WITH(qt-immodule,
 
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
-  AC_HELP_STRING([--default-toolkit],
-                 [Determine default toolkit]),
-  [],
+  AC_HELP_STRING([--enable-default-toolkit],
+                 [Determine default toolkit (gtk or qt)
+		  @<:@default=gtk@:>@]),
   [
-  if test x"$enable_default_toolkit" = "xgtk" && test x"use_gtk2" = "xyes"; then
+  if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
      default_toolkit="gtk"
   fi
-  if test x"$enable_default_toolkit" = "xqt" && test x"use_qt" = "xyes"; then
+  if test x"$enable_default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
      default_toolkit="qt"
   fi
-  ])
+  ],
+  [])
 
 AC_ARG_ENABLE(debug,
   AC_HELP_STRING([--enable-debug],
-                 [enable debugging]),
+                 [enable debugging @<:@default=no@:>@]),
   [],
   [
     enable_debug="no"
@@ -491,7 +523,8 @@ AC_ARG_ENABLE(emacs,
 
 AC_ARG_ENABLE(dict,
   AC_HELP_STRING([--enable-dict],
-                 [enable uim-dict (a dictionary utility for uim, broken)]),
+                 [build dictionary utility for uim (Anthy and Canna)
+		  @<:@default=no@:>@]),
   [
     case $enable_dict in
       no)
@@ -555,7 +588,8 @@ AC_SUBST(EBLIB_LIBS)
 # This code was based on openssh-4.1p1
 
 AC_ARG_WITH(libedit,
-AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support]),
+AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
+				      @<:@default=yes@:>@]),
   [
    if test "x$with_libedit" != "xno"; then
         use_libedit="yes"
@@ -581,6 +615,26 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support]),
      LDFLAGS=$saved_LDFLAGS
 fi
 
+dnl for uim-dict.xml.in
+if test "x$use_anthy" = "xyes"; then
+  UI_XML_ANTHY_START=""
+  UI_XML_ANTHY_END=""
+else
+  UI_XML_ANTHY_START="<!--"
+  UI_XML_ANTHY_END="-->"
+fi
+if test "x$use_canna" = "xyes"; then
+  UI_XML_CANNA_START=""
+  UI_XML_CANNA_END=""
+else
+  UI_XML_CANNA_START="<!--"
+  UI_XML_CANNA_END="-->"
+fi
+AC_SUBST(UI_XML_ANTHY_START)
+AC_SUBST(UI_XML_ANTHY_END)
+AC_SUBST(UI_XML_CANNA_START)
+AC_SUBST(UI_XML_CANNA_END)
+
 
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
@@ -593,8 +647,7 @@ AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
-AM_CONDITIONAL(GNOME2, test x$use_gnome2 = xyes)
-AM_CONDITIONAL(APPLET, test x$use_applet = xyes)
+AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
@@ -605,20 +658,18 @@ AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
 AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
+AM_CONDITIONAL(GCC, test x$ac_cv_c_compiler_gnu = xyes)
+AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
 
 AC_PROG_INTLTOOL([0.31], [no-xml])
 
 
-GTK_BINARY_VERSION=`pkg-config gtk+-2.0 --variable=gtk_binary_version`
+GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
 AC_SUBST(GTK_BINARY_VERSION)
 
 if test x$use_gtk2 = xyes ; then
 AC_DEFINE(USE_GTK2, 1, [use gtk2])
 fi
-
-#if test x$use_gnome2 = xyes ; then
-#AC_DEFINE(USE_GNOME2, 1, [use gnome2])
-#fi
 
 if test x$use_qt = xyes ; then
     # minimum version
@@ -759,6 +810,61 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
+AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
+if test "x$use_qt" = "xyes"; then
+    if test "x$KDE_CONFIG" != "xno"; then
+	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
+    fi
+    if test -z "$KDE_ICONDIR"; then
+      KDE_ICONDIR="$prefix/share/icons"
+    fi
+    AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
+fi
+
+dnl *********************************
+dnl *** test for KDE applet.. XXX ***
+dnl *********************************
+AC_ARG_ENABLE(kde-applet,
+  AC_HELP_STRING([--enable-kde-applet],
+  		 [build uim applet for KDE panel
+		  @<:@default=yes@:>@]),
+		 enable_kde_applet=$enableval,
+		 enable_kde_applet=yes)
+case "$enable_kde_applet" in
+  no)
+    use_applet_kde="no"
+    ;;
+  yes|*)
+    if test "x$use_qt" = "xyes"; then
+      if test "x$KDE_CONFIG" != "xno"; then
+	KDE_PREFIX=`kde-config --prefix`
+	KDE_LIB_DIR=`kde-config --expandvars --install lib`
+	KDE_DATA_DIR=`kde-config --expandvars --install data`
+	saved_cppflags="${CPPFLAGS}"
+	CPPFLAGS="-I${KDE_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADER([${KDE_PREFIX}/include/kde/kpanelapplet.h],
+			[use_applet_kde="yes" KDE_INCLUDE_DIR="${KDE_PREFIX}/include/kde"], [use_applet_kde="no"])
+	if test "x$use_applet_kde" = "xno"; then
+	  CPPFLAGS="-I${KDE_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
+	  AC_CHECK_HEADER([${KDE_PREFIX}/include/kglobal.h],
+	  		  [use_applet_kde="yes" KDE_INCLUDE_DIR="${KDE_PREFIX}/include"], [use_applet_kde="no"])
+	fi
+	CPPFLAGS="${saved_cppflags}"
+	AC_LANG_POP(C++)
+      else
+	use_applet_kde="no"
+      fi
+    else
+      use_applet_kde="no"
+    fi
+    ;;
+esac
+AC_SUBST(KDE_PREFIX)
+AC_SUBST(KDE_LIB_DIR)
+AC_SUBST(KDE_DATA_DIR)
+AC_SUBST(KDE_INCLUDE_DIR)
+
 if test x$use_qtimmodule = xyes ; then
     AC_MSG_CHECKING(for qt-immodule patch)
     # Check for immodule for Qt patch
@@ -773,27 +879,110 @@ fi
 
 AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
+AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
 
+AC_ARG_ENABLE(pref,
+  AC_HELP_STRING([--enable-pref],
+		 [build graphical utility to edit user settings
+		  @<:@default=yes@:>@]),
+[
+    case $enable_pref in
+      no)
+        use_pref="no"
+	;;
+      yes|*)
+	if test x"$default_toolkit" = "xgtk" && \
+	   test x"$use_gtk2_4" = "xyes"; then
+	  use_pref="yes"
+	else
+	  if test x"$default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
+	    use_pref="yes"
+	  else
+	    use_pref="no"
+	    AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
+	  fi
+	fi
+	;;
+    esac ],
+  [
+    if test x"$default_toolkit" = "xgtk" && test x"$use_gtk2_4" = "xyes"; then
+      use_pref="yes"
+    else
+      if test x"$default_toolkit" = "xqt" && \
+         test x"$use_qt" = "xyes"; then
+	use_pref="yes"
+      else
+	use_pref="no"
+	AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
+      fi
+    fi
+  ])
+AM_CONDITIONAL(PREF, test x"$use_pref" = "xyes")
+
+AC_ARG_ENABLE(anthy-static,
+    AC_HELP_STRING([--enable-anthy-static],
+		   [@<:@default=no@:>@]),
+    [
+        case $enable_anthy_static in
+	yes)
+	    build_anthy_static="yes"
+	    ;;
+	no|*)
+	    build_anthy_static="no"
+	    ;;
+	esac
+    ], [
+	    build_anthy_static="no"
+    ])
+
+AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test x$build_anthy_static = xyes)
 
 # add debugging flags to CFLAGS regardless of GCC=yes or not
 if test x$enable_debug = xyes; then
-	CFLAGS="$CFLAGS -g"
-	CXXFLAGS="$CXXFLAGS -g"
+	CFLAGS="$CFLAGS -g -pipe"
+	CXXFLAGS="$CXXFLAGS -g -pipe"
 else
-	CFLAGS="$CFLAGS -O2"
-	CXXFLAGS="$CXXFLAGS -O2"
+	CFLAGS="$CFLAGS -O2 -pipe"
+	CXXFLAGS="$CXXFLAGS -O2 -pipe"
 fi
 
 # add warning flags to CFLAGS if GCC=yes
-if test x$CC = xgcc; then
+if test x$ac_cv_c_compiler_gnu = xyes; then
+#if test x$CC = xgcc; then
 	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
+fi
+
+if test x$ac_cv_cxx_compiler_gnu = xyes; then
 	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security"
 fi
+
+AC_ARG_ENABLE(warnings-into-error,
+    AC_HELP_STRING([--enable-warnings-into-error],
+		   [Treat compiler warnings as error @<:@default=no if !debug@:>@]),
+    [
+        case $enable_warnings_into_error in
+	no)
+	    ;;
+	yes|*)
+	    CFLAGS="$CFLAGS -Werror"
+	    CXXFLAGS="$CXXFLAGS -Werror"
+	    ;;
+	esac
+    ], [
+	    if test x$enable_debug = xyes; then
+	      CFLAGS="$CFLAGS -Werror"
+	      CXXFLAGS="$CXXFLAGS -Werror"
+	    fi
+    ])
+
 
 if test x$enable_compat_scm = xyes; then
   AC_DEFINE(UIM_COMPAT_SCM, 1,
             [Enable obsolete part of uim-scm API])
 fi
+
+# Checks for system services
+
 
 AH_BOTTOM([/* Include os specific header. */
 #include "os_dep.h"])
@@ -802,30 +991,19 @@ AH_BOTTOM([/* Include os specific header. */
 INCLUDES='-I$(top_srcdir)/replace -I$(top_srcdir)/uim'
 AC_SUBST(INCLUDES)
 
-# Checks for typedefs, structures, and compiler characteristics.
-AC_HEADER_STDBOOL
-AC_C_CONST
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-
-# Checks for library functions.
-AC_FUNC_FORK
-AC_FUNC_LSTAT
-AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
-AC_FUNC_MEMCMP
-AC_FUNC_MMAP
-AC_FUNC_REALLOC
-AC_FUNC_SELECT_ARGTYPES
-AC_TYPE_SIGNAL
-
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
 
+AC_SUBST(abs_srcdir)
+AC_SUBST(abs_builddir)
+AC_SUBST(abs_top_srcdir)
+AC_SUBST(abs_top_builddir)
 
 AC_CONFIG_FILES([Makefile
 		 po/Makefile.in
 		 m4/Makefile
 		 helper/Makefile
+		 helper/uim-dict-ui.xml
 		 doc/Makefile
 		 sigscheme/Makefile
 		 uim/Makefile
@@ -837,6 +1015,7 @@ AC_CONFIG_FILES([Makefile
 		 qt/chardict/Makefile
 		 qt/chardict/po/Makefile.in
 		 qt/test/Makefile
+		 qt/uimapplet.desktop
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
@@ -862,13 +1041,14 @@ Configure Result :
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
    Gtk+            : ${use_gtk2}
-   Gnome           : ${use_gnome2}
-   Gnome Applet    : ${use_applet}
+   Gnome Applet    : ${use_applet_gnome}
    Qt              : ${use_qt}
    Qt immodule     : ${use_qtimmodule}
+   KDE Applet      : ${use_applet_kde}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
+   Pref            : ${use_pref}
    DICT            : ${use_dict}
    EB              : ${use_eb}
    libedit         : ${use_libedit}

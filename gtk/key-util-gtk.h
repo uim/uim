@@ -38,8 +38,6 @@
 #ifndef _key_util_gtk_h_included_
 #define _key_util_gtk_h_included_
 
-#include <glib.h>
-
 /*
  * Initialize modifier key mappings.
  */

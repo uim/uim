@@ -179,6 +179,9 @@ public:
     void customContext(const char *custom, const char *val);
     void createUimContext(const char *engine);
     void configuration_changed();
+    void switch_app_global_im(const char *name);
+    void switch_system_global_im(const char *name);
+    void set_need_hilite_selected_cand(bool set);
 public:
     static void commit_cb(void *ptr, const char *str);
     static void clear_cb(void *ptr);
@@ -191,12 +194,15 @@ public:
     static void update_prop_list_cb(void *ptr, const char *str);
     static void update_prop_label_cb(void *ptr, const char *str);
     static void configuration_changed_cb(void *ptr);
+    static void switch_app_global_im_cb(void *ptr, const char *name);
+    static void switch_system_global_im_cb(void *ptr, const char *name);
     static InputContext *focusedContext();
     static void deletefocusedContext();
 private:
     void commit_string(char *);
     void clear_pe_stat();
     void review_im(const char *engine);
+    char *get_caret_state_label_from_prop_list(const char *str);
 
     XimIC *mXic;
     XimServer *mServer;
@@ -208,6 +214,7 @@ private:
     int mNumPage;
     int current_cand_selection;
     int current_page;
+    bool need_hilite_selected_cand;
     std::vector<const char *> active_candidates;
     char *mEngineName;
     char *mLocaleName;

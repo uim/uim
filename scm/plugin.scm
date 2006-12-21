@@ -35,24 +35,31 @@
 (require "util.scm")
 
 (define uim-plugin-lib-load-path
-   (if (setugid?)
-       (list (string-append (sys-pkglibdir) "/plugin"))
-       (filter string?
- 	      (append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
- 			    (string-append (getenv "HOME") "/.uim.d/plugin")
- 			    (string-append (sys-pkglibdir) "/plugin"))
- 		      ;; XXX
- 		      (if (getenv "LD_LIBRARY_PATH")
- 			  (string-split (getenv "LD_LIBRARY_PATH") ":")
- 			  ())))))
+  (if (setugid?)
+      (list (string-append (sys-pkglibdir) "/plugin"))
+      (let ((home-dir (getenv "HOME"))
+	    (ld-library-path (getenv "LD_LIBRARY_PATH")))
+	(filter string?
+		(append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
+			      (if home-dir
+				  (string-append home-dir "/.uim.d/plugin")
+				  '())
+			      (string-append (sys-pkglibdir) "/plugin"))
+			;; XXX
+			(if ld-library-path
+			    (string-split ld-library-path ":")
+			    '()))))))
 
 (define uim-plugin-scm-load-path
   (if (setugid?)
       (list (sys-pkgdatadir))
-      (filter string?
- 	      (list (getenv "LIBUIM_SCM_FILES")
- 		    (string-append (getenv "HOME") "/.uim.d/plugin")
- 		    (sys-pkgdatadir)))))
+      (let ((home-dir (getenv "HOME")))
+	(filter string?
+		(list (getenv "LIBUIM_SCM_FILES")
+		      (if home-dir
+			  (string-append home-dir "/.uim.d/plugin")
+			  '())
+		      (sys-pkgdatadir))))))
 
 (define plugin-alist ())
 (define plugin-func-alist ())
@@ -121,29 +128,43 @@
 ;; TODO: write test
 (define load-module-conf
   (lambda ()
-    (let* ((user-module-dir (string-append (getenv "HOME") "/.uim.d/plugin/"))
+    (let* ((home-dir (getenv "HOME"))
+	   (user-module-dir (if home-dir
+				(string-append home-dir "/.uim.d/plugin/")
+				#f))
 	   (conf-file "installed-modules.scm")
-	   (user-conf-file (string-append user-module-dir conf-file)))
+	   (user-conf-file (if user-module-dir
+			       (string-append user-module-dir conf-file)
+			       #f)))
       (try-load conf-file)
-      (if (setugid?)
+      (if (or
+	   (setugid?)
+	   (not user-conf-file))
 	  #f
 	  (if (not (getenv "LIBUIM_VANILLA"))
 	      (let ((orig-module-list installed-im-module-list)
 		    (orig-enabled-list enabled-im-list))
-		(and (try-load user-conf-file)
-		     (set! installed-im-module-list
-			   (append orig-module-list installed-im-module-list))
-		     (set! enabled-im-list
-			   (append orig-enabled-list enabled-im-list)))))))))
+		(if (try-load user-conf-file)
+		    (begin
+		      (set! installed-im-module-list
+			    (append orig-module-list installed-im-module-list))
+		      (set! enabled-im-list
+			    (append orig-enabled-list enabled-im-list))))))))))
 
 
 ;; TODO: write test
 (define load-enabled-modules
   (lambda ()
-    (let* ((user-module-dir (string-append (getenv "HOME") "/.uim.d/plugin/"))
+    (let* ((home-dir (getenv "HOME"))
+	   (user-module-dir (if home-dir
+				(string-append home-dir "/.uim.d/plugin/")
+				#f))
 	   (file "loader.scm")
-	   (user-file (string-append user-module-dir file)))
+	   (user-file (if user-module-dir
+			  (string-append user-module-dir file)
+			  #f)))
       (and (try-load file)
 	   (or (and (not (setugid?))
+		    user-file
 		    (try-load user-file))
 	       #t)))))

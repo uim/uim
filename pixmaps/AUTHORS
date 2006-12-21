@@ -1,0 +1,38 @@
+scim-anthy.png, scim-canna.png, uim-icon64.png, uim-icon48.png:
+  SHIMODA Hiroshi <piro@p.club.ne.jp>
+
+scim-prime.png, taiyaki.xcf:
+  FUJITA Yuji <yuji@webmasters.gr.jp>
+
+scim-skk.png:
+  Jun Mukai <mukai@jmuk.org>
+
+scim-wnn.png:
+  Teppei Tamra <tam-t@par.odn.ne.jp>
+
+# These icons use M+ outline fonts TESTFLIGHT 011 by MORISHITA Coji.
+# Thank you for the good fonts.
+# http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/index.html
+#
+# uim-gray.png and im_subst.svg is derived from uim-icon64.png
+unknown.svg,
+direct.svg, skk.svg, tcode.svg, tutcode.svg,
+direct_input.svg, on.svg, off.svg,
+ja_direct.svg, ja_hiragana.svg, ja_katakana.svg,
+ja_halfkana.svg,
+ja_halfwidth_alnum.svg, ja_fullwidth_alnum.svg,
+prime_mode_application.svg,
+ja_romaji.svg, ja_kana.svg, ja_azik.svg, ja_nicola.svg, ja_pocketbell.svg
+uim-gray.png im_subst.svg, im_switcher.svg:
+  YAMAMOTO Kengo / Yamaken <yamaken@bp.iij4u.or.jp>
+
+# uim-dict.svg is based on public domain image.
+# http://commons.wikimedia.org/wiki/Image:Books-aj.svg_aj_ashton_01.svg
+uim-dict.svg
+  Etsushi Kato <ek.kato@gmail.com>
+
+# ko_direct.svg is based on ja_fullwidth_alnum.svg.
+# byeoru.svg, ko_hangulchar.svg, ko_hangulword have glyphs from
+# the UnYetgul font by Koaunghi Un, http://kldp.net/projects/unfonts.
+byeoru.svg, ko_direct.svg, ko_hangulchar.svg, ko_hangulword.svg:
+  Jae-hyeon Park <jhyeon@gmail.com>

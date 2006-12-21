@@ -45,29 +45,14 @@
 #include <uim/uim-im-switcher.h>
 
 #include "debug.h"
+#include "uim-el-types.h"
+
 #include "prop.h"
 #include "preedit.h"
+#include "commit.h"
 #include "im.h"
 #include "callback.h"
 #include "encoding.h"
-
-typedef struct uim_agent_context {
-  uim_context context;
-  int context_id;
-  char *encoding;
-  char *im;
-  preedit *pe;
-  candidate_info *cand;
-  property *prop;
-} uim_agent_context;
-
-
-typedef struct uim_agent_context_list {
-  uim_agent_context *agent_context;
-  struct uim_agent_context_list *next;
-  struct uim_agent_context_list *prev;
-} uim_agent_context_list;
-
 
 uim_context create_context(const char *encoding, uim_agent_context *ptr);
 
@@ -77,14 +62,15 @@ int release_uim_agent_context(int id);
 
 uim_agent_context *get_uim_agent_context(int id);
 
-uim_agent_context *switch_context_im(uim_agent_context *ua, const char *im,
-									 const char *encoding);
+uim_agent_context *switch_context_im(uim_agent_context *ua, const char *im);
+void switch_context_im_all(const char *im);
 
 int set_current_uim_agent_context(uim_agent_context *ua);
 int clear_current_uim_agent_context(void);
 
 void update_context_configuration(uim_agent_context *ua);
 
+int show_commit_string_uim_agent_context(uim_agent_context *ua);
 int show_preedit_uim_agent_context(uim_agent_context *ua);
 int show_candidate_uim_agent_context(uim_agent_context *ua);
 int show_prop_uim_agent_context(uim_agent_context *ua);
@@ -92,6 +78,7 @@ int show_im_uim_agent_context(uim_agent_context *ua);
 
 /* current focused context */
 extern uim_agent_context *current;
+extern int focused;
 
 extern uim_agent_context_list *agent_context_list_head;
 extern uim_agent_context_list *agent_context_list_tail;

@@ -57,7 +57,7 @@
 (register-action 'action_m17nlib_off
 		 (lambda (mc)
 		   (list
-		    'figure_m17nlib_off
+		    'off
 		    "-"
 		    (N_ "off")
 		    (N_ "Direct Input Mode")))
@@ -71,7 +71,7 @@
 		   (let* ((im (m17nlib-context-im mc))
 			  (name (symbol->string (im-name im))))
 		     (list
-		      'figure_m17nlib_on
+		      'on
 		      "O"
 		      (N_ "on")
 		      (string-append name (N_ " Mode")))))
@@ -169,23 +169,42 @@
 	     mc (m17nlib-lib-get-candidate-index mid))
 	    (m17nlib-context-set-showing-candidate! mc #t)))
 
-      (if (and showing-candidate?
+      (if (and (m17nlib-context-showing-candidate mc)
 	       (m17nlib-lib-candidate-show? mid))
 	  (im-select-candidate mc (m17nlib-lib-get-candidate-index mid))))))
 
 
 (define m17nlib-construct-modifier
-  (lambda (key-state)
+  (lambda (key key-state)
     (let ((key-str ""))
-      (if (shift-key-mask key-state)
+      (if (and
+	   (shift-key-mask key-state)
+	   (not (char-graphic? key)))
 	  (set! key-str (string-append "S-" key-str)))
-      (if (control-key-mask key-state)
+      (if (and
+	   (control-key-mask key-state)
+	   (char-printable? key))
 	  (set! key-str (string-append "C-" key-str)))
       (if (alt-key-mask key-state)
 	  (set! key-str (string-append "A-" key-str)))
       (if (meta-key-mask key-state)
 	  (set! key-str (string-append "M-" key-str)))
+      (if (super-key-mask key-state)
+	  (set! key-str (string-append "s-" key-str)))
+      (if (hyper-key-mask key-state)
+	  (set! key-str (string-append "H-" key-str)))
       key-str)))
+
+(define m17nlib-construct-key
+  (lambda (key key-state)
+    (if (symbol? key)
+	(let ((mkey (assq key m17nlib-key-translation-alist)))
+	  (if mkey
+	      (cdr mkey)
+	      ""))
+	(if (control-key-mask key-state)
+	    (charcode->string (char-upcase key))
+	    (charcode->string key)))))
 
 (define m17nlib-proc-direct-state
   (lambda (mc key key-state)
@@ -216,6 +235,8 @@
     (Mode_switch     . "")
     (Henkan_Mode     . "")
     (Muhenkan        . "")
+    (Kanji           . "")
+    (hiragana-katakana . "")
     (F1              . "F1")
     (F2              . "F2")
     (F3              . "F3")
@@ -241,10 +262,8 @@
 (define m17nlib-translate-ukey-to-mkey
   (lambda (key key-state)
     (string-append 
-     (m17nlib-construct-modifier key-state)
-     (if (symbol? key)
-	 (cdr (assq key m17nlib-key-translation-alist))
-	 (charcode->string key)))))
+     (m17nlib-construct-modifier key key-state)
+     (m17nlib-construct-key key key-state))))
 
 (define m17nlib-init-handler
   (lambda (id im arg)
@@ -256,8 +275,8 @@
 
 (define m17nlib-push-key
   (lambda (mc key key-state)
-    (let* ((mid (m17nlib-context-mc-id mc))
-	   (mkey (m17nlib-translate-ukey-to-mkey key key-state)))
+    (let ((mid (m17nlib-context-mc-id mc))
+	  (mkey (m17nlib-translate-ukey-to-mkey key key-state)))
       (m17nlib-lib-push-symbol-key mid mkey))))
 
 (define m17nlib-press-key-handler
@@ -291,7 +310,26 @@
 
 (define m17nlib-reset-handler
   (lambda (mc)
-    #f))
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-reset"))))
+
+(define m17nlib-focus-in-handler
+  (lambda (mc)
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-focus-in")
+      (m17nlib-update-preedit mc))))
+
+(define m17nlib-focus-out-handler
+  (lambda (mc)
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-focus-out")
+      (m17nlib-update-preedit mc))))
+
+(define m17nlib-displace-handler
+  (lambda (mc)
+    (let ((mid (m17nlib-context-mc-id mc)))
+      (m17nlib-lib-push-symbol-key mid "input-focus-move")
+      (m17nlib-update-preedit mc))))
 
 (define m17nlib-get-candidate-handler
   (lambda (mc idx accel-enum-hint)
@@ -335,7 +373,7 @@
 	       (m17nlib-lib-nth-input-method-lang i)
 	       "UTF-8"
 	       (m17nlib-lib-nth-input-method-name i)
-	       (N_ "An input method provided by the m17n library")
+	       (m17nlib-lib-nth-input-method-short-desc i)
 	       (m17nlib-lib-nth-input-method-name i)
 	       m17nlib-init-handler
 	       m17nlib-release-handler
@@ -346,6 +384,11 @@
 	       m17nlib-get-candidate-handler
 	       m17nlib-set-candidate-index-handler
 	       context-prop-activate-handler
+	       #f
+	       m17nlib-focus-in-handler
+	       m17nlib-focus-out-handler
+	       #f
+	       m17nlib-displace-handler
 	       ))
 	      (m17nlib-register (+ i 1) nr-im))
 	())))

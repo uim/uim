@@ -41,10 +41,7 @@
 
 #include <uim/uim.h>
 
-typedef struct uim_key{
-  int mod;
-  int key;
-} uim_key;
+#include "uim-el-types.h"
 
 void convert_keyname_a2e(char *keyname, const char *name);
 enum UKey convert_keyname_e2u( const char *keyname );

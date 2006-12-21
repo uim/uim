@@ -53,16 +53,36 @@
 		     preedit-cursor
 		     preedit-separator))))
 
+(define text-area-id-alist
+  '((primary   . 1)
+    (selection . 2)
+    (clipboard . 4)))
+
+(define text-origin-alist
+  '((cursor    . 1)
+    (beginning . 2)
+    (end       . 3)))
+
+(define text-extent-alist
+  '((full       . -2)
+    (paragraph  . -3)
+    (sentence   . -5)
+    (word       . -9)
+    (char-frags . -17)
+    (disp-rect  . -33)
+    (disp-line  . -65)
+    (line       . -129)))
+
 ;;
 ;; im-management
 ;;
 (define im-list ())
 
+(define installed-im-list ())
 ;; enabled-im-list cannot be changed once libuim has been
 ;; initialized. This limitation may be removed after uim 0.4.6.
 ;;   -- YamaKen 2005-01-25
 (define enabled-im-list ())
-(define system-available-im-list ())
 
 (define-record 'im
   (list
@@ -81,6 +101,11 @@
    (list 'get-candidate-handler       list)
    (list 'set-candidate-index-handler list)
    (list 'prop-activate-handler       list)
+   (list 'input-string-handler        list)
+   (list 'focus-in-handler            list)
+   (list 'focus-out-handler           list)
+   (list 'place-handler               list)
+   (list 'displace-handler            list)
    (list 'module-name                 "")))
 
 (define im-custom-set-handler
@@ -109,7 +134,8 @@
 (define register-im
   (lambda (name lang encoding name-label short-desc init-arg init release
 		mode key-press key-release reset
-		get-candidate set-candidate-index prop)
+		get-candidate set-candidate-index prop input-string
+		focus-in focus-out place displace)
     (and (or (null? enabled-im-list)  ;; bootstrap
 	     (memq name enabled-im-list)
 	     (eq? name 'direct))  ;; direct IM must always be enabled
@@ -117,6 +143,7 @@
 			   init-arg init release
 			   mode key-press key-release reset
 			   get-candidate set-candidate-index prop
+			   input-string focus-in focus-out place displace
 			   currently-loading-module-name)))
 	   (set! im-list (alist-replace im im-list))
 	   (normalize-im-list)
@@ -195,31 +222,32 @@
 
 (define switch-im
   (lambda (id name)
-    (uim-switch-im id (next-im name))))
+    (im-switch-im id (next-im name))))
 
-;; im-toggle
-(define toggle-im-preserved-im #f)
-(define toggle-im-preserved-widget-states '())
-(define toggle-im-alt-preserved-widget-states '())
-
+;; FIXME: Input states are kept only if the state is appeared in the
+;; toolbar.
 (define toggle-im
-  (lambda (id name)
-    (let ((widget-states (context-current-widget-states (find-context id))))
-      (if (eq? name toggle-im-alt-im)
-	  (begin
-	    (set! toggle-im-alt-preserved-widget-states widget-states)
-	    (if toggle-im-preserved-im
-		(begin
-		  (uim-switch-im id toggle-im-preserved-im)
-		  (context-update-widget-states!
-		   (find-context id)
-		   toggle-im-preserved-widget-states))))
-	  (begin
-	    (set! toggle-im-preserved-im name)
-	    (set! toggle-im-preserved-widget-states widget-states)
-	    (uim-switch-im id toggle-im-alt-im)
-	    (context-update-widget-states! (find-context id)
-	    			  toggle-im-alt-preserved-widget-states))))))
+  (lambda (id c)
+    (let* ((cur-state (toggle-state-new (context-primary-im? c)
+					(im-name (context-im c))
+					(context-current-widget-states c)))
+	   (saved-state (context-toggle-state c)))
+      (im-switch-im id (if saved-state
+			   (toggle-state-im-name saved-state)
+			   toggle-im-alt-im))
+      ;; retrieve new context replaced by im-switch-im
+      (let ((c (find-context id)))
+	(if saved-state
+	    (let ((orig-wstates (toggle-state-widget-states saved-state)))
+	      (context-update-widget-states! c orig-wstates)))
+	(context-set-toggle-state! c cur-state)))))
+
+(define reset-toggle-context!
+  (lambda (id ctx)
+    (if (not (context-primary-im? ctx))
+	(toggle-im id ctx))
+    ;; ctx may be expired by the toggle-im
+    (context-set-toggle-state! (find-context id) #f)))
 
 ;;
 ;; context-management
@@ -227,10 +255,34 @@
 (define context-list ())
 
 (define context-rec-spec
-  '((id      #f)  ;; must be first member
-    (im      #f)
-    (widgets ())))  ;; may be renamed
+  '((id           #f)  ;; must be first member
+    (im           #f)
+    (widgets      ())  ;; may be renamed
+    (toggle-state #f)))
 (define-record 'context context-rec-spec)
+
+(define toggle-state-rec-spec
+  '((primary?      #f)
+    (im-name       #f)
+    (widget-states ())))
+(define-record 'toggle-state toggle-state-rec-spec)
+
+(define context-primary-im?
+  (lambda (c)
+    (let ((toggle-state (context-toggle-state c)))
+      (or (not toggle-state)
+	  (not (toggle-state-primary? toggle-state))))))
+
+(define context-primary-im-name
+  (lambda (c)
+    (if (context-primary-im? c)
+	(im-name (context-im c))
+	(toggle-state-im-name (context-toggle-state c)))))
+
+;; FIXME: implement
+(define context-focused?
+  (lambda (c)
+    #t))
 
 (define find-context
   (lambda (id)
@@ -295,7 +347,7 @@
       (cond
        ((and enable-im-toggle?
 	     (toggle-im-key? key state))
-	(toggle-im id (im-name im)))
+	(toggle-im id c))
        ((and enable-im-switch
 	     (switch-im-key? key state))
 	(switch-im id (im-name im)))
@@ -319,6 +371,22 @@
   (lambda (id)
     (invoke-handler im-reset-handler id)))
 
+(define focus-in-handler
+  (lambda (id)
+    (invoke-handler im-focus-in-handler id)))
+
+(define focus-out-handler
+  (lambda (id)
+    (invoke-handler im-focus-out-handler id)))
+
+(define place-handler
+  (lambda (id)
+    (invoke-handler im-place-handler id)))
+
+(define displace-handler
+  (lambda (id)
+    (invoke-handler im-displace-handler id)))
+
 (define mode-handler
   (lambda (id mode)
     (invoke-handler im-mode-handler id mode)))
@@ -326,6 +394,10 @@
 (define prop-activate-handler
   (lambda (id message)
     (invoke-handler im-prop-activate-handler id message)))
+
+(define input-string-handler
+  (lambda (id str)
+    (invoke-handler im-input-string-handler id str)))
 
 (define custom-set-handler
   (lambda (id custom-sym custom-val)
@@ -339,3 +411,29 @@
 (define set-candidate-index
   (lambda (id idx)
     (invoke-handler im-set-candidate-index-handler id idx)))
+
+(define im-acquire-text
+  (lambda (c id origin former-len latter-len)
+    (let ((text-id (cdr (assq id text-area-id-alist)))
+          (text-origin (cdr (assq origin text-origin-alist)))
+	  (text-extent-former (if (symbol? former-len)
+				  (cdr (assq former-len text-extent-alist))
+				  former-len))
+	  (text-extent-latter (if (symbol? latter-len)
+				  (cdr (assq latter-len text-extent-alist))
+				  latter-len)))
+      (im-acquire-text-internal
+       c text-id text-origin text-extent-former text-extent-latter))))
+
+(define im-delete-text
+  (lambda (c id origin former-len latter-len)
+    (let ((text-id (cdr (assq id text-area-id-alist)))
+          (text-origin (cdr (assq origin text-origin-alist)))
+	  (text-extent-former (if (symbol? former-len)
+				  (cdr (assq former-len text-extent-alist))
+				  former-len))
+	  (text-extent-latter (if (symbol? latter-len)
+				  (cdr (assq latter-len text-extent-alist))
+				  latter-len)))
+      (im-delete-text-internal
+       c text-id text-origin text-extent-former text-extent-latter))))

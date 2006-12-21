@@ -31,7 +31,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <list>
@@ -192,7 +192,7 @@ private:
     void init(char *s, int len) {
 	m_len = len;
 	m_str = (char *)malloc(len + 1);
-	strncpy(m_str, s, len);
+	strlcpy(m_str, s, len + 1);
     }
     int m_len;
     char *m_str;

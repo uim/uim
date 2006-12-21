@@ -58,7 +58,7 @@
 (define-custom 'byeoru-conversion-key '("F9")
   '(byeoru-keys1)
   '(key)
-  (_ "[Byeoru] convert Hangul to Chinese")
+  (_ "[Byeoru] convert Hangul to Chinese characters")
   (_ "long description will be here"))
 
 (define-custom 'byeoru-commit-key '(generic-commit-key)

@@ -30,7 +30,7 @@
   SUCH DAMAGE.
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <stdio.h>
 #include <ctype.h>
@@ -422,8 +422,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
     if (!mb)
 	return 0;
     len = strlen(mb);
-    strncpy(buf, mb, len);
-    buf[len] = '\0';
+    strlcpy(buf, mb, MB_LEN_MAX + 1);
     free(mb);
 
     return len;
@@ -1209,8 +1208,7 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     }
     iconv_close(cd);
 
-    strncpy(utf8, outbuf, outbufsize - outbytesleft);
-    utf8[outbufsize - outbytesleft] = '\0';
+    strlcpy(utf8, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);
 
     return outbufsize - outbytesleft;

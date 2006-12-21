@@ -30,7 +30,7 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include "immodule-candidatewindow.h"
+#include <config.h>
 
 #include <qapplication.h>
 #include <qlabel.h>
@@ -38,6 +38,9 @@ SUCH DAMAGE.
 #include <qfontmetrics.h>
 #include <qevent.h>
 
+#include "uim/uim.h"
+
+#include "immodule-candidatewindow.h"
 #include "immodule-quiminputcontext.h"
 #include "immodule-subwindow.h"
 
@@ -66,7 +69,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
 
     //setup CandidateList
     cList = new CandidateListView( this, "candidateListView" );
-    cList->setSorting( 0 );
+    cList->setSorting( -1 );
     cList->setSelectionMode( QListView::Single );
     cList->addColumn( "0" );
     cList->setColumnWidthMode( 0, QListView::Maximum );
@@ -117,6 +120,7 @@ void CandidateWindow::activateCandwin( int dLimit )
 {
     candidateIndex = -1;
     displayLimit = dLimit;
+    pageIndex = 0;
 }
 
 void CandidateWindow::deactivateCandwin()
@@ -180,7 +184,11 @@ void CandidateWindow::setPage( int page )
 
     // calculate page
     int newpage, lastpage;
-    lastpage = nrCandidates / displayLimit;
+    if ( displayLimit )
+        lastpage = nrCandidates / displayLimit;
+    else
+        lastpage = 0;
+
     if ( page < 0 )
     {
         newpage = lastpage;
@@ -203,7 +211,7 @@ void CandidateWindow::setPage( int page )
         if ( candidateIndex >= 0 )
             newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
         else
-            newindex = newpage * displayLimit;
+            newindex = -1;
     }
     else
     {
@@ -223,13 +231,10 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
-    for ( int i = 0; i < ncandidates; i++ )
+    for ( int i = ncandidates - 1; i >= 0; i-- )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
         QString headString = QString::fromUtf8( ( const char * ) uim_candidate_get_heading_label( cand ) );
-        if ( ( headString.toInt() < 10 && headString.toInt() + displayLimit > 10 )
-                || ( headString.toInt() < 100 && headString.toInt() + displayLimit > 100 ) )
-            headString.prepend( "0" );
         QString candString = QString::fromUtf8( ( const char * ) uim_candidate_get_cand_str( cand ) );
 
         // 2004-12-13 Kazuki Ohta <mover@hct.zaq.ne.jp>
@@ -244,6 +249,8 @@ void CandidateWindow::setPage( int page )
     // set index
     if ( newindex != candidateIndex )
         setIndex( newindex );
+    else
+        updateLabel();
 
     // size adjustment
     adjustSize();
@@ -313,25 +320,33 @@ void CandidateWindow::shiftPage( bool forward )
     
     if ( forward )
     {
-        candidateIndex += displayLimit;
+        if ( candidateIndex != -1 )
+            candidateIndex += displayLimit;
         setPage( pageIndex + 1 );
     }
     else
     {
-        if ( candidateIndex < displayLimit )
-            candidateIndex = displayLimit * ( nrCandidates / displayLimit ) + candidateIndex;
-        else
-            candidateIndex -= displayLimit;
+        if (candidateIndex != -1 ) {
+            if ( candidateIndex < displayLimit )
+                candidateIndex = displayLimit * ( nrCandidates / displayLimit ) + candidateIndex;
+            else
+                candidateIndex -= displayLimit;
+        }
 
         setPage( pageIndex - 1 );
     }
 
-    cList->setSelected( cList->itemAtIndex( candidateIndex % displayLimit ), true );
-    if ( ic && ic->uimContext() )
+    if ( candidateIndex != -1 ) {
+        if ( displayLimit )
+            cList->setSelected( cList->itemAtIndex( candidateIndex % displayLimit ), true );
+        else
+            cList->setSelected( cList->itemAtIndex( candidateIndex ), true );
+    }
+    if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
 }
 
-void CandidateWindow::layoutWindow( int x, int y, int w, int h )
+void CandidateWindow::layoutWindow( int x, int y, int /* w */, int h )
 {
     int destX = x;
     int destY = y + h;

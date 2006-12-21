@@ -1,3 +1,297 @@
+Overview of changes from 1.3.0-beta to 1.3.0
+==
+* Fixed
+  - XIM bridge
+    - Fix compilation on pre-X11R6.7 environment.
+
+Overview of changes from 1.3.0-alpha to 1.3.0-beta
+==
+* Fixed
+  - libuim
+    - Minor fix for text acquisition and injection
+    - Add caps-lock, scroll-lock, and num-lock keysyms
+
+  - Tcode
+  - Try-code
+    - Update compose table
+
+  - uim-toolbar-qt
+    - Suppress runtime warning when icon files are missing
+
+  - GTK+ bridge
+  - Qt bridge
+  - XIM bridge
+    - Support caps-lock, scroll-lock, and num-lock keysyms
+    - Fix page shift behavior
+
+Overview of changes from 1.2.x to 1.3.0-alpha
+==
+* New features
+  - libuim
+    - Obsolete experimental surrounding text API
+    - Add text acquisition API and support it in GTK+ and Qt bridges
+    - Add text injection API (uim_input_string())
+    - Support focus-in and focus-out handler in IM context
+    - More keysyms support
+    - See doc/COMPATIBILITY for further details
+
+  - Anthy
+    - Kana keyboard support (experimental)
+  - Latin IM
+    - Support deadkeys with preedit enabled
+  - Try-Code IM
+    - New Japanese IM based on T-Code
+
+  - uim_panelapplet
+    - New toolbar applet for KDE panel
+  - uim-toolbar-gtk
+    - Double click to shrink the window (Masatake Yamato)
+  - uim-toolbar-qt
+    - Double click to shrink the window
+
+  - uim-pref-gtk
+  - uim-pref-qt
+    - Support more keysyms in key editor
+
+  - GTK+ bridge
+  - Qt bridge
+  - XIM bridge
+    - More keysyms support
+
+* Fixes
+  - Prime
+    - Fix key handling in word registration mode (bug #8984)
+  - Tcode
+    - Update compose table
+  - Generic (Tcode, Hangul, PY)
+    - Fix key handling
+
+  - uim-toolbar-gtk
+    - More icons (Shun-ichi TAHARA)
+  - uim-toolbar-qt
+    - More icons
+    - Use smaller toolbar icons
+    - Fix in movement with mouse pointer
+
+  - GTK+ bridge
+    - Use workaround for gtk_im_context_reset()
+  - Qt bridge
+    - Fix for preedit relocation with Japanese IM 
+  - XIM bridge
+    - Fix for java applications with incorrect font setting
+    - Workaround for Flash Player 9 plugin
+
+* Others
+  - Input method icons
+    - Replace with inputmethod-icons 1.1.1
+  - uim-module-manager
+    - Set newly registering module names to the head of IM list
+  - uim-input-pad-ja
+    - Reorginize pad buttons (Shun-ichi TAHARA)
+
+Overview of changes from 1.2.0 to 1.2.1
+==
+* Fixes
+  - Prime
+    - Sync prime.scm with prime-1.0.0.1.
+    - Improve connection using unix domain socket.
+    - Use unix domain socket connection by default.
+
+  - uim-candwin-qt
+    - Fix displaying candidates in input prediction.
+
+  - Qt immodule
+    - Fix displaying candidates in input prediction.
+    - Fix key handling with control modifier.
+
+Overview of changes from 1.2.0-beta to 1.2.0
+==
+* Fixes
+  o Minor
+    - Prime
+      - Fix initialization of the context upon IM switch (Konosuke).
+
+    - uim-pref-qt
+      - Handle Meta modifier.
+    - uim-toolbar-qt
+      - Fix to shrink toolbar when any of the buttons are removed.
+
+    - uim.el
+      - Fix displaying candidates in input prediction (Konosuke).
+      - Fix displaying candidates with appendix on uim-prime (Konosuke).
+
+* Others
+  - Bump libuim version.
+
+Overview of changes from 1.2.0-alpha to 1.2.0-beta
+==
+* Fixes
+  o Minor
+    - Anthy
+    - Canna
+    - Mana
+      - Commit appropriate space letter in halfwidth_alnum input mode.
+
+    - Qt immodule
+      - Fix getting default IM in some environments.
+
+Overview of changes from 1.1.x to 1.2.0-alpha
+==
+* New features
+  - Anthy
+    - Input prediction support.
+    - Half-width and full-width alphanumeric conversion with a specific
+      segment.
+    - Add half-width alphanumeric input mode.
+    - Change definition of some input-mode transition keys.
+
+  - Canna
+  - Mana
+    - Hiragana, katakana, half-width katakana, half- and full-width
+      alphanumeric conversion with a specific segment.
+    - Add half-width alphanumeric input mode.
+    - Change definition of some input-mode transition keys.
+
+  - uim-dict-gtk
+    - Support Canna private dictionary.
+
+  - Gtk+ immodule
+  - Qt immodule
+    - Support locale dependent Compose file and ~/.XCompose
+
+* Fixes
+  - Anthy, Canan, Mana
+    - Don't insert full-width space on half-width katakana mode (bug #502).
+
+  - uim-xim
+    - Support ja (EUC) locale in Solaris 10 (bug #7558, KIHARA Hideto).
+
+  - general
+    - Handle several input mode keys in Japanese keyboard.
+
+Overview of changes from 1.1.0 to 1.1.1
+==
+* Fixes
+  - Anthy
+  - Mana
+    - Fix hang in latin conversion with incomplete roma-kana sequence,
+      but the behavior is still corrupted and won't fix in 1.1 series.
+  - Canna
+    - Fix key bindings for kana input rule.
+    - Improve preedit handing on direct mode.
+    - Fix IM context reset.
+    - Don't hang if Canna server close the connection.
+  
+  - uim.el
+    - Reflect updated custom preferences on-the-fly even without focus.
+
+  - uim-pref-qt
+    - Enable to remove all the key bindings in a setting.
+  - uim-toolbar-gtk
+  - uim-toolbar-gtk-systray
+  - uim-toolbar-applet
+    - Fix the position of the menu if it is too large.
+
+Overview of changes from 1.1.0-beta to 1.1.0
+==
+* Fixes
+  o Critical
+    - libuim
+      - fix a GC corruption that causes SEGV (YamaKen)
+
+  o Minor
+    - Qt immodule
+      - proper deadkey and compose key handling (bug #3988, Etsushi)
+      - adapted to the menu-based IM switcher (Etsushi)
+
+    - m17n-lib IM
+      - fix key handling with modifier keys (Etsushi)
+
+* Others
+  - tidy up automake/autoconf related scripts
+
+Overview of changes from 1.1.0-alpha to 1.1.0-beta
+==
+* New features
+  o Minor
+    - Anthy
+      - hankaku katakana conversion with Anthy-7802 (Etsushi)
+    
+* Fixes
+  o Minor
+    - uim-toolbar-gtk
+      - prevent startup hang in a rare case (Etsushi)
+
+    - Latin IM
+      - update table (Etsushi)
+
+Overview of changes from 1.0.x to 1.1.0-alpha
+==
+* New features
+  o Major
+    - icon support for toolbar (Etsushi, YamaKen)
+    - menu-based quick IM switching from toolbar (YamaKen, Etsushi)
+
+  o Minor
+    - hotkey-based IM toggle has been able to hold per-context state
+      (YamaKen)
+
+  o IM related
+    - Anthy, Canna, Mana
+      - circular Hiragana, Katakana, Hankaku-kana conversion with
+	"Muhenkan" key (Shun-ichi TAHARA)
+    - Mana
+      - support conversion-result learning with mana-0.2.0 (Shun-ichi
+        TAHARA, Masanari)
+
+* Fixes
+  o Minor
+    - general
+      - handle 'Kanji' and 'Hiragana_Katakana' keys (Shun-ichi TAHARA)
+
+    - uim-dict-gtk
+      - refresh the word list when removing and updating the existing
+        items (Etsushi)
+    - uim-im-switcher-gtk
+      - respond to the cursor movement from keyboard (Etsushi)
+    - uim-pref-gtk
+      - handle <Meta>, <Super>, and <Hyper> modifiers in the key
+	capture widget (Etsushi)
+      - distinguish directories and regular files on pathname custom
+	widget (Etsushi, YamaKen)
+    - uim-pref-qt
+      - distinguish directories and regular files on pathname custom
+	widget (Etsushi, YamaKen)
+
+    - GTK+ immodule
+      - enable <Alt>, <Meta>, <Super>, and <Hyper> modifier key
+	handling on X11 (bug #2468, Etsushi)
+      - disuse key snooper to improve shortcut key handling (Etsushi)
+    - uim-xim
+      - fix event handling with flashplayer plugin (Etsushi)
+    - uim-fep
+      - fix "commit_string" handling and make uim-input-ja working
+        again (Konosuke, Masanari)
+    - uim.el
+      - handle "commit_string" from helper programs and make
+        uim-input-ja working (Konosuke)
+
+* Others
+  - improve code properness with -Werror flag
+
+  - contributed and new input method icons (SHIMODA Hiroshi, FUJITA
+    Yuji, Jae-hyeon, YamaKen)
+
+  - new icons for input state indicator in the toolbar (YamaKen,
+    Jae-hyeon)
+
+  - strip IM name multiplexed in iconic-label of input modes of skk and
+    tutcode that confuses users (YamaKen)
+
+  - update translations
+    - ja (Daichi Kawahata, YamaKen)
+    - ko (Jae-hyeon)
+
 Overview of changes from 1.0.0 to 1.0.1
 ==
 * Fixes

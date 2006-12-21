@@ -33,7 +33,7 @@
 // classes for preedit draw
 
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <X11/Xlib.h>
@@ -56,14 +56,15 @@
 #define UNDERLINE_HEIGHT	2
 #define DEFAULT_FONT_SIZE	16
 // Temporal hack for flashplayer plugin's broken over-the-spot XIM style
-#define FLASHPLAYER_WORKAROUND
+#define FLASHPLAYER7_WORKAROUND
+#define FLASHPLAYER9_WORKAROUND
 
 //
 // PeWin:     Base class for preedit window
 // PeLineWin: Child class for root window style preedit window
 // PeOvWin:   Child class for over the spot style preedit window
 
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
 static Window getTopWindow(Display *, Window);
 #endif
 
@@ -276,7 +277,7 @@ private:
     void make_ce_array();
     void draw_preedit();
     void do_draw_preedit();
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
     int get_ce_font_height(char_ent *ce, int len);
     int revised_spot_y;
 #endif
@@ -1059,7 +1060,7 @@ ConvdispOv::ConvdispOv(InputContext *k, icxatr *a) : Convdisp(k, a)
     m_ov_win = 0;
     m_candwin_x_off = 0;
     m_candwin_y_off = 0;
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
     revised_spot_y = -1;
 #endif
 }
@@ -1104,7 +1105,7 @@ void ConvdispOv::move_candwin()
 				  m_atr->spot_location.y,
 				  &x, &y, &win);
 	}
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
 	if (revised_spot_y != -1) {
 	    XTranslateCoordinates(XimServer::gDpy, m_atr->client_window,
 				  DefaultRootWindow(XimServer::gDpy),
@@ -1183,6 +1184,13 @@ void ConvdispOv::update_icxatr()
     if (m_atr->is_changed(ICA_Area)) {
 	if (m_atr->area.width == 0)
 	    validate_area();
+#ifdef FLASHPLAYER9_WORKAROUND
+	if (m_atr->area.width == 500 && m_atr->area.height == 40) {
+	    validate_area();
+	    m_atr->area.x = 0;
+	    m_atr->area.y = 0;
+	}
+#endif
 	m_ov_win->set_size(m_atr->area.width, m_atr->area.height);
 	m_atr->unset_change_mask(ICA_Area);
     }
@@ -1237,12 +1245,12 @@ void ConvdispOv::draw_preedit()
 
 void ConvdispOv::do_draw_preedit()
 {
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
     revised_spot_y = -1;
 #endif
 
     if (m_atr->has_atr(ICA_Area)) {
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
 	// Workaround for brain damaged flash player plugin (at least
 	// version 7.0 r25). --ekato
 	//
@@ -1308,7 +1316,7 @@ void ConvdispOv::do_draw_preedit()
 		}
 	    }
 	} else
-#endif // FLASHPLAYER_WORKAROUND
+#endif // FLASHPLAYER7_WORKAROUND
 	    m_ov_win->set_pos(m_atr->area.x, m_atr->area.y);
     } else {
 	m_ov_win->set_pos(0, 0);
@@ -1370,6 +1378,14 @@ bool ConvdispOv::check_atr()
 	m_atr->area.x = 0;
 	m_atr->area.y = 0;
     }
+#ifdef FLASHPLAYER9_WORKAROUND
+    if (m_atr->has_atr(ICA_Area) &&
+	m_atr->area.width == 500 && m_atr->area.height == 40) {
+	validate_area();
+	m_atr->area.x = 0;
+	m_atr->area.y = 0;
+    }
+#endif
     if (!m_atr->has_atr(ICA_FontSet)) {
 	if (use_xft() == false)
 	    m_atr->font_set = choose_default_fontset(mIMLang, mLocaleName);
@@ -1463,7 +1479,7 @@ void ConvdispOv::layoutCharEnt()
 	}
 	m_ce[i].x = x - m_atr->area.x;
 	m_ce[i].y = y - m_atr->area.y;
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
 	// workaround for brain damaged flash player plugin
 	if (m_ce[i].y == 0)
 	    m_ce[i].y += m_ce[i].height;
@@ -1491,7 +1507,7 @@ void ConvdispOv::layoutCharEnt()
     }
 }
 
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
 int ConvdispOv::get_ce_font_height(char_ent *ce, int len)
 {
     int i, h = 0;
@@ -1683,7 +1699,7 @@ bool ConvdispOs::use_xft()
     return true;
 }
 
-#ifdef FLASHPLAYER_WORKAROUND
+#ifdef FLASHPLAYER7_WORKAROUND
 static Window getTopWindow(Display *d, Window w)
 {
     Window root, parent, *children;

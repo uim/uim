@@ -32,12 +32,8 @@
 
 // uim-helper connection
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
-#endif
-
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <stdio.h>
@@ -76,7 +72,7 @@ parse_helper_str_im_change(const char *level, const char *engine) {
     }
 }
 
-static void
+void
 send_im_list(void)
 {
     char *buf = NULL, *tmp = NULL;

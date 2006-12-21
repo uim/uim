@@ -38,14 +38,19 @@
 #include <qpopupmenu.h>
 #include <qpixmap.h>
 
+class UimStateIndicator;
+
 class QUimHelperToolbar : public QHBox
 {
     Q_OBJECT
 
 public:
-    QUimHelperToolbar( QWidget *parent = 0, const char *name = 0, WFlags f = 0 );
+    QUimHelperToolbar( QWidget *parent = 0, const char *name = 0, WFlags f = 0, bool isApplet = false );
     ~QUimHelperToolbar();
 
+public slots:    
+    void slotExecPref();
+    QPopupMenu *contextMenu();
 
 protected:
     // right click
@@ -59,22 +64,29 @@ protected:
     void addExecHandwritingInputPadButton();
     void addExecHelpButton();    
 
-    
+    int getNumButtons();
 protected slots:
     void slotExecImSwitcher();
-    void slotExecPref();
     void slotExecDict();
     void slotExecInputPad();
     void slotExecHandwritingInputPad();
     void slotExecHelp();    
 
+    void slotIndicatorResized();
 signals:
     void quitToolbar();
+    void toolbarResized();
 
 protected:
+    UimStateIndicator *m_indicator;
     QPixmap m_swicon;
     QPixmap m_preficon;
+    QPixmap m_dicticon;
+    QPixmap m_padicon;
+    QPixmap m_handicon;
+    QPixmap m_helpicon;
     QPopupMenu *m_contextMenu;
+    int m_nr_exec_buttons;
 };
 
 

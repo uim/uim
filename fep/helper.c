@@ -32,7 +32,7 @@
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #ifndef DEBUG
 #define NDEBUG
@@ -111,10 +111,6 @@ void helper_handler(void)
         debug(("prop_list_get\n"));
         uim_prop_list_update(g_context);
 
-      } else if (str_has_prefix(message, "prop_label_get")) {
-        debug(("prop_label_get\n"));
-        uim_prop_label_update(g_context);
-
       } else if (str_has_prefix(message, "prop_activate")) {
         char *eol;
         debug(("prop_activate\n"));
@@ -134,26 +130,28 @@ void helper_handler(void)
         char *eol;
         debug(("commit_string\n"));
         if ((eol = strchr(message, '\n')) != NULL) {
-          char *charset = eol + 1;
+          char *charset = "UTF-8";
 
-          if (str_has_prefix(charset, "charset=")) {
-            charset += strlen("charset=");
-            if ((eol = strchr(charset, '\n')) != NULL) {
-              char *commit_string = eol + 1;
+          if (str_has_prefix(eol + 1, "charset=")) {
+            charset = eol + 1 + strlen("charset=");
+            eol = strchr(charset, '\n');
+            *eol = '\0';
+          }
+
+          if (eol != NULL) {
+            char *commit_string = eol + 1;
+
+            if ((eol = strchr(commit_string, '\n')) != NULL) {
+              const char *commit_enc = get_enc();
 
               *eol = '\0';
-              if ((eol = strchr(commit_string, '\n')) != NULL) {
-                const char *commit_enc;
-
-                *eol = '\0';
-                if (uim_iconv->is_convertible(commit_enc = get_enc(), charset)) {
-                  void *cd = uim_iconv->create(commit_enc, charset);
-                  commit_string = uim_iconv->convert(cd, commit_string);
-                  commit_cb(NULL, commit_string);
-                  free(commit_string);
-                  if (cd) {
-                    uim_iconv->release(cd);
-                  }
+              if (uim_iconv->is_convertible(commit_enc, charset)) {
+                void *cd = uim_iconv->create(commit_enc, charset);
+                commit_string = uim_iconv->convert(cd, commit_string);
+                commit_cb(NULL, commit_string);
+                free(commit_string);
+                if (cd) {
+                  uim_iconv->release(cd);
                 }
               }
             }
@@ -227,5 +225,4 @@ void focus_in(void)
   g_focus_in = TRUE;
   uim_helper_client_focus_in(g_context);
   uim_prop_list_update(g_context);
-  uim_prop_label_update(g_context);
 }

@@ -31,6 +31,8 @@
 
 */
 
+#include <config.h>
+
 #include <pref-gtk-custom-widgets.h>
 #include <gdk/gdkkeysyms.h>
 
@@ -38,13 +40,18 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include "uim/config.h"
+#include "uim/uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
 #include "../gtk/key-util-gtk.h"
+#include "pref-gtk-keytab.h"
 
+#define DEFAULT_OLIST_WINDOW_WIDTH    480
+#define DEFAULT_OLIST_WINDOW_HEIGHT   350
+#define DEFAULT_KEYCONF_WINDOW_WIDTH  280
+#define DEFAULT_KEYCONF_WINDOW_HEIGHT 220
 #define OBJECT_DATA_UIM_CUSTOM_SYM    "uim-pref-gtk::uim-custom-sym"
 
 extern gboolean uim_pref_gtk_value_changed;
@@ -159,7 +166,7 @@ sync_value_bool(GtkCheckButton *button)
   struct uim_custom *custom;
 
   g_signal_handlers_block_by_func(G_OBJECT(button),
-				  (gpointer) custom_check_button_toggled_cb,
+				  (gpointer)(uintptr_t) custom_check_button_toggled_cb,
 				  NULL);
 
   custom_sym = g_object_get_data(G_OBJECT(button), OBJECT_DATA_UIM_CUSTOM_SYM);
@@ -174,7 +181,7 @@ sync_value_bool(GtkCheckButton *button)
   uim_custom_free(custom);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(button),
-				    (gpointer) custom_check_button_toggled_cb,
+				    (gpointer)(uintptr_t) custom_check_button_toggled_cb,
 				    NULL);
 }
 
@@ -242,7 +249,7 @@ sync_value_int(GtkSpinButton *spin)
   GtkAdjustment *adj;
 
   g_signal_handlers_block_by_func(G_OBJECT(spin),
-				  (gpointer) custom_spin_button_value_changed,
+				  (gpointer)(uintptr_t) custom_spin_button_value_changed,
 				  NULL);
 
   adj = gtk_spin_button_get_adjustment(spin);
@@ -264,7 +271,7 @@ sync_value_int(GtkSpinButton *spin)
   uim_custom_free(custom);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(spin),
-				    (gpointer) custom_spin_button_value_changed,
+				    (gpointer)(uintptr_t) custom_spin_button_value_changed,
 				    NULL);
 }
 
@@ -365,7 +372,7 @@ sync_value_string(GtkEntry *entry)
   struct uim_custom *custom;
 
   g_signal_handlers_block_by_func(G_OBJECT(entry),
-				  (gpointer) custom_entry_changed_cb,
+				  (gpointer)(uintptr_t) custom_entry_changed_cb,
 				  NULL);
 
   custom_sym = g_object_get_data(G_OBJECT(entry), OBJECT_DATA_UIM_CUSTOM_SYM);
@@ -386,7 +393,7 @@ sync_value_string(GtkEntry *entry)
   uim_custom_free(custom);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(entry),
-				    (gpointer) custom_entry_changed_cb,
+				    (gpointer)(uintptr_t) custom_entry_changed_cb,
 				    NULL);
 }
 
@@ -446,9 +453,9 @@ custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 					NULL);
-  
+
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-    char *filename;    
+    char *filename;
     filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
     if (filename) {
       gtk_entry_set_text(GTK_ENTRY(entry), filename);
@@ -469,7 +476,7 @@ add_custom_type_pathname(GtkWidget *vbox, struct uim_custom *custom)
   const char *button_label;
 
   hbox = gtk_hbox_new(FALSE, 8);
- 
+
   label = gtk_label_new(custom->label);
   gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
   gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -585,18 +592,18 @@ sync_value_choice(GtkComboBox *combobox)
     uim_custom_free(custom);
     return;
   }
-  
+
   g_signal_handlers_block_by_func(G_OBJECT(combobox),
-				  (gpointer)custom_combo_box_changed, NULL);
+				  (gpointer)(uintptr_t) custom_combo_box_changed, NULL);
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combobox))));
-  
+
   default_symbol = custom->value->as_choice->symbol;
 
   while (*item) {
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), (*item)->label);
     if (!strcmp(default_symbol, (*item)->symbol))
-      default_index = i;    
+      default_index = i;
     i++;
     item++;
   }
@@ -605,7 +612,7 @@ sync_value_choice(GtkComboBox *combobox)
   gtk_widget_set_sensitive(GTK_WIDGET(combobox)->parent, custom->is_active);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(combobox),
-				    (gpointer)custom_combo_box_changed, NULL);
+				    (gpointer)(uintptr_t) custom_combo_box_changed, NULL);
 
   uim_custom_free(custom);
 }
@@ -635,7 +642,7 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
   g_object_set_data_full(G_OBJECT(combobox),
 			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
 			 (GDestroyNotify) g_free);
-  
+
   sync_value_choice(GTK_COMBO_BOX(combobox));
 
   g_signal_connect(G_OBJECT(combobox), "changed",
@@ -1050,7 +1057,7 @@ olist_pref_left_button_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
     custom->value->as_olist[num - 1]->desc   = choice->desc   ? strdup(choice->desc)   : NULL;
     custom->value->as_olist[num] = NULL;
   }
-  
+
   urv = uim_custom_set(custom);
 
   if (urv != UIM_FALSE) {
@@ -1169,7 +1176,9 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   uim_custom_free(custom);
 
   olist_pref_win.window = dialog;
-  gtk_window_set_default_size(GTK_WINDOW(dialog), 400, 250);
+  gtk_window_set_default_size(GTK_WINDOW(dialog),
+			      DEFAULT_OLIST_WINDOW_WIDTH,
+			      DEFAULT_OLIST_WINDOW_HEIGHT);
   g_signal_connect(G_OBJECT(dialog), "response",
 		   G_CALLBACK(olist_pref_dialog_response_cb), olist_entry);
 
@@ -1388,6 +1397,7 @@ static void
 key_pref_set_value(gint ukey, gint umod)
 {
   GString *keystr;
+  const char *sym;
 
   keystr = g_string_new("");
   /*
@@ -1417,90 +1427,15 @@ key_pref_set_value(gint ukey, gint umod)
      */
     g_string_append(keystr, "space");
     break;
-  case UKey_Backspace:
-    g_string_append(keystr, "backspace");
-    break;
-  case UKey_Delete:
-    g_string_append(keystr, "delete");
-    break;
-  case UKey_Insert:
-    g_string_append(keystr, "insert");
-    break;
-  case UKey_Escape:
-    g_string_append(keystr, "escape");
-    break;
-  case UKey_Tab:
-    g_string_append(keystr, "tab");
-    break;
-  case UKey_Return:
-    g_string_append(keystr, "return");
-    break;
-  case UKey_Left:
-    g_string_append(keystr, "left");
-    break;
-  case UKey_Up:
-    g_string_append(keystr, "up");
-    break;
-  case UKey_Right:
-    g_string_append(keystr, "right");
-    break;
-  case UKey_Down:
-    g_string_append(keystr, "down");
-    break;
-  case UKey_Prior:
-    g_string_append(keystr, "prior");
-    break;
-  case UKey_Next:
-    g_string_append(keystr, "next");
-    break;
-  case UKey_Home:
-    g_string_append(keystr, "home");
-    break;
-  case UKey_End:
-    g_string_append(keystr, "end");
-    break;
-  case UKey_Zenkaku_Hankaku:
-    g_string_append(keystr, "zenkaku-hankaku");
-    break;
-  case UKey_Multi_key:
-    g_string_append(keystr, "Multi_key");
-    break;
-  case UKey_Mode_switch:
-    g_string_append(keystr, "Mode_switch");
-    break;
-  case UKey_Henkan_Mode:
-    g_string_append(keystr, "Henkan_Mode");
-    break;
-  case UKey_Muhenkan:
-    g_string_append(keystr, "Muhenkan");
-    break;
-  case UKey_Shift_key:
-    g_string_append(keystr, "Shift_key");
-    break;
-  case UKey_Control_key:
-    g_string_append(keystr, "Control_key");
-    break;
-  case UKey_Alt_key:
-    g_string_append(keystr, "Alt_key");
-    break;
-  case UKey_Meta_key:
-    g_string_append(keystr, "Meta_key");
-    break;
-  case UKey_Super_key:
-    g_string_append(keystr, "Super_key");
-    break;
-  case UKey_Hyper_key:
-    g_string_append(keystr, "Hyper_key");
-    break;
   default:
-    if (ukey >= UKey_F1 && ukey <= UKey_F35) {
-      g_string_append_printf(keystr, "F%d", ukey - UKey_F1 + 1);
 #if 0
-    } else if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9) {
+    if (keyval >= GDK_KP_0 && keyval <= GDK_KP_9) {
       g_string_append_printf(keystr, "%d", keyval - GDK_KP_0 + UKey_0);
 #endif
-    } else if (ukey < 256) {
+    if (ukey < 128) {
       g_string_append_printf(keystr, "%c", ukey);
+    } else if ((sym = uim_pref_get_keysym(ukey))) {
+      g_string_append(keystr, sym);
     } else {
       /* UKey_Other */
     }
@@ -1536,10 +1471,10 @@ grab_win_key_release_cb (GtkWidget *widget, GdkEventKey *event,
 				 &key_pref_win.grabbed_key_state);
 
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
-				       (gpointer) grab_win_key_press_cb,
+				       (gpointer)(uintptr_t) grab_win_key_press_cb,
 				       key_entry);
   g_signal_handlers_disconnect_by_func(G_OBJECT(widget),
-				       (gpointer) grab_win_key_release_cb,
+				       (gpointer)(uintptr_t) grab_win_key_release_cb,
 				       key_entry);
 
   gtk_dialog_response(GTK_DIALOG(widget), 0);
@@ -1812,7 +1747,9 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
     GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
     NULL);
   key_pref_win.window = dialog;
-  gtk_window_set_default_size(GTK_WINDOW(dialog), 280, 220);
+  gtk_window_set_default_size(GTK_WINDOW(dialog),
+			      DEFAULT_KEYCONF_WINDOW_WIDTH,
+			      DEFAULT_KEYCONF_WINDOW_HEIGHT);
   g_signal_connect(G_OBJECT(dialog), "response",
 		   G_CALLBACK(key_pref_dialog_response_cb), key_entry);
 
@@ -1968,7 +1905,7 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(choose_key_clicked_cb), entry);
   uim_custom_cb_add(custom->symbol, entry, update_custom_type_key_cb);
-  
+
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 }
 

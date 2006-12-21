@@ -49,10 +49,11 @@ typedef enum _uim_word_type {
     WORD_TYPE_ANTHY,
     WORD_TYPE_CANNA,
     WORD_TYPE_SKK,
-    WORD_TYPE_PRIME
+    WORD_TYPE_PRIME,
+    WORD_TYPE_UNKNOWN
 } uim_word_type;
 
-/* 
+/*
  *  - ハッシュテーブルか何かでデータを管理し，charsetとphonとdesc以外の
  *    全てのメンバーを隠したほうが良いかもしれない．
  *    全てのデータは関数経由でアクセス
@@ -74,9 +75,9 @@ typedef struct _uim_word {
 
     char       *phon;		    /* 読み */
     char       *desc;	            /* 漢字 */
-    char       *cclass_code;	    /* 品詞コード or 品詞 */
-				    /* FIXME! 品詞コードと品詞は分けたほうが良い? */
-				    /* 現在は(コードではなく)品詞名(狭義)が格納されている */
+    char       *cclass_code;	    /* 品詞 現在は(コードではなく)品詞名(狭義)
+				       が格納されている */
+    char       *cclass_native;	    /* native cclass code (like #T01). */
     int	        freq;		    /* 頻度 */
 
     /* SKK specific fields */       /* FIXME! 共用体か継承で分離 */
@@ -92,9 +93,13 @@ typedef struct _uim_word {
 void      word_append    (uim_word **head, uim_word_type type,
 			  char *charset,
 			  char *phon, char *desc,
-			  char *cclass_code, int freq,
+			  const char *cclass_code,
+			  const char *cclass_native,
+			  int freq,
 			  int okuri, char *annotation);
 void      word_free_list (uim_word *head);
 uim_word *word_last      (uim_word *list);
 
+uim_word_type dict_identifier_to_word_type(char *identifier);
+int dict_identifier_to_support_type(char *identifier);
 #endif /* __dict_word_h_included__ */

@@ -30,7 +30,7 @@
   SUCH DAMAGE.
 
 */
-#include "config.h"
+#include <config.h>
 
 #define Uses_SCIM_CONFIG_PATH
 #define Uses_SCIM_IMENGINE_MODULE

@@ -163,41 +163,41 @@
 (define skk-input-mode-indication-alist
   (list
    (list 'action_skk_latin
-	 'figure_ja_latin
-	 "s"
+	 'ja_halfwidth_alnum
+	 "a"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_skk_hiragana
-	 'figure_ja_hiragana
-	 "¤¨"
+	 'ja_hiragana
+	 "¤¢"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_skk_katakana
-	 'figure_ja_katakana
-	 "¥¨"
+	 'ja_katakana
+	 "¥¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
    (list 'action_skk_hankana
-	 'figure_ja_hankana
-	 "Ž´"
+	 'ja_halfkana
+	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
    (list 'action_skk_wide_latin
-	 'figure_ja_wide_latin
-	 "£Ó"
+	 'ja_fullwidth_alnum
+	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
 
 (define skk-kana-input-method-indication-alist
   (list
    (list 'action_skk_roma
-	 'figure_ja_roma
+	 'ja_romaji
 	 "£Ò"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
    (list 'action_skk_azik
-	 'figure_ja_azik
-	 "£Á"
+	 'ja_azik
+	 "£Ú"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))
 
@@ -346,14 +346,14 @@
   (_ "long description will be here."))
 
 (define-custom 'skk-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-jisyo")
+  (string-append (or (getenv "HOME") "") "/.skk-jisyo")
   '(skk-dict)
   '(pathname regular-file)
   (_ "Personal dictionary file")
   (_ "long description will be here."))
 
 (define-custom 'skk-uim-personal-dic-filename
-  (string-append (getenv "HOME") "/.skk-uim-jisyo")
+  (string-append (or (getenv "HOME") "") "/.skk-uim-jisyo")
   '(skk-dict)
   '(pathname regular-file)
   (_ "Personal dictionary file (dedicated to uim)")

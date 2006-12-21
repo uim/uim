@@ -40,6 +40,7 @@
 #define _FU8(String) QString::fromUtf8(String)
 
 #define DEBUG_KEY_EDIT 0
+static QString unicodeKeyToSymStr( QChar c );
 
 CustomCheckBox::CustomCheckBox( struct uim_custom *c, QWidget *parent, const char *name )
     : QCheckBox( parent, name ),
@@ -726,8 +727,6 @@ void CustomKeyEdit::slotKeyButtonClicked()
     if( d->exec() == KeyEditForm::Accepted )
     {
         const QStringList keyStrList = d->getKeyStrList();
-        if( keyStrList.isEmpty() )
-            return;
 
         /* free old items */
         int num = 0;
@@ -869,6 +868,7 @@ KeyGrabDialog::KeyGrabDialog( QWidget *parent, const char *name )
     : QDialog( parent, name ),
       pressed_keyval( 0 ),
       pressed_keystate( Qt::NoButton ),
+      pressed_unichar ( 0 ),
       m_keystr( 0 )
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout( this );
@@ -882,9 +882,10 @@ void KeyGrabDialog::keyPressEvent( QKeyEvent *e )
 {
     pressed_keyval = e->key();
     pressed_keystate = e->state();
+    pressed_unichar = e->text().at(0);
 }
 
-void KeyGrabDialog::keyReleaseEvent( QKeyEvent *e )
+void KeyGrabDialog::keyReleaseEvent( QKeyEvent * /* e */ )
 {
     // create keystr
     setKeyStr();
@@ -911,6 +912,8 @@ void KeyGrabDialog::setKeyStr()
         keystr += "<Control>";
     if( mod & Qt::AltButton )
         keystr += "<Alt>";
+    if( mod & Qt::MetaButton )
+        keystr += "<Meta>";
 
     switch( keyval ) {
     case Qt::Key_Space:
@@ -959,21 +962,161 @@ void KeyGrabDialog::setKeyStr()
         keystr += "end";
         break;
 #ifdef QT_IMMODULE
-    case Qt::Key_Kanji:
-    case Qt::Key_Zenkaku_Hankaku:
-        keystr += "zenkaku-hankaku";
-        break;
     case Qt::Key_Multi_key:
         keystr += "Multi_key";
+        break;
+    case Qt::Key_Codeinput:
+        keystr += "codeinput";
+        break;
+    case Qt::Key_SingleCandidate:
+        keystr += "single-candidate";
+        break;
+    case Qt::Key_MultipleCandidate:
+        keystr += "multiple-candidate";
+        break;
+    case Qt::Key_PreviousCandidate:
+        keystr += "previous-candidate";
         break;
     case Qt::Key_Mode_switch:
         keystr += "Mode_switch";
         break;
-    case Qt::Key_Henkan:
-        keystr += "Henkan_Mode";
+    case Qt::Key_Kanji:
+        keystr += "Kanji";
         break;
     case Qt::Key_Muhenkan:
         keystr += "Muhenkan";
+        break;
+    case Qt::Key_Henkan:
+        keystr += "Henkan_Mode";
+        break;
+    case Qt::Key_Romaji:
+        keystr += "romaji";
+        break;
+    case Qt::Key_Hiragana:
+        keystr += "hiragana";
+        break;
+    case Qt::Key_Katakana:
+        keystr += "katakana";
+        break;
+    case Qt::Key_Hiragana_Katakana:
+        keystr += "hiragana-katakana";
+        break;
+    case Qt::Key_Zenkaku:
+        keystr += "zenkaku";
+        break;
+    case Qt::Key_Hankaku:
+        keystr += "hankaku";
+        break;
+    case Qt::Key_Zenkaku_Hankaku:
+        keystr += "zenkaku-hankaku";
+        break;
+    case Qt::Key_Touroku:
+        keystr += "touroku";
+        break;
+    case Qt::Key_Massyo:
+        keystr += "massyo";
+        break;
+    case Qt::Key_Kana_Lock:
+        keystr += "kana-lock";
+        break;
+    case Qt::Key_Kana_Shift:
+        keystr += "kana-shift";
+        break;
+    case Qt::Key_Eisu_Shift:
+        keystr += "eisu-shift";
+        break;
+    case Qt::Key_Eisu_toggle:
+        keystr += "eisu-toggle";
+        break;
+    case Qt::Key_Hangul:
+        keystr += "hangul";
+        break;
+    case Qt::Key_Hangul_Start:
+        keystr += "hangul-start";
+        break;
+    case Qt::Key_Hangul_End:
+        keystr += "hangul-end";
+        break;
+    case Qt::Key_Hangul_Hanja:
+        keystr += "hangul-hanja";
+        break;
+    case Qt::Key_Hangul_Jamo:
+        keystr += "hangul-jamo";
+        break;
+    case Qt::Key_Hangul_Romaja:
+        keystr += "hangul-romaja";
+        break;
+    case Qt::Key_Hangul_Jeonja:
+        keystr += "hangul-jeonja";
+        break;
+    case Qt::Key_Hangul_Banja:
+        keystr += "hangul-banja";
+        break;
+    case Qt::Key_Hangul_PreHanja:
+        keystr += "hangul-prehanja";
+        break;
+    case Qt::Key_Hangul_PostHanja:
+        keystr += "hangul-prosthanja";
+        break;
+    case Qt::Key_Hangul_Special:
+        keystr += "hangul-special";
+        break;
+    case Qt::Key_Dead_Grave:
+        keystr += "dead-grave";
+        break;
+    case Qt::Key_Dead_Acute:
+        keystr += "dead-acute";
+        break;
+    case Qt::Key_Dead_Circumflex:
+        keystr += "dead-circumflex";
+        break;
+    case Qt::Key_Dead_Tilde:
+        keystr += "dead-tilde";
+        break;
+    case Qt::Key_Dead_Macron:
+        keystr += "dead-macron";
+        break;
+    case Qt::Key_Dead_Breve:
+        keystr += "dead-breve";
+        break;
+    case Qt::Key_Dead_Abovedot:
+        keystr += "dead-abovedot";
+        break;
+    case Qt::Key_Dead_Diaeresis:
+        keystr += "dead-diaeresis";
+        break;
+    case Qt::Key_Dead_Abovering:
+        keystr += "dead-abovering";
+        break;
+    case Qt::Key_Dead_Doubleacute:
+        keystr += "dead-doubleacute";
+        break;
+    case Qt::Key_Dead_Caron:
+        keystr += "dead-caron";
+        break;
+    case Qt::Key_Dead_Cedilla:
+        keystr += "dead-cedilla";
+        break;
+    case Qt::Key_Dead_Ogonek:
+        keystr += "dead-ogonek";
+        break;
+    case Qt::Key_Dead_Iota:
+        keystr += "dead-iota";
+        break;
+    case Qt::Key_Dead_Voiced_Sound:
+        keystr += "dead-voiced-sound";
+        break;
+    case Qt::Key_Dead_Semivoiced_Sound:
+        keystr += "dead-semivoiced-sound";
+        break;
+    case Qt::Key_Dead_Belowdot:
+        keystr += "dead-belowdot";
+        break;
+    case Qt::Key_Dead_Hook:
+        keystr += "dead-hook";
+        break;
+    case Qt::Key_Dead_Horn:
+        keystr += "dead-horn";
         break;
 #endif /* Def: QT_IMMODULE */
     case Qt::Key_Shift:
@@ -996,6 +1139,18 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Hyper_R:
         keystr += "Hyper_key";
         break;
+    case Qt::Key_CapsLock:
+        keystr += "caps-lock";
+        break;
+    case Qt::Key_NumLock:
+        keystr += "num-lock";
+        break;
+    case Qt::Key_ScrollLock:
+        keystr += "scroll-lock";
+        break;
+    case Qt::Key_unknown:
+        keystr += unicodeKeyToSymStr ( pressed_unichar );
+        break;
     default:
         if( keyval >= Qt::Key_F1 && keyval <= Qt::Key_F35 )
         {
@@ -1017,6 +1172,82 @@ void KeyGrabDialog::setKeyStr()
 
     m_keystr = keystr;
         
+}
+
+static QString unicodeKeyToSymStr ( QChar c )
+{
+    QString str = QString::null;
+
+    switch ( c.unicode() ) {
+    case 0x00A5: str = "yen"; break;
+    case 0x3002: str = "kana-fullstop"; break;
+    case 0x300C: str = "kana-opening-bracket"; break;
+    case 0x300D: str = "kana-closing-bracket"; break;
+    case 0x3001: str = "kana-comma"; break;
+    case 0x30FB: str = "kana-conjunctive"; break;
+    case 0x30F2: str = "kana-WO"; break;
+    case 0x30A1: str = "kana-a"; break;
+    case 0x30A3: str = "kana-i"; break;
+    case 0x30A5: str = "kana-u"; break;
+    case 0x30A7: str = "kana-e"; break;
+    case 0x30A9: str = "kana-o"; break;
+    case 0x30E3: str = "kana-ya"; break;
+    case 0x30E5: str = "kana-yu"; break;
+    case 0x30E7: str = "kana-yo"; break;
+    case 0x30C3: str = "kana-tsu"; break;
+    case 0x30FC: str = "kana-prolonged-sound"; break;
+    case 0x30A2: str = "kana-A"; break;
+    case 0x30A4: str = "kana-I"; break;
+    case 0x30A6: str = "kana-U"; break;
+    case 0x30A8: str = "kana-E"; break;
+    case 0x30AA: str = "kana-O"; break;
+    case 0x30AB: str = "kana-KA"; break;
+    case 0x30AD: str = "kana-KI"; break;
+    case 0x30AF: str = "kana-KU"; break;
+    case 0x30B1: str = "kana-KE"; break;
+    case 0x30B3: str = "kana-KO"; break;
+    case 0x30B5: str = "kana-SA"; break;
+    case 0x30B7: str = "kana-SHI"; break;
+    case 0x30B9: str = "kana-SU"; break;
+    case 0x30BB: str = "kana-SE"; break;
+    case 0x30BD: str = "kana-SO"; break;
+    case 0x30BF: str = "kana-TA"; break;
+    case 0x30C1: str = "kana-CHI"; break;
+    case 0x30C4: str = "kana-TSU"; break;
+    case 0x30C6: str = "kana-TE"; break;
+    case 0x30C8: str = "kana-TO"; break;
+    case 0x30CA: str = "kana-NA"; break;
+    case 0x30CB: str = "kana-NI"; break;
+    case 0x30CC: str = "kana-NU"; break;
+    case 0x30CD: str = "kana-NE"; break;
+    case 0x30CE: str = "kana-NO"; break;
+    case 0x30CF: str = "kana-HA"; break;
+    case 0x30D2: str = "kana-HI"; break;
+    case 0x30D5: str = "kana-FU"; break;
+    case 0x30D8: str = "kana-HE"; break;
+    case 0x30DB: str = "kana-HO"; break;
+    case 0x30DE: str = "kana-MA"; break;
+    case 0x30DF: str = "kana-MI"; break;
+    case 0x30E0: str = "kana-MU"; break;
+    case 0x30E1: str = "kana-ME"; break;
+    case 0x30E2: str = "kana-MO"; break;
+    case 0x30E4: str = "kana-YA"; break;
+    case 0x30E6: str = "kana-YU"; break;
+    case 0x30E8: str = "kana-YO"; break;
+    case 0x30E9: str = "kana-RA"; break;
+    case 0x30EA: str = "kana-RI"; break;
+    case 0x30EB: str = "kana-RU"; break;
+    case 0x30EC: str = "kana-RE"; break;
+    case 0x30ED: str = "kana-RO"; break;
+    case 0x30EF: str = "kana-WA"; break;
+    case 0x30F3: str = "kana-N"; break;
+    case 0x309B: str = "kana-voiced-sound"; break;
+    case 0x309C: str = "kana-semivoiced-sound"; break;
+    default:
+        break;
+    }
+
+    return str;
 }
 
 #include "pref-customwidgets.moc"

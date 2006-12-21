@@ -1,0 +1,70 @@
+uim 1.3.0 Release Note
+======================
+
+About This Release
+------------------
+
+This distribution of uim 1.3.0 is latest stable release of uim.
+
+Please report us if you find a problem.
+
+Mailinglist: uim@freedesktop.org
+Bug tracking system: http://bugs.freedesktop.org/
+
+
+What's New
+----------
+
+  - Text acquisition and focus-related APIs
+
+  - Dead keys support for the latin IM
+
+  - Experimental Kana keyboard support
+
+  - Flash Player 9 plugin workaround for uim-xim
+
+  - New Try-Code Japanese IM
+
+See NEWS for the fully detailed changes.
+
+
+Notes for Packagers and System Integrators
+------------------------------------------
+
+  - The maintainer mode of configure script is introduced. If your
+    package prefer your own PNG icon generation with rsvg, Add
+    --enable-maintainer-mode option to configure
+
+  - anthy.png, canna.png and prime.png are replaced with generated
+    file. Be careful to maintain install procedure
+
+
+Roadmap
+-------
+
+  - uim 1.4.0
+
+    Release for internal improvement. No user-visible changes other
+    than resource consumption reduction. This release plan will not be
+    deferred anymore.
+
+    The non-standard-conformant Scheme interpreter of libuim will be
+    replaced with newly developed SigScheme to make a room for next
+    leap.
+
+
+  - uim 1.5.0
+
+    Release for internal simplification. No user-visible changes.
+
+    The complicated C part of uim which prevents extensions, design
+    improvements and automated input method tests will be turned into
+    Scheme codes or optimized out.
+
+
+  - uim 1.6.0 and later
+
+    The time for drastic reconstruction. Many user-visible changes.
+
+    The composer framework will be introduced for extensible IM
+    development.

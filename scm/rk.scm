@@ -95,12 +95,16 @@
        (if (not tail-partial)
 	   (begin
 	     (set! res (cadr (rk-lib-find-seq (reverse longest-head) rule)))
-	     (rk-context-set-seq!
-	      rkc
-	      (reverse
-	       (truncate-list (reverse seq)
-			      (- (length seq)
-				 (length longest-head)))))
+	     (let ((tail (reverse (truncate-list (reverse seq)
+						 (- (length seq)
+						    (length longest-head))))))
+	       (if (and
+		    res
+		    (or
+		     longest-tail
+		     (rk-lib-find-partial-seq tail rule)))
+		   (rk-context-set-seq! rkc tail)
+		   (rk-context-set-seq! rkc '()))) ;; no match in rule
 	     #f)
 	   #t)
        (begin
@@ -110,13 +114,17 @@
 ;;
 (define rk-partial-seq?
   (lambda (rkc s)
-    (rk-lib-find-partial-seq
-     (reverse s) (rk-context-rule rkc))))
+    (if (null? s)
+        #f
+        (rk-lib-find-partial-seq (reverse s) (rk-context-rule rkc)))))
+
 ;; API
 (define rk-partial?
   (lambda (rkc)
     (if (rk-context-back-match rkc)
-	#t
+	(if (rk-context-seq rkc)
+	    #t
+	    #f)
 	(rk-partial-seq?
 	 rkc
 	 (rk-context-seq rkc)))))
@@ -141,6 +149,17 @@
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
+       ;; If the sequence contains only non-representable keysyms after
+       ;; the deletion, flush them.
+       (if (and
+	    (not (null? (rk-context-seq context)))
+	    (null? (remove
+		    (lambda (x)
+		     (and
+		      (intern-key-symbol x)
+		      (not (symbol-bound? (string->symbol x)))))
+		    (rk-context-seq context))))
+	   (rk-flush context))
        #t)
      #f)))
  
@@ -152,6 +171,18 @@
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
+       ;; If the sequence contains only non-representable keysyms after
+       ;; the deletion, flush them.
+       (if (and
+	    (not (null? (rk-context-seq context)))
+	    (null? (remove
+		    (lambda (x)
+		     (and
+		      (intern-key-symbol x)
+		      (not (symbol-bound? (string->symbol x)))))
+		    (rk-context-seq context))))
+	   (rk-flush context))
+
        #t)
      #f)))
 
@@ -281,4 +312,11 @@
 ;; API
 (define rk-pending
   (lambda (c)
-    (string-list-concat (rk-context-seq c))))
+    (string-list-concat
+     ;; remove keysyms not representable in IM
+     (filter-map
+      (lambda (x) (if (intern-key-symbol x)
+		      (if (symbol-bound? (string->symbol x))
+		          (symbol-value (string->symbol x)))
+		      x))
+      (rk-context-seq c)))))

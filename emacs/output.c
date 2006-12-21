@@ -36,33 +36,26 @@
 
 #include "output.h"
 
-int output_enable = 1;
-
+#if 0
 int
 a_putchar(const int c)
 {
-  if (output_enable)
 	return putchar(c);
-  else
-	return 0;
 }
-
 
 int
 a_printf(const char *fmt, ...)
 {
   int ret = 0;
-  
-  if (output_enable) {
 	va_list ap;
 
 	va_start(ap, fmt);
 	ret = vfprintf(stdout, fmt, ap);
 	va_end(ap);  
-  }
 
   return ret;
 }
+#endif
 
 
 void
@@ -79,6 +72,8 @@ output_with_escape(const char *str)
 	  for (i = 0; i < strlen(str); i ++) {
 		if (str[i] == '"') 
 		  a_printf("\\\"");
+		else if (str[i] == '\\') 
+		  a_printf("\\\\");
 		else
 		  a_putchar(str[i]);
 	  }

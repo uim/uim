@@ -81,7 +81,7 @@
 	       (_ "[TUT-Code] off")
 	       (_ "long description will be here"))
 
-(define-custom 'tutcode-kana-toggle-key '("'")
+(define-custom 'tutcode-kana-toggle-key '("<IgnoreShift>'")
                '(tutcode-keys1 mode-transition)
 	       '(key)
 	       (_ "[TUT-Code] toggle hiragana/katakana mode")

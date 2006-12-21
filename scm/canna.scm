@@ -29,6 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "ustr.scm")
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
@@ -41,99 +42,166 @@
 
 (define canna-init-lib-ok? #f)
 
+(define canna-type-direct	   ja-type-direct)
+(define canna-type-hiragana	   ja-type-hiragana)
+(define canna-type-katakana	   ja-type-katakana)
+(define canna-type-halfkana	   ja-type-halfkana)
+(define canna-type-halfwidth-alnum ja-type-halfwidth-alnum)
+(define canna-type-fullwidth-alnum ja-type-fullwidth-alnum)
+
 (define canna-input-rule-roma 0)
 (define canna-input-rule-kana 1)
 (define canna-input-rule-azik 2)
 
-(define canna-prepare-activation
+(define canna-candidate-type-katakana -2)
+(define canna-candidate-type-hiragana -3)
+(define canna-candidate-type-halfkana -4)
+(define canna-candidate-type-halfwidth-alnum -5)
+(define canna-candidate-type-fullwidth-alnum -6)
+(define canna-candidate-type-upper-halfwidth-alnum -7)
+(define canna-candidate-type-upper-fullwidth-alnum -8)
+
+;; I don't think the key needs to be customizable.
+(define-key canna-space-key? '(" "))
+
+(define canna-prepare-input-rule-activation
   (lambda (cc)
-    (if (canna-context-state cc)
-        (let ((cc-id (canna-context-cc-id cc)))
-          (canna-lib-reset-conversion cc-id)))
+    (cond
+     ((canna-context-state cc)
+      (canna-do-commit cc))
+     ((canna-context-transposing cc)
+      (im-commit cc (canna-transposing-text cc)))
+     ((and
+       (canna-context-on cc)
+       (canna-has-preedit? cc))
+      (im-commit
+       cc (canna-make-whole-string cc #t (canna-context-kana-mode cc)))))
     (canna-flush cc)
     (canna-update-preedit cc)))
 
+(define canna-prepare-input-mode-activation
+  (lambda (cc new-mode)
+    (let ((old-kana (canna-context-kana-mode cc)))
+      (cond
+       ((canna-context-state cc)
+	(canna-do-commit cc))
+       ((canna-context-transposing cc)
+	(im-commit cc (canna-transposing-text cc))
+	(canna-flush cc))
+       ((and
+	 (canna-context-on cc)
+	 (canna-has-preedit? cc)
+	 (not (= old-kana new-mode)))
+	(im-commit
+	 cc (canna-make-whole-string cc #t (canna-context-kana-mode cc)))
+	(canna-flush cc)))
+      (canna-update-preedit cc))))
+
 (register-action 'action_canna_hiragana
 		 (lambda (cc) ;; indication handler
-		   '(figure_ja_hiragana
+		   '(ja_hiragana
 		     "あ"
 		     "ひらがな"
 		     "ひらがな入力モード"))
 
 		 (lambda (cc) ;; activity predicate
 		   (and (canna-context-on cc)
+		        (not (canna-context-alnum cc))
 			(= (canna-context-kana-mode cc)
-			   multi-segment-type-hiragana)))
+			   canna-type-hiragana)))
 
 		 (lambda (cc) ;; action handler
-		   (canna-prepare-activation cc)
+		   (canna-prepare-input-mode-activation cc canna-type-hiragana)
 		   (canna-context-set-on! cc #t)
-		   (canna-context-change-kana-mode! cc
-						 multi-segment-type-hiragana)))
+		   (canna-context-set-alnum! cc #f)
+		   (canna-context-change-kana-mode! cc canna-type-hiragana)))
 
 (register-action 'action_canna_katakana
 		 (lambda (cc)
-		   '(figure_ja_katakana
+		   '(ja_katakana
 		     "ア"
 		     "カタカナ"
 		     "カタカナ入力モード"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
+		        (not (canna-context-alnum cc))
 			(= (canna-context-kana-mode cc)
-			   multi-segment-type-katakana)))
+			   canna-type-katakana)))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (canna-prepare-input-mode-activation cc canna-type-katakana)
 		   (canna-context-set-on! cc #t)
-		   (canna-context-change-kana-mode! cc
-						 multi-segment-type-katakana)))
+		   (canna-context-set-alnum! cc #f)
+		   (canna-context-change-kana-mode! cc canna-type-katakana)))
 
-(register-action 'action_canna_hankana
+(register-action 'action_canna_halfkana
 		 (lambda (cc)
-		   '(figure_ja_hankana
+		   '(ja_halfkana
 		     "ｱ"
 		     "半角カタカナ"
 		     "半角カタカナ入力モード"))
 		 (lambda (cc)
 		   (and (canna-context-on cc)
-			(= (canna-context-kana-mode cc)
-			   multi-segment-type-hankana)))
+			(not (canna-context-alnum cc))
+			(= (canna-context-kana-mode cc) canna-type-halfkana)))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (canna-prepare-input-mode-activation cc canna-type-halfkana)
 		   (canna-context-set-on! cc #t)
-		   (canna-context-change-kana-mode! cc
-						 multi-segment-type-hankana)))
+		   (canna-context-set-alnum! cc #f)
+		   (canna-context-change-kana-mode! cc canna-type-halfkana)))
+
+(register-action 'action_canna_halfwidth_alnum
+		 (lambda (cc) ;; indication handler
+		   '(ja_halfwidth_alnum
+		     "a"
+		     "半角英数"
+		     "半角英数入力モード"))
+		 (lambda (cc) ;; activity predicate
+		   (and (canna-context-on cc)
+			(canna-context-alnum cc)
+			(= (canna-context-alnum-type cc)
+			   canna-type-halfwidth-alnum)))
+		 (lambda (cc) ;; action handler
+		   (canna-prepare-input-mode-activation
+		    cc (canna-context-kana-mode cc))
+		   (canna-context-set-on! cc #t)
+		   (canna-context-set-alnum! cc #t)
+		   (canna-context-set-alnum-type!
+		    cc canna-type-halfwidth-alnum)))
 
 (register-action 'action_canna_direct
 		 (lambda (cc)
-		   '(figure_ja_direct
-		     "a"
+		   '(ja_direct
+		     "-"
 		     "直接入力"
 		     "直接(無変換)入力モード"))
 		 (lambda (cc)
-		   (and (not (canna-context-on cc))
-			(not (canna-context-wide-latin cc))))
+		   (not (canna-context-on cc)))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
-		   (canna-context-set-on! cc #f)
-		   (canna-context-set-wide-latin! cc #f)))
+		   (canna-prepare-input-mode-activation cc canna-type-direct)
+		   (canna-context-set-on! cc #f)))
 
-(register-action 'action_canna_zenkaku
+(register-action 'action_canna_fullwidth_alnum
 		 (lambda (cc)
-		   '(figure_ja_zenkaku
+		   '(ja_fullwidth_alnum
 		     "Ａ"
 		     "全角英数"
 		     "全角英数入力モード"))
 		 (lambda (cc)
-		   (and (not (canna-context-on cc))
-			(canna-context-wide-latin cc)))
+		   (and (canna-context-on cc)
+			(canna-context-alnum cc)
+			(= (canna-context-alnum-type cc)
+			   canna-type-fullwidth-alnum)))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
-		   (canna-context-set-on! cc #f)
-		   (canna-context-set-wide-latin! cc #t)))
+		   (canna-prepare-input-mode-activation
+		    cc (canna-context-kana-mode cc))
+		   (canna-context-set-on! cc #t)
+		   (canna-context-set-alnum! cc #t)
+		   (canna-context-set-alnum-type!
+		    cc canna-type-fullwidth-alnum)))
 
 (register-action 'action_canna_roma
 		 (lambda (cc)
-		   '(figure_ja_roma
+		   '(ja_romaji
 		     "Ｒ"
 		     "ローマ字"
 		     "ローマ字入力モード"))
@@ -141,14 +209,14 @@
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-roma))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (canna-prepare-input-rule-activation cc)
 		   (rk-context-set-rule! (canna-context-rkc cc)
 					 ja-rk-rule)
 		   (canna-context-set-input-rule! cc canna-input-rule-roma)))
 
 (register-action 'action_canna_kana
 		 (lambda (cc)
-		   '(figure_ja_kana
+		   '(ja_kana
 		     "か"
 		     "かな"
 		     "かな入力モード"))
@@ -156,22 +224,23 @@
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-kana))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (canna-prepare-input-rule-activation cc)
 		   (canna-context-set-input-rule! cc canna-input-rule-kana)
                    (canna-context-change-kana-mode!
-                     cc (canna-context-kana-mode cc))))
+                     cc (canna-context-kana-mode cc))
+		   (canna-context-set-alnum! cc #f)))
 
 (register-action 'action_canna_azik
 		 (lambda (cc)
-		   '(figure_ja_azik
-		     "Ａ"
+		   '(ja_azik
+		     "Ｚ"
 		     "AZIK"
 		     "AZIK拡張ローマ字入力モード"))
 		 (lambda (cc)
 		   (= (canna-context-input-rule cc)
 		      canna-input-rule-azik))
 		 (lambda (cc)
-		   (canna-prepare-activation cc)
+		   (canna-prepare-input-rule-activation cc)
 		   (rk-context-set-rule! (canna-context-rkc cc)
 					 ja-azik-rule)
 		   (canna-context-set-input-rule! cc canna-input-rule-azik)))
@@ -199,17 +268,17 @@
     (list 'transposing        #f)
     (list 'transposing-type    0)
     (list 'cc-id              ()) ;; canna-context-id
-    (list 'left-string        ()) ;; preedit strings in the left of cursor
-    (list 'right-string       ())
+    (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
-    (list 'index-list         ())
-    (list 'cur-seg            ())
+    (list 'segments	      #f) ;; ustr of candidate indices
     (list 'candidate-window   ())
     (list 'candidate-op-count ())
-    (list 'wide-latin         #f)
-    (list 'kana-mode          multi-segment-type-hiragana)
+    (list 'kana-mode          canna-type-hiragana)
+    (list 'alnum	      #f)
+    (list 'alnum-type	      canna-type-halfwidth-alnum)
     (list 'commit-raw         #t)
-    (list 'input-rule         canna-input-rule-roma))))
+    (list 'input-rule         canna-input-rule-roma)
+    (list 'raw-ustr	      #f))))
 (define-record 'canna-context canna-context-rec-spec)
 (define canna-context-new-internal canna-context-new)
 
@@ -221,6 +290,9 @@
     (canna-context-set-cc-id! cc (canna-lib-alloc-context))
     (canna-context-set-widgets! cc canna-widgets)
     (canna-context-set-rkc! cc rkc)
+    (canna-context-set-preconv-ustr! cc (ustr-new))
+    (canna-context-set-raw-ustr! cc (ustr-new))
+    (canna-context-set-segments! cc (ustr-new))
     (if using-kana-table?
         (canna-context-set-input-rule! cc canna-input-rule-kana)
         (canna-context-set-input-rule! cc canna-input-rule-roma))
@@ -230,97 +302,194 @@
   (im-commit-raw cc)
   (canna-context-set-commit-raw! cc #t))
 
-(define canna-opposite-kana
-  (lambda (kana)
-    (cond
-     ((= kana multi-segment-type-hiragana)
-      multi-segment-type-katakana)
-     ((= kana multi-segment-type-katakana)
-      multi-segment-type-hiragana)
-     ((= kana multi-segment-type-hankana)
-      multi-segment-type-hiragana))))
-
 (define (canna-context-kana-toggle cc)
   (let* ((kana (canna-context-kana-mode cc))
-	 (opposite-kana (canna-opposite-kana kana)))
+	 (opposite-kana (ja-opposite-kana kana)))
     (canna-context-change-kana-mode! cc opposite-kana)))
+
+(define canna-context-alkana-toggle
+  (lambda (cc)
+    (let ((alnum-state (canna-context-alnum cc)))
+      (canna-context-set-alnum! cc (not alnum-state)))))
 
 (define canna-context-change-kana-mode!
   (lambda (cc kana-mode)
     (if (= (canna-context-input-rule cc)
            canna-input-rule-kana)
         (rk-context-set-rule!
-          (canna-context-rkc cc)
-          (cond
-            ((= kana-mode multi-segment-type-hiragana) ja-kana-hiragana-rule)
-            ((= kana-mode multi-segment-type-katakana) ja-kana-katakana-rule)
-            ((= kana-mode multi-segment-type-hankana)  ja-kana-hankana-rule))))
+	 (canna-context-rkc cc)
+	 (cond
+	  ((= kana-mode canna-type-hiragana) ja-kana-hiragana-rule)
+	  ((= kana-mode canna-type-katakana) ja-kana-katakana-rule)
+	  ((= kana-mode canna-type-halfkana) ja-kana-halfkana-rule))))
     (canna-context-set-kana-mode! cc kana-mode)))
+
+(define canna-make-whole-string
+  (lambda (cc convert-pending-into-kana? kana)
+    (let* ((rkc (canna-context-rkc cc))
+           (pending (rk-pending rkc))
+           (residual-kana (rk-peek-terminal-match rkc))
+           (rule (canna-context-input-rule cc))
+           (preconv-str (canna-context-preconv-ustr cc))
+           (extract-kana
+            (if (= rule canna-input-rule-kana)
+                (lambda (entry) (car entry))
+                (lambda (entry) (list-ref entry kana)))))
+
+      (if (= rule canna-input-rule-kana)
+	  (ja-make-kana-str
+	   (ja-make-kana-str-list
+	    (string-to-list 
+	     (string-append
+	      (string-append-map-ustr-former extract-kana preconv-str)
+	      (if convert-pending-into-kana?
+		  (if residual-kana
+		      (extract-kana residual-kana)
+                      pending)
+		  pending)
+              (string-append-map-ustr-latter extract-kana preconv-str))))
+	   kana)
+          (string-append
+	   (string-append-map-ustr-former extract-kana preconv-str)
+           (if convert-pending-into-kana?
+               (if residual-kana
+                   (extract-kana residual-kana)
+                   "")
+               pending)
+           (string-append-map-ustr-latter extract-kana preconv-str))))))
+
+(define canna-make-raw-string
+  (lambda (raw-str-list wide? upper?)
+    (if (not (null? raw-str-list))
+	(if wide?
+	    (string-append
+	     (ja-string-list-to-wide-alphabet
+	      (if upper?
+		  (map charcode->string
+		       (map char-upcase
+			    (map string->charcode
+				 (string-to-list (car raw-str-list)))))
+		  (string-to-list (car raw-str-list))))
+	     (canna-make-raw-string (cdr raw-str-list) wide? upper?))
+	    (string-append
+	     (if upper?
+		 (string-list-concat
+		  (map charcode->string
+		       (map char-upcase
+			    (map string->charcode
+				 (string-to-list (car raw-str-list))))))
+		 (car raw-str-list))
+	     (canna-make-raw-string (cdr raw-str-list) wide? upper?)))
+	"")))
+
+(define canna-make-whole-raw-string
+  (lambda (cc wide? upper?)
+    (canna-make-raw-string (canna-get-raw-str-seq cc) wide? upper?)))
+
+(define (canna-init-handler id im arg)
+  (if (not canna-init-lib-ok?)
+      (begin
+	(canna-lib-init canna-server-name)
+	(set! canna-init-lib-ok? #t)))
+  (canna-context-new id im))
+
+(define (canna-release-handler cc)
+  (let ((cc-id (canna-context-cc-id cc)))
+    (if (number? cc-id)
+        (canna-lib-release-context cc-id))))
 
 (define (canna-flush cc)
   (rk-flush (canna-context-rkc cc))
-  (canna-context-set-left-string! cc '())
-  (canna-context-set-right-string! cc '())
-  (canna-context-set-state! cc #f)
-  (canna-context-set-index-list! cc ())
+  (ustr-clear! (canna-context-preconv-ustr cc))
+  (ustr-clear! (canna-context-raw-ustr cc))
+  (ustr-clear! (canna-context-segments cc))
   (canna-context-set-transposing! cc #f)
+  (canna-context-set-state! cc #f)
   (if (canna-context-candidate-window cc)
-        (im-deactivate-candidate-selector cc))
+      (im-deactivate-candidate-selector cc))
   (canna-context-set-candidate-window! cc #f)
   (canna-context-set-candidate-op-count! cc 0))
 
-(define (canna-begin-input cc)
-  (canna-context-set-on! cc #t)
-  (rk-flush (canna-context-rkc cc))
-  (canna-context-set-state! cc #f))
+(define (canna-begin-input cc key key-state)
+  (if (cond
+       ((canna-on-key? key key-state)
+	#t)
+       ((and
+	 canna-use-mode-transition-keys-in-off-mode?
+	 (cond
+	  ((canna-hiragana-key? key key-state)
+	   (canna-context-set-kana-mode! cc canna-type-hiragana)
+	   (canna-context-set-alnum! cc #f)
+	   #t)
+	  ((canna-katakana-key? key key-state)
+	   (canna-context-set-kana-mode! cc canna-type-katakana)
+	   (canna-context-set-alnum! cc #f)
+	   #t)
+	  ((canna-halfkana-key? key key-state)
+	   (canna-context-set-kana-mode! cc canna-type-halfkana)
+	   (canna-context-set-alnum! cc #f)
+	   #t)
+	  ((canna-halfwidth-alnum-key? key key-state)
+	   (canna-context-set-alnum-type! cc canna-type-halfwidth-alnum)
+	   (canna-context-set-alnum! cc #t)
+	   #t)
+	  ((canna-halfwidth-alnum-key? key key-state)
+	   (canna-context-set-alnum-type! cc canna-type-fullwidth-alnum)
+	   (canna-context-set-alnum! cc #t)
+	   #t)
+	  ((canna-kana-toggle-key? key key-state)
+	   (canna-context-kana-toggle cc)
+	   (canna-context-set-alnum! cc #f)
+	   #t)
+	  ((canna-alkana-toggle-key? key key-state)
+	   (canna-context-alkana-toggle cc)
+	   #t)
+	  (else
+	   #f))))
+       (else
+	#f))
+      (begin
+	(canna-context-set-on! cc #t)
+	(rk-flush (canna-context-rkc cc))
+	(canna-context-set-state! cc #f)
+	#t)
+      #f))
 
 (define (canna-update-preedit cc)
-  (if (canna-context-on cc)
-      (if (canna-context-transposing cc)
-          (canna-context-transposing-state-preedit cc)
-          (if (canna-context-state cc)
-              (canna-compose-state-preedit cc)
-              (canna-input-state-preedit cc)))
-      (begin
-	(im-clear-preedit cc)
-	(im-update-preedit cc))))
-
-(define (canna-append-string cc str)
-  (and str
-       (if (not (string? (car str)))
-	   (begin
-	     (canna-append-string cc (car str))
-	     (canna-append-string cc (cdr str))
-	     #f)
-	   #t)
-       (canna-context-set-left-string!
-	cc (cons str (canna-context-left-string cc)))))
+  (if (not (canna-context-commit-raw cc))
+      (let ((segments (if (canna-context-on cc)
+			  (if (canna-context-transposing cc)
+			      (canna-context-transposing-state-preedit cc)
+			      (if (canna-context-state cc)
+				  (canna-compose-state-preedit cc)
+				  (canna-input-state-preedit cc)))
+			  ())))
+	(context-update-preedit cc segments))
+      (canna-context-set-commit-raw! cc #f)))
 
 (define (canna-begin-conv cc)
-  (let* ((cc-id (canna-context-cc-id cc))
-	 (rkc (canna-context-rkc cc))
-	 (kana (canna-context-kana-mode cc))
-	 (last "")
-	 (res))
-    (set! res (rk-push-key-last! rkc))
-    (if res
-	(canna-append-string cc res))
+  (let ((cc-id (canna-context-cc-id cc))
+	(preconv-str (canna-make-whole-string cc #t canna-type-hiragana)))
+    (if (and (number? cc-id)
+             (> (string-length preconv-str) 0))
+	(let ((num (canna-lib-begin-conversion cc-id preconv-str)))
+	  (if num
+	      (begin
+		(ustr-set-latter-seq!
+		 (canna-context-segments cc)
+		 (make-list num 0))
+		(canna-context-set-state! cc #t)
+		;; Don't perform rk-flush here. The rkc must be restored when
+		;; canna-cancel-conv invoked -- YamaKen 2004-10-25
+		))))))
 
-    (let ((preconv-str (string-append
-                         (multi-segment-make-left-string (canna-context-left-string cc)
-                                                         multi-segment-type-hiragana)
-                         (multi-segment-make-right-string (canna-context-right-string cc)
-                                                          multi-segment-type-hiragana))))
-      (if (and (number? cc-id)
-               (> (string-length preconv-str) 0))
-          (begin
-            (canna-context-set-index-list!
-              cc
-              (multi-segment-make-index-list
-                (canna-lib-begin-conversion cc-id preconv-str) #f))
-            (canna-context-set-state! cc #t)
-            (canna-context-set-cur-seg! cc 0)
-            (rk-flush (canna-context-rkc cc)))))))
+(define canna-cancel-conv
+  (lambda (cc)
+    (let ((cc-id (canna-context-cc-id cc)))
+      (canna-reset-candidate-window cc)
+      (canna-context-set-state! cc #f)
+      (ustr-clear! (canna-context-segments cc))
+      (canna-lib-reset-conversion cc-id))))
 
 (define (canna-proc-input-state-no-preedit cc key key-state)
   (let
@@ -330,35 +499,72 @@
     (cond
      ((and canna-use-with-vi?
            (canna-vi-escape-key? key key-state))
-      (begin
-        (canna-flush cc)
-        (canna-context-set-on! cc #f)
-        (canna-context-set-wide-latin! cc #f)
-        (canna-commit-raw cc)))
+      (canna-flush cc)
+      (canna-context-set-on! cc #f)
+      (canna-commit-raw cc))
 
-     ((canna-wide-latin-key? key key-state)
-      (begin
-	(canna-flush cc)
-	(canna-context-set-on! cc #f)
-	(canna-context-set-wide-latin! cc #t)))
-     
-     ((canna-latin-key? key key-state)
-      (begin
-	(canna-flush cc)
-	(canna-context-set-on! cc #f)
-	(canna-context-set-wide-latin! cc #f)))
-     
+     ((canna-off-key? key key-state)
+      (canna-flush cc)
+      (canna-context-set-on! cc #f))
+
      ((canna-backspace-key? key key-state)
       (canna-commit-raw cc))
      
      ((canna-delete-key? key key-state)
       (canna-commit-raw cc))
+
+     ((and
+       (canna-hiragana-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-kana-mode cc) canna-type-hiragana)
+	 (not (canna-context-alnum cc)))))
+      (canna-context-change-kana-mode! cc canna-type-hiragana)
+      (canna-context-set-alnum! cc #f))
+
+     ((and
+       (canna-katakana-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-kana-mode cc) canna-type-katakana)
+	 (not (canna-context-alnum cc)))))
+      (canna-context-change-kana-mode! cc canna-type-katakana)
+      (canna-context-set-alnum! cc #f))
      
-     ((canna-hankaku-kana-key? key key-state)
-      (canna-context-change-kana-mode! cc multi-segment-type-hankana))
+     ((and
+       (canna-halfkana-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-kana-mode cc) canna-type-halfkana)
+	 (not (canna-context-alnum cc)))))
+      (canna-context-change-kana-mode! cc canna-type-halfkana)
+      (canna-context-set-alnum! cc #f))
      
-     ((canna-kana-toggle-key? key key-state)
+     ((and
+       (canna-halfwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) canna-type-halfwidth-alnum)
+	 (canna-context-alnum cc))))
+      (canna-context-set-alnum-type! cc canna-type-halfwidth-alnum)
+      (canna-context-set-alnum! cc #t))
+     
+     ((and
+       (canna-fullwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) canna-type-fullwidth-alnum)
+	 (canna-context-alnum cc))))
+      (canna-context-set-alnum-type! cc canna-type-fullwidth-alnum)
+      (canna-context-set-alnum! cc #t))
+     
+     ((and
+       (not (canna-context-alnum cc))
+       (canna-kana-toggle-key? key key-state))
       (canna-context-kana-toggle cc))
+
+     ((canna-alkana-toggle-key? key key-state)
+      (canna-context-alkana-toggle cc))
      
      ;; modifiers (except shift) => ignore
      ((and (modifier-key-mask key-state)
@@ -369,383 +575,594 @@
      (direct
       (im-commit cc direct))
 
+     ;; space key
+     ((canna-space-key? key key-state)
+      (if (canna-context-alnum cc)
+	  (im-commit cc (list-ref
+			 ja-alnum-space
+			 (- (canna-context-alnum-type cc)
+			    canna-type-halfwidth-alnum)))
+	  (im-commit cc (list-ref ja-space (canna-context-kana-mode cc)))))
+
      ((symbol? key)
       (canna-commit-raw cc))
 
      (else
-      (let* ((key-str (charcode->string
-		       (if (= rule canna-input-rule-kana)
-			   key
-			   (to-lower-char key))))
-	     (res (rk-push-key! rkc key-str)))
-	(if res
-	    (canna-append-string cc res)
-	    (if (not (rk-pending rkc)
-		       (canna-commit-raw cc)))))))))
+      (if (canna-context-alnum cc)
+          (let ((key-str (charcode->string key)))
+	    (ustr-insert-elem! (canna-context-preconv-ustr cc)
+			       (if (= (canna-context-alnum-type cc)
+				      canna-type-halfwidth-alnum)
+			       (list key-str key-str key-str)
+			       (list (ja-wide key-str) (ja-wide key-str)
+				     (ja-wide key-str))))
+	    (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
+	  (let* ((key-str (charcode->string
+		           (if (= rule canna-input-rule-kana)
+			       key
+			       (to-lower-char key))))
+	         (res (rk-push-key! rkc key-str)))
+	    (if res
+	        (begin
+	          (ustr-insert-elem! (canna-context-preconv-ustr cc) res)
+	          (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
+	        (if (null? (rk-context-seq rkc))
+		    (canna-commit-raw cc)))))))))
 
 (define (canna-has-preedit? cc)
-  (or
-   (> (length (canna-context-left-string cc)) 0)
-   (> (length (canna-context-right-string cc)) 0)
-   (> (length (rk-pending (canna-context-rkc cc))) 0)))
+  (or (not (ustr-empty? (canna-context-preconv-ustr cc)))
+      (> (string-length (rk-pending (canna-context-rkc cc))) 0)))
+
+(define canna-rotate-transposing-alnum-type
+  (lambda (cur-type state)
+    (cond
+     ((and
+       (= cur-type canna-type-halfwidth-alnum)
+       (= state canna-type-halfwidth-alnum))
+      canna-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= cur-type canna-type-fullwidth-alnum)
+       (= state canna-type-fullwidth-alnum))
+      canna-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
 
 (define canna-proc-transposing-state
   (lambda (cc key key-state)
-    (cond
-     ((canna-transpose-as-hiragana-key? key key-state)
-      (canna-context-set-transposing-type! cc multi-segment-type-hiragana))
+    (let ((rotate-list '())
+	  (state #f))
+      (if (canna-transpose-as-fullwidth-alnum-key? key key-state)
+	  (set! rotate-list (cons canna-type-fullwidth-alnum rotate-list)))
+      (if (canna-transpose-as-halfwidth-alnum-key? key key-state)
+	  (set! rotate-list (cons canna-type-halfwidth-alnum rotate-list)))
+      (if (canna-transpose-as-halfkana-key? key key-state)
+	  (set! rotate-list (cons canna-type-halfkana rotate-list)))
+      (if (canna-transpose-as-katakana-key? key key-state)
+	  (set! rotate-list (cons canna-type-katakana rotate-list)))
+      (if (canna-transpose-as-hiragana-key? key key-state)
+	  (set! rotate-list (cons canna-type-hiragana rotate-list)))
 
-     ((canna-transpose-as-katakana-key? key key-state)
-      (canna-context-set-transposing-type! cc multi-segment-type-katakana))
+      (if (canna-context-transposing cc)
+	  (let ((lst (member (canna-context-transposing-type cc) rotate-list)))
+	    (if (and lst
+	    	     (not (null? (cdr lst))))
+		(set! state (car (cdr lst)))
+		(set! state (canna-rotate-transposing-alnum-type
+			     (canna-context-transposing-type cc)
+			     (car rotate-list)))))
+	  (begin
+	    (canna-context-set-transposing! cc #t)
+	    (set! state (car rotate-list))))
 
-     ((canna-transpose-as-hankana-key? key key-state)
-      (canna-context-set-transposing-type! cc multi-segment-type-hankana))
-
-     (else
-      (begin
-	; commit
-	(im-commit cc (canna-transposing-text cc))
-	(canna-flush cc)
-	(if (not (canna-commit-key? key key-state))
-	      (canna-proc-input-state cc key key-state)))))))
+      (cond
+       ((or
+	 (= state canna-type-hiragana)
+	 (= state canna-type-katakana)
+	 (= state canna-type-halfkana))
+	(canna-context-set-transposing-type! cc state))
+       ((or
+	 (= state canna-type-halfwidth-alnum)
+	 (= state canna-candidate-type-upper-halfwidth-alnum)
+	 (= state canna-type-fullwidth-alnum)
+	 (= state canna-candidate-type-upper-fullwidth-alnum))
+	(if (not (= (canna-context-input-rule cc) canna-input-rule-kana))
+	    (canna-context-set-transposing-type! cc state)))
+       (else
+	(and
+	 ; commit
+	 (if (canna-commit-key? key key-state)
+	     (begin
+	       (im-commit cc (canna-transposing-text cc))
+	       (canna-flush cc)
+	       #f)
+	     #t)
+	 ; begin-conv
+	 (if (canna-begin-conv-key? key key-state)
+	     (begin
+	       (canna-context-set-transposing! cc #f)
+	       (canna-begin-conv cc)
+	       #f)
+	     #t)
+	 ; cancel
+	 (if (or
+	      (canna-cancel-key? key key-state)
+	      (canna-backspace-key? key key-state))
+	     (begin
+	       (canna-context-set-transposing! cc #f)
+	       #f)
+	     #t)
+	 ; ignore
+	 (if (or
+	      (canna-prev-page-key? key key-state)
+	      (canna-next-page-key? key key-state)
+	      (canna-extend-segment-key? key key-state)
+	      (canna-shrink-segment-key? key key-state)
+	      (canna-next-segment-key? key key-state)
+	      (canna-beginning-of-preedit-key? key key-state)
+	      (canna-end-of-preedit-key? key key-state)
+	      (canna-next-candidate-key? key key-state)
+	      (canna-prev-candidate-key? key key-state)
+	      (and
+	       (modifier-key-mask key-state)
+	       (not (shift-key-mask key-state)))
+	      (symbol? key))
+	     #f
+	     #t)
+	 ; implicit commit
+	 (begin
+	   (im-commit cc (canna-transposing-text cc))
+	   (canna-flush cc)
+	   (canna-proc-input-state cc key key-state))))))))
 
 (define (canna-proc-input-state-with-preedit cc key key-state)
-  (let* ((rkc (canna-context-rkc cc))
-         (rule (canna-context-input-rule cc))
-         (kana (if (= rule canna-input-rule-kana)
-                   multi-segment-type-hiragana
-                   (canna-context-kana-mode cc))))
-
+  (let ((preconv-str (canna-context-preconv-ustr cc))
+	(raw-str (canna-context-raw-ustr cc))
+	(rkc (canna-context-rkc cc))
+	(rule (canna-context-input-rule cc))
+	(kana (canna-context-kana-mode cc)))
     (cond
      ;; begin conversion
      ((canna-begin-conv-key? key key-state)
       (canna-begin-conv cc))
-;     ((and (canna-begin-conv-key? key key-state)
-;	   canna-init-lib-ok?)
-;      (canna-begin-conv cc))
+
      ;; backspace
      ((canna-backspace-key? key key-state)
       (if (not (rk-backspace rkc))
-          (if (canna-context-left-string cc)
-              (canna-context-set-left-string!
-                cc
-                (cdr (canna-context-left-string cc))))))
+	  (begin
+	    (ustr-cursor-delete-backside! preconv-str)
+	    (ustr-cursor-delete-backside! raw-str)
+	    ;; fix to valid roma
+	    (if (and
+		 (= (canna-context-input-rule cc) canna-input-rule-roma)
+		 (not (null? (ustr-former-seq preconv-str)))
+		 (not (char-printable?
+		       (string->char
+			(car (last (ustr-former-seq preconv-str)))))))
+	        (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
+
      ;; delete
      ((canna-delete-key? key key-state)
       (if (not (rk-delete rkc))
-	  (if (canna-context-right-string cc)
-	      (canna-context-set-right-string!
-	       cc
-	       (cdr (canna-context-right-string cc))))))
+	  (begin
+	    (ustr-cursor-delete-frontside! preconv-str)
+	    (ustr-cursor-delete-frontside! raw-str))))
 
        ;; kill
      ((canna-kill-key? key key-state)
-      (canna-context-set-right-string! cc ()))
+      (ustr-clear-latter! preconv-str)
+      (ustr-clear-latter! raw-str))
      
      ;; kill-backward
      ((canna-kill-backward-key? key key-state)
-      (begin
-        (rk-flush rkc)
-        (canna-context-set-left-string! cc ())))
+      (rk-flush rkc)
+      (ustr-clear-former! preconv-str)
+      (ustr-clear-former! raw-str))
        
-     ;; ひらがなモードでカタカナを確定する
-     ((canna-commit-as-opposite-kana-key? key key-state)
-      (let ((opposite-kana (if (= rule canna-input-rule-kana)
-                               multi-segment-type-hiragana
-                               (canna-opposite-kana kana))))
-	(im-commit
-	 cc
-	 (string-append
-	  (multi-segment-make-left-string (canna-context-left-string cc)
-					  opposite-kana)
-	  (rk-pending rkc)
-	  (multi-segment-make-right-string (canna-context-right-string cc)
-					   opposite-kana)))
-	(canna-flush cc)))
+     ;; 現在とは逆のかなモードでかなを確定する
+     ((and
+       (not (canna-context-alnum cc))
+       (canna-commit-as-opposite-kana-key? key key-state))
+      (im-commit cc (canna-make-whole-string cc #t (ja-opposite-kana kana)))
+      (canna-flush cc))
 
-       ;; Transposing状態へ移行
-     ((or (canna-transpose-as-hiragana-key?   key key-state)
-          (canna-transpose-as-katakana-key?   key key-state)
-          (canna-transpose-as-hankana-key?    key key-state))
-      (begin
-        (canna-context-confirm-kana! cc)
-        (canna-context-set-transposing! cc #t)
-        (canna-proc-transposing-state cc key key-state)))
+     ;; Transposing状態へ移行
+     ((or (canna-transpose-as-hiragana-key? key key-state)
+	  (canna-transpose-as-katakana-key? key key-state)
+	  (canna-transpose-as-halfkana-key? key key-state)
+	  (and
+	   (not (= (canna-context-input-rule cc) canna-input-rule-kana))
+	   (or
+	    (canna-transpose-as-halfwidth-alnum-key? key key-state)
+	    (canna-transpose-as-fullwidth-alnum-key? key key-state))))
+      (canna-proc-transposing-state cc key key-state))
 
-     ;; 現在のかなを確定後、ひらがな/カタカナモードを切り換える
-     ((canna-kana-toggle-key? key key-state)
-      (begin
-	(im-commit
-	 cc
-	 (string-append
-	  (multi-segment-make-left-string (canna-context-left-string cc)
-					  kana)
-	  (rk-pending rkc)
-	  (multi-segment-make-right-string (canna-context-right-string cc)
-					   kana)))
-	(canna-flush cc)
-	(canna-context-kana-toggle cc)))
+     ((canna-hiragana-key? key key-state)
+      (if (not (= kana canna-type-hiragana))
+	  (begin
+	    (im-commit cc (canna-make-whole-string cc #t kana))
+	    (canna-flush cc)))
+      (canna-context-set-kana-mode! cc canna-type-hiragana)
+      (canna-context-set-alnum! cc #f))
+
+     ((canna-katakana-key? key key-state)
+      (if (not (= kana canna-type-katakana))
+	  (begin
+	    (im-commit cc (canna-make-whole-string cc #t kana))
+	    (canna-flush cc)))
+      (canna-context-set-kana-mode! cc canna-type-katakana)
+      (canna-context-set-alnum! cc #f))
+
+     ((canna-halfkana-key? key key-state)
+      (if (not (= kana canna-type-halfkana))
+	  (begin
+	    (im-commit cc (canna-make-whole-string cc #t kana))
+	    (canna-flush cc)))
+      (canna-context-set-kana-mode! cc canna-type-halfkana)
+      (canna-context-set-alnum! cc #f))
+
+     ((and
+       (canna-halfwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) canna-type-halfwidth-alnum)
+	 (canna-context-alnum cc))))
+      (canna-context-set-alnum-type! cc canna-type-halfwidth-alnum)
+      (canna-context-set-alnum! cc #t))
+
+     ((and
+       (canna-fullwidth-alnum-key? key key-state)
+       (not
+        (and
+	 (= (canna-context-alnum-type cc) canna-type-fullwidth-alnum)
+	 (canna-context-alnum cc))))
+      (canna-context-set-alnum-type! cc canna-type-fullwidth-alnum)
+      (canna-context-set-alnum! cc #t))
+
+     ;; Commit current preedit string, then toggle hiragana/katakana mode.
+     ((and
+       (not (canna-context-alnum cc))
+       (canna-kana-toggle-key? key key-state))
+      (im-commit cc (canna-make-whole-string cc #t kana))
+      (canna-flush cc)
+      (canna-context-kana-toggle cc))
+
+     ((canna-alkana-toggle-key? key key-state)
+      (canna-context-alkana-toggle cc))
+
      ;; cancel
      ((canna-cancel-key? key key-state)
       (canna-flush cc))
+
      ;; commit
      ((canna-commit-key? key key-state)
       (begin
 	(im-commit
 	 cc
-	 (string-append
-	  (multi-segment-make-left-string (canna-context-left-string cc)
-					  kana)
-	  (rk-pending rkc)
-	  (multi-segment-make-right-string (canna-context-right-string cc)
-					   kana)))
+	 (canna-make-whole-string cc #t kana))
 	(canna-flush cc)))
+
      ;; left
      ((canna-go-left-key? key key-state)
-      (begin
-        (canna-context-confirm-kana! cc)
-	(if (canna-context-left-string cc)
-	    (let
-		((c (car (canna-context-left-string cc))))
-	      (canna-context-set-left-string!
-	       cc (cdr (canna-context-left-string cc)))
-	      (canna-context-set-right-string!
-	       cc
-	       (cons c (canna-context-right-string cc)))))))
+      (canna-context-confirm-kana! cc)
+      (ustr-cursor-move-backward! preconv-str)
+      (ustr-cursor-move-backward! raw-str))
+
      ;; right
      ((canna-go-right-key? key key-state)
-      (begin
-        (canna-context-confirm-kana! cc)
-	(if (canna-context-right-string cc)
-	    (let
-		((c (car (canna-context-right-string cc))))
-	      (canna-context-set-right-string!
-	       cc (cdr (canna-context-right-string cc)))
-	      (canna-append-string cc c)))))
+      (canna-context-confirm-kana! cc)
+      (ustr-cursor-move-forward! preconv-str)
+      (ustr-cursor-move-forward! raw-str))
 
      ;; beginning-of-preedit
      ((canna-beginning-of-preedit-key? key key-state)
-      (begin
-        (canna-context-confirm-kana! cc)
-        (if (canna-context-left-string cc)
-            (begin
-              (canna-context-set-right-string!
-              cc
-              (append
-                (reverse (canna-context-left-string cc))
-                (canna-context-right-string cc)))
-              (canna-context-set-left-string! cc ())))))
+      (canna-context-confirm-kana! cc)
+      (ustr-cursor-move-beginning! preconv-str)
+      (ustr-cursor-move-beginning! raw-str))
 
      ;; end-of-preedit
      ((canna-end-of-preedit-key? key key-state)
-      (begin
-        (canna-context-confirm-kana! cc)
-        (if (canna-context-right-string cc)
-            (begin
-              (canna-context-set-left-string!
-              cc
-              (append
-                (reverse (canna-context-right-string cc))
-                (canna-context-left-string cc)))
-                (canna-context-set-right-string! cc ())))))
-;		   (rk-flush rkc)))
+      (canna-context-confirm-kana! cc)
+      (ustr-cursor-move-end! preconv-str)
+      (ustr-cursor-move-end! raw-str))
 
      ;; modifiers (except shift) => ignore
      ((and (modifier-key-mask key-state)
 	      (not (shift-key-mask key-state)))
-      (canna-commit-raw cc))
+      #f)
+
+     ((symbol? key)
+      #f)
+
      (else
-      (let* ((key-str (charcode->string key))
-	     (pend (rk-pending rkc))
-	     (res (rk-push-key! rkc key-str)))
-	(if (and res (or
-		      (list? (car res))
-		      (not (string=? (car res) ""))))
-	    (canna-append-string cc res)
-	    (if (= rule canna-input-rule-kana)
+      ;; handle "n1" sequence as "ん1"
+      (if (and (not (canna-context-alnum cc))
+	       (not (alphabet-char? key))
+	       (not (string-find
+		     (rk-expect rkc)
+		     (charcode->string
+		      (if (= rule canna-input-rule-kana)
+			  key
+			  (to-lower-char key))))))
+	  (let ((pend (rk-pending rkc))
+		(residual-kana (rk-push-key-last! rkc)))
+	    (if residual-kana
 		(begin
-		  (canna-append-string cc (list pend "" ""))
-;     (set! key (to-lower-char key))
-;     (let ((res)
-;	   (key-str (charcode->string key)))
-;       (set! res (rk-push-key! rkc key-str))
-;       (if res
-;	   (canna-append-string cc res))))))
-))))))))
+		  (ustr-insert-elem! preconv-str residual-kana)
+		  (ustr-insert-elem! raw-str pend)))))
+
+      (if (canna-context-alnum cc)
+          (let ((key-str (charcode->string key))
+	        (pend (rk-pending rkc))
+		(residual-kana (rk-peek-terminal-match rkc)))
+	    (rk-flush rkc) ;; OK to reset rkc here.
+	    (if residual-kana
+	        (begin
+		  (ustr-insert-elem! preconv-str residual-kana)
+		  (ustr-insert-elem! raw-str pend)))
+	    (ustr-insert-elem! preconv-str
+			       (if (= (canna-context-alnum-type cc)
+				      canna-type-halfwidth-alnum)
+				   (list key-str key-str key-str)
+				   (list (ja-wide key-str) (ja-wide key-str)
+					 (ja-wide key-str))))
+	    (ustr-insert-elem! raw-str key-str))
+	  (let* ((key-str (charcode->string
+			   (if (= rule canna-input-rule-kana)
+			       key
+			       (to-lower-char key))))
+	         (pend (rk-pending rkc))
+	         (res (rk-push-key! rkc key-str)))
+	    (if (and res
+		     (or (list? (car res))
+		         (not (string=? (car res) ""))))
+	        (let ((next-pend (rk-pending rkc)))
+	          (if (list? (car res))
+		      (ustr-insert-seq!  preconv-str res)
+		      (ustr-insert-elem! preconv-str res))
+	          (if (and next-pend
+		           (not (string=? next-pend "")))
+		      (ustr-insert-elem! raw-str pend)
+		      (if (list? (car res))
+		          (begin
+			    (ustr-insert-elem! raw-str pend)
+			    (ustr-insert-elem! raw-str key-str))
+		          (ustr-insert-elem!
+		           raw-str
+		           (string-append pend key-str))))))))))))
 
 (define canna-context-confirm-kana!
   (lambda (cc)
     (if (= (canna-context-input-rule cc)
 	   canna-input-rule-kana)
-	(let* ((rkc (canna-context-rkc cc))
+	(let* ((preconv-str (canna-context-preconv-ustr cc))
+	       (rkc (canna-context-rkc cc))
 	       (residual-kana (rk-peek-terminal-match rkc)))
-	    (if residual-kana
-		(begin
-		  (canna-append-string cc residual-kana)
-		  (rk-flush rkc)))))))
+	  (if residual-kana
+	      (begin
+		(ustr-insert-elem! preconv-str residual-kana)
+		(rk-flush rkc)))))))
 
 (define (canna-proc-input-state cc key key-state)
   (if (canna-has-preedit? cc)
       (canna-proc-input-state-with-preedit cc key key-state)
       (canna-proc-input-state-no-preedit cc key key-state)))
 
+(define canna-separator
+  (lambda (cc)
+    (let ((attr (bit-or preedit-separator preedit-underline)))
+      (if canna-show-segment-separator?
+	  (cons attr canna-segment-separator)
+	  #f))))
+
 (define canna-context-transposing-state-preedit
   (lambda (cc)
     (let ((transposing-text (canna-transposing-text cc)))
-      (im-clear-preedit cc)
-      (im-pushback-preedit
-        cc
-        preedit-underline
-        transposing-text)
-      (im-pushback-preedit
-        cc
-        preedit-cursor
-        "")
-      (im-update-preedit cc))))
+      (list (cons preedit-reverse transposing-text)
+	    (cons preedit-cursor "")))))
 
 (define canna-transposing-text
   (lambda (cc)
-    (let ((transposing-type (if (= (canna-context-input-rule cc) canna-input-rule-kana)
-                                multi-segment-type-hiragana
-                                (canna-context-transposing-type cc))))
-      (string-append
-        (multi-segment-make-left-string (canna-context-left-string cc) transposing-type)
-        (multi-segment-make-right-string (canna-context-right-string cc) transposing-type)))))
+    (let ((transposing-type (canna-context-transposing-type cc)))
+      (cond
+       ((or
+	 (= transposing-type canna-type-hiragana)
+	 (= transposing-type canna-type-katakana)
+	 (= transposing-type canna-type-halfkana))
+	(canna-make-whole-string cc #t transposing-type))
+       ((= transposing-type canna-type-halfwidth-alnum)
+	(canna-make-whole-raw-string cc #f #f))
+       ((= transposing-type canna-candidate-type-upper-halfwidth-alnum)
+	(canna-make-whole-raw-string cc #f #t))
+       ((= transposing-type canna-type-fullwidth-alnum)
+	(canna-make-whole-raw-string cc #t #f))
+       ((= transposing-type canna-candidate-type-upper-fullwidth-alnum)
+	(canna-make-whole-raw-string cc #t #t))))))
 
-(define (canna-pushback-preedit-segment-rec cc idx nseg)
-  (let ((cc-id (canna-context-cc-id cc)))
-    (if (< idx nseg)
-	(begin
-	  (if (and
-	       canna-show-segment-separator?
-	       (< 0 idx))
-	      (im-pushback-preedit
-	       cc
-	       (bit-or preedit-separator
-		       preedit-underline)
-	       canna-segment-separator))
-	  (im-pushback-preedit
-	   cc
-	   (if (= idx (canna-context-cur-seg cc))
-	       (+ preedit-reverse preedit-cursor)
-	       preedit-underline)
-	   (canna-lib-get-nth-candidate
-	      cc-id idx
-	      (nth idx (canna-context-index-list cc))))
-	    (canna-pushback-preedit-segment-rec cc (+ idx 1) nseg)))))
+(define canna-get-raw-str-seq
+  (lambda (cc)
+    (let* ((rkc (canna-context-rkc cc))
+	   (pending (rk-pending rkc))
+	   (residual-kana (rk-peek-terminal-match rkc))
+	   (raw-str (canna-context-raw-ustr cc))
+	   (right-str (ustr-latter-seq raw-str))
+	   (left-str (ustr-former-seq raw-str)))
+     (append left-str
+	     (if (not (null? residual-kana))
+		 (list pending))
+	      right-str))))
+
+(define canna-get-raw-candidate
+  (lambda (cc cc-id seg-idx cand-idx)
+    (let* ((preconv
+	    (ja-join-vu (string-to-list
+			 (canna-make-whole-string cc #t canna-type-hiragana))))
+	   (unconv-candidate (canna-lib-get-unconv-candidate cc-id seg-idx))
+	   (unconv (if unconv-candidate
+		       (ja-join-vu (string-to-list unconv-candidate))
+		       '()))
+	   (raw-str (reverse (canna-get-raw-str-seq cc))))
+      (cond
+       ((= cand-idx canna-candidate-type-hiragana)
+	(string-list-concat unconv))
+       ((= cand-idx canna-candidate-type-katakana)
+	(ja-make-kana-str (ja-make-kana-str-list unconv) canna-type-katakana))
+       ((= cand-idx canna-candidate-type-halfkana)
+	(ja-make-kana-str (ja-make-kana-str-list unconv) canna-type-halfkana))
+       (else
+	(if (not (null? unconv))
+	    (if (member (car unconv) preconv)
+		(let ((start (list-seq-contained? preconv unconv))
+		      (len (length unconv)))
+		  (if start
+		      (canna-make-raw-string
+		       (reverse (sublist raw-str start (+ start (- len 1))))
+		       (if (or
+			    (= cand-idx canna-candidate-type-halfwidth-alnum)
+			    (= cand-idx
+			       canna-candidate-type-upper-halfwidth-alnum))
+			   #f
+			   #t)
+		       (if (or
+			    (= cand-idx canna-candidate-type-halfwidth-alnum)
+			    (= cand-idx canna-candidate-type-fullwidth-alnum))
+			   #f
+			   #t))
+		      "??")) ;; FIXME
+		"???") ;; FIXME
+	    "????")))))) ;; shouldn't happen
 
 (define (canna-compose-state-preedit cc)
-  (im-clear-preedit cc)
-  (canna-pushback-preedit-segment-rec
-   cc
-   0 (length (canna-context-index-list cc)))
-  (im-update-preedit cc))
+  (let* ((cc-id (canna-context-cc-id cc))
+	 (segments (canna-context-segments cc))
+	 (cur-seg (ustr-cursor-pos segments))
+	 (separator (canna-separator cc)))
+    (append-map
+     (lambda (seg-idx cand-idx)
+       (let* ((attr (if (= seg-idx cur-seg)
+			(bit-or preedit-reverse
+				preedit-cursor)
+			preedit-underline))
+	      (cand (if (> cand-idx canna-candidate-type-katakana)
+			(canna-lib-get-nth-candidate cc-id seg-idx cand-idx)
+			(canna-get-raw-candidate cc cc-id seg-idx cand-idx)))
+	      (seg (list (cons attr cand))))
+	 (if (and separator
+		  (< 0 seg-idx))
+	     (cons separator seg)
+	     seg)))
+     (iota (ustr-length segments))
+     (ustr-whole-seq segments))))
 
 (define (canna-input-state-preedit cc)
-  (let ((rkc (canna-context-rkc cc))
-        (kana (if (= (canna-context-input-rule cc)
-                     canna-input-rule-kana)
-                   multi-segment-type-hiragana
-                   (canna-context-kana-mode cc))))
-    (im-clear-preedit cc)
-    (im-pushback-preedit
-     cc preedit-underline
-     (multi-segment-make-left-string (canna-context-left-string cc) kana))
-    (im-pushback-preedit cc preedit-underline
-			 (rk-pending rkc))
-    (if (canna-has-preedit? cc)
-	(im-pushback-preedit cc preedit-cursor ""))
-    (im-pushback-preedit
-     cc preedit-underline
-     (multi-segment-make-right-string (canna-context-right-string cc) kana))
-    (im-update-preedit cc)))
+  (let* ((preconv-str (canna-context-preconv-ustr cc))
+	 (rkc (canna-context-rkc cc))
+	 (pending (rk-pending rkc))
+	 (kana (canna-context-kana-mode cc))
+	 (rule (canna-context-input-rule cc))
+	 (extract-kana
+	  (if (= rule canna-input-rule-kana)
+	      (lambda (entry) (car entry))
+	      (lambda (entry) (list-ref entry kana)))))
+    (list
+     (and (not (ustr-cursor-at-beginning? preconv-str))
+	  (cons preedit-underline
+		(string-append-map-ustr-former extract-kana preconv-str)))
+     (and (> (string-length pending) 0)
+	  (cons preedit-underline pending))
+     (and (canna-has-preedit? cc)
+	  (cons preedit-cursor ""))
+     (and (not (ustr-cursor-at-end? preconv-str))
+	  (cons preedit-underline
+		(string-append-map-ustr-latter extract-kana preconv-str))))))
 
-(define (canna-get-commit-string cc idx nseg)
-  (let ((cc-id (canna-context-cc-id cc)))
-    (if (< idx nseg)
-	(string-append
-	 (canna-lib-get-nth-candidate
-	  cc-id idx
-	  (nth idx (canna-context-index-list cc)))
-	 (canna-get-commit-string cc (+ idx 1) nseg))
-	"")))
+(define (canna-get-commit-string cc)
+  (let ((cc-id (canna-context-cc-id cc))
+	(segments (canna-context-segments cc)))
+    (string-append-map (lambda (seg-idx cand-idx)
+			 (if (> cand-idx canna-candidate-type-katakana)
+			     (canna-lib-get-nth-candidate
+			      cc-id seg-idx cand-idx)
+			     (canna-get-raw-candidate
+			      cc cc-id seg-idx cand-idx)))
+		       (iota (ustr-length segments))
+		       (ustr-whole-seq segments))))
 
-(define (canna-commit-string cc idx nseg)
-  (let ((cc-id (canna-context-cc-id cc)))
-    (if (< idx nseg)
-	(begin
-	  (canna-lib-commit-segment
-	   cc-id idx (nth idx (canna-context-index-list cc)))
-	  (canna-commit-string cc
-			       (+ idx 1) nseg))
-	#f)))
+(define (canna-commit-string cc)
+  (let ((cc-id (canna-context-cc-id cc))
+        (segments (canna-context-segments cc)))
+    (for-each (lambda (seg-idx cand-idx)
+		(if (> cand-idx canna-candidate-type-katakana)
+		    (canna-lib-commit-segment cc-id seg-idx cand-idx)))
+	      (iota (ustr-length segments))
+	      (ustr-whole-seq segments))
+    (if (every (lambda (x) (<= x canna-candidate-type-katakana))
+	       (ustr-whole-seq segments))
+	(canna-lib-reset-conversion cc-id))))
 
 (define (canna-do-commit cc)
+    (im-commit cc (canna-get-commit-string cc))
+    (canna-commit-string cc)
     (canna-reset-candidate-window cc)
-    (im-commit cc
-	       (canna-get-commit-string
-		cc 0
-		(length (canna-context-index-list cc))))
-    (canna-commit-string
-     cc 0
-     (length (canna-context-index-list cc)))
     (canna-flush cc))
 
-(define (canna-init-handler id im arg)
-  (if (not canna-init-lib-ok?)
-      (begin
-	(canna-lib-init canna-server-name)
-	(set! canna-init-lib-ok? #t)))
-
-  (canna-context-new id im))
-
-(define (canna-release-handler cc)
-  (let ((cc-id (canna-context-cc-id cc)))
-    (if (number? cc-id)
-        (canna-lib-release-context cc-id))))
+(define canna-correct-segment-cursor
+  (lambda (segments)
+    (if (ustr-cursor-at-end? segments)
+	(ustr-cursor-move-backward! segments))))
 
 (define (canna-move-segment cc dir)
-  (let ((pos (+ (canna-context-cur-seg cc) dir))
-	(nseg (length (canna-context-index-list cc))))
-      (if (and
-	   (> pos -1)
-	   (< pos nseg))
-	  (canna-context-set-cur-seg! cc pos))))
+  (canna-reset-candidate-window cc)
+  (let ((segments (canna-context-segments cc)))
+    (ustr-cursor-move! segments dir)
+    (canna-correct-segment-cursor segments)))
 
-(define (canna-move-candidate cc off)
-  (let* ((seg (canna-context-cur-seg cc))
-	 (n (nth seg (canna-context-index-list cc)))
-	 (cc-id (canna-context-cc-id cc))
-	 (max (canna-lib-get-nr-candidates cc-id seg)))
-    (set! n (+ n off))
-    (if (>= n max)
-	(set! n 0))
-    (if (< n 0)
-	(set! n (- max 1)))
-    (set-car! (nthcdr seg (canna-context-index-list cc)) n)
-    (canna-context-set-candidate-op-count!
-     cc
-     (+ 1 (canna-context-candidate-op-count cc)))
+(define (canna-resize-segment cc cnt)
+  (let* ((cc-id (canna-context-cc-id cc))
+	 (segments (canna-context-segments cc))
+	 (cur-seg (ustr-cursor-pos segments)))
+    (canna-reset-candidate-window cc)
+    (canna-lib-resize-segment cc-id cur-seg cnt)
+    (let* ((resized-nseg (canna-lib-get-nr-segments cc-id))
+           (latter-nseg (- resized-nseg cur-seg)))
+      (ustr-set-latter-seq! segments (make-list latter-nseg 0)))))
+
+(define (canna-move-candidate cc offset)
+  (let* ((cc-id (canna-context-cc-id cc))
+	 (segments (canna-context-segments cc))
+	 (cur-seg (ustr-cursor-pos segments))
+	 (max (canna-lib-get-nr-candidates cc-id cur-seg))
+	 (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
+		0
+		(+ (ustr-cursor-frontside segments) offset)))
+	 (compensated-n (cond
+			 ((>= n max)
+			  0)
+			 ((< n 0)
+			  (- max 1))
+			 (else
+			  n)))
+	 (new-op-count (+ 1 (canna-context-candidate-op-count cc))))
+    (ustr-cursor-set-frontside! segments compensated-n)
+    (canna-context-set-candidate-op-count! cc new-op-count)
     (if (and
 	 (= (canna-context-candidate-op-count cc)
 	    canna-candidate-op-count)
 	 canna-use-candidate-window?)
 	(begin
 	  (canna-context-set-candidate-window! cc #t)
-	  (im-activate-candidate-selector
-	   cc
-	   max canna-nr-candidate-max)))
+	  (im-activate-candidate-selector cc max canna-nr-candidate-max)))
     (if (canna-context-candidate-window cc)
-	(im-select-candidate cc n))))
+	(im-select-candidate cc compensated-n))))
 
 (define canna-move-candidate-in-page
   (lambda (cc numeralc)
     (let* ((cc-id (canna-context-cc-id cc))
-	   (cur-seg (canna-context-cur-seg cc))
+	   (segments (canna-context-segments cc))
+	   (cur-seg (ustr-cursor-pos segments))
 	   (max (canna-lib-get-nr-candidates cc-id cur-seg))
-           (n (nth cur-seg (canna-context-index-list cc)))
+	   (n (ustr-cursor-frontside segments))
 	   (cur-page (if (= canna-nr-candidate-max 0)
-	   		 0
+			 0
 			 (quotient n canna-nr-candidate-max)))
 	   (pageidx (- (numeral-char->number numeralc) 1))
 	   (compensated-pageidx (cond
@@ -760,7 +1177,7 @@
 			     (else
 			      idx)))
 	   (new-op-count (+ 1 (canna-context-candidate-op-count cc))))
-      (set-car! (nthcdr cur-seg (canna-context-index-list cc)) compensated-idx)
+      (ustr-cursor-set-frontside! segments compensated-idx)
       (canna-context-set-candidate-op-count! cc new-op-count)
       (im-select-candidate cc compensated-idx))))
 
@@ -771,20 +1188,60 @@
 	(canna-context-set-candidate-window! cc #f)))
   (canna-context-set-candidate-op-count! cc 0))
 
-(define (canna-resize-segment cc cnt)
-  (let
-      ((cc-id (canna-context-cc-id cc)))
-      (canna-reset-candidate-window cc)
-      (canna-lib-resize-segment
-       cc-id (canna-context-cur-seg cc) cnt)
-      (canna-context-set-index-list!
-       cc
-       (multi-segment-make-index-list
-	(canna-lib-get-nr-segments cc-id)
-	(truncate-list
-	 (canna-context-index-list cc)
-	 (canna-context-cur-seg cc)))
-      )))
+(define canna-rotate-segment-transposing-alnum-type
+  (lambda (idx state)
+    (cond
+     ((and
+       (= idx canna-candidate-type-halfwidth-alnum)
+       (= state canna-candidate-type-halfwidth-alnum))
+      canna-candidate-type-upper-halfwidth-alnum)
+     ((and
+       (= idx canna-candidate-type-fullwidth-alnum)
+       (= state canna-candidate-type-fullwidth-alnum))
+      canna-candidate-type-upper-fullwidth-alnum)
+     (else
+      state))))
+
+(define canna-set-segment-transposing
+  (lambda (cc key key-state)
+    (let ((segments (canna-context-segments cc)))
+      (let ((rotate-list '())
+	    (state #f)
+	    (idx (ustr-cursor-frontside segments)))
+	(canna-reset-candidate-window cc)
+	(canna-context-set-candidate-op-count! cc 0)
+
+	(if (canna-transpose-as-fullwidth-alnum-key? key key-state)
+	    (set! rotate-list (cons canna-candidate-type-fullwidth-alnum
+				    rotate-list)))
+	(if (canna-transpose-as-halfwidth-alnum-key? key key-state)
+	    (set! rotate-list (cons canna-candidate-type-halfwidth-alnum
+				    rotate-list)))
+	(if (canna-transpose-as-halfkana-key? key key-state)
+	    (set! rotate-list (cons canna-candidate-type-halfkana
+				    rotate-list)))
+	(if (canna-transpose-as-katakana-key? key key-state)
+	    (set! rotate-list (cons canna-candidate-type-katakana
+				    rotate-list)))
+	(if (canna-transpose-as-hiragana-key? key key-state)
+	    (set! rotate-list (cons canna-candidate-type-hiragana
+				    rotate-list)))
+	(if (or
+	     (= idx canna-candidate-type-hiragana)
+	     (= idx canna-candidate-type-katakana)
+	     (= idx canna-candidate-type-halfkana)
+	     (= idx canna-candidate-type-halfwidth-alnum)
+	     (= idx canna-candidate-type-fullwidth-alnum)
+	     (= idx canna-candidate-type-upper-halfwidth-alnum)
+	     (= idx canna-candidate-type-upper-fullwidth-alnum))
+	    (let ((lst (member idx rotate-list)))
+	      (if (and lst
+		       (not (null? (cdr lst))))
+		  (set! state (car (cdr lst)))
+		  (set! state (canna-rotate-segment-transposing-alnum-type
+			       idx (car rotate-list)))))
+	    (set! state (car rotate-list)))
+	(ustr-cursor-set-frontside! segments state)))))
 
 (define (canna-proc-compose-state cc key key-state)
   (let ((cc-id (canna-context-cc-id cc)))
@@ -807,20 +1264,24 @@
       (canna-resize-segment cc -1))
 
      ((canna-next-segment-key? key key-state)
-      (begin
-	(canna-move-segment cc 1)
-	(canna-reset-candidate-window cc)))
+      (canna-move-segment cc 1))
 
      ((canna-prev-segment-key? key key-state)
+      (canna-move-segment cc -1))
+
+     ((canna-beginning-of-preedit-key? key key-state)
       (begin
-	(canna-move-segment cc -1)
+	(ustr-cursor-move-beginning! (canna-context-segments cc))
+	(canna-reset-candidate-window cc)))
+
+     ((canna-end-of-preedit-key? key key-state)
+      (begin
+	(ustr-cursor-move-end! (canna-context-segments cc))
+	(canna-correct-segment-cursor (canna-context-segments cc))
 	(canna-reset-candidate-window cc)))
 
      ((canna-backspace-key? key key-state)
-      (begin
-	(canna-context-set-state! cc #f)
-	(canna-reset-candidate-window cc)
-	(canna-lib-reset-conversion cc-id)))
+      (canna-cancel-conv cc))
 
      ((canna-next-candidate-key? key key-state)
       (canna-move-candidate cc 1))
@@ -828,11 +1289,18 @@
      ((canna-prev-candidate-key? key key-state)
       (canna-move-candidate cc -1))
 
+     ((or (canna-transpose-as-hiragana-key? key key-state)
+	  (canna-transpose-as-katakana-key? key key-state)
+	  (canna-transpose-as-halfkana-key? key key-state)
+	  (and
+	   (not (= (canna-context-input-rule cc) canna-input-rule-kana))
+	   (or
+	    (canna-transpose-as-halfwidth-alnum-key? key key-state)
+	    (canna-transpose-as-fullwidth-alnum-key? key key-state))))
+      (canna-set-segment-transposing cc key key-state))
+
      ((canna-cancel-key? key key-state)
-      (begin
-	(canna-context-set-state! cc #f)
-	(canna-reset-candidate-window cc)
-	(canna-lib-reset-conversion cc-id)))
+      (canna-cancel-conv cc))
 
      ((and canna-select-candidate-by-numeral-key?
 	   (numeral-char? key)
@@ -851,30 +1319,6 @@
 	(canna-do-commit cc)
 	(canna-proc-input-state cc key key-state))))))
 
-(define (canna-proc-wide-latin cc key key-state)
-  (let* ((char (charcode->string key))
-	 (w (or (ja-direct char)
-		(ja-wide char))))
-    (cond
-     ((and canna-use-with-vi?
-           (canna-vi-escape-key? key key-state))
-      (begin
-        (canna-flush cc)
-        (canna-context-set-wide-latin! cc #f)
-        (canna-commit-raw cc)))
-
-     ((canna-on-key? key key-state)
-      (canna-flush cc)
-      (canna-context-set-on! cc #t))
-     ((and (modifier-key-mask key-state)
-	   (not (shift-key-mask key-state)))
-      (canna-commit-raw cc))
-     (w
-      (im-commit cc w))
-     (else
-      (im-commit-raw cc)))
-    ()))
-
 (define (canna-press-key-handler cc key key-state)
   (if (control-char? key)
       (im-commit-raw cc)
@@ -884,43 +1328,37 @@
               (if (canna-context-state cc)
                   (canna-proc-compose-state cc key key-state)
                   (canna-proc-input-state cc key key-state)))
-	  (if (canna-context-wide-latin cc)
-	      (canna-proc-wide-latin cc key key-state)
-	      (canna-proc-raw-state cc key key-state))))
+	  (canna-proc-raw-state cc key key-state)))
   (canna-update-preedit cc))
 
 ;;;
 (define (canna-release-key-handler cc key key-state)
   (if (or (control-char? key)
-	  (and
-	   (not (canna-context-on cc))
-	   (not (canna-context-wide-latin cc))))
+	  (not (canna-context-on cc)))
       (canna-commit-raw cc)))
 ;;;
 (define (canna-reset-handler cc)
   (if (canna-context-on cc)
       (begin
-        (canna-flush cc)
-        (if (canna-context-state cc)
-          (let ((cc-id (canna-context-cc-id cc)))
-            (canna-lib-reset-conversion cc-id))))))
+	(if (canna-context-state cc)
+	  (let ((cc-id (canna-context-cc-id cc)))
+	    (canna-lib-reset-conversion cc-id)))
+	(canna-flush cc))))
 
 ;;;
 (define (canna-get-candidate-handler cc idx accel-enum-hint)
   (let* ((cc-id (canna-context-cc-id cc))
+	 (cur-seg (ustr-cursor-pos (canna-context-segments cc)))
 	 (cand (canna-lib-get-nth-candidate
-		cc-id (canna-context-cur-seg cc) idx)))
+		cc-id cur-seg idx)))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (canna-set-candidate-index-handler cc idx)
-  (let* ((seg (canna-context-cur-seg cc))
-	 (cc-id (canna-context-cc-id cc)))
-    (set-car! (nthcdr seg (canna-context-index-list cc)) idx)
-    (canna-update-preedit cc)))
+  (ustr-cursor-set-frontside! (canna-context-segments cc) idx)
+  (canna-update-preedit cc))
 
 (define (canna-proc-raw-state cc key key-state)
-  (if (canna-on-key? key key-state)
-      (canna-begin-input cc)
+  (if (not (canna-begin-input cc key key-state))
       (im-commit-raw cc)))
 
 (canna-configure-widgets)
@@ -939,4 +1377,10 @@
  canna-reset-handler
  canna-get-candidate-handler
  canna-set-candidate-index-handler
- context-prop-activate-handler)
+ context-prop-activate-handler
+ #f
+ #f
+ #f
+ #f
+ #f
+ )

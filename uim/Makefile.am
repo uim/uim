@@ -8,6 +8,15 @@ uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
 lib_LTLIBRARIES = libuim.la libuim-custom.la
 
+# Although uim only needs *.so for the plugins, whether *.la is
+# installed or not is system-dependent and uim leaves it untouched. It
+# will installed with normal libtool, or may not installed depending
+# on the ltmain the system uses. For example, FreeBSD's libtool does
+# not. Likewise it, *.a is also untouched other than libtool's
+# package-global 'static' configuration since no partial disabling of
+# static libraaries is supported by libtool. And no violent rm of *.a
+# and *.la is performed to avoid system-dependent unexpected
+# result. It's libtool's responsibility.  -- YamaKen 2006-05-20
 uim_plugin_LTLIBRARIES = 
 uim_plugindir = $(pkglibdir)/plugin
 
@@ -58,11 +67,15 @@ if CANNA
 endif
 
 if ANTHY
+if ENABLE_ANTHY_STATIC
+  libuim_la_SOURCES += anthy.c
+else
   uim_plugin_LTLIBRARIES += libuim-anthy.la
   libuim_anthy_la_SOURCES = anthy.c
   libuim_anthy_la_LIBADD = @ANTHY_LIBS@ libuim.la
   libuim_anthy_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
   libuim_anthy_la_CPPFLAGS = -I$(top_srcdir)
+endif
 endif
 
 if MANA
@@ -89,7 +102,10 @@ libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
-libuim_la_LDFLAGS = -version-info $(libuim_version) -export-symbols-regex uim.\*
+# NOTE: Don't depend on -export-symbols-regex to avoid symbol
+# conflict. The libtool option is not and will not be supported on
+# some platforms. See [Anthy-dev 2847].  -- YamaKen 2006-03-30
+libuim_la_LDFLAGS = -version-info $(libuim_version) -export-dynamic
 libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ \
 		   $(top_builddir)/replace/libreplace.la
 # place -I$(top_srcdir) surely prior to sigscheme dirs
@@ -100,12 +116,18 @@ libuim_la_CPPFLAGS = $(uim_defs) \
 		     -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
 
+if ENABLE_ANTHY_STATIC
+  libuim_la_LIBADD += @ANTHY_LIBS@
+  libuim_la_CPPFLAGS += -DENABLE_ANTHY_STATIC
+endif
+
 if DEBUG
 libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
 endif
 
-libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) -export-symbols-regex uim.\*
-libuim_custom_la_LIBADD = 
+libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) \
+			   -export-dynamic
+libuim_custom_la_LIBADD = libuim.la
 libuim_custom_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-custom-enabler.la
@@ -122,6 +144,7 @@ uim_helper_server_LIBS =
 uim_helper_server_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_helper_server_CFLAGS =
 uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c
+uim_helper_server_LDADD = $(top_builddir)/replace/libreplace.la
 
 uim_sh_LIBS =
 uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
@@ -137,10 +160,15 @@ endif
 uim_module_manager_LIBS =
 uim_module_manager_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DUIM_DATADIR=\""$(datadir)/uim"\"
 uim_module_manager_CFLAGS =
-uim_module_manager_LDADD = libuim.la $(top_builddir)/replace/libreplace.la
+uim_module_manager_LDADD = libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
 
-noinst_PROGRAMS = uim-agent
+noinst_PROGRAMS = uim-agent test-gc
 
 uim_agent_SOURCES = agent.c
 uim_agent_LDADD   = libuim.la
+
+test_gc_SOURCES = test-gc.c
+test_gc_LDADD   = libuim.la
+
+DISTCLEANFILES = uim-stdint.h

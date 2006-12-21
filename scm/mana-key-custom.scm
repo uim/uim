@@ -1,4 +1,4 @@
-;;; mana-custom.scm: Customization variables for mana.scm
+;;; mana-key-custom.scm: Customization variables for mana.scm
 ;;;
 ;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 ;;;
@@ -44,6 +44,9 @@
 		     (_ "Mana key bindings 3")
 		     (_ "long description will be here."))
 
+(define-custom-group 'mana-keys4
+		     (_ "Mana key bindings 4")
+		     (_ "long description will be here."))
 
 (define-custom 'mana-next-segment-key '(generic-go-right-key)
                '(mana-keys1)
@@ -69,34 +72,34 @@
 	       (_ "[Mana] shrink segment")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-transpose-as-latin-key '("F10")
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] convert to halfwidth alphanumeric")
-	       (_ "long description will be here"))
-
-(define-custom 'mana-transpose-as-wide-latin-key '("F9")
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] convert to fullwidth alphanumeric")
-	       (_ "long description will be here"))
-
-(define-custom 'mana-transpose-as-hiragana-key '("F6")
+(define-custom 'mana-transpose-as-hiragana-key '("F6" "Muhenkan")
                '(mana-keys1)
 	       '(key)
 	       (_ "[Mana] convert to hiragana")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-transpose-as-katakana-key '("F7")
+(define-custom 'mana-transpose-as-katakana-key '("F7" "Muhenkan")
                '(mana-keys1)
 	       '(key)
 	       (_ "[Mana] convert to katakana")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-transpose-as-hankana-key '("F8")
+(define-custom 'mana-transpose-as-halfkana-key '("F8" "Muhenkan")
                '(mana-keys1)
 	       '(key)
 	       (_ "[Mana] convert to halfwidth katakana")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-transpose-as-halfwidth-alnum-key '("F10")
+               '(mana-keys1)
+	       '(key)
+	       (_ "[Mana] convert to halfwidth alphanumeric")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-transpose-as-fullwidth-alnum-key '("F9")
+               '(mana-keys1)
+	       '(key)
+	       (_ "[Mana] convert to fullwidth alphanumeric")
 	       (_ "long description will be here"))
 
 (define-custom 'mana-commit-as-opposite-kana-key '()
@@ -105,37 +108,17 @@
 	       (_ "[Mana] commit as transposed kana")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-wide-latin-key '()
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] fullwidth alphanumeric mode")
-	       (_ "long description will be here"))
-
-;(define-custom 'mana-hankaku-kana-key '("<IgnoreCase><Control>q")
-(define-custom 'mana-hankaku-kana-key '()
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] halfwidth katakana mode")
-	       (_ "long description will be here"))
-
-(define-custom 'mana-kana-toggle-key '()
-               '(mana-keys1)
-	       '(key)
-	       (_ "[Mana] toggle hiragana/katakana mode")
-	       (_ "long description will be here"))
-
-
 ;;
 ;; overriding generic keys
 ;;
 
-(define-custom 'mana-on-key '("<IgnoreCase><Control>j" generic-on-key)
+(define-custom 'mana-on-key '(generic-on-key)
                '(mana-keys2)
 	       '(key)
 	       (_ "[Mana] on")
 	       (_ "long description will be here"))
 
-(define-custom 'mana-latin-key '("<IgnoreCase><Control>j" generic-off-key)
+(define-custom 'mana-off-key '(generic-off-key)
                '(mana-keys2)
 	       '(key)
 	       (_ "[Mana] off")
@@ -239,4 +222,48 @@
                '(mana-keys3)
 	       '(key)
 	       (_ "[Mana] ESC keys on vi-cooperative mode")
+	       (_ "long description will be here"))
+
+;; ja advanced
+
+(define-custom 'mana-hiragana-key '("<Shift>F6")
+	       '(mana-keys4 mode-transition)
+	       '(key)
+	       (_ "[Mana] hiragana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-katakana-key '("<Shift>F7")
+	       '(mana-keys4 mode-transition)
+	       '(key)
+	       (_ "[Mana] katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-halfkana-key '("<Shift>F8")
+	       '(mana-keys4 mode-transition)
+	       '(key)
+	       (_ "[Mana] halfwidth katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-halfwidth-alnum-key '("<Shift>F10")
+	       '(mana-keys4 mode-transition)
+	       '(key)
+	       (_ "[Mana] halfwidth alphanumeric mode")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-fullwidth-alnum-key '("<Shift>F9")
+	       '(mana-keys4 mode-transition)
+	       '(key)
+	       (_ "[Mana] fullwidth alphanumeric mode")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-kana-toggle-key '()
+	       '(mana-keys4 advanced)
+	       '(key)
+	       (_ "[Mana] toggle hiragana/katakana mode")
+	       (_ "long description will be here"))
+
+(define-custom 'mana-alkana-toggle-key '()
+	       '(mana-keys4 advanced)
+	       '(key)
+	       (_ "[Mana] toggle kana/alphanumeric mode")
 	       (_ "long description will be here"))

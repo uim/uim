@@ -995,43 +995,43 @@
 
 ;; This is the way an isolated jamo is encoded in the Unicode standard.
 ;; However, it doesn't seem to be well supported currently.
-(define byeoru-choseong-jamo-utf-8-list
+(define byeoru-choseong-jamo-utf8-list
   (map ucs-to-utf8-string
        (cons byeoru-ucs-code-choseong-filler
 	     (list-tabulate
 	      19 (lambda (n) (+ n byeoru-ucs-code-choseong-giyeog))))))
 
-(define byeoru-jungseong-jamo-utf-8-list
+(define byeoru-jungseong-jamo-utf8-list
   (map ucs-to-utf8-string
        (cons byeoru-ucs-code-jungseong-filler
 	     (list-tabulate
 	      21 (lambda (n) (+ n byeoru-ucs-code-jungseong-a))))))
 
-(define byeoru-jongseong-jamo-utf-8-list
+(define byeoru-jongseong-jamo-utf8-list
   (cons "" (map ucs-to-utf8-string
 		(list-tabulate
 		 27 (lambda (n) (+ n byeoru-ucs-code-jongseong-giyeog))))))
 
 ;; So we show an incomplete syllable as a sequence of
 ;; Hangul compatibility jamos by default.
-(define byeoru-choseong-compatibility-jamo-utf-8-list
+(define byeoru-choseong-compatibility-jamo-utf8-list
   (cons "" (map ucs-to-utf8-string
 		'(12593 12594 12596 12599 12600 12601 12609 12610 12611 12613
 		  12614 12615 12616 12617 12618 12619 12620 12621 12622))))
 
-(define byeoru-jungseong-compatibility-jamo-utf-8-list
+(define byeoru-jungseong-compatibility-jamo-utf8-list
   (cons "" (map ucs-to-utf8-string
 		'(12623 12624 12625 12626 12627 12628 12629 12630 12631 12632
 		  12633 12634 12635 12636 12637 12638 12639 12640 12641 12642
 		  12643))))
 
-(define byeoru-jongseong-compatibility-jamo-utf-8-list
+(define byeoru-jongseong-compatibility-jamo-utf8-list
   (cons "" (map ucs-to-utf8-string
 		'(12593 12594 12595 12596 12597 12598 12599 12601 12602 12603
 		  12604 12605 12606 12607 12608 12609 12610 12612 12613 12614
 		  12615 12616 12618 12619 12620 12621 12622))))
 
-(define (byeoru-johab-to-utf-8-string johab)
+(define (byeoru-johab-to-utf8-string johab)
   (let ((cho (car johab))
 	(jung (cadr johab))
 	(jong (nth 2 johab)))
@@ -1043,14 +1043,14 @@
       (ucs-to-utf8-string (byeoru-johab-to-ucs johab)))
      (else
       (let ((cho-l (if byeoru-compatibility-jamos-for-incomplete-syllables?
-		       byeoru-choseong-compatibility-jamo-utf-8-list
-		       byeoru-choseong-jamo-utf-8-list))
+		       byeoru-choseong-compatibility-jamo-utf8-list
+		       byeoru-choseong-jamo-utf8-list))
 	    (jung-l (if byeoru-compatibility-jamos-for-incomplete-syllables?
-			byeoru-jungseong-compatibility-jamo-utf-8-list
-			byeoru-jungseong-jamo-utf-8-list))
+			byeoru-jungseong-compatibility-jamo-utf8-list
+			byeoru-jungseong-jamo-utf8-list))
 	    (jong-l (if byeoru-compatibility-jamos-for-incomplete-syllables?
-			byeoru-jongseong-compatibility-jamo-utf-8-list
-			byeoru-jongseong-jamo-utf-8-list)))
+			byeoru-jongseong-compatibility-jamo-utf8-list
+			byeoru-jongseong-jamo-utf8-list)))
 	(string-append
 	 (nth cho cho-l) (nth jung jung-l) (nth jong jong-l)))))))
 
@@ -1167,7 +1167,7 @@
 
 (define (byeoru-flush-automata bc)
   (let* ((ba (byeoru-context-automata bc))
-	 (composing (byeoru-johab-to-utf-8-string
+	 (composing (byeoru-johab-to-utf8-string
 		     (byeoru-automata-composing-char ba))))
     (if (not (string=? composing ""))
 	(begin
@@ -1198,7 +1198,7 @@
 
 (register-action 'action_byeoru_direct
 		 (lambda (bc)
-		   '(figure_ko_direct
+		   '(ko_direct
 		     "A"
 		     ;; Change this to a more reasonable name.
 		     "영문"
@@ -1211,7 +1211,7 @@
 
 (register-action 'action_byeoru_hangulchar
 		 (lambda (bc)
-		   '(figure_ko_hangulchar
+		   '(ko_hangulchar
 		     "가"
 		     "한글 글자"
 		     "한글 글자단위 입력모드"))
@@ -1225,9 +1225,9 @@
 
 (register-action 'action_byeoru_hangulword
 		 (lambda (bc)
-		   '(figure_ko_hangulword
-		     "말"
-		     "한글 낱말"
+		   '(ko_hangulword
+		     "단"
+		     "한글 단어"
 		     "한글 단어단위 입력모드"))
 		 (lambda (bc)
 		   (and (byeoru-context-on bc)
@@ -1359,7 +1359,7 @@
 (define (byeoru-break-char bc)
   (let ((ba (byeoru-context-automata bc)))
     (ustr-insert-elem! (byeoru-context-word-ustr bc)
-		       (byeoru-johab-to-utf-8-string
+		       (byeoru-johab-to-utf8-string
 			(byeoru-automata-composed-char ba)))
     (if (not (byeoru-context-commit-by-word? bc))
 	(begin
@@ -1750,7 +1750,7 @@
 
 (define (byeoru-input-state-preedit bc)
   (let ((word (byeoru-context-word-ustr bc))
-	(composing (byeoru-johab-to-utf-8-string
+	(composing (byeoru-johab-to-utf8-string
 		    (byeoru-automata-composing-char
 		     (byeoru-context-automata bc))))
 ;; Underlining a composing character leads to a confusing appearance.
@@ -1812,6 +1812,15 @@
 	(byeoru-clear! bc)
 	(byeoru-update-preedit bc))))
 
+(define (byeoru-focus-out-handler bc)
+;;    (ustr-insert-elem! (byeoru-context-word-ustr bc) "R!")
+  (if (byeoru-context-on bc)
+      (begin
+	(byeoru-flush-automata bc)
+	(byeoru-commit bc (byeoru-make-whole-string bc))
+	(byeoru-clear! bc)
+	(byeoru-update-preedit bc))))
+
 (define (byeoru-get-candidate-handler bc idx accel-enum-hint)
   (let* ((cands (byeoru-context-cands bc))
 	 (cand (nth idx cands)))
@@ -1854,4 +1863,9 @@
  byeoru-get-candidate-handler
  byeoru-set-candidate-index-handler
  context-prop-activate-handler
+ #f
+ #f
+ byeoru-focus-out-handler
+ #f
+ #f
 )

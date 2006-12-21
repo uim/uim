@@ -82,8 +82,6 @@ protocol within uim.
   message  = (focus_in            |
               focus_out           |
               prop_activate       |
-              prop_label_get      |
-              prop_label_update   |
               prop_list_get       |
               prop_list_update    |
               im_list             |
@@ -99,6 +97,7 @@ protocol within uim.
   charset = "UTF-8" | "EUC-JP" | "GB18030" |
             <or any name that can be specified as iconv_open(3) argument>
   str = str <any characters except for '\0', '\t' or '\n'> | ""
+  identifier = [_a-zA-Z][_a-zA-Z0-9]*
 
 * Focus notification messages
 
@@ -135,52 +134,20 @@ protocol within uim.
     if the input method has 2 or more properties. One property controls one
     variable state of the input method such as 'input mode' or 'keymap'.
 
-    menucommand_name = "prop_" /^[a-z0-9_]+$/
+    action_id = identifier
 
   - prop_activate
 
-    This message notifies that a command named as menucommand_name has been
+    This message notifies that a command named as action_id has been
     activated. This message is usually sent from toolbar applets in response
     to an user selection and received by corresponding IM. Once received, the
-    prop-handler of current IM has been invoked with menucommand_name. Several
-    IMs use menucommand_name as 'input mode' such as 'hiragana', 'katakana',
+    prop-handler of current IM has been invoked with action_id. Several
+    IMs use action_id as 'input mode' such as 'hiragana', 'katakana',
     'direct' and so on, and switches to activated input mode on receiving.
 
     See also prop_list_update.
 
-    prop_activate = "prop_activate\n" menucommand_name "\n"
-
-  - prop_label_get
-
-    This message requests a prop_label_update. The request sender will receive
-    prop_label_update in response to this message. This message is currently
-    not used by official uim suites.
-
-    See also prop_label_update
-
-    prop_label_get = "prop_label_get\n"
-
-  - prop_label_update
-
-    This message notifies a subset of prop_list_update. This message had been
-    designed to reduce message passing overhead by replacing prop_list_update
-    by this.
-
-    iconic_label is a very short string typically 1 character to be used as
-    icon. For example, "a" means 'direct input'.
-
-    buttontooltip_string is a string for tooltip of the button.
-
-    Invoke im-update-prop-label to send this message.
-
-    See also prop_list_update.
-
-    prop_label_update = "prop_label_update\n" charset_specifier labels
-    labels = labels label | label
-    label = iconic_label "\t" buttontooltip_string "\n"
-
-    iconic_label = str
-    buttontooltip_string = str
+    prop_activate = "prop_activate\n" action_id "\n"
 
   - prop_list_get
 
@@ -204,21 +171,32 @@ protocol within uim.
     of leaves. A branch represents a property which is shown as (popup) menu
     for user, and a leaf represents a menu item of the branch.
 
+    indication_id is an identifier that specifies visual appearance of the
+    item. The ID roughly considerable as "icon name", and so the message
+    receiver can use it to form filename for the corresponding icon
+    (e.g. "anthy" -> "/path/to/somewhere/32x32/anthy.png"). There is a special
+    ID. If the ID is "separator", message receivers should display the leaf as
+    toolkit-native separator. But it is not necessary since the "separator"
+    appears as dummy item with no action if the receiver is not aware of it.
+
     iconic_label is a very short string typically 1 character to be used as
-    icon. For example, "a" means 'direct input'.
+    icon. For example, "a" means 'direct input'. This field should be
+    translated with gettext(3) or equivalent. See safe_gettext() of
+    toolbar-common-gtk.c.
 
-    buttontooltip_string is a string for tooltip of the button.
+    label_string is a short string to be shown in the menu, or used as tooltip
+    of the button. This field should be translated with gettext(3) or
+    equivalent.
 
-    menulabel_string is a short string to be shown in the menu.
+    short_desc is a short description string usually used as tooltip of the
+    menu item. This field should be translated with gettext(3) or equivalent.
 
-    menutooltip_string is a string for tooltip of the menu.
-
-    menucommand_name is a symbolic identifier of the menu item. This will be
+    action_id is an identifier of the menu item. This will be
     notified to other processes by prop_activate when this menu item has been
     selected by user.
 
-    flag means that whether this menu item is selected. Only one menu item per
-    branch should be notified as "*" which means 'selected'.
+    activity means that whether this menu item is selected. Only one menu item
+    per branch should be notified as "*" which means 'selected'.
 
     Invoke im-update-prop-list to send this message.
 
@@ -227,15 +205,16 @@ protocol within uim.
     prop_list_update = "prop_list_update\n" charset_specifier parts
     parts = parts part | part
     part = branch leaves
-    branch = "branch\t" iconic_label "\t" buttontooltip_string "\n"
+    branch = "branch\t" indication_id "\t" iconic_label "\t" label_string "\n"
     leaves = leaves leaf | leaf
-    leaf = "leaf\t" iconic_label "\t" menulabel_string "\t" menutooltip_string "\t" menucommand_name "\t" flag "\n"
+    leaf = "leaf\t" indication_id "\t" iconic_label "\t"
+           label_string "\t" short_desc "\t" action_id "\t" activity "\n"
 
+    indication_id = identifier | "separator"
     iconic_label = str
-    buttontooltip_string = str
-    menulabel_string = str
-    menutooltip_string = str
-    flag = "*" | ""
+    label_string = str
+    short_desc = str
+    activity = "*" | ""
 
 
 * IM management messages

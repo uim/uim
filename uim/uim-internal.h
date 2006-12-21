@@ -33,15 +33,16 @@
 #ifndef _uim_internal_h_included_
 #define _uim_internal_h_included_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <config.h>
 
 #include <stdio.h>
-#include "config.h"
 #include "gettext.h"
 #include "uim.h"
 #include "uim-scm.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct uim_im {
   char *name;
@@ -75,7 +76,8 @@ struct uim_context_ {
   int is_enable;
 
   struct uim_code_converter *conv_if;
-  void *conv;
+  void *outbound_conv;
+  void *inbound_conv;
   char *current_im_name;
   char *short_desc;
   char *encoding;
@@ -87,7 +89,6 @@ struct uim_context_ {
   /**/
   int mode;
   /**/
-  char *proplabelstr;
   char *propstr;
   /**/
   int candidate_index;
@@ -104,18 +105,19 @@ struct uim_context_ {
   void (*mode_update_cb)(void *ptr, int);
   /* property list */
   void (*prop_list_update_cb)(void *ptr, const char *str);
-  /* property label */
-  void (*prop_label_update_cb)(void *ptr, const char *str);
   /* candidate window */
   void (*candidate_selector_activate_cb)(void *ptr, int nr, int index);
   void (*candidate_selector_select_cb)(void *ptr, int index);
   void (*candidate_selector_shift_page_cb)(void *ptr, int direction);
   void (*candidate_selector_deactivate_cb)(void *ptr);
-  /* surrounding text */
-  void (*request_surrounding_text_cb)(void *ptr);
-  int (*delete_surrounding_text_cb)(void *ptr, int offset, int len);
+  /* text acquisition */
+  int (*acquire_text_cb)(void *ptr, enum UTextArea text_id, enum UTextOrigin origin, int former_len, int latter_len, char **former, char **latter);
+  int (*delete_text_cb)(void *ptr, enum UTextArea text_id, enum UTextOrigin origin, int former_len, int latter_len);
   /* configuration changed */
   void (*configuration_changed_cb)(void *ptr);
+  /* switch IM */
+  void (*switch_app_global_im_cb)(void *ptr, const char *name);
+  void (*switch_system_global_im_cb)(void *ptr, const char *name);
   /* preedit segments array */
   struct preedit_segment *psegs;
   int nr_psegs;
@@ -288,6 +290,7 @@ extern struct uim_im *uim_im_array;
 extern int uim_nr_im;
 extern char *uim_last_client_encoding;
 
+void uim_internal_escape_string(char *str);
 #ifdef __cplusplus
 }
 #endif

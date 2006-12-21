@@ -30,15 +30,17 @@
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
  */
- 
+
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <stdio.h>
 
 #include "dict-cclass-dialog.h"
-#include "dict-canna.h"
+#include "dict-canna-cclass.h"
 #include "dict-util.h"
-#include "uim/config.h"
-#include "uim/gettext.h"
+
+#include "gettext.h"
 
 
 enum {

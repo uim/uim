@@ -1,5 +1,4 @@
-/*
-
+/* 
   Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
@@ -36,7 +35,7 @@
  *
  * Many many things are to be implemented!
  */
-#include "config.h"
+#include <config.h>
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -53,6 +52,12 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+#ifdef HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 #include "uim-scm.h"
 #include "uim-helper.h"
@@ -692,7 +697,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 {
   char r;
   struct skk_line *sl;
-  int n = 0, ret;
+  int n = 0, ret, len;
   char buf[SKK_SERV_BUFSIZ];
   char *line;
   char *idx = alloca(strlen(s) + 2);
@@ -729,15 +734,18 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
       }
 
       if (r == '\n') {
-	line = realloc(line, strlen(line) + n + 1);
-	strncat(line, buf, n);
+	len = strlen(line) + n;
+	line = realloc(line, len + 1);
+	strlcat(line, buf, len + 1);
 	break;
       }
 
       buf[n] = r;
-      if (n == SKK_SERV_BUFSIZ - 1) {
-	line = realloc(line, strlen(line) + n + 2);
-	strncat(line, buf, n + 1);
+      buf[n + 1] = '\0';
+      if (n == SKK_SERV_BUFSIZ - 2) {
+	len = strlen(line) + n + 1;
+	line = realloc(line, len + 1);
+	strlcat(line, buf, len + 1);
 	n = 0;
       } else {
 	n++;
@@ -777,6 +785,7 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   p = find_line(di, n);
   len = calc_line_len(p);
   line = malloc(len + 1);
+  /* strncat is used intentionally because *p is too long string */
   line[0] = '\0';
   strncat(line, p, len);
   sl = compose_line(di, s, okuri_head, line);
@@ -998,8 +1007,7 @@ get_purged_words(const char *str)
 	  words = realloc(words, sizeof(char *) * nr);
 	else
 	  words = malloc(sizeof(char *));
-	strncpy(orig, word, len);
-	orig[len] = '\0';
+	strlcpy(orig, word, len + 1);
 
 	expanded_word = expand_str(orig);
 	if (expanded_word)
@@ -1130,8 +1138,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
 	  numstr = malloc(numlen + 1);
 	else
 	  numstr = realloc(numstr, numlen + 1);
-	strncpy(numstr, &str[start], numlen);
-	numstr[numlen] = '\0';
+	strlcpy(numstr, &str[start], numlen + 1);
 	lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
       }
       prev_is_num = 0;
@@ -1147,8 +1154,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
       numstr = malloc(numlen + 1);
     else
       numstr = realloc(numstr, numlen + 1);
-    strncpy(numstr, &str[start], numlen);
-    numstr[numlen] = '\0';
+    strlcpy(numstr, &str[start], numlen + 1);
     lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
   }
   free(numstr);
@@ -3257,8 +3263,7 @@ eval_candidate_with_concat(const char *cand)
   /* get quoted str  */
   len = (q - p + 1) - strlen("(concat \"\")");
   str = malloc(len + 1);
-  strncpy(str, p + strlen("(concat \""), len);
-  str[len] = '\0';
+  strlcpy(str, p + strlen("(concat \""), len + 1);
 
   expanded_str = expand_str(str);
   if (!expanded_str) {
@@ -3272,8 +3277,7 @@ eval_candidate_with_concat(const char *cand)
     str = realloc(str, len + 1);
 
   if (p != cand) {
-    strncpy(str, cand, p - cand);
-    str[p - cand] = '\0';
+    strlcpy(str, cand, p - cand + 1);
     strcat(str, expanded_str);
   } else {
     strcpy(str, expanded_str);

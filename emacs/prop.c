@@ -46,16 +46,15 @@ create_prop()
   prop->valid = 0;
 
   prop->list = NULL;
-  prop->label = NULL;
   prop->list_update = 0;
-  prop->label_update = 0;
 
   return prop;
 }
 
 void
-update_prop_list(property *prop, const char *str)
+update_prop_list(property *prop, const char *encoding, const char *str)
 {
+  debug_printf(DEBUG_NOTE, "update_prop_list\n");
 
   prop->valid = 1;
 
@@ -63,25 +62,7 @@ update_prop_list(property *prop, const char *str)
 
   prop->list = strdup(str);
   
-  debug_printf(DEBUG_NOTE, "prop->list: %s\n", prop->list);  
-
   prop->list_update = 1;
-
-}
-
-void
-update_prop_label(property *prop, const char *str)
-{
-  prop->valid = 1;
-
-  if (prop->label != NULL) free(prop->label);
-
-  prop->label = strdup(str);
-
-  debug_printf(DEBUG_NOTE, "prop->label: %s\n", prop->label);  
-
-  prop->label_update = 1;
-
 }
 
 
@@ -102,15 +83,12 @@ announce_prop_list_update(property *prop, const char *encoding)
 	+ strlen(prop->list) + 1;
 
   buf = (char *)malloc(len);
-
   snprintf(buf, len, PROP_LIST_FORMAT, encoding, prop->list);
 
-  uim_helper_send_message(helper_fd, buf);
-
+  helper_send_message(buf);
   free(buf);
 
 #undef PROP_LIST_FORMAT
-  
 }
 
 
@@ -118,7 +96,10 @@ int
 show_prop(property *prop)
 {
   char *buf;
-  char *p[4];
+  char *head, *tail;
+  char *p[6] = {0};
+  char *indication_id = NULL, *iconic_label =NULL, *label_string = NULL;
+  int check_leaf = 0;
   
   /* output new prop_list for Emacs */
 
@@ -130,29 +111,66 @@ show_prop(property *prop)
 
   a_printf(" ( l ");
 
-
   buf = (char *)malloc(strlen(prop->list) + 1);
   strcpy(buf, prop->list);
 
-  p[0] = buf;
+  head = buf;
 
-  while (p[0] && *p[0]) { 
+#define PART_BRANCH "branch"
+#define PART_LEAF   "leaf"
+#define ACTION_ID_IMSW "action_imsw_"
 
-	p[1] = strchr(p[0], '\n');
+  while (head && *head) { 
 
-	if (p[1]) 
-	  *p[1] = '\0';
+	/* 
+	 * head: beginning of each line
+	 * tail: end of each line 
+	 * p[n]: token
+	 */
+	tail = strchr(head, '\n');
+
+	if (tail)
+	  *tail = '\0';
 	else
 	  break;
 
-	/* p[0] always not equal NULL */
-	if (strlen(p[0]) >= 6 && strncmp(p[0], "branch", 6) == 0) {
-	  if ((p[2] = strchr(p[0], '\t')) && (p[3] = strchr(p[2] + 1, '\t'))) {
-		*p[2] = *p[3] = '\0';
-		a_printf(" ( \"%s\" \"%s\" ) ", p[2] + 1, p[3] + 1);
+	/* head always not equal NULL */
+	if (strlen(head) >= strlen(PART_BRANCH)
+		&& strncmp(head, PART_BRANCH, strlen(PART_BRANCH)) == 0) {
+	  if ((p[0] = strchr(head, '\t')) 
+		  && (p[1] = strchr(p[0] + 1, '\t'))
+		  && (p[2] = strchr(p[1] + 1, '\t'))) {
+		*p[0] = *p[1] = *p[2] = '\0';
+		indication_id = p[0] + 1;
+		iconic_label = p[1] + 1;
+		label_string = p[2] + 1;
+
+		check_leaf = 1; /* check next leaf */
+		/*a_printf(" ( \"%s\" \"%s\" \"%s\" ) ", p[0] + 1, p[1] + 1, p[2] + 1);*/
+	  }
+	} else if (strlen(head) >= strlen(PART_LEAF) 
+			   && strncmp(head, PART_LEAF, strlen(PART_LEAF)) == 0) {
+	  if (check_leaf && indication_id && iconic_label && label_string) {
+		check_leaf = 0;
+		/* im_switcher detection */
+		if ((p[0] = strchr(head, '\t')) 
+			&& (p[1] = strchr(p[0] + 1, '\t'))
+			&& (p[2] = strchr(p[1] + 1, '\t'))
+			&& (p[3] = strchr(p[2] + 1, '\t'))
+			&& (p[4] = strchr(p[3] + 1, '\t'))
+			&& (p[5] = strchr(p[4] + 1, '\t')))
+		  *p[0] = *p[1] = *p[2] = *p[3] = *p[4] = *p[5] = '\0';
+
+		  if (strlen(p[4] + 1) >= strlen(ACTION_ID_IMSW)
+			  && strncmp(p[4] + 1, ACTION_ID_IMSW, strlen(ACTION_ID_IMSW)) == 0)
+			a_printf(" ( \"im-name\" \"%s\" \"%s\" \"%s\" ) ", 
+					 indication_id, iconic_label, label_string);
+		  else
+			a_printf(" ( \"im-mode\" \"%s\" \"%s\" \"%s\" ) ", 
+					 indication_id, iconic_label, label_string);
 	  }
 	}
-	p[0] = p[1] + 1;
+	head = tail + 1;
   }
 
   free(buf);
@@ -161,34 +179,9 @@ show_prop(property *prop)
 
   return 1;
 
+#undef PART_BRANCH
+#undef PART_LEAF
+#undef ACTION_ID_IMSW
 }
 
 
-void
-announce_prop_label_update(property *prop, const char *encoding)
-{
-  unsigned len;
-  char *buf;
-
-  if (prop->label == NULL) {
-	debug_printf(DEBUG_ERROR, "no prop_label\n");
-	return;
-  }
-
-#define PROP_LABEL_FORMAT "prop_label_update\ncharset=%s\n%s"
-
-  len = strlen(PROP_LABEL_FORMAT) + strlen(encoding) 
-	+ strlen(prop->label) + 1;
-  
-  buf = (char *)malloc(len);
-
-  snprintf(buf, len, PROP_LABEL_FORMAT, encoding, prop->label);
-
-  uim_helper_send_message(helper_fd, buf);
-
-
-  free(buf);
-
-#undef PROP_LABEL_FORMAT
-
-}

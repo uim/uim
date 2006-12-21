@@ -1,11 +1,17 @@
-uim is a multilingual input method library, whose goal is to provide a
-secure and useful input method for all languages.
+About uim
+=========
 
-See http://uim.freedesktop.org/ for more detail.
+uim is a multilingual input method library and environment.
+
+Its goal is to provide simple, easily extensible and high code-quality
+input method development platform, and useful input method environment
+for users of desktop and embedded platforms.
+
+See http://uim.freedesktop.org/ for further details.
 
 
 Acknowledgements
-================
+----------------
 
- This software is hosted on freedesktop.org.
- Part of this software is funded by IPA (http://www.ipa.go.jp/)
+This software is hosted on freedesktop.org.
+Part of this software is funded by IPA (http://www.ipa.go.jp/)

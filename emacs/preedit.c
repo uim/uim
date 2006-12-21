@@ -139,3 +139,12 @@ show_preedit(preedit *pe)
 }
 
 
+
+int
+show_preedit_force(preedit *pe)
+{
+  if (! show_preedit(pe))
+	a_printf("( p (t \"\") ) ");
+
+  return 1;
+}

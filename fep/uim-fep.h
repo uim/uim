@@ -35,7 +35,7 @@
 #define UIM_FEP_H
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#include <config.h>
 #endif
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
@@ -43,6 +43,11 @@
 /* solaris でwinsizeを使うために必要 */
 #ifdef HAVE_CURSES_H
 #include <curses.h>
+#endif
+#ifdef __CYGWIN32__
+#ifdef HAVE_SYS_TERMIOS_H
+#include <sys/termios.h>
+#endif
 #endif
 #include <uim/uim.h>
 
@@ -93,6 +98,7 @@ void done(int exit_value);
 #define debug_write2(str, len) _debug_write(str, len)
 #define debug_write(str, len) _debug_write(str, len)
 void _debug(const char *fmt, ...);
+void _debug_write(const char *str, int len);
 
 #elif DEBUG == 2
 #define debug2(arg)
@@ -101,6 +107,7 @@ void _debug(const char *fmt, ...);
 #define debug_write(str, len) _debug_write(str, len)
 
 void _debug(const char *fmt, ...);
+void _debug_write(const char *str, int len);
 #else
 #define debug2(arg)
 #define debug(arg)

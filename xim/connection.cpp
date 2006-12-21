@@ -33,7 +33,7 @@
 // connection management
 
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <unistd.h>
@@ -47,6 +47,8 @@
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
 #endif
+
+#include "uim/uim-stdint.h"
 
 #define BUF_SIZE 1024
 #define TRANSPORT_UNIT 20
@@ -227,7 +229,7 @@ bool XConnection::readToBuf(XClientMessageEvent *ev)
 			       offset, BUF_SIZE - mBuf.len, True,
 			       AnyPropertyType,
 			       &type, &format, &nrItems, &remain,
-			       (unsigned char **)&data);
+			       (unsigned char **)(uintptr_t)&data);
 	    if (!data)
 		return false;
 

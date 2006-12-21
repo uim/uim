@@ -41,7 +41,7 @@
   argument that causes no action.  -- YamaKen 2004-12-17
 */
 
-#include "config.h"
+#include <config.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -110,7 +110,6 @@ static struct uim_custom_key **uim_custom_key_get(const char *custom_sym, const 
 static void uim_custom_key_free(struct uim_custom_key *custom_key);
 static char *extract_key_literal(const struct uim_custom_key *custom_key);
 static char *key_list_to_str(const struct uim_custom_key *const *list, const char *sep);
-void uim_custom_key_list_free(struct uim_custom_key **list);
 
 static union uim_custom_value *uim_custom_value_internal(const char *custom_sym, const char *getter_proc);
 static union uim_custom_value *uim_custom_value(const char *custom_sym);
@@ -822,7 +821,7 @@ uim_conf_path(const char *subpath)
 {
   char *dir;
 
-  UIM_EVAL_STRING(NULL, "(string-append (getenv \"HOME\") \"/.uim.d\")");
+  UIM_EVAL_STRING(NULL, "(string-append (or (getenv \"HOME\") \"\") \"/.uim.d\")");
   dir = uim_scm_c_str(uim_scm_return_value());
   if (subpath) {
     UIM_EVAL_FSTRING2(NULL, "\"%s/%s\"", dir, subpath);
@@ -840,7 +839,7 @@ custom_file_path(const char *group, pid_t pid)
 
   custom_dir = uim_conf_path(custom_subdir);
   if (pid) {
-    UIM_EVAL_FSTRING3(NULL, "\"%s/.custom-%s.scm.%d\"", custom_dir, group, pid);
+    UIM_EVAL_FSTRING3(NULL, "\"%s/.custom-%s.scm.%d\"", custom_dir, group, (int)pid);
   } else {
     UIM_EVAL_FSTRING2(NULL, "\"%s/custom-%s.scm\"", custom_dir, group);
   }

@@ -33,7 +33,7 @@
 // receive XIM packet and dispatch it.
  
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <stdio.h>
@@ -515,7 +515,7 @@ void Connection::xim_open(RxPacket *p)
     t->pushC16(0);
     if (g_option_mask & OPT_ON_DEMAND_SYNC) {
 	t->pushC32(KeyPressMask|KeyReleaseMask);
-	t->pushC32(~(KeyPressMask|KeyReleaseMask)); // no need to send
+	t->pushC32((unsigned int)~(KeyPressMask|KeyReleaseMask)); // no need to send
 						    // XIM_SYNC_REPLY from
 						    // XIM server
     } else {

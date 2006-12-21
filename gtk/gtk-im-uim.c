@@ -34,6 +34,8 @@
 /*
  * gtk+-immodule
  */
+#include <config.h>
+
 #include <gtk/gtk.h>
 #include <gtk/gtkimcontext.h>
 #include <gtk/gtkimmodule.h>
@@ -41,14 +43,14 @@
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
-#include <glib/gprintf.h>
+#include <glib.h>
 
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <locale.h>
 
-#include "config.h"
+#include "uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-util.h"
 #include "uim/uim-helper.h"
@@ -56,19 +58,24 @@
 #include "uim/gettext.h"
 #include "uim/uim-compat-scm.h"
 
+#include "gtk-im-uim.h"
 #include "uim-cand-win-gtk.h"
 #include "caret-state-indicator.h"
 #include "key-util-gtk.h"
-
-/* select either of these two, or filter key event will be used */
-#define IM_UIM_USE_SNOOPER	0
-#define IM_UIM_USE_TOPLEVEL	1
+#ifdef GDK_WINDOWING_X11
+#include "compose.h"
+#endif
+#include "text-util.h"
 
 /* exported symbols */
 GtkIMContext *im_module_create(const gchar *context_id);
 void im_module_list(const GtkIMContextInfo ***contexts, int *n_contexts);
 void im_module_exit(void);
 void im_module_init(GTypeModule *type_module);
+
+#ifdef GDK_WINDOWING_X11
+extern int compose_handle_key(GdkEventKey *key, IMUIMContext *uic);
+#endif
 
 #define NR_CANDIDATES 20
 #define DEFAULT_SEPARATOR_STR "|"
@@ -77,32 +84,6 @@ struct preedit_segment {
   int attr;
   char *str;
 };
-
-typedef struct _IMUIMContext {
-  struct _GtkIMContext parent;
-  struct _GtkIMContext *slave;
-  uim_context uc;
-  UIMCandWinGtk *cwin;
-  gboolean cwin_is_active;
-  int nr_psegs;
-  int prev_preedit_len;
-  struct preedit_segment *pseg;
-
-  GdkWindow *win;
-
-  GtkWidget *caret_state_indicator;
-  GdkRectangle preedit_pos;
-
-  /* following two members are used when use_preedit == FALSE */
-  GtkWidget *preedit_window;
-  gulong preedit_handler_id;
-
-#if IM_UIM_USE_TOPLEVEL
-  GtkWidget *widget;
-#endif
-
-  struct _IMUIMContext *prev, *next;
-} IMUIMContext;
 
 static int im_uim_fd = -1;
 static unsigned int read_tag;
@@ -114,6 +95,7 @@ static GtkWidget *cur_toplevel;
 static GtkWidget *grab_widget;
 static gulong cur_key_press_handler_id;
 static gulong cur_key_release_handler_id;
+static GList *cwin_list;
 #endif
 
 static IMUIMContext context_list;
@@ -131,12 +113,15 @@ typedef struct _IMContextUIMClass
 static void im_uim_class_init(GtkIMContextClass *class);
 static void im_uim_class_finalize(GtkIMContextClass *class);
 static void im_uim_init(IMUIMContext *uic);
+static void switch_app_global_im_cb(void *ptr, const char *name);
+static void switch_system_global_im_cb(void *ptr, const char *name);
 
 #if IM_UIM_USE_SNOOPER
 static gboolean key_snoop(GtkWidget *grab_widget, GdkEventKey *key, gpointer data);
 #elif IM_UIM_USE_TOPLEVEL
 static gboolean handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data);
 #endif
+static void send_im_list(void);
 
 static const GTypeInfo class_info = {
   sizeof(IMContextUIMClass),
@@ -170,8 +155,8 @@ static const GtkIMContextInfo *im_uim_info_list = {
 
 /* gtk's string handling */
 
-static void
-commit_string(void *ptr, const char *str)
+void
+im_uim_commit_string(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   uim_bool show_state;
@@ -344,6 +329,21 @@ remove_cur_toplevel()
 static void
 update_cur_toplevel(IMUIMContext *uic)
 {
+  /* Don't set our candwin's text widget as cur_toplevel */
+  if (uic->widget) {
+    UIMCandWinGtk *cwin;
+    GList *tmp_list;
+
+    tmp_list = cwin_list;
+    while (tmp_list) {
+      cwin = tmp_list->data;
+      if (cwin->sub_window.text_view &&
+		      cwin->sub_window.text_view == uic->widget)
+	  return;
+      tmp_list = tmp_list->next;
+    }
+  }
+
   if (uic->widget) {
     GtkWidget *toplevel = gtk_widget_get_toplevel(uic->widget);
     if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
@@ -361,21 +361,6 @@ update_cur_toplevel(IMUIMContext *uic)
       remove_cur_toplevel();
   } else
     remove_cur_toplevel();
-}
-
-static GtkWidget *
-widget_for_window(GdkWindow *window)
-{
-  while (window) {
-    gpointer user_data;
-    gdk_window_get_user_data(window, &user_data);
-    if (user_data)
-      return user_data;
-
-    window = gdk_window_get_parent(window);
-  }
-
-  return NULL;
 }
 
 static void
@@ -398,7 +383,7 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
 	
 	window = GTK_WINDOW(cur_toplevel);
 	group = window->group;
-	if (group)
+	if (group && group->grabs)
 	  grab_widget = GTK_WIDGET(group->grabs->data);
       }
     }
@@ -406,18 +391,35 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
 
   return FALSE;
 }
+#endif /* IM_UIM_USE_TOPLEVEL */
+
+static GtkWidget *
+widget_for_window(GdkWindow *window)
+{
+  while (window) {
+    gpointer user_data;
+    gdk_window_get_user_data(window, &user_data);
+    if (user_data)
+      return user_data;
+
+    window = gdk_window_get_parent(window);
+  }
+
+  return NULL;
+}
 
 static void
 update_client_widget(IMUIMContext *uic)
 {
   GtkWidget *new_widget = widget_for_window(uic->win);
 
+#if IM_UIM_USE_TOPLEVEL
   if (new_widget != uic->widget) {
     if (uic->widget) {
       g_signal_handlers_disconnect_by_func(uic->widget,
-		      (gpointer)on_client_widget_hierarchy_changed, uic);
+		      (gpointer)(uintptr_t)on_client_widget_hierarchy_changed, uic);
       g_signal_handlers_disconnect_by_func(uic->widget,
-		      (gpointer)on_client_widget_grab_notify, uic);
+		      (gpointer)(uintptr_t)on_client_widget_grab_notify, uic);
     }
     uic->widget = new_widget;
     if (uic->widget) {
@@ -429,8 +431,10 @@ update_client_widget(IMUIMContext *uic)
 
     update_cur_toplevel(uic);
   }
+#else /* IM_UIM_USE_TOPLEVEL */
+  uic->widget = new_widget;
+#endif
 }
-#endif /* IM_UIM_USE_TOPLEVEL */
 
 
 
@@ -455,6 +459,20 @@ index_changed_cb(UIMCandWinGtk *cwin, IMUIMContext *uic)
   uim_set_candidate_index(uic->uc, uim_cand_win_gtk_get_index(cwin));
 }
 
+static void
+layout_candwin(IMUIMContext *uic)
+{
+  gint x, y, width, height, depth;
+
+  g_return_if_fail(uic);
+
+  if (uic->win && uic->cwin) {
+    gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+    gdk_window_get_origin(uic->win, &x, &y);
+    uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+  }
+}
+
 static GdkFilterReturn
 toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
 {
@@ -463,15 +481,77 @@ toplevel_window_candidate_cb(GdkXEvent *xevent, GdkEvent *ev, gpointer data)
   if (!uic)
     return GDK_FILTER_CONTINUE;
 
-  if (uic->cwin && uic->cwin_is_active) {
-    gint x, y, width, height, depth;
-
-    gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-    gdk_window_get_origin(uic->win, &x, &y);
-    uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
-  }
+  if (uic->cwin_is_active)
+    layout_candwin(uic);
 
   return GDK_FILTER_CONTINUE;
+}
+
+#if IM_UIM_USE_TOPLEVEL
+static inline gboolean
+event_key_equal(GdkEventKey *event1, GdkEventKey *event2)
+{
+  return (event1->type == event2->type &&
+	  event1->window == event2->window &&
+	  event1->send_event == event2->send_event &&
+	  event1->time == event2->time &&
+	  event1->state == event2->state &&
+	  event1->keyval == event2->keyval &&
+	  event1->length == event2->length &&
+	  event1->string == event2->string &&
+	  event1->hardware_keycode == event2->hardware_keycode &&
+	  event1->group == event2->group);
+}
+
+static void
+init_event_key_rec(GdkEventKey *event)
+{
+  event->type = -1;
+  event->window = NULL;
+  event->send_event = 0;
+  event->time = 0;
+  event->state = 0;
+  event->keyval = 0;
+  event->length = 0;
+  event->string = NULL;
+  event->hardware_keycode = 0;
+  event->group = 0;
+}
+
+static inline void
+store_event_key(GdkEventKey *dest, GdkEventKey *source)
+{
+  memcpy(dest, source, sizeof(GdkEventKey));
+}
+#endif
+
+static GString *
+get_caret_state_label_from_prop_list(const char *str)
+{
+  gchar **lines;
+  GString *label;
+  int i;
+
+  label = g_string_new("");
+  lines = g_strsplit(str, "\n", 0);
+  for (i = 0; lines[i] && strcmp("", lines[i]); i++) {
+    gchar **cols;
+
+    cols = g_strsplit(lines[i], "\t", 0);
+    if (cols && cols[0]) {
+      if (!strcmp("branch", cols[0])) {
+	gchar *iconic_label = cols[2];
+
+	if (strcmp(label->str, ""))
+	  g_string_append(label, "\t");
+	g_string_append(label, iconic_label);
+      }
+    }
+    g_strfreev(cols);
+  }
+  g_strfreev(lines);
+
+  return label;
 }
 
 
@@ -535,6 +615,7 @@ update_prop_list_cb(void *ptr, const char *str)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   GString *prop_list;
+  uim_bool show_state;
 
   if (uic != focused_context || disable_focused_context)
     return;
@@ -544,31 +625,17 @@ update_prop_list_cb(void *ptr, const char *str)
 
   uim_helper_send_message(im_uim_fd, prop_list->str);
   g_string_free(prop_list, TRUE);
-}
-
-static void
-update_prop_label_cb(void *ptr, const char *str)
-{
-  IMUIMContext *uic = (IMUIMContext *)ptr;
-  GString *prop_label;
-  gint x, y;
-  uim_bool show_state;
-
-  if (uic != focused_context || disable_focused_context)
-    return;
-
-  prop_label = g_string_new("");
-  g_string_printf(prop_label, "prop_label_update\ncharset=UTF-8\n%s", str);
-
-  uim_helper_send_message(im_uim_fd, prop_label->str);
-  g_string_free(prop_label, TRUE);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
   if (show_state && uic->win) {
     gint timeout;
+    gint x, y;
+    GString *label;
 
     gdk_window_get_origin(uic->win, &x, &y);
-    caret_state_indicator_update(uic->caret_state_indicator, x, y, str);
+    label = get_caret_state_label_from_prop_list(str);
+    caret_state_indicator_update(uic->caret_state_indicator, x, y, label->str);
+    g_string_free(label, TRUE);
     timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
 
     if (timeout != 0)
@@ -582,7 +649,6 @@ static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint x, y, width, height, depth;
   GSList *list = NULL;
   uim_candidate cand;
   gint i;
@@ -591,17 +657,16 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
 
   for (i = 0; i < nr; i++) {
     cand = uim_get_candidate(uic->uc, i, display_limit ? i % display_limit : i);
-    list = g_slist_append(list, cand);
+    list = g_slist_prepend(list, cand);
   }
+  list = g_slist_reverse(list);
 
   uim_cand_win_gtk_set_candidates(uic->cwin, display_limit, list);
 
   g_slist_foreach(list, (GFunc)uim_candidate_free, NULL);
   g_slist_free(list);
 
-  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-  gdk_window_get_origin(uic->win, &x, &y);
-  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
+  layout_candwin(uic);
   gtk_widget_show(GTK_WIDGET(uic->cwin));
 
   if (uic->win) {
@@ -616,33 +681,28 @@ static void
 cand_select_cb(void *ptr, int index)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint x, y, width, height, depth;
 
-  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-  gdk_window_get_origin(uic->win, &x, &y);
+  layout_candwin(uic);
 
-  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
-
-  g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
-  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
 }
 
 static void
 cand_shift_page_cb(void *ptr, int direction)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
-  gint x, y, width, height, depth;
 
-  gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
-  gdk_window_get_origin(uic->win, &x, &y);
+  layout_candwin(uic);
 
-  uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
-
-  g_signal_handlers_block_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  g_signal_handlers_block_by_func(uic->cwin,
+				  (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
-  uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
-  g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)index_changed_cb, uic);
+  if (uic->cwin->candidate_index != -1)
+    uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
+  g_signal_handlers_unblock_by_func(uic->cwin,
+				   (gpointer)(uintptr_t)index_changed_cb, uic);
 }
 
 static void
@@ -665,7 +725,104 @@ cand_deactivate_cb(void *ptr)
   }
 }
 
+static void
+configuration_changed_cb(void *ptr)
+{
+  IMUIMContext *uic = (IMUIMContext *)ptr;
 
+  if (focused_context == uic && !disable_focused_context)
+    send_im_list();
+}
+
+static void
+switch_app_global_im_cb(void *ptr, const char *name)
+{
+  IMUIMContext *uic, *cc;
+  GString *im_name_sym;
+
+  uic = (IMUIMContext *)ptr;
+  im_name_sym = g_string_new(name);
+  g_string_prepend_c(im_name_sym, '\'');
+
+  for (cc = context_list.next; cc != &context_list; cc = cc->next) {
+    if (cc != uic)
+      uim_switch_im(cc->uc, name);
+  }
+  uim_prop_update_custom(uic->uc,
+			 "custom-preserved-default-im-name", im_name_sym->str);
+  g_string_free(im_name_sym, TRUE);
+}
+
+static void
+switch_system_global_im_cb(void *ptr, const char *name)
+{
+  GString *msg;
+
+  /* switch contexts of this process */
+  switch_app_global_im_cb(ptr, name);
+
+  /* Switch contexts of other processes. Bridges should not expect
+   * that the helper-server reflect back the messaage to the
+   * originating process.  -- YamaKen 2006-03-01 */
+  msg = g_string_new("");
+  g_string_printf(msg, "im_change_whole_desktop\n%s\n", name);
+  uim_helper_send_message(im_uim_fd, msg->str);
+  g_string_free(msg, TRUE);
+}
+
+static int
+acquire_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+		int former_req_len, int latter_req_len, char **former,
+		char **latter)
+{
+  int err;
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+
+  switch (text_id) {
+  case UTextArea_Primary:
+    err = im_uim_acquire_primary_text(uic, origin, former_req_len,
+				      latter_req_len, former, latter);
+    break;
+  case UTextArea_Selection:
+    err = im_uim_acquire_selection_text(uic, origin, former_req_len,
+					latter_req_len, former, latter);
+    break;
+  case UTextArea_Clipboard:
+    err = im_uim_acquire_clipboard_text(uic, origin, former_req_len,
+					latter_req_len, former, latter);
+    break;
+  case UTextArea_Unspecified:
+  default:
+    err = -1;
+  }
+
+  return err;
+}
+
+static int
+delete_text_cb(void *ptr, enum UTextArea text_id, enum UTextOrigin origin,
+		int former_req_len, int latter_req_len)
+{
+  int err;
+  IMUIMContext *uic = (IMUIMContext *)ptr;
+
+  switch (text_id) {
+  case UTextArea_Primary:
+    err = im_uim_delete_primary_text(uic, origin, former_req_len,
+				     latter_req_len);
+    break;
+  case UTextArea_Selection:
+    err = im_uim_delete_selection_text(uic, origin, former_req_len,
+				       latter_req_len);
+    break;
+  case UTextArea_Clipboard:
+  case UTextArea_Unspecified:
+  default:
+    err = -1;
+  }
+
+  return err;
+}
 
 /* uim helper related */
 
@@ -812,6 +969,17 @@ commit_string_from_other_process(const gchar *str)
 }
 
 static void
+update_candwin_pos_type()
+{
+  IMUIMContext *cc;
+
+  for (cc = context_list.next; cc != &context_list; cc = cc->next) {
+    if (cc->cwin)
+      uim_cand_win_gtk_get_window_pos_type(cc->cwin);
+  }
+}
+
+static void
 parse_helper_str(const char *str)
 {
   gchar **lines;
@@ -825,17 +993,18 @@ parse_helper_str(const char *str)
     if (lines && lines[0] && lines[1] && lines[2]) {
       for (cc = context_list.next; cc != &context_list; cc = cc->next) {
 	uim_prop_update_custom(cc->uc, lines[1], lines[2]);
+	if (!strcmp(lines[1], "candidate-window-position"))
+	  update_candwin_pos_type();
 	break;  /* all custom variables are global */
       }
       g_strfreev(lines);
     }
   } else if (g_str_has_prefix(str, "custom_reload_notify") == TRUE) {
     uim_prop_reload_configs();
+    update_candwin_pos_type();
   } else if (focused_context && !disable_focused_context) {
     if (g_str_has_prefix(str, "prop_list_get") == TRUE) {
       uim_prop_list_update(focused_context->uc);
-    } else if (g_str_has_prefix(str, "prop_label_get") == TRUE) {
-      uim_prop_label_update(focused_context->uc);
     } else if (g_str_has_prefix(str, "prop_activate") == TRUE) {
       lines = g_strsplit(str, "\n", 0);
       if (lines && lines[0]) {
@@ -900,15 +1069,17 @@ static gboolean
 im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
+  int rv;
 
 #if IM_UIM_USE_SNOOPER
   if (!snooper_installed) {
 #elif IM_UIM_USE_TOPLEVEL
-  if (!cur_toplevel || (cur_toplevel && grab_widget)) {
+  if (!cur_toplevel || (cur_toplevel && grab_widget) ||
+		  !event_key_equal(&uic->event_rec, key)) {
 #else
   if (TRUE) {
 #endif
-    int rv, kv, mod;
+    int kv, mod;
 
     im_uim_convert_keyevent(key, &kv, &mod);
 
@@ -917,13 +1088,26 @@ im_uim_filter_keypress(GtkIMContext *ic, GdkEventKey *key)
     else
       rv = uim_press_key(uic->uc, kv, mod);
 
-    if (rv)
-      return gtk_im_context_filter_keypress(uic->slave, key);
+    if (rv) {
+#ifdef GDK_WINDOWING_X11
+      rv = compose_handle_key(key, uic);
+      if (rv)
+#endif
+        return gtk_im_context_filter_keypress(uic->slave, key);
+    }
 
     return TRUE;
   }
 
+#ifdef GDK_WINDOWING_X11
+  rv = compose_handle_key(key, uic);
+  if (rv)
+    return gtk_im_context_filter_keypress(uic->slave, key);
+
+  return TRUE;
+#else
   return gtk_im_context_filter_keypress(uic->slave, key);
+#endif
 }
 
 static void
@@ -965,6 +1149,9 @@ im_uim_set_cursor_location(GtkIMContext *ic, GdkRectangle *area)
   uic->preedit_pos = *area;
   uim_cand_win_gtk_set_cursor_location(uic->cwin, area);
   caret_state_indicator_set_cursor_location(uic->caret_state_indicator, area);
+
+  if (uic->cwin_is_active)
+    layout_candwin(uic);
 }
 
 static void
@@ -987,11 +1174,8 @@ im_uim_focus_in(GtkIMContext *ic)
 #endif
 
   check_helper_connection();
-
   uim_helper_client_focus_in(uic->uc);
-
   uim_prop_list_update(uic->uc);
-  uim_prop_label_update(uic->uc);
 
   for (cc = context_list.next; cc != &context_list; cc = cc->next) {
     if (cc != uic && cc->cwin)
@@ -1000,6 +1184,8 @@ im_uim_focus_in(GtkIMContext *ic)
 
   if (uic->cwin && uic->cwin_is_active)
     gtk_widget_show(GTK_WIDGET(uic->cwin));
+
+  uim_focus_in_context(uic->uc);
 }
 
 static void
@@ -1016,6 +1202,8 @@ im_uim_focus_out(GtkIMContext *ic)
   remove_cur_toplevel();
 #endif
 
+  uim_focus_out_context(uic->uc);
+
   check_helper_connection();
   uim_helper_client_focus_out(uic->uc);
 
@@ -1025,11 +1213,28 @@ im_uim_focus_out(GtkIMContext *ic)
   gtk_widget_hide(uic->caret_state_indicator);
 }
 
+#define WORKAROUND_BROKEN_RESET_IN_GTK	1
 static void
 im_uim_reset(GtkIMContext *ic)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
+#if !defined(WORKAROUND_BROKEN_RESET_IN_GTK)
   uim_reset_context(uic->uc);
+#else
+  if (uic == focused_context) {
+    uim_focus_out_context(uic->uc);
+    uim_focus_in_context(uic->uc);
+  } else {
+    uim_reset_context(uic->uc);
+  }
+#endif
+#ifdef GDK_WINDOWING_X11
+  im_uim_compose_reset(uic->compose);
+#endif
+#if !defined(WORKAROUND_BROKEN_RESET_IN_GTK)
+  clear_cb(uic);
+  update_cb(uic);
+#endif
 }
 
 static void
@@ -1073,17 +1278,16 @@ im_uim_set_client_window(GtkIMContext *ic, GdkWindow *w)
       g_object_unref(uic->win);
     uic->win = NULL;
   }
-#if IM_UIM_USE_TOPLEVEL
   update_client_widget(uic);
-#endif
 }
 
 static void
 im_uim_init(IMUIMContext *uic)
 {
   uic->win = NULL;
-#if IM_UIM_USE_TOPLEVEL
   uic->widget = NULL;
+#if IM_UIM_USE_TOPLEVEL
+  init_event_key_rec(&uic->event_rec);
 #endif
   uic->caret_state_indicator = NULL;
   uic->pseg = NULL;
@@ -1091,6 +1295,9 @@ im_uim_init(IMUIMContext *uic)
   uic->prev_preedit_len = 0;
 
   uic->cwin = uim_cand_win_gtk_new();
+#if IM_UIM_USE_TOPLEVEL
+  cwin_list = g_list_append(cwin_list, uic->cwin);
+#endif
   uic->cwin_is_active = FALSE;
   uic->preedit_window = NULL;
   uic->preedit_handler_id = 0;
@@ -1103,15 +1310,20 @@ static void
 im_uim_finalize(GObject *obj)
 {
   IMUIMContext *uic = IM_UIM_CONTEXT(obj);
-  /* im_uim_set_client_window(GTK_IM_CONTEXT(uic), NULL); */
+
+  im_uim_set_client_window(GTK_IM_CONTEXT(uic), NULL);
 
   uic->next->prev = uic->prev;
   uic->prev->next = uic->next;
 
   if (uic->cwin) {
     gtk_widget_destroy(GTK_WIDGET(uic->cwin));
+#if IM_UIM_USE_TOPLEVEL
+    cwin_list = g_list_remove(cwin_list, uic->cwin);
+#endif
     uic->cwin = NULL;
   }
+
   if (uic->caret_state_indicator) {
     guint tag = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(uic->caret_state_indicator), "timeout-tag"));
     if (tag > 0)
@@ -1131,7 +1343,7 @@ im_uim_finalize(GObject *obj)
 
   uim_release_context(uic->uc);
 
-  g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)commit_cb, uic);
+  g_signal_handlers_disconnect_by_func(uic->slave, (gpointer)(uintptr_t)commit_cb, uic);
   g_object_unref(uic->slave);
   parent_class->finalize(obj);
 
@@ -1139,6 +1351,9 @@ im_uim_finalize(GObject *obj)
     focused_context = NULL;
     disable_focused_context = TRUE;
   }
+#ifdef GDK_WINDOWING_X11
+  free(uic->compose);
+#endif
 }
 
 static void
@@ -1177,11 +1392,15 @@ im_module_create(const gchar *context_id)
 
   obj = g_object_new(type_im_uim, NULL);
   uic = IM_UIM_CONTEXT(obj);
+
+  if (!uic)
+    return NULL;
+
   im_name = uim_get_default_im_name(setlocale(LC_CTYPE, NULL));
   uic->uc = uim_create_context(uic, "UTF-8",
 			       NULL, im_name,
 			       uim_iconv,
-			       commit_string);
+			       im_uim_commit_string);
   if (uic->uc == NULL) {
     parent_class->finalize(obj);
     return NULL;
@@ -1191,11 +1410,19 @@ im_module_create(const gchar *context_id)
 
   uim_set_preedit_cb(uic->uc, clear_cb, pushback_cb, update_cb);
   uim_set_prop_list_update_cb(uic->uc, update_prop_list_cb);
-  uim_set_prop_label_update_cb(uic->uc, update_prop_label_cb);
   uim_set_candidate_selector_cb(uic->uc, cand_activate_cb, cand_select_cb,
 				cand_shift_page_cb, cand_deactivate_cb);
+  uim_set_configuration_changed_cb(uic->uc, configuration_changed_cb);
+  uim_set_im_switch_request_cb(uic->uc,
+			       switch_app_global_im_cb,
+			       switch_system_global_im_cb);
+  uim_set_text_acquisition_cb(uic->uc, acquire_text_cb, delete_text_cb);
 
   uim_prop_list_update(uic->uc);
+
+#ifdef GDK_WINDOWING_X11
+  uic->compose = im_uim_compose_new();
+#endif
 
   /* slave exists for using gtk+'s table based input method */
   uic->slave = g_object_new(GTK_TYPE_IM_CONTEXT_SIMPLE, NULL);
@@ -1253,6 +1480,7 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
   if (focused_context == uic) {
     int rv, kv, mod;
 
+    store_event_key(&uic->event_rec, event);
     im_uim_convert_keyevent(event, &kv, &mod);
 
     if (event->type == GDK_KEY_RELEASE)
@@ -1262,14 +1490,13 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
 
     if (rv)
       return FALSE;
-#if 0
+
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
     else if (GTK_IS_ENTRY(uic->widget)) {
       if (GTK_ENTRY(uic->widget)->editable)
 	GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
     }
-#endif
     return TRUE;
   }
 
@@ -1296,6 +1523,9 @@ im_module_init(GTypeModule *type_module)
 #endif
 
   im_uim_init_modifier_keys();
+#ifdef GDK_WINDOWING_X11
+  im_uim_create_compose_tree();
+#endif
 }
 
 void
@@ -1306,6 +1536,9 @@ im_module_exit(void)
 
 #if IM_UIM_USE_SNOOPER
   gtk_key_snooper_remove(snooper_id);
+#endif
+#ifdef GDK_WINDOWING_X11
+  im_uim_release_compose_tree();
 #endif
   uim_quit();
 }

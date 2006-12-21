@@ -57,6 +57,145 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Focus activity and input position relocation notifications
+Affects: Bridge developers, IM developers
+Updates: C API, Scheme API
+Version: 1.3.0
+Revision: ac3966, ac3968-ac3970, ac4001-4005, ac4008-4016, ac4025, ac4027
+Date: 2006-10-09 - 2006-12-01
+Modifier: YamaKen, Etsushi
+Related: bug #7729
+URL:
+  http://lists.freedesktop.org/archives/uim/2006-October/001548.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001559.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001566.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001573.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001576.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001581.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001584.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001591.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001602.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001606.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001609.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001613.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001614.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001626.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001628.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001633.html
+  http://lists.sourceforge.jp/mailman/archives/anthy-dev/2005-October/002571.html (Japanese)
+Changes:
+   (update) uim_reset_context()
+      (new) uim_focus_in_context()
+      (new) uim_focus_out_context()
+      (new) uim_place_context()
+      (new) uim_displace_context()
+      (new) focus-in-handler
+      (new) focus-out-handler
+      (new) place-handler
+      (new) displace-handler
+Description:
+  The focus activity and input position relocation notifications are
+  required to handle some IM-specific convenient behaviors, such as
+  reset context at focus-out (latin IMs), auto-commit pending preedit
+  string at cursor relocation (Hangul IMs), and preedit relocation
+  between textareas (Japanese IMs). See the discussions of URL: for
+  further information. The requirements for the reset handler is also
+  redefined to be matched with the other new handlers.
+------------------------------------------------------------------------------
+Summary: Text acquisition and injection API
+Affects: Bridge developers, IM developers
+Updates: C API, Scheme API, libuim ABI
+Version: 1.3.0
+Revision: ac3907, ac3910-ac3922, ac3967, ac3971-ac3989, ac4026
+Date: 2006-10-02 - 2006-10-11, 2006-11-10 - 2006-11-16, 2006-12-01
+Modifier: YamaKen, Etsushi
+Related: surrounding text API
+URL:
+  http://lists.freedesktop.org/archives/uim/2006-October/001535.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001542.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001544.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001547.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001551.html
+  http://lists.freedesktop.org/archives/uim/2006-October/001553.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001583.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001605.html
+  http://lists.freedesktop.org/archives/uim/2006-November/001608.html
+  http://lists.sourceforge.jp/mailman/archives/scim-imengine-dev/2006-November/001412.html (Japanese)
+Changes:
+      (new) enum UTextArea
+      (new) enum UTextOrigin
+      (new) enum UTextExtent
+      (new) uim_set_text_acquisition_cb()
+      (new) uim_input_string()
+  (removed) uim_set_surrounding_text_cb()
+  (removed) uim_set_surrounding_text()
+      (new) input-string-handler
+      (new) im-acquire-text
+      (new) im-delete-text
+  (removed) im-request-surrounding
+  (removed) im-delete-surrounding
+Description:
+  The experimental surrounding text API (never used until now) has
+  been replaced with general text acquisition API. It allows to
+  acquire arbitrary length string of the entire text of the textarea
+  which input context is placed, clipboard, and selection text. The
+  feature can be used as surrounding text processing, re-conversion of
+  Japanese text, pasting clipboard text into preedit, and possibly
+  pluggable full-screen editor for applications.
+  
+  Since the obsoleted surrounding text API was never used, The removal
+  of the API is not regarded as a backward-compatibility break of the ABI.
+------------------------------------------------------------------------------
+Summary: Add new key definition
+Affects: Bridge developers, Helper program developers
+Updates: libuim ABI
+Version: 1.3.0
+Revision: ac3923, ac3936, ac3937, ac4063
+Date: 2006-10-21, 2006-10-23
+Modifier: Etsushi, YamaKen
+Related:
+URL: http://lists.freedesktop.org/archives/uim/2006-October/001567.html
+Changes:
+  (update) UKey
+  (update) key_tab
+Description:
+  Add dead keys, kana keys, and some keys on international keyboard.
+  These keys are added at the bottom of enum UKey to avoid backward ABI
+  incompatibility.
+------------------------------------------------------------------------------
+Summary: Add new key definition
+Affects: Bridge developers, Helper program developers
+Updates: libuim ABI
+Version: 1.2.0
+Revision: ac3765
+Date: 2006-07-21
+Modifier: Etsushi
+Related:
+URL:
+Changes:
+  (update) UKey
+Description:
+  Add some key definitions and symbols for Japanese keyboard.
+------------------------------------------------------------------------------
+Summary: Version numbers for conditional compilation
+Affects: Bridge developers, Helper program developers
+Updates: C API
+Version: 1.1.0
+Revision: ac3460
+Date: 2006-05-21
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (new) UIM_VERSION_MAJOR
+  (new) UIM_VERSION_MINOR
+  (new) UIM_VERSION_PATCHLEVEL
+  (new) UIM_VERSION_REQUIRE()
+Description:
+  To absorb API and helper protocol incompatibility, provide the version
+  numbers to allow conditional compilation for 3rd party uim-related
+  softwares.
+------------------------------------------------------------------------------
 Summary: Deprecate truth predicates for uim-scm
 Affects: uim developers, IM developers
 Updates: C API (uim-scm)
@@ -106,6 +245,7 @@ Revision: ac3147, ac3148, ac3150, ac3151
 Date: 2006-02-24
 Modifier: YamaKen, Etsushi
 Related: action-based IM switcher
+         "Version numbers for conditional compilation"
 URL:
 Changes:
   (new) uim_set_im_switch_request_cb()
@@ -124,6 +264,7 @@ Revision: ac3122, ac3123, ac3125, ac3131
 Date: 2006-02-20
 Modifier: Etsushi, YamaKen
 Related: "Add icon support to helper protocol"
+         "Version numbers for conditional compilation"
 URL:
 Changes:
     (removed) "prop_label_get"
@@ -147,7 +288,7 @@ Version: 1.1.0
 Revision: ac3110
 Date: 2006-02-18
 Modifier: YamaKen
-Related:
+Related: "Version numbers for conditional compilation"
 URL:
   http://lists.freedesktop.org/archives/uim/2006-February/001434.html
 Changes:

@@ -61,6 +61,11 @@
 		     (_ "long description will be here."))
 
 ;; subgroup
+(define-custom-group 'menu-imsw
+		     (_ "Menu-based IM switcher")
+		     (_ "long description will be here."))
+
+;; subgroup
 (define-custom-group 'candwin
 		     (_ "Candidate window")
 		     (_ "long description will be here."))
@@ -181,39 +186,11 @@
 ;; Enabled IM list
 ;;
 
-(define custom-installed-im-list
-  (lambda ()
-    (let ((orig-enabled-im-list enabled-im-list)
-	  (orig-require require))
-      (set! enabled-im-list ())  ;; enable all IMs
-      ;; XXX temporary solution to register all IM in a file
-      (set! require
-	    (lambda (file)
-	      (let* ((file-sym (string->symbol file))
-		     (loaded-sym (symbolconc '* file-sym '-loaded*))
-		     (reloaded-sym (symbolconc '* file-sym '-reloaded*)))
-		(cond
-		 ((symbol-bound? reloaded-sym)
-		  loaded-sym)
-		 ((try-load file)
-		  (eval (list 'define loaded-sym #t)
-			(interaction-environment))
-		  (eval (list 'define reloaded-sym #t)
-			(interaction-environment))
-		  loaded-sym)
-		 (else
-		  #f)))))
-      (for-each require-module installed-im-module-list)
-      (set! require orig-require)
-      (set! enabled-im-list orig-enabled-im-list)
-      (custom-im-list-as-choice-rec (reverse
-				     (alist-delete 'direct im-list eq?))))))
-
 (define usable-im-list
   (lambda ()
-    (let ((imlist (filter
-		    (lambda (name)
-	              (memq name system-available-im-list)) enabled-im-list)))
+    (let ((imlist (filter (lambda (name)
+			    (memq name installed-im-list))
+			  enabled-im-list)))
 	 (if (not (null? imlist))
 	     imlist
 	     '(direct)))))
@@ -223,7 +200,7 @@
   (cons
    'ordered-list
    (if custom-full-featured?
-       (custom-installed-im-list)
+       (custom-im-list-as-choice-rec (alist-delete 'direct stub-im-list))
        ()))
   (_ "Enabled input methods")
   (_ "long description will be here."))
@@ -231,10 +208,7 @@
 (custom-add-hook 'enabled-im-list
 		 'custom-get-hooks
 		 (lambda ()
-		   (set! enabled-im-list (remove (lambda (name)
-						   (eq? name
-							'direct))
-						 enabled-im-list))))
+		   (set! enabled-im-list (delete 'direct enabled-im-list))))
 
 ;; value dependency
 (if custom-full-featured?
@@ -301,9 +275,19 @@
   '(global im-toggle)
   (cons
    'choice
-   (custom-im-list-as-choice-rec (reverse im-list)))
+   (if custom-full-featured?
+       (custom-im-list-as-choice-rec stub-im-list)
+       ()))
   (_ "Alternative input method")
   (_ "long description will be here."))
+
+(custom-add-hook 'toggle-im-alt-im
+		 'custom-set-hooks
+		 (lambda ()
+		   (for-each (lambda (ctx)
+			       (reset-toggle-context! (context-id ctx) ctx))
+			     context-list)))
+
 
 ;; activity dependency
 (custom-add-hook 'toggle-im-key
@@ -352,12 +336,61 @@
   (_ "Enable lazy input method loading for fast startup")
   (_ "long description will be here."))
 
+
+;;
 ;; toolbar buttons
-(define-custom 'toolbar-show-switcher-button? #t
+;;
+
+(define imsw-reconfigure
+  (lambda ()
+    (if toolbar-show-action-based-switcher-button?
+	(require "im-switcher.scm"))
+    ;; Since context-list is empty on start-up, imsw-register-widget
+    ;; is not called here.
+    (if (and
+	 (symbol-bound? 'context-refresh-switcher-widget!)
+	 toolbar-show-action-based-switcher-button?)
+	(for-each context-refresh-switcher-widget!
+		  context-list))))
+
+;; must be hooked before 'toolbar-show-action-based-switcher-button?
+;; definition
+(custom-add-hook 'toolbar-show-action-based-switcher-button?
+		 'custom-set-hooks
+		 imsw-reconfigure)
+
+(define-custom 'toolbar-show-action-based-switcher-button? #t
+  '(toolbar menu-imsw)
+  '(boolean)
+  (_ "Enable menu-based input method switcher")
+  (_ "Show menu-based IM switcher on toolbar."))
+
+(define-custom 'imsw-coverage 'system-global
+  '(toolbar menu-imsw)
+  (list 'choice
+	(list 'system-global
+	      (_ "whole desktop")
+	      (_ "All input method of text areas on the system are changed."))
+	(list 'app-global
+	      (_ "focused application only")
+	      (_ "Only the input method of the focused application is changed. Other text areas remain untouched."))
+	(list 'focused-context
+	      (_ "focused text area only")
+	      (_ "Only the input method of the focused text area is changed. Other text areas remain untouched.")))
+  (_ "Effective coverage")
+  (_ "Specify where the IM switching takes effect."))
+
+;; activity dependency
+(custom-add-hook 'imsw-coverage
+		 'custom-activity-hooks
+		 (lambda ()
+		   toolbar-show-action-based-switcher-button?))
+
+(define-custom 'toolbar-show-switcher-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "input method switcher")
-  (_ "long description will be here."))
+  (_ "full-featured input method switcher")
+  (_ "Show the button on toolbar that invokes uim-im-switcher application for IM switching."))
 
 (define-custom 'toolbar-show-pref-button? #t
   '(toolbar buttons)
@@ -420,7 +453,7 @@
   (_ "long description will be here."))
 
 (define-custom 'eb-dic-path
-  (string-append (getenv "HOME") "/dict")
+  (string-append (or (getenv "HOME") "") "/dict")
   '(eb candwin)
   '(pathname directory)
   (_ "The directory which contains EB dictionary file")
@@ -456,3 +489,7 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   uim-xim-use-xft-font?))
+
+
+(if custom-full-featured?
+    (for-each require-module installed-im-module-list))

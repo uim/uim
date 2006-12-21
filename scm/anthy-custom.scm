@@ -39,6 +39,13 @@
                      (ugettext anthy-im-name-label)
                      (ugettext anthy-im-short-desc))
 
+(define-custom-group 'anthy-advanced
+		     (_ "Anthy (advanced)")
+		     (_ "Advanced settings for Anthy"))
+
+(define-custom-group 'prediction
+		     (_ "Prediction")
+		     (_ "long description will be here."))
 
 ;;
 ;; segment separator
@@ -114,27 +121,32 @@
 (define anthy-input-mode-indication-alist
   (list
    (list 'action_anthy_direct
-	 'figure_ja_direct
-	 "a"
+	 'ja_direct
+	 "-"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_anthy_hiragana
-	 'figure_ja_hiragana
+	 'ja_hiragana
 	 "¤¢"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_anthy_katakana
-	 'figure_ja_katakana
+	 'ja_katakana
 	 "¥¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
-   (list 'action_anthy_hankana
-	 'figure_ja_hankana
+   (list 'action_anthy_halfkana
+	 'ja_halfkana
 	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
-   (list 'action_anthy_zenkaku
-	 'figure_ja_zenkaku
+   (list 'action_anthy_halfwidth_alnum
+	 'ja_halfwidth_alnum
+	 "a"
+	 (N_ "Halfwidth Alphanumeric")
+	 (N_ "Halfwidth Alphanumeric input mode"))
+   (list 'action_anthy_fullwidth_alnum
+	 'ja_fullwidth_alnum
 	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
@@ -142,18 +154,18 @@
 (define anthy-kana-input-method-indication-alist
   (list
    (list 'action_anthy_roma
-	 'figure_ja_roma
+	 'ja_romaji
 	 "£Ò"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
    (list 'action_anthy_kana
-	 'figure_ja_kana
+	 'ja_kana
 	 "¤«"
 	 (N_ "Kana")
 	 (N_ "Kana input mode"))
    (list 'action_anthy_azik
-	 'figure_ja_azik
-	 "£Á"
+	 'ja_azik
+	 "£Ú"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))
 
@@ -283,8 +295,53 @@
 		 (lambda ()
 		   (anthy-configure-widgets)))
 
+(define-custom 'anthy-use-prediction? #f
+  '(anthy-advanced prediction)
+  '(boolean)
+  (_ "Enable input prediction")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-select-prediction-by-numeral-key? #f
+  '(anthy-advanced prediction)
+  '(boolean)
+  (_ "Select prediction candidate by numeral keys")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-use-implicit-commit-prediction? #t
+  '(anthy-advanced prediction)
+  '(boolean)
+  (_ "Show selected prediction candidate in preedit area")
+  (_ "long description will be here."))
+
+(custom-add-hook 'anthy-use-candidate-window?
+		 'custom-get-hooks
+		 (lambda ()
+		   (if (not anthy-use-candidate-window?)
+		       (set! anthy-use-prediction? #f))))
+
+(custom-add-hook 'anthy-use-prediction?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-candidate-window?))
+
+(custom-add-hook 'anthy-select-prediction-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-prediction?))
+
+(custom-add-hook 'anthy-use-implicit-commit-prediction?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-prediction?))
+
 (define-custom 'anthy-use-with-vi? #f
-  '(anthy special-op)
+  '(anthy-advanced special-op)
   '(boolean)
   (_ "Enable vi-cooperative mode")
+  (_ "long description will be here."))
+
+(define-custom 'anthy-use-mode-transition-keys-in-off-mode? #f
+  '(anthy-advanced mode-transition)
+  '(boolean)
+  (_ "Enable input mode transition keys in direct (off state) input mode")
   (_ "long description will be here."))

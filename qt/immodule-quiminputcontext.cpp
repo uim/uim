@@ -30,7 +30,7 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include "immodule-quiminputcontext.h"
+#include <config.h>
 
 #include <qnamespace.h>
 #include <qevent.h>
@@ -44,10 +44,19 @@ SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 
-#include "uim/config.h"
+#include "uim/uim.h"
+#include "uim/uim-helper.h"
+#include "uim/uim-im-switcher.h"
 
+#include "immodule-quiminputcontext.h"
 #include "immodule-candidatewindow.h"
 #include "immodule-qhelpermanager.h"
+#include "immodule-quiminfomanager.h"
+#include "immodule-plugin.h"
+#include "immodule-qtextutil.h"
+#ifdef Q_WS_X11
+#include "immodule-quiminputcontext_compose.h"
+#endif
 
 #define DEFAULT_SEPARATOR_STR "|"
 
@@ -55,9 +64,12 @@ QUimInputContext *focusedInputContext = NULL;
 bool disableFocusedContext = false;
 
 QPtrList<QUimInputContext> contextList;
-QValueList<UIMInfo> uimInfo;
 
 QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
+#ifdef Q_WS_X11
+DefTree *QUimInputContext::mTreeTop = NULL;
+#endif
+static int unicodeToUKey(ushort c);
 
 // I think that current index-based query API of uim for language and
 // input method name is useless and should be redesigned. I will
@@ -86,7 +98,12 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     if ( !m_HelperManager )
         m_HelperManager = new QUimHelperManager();
 
-    createUimInfo();
+#ifdef Q_WS_X11
+    if ( !mTreeTop )
+        create_compose_tree();
+    mCompose = new Compose( mTreeTop, this );
+#endif
+    mTextUtil = new QUimTextUtil( this );
 
     // read configuration
     readIMConf();
@@ -108,6 +125,10 @@ QUimInputContext::~QUimInputContext()
         focusedInputContext = NULL;
         disableFocusedContext = true;
     }
+
+#ifdef Q_WS_X11
+    delete mCompose;
+#endif
 }
 
 uim_context QUimInputContext::createUimContext( const char *imname )
@@ -136,6 +157,15 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
     uim_set_prop_list_update_cb( uc, QUimHelperManager::update_prop_list_cb );
     uim_set_prop_label_update_cb( uc, QUimHelperManager::update_prop_label_cb );
+
+    uim_set_im_switch_request_cb( uc,
+                                  QUimInputContext::switch_app_global_im_cb,
+                                  QUimInputContext::switch_system_global_im_cb);
+
+    uim_set_text_acquisition_cb( uc,
+                                 QUimTextUtil::acquire_text_cb,
+                                 QUimTextUtil::delete_text_cb);
+
     uim_prop_list_update( uc );
 
     return uc;
@@ -163,7 +193,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         modifier |= UMod_Control;
     if ( keyevent->state() & Qt::AltButton )
         modifier |= UMod_Alt;
-#if defined(_WS_X11_)
+#if defined(Q_WS_X11)
     if ( keyevent->state() & Qt::MetaButton )
         modifier |= UMod_Meta;
 #endif
@@ -178,69 +208,79 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         }
         else
         {
-            key = qkey;
+            if ( keyevent->state() & Qt::ControlButton &&
+                 ( ascii >= 0x01 && ascii <= 0x1a ) )
+                if ( keyevent->state() & Qt::ShiftButton )
+                    key = ascii + 0x40;
+                else
+                    key = ascii + 0x60;
+            else
+                key = qkey;
+        }
+    }
+    else if ( qkey == Qt::Key_unknown )
+    {
+        QString text = keyevent->text();
+        if ( !text.isNull() )
+        {
+            QChar s = text.at(0);
+            key = unicodeToUKey ( s.unicode() );
+        }
+        else
+        {
+            key = UKey_Other;
         }
     }
     else
     {
-        switch ( qkey )
+        if ( qkey >= Qt::Key_F1 && qkey <= Qt::Key_F35 )
         {
-        case Qt::Key_Tab: key = UKey_Tab; break;
-        case Qt::Key_BackSpace: key = UKey_Backspace; break;
-        case Qt::Key_Escape: key = UKey_Escape; break;
-        case Qt::Key_Delete: key = UKey_Delete; break;
-        case Qt::Key_Return: key = UKey_Return; break;
-        case Qt::Key_Left: key = UKey_Left; break;
-        case Qt::Key_Up: key = UKey_Up; break;
-        case Qt::Key_Right: key = UKey_Right; break;
-        case Qt::Key_Down: key = UKey_Down; break;
-        case Qt::Key_Prior: key = UKey_Prior; break;
-        case Qt::Key_Next: key = UKey_Next; break;
-        case Qt::Key_Home: key = UKey_Home; break;
-        case Qt::Key_End: key = UKey_End; break;
-        case Qt::Key_Zenkaku_Hankaku: key = UKey_Zenkaku_Hankaku; break;
-        case Qt::Key_Multi_key: key = UKey_Multi_key; break;
-#if defined(_WS_X11_)
-        case Qt::Key_Mode_switch: key = UKey_Mode_switch; break;
-#endif
-        case Qt::Key_Henkan: key = UKey_Henkan_Mode; break;
-        case Qt::Key_Muhenkan: key = UKey_Muhenkan; break;
-        case Qt::Key_F1: key = UKey_F1; break;
-        case Qt::Key_F2: key = UKey_F2; break;
-        case Qt::Key_F3: key = UKey_F3; break;
-        case Qt::Key_F4: key = UKey_F4; break;
-        case Qt::Key_F5: key = UKey_F5; break;
-        case Qt::Key_F6: key = UKey_F6; break;
-        case Qt::Key_F7: key = UKey_F7; break;
-        case Qt::Key_F8: key = UKey_F8; break;
-        case Qt::Key_F9: key = UKey_F9; break;
-        case Qt::Key_F10: key = UKey_F10; break;
-        case Qt::Key_F11: key = UKey_F11; break;
-        case Qt::Key_F12: key = UKey_F12; break;
-        case Qt::Key_F13: key = UKey_F13; break;
-        case Qt::Key_F14: key = UKey_F14; break;
-        case Qt::Key_F15: key = UKey_F15; break;
-        case Qt::Key_F16: key = UKey_F16; break;
-        case Qt::Key_F17: key = UKey_F17; break;
-        case Qt::Key_F18: key = UKey_F18; break;
-        case Qt::Key_F19: key = UKey_F19; break;
-        case Qt::Key_F20: key = UKey_F20; break;
-        case Qt::Key_F21: key = UKey_F21; break;
-        case Qt::Key_F22: key = UKey_F22; break;
-        case Qt::Key_F23: key = UKey_F23; break;
-        case Qt::Key_F24: key = UKey_F24; break;
-        case Qt::Key_F25: key = UKey_F25; break;
-        case Qt::Key_F26: key = UKey_F26; break;
-        case Qt::Key_F27: key = UKey_F27; break;
-        case Qt::Key_F28: key = UKey_F28; break;
-        case Qt::Key_F29: key = UKey_F29; break;
-        case Qt::Key_F30: key = UKey_F30; break;
-        case Qt::Key_F31: key = UKey_F31; break;
-        case Qt::Key_F32: key = UKey_F32; break;
-        case Qt::Key_F33: key = UKey_F33; break;
-        case Qt::Key_F34: key = UKey_F34; break;
-        case Qt::Key_F35: key = UKey_F35; break;
-        default: key = UKey_Other;
+            key = qkey - Qt::Key_F1 + UKey_F1;
+        }
+        else if ( qkey >= Qt::Key_Dead_Grave && qkey <= Qt::Key_Dead_Horn )
+        {
+            key = qkey - Qt::Key_Dead_Grave + UKey_Dead_Grave;
+        }
+        else if ( qkey >= Qt::Key_Kanji && qkey <= Qt::Key_Eisu_toggle )
+        {
+            key = qkey - Qt::Key_Kanji + UKey_Kanji;
+        }
+        else if ( qkey >= Qt::Key_Hangul && qkey <= Qt::Key_Hangul_Special )
+        {
+            key = qkey - Qt::Key_Hangul + UKey_Hangul;
+        }
+        else
+        {
+            switch ( qkey )
+            {
+            case Qt::Key_Tab: key = UKey_Tab; break;
+            case Qt::Key_BackSpace: key = UKey_Backspace; break;
+            case Qt::Key_Escape: key = UKey_Escape; break;
+            case Qt::Key_Delete: key = UKey_Delete; break;
+            case Qt::Key_Return: key = UKey_Return; break;
+            case Qt::Key_Left: key = UKey_Left; break;
+            case Qt::Key_Up: key = UKey_Up; break;
+            case Qt::Key_Right: key = UKey_Right; break;
+            case Qt::Key_Down: key = UKey_Down; break;
+            case Qt::Key_Prior: key = UKey_Prior; break;
+            case Qt::Key_Next: key = UKey_Next; break;
+            case Qt::Key_Home: key = UKey_Home; break;
+            case Qt::Key_End: key = UKey_End; break;
+            case Qt::Key_Multi_key: key = UKey_Multi_key; break;
+            case Qt::Key_Mode_switch: key = UKey_Mode_switch; break;
+            case Qt::Key_Codeinput: key = UKey_Codeinput; break;
+            case Qt::Key_SingleCandidate: key = UKey_SingleCandidate; break;
+            case Qt::Key_MultipleCandidate: key = UKey_MultipleCandidate; break;
+            case Qt::Key_PreviousCandidate: key = UKey_PreviousCandidate; break;
+            case Qt::Key_Shift: key = UKey_Shift_key; break;
+            case Qt::Key_Control: key = UKey_Control_key; break;
+            case Qt::Key_Alt: key = UKey_Alt_key; break;
+            case Qt::Key_Meta: key = UKey_Meta_key; break;
+            case Qt::Key_CapsLock: key = UKey_Caps_Lock; break;
+            case Qt::Key_NumLock: key = UKey_Num_Lock; break;
+            case Qt::Key_ScrollLock: key = UKey_Scroll_Lock; break;
+            default: key = UKey_Other;
+            }
         }
     }
 
@@ -248,14 +288,24 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     if ( type == QEvent::KeyPress )
     {
         notFiltered = uim_press_key( m_uc, key, modifier );
+#ifdef Q_WS_X11
+        if ( notFiltered )
+            return mCompose->handle_qkey( keyevent );
+#else
         if ( notFiltered )
             return FALSE;
+#endif
     }
     else if ( type == QEvent::KeyRelease )
     {
         notFiltered = uim_release_key( m_uc, key, modifier );
+#ifdef Q_WS_X11
+        if ( notFiltered )
+            return mCompose->handle_qkey( keyevent );
+#else
         if ( notFiltered )
             return FALSE;
+#endif
     }
 
     return TRUE;
@@ -278,7 +328,8 @@ void QUimInputContext::setFocus()
 
     uim_helper_client_focus_in( m_uc );
     uim_prop_list_update( m_uc );
-    uim_prop_label_update( m_uc );
+
+    uim_focus_in_context( m_uc );
 }
 
 void QUimInputContext::unsetFocus()
@@ -287,13 +338,7 @@ void QUimInputContext::unsetFocus()
     qDebug( "QUimInputContext: %p->unsetFocus(), focusWidget()=%p",
             this, focusWidget() );
 #endif
-
-    // Don't reset Japanese input context here. Japanese input context
-    // sometimes contains a whole paragraph and has minutes of
-    // lifetime different to ephemeral one in other languages. The
-    // input context should be survived until focused again.
-    if ( ! isPreeditPreservationEnabled() )
-        reset();
+    uim_focus_out_context( m_uc );
 
     cwin->hide();
 
@@ -307,8 +352,28 @@ QUimInputContext * QUimInputContext::focusedIC()
     return focusedInputContext;
 }
 
+void QUimInputContext::reloadUim()
+{
+    QUimInputContext *ic;
+    QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
 
-void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
+    for ( ic = contextList.first(); ic; ic = contextList.next() )
+    {
+        ic->reset();
+        uim_release_context( ic->m_uc );
+    }
+
+    uim_quit();
+    uim_init();
+    infoManager->initUimInfo();
+
+    for ( ic = contextList.first(); ic; ic = contextList.next() )
+    {
+        ic->m_uc = ic->createUimContext( ic->m_imname );
+    }
+}
+
+void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont * /* f */)
 {
 #ifdef ENABLE_DEBUG
     // qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
@@ -316,9 +381,9 @@ void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
     cwin->layoutWindow( x, y, w, h );
 }
 
-void QUimInputContext::mouseHandler( int x, QEvent::Type type,
-                                     Qt::ButtonState button,
-                                     Qt::ButtonState state )
+void QUimInputContext::mouseHandler( int /* x */, QEvent::Type type,
+                                     Qt::ButtonState /* button */,
+                                     Qt::ButtonState /* state */ )
 {
     switch ( type )
     {
@@ -343,15 +408,19 @@ void QUimInputContext::reset()
 #endif
 
     QInputContext::reset();
-    preeditString = QString::null;
     candwinIsActive = FALSE;
     cwin->hide();
     uim_reset_context( m_uc );
+#ifdef Q_WS_X11
+    mCompose->reset();
+#endif
+    clearPreedit();
+    updatePreedit();
 }
 
 QString QUimInputContext::identifierName()
 {
-    return ( QString( "uim-" ) + m_imname );
+    return QString( "uim" );
 }
 
 QString QUimInputContext::language()
@@ -451,6 +520,18 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
     ic->candidateDeactivate();
 }
 
+void QUimInputContext::switch_app_global_im_cb( void *ptr, const char *name )
+{
+    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    ic->switch_app_global_im( name );
+}
+
+void QUimInputContext::switch_system_global_im_cb( void *ptr, const char *name )
+{
+    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    ic->switch_system_global_im( name );
+}
+
 void QUimInputContext::commitString( const QString& str )
 {
     if ( !isComposing() )
@@ -458,12 +539,11 @@ void QUimInputContext::commitString( const QString& str )
         sendIMEvent( QEvent::IMStart );
     }
 
-    preeditString = QString::null;
     sendIMEvent( QEvent::IMEnd, str );
 }
 void QUimInputContext::clearPreedit()
 {
-    if( !psegs.isEmpty() )
+    if ( !psegs.isEmpty() )
         psegs.clear();
 }
 
@@ -479,7 +559,7 @@ void QUimInputContext::updatePreedit()
     int cursor = getPreeditCursorPosition();
     int selLength = getPreeditSelectionLength();
 
-    if ( newString.isEmpty() && preeditString.isEmpty() && ! isComposing() )
+    if ( newString.isEmpty() && ! isComposing() )
         return ;
 
     // Activating the IM
@@ -499,16 +579,21 @@ void QUimInputContext::updatePreedit()
     // empty string.
     if ( newString.isEmpty() && isComposing() )
         sendIMEvent( QEvent::IMEnd );
+}
 
-    preeditString = newString;
+void QUimInputContext::saveContext()
+{
+    // just send IMEnd and keep preedit string
+    if ( isComposing() )
+        sendIMEvent( QEvent::IMEnd );
+}
+
+void QUimInputContext::restoreContext()
+{
+    updatePreedit();
 }
 
 bool QUimInputContext::isPreeditRelocationEnabled()
-{
-    return ( language() == "ja" );
-}
-
-bool QUimInputContext::isPreeditPreservationEnabled()
 {
     return ( language() == "ja" );
 }
@@ -536,8 +621,10 @@ QString QUimInputContext::getPreeditString()
 
 int QUimInputContext::getPreeditCursorPosition()
 {
+#if 0
     if ( cwin->isAlwaysLeftPosition() )
         return 0;
+#endif
 
     int cursorPos = 0;
     QPtrList<PreeditSegment>::ConstIterator seg = psegs.begin();
@@ -620,28 +707,27 @@ void QUimInputContext::candidateDeactivate()
     candwinIsActive = false;
 }
 
-void QUimInputContext::createUimInfo()
+void QUimInputContext::switch_app_global_im( const char *name )
 {
-    if ( !uimInfo.isEmpty() )
-        return ;
+    QUimInputContext *cc;
+    QString im_name_sym;
 
-    uim_context tmp_uc = uim_create_context( NULL, "UTF-8", NULL, NULL, uim_iconv, NULL );
-    struct UIMInfo ui;
-    int nr = uim_get_nr_im( tmp_uc );
-    for ( int i = 0; i < nr; i++ )
+    im_name_sym.sprintf( "'%s", name);
+
+    for ( cc = contextList.first(); cc; cc = contextList.next() )
     {
-        ui.name = uim_get_im_name( tmp_uc, i );
-        /* return value of uim_get_im_language() is an ISO 639-1
-           compatible language code such as "ja". Since it is unfriendly
-           for human reading, we convert it into friendly one by
-           uim_get_language_name_from_locale() here */
-        const char *langcode = uim_get_im_language( tmp_uc, i );
-        ui.lang = uim_get_language_name_from_locale( langcode );
-        ui.short_desc = uim_get_im_short_desc( tmp_uc, i );
-
-        uimInfo.append( ui );
+        if (cc != this) {
+            uim_switch_im( cc->uimContext(), name );
+            cc->readIMConf();
+        }
     }
-    uim_release_context( tmp_uc );
+    uim_prop_update_custom(this->uimContext(), "custom-preserved-default-im-name", ( const char* ) im_name_sym );
+}
+
+void QUimInputContext::switch_system_global_im( const char *name )
+{
+    switch_app_global_im( name );
+    QUimHelperManager::send_im_change_whole_desktop( name );
 }
 
 void QUimInputContext::readIMConf()
@@ -652,6 +738,82 @@ void QUimInputContext::readIMConf()
     else
         cwin->setAlwaysLeftPosition( false );
     free( leftp );
+}
+
+static int unicodeToUKey (ushort c) {
+    int sym;
+
+    switch (c) {
+    case 0x00A5: sym = UKey_Yen; break;
+    case 0x3002: sym = UKey_Kana_Fullstop; break;
+    case 0x300C: sym = UKey_Kana_OpeningBracket; break;
+    case 0x300D: sym = UKey_Kana_ClosingBracket; break;
+    case 0x3001: sym = UKey_Kana_Comma; break;
+    case 0x30FB: sym = UKey_Kana_Conjunctive; break;
+    case 0x30F2: sym = UKey_Kana_WO; break;
+    case 0x30A1: sym = UKey_Kana_a; break;
+    case 0x30A3: sym = UKey_Kana_i; break;
+    case 0x30A5: sym = UKey_Kana_u; break;
+    case 0x30A7: sym = UKey_Kana_e; break;
+    case 0x30A9: sym = UKey_Kana_o; break;
+    case 0x30E3: sym = UKey_Kana_ya; break;
+    case 0x30E5: sym = UKey_Kana_yu; break;
+    case 0x30E7: sym = UKey_Kana_yo; break;
+    case 0x30C3: sym = UKey_Kana_tsu; break;
+    case 0x30FC: sym = UKey_Kana_ProlongedSound; break;
+    case 0x30A2: sym = UKey_Kana_A; break;
+    case 0x30A4: sym = UKey_Kana_I; break;
+    case 0x30A6: sym = UKey_Kana_U; break;
+    case 0x30A8: sym = UKey_Kana_E; break;
+    case 0x30AA: sym = UKey_Kana_O; break;
+    case 0x30AB: sym = UKey_Kana_KA; break;
+    case 0x30AD: sym = UKey_Kana_KI; break;
+    case 0x30AF: sym = UKey_Kana_KU; break;
+    case 0x30B1: sym = UKey_Kana_KE; break;
+    case 0x30B3: sym = UKey_Kana_KO; break;
+    case 0x30B5: sym = UKey_Kana_SA; break;
+    case 0x30B7: sym = UKey_Kana_SHI; break;
+    case 0x30B9: sym = UKey_Kana_SU; break;
+    case 0x30BB: sym = UKey_Kana_SE; break;
+    case 0x30BD: sym = UKey_Kana_SO; break;
+    case 0x30BF: sym = UKey_Kana_TA; break;
+    case 0x30C1: sym = UKey_Kana_CHI; break;
+    case 0x30C4: sym = UKey_Kana_TSU; break;
+    case 0x30C6: sym = UKey_Kana_TE; break;
+    case 0x30C8: sym = UKey_Kana_TO; break;
+    case 0x30CA: sym = UKey_Kana_NA; break;
+    case 0x30CB: sym = UKey_Kana_NI; break;
+    case 0x30CC: sym = UKey_Kana_NU; break;
+    case 0x30CD: sym = UKey_Kana_NE; break;
+    case 0x30CE: sym = UKey_Kana_NO; break;
+    case 0x30CF: sym = UKey_Kana_HA; break;
+    case 0x30D2: sym = UKey_Kana_HI; break;
+    case 0x30D5: sym = UKey_Kana_FU; break;
+    case 0x30D8: sym = UKey_Kana_HE; break;
+    case 0x30DB: sym = UKey_Kana_HO; break;
+    case 0x30DE: sym = UKey_Kana_MA; break;
+    case 0x30DF: sym = UKey_Kana_MI; break;
+    case 0x30E0: sym = UKey_Kana_MU; break;
+    case 0x30E1: sym = UKey_Kana_ME; break;
+    case 0x30E2: sym = UKey_Kana_MO; break;
+    case 0x30E4: sym = UKey_Kana_YA; break;
+    case 0x30E6: sym = UKey_Kana_YU; break;
+    case 0x30E8: sym = UKey_Kana_YO; break;
+    case 0x30E9: sym = UKey_Kana_RA; break;
+    case 0x30EA: sym = UKey_Kana_RI; break;
+    case 0x30EB: sym = UKey_Kana_RU; break;
+    case 0x30EC: sym = UKey_Kana_RE; break;
+    case 0x30ED: sym = UKey_Kana_RO; break;
+    case 0x30EF: sym = UKey_Kana_WA; break;
+    case 0x30F3: sym = UKey_Kana_N; break;
+    case 0x309B: sym = UKey_Kana_VoicedSound; break;
+    case 0x309C: sym = UKey_Kana_SemivoicedSound; break;
+    default:
+        sym = UKey_Other;
+        break;
+    }
+
+    return sym;
 }
 
 #include "immodule-quiminputcontext.moc"

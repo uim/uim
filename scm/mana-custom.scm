@@ -39,6 +39,9 @@
                      (ugettext mana-im-name-label)
                      (ugettext mana-im-short-desc))
 
+(define-custom-group 'mana-advanced
+                     (_ "Mana (advanced)")
+                     (_ "Advanced settings for Mana"))
 
 ;;
 ;; segment separator
@@ -114,27 +117,32 @@
 (define mana-input-mode-indication-alist
   (list
    (list 'action_mana_direct
-	 'figure_ja_direct
-	 "a"
+	 'ja_direct
+	 "-"
 	 (N_ "Direct input")
 	 (N_ "Direct input mode"))
    (list 'action_mana_hiragana
-	 'figure_ja_hiragana
+	 'ja_hiragana
 	 "¤¢"
 	 (N_ "Hiragana")
 	 (N_ "Hiragana input mode"))
    (list 'action_mana_katakana
-	 'figure_ja_katakana
+	 'ja_katakana
 	 "¥¢"
 	 (N_ "Katakana")
 	 (N_ "Katakana input mode"))
-   (list 'action_mana_hankana
-	 'figure_ja_hankana
+   (list 'action_mana_halfkana
+	 'ja_halfkana
 	 "Ž±"
 	 (N_ "Halfwidth Katakana")
 	 (N_ "Halfwidth Katakana input mode"))
-   (list 'action_mana_zenkaku
-	 'figure_ja_zenkaku
+   (list 'action_mana_halfwidth_alnum
+	 'ja_halfwidth_alnum
+	 "aA"
+	 (N_ "Halfwidth Alphanumeric")
+	 (N_ "Halfwidth Alphanumeric input mode"))
+   (list 'action_mana_fullwidth_alnum
+	 'ja_fullwidth_alnum
 	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
 	 (N_ "Fullwidth Alphanumeric input mode"))))
@@ -142,18 +150,18 @@
 (define mana-kana-input-method-indication-alist
   (list
    (list 'action_mana_roma
-	 'figure_ja_roma
+	 'ja_romaji
 	 "£Ò"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
    (list 'action_mana_kana
-	 'figure_ja_kana
+	 'ja_kana
 	 "¤«"
 	 (N_ "Kana")
 	 (N_ "Kana input mode"))
    (list 'action_mana_azik
-	 'figure_ja_azik
-	 "£Á"
+	 'ja_azik
+	 "£Ú"
 	 (N_ "AZIK")
 	 (N_ "AZIK extended romaji input mode"))))
 
@@ -284,7 +292,13 @@
 		   (mana-configure-widgets)))
 
 (define-custom 'mana-use-with-vi? #f
-  '(mana special-op)
+  '(mana-advanced special-op)
   '(boolean)
   (_ "Enable vi-cooperative mode")
+  (_ "long description will be here."))
+
+(define-custom 'mana-use-mode-transition-keys-in-off-mode? #f
+  '(mana-advanced mode-transition)
+  '(boolean)
+  (_ "Enable input mode transition keys in direct (off state) input mode")
   (_ "long description will be here."))

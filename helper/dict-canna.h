@@ -1,7 +1,5 @@
 /*
- *  $Id:$
- *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
- *                2005-2006 uim Project http://uim.freedesktop.org/
+ *  Copyright (c) 2006 uim Project http://uim.freedesktop.org/
  *
  *  All rights reserved.
  *
@@ -29,101 +27,16 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  *  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  *  SUCH DAMAGE.
- *
- * This code is based on canna's code. For more information about canna,
- * visit http://canna.sourceforge.jp/ . Canna license is as follows,
- *
- * Copyright (c) 2002 Canna Project. All rights reserved.
- *
- * Permission to use, copy, modify, distribute and sell this software
- * and its documentation for any purpose is hereby granted without
- * fee, provided that the above copyright notice appear in all copies
- * and that both that copyright notice and this permission notice
- * appear in supporting documentation, and that the name of the
- * author and contributors not be used in advertising or publicity
- * pertaining to distribution of the software without specific, written
- * prior permission.  The author and contributors no representations
- * about the suitability of this software for any purpose.  It is
- * provided "as is" without express or implied warranty.
- *
- * THE AUTHOR AND CONTRIBUTORS DISCLAIMS ALL WARRANTIES WITH REGARD TO
- * THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
- * FITNESS, IN NO EVENT SHALL THE AUTHOR AND CONTRIBUTORS BE LIABLE FOR
- * ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER
- * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF
- * CONTRACT, NEGLIGENCE OR OTHER TORTUOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- *
- * Copyright 1994 NEC Corporation, Tokyo, Japan.
- *
- * Permission to use, copy, modify, distribute and sell this software
- * and its documentation for any purpose is hereby granted without
- * fee, provided that the above copyright notice appear in all copies
- * and that both that copyright notice and this permission notice
- * appear in supporting documentation, and that the name of NEC
- * Corporation not be used in advertising or publicity pertaining to
- * distribution of the software without specific, written prior
- * permission.	NEC Corporation makes no representations about the
- * suitability of this software for any purpose.  It is provided "as
- * is" without express or implied warranty.
- *
- * NEC CORPORATION DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
- * NO EVENT SHALL NEC CORPORATION BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
- * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
- * OTHER TORTUOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef __CANNADIC_H__
-#define __CANNADIC_H__
+#ifndef __dict_canna_h_included__
+#define __dict_canna_h_included__
 
-#include <glib.h>
 #include "dict-word.h"
+#include "dict-dict.h"
 
-#define SUPPORT_ANTHY (1 << 0)
-#define SUPPORT_CANNA (1 << 1)
-#define SUPPORT_ANTHY_CANNA (SUPPORT_ANTHY|SUPPORT_CANNA)
+#define CANNA_DEFAULT_PRIV_DICNAME	"user"
+#define CANNA_PRIV_DIC_BUFLEN	1024
+#define CANNA_STD_CONTEXT	0
 
-enum {
-  POS_SUBSTANTIVE,
-  POS_VERB,
-  POS_ADJECTIVE,
-  POS_ADVERB,
-  POS_ETC,
-  NR_POS
-};
-
-typedef struct _category_code {
-  char *code;
-  char *desc;
-  char *example;
-  int   flag;
-  int   type;
-} category_code;
-
-extern category_code substantive_code[];
-extern category_code adverb_code[];
-extern category_code verb_code[];
-extern category_code adjective_code[];
-extern category_code etc_code[];
-
-extern unsigned int nr_substantive_code;
-extern unsigned int nr_adverb_code;
-extern unsigned int nr_verb_code;
-extern unsigned int nr_adjective_code;
-extern unsigned int nr_etc_code;
-
-#if 0
-void   cannadic_parse_line        (unsigned char *, word **);
-int    cannadic_import            (const char *, int);
-int    cannadic_export            (const char *, int);
-GList *cannadic_parse_line_glist  (unsigned char *buf, GList *list);
-#endif
-char  *find_desc_from_code        (const char *code, int type);
-char  *find_code_from_desc        (const char *desc, int type);
-int    find_cclass_type_from_code (const char *code);
-int    find_cclass_type_from_desc (const char *desc);
-
-#endif /* __CANNADIC_H__ */
+#endif /* __dict_canna_h_included__ */

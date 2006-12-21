@@ -32,12 +32,8 @@
 
 // Locale dependent routines
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
-#endif
-
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <stdio.h>
@@ -286,8 +282,7 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
 	return NULL;
     }
 
-    strncpy(convstr, outbuf, outbufsize - outbytesleft);
-    convstr[outbufsize - outbytesleft] = '\0';
+    strlcpy(convstr, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);
     return convstr;
 }

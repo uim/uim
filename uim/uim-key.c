@@ -40,12 +40,19 @@
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
 
+
+#define KEYBUF_SIZE (sizeof("'hangul-multiple-candidate     "))
+
+#define ISASCII(c) (0 <= (c) && (c) <= 127)
+
+
 struct key_entry {
   int key;
   const char *str;
 };
 
 static struct key_entry key_tab[] = {
+  {UKey_Yen, "yen"},
   {UKey_Backspace, "backspace"},
   {UKey_Delete, "delete"},
   {UKey_Escape, "escape"},
@@ -60,11 +67,45 @@ static struct key_entry key_tab[] = {
   {UKey_Home, "home"},
   {UKey_End, "end"},
   {UKey_Insert, "insert"},
-  {UKey_Zenkaku_Hankaku, "zenkaku-hankaku"},
   {UKey_Multi_key, "Multi_key"},
+  {UKey_Codeinput, "codeinput"},
+  {UKey_SingleCandidate, "single-candidate"},
+  {UKey_MultipleCandidate, "multiple-candidate"},
+  {UKey_PreviousCandidate, "previous-candidate"},
   {UKey_Mode_switch, "Mode_switch"},
-  {UKey_Henkan_Mode, "Henkan_Mode"},
+  {UKey_Kanji, "Kanji"},
   {UKey_Muhenkan, "Muhenkan"},
+  {UKey_Henkan_Mode, "Henkan_Mode"},
+  {UKey_Romaji, "romaji"},
+  {UKey_Hiragana, "hiragana"},
+  {UKey_Katakana, "katakana"},
+  {UKey_Hiragana_Katakana, "hiragana-katakana"},
+  {UKey_Zenkaku, "zenkaku"},
+  {UKey_Hankaku, "hankaku"},
+  {UKey_Zenkaku_Hankaku, "zenkaku-hankaku"},
+  {UKey_Touroku, "touroku"},
+  {UKey_Massyo, "massyo"},
+  {UKey_Kana_Lock, "kana-lock"},
+  {UKey_Kana_Shift, "kana-shift"},
+  {UKey_Eisu_Shift, "eisu-shift"},
+  {UKey_Eisu_toggle, "eisu-toggle"},
+
+  {UKey_Hangul, "hangul"},
+  {UKey_Hangul_Start, "hangul-start"},
+  {UKey_Hangul_End, "hangul-end"},
+  {UKey_Hangul_Hanja, "hangul-hanja"},
+  {UKey_Hangul_Jamo, "hangul-jamo"},
+  {UKey_Hangul_Romaja, "hangul-romaja"},
+  {UKey_Hangul_Codeinput, "hangul-codeinput"},
+  {UKey_Hangul_Jeonja, "hangul-jeonja"},
+  {UKey_Hangul_Banja, "hangul-banja"},
+  {UKey_Hangul_PreHanja, "hangul-prehanja"},
+  {UKey_Hangul_PostHanja, "hangul-posthanja"},
+  {UKey_Hangul_SingleCandidate, "hangul-single-candidate"},
+  {UKey_Hangul_MultipleCandidate, "hangul-multiple-candidate"},
+  {UKey_Hangul_PreviousCandidate, "hangul-previous-candidate"},
+  {UKey_Hangul_Special, "hangul-special"},
+
   {UKey_F1, "F1"},
   {UKey_F2, "F2"},
   {UKey_F3, "F3"},
@@ -100,6 +141,91 @@ static struct key_entry key_tab[] = {
   {UKey_F33, "F33"},
   {UKey_F34, "F34"},
   {UKey_F35, "F35"},
+
+  {UKey_Dead_Grave, "dead-grave"},
+  {UKey_Dead_Acute, "dead-acute"},
+  {UKey_Dead_Circumflex, "dead-circumflex"},
+  {UKey_Dead_Tilde, "dead-tilde"},
+  {UKey_Dead_Macron, "dead-macron"},
+  {UKey_Dead_Breve, "dead-breve"},
+  {UKey_Dead_Abovedot, "dead-abovedot"},
+  {UKey_Dead_Diaeresis, "dead-diaeresis"},
+  {UKey_Dead_Abovering, "dead-abovering"},
+  {UKey_Dead_Doubleacute, "dead-doubleacute"},
+  {UKey_Dead_Caron, "dead-caron"},
+  {UKey_Dead_Cedilla, "dead-cedilla"},
+  {UKey_Dead_Ogonek, "dead-ogonek"},
+  {UKey_Dead_Iota, "dead-iota"},
+  {UKey_Dead_VoicedSound, "dead-voiced-sound"},
+  {UKey_Dead_SemivoicedSound, "dead-semivoiced-sound"},
+  {UKey_Dead_Belowdot, "dead-belowdot"},
+  {UKey_Dead_Hook, "dead-hook"},
+  {UKey_Dead_Horn, "dead-horn"},
+
+  {UKey_Kana_Fullstop, "kana-fullstop"},
+  {UKey_Kana_OpeningBracket, "kana-opening-bracket"},
+  {UKey_Kana_ClosingBracket, "kana-closing-bracket"},
+  {UKey_Kana_Comma, "kana-comma"},
+  {UKey_Kana_Conjunctive, "kana-conjunctive"},
+  {UKey_Kana_WO, "kana-WO"},
+  {UKey_Kana_a, "kana-a"},
+  {UKey_Kana_i, "kana-i"},
+  {UKey_Kana_u, "kana-u"},
+  {UKey_Kana_e, "kana-e"},
+  {UKey_Kana_o, "kana-o"},
+  {UKey_Kana_ya, "kana-ya"},
+  {UKey_Kana_yu, "kana-yu"},
+  {UKey_Kana_yo, "kana-yo"},
+  {UKey_Kana_tsu, "kana-tsu"},
+  {UKey_Kana_ProlongedSound, "kana-prolonged-sound"},
+  {UKey_Kana_A, "kana-A"},
+  {UKey_Kana_I, "kana-I"},
+  {UKey_Kana_U, "kana-U"},
+  {UKey_Kana_E, "kana-E"},
+  {UKey_Kana_O, "kana-O"},
+  {UKey_Kana_KA, "kana-KA"},
+  {UKey_Kana_KI, "kana-KI"},
+  {UKey_Kana_KU, "kana-KU"},
+  {UKey_Kana_KE, "kana-KE"},
+  {UKey_Kana_KO, "kana-KO"},
+  {UKey_Kana_SA, "kana-SA"},
+  {UKey_Kana_SHI, "kana-SHI"},
+  {UKey_Kana_SU, "kana-SU"},
+  {UKey_Kana_SE, "kana-SE"},
+  {UKey_Kana_SO, "kana-SO"},
+  {UKey_Kana_TA, "kana-TA"},
+  {UKey_Kana_CHI, "kana-CHI"},
+  {UKey_Kana_TSU, "kana-TSU"},
+  {UKey_Kana_TE, "kana-TE"},
+  {UKey_Kana_TO, "kana-TO"},
+  {UKey_Kana_NA, "kana-NA"},
+  {UKey_Kana_NI, "kana-NI"},
+  {UKey_Kana_NU, "kana-NU"},
+  {UKey_Kana_NE, "kana-NE"},
+  {UKey_Kana_NO, "kana-NO"},
+  {UKey_Kana_HA, "kana-HA"},
+  {UKey_Kana_HI, "kana-HI"},
+  {UKey_Kana_FU, "kana-FU"},
+  {UKey_Kana_HE, "kana-HE"},
+  {UKey_Kana_HO, "kana-HO"},
+  {UKey_Kana_MA, "kana-MA"},
+  {UKey_Kana_MI, "kana-MI"},
+  {UKey_Kana_MU, "kana-MU"},
+  {UKey_Kana_ME, "kana-ME"},
+  {UKey_Kana_MO, "kana-MO"},
+  {UKey_Kana_YA, "kana-YA"},
+  {UKey_Kana_YU, "kana-YU"},
+  {UKey_Kana_YO, "kana-YO"},
+  {UKey_Kana_RA, "kana-RA"},
+  {UKey_Kana_RI, "kana-RI"},
+  {UKey_Kana_RU, "kana-RU"},
+  {UKey_Kana_RE, "kana-RE"},
+  {UKey_Kana_RO, "kana-RO"},
+  {UKey_Kana_WA, "kana-WA"},
+  {UKey_Kana_N, "kana-N"},
+  {UKey_Kana_VoicedSound, "kana-voiced-sound"},
+  {UKey_Kana_SemivoicedSound, "kana-semivoiced-sound"},
+
   {UKey_Private1, "Private1"},
   {UKey_Private2, "Private2"},
   {UKey_Private3, "Private3"},
@@ -136,8 +262,12 @@ static struct key_entry key_tab[] = {
   {UKey_Meta_key, "Meta_key"},
   {UKey_Super_key, "Super_key"},
   {UKey_Hyper_key, "Hyper_key"},
+
+  {UKey_Caps_Lock, "caps-lock"},
+  {UKey_Num_Lock, "num-lock"},
+  {UKey_Scroll_Lock, "scroll-lock"},
   /*  {UKey_Other, "other"},*/
-  {0,0}
+  {0, 0}
 };
 
 #if 0
@@ -179,6 +309,7 @@ get_sym(int key)
   for (i = 0; key_tab[i].key; i++) {
     if (key_tab[i].key == key) {
       res = key_tab[i].str;
+      break;
     }
   }
   return res;
@@ -187,14 +318,15 @@ get_sym(int key)
 static int
 keycode_to_sym(int key, char *buf)
 {
-  char *s = (char *)get_sym(key);
-  if (!s) {
-    if (key > 128) {
-      return -1;
-    }
-    snprintf(buf, 19, "%d", key);
+  const char *s;
+
+  if (ISASCII(key)) {
+    snprintf(buf, KEYBUF_SIZE, "%d", key);
   } else {
-    snprintf(buf, 19, "'%s", s);
+    s = get_sym(key);
+    if (!s)
+      return -1;
+    snprintf(buf, KEYBUF_SIZE, "'%s", s);
   }
   return 0;
 }
@@ -202,7 +334,7 @@ keycode_to_sym(int key, char *buf)
 static void
 handle_key(uim_context uc, const char *p, int key, int state)
 {
-  char keybuf[20];
+  char keybuf[KEYBUF_SIZE];
   int rv;
 
   rv = keycode_to_sym(key, keybuf);

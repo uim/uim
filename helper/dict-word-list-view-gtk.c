@@ -31,14 +31,14 @@
  *  SUCH DAMAGE.
  */
 
+#include <config.h>
+
 #include <gtk/gtk.h>
 
-#include "uim/config.h"
-#include "uim/gettext.h"
+#include "gettext.h"
 
 #include "dict-word-list-view-gtk.h"
 #include "dict-util.h"
-
 
 #include <stdlib.h>
 #include <string.h>
@@ -184,6 +184,7 @@ word_list_view_init(WordListView *view)
     gtk_scrolled_window_set_vadjustment(&view->container, GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)));
 
     treeview = gtk_tree_view_new();
+    gtk_tree_view_set_rules_hint (GTK_TREE_VIEW(treeview), TRUE);
     view->view = GTK_TREE_VIEW(treeview);
 
     gtk_container_add(GTK_CONTAINER(&view->container), treeview);
@@ -222,6 +223,8 @@ word_list_view_init(WordListView *view)
 					"text", WORD_LIST_PHON,
 					"editable", WORD_LIST_EDITABLE,
 					NULL);
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_PHON);
+    gtk_tree_view_column_set_resizable(column, TRUE);
 
     /*
     column = gtk_tree_view_column_new_with_attributes("Phonetic", renderer,
@@ -247,6 +250,8 @@ word_list_view_init(WordListView *view)
     gtk_tree_view_append_column(view->view, column);
     gtk_tree_view_column_set_title(column, _("Literal"));
     gtk_tree_view_column_set_visible(column, TRUE);
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_DESC);
+    gtk_tree_view_column_set_resizable(column, TRUE);
     view->desc_column = column;
 
     /* CClass (part of speech) Code */
@@ -262,6 +267,8 @@ word_list_view_init(WordListView *view)
 						      NULL);
     gtk_tree_view_column_set_visible(column, FALSE);
     gtk_tree_view_column_set_title(column, _("Part of Speech"));
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_CCLASS_CODE);
+    gtk_tree_view_column_set_resizable(column, TRUE);
     gtk_tree_view_append_column(view->view, column);
     view->cclass_code_column = column;
 
@@ -278,6 +285,8 @@ word_list_view_init(WordListView *view)
 						      NULL);
     gtk_tree_view_column_set_visible(column, FALSE);
     gtk_tree_view_column_set_title(column, _("Frequency"));
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_FREQ);
+    gtk_tree_view_column_set_resizable(column, TRUE);
     gtk_tree_view_append_column(view->view, column);
     view->freq_column = column;
 
@@ -287,9 +296,11 @@ word_list_view_init(WordListView *view)
 						      "text", WORD_LIST_OKURI,
 						      "editable", WORD_LIST_EDITABLE,
 						      NULL);
-    gtk_tree_view_append_column(view->view, column);
     gtk_tree_view_column_set_title(column, _("Okuri"));
     gtk_tree_view_column_set_visible(column, FALSE);
+    gtk_tree_view_column_set_sort_column_id(column, WORD_LIST_OKURI);
+    gtk_tree_view_column_set_resizable(column, TRUE);
+    gtk_tree_view_append_column(view->view, column);
     view->okuri_column = column;
 
     store = gtk_list_store_new(WORD_LIST_N_COLUMNS,
@@ -331,16 +342,16 @@ word_list_view_finalize(GObject *object)
 static void
 word_list_view_destroy(GtkObject *object)
 {
-    WordListView *view = WORD_LIST_VIEW(object);
+   WordListView *view = WORD_LIST_VIEW(object);
 
-    if (view->dict) {
-      uim_dict_unref(view->dict);
-      view->dict = NULL;
-    }
+   if (view->dict) {
+     uim_dict_unref(view->dict);
+     view->dict = NULL;
+   }
 
-    if (GTK_OBJECT_CLASS(parent_class)->destroy) {
-	GTK_OBJECT_CLASS(parent_class)->destroy(object);
-    }
+   if (GTK_OBJECT_CLASS(parent_class)->destroy) {
+     GTK_OBJECT_CLASS(parent_class)->destroy(object);
+   }
 }
 
 /*

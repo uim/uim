@@ -30,12 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE // for asprintf on stdio.h with old glibc/gcc
-#endif
-
 #ifdef HAVE_CONFIG_H
-# include "config.h"
+# include <config.h>
 #endif
 
 #include <stdio.h>
@@ -44,7 +40,18 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+
+/* workaround for pre X11R6.7 */
+#ifndef XK_KOREAN
+#define XK_KOREAN
+#endif
+#ifndef XK_KATAKANA
+#define XK_KATAKANA
+#endif
 #include <X11/keysymdef.h>
+#ifndef XK_dead_horn
+#define XK_dead_horn	0xfe62
+#endif
 
 #include "xim.h"
 #include "convdisp.h"
@@ -56,6 +63,7 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-compat-scm.h"
+#include "uim/uim-stdint.h"
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H
@@ -226,7 +234,7 @@ XimServer::setupConnection(bool useDefaultIM)
     XGetWindowProperty(XimServer::gDpy, DefaultRootWindow(XimServer::gDpy),
 		       xim_servers, 0, 8192 ,False,
 		       XA_ATOM, &type, &format,
-		       &nr_prop, &nr_bytes, (unsigned char **)&prop);
+		       &nr_prop, &nr_bytes, (unsigned char **)(uintptr_t)&prop);
     int i;
     if (type != XA_ATOM || format != 32)
 	mode = PropModeReplace;
@@ -407,10 +415,15 @@ InputContext::createUimContext(const char *engine)
 			InputContext::candidate_deactivate_cb);
 	uim_set_prop_list_update_cb(uc,
 			InputContext::update_prop_list_cb);
+#if 0
 	uim_set_prop_label_update_cb(uc,
 			InputContext::update_prop_label_cb);
+#endif
 	uim_set_configuration_changed_cb(uc,
 			InputContext::configuration_changed_cb);
+	uim_set_im_switch_request_cb(uc,
+			InputContext::switch_app_global_im_cb,
+			InputContext::switch_system_global_im_cb);
 
 	if (mFocusedContext == this)
 	    uim_prop_list_update(uc);
@@ -421,8 +434,13 @@ InputContext::createUimContext(const char *engine)
 void
 InputContext::changeContext(const char *engine)
 {
-    const char *encoding = mXic->get_encoding();
-    const char *im_lang = get_im_lang_from_engine(engine);
+    const char *encoding, *im_lang;
+
+    if (!strcmp(mEngineName, engine))
+	return;
+
+    encoding = mXic->get_encoding();
+    im_lang = get_im_lang_from_engine(engine);
 
     // Don't change im unless encoding matches for clients with legacy locales.
     if (strcmp(encoding, "UTF-8")) {
@@ -447,14 +465,38 @@ void InputContext::configuration_changed()
     const char *engine = uim_get_current_im_name(mUc);
 
     review_im(engine);
+
+    InputContext *focusedContext = InputContext::focusedContext();
+    if (this == focusedContext)
+	send_im_list();
+}
+
+void InputContext::switch_app_global_im(const char *name)
+{
+    get_im_by_id(this->get_ic()->get_imid())->changeContext(name);
+}
+
+void InputContext::switch_system_global_im(const char *name)
+{
+    char *msg;
+    std::map<Window, XimServer *>::iterator it;
+
+    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it)
+	(*it).second->changeContext(name);
+
+    asprintf(&msg, "im_change_whole_desktop\n%s\n", name);
+    uim_helper_send_message(lib_uim_fd, msg);
+    free(msg);
 }
 
 void InputContext::review_im(const char *engine)
 {
-    char *locale;
+    char *locale, *prev_engine;
     const char *client_locale, *engine_locales;
     const char *encoding;
 
+    prev_engine = mEngineName;
+    mEngineName = strdup(engine);
     encoding = mXic->get_encoding();
     client_locale = mXic->get_lang_region();
     engine_locales = compose_localenames_from_im_lang(get_im_lang_from_engine(engine));
@@ -469,16 +511,11 @@ void InputContext::review_im(const char *engine)
 	setlocale(LC_CTYPE, locale);
 	free(mLocaleName);
 	mLocaleName = locale;
-	free(mEngineName);
-	mEngineName = strdup(engine);
     } else {
 	if (!is_locale_included(engine_locales, client_locale))
-	    changeContext(mEngineName);
-	else {
-	    free(mEngineName);
-	    mEngineName = strdup(engine);
-	}
+	    changeContext(prev_engine);
     }
+    free(prev_engine);
 }
 
 void
@@ -516,11 +553,13 @@ InputContext::focusIn()
     uim_prop_label_update(mUc);	
     if (hasActiveCandwin())
 	candidate_update();
+    uim_focus_in_context(mUc);
 }
 
 void
 InputContext::focusOut()
 {
+    uim_focus_out_context(mUc);
     uim_helper_client_focus_out(mUc);
     if (mFocusedContext == this) {
 	Canddisp *disp = canddisp_singleton();
@@ -581,6 +620,7 @@ void InputContext::candidate_activate_cb(void *ptr, int nr, int display_limit)
 void InputContext::candidate_select_cb(void *ptr, int index)
 {
     InputContext *ic = (InputContext *)ptr;
+    ic->set_need_hilite_selected_cand(true);
     ic->candidate_select(index);
 }
 
@@ -617,6 +657,20 @@ void InputContext::configuration_changed_cb(void *ptr)
     InputContext *ic = (InputContext *)ptr;
 
     ic->configuration_changed();
+}
+
+void InputContext::switch_app_global_im_cb(void *ptr, const char *name)
+{
+    InputContext *ic = (InputContext *)ptr;
+
+    ic->switch_app_global_im(name);
+}
+
+void InputContext::switch_system_global_im_cb(void *ptr, const char *name)
+{
+    InputContext *ic = (InputContext *)ptr;
+
+    ic->switch_system_global_im(name);
 }
 
 void InputContext::clear_pe_stat()
@@ -772,6 +826,10 @@ void InputContext::candidate_activate(int nr, int display_limit)
     mDisplayLimit = display_limit;
     if (display_limit)
 	mNumPage = (nr - 1) / display_limit + 1;
+
+    current_cand_selection = 0;
+    current_page = 0;
+    need_hilite_selected_cand = false;
 }
 
 void InputContext::candidate_update()
@@ -779,14 +837,14 @@ void InputContext::candidate_update()
     Canddisp *disp = canddisp_singleton();
 
     disp->activate(active_candidates, mDisplayLimit);
-    disp->select(current_cand_selection);
+    disp->select(current_cand_selection, need_hilite_selected_cand);
     disp->show();
 }
 
 void InputContext::candidate_select(int index)
 {
     Canddisp *disp = canddisp_singleton();
-    disp->select(index);
+    disp->select(index, need_hilite_selected_cand);
     current_cand_selection = index;
     if (mDisplayLimit)
 	current_page = current_cand_selection / mDisplayLimit;
@@ -818,7 +876,8 @@ void InputContext::candidate_shift_page(int direction)
 	    current_cand_selection = new_index;
     }
     candidate_select(current_cand_selection);
-    uim_set_candidate_index(mUc, current_cand_selection);
+    if (need_hilite_selected_cand)
+      uim_set_candidate_index(mUc, current_cand_selection);
 }
 
 void InputContext::candidate_deactivate()
@@ -836,6 +895,47 @@ void InputContext::candidate_deactivate()
     }
 }
 
+void InputContext::set_need_hilite_selected_cand(bool set)
+{
+    need_hilite_selected_cand = set;
+}
+
+char *InputContext::get_caret_state_label_from_prop_list(const char *str)
+{
+    const char *p, *q;
+    char *state_label = NULL;
+    char label[10];
+    int len, state_label_len = 0;
+
+    p = str;
+    while ((p = strstr(p, "branch\t"))) {
+	p = strchr(p + 7, '\t');
+	if (p) {
+	    p++;
+	    q = strchr(p, '\t');
+	    len = q - p;
+	    if (q && len < 10) {
+		strlcpy(label, p, len + 1);
+		if (!state_label) {
+		    state_label_len = len;
+		    state_label = strdup(label);
+		} else {
+		    state_label_len += (len + 1);
+		    state_label = (char *)realloc(state_label,
+						      state_label_len + 1);
+		    if (state_label) {
+			strcat(state_label, "\t");
+			strcat(state_label, label);
+			state_label[state_label_len] = '\0';
+		    }
+		}
+	    }
+	}
+    }
+
+    return state_label;
+}
+
 void InputContext::update_prop_list(const char *str)
 {
     char *buf;
@@ -845,25 +945,46 @@ void InputContext::update_prop_list(const char *str)
 	return;
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
+
+#if 1
+    // Show caret state indicator with this function instead of
+    // InputContext::update_prop_label() to workaround the label
+    // mismatch during IM switch caused from context-update-widgets.
+    uim_bool show_caret_state =
+	uim_scm_symbol_value_bool("bridge-show-input-state?");
+    if (show_caret_state == UIM_TRUE) {
+	char *label;
+	int timeout;
+	Canddisp *disp = canddisp_singleton();
+
+	timeout =
+	    uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+	label = get_caret_state_label_from_prop_list(str);
+	disp->show_caret_state(label, timeout);
+	free(label);
+	mCaretStateShown = true;
+    }
+#endif
 }
 
 void InputContext::update_prop_label(const char *str)
 {
     char *buf;
-    uim_bool show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
 
     asprintf(&buf, "prop_label_update\ncharset=UTF-8\n%s", str);
     if (!buf)
 	return;
     uim_helper_send_message(lib_uim_fd, buf);
     free(buf);
-    
+#if 0    
+    uim_bool show_caret_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
     if (show_caret_state == UIM_TRUE) {
 	int timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
 	Canddisp *disp = canddisp_singleton();
 	disp->show_caret_state(str, timeout);
 	mCaretStateShown = true;
     }
+#endif
 }
 
 const char *InputContext::get_engine_name()
@@ -979,14 +1100,24 @@ void keyState::check_key(keyEventX *x)
 	mKey = x->key_sym;
     else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
 	mKey = x->key_sym - XK_F1 + UKey_F1;
-    else if (x->key_sym >= 0xfe50 && x->key_sym <= 0xfe62)
-	mKey = UKey_Other; // Don't forward deadkeys to libuim.
+    // GTK+ and Qt don't support dead_stroke yet
+    else if (x->key_sym >= XK_dead_grave && x->key_sym <= XK_dead_horn)
+	mKey = x->key_sym - XK_dead_grave + UKey_Dead_Grave;
+    else if (x->key_sym >= XK_Kanji && x->key_sym <= XK_Eisu_toggle)
+	mKey = x->key_sym - XK_Kanji + UKey_Kanji;
+    else if (x->key_sym >= XK_Hangul && x->key_sym <= XK_Hangul_Special)
+	mKey = x->key_sym - XK_Hangul + UKey_Hangul;
+    else if (x->key_sym >= XK_kana_fullstop && x->key_sym <= XK_semivoicedsound)
+	mKey = x->key_sym - XK_kana_fullstop + UKey_Kana_Fullstop;
     else {
 	switch (x->key_sym) {
+	case XK_yen: mKey = UKey_Yen; break;
 	case XK_BackSpace: mKey = UKey_Backspace; break;
 	case XK_Delete: mKey = UKey_Delete; break;
+	case XK_Insert: mKey = UKey_Insert; break;
 	case XK_Escape: mKey = UKey_Escape; break;
-	case XK_Tab: mKey = UKey_Tab; break;
+	case XK_Tab:
+	case XK_ISO_Left_Tab: mKey = UKey_Tab; break;
 	case XK_Return: mKey = UKey_Return; break;
 	case XK_Left: mKey = UKey_Left; break;
 	case XK_Up: mKey = UKey_Up; break;
@@ -996,14 +1127,12 @@ void keyState::check_key(keyEventX *x)
 	case XK_Next: mKey = UKey_Next; break;
 	case XK_Home: mKey = UKey_Home; break;
 	case XK_End: mKey = UKey_End; break;
-	case XK_Kanji:
-	case XK_Zenkaku_Hankaku: mKey = UKey_Zenkaku_Hankaku; break;
-	// Don't forward Multi_key to libuim.
-	//case XK_Multi_key: mKey = UKey_Multi_key; break;
-	case XK_Multi_key: mKey = UKey_Other; break;
+	case XK_Multi_key: mKey = UKey_Multi_key; break;
+	case XK_Codeinput: mKey = UKey_Codeinput; break;
+	case XK_SingleCandidate: mKey = UKey_SingleCandidate; break;
+	case XK_MultipleCandidate: mKey = UKey_MultipleCandidate; break;
+	case XK_PreviousCandidate: mKey = UKey_PreviousCandidate; break;
 	case XK_Mode_switch: mKey = UKey_Mode_switch; break;
-	case XK_Henkan_Mode: mKey = UKey_Henkan_Mode; break;
-	case XK_Muhenkan: mKey = UKey_Muhenkan; break;
 	case XK_Shift_L: mKey = UKey_Shift_key; break;
 	case XK_Shift_R: mKey = UKey_Shift_key; break;
 	case XK_Control_L: mKey = UKey_Control_key; break;
@@ -1016,6 +1145,9 @@ void keyState::check_key(keyEventX *x)
 	case XK_Super_R: mKey = UKey_Super_key; break;
 	case XK_Hyper_L: mKey = UKey_Hyper_key; break;
 	case XK_Hyper_R: mKey = UKey_Hyper_key; break;
+	case XK_Caps_Lock: mKey = UKey_Caps_Lock; break;
+	case XK_Num_Lock: mKey = UKey_Num_Lock; break;
+	case XK_Scroll_Lock: mKey = UKey_Scroll_Lock; break;
 	default:
 	    mKey = UKey_Other;
 	}

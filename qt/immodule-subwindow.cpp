@@ -30,7 +30,7 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#include "immodule-subwindow.h"
+#include <config.h>
 
 #include <qlabel.h>
 #include <qtextbrowser.h>
@@ -38,6 +38,8 @@ SUCH DAMAGE.
 #include <qapplication.h>
 #include <qrect.h>
 #include <qpoint.h>
+
+#include "immodule-subwindow.h"
 
 const Qt::WFlags subwindowFlag = ( Qt::WType_TopLevel
                                    | Qt::WStyle_Customize

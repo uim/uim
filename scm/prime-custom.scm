@@ -42,16 +42,31 @@
   (_ "PRIME (advanced)")
   (_ "Advanced settings for PRIME"))
 
+(define-custom-group 'language
+  (_ "Language choice")
+  (_ "Language settings"))
+
 (define-custom-group 'japanese
   (_ "Japanese")
   (_ "Japanese specific settings"))
 
+(define-custom-group 'english
+  (_ "English")
+  (_ "English specific settings"))
+
+
 (define-custom 'prime-custom-default-language 'Japanese
-  '(prime)
+  '(prime language)
   (list 'choice
 	(list 'Japanese (_ "Japanese") (_ "Japanese"))
 	(list 'English  (_ "English")  (_ "English")))
   (_ "Default language")
+  (_ "long description will be here."))
+
+(define-custom 'prime-language-toggle-key '("F11")
+  '(prime language)
+  '(key)
+  (_ "Language toggle key")
   (_ "long description will be here."))
 
 (define-custom 'prime-auto-register-mode? #t
@@ -68,7 +83,13 @@
   (_ "Space character")
   (_ "long description will be here."))
 
-(define-custom 'prime-use-unixdomain? #f
+(define-custom 'prime-altspace-key '("<Control> " "<Alt> ")
+  '(prime japanese)
+  '(key)
+  (_ "Alternative space character key")
+  (_ "long description will be here."))
+
+(define-custom 'prime-use-unixdomain? #t
   '(prime advanced)
   '(boolean)
   (_ "Use UNIX domain socket to communicate with PRIME")
@@ -155,20 +176,30 @@
 (define prime-input-mode-indication-alist
   (list
    (list 'action_prime_mode_latin
-	 'figure_prime_mode_latin
-	 "P"
+	 'ja_direct
+	 "--"
 	 (N_ "Direct input")
 	 (N_ "PRIME off"))
    (list 'action_prime_mode_hiragana
-	 'figure_prime_mode_hiragana
-	 "¤×"
+	 'ja_hiragana
+	 "¤¢"
 	 (N_ "Japanese")
 	 (N_ "PRIME on"))
+   (list 'action_prime_mode_english
+	 'ja_halfwidth_alnum
+	 "A"
+	 (N_ "English")
+	 (N_ "PRIME on"))
    (list 'action_prime_mode_wide_latin
-	 'figure_prime_mode_wide_latin
-	 "£Ð"
+	 'ja_fullwidth_alnum
+	 "£Á"
 	 (N_ "Fullwidth Alphanumeric")
-	 (N_ "Fullwidth Alphanumeric input mode"))))
+	 (N_ "Fullwidth Alphanumeric input mode"))
+   (list 'action_prime_mode_application
+	 'prime_mode_application
+	 "¡ª"
+	 (N_ "Peculiar")
+	 (N_ "Application specific input mode"))))
 
 (define prime-widgets '(widget_prime_input_mode))
 

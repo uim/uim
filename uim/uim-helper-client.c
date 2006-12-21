@@ -30,6 +30,7 @@
   SUCH DAMAGE.
 
 */
+#include <config.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -42,6 +43,11 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #include "uim.h"
 #include "uim-helper.h"
 #include "uim-internal.h"
@@ -77,7 +83,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 
   bzero(&server, sizeof(server));
   server.sun_family = PF_UNIX;
-  strcpy(server.sun_path, path);
+  strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
   free(path);
   

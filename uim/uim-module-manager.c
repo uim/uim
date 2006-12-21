@@ -32,13 +32,13 @@
 
 */
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#include "config.h"
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -74,8 +74,8 @@ concat(const char *a, const char *b)
     return NULL;
   len = strlen(a) + strlen(b) + 1;
   dest = malloc(len);
-  dest = strcpy(dest, a);
-  strcat(dest, b);
+  strlcpy(dest, a, len);
+  strlcat(dest, b, len);
   return dest;
 }
 
@@ -248,5 +248,5 @@ main(int argc, char *argv[]) {
 
   uim_quit();
 
-  return 0;
+  return EXIT_SUCCESS;
 }

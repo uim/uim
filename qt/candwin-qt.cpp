@@ -30,6 +30,8 @@
  SUCH DAMAGE.
 
 */
+#include <config.h>
+
 #include <qapplication.h>
 #include <qlabel.h>
 #include <qwidget.h>
@@ -45,7 +47,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "uim/config.h"
 
 #include "qtgettext.h"
 #include "candwin-qt.h"
@@ -72,7 +73,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
 
     //setup CandidateList
     cList = new CandidateListView( this, "candidateListView" );
-    cList->setSorting( 0 );
+    cList->setSorting( -1 );
     cList->setSelectionMode( QListView::Single );
     cList->addColumn( "1" );
     cList->setColumnWidthMode( 0, QListView::Maximum );
@@ -110,8 +111,9 @@ CandidateWindow::~CandidateWindow()
 
 void CandidateWindow::activateCand( const QStringList &list )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: activateCand()" );
-
+#endif
     /**
      * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
      */
@@ -152,10 +154,6 @@ void CandidateWindow::activateCand( const QStringList &list )
         else
             headString = l [ 0 ];
 
-        if ( ( headString.toInt() < 10 && headString.toInt() + displayLimit > 10 )
-                || ( headString.toInt() < 100 && headString.toInt() + displayLimit > 100 ) )
-            headString.prepend( "0" );
-
         d.label = headString;
 
 	// XXX Current prime (0.4.6) may return candidate string
@@ -186,9 +184,11 @@ void CandidateWindow::activateCand( const QStringList &list )
 }
 void CandidateWindow::selectCand( const QStringList &list )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: selectCand()" );
-
+#endif
     const int index = list[ 1 ].toInt();
+    needHilite = (list[ 2 ].toInt() == 1) ? TRUE : FALSE;
     setIndex( index );
 
     updateLabel();
@@ -196,8 +196,9 @@ void CandidateWindow::selectCand( const QStringList &list )
 
 void CandidateWindow::moveCand( const QStringList &list )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: moveCand()" );
-
+#endif
     if ( list[ 1 ].isEmpty() || list[ 2 ].isEmpty() )
         return ;
 
@@ -233,15 +234,17 @@ void CandidateWindow::moveCand( const QStringList &list )
 
 void CandidateWindow::showCand()
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: showCand()" );
-
+#endif
     if ( isActive )
         show();
 }
 void CandidateWindow::deactivateCand()
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "uim-helper-candwin-qt: deactivateCand()" );
-
+#endif
     hide();
     isActive = false;
 }
@@ -256,7 +259,7 @@ void CandidateWindow::slotStdinActivated( int fd )
         if ( n == 0 )
         {
             close( fd );
-            QApplication::exit( -1 );
+            exit( 1 );
         }
         if ( n == -1 )
             return ;
@@ -276,8 +279,9 @@ void CandidateWindow::slotStdinActivated( int fd )
 
 void CandidateWindow::strParse( const QString& str )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "str = %s", ( const char* ) str.local8Bit() );
-
+#endif
     QStringList list = QStringList::split( "\n", str );
 
     QStringList::Iterator it = list.begin();
@@ -313,8 +317,9 @@ void CandidateWindow::slotCandidateSelected( QListViewItem * item )
 
 void CandidateWindow::adjustCandidateWindowSize()
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "adjustCandidateWindowSize()" );
-
+#endif
     int width = 0;
     int height = 0;
     QListViewItem *item = cList->firstChild();
@@ -349,7 +354,11 @@ void CandidateWindow::setPage( int page )
 
     // calculate page
     int newpage, lastpage;
-    lastpage = nrCandidates / displayLimit;
+    if ( displayLimit )
+        lastpage = nrCandidates / displayLimit;
+    else
+        lastpage = 0;
+    
     if ( page < 0 )
     {
         newpage = lastpage;
@@ -372,7 +381,7 @@ void CandidateWindow::setPage( int page )
         if ( candidateIndex >= 0 )
             newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
         else
-            newindex = newpage * displayLimit;
+            newindex = -1;
     }
     else
     {
@@ -392,7 +401,7 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
-    for ( int i = 0; i < ncandidates; i++ )
+    for ( int i = ncandidates - 1; i >=0 ; i-- )
     {
         QString headString = stores[ displayLimit * newpage + i ].label;
         QString candString = stores[ displayLimit * newpage + i ].str;
@@ -404,6 +413,8 @@ void CandidateWindow::setPage( int page )
     // set index
     if ( newindex != candidateIndex )
         setIndex( newindex );
+    else
+        updateLabel();
 
     // set candwin size
     adjustCandidateWindowSize();
@@ -411,8 +422,9 @@ void CandidateWindow::setPage( int page )
 
 void CandidateWindow::setIndex( int index )
 {
+#if defined(ENABLE_DEBUG)
     qDebug( "setIndex : index = %d", index );
-
+#endif
     // validity check
     if ( index < 0 )
         candidateIndex = nrCandidates - 1;
@@ -429,7 +441,7 @@ void CandidateWindow::setIndex( int index )
         setPage( newpage );
 
     // select item
-    if ( candidateIndex >= 0 )
+    if ( candidateIndex >= 0 && needHilite )
     {
         int pos = index;
         if ( displayLimit )
@@ -449,7 +461,7 @@ void CandidateWindow::setIndex( int index )
 void CandidateWindow::updateLabel()
 {
     QString indexString = QString::null;
-    if ( candidateIndex >= 0 )
+    if ( candidateIndex >= 0 && needHilite )
         indexString = QString::number( candidateIndex + 1 ) + " / " + QString::number( nrCandidates );
     else
         indexString = "- / " + QString::number( nrCandidates );

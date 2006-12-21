@@ -105,8 +105,6 @@
   (define-key uim-mode-map [vertical-scroll-bar] nil)
   (define-key uim-mode-map [mode-line] nil)
   (define-key uim-mode-map [vertical-line] nil)
-  (define-key uim-mode-map [menu-bar] nil)
-  (define-key uim-mode-map [tool-bar] nil)
 
   (define-key uim-mode-map [mouse-movement] nil)
   (define-key uim-mode-map [scroll-bar-movement] nil)
@@ -121,8 +119,6 @@
   (define-key uim-preedit-map [vertical-scroll-bar] 'ignore)
   (define-key uim-preedit-map [mode-line] nil)
   (define-key uim-preedit-map [vertical-line] nil) 
-  (define-key uim-preedit-map [menu-bar] 'ignore) 
-  (define-key uim-preedit-map [tool-bar] 'ignore) 
 
   (define-key uim-preedit-map [mouse-movement] nil)
   (define-key uim-preedit-map [scroll-bar-movement] nil)
@@ -168,28 +164,27 @@
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
-	 (define-key uim-escape-map [t] 'uim-process-input)
-	 (define-key uim-mode-map [27] 'uim-escape-map)
-	 (define-key uim-preedit-map [27] 'uim-escape-map)
+ 	 (define-key uim-escape-map [t] 'uim-process-input)
 
-	 (define-key uim-mode-map [escape] nil)
+ 	 (define-key uim-mode-map [27] 'uim-escape-map)
+ 	 (define-key uim-preedit-map [27] 'uim-escape-map)
 
+	 (if (not window-system)
+	     (define-key uim-mode-map [27] 'uim-process-input))
 	 )
 
 	((and uim-emacs (= emacs-major-version 21)) ;;; GNU Emacs-21.x 
-	 (define-key uim-mode-map (vector t) 'uim-process-input)
-	 (define-key uim-preedit-map (vector t) 'uim-process-input)
+	 (define-key uim-mode-map [t] 'uim-process-input)
+	 (define-key uim-preedit-map [t] 'uim-process-input)
 
-	 (define-key uim-mode-map [escape] nil)
+	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
 	((and uim-emacs (= emacs-major-version 22)) ;;; GNU Emacs-22.x
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
-	 (define-key uim-escape-map [t] 'uim-process-input)
-	 (define-key uim-mode-map [27] 'uim-escape-map)
-	 (define-key uim-preedit-map [27] 'uim-escape-map)
+	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
 	)
