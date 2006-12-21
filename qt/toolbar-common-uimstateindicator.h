@@ -71,8 +71,13 @@ signals:
 public slots:
     void slotStdinActivated( int socket );
 
+private slots:
+    void slotPopupMenuAboutToShow();
+    void slotPopupMenuAboutToHide();
+
 protected:
     QPtrList<QHelperToolbarButton> buttons;
+    bool popupMenuShowing;
 };
 
 class QHelperToolbarButton : public QToolButton

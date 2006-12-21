@@ -37,6 +37,7 @@
 
 #include <kglobal.h>
 #include <klocale.h>
+#include <qcursor.h>
 
 #include "toolbar-applet-kde.h"
 #include "toolbar-common-quimhelpertoolbar.h"
@@ -64,8 +65,10 @@ UimApplet::UimApplet(const QString& configFile, Type type, int actions,
     uim_init();
     setBackgroundMode(QWidget::X11ParentRelative);
     toolbar = new UimToolbar(this);
+    toolbar->resize(QSize(toolbar->preferedWidthForHeight(), size().height()));
     toolbar->show();
     QObject::connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
+    setCustomMenu(toolbar->contextMenu());
 }
 
 UimApplet::~UimApplet()
@@ -93,6 +96,16 @@ void UimApplet::preferences()
     toolbar->slotExecPref();
 }
 
+void UimApplet::resizeEvent(QResizeEvent *ev)
+{
+    int x, y;
+
+    KPanelApplet::resizeEvent(ev);
+    x = (width() - toolbar->width()) / 2;
+    y = (height() - toolbar->height()) / 2;
+    toolbar->move(x, y);
+}
+
 void UimApplet::slotToolbarResized()
 {
     toolbar->resize(QSize(toolbar->preferedWidthForHeight(), size().height()));
@@ -100,7 +113,7 @@ void UimApplet::slotToolbarResized()
 }
 
 UimToolbar::UimToolbar(QWidget *parent, const char *name, WFlags f)
-    : QUimHelperToolbar(parent, name, f)
+    : QUimHelperToolbar(parent, name, f, true)
 {
     setBackgroundMode(X11ParentRelative);
 }
@@ -112,6 +125,12 @@ UimToolbar::~UimToolbar()
 int UimToolbar::preferedWidthForHeight()
 {
     return BUTTON_SIZE * getNumButtons();
+}
+
+void UimToolbar::mousePressEvent(QMouseEvent *ev)
+{
+    if (ev->button() == RightButton)
+	contextMenu()->popup(QCursor::pos());
 }
 
 #include "toolbar-applet-kde.moc"

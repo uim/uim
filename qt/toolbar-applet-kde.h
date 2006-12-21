@@ -47,6 +47,7 @@ public:
     ~UimToolbar();
 
     int preferedWidthForHeight();
+    void mousePressEvent(QMouseEvent *);
 };
 
 class UimApplet : public KPanelApplet
@@ -61,6 +62,7 @@ public:
     int widthForHeight(int h) const;
     int heightForWidth(int w) const;
     void preferences();
+    void resizeEvent(QResizeEvent *ev);
 
 protected slots:
     void slotToolbarResized();
