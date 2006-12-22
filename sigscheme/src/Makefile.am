@@ -112,7 +112,7 @@ endif
 # Optional and not built by 'make all'. Build explicitly with 'make combined'
 # if needed. This target does not use non-standard scripting languages for
 # portability.
-sigscheme-combined.c: $(libsscm_la_SOURCES) config.h
+sigscheme-combined.c: $(libsscm_sources) config.h
 	@echo 'generating $@'
 	@echo "/* This is an auto-generated file. Don't edit directly. */" >$@
 	@echo >>$@
@@ -208,7 +208,7 @@ BUILT_SOURCES = $(BUILT_DIST)
 nodist_pkginclude_HEADERS = config.h
 pkginclude_HEADERS = config-old.h scmint.h global.h sigscheme.h
 
-libsscm_la_SOURCES = \
+libsscm_sources = \
         alloc.c storage.c storage-gc.c \
         error.c symbol.c env.c eval.c \
 	syntax.c procedure.c list.c \
@@ -219,112 +219,115 @@ else
   pkginclude_HEADERS += storage-common.h storage-fatty.h
 endif
 if USE_CONTINUATION
-  libsscm_la_SOURCES += continuation.c
+  libsscm_sources += continuation.c
 endif
 if USE_PORT
-  libsscm_la_SOURCES += \
+  libsscm_sources += \
         scmport.h scmport-config.h \
         scmport-file.h scmport-file.c \
         scmport-basechar.c
 if USE_MULTIBYTE_CHAR
   pkginclude_HEADERS += encoding.h
-  libsscm_la_SOURCES += encoding-config.h encoding.c \
+  libsscm_sources    += encoding-config.h encoding.c \
                         scmport-mbchar.h scmport-mbchar.c
 else
   pkginclude_HEADERS += encoding-dummy.h
-  libsscm_la_SOURCES += scmport-sbchar.h scmport-sbchar.c
+  libsscm_sources    += scmport-sbchar.h scmport-sbchar.c
 endif
 endif
 if USE_FORMAT
-  libsscm_la_SOURCES += format.c
+  libsscm_sources += format.c
 endif
 if USE_QUASIQUOTE
-  libsscm_la_SOURCES += qquote.c
+  libsscm_sources += qquote.c
 endif
 # FIXME: support SCM_USE_SYNTAX_CASE, SCM_USE_UNHYGIENIC_MACRO and
 # SCM_USE_LEGACY_MACRO
 if USE_HYGIENIC_MACRO
-  libsscm_la_SOURCES += macro.c
+  libsscm_sources += macro.c
 endif
 if USE_PROMISE
-  libsscm_la_SOURCES += promise.c
+  libsscm_sources += promise.c
 endif
 if USE_NUMBER
-  libsscm_la_SOURCES += number.c
+  libsscm_sources += number.c
 endif
 if USE_NUMBER_IO
-  libsscm_la_SOURCES += number-io.c
+  libsscm_sources += number-io.c
 endif
 if USE_CHAR
-  libsscm_la_SOURCES += char.c
+  libsscm_sources += char.c
 endif
 if USE_STRING
-  libsscm_la_SOURCES += string.c
+  libsscm_sources += string.c
 endif
 if USE_STRING_PROCEDURE
-  libsscm_la_SOURCES += string-procedure.c
+  libsscm_sources += string-procedure.c
 endif
 if USE_VECTOR
-  libsscm_la_SOURCES += vector.c
+  libsscm_sources += vector.c
 endif
 if USE_PORT
-  libsscm_la_SOURCES += port.c
+  libsscm_sources += port.c
 endif
 if USE_READER
-  libsscm_la_SOURCES += read.c
+  libsscm_sources += read.c
 endif
 if USE_WRITER
-  libsscm_la_SOURCES += write.c
+  libsscm_sources += write.c
 endif
 if USE_LOAD
-  libsscm_la_SOURCES += load.c
+  libsscm_sources += load.c
 endif
 if USE_DEEP_CADRS
-  libsscm_la_SOURCES += deep-cadrs.c
+  libsscm_sources += deep-cadrs.c
 endif
 
 # optional modules
 if USE_SSCM_EXTENSIONS
-  libsscm_la_SOURCES += module-sscm-ext.c
+  libsscm_sources += module-sscm-ext.c
 endif
 if COMPAT_SIOD
-  libsscm_la_SOURCES += module-siod.c scmport-null.h scmport-null.c
+  libsscm_sources += module-siod.c scmport-null.h scmport-null.c
 endif
 if USE_SRFI1
-  libsscm_la_SOURCES += module-srfi1.c
+  libsscm_sources += module-srfi1.c
 endif
 if USE_SRFI2
-  libsscm_la_SOURCES += module-srfi2.c
+  libsscm_sources += module-srfi2.c
 endif
 if USE_SRFI6
-  libsscm_la_SOURCES += module-srfi6.c scmport-str.h scmport-str.c
+  libsscm_sources += module-srfi6.c scmport-str.h scmport-str.c
 endif
 if USE_SRFI8
-  libsscm_la_SOURCES += module-srfi8.c
+  libsscm_sources += module-srfi8.c
 endif
 if USE_SRFI23
-  libsscm_la_SOURCES += module-srfi23.c
+  libsscm_sources += module-srfi23.c
 endif
 if USE_SRFI28
-  libsscm_la_SOURCES += module-srfi28.c
+  libsscm_sources += module-srfi28.c
 endif
 if USE_SRFI34
-  libsscm_la_SOURCES += module-srfi34.c
+  libsscm_sources += module-srfi34.c
 endif
 if USE_SRFI38
-  libsscm_la_SOURCES += module-srfi38.c
+  libsscm_sources += module-srfi38.c
 endif
 if USE_SRFI48
-  libsscm_la_SOURCES += module-srfi48.c
+  libsscm_sources += module-srfi48.c
 endif
 if USE_SRFI60
-  libsscm_la_SOURCES += module-srfi60.c
+  libsscm_sources += module-srfi60.c
 endif
 
+if USE_LIBSSCM
+libsscm_la_SOURCES  = $(libsscm_sources)
 libsscm_la_LIBADD   = $(LIBOBJS)
 libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
 libsscm_la_CPPFLAGS = -I$(top_builddir)/include -DSCM_COMPILING_LIBSSCM=1
-libsscm_la_CFLAGS   = -Wall
+libsscm_la_CFLAGS   =
+endif
 
 if USE_SHELL
 bin_PROGRAMS  = sscm

@@ -1,12 +1,6 @@
 ==============================================================================
 Requirements and critical bugs:
 
-* (yamaken) Autoconfiscate the SigScheme package
-  - Make most settings in src/config.h configurable with configure options
-  - [uim] configure sigscheme subdir by top-level configure like GCC
-  - [uim] Add --disable-install to disable installation of libsscm that
-    specially configured for libuim. Only the combined-source is needed for uim
-
 * (yamaken) Confirm R5RS and SRFI conformance for each function implementation
   - Complete 'r5rs' and 'srfi' categories of QALog
 

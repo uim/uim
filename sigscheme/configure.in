@@ -588,6 +588,7 @@ AX_FEATURE_ARG_N(compat-siod,         [some SIOD compatible features])
 AX_FEATURE_ARG_N(compat-siod-bugs,    [emulating the buggy behaviors of SIOD])
 AX_FEATURE_ARG_Y(eval-c-string,       [eval_c_string() of libsscm])
 AX_FEATURE_ARG_N(backtrace,           [showing backtrace on error])
+AX_FEATURE_ARG_Y(libsscm,             [building libsscm])
 AX_FEATURE_ARG_Y(shell,               [the 'sscm' interactive shell])
 
 # Developer-only debugging features
@@ -797,6 +798,7 @@ AX_FEATURE_DEFINE(compat_siod,        SCM_COMPAT_SIOD,      COMPAT_SIOD)
 AX_FEATURE_DEFINE(compat_siod_bugs,   SCM_COMPAT_SIOD_BUGS, COMPAT_SIOD_BUGS)
 AX_FEATURE_DEFINE(eval_c_string)
 AX_FEATURE_DEFINE(backtrace)
+AX_FEATURE_DEFINE(libsscm)
 AX_FEATURE_DEFINE(shell)
 
 # Developer-only debugging features
@@ -990,6 +992,7 @@ SIOD compatibilities: $use_compat_siod
 SIOD bugs emulation:  $use_compat_siod_bugs
 eval_c_string():      $use_eval_c_string
 Backtrace:            $use_backtrace
+Library:              $use_libsscm
 Interactive shell:    $use_shell
 
 [Developer-only debugging features]
