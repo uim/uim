@@ -7,7 +7,8 @@ DIST_SUM_LIST = $(PACKAGE)-$(VERSION).sum
 
 EXTRA_DIST = \
         sigscheme.pc.in TODO QALog autogen.sh \
-        compare-scm.sh runbench.sh runtest.sh runtest-tail-rec.sh
+        compare-scm.sh runbench.sh runtest.sh runtest-tail-rec.sh \
+        make-report.sh
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = sigscheme.pc
