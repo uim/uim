@@ -1,5 +1,5 @@
 AC_PREREQ(2.57)
-AC_INIT([uim], [1.3.1], [uim@lists.freedesktop.org])
+AC_INIT([uim], [1.3.2], [uim@lists.freedesktop.org])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
 AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
