@@ -482,7 +482,7 @@ corner case tests:
 
 file:              global.h
 category:          base
-spec by eyes:      yamaken@r4060
+spec by eyes:      yamaken@r4060, yamaken@r4175
 spec by tests:     
 general review:    yamaken@r4060
 64-bit by eyes:    yamaken@r4060

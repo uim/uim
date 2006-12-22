@@ -127,7 +127,7 @@ extern "C" {
     {                                                                        \
         return &SCM_AGGREGATED_GLOBAL_VARS_INSTANCE()._namespace;            \
     }                                                                        \
-    extern int scm_g_dummy
+    extern int scm_g_dummy_##_namespace
 
 #else /* SCM_USE_AGGREGATED_GLOBAL_VARS */
 
@@ -163,7 +163,7 @@ extern "C" {
 #define SCM_DECLARE_EXPORTED_VARS(_namespace)                                \
     SCM_EXPORT struct scm_g_##_namespace *scm_g_instance_##_namespace(void)
 #define SCM_DEFINE_EXPORTED_VARS(_namespace)                                 \
-    extern int scm_g_dummy
+    extern int scm_g_dummy_##_namespace
 #if !SCM_COMBINED_SOURCE
 #error "(SCM_USE_AGGREGATED_GLOBAL_VARS && !SCM_COMBINED_SOURCE) is not supported"
 #endif /* SCM_COMBINED_SOURCE */
