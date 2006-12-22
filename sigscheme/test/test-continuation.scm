@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'call-with-current-continuation))
+    (test-skip "R5RS continuation is not enabled"))
+
 (define tn test-name)
 (define call/cc call-with-current-continuation)
 

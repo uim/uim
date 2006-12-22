@@ -36,6 +36,11 @@
 
 (load "./test/unittest.scm")
 
+(if (not (and (provided? "shift-jis")
+              (symbol-bound? 'char?)
+              (symbol-bound? 'string?)))
+    (test-skip "Shift_JIS codec is not enabled"))
+
 (define tn test-name)
 
 (assert-equal? "string 1" "”ül‚É‚Í" (string #\”ü #\l #\‚É #\‚Í))

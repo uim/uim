@@ -35,6 +35,11 @@
 
 (load "./test/unittest.scm")
 
+(if (not (and (provided? "euc-jp")
+              (symbol-bound? 'char?)
+              (symbol-bound? 'string?)))
+    (test-skip "EUC-JP codec is not enabled"))
+
 (define tn test-name)
 
 ;; string?

@@ -36,6 +36,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (provided? "srfi-48"))
+    (test-skip "SRFI-48 is not enabled"))
+
 (use srfi-6)
 (use srfi-38)
 (use srfi-48)

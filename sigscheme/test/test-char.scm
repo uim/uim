@@ -35,6 +35,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'char?))
+    (test-skip "R5RS characters is not enabled"))
+
 (define tn test-name)
 
 (define i->chlit

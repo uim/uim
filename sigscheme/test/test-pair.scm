@@ -100,13 +100,13 @@
 (if (and (provided? "sigscheme")
          (provided? "siod-bugs"))
     (assert-equal? (tn) '() (car '()))
-    (assert-error  (tn) (lambda (car '()))))
+    (assert-error  (tn) (lambda () (car '()))))
 
 (tn "car various type objects")
 (if (and (provided? "sigscheme")
          (provided? "siod-bugs"))
     (assert-equal? (tn) '() (car #f))
-    (assert-error  (tn) (lambda (car #f))))
+    (assert-error  (tn) (lambda () (car #f))))
 (assert-error  (tn) (lambda () (car #t)))
 (if (provided? "sigscheme")
     (begin
@@ -159,13 +159,13 @@
 (if (and (provided? "sigscheme")
          (provided? "siod-bugs"))
     (assert-equal? (tn) '() (cdr '()))
-    (assert-error  (tn) (lambda (cdr '()))))
+    (assert-error  (tn) (lambda () (cdr '()))))
 
 (tn "cdr various type objects")
 (if (and (provided? "sigscheme")
          (provided? "siod-bugs"))
     (assert-equal? (tn) '() (cdr #f))
-    (assert-error  (tn) (lambda (cdr #f))))
+    (assert-error  (tn) (lambda () (cdr #f))))
 (assert-error  (tn) (lambda () (cdr #t)))
 (if (provided? "sigscheme")
     (begin

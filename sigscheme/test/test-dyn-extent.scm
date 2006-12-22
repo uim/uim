@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'dynamic-wind))
+    (test-skip "R5RS dynamic-wind is not enabled"))
+
 (define *test-track-progress* #f)
 (define tn test-name)
 

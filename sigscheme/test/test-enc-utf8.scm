@@ -35,6 +35,11 @@
 
 (load "./test/unittest.scm")
 
+(if (not (and (provided? "utf-8")
+              (symbol-bound? 'char?)
+              (symbol-bound? 'string?)))
+    (test-skip "UTF-8 codec is not enabled"))
+
 (define tn test-name)
 
 (assert-equal? "string 1" "美人には" (string #\美 #\人 #\に #\は))

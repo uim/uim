@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'vector?))
+    (test-skip "R5RS vectors is not enabled"))
+
 (define tn test-name)
 
 (tn "vector")

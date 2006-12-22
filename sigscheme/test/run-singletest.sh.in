@@ -1,0 +1,6 @@
+#!/bin/sh
+
+SSCM=@abs_top_builddir@/src/sscm
+TESTS_DIR=@abs_top_srcdir@/test
+
+cd @top_srcdir@ && $SSCM $TESTS_DIR/$1

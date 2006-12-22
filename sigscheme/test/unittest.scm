@@ -106,7 +106,7 @@
     (display "SKIP: ")
     (display reason)
     (newline)
-    (exit 0)))
+    (exit 77)))  ;; special code for automake
 
 ;;
 ;; assertions for test writers

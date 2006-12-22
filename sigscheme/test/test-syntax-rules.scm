@@ -31,6 +31,8 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'syntax-rules))
+    (test-skip "R5RS hygienic macros is not enabled"))
 
 ;; Uncomment these if the interpreter crashes somewhere
 

@@ -167,6 +167,18 @@ static const char *const builtin_features[] = {
 #if SCM_USE_UTF8
     "utf-8",
 #endif
+#if SCM_USE_EUCCN
+    "euc-cn",
+#endif
+#if SCM_USE_EUCJP
+    "euc-jp",
+#endif
+#if SCM_USE_EUCKR
+    "euc-kr",
+#endif
+#if SCM_USE_SJIS
+    "shift-jis",
+#endif
     NULL
 };
 

@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'number?))
+    (test-skip "R5RS numbers is not enabled"))
+
 (define tn test-name)
 
 

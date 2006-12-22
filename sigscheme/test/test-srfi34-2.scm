@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (provided? "srfi-34"))
+    (test-skip "SRFI-34 is not enabled"))
+
 (define tn test-name)
 
 (set! *test-track-progress* #f)

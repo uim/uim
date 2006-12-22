@@ -29,7 +29,11 @@
 ;;  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 ;;  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 (load "./test/unittest.scm")
+
+(if (not (provided? "srfi-38"))
+    (test-skip "SRFI-38 is not enabled"))
 
 (define tn test-name)
 

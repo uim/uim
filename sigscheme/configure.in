@@ -533,7 +533,7 @@ AX_FEATURE_VAR_N(raw-c-format, [internal format which takes raw C values from va
 # R5RS behaviors
 AX_FEATURE_ARG_N(strict-r5rs,          [strict R5RS conformance checks])
 AX_FEATURE_ARG_N(const-list-literal,   [immutable list literals])
-AX_FEATURE_ARG_N(const-vector-literal, [immutable vector literals])
+AX_FEATURE_ARG_Y(const-vector-literal, [immutable vector literals])
 AX_FEATURE_ARG_N(strict-null-form,     [rejecting quote-less ()])
 AX_FEATURE_ARG_Y(strict-vector-form,   [rejecting quote-less vector literal])
 AX_FEATURE_ARG_Y(strict-argcheck,      [strict check for form arguments])
@@ -919,6 +919,7 @@ AC_CONFIG_FILES([sigscheme.pc
                  src/Makefile
                  lib/Makefile
                  test/Makefile
+                 test/run-singletest.sh
                  test-c/Makefile
                  test-c/collect.sh
                  bench/Makefile])

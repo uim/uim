@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'char=?))
+    (test-skip "R5RS characters is not enabled"))
+
 (define tn test-name)
 
 ;; SigScheme's case-insensitive comparison conforms to the foldcase'ed

@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'quasiquote))
+    (test-skip "R5RS quasiquote is not enabled"))
+
 (define tn test-name)
 (define *test-track-progress* #f)
 

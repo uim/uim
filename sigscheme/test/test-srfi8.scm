@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (provided? "srfi-8"))
+    (test-skip "SRFI-8 is not enabled"))
+
 (define tn test-name)
 
 (use srfi-8)

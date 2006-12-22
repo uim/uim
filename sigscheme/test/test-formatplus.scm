@@ -34,6 +34,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'format+))
+    (test-skip "format+ is not enabled"))
+
 (use srfi-48)
 
 ;; test SRFI-48 compatible part of format+

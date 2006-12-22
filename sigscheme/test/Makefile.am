@@ -1,23 +1,20 @@
 # Libraries
-EXTRA_DIST = unittest.scm unittest-bigloo.scm unittest-gauche.scm
+EXTRA_DIST = unittest.scm unittest-bigloo.scm unittest-gauche.scm \
+             run-singletest.sh.in
 
+sscm_xfail_tests =
 # Native tests of SigScheme
-EXTRA_DIST += \
+sscm_tests = \
         test-apply.scm \
         test-assoc.scm \
         test-begin.scm \
         test-bool.scm \
         test-char-cmp.scm \
-        test-char.scm \
         test-continuation.scm \
         test-define.scm \
         test-define-internal.scm \
         test-do.scm \
         test-dyn-extent.scm \
-        test-enc-eucgeneric.scm \
-        test-enc-eucjp.scm \
-        test-enc-sjis.scm \
-        test-enc-utf8.scm \
         test-eq.scm \
         test-eqv.scm \
         test-equal.scm \
@@ -58,12 +55,37 @@ EXTRA_DIST += \
         test-symbol.scm \
         test-syntax-rules.scm \
         test-syntax.scm \
-        test-tail-rec.scm \
         test-values.scm \
         test-vector.scm
 
+if USE_UTF8
+sscm_tests += test-enc-utf8.scm
+else
+sscm_xfail_tests += test-enc-utf8.scm
+endif
+
+if USE_EUCCN
+sscm_tests += test-enc-eucgeneric.scm
+else
+sscm_xfail_tests += test-enc-eucgeneric.scm
+endif
+
+if USE_EUCJP
+sscm_tests += test-enc-eucjp.scm test-char.scm
+else
+sscm_xfail_tests += test-enc-eucjp.scm test-char.scm
+endif
+
+if USE_SJIS
+sscm_tests += test-enc-sjis.scm
+else
+sscm_xfail_tests += test-enc-sjis.scm
+endif
+
+EXTRA_DIST += test-tail-rec.scm
+
 # Imported foreign tests
-EXTRA_DIST += \
+imported_tests = \
         test-r4rs.scm \
         bigloo-apply.scm \
         bigloo-bchar.scm \
@@ -75,3 +97,11 @@ EXTRA_DIST += \
         bigloo-vector.scm \
         gauche-euc-jp.scm \
         gauche-primsyn.scm
+
+EXTRA_DIST += $(sscm_tests) $(imported_tests)
+
+TESTS_ENVIRONMENT = $(SH) $(top_builddir)/test/run-singletest.sh
+TESTS = $(sscm_tests)
+XFAIL_TESTS = $(sscm_xfail_tests)
+
+DISTCLEANFILES = run-singletest.sh

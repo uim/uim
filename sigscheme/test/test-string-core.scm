@@ -32,6 +32,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (symbol-bound? 'string?))
+    (test-skip "R5RS core string procedures are not enabled"))
+
 (define tn test-name)
 (define cp string-copy)
 

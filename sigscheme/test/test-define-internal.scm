@@ -34,6 +34,9 @@
 
 (load "./test/unittest.scm")
 
+(if (not (provided? "internal-definitions"))
+    (test-skip "R5RS internal definitions is not enabled"))
+
 (define tn test-name)
 (define *test-track-progress* #f)
 
