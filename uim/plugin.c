@@ -291,7 +291,9 @@ uim_quit_plugin_internal(void *dummy)
     plugin_unload(name);
   }
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  return NULL;
+#else
   uim_scm_gc_unprotect_stack(&stack_start);
 #endif
 }
