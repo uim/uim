@@ -185,9 +185,9 @@ static const char *const builtin_features[] = {
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void scm_initialize_internal(void);
+static void *scm_initialize_internal(void *dummy);
 #if SCM_USE_EVAL_C_STRING
-static ScmObj scm_eval_c_string_internal(const char *exp);
+static void *scm_eval_c_string_internal(const char *exp);
 #endif
 
 /*=======================================
@@ -207,13 +207,13 @@ scm_initialize(const ScmStorageConf *storage_conf)
     scm_encoding_init();
     scm_init_storage(storage_conf);
 
-    SCM_GC_PROTECTED_CALL_VOID(scm_initialize_internal, ());
+    scm_call_with_gc_ready_stack(scm_initialize_internal, NULL);
 
     l_scm_initialized = scm_true;
 }
 
-static void
-scm_initialize_internal(void)
+static void *
+scm_initialize_internal(void *dummy)
 {
     const char *const *feature;
 
@@ -332,6 +332,8 @@ scm_initialize_internal(void)
      * macro, #if is not safe here. */
     if (SCM_PTR_BITS == 64)
         scm_provide(CONST_STRING("64bit-addr"));
+
+    return NULL;
 }
 
 SCM_EXPORT void
@@ -353,14 +355,10 @@ scm_finalize()
 SCM_EXPORT ScmObj
 scm_eval_c_string(const char *exp)
 {
-    ScmObj ret;
-
-    SCM_GC_PROTECTED_CALL(ret, ScmObj, scm_eval_c_string_internal, (exp));
-
-    return ret;
+    return (ScmObj)scm_call_with_gc_ready_stack((ScmGCGateFunc)scm_eval_c_string_internal, (void *)exp);
 }
 
-static ScmObj
+static void *
 scm_eval_c_string_internal(const char *exp)
 {
     ScmObj str_port, ret;
@@ -374,7 +372,7 @@ scm_eval_c_string_internal(const char *exp)
     ret = scm_read(str_port);
     ret = EVAL(ret, SCM_INTERACTION_ENV);
 
-    return ret;
+    return (void *)ret;
 }
 #endif /* SCM_USE_EVAL_C_STRING */
 

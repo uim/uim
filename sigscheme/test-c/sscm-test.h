@@ -177,7 +177,33 @@ main ()                                         \
 
 #else  /* !defined (TST_EXCLUDE_THIS) */
 
-#define TST_RUN(fn, s, c)  SCM_GC_PROTECTED_CALL_VOID((fn), ((s), (c)))
+typedef struct _tst_run_args tst_run_args;
+struct _tst_run_args {
+    void (*fn)(tst_suite_info *, tst_case_info *);
+    tst_suite_info *suite;
+    tst_case_info *tcase;
+};
+
+#define TST_RUN(fn, s, c)  tst_run((fn), (s), (c))
+static void *tst_run_internal(tst_run_args *args);
+static void
+tst_run(void (*fn)(tst_suite_info *, tst_case_info *),
+        tst_suite_info *suite, tst_case_info *tcase)
+{
+    tst_run_args args;
+
+    args.fn = fn;
+    args.suite = suite;
+    args.tcase = tcase;
+    scm_call_with_gc_ready_stack((ScmGCGateFunc)tst_run_internal, &args);
+}
+
+static void *
+tst_run_internal(tst_run_args *args)
+{
+    (*args->fn)(args->suite, args->tcase);
+    return NULL;
+}
 
 static int tst_main(tst_suite_info *suite);
 

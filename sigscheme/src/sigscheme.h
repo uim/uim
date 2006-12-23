@@ -42,6 +42,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "gcroots/gcroots.h"
+#if !GCROOTS_VERSION_REQUIRE(0, 1, 0)
+#error "libgcroots 0.1.0 or later, or else compatible one is required"
+#endif
+
 #include "scmint.h"
 #include "global.h"
 #if SCM_USE_MULTIBYTE_CHAR
@@ -225,35 +230,6 @@ extern "C" {
         scm_register_func(name, c_func, typecode);                           \
     } while (/* CONSTCOND */ 0)
 #endif
-
-/*
- * Function caller with protecting Scheme objects on stack from GC
- *
- * The protection is safe against with variable reordering on a stack
- * frame performed in some compilers as anti-stack smashing or
- * optimization.
- *
- * Users should only use SCM_GC_PROTECTED_CALL() and
- * SCM_GC_PROTECTED_CALL_VOID().
- */
-#define SCM_GC_PROTECTED_CALL(ret, ret_type, func, args)                     \
-    SCM_GC_PROTECTED_CALL_INTERNAL(ret = , ret_type, func, args)
-
-#define SCM_GC_PROTECTED_CALL_VOID(func, args)                               \
-    SCM_GC_PROTECTED_CALL_INTERNAL((void), void, func, args)
-
-#define SCM_GC_PROTECTED_CALL_INTERNAL(exp_ret, ret_type, func, args)        \
-    do {                                                                     \
-        /* ensure that func is uninlined */                                  \
-        ret_type (*volatile fp)() = (ret_type (*)())func;                    \
-        ScmObj *stack_start;                                                 \
-                                                                             \
-        if (0) exp_ret func args;  /* compile-time type check */             \
-        stack_start = scm_gc_current_stack();                                \
-        scm_gc_protect_stack(stack_start);                                   \
-        exp_ret (*fp)args;                                                   \
-        scm_gc_unprotect_stack(stack_start);                                 \
-    } while (/* CONSTCOND */ 0)
 
 #if SCM_USE_PORT
 #define SCM_ENSURE_LIVE_PORT(port)                                           \
@@ -459,6 +435,7 @@ enum ScmPortFlag {
 };
 
 typedef void (*ScmCFunc)(void);
+typedef void *(*ScmGCGateFunc)(void *);
 
 
 #if SCM_USE_HYGIENIC_MACRO
@@ -1225,21 +1202,6 @@ SCM_GLOBAL_VARS_END(syntax);
 #define scm_sym_ellipsis         SCM_GLOBAL_VAR(syntax, scm_sym_ellipsis)
 SCM_DECLARE_EXPORTED_VARS(syntax);
 
-/* storage-gc.c */
-/*
- * The variable to ensure that a call of scm_gc_protect_stack() is
- * uninlined in portable way through (*f)().
- *
- * Don't access this variables directly. Use SCM_GC_PROTECTED_CALL*() instead.
- */
-SCM_GLOBAL_VARS_BEGIN(gc);
-ScmObj *(*volatile scm_gc_current_stack_fp)(void);
-ScmObj *(*volatile scm_gc_protect_stack_fp)(ScmObj *);
-SCM_GLOBAL_VARS_END(gc);
-SCM_DECLARE_EXPORTED_VARS(gc);
-#define scm_gc_current_stack_fp SCM_GLOBAL_VAR(gc, scm_gc_current_stack_fp)
-#define scm_gc_protect_stack_fp SCM_GLOBAL_VAR(gc, scm_gc_protect_stack_fp)
-
 /*=======================================
   Function Declarations
 =======================================*/
@@ -1274,20 +1236,7 @@ SCM_EXPORT char *scm_strdup(const char *str);
 SCM_EXPORT void scm_gc_protect(ScmObj *var);
 SCM_EXPORT void scm_gc_protect_with_init(ScmObj *var, ScmObj init_val);
 SCM_EXPORT void scm_gc_unprotect(ScmObj *var);
-/*
- * Ordinary programs should not call these functions directly. Use
- * SCM_GC_PROTECTED_CALL*() instead.
- */
-#ifdef __GNUC__
-#define scm_gc_current_stack scm_gc_current_stack_internal
-#define scm_gc_protect_stack scm_gc_protect_stack_internal
-#else /* __GNUC__ */
-#define scm_gc_current_stack (*scm_gc_current_stack_fp)
-#define scm_gc_protect_stack (*scm_gc_protect_stack_fp)
-#endif /* __GNUC__ */
-SCM_EXPORT ScmObj *scm_gc_current_stack_internal(void) SCM_NOINLINE;
-SCM_EXPORT ScmObj *scm_gc_protect_stack_internal(ScmObj *designated_stack_start) SCM_NOINLINE;
-SCM_EXPORT void scm_gc_unprotect_stack(ScmObj *stack_start);
+SCM_EXPORT void *scm_call_with_gc_ready_stack(ScmGCGateFunc func, void *arg);
 
 /* symbol.c */
 SCM_EXPORT ScmObj scm_intern(const char *name);

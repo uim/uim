@@ -79,7 +79,7 @@ SCM_DEFINE_STATIC_VARS(static_load);
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void scm_load_internal(const char *filename);
+static void *scm_load_internal(const char *filename);
 static char *find_path(const char *filename);
 static scm_bool file_existsp(const char *filepath);
 #if SCM_USE_SRFI22
@@ -138,10 +138,11 @@ scm_p_load_path(void)
 SCM_EXPORT void
 scm_load(const char *filename)
 {
-    SCM_GC_PROTECTED_CALL_VOID(scm_load_internal, (filename));
+    scm_call_with_gc_ready_stack((ScmGCGateFunc)scm_load_internal,
+                                 (void *)filename);
 }
 
-static void
+static void *
 scm_load_internal(const char *filename)
 {
     ScmObj path, port, sexp;
@@ -178,6 +179,7 @@ scm_load_internal(const char *filename)
 #endif
 
     CDBG((SCM_DBG_FILE, "done."));
+    return NULL;
 }
 
 static char *

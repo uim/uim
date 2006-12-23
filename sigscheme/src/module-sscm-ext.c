@@ -58,7 +58,7 @@
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void scm_require_internal(const char *filename);
+static void *scm_require_internal(const char *filename);
 static ScmObj make_loaded_str(const char *filename);
 
 /*=======================================
@@ -142,10 +142,11 @@ scm_p_greatest_fixnum(void)
 SCM_EXPORT void
 scm_require(const char *filename)
 {
-    SCM_GC_PROTECTED_CALL_VOID(scm_require_internal, (filename));
+    scm_call_with_gc_ready_stack((ScmGCGateFunc)scm_require_internal,
+                                 (void *)filename);
 }
 
-static void
+static void *
 scm_require_internal(const char *filename)
 {
     ScmObj loaded_str;
@@ -155,6 +156,7 @@ scm_require_internal(const char *filename)
         scm_load(filename);
         scm_provide(loaded_str);
     }
+    return NULL;
 }
 
 SCM_EXPORT ScmObj

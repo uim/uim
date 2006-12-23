@@ -57,7 +57,6 @@
 
 #include <stddef.h>
 #include <stdlib.h>
-#include <setjmp.h>
 
 #include "sigscheme.h"
 #include "sigschemeinternal.h"
@@ -65,7 +64,6 @@
 /*=======================================
   File Local Macro Definitions
 =======================================*/
-#define N_REGS_IN_JMP_BUF    (sizeof(jmp_buf) / sizeof(void *))
 #define SCMOBJ_ALIGNEDP(ptr) (!((uintptr_t)(ptr) % sizeof(ScmObj)))
 
 /*=======================================
@@ -76,8 +74,6 @@ typedef ScmCell *ScmObjHeap;
 /*=======================================
   Variable Definitions
 =======================================*/
-SCM_DEFINE_EXPORTED_VARS(gc);
-
 SCM_GLOBAL_VARS_BEGIN(static_gc);
 #define static
 static size_t l_heap_size, l_heap_alloc_threshold;
@@ -91,10 +87,9 @@ static ScmCell *l_heaps_lowest, *l_heaps_highest;
  *   -- YamaKen 2006-05-29 */
 static ScmObj l_freelist;
 
-static ScmObj *l_stack_start_pointer;
 static ScmObj **l_protected_vars;
 static size_t l_protected_vars_size, l_n_empty_protected_vars;
-static jmp_buf l_save_regs_buf;
+static GCROOTS_context *l_gcroots_ctx;
 #undef static
 SCM_GLOBAL_VARS_END(static_gc);
 #define l_heap_size            SCM_GLOBAL_VAR(static_gc, l_heap_size)
@@ -105,12 +100,11 @@ SCM_GLOBAL_VARS_END(static_gc);
 #define l_heaps_lowest         SCM_GLOBAL_VAR(static_gc, l_heaps_lowest)
 #define l_heaps_highest        SCM_GLOBAL_VAR(static_gc, l_heaps_highest)
 #define l_freelist             SCM_GLOBAL_VAR(static_gc, l_freelist)
-#define l_stack_start_pointer  SCM_GLOBAL_VAR(static_gc, l_stack_start_pointer)
 #define l_protected_vars       SCM_GLOBAL_VAR(static_gc, l_protected_vars)
 #define l_protected_vars_size  SCM_GLOBAL_VAR(static_gc, l_protected_vars_size)
 #define l_n_empty_protected_vars                                             \
     SCM_GLOBAL_VAR(static_gc, l_n_empty_protected_vars)
-#define l_save_regs_buf        SCM_GLOBAL_VAR(static_gc, l_save_regs_buf)
+#define l_gcroots_ctx          SCM_GLOBAL_VAR(static_gc, l_gcroots_ctx)
 SCM_DEFINE_STATIC_VARS(static_gc);
 
 /*=======================================
@@ -131,7 +125,8 @@ static scm_bool within_heapp(ScmObj obj);
 static void gc_mark_protected_var();
 static void gc_mark_locations_n(ScmObj *start, size_t n);
 static void gc_mark_definite_locations_n(ScmObj *start, size_t n);
-static void gc_mark_locations(ScmObj *start, ScmObj *end);
+static void gc_mark_locations(ScmObj *start, ScmObj *end,
+                              int is_certain, int is_aligned);
 static void gc_mark(void);
 
 /* GC Sweep Related Functions */
@@ -146,11 +141,11 @@ static void finalize_protected_var(void);
 SCM_EXPORT void
 scm_init_gc(const ScmStorageConf *conf)
 {
-    SCM_GLOBAL_VARS_INIT(gc);
     SCM_GLOBAL_VARS_INIT(static_gc);
 
-    scm_gc_current_stack_fp = scm_gc_current_stack_internal;
-    scm_gc_protect_stack_fp = scm_gc_protect_stack_internal;
+    l_gcroots_ctx = GCROOTS_init(scm_malloc,
+                                 (GCROOTS_mark_proc)gc_mark_locations,
+                                 scm_false);
 
     initialize_heap(conf);
 }
@@ -161,8 +156,10 @@ scm_fin_gc(void)
     finalize_heap();
     finalize_protected_var();
 
+    GCROOTS_fin(l_gcroots_ctx);
+    free(l_gcroots_ctx);
+
     SCM_GLOBAL_VARS_FIN(static_gc);
-    SCM_GLOBAL_VARS_FIN(gc);
 }
 
 SCM_EXPORT ScmObj
@@ -241,45 +238,10 @@ scm_gc_unprotect(ScmObj *var)
     }
 }
 
-/*===========================================================================
-  C Stack Protection
-===========================================================================*/
-/* scm_gc_current_stack_internal() is separated from
- * scm_gc_protect_stack_internal() to avoid returning inaccurate stack-start
- * address. Don't add any code fragments such as SCM_ASSERT() to this
- * function. It may alter the stack address.  -- YamaKen 2006-06-04 */
-SCM_EXPORT ScmObj *
-scm_gc_current_stack_internal(void)
+SCM_EXPORT void *
+scm_call_with_gc_ready_stack(ScmGCGateFunc func, void *arg)
 {
-    /*
-     * &stack_start will be relocated to start of the frame of subsequent
-     * function call
-     */
-    ScmObj stack_start;
-
-    /* intentionally returns invalidated local address with a warning
-     * suppression workaround */
-    return (ScmObj *)(((uintptr_t)&stack_start | 1) ^ 1);
-}
-
-SCM_EXPORT ScmObj *
-scm_gc_protect_stack_internal(ScmObj *designated_stack_start)
-{
-    SCM_ASSERT(designated_stack_start);
-
-    if (!l_stack_start_pointer)
-        l_stack_start_pointer = designated_stack_start;
-
-    SCM_ASSERT(SCMOBJ_ALIGNEDP(l_stack_start_pointer));
-
-    return l_stack_start_pointer;
-}
-
-SCM_EXPORT void
-scm_gc_unprotect_stack(ScmObj *stack_start)
-{
-    if (l_stack_start_pointer == stack_start)
-        l_stack_start_pointer = NULL;
+    return GCROOTS_call_with_gc_ready_stack(l_gcroots_ctx, func, arg);
 }
 
 /*===========================================================================
@@ -604,18 +566,16 @@ gc_mark_definite_locations_n(ScmObj *start, size_t n)
 }
 
 static void
-gc_mark_locations(ScmObj *start, ScmObj *end)
+gc_mark_locations(ScmObj *start, ScmObj *end, int is_certain, int is_aligned)
 {
     ScmObj *adjusted_start, *tmp;
     ptrdiff_t len;
     unsigned int offset;
 
-    SCM_ASSERT(SCMOBJ_ALIGNEDP(end));
-
     /* swap end and start if (end < start) */
     if (end < start) {
-        tmp = end;
-        end = start;
+        tmp = end - 1;
+        end = start + 1;
         start = tmp;
     }
 
@@ -634,25 +594,24 @@ gc_mark_locations(ScmObj *start, ScmObj *end)
         len = end - adjusted_start;
         CDBG((SCM_DBG_GC, "gc_mark_locations: start = ~P, end = ~P, len = ~TD, offset = ~U",
               adjusted_start, end, len, offset));
-        
-        gc_mark_locations_n(adjusted_start, len);
+
+        if (is_certain)
+            gc_mark_definite_locations_n(adjusted_start, len);
+        else
+            gc_mark_locations_n(adjusted_start, len);
+
+        if (is_aligned)
+            break;
     }
 }
 
-/*
- * To avoid incorrect stack_end placement, the jmp_buf is allocated to outside
- * of stack
- */
 static void
 gc_mark(void)
 {
-    ScmObj stack_end;
+    /* Mark stack and all machine-dependent contexts such as registers,
+     * register windows (SPARC), register stack backing store (IA-64) etc. */
+    GCROOTS_mark(l_gcroots_ctx);
 
-    setjmp(l_save_regs_buf);
-    gc_mark_locations_n((ScmObj *)l_save_regs_buf, N_REGS_IN_JMP_BUF);
-    gc_mark_locations(l_stack_start_pointer, &stack_end);
-
-    /* performed after above two to avoid cache pollution */
     gc_mark_protected_var();
     if (scm_symbol_hash)
         gc_mark_definite_locations_n(scm_symbol_hash, scm_symbol_hash_size);

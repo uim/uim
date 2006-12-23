@@ -41,6 +41,9 @@ Overview of changes from 0.6.1 to 0.7.0
   - [SRFI-77, R6RS] The SRFI-77 procedures 'least-fixnum' and 'greatest-fixnum'
     have been upgraded to R6RS (R5.91RS) (nothing is actually changed)
 
+  - The API of function call with GC-ready stack has been changed to resolve
+    corrupted GC problem on SPARC and IA-64. It needs API change
+
   - Definition of dotted list length is changed to SRFI-1's from
     SigScheme-speciific one. SCM_LISTLEN_DOTTED(), SCM_DOTTED_LISTP() and other
     dotted list-related macros and functions have been changed so

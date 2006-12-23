@@ -110,7 +110,7 @@ static const struct module_info module_info_table[] = {
   File Local Function Declarations
 =======================================*/
 static const struct module_info *lookup_module_info(const char *feature);
-static scm_bool scm_use_internal(const char *feature);
+static void *scm_use_internal(const char *feature);
 
 /*=======================================
   Function Definitions
@@ -172,14 +172,10 @@ scm_providedp(ScmObj feature)
 SCM_EXPORT scm_bool
 scm_use(const char *feature)
 {
-    scm_bool ok;
-
-    SCM_GC_PROTECTED_CALL(ok, scm_bool, scm_use_internal, (feature));
-
-    return ok;
+    return (scm_bool)scm_call_with_gc_ready_stack((ScmGCGateFunc)scm_use_internal, (void *)feature);
 }
 
-static scm_bool
+static void *
 scm_use_internal(const char *feature)
 {
     ScmObj ok;
@@ -187,7 +183,7 @@ scm_use_internal(const char *feature)
     SCM_ASSERT(feature);
 
     ok = scm_s_use(scm_intern(feature), SCM_INTERACTION_ENV);
-    return TRUEP(ok);
+    return (void *)TRUEP(ok);
 }
 
 /*

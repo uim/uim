@@ -32,8 +32,16 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ===========================================================================*/
 
+#if 1
+/* Since introduction of libgcroots to SigScheme, the GC protection interfaces
+ * are withdrawn. These tests does not make sense now. -- YamaKen 2006-12-23 */
+#define TST_EXCLUDE_THIS
+#endif
+
 #define TST_HAVE_MAIN 1
 #include "sscm-test.h"
+
+#ifndef TST_EXCLUDE_THIS
 
 #include <stddef.h>
 #include <sigscheme/sigscheme.h>
@@ -237,3 +245,5 @@ TST_CASE("ScmObj *(*)(ScmObj *) (2)")
 
     TEST_STACK_START(stack_start_protected, stack_start_actual);
 }
+
+#endif /* TST_EXCLUDE_THIS */

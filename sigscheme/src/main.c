@@ -98,17 +98,18 @@ static struct g_sscm sscm;
 /*=======================================
   File Local Function Declarations
 =======================================*/
-static void repl(void);
+static void *repl(void *dummy);
 static void repl_loop(void);
 static scm_bool show_promptp(void);
 
 /*=======================================
   Function Definitions
 =======================================*/
-static void
-repl(void)
+static void *
+repl(void *dummy)
 {
     repl_loop();
+    return NULL;
 }
 
 static void
@@ -246,7 +247,7 @@ main(int argc, char **argv)
     if (filename) {
         scm_load(filename);
     } else {
-        SCM_GC_PROTECTED_CALL_VOID(repl, ());
+        scm_call_with_gc_ready_stack(repl, NULL);
         /* ERR("usage: sscm <filename>"); */
     }
 
