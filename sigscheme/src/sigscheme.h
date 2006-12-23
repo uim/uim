@@ -43,8 +43,8 @@
 #include <stdarg.h>
 
 #include "gcroots/gcroots.h"
-#if !GCROOTS_VERSION_REQUIRE(0, 1, 0)
-#error "libgcroots 0.1.0 or later, or else compatible one is required"
+#if (GCROOTS_API_REVISION < 1)
+#error "libgcroots that has API revision >= 1 is required"
 #endif
 
 #include "scmint.h"
