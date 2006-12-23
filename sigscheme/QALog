@@ -66,7 +66,7 @@ corner case tests:
   * category = (base|core|semicore|r5rs|srfi|opt|ext|other)
   * record comma separated username@revision for each checkpoints
   * don't overwrite per-user checkpoints. i.e. record as "yamaken@r3499,
-    yamaken@3670" instead of recording latest "yamaken@3670" only
+    yamaken@r3670" instead of recording latest "yamaken@r3670" only
   * don't fold each line
   * '-' means "unneeded"
   * blank field means "unchecked"
@@ -86,7 +86,7 @@ corner case tests:
 
 file:              syntax.c
 category:          r5rs
-spec by eyes:      yamaken@r3499, yamaken@3670
+spec by eyes:      yamaken@r3499, yamaken@r3670
 spec by tests:     
 general review:    yamaken@r3499
 64-bit by eyes:    yamaken@r3499
@@ -284,10 +284,10 @@ Status
 
 file:              scmint.h
 category:          base
-spec by eyes:      yamaken@r3961, yamaken@r3992, yamaken@4134
+spec by eyes:      yamaken@r3961, yamaken@r3992, yamaken@r4134
 spec by tests:     
 general review:    yamaken@r3961
-64-bit by eyes:    yamaken@r3961, yamaken@4134
+64-bit by eyes:    yamaken@r3961, yamaken@r4134
 64-bit by tests:   
 coding style:      yamaken@r3961
 normal case tests: 
@@ -449,12 +449,12 @@ corner case tests:
 
 file:              encoding-dummy.h
 category:          base
-spec by eyes:      yamaken@4067
+spec by eyes:      yamaken@r4067
 spec by tests:     
-general review:    yamaken@4067
-64-bit by eyes:    yamaken@4067
+general review:    yamaken@r4067
+64-bit by eyes:    yamaken@r4067
 64-bit by tests:   
-coding style:      yamaken@4067
+coding style:      yamaken@r4067
 normal case tests: 
 corner case tests: 
 
@@ -515,7 +515,7 @@ corner case tests:
 
 file:              sigscheme.h
 category:          core
-spec by eyes:      yamaken@r4061, yamaken@r4103, yamaken@r4110, yamaken@r4111, yamaken@r4138, yamaken@4152, yamaken@r4182
+spec by eyes:      yamaken@r4061, yamaken@r4103, yamaken@r4110, yamaken@r4111, yamaken@r4138, yamaken@r4152, yamaken@r4182
 spec by tests:     
 general review:    yamaken@r4061
 64-bit by eyes:    yamaken@r4061
@@ -526,7 +526,7 @@ corner case tests:
 
 file:              sigschemeinternal.h
 category:          core
-spec by eyes:      yamaken@r4061, yamaken@r4101, yamaken@r4103, yamaken@4152
+spec by eyes:      yamaken@r4061, yamaken@r4101, yamaken@r4103, yamaken@r4152
 spec by tests:     
 general review:    yamaken@r4061
 64-bit by eyes:    yamaken@r4061
@@ -537,7 +537,7 @@ corner case tests:
 
 file:              storage-common.h
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@r4108, yamaken@4152
+spec by eyes:      yamaken@r4066, yamaken@r4108, yamaken@r4152
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -548,7 +548,7 @@ corner case tests:
 
 file:              storage-fatty.h
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@r4108, yamaken@4127
+spec by eyes:      yamaken@r4066, yamaken@r4108, yamaken@r4127
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -559,18 +559,18 @@ corner case tests:
 
 file:              storage-compact.h
 category:          core
-spec by eyes:      yamaken@r4103, yamaken@r4123, yamaken@4135
+spec by eyes:      yamaken@r4103, yamaken@r4123, yamaken@r4135
 spec by tests:     
 general review:    yamaken@r4103
-64-bit by eyes:    yamaken@r4103, yamaken@4135
+64-bit by eyes:    yamaken@r4103, yamaken@r4135
 64-bit by tests:   
 coding style:      yamaken@r4103
-normal case tests: yamaken@r4103, yamaken@r4123, yamaken@4135
+normal case tests: yamaken@r4103, yamaken@r4123, yamaken@r4135
 corner case tests: 
 
 file:              storage.c
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@4152
+spec by eyes:      yamaken@r4066, yamaken@r4152
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -581,7 +581,7 @@ corner case tests:
 
 file:              storage-gc.c
 category:          core
-spec by eyes:      yamaken@r4066, yamaken@r4101, yamaken@r4108, yamaken@r4110, yamaken@r4111, yamaken@4152, yamaken@r4182
+spec by eyes:      yamaken@r4066, yamaken@r4101, yamaken@r4108, yamaken@r4110, yamaken@r4111, yamaken@r4152, yamaken@r4182
 spec by tests:     
 general review:    yamaken@r4066
 64-bit by eyes:    yamaken@r4066
@@ -614,7 +614,7 @@ corner case tests:
 
 file:              error.c
 category:          core
-spec by eyes:      yamaken@r3950, yamaken@r4062, yamaken@4152
+spec by eyes:      yamaken@r3950, yamaken@r4062, yamaken@r4152
 spec by tests:     
 general review:    yamaken@r3950
 64-bit by eyes:    yamaken@r3950
@@ -658,7 +658,7 @@ corner case tests: yamaken@r3880
 
 file:              eval.c
 category:          core
-spec by eyes:      yamaken@r3865, yamaken@r4103, yamaken@4152
+spec by eyes:      yamaken@r3865, yamaken@r4103, yamaken@r4152
 spec by tests:     yamaken@r3865, yamaken@r4076, yamaken@r4103
 general review:    yamaken@r3865
 64-bit by eyes:    yamaken@r3865
@@ -680,7 +680,7 @@ corner case tests:
 
 file:              sigscheme.c
 category:          core
-spec by eyes:      yamaken@r4017, yamaken@r4019, yamaken@r4066, yamaken@4152, yamaken@r4182
+spec by eyes:      yamaken@r4017, yamaken@r4019, yamaken@r4066, yamaken@r4152, yamaken@r4182
 spec by tests:     
 general review:    yamaken@r4017
 64-bit by eyes:    yamaken@r4017
@@ -691,7 +691,7 @@ corner case tests:
 
 file:              port.c
 category:          semicore
-spec by eyes:      yamaken@r3992, yamaken@4152
+spec by eyes:      yamaken@r3992, yamaken@r4152
 spec by tests:     
 general review:    yamaken@r3992
 64-bit by eyes:    yamaken@r3992
@@ -713,7 +713,7 @@ corner case tests: yamaken@r4012
 
 file:              write.c
 category:          semicore
-spec by eyes:      yamaken@r4041, yamaken@4152
+spec by eyes:      yamaken@r4041, yamaken@r4152
 spec by tests:     
 general review:    yamaken@r4041
 64-bit by eyes:    yamaken@r4041
@@ -735,7 +735,7 @@ corner case tests:
 
 file:              format.c
 category:          semicore
-spec by eyes:      yamaken@r4052, yamaken@r4070, yamaken@4152
+spec by eyes:      yamaken@r4052, yamaken@r4070, yamaken@r4152
 spec by tests:     yamaken@r4052, yamaken@r4070
 general review:    yamaken@r4052
 64-bit by eyes:    yamaken@r4052
@@ -746,7 +746,7 @@ corner case tests: yamaken@r4052, yamaken@r4070, yamaken@r4075
 
 file:              syntax.c
 category:          r5rs
-spec by eyes:      yamaken@r3704, yamaken@r4103, yamaken@4152
+spec by eyes:      yamaken@r3704, yamaken@r4103, yamaken@r4152
 spec by tests:     yamaken@r3704, yamaken@r4014, yamaken@r4076, yamaken@r4103
 general review:    yamaken@r3704
 64-bit by eyes:    yamaken@r3704
@@ -757,7 +757,7 @@ corner case tests: yamaken@r3896, yamaken@r4103
 
 file:              procedure.c
 category:          r5rs
-spec by eyes:      yamaken@r3880, yamaken@4152
+spec by eyes:      yamaken@r3880, yamaken@r4152
 spec by tests:     yamaken@r3880
 general review:    yamaken@r3880
 64-bit by eyes:    yamaken@r3880
