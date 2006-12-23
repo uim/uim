@@ -2,7 +2,7 @@ include libtool-version.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = iso-639-1.def uim-compat-scm.c
+EXTRA_DIST = iso-639-1.def uim-compat-scm.c test-gc.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
@@ -163,12 +163,9 @@ uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
 
-noinst_PROGRAMS = uim-agent test-gc
+noinst_PROGRAMS = uim-agent
 
 uim_agent_SOURCES = agent.c
 uim_agent_LDADD   = libuim.la
-
-test_gc_SOURCES = test-gc.c
-test_gc_LDADD   = libuim.la
 
 DISTCLEANFILES = uim-stdint.h

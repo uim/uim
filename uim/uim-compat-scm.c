@@ -40,7 +40,7 @@
 #include "uim-internal.h"
 
 #if UIM_SCM_GCC4_READY_GC
-static int uim_scm_symbol_value_int_internal(const char *symbol_str);
+static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
 static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 #endif
 
@@ -66,14 +66,10 @@ int
 uim_scm_symbol_value_int(const char *symbol_str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  int ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, int, uim_scm_symbol_value_int_internal, (symbol_str));
-
-  return ret;
+  return (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
 }
 
-static int
+static void *
 uim_scm_symbol_value_int_internal(const char *symbol_str)
 #endif
 {
@@ -93,11 +89,13 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
   } else {
     val = 0;
   }
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  return (void *)val;
+#else
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return val;
+#endif
 }
 
 uim_lisp
@@ -110,12 +108,7 @@ char *
 uim_scm_symbol_value_str(const char *symbol_str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  char *ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, char *, uim_scm_symbol_value_str_internal,
-			    (symbol_str));
-
-  return ret;
+  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_str_internal, (void *)symbol_str);
 }
 
 static char *

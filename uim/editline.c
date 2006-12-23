@@ -59,7 +59,7 @@ static uim_lisp uim_editline_readline(void);
 static char *prompt(EditLine *e);
 
 #if UIM_SCM_GCC4_READY_GC
-static uim_lisp uim_editline_readline_internal(void);
+static void *uim_editline_readline_internal(void *dummy);
 #endif
 
 void
@@ -88,15 +88,11 @@ static uim_lisp
 uim_editline_readline(void)
 #if UIM_SCM_GCC4_READY_GC
 {
-  uim_lisp ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, uim_editline_readline_internal, ());
-
-  return ret;
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_editline_readline_internal, NULL);
 }
 
-static uim_lisp
-uim_editline_readline_internal(void)
+static void *
+uim_editline_readline_internal(void *dummy)
 #endif
 {
     const char *line;
@@ -119,11 +115,13 @@ uim_editline_readline_internal(void)
 	ret = uim_scm_make_str("");
     }
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+    return (void *)ret;
+#else
     uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
     return ret;
+#endif
 }
 
 static char *prompt(EditLine *e) {
