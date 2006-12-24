@@ -313,7 +313,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
                        [regular], [^(regular|full|small|r5rs|siod|dev|uim)$],
   [
     # multibyte char handlings
-    case $enable_conf in
+    case "$enable_conf" in
       full|dev)
         use_utf8=yes
         use_euccn=yes
@@ -333,7 +333,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
     esac
 
     # R5RS behaviors
-    case $enable_conf in
+    case "$enable_conf" in
       r5rs)
         use_strict_r5rs=yes
         ;;
@@ -370,7 +370,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
     esac
 
     # R5RS features
-    case $enable_conf in
+    case "$enable_conf" in
       full|r5rs|dev)
         use_continuation=yes
         use_quasiquote=yes
@@ -442,7 +442,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
     esac
 
     # SRFIs and SigScheme-specific extensions
-    case $enable_conf in
+    case "$enable_conf" in
       full|r5rs|dev)
         use_srfi1=no
         use_srfi2=yes
@@ -526,7 +526,7 @@ AX_FEATURE_ARG_X(conf, [select base configuration of SigScheme.
     esac
 
     # Debugging features
-    case $enable_conf in
+    case "$enable_conf" in
       dev)
         use_backtrace=yes
         use_debug=yes
