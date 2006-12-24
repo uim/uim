@@ -1,6 +1,8 @@
 GC protection for on-stack objects
 ==================================
 
+FIXME: obsolete
+
 
 About
 -----

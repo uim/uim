@@ -41,7 +41,7 @@ Overview of changes from 0.6.1 to 0.7.0
   - [SRFI-77, R6RS] The SRFI-77 procedures 'least-fixnum' and 'greatest-fixnum'
     have been upgraded to R6RS (R5.91RS) (nothing is actually changed)
 
-  - The API of function call with GC-ready stack has been changed to resolve
+  - The API for function call with GC-ready stack has been changed to resolve
     corrupted GC problem on SPARC and IA-64. It needs API change
 
   - Definition of dotted list length is changed to SRFI-1's from
@@ -73,37 +73,26 @@ Overview of changes from 0.6.1 to 0.7.0
 
   [R5RS] and [SRFI-n] tags indicate specification conformance fixes.
 
-  - Fix crashes by broken va_list passing of format.c on x86_64 platform
+  - [CRITICAL] Fix crashes by broken va_list passing of format.c on x86_64
+    platform
 
-  - Fix crashes by corrupted GC mark on stack on specific platforms that have
-    (alignof(ScmObj) < sizeof(ScmObj)), such as m68k
+  - [CRITICAL] Fix corrupted GC on some architectures such as SPARC and IA-64
+    with libgcroots
 
-  - Fix potential SEGV on long string parsing
+  - [CRITICAL] Fix crashes by corrupted GC mark on stack on specific platforms
+    that have (alignof(ScmObj) < sizeof(ScmObj)), such as m68k
 
-  - Fix possible crash on parsing R5RS-reserved chars |[]{}
+  - [CRITICAL] Fix potential SEGV on long string parsing
 
-  - Fix broken GC on systems that have 8-byte aligned malloc(3) such as Cygwin
+  - [CRITICAL] Fix possible crash on parsing R5RS-reserved chars |[]{}
 
-  - Fix broken 64-bit data model capability of storage-compact
+  - [CRITICAL] Fix broken GC on systems that have 8-byte aligned malloc(3) such
+    as Cygwin
 
-  - Fix broken out of range error detection of string->number which fails every
-    conversion once after the error has occurred
+  - [CRITICAL] Fix broken 64-bit data model capability of storage-compact
 
-  - Fix possible crash on parsing script prelude longer than 64 chars
-
-  - Fix possible crash on parsing script prelude that only has
-    "#! /usr/bin/env"
-
-  - Fix a broken error handling on character encoding switching when
-    !SCM_USE_MULTIBYTE_CHAR
-
-  - Fix infinite loop on raising error objects that contain circular list when
-    SCM_USE_HYGIENIC_MACRO
-
-  - Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
+  - [CRITICAL] Fix broken ScmBaseCharPort inheritance of ScmSingleByteCharPort
     which may cause SEGV
-
-  - Add lacking or incomplete error handlings for port operations
 
   - [R5RS] Fix invalid acceptance of definition form on where neither toplevel
     nor internal definition is allowed
@@ -161,21 +150,39 @@ Overview of changes from 0.6.1 to 0.7.0
   - [SRFI-60] Fix invalid result of (logand). Now it returns -1 as same
     as the reference implementation
 
-  - Fix incomplete singlebyte charater support
+  - [MAJOR] Add lacking or incomplete error handlings for port operations
 
-  - Fix broken sign extention for 8-bit char on string port read
+  - [MAJOR] Fix incomplete singlebyte charater support
 
-  - Fix compile error on environments that lacks stdint.h -compatible
+  - [MAJOR] Fix broken sign extention for 8-bit char on string port read
+
+  - [MAJOR] Fix broken out of range error detection of string->number which
+    fails every conversion once after the error has occurred
+
+  - [MAJOR] Fix possible crash on parsing script prelude longer than 64 chars
+
+  - [MAJOR] Fix possible crash on parsing script prelude that only has
+    "#! /usr/bin/env"
+
+  - [MAJOR] Fix a broken error handling on character encoding switching when
+    !SCM_USE_MULTIBYTE_CHAR
+
+  - [MAJOR] Fix infinite loop on raising error objects that contain circular
+    list when SCM_USE_HYGIENIC_MACRO
+
+  - [MAJOR] Fix compile error on environments that lacks stdint.h -compatible
     definitions
 
-  - Fix missized-cast of 'quotient' which results a broken value on 64-bit
-    configurations
+  - [MAJOR] Fix missized-cast of 'quotient' which results a broken value on
+    64-bit configurations
 
-  - Fix broken evaluation of quasiquoted vectors splicing with improper list
+  - [MAJOR] Fix broken evaluation of quasiquoted vectors splicing with improper
+    list
 
-  - Fix 64-bit capability of quasiquoted vectors
+  - [MAJOR] Fix 64-bit capability of quasiquoted vectors
 
-  - Fix passing circular list into error object when SRFI-38 is not enabled
+  - [MAJOR] Fix passing circular list into error object when SRFI-38 is not
+    enabled
 
   - Fix '0' prefix incapability on a maximum-length binary number literal. See
     "R5RS conformance: Numbers: Literals" subsection of doc/spec.txt for

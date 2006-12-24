@@ -12,7 +12,15 @@ SigScheme is a R5RS Scheme interpreter for embedded use.
   Web access to the repository:
     http://websvn.freedesktop.org/uim/branches/r5rs/sigscheme/
 
-Please report us if you find a problem.
+
+See following files for further information.
+
+  - doc/spec.txt: specifications of SigScheme
+  - QALog:        quality assurance state
+
+Please report us if you find a problem. And if you have a time, run
+'make-report.sh' and send us the result regardless of PASSed or FAILed. It
+greatly helps the development, especially for non-PC platforms.
 
 Mailinglist: uim@freedesktop.org
 
@@ -20,8 +28,8 @@ Mailinglist: uim@freedesktop.org
 Features
 --------
 
-- Conforms to R5RS basically (not fully comformant)
-- R5RS hygienic macros
+- Conforms to R5RS basically (not fully)
+- R5RS hygienic macros (experimental)
 - Supports Following SRFIs
   - SRFI-2  : And-let*
   - SRFI-6  : Basic String Ports
@@ -34,7 +42,7 @@ Features
   - SRFI-48 : Intermediate Format Strings
   - SRFI-60 : Integer as Bits (partial)
   - SRFI-75 : R6RS Unicode data (partial and obsolete)
-- Multibyte character support
+- Multibyte character encodings support
 - Partial SIOD compatibility
 
 See doc/spec.txt and doc/design.txt for furtuer information.
@@ -45,38 +53,59 @@ How to build
 
 At first, you need to run ./configure with some options at the top directory.
 
-$ ./configure [--enable-configuration=CONF] [--enable-multibyte=ENC]
+  $ ./configure [--enable-conf=CONF] [--enable-default-encoding=ENCODING]
 
-(1) --enable-configuration=CONFIGURATION
+(1) --enable-conf=CONF
 
-You can choose the functionality with this option. Please select in the
-following candidates.
+  This specifies a base configuration set. Select one from the list below
+  suitable for your purpose.
 
-  - 'full': compiled with full spec including all supported SRFIs.
-  - 'r5rs': compiled with the functionality only defined in R5RS.
-  - 'siod': compiled in compatible with SIOD(Scheme In One Defun).
+    - full:    compile with full features but broken ones
+    - regular: (default) compile with typically needed features
+    - small:   compile with primary features only
+    - r5rs:    compile with strict R5RS conformances
+    - siod:    emulate some SIOD features and bugs
+    - dev:     developer-friendly configuration
+    - uim:     configure for uim
 
-(2) --enable-multibyte=ENCODING
+(2) --enable-default-encoding=ENCODING
 
-By default, SigScheme is built with UTF-8 as default encoding. You can change
-the default encoding with this option. Currently, following encodings are
-supported.
+  SigScheme normally selects UTF-8 as default encoding. You can change it by
+  this option as follows.
 
-  - 'utf8'
-  - 'euccn'
-  - 'eucjp'
-  - 'euckr'
-  - 'sjis'
+    $ ./configure --enable-default-encoding=eucjp
 
-Then, run make command at the top directory.
+  Following encodings can be specified.
 
-$ make
+    - utf8
+    - euccn
+    - eucjp
+    - euckr
+    - sjis
+
+(3) --enable-ENCODING
+
+  In addition to (2), you can enable other optional and switchable character
+  encodings.
+
+    $ ./configure --enable-default-encoding=eucjp --enable-eucjp --enable-sjis
+
+
+Then type 'make' at the top directory.
+
+  $ make
+
+
+Test
+----
+
+  $ make check
 
 
 Installation
 ------------
 
-$ make install
+  $ make install
 
 
 How to use
@@ -84,14 +113,14 @@ How to use
 
 To run SigScheme in interactive mode, type as follows.
 
-$ sscm
+  $ sscm
 
-To execute a file, do like following.
+To execute a Scheme script, specify it as argument.
 
-$ sscm filename
+  $ sscm <filename>
 
 
 Acknowledgements
 ----------------
 
-Part of this software is funded by IPA (http://www.ipa.go.jp/)
+Some parts of this software are funded by IPA (http://www.ipa.go.jp/)

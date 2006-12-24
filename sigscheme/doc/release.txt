@@ -1,6 +1,9 @@
 Release management of SigScheme
 ===============================
 
+FIXME: obsolete
+
+
 Acknowledgement
 ---------------
 

@@ -8,9 +8,7 @@ General
 64-bit data models
 ~~~~~~~~~~~~~~~~~~
 
-  - Supports LL64, LLP64, LP64 and ILP64 (storage-fatty)
-
-  - storage-compact does not support any of above (yet)
+Supports LL64, LLP64, LP64 and ILP64 on both storage-fatty and storage-compact.
 
 Addressable memory space
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -52,7 +50,10 @@ causes an error.
 Macros
 ~~~~~~
 
-The hygienic macros are fully supported.
+The hygienic macros are fully supported. But although the macro expansion
+engine itself works well and can be expected as R5RS-conformant, its
+integration into SigScheme is not fully validated yet. It is likely having a
+problem on identifier references.
 
 Numbers
 ~~~~~~~
@@ -375,6 +376,12 @@ Numbers
   - *procedure:* exact->inexact z
   - *procedure:* inexact->exact z
 
+Promises
+^^^^^^^^
+
+  - *library syntax:* delay <expression>
+  - *library procedure:* force promise
+
 System interface
 ^^^^^^^^^^^^^^^^
 
@@ -586,6 +593,8 @@ TODOs
 
 SIOD compatibility
 ------------------
+
+FIXME: describe them.
 
   - #f and '()
 
