@@ -135,12 +135,12 @@ AC_DEFUN([AX_FEATURE_DEFINE], [
 
   m4_define_default(AX_FEATURE_DESC_[]AS_TR_CPP([$1]),
                     [$1])
-  if test "x${AX_FEATURE_PREFIX_VAR[][$1]:-no}" != xno; then
+  if test "x${AX_FEATURE_PREFIX_VAR[][$1]:=no}" != xno; then
     AC_DEFINE(m4_default([$2], AX_FEATURE_PREFIX_DEF[]m4_toupper([$1])), 1,
               m4_default([$4], AX_FEATURE_DESC_[]AS_TR_CPP([$1])))
   fi
   AM_CONDITIONAL(m4_default([$3], AX_FEATURE_PREFIX_COND[]m4_toupper([$1])),
-                 test "x${AX_FEATURE_PREFIX_VAR[$1]:-no}" != xno)
+                 test "x${AX_FEATURE_PREFIX_VAR[$1]}" != xno)
 ])
 
 # _AX_FEATURE_OVERRIDE_VALS(DEPENDENT-VAL, FEATURE-LIST)
