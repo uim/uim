@@ -252,10 +252,11 @@ AX_CHECK_PAGE_ALIGNED_MALLOC
 #####################
 
 AC_ARG_WITH(libgcroots,
-            AS_HELP_STRING([--with-libgcroots[=WHICH]],
+            AS_HELP_STRING([--with-libgcroots@<:@=WHICH@:>@],
                            [use alternative libgcroots instead of
                             package-bundled one.
-                            WHICH=(installed|tiny-subst) [default=installed]]))
+                            WHICH=(installed|tiny-subst)
+                            @<:@default=installed@:>@]))
 
 case "${with_libgcroots:=no}" in
   no)
