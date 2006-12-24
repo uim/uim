@@ -1,4 +1,8 @@
-SUBDIRS = doc m4 tools include src lib test test-c bench
+SUBDIRS = doc m4 tools
+if USE_LIBGCROOTS_BUNDLED
+SUBDIRS += libgcroots
+endif
+SUBDIRS += include src lib test test-c bench
 
 UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 SSCM_REPOSITORY = $(UIM_REPOSITORY)/branches/r5rs/sigscheme

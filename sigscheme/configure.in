@@ -247,6 +247,51 @@ AH_VERBATIM(_BSD_SOURCE,
 AX_CHECK_PAGE_ALIGNED_MALLOC
 
 
+#####################
+# Optional packages #
+#####################
+
+AC_ARG_WITH(libgcroots,
+            AS_HELP_STRING([--with-libgcroots[=WHICH]],
+                           [use alternative libgcroots instead of
+                            package-bundled one.
+                            WHICH=(installed|tiny-subst) [default=installed]]))
+
+case "${with_libgcroots:=no}" in
+  no)
+    # bundled libgcroots package
+
+    ac_configure_args="$ac_configure_args "
+    AC_CONFIG_SUBDIRS([libgcroots])
+
+    GCROOTS_LIBS='$(top_builddir)/libgcroots/libgcroots.la'
+    GCROOTS_CFLAGS='-I$(top_builddir)/libgcroots/include'
+    use_libgcroots="bundled one"
+  ;;
+  yes|installed)
+    PKG_CHECK_MODULES(GCROOTS, [gcroots >= 0.1.0],
+                      [],
+                      [AC_MSG_ERROR([installed libgcroots is not found.])])
+    use_libgcroots="installed one"
+  ;;
+  tiny-subst)
+    # use src/gcroots/gcroots.[hc]
+    with_libgcroots=tiny_subst
+    use_libgcroots="tiny substitution in src/gcroots"
+  ;;
+  *)
+    AC_MSG_ERROR([invalid argument for --with-libgcroots.])
+  ;;
+esac
+
+AC_SUBST(GCROOTS_LIBS)
+AC_SUBST(GCROOTS_CFLAGS)
+AM_CONDITIONAL(USE_LIBGCROOTS, [test "x$with_libgcroots" != xtiny_subst])
+AM_CONDITIONAL(USE_LIBGCROOTS_BUNDLED, [test "x$with_libgcroots" = xno])
+AM_CONDITIONAL(USE_LIBGCROOTS_TINY_SUBST,
+               [test "x$with_libgcroots" = xtiny_subst])
+
+
 ########################################
 # Configure features with dependencies #
 ########################################
@@ -934,6 +979,7 @@ base config:  $use_conf
 [Storage configuration]
 Storage impl: $use_storage
 Fixnum size:  $use_fixnum
+libgcroots:   $use_libgcroots
 
 [Multibyte character handlings]
 Multibyte chars:  ${use_multibyte_char:-no}

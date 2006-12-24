@@ -321,8 +321,7 @@ if USE_SRFI60
   libsscm_sources += module-srfi60.c
 endif
 
-if WITH_LIBGCROOTS
-else
+if USE_LIBGCROOTS_TINY_SUBST
 libsscm_sources += gcroots/gcroots.h gcroots/gcroots.c
 endif
 
@@ -332,7 +331,7 @@ libsscm_la_LIBADD   = $(LIBOBJS)
 libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
 libsscm_la_CPPFLAGS = -I$(top_builddir)/include -DSCM_COMPILING_LIBSSCM=1
 libsscm_la_CFLAGS   =
-if WITH_LIBGCROOTS
+if USE_LIBGCROOTS
 libsscm_la_LIBADD   += @GCROOTS_LIBS@
 libsscm_la_CFLAGS   += @GCROOTS_CFLAGS@
 endif
