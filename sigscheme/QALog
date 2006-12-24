@@ -132,6 +132,8 @@ Categorized File List
   * storage-compact.h
   * storage.c
   * storage-gc.c
+  * gcroots.h
+  * gcroots.c
   * strcasecmp.c
   * alloc.c
   * error.c
@@ -234,6 +236,8 @@ y yy y   core storage-fatty.h
 y yy yy  core storage-compact.h
 y yy y   core storage.c
 y yy y   core storage-gc.c
+y yy yy  core gcroots.h
+y yy yy  core gcroots.c
 yyyy yyy core strcasecmp.c
 y yy y   core alloc.c
 y yy y   core error.c
@@ -588,6 +592,28 @@ general review:    yamaken@r4066
 64-bit by tests:   
 coding style:      yamaken@r4066
 normal case tests: 
+corner case tests: 
+
+file:              gcroots.h
+category:          core
+spec by eyes:      yamaken@r4203
+spec by tests:     
+general review:    yamaken@r4203
+64-bit by eyes:    yamaken@r4203
+64-bit by tests:   
+coding style:      yamaken@r4203
+normal case tests: yamaken@r4203
+corner case tests: 
+
+file:              gcroots.c
+category:          core
+spec by eyes:      yamaken@r4203
+spec by tests:     
+general review:    yamaken@r4203
+64-bit by eyes:    yamaken@r4203
+64-bit by tests:   
+coding style:      yamaken@r4203
+normal case tests: yamaken@r4203
 corner case tests: 
 
 file:              strcasecmp.c
@@ -1055,6 +1081,11 @@ corner case tests:
 
 Log
 ---
+2006-12-24  YamaKen <yamaken AT bp.iij4u.or.jp>
+        * gcroots.h
+        * gcroots.c
+          - QA done @r4203
+
 2006-12-23  YamaKen <yamaken AT bp.iij4u.or.jp>
         * sigscheme.h
         * storage-gc.c

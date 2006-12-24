@@ -59,5 +59,6 @@ sscm_debug=@use_debug@
 Name: @PACKAGE_NAME@
 Description: Scheme interpreter for embedded use
 Version: @VERSION@
+Requires: @GCROOTS_REQ@
 Libs: -L${libdir} -lsscm
 Cflags: -I${includedir}/sigscheme

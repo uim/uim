@@ -1,6 +1,7 @@
 AM_CPPFLAGS = -I$(top_builddir)/include -I$(top_srcdir)/src
+AM_CFLAGS   = @GCROOTS_CFLAGS@
 AM_LDFLAGS  = -rpath $(libdir)
-LIBS        = $(top_builddir)/src/libsscm.la
+LIBS        = $(top_builddir)/src/libsscm.la @GCROOTS_LIBS@
 
 EXTRA_DIST= sscm-test.h utils.c \
             test-alignment.c \

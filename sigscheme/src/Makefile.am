@@ -327,22 +327,18 @@ endif
 
 if USE_LIBSSCM
 libsscm_la_SOURCES  = $(libsscm_sources)
-libsscm_la_LIBADD   = $(LIBOBJS)
+libsscm_la_LIBADD   = $(LIBOBJS) @GCROOTS_LIBS@
 libsscm_la_LDFLAGS  = -version-info $(libsscm_version)
 libsscm_la_CPPFLAGS = -I$(top_builddir)/include -DSCM_COMPILING_LIBSSCM=1
-libsscm_la_CFLAGS   =
-if USE_LIBGCROOTS
-libsscm_la_LIBADD   += @GCROOTS_LIBS@
-libsscm_la_CFLAGS   += @GCROOTS_CFLAGS@
-endif
+libsscm_la_CFLAGS   = @GCROOTS_CFLAGS@
 endif
 
 if USE_SHELL
 bin_PROGRAMS  = sscm
 sscm_SOURCES  = main.c
-sscm_LDADD    = libsscm.la
+sscm_LDADD    = libsscm.la @GCROOTS_LIBS@
 sscm_CPPFLAGS = -I$(top_builddir)/include
-sscm_CFLAGS   =
+sscm_CFLAGS   = @GCROOTS_CFLAGS@
 endif
 
 # To enable ruby-and-perl-less build on tarball distribution, we should not

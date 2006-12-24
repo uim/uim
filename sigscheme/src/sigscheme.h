@@ -42,9 +42,9 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "gcroots/gcroots.h"
-#if (GCROOTS_API_REVISION < 1)
-#error "libgcroots that has API revision >= 1 is required"
+#include <gcroots.h>
+#if (GCROOTS_API_REVISION < 0)
+#error "libgcroots that has API revision >= 0 is required"
 #endif
 
 #include "scmint.h"

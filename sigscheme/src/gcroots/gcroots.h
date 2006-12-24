@@ -44,8 +44,8 @@ extern "C" {
 
 #define GCROOTS_VERSION_MAJOR      (0)
 #define GCROOTS_VERSION_MINOR      (1)
-#define GCROOTS_VERSION_PATCHLEVEL (0)
-#define GCROOTS_API_REVISION       (1)
+#define GCROOTS_VERSION_PATCHLEVEL (1)
+#define GCROOTS_API_REVISION       (0)
 
 #define GCROOTS_VERSION_REQUIRE(major, minor, patchlevel)                    \
   ((major) < GCROOTS_VERSION_MAJOR                                           \
