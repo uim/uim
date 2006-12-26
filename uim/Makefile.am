@@ -1,4 +1,5 @@
 include libtool-version.mk
+include $(top_builddir)/sigscheme/libgcroots.mk
 
 AUTOMAKE_OPTIONS = foreign
 
@@ -106,15 +107,18 @@ libuimincludedir =  $(includedir)/uim
 # conflict. The libtool option is not and will not be supported on
 # some platforms. See [Anthy-dev 2847].  -- YamaKen 2006-03-30
 libuim_la_LDFLAGS = -version-info $(libuim_version) -export-dynamic
-libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ \
+libuim_la_LIBADD = $(GCROOTS_LIBS) \
+		   @LTLIBINTL@ @LTLIBICONV@ \
 		   $(top_builddir)/replace/libreplace.la
 # place -I$(top_srcdir) surely prior to sigscheme dirs
 libuim_la_CPPFLAGS = $(uim_defs) \
 		     -I$(top_srcdir) \
-		     -I$(top_srcdir)/sigscheme/include \
+		     -I$(top_builddir)/sigscheme/include \
 		     -I$(top_srcdir)/sigscheme/src \
+		     -I$(top_builddir)/sigscheme/src \
 		     -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
+libuim_la_CFLAGS = $(GCROOTS_CFLAGS)
 
 if ENABLE_ANTHY_STATIC
   libuim_la_LIBADD += @ANTHY_LIBS@
