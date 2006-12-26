@@ -17,20 +17,29 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 ACLOCAL_AMFLAGS = -I m4
 
-ChangeLog: FORCE
-	@cd $(top_srcdir); \
-	svn log | $(top_srcdir)/tools/gnuify-changelog.pl > ChangeLog.tmpl; \
-	if test -s ChangeLog.tmpl; then \
-	    mv ChangeLog.tmpl ChangeLog; \
-	    echo "ChangeLog updated successfully."; \
-	else \
-	    echo "ChangeLog: Failed to update ChangeLog."; \
-	    $(RM) -f ChangeLog.tmpl; \
-	fi
+UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
+TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
+RELEASE_URL     = $(TAGS_REPOSITORY)/$(PACKAGE)-$(VERSION)
+#RELEASE_URL     = $(UIM_REPOSITORY)/trunk
+DIST_SUM_LIST = $(PACKAGE)-$(VERSION).sum
 
-.PHONY: FORCE releasetest-all-flag-enabled releasetest-all-flag-disabled each-releasetest releasetest
+.PHONY: FORCE sum releasetest-all-flag-enabled releasetest-all-flag-disabled each-releasetest releasetest
 
 FORCE:
+
+ChangeLog: FORCE
+	svn log $(RELEASE_URL) | $(top_srcdir)/tools/gnuify-changelog.pl > $@
+	@if test -s $@; then                                    \
+	    echo "ChangeLog updated successfully.";             \
+	else                                                    \
+	    echo "ChangeLog: Failed to update ChangeLog.";      \
+	    $(RM) -f $@;                                        \
+	    false;                                              \
+	fi
+
+sum:
+	$(MD5) $(DIST_ARCHIVES) >$(DIST_SUM_LIST)
+	$(SHA1) $(DIST_ARCHIVES) >>$(DIST_SUM_LIST)
 
 releasetest-all-flag-enabled: RELEASETEST_CONFIGURE_FLAGS= --enable-debug \
 	--enable-fep --enable-emacs --enable-dict \
