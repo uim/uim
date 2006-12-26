@@ -44,6 +44,7 @@ static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
 static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 #endif
 
+extern uim_lisp uim_scm_last_val;
 static uim_lisp return_val;
 
 /* will be deprecated. use uim_scm_c_str() instead */
@@ -56,8 +57,7 @@ uim_get_c_string(uim_lisp str)
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
-  /* TODO: fix return value */
-  scm_eval_c_string(str);
+  uim_scm_last_val = scm_eval_c_string(str);
 
   return 0;
 }
@@ -221,42 +221,32 @@ uim_scm_nth(uim_lisp n, uim_lisp lst)
 uim_lisp
 uim_scm_list1(uim_lisp elm1)
 {
-  uim_lisp lst;
-  lst = uim_scm_cons(elm1, uim_scm_null_list());
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_null_list());
 }
 
 uim_lisp
 uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
 {
-  uim_lisp lst;
-  lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_null_list()));
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list1(elm2));
 }
 
 uim_lisp
 uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
 {
-  uim_lisp lst;
-  lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_cons(elm3, uim_scm_null_list())));
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list2(elm2, elm3));
 }
 
 uim_lisp
 uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
 {
-  uim_lisp lst;
-  lst = uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
 }
 
 uim_lisp
 uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
               uim_lisp elm5)
 {
-  uim_lisp lst;
-  lst = uim_scm_cons(elm1, uim_scm_cons(elm2, uim_scm_list3(elm3, elm4, elm5)));
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list4(elm2, elm3, elm4, elm5));
 }
 
 /* Is this function used from somewhere? I think this function could be removed. */

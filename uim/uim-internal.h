@@ -124,12 +124,6 @@ struct uim_context_ {
 };
 
 
-/*
-  Most of following definitions should be separated into another file such as
-  private.h since they are not relevant to input contexts. I'm not having
-  enough time to do and validate it. Anyone?  -- YamaKen 2005-07-30
-*/
-
 #if 0
 /*
   Evaluating a S-expression in C involves the two problems, performance and

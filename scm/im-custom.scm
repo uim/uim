@@ -327,8 +327,8 @@
 	(list 'right
 	      (_ "Right end of preedit area")
 	      (_ "Right end of preedit area")))
- (_ "Candidate window position")
- (_ "long description will be here."))
+  (_ "Candidate window position")
+  (_ "long description will be here."))
 
 (define-custom 'enable-lazy-loading? #t
   '(global advanced)

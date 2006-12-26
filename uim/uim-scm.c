@@ -49,6 +49,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "uim-stdint.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
@@ -77,7 +78,7 @@ static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
 #endif
 
-static uim_lisp last_val;
+uim_lisp uim_scm_last_val;
 static uim_bool sscm_is_exit_with_fatal_error;
 static FILE *uim_output = NULL;
 
@@ -249,7 +250,7 @@ uim_scm_make_str(const char *str)
 char *
 uim_scm_c_symbol(uim_lisp symbol)
 {
-  return strdup((char*)SCM_SYMBOL_NAME((ScmObj)symbol));
+  return strdup((char *)SCM_SYMBOL_NAME((ScmObj)symbol));
 }
 
 uim_lisp
@@ -450,16 +451,16 @@ uim_scm_eval_internal(void *uim_lisp_obj)
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  last_val = (uim_lisp)scm_eval_c_string(str);
+  uim_scm_last_val = (uim_lisp)scm_eval_c_string(str);
 
-  return last_val;
+  return uim_scm_last_val;
 }
 
 uim_lisp
 uim_scm_return_value(void)
 {
   /* FIXME: This function should be removed. */
-  return last_val;
+  return uim_scm_last_val;
 }
 
 uim_lisp
@@ -507,6 +508,10 @@ uim_scm_cons(uim_lisp car, uim_lisp cdr)
 uim_lisp
 uim_scm_length(uim_lisp lst)
 {
+  /*
+    although nlength() of siod returns length of anything, this
+    function should be called only for list
+  */
   return (uim_lisp)scm_p_length((ScmObj)lst);
 }
 
@@ -574,7 +579,7 @@ exit_hook(void)
   sscm_is_exit_with_fatal_error = UIM_TRUE;
   /* FIXME: Add longjmp() to outermost uim API call, and make all API
    * calls uim_scm_is_alive()-sensitive. It should be fixed on uim
-   * 1.3.  -- YamaKen 2006-06-06 */
+   * 1.5.  -- YamaKen 2006-06-06, 2006-12-27 */
 }
 
 void
@@ -624,7 +629,7 @@ uim_scm_init(const char *verbose_level)
   scm_use("srfi-34");
   scm_use("siod");
 
-  uim_scm_gc_protect(&last_val);
+  uim_scm_gc_protect(&uim_scm_last_val);
   uim_scm_set_verbose_level(vlevel);
 }
 

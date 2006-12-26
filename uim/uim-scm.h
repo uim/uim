@@ -58,16 +58,6 @@
 extern "C" {
 #endif
 
-/*
-  UIM_SCM_EXTENDED_API indicates that the interfaces are extended in
-  the r5rs barnch. Some of interfaces are re-adopted from
-  uim-compat-scm.h. Since it contradicts with the "core interface
-  policy" described above (2005-01-10 YamaKen), it must be
-  distinguished from original ones for now. A discussion may be
-  required to make the new API standard before next stable series
-  has been released.  -- YamaKen 2005-07-29
-*/
-#define UIM_SCM_EXTENDED_API
 
 #define UIM_SCM_GCC4_READY_GC 1
 
