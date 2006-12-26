@@ -3,7 +3,7 @@ SUBDIRS = m4 doc replace sigscheme uim scm gtk qt xim helper po test fep emacs \
 	examples pixmaps
 EXTRA_DIST = RELNOTE uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
-	uim.pc.in ChangeLog.old uim.desktop autogen.sh
+	uim.pc.in ChangeLog.old uim.desktop autogen.sh make-dist.sh
 
 DISTCLEANFILES = uim.pc intltool-extract intltool-merge intltool-update po/.intltool-merge-cache
 
