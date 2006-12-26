@@ -1003,7 +1003,7 @@ AC_SUBST(abs_top_builddir)
 
 # configure sigscheme/ subdir
 # To allow overridings, $ac_configure_args is placed at end.
-ac_configure_args="--enable-conf=uim --disable-libsscm --disable-shell $ac_configure_args"
+ac_configure_args="$ac_configure_args --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([sigscheme])
 
 AC_CONFIG_FILES([Makefile
