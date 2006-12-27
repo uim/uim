@@ -1,11 +1,11 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = m4 doc replace sigscheme uim scm gtk qt xim helper po test fep emacs \
 	examples pixmaps
-EXTRA_DIST = RELNOTE uim.spec.in \
+EXTRA_DIST = RELNOTE uim.spec.in uim.spec \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in ChangeLog.old uim.desktop autogen.sh make-dist.sh
 
-DISTCLEANFILES = uim.pc \
+DISTCLEANFILES = uim.pc uim.desktop \
 		 intltool-extract intltool-merge intltool-update \
 		 po/.intltool-merge-cache \
 		 gnuify-changelog.pl $(DIST_SUM_LIST)
@@ -98,5 +98,7 @@ releasetest: dist
 	  list='$(DIST_ARCHIVES)'; for i in $$list; do echo $$i; done) | \
 	  sed -e '1{h;s/./=/g;p;x;}' -e '$${p;x;}'
 
-dist-hook: uim.spec
-	cp uim.spec $(distdir)
+distclean-local:
+	if test '$(top_srcdir)' != '$(top_builddir)'; then      \
+	    rm -f ChangeLog;                                    \
+	fi

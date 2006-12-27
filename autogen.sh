@@ -7,4 +7,5 @@ aclocal -I m4 \
   && autoheader \
   && automake --add-missing --foreign --copy \
   && autoconf \
-  && intltoolize --copy --force --automake
+  && intltoolize --copy --force --automake \
+  && perl -i -pe 's/\bscm\b/scm-workaround/g' intltool-update.in
