@@ -72,7 +72,7 @@ AC_SUBST(m17n_db_dir)
 
 AC_ARG_WITH(scim,
   AC_HELP_STRING([--with-scim],
-                 [build against SCIM (too experimental)
+                 [build against SCIM (broken)
 		  @<:@default=no@:>@]),
   [
     case $with_scim in

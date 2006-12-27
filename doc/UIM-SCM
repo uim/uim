@@ -4,7 +4,7 @@ developers.
 
 * Abstract
 
-  The uim-scm API is responsible for follwing two roles.
+  The uim-scm API is responsible for following two roles.
 
   - Provides Scheme interpreter interfaces to input method plugin
     developers
@@ -22,7 +22,7 @@ developers.
   uim-scm provides the lisp object type named 'uim_lisp'. Since all of
   the objects are managed by a conservative mark and sweep GC, you
   have to protect them from undesirable collection. The word
-  'protection' means that instructing GC "it's in use, don't
+  'protection' means that instructing GC "It's in use, don't
   mark". There are two methods of protection.
 
   1. static storage protection
@@ -47,68 +47,62 @@ developers.
     You can also protect your lisp objects on stack (i.e. auto
     storage). See following example.
 
-
-    static char *
+    char *
     literalize_string(const char *str)
     {
-      uim_lisp stack_start;
+      uim_gc_gate_func_ptr func_body;
+      void *ret;
+
+      func_body = (uim_gc_gate_func_ptr)literalize_string_internal;
+      ret = uim_scm_call_with_gc_ready_stack(func_body, (void *)str);
+
+      return (char *)ret;
+    }
+
+    static char *
+    literalize_string_internal(const char *str)
+    {
       uim_lisp form;
       char *escaped;
 
-      uim_scm_gc_protect_stack(&stack_start);
       form = uim_scm_list2(uim_scm_make_symbol("string-escape"),
                            uim_scm_make_str(str));
       escaped = uim_scm_c_str(uim_scm_eval(form));
-      uim_scm_gc_unprotect_stack(&stack_start);
 
       return escaped;
     }
 
+    All function that uses stack-placed uim_lisp must be called via
+    uim_scm_call_with_gc_ready_stack() as above. It setups the base address of
+    'protected' stack region. In this case, the lisp objects 'form', anonymous
+    return value of uim_scm_make_symbol(), uim_scm_make_str() and
+    uim_scm_eval() are protected by the method (although some objects may be
+    placed into registers, the registers are also protected implicitly).
 
-    Combination of uim_scm_gc_protect_stack(),
-    uim_scm_gc_unprotect_stack() and the dummy variable 'stack_start'
-    consists of the stack protection. In this case, the lisp objects
-    'form', anonymous return value of uim_scm_make_symbol(),
-    uim_scm_make_str() and uim_scm_eval() are protected by the method
-    (although some objects may be placed into registers, the registers
-    are also protected implicitly).
+    The function type uim_gc_gate_func_ptr is defined as follows in
+    uim-scm.h. Since its arguments and return type are fixed to (void *),
+    passing multiple arguments to a function need temporary struct. See
+    uim_scm_error() in uim-scm.c for example.
 
-    The 'stack_start' indicates start point of protected region. And
-    uim_scm_gc_protect_stack() instructs the GC protection. After the
-    invocation, the region from stack_start to top of the stack is
-    left untouched at GC marking.
+    typedef void *(*uim_gc_gate_func_ptr)(void *);
 
-    Protected stack regions can be nested or duplexed.
-
-    Be careful to place stack_start. There are some bad examples.
-
-    - invalid order
-
-      uim_lisp form;         /* XXX out of protected region */
-      uim_lisp stack_start;
-
-    - invalid order (2)
-
-      uim_lisp form, stack_start;   /* XXX may by out of protected region */
-
-    - uncertain way
-
-      uim_lisp stack_start, form;   /* ??? may be implementation dependent */
+    The 'protected' stack region can be
+    nested. i.e. uim_scm_call_with_gc_ready_stack() can be invoked from a
+    function invoked from uim_scm_call_with_gc_ready_stack().
 
 
 * Internal
 
-  This API is not intended to provide all R5RS features. Only 'core'
+  The uim-scm API is not intended to provide all R5RS features. Only 'core'
   ones to write Scheme-C adapters should be added. Consider how
   frequently it will be used, and whether it should be written by C,
   when you want to add an API function.
 
-  Current implemenation of uim-scm only provides the Siod
-  interpreter. To avoid namespace pollution, all Siod functions are
-  defined as static and wrapped into uim-scm.c by direct inclusion
-  rather than linked via public symbols. After elaboration of uim-scm
-  API, the Scheme interpreter implementation can be switched to
-  another one such as uim-scm-tinyscheme.c or uim-scm-gauche.c. But
-  *.[hc] under uim/ and *.scm are still depending on Siod in several
-  ways. At least full test suite for *.scm files are required to
-  migrate to another Scheme implementation.
+  Current implemenation of uim-scm only provides the SigScheme interpreter. To
+  avoid namespace pollution, all SigScheme functions and variables are defined
+  as static and wrapped into uim-scm.c by direct inclusion rather than linked
+  via public symbols. After elaboration of uim-scm API, the Scheme interpreter
+  implementation can be switched to another one such as uim-scm-scheme48.c or
+  uim-scm-gauche.c. But *.[hc] under uim/ and *.scm are still depending on
+  SIOD-specific (and emulated by SigScheme) features and behaviors in several
+  ways.

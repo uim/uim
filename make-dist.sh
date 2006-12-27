@@ -11,10 +11,11 @@ SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.7.2"
 LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.1.2"
 #LIBGCROOTS_URL="${LIBGCROOTS_REPOSITORY}"
 
-CONF_COMMON="--enable-maintainer-mode"
-CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-dict --disable-scim --disable-gnome-applet --without-anthy --without-canna --without-mana --without-prime --without-m17nlib --without-gtk2 --without-gnome2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
+CONF_COMMON="--enable-maintainer-mode --disable-warnings-into-error"
+CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-gnome-applet --disable-kde-applet --disable-pref --disable-dict --without-anthy --without-canna --without-mana --without-prime --without-m17nlib --without-scim --without-gtk2 --without-gnome2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
 CONF_DEFAULT="$CONF_COMMON"
-CONF_FULL="$CONF_COMMON --enable-debug --enable-fep --enable-emacs --enable-dict --enable-scim --enable-gnome-applet --with-anthy --with-canna --with-mana --with-prime --with-m17nlib --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --enable-compat-scm --with-eb --with-libedit"
+# --without-scim since it is broken
+CONF_FULL="$CONF_COMMON --enable-debug --enable-fep --enable-emacs --enable-scim --enable-gnome-applet --enable-kde-applet --enable-pref --enable-dict --with-anthy --with-canna --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --enable-compat-scm --with-eb --with-libedit"
 
 
 svn export $SSCM_URL sigscheme
