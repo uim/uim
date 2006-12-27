@@ -28,17 +28,35 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 
+(use srfi-6)
 (use srfi-34)
 
 ;;;;
-;(require "slib-mulapply.scm")
-;(require "slib-srfi-1.scm")
 
 (define hyphen-sym (string->symbol "-"))
 
 ;;
 ;; generic utilities
 ;;
+
+;; Make escaped string literal to print a form.
+;;
+;; (string-escape "a str\n") -> "\"a str\\n\""
+;;
+;; The following two codes must display same result. See
+;; test/test-util.scm for further specification.
+;;
+;; (display str)
+;;
+;; (use srfi-6)
+;; (define estr (string-append "(display " (string-escape str) ")"))
+;; (eval (read (open-input-string estr))
+;;       (interaction-environment))
+(define string-escape
+  (lambda (s)
+    (let ((p (open-output-string)))
+      (write s p)
+      (get-output-string p))))
 
 ;; Current uim implementation treats char as integer
 
