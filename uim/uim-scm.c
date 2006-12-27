@@ -202,8 +202,7 @@ const char *
 uim_scm_refer_c_str(uim_lisp str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  return uim_scm_call_with_gc_ready_stack(uim_scm_refer_c_str_internal,
-					  (void *)str);
+  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_refer_c_str_internal, (void *)str);
 }
 
 static const char *

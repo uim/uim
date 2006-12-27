@@ -57,7 +57,7 @@ uim_get_c_string(uim_lisp str)
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
-  uim_scm_last_val = scm_eval_c_string(str);
+  uim_scm_last_val = (uim_lisp)scm_eval_c_string(str);
 
   return 0;
 }

@@ -944,8 +944,8 @@ if test x$enable_debug = xyes; then
 	CFLAGS="$CFLAGS -g -pipe"
 	CXXFLAGS="$CXXFLAGS -g -pipe"
 else
-	CFLAGS="$CFLAGS -O2 -pipe"
-	CXXFLAGS="$CXXFLAGS -O2 -pipe"
+	CFLAGS="$CFLAGS -DNDEBUG -O2 -pipe"
+	CXXFLAGS="$CXXFLAGS -DNDEBUG -O2 -pipe"
 fi
 
 # add warning flags to CFLAGS if GCC=yes
