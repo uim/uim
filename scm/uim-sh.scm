@@ -47,15 +47,10 @@
 	   (eof  (eof-object? expr)))
       (if (not eof)
 	  (begin
-	    (guard (err
-		    (else
-                     (display err)
-		     (%%backtrace)
-		     #f))
-	      ((if uim-sh-opt-strict-batch
-		   (lambda (obj) #f)
-		   print)
-	       (eval expr (interaction-environment))))
+	    ((if  uim-sh-opt-strict-batch
+		  (lambda () #f)
+		  print)
+	     (eval expr (interaction-environment)))
 	    (uim-sh-loop))
 	  #f))))
 
@@ -96,11 +91,15 @@
 	  (if (and uim-editline-enabled
 		   (symbol-bound? 'uim-editline-readline))
 	      (activate-editline))
-;	  (if (*catch
-;	       'all
-;	       (uim-sh-loop))
-;	      (uim-sh args))))))
-	       (uim-sh-loop)))))
+	  (if (guard (err
+		      (else
+		       (display err)
+		       (newline)
+		       (if (>= (verbose) 2)
+			   (%%backtrace))
+		       #t))
+		(uim-sh-loop))
+	      (uim-sh args))))))
 
 (if (symbol-bound? 'uim-editline-readline)
     (begin
