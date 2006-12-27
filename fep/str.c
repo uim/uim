@@ -35,7 +35,7 @@
 #include <config.h>
 #endif
 #include <stdio.h>
-#ifndef DEBUG
+#if (!defined(DEBUG) && !defined(NDEBUG))
 #define NDEBUG
 #endif
 #ifdef HAVE_ASSERT_H

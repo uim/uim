@@ -34,7 +34,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#ifndef DEBUG
+#if (!defined(DEBUG) && !defined(NDEBUG))
 #define NDEBUG
 #endif
 
