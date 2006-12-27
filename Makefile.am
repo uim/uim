@@ -5,7 +5,10 @@ EXTRA_DIST = RELNOTE uim.spec.in \
 	intltool-extract.in intltool-merge.in intltool-update.in \
 	uim.pc.in ChangeLog.old uim.desktop autogen.sh make-dist.sh
 
-DISTCLEANFILES = uim.pc intltool-extract intltool-merge intltool-update po/.intltool-merge-cache
+DISTCLEANFILES = uim.pc \
+		 intltool-extract intltool-merge intltool-update \
+		 po/.intltool-merge-cache \
+		 tools/gnuify-changelog.pl $(DIST_SUM_LIST)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = uim.pc
@@ -28,7 +31,9 @@ DIST_SUM_LIST = $(PACKAGE)-$(VERSION).sum
 FORCE:
 
 ChangeLog: FORCE
-	svn log $(RELEASE_URL) | $(top_srcdir)/tools/gnuify-changelog.pl > $@
+	svn export $(UIM_REPOSITORY)/trunk/tools/gnuify-changelog.pl \
+	    tools/gnuify-changelog.pl
+	svn log $(RELEASE_URL) | tools/gnuify-changelog.pl > $@
 	@if test -s $@; then                                    \
 	    echo "ChangeLog updated successfully.";             \
 	else                                                    \
