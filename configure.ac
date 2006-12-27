@@ -663,7 +663,7 @@ AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 AM_CONDITIONAL(GCC, test x$ac_cv_c_compiler_gnu = xyes)
 AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
 
-AC_PROG_INTLTOOL([0.31], [no-xml])
+AC_PROG_INTLTOOL([0.35], [no-xml])
 
 
 GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
