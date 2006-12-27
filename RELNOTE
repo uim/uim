@@ -1,54 +1,12 @@
-uim 1.3.1 Release Note
+uim 1.4.0 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.3.1 is latest stable release of uim.
+This distribution of uim 1.4.0 is latest stable release of uim.
 
-Please report us if you find a problem.
-
-Mailinglist: uim@freedesktop.org
-Bug tracking system: http://bugs.freedesktop.org/
-
-
-What's New
-----------
-Minor bug fix and compilation fix on non-immodule patched version of Qt3.
-See NEWS for the detailed changes.
-
-
-What's New in 1.3.0
--------------------
-
-  - Text acquisition and focus-related APIs
-
-  - Dead keys support for the latin IM
-
-  - Experimental Kana keyboard support
-
-  - Flash Player 9 plugin workaround for uim-xim
-
-  - New Try-Code Japanese IM
-
-See NEWS for the fully detailed changes.
-
-
-Notes for Packagers and System Integrators
-------------------------------------------
-
-  - The maintainer mode of configure script is introduced. If your
-    package prefer your own PNG icon generation with rsvg, Add
-    --enable-maintainer-mode option to configure
-
-  - anthy.png, canna.png and prime.png are replaced with generated
-    file. Be careful to maintain install procedure
-
-
-Roadmap
--------
-
-  - uim 1.4.0
+FIXME
 
     Release for internal improvement. No user-visible changes other
     than resource consumption reduction. This release plan will not be
@@ -58,6 +16,28 @@ Roadmap
     replaced with newly developed SigScheme to make a room for next
     leap.
 
+Please report us if you find a problem.
+
+Mailinglist: uim@freedesktop.org
+Bug tracking system: http://bugs.freedesktop.org/
+
+
+What's New
+----------
+
+FIXME
+
+See NEWS for the fully detailed changes.
+
+
+Notes for Packagers and System Integrators
+------------------------------------------
+
+FIXME
+
+
+Roadmap
+-------
 
   - uim 1.5.0
 

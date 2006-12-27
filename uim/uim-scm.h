@@ -67,6 +67,7 @@ extern "C" {
 */
 typedef struct uim_opaque * uim_lisp;
 typedef void (*uim_func_ptr)(void);
+typedef void *(*uim_gc_gate_func_ptr)(void *);
 
 #define UIM_SCM_FALSEP(x)  (uim_scm_eq((x), uim_scm_f()))
 #define UIM_SCM_NFALSEP(x) (!uim_scm_eq((x), uim_scm_f()))
@@ -109,58 +110,10 @@ void
 uim_scm_set_lib_path(const char *path);
 
 #if UIM_SCM_GCC4_READY_GC
-#ifdef __GNUC__
-#define UIM_SCM_NOINLINE __attribute__((__noinline__))
-#else
-#define UIM_SCM_NOINLINE
-#endif /* __GNUC__ */
-
-/*
- * Function caller with protecting lisp objects on stack from GC
- *
- * The protection is safe against with variable reordering on a stack
- * frame performed in some compilers as anti-stack smashing or
- * optimization.
- */
-#define UIM_SCM_GC_PROTECTED_CALL(ret, ret_type, func, args)                 \
-    UIM_SCM_GC_PROTECTED_CALL_INTERNAL(ret = , ret_type, func, args)
-
-#define UIM_SCM_GC_PROTECTED_CALL_VOID(func, args)                           \
-    UIM_SCM_GC_PROTECTED_CALL_INTERNAL((void), void, func, args)
-
-#define UIM_SCM_GC_PROTECTED_CALL_INTERNAL(exp_ret, ret_type, func, args)    \
-    do {                                                                     \
-        /* ensure that func is uninlined */                                  \
-        ret_type (*volatile fp)() = (ret_type (*)())&func;                   \
-        uim_lisp *stack_start;                                               \
-                                                                             \
-        if (0) exp_ret func args;  /* compile-time type check */             \
-        stack_start = uim_scm_gc_current_stack();                            \
-        uim_scm_gc_protect_stack(stack_start);                               \
-        exp_ret (*fp)args;                                                   \
-        uim_scm_gc_unprotect_stack(stack_start);                             \
-    } while (/* CONSTCOND */ 0)
-
-/*
- * Ordinary programs should not call these functions directly. Use
- * UIM_SCM_GC_PROTECTED_CALL*() instead.
- */
-#ifdef __GNUC__
-#define uim_scm_gc_current_stack uim_scm_gc_current_stack_internal
-#define uim_scm_gc_protect_stack uim_scm_gc_protect_stack_internal
-#else /* __GNUC__ */
-#define uim_scm_gc_current_stack (*uim_scm_gc_current_stack_ptr)
-#define uim_scm_gc_protect_stack (*uim_scm_gc_protect_stack_ptr)
-#endif /* __GNUC__ */
 void
 uim_scm_gc_protect(uim_lisp *location);
-void
-uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
-
-uim_lisp *
-uim_scm_gc_current_stack_internal(void) UIM_SCM_NOINLINE;
-uim_lisp *
-uim_scm_gc_protect_stack_internal(uim_lisp *stack_start) UIM_SCM_NOINLINE;
+void *
+uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
 #else /* UIM_SCM_GCC4_READY_GC */
 void
 uim_scm_gc_protect(uim_lisp *location);
@@ -260,21 +213,22 @@ uim_scm_string_equal(uim_lisp a, uim_lisp b);
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr);
 uim_lisp
-uim_scm_car(uim_lisp cell);
+uim_scm_car(uim_lisp pair);
 uim_lisp
-uim_scm_cdr(uim_lisp cell);
+uim_scm_cdr(uim_lisp pair);
 uim_lisp
-uim_scm_cadr(uim_lisp cell);
+uim_scm_cadr(uim_lisp lst);
 uim_lisp
-uim_scm_caar(uim_lisp cell);
+uim_scm_caar(uim_lisp lst);
 uim_lisp
-uim_scm_cdar(uim_lisp cell);
+uim_scm_cdar(uim_lisp lst);
 uim_lisp
-uim_scm_cddr(uim_lisp cell);
+uim_scm_cddr(uim_lisp lst);
 uim_lisp
-uim_scm_length(uim_lisp list);
+uim_scm_length(uim_lisp lst);
 uim_lisp
-uim_scm_reverse(uim_lisp cell);
+uim_scm_reverse(uim_lisp lst);
+
 
 #ifdef __cplusplus
 }

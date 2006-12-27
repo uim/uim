@@ -34,7 +34,16 @@
 ;; configuration for special platforms such as embedded environments
 ;;   -- YamaKen 2005-01-29
 
+(use srfi-23)
+(use srfi-34)
+
 (define enable-action? #t)
+
+;; SIOD compatibility for SigScheme
+(if (not (symbol-bound? 'allocate-heap))
+    (define allocate-heap
+      (lambda args
+        #f)))
 
 ;; Performance tuning for heavy job such as custom.scm. The value 64
 ;; allocates approximately 12MB of heaps. Reduce it for less-memory

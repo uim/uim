@@ -27,7 +27,17 @@
 ;;; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
+
+(use srfi-6)
+(use srfi-34)
+
 ;;;;
+
+(define hyphen-sym (string->symbol "-"))
+
+;;
+;; generic utilities
+;;
 
 ;; Make escaped string literal to print a form.
 ;;
@@ -44,8 +54,9 @@
 ;;       (interaction-environment))
 (define string-escape
   (lambda (s)
-    (let ((buf (string-append "\"\"" s s)))
-      (print-to-string s buf))))
+    (let ((p (open-output-string)))
+      (write s p)
+      (get-output-string p))))
 
 ;; Current uim implementation treats char as integer
 
@@ -155,6 +166,11 @@
   (lambda args
     (apply string-append (apply map args))))
 
+;; symbol-append is a de facto standard procedure name
+(define symbol-append
+  (lambda args
+    (string->symbol (string-append-map symbol->string args))))
+
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 (define compose
@@ -197,85 +213,13 @@
     (max bottom
 	 (min x ceiling))))
 
-;;
-;; R5RS procedures (don't expect 100% compatibility)
-;;
-
-;; definition of 'else' has been moved into slib.c
-;(define else #t)
-
-;; for eval
-(define interaction-environment
-  (lambda ()
-    ()))
-
-(define boolean?
-  (lambda (x)
-    (or (eq? x #t)
-        (eq? x #f))))
-
-(define integer?
-  (lambda (x)
-    (number? x)))
-
-;; Siod doesn't support char
-(define char?
-  (lambda (x)
-    #f))
-
-(define list?
-  (lambda (x)
-    (or (null? x)
-	(and (pair? x)
-	     (list? (cdr x))))))
-
-(define zero?
-  (lambda (x)
-    (if (integer? x)
-	(= x 0)
-	(error "non-numeric value for zero?"))))
-
-(define positive?
-  (lambda (x)
-    (> x 0)))
-
-(define negative?
-  (lambda (x)
-    (< x 0)))
-
-(define number->string integer->string)
-(define string->number string->integer)
-(define string->symbol intern)
-
-(define map
-  (lambda args
-    (let ((f (car args))
-	  (lists (cdr args)))
-      (if (<= (length lists) 3)  ;; uim's siod accepts up to 3 lists
-	  (apply mapcar args)    ;; faster native processing
-	  (iterate-lists (lambda (state elms)
-			   (if (null? elms)
-			       (cons #t (reverse state))
-			       (let ((mapped (apply f elms)))
-				 (cons #f (cons mapped state)))))
-			 () lists)))))
-
-(define for-each map)
-
-(define quotient /)	;; / in siod is quotient actually
-
-;;(define list-tail
-;;  (lambda (lst n)
-;;    (if (= n 0)
-;;	lst
-;;	(list-tail (cdr lst) (- n 1)))))
-(define list-tail
-  (lambda (lst n)
-    (if (or (< (length lst)
-	       n)
-	    (< n 0))
-	(error "out of range in list-tail")
-	(nthcdr n lst))))
+(define nconc
+  (lambda (lst obj)
+    (if (null? lst)
+	obj
+	(begin
+	  (set-cdr! (last-pair lst) obj)
+	  lst))))
 
 ;;
 ;; R5RS-like character procedures
@@ -354,23 +298,50 @@
 	(- c 32)
 	c)))
 
-;; backward compatibility
+;;
+;; backward compatibility: should be obsoleted
+;;
+
 (define control-char? char-control?)
 (define alphabet-char? char-alphabetic?)
 (define numeral-char? char-numeric?)
 (define usual-char? char-graphic?)
 (define to-lower-char char-downcase)
 
+(define symbolconc symbol-append)
+
+;; should be obsoleted by list-ref
+(define nth
+  (lambda (k lst)
+    (list-ref lst k)))
+
+;; should be obsoleted by list-copy of SRFI-1
+(define copy-list
+  (lambda (lst)
+    (append lst '())))
+
+;;
+;; SIOD compatibility
+;;
+(define puts display)
+
+;; TODO: Rename to more appropriate name such as 'inspect' (the name
+;; came from debugging terms) or simply 'writeln'. But since I don't
+;; know Scheme culture enough, I can't determine what is appropriate.
+(define siod-print
+  (lambda (obj)
+    (write obj)
+    (newline)))
+
+(define print siod-print)
+
+(define feature?
+  (lambda (sym)
+    (provided? (symbol->string sym))))
+
 ;;
 ;; SRFI procedures (don't expect 100% compatibility)
 ;;
-
-;;(define take)
-;;(define drop)
-;;(define take-right)
-;;(define drop-right)
-;;(define split-at)
-
 (define list-tabulate
   (lambda (n init-proc)
     (if (< n 0)
@@ -428,6 +399,12 @@
 	    (let* ((elms (map car lists))
 		   (rests (map cdr lists)))
 	      (cons elms (apply zip rests)))))))
+
+(define last-pair
+  (lambda (lst)
+    (if (pair? (cdr lst))
+	(last-pair (cdr lst))
+	lst)))
 
 (define append-map
   (lambda args
@@ -563,22 +540,6 @@
 		     key))
 	    alist))))
 
-;; SRFI-60 procedures
-;; Siod's bit operation procedures take only two arguments
-;; TODO: write tests
-(define bitwise-not bit-not)
-
-(define bitwise-and
-  (lambda xs
-    (fold bit-and (bitwise-not 0) xs)))
-
-(define bitwise-ior
-  (lambda xs
-    (fold bit-or 0 xs)))
-
-(define bitwise-xor
-  (lambda xs
-    (fold bit-xor 0 xs)))
 
 ;;
 ;; uim-specific utilities
@@ -598,19 +559,23 @@
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
-    ;; to suppress error message, check file existence first
-    (and (file-readable? (make-scm-pathname file))
-	 (not (*catch 'errobj (begin (load file)
-				     #f))))))
+    (guard (err
+	    (else
+	     #f))
+      ;; to suppress error message, check file existence first
+      (and (file-readable? (make-scm-pathname file))
+	   (load file)))))
 
 ;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
-    ;; to suppress error message, check file existence first
-    (and (file-readable? (make-scm-pathname file))
-	 (eq? (symbolconc '* (string->symbol file) '-loaded*)
-	      (*catch 'errobj (require file))))))
+    (guard (err
+	    (else
+	     #f))
+      ;; to suppress error message, check file existence first
+      (and (file-readable? (make-scm-pathname file))
+	   (require file)))))
 
 ;; used for dynamic environment substitution of closure
 (define %%enclose-another-env
@@ -627,12 +592,12 @@
 (define define-record
   (lambda (rec-sym rec-spec)
     (for-each (lambda (spec index)
-		(let* ((elem-sym (nth 0 spec))
-		       (default  (nth 1 spec))
-		       (getter-sym (symbolconc rec-sym '- elem-sym))
+		(let* ((elem-sym (list-ref spec 0))
+		       (default  (list-ref spec 1))
+		       (getter-sym (symbolconc rec-sym hyphen-sym elem-sym))
 		       (getter (lambda (rec)
-				 (nth index rec)))
-		       (setter-sym (symbolconc rec-sym '-set- elem-sym '!))
+				 (list-ref rec index)))
+		       (setter-sym (symbolconc rec-sym hyphen-sym 'set- elem-sym '!))
 		       (setter (lambda (rec val)
 				 (set-car! (nthcdr index rec)
 					   val))))
@@ -642,7 +607,7 @@
 			(interaction-environment))))
 	      rec-spec
 	      (iota (length rec-spec)))
-    (let ((creator-sym (symbolconc rec-sym '-new))
+    (let ((creator-sym (symbolconc rec-sym hyphen-sym 'new))
 	  (creator (let ((defaults (map cadr rec-spec)))
 		     (lambda init-lst
 		       (cond

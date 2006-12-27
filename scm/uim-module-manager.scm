@@ -29,6 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "util.scm")
 (require "im.scm")
 (require "lazy-load.scm")
 
@@ -43,9 +44,10 @@
       ;; XXX temporary solution to register all IM in a file
       (set! require
 	    (lambda (file)
-	      (let* ((file-sym (string->symbol file))
-		     (loaded-sym (symbolconc '* file-sym '-loaded*))
-		     (reloaded-sym (symbolconc '* file-sym '-reloaded*)))
+	      (let* ((loaded-sym (string->symbol
+				  (string-append "*" file "-loaded*")))
+		     (reloaded-sym (string->symbol
+				    (string-append "*" file "-reloaded*"))))
 		(cond
 		 ((symbol-bound? reloaded-sym)
 		  loaded-sym)

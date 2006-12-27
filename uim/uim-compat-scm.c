@@ -36,51 +36,40 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "siod.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
 
-
 #if UIM_SCM_GCC4_READY_GC
-static int uim_scm_symbol_value_int_internal(const char *symbol_str);
+static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
 static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 #endif
 
+extern uim_lisp uim_scm_last_val;
 static uim_lisp return_val;
-static uim_lisp quote_sym;
-
 
 /* will be deprecated. use uim_scm_c_str() instead */
 char *
 uim_get_c_string(uim_lisp str)
 {
-  char *s;
-  long len;
-  char *buf;
-  s = get_c_string_dim((LISP)str, &len);
-  buf = (char *)malloc(sizeof(char)*(len + 1));
-  strlcpy(buf, s, len + 1);
-  return buf;
+  return uim_scm_c_str(str);
 }
 
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print)
 {
-  return repl_c_string(str, want_init, want_print);
+  uim_scm_last_val = (uim_lisp)scm_eval_c_string(str);
+
+  return 0;
 }
 
 int
 uim_scm_symbol_value_int(const char *symbol_str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  int ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, int, uim_scm_symbol_value_int_internal, (symbol_str));
-
-  return ret;
+  return (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
 }
 
-static int
+static void *
 uim_scm_symbol_value_int_internal(const char *symbol_str)
 #endif
 {
@@ -100,11 +89,13 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
   } else {
     val = 0;
   }
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  return (void *)val;
+#else
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return val;
+#endif
 }
 
 uim_lisp
@@ -117,12 +108,7 @@ char *
 uim_scm_symbol_value_str(const char *symbol_str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  char *ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, char *, uim_scm_symbol_value_str_internal,
-			    (symbol_str));
-
-  return ret;
+  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_str_internal, (void *)symbol_str);
 }
 
 static char *
@@ -173,8 +159,7 @@ uim_scm_symbol_value_bool(const char *symbol_str)
   if (!symbol_str)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING1(NULL, "(symbol-value '%s)", symbol_str);
-  val = uim_scm_c_bool(uim_scm_return_value());
+  val = uim_scm_c_bool(uim_scm_symbol_value(symbol_str));
 
   return val;
 }
@@ -188,14 +173,15 @@ uim_scm_str_from_c_str(const char *str)
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {
-  LISP lst = NIL, str = NIL;
+  uim_lisp lst = (uim_lisp)SCM_NULL;
+  uim_lisp str = (uim_lisp)SCM_NULL;
   const char *c_str;
-  int i, unknown_strlen = -1;
+  int i;
 
   for (i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
-    str = strcons(unknown_strlen, c_str);
-    lst = cons(str, lst);
+    str = uim_scm_make_str(c_str);
+    lst = (uim_lisp)SCM_CONS((ScmObj)str, (ScmObj)lst);
   }
 
   return (uim_lisp)lst;
@@ -204,13 +190,7 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  LISP symbol_str_ = rintern(symbol_str);
-  
-  if (UIM_SCM_NFALSEP((uim_lisp)symbol_boundp(symbol_str_, NIL))) {
-    return (uim_lisp)symbol_value(symbol_str_, NIL);         
-  } else {
-    return uim_scm_f();
-  }
+  return (uim_lisp)scm_p_symbol_value(scm_intern(symbol_str));
 }
 
 uim_lisp
@@ -228,77 +208,74 @@ uim_scm_qintern_c_str(const char *str)
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  return uim_scm_list2(quote_sym, obj);
+  return (uim_lisp)SCM_LIST_2(SCM_SYM_QUOTE, (ScmObj)obj);
 }
 
 uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst)
 {
-  uim_lisp form;
-  form = uim_scm_list3(uim_scm_intern_c_str("nth"),
-		       n,
-		       lst);
-  return uim_scm_eval(form);
+  return (uim_lisp)scm_p_list_ref((ScmObj)lst,
+				  (ScmObj)n);
 }
 
 uim_lisp
 uim_scm_list1(uim_lisp elm1)
 {
-  uim_lisp lst;
-  lst = (uim_lisp)listn(1, (LISP)elm1);
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_null_list());
 }
 
 uim_lisp
 uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
 {
-  uim_lisp lst;
-  lst = (uim_lisp)listn(2, (LISP)elm1, (LISP)elm2);
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list1(elm2));
 }
 
 uim_lisp
 uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
 {
-  uim_lisp lst;
-  lst = (uim_lisp)listn(3, (LISP)elm1, (LISP)elm2, (LISP)elm3);
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list2(elm2, elm3));
 }
 
 uim_lisp
 uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
 {
-  uim_lisp lst;
-  lst = (uim_lisp)listn(4, (LISP)elm1, (LISP)elm2, (LISP)elm3, (LISP)elm4);
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
 }
 
 uim_lisp
 uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
               uim_lisp elm5)
 {
-  uim_lisp lst;
-  lst = (uim_lisp)listn(5, (LISP)elm1, (LISP)elm2, (LISP)elm3, (LISP)elm4,
-			(LISP)elm5);
-  return lst;
+  return uim_scm_cons(elm1, uim_scm_list4(elm2, elm3, elm4, elm5));
 }
 
+/* Is this function used from somewhere? I think this function could be removed. */
+/*
+ * Not only this function but all functions of this file should be
+ * removed. See the header comment of uim-compat-scm.h. Remove these
+ * two comments if you have been satisfied by this answer.
+ *   -- YamaKen 2005-09-18
+ */
 uim_lisp
 uim_scm_nreverse(uim_lisp cell)
 {
-  return (uim_lisp)nreverse((LISP)cell);
+  fprintf(stderr, "uim_scm_nreverse : not implemented yet.\n");
+  return uim_scm_null_list();
+#if 0
+  return (uim_lisp)nreverse((uim_lisp)cell);
+#endif
 }
 
 void
 uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
 {
-  init_fsubr(name, (LISP (*)(LISP, LISP))fcn);
+  scm_register_func(name, (scm_syntax_variadic_0)fcn, SCM_SYNTAX_VARIADIC_0);
 }
 
 void
 uim_scm_provide(const char *feature)
 {
-  siod_c_provide(feature);
+  scm_p_provide(SCM_CONST_STRING(feature));
 }
 
 
@@ -368,9 +345,4 @@ uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
 void
 uim_init_compat_scm_subrs(void)
 {
-  return_val = uim_scm_f();
-  quote_sym = uim_scm_intern_c_str("quote");
-
-  uim_scm_gc_protect(&return_val);
-  uim_scm_gc_protect(&quote_sym);
 }

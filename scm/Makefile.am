@@ -33,6 +33,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  scim.scm \
  uim-module-manager.scm
 
+ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
+
 module_names = "pyload"
 if ANTHY
   module_names += "anthy"

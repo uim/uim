@@ -2048,7 +2048,7 @@
 (define prime-reset-handler
   (lambda (context)
     ;(print "prime-reset-handler")
-    ))
+    #f))
 
 (define prime-mode-set
   (lambda (context mode)

@@ -242,7 +242,7 @@
 			 ":"
 			 (dbg-get-line (uim-db-breakpoint-pos bp))
 			 "\n"))
-	  (puts "Invalid breakpoint ID.\n")))))
+	  (print "Invalid breakpoint ID.\n")))))
 
 (define uim-db-break
   (lambda (env id)
@@ -324,7 +324,7 @@
      (lambda (x)
        (case (typeof x)
 	 ((tc_string tc_symbol) (puts x))
-	 ((tc_intnum) (puts (integer->string x)))
+	 ((tc_intnum) (puts (number->string x)))
 	 (else (print x))))
      args)))
 

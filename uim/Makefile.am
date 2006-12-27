@@ -1,8 +1,9 @@
 include libtool-version.mk
+include $(top_builddir)/sigscheme/libgcroots.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = iso-639-1.def slib.c uim-compat-scm.c
+EXTRA_DIST = iso-639-1.def uim-compat-scm.c test-gc.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 
@@ -20,12 +21,17 @@ lib_LTLIBRARIES = libuim.la libuim-custom.la
 uim_plugin_LTLIBRARIES = 
 uim_plugindir = $(pkglibdir)/plugin
 
+BUILT_SOURCES = sigscheme-combined
+.PHONY: sigscheme-combined
+sigscheme-combined:
+	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme/src combined
+
 pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
 		uim-scm.h uim-custom.h plugin.h
 
 libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 		uim-internal.h gettext.h uim-encoding.h\
-		siod.h  uim-scm.c \
+		uim-scm.c \
 		uim-helper.c uim-helper-client.c \
 		intl.c \
 		uim-ipc.c \
@@ -101,9 +107,18 @@ libuimincludedir =  $(includedir)/uim
 # conflict. The libtool option is not and will not be supported on
 # some platforms. See [Anthy-dev 2847].  -- YamaKen 2006-03-30
 libuim_la_LDFLAGS = -version-info $(libuim_version) -export-dynamic
-libuim_la_LIBADD = @LTLIBINTL@ @LTLIBICONV@ $(top_builddir)/replace/libreplace.la
-libuim_la_CPPFLAGS = $(uim_defs) -I$(top_srcdir) -DPKGLIBDIR=\"$(pkglibdir)\" \
+libuim_la_LIBADD = $(GCROOTS_LIBS) \
+		   @LTLIBINTL@ @LTLIBICONV@ \
+		   $(top_builddir)/replace/libreplace.la
+# place -I$(top_srcdir) surely prior to sigscheme dirs
+libuim_la_CPPFLAGS = $(uim_defs) \
+		     -I$(top_srcdir) \
+		     -I$(top_builddir)/sigscheme/include \
+		     -I$(top_srcdir)/sigscheme/src \
+		     -I$(top_builddir)/sigscheme/src \
+		     -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
+libuim_la_CFLAGS = $(GCROOTS_CFLAGS)
 
 if ENABLE_ANTHY_STATIC
   libuim_la_LIBADD += @ANTHY_LIBS@
@@ -152,12 +167,9 @@ uim_module_manager_CFLAGS =
 uim_module_manager_LDADD = libuim.la
 uim_module_manager_SOURCES = uim-module-manager.c
 
-noinst_PROGRAMS = uim-agent test-gc
+noinst_PROGRAMS = uim-agent
 
 uim_agent_SOURCES = agent.c
 uim_agent_LDADD   = libuim.la
-
-test_gc_SOURCES = test-gc.c
-test_gc_LDADD   = libuim.la
 
 DISTCLEANFILES = uim-stdint.h

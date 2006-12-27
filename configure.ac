@@ -19,6 +19,8 @@ AC_PROG_MAKE_SET
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PATH_PROG(RSVG, rsvg)
+AC_PATH_PROGS(MD5, md5 md5sum)
+AC_PATH_PROGS(SHA1, sha1 sha1sum)
 
 AM_MAINTAINER_MODE
 
@@ -942,8 +944,8 @@ if test x$enable_debug = xyes; then
 	CFLAGS="$CFLAGS -g -pipe"
 	CXXFLAGS="$CXXFLAGS -g -pipe"
 else
-	CFLAGS="$CFLAGS -O2 -pipe"
-	CXXFLAGS="$CXXFLAGS -O2 -pipe"
+	CFLAGS="$CFLAGS -DNDEBUG -O2 -pipe"
+	CXXFLAGS="$CXXFLAGS -DNDEBUG -O2 -pipe"
 fi
 
 # add warning flags to CFLAGS if GCC=yes
@@ -998,6 +1000,11 @@ AC_SUBST(abs_srcdir)
 AC_SUBST(abs_builddir)
 AC_SUBST(abs_top_srcdir)
 AC_SUBST(abs_top_builddir)
+
+# configure sigscheme/ subdir
+# To allow overridings, $ac_configure_args is placed at end.
+ac_configure_args="$ac_configure_args --enable-conf=uim --disable-libsscm --disable-shell"
+AC_CONFIG_SUBDIRS([sigscheme])
 
 AC_CONFIG_FILES([Makefile
 		 po/Makefile.in

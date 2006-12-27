@@ -136,9 +136,16 @@ static uim_bool uim_custom_save_group(const char *group);
 
 #if UIM_SCM_GCC4_READY_GC
 static char *literalize_string_internal(const char *str);
-static uim_bool custom_cb_add_internal(const char *hook, const char *validator,
-				       const char *custom_sym, void *ptr,
-				       const char *gate_func, void (*cb)(void));
+
+struct custom_cb_add_args {
+  const char *hook;
+  const char *validator;
+  const char *custom_sym;
+  void *ptr;
+  const char *gate_func;
+  void (*cb)(void);
+};
+static void *custom_cb_add_internal(struct custom_cb_add_args *args);
 #endif
 
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
@@ -152,11 +159,7 @@ static char *
 literalize_string(const char *str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  char *ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, char *, literalize_string_internal, (str));
-
-  return ret;
+  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)literalize_string_internal, (void *)str);
 }
 
 static char *
@@ -1463,27 +1466,42 @@ custom_cb_add(const char *hook, const char *validator,
 	      const char *gate_func, void (*cb)(void))
 #if UIM_SCM_GCC4_READY_GC
 {
-  uim_bool ret;
+  struct custom_cb_add_args args;
 
-  UIM_SCM_GC_PROTECTED_CALL(ret, uim_bool, custom_cb_add_internal,
-			    (hook, validator, custom_sym, ptr, gate_func, cb));
-
-  return ret;
+  args.hook = hook;
+  args.validator = validator;
+  args.custom_sym = custom_sym;
+  args.ptr = ptr;
+  args.gate_func = gate_func;
+  args.cb = cb;
+  return (uim_bool)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)custom_cb_add_internal, &args);
 }
 
-static uim_bool
-custom_cb_add_internal(const char *hook, const char *validator,
-		       const char *custom_sym, void *ptr,
-		       const char *gate_func, void (*cb)(void))
+static void *
+custom_cb_add_internal(struct custom_cb_add_args *args)
 #endif
 {
   uim_bool succeeded;
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  const char *hook;
+  const char *validator;
+  const char *custom_sym;
+  void *ptr;
+  const char *gate_func;
+  void (*cb)(void);
+#else
   uim_lisp stack_start;
 #endif
   uim_lisp form;
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  hook = args->hook;
+  validator = args->validator;
+  custom_sym = args->custom_sym;
+  ptr = args->ptr;
+  gate_func = args->gate_func;
+  cb = args->cb;
+#else
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
@@ -1496,11 +1514,13 @@ custom_cb_add_internal(const char *hook, const char *validator,
   form = uim_scm_cons(uim_scm_make_symbol("custom-register-cb"), form);
   succeeded = uim_scm_c_bool(uim_scm_eval(form));
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  return (void *)succeeded;
+#else
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return succeeded;
+#endif
 }
 
 static uim_bool

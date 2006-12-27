@@ -180,7 +180,7 @@
   (lambda (key key-state)
     (or
      (and
-      (not (= key 'escape))
+      (not (eq? key 'escape))
       (zaurus-orig-generic-cancel-key? key key-state))
      (zaurus-shift-select-key? key key-state))))
 

@@ -57,6 +57,27 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: GC protection API change
+Affects: uim developers, IM developers
+Updates: C API, libuim ABI
+Version: 1.4.0
+Revision: ac4182, ac4184
+Date: 2006-12-23
+Modifier: YamaKen
+Related: libgcroots introduction to SigScheme
+URL:
+Changes:
+      (new) uim_scm_call_with_gc_ready_stack()
+  (removed) UIM_SCM_GC_PROTECTED_CALL()
+  (removed) UIM_SCM_GC_PROTECTED_CALL_VOID()
+  (removed) uim_scm_gc_protect_stack()
+  (removed) uim_scm_gc_unprotect_stack()
+Description:
+  The new API is introduced to resolve corrupted GC problem on
+  register windows on SPARC and register stack backing store on
+  IA-64. It needs API change. Although !UIM_SCM_GCC4_READY_GC enables
+  the old APIs, it will be removed on uim 1.5.0. Please use new API.
+------------------------------------------------------------------------------
 Summary: Focus activity and input position relocation notifications
 Affects: Bridge developers, IM developers
 Updates: C API, Scheme API

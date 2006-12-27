@@ -37,7 +37,7 @@
 
 ;; convenience shorthand of runtime translation
 (define ugettext
-  (if (feature? 'nls)
+  (if (provided? "nls")
       (lambda (str)
 	(dgettext (gettext-package) str))
       (lambda (str)

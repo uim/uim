@@ -75,8 +75,8 @@
 #endif
 
 #if UIM_SCM_GCC4_READY_GC
-static uim_lisp plugin_unload_internal(uim_lisp _name);
-static void uim_quit_plugin_internal(void);
+static void *plugin_unload_internal(void *uim_lisp_name);
+static void *uim_quit_plugin_internal(void *dummy);
 #endif
 
 
@@ -93,7 +93,7 @@ plugin_load(uim_lisp _name)
   void (*plugin_instance_quit)(void);
 
   size_t len;
-  
+
   plugin_name = uim_scm_refer_c_str(_name);
   
   if (plugin_name == NULL) {
@@ -203,24 +203,25 @@ static uim_lisp
 plugin_unload(uim_lisp _name)
 #if UIM_SCM_GCC4_READY_GC
 {
-  uim_lisp ret;
-
-  UIM_SCM_GC_PROTECTED_CALL(ret, uim_lisp, plugin_unload_internal, (_name));
-
-  return ret;
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack(plugin_unload_internal,
+						    (void *)_name);
 }
 
-static uim_lisp
-plugin_unload_internal(uim_lisp _name)
+static void *
+plugin_unload_internal(void *uim_lisp_name)
 #endif
 {
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  uim_lisp _name;
+#else
   uim_lisp stack_start;
 #endif
   void *library;
   void (*plugin_instance_quit)(void);
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  _name = (uim_lisp)uim_lisp_name;
+#else
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
@@ -242,11 +243,13 @@ plugin_unload_internal(uim_lisp _name)
   UIM_EVAL_FSTRING1(NULL, "(plugin-list-delete \"%s\")",
 		    uim_scm_refer_c_str(_name));
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  return (void *)uim_scm_t();
+#else
   uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return uim_scm_t();
+#endif
 }
 
 /* Called from uim_init */
@@ -264,11 +267,11 @@ void
 uim_quit_plugin(void)
 #if UIM_SCM_GCC4_READY_GC
 {
-  UIM_SCM_GC_PROTECTED_CALL_VOID(uim_quit_plugin_internal, ());
+  uim_scm_call_with_gc_ready_stack(uim_quit_plugin_internal, NULL);
 }
 
-static void
-uim_quit_plugin_internal(void)
+static void *
+uim_quit_plugin_internal(void *dummy)
 #endif
 {
 #if !UIM_SCM_GCC4_READY_GC
@@ -288,7 +291,9 @@ uim_quit_plugin_internal(void)
     plugin_unload(name);
   }
 
-#if !UIM_SCM_GCC4_READY_GC
+#if UIM_SCM_GCC4_READY_GC
+  return NULL;
+#else
   uim_scm_gc_unprotect_stack(&stack_start);
 #endif
 }

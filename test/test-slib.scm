@@ -90,8 +90,14 @@
    (assert-true  (uim-bool '(procedure? dcngettext)))         ;; 5
    (assert-true  (uim-bool '(procedure? +)))                  ;; 2n
    (assert-true  (uim-bool '(procedure? append)))             ;; lsubr
-   (assert-true  (uim-bool '(procedure? define)))             ;; fsubr
-   (assert-true  (uim-bool '(procedure? cond)))               ;; msubr
+
+   ;; SIOD
+   ;;(assert-true  (uim-bool '(procedure? define)))             ;; fsubr
+   ;;(assert-true  (uim-bool '(procedure? cond)))               ;; msubr
+   ;; SigScheme
+   (assert-false (uim-bool '(procedure? define)))             ;; fsubr
+   (assert-false (uim-bool '(procedure? cond)))               ;; msubr
+
    (assert-true  (uim-bool '(procedure? (lambda (x) x))))     ;; closure
 
    (assert-false (uim-bool '(procedure? 0)))

@@ -30,6 +30,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(use srfi-34)
+
 (define uim-sh-prompt "uim> ")
 (define uim-sh-opt-batch #f)
 (define uim-sh-opt-strict-batch #f)
@@ -40,9 +42,9 @@
 (define uim-sh-loop
   (lambda ()
     (if (not uim-sh-opt-batch)
-	(puts uim-sh-prompt))
+	(display uim-sh-prompt))
     (let* ((expr (read))
-	   (eof (eq? (eof-val) expr)))
+	   (eof  (eof-object? expr)))
       (if (not eof)
 	  (begin
 	    ((if  uim-sh-opt-strict-batch
@@ -70,14 +72,16 @@
 
 (define uim-sh-usage
   (lambda ()
-    (puts "Usage: uim-sh [options]
+    (print "Usage: uim-sh [options]
   -b        batch mode. suppress shell prompts
   -B        strict batch mode, implies -b. suppress shell prompts and
             evaluated results\n")
     (if (symbol-bound? 'uim-editline-readline)
-	(puts "  -r [module] Load and import module.\n"))
-    (puts "  -h        show this help\n")))
+	(display "  -r [module] Load and import module.\n"))
+    (display "  -h        show this help\n")))
 
+;; TODO: Loop even if error has occur. This is required to run GaUnit-based
+;; unit test for uim
 (define uim-sh
   (lambda (args)
     (uim-sh-parse-args args)
@@ -87,9 +91,14 @@
 	  (if (and uim-editline-enabled
 		   (symbol-bound? 'uim-editline-readline))
 	      (activate-editline))
-	  (if (*catch
-	       'all
-	       (uim-sh-loop))
+	  (if (guard (err
+		      (else
+		       (display err)
+		       (newline)
+		       (if (>= (verbose) 2)
+			   (%%backtrace))
+		       #t))
+		(uim-sh-loop))
 	      (uim-sh args))))))
 
 (if (symbol-bound? 'uim-editline-readline)
