@@ -7,7 +7,6 @@ EXTRA_DIST = RELNOTE uim.spec.in uim.spec \
 
 DISTCLEANFILES = uim.pc uim.desktop \
 		 intltool-extract intltool-merge intltool-update \
-		 po/.intltool-merge-cache \
 		 gnuify-changelog.pl $(DIST_SUM_LIST)
 
 pkgconfigdir = $(libdir)/pkgconfig
