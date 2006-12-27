@@ -32,7 +32,7 @@ FORCE:
 
 ChangeLog: FORCE
 	svn export $(UIM_REPOSITORY)/trunk/tools/gnuify-changelog.pl
-	svn log $(RELEASE_URL) | gnuify-changelog.pl > $@
+	svn log $(RELEASE_URL) | ./gnuify-changelog.pl > $@
 	@if test -s $@; then                                    \
 	    echo "ChangeLog updated successfully.";             \
 	else                                                    \
