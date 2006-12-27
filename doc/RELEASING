@@ -26,11 +26,11 @@ release, you have to repeat the following procedure at least three times.
    ChangeLog is hard work. Therefore a committer should send details of their
    commit. Maybe we sould prepare a better way.
 
-3. Checkout a fresh version from svn.
+3. Export a fresh tree from svn.
 
-   svn co svn+ssh://freedesktop.org/srv/uim.freedesktop.org/svn/trunk
+   svn export http://anonsvn.freedesktop.org/srv/uim/trunk
 
-4. Do a build test with make releasetest
+4. Do a build test with make-dist.sh
 
    This test is not enough, but worth doing. It is especially useful when a
    new file is added. As a TODO, we should do unit testing at this point.
@@ -39,19 +39,25 @@ release, you have to repeat the following procedure at least three times.
 
    This item needs many many description... I must fill this item later.
 
-6. Increment the version number in configure.ac and Project-Id-Version in
-   po/*.po, then commit it.
+6. Increment the version number in configure.ac, uim.h and Project-Id-Version
+   in po/*.po. Increment libtool-version.mk too if ABI is updated.
 
-7. make dist
+7. Tag to tags/uim-x.y.z
 
-8. Copy the source tarball to http://uim.freedesktop.org/releases
+   svn cp svn+ssh://svn.freedesktop.org/svn/uim/trunk \
+          svn+ssh://svn.freedesktop.org/svn/uim/tags/uim-x.y.z
 
-9. Tag to tags/uim-x.y.z
+8. Export the fresh tagged tree from svn.
 
-   svn copy svn+ssh://freedesktop.org/srv/uim.freedesktop.org/svn/trunk\
-   svn+ssh://freedesktop.org/srv/uim.freedesktop.org/svn/tags/uim-x.y.z
+   svn export http://anonsvn.freedesktop.org/srv/uim/tags/uim-x.y.z
 
-10. Send a message to uim@freedesktop.org.
+9. Make the distribution.
 
-11. Update the web page.
+   cd uim-x.y.z
+   ./make-dist.sh
 
+10. Copy the source tarball to http://uim.freedesktop.org/releases
+
+11. Send a message to uim@freedesktop.org.
+
+12. Update the web page.
