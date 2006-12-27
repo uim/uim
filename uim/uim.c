@@ -196,6 +196,7 @@ uim_create_context(void *ptr,
   }
 
   UIM_EVAL_FSTRING3(uc, "(create-context %d '%s '%s)", uc->id, lang, engine);
+
   return uc;
 }
 
