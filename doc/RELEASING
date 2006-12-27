@@ -42,18 +42,18 @@ release, you have to repeat the following procedure at least three times.
 6. Increment the version number in configure.ac, uim.h and Project-Id-Version
    in po/*.po. Increment libtool-version.mk too if ABI is updated.
 
-7. Tag to tags/uim-x.y.z
+7. Tag to tags/x.y.z
 
-   svn cp svn+ssh://svn.freedesktop.org/svn/uim/trunk \
-          svn+ssh://svn.freedesktop.org/svn/uim/tags/uim-x.y.z
+   svn cp svn+ssh://svn.freedesktop.org/svn/uim/branches/x.y \
+          svn+ssh://svn.freedesktop.org/svn/uim/tags/x.y.z
 
 8. Export the fresh tagged tree from svn.
 
-   svn export http://anonsvn.freedesktop.org/srv/uim/tags/uim-x.y.z
+   svn export http://anonsvn.freedesktop.org/srv/uim/tags/x.y.z
 
 9. Make the distribution.
 
-   cd uim-x.y.z
+   cd x.y.z
    ./make-dist.sh
 
 10. Copy the source tarball to http://uim.freedesktop.org/releases

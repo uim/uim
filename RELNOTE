@@ -1,20 +1,18 @@
-uim 1.4.0 Release Note
-======================
+uim 1.4.0-alpha Release Note
+============================
 
 About This Release
 ------------------
 
-This distribution of uim 1.4.0 is latest stable release of uim.
+This distribution of uim 1.4.0-alpha is a preview release for testing
+purpose. Since it may contain serious unknown problems, it should not be
+used for important works. For such situations, use our latest stable
+release uim 1.3.1.
 
-FIXME
-
-    Release for internal improvement. No user-visible changes other
-    than resource consumption reduction. This release plan will not be
-    deferred anymore.
-
-    The non-standard-conformant Scheme interpreter of libuim will be
-    replaced with newly developed SigScheme to make a room for next
-    leap.
+This release is for internal improvement. The non-standards-conformant
+Scheme interpreter of libuim has been replaced with newly developed
+SigScheme to make a room for next leap. There is no user-visible feature
+changes other than resource consumption reduction.
 
 Please report us if you find a problem.
 
@@ -25,7 +23,10 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
-FIXME
+  - The modified-SIOD interpreter has been replaced with SigScheme 0.7.2
+
+  - Fix GC corruption on SPARC, IA-64, and possibly MIPS, Alpha, m68k, by
+    introduction of libgcroots
 
 See NEWS for the fully detailed changes.
 
@@ -33,7 +34,22 @@ See NEWS for the fully detailed changes.
 Notes for Packagers and System Integrators
 ------------------------------------------
 
-FIXME
+  - Use the bundled SigScheme, and do not depend on external SigScheme
+    package. Since the SigScheme interpreter is completely embedded into
+    libuim without linking to libsscm, and exposing no SigScheme-specific
+    symbols regardless of environment-dependent symbol exportation control
+    existence such as -export-symbols of libtool or version script of ld,
+    no conflict with libsscm occurs
+
+  - libuim links to libgcroots although SigScheme is embedded into
+    libuim. Although libgcroots is also bundled in uim, it should be
+    managed as a separated package since both libsscm and libuim which
+    provided by separated package depends on it. Add
+    '--with-libgcroots=installed' to configure options for uim to disable
+    build and install of the bundled version of libgcroots
+
+  - libuim ABI and so libtool-version has been updated due to the GC
+    protection API change which required to fix the GC problem
 
 
 Roadmap
@@ -54,3 +70,12 @@ Roadmap
 
     The composer framework will be introduced for extensible IM
     development.
+
+
+Thanks
+------
+
+Hans-J. Boehm and all authors of Boehm GC for the useful codes.
+
+Tanaka Akira for letting me realize about the GC problem through the
+presentation at Binary 2.0 Conference 2006.
