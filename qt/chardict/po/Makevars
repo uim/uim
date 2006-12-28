@@ -3,6 +3,9 @@
 # Usually the message domain is the same as the package name.
 DOMAIN = $(PACKAGE)-chardict-qt
 
+# intltool 0.32 and later depends on $(GETTEXT_PACKAGE)
+GETTEXT_PACKAGE = $(DOMAIN)
+
 # These two variables depend on the location of this directory.
 subdir = qt/chardict/po
 top_builddir = ../../..
