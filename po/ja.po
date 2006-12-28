@@ -97,8 +97,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 1.2.0\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: uim 1.4.0\n"
+"Report-Msgid-Bugs-To: uim@freedesktop.org\n"
 "POT-Creation-Date: 2006-08-14 12:58+0900\n"
 "PO-Revision-Date: 2006-06-04 10:49+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"

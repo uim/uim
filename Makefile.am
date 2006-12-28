@@ -20,7 +20,7 @@ UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
 RELEASE_URL     = $(TAGS_REPOSITORY)/$(PACKAGE)-$(VERSION)
 #RELEASE_URL     = $(UIM_REPOSITORY)/trunk
-DIST_SUM_LIST = $(PACKAGE)-$(VERSION).sum
+DIST_SUM_LIST = $(distdir).sum
 
 DISTCLEANFILES = uim.pc uim.desktop \
 		 intltool-extract intltool-merge intltool-update \

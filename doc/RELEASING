@@ -26,38 +26,81 @@ release, you have to repeat the following procedure at least three times.
    ChangeLog is hard work. Therefore a committer should send details of their
    commit. Maybe we sould prepare a better way.
 
-3. Export a fresh tree from svn.
+3. Update subpackage versions in make-dist.sh.
+
+   SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.7.2"
+   LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.1.3"
+
+4. Export a fresh tree from svn.
 
    svn export http://anonsvn.freedesktop.org/srv/uim/trunk
 
-4. Do a build test with make-dist.sh
+5. Do a build test with make-dist.sh
 
    This test is not enough, but worth doing. It is especially useful when a
    new file is added. As a TODO, we should do unit testing at this point.
 
-5. Do test
+6. Do test.
 
    This item needs many many description... I must fill this item later.
 
-6. Increment the version number in configure.ac, uim.h and Project-Id-Version
+7. Increment the version number in configure.ac, uim.h and Project-Id-Version
    in po/*.po. Increment libtool-version.mk too if ABI is updated.
 
-7. Tag to tags/x.y.z
+8. Update NEWS and RELNOTE
+
+9. Tag to tags/x.y.z
+
+   On an alpha release, branch the tree at first.
+
+   svn cp svn+ssh://svn.freedesktop.org/svn/uim/trunk \
+          svn+ssh://svn.freedesktop.org/svn/uim/branches/x.y
+
+   And then tag.
 
    svn cp svn+ssh://svn.freedesktop.org/svn/uim/branches/x.y \
-          svn+ssh://svn.freedesktop.org/svn/uim/tags/x.y.z
+          svn+ssh://svn.freedesktop.org/svn/uim/tags/x.y.z-alpha
 
-8. Export the fresh tagged tree from svn.
+10. Export the fresh tagged tree from svn.
 
-   svn export http://anonsvn.freedesktop.org/srv/uim/tags/x.y.z
+   svn export http://anonsvn.freedesktop.org/srv/uim/tags/x.y.z-alpha
 
-9. Make the distribution.
+11. Make the distribution.
 
    cd x.y.z
    ./make-dist.sh
 
-10. Copy the source tarball to http://uim.freedesktop.org/releases
+   If the release is an alpha or beta, do following extra steps.
 
-11. Send a message to uim@freedesktop.org.
+   Modify 'distdir' variable of Makefile.in as follows:
 
-12. Update the web page.
+     #distdir = $(PACKAGE)-$(VERSION)
+     distdir = $(PACKAGE)-$(VERSION)-alpha
+
+   Make the distribution again with the -alpha or -beta suffix.
+
+     make distcheck sum
+
+12. Copy the source tarball to http://uim.freedesktop.org/releases
+
+13. Update the web pages.
+
+   http://uim.freedesktop.org/
+   http://uim.freedesktop.org/wiki/UimDownload
+
+   The checksums of the files must not directly be written into the
+   anyone-rewritable wikipage, to prevent spoofings. It should be a link to the
+   release announce which contain the checksum information.
+
+14. Send a message to uim@freedesktop.org.
+
+   <write announcement here>
+   
+     http://uim.freedesktop.org/wiki/UimDownload
+
+   MD5 (uim-1.4.0-example.tar.gz) = cff14a6ad95a6a1303b527a86d27bff4
+   MD5 (uim-1.4.0-example.tar.bz2) = b2e96af101a0c51df697990f6311f6f2
+   SHA1 (uim-1.4.0-example.tar.gz) = 3f152c4aa77a3a44d9f74800a8b9d8d3b6c16771
+   SHA1 (uim-1.4.0-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
+
+   <append RELNOTE here>
