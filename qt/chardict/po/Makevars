@@ -6,9 +6,9 @@ DOMAIN = $(PACKAGE)-chardict-qt
 # intltool 0.32 and later depends on $(GETTEXT_PACKAGE)
 GETTEXT_PACKAGE = $(DOMAIN)
 
-# These two variables depend on the location of this directory.
+# These variables depend on the location of this directory.
 subdir = qt/chardict/po
-top_builddir = ../../..
+top_podir = $(top_srcdir)/po
 
 # These options get passed to xgettext.
 XGETTEXT_OPTIONS = --keyword=_ --keyword=N_
@@ -42,3 +42,6 @@ MSGID_BUGS_ADDRESS =uim@lists.freedesktop.org
 # This is the list of locale categories, beyond LC_MESSAGES, for which the
 # message catalogs shall be used.  It is usually empty.
 EXTRA_LOCALE_CATEGORIES =
+
+MSGMERGE = INTLTOOL_EXTRACT=$(INTLTOOL_EXTRACT) srcdir=$(top_podir) $(INTLTOOL_UPDATE) --gettext-package $(GETTEXT_PACKAGE) --dist
+GENPOT   = INTLTOOL_EXTRACT=$(INTLTOOL_EXTRACT) srcdir=$(top_podir) $(INTLTOOL_UPDATE) --gettext-package $(GETTEXT_PACKAGE) --pot

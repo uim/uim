@@ -7,6 +7,7 @@ helper/dict-word.c
 helper/dict-word-list-view-gtk.c
 helper/dict-word-list-win-gtk.c
 helper/dict-word-win-gtk.c
+helper/eggtrayicon.c
 helper/im-switcher-gtk.c
 helper/input-pad-ja.c
 helper/pref-gtk-custom-widgets.c
