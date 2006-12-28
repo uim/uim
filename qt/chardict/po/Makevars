@@ -8,6 +8,7 @@ GETTEXT_PACKAGE = $(DOMAIN)
 
 # These variables depend on the location of this directory.
 subdir = qt/chardict/po
+top_builddir = ../../..
 top_podir = $(top_srcdir)/po
 
 # These options get passed to xgettext.
