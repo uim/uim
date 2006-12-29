@@ -24,9 +24,10 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
-  - The modified-SIOD interpreter has been replaced with SigScheme 0.7.2
+  - The modified version of SIOD interpreter has been replaced with
+    SigScheme 0.7.2
 
-  - Fix GC crash on SPARC, IA-64, and possibly MIPS, Alpha, m68k, by
+  - [CRITICAL] Fix GC crash on SPARC, IA-64, and possibly MIPS, Alpha, m68k, by
     introduction of libgcroots
 
 See NEWS for the fully detailed changes.
