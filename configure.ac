@@ -277,6 +277,9 @@ AX_CFLAGS_GCC_OPTION([-Wno-overlength-strings])
 # Disable the problematic preprocessing on Mac OS X
 AX_CFLAGS_GCC_OPTION([-no-cpp-precomp])
 
+# Deprecated autoconf macro used in AX_CXXFLAGS_GCC_OPTION.
+AC_DEFUN([AC_LANG_CXX], [AC_LANG([C++])])
+
 AX_CXXFLAGS_GCC_OPTION([-pipe])
 AX_CXXFLAGS_GCC_OPTION([-W])
 AX_CXXFLAGS_GCC_OPTION([-Wall])
