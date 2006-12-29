@@ -41,7 +41,7 @@
 (if (version<? *gaunit-version* "0.1.1")
     (error "GaUnit 0.1.1 is required"))
 
-(sys-putenv "LIBUIM_SCM_FILES" "./scm")
+(sys-putenv "LIBUIM_SCM_FILES" (string-append (sys-realpath ".") "/scm"))
 (sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)
 (sys-putenv "LIBUIM_VANILLA" "1")
 
