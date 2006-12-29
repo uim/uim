@@ -254,6 +254,9 @@ AC_CHECK_TYPES(sig_t, , ,
 # Checks for compiler characteristics
 AC_C_CONST
 
+# FIXME: depending on the internal variable name
+AC_DEFUN([AX_LANG_WNOERROR], [ac_[]_AC_LANG_ABBREV[]_werror_flag=])
+
 AC_LANG_WERROR  # Turn warning-only unknown options into error.
 
 AX_CFLAGS_GCC_OPTION([-pedantic])
