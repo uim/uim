@@ -1,8 +1,8 @@
-AC_PREREQ(2.57)
+AC_PREREQ(2.60b)
 AC_INIT([uim], [1.4.0], [uim@lists.freedesktop.org])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
-AM_INIT_AUTOMAKE([1.8.3 dist-bzip2])
+AM_INIT_AUTOMAKE([1.10 dist-bzip2])
 
 # Enable GNU extensions such as asprintf(3), BSD-originated functions,
 # POSIX features and more on glibc (and some other
@@ -27,6 +27,8 @@ AM_MAINTAINER_MODE
 # Checks for libraries
 AC_CHECK_LIB(dl,dlopen)
 AC_CHECK_LIB(socket,socket)
+
+AX_LIB_GLIBC
 
 dnl ***********************
 dnl *** Tests for iconv ***
@@ -251,6 +253,41 @@ AC_CHECK_TYPES(sig_t, , ,
 
 # Checks for compiler characteristics
 AC_C_CONST
+
+AC_LANG_WERROR  # Turn warning-only unknown options into error.
+
+AX_CFLAGS_GCC_OPTION([-pedantic])
+AX_CFLAGS_GCC_OPTION([-pipe])
+AX_CFLAGS_GCC_OPTION([-Wall])
+AX_CFLAGS_GCC_OPTION([-Wchar-subscripts])
+AX_CFLAGS_GCC_OPTION([-Wmissing-declarations])
+AX_CFLAGS_GCC_OPTION([-Wredundant-decls])
+AX_CFLAGS_GCC_OPTION([-Wmissing-prototypes])
+AX_CFLAGS_GCC_OPTION([-Wnested-externs])
+AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
+AX_CFLAGS_GCC_OPTION([-Wcast-align])
+AX_CFLAGS_GCC_OPTION([-Wsign-compare])
+
+# Suppress warnings about strings longer than ISO C 89 maximum length (509).
+AX_CFLAGS_GCC_OPTION([-Wno-overlength-strings])
+
+# Disable the problematic preprocessing on Mac OS X
+AX_CFLAGS_GCC_OPTION([-no-cpp-precomp])
+
+AX_CXXFLAGS_GCC_OPTION([-pipe])
+AX_CXXFLAGS_GCC_OPTION([-W])
+AX_CXXFLAGS_GCC_OPTION([-Wall])
+AX_CXXFLAGS_GCC_OPTION([-Wchar-subscripts])
+AX_CXXFLAGS_GCC_OPTION([-Wnon-virtual-dtor])
+AX_CXXFLAGS_GCC_OPTION([-Wno-long-long])
+AX_CXXFLAGS_GCC_OPTION([-Wcast-align])
+AX_CXXFLAGS_GCC_OPTION([-Wconversion])
+AX_CXXFLAGS_GCC_OPTION([-Wchar-subscripts])
+AX_CXXFLAGS_GCC_OPTION([-Wpointer-arith])
+AX_CXXFLAGS_GCC_OPTION([-Wwrite-strings])
+AX_CXXFLAGS_GCC_OPTION([-Wformat-security])
+
+AX_LANG_WNOERROR  # end AC_LANG_WERROR
 
 # Checks for library functions
 AC_FUNC_REALLOC
@@ -942,23 +979,34 @@ AC_ARG_ENABLE(anthy-static,
 
 AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test x$build_anthy_static = xyes)
 
-# add debugging flags to CFLAGS regardless of GCC=yes or not
-if test x$enable_debug = xyes; then
-	CFLAGS="$CFLAGS -g -pipe"
-	CXXFLAGS="$CXXFLAGS -g -pipe"
+#
+# Compiler options
+#
+
+# Debugging-related flags
+if test "x$enable_debug" = xyes; then
+  # add -g flag to CFLAGS regardless of GCC=yes or not
+  if test "x$ac_cv_prog_cc_g" = xyes; then
+    CFLAGS="$CFLAGS -g"
+    CXXFLAGS="$CXXFLAGS -g"
+  fi
+
+  # Restricting the C dialect tends to cause system library disfunction such as
+  # on glibc and Darwin libc. So this option is only specified at debugging
+  # mode.
+  #
+  # -std=gnu89 is required only for (old?) glibc. -std=c89 is sufficient for
+  # other environments.
+  AC_LANG_WERROR  # Turn warning-only unknown options into error.
+  if test "x$ax_cv_lib_glibc" = xyes; then
+    AX_CFLAGS_GCC_OPTION([-std=gnu89])
+  else
+    AX_CFLAGS_GCC_OPTION([-std=c89])
+  fi
+  AX_LANG_WNOERROR  # end AC_LANG_WERROR
 else
-	CFLAGS="$CFLAGS -DNDEBUG -O2 -pipe"
-	CXXFLAGS="$CXXFLAGS -DNDEBUG -O2 -pipe"
-fi
-
-# add warning flags to CFLAGS if GCC=yes
-if test x$ac_cv_c_compiler_gnu = xyes; then
-#if test x$CC = xgcc; then
-	CFLAGS="$CFLAGS -Wall -std=gnu89 -pedantic -Wchar-subscripts -Wmissing-declarations -Wredundant-decls -Wmissing-prototypes -Wnested-externs -Wpointer-arith -Wcast-align -Wsign-compare"
-fi
-
-if test x$ac_cv_cxx_compiler_gnu = xyes; then
-	CXXFLAGS="$CXXFLAGS -Wnon-virtual-dtor -Wno-long-long -Wcast-align -Wconversion -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security"
+  CFLAGS="$CFLAGS -DNDEBUG"
+  CXXFLAGS="$CXXFLAGS -DNDEBUG"
 fi
 
 AC_ARG_ENABLE(warnings-into-error,
