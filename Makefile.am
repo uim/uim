@@ -19,12 +19,16 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
 #RELEASE_URL     = $(UIM_REPOSITORY)/trunk
-RELEASE_URL     = $(TAGS_REPOSITORY)/$(PACKAGE)-$(VERSION)
+RELEASE_URL     = $(TAGS_REPOSITORY)/$(distdir)
 DIST_SUM_LIST = $(distdir).sum
 
 DISTCLEANFILES = uim.pc uim.desktop \
 		 intltool-extract intltool-merge intltool-update \
 		 gnuify-changelog.pl $(DIST_SUM_LIST)
+
+MAINTAINERCLEANFILES = \
+    aclocal.m4 ltmain.sh depcomp missing install-sh \
+    intltool-extract.in intltool-merge.in intltool-update.in
 
 .PHONY: FORCE sum
 

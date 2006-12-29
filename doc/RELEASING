@@ -31,21 +31,32 @@ release, you have to repeat the following procedure at least three times.
    SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.7.2"
    LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.1.3"
 
+   And set appropriate $RELEASE_SUFFIX.
+
+   RELEASE_SUFFIX="-alpha"
+   RELEASE_SUFFIX="-beta"
+   RELEASE_SUFFIX=""
+
 4. Export a fresh tree from svn.
 
    svn export http://anonsvn.freedesktop.org/srv/uim/trunk
 
-5. Do a build test with make-dist.sh
+5. Do test.
+
+   This item needs many many description... I must fill this item later.
+
+6. Do a build test with make-dist.sh
 
    This test is not enough, but worth doing. It is especially useful when a
    new file is added. As a TODO, we should do unit testing at this point.
 
-6. Do test.
+7. Increment the version numbers in:
 
-   This item needs many many description... I must fill this item later.
+   - configure.ac
+   - uim.h
+   - Project-Id-Version in po/*.po
 
-7. Increment the version number in configure.ac, uim.h and Project-Id-Version
-   in po/*.po. Increment libtool-version.mk too if ABI is updated.
+   And increment libtool-version.mk too if ABI is updated.
 
 8. Update NEWS and RELNOTE
 
@@ -70,16 +81,7 @@ release, you have to repeat the following procedure at least three times.
    cd x.y.z
    ./make-dist.sh
 
-   If the release is an alpha or beta, do following extra steps.
-
-   Modify 'distdir' variable of Makefile.in as follows:
-
-     #distdir = $(PACKAGE)-$(VERSION)
-     distdir = $(PACKAGE)-$(VERSION)-alpha
-
-   Make the distribution again with the -alpha or -beta suffix.
-
-     make distcheck sum
+   Release suffixes such as '-alpha' and '-beta' is automatically appended.
 
 12. Copy the source tarball to http://uim.freedesktop.org/releases
 
