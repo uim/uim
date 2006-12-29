@@ -66,7 +66,7 @@ int
 uim_scm_symbol_value_int(const char *symbol_str)
 #if UIM_SCM_GCC4_READY_GC
 {
-  return (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
+  return (int)(intptr_t)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
 }
 
 static void *
@@ -90,7 +90,7 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
     val = 0;
   }
 #if UIM_SCM_GCC4_READY_GC
-  return (void *)val;
+  return (void *)(intptr_t)val;
 #else
   uim_scm_gc_unprotect_stack(&stack_start);
 

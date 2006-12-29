@@ -143,8 +143,7 @@ int
 uim_scm_c_int(uim_lisp integer)
 #if UIM_SCM_GCC4_READY_GC
 {
-  return (int)uim_scm_call_with_gc_ready_stack(uim_scm_c_int_internal,
-					       (void *)integer);
+  return (int)(intptr_t)uim_scm_call_with_gc_ready_stack(uim_scm_c_int_internal, (void *)integer);
 }
 
 static void *
@@ -174,7 +173,7 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
   }
 
 #if UIM_SCM_GCC4_READY_GC
-  return (void *)c_int;
+  return (void *)(intptr_t)c_int;
 #else
   uim_scm_gc_unprotect_stack(&stack_start);
 

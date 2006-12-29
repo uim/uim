@@ -49,6 +49,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "uim-stdint.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-custom.h"
@@ -1474,7 +1476,7 @@ custom_cb_add(const char *hook, const char *validator,
   args.ptr = ptr;
   args.gate_func = gate_func;
   args.cb = cb;
-  return (uim_bool)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)custom_cb_add_internal, &args);
+  return (uim_bool)(uintptr_t)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)custom_cb_add_internal, &args);
 }
 
 static void *
@@ -1515,7 +1517,7 @@ custom_cb_add_internal(struct custom_cb_add_args *args)
   succeeded = uim_scm_c_bool(uim_scm_eval(form));
 
 #if UIM_SCM_GCC4_READY_GC
-  return (void *)succeeded;
+  return (void *)(uintptr_t)succeeded;
 #else
   uim_scm_gc_unprotect_stack(&stack_start);
 

@@ -39,7 +39,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
-#include <langinfo.h>
 #include "uim-internal.h"
 #include "gettext.h"
 #include "uim-scm.h"
