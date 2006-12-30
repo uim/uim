@@ -190,7 +190,14 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  return (uim_lisp)scm_p_symbol_value(scm_intern(symbol_str));
+  ScmObj symbol;
+
+  symbol = scm_intern(symbol_str);
+  if (SCM_TRUEP(scm_p_symbol_boundp(symbol, SCM_NULL))) {
+    return (uim_lisp)scm_p_symbol_value(symbol);
+  } else {
+    return uim_scm_f();
+  }
 }
 
 uim_lisp
