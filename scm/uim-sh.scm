@@ -93,11 +93,7 @@
 	      (activate-editline))
 	  (if (guard (err
 		      (else
-		       (display err)
-		       (newline)
-		       (if (>= (verbose) 2)
-			   (%%backtrace))
-		       #t))
+                       (%%inspect-error err)))
 		(uim-sh-loop))
 	      (uim-sh args))))))
 
