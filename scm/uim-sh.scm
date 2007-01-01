@@ -48,7 +48,7 @@
       (if (not eof)
 	  (begin
 	    ((if  uim-sh-opt-strict-batch
-		  (lambda () #f)
+		  (lambda args #f)
 		  print)
 	     (eval expr (interaction-environment)))
 	    (uim-sh-loop))
@@ -72,7 +72,7 @@
 
 (define uim-sh-usage
   (lambda ()
-    (print "Usage: uim-sh [options]
+    (display "Usage: uim-sh [options]
   -b        batch mode. suppress shell prompts
   -B        strict batch mode, implies -b. suppress shell prompts and
             evaluated results\n")
@@ -117,7 +117,7 @@
 			(if (not eof)
 			    (begin
 			      ((if uim-sh-opt-strict-batch
-				   (lambda () #f)
+				   (lambda args #f)
 				   print)
 			       (eval expr (interaction-environment)))
 			      (uim-sh-loop))
