@@ -31,8 +31,9 @@ if test -n "$RELEASE_SUFFIX"; then
 /^distdir =
 d
 i
+RELEASE_SUFFIX = ${RELEASE_SUFFIX}
 #distdir = \$(PACKAGE)-\$(VERSION)
-distdir = \$(PACKAGE)-\$(VERSION)${RELEASE_SUFFIX}
+distdir = \$(PACKAGE)-\$(VERSION)\$(RELEASE_SUFFIX)
 .
 wq
 EOT
