@@ -1,6 +1,6 @@
 ;;; im.scm: Core IM management functions for uim
 ;;;
-;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;

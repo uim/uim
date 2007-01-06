@@ -211,14 +211,14 @@ msgstr ""
 #: helper/dict-word-list-win-gtk.c:585
 msgid ""
 "Copyright (C) 2003-2004 Masahito Omote\n"
-"Copyright (C) 2004-2006 uim Project\n"
+"Copyright (C) 2004-2007 uim Project\n"
 "All rights reserved."
 msgstr ""
 
 #: helper/dict-word-list-win-gtk.c:609
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-"Copyright 2004-2006 uim Project http://uim.freedesktop.org/\n"
+"Copyright 2004-2007 uim Project http://uim.freedesktop.org/\n"
 "All rights reserved."
 msgstr ""
 
@@ -2712,7 +2712,7 @@ msgstr "입력기 (uim)"
 
 #.
 #.
-#. Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+#. Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 #.
 #. All rights reserved.
 #.
