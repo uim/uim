@@ -60,7 +60,7 @@ release, you have to repeat the following procedure at least three times.
 
 8. Update NEWS and RELNOTE
 
-9. Tag to tags/x.y.z
+9. Tag to tags/uim-x.y.z
 
    On an alpha release, branch the tree at first.
 
@@ -70,11 +70,11 @@ release, you have to repeat the following procedure at least three times.
    And then tag.
 
    svn cp svn+ssh://svn.freedesktop.org/svn/uim/branches/x.y \
-          svn+ssh://svn.freedesktop.org/svn/uim/tags/x.y.z-alpha
+          svn+ssh://svn.freedesktop.org/svn/uim/tags/uim-x.y.z-alpha
 
 10. Export the fresh tagged tree from svn.
 
-   svn export http://anonsvn.freedesktop.org/srv/uim/tags/x.y.z-alpha
+   svn export http://anonsvn.freedesktop.org/srv/uim/tags/uim-x.y.z-alpha
 
 11. Make the distribution.
 

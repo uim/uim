@@ -1,6 +1,6 @@
 ;;; im-custom.scm: Customization variables for im.scm
 ;;;
-;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -453,7 +453,7 @@
   (_ "long description will be here."))
 
 (define-custom 'eb-dic-path
-  (string-append (or (getenv "HOME") "") "/dict")
+  (string-append (sys-datadir) "/dict")
   '(eb candwin)
   '(pathname directory)
   (_ "The directory which contains EB dictionary file")

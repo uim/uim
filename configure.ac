@@ -1013,7 +1013,14 @@ if test "x$enable_debug" = xyes; then
 else
   CFLAGS="$CFLAGS -DNDEBUG"
   CXXFLAGS="$CXXFLAGS -DNDEBUG"
+
+  # Suppress the warnings of combined-mode SigScheme
+  AC_LANG_WERROR  # Turn warning-only unknown options into error.
+  AX_CFLAGS_GCC_OPTION([-Wno-redundant-decls], [UIM_SCM_CFLAGS])
+  AX_CFLAGS_GCC_OPTION([-Wno-unused-function], [UIM_SCM_CFLAGS])
+  AX_LANG_WNOERROR  # end AC_LANG_WERROR
 fi
+AC_SUBST(UIM_SCM_CFLAGS)
 
 AC_ARG_ENABLE(warnings-into-error,
     AC_HELP_STRING([--enable-warnings-into-error],
@@ -1059,7 +1066,6 @@ AC_SUBST(abs_top_srcdir)
 AC_SUBST(abs_top_builddir)
 
 # configure sigscheme/ subdir
-# To allow overridings, $ac_configure_args is placed at end.
 ac_configure_args="$ac_configure_args --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([sigscheme])
 

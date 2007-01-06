@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -45,7 +45,6 @@ static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 #endif
 
 extern uim_lisp uim_scm_last_val;
-static uim_lisp return_val;
 
 /* will be deprecated. use uim_scm_c_str() instead */
 char *
@@ -173,24 +172,30 @@ uim_scm_str_from_c_str(const char *str)
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {
-  uim_lisp lst = (uim_lisp)SCM_NULL;
-  uim_lisp str = (uim_lisp)SCM_NULL;
+  uim_lisp lst, str;
   const char *c_str;
   int i;
 
-  for (i = n_strs - 1; 0 <= i; i--) {
+  for (lst = uim_scm_null_list(), i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
     str = uim_scm_make_str(c_str);
-    lst = (uim_lisp)SCM_CONS((ScmObj)str, (ScmObj)lst);
+    lst = uim_scm_cons(str, lst);
   }
 
-  return (uim_lisp)lst;
+  return lst;
 }
 
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
-  return (uim_lisp)scm_p_symbol_value(scm_intern(symbol_str));
+  ScmObj symbol;
+
+  symbol = scm_intern(symbol_str);
+  if (SCM_TRUEP(scm_p_symbol_boundp(symbol, SCM_NULL))) {
+    return (uim_lisp)scm_p_symbol_value(symbol);
+  } else {
+    return uim_scm_f();
+  }
 }
 
 uim_lisp
@@ -292,8 +297,7 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
   void **result;
 
   UIM_EVAL_FSTRING1(NULL, "(length %s)", list_repl);
-  return_val = uim_scm_return_value();
-  list_len = uim_scm_c_int(return_val);
+  list_len = uim_scm_c_int(uim_scm_return_value());
 
   result = (void **)malloc(sizeof(void *) * (list_len + 1));
   if (!result)
@@ -302,8 +306,7 @@ uim_scm_c_list(const char *list_repl, const char *mapper_proc,
   result[list_len] = NULL;
   for (i = 0; i < list_len; i++) {
     UIM_EVAL_FSTRING3(NULL, "(%s (nth %d %s))", mapper_proc, i, list_repl);
-    return_val = uim_scm_return_value();
-    result[i] = (*conv_func)(return_val);
+    result[i] = (*conv_func)(uim_scm_return_value());
   }
 
   return result;

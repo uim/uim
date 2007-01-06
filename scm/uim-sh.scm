@@ -1,7 +1,7 @@
 ;;; uim-sh.scm: uim interactive shell for debugging, batch processing
 ;;;             and serving as generic inferior process
 ;;;
-;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -48,7 +48,7 @@
       (if (not eof)
 	  (begin
 	    ((if  uim-sh-opt-strict-batch
-		  (lambda () #f)
+		  (lambda args #f)
 		  print)
 	     (eval expr (interaction-environment)))
 	    (uim-sh-loop))
@@ -72,7 +72,7 @@
 
 (define uim-sh-usage
   (lambda ()
-    (print "Usage: uim-sh [options]
+    (display "Usage: uim-sh [options]
   -b        batch mode. suppress shell prompts
   -B        strict batch mode, implies -b. suppress shell prompts and
             evaluated results\n")
@@ -93,11 +93,7 @@
 	      (activate-editline))
 	  (if (guard (err
 		      (else
-		       (display err)
-		       (newline)
-		       (if (>= (verbose) 2)
-			   (%%backtrace))
-		       #t))
+                       (%%inspect-error err)))
 		(uim-sh-loop))
 	      (uim-sh args))))))
 
@@ -117,7 +113,7 @@
 			(if (not eof)
 			    (begin
 			      ((if uim-sh-opt-strict-batch
-				   (lambda () #f)
+				   (lambda args #f)
 				   print)
 			       (eval expr (interaction-environment)))
 			      (uim-sh-loop))

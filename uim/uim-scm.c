@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -39,8 +39,8 @@
  */
 /* This file must be included before uim's config.h */
 #include "sigscheme-combined.c"
-#if !SSCM_VERSION_REQUIRE(0, 7, 0)
-#error "SigScheme version 0.7.0 or later is required"
+#if !SSCM_VERSION_REQUIRE(0, 7, 3)
+#error "SigScheme version 0.7.3 or later is required"
 #endif
 
 #include <config.h>
@@ -136,7 +136,7 @@ uim_scm_c_bool(uim_lisp val)
 uim_lisp
 uim_scm_make_bool(uim_bool val)
 {
-  return (uim_lisp)SCM_MAKE_BOOL(val);
+  return (val) ? uim_scm_t() : uim_scm_f();
 }
 
 int
@@ -345,15 +345,15 @@ uim_scm_set_lib_path(const char *path)
 uim_bool
 uim_scm_load_file(const char *fn)
 {
-  uim_bool ret;
+  uim_bool succeeded;
 
   if (!fn)
     return UIM_FALSE;
 
   UIM_EVAL_FSTRING1(NULL, "(guard (err (else #f)) (load \"%s\"))", fn);
-  ret = uim_scm_c_bool(uim_scm_return_value());
+  succeeded = uim_scm_c_bool(uim_scm_return_value());
 
-  return ret;
+  return succeeded;
 }
 
 uim_lisp
@@ -435,7 +435,7 @@ uim_scm_eval_internal(void *uim_lisp_obj)
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
-  ret = (uim_lisp)scm_p_eval((ScmObj)obj, SCM_NULL);
+  uim_scm_last_val = ret = (uim_lisp)scm_p_eval((ScmObj)obj, SCM_NULL);
 
 #if UIM_SCM_GCC4_READY_GC
   return (void *)ret;
@@ -522,15 +522,15 @@ uim_scm_reverse(uim_lisp lst)
 uim_bool
 uim_scm_require_file(const char *fn)
 {
-  uim_bool ret;
+  uim_bool succeeded;
 
   if (!fn)
     return UIM_FALSE;
 
   UIM_EVAL_FSTRING1(NULL, "(guard (err (else #f)) (require \"%s\"))", fn);
-  ret = uim_scm_c_bool(uim_scm_return_value());
+  succeeded = uim_scm_c_bool(uim_scm_return_value());
 
-  return ret;
+  return succeeded;
 }
 
 void

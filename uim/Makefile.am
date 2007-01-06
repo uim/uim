@@ -6,6 +6,8 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = iso-639-1.def uim-compat-scm.c test-gc.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
+# FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
+CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
 
 lib_LTLIBRARIES = libuim.la libuim-custom.la
 
@@ -118,7 +120,7 @@ libuim_la_CPPFLAGS = $(uim_defs) \
 		     -I$(top_builddir)/sigscheme/src \
 		     -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
-libuim_la_CFLAGS = $(GCROOTS_CFLAGS)
+libuim_la_CFLAGS = $(GCROOTS_CFLAGS) $(UIM_SCM_CFLAGS)
 
 if ENABLE_ANTHY_STATIC
   libuim_la_LIBADD += @ANTHY_LIBS@

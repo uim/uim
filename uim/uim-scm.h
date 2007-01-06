@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
@@ -132,6 +132,8 @@ uim_lisp
 uim_scm_eval(uim_lisp obj);
 uim_lisp
 uim_scm_eval_c_string(const char *str);
+/* uim_scm_return_value() should only used to retrieve result of
+ * UIM_EVAL_FSTRINGn() or UIM_EVAL_STRING(). */
 uim_lisp
 uim_scm_return_value(void);
 /*

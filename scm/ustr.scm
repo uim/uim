@@ -1,6 +1,6 @@
 ;;; ustr.scm: logical order string of abstract elements
 ;;;
-;;; Copyright (c) 2003-2006 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
