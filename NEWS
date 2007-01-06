@@ -12,6 +12,9 @@ Overview of changes from 1.4.0-alpha to 1.4.0-beta
     - Fix broken 'uim-sh -B' error handling
     - Fix broken backtrace printing
 
+  - Broken compilation on SPARC and IA-64 (NIIBE Yutaka)
+  - Suppress warnings
+
 Overview of changes from 1.3.x to 1.4.0-alpha
 ==
 * New features
@@ -20,7 +23,7 @@ Overview of changes from 1.3.x to 1.4.0-alpha
       0.7.2
 
 * Fixed
-  - [CRITICAL] Fix GC crash on SPARC, IA-64, and possibly MIPS, Alpha, m68k, by
+  - [CRITICAL] Fix GC crash on SPARC, IA-64, m68k, and possibly MIPS, Alpha, by
     introduction of libgcroots
 
 Overview of changes from 1.3.0 to 1.3.1

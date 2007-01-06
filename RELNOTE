@@ -25,9 +25,9 @@ What's New
 ----------
 
   - The modified version of SIOD interpreter has been replaced with
-    SigScheme 0.7.2
+    SigScheme 0.7.3
 
-  - [CRITICAL] Fix GC crash on SPARC, IA-64, and possibly MIPS, Alpha, m68k, by
+  - [CRITICAL] Fix GC crash on SPARC, IA-64, m68k, and possibly MIPS, Alpha, by
     introduction of libgcroots
 
 See NEWS for the fully detailed changes.
@@ -36,9 +36,9 @@ See NEWS for the fully detailed changes.
 Notes for Packagers and System Integrators
 ------------------------------------------
 
-  - The option "--enable-debug" makes uim (in accurately, underlying
-    SigScheme interpreter) quite heavy. Please keep them unspecified for
-    normal library
+  - The option "--enable-debug" and/or "--enable-backtrace" makes uim (in
+    accurately, underlying SigScheme interpreter) quite heavy. Please keep them
+    unspecified for normal library
 
   - Use the bundled SigScheme, and do not depend on external SigScheme
     package. Since the SigScheme interpreter is completely embedded into
