@@ -16,11 +16,14 @@ desktop_in_files = uim.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
+# $(distdir) does work as a part of $(RELEASE_URL) when configured as a
+# subpackage.
+DIST_NAME = $(PACKAGE)-$(VERSION)$(RELEASE_SUFFIX)
 UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
 TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
 #RELEASE_URL     = $(UIM_REPOSITORY)/trunk
-RELEASE_URL     = $(TAGS_REPOSITORY)/$(distdir)
-DIST_SUM_LIST = $(distdir).sum
+RELEASE_URL     = $(TAGS_REPOSITORY)/$(DIST_NAME)
+DIST_SUM_LIST = $(DIST_NAME).sum
 
 DISTCLEANFILES = uim.pc uim.desktop \
 		 intltool-extract intltool-merge intltool-update \
