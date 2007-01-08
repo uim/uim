@@ -515,7 +515,6 @@ uim_scm_length(uim_lisp lst)
   uim_lisp len;
 
   len = (uim_lisp)scm_p_length((ScmObj)lst);
-  uim_scm_ensure(uim_scm_integerp(len));
   return uim_scm_c_int(len);
 }
 
