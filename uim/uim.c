@@ -47,8 +47,6 @@
 #include "gettext.h"
 #include "uim-util.h"
 
-extern char *uim_return_str;
-
 char *uim_last_client_encoding;
 
 #define CONTEXT_ARRAY_SIZE 512
@@ -277,8 +275,7 @@ uim_switch_im(uim_context uc, const char *engine)
   if (uc->short_desc)
     free(uc->short_desc);
   UIM_EVAL_FSTRING1(uc, "(uim-get-im-short-desc '%s)", im->name);
-  uc->short_desc = uim_return_str;
-  uim_return_str = NULL;  /* ownership has been transferred */
+  uc->short_desc = uim_scm_c_str(uim_scm_return_value());
 #endif
 }
 
@@ -501,8 +498,7 @@ uim_get_im_short_desc(uim_context uc, int nth)
     if (im->short_desc)
       free(im->short_desc);
     UIM_EVAL_FSTRING1(uc, "(uim-get-im-short-desc '%s)", im->name);
-    im->short_desc = uim_return_str;
-    uim_return_str = NULL;  /* ownership has been transferred */
+    im->short_desc = uim_scm_c_str(uim_scm_return_value());
     return im->short_desc;
   }
   return NULL;
@@ -539,9 +535,11 @@ uim_check_im_exist(const char *im_engine_name)
 const char *
 uim_get_default_im_name(const char *localename)
 {
-  const char *valid_default_im_name;
+  const char *default_im_name, *valid_default_im_name;
+
   UIM_EVAL_FSTRING1(NULL, "(uim-get-default-im-name \"%s\")", localename);
-  valid_default_im_name = uim_check_im_exist(uim_return_str);
+  default_im_name = uim_scm_refer_c_str(uim_scm_return_value());
+  valid_default_im_name = uim_check_im_exist(default_im_name);
 
   if (!valid_default_im_name)
     valid_default_im_name = "direct";  /* never happen */
@@ -551,9 +549,11 @@ uim_get_default_im_name(const char *localename)
 const char *
 uim_get_im_name_for_locale(const char *localename)
 {
-  const char *valid_im_name;
+  const char *im_name, *valid_im_name;
+
   UIM_EVAL_FSTRING1(NULL, "(uim-get-im-name-for-locale \"%s\")", localename);
-  valid_im_name = uim_check_im_exist(uim_return_str);
+  im_name = uim_scm_refer_c_str(uim_scm_return_value());
+  valid_im_name = uim_check_im_exist(im_name);
 
   if (!valid_im_name)
     valid_im_name = "direct";  /* never happen */
@@ -734,8 +734,6 @@ uim_init_scm(void)
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
   uim_scm_require_file("init.scm");
-
-  uim_return_str = NULL;
 
 #if 0
   /*

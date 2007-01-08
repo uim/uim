@@ -56,8 +56,6 @@
 
 static const char **uim_get_encoding_alias(const char *encoding);
 
-char *uim_return_str;
-
 static struct uim_code_converter uim_iconv_tbl = {
   uim_iconv_is_convertible,
   uim_iconv_create,
@@ -644,19 +642,6 @@ im_deactivate_candidate_selector(uim_lisp id_)
 }
 
 static uim_lisp
-im_return_str(uim_lisp str_)
-{
-  if (uim_return_str) {
-    free(uim_return_str);
-    uim_return_str = NULL;
-  }
-  if (uim_scm_stringp(str_)) {
-    uim_return_str = uim_scm_c_str(str_);
-  }
-  return uim_scm_f();
-}
-
-static uim_lisp
 im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
 		uim_lisp former_len_, uim_lisp latter_len_)
 {
@@ -784,8 +769,6 @@ switch_system_global_im(uim_lisp id_, uim_lisp name_)
 void
 uim_init_im_subrs(void)
 {
-  /**/
-  uim_scm_init_subr_1("im-return-str", im_return_str);
   /**/
   uim_scm_init_subr_2("im-commit",       im_commit);
   uim_scm_init_subr_1("im-commit-raw",   im_commit_raw);

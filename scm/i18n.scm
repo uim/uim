@@ -224,4 +224,4 @@
 				  "invalid"))  ;; intentionally invalid
 	   (locale (locale-new primary-localestr))
 	   (langcode (locale-zh-awared-lang locale)))
-      (im-return-str langcode))))
+      langcode)))

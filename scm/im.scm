@@ -153,9 +153,9 @@
 (define uim-get-im-short-desc
   (lambda (name)
     (let ((im (retrieve-im name)))
-      (im-return-str (or (and im
-			      (im-short-desc im))
-			 "-")))))
+      (or (and im
+               (im-short-desc im))
+          "-"))))
 
 ;; strictly find out im by name
 (define retrieve-im
@@ -200,13 +200,13 @@
 (define uim-get-default-im-name
   (lambda (localestr)
     (let ((name (im-name (find-default-im localestr))))
-      (im-return-str (symbol->string name)))))
+      (symbol->string name))))
 
 ;; called from uim_get_im_name_for_locale()
 (define uim-get-im-name-for-locale
   (lambda (localestr)
     (let ((name (im-name (find-im-for-locale localestr))))
-      (im-return-str (symbol->string name)))))
+      (symbol->string name))))
 
 ;;
 ;; im-switching

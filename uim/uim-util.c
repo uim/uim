@@ -45,8 +45,6 @@
 #include "uim-compat-scm.h"
 #include "uim-util.h"
 
-extern char *uim_return_str;
-
 /* define constants as procedure to ensure unmodifiable */
 static uim_lisp
 sys_libdir()
@@ -585,7 +583,7 @@ uim_get_language_name_from_locale(const char *localename)
      specification of this function for backward compatibility
   */
   UIM_EVAL_FSTRING1(NULL, "(langgroup-primary-lang-code \"%s\")", localename);
-  localename = uim_return_str;  /* will be free() automatically */
+  localename = uim_scm_refer_c_str(uim_scm_return_value());
 #endif
   return get_language_name_from_locale(localename);
 }
