@@ -1,3 +1,10 @@
+Overview of changes from 1.4.0-beta to 1.4.0
+==
+* Fixed
+  - uim Scheme library
+    - Fix lacking heap preallocation for heavy job. This makes uim-pref startup
+      faster
+
 Overview of changes from 1.4.0-alpha to 1.4.0-beta
 ==
 * Fixed

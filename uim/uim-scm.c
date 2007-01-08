@@ -606,9 +606,12 @@ uim_scm_init(const char *verbose_level)
   scm_current_char_codec = scm_mb_find_codec("ISO-8859-1");
 #endif
 
+  /* 128KB/heap, max 0.99GB on 32-bit systems. Since maximum length of list can
+   * be represented by a Scheme integer, SCM_INT_MAX limits the number of cons
+   * cells. */
   storage_conf.heap_size            = 16384;
   storage_conf.heap_alloc_threshold = 16384;
-  storage_conf.n_heaps_max          = 64;
+  storage_conf.n_heaps_max          = SCM_INT_MAX / storage_conf.heap_size;
   storage_conf.n_heaps_init         = 1;
   storage_conf.symbol_hash_size     = 1024;
   scm_initialize(&storage_conf);
