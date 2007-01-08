@@ -44,8 +44,8 @@
     (let ((act-id (car entry))
 	  (indication (cdr entry)))
       (list act-id
-	    (ugettext (indication-label indication))
-	    (ugettext (indication-short-desc indication))))))
+	    (indication-label indication)
+	    (indication-short-desc indication)))))
 
 (define action-id-list->choice
   (lambda (act-ids indication-alist)
@@ -65,8 +65,8 @@
 	   (cur-codeset (bind-textdomain-codeset (gettext-package) "EUC-JP"))
 	   (translated (list (indication-id indication)
 			     (indication-iconic-label indication)
-			     (ugettext (indication-label indication))
-			     (ugettext (indication-short-desc indication)))))
+			     (indication-label indication)
+			     (indication-short-desc indication))))
       (bind-textdomain-codeset (gettext-package) (or orig-codeset
 						     "UTF-8"))
       (lambda (owner)

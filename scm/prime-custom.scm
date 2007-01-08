@@ -35,65 +35,65 @@
 (define prime-im-short-desc (N_ "Japanese predictive input method"))
 
 (define-custom-group 'prime
-  (ugettext prime-im-name-label)
-  (ugettext prime-im-short-desc))
+  prime-im-name-label
+  prime-im-short-desc)
 
 (define-custom-group 'prime-advanced
-  (_ "PRIME (advanced)")
-  (_ "Advanced settings for PRIME"))
+  (N_ "PRIME (advanced)")
+  (N_ "Advanced settings for PRIME"))
 
 (define-custom-group 'language
-  (_ "Language choice")
-  (_ "Language settings"))
+  (N_ "Language choice")
+  (N_ "Language settings"))
 
 (define-custom-group 'japanese
-  (_ "Japanese")
-  (_ "Japanese specific settings"))
+  (N_ "Japanese")
+  (N_ "Japanese specific settings"))
 
 (define-custom-group 'english
-  (_ "English")
-  (_ "English specific settings"))
+  (N_ "English")
+  (N_ "English specific settings"))
 
 
 (define-custom 'prime-custom-default-language 'Japanese
   '(prime language)
   (list 'choice
-	(list 'Japanese (_ "Japanese") (_ "Japanese"))
-	(list 'English  (_ "English")  (_ "English")))
-  (_ "Default language")
-  (_ "long description will be here."))
+	(list 'Japanese (N_ "Japanese") (N_ "Japanese"))
+	(list 'English  (N_ "English")  (N_ "English")))
+  (N_ "Default language")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-language-toggle-key '("F11")
   '(prime language)
   '(key)
-  (_ "Language toggle key")
-  (_ "long description will be here."))
+  (N_ "Language toggle key")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-auto-register-mode? #t
   '(prime)
   '(boolean)
-  (_ "Enable auto register mode")
-  (_ "long description will be here."))
+  (N_ "Enable auto register mode")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-custom-japanese-space 'wide
   '(prime japanese)
   (list 'choice
-	(list 'wide (_ "Wide width (Zenkaku)") (_ "Wide width (Zenkaku)"))
-	(list 'half (_ "Half width (Hankaku)") (_ "Half width (Hankaku)")))
-  (_ "Space character")
-  (_ "long description will be here."))
+	(list 'wide (N_ "Wide width (Zenkaku)") (N_ "Wide width (Zenkaku)"))
+	(list 'half (N_ "Half width (Hankaku)") (N_ "Half width (Hankaku)")))
+  (N_ "Space character")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-altspace-key '("<Control> " "<Alt> ")
   '(prime japanese)
   '(key)
-  (_ "Alternative space character key")
-  (_ "long description will be here."))
+  (N_ "Alternative space character key")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-use-unixdomain? #t
   '(prime advanced)
   '(boolean)
-  (_ "Use UNIX domain socket to communicate with PRIME")
-  (_ "long description will be here."))
+  (N_ "Use UNIX domain socket to communicate with PRIME")
+  (N_ "long description will be here."))
 
 ;(define-custom 'prime-use-candidate-window? #t
 ;  '(prime candwin)
@@ -110,62 +110,62 @@
 (define-custom 'prime-nr-candidate-max 10
   '(prime-advanced candwin)
   '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-always-show-window? #t
   '(prime-advanced candwin)
   '(boolean)
-  (_ "Always showing candidate window")
-  (_ "long description will be here."))
+  (N_ "Always showing candidate window")
+  (N_ "long description will be here."))
 
 ;; If #t a candidate window displays usage examples of candidate words.
 (define-custom 'prime-custom-display-usage? #t
   '(prime-advanced annotation)
   '(boolean)
-  (_ "Show usage examples of candidate words")
-  (_ "long description will be here."))
+  (N_ "Show usage examples of candidate words")
+  (N_ "long description will be here."))
 
 ;; If #t a candidate window displays comments of candidate words.
 (define-custom 'prime-custom-display-comment? #t
   '(prime-advanced annotation)
   '(boolean)
-  (_ "Show candidate annotations")
-  (_ "long description will be here."))
+  (N_ "Show candidate annotations")
+  (N_ "long description will be here."))
 
 ;; If #t a candidate window displays forms of candidate words such as
 ;; 'l (small L)', 'I (large i)'.
 (define-custom 'prime-custom-display-form? #t
   '(prime-advanced annotation)
   '(boolean)
-  (_ "Show candidate forms")
-  (_ "long description will be here."))
+  (N_ "Show candidate forms")
+  (N_ "long description will be here."))
 
 ;; ------------------------------------------------------------
 
 (define-custom 'prime-custom-number-selection? #f
   '(prime-advanced special-op)
   '(boolean)
-  (_ "Select candidate by numeral keys")
-  (_ "long description will be here."))
+  (N_ "Select candidate by numeral keys")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-custom-app-mode-vi? #f
   '(prime-advanced special-op)
   '(boolean)
-  (_ "Enable vi-cooperative mode")
-  (_ "long description will be here."))
+  (N_ "Enable vi-cooperative mode")
+  (N_ "long description will be here."))
 
 (define-custom 'prime-pseudo-mode-cursor? #f
   '(prime-advanced special-op)
   '(boolean)
-  (_ "Enable pseudo mode cursor")
-  (_ "long description will be here."))
+  (N_ "Enable pseudo mode cursor")
+  (N_ "long description will be here."))
 
 ;(define-custom 'prime-mask-pending-preedit? #f
 ;  '(prime)
 ;  '(boolean)
-;  (_ "Mask preedit strings (For T-Code users)")
-;  (_ "long description will be here."))
+;  (N_ "Mask preedit strings (For T-Code users)")
+;  (N_ "long description will be here."))
 
 ;;
 ;; toolbar
@@ -213,8 +213,8 @@
 ;  (cons 'choice
 ;	(map indication-alist-entry-extract-choice
 ;	     prime-input-mode-indication-alist))
-;  (_ "Default input mode")
-;  (_ "long description will be here."))
+;  (N_ "Default input mode")
+;  (N_ "long description will be here."))
 
 (define prime-input-mode-actions (map car prime-input-mode-indication-alist))
 ;; Users don't care this option.
@@ -225,8 +225,8 @@
 ;  (cons 'ordered-list
 ;	(map indication-alist-entry-extract-choice
 ;	     prime-input-mode-indication-alist))
-;  (_ "Input mode menu items")
-;  (_ "long description will be here."))
+;  (N_ "Input mode menu items")
+;  (N_ "long description will be here."))
 
 ;; value dependency
 ;(if custom-full-featured?

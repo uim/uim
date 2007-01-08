@@ -33,32 +33,32 @@
 
 
 (define-custom-group 'other-ims
-		     (_ "Other input methods")
-		     (_ "long description will be here."))
+		     (N_ "Other input methods")
+		     (N_ "long description will be here."))
 
 (define-custom 'generic-use-candidate-window? #t
   '(other-ims candwin)
   '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'generic-candidate-op-count 1
   '(other-ims candwin)
   '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'generic-nr-candidate-max 10
   '(other-ims candwin)
   '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
 
 (define-custom 'generic-commit-candidate-by-numeral-key? #t
   '(other-ims candwin)
   '(boolean)
-  (_ "Select candidate by numeral keys")
-  (_ "long description will be here."))
+  (N_ "Select candidate by numeral keys")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'generic-candidate-op-count

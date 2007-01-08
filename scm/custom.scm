@@ -749,12 +749,12 @@
 ;;
 
 (define-custom-group 'main
-		     (_ "-")
-		     (_ "Main settings of this group"))
+		     (N_ "-")
+		     (N_ "Main settings of this group"))
 
 (define-custom-group 'hidden
-		     (_ "Hidden settings")
-		     (_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
+		     (N_ "Hidden settings")
+		     (N_ "Hidden settings of this group. This group is invisible from uim_custom clients. Exists for internal variable management."))
 
 
 (prealloc-heaps-for-heavy-job)

@@ -36,12 +36,12 @@
 (define mana-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'mana
-                     (ugettext mana-im-name-label)
-                     (ugettext mana-im-short-desc))
+                     mana-im-name-label
+                     mana-im-short-desc)
 
 (define-custom-group 'mana-advanced
-                     (_ "Mana (advanced)")
-                     (_ "Advanced settings for Mana"))
+                     (N_ "Mana (advanced)")
+                     (N_ "Advanced settings for Mana"))
 
 ;;
 ;; segment separator
@@ -50,14 +50,14 @@
 (define-custom 'mana-show-segment-separator? #f
   '(mana segment-sep)
   '(boolean)
-  (_ "Show segment separator")
-  (_ "long description will be here."))
+  (N_ "Show segment separator")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-segment-separator "|"
   '(mana segment-sep)
   '(string ".*")
-  (_ "Segment separator")
-  (_ "long description will be here."))
+  (N_ "Segment separator")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'mana-segment-separator
 		 'custom-activity-hooks
@@ -71,26 +71,26 @@
 (define-custom 'mana-use-candidate-window? #t
   '(mana candwin)
   '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-candidate-op-count 1
   '(mana candwin)
   '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-nr-candidate-max 10
   '(mana candwin)
   '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-select-candidate-by-numeral-key? #f
   '(mana candwin)
   '(boolean)
-  (_ "Select candidate by numeral keys")
-  (_ "long description will be here."))
+  (N_ "Select candidate by numeral keys")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'mana-candidate-op-count
@@ -172,13 +172,13 @@
   '(mana toolbar)
   (list 'ordered-list
 	(list 'widget_mana_input_mode
-	      (_ "Input mode")
-	      (_ "Input mode"))
+	      (N_ "Input mode")
+	      (N_ "Input mode"))
 	(list 'widget_mana_kana_input_method
-	      (_ "Kana input method")
-	      (_ "Kana input method")))
-  (_ "Enabled toolbar buttons")
-  (_ "long description will be here."))
+	      (N_ "Kana input method")
+	      (N_ "Kana input method")))
+  (N_ "Enabled toolbar buttons")
+  (N_ "long description will be here."))
 
 ;; dynamic reconfiguration
 ;; mana-configure-widgets is not defined at this point. So wrapping
@@ -196,8 +196,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     mana-input-mode-indication-alist))
-  (_ "Default input mode")
-  (_ "long description will be here."))
+  (N_ "Default input mode")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-input-mode-actions
                (map car mana-input-mode-indication-alist)
@@ -205,8 +205,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     mana-input-mode-indication-alist))
-  (_ "Input mode menu items")
-  (_ "long description will be here."))
+  (N_ "Input mode menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -247,8 +247,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     mana-kana-input-method-indication-alist))
-  (_ "Default kana input method")
-  (_ "long description will be here."))
+  (N_ "Default kana input method")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-kana-input-method-actions
                (map car mana-kana-input-method-indication-alist)
@@ -256,8 +256,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     mana-kana-input-method-indication-alist))
-  (_ "Kana input method menu items")
-  (_ "long description will be here."))
+  (N_ "Kana input method menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -294,11 +294,11 @@
 (define-custom 'mana-use-with-vi? #f
   '(mana-advanced special-op)
   '(boolean)
-  (_ "Enable vi-cooperative mode")
-  (_ "long description will be here."))
+  (N_ "Enable vi-cooperative mode")
+  (N_ "long description will be here."))
 
 (define-custom 'mana-use-mode-transition-keys-in-off-mode? #f
   '(mana-advanced mode-transition)
   '(boolean)
-  (_ "Enable input mode transition keys in direct (off state) input mode")
-  (_ "long description will be here."))
+  (N_ "Enable input mode transition keys in direct (off state) input mode")
+  (N_ "long description will be here."))

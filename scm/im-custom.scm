@@ -31,84 +31,83 @@
 
 (require "i18n.scm")
 
-;; ugettext should be performed higher layer
 (define custom-im-list-as-choice-rec
   (lambda (lst)
      (filter-map (lambda (im)
 		   (and im
 			(let ((sym (im-name im))
-			      (name-label (ugettext (im-name-label im)))
-			      (desc (ugettext (im-short-desc im))))
+			      (name-label (im-name-label im))
+			      (desc (im-short-desc im)))
 			  (custom-choice-rec-new sym name-label desc))))
 		 lst)))
   
 (define-custom-group 'global
-		     (_ "Global settings")
-		     (_ "long description will be here."))
+		     (N_ "Global settings")
+		     (N_ "long description will be here."))
 
 (define-custom-group 'toolbar
-		     (_ "Toolbar")
-		     (_ "long description will be here."))
+		     (N_ "Toolbar")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'advanced
-		     (_ "Advanced settings")
-		     (_ "long description will be here."))
+		     (N_ "Advanced settings")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'buttons
-		     (_ "Buttons")
-		     (_ "long description will be here."))
+		     (N_ "Buttons")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'menu-imsw
-		     (_ "Menu-based IM switcher")
-		     (_ "long description will be here."))
+		     (N_ "Menu-based IM switcher")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'candwin
-		     (_ "Candidate window")
-		     (_ "long description will be here."))
+		     (N_ "Candidate window")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'annotation
-                     (_ "Annotation")
-                     (_ "long description will be here."))
+                     (N_ "Annotation")
+                     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'dictionary
-                     (_ "Dictionary")
-                     (_ "long description will be here."))
+                     (N_ "Dictionary")
+                     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'segment-sep
-                     (_ "Segment separator")
-                     (_ "long description will be here."))
+                     (N_ "Segment separator")
+                     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'mode-transition
-                     (_ "Mode transition")
-                     (_ "long description will be here."))
+                     (N_ "Mode transition")
+                     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'special-op
-                     (_ "Special operation")
-                     (_ "long description will be here."))
+                     (N_ "Special operation")
+                     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'default-im-name
-		     (_ "Default input method")
-		     (_ "long description will be here."))
+		     (N_ "Default input method")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'im-deployment
-		     (_ "Input method deployment")
-		     (_ "long description will be here."))
+		     (N_ "Input method deployment")
+		     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'visual-preference
-		     (_ "Visual preference")
-		     (_ "long description will be here."))
+		     (N_ "Visual preference")
+		     (N_ "long description will be here."))
 
 ;; 
 ;; default-im-name
@@ -118,8 +117,8 @@
 (define-custom 'custom-activate-default-im-name? #f
   '(global im-deployment)
   '(boolean)
-  (_ "Specify default IM")
-  (_ "long description will be here."))
+  (N_ "Specify default IM")
+  (N_ "long description will be here."))
 
 (define-custom 'custom-preserved-default-im-name
   (and (not (null? im-list))
@@ -128,8 +127,8 @@
   (cons
    'choice
    (custom-im-list-as-choice-rec (reverse im-list)))
-  (_ "Default input method")
-  (_ "long description will be here."))
+  (N_ "Default input method")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-default-im-name
@@ -202,8 +201,8 @@
    (if custom-full-featured?
        (custom-im-list-as-choice-rec (alist-delete 'direct stub-im-list))
        ()))
-  (_ "Enabled input methods")
-  (_ "long description will be here."))
+  (N_ "Enabled input methods")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'enabled-im-list
 		 'custom-get-hooks
@@ -231,20 +230,20 @@
 ;;   -- YamaKen 2005-02-01
 
 ;;(define-custom-group 'im-switching
-;;		     (_ "Input method switching")
-;;		     (_ "long description will be here."))
+;;		     (N_ "Input method switching")
+;;		     (N_ "long description will be here."))
 ;;
 ;;(define-custom 'enable-im-switch #f
 ;;  '(global im-switching)
 ;;  '(boolean)
-;;  (_ "Enable IM switching by hotkey")
-;;  (_ "long description will be here."))
+;;  (N_ "Enable IM switching by hotkey")
+;;  (N_ "long description will be here."))
 ;;
 ;;(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
 ;;  '(global im-switching)
 ;;  '(key)
-;;  (_ "IM switching key")
-;;  (_ "long description will be here."))
+;;  (N_ "IM switching key")
+;;  (N_ "long description will be here."))
 ;;
 ;;;; activity dependency
 ;;(custom-add-hook 'switch-im-key?
@@ -256,20 +255,20 @@
 
 ;; im-toggle 
 (define-custom-group 'im-toggle
-		     (_ "Input method toggle")
-		     (_ "long description will be here."))
+		     (N_ "Input method toggle")
+		     (N_ "long description will be here."))
 
 (define-custom 'enable-im-toggle? #t
   '(global im-toggle)
   '(boolean)
-  (_ "Enable input method toggle by hot keys")
-  (_ "long description will be here."))
+  (N_ "Enable input method toggle by hot keys")
+  (N_ "long description will be here."))
 
 (define-custom 'toggle-im-key '("<Meta> ")
   '(global im-toggle)
   '(key)
-  (_ "Input method toggle key")
-  (_ "long description will be here."))
+  (N_ "Input method toggle key")
+  (N_ "long description will be here."))
 
 (define-custom 'toggle-im-alt-im 'direct
   '(global im-toggle)
@@ -278,8 +277,8 @@
    (if custom-full-featured?
        (custom-im-list-as-choice-rec stub-im-list)
        ()))
-  (_ "Alternative input method")
-  (_ "long description will be here."))
+  (N_ "Alternative input method")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'toggle-im-alt-im
 		 'custom-set-hooks
@@ -304,10 +303,10 @@
 (define-custom 'uim-color 'uim-color-uim
   '(global visual-preference)
   (list 'choice
-	(list 'uim-color-uim (_ "uim") (_ "uim native"))
-	(list 'uim-color-atok (_ "ATOK like") (_ "Similar to ATOK")))
-  (_ "Preedit color")
-  (_ "long description will be here."))
+	(list 'uim-color-uim (N_ "uim") (N_ "uim native"))
+	(list 'uim-color-atok (N_ "ATOK like") (N_ "Similar to ATOK")))
+  (N_ "Preedit color")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'uim-color
 		 'custom-set-hooks
@@ -319,22 +318,22 @@
   '(global visual-preference)
   (list 'choice
 	(list 'caret
-	      (_ "Adjacent to cursor")
-	      (_ "Adjacent to cursor"))
+	      (N_ "Adjacent to cursor")
+	      (N_ "Adjacent to cursor"))
 	(list 'left
-	      (_ "Left end of preedit area")
-	      (_ "Left end of preedit area"))
+	      (N_ "Left end of preedit area")
+	      (N_ "Left end of preedit area"))
 	(list 'right
-	      (_ "Right end of preedit area")
-	      (_ "Right end of preedit area")))
-  (_ "Candidate window position")
-  (_ "long description will be here."))
+	      (N_ "Right end of preedit area")
+	      (N_ "Right end of preedit area")))
+  (N_ "Candidate window position")
+  (N_ "long description will be here."))
 
 (define-custom 'enable-lazy-loading? #t
   '(global advanced)
   '(boolean)
-  (_ "Enable lazy input method loading for fast startup")
-  (_ "long description will be here."))
+  (N_ "Enable lazy input method loading for fast startup")
+  (N_ "long description will be here."))
 
 
 ;;
@@ -362,23 +361,23 @@
 (define-custom 'toolbar-show-action-based-switcher-button? #t
   '(toolbar menu-imsw)
   '(boolean)
-  (_ "Enable menu-based input method switcher")
-  (_ "Show menu-based IM switcher on toolbar."))
+  (N_ "Enable menu-based input method switcher")
+  (N_ "Show menu-based IM switcher on toolbar."))
 
 (define-custom 'imsw-coverage 'system-global
   '(toolbar menu-imsw)
   (list 'choice
 	(list 'system-global
-	      (_ "whole desktop")
-	      (_ "All input method of text areas on the system are changed."))
+	      (N_ "whole desktop")
+	      (N_ "All input method of text areas on the system are changed."))
 	(list 'app-global
-	      (_ "focused application only")
-	      (_ "Only the input method of the focused application is changed. Other text areas remain untouched."))
+	      (N_ "focused application only")
+	      (N_ "Only the input method of the focused application is changed. Other text areas remain untouched."))
 	(list 'focused-context
-	      (_ "focused text area only")
-	      (_ "Only the input method of the focused text area is changed. Other text areas remain untouched.")))
-  (_ "Effective coverage")
-  (_ "Specify where the IM switching takes effect."))
+	      (N_ "focused text area only")
+	      (N_ "Only the input method of the focused text area is changed. Other text areas remain untouched.")))
+  (N_ "Effective coverage")
+  (N_ "Specify where the IM switching takes effect."))
 
 ;; activity dependency
 (custom-add-hook 'imsw-coverage
@@ -389,50 +388,50 @@
 (define-custom 'toolbar-show-switcher-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "full-featured input method switcher")
-  (_ "Show the button on toolbar that invokes uim-im-switcher application for IM switching."))
+  (N_ "full-featured input method switcher")
+  (N_ "Show the button on toolbar that invokes uim-im-switcher application for IM switching."))
 
 (define-custom 'toolbar-show-pref-button? #t
   '(toolbar buttons)
   '(boolean)
-  (_ "preference tool")
-  (_ "long description will be here."))
+  (N_ "preference tool")
+  (N_ "long description will be here."))
 
 (define-custom 'toolbar-show-dict-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "Japanese dictionary tool")
-  (_ "long description will be here."))
+  (N_ "Japanese dictionary tool")
+  (N_ "long description will be here."))
 
 (define-custom 'toolbar-show-input-pad-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "input pad")
-  (_ "long description will be here."))
+  (N_ "input pad")
+  (N_ "long description will be here."))
 
 (define-custom 'toolbar-show-handwriting-input-pad-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "handwriting-input pad")
-  (_ "long description will be here."))
+  (N_ "handwriting-input pad")
+  (N_ "long description will be here."))
 
 (define-custom 'toolbar-show-help-button? #f
   '(toolbar buttons)
   '(boolean)
-  (_ "help")
-  (_ "long description will be here."))
+  (N_ "help")
+  (N_ "long description will be here."))
 
 (define-custom 'bridge-show-input-state? #f
   '(global visual-preference)
   '(boolean)
-  (_ "Show input mode nearby cursor")
-  (_ "long description will be here."))
+  (N_ "Show input mode nearby cursor")
+  (N_ "long description will be here."))
 
 (define-custom 'bridge-show-input-state-time-length 3
   '(global visual-preference)
   '(integer 0 100)
-  (_ "Time length for showing input mode nearby the cursor")
-  (_ "Set 0 to show indicator always."))
+  (N_ "Time length for showing input mode nearby the cursor")
+  (N_ "Set 0 to show indicator always."))
 
 (custom-add-hook 'bridge-show-input-state-time-length
 		 'custom-activity-hooks
@@ -443,21 +442,21 @@
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
 ;; FIXME! Here isn't suitable position for EB support preference
 (define-custom-group 'eb
-		     (_ "EB library")
-		     (_ "long description will be here."))
+		     (N_ "EB library")
+		     (N_ "long description will be here."))
 
 (define-custom 'eb-enable-for-annotation? #f
   '(eb candwin)
   '(boolean)
-  (_ "Use EB library to search annotations")
-  (_ "long description will be here."))
+  (N_ "Use EB library to search annotations")
+  (N_ "long description will be here."))
 
 (define-custom 'eb-dic-path
   (string-append (sys-datadir) "/dict")
   '(eb candwin)
   '(pathname directory)
-  (_ "The directory which contains EB dictionary file")
-  (_ "long description will be here."))
+  (N_ "The directory which contains EB dictionary file")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'eb-dic-path
 		 'custom-activity-hooks
@@ -466,24 +465,24 @@
 
 ;; uim-xim specific custom
 (define-custom-group 'xim
-		     (_ "XIM")
-		     (_ "long description will be here."))
+		     (N_ "XIM")
+		     (N_ "long description will be here."))
 
 (define-custom-group 'preedit
-		     (_ "Preedit settings of XIM")
-		     (_ "long description will be here."))
+		     (N_ "Preedit settings of XIM")
+		     (N_ "long description will be here."))
 
 (define-custom 'uim-xim-use-xft-font? #f
   '(xim preedit)
   '(boolean)
-  (_ "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit")
-  (_ "long description will be here."))
+  (N_ "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit")
+  (N_ "long description will be here."))
 
 (define-custom 'uim-xim-xft-font-name "Sans"
   '(xim preedit)
   '(string ".*")
-  (_ "Font name for preedit area (anti-aliased)")
-  (_ "long description will be here."))
+  (N_ "Font name for preedit area (anti-aliased)")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'uim-xim-xft-font-name
 		 'custom-activity-hooks

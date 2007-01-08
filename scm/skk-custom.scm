@@ -36,16 +36,16 @@
 (define skk-im-short-desc (N_ "uim version of SKK input method"))
 
 (define-custom-group 'skk
-                     (ugettext skk-im-name-label)
-                     (ugettext skk-im-short-desc))
+                     skk-im-name-label
+                     skk-im-short-desc)
 
 (define-custom-group 'skk-dict
-                     (_ "SKK dictionaries")
-                     (_ "Dictionary settings for SKK"))
+                     (N_ "SKK dictionaries")
+                     (N_ "Dictionary settings for SKK"))
 
 (define-custom-group 'skk-advanced
-                     (_ "SKK (advanced)")
-                     (_ "Advanced settings for SKK"))
+                     (N_ "SKK (advanced)")
+                     (N_ "Advanced settings for SKK"))
 
 
 ;;
@@ -55,40 +55,40 @@
 (define-custom 'skk-use-candidate-window? #t
   '(skk candwin)
   '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-commit-candidate-by-label-key? #t
   '(skk candwin)
   '(boolean)
-  (_ "Commit candidate by heading label keys")
-  (_ "long description will be here."))
+  (N_ "Commit candidate by heading label keys")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-candidate-selection-style 'ddskk-like
   '(skk candwin)
   (list 'choice
-	(list 'uim (_ "uim") (_ "uim native"))
-	(list 'ddskk-like (_ "ddskk-like") (_ "Similar to ddskk")))
-  (_ "Candidate selection style")
-  (_ "long description will be here."))
+	(list 'uim (N_ "uim") (N_ "uim native"))
+	(list 'ddskk-like (N_ "ddskk-like") (N_ "Similar to ddskk")))
+  (N_ "Candidate selection style")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-use-manual-candwin-setting? #f
   '(skk candwin)
   '(boolean)
-  (_ "Set candidate window behavior manually")
-  (_ "long description will be here."))
+  (N_ "Set candidate window behavior manually")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-candidate-op-count 5
   '(skk candwin)
   '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-nr-candidate-max 7
   '(skk candwin)
   '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'skk-commit-candidate-by-label-key?
@@ -208,13 +208,13 @@
   '(skk toolbar)
   (list 'ordered-list
 	(list 'widget_skk_input_mode
-	      (_ "Input mode")
-	      (_ "Input mode"))
+	      (N_ "Input mode")
+	      (N_ "Input mode"))
 	(list 'widget_skk_kana_input_method
-	      (_ "Kana input method")
-	      (_ "Kana input method")))
-  (_ "Enabled toolbar buttons")
-  (_ "long description will be here."))
+	      (N_ "Kana input method")
+	      (N_ "Kana input method")))
+  (N_ "Enabled toolbar buttons")
+  (N_ "long description will be here."))
 
 ;; dynamic reconfiguration
 ;; skk-configure-widgets is not defined at this point. So wrapping
@@ -232,8 +232,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     skk-input-mode-indication-alist))
-  (_ "Default input mode")
-  (_ "long description will be here."))
+  (N_ "Default input mode")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-input-mode-actions
                (map car skk-input-mode-indication-alist)
@@ -241,8 +241,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     skk-input-mode-indication-alist))
-  (_ "Input mode menu items")
-  (_ "long description will be here."))
+  (N_ "Input mode menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -272,8 +272,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     skk-kana-input-method-indication-alist))
-  (_ "Default kana input method")
-  (_ "long description will be here."))
+  (N_ "Default kana input method")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-kana-input-method-actions
                (map car skk-kana-input-method-indication-alist)
@@ -281,8 +281,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     skk-kana-input-method-indication-alist))
-  (_ "Kana input method menu items")
-  (_ "long description will be here."))
+  (N_ "Kana input method menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -324,14 +324,14 @@
 (define-custom 'skk-use-skkserv? #f
   '(skk-dict)
   '(boolean)
-  (_ "Use skkserv instead of SKK-JISYO")
-  (_ "long description will be here."))
+  (N_ "Use skkserv instead of SKK-JISYO")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-skkserv-portnum 1178
   '(skk-dict)
   '(integer 0 65535)
-  (_ "Port number of skkserv")
-  (_ "long description will be here."))
+  (N_ "Port number of skkserv")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'skk-skkserv-portnum
 		 'custom-activity-hooks
@@ -342,22 +342,22 @@
 						 "/skk/SKK-JISYO.L")
   '(skk-dict)
   '(pathname regular-file)
-  (_ "Dictionary file")
-  (_ "long description will be here."))
+  (N_ "Dictionary file")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-personal-dic-filename
   (string-append (or (getenv "HOME") "") "/.skk-jisyo")
   '(skk-dict)
   '(pathname regular-file)
-  (_ "Personal dictionary file")
-  (_ "long description will be here."))
+  (N_ "Personal dictionary file")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-uim-personal-dic-filename
   (string-append (or (getenv "HOME") "") "/.skk-uim-jisyo")
   '(skk-dict)
   '(pathname regular-file)
-  (_ "Personal dictionary file (dedicated to uim)")
-  (_ "long description will be here."))
+  (N_ "Personal dictionary file (dedicated to uim)")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'skk-dic-file-name
 		 'custom-activity-hooks
@@ -371,40 +371,40 @@
 (define-custom 'skk-style 'skk-style-ddskk-like
   '(skk-advanced)
   (list 'choice
-	(list 'skk-style-ddskk-like (_ "ddskk") (_ "Similar to ddskk"))
-	(list 'skk-style-uim (_ "uim") (_ "uim native")))
-  (_ "Visual style")
-  (_ "long description will be here."))
+	(list 'skk-style-ddskk-like (N_ "ddskk") (N_ "Similar to ddskk"))
+	(list 'skk-style-uim (N_ "uim") (N_ "uim native")))
+  (N_ "Visual style")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-use-recursive-learning? #t
   '(skk-advanced)
   '(boolean)
-  (_ "Use recursive learning")
-  (_ "long description will be here."))
+  (N_ "Use recursive learning")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-use-numeric-conversion? #t
   '(skk-advanced)
   '(boolean)
-  (_ "Use numeric conversion")
-  (_ "long description will be here."))
+  (N_ "Use numeric conversion")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-auto-start-henkan? #t
   '(skk-advanced)
   '(boolean)
-  (_ "Enable auto conversion with punctuation marks")
-  (_ "long description will be here."))
+  (N_ "Enable auto conversion with punctuation marks")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-dcomp-activate? #f
   '(skk-advanced)
   '(boolean)
-  (_ "Enable dynamic completion")
-  (_ "long description will be here."))
+  (N_ "Enable dynamic completion")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-use-look? #f
   '(skk-advanced)
   '(boolean)
-  (_ "Use UNIX look command for completion")
-  (_ "long description will be here."))
+  (N_ "Use UNIX look command for completion")
+  (N_ "long description will be here."))
 ;;
 ;; annotation
 ;;
@@ -412,14 +412,14 @@
 (define-custom 'skk-show-annotation? #t
   '(skk-advanced annotation)
   '(boolean)
-  (_ "Show annotation of candidate word")
-  (_ "long description will be here."))
+  (N_ "Show annotation of candidate word")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-show-annotation-in-preedit? #f
   '(skk-advanced annotation)
   '(boolean)
-  (_ "Show annotation also in preedit area")
-  (_ "long description will be here."))
+  (N_ "Show annotation also in preedit area")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'skk-show-annotation-in-preedit?
 		 'custom-activity-hooks
@@ -439,18 +439,18 @@
 (define-custom 'skk-use-with-vi? #f
   '(skk-advanced special-op)
   '(boolean)
-  (_ "Enable vi-cooperative mode")
-  (_ "long description will be here."))
+  (N_ "Enable vi-cooperative mode")
+  (N_ "long description will be here."))
 
 (define-custom 'skk-egg-like-newline? #f
   '(skk-advanced special-op)
   '(boolean)
-  (_ "Use Enter key as just committing (egg-like operation)")
-  (_ "long description will be here."))
+  (N_ "Use Enter key as just committing (egg-like operation)")
+  (N_ "long description will be here."))
 
 ;; should be removed if there is no usage
 (define-custom 'skk-commit-newline-explicitly? #f
   '(skk-advanced special-op)
   '(boolean)
-  (_ "Commit newline as ASCII string instead of native key-event")
-  (_ "long description will be here."))
+  (N_ "Commit newline as ASCII string instead of native key-event")
+  (N_ "long description will be here."))

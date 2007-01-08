@@ -38,35 +38,35 @@
 (define spell-im-short-desc (N_ "Spellcheck"))
 
 (define-custom-group 'spellcheck
-                     (ugettext spell-im-name-label)
-                     (ugettext spell-im-short-desc))
+                     spell-im-name-label
+                     spell-im-short-desc)
 
 (define-custom 'spell-use-candidate-window? #t
   '(spellcheck)
   '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'spell-candidate-op-count 1
   '(spellcheck)
   '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'spell-preedit-immediate-commit? #f
   '(spellcheck)
   '(boolean)
-  (_ "spell-preedit-immediate-commit?")
-  (_ "long description will be here."))
+  (N_ "spell-preedit-immediate-commit?")
+  (N_ "long description will be here."))
 
 (define-custom 'spell-always-show-window? #t
   '(spellcheck)
   '(boolean)
-  (_ "Always showing candidate window")
-  (_ "long description will be here."))
+  (N_ "Always showing candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'spell-on-key '("<Control>j" "<Control>J" generic-on-key)
                '(spellcheck)
 	       '(key)
-	       (_ "[Spellcheck] on")
-	       (_ "long description will be here"))
+	       (N_ "[Spellcheck] on")
+	       (N_ "long description will be here"))

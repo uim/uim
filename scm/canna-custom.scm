@@ -36,16 +36,16 @@
 (define canna-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'canna
-                     (ugettext canna-im-name-label)
-                     (ugettext canna-im-short-desc))
+                     canna-im-name-label
+                     canna-im-short-desc)
 
 (define-custom-group 'cannaserver
-		     (_ "Canna server")
-		     (_ "long description will be here."))
+		     (N_ "Canna server")
+		     (N_ "long description will be here."))
 
 (define-custom-group 'canna-advanced
-		     (_ "Canna (advanced)")
-		     (_ "long description will be here."))
+		     (N_ "Canna (advanced)")
+		     (N_ "long description will be here."))
 
 ;;
 ;; segment separator
@@ -54,14 +54,14 @@
 (define-custom 'canna-show-segment-separator? #f
   '(canna segment-sep)
   '(boolean)
-  (_ "Show segment separator")
-  (_ "long description will be here."))
+  (N_ "Show segment separator")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-segment-separator "|"
   '(canna segment-sep)
   '(string ".*")
-  (_ "Segment separator")
-  (_ "long description will be here."))
+  (N_ "Segment separator")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'canna-segment-separator
 		 'custom-activity-hooks
@@ -75,26 +75,26 @@
 (define-custom 'canna-use-candidate-window? #t
   '(canna candwin)
   '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-candidate-op-count 1
   '(canna candwin)
   '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-nr-candidate-max 10
   '(canna candwin)
   '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-select-candidate-by-numeral-key? #f
   '(canna candwin)
   '(boolean)
-  (_ "Select candidate by numeral keys")
-  (_ "long description will be here."))
+  (N_ "Select candidate by numeral keys")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'canna-candidate-op-count
@@ -177,13 +177,13 @@
   '(canna toolbar)
   (list 'ordered-list
 	(list 'widget_canna_input_mode
-	      (_ "Input mode")
-	      (_ "Input mode"))
+	      (N_ "Input mode")
+	      (N_ "Input mode"))
 	(list 'widget_canna_kana_input_method
-	      (_ "Kana input method")
-	      (_ "Kana input method")))
-  (_ "Enabled toolbar buttons")
-  (_ "long description will be here."))
+	      (N_ "Kana input method")
+	      (N_ "Kana input method")))
+  (N_ "Enabled toolbar buttons")
+  (N_ "long description will be here."))
 
 ;; dynamic reconfiguration
 ;; canna-configure-widgets is not defined at this point. So wrapping
@@ -201,8 +201,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     canna-input-mode-indication-alist))
-  (_ "Default input mode")
-  (_ "long description will be here."))
+  (N_ "Default input mode")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-input-mode-actions
                (map car canna-input-mode-indication-alist)
@@ -210,8 +210,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     canna-input-mode-indication-alist))
-  (_ "Input mode menu items")
-  (_ "long description will be here."))
+  (N_ "Input mode menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -252,8 +252,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     canna-kana-input-method-indication-alist))
-  (_ "Default kana input method")
-  (_ "long description will be here."))
+  (N_ "Default kana input method")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-kana-input-method-actions
                (map car canna-kana-input-method-indication-alist)
@@ -261,8 +261,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     canna-kana-input-method-indication-alist))
-  (_ "Kana input method menu items")
-  (_ "long description will be here."))
+  (N_ "Kana input method menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -310,14 +310,14 @@
 (define-custom 'custom-activate-canna-server-name? #f
   '(canna-advanced cannaserver)
   '(boolean)
-  (_ "Specify Canna server")
-  (_ "long description will be here."))
+  (N_ "Specify Canna server")
+  (N_ "long description will be here."))
 
 (define-custom 'custom-preserved-canna-server-name ""
   '(canna-advanced cannaserver)
   '(string ".*")
-  (_ "Canna server name")
-  (_ "long description will be here."))
+  (N_ "Canna server name")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'custom-preserved-canna-server-name
@@ -373,11 +373,11 @@
 (define-custom 'canna-use-with-vi? #f
   '(canna-advanced special-op)
   '(boolean)
-  (_ "Enable vi-cooperative mode")
-  (_ "long description will be here."))
+  (N_ "Enable vi-cooperative mode")
+  (N_ "long description will be here."))
 
 (define-custom 'canna-use-mode-transition-keys-in-off-mode? #f
   '(canna-advanced mode-transition)
   '(boolean)
-  (_ "Enable input mode transition keys in direct (off state) input mode")
-  (_ "long description will be here."))
+  (N_ "Enable input mode transition keys in direct (off state) input mode")
+  (N_ "long description will be here."))

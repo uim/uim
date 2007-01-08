@@ -62,34 +62,34 @@
 ;(define-key tutcode-backspace-key? 'generic-backspace-key?)
 
 (define-custom-group 'tutcode-keys1
-		     (_ "TUT-Code key bindings 1")
-		     (_ "long description will be here."))
+		     (N_ "TUT-Code key bindings 1")
+		     (N_ "long description will be here."))
 
 (define-custom-group 'tutcode-keys2
-		     (_ "TUT-Code key bindings 2")
-		     (_ "long description will be here."))
+		     (N_ "TUT-Code key bindings 2")
+		     (N_ "long description will be here."))
 
 (define-custom 'tutcode-on-key '("<Control>\\" generic-on-key)
                '(tutcode-keys1 mode-transition)
 	       '(key)
-	       (_ "[TUT-Code] on")
-	       (_ "long description will be here"))
+	       (N_ "[TUT-Code] on")
+	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-off-key '("<Control>\\" generic-off-key)
                '(tutcode-keys1 mode-transition)
 	       '(key)
-	       (_ "[TUT-Code] off")
-	       (_ "long description will be here"))
+	       (N_ "[TUT-Code] off")
+	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-kana-toggle-key '("<IgnoreShift>'")
                '(tutcode-keys1 mode-transition)
 	       '(key)
-	       (_ "[TUT-Code] toggle hiragana/katakana mode")
-	       (_ "long description will be here"))
+	       (N_ "[TUT-Code] toggle hiragana/katakana mode")
+	       (N_ "long description will be here"))
 
 
 (define-custom 'tutcode-backspace-key '(generic-backspace-key)
                '(tutcode-keys2)
 	       '(key)
-	       (_ "[TUT-Code] backspace")
-	       (_ "long description will be here"))
+	       (N_ "[TUT-Code] backspace")
+	       (N_ "long description will be here"))

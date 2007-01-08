@@ -73,20 +73,20 @@
 ;; Check hooks.
 
 (define-custom-group 'byeoru
-  (ugettext byeoru-im-name-label)
-  (ugettext byeoru-im-short-desc))
+  byeoru-im-name-label
+  byeoru-im-short-desc)
 
 (define-custom-group 'byeoru-keyboard
-  (_ "Keyboard")
-  (_ "long description will be here."))
+  (N_ "Keyboard")
+  (N_ "long description will be here."))
 
 (define-custom-group 'byeoru-properties
-  (_ "Properties")
-  (_ "long description will be here."))
+  (N_ "Properties")
+  (N_ "long description will be here."))
 
 (define-custom-group 'byeoru-workarounds
-  (_ "Workarounds")
-  (_ "long description will be here."))
+  (N_ "Workarounds")
+  (N_ "long description will be here."))
 
 ;; Changing keyboard layout should flush the automata.
 (define-custom 'byeoru-layout 'byeoru-layout-hangul2
@@ -97,26 +97,26 @@
 		     (label (nth 2 entry))
 		     (short-desc (nth 3 entry)))
 		 (list id
-		       (ugettext label)
-		       (ugettext short-desc))))
+		       label
+		       short-desc)))
 	     byeoru-layout-alist))
-  (_ "Hangul keyboard layout")
-  (_ "long description will be here."))
+  (N_ "Hangul keyboard layout")
+  (N_ "long description will be here."))
 
 (define-custom 'byeoru-jamo-orderedness 'ordered
   '(byeoru byeoru-keyboard)
   (list 'choice
 	 (list 'ordered
-	       (_ "ordered")
-	       (_ "long description will be here."))
+	       (N_ "ordered")
+	       (N_ "long description will be here."))
 	 (list 'orderless
-	       (_ "orderless")
-	       (_ "long description will be here."))
+	       (N_ "orderless")
+	       (N_ "long description will be here."))
 	 (list 'more-orderless
-	       (_ "more orderless")
-	       (_ "long description will be here.")))
-  (_ "Jamo input is")
-  (_ "long description will be here."))
+	       (N_ "more orderless")
+	       (N_ "long description will be here.")))
+  (N_ "Jamo input is")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'byeoru-jamo-orderedness
 		 'custom-activity-hooks
@@ -127,20 +127,20 @@
 (define-custom 'byeoru-esc-turns-off? #t
   '(byeoru byeoru-properties)
   '(boolean)
-  (_ "ESC turns off Hangul mode (for vi users)")
-  (_ "long description will be here."))
+  (N_ "ESC turns off Hangul mode (for vi users)")
+  (N_ "long description will be here."))
 
 (define-custom 'byeoru-commit-by-word? #f
   '(byeoru byeoru-properties)
   '(boolean)
-  (_ "Default unit of commitment is word")
-  (_ "long description will be here."))
+  (N_ "Default unit of commitment is word")
+  (N_ "long description will be here."))
 
 (define-custom 'byeoru-shifted-romaja-isolates-vowel? #f
   '(byeoru byeoru-properties)
   '(boolean)
-  (_ "Shifted roman vowel inputs an isolated vowel")
-  (_ "long description will be here."))
+  (N_ "Shifted roman vowel inputs an isolated vowel")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'byeoru-shifted-romaja-isolates-vowel?
 		 'custom-activity-hooks
@@ -150,18 +150,18 @@
 (define-custom 'byeoru-nr-candidate-max 10
   '(byeoru candwin)
   '(integer 1 20)
-  (_ "Candidate window size")
-  (_ "long description will be here."))
+  (N_ "Candidate window size")
+  (N_ "long description will be here."))
 
 (define-custom 'byeoru-symbol-cache-size 5
   '(byeoru candwin)
   '(integer 1 20)
-  (_ "Symbol cache size")
-  (_ "long description will be here."))
+  (N_ "Symbol cache size")
+  (N_ "long description will be here."))
 
 ;; Encoding of the composing character should be changed accordingly.
 (define-custom 'byeoru-compatibility-jamos-for-incomplete-syllables? #t
   '(byeoru byeoru-workarounds)
   '(boolean)
-  (_ "Represent incomplete syllables using compatibility jamos")
-  (_ "long description will be here."))
+  (N_ "Represent incomplete syllables using compatibility jamos")
+  (N_ "long description will be here."))

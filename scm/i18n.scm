@@ -35,6 +35,7 @@
 ;; string translation
 ;;
 
+;; WARNING: ugettext and _ should not be used for normal codes.
 ;; convenience shorthand of runtime translation
 (define ugettext
   (if (provided? "nls")
@@ -43,6 +44,7 @@
       (lambda (str)
 	str)))
 
+;; WARNING: ugettext and _ should not be used for normal codes.
 ;; shorthand version of gettext. it is also used as xgettext keyword
 (define _ ugettext)
 
@@ -212,8 +214,7 @@
 (define lang-code->lang-name
   (lambda (langcode)
     (let ((langname (lang-code->lang-name-raw langcode)))
-      (if langname
-	  (ugettext langname)
+      (or langname
 	  "-"))))
 
 ;; returns "zh_TW" of "zh_TW:zh_HK"

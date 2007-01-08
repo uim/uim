@@ -36,16 +36,16 @@
 (define anthy-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
 
 (define-custom-group 'anthy
-                     (ugettext anthy-im-name-label)
-                     (ugettext anthy-im-short-desc))
+                     anthy-im-name-label
+                     anthy-im-short-desc)
 
 (define-custom-group 'anthy-advanced
-		     (_ "Anthy (advanced)")
-		     (_ "Advanced settings for Anthy"))
+		     (N_ "Anthy (advanced)")
+		     (N_ "Advanced settings for Anthy"))
 
 (define-custom-group 'prediction
-		     (_ "Prediction")
-		     (_ "long description will be here."))
+		     (N_ "Prediction")
+		     (N_ "long description will be here."))
 
 ;;
 ;; segment separator
@@ -54,14 +54,14 @@
 (define-custom 'anthy-show-segment-separator? #f
   '(anthy segment-sep)
   '(boolean)
-  (_ "Show segment separator")
-  (_ "long description will be here."))
+  (N_ "Show segment separator")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-segment-separator "|"
   '(anthy segment-sep)
   '(string ".*")
-  (_ "Segment separator")
-  (_ "long description will be here."))
+  (N_ "Segment separator")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'anthy-segment-separator
 		 'custom-activity-hooks
@@ -75,26 +75,26 @@
 (define-custom 'anthy-use-candidate-window? #t
   '(anthy candwin)
   '(boolean)
-  (_ "Use candidate window")
-  (_ "long description will be here."))
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-candidate-op-count 1
   '(anthy candwin)
   '(integer 0 99)
-  (_ "Conversion key press count to show candidate window")
-  (_ "long description will be here."))
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-nr-candidate-max 10
   '(anthy candwin)
   '(integer 1 20)
-  (_ "Number of candidates in candidate window at a time")
-  (_ "long description will be here."))
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-select-candidate-by-numeral-key? #f
   '(anthy candwin)
   '(boolean)
-  (_ "Select candidate by numeral keys")
-  (_ "long description will be here."))
+  (N_ "Select candidate by numeral keys")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'anthy-candidate-op-count
@@ -176,13 +176,13 @@
   '(anthy toolbar)
   (list 'ordered-list
 	(list 'widget_anthy_input_mode
-	      (_ "Input mode")
-	      (_ "Input mode"))
+	      (N_ "Input mode")
+	      (N_ "Input mode"))
 	(list 'widget_anthy_kana_input_method
-	      (_ "Kana input method")
-	      (_ "Kana input method")))
-  (_ "Enabled toolbar buttons")
-  (_ "long description will be here."))
+	      (N_ "Kana input method")
+	      (N_ "Kana input method")))
+  (N_ "Enabled toolbar buttons")
+  (N_ "long description will be here."))
 
 ;; dynamic reconfiguration
 ;; anthy-configure-widgets is not defined at this point. So wrapping
@@ -200,8 +200,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     anthy-input-mode-indication-alist))
-  (_ "Default input mode")
-  (_ "long description will be here."))
+  (N_ "Default input mode")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-input-mode-actions
                (map car anthy-input-mode-indication-alist)
@@ -209,8 +209,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     anthy-input-mode-indication-alist))
-  (_ "Input mode menu items")
-  (_ "long description will be here."))
+  (N_ "Input mode menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -251,8 +251,8 @@
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     anthy-kana-input-method-indication-alist))
-  (_ "Default kana input method")
-  (_ "long description will be here."))
+  (N_ "Default kana input method")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-kana-input-method-actions
                (map car anthy-kana-input-method-indication-alist)
@@ -260,8 +260,8 @@
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     anthy-kana-input-method-indication-alist))
-  (_ "Kana input method menu items")
-  (_ "long description will be here."))
+  (N_ "Kana input method menu items")
+  (N_ "long description will be here."))
 
 ;; value dependency
 (if custom-full-featured?
@@ -298,20 +298,20 @@
 (define-custom 'anthy-use-prediction? #f
   '(anthy-advanced prediction)
   '(boolean)
-  (_ "Enable input prediction")
-  (_ "long description will be here."))
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-select-prediction-by-numeral-key? #f
   '(anthy-advanced prediction)
   '(boolean)
-  (_ "Select prediction candidate by numeral keys")
-  (_ "long description will be here."))
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-use-implicit-commit-prediction? #t
   '(anthy-advanced prediction)
   '(boolean)
-  (_ "Show selected prediction candidate in preedit area")
-  (_ "long description will be here."))
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
 
 (custom-add-hook 'anthy-use-candidate-window?
 		 'custom-get-hooks
@@ -337,11 +337,11 @@
 (define-custom 'anthy-use-with-vi? #f
   '(anthy-advanced special-op)
   '(boolean)
-  (_ "Enable vi-cooperative mode")
-  (_ "long description will be here."))
+  (N_ "Enable vi-cooperative mode")
+  (N_ "long description will be here."))
 
 (define-custom 'anthy-use-mode-transition-keys-in-off-mode? #f
   '(anthy-advanced mode-transition)
   '(boolean)
-  (_ "Enable input mode transition keys in direct (off state) input mode")
-  (_ "long description will be here."))
+  (N_ "Enable input mode transition keys in direct (off state) input mode")
+  (N_ "long description will be here."))
