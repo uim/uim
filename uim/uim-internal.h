@@ -36,7 +36,7 @@
 #include <config.h>
 
 #include <stdio.h>
-#include "gettext.h"
+
 #include "uim.h"
 #include "uim-scm.h"
 
@@ -135,24 +135,6 @@ struct uim_context_ {
 #define UIM_EVAL_SEXP_AS_STRING
 #endif
 
-#ifdef ENABLE_NLS
-#define UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET() \
-    char *enc, *orig_encoding = NULL; \
-    const char *client_encoding;
-#define UIM_SWITCH_TEXTDOMAIN_CODESET(uc) \
-  if ((enc = bind_textdomain_codeset(GETTEXT_PACKAGE, NULL))) \
-    orig_encoding = strdup(enc); \
-  client_encoding = (uc) ? ((struct uim_context_ *)uc)->encoding : uim_last_client_encoding; \
-  bind_textdomain_codeset(GETTEXT_PACKAGE, client_encoding);
-#define UIM_RESTORE_TEXTDOMAIN_CODESET() \
-  bind_textdomain_codeset(GETTEXT_PACKAGE, orig_encoding); \
-  free(orig_encoding);
-#else  /* ENABLE_NLS */
-#define UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET()
-#define UIM_SWITCH_TEXTDOMAIN_CODESET(uc)
-#define UIM_RESTORE_TEXTDOMAIN_CODESET()
-#endif  /* ENABLE_NLS */
-
 /* we cannot use the variadic macro (i.e. __VA_ARGS__) because we
    should also support C89 compilers
 */
@@ -164,18 +146,13 @@ struct uim_context_ {
 
 #define UIM_EVAL_STRING(uc, sexp_str) \
   { \
-    UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET(); \
-    UIM_SWITCH_TEXTDOMAIN_CODESET(uc); \
     UIM_EVAL_STRING_INTERNAL(uc, sexp_str); \
-    UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
 #define UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1) \
   { \
     int form_size; \
     char *buf; \
-    UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET(); \
-    UIM_SWITCH_TEXTDOMAIN_CODESET(uc); \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1); \
     if (form_size != -1) { \
       buf = malloc(form_size); \
@@ -183,15 +160,12 @@ struct uim_context_ {
       UIM_EVAL_STRING_INTERNAL(uc, buf); \
       free(buf); \
     } \
-    UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
 #define UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2) \
   { \
     int form_size; \
     char *buf; \
-    UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET(); \
-    UIM_SWITCH_TEXTDOMAIN_CODESET(uc); \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2); \
     if (form_size != -1) { \
       buf = malloc(form_size); \
@@ -199,15 +173,12 @@ struct uim_context_ {
       UIM_EVAL_STRING_INTERNAL(uc, buf); \
       free(buf); \
     } \
-    UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
 #define UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3) \
   { \
     int form_size; \
     char *buf; \
-    UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET(); \
-    UIM_SWITCH_TEXTDOMAIN_CODESET(uc); \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3); \
     if (form_size != -1) { \
       buf = malloc(form_size); \
@@ -215,15 +186,12 @@ struct uim_context_ {
       UIM_EVAL_STRING_INTERNAL(uc, buf); \
       free(buf); \
     } \
-    UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
 #define UIM_EVAL_FSTRING4(uc, sexp_tmpl, arg1, arg2, arg3, arg4) \
   { \
     int form_size; \
     char *buf; \
-    UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET(); \
-    UIM_SWITCH_TEXTDOMAIN_CODESET(uc); \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4); \
     if (form_size != -1) { \
       buf = malloc(form_size); \
@@ -231,15 +199,12 @@ struct uim_context_ {
       UIM_EVAL_STRING_INTERNAL(uc, buf); \
       free(buf); \
     } \
-    UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
 #define UIM_EVAL_FSTRING5(uc, sexp_tmpl, arg1, arg2, arg3, arg4, arg5) \
   { \
     int form_size; \
     char *buf; \
-    UIM_PREPARE_SAVING_TEXTDOMAIN_CODESET(); \
-    UIM_SWITCH_TEXTDOMAIN_CODESET(uc); \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
     if (form_size != -1) { \
       buf = malloc(form_size); \
@@ -247,7 +212,6 @@ struct uim_context_ {
       UIM_EVAL_STRING_INTERNAL(uc, buf); \
       free(buf); \
     } \
-    UIM_RESTORE_TEXTDOMAIN_CODESET(); \
   }
 
 /**/
@@ -282,7 +246,6 @@ uim_bool uim_issetugid(void);
 
 extern struct uim_im *uim_im_array;
 extern int uim_nr_im;
-extern char *uim_last_client_encoding;
 
 void uim_internal_escape_string(char *str);
 #ifdef __cplusplus

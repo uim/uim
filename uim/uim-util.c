@@ -39,8 +39,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+
+#include "gettext.h" /* for iso-639-1.def */
 #include "uim-internal.h"
-#include "gettext.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-util.h"

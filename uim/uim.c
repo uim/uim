@@ -44,10 +44,7 @@
 #include "uim-scm.h"
 #include "uim-custom.h"
 #include "uim-internal.h"
-#include "gettext.h"
 #include "uim-util.h"
-
-char *uim_last_client_encoding;
 
 #define CONTEXT_ARRAY_SIZE 512
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
@@ -175,18 +172,6 @@ uim_create_context(void *ptr,
     uc->current_im_name = NULL;
   } else {
     uc->current_im_name = strdup(engine);
-  }
-  if (uim_last_client_encoding) {
-    free(uim_last_client_encoding);
-    uim_last_client_encoding = NULL;
-  }
-  if (enc) {
-    /* Save client encoding for bind_textdomain_codeset(). The value
-       is used when UIM_EVAL_STRING() is called without
-       uim_context. The specification assumes client always uses
-       consistent encoding
-    */
-    uim_last_client_encoding = strdup(enc);
   }
 
   UIM_EVAL_FSTRING3(uc, "(create-context %d '%s '%s)", uc->id, lang, engine);
@@ -735,25 +720,6 @@ uim_init_scm(void)
   uim_scm_set_lib_path((scm_files) ? scm_files : SCM_FILES);
 
   uim_scm_require_file("init.scm");
-
-#if 0
-  /*
-    Current libuim implementation has the gettext encoding problem. It
-    requires library-wide default encoding configurability rather than
-    per context encoding.  -- YamaKen 2005-01-31
-  */
-#ifdef ENABLE_NLS
- {
-   const char *client_enc;
-
-   /* portable equivalent of nl_langinfo(CODESET) */
-   UIM_EVAL_FSTRING1(NULL, "(locale-lang (locale-new \"%s\"))",
-		     setlocale(LC_CTYPE, NULL));
-   client_enc = uim_scm_refer_c_str(uim_scm_return_value());
-   uim_last_client_encoding = strdup(client_enc);
- }
-#endif
-#endif
 }
 
 int
@@ -762,7 +728,6 @@ uim_init(void)
   if (uim_initialized)
     return 0;
 
-  uim_last_client_encoding = NULL;
   uim_im_array = NULL;
   uim_nr_im = 0;
   uim_init_scm();
@@ -791,7 +756,5 @@ uim_quit(void)
   uim_anthy_plugin_instance_quit();
 #endif
   uim_scm_quit();
-  free(uim_last_client_encoding);
-  uim_last_client_encoding = NULL;
   uim_initialized = 0;
 }
