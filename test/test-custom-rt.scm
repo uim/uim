@@ -33,14 +33,18 @@
 ;;
 ;; custom-reload-customs
 
+;; These tests are passed at revision 4331 (new repository)
+
 (use test.unit)
 
 (require "test/uim-test-utils")
 
-
 (define-uim-test-case "testcase custom define-custom"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))))
 
   ("test define-custom (choice)"
@@ -130,6 +134,9 @@
 (define-uim-test-case "testcase custom methods"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(define-custom 'test-style 'test-style-ddskk
 	     '(global)
 	     '(choice

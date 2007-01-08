@@ -43,7 +43,7 @@ release, you have to repeat the following procedure at least three times.
 
 5. Do test.
 
-   This item needs many many description... I must fill this item later.
+   gosh -I. test/run-test.scm
 
 6. Do a build test with make-dist.sh
 
@@ -83,7 +83,14 @@ release, you have to repeat the following procedure at least three times.
 
    Release suffixes such as '-alpha' and '-beta' is automatically appended.
 
-12. Copy the source tarball to http://uim.freedesktop.org/releases
+12. Copy the source tarball to the download site.
+
+   Place alpha and beta into /unstable, final releases into /stable, and
+   snapshots into /snapshots
+
+   http://uim.freedesktop.org/releases/uim/stable/
+   http://uim.freedesktop.org/releases/uim/unstable/
+   http://uim.freedesktop.org/releases/uim/snapshots/
 
 13. Update the web pages.
 

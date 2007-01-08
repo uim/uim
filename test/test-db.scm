@@ -1,4 +1,4 @@
-#!/usr/bin/env gosh
+#! /usr/bin/env gosh
 
 ;;; Copyright (c) 2005-2007 uim Project http://uim.freedesktop.org/
 ;;;
@@ -29,6 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; uim-db.scm is not ported to and does not work on SigScheme-based uim.
 
 
 ; Tests for uim-db requires debugging information, so we have to let
@@ -88,7 +89,8 @@
 	  #f))))
 
 ; shadow this part from libuim
-(if (not (symbol-bound? 'feature?))
+(if (and (not (symbol-bound? 'uim-sh))
+         #f)  ;; disable this test until uim-db.scm is ported to SigScheme
     (begin
       (use test.unit)
 
@@ -97,7 +99,7 @@
       (define-uim-test-case "testcase debugger"
 	(setup
 	 (lambda ()
-	   (uim '(begin (load "test/test-db.scm")
+	   (uim '(begin (load "../test/test-db.scm")
 			(load "uim-db.scm")))))
 	("test uim-db-find"
 	 (assert-true (uim-bool '(test-db-find))))

@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1274 of new repository
+;; These tests are passed at revision 4331 (new repository)
 
 (use test.unit)
 
@@ -240,7 +240,10 @@
    (assert-equal 126 (uim '(string->charcode "~"))))
 
   ("test digit->string"
-   (assert-equal "-2147483648" (uim '(digit->string -2147483648)))
+   ;; for storage-fatty@32-bit
+   ;;(assert-equal "-2147483648" (uim '(digit->string -2147483648)))
+   ;; for storage-compact@32-bit
+   (assert-equal "-134217728" (uim '(digit->string -134217728)))
    (assert-equal "-10"  (uim '(digit->string -10)))
    (assert-equal "-2"   (uim '(digit->string -2)))
    (assert-equal "-1"   (uim '(digit->string -1)))
@@ -266,7 +269,11 @@
    (assert-equal "19"   (uim '(digit->string 19)))
    (assert-equal "100"  (uim '(digit->string 100)))
    (assert-equal "1000" (uim '(digit->string 1000)))
-   (assert-equal "2147483647" (uim '(digit->string 2147483647))))
+   ;; for storage-fatty@32-bit
+   ;;(assert-equal "2147483647" (uim '(digit->string 2147483647)))
+   ;; for storage-compact@32-bit
+   (assert-equal "134217727" (uim '(digit->string 134217727)))
+   )
 
   ("test iterate-lists"
    ;; single list cases (fast path)

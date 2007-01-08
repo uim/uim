@@ -78,7 +78,6 @@
 	   )
 	  (im-set-module-name! (retrieve-im name) module-name)))))
 
-;; TODO: rewrite test
 ;; side effect: invoke require-module for all installed IM modules
 (define stub-im-generate-stub-im-list
   (lambda (im-names)

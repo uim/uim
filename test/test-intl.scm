@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; These tests are passed at revision 4331 (new repository)
+
 (use test.unit)
 (use file.util)
 

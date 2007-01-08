@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; These tests are passed at revision 4331 (new repository)
+
 (use test.unit)
 
 (require "test/uim-test-utils")
@@ -81,7 +83,7 @@
 			      ((2) #f))))))
 
 (define-uim-test-case "testcase procedures"
-  ("test precedure?"
+  ("test procedure?"
    (assert-true  (uim-bool '(procedure? eof-val)))            ;; 0
    (assert-true  (uim-bool '(procedure? car)))                ;; 1
    (assert-true  (uim-bool '(procedure? cons)))               ;; 2
@@ -94,9 +96,9 @@
    ;; SIOD
    ;;(assert-true  (uim-bool '(procedure? define)))             ;; fsubr
    ;;(assert-true  (uim-bool '(procedure? cond)))               ;; msubr
-   ;; SigScheme
-   (assert-false (uim-bool '(procedure? define)))             ;; fsubr
-   (assert-false (uim-bool '(procedure? cond)))               ;; msubr
+   ;; SigScheme: syntactic keyword cannot be evaluated as value
+   ;;(assert-false (uim-bool '(procedure? define)))             ;; fsubr
+   ;;(assert-false (uim-bool '(procedure? cond)))               ;; msubr
 
    (assert-true  (uim-bool '(procedure? (lambda (x) x))))     ;; closure
 
