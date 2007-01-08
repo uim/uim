@@ -48,10 +48,6 @@
 #include "uim-util.h"
 
 extern char *uim_return_str;
-extern char *uim_return_str_list[10];
-/* duplicate definition */
-#define UIM_RETURN_STR_LIST_SIZE ((sizeof(uim_return_str_list) \
-                                   / sizeof(uim_return_str_list[0])) - 2)
 
 char *uim_last_client_encoding;
 
@@ -581,21 +577,25 @@ int uim_set_candidate_selector_cb(uim_context uc,
 uim_candidate
 uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 {
-  uim_candidate cand = malloc(sizeof(*cand));
-  memset(cand, 0, sizeof(*cand));
+  uim_candidate cand;
+  uim_lisp triple; /* safe until next eval */
+  const char *str, *head, *ann;
+
   UIM_EVAL_FSTRING3(uc, "(get-candidate %d %d %d)",
 		    uc->id, index, accel_enumeration_hint);
+  triple = uim_scm_return_value();
 
-  if (uim_return_str_list[0] && uim_return_str_list[1]) {
-    cand->str = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[0]);
-    cand->heading_label = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[1]);    
-  } else {
-    cand->str = NULL;
-    cand->heading_label = NULL;
-  }
-
-  if (uim_return_str_list[2]) {
-    cand->annotation = uc->conv_if->convert(uc->outbound_conv, uim_return_str_list[2]);
+  cand = malloc(sizeof(*cand));
+  if (cand) {
+    memset(cand, 0, sizeof(*cand));
+    if (uim_scm_length(triple) == 3) {
+      str  = uim_scm_refer_c_str(uim_scm_car(triple));
+      head = uim_scm_refer_c_str(uim_scm_cadr(triple));
+      ann  = uim_scm_refer_c_str(uim_scm_car(uim_scm_cddr(triple)));
+      cand->str           = uc->conv_if->convert(uc->outbound_conv, str);
+      cand->heading_label = uc->conv_if->convert(uc->outbound_conv, head);
+      cand->annotation    = uc->conv_if->convert(uc->outbound_conv, ann);
+    }
   }
 
   return cand;
@@ -708,7 +708,6 @@ uim_input_string(uim_context uc, const char *str)
 static void
 uim_init_scm(void)
 {
-  int i;
   char *scm_files = NULL;
   char *env = NULL;
 
@@ -737,9 +736,6 @@ uim_init_scm(void)
   uim_scm_require_file("init.scm");
 
   uim_return_str = NULL;
-  for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
-    uim_return_str_list[i] = NULL;
-  }
 
 #if 0
   /*

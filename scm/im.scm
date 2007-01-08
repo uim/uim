@@ -405,8 +405,7 @@
 
 (define get-candidate
   (lambda (id idx accel-enum-hint)
-    (im-return-str-list (invoke-handler im-get-candidate-handler
-					id idx accel-enum-hint))))
+    (invoke-handler im-get-candidate-handler id idx accel-enum-hint)))
 
 (define set-candidate-index
   (lambda (id idx)

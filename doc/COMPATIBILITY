@@ -57,6 +57,22 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: uim-scm API reorganization in uim 1.5.0
+Affects: uim developers, IM developers
+Updates: C API, libuim ABI
+Version: 1.5.0
+Revision: ac4333
+Date: 2007-01-09 -
+Modifier: YamaKen
+Related: SigScheme introduction to uim
+URL:
+Changes:
+      (new) uim_scm_ensure()
+  (changed) uim_scm_length()
+  (removed) im-return-str-list
+Description:
+  - return type of uim_scm_length() is changed to long from uim_lisp
+------------------------------------------------------------------------------
 Summary: GC protection API change
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI

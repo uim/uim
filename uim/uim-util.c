@@ -190,8 +190,8 @@ nthcdr(uim_lisp nth_, uim_lisp lst)
 static uim_lisp
 str_seq_equal(uim_lisp seq, uim_lisp rule)
 {
-  int sl = uim_scm_c_int(uim_scm_length(seq));
-  int rl = uim_scm_c_int(uim_scm_length(rule));
+  int sl = uim_scm_length(seq);
+  int rl = uim_scm_length(rule);
   int i;
   if (sl != rl) {
     return uim_scm_f();
@@ -215,8 +215,8 @@ str_seq_equal(uim_lisp seq, uim_lisp rule)
 static uim_lisp
 str_seq_partial(uim_lisp seq, uim_lisp rule)
 {
-  int sl = uim_scm_c_int(uim_scm_length(seq));
-  int rl = uim_scm_c_int(uim_scm_length(rule));
+  int sl = uim_scm_length(seq);
+  int rl = uim_scm_length(rule);
   int i;
 
   if (sl >= rl) {

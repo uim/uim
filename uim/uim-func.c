@@ -57,10 +57,7 @@
 static const char **uim_get_encoding_alias(const char *encoding);
 
 char *uim_return_str;
-char *uim_return_str_list[10]; /* XXX */
-/* duplicate definition */
-#define UIM_RETURN_STR_LIST_SIZE ((sizeof(uim_return_str_list) \
-                                   / sizeof(uim_return_str_list[0])) - 2)
+
 static struct uim_code_converter uim_iconv_tbl = {
   uim_iconv_is_convertible,
   uim_iconv_create,
@@ -660,36 +657,6 @@ im_return_str(uim_lisp str_)
 }
 
 static uim_lisp
-im_return_str_list(uim_lisp str_list_)
-{
-  /*XXX: This fixed length array is negligence */
-  int i;
-
-  for (i = 0; i < (int)UIM_RETURN_STR_LIST_SIZE; i++) {
-    if (uim_return_str_list[i]) {
-      free(uim_return_str_list[i]);
-      uim_return_str_list[i] = NULL;
-    } else {
-      break;
-    }
-  }
-
-  i = 0;
-
-  while (!uim_scm_nullp(str_list_) && i < (int)UIM_RETURN_STR_LIST_SIZE) {
-    uim_lisp str_ = uim_scm_car(str_list_);
-    if (uim_scm_stringp(str_)) {
-      uim_return_str_list[i] = uim_scm_c_str(str_);
-    }
-
-    i++;
-    str_list_ = uim_scm_cdr(str_list_);
-  }
-  uim_return_str_list[i] = NULL;
-  return uim_scm_f();
-}
-
-static uim_lisp
 im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
 		uim_lisp former_len_, uim_lisp latter_len_)
 {
@@ -819,7 +786,6 @@ uim_init_im_subrs(void)
 {
   /**/
   uim_scm_init_subr_1("im-return-str", im_return_str);
-  uim_scm_init_subr_1("im-return-str-list", im_return_str_list);
   /**/
   uim_scm_init_subr_2("im-commit",       im_commit);
   uim_scm_init_subr_1("im-commit-raw",   im_commit_raw);

@@ -127,6 +127,12 @@ uim_scm_set_output(FILE *fp)
   uim_output = fp;
 }
 
+void
+uim_scm_ensure(uim_bool cond)
+{
+  SCM_ENSURE(cond);
+}
+
 uim_bool
 uim_scm_c_bool(uim_lisp val)
 {
@@ -503,14 +509,14 @@ uim_scm_cons(uim_lisp car, uim_lisp cdr)
   return (uim_lisp)SCM_CONS((ScmObj)car, (ScmObj)cdr);
 }
 
-uim_lisp
+long
 uim_scm_length(uim_lisp lst)
 {
-  /*
-    although nlength() of siod returns length of anything, this
-    function should be called only for list
-  */
-  return (uim_lisp)scm_p_length((ScmObj)lst);
+  uim_lisp len;
+
+  len = (uim_lisp)scm_p_length((ScmObj)lst);
+  uim_scm_ensure(uim_scm_integerp(len));
+  return uim_scm_c_int(len);
 }
 
 uim_lisp

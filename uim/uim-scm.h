@@ -141,6 +141,8 @@ uim_scm_return_value(void);
   uim_eval_string() in uim-internal.h into this file
 */
 
+void uim_scm_ensure(uim_bool cond);
+
 /* type conversions */
 uim_bool
 uim_scm_c_bool(uim_lisp val);
@@ -226,8 +228,8 @@ uim_lisp
 uim_scm_cdar(uim_lisp lst);
 uim_lisp
 uim_scm_cddr(uim_lisp lst);
-uim_lisp
-uim_scm_length(uim_lisp lst);
+
+long uim_scm_length(uim_lisp lst);
 uim_lisp
 uim_scm_reverse(uim_lisp lst);
 
