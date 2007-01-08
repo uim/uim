@@ -574,11 +574,12 @@ int uim_set_candidate_selector_cb(uim_context uc,
   return 0;
 }
 
+/* must be called from GC-protected stack context */
 uim_candidate
 uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 {
   uim_candidate cand;
-  uim_lisp triple; /* safe until next eval */
+  uim_lisp triple;
   const char *str, *head, *ann;
 
   UIM_EVAL_FSTRING3(uc, "(get-candidate %d %d %d)",
