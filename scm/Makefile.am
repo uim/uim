@@ -35,7 +35,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 
-module_names = "pyload"
+module_names =
 if ANTHY
   module_names += "anthy"
 endif
@@ -51,11 +51,12 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "tcode" "trycode" "tutcode" "byeoru" "hangul" "viqr" \
-		"ipa-x-sampa" "latin"
+module_names += "tcode" "trycode" "tutcode" "byeoru" "latin"
 if M17NLIB
   module_names += "m17nlib"
 endif
+# less preferable IMs
+module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"
 if SCIM
   module_names += "scim"
 endif
