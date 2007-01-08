@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 2950 of new repository
+;; These tests are passed at revision 4331 (new repository)
 
 ;; TODO:
 ;;
@@ -49,6 +49,9 @@
 (define-uim-test-case "testcase custom validators"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
      (uim '(define-custom 'test-cancel-key '("<Control>g" "escape")
 	     '(global)
@@ -340,6 +343,9 @@
 (define-uim-test-case "testcase custom custom-pathname"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
      (uim '(define-custom 'skk-dic-file-name (string-append (sys-datadir)
 							    "/skk/SKK-JISYO.L")
@@ -363,6 +369,9 @@
 (define-uim-test-case "testcase custom custom-choice"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))))
 
   ("test custom-choice-rec-new"
@@ -395,6 +404,9 @@
 (define-uim-test-case "testcase custom custom-group"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(begin
 	     (require "custom.scm")
 	     ;; to reset previously defined groups
@@ -759,6 +771,9 @@
 (define-uim-test-case "testcase custom custom-group methods"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
      (uim '(define-custom-group
 	    'test-group
@@ -829,6 +844,9 @@
 (define-uim-test-case "testcase custom hooks"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
      (uim '(define test-hook ()))
      (uim '(define test-group1-trace ()))
@@ -1375,6 +1393,9 @@
 (define-uim-test-case "testcase custom get and set hooks"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
      (uim '(define test-custom1-trace ()))
      (uim '(define test-custom3-trace ()))
@@ -1484,6 +1505,9 @@
 (define-uim-test-case "testcase custom define-custom"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))))
 
   ;; tests updated features committed in r559 and r1862 of new repository
@@ -1643,6 +1667,9 @@
 (define-uim-test-case "testcase custom methods"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
 
      (uim '(define-custom-group 'test
@@ -2260,6 +2287,9 @@
 (define-uim-test-case "testcase custom interfaces"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))
 
      (uim '(define-custom-group 'test
@@ -2295,6 +2325,9 @@
 (define-uim-test-case "testcase custom canna-server-name"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
      (uim '(require "custom.scm"))))
 
   ("test canna-server-name"

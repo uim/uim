@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; This code is not ported to and does not work on SigScheme-based uim.
+
 (define uim-db-prompt "uim-db> ")
 (define uim-db-break-at-molecule #f)
 

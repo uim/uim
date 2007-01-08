@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 2005 of new repository
+;; These tests are passed at revision 4331 (new repository)
 
 (use test.unit)
 
@@ -78,7 +78,12 @@
 					   direct-reset-handler
 					   direct-get-candidate-handler
 					   direct-set-candidate-index-handler
-					   context-prop-activate-handler))
+					   context-prop-activate-handler
+					   #f
+					   #f
+					   #f
+					   #f
+					   #f))
 	     (set! test-im-alt-init-args (list 'test-im
 					       "en"
 					       "en_US.UTF-8"
@@ -93,7 +98,12 @@
 					       'alt-reset-handler
 					       'alt-get-candidate-handler
 					       'alt-set-candidate-index-handler
-					       'alt-prop-activate-handler))
+					       'alt-prop-activate-handler
+					       #f
+					       #f
+					       #f
+					       #f
+					       #f))
 	     #t))))
 
   ("test normalize-im-list"
@@ -131,13 +141,13 @@
    (assert-equal (+ (uim 'prev-nr-ims) 1)
 		 (uim '(length im-list)))
    (assert-equal 'test-im
-		 (uim '(im-name (retrieve-im 'test-im #f))))
-   (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im #f))))
-   (assert-equal 16
-		 (uim '(length (retrieve-im 'test-im #f))))
-   (uim '(im-set-module-name! (retrieve-im 'test-im #f) "foo"))
+		 (uim '(im-name (retrieve-im 'test-im))))
+   (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im))))
+   (assert-equal 21
+		 (uim '(length (retrieve-im 'test-im))))
+   (uim '(im-set-module-name! (retrieve-im 'test-im) "foo"))
    (assert-equal "foo"
-		 (uim '(im-module-name (retrieve-im 'test-im #f))))
+		 (uim '(im-module-name (retrieve-im 'test-im))))
 
    ;; duplicate register overwrites preexisting one
    (assert-false (uim-bool '(apply register-im test-im-alt-init-args)))
@@ -158,8 +168,14 @@
 		   alt-get-candidate-handler
 		   alt-set-candidate-index-handler
 		   alt-prop-activate-handler
-		   ())  ;; replace with #f for R5RS compliant interpreter
-		 (uim '(retrieve-im 'test-im #f)))
+		   ;; replace with #f for R5RS compliant interpreter
+		   ()
+		   ()
+		   ()
+		   ()
+		   ()
+		   ())
+		 (uim '(retrieve-im 'test-im)))
    ;; subsequent registration that has different im-name will be
    ;; registered as another IM
    (assert-true  (uim-bool '(apply register-im
@@ -182,18 +198,24 @@
 		   alt-get-candidate-handler
 		   alt-set-candidate-index-handler
 		   alt-prop-activate-handler
-		   ())  ;; replace with #f for R5RS compliant interpreter
-		 (uim '(retrieve-im 'test-im2 #f))))
+		   ;; replace with #f for R5RS compliant interpreter
+		   ()
+		   ()
+		   ()
+		   ()
+		   ()
+		   ())
+		 (uim '(retrieve-im 'test-im2))))
 
   ("test register-im (module-name)"
    (assert-true  (uim-bool '(apply register-im test-im-init-args)))
-   (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im #f))))
+   (assert-false (uim-bool '(im-module-name (retrieve-im 'test-im))))
 
    (uim '(set! currently-loading-module-name "foo"))
    (assert-true  (uim-bool '(apply register-im (cons 'test-im2
 						     (cdr test-im-init-args)))))
    (assert-equal "foo"
-		 (uim '(im-module-name (retrieve-im 'test-im2 #f)))))
+		 (uim '(im-module-name (retrieve-im 'test-im2)))))
 
   ("test retrieve-im"
    (assert-false (uim-bool '(retrieve-im 'nonexistent)))
@@ -322,24 +344,24 @@
    (assert-equal 'anthy
 		 (uim '(im-name (find-im-for-locale "ja.UTF-8"))))
    ;; Korean
-   (assert-equal 'hangul2
+   (assert-equal 'byeoru
 		 (uim '(im-name (find-im-for-locale "ko"))))
-   (assert-equal 'hangul2
+   (assert-equal 'byeoru
 		 (uim '(im-name (find-im-for-locale "ko_KR"))))
-   (assert-equal 'hangul2
+   (assert-equal 'byeoru
 		 (uim '(im-name (find-im-for-locale "ko_KR.EUC-KR"))))
-   (assert-equal 'hangul2
+   (assert-equal 'byeoru
 		 (uim '(im-name (find-im-for-locale "ko_KR.UTF-8"))))
-   (assert-equal 'hangul2
+   (assert-equal 'byeoru
 		 (uim '(im-name (find-im-for-locale "ko.UTF-8"))))
    ;; Vietnamese
-   (assert-equal 'viqr
+   (assert-equal 'm17n-vi-viqr
 		 (uim '(im-name (find-im-for-locale "vi"))))
-   (assert-equal 'viqr
+   (assert-equal 'm17n-vi-viqr
 		 (uim '(im-name (find-im-for-locale "vi_VN"))))
-   (assert-equal 'viqr
+   (assert-equal 'm17n-vi-viqr
 		 (uim '(im-name (find-im-for-locale "vi_VN.UTF-8"))))
-   (assert-equal 'viqr
+   (assert-equal 'm17n-vi-viqr
 		 (uim '(im-name (find-im-for-locale "vi.UTF-8"))))
    ;; native locale
    (uim '(unsetenv "LC_ALL"))

@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 1413 (new repository)
+;; These tests are passed at revision 4331 (new repository)
 
 (use test.unit)
 
@@ -284,8 +284,10 @@
    (assert-equal 127 (uim '(char-upcase 127))))  ; DEL
   ("test string->letter"
    (assert-false (uim-bool '(string->letter "")))    ; NUL
-   (assert-false (uim-bool '(string->letter "")))  ; SOH
-   (assert-false (uim-bool '(string->letter "")))  ; US
+   ;; FIXME: Since these control chars are normalized to "\x01" and so on by
+   ;; Gauche at first, uim-sh cannot interpret them without SRFI-75 support.
+   ;;(assert-false (uim-bool '(string->letter "")))  ; SOH
+   ;;(assert-false (uim-bool '(string->letter "")))  ; US
    (assert-false (uim-bool '(string->letter " ")))   ; SPACE
    (assert-false (uim-bool '(string->letter "!")))   ; !
    (assert-false (uim-bool '(string->letter "/")))   ; /
@@ -305,7 +307,8 @@
    (assert-false (uim-bool '(string->letter "zz")))  ; zz
    (assert-false (uim-bool '(string->letter "{")))   ; {
    (assert-false (uim-bool '(string->letter "~")))   ; ~
-   (assert-false (uim-bool '(string->letter "")))) ; DEL
+   ;;(assert-false (uim-bool '(string->letter ""))) ; DEL
+   )
   ("test to-lower-char"
    (assert-true  (uim-bool '(eq? to-lower-char char-downcase)))))
 
@@ -1413,8 +1416,9 @@
 				  (interaction-environment))))
    (assert-false (uim-bool '(eval '(symbol-bound? 'filter-baz)
 				  (interaction-environment))))
-   (uim '(eval (list define 'filter-baz filter-map)
-	       (interaction-environment)))
+   ;; SigScheme: syntactic keyword 'define' cannot be evaluated as value
+   (uim '(eval (list 'define 'filter-baz filter-map)
+               (interaction-environment)))
    (assert-true  (uim-bool '(eval '(symbol-bound? 'filter-baz)
 				  (interaction-environment))))
    (assert-true  (uim-bool '(eq? filter-baz filter-map))))
@@ -1549,31 +1553,32 @@
 			     (equal? (test-rec-fourth trec)
 				     44))))))
 
-(define-uim-test-case "testcase util multi-segment utils"
-  ("test multi-segment-make-index-list"
-   (uim '(define old-lst '(0 1 2 3 4)))
-   (assert-false (uim-bool '(multi-segment-make-index-list -1 old-lst)))
-   (assert-equal ()
-		 (uim '(multi-segment-make-index-list 0 old-lst)))
-   (assert-equal '(0)
-		 (uim '(multi-segment-make-index-list 1 old-lst)))
-   (assert-equal '(0 1)
-		 (uim '(multi-segment-make-index-list 2 old-lst)))
-   (assert-equal '(0 1 2 3 4)
-		 (uim '(multi-segment-make-index-list 5 old-lst)))
-   (assert-equal '(0 1 2 3 4 0)
-		 (uim '(multi-segment-make-index-list 6 old-lst)))
-   (assert-equal '(0 1 2 3 4 0 0)
-		 (uim '(multi-segment-make-index-list 7 old-lst))))
-
-  ("test multi-segment-opposite-kana"
-   (assert-equal (uim 'multi-segment-type-katakana)
-		 (uim '(multi-segment-opposite-kana
-			multi-segment-type-hiragana)))
-   (assert-equal (uim 'multi-segment-type-hiragana)
-		 (uim '(multi-segment-opposite-kana
-			multi-segment-type-katakana)))
-   (assert-equal (uim 'multi-segment-type-hiragana)
-		 (uim '(multi-segment-opposite-kana
-			multi-segment-type-hankana))))
-)
+;;;FIXME: multi-segment functions are withdrawn -- YamaKen 2007-01-07
+;;(define-uim-test-case "testcase util multi-segment utils"
+;;  ("test multi-segment-make-index-list"
+;;   (uim '(define old-lst '(0 1 2 3 4)))
+;;   (assert-false (uim-bool '(multi-segment-make-index-list -1 old-lst)))
+;;   (assert-equal ()
+;;		 (uim '(multi-segment-make-index-list 0 old-lst)))
+;;   (assert-equal '(0)
+;;		 (uim '(multi-segment-make-index-list 1 old-lst)))
+;;   (assert-equal '(0 1)
+;;		 (uim '(multi-segment-make-index-list 2 old-lst)))
+;;   (assert-equal '(0 1 2 3 4)
+;;		 (uim '(multi-segment-make-index-list 5 old-lst)))
+;;   (assert-equal '(0 1 2 3 4 0)
+;;		 (uim '(multi-segment-make-index-list 6 old-lst)))
+;;   (assert-equal '(0 1 2 3 4 0 0)
+;;		 (uim '(multi-segment-make-index-list 7 old-lst))))
+;;
+;;  ("test multi-segment-opposite-kana"
+;;   (assert-equal (uim 'multi-segment-type-katakana)
+;;		 (uim '(multi-segment-opposite-kana
+;;			multi-segment-type-hiragana)))
+;;   (assert-equal (uim 'multi-segment-type-hiragana)
+;;		 (uim '(multi-segment-opposite-kana
+;;			multi-segment-type-katakana)))
+;;   (assert-equal (uim 'multi-segment-type-hiragana)
+;;		 (uim '(multi-segment-opposite-kana
+;;			multi-segment-type-hankana))))
+;;)

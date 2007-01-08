@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; This file is tested with revision 327 of new repository
+;; These tests are passed at revision 4331 (new repository)
 
 (use test.unit)
 
@@ -38,6 +38,10 @@
 (define-uim-test-case "testcase module"
   (setup
    (lambda ()
+     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+     (uim '(load-enabled-modules))
+
+     (uim-define-siod-compatible-require)
      (uim '(begin
 	     ))))
 
@@ -64,16 +68,8 @@
    ;; raw require does not set im-module-name
    (uim '(set! im-list ()))
 
-   ;; SIOD
-   ;;(uim '(undefine *tcode.scm-loaded*))
-   ;;(assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
-   ;;(assert-false (uim-bool '(retrieve-im 'tcode)))
-   ;;(assert-true  (uim-bool '(require "tcode.scm")))
-   ;; SigScheme
    (uim '(undefine *tcode.scm-loaded*))
-   (uim '(set! *features* (delete "*tcode.scm-loaded*" *features*)))
    (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
-   (assert-false (uim-bool '(provided? "*tcode.scm-loaded*")))
    (assert-false (uim-bool '(retrieve-im 'tcode)))
    (assert-true  (uim-bool '(require "tcode.scm")))
 
