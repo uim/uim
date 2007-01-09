@@ -85,6 +85,7 @@ uim_bool uim_custom_init(void);
 uim_bool uim_custom_quit(void);
 
 static char *literalize_string(const char *str);
+static char *literalize_string_internal(const char *str);
 
 static char *c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const char *sep);
 
@@ -122,10 +123,19 @@ static union uim_custom_range *uim_custom_range_get(const char *custom_sym);
 static void uim_custom_range_free(int custom_type, union uim_custom_range *custom_range);
 static uim_lisp uim_custom_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr, uim_lisp custom_sym);
 static uim_lisp uim_custom_global_cb_update_cb_gate(uim_lisp cb, uim_lisp ptr);
+static uim_bool custom_cb_remove(const char *key_sym, const char *hook);
 static uim_bool custom_cb_add(const char *hook, const char *validator,
 			      const char *custom_sym, void *ptr,
 			      const char *gate_func, void (*cb)(void));
-static uim_bool custom_cb_remove(const char *key_sym, const char *hook);
+struct custom_cb_add_args {
+  const char *hook;
+  const char *validator;
+  const char *custom_sym;
+  void *ptr;
+  const char *gate_func;
+  void (*cb)(void);
+};
+static void *custom_cb_add_internal(struct custom_cb_add_args *args);
 
 static void helper_disconnect_cb(void);
 static char *uim_conf_path(const char *subpath);
@@ -136,20 +146,6 @@ static uim_bool for_each_primary_groups(uim_bool (*func)(const char *));
 static uim_bool uim_custom_load_group(const char *group);
 static uim_bool uim_custom_save_group(const char *group);
 
-#if UIM_SCM_GCC4_READY_GC
-static char *literalize_string_internal(const char *str);
-
-struct custom_cb_add_args {
-  const char *hook;
-  const char *validator;
-  const char *custom_sym;
-  void *ptr;
-  const char *gate_func;
-  void (*cb)(void);
-};
-static void *custom_cb_add_internal(struct custom_cb_add_args *args);
-#endif
-
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
 static const char custom_subdir[] = "customs";
 static const char custom_msg_tmpl[] = "prop_update_custom\n%s\n%s\n";
@@ -159,32 +155,19 @@ static uim_lisp return_val;
 
 static char *
 literalize_string(const char *str)
-#if UIM_SCM_GCC4_READY_GC
 {
   return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)literalize_string_internal, (void *)str);
 }
 
 static char *
 literalize_string_internal(const char *str)
-#endif
 {
-#if !UIM_SCM_GCC4_READY_GC
-  uim_lisp stack_start;
-#endif
   uim_lisp form;
   char *escaped;
-
-#if !UIM_SCM_GCC4_READY_GC
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   form = uim_scm_list2(uim_scm_make_symbol("string-escape"),
 		       uim_scm_make_str(str));
   escaped = uim_scm_c_str(uim_scm_eval(form));
-
-#if !UIM_SCM_GCC4_READY_GC
-  uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return escaped;
 }
@@ -1466,7 +1449,6 @@ static uim_bool
 custom_cb_add(const char *hook, const char *validator,
 	      const char *custom_sym, void *ptr,
 	      const char *gate_func, void (*cb)(void))
-#if UIM_SCM_GCC4_READY_GC
 {
   struct custom_cb_add_args args;
 
@@ -1481,31 +1463,22 @@ custom_cb_add(const char *hook, const char *validator,
 
 static void *
 custom_cb_add_internal(struct custom_cb_add_args *args)
-#endif
 {
   uim_bool succeeded;
-#if UIM_SCM_GCC4_READY_GC
   const char *hook;
   const char *validator;
   const char *custom_sym;
   void *ptr;
   const char *gate_func;
   void (*cb)(void);
-#else
-  uim_lisp stack_start;
-#endif
   uim_lisp form;
 
-#if UIM_SCM_GCC4_READY_GC
   hook = args->hook;
   validator = args->validator;
   custom_sym = args->custom_sym;
   ptr = args->ptr;
   gate_func = args->gate_func;
   cb = args->cb;
-#else
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   form = uim_scm_list5(uim_scm_make_symbol(validator),
 		       uim_scm_quote(uim_scm_make_symbol(custom_sym)),
@@ -1516,13 +1489,7 @@ custom_cb_add_internal(struct custom_cb_add_args *args)
   form = uim_scm_cons(uim_scm_make_symbol("custom-register-cb"), form);
   succeeded = uim_scm_c_bool(uim_scm_eval(form));
 
-#if UIM_SCM_GCC4_READY_GC
   return (void *)(uintptr_t)succeeded;
-#else
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return succeeded;
-#endif
 }
 
 static uim_bool

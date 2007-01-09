@@ -74,10 +74,8 @@
 #define DPRINTFN(n,x)
 #endif
 
-#if UIM_SCM_GCC4_READY_GC
 static void *plugin_unload_internal(void *uim_lisp_name);
 static void *uim_quit_plugin_internal(void *dummy);
-#endif
 
 
 static uim_lisp 
@@ -201,7 +199,6 @@ plugin_load(uim_lisp _name)
 
 static uim_lisp
 plugin_unload(uim_lisp _name)
-#if UIM_SCM_GCC4_READY_GC
 {
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(plugin_unload_internal,
 						    (void *)_name);
@@ -209,22 +206,13 @@ plugin_unload(uim_lisp _name)
 
 static void *
 plugin_unload_internal(void *uim_lisp_name)
-#endif
 {
-#if UIM_SCM_GCC4_READY_GC
   uim_lisp _name;
-#else
-  uim_lisp stack_start;
-#endif
   uim_lisp ret;
   void *library;
   void (*plugin_instance_quit)(void);
 
-#if UIM_SCM_GCC4_READY_GC
   _name = (uim_lisp)uim_lisp_name;
-#else
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   ret = uim_scm_call1(MAKE_SYM("plugin-list-query-library"), _name);
   if (UIM_SCM_FALSEP(ret))
@@ -241,13 +229,7 @@ plugin_unload_internal(void *uim_lisp_name)
 
   uim_scm_call1(MAKE_SYM("plugin-list-delete"), _name);
 
-#if UIM_SCM_GCC4_READY_GC
   return (void *)uim_scm_t();
-#else
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return uim_scm_t();
-#endif
 }
 
 /* Called from uim_init */
@@ -263,23 +245,14 @@ uim_init_plugin(void)
 /* Called from uim_quit */
 void
 uim_quit_plugin(void)
-#if UIM_SCM_GCC4_READY_GC
 {
   uim_scm_call_with_gc_ready_stack(uim_quit_plugin_internal, NULL);
 }
 
 static void *
 uim_quit_plugin_internal(void *dummy)
-#endif
 {
-#if !UIM_SCM_GCC4_READY_GC
-  uim_lisp stack_start;
-#endif
   uim_lisp alist, rest, entry, name;
-
-#if !UIM_SCM_GCC4_READY_GC
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   alist = uim_scm_eval_c_string("plugin-alist");
   for (rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
@@ -289,9 +262,5 @@ uim_quit_plugin_internal(void *dummy)
     plugin_unload(name);
   }
 
-#if UIM_SCM_GCC4_READY_GC
   return NULL;
-#else
-  uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 }

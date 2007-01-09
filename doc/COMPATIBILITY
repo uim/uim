@@ -110,7 +110,7 @@ Summary: GC protection API change
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.4.0
-Revision: ac4182, ac4184
+Revision: ac4182, ac4184, ac4345
 Date: 2006-12-23
 Modifier: YamaKen
 Related: libgcroots introduction to SigScheme

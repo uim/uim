@@ -56,11 +56,8 @@ static EditLine *el;
 static History *hist;
 static HistEvent hev;
 static uim_lisp uim_editline_readline(void);
-static char *prompt(EditLine *e);
-
-#if UIM_SCM_GCC4_READY_GC
 static void *uim_editline_readline_internal(void *dummy);
-#endif
+static char *prompt(EditLine *e);
 
 void
 editline_init(void)
@@ -86,25 +83,16 @@ editline_quit(void)
 
 static uim_lisp
 uim_editline_readline(void)
-#if UIM_SCM_GCC4_READY_GC
 {
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_editline_readline_internal, NULL);
 }
 
 static void *
 uim_editline_readline_internal(void *dummy)
-#endif
 {
     const char *line;
     int count = 0;
-#if !UIM_SCM_GCC4_READY_GC
-    uim_lisp stack_start;
-#endif
     uim_lisp ret;
-
-#if !UIM_SCM_GCC4_READY_GC
-    uim_scm_gc_protect_stack(&stack_start);
-#endif
 
     line = el_gets(el, &count);
 
@@ -115,13 +103,7 @@ uim_editline_readline_internal(void *dummy)
 	ret = uim_scm_make_str("");
     }
 
-#if UIM_SCM_GCC4_READY_GC
     return (void *)ret;
-#else
-    uim_scm_gc_unprotect_stack(&stack_start);
-
-    return ret;
-#endif
 }
 
 static char *prompt(EditLine *e) {

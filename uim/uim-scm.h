@@ -59,8 +59,6 @@ extern "C" {
 #endif
 
 
-#define UIM_SCM_GCC4_READY_GC 1
-
 /*
   uim companion tools should treat lisp object as opaque. struct
   uim_opaque exists only for type check and has no actual definition.
@@ -81,19 +79,6 @@ typedef void *(*uim_gc_gate_func_ptr)(void *);
 #endif
 
 
-#if UIM_SCM_GCC4_READY_GC
-/*
- * The variable to ensure that a call of uim_scm_gc_protect_stack() is
- * uninlined in portable way through (*f)().
- *
- * Don't access this variables directly. Use
- * UIM_SCM_GC_PROTECTED_CALL*() instead.
- */
-extern uim_lisp *(*volatile uim_scm_gc_current_stack_ptr)(void);
-extern uim_lisp *(*volatile uim_scm_gc_protect_stack_ptr)(uim_lisp *);
-#endif /* UIM_SCM_GCC4_READY_GC */
-
-
 /* 'uim_scm' prefix is not appropriate for these functions... any ideas? */
 FILE *
 uim_scm_get_output(void);
@@ -109,19 +94,10 @@ uim_scm_set_verbose_level(long new_value);
 void
 uim_scm_set_lib_path(const char *path);
 
-#if UIM_SCM_GCC4_READY_GC
 void
 uim_scm_gc_protect(uim_lisp *location);
 void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
-#else /* UIM_SCM_GCC4_READY_GC */
-void
-uim_scm_gc_protect(uim_lisp *location);
-void
-uim_scm_gc_protect_stack(uim_lisp *stack_start);
-void
-uim_scm_gc_unprotect_stack(uim_lisp *stack_start);
-#endif /* UIM_SCM_GCC4_READY_GC */
 
 /* evaluations */
 uim_bool

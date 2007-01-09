@@ -65,7 +65,16 @@
 #define scm_out SCM_GLOBAL_VAR(port, scm_out)
 #define scm_err SCM_GLOBAL_VAR(port, scm_err)
 
+uim_lisp uim_scm_last_val;
+static uim_bool sscm_is_exit_with_fatal_error;
+static FILE *uim_output = NULL;
+
 static void uim_scm_error(const char *msg, uim_lisp errobj);
+struct uim_scm_error_args {
+  const char *msg;
+  uim_lisp errobj;
+};
+static void *uim_scm_error_internal(struct uim_scm_error_args *args);
 
 struct call_args {
   uim_lisp proc;
@@ -75,25 +84,12 @@ struct call_args {
 static void *uim_scm_call_internal(struct call_args *args);
 static void *uim_scm_call_with_guard_internal(struct call_args *args);
 
-#if UIM_SCM_GCC4_READY_GC
-struct uim_scm_error_args {
-  const char *msg;
-  uim_lisp errobj;
-};
-static void *uim_scm_error_internal(struct uim_scm_error_args *args);
-
 static void *uim_scm_c_int_internal(void *uim_lisp_integer);
 static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
-#endif
-
-uim_lisp uim_scm_last_val;
-static uim_bool sscm_is_exit_with_fatal_error;
-static FILE *uim_output = NULL;
 
 static void
 uim_scm_error(const char *msg, uim_lisp errobj)
-#if UIM_SCM_GCC4_READY_GC
 {
   struct uim_scm_error_args args;
 
@@ -109,20 +105,6 @@ uim_scm_error_internal(struct uim_scm_error_args *args)
   scm_error_obj(NULL, args->msg, (ScmObj)args->errobj);
   return NULL;
 }
-#else /* UIM_SCM_GCC4_READY_GC */
-static void
-uim_scm_error_internal(const char *msg, uim_lisp errobj)
-{
-  uim_lisp stack_start;
-
-  uim_scm_gc_protect_stack(&stack_start);
-
-  /* FIXME: don't terminate the process */
-  scm_error_obj(NULL, msg, (ScmObj)errobj);
-
-  uim_scm_gc_unprotect_stack(&stack_start);
-}
-#endif /* UIM_SCM_GCC4_READY_GC */
 
 FILE *
 uim_scm_get_output(void)
@@ -156,28 +138,17 @@ uim_scm_make_bool(uim_bool val)
 
 int
 uim_scm_c_int(uim_lisp integer)
-#if UIM_SCM_GCC4_READY_GC
 {
   return (int)(intptr_t)uim_scm_call_with_gc_ready_stack(uim_scm_c_int_internal, (void *)integer);
 }
 
 static void *
 uim_scm_c_int_internal(void *uim_lisp_integer)
-#endif
 {
   int c_int;
-#if UIM_SCM_GCC4_READY_GC
   uim_lisp integer;
-#else
-  uim_lisp stack_start;
-#endif
 
-#if UIM_SCM_GCC4_READY_GC
   integer = (uim_lisp)uim_lisp_integer;
-#else
-  /* stack protection is required for my_err() */
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   if (SCM_INTP((ScmObj)integer)) {
     c_int = SCM_INT_VALUE((ScmObj)integer);
@@ -187,13 +158,7 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
     c_int = -1;
   }
 
-#if UIM_SCM_GCC4_READY_GC
   return (void *)(intptr_t)c_int;
-#else
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return c_int;
-#endif
 }
 
 uim_lisp
@@ -214,28 +179,17 @@ uim_scm_c_str(uim_lisp str)
 
 const char *
 uim_scm_refer_c_str(uim_lisp str)
-#if UIM_SCM_GCC4_READY_GC
 {
   return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_refer_c_str_internal, (void *)str);
 }
 
 static const char *
 uim_scm_refer_c_str_internal(void *uim_lisp_str)
-#endif
 {
   char *c_str;
-#if UIM_SCM_GCC4_READY_GC
   uim_lisp str;
-#else
-  uim_lisp stack_start;
-#endif
 
-#if UIM_SCM_GCC4_READY_GC
   str = (uim_lisp)uim_lisp_str;
-#else
-  /* stack protection is required for my_err() */
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   if (SCM_STRINGP((ScmObj)str)) {
     c_str = SCM_STRING_STR((ScmObj)str);
@@ -246,10 +200,6 @@ uim_scm_refer_c_str_internal(void *uim_lisp_str)
                   (uim_lisp)str);
     c_str = NULL;
   }
-
-#if !UIM_SCM_GCC4_READY_GC
-  uim_scm_gc_unprotect_stack(&stack_start);
-#endif
 
   return c_str;
 }
@@ -313,25 +263,11 @@ uim_scm_gc_protect(uim_lisp *location)
   scm_gc_protect((ScmObj *)location);
 }
 
-#if UIM_SCM_GCC4_READY_GC
 void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg)
 {
   return scm_call_with_gc_ready_stack(func, arg);
 }
-#else
-void
-uim_scm_gc_unprotect_stack(uim_lisp *stack_start)
-{
-  scm_gc_unprotect_stack((ScmObj*)stack_start);
-}
-
-void
-uim_scm_gc_protect_stack(uim_lisp *stack_start)
-{
-  scm_gc_protect_stack((ScmObj*)stack_start);
-}
-#endif /* UIM_SCM_GCC4_READY_GC */
 
 uim_bool
 uim_scm_is_alive(void)
@@ -435,7 +371,6 @@ uim_scm_string_equal(uim_lisp a, uim_lisp b)
 
 uim_lisp
 uim_scm_eval(uim_lisp obj)
-#if UIM_SCM_GCC4_READY_GC
 {
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_eval_internal,
 						    (void *)obj);
@@ -443,30 +378,15 @@ uim_scm_eval(uim_lisp obj)
 
 static void *
 uim_scm_eval_internal(void *uim_lisp_obj)
-#endif
 {
   uim_lisp ret;  /* intentionally outside of next stack_start */
-#if UIM_SCM_GCC4_READY_GC
   uim_lisp obj;
-#else
-  uim_lisp stack_start;
-#endif
 
-#if UIM_SCM_GCC4_READY_GC
   obj = (uim_lisp)uim_lisp_obj;
-#else
-  uim_scm_gc_protect_stack(&stack_start);
-#endif
 
   uim_scm_last_val = ret = (uim_lisp)scm_p_eval((ScmObj)obj, SCM_NULL);
 
-#if UIM_SCM_GCC4_READY_GC
   return (void *)ret;
-#else
-  uim_scm_gc_unprotect_stack(&stack_start);
-
-  return ret;
-#endif
 }
 
 uim_lisp
