@@ -57,6 +57,20 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: uim_symbol_value_str removal
+Affects: IM developers
+Updates: C API, libuim ABI
+Version: 1.5.0
+Revision: ac4349
+Date: 2007-01-09
+Modifier: YamaKen
+Related: uim-scm API reorganization in uim 1.5.0
+URL:
+Changes:
+  (removed) uim_symbol_value_str()
+Description:
+  Use uim_scm_symbol_value_str() instead.
+------------------------------------------------------------------------------
 Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
@@ -76,43 +90,43 @@ Changes:
       (new) uim_scm_call()
       (new) uim_scm_call_with_guard()
       (new) uim_scm_null()
-      (new) MAKE_INT
-      (new) MAKE_STR
-      (new) MAKE_SYM
-      (new) MAKE_PTR
-      (new) MAKE_FPTR
-      (new) INTP
-      (new) STRP
-      (new) SYMP
-      (new) PTRP
-      (new) FPTRP
-      (new) CAR
-      (new) CDR
-      (new) SET_CAR
-      (new) SET_CDR
-      (new) CONS
-      (new) LIST1
-      (new) LIST2
-      (new) LIST3
-      (new) LIST4
-      (new) LIST5
-      (new) QUOTE
+      (new) MAKE_INT()
+      (new) MAKE_STR()
+      (new) MAKE_SYM()
+      (new) MAKE_PTR()
+      (new) MAKE_FPTR()
+      (new) INTP()
+      (new) STRP()
+      (new) SYMP()
+      (new) PTRP()
+      (new) FPTRP()
+      (new) CAR()
+      (new) CDR()
+      (new) SET_CAR()
+      (new) SET_CDR()
+      (new) CONS()
+      (new) LIST1()
+      (new) LIST2()
+      (new) LIST3()
+      (new) LIST4()
+      (new) LIST5()
+      (new) QUOTE()
   (changed) uim_scm_length()
   (removed) uim_scm_null_list()
-  (removed) uim_scm_cadr
-  (removed) uim_scm_caar
-  (removed) uim_scm_cdar
-  (removed) uim_scm_cddr
-  (removed) uim_scm_reverse
-  (removed) uim_get_c_string
-  (removed) uim_scm_repl_c_string
-  (removed) uim_scm_int_from_c_int
-  (removed) uim_scm_str_from_c_str
-  (removed) uim_scm_intern_c_str
-  (removed) uim_scm_qintern_c_str
-  (removed) uim_scm_nth
-  (removed) uim_scm_nreverse
-  (removed) uim_scm_provide
+  (removed) uim_scm_cadr()
+  (removed) uim_scm_caar()
+  (removed) uim_scm_cdar()
+  (removed) uim_scm_cddr()
+  (removed) uim_scm_reverse()
+  (removed) uim_get_c_string()
+  (removed) uim_scm_repl_c_string()
+  (removed) uim_scm_int_from_c_int()
+  (removed) uim_scm_str_from_c_str()
+  (removed) uim_scm_intern_c_str()
+  (removed) uim_scm_qintern_c_str()
+  (removed) uim_scm_nth()
+  (removed) uim_scm_nreverse()
+  (removed) uim_scm_provide()
   (removed) im-return-str
   (removed) im-return-str-list
 Description:

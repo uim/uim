@@ -41,17 +41,6 @@
 
 extern uim_lisp uim_scm_last_val;
 
-/* backward compatibility */
-char *
-uim_symbol_value_str(const char *symbol_str)
-{
-  uim_lisp val;
-
-  val = uim_scm_call1(uim_scm_make_symbol("uim-symbol-value-str"),
-                      uim_scm_make_symbol(symbol_str));
-  return uim_scm_c_str(val);
-}
-
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {

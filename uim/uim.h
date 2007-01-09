@@ -928,9 +928,6 @@ char *
 uim_ipc_send_command(int *pid, FILE **read_handler,
 		     FILE **write_handler, const char *command, const char *str);
 
-/* will be deprecated. use custom API (uim-custom.h) instead */
-char *uim_symbol_value_str(const char *symbol_str);
-
 /* an uim_code_converter implementation using iconv */
 extern struct uim_code_converter *uim_iconv;
 
