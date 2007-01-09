@@ -12,7 +12,7 @@
 #
 #   Or if you are an uim committer,
 #
-#     $ svn co svn+ssh://svn.freedesktop.org/svn/uim uim-trunk
+#     $ svn co svn+ssh://svn.freedesktop.org/svn/uim/trunk uim-trunk
 #     $ cd uim-trunk
 #     $ ./make-wc.sh
 #     $ make
@@ -20,6 +20,19 @@
 #   You can add arbitrary configure options to make-wc.sh as follows:
 #
 #     $ ./make-wc.sh --enable-debug --enable-backtrace
+#
+# Prerequisites to build uim trunk:
+#
+#   - autoconf 2.60b or later
+#   - automake 1.10 or later
+#   - libtool (1.5.22 is working)
+#   - intltool 0.35.2 (later versions may need autogen.sh modification)
+#   - GNU make
+#   - GNU sed
+#   - perl
+#   - ruby
+#   - rsvg(1) distributed with librsvg
+#   - AsciiDoc
 
 MAKE=make
 
