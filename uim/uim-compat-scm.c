@@ -57,67 +57,6 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
   return lst;
 }
 
-/*
-  - list_repl must always returns same list for each evaluation
-  - returns NULL terminated array. NULL will not appeared except terminator
-  - non-string element such as #f is converted to ""
- */
-void **
-uim_scm_c_list(const char *list_repl, const char *mapper_proc,
-	       uim_scm_c_list_conv_func conv_func)
-{
-  int list_len, i;
-  void **result;
-
-  UIM_EVAL_FSTRING1(NULL, "(length %s)", list_repl);
-  list_len = uim_scm_c_int(uim_scm_return_value());
-
-  result = (void **)malloc(sizeof(void *) * (list_len + 1));
-  if (!result)
-    return NULL;
-
-  result[list_len] = NULL;
-  for (i = 0; i < list_len; i++) {
-    UIM_EVAL_FSTRING3(NULL, "(%s (nth %d %s))", mapper_proc, i, list_repl);
-    result[i] = (*conv_func)(uim_scm_return_value());
-  }
-
-  return result;
-}
-
-char *
-uim_scm_c_str_failsafe(uim_lisp str)
-{
-  return (UIM_SCM_NFALSEP(str)) ? uim_scm_c_str(str) : strdup("");
-}
-
-char **
-uim_scm_c_str_list(const char *list_repl, const char *mapper_proc)
-{
-  void **list;
-  
-  list = uim_scm_c_list(list_repl, mapper_proc,
-			(uim_scm_c_list_conv_func)uim_scm_c_str_failsafe);
-
-  return (char **)list;
-}
-
-void
-uim_scm_c_list_free(void **list, uim_scm_c_list_free_func free_func)
-{
-  void *elem;
-  void **p;
-
-  if (!list)
-    return;
-
-  for (p = list; *p; p++) {
-    elem = *p;
-    free_func(elem);
-  }
-  free(list);
-}
-
 void
 uim_init_compat_scm_subrs(void)
 {
