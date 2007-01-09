@@ -23,16 +23,22 @@
 #
 # Prerequisites to build uim trunk:
 #
-#   - autoconf 2.60b or later
+#   - autoconf 2.60b or later (2.61 is recommended)
 #   - automake 1.10 or later
 #   - libtool (1.5.22 is working)
 #   - intltool 0.35.2 (later versions may need autogen.sh modification)
 #   - GNU make
-#   - GNU sed
 #   - perl
 #   - ruby
 #   - rsvg(1) distributed with librsvg
 #   - AsciiDoc
+#
+# And to run tests:
+#
+#   - GNU sed (for 'make check' on SigScheme)
+#   - Gauche 0.8.5 or later
+#   - GaUnit 0.1.1 or later (see doc/UNIT-TEST)
+
 
 MAKE=make
 
