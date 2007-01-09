@@ -100,6 +100,11 @@ void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
 
 /* evaluations */
+uim_lisp uim_scm_symbol_value(const char *symbol_str);
+uim_bool uim_scm_symbol_value_bool(const char *symbol_str);
+int uim_scm_symbol_value_int(const char *symbol_str);
+char *uim_scm_symbol_value_str(const char *symbol_str);
+
 uim_bool
 uim_scm_load_file(const char *fn);
 uim_bool
@@ -174,6 +179,9 @@ uim_scm_init_subr_4(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_li
 void
 uim_scm_init_subr_5(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp));
+void uim_scm_init_fsubr(char *name,
+                        uim_lisp (*fcn)(uim_lisp args, uim_lisp env));
+
 
 /* constants */
 uim_lisp
@@ -182,6 +190,16 @@ uim_lisp
 uim_scm_f(void);
 uim_lisp uim_scm_null(void);
 #define uim_scm_null_list uim_scm_null
+
+/* list constructors */
+uim_lisp uim_scm_quote(uim_lisp obj);
+uim_lisp uim_scm_list1(uim_lisp elm1);
+uim_lisp uim_scm_list2(uim_lisp elm1, uim_lisp elm2);
+uim_lisp uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
+uim_lisp uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
+                       uim_lisp elm4);
+uim_lisp uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
+                       uim_lisp elm4, uim_lisp elm5);
 
 /* predicates */
 uim_bool

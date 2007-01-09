@@ -86,6 +86,8 @@ static void *uim_scm_call_with_guard_internal(struct call_args *args);
 
 static void *uim_scm_c_int_internal(void *uim_lisp_integer);
 static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
+static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
+static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
 
 static void
@@ -293,6 +295,79 @@ uim_scm_set_lib_path(const char *path)
   scm_set_lib_path(path);
 }
 
+uim_lisp
+uim_scm_symbol_value(const char *symbol_str)
+{
+  ScmObj symbol;
+
+  symbol = scm_intern(symbol_str);
+  if (SCM_TRUEP(scm_p_symbol_boundp(symbol, SCM_NULL))) {
+    return (uim_lisp)scm_p_symbol_value(symbol);
+  } else {
+    return uim_scm_f();
+  }
+}
+
+/* temprary solution for getting an value from Scheme world */
+uim_bool
+uim_scm_symbol_value_bool(const char *symbol_str)
+{
+  uim_bool val;
+
+  if (!symbol_str)
+    return UIM_FALSE;
+
+  val = uim_scm_c_bool(uim_scm_symbol_value(symbol_str));
+
+  return val;
+}
+
+int
+uim_scm_symbol_value_int(const char *symbol_str)
+{
+  return (int)(intptr_t)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
+}
+
+static void *
+uim_scm_symbol_value_int_internal(const char *symbol_str)
+{
+  uim_lisp val_;
+  int val;
+
+  val_ = uim_scm_symbol_value(symbol_str);
+
+  if (UIM_SCM_NFALSEP(val_)) {
+    val = uim_scm_c_int(val_);
+  } else {
+    val = 0;
+  }
+
+  return (void *)(intptr_t)val;
+}
+
+char *
+uim_scm_symbol_value_str(const char *symbol_str)
+{
+  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_str_internal, (void *)symbol_str);
+}
+
+static char *
+uim_scm_symbol_value_str_internal(const char *symbol_str)
+{
+  uim_lisp val_ = uim_scm_f();
+  char *val;
+
+  val_ = uim_scm_symbol_value(symbol_str);
+
+  if (UIM_SCM_NFALSEP(val_)) {
+    val = uim_scm_c_str(val_);
+  } else {
+    val = NULL;
+  }
+
+  return val;
+}
+
 uim_bool
 uim_scm_load_file(const char *fn)
 {
@@ -322,9 +397,46 @@ uim_scm_f(void)
 }
 
 uim_lisp
-uim_scm_null_list(void)
+uim_scm_null(void)
 {
   return (uim_lisp)SCM_NULL;
+}
+
+uim_lisp
+uim_scm_quote(uim_lisp obj)
+{
+  return (uim_lisp)SCM_LIST_2(SCM_SYM_QUOTE, (ScmObj)obj);
+}
+
+uim_lisp
+uim_scm_list1(uim_lisp elm1)
+{
+  return uim_scm_cons(elm1, uim_scm_null_list());
+}
+
+uim_lisp
+uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
+{
+  return uim_scm_cons(elm1, uim_scm_list1(elm2));
+}
+
+uim_lisp
+uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
+{
+  return uim_scm_cons(elm1, uim_scm_list2(elm2, elm3));
+}
+
+uim_lisp
+uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
+{
+  return uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
+}
+
+uim_lisp
+uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
+              uim_lisp elm5)
+{
+  return uim_scm_cons(elm1, uim_scm_list4(elm2, elm3, elm4, elm5));
 }
 
 uim_bool
@@ -584,6 +696,12 @@ uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_l
                                                        uim_lisp, uim_lisp))
 {
   scm_register_func(name, (scm_procedure_fixed_5)func, SCM_PROCEDURE_FIXED_5);
+}
+
+void
+uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp args, uim_lisp env))
+{
+  scm_register_func(name, (scm_syntax_variadic_0)fcn, SCM_SYNTAX_VARIADIC_0);
 }
 
 static void

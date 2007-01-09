@@ -41,9 +41,6 @@
 
 extern uim_lisp uim_scm_last_val;
 
-static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
-static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
-
 /* will be deprecated. use uim_scm_c_str() instead */
 char *
 uim_get_c_string(uim_lisp str)
@@ -59,56 +56,10 @@ uim_scm_repl_c_string(char *str, long want_init, long want_print)
   return 0;
 }
 
-int
-uim_scm_symbol_value_int(const char *symbol_str)
-{
-  return (int)(intptr_t)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
-}
-
-static void *
-uim_scm_symbol_value_int_internal(const char *symbol_str)
-{
-  uim_lisp val_;
-  int val;
-
-  val_ = uim_scm_symbol_value(symbol_str);
-
-  if (UIM_SCM_NFALSEP(val_)) {
-    val = uim_scm_c_int(val_);
-  } else {
-    val = 0;
-  }
-
-  return (void *)(intptr_t)val;
-}
-
 uim_lisp
 uim_scm_int_from_c_int(int integer)
 {
   return uim_scm_make_int(integer);
-}
-
-char *
-uim_scm_symbol_value_str(const char *symbol_str)
-{
-  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_str_internal, (void *)symbol_str);
-}
-
-static char *
-uim_scm_symbol_value_str_internal(const char *symbol_str)
-{
-  uim_lisp val_ = uim_scm_f();
-  char *val;
-
-  val_ = uim_scm_symbol_value(symbol_str);
-
-  if (UIM_SCM_NFALSEP(val_)) {
-    val = uim_scm_c_str(val_);
-  } else {
-    val = NULL;
-  }
-
-  return val;
 }
 
 /* backward compatibility */
@@ -120,20 +71,6 @@ uim_symbol_value_str(const char *symbol_str)
   val = uim_scm_call1(uim_scm_make_symbol("uim-symbol-value-str"),
                       uim_scm_make_symbol(symbol_str));
   return uim_scm_c_str(val);
-}
-
-/* temprary solution for getting an value from Scheme world */
-uim_bool
-uim_scm_symbol_value_bool(const char *symbol_str)
-{
-  uim_bool val;
-
-  if (!symbol_str)
-    return UIM_FALSE;
-
-  val = uim_scm_c_bool(uim_scm_symbol_value(symbol_str));
-
-  return val;
 }
 
 uim_lisp
@@ -159,19 +96,6 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 }
 
 uim_lisp
-uim_scm_symbol_value(const char *symbol_str)
-{
-  ScmObj symbol;
-
-  symbol = scm_intern(symbol_str);
-  if (SCM_TRUEP(scm_p_symbol_boundp(symbol, SCM_NULL))) {
-    return (uim_lisp)scm_p_symbol_value(symbol);
-  } else {
-    return uim_scm_f();
-  }
-}
-
-uim_lisp
 uim_scm_intern_c_str(const char *str)
 {
   return uim_scm_make_symbol(str);
@@ -184,47 +108,10 @@ uim_scm_qintern_c_str(const char *str)
 }
 
 uim_lisp
-uim_scm_quote(uim_lisp obj)
-{
-  return (uim_lisp)SCM_LIST_2(SCM_SYM_QUOTE, (ScmObj)obj);
-}
-
-uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst)
 {
   return (uim_lisp)scm_p_list_ref((ScmObj)lst,
 				  (ScmObj)n);
-}
-
-uim_lisp
-uim_scm_list1(uim_lisp elm1)
-{
-  return uim_scm_cons(elm1, uim_scm_null_list());
-}
-
-uim_lisp
-uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
-{
-  return uim_scm_cons(elm1, uim_scm_list1(elm2));
-}
-
-uim_lisp
-uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
-{
-  return uim_scm_cons(elm1, uim_scm_list2(elm2, elm3));
-}
-
-uim_lisp
-uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
-{
-  return uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
-}
-
-uim_lisp
-uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
-              uim_lisp elm5)
-{
-  return uim_scm_cons(elm1, uim_scm_list4(elm2, elm3, elm4, elm5));
 }
 
 /* Is this function used from somewhere? I think this function could be removed. */
@@ -242,12 +129,6 @@ uim_scm_nreverse(uim_lisp cell)
 #if 0
   return (uim_lisp)nreverse((uim_lisp)cell);
 #endif
-}
-
-void
-uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp))
-{
-  scm_register_func(name, (scm_syntax_variadic_0)fcn, SCM_SYNTAX_VARIADIC_0);
 }
 
 void

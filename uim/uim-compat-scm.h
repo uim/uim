@@ -65,49 +65,24 @@ char *uim_get_c_string(uim_lisp str);
 long
 uim_scm_repl_c_string(char *str, long want_init, long want_print);
 
-int
-uim_scm_symbol_value_int(const char *symbol_str);
 uim_lisp
 uim_scm_int_from_c_int(int integer);
 
-char *
-uim_scm_symbol_value_str(const char *symbol_str);
 uim_lisp
 uim_scm_str_from_c_str(const char *str);
 
-uim_bool
-uim_scm_symbol_value_bool(const char *symbol_str);
-
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs);
-uim_lisp
-uim_scm_symbol_value(const char *symbol_str);
 uim_lisp
 uim_scm_intern_c_str(const char *str);
 uim_lisp
 uim_scm_qintern_c_str(const char *str);
 
 uim_lisp
-uim_scm_quote(uim_lisp obj);
-uim_lisp
 uim_scm_nth(uim_lisp n, uim_lisp lst);
-uim_lisp
-uim_scm_list1(uim_lisp elm1);
-uim_lisp
-uim_scm_list2(uim_lisp elm1, uim_lisp elm2);
-uim_lisp
-uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3);
-uim_lisp
-uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4);
-uim_lisp
-uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
-              uim_lisp elm5);
 
 uim_lisp
 uim_scm_nreverse(uim_lisp cell);
-
-void
-uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
 
 void
 uim_scm_provide(const char *feature);
