@@ -75,4 +75,4 @@ EOT
 fi
 
 echo "configure $CONF_COMMON $@"
-./configure $CONF_ARGS $@
+./configure $CONF_COMMON $@
