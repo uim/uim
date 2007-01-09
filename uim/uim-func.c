@@ -37,7 +37,6 @@
 #include <iconv.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdarg.h>
 
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
@@ -53,8 +52,6 @@
 #include "uim-encoding.h"
 #include "uim-util.h"
 #include "uim-im-switcher.h"
-
-#define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
 
 static const char **uim_get_encoding_alias(const char *encoding);
 
@@ -283,61 +280,6 @@ uim_iconv_release(void *obj)
 {
   int err;
   err = iconv_close((iconv_t)obj);
-}
-
-/** Calculate actual sexp string size from printf-style args.
- * This function calculates actual sexp string size from printf-style
- * args. Format string \a sexp_tmpl only accepts %d and %s.
- */
-int
-uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
-{
-  va_list ap;
-  int len, size;
-  int tmp;
-  const char *sexp_tmpl_end, *escp = sexp_tmpl, *strarg;
-  char fmtchr;
-
-  va_start(ap, sexp_tmpl);
-  len = strlen(sexp_tmpl);
-  sexp_tmpl_end = sexp_tmpl + len - 1;
-  while ((escp = strchr(escp, '%'))) {
-    if (escp < sexp_tmpl_end) {
-      escp += sizeof((char)'%');
-      fmtchr = *escp++;
-      switch (fmtchr) {
-      case 'd':
-	tmp = va_arg(ap, int);
-	len += MAX_LENGTH_OF_INT_AS_STR;
-	break;
-      case 's':
-	strarg = va_arg(ap, const char *);
-	len += strlen(strarg);
-	break;
-      default:
-	/* unexpected format string */
-	size = -1;
-	goto end;
-      }
-    } else {
-      /* invalid format string */
-      size = -1;
-      goto end;
-    }
-  }
-  size = len + sizeof((char)'\0');
-
- end:
-  va_end(ap);
-
-  return size;
-}
-
-void
-uim_eval_string(uim_context uc, char *buf)
-{
-  /* Evaluate */
-  uim_scm_eval_c_string(buf);
 }
 
 /* this is not a uim API, so did not name as uim_retrieve_context() */

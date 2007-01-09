@@ -49,6 +49,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "uim-stdint.h"
 #include "uim-scm.h"
@@ -76,6 +77,84 @@
 #define UIM_CUSTOM_EXPERIMENTAL_MTIME_SENSING
 #endif
 
+#define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
+
+/* we cannot use the variadic macro (i.e. __VA_ARGS__) because we
+   should also support C89 compilers
+*/
+#define UIM_EVAL_STRING_INTERNAL(uc, sexp_str) \
+  (uim_scm_last_val = uim_scm_eval_c_string(sexp_str))
+
+#define UIM_EVAL_STRING(uc, sexp_str) \
+  { \
+    UIM_EVAL_STRING_INTERNAL(uc, sexp_str); \
+  }
+
+#define UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1) \
+  { \
+    int form_size; \
+    char *buf; \
+    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1); \
+    if (form_size != -1) { \
+      buf = malloc(form_size); \
+      snprintf(buf, form_size, sexp_tmpl, arg1); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
+    } \
+  }
+
+#define UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2) \
+  { \
+    int form_size; \
+    char *buf; \
+    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2); \
+    if (form_size != -1) { \
+      buf = malloc(form_size); \
+      snprintf(buf, form_size, sexp_tmpl, arg1, arg2); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
+    } \
+  }
+
+#define UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3) \
+  { \
+    int form_size; \
+    char *buf; \
+    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3); \
+    if (form_size != -1) { \
+      buf = malloc(form_size); \
+      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
+    } \
+  }
+
+#define UIM_EVAL_FSTRING4(uc, sexp_tmpl, arg1, arg2, arg3, arg4) \
+  { \
+    int form_size; \
+    char *buf; \
+    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4); \
+    if (form_size != -1) { \
+      buf = malloc(form_size); \
+      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3, arg4); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
+    } \
+  }
+
+#define UIM_EVAL_FSTRING5(uc, sexp_tmpl, arg1, arg2, arg3, arg4, arg5) \
+  { \
+    int form_size; \
+    char *buf; \
+    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
+    if (form_size != -1) { \
+      buf = malloc(form_size); \
+      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
+    } \
+  }
+
 typedef void (*uim_custom_cb_update_cb_t)(void *ptr, const char *custom_sym);
 typedef void (*uim_custom_global_cb_update_cb_t)(void *ptr);
 
@@ -85,6 +164,11 @@ typedef void (*uim_scm_c_list_free_func)(void *elem);
 /* exported for internal use */
 uim_bool uim_custom_init(void);
 uim_bool uim_custom_quit(void);
+
+/* uim_scm_return_value() can only be used to retrieve result of
+ * UIM_EVAL_FSTRINGn() or UIM_EVAL_STRING(). */
+static uim_lisp uim_scm_return_value(void);
+static int uim_sizeof_sexp_str(const char *tmpl, ...);
 
 static void **uim_scm_c_list(const char *list_repl, const char *mapper_proc,
                              uim_scm_c_list_conv_func conv_func);
@@ -161,7 +245,62 @@ static const char custom_subdir[] = "customs";
 static const char custom_msg_tmpl[] = "prop_update_custom\n%s\n%s\n";
 static int helper_fd = -1;
 static uim_lisp return_val;
+static uim_lisp uim_scm_last_val;
 
+
+static uim_lisp
+uim_scm_return_value(void)
+{
+  return uim_scm_last_val;
+}
+
+/** Calculate actual sexp string size from printf-style args.
+ * This function calculates actual sexp string size from printf-style
+ * args. Format string \a sexp_tmpl only accepts %d and %s.
+ */
+int
+uim_sizeof_sexp_str(const char *sexp_tmpl, ...)
+{
+  va_list ap;
+  int len, size;
+  int tmp;
+  const char *sexp_tmpl_end, *escp = sexp_tmpl, *strarg;
+  char fmtchr;
+
+  va_start(ap, sexp_tmpl);
+  len = strlen(sexp_tmpl);
+  sexp_tmpl_end = sexp_tmpl + len - 1;
+  while ((escp = strchr(escp, '%'))) {
+    if (escp < sexp_tmpl_end) {
+      escp += sizeof((char)'%');
+      fmtchr = *escp++;
+      switch (fmtchr) {
+      case 'd':
+	tmp = va_arg(ap, int);
+	len += MAX_LENGTH_OF_INT_AS_STR;
+	break;
+      case 's':
+	strarg = va_arg(ap, const char *);
+	len += strlen(strarg);
+	break;
+      default:
+	/* unexpected format string */
+	size = -1;
+	goto end;
+      }
+    } else {
+      /* invalid format string */
+      size = -1;
+      goto end;
+    }
+  }
+  size = len + sizeof((char)'\0');
+
+ end:
+  va_end(ap);
+
+  return size;
+}
 
 /*
   - list_repl must always returns same list for each evaluation

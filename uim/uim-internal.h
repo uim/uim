@@ -124,96 +124,6 @@ struct uim_context_ {
 };
 
 
-#if 0
-/*
-  Evaluating a S-expression in C involves the two problems, performance and
-  sourcecode-simpleness. Traditional UIM_EVAL_FSTRINGn() satisfies the latter,
-  but loses former. Manual sexp construction and evaluation by a sequence of
-  function calling is an opponent. The two should co-exist until better
-  solution has been implemented as a uim-scm API.  -- YamaKen 2005-07-30
- */
-#define UIM_EVAL_SEXP_AS_STRING
-#endif
-
-/* we cannot use the variadic macro (i.e. __VA_ARGS__) because we
-   should also support C89 compilers
-*/
-#define UIM_EVAL_STRING_INTERNAL(uc, sexp_str) \
-      if (uc) \
-        uim_eval_string(uc, sexp_str); \
-      else \
-        uim_scm_eval_c_string(sexp_str); \
-
-#define UIM_EVAL_STRING(uc, sexp_str) \
-  { \
-    UIM_EVAL_STRING_INTERNAL(uc, sexp_str); \
-  }
-
-#define UIM_EVAL_FSTRING1(uc, sexp_tmpl, arg1) \
-  { \
-    int form_size; \
-    char *buf; \
-    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1); \
-    if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
-    } \
-  }
-
-#define UIM_EVAL_FSTRING2(uc, sexp_tmpl, arg1, arg2) \
-  { \
-    int form_size; \
-    char *buf; \
-    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2); \
-    if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
-    } \
-  }
-
-#define UIM_EVAL_FSTRING3(uc, sexp_tmpl, arg1, arg2, arg3) \
-  { \
-    int form_size; \
-    char *buf; \
-    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3); \
-    if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
-    } \
-  }
-
-#define UIM_EVAL_FSTRING4(uc, sexp_tmpl, arg1, arg2, arg3, arg4) \
-  { \
-    int form_size; \
-    char *buf; \
-    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4); \
-    if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3, arg4); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
-    } \
-  }
-
-#define UIM_EVAL_FSTRING5(uc, sexp_tmpl, arg1, arg2, arg3, arg4, arg5) \
-  { \
-    int form_size; \
-    char *buf; \
-    form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
-    if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
-    } \
-  }
-
 /**/
 uim_context
 uim_find_context(int id);
@@ -237,8 +147,6 @@ void *uim_iconv_create(const char *tocode, const char *fromcode);
 char *uim_iconv_code_conv(void *obj, const char *str);
 void uim_iconv_release(void *obj);
 
-int uim_sizeof_sexp_str(const char *tmpl, ...);
-void uim_eval_string(uim_context, char *str);
 void uim_release_preedit_segments(uim_context uc);
 void uim_update_preedit_segments(uim_context uc);
 

@@ -65,7 +65,6 @@
 #define scm_out SCM_GLOBAL_VAR(port, scm_out)
 #define scm_err SCM_GLOBAL_VAR(port, scm_err)
 
-uim_lisp uim_scm_last_val;
 static uim_bool sscm_is_exit_with_fatal_error;
 static FILE *uim_output = NULL;
 
@@ -491,22 +490,17 @@ uim_scm_eval(uim_lisp obj)
 static void *
 uim_scm_eval_internal(void *uim_lisp_obj)
 {
-  uim_lisp ret;  /* intentionally outside of next stack_start */
   uim_lisp obj;
 
   obj = (uim_lisp)uim_lisp_obj;
 
-  uim_scm_last_val = ret = (uim_lisp)scm_p_eval((ScmObj)obj, SCM_NULL);
-
-  return (void *)ret;
+  return (void *)scm_p_eval((ScmObj)obj, SCM_NULL);
 }
 
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
-  uim_scm_last_val = (uim_lisp)scm_eval_c_string(str);
-
-  return uim_scm_last_val;
+  return (uim_lisp)scm_eval_c_string(str);
 }
 
 uim_lisp
@@ -578,13 +572,6 @@ uim_scm_call_with_guard_internal(struct call_args *args)
                                      uim_scm_quote(args->args)));
 
   return (void *)uim_scm_eval(form);
-}
-
-uim_lisp
-uim_scm_return_value(void)
-{
-  /* FIXME: This function should be removed. */
-  return uim_scm_last_val;
 }
 
 uim_lisp
@@ -733,7 +720,6 @@ uim_scm_init(const char *verbose_level)
   scm_use("srfi-34");
   scm_use("siod");
 
-  uim_scm_gc_protect(&uim_scm_last_val);
   uim_scm_set_verbose_level(vlevel);
 }
 

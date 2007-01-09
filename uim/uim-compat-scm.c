@@ -39,7 +39,6 @@
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
 
-extern uim_lisp uim_scm_last_val;
 
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)

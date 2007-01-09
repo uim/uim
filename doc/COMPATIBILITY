@@ -118,6 +118,7 @@ Changes:
   (removed) uim_scm_cdar()
   (removed) uim_scm_cddr()
   (removed) uim_scm_reverse()
+  (removed) uim_scm_return_value()
   (removed) uim_scm_c_list_conv_func
   (removed) uim_scm_c_list_free_func
   (removed) uim_scm_c_list()

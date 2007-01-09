@@ -121,14 +121,6 @@ uim_lisp uim_scm_call3(uim_lisp proc,
 uim_lisp uim_scm_call(uim_lisp proc, uim_lisp args);
 uim_lisp uim_scm_call_with_guard(uim_lisp failed,
                                  uim_lisp proc, uim_lisp args);
-/* uim_scm_return_value() should only used to retrieve result of
- * UIM_EVAL_FSTRINGn() or UIM_EVAL_STRING(). */
-uim_lisp
-uim_scm_return_value(void);
-/*
-  TODO: reorganize UIM_EVAL_FSTRINGn(), uim_sizeof_sexp_str() and
-  uim_eval_string() in uim-internal.h into this file
-*/
 
 void uim_scm_ensure(uim_bool cond);
 
