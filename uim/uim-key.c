@@ -385,7 +385,7 @@ define_key(uim_lisp args, uim_lisp env)
   uim_lisp form, predicate_sym, sources;
 
   predicate_sym = uim_scm_car(args);
-  sources = uim_scm_nullp(args) ? uim_scm_null_list() : uim_scm_cadr(args);
+  sources = uim_scm_nullp(args) ? uim_scm_null_list() : CAR(CDR(args));
   form = uim_scm_list3(uim_scm_make_symbol("define-key-internal"),
 		       uim_scm_quote(predicate_sym),
 		       sources);

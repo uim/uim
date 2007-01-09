@@ -41,27 +41,6 @@
 
 extern uim_lisp uim_scm_last_val;
 
-/* will be deprecated. use uim_scm_c_str() instead */
-char *
-uim_get_c_string(uim_lisp str)
-{
-  return uim_scm_c_str(str);
-}
-
-long
-uim_scm_repl_c_string(char *str, long want_init, long want_print)
-{
-  uim_scm_last_val = (uim_lisp)scm_eval_c_string(str);
-
-  return 0;
-}
-
-uim_lisp
-uim_scm_int_from_c_int(int integer)
-{
-  return uim_scm_make_int(integer);
-}
-
 /* backward compatibility */
 char *
 uim_symbol_value_str(const char *symbol_str)
@@ -71,12 +50,6 @@ uim_symbol_value_str(const char *symbol_str)
   val = uim_scm_call1(uim_scm_make_symbol("uim-symbol-value-str"),
                       uim_scm_make_symbol(symbol_str));
   return uim_scm_c_str(val);
-}
-
-uim_lisp
-uim_scm_str_from_c_str(const char *str)
-{
-  return uim_scm_make_str(str);
 }
 
 uim_lisp
@@ -94,49 +67,6 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 
   return lst;
 }
-
-uim_lisp
-uim_scm_intern_c_str(const char *str)
-{
-  return uim_scm_make_symbol(str);
-}
-
-uim_lisp
-uim_scm_qintern_c_str(const char *str)
-{
-  return uim_scm_quote(uim_scm_intern_c_str(str));
-}
-
-uim_lisp
-uim_scm_nth(uim_lisp n, uim_lisp lst)
-{
-  return (uim_lisp)scm_p_list_ref((ScmObj)lst,
-				  (ScmObj)n);
-}
-
-/* Is this function used from somewhere? I think this function could be removed. */
-/*
- * Not only this function but all functions of this file should be
- * removed. See the header comment of uim-compat-scm.h. Remove these
- * two comments if you have been satisfied by this answer.
- *   -- YamaKen 2005-09-18
- */
-uim_lisp
-uim_scm_nreverse(uim_lisp cell)
-{
-  fprintf(stderr, "uim_scm_nreverse : not implemented yet.\n");
-  return uim_scm_null_list();
-#if 0
-  return (uim_lisp)nreverse((uim_lisp)cell);
-#endif
-}
-
-void
-uim_scm_provide(const char *feature)
-{
-  scm_p_provide(SCM_CONST_STRING(feature));
-}
-
 
 /*
   - list_repl must always returns same list for each evaluation

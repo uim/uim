@@ -258,7 +258,7 @@ rk_expect_seq(uim_lisp seq, uim_lisp rules)
   uim_lisp cur, res = uim_scm_null_list();
   for (cur = rules; !uim_scm_nullp(cur); cur = uim_scm_cdr(cur)) {
     uim_lisp rule = uim_scm_car(cur);
-    uim_lisp key = uim_scm_caar(rule);
+    uim_lisp key = CAR(CAR(rule));
     uim_lisp e = str_seq_partial(seq, key);
     if UIM_SCM_NFALSEP(e) {
       res = uim_scm_cons(e, res);
@@ -474,8 +474,8 @@ shift_elems(uim_lisp lists)
     rests = uim_scm_cons(uim_scm_cdr(list), rests);
   }
 
-  return uim_scm_cons(uim_scm_reverse(elms),
-		      uim_scm_reverse(rests));
+  return uim_scm_cons(uim_scm_call1(MAKE_SYM("reverse"), elms),
+                      uim_scm_call1(MAKE_SYM("reverse"), rests));
 }
 
 static uim_lisp

@@ -600,30 +600,6 @@ uim_scm_cdr(uim_lisp pair)
 }
 
 uim_lisp
-uim_scm_cadr(uim_lisp lst)
-{
-  return (uim_lisp)scm_p_cadr((ScmObj)lst);
-}
-
-uim_lisp
-uim_scm_caar(uim_lisp lst)
-{
-  return (uim_lisp)scm_p_caar((ScmObj)lst);
-}
-
-uim_lisp
-uim_scm_cdar(uim_lisp lst)
-{
-  return (uim_lisp)scm_p_cdar((ScmObj)lst);
-}
-
-uim_lisp
-uim_scm_cddr(uim_lisp lst)
-{
-  return (uim_lisp)scm_p_cddr((ScmObj)lst);
-}
-
-uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
   return (uim_lisp)SCM_CONS((ScmObj)car, (ScmObj)cdr);
@@ -636,12 +612,6 @@ uim_scm_length(uim_lisp lst)
 
   len = (uim_lisp)scm_p_length((ScmObj)lst);
   return uim_scm_c_int(len);
-}
-
-uim_lisp
-uim_scm_reverse(uim_lisp lst)
-{
-  return (uim_lisp)scm_p_reverse((ScmObj)lst);
 }
 
 uim_bool
@@ -756,7 +726,7 @@ uim_scm_init(const char *verbose_level)
 
 #ifdef DEBUG_SCM
   /* required by test-im.scm */
-  uim_scm_provide("debug");
+  uim_scm_call1(uim_scm_make_symbol("provide"), uim_scm_make_str("debug"));
 #endif
 
   scm_use("srfi-23");

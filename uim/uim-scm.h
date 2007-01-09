@@ -223,18 +223,8 @@ uim_lisp
 uim_scm_car(uim_lisp pair);
 uim_lisp
 uim_scm_cdr(uim_lisp pair);
-uim_lisp
-uim_scm_cadr(uim_lisp lst);
-uim_lisp
-uim_scm_caar(uim_lisp lst);
-uim_lisp
-uim_scm_cdar(uim_lisp lst);
-uim_lisp
-uim_scm_cddr(uim_lisp lst);
 
 long uim_scm_length(uim_lisp lst);
-uim_lisp
-uim_scm_reverse(uim_lisp lst);
 
 
 #ifdef __cplusplus

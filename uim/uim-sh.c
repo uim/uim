@@ -36,6 +36,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
+#include "uim-scm-abbrev.h"
 
 #ifdef LIBEDIT
 #include "editline.h"
@@ -46,9 +47,10 @@ extern int uim_siod_fatal;
 #endif
 
 int
-main(int argc, char *argv[]) {
+main(int argc, char *argv[])
+{
   long verbose;
-  uim_lisp args, form;
+  uim_lisp args;
 
   uim_scm_set_output(stdout);
   
@@ -79,9 +81,7 @@ main(int argc, char *argv[]) {
   uim_scm_set_verbose_level(verbose);
 
   args = uim_scm_c_strs_into_list(argc, (const char *const *)argv);
-  form = uim_scm_list2(uim_scm_intern_c_str("uim-sh"),
-		       uim_scm_quote(args));
-  uim_scm_eval(form);
+  uim_scm_call1(MAKE_SYM("uim-sh"), args);
 
 #ifdef UIM_SH_USE_EXIT_HOOK
   /* is not working even if uim_siod_fatal is accessible. outermost

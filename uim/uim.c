@@ -589,9 +589,9 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   if (cand) {
     memset(cand, 0, sizeof(*cand));
     if (uim_scm_length(triple) == 3) {
-      str  = uim_scm_refer_c_str(uim_scm_car(triple));
-      head = uim_scm_refer_c_str(uim_scm_cadr(triple));
-      ann  = uim_scm_refer_c_str(uim_scm_car(uim_scm_cddr(triple)));
+      str  = uim_scm_refer_c_str(CAR(triple));
+      head = uim_scm_refer_c_str(CAR(CDR(triple)));
+      ann  = uim_scm_refer_c_str(CAR(CDR(CDR((triple)))));
       cand->str           = uc->conv_if->convert(uc->outbound_conv, str);
       cand->heading_label = uc->conv_if->convert(uc->outbound_conv, head);
       cand->annotation    = uc->conv_if->convert(uc->outbound_conv, ann);
