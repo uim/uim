@@ -58,7 +58,7 @@ Each change consist of following fields. All fields are required.
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
 Summary: uim_symbol_value_str removal
-Affects: IM developers
+Affects: IM developers, Bridge developers
 Updates: C API, libuim ABI
 Version: 1.5.0
 Revision: ac4349
