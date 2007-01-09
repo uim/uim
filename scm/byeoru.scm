@@ -1281,7 +1281,6 @@
 
 (define byeoru-dic-filename "byeoru-dic.scm")
 (define byeoru-load-dic-hook '())
-(define byeoru-dic-loaded? #f)
 
 (define (byeoru-add-hook hook-sym proc)
   (set-symbol-value! hook-sym (cons proc (symbol-value hook-sym))))
@@ -1290,11 +1289,10 @@
   (for-each (lambda (proc) (proc)) hook))
 
 (define (byeoru-look-up-dic word)
-  (if (not byeoru-dic-loaded?)
+  (if (not (symbol-bound? 'byeoru-dic))
       (begin
 	(require byeoru-dic-filename)
-	(byeoru-call-hook-procs byeoru-load-dic-hook)
-	(set! byeoru-dic-loaded? #t)))
+	(byeoru-call-hook-procs byeoru-load-dic-hook)))
   (assoc word byeoru-dic))
 
 (define (byeoru-add-dic-entry kons)
