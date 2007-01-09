@@ -75,7 +75,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: SigScheme introduction to uim
@@ -134,6 +134,7 @@ Changes:
   (removed) uim_scm_nth()
   (removed) uim_scm_nreverse()
   (removed) uim_scm_provide()
+  (removed) struct uim_api_tbl
   (removed) im-return-str
   (removed) im-return-str-list
 Description:

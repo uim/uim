@@ -50,7 +50,6 @@
 #include "uim-stdint.h"
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "uim-scm-abbrev.h"
 #include "plugin.h"
 #include "uim-internal.h"

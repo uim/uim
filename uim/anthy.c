@@ -38,7 +38,6 @@
 #include <anthy/anthy.h>
 
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "plugin.h"
 
 #define MAX_CONTEXT 256

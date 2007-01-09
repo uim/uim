@@ -56,7 +56,7 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/gettext.h"
-#include "uim/uim-compat-scm.h"
+#include "uim/uim-scm.h"
 
 #include "gtk-im-uim.h"
 #include "uim-cand-win-gtk.h"
@@ -183,7 +183,7 @@ static gboolean
 get_user_defined_color(PangoColor *color, const gchar *uim_symbol)
 {
   gboolean parsed = FALSE;
-  gchar *literal = uim_symbol_value_str(uim_symbol);
+  gchar *literal = uim_scm_symbol_value_str(uim_symbol);
 
   if (literal != NULL && literal[0] != '\0')
     parsed = pango_color_parse(color, literal);

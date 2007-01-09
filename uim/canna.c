@@ -41,7 +41,6 @@
 #include <errno.h>
 #include <string.h>
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "plugin.h"
 
 /* #define UIM_CANNA_DEBUG */

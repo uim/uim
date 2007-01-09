@@ -687,9 +687,6 @@ uim_init_scm(void)
     /*  }*/
   uim_scm_init(env);  /* init Scheme interpreter */
 
-#ifdef UIM_COMPAT_SCM
-  uim_init_compat_scm_subrs();
-#endif
   uim_init_intl_subrs();
   uim_init_util_subrs();
   uim_init_plugin();

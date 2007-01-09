@@ -49,7 +49,6 @@
 #endif
 
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "plugin.h"
 #include "uim-helper.h"
 

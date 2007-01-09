@@ -46,7 +46,6 @@
 
 #include "gettext.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 
 /* for uim_init_intl_subrs() */
 #include "uim-internal.h"

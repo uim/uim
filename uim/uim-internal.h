@@ -130,9 +130,6 @@ uim_find_context(int id);
 void uim_scm_init(const char *verbose_level);
 void uim_scm_quit(void);
 
-#ifdef UIM_COMPAT_SCM
-void uim_init_compat_scm_subrs(void);
-#endif
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
 void uim_init_im_subrs(void);

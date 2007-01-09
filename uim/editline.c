@@ -41,12 +41,10 @@
 #if UIM_EDITLINE_SEPARATED_BUILD
 #include <uim/uim.h>
 #include <uim/uim-scm.h>
-#include <uim/uim-compat-scm.h>
 #include <uim/plugin.h>
 #else
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "plugin.h"
 #endif
 

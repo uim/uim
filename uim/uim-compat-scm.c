@@ -33,11 +33,7 @@
 
 #include <config.h>
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "uim-compat-scm.h"
-#include "uim-internal.h"
 
 
 uim_lisp
@@ -54,9 +50,4 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
   }
 
   return lst;
-}
-
-void
-uim_init_compat_scm_subrs(void)
-{
 }

@@ -37,7 +37,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <uim/uim.h>
-#include <uim/uim-compat-scm.h>
+#include <uim/uim-scm.h>
 #if HAVE_EBLIB
 #include "uim-eb.h"
 #endif /* HAVE_EBLIB */
@@ -141,7 +141,7 @@ uim_cand_win_gtk_get_window_pos_type(UIMCandWinGtk *cwin)
 {
   char *win_pos;
 
-  win_pos = uim_symbol_value_str("candidate-window-position");
+  win_pos = uim_scm_symbol_value_str("candidate-window-position");
   if (win_pos && !strcmp(win_pos, "left")) {
     cwin->position = UIM_CAND_WIN_POS_LEFT;
   } else if (win_pos && !strcmp(win_pos, "right")) {

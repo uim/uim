@@ -40,7 +40,7 @@
 
 #include <uim/uim.h>
 #include "uim/uim-helper.h"
-#include "uim/uim-compat-scm.h"
+#include "uim/uim-scm.h"
 #include "uim/gettext.h"
 
 #define OBJECT_DATA_PROP_BUTTONS "PROP_BUTTONS"

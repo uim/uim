@@ -37,7 +37,6 @@
 
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-internal.h"
 
