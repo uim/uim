@@ -1376,17 +1376,17 @@
 ;; romaja key presses since the backspace key is supposed to delete a
 ;; romaja, not a jamo.
 (define (byeoru-feed-romaja-key bc key key-state)
+
+  (define (flush-automata)
+    (byeoru-flush-automata bc)
+    (if (not (byeoru-context-commit-by-word? bc))
+	(begin
+	  (byeoru-commit bc (byeoru-make-whole-string bc))
+	  (byeoru-clear! bc))))
+
   (and
    (byeoru-non-control-key? key key-state)
    (begin
-
-     (define (flush-automata)
-       (byeoru-flush-automata bc)
-       (if (not (byeoru-context-commit-by-word? bc))
-	   (begin
-	     (byeoru-commit bc (byeoru-make-whole-string bc))
-	     (byeoru-clear! bc))))
-
      ;; Shift key forces a syllable under composition to be completed.
      ;; E.g., gagga becomes 각가,
      ;; while gaGga becomes 가까.
@@ -1410,7 +1410,9 @@
 
        (and
 	(not (string=? pend ""))
-	(list? candidates) (not (null? candidates))
+	(list? candidates) ; (not (null? candidates))
+	;; Commented out (not (null? candidates)) for compatibility with R5RS
+	;; - jhpark, 2007-01-09
 	;; FIXME: remove (not (null? candidates))
 	;; if sigscheme becomes in use.
 	(let ((jungseong? (byeoru-jungseong? (caar candidates))))
@@ -1461,7 +1463,9 @@
 
 (define (byeoru-feed-hangul-key bc key key-state)
   (let ((candidates (byeoru-key-to-candidates key key-state)))
-    (and (list? candidates) (not (null? candidates))
+    (and (list? candidates) ; (not (null? candidates))
+	 ;; Commented out (not (null? candidates)) for compatibility with R5RS
+	 ;; - jhpark, 2007-01-09
 	 ;; Why should I check the length of candidates?
 	 ;; Isn't scheme supposed to distinguish #f from an empty list?
 	 ;; -> fixed in sigscheme.
