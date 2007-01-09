@@ -38,10 +38,9 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-internal.h"
 
-
-#define KEYBUF_SIZE (sizeof("'hangul-multiple-candidate     "))
 
 #define ISASCII(c) (0 <= (c) && (c) <= 127)
 
@@ -292,13 +291,16 @@ static void
 define_valid_key_symbols(void)
 {
   int i;
+  uim_lisp valid_key_symbols;
 
-  UIM_EVAL_STRING(NULL, "(define valid-key-symbols ())");
+  valid_key_symbols = uim_scm_null();
   for (i = 0; key_tab[i].key; i++) {
-    UIM_EVAL_FSTRING1(NULL,
-		      "(set! valid-key-symbols (cons '%s valid-key-symbols))",
-		      key_tab[i].str);
+    valid_key_symbols = uim_scm_cons(MAKE_SYM(key_tab[i].str),
+                                     valid_key_symbols);
   }
+  uim_scm_eval(uim_scm_list3(MAKE_SYM("define"),
+                             MAKE_SYM("valid-key-symbols"),
+                             uim_scm_quote(valid_key_symbols)));
 }
 
 static const char *
@@ -315,34 +317,24 @@ get_sym(int key)
   return res;
 }
 
-static int
-keycode_to_sym(int key, char *buf)
+static void
+handle_key(uim_context uc, const char *handler, int key, int state)
 {
-  const char *s;
+  uim_lisp key_;
+  const char *sym;
 
   if (ISASCII(key)) {
-    snprintf(buf, KEYBUF_SIZE, "%d", key);
+    key_ = MAKE_INT(key);
   } else {
-    s = get_sym(key);
-    if (!s)
-      return -1;
-    snprintf(buf, KEYBUF_SIZE, "'%s", s);
+    sym = get_sym(key);
+    if (!sym) {
+      uc->commit_raw_flag = 1;
+      return;
+    }
+    key_ = MAKE_SYM(get_sym(key));
   }
-  return 0;
-}
 
-static void
-handle_key(uim_context uc, const char *p, int key, int state)
-{
-  char keybuf[KEYBUF_SIZE];
-  int rv;
-
-  rv = keycode_to_sym(key, keybuf);
-  if (rv == -1) {
-    uc->commit_raw_flag = 1;
-    return;
-  }
-  UIM_EVAL_FSTRING4(uc, "(key-%s-handler %d %s %d)", p, uc->id, keybuf, state);
+  uim_scm_call3(MAKE_SYM(handler), MAKE_INT(uc->id), key_, MAKE_INT(state));
 }
 
 static int
@@ -369,7 +361,7 @@ uim_press_key(uim_context uc, int key, int state)
     return 1;
   }
   uc->commit_raw_flag = 0;
-  handle_key(uc, "press", key, state);
+  handle_key(uc, "key-press-handler", key, state);
   return uc->commit_raw_flag;
 }
 
@@ -383,7 +375,7 @@ uim_release_key(uim_context uc, int key, int state)
     return 1;
   }
   uc->commit_raw_flag = 0;
-  handle_key(uc, "release", key, state);
+  handle_key(uc, "key-release-handler", key, state);
   return uc->commit_raw_flag;
 }
 

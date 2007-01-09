@@ -48,6 +48,8 @@
 
 #include "uim-internal.h"
 #include "uim-scm.h"
+#include "uim-compat-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-encoding.h"
 #include "uim-util.h"
 #include "uim-im-switcher.h"
@@ -650,7 +652,8 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
   enum UTextArea text_id;
   enum UTextOrigin origin;
   char *former, *latter, *im_former, *im_latter;
-  uim_bool is_former_null = UIM_TRUE, is_latter_null = UIM_TRUE;
+  uim_bool is_former_null, is_latter_null;
+  uim_lisp ret;
 
   if (!uc->acquire_text_cb)
     return uim_scm_f();
@@ -672,31 +675,28 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
    * needed.  -- YamaKen 2006-10-07 */
   im_former = uc->conv_if->convert(uc->inbound_conv, former);
   im_latter = uc->conv_if->convert(uc->inbound_conv, latter);
-  uim_internal_escape_string(im_former);
-  uim_internal_escape_string(im_latter);
 
-  if (im_former && strcmp(im_former, ""))
-    is_former_null = UIM_FALSE;
-  if (im_latter && strcmp(im_latter, ""))
-    is_latter_null = UIM_FALSE;
-
-  /* UIM_EVAL_*STRING* macro needs brace around if .. else */
-  if (is_former_null && is_latter_null) {
-    uim_eval_string(uc, "(ustr-new '() '())");
-  } else if (is_former_null && !is_latter_null) {
-    UIM_EVAL_FSTRING1(uc, "(ustr-new '() '(\"%s\"))", im_latter);
-  } else if (!is_former_null && is_latter_null) {
-    UIM_EVAL_FSTRING1(uc, "(ustr-new '(\"%s\") '())", im_former);
-  } else {
-    UIM_EVAL_FSTRING2(uc, "(ustr-new '(\"%s\") '(\"%s\"))", im_former,
-		      im_latter);
-  }
+  is_former_null = (im_former && !im_former[0]);
+  is_latter_null = (im_latter && !im_former[0]);
+  if (is_former_null && is_latter_null)
+    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
+                        uim_scm_null(), uim_scm_null());
+  else if (is_former_null && !is_latter_null)
+    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
+                        uim_scm_null(), LIST1(MAKE_STR(im_latter)));
+  else if (!is_former_null && is_latter_null)
+    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
+                        LIST1(MAKE_STR(im_former)), uim_scm_null());
+  else
+    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
+                        LIST1(MAKE_STR(im_former)),
+                        LIST1(MAKE_STR(im_latter)));
   free(former);
   free(latter);
   free(im_former);
   free(im_latter);
 
-  return uim_scm_return_value();
+  return ret;
 }
 
 static uim_lisp

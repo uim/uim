@@ -247,7 +247,6 @@ uim_bool uim_issetugid(void);
 extern struct uim_im *uim_im_array;
 extern int uim_nr_im;
 
-void uim_internal_escape_string(char *str);
 #ifdef __cplusplus
 }
 #endif

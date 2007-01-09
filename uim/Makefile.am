@@ -29,7 +29,7 @@ sigscheme-combined:
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme/src combined
 
 pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
-		uim-scm.h uim-custom.h plugin.h
+		uim-scm.h uim-scm-abbrev.h uim-custom.h plugin.h
 
 libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 		uim-internal.h gettext.h uim-encoding.h\

@@ -320,6 +320,11 @@
   (lambda (lst)
     (append lst '())))
 
+(define digit->string
+  (lambda (n)
+    (and (number? n)
+         (number->string n))))
+
 ;;
 ;; SIOD compatibility
 ;;

@@ -61,18 +61,50 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334
+Revision: ac4333, ac4334, ac4338
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: SigScheme introduction to uim
 URL:
 Changes:
       (new) uim_scm_ensure()
+      (new) uim_scm_symbolp()
+      (new) uim_scm_call0()
+      (new) uim_scm_call1()
+      (new) uim_scm_call2()
+      (new) uim_scm_call3()
+      (new) uim_scm_call()
+      (new) uim_scm_call_with_guard()
+      (new) uim_scm_null()
+      (new) MAKE_INT
+      (new) MAKE_STR
+      (new) MAKE_SYM
+      (new) MAKE_PTR
+      (new) MAKE_FPTR
+      (new) INTP
+      (new) STRP
+      (new) SYMP
+      (new) PTRP
+      (new) FPTRP
+      (new) CAR
+      (new) CDR
+      (new) SET_CAR
+      (new) SET_CDR
+      (new) CONS
+      (new) LIST1
+      (new) LIST2
+      (new) LIST3
+      (new) LIST4
+      (new) LIST5
+      (new) QUOTE
   (changed) uim_scm_length()
+  (removed) uim_scm_null_list()
   (removed) im-return-str
   (removed) im-return-str-list
 Description:
   - return type of uim_scm_length() is changed to long from uim_lisp
+  - uim_scm_null_list() is renamed to uim_scm_null()
+  - uim-scm-abbrev.h is introduced
 ------------------------------------------------------------------------------
 Summary: GC protection API change
 Affects: uim developers, IM developers

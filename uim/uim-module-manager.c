@@ -42,6 +42,8 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-compat-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-internal.h"
 
 #define MODULE_LIST_FILENAME UIM_DATADIR"/modules"
@@ -64,6 +66,12 @@ char *action_command[] = {
   NULL
 };
 
+struct main_args {
+  int argc;
+  char **argv;
+};
+static void *main_internal(struct main_args *args);
+
 /* Utility function */
 static char *
 concat(const char *a, const char *b)
@@ -79,18 +87,11 @@ concat(const char *a, const char *b)
   return dest;
 }
 
-static char *
-append_module_names(char *modules, const char *new_module)
+static uim_lisp
+append_module_names(uim_lisp modules, const char *new_module)
 {
-  if (!modules)
-    return strdup(new_module);
-
-  modules = realloc(modules, strlen(modules) + strlen(new_module) + 2);
-  if (modules) {
-    strcat(modules, " ");
-    strcat(modules, new_module);
-  }
-  return modules;
+  return uim_scm_call2(MAKE_SYM("append"),
+                       modules, LIST1(MAKE_STR(new_module)));
 }
 
 static void
@@ -163,10 +164,9 @@ write_installed_modules_scm(uim_lisp str)
 }
 
 int
-main(int argc, char *argv[]) {
-  int i;
-  int action = None;
-  char *module_names = NULL;
+main(int argc, char *argv[])
+{
+  struct main_args args;
 
   if (argc <= 1) {
     print_usage();
@@ -181,6 +181,26 @@ main(int argc, char *argv[]) {
   uim_init();
   uim_scm_set_verbose_level(1);
 
+  args.argc = argc;
+  args.argv = argv;
+  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)main_internal, &args);
+
+  uim_quit();
+
+  return EXIT_SUCCESS;
+}
+
+static void *
+main_internal(struct main_args *args)
+{
+  int i, argc;
+  int action = None;
+  char **argv;
+  uim_lisp module_names;
+
+  argc = args->argc;
+  argv = args->argv;
+  module_names = uim_scm_null();
   for (i = 0; i < argc; i++) {
     if (strcmp(argv[i], "--register") == 0) {
       if (action != None) {
@@ -238,15 +258,5 @@ main(int argc, char *argv[]) {
     free(extra_file);
   }
 
-  /* for unregister-all */
-  if (!module_names)
-    module_names = "";
-
-  UIM_EVAL_FSTRING2(NULL, "(%s \"%s\")",
-		    action_command[action],
-		    module_names);
-
-  uim_quit();
-
-  return EXIT_SUCCESS;
+  return uim_scm_call1(MAKE_SYM(action_command[action]), module_names);
 }

@@ -44,6 +44,7 @@
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-util.h"
 
 /* define constants as procedure to ensure unmodifiable */
@@ -154,21 +155,6 @@ string2charcode(uim_lisp x)
     return uim_scm_make_int(*buf);
   }
   return uim_scm_f();
-}
-
-static uim_lisp
-digit2string(uim_lisp x)
-{
-  if (uim_scm_integerp(x)) {
-    int i;
-
-    i = uim_scm_c_int(x);
-    UIM_EVAL_FSTRING1(NULL, "\"%d\"", i);
-
-    return uim_scm_return_value();
-  } else {
-    return uim_scm_f();
-  }
 }
 
 static uim_lisp
@@ -583,8 +569,11 @@ uim_get_language_name_from_locale(const char *localename)
   /* performs adhoc "zh_TW:zh_HK" style locale handling as temporary
      specification of this function for backward compatibility
   */
-  UIM_EVAL_FSTRING1(NULL, "(langgroup-primary-lang-code \"%s\")", localename);
-  localename = uim_scm_refer_c_str(uim_scm_return_value());
+  uim_lisp ret;
+
+  ret = uim_scm_call1(MAKE_SYM("langgroup-primary-lang-code"),
+                      MAKE_STR(localename));
+  localename = uim_scm_refer_c_str(ret);
 #endif
   return get_language_name_from_locale(localename);
 }
@@ -638,7 +627,6 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);
   uim_scm_init_subr_1("string->charcode", string2charcode);
-  uim_scm_init_subr_1("digit->string", digit2string);
   uim_scm_init_subr_2("str-seq-equal?", str_seq_equal);
   uim_scm_init_subr_2("str-seq-partial?", str_seq_partial);
   uim_scm_init_subr_2("rk-lib-find-seq", rk_find_seq);

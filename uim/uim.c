@@ -42,6 +42,7 @@
 #include "uim.h"
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-custom.h"
 #include "uim-internal.h"
 #include "uim-util.h"
@@ -95,6 +96,7 @@ uim_create_context(void *ptr,
 		   void (*commit_cb)(void *ptr, const char *str))
 {
   uim_context uc;
+  uim_lisp lang_, engine_;
 
   if (!uim_initialized) {
     fprintf(stderr, "uim_create_context() before uim_init()\n");
@@ -163,18 +165,17 @@ uim_create_context(void *ptr,
   /**/
   uc->psegs = NULL;
   uc->nr_psegs = 0;
-  
-  if (!lang) {
-    lang = "#f";
-  }
-  if (!engine) {
-    engine = "#f";
-    uc->current_im_name = NULL;
-  } else {
+
+  lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
+  if (engine) {
     uc->current_im_name = strdup(engine);
+    engine_ = MAKE_SYM(engine);
+  } else {
+    uc->current_im_name = NULL;
+    engine_ = uim_scm_f();
   }
 
-  UIM_EVAL_FSTRING3(uc, "(create-context %d '%s '%s)", uc->id, lang, engine);
+  uim_scm_call3(MAKE_SYM("create-context"), MAKE_INT(uc->id), lang_, engine_);
 
   return uc;
 }
@@ -182,34 +183,34 @@ uim_create_context(void *ptr,
 void
 uim_reset_context(uim_context uc)
 {
-   UIM_EVAL_FSTRING1(uc, "(reset-handler %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_INT(uc->id));
 
-   /* delete all preedit segments */
-   uim_release_preedit_segments(uc);
+  /* delete all preedit segments */
+  uim_release_preedit_segments(uc);
 }
 
 void
 uim_focus_in_context(uim_context uc)
 {
-   UIM_EVAL_FSTRING1(uc, "(focus-in-handler %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("focus-in-handler"),MAKE_INT(uc->id));
 }
 
 void
 uim_focus_out_context(uim_context uc)
 {
-   UIM_EVAL_FSTRING1(uc, "(focus-out-handler %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("focus-out-handler"), MAKE_INT(uc->id));
 }
 
 void
 uim_place_context(uim_context uc)
 {
-   UIM_EVAL_FSTRING1(uc, "(place-handler %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("place-handler"), MAKE_INT(uc->id));
 }
 
 void
 uim_displace_context(uim_context uc)
 {
-   UIM_EVAL_FSTRING1(uc, "(displace-handler %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("displace-handler"), MAKE_INT(uc->id));
 }
 
 void
@@ -242,13 +243,18 @@ uim_switch_im(uim_context uc, const char *engine)
      -- 2004-10-05 YamaKen
   */
   int id = uc->id;
+#if 0
+  uim_lisp ret;
+#endif
+
   uim_reset_context(uc); /* FIXME: reset should be called here? */
 
-  UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("release-context"), MAKE_INT(id));
   uim_release_preedit_segments(uc);
   uim_update_preedit_segments(uc);
 
-  UIM_EVAL_FSTRING2(uc, "(create-context %d #f '%s)", id, engine);
+  uim_scm_call3(MAKE_SYM("create-context"),
+                MAKE_INT(id), uim_scm_f(), MAKE_SYM(engine));
   if (uc->current_im_name)
     free(uc->current_im_name);
   uc->current_im_name = strdup(engine);
@@ -259,8 +265,8 @@ uim_switch_im(uim_context uc, const char *engine)
   */
   if (uc->short_desc)
     free(uc->short_desc);
-  UIM_EVAL_FSTRING1(uc, "(uim-get-im-short-desc '%s)", im->name);
-  uc->short_desc = uim_scm_c_str(uim_scm_return_value());
+  ret = uim_scm_call1(MAKE_SYM("uim-get-im-short-desc"), MAKE_SYM(im->name));
+  uc->short_desc = uim_scm_c_str(ret);
 #endif
 }
 
@@ -272,7 +278,7 @@ uim_release_context(uim_context uc)
   if (!uc)
     return;
 
-  UIM_EVAL_FSTRING1(uc, "(release-context %d)", uc->id);
+  uim_scm_call1(MAKE_SYM("release-context"), MAKE_INT(uc->id));
   put_context_id(uc);
   if (uc->outbound_conv)
     uc->conv_if->release(uc->outbound_conv);
@@ -341,8 +347,8 @@ uim_prop_activate(uim_context uc, const char *str)
   if (!str)
     return;
       
-  UIM_EVAL_FSTRING2(uc, "(prop-activate-handler %d \"%s\")",
-		    uc->id, str);
+  uim_scm_call2(MAKE_SYM("prop-activate-handler"),
+                MAKE_INT(uc->id), MAKE_STR(str));
 }
 
 /** Update custom value from property message.
@@ -358,8 +364,10 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
   if (!custom || !val)
     return;
 
-  UIM_EVAL_FSTRING3(uc, "(custom-set-handler %d '%s %s)",
-		    uc->id, custom, val);
+  uim_scm_call3(MAKE_SYM("custom-set-handler"),
+                MAKE_INT(uc->id),
+                MAKE_SYM(custom),
+                uim_scm_eval_c_string(val));
 }
 
 
@@ -375,7 +383,7 @@ uim_bool
 uim_prop_reload_configs(void)
 {
   /* FIXME: handle return value properly. */
-  uim_scm_eval_c_string("(custom-reload-user-configs)");
+  uim_scm_call0(MAKE_SYM("custom-reload-user-configs"));
   return UIM_TRUE;
 }
 
@@ -389,7 +397,7 @@ void
 uim_set_mode(uim_context uc, int mode)
 {
   uc->mode = mode;
-  UIM_EVAL_FSTRING2(uc, "(mode-handler %d %d)", uc->id, mode);
+  uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_INT(uc->id), MAKE_INT(mode));
 }
 
 void
@@ -478,12 +486,13 @@ const char *
 uim_get_im_short_desc(uim_context uc, int nth)
 {
   struct uim_im *im = get_nth_im(uc, nth);
+  uim_lisp ret;
 
   if (im) {
     if (im->short_desc)
       free(im->short_desc);
-    UIM_EVAL_FSTRING1(uc, "(uim-get-im-short-desc '%s)", im->name);
-    im->short_desc = uim_scm_c_str(uim_scm_return_value());
+    ret = uim_scm_call1(MAKE_SYM("uim-get-im-short-desc"), MAKE_SYM(im->name));
+    im->short_desc = uim_scm_c_str(ret);
     return im->short_desc;
   }
   return NULL;
@@ -521,9 +530,11 @@ const char *
 uim_get_default_im_name(const char *localename)
 {
   const char *default_im_name, *valid_default_im_name;
+  uim_lisp ret;
 
-  UIM_EVAL_FSTRING1(NULL, "(uim-get-default-im-name \"%s\")", localename);
-  default_im_name = uim_scm_refer_c_str(uim_scm_return_value());
+  ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
+                      MAKE_STR(localename));
+  default_im_name = uim_scm_refer_c_str(ret);
   valid_default_im_name = uim_check_im_exist(default_im_name);
 
   if (!valid_default_im_name)
@@ -535,9 +546,11 @@ const char *
 uim_get_im_name_for_locale(const char *localename)
 {
   const char *im_name, *valid_im_name;
+  uim_lisp ret;
 
-  UIM_EVAL_FSTRING1(NULL, "(uim-get-im-name-for-locale \"%s\")", localename);
-  im_name = uim_scm_refer_c_str(uim_scm_return_value());
+  ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
+                      MAKE_STR(localename));
+  im_name = uim_scm_refer_c_str(ret);
   valid_im_name = uim_check_im_exist(im_name);
 
   if (!valid_im_name)
@@ -567,9 +580,10 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   uim_lisp triple;
   const char *str, *head, *ann;
 
-  UIM_EVAL_FSTRING3(uc, "(get-candidate %d %d %d)",
-		    uc->id, index, accel_enumeration_hint);
-  triple = uim_scm_return_value();
+  triple = uim_scm_call3(MAKE_SYM("get-candidate"),
+                         MAKE_INT(uc->id),
+                         MAKE_INT(index),
+                         MAKE_INT(accel_enumeration_hint));
 
   cand = malloc(sizeof(*cand));
   if (cand) {
@@ -624,8 +638,8 @@ int uim_get_candidate_index(uim_context uc)
 void
 uim_set_candidate_index(uim_context uc, int nth)
 {
-  UIM_EVAL_FSTRING2(uc, "(set-candidate-index %d %d)", uc->id, nth);
-  return ;
+  uim_scm_call2(MAKE_SYM("set-candidate-index"),
+                MAKE_INT(uc->id), MAKE_INT(nth));
 }
 
 void
@@ -643,35 +657,6 @@ uim_set_text_acquisition_cb(uim_context uc,
   uc->delete_text_cb = delete_cb;
 }
 
-void
-uim_internal_escape_string(char *str)
-{
-  char *p;
-  int len;
-  
-  if (!str)
-    return;
-
-  len = strlen(str);
-
-  for (p = str; *p != '\0'; p++) {
-    switch (*p) {
-    case '"':
-    case '\\':
-      str = realloc(str, len + 2);
-      if (!str)
-        return;
-      memmove(p + 1, p, str + len - p + 1);
-      *p = '\\';
-      len++;
-      p++;
-      break;
-    default:
-      break;
-    }
-  }
-}
-
 uim_bool
 uim_input_string(uim_context uc, const char *str)
 {
@@ -679,9 +664,9 @@ uim_input_string(uim_context uc, const char *str)
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
-    uim_internal_escape_string(conv);
     if (conv)
-      UIM_EVAL_FSTRING2(uc, "(input-string-handler %d \"%s\")", uc->id, conv);
+      uim_scm_call2(MAKE_SYM("input-string-handler"),
+                    MAKE_INT(uc->id), MAKE_STR(conv));
     free(conv);
 
     /* FIXME: handle return value properly. */

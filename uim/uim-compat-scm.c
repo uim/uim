@@ -141,12 +141,11 @@ uim_scm_symbol_value_str_internal(const char *symbol_str)
 char *
 uim_symbol_value_str(const char *symbol_str)
 {
-  char *val;
+  uim_lisp val;
 
-  UIM_EVAL_FSTRING1(NULL, "(uim-symbol-value-str '%s)", symbol_str);
-  val = uim_scm_c_str(uim_scm_return_value());
-
-  return val;
+  val = uim_scm_call1(uim_scm_make_symbol("uim-symbol-value-str"),
+                      uim_scm_make_symbol(symbol_str));
+  return uim_scm_c_str(val);
 }
 
 /* temprary solution for getting an value from Scheme world */

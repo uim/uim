@@ -132,6 +132,14 @@ uim_lisp
 uim_scm_eval(uim_lisp obj);
 uim_lisp
 uim_scm_eval_c_string(const char *str);
+uim_lisp uim_scm_call0(uim_lisp proc);
+uim_lisp uim_scm_call1(uim_lisp proc, uim_lisp arg1);
+uim_lisp uim_scm_call2(uim_lisp proc, uim_lisp arg1, uim_lisp arg2);
+uim_lisp uim_scm_call3(uim_lisp proc,
+                       uim_lisp arg1, uim_lisp arg2, uim_lisp arg3);
+uim_lisp uim_scm_call(uim_lisp proc, uim_lisp args);
+uim_lisp uim_scm_call_with_guard(uim_lisp failed,
+                                 uim_lisp proc, uim_lisp args);
 /* uim_scm_return_value() should only used to retrieve result of
  * UIM_EVAL_FSTRINGn() or UIM_EVAL_STRING(). */
 uim_lisp
@@ -196,8 +204,8 @@ uim_lisp
 uim_scm_t(void);
 uim_lisp
 uim_scm_f(void);
-uim_lisp
-uim_scm_null_list(void);
+uim_lisp uim_scm_null(void);
+#define uim_scm_null_list uim_scm_null
 
 /* predicates */
 uim_bool
@@ -208,6 +216,7 @@ uim_bool
 uim_scm_integerp(uim_lisp obj);
 uim_bool
 uim_scm_stringp(uim_lisp obj);
+uim_bool uim_scm_symbolp(uim_lisp obj);
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b);
 uim_bool

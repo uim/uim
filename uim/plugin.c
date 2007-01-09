@@ -51,7 +51,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
-#include "uim-compat-scm.h"
+#include "uim-scm-abbrev.h"
 #include "plugin.h"
 #include "uim-internal.h"
 
@@ -216,6 +216,7 @@ plugin_unload_internal(void *uim_lisp_name)
 #else
   uim_lisp stack_start;
 #endif
+  uim_lisp ret;
   void *library;
   void (*plugin_instance_quit)(void);
 
@@ -225,23 +226,20 @@ plugin_unload_internal(void *uim_lisp_name)
   uim_scm_gc_protect_stack(&stack_start);
 #endif
 
-  UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-library \"%s\")",
-		    uim_scm_refer_c_str(_name));
-  if (UIM_SCM_FALSEP(uim_scm_return_value()))
+  ret = uim_scm_call1(MAKE_SYM("plugin-list-query-library"), _name);
+  if (UIM_SCM_FALSEP(ret))
     return uim_scm_f();
-  library = uim_scm_c_ptr(uim_scm_return_value());
+  library = uim_scm_c_ptr(ret);
 
-  UIM_EVAL_FSTRING1(NULL, "(plugin-list-query-instance-quit \"%s\")",
-		    uim_scm_refer_c_str(_name));
-  if (UIM_SCM_FALSEP(uim_scm_return_value()))
+  ret = uim_scm_call1(MAKE_SYM("plugin-list-query-instance-quit"), _name);
+  if (UIM_SCM_FALSEP(ret))
     return uim_scm_f();
-  plugin_instance_quit = uim_scm_c_func_ptr(uim_scm_return_value());
+  plugin_instance_quit = uim_scm_c_func_ptr(ret);
 
   (plugin_instance_quit)();
   dlclose(library);
 
-  UIM_EVAL_FSTRING1(NULL, "(plugin-list-delete \"%s\")",
-		    uim_scm_refer_c_str(_name));
+  uim_scm_call1(MAKE_SYM("plugin-list-delete"), _name);
 
 #if UIM_SCM_GCC4_READY_GC
   return (void *)uim_scm_t();

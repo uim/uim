@@ -54,7 +54,8 @@
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
 #include "uim-internal.h"
-
+/* To avoid macro name conflict with SigScheme, uim-scm-abbrev.h should not
+ * be included. */
 
 #ifdef UIM_COMPAT_SCM
 #include "uim-compat-scm.c"
@@ -65,6 +66,14 @@
 #define scm_err SCM_GLOBAL_VAR(port, scm_err)
 
 static void uim_scm_error(const char *msg, uim_lisp errobj);
+
+struct call_args {
+  uim_lisp proc;
+  uim_lisp args;
+  uim_lisp failed;
+};
+static void *uim_scm_call_internal(struct call_args *args);
+static void *uim_scm_call_with_guard_internal(struct call_args *args);
 
 #if UIM_SCM_GCC4_READY_GC
 struct uim_scm_error_args {
@@ -351,15 +360,17 @@ uim_scm_set_lib_path(const char *path)
 uim_bool
 uim_scm_load_file(const char *fn)
 {
-  uim_bool succeeded;
+  uim_lisp ok;
 
   if (!fn)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING1(NULL, "(guard (err (else #f)) (load \"%s\"))", fn);
-  succeeded = uim_scm_c_bool(uim_scm_return_value());
+  /* (guard (err (else #f)) (load "<fn>")) */
+  ok = uim_scm_call_with_guard(uim_scm_f(),
+                               uim_scm_make_symbol("load"),
+                               uim_scm_list1(uim_scm_make_str(fn)));
 
-  return succeeded;
+  return uim_scm_c_bool(ok);
 }
 
 uim_lisp
@@ -402,6 +413,12 @@ uim_bool
 uim_scm_stringp(uim_lisp obj)
 {
   return (SCM_STRINGP((ScmObj)obj));
+}
+
+uim_bool
+uim_scm_symbolp(uim_lisp obj)
+{
+  return (SCM_SYMBOLP((ScmObj)obj));
 }
 
 uim_bool
@@ -458,6 +475,77 @@ uim_scm_eval_c_string(const char *str)
   uim_scm_last_val = (uim_lisp)scm_eval_c_string(str);
 
   return uim_scm_last_val;
+}
+
+uim_lisp
+uim_scm_call0(uim_lisp proc)
+{
+  return uim_scm_call(proc, uim_scm_null());
+}
+
+uim_lisp
+uim_scm_call1(uim_lisp proc, uim_lisp arg1)
+{
+  return uim_scm_call(proc, uim_scm_list1(arg1));
+}
+
+uim_lisp
+uim_scm_call2(uim_lisp proc, uim_lisp arg1, uim_lisp arg2)
+{
+  return uim_scm_call(proc, uim_scm_list2(arg1, arg2));
+}
+
+uim_lisp
+uim_scm_call3(uim_lisp proc, uim_lisp arg1, uim_lisp arg2, uim_lisp arg3)
+{
+  return uim_scm_call(proc, uim_scm_list3(arg1, arg2, arg3));
+}
+
+uim_lisp
+uim_scm_call(uim_lisp proc, uim_lisp args)
+{
+  struct call_args _args;
+
+  _args.proc = proc;
+  _args.args = args;
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_call_internal, &_args);
+}
+
+static void *
+uim_scm_call_internal(struct call_args *args)
+{
+  if (uim_scm_symbolp(args->proc))
+    args->proc = uim_scm_eval(args->proc);
+
+  return (void *)scm_call((ScmObj)args->proc, (ScmObj)args->args);
+}
+
+uim_lisp
+uim_scm_call_with_guard(uim_lisp failed, uim_lisp proc, uim_lisp args)
+{
+  struct call_args _args;
+
+  _args.failed = failed;
+  _args.proc = proc;
+  _args.args = args;
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_call_with_guard_internal, &_args);
+}
+
+static void *
+uim_scm_call_with_guard_internal(struct call_args *args)
+{
+  uim_lisp form;
+
+  /* (guard (err (else '<failed>)) (apply <proc> '<args>)) */
+  form = uim_scm_list3(uim_scm_make_symbol("guard"),
+                       uim_scm_list2(uim_scm_make_symbol("err"),
+                                     uim_scm_list2(uim_scm_make_symbol("else"),
+                                                   uim_scm_quote(args->failed))),
+                       uim_scm_list3(uim_scm_make_symbol("apply"),
+                                     args->proc,
+                                     uim_scm_quote(args->args)));
+
+  return (void *)uim_scm_eval(form);
 }
 
 uim_lisp
@@ -527,15 +615,17 @@ uim_scm_reverse(uim_lisp lst)
 uim_bool
 uim_scm_require_file(const char *fn)
 {
-  uim_bool succeeded;
+  uim_lisp ok;
 
   if (!fn)
     return UIM_FALSE;
 
-  UIM_EVAL_FSTRING1(NULL, "(guard (err (else #f)) (require \"%s\"))", fn);
-  succeeded = uim_scm_c_bool(uim_scm_return_value());
+  /* (guard (err (else #f)) (load "<fn>")) */
+  ok = uim_scm_call_with_guard(uim_scm_f(),
+                               uim_scm_make_symbol("require"),
+                               uim_scm_list1(uim_scm_make_str(fn)));
 
-  return succeeded;
+  return uim_scm_c_bool(ok);
 }
 
 void

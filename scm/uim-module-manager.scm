@@ -99,7 +99,7 @@
 ;; This function is called with 'uim-module-manager --register'
 (define register-modules
   (lambda (module-names)
-    (let* ((modules (map string->symbol (string-split module-names " ")))
+    (let* ((modules (map string->symbol module-names))
 	   (current-module-list (map string->symbol installed-im-module-list))
 	   (revised-module-list (add-modules-to-module-list modules
 				 current-module-list)))
@@ -108,7 +108,7 @@
 ;; This function is called with 'uim-module-manager --unregister'
 (define unregister-modules
   (lambda (module-names)
-    (let* ((modules (map string->symbol (string-split module-names " ")))
+    (let* ((modules (map string->symbol module-names))
 	   (current-module-list (map string->symbol installed-im-module-list))
 	   (revised-module-list (remove-modules-from-module-list 
 				 modules
