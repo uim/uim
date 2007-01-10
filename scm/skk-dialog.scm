@@ -50,7 +50,7 @@
 
 (define skk-dialog-make-string
   (lambda (sl dir)
-    (if sl
+    (if (not (null? sl))
 	(if dir
 	    (string-append (skk-dialog-make-string (cdr sl) dir)
 			   (car sl))
@@ -72,7 +72,7 @@
 
 (define skk-dialog-commit-char-list
   (lambda (dc sl)
-    (if sl
+    (if (not (null? sl))
 	(begin
 	  (skk-dialog-set-left-string!
 	   dc
@@ -100,7 +100,7 @@
 	  (and
 	   (if (skk-backspace-key? key key-state)
 	       (let ((cur (skk-dialog-left-string dc)))
-		 (if cur
+		 (if (not (null? cur))
 		     (skk-dialog-set-left-string!
 		      dc (cdr cur)))
 		 #f)

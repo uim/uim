@@ -472,7 +472,7 @@
 
 (define skk-do-get-string
   (lambda (sc str kana)
-    (if str
+    (if (not (null? str))
 	(if (string? (car str))
 	    (skk-get-string-mode-part sc str kana)
 	    (string-append
@@ -607,7 +607,7 @@
 (define skk-append-string
   (lambda (sc str)
     (and
-     str
+     (not (null? str))
      (if (not (string? (car str)))
 	 (begin
 	   (skk-append-string sc (car str))
@@ -627,7 +627,7 @@
 (define skk-append-okuri-string
   (lambda (sc str)
     (and
-     str
+     (not (null? str))
      (if (not (string? (car str)))
 	 (begin
 	   (skk-append-okuri-string sc (car str))
@@ -1170,7 +1170,9 @@
 	   (s (cons key s))
 	   (rule (rk-context-rule rkc))
 	   (seq (rk-lib-find-seq (reverse s) rule)))
-	 (if (null? (cdar seq))
+	 (if (and
+	      seq
+	      (null? (cdar seq)))
 	     (cadr seq)
 	     #f))))
 
@@ -1489,6 +1491,7 @@
 		(charcode->string key)))
 	 (and
 	  (if (and
+	       res
 	       skk-auto-start-henkan?
 	       (string-find skk-auto-start-henkan-keyword-list (car res))
 	       (not (null? (skk-context-head sc))))

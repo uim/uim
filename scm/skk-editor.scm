@@ -50,7 +50,7 @@
 
 (define skk-editor-make-string
   (lambda (sl dir)
-    (if sl
+    (if (not (null? sl))
 	(if dir
 	    (string-append (skk-editor-make-string (cdr sl) dir)
 			   (car sl))
@@ -70,7 +70,7 @@
 
 (define skk-editor-commit-char-list
   (lambda (ec sl)
-    (if sl
+    (if (not (null? sl))
 	(begin
 	  (skk-editor-set-left-string!
 	   ec
@@ -98,14 +98,14 @@
 	  (and
 	   (if (skk-backspace-key? key key-state)
 	       (let ((cur (skk-editor-left-string ec)))
-		 (if cur
+		 (if (not (null? cur))
 		     (skk-editor-set-left-string!
 		      ec (cdr cur)))
 		 #f)
 	       #t)
 	   (if (skk-go-left-key? key key-state)
 	       (let ((cur (skk-editor-left-string ec)))
-		 (if cur
+		 (if (not (null? cur))
 		     (begin
 		       (skk-editor-set-left-string!
 			ec (cdr cur))
@@ -115,7 +115,7 @@
 	       #t)
 	   (if (skk-go-right-key? key key-state)
 	       (let ((cur (skk-editor-right-string ec)))
-		 (if cur
+		 (if (not (null? cur))
 		     (begin
 		       (skk-editor-set-right-string!
 			ec (cdr cur))

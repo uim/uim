@@ -233,9 +233,13 @@
 (define rk-proc-end-seq
   (lambda (context seq s)
     (if (rk-context-immediate-commit context)
-	(begin
-	  (rk-context-set-seq! context (cdar seq))
-	  (cadr seq))
+	(if seq
+	    (begin
+	      (rk-context-set-seq! context (cdar seq))
+	      (cadr seq))
+	    (begin
+	      (rk-context-set-seq! context '())
+	      #f))
 	(begin
 	  (rk-context-set-seq! context s)
 	  #f))))
