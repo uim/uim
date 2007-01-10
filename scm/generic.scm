@@ -151,7 +151,9 @@
   (lambda (pc)
     (let* ((rkc (generic-context-rk-context pc))
 	   (cs (rk-current-seq rkc)))
-      (if (> (length (cadr cs)) 0)
+      (if (and
+	   cs
+	   (> (length (cadr cs)) 0))
 	  (begin
 	    (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
 	    (im-deactivate-candidate-selector pc)
@@ -263,7 +265,9 @@
 
          (if (not (rk-partial? rkc)) ;; exact match or no-match
 	     (let ((cs (rk-current-seq rkc)))
-	       (if (= (length (cadr cs)) 1)
+	       (if (and
+		    cs
+		    (= (length (cadr cs)) 1))
 		   (begin
 		     (im-commit pc
 				(nth (generic-context-rk-nth pc) (cadr cs)))
@@ -282,20 +286,23 @@
   (lambda (pc key state)
     (let* ((rkc (generic-context-rk-context pc))
 	   (n (generic-context-rk-nth pc))
-	   (cs (cadr (rk-current-seq rkc)))
+	   (cs (rk-current-seq rkc))
+	   (cands (if cs
+		     (cadr cs)
+		     '()))
 	   (res #f))
       (and
        (if (generic-prev-candidate-key? key state)
 	   (if (and
-		(not (null? cs))
-		(> (length (cdr cs)) 0))
+		(not (null? cands))
+		(> (length (cdr cands)) 0))
 	       (begin
 		 (set! n (- n 1))
 		 (generic-context-set-rk-nth! pc n)
 		 (if (< n 0)
 		     (begin
-		       (generic-context-set-rk-nth! pc (- (length cs) 1))
-		       (set! n (- (length cs) 1))))
+		       (generic-context-set-rk-nth! pc (- (length cands) 1))
+		       (set! n (- (length cands) 1))))
 		 (generic-context-set-candidate-op-count!
 		  pc
 		  (+ 1 (generic-context-candidate-op-count pc)))
@@ -304,7 +311,7 @@
                          generic-candidate-op-count)
                       generic-use-candidate-window?)
                      (im-activate-candidate-selector
-		      pc (length cs) generic-nr-candidate-max))
+		      pc (length cands) generic-nr-candidate-max))
 		 (if (>= (generic-context-candidate-op-count pc)
 			 generic-candidate-op-count)
 		     (im-select-candidate pc n))
@@ -316,11 +323,11 @@
 	   #t)
        (if (generic-next-candidate-key? key state)
 	   (if (and
-		(not (null? cs))
-		(> (length (cdr cs)) 0))
+		(not (null? cands))
+		(> (length (cdr cands)) 0))
 	       (begin
 		 (generic-context-set-rk-nth! pc (+ 1 n))
-		 (if (<= (length cs) (+ n 1))
+		 (if (<= (length cands) (+ n 1))
 		     (generic-context-set-rk-nth! pc 0))
 		 (generic-context-set-candidate-op-count!
 		  pc
@@ -329,11 +336,11 @@
 		      (= (generic-context-candidate-op-count pc)
 			 generic-candidate-op-count)
 		      generic-use-candidate-window?)
-		     (im-activate-candidate-selector pc (length cs) generic-nr-candidate-max))
+		     (im-activate-candidate-selector pc (length cands) generic-nr-candidate-max))
 		 (if (>= (generic-context-candidate-op-count pc)
 			 generic-candidate-op-count)
 		     (begin
-		       (if (>= (+ n 1) (length cs))
+		       (if (>= (+ n 1) (length cands))
 			   (set! n -1))
 		       (im-select-candidate pc (+ n 1))))
 		 #f)
@@ -393,13 +400,14 @@
 	     #f)
 	   #t)
        (let ((cs (rk-current-seq rkc)))
-	 (if (> (length (cadr cs)) 0)
+	 (if (and
+	      cs
+	      (> (length (cadr cs)) 0))
 	     (im-commit pc
 			(nth (generic-context-rk-nth pc) (cadr cs))))
 	 (generic-context-flush pc)
 	 (im-deactivate-candidate-selector pc)
-	 (generic-proc-input-state pc key state)
-	 )))))
+	 (generic-proc-input-state pc key state))))))
   
 
 (define generic-proc-off-mode
@@ -446,15 +454,16 @@
     (let* ((rkc (generic-context-rk-context pc))
 	   (cs (rk-current-seq rkc)))
       (cond
-       ((> (length (cadr cs)) 0) ;; commit
-	 (im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
-	 (im-deactivate-candidate-selector pc)
-	 (generic-context-flush pc)
-	 (generic-update-preedit pc))
+       ((and
+	 cs
+	 (> (length (cadr cs)) 0)) ;; commit
+	(im-commit pc (nth (generic-context-rk-nth pc) (cadr cs)))
+	(im-deactivate-candidate-selector pc)
+	(generic-context-flush pc)
+	(generic-update-preedit pc))
        ((not (string=? (rk-pending rkc) "")) ;; flush pending rk
-	 (generic-context-flush pc)
-	 (generic-update-preedit pc))
-	 ))))
+	(generic-context-flush pc)
+	(generic-update-preedit pc))))))
 
 (define generic-place-handler generic-focus-in-handler)
 (define generic-displace-handler generic-focus-out-handler)
