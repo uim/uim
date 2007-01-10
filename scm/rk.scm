@@ -317,6 +317,7 @@
      (filter-map
       (lambda (x) (if (intern-key-symbol x)
 		      (if (symbol-bound? (string->symbol x))
-		          (symbol-value (string->symbol x)))
+		          (symbol-value (string->symbol x))
+			  "")
 		      x))
       (rk-context-seq c)))))
