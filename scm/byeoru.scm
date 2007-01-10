@@ -1160,9 +1160,9 @@
     (byeoru-context-set-widgets! bc byeoru-widgets)
     (byeoru-context-set-automata! bc (byeoru-automata-new))
     (byeoru-context-set-rkc! bc (rk-context-new byeoru-romaja-rule #f #f))
-    (byeoru-context-set-word-ustr! bc (ustr-new))
-    (byeoru-context-set-convl-ustr! bc (ustr-new))
-    (byeoru-context-set-convr-ustr! bc (ustr-new))
+    (byeoru-context-set-word-ustr! bc (ustr-new '()))
+    (byeoru-context-set-convl-ustr! bc (ustr-new '()))
+    (byeoru-context-set-convr-ustr! bc (ustr-new '()))
     bc))
 
 (define (byeoru-flush-automata bc)

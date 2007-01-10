@@ -538,9 +538,9 @@
           (set! mana-lib-initialized? (mana-lib-init)))
       (mana-context-set-widgets! mc mana-widgets)
       (mana-context-set-rkc! mc rkc)
-      (mana-context-set-preconv-ustr! mc (ustr-new))
-      (mana-context-set-raw-ustr! mc (ustr-new))
-      (mana-context-set-segments! mc (ustr-new))
+      (mana-context-set-preconv-ustr! mc (ustr-new '()))
+      (mana-context-set-raw-ustr! mc (ustr-new '()))
+      (mana-context-set-segments! mc (ustr-new '()))
 
       ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
       ;;   * I think load-kana-table should be marked as depracated.

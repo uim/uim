@@ -324,9 +324,9 @@
 	 (anthy-context-set-ac-id! ac (anthy-lib-alloc-context)))
      (anthy-context-set-widgets! ac anthy-widgets)
      (anthy-context-set-rkc! ac rkc)
-     (anthy-context-set-preconv-ustr! ac (ustr-new))
-     (anthy-context-set-raw-ustr! ac (ustr-new))
-     (anthy-context-set-segments! ac (ustr-new))
+     (anthy-context-set-preconv-ustr! ac (ustr-new '()))
+     (anthy-context-set-raw-ustr! ac (ustr-new '()))
+     (anthy-context-set-segments! ac (ustr-new '()))
 
      ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
      ;;   * I think load-kana-table should be marked as depracated.

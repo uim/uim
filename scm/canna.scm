@@ -290,9 +290,9 @@
     (canna-context-set-cc-id! cc (canna-lib-alloc-context))
     (canna-context-set-widgets! cc canna-widgets)
     (canna-context-set-rkc! cc rkc)
-    (canna-context-set-preconv-ustr! cc (ustr-new))
-    (canna-context-set-raw-ustr! cc (ustr-new))
-    (canna-context-set-segments! cc (ustr-new))
+    (canna-context-set-preconv-ustr! cc (ustr-new '()))
+    (canna-context-set-raw-ustr! cc (ustr-new '()))
+    (canna-context-set-segments! cc (ustr-new '()))
     (if using-kana-table?
         (canna-context-set-input-rule! cc canna-input-rule-kana)
         (canna-context-set-input-rule! cc canna-input-rule-roma))
