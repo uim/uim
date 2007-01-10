@@ -47,6 +47,7 @@ SUCH DAMAGE.
 #include "uim/uim.h"
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
+#include "uim/uim-scm.h"
 
 #include "immodule-quiminputcontext.h"
 #include "immodule-candidatewindow.h"
@@ -732,7 +733,7 @@ void QUimInputContext::switch_system_global_im( const char *name )
 
 void QUimInputContext::readIMConf()
 {
-    char * leftp = uim_symbol_value_str( "candidate-window-position" );
+    char * leftp = uim_scm_symbol_value_str( "candidate-window-position" );
     if ( leftp && !strcmp( leftp, "left" ) )
         cwin->setAlwaysLeftPosition( true );
     else
