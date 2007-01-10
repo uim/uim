@@ -306,6 +306,12 @@ uim_scm_gc_protect(uim_lisp *location)
   scm_gc_protect((ScmObj *)location);
 }
 
+void
+uim_scm_gc_unprotect(uim_lisp *location)
+{
+  scm_gc_unprotect((ScmObj *)location);
+}
+
 void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg)
 {
