@@ -243,7 +243,7 @@
 			   (toggle-state-im-name saved-state)
 			   toggle-im-alt-im))
       ;; retrieve new context replaced by im-switch-im
-      (let ((c (find-context id)))
+      (let ((c (im-retrieve-context id)))
 	(if saved-state
 	    (let ((orig-wstates (toggle-state-widget-states saved-state)))
 	      (context-update-widget-states! c orig-wstates)))
@@ -254,7 +254,7 @@
     (if (not (context-primary-im? ctx))
 	(toggle-im id ctx))
     ;; ctx may be expired by the toggle-im
-    (context-set-toggle-state! (find-context id) #f)))
+    (context-set-toggle-state! (im-retrieve-context id) #f)))
 
 ;;
 ;; context-management
@@ -291,17 +291,10 @@
   (lambda (c)
     #t))
 
-(define find-context
-  (lambda (id)
-    (assv id context-list)))
-
 (define remove-context
-  (lambda (id)
+  (lambda (c)
     (set! context-list
-	  (filter (lambda (c)
-		    (not (= (context-id c)
-			    id)))
-		  context-list))))
+	  (delete c context-list eq?))))
 
 (define register-context
   (lambda (c)
@@ -312,7 +305,7 @@
   (lambda (id lang name)
     (let* ((im (find-im name lang))
 	   (arg (and im (im-init-arg im))))
-      (if (find-context id)
+      (if (im-retrieve-context id)
 	  (release-context id))
       (im-set-encoding id (im-encoding im))
       (update-style uim-color-spec (symbol-value uim-color))
@@ -320,7 +313,8 @@
 	     (c (handler id im arg))
 	     (widget-ids (context-widgets c)))
 	(context-init-widgets! c widget-ids)
-	(register-context c)))))
+	(register-context c)
+        c))))
 
 (define release-context
   (lambda (id)
@@ -329,8 +323,8 @@
     #f))
 
 (define uim-context-im
-  (lambda (id)
-    (let ((c (find-context id)))
+  (lambda (uc)
+    (let ((c (im-retrieve-context uc)))
       (and c
            (context-im c)))))
 
@@ -341,7 +335,7 @@
   (lambda args
     (let* ((handler-reader (car args))
 	   (id (cadr args))
-	   (c (find-context id))
+	   (c (im-retrieve-context id))
 	   (handler-args (cons c (cddr args)))
 	   (im (and c (context-im c)))
 	   (handler (and im (handler-reader im)))
@@ -355,7 +349,7 @@
 ;; codes is needed.
 (define key-press-handler
   (lambda (id key state)
-    (let* ((c (find-context id))
+    (let* ((c (im-retrieve-context id))
 	   (im (and c (context-im c))))
       (cond
        ((and enable-im-toggle?
@@ -372,7 +366,7 @@
 
 (define key-release-handler
   (lambda (id key state)
-    (let ((c (find-context id)))
+    (let ((c (im-retrieve-context id)))
       (cond
        ((modifier-key? key state)
 	;; don't discard modifier press/release edge for apps

@@ -50,6 +50,8 @@ extern "C" {
 #define SYMP      uim_scm_symbolp
 #define PTRP      uim_scm_ptrp
 #define FPTRP     uim_scm_func_ptrp
+#define NULLP     uim_scm_nullp
+#define CONSP     uim_scm_consp
 
 #define CAR       uim_scm_car
 #define CDR       uim_scm_cdr

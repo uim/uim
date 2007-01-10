@@ -47,9 +47,6 @@
 #include "uim-internal.h"
 #include "uim-util.h"
 
-#define CONTEXT_ARRAY_SIZE 512
-static uim_context context_array[CONTEXT_ARRAY_SIZE];
-
 static int uim_initialized;
 
 void
@@ -63,26 +60,6 @@ uim_set_preedit_cb(uim_context uc,
   uc->preedit_clear_cb = clear_cb;
   uc->preedit_pushback_cb = pushback_cb;
   uc->preedit_update_cb = update_cb;
-}
-
-static void
-get_context_id(uim_context uc)
-{
-  int i;
-  for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
-    if (!context_array[i]) {
-      context_array[i] = uc;
-      uc->id = i;
-      return;
-    }
-  }
-  uc->id = -1;
-}
-
-static void
-put_context_id(uim_context uc)
-{
-  context_array[uc->id] = NULL;
 }
 
 uim_context
@@ -113,9 +90,6 @@ uim_create_context(void *ptr,
   if (!uc) {
     return NULL;
   }
-  get_context_id(uc);
-  if (uc->id == -1)
-    return NULL;
 
   uc->ptr = ptr;
   uc->is_enable = 1;
@@ -165,7 +139,9 @@ uim_create_context(void *ptr,
 
   lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
   engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
-  uim_scm_call3(MAKE_SYM("create-context"), MAKE_INT(uc->id), lang_, engine_);
+  uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
+                         MAKE_PTR(uc), lang_, engine_);
+  uim_scm_gc_protect(&uc->sc);
 
   return uc;
 }
@@ -173,7 +149,7 @@ uim_create_context(void *ptr,
 void
 uim_reset_context(uim_context uc)
 {
-  uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_INT(uc->id));
+  uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_PTR(uc));
 
   /* delete all preedit segments */
   uim_release_preedit_segments(uc);
@@ -182,25 +158,25 @@ uim_reset_context(uim_context uc)
 void
 uim_focus_in_context(uim_context uc)
 {
-  uim_scm_call1(MAKE_SYM("focus-in-handler"),MAKE_INT(uc->id));
+  uim_scm_call1(MAKE_SYM("focus-in-handler"),MAKE_PTR(uc));
 }
 
 void
 uim_focus_out_context(uim_context uc)
 {
-  uim_scm_call1(MAKE_SYM("focus-out-handler"), MAKE_INT(uc->id));
+  uim_scm_call1(MAKE_SYM("focus-out-handler"), MAKE_PTR(uc));
 }
 
 void
 uim_place_context(uim_context uc)
 {
-  uim_scm_call1(MAKE_SYM("place-handler"), MAKE_INT(uc->id));
+  uim_scm_call1(MAKE_SYM("place-handler"), MAKE_PTR(uc));
 }
 
 void
 uim_displace_context(uim_context uc)
 {
-  uim_scm_call1(MAKE_SYM("displace-handler"), MAKE_INT(uc->id));
+  uim_scm_call1(MAKE_SYM("displace-handler"), MAKE_PTR(uc));
 }
 
 void
@@ -232,19 +208,14 @@ uim_switch_im(uim_context uc, const char *engine)
      immodule API. We should follow its design to make our API simple.
      -- 2004-10-05 YamaKen
   */
-  int id = uc->id;
-#if 0
-  uim_lisp ret;
-#endif
-
   uim_reset_context(uc); /* FIXME: reset should be called here? */
 
-  uim_scm_call1(MAKE_SYM("release-context"), MAKE_INT(id));
+  uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
   uim_release_preedit_segments(uc);
   uim_update_preedit_segments(uc);
 
-  uim_scm_call3(MAKE_SYM("create-context"),
-                MAKE_INT(id), uim_scm_f(), MAKE_SYM(engine));
+  uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
+                         MAKE_PTR(uc), uim_scm_f(), MAKE_SYM(engine));
 }
 
 void
@@ -255,8 +226,8 @@ uim_release_context(uim_context uc)
   if (!uc)
     return;
 
-  uim_scm_call1(MAKE_SYM("release-context"), MAKE_INT(uc->id));
-  put_context_id(uc);
+  uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
+  uim_scm_gc_unprotect(&uc->sc);
   if (uc->outbound_conv)
     uc->conv_if->release(uc->outbound_conv);
   if (uc->inbound_conv)
@@ -270,14 +241,6 @@ uim_release_context(uim_context uc)
   free(uc->modes);
   free(uc->client_encoding);
   free(uc);
-}
-
-uim_context
-uim_find_context(int id)
-{
-  uim_context uc;
-  uc = context_array[id];
-  return uc;
 }
 
 int
@@ -323,7 +286,7 @@ uim_prop_activate(uim_context uc, const char *str)
     return;
       
   uim_scm_call2(MAKE_SYM("prop-activate-handler"),
-                MAKE_INT(uc->id), MAKE_STR(str));
+                MAKE_PTR(uc), MAKE_STR(str));
 }
 
 /** Update custom value from property message.
@@ -340,7 +303,7 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
     return;
 
   uim_scm_call3(MAKE_SYM("custom-set-handler"),
-                MAKE_INT(uc->id),
+                MAKE_PTR(uc),
                 MAKE_SYM(custom),
                 uim_scm_eval_c_string(val));
 }
@@ -372,7 +335,7 @@ void
 uim_set_mode(uim_context uc, int mode)
 {
   uc->mode = mode;
-  uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_INT(uc->id), MAKE_INT(mode));
+  uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_PTR(uc), MAKE_INT(mode));
 }
 
 void
@@ -403,7 +366,7 @@ uim_get_nr_im(uim_context uc)
   if (!uc)
     return 0;
 
-  n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_INT(uc->id));
+  n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_PTR(uc));
   return uim_scm_c_int(n);
 }
 
@@ -411,7 +374,7 @@ static uim_lisp
 get_nth_im(uim_context uc, int nth)
 {
   return uim_scm_call2(MAKE_SYM("uim-nth-convertible-im"),
-                       MAKE_INT(uc->id), MAKE_INT(nth));
+                       MAKE_PTR(uc), MAKE_INT(nth));
 }
 
 const char *
@@ -422,7 +385,7 @@ uim_get_current_im_name(uim_context uc)
   if (!uc)
     return NULL;
 
-  im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_INT(uc->id));
+  im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_PTR(uc));
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
@@ -531,7 +494,7 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   const char *str, *head, *ann;
 
   triple = uim_scm_call3(MAKE_SYM("get-candidate"),
-                         MAKE_INT(uc->id),
+                         MAKE_PTR(uc),
                          MAKE_INT(index),
                          MAKE_INT(accel_enumeration_hint));
 
@@ -588,8 +551,7 @@ int uim_get_candidate_index(uim_context uc)
 void
 uim_set_candidate_index(uim_context uc, int nth)
 {
-  uim_scm_call2(MAKE_SYM("set-candidate-index"),
-                MAKE_INT(uc->id), MAKE_INT(nth));
+  uim_scm_call2(MAKE_SYM("set-candidate-index"), MAKE_PTR(uc), MAKE_INT(nth));
 }
 
 void
@@ -616,7 +578,7 @@ uim_input_string(uim_context uc, const char *str)
   if (conv) {
     if (conv)
       uim_scm_call2(MAKE_SYM("input-string-handler"),
-                    MAKE_INT(uc->id), MAKE_STR(conv));
+                    MAKE_PTR(uc), MAKE_STR(conv));
     free(conv);
 
     /* FIXME: handle return value properly. */
@@ -669,18 +631,9 @@ uim_init(void)
 void
 uim_quit(void)
 {
-  int i;
-
   if (!uim_initialized)
     return;
 
-  /* release still active contexts */
-  for (i = 0; i < CONTEXT_ARRAY_SIZE; i++) {
-    if (context_array[i]) {
-      uim_release_context(context_array[i]);
-    }
-  }
-  /**/
   uim_quit_plugin();
 #ifdef ENABLE_ANTHY_STATIC
   uim_anthy_plugin_instance_quit();

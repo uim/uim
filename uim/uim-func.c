@@ -283,15 +283,25 @@ uim_iconv_release(void *obj)
 
 /* this is not a uim API, so did not name as uim_retrieve_context() */
 static uim_context
-retrieve_uim_context(uim_lisp id)
+retrieve_uim_context(uim_lisp c)
 {
   uim_context uc;
 
-  if (uim_scm_consp(id)) {  /* passed as Scheme-side input context */
-    id = uim_scm_car(id);
-  }
-  uc = uim_find_context(uim_scm_c_int(id));
+  if (CONSP(c))  /* passed as Scheme-side input context */
+    c = CAR(c);
+
+  uc = uim_scm_c_ptr(c);
   return uc;
+}
+
+/* extract Scheme IM context from Scheme-object-wrapped uim_context */
+static uim_lisp
+im_retrieve_context(uim_lisp uc_)
+{
+  uim_context uc;
+
+  uc = uim_scm_c_ptr(uc_);
+  return uc->sc;
 }
 
 static uim_lisp
@@ -690,6 +700,7 @@ switch_system_global_im(uim_lisp id_, uim_lisp name_)
 void
 uim_init_im_subrs(void)
 {
+  uim_scm_init_subr_1("im-retrieve-context", im_retrieve_context);
   uim_scm_init_subr_2("im-convertible?", im_convertiblep);
   /**/
   uim_scm_init_subr_2("im-commit",       im_commit);

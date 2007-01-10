@@ -333,7 +333,7 @@ handle_key(uim_context uc, const char *handler, int key, int state)
     key_ = MAKE_SYM(get_sym(key));
   }
 
-  uim_scm_call3(MAKE_SYM(handler), MAKE_INT(uc->id), key_, MAKE_INT(state));
+  uim_scm_call3(MAKE_SYM(handler), MAKE_PTR(uc), key_, MAKE_INT(state));
 }
 
 static int

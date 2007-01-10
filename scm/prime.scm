@@ -561,20 +561,23 @@
     ;(print "prime-context-push")
     (let* ((im (prime-context-im context))
 	   (id (prime-context-id context))
-	   (new-context (prime-context-new2 (prime-context-id context) im)))
+           (root-context (im-retrieve-context id))
+	   (new-context (prime-context-new2 id im)))
 
       (prime-context-set-history! new-context (prime-context-history context))
       (set-cdr! (assoc 'state (prime-context-history new-context))
 		'prime-state-pushed)
       (prime-context-set-parent-context! new-context (cons id (cdr context)))
-      (set-cdr! (find-context id) (cdr new-context))
+      (set-cdr! root-context (cdr new-context))
       new-context)))
 
-;; This function destories the current context-data and pops the tail
+;; This function destructs the current context-data and pops the tail
 ;; context-data from the stack of uim-contexts.
 (define prime-context-pop
   (lambda (context)
-    (let ((parent-context (prime-context-parent-context context)))
+    (let ((parent-context (prime-context-parent-context context))
+          (id (prime-context-id context))
+          (root-context (im-retrieve-context id)))
       (map
        (lambda (lang-pair)
 	 (prime-engine-session-end (cdr lang-pair)))
@@ -585,7 +588,7 @@
  					(prime-context-history parent-context))
 	    (set-cdr! (assoc 'state (prime-context-history context))
 		      'prime-state-poped)
-	    (set-cdr! (find-context (prime-context-id context))
+	    (set-cdr! root-context
 		      (cdr parent-context))
 	    ))
       parent-context)))

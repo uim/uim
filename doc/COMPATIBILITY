@@ -61,18 +61,23 @@ Summary: IM and context management concentration into Scheme
 Affects: uim developers
 Updates: Scheme API
 Version: 1.5.0
-Revision: ac4354
+Revision: ac4354, ac4359
 Date: 2007-01-10 -
 Modifier: YamaKen
 Related: 
 URL:
 Changes:
+      (new) im-retrieve-context
+  (changed) create-context
+  (removed) find-context
   (removed) register-im
 Description:
   The complex and problematic IM registration and context management divided
-  in C has been resolved. Now all IM management data is concentrated into
-  Scheme as one-source management. This will resolve C-data and Scheme-data
-  synchronization problem on im-switching and so on.
+  in C has been resolved. Now all IM and context management data is
+  concentrated into Scheme as one-source management. This will resolve C-data
+  and Scheme-data synchronization problem on im-switching and so on.
+  
+  - create-context now returns created context
 ------------------------------------------------------------------------------
 Summary: uim_symbol_value_str removal
 Affects: IM developers, Bridge developers
@@ -107,6 +112,7 @@ Changes:
       (new) uim_scm_call()
       (new) uim_scm_call_with_guard()
       (new) uim_scm_null()
+      (new) MAKE_BOOL()
       (new) MAKE_INT()
       (new) MAKE_STR()
       (new) MAKE_SYM()
@@ -117,6 +123,8 @@ Changes:
       (new) SYMP()
       (new) PTRP()
       (new) FPTRP()
+      (new) NULLP()
+      (new) CONSP()
       (new) CAR()
       (new) CDR()
       (new) SET_CAR()
@@ -156,6 +164,7 @@ Changes:
   (removed) im-return-str-list
 Description:
   - uim-scm-abbrev.h is introduced
+  - Scheme integer type has been changed to long from int
   - return type of uim_scm_length() is changed to long from uim_lisp
   - uim_scm_null_list() is renamed to uim_scm_null()
   - uim_scm_c_list() and other list-related functions are moved into

@@ -63,8 +63,8 @@ struct preedit_segment {
 struct uim_context_ {
   /* cookier pointer */
   void *ptr;
-  /* internal id */
-  int id;
+  /* Scheme-side context */
+  uim_lisp sc;
   /**/
   int is_enable;
 
@@ -116,8 +116,6 @@ struct uim_context_ {
 
 
 /**/
-uim_context
-uim_find_context(int id);
 void uim_scm_init(const char *verbose_level);
 void uim_scm_quit(void);
 
