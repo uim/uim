@@ -92,7 +92,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: SigScheme introduction to uim
@@ -160,6 +160,11 @@ Description:
   - uim_scm_null_list() is renamed to uim_scm_null()
   - uim_scm_c_list() and other list-related functions are moved into
     uim-custom.c and made static
+  - uim_scm_make_int(), uim_scm_make_str(), uim_scm_make_symbol(),
+    uim_scm_make_ptr(), uim_scm_make_func_ptr(), uim_scm_quote(),
+    uim_scm_cons(), uim_list1(), uim_list2(), uim_list3(), uim_list4(),
+    uim_list5() have been callable from non-Scheme context, to use with
+    uim_scm_call*()
 ------------------------------------------------------------------------------
 Summary: GC protection API change
 Affects: uim developers, IM developers

@@ -83,10 +83,21 @@ static void *uim_scm_call_internal(struct call_args *args);
 static void *uim_scm_call_with_guard_internal(struct call_args *args);
 
 static void *uim_scm_c_int_internal(void *uim_lisp_integer);
+static void *uim_scm_make_int_internal(void *integer);
 static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
+static void *uim_scm_make_str_internal(const char *str);
+static void *uim_scm_make_symbol_internal(const char *name);
+static void *uim_scm_make_ptr_internal(void *ptr);
+static void *uim_scm_make_func_ptr_internal(uim_func_ptr func_ptr);
 static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
 static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
+static void *uim_scm_quote_internal(void *obj);
+struct cons_args {
+  uim_lisp car;
+  uim_lisp cdr;
+};
+static void *uim_scm_cons_internal(struct cons_args *args);
 
 static void
 uim_scm_error(const char *msg, uim_lisp errobj)
@@ -136,16 +147,16 @@ uim_scm_make_bool(uim_bool val)
   return (val) ? uim_scm_t() : uim_scm_f();
 }
 
-int
+long
 uim_scm_c_int(uim_lisp integer)
 {
-  return (int)(intptr_t)uim_scm_call_with_gc_ready_stack(uim_scm_c_int_internal, (void *)integer);
+  return (long)(intptr_t)uim_scm_call_with_gc_ready_stack(uim_scm_c_int_internal, (void *)integer);
 }
 
 static void *
 uim_scm_c_int_internal(void *uim_lisp_integer)
 {
-  int c_int;
+  long c_int;
   uim_lisp integer;
 
   integer = (uim_lisp)uim_lisp_integer;
@@ -162,9 +173,16 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
 }
 
 uim_lisp
-uim_scm_make_int(int integer)
+uim_scm_make_int(long integer)
 {
-  return (uim_lisp)SCM_MAKE_INT(integer);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_make_int_internal,
+                                                    (void *)(intptr_t)integer);
+}
+
+static void *
+uim_scm_make_int_internal(void *integer)
+{
+  return (void *)SCM_MAKE_INT((intptr_t)integer);
 }
 
 char *
@@ -207,7 +225,13 @@ uim_scm_refer_c_str_internal(void *uim_lisp_str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
-  return (uim_lisp)SCM_MAKE_STRING_COPYING(str, SCM_STRLEN_UNKNOWN);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_str_internal, (void *)str);
+}
+
+static void *
+uim_scm_make_str_internal(const char *str)
+{
+  return (void *)SCM_MAKE_STRING_COPYING(str, SCM_STRLEN_UNKNOWN);
 }
 
 char *
@@ -219,7 +243,13 @@ uim_scm_c_symbol(uim_lisp symbol)
 uim_lisp
 uim_scm_make_symbol(const char *name)
 {
-  return (uim_lisp)scm_intern(name);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_symbol_internal, (void *)name);
+}
+
+static void *
+uim_scm_make_symbol_internal(const char *name)
+{
+  return (void *)scm_intern(name);
 }
 
 void *
@@ -236,7 +266,14 @@ uim_scm_c_ptr(uim_lisp ptr)
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
-  return (uim_lisp)SCM_MAKE_C_POINTER(ptr);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_make_ptr_internal,
+                                                    ptr);
+}
+
+static void *
+uim_scm_make_ptr_internal(void *ptr)
+{
+  return (void *)SCM_MAKE_C_POINTER(ptr);
 }
 
 uim_func_ptr
@@ -254,7 +291,13 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
-  return (uim_lisp)SCM_MAKE_C_FUNCPOINTER((ScmCFunc)func_ptr);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_func_ptr_internal, (void *)(uintptr_t)func_ptr);
+}
+
+static void *
+uim_scm_make_func_ptr_internal(uim_func_ptr func_ptr)
+{
+  return (void *)SCM_MAKE_C_FUNCPOINTER((ScmCFunc)func_ptr);
 }
 
 void
@@ -403,7 +446,14 @@ uim_scm_null(void)
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
-  return (uim_lisp)SCM_LIST_2(SCM_SYM_QUOTE, (ScmObj)obj);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_quote_internal,
+                                                    (void *)obj);
+}
+
+static void *
+uim_scm_quote_internal(void *obj)
+{
+  return (void *)SCM_LIST_2(SCM_SYM_QUOTE, (ScmObj)obj);
 }
 
 uim_lisp
@@ -588,7 +638,17 @@ uim_scm_cdr(uim_lisp pair)
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
-  return (uim_lisp)SCM_CONS((ScmObj)car, (ScmObj)cdr);
+  struct cons_args args;
+
+  args.car = car;
+  args.cdr = cdr;
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_cons_internal, &args);
+}
+
+static void *
+uim_scm_cons_internal(struct cons_args *args)
+{
+  return (void *)SCM_CONS((ScmObj)args->car, (ScmObj)args->cdr);
 }
 
 long
