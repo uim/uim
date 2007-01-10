@@ -38,6 +38,7 @@
 extern "C" {
 #endif
 
+#define MAKE_BOOL uim_scm_make_bool
 #define MAKE_INT  uim_scm_make_int
 #define MAKE_STR  uim_scm_make_str
 #define MAKE_SYM  uim_scm_make_symbol

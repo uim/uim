@@ -49,8 +49,6 @@
 
 #define CONTEXT_ARRAY_SIZE 512
 static uim_context context_array[CONTEXT_ARRAY_SIZE];
-struct uim_im *uim_im_array;
-int uim_nr_im;
 
 static int uim_initialized;
 
@@ -125,8 +123,7 @@ uim_create_context(void *ptr,
   if (!enc) {
     enc = "UTF-8";
   }
-  uc->short_desc = NULL;
-  uc->encoding = strdup(enc);
+  uc->client_encoding = strdup(enc);
   uc->conv_if = conv;
   uc->outbound_conv = NULL;
   uc->inbound_conv = NULL;
@@ -167,14 +164,7 @@ uim_create_context(void *ptr,
   uc->nr_psegs = 0;
 
   lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
-  if (engine) {
-    uc->current_im_name = strdup(engine);
-    engine_ = MAKE_SYM(engine);
-  } else {
-    uc->current_im_name = NULL;
-    engine_ = uim_scm_f();
-  }
-
+  engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
   uim_scm_call3(MAKE_SYM("create-context"), MAKE_INT(uc->id), lang_, engine_);
 
   return uc;
@@ -255,19 +245,6 @@ uim_switch_im(uim_context uc, const char *engine)
 
   uim_scm_call3(MAKE_SYM("create-context"),
                 MAKE_INT(id), uim_scm_f(), MAKE_SYM(engine));
-  if (uc->current_im_name)
-    free(uc->current_im_name);
-  uc->current_im_name = strdup(engine);
-#if 0
-  /*
-    I don't know when uc->short_desc is used, so this part is
-    disabled. -- 2004-10-04 YamaKen
-  */
-  if (uc->short_desc)
-    free(uc->short_desc);
-  ret = uim_scm_call1(MAKE_SYM("uim-get-im-short-desc"), MAKE_SYM(im->name));
-  uc->short_desc = uim_scm_c_str(ret);
-#endif
 }
 
 void
@@ -291,9 +268,7 @@ uim_release_context(uim_context uc)
   }
   free(uc->propstr);
   free(uc->modes);
-  free(uc->short_desc);
-  free(uc->encoding);
-  free(uc->current_im_name);
+  free(uc->client_encoding);
   free(uc);
 }
 
@@ -423,119 +398,95 @@ uim_prop_label_update(uim_context uc)
 int
 uim_get_nr_im(uim_context uc)
 {
-  int i, nr = 0;
+  uim_lisp n;
 
   if (!uc)
     return 0;
 
-  for (i = 0; i < uim_nr_im; i++) {
-    if (uc->conv_if->is_convertible(uc->encoding, uim_im_array[i].encoding)) {
-      nr ++;
-    }
-  }
-  return nr;
+  n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_INT(uc->id));
+  return uim_scm_c_int(n);
 }
 
-static struct uim_im *
+static uim_lisp
 get_nth_im(uim_context uc, int nth)
 {
-  int i,n=0;
-  for (i = 0; i < uim_nr_im; i++) {
-    if (uc->conv_if->is_convertible(uc->encoding, uim_im_array[i].encoding)) {
-      if (n == nth) {
-	return &uim_im_array[i];
-      }
-      n++;
-    }
-  }
-  return NULL;
+  return uim_scm_call2(MAKE_SYM("uim-nth-convertible-im"),
+                       MAKE_INT(uc->id), MAKE_INT(nth));
 }
 
 const char *
 uim_get_current_im_name(uim_context uc)
 {
-  if (uc) {
-    return uc->current_im_name;
-  }
-  return NULL;
+  uim_lisp im;
+
+  if (!uc)
+    return NULL;
+
+  im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_INT(uc->id));
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
 }
 
 const char *
 uim_get_im_name(uim_context uc, int nth)
 {
-  struct uim_im *im = get_nth_im(uc, nth);
+  uim_lisp im;
 
-  if (im) {
-    return im->name;
-  }
-  return NULL;
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
 }
 
 const char *
 uim_get_im_language(uim_context uc, int nth)
 {
-  struct uim_im *im = get_nth_im(uc, nth);
+  uim_lisp im;
 
-  if (im) {
-    return im->lang;
-  }
-  return NULL;
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-lang"), im));
 }
 
 const char *
 uim_get_im_short_desc(uim_context uc, int nth)
 {
-  struct uim_im *im = get_nth_im(uc, nth);
-  uim_lisp ret;
+  uim_lisp im, short_desc;
 
-  if (im) {
-    if (im->short_desc)
-      free(im->short_desc);
-    ret = uim_scm_call1(MAKE_SYM("uim-get-im-short-desc"), MAKE_SYM(im->name));
-    im->short_desc = uim_scm_c_str(ret);
-    return im->short_desc;
-  }
-  return NULL;
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  short_desc = uim_scm_call1(MAKE_SYM("im-short-desc"), im);
+  return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
 }
 
 const char *
 uim_get_im_encoding(uim_context uc, int nth)
 {
-  struct uim_im *im = get_nth_im(uc, nth);
+  uim_lisp im;
 
-  if (im) {
-    return im->encoding;
-  }
-  return NULL;
-}
-
-static const char *
-uim_check_im_exist(const char *im_engine_name)
-{
-  int i;
-
-  if (im_engine_name == NULL)
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  for (i = 0; i < uim_nr_im; i++) {
-    struct uim_im *im = &uim_im_array[i];
-    if (strcmp(im_engine_name, im->name) == 0) {
-      return im->name;
-    }
-  }
-  return NULL;
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-encoding"), im));
 }
 
 const char *
 uim_get_default_im_name(const char *localename)
 {
-  const char *default_im_name, *valid_default_im_name;
+  const char *valid_default_im_name;
   uim_lisp ret;
 
   ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
                       MAKE_STR(localename));
-  default_im_name = uim_scm_refer_c_str(ret);
-  valid_default_im_name = uim_check_im_exist(default_im_name);
+  valid_default_im_name = uim_scm_refer_c_str(ret);
 
   if (!valid_default_im_name)
     valid_default_im_name = "direct";  /* never happen */
@@ -545,13 +496,12 @@ uim_get_default_im_name(const char *localename)
 const char *
 uim_get_im_name_for_locale(const char *localename)
 {
-  const char *im_name, *valid_im_name;
+  const char *valid_im_name;
   uim_lisp ret;
 
   ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
                       MAKE_STR(localename));
-  im_name = uim_scm_refer_c_str(ret);
-  valid_im_name = uim_check_im_exist(im_name);
+  valid_im_name = uim_scm_refer_c_str(ret);
 
   if (!valid_im_name)
     valid_im_name = "direct";  /* never happen */
@@ -710,8 +660,6 @@ uim_init(void)
   if (uim_initialized)
     return 0;
 
-  uim_im_array = NULL;
-  uim_nr_im = 0;
   uim_init_scm();
   uim_initialized = 1;
 

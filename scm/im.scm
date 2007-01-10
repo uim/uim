@@ -146,16 +146,7 @@
 			   input-string focus-in focus-out place displace
 			   currently-loading-module-name)))
 	   (set! im-list (alist-replace im im-list))
-	   (normalize-im-list)
-	   (im-register-im name lang encoding short-desc)))))
-
-;; called from C
-(define uim-get-im-short-desc
-  (lambda (name)
-    (let ((im (retrieve-im name)))
-      (or (and im
-               (im-short-desc im))
-          "-"))))
+	   (normalize-im-list)))))
 
 ;; strictly find out im by name
 (define retrieve-im
@@ -195,6 +186,22 @@
   (lambda (name localestr)
     (or (retrieve-im name)
 	(find-default-im localestr))))
+
+(define uim-filter-convertible-ims
+  (lambda (id)
+    (filter (lambda (im)
+              (im-convertible? id (im-encoding im)))
+            im-list)))
+
+(define uim-n-convertible-ims
+  (lambda (id)
+    (length (uim-filter-convertible-ims id))))
+
+(define uim-nth-convertible-im
+  (lambda (id n)
+    (guard (err
+            (else #f))
+      (list-ref (uim-filter-convertible-ims id) n))))
 
 ;; called from uim_get_default_im_name()
 (define uim-get-default-im-name
@@ -320,6 +327,12 @@
     (invoke-handler im-release-handler id)
     (remove-context id)
     #f))
+
+(define uim-context-im
+  (lambda (id)
+    (let ((c (find-context id)))
+      (and c
+           (context-im c)))))
 
 ;;
 ;; dispatchers

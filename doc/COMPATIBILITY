@@ -57,6 +57,23 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: IM and context management concentration into Scheme
+Affects: uim developers
+Updates: Scheme API
+Version: 1.5.0
+Revision: ac4354
+Date: 2007-01-10 -
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (removed) register-im
+Description:
+  The complex and problematic IM registration and context management divided
+  in C has been resolved. Now all IM management data is concentrated into
+  Scheme as one-source management. This will resolve C-data and Scheme-data
+  synchronization problem on im-switching and so on.
+------------------------------------------------------------------------------
 Summary: uim_symbol_value_str removal
 Affects: IM developers, Bridge developers
 Updates: C API, libuim ABI

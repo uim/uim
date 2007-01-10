@@ -44,13 +44,6 @@
 extern "C" {
 #endif
 
-struct uim_im {
-  char *name;
-  char *lang;
-  char *encoding;
-  char *short_desc;
-};
-
 struct uim_candidate_ {
   char *str;         /* candidate */
   char *heading_label;
@@ -78,9 +71,7 @@ struct uim_context_ {
   struct uim_code_converter *conv_if;
   void *outbound_conv;
   void *inbound_conv;
-  char *current_im_name;
-  char *short_desc;
-  char *encoding;
+  char *client_encoding;
   /**/
   int commit_raw_flag;
   /**/
@@ -148,9 +139,6 @@ void uim_release_preedit_segments(uim_context uc);
 void uim_update_preedit_segments(uim_context uc);
 
 uim_bool uim_issetugid(void);
-
-extern struct uim_im *uim_im_array;
-extern int uim_nr_im;
 
 #ifdef __cplusplus
 }

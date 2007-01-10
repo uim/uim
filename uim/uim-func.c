@@ -295,6 +295,18 @@ retrieve_uim_context(uim_lisp id)
 }
 
 static uim_lisp
+im_convertiblep(uim_lisp id, uim_lisp im_encoding_)
+{
+  uim_context uc;
+  const char *im_encoding;
+
+  uc = retrieve_uim_context(id);
+  im_encoding = uim_scm_refer_c_str(im_encoding_);
+  return MAKE_BOOL(uc->conv_if->is_convertible(uc->client_encoding,
+                                               im_encoding));
+}
+
+static uim_lisp
 im_clear_preedit(uim_lisp id)
 {
   uim_context uc = retrieve_uim_context(id);
@@ -399,13 +411,13 @@ im_set_encoding(uim_lisp id, uim_lisp enc)
   if (uc->inbound_conv) {
     uc->conv_if->release(uc->inbound_conv);
   }
-  if (!strcmp(uc->encoding, e)) {
+  if (!strcmp(uc->client_encoding, e)) {
     uc->outbound_conv = NULL;
     uc->inbound_conv = NULL;
     return uim_scm_f();
   }
-  uc->outbound_conv = uc->conv_if->create(uc->encoding, e);
-  uc->inbound_conv = uc->conv_if->create(e, uc->encoding);
+  uc->outbound_conv = uc->conv_if->create(uc->client_encoding, e);
+  uc->inbound_conv = uc->conv_if->create(e, uc->client_encoding);
 
   return uim_scm_f();
 }
@@ -498,38 +510,6 @@ im_update_mode(uim_lisp id, uim_lisp mode_)
     uc->mode_update_cb(uc->ptr, mode);
   }
   return uim_scm_f();
-}
-
-static char *
-get_im_lang(const char *name)
-{
-  int i;
-  for (i = 0; i < uim_nr_im; i++) {
-    struct uim_im *im = &uim_im_array[i];
-    if (!strcmp(im->name, name)) {
-      return im->lang;
-    }
-  }
-  return NULL;
-}
-
-static uim_lisp
-im_register_im(uim_lisp name, uim_lisp lang, uim_lisp enc, uim_lisp s_desc)
-{
-  const char *im_name = uim_scm_refer_c_str(name);
-  if (get_im_lang(im_name)) {
-    /* avoid duplicate register */
-    return uim_scm_f();
-  }
-  uim_im_array = realloc(uim_im_array,
-			 sizeof(struct uim_im) *
-			 (uim_nr_im + 1));
-  uim_im_array[uim_nr_im].lang = uim_scm_c_str(lang);
-  uim_im_array[uim_nr_im].name = uim_scm_c_str(name);
-  uim_im_array[uim_nr_im].encoding = uim_scm_c_str(enc);
-  uim_im_array[uim_nr_im].short_desc = uim_scm_c_str(s_desc);
-  uim_nr_im ++;
-  return uim_scm_t();
 }
 
 static uim_lisp
@@ -710,13 +690,12 @@ switch_system_global_im(uim_lisp id_, uim_lisp name_)
 void
 uim_init_im_subrs(void)
 {
+  uim_scm_init_subr_2("im-convertible?", im_convertiblep);
   /**/
   uim_scm_init_subr_2("im-commit",       im_commit);
   uim_scm_init_subr_1("im-commit-raw",   im_commit_raw);
   uim_scm_init_subr_2("im-get-raw-key-str", im_get_raw_key_str);
   uim_scm_init_subr_2("im-set-encoding", im_set_encoding);
-  /**/
-  uim_scm_init_subr_4("im-register-im", im_register_im);
   /**/
   uim_scm_init_subr_1("im-clear-preedit",    im_clear_preedit);
   uim_scm_init_subr_3("im-pushback-preedit", im_pushback_preedit);

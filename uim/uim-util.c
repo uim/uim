@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <locale.h>
+#include <assert.h>
 
 #include "gettext.h" /* for iso-639-1.def */
 #include "uim-internal.h"
@@ -554,6 +555,9 @@ static const char *
 get_language_name_from_locale(const char *localename)
 {
   unsigned int i;
+
+  assert(localename);
+
   for (i = 0; i < NR_LOCALE_LANGUAGE; i++) {
     if (strcmp(locale_language_table[i].locale, localename) == 0) {
       return locale_language_table[i].language;
@@ -570,6 +574,8 @@ uim_get_language_name_from_locale(const char *localename)
      specification of this function for backward compatibility
   */
   uim_lisp ret;
+
+  assert(localename);
 
   ret = uim_scm_call1(MAKE_SYM("langgroup-primary-lang-code"),
                       MAKE_STR(localename));
