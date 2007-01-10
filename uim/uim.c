@@ -130,9 +130,6 @@ uim_create_context(void *ptr,
   /**/
   uc->switch_app_global_im_cb = NULL;
   uc->switch_system_global_im_cb = NULL;
-  /**/
-  uc->nr_candidates = 0;
-  uc->candidate_index = 0;
 
   lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
   engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();

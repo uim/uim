@@ -77,9 +77,6 @@ struct uim_context_ {
   /**/
   char *propstr;
   /**/
-  int candidate_index;
-  int nr_candidates;
-  /**/
   void (*commit_cb)(void *ptr, const char *str);
   /* preedit */
   void (*preedit_clear_cb)(void *ptr);
