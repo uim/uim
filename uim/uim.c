@@ -133,12 +133,10 @@ uim_create_context(void *ptr,
   /**/
   uc->nr_candidates = 0;
   uc->candidate_index = 0;
-  /**/
-  uc->psegs = NULL;
-  uc->nr_psegs = 0;
 
   lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
   engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
+  uc->sc = NULL; /* failsafe */
   uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
                          MAKE_PTR(uc), lang_, engine_);
   uim_scm_gc_protect(&uc->sc);
@@ -150,9 +148,6 @@ void
 uim_reset_context(uim_context uc)
 {
   uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_PTR(uc));
-
-  /* delete all preedit segments */
-  uim_release_preedit_segments(uc);
 }
 
 void
@@ -211,9 +206,6 @@ uim_switch_im(uim_context uc, const char *engine)
   uim_reset_context(uc); /* FIXME: reset should be called here? */
 
   uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
-  uim_release_preedit_segments(uc);
-  uim_update_preedit_segments(uc);
-
   uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
                          MAKE_PTR(uc), uim_scm_f(), MAKE_SYM(engine));
 }
@@ -232,7 +224,6 @@ uim_release_context(uim_context uc)
     uc->conv_if->release(uc->outbound_conv);
   if (uc->inbound_conv)
     uc->conv_if->release(uc->inbound_conv);
-  uim_release_preedit_segments(uc);
   for (i = 0; i < uc->nr_modes; i++) {
     free(uc->modes[i]);
     uc->modes[i] = NULL;

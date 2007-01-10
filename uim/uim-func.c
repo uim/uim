@@ -63,56 +63,6 @@ static struct uim_code_converter uim_iconv_tbl = {
 struct uim_code_converter *uim_iconv = &uim_iconv_tbl;
 
 
-/* push back a preedit segment to context */
-static void
-pushback_preedit_segment(uim_context uc, int atr, char *str)
-{
-  uc->psegs = realloc(uc->psegs,
-		      sizeof(struct preedit_segment) * (uc->nr_psegs + 1));
-  uc->psegs[uc->nr_psegs].attr = atr;
-  uc->psegs[uc->nr_psegs].str = str;
-  uc->nr_psegs ++;
-}
-
-/* notify all preedit segments to user */
-void
-uim_update_preedit_segments(uim_context uc)
-{
-  int i;
-  if (uc->preedit_clear_cb) {
-    uc->preedit_clear_cb(uc->ptr);
-  }
-  if (uc->preedit_pushback_cb) {
-    for (i = 0; i < uc->nr_psegs; i++) {
-      uc->preedit_pushback_cb(uc->ptr, uc->psegs[i].attr, uc->psegs[i].str);
-    }
-  }
-  if (uc->preedit_update_cb) {
-    uc->preedit_update_cb(uc->ptr);
-  }
-}
-
-/* release preedit segment in a context */
-void
-uim_release_preedit_segments(uim_context uc)
-{
-  int i;
-
-  if (!uc)
-    return;
-
-  if (!uc->psegs) {
-    uc->nr_psegs = 0;
-    return ;
-  }
-  for (i = 0; i < uc->nr_psegs; i++) {
-    free(uc->psegs[i].str);
-  }
-  free(uc->psegs);
-  uc->psegs = NULL;
-  uc->nr_psegs = 0;
-}
-
 static int check_encoding_equivalence(const char *tocode, const char *fromcode)
 {
   const char **alias_tocode;
@@ -317,35 +267,46 @@ im_convertiblep(uim_lisp id, uim_lisp im_encoding_)
 }
 
 static uim_lisp
-im_clear_preedit(uim_lisp id)
+im_clear_preedit(uim_lisp uc_)
 {
-  uim_context uc = retrieve_uim_context(id);
-  uim_release_preedit_segments(uc);
+  uim_context uc;
+
+  uc = retrieve_uim_context(uc_);
+  if (uc->preedit_clear_cb)
+    uc->preedit_clear_cb(uc->ptr);
+
   return uim_scm_f();
 }
 
 static uim_lisp
-im_pushback_preedit(uim_lisp id_, uim_lisp attr_, uim_lisp str_)
+im_pushback_preedit(uim_lisp uc_, uim_lisp attr_, uim_lisp str_)
 {
-  uim_context uc = retrieve_uim_context(id_);
-  const char *str = NULL;
-  int attr = uim_scm_c_int(attr_);
-  if (str_) {
-    str = uim_scm_refer_c_str(str_);
-  }
-  {
-    char *s;
-    s = uc->conv_if->convert(uc->outbound_conv, str);
-    pushback_preedit_segment(uc, attr, s);
-  }
+  uim_context uc;
+  const char *str;
+  char *converted_str;
+  int attr;
+
+  uc = retrieve_uim_context(uc_);
+  attr = uim_scm_c_int(attr_);
+  str = uim_scm_refer_c_str(str_);
+
+  converted_str = uc->conv_if->convert(uc->outbound_conv, str);
+  if (uc->preedit_pushback_cb)
+      uc->preedit_pushback_cb(uc->ptr, attr, converted_str);
+  free(converted_str);
+
   return uim_scm_f();
 }
 
 static uim_lisp
-im_update_preedit(uim_lisp id)
+im_update_preedit(uim_lisp uc_)
 {
-  uim_context uc = retrieve_uim_context(id);
-  uim_update_preedit_segments(uc);
+  uim_context uc;
+
+  uc = retrieve_uim_context(uc_);
+  if (uc->preedit_update_cb)
+    uc->preedit_update_cb(uc->ptr);
+
   return uim_scm_f();
 }
 

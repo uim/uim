@@ -55,11 +55,6 @@ struct uim_candidate_ {
   /* char *src_dict; */
 };
 
-struct preedit_segment {
-  int attr;
-  char *str;
-};
-
 struct uim_context_ {
   /* cookier pointer */
   void *ptr;
@@ -109,9 +104,6 @@ struct uim_context_ {
   /* switch IM */
   void (*switch_app_global_im_cb)(void *ptr, const char *name);
   void (*switch_system_global_im_cb)(void *ptr, const char *name);
-  /* preedit segments array */
-  struct preedit_segment *psegs;
-  int nr_psegs;
 };
 
 
@@ -132,9 +124,6 @@ int uim_iconv_is_convertible(const char *tocode, const char *fromcode);
 void *uim_iconv_create(const char *tocode, const char *fromcode);
 char *uim_iconv_code_conv(void *obj, const char *str);
 void uim_iconv_release(void *obj);
-
-void uim_release_preedit_segments(uim_context uc);
-void uim_update_preedit_segments(uim_context uc);
 
 uim_bool uim_issetugid(void);
 
