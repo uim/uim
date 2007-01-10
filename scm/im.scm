@@ -305,8 +305,6 @@
   (lambda (id lang name)
     (let* ((im (find-im name lang))
 	   (arg (and im (im-init-arg im))))
-      (if (im-retrieve-context id)
-	  (release-context id))
       (im-set-encoding id (im-encoding im))
       (update-style uim-color-spec (symbol-value uim-color))
       (let* ((handler (im-init-handler im))
