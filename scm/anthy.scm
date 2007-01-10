@@ -750,9 +750,10 @@
 	    (if (and lst
 		     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
-		(set! state (anthy-rotate-transposing-alnum-type
-			     (anthy-context-transposing-type ac)
-			     (car rotate-list)))))
+		(if (not (null? rotate-list))
+		    (set! state (anthy-rotate-transposing-alnum-type
+				 (anthy-context-transposing-type ac)
+				 (car rotate-list))))))
 	  (begin
 	    (anthy-context-set-transposing! ac #t)
 	    (set! state (car rotate-list))))

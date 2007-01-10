@@ -920,9 +920,10 @@
 	    (if (and lst
 	    	     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
-		(set! state (mana-rotate-transposing-alnum-type
-			     (mana-context-transposing-type mc)
-			     (car rotate-list)))))
+		(if (not (null? rotate-list))
+		    (set! state (mana-rotate-transposing-alnum-type
+				 (mana-context-transposing-type mc)
+				 (car rotate-list))))))
 	  (begin
 	    (mana-context-set-transposing! mc #t)
 	    (set! state (car rotate-list))))
