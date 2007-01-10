@@ -432,31 +432,21 @@ uim_get_im_encoding(uim_context uc, int nth)
 const char *
 uim_get_default_im_name(const char *localename)
 {
-  const char *valid_default_im_name;
   uim_lisp ret;
 
   ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
                       MAKE_STR(localename));
-  valid_default_im_name = uim_scm_refer_c_str(ret);
-
-  if (!valid_default_im_name)
-    valid_default_im_name = "direct";  /* never happen */
-  return valid_default_im_name;
+  return uim_scm_refer_c_str(ret);
 }
 
 const char *
 uim_get_im_name_for_locale(const char *localename)
 {
-  const char *valid_im_name;
   uim_lisp ret;
 
   ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
                       MAKE_STR(localename));
-  valid_im_name = uim_scm_refer_c_str(ret);
-
-  if (!valid_im_name)
-    valid_im_name = "direct";  /* never happen */
-  return valid_im_name;
+  return uim_scm_refer_c_str(ret);
 }
 
 int uim_set_candidate_selector_cb(uim_context uc,

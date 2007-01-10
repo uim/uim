@@ -63,7 +63,8 @@ static struct uim_code_converter uim_iconv_tbl = {
 struct uim_code_converter *uim_iconv = &uim_iconv_tbl;
 
 
-static int check_encoding_equivalence(const char *tocode, const char *fromcode)
+static int
+check_encoding_equivalence(const char *tocode, const char *fromcode)
 {
   const char **alias_tocode;
   const char **alias_fromcode;
