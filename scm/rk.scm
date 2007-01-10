@@ -50,20 +50,20 @@
 ;; back match
 (define rk-find-longest-back-match
   (lambda (rule seq)
-    (if seq
+    (if (not (null? seq))
 	(if (rk-lib-find-seq seq rule)
 	    seq
 	    (rk-find-longest-back-match rule (cdr seq)))
-	#f)))
+	'())))
 ;; back match
 (define rk-find-longest-head
   (lambda (rseq rule)
     (let ((seq (reverse rseq)))
       (if (rk-lib-find-seq seq rule)
 	  seq
-	  (if rseq
+	  (if (not (null? rseq))
 	      (rk-find-longest-head (cdr rseq) rule)
-	      #f)))))
+	      '())))))
 ;; back match
 (define rk-check-back-commit
   (lambda (rkc rule rseq)
@@ -76,7 +76,7 @@
 			   (- (length seq) (length longest-tail))))
 	   (partial (rk-lib-find-partial-seq seq rule))
 	   (tail-partial
-	    (if longest-tail
+	    (if (not (null? longest-tail))
 		(rk-lib-find-partial-seq longest-tail rule)
 		#f))
 	   (c (rk-lib-find-seq longest-tail rule))
@@ -93,22 +93,24 @@
 	   #f
 	   #t)
        (if (not tail-partial)
-	   (begin
-	     (set! res (cadr (rk-lib-find-seq (reverse longest-head) rule)))
-	     (let ((tail (reverse (truncate-list (reverse seq)
-						 (- (length seq)
-						    (length longest-head))))))
-	       (if (and
-		    res
-		    (or
-		     longest-tail
-		     (rk-lib-find-partial-seq tail rule)))
-		   (rk-context-set-seq! rkc tail)
-		   (rk-context-set-seq! rkc '()))) ;; no match in rule
+	   (let ((matched (rk-lib-find-seq (reverse longest-head) rule))
+		 (tail (reverse (truncate-list (reverse seq)
+					       (- (length seq)
+						  (length longest-head))))))
+	     (if matched
+		 (set! res (cadr matched)))
+	     (if (and
+		  res
+		  (or
+		   (not (null? longest-tail))
+		   (rk-lib-find-partial-seq tail rule)))
+		 (rk-context-set-seq! rkc tail)
+		 (rk-context-set-seq! rkc '())) ;; no match in rule
 	     #f)
 	   #t)
-       (begin
-	 (set! res (cadr (rk-lib-find-seq head rule)))
+       (let ((matched (rk-lib-find-seq head rule)))
+	 (if matched
+	     (set! res (cadr matched)))
 	 (rk-context-set-seq! rkc (reverse longest-tail))))
       res)))
 ;;
@@ -122,7 +124,7 @@
 (define rk-partial?
   (lambda (rkc)
     (if (rk-context-back-match rkc)
-	(if (rk-context-seq rkc)
+	(if (not (null? (rk-context-seq rkc)))
 	    #t
 	    #f)
 	(rk-partial-seq?
@@ -222,7 +224,7 @@
 	    (rk-push-key! context (car seq))
 	    (set! res (cadr old-seq)))
 	    ;;
-	  (if (rk-context-seq context)
+	  (if (not (null? (rk-context-seq context)))
 	      (begin
 		(rk-flush context)
 		(set! res
