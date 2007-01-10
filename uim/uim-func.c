@@ -331,14 +331,6 @@ im_commit(uim_lisp id, uim_lisp str_)
 }
 
 static uim_lisp
-im_commit_raw(uim_lisp id)
-{
-  uim_context uc = retrieve_uim_context(id);
-  uc->commit_raw_flag = 1;
-  return uim_scm_f();
-}
-
-static uim_lisp
 im_get_raw_key_str(uim_lisp key_, uim_lisp key_state_)
 {
   int key;
@@ -665,7 +657,6 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_2("im-convertible?", im_convertiblep);
   /**/
   uim_scm_init_subr_2("im-commit",       im_commit);
-  uim_scm_init_subr_1("im-commit-raw",   im_commit_raw);
   uim_scm_init_subr_2("im-get-raw-key-str", im_get_raw_key_str);
   uim_scm_init_subr_2("im-set-encoding", im_set_encoding);
   /**/

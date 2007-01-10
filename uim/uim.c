@@ -92,7 +92,7 @@ uim_create_context(void *ptr,
   }
 
   uc->ptr = ptr;
-  uc->is_enable = 1;
+  uc->is_enabled = UIM_TRUE;
   uc->commit_cb = commit_cb;
   if (!enc) {
     enc = "UTF-8";

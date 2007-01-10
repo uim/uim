@@ -41,6 +41,14 @@
 #include "uim-internal.h"
 
 
+/* Future version of uim should have uim_filter_key() that returns 'filtered'
+ * as true value. Current semantics is not an ordinary design for IM and felt
+ * unnatural.  -- YamaKen 2007-01-10 */
+enum key_filtering_result {
+  FILTERED = 0,
+  PASSTHROUGH = 1
+};
+
 #define ISASCII(c) (0 <= (c) && (c) <= 127)
 
 
@@ -268,6 +276,8 @@ static struct key_entry key_tab[] = {
   {0, 0}
 };
 
+static int emergency_key_p(int key, int state);
+
 #if 0
 int uim_key_sym_to_int(uim_lisp sym);
 
@@ -316,24 +326,38 @@ get_sym(int key)
   return res;
 }
 
-static void
-handle_key(uim_context uc, const char *handler, int key, int state)
+static uim_bool
+filter_key(uim_context uc, int key, int state, uim_bool is_press)
 {
-  uim_lisp key_;
-  const char *sym;
+  uim_lisp key_, filtered;
+  const char *sym, *handler;
+
+  if (!uc)
+    return UIM_FALSE;
+
+  if (is_press
+      && emergency_key_p(key, state)
+      && getenv("LIBUIM_ENABLE_EMERGENCY_KEY"))
+  {
+    uc->is_enabled = !uc->is_enabled;
+    return UIM_TRUE;
+  }
+  if (!uc->is_enabled)
+    return UIM_FALSE;
 
   if (ISASCII(key)) {
     key_ = MAKE_INT(key);
   } else {
     sym = get_sym(key);
-    if (!sym) {
-      uc->commit_raw_flag = 1;
-      return;
-    }
+    if (!sym)
+      return UIM_FALSE;
     key_ = MAKE_SYM(get_sym(key));
   }
 
-  uim_scm_call3(MAKE_SYM(handler), MAKE_PTR(uc), key_, MAKE_INT(state));
+  handler = (is_press) ? "key-press-handler" : "key-release-handler";
+  filtered = uim_scm_call3(MAKE_SYM(handler),
+                           MAKE_PTR(uc), key_, MAKE_INT(state));
+  return uim_scm_c_bool(filtered);
 }
 
 static int
@@ -349,33 +373,19 @@ emergency_key_p(int key, int state)
 int
 uim_press_key(uim_context uc, int key, int state)
 {
-  if (!uc) {
-    return 1;
-  }
-  if (getenv("LIBUIM_ENABLE_EMERGENCY_KEY") && emergency_key_p(key, state)) {
-    uc->is_enable = uc->is_enable ? 0 : 1;
-    return 0;
-  }
-  if (!uc->is_enable) {
-    return 1;
-  }
-  uc->commit_raw_flag = 0;
-  handle_key(uc, "key-press-handler", key, state);
-  return uc->commit_raw_flag;
+  uim_bool filtered;
+
+  filtered = filter_key(uc, key, state, UIM_TRUE);
+  return (filtered) ? FILTERED : PASSTHROUGH;
 }
 
 int
 uim_release_key(uim_context uc, int key, int state)
 {
-  if (!uc) {
-    return 1;
-  }
-  if (!uc->is_enable) {
-    return 1;
-  }
-  uc->commit_raw_flag = 0;
-  handle_key(uc, "key-release-handler", key, state);
-  return uc->commit_raw_flag;
+  uim_bool filtered;
+
+  filtered = filter_key(uc, key, state, UIM_FALSE);
+  return (filtered) ? FILTERED : PASSTHROUGH;
 }
 
 static uim_lisp

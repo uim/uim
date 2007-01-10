@@ -61,14 +61,12 @@ struct uim_context_ {
   /* Scheme-side context */
   uim_lisp sc;
   /**/
-  int is_enable;
+  uim_bool is_enabled;
 
   struct uim_code_converter *conv_if;
   void *outbound_conv;
   void *inbound_conv;
   char *client_encoding;
-  /**/
-  int commit_raw_flag;
   /**/
   int nr_modes;
   char **modes;

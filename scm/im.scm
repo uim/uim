@@ -265,7 +265,8 @@
   '((id           #f)  ;; must be first member
     (im           #f)
     (widgets      ())  ;; may be renamed
-    (toggle-state #f)))
+    (toggle-state #f)
+    (key-passthrough #f)))
 (define-record 'context context-rec-spec)
 
 (define toggle-state-rec-spec
@@ -326,6 +327,20 @@
       (and c
            (context-im c)))))
 
+;; Backward compatibility. The term 'commit' is incorrect. No commit
+;; operation is performed by this. This actually instructs 'pass-through' the
+;; input key. The key filtering interface will be replaced with 'filtered'
+;; boolean value returned by key-*-handler of each IM in some future. Current
+;; semantics is not an ordinary design for IM and felt unnatural.
+;;   -- YamaKen 2007-01-10
+(define im-commit-raw
+  (lambda (c)
+    (context-set-key-passthrough! (if (pair? c)
+                                      c
+                                      (im-retrieve-context c))
+                                  #t)))
+    
+
 ;;
 ;; dispatchers
 ;;
@@ -342,6 +357,7 @@
       (context-update-widgets c)
       result)))
 
+;; Returns #t if input is filtered.
 ;; Don't discard unnecessary key events. They are necessary for
 ;; proper GUI widget handling. More correction over entire uim
 ;; codes is needed.
@@ -349,6 +365,7 @@
   (lambda (id key state)
     (let* ((c (im-retrieve-context id))
 	   (im (and c (context-im c))))
+      (context-set-key-passthrough! c #f)
       (cond
        ((and enable-im-toggle?
 	     (toggle-im-key? key state))
@@ -360,17 +377,21 @@
 	;; don't discard modifier press/release edge for apps
 	(im-commit-raw c))
        (else
-	(invoke-handler im-key-press-handler id key state))))))
+	(invoke-handler im-key-press-handler id key state)))
+      (not (context-key-passthrough c)))))
 
+;; Returns #t if input is filtered.
 (define key-release-handler
   (lambda (id key state)
     (let ((c (im-retrieve-context id)))
+      (context-set-key-passthrough! c #f)
       (cond
        ((modifier-key? key state)
 	;; don't discard modifier press/release edge for apps
 	(im-commit-raw c))
        (else
-	(invoke-handler im-key-release-handler id key state))))))
+	(invoke-handler im-key-release-handler id key state)))
+      (not (context-key-passthrough c)))))
 
 (define reset-handler
   (lambda (id)
