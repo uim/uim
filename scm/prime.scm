@@ -575,9 +575,9 @@
 ;; context-data from the stack of uim-contexts.
 (define prime-context-pop
   (lambda (context)
-    (let ((parent-context (prime-context-parent-context context))
-          (id (prime-context-id context))
-          (root-context (im-retrieve-context id)))
+    (let* ((parent-context (prime-context-parent-context context))
+           (id (prime-context-id context))
+           (root-context (im-retrieve-context id)))
       (map
        (lambda (lang-pair)
 	 (prime-engine-session-end (cdr lang-pair)))
