@@ -666,11 +666,14 @@ const char *uim_get_im_name_for_locale(const char *localename);
  *
  * @see uim_create_context
  */
-int uim_set_candidate_selector_cb(uim_context uc,
-				  void (*activate_cb)(void *ptr, int nr, int display_limit),
-				  void (*select_cb)(void *ptr, int index),
-				  void (*shift_page_cb)(void *ptr, int direction),
-				  void (*deactivate_cb)(void *ptr));
+void uim_set_candidate_selector_cb(uim_context uc,
+                                   void (*activate_cb)(void *ptr,
+                                                       int nr,
+                                                       int display_limit),
+                                   void (*select_cb)(void *ptr, int index),
+                                   void (*shift_page_cb)(void *ptr,
+                                                         int direction),
+                                   void (*deactivate_cb)(void *ptr));
 
 /**
  * Get candidate data.

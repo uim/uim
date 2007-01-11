@@ -442,18 +442,18 @@ uim_get_im_name_for_locale(const char *localename)
   return uim_scm_refer_c_str(ret);
 }
 
-int uim_set_candidate_selector_cb(uim_context uc,
-				  void (*activate_cb)(void *ptr, int nr, int display_limit),
-				  void (*select_cb)(void *ptr, int index),
-				  void (*shift_page_cb)(void *ptr, int direction),
-				  void (*deactivate_cb)(void *ptr))
+void
+uim_set_candidate_selector_cb(uim_context uc,
+                              void (*activate_cb)(void *ptr,
+                                                  int nr, int display_limit),
+                              void (*select_cb)(void *ptr, int index),
+                              void (*shift_page_cb)(void *ptr, int direction),
+                              void (*deactivate_cb)(void *ptr))
 {
-  uc->candidate_selector_activate_cb = activate_cb;
-  uc->candidate_selector_select_cb = select_cb;
+  uc->candidate_selector_activate_cb   = activate_cb;
+  uc->candidate_selector_select_cb     = select_cb;
   uc->candidate_selector_deactivate_cb = deactivate_cb;
   uc->candidate_selector_shift_page_cb = shift_page_cb;
-
-  return 0;
 }
 
 /* must be called from GC-protected stack context */

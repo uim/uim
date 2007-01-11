@@ -57,6 +57,20 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Change return type of uim_set_candidate_selector_cb() to void
+Affects: Bridge developers
+Updates: C API, libuim ABI
+Version: 1.5.0
+Revision: ac4388
+Date: 2007-01-11
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (changed) uim_set_candidate_selector_cb()
+Description:
+  The previous return type 'int' is useless and probably a logical typo.
+------------------------------------------------------------------------------
 Summary: Non-core API move to uim-util.h
 Affects: IM developers, Bridge developers
 Updates: C API
