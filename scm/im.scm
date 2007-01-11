@@ -114,12 +114,6 @@
 	custom-prop-update-custom-handler
 	list)))
 
-;; Invoking this procedure causes inconsistency between im-list and
-;; corresponding IM management entity in C-side
-;; (uim_im_array). uim-im-switcher may show IM list in strange
-;; order. This inconsistency problem is also preventing IM removal
-;; feature implementation. We should resolve it after uim 0.4.6.
-;;   -- YamaKen 2005-01-25
 (define normalize-im-list
   (lambda ()
     (let ((ordinary-im-list (alist-delete 'direct im-list eq?))

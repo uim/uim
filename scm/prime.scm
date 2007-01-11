@@ -568,6 +568,11 @@
       (set-cdr! (assoc 'state (prime-context-history new-context))
 		'prime-state-pushed)
       (prime-context-set-parent-context! new-context (cons id (cdr context)))
+      ;; FIXME: Directly overwriting root-context prevents flexible input
+      ;; context composition such as <im-switcher context> -> <prime
+      ;; context>.  In such case, this code break both im-switcher context
+      ;; and prime context. Do not assume and access superordinate input
+      ;; context management scheme. -- YamaKen 2007-01-11
       (set-cdr! root-context (cdr new-context))
       new-context)))
 
@@ -588,6 +593,8 @@
  					(prime-context-history parent-context))
 	    (set-cdr! (assoc 'state (prime-context-history context))
 		      'prime-state-poped)
+            ;; FIXME: Directly overwriting root-context. See the comment
+            ;; in prime-context-push.
 	    (set-cdr! root-context
 		      (cdr parent-context))
 	    ))
