@@ -1521,7 +1521,7 @@
 
 (define skk-setup-child-context
   (lambda (sc type)
-    (let ((csc (skk-context-new (skk-context-id sc)
+    (let ((csc (skk-context-new (skk-context-uc sc)
 				(skk-context-im sc)))
 	  (input-rule (skk-context-input-rule sc)))
       (skk-context-set-child-context! sc csc)
