@@ -97,7 +97,7 @@ init_server_fd(char *path)
     return -1;
   }
 
-  bzero(&myhost, sizeof(myhost));
+  memset(&myhost, 0, sizeof(myhost));
   myhost.sun_family = PF_UNIX;
   strlcpy(myhost.sun_path, path, sizeof(myhost.sun_path));
 

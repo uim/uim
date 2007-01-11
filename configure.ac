@@ -322,15 +322,15 @@ AC_FUNC_SELECT_ARGTYPES
 AC_CHECK_FUNCS([cfmakeraw])
 AC_CHECK_FUNCS([wcswidth])
 # BSD functions
-AC_CHECK_FUNCS(bzero strdup)
+AC_CHECK_FUNCS([strdup])
 # GNU functions
-AC_CHECK_FUNCS(asprintf vasprintf)
+AC_CHECK_FUNCS([asprintf vasprintf])
 # C99 functions
-AC_CHECK_FUNCS(snprintf vsnprintf)
-AC_REPLACE_FUNCS(getpeereid strsep setenv unsetenv strlcpy strlcat)
-AC_CHECK_FUNCS(getpid stat mkdir chmod)
-AC_CHECK_FUNCS(execv execvp)
-AC_CHECK_FUNCS(isascii)
+AC_CHECK_FUNCS([snprintf vsnprintf])
+AC_REPLACE_FUNCS([getpeereid strsep setenv unsetenv strlcpy strlcat])
+AC_CHECK_FUNCS([getpid stat mkdir chmod])
+AC_CHECK_FUNCS([execv execvp])
+AC_CHECK_FUNCS([isascii])
 AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
 AC_TRY_RUN([
 #include <sys/types.h>

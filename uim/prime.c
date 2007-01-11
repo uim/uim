@@ -74,7 +74,7 @@ prime_init_ud(char *path)
   if (!path)
     return -1;
 
-  bzero(&server, sizeof(server));
+  memset(&server, 0, sizeof(server));
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
