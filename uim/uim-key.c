@@ -276,6 +276,10 @@ static struct key_entry key_tab[] = {
   {0, 0}
 };
 
+static void define_valid_key_symbols(void);
+static const char *get_sym(int key);
+static uim_bool filter_key(uim_context uc,
+                           int key, int state, uim_bool is_press);
 static int emergency_key_p(int key, int state);
 
 #if 0

@@ -47,7 +47,13 @@
 #include "uim-internal.h"
 #include "uim-util.h"
 
-static int uim_initialized;
+
+#define OK 0
+
+static uim_lisp get_nth_im(uim_context uc, int nth);
+
+static uim_bool uim_initialized;
+
 
 void
 uim_set_preedit_cb(uim_context uc,
@@ -75,61 +81,52 @@ uim_create_context(void *ptr,
 
   if (!uim_initialized) {
     fprintf(stderr, "uim_create_context() before uim_init()\n");
-    return 0;
-  }
-
-  if (!conv) {
-    conv = uim_iconv;
-  }
-
-  if (!uim_scm_is_alive() || !conv) {
     return NULL;
   }
+  if (!uim_scm_is_alive())
+    return NULL;
 
   uc = malloc(sizeof(*uc));
-  if (!uc) {
+  if (!uc)
     return NULL;
-  }
 
-  uc->ptr = ptr;
-  uc->is_enabled = UIM_TRUE;
-  uc->commit_cb = commit_cb;
-  if (!enc) {
+  /* encoding handlings */
+  if (!enc)
     enc = "UTF-8";
-  }
   uc->client_encoding = strdup(enc);
-  uc->conv_if = conv;
+  uc->conv_if = (conv) ? conv uim_iconv;
   uc->outbound_conv = NULL;
   uc->inbound_conv = NULL;
-  /**/
+
+  /* variables */
+  uc->is_enabled = UIM_TRUE;
   uc->nr_modes = 0;
   uc->modes = NULL;
   uc->mode = 0;
-  /**/
   uc->propstr = NULL;
-  /**/
+
+  /* core callbacks */
+  uc->commit_cb = commit_cb;
   uc->preedit_clear_cb = NULL;
   uc->preedit_pushback_cb = NULL;
   uc->preedit_update_cb = NULL;
-  /**/
-  uc->mode_list_update_cb = NULL;
-  /**/
-  uc->mode_update_cb = NULL;
-  /**/
-  uc->prop_list_update_cb  = NULL;
-  /**/
   uc->candidate_selector_activate_cb = NULL;
   uc->candidate_selector_select_cb = NULL;
   uc->candidate_selector_shift_page_cb = NULL;
   uc->candidate_selector_deactivate_cb = NULL;
-  /**/
   uc->acquire_text_cb = NULL;
   uc->delete_text_cb = NULL;
-  /**/
+
+  /* non-core callbacks */
+  uc->mode_list_update_cb = NULL;
+  uc->mode_update_cb = NULL;
+  uc->prop_list_update_cb  = NULL;
   uc->configuration_changed_cb = NULL;
-  /**/
   uc->switch_app_global_im_cb = NULL;
   uc->switch_system_global_im_cb = NULL;
+
+  /* foreign context objects */
+  uc->ptr = ptr;
 
   lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
   engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
@@ -517,7 +514,8 @@ uim_candidate_free(uim_candidate cand)
   free(cand);
 }
 
-int uim_get_candidate_index(uim_context uc)
+int
+uim_get_candidate_index(uim_context uc)
 {
   return 0;
 }
@@ -562,10 +560,13 @@ uim_input_string(uim_context uc, const char *str)
   return UIM_FALSE;
 }
 
-static void
-uim_init_scm(void)
+int
+uim_init(void)
 {
   char *scm_files, *env;
+
+  if (uim_initialized)
+    return OK;
 
   env = getenv("LIBUIM_VERBOSE");
   uim_scm_init(env);
@@ -589,18 +590,10 @@ uim_init_scm(void)
   uim_scm_set_lib_path(scm_files);
 
   uim_scm_require_file("init.scm");
-}
 
-int
-uim_init(void)
-{
-  if (uim_initialized)
-    return 0;
+  uim_initialized = UIM_TRUE;
 
-  uim_init_scm();
-  uim_initialized = 1;
-
-  return 0;
+  return OK;
 }
 
 void
@@ -614,5 +607,5 @@ uim_quit(void)
   uim_anthy_plugin_instance_quit();
 #endif
   uim_scm_quit();
-  uim_initialized = 0;
+  uim_initialized = UIM_FALSE;
 }

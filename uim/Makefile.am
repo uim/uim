@@ -28,16 +28,17 @@ BUILT_SOURCES = sigscheme-combined
 sigscheme-combined:
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme/src combined
 
-pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
-		uim-scm.h uim-scm-abbrev.h uim-custom.h plugin.h
+pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
+		uim-util.h plugin.h \
+		uim-helper.h uim-im-switcher.h \
+		uim-custom.h
 
-libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
-		uim-internal.h gettext.h \
-		uim-scm.c \
-		uim-helper.c uim-helper-client.c \
-		rk.c iconv.c intl.c \
-		uim-ipc.c \
-		plugin.c
+libuim_la_SOURCES = uim-scm.c \
+		uim-internal.h uim.c uim-key.c uim-func.c uim-util.c \
+		iconv.c plugin.c \
+		uim-ipc.c uim-helper.c uim-helper-client.c \
+		gettext.h intl.c \
+		rk.c
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
