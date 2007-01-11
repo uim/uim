@@ -417,15 +417,12 @@ im_delete_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
 }
 
 static uim_lisp
-switch_im(uim_lisp id_, uim_lisp name_)
+raise_configuration_change(uim_lisp uc_)
 {
   uim_context uc;
-  const char *name;
 
-  uc = retrieve_uim_context(id_);
-  name= uim_scm_refer_c_str(name_);
+  uc = retrieve_uim_context(uc_);
 
-  uim_switch_im(uc, name);
   if (uc->configuration_changed_cb)
     uc->configuration_changed_cb(uc->ptr);
 
@@ -492,7 +489,7 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_5("im-acquire-text-internal", im_acquire_text);
   uim_scm_init_subr_5("im-delete-text-internal", im_delete_text);
   /**/
-  uim_scm_init_subr_2("im-switch-im", switch_im);
+  uim_scm_init_subr_1("im-raise-configuration-change", raise_configuration_change);
   uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);
   uim_scm_init_subr_2("im-switch-system-global-im", switch_system_global_im);
 }

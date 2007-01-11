@@ -218,6 +218,27 @@
 ;;
 ;; im-switching
 ;;
+
+;; for C
+(define uim-switch-im
+  (lambda (uc name)
+    (reset-handler uc)
+    ;; Don't use remove-context. old and new context must (eq? old new)
+    (invoke-handler im-release-handler uc)
+    (let ((cur-context (im-retrieve-context uc))
+          (new-context (create-context uc #f name)))
+      (remove-context new-context)
+      (set-cdr! cur-context (cdr new-context)))))
+
+;; for Scheme
+(define im-switch-im
+  (lambda (c name)
+    (let ((uc (if (pair? c)
+                  (context-uc c)
+                  c)))
+      (uim-switch-im uc name)
+      (im-raise-configuration-change uc))))
+
 (define next-im
   (lambda (name)
     (let* ((im-names (map car im-list))
@@ -227,6 +248,8 @@
 	       (cadr im-rest))
 	  (car im-names)))))
 
+;; 'switch-im' is not a API but an IM-switching method. Don't confuse with
+;; im-switch-im
 (define switch-im
   (lambda (uc name)
     (im-switch-im uc (next-im name))))
@@ -322,7 +345,7 @@
 (define release-context
   (lambda (uc)
     (invoke-handler im-release-handler uc)
-    (remove-context uc)
+    (remove-context (im-retrieve-context uc))
     #f))
 
 (define uim-context-im

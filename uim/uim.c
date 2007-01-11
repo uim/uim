@@ -200,11 +200,7 @@ uim_switch_im(uim_context uc, const char *engine)
      immodule API. We should follow its design to make our API simple.
      -- 2004-10-05 YamaKen
   */
-  uim_reset_context(uc); /* FIXME: reset should be called here? */
-
-  uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
-  uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
-                         MAKE_PTR(uc), uim_scm_f(), MAKE_SYM(engine));
+  uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_STR(engine));
 }
 
 void

@@ -110,33 +110,38 @@ Description:
   is safer than previous behavior, and will not cause compatibility problems.
 ------------------------------------------------------------------------------
 Summary: IM and context management concentration into Scheme
-Affects: uim developers
+Affects: uim developers, IM developers
 Updates: Scheme API
 Version: 1.5.0
-Revision: ac4354, ac4359, ac4382
-Date: 2007-01-10
+Revision: ac4354, ac4359, ac4382, ac4385
+Date: 2007-01-10 - 2007-01-11
 Modifier: YamaKen
 Related: 
 URL:
 Changes:
          (new) im-retrieve-context
+         (new) im-raise-configuration-change
+         (new) uim-switch-im
          (new) context-uc
          (new) context-set-uc!
   (deprecated) context-id
   (deprecated) context-set-id!
      (changed) create-context
+     (changed) im-switch-im
      (removed) find-context
      (removed) im-register-im
 Description:
   The complex and problematic IM registration and context management divided
   in C has been resolved. Now all IM and context management data is
-  concentrated into Scheme as one-source management. This will resolve C-data
-  and Scheme-data synchronization problem on im-switching and so on.
+  concentrated into Scheme as one-source management. This has been resolved
+  C-data and Scheme-data synchronization problem on im-switching and so on.
   
   - create-context now returns created context
   - The member 'id' of context record has been replaced with 'uc'. Each IMs
     should follow the renaming although backward compatiblity procedure is
     provided
+  - im-switch-im has been replaced with Scheme-implemented one. This resolved
+    the context inconsistency problem between C and Scheme
 ------------------------------------------------------------------------------
 Summary: uim_symbol_value_str removal
 Affects: IM developers, Bridge developers
