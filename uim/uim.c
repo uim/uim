@@ -94,7 +94,7 @@ uim_create_context(void *ptr,
   if (!enc)
     enc = "UTF-8";
   uc->client_encoding = strdup(enc);
-  uc->conv_if = (conv) ? conv uim_iconv;
+  uc->conv_if = (conv) ? conv : uim_iconv;
   uc->outbound_conv = NULL;
   uc->inbound_conv = NULL;
 

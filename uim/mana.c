@@ -47,6 +47,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-util.h"
 #include "plugin.h"
 
 #define MANA_COMMAND "mana"
