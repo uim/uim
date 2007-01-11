@@ -31,9 +31,6 @@
 
 */
 
-#ifndef _uim_encoding_h_included_
-#define _uim_encoding_h_included_
-
 /*
  * Mostly from http://www.openi18n.org/subgroups/sa/locnameguide/final/CodesetAliasTable.html
  */
@@ -326,5 +323,3 @@ static const char **uim_encoding_list[] = {
   alias_georgianps,
   NULL
 };
-
-#endif

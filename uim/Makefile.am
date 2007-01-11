@@ -3,7 +3,7 @@ include $(top_builddir)/sigscheme/libgcroots.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = uim-compat-scm.c test-gc.c
+EXTRA_DIST = uim-compat-scm.c encoding-table.c test-gc.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
@@ -32,10 +32,10 @@ pkginclude_HEADERS = uim.h uim-util.h uim-helper.h uim-im-switcher.h \
 		uim-scm.h uim-scm-abbrev.h uim-custom.h plugin.h
 
 libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
-		uim-internal.h gettext.h uim-encoding.h\
+		uim-internal.h gettext.h \
 		uim-scm.c \
 		uim-helper.c uim-helper-client.c \
-		intl.c \
+		iconv.c intl.c \
 		uim-ipc.c \
 		plugin.c
 
