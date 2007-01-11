@@ -69,7 +69,6 @@ typedef struct uim_context_ *uim_context;
 
 typedef struct uim_candidate_ *uim_candidate;
 
-/* FIXME: We need reorganize of key event handling...*/
 enum UKey {
   UKey_0 = 48,
   UKey_1 = 49,
@@ -82,10 +81,12 @@ enum UKey {
   UKey_8 = 56,
   UKey_9 = 57,
   UKey_Yen = 165,
+
   UKey_Escape = 256,
   UKey_Tab,
   UKey_Backspace,
   UKey_Delete,
+  UKey_Insert,
   UKey_Return,
   UKey_Left,
   UKey_Up ,
@@ -95,8 +96,15 @@ enum UKey {
   UKey_Next , /* page down */
   UKey_Home,
   UKey_End,
+
   UKey_Multi_key, /* multi-key character compose */
+  UKey_Codeinput,
+  UKey_SingleCandidate,
+  UKey_MultipleCandidate,
+  UKey_PreviousCandidate,
   UKey_Mode_switch, /* charcter set switch */
+
+  /* Japanese keyboard */
   UKey_Kanji, /* kanji, kanji convert */
   UKey_Muhenkan, /* cancel conversion */
   UKey_Henkan_Mode, /* start/stop conversion */
@@ -114,6 +122,25 @@ enum UKey {
   UKey_Kana_Shift,
   UKey_Eisu_Shift, /* alphanumeric shift */
   UKey_Eisu_toggle, /* alphanumeric toggle */
+
+  /* Korean keyboard */
+  UKey_Hangul,
+  UKey_Hangul_Start,
+  UKey_Hangul_End,
+  UKey_Hangul_Hanja,
+  UKey_Hangul_Jamo,
+  UKey_Hangul_Romaja,
+  UKey_Hangul_Codeinput,
+  UKey_Hangul_Jeonja,
+  UKey_Hangul_Banja,
+  UKey_Hangul_PreHanja,
+  UKey_Hangul_PostHanja,
+  UKey_Hangul_SingleCandidate,
+  UKey_Hangul_MultipleCandidate,
+  UKey_Hangul_PreviousCandidate,
+  UKey_Hangul_Special,
+
+  /* function keys */
   UKey_F1,
   UKey_F2,
   UKey_F3,
@@ -149,70 +176,6 @@ enum UKey {
   UKey_F33,
   UKey_F34,
   UKey_F35, /* X, Gtk and Qt supports up to F35 */
-  /* non-standard platform specific keys (e.g. Zaurus PDA) */
-  UKey_Private1,
-  UKey_Private2,
-  UKey_Private3,
-  UKey_Private4,
-  UKey_Private5,
-  UKey_Private6,
-  UKey_Private7,
-  UKey_Private8,
-  UKey_Private9,
-  UKey_Private10,
-  UKey_Private11,
-  UKey_Private12,
-  UKey_Private13,
-  UKey_Private14,
-  UKey_Private15,
-  UKey_Private16,
-  UKey_Private17,
-  UKey_Private18,
-  UKey_Private19,
-  UKey_Private20,
-  UKey_Private21,
-  UKey_Private22,
-  UKey_Private23,
-  UKey_Private24,
-  UKey_Private25,
-  UKey_Private26,
-  UKey_Private27,
-  UKey_Private28,
-  UKey_Private29,
-  UKey_Private30,
-  /* this part is especially unstable */
-  /* modifier keys: "_key" suffix should be removed in the future */
-  UKey_Shift_key,
-  UKey_Control_key,
-  UKey_Alt_key,
-  UKey_Meta_key,
-  UKey_Super_key,
-  UKey_Hyper_key,
-  UKey_Insert,
-
-  /* These new keys added at uim 1.3.0 are placed here to keep (virtually)
-   * backward-compatible ABI. It will be relocated to appropriate place when
-   * an backward-incompatible ABI change has occur. */
-  UKey_Codeinput,
-  UKey_SingleCandidate,
-  UKey_MultipleCandidate,
-  UKey_PreviousCandidate,
-
-  UKey_Hangul,
-  UKey_Hangul_Start,
-  UKey_Hangul_End,
-  UKey_Hangul_Hanja,
-  UKey_Hangul_Jamo,
-  UKey_Hangul_Romaja,
-  UKey_Hangul_Codeinput,
-  UKey_Hangul_Jeonja,
-  UKey_Hangul_Banja,
-  UKey_Hangul_PreHanja,
-  UKey_Hangul_PostHanja,
-  UKey_Hangul_SingleCandidate,
-  UKey_Hangul_MultipleCandidate,
-  UKey_Hangul_PreviousCandidate,
-  UKey_Hangul_Special,
 
   /* dead keys */
   UKey_Dead_Grave,
@@ -235,7 +198,7 @@ enum UKey {
   UKey_Dead_Hook,
   UKey_Dead_Horn,
 
-  /* Kana keys */
+  /* Japanese Kana keys */
   UKey_Kana_Fullstop,
   UKey_Kana_OpeningBracket,
   UKey_Kana_ClosingBracket,
@@ -300,11 +263,62 @@ enum UKey {
   UKey_Kana_VoicedSound,
   UKey_Kana_SemivoicedSound,
 
-  UKey_Caps_Lock,
+  /* non-standard platform specific keys (e.g. Zaurus PDA) */
+  UKey_Private1,
+  UKey_Private2,
+  UKey_Private3,
+  UKey_Private4,
+  UKey_Private5,
+  UKey_Private6,
+  UKey_Private7,
+  UKey_Private8,
+  UKey_Private9,
+  UKey_Private10,
+  UKey_Private11,
+  UKey_Private12,
+  UKey_Private13,
+  UKey_Private14,
+  UKey_Private15,
+  UKey_Private16,
+  UKey_Private17,
+  UKey_Private18,
+  UKey_Private19,
+  UKey_Private20,
+  UKey_Private21,
+  UKey_Private22,
+  UKey_Private23,
+  UKey_Private24,
+  UKey_Private25,
+  UKey_Private26,
+  UKey_Private27,
+  UKey_Private28,
+  UKey_Private29,
+  UKey_Private30,
+
+  /* modifier keys */
+  UKey_Shift = 0x8000,
+  UKey_Control,
+  UKey_Alt,
+  UKey_Meta,
+  UKey_Super,
+  UKey_Hyper,
+
+  /* lock modifier keys: unstable */
+  UKey_Caps_Lock = 0x9000,
   UKey_Num_Lock,
   UKey_Scroll_Lock,
 
-  UKey_Other = 1000
+#if 1
+  /* Deprecated. Please replace with UKey_Shift and so on. */
+  UKey_Shift_key = UKey_Shift,
+  UKey_Control_key = UKey_Control,
+  UKey_Alt_key = UKey_Alt,
+  UKey_Meta_key = UKey_Meta,
+  UKey_Super_key = UKey_Super,
+  UKey_Hyper_key = UKey_Hyper,
+#endif
+
+  UKey_Other = 0x10000
 };
   
 enum UKeyModifier {
