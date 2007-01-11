@@ -539,73 +539,31 @@ find_tail(uim_lisp pred, uim_lisp lst)
   return uim_scm_f();
 }
 
-/* Following is utility functions for C world */
-struct _locale_language_table {
-  char *locale;
-  char *language;
-};
-
-static struct _locale_language_table locale_language_table[] = {
-#include "iso-639-1.def"
-};
-#define NR_LOCALE_LANGUAGE \
-        (sizeof(locale_language_table) / sizeof(struct _locale_language_table))
-
-static const char *
-get_language_name_from_locale(const char *localename)
-{
-  unsigned int i;
-
-  assert(localename);
-
-  for (i = 0; i < NR_LOCALE_LANGUAGE; i++) {
-    if (strcmp(locale_language_table[i].locale, localename) == 0) {
-      return locale_language_table[i].language;
-    }
-  }
-  return NULL;
-}
-
 const char *
-uim_get_language_name_from_locale(const char *localename)
+uim_get_language_name_from_locale(const char *locale)
 {
-#if 1
-  /* performs adhoc "zh_TW:zh_HK" style locale handling as temporary
-     specification of this function for backward compatibility
-  */
-  uim_lisp ret;
+  uim_lisp lang_code, lang_name;
 
-  assert(localename);
+  assert(locale);
 
-  ret = uim_scm_call1(MAKE_SYM("langgroup-primary-lang-code"),
-                      MAKE_STR(localename));
-  localename = uim_scm_refer_c_str(ret);
-#endif
-  return get_language_name_from_locale(localename);
+  /* Performs adhoc "zh_TW:zh_HK" style locale handling as temporary
+   * specification of this function for backward compatibility. */
+  lang_code = uim_scm_call1(MAKE_SYM("langgroup-primary-lang-code"),
+                            MAKE_STR(locale));
+  lang_name = uim_scm_call1(MAKE_SYM("lang-code->lang-name"), lang_code);
+  return uim_scm_refer_c_str(lang_name);
 }
 
 const char *
 uim_get_language_code_from_language_name(const char *language_name)
 {
-  unsigned int i;
-  for (i = 0; i < NR_LOCALE_LANGUAGE; i++) {
-    if (strcmp(locale_language_table[i].language, language_name) == 0) {
-      return locale_language_table[i].locale;
-    }
-  }
-  return NULL;
-}
+  uim_lisp lang_code;
 
-static uim_lisp
-lang_code_to_lang_name_raw(uim_lisp code_)
-{
-  const char *code = uim_scm_refer_c_str(code_);
-  const char *name;
+  assert(language_name);
 
-  if (!code)
-    return uim_scm_f();
-  name = get_language_name_from_locale(code);
-  return (name) ? uim_scm_make_str(name) : uim_scm_f();
+  lang_code = uim_scm_call1(MAKE_SYM("lang-name->lang-code"),
+                            MAKE_STR(language_name));
+  return uim_scm_refer_c_str(lang_code);
 }
 
 static uim_lisp
@@ -647,6 +605,5 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
   uim_scm_init_subr_3("iterate-lists", iterate_lists);
   uim_scm_init_subr_2("find-tail", find_tail);
-  uim_scm_init_subr_1("lang-code->lang-name-raw", lang_code_to_lang_name_raw);
   uim_scm_init_subr_0("setugid?", setugidp);
 }

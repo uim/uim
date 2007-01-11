@@ -3,7 +3,7 @@ include $(top_builddir)/sigscheme/libgcroots.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = iso-639-1.def uim-compat-scm.c test-gc.c
+EXTRA_DIST = uim-compat-scm.c test-gc.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c

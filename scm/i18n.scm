@@ -191,6 +191,9 @@
 ;; language handling
 ;;
 
+;; requires 'N_' definition
+(require "iso-639-1.scm")
+
 ;; This predicate supports following langgrp formats
 ;;
 ;; "ja"          matches with the language exactly
@@ -213,9 +216,20 @@
 
 (define lang-code->lang-name
   (lambda (langcode)
-    (let ((langname (lang-code->lang-name-raw langcode)))
+    (let* ((pair (assoc langcode iso-639-1-alist))
+	   (langname (and pair
+			  (cdr pair))))
       (or langname
 	  "-"))))
+
+(define lang-name->lang-code
+  (lambda (langname)
+    (or (find (lambda (pair)
+                (and (string=? (cdr pair)
+                               langname)
+                     (car pair)))
+              iso-639-1-alist)
+        "-")))
 
 ;; returns "zh_TW" of "zh_TW:zh_HK"
 (define langgroup-primary-lang-code

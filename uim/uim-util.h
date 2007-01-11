@@ -40,18 +40,29 @@ extern "C" {
 #endif
 
 /**
- *  *
- * @param localename locale string. typical format of this string
- * is ll_CC.charset. E.G. for Japanese locale, ja_JP.EUC-JP
- * ll is language code defined in ISO 639, CC is country code defined
- * in ISO 3166.
- * @return language name string. (Now it's untranslated.)
+ * Returns human-readable language name from a locale string.
+ *
+ * @param locale locale string. typical format of this string is
+ * ll_CC.charset. e.g. for Japanese locale, ja_JP.EUC-JP ll is language code
+ * defined in ISO 639-1, CC is country code defined in ISO 3166.
+ *
+ * @return untranslated language name string, or else "-" if no language is
+ * matched. apply gettext() in caller side if needed.
  *
  * @see uim_create_context
  */
 const char *
-uim_get_language_name_from_locale(const char *localename);
+uim_get_language_name_from_locale(const char *locale);
 
+/**
+ * Returns ISO 639-1 language code from a human-readable language name.
+ *
+ * @param language_name a human-readable language name in English such as
+ * "Japanese".
+ *
+ * @return ISO 639-1 language code such as "ja", or else "-" if no language
+ * is matched.
+ */
 const char *
 uim_get_language_code_from_language_name(const char *language_name);
 

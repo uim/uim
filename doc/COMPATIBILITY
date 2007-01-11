@@ -57,12 +57,29 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Language strings fallback to "-"
+Affects: Bridge developers, Helper program developers
+Updates: C API
+Version: 1.5.0
+Revision: ac4375
+Date: 2007-01-11
+Modifier: YamaKen
+Related: iso-639-1.def removal
+URL:
+Changes:
+  (changed) uim_get_language_name_from_locale()
+  (changed) uim_get_language_code_from_language_name()
+Description:
+  These functions previously return NULL if no language is matched. But since
+  no program is checking it, I changed it returning "-" instead of NULL. It
+  is safer than previous behavior, and will not cause compatibility problems.
+------------------------------------------------------------------------------
 Summary: IM and context management concentration into Scheme
 Affects: uim developers
 Updates: Scheme API
 Version: 1.5.0
 Revision: ac4354, ac4359
-Date: 2007-01-10 -
+Date: 2007-01-10
 Modifier: YamaKen
 Related: 
 URL:
