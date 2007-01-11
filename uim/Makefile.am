@@ -35,7 +35,7 @@ libuim_la_SOURCES = uim.c uim-util.c uim-func.c uim-key.c \
 		uim-internal.h gettext.h \
 		uim-scm.c \
 		uim-helper.c uim-helper-client.c \
-		iconv.c intl.c \
+		rk.c iconv.c intl.c \
 		uim-ipc.c \
 		plugin.c
 

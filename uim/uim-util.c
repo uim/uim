@@ -38,10 +38,8 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
-#include <locale.h>
 #include <assert.h>
 
-#include "gettext.h" /* for iso-639-1.def */
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
@@ -171,101 +169,6 @@ nthcdr(uim_lisp nth_, uim_lisp lst)
     lst = uim_scm_cdr(lst);
   }
   return lst;
-}
-
-static uim_lisp
-str_seq_equal(uim_lisp seq, uim_lisp rule)
-{
-  int sl = uim_scm_length(seq);
-  int rl = uim_scm_length(rule);
-  int i;
-  if (sl != rl) {
-    return uim_scm_f();
-  }
-  for (i = 0; i < sl; i++) {
-    if (!uim_scm_string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
-      return uim_scm_f();
-    }
-    seq = uim_scm_cdr(seq);
-    rule = uim_scm_cdr(rule);
-  }
-  return uim_scm_t();
-}
-
-/*
- * Partial -> first string of remaining sequence
- *  eg. ("a" "b") ("a" "b" "c") -> "c"
- * Not partial -> #f
- *
- */
-static uim_lisp
-str_seq_partial(uim_lisp seq, uim_lisp rule)
-{
-  int sl = uim_scm_length(seq);
-  int rl = uim_scm_length(rule);
-  int i;
-
-  if (sl >= rl) {
-    return uim_scm_f();
-  }
-  /* Obviously. sl < rl */
-  for (i = 0; i < sl; i++) {
-    if (!uim_scm_string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
-      return uim_scm_f();
-    }
-    seq = uim_scm_cdr(seq);
-    rule = uim_scm_cdr(rule);
-  }
-  if (rule && uim_scm_car(rule)) {
-    return uim_scm_car(rule);
-  }
-  /* never reach here */
-  return uim_scm_f();
-}
-
-static uim_lisp
-rk_find_seq(uim_lisp seq, uim_lisp rules)
-{
-  for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
-    uim_lisp rule = uim_scm_car(rules);
-    uim_lisp key = uim_scm_car(uim_scm_car(rule));
-    if UIM_SCM_NFALSEP(str_seq_equal(seq, key)) {
-      return rule;
-    }
-  }
-  return uim_scm_f();
-}
-
-static uim_lisp
-rk_find_partial_seq(uim_lisp seq, uim_lisp rules)
-{
-  for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
-    uim_lisp rule = uim_scm_car(rules);
-    uim_lisp key = uim_scm_car(uim_scm_car(rule));
-    if UIM_SCM_NFALSEP(str_seq_partial(seq, key)) {
-      return rule;
-    }
-  }
-  return uim_scm_f();
-}
-
-/*
- * returns possible next characters
- * (rk-lib-expect-seq '("k" "y") ja-rk-rule) -> ("o" "e" "u" "i" "a")
- */
-static uim_lisp
-rk_expect_seq(uim_lisp seq, uim_lisp rules)
-{
-  uim_lisp cur, res = uim_scm_null_list();
-  for (cur = rules; !uim_scm_nullp(cur); cur = uim_scm_cdr(cur)) {
-    uim_lisp rule = uim_scm_car(cur);
-    uim_lisp key = CAR(CAR(rule));
-    uim_lisp e = str_seq_partial(seq, key);
-    if UIM_SCM_NFALSEP(e) {
-      res = uim_scm_cons(e, res);
-    }
-  }
-  return res;  /* don't return uim_scm_f() */
 }
 
 static uim_lisp
@@ -588,22 +491,19 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_1("file-regular?", file_regularp);
   uim_scm_init_subr_1("file-directory?", file_directoryp);
   uim_scm_init_subr_1("file-mtime", file_mtime);
-  uim_scm_init_subr_2("nthcdr", nthcdr);
-  uim_scm_init_subr_1("charcode->string", charcode2string);
-  uim_scm_init_subr_1("string->charcode", string2charcode);
-  uim_scm_init_subr_2("str-seq-equal?", str_seq_equal);
-  uim_scm_init_subr_2("str-seq-partial?", str_seq_partial);
-  uim_scm_init_subr_2("rk-lib-find-seq", rk_find_seq);
-  uim_scm_init_subr_2("rk-lib-find-partial-seq", rk_find_partial_seq);
-  uim_scm_init_subr_2("rk-lib-expect-seq", rk_expect_seq);
+  uim_scm_init_subr_0("setugid?", setugidp);
   uim_scm_init_subr_1("getenv", c_getenv);
   uim_scm_init_subr_3("setenv", c_setenv);
   uim_scm_init_subr_1("unsetenv", c_unsetenv);
+
+  /* these procedures should be replaced with standard ones of R5RS or SRFIs */
+  uim_scm_init_subr_2("nthcdr", nthcdr);
+  uim_scm_init_subr_1("charcode->string", charcode2string);
+  uim_scm_init_subr_1("string->charcode", string2charcode);
   uim_scm_init_subr_2("string-split", uim_split_string);
   uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
   uim_scm_init_subr_3("iterate-lists", iterate_lists);
   uim_scm_init_subr_2("find-tail", find_tail);
-  uim_scm_init_subr_0("setugid?", setugidp);
 }
