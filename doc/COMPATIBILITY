@@ -113,16 +113,20 @@ Summary: IM and context management concentration into Scheme
 Affects: uim developers
 Updates: Scheme API
 Version: 1.5.0
-Revision: ac4354, ac4359
+Revision: ac4354, ac4359, ac4382
 Date: 2007-01-10
 Modifier: YamaKen
 Related: 
 URL:
 Changes:
-      (new) im-retrieve-context
-  (changed) create-context
-  (removed) find-context
-  (removed) im-register-im
+         (new) im-retrieve-context
+         (new) context-uc
+         (new) context-set-uc!
+  (deprecated) context-id
+  (deprecated) context-set-id!
+     (changed) create-context
+     (removed) find-context
+     (removed) im-register-im
 Description:
   The complex and problematic IM registration and context management divided
   in C has been resolved. Now all IM and context management data is
@@ -130,6 +134,9 @@ Description:
   and Scheme-data synchronization problem on im-switching and so on.
   
   - create-context now returns created context
+  - The member 'id' of context record has been replaced with 'uc'. Each IMs
+    should follow the renaming although backward compatiblity procedure is
+    provided
 ------------------------------------------------------------------------------
 Summary: uim_symbol_value_str removal
 Affects: IM developers, Bridge developers

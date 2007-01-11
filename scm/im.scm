@@ -188,20 +188,20 @@
 	(find-default-im localestr))))
 
 (define uim-filter-convertible-ims
-  (lambda (id)
+  (lambda (uc)
     (filter (lambda (im)
-              (im-convertible? id (im-encoding im)))
+              (im-convertible? uc (im-encoding im)))
             im-list)))
 
 (define uim-n-convertible-ims
-  (lambda (id)
-    (length (uim-filter-convertible-ims id))))
+  (lambda (uc)
+    (length (uim-filter-convertible-ims uc))))
 
 (define uim-nth-convertible-im
-  (lambda (id n)
+  (lambda (uc n)
     (guard (err
             (else #f))
-      (list-ref (uim-filter-convertible-ims id) n))))
+      (list-ref (uim-filter-convertible-ims uc) n))))
 
 ;; called from uim_get_default_im_name()
 (define uim-get-default-im-name
@@ -228,33 +228,33 @@
 	  (car im-names)))))
 
 (define switch-im
-  (lambda (id name)
-    (im-switch-im id (next-im name))))
+  (lambda (uc name)
+    (im-switch-im uc (next-im name))))
 
 ;; FIXME: Input states are kept only if the state is appeared in the
 ;; toolbar.
 (define toggle-im
-  (lambda (id c)
+  (lambda (uc c)
     (let* ((cur-state (toggle-state-new (context-primary-im? c)
 					(im-name (context-im c))
 					(context-current-widget-states c)))
 	   (saved-state (context-toggle-state c)))
-      (im-switch-im id (if saved-state
+      (im-switch-im uc (if saved-state
 			   (toggle-state-im-name saved-state)
 			   toggle-im-alt-im))
       ;; retrieve new context replaced by im-switch-im
-      (let ((c (im-retrieve-context id)))
+      (let ((c (im-retrieve-context uc)))
 	(if saved-state
 	    (let ((orig-wstates (toggle-state-widget-states saved-state)))
 	      (context-update-widget-states! c orig-wstates)))
 	(context-set-toggle-state! c cur-state)))))
 
 (define reset-toggle-context!
-  (lambda (id ctx)
+  (lambda (uc ctx)
     (if (not (context-primary-im? ctx))
-	(toggle-im id ctx))
+	(toggle-im uc ctx))
     ;; ctx may be expired by the toggle-im
-    (context-set-toggle-state! (im-retrieve-context id) #f)))
+    (context-set-toggle-state! (im-retrieve-context uc) #f)))
 
 ;;
 ;; context-management
@@ -262,12 +262,16 @@
 (define context-list ())
 
 (define context-rec-spec
-  '((id           #f)  ;; must be first member
+  '((uc           #f)  ;; Scheme-wrapped uim_context. must be first member
     (im           #f)
     (widgets      ())  ;; may be renamed
     (toggle-state #f)
     (key-passthrough #f)))
 (define-record 'context context-rec-spec)
+;; backward compatibility: should be replaced with context-uc and
+;; context-set-uc!
+(define context-id context-uc)
+(define context-set-id! context-set-uc!)
 
 (define toggle-state-rec-spec
   '((primary?      #f)
@@ -303,22 +307,22 @@
 	  (cons c context-list))))
 
 (define create-context
-  (lambda (id lang name)
+  (lambda (uc lang name)
     (let* ((im (find-im name lang))
 	   (arg (and im (im-init-arg im))))
-      (im-set-encoding id (im-encoding im))
+      (im-set-encoding uc (im-encoding im))
       (update-style uim-color-spec (symbol-value uim-color))
       (let* ((handler (im-init-handler im))
-	     (c (handler id im arg))
+	     (c (handler uc im arg))
 	     (widget-ids (context-widgets c)))
 	(context-init-widgets! c widget-ids)
 	(register-context c)
         c))))
 
 (define release-context
-  (lambda (id)
-    (invoke-handler im-release-handler id)
-    (remove-context id)
+  (lambda (uc)
+    (invoke-handler im-release-handler uc)
+    (remove-context uc)
     #f))
 
 (define uim-context-im
@@ -347,8 +351,8 @@
 (define invoke-handler
   (lambda args
     (let* ((handler-reader (car args))
-	   (id (cadr args))
-	   (c (im-retrieve-context id))
+	   (uc (cadr args))
+	   (c (im-retrieve-context uc))
 	   (handler-args (cons c (cddr args)))
 	   (im (and c (context-im c)))
 	   (handler (and im (handler-reader im)))
@@ -362,80 +366,80 @@
 ;; proper GUI widget handling. More correction over entire uim
 ;; codes is needed.
 (define key-press-handler
-  (lambda (id key state)
-    (let* ((c (im-retrieve-context id))
+  (lambda (uc key state)
+    (let* ((c (im-retrieve-context uc))
 	   (im (and c (context-im c))))
       (context-set-key-passthrough! c #f)
       (cond
        ((and enable-im-toggle?
 	     (toggle-im-key? key state))
-	(toggle-im id c))
+	(toggle-im uc c))
        ((and enable-im-switch
 	     (switch-im-key? key state))
-	(switch-im id (im-name im)))
+	(switch-im uc (im-name im)))
        ((modifier-key? key state)
 	;; don't discard modifier press/release edge for apps
 	(im-commit-raw c))
        (else
-	(invoke-handler im-key-press-handler id key state)))
+	(invoke-handler im-key-press-handler uc key state)))
       (not (context-key-passthrough c)))))
 
 ;; Returns #t if input is filtered.
 (define key-release-handler
-  (lambda (id key state)
-    (let ((c (im-retrieve-context id)))
+  (lambda (uc key state)
+    (let ((c (im-retrieve-context uc)))
       (context-set-key-passthrough! c #f)
       (cond
        ((modifier-key? key state)
 	;; don't discard modifier press/release edge for apps
 	(im-commit-raw c))
        (else
-	(invoke-handler im-key-release-handler id key state)))
+	(invoke-handler im-key-release-handler uc key state)))
       (not (context-key-passthrough c)))))
 
 (define reset-handler
-  (lambda (id)
-    (invoke-handler im-reset-handler id)))
+  (lambda (uc)
+    (invoke-handler im-reset-handler uc)))
 
 (define focus-in-handler
-  (lambda (id)
-    (invoke-handler im-focus-in-handler id)))
+  (lambda (uc)
+    (invoke-handler im-focus-in-handler uc)))
 
 (define focus-out-handler
-  (lambda (id)
-    (invoke-handler im-focus-out-handler id)))
+  (lambda (uc)
+    (invoke-handler im-focus-out-handler uc)))
 
 (define place-handler
-  (lambda (id)
-    (invoke-handler im-place-handler id)))
+  (lambda (uc)
+    (invoke-handler im-place-handler uc)))
 
 (define displace-handler
-  (lambda (id)
-    (invoke-handler im-displace-handler id)))
+  (lambda (uc)
+    (invoke-handler im-displace-handler uc)))
 
 (define mode-handler
-  (lambda (id mode)
-    (invoke-handler im-mode-handler id mode)))
+  (lambda (uc mode)
+    (invoke-handler im-mode-handler uc mode)))
 
 (define prop-activate-handler
-  (lambda (id message)
-    (invoke-handler im-prop-activate-handler id message)))
+  (lambda (uc message)
+    (invoke-handler im-prop-activate-handler uc message)))
 
 (define input-string-handler
-  (lambda (id str)
-    (invoke-handler im-input-string-handler id str)))
+  (lambda (uc str)
+    (invoke-handler im-input-string-handler uc str)))
 
 (define custom-set-handler
-  (lambda (id custom-sym custom-val)
-    (invoke-handler im-custom-set-handler id custom-sym custom-val)))
+  (lambda (uc custom-sym custom-val)
+    (invoke-handler im-custom-set-handler uc custom-sym custom-val)))
 
 (define get-candidate
-  (lambda (id idx accel-enum-hint)
-    (invoke-handler im-get-candidate-handler id idx accel-enum-hint)))
+  (lambda (uc idx accel-enum-hint)
+    (invoke-handler im-get-candidate-handler uc idx accel-enum-hint)))
 
 (define set-candidate-index
-  (lambda (id idx)
-    (invoke-handler im-set-candidate-index-handler id idx)))
+  (lambda (uc idx)
+    (invoke-handler im-set-candidate-index-handler uc idx)))
 
 (define im-acquire-text
   (lambda (c id origin former-len latter-len)
