@@ -46,6 +46,17 @@
 #include "uim-util.h"
 
 
+static void *uim_iconv_open(const char *tocode, const char *fromcode);
+static int uim_iconv_is_convertible(const char *tocode, const char *fromcode);
+static void *uim_iconv_create(const char *tocode, const char *fromcode);
+static char *uim_iconv_code_conv(void *obj, const char *str);
+static void uim_iconv_release(void *obj);
+
+static int check_encoding_equivalence(const char *tocode,
+                                      const char *fromcode);
+static const char **uim_get_encoding_alias(const char *encoding);
+
+
 static struct uim_code_converter uim_iconv_tbl = {
   uim_iconv_is_convertible,
   uim_iconv_create,
@@ -55,11 +66,6 @@ static struct uim_code_converter uim_iconv_tbl = {
 struct uim_code_converter *uim_iconv = &uim_iconv_tbl;
 
 #include "encoding-table.c"
-
-
-static int check_encoding_equivalence(const char *tocode,
-                                      const char *fromcode);
-static const char **uim_get_encoding_alias(const char *encoding);
 
 
 static int
@@ -106,7 +112,7 @@ check_encoding_equivalence(const char *tocode, const char *fromcode)
   return found;
 }
 
-int
+static int
 uim_iconv_is_convertible(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
@@ -138,7 +144,7 @@ uim_get_encoding_alias(const char *encoding)
   return NULL;
 }
 
-void *
+static void *
 uim_iconv_open(const char *tocode, const char *fromcode)
 {
   iconv_t cd = (iconv_t)-1;
@@ -183,7 +189,7 @@ uim_iconv_open(const char *tocode, const char *fromcode)
   return (void *)cd;
 }
 
-void *
+static void *
 uim_iconv_create(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
@@ -199,7 +205,7 @@ uim_iconv_create(const char *tocode, const char *fromcode)
   return (void *)ic;
 }
 
-char *
+static char *
 uim_iconv_code_conv(void *obj, const char *str)
 {
   iconv_t ic;
@@ -226,7 +232,7 @@ uim_iconv_code_conv(void *obj, const char *str)
   return strdup(realbuf);
 }
 
-void
+static void
 uim_iconv_release(void *obj)
 {
   int err;

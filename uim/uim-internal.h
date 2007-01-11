@@ -115,11 +115,6 @@ void uim_init_intl_subrs(void);
 void uim_init_plugin(void);
 void uim_quit_plugin(void);
 
-int uim_iconv_is_convertible(const char *tocode, const char *fromcode);
-void *uim_iconv_create(const char *tocode, const char *fromcode);
-char *uim_iconv_code_conv(void *obj, const char *str);
-void uim_iconv_release(void *obj);
-
 uim_bool uim_issetugid(void);
 
 #ifdef __cplusplus

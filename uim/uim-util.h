@@ -66,9 +66,6 @@ uim_get_language_name_from_locale(const char *locale);
 const char *
 uim_get_language_code_from_language_name(const char *language_name);
 
-/* uim's iconv_open wrapper */
-void *uim_iconv_open(const char *tocode, const char *fromcode);
-
 #ifdef __cplusplus
 }
 #endif

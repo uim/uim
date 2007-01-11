@@ -57,6 +57,25 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: uim_iconv_open() privatization
+Affects: Bridge developers
+Updates: C API
+Version: 1.5.0
+Revision: ac4377
+Date: 2007-01-11
+Modifier: YamaKen
+Related: iconv.c separation on ac4376
+URL:
+Changes:
+  (removed) uim_iconv_open()
+Description:
+  Direct access to the default uim_code_converter implementation from libuim
+  users has been inhibited. It should be used as an abstract object via
+  uim_code_converter interface, such as uim_iconv->create(). Please rewrite
+  the direct use of the implementation. This is required to isolate platform
+  dependency from libuim core. Although libuim is still depending on iconv,
+  it will be a bridge-dependent optional module.
+------------------------------------------------------------------------------
 Summary: Language strings fallback to "-"
 Affects: Bridge developers, Helper program developers
 Updates: C API
