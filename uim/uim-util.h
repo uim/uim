@@ -66,6 +66,20 @@ uim_get_language_name_from_locale(const char *locale);
 const char *
 uim_get_language_code_from_language_name(const char *language_name);
 
+
+/* command execution in pipe-connected subprocess (like popen(3))*/
+int
+uim_ipc_open_command(int old_pid, FILE **read_handler, FILE **write_handler, const char *command);
+int
+uim_ipc_open_command_with_option(int old_pid, FILE **read_handler, FILE **write_handler, const char *command, const char *option);
+char *
+uim_ipc_send_command(int *pid, FILE **read_handler,
+		     FILE **write_handler, const char *command, const char *str);
+
+/* an uim_code_converter implementation using iconv */
+extern struct uim_code_converter *uim_iconv;
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -57,6 +57,24 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Non-core API move to uim-util.h
+Affects: IM developers, Bridge developers
+Updates: C API
+Version: 1.5.0
+Revision: ac4386
+Date: 2007-01-11
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+  (moved) uim_ipc_open_command()
+  (moved) uim_ipc_open_command_with_option()
+  (moved) uim_ipc_send_command()
+  (moved) uim_iconv
+Description:
+  Declarations for these functions and global variable uim_iconv have been
+  moved to uim-util.h from uim.h since they are not core uim API.
+------------------------------------------------------------------------------
 Summary: Deprecation of UKey_Shift_key and so on
 Affects: Bridge developers
 Updates: C API, libuim ABI

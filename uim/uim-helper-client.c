@@ -51,6 +51,7 @@
 #include "uim.h"
 #include "uim-helper.h"
 #include "uim-internal.h"
+#include "uim-util.h"
 
 
 #define RECV_BUFFER_SIZE 1024

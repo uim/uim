@@ -193,7 +193,7 @@ static void init_uim(const char *engine)
     printf("uim_init error\n");
     exit(EXIT_FAILURE);
   }
-  g_context = uim_create_context(NULL, get_enc(), NULL, engine, uim_iconv, commit_cb);
+  g_context = uim_create_context(NULL, get_enc(), NULL, engine, NULL, commit_cb);
   nr = uim_get_nr_im(g_context);
   for (i = 0; i < nr; i++) {
     if (strcmp(engine, uim_get_im_name(g_context, i)) == 0) {
@@ -1207,7 +1207,7 @@ static void usage(void)
   int max_im_name_len = 0;
 
   uim_init();
-  context = uim_create_context(NULL, get_enc(), NULL, NULL, uim_iconv, commit_cb);
+  context = uim_create_context(NULL, get_enc(), NULL, NULL, NULL, commit_cb);
 
   printf("uim-fep version %s\n", PACKAGE_VERSION);
   printf("Usage: uim-fep [OPTIONS]\n");

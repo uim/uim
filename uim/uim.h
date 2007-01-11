@@ -933,18 +933,6 @@ uim_set_im_switch_request_cb(uim_context uc,
 			     void (*sw_app_im_cb)(void *ptr, const char *name),
 			     void (*sw_system_im_cb)(void *ptr, const char *name));
 
-/* Utility functions */
-int
-uim_ipc_open_command(int old_pid, FILE **read_handler, FILE **write_handler, const char *command);
-int
-uim_ipc_open_command_with_option(int old_pid, FILE **read_handler, FILE **write_handler, const char *command, const char *option);
-char *
-uim_ipc_send_command(int *pid, FILE **read_handler,
-		     FILE **write_handler, const char *command, const char *str);
-
-/* an uim_code_converter implementation using iconv */
-extern struct uim_code_converter *uim_iconv;
-
 #ifdef __cplusplus
 }
 #endif

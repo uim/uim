@@ -35,8 +35,10 @@
 */
 #include <stdio.h>
 #include <ctype.h>
-#include "uim.h"
 #include <stdlib.h>
+
+#include "uim.h"
+#include "uim-util.h"
 
 static struct agent_context {
   uim_context uc;

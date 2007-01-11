@@ -51,6 +51,7 @@
 #include "uim-scm.h"
 #include "plugin.h"
 #include "uim-helper.h"
+#include "uim-util.h"
 
 #define BUFFER_SIZE (4 * 1024)
 

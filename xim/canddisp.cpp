@@ -42,6 +42,7 @@
 #include <fcntl.h>
 
 #include "uim/uim.h"
+#include "uim/uim-util.h"
 #ifdef UIM_COMPAT_SCM
 #include "uim/uim-compat-scm.h"
 #endif /* UIM_COMPAT_SCM */

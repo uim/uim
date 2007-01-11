@@ -400,7 +400,7 @@ InputContext::createUimContext(const char *engine)
     }
 
     uim_context uc = uim_create_context((void *) this, "UTF-8",
-					NULL, real_im, uim_iconv,
+					NULL, real_im, NULL,
 					InputContext::commit_cb);
 
     if (uc) {

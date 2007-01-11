@@ -55,6 +55,7 @@
 #include "helper.h"
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-helper.h>
+#include <uim/uim-util.h>
 
 /* ステータスラインの最大幅 */
 static int s_max_width;
