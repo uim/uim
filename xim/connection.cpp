@@ -48,8 +48,6 @@
 # include <alloca.h>
 #endif
 
-#include "uim/uim-stdint.h"
-
 #define BUF_SIZE 1024
 #define TRANSPORT_UNIT 20
 #define TRANSPORT_MAX 20	// Emacs's XIM won't work correctly when the value is 100

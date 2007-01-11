@@ -47,7 +47,6 @@
 #include <errno.h>
 #include <pwd.h>
 
-#include "uim-stdint.h"
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"

@@ -50,7 +50,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "uim-stdint.h"
 #include "uim-scm.h"
 #include "uim-internal.h"
 /* To avoid macro name conflict with SigScheme, uim-scm-abbrev.h should not

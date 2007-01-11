@@ -51,7 +51,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "uim-stdint.h"
 #include "uim-scm.h"
 #include "uim-custom.h"
 #include "uim-internal.h"

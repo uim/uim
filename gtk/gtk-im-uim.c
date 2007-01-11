@@ -50,7 +50,6 @@
 #include <unistd.h>
 #include <locale.h>
 
-#include "uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-util.h"
 #include "uim/uim-helper.h"

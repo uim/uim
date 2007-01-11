@@ -232,16 +232,31 @@ AM_CONDITIONAL(WITH_XFT, test x"$XFT" = "xtrue")
 # Checks for header files
 AC_HEADER_STDC
 AC_HEADER_STDBOOL
+AC_CHECK_HEADERS([stdint.h inttypes.h sys/inttypes.h sys/types.h])
 AC_CHECK_HEADERS([fcntl.h locale.h stdlib.h unistd.h errno.h])
 AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h sys/termios.h wchar.h])
 AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h])
-AX_CREATE_STDINT_H(uim/uim-stdint.h)
 
 # Check for types
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INTMAX_T
+AC_TYPE_INTPTR_T
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINTMAX_T
+AC_TYPE_UINTPTR_T
+
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+
 AC_TYPE_PID_T
 AC_TYPE_SIGNAL
 AC_CHECK_TYPES(sig_atomic_t, , ,

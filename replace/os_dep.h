@@ -34,6 +34,21 @@
 #ifndef _os_dep_h_included_
 #define _os_dep_h_included_
 
+/* stdint.h compatible type definitions */
+#if HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#if HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+#if HAVE_SYS_INTTYPES_H
+#include <sys/inttypes.h>
+#endif
+#if HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#include <limits.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

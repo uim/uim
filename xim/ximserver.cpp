@@ -63,7 +63,6 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-compat-scm.h"
-#include "uim/uim-stdint.h"
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H

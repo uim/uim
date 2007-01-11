@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include <locale.h>
 
-#include "uim/uim-stdint.h"
 #include "uim/uim.h"
 #include "uim/uim-custom.h"
 #include "uim/gettext.h"
