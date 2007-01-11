@@ -1174,8 +1174,7 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     size_t ret_val;
     iconv_t cd;
 
-    cd = (iconv_t)uim_iconv_open("UTF-8", enc);
-    if (cd == (iconv_t)-1) {
+    if (!uim_iconv->is_convertible("UTF-8", enc)) {
 	perror("error in iconv_open");
 	utf8[0] = '\0';
 	return 0;
@@ -1183,13 +1182,19 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
 
     inbuf = str;
     if (!inbuf) {
-	iconv_close(cd);
 	utf8[0] = '\0';
 	return 0;
     }
+
+    cd = (iconv_t)uim_iconv->create("UTF-8", enc);
+
+    // no conversion needed
+    if (!cd)
+	return strlcpy(utf8, inbuf, len + 1);
+
     outbuf = (char *)malloc(outbufsize);
     if (!outbuf) {
-	iconv_close(cd);
+	uim_iconv->release(cd);
 	utf8[0] = '\0';
 	return 0;
     }
@@ -1201,12 +1206,12 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
 
     if (ret_val == (size_t)-1 && errno != E2BIG) {
 	//perror("error in iconv");
-	iconv_close(cd);
+	uim_iconv->release(cd);
 	free(outbuf);
 	utf8[0] = '\0';
 	return 0;
     }
-    iconv_close(cd);
+    uim_iconv->release(cd);
 
     strlcpy(utf8, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);

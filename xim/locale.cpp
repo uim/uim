@@ -235,14 +235,17 @@ private:
 UTF8_Locale::UTF8_Locale(const char *encoding)
 {
     mEncoding = strdup(encoding);
-    m_iconv_cd = (iconv_t)uim_iconv_open(encoding, "UTF-8");
+    if (uim_iconv->is_convertible(encoding, "UTF-8"))
+	m_iconv_cd = (iconv_t)uim_iconv->create(encoding, "UTF-8");
+    else
+	m_iconv_cd = (iconv_t)-1;
 }
 
 UTF8_Locale::~UTF8_Locale()
 {
     free(mEncoding);
-    if (m_iconv_cd != (iconv_t)-1)
-        iconv_close(m_iconv_cd);
+    if (m_iconv_cd != (iconv_t)-1 && m_iconv_cd)
+        uim_iconv->release(m_iconv_cd);
 }
 
 char *UTF8_Locale::utf8_to_native_str(char *utf8) {
@@ -259,6 +262,10 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
     inbuf = utf8;
     if (!inbuf)
 	return NULL;
+
+    // no conversion needed
+    if (!m_iconv_cd)
+	return strdup(inbuf);
 
     outbuf = (char *)malloc(outbufsize);
     if (!outbuf)
