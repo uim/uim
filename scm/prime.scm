@@ -114,7 +114,7 @@
 (define prime-keymap-get-keymap
   (lambda (context key key-state)
     (let ((mode (prime-context-mode context))
-	  (keymap))
+	  (keymap #f))
       (cond 
        ((= mode prime-mode-latin)
 	(set! keymap prime-keymap-latin-mode))
@@ -130,7 +130,7 @@
   (lambda (context key key-state)
     (let ((state    (prime-context-state context))
 	  (language (prime-context-language context))
-	  (keymap))
+	  (keymap #f))
       (cond
        ((eq? state 'prime-state-segment)
 	(set! keymap prime-keymap-segment-state))
@@ -540,7 +540,7 @@
 (define prime-context-initialize!
   (lambda (context)
     ;(print "prime-context-initialize!")
-    (if (null? (prime-context-session context))
+    (if (not (prime-context-session context))
 	(begin
 	  ;; The prime server is initialized here.
 	  (prime-lib-init prime-use-unixdomain?)
@@ -560,14 +560,14 @@
   (lambda (context)
     ;(print "prime-context-push")
     (let* ((im (prime-context-im context))
-	   (id (prime-context-id context))
-           (root-context (im-retrieve-context id))
-	   (new-context (prime-context-new2 id im)))
+	   (uc (prime-context-uc context))
+           (root-context (im-retrieve-context uc))
+	   (new-context (prime-context-new2 uc im)))
 
       (prime-context-set-history! new-context (prime-context-history context))
       (set-cdr! (assoc 'state (prime-context-history new-context))
 		'prime-state-pushed)
-      (prime-context-set-parent-context! new-context (cons id (cdr context)))
+      (prime-context-set-parent-context! new-context (cons uc (cdr context)))
       ;; FIXME: Directly overwriting root-context prevents flexible input
       ;; context composition such as <im-switcher context> -> <prime
       ;; context>.  In such case, this code break both im-switcher context
@@ -581,8 +581,8 @@
 (define prime-context-pop
   (lambda (context)
     (let* ((parent-context (prime-context-parent-context context))
-           (id (prime-context-id context))
-           (root-context (im-retrieve-context id)))
+           (uc (prime-context-uc context))
+           (root-context (im-retrieve-context uc)))
       (map
        (lambda (lang-pair)
 	 (prime-engine-session-end (cdr lang-pair)))
@@ -625,19 +625,19 @@
 			       (prime-context-nth context))))
       (cond
        ((not (equal? state
-		     (cdr (assoc 'state prev-data))))
+		     (safe-cdr (assoc 'state prev-data))))
 	'state)
        ((not (equal? (prime-context-get-preedit-line context)
-		     (cdr (assoc 'preedit-line prev-data))))
+		     (safe-cdr (assoc 'preedit-line prev-data))))
 	'preedit)
        ((not (equal? (prime-context-fund-line context)
-		     (cdr (assoc 'fund-line prev-data))))
+		     (safe-cdr (assoc 'fund-line prev-data))))
 	'cursor)
        ((not (equal? selected-index
-		     (cdr (assoc 'selected-index prev-data))))
+		     (safe-cdr (assoc 'selected-index prev-data))))
 	'nth)
        ((not (equal? (prime-context-modification context)
-		     (cdr (assoc 'conversion-line prev-data))))
+		     (safe-cdr (assoc 'conversion-line prev-data))))
 	'cursor)
        ))))
 
@@ -1461,7 +1461,7 @@
 
 (define prime-command-app-mode-internal
   (lambda (context key key-state key-list)
-    (let ((key-data (car key-list)))
+    (let ((key-data (safe-car key-list)))
       (cond
        ;; there's no speficied command then pressed key is passed.
        ((eq? key-list '())
@@ -1545,17 +1545,21 @@
      ;; right motion
      ((and (> motion-arg 0)
 	   (not (null? (cdr line))))
-      (let ((line-left  (cons (car (prime-editor-get-right line))
+      (let ((line-left  (cons (car (or (pair? (prime-editor-get-right line))
+				       '(() . ())))
 			      (prime-editor-get-left line)))
-	    (line-right (cdr (prime-editor-get-right line))))
+	    (line-right (cdr (or (pair? (prime-editor-get-right line))
+				 '(() . ())))))
 	(prime-editor-set-left  line line-left)
 	(prime-editor-set-right line line-right))
       (prime-editor-cursor-move line (- motion-arg 1)))
      ;; left motion
      ((and (< motion-arg 0)
 	   (not (null? (car line))))
-      (let ((line-left  (cdr (prime-editor-get-left line)))
-	    (line-right (cons (car (prime-editor-get-left line))
+      (let ((line-left  (cdr (or (pair? (prime-editor-get-left line))
+				 '(() . ()))))
+	    (line-right (cons (car (or (pair? (prime-editor-get-left line))
+				       '(() . ())))
 			      (prime-editor-get-right line))))
 	(prime-editor-set-left  line line-left)
 	(prime-editor-set-right line line-right))
@@ -1568,11 +1572,13 @@
 
 (define prime-editor-backspace-char
   (lambda (line)
-    (prime-editor-set-left  line (cdr (prime-editor-get-left line)))))
+    (prime-editor-set-left  line (cdr (or (pair? (prime-editor-get-left line))
+					  '(() . ()))))))
 
 (define prime-editor-delete-char
   (lambda (line)
-    (prime-editor-set-right line (cdr (prime-editor-get-right line)))))
+    (prime-editor-set-right line (cdr (or (pair? (prime-editor-get-right line))
+					  '(() . ()))))))
 
 
 ;; This returns a preediting string.
@@ -1657,9 +1663,12 @@
     (prime-learn-word context word-data)
     (prime-commit-string
      context
-     (string-append (or (cadr (assoc "base"        word-data)) "")
-		    (or (cadr (assoc "conjugation" word-data)) "")
-		    (or (cadr (assoc "suffix"      word-data)) "")))))
+     (string-append (or (safe-car (safe-cdr (assoc "base"        word-data)))
+			"")
+		    (or (safe-car (safe-cdr (assoc "conjugation" word-data)))
+			"")
+		    (or (safe-car (safe-cdr (assoc "suffix"      word-data)))
+			"")))))
 
 (define prime-commit-preedition
   (lambda (context)
@@ -1699,12 +1708,17 @@
 
 (define prime-learn-word
   (lambda (context assoc-list)
-    (let ((key     (or (cadr (assoc "basekey"     assoc-list)) ""))
-	  (value   (or (cadr (assoc "base"        assoc-list)) ""))
-	  (part    (or (cadr (assoc "part"        assoc-list)) ""))
+    (let ((key     (or (safe-car (safe-cdr (assoc "basekey"     assoc-list)))
+		       ""))
+	  (value   (or (safe-car (safe-cdr (assoc "base"        assoc-list)))
+		       ""))
+	  (part    (or (safe-car (safe-cdr (assoc "part"        assoc-list)))
+		       ""))
 	  (prime-context (or (prime-context-last-word context) ""))
-	  (suffix  (or (cadr (assoc "conjugation" assoc-list)) ""))
-	  (rest    (or (cadr (assoc "suffix"      assoc-list)) "")))
+	  (suffix  (or (safe-car (safe-cdr (assoc "conjugation" assoc-list)))
+		       ""))
+	  (rest    (or (safe-car (safe-cdr (assoc "suffix"      assoc-list)))
+		       "")))
       
       (prime-engine-learn-word key value part prime-context suffix rest)
       (prime-context-set-last-word! context
@@ -1728,7 +1742,7 @@
 
 (define prime-convert-start-internal
   (lambda (context init-idx)
-    (let ((res))
+    (let ((res #f))
       (prime-convert-get-conversion context)
       (set! res (prime-get-nth-candidate context init-idx))
       (if res
@@ -1791,7 +1805,7 @@
     (let ((session (prime-context-session context))
 	  (mode (prime-context-mode context)))
       (cond
-       ((null? session)
+       ((not session)
 	#f)  ;; Do nothing.
 
        (else
@@ -1811,7 +1825,7 @@
   (lambda (context)
     (let ((session (prime-context-session context)))
       (cond
-       ((null? session)
+       ((not session)
 	#f)  ;; Do nothing.
 
        (else
@@ -1960,7 +1974,7 @@
 
 (define prime-display-preedit
   (lambda (context preedit-list)
-    (if preedit-list
+    (if (not (null? preedit-list))
 	(let ((type   (car (car preedit-list)))
 	      (string (cdr (car preedit-list))))
 	  (cond
@@ -2079,7 +2093,7 @@
 (define prime-mode-language-set
   (lambda (context language)
     (let* ((lang-session-list (prime-context-lang-session-list context))
-	   (session (cdr (assoc language lang-session-list))))
+	   (session (safe-cdr (assoc language lang-session-list))))
       (if (not session)
 	  (begin
 	    (set! session (prime-engine-session-language-set language))
@@ -2097,7 +2111,8 @@
 	       (nth index-no (prime-context-candidates context)))))
       ;; The return value is a list with a candidate string and the next index.
       (list (prime-candidate-combine-string context candidate)
-	    (digit->string (+ index-no 1))))))
+	    (digit->string (+ index-no 1))
+	    ""))))
 
 (define prime-candidate-combine-string
   (lambda (context candidate)
@@ -2129,7 +2144,7 @@
 
 (define prime-candidate-get-data
   (lambda (candidate key)
-    (cadr (assoc key (nth 1 candidate)))))
+    (safe-car (safe-cdr (assoc key (nth 1 candidate))))))
 
 (define prime-set-candidate-index-handler
   (lambda (context selection-index)
