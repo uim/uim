@@ -35,8 +35,6 @@
 
 #include <config.h>
 
-#include <stdio.h>
-
 #include "uim.h"
 #include "uim-scm.h"
 
@@ -56,62 +54,67 @@ struct uim_candidate_ {
 };
 
 struct uim_context_ {
-  /* cookier pointer */
-  void *ptr;
-  /* Scheme-side context */
-  uim_lisp sc;
-  /**/
-  uim_bool is_enabled;
+  uim_lisp sc;  /* Scheme-side context */
+  void *ptr;    /* 1st callback argument */
 
+  /* encoding handlings */
+  char *client_encoding;
   struct uim_code_converter *conv_if;
   void *outbound_conv;
   void *inbound_conv;
-  char *client_encoding;
-  /**/
+
+  /* whether key input to IM is enabled */
+  uim_bool is_enabled;
+
+  /* legacy 'mode' API*/
+  int mode;
   int nr_modes;
   char **modes;
-  /**/
-  int mode;
-  /**/
+  /* legacy 'property' API */
   char *propstr;
-  /**/
+
+  /* commit */
   void (*commit_cb)(void *ptr, const char *str);
   /* preedit */
   void (*preedit_clear_cb)(void *ptr);
   void (*preedit_pushback_cb)(void *ptr, int attr, const char *str);
   void (*preedit_update_cb)(void *ptr);
-  /* mode list */
-  void (*mode_list_update_cb)(void *ptr);
-  /* mode */
-  void (*mode_update_cb)(void *ptr, int);
-  /* property list */
-  void (*prop_list_update_cb)(void *ptr, const char *str);
-  /* candidate window */
+  /* candidate selector */
   void (*candidate_selector_activate_cb)(void *ptr, int nr, int index);
   void (*candidate_selector_select_cb)(void *ptr, int index);
   void (*candidate_selector_shift_page_cb)(void *ptr, int direction);
   void (*candidate_selector_deactivate_cb)(void *ptr);
   /* text acquisition */
-  int (*acquire_text_cb)(void *ptr, enum UTextArea text_id, enum UTextOrigin origin, int former_len, int latter_len, char **former, char **latter);
-  int (*delete_text_cb)(void *ptr, enum UTextArea text_id, enum UTextOrigin origin, int former_len, int latter_len);
+  int (*acquire_text_cb)(void *ptr,
+                         enum UTextArea text_id, enum UTextOrigin origin,
+                         int former_len, int latter_len,
+                         char **former, char **latter);
+  int (*delete_text_cb)(void *ptr,
+                        enum UTextArea text_id, enum UTextOrigin origin,
+                        int former_len, int latter_len);
+
+  /* mode */
+  void (*mode_list_update_cb)(void *ptr);
+  void (*mode_update_cb)(void *ptr, int);
+  /* property */
+  void (*prop_list_update_cb)(void *ptr, const char *str);
+
   /* configuration changed */
   void (*configuration_changed_cb)(void *ptr);
-  /* switch IM */
+  /* IM switching */
   void (*switch_app_global_im_cb)(void *ptr, const char *name);
   void (*switch_system_global_im_cb)(void *ptr, const char *name);
 };
 
 
-/**/
 void uim_scm_init(const char *verbose_level);
 void uim_scm_quit(void);
 
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
 void uim_init_im_subrs(void);
-void uim_init_intl_subrs(void);
 
-/**/
+void uim_init_intl_subrs(void);
 void uim_init_plugin(void);
 void uim_quit_plugin(void);
 

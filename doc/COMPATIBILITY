@@ -106,7 +106,7 @@ Changes:
       (new) im-retrieve-context
   (changed) create-context
   (removed) find-context
-  (removed) register-im
+  (removed) im-register-im
 Description:
   The complex and problematic IM registration and context management divided
   in C has been resolved. Now all IM and context management data is
