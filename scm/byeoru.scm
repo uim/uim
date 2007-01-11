@@ -1399,7 +1399,7 @@
 	    (res (rk-push-key! rkc key-str))
 	    (pend (rk-pending rkc))
 	    (cur-seq (rk-current-seq rkc))
-	    (candidates (and (not (null? cur-seq)) (cadr cur-seq))))
+	    (candidates (and cur-seq (cadr cur-seq))))
 
        (define (byeoru-prepend-ieung)
 	 (byeoru-automata-backspace ba)
