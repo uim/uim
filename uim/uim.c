@@ -55,19 +55,9 @@ static uim_lisp get_nth_im(uim_context uc, int nth);
 static uim_bool uim_initialized;
 
 
-void
-uim_set_preedit_cb(uim_context uc,
-		   void (*clear_cb)(void *ptr),
-		   void (*pushback_cb)(void *ptr,
-				       int attr,
-				       const char *str),
-		   void (*update_cb)(void *ptr))
-{
-  uc->preedit_clear_cb = clear_cb;
-  uc->preedit_pushback_cb = pushback_cb;
-  uc->preedit_update_cb = update_cb;
-}
-
+/****************************************************************
+ * Core APIs                                                    *
+ ****************************************************************/
 uim_context
 uim_create_context(void *ptr,
 		   const char *enc,
@@ -139,6 +129,30 @@ uim_create_context(void *ptr,
 }
 
 void
+uim_release_context(uim_context uc)
+{
+  int i;
+
+  if (!uc)
+    return;
+
+  uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
+  uim_scm_gc_unprotect(&uc->sc);
+  if (uc->outbound_conv)
+    uc->conv_if->release(uc->outbound_conv);
+  if (uc->inbound_conv)
+    uc->conv_if->release(uc->inbound_conv);
+  for (i = 0; i < uc->nr_modes; i++) {
+    free(uc->modes[i]);
+    uc->modes[i] = NULL;
+  }
+  free(uc->propstr);
+  free(uc->modes);
+  free(uc->client_encoding);
+  free(uc);
+}
+
+void
 uim_reset_context(uim_context uc)
 {
   uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_PTR(uc));
@@ -169,277 +183,16 @@ uim_displace_context(uim_context uc)
 }
 
 void
-uim_set_configuration_changed_cb(uim_context uc,
-				 void (*changed_cb)(void *ptr))
+uim_set_preedit_cb(uim_context uc,
+		   void (*clear_cb)(void *ptr),
+		   void (*pushback_cb)(void *ptr,
+				       int attr,
+				       const char *str),
+		   void (*update_cb)(void *ptr))
 {
-  uc->configuration_changed_cb = changed_cb;
-}
-
-void
-uim_set_im_switch_request_cb(uim_context uc,
-			     void (*sw_app_im_cb)(void *ptr, const char *name),
-			     void (*sw_system_im_cb)(void *ptr, const char *name))
-{
-  uc->switch_app_global_im_cb = sw_app_im_cb;
-  uc->switch_system_global_im_cb = sw_system_im_cb;
-}
-
-void
-uim_switch_im(uim_context uc, const char *engine)
-{
-  /* related to the commit log of r1400:
-
-     We should not add the API uim_destroy_context(). We should move
-     IM-switching feature into Scheme instead. It removes the context
-     management code related to IM-switching duplicated in several IM
-     bridges. Refer the implementation of GtkIMMulticontext as example
-     of proxy-like IM-switcher. It does IM-switching without extending
-     immodule API. We should follow its design to make our API simple.
-     -- 2004-10-05 YamaKen
-  */
-  uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_STR(engine));
-}
-
-void
-uim_release_context(uim_context uc)
-{
-  int i;
-
-  if (!uc)
-    return;
-
-  uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
-  uim_scm_gc_unprotect(&uc->sc);
-  if (uc->outbound_conv)
-    uc->conv_if->release(uc->outbound_conv);
-  if (uc->inbound_conv)
-    uc->conv_if->release(uc->inbound_conv);
-  for (i = 0; i < uc->nr_modes; i++) {
-    free(uc->modes[i]);
-    uc->modes[i] = NULL;
-  }
-  free(uc->propstr);
-  free(uc->modes);
-  free(uc->client_encoding);
-  free(uc);
-}
-
-int
-uim_get_nr_modes(uim_context uc)
-{
-  return uc->nr_modes;
-}
-
-const char *
-uim_get_mode_name(uim_context uc, int nth)
-{
-  if (nth >= 0 && nth < uc->nr_modes) {
-    return uc->modes[nth];
-  }
-  return NULL;
-}
-
-void
-uim_set_mode_list_update_cb(uim_context uc,
-			    void (*update_cb)(void *ptr))
-{
-  uc->mode_list_update_cb = update_cb;
-}
-
-void
-uim_set_prop_list_update_cb(uim_context uc,
-			    void (*update_cb)(void *ptr, const char *str))
-{
-  uc->prop_list_update_cb = update_cb;
-}
-
-/* Obsolete */
-void
-uim_set_prop_label_update_cb(uim_context uc,
-			     void (*update_cb)(void *ptr, const char *str))
-{
-}
-
-void
-uim_prop_activate(uim_context uc, const char *str)
-{
-  if (!str)
-    return;
-      
-  uim_scm_call2(MAKE_SYM("prop-activate-handler"),
-                MAKE_PTR(uc), MAKE_STR(str));
-}
-
-/** Update custom value from property message.
- * Update custom value from property message. All variable update is
- * validated by custom APIs rather than arbitrary sexp
- * evaluation. Custom symbol \a custom is quoted in sexp string to be
- * restricted to accept symbol literal only. This prevents arbitrary
- * sexp evaluation.
- */
-void
-uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
-{
-  if (!custom || !val)
-    return;
-
-  uim_scm_call3(MAKE_SYM("custom-set-handler"),
-                MAKE_PTR(uc),
-                MAKE_SYM(custom),
-                uim_scm_eval_c_string(val));
-}
-
-
-/* Tentative name. I followed above uim_prop_update_custom, but prop 
-would not be proper to this function. */
-/*
- * As I described in doc/HELPER-PROTOCOL, it had wrongly named by my
- * misunderstanding about what is the 'property' of uim. It should be
- * renamed along with corresponding procol names when an appropriate
- * time has come.  -- YamaKen 2005-09-12
- */
-uim_bool
-uim_prop_reload_configs(void)
-{
-  /* FIXME: handle return value properly. */
-  uim_scm_call0(MAKE_SYM("custom-reload-user-configs"));
-  return UIM_TRUE;
-}
-
-int
-uim_get_current_mode(uim_context uc)
-{
-  return uc->mode;
-}
-
-void
-uim_set_mode(uim_context uc, int mode)
-{
-  uc->mode = mode;
-  uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_PTR(uc), MAKE_INT(mode));
-}
-
-void
-uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
-						  int mode))
-{
-  uc->mode_update_cb = update_cb;
-}
-
-void
-uim_prop_list_update(uim_context uc)
-{
-  if (uc && uc->propstr && uc->prop_list_update_cb)
-    uc->prop_list_update_cb(uc->ptr, uc->propstr);
-}
-
-/* Obsolete */
-void
-uim_prop_label_update(uim_context uc)
-{
-}
-
-int
-uim_get_nr_im(uim_context uc)
-{
-  uim_lisp n;
-
-  if (!uc)
-    return 0;
-
-  n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_PTR(uc));
-  return uim_scm_c_int(n);
-}
-
-static uim_lisp
-get_nth_im(uim_context uc, int nth)
-{
-  return uim_scm_call2(MAKE_SYM("uim-nth-convertible-im"),
-                       MAKE_PTR(uc), MAKE_INT(nth));
-}
-
-const char *
-uim_get_current_im_name(uim_context uc)
-{
-  uim_lisp im;
-
-  if (!uc)
-    return NULL;
-
-  im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_PTR(uc));
-  if (UIM_SCM_FALSEP(im))
-    return NULL;
-
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
-}
-
-const char *
-uim_get_im_name(uim_context uc, int nth)
-{
-  uim_lisp im;
-
-  im = get_nth_im(uc, nth);
-  if (UIM_SCM_FALSEP(im))
-    return NULL;
-
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
-}
-
-const char *
-uim_get_im_language(uim_context uc, int nth)
-{
-  uim_lisp im;
-
-  im = get_nth_im(uc, nth);
-  if (UIM_SCM_FALSEP(im))
-    return NULL;
-
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-lang"), im));
-}
-
-const char *
-uim_get_im_short_desc(uim_context uc, int nth)
-{
-  uim_lisp im, short_desc;
-
-  im = get_nth_im(uc, nth);
-  if (UIM_SCM_FALSEP(im))
-    return NULL;
-
-  short_desc = uim_scm_call1(MAKE_SYM("im-short-desc"), im);
-  return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
-}
-
-const char *
-uim_get_im_encoding(uim_context uc, int nth)
-{
-  uim_lisp im;
-
-  im = get_nth_im(uc, nth);
-  if (UIM_SCM_FALSEP(im))
-    return NULL;
-
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-encoding"), im));
-}
-
-const char *
-uim_get_default_im_name(const char *localename)
-{
-  uim_lisp ret;
-
-  ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
-                      MAKE_STR(localename));
-  return uim_scm_refer_c_str(ret);
-}
-
-const char *
-uim_get_im_name_for_locale(const char *localename)
-{
-  uim_lisp ret;
-
-  ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
-                      MAKE_STR(localename));
-  return uim_scm_refer_c_str(ret);
+  uc->preedit_clear_cb = clear_cb;
+  uc->preedit_pushback_cb = pushback_cb;
+  uc->preedit_update_cb = update_cb;
 }
 
 void
@@ -557,6 +310,273 @@ uim_input_string(uim_context uc, const char *str)
   return UIM_FALSE;
 }
 
+/****************************************************************
+ * Optional APIs                                                *
+ ****************************************************************/
+void
+uim_set_configuration_changed_cb(uim_context uc,
+				 void (*changed_cb)(void *ptr))
+{
+  uc->configuration_changed_cb = changed_cb;
+}
+
+void
+uim_set_im_switch_request_cb(uim_context uc,
+			     void (*sw_app_im_cb)(void *ptr, const char *name),
+			     void (*sw_system_im_cb)(void *ptr, const char *name))
+{
+  uc->switch_app_global_im_cb = sw_app_im_cb;
+  uc->switch_system_global_im_cb = sw_system_im_cb;
+}
+
+void
+uim_switch_im(uim_context uc, const char *engine)
+{
+  /* related to the commit log of r1400:
+
+     We should not add the API uim_destroy_context(). We should move
+     IM-switching feature into Scheme instead. It removes the context
+     management code related to IM-switching duplicated in several IM
+     bridges. Refer the implementation of GtkIMMulticontext as example
+     of proxy-like IM-switcher. It does IM-switching without extending
+     immodule API. We should follow its design to make our API simple.
+     -- 2004-10-05 YamaKen
+  */
+  uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_STR(engine));
+}
+
+const char *
+uim_get_current_im_name(uim_context uc)
+{
+  uim_lisp im;
+
+  if (!uc)
+    return NULL;
+
+  im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_PTR(uc));
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
+}
+
+const char *
+uim_get_default_im_name(const char *localename)
+{
+  uim_lisp ret;
+
+  ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
+                      MAKE_STR(localename));
+  return uim_scm_refer_c_str(ret);
+}
+
+const char *
+uim_get_im_name_for_locale(const char *localename)
+{
+  uim_lisp ret;
+
+  ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
+                      MAKE_STR(localename));
+  return uim_scm_refer_c_str(ret);
+}
+
+/****************************************************************
+ * Legacy 'mode' API                                            *
+ ****************************************************************/
+int
+uim_get_nr_modes(uim_context uc)
+{
+  return uc->nr_modes;
+}
+
+const char *
+uim_get_mode_name(uim_context uc, int nth)
+{
+  if (nth >= 0 && nth < uc->nr_modes) {
+    return uc->modes[nth];
+  }
+  return NULL;
+}
+
+int
+uim_get_current_mode(uim_context uc)
+{
+  return uc->mode;
+}
+
+void
+uim_set_mode(uim_context uc, int mode)
+{
+  uc->mode = mode;
+  uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_PTR(uc), MAKE_INT(mode));
+}
+
+void
+uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
+						  int mode))
+{
+  uc->mode_update_cb = update_cb;
+}
+
+void
+uim_set_mode_list_update_cb(uim_context uc,
+			    void (*update_cb)(void *ptr))
+{
+  uc->mode_list_update_cb = update_cb;
+}
+
+/****************************************************************
+ * Legacy 'property list' API                                   *
+ ****************************************************************/
+void
+uim_set_prop_list_update_cb(uim_context uc,
+			    void (*update_cb)(void *ptr, const char *str))
+{
+  uc->prop_list_update_cb = update_cb;
+}
+
+/* Obsolete */
+void
+uim_set_prop_label_update_cb(uim_context uc,
+			     void (*update_cb)(void *ptr, const char *str))
+{
+}
+
+void
+uim_prop_list_update(uim_context uc)
+{
+  if (uc && uc->propstr && uc->prop_list_update_cb)
+    uc->prop_list_update_cb(uc->ptr, uc->propstr);
+}
+
+/* Obsolete */
+void
+uim_prop_label_update(uim_context uc)
+{
+}
+
+void
+uim_prop_activate(uim_context uc, const char *str)
+{
+  if (!str)
+    return;
+      
+  uim_scm_call2(MAKE_SYM("prop-activate-handler"),
+                MAKE_PTR(uc), MAKE_STR(str));
+}
+
+/****************************************************************
+ * Legacy 'custom' API                                          *
+ ****************************************************************/
+/* Tentative name. I followed above uim_prop_update_custom, but prop 
+would not be proper to this function. */
+/*
+ * As I described in doc/HELPER-PROTOCOL, it had wrongly named by my
+ * misunderstanding about what is the 'property' of uim. It should be
+ * renamed along with corresponding procol names when an appropriate
+ * time has come.  -- YamaKen 2005-09-12
+ */
+/** Update custom value from property message.
+ * Update custom value from property message. All variable update is
+ * validated by custom APIs rather than arbitrary sexp
+ * evaluation. Custom symbol \a custom is quoted in sexp string to be
+ * restricted to accept symbol literal only. This prevents arbitrary
+ * sexp evaluation.
+ */
+void
+uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
+{
+  if (!custom || !val)
+    return;
+
+  uim_scm_call3(MAKE_SYM("custom-set-handler"),
+                MAKE_PTR(uc),
+                MAKE_SYM(custom),
+                uim_scm_eval_c_string(val));
+}
+
+uim_bool
+uim_prop_reload_configs(void)
+{
+  /* FIXME: handle return value properly. */
+  uim_scm_call0(MAKE_SYM("custom-reload-user-configs"));
+  return UIM_TRUE;
+}
+
+/****************************************************************
+ * Legacy nth-index based IM management APIs                    *
+ ****************************************************************/
+int
+uim_get_nr_im(uim_context uc)
+{
+  uim_lisp n;
+
+  if (!uc)
+    return 0;
+
+  n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_PTR(uc));
+  return uim_scm_c_int(n);
+}
+
+static uim_lisp
+get_nth_im(uim_context uc, int nth)
+{
+  return uim_scm_call2(MAKE_SYM("uim-nth-convertible-im"),
+                       MAKE_PTR(uc), MAKE_INT(nth));
+}
+
+const char *
+uim_get_im_name(uim_context uc, int nth)
+{
+  uim_lisp im;
+
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
+}
+
+const char *
+uim_get_im_language(uim_context uc, int nth)
+{
+  uim_lisp im;
+
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-lang"), im));
+}
+
+const char *
+uim_get_im_encoding(uim_context uc, int nth)
+{
+  uim_lisp im;
+
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-encoding"), im));
+}
+
+const char *
+uim_get_im_short_desc(uim_context uc, int nth)
+{
+  uim_lisp im, short_desc;
+
+  im = get_nth_im(uc, nth);
+  if (UIM_SCM_FALSEP(im))
+    return NULL;
+
+  short_desc = uim_scm_call1(MAKE_SYM("im-short-desc"), im);
+  return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
+}
+
+/****************************************************************
+ * Initialization and finalization                              *
+ ****************************************************************/
 int
 uim_init(void)
 {
