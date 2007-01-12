@@ -55,6 +55,56 @@ static uim_bool uim_initialized;
 /****************************************************************
  * Core APIs                                                    *
  ****************************************************************/
+int
+uim_init(void)
+{
+  char *scm_files, *env;
+
+  if (uim_initialized)
+    return OK;
+
+  env = getenv("LIBUIM_VERBOSE");
+  uim_scm_init(env);
+
+  uim_init_im_subrs();
+  uim_init_intl_subrs();
+  uim_init_util_subrs();
+  uim_init_key_subrs();
+  uim_init_rk_subrs();
+  uim_init_plugin();
+#ifdef ENABLE_ANTHY_STATIC
+  uim_anthy_plugin_instance_init();
+#endif
+
+  if (uim_issetugid()) {
+    scm_files = SCM_FILES;
+  } else {
+    scm_files = getenv("LIBUIM_SCM_FILES");
+    scm_files = (scm_files) ? scm_files : SCM_FILES;
+  }
+  uim_scm_set_lib_path(scm_files);
+
+  uim_scm_require_file("init.scm");
+
+  uim_initialized = UIM_TRUE;
+
+  return OK;
+}
+
+void
+uim_quit(void)
+{
+  if (!uim_initialized)
+    return;
+
+  uim_quit_plugin();
+#ifdef ENABLE_ANTHY_STATIC
+  uim_anthy_plugin_instance_quit();
+#endif
+  uim_scm_quit();
+  uim_initialized = UIM_FALSE;
+}
+
 uim_context
 uim_create_context(void *ptr,
 		   const char *enc,
@@ -634,57 +684,4 @@ uim_get_im_short_desc(uim_context uc, int nth)
 
   short_desc = uim_scm_call1(MAKE_SYM("im-short-desc"), im);
   return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
-}
-
-/****************************************************************
- * Initialization and finalization                              *
- ****************************************************************/
-int
-uim_init(void)
-{
-  char *scm_files, *env;
-
-  if (uim_initialized)
-    return OK;
-
-  env = getenv("LIBUIM_VERBOSE");
-  uim_scm_init(env);
-
-  uim_init_im_subrs();
-  uim_init_intl_subrs();
-  uim_init_util_subrs();
-  uim_init_key_subrs();
-  uim_init_rk_subrs();
-  uim_init_plugin();
-#ifdef ENABLE_ANTHY_STATIC
-  uim_anthy_plugin_instance_init();
-#endif
-
-  if (uim_issetugid()) {
-    scm_files = SCM_FILES;
-  } else {
-    scm_files = getenv("LIBUIM_SCM_FILES");
-    scm_files = (scm_files) ? scm_files : SCM_FILES;
-  }
-  uim_scm_set_lib_path(scm_files);
-
-  uim_scm_require_file("init.scm");
-
-  uim_initialized = UIM_TRUE;
-
-  return OK;
-}
-
-void
-uim_quit(void)
-{
-  if (!uim_initialized)
-    return;
-
-  uim_quit_plugin();
-#ifdef ENABLE_ANTHY_STATIC
-  uim_anthy_plugin_instance_quit();
-#endif
-  uim_scm_quit();
-  uim_initialized = UIM_FALSE;
 }
