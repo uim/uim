@@ -2,7 +2,6 @@ Overview of changes from 1.4.0-beta to 1.4.0
 ==
 * Fixed
   - libuim
-    - Fix crash on im-acquire-text when acquired text is NULL
     - Fix unimplemented return value of uim_input_string()
     - Fix uneffected --disable-nls
 
