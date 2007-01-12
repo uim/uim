@@ -43,6 +43,9 @@
 #include "uim-im-switcher.h"
 
 
+#define TEXT_EMPTYP(txt) (!(txt) || !(txt)[0])
+
+
 /* this is not a uim API, so did not name as uim_retrieve_context() */
 static uim_context
 retrieve_uim_context(uim_lisp c)
@@ -343,22 +346,22 @@ static uim_lisp
 im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
 		uim_lisp former_len_, uim_lisp latter_len_)
 {
-  uim_context uc = retrieve_uim_context(id_);
+  uim_context uc;
   int err, former_len, latter_len;
   enum UTextArea text_id;
   enum UTextOrigin origin;
-  char *former, *latter, *im_former, *im_latter;
-  uim_bool is_former_null, is_latter_null;
-  uim_lisp ret;
+  char *former, *latter, *cv_former, *cv_latter;
+  uim_lisp former_, latter_, ret;
+
+  uc = retrieve_uim_context(id_);
 
   if (!uc->acquire_text_cb)
     return uim_scm_f();
 
-  former_len = uim_scm_c_int(former_len_);
-  latter_len = uim_scm_c_int(latter_len_);
-
   text_id = uim_scm_c_int(text_id_);
   origin = uim_scm_c_int(origin_);
+  former_len = uim_scm_c_int(former_len_);
+  latter_len = uim_scm_c_int(latter_len_);
 
   err = uc->acquire_text_cb(uc->ptr, text_id, origin, former_len, latter_len,
 			    &former, &latter);
@@ -369,28 +372,17 @@ im_acquire_text(uim_lisp id_, uim_lisp text_id_, uim_lisp origin_,
    * interface should be revised when SigScheme has been introduced to
    * uim. Until then, perform character separation by each input methods if
    * needed.  -- YamaKen 2006-10-07 */
-  im_former = uc->conv_if->convert(uc->inbound_conv, former);
-  im_latter = uc->conv_if->convert(uc->inbound_conv, latter);
+  cv_former = uc->conv_if->convert(uc->inbound_conv, former);
+  cv_latter = uc->conv_if->convert(uc->inbound_conv, latter);
+  former_ = (TEXT_EMPTYP(cv_former)) ? uim_scm_null() : MAKE_STR(cv_former);
+  latter_ = (TEXT_EMPTYP(cv_latter)) ? uim_scm_null() : MAKE_STR(cv_latter);
 
-  is_former_null = (im_former && !im_former[0]);
-  is_latter_null = (im_latter && !im_former[0]);
-  if (is_former_null && is_latter_null)
-    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
-                        uim_scm_null(), uim_scm_null());
-  else if (is_former_null && !is_latter_null)
-    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
-                        uim_scm_null(), LIST1(MAKE_STR(im_latter)));
-  else if (!is_former_null && is_latter_null)
-    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
-                        LIST1(MAKE_STR(im_former)), uim_scm_null());
-  else
-    ret = uim_scm_call2(MAKE_SYM("ustr-new"),
-                        LIST1(MAKE_STR(im_former)),
-                        LIST1(MAKE_STR(im_latter)));
+  ret = uim_scm_call2(MAKE_SYM("ustr-new"), former_, latter_);
+
   free(former);
   free(latter);
-  free(im_former);
-  free(im_latter);
+  free(cv_former);
+  free(cv_latter);
 
   return ret;
 }

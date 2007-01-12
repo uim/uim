@@ -508,9 +508,7 @@ uim_candidate_free(uim_candidate cand)
 {
   free(cand->str);
   free(cand->heading_label);
-  if (cand->annotation)
-    free(cand->annotation);
-
+  free(cand->annotation);
   free(cand);
 }
 
@@ -544,17 +542,16 @@ uim_set_text_acquisition_cb(uim_context uc,
 uim_bool
 uim_input_string(uim_context uc, const char *str)
 {
+  uim_lisp consumed;
   char *conv;
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
-    if (conv)
-      uim_scm_call2(MAKE_SYM("input-string-handler"),
-                    MAKE_PTR(uc), MAKE_STR(conv));
+    consumed = uim_scm_call2(MAKE_SYM("input-string-handler"),
+                             MAKE_PTR(uc), MAKE_STR(conv));
     free(conv);
 
-    /* FIXME: handle return value properly. */
-    return UIM_TRUE;
+    return uim_scm_c_bool(consumed);
   }
 
   return UIM_FALSE;
