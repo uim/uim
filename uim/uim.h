@@ -594,7 +594,7 @@ int uim_get_nr_im(uim_context uc);
  * @param uc input context
  * @param nth index of input method.
  *
- * @return name of nth input method
+ * @return name of nth input method. only valid until next uim API call.
  */
 const char *uim_get_im_name(uim_context uc, int nth);
 
@@ -604,7 +604,7 @@ const char *uim_get_im_name(uim_context uc, int nth);
  * @warning you must not free the result.
  *
  * @param uc input context
- * @param nth index of input method
+ * @param nth index of input method. only valid until next uim API call.
  */
 const char *uim_get_im_language(uim_context uc, int nth);
 
@@ -614,7 +614,7 @@ const char *uim_get_im_language(uim_context uc, int nth);
  * @warning you must not free the result.
  *
  * @param uc input context
- * @param nth index of input method
+ * @param nth index of input method. only valid until next uim API call.
  */
 const char *uim_get_im_short_desc(uim_context uc, int nth);
 
@@ -626,7 +626,7 @@ const char *uim_get_im_short_desc(uim_context uc, int nth);
  * @param uc input context
  * @param nth index of input method
  *
- * @return nth input method's encoding
+ * @return nth input method's encoding. only valid until next uim API call.
  */
 const char *uim_get_im_encoding(uim_context uc, int nth);
 
@@ -638,7 +638,7 @@ const char *uim_get_im_encoding(uim_context uc, int nth);
  *
  * @param localename locale name
  *
- * @return input method name.
+ * @return input method name. only valid until next uim API call.
  */
 const char *uim_get_default_im_name(const char *localename);
 
@@ -649,7 +649,7 @@ const char *uim_get_default_im_name(const char *localename);
  *
  * @param localename locale name
  *
- * @return input method name.
+ * @return input method name. only valid until next uim API call.
  */
 const char *uim_get_im_name_for_locale(const char *localename);
 
@@ -796,7 +796,7 @@ uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
 /* mode list */
 int
 uim_get_nr_modes(uim_context uc);
-/* you must not free the result */
+/* you must not free the result. and only valid until next uim API call */
 const char *
 uim_get_mode_name(uim_context uc, int nth);
 void

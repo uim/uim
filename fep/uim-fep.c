@@ -201,7 +201,7 @@ static void init_uim(const char *engine)
     }
   }
   if (i == nr) {
-    printf("%s is not a input method\n\n", engine);
+    printf("%s is not an available input method\n\n", engine);
     usage();
     exit(EXIT_FAILURE);
   }
@@ -218,6 +218,8 @@ static const char *get_default_im_name(void)
   }
 
   engine = uim_get_default_im_name("");  /* instructs native locale */
+
+  /* the string is only valid until next uim API call */
   return engine;
 }
 
@@ -225,7 +227,7 @@ int main(int argc, char **argv)
 {
   /* command will be execed on pty */
   const char **command = malloc(sizeof(const char *) * (argc + 1));
-  const char *engine;
+  char *engine;
   char *sock_path = NULL; /* Socket for backtick */
   int gnu_screen = FALSE;
   char *env_buf;
@@ -255,7 +257,7 @@ int main(int argc, char **argv)
   command[1] = NULL;
 
   init_str();
-  engine = get_default_im_name();
+  engine = strdup(get_default_im_name());
 
   while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SXciodKvh")) != -1) {
     int i;
@@ -517,6 +519,7 @@ opt_end:
   }
 
   init_uim(engine);
+  free(engine);
   if (gnu_screen) {
     uim_set_mode(g_context, 1);
   }
