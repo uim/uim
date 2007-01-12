@@ -40,7 +40,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#ifdef ENABLE_NLS
+#if ENABLE_NLS
 #include <locale.h>
 #endif
 
@@ -167,7 +167,7 @@ intl_dcngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp 
 static void
 intl_init_locale(void)
 {
-#ifdef ENABLE_NLS
+#if ENABLE_NLS
   const char *current_locale;
 
   /* Perform setlocale() only if it maybe did not performed before. This  */
@@ -206,7 +206,7 @@ uim_init_intl_subrs(void)
   uim_scm_init_subr_4("dngettext", intl_dngettext);
   uim_scm_init_subr_5("dcngettext", intl_dcngettext);
 
-#ifdef ENABLE_NLS
+#if ENABLE_NLS
   uim_scm_call1(uim_scm_make_symbol("provide"), uim_scm_make_str("nls"));
 #endif
 }
