@@ -624,9 +624,7 @@ uim_candidate_free(uim_candidate cand)
 {
   free(cand->str);
   free(cand->heading_label);
-  if (cand->annotation)
-    free(cand->annotation);
-
+  free(cand->annotation);
   free(cand);
 }
 
@@ -689,17 +687,21 @@ uim_internal_escape_string(char *str)
 uim_bool
 uim_input_string(uim_context uc, const char *str)
 {
+  uim_lisp consumed;
   char *conv;
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
     uim_internal_escape_string(conv);
-    if (conv)
+    if (conv) {
       UIM_EVAL_FSTRING2(uc, "(input-string-handler %d \"%s\")", uc->id, conv);
+      consumed = uim_scm_return_value();
+    } else {
+      consumed = uim_scm_f();
+    }
     free(conv);
 
-    /* FIXME: handle return value properly. */
-    return UIM_TRUE;
+    return uim_scm_c_bool(consumed);
   }
 
   return UIM_FALSE;
