@@ -124,15 +124,17 @@
 		 (uim '(map im-name im-list)))
    ;; direct IM can be registered to null list
    (uim '(set! im-list ()))
-   ;; second time im-register-im for 'direct returns #f
-   (assert-false (uim-bool '(apply register-im (cons 'direct
-						     (cdr test-im-init-args)))))
+   ;; second time register-im for 'direct returns #t if im-list does not
+   ;; contain 'direct
+   (assert-true (uim-bool '(apply register-im (cons 'direct
+                                                    (cdr test-im-init-args)))))
    (assert-equal '(direct)
 		 (uim '(map im-name im-list)))
    ;; ordinary IM can be registered to null list
    (uim '(set! im-list ()))
-   ;; second time im-register-im for 'test-im returns #f
-   (assert-false (uim-bool '(apply register-im test-im-init-args)))
+   ;; second time register-im for 'test-im returns #t if im-list does not
+   ;; contain 'test-im
+   (assert-true  (uim-bool '(apply register-im test-im-init-args)))
    (assert-equal '(test-im)
 		 (uim '(map im-name im-list))))
 
@@ -698,16 +700,15 @@
 				      (im-new 4 (retrieve-im 'anthy))))
 	     #t))))
      
-
-  ("test context-id"
+  ("test context-uc"
    (assert-equal 1
-		 (uim '(context-id (nth 0 context-list))))
+		 (uim '(context-uc (nth 0 context-list))))
    (assert-equal 2
-		 (uim '(context-id (nth 1 context-list))))
+		 (uim '(context-uc (nth 1 context-list))))
    (assert-equal 3
-		 (uim '(context-id (nth 2 context-list))))
+		 (uim '(context-uc (nth 2 context-list))))
    (assert-equal 4
-		 (uim '(context-id (nth 3 context-list)))))
+		 (uim '(context-uc (nth 3 context-list)))))
 
   ("test context-im"
    (assert-equal 'tcode
@@ -719,75 +720,65 @@
    (assert-equal 'anthy
 		 (uim '(im-name (context-im (nth 3 context-list))))))
    
-  ("test find-context"
-   (assert-equal 'tcode
-		 (uim '(im-name (context-im (find-context 1)))))
-   (assert-equal 'direct
-		 (uim '(im-name (context-im (find-context 2)))))
-   (assert-equal 'skk
-		 (uim '(im-name (context-im (find-context 3)))))
-   (assert-equal 'anthy
-		 (uim '(im-name (context-im (find-context 4))))))
-
   ("test remove-context"
    (assert-equal 4
 		 (uim '(length context-list)))
 
-   (uim '(begin (remove-context 3) #t))
+   (uim '(begin (remove-context (assv 3 context-list)) #t))
    (assert-equal 3
 		 (uim '(length context-list)))
    (assert-equal 'tcode
-		 (uim '(im-name (context-im (find-context 1)))))
+		 (uim '(im-name (context-im (assv 1 context-list)))))
    (assert-equal 'direct
-		 (uim '(im-name (context-im (find-context 2)))))
-   (assert-false (uim-bool '(find-context 3)))
+		 (uim '(im-name (context-im (assv 2 context-list)))))
+   (assert-false (uim-bool '(assv 3 context-list)))
    (assert-equal 'anthy
-		 (uim '(im-name (context-im (find-context 4)))))
+		 (uim '(im-name (context-im (assv 4 context-list)))))
 
-   (uim '(begin (remove-context 1) #t))
+   (uim '(begin (remove-context (assv 1 context-list)) #t))
    (assert-equal 2
 		 (uim '(length context-list)))
-   (assert-false (uim-bool '(find-context 1)))
+   (assert-false (uim-bool '(assv 1 context-list)))
    (assert-equal 'direct
-		 (uim '(im-name (context-im (find-context 2)))))
-   (assert-false (uim-bool '(find-context 3)))
+		 (uim '(im-name (context-im (assv 2 context-list)))))
+   (assert-false (uim-bool '(assv 3 context-list)))
    (assert-equal 'anthy
-		 (uim '(im-name (context-im (find-context 4)))))
+		 (uim '(im-name (context-im (assv 4 context-list)))))
 
    ;; test excessive removal
-   (uim '(begin (remove-context 1) #t))
+   (uim '(begin (remove-context (assv 1 context-list)) #t))
    (assert-equal 2
 		 (uim '(length context-list)))
-   (assert-false (uim-bool '(find-context 1)))
+   (assert-false (uim-bool '(assv 1 context-list)))
    (assert-equal 'direct
-		 (uim '(im-name (context-im (find-context 2)))))
-   (assert-false (uim-bool '(find-context 3)))
+		 (uim '(im-name (context-im (assv 2 context-list)))))
+   (assert-false (uim-bool '(assv 3 context-list)))
    (assert-equal 'anthy
-		 (uim '(im-name (context-im (find-context 4)))))
+		 (uim '(im-name (context-im (assv 4 context-list)))))
 
-   (uim '(begin (remove-context 4) #t))
+   (uim '(begin (remove-context (assv 4 context-list)) #t))
    (assert-equal 1
 		 (uim '(length context-list)))
-   (assert-false (uim-bool '(find-context 1)))
+   (assert-false (uim-bool '(assv 1 context-list)))
    (assert-equal 'direct
-		 (uim '(im-name (context-im (find-context 2)))))
-   (assert-false (uim-bool '(find-context 3)))
-   (assert-false (uim-bool '(find-context 4)))
+		 (uim '(im-name (context-im (assv 2 context-list)))))
+   (assert-false (uim-bool '(assv 3 context-list)))
+   (assert-false (uim-bool '(assv 4 context-list)))
 
-   (uim '(begin (remove-context 2) #t))
+   (uim '(begin (remove-context (assv 2 context-list)) #t))
    (assert-true  (uim-bool '(null? context-list)))
-   (assert-false (uim-bool '(find-context 1)))
-   (assert-false (uim-bool '(find-context 2)))
-   (assert-false (uim-bool '(find-context 3)))
-   (assert-false (uim-bool '(find-context 4)))
+   (assert-false (uim-bool '(assv 1 context-list)))
+   (assert-false (uim-bool '(assv 2 context-list)))
+   (assert-false (uim-bool '(assv 3 context-list)))
+   (assert-false (uim-bool '(assv 4 context-list)))
 
    ;; test exessive removal
-   (uim '(begin (remove-context 1)))
+   (uim '(begin (remove-context (assv 1 context-list))))
    (assert-true  (uim-bool '(null? context-list)))
-   (assert-false (uim-bool '(find-context 1)))
-   (assert-false (uim-bool '(find-context 2)))
-   (assert-false (uim-bool '(find-context 3)))
-   (assert-false (uim-bool '(find-context 4))))
+   (assert-false (uim-bool '(assv 1 context-list)))
+   (assert-false (uim-bool '(assv 2 context-list)))
+   (assert-false (uim-bool '(assv 3 context-list)))
+   (assert-false (uim-bool '(assv 4 context-list))))
 
   ("test register-context (add as new id)"
    (assert-equal 4
@@ -798,9 +789,9 @@
    (assert-equal 5
 		 (uim '(length context-list)))
    (assert-equal 'tcode
-		 (uim '(im-name (context-im (find-context 1)))))
+		 (uim '(im-name (context-im (assv 1 context-list)))))
    (assert-equal 'tutcode
-		 (uim '(im-name (context-im (find-context 5)))))
+		 (uim '(im-name (context-im (assv 5 context-list)))))
 
    ;; sparse id must be accepted
    (uim '(begin
@@ -809,7 +800,7 @@
    (assert-equal 6
 		 (uim '(length context-list)))
    (assert-equal 'hangul2
-		 (uim '(im-name (context-im (find-context 10)))))
+		 (uim '(im-name (context-im (assv 10 context-list)))))
 
    ;; additional sparse id
    (uim '(begin
@@ -818,7 +809,7 @@
    (assert-equal 7
 		 (uim '(length context-list)))
    (assert-equal 'hangul3
-		 (uim '(im-name (context-im (find-context 8)))))
+		 (uim '(im-name (context-im (assv 8 context-list)))))
 
    ;; decrimented id
    (uim '(begin
@@ -827,7 +818,7 @@
    (assert-equal 8
 		 (uim '(length context-list)))
    (assert-equal 'romaja
-		 (uim '(im-name (context-im (find-context 0))))))
+		 (uim '(im-name (context-im (assv 0 context-list))))))
 
   ("test register-context (duplicate id)"
    (assert-equal 4

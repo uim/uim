@@ -124,7 +124,7 @@
 
 ;; TODO: rewrite test
 ;; accepts overwrite register
-;; returns initial register or not
+;; returns whether initial register or not
 (define register-im
   (lambda (name lang encoding name-label short-desc init-arg init release
 		mode key-press key-release reset
@@ -138,9 +138,11 @@
 			   mode key-press key-release reset
 			   get-candidate set-candidate-index prop
 			   input-string focus-in focus-out place displace
-			   currently-loading-module-name)))
+			   currently-loading-module-name))
+               (initial-registration? (not (assq name im-list))))
 	   (set! im-list (alist-replace im im-list))
-	   (normalize-im-list)))))
+	   (normalize-im-list)
+           initial-registration?))))
 
 ;; strictly find out im by name
 (define retrieve-im

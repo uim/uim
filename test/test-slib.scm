@@ -88,7 +88,7 @@
    (assert-true  (uim-bool '(procedure? car)))                ;; 1
    (assert-true  (uim-bool '(procedure? cons)))               ;; 2
    (assert-true  (uim-bool '(procedure? set-symbol-value!)))  ;; 3
-   (assert-true  (uim-bool '(procedure? im-register-im)))     ;; 4
+   (assert-true  (uim-bool '(procedure? dngettext)))          ;; 4
    (assert-true  (uim-bool '(procedure? dcngettext)))         ;; 5
    (assert-true  (uim-bool '(procedure? +)))                  ;; 2n
    (assert-true  (uim-bool '(procedure? append)))             ;; lsubr

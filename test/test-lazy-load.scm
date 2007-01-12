@@ -105,15 +105,23 @@
    (assert-true  (uim-bool '(procedure? (im-init-handler
 					 (retrieve-im 'hangul2)))))
    ;; to prevent SEGV on create-context
-   (uim '(define im-update-preedit (lambda arg #f)))
+   (uim '(define im-set-encoding (lambda arg #f)))
+   (uim '(define im-clear-preedit (lambda arg #f)))
    (uim '(define im-pushback-preedit (lambda arg #f)))
+   (uim '(define im-update-preedit (lambda arg #f)))
+   (uim '(define im-update-prop-list (lambda arg #f)))
+   (uim '(define im-clear-mode-list (lambda arg #f)))
+   (uim '(define im-pushback-mode-list (lambda arg #f)))
+   (uim '(define im-update-mode-list (lambda arg #f)))
+   (uim '(define im-update-mode (lambda arg #f)))
 
    (uim '(begin
 	   (create-context 0 #f 'hangul2)
 	   #f))
    (uim '(begin
-	   (define test-context (find-context 0))
+	   (define test-context (assv 0 context-list))
 	   #f))
+
    (assert-equal 'hangul2
 		 (uim '(im-name (context-im test-context))))
    (assert-equal "hangul"
