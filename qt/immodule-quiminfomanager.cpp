@@ -59,7 +59,7 @@ QUimInfoManager::initUimInfo()
 {
     info.clear();
 
-    uim_context tmp_uc = uim_create_context( NULL, "UTF-8", NULL, NULL, uim_iconv, NULL );
+    uim_context tmp_uc = uim_create_context( NULL, "UTF-8", NULL, NULL, NULL, NULL );
     struct uimInfo ui;
     int nr = uim_get_nr_im( tmp_uc );
     for ( int i = 0; i < nr; i++ )

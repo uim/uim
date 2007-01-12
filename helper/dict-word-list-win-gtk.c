@@ -37,7 +37,6 @@
 #include <gdk/gdkkeysyms.h>
 
 #include "gettext.h"
-#include "uim-stdint.h"
 
 #include "dict-word.h"
 #include "dict-anthy.h"

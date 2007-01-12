@@ -138,7 +138,7 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
     uim_context uc = uim_create_context( this, "UTF-8",
                                          NULL, ( char * ) imname,
-                                         uim_iconv,
+                                         NULL,
                                          QUimInputContext::commit_cb );
 
     m_HelperManager->checkHelperConnection();
