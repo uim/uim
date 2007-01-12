@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include "gettext.h"
 
 #include "uim-scm.h"
 #include "uim-custom.h"
@@ -77,6 +78,8 @@
 #endif
 
 #define MAX_LENGTH_OF_INT_AS_STR (((sizeof(int) == 4) ? sizeof("-2147483648") : sizeof("-9223372036854775808")) - sizeof((char)'\0'))
+
+#define UGETTEXT(str) (dgettext(GETTEXT_PACKAGE, (str)))
 
 /* we cannot use the variadic macro (i.e. __VA_ARGS__) because we
    should also support C89 compilers
@@ -185,7 +188,8 @@ static char *c_list_to_str(const void *const *list, char *(*mapper)(const void *
 static int uim_custom_type_eq(const char *custom_sym, const char *custom_type);
 static int uim_custom_type(const char *custom_sym);
 static int uim_custom_is_active(const char *custom_sym);
-static char *uim_custom_get_str(const char *custom_sym, const char *proc);
+static const char *uim_custom_get_str(const char *custom_sym,
+                                      const char *proc);
 static char *uim_custom_label(const char *custom_sym);
 static char *uim_custom_desc(const char *custom_sym);
 
@@ -453,29 +457,31 @@ uim_custom_is_active(const char *custom_sym)
   return uim_scm_c_bool(return_val);
 }
 
-static char *
+static const char *
 uim_custom_get_str(const char *custom_sym, const char *proc)
 {
   UIM_EVAL_FSTRING2(NULL, "(%s '%s)", proc, custom_sym);
   return_val = uim_scm_return_value();
 
-  /*
-    The arg must be assigned to return_val to be proteced from GC
-    while evaluation
-  */
-  return uim_scm_c_str(return_val);
+  return uim_scm_refer_c_str(return_val);
 }
 
 static char *
 uim_custom_label(const char *custom_sym)
 {
-  return uim_custom_get_str(custom_sym, "custom-label");
+  const char *str;
+
+  str = uim_custom_get_str(custom_sym, "custom-label");
+  return strdup(UGETTEXT(str));
 }
 
 static char *
 uim_custom_desc(const char *custom_sym)
 {
-  return uim_custom_get_str(custom_sym, "custom-desc");
+  const char *str;
+
+  str = uim_custom_get_str(custom_sym, "custom-desc");
+  return strdup(UGETTEXT(str));
 }
 
 /* pathname */
@@ -545,12 +551,12 @@ uim_custom_choice_get(const char *custom_sym, const char *choice_sym)
   UIM_EVAL_FSTRING2(NULL, "(custom-choice-label '%s '%s)",
 		    custom_sym, choice_sym);
   return_val = uim_scm_return_value();
-  c_choice->label = uim_scm_c_str(return_val);
+  c_choice->label = strdup(UGETTEXT(uim_scm_refer_c_str(return_val)));
 
   UIM_EVAL_FSTRING2(NULL, "(custom-choice-desc '%s '%s)",
 		    custom_sym, choice_sym);
   return_val = uim_scm_return_value();
-  c_choice->desc = uim_scm_c_str(return_val);
+  c_choice->desc = strdup(UGETTEXT(uim_scm_refer_c_str(return_val)));
 
   return c_choice;
 }
@@ -978,6 +984,8 @@ uim_custom_enable(void)
 uim_bool
 uim_custom_init(void)
 {
+  const char *client_codeset;
+
   return_val = uim_scm_f();
 
   uim_scm_gc_protect(&return_val);
@@ -990,6 +998,11 @@ uim_custom_init(void)
 
   /* temporary solution to control key definition expantion */
   UIM_EVAL_STRING(NULL, "(define uim-custom-expand-key? #t)");
+
+  /* Assumes that bind_textdomain_codeset() is already called in client
+   * program. */
+  client_codeset = bind_textdomain_codeset(textdomain(NULL), NULL);
+  bind_textdomain_codeset(GETTEXT_PACKAGE, client_codeset);
 
   return UIM_TRUE;
 }
@@ -1470,7 +1483,7 @@ uim_custom_free(struct uim_custom *custom)
 char *
 uim_custom_value_as_literal(const char *custom_sym)
 {
-  return uim_custom_get_str(custom_sym, "custom-value-as-literal");
+  return strdup(uim_custom_get_str(custom_sym, "custom-value-as-literal"));
 }
 
 /**
@@ -1483,7 +1496,7 @@ uim_custom_value_as_literal(const char *custom_sym)
 char *
 uim_custom_definition_as_literal(const char *custom_sym)
 {
-  return uim_custom_get_str(custom_sym, "custom-definition-as-literal");
+  return strdup(uim_custom_get_str(custom_sym, "custom-definition-as-literal"));
 }
 
 /**
@@ -1498,14 +1511,18 @@ struct uim_custom_group *
 uim_custom_group_get(const char *group_sym)
 {
   struct uim_custom_group *custom_group;
+  const char *label, *desc;
 
   custom_group = (struct uim_custom_group *)malloc(sizeof(struct uim_custom_group));
   if (!custom_group)
     return NULL;
 
+  label = uim_custom_get_str(group_sym, "custom-group-label");
+  desc = uim_custom_get_str(group_sym, "custom-group-desc");
+
   custom_group->symbol = strdup(group_sym);
-  custom_group->label = uim_custom_get_str(group_sym, "custom-group-label");
-  custom_group->desc = uim_custom_get_str(group_sym, "custom-group-desc");
+  custom_group->label = strdup(UGETTEXT(label));
+  custom_group->desc = strdup(UGETTEXT(desc));
 
   return custom_group;
 }
