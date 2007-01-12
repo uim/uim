@@ -680,7 +680,8 @@ void uim_set_candidate_selector_cb(uim_context uc,
  *
  * @param uc input context
  * @param index index of the candidate you want to get
- * @param accel_enumeration_hint
+ * @param accel_enumeration_hint index of the first candidate displayed in
+ * the candidate selector
  *
  * @warning You must free the result by uim_candidate_free
  *

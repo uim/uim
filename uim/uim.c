@@ -33,19 +33,16 @@
 
 #include <config.h>
 
-#include <pwd.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+
 #include "uim.h"
+#include "uim-internal.h"
+#include "uim-util.h"
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
-#include "uim-custom.h"
-#include "uim-internal.h"
-#include "uim-util.h"
 
 
 #define OK 0
@@ -133,8 +130,7 @@ uim_release_context(uim_context uc)
 {
   int i;
 
-  if (!uc)
-    return;
+  assert(uc);
 
   uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
   uim_scm_gc_unprotect(&uc->sc);
@@ -155,41 +151,51 @@ uim_release_context(uim_context uc)
 void
 uim_reset_context(uim_context uc)
 {
+  assert(uc);
+
   uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_PTR(uc));
 }
 
 void
 uim_focus_in_context(uim_context uc)
 {
+  assert(uc);
+
   uim_scm_call1(MAKE_SYM("focus-in-handler"),MAKE_PTR(uc));
 }
 
 void
 uim_focus_out_context(uim_context uc)
 {
+  assert(uc);
+
   uim_scm_call1(MAKE_SYM("focus-out-handler"), MAKE_PTR(uc));
 }
 
 void
 uim_place_context(uim_context uc)
 {
+  assert(uc);
+
   uim_scm_call1(MAKE_SYM("place-handler"), MAKE_PTR(uc));
 }
 
 void
 uim_displace_context(uim_context uc)
 {
+  assert(uc);
+
   uim_scm_call1(MAKE_SYM("displace-handler"), MAKE_PTR(uc));
 }
 
 void
 uim_set_preedit_cb(uim_context uc,
 		   void (*clear_cb)(void *ptr),
-		   void (*pushback_cb)(void *ptr,
-				       int attr,
-				       const char *str),
+		   void (*pushback_cb)(void *ptr, int attr, const char *str),
 		   void (*update_cb)(void *ptr))
 {
+  assert(uc);
+
   uc->preedit_clear_cb = clear_cb;
   uc->preedit_pushback_cb = pushback_cb;
   uc->preedit_update_cb = update_cb;
@@ -203,6 +209,8 @@ uim_set_candidate_selector_cb(uim_context uc,
                               void (*shift_page_cb)(void *ptr, int direction),
                               void (*deactivate_cb)(void *ptr))
 {
+  assert(uc);
+
   uc->candidate_selector_activate_cb   = activate_cb;
   uc->candidate_selector_select_cb     = select_cb;
   uc->candidate_selector_deactivate_cb = deactivate_cb;
@@ -216,6 +224,10 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   uim_candidate cand;
   uim_lisp triple;
   const char *str, *head, *ann;
+
+  assert(uc);
+  assert(index >= 0);
+  assert(accel_enumeration_hint >= 0);
 
   triple = uim_scm_call3(MAKE_SYM("get-candidate"),
                          MAKE_PTR(uc),
@@ -241,24 +253,32 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 const char *
 uim_candidate_get_cand_str(uim_candidate cand)
 {
+  assert(cand);
+
   return cand->str;
 }
 
 const char *
 uim_candidate_get_heading_label(uim_candidate cand)
 {
+  assert(cand);
+
   return cand->heading_label;
 }
 
 const char *
 uim_candidate_get_annotation_str(uim_candidate cand)
 {
+  assert(cand);
+
   return cand->annotation;
 }
 
 void
 uim_candidate_free(uim_candidate cand)
 {
+  assert(cand);
+
   free(cand->str);
   free(cand->heading_label);
   free(cand->annotation);
@@ -268,12 +288,17 @@ uim_candidate_free(uim_candidate cand)
 int
 uim_get_candidate_index(uim_context uc)
 {
+  assert(uc);
+
   return 0;
 }
 
 void
 uim_set_candidate_index(uim_context uc, int nth)
 {
+  assert(uc);
+  assert(nth >= 0);
+
   uim_scm_call2(MAKE_SYM("set-candidate-index"), MAKE_PTR(uc), MAKE_INT(nth));
 }
 
@@ -288,6 +313,8 @@ uim_set_text_acquisition_cb(uim_context uc,
 				    	     enum UTextOrigin origin,
 					     int former_len, int latter_len))
 {
+  assert(uc);
+
   uc->acquire_text_cb = acquire_cb;
   uc->delete_text_cb = delete_cb;
 }
@@ -297,6 +324,9 @@ uim_input_string(uim_context uc, const char *str)
 {
   uim_lisp consumed;
   char *conv;
+
+  assert(uc);
+  assert(str);
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
@@ -317,14 +347,19 @@ void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {
+  assert(uc);
+
   uc->configuration_changed_cb = changed_cb;
 }
 
 void
 uim_set_im_switch_request_cb(uim_context uc,
 			     void (*sw_app_im_cb)(void *ptr, const char *name),
-			     void (*sw_system_im_cb)(void *ptr, const char *name))
+			     void (*sw_system_im_cb)(void *ptr,
+                                                     const char *name))
 {
+  assert(uc);
+
   uc->switch_app_global_im_cb = sw_app_im_cb;
   uc->switch_system_global_im_cb = sw_system_im_cb;
 }
@@ -342,6 +377,9 @@ uim_switch_im(uim_context uc, const char *engine)
      immodule API. We should follow its design to make our API simple.
      -- 2004-10-05 YamaKen
   */
+  assert(uc);
+  assert(engine);
+
   uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_STR(engine));
 }
 
@@ -350,8 +388,7 @@ uim_get_current_im_name(uim_context uc)
 {
   uim_lisp im;
 
-  if (!uc)
-    return NULL;
+  assert(uc);
 
   im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_PTR(uc));
   if (UIM_SCM_FALSEP(im))
@@ -365,6 +402,8 @@ uim_get_default_im_name(const char *localename)
 {
   uim_lisp ret;
 
+  assert(localename);
+
   ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
                       MAKE_STR(localename));
   return uim_scm_refer_c_str(ret);
@@ -374,6 +413,8 @@ const char *
 uim_get_im_name_for_locale(const char *localename)
 {
   uim_lisp ret;
+
+  assert(localename);
 
   ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
                       MAKE_STR(localename));
@@ -386,12 +427,17 @@ uim_get_im_name_for_locale(const char *localename)
 int
 uim_get_nr_modes(uim_context uc)
 {
+  assert(uc);
+
   return uc->nr_modes;
 }
 
 const char *
 uim_get_mode_name(uim_context uc, int nth)
 {
+  assert(uc);
+  assert(nth >= 0);
+
   if (nth >= 0 && nth < uc->nr_modes) {
     return uc->modes[nth];
   }
@@ -401,27 +447,34 @@ uim_get_mode_name(uim_context uc, int nth)
 int
 uim_get_current_mode(uim_context uc)
 {
+  assert(uc);
+
   return uc->mode;
 }
 
 void
 uim_set_mode(uim_context uc, int mode)
 {
+  assert(uc);
+  assert(mode >= 0);
+
   uc->mode = mode;
   uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_PTR(uc), MAKE_INT(mode));
 }
 
 void
-uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr,
-						  int mode))
+uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr, int mode))
 {
+  assert(uc);
+
   uc->mode_update_cb = update_cb;
 }
 
 void
-uim_set_mode_list_update_cb(uim_context uc,
-			    void (*update_cb)(void *ptr))
+uim_set_mode_list_update_cb(uim_context uc, void (*update_cb)(void *ptr))
 {
+  assert(uc);
+
   uc->mode_list_update_cb = update_cb;
 }
 
@@ -432,6 +485,8 @@ void
 uim_set_prop_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr, const char *str))
 {
+  assert(uc);
+
   uc->prop_list_update_cb = update_cb;
 }
 
@@ -440,12 +495,15 @@ void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str))
 {
+  assert(uc);
 }
 
 void
 uim_prop_list_update(uim_context uc)
 {
-  if (uc && uc->propstr && uc->prop_list_update_cb)
+  assert(uc);
+
+  if (uc->propstr && uc->prop_list_update_cb)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
 }
 
@@ -453,13 +511,14 @@ uim_prop_list_update(uim_context uc)
 void
 uim_prop_label_update(uim_context uc)
 {
+  assert(uc);
 }
 
 void
 uim_prop_activate(uim_context uc, const char *str)
 {
-  if (!str)
-    return;
+  assert(uc);
+  assert(str);
       
   uim_scm_call2(MAKE_SYM("prop-activate-handler"),
                 MAKE_PTR(uc), MAKE_STR(str));
@@ -486,8 +545,9 @@ would not be proper to this function. */
 void
 uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 {
-  if (!custom || !val)
-    return;
+  assert(uc);
+  assert(custom);
+  assert(val);
 
   uim_scm_call3(MAKE_SYM("custom-set-handler"),
                 MAKE_PTR(uc),
@@ -511,8 +571,7 @@ uim_get_nr_im(uim_context uc)
 {
   uim_lisp n;
 
-  if (!uc)
-    return 0;
+  assert(uc);
 
   n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_PTR(uc));
   return uim_scm_c_int(n);
@@ -521,6 +580,9 @@ uim_get_nr_im(uim_context uc)
 static uim_lisp
 get_nth_im(uim_context uc, int nth)
 {
+  assert(uc);
+  assert(nth >= 0);
+
   return uim_scm_call2(MAKE_SYM("uim-nth-convertible-im"),
                        MAKE_PTR(uc), MAKE_INT(nth));
 }
