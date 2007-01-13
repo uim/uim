@@ -1,6 +1,9 @@
 Overview of changes from 1.4.0-beta to 1.4.0
 ==
 * Fixed
+  - Fix the license terms of replace/strsep.c and replace/setenv.c
+    accidencially mis-modified in r790
+
   - libuim
     - Fix unimplemented return value of uim_input_string()
     - Fix uneffected --disable-nls
