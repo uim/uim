@@ -39,7 +39,7 @@ release, you have to repeat the following procedure at least three times.
 
 4. Export a fresh tree from svn.
 
-   svn export http://anonsvn.freedesktop.org/srv/uim/trunk
+   svn export http://anonsvn.freedesktop.org/svn/uim/trunk
 
 5. Do test.
 
