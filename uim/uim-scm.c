@@ -39,8 +39,8 @@
  */
 /* This file must be included before uim's config.h */
 #include "sigscheme-combined.c"
-#if !SSCM_VERSION_REQUIRE(0, 7, 3)
-#error "SigScheme version 0.7.3 or later is required"
+#if !SSCM_VERSION_REQUIRE(0, 7, 4)
+#error "SigScheme version 0.7.4 or later is required"
 #endif
 
 #include <config.h>
