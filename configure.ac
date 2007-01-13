@@ -238,7 +238,7 @@ AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h sys/termios.h wcha
 AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
-AC_CHECK_HEADERS([sys/param.h strings.h])
+AC_CHECK_HEADERS([sys/param.h strings.h netdb.h])
 
 # Check for types
 AC_TYPE_INT8_T
@@ -331,6 +331,23 @@ AC_REPLACE_FUNCS([getpeereid strsep setenv unsetenv strlcpy strlcat])
 AC_CHECK_FUNCS([getpid stat mkdir chmod])
 AC_CHECK_FUNCS([execv execvp])
 AC_CHECK_FUNCS([isascii])
+AC_CHECK_FUNCS([getaddrinfo freeaddrinfo getnameinfo])
+
+# IRIX has a const char return value for gai_strerror()
+AC_CHECK_FUNCS(gai_strerror,[
+        AC_DEFINE(HAVE_GAI_STRERROR)
+        AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+const char *gai_strerror(int);],[
+char *str;
+
+str = gai_strerror(0);],[
+                AC_DEFINE(HAVE_CONST_GAI_STRERROR_PROTO, 1,
+                [Define if gai_strerror() returns const char *])])])
+
 AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
 AC_TRY_RUN([
 #include <sys/types.h>
@@ -371,6 +388,73 @@ NETLIBS=""
 AC_CHECK_FUNC(inet_aton, ,
   [AC_CHECK_LIB(resolv, inet_aton, [NETLIBS="-lresolv"])])
 AC_SUBST(NETLIBS)
+
+dnl socket related
+AC_CACHE_CHECK([for struct sockaddr_storage], ac_cv_have_struct_sockaddr_storage, [
+	AC_TRY_COMPILE(
+		[
+#include <sys/types.h>
+#include <sys/socket.h>
+		],
+		[ struct sockaddr_storage s; ],
+		[ ac_cv_have_struct_sockaddr_storage="yes" ],
+		[ ac_cv_have_struct_sockaddr_storage="no" ]
+	)
+])
+if test "x$ac_cv_have_struct_sockaddr_storage" = "xyes" ; then
+	AC_DEFINE(HAVE_STRUCT_SOCKADDR_STORAGE, 1,
+		[define if you have struct sockaddr_storage data type])
+fi
+
+AC_CACHE_CHECK([for struct sockaddr_in6], ac_cv_have_struct_sockaddr_in6, [
+	AC_TRY_COMPILE(
+		[
+#include <sys/types.h>
+#include <netinet/in.h>
+		],
+		[ struct sockaddr_in6 s; s.sin6_family = 0; ],
+		[ ac_cv_have_struct_sockaddr_in6="yes" ],
+		[ ac_cv_have_struct_sockaddr_in6="no" ]
+	)
+])
+if test "x$ac_cv_have_struct_sockaddr_in6" = "xyes" ; then
+	AC_DEFINE(HAVE_STRUCT_SOCKADDR_IN6, 1,
+		[define if you have struct sockaddr_in6 data type])
+fi
+
+AC_CACHE_CHECK([for struct in6_addr], ac_cv_have_struct_in6_addr, [
+	AC_TRY_COMPILE(
+		[
+#include <sys/types.h>
+#include <netinet/in.h>
+		],
+		[ struct in6_addr s; s.s6_addr[0] = 0; ],
+		[ ac_cv_have_struct_in6_addr="yes" ],
+		[ ac_cv_have_struct_in6_addr="no" ]
+	)
+])
+if test "x$ac_cv_have_struct_in6_addr" = "xyes" ; then
+	AC_DEFINE(HAVE_STRUCT_IN6_ADDR, 1,
+		[define if you have struct in6_addr data type])
+fi
+
+AC_CACHE_CHECK([for struct addrinfo], ac_cv_have_struct_addrinfo, [
+	AC_TRY_COMPILE(
+		[
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+		],
+		[ struct addrinfo s; s.ai_flags = AI_PASSIVE; ],
+		[ ac_cv_have_struct_addrinfo="yes" ],
+		[ ac_cv_have_struct_addrinfo="no" ]
+	)
+])
+if test "x$ac_cv_have_struct_addrinfo" = "xyes" ; then
+	AC_DEFINE(HAVE_STRUCT_ADDRINFO, 1,
+		[define if you have struct addrinfo data type])
+fi
+
 
 GETTEXT_PACKAGE=uim
 AC_SUBST(GETTEXT_PACKAGE)

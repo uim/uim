@@ -84,6 +84,8 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 size_t strlcat(char *dst, const char *src, size_t siz);
 #endif
 
+#include "fake-rfc2553.h"
+
 #ifdef __cplusplus
 }
 #endif
