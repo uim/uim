@@ -34,6 +34,7 @@
  * is implemented for ssh use only. For example, this routine assumes
  * that ai_family is AF_INET. Don't use it for another purpose.
  */
+#include <config.h>
 
 #include <stdlib.h>
 #include <string.h>
