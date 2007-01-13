@@ -49,9 +49,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <netdb.h>
-#include <arpa/inet.h>
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
@@ -446,7 +444,7 @@ skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
   if (skkserv_family_str) {
     if (!strcmp(skkserv_family_str, "inet"))
       skkserv_family = AF_INET;
-    if (!strcmp(skkserv_family_str, "inet6"))
+    else if (!strcmp(skkserv_family_str, "inet6"))
       skkserv_family = AF_INET6;
   }
 
