@@ -139,8 +139,12 @@ static struct dic_info {
   int cache_len;
   /* skkserv related state */
   int skkserv_state;
+  /* skkserv hostname */
+  char *skkserv_hostname;
   /* skkserv port number */
   int skkserv_portnum;
+  /* skkserv address family. AF_UNSPEC or AF_INET or AF_INET6 */
+  int skkserv_family;
 } *skk_dic;
 
 /* completion */
@@ -173,17 +177,14 @@ static void look_get_comp(struct skk_comp_array *ca, const char *str);
 static uim_lisp look_get_top_word(const char *str);
 
 /* skkserv connection */
-#define SKK_SERVICENAME	"skkserv"
-#define SKK_SERVER_HOST	"localhost"
 #define SKK_SERV_BUFSIZ	1024
 #define SKK_SERV_USE	(1<<0)
 #define SKK_SERV_CONNECTED	(1<<1)
 
 static int skkservsock = -1;
 static FILE *rserv, *wserv;
-static char *SKKServerHost = NULL;
 /* prototype */
-static int open_skkserv(int portnum);
+static int open_skkserv(const char *hostname, int portnum, int family);
 static void close_skkserv(void);
 static void skkserv_disconnected(struct dic_info *di);
 
@@ -245,7 +246,8 @@ find_border(struct dic_info *di)
 }
 
 static struct dic_info *
-open_dic(const char *fn, uim_bool use_skkserv, int skkserv_portnum)
+open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
+	 int skkserv_portnum, int skkserv_family)
 {
   struct dic_info *di;
   struct stat st;
@@ -256,10 +258,15 @@ open_dic(const char *fn, uim_bool use_skkserv, int skkserv_portnum)
   if (!(di = (struct dic_info *)malloc(sizeof(struct dic_info))))
     return NULL;
 
-  di->skkserv_portnum = skkserv_portnum;
-  if (use_skkserv)
-    di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_portnum);
-  else {
+  di->skkserv_hostname = NULL;
+  if (use_skkserv) {
+    di->skkserv_hostname = strdup(skkserv_hostname);
+    di->skkserv_portnum = skkserv_portnum;
+    di->skkserv_family = skkserv_family;
+    di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_hostname,
+						    skkserv_portnum,
+						    skkserv_family);
+  } else {
     di->skkserv_state = 0;
     fd = open(fn, O_RDONLY);
     if (fd != -1) {
@@ -282,7 +289,7 @@ open_dic(const char *fn, uim_bool use_skkserv, int skkserv_portnum)
   di->personal_dic_timestamp = 0;
   di->cache_modified = 0;
   di->cache_len = 0;
-  
+
   return di;
 }
 
@@ -419,18 +426,34 @@ nth_candidate(char *str, int nth)
 
 /* init */
 static uim_lisp
-skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_portnum_)
+skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
+	     uim_lisp skkserv_portnum_, uim_lisp skkserv_family_)
 {
-  const char *fn = uim_scm_refer_c_str(fn_);
-  uim_bool use_skkserv = uim_scm_c_bool(use_skkserv_);
-  int skkserv_portnum = uim_scm_c_int(skkserv_portnum_);
-  
+  const char *fn, *skkserv_hostname, *skkserv_family_str;
+  uim_bool use_skkserv;
+  int skkserv_portnum, skkserv_family;
+
+  fn = uim_scm_refer_c_str(fn_);
+  use_skkserv = uim_scm_c_bool(use_skkserv_);
+  skkserv_hostname = uim_scm_refer_c_str(skkserv_hostname_);
+  skkserv_portnum = uim_scm_c_int(skkserv_portnum_);
+  skkserv_family_str = uim_scm_refer_c_str(skkserv_family_);
+
   is_setugid = uim_helper_is_setugid();
   signal(SIGPIPE, SIG_IGN);
 
-  if (!skk_dic) {
-    skk_dic = open_dic(fn, use_skkserv, skkserv_portnum);
+  skkserv_family = AF_UNSPEC;
+  if (skkserv_family_str) {
+    if (!strcmp(skkserv_family_str, "inet"))
+      skkserv_family = AF_INET;
+    if (!strcmp(skkserv_family_str, "inet6"))
+      skkserv_family = AF_INET6;
   }
+
+  if (!skk_dic)
+    skk_dic = open_dic(fn, use_skkserv, skkserv_hostname, skkserv_portnum,
+		       skkserv_family);
+
   return uim_scm_f();
 }
 
@@ -682,7 +705,7 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
     prev = di->head.next;
     while (prev->next) {
       prev = prev->next;
-    }	
+    }
     prev->next = sl;
   }
   sl->next = NULL;
@@ -703,9 +726,11 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   char *idx = alloca(strlen(s) + 2);
 
   if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
-      if (!((di->skkserv_state |= open_skkserv(di->skkserv_portnum)) &
-			      SKK_SERV_CONNECTED))
-	return NULL;
+    if (!((di->skkserv_state |= open_skkserv(di->skkserv_hostname,
+					     di->skkserv_portnum,
+					     di->skkserv_family)) &
+	  SKK_SERV_CONNECTED))
+      return NULL;
   }
 
   sprintf(idx, "%s%c", s, okuri_head);
@@ -759,7 +784,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
     return NULL;
   }
 }
-	
+
 static struct skk_line *
 search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
 {
@@ -1144,7 +1169,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
       prev_is_num = 0;
     }
   }
-  
+
   /*
    * Add last number into list if string is ended with numeric
    * character.
@@ -1158,7 +1183,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
     lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
   }
   free(numstr);
- 
+
   return uim_scm_call1(uim_scm_make_symbol("reverse"), lst);
 }
 
@@ -1394,7 +1419,7 @@ numeric_shogi_conv(const char *numstr)
   len = strlen(numstr);
   if (len != 2) /* allow two digit number only */
     return strdup(numstr);
-    
+
   mbstr = malloc(5);
   strcpy(&mbstr[0], wide_num_list[numstr[0] - '0']);
   strcpy(&mbstr[2], kanji_num_list[numstr[1] - '0']);
@@ -1593,7 +1618,7 @@ get_ignoring_indices(struct skk_cand_array *ca, int indices[])
 {
   int i, j, k = 0;
   int purged_cand_index;
-  
+
   purged_cand_index= get_purged_cand_index(ca);
 
   if (purged_cand_index != -1) {
@@ -1636,7 +1661,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   uim_lisp str_ = uim_scm_null_list();
   uim_lisp numlst_ = uim_scm_null_list();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
-  
+
   if UIM_SCM_NFALSEP(numeric_conv_)
     numlst_ = skk_store_replaced_numeric_str(head_);
 
@@ -1834,7 +1859,7 @@ find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
   const char *hs;
   struct skk_comp_array *ca;
   char *rs = NULL;
-  
+
   hs = uim_scm_refer_c_str(head_);
 
   if UIM_SCM_NFALSEP(numeric_conv_)
@@ -1993,7 +2018,7 @@ restore_numeric(const char *s, uim_lisp numlst_)
     if (str[i] == '#') {
       if (uim_scm_nullp(numlst_))
 	break;
-      
+
       numstr  = uim_scm_refer_c_str(uim_scm_car(numlst_));
       numstrlen = strlen(numstr);
       newlen = newlen - 1 + numstrlen;
@@ -2459,7 +2484,7 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
 {
     char *str;
     int i;
-    
+
     if (nth == -1)
       return;
 
@@ -2473,7 +2498,7 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
       push_purged_word(ca, i, 1, str);
       remove_candidate_from_array(ca, nth);
     }
-    
+
 #if 0
     /* Disabled since we use okuri specific ignoing words */
     if (ca->okuri) {
@@ -3354,8 +3379,8 @@ look_popen(const char *str)
   const char *look;
   FILE *fp;
   int len;
-  
-  if (is_setugid) 
+
+  if (is_setugid)
     look = "/usr/bin/" LOOK_COMMAND;
   else
     look = LOOK_COMMAND;
@@ -3472,7 +3497,7 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_3("skk-lib-dic-open", skk_dic_open);
+  uim_scm_init_subr_5("skk-lib-dic-open", skk_dic_open);
   uim_scm_init_subr_1("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
   uim_scm_init_subr_1("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
   uim_scm_init_subr_4("skk-lib-get-entry", skk_get_entry);
@@ -3503,9 +3528,9 @@ uim_plugin_instance_quit(void)
   if (!skk_dic)
     return;
 
-  if (skk_dic->addr) {
+  if (skk_dic->addr)
     munmap(skk_dic->addr, skk_dic->size);
-  }
+
   sl = skk_dic->head.next;
   while (sl) {
     tmp = sl;
@@ -3515,6 +3540,7 @@ uim_plugin_instance_quit(void)
 
   if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
     close_skkserv();
+  free(skk_dic->skkserv_hostname);
 
   free(skk_dic);
   skk_dic = NULL;
@@ -3522,47 +3548,50 @@ uim_plugin_instance_quit(void)
 
 /* skkserv related */
 static int
-open_skkserv(int portnum)
+open_skkserv(const char *hostname, int portnum, int family)
 {
   int sock;
-  struct sockaddr_in hostaddr;
-  struct hostent *entry;
-  /* struct servent *serv; */
-  struct protoent *proto;
-  char *hostname;
+  struct addrinfo hints, *res, *res0;
+  char port[BUFSIZ];
+  int error;
 
-  /* serv = getservbyname(SKK_SERVICENAME, "tcp"); */
-  memset((char*)&hostaddr, 0, sizeof(struct sockaddr_in));
-  if ((proto = getprotobyname("tcp")) == NULL) {
+  (void)snprintf(port, sizeof(port), "%d", portnum);
+
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = family;
+  hints.ai_flags = AI_PASSIVE;
+  hints.ai_socktype = SOCK_STREAM;
+
+  if ((error = getaddrinfo(hostname, port, &hints, &res))) {
+    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
     return 0;
   }
 
-  if ((sock = socket(AF_INET, SOCK_STREAM, proto->p_proto)) < 0) {
-    return 0;
-  }
+  res0 = res;
+  do {
+    if (res0->ai_family != AF_INET && res0->ai_family != AF_INET6)
+      continue;
 
-  if (SKKServerHost)
-    hostname = SKKServerHost;
-  else if ((hostname = getenv("SKKSERVER")) == NULL) {
-#ifdef SKK_SERVER_HOST
-    hostname = SKK_SERVER_HOST;
-#else
+    if ((sock = socket(res0->ai_family, res0->ai_socktype,
+		       res0->ai_protocol)) < 0)
+      continue;
+
+    if (connect(sock, res0->ai_addr, res0->ai_addrlen) == 0)
+      break;
+    else
+      fprintf(stderr, "connect to %s port %s failed\n", hostname, port);
+    close(sock);
+    sock = -1;
+  }  while ((res0 = res0->ai_next) != NULL);
+
+  freeaddrinfo(res);
+
+  if (sock == -1)
     return 0;
-#endif
-  }
-  if (!inet_aton(hostname, (struct in_addr *)&hostaddr.sin_addr)) {
-    if ((entry = gethostbyname(hostname)) == NULL) {
-      return 0;
-    }
-    memcpy(&hostaddr.sin_addr, entry->h_addr, entry->h_length);
-  }
-  hostaddr.sin_family = AF_INET;
-  /* hostaddr.sin_port = serv ? serv->s_port : htons(portnum); */
-  hostaddr.sin_port = htons(portnum);
-  if (connect(sock, (struct sockaddr *)&hostaddr, sizeof(struct sockaddr_in)) < 0) {
-    return 0;
-  }
+
+#if 0
   fprintf(stderr, "SKKSERVER=%s\n", hostname);
+#endif
   skkservsock = sock;
   rserv = fdopen(sock, "r");
   wserv = fdopen(sock, "w");

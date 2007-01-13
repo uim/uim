@@ -133,7 +133,7 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   skk-use-manual-candwin-setting?))
-		   
+
 (custom-add-hook 'skk-candidate-selection-style
 		 'custom-set-hooks
 		 (lambda ()
@@ -327,6 +327,28 @@
   (N_ "Use skkserv instead of SKK-JISYO")
   (N_ "long description will be here."))
 
+(define-custom 'skk-skkserv-use-env? #t
+  '(skk-dict)
+  '(boolean)
+  (N_ "Use value of environment variable SKKSERVER")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'skk-skkserv-use-env?
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-skkserv?))
+
+(define-custom 'skk-skkserv-hostname "localhost"
+  '(skk-dict)
+  '(string ".*")
+  (N_ "Hostname of skkserv")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'skk-skkserv-hostname
+		 'custom-activity-hooks
+		 (lambda ()
+		   (not skk-skkserv-use-env?)))
+
 (define-custom 'skk-skkserv-portnum 1178
   '(skk-dict)
   '(integer 0 65535)
@@ -337,6 +359,22 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   skk-use-skkserv?))
+
+(define-custom 'skk-skkserv-address-family 'unspecified
+  '(skk-dict)
+  (list 'choice
+	(list 'unspecified (N_ "Auto") (N_ "Auto"))
+	(list 'inet  (N_ "IPv4")
+	      (N_ "Forces skkserv to use IPv4 addresses only"))
+	(list 'inet6 (N_ "IPv6")
+	      (N_ "Forces skkserv to use IPv6 addresses only")))
+  (N_ "Address family of skkserv")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'skk-skkserv-address-family
+	 'custom-activity-hooks
+	 (lambda ()
+	   skk-use-skkserv?))
 
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")

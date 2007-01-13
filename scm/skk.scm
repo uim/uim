@@ -370,13 +370,16 @@
 (define skk-context-new
   (lambda (id im)
     (if (not skk-dic-init)
-	(begin
+	(let ((hostname (if skk-skkserv-use-env?
+			    (or (getenv "SKKSERVER") "localhost")
+			    skk-skkserv-hostname)))
 	  (set! skk-dic-init #t)
 	  (if skk-use-recursive-learning?
 	      (require "skk-editor.scm"))
 	  (require "skk-dialog.scm")
 	  (skk-lib-dic-open
-	     skk-dic-file-name skk-use-skkserv? skk-skkserv-portnum)
+	   skk-dic-file-name skk-use-skkserv? hostname skk-skkserv-portnum
+	   skk-skkserv-address-family)
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
 	  (rkc (rk-context-new ja-rk-rule #t #f)))
