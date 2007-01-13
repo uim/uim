@@ -3548,8 +3548,8 @@ uim_plugin_instance_quit(void)
 static int
 open_skkserv(const char *hostname, int portnum, int family)
 {
-  int sock;
-  struct addrinfo hints, *res, *res0;
+  int sock = -1;
+  struct addrinfo hints, *aitop, *ai;
   char port[BUFSIZ];
   int error;
 
@@ -3560,29 +3560,28 @@ open_skkserv(const char *hostname, int portnum, int family)
   hints.ai_flags = AI_PASSIVE;
   hints.ai_socktype = SOCK_STREAM;
 
-  if ((error = getaddrinfo(hostname, port, &hints, &res))) {
+  if ((error = getaddrinfo(hostname, port, &hints, &aitop))) {
     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
     return 0;
   }
 
-  res0 = res;
+  ai = aitop;
   do {
-    if (res0->ai_family != AF_INET && res0->ai_family != AF_INET6)
+    if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
       continue;
 
-    if ((sock = socket(res0->ai_family, res0->ai_socktype,
-		       res0->ai_protocol)) < 0)
+    if ((sock = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol)) < 0)
       continue;
 
-    if (connect(sock, res0->ai_addr, res0->ai_addrlen) == 0)
+    if (connect(sock, ai->ai_addr, ai->ai_addrlen) == 0)
       break;
     else
       fprintf(stderr, "connect to %s port %s failed\n", hostname, port);
     close(sock);
     sock = -1;
-  }  while ((res0 = res0->ai_next) != NULL);
+  }  while ((ai = ai->ai_next) != NULL);
 
-  freeaddrinfo(res);
+  freeaddrinfo(aitop);
 
   if (sock == -1)
     return 0;
