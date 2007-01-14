@@ -181,7 +181,7 @@
      (list jo3 . (jo4))
      (list jo4 . ()))))
 
-;; Expands a key candidate list like
+;; Expands a key choices list like
 ;; ((jongseong-bieub . (1 4)))
 ;; => ((jongseong-bieub . 1) (jongseong-bieub . 4)))
 (define byeoru-expand-layout
@@ -234,11 +234,11 @@
      ("n" (jungseong-u      . 3))
      ("m" (jungseong-eu     . 3))
      ;; Shifted keys
-     ("Q" (choseong-ssangbieub  . 1))
-     ("W" (choseong-ssangjieuj  . 1))
-     ("E" (choseong-ssangdigeud . 1))
-     ("R" (choseong-ssanggiyeog . 1) (jongseong-ssanggiyeog . 5))
-     ("T" (choseong-ssangsios   . 1) (jongseong-ssangsios   . 5))
+     ("Q" (choseong-ssangbieub  . 5))
+     ("W" (choseong-ssangjieuj  . 5))
+     ("E" (choseong-ssangdigeud . 5))
+     ("R" (choseong-ssanggiyeog . 5) (jongseong-ssanggiyeog . 5))
+     ("T" (choseong-ssangsios   . 5) (jongseong-ssangsios   . 5))
      ("O" (jungseong-yae        . 1))
      ("P" (jungseong-ye         . 1)))))
 
@@ -665,12 +665,12 @@
      (">" . "3"))))
 
 (define-record 'byeoru-automata
-  '((state-history     ((start . 0)))
-    (candidate-history ())
-    (ordered-cand-hist ())
-    (elected-keys      ())
-    (composing-char    (0 0 0))
-    (composed-char     (0 0 0))))
+  '((state		      (start . 0))
+    (choices-history	      ())
+    (unsorted-choices-history ())
+    (chosen-jamos	      ())
+    (composing-char	      (0 0 0))
+    (composed-char	      (0 0 0))))
 
 (define (byeoru-choseong? jamo)
   (assoc jamo byeoru-choseong-alist))
@@ -681,12 +681,12 @@
 (define (byeoru-jongseong? jamo)
   (assoc jamo byeoru-jongseong-alist))
 
-(define (byeoru-compound? jamo-key)
-  (find (lambda (item) (eq? jamo-key (cdr item)))
+(define (byeoru-compound? jamo)
+  (find (lambda (item) (eq? jamo (cdr item)))
 	byeoru-compound-jamo-alist))
 	 
-(define (byeoru-double? jamo-key)
-  (find (lambda (item) (eq? jamo-key (cdr item)))
+(define (byeoru-double? jamo)
+  (find (lambda (item) (eq? jamo (cdr item)))
 	byeoru-double-jamo-alist))
 
 (define (byeoru-combine-compound jamo1 jamo2)
@@ -702,14 +702,14 @@
       (byeoru-combine-double jamo1 jamo2)
       (byeoru-combine-compound jamo1 jamo2)))
 
-(define (byeoru-jamo-key-class jamo-key)
+(define (byeoru-jamo-class jamo)
   (cond
-   ((byeoru-choseong?  jamo-key) 'choseong)
-   ((byeoru-jungseong? jamo-key) 'jungseong)
-   ((byeoru-jongseong? jamo-key) 'jongseong)))
+   ((byeoru-choseong?  jamo) 'choseong)
+   ((byeoru-jungseong? jamo) 'jungseong)
+   ((byeoru-jongseong? jamo) 'jongseong)))
 
-(define (byeoru-jamo-keys-to-johab jamo-keys)
-  (let* ((jamos (reverse jamo-keys))
+(define (byeoru-jamos-to-johab jamos)
+  (let* ((jamos (reverse jamos))
 	 (get-johab-code
 	  (lambda (class-test alist)
 	    (cond
@@ -746,62 +746,96 @@
 	 (or (= state-no 2) (= state-no 3)))))
 
 (define (byeoru-automata-reset! ba)
-  (byeoru-automata-set-state-history! ba '((start . 0)))
-  (byeoru-automata-set-elected-keys! ba '())
-  (byeoru-automata-set-candidate-history! ba '())
+  (byeoru-automata-set-state! ba '(start . 0))
+  (byeoru-automata-set-chosen-jamos! ba '())
+  (byeoru-automata-set-choices-history! ba '())
   (byeoru-automata-set-composing-char! ba '(0 0 0))
-  (byeoru-automata-set-ordered-cand-hist! ba '()))
+  (byeoru-automata-set-unsorted-choices-history! ba '()))
 
-(define (byeoru-automata-eat-ordered-key ba candidates)
-  ;; candidates are not candidates in the sense used in Hangul to
-  ;; Chinese conversion.  A few jamo and state candidates are assigned
-  ;; to each key.  For example, '((choseong-giyeog . 1)
-  ;; (jongseong-giyeog . 3) (jongseong-giyeog . 4))) are assigned to
-  ;; "r" in the hangul2 layout, which means that "r" key can be
-  ;; interpreted as one of the these three possibilities.  They are
-  ;; tried in the order from left to right, and the first one that can
-  ;; be used for continuing syllable composition is used.  If no
-  ;; candidate can be used for composition, the syllable is completed,
-  ;; and composition of a new syllable begins.
-  (let loop ((cands candidates))
-    (let* ((state (car (byeoru-automata-state-history ba)))
+(define (byeoru-automata-eat-ordered-key ba choices)
+  ;; A few jamo and state choices are assigned to each key.  For
+  ;; example, '((choseong-giyeog . 1) (jongseong-giyeog . 3)
+  ;; (jongseong-giyeog . 4))) are assigned to "r" in the hangul2
+  ;; layout, which means that "r" key can be interpreted as one of the
+  ;; these three possibilities.  They are tried in the order from left
+  ;; to right, and the first one that can be used for continuing
+  ;; syllable composition is used.  If no choice can be used for
+  ;; composition, the syllable is completed, and composition of a new
+  ;; syllable begins.
+  (let loop ((chs choices))
+    (let* ((state (byeoru-automata-state ba))
 	   (state-class (car state))
 	   (state-no (cdr state))
-	   (elected-keys (byeoru-automata-elected-keys ba))
-	   (cand-hist (byeoru-automata-candidate-history ba)))
+	   (chosen-jamos (byeoru-automata-chosen-jamos ba))
+	   (chs-hist (byeoru-automata-choices-history ba)))
 
       (cond
 
-       ((null? cands)
-	;; No valid jamo candidate found, so we have to break the syllable.
-	(if (and (byeoru-jungseong? (caar candidates))
+       ((null? chs)
+	;; No valid jamo choice found, so we have to break the syllable.
+	(if (and (byeoru-jungseong? (caar choices))
 		 (eq? state-class 'jongseong)
-		 (member state-no '(1 3 4))
-		 (byeoru-choseong? (caar (car cand-hist))))
+		 (memv state-no '(1 3 4))
+		 (byeoru-choseong? (caar (car chs-hist))))
 	    ;; A 2-beol layout may give rise to a transformation like
 	    ;; (consonant vowel consonant) + vowel
 	    ;; => (consonant vowel) (consonant + vowel)
-	    (let ((last-candidates (car cand-hist)))
+	    (let ((last-choices (car chs-hist)))
+	      (byeoru-automata-backspace ba)
 	      (byeoru-automata-set-composed-char!
-	       ba (byeoru-jamo-keys-to-johab (cdr elected-keys)))
+	       ba (byeoru-jamos-to-johab (byeoru-automata-chosen-jamos ba)))
 	      (byeoru-automata-reset! ba)
-	      (byeoru-automata-eat-ordered-key ba last-candidates)
-	      (byeoru-automata-eat-ordered-key ba candidates))
+	      (byeoru-automata-eat-ordered-key ba last-choices)
+	      (byeoru-automata-eat-ordered-key ba choices))
 	    ;; For a 3-beol layout, just begin a new syllable with
 	    ;; the new key.
 	    (begin
 	      (byeoru-automata-set-composed-char!
 	       ba (byeoru-automata-composing-char ba))
 	      (byeoru-automata-reset! ba)
-	      (byeoru-automata-eat-ordered-key ba candidates)))
+	      (byeoru-automata-eat-ordered-key ba choices)))
 
 	'char-break)
 
-       ((let* ((cand (car cands))
-	       (jamo-key (car cand))
-	       (dest-no (cdr cand))
-	       (p-dest-class (byeoru-jamo-key-class jamo-key))
+       ((let* ((ch (car chs))
+	       (jamo (car ch))
+	       (dest-no (cdr ch))
+	       (p-dest-class (byeoru-jamo-class jamo))
 	       (p-dest (cons p-dest-class (if (= dest-no 5) 4 dest-no))))
+
+	  (define (combine-jongseongs)
+	    (let loop1 ((chs1 (car chs-hist)))
+	      (cond
+	       ((null? chs1)
+		#f)
+	       ((let ((jamo1 (caar chs1))
+		      (no1 (cdar chs1)))
+		  (and
+		   (byeoru-jongseong? jamo1)
+		   (= no1 3)
+		   (let loop2 ((chs2 chs))
+		     (cond
+		      ((null? chs2)
+		       #f)
+		      ((let ((jamo2 (caar chs2))
+			     (no2 (cdar chs2)))
+			 (and
+			  (byeoru-jongseong? jamo2)
+			  (or
+			   (and (= no2 4)
+				(byeoru-combine-compound jamo1 jamo2))
+			   (and (= no2 5)
+				(eq? jamo1 jamo2)))
+			  (begin
+			    (set! chosen-jamos (cons jamo1 (cdr chosen-jamos)))
+			    (set! jamo jamo2)
+			    (set! p-dest (cons p-dest-class 4))
+			    #t))))
+		      (else
+		       (loop2 (cdr chs2))))))))
+	       (else
+		(loop1 (cdr chs1))))))
+
 	  (and
 	   (byeoru-transition-allowed? state p-dest)
 	   (case dest-no
@@ -809,63 +843,74 @@
 	    ;; of a double jamo, separately from composition of a
 	    ;; (heterogeneous) compound jamo.
 	    ((5)
-	     (if (byeoru-double? jamo-key)
+	     (if (byeoru-double? jamo)
 		 ;; a double jamo key cannot be the second key
 		 ;; for a double jamo.
 		 (not (byeoru-comp-or-double-forbidden? state p-dest))
-		 ;; jamo-key must be the second key for a double jamo,
-		 (and (not (null? elected-keys)) ; so, a first key needed,
-		      ;; that is the same as jamo-key.
-		      (eq? (car elected-keys) jamo-key))))
+		 ;; (variable) jamo must be the second key for a double jamo,
+		 (and (not (null? chosen-jamos)) ; so, a first key needed,
+		      ;; that is the same as (variable) jamo.
+		      (eq? (car chosen-jamos) jamo))))
 	    ((4)
-	     (if (byeoru-compound? jamo-key)
+	     (if (byeoru-compound? jamo)
 		 ;; a compound jamo key cannot be the second key
 		 ;; for a compound jamo.
 		 (not (byeoru-comp-or-double-forbidden? state p-dest))
-		 ;; jamo-key must be the second key for a compound,
-		 (and (not (null? elected-keys)) ; so, a first key needed,
-		      ;; that can be combined with jamo-key.
-		      (byeoru-combine-compound
-		       (car elected-keys) jamo-key))))
+		 ;; (variable) jamo must be the second key for a compound,
+		 (and (not (null? chosen-jamos)) ; so, a first key needed,
+		      ;; that can be combined with (variable) jamo.
+		      (byeoru-combine-compound (car chosen-jamos) jamo))))
 	    (else #t))
 	   (not (and (eq? p-dest-class 'jongseong)
 		     (eq? state-class 'choseong)
-		     ;; cho -> jong transition is allowed in general,
-		     ;; but not in a 2-beol layout.
-		     (byeoru-choseong? (caar candidates))))
+		     ;; choseong -> jongseong transition is allowed
+		     ;; for a 3-beol layout, so that it can compose a
+		     ;; syllable of the form (choseong jongseong).  A
+		     ;; 2-beol layout cannot do this since it does not
+		     ;; distinguish between choseong and jongseong.
+		     ;; However, we use this transition for a
+		     ;; transformation like
+		     ;; (choseong-giyeog) + jongseong-sios =>
+		     ;; (jongseong-giyeog jongseong-sios)
+		     ;; to enable input of ㄳ with a 2-beol layout.
+		     (byeoru-choseong? (caar choices)) ; 2-beol layout?
+		     (or (equal? state '(choseong . 4))
+			 ;; do not allow something like
+			 ;; (choseong-giyeog choseong-giyeog) +
+			 ;; jongseong-giyeog => (choseong-giyeog
+			 ;; jongseong-giyeog jongseong-giyeog) which
+			 ;; might happen in romaja layout mode.
+			 (not (combine-jongseongs)))))
 
-	   ;; A valid jamo candidate found.  Keep composing.
+	   ;; A valid jamo choice found.  Keep composing.
 	   (begin
-	     (byeoru-automata-set-elected-keys!
-	      ba (cons jamo-key elected-keys))
-	     (byeoru-automata-set-candidate-history!
-	      ba (cons candidates cand-hist))
-	     (byeoru-automata-set-state-history!
-	      ba (cons p-dest (byeoru-automata-state-history ba)))
+	     (byeoru-automata-set-chosen-jamos! ba (cons jamo chosen-jamos))
+	     (byeoru-automata-set-choices-history! ba (cons choices chs-hist))
+	     (byeoru-automata-set-state! ba p-dest)
 	     (byeoru-automata-set-composing-char!
-	      ba (byeoru-jamo-keys-to-johab
-		  (byeoru-automata-elected-keys ba)))
+	      ba (byeoru-jamos-to-johab
+		  (byeoru-automata-chosen-jamos ba)))
 
 	     'composing))))
 
        (else
-	(loop (cdr cands)))))))
+	(loop (cdr chs)))))))
 
 (define (byeoru-orderedness)
   (let ((can-be-orderless
 	 (cadr (assoc byeoru-layout byeoru-layout-alist))))
     (if can-be-orderless byeoru-jamo-orderedness 'ordered)))
 
-(define (byeoru-cmp-class cands1 cands2)
+(define (byeoru-cmp-class choices1 choices2)
   (let* ((byeoru-class-order
 	  (lambda (class)
 	    (cdr (assoc class '((choseong  . 1)
 				(jungseong . 2)
 				(jongseong . 3))))))
-	 (jamo1 (caar cands1))
-	 (jamo2 (caar cands2))
-	 (order1 (byeoru-class-order (byeoru-jamo-key-class jamo1)))
-	 (order2 (byeoru-class-order (byeoru-jamo-key-class jamo2))))
+	 (jamo1 (caar choices1))
+	 (jamo2 (caar choices2))
+	 (order1 (byeoru-class-order (byeoru-jamo-class jamo1)))
+	 (order2 (byeoru-class-order (byeoru-jamo-class jamo2))))
     (if (= order1 order2)
 	(if (eq? jamo1 jamo2)
 	    0
@@ -875,23 +920,23 @@
 	     (else 0)))
 	(- order1 order2))))
 
-(define (byeoru-insert-candidates candidates cands-list)
-  (if (or (null? cands-list)
-	  (>= (byeoru-cmp-class candidates (car cands-list)) 0))
-      (cons candidates cands-list)
-      (cons (car cands-list)
-	    (byeoru-insert-candidates candidates (cdr cands-list)))))
+(define (byeoru-insert-choices choices choices-list)
+  (if (or (null? choices-list)
+	  (>= (byeoru-cmp-class choices (car choices-list)) 0))
+      (cons choices choices-list)
+      (cons (car choices-list)
+	    (byeoru-insert-choices choices (cdr choices-list)))))
 
-(define (byeoru-test-list ba cands-list)
-  (let loop ((rev-cands-list (reverse cands-list)))
+(define (byeoru-test-list ba choices-list)
+  (let loop ((rev-chs-list (reverse choices-list)))
     (cond
-     ((null? rev-cands-list)
+     ((null? rev-chs-list)
       'composing)
-     ((eq? (byeoru-automata-eat-ordered-key ba (car rev-cands-list))
+     ((eq? (byeoru-automata-eat-ordered-key ba (car rev-chs-list))
 	   'char-break)
       'char-break)
      (else
-      (loop (cdr rev-cands-list))))))
+      (loop (cdr rev-chs-list))))))
 
 (define (byeoru-eat-list f ba lst)
   (and (not (null? lst))
@@ -901,64 +946,58 @@
 	       res
 	       (loop (cdr rev-lst)))))))
 
-(define (byeoru-automata-eat-orderless-key ba candidates)
-  (let ((och (byeoru-automata-ordered-cand-hist ba))
-	(class (byeoru-jamo-key-class (caar candidates))))
+(define (byeoru-automata-eat-orderless-key ba choices)
+  (let ((uch (byeoru-automata-unsorted-choices-history ba))
+	(class (byeoru-jamo-class (caar choices))))
     ;; Even though we allow keystroke orders to be interchanged, two
     ;; keystrokes of the same class should be consecutive.  Otherwise,
     ;; we break the syllable.
     (if (and (memq class (map (lambda (elm)
-				(byeoru-jamo-key-class (caar elm))) och))
-	     (not (eq? class (byeoru-jamo-key-class (caar (car och)))))
+				(byeoru-jamo-class (caar elm))) uch))
+	     (not (eq? class (byeoru-jamo-class (caar (car uch)))))
 	     ;; But, in more-orderless mode, we only require that two
 	     ;; keystrokes of choseong class be consecutive, for
 	     ;; syllable breaks to be well defined.  All other
 	     ;; disorders are allowed.
 	     (or (not (eq? (byeoru-orderedness) 'more-orderless))
 		 (eq? class 'choseong)))
-	(byeoru-automata-eat-ordered-key ba candidates)
-	(let* ((cand-hist (byeoru-automata-candidate-history ba))
-	       (new-cand-hist (cons candidates cand-hist))
-	       (new-sorted-cand-hist (byeoru-insert-candidates
-				      candidates cand-hist))
+	(byeoru-automata-eat-ordered-key ba choices)
+	(let* ((chs-hist (byeoru-automata-choices-history ba))
+	       (new-chs-hist (cons choices chs-hist))
+	       (new-sorted-chs-hist (byeoru-insert-choices
+				     choices chs-hist))
 	       (res (begin
 		      (byeoru-automata-reset! ba)
-		      (byeoru-test-list ba new-sorted-cand-hist))))
+		      (byeoru-test-list ba new-sorted-chs-hist))))
 	  (if (eq? res 'char-break)
 	      (begin
 		(byeoru-automata-reset! ba)
 		(byeoru-eat-list
-		 byeoru-automata-eat-ordered-key ba new-cand-hist)))
+		 byeoru-automata-eat-ordered-key ba new-chs-hist)))
 	  res))))
 
-(define (byeoru-automata-eat-key ba candidates)
-  (let ((och (byeoru-automata-ordered-cand-hist ba))
+(define (byeoru-automata-eat-key ba choices)
+  (let ((uch (byeoru-automata-unsorted-choices-history ba))
 	(res
 	 (case (byeoru-orderedness)
 	   ((ordered)
-	    (byeoru-automata-eat-ordered-key ba candidates))
+	    (byeoru-automata-eat-ordered-key ba choices))
 	   ((orderless more-orderless)
-	    (byeoru-automata-eat-orderless-key ba candidates)))))
-    (byeoru-automata-set-ordered-cand-hist!
+	    (byeoru-automata-eat-orderless-key ba choices)))))
+    (byeoru-automata-set-unsorted-choices-history!
      ba (if (eq? res 'char-break)
-	    (byeoru-automata-candidate-history ba)
-	    (cons candidates och)))
+	    (byeoru-automata-choices-history ba)
+	    (cons choices uch)))
     res))
 
 (define (byeoru-automata-backspace ba)
-  (and (not (null? (byeoru-automata-elected-keys ba)))
-       (begin
-	 (byeoru-automata-set-elected-keys!
-	  ba (cdr (byeoru-automata-elected-keys ba)))
-	 (byeoru-automata-set-state-history!
-	  ba (cdr (byeoru-automata-state-history ba)))
-	 (byeoru-automata-set-candidate-history!
-	  ba (cdr (byeoru-automata-candidate-history ba)))
-	 (byeoru-automata-set-ordered-cand-hist!
-	  ba (byeoru-automata-candidate-history ba))
-	 (byeoru-automata-set-composing-char!
-	  ba (byeoru-jamo-keys-to-johab (byeoru-automata-elected-keys ba))))
-       #t))
+  (let ((chs-hist (byeoru-automata-choices-history ba)))
+    (and (not (null? chs-hist))
+	 (let ((new-chs-hist (cdr chs-hist)))
+	   (byeoru-automata-reset! ba)
+	   (byeoru-eat-list byeoru-automata-eat-ordered-key ba new-chs-hist)
+	   (byeoru-automata-set-unsorted-choices-history! ba new-chs-hist)
+	   #t))))
 
 
 ;;; ----------------------------
@@ -1264,7 +1303,7 @@
     (lambda (key key-state)
       (shift-or-no-modifier? -1 key-state))))
 
-(define (byeoru-key-to-candidates key key-state)
+(define (byeoru-key-to-choices key key-state)
   (and (byeoru-non-control-key? key key-state)
        (let* ((layout (symbol-value byeoru-layout))
 	      (pressed-key
@@ -1274,10 +1313,10 @@
 		    (char-upcase key) (char-downcase key))))
 	      (entry (assoc pressed-key layout)))
 	 (and entry
-	      (let ((candidates (cdr entry)))
-		(if (number? candidates)
-		    (ucs-to-utf8-string candidates)
-		    candidates))))))
+	      (let ((choices (cdr entry)))
+		(if (number? choices)
+		    (ucs-to-utf8-string choices)
+		    choices))))))
 
 (define byeoru-dic-filename "byeoru-dic.scm")
 (define byeoru-load-dic-hook '())
@@ -1399,23 +1438,18 @@
 	    (res (rk-push-key! rkc key-str))
 	    (pend (rk-pending rkc))
 	    (cur-seq (rk-current-seq rkc))
-	    (candidates (and cur-seq (cadr cur-seq))))
+	    (choices (and cur-seq (cadr cur-seq))))
 
        (define (byeoru-prepend-ieung)
 	 (byeoru-automata-backspace ba)
 	 (byeoru-automata-eat-key ba '((choseong-ieung . 1)))
-	 (byeoru-automata-eat-key ba candidates))
+	 (byeoru-automata-eat-key ba choices))
 
        (and
 	(not (string=? pend ""))
-	(list? candidates) ; (not (null? candidates))
-	;; Commented out (not (null? candidates)) for compatibility with R5RS
-	;; - jhpark, 2007-01-09
-	;; FIXME: remove (not (null? candidates))
-	;; if sigscheme becomes in use.
-	(let ((jungseong? (byeoru-jungseong? (caar candidates))))
+	(list? choices)
+	(let ((jungseong? (byeoru-jungseong? (caar choices))))
 	  (if (not res) (byeoru-automata-backspace ba))
-	  ;; CHECK: is res #f or '()?
 	  (if (and jungseong? (string=? last-pend "ng"))
 	      ;; Note that HWP does not treat "ch" in this way.
 	      ;; E.g., gochi becomes 고치
@@ -1427,12 +1461,12 @@
 		(byeoru-automata-eat-key ba '((choseong-giyeog . 1)))
 		(byeoru-context-set-key-hist! bc '(103))
 		(rk-push-key! rkc key-str)))
-	  (if (eq? (byeoru-automata-eat-key ba candidates) 'char-break)
+	  (if (eq? (byeoru-automata-eat-key ba choices) 'char-break)
 	      (begin
 		(byeoru-break-char bc)
 		(byeoru-context-set-key-hist! bc '())
 		(if jungseong?
-		    (if (= (length (byeoru-automata-elected-keys ba)) 1)
+		    (if (= (length (byeoru-automata-chosen-jamos ba)) 1)
 			(byeoru-prepend-ieung)
 			(byeoru-context-set-key-hist!
 			 bc (if (string=? last-pend "ch")
@@ -1460,16 +1494,11 @@
 		   (loop (cdr rev-key-hist)))))))))
 
 (define (byeoru-feed-hangul-key bc key key-state)
-  (let ((candidates (byeoru-key-to-candidates key key-state)))
-    (and (list? candidates) ; (not (null? candidates))
-	 ;; Commented out (not (null? candidates)) for compatibility with R5RS
-	 ;; - jhpark, 2007-01-09
-	 ;; Why should I check the length of candidates?
-	 ;; Isn't scheme supposed to distinguish #f from an empty list?
-	 ;; -> fixed in sigscheme.
+  (let ((choices (byeoru-key-to-choices key key-state)))
+    (and (list? choices)
 	 (begin
 	   (if (eq? (byeoru-automata-eat-key (byeoru-context-automata bc)
-					     candidates)
+					     choices)
 		    'char-break)
 	       (byeoru-break-char bc))
 	   #t))))
@@ -1545,11 +1574,11 @@
      ;; Commit the word.
      (else
       (byeoru-flush-automata bc)
-      (let ((candidates (or (eq? byeoru-layout 'byeoru-layout-romaja)
-			  (byeoru-key-to-candidates key key-state))))
-	(if (string? candidates)
+      (let ((choices (or (eq? byeoru-layout 'byeoru-layout-romaja)
+			 (byeoru-key-to-choices key key-state))))
+	(if (string? choices)
 	    (begin
-	      (ustr-insert-elem! word candidates)
+	      (ustr-insert-elem! word choices)
 	      (commit-former-string))
 	    (begin
 	      (commit-former-string)
@@ -1582,10 +1611,10 @@
    
    ;; Commit a single key.
    (else
-    (let ((candidates (or (eq? byeoru-layout 'byeoru-layout-romaja)
-			  (byeoru-key-to-candidates key key-state))))
-      (if (string? candidates)
-	  (byeoru-commit bc candidates)
+    (let ((choices (or (eq? byeoru-layout 'byeoru-layout-romaja)
+		       (byeoru-key-to-choices key key-state))))
+      (if (string? choices)
+	  (byeoru-commit bc choices)
 	  (im-commit-raw bc))
       (if (and byeoru-esc-turns-off? (eq? key 'escape))
 	  (byeoru-context-set-on! bc #f))))))
@@ -1806,7 +1835,6 @@
 
 ;; Check mouse click while composing, converting, etc.
 (define (byeoru-reset-handler bc)
-;;    (ustr-insert-elem! (byeoru-context-word-ustr bc) "R!")
   (if (byeoru-context-on bc)
       (begin
 	(byeoru-flush-automata bc)
@@ -1815,7 +1843,6 @@
 	(byeoru-update-preedit bc))))
 
 (define (byeoru-focus-out-handler bc)
-;;    (ustr-insert-elem! (byeoru-context-word-ustr bc) "R!")
   (if (byeoru-context-on bc)
       (begin
 	(byeoru-flush-automata bc)
