@@ -171,6 +171,7 @@ uim_create_context(void *ptr,
   uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
                          MAKE_PTR(uc), lang_, engine_);
   uim_scm_gc_protect(&uc->sc);
+  uim_scm_call1(MAKE_SYM("setup-context"), uc->sc);
 
   return uc;
 }

@@ -330,13 +330,19 @@
     (let* ((im (find-im name lang))
 	   (arg (and im (im-init-arg im))))
       (im-set-encoding uc (im-encoding im))
-      (update-style uim-color-spec (symbol-value uim-color))
       (let* ((handler (im-init-handler im))
-	     (c (handler uc im arg))
-	     (widget-ids (context-widgets c)))
-	(context-init-widgets! c widget-ids)
+	     (c (handler uc im arg)))
 	(register-context c)
+        ;; im-* procedures that require uc->sc must not called here since it
+        ;; is not filled yet. Place such procedures to setup-context.
         c))))
+
+;; post create-context setup
+(define setup-context
+  (lambda (c)
+    (let ((widget-ids (context-widgets c)))
+      (update-style uim-color-spec (symbol-value uim-color))
+      (context-init-widgets! c widget-ids))))
 
 (define release-context
   (lambda (uc)
