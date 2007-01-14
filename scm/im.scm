@@ -224,7 +224,8 @@
     (let ((cur-context (im-retrieve-context uc))
           (new-context (create-context uc #f name)))
       (remove-context new-context)
-      (set-cdr! cur-context (cdr new-context)))))
+      (set-cdr! cur-context (cdr new-context))
+      (setup-context cur-context))))
 
 ;; for Scheme
 (define im-switch-im
