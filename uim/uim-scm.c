@@ -113,7 +113,7 @@ uim_scm_error_internal(struct uim_scm_error_args *args)
 {
   /* FIXME: don't terminate the process */
   scm_error_obj(NULL, args->msg, (ScmObj)args->errobj);
-  return NULL;
+  SCM_NOTREACHED;
 }
 
 FILE *
@@ -160,14 +160,11 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
 
   integer = (uim_lisp)uim_lisp_integer;
 
-  if (SCM_INTP((ScmObj)integer)) {
-    c_int = SCM_INT_VALUE((ScmObj)integer);
-  } else {
+  if (!SCM_INTP((ScmObj)integer))
     uim_scm_error("uim_scm_c_int: number required but got ",
                   (uim_lisp)integer);
-    c_int = -1;
-  }
 
+  c_int = SCM_INT_VALUE((ScmObj)integer);
   return (void *)(intptr_t)c_int;
 }
 
@@ -215,7 +212,7 @@ uim_scm_refer_c_str_internal(void *uim_lisp_str)
   } else {
     uim_scm_error("uim_scm_refer_c_str: string or symbol required but got ",
                   (uim_lisp)str);
-    c_str = NULL;
+    SCM_NOTREACHED;
   }
 
   return c_str;
@@ -254,12 +251,10 @@ uim_scm_make_symbol_internal(const char *name)
 void *
 uim_scm_c_ptr(uim_lisp ptr)
 {
-  if (SCM_C_POINTERP((ScmObj)ptr)) {
-    return SCM_C_POINTER_VALUE((ScmObj)ptr);
-  } else {
+  if (!SCM_C_POINTERP((ScmObj)ptr))
     uim_scm_error("uim_scm_c_ptr: C pointer required but got ", (uim_lisp)ptr);
-    return NULL;
-  }
+
+  return SCM_C_POINTER_VALUE((ScmObj)ptr);
 }
 
 uim_lisp
@@ -278,13 +273,11 @@ uim_scm_make_ptr_internal(void *ptr)
 uim_func_ptr
 uim_scm_c_func_ptr(uim_lisp func_ptr)
 {
-  if (SCM_C_FUNCPOINTERP((ScmObj)func_ptr)) {
-    return SCM_C_FUNCPOINTER_VALUE((ScmObj)func_ptr);
-  } else {
+  if (!SCM_C_FUNCPOINTERP((ScmObj)func_ptr))
     uim_scm_error("uim_scm_c_func_ptr: C function pointer required but got ",
                   (uim_lisp)func_ptr);
-    return NULL;
-  }
+
+  return SCM_C_FUNCPOINTER_VALUE((ScmObj)func_ptr);
 }
 
 uim_lisp
