@@ -113,3 +113,7 @@ release, you have to repeat the following procedure at least three times.
    SHA1 (uim-1.4.0-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
 
    <append RELNOTE here>
+
+15. Update Freshmeat entry
+
+   http://freshmeat.net/projects/uim-inputmethod/
