@@ -431,7 +431,7 @@ uim_switch_im(uim_context uc, const char *engine)
   assert(uc);
   assert(engine);
 
-  uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_STR(engine));
+  uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_SYM(engine));
 }
 
 const char *
