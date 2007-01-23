@@ -432,15 +432,19 @@ get_nr_input_methods()
 static uim_lisp
 get_input_method_name(uim_lisp nth_)
 {
-  int nth = uim_scm_c_int(nth_);
+  int len, nth;
+  char *name;
+  
+  nth = uim_scm_c_int(nth_);
 
   if (nth < nr_input_methods) {
-    char *name = alloca(strlen(im_array[nth].name) + 20);
+    len = strlen(im_array[nth].name) + 7;
+    name = alloca(len);
 
     if (!strcmp(im_array[nth].lang, ""))
-      sprintf(name, "m17n-%s", im_array[nth].name);
+      snprintf(name, len, "m17n-%s", im_array[nth].name);
     else
-      sprintf(name, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
+      snprintf(name, len, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
 
     return uim_scm_make_str(name);
   }

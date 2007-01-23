@@ -1307,7 +1307,7 @@ uim_custom_broadcast(void)
 	uim_custom_symbol_list_free(custom_syms);
 	return UIM_FALSE;
       }
-      sprintf(msg, custom_msg_tmpl, *sym, value);
+      snprintf(msg, msg_size, custom_msg_tmpl, *sym, value);
       uim_helper_send_message(helper_fd, msg);
       free(msg);
       free(value);

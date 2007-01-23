@@ -75,10 +75,11 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
   int fd;
   struct sockaddr_un server;
-  char *path = uim_helper_get_pathname();
+  char *path;
   
   uim_fd = -1;
   
+  path = uim_helper_get_pathname();
   if (!path)
     return -1;
 
@@ -103,25 +104,24 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 #endif
 
 
-  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1) {
+  if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
     int serv_pid = 0;
     FILE *serv_r = NULL, *serv_w = NULL;
     char buf[128];
     
-    serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w, get_server_command());
-    
-    if (serv_pid == 0) {
+    serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w,
+				    get_server_command());
+
+    if (serv_pid == 0)
       return -1;
-    }
     
     while (fgets (buf, sizeof(buf), serv_r ) != NULL ) {
       if (strcmp( buf, "\n" ) == 0)
 	break;
     }
     
-    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) == -1) {
+    if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0)
       return -1;
-    }
   }
 
   if (uim_helper_check_connection_fd(fd)) {
@@ -132,21 +132,21 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   uim_read_buf = strdup("");
   uim_disconnect_cb = disconnect_cb;
   uim_fd = fd;
+
   return fd;
 }
 
 void
 uim_helper_close_client_fd(int fd)
 {
-  if (fd != -1) {
+  if (fd != -1)
     close(fd);
-  }
-  if (uim_disconnect_cb) {
+
+  if (uim_disconnect_cb)
     uim_disconnect_cb();
-  }
+
   uim_fd = -1;
 }
-
 
 void
 uim_helper_client_focus_in(uim_context uc)

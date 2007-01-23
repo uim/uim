@@ -720,8 +720,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   struct skk_line *sl;
   int n = 0, ret, len;
   char buf[SKK_SERV_BUFSIZ];
-  char *line;
-  char *idx = alloca(strlen(s) + 2);
+  char *line, *idx;
 
   if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
     if (!((di->skkserv_state |= open_skkserv(di->skkserv_hostname,
@@ -731,7 +730,9 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
       return NULL;
   }
 
-  sprintf(idx, "%s%c", s, okuri_head);
+  len = strlen(s) + 2;
+  idx = alloca(len);
+  snprintf(idx, len, "%s%c", s, okuri_head);
 
   fprintf(wserv, "1%s \n", idx);
   ret = fflush(wserv);
@@ -740,8 +741,9 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
     return NULL;
   }
 
-  line = malloc(strlen(idx) + 2);
-  sprintf(line, "%s ", idx);
+  len = strlen(idx) + 2;
+  line = malloc(len);
+  snprintf(line, len, "%s ", idx);
 
   if (read(skkservsock, &r, 1) <= 0) {
     skkserv_disconnected(di);
@@ -789,14 +791,16 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   int n;
   const char *p;
   int len;
-  char *line;
-  char *idx = alloca(strlen(s) + 2);
+  char *line, *idx;
   struct skk_line *sl;
 
   if (!di->addr)
     return NULL;
 
-  sprintf(idx, "%s%c", s, okuri_head);
+  len = strlen(s) + 2;
+  idx = alloca(len);
+  snprintf(idx, len, "%s%c", s, okuri_head);
+
   if (okuri_head)
     n = do_search_line(di, idx, di->first, di->border - 1, -1);
   else
@@ -2152,9 +2156,10 @@ static void push_purged_word(struct skk_cand_array *ca, int nth, int append, cha
       skk_dic->cache_modified = 1;
     }
   } else {
-    cand = realloc(cand, strlen("(skk-ignore-dic-word \"\")") + strlen(p) + 1);
+    len = strlen("(skk-ignore-dic-word \"\")") + strlen(p) + 1;
+    cand = realloc(cand, len);
     if (cand) {
-      sprintf(cand, "(skk-ignore-dic-word \"%s\")", p);
+      snprintf(cand, len, "(skk-ignore-dic-word \"%s\")", p);
       ca->cands[nth] = cand;
       skk_dic->cache_modified = 1;
     }
@@ -2822,14 +2827,15 @@ write_out_line(FILE *fp, struct skk_line *sl)
 static int
 open_lock(const char *name, int type)
 {
-  int fd;
+  int fd, len;
   struct flock fl;
   char *lock_fn;
 
-  lock_fn = malloc(sizeof(char) * (strlen(name) + strlen(".lock") + 1));
+  len = strlen(name) + strlen(".lock") + 1;
+  lock_fn = malloc(len);
   if (lock_fn == NULL)
     return -1;
-  sprintf(lock_fn, "%s.lock", name);
+  snprintf(lock_fn, len, "%s.lock", name);
 
   fd = open(lock_fn, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
   if (fd == -1) {
@@ -3180,7 +3186,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   char *tmp_fn = NULL;
   struct skk_line *sl;
   struct stat st;
-  int lock_fd = -1;
+  int len, lock_fd = -1;
 
   if (!skk_dic || skk_dic->cache_modified == 0)
     return uim_scm_f();
@@ -3192,10 +3198,11 @@ skk_save_personal_dictionary(uim_lisp fn_)
     }
 
     lock_fd = open_lock(fn, F_WRLCK);
-    if (!(tmp_fn = malloc(strlen(fn) + 5)))
+    len = strlen(fn) + 5;
+    if (!(tmp_fn = malloc(len)))
       goto error;
 
-    sprintf(tmp_fn, "%s.tmp", fn);
+    snprintf(tmp_fn, len, "%s.tmp", fn);
     fp = fopen(tmp_fn, "w");
     if (!fp)
       goto error;

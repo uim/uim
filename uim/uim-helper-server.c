@@ -72,21 +72,14 @@ struct client {
 static fd_set s_fdset_read;
 static fd_set s_fdset_write;
 static int s_max_fd;
-
 static int nr_client_slots;
 static struct client *clients;
-
 static char read_buf[BUFFER_SIZE];
 
-/*
-  initialize server's file descriptor.
-*/
 static int
 init_server_fd(char *path)
 {
-  int foo;
-  int fd;
-  int flag;
+  int fd, flag;
   struct sockaddr_un myhost;
   struct passwd *pw;
   char *logname;
@@ -96,45 +89,43 @@ init_server_fd(char *path)
     perror("failed in socket()");
     return -1;
   }
+  fchmod(fd, S_IRUSR | S_IWUSR);
 
   memset(&myhost, 0, sizeof(myhost));
   myhost.sun_family = PF_UNIX;
   strlcpy(myhost.sun_path, path, sizeof(myhost.sun_path));
 
-  foo = bind(fd, (struct sockaddr *)&myhost, SUN_LEN(&myhost));
-  if (foo < -1) {
+  if (bind(fd, (struct sockaddr *)&myhost, SUN_LEN(&myhost)) < 0) {
     perror("failed in bind()");
     return -1;
   }
-
-  chmod(path, S_IRUSR|S_IWUSR);
 
   logname = getenv("LOGNAME");
   if (logname) {
     pw = getpwnam(logname);
     if (pw)
-      chown(path, pw->pw_uid, -1);
+      fchown(fd, pw->pw_uid, -1);
   }
 
-  if ((flag = fcntl(fd, F_GETFL)) == -1) {
+  if ((flag = fcntl(fd, F_GETFL)) < 0) {
     close(fd);
     return -1;
   }
 
   flag |= O_NONBLOCK;
-  if (fcntl(fd, F_SETFL, flag) == -1) {
+  if (fcntl(fd, F_SETFL, flag) < 0) {
     close(fd);
     return -1;
   }
 
-  foo = listen(fd, 5);
-  if (foo == -1) {
+  if (listen(fd, 5) < 0) {
     perror("failed in listen()");
     return -1;
   }
-  /*  fprintf(stderr,"listen at %s\n",path);*/
+
   FD_SET(fd, &s_fdset_read);
   s_max_fd = fd;
+
   return fd;
 }
 
@@ -142,15 +133,17 @@ static struct client *
 get_unused_client(void)
 {
   int i;
+
   for (i = 0; i < nr_client_slots; i++) {
-    if (clients[i].fd == -1) {
+    if (clients[i].fd == -1)
       return &clients[i];
-    }
   }
+
   nr_client_slots++;
   clients = realloc(clients, sizeof(struct client) * nr_client_slots);
   clients[nr_client_slots - 1].rbuf = strdup("");
   clients[nr_client_slots - 1].wbuf = strdup("");
+
   return &clients[nr_client_slots - 1];
 }
 
@@ -205,6 +198,7 @@ reflect_message_fragment(struct client *cl)
     distribute_message(msg, cl);
     free(msg);
   }
+
   return 1;
 }
 
@@ -213,11 +207,12 @@ check_session_alive(void)
 {
   /* If there's no connection, we can assume user logged out. */
   int i;
+
   for (i = 0; i < nr_client_slots; i++) {
-    if (clients[i].fd != -1) {
+    if (clients[i].fd != -1)
       return UIM_TRUE;
-    }
   }
+
   return UIM_FALSE; /* User already logged out */
 }
 
@@ -226,10 +221,11 @@ static uim_bool
 accept_new_connection(int server_fd)
 {
   struct sockaddr_un clientsoc;
-  socklen_t len = sizeof(clientsoc);
-  int new_fd;
-  int flag;
+  socklen_t len;
+  int new_fd, flag;
   struct client *cl;
+
+  len = sizeof(clientsoc);
   new_fd = accept(server_fd, (struct sockaddr *)&clientsoc, &len);
   
   if (new_fd < 0) {
@@ -237,13 +233,13 @@ accept_new_connection(int server_fd)
     return UIM_FALSE;
   }
 
-  if ((flag = fcntl(new_fd, F_GETFL)) == -1) {
+  if ((flag = fcntl(new_fd, F_GETFL)) < 0) {
     close(new_fd);
     return UIM_FALSE;
   }
 
   flag |= O_NONBLOCK;
-  if (fcntl(new_fd, F_SETFL, flag) == -1) {
+  if (fcntl(new_fd, F_SETFL, flag) < 0) {
     close(new_fd);
     return UIM_FALSE;
   }
@@ -312,6 +308,7 @@ static void
 read_message(struct client *cl)
 {
   int result;
+
   result = reflect_message_fragment(cl);
   
   if (result < 0) {
@@ -323,7 +320,6 @@ read_message(struct client *cl)
   }
 }
 
-
 static void
 uim_helper_server_process_connection(int server_fd)
 {
@@ -331,7 +327,6 @@ uim_helper_server_process_connection(int server_fd)
   fd_set readfds, writefds;
 
   while (1) {
-    /* Could we replace this memcpy with direct assignment? */
     /* Copy readfds from s_fdset_read/s_fdset_write because select removes
        readble/writable fd from readfds/writefds */
     memcpy(&readfds, &s_fdset_read, sizeof(fd_set));
@@ -348,24 +343,23 @@ uim_helper_server_process_connection(int server_fd)
     if (FD_ISSET(server_fd, &readfds)) {
       uim_bool accepted;
       accepted = accept_new_connection(server_fd);
-      if(accepted == UIM_FALSE) {
-	continue; /* acception failed, go next loop without message processing. */
+      if (accepted == UIM_FALSE) {
+	/* acception failed, go next loop without message processing. */
+	continue;
       }
     } else {
       /* check data to write and from clients reached */
       for (i = 0; i < nr_client_slots; i++) {
-	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &writefds)) {
+	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &writefds))
 	  write_message(&clients[i]);
-	}
-	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds)) {
+
+	if (clients[i].fd != -1 && FD_ISSET(clients[i].fd, &readfds))
 	  read_message(&clients[i]);
-	}
       }
     }
 
-    if(check_session_alive() == UIM_FALSE) {
+    if (!check_session_alive())
       return;
-    }
   }
 }
 
@@ -373,8 +367,13 @@ uim_helper_server_process_connection(int server_fd)
 int
 main(int argc, char **argv)
 {
-  char *path = uim_helper_get_pathname();
+  char *path;
   int server_fd;
+
+  path = uim_helper_get_pathname();
+  if (!path)
+    return 0;
+
   unlink(path);
 
   clients = NULL;
@@ -384,6 +383,7 @@ main(int argc, char **argv)
   FD_ZERO(&s_fdset_write);
   s_max_fd = 0;
   server_fd = init_server_fd(path);
+  free(path);
 
   printf("waiting\n\n");
   fflush(stdout);
@@ -391,18 +391,13 @@ main(int argc, char **argv)
   fclose(stdin);
   fclose(stdout);
 
-  if (server_fd < 0) {
+  if (server_fd < 0)
     return 0;
-  }
+
   /*  fprintf(stderr,"Waiting for connection at %s\n", path);*/
 
-  free(path);
-
   signal(SIGPIPE, SIG_IGN);
-
   uim_helper_server_process_connection(server_fd);
 
   return 0;
 }
-
-

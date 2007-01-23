@@ -63,7 +63,6 @@ static char *prime_command = "prime";
 static char *prime_ud_path;
 static int prime_fd = -1;
 static uim_bool use_unix_domain_socket;
-#define PRIME_UNIX_SOCKET_PREFIX	"/tmp/uim-prime-"
 
 static int
 prime_init_ud(char *path)
@@ -106,26 +105,55 @@ prime_init_ud(char *path)
   return fd;
 }
 
+static uim_bool
+check_dir(const char *dir)
+{
+  struct stat st;
+
+  if (stat(dir, &st) < 0)
+    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+  else {
+    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
+    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
+  }
+}
+
 static char *
 prime_get_ud_path(void)
 {
-  char *path, *login;
-  struct passwd *pw = NULL;
+  char *path, *home = NULL;
+  struct passwd *pw;
   int len;
  
-  login = getenv("LOGNAME");
+  pw = getpwuid(getuid());
+  if (pw)
+    home = pw->pw_dir;
+
+  if (!home && !uim_helper_is_setugid())
+    home = getenv("HOME");
   
-  if (!login) {
-    pw = getpwuid(getuid());
-    login = strdup(pw->pw_name);
+  if (!home)
+    return NULL;
+
+  len = strlen(home) + strlen("/.uim.d");
+  path = (char *)malloc(len + 1);
+  snprintf(path, len + 1, "%s/.uim.d", home);
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
   }
 
-  len = strlen(login) + strlen(PRIME_UNIX_SOCKET_PREFIX) + 1;
-  path = (char *)malloc(len);
-  snprintf(path, len, PRIME_UNIX_SOCKET_PREFIX"%s", login);
+  len += strlen("/socket");
+  path = (char *)realloc(path, len + 1);
+  strlcat(path, "/socket", len + 1);
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
+  }
 
-  if (pw)
-    free(login);
+  len += strlen("/uim-prime");
+  path = (char *)realloc(path, len + 1);
+  strlcat(path, "/uim-prime", len + 1);
 
   return path;
 }
@@ -194,9 +222,11 @@ prime_write_msg_to_ud(int fd, const char *message)
 static uim_lisp
 prime_send_command(uim_lisp str_)
 {
-  const char *str = uim_scm_refer_c_str(str_);
+  const char *str;
   char *result;
   uim_lisp ret;
+
+  str = uim_scm_refer_c_str(str_);
 
   if (use_unix_domain_socket) {
     prime_write_msg_to_ud(prime_fd, str);
@@ -224,6 +254,7 @@ static uim_lisp
 prime_lib_init(uim_lisp use_udp_)
 {
   char *option;
+  int len, timeout_count = 0;
 
   use_unix_domain_socket = uim_scm_c_bool(use_udp_);
 
@@ -238,8 +269,9 @@ prime_lib_init(uim_lisp use_udp_)
     prime_fd = prime_init_ud(prime_ud_path);
     if (prime_fd == -1) {
       unlink(prime_ud_path);
-      option = malloc(strlen("-u ") + strlen(prime_ud_path) + 1);
-      sprintf(option, "-u %s", prime_ud_path);
+      len = strlen("-u ") + strlen(prime_ud_path) + 1;
+      option = malloc(len);
+      snprintf(option, len, "-u %s", prime_ud_path);
       prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew,
 						   prime_command, option);
       free(option);
@@ -247,8 +279,11 @@ prime_lib_init(uim_lisp use_udp_)
 	return uim_scm_f();
       else {
 	prime_fd = prime_init_ud(prime_ud_path);
-	while (prime_fd == -1)
+	while (prime_fd == -1 && timeout_count < 100) {
+	  usleep(100000);
 	  prime_fd = prime_init_ud(prime_ud_path);
+	  timeout_count++;
+	}
       }
     }
 

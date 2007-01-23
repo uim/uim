@@ -46,6 +46,8 @@
 #include <pwd.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/stat.h>
+
 #include "uim-internal.h"
 #include "uim-helper.h"
 #include "uim-util.h"
@@ -120,27 +122,58 @@ uim_helper_send_message(int fd, const char *message)
   return;
 }
 
+static uim_bool
+check_dir(const char *dir)
+{
+  struct stat st;
+
+  if (stat(dir, &st) < 0)
+    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+  else {
+    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
+    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
+  }
+}
+
 char *
 uim_helper_get_pathname(void)
 {
-  char *path;
-  char *login = NULL;
-  struct passwd *pw = NULL;
+  char *path, *home = NULL;
+  struct passwd *pw;
+  int len;
  
-  if (!uim_issetugid()) {
-    login = getenv("LOGNAME");
+  pw = getpwuid(getuid());
+  if (pw)
+    home = pw->pw_dir;
+
+  if (!home && !uim_issetugid())
+    home = getenv("HOME");
+
+  if (!home)
+    return NULL;
+
+  /* check ~/.uim.d/ */
+  len = strlen(home) + strlen("/.uim.d");
+  path = (char *)malloc(len + 1);
+  snprintf(path, len + 1, "%s/.uim.d", home);
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
   }
 
-  if (!login) {
-    pw = getpwuid(getuid());
-    login = strdup(pw->pw_name);
+  /* check ~/.uim.d/socket/ */
+  len += strlen("/socket");
+  path = (char *)realloc(path, len + 1);
+  strlcat(path, "/socket", len + 1);
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
   }
 
-  path = (char *)malloc(strlen(login)+ 20);
-  sprintf(path, "/tmp/uimhelper-%s",login);
-  if (pw) {
-    free(login);
-  }
+  len += strlen("/uim-helper");
+  path = (char *)realloc(path, len + 1);
+  strlcat(path, "/uim-helper", len + 1);
+
   return path;
 }
 
