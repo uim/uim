@@ -774,7 +774,8 @@
   (lambda (sl)
     (if (not (null? sl))
 	(append (list (ja-find-kana-list-from-rule ja-rk-rule-basic (car sl)))
-		(ja-make-kana-str-list (cdr sl))))))
+		(ja-make-kana-str-list (cdr sl)))
+	'())))
 
 (define ja-type-direct	       -1)
 (define ja-type-hiragana	0)

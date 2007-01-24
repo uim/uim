@@ -236,9 +236,11 @@
   (lambda (context seq s)
     (if (rk-context-immediate-commit context)
 	(if seq
-	    (begin
+	    (let ((latter (cadr seq)))
 	      (rk-context-set-seq! context (cdar seq))
-	      (cadr seq))
+	      (if (not (null? latter))
+		  (cadr seq)
+		  #f))
 	    (begin
 	      (rk-context-set-seq! context '())
 	      #f))
