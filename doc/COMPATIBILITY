@@ -193,7 +193,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: SigScheme introduction to uim

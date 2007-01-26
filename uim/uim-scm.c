@@ -676,7 +676,7 @@ uim_scm_callf_internal(struct callf_args *args)
   ScmQueue argq;
   const char *fmtp;
 
-  proc = scm_intern(args->proc);
+  proc = scm_eval(scm_intern(args->proc), SCM_INTERACTION_ENV);
   scm_args = SCM_NULL;
   SCM_QUEUE_POINT_TO(argq, scm_args);
   for (fmtp = args->args_fmt; *fmtp; fmtp++) {
@@ -718,7 +718,7 @@ uim_scm_callf_internal(struct callf_args *args)
       break;
 
     case 'o':
-      arg = va_arg(args->args, ScmObj);
+      arg = (ScmObj)va_arg(args->args, uim_lisp);
       assert(scm_gc_protectedp(arg));
       break;
 
