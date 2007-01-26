@@ -165,13 +165,13 @@ uim_create_context(void *ptr,
   /* foreign context objects */
   uc->ptr = ptr;
 
+  /* FIXME: GC unsafe */
   lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
   engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
   uc->sc = uim_scm_f(); /* failsafe */
-  uc->sc = uim_scm_call3(MAKE_SYM("create-context"),
-                         MAKE_PTR(uc), lang_, engine_);
+  uc->sc = uim_scm_callf("create-context", "poo", uc, lang_, engine_);
   uim_scm_gc_protect(&uc->sc);
-  uim_scm_call1(MAKE_SYM("setup-context"), uc->sc);
+  uim_scm_callf("setup-context", "o", uc->sc);
 
   return uc;
 }
@@ -183,7 +183,7 @@ uim_release_context(uim_context uc)
 
   assert(uc);
 
-  uim_scm_call1(MAKE_SYM("release-context"), MAKE_PTR(uc));
+  uim_scm_callf("release-context", "p", uc);
   uim_scm_gc_unprotect(&uc->sc);
   if (uc->outbound_conv)
     uc->conv_if->release(uc->outbound_conv);
@@ -204,7 +204,7 @@ uim_reset_context(uim_context uc)
 {
   assert(uc);
 
-  uim_scm_call1(MAKE_SYM("reset-handler"), MAKE_PTR(uc));
+  uim_scm_callf("reset-handler", "p", uc);
 }
 
 void
@@ -212,7 +212,7 @@ uim_focus_in_context(uim_context uc)
 {
   assert(uc);
 
-  uim_scm_call1(MAKE_SYM("focus-in-handler"),MAKE_PTR(uc));
+  uim_scm_callf("focus-in-handler", "p", uc);
 }
 
 void
@@ -220,7 +220,7 @@ uim_focus_out_context(uim_context uc)
 {
   assert(uc);
 
-  uim_scm_call1(MAKE_SYM("focus-out-handler"), MAKE_PTR(uc));
+  uim_scm_callf("focus-out-handler", "p", uc);
 }
 
 void
@@ -228,7 +228,7 @@ uim_place_context(uim_context uc)
 {
   assert(uc);
 
-  uim_scm_call1(MAKE_SYM("place-handler"), MAKE_PTR(uc));
+  uim_scm_callf("place-handler", "p", uc);
 }
 
 void
@@ -236,7 +236,7 @@ uim_displace_context(uim_context uc)
 {
   assert(uc);
 
-  uim_scm_call1(MAKE_SYM("displace-handler"), MAKE_PTR(uc));
+  uim_scm_callf("displace-handler", "p", uc);
 }
 
 void
@@ -280,10 +280,8 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   assert(index >= 0);
   assert(accel_enumeration_hint >= 0);
 
-  triple = uim_scm_call3(MAKE_SYM("get-candidate"),
-                         MAKE_PTR(uc),
-                         MAKE_INT(index),
-                         MAKE_INT(accel_enumeration_hint));
+  triple = uim_scm_callf("get-candidate", "pii",
+                         uc, index, accel_enumeration_hint);
 
   cand = malloc(sizeof(*cand));
   if (cand) {
@@ -350,7 +348,7 @@ uim_set_candidate_index(uim_context uc, int nth)
   assert(uc);
   assert(nth >= 0);
 
-  uim_scm_call2(MAKE_SYM("set-candidate-index"), MAKE_PTR(uc), MAKE_INT(nth));
+  uim_scm_callf("set-candidate-index", "pi", uc, nth);
 }
 
 void
@@ -381,8 +379,7 @@ uim_input_string(uim_context uc, const char *str)
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
-    consumed = uim_scm_call2(MAKE_SYM("input-string-handler"),
-                             MAKE_PTR(uc), MAKE_STR(conv));
+    consumed = uim_scm_callf("input-string-handler", "ps", uc, conv);
     free(conv);
 
     return uim_scm_c_bool(consumed);
@@ -431,7 +428,7 @@ uim_switch_im(uim_context uc, const char *engine)
   assert(uc);
   assert(engine);
 
-  uim_scm_call2(MAKE_SYM("uim-switch-im"), MAKE_PTR(uc), MAKE_SYM(engine));
+  uim_scm_callf("uim-switch-im", "py", uc, engine);
 }
 
 const char *
@@ -441,11 +438,11 @@ uim_get_current_im_name(uim_context uc)
 
   assert(uc);
 
-  im = uim_scm_call1(MAKE_SYM("uim-context-im"), MAKE_PTR(uc));
+  im = uim_scm_callf("uim-context-im", "p", uc);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
+  return uim_scm_refer_c_str(uim_scm_callf("im-name", "o", im));
 }
 
 const char *
@@ -455,8 +452,7 @@ uim_get_default_im_name(const char *localename)
 
   assert(localename);
 
-  ret = uim_scm_call1(MAKE_SYM("uim-get-default-im-name"),
-                      MAKE_STR(localename));
+  ret = uim_scm_callf("uim-get-default-im-name", "s", localename);
   return uim_scm_refer_c_str(ret);
 }
 
@@ -467,8 +463,7 @@ uim_get_im_name_for_locale(const char *localename)
 
   assert(localename);
 
-  ret = uim_scm_call1(MAKE_SYM("uim-get-im-name-for-locale"),
-                      MAKE_STR(localename));
+  ret = uim_scm_callf("uim-get-im-name-for-locale", "s", localename);
   return uim_scm_refer_c_str(ret);
 }
 
@@ -510,7 +505,7 @@ uim_set_mode(uim_context uc, int mode)
   assert(mode >= 0);
 
   uc->mode = mode;
-  uim_scm_call2(MAKE_SYM("mode-handler"), MAKE_PTR(uc), MAKE_INT(mode));
+  uim_scm_callf("mode-handler", "pi", uc, mode);
 }
 
 void
@@ -571,8 +566,7 @@ uim_prop_activate(uim_context uc, const char *str)
   assert(uc);
   assert(str);
       
-  uim_scm_call2(MAKE_SYM("prop-activate-handler"),
-                MAKE_PTR(uc), MAKE_STR(str));
+  uim_scm_callf("prop-activate-handler", "ps", uc, str);
 }
 
 /****************************************************************
@@ -600,17 +594,15 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
   assert(custom);
   assert(val);
 
-  uim_scm_call3(MAKE_SYM("custom-set-handler"),
-                MAKE_PTR(uc),
-                MAKE_SYM(custom),
-                uim_scm_eval_c_string(val));
+  uim_scm_callf("custom-set-handler", "pyo",
+                uc, custom, uim_scm_eval_c_string(val));
 }
 
 uim_bool
 uim_prop_reload_configs(void)
 {
   /* FIXME: handle return value properly. */
-  uim_scm_call0(MAKE_SYM("custom-reload-user-configs"));
+  uim_scm_callf("custom-reload-user-configs", "");
   return UIM_TRUE;
 }
 
@@ -624,7 +616,7 @@ uim_get_nr_im(uim_context uc)
 
   assert(uc);
 
-  n = uim_scm_call1(MAKE_SYM("uim-n-convertible-ims"), MAKE_PTR(uc));
+  n = uim_scm_callf("uim-n-convertible-ims", "p", uc);
   return uim_scm_c_int(n);
 }
 
@@ -634,8 +626,7 @@ get_nth_im(uim_context uc, int nth)
   assert(uc);
   assert(nth >= 0);
 
-  return uim_scm_call2(MAKE_SYM("uim-nth-convertible-im"),
-                       MAKE_PTR(uc), MAKE_INT(nth));
+  return uim_scm_callf("uim-nth-convertible-im", "pi", uc, nth);
 }
 
 const char *
@@ -647,7 +638,7 @@ uim_get_im_name(uim_context uc, int nth)
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-name"), im));
+  return uim_scm_refer_c_str(uim_scm_callf("im-name", "o", im));
 }
 
 const char *
@@ -659,7 +650,7 @@ uim_get_im_language(uim_context uc, int nth)
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-lang"), im));
+  return uim_scm_refer_c_str(uim_scm_callf("im-lang", "o", im));
 }
 
 const char *
@@ -671,7 +662,7 @@ uim_get_im_encoding(uim_context uc, int nth)
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  return uim_scm_refer_c_str(uim_scm_call1(MAKE_SYM("im-encoding"), im));
+  return uim_scm_refer_c_str(uim_scm_callf("im-encoding", "o", im));
 }
 
 const char *
@@ -683,6 +674,6 @@ uim_get_im_short_desc(uim_context uc, int nth)
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  short_desc = uim_scm_call1(MAKE_SYM("im-short-desc"), im);
+  short_desc = uim_scm_callf("im-short-desc", "o", im);
   return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
 }

@@ -573,33 +573,6 @@ uim_scm_eval_c_string(const char *str)
   return (uim_lisp)scm_eval_c_string(str);
 }
 
-/* deprecated */
-#if 1
-uim_lisp
-uim_scm_call0(uim_lisp proc)
-{
-  return uim_scm_call(proc, uim_scm_null());
-}
-
-uim_lisp
-uim_scm_call1(uim_lisp proc, uim_lisp arg1)
-{
-  return uim_scm_call(proc, uim_scm_list1(arg1));
-}
-
-uim_lisp
-uim_scm_call2(uim_lisp proc, uim_lisp arg1, uim_lisp arg2)
-{
-  return uim_scm_call(proc, uim_scm_list2(arg1, arg2));
-}
-
-uim_lisp
-uim_scm_call3(uim_lisp proc, uim_lisp arg1, uim_lisp arg2, uim_lisp arg3)
-{
-  return uim_scm_call(proc, uim_scm_list3(arg1, arg2, arg3));
-}
-#endif
-
 uim_lisp
 uim_scm_call(uim_lisp proc, uim_lisp args)
 {
@@ -909,7 +882,7 @@ uim_scm_init(const char *verbose_level)
 
 #ifdef DEBUG_SCM
   /* required by test-im.scm */
-  uim_scm_call1(uim_scm_make_symbol("provide"), uim_scm_make_str("debug"));
+  uim_scm_callf("provide", "s", "debug");
 #endif
 
   scm_use("srfi-23");

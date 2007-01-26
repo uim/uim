@@ -359,8 +359,7 @@ filter_key(uim_context uc, int key, int state, uim_bool is_press)
   }
 
   handler = (is_press) ? "key-press-handler" : "key-release-handler";
-  filtered = uim_scm_call3(MAKE_SYM(handler),
-                           MAKE_PTR(uc), key_, MAKE_INT(state));
+  filtered = uim_scm_callf(handler, "poi", uc, key_, state);
   return uim_scm_c_bool(filtered);
 }
 

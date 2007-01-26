@@ -207,6 +207,6 @@ uim_init_intl_subrs(void)
   uim_scm_init_subr_5("dcngettext", intl_dcngettext);
 
 #if ENABLE_NLS
-  uim_scm_call1(uim_scm_make_symbol("provide"), uim_scm_make_str("nls"));
+  uim_scm_callf("provide", "s", "nls");
 #endif
 }

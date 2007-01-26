@@ -120,15 +120,6 @@ uim_scm_eval(uim_lisp obj);
 uim_lisp
 uim_scm_eval_c_string(const char *str);
 
-/* deprecated */
-#if 1
-uim_lisp uim_scm_call0(uim_lisp proc);
-uim_lisp uim_scm_call1(uim_lisp proc, uim_lisp arg1);
-uim_lisp uim_scm_call2(uim_lisp proc, uim_lisp arg1, uim_lisp arg2);
-uim_lisp uim_scm_call3(uim_lisp proc,
-                       uim_lisp arg1, uim_lisp arg2, uim_lisp arg3);
-#endif
-
 uim_lisp uim_scm_call(uim_lisp proc, uim_lisp args);
 uim_lisp uim_scm_call_with_guard(uim_lisp failed,
                                  uim_lisp proc, uim_lisp args);

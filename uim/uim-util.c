@@ -378,8 +378,8 @@ shift_elems(uim_lisp lists)
     rests = uim_scm_cons(uim_scm_cdr(list), rests);
   }
 
-  return uim_scm_cons(uim_scm_call1(MAKE_SYM("reverse"), elms),
-                      uim_scm_call1(MAKE_SYM("reverse"), rests));
+  return uim_scm_cons(uim_scm_callf("reverse", "o", elms),
+                      uim_scm_callf("reverse", "o", rests));
 }
 
 static uim_lisp
@@ -451,9 +451,8 @@ uim_get_language_name_from_locale(const char *locale)
 
   /* Performs adhoc "zh_TW:zh_HK" style locale handling as temporary
    * specification of this function for backward compatibility. */
-  lang_code = uim_scm_call1(MAKE_SYM("langgroup-primary-lang-code"),
-                            MAKE_STR(locale));
-  lang_name = uim_scm_call1(MAKE_SYM("lang-code->lang-name"), lang_code);
+  lang_code = uim_scm_callf("langgroup-primary-lang-code", "s", locale);
+  lang_name = uim_scm_callf("lang-code->lang-name", "o", lang_code);
   return uim_scm_refer_c_str(lang_name);
 }
 
@@ -464,8 +463,7 @@ uim_get_language_code_from_language_name(const char *language_name)
 
   assert(language_name);
 
-  lang_code = uim_scm_call1(MAKE_SYM("lang-name->lang-code"),
-                            MAKE_STR(language_name));
+  lang_code = uim_scm_callf("lang-name->lang-code", "s", language_name);
   return uim_scm_refer_c_str(lang_code);
 }
 

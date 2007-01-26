@@ -89,8 +89,7 @@ concat(const char *a, const char *b)
 static uim_lisp
 append_module_names(uim_lisp modules, const char *new_module)
 {
-  return uim_scm_call2(MAKE_SYM("append"),
-                       modules, LIST1(MAKE_STR(new_module)));
+  return uim_scm_callf("append", "oo", modules, LIST1(MAKE_STR(new_module)));
 }
 
 static void
@@ -257,5 +256,5 @@ main_internal(struct main_args *args)
     free(extra_file);
   }
 
-  return uim_scm_call1(MAKE_SYM(action_command[action]), module_names);
+  return uim_scm_callf(action_command[action], "o", module_names);
 }

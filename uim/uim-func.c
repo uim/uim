@@ -382,7 +382,7 @@ im_acquire_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
   former_ = (TEXT_EMPTYP(cv_former)) ? uim_scm_null() : MAKE_STR(cv_former);
   latter_ = (TEXT_EMPTYP(cv_latter)) ? uim_scm_null() : MAKE_STR(cv_latter);
 
-  ret = uim_scm_call2(MAKE_SYM("ustr-new"), former_, latter_);
+  ret = uim_scm_callf("ustr-new", "oo", former_, latter_);
 
   free(former);
   free(latter);

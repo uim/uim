@@ -1186,7 +1186,7 @@ skk_store_replaced_numeric_str(uim_lisp head_)
   }
   free(numstr);
 
-  return uim_scm_call1(uim_scm_make_symbol("reverse"), lst);
+  return uim_scm_callf("reverse", "o", lst);
 }
 
 static char *wide_num_list[] =

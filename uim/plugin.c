@@ -212,12 +212,12 @@ plugin_unload_internal(void *uim_lisp_name)
 
   _name = (uim_lisp)uim_lisp_name;
 
-  ret = uim_scm_call1(MAKE_SYM("plugin-list-query-library"), _name);
+  ret = uim_scm_callf("plugin-list-query-library", "o", _name);
   if (UIM_SCM_FALSEP(ret))
     return uim_scm_f();
   library = uim_scm_c_ptr(ret);
 
-  ret = uim_scm_call1(MAKE_SYM("plugin-list-query-instance-quit"), _name);
+  ret = uim_scm_callf("plugin-list-query-instance-quit", "o", _name);
   if (UIM_SCM_FALSEP(ret))
     return uim_scm_f();
   plugin_instance_quit = uim_scm_c_func_ptr(ret);
@@ -225,7 +225,7 @@ plugin_unload_internal(void *uim_lisp_name)
   (plugin_instance_quit)();
   dlclose(library);
 
-  uim_scm_call1(MAKE_SYM("plugin-list-delete"), _name);
+  uim_scm_callf("plugin-list-delete", "o", _name);
 
   return (void *)uim_scm_t();
 }

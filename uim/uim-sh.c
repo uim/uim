@@ -81,7 +81,7 @@ main(int argc, char *argv[])
   uim_scm_set_verbose_level(verbose);
 
   args = uim_scm_c_strs_into_list(argc, (const char *const *)argv);
-  uim_scm_call1(MAKE_SYM("uim-sh"), args);
+  uim_scm_callf("uim-sh", "o", args);
 
 #ifdef UIM_SH_USE_EXIT_HOOK
   /* is not working even if uim_siod_fatal is accessible. outermost
