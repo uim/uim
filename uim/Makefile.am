@@ -113,15 +113,18 @@ libuim_la_LDFLAGS = -version-info $(libuim_version) -export-dynamic
 libuim_la_LIBADD = $(GCROOTS_LIBS) \
 		   @LTLIBINTL@ @LTLIBICONV@ \
 		   $(top_builddir)/replace/libreplace.la
-# place -I$(top_srcdir) surely prior to sigscheme dirs
+# - Place -I$(top_srcdir) surely prior to sigscheme dirs
+# - To take precedence over installed gcroots.h by the bundled
+#   libgcroots/include/gcroots.h, @GCROOTS_CFLAGS@ must be placed here.
 libuim_la_CPPFLAGS = $(uim_defs) \
 		     -I$(top_srcdir) \
 		     -I$(top_builddir)/sigscheme/include \
 		     -I$(top_srcdir)/sigscheme/src \
 		     -I$(top_builddir)/sigscheme/src \
+		     $(GCROOTS_CFLAGS) \
 		     -DPKGLIBDIR=\"$(pkglibdir)\" \
 		     -DPKGDATADIR=\"$(pkgdatadir)\"
-libuim_la_CFLAGS = $(GCROOTS_CFLAGS) $(UIM_SCM_CFLAGS)
+libuim_la_CFLAGS = $(UIM_SCM_CFLAGS)
 
 if ENABLE_ANTHY_STATIC
   libuim_la_LIBADD += @ANTHY_LIBS@

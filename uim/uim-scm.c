@@ -39,8 +39,8 @@
  */
 /* This file must be included before uim's config.h */
 #include "sigscheme-combined.c"
-#if !SSCM_VERSION_REQUIRE(0, 7, 4)
-#error "SigScheme version 0.7.4 or later is required"
+#if !SSCM_VERSION_REQUIRE(0, 8, 0)
+#error "SigScheme version 0.8.0 or later is required"
 #endif
 
 #include <config.h>
@@ -49,6 +49,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
+#include <assert.h>
 
 #include "uim-scm.h"
 #include "uim-internal.h"
@@ -80,6 +82,15 @@ struct call_args {
 };
 static void *uim_scm_call_internal(struct call_args *args);
 static void *uim_scm_call_with_guard_internal(struct call_args *args);
+
+struct callf_args {
+  const char *proc;
+  const char *args_fmt;
+  va_list args;
+  uim_bool with_guard;
+  uim_lisp failed;
+};
+static void *uim_scm_callf_internal(struct callf_args *args);
 
 static void *uim_scm_c_int_internal(void *uim_lisp_integer);
 static void *uim_scm_make_int_internal(void *integer);
@@ -308,6 +319,18 @@ void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg)
 {
   return scm_call_with_gc_ready_stack(func, arg);
+}
+
+uim_bool
+uim_scm_gc_protectedp(uim_lisp obj)
+{
+  return scm_gc_protectedp((ScmObj)obj);
+}
+
+uim_bool
+uim_scm_gc_protected_contextp(void)
+{
+  return scm_gc_protected_contextp();
 }
 
 uim_bool
@@ -550,6 +573,8 @@ uim_scm_eval_c_string(const char *str)
   return (uim_lisp)scm_eval_c_string(str);
 }
 
+/* deprecated */
+#if 1
 uim_lisp
 uim_scm_call0(uim_lisp proc)
 {
@@ -573,6 +598,7 @@ uim_scm_call3(uim_lisp proc, uim_lisp arg1, uim_lisp arg2, uim_lisp arg3)
 {
   return uim_scm_call(proc, uim_scm_list3(arg1, arg2, arg3));
 }
+#endif
 
 uim_lisp
 uim_scm_call(uim_lisp proc, uim_lisp args)
@@ -619,6 +645,119 @@ uim_scm_call_with_guard_internal(struct call_args *args)
                                      uim_scm_quote(args->args)));
 
   return (void *)uim_scm_eval(form);
+}
+
+uim_lisp
+uim_scm_callf(const char *proc, const char *args_fmt, ...)
+{
+  uim_lisp ret;
+  struct callf_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(proc);
+  assert(args_fmt);
+
+  va_start(args.args, args_fmt);
+
+  args.proc = proc;
+  args.args_fmt = args_fmt;
+  args.with_guard = UIM_FALSE;
+  ret = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_callf_internal, &args);
+
+  va_end(args.args);
+
+  return ret;
+}
+
+static void *
+uim_scm_callf_internal(struct callf_args *args)
+{
+  ScmObj proc, scm_args, arg;
+  ScmQueue argq;
+  const char *fmtp;
+
+  proc = scm_intern(args->proc);
+  scm_args = SCM_NULL;
+  SCM_QUEUE_POINT_TO(argq, scm_args);
+  for (fmtp = args->args_fmt; *fmtp; fmtp++) {
+    switch (*fmtp) {
+    case 'b':
+      arg = SCM_MAKE_BOOL(va_arg(args->args, int));
+      break;
+
+    case 'i':
+      arg = SCM_MAKE_INT(va_arg(args->args, int));
+      break;
+
+    case 'j':
+      arg = SCM_MAKE_INT(va_arg(args->args, intmax_t));
+      break;
+
+    /* FIXME: enable R6RS chars by default */
+#if SCM_USE_CHAR
+    case 'c':
+      arg = SCM_MAKE_CHAR(va_arg(args->args, int));
+      break;
+#endif
+
+    case 's':
+      arg = SCM_MAKE_STRING_COPYING(va_arg(args->args, const char *),
+                                    SCM_STRLEN_UNKNOWN);
+      break;
+
+    case 'y':
+      arg = scm_intern(va_arg(args->args, const char *));
+      break;
+
+    case 'p':
+      arg = SCM_MAKE_C_POINTER(va_arg(args->args, void *));
+      break;
+
+    case 'f':
+      arg = SCM_MAKE_C_FUNCPOINTER(va_arg(args->args, ScmCFunc));
+      break;
+
+    case 'o':
+      arg = va_arg(args->args, ScmObj);
+      assert(scm_gc_protectedp(arg));
+      break;
+
+    default:
+      assert(scm_false);
+    }
+    SCM_QUEUE_ADD(argq, arg);
+  }
+
+  if (args->with_guard)
+    return (void *)uim_scm_call_with_guard(args->failed,
+                                           (uim_lisp)proc, (uim_lisp)scm_args);
+  else
+    return (void *)(uim_lisp)scm_call(proc, scm_args);
+}
+
+uim_lisp
+uim_scm_callf_with_guard(uim_lisp failed,
+                         const char *proc, const char *args_fmt, ...)
+{
+  uim_lisp ret;
+  struct callf_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(failed));
+  assert(proc);
+  assert(args_fmt);
+
+  va_start(args.args, args_fmt);
+
+  args.proc = proc;
+  args.args_fmt = args_fmt;
+  args.with_guard = UIM_TRUE;
+  args.failed = failed;
+  ret = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_callf_internal, &args);
+
+  va_end(args.args);
+
+  return ret;
 }
 
 uim_lisp

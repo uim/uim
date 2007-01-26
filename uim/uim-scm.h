@@ -99,6 +99,11 @@ uim_scm_gc_protect(uim_lisp *location);
 void uim_scm_gc_unprotect(uim_lisp *location);
 void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
+uim_bool uim_scm_gc_protectedp(uim_lisp obj);
+uim_bool uim_scm_gc_protected_contextp(void);
+/* for semantic assertions */
+#define uim_scm_gc_any_contextp()                                            \
+  (!uim_scm_gc_protected_contextp() || uim_scm_gc_protected_contextp())
 
 /* evaluations */
 uim_lisp uim_scm_symbol_value(const char *symbol_str);
@@ -114,14 +119,22 @@ uim_lisp
 uim_scm_eval(uim_lisp obj);
 uim_lisp
 uim_scm_eval_c_string(const char *str);
+
+/* deprecated */
+#if 1
 uim_lisp uim_scm_call0(uim_lisp proc);
 uim_lisp uim_scm_call1(uim_lisp proc, uim_lisp arg1);
 uim_lisp uim_scm_call2(uim_lisp proc, uim_lisp arg1, uim_lisp arg2);
 uim_lisp uim_scm_call3(uim_lisp proc,
                        uim_lisp arg1, uim_lisp arg2, uim_lisp arg3);
+#endif
+
 uim_lisp uim_scm_call(uim_lisp proc, uim_lisp args);
 uim_lisp uim_scm_call_with_guard(uim_lisp failed,
                                  uim_lisp proc, uim_lisp args);
+uim_lisp uim_scm_callf(const char *proc, const char *args_fmt, ...);
+uim_lisp uim_scm_callf_with_guard(uim_lisp failed,
+                                  const char *proc, const char *args_fmt, ...);
 
 void uim_scm_ensure(uim_bool cond);
 
