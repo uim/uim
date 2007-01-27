@@ -234,6 +234,7 @@ Changes:
       (new) LIST5()
       (new) QUOTE()
   (changed) uim_scm_length()
+  (changed) uim_scm_init_fsubr()
   (removed) uim_scm_null_list()
   (removed) uim_scm_cadr()
   (removed) uim_scm_caar()
@@ -271,6 +272,7 @@ Description:
     uim_scm_cons(), uim_list1(), uim_list2(), uim_list3(), uim_list4(),
     uim_list5() have been callable from non-Scheme context, to use with
     uim_scm_call*()
+  - 1st arg of uim_scm_init_fsubr() (name) has been qualified as const
 ------------------------------------------------------------------------------
 Summary: GC protection API change
 Affects: uim developers, IM developers

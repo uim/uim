@@ -825,7 +825,8 @@ uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_l
 }
 
 void
-uim_scm_init_fsubr(char *name, uim_lisp (*fcn)(uim_lisp args, uim_lisp env))
+uim_scm_init_fsubr(const char *name,
+                   uim_lisp (*fcn)(uim_lisp args, uim_lisp env))
 {
   scm_register_func(name, (scm_syntax_variadic_0)fcn, SCM_SYNTAX_VARIADIC_0);
 }
