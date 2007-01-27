@@ -39,6 +39,7 @@
 #   - Gauche 0.8.5 or later
 #   - GaUnit 0.1.1 or later (see doc/UNIT-TEST)
 
+LANG=C
 
 MAKE=make
 
