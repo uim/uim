@@ -57,6 +57,9 @@
 #define N_(String) (String)
 #endif /* gettext_noop */
 
+#else /* ENABLE_NLS */
+
+#define mygettext(String) QString::fromLocal8Bit( (const char *)(String) )
 #endif /* ENABLE_NLS */
 
 #endif /* Not def: _QT_GETTEXT_H_ */
