@@ -158,9 +158,12 @@
 
 (define prime-keymap-get-command
   (lambda (keymap key key-state)
-    (let ((command-key? (car (car keymap)))
-	  (command      (cdr (car keymap))))
-      (if ((symbol-value command-key?) key key-state)
+    (let* ((command-key? (car (car keymap)))
+	   (command      (cdr (car keymap)))
+	   (key-pred (symbol-value command-key?)))
+      (if (and
+	   key-pred
+	   (key-pred key key-state))
 	  command
 	  (if (null? (cdr keymap))
 	      #f
