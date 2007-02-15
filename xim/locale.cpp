@@ -267,7 +267,7 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
     if (!m_iconv_cd)
 	return strdup(inbuf);
 
-    outbuf = (char *)malloc(outbufsize);
+    outbuf = (char *)malloc(outbufsize + 1);
     if (!outbuf)
 	return NULL;
 
@@ -288,6 +288,8 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
 	free(outbuf);
 	return NULL;
     }
+
+    *outchar = '\0';
 
     strlcpy(convstr, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);
