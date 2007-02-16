@@ -142,8 +142,9 @@
 	   (right-str (ustr-latter-seq raw-str))
 	   (left-str (ustr-former-seq raw-str)))
      (append left-str
-	     (if (not (null? residual-kana))
-		 (list pending))
+	     (if residual-kana
+		 (list pending)
+		 '())
 	     right-str))))
 
 (define mana-get-raw-candidate
