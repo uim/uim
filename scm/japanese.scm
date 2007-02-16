@@ -752,7 +752,9 @@
 	   (list-head lst (- (length lst) (length sub)))
 	   '("¤¦¡«")
 	   (ja-join-vu (list-tail lst (+ (- (length lst) (length sub)) 2))))
-	  (if (member "¡«" (cdr sub))
+	  (if (and
+	       sub
+	       (member "¡«" (cdr sub)))
 	      (append
 	       (list-head lst (+ (- (length lst) (length sub)) 1))
 	       (ja-join-vu (cdr sub)))
