@@ -201,7 +201,7 @@
   (lambda (mc seg-idx)
     (let* ((segment-list (mana-context-segment-list mc))
            (segment (list-ref segment-list seg-idx)))
-      (if (not (mana-segment-candidate-list segment))
+      (if (null? (mana-segment-candidate-list segment))
           (mana-set-candidate-list! mc seg-idx))
       (mana-segment-nr-candidates segment))))
 
