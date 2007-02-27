@@ -438,13 +438,13 @@ get_input_method_name(uim_lisp nth_)
   nth = uim_scm_c_int(nth_);
 
   if (nth < nr_input_methods) {
-    len = strlen(im_array[nth].name) + 7;
+    len = strlen(im_array[nth].lang) + strlen(im_array[nth].name) + 7;
     name = alloca(len);
 
     if (!strcmp(im_array[nth].lang, ""))
-      snprintf(name, len + 7, "m17n-%s", im_array[nth].name);
+      snprintf(name, len, "m17n-%s", im_array[nth].name);
     else
-      snprintf(name, len + 7, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
+      snprintf(name, len, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
 
     return uim_scm_make_str(name);
   }
