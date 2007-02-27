@@ -269,10 +269,17 @@
 	      (context-update-widget-states! c orig-wstates)))
 	(context-set-toggle-state! c cur-state)))))
 
+(define reset-toggled-im
+  (lambda (uc c)
+    (let ((saved-state (context-toggle-state c)))
+      (im-switch-im uc (if saved-state
+			   (toggle-state-im-name saved-state)
+			   default-im-name)))))
+
 (define reset-toggle-context!
   (lambda (uc ctx)
     (if (not (context-primary-im? ctx))
-	(toggle-im uc ctx))
+	(reset-toggled-im uc ctx))
     ;; ctx may be expired by the toggle-im
     (context-set-toggle-state! (im-retrieve-context uc) #f)))
 
