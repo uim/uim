@@ -151,7 +151,9 @@
     (if toolbar-show-action-based-switcher-button?
 	(begin
 	  (imsw-register-widget)
-	  (if (assq 'widget_im_switcher widgets)
+	  (if (and
+	       (pair? (car widgets))
+	       (assq 'widget_im_switcher widgets))
 	      widgets
 	      (cons (widget-new 'widget_im_switcher ctx)
 		    widgets)))
