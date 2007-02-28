@@ -172,8 +172,7 @@ void XimServer::customContext(const char *custom, const char *val) {
 }
 
 void XimServer::reloadConfigs() {
-#if 0
-    // uim_prop_reload_configs() seems broken... --ekato Aug 19 2005
+#if 1
     uim_prop_reload_configs();
 #else
     reload_uim(0);
