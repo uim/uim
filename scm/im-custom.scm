@@ -226,6 +226,13 @@
 			(apply register-stub-im stub)
 			(require-module (stub-im-module-name stub)))))
 	      stub-im-list)
+    (set! im-list
+      (remove (lambda (im)
+		(and
+		  (not (memq (im-name im) enabled-im-list))
+		  (not (eq? (im-name im) 'direct))))
+	      im-list))
+
     ;; update imsw widget
     (if toolbar-show-action-based-switcher-button?
 	(let ((acts (imsw-actions)))
