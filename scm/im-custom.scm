@@ -209,6 +209,35 @@
 		 (lambda ()
 		   (set! enabled-im-list (delete 'direct enabled-im-list))))
 
+(define retrieve-im-for-custom-choice
+  (lambda (name)
+    (and name
+	 (if (eq? name 'direct) ;; 'direct is not in the stub-im-list
+	     (assq 'direct im-list)
+	     (let ((im (assq name stub-im-list)))
+	       im)))))
+
+(define update-imsw-widget-of-context-widgets
+  (lambda ()
+    ;; update im-list
+    (for-each (lambda (stub)
+		(if (memq (stub-im-name stub) enabled-im-list)
+		    (if enable-lazy-loading?
+			(apply register-stub-im stub)
+			(require-module (stub-im-module-name stub)))))
+	      stub-im-list)
+    ;; update imsw widget
+    (if toolbar-show-action-based-switcher-button?
+	(let ((acts (imsw-actions)))
+	  (register-widget 'widget_im_switcher
+			   (activity-indicator-new acts)
+			   (actions-new acts))
+	  (for-each (lambda (ctx)
+		      (let* ((widgets (context-widgets ctx))
+			     (widget-ids (map car widgets)))
+			(context-init-widgets! ctx widget-ids)))
+		    context-list)))))
+
 ;; value dependency
 (if custom-full-featured?
     (custom-add-hook 'enabled-im-list
@@ -218,8 +247,22 @@
 			'custom-preserved-default-im-name
 			(cons 'choice
 			      (custom-im-list-as-choice-rec
-			       (map retrieve-im
-				    enabled-im-list)))))))
+			       (map retrieve-im-for-custom-choice
+			            (if (not (memq 'direct enabled-im-list))
+				        (append enabled-im-list '(direct))
+				        enabled-im-list)))))
+		       (custom-set-type-info!
+			'toggle-im-alt-im
+			(cons 'choice
+			      (custom-im-list-as-choice-rec
+			       (map retrieve-im-for-custom-choice
+			            (if (not (memq 'direct enabled-im-list))
+				        (append enabled-im-list '(direct))
+				        enabled-im-list)))))))
+    ;; for non- full-featured
+    (custom-add-hook 'enabled-im-list
+		     'custom-set-hooks
+		     update-imsw-widget-of-context-widgets))
 
 ;;
 ;; im-switching
@@ -275,7 +318,7 @@
   (cons
    'choice
    (if custom-full-featured?
-       (custom-im-list-as-choice-rec stub-im-list)
+       (custom-im-list-as-choice-rec (reverse im-list))
        ()))
   (N_ "Alternative input method")
   (N_ "long description will be here."))
@@ -335,6 +378,11 @@
   (N_ "Enable lazy input method loading for fast startup")
   (N_ "long description will be here."))
 
+(custom-add-hook 'enable-lazy-loading?
+		 'custom-set-hooks
+		 (lambda ()
+		   (if enable-lazy-loading?
+		       (require "lazy-load.scm"))))
 
 ;;
 ;; toolbar buttons
