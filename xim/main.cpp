@@ -523,42 +523,49 @@ terminate_x_connection()
 }
 
 void
-reload_uim(int /* x */)
+reload_uim(int only_info)
 {
-    fprintf(stderr, "\nReloading uim...\n\n");
+    if (!only_info) {
+	fprintf(stderr, "\nReloading uim...\n\n");
 
-    terminate_canddisp_connection();
-    helper_disconnect_cb();
-    terminate_x_connection();
+	terminate_canddisp_connection();
+	helper_disconnect_cb();
+	terminate_x_connection();
 
-    std::map<Window, XimServer *>::iterator it;
-    std::list<InputContext *>::iterator it_c;
+	std::map<Window, XimServer *>::iterator it;
+	std::list<InputContext *>::iterator it_c;
 
-    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
-	XimServer *xs = it->second;
-	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); ++it_c)
-	    (*it_c)->clear();
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
+	    XimServer *xs = it->second;
+	    for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); ++it_c)
+		(*it_c)->clear();
+	}
+	uim_quit();
     }
 
-    uim_quit();
     clear_uim_info();
     get_uim_info();
     //print_uim_info();
 
-    for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
-	XimServer *xs = it->second;
-	for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); ++it_c) {
-	    const char *engine = (*it_c)->get_engine_name();
-	    (*it_c)->createUimContext(engine);
+    if (!only_info) {
+	std::map<Window, XimServer *>::iterator it;
+	std::list<InputContext *>::iterator it_c;
+
+	for (it = XimServer::gServerMap.begin(); it != XimServer::gServerMap.end(); ++it) {
+	    XimServer *xs = it->second;
+	    for (it_c = xs->ic_list.begin(); it_c != xs->ic_list.end(); ++it_c) {
+		const char *engine = (*it_c)->get_engine_name();
+		(*it_c)->createUimContext(engine);
+	    }
 	}
+
+	// make sure to use appropriate locale for the focused context
+	InputContext *focusedContext = InputContext::focusedContext();
+	if (focusedContext)
+	    focusedContext->focusIn();
+
+	pretrans_setup();
     }
-
-    // make sure to use appropriate locale for the focused context
-    InputContext *focusedContext = InputContext::focusedContext();
-    if (focusedContext)
-	focusedContext->focusIn();
-
-    pretrans_setup();
 }
 
 int
