@@ -44,7 +44,8 @@
     (mana   . "M")
     (skk    . "S")
     (tcode  . "T")
-    (byeoru . "B")))
+    (byeoru . "B")
+    (anthy-utf8 . "A")))
 
 (define imsw-default-iconic-label "IM")
 

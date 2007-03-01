@@ -125,6 +125,26 @@ fi
 AC_SUBST(ANTHY_LIBS)
 AC_SUBST(ANTHY_CFLAGS)
 
+# *******************************
+# *** Tests for Anthy (UTF-8) ***
+# *******************************
+AC_ARG_WITH(anthy-utf8,
+  AC_HELP_STRING([--with-anthy-utf8],
+		 [build with libanthy (UTF-8)
+		 @<:@default=no@:>@]),
+  [
+    case $with_anthy_utf8 in
+      no)
+        use_anthy_utf8="no"
+      ;;
+      yes|*)
+        PKG_CHECK_MODULES(ANTHY_UTF8, anthy >= 8622, use_anthy_utf8="yes",
+						     use_anthy_utf8="no")
+      ;;
+    esac
+  ],
+  [use_anthy_utf8="no"])
+
 # ***********************
 # *** Tests for Canna ***
 # ***********************
@@ -760,7 +780,7 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
 fi
 
 dnl for uim-dict.xml.in
-if test "x$use_anthy" = "xyes"; then
+if test "x$use_anthy" = "xyes" || test "x$use_anthy_utf8" = "xyes"; then
   UI_XML_ANTHY_START=""
   UI_XML_ANTHY_END=""
 else
@@ -783,6 +803,7 @@ AC_SUBST(UI_XML_CANNA_END)
 AM_CONDITIONAL(M17NLIB, test x$use_m17nlib = xyes)
 AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
+AM_CONDITIONAL(ANTHY_UTF8, test x$use_anthy_utf8 = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
 AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
@@ -1203,6 +1224,7 @@ AC_MSG_RESULT([
 Configure Result :
 
    Anthy           : ${use_anthy}
+   Anthy (UTF-8)   : ${use_anthy_utf8}
    Canna           : ${use_canna}
    Mana            : ${use_mana}
    PRIME           : ${use_prime}

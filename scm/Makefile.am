@@ -15,6 +15,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
+ anthy-utf8.scm anthy-utf8-custom.scm \
  canna.scm canna-custom.scm canna-key-custom.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
@@ -38,6 +39,9 @@ ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 module_names =
 if ANTHY
   module_names += "anthy"
+endif
+if ANTHY_UTF8
+  module_names += "anthy-utf8"
 endif
 if CANNA
   module_names += "canna"

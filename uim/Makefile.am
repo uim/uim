@@ -82,6 +82,14 @@ else
 endif
 endif
 
+if ANTHY_UTF8
+  uim_plugin_LTLIBRARIES += libuim-anthy-utf8.la
+  libuim_anthy_utf8_la_SOURCES = anthy-utf8.c
+  libuim_anthy_utf8_la_LIBADD = @ANTHY_UTF8_LIBS@ libuim.la
+  libuim_anthy_utf8_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_anthy_utf8_la_CPPFLAGS = -I$(top_srcdir) @ANTHY_UTF8_CFLAGS@
+endif
+
 if MANA
 uim_plugin_LTLIBRARIES += libuim-mana.la
 libuim_mana_la_SOURCES = mana.c

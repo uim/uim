@@ -106,6 +106,12 @@ if ANTHY
 uim_dict_gtk_SOURCES  += dict-anthy.c dict-anthy.h
 uim_dict_gtk_LDADD    += @ANTHY_LIBS@
 uim_dict_gtk_CPPFLAGS += -DUSE_ANTHY
+else
+if ANTHY_UTF8
+uim_dict_gtk_SOURCES  += dict-anthy.c dict-anthy.h
+uim_dict_gtk_LDADD    += @ANTHY_UTF8_LIBS@
+uim_dict_gtk_CPPFLAGS += -DUSE_ANTHY @ANTHY_UTF8_CFLAGS@
+endif
 endif
 if CANNA
 uim_dict_gtk_SOURCES  += dict-canna.c dict-canna.h
