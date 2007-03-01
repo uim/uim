@@ -523,9 +523,9 @@ terminate_x_connection()
 }
 
 void
-reload_uim(int only_info)
+reload_uim(int reload_libuim)
 {
-    if (!only_info) {
+    if (reload_libuim) {
 	fprintf(stderr, "\nReloading uim...\n\n");
 
 	terminate_canddisp_connection();
@@ -547,7 +547,7 @@ reload_uim(int only_info)
     get_uim_info();
     //print_uim_info();
 
-    if (!only_info) {
+    if (reload_libuim) {
 	std::map<Window, XimServer *>::iterator it;
 	std::list<InputContext *>::iterator it_c;
 

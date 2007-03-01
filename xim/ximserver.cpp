@@ -174,9 +174,9 @@ void XimServer::customContext(const char *custom, const char *val) {
 void XimServer::reloadConfigs() {
 #if 1
     uim_prop_reload_configs();
-    reload_uim(1);
-#else
     reload_uim(0);
+#else
+    reload_uim(1);
 #endif
 
     // Updated global IM of XimServer
