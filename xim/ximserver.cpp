@@ -49,9 +49,6 @@
 #define XK_KATAKANA
 #endif
 #include <X11/keysymdef.h>
-#ifndef XK_dead_horn
-#define XK_dead_horn	0xfe62
-#endif
 
 #include "xim.h"
 #include "convdisp.h"
@@ -63,6 +60,10 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-compat-scm.h"
+
+#ifndef XK_dead_horn
+#define XK_dead_horn	0xfe62
+#endif
 
 #ifndef __GNUC__
 # ifdef HAVE_ALLOCA_H
