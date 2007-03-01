@@ -51,6 +51,9 @@ NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png
 SCIM_PNGS = scim-anthy.png scim-canna.png scim-prime.png \
 	    scim-skk.png scim-wnn.png
 SCIM_ORIGINATED_PNGS = anthy.png canna.png prime.png
+if ANTHY_UTF8
+SCIM_ORIGINATED_PNGS += anthy-utf8.png
+endif
 
 GENERATED_PNGS = $(SVG_PNGS) $(SCIM_ORIGINATED_PNGS) uim-icon.png
 
@@ -64,6 +67,8 @@ MAINTAINERCLEANFILES = $(GENERATED_PNGS) $(GENERATED_SVGS)
 
 if MAINTAINER_MODE
 anthy.png: scim-anthy.png
+	cp $< $@
+anthy-utf8.png: scim-anthy.png
 	cp $< $@
 canna.png: scim-canna.png
 	cp $< $@
