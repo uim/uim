@@ -126,6 +126,7 @@ CustomLineEdit::CustomLineEdit( struct uim_custom *c, QWidget *parent, const cha
     QObject::connect( this, SIGNAL(textChanged(const QString&)),
                       this, SLOT(slotCustomTextChanged(const QString&)) );
 
+    setInputMethodEnabled( false );
     update();
 }
 
@@ -341,6 +342,7 @@ CustomOrderedListEdit::CustomOrderedListEdit( struct uim_custom *c, QWidget *par
     setSpacing( 3 );
 
     m_lineEdit = new QLineEdit( this );
+    m_lineEdit->setInputMethodEnabled( false );
     m_lineEdit->setReadOnly( true );
 
     m_editButton = new QPushButton( this );
@@ -623,6 +625,7 @@ CustomKeyEdit::CustomKeyEdit( struct uim_custom *c, QWidget *parent, const char 
 {
     setSpacing( 3 );
     m_lineEdit = new QLineEdit( this );
+    m_lineEdit->setInputMethodEnabled( false );
     m_lineEdit->setReadOnly( true );
 
     m_editButton = new QPushButton( this );
