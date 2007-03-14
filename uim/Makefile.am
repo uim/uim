@@ -50,7 +50,7 @@ if M17NLIB
   libuim_m17nlib_la_SOURCES = m17nlib.c
   libuim_m17nlib_la_LIBADD = @M17NLIB_LIBS@ libuim.la
   libuim_m17nlib_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-  libuim_m17nlib_la_CPPFLAGS = -I$(top_srcdir)
+  libuim_m17nlib_la_CPPFLAGS = -I$(top_srcdir) @M17NLIB_CFLAGS@
 endif
 
 if SCIM
