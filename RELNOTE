@@ -1,15 +1,10 @@
-uim 1.4.0 Release Note
+uim 1.4.1 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.4.0 is latest stable release of uim.
-
-This release is for internal improvement. The non-standards-conformant
-Scheme interpreter of libuim has been replaced with newly developed
-SigScheme to make a room for next leap. There is no user-visible feature
-changes other than resource consumption reduction.
+This distribution of uim 1.4.1 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -20,6 +15,16 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
+A bug fix release against uim 1.4.0.
+See NEWS for the detailed changes.
+
+
+What's New in 1.4.0
+-------------------
+This release is for internal improvement. The non-standards-conformant
+Scheme interpreter of libuim has been replaced with newly developed
+SigScheme to make a room for next leap. There is no user-visible feature
+changes other than resource consumption reduction.
 
   - Fix the license terms of replace/strsep.c and replace/setenv.c
     accidencially mis-modified in r790. I apologize the careless treatment of
