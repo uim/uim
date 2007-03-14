@@ -2,19 +2,19 @@ Overview of changes from 1.4.0 to 1.4.1
 ==
 * Fixed
   - libuim
-    - Fix crash in IM context using an alternative IM upon custom
-      update by uim-pref
+    - Fix crash in a context using toggled IM when updating the custom
+      setting by uim-pref
 
   - Anthy, Canna, Mana
     - Fix crash with Kana input mode
-    - Fix crash when converting a preedit string into alphanumeric
+    - Fix crash upon converting a preedit string into alphanumeric
       characters
 
   - Pinyin (Simplified, Unicode, Traditional)
     - Fix crash upon selecting a candidate with numeric keys
 
   - uim Scheme library
-    - Support SIOD compatibility behavior with syntax 'if'
+    - Support SIOD compatible behavior with syntax 'if'
 
   - Fix compilation in qt directory with --disable-nls option
 
