@@ -166,7 +166,7 @@
   (lambda (pc key)
     (let* ((rkc (generic-context-rk-context pc))
 	   (cs (rk-current-seq rkc))
-	   (n (generic-context-rk-nth pc) (cadr cs))
+	   (n (generic-context-rk-nth pc))
 	   (nr (length (cadr cs)))
 	   (cur-page (if (= generic-nr-candidate-max 0)
 			 0
