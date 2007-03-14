@@ -1,7 +1,9 @@
 SUBDIRS = test
 
-moduledir = $(libdir)/gtk-2.0/@GTK_BINARY_VERSION@/immodules
-GTK_IMMODULES= $(DESTDIR)$(sysconfdir)/gtk-2.0/gtk.immodules
+uim_gtk_im_module_path = $(libdir)/gtk-2.0
+uim_gtk_im_module_file = $(DESTDIR)$(sysconfdir)/gtk-2.0/gtk.immodules
+
+moduledir = $(uim_gtk_im_module_path)/@GTK_BINARY_VERSION@/immodules
 
 if GTK2
 im_uim_la = im-uim.la
@@ -25,13 +27,33 @@ if EB
 IM_UIM_SOURCES += uim-eb.c uim-eb.h
 endif
 
-install-data-hook:
-	if test -f $(GTK_IMMODULES); then \
-	gtk-query-immodules-2.0 > $(GTK_IMMODULES); \
+noinst_PROGRAMS = gtk-rc-get-immodule-file
+gtk_rc_get_immodule_file_SOURCES = gtk-rc-get-immodule-file.c
+gtk_rc_get_immodule_file_CFLAGS = @GTK2_CFLAGS@
+gtk_rc_get_immodule_file_LDADD = @GTK2_LIBS@
+GTK_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk/gtk-rc-get-immodule-file
+
+install-data-hook: gtk-rc-get-immodule-file
+	if test -z $(DESTDIR); then \
+	  if test $(libdir) = $(GTK_LIBDIR); then \
+	    gtk-query-immodules-2.0 > `$(GTK_RC_GET_IMMODULE_FILE)`; \
+	  else \
+	    $(mkinstalldirs) $(sysconfdir)/gtk-2.0; \
+	    GTK_PATH=$(uim_gtk_im_module_path) gtk-query-immodules-2.0 > $(uim_gtk_im_module_file); \
+	    echo -n; \
+	    echo "You need to set"; \
+	    echo "GTK_IM_MODULE_FILE=$(uim_gtk_im_module_file)"; \
+	    echo "environment variable to use the module."; \
+	    echo -n; \
+	  fi \
 	fi
 uninstall-hook:
-	if test -f $(GTK_IMMODULES); then \
-	gtk-query-immodules-2.0 > $(GTK_IMMODULES); \
+	if test -z $(DESTDIR); then \
+	  if test $(libdir) = $(GTK_LIBDIR); then \
+	    gtk-query-immodules-2.0 > `$(GTK_RC_GET_IMMODULE_FILE)`; \
+	  else \
+	    GTK_PATH=$(uim_gtk_im_module_path) gtk-query-immodules-2.0 > $(uim_gtk_im_module_file); \
+	  fi \
 	fi
 else
 install-data-hook:

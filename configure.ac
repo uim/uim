@@ -833,7 +833,9 @@ IT_PO_SUBDIR([qt/chardict/po])
 
 
 GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
+GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
 AC_SUBST(GTK_BINARY_VERSION)
+AC_SUBST(GTK_LIBDIR)
 
 if test x$use_gtk2 = xyes ; then
 AC_DEFINE(USE_GTK2, 1, [use gtk2])
