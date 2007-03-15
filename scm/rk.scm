@@ -239,7 +239,7 @@
 	    (let ((latter (cadr seq)))
 	      (rk-context-set-seq! context (cdar seq))
 	      (if (not (null? latter))
-		  (cadr seq)
+		  latter
 		  #f))
 	    (begin
 	      (rk-context-set-seq! context '())
