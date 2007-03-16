@@ -264,7 +264,7 @@
    context-rec-spec
    (list
     (list 'on                 #f)
-    (list 'state              ())
+    (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
     (list 'cc-id              ()) ;; canna-context-id
