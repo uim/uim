@@ -165,7 +165,7 @@ im_uim_commit_string(void *ptr, const char *str)
   g_signal_emit_by_name(uic, "commit", str);
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
-  if (show_state) {
+  if (show_state && uic->win) {
     gdk_window_get_origin(uic->win, &x, &y);
     caret_state_indicator_update(uic->caret_state_indicator, x, y, NULL);
   }
@@ -302,7 +302,7 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
   } else {
     gtk_label_set_text(GTK_LABEL(preedit_label), "");
     gtk_widget_hide(preedit_window);
-    gtk_window_resize(GTK_WINDOW(preedit_window), 0, 0);
+    gtk_window_resize(GTK_WINDOW(preedit_window), 1, 1);
   }
   g_free(str);
   pango_attr_list_unref(attrs);
