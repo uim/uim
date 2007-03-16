@@ -308,7 +308,7 @@ int main(int argc, char **argv)
         break;
 
       case 'u':
-        engine = optarg;
+        engine = strdup(optarg);
         break;
 
       case 'c':
