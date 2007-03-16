@@ -271,8 +271,8 @@
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
     (list 'segments	      #f) ;; ustr of candidate indices
-    (list 'candidate-window   ())
-    (list 'candidate-op-count ())
+    (list 'candidate-window   #f)
+    (list 'candidate-op-count 0)
     (list 'kana-mode          canna-type-hiragana)
     (list 'alnum	      #f)
     (list 'alnum-type	      canna-type-halfwidth-alnum)
