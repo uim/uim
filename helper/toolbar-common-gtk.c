@@ -966,7 +966,7 @@ uim_toolbar_trayicon_new(void)
 		      "   style \"uim-systray-button-style\"\n"
 		      "   {\n"
 		      "      GtkWidget::focus-line-width=0\n"
-		      "      GtkWidget::focus-padding=0\n"
+		      "      GtkWidget::focus-padding=1\n"
 		      "   }\n" "\n"
 		      "    widget \"*.uim-systray-button\" style \"uim-systray-button-style\"\n"
 		      "\n");
