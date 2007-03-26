@@ -61,7 +61,7 @@ Summary: Stricter argument precondition requirements
 Affects: IM developers, Bridge developers
 Updates: C API
 Version: 1.5.0
-Revision: ac4519
+Revision: ac4519, ac4520
 Date: 2007-03-26
 Modifier: YamaKen
 Related: uim-scm API reorganization in uim 1.5.0
@@ -69,8 +69,12 @@ URL:
 Changes:
   (changed) uim_scm_load_file()
   (changed) uim_scm_require_file()
+  (changed) uim_scm_symbol_value()
+  (changed) uim_scm_symbol_value_int()
+  (changed) uim_scm_symbol_value_str()
+  (changed) uim_scm_symbol_value_bool()
 Description:
-  The arg fn now requires that non-NULL string.
+  The arguments now requires that non-NULL string.
 ------------------------------------------------------------------------------
 Summary: Change return type of uim_set_candidate_selector_cb() to void
 Affects: Bridge developers

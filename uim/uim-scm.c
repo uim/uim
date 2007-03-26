@@ -427,6 +427,7 @@ uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
 {
   assert(uim_scm_gc_any_contextp());
+  assert(symbol_str);
 
   return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_internal, (void *)symbol_str);
 }
@@ -450,9 +451,7 @@ uim_scm_symbol_value_bool(const char *symbol_str)
   uim_bool val;
 
   assert(uim_scm_gc_any_contextp());
-
-  if (!symbol_str)
-    return UIM_FALSE;
+  assert(symbol_str);
 
   val = uim_scm_c_bool(uim_scm_symbol_value(symbol_str));
 
@@ -463,6 +462,7 @@ int
 uim_scm_symbol_value_int(const char *symbol_str)
 {
   assert(uim_scm_gc_any_contextp());
+  assert(symbol_str);
 
   return (int)(intptr_t)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
 }
@@ -488,6 +488,7 @@ char *
 uim_scm_symbol_value_str(const char *symbol_str)
 {
   assert(uim_scm_gc_any_contextp());
+  assert(symbol_str);
 
   return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_str_internal, (void *)symbol_str);
 }
