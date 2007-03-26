@@ -291,15 +291,16 @@ int uim_key_sym_to_int(uim_lisp sym);
 int
 uim_key_sym_to_int(uim_lisp sym_)
 {
-  char *sym = uim_scm_refer_c_str(sym_);
-  int res = 0;
+  char *sym;
   int i;
+
+  sym = uim_scm_refer_c_str(sym_);
   for (i = 0; key_tab[i].key; i++) {
-    if (!strcmp(key_tab[i].str, sym)) {
-      res = key_tab[i].key;
-    }
+    if (!strcmp(key_tab[i].str, sym))
+      return key_tab[i].key;
   }
-  return res;
+
+  return 0;
 }
 #endif
 
@@ -316,21 +317,20 @@ define_valid_key_symbols(void)
   }
   uim_scm_eval(uim_scm_list3(MAKE_SYM("define"),
                              MAKE_SYM("valid-key-symbols"),
-                             uim_scm_quote(valid_key_symbols)));
+                             QUOTE(valid_key_symbols)));
 }
 
 static const char *
 get_sym(int key)
 {
   int i;
-  const char *res = NULL;
+
   for (i = 0; key_tab[i].key; i++) {
-    if (key_tab[i].key == key) {
-      res = key_tab[i].str;
-      break;
-    }
+    if (key_tab[i].key == key)
+      return key_tab[i].str;
   }
-  return res;
+
+  return NULL;
 }
 
 /* FIXME: Replace 'protected' variable with stack protection */
@@ -410,11 +410,17 @@ define_key(uim_lisp args, uim_lisp env)
 {
   uim_lisp form, predicate_sym, sources;
 
-  predicate_sym = uim_scm_car(args);
-  sources = uim_scm_nullp(args) ? uim_scm_null_list() : CAR(CDR(args));
-  form = uim_scm_list3(uim_scm_make_symbol("define-key-internal"),
-		       uim_scm_quote(predicate_sym),
-		       sources);
+  if (uim_scm_length(args) != 2) {
+#if 0
+    uim_scm_error("define-key: invalid form", args);
+#else
+    return uim_scm_f();
+#endif
+  }
+
+  predicate_sym = CAR(args);
+  sources = CAR(CDR(args));
+  form = LIST3(MAKE_SYM("define-key-internal"), QUOTE(predicate_sym), sources);
 
   return uim_scm_eval(form);
 }
