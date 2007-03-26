@@ -208,8 +208,6 @@ uim_scm_stringp(uim_lisp obj);
 uim_bool uim_scm_symbolp(uim_lisp obj);
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b);
-uim_bool
-uim_scm_string_equal(uim_lisp a, uim_lisp b);
 
 /* list operations */
 uim_lisp

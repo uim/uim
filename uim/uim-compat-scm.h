@@ -62,6 +62,8 @@ extern "C" {
 
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs);
+uim_bool
+uim_scm_string_equal(uim_lisp a, uim_lisp b);
 
 
 #ifdef __cplusplus

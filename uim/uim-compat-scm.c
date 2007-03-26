@@ -37,6 +37,13 @@
 #include "uim-compat-scm.h"
 
 
+struct cmp_args {
+  uim_lisp a;
+  uim_lisp b;
+};
+static void *uim_scm_string_equal_internal(struct cmp_args *args);
+
+
 uim_lisp
 uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
 {
@@ -54,4 +61,25 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
   }
 
   return lst;
+}
+
+uim_bool
+uim_scm_string_equal(uim_lisp a, uim_lisp b)
+{
+  struct cmp_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(a));
+  assert(uim_scm_gc_protectedp(b));
+
+  args.a = a;
+  args.b = b;
+  return (uim_bool)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_string_equal_internal, &args);
+}
+
+static void *
+uim_scm_string_equal_internal(struct cmp_args *args)
+{
+  return (void *)SCM_TRUEP(scm_p_stringequalp((ScmObj)args->a,
+                                              (ScmObj)args->b));
 }

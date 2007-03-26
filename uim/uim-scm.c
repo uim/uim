@@ -103,13 +103,6 @@ static void *uim_scm_make_func_ptr_internal(uim_func_ptr func_ptr);
 static void *uim_scm_symbol_value_internal(const char *symbol_str);
 static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
 static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
-
-struct cmp_args {
-  uim_lisp a;
-  uim_lisp b;
-};
-static void *uim_scm_string_equal_internal(struct cmp_args *args);
-
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
 static void *uim_scm_quote_internal(void *obj);
 struct cons_args {
@@ -676,27 +669,6 @@ uim_scm_eq(uim_lisp a, uim_lisp b)
   assert(uim_scm_gc_protectedp(b));
 
   return (SCM_EQ((ScmObj)a, (ScmObj)b));
-}
-
-uim_bool
-uim_scm_string_equal(uim_lisp a, uim_lisp b)
-{
-  struct cmp_args args;
-
-  assert(uim_scm_gc_any_contextp());
-  assert(uim_scm_gc_protectedp(a));
-  assert(uim_scm_gc_protectedp(b));
-
-  args.a = a;
-  args.b = b;
-  return (uim_bool)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_string_equal_internal, &args);
-}
-
-static void *
-uim_scm_string_equal_internal(struct cmp_args *args)
-{
-  return (void *)SCM_TRUEP(scm_p_stringequalp((ScmObj)args->a,
-                                              (ScmObj)args->b));
 }
 
 uim_lisp
