@@ -515,9 +515,7 @@ uim_scm_load_file(const char *fn)
   uim_lisp ok;
 
   assert(uim_scm_gc_any_contextp());
-
-  if (!fn)
-    return UIM_FALSE;
+  assert(fn);
 
   /* (guard (err (else #f)) (load "<fn>")) */
   protected = ok = uim_scm_callf_with_guard(uim_scm_f(), "load", "s", fn);
@@ -922,9 +920,7 @@ uim_scm_require_file(const char *fn)
   uim_lisp ok;
 
   assert(uim_scm_gc_any_contextp());
-
-  if (!fn)
-    return UIM_FALSE;
+  assert(fn);
 
   /* (guard (err (else #f)) (require "<fn>")) */
   protected = ok = uim_scm_callf_with_guard(uim_scm_f(), "require", "s", fn);
