@@ -20,9 +20,9 @@
                 <item value="IDL:Bonobo/Control:1.0"/>
                 <item value="IDL:Bonobo/Unknown:1.0"/>
         </oaf_attribute>
-        <oaf_attribute name="name" type="string" _value="Input Method Indicator (uim)"/>
-        <oaf_attribute name="description" type="string" _value="Indicates and control the state of input method"/>
-        <oaf_attribute name="panel:category" type="string" _value="Utility"/>
+        <oaf_attribute name="name" type="string" _value="Input Method Indicator"/>
+        <oaf_attribute name="description" type="string" _value="Indicates and controls the state of input method (for uim)"/>
+        <oaf_attribute name="panel:category" type="string" _value="Utilities"/>
         <oaf_attribute name="panel:icon" type="string" value="@UIM_PIXMAPSDIR@/uim-icon.png"/>
 </oaf_server>
 </oaf_info>

@@ -99,8 +99,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim@lists.freedesktop.org\n"
-"POT-Creation-Date: 2007-03-27 01:04+0900\n"
-"PO-Revision-Date: 2007-03-27 01:09+0900\n"
+"POT-Creation-Date: 2007-03-27 01:20+0900\n"
+"PO-Revision-Date: 2007-03-27 01:25+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -109,16 +109,16 @@ msgstr ""
 
 # 他のGNOMEアプレットのですます調に合わせた
 #: helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicates and control the state of input method"
-msgstr "入力メソッドの状態を表示・制御します"
+msgid "Indicates and controls the state of input method (for uim)"
+msgstr "入力メソッド (uim) の状態を表示・制御します"
 
 # 「表示器」は他のGNOMEアプレットの訳語に従った
 #: helper/GNOME_UimApplet.server.in.in.h:2
-msgid "Input Method Indicator (uim)"
-msgstr "入力メソッド表示器 (uim)"
+msgid "Input Method Indicator"
+msgstr "入力メソッド表示器"
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
-msgid "Utility"
+msgid "Utilities"
 msgstr "ユーティリティ"
 
 #: helper/GNOME_UimApplet.server.in.in.h:4
@@ -3454,8 +3454,8 @@ msgid "Customize uim input method environment"
 msgstr "入力メソッド環境 (uim) を設定します"
 
 #: uim.desktop.in.in.h:2
-msgid "Input Method (uim)"
-msgstr "入力メソッド (uim)"
+msgid "Input Method"
+msgstr "入力メソッド"
 
 #: uim/m17nlib.c:517
 msgid "An input method provided by the m17n library"

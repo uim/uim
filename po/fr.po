@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim@lists.freedesktop.org\n"
-"POT-Creation-Date: 2007-03-27 01:04+0900\n"
+"POT-Creation-Date: 2007-03-27 01:20+0900\n"
 "PO-Revision-Date: 2006-05-21 11:21+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -16,15 +16,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: helper/GNOME_UimApplet.server.in.in.h:1
-msgid "Indicates and control the state of input method"
+msgid "Indicates and controls the state of input method (for uim)"
 msgstr ""
 
 #: helper/GNOME_UimApplet.server.in.in.h:2
-msgid "Input Method Indicator (uim)"
-msgstr ""
+#, fuzzy
+msgid "Input Method Indicator"
+msgstr "Nom de la méthode d'entrée"
 
 #: helper/GNOME_UimApplet.server.in.in.h:3
-msgid "Utility"
+#, fuzzy
+msgid "Utilities"
 msgstr "Utilitaire"
 
 #: helper/GNOME_UimApplet.server.in.in.h:4
@@ -3334,8 +3336,9 @@ msgid "Customize uim input method environment"
 msgstr ""
 
 #: uim.desktop.in.in.h:2
-msgid "Input Method (uim)"
-msgstr ""
+#, fuzzy
+msgid "Input Method"
+msgstr "Nom de la méthode d'entrée"
 
 #: uim/m17nlib.c:517
 msgid "An input method provided by the m17n library"
