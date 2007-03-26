@@ -131,7 +131,7 @@
     ("no"    . ,(N_ "Norwegian"))
     ("oc"    . ,(N_ "Occitan"))
     ("or"    . ,(N_ "Oriya"))
-    ("om"    . ,(N_ "Oromo (Afan Galla)"))
+    ("om"    . ,(N_ "Oromo (Afan, Galla)"))
     ("ps"    . ,(N_ "Pashto (Pushto)"))
     ("pl"    . ,(N_ "Polish"))
     ("pt"    . ,(N_ "Portuguese"))
