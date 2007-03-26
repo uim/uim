@@ -191,8 +191,7 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
   integer = (uim_lisp)uim_lisp_integer;
 
   if (!SCM_INTP((ScmObj)integer))
-    uim_scm_error("uim_scm_c_int: number required but got ",
-                  (uim_lisp)integer);
+    uim_scm_error("uim_scm_c_int: number required but got ", integer);
 
   c_int = SCM_INT_VALUE((ScmObj)integer);
   return (void *)(intptr_t)c_int;
@@ -249,7 +248,7 @@ uim_scm_refer_c_str_internal(void *uim_lisp_str)
     c_str = SCM_SYMBOL_NAME((ScmObj)str);
   } else {
     uim_scm_error("uim_scm_refer_c_str: string or symbol required but got ",
-                  (uim_lisp)str);
+                  str);
     SCM_NOTREACHED;
   }
 
@@ -302,7 +301,7 @@ uim_scm_c_ptr(uim_lisp ptr)
   assert(uim_scm_gc_protectedp(ptr));
 
   if (!SCM_C_POINTERP((ScmObj)ptr))
-    uim_scm_error("uim_scm_c_ptr: C pointer required but got ", (uim_lisp)ptr);
+    uim_scm_error("uim_scm_c_ptr: C pointer required but got ", ptr);
 
   return SCM_C_POINTER_VALUE((ScmObj)ptr);
 }
@@ -330,7 +329,7 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
 
   if (!SCM_C_FUNCPOINTERP((ScmObj)func_ptr))
     uim_scm_error("uim_scm_c_func_ptr: C function pointer required but got ",
-                  (uim_lisp)func_ptr);
+                  func_ptr);
 
   return SCM_C_FUNCPOINTER_VALUE((ScmObj)func_ptr);
 }
