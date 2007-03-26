@@ -47,9 +47,11 @@
 
 #define OK 0
 
+static void *uim_init_internal(void *dummy);
 static uim_lisp get_nth_im(uim_context uc, int nth);
 
 static uim_bool uim_initialized;
+static uim_lisp protected0, protected1;
 
 
 /****************************************************************
@@ -58,13 +60,26 @@ static uim_bool uim_initialized;
 int
 uim_init(void)
 {
-  char *scm_files, *env;
+  char *env;
 
   if (uim_initialized)
     return OK;
 
   env = getenv("LIBUIM_VERBOSE");
   uim_scm_init(env);
+
+  return (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_init_internal, NULL);
+}
+
+static void *
+uim_init_internal(void *dummy)
+{
+  char *scm_files;
+
+  protected0 = uim_scm_f();
+  protected1 = uim_scm_f();
+  uim_scm_gc_protect(&protected0);
+  uim_scm_gc_protect(&protected1);
 
   uim_init_im_subrs();
   uim_init_intl_subrs();
@@ -88,7 +103,7 @@ uim_init(void)
 
   uim_initialized = UIM_TRUE;
 
-  return OK;
+  return (void *)OK;
 }
 
 void
@@ -115,6 +130,8 @@ uim_create_context(void *ptr,
 {
   uim_context uc;
   uim_lisp lang_, engine_;
+
+  assert(uim_scm_gc_any_contextp());
 
   if (!uim_initialized) {
     fprintf(stderr, "uim_create_context() before uim_init()\n");
@@ -165,9 +182,8 @@ uim_create_context(void *ptr,
   /* foreign context objects */
   uc->ptr = ptr;
 
-  /* FIXME: GC unsafe */
-  lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
-  engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
+  protected0 = lang_ = (lang) ? MAKE_SYM(lang) : uim_scm_f();
+  protected1 = engine_ = (engine) ? MAKE_SYM(engine) : uim_scm_f();
   uc->sc = uim_scm_f(); /* failsafe */
   uc->sc = uim_scm_callf("create-context", "poo", uc, lang_, engine_);
   uim_scm_gc_protect(&uc->sc);
@@ -181,6 +197,7 @@ uim_release_context(uim_context uc)
 {
   int i;
 
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uim_scm_callf("release-context", "p", uc);
@@ -202,6 +219,7 @@ uim_release_context(uim_context uc)
 void
 uim_reset_context(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uim_scm_callf("reset-handler", "p", uc);
@@ -210,6 +228,7 @@ uim_reset_context(uim_context uc)
 void
 uim_focus_in_context(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uim_scm_callf("focus-in-handler", "p", uc);
@@ -218,6 +237,7 @@ uim_focus_in_context(uim_context uc)
 void
 uim_focus_out_context(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uim_scm_callf("focus-out-handler", "p", uc);
@@ -226,6 +246,7 @@ uim_focus_out_context(uim_context uc)
 void
 uim_place_context(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uim_scm_callf("place-handler", "p", uc);
@@ -234,6 +255,7 @@ uim_place_context(uim_context uc)
 void
 uim_displace_context(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uim_scm_callf("displace-handler", "p", uc);
@@ -245,6 +267,7 @@ uim_set_preedit_cb(uim_context uc,
 		   void (*pushback_cb)(void *ptr, int attr, const char *str),
 		   void (*update_cb)(void *ptr))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->preedit_clear_cb = clear_cb;
@@ -260,6 +283,7 @@ uim_set_candidate_selector_cb(uim_context uc,
                               void (*shift_page_cb)(void *ptr, int direction),
                               void (*deactivate_cb)(void *ptr))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->candidate_selector_activate_cb   = activate_cb;
@@ -268,7 +292,6 @@ uim_set_candidate_selector_cb(uim_context uc,
   uc->candidate_selector_shift_page_cb = shift_page_cb;
 }
 
-/* must be called from GC-protected stack context */
 uim_candidate
 uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 {
@@ -276,6 +299,7 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   uim_lisp triple;
   const char *str, *head, *ann;
 
+  assert(uim_scm_gc_protected_contextp());
   assert(uc);
   assert(index >= 0);
   assert(accel_enumeration_hint >= 0);
@@ -302,6 +326,7 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 const char *
 uim_candidate_get_cand_str(uim_candidate cand)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(cand);
 
   return cand->str;
@@ -310,6 +335,7 @@ uim_candidate_get_cand_str(uim_candidate cand)
 const char *
 uim_candidate_get_heading_label(uim_candidate cand)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(cand);
 
   return cand->heading_label;
@@ -318,6 +344,7 @@ uim_candidate_get_heading_label(uim_candidate cand)
 const char *
 uim_candidate_get_annotation_str(uim_candidate cand)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(cand);
 
   return cand->annotation;
@@ -326,6 +353,7 @@ uim_candidate_get_annotation_str(uim_candidate cand)
 void
 uim_candidate_free(uim_candidate cand)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(cand);
 
   free(cand->str);
@@ -337,6 +365,7 @@ uim_candidate_free(uim_candidate cand)
 int
 uim_get_candidate_index(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   return 0;
@@ -345,6 +374,7 @@ uim_get_candidate_index(uim_context uc)
 void
 uim_set_candidate_index(uim_context uc, int nth)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(nth >= 0);
 
@@ -362,6 +392,7 @@ uim_set_text_acquisition_cb(uim_context uc,
 				    	     enum UTextOrigin origin,
 					     int former_len, int latter_len))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->acquire_text_cb = acquire_cb;
@@ -374,12 +405,14 @@ uim_input_string(uim_context uc, const char *str)
   uim_lisp consumed;
   char *conv;
 
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(str);
 
   conv = uc->conv_if->convert(uc->inbound_conv, str);
   if (conv) {
-    consumed = uim_scm_callf("input-string-handler", "ps", uc, conv);
+    protected0 =
+      consumed = uim_scm_callf("input-string-handler", "ps", uc, conv);
     free(conv);
 
     return uim_scm_c_bool(consumed);
@@ -395,6 +428,7 @@ void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->configuration_changed_cb = changed_cb;
@@ -406,6 +440,7 @@ uim_set_im_switch_request_cb(uim_context uc,
 			     void (*sw_system_im_cb)(void *ptr,
                                                      const char *name))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->switch_app_global_im_cb = sw_app_im_cb;
@@ -425,6 +460,7 @@ uim_switch_im(uim_context uc, const char *engine)
      immodule API. We should follow its design to make our API simple.
      -- 2004-10-05 YamaKen
   */
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(engine);
 
@@ -436,9 +472,10 @@ uim_get_current_im_name(uim_context uc)
 {
   uim_lisp im;
 
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  im = uim_scm_callf("uim-context-im", "p", uc);
+  protected0 = im = uim_scm_callf("uim-context-im", "p", uc);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
@@ -450,9 +487,10 @@ uim_get_default_im_name(const char *localename)
 {
   uim_lisp ret;
 
+  assert(uim_scm_gc_any_contextp());
   assert(localename);
 
-  ret = uim_scm_callf("uim-get-default-im-name", "s", localename);
+  protected0 = ret = uim_scm_callf("uim-get-default-im-name", "s", localename);
   return uim_scm_refer_c_str(ret);
 }
 
@@ -461,9 +499,11 @@ uim_get_im_name_for_locale(const char *localename)
 {
   uim_lisp ret;
 
+  assert(uim_scm_gc_any_contextp());
   assert(localename);
 
-  ret = uim_scm_callf("uim-get-im-name-for-locale", "s", localename);
+  protected0 =
+    ret = uim_scm_callf("uim-get-im-name-for-locale", "s", localename);
   return uim_scm_refer_c_str(ret);
 }
 
@@ -473,6 +513,7 @@ uim_get_im_name_for_locale(const char *localename)
 int
 uim_get_nr_modes(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   return uc->nr_modes;
@@ -481,6 +522,7 @@ uim_get_nr_modes(uim_context uc)
 const char *
 uim_get_mode_name(uim_context uc, int nth)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(nth >= 0);
 
@@ -493,6 +535,7 @@ uim_get_mode_name(uim_context uc, int nth)
 int
 uim_get_current_mode(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   return uc->mode;
@@ -501,6 +544,7 @@ uim_get_current_mode(uim_context uc)
 void
 uim_set_mode(uim_context uc, int mode)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(mode >= 0);
 
@@ -511,6 +555,7 @@ uim_set_mode(uim_context uc, int mode)
 void
 uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr, int mode))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->mode_update_cb = update_cb;
@@ -519,6 +564,7 @@ uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr, int mode))
 void
 uim_set_mode_list_update_cb(uim_context uc, void (*update_cb)(void *ptr))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->mode_list_update_cb = update_cb;
@@ -531,6 +577,7 @@ void
 uim_set_prop_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr, const char *str))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   uc->prop_list_update_cb = update_cb;
@@ -541,12 +588,14 @@ void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str))
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 }
 
 void
 uim_prop_list_update(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
   if (uc->propstr && uc->prop_list_update_cb)
@@ -557,12 +606,14 @@ uim_prop_list_update(uim_context uc)
 void
 uim_prop_label_update(uim_context uc)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 }
 
 void
 uim_prop_activate(uim_context uc, const char *str)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(str);
       
@@ -590,6 +641,7 @@ would not be proper to this function. */
 void
 uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(custom);
   assert(val);
@@ -601,6 +653,8 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 uim_bool
 uim_prop_reload_configs(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   /* FIXME: handle return value properly. */
   uim_scm_callf("custom-reload-user-configs", "");
   return UIM_TRUE;
@@ -614,15 +668,17 @@ uim_get_nr_im(uim_context uc)
 {
   uim_lisp n;
 
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  n = uim_scm_callf("uim-n-convertible-ims", "p", uc);
+  protected0 = n = uim_scm_callf("uim-n-convertible-ims", "p", uc);
   return uim_scm_c_int(n);
 }
 
 static uim_lisp
 get_nth_im(uim_context uc, int nth)
 {
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(nth >= 0);
 
@@ -634,7 +690,7 @@ uim_get_im_name(uim_context uc, int nth)
 {
   uim_lisp im;
 
-  im = get_nth_im(uc, nth);
+  protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
@@ -646,7 +702,7 @@ uim_get_im_language(uim_context uc, int nth)
 {
   uim_lisp im;
 
-  im = get_nth_im(uc, nth);
+  protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
@@ -658,7 +714,7 @@ uim_get_im_encoding(uim_context uc, int nth)
 {
   uim_lisp im;
 
-  im = get_nth_im(uc, nth);
+  protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
@@ -670,10 +726,10 @@ uim_get_im_short_desc(uim_context uc, int nth)
 {
   uim_lisp im, short_desc;
 
-  im = get_nth_im(uc, nth);
+  protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  short_desc = uim_scm_callf("im-short-desc", "o", im);
+  protected0 = short_desc = uim_scm_callf("im-short-desc", "o", im);
   return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
 }

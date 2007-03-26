@@ -65,7 +65,8 @@
 #define scm_out SCM_GLOBAL_VAR(port, scm_out)
 #define scm_err SCM_GLOBAL_VAR(port, scm_err)
 
-static uim_bool sscm_is_exit_with_fatal_error;
+static uim_lisp protected;
+static uim_bool initialized, sscm_is_exit_with_fatal_error;
 static FILE *uim_output = NULL;
 
 static void uim_scm_error(const char *msg, uim_lisp errobj);
@@ -99,8 +100,16 @@ static void *uim_scm_make_str_internal(const char *str);
 static void *uim_scm_make_symbol_internal(const char *name);
 static void *uim_scm_make_ptr_internal(void *ptr);
 static void *uim_scm_make_func_ptr_internal(uim_func_ptr func_ptr);
+static void *uim_scm_symbol_value_internal(const char *symbol_str);
 static void *uim_scm_symbol_value_int_internal(const char *symbol_str);
 static char *uim_scm_symbol_value_str_internal(const char *symbol_str);
+
+struct cmp_args {
+  uim_lisp a;
+  uim_lisp b;
+};
+static void *uim_scm_string_equal_internal(struct cmp_args *args);
+
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
 static void *uim_scm_quote_internal(void *obj);
 struct cons_args {
@@ -113,6 +122,10 @@ static void
 uim_scm_error(const char *msg, uim_lisp errobj)
 {
   struct uim_scm_error_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(msg);
+  assert(uim_scm_gc_protectedp(errobj));
 
   args.msg = msg;
   args.errobj = errobj;
@@ -130,36 +143,49 @@ uim_scm_error_internal(struct uim_scm_error_args *args)
 FILE *
 uim_scm_get_output(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return uim_output;
 }
 
 void
 uim_scm_set_output(FILE *fp)
 {
+  assert(uim_scm_gc_any_contextp());
+
   uim_output = fp;
 }
 
 void
 uim_scm_ensure(uim_bool cond)
 {
+  assert(uim_scm_gc_protected_contextp());
+
   SCM_ENSURE(cond);
 }
 
 uim_bool
 uim_scm_c_bool(uim_lisp val)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return UIM_SCM_NFALSEP(val);
 }
 
 uim_lisp
 uim_scm_make_bool(uim_bool val)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (val) ? uim_scm_t() : uim_scm_f();
 }
 
 long
 uim_scm_c_int(uim_lisp integer)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(integer));
+
   return (long)(intptr_t)uim_scm_call_with_gc_ready_stack(uim_scm_c_int_internal, (void *)integer);
 }
 
@@ -182,6 +208,8 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
 uim_lisp
 uim_scm_make_int(long integer)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_make_int_internal,
                                                     (void *)(intptr_t)integer);
 }
@@ -197,6 +225,9 @@ uim_scm_c_str(uim_lisp str)
 {
   const char *c_str;
 
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(str));
+
   c_str = uim_scm_refer_c_str(str);
 
   return (c_str) ? strdup(c_str) : NULL;
@@ -205,6 +236,9 @@ uim_scm_c_str(uim_lisp str)
 const char *
 uim_scm_refer_c_str(uim_lisp str)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(str));
+
   return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_refer_c_str_internal, (void *)str);
 }
 
@@ -232,6 +266,9 @@ uim_scm_refer_c_str_internal(void *uim_lisp_str)
 uim_lisp
 uim_scm_make_str(const char *str)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(str);
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_str_internal, (void *)str);
 }
 
@@ -244,12 +281,18 @@ uim_scm_make_str_internal(const char *str)
 char *
 uim_scm_c_symbol(uim_lisp symbol)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(symbol));
+
   return strdup((char *)SCM_SYMBOL_NAME((ScmObj)symbol));
 }
 
 uim_lisp
 uim_scm_make_symbol(const char *name)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(name);
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_symbol_internal, (void *)name);
 }
 
@@ -262,6 +305,9 @@ uim_scm_make_symbol_internal(const char *name)
 void *
 uim_scm_c_ptr(uim_lisp ptr)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(ptr));
+
   if (!SCM_C_POINTERP((ScmObj)ptr))
     uim_scm_error("uim_scm_c_ptr: C pointer required but got ", (uim_lisp)ptr);
 
@@ -271,6 +317,8 @@ uim_scm_c_ptr(uim_lisp ptr)
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_make_ptr_internal,
                                                     ptr);
 }
@@ -284,6 +332,9 @@ uim_scm_make_ptr_internal(void *ptr)
 uim_func_ptr
 uim_scm_c_func_ptr(uim_lisp func_ptr)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(func_ptr));
+
   if (!SCM_C_FUNCPOINTERP((ScmObj)func_ptr))
     uim_scm_error("uim_scm_c_func_ptr: C function pointer required but got ",
                   (uim_lisp)func_ptr);
@@ -294,6 +345,8 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_func_ptr_internal, (void *)(uintptr_t)func_ptr);
 }
 
@@ -306,75 +359,104 @@ uim_scm_make_func_ptr_internal(uim_func_ptr func_ptr)
 void
 uim_scm_gc_protect(uim_lisp *location)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(location);
+
   scm_gc_protect((ScmObj *)location);
 }
 
 void
 uim_scm_gc_unprotect(uim_lisp *location)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(location);
+
   scm_gc_unprotect((ScmObj *)location);
 }
 
 void *
 uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(func);
+
   return scm_call_with_gc_ready_stack(func, arg);
 }
 
 uim_bool
 uim_scm_gc_protectedp(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return scm_gc_protectedp((ScmObj)obj);
 }
 
 uim_bool
 uim_scm_gc_protected_contextp(void)
 {
-  return scm_gc_protected_contextp();
+  return (initialized && scm_gc_protected_contextp());
 }
 
 uim_bool
 uim_scm_is_alive(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (!sscm_is_exit_with_fatal_error);
 }
 
 long
 uim_scm_get_verbose_level(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (long)scm_get_verbose_level();
 }
 
 void
 uim_scm_set_verbose_level(long new_value)
 {
+  assert(uim_scm_gc_any_contextp());
+
   scm_set_verbose_level(new_value);
 }
 
 void
 uim_scm_set_lib_path(const char *path)
 {
+  assert(uim_scm_gc_any_contextp());
+
   scm_set_lib_path(path);
 }
 
+/* temporary solution for getting an value from Scheme world */
 uim_lisp
 uim_scm_symbol_value(const char *symbol_str)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_internal, (void *)symbol_str);
+}
+
+static void *
+uim_scm_symbol_value_internal(const char *symbol_str)
 {
   ScmObj symbol;
 
   symbol = scm_intern(symbol_str);
   if (SCM_TRUEP(scm_p_symbol_boundp(symbol, SCM_NULL))) {
-    return (uim_lisp)scm_p_symbol_value(symbol);
+    return (void *)(uim_lisp)scm_p_symbol_value(symbol);
   } else {
-    return uim_scm_f();
+    return (void *)uim_scm_f();
   }
 }
 
-/* temprary solution for getting an value from Scheme world */
 uim_bool
 uim_scm_symbol_value_bool(const char *symbol_str)
 {
   uim_bool val;
+
+  assert(uim_scm_gc_any_contextp());
 
   if (!symbol_str)
     return UIM_FALSE;
@@ -387,6 +469,8 @@ uim_scm_symbol_value_bool(const char *symbol_str)
 int
 uim_scm_symbol_value_int(const char *symbol_str)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (int)(intptr_t)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_int_internal, (void *)symbol_str);
 }
 
@@ -410,13 +494,15 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
 char *
 uim_scm_symbol_value_str(const char *symbol_str)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_symbol_value_str_internal, (void *)symbol_str);
 }
 
 static char *
 uim_scm_symbol_value_str_internal(const char *symbol_str)
 {
-  uim_lisp val_ = uim_scm_f();
+  uim_lisp val_;
   char *val;
 
   val_ = uim_scm_symbol_value(symbol_str);
@@ -435,13 +521,13 @@ uim_scm_load_file(const char *fn)
 {
   uim_lisp ok;
 
+  assert(uim_scm_gc_any_contextp());
+
   if (!fn)
     return UIM_FALSE;
 
   /* (guard (err (else #f)) (load "<fn>")) */
-  ok = uim_scm_call_with_guard(uim_scm_f(),
-                               uim_scm_make_symbol("load"),
-                               uim_scm_list1(uim_scm_make_str(fn)));
+  protected = ok = uim_scm_callf_with_guard(uim_scm_f(), "load", "s", fn);
 
   return uim_scm_c_bool(ok);
 }
@@ -449,24 +535,33 @@ uim_scm_load_file(const char *fn)
 uim_lisp
 uim_scm_t(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)SCM_TRUE;
 }
 
 uim_lisp
 uim_scm_f(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)SCM_FALSE;
 }
 
 uim_lisp
 uim_scm_null(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)SCM_NULL;
 }
 
 uim_lisp
 uim_scm_quote(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(obj));
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_quote_internal,
                                                     (void *)obj);
 }
@@ -480,24 +575,42 @@ uim_scm_quote_internal(void *obj)
 uim_lisp
 uim_scm_list1(uim_lisp elm1)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(elm1));
+
   return uim_scm_cons(elm1, uim_scm_null_list());
 }
 
 uim_lisp
 uim_scm_list2(uim_lisp elm1, uim_lisp elm2)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(elm1));
+  assert(uim_scm_gc_protectedp(elm2));
+
   return uim_scm_cons(elm1, uim_scm_list1(elm2));
 }
 
 uim_lisp
 uim_scm_list3(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(elm1));
+  assert(uim_scm_gc_protectedp(elm2));
+  assert(uim_scm_gc_protectedp(elm3));
+
   return uim_scm_cons(elm1, uim_scm_list2(elm2, elm3));
 }
 
 uim_lisp
 uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(elm1));
+  assert(uim_scm_gc_protectedp(elm2));
+  assert(uim_scm_gc_protectedp(elm3));
+  assert(uim_scm_gc_protectedp(elm4));
+
   return uim_scm_cons(elm1, uim_scm_list3(elm2, elm3, elm4));
 }
 
@@ -505,54 +618,93 @@ uim_lisp
 uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3, uim_lisp elm4,
               uim_lisp elm5)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(elm1));
+  assert(uim_scm_gc_protectedp(elm2));
+  assert(uim_scm_gc_protectedp(elm3));
+  assert(uim_scm_gc_protectedp(elm4));
+  assert(uim_scm_gc_protectedp(elm5));
+
   return uim_scm_cons(elm1, uim_scm_list4(elm2, elm3, elm4, elm5));
 }
 
 uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (SCM_NULLP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_consp(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (SCM_CONSP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_integerp(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (SCM_INTP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_stringp(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (SCM_STRINGP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_symbolp(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (SCM_SYMBOLP((ScmObj)obj));
 }
 
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(a));
+  assert(uim_scm_gc_protectedp(b));
+
   return (SCM_EQ((ScmObj)a, (ScmObj)b));
 }
 
 uim_bool
 uim_scm_string_equal(uim_lisp a, uim_lisp b)
 {
-  return (SCM_TRUEP(scm_p_stringequalp((ScmObj)a, (ScmObj)b)));
+  struct cmp_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(a));
+  assert(uim_scm_gc_protectedp(b));
+
+  args.a = a;
+  args.b = b;
+  return (uim_bool)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_string_equal_internal, &args);
+}
+
+static void *
+uim_scm_string_equal_internal(struct cmp_args *args)
+{
+  return (void *)SCM_TRUEP(scm_p_stringequalp((ScmObj)args->a,
+                                              (ScmObj)args->b));
 }
 
 uim_lisp
 uim_scm_eval(uim_lisp obj)
 {
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(obj));
+
   return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_eval_internal,
 						    (void *)obj);
 }
@@ -570,6 +722,8 @@ uim_scm_eval_internal(void *uim_lisp_obj)
 uim_lisp
 uim_scm_eval_c_string(const char *str)
 {
+  assert(uim_scm_gc_any_contextp());
+
   return (uim_lisp)scm_eval_c_string(str);
 }
 
@@ -577,6 +731,10 @@ uim_lisp
 uim_scm_call(uim_lisp proc, uim_lisp args)
 {
   struct call_args _args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(proc));
+  assert(uim_scm_gc_protectedp(args));
 
   _args.proc = proc;
   _args.args = args;
@@ -596,6 +754,11 @@ uim_lisp
 uim_scm_call_with_guard(uim_lisp failed, uim_lisp proc, uim_lisp args)
 {
   struct call_args _args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(failed));
+  assert(uim_scm_gc_protectedp(proc));
+  assert(uim_scm_gc_protectedp(args));
 
   _args.failed = failed;
   _args.proc = proc;
@@ -736,12 +899,16 @@ uim_scm_callf_with_guard(uim_lisp failed,
 uim_lisp
 uim_scm_car(uim_lisp pair)
 {
+  assert(uim_scm_gc_protected_contextp());
+
   return (uim_lisp)scm_p_car((ScmObj)pair);
 }
 
 uim_lisp
 uim_scm_cdr(uim_lisp pair)
 {
+  assert(uim_scm_gc_protected_contextp());
+
   return (uim_lisp)scm_p_cdr((ScmObj)pair);
 }
 
@@ -749,6 +916,10 @@ uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
   struct cons_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(car));
+  assert(uim_scm_gc_protectedp(cdr));
 
   args.car = car;
   args.cdr = cdr;
@@ -766,7 +937,10 @@ uim_scm_length(uim_lisp lst)
 {
   uim_lisp len;
 
-  len = (uim_lisp)scm_p_length((ScmObj)lst);
+  assert(uim_scm_gc_protected_contextp());
+  assert(uim_scm_gc_protectedp(lst));
+
+  protected = len = (uim_lisp)scm_p_length((ScmObj)lst);
   return uim_scm_c_int(len);
 }
 
@@ -775,13 +949,13 @@ uim_scm_require_file(const char *fn)
 {
   uim_lisp ok;
 
+  assert(uim_scm_gc_any_contextp());
+
   if (!fn)
     return UIM_FALSE;
 
-  /* (guard (err (else #f)) (load "<fn>")) */
-  ok = uim_scm_call_with_guard(uim_scm_f(),
-                               uim_scm_make_symbol("require"),
-                               uim_scm_list1(uim_scm_make_str(fn)));
+  /* (guard (err (else #f)) (require "<fn>")) */
+  protected = ok = uim_scm_callf_with_guard(uim_scm_f(), "require", "s", fn);
 
   return uim_scm_c_bool(ok);
 }
@@ -789,46 +963,76 @@ uim_scm_require_file(const char *fn)
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
 {
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
   scm_register_func(name, (scm_procedure_fixed_0)func, SCM_PROCEDURE_FIXED_0);
 }
 
 void
 uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
 {
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
   scm_register_func(name, (scm_procedure_fixed_1)func, SCM_PROCEDURE_FIXED_1);
 }
 
 void
 uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
   scm_register_func(name, (scm_procedure_fixed_2)func, SCM_PROCEDURE_FIXED_2);
 }
 
 void
-uim_scm_init_subr_3(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
+uim_scm_init_subr_3(const char *name,
+		    uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
   scm_register_func(name, (scm_procedure_fixed_3)func, SCM_PROCEDURE_FIXED_3);
 }
 
 void
-uim_scm_init_subr_4(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
-                                                       uim_lisp))
+uim_scm_init_subr_4(const char *name,
+		    uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp, uim_lisp))
 {
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
   scm_register_func(name, (scm_procedure_fixed_4)func, SCM_PROCEDURE_FIXED_4);
 }
 
 void
-uim_scm_init_subr_5(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
-                                                       uim_lisp, uim_lisp))
+uim_scm_init_subr_5(const char *name,
+		    uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp, uim_lisp,
+				     uim_lisp))
 {
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
   scm_register_func(name, (scm_procedure_fixed_5)func, SCM_PROCEDURE_FIXED_5);
 }
 
 void
 uim_scm_init_fsubr(const char *name,
-                   uim_lisp (*fcn)(uim_lisp args, uim_lisp env))
+                   uim_lisp (*func)(uim_lisp args, uim_lisp env))
 {
-  scm_register_func(name, (scm_syntax_variadic_0)fcn, SCM_SYNTAX_VARIADIC_0);
+  assert(uim_scm_gc_protected_contextp());
+  assert(name);
+  assert(func);
+
+  scm_register_func(name, (scm_syntax_variadic_0)func, SCM_SYNTAX_VARIADIC_0);
 }
 
 static void
@@ -846,6 +1050,9 @@ uim_scm_init(const char *verbose_level)
   ScmStorageConf storage_conf;
   long vlevel = 2;
   ScmObj output_port;
+
+  if (initialized)
+    return;
 
   if (!uim_output)
     uim_output = stderr;
@@ -881,6 +1088,9 @@ uim_scm_init(const char *verbose_level)
   output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
   scm_out = scm_err = output_port;
 
+  protected = (uim_lisp)SCM_FALSE;
+  uim_scm_gc_protect(&protected);
+
 #ifdef DEBUG_SCM
   /* required by test-im.scm */
   uim_scm_callf("provide", "s", "debug");
@@ -891,6 +1101,7 @@ uim_scm_init(const char *verbose_level)
   scm_use("siod");
 
   uim_scm_set_verbose_level(vlevel);
+  initialized = UIM_TRUE;
 }
 
 void
@@ -899,4 +1110,5 @@ uim_scm_quit(void)
   scm_finalize();
   sscm_is_exit_with_fatal_error = UIM_FALSE;
   uim_output = NULL;
+  initialized = UIM_FALSE;
 }

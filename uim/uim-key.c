@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -276,6 +277,8 @@ static struct key_entry key_tab[] = {
   {0, 0}
 };
 
+static uim_lisp protected;
+
 static void define_valid_key_symbols(void);
 static const char *get_sym(int key);
 static uim_bool filter_key(uim_context uc,
@@ -330,6 +333,7 @@ get_sym(int key)
   return res;
 }
 
+/* FIXME: Replace 'protected' variable with stack protection */
 static uim_bool
 filter_key(uim_context uc, int key, int state, uim_bool is_press)
 {
@@ -350,12 +354,12 @@ filter_key(uim_context uc, int key, int state, uim_bool is_press)
     return UIM_FALSE;
 
   if (ISASCII(key)) {
-    key_ = MAKE_INT(key);
+    protected = key_ = MAKE_INT(key);
   } else {
     sym = get_sym(key);
     if (!sym)
       return UIM_FALSE;
-    key_ = MAKE_SYM(get_sym(key));
+    protected = key_ = MAKE_SYM(get_sym(key));
   }
 
   handler = (is_press) ? "key-press-handler" : "key-release-handler";
@@ -378,6 +382,11 @@ uim_press_key(uim_context uc, int key, int state)
 {
   uim_bool filtered;
 
+  assert(uim_scm_gc_any_contextp());
+  assert(uc);
+  assert(key >= 0);
+  assert(state >= 0);
+
   filtered = filter_key(uc, key, state, UIM_TRUE);
   return (filtered) ? FILTERED : PASSTHROUGH;
 }
@@ -386,6 +395,11 @@ int
 uim_release_key(uim_context uc, int key, int state)
 {
   uim_bool filtered;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uc);
+  assert(key >= 0);
+  assert(state >= 0);
 
   filtered = filter_key(uc, key, state, UIM_FALSE);
   return (filtered) ? FILTERED : PASSTHROUGH;
@@ -408,6 +422,9 @@ define_key(uim_lisp args, uim_lisp env)
 void
 uim_init_key_subrs(void)
 {
+  protected = uim_scm_f();
+  uim_scm_gc_protect(&protected);
+
   define_valid_key_symbols();
   uim_scm_init_fsubr("define-key", define_key);
 }

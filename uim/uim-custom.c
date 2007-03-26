@@ -987,8 +987,9 @@ uim_custom_init(void)
   const char *client_codeset;
 
   return_val = uim_scm_f();
-
+  uim_scm_last_val = uim_scm_f();
   uim_scm_gc_protect(&return_val);
+  uim_scm_gc_protect(&uim_scm_last_val);
 
   uim_scm_init_subr_3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
   uim_scm_init_subr_2("custom-global-update-cb-gate",

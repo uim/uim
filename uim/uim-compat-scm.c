@@ -32,6 +32,7 @@
 */
 
 #include <config.h>
+#include <assert.h>
 
 #include "uim-compat-scm.h"
 
@@ -42,6 +43,9 @@ uim_scm_c_strs_into_list(int n_strs, const char *const *strs)
   uim_lisp lst, str;
   const char *c_str;
   int i;
+
+  assert(n_strs >= 0);
+  assert(strs);
 
   for (lst = uim_scm_null_list(), i = n_strs - 1; 0 <= i; i--) {
     c_str = strs[i];
