@@ -33,6 +33,8 @@
 
 */
 
+#include <stdlib.h>
+
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-compat-scm.h"
@@ -46,16 +48,40 @@
 extern int uim_siod_fatal;
 #endif
 
+struct uim_sh_args {
+  int argc;
+  char **argv;
+};
+static void *uim_sh(struct uim_sh_args *c_args);
+
 int
 main(int argc, char *argv[])
 {
-  long verbose;
-  uim_lisp args;
+  struct uim_sh_args c_args;
+  int err;
 
   uim_scm_set_output(stdout);
   
   /* TODO: be able to suppress ordinary initialization process */
   uim_init();
+
+  c_args.argc = argc;
+  c_args.argv = argv;
+  err = (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_sh,
+					      &c_args);
+  if (err)
+    return err;
+
+  uim_quit();
+
+  return EXIT_SUCCESS;
+}
+
+static void *
+uim_sh(struct uim_sh_args *c_args)
+{
+  long verbose;
+  uim_lisp args;
 
 #ifdef LIBEDIT
   editline_init();
@@ -70,7 +96,7 @@ main(int argc, char *argv[])
      *catch affects me?
   */
   if (uim_siod_fatal)
-    return 1;
+    return (void *)EXIT_FAILURE;
 #endif
 
   /*
@@ -80,7 +106,8 @@ main(int argc, char *argv[])
     verbose = 1;
   uim_scm_set_verbose_level(verbose);
 
-  args = uim_scm_c_strs_into_list(argc, (const char *const *)argv);
+  args = uim_scm_c_strs_into_list(c_args->argc,
+				  (const char *const *)c_args->argv);
   uim_scm_callf("uim-sh", "o", args);
 
 #ifdef UIM_SH_USE_EXIT_HOOK
@@ -88,14 +115,12 @@ main(int argc, char *argv[])
    * *catch affects me?
    */
   if (uim_siod_fatal)
-    return 1;
+    return (void *)EXIT_FAILURE;
 #endif
 
 #ifdef LIBEDIT
   editline_quit();
 #endif
 
-  uim_quit();
-
-  return 0;
+  return (void *)EXIT_SUCCESS;
 }
