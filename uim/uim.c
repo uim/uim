@@ -688,37 +688,54 @@ get_nth_im(uim_context uc, int nth)
 const char *
 uim_get_im_name(uim_context uc, int nth)
 {
-  uim_lisp im;
+  uim_lisp im, str;
 
   protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
+#if 1
+  protected1 = str = uim_scm_callf("im-name", "o", im);
+
+  return uim_scm_refer_c_str(str);
+#else
+  /* FIXME: This code breaks l_freelist as follows. Though the
+   * unprotected variable causes unexpected sweep, l_freelist is not
+   * supposed to be broken.  -- 2007-04-05 YamaKen
+   *
+   * $ uim/uim-fep
+   * lt-uim-fep: ../sigscheme/src/storage-gc.c:178: scm_alloc_cell: Assertion `!((scm_uintobj_t)(((scm_g_instance_static_gc).l_freelist)) % sizeof(ScmCell))' failed.
+   */
   return uim_scm_refer_c_str(uim_scm_callf("im-name", "o", im));
+#endif
 }
 
 const char *
 uim_get_im_language(uim_context uc, int nth)
 {
-  uim_lisp im;
+  uim_lisp im, str;
 
   protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  return uim_scm_refer_c_str(uim_scm_callf("im-lang", "o", im));
+  protected1 = str = uim_scm_callf("im-lang", "o", im);
+
+  return uim_scm_refer_c_str(str);
 }
 
 const char *
 uim_get_im_encoding(uim_context uc, int nth)
 {
-  uim_lisp im;
+  uim_lisp im, str;
 
   protected0 = im = get_nth_im(uc, nth);
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  return uim_scm_refer_c_str(uim_scm_callf("im-encoding", "o", im));
+  protected1 = str = uim_scm_callf("im-encoding", "o", im);
+
+  return uim_scm_refer_c_str(str);
 }
 
 const char *
@@ -730,6 +747,6 @@ uim_get_im_short_desc(uim_context uc, int nth)
   if (UIM_SCM_FALSEP(im))
     return NULL;
 
-  protected0 = short_desc = uim_scm_callf("im-short-desc", "o", im);
+  protected1 = short_desc = uim_scm_callf("im-short-desc", "o", im);
   return UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
 }
