@@ -331,6 +331,105 @@ AX_CXXFLAGS_GCC_OPTION([-Wformat-security])
 
 AX_LANG_WNOERROR  # end AC_LANG_WERROR
 
+AC_CHECK_DECL(LLONG_MAX, have_llong_max=1, , [#include <limits.h>])
+# compute LLONG_MIN and LLONG_MAX if we don't know them.
+if test -z "$have_llong_max"; then
+	AC_MSG_CHECKING([for max value of long long])
+	AC_RUN_IFELSE(
+		[AC_LANG_SOURCE([[
+#include <stdio.h>
+/* Why is this so damn hard? */
+#ifdef __GNUC__
+# undef __GNUC__
+#endif
+#define __USE_ISOC99
+#include <limits.h>
+#define DATA "conftest.llminmax"
+#define my_abs(a) ((a) < 0 ? ((a) * -1) : (a))
+
+/*
+ * printf in libc on some platforms (eg old Tru64) does not understand %lld so
+ * we do this the hard way.
+ */
+static int
+fprint_ll(FILE *f, long long n)
+{
+	unsigned int i;
+	int l[sizeof(long long) * 8];
+
+	if (n < 0)
+		if (fprintf(f, "-") < 0)
+			return -1;
+	for (i = 0; n != 0; i++) {
+		l[i] = my_abs(n % 10);
+		n /= 10;
+	}
+	do {
+		if (fprintf(f, "%d", l[--i]) < 0)
+			return -1;
+	} while (i != 0);
+	if (fprintf(f, " ") < 0)
+		return -1;
+	return 0;
+}
+
+int main(void) {
+	FILE *f;
+	long long i, llmin, llmax = 0;
+
+	if((f = fopen(DATA,"w")) == NULL)
+		exit(1);
+
+#if defined(LLONG_MIN) && defined(LLONG_MAX)
+	fprintf(stderr, "Using system header for LLONG_MIN and LLONG_MAX\n");
+	llmin = LLONG_MIN;
+	llmax = LLONG_MAX;
+#else
+	fprintf(stderr, "Calculating  LLONG_MIN and LLONG_MAX\n");
+	/* This will work on one's complement and two's complement */
+	for (i = 1; i > llmax; i <<= 1, i++)
+		llmax = i;
+	llmin = llmax + 1LL;    /* wrap */
+#endif
+
+	/* Sanity check */
+	if (llmin + 1 < llmin || llmin - 1 < llmin || llmax + 1 > llmax
+	    || llmax - 1 > llmax || llmin == llmax || llmin == 0
+	    || llmax == 0 || llmax < LONG_MAX || llmin > LONG_MIN) {
+		fprintf(f, "unknown unknown\n");
+		exit(2);
+	}
+
+	if (fprint_ll(f, llmin) < 0)
+		exit(3);
+	if (fprint_ll(f, llmax) < 0)
+		exit(4);
+	if (fclose(f) < 0)
+		exit(5);
+	exit(0);
+}
+		]])],
+		[
+			llong_min=`$AWK '{print $1}' conftest.llminmax`
+			llong_max=`$AWK '{print $2}' conftest.llminmax`
+
+			AC_MSG_RESULT($llong_max)
+			AC_DEFINE_UNQUOTED(LLONG_MAX, [${llong_max}LL],
+			    [max value of long long calculated by configure])
+			AC_MSG_CHECKING([for min value of long long])
+			AC_MSG_RESULT($llong_min)
+			AC_DEFINE_UNQUOTED(LLONG_MIN, [${llong_min}LL],
+			    [min value of long long calculated by configure])
+		],
+		[
+			AC_MSG_RESULT(not found)
+		],
+		[
+			AC_MSG_WARN([cross compiling: not checking])
+		]
+	)
+fi
+
 # Checks for library functions
 AC_FUNC_REALLOC
 AC_FUNC_ALLOCA
