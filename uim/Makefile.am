@@ -38,7 +38,7 @@ libuim_la_SOURCES = uim-scm.c \
 		iconv.c plugin.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
-		rk.c
+		rk.c bsdlook.c
 
 if COMPAT_SCM
   pkginclude_HEADERS += uim-compat-scm.h
@@ -111,6 +111,12 @@ libuim_skk_la_SOURCES = skk.c
 libuim_skk_la_LIBADD = libuim.la @NETLIBS@
 libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
+
+uim_plugin_LTLIBRARIES += libuim-look.la
+libuim_look_la_SOURCES = look.c
+libuim_look_la_LIBADD = libuim.la
+libuim_look_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_look_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 

@@ -28,6 +28,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  viqr.scm \
  ipa-x-sampa.scm \
  latin.scm \
+ look.scm look-custom.scm \
  m17nlib.scm \
  spellcheck.scm spellcheck-custom.scm \
  zaurus.scm \
@@ -60,7 +61,7 @@ if M17NLIB
   module_names += "m17nlib"
 endif
 # less preferable IMs
-module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"
+module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"  "look"
 if SCIM
   module_names += "scim"
 endif

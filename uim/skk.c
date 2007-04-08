@@ -61,6 +61,8 @@
 #include "uim-helper.h"
 #include "plugin.h"
 
+#include "bsdlook.h"
+
 #define skk_isalpha(ch)	(skk_islower(ch) || skk_isupper(ch))
 #define skk_islower(ch)	((((unsigned char)ch) >= 'a') && (((unsigned char)ch) <= 'z'))
 #define skk_isupper(ch)	((((unsigned char)ch) >= 'A') && (((unsigned char)ch) <= 'Z'))
@@ -70,7 +72,6 @@
 #define USE_SKK_JISYO_S_BUF	1	/* use SKK-JISYO.S as a cache for
 					   word completion */
 #define SKK_JISYO_S	DATADIR "/skk/SKK-JISYO.S"
-#define LOOK_COMMAND	"look"		/* UNIX look command for completion */
 
 /*
  * cand : candidate
@@ -185,6 +186,9 @@ static FILE *rserv, *wserv;
 static int open_skkserv(const char *hostname, int portnum, int family);
 static void close_skkserv(void);
 static void skkserv_disconnected(struct dic_info *di);
+
+static int use_look = 0;
+static uim_look_ctx *skk_look_ctx = NULL;
 
 static uim_bool is_setugid;
 
@@ -3377,37 +3381,36 @@ skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
   return ret;
 }
 
-static FILE *
-look_popen(const char *str)
+static uim_lisp
+skk_look_open(uim_lisp fn_)
 {
-  char *cmd;
-  const char *look;
-  FILE *fp;
-  int len;
+  const char *fn = uim_scm_refer_c_str(fn_);
 
-  if (is_setugid)
-    look = "/usr/bin/" LOOK_COMMAND;
-  else
-    look = LOOK_COMMAND;
+  if (use_look == 1 && skk_look_ctx)
+    uim_look_finish(skk_look_ctx);
 
-  len = strlen(look) + strlen(str) + strlen(" 2>/dev/null") + 1;
-  cmd = malloc(len + 1);
-  if (!cmd)
-    return NULL;
+  if ((skk_look_ctx = uim_look_init()) == NULL) {
+    use_look = 0;
+    return uim_scm_f(); /* XXX: fatal */
+  }
 
-  snprintf(cmd, len + 1, "%s %s%s", look, str, " 2>/dev/null");
-  fp = popen(cmd, "r");
-  free(cmd);
+  if (!uim_look_open_dict(fn, skk_look_ctx)) {
+    uim_look_finish(skk_look_ctx);
+    skk_look_ctx = NULL;
+    use_look = 0;
+    return uim_scm_f();
+  }
 
-  return fp;
+  use_look = 1;
+  return uim_scm_t();
 }
 
 static uim_lisp
 look_get_top_word(const char *str)
 {
-  char buf[512], *p;
-  FILE *fp;
+  char buf[512], *dict_str;
   int i = 0;
+  size_t len;
   uim_lisp ret_ = uim_scm_f();
 
   while (str[i] != '\0') {
@@ -3416,35 +3419,38 @@ look_get_top_word(const char *str)
     i++;
   }
 
-  fp = look_popen(str);
-  if (!fp) {
-    perror("popen look");
+  if (!use_look)
     return ret_;
-  }
 
-  while (fgets(buf, 512, fp) != NULL) {
-    p = strchr(buf, '\n');
-    if (p != NULL)
-      *p = '\0';
-    if (strcmp(buf, str)) { /* don't use the word itself */
-      ret_ = uim_scm_make_str(buf);
-      break;
+  if ((dict_str = strdup(str)) == NULL)
+    return ret_; /* XXX: fatal */
+
+  uim_look_reset(skk_look_ctx);
+  if (uim_look(dict_str, skk_look_ctx) != 0) {
+    len = strlen(str);
+    uim_look_set(skk_look_ctx);
+    while (uim_look_get(dict_str, buf, sizeof(buf), skk_look_ctx) != 0) {
+      /* don't use the word itself */
+      if (strcasecmp(buf, dict_str) != 0) {
+	/* overwrite upper and lower case */
+	if (len < strlen(buf))
+	  memcpy(buf, str, len);
+	ret_ = uim_scm_make_str(buf);
+	break;
+      }
     }
   }
-  /* read to the end */
-  /* while (fgets(buf, 512, fp) != NULL) ; */
-  pclose(fp);
-
+  free(dict_str);
   return ret_;
 }
 
 static void
 look_get_comp(struct skk_comp_array *ca, const char *str)
 {
-  char buf[512], *p;
-  FILE *fp;
-  int i = 0, nr_pre, c = 0;
+  char buf[512], *dict_str;
+  int i = 0, nr_pre;
   int *matched;
+  size_t len;
 
   while (str[i] != '\0') {
     if (!skk_isalpha(str[i]))
@@ -3452,38 +3458,39 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
     i++;
   }
 
-  fp = look_popen(str);
-  if (!fp) {
-    perror("popen look");
+  if (!use_look)
+    return ;
+
+  if ((dict_str = strdup(str)) == NULL)
+    return ; /* XXX: fatal */
+
+  uim_look_reset(skk_look_ctx);
+  if (uim_look(dict_str, skk_look_ctx) == 0)
     return;
-  }
 
   nr_pre = ca->nr_comps;
   matched = malloc(sizeof(int) * nr_pre);
   for (i = 0; i < nr_pre; i++)
     matched[i] = 0;
 
-  while (fgets(buf, 512, fp) != NULL) {
+  uim_look_set(skk_look_ctx);
+  len = strlen(str);
+  while (uim_look_get(dict_str, buf, sizeof(buf), skk_look_ctx) != 0) {
     int match = 0;
 
-    p = strchr(buf, '\n');
-    if (p != NULL)
-      *p = '\0';
-
     /* don't use the word itself */
-    if ((c == 0 || c == 1)) {
-      c++;
-      if (!strcmp(buf, str)) {
-	c = -1;
-	continue;
-      }
-    }
+    if (strcasecmp(buf, dict_str) == 0)
+      continue;
+
+    /* overwrite upper and lower case */
+    if (len < strlen(buf))
+      memcpy(buf, str, len);
 
     /* skip words already in the cache */
     for (i = 0; i < nr_pre; i++) {
       if (matched[i])
 	continue;
-      if (!strcmp(ca->comps[i], buf)) {
+      if (!strcasecmp(ca->comps[i], buf)) {
 	matched[i] = 1;
 	match = 1;
 	break;
@@ -3495,8 +3502,9 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
       ca->comps[ca->nr_comps - 1] = strdup(buf);
     }
   }
-  pclose(fp);
+
   free(matched);
+  free(dict_str);
 }
 
 void
@@ -3523,6 +3531,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_subr_3("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
   uim_scm_init_subr_3("skk-lib-substring", skk_substring);
+  uim_scm_init_subr_1("skk-lib-look-open", skk_look_open);
 }
 
 void
@@ -3549,6 +3558,12 @@ uim_plugin_instance_quit(void)
 
   free(skk_dic);
   skk_dic = NULL;
+
+  if (use_look && skk_look_ctx) {
+    uim_look_finish(skk_look_ctx);
+    skk_look_ctx = NULL;
+    use_look = 0;
+  };
 }
 
 /* skkserv related */

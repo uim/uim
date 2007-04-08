@@ -443,6 +443,18 @@
   '(boolean)
   (N_ "Use UNIX look command for completion")
   (N_ "long description will be here."))
+
+(define-custom 'skk-look-dict "/usr/share/dict/words"
+  '(skk-advanced)
+  '(pathname regular-file)
+  (N_ "Use UNIX look dictionary file")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'skk-look-dict
+		 'custom-activity-hooks
+		 (lambda ()
+		   skk-use-look?))
+
 ;;
 ;; annotation
 ;;

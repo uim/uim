@@ -380,6 +380,8 @@
 	  (skk-lib-dic-open
 	   skk-dic-file-name skk-use-skkserv? hostname skk-skkserv-portnum
 	   skk-skkserv-address-family)
+          (if skk-use-look?
+              (skk-lib-look-open skk-look-dict))
 	  (skk-read-personal-dictionary)))
     (let ((sc (skk-context-new-internal id im))
 	  (rkc (rk-context-new ja-rk-rule #t #f)))
