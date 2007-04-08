@@ -305,6 +305,7 @@ AX_CFLAGS_GCC_OPTION([-Wnested-externs])
 AX_CFLAGS_GCC_OPTION([-Wpointer-arith])
 AX_CFLAGS_GCC_OPTION([-Wcast-align])
 AX_CFLAGS_GCC_OPTION([-Wsign-compare])
+AX_CFLAGS_GCC_OPTION([-Wno-long-long])
 
 # Suppress warnings about strings longer than ISO C 89 maximum length (509).
 AX_CFLAGS_GCC_OPTION([-Wno-overlength-strings])
