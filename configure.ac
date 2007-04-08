@@ -347,7 +347,7 @@ AC_CHECK_FUNCS([strdup])
 AC_CHECK_FUNCS([asprintf vasprintf])
 # C99 functions
 AC_CHECK_FUNCS([snprintf vsnprintf])
-AC_REPLACE_FUNCS([getpeereid strsep setenv unsetenv strlcpy strlcat])
+AC_REPLACE_FUNCS([getpeereid strsep setenv unsetenv strlcpy strlcat strtonum strtoll])
 AC_CHECK_FUNCS([getpid stat mkdir chmod])
 AC_CHECK_FUNCS([execv execvp])
 AC_CHECK_FUNCS([isascii])
@@ -368,30 +368,72 @@ str = gai_strerror(0);],[
                 AC_DEFINE(HAVE_CONST_GAI_STRERROR_PROTO, 1,
                 [Define if gai_strerror() returns const char *])])])
 
-AC_CACHE_CHECK([for C99 vsnprintf], uim_cv_HAVE_C99_VSNPRINTF,[
-AC_TRY_RUN([
-#include <sys/types.h>
-#include <stdarg.h>
-void foo(const char *format, ...) {
-	va_list ap;
-	int len;
-	char buf[5];
-
-	va_start(ap, format);
-	len = vsnprintf(0, 0, format, ap);
-	va_end(ap);
-	if (len != 5) exit(1);
-
-	if (snprintf(buf, 3, "hello") != 5 || strcmp(buf, "he") != 0) exit(1);
-
-	exit(0);
-}
-main() { foo("hello"); }
-],
-uim_cv_HAVE_C99_VSNPRINTF=yes,uim_cv_HAVE_C99_VSNPRINTF=no,uim_cv_HAVE_C99_VSNPRINTF=cross)])
-if test x"$uim_cv_HAVE_C99_VSNPRINTF" = x"yes"; then
-  AC_DEFINE(HAVE_C99_VSNPRINTF, 1, [define if you have vsnprintf with C99 semantics (set by configure)])
+# Check for broken snprintf
+if test "x$ac_cv_func_snprintf" = "xyes" ; then
+	AC_MSG_CHECKING([whether snprintf correctly terminates long strings])
+	AC_RUN_IFELSE(
+		[AC_LANG_SOURCE([[
+#include <stdio.h>
+int main(void){char b[5];snprintf(b,5,"123456789");exit(b[4]!='\0');}
+		]])],
+		[AC_MSG_RESULT(yes)],
+		[
+			AC_MSG_RESULT(no)
+			AC_DEFINE(BROKEN_SNPRINTF, 1,
+				[Define if your snprintf is busted])
+			AC_MSG_WARN([****** Your snprintf() function is broken, complain to your vendor])
+		],
+		[ AC_MSG_WARN([cross compiling: Assuming working snprintf()]) ]
+	)
 fi
+
+# If we don't have a working asprintf, then we strongly depend on vsnprintf
+# returning the right thing on overflow: the number of characters it tried to
+# create (as per SUSv3)
+if test "x$ac_cv_func_asprintf" != "xyes" && \
+   test "x$ac_cv_func_vsnprintf" = "xyes" ; then
+	AC_MSG_CHECKING([whether vsnprintf returns correct values on overflow])
+	AC_RUN_IFELSE(
+		[AC_LANG_SOURCE([[
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+int x_snprintf(char *str,size_t count,const char *fmt,...)
+{
+	size_t ret; va_list ap;
+	va_start(ap, fmt); ret = vsnprintf(str, count, fmt, ap); va_end(ap);
+	return ret;
+}
+int main(void)
+{
+	char x[1];
+	exit(x_snprintf(x, 1, "%s %d", "hello", 12345) == 11 ? 0 : 1);
+} ]])],
+		[AC_MSG_RESULT(yes)],
+		[
+			AC_MSG_RESULT(no)
+			AC_DEFINE(BROKEN_SNPRINTF, 1,
+				[Define if your snprintf is busted])
+			AC_MSG_WARN([****** Your vsnprintf() function is broken, complain to your vendor])
+		],
+		[ AC_MSG_WARN([cross compiling: Assuming working vsnprintf()]) ]
+	)
+fi
+
+# On systems where [v]snprintf is broken, but is declared in stdio,
+# check that the fmt argument is const char * or just char *.
+# This is only useful for when BROKEN_SNPRINTF
+AC_MSG_CHECKING([whether snprintf can declare const char *fmt])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
+	   int snprintf(char *a, size_t b, const char *c, ...) { return 0; }
+	   int main(void) { snprintf(0, 0, 0); } 
+    ]])],
+   [AC_MSG_RESULT(yes)
+    AC_DEFINE(SNPRINTF_CONST, [const],
+              [Define as const if snprintf() can declare const char *fmt])],
+   [AC_MSG_RESULT(no)
+    AC_DEFINE(SNPRINTF_CONST, [/* not const */])])
 
 AC_SEARCH_LIBS(dlfunc,dl,
   [

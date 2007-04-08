@@ -223,6 +223,58 @@ static const char *get_default_im_name(void)
   return engine;
 }
 
+static uim_bool
+check_dir(const char *dir)
+{
+  struct stat st;
+
+  if (dir == NULL)
+    return UIM_FALSE;
+
+  if (stat(dir, &st) < 0)
+    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+  else {
+    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
+    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
+  }
+}
+
+static char *
+get_ud_path(void)
+{
+  char *path, *home = NULL;
+  struct passwd *pw;
+
+  pw = getpwuid(getuid());
+  if (pw)
+    home = pw->pw_dir;
+
+  if (!home && !uim_helper_is_setugid())
+    home = getenv("HOME");
+
+  if (!home)
+    return NULL;
+
+  if (asprintf(&path, "%s/.uim.d", home) == -1)
+    return NULL; /* XXX: fatal */
+
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
+  }
+  free(path);
+
+  if (asprintf(&path, "%s/.uim.d/fep", home) == -1)
+    return NULL; /* XXX: fatal */
+
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
+  }
+
+  return path;
+}
+
 int main(int argc, char **argv)
 {
   /* command will be execed on pty */
@@ -230,7 +282,7 @@ int main(int argc, char **argv)
   char *engine;
   char *sock_path = NULL; /* Socket for backtick */
   int gnu_screen = FALSE;
-  char *env_buf;
+  char pid_str[30];
   struct attribute_tag attr_uim = {
     FALSE,     /* underline */
     FALSE,     /* standout */
@@ -241,10 +293,11 @@ int main(int argc, char **argv)
   };
   FILE *fp;
   const char *suffix = NULL;
-  const char *tmp_dir;
+  const char *uim_dir;
   const char *sty_str;
   const char *win_str;
   struct stat stat_buf;
+  const char *errstr;
 
   int op;
 
@@ -332,7 +385,11 @@ int main(int argc, char **argv)
         break;
 
       case 'w':
-        g_opt.statusline_width = atoi(optarg);
+        g_opt.statusline_width = strtonum(optarg, 1, 10000, &errstr);
+	if (errstr) {
+	  printf("'%s' is %s", optarg, errstr);
+	  return EXIT_FAILURE;
+	}
         if (g_opt.statusline_width <= 0) {
           usage();
           return EXIT_FAILURE;
@@ -408,8 +465,9 @@ opt_end:
   tcgetattr(g_win_in, &s_save_tios);
   setupterm(NULL, g_win_out, NULL);
 
-  if ((tmp_dir = getenv("TMP")) == NULL) {
-    tmp_dir = "/tmp";
+  if ((uim_dir = get_ud_path()) == NULL) {
+    sendline("uim-fep cannot make directory");
+    return EXIT_FAILURE;
   }
 
   sty_str = getenv("STY");
@@ -419,65 +477,62 @@ opt_end:
       puts("STY and WINDOW are not defined");
       return EXIT_FAILURE;
     }
-    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
-    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
+    snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s-%s", uim_dir, sty_str, win_str);
+    snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s-%s", uim_dir, sty_str, win_str);
     if (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
       char msg[100];
-      snprintf(msg, 100, "uim-fep is already running on window %s", win_str);
+      snprintf(msg, sizeof(msg), "uim-fep is already running on window %s", win_str);
       sendline(msg);
       return EXIT_FAILURE;
     }
     if (suffix != NULL) {
-      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s", tmp_dir, suffix);
-      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s", tmp_dir, suffix);
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s", uim_dir, suffix);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s", uim_dir, suffix);
     } else {
-      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
-      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s-%s-screen", uim_dir, sty_str, win_str);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s-%s-screen", uim_dir, sty_str, win_str);
     }
   } else {
     if (sty_str != NULL && win_str != NULL) {
-      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s-screen", tmp_dir, sty_str, win_str);
-      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s-screen", tmp_dir, sty_str, win_str);
+      snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s-%s-screen", uim_dir, sty_str, win_str);
+      snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s-%s-screen", uim_dir, sty_str, win_str);
       if (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
         printf("uim-fep is already running on window %s as filter\n", win_str);
         return EXIT_FAILURE;
       }
       if (suffix != NULL) {
-        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s", tmp_dir, suffix);
-        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s", tmp_dir, suffix);
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s", uim_dir, suffix);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s", uim_dir, suffix);
       } else {
-        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s-%s", tmp_dir, sty_str, win_str);
-        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s-%s", tmp_dir, sty_str, win_str);
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s-%s", uim_dir, sty_str, win_str);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s-%s", uim_dir, sty_str, win_str);
       }
     } else {
       if (suffix != NULL) {
-        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%s", tmp_dir, suffix);
-        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%s", tmp_dir, suffix);
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%s", uim_dir, suffix);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%s", uim_dir, suffix);
       } else {
         int file_suffix = 1;
         int pid = getpid();
 
-        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d", tmp_dir, pid);
-        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d", tmp_dir, pid);
+        snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%d", uim_dir, pid);
+        snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%d", uim_dir, pid);
         while (stat(s_path_getmode, &stat_buf) == 0 || stat(s_path_setmode, &stat_buf) == 0) {
-          snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/uim-fep-getmode-%d-%d", tmp_dir, pid, file_suffix);
-          snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/uim-fep-setmode-%d-%d", tmp_dir, pid, file_suffix);
+          snprintf(s_path_getmode, sizeof(s_path_getmode), "%s/getmode-%d-%d", uim_dir, pid, file_suffix);
+          snprintf(s_path_setmode, sizeof(s_path_setmode), "%s/setmode-%d-%d", uim_dir, pid, file_suffix);
           file_suffix++;
         }
       }
     }
   }
 
-  env_buf = malloc(30);
-  snprintf(env_buf, 30, "UIM_FEP_PID=%d", getpid());
-  putenv(env_buf);
+  snprintf(pid_str, sizeof(pid_str), "%d", getpid());
+  setenv("UIM_FEP_PID", pid_str, 1);
 
   if ((fp = fopen(s_path_getmode, "wt")) != NULL) {
     fclose(fp);
     unlink(s_path_getmode);
-    env_buf = malloc(strlen("UIM_FEP_GETMODE=") + strlen(s_path_getmode) + 1);
-    sprintf(env_buf, "UIM_FEP_GETMODE=%s", s_path_getmode);
-    putenv(env_buf);
+    setenv("UIM_FEP_GETMODE", s_path_getmode, 1);
   } else {
     s_path_getmode[0] = '\0';
   }
@@ -485,9 +540,7 @@ opt_end:
   unlink(s_path_setmode);
   if (mkfifo(s_path_setmode, 0600) != -1) {
     unlink(s_path_setmode);
-    env_buf = malloc(strlen("UIM_FEP_SETMODE=") + strlen(s_path_setmode) + 1);
-    sprintf(env_buf, "UIM_FEP_SETMODE=%s", s_path_setmode);
-    putenv(env_buf);
+    setenv("UIM_FEP_SETMODE", s_path_setmode, 1);
   } else {
     s_path_setmode[0] = '\0';
     s_setmode_fd = -1;
@@ -730,6 +783,7 @@ static void main_loop(void)
   int nfd;
   char *_clear_screen = cut_padding(clear_screen);
   char *_clr_eos = cut_padding(clr_eos);
+  const char *errstr;
 
   if (g_win_in > s_master) {
     if (g_win_in > s_setmode_fd) {
@@ -830,8 +884,10 @@ static void main_loop(void)
 
         for (start = end; start > 0 && isdigit((unsigned char)buf[start - 1]); --start);
         buf[end + 1] = '\0';
-        mode = atoi(&buf[start]);
-        if (mode != uim_get_current_mode(g_context)) {
+        mode = strtonum(&buf[start], 0, uim_get_nr_modes(g_context) - 1, &errstr);
+	if (errstr) {
+	  debug2(("error: '%s' is %s\n", &buf[start], errstr));
+	} else if (mode != uim_get_current_mode(g_context)) {
           debug2(("mode change %d\n", mode));
           uim_set_mode(g_context, mode);
           /* callbacks_set_mode(uim_get_current_mode(g_context)); */

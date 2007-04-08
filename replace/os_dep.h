@@ -47,6 +47,9 @@
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
+#if HAVE_STDARG_H
+#include <stdarg.h>
+#endif
 #include <limits.h>
 
 #ifdef __cplusplus
@@ -85,6 +88,36 @@ size_t strlcat(char *dst, const char *src, size_t siz);
 #endif
 
 #include "fake-rfc2553.h"
+
+#ifndef HAVE_VASPRINTF
+#define vasprintf	uim_vasprintf
+int vasprintf(char **ret, const char *format, va_list ap);
+#endif
+
+#ifndef HAVE_ASPRINTF
+#define asprintf	uim_asprintf
+int asprintf(char **ret, const char *format, ...);
+#endif
+
+#if !defined(HAVE_VSNPRINTF) || defined(BROKEN_SNPRINTF)
+#define vsnprintf	uim_vsnprintf
+int vsnprintf(char *str, size_t size, const char *format, va_list ap);
+#endif
+
+#if !defined(HAVE_SNPRINTF) || defined(BROKEN_SNPRINTF)
+#define snprintf	uim_snprintf
+int snprintf(char *str, size_t size, const char *format, ...);
+#endif
+
+#ifndef HAVE_STRTOLL
+#define strtoll	uim_strtoll
+long long strtoll(const char *, char **, int);
+#endif
+
+#ifndef HAVE_STRTONUM
+#define strtonum	uim_strtonum
+long long strtonum(const char *numstr, long long minval, long long maxval, const char **errstrp);
+#endif
 
 #ifdef __cplusplus
 }
