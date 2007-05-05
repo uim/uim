@@ -792,80 +792,22 @@
 	(uim-wait-recv serial))))
 
 
-;;
-;; Save face property
-;;
-(defun uim-get-face-list (start end)
+;; for XEmacs
+(defun uim-overwrite-font-face (start end)
   (let ((facelist '()) tail face)
     (catch 'face-loop
       (while t
 	(setq tail
 	      (next-single-property-change start 'face (current-buffer) end))
 	(if (setq face (get-text-property start 'face))
-	    (setq uim-facelist (cons (list face start tail) uim-facelist)))
+	    (if (atom face)
+		(put-text-property start tail 'face 
+				   (cons face nil))))
 	(setq start tail)
 	(if (= start end)
 	    (throw 'face-loop t))))
     )
   )
-
-
-
-;;
-;; Save face property of the window
-;;   Save only displayed region
-(defun uim-get-facelist-window (win)
-  (select-window win)
-  (let (end)
-    (save-excursion
-      (goto-char (window-end nil t))
-      (vertical-motion (window-height))
-      (setq end (point)))
-    (save-excursion
-      (uim-get-face-list (window-start) end)
-      )
-    ))
-
-
-;;
-;; Save face property of windows which are displaying the current buffer.
-;;
-(defun uim-get-facelist-buffer ()
-  (save-selected-window
-    (mapcar 'uim-get-facelist-window
-	    (get-buffer-window-list (current-buffer) t 'visible))
-    uim-facelist))
-
-
-;;
-;; Disable font-lock mode
-;;    This function should be called only when the font-lock-mode is 
-;;   already in use
-;;
-(defun uim-disable-font-lock-mode ()
-  ;; save and disable font-lock-mode
-  (setq uim-font-lock-mode font-lock-mode)
-  (setq uim-font-lock-verbose font-lock-verbose)
-  (when font-lock-mode
-    (font-lock-mode 0)
-    (setq font-lock-verbose nil)))
-
-
-;;
-;; Eable font-lock mode
-;;
-(defun uim-enable-font-lock-mode ()
-  (when uim-font-lock-mode
-    (font-lock-mode uim-font-lock-mode)
-    (setq font-lock-verbose uim-font-lock-verbose)))
-
-
-;;
-;; Restore face property
-;;
-(defun uim-put-face (facelist)
-  (put-text-property (nth 1 facelist) (nth 2 facelist)
-		     'face (car facelist)))
 
 
 ;;
@@ -888,33 +830,30 @@
      uim-candidate-selected-face
      uim-candidate-nth-face)))
 
-;;
-;; Lock appearance of buffer
-;;
+
 (defun uim-freeze-buffer ()
-  (let (facelists)
+  (when (not uim-buffer-frozen)
+    (setq uim-after-change-functions after-change-functions)
+    (setq after-change-functions nil)
 
-    (setq uim-facelist nil)
-    (uim-get-facelist-buffer)
-    ;(setq facelists (uim-get-face-list 1 (point-max)))
-    (if (memq 'font-lock features)	     
-	(progn
-	  (uim-disable-font-lock-mode)
-	  (mapcar 'uim-put-face uim-facelist)))
-    )
-  (setq uim-buffer-frozen t))
+    (when (boundp 'fontification-functions)
+      (setq uim-fontification-functions fontification-functions)
+      (setq fontification-functions nil))
 
+    (setq uim-buffer-frozen t))
+  )
 
 
-;;
-;; Unlock appearance of buffer
-;;
 (defun uim-unfreeze-buffer ()
-  (let (facelists)
-    (if (memq 'font-lock features)
-	(uim-enable-font-lock-mode))
-    )
-  (setq uim-buffer-frozen nil))
+  (when uim-buffer-frozen ;; avoid multiple unfreeze 
+    (setq after-change-functions uim-after-change-functions)
+    (setq uim-after-change-functions nil)
+
+    (when (boundp 'fontification-functions)
+      (setq fontification-functions uim-fontification-functions)
+      (setq uim-fontification-functions nil))
+
+    (setq uim-buffer-frozen nil)))
 
  
 
@@ -1104,8 +1043,8 @@
 
 (defun uim-leave-preedit-mode ()
   (uim-disable-preedit-keymap)
-  (uim-unfreeze-buffer)
   (setq buffer-read-only uim-buffer-read-only)
+  (uim-unfreeze-buffer)
   )
 
 

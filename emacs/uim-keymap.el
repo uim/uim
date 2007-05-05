@@ -116,7 +116,7 @@
 
   ;; for uim-preedit-map
   ;;  menu-bar/tool-bar operation must be avoided
-  (define-key uim-preedit-map [vertical-scroll-bar] 'ignore)
+  (define-key uim-preedit-map [vertical-scroll-bar] nil)
   (define-key uim-preedit-map [mode-line] nil)
   (define-key uim-preedit-map [vertical-line] nil) 
 

@@ -382,17 +382,13 @@ displayed at the echo area.")
 
 (uim-deflocalvar uim-preedit-keymap-enabled nil)
 
-;; save font-lock mode
-(uim-deflocalvar uim-font-lock-mode nil)
-(uim-deflocalvar uim-font-lock-verbose nil)
+(uim-deflocalvar uim-after-change-functions nil)
+(uim-deflocalvar uim-fontification-functions nil)
 
 ;; save top point of current window to lock scroll
 (uim-deflocalvar uim-window-force-scrolled nil)
 
 (uim-deflocalvar uim-buffer-read-only nil)
-
-;; list of font faces for emulating font-lock mode looks
-(uim-deflocalvar uim-facelist nil)
 
 ;; save current menubar temporally for XEmacs
 (uim-deflocalvar uim-menubar-temp nil)

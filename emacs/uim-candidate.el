@@ -68,6 +68,11 @@
     (setq mark-base (point-marker))
     ;;(uim-debug (format "before: %s" (marker-position mark-base)))
 
+    ;; save font-lock face
+    (when uim-xemacs
+      (uim-overwrite-font-face uim-candidate-original-start
+			       uim-candidate-original-end))
+
     ;; save original string
     (setq uim-candidate-original-str
 	  (buffer-substring uim-candidate-original-start
