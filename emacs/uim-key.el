@@ -141,7 +141,10 @@
     (unwind-protect
 	(progn
 	  (setq uim-mode nil)
-	  (command-execute keyvec))
+	  (setq this-command keyvec)
+	  (run-hooks 'pre-command-hook)
+	  (command-execute this-command)
+	  )
       (setq uim-mode mode))))
 
 
@@ -219,9 +222,14 @@
 		     (call-interactively bind)
 		     (uim-concat-undo))
 		 (setq this-command bind)
-		 (command-execute bind) 
+		 (uim-debug (format "this-command is %s" this-command))
+		 (setq last-command-char (aref keyvec 0))
+		 (run-hooks 'pre-command-hook)
+		 (command-execute this-command) 
+
 		 (uim-flush-concat-undo)
-		 ))
+		 )
+	       )
 	      (t
 	       (uim-flush-concat-undo)
 	       (if uim-xemacs
