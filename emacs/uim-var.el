@@ -362,8 +362,6 @@ displayed at the echo area.")
 (uim-deflocalvar uim-candidate-original-start nil)
 (uim-deflocalvar uim-candidate-original-end nil)
 (uim-deflocalvar uim-candidate-end 0)
-;; list of overlays of candidate string
-(uim-deflocalvar uim-candidate-overlays '())
 
 (uim-deflocalvar uim-candidate-cursor nil)
 
