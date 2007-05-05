@@ -568,10 +568,8 @@
 		 (setq done t)
 		 )
 		((functionp fmap)
-		 ;; function: Where should I call this function???
-		 ;;   Perhaps, this part doesn't work.
 		 (uim-debug (format "function: %s" (vconcat merged-list)))
-		 (setq fmap (fmap nil))
+		 (setq fmap (funcall fmap nil))
 		 (if (vectorp fmap)
 		     (setq uim-stacked-key-vector (vconcat stacked-list fmap))
 		   )
