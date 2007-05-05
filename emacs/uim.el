@@ -1038,34 +1038,34 @@
 		       (or (eq (car-safe (aref sendkey 0)) 'menu-bar)
 			   (eq (car-safe (aref sendkey 0)) 'tool-bar)))
 		  (uim-do-send-recv-cmd (format "%d NOP" uim-context-id))
-	  (if (not bypass)
-	      (uim-do-send-recv-cmd (format "%d %s" uim-context-id sendkey))
-	    (if mouse
-		(uim-process-mouse-event event)
-	      (uim-process-keyvec uim-last-key-vector count)
+		(if (not bypass)
+		    (uim-do-send-recv-cmd (format "%d %s" uim-context-id sendkey))
+		  (if mouse
+		      (uim-process-mouse-event event)
+		    (uim-process-keyvec uim-last-key-vector count)
 
-	      ;; display "ESC ESC ESC" or something
+		    ;; display "ESC ESC ESC" or something
 
-	      (if uim-show-keystrokes
-		  (let (message-log-max keymsg)
-		    (setq keymsg (if uim-prefix-arg-vector
-				     (concat (key-description uim-prefix-arg-vector)
-					     " ")
-				   nil))
-		    (mapcar '(lambda (x)
-			       (setq keymsg (concat keymsg
-						(key-description (vector x))
-						" ")))
-			    (append uim-last-key-vector nil))
-		    (message keymsg))
-		)
+		    (if uim-show-keystrokes
+			(let (message-log-max keymsg)
+			  (setq keymsg (if uim-prefix-arg-vector
+					   (concat (key-description uim-prefix-arg-vector)
+						   " ")
+					 nil))
+			  (mapcar '(lambda (x)
+				     (setq keymsg (concat keymsg
+							  (key-description (vector x))
+							  " ")))
+				  (append uim-last-key-vector nil))
+			  (message keymsg))
+		      )
 		    )))
 	  
 	    (progn
-	  (uim-debug "reset prefix variables")
-	  (setq uim-prefix-arg nil)
-	  (setq uim-prefix-arg-vector nil)
-	  (setq uim-prefix-ignore-next nil)
+	      (uim-debug "reset prefix variables")
+	      (setq uim-prefix-arg nil)
+	      (setq uim-prefix-arg-vector nil)
+	      (setq uim-prefix-ignore-next nil)
 	      )
 	    )
 
