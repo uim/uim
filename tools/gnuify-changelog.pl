@@ -10,16 +10,33 @@
 # $ svn log | /path/to/gnuify-changelog.pl > ChangeLog
 
 %hackers = ( "tkng"     => 'TOKUNAGA Hiroyuki <tkng@xem.jp>',
+
 	     "yusuke"   => 'Yusuke TABATA <yusuke@w5.dion.ne.jp>',
+
 	     "yamaken"  => 'YAMAMOTO Kengo / YamaKen <yamaken@bp.iij4u.or.jp>',
+	     "yamakenz" => 'YAMAMOTO Kengo / YamaKen <yamaken@bp.iij4u.or.jp>',
+
 	     "omote"    => 'Masahito Omote <omote@utyuuzin.net>',
+	     "omote.masahito" => 'Masahito Omote <omote@utyuuzin.net>',
+
 	     "kzk"      => 'kzk <mover@hct.zaq.ne.jp>',
+
 	     "makeinu"  => 'Takuro Ashie <ashie@homa.ne.jp>',
+	     "takuro.ashie" => 'Takuro Ashie <ashie@homa.ne.jp>',
+
 	     "ekato"    => 'Etsushi Kato <ek.kato@gmail.com>',
+	     "ek.kato"  => 'Etsushi Kato <ek.kato@gmail.com>',
+
 	     "yamamoto" => 'Masanari Yamamoto <h013177b@ice.nuie.nagoya-u.ac.jp>',
+
 	     "jun0"     => 'Jun Inoue <jun.lambda@gmail.com>',
+	     "jun.lambda" => 'Jun Inoue <jun.lambda@gmail.com>',
+
 	     "nosuke"   => 'Konosuke Watanabe <sasugaanija@gmail.com>',
+	     "sasugaanija" => 'Konosuke Watanabe <sasugaanija@gmail.com>',
+
 	     "jhpark"   => 'Jae-hyeon Park <jhyeon@gmail.com>',
+	     "jhyeon"   => 'Jae-hyeon Park <jhyeon@gmail.com>',
 );
 
 $parse_next_line = 0;
