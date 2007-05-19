@@ -37,6 +37,8 @@
 
 	     "jhpark"   => 'Jae-hyeon Park <jhyeon@gmail.com>',
 	     "jhyeon"   => 'Jae-hyeon Park <jhyeon@gmail.com>',
+
+	     "deton.kih" => 'KIHARA Hideto <deton@m1.interq.or.jp>',
 );
 
 $parse_next_line = 0;
