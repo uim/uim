@@ -33,34 +33,6 @@
 
 ;; key defs
 
-;;; TUT-Codeモードに入るキー(CTRL-\)かどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがTUT-Codeモードに入るキーの場合。
-;;;	    #f: そうでない場合。 
-;(define-key tutcode-on-key? "<Control>\\")
-
-;;; TUT-Codeモードを抜けるキー(CTRL-\)かどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがTUT-Codeモードを抜けるキーの場合。
-;;;	    #f: そうでない場合。 
-;(define-key tutcode-off-key? "<Control>\\")
-
-;;; ひらがな/カタカナモードの切り替えを行うキー(')かどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがひらがな/カタカナモードの切り替えキーの場合。
-;;;	    #f: そうでない場合。 
-;(define-key tutcode-kana-toggle-key? "'")
-
-;;; Backspaceキーかどうかを判定する。
-;;; @param key 判定するキー
-;;; @param key-state コントロールキー等の状態
-;;; @return #t: keyがBackspaceキーの場合。
-;;;	    #f: そうでない場合。 
-;(define-key tutcode-backspace-key? 'generic-backspace-key?)
-
 (define-custom-group 'tutcode-keys1
 		     (N_ "TUT-Code key bindings 1")
 		     (N_ "long description will be here."))
@@ -87,9 +59,62 @@
 	       (N_ "[TUT-Code] toggle hiragana/katakana mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-mazegaki-start-sequence "alj"
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] mazegaki conversion mode")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-bushu-start-sequence "ala"
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] bushu conversion mode")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-begin-conv-key '(generic-begin-conv-key)
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] begin conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-commit-key '(generic-commit-key)
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] commit")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-cancel-key '("<IgnoreCase><Control>u" generic-cancel-key)
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] cancel")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-next-candidate-key '(generic-next-candidate-key)
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] next candidate")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-prev-candidate-key '("delete" generic-prev-candidate-key)
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] previous candidate")
+	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-backspace-key '(generic-backspace-key)
                '(tutcode-keys2)
 	       '(key)
 	       (N_ "[TUT-Code] backspace")
 	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-return-key '(generic-return-key)
+               '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] return")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-vi-escape-key '("escape" "<Control>[")
+               '(tutcode-keys2)
+               '(key)
+               (N_ "[TUT-Code] ESC keys on vi-cooperative mode")
+               (N_ "long description will be here"))
