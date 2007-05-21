@@ -250,12 +250,13 @@
 ;;; @param key キーの文字列
 (define (tutcode-push-key! pc key)
   (let ((res (rk-push-key! (tutcode-context-rk-context pc) key)))
-    (if
-      (and
-        (not (null? (cadr res)))
-        (tutcode-context-katakana-mode? pc))
-      (cadr res)
-      (car res))))
+    (and res
+      (if
+        (and
+          (not (null? (cdr res)))
+          (tutcode-context-katakana-mode? pc))
+        (cadr res)
+        (car res)))))
 
 ;;; 変換中状態をクリアする。
 ;;; @param pc コンテキストリスト
@@ -610,10 +611,10 @@
           (tutcode-bushu-compose-sub c1 c2)))
       (let* ((decomposed1 (tutcode-bushu-decompose c1))
              (decomposed2 (tutcode-bushu-decompose c2))
-             (tc11 (car decomposed1))
-             (tc12 (cadr decomposed1))
-             (tc21 (car decomposed2))
-             (tc22 (cadr decomposed2))
+             (tc11 (and decomposed1 (car decomposed1)))
+             (tc12 (and decomposed1 (cadr decomposed1)))
+             (tc21 (and decomposed2 (car decomposed2)))
+             (tc22 (and decomposed2 (cadr decomposed2)))
              ;; 合成後の文字が、合成前の2つの部首とは異なる
              ;; 新しい文字であることを確認する。
              ;; (string=?だと#fがあったときにエラーになるのでequal?を使用)
@@ -678,26 +679,31 @@
 ;;; @param c2 2番目の部首
 ;;; @return 合成後の文字。合成できなかったときは#f
 (define (tutcode-bushu-compose c1 c2)
-  (car (cadr (rk-lib-find-seq (list c1 c2) tutcode-bushudic))))
+  (let ((seq (rk-lib-find-seq (list c1 c2) tutcode-bushudic)))
+    (and seq
+      (car (cadr seq)))))
 
 ;;; 部首合成変換:等価文字を探して返す。
 ;;; @param c 検索対象の文字
 ;;; @return 等価文字。等価文字が見つからなかったときは元の文字自身
 (define (tutcode-bushu-alternative c)
-  (or
-    (cadr (assoc c tutcode-bushudic-altchar))
-    c))
+  (let ((alt (assoc c tutcode-bushudic-altchar)))
+    (or
+      (and alt (cadr alt))
+      c)))
 
 ;;; 部首合成変換:文字を2つの部首に分解する。
 ;;; @param c 分解対象の文字
-;;; @return 分解してできた2つの部首のリスト。分解できなかったときは()
+;;; @return 分解してできた2つの部首のリスト。分解できなかったときは#f
 (define (tutcode-bushu-decompose c)
-  (car
-    (caar
-      (filter
-        (lambda (elem)
-          (string=? c (car (cadr elem))))
-        tutcode-bushudic))))
+  (let ((lst
+          (filter
+            (lambda (elem)
+              (string=? c (car (cadr elem))))
+            tutcode-bushudic)))
+    (and
+      (not (null? lst))
+      (car (caar lst)))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param pc コンテキストリスト
@@ -963,11 +969,12 @@
           (lambda (elem)
             (let* ((seq (caar elem))
                    (kanji (cadr elem))
-                   (pair (cadr (rk-lib-find-seq seq tutcode-rule))))
-              (if (pair? pair)
+                   (curseq (rk-lib-find-seq seq tutcode-rule))
+                   (pair (and curseq (cadr curseq))))
+              (if (and pair (pair? pair))
                 (begin
                   (set-car! pair (car kanji))
-                  (if (not (null? (cadr kanji)))
+                  (if (not (null? (cdr kanji)))
                     (if (< (length pair) 2)
                       (set-cdr! pair (list (cadr kanji)))
                       (set-car! (cdr pair) (cadr kanji)))))
