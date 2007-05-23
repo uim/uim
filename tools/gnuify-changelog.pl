@@ -39,6 +39,8 @@
 	     "jhyeon"   => 'Jae-hyeon Park <jhyeon@gmail.com>',
 
 	     "deton.kih" => 'KIHARA Hideto <deton@m1.interq.or.jp>',
+
+	     "iratqq"   => 'IWATA Ray <iwata AT quasiquote.org>',
 );
 
 $parse_next_line = 0;
