@@ -48,6 +48,12 @@
 #define OK 0
 
 static void *uim_init_internal(void *dummy);
+struct uim_get_candidate_args {
+  uim_context uc;
+  int index;
+  int enum_hint;
+};
+static void *uim_get_candidate_internal(struct uim_get_candidate_args *args);
 static uim_lisp get_nth_im(uim_context uc, int nth);
 
 static uim_bool uim_initialized;
@@ -295,17 +301,31 @@ uim_set_candidate_selector_cb(uim_context uc,
 uim_candidate
 uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 {
-  uim_candidate cand;
-  uim_lisp triple;
-  const char *str, *head, *ann;
+  struct uim_get_candidate_args args;
 
-  assert(uim_scm_gc_protected_contextp());
+  assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(index >= 0);
   assert(accel_enumeration_hint >= 0);
 
+  args.uc = uc;
+  args.index = index;
+  args.enum_hint = accel_enumeration_hint;
+
+  return (uim_candidate)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_get_candidate_internal, &args);
+}
+
+static void *
+uim_get_candidate_internal(struct uim_get_candidate_args *args)
+{
+  uim_context uc;
+  uim_candidate cand;
+  uim_lisp triple;
+  const char *str, *head, *ann;
+
+  uc = args->uc;
   triple = uim_scm_callf("get-candidate", "pii",
-                         uc, index, accel_enumeration_hint);
+			 uc, args->index, args->enum_hint);
 
   cand = malloc(sizeof(*cand));
   if (cand) {
@@ -320,7 +340,7 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
     }
   }
 
-  return cand;
+  return (void *)cand;
 }
 
 const char *
