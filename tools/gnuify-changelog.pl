@@ -40,7 +40,7 @@
 
 	     "deton.kih" => 'KIHARA Hideto <deton@m1.interq.or.jp>',
 
-	     "iratqq"   => 'IWATA Ray <iwata AT quasiquote.org>',
+	     "iratqq"   => 'IWATA Ray <iwata@quasiquote.org>',
 );
 
 $parse_next_line = 0;
