@@ -46,6 +46,8 @@
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
 
+static uim_lisp protected;
+
 /* define constants as procedure to ensure unmodifiable */
 static uim_lisp
 sys_libdir()
@@ -447,12 +449,15 @@ uim_get_language_name_from_locale(const char *locale)
 {
   uim_lisp lang_code, lang_name;
 
+  assert(uim_scm_gc_any_contextp());
   assert(locale);
 
   /* Performs adhoc "zh_TW:zh_HK" style locale handling as temporary
    * specification of this function for backward compatibility. */
-  lang_code = uim_scm_callf("langgroup-primary-lang-code", "s", locale);
-  lang_name = uim_scm_callf("lang-code->lang-name", "o", lang_code);
+  protected =
+    lang_code = uim_scm_callf("langgroup-primary-lang-code", "s", locale);
+  protected =
+    lang_name = uim_scm_callf("lang-code->lang-name", "o", lang_code);
   return uim_scm_refer_c_str(lang_name);
 }
 
@@ -461,15 +466,19 @@ uim_get_language_code_from_language_name(const char *language_name)
 {
   uim_lisp lang_code;
 
+  assert(uim_scm_gc_any_contextp());
   assert(language_name);
 
-  lang_code = uim_scm_callf("lang-name->lang-code", "s", language_name);
+  protected =
+    lang_code = uim_scm_callf("lang-name->lang-code", "s", language_name);
   return uim_scm_refer_c_str(lang_code);
 }
 
 static uim_lisp
 setugidp(void)
 {
+  assert(uim_scm_gc_any_contextp());
+
   if (uim_issetugid()) {
     return uim_scm_t();
   }
@@ -479,6 +488,9 @@ setugidp(void)
 void
 uim_init_util_subrs(void)
 {
+  protected = uim_scm_f();
+  uim_scm_gc_protect(&protected);
+
   uim_scm_init_subr_0("sys-libdir", sys_libdir);
   uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
   uim_scm_init_subr_0("sys-datadir", sys_datadir);
