@@ -63,6 +63,8 @@ static struct ic_ {
   int  nr_candidates;
 } *ic_array;
 
+static MInputMethod *im_instance(int nth);
+
 /* Utility function */
 static char *
 m17nlib_utf8_find_next_char(const char *p)
@@ -199,16 +201,16 @@ init_m17nlib()
   }
 
   for (elm = imlist; mplist_key(elm) != Mnil; elm = mplist_next(elm)) {
-    MDatabase *mdb = mplist_value(elm);
-    MSymbol *tag = mdatabase_tag(mdb); /* tag[1]: lang, tag[2]: name */
+    MDatabase *mdb;
+    MSymbol *tag, lang, imname;
 
-    if (tag[1] != Mnil) {
-      MInputMethod *im = minput_open_im(tag[1], tag[2], NULL);
+    mdb = mplist_value(elm);
+    tag = mdatabase_tag(mdb);
+    lang = tag[1];
+    imname = tag[2];
 
-      if (im)
-	pushback_input_method(im, msymbol_name(im->language),
-			      msymbol_name(im->name));
-    }
+    if (lang != Mnil)
+      pushback_input_method(NULL, msymbol_name(lang), msymbol_name(imname));
   }
 #if 0
   register_callbacks();
@@ -476,7 +478,10 @@ get_input_method_short_desc(uim_lisp nth_)
     MInputMethod *im;
     MText *desc;
 
-    im = im_array[nth].im;
+    im = im_instance(nth);
+    if (!im)
+      return uim_scm_make_str(N_("m17n library IM open error"));
+
     desc = minput_get_description(im->language, im->name);
     if (desc) {
       int i, len;
@@ -523,6 +528,21 @@ get_input_method_short_desc(uim_lisp nth_)
 }
 
 static MInputMethod *
+im_instance(int nth)
+{
+  struct im_ *ent;
+
+  if (!(0 <= nth && nth < nr_input_methods))
+    return NULL;
+
+  ent = &im_array[nth];
+  if (!ent->im)
+    ent->im = minput_open_im(msymbol(ent->lang), msymbol(ent->name), NULL);
+
+  return ent->im;
+}
+
+static MInputMethod *
 find_im_by_name(const char *name)
 {
   int i;
@@ -542,7 +562,7 @@ find_im_by_name(const char *name)
       snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
 
     if (!strcmp(im_name, buf))
-      return im_array[i].im;
+      return im_instance(i);
   }
 
   return NULL;
