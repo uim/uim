@@ -642,6 +642,8 @@
        ((not (equal? (prime-context-modification context)
 		     (safe-cdr (assoc 'conversion-line prev-data))))
 	'cursor)
+       (else
+        #f)
        ))))
 
 
