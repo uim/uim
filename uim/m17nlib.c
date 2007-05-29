@@ -203,13 +203,15 @@ init_m17nlib()
   for (elm = imlist; mplist_key(elm) != Mnil; elm = mplist_next(elm)) {
     MDatabase *mdb;
     MSymbol *tag, lang, imname;
+    uim_bool is_complete_im;
 
     mdb = mplist_value(elm);
     tag = mdatabase_tag(mdb);
     lang = tag[1];
     imname = tag[2];
+    is_complete_im = (lang != Mnil && imname != Mnil);  /* [uim-ja 30] */
 
-    if (lang != Mnil)
+    if (is_complete_im)
       pushback_input_method(NULL, msymbol_name(lang), msymbol_name(imname));
   }
 #if 0
