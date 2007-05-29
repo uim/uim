@@ -211,9 +211,10 @@ init_m17nlib()
     imname = tag[2];
     is_complete_im = (lang != Mnil && imname != Mnil);  /* [uim-ja 30] */
 
-    /* pass NULL as IM to enable lazy instantiation */
-    if (is_complete_im)
+    if (is_complete_im) {
+      /* pass NULL as IM to enable lazy instantiation */
       pushback_input_method(NULL, msymbol_name(lang), msymbol_name(imname));
+    }
   }
 #if 0
   register_callbacks();
