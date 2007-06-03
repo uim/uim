@@ -62,19 +62,6 @@
     (shift control meta)  
     ))
 
-
-(defconst uim-emacs-prefix-keys
-  '(help-command
-    2C-command
-    Control-X-prefix
-    mode-specific-command-prefix
-    ctl-x-4-prefix
-    ctl-x-5-prefix
-    vc-prefix-map
-    facemenu-keymap
-    ))
-
-
 (defun uim-mouse-set-point (event)
   (interactive "e")
   (mouse-minibuffer-check event)
@@ -139,17 +126,6 @@
   (setq uim-mode-map (make-sparse-keymap))
   (setq uim-preedit-map (make-sparse-keymap))
 
-
-  ;; copy special keys
-  (let ((prefixs uim-emacs-prefix-keys))
-    (while prefixs
-      (let ((prefix-keys (where-is-internal (car prefixs))))
-	(while prefix-keys
-	  (define-key uim-mode-map (car prefix-keys) (car prefixs))
-	  (setq prefix-keys (cdr prefix-keys))))
-      (setq prefixs (cdr prefixs))))
-
-  
   (define-prefix-command 'uim-escape-map)
 
   ;; set default key-binds

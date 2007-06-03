@@ -137,15 +137,27 @@
 
 
 (defun uim-command-execute (keyvec)
-  (let ((mode uim-mode))
+  (uim-debug (format "uim-command-execute: %s" keyvec))
+  (let (this-command-keys-original 
+	(mode uim-mode))
+
+    (fset 'this-command-keys-original
+	  (symbol-function 'this-command-keys))
+
     (unwind-protect
 	(progn
+	  (fset 'this-command-keys 
+		'(lambda ()
+		   keyvec))
 	  (setq uim-mode nil)
 	  (setq this-command keyvec)
 	  (run-hooks 'pre-command-hook)
 	  (command-execute this-command)
 	  )
-      (setq uim-mode mode))))
+      (progn
+	(fset 'this-command-keys 
+	      (symbol-function 'this-command-keys-original))
+	(setq uim-mode mode)))))
 
 
 (defun uim-blink-match (char)
@@ -177,7 +189,8 @@
 (defun uim-process-keyvec (keyvec &optional count)
   (let ((bind (uim-getbind keyvec))
 	keyvectmp)
-
+    (uim-debug (format "uim-process-keyvec"))
+    
     (if uim-emacs
 	;; for transient-mark-mode
 	(setq deactivate-mark nil))
@@ -215,20 +228,61 @@
 	       )
 	      
 	      ((commandp bind)
-	       (if (eq bind 'self-insert-command)
-		   (progn
-		     (setq this-command bind)
-		     (setq last-command-char (aref keyvec 0))
-		     (call-interactively bind)
-		     (uim-concat-undo))
-		 (setq this-command bind)
-		 (uim-debug (format "this-command is %s" this-command))
-		 (setq last-command-char (aref keyvec 0))
-		 (run-hooks 'pre-command-hook)
-		 (command-execute this-command) 
 
-		 (uim-flush-concat-undo)
+	       (let (this-command-keys-original)
+		 (fset 'this-command-keys-original
+		       (symbol-function 'this-command-keys))
+
+		 (unwind-protect
+		     (progn
+		       (fset 'this-command-keys 
+			     '(lambda ()
+				keyvec))
+
+		       (if (eq bind 'self-insert-command)
+			   (progn
+			     (setq this-command bind)
+			     (setq last-command-char (aref keyvec 0))
+			     (call-interactively bind)
+			     (uim-concat-undo))
+			 (setq this-command bind)
+			 (uim-debug (format "this-command is %s" this-command))
+			 (setq last-command-char (aref keyvec 0))
+
+			 (run-hooks 'pre-command-hook)
+			 (command-execute this-command) 
+
+			 (uim-flush-concat-undo)
+			 )
+		       )
+		   (fset 'this-command-keys 
+			 (symbol-function 'this-command-keys-original))
+		   )
 		 )
+	       )
+	      ((or (and uim-emacs
+			(= help-char (aref (uim-last-onestroke-key keyvec) 0)))
+		   (and uim-xemacs
+			(equal (uim-xemacs-make-event 
+				(uim-convert-char-to-symbolvector (key-description help-char)))
+			       (aref (uim-last-onestroke-key keyvec) 0))))
+	       (uim-debug "help-char")
+	       (let (this-command-keys-original 
+		     (mode uim-mode))
+		 (fset 'this-command-keys-original
+		       (symbol-function 'this-command-keys))
+		 (unwind-protect
+		     (progn
+		       (fset 'this-command-keys 
+			     '(lambda ()
+				keyvec))
+		       (setq uim-mode nil)
+		       (funcall prefix-help-command)
+		       )
+		   (progn
+		     (fset 'this-command-keys 
+			   (symbol-function 'this-command-keys-original))
+		     (setq uim-mode mode))))
 	       )
 	      (t
 	       (uim-flush-concat-undo)
