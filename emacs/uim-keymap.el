@@ -180,7 +180,7 @@
 	 (define-key uim-mode-map [27] 'uim-process-input)
 	 )
 
-	((and uim-emacs (= emacs-major-version 22)) ;;; GNU Emacs-22.x
+	((and uim-emacs (>= emacs-major-version 22)) ;;; GNU Emacs-22 or later
 	 (define-key uim-mode-map [t] 'uim-process-input)
 	 (define-key uim-preedit-map [t] 'uim-process-input)
 
@@ -227,7 +227,7 @@
       (setq uim-minor-mode-map-alist minor-mode-map-alist)
       (setq minor-mode-map-alist (list (assq 'uim-mode minor-mode-map-alist)))
 
-      (when (and uim-emacs (= emacs-major-version 22)) 
+      (when (and uim-emacs (>= emacs-major-version 22)) 
 	(setq uim-emulation-mode-map-alists emulation-mode-map-alists)
 	(setq emulation-mode-map-alists nil)))
 
@@ -249,7 +249,7 @@
       (setq minor-mode-map-alist uim-minor-mode-map-alist)
       (setq uim-minor-mode-map-alist nil)
 
-      (when (and uim-emacs (= emacs-major-version 22)) 
+      (when (and uim-emacs (>= emacs-major-version 22)) 
 	(setq emulation-mode-map-alists uim-emulation-mode-map-alists)
 	(setq uim-emulation-mode-map-alists nil)))
 
