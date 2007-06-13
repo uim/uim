@@ -59,17 +59,18 @@
 (define-key prime-escape-key?         '("escape" "<Control>["))
 (define-key prime-space-key?          '(" "))
 
+(define prime-app-mode-end-stroke-list #f)
 ;;;; If you're a Vi user, modify the lines below.
 (if prime-custom-app-mode-vi?
     (begin
       ;; For Vi users
       (define-key prime-app-mode-start-key? prime-escape-key?)
-      (define prime-app-mode-end-stroke-list
-	'("i" "I" "a" "A" "o" "O" "C" "s" "S" ("c" . ("l" "w" "e" "c" "G")))))
+      (set! prime-app-mode-end-stroke-list
+	    '("i" "I" "a" "A" "o" "O" "C" "s" "S" ("c" . ("l" "w" "e" "c" "G")))))
     (begin
       ;; Default
       (define-key prime-app-mode-start-key?  #f)
-      (define prime-app-mode-end-stroke-list #f)))
+      (set! prime-app-mode-end-stroke-list #f)))
 
 (define prime-cand-select-key?
   (lambda (key key-state)

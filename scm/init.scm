@@ -41,9 +41,10 @@
 
 ;; SIOD compatibility for SigScheme
 (if (not (symbol-bound? 'allocate-heap))
-    (define allocate-heap
-      (lambda ()
-        (%%prealloc-heaps 0))))
+    (eval '(define allocate-heap
+	     (lambda ()
+	       (%%prealloc-heaps 0)))
+	  (interaction-environment)))
 
 ;; Performance tuning for heavy job such as custom.scm. The value 64
 ;; allocates approximately 8MB of heaps. Reduce it for less-memory

@@ -97,25 +97,23 @@
 		(uim-sh-loop))
 	      (uim-sh args))))))
 
-(if (symbol-bound? 'uim-editline-readline)
-    (begin
-      (define uim-sh-loop-orig ())
-      (define activate-editline
-	(lambda ()
-	  (set! uim-sh-loop-orig uim-sh-loop)
-	  (set! uim-sh-loop
-		(lambda ()
-		  (if uim-sh-opt-batch
-		      (uim-sh-loop-orig)
-		      (let* ((line (uim-editline-readline))
-			     (expr (read-from-string line))
-			     (eof (eq? (eof-val) expr)))
-			(if (not eof)
-			    (begin
-			      ((if uim-sh-opt-strict-batch
-				   (lambda args #f)
-				   print)
-			       (eval expr (interaction-environment)))
-			      (uim-sh-loop))
-			    #f)))))
-	#t))))
+(define uim-sh-loop-orig ())
+(define activate-editline
+  (lambda ()
+    (set! uim-sh-loop-orig uim-sh-loop)
+    (set! uim-sh-loop
+	  (lambda ()
+	    (if uim-sh-opt-batch
+		(uim-sh-loop-orig)
+		(let* ((line (uim-editline-readline))
+		       (expr (read-from-string line))
+		       (eof (eq? (eof-val) expr)))
+		  (if (not eof)
+		      (begin
+			((if uim-sh-opt-strict-batch
+			     (lambda args #f)
+			     print)
+			 (eval expr (interaction-environment)))
+			(uim-sh-loop))
+		      #f)))))
+    #t))

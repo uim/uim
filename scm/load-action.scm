@@ -72,19 +72,19 @@
       (lambda (owner)
 	translated))))
 
+(define do-nothing
+  (lambda args
+    #f))
+(define register-widget do-nothing)
+(define register-action do-nothing)
+(define indicator-new do-nothing)
+(define activity-indicator-new do-nothing)
+(define actions-new do-nothing)
+(define context-init-widgets do-nothing)
+(define context-list-replace-widgets! do-nothing)
+(define context-update-widgets do-nothing)
+(define context-prop-activate-handler do-nothing)
+(define context-mode-handler do-nothing)
+;; override above procedures
 (if enable-action?
-    (require "action.scm")
-    (begin
-      (define do-nothing
-	(lambda args
-	  #f))
-      (define register-widget do-nothing)
-      (define register-action do-nothing)
-      (define indicator-new do-nothing)
-      (define activity-indicator-new do-nothing)
-      (define actions-new do-nothing)
-      (define context-init-widgets do-nothing)
-      (define context-list-replace-widgets! do-nothing)
-      (define context-update-widgets do-nothing)
-      (define context-prop-activate-handler do-nothing)
-      (define context-mode-handler do-nothing)))
+    (require "action.scm"))
