@@ -435,16 +435,28 @@
        (tutcode-flush pc))
       ((tutcode-cancel-key? key key-state)
        (tutcode-flush pc))
-      ((or
-        (symbol? key)
-        (and
-          (modifier-key-mask key-state)
-          (not (shift-key-mask key-state))))
+      ((symbol? key)
        (tutcode-flush pc)
        (tutcode-proc-state-on pc key key-state))
+      ((and
+        (modifier-key-mask key-state)
+        (not (shift-key-mask key-state)))
+       ;; <Control>n等での変換開始?
+       (if (tutcode-begin-conv-key? key key-state)
+         (if (not (null? (tutcode-context-head pc)))
+           (tutcode-begin-conversion pc)
+           (tutcode-flush pc))
+         (begin
+           (tutcode-flush pc)
+           (tutcode-proc-state-on pc key key-state))))
       ((not (member (charcode->string key) (rk-expect rkc)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
+         ;; spaceキーでの変換開始?
+         ;; (spaceはキーシーケンスに含まれる場合があるので、
+         ;;  rk-expectにspaceが無いことが条件)
+         ;; (trycodeでspaceで始まるキーシーケンスを使っている場合、
+         ;;  spaceで変換開始はできないので、<Control>n等を使う必要あり)
          (if (tutcode-begin-conv-key? key key-state)
            (if (not (null? (tutcode-context-head pc)))
              (tutcode-begin-conversion pc)
