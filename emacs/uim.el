@@ -880,6 +880,8 @@
   (if uim-prefix-arg
       (uim-debug (format "uim-prefix-arg %s" uim-prefix-arg)))
 
+  (if (and uim-xemacs (not uim-retry-keys))
+      (setq uim-original-input-event (copy-event last-input-event)))
 
   (let ((keyvec (uim-this-command-keys current-prefix-arg))
 	sendkey newvec bypass count mouse)

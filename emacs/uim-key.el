@@ -249,8 +249,16 @@
 			 (uim-debug (format "this-command is %s" this-command))
 			 (setq last-command-char (aref keyvec 0))
 
+			 (if uim-xemacs
+			     (progn
+			       (setq last-input-event uim-original-input-event)
+			       (handle-pre-motion-command)))
+
 			 (run-hooks 'pre-command-hook)
 			 (command-execute this-command) 
+
+			 (if uim-xemacs
+			     (handle-post-motion-command))
 
 			 (uim-flush-concat-undo)
 			 )
