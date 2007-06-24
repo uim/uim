@@ -59,10 +59,10 @@
   (N_ "beginning character length of predicting")
   (N_ "long description will be here."))
 
-(define-custom 'look-prepered-words 0
+(define-custom 'look-prepared-words 0
   '(look)
   '(integer 0 65535)
-  (N_ "Prepered words for prediction")
+  (N_ "Prepared words for prediction")
   (N_ "long description will be here."))
 
 (define-custom 'look-fence-left "{"

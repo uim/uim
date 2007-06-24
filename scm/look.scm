@@ -226,7 +226,7 @@
        lc preedit-reverse
        "[saving...]")
       (im-update-preedit lc)
-      (write (cons look-prepered-words
+      (write (cons look-prepared-words
                    (look-context-dict lc))
              port)
       (im-clear-preedit lc)
@@ -245,7 +245,7 @@
                              (read port))))))
         (if (and dict
                  (not (null? dict))
-                 (= (car dict) look-prepered-words))
+                 (= (car dict) look-prepared-words))
             (look-context-set-dict! lc (cdr dict)))))
   (im-clear-preedit lc)
   (im-update-preedit lc))
@@ -256,14 +256,14 @@
                          hist
                          look-history-stat-init
                          look-history-stat-inc))
-  (cond ((= 0 look-prepered-words)
+  (cond ((= 0 look-prepared-words)
          (let ((hist (if (not (look-context-dict lc))
                          (look-init-history look-history-stat-init)
                          (look-context-dict lc))))
            (look-context-set-dict!
             lc
             (histroy-append hist))))
-        ((< (length (look-context-prev lc)) look-prepered-words)
+        ((< (length (look-context-prev lc)) look-prepared-words)
          #t)
         (else
          (if (not (look-context-dict lc))
@@ -287,16 +287,16 @@
                   (append (list (cons (look-context-prev lc)
                                       (histroy-append (look-init-history look-history-stat-init))))
                           (look-context-dict lc)))))))
-  (if (< (length (look-context-prev lc)) look-prepered-words)
+  (if (< (length (look-context-prev lc)) look-prepared-words)
       (look-context-set-prev! lc (append (look-context-prev lc)
                                          (list (string->symbol (look-context-left lc)))))
-      (if (= 0 look-prepered-words)
+      (if (= 0 look-prepared-words)
           #t
           (look-context-set-prev! lc (append (cdr (look-context-prev lc))
                                              (list (string->symbol (look-context-left lc))))))))
 
 (define (look-search-learned lc str)
-  (if (= 0 look-prepered-words)
+  (if (= 0 look-prepared-words)
       (if (look-context-dict lc)
           (look-history-sort
            (look-history-search (look-to-lower-string str)
