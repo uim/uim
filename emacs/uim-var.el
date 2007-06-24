@@ -388,6 +388,7 @@ displayed at the echo area.")
 
 (uim-deflocalvar uim-after-change-functions nil)
 (uim-deflocalvar uim-fontification-functions nil)
+(uim-deflocalvar uim-timer-idle-list nil)
 
 ;; save top point of current window to lock scroll
 (uim-deflocalvar uim-window-force-scrolled nil)

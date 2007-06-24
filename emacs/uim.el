@@ -836,6 +836,10 @@
     (setq uim-after-change-functions after-change-functions)
     (setq after-change-functions nil)
 
+    (when (boundp 'timer-idle-list)
+      (setq uim-timer-idle-list timer-idle-list)
+      (setq timer-idle-list nil))
+
     (when (boundp 'fontification-functions)
       (setq uim-fontification-functions fontification-functions)
       (setq fontification-functions nil))
@@ -848,6 +852,10 @@
   (when uim-buffer-frozen ;; avoid multiple unfreeze 
     (setq after-change-functions uim-after-change-functions)
     (setq uim-after-change-functions nil)
+
+    (when (boundp 'timer-idle-list)
+      (setq timer-idle-list uim-timer-idle-list)
+      (setq uim-timer-idle-list nil))
 
     (when (boundp 'fontification-functions)
       (setq fontification-functions uim-fontification-functions)
