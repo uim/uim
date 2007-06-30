@@ -440,7 +440,7 @@ get_mb_string(char *buf, KeySym ks)
 	return 0;
     len = strlen(mb);
     strlcpy(buf, mb, MB_LEN_MAX + 1);
-    free(mb);
+    g_free(mb);
 
     return len;
 }
@@ -611,7 +611,12 @@ parse_compose_line(FILE *fp, char* tokenbuf)
 	goto error;
     }
 
-    rhs_string_utf8 = g_locale_to_utf8(rhs_string_mb, -1, NULL, NULL, NULL);
+	{
+		char *result;
+    		result = g_locale_to_utf8(rhs_string_mb, -1, NULL, NULL, NULL);
+    		rhs_string_utf8 = strdup(result);
+		g_free(result);
+	}
 
     for (i = 0; i < n; i++) {
 	for (p = *top; p; p = p->next) {
