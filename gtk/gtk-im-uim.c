@@ -192,7 +192,7 @@ get_user_defined_color(PangoColor *color, const gchar *uim_symbol)
   return parsed;
 }
 
-static char *
+static gchar *
 get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs,
 		    gchar *str)
 {
