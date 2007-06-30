@@ -393,7 +393,7 @@ tree_selection_changed(GtkTreeSelection *selection,
 	  annotation = uim_eb_search_text(ueb, cand);
 	  uim_eb_destroy(ueb);
 	}
-	g_free(book);
+	free(book);
       }
       g_free(cand);
     }

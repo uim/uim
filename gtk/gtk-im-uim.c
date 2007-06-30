@@ -182,12 +182,12 @@ static gboolean
 get_user_defined_color(PangoColor *color, const gchar *uim_symbol)
 {
   gboolean parsed = FALSE;
-  gchar *literal = uim_scm_symbol_value_str(uim_symbol);
+  char *literal = uim_scm_symbol_value_str(uim_symbol);
 
   if (literal != NULL && literal[0] != '\0')
     parsed = pango_color_parse(color, literal);
 
-  g_free(literal);
+  free(literal);
 
   return parsed;
 }
@@ -198,6 +198,7 @@ get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs,
 {
   PangoAttribute *attr;
   const gchar *segment_str = ps->str;
+  gint len;
 
   if ((ps->attr & UPreeditAttr_Separator) && !strcmp(segment_str, ""))
     segment_str = DEFAULT_SEPARATOR_STR;
@@ -259,8 +260,9 @@ get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs,
     }
   }
 
-  str = (gchar *)g_realloc(str, strlen(str) + strlen(segment_str) + 1);
-  strcat(str, segment_str);
+  len = strlen(str) + strlen(segment_str) + 1;
+  str = (gchar *)g_realloc(str, len);
+  g_strlcat(str, segment_str, len);
 
   return str;
 }
