@@ -1,5 +1,6 @@
 include libtool-version.mk
 include $(top_builddir)/sigscheme/libgcroots.mk
+include $(top_builddir)/sigscheme/sigscheme.mk
 
 AUTOMAKE_OPTIONS = foreign
 
