@@ -5,14 +5,14 @@
 #
 # Usage:
 #
-#     $ svn co http://anonsvn.freedesktop.org/svn/uim/trunk uim-trunk
+#     $ svn co http://uim.googlecode.com/svn/trunk uim-trunk
 #     $ cd uim-trunk
 #     $ ./make-wc.sh
 #     $ make
 #
 #   Or if you are an uim committer,
 #
-#     $ svn co svn+ssh://svn.freedesktop.org/svn/uim/trunk uim-trunk
+#     $ svn co https://uim.googlecode.com/svn/trunk uim-trunk
 #     $ cd uim-trunk
 #     $ ./make-wc.sh
 #     $ make
@@ -43,8 +43,8 @@ LANG=C
 
 MAKE=make
 
-#UIM_REPOSITORY="http://anonsvn.freedesktop.org/svn/uim"
-#UIM_REPOSITORY="svn+ssh://svn.freedesktop.org/svn/uim"
+#UIM_REPOSITORY="http://uim.googlecode.com/svn"
+#UIM_REPOSITORY="https://uim.googlecode.com/svn"
 # autoselect
 UIM_REPOSITORY=`svn info | grep 'Repository Root:' | sed 's/.*: //'`
 

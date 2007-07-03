@@ -597,7 +597,7 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
 			 "name", name,
 			 "version", VERSION,
 			 "copyright", copyright,
-			 "website", "http://uim.freedesktop.org",
+			 "website", "http://code.google.com/p/uim/",
 			 "authors", authors,
 			 "logo", transparent,
 			 NULL);
