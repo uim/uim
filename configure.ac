@@ -1330,7 +1330,10 @@ AC_SUBST(abs_top_srcdir)
 AC_SUBST(abs_top_builddir)
 
 # configure sigscheme/ subdir
-ac_configure_args="$ac_configure_args --enable-conf=uim --disable-libsscm --disable-shell"
+#
+# --with-master-pkg=uim instructs that pkgdatadir for Scheme libraries.
+# See also sigscheme/lib/Makefile.am
+ac_configure_args="$ac_configure_args --with-master-pkg=uim --enable-conf=uim --disable-libsscm --disable-shell"
 AC_CONFIG_SUBDIRS([sigscheme])
 
 AC_CONFIG_FILES([Makefile
