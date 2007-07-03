@@ -21,6 +21,7 @@
 	     "omote.masahito" => 'Masahito Omote <omote@utyuuzin.net>',
 
 	     "kzk"      => 'kzk <mover@hct.zaq.ne.jp>',
+	     "kazuki.ohta" => 'kzk <mover@hct.zaq.ne.jp>',
 
 	     "makeinu"  => 'Takuro Ashie <ashie@homa.ne.jp>',
 	     "takuro.ashie" => 'Takuro Ashie <ashie@homa.ne.jp>',
