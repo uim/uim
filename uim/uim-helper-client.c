@@ -73,15 +73,16 @@ get_server_command(void)
 
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
-  int fd;
   struct sockaddr_un server;
   char *path;
+  FILE *serv_r = NULL, *serv_w = NULL;
+  int fd = -1;
   
   uim_fd = -1;
   
   path = uim_helper_get_pathname();
   if (!path)
-    return -1;
+    goto error;
 
   memset(&server, 0, sizeof(server));
   server.sun_family = PF_UNIX;
@@ -92,7 +93,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
     perror("fail to create socket");
-    return -1;
+    goto error;
   }
   
 #ifdef LOCAL_CREDS /* for NetBSD */
@@ -106,14 +107,13 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 
   if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
     int serv_pid = 0;
-    FILE *serv_r = NULL, *serv_w = NULL;
     char buf[128];
     
     serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w,
 				    get_server_command());
 
     if (serv_pid == 0)
-      return -1;
+      goto error;
     
     while (fgets (buf, sizeof(buf), serv_r ) != NULL ) {
       if (strcmp( buf, "\n" ) == 0)
@@ -121,19 +121,29 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
     }
     
     if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0)
-      return -1;
+      goto error;
   }
 
-  if (uim_helper_check_connection_fd(fd)) {
-    close(fd);
-    return -1;
-  }
+  if (uim_helper_check_connection_fd(fd))
+    goto error;
 
   uim_read_buf = strdup("");
   uim_disconnect_cb = disconnect_cb;
   uim_fd = fd;
 
   return fd;
+
+error:
+  if (fd != -1)
+    close(fd);
+
+  if (serv_r)
+    fclose(serv_r);
+ 
+  if (serv_w)
+    fclose(serv_w);
+
+  return -1;
 }
 
 void
