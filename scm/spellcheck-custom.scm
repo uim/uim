@@ -1,6 +1,6 @@
 ;;; spellcheck-custom.scm: Customization variables for spellcheck.scm:
 ;;;
-;;; Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

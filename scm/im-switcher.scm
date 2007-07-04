@@ -1,6 +1,6 @@
 ;;; im-switcher.scm: Action-based IM switcher
 ;;;
-;;; Copyright (c) 2006-2007 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2006-2007 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

@@ -1,7 +1,7 @@
 /*
  *  $Id:$
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
- *                2005-2007 uim Project http://uim.freedesktop.org/
+ *                2005-2007 uim Project http://code.google.com/p/uim/
  *
  *  All rights reserved.
  *
