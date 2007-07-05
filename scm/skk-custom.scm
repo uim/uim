@@ -47,6 +47,16 @@
                      (N_ "SKK (advanced)")
                      (N_ "Advanced settings for SKK"))
 
+;; subgroup
+(define-custom-group 'skkserv
+		     (N_ "SKK server")
+		     (N_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'dict-files
+		     (N_ "Dictionary files")
+		     (N_ "long description will be here."))
+
 
 ;;
 ;; candidate window
@@ -322,13 +332,13 @@
 ;;
 
 (define-custom 'skk-use-skkserv? #f
-  '(skk-dict)
+  '(skk-dict skkserv)
   '(boolean)
   (N_ "Use skkserv instead of SKK-JISYO")
   (N_ "long description will be here."))
 
 (define-custom 'skk-skkserv-use-env? #t
-  '(skk-dict)
+  '(skk-dict skkserv)
   '(boolean)
   (N_ "Use value of environment variable SKKSERVER")
   (N_ "long description will be here."))
@@ -339,7 +349,7 @@
 		   skk-use-skkserv?))
 
 (define-custom 'skk-skkserv-hostname "localhost"
-  '(skk-dict)
+  '(skk-dict skkserv)
   '(string ".*")
   (N_ "Hostname of skkserv")
   (N_ "long description will be here."))
@@ -350,7 +360,7 @@
 		   (not skk-skkserv-use-env?)))
 
 (define-custom 'skk-skkserv-portnum 1178
-  '(skk-dict)
+  '(skk-dict skkserv)
   '(integer 0 65535)
   (N_ "Port number of skkserv")
   (N_ "long description will be here."))
@@ -361,7 +371,7 @@
 		   skk-use-skkserv?))
 
 (define-custom 'skk-skkserv-address-family 'unspecified
-  '(skk-dict)
+  '(skk-dict skkserv)
   (list 'choice
 	(list 'unspecified (N_ "Auto") (N_ "Auto"))
 	(list 'inet  (N_ "IPv4")
@@ -378,21 +388,21 @@
 
 (define-custom 'skk-dic-file-name (string-append (sys-datadir)
 						 "/skk/SKK-JISYO.L")
-  '(skk-dict)
+  '(skk-dict dict-files)
   '(pathname regular-file)
-  (N_ "Dictionary file")
+  (N_ "System dictionary file")
   (N_ "long description will be here."))
 
 (define-custom 'skk-personal-dic-filename
   (string-append (or (getenv "HOME") "") "/.skk-jisyo")
-  '(skk-dict)
+  '(skk-dict dict-files)
   '(pathname regular-file)
   (N_ "Personal dictionary file")
   (N_ "long description will be here."))
 
 (define-custom 'skk-uim-personal-dic-filename
   (string-append (or (getenv "HOME") "") "/.skk-uim-jisyo")
-  '(skk-dict)
+  '(skk-dict dict-files)
   '(pathname regular-file)
   (N_ "Personal dictionary file (dedicated to uim)")
   (N_ "long description will be here."))
