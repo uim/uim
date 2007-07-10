@@ -89,19 +89,12 @@
   (lambda (lst str)
     (member str lst)))
 
+;; should be obsoleted by 'take'
 (define truncate-list
   (lambda (lst n)
-    (if (or (< (length lst)
-	       n)
-	    (< n 0))
-	#f
-	(let self ((lst lst)
-		   (n n))
-	  (if (or (= n 0)
-		  (null? lst))
-	      ()
-	      (cons (car lst)
-		    (self (cdr lst) (- n 1))))))))
+    (guard (err
+	    (else #f))
+      (take lst n))))
 
 ;; procedural 'or' for use with 'apply'
 ;; e.g. (apply proc-or boolean-lst)
@@ -123,12 +116,8 @@
 	(and (car xs)
 	     (apply proc-and (cdr xs))))))
 
-(define list-head
-  (lambda (lst n)
-    (if (= n 0)  ;; required due to bug #642
-	()
-	(or (truncate-list lst n)
-	    (error "out of range in list-head")))))
+;; should be obsoleted by 'take'
+(define list-head take)
 
 ;; TODO: write test
 (define sublist
