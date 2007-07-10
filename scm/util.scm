@@ -315,6 +315,13 @@
   (lambda (k lst)
     (list-ref lst k)))
 
+;; should be obsoleted by list-tail
+(define nthcdr
+  (lambda (k lst)
+    (guard (err
+	    (else #f))
+      (list-tail lst k))))
+
 ;; should be obsoleted by list-copy of SRFI-1
 (define copy-list
   (lambda (lst)

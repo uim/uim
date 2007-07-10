@@ -159,21 +159,6 @@ string2charcode(uim_lisp x)
 }
 
 static uim_lisp
-nthcdr(uim_lisp nth_, uim_lisp lst)
-{
-  int nth = uim_scm_c_int(nth_);
-  int i;
-  for (i = 0; i < nth; i++) {
-    if (uim_scm_nullp(lst)) {
-      /* something bad happened */
-      return uim_scm_f();
-    }
-    lst = uim_scm_cdr(lst);
-  }
-  return lst;
-}
-
-static uim_lisp
 c_getenv(uim_lisp str_)
 {
   const char *str = uim_scm_refer_c_str(str_);
@@ -510,7 +495,6 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_1("unsetenv", c_unsetenv);
 
   /* these procedures should be replaced with standard ones of R5RS or SRFIs */
-  uim_scm_init_subr_2("nthcdr", nthcdr);
   uim_scm_init_subr_1("charcode->string", charcode2string);
   uim_scm_init_subr_1("string->charcode", string2charcode);
   uim_scm_init_subr_2("string-split", uim_split_string);
