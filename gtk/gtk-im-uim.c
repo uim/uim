@@ -82,7 +82,7 @@ extern int compose_handle_key(GdkEventKey *key, IMUIMContext *uic);
 
 struct preedit_segment {
   int attr;
-  char *str;
+  gchar *str;
 };
 
 static int im_uim_fd = -1;
@@ -183,21 +183,23 @@ static gboolean
 get_user_defined_color(PangoColor *color, const gchar *uim_symbol)
 {
   gboolean parsed = FALSE;
-  gchar *literal = uim_symbol_value_str(uim_symbol);
+  char *literal = uim_symbol_value_str(uim_symbol);
 
   if (literal != NULL && literal[0] != '\0')
     parsed = pango_color_parse(color, literal);
 
-  g_free(literal);
+  free(literal);
 
   return parsed;
 }
 
-static char *
-get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs, char *str)
+static gchar *
+get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs,
+		    gchar *str)
 {
   PangoAttribute *attr;
   const gchar *segment_str = ps->str;
+  gint len;
 
   if ((ps->attr & UPreeditAttr_Separator) && !strcmp(segment_str, ""))
     segment_str = DEFAULT_SEPARATOR_STR;
@@ -259,8 +261,9 @@ get_preedit_segment(struct preedit_segment *ps, PangoAttrList *attrs, char *str)
     }
   }
 
-  str = (char *)realloc(str, strlen(str) + strlen(segment_str) + 1);
-  strcat(str, segment_str);
+  len = strlen(str) + strlen(segment_str) + 1;
+  str = (gchar *)g_realloc(str, len);
+  g_strlcat(str, segment_str, len);
 
   return str;
 }
@@ -565,7 +568,7 @@ clear_cb(void *ptr)
   int i;
 
   for (i = 0; i < uic->nr_psegs; i++)
-    free(uic->pseg[i].str);
+    g_free(uic->pseg[i].str);
   free(uic->pseg);
 
   uic->pseg = NULL;
@@ -1114,7 +1117,7 @@ static void
 im_uim_get_preedit_string(GtkIMContext *ic, gchar **str, PangoAttrList **attrs,
 			  gint *cursor_pos)
 {
-  char *tmp;
+  gchar *tmp;
   int i, pos = 0;
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
@@ -1138,7 +1141,7 @@ im_uim_get_preedit_string(GtkIMContext *ic, gchar **str, PangoAttrList **attrs,
   if (str)
     *str = tmp;
   else
-    free(tmp);
+    g_free(tmp);
 }
 
 static void

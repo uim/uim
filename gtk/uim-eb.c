@@ -109,7 +109,7 @@ uim_eb_destroy (uim_eb *ueb)
 }
 
 
-char *
+gchar *
 uim_eb_search_text (uim_eb *ueb, const gchar *text_utf8)
 {
   gchar *text;

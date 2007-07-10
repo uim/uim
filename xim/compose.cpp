@@ -117,9 +117,12 @@ void Compose::reset()
 }
 
 static int
-nextch(FILE *fp, int *lastch)
+nextch(FILE *fp, int *lastch, size_t *remain)
 {
     int c;
+
+    if (*remain <= 1)
+    	return EOF;
 
     if (*lastch != 0) {
 	c = *lastch;
@@ -166,14 +169,14 @@ putbackch(int c, int *lastch)
 #endif
 
 static int
-nexttoken(FILE *fp, char *tokenbuf, int *lastch)
+nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
 {
     int c;
     int token;
     char *p;
     int i, j;
 
-    while ((c = nextch(fp, lastch)) == ' ' || c == '\t') {
+    while ((c = nextch(fp, lastch, remain)) == ' ' || c == '\t') {
     }
     switch (c) {
     case EOF:
@@ -199,26 +202,30 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch)
 	break;
     case '"':
 	p = tokenbuf;
-	while ((c = nextch(fp, lastch)) != '"') {
+	while ((c = nextch(fp, lastch, remain)) != '"') {
 	    if (c == '\n' || c == EOF) {
 		putbackch(c, lastch);
 		token = ERROR;
 		goto string_error;
 	    } else if (c == '\\') {
-		c = nextch(fp, lastch);
+		c = nextch(fp, lastch, remain);
 		switch (c) {
 		case '\\':
 		case '"':
 		    *p++ = c;
+		    (*remain)--;
 		    break;
 		case 'n':
 		    *p++ = '\n';
+		    (*remain)--;
 		    break;
 		case 'r':
 		    *p++ = '\r';
+		    (*remain)--;
 		    break;
 		case 't':
 		    *p++ = '\t';
+		    (*remain)--;
 		    break;
 		case '0':
 		case '1':
@@ -229,20 +236,21 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch)
 		case '6':
 		case '7':
 		    i = c - '0';
-		    c = nextch(fp, lastch);
+		    c = nextch(fp, lastch, remain);
 		    for (j = 0; j < 2 && c >= '0' && c <= '7'; j++) {
 			i <<= 3;
 			i += c - '0';
-			c = nextch(fp, lastch);
+			c = nextch(fp, lastch, remain);
 		    }
 		    putbackch(c, lastch);
 		    *p++ = (char)i;
+		    (*remain)--;
 		    break;
 		case 'X':
 		case 'x':
 		    i = 0;
 		    for (j = 0; j < 2; j++) {
-			c = nextch(fp, lastch);
+			c = nextch(fp, lastch, remain);
 			i <<= 4;
 			if (c >= '0' && c <= '9') {
 			    i += c - '0';
@@ -261,6 +269,7 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch)
 			goto string_error;
 		    }
 		    *p++ = (char)i;
+		    (*remain)--;
 		    break;
 		case EOF:
 		    putbackch(c, lastch);
@@ -268,17 +277,19 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch)
 		    goto string_error;
 		default:
 		    *p++ = c;
+		    (*remain)--;
 		    break;
 		}
 	    } else {
 		*p++ = c;
+		(*remain)--;
 	    }
 	}
 	*p = '\0';
 	token = STRING;
 	break;
     case '#':
-	while ((c = nextch(fp, lastch)) != '\n' && c != EOF) {
+	while ((c = nextch(fp, lastch, remain)) != '\n' && c != EOF) {
 	}
 	if (c == '\n') {
 	    token = ENDOFLINE;
@@ -290,10 +301,17 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch)
 	if (isalnum(c) || c == '_' || c == '-') {
 	    p = tokenbuf;
 	    *p++ = c;
-	    c = nextch(fp, lastch);
+	    (*remain)--;
+	    c = nextch(fp, lastch, remain);
 	    while (isalnum(c) || c == '_' || c == '-') {
 		*p++ = c;
-		c = nextch(fp, lastch);
+		(*remain)--;
+		c = nextch(fp, lastch, remain);
+	    }
+	    if (c == '\n' || c == EOF) {
+		putbackch(c, lastch);
+		token = ERROR;
+		goto string_error;
 	    }
 	    *p = '\0';
 	    putbackch(c, lastch);
@@ -433,7 +451,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
 #define SEQUENCE_MAX    10
 
 int
-XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
+XimIM::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
 {
     int token;
     unsigned modifier_mask;
@@ -461,7 +479,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
     const char *encoding = get_encoding();;
 
     do {
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
     } while (token == ENDOFLINE);
 
     if (token == ENDOFFILE) {
@@ -473,7 +491,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	if ((token == KEY) && (strcmp("include", tokenbuf) == 0)) {
 	    char *filename;
 	    FILE *infp;
-	    token = nexttoken(fp, tokenbuf, &lastch);
+	    token = nexttoken(fp, tokenbuf, &lastch, remain);
 	    if (token != KEY && token != STRING)
 		goto error;
 
@@ -488,19 +506,19 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	} else if ((token == KEY) && (strcmp("None", tokenbuf) == 0)) {
 	    modifier = 0;
 	    modifier_mask = AllMask;
-	    token = nexttoken(fp, tokenbuf, &lastch);
+	    token = nexttoken(fp, tokenbuf, &lastch, remain);
 	} else {
 	    modifier_mask = modifier = 0;
 	    exclam = False;
 	    if (token == EXCLAM) {
 		exclam = True;
-		token = nexttoken(fp, tokenbuf, &lastch);
+		token = nexttoken(fp, tokenbuf, &lastch, remain);
 	    }
 	    while (token == TILDE || token == KEY) {
 		tilde = False;
 		if (token == TILDE) {
 		    tilde = True;
-		    token = nexttoken(fp, tokenbuf, &lastch);
+		    token = nexttoken(fp, tokenbuf, &lastch, remain);
 		    if (token != KEY)
 			goto error;
 		}
@@ -514,7 +532,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 		} else {
 		    modifier |= tmp;
 		}
-		token = nexttoken(fp, tokenbuf, &lastch);
+		token = nexttoken(fp, tokenbuf, &lastch, remain);
 	    }
 	    if (exclam) {
 		modifier_mask = AllMask;
@@ -526,12 +544,12 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	    goto error;
 	}
 
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
 	if (token != KEY) {
 	    goto error;
 	}
 
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
 	if (token != GREATER) {
 	    goto error;
 	}
@@ -547,22 +565,22 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	n++;
 	if (n >= SEQUENCE_MAX)
 	    goto error;
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
     } while (token != COLON);
 
-    token = nexttoken(fp, tokenbuf, &lastch);
+    token = nexttoken(fp, tokenbuf, &lastch, remain);
     if (token == STRING) {
 	if ((rhs_string_mb = (char *)malloc(strlen(tokenbuf) + 1)) == NULL)
 	    goto error;
 	strcpy(rhs_string_mb, tokenbuf);
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
 	if (token == KEY) {
 	    rhs_keysym = XStringToKeysym(tokenbuf);
 	    if (rhs_keysym == NoSymbol) {
 		free(rhs_string_mb);
 		goto error;
 	    }
-	    token = nexttoken(fp, tokenbuf, &lastch);
+	    token = nexttoken(fp, tokenbuf, &lastch, remain);
 	}
 	if (token != ENDOFLINE && token != ENDOFFILE) {
 	    free(rhs_string_mb);
@@ -573,7 +591,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
 	if (rhs_keysym == NoSymbol) {
 	    goto error;
 	}
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
 	if (token != ENDOFLINE && token != ENDOFFILE) {
 	    goto error;
 	}
@@ -641,7 +659,7 @@ XimIM::parse_compose_line(FILE *fp, char* tokenbuf)
     return n;
 error:
     while (token != ENDOFLINE && token != ENDOFFILE) {
-	token = nexttoken(fp, tokenbuf, &lastch);
+	token = nexttoken(fp, tokenbuf, &lastch, remain);
     }
     return 0;
 }
@@ -649,22 +667,21 @@ error:
 void
 XimIM::ParseComposeStringFile(FILE *fp)
 {
-    char tb[8192];
     char* tbp;
     struct stat st;
+    size_t tb_remain;
 
-    if (fstat(fileno(fp), &st) != -1) {
-	unsigned long size = (unsigned long)st.st_size;
-	if (size <= sizeof tb)
-	    tbp = tb;
-	else
-	    tbp = (char *)malloc(size);
+    if (fstat(fileno(fp), &st) != -1 &&
+	S_ISREG(st.st_mode) &&
+	st.st_size > 0 &&
+	st.st_size + (size_t)0 < (off_t)0 + (size_t)-1) {
 
+	tbp = (char *)malloc(st.st_size);
+	tb_remain = st.st_size;
 	if (tbp != NULL) {
-	    while (parse_compose_line(fp, tbp) >= 0) {
+	    while (parse_compose_line(fp, tbp, &tb_remain) >= 0) {
 	    }
-	    if (tbp != tb)
-		free (tbp);
+	    free (tbp);
 	}
     }
 }
@@ -785,7 +802,7 @@ char *XimIM::get_compose_filename()
 	char *p = buf;
 	int n;
 	char *args[2], *from, *to;
-	while (isspace(*p)) {
+	while (isspace((unsigned char)*p)) {
 	    ++p;
 	}
 	if (iscomment(*p)) {
@@ -828,7 +845,7 @@ parse_line(char *line, char **argv, int argsize)
     char *p = line;
 
     while (argc < argsize) {
-	while (isspace(*p)) {
+	while (isspace((unsigned char)*p)) {
 	    ++p;
 	}
 	if (*p == '\0') {

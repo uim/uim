@@ -242,6 +242,7 @@ AX_CREATE_STDINT_H(uim/uim-stdint.h)
 
 # Check for types
 AC_TYPE_SIZE_T
+AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIGNAL
 AC_CHECK_TYPES(sig_atomic_t, , ,

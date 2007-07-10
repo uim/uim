@@ -85,7 +85,7 @@ get_anthy_version()
 
     len = strlen(str);
     for (i = 0; str[i] != '\0'; i++) {
-      if (isalpha(str[i]))
+      if (isalpha((unsigned char)str[i]))
         break;
     }
 
