@@ -986,7 +986,7 @@ char *QUimInputContext::get_compose_filename()
 	char *p = buf;
 	int n;
 	char *args[2], *from, *to;
-	while (isspace(*p)) {
+	while ((unsigned char)isspace(*p)) {
 	    ++p;
 	}
 	if (iscomment(*p)) {
@@ -1029,7 +1029,7 @@ parse_line(char *line, char **argv, int argsize)
     char *p = line;
 
     while (argc < argsize) {
-	while (isspace(*p)) {
+	while ((unsigned char)isspace(*p)) {
 	    ++p;
 	}
 	if (*p == '\0') {

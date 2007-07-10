@@ -168,7 +168,7 @@ im_get_raw_key_str(uim_lisp key_, uim_lisp key_state_)
   buf[0] = key;
   buf[1] = 0;
   if (key_state == UMod_Shift) {
-    buf[0] = toupper(buf[0]);
+    buf[0] = toupper((unsigned char)buf[0]);
   }
   return uim_scm_make_str(buf);
 }
