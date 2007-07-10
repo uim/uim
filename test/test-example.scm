@@ -29,6 +29,8 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;
 
+;; These tests are passed at revision 4674 (new repository)
+
 (use test.unit)
 
 (require "test/uim-test-utils")
