@@ -56,6 +56,7 @@
 	     (set! enabled-im-list (append (delete 'm17n-en-ispell
 						   enabled-im-list)
 					   '(test-im test-im2)))
+	     (set! enabled-im-list (delete 'look enabled-im-list))
 	     (for-each require-module installed-im-module-list)
 	     (define prev-im #f)
 	     (define prev-nr-ims (length im-list))
@@ -443,8 +444,10 @@
 		 (uim '(im-name (find-default-im "ja_JP.EUC-JP")))))
 
   ("test find-im"
-   ;; explicit IM specification
    (uim '(unsetenv "UIM_IM_ENGINE"))
+   (uim '(unsetenv "LANG"))
+   (uim '(unsetenv "LC_ALL"))
+   ;; explicit IM specification
    (uim '(set! default-im-name #f))
    (assert-equal 'direct
 		 (uim '(im-name (find-im 'direct #f))))
