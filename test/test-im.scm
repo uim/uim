@@ -306,13 +306,13 @@
 		 (uim '(im-name (find-im-for-locale "pt"))))
    (uim '(unsetenv "UIM_IM_ENGINE"))
    ;; Chinese
-   (assert-equal 'm17n-zh-py
+   (assert-equal 'm17n-zh-pinyin
 		 (uim '(im-name (find-im-for-locale "zh"))))
-   (assert-equal 'm17n-zh-py
+   (assert-equal 'm17n-zh-pinyin
 		 (uim '(im-name (find-im-for-locale "zh.GB18030"))))
-   (assert-equal 'm17n-zh-py
+   (assert-equal 'm17n-zh-pinyin
 		 (uim '(im-name (find-im-for-locale "zh.Big5"))))
-   (assert-equal 'm17n-zh-py
+   (assert-equal 'm17n-zh-pinyin
 		 (uim '(im-name (find-im-for-locale "zh.UTF-8"))))
    (assert-equal 'direct
 		 (uim '(im-name (find-im-for-locale "zh_US"))))
@@ -357,13 +357,13 @@
    (assert-equal 'byeoru
 		 (uim '(im-name (find-im-for-locale "ko.UTF-8"))))
    ;; Vietnamese
-   (assert-equal 'm17n-vi-viqr
+   (assert-equal 'm17n-vi-vni
 		 (uim '(im-name (find-im-for-locale "vi"))))
-   (assert-equal 'm17n-vi-viqr
+   (assert-equal 'm17n-vi-vni
 		 (uim '(im-name (find-im-for-locale "vi_VN"))))
-   (assert-equal 'm17n-vi-viqr
+   (assert-equal 'm17n-vi-vni
 		 (uim '(im-name (find-im-for-locale "vi_VN.UTF-8"))))
-   (assert-equal 'm17n-vi-viqr
+   (assert-equal 'm17n-vi-vni
 		 (uim '(im-name (find-im-for-locale "vi.UTF-8"))))
    ;; native locale
    (uim '(unsetenv "LC_ALL"))
