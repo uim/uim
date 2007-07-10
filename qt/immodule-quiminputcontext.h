@@ -136,7 +136,7 @@ private:
     static char *TransFileName( char *name );
     static void ParseComposeStringFile( FILE *fp );
     static void FreeComposeTree( DefTree *top );
-    static int parse_compose_line( FILE *fp, char *tokenbuf );
+    static int parse_compose_line( FILE *fp, char *tokenbuf, size_t *remain );
     static int get_mb_string( char *buf, unsigned int ks );
     static const char *get_encoding( void );
     static char *get_lang_region( void );
