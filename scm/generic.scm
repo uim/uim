@@ -55,7 +55,7 @@
 		  (list (list entry) entry))
 		list
 		charcode->string)
-       (iota 127 32)))
+       (iota 95 32)))
 
 (define generic-prepare-activation
   (lambda (gc)

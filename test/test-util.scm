@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4674 (new repository)
+;; These tests are passed at revision 4680 (new repository)
 
 (use test.unit)
 
@@ -1057,23 +1057,23 @@
    (assert-error (lambda ()
 		   (uim '(iota -1 0))))
 
-   (assert-error (lambda ()
-		   (uim '(iota 0 1))))
    (assert-equal '()
+		 (uim '(iota 0 1)))
+   (assert-equal '(1)
 		 (uim '(iota 1 1)))
-   (assert-equal '(1 2 3 4)
+   (assert-equal '(1 2 3 4 5)
 		 (uim '(iota 5 1)))
    (assert-error (lambda ()
 		   (uim '(iota -1 1))))
 
-   (assert-error (lambda ()
-		   (uim '(iota 1 3))))
-   (assert-equal '(3 4)
+   (assert-equal '(3)
+		 (uim '(iota 1 3)))
+   (assert-equal '(3 4 5 6 7)
 		 (uim '(iota 5 3)))
    (assert-error (lambda ()
 		   (uim '(iota -1 3))))
 
-   (assert-equal '()
+   (assert-equal '(5 6 7 8 9)
 		 (uim '(iota 5 5))))
 
   ("test zip"

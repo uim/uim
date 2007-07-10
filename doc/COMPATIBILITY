@@ -57,6 +57,23 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: SRFI-1 procedures replacement
+Affects: uim developers, IM developers
+Updates: Scheme API
+Version: 1.5.0
+Revision: ac4680
+Date: 2007-07-10
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (changed) iota
+Description:
+  Various SRFI-1 procedures implemented in util.scm have been replaced
+  with the SRFI-1 feature provided by SigScheme 0.8. And the
+  misunderstood second arg meaning of 'iota' has been fixed to the
+  standard one.
+------------------------------------------------------------------------------
 Summary: Stricter argument precondition requirements
 Affects: IM developers, Bridge developers
 Updates: C API

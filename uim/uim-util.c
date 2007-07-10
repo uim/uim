@@ -417,21 +417,6 @@ iterate_lists(uim_lisp mapper, uim_lisp seed, uim_lisp lists)
   return res;
 }
 
-static uim_lisp
-find_tail(uim_lisp pred, uim_lisp lst)
-{
-  uim_lisp form, elem;
-
-  for (; !uim_scm_nullp(lst); lst = uim_scm_cdr(lst)) {
-    elem = uim_scm_car(lst);
-    form = uim_scm_list2(pred, uim_scm_quote(elem));
-    if (UIM_SCM_NFALSEP(uim_scm_eval(form)))
-      return lst;
-  }
-
-  return uim_scm_f();
-}
-
 const char *
 uim_get_language_name_from_locale(const char *locale)
 {
@@ -502,5 +487,4 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
   uim_scm_init_subr_3("iterate-lists", iterate_lists);
-  uim_scm_init_subr_2("find-tail", find_tail);
 }
