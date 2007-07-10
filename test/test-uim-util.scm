@@ -194,7 +194,7 @@
 		 (uim '(nthcdr 3 lst)))
    (assert-equal ()
 		 (uim '(nthcdr 4 lst)))
-   (assert-equal ()
+   (assert-equal #f
 		 (uim '(nthcdr 5 lst))))
 
   ("test charcode->string"

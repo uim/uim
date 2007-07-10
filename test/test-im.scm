@@ -171,12 +171,12 @@
 		   alt-set-candidate-index-handler
 		   alt-prop-activate-handler
 		   ;; replace with #f for R5RS compliant interpreter
-		   ()
-		   ()
-		   ()
-		   ()
-		   ()
-		   ())
+		   #f
+		   #f
+		   #f
+		   #f
+		   #f
+		   #f)
 		 (uim '(retrieve-im 'test-im)))
    ;; subsequent registration that has different im-name will be
    ;; registered as another IM
@@ -201,12 +201,12 @@
 		   alt-set-candidate-index-handler
 		   alt-prop-activate-handler
 		   ;; replace with #f for R5RS compliant interpreter
-		   ()
-		   ()
-		   ()
-		   ()
-		   ()
-		   ())
+		   #f
+		   #f
+		   #f
+		   #f
+		   #f
+		   #f)
 		 (uim '(retrieve-im 'test-im2))))
 
   ("test register-im (module-name)"

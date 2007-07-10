@@ -55,7 +55,7 @@
 
    ;; When <extected> and the actual evaluated values are different,
    ;; it is countted as failure and reported.
-   (assert-equal -1
+   (assert-equal 1
 		 (uim '(- 0 -1))))
 
   ("test /"

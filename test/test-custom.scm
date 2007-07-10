@@ -974,6 +974,13 @@
 		 (uim '(custom-hook-procs 'test-custom2 test-hook))))
 
   ("test custom-remove-hook"
+   (uim '(define custom-remove-hook-orig custom-remove-hook))
+   ;; Canonicalize to boolean since the pipe communication between
+   ;; uim-sh and gosh cannot treat (test-custom1 . #<closure (() 2)>)
+   ;; properly.
+   (uim '(define custom-remove-hook
+	   (lambda args
+	     (not (not (apply custom-remove-hook-orig args))))))
    ;; null
    (assert-equal ()
 		 (uim 'test-hook))

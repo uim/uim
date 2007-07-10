@@ -62,7 +62,7 @@ intl_textdomain(uim_lisp domainname)
 {
   const char *new_domain;
 
-  if (uim_scm_nullp(domainname)) {
+  if (UIM_SCM_FALSEP(domainname)) {
     new_domain = textdomain(NULL);
   } else {
     new_domain = textdomain(uim_scm_refer_c_str(domainname));
@@ -78,7 +78,7 @@ intl_bindtextdomain(uim_lisp domainname, uim_lisp dirname)
 
   domain = uim_scm_refer_c_str(domainname);
 
-  if (uim_scm_nullp(dirname)) {
+  if (UIM_SCM_FALSEP(dirname)) {
     new_dir = bindtextdomain(domain, NULL);
   } else {
     new_dir = bindtextdomain(domain, uim_scm_refer_c_str(dirname));

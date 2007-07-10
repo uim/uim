@@ -771,7 +771,8 @@
    (assert-false (uim-bool '(boolean? 1)))
 
    (assert-false (uim-bool '(boolean? 10)))
-   (assert-true  (uim-bool '(boolean? ()))) ; Siod specific
+   ;;(assert-true  (uim-bool '(boolean? ()))) ; SIOD specific
+   (assert-false (uim-bool '(boolean? ()))) ; SigScheme
    (assert-false (uim-bool '(boolean? '(1 "2" 'three))))
    (assert-false (uim-bool '(boolean? 'nil)))
    (assert-false (uim-bool '(symbol-bound? 'nil))))
@@ -787,7 +788,8 @@
    (assert-false (uim-bool '(integer? ())))
    (assert-false (uim-bool '(integer? '(1 "2" 'three)))))
   ("test list?"
-   (assert-true  (uim-bool '(list? #f))) ; Siod specific
+   ;;(assert-true  (uim-bool '(list? #f))) ; SIOD specific
+   (assert-false (uim-bool '(list? #f))) ; SigScheme
    (assert-false (uim-bool '(list? "foo")))
    (assert-false (uim-bool '(list? 'foo)))
    (assert-false (uim-bool '(list? -1)))
@@ -1120,7 +1122,7 @@
 		 (uim '(find string? lst)))
    (assert-equal 'three
 		 (uim '(find symbol? lst)))
-   (assert-equal ()
+   (assert-equal #f
 		 (uim '(find string? ())))
    (assert-equal -9
 		 (uim '(find (lambda (x)

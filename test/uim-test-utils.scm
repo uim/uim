@@ -100,7 +100,7 @@
   (uim-sh-read (process-output *uim-sh-process*)))
 
 (define (uim-bool sexp)
-  (not (null? (uim sexp))))
+  (not (not (uim sexp))))
 
 ;; only the tricky tests require this 'require' emulation.
 (define (uim-define-siod-compatible-require)

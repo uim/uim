@@ -513,70 +513,70 @@
   ("test widget-new"
    (assert-false (uim-bool '(widget-new 'widget_test_nonexistent tc)))
    ;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal 'widget_test_input_mode
 		 (uim '(widget-id test-input-mode)))
    (assert-equal 'action_test_direct
 		 (uim '(action-id (widget-activity test-input-mode))))
    ;; widget_test_input_mode with default value
    (uim '(define default-widget_test_input_mode 'action_test_hiragana))
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal 'action_test_hiragana
 		 (uim '(action-id (widget-activity test-input-mode))))
    ;; widget_test_input_mode with default value #2
    (uim '(define default-widget_test_input_mode 'action_test_katakana))
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal 'action_test_katakana
 		 (uim '(action-id (widget-activity test-input-mode))))
    ;; widget_test_input_mode with default value #3
    (uim '(define default-widget_test_input_mode 'action_test_zenkaku))
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal 'action_test_zenkaku
 		 (uim '(action-id (widget-activity test-input-mode))))
 
    ;; widget_test_input_mode with invalid default value
    (uim '(define default-widget_test_input_mode 'action_nonexistent))
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal 'action_test_zenkaku
 		 (uim '(action-id (widget-activity test-input-mode))))
 
    ;; widget_test_kana_input_method
-   (assert-true  (uim-bool '(and (define test-kana-input-method
-				   (widget-new 'widget_test_kana_input_method tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-kana-input-method
+				     (widget-new 'widget_test_kana_input_method tc))
+				   #t)))
    (assert-equal 'action_test_roma
 		 (uim '(action-id (widget-activity test-kana-input-method))))
    ;; widget_test_kana_input_method with default value
    (uim '(define default-widget_test_kana_input_method 'action_test_kana))
-   (assert-true  (uim-bool '(and (define test-kana-input-method
-				   (widget-new 'widget_test_kana_input_method tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-kana-input-method
+				     (widget-new 'widget_test_kana_input_method tc))
+				   #t)))
    (assert-equal 'action_test_kana
 		 (uim '(action-id (widget-activity test-kana-input-method))))
    ;; widget_test_kana_input_method with invalid default value
    (uim '(define default-widget_test_kana_input_method 'action_nonexistent))
-   (assert-true  (uim-bool '(and (define test-kana-input-method
-				   (widget-new 'widget_test_kana_input_method tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-kana-input-method
+				     (widget-new 'widget_test_kana_input_method tc))
+				   #t)))
    (assert-equal 'action_test_kana
 		 (uim '(action-id (widget-activity test-kana-input-method)))))
 
 
   ("test widget-activity"
    ;;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    ;; action_test_direct (initial activity)
    (assert-false (uim-bool '(test-context-on tc)))
    (assert-false (uim-bool '(test-context-wide-latin tc)))
@@ -659,9 +659,9 @@
 
   ("test widget-activate!"
    ;;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    ;; action_test_direct (initial activity)
    (assert-false (uim-bool '(test-context-on tc)))
    (assert-false (uim-bool '(test-context-wide-latin tc)))
@@ -726,9 +726,9 @@
 
   ("test widget-configuration"
    ;;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal '(action_unknown
 		   (figure_ja_hiragana
 		    "あ"
@@ -752,9 +752,9 @@
 		    "全角英数入力モード"))
 		 (uim '(widget-configuration test-input-mode)))
    ;;; widget_test_kana_input_method
-   (assert-true  (uim-bool '(and (define test-kana-input-method
-				   (widget-new 'widget_test_kana_input_method tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-kana-input-method
+				     (widget-new 'widget_test_kana_input_method tc))
+				   #t)))
    (assert-equal '(action_unknown
 		   (figure_ja_roma
 		    "Ｒ"
@@ -766,17 +766,17 @@
 		    "かな入力モード"))
 		 (uim '(widget-configuration test-kana-input-method)))
    ;;; widget_test_null
-   (assert-true  (uim-bool '(and (define test-null
-				   (widget-new 'widget_test_null tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-null
+				     (widget-new 'widget_test_null tc))
+				   #t)))
    (assert-equal '(action_unknown)
 		 (uim '(widget-configuration test-null))))
 
   ("test widget-state"
    ;;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
 					  '(figure_ja_direct
 					    "a"
@@ -800,9 +800,9 @@
 					    "カタカナ入力モード"))
 				    (widget-state test-input-mode))))
    ;;; widget_test_kana_input_method
-   (assert-true  (uim-bool '(and (define test-kana-input-method
-				   (widget-new 'widget_test_kana_input_method tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-kana-input-method
+				     (widget-new 'widget_test_kana_input_method tc))
+				   #t)))
    (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_roma)
 					  '(figure_ja_roma
 					    "Ｒ"
@@ -810,9 +810,9 @@
 					    "ローマ字入力モード"))
 				    (widget-state test-kana-input-method))))
    ;;; widget_test_null
-   (assert-true  (uim-bool '(and (define test-null
-				   (widget-new 'widget_test_null tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-null
+				     (widget-new 'widget_test_null tc))
+				   #t)))
    (assert-true  (uim-bool '(equal? (list #f
 					  '(unknown
 					    "?"
@@ -822,9 +822,9 @@
 
   ("test widget-update-configuration!"
    ;;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal '(action_unknown
 		   (figure_ja_hiragana
 		    "あ"
@@ -917,9 +917,9 @@
 		    "全角英数入力モード"))
 		 (uim '(widget-prev-config test-input-mode)))
    ;;; widget_test_null
-   (assert-true  (uim-bool '(and (define test-null
-				   (widget-new 'widget_test_null tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-null
+				     (widget-new 'widget_test_null tc))
+				   #t)))
    (assert-equal '(action_unknown)
 		 (uim '(widget-configuration test-null)))
    (assert-false (uim-bool '(widget-prev-config test-null)))
@@ -930,9 +930,9 @@
 
   ("test widget-update-state!"
    ;;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    ;; initial state
    (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
 					  '(figure_ja_direct
@@ -1014,9 +1014,9 @@
 					    "カタカナ入力モード"))
 				    (widget-prev-state test-input-mode))))
    ;;; widget_test_null
-   (assert-true  (uim-bool '(and (define test-null
-				   (widget-new 'widget_test_null tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-null
+				     (widget-new 'widget_test_null tc))
+				   #t)))
 
    ;; initial state
    (assert-true  (uim-bool '(equal? (list #f
@@ -1056,9 +1056,9 @@
 				    (widget-prev-state test-null)))))
 
   ("test widget-debug-message"
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal "something in somewhere. debug widget_test_input_mode."
 		 (uim '(widget-debug-message test-input-mode
 					     "somewhere"
@@ -1214,9 +1214,9 @@
 
   ("test widget-compose-live-branch"
    ;; widget_test_input_mode
-   (assert-true  (uim-bool '(and (define test-input-mode
-				   (widget-new 'widget_test_input_mode tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-input-mode
+				     (widget-new 'widget_test_input_mode tc))
+				   #t)))
    (assert-equal (string-append
 		  "branch\tfigure_ja_direct\ta\t直接入力\n"
 		  "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
@@ -1236,9 +1236,9 @@
 		  "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n")
 		 (uim '(widget-compose-live-branch test-input-mode)))
    ;;; prop_test_kana_input_method
-   (assert-true  (uim-bool '(and (define test-kana-input-method
-				   (widget-new 'widget_test_kana_input_method tc))
-				 #t)))
+   (assert-true  (uim-bool '(begin (define test-kana-input-method
+				     (widget-new 'widget_test_kana_input_method tc))
+				   #t)))
    (assert-equal (string-append
 		  "branch\tfigure_ja_roma\tＲ\tローマ字\n"
 		  "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
@@ -1305,8 +1305,8 @@
 	   #t))
    ;; initial update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
@@ -1318,49 +1318,49 @@
 		 (uim '(map widget-id test-widget-state)))
    ;; duplicate update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
    ;; duplicate update #2
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
    ;; state update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
 						   (context-widgets tc))
 					     'action_test_katakana)))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
    (assert-equal '(widget_test_input_mode
 		   widget_test_kana_input_method)
 		 (uim '(map widget-id test-widget-state)))
    ;; duplicate state update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
    ;; configuration update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (register-action 'action_test_alt_hiragana
 			    (lambda (tc)
@@ -1395,20 +1395,20 @@
    (assert-equal '(widget_test_input_mode
 		   widget_test_kana_input_method)
 		 (uim '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
    ;; duplicate configuration update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
    ;; configuration & state update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-init-widgets! tc '(widget_test_input_mode))
 	   #t))
@@ -1421,19 +1421,19 @@
 		 (uim '(map widget-id test-widget-state)))
    ;; duplicate configuration & state update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
    ;; The framework can't detect the configuration information
    ;; invalidation when violently reconfigured by
    ;; context-set-widgets!.
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-set-widgets!
 	    tc
@@ -1445,8 +1445,8 @@
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
 
    ;;; no widgets
    (uim '(begin
@@ -1454,8 +1454,8 @@
 	   #t))
    ;; initial update (widget_fallback)
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
@@ -1465,13 +1465,13 @@
 		 (uim '(map widget-id test-widget-state)))
    ;; subsequent update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state)))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state))))
 
    ;;; null widget
    (uim '(begin
@@ -1479,8 +1479,8 @@
 	   #t))
    ;; initial update (widget_test_null with fallback-indication)
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
@@ -1490,13 +1490,13 @@
 		 (uim '(map widget-id test-widget-state)))
    ;; subsequent update
    (uim '(begin
-	   (define test-widget-conf #f)
-	   (define test-widget-state #f)))
+	   (define test-widget-conf '())
+	   (define test-widget-state '())))
    (uim '(begin
 	   (context-update-widgets tc)
 	   #t))
-   (assert-false (uim-bool '(map widget-id test-widget-conf)))
-   (assert-false (uim-bool '(map widget-id test-widget-state))))
+   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+   (assert-true  (null? (uim '(map widget-id test-widget-state)))))
 
   ("test context-propagate-prop-list-update"
    (uim '(begin

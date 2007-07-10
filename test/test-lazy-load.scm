@@ -83,21 +83,21 @@
 		   "Hangul (2-bul)"
 		   "2-bul style hangul input method"
 		   ;; replace () with #f for R5RS compliant interpreter
-		   () ;; arg
+		   #f ;; arg
 		   init
-		   () ;; release-handler
-		   () ;; mode-handler
-		   () ;; press-key-handler
-		   () ;; release-key-handler
-		   () ;; reset-handler
-		   () ;; get-candidate-handler
-		   () ;; set-candidate-index-handler
-		   () ;; prop-activate-handler
-		   () ;; input-string-handler
-		   () ;; focus-in-handler
-		   () ;; focus-out-handler
-		   () ;; place-handler
-		   () ;; displace-handler
+		   #f ;; release-handler
+		   #f ;; mode-handler
+		   #f ;; press-key-handler
+		   #f ;; release-key-handler
+		   #f ;; reset-handler
+		   #f ;; get-candidate-handler
+		   #f ;; set-candidate-index-handler
+		   #f ;; prop-activate-handler
+		   #f ;; input-string-handler
+		   #f ;; focus-in-handler
+		   #f ;; focus-out-handler
+		   #f ;; place-handler
+		   #f ;; displace-handler
 		   "hangul")
 		 (uim '(retrieve-im 'hangul2)))
    (uim '(im-set-init-handler! (retrieve-im 'hangul2) init-handler))

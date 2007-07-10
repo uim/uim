@@ -238,7 +238,7 @@
     (let* ((im-names (map car im-list))
 	   (im-rest (memq name im-names)))
       (or (and im-rest
-               (not (null? im-rest))
+	       (pair? (cdr im-rest))
 	       (cadr im-rest))
 	  (car im-names)))))
 

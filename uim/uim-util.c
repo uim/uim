@@ -293,8 +293,11 @@ uim_split_string(uim_lisp _splittee, uim_lisp _splitter)
 
   strs = uim_strsplit(splittee, splitter);
 
-  if (!strs || !*strs)
+  if (!strs)
     return uim_scm_f();
+
+  if (!*strs)
+    return uim_scm_null_list();
 
   for (n_strs = 0; strs[n_strs] != '\0'; n_strs++);
 
