@@ -57,6 +57,23 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Specification changes of utility procedures
+Affects: uim developers, IM developers
+Updates: Scheme API
+Version: 1.5.0
+Revision: ac4693
+Date: 2007-07-11
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (changed) string-split
+Description:
+  Now string-split produces empty strings as follows. See
+  test-uim-utils.scm for further information.
+    uim 1.4: (string-split "hhh" "h")  ==> ()
+    uim 1.5: (string-split "hhh" "h")  ==> ("" "" "" "")
+------------------------------------------------------------------------------
 Summary: SRFI-1 procedures replacement
 Affects: uim developers, IM developers
 Updates: Scheme API

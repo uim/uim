@@ -153,6 +153,18 @@
   (lambda (sep str-list)
     (apply string-append (join sep str-list))))
 
+(define string-split
+  (lambda (str sep)
+    (let ((slen (string-length str))
+	  (seplen (string-length sep)))
+      (let rec ((start 0))
+	(let ((next (and (<= start slen)
+			 (string-contains str sep start))))
+	  (if next
+	      (cons (substring str start next)
+		    (rec (+ next seplen)))
+	      (list (substring str start slen))))))))
+
 (define string-append-map
   (lambda args
     (apply string-append (apply map args))))

@@ -179,95 +179,29 @@ c_unsetenv(uim_lisp name_)
   return uim_scm_t();
 }
 
-static char **
-uim_strsplit(const char *splittee, const char *splitter)
-{
-  const char *cur, *tmp;
-  int nr_token = 0;
-  int in_token = 0;
-  char **res;
-  int len;
-  int i;
-
-  if (!splittee || !splitter)
-    return NULL;
-
-
-  /* count the number of token */
-  cur = splittee;
-  while (*cur) {
-    if (strchr(splitter, *cur)) {
-      in_token = 0;
-    } else {
-      if (!in_token) {
-	nr_token ++;
-      }
-      in_token = 1;
-    }
-    cur ++;
-  }
-  /* allocate buffer */
-  res = (char **)malloc(sizeof(char *) * (nr_token + 1) );
-  if (!res) {
-    return NULL;
-  }
-  /**/
-  cur = splittee;
-  for (i = 0; i < nr_token; i++) {
-    /* find current token's start */
-    while (strchr(splitter, *cur)) {
-      cur ++;
-    }
-    /* calc length */
-    len = 0;
-    tmp = cur;
-    while (!strchr(splitter, *tmp)) {
-      len ++;
-      tmp ++;
-    }
-    /* store */
-    res[i] = malloc(sizeof(char) * (len + 1));
-    strlcpy(res[i], cur, len + 1);
-    cur = tmp;
-  }
-  /**/
-  res[nr_token] = NULL;
-
-  return res;
-}
-
+/* Limited version of SRFI-13 string-contains. The number of args are
+ * fixed to 3. */
 static uim_lisp
-uim_split_string(uim_lisp _splittee, uim_lisp _splitter)
+string_contains(uim_lisp s1_, uim_lisp s2_, uim_lisp start1_)
 {
-  const char *splittee = uim_scm_refer_c_str(_splittee);
-  const char *splitter = uim_scm_refer_c_str(_splitter);
-  char **strs;
-  uim_lisp l = uim_scm_null_list();
-  int i;
-  int n_strs;
+  const char *s1, *s2, *found;
+  int start1;
+  size_t s1len;
 
-  if (!uim_scm_stringp(_splittee) || !uim_scm_stringp(_splitter))
-    return uim_scm_f();
+  if (!uim_scm_stringp(s1_) || !uim_scm_stringp(s2_))
+    return uim_scm_f();  /* FIXME: uim_scm_error() */
 
-  if (splittee == NULL || splitter == NULL)
-    return uim_scm_f();
+  s1 = uim_scm_refer_c_str(s1_);
+  s2 = uim_scm_refer_c_str(s2_);
+  start1 = uim_scm_c_int(start1_);
+  s1len = strlen(s1);
 
-  strs = uim_strsplit(splittee, splitter);
+  if (start1 < 0 || s1len < (size_t)start1)
+    return uim_scm_f();  /* FIXME: uim_scm_error() */
 
-  if (!strs)
-    return uim_scm_f();
+  found = strstr(&s1[start1], s2);
 
-  if (!*strs)
-    return uim_scm_null_list();
-
-  for (n_strs = 0; strs[n_strs] != '\0'; n_strs++);
-
-  l = uim_scm_c_strs_into_list(n_strs, (const char *const *)strs);
-  for (i = n_strs - 1; i >= 0; i--) {
-    free(strs[i]);
-  }
-  free(strs);
-  return l;
+  return (found) ? uim_scm_make_int(found - s1) : uim_scm_f();
 }
 
 static uim_lisp
@@ -350,19 +284,22 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
   uim_scm_init_subr_0("sys-datadir", sys_datadir);
   uim_scm_init_subr_0("sys-pkgdatadir", sys_pkgdatadir);
+
   uim_scm_init_subr_1("file-readable?", file_readablep);
   uim_scm_init_subr_1("file-writable?", file_writablep);
   uim_scm_init_subr_1("file-executable?", file_executablep);
   uim_scm_init_subr_1("file-regular?", file_regularp);
   uim_scm_init_subr_1("file-directory?", file_directoryp);
   uim_scm_init_subr_1("file-mtime", file_mtime);
+
   uim_scm_init_subr_0("setugid?", setugidp);
+
   uim_scm_init_subr_1("getenv", c_getenv);
   uim_scm_init_subr_3("setenv", c_setenv);
   uim_scm_init_subr_1("unsetenv", c_unsetenv);
 
-  /* these procedures should be replaced with standard ones of R5RS or SRFIs */
-  uim_scm_init_subr_2("string-split", uim_split_string);
+  /* SRFI-13 */
+  uim_scm_init_subr_3("string-contains", string_contains);
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
 }

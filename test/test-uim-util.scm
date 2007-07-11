@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4692 (new repository)
+;; These tests are passed at revision 4693 (new repository)
 
 (use test.unit)
 
@@ -67,7 +67,47 @@
    (assert-true  (uim-bool '(unsetenv "UIM_NONEXISTING_ENV")))
    (assert-false (uim-bool '(getenv "UIM_NONEXISTING_ENV"))))
 
-  ("test string-split"
+  ;; See "Specification changes of utility procedures" of doc/COMPATIBILITY
+;;  ("test string-split (uim 1.4)"
+;;   ;; ordinary split
+;;   (assert-equal '("h" "geh" "ge")
+;;		 (uim '(string-split "hogehoge" "o")))
+;;   ;; case sensitive
+;;   (assert-equal '("hogehoge")
+;;		 (uim '(string-split "hogehoge" "O")))
+;;   ;; split by sequence
+;;   (assert-equal '("h" "eh" "e")
+;;		 (uim '(string-split "hogehoge" "og")))
+;;   ;; split by first character
+;;   (assert-equal '("oge" "oge")
+;;		 (uim '(string-split "hogehoge" "h")))
+;;   ;; split by first sequence
+;;   (assert-equal '("ge" "ge")
+;;		 (uim '(string-split "hogehoge" "ho")))
+;;   ;; split by last character
+;;   (assert-equal '("hog" "hog")
+;;		 (uim '(string-split "hogehoge" "e")))
+;;   ;; split by last sequence
+;;   (assert-equal '("ho" "ho")
+;;		 (uim '(string-split "hogehoge" "ge")))
+;;   ;; split by whole string
+;;   (assert-equal ()
+;;		 (uim '(string-split "hogehoge" "hogehoge")))
+;;   ;; repeated splitter
+;;   (assert-equal ()
+;;		 (uim '(string-split "hhh" "h")))
+;;   ;; split by space
+;;   (assert-equal '("h" "o" "g" "e" "hoge")
+;;		 (uim '(string-split " h o g e hoge" " ")))
+;;   ;; split by symbolic character
+;;   (assert-equal '("h" "o" "g" "e" "hoge")
+;;		 (uim '(string-split "|h|o|g|e|hoge" "|")))
+;;   ;; split by non existent character
+;;   (assert-equal '("hogehoge")
+;;		 (uim '(string-split "hogehoge" "|"))))
+
+  ;; See "Specification changes of utility procedures" of doc/COMPATIBILITY
+  ("test string-split (uim 1.5)"
    ;; ordinary split
    (assert-equal '("h" "geh" "ge")
 		 (uim '(string-split "hogehoge" "o")))
@@ -78,25 +118,28 @@
    (assert-equal '("h" "eh" "e")
 		 (uim '(string-split "hogehoge" "og")))
    ;; split by first character
-   (assert-equal '("oge" "oge")
+   (assert-equal '("" "oge" "oge")
 		 (uim '(string-split "hogehoge" "h")))
    ;; split by first sequence
-   (assert-equal '("ge" "ge")
+   (assert-equal '("" "ge" "ge")
 		 (uim '(string-split "hogehoge" "ho")))
    ;; split by last character
-   (assert-equal '("hog" "hog")
+   (assert-equal '("hog" "hog" "")
 		 (uim '(string-split "hogehoge" "e")))
    ;; split by last sequence
-   (assert-equal '("ho" "ho")
+   (assert-equal '("ho" "ho" "")
 		 (uim '(string-split "hogehoge" "ge")))
    ;; split by whole string
-   (assert-equal ()
+   (assert-equal '("" "")
 		 (uim '(string-split "hogehoge" "hogehoge")))
+   ;; repeated splitter
+   (assert-equal '("" "" "" "")
+		 (uim '(string-split "hhh" "h")))
    ;; split by space
-   (assert-equal '("h" "o" "g" "e" "hoge")
+   (assert-equal '("" "h" "o" "g" "e" "hoge")
 		 (uim '(string-split " h o g e hoge" " ")))
    ;; split by symbolic character
-   (assert-equal '("h" "o" "g" "e" "hoge")
+   (assert-equal '("" "h" "o" "g" "e" "hoge")
 		 (uim '(string-split "|h|o|g|e|hoge" "|")))
    ;; split by non existent character
    (assert-equal '("hogehoge")
@@ -124,6 +167,17 @@
 ;   (assert-equal '("c" "語" "本" "b" "日" "a")
 ;		 (uim '(string-to-list "a日b本語c")))
    )
+
+  ("test string-contains"
+   (assert-equal 0 (uim '(string-contains ""         "" 0)))
+   (assert-false   (uim '(string-contains ""         "f" 0)))
+   (assert-equal 0 (uim '(string-contains "foo"      "" 0)))
+   (assert-equal 0 (uim '(string-contains "foo"      "f" 0)))
+   (assert-equal 1 (uim '(string-contains "foo"      "o" 0)))
+   (assert-equal 1 (uim '(string-contains "foo"      "oo" 0)))
+   (assert-false   (uim '(string-contains "foo"      "oof" 0)))
+   (assert-equal 1 (uim '(string-contains "foo"      "o" 1)))
+   (assert-equal 2 (uim '(string-contains "foo"      "o" 2))))
 
   ("test string-prefix?"
    (assert-true  (uim-bool '(string-prefix? ""         "foo_bar")))
