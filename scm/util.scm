@@ -314,7 +314,10 @@
 
 (define charcode->string
   (lambda (c)
-    (list->string (list (integer->char (bitwise-and 255 c))))))
+    (if (and (integer? c)
+	     (not (zero? c)))
+	(list->string (list (integer->char (bitwise-and 255 c))))
+	"")))
 
 (define string->charcode
   (lambda (s)

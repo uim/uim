@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4693 (new repository)
+;; These tests are passed at revision 4695 (new repository)
 
 (use test.unit)
 
@@ -253,6 +253,7 @@
 		 (uim '(nthcdr 5 lst))))
 
   ("test charcode->string"
+   (assert-equal ""   (uim '(charcode->string 'return)))
    (assert-equal ""   (uim '(charcode->string 0)))
    (assert-equal "\n" (uim '(charcode->string 10)))
    (assert-equal "\r" (uim '(charcode->string 13)))
