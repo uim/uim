@@ -135,30 +135,6 @@ file_mtime(uim_lisp f)
 }
 
 static uim_lisp
-charcode2string(uim_lisp x)
-{
-  char buf[2];
-  if (uim_scm_integerp(x)) {
-    buf[0] = uim_scm_c_int(x);
-  } else {
-    buf[0] = 0;
-  }
-  buf[1] = 0;
-  return uim_scm_make_str(buf);
-}
-
-static uim_lisp
-string2charcode(uim_lisp x)
-{
-  const char *buf = uim_scm_refer_c_str(x);
-
-  if (buf) {
-    return uim_scm_make_int(*buf);
-  }
-  return uim_scm_f();
-}
-
-static uim_lisp
 c_getenv(uim_lisp str_)
 {
   const char *str = uim_scm_refer_c_str(str_);
@@ -413,8 +389,6 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_1("unsetenv", c_unsetenv);
 
   /* these procedures should be replaced with standard ones of R5RS or SRFIs */
-  uim_scm_init_subr_1("charcode->string", charcode2string);
-  uim_scm_init_subr_1("string->charcode", string2charcode);
   uim_scm_init_subr_2("string-split", uim_split_string);
   uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
   uim_scm_init_subr_2("string-prefix?", string_prefixp);

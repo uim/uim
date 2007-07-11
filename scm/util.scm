@@ -31,6 +31,7 @@
 (use srfi-1)
 (use srfi-6)
 (use srfi-34)
+(use srfi-60)
 
 ;;;;
 
@@ -297,6 +298,19 @@
 (define numeral-char? char-numeric?)
 (define usual-char? char-graphic?)
 (define to-lower-char char-downcase)
+
+(define charcode->string
+  (lambda (c)
+    (list->string (list (integer->char (bitwise-and 255 c))))))
+
+(define string->charcode
+  (lambda (s)
+    (let ((sl (with-char-codec "ISO-8859-1"
+	        (lambda ()
+		  (string->list s)))))
+      (if (null? sl)
+	  0
+	  (char->integer (car sl))))))
 
 (define symbolconc symbol-append)
 
