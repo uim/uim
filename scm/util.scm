@@ -34,6 +34,7 @@
 (use srfi-60)
 
 (require "ichar.scm")
+(require "deprecated-util.scm")
 
 ;;;;
 
@@ -62,23 +63,6 @@
       (write s p)
       (get-output-string p))))
 
-;; Current uim implementation treats char as integer
-
-(define string-list-concat
-  (lambda (lst)
-    (apply string-append (reverse lst))))
-
-(define string-find
-  (lambda (lst str)
-    (member str lst)))
-
-;; should be obsoleted by 'take'
-(define truncate-list
-  (lambda (lst n)
-    (guard (err
-	    (else #f))
-      (take lst n))))
-
 ;; procedural 'or' for use with 'apply'
 ;; e.g. (apply proc-or boolean-lst)
 ;; should be deprecated and replaced with a proper, Schemer's way
@@ -98,9 +82,6 @@
 	#t
 	(and (car xs)
 	     (apply proc-and (cdr xs))))))
-
-;; should be obsoleted by 'take'
-(define list-head take)
 
 ;; TODO: write test
 (define sublist
@@ -198,66 +179,6 @@
   (lambda (x bottom ceiling)
     (max bottom
 	 (min x ceiling))))
-
-(define nconc
-  (lambda (lst obj)
-    (if (null? lst)
-	obj
-	(begin
-	  (set-cdr! (last-pair lst) obj)
-	  lst))))
-
-;; split EUC-JP string into reversed character list
-(define string-to-list
-  (lambda (s)
-    (with-char-codec "EUC-JP"
-      (lambda ()
-	(map! (lambda (c)
-		(list->string (list c)))
-	      (reverse! (string->list s)))))))
-
-(define symbolconc symbol-append)
-
-;; should be obsoleted by list-ref
-(define nth
-  (lambda (k lst)
-    (list-ref lst k)))
-
-;; should be obsoleted by list-tail
-(define nthcdr
-  (lambda (k lst)
-    (guard (err
-	    (else #f))
-      (list-tail lst k))))
-
-;; should be obsoleted by list-copy of SRFI-1
-(define copy-list
-  (lambda (lst)
-    (append lst '())))
-
-(define digit->string
-  (lambda (n)
-    (and (number? n)
-         (number->string n))))
-
-;;
-;; SIOD compatibility
-;;
-(define puts display)
-
-;; TODO: Rename to more appropriate name such as 'inspect' (the name
-;; came from debugging terms) or simply 'writeln'. But since I don't
-;; know Scheme culture enough, I can't determine what is appropriate.
-(define siod-print
-  (lambda (obj)
-    (write obj)
-    (newline)))
-
-(define print siod-print)
-
-(define feature?
-  (lambda (sym)
-    (provided? (symbol->string sym))))
 
 
 ;;
@@ -376,16 +297,6 @@
 	  (set-symbol-value! name val))
       (if (not (null? (cdr style)))
 	  (update-style style-spec (cdr style))))))
-
-;; for backward compatibility
-(define uim-symbol-value-str
-  (lambda (sym)
-    (let ((val (if (symbol-bound? sym)
-		   (symbol-value sym)
-		   "")))
-      (if (symbol? val)
-	  (symbol->string val)
-	  val))))
 
 ;;
 ;; Preedit color related configurations and functions.
