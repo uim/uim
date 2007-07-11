@@ -258,8 +258,8 @@
 
 ;; TODO: write test
 (define char-vowel?
-  (let ((vowel-chars (map string->char
-			  '("a" "i" "u" "e" "o"))))
+  (let ((vowel-chars (map char->integer
+			  '(#\a #\i #\u #\e #\o))))
     (lambda (c)
       (and (char-alphabetic? c)
 	   (member (char-downcase c)
