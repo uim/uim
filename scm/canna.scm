@@ -1017,7 +1017,7 @@
 		      (len (length unconv)))
 		  (if start
 		      (canna-make-raw-string
-		       (reverse (sublist raw-str start (+ start (- len 1))))
+		       (reverse (sublist-rel raw-str start len))
 		       (if (or
 			    (= cand-idx canna-candidate-type-halfwidth-alnum)
 			    (= cand-idx

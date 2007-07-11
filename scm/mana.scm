@@ -158,8 +158,8 @@
 	   (preconv (ja-join-vu (string-to-list yomi)))
 	   (unconv (ja-join-vu (sublist
 				(string-to-list yomi)
-				(- (- yomi-len 1) (+ pos (- len 1)))
-				(- (- yomi-len 1) pos))))
+				(- yomi-len (+ pos len))
+				(- yomi-len pos))))
 	   (raw-str (reverse (mana-get-raw-str-seq mc))))
      (cond
       ((= cand-idx mana-candidate-type-hiragana)
@@ -175,7 +175,7 @@
 		     (len (length unconv)))
 		 (if start
 		     (mana-make-raw-string
-		      (reverse (sublist raw-str start (+ start (- len 1))))
+		      (reverse (sublist-rel raw-str start len))
 		      (if (or
 			   (= cand-idx mana-candidate-type-halfwidth-alnum)
 			   (= cand-idx

@@ -83,16 +83,19 @@
 	(and (car xs)
 	     (apply proc-and (cdr xs))))))
 
-;; TODO: write test
+;; meaning of 'end' has been changed from uim 1.5.0. See
+;; doc/COMPATIBILITY and test-util.scm.
 (define sublist
   (lambda (lst start end)
-    (list-tail (list-head lst (+ end 1))
-	       start)))
+    (take (drop lst start)
+	  (- end start))))
 
-;; TODO: write test
+;; meaning of 'len' has been changed from uim 1.5.0. See
+;; doc/COMPATIBILITY and test-util.scm.
 (define sublist-rel
   (lambda (lst start len)
-    (sublist lst start (+ start len))))
+    (take (drop lst start)
+	  len)))
 
 (define alist-replace
   (lambda (kons alist)
@@ -158,19 +161,16 @@
 	     (dest (dest-getter self)))
 	(apply method (cons dest (cdr args)))))))
 
-;; TODO: write test
 (define safe-car
   (lambda (pair)
     (and (pair? pair)
 	 (car pair))))
 
-;; TODO: write test
 (define safe-cdr
   (lambda (pair)
     (and (pair? pair)
 	 (cdr pair))))
 
-;; TODO: write test
 (define assq-cdr
   (lambda (key alist)
     (safe-cdr (assq key alist))))
@@ -187,7 +187,6 @@
 
 (define do-nothing (lambda args #f))
 
-;; TODO: write test
 (define make-scm-pathname
   (lambda (file)
     (or (and (= (string->charcode file)

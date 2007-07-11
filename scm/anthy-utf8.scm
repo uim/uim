@@ -1374,7 +1374,7 @@
 		    (len (length unconv)))
 		(if start
 		    (anthy-make-raw-string
-		     (reverse (sublist raw-str start (+ start (- len 1))))
+		     (reverse (sublist-rel raw-str start len))
 		     (if (or
 			  (= cand-idx anthy-candidate-type-halfwidth-alnum)
 			  (= cand-idx
