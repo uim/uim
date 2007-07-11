@@ -103,8 +103,8 @@
 	    alist)
 	  (cons kons alist)))))
 
-(define join
-  (lambda (sep lst)
+(define list-join
+  (lambda (lst sep)
     (if (null? lst)
 	'()
 	(cdr (fold-right (lambda (kar kdr)
@@ -115,7 +115,7 @@
 ;; downward compatible with SRFI-13 string-join
 (define string-join
   (lambda (str-list sep)
-    (apply string-append (join sep str-list))))
+    (apply string-append (list-join str-list sep))))
 
 (define string-split
   (lambda (str sep)

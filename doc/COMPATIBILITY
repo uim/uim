@@ -61,30 +61,33 @@ Summary: Specification changes of utility procedures
 Affects: uim developers, IM developers
 Updates: Scheme API
 Version: 1.5.0
-Revision: ac4693, ac4694, ac4698, ac4699
+Revision: ac4693, ac4694, ac4698, ac4699, ac4703
 Date: 2007-07-11
 Modifier: YamaKen
 Related: 
 URL:
 Changes:
+  (removed) join
+      (new) list-join
   (changed) string-split
   (changed) string-join
   (changed) sublist
   (changed) sublist-rel
 Description:
-  Now string-split produces empty strings as follows. See
-  test-uim-utils.scm for further information.
-    uim 1.4: (string-split "hhh" "h")  ==> ()
-    uim 1.5: (string-split "hhh" "h")  ==> ("" "" "" "")
-  The 2 arguments of string-join has been swapped to be compatible
-  with SRFI-13 string-join.
-  The meaning of 'end' arg of sublist and 'len' arg of sublist-rel has
-  been changed to correct one. See test-util.scm for further
-  information.
-    uim 1.4: (sublist     '(1) 0 0)  ==> (1)
-             (sublist-rel '(1) 0 0)  ==> (1)
-    uim 1.5: (sublist     '(1) 0 0)  ==> ()
-             (sublist-rel '(1) 0 0)  ==> ()
+  - 'join' has been replaced with 'list-join'. The args are swapped
+  - Now string-split produces empty strings as follows. See
+    test-uim-utils.scm for further information.
+      uim 1.4: (string-split "hhh" "h")  ==> ()
+      uim 1.5: (string-split "hhh" "h")  ==> ("" "" "" "")
+  - The 2 arguments of string-join has been swapped to be compatible
+    with SRFI-13 string-join.
+  - The meaning of 'end' arg of sublist and 'len' arg of sublist-rel has
+    been changed to correct one. See test-util.scm for further
+    information.
+      uim 1.4: (sublist     '(1) 0 0)  ==> (1)
+               (sublist-rel '(1) 0 0)  ==> (1)
+      uim 1.5: (sublist     '(1) 0 0)  ==> ()
+               (sublist-rel '(1) 0 0)  ==> ()
 ------------------------------------------------------------------------------
 Summary: SRFI-1 procedures replacement
 Affects: uim developers, IM developers

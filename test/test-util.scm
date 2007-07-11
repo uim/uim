@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4700 (new repository)
+;; These tests are passed at revision 4703 (new repository)
 
 (use test.unit)
 
@@ -926,44 +926,44 @@
    (assert-equal '((third 3 "3") (second two "two") (first 1 "1"))
 		 (uim 'alist)))
 
-  ("test join"
+  ("test list-join"
    (assert-equal ()
-		 (uim '(join () ())))
+		 (uim '(list-join () ())))
    (assert-equal '(())
-		 (uim '(join () '(()))))
+		 (uim '(list-join '(()) ())))
    (assert-equal '(1)
-		 (uim '(join () '(1))))
+		 (uim '(list-join '(1) ())))
    (assert-equal '(() () ())
-		 (uim '(join () '(() ()))))
+		 (uim '(list-join '(() ()) ())))
    (assert-equal '(1 () 2)
-		 (uim '(join () '(1 2))))
+		 (uim '(list-join '(1 2) ())))
    (assert-equal '(1 () 2 () 3)
-		 (uim '(join () '(1 2 3))))
+		 (uim '(list-join '(1 2 3) ())))
    (assert-equal '(one () two () three)
-		 (uim '(join () '(one two three))))
+		 (uim '(list-join '(one two three) ())))
    (assert-equal '("1" () "2" () "3")
-		 (uim '(join () '("1" "2" "3"))))
+		 (uim '(list-join '("1" "2" "3") ())))
    (assert-equal '(() () () () ())
-		 (uim '(join () '(() () ()))))
+		 (uim '(list-join '(() () ()) ())))
 
    (assert-equal ()
-		 (uim '(join "/" ())))
+		 (uim '(list-join () "/")))
    (assert-equal '(())
-		 (uim '(join "/" '(()))))
+		 (uim '(list-join '(()) "/")))
    (assert-equal '(1)
-		 (uim '(join "/" '(1))))
+		 (uim '(list-join '(1) "/")))
    (assert-equal '(() "/" ())
-		 (uim '(join "/" '(() ()))))
+		 (uim '(list-join '(() ()) "/")))
    (assert-equal '(1 "/" 2)
-		 (uim '(join "/" '(1 2))))
+		 (uim '(list-join '(1 2) "/")))
    (assert-equal '(1 "/" 2 "/" 3)
-		 (uim '(join "/" '(1 2 3))))
+		 (uim '(list-join '(1 2 3) "/")))
    (assert-equal '(one "/" two "/" three)
-		 (uim '(join "/" '(one two three))))
+		 (uim '(list-join '(one two three) "/")))
    (assert-equal '("1" "/" "2" "/" "3")
-		 (uim '(join "/" '("1" "2" "3"))))
+		 (uim '(list-join '("1" "2" "3") "/")))
    (assert-equal '(() "/" () "/" ())
-		 (uim '(join "/" '(() () ())))))
+		 (uim '(list-join '(() () ()) "/"))))
 
   ("test string-join"
    (assert-equal ""
