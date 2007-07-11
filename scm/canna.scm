@@ -366,7 +366,7 @@
 	     (ja-string-list-to-wide-alphabet
 	      (if upper?
 		  (map charcode->string
-		       (map char-upcase
+		       (map ichar-upcase
 			    (map string->charcode
 				 (string-to-list (car raw-str-list)))))
 		  (string-to-list (car raw-str-list))))
@@ -375,7 +375,7 @@
 	     (if upper?
 		 (string-list-concat
 		  (map charcode->string
-		       (map char-upcase
+		       (map ichar-upcase
 			    (map string->charcode
 				 (string-to-list (car raw-str-list))))))
 		 (car raw-str-list))
@@ -736,7 +736,7 @@
 	    (if (and
 		 (= (canna-context-input-rule cc) canna-input-rule-roma)
 		 (not (null? (ustr-former-seq preconv-str)))
-		 (not (char-printable?
+		 (not (ichar-printable?
 		       (string->char
 			(car (last (ustr-former-seq preconv-str)))))))
 	        (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))

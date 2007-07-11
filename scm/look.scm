@@ -137,7 +137,7 @@
 (define (look-to-lower-string str)
   (apply string-append
          (map (lambda (c)
-                (if (char-upper-case? (string->charcode c))
+                (if (ichar-upper-case? (string->charcode c))
                     (charcode->string (to-lower-char (string->charcode c)))
                     c))
               (reverse (string-to-list str)))))
@@ -381,7 +381,7 @@
 (define (look-alphabetic-char? key state)
   (and (or (not (modifier-key-mask state))
            (shift-key-mask state))
-       (char-alphabetic? key)))
+       (ichar-alphabetic? key)))
 
 (define (look-next-candidate! lc)
   (if (< (look-context-nth lc) (- (length (look-context-candidates lc)) 1))

@@ -1310,7 +1310,7 @@
 	       (charcode->string
 		;; avoid case change due to caps lock.
 		(if (shift-key-mask key-state)
-		    (char-upcase key) (char-downcase key))))
+		    (ichar-upcase key) (ichar-downcase key))))
 	      (entry (assoc pressed-key layout)))
 	 (and entry
 	      (let ((choices (cdr entry)))
@@ -1814,7 +1814,7 @@
 
 (define (byeoru-key-press-handler bc key key-state)
 
-;;    (if (char-control? key)	    ; doesn't seem to work.
+;;    (if (ichar-control? key)	    ; doesn't seem to work.
 ;;	(im-commit-raw bc)
 
   (if (byeoru-context-on bc)
@@ -1828,7 +1828,7 @@
   (byeoru-update-preedit bc))
 
 (define (byeoru-key-release-handler bc key key-state)
-  (if (or (char-control? key)
+  (if (or (ichar-control? key)
 	  (not (byeoru-context-on bc)))
       ;; don't discard key release event for apps
       (im-commit-raw bc)))

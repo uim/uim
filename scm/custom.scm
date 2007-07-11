@@ -201,12 +201,12 @@
 ;; TODO: write test
 (define key-list-upcase
   (lambda (key-list)
-    (map-key-list-letter char-upcase key-list)))
+    (map-key-list-letter ichar-upcase key-list)))
 
 ;; TODO: write test
 (define key-list-downcase
   (lambda (key-list)
-    (map-key-list-letter char-downcase key-list)))
+    (map-key-list-letter ichar-downcase key-list)))
 
 ;; TODO: write test
 (define key-list-visualize-space
@@ -236,15 +236,15 @@
       (filter-map (lambda (elem)
 		    (cond
 		     ((and (eq? elem 'Shift_key)
-			   (char-graphic? printable))
+			   (ichar-graphic? printable))
 		      #f)
 		     ((and (string? elem)
 			   has-shift?
 			   letter)
-		      (charcode->string (char-upcase letter)))
+		      (charcode->string (ichar-upcase letter)))
 		     ((and (string? elem)
 			   has-shift?
-			   (char-graphic? printable))
+			   (ichar-graphic? printable))
 		      str)
 		     (else
 		      elem)))
@@ -255,7 +255,7 @@
   (lambda (key-list)
     (let* ((letter (string->letter (find string? key-list)))
 	   (upper-case? (and letter
-			     (char-upper-case? letter)))
+			     (ichar-upper-case? letter)))
 	   (has-shift? (memq 'Shift_key key-list))
 	   (stripped (key-list-downcase key-list)))
       (if (and (not has-shift?)
@@ -267,7 +267,7 @@
 (define key-list-ignore-regular-shift
   (lambda (key-list)
     (let ((printable (string->printable-char (find string? key-list))))
-      (if (char-graphic? printable)
+      (if (ichar-graphic? printable)
 	  (cons 'IgnoreRegularShift key-list)
 	  key-list))))
 
@@ -284,8 +284,8 @@
   (lambda (key-list)
     (let* ((str (find string? key-list))
 	   (c (string->printable-char str)))
-      (if (and (char-graphic? c)
-	       (not (char-alphabetic? c)))
+      (if (and (ichar-graphic? c)
+	       (not (ichar-alphabetic? c)))
 	  (cons 'IgnoreShift key-list)
 	  key-list))))
 
@@ -307,7 +307,7 @@
   (lambda (key-list)
     (let* ((str (find string? key-list))
 	   (printable (string->printable-char str)))
-      (if (char-graphic? printable)
+      (if (ichar-graphic? printable)
 	  (key-list-strip-shift key-list)
 	  key-list))))
 

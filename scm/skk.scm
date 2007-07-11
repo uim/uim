@@ -435,9 +435,9 @@
 	   (lambda (l)
 	     (let ((c (string->charcode (caar l))))
 	       (cond
-		((char-upper-case? c)
+		((ichar-upper-case? c)
 		 (charcode->string (+ c 32)))
-		((char-lower-case? c)
+		((ichar-lower-case? c)
 		 (charcode->string (- c 32)))
 		(else
 		 (caar l)))))))
@@ -963,7 +963,7 @@
      ((or
        (and
 	(shift-key-mask key-state)
-	(not (char-graphic? key)))
+	(not (ichar-graphic? key)))
        (control-key-mask key-state)
        (alt-key-mask key-state)
        (meta-key-mask key-state)
@@ -1088,7 +1088,7 @@
        (if (or
 	    (and
 	     (shift-key-mask key-state)
-	     (not (char-graphic? key)))
+	     (not (ichar-graphic? key)))
 	    (control-key-mask key-state)
 	    (alt-key-mask key-state)
 	    (meta-key-mask key-state)
@@ -1099,7 +1099,7 @@
 	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
-       (if (char-upper-case? key)
+       (if (ichar-upper-case? key)
 	   (if (and 
 		(skk-rk-pending? sc)
 		(not (rk-current-seq rkc)))
@@ -1418,7 +1418,7 @@
 	     (skk-begin-conversion sc)
 	     #f)
 	   #t)
-       (if (and (char-upper-case? key)
+       (if (and (ichar-upper-case? key)
 		(not (null? (skk-context-head sc))))
 	   (let ((key-str (charcode->string (to-lower-char key))))
 	     (set! res (skk-rk-push-key-match-without-new-seq rkc key-str))
@@ -2102,7 +2102,7 @@
 	       (set! idx (remainder idx skk-nr-candidate-max))
 	       (if (< idx (length skk-uim-heading-label-char-list))
 		   (charcode->string
-		    (char-upcase
+		    (ichar-upcase
 		     (string->charcode
 		      (nth idx skk-uim-heading-label-char-list))))
 		   ""))))
@@ -2111,7 +2111,7 @@
 	     (set! idx (remainder idx skk-nr-candidate-max)))
 	 (if (< idx (length skk-ddskk-like-heading-label-char-list))
 	     (charcode->string
-	      (char-upcase
+	      (ichar-upcase
 	       (string->charcode
 		(nth idx skk-ddskk-like-heading-label-char-list))))
 	     "")))

@@ -179,11 +179,11 @@
     (let ((key-str ""))
       (if (and
 	   (shift-key-mask key-state)
-	   (not (char-graphic? key)))
+	   (not (ichar-graphic? key)))
 	  (set! key-str (string-append "S-" key-str)))
       (if (and
 	   (control-key-mask key-state)
-	   (char-printable? key))
+	   (ichar-printable? key))
 	  (set! key-str (string-append "C-" key-str)))
       (if (alt-key-mask key-state)
 	  (set! key-str (string-append "A-" key-str)))
@@ -203,7 +203,7 @@
 	      (cdr mkey)
 	      ""))
 	(if (control-key-mask key-state)
-	    (charcode->string (char-upcase key))
+	    (charcode->string (ichar-upcase key))
 	    (charcode->string key)))))
 
 (define m17nlib-proc-direct-state

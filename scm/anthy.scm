@@ -411,8 +411,8 @@
 	      (if upper?
 		  (map
 		   (lambda (x)
-		     (if (char-alphabetic? (string->charcode x))
-			 (charcode->string (char-upcase (string->charcode x)))
+		     (if (ichar-alphabetic? (string->charcode x))
+			 (charcode->string (ichar-upcase (string->charcode x)))
 			 x))
 		   (string-to-list (car raw-str-list)))
 		  (string-to-list (car raw-str-list))))
@@ -422,8 +422,8 @@
 		 (string-list-concat
 		  (map
 		   (lambda (x)
-		     (if (char-alphabetic? (string->charcode x))
-			 (charcode->string (char-upcase (string->charcode x)))
+		     (if (ichar-alphabetic? (string->charcode x))
+			 (charcode->string (ichar-upcase (string->charcode x)))
 			 x))
 		   (string-to-list (car raw-str-list))))
 		 (car raw-str-list))
@@ -1020,7 +1020,7 @@
 	      (if (and
 		   (= (anthy-context-input-rule ac) anthy-input-rule-roma)
 		   (not (null? (ustr-former-seq preconv-str)))
-		   (not (char-printable?	;; check for kana
+		   (not (ichar-printable?	;; check for kana
 			 (string->char
 			  (car (last (ustr-former-seq preconv-str)))))))
 		  (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))

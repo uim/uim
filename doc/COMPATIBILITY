@@ -57,6 +57,42 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Renaming of integer-based char procedures
+Affects: uim developers, IM developers
+Updates: Scheme API
+Version: 1.5.0
+Revision: ac4708
+Date: 2007-07-11
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (renamed) char-control?
+  (renamed) char-upper-case?
+  (renamed) char-lower-case?
+  (renamed) char-alphabetic?
+  (renamed) char-numeric?
+  (renamed) char-printable?
+  (renamed) char-graphic?
+  (renamed) char-vowel?
+  (renamed) char-consonant?
+  (renamed) char-downcase
+  (renamed) char-upcase
+      (new) ichar-control?
+      (new) ichar-upper-case?
+      (new) ichar-lower-case?
+      (new) ichar-alphabetic?
+      (new) ichar-numeric?
+      (new) ichar-printable?
+      (new) ichar-graphic?
+      (new) ichar-vowel?
+      (new) ichar-consonant?
+      (new) ichar-downcase
+      (new) ichar-upcase
+Description:
+  The integer-based char-* procedures have been renamed to ichar-* to
+  distinguish from and coexist with R5RS ones
+------------------------------------------------------------------------------
 Summary: Specification changes of utility procedures
 Affects: uim developers, IM developers
 Updates: Scheme API

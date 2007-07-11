@@ -42,89 +42,89 @@
 (define string->printable-char
   (lambda (str)
     (let ((c (string->char str)))
-      (and (char-printable? c)
+      (and (ichar-printable? c)
 	   c))))
 
 (define string->letter
   (lambda (str)
     (let ((c (string->printable-char str)))
-      (and (char-alphabetic? c)
+      (and (ichar-alphabetic? c)
 	   c))))
 
 ;;
 ;; R5RS-like character procedures
 ;;
 
-(define char-control?
+(define ichar-control?
   (lambda (c)
     (and (integer? c)
 	 (or (<= c 31)
 	     (= c 127)))))
 
-(define char-upper-case?
+(define ichar-upper-case?
   (lambda (c)
     (and (integer? c)
 	 (>= c 65)
 	 (<= c 90))))
 
-(define char-lower-case?
+(define ichar-lower-case?
   (lambda (c)
     (and (integer? c)
 	 (>= c 97)
 	 (<= c 122))))
 
-(define char-alphabetic?
+(define ichar-alphabetic?
   (lambda (c)
-    (or (char-upper-case? c)
-	(char-lower-case? c))))
+    (or (ichar-upper-case? c)
+	(ichar-lower-case? c))))
 
-(define char-numeric?
+(define ichar-numeric?
   (lambda (c)
     (and (integer? c)
 	 (>= c 48)
 	 (<= c 57))))
 
-(define char-printable?
+(define ichar-printable?
   (lambda (c)
     (and (integer? c)
 	 (<= c 127)
-	 (not (char-control? c)))))
+	 (not (ichar-control? c)))))
 
-(define char-graphic?
+(define ichar-graphic?
   (lambda (c)
-    (and (char-printable? c)
+    (and (ichar-printable? c)
 	 (not (= c 32)))))
 
 ;; TODO: write test
-(define char-vowel?
+(define ichar-vowel?
   (let ((vowel-chars (map char->integer
 			  '(#\a #\i #\u #\e #\o))))
     (lambda (c)
-      (and (char-alphabetic? c)
-	   (member (char-downcase c)
+      (and (ichar-alphabetic? c)
+	   (member (ichar-downcase c)
 		   vowel-chars)))))
 
 ;; TODO: write test
-(define char-consonant?
+(define ichar-consonant?
   (lambda (c)
-    (and (char-alphabetic? c)
-	 (not (char-vowel? c)))))
+    (and (ichar-alphabetic? c)
+	 (not (ichar-vowel? c)))))
 
 (define numeral-char->number
   (lambda (c)
-    (if (char-numeric? c)
+    (if (ichar-numeric? c)
 	(- c 48)
 	c)))
 
-(define char-downcase
+(define ichar-downcase
   (lambda (c)
-    (if (char-upper-case? c)
+    (if (ichar-upper-case? c)
 	(+ c 32)
 	c)))
 
-(define char-upcase
+(define ichar-upcase
   (lambda (c)
-    (if (char-lower-case? c)
+    (if (ichar-lower-case? c)
 	(- c 32)
 	c)))
 
@@ -132,11 +132,11 @@
 ;; backward compatibility: should be obsoleted
 ;;
 
-(define control-char? char-control?)
-(define alphabet-char? char-alphabetic?)
-(define numeral-char? char-numeric?)
-(define usual-char? char-graphic?)
-(define to-lower-char char-downcase)
+(define control-char? ichar-control?)
+(define alphabet-char? ichar-alphabetic?)
+(define numeral-char? ichar-numeric?)
+(define usual-char? ichar-graphic?)
+(define to-lower-char ichar-downcase)
 
 (define charcode->string
   (lambda (c)
