@@ -68,20 +68,18 @@
 ;; should be deprecated and replaced with a proper, Schemer's way
 (define proc-or
   (lambda xs
-    (if (null? xs)
-	#f
-	(or (car xs)
-	    (apply proc-or (cdr xs))))))
+    (reduce (lambda (x y)
+	      (or x y))
+	    #f xs)))
 
 ;; procedural 'and' for use with 'apply'
 ;; e.g. (apply proc-and boolean-lst)
 ;; should be deprecated and replaced with a proper, Schemer's way
 (define proc-and
   (lambda xs
-    (if (null? xs)
-	#t
-	(and (car xs)
-	     (apply proc-and (cdr xs))))))
+    (reduce (lambda (x y)
+	      (and x y))
+	    #t xs)))
 
 ;; meaning of 'end' has been changed from uim 1.5.0. See
 ;; doc/COMPATIBILITY and test-util.scm.
@@ -108,12 +106,13 @@
 	  (cons kons alist)))))
 
 (define join
-  (lambda (sep list)
-    (let ((len (length list)))
-      (if (= len 0)
-	  ()
-	  (cdr (apply append (zip (make-list len sep)
-				  list)))))))
+  (lambda (sep lst)
+    (if (null? lst)
+	'()
+	(cdr (fold-right (lambda (kar kdr)
+			   (cons* sep kar kdr))
+			 '()
+			 lst)))))
 
 ;; downward compatible with SRFI-13 string-join
 (define string-join
@@ -144,15 +143,12 @@
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 (define compose
-  (lambda args
-    (let ((funcs (if (null? args)
-		     (list (lambda (x) x))
-		     args)))
-      (fold (lambda (f g)
+  (lambda funcs
+    (reduce (lambda (f g)
 	      (lambda (arg)
 		(f (g arg))))
-	    (car (reverse funcs))
-	    (cdr (reverse funcs))))))
+	    values
+	    (reverse funcs))))
 
 (define method-delegator-new
   (lambda (dest-getter method)
@@ -189,9 +185,8 @@
 
 (define make-scm-pathname
   (lambda (file)
-    (or (and (= (string->charcode file)
-		(string->charcode "/"))
-	     file)
+    (if (string-prefix? "/" file)
+	file
 	(string-append (load-path) "/" file))))
 
 ;; TODO: write test
@@ -233,12 +228,12 @@
     (for-each (lambda (spec index)
 		(let* ((elem-sym (list-ref spec 0))
 		       (default  (list-ref spec 1))
-		       (getter-sym (symbolconc rec-sym hyphen-sym elem-sym))
+		       (getter-sym (symbol-append rec-sym hyphen-sym elem-sym))
 		       (getter (lambda (rec)
 				 (list-ref rec index)))
-		       (setter-sym (symbolconc rec-sym hyphen-sym 'set- elem-sym '!))
+		       (setter-sym (symbol-append rec-sym hyphen-sym 'set- elem-sym '!))
 		       (setter (lambda (rec val)
-				 (set-car! (nthcdr index rec)
+				 (set-car! (list-tail rec index)
 					   val))))
 		  (eval (list 'define getter-sym getter)
 			(interaction-environment))
@@ -246,7 +241,7 @@
 			(interaction-environment))))
 	      rec-spec
 	      (iota (length rec-spec)))
-    (let ((creator-sym (symbolconc rec-sym hyphen-sym 'new))
+    (let ((creator-sym (symbol-append rec-sym hyphen-sym 'new))
 	  (creator (let ((defaults (map cadr rec-spec)))
 		     (lambda init-lst
 		       (cond
@@ -259,8 +254,8 @@
 			;; others
 			((< (length init-lst)
 			    (length defaults))
-			 (let* ((rest-defaults (nthcdr (length init-lst)
-						       defaults))
+			 (let* ((rest-defaults (list-tail defaults
+							  (length init-lst)))
 				(complemented-init-lst (append init-lst
 							       rest-defaults)))
 			   (copy-list complemented-init-lst)))
