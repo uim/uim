@@ -264,12 +264,9 @@ void Compose::reset()
 }
 
 static int
-nextch(FILE *fp, int *lastch, size_t *remain)
+nextch(FILE *fp, int *lastch)
 {
     int c;
-
-    if (*remain <= 1)
-    	return EOF;
 
     if (*lastch != 0) {
 	c = *lastch;
@@ -316,14 +313,15 @@ putbackch(int c, int *lastch)
 #endif
 
 static int
-nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
+nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
 {
     int c;
     int token;
     char *p;
     int i, j;
+    size_t len = 0;
 
-    while ((c = nextch(fp, lastch, remain)) == ' ' || c == '\t') {
+    while ((c = nextch(fp, lastch)) == ' ' || c == '\t') {
     }
     switch (c) {
     case EOF:
@@ -348,31 +346,36 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
 	token = TILDE;
 	break;
     case '"':
-	p = tokenbuf;
-	while ((c = nextch(fp, lastch, remain)) != '"') {
+	p = *tokenbuf;
+	while ((c = nextch(fp, lastch)) != '"') {
+	    if (len >= *buflen - 1) {
+		    *buflen += BUFSIZ;
+		    *tokenbuf = (char *)realloc(*tokenbuf, *buflen);
+		    p = *tokenbuf + len;
+	    }
 	    if (c == '\n' || c == EOF) {
 		putbackch(c, lastch);
 		token = ERROR;
 		goto string_error;
 	    } else if (c == '\\') {
-		c = nextch(fp, lastch, remain);
+		c = nextch(fp, lastch);
 		switch (c) {
 		case '\\':
 		case '"':
 		    *p++ = c;
-		    (*remain)--;
+		    len++;
 		    break;
 		case 'n':
 		    *p++ = '\n';
-		    (*remain)--;
+		    len++;
 		    break;
 		case 'r':
 		    *p++ = '\r';
-		    (*remain)--;
+		    len++;
 		    break;
 		case 't':
 		    *p++ = '\t';
-		    (*remain)--;
+		    len++;
 		    break;
 		case '0':
 		case '1':
@@ -383,21 +386,21 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
 		case '6':
 		case '7':
 		    i = c - '0';
-		    c = nextch(fp, lastch, remain);
+		    c = nextch(fp, lastch);
 		    for (j = 0; j < 2 && c >= '0' && c <= '7'; j++) {
 			i <<= 3;
 			i += c - '0';
-			c = nextch(fp, lastch, remain);
+			c = nextch(fp, lastch);
 		    }
 		    putbackch(c, lastch);
 		    *p++ = (char)i;
-		    (*remain)--;
+		    len++;
 		    break;
 		case 'X':
 		case 'x':
 		    i = 0;
 		    for (j = 0; j < 2; j++) {
-			c = nextch(fp, lastch, remain);
+			c = nextch(fp, lastch);
 			i <<= 4;
 			if (c >= '0' && c <= '9') {
 			    i += c - '0';
@@ -416,7 +419,7 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
 			goto string_error;
 		    }
 		    *p++ = (char)i;
-		    (*remain)--;
+		    len++;
 		    break;
 		case EOF:
 		    putbackch(c, lastch);
@@ -424,19 +427,19 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
 		    goto string_error;
 		default:
 		    *p++ = c;
-		    (*remain)--;
+		    len++;
 		    break;
 		}
 	    } else {
 		*p++ = c;
-		(*remain)--;
+		len++;
 	    }
 	}
 	*p = '\0';
 	token = STRING;
 	break;
     case '#':
-	while ((c = nextch(fp, lastch, remain)) != '\n' && c != EOF) {
+	while ((c = nextch(fp, lastch)) != '\n' && c != EOF) {
 	}
 	if (c == '\n') {
 	    token = ENDOFLINE;
@@ -446,19 +449,23 @@ nexttoken(FILE *fp, char *tokenbuf, int *lastch, size_t *remain)
 	break;
     default:
 	if (isalnum(c) || c == '_' || c == '-') {
-	    p = tokenbuf;
-	    *p++ = c;
-	    (*remain)--;
-	    c = nextch(fp, lastch, remain);
-	    while (isalnum(c) || c == '_' || c == '-') {
-		*p++ = c;
-		(*remain)--;
-		c = nextch(fp, lastch, remain);
+	    if (len >= *buflen - 1) {
+		*buflen += BUFSIZ;
+		*tokenbuf = (char *)realloc(*tokenbuf,  *buflen);
 	    }
-	    if (c == '\n' || c == EOF) {
-		putbackch(c, lastch);
-		token = ERROR;
-		goto string_error;
+	    p = *tokenbuf;
+	    *p++ = c;
+	    len++;
+	    c = nextch(fp, lastch);
+	    while (isalnum(c) || c == '_' || c == '-') {
+	        if (len >= *buflen - 1) {
+			*buflen += BUFSIZ;
+			*tokenbuf = (char *)realloc(*tokenbuf,  *buflen);
+			p = *tokenbuf + len;
+		}
+		*p++ = c;
+		len++;
+		c = nextch(fp, lastch);
 	    }
 	    *p = '\0';
 	    putbackch(c, lastch);
@@ -622,7 +629,7 @@ QUimInputContext::get_mb_string(char *buf, unsigned int ks)
 #define SEQUENCE_MAX    10
 
 int
-QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
+QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 {
     int token;
     unsigned modifier_mask;
@@ -651,7 +658,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
     QString qs;
 
     do {
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
     } while (token == ENDOFLINE);
 
     if (token == ENDOFFILE) {
@@ -660,41 +667,42 @@ QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
 
     n = 0;
     do {
-	if ((token == KEY) && (strcmp("include", tokenbuf) == 0)) {
+	if ((token == KEY) && (strcmp("include", *tokenbuf) == 0)) {
 	    char *filename;
 	    FILE *infp;
-	    token = nexttoken(fp, tokenbuf, &lastch, remain);
+	    token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	    if (token != KEY && token != STRING)
 		goto error;
 
-	    if ((filename = TransFileName(tokenbuf)) == NULL)
+	    if ((filename = TransFileName(*tokenbuf)) == NULL)
 		goto error;
 	    infp = fopen(filename, "r");
 	    free(filename);
 	    if (infp == NULL)
 		goto error;
 	    ParseComposeStringFile(infp);
-	    return (0);
-	} else if ((token == KEY) && (strcmp("None", tokenbuf) == 0)) {
+	    fclose(infp);
+	    return 0;
+	} else if ((token == KEY) && (strcmp("None", *tokenbuf) == 0)) {
 	    modifier = 0;
 	    modifier_mask = AllMask;
-	    token = nexttoken(fp, tokenbuf, &lastch, remain);
+	    token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	} else {
 	    modifier_mask = modifier = 0;
 	    exclam = False;
 	    if (token == EXCLAM) {
 		exclam = True;
-		token = nexttoken(fp, tokenbuf, &lastch, remain);
+		token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	    }
 	    while (token == TILDE || token == KEY) {
 		tilde = False;
 		if (token == TILDE) {
 		    tilde = True;
-		    token = nexttoken(fp, tokenbuf, &lastch, remain);
+		    token = nexttoken(fp, tokenbuf, &lastch, buflen);
 		    if (token != KEY)
 			goto error;
 		}
-		tmp = modmask(tokenbuf);
+		tmp = modmask(*tokenbuf);
 		if (!tmp) {
 		    goto error;
 		}
@@ -704,7 +712,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
 		} else {
 		    modifier |= tmp;
 		}
-		token = nexttoken(fp, tokenbuf, &lastch, remain);
+		token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	    }
 	    if (exclam) {
 		modifier_mask = AllMask;
@@ -716,17 +724,17 @@ QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
 	    goto error;
 	}
 
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	if (token != KEY) {
 	    goto error;
 	}
 
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	if (token != GREATER) {
 	    goto error;
 	}
 
-	keysym = XStringToKeysym(tokenbuf);
+	keysym = XStringToKeysym(*tokenbuf);
 	if (keysym == NoSymbol) {
 	    goto error;
 	}
@@ -737,33 +745,33 @@ QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
 	n++;
 	if (n >= SEQUENCE_MAX)
 	    goto error;
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
     } while (token != COLON);
 
-    token = nexttoken(fp, tokenbuf, &lastch, remain);
+    token = nexttoken(fp, tokenbuf, &lastch, buflen);
     if (token == STRING) {
-	if ((rhs_string_mb = (char *)malloc(strlen(tokenbuf) + 1)) == NULL)
+	if ((rhs_string_mb = (char *)malloc(strlen(*tokenbuf) + 1)) == NULL)
 	    goto error;
-	strcpy(rhs_string_mb, tokenbuf);
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	strcpy(rhs_string_mb, *tokenbuf);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	if (token == KEY) {
-	    rhs_keysym = XStringToKeysym(tokenbuf);
+	    rhs_keysym = XStringToKeysym(*tokenbuf);
 	    if (rhs_keysym == NoSymbol) {
 		free(rhs_string_mb);
 		goto error;
 	    }
-	    token = nexttoken(fp, tokenbuf, &lastch, remain);
+	    token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	}
 	if (token != ENDOFLINE && token != ENDOFFILE) {
 	    free(rhs_string_mb);
 	    goto error;
 	}
     } else if (token == KEY) {
-	rhs_keysym = XStringToKeysym(tokenbuf);
+	rhs_keysym = XStringToKeysym(*tokenbuf);
 	if (rhs_keysym == NoSymbol) {
 	    goto error;
 	}
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	if (token != ENDOFLINE && token != ENDOFFILE) {
 	    goto error;
 	}
@@ -824,7 +832,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char* tokenbuf, size_t *remain)
     return n;
 error:
     while (token != ENDOFLINE && token != ENDOFFILE) {
-	token = nexttoken(fp, tokenbuf, &lastch, remain);
+	token = nexttoken(fp, tokenbuf, &lastch, buflen);
     }
     return 0;
 }
@@ -847,21 +855,19 @@ QUimInputContext::FreeComposeTree(DefTree *top)
 void
 QUimInputContext::ParseComposeStringFile(FILE *fp)
 {
-    char* tbp;
+    char *tbp, *p[1];
     struct stat st;
-    size_t tb_remain;
+    size_t buflen = BUFSIZ;
 
-    if (fstat(fileno(fp), &st) != -1 &&
-	S_ISREG(st.st_mode) &&
-	st.st_size > 0 &&
-	st.st_size + (size_t)0 < (off_t)0 + (size_t)-1) {
+    if (fstat(fileno(fp), &st) != -1 && S_ISREG(st.st_mode) &&
+	st.st_size > 0) {
 
-	tbp = (char *)malloc(st.st_size);
-	tb_remain = st.st_size;
+	tbp = (char *)malloc(buflen);
+	p[0] = tbp;
 	if (tbp != NULL) {
-	    while (parse_compose_line(fp, tbp, &tb_remain) >= 0) {
+	    while (parse_compose_line(fp, p, &buflen) >= 0) {
 	    }
-	    free (tbp);
+	    free(p[0]);
 	}
     }
 }

@@ -211,7 +211,7 @@ protected:
     char *TransFileName(char *name);
     void ParseComposeStringFile(FILE *fp);
     void FreeComposeTree(DefTree *top);
-    int parse_compose_line(FILE *fp, char *tokenbuf, size_t *remain);
+    int parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen);
     int get_mb_string(char *buf, KeySym ks);
     DefTree *mTreeTop;
 };
