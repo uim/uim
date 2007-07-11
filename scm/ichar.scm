@@ -31,6 +31,10 @@
 (use srfi-60)
 
 
+;;
+;; Converters
+;;
+
 ;; TODO: write test
 (define string->ichar
   (lambda (str)
@@ -50,6 +54,18 @@
     (let ((c (string->printable-ichar str)))
       (and (ichar-alphabetic? c)
 	   c))))
+
+(define numeric-ichar->integer
+  (lambda (c)
+    (if (ichar-numeric? c)
+	(- c 48)
+	c)))
+
+(define ucs->utf8-string
+  (lambda (ucs)
+    (with-char-codec "UTF-8"
+      (lambda ()
+	(list->string (list (integer->char ucs)))))))
 
 ;;
 ;; R5RS-like character procedures
@@ -110,12 +126,6 @@
     (and (ichar-alphabetic? c)
 	 (not (ichar-vowel? c)))))
 
-(define numeric-ichar->integer
-  (lambda (c)
-    (if (ichar-numeric? c)
-	(- c 48)
-	c)))
-
 (define ichar-downcase
   (lambda (c)
     (if (ichar-upper-case? c)
@@ -147,12 +157,6 @@
       (if (null? sl)
 	  0
 	  (char->integer (car sl))))))
-
-(define ucs->utf8-string
-  (lambda (ucs)
-    (with-char-codec "UTF-8"
-      (lambda ()
-	(list->string (list (integer->char ucs)))))))
 
 ;; FIXME: write test.
 (define ucs-to-utf8-string ucs->utf8-string)
