@@ -95,7 +95,7 @@
                                   (else
                                     "")))
                               lst)))
-      (string-append "(" (string-join " " canonicalized) ")"))))
+      (string-append "(" (string-join canonicalized " ") ")"))))
 
 (define mana-set-string!
   (lambda (mc yomi yomi-len)

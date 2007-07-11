@@ -139,7 +139,7 @@
       "(define-record 'stub-im stub-im-rec-spec)\n\n"
       "(define stub-im-list\n"
       "  '(\n"
-      (string-join "\n" (stub-im-generate-all-stub-im-list))
+      (string-join (stub-im-generate-all-stub-im-list) "\n")
       "    ))\n\n"
       "(for-each (lambda (stub)\n"
       "            (if (memq (stub-im-name stub) enabled-im-list)\n"

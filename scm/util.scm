@@ -149,8 +149,9 @@
 	  (cdr (apply append (zip (make-list len sep)
 				  list)))))))
 
+;; downward compatible with SRFI-13 string-join
 (define string-join
-  (lambda (sep str-list)
+  (lambda (str-list sep)
     (apply string-append (join sep str-list))))
 
 (define string-split

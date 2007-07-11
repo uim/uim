@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4682 (new repository)
+;; These tests are passed at revision 4694 (new repository)
 
 (use test.unit)
 
@@ -496,43 +496,43 @@
    (assert-equal ""
 		 (uim '(string-join () ())))
    (assert-error (lambda ()
-		   (uim '(string-join () '(())))))
+		   (uim '(string-join '(()) ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '(1)))))
+		   (uim '(string-join '(1) ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '(() ())))))
+		   (uim '(string-join '(() ()) ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '(1 2)))))
+		   (uim '(string-join '(1 2) ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '(1 2 3)))))
+		   (uim '(string-join '(1 2 3) ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '(one two three)))))
+		   (uim '(string-join '(one two three) ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '("1" "2" "3")))))
+		   (uim '(string-join '("1" "2" "3") ()))))
    (assert-error (lambda ()
-		   (uim '(string-join () '(() () ())))))
+		   (uim '(string-join '(() () ()) ()))))
 
    (assert-equal ""
-		 (uim '(string-join "/" ())))
+		 (uim '(string-join () "/")))
    (assert-equal ""
-		 (uim '(string-join "/" '(""))))
+		 (uim '(string-join '("") "/")))
    (assert-equal "1"
-		 (uim '(string-join "/" '("1"))))
+		 (uim '(string-join '("1") "/")))
    (assert-equal "1/2"
-		 (uim '(string-join "/" '("1" "2"))))
+		 (uim '(string-join '("1" "2") "/")))
    (assert-equal "1/2/3"
-		 (uim '(string-join "/" '("1" "2" "3"))))
+		 (uim '(string-join '("1" "2" "3") "/")))
 
    (assert-equal ""
-		 (uim '(string-join "-sep-" ())))
+		 (uim '(string-join () "-sep-")))
    (assert-equal ""
-		 (uim '(string-join "-sep-" '(""))))
+		 (uim '(string-join '("") "-sep-")))
    (assert-equal "1"
-		 (uim '(string-join "-sep-" '("1"))))
+		 (uim '(string-join '("1") "-sep-")))
    (assert-equal "1-sep-2"
-		 (uim '(string-join "-sep-" '("1" "2"))))
+		 (uim '(string-join '("1" "2") "-sep-")))
    (assert-equal "1-sep-2-sep-3"
-		 (uim '(string-join "-sep-" '("1" "2" "3")))))
+		 (uim '(string-join '("1" "2" "3") "-sep-"))))
 
   ("test string-append-map"
    (assert-equal ""

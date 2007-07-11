@@ -61,18 +61,21 @@ Summary: Specification changes of utility procedures
 Affects: uim developers, IM developers
 Updates: Scheme API
 Version: 1.5.0
-Revision: ac4693
+Revision: ac4693, ac4694
 Date: 2007-07-11
 Modifier: YamaKen
 Related: 
 URL:
 Changes:
   (changed) string-split
+  (changed) string-join
 Description:
   Now string-split produces empty strings as follows. See
   test-uim-utils.scm for further information.
     uim 1.4: (string-split "hhh" "h")  ==> ()
     uim 1.5: (string-split "hhh" "h")  ==> ("" "" "" "")
+  The 2 arguments of string-join has been swapped to be compatible
+  with SRFI-13 string-join.
 ------------------------------------------------------------------------------
 Summary: SRFI-1 procedures replacement
 Affects: uim developers, IM developers

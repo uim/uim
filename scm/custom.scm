@@ -675,7 +675,7 @@
 				 (else
 				  "")))
 			      lst)))
-      (string-append "'(" (string-join " " canonicalized) ")"))))
+      (string-append "'(" (string-join canonicalized " ") ")"))))
 
 ;; API
 (define custom-value-as-literal
@@ -707,7 +707,7 @@
 	  (val (custom-value-as-literal sym))
 	  (hooked (custom-call-hook-procs sym custom-literalize-hooks)))
       (if (not (null? hooked))
-	  (string-join "\n" hooked)
+	  (string-join hooked "\n")
 	  (apply string-append
 		 (append
 		  (list "(define " var " " val ")")
