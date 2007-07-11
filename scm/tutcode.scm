@@ -722,7 +722,7 @@
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-key-press-handler pc key key-state)
-  (if (control-char? key)
+  (if (ichar-control? key)
       (im-commit-raw pc)
       (begin
         (case (tutcode-context-state pc)
@@ -743,7 +743,7 @@
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-key-release-handler pc key key-state)
-  (if (or (control-char? key)
+  (if (or (ichar-control? key)
 	  (not (tutcode-context-on? pc)))
       ;; don't discard key release event for apps
       (im-commit-raw pc)))

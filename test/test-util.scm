@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4708 (new repository)
+;; These tests are passed at revision 4709 (new repository)
 
 (use test.unit)
 
@@ -204,14 +204,7 @@
    (assert-true  (uim-bool '(ichar-graphic? 123)))  ; {
    (assert-true  (uim-bool '(ichar-graphic? 126)))  ; ~
    (assert-false (uim-bool '(ichar-graphic? 127)))) ; DEL
-  ("test control-char?"
-   (assert-true  (uim-bool '(eq? control-char? ichar-control?))))
-  ("test alphabet-char?"
-   (assert-true  (uim-bool '(eq? alphabet-char? ichar-alphabetic?))))
-  ("test numeral-char?"
-   (assert-true  (uim-bool '(eq? numeral-char? ichar-numeric?))))
-  ("test usual-char?"
-   (assert-true  (uim-bool '(eq? usual-char? ichar-graphic?)))))
+  )
 
 (define-uim-test-case "test util character conversion procedures"
   ("test numeral-char->number"
@@ -308,9 +301,7 @@
    (assert-false (uim-bool '(string->letter "{")))   ; {
    (assert-false (uim-bool '(string->letter "~")))   ; ~
    ;;(assert-false (uim-bool '(string->letter ""))) ; DEL
-   )
-  ("test to-lower-char"
-   (assert-true  (uim-bool '(eq? to-lower-char ichar-downcase)))))
+   ))
 
 (define-uim-test-case "test util string list procedures"
   ("test string-list-concat"

@@ -138,7 +138,7 @@
   (apply string-append
          (map (lambda (c)
                 (if (ichar-upper-case? (string->charcode c))
-                    (charcode->string (to-lower-char (string->charcode c)))
+                    (charcode->string (ichar-downcase (string->charcode c)))
                     c))
               (reverse (string-to-list str)))))
 

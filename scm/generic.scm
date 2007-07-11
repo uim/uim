@@ -387,7 +387,7 @@
 	     #f)
 	   #t)
        (if (and generic-commit-candidate-by-numeral-key?
-		(numeral-char? key))
+		(ichar-numeric? key))
 	   (begin
 	     (generic-commit-by-numkey pc key)
 	     #f)
@@ -423,7 +423,7 @@
 
 (define generic-key-press-handler
   (lambda (pc key state)
-    (if (control-char? key)
+    (if (ichar-control? key)
 	(im-commit-raw pc)
 	(if (generic-context-on pc)
 	    (if (generic-context-converting pc)
@@ -435,7 +435,7 @@
 
 (define generic-key-release-handler
   (lambda (pc key state)
-    (if (or (control-char? key)
+    (if (or (ichar-control? key)
 	    (not (generic-context-on pc)))
 	;; don't discard key release event for apps
 	(generic-commit-raw pc))))

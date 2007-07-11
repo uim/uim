@@ -984,7 +984,7 @@
 (define skk-proc-state-direct
   (lambda (c key key-state)
     (let* ((sc (skk-find-descendant-context c))
-	   (key-str (charcode->string (to-lower-char key)))
+	   (key-str (charcode->string (ichar-downcase key)))
 	   (rkc (skk-context-rk-context sc))
 	   (res #f)
 	   (kana (skk-context-kana-mode sc)))
@@ -1109,19 +1109,19 @@
 		 (skk-append-string sc (rk-push-key!
 					rkc
 					(charcode->string
-					 (to-lower-char key))))
+					 (ichar-downcase key))))
 		 #f)
 	       (let* ((residual-kana (rk-push-key-last! rkc)))
 		 ;; handle preceding "n"
 		 (if residual-kana
 		     (skk-commit sc (skk-get-string sc residual-kana kana)))
 		 (skk-context-set-state! sc 'skk-state-kanji)
-		 (set! key (to-lower-char key))
+		 (set! key (ichar-downcase key))
 		 #t))
 	   #t)
        ;; Hack to handle "n1" sequence as "¤ó1".
        ;; This should be handled in rk.scm. -- ekato
-       (if (and (not (alphabet-char? key))
+       (if (and (not (ichar-alphabetic? key))
 		(not (string-find (rk-expect rkc) key-str)))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
@@ -1160,7 +1160,7 @@
 
 (define skk-sokuon-shiin-char?
   (lambda (c)
-    (and (alphabet-char? c)
+    (and (ichar-alphabetic? c)
 	 (and
 	  (not (= c 97))	;; a
 	  (not (= c 105))	;; i
@@ -1391,7 +1391,7 @@
 	      (else
 	       ;; append latin string
 	       (begin
-		 (if (usual-char? key)
+		 (if (ichar-graphic? key)
 		     (let* ((s (charcode->string key))
 			    (p (cons s (cons s (cons s s)))))
 		       (skk-append-string sc p))))))
@@ -1420,7 +1420,7 @@
 	   #t)
        (if (and (ichar-upper-case? key)
 		(not (null? (skk-context-head sc))))
-	   (let ((key-str (charcode->string (to-lower-char key))))
+	   (let ((key-str (charcode->string (ichar-downcase key))))
 	     (set! res (skk-rk-push-key-match-without-new-seq rkc key-str))
 	     (if (and
 		  (skk-rk-pending? sc)
@@ -1438,7 +1438,7 @@
 		   #f)
 		 (begin
 		   (skk-context-set-state! sc 'skk-state-okuri)
-		   (set! key (to-lower-char key))
+		   (set! key (ichar-downcase key))
 		   (skk-context-set-okuri-head! sc key-str)
 		   (if (skk-sokuon-shiin-char? key)
 		       (begin
@@ -1475,10 +1475,10 @@
 	   #t)
        ;; Hack to handle "n1" sequence as "¤ó1".
        ;; This should be handled in rk.scm. -- ekato
-       (if (and (not (alphabet-char? key))
+       (if (and (not (ichar-alphabetic? key))
 		(not (string-find
 		      (rk-expect rkc)
-		      (charcode->string (to-lower-char key)))))
+		      (charcode->string (ichar-downcase key)))))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
 		 (skk-context-set-head! sc
@@ -1488,7 +1488,7 @@
 	     #t)
 	   #t)
        (begin
-	 (set! key (to-lower-char key))  
+	 (set! key (ichar-downcase key))  
 	 (set! stat (skk-context-state sc))
 	 (set! res
 	       (rk-push-key!
@@ -1974,7 +1974,7 @@
 	 (set! res
 	       (rk-push-key!
 		rkc
-		(charcode->string (to-lower-char key))))
+		(charcode->string (ichar-downcase key))))
 	 (if (and res
 	 	  (or
 		   (list? (car res))
@@ -2057,7 +2057,7 @@
 
 (define skk-press-key-handler
   (lambda (sc key state)
-    (if (control-char? key)
+    (if (ichar-control? key)
 	(im-commit-raw sc)
 	(skk-push-key sc key state))))
 

@@ -1434,7 +1434,7 @@
 	    (rkc (byeoru-context-rkc bc))
 	    (last-pend (rk-pending rkc))
 	    (last-seq (rk-context-seq rkc))
-	    (key-str (charcode->string (to-lower-char key)))
+	    (key-str (charcode->string (ichar-downcase key)))
 	    (res (rk-push-key! rkc key-str))
 	    (pend (rk-pending rkc))
 	    (cur-seq (rk-current-seq rkc))

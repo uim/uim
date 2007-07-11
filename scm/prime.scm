@@ -52,7 +52,7 @@
   (lambda ()
     (set! prime-cand-select-key?
 	  (lambda (key key-state)
-	    (and (numeral-char? key)
+	    (and (ichar-numeric? key)
 		 (control-key-mask key-state))))))
 
 ;; keys without custom
@@ -74,7 +74,7 @@
 
 (define prime-cand-select-key?
   (lambda (key key-state)
-    (numeral-char? key)))
+    (ichar-numeric? key)))
 
 (define prime-symbol-key?
   (lambda (key key-state)
@@ -102,7 +102,7 @@
 (define prime-capital-key?
   (lambda (key key-state)
     (and (shift-key-mask key-state)
-	 (alphabet-char? key))))
+	 (ichar-alphabetic? key))))
 
 (define prime-ja-direct-key?
   (lambda (key key-state)
@@ -2061,7 +2061,7 @@
 
 (define prime-press-key-handler
   (lambda (context key key-state)
-    (if (control-char? key)
+    (if (ichar-control? key)
 	(im-commit-raw context)
 	(let ((keymap (prime-keymap-get-keymap context key key-state)))
 	  (prime-proc-call-command keymap context key key-state)
@@ -2071,7 +2071,7 @@
 (define prime-release-key-handler
   (lambda (context key key-state)
     ;(print "prime-release-key-handler")
-    (if (or (control-char? key)
+    (if (or (ichar-control? key)
 	    (= (prime-context-mode context)
 	       prime-mode-latin))
 	(im-commit-raw context)

@@ -1701,7 +1701,7 @@
 
 (define latin-press-key-handler
   (lambda (lc key state)
-    (if (control-char? key)
+    (if (ichar-control? key)
 	(im-commit-raw lc)
 	(if (latin-context-composing? lc)
 	    (latin-proc-composing-state lc key state)
@@ -1710,7 +1710,7 @@
 
 (define latin-release-key-handler
   (lambda (lc key state)
-    (if (or (control-char? key)
+    (if (or (ichar-control? key)
 	    (not (latin-context-composing? lc)))
 	;; don't discard key release event for apps
 	(latin-commit-raw lc))))

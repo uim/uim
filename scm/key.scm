@@ -132,8 +132,8 @@
 	  (let* ((head (car char-list))
 		 (head-char (string->charcode head))
 		 (rest (cdr char-list)))
-	    (if (or (alphabet-char? head-char)
-		    (numeral-char? head-char)
+	    (if (or (ichar-alphabetic? head-char)
+		    (ichar-numeric? head-char)
 		    (string=? head "_"))
 		(parse-tag-prefix-symbol (string-append parsed head) rest)
 		(cons prefix char-list)))
@@ -201,7 +201,7 @@
 		    (cond
 		     ((eq? prefix 'IgnoreCase)
 		      (lambda (key key-state)
-			(let ((translated-key (to-lower-char key)))
+			(let ((translated-key (ichar-downcase key)))
 			  (list translated-key key-state))))
 		     ((eq? prefix 'IgnoreShift)
 		      (lambda (key key-state)
@@ -210,7 +210,7 @@
 			  (list key translated-key-state))))
 		     ((eq? prefix 'IgnoreRegularShift)
 		      (lambda (key key-state)
-			(let ((translated-key-state (if (usual-char? key)
+			(let ((translated-key-state (if (ichar-graphic? key)
 							(bit-and key-state
 								 (bit-not 1))
 							key-state)))

@@ -267,7 +267,7 @@
 
 (define spell-proc-input-no-preedit
   (lambda (sc key key-state)
-    (let* ((key-str (charcode->string (to-lower-char key)))
+    (let* ((key-str (charcode->string (ichar-downcase key)))
 	   (rkc (spell-context-rk-context sc))
 	   (res #f)
 	   (direct (ja-direct (charcode->string key)))
@@ -298,7 +298,7 @@
 	   #t)
        (if (and
 	    (shift-key-mask key-state)
-	    (alphabet-char? key))
+	    (ichar-alphabetic? key))
 	   (begin
 	     (spell-context-set-immediate-commit! sc #f)
 	     #t)
@@ -389,7 +389,7 @@
 		    (cons c (spell-context-left-string sc)))))
 	     #f)
 	   #t)
-       (if (numeral-char? key)
+       (if (ichar-numeric? key)
 	   (begin
 	     (spell-context-set-nth! sc (- key 49))
 	     (im-commit sc (spell-get-nth-candidate sc (- key 49)))
@@ -408,7 +408,7 @@
 	 (set! res
 	       (rk-push-key!
 		rkc
-		(charcode->string (to-lower-char key))))
+		(charcode->string (ichar-downcase key))))
 	 (if res
 	     (begin
 	       (spell-context-set-left-string!

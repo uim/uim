@@ -600,7 +600,7 @@
 	  (let* ((key-str (charcode->string
 		           (if (= rule canna-input-rule-kana)
 			       key
-			       (to-lower-char key))))
+			       (ichar-downcase key))))
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
@@ -877,13 +877,13 @@
      (else
       ;; handle "n1" sequence as "¤ó1"
       (if (and (not (canna-context-alnum cc))
-	       (not (alphabet-char? key))
+	       (not (ichar-alphabetic? key))
 	       (not (string-find
 		     (rk-expect rkc)
 		     (charcode->string
 		      (if (= rule canna-input-rule-kana)
 			  key
-			  (to-lower-char key))))))
+			  (ichar-downcase key))))))
 	  (let ((pend (rk-pending rkc))
 		(residual-kana (rk-push-key-last! rkc)))
 	    (if residual-kana
@@ -910,7 +910,7 @@
 	  (let* ((key-str (charcode->string
 			   (if (= rule canna-input-rule-kana)
 			       key
-			       (to-lower-char key))))
+			       (ichar-downcase key))))
 	         (pend (rk-pending rkc))
 	         (res (rk-push-key! rkc key-str)))
 	    (if (and res
@@ -1307,7 +1307,7 @@
       (canna-cancel-conv cc))
 
      ((and canna-select-candidate-by-numeral-key?
-	   (numeral-char? key)
+	   (ichar-numeric? key)
 	   (canna-context-candidate-window cc))
       (canna-move-candidate-in-page cc key))
 
@@ -1324,7 +1324,7 @@
 	(canna-proc-input-state cc key key-state))))))
 
 (define (canna-press-key-handler cc key key-state)
-  (if (control-char? key)
+  (if (ichar-control? key)
       (im-commit-raw cc)
       (if (canna-context-on cc)
           (if (canna-context-transposing cc)
@@ -1337,7 +1337,7 @@
 
 ;;;
 (define (canna-release-key-handler cc key key-state)
-  (if (or (control-char? key)
+  (if (or (ichar-control? key)
 	  (not (canna-context-on cc)))
       (canna-commit-raw cc)))
 ;;;

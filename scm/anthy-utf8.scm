@@ -701,7 +701,7 @@
 				    (charcode->string key))
 				(if (symbol? key)
 				    (symbol->string key)
-				    (charcode->string (to-lower-char key)))))
+				    (charcode->string (ichar-downcase key)))))
 		   (res (rk-push-key! rkc key-str)))
 	      (if res
 		  (begin
@@ -909,7 +909,7 @@
       #t)
      ((and
        anthy-select-prediction-by-numeral-key?
-       (numeral-char? key))
+       (ichar-numeric? key))
       (anthy-utf8-move-prediction-in-page ac key))
      ((and
        (anthy-utf8-context-prediction-index ac)
@@ -986,7 +986,7 @@
 	     (anthy-utf8-reset-prediction-window ac)
 	     (anthy-utf8-check-prediction ac))
 	    ((and
-	      (numeral-char? key)
+	      (ichar-numeric? key)
 	      anthy-select-prediction-by-numeral-key?
 	      (not (anthy-utf8-prediction-select-non-existing-index? ac key)))
 	     (anthy-utf8-context-set-predicting! ac #f)
@@ -1183,7 +1183,7 @@
        (else	
 	;; handle "n1" sequence as "ん1"
 	(if (and (not (anthy-utf8-context-alnum ac))
-		 (not (alphabet-char? key))
+		 (not (ichar-alphabetic? key))
 		 (not (string-find
 		       (rk-expect rkc)
 		       (if (= rule anthy-input-rule-kana)
@@ -1192,7 +1192,7 @@
 			       (charcode->string key))
 			   (if (symbol? key)
 			       (symbol->string key)
-			       (charcode->string (to-lower-char key)))))))
+			       (charcode->string (ichar-downcase key)))))))
 	    (let ((pend (rk-pending rkc))
 		  (residual-kana (rk-push-key-last! rkc)))
 	      (if residual-kana
@@ -1226,7 +1226,7 @@
 				    (charcode->string key))
 				(if (symbol? key)
 				    (symbol->string key)
-				    (charcode->string (to-lower-char key)))))
+				    (charcode->string (ichar-downcase key)))))
 		   (pend (rk-pending rkc))
 		   (res (rk-push-key! rkc key-str)))
 	      (if (and res
@@ -1706,7 +1706,7 @@
       (anthy-utf8-cancel-conv ac))
 
      ((and anthy-select-candidate-by-numeral-key?
-	   (numeral-char? key)
+	   (ichar-numeric? key)
 	   (anthy-utf8-context-candidate-window ac))
       (anthy-utf8-move-candidate-in-page ac key))
 
@@ -1727,7 +1727,7 @@
 
 (define anthy-utf8-press-key-handler
   (lambda (ac key key-state)
-    (if (control-char? key)
+    (if (ichar-control? key)
 	(im-commit-raw ac)
 	(if (anthy-utf8-context-on ac)
 	    (if (anthy-utf8-context-transposing ac)
@@ -1744,7 +1744,7 @@
 
 (define anthy-utf8-release-key-handler
   (lambda (ac key key-state)
-    (if (or (control-char? key)
+    (if (or (ichar-control? key)
 	    (not (anthy-utf8-context-on ac)))
 	;; don't discard key release event for apps
 	(anthy-utf8-commit-raw ac))))

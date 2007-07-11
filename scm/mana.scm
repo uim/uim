@@ -871,7 +871,7 @@
 	     (let* ((key-str (charcode->string
 			      (if (= rule mana-input-rule-kana)
 				  key
-				  (to-lower-char key))))
+				  (ichar-downcase key))))
 		    (res (rk-push-key! rkc key-str)))
 	       (if res
 		   (begin
@@ -1166,13 +1166,13 @@
        (else
 	;; handle "n1" sequence as "¤ó1"
 	(if (and (not (mana-context-alnum mc))
-		 (not (alphabet-char? key))
+		 (not (ichar-alphabetic? key))
 		 (not (string-find
 		       (rk-expect rkc)
 		       (charcode->string
 			(if (= rule mana-input-rule-kana)
 			    key
-			    (to-lower-char key))))))
+			    (ichar-downcase key))))))
 	    (let ((pend (rk-pending rkc))
 		  (residual-kana (rk-push-key-last! rkc)))
 	      (if residual-kana
@@ -1199,7 +1199,7 @@
 	    (let* ((key-str (charcode->string 
 			     (if (= rule mana-input-rule-kana)
 				 key
-				 (to-lower-char key))))
+				 (ichar-downcase key))))
 		   (pend (rk-pending rkc))
 		   (res (rk-push-key! rkc key-str)))
 	      (if (and res
@@ -1546,7 +1546,7 @@
        (mana-cancel-conv mc))
 
       ((and mana-select-candidate-by-numeral-key?
-            (numeral-char? key)
+            (ichar-numeric? key)
             (mana-context-candidate-window mc))
        (mana-move-candidate-in-page mc key))
 
@@ -1567,7 +1567,7 @@
 
 (define mana-press-key-handler
   (lambda (mc key key-state)
-    (if (control-char? key)
+    (if (ichar-control? key)
         (im-commit-raw mc)
         (if (mana-context-on mc)
             (if (mana-context-transposing mc)
@@ -1582,7 +1582,7 @@
 
 (define mana-release-key-handler
   (lambda (mc key key-state)
-    (if (or (control-char? key)
+    (if (or (ichar-control? key)
             (not (mana-context-on mc)))
         ;; don't discard key release event for apps
         (mana-commit-raw mc))))

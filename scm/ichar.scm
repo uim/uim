@@ -129,14 +129,8 @@
 	c)))
 
 ;;
-;; backward compatibility: should be obsoleted
+;; backward compatibility
 ;;
-
-(define control-char? ichar-control?)
-(define alphabet-char? ichar-alphabetic?)
-(define numeral-char? ichar-numeric?)
-(define usual-char? ichar-graphic?)
-(define to-lower-char ichar-downcase)
 
 (define charcode->string
   (lambda (c)
