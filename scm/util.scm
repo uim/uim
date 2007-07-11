@@ -150,10 +150,8 @@
 
 (define method-delegator-new
   (lambda (dest-getter method)
-    (lambda args
-      (let* ((self (car args))
-	     (dest (dest-getter self)))
-	(apply method (cons dest (cdr args)))))))
+    (lambda (self . args)
+      (apply method (cons (dest-getter self) args)))))
 
 (define safe-car
   (lambda (pair)
