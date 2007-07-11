@@ -312,6 +312,15 @@
 	  0
 	  (char->integer (car sl))))))
 
+;; split EUC-JP string into reversed character list
+(define string-to-list
+  (lambda (s)
+    (with-char-codec "EUC-JP"
+      (lambda ()
+	(map! (lambda (c)
+		(list->string (list c)))
+	      (reverse! (string->list s)))))))
+
 (define symbolconc symbol-append)
 
 ;; should be obsoleted by list-ref

@@ -271,33 +271,6 @@ uim_split_string(uim_lisp _splittee, uim_lisp _splitter)
 }
 
 static uim_lisp
-eucjp_string_to_list(uim_lisp str_)
-{
-  const char *str = uim_scm_refer_c_str(str_);
-  const unsigned char *cur = (const unsigned char *)str;
-  uim_lisp res = uim_scm_null_list();
-  while (*cur) {
-    char buf[3];
-    int len;
-    buf[2] = 0;
-    if (*cur > 127) {
-      /* 2 bytes */
-      buf[0] = cur[0];
-      buf[1] = cur[1];
-      len = 2;
-      cur ++;
-    } else {
-      buf[0] = cur[0];
-      buf[1] = 0;
-      len = 1;
-    }
-    res = uim_scm_cons(uim_scm_make_str((char *)buf), res);
-    cur ++;
-  }
-  return res;
-}
-
-static uim_lisp
 string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
 			int (*cmp)(const char *, const char *, size_t))
 {
@@ -390,7 +363,6 @@ uim_init_util_subrs(void)
 
   /* these procedures should be replaced with standard ones of R5RS or SRFIs */
   uim_scm_init_subr_2("string-split", uim_split_string);
-  uim_scm_init_subr_1("string-to-list", eucjp_string_to_list);
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
 }

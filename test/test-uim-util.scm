@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4690 (new repository)
+;; These tests are passed at revision 4692 (new repository)
 
 (use test.unit)
 
@@ -38,6 +38,7 @@
 (define-uim-test-case "testcase uim-util"
   (setup
    (lambda ()
+     (uim '(require "util.scm"))
      (uim '(define lst '(1 2 3 4)))))
 
   ("test getenv"
