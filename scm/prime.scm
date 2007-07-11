@@ -1148,7 +1148,7 @@
 
 (define prime-command-conv-select
   (lambda (context key key-state)
-    (let* ((nth0 (number->candidate-index (numeral-char->number key)))
+    (let* ((nth0 (number->candidate-index (numeric-ichar->integer key)))
 	   (cand-range (prime-uim-candwin-get-range context))
 	   (nth (min (+ (car cand-range) nth0) (cdr cand-range)))
 	   (cand (prime-candidates-get-nth context nth)))
@@ -1160,7 +1160,7 @@
 ;; FIXME: <Hiroyuki Komatsu> (2005-03-30)
 (define prime-command-segment-select
   (lambda (context key key-state)
-    (let* ((nth0 (number->candidate-index (numeral-char->number key)))
+    (let* ((nth0 (number->candidate-index (numeric-ichar->integer key)))
 	   (cand-range (prime-uim-candwin-get-range context))
 	   (nth (min (+ (car cand-range) nth0) (cdr cand-range)))
 	   (cand (prime-candidates-get-nth context nth)))
@@ -1345,7 +1345,7 @@
 (define prime-command-preedit-commit-candidate
   (lambda (context key key-state)
     (if prime-custom-number-selection?
-	(let* ((nth (number->candidate-index (numeral-char->number key)))
+	(let* ((nth (number->candidate-index (numeric-ichar->integer key)))
 	       (cand (prime-get-nth-candidate context nth)))
 	  (if cand
 	      (prime-commit-candidate context nth))

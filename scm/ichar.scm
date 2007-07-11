@@ -32,22 +32,22 @@
 
 
 ;; TODO: write test
-(define string->char
+(define string->ichar
   (lambda (str)
     (and (= (string-length str)
 	    1)
 	 (string->charcode str))))
 
 ;; TODO: write test
-(define string->printable-char
+(define string->printable-ichar
   (lambda (str)
-    (let ((c (string->char str)))
+    (let ((c (string->ichar str)))
       (and (ichar-printable? c)
 	   c))))
 
-(define string->letter
+(define string->alphabetic-ichar
   (lambda (str)
-    (let ((c (string->printable-char str)))
+    (let ((c (string->printable-ichar str)))
       (and (ichar-alphabetic? c)
 	   c))))
 
@@ -110,7 +110,7 @@
     (and (ichar-alphabetic? c)
 	 (not (ichar-vowel? c)))))
 
-(define numeral-char->number
+(define numeric-ichar->integer
   (lambda (c)
     (if (ichar-numeric? c)
 	(- c 48)

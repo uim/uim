@@ -183,7 +183,7 @@
 ;; TODO: write test
 (define map-key-list-letter
   (lambda (letter-mapper key-list)
-    (let ((letter (string->letter (find string? key-list))))
+    (let ((letter (string->alphabetic-ichar (find string? key-list))))
       (map-key-list-body (lambda (elem)
 			   (if letter
 			       (charcode->string (letter-mapper letter))
@@ -231,8 +231,8 @@
   (lambda (key-list)
     (let* ((has-shift? (memq 'Shift_key key-list))
 	   (str (find string? key-list))
-	   (printable (string->printable-char str))
-	   (letter (string->letter str)))
+	   (printable (string->printable-ichar str))
+	   (letter (string->alphabetic-ichar str)))
       (filter-map (lambda (elem)
 		    (cond
 		     ((and (eq? elem 'Shift_key)
@@ -253,7 +253,7 @@
 ;; TODO: write test
 (define key-list-decode-shift
   (lambda (key-list)
-    (let* ((letter (string->letter (find string? key-list)))
+    (let* ((letter (string->alphabetic-ichar (find string? key-list)))
 	   (upper-case? (and letter
 			     (ichar-upper-case? letter)))
 	   (has-shift? (memq 'Shift_key key-list))
@@ -266,7 +266,7 @@
 ;; TODO: write test
 (define key-list-ignore-regular-shift
   (lambda (key-list)
-    (let ((printable (string->printable-char (find string? key-list))))
+    (let ((printable (string->printable-ichar (find string? key-list))))
       (if (ichar-graphic? printable)
 	  (cons 'IgnoreRegularShift key-list)
 	  key-list))))
@@ -274,7 +274,7 @@
 ;; TODO: write test
 (define key-list-ignore-letter-shift
   (lambda (key-list)
-    (let ((letter (string->letter (find string? key-list))))
+    (let ((letter (string->alphabetic-ichar (find string? key-list))))
       (if letter
 	  (cons 'IgnoreShift key-list)
 	  key-list))))
@@ -283,7 +283,7 @@
 (define key-list-ignore-punct-numeric-shift
   (lambda (key-list)
     (let* ((str (find string? key-list))
-	   (c (string->printable-char str)))
+	   (c (string->printable-ichar str)))
       (if (and (ichar-graphic? c)
 	       (not (ichar-alphabetic? c)))
 	  (cons 'IgnoreShift key-list)
@@ -292,7 +292,7 @@
 ;; TODO: write test
 (define key-list-ignore-case
   (lambda (key-list)
-    (let ((letter (string->letter (find string? key-list))))
+    (let ((letter (string->alphabetic-ichar (find string? key-list))))
       (if letter
 	  (cons 'IgnoreCase key-list)
  	  key-list))))
@@ -306,7 +306,7 @@
 (define key-list-strip-regular-shift
   (lambda (key-list)
     (let* ((str (find string? key-list))
-	   (printable (string->printable-char str)))
+	   (printable (string->printable-ichar str)))
       (if (ichar-graphic? printable)
 	  (key-list-strip-shift key-list)
 	  key-list))))

@@ -171,7 +171,7 @@
 	   (cur-page (if (= generic-nr-candidate-max 0)
 			 0
 			 (quotient n generic-nr-candidate-max)))
-	   (pageidx (- (numeral-char->number key) 1))
+	   (pageidx (- (numeric-ichar->integer key) 1))
 	   (compensated-pageidx (cond
 				 ((< pageidx 0) ; pressing key_0
 				  (+ pageidx 10))

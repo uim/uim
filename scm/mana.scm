@@ -1014,7 +1014,7 @@
 		   (= (mana-context-input-rule mc) mana-input-rule-roma)
 		   (not (null? (ustr-former-seq preconv-str)))
 		   (not (ichar-printable?	;; check for kana
-			 (string->char
+			 (string->ichar
 			  (car (last (ustr-former-seq preconv-str)))))))
 		  (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
 
@@ -1406,7 +1406,7 @@
            (cur-page (if (= mana-nr-candidate-max 0)
                          0
                          (quotient n mana-nr-candidate-max)))
-           (pageidx (- (numeral-char->number numeralc) 1))
+           (pageidx (- (numeric-ichar->integer numeralc) 1))
            (compensated-pageidx (cond
                                   ((< pageidx 0) ; pressing key_0
                                    (+ pageidx 10))

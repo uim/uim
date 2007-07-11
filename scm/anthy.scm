@@ -847,7 +847,7 @@
 	   (cur-page (if (= anthy-nr-candidate-max 0)
 			 0
 			 (quotient n anthy-nr-candidate-max)))
-	   (pageidx (- (numeral-char->number numeralc) 1))
+	   (pageidx (- (numeric-ichar->integer numeralc) 1))
 	   (compensated-pageidx (cond
 				 ((< pageidx 0) ; pressing key_0
 				  (+ pageidx 10))
@@ -882,7 +882,7 @@
 	   (cur-page (if (= anthy-nr-candidate-max 0)
 			 0
 			 (quotient p-idx anthy-nr-candidate-max)))
-	   (pageidx (- (numeral-char->number numeralc) 1))
+	   (pageidx (- (numeric-ichar->integer numeralc) 1))
 	   (compensated-pageidx (cond
 				 ((< pageidx 0) ; pressing key_0
 				  (+ pageidx 10))
@@ -1021,7 +1021,7 @@
 		   (= (anthy-context-input-rule ac) anthy-input-rule-roma)
 		   (not (null? (ustr-former-seq preconv-str)))
 		   (not (ichar-printable?	;; check for kana
-			 (string->char
+			 (string->ichar
 			  (car (last (ustr-former-seq preconv-str)))))))
 		  (ja-fix-deleted-raw-str-to-valid-roma! raw-str)))))
 
@@ -1553,7 +1553,7 @@
 	   (cur-page (if (= anthy-nr-candidate-max 0)
 	   		 0
 			 (quotient n anthy-nr-candidate-max)))
-	   (pageidx (- (numeral-char->number numeralc) 1))
+	   (pageidx (- (numeric-ichar->integer numeralc) 1))
 	   (compensated-pageidx (cond
 				 ((< pageidx 0) ; pressing key_0
 				  (+ pageidx 10))

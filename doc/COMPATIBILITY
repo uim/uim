@@ -89,6 +89,14 @@ Changes:
       (new) ichar-consonant?
       (new) ichar-downcase
       (new) ichar-upcase
+  (renamed) string->char
+      (new) string->ichar
+  (renamed) string->printable-char
+      (new) string->printable-ichar
+  (renamed) string->letter
+      (new) string->alphabetic-ichar
+  (renamed) numeral-char->number
+      (new) numeric-ichar->integer
   (removed) control-char?
   (removed) alphabet-char?
   (removed) numeral-char?
