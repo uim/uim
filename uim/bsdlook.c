@@ -103,7 +103,7 @@ static int	 compare(char *, char *, uim_look_ctx *);
 static char	*linear_search(char *, uim_look_ctx *);
 
 uim_look_ctx *
-uim_look_init()
+uim_look_init(void)
 {
 	uim_look_ctx *ctx = calloc(1, sizeof(*ctx));
 

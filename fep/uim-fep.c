@@ -109,6 +109,9 @@
 #include <libutil.h>
 #endif
 
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+
 #include "udsock.h"
 #include "str.h"
 #include "uim-fep.h"

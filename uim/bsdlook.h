@@ -38,7 +38,7 @@
 
 typedef struct uim_look_ctx uim_look_ctx;
 
-uim_look_ctx	*uim_look_init();
+uim_look_ctx	*uim_look_init(void);
 void		 uim_look_finish(uim_look_ctx *);
 int		 uim_look_open_dict(const char *, uim_look_ctx *);
 int		 uim_look(char *, uim_look_ctx *);
