@@ -28,6 +28,8 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 
+(use srfi-60)
+
 
 ;; TODO: write test
 (define string->char
@@ -152,17 +154,11 @@
 	  0
 	  (char->integer (car sl))))))
 
-;; FIXME: write test.
-(define ucs-to-utf8-string
+(define ucs->utf8-string
   (lambda (ucs)
-    (let ((utf-8
-	   (if (< ucs 128)
-	       (list ucs)		; ASCII
-	       (let enc ((to-be-split ucs)
-			 (threshold 64))
-		 (if (< to-be-split threshold)
-		     (list (bit-or to-be-split
-				   (bit-xor 255 (- (* 2 threshold) 1))))
-		     (cons (bit-or 128 (bit-and 63 to-be-split))
-			   (enc (/ to-be-split 64) (/ threshold 2))))))))
-      (string-append-map charcode->string (reverse utf-8)))))
+    (with-char-codec "UTF-8"
+      (lambda ()
+	(list->string (list (integer->char ucs)))))))
+
+;; FIXME: write test.
+(define ucs-to-utf8-string ucs->utf8-string)

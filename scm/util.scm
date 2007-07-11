@@ -31,12 +31,10 @@
 (use srfi-1)
 (use srfi-6)
 (use srfi-34)
-(use srfi-60)
 
 (require "ichar.scm")
 (require "deprecated-util.scm")
 
-;;;;
 
 (define hyphen-sym (string->symbol "-"))
 
