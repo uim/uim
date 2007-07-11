@@ -49,7 +49,7 @@
 	  (begin
 	    ((if  uim-sh-opt-strict-batch
 		  (lambda args #f)
-		  print)
+		  writeln)
 	     (eval expr (interaction-environment)))
 	    (uim-sh-loop))
 	  #f))))
@@ -112,7 +112,7 @@
 		      (begin
 			((if uim-sh-opt-strict-batch
 			     (lambda args #f)
-			     print)
+			     writeln)
 			 (eval expr (interaction-environment)))
 			(uim-sh-loop))
 		      #f)))))

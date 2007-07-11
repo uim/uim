@@ -234,7 +234,7 @@
 	     (<= pos (ustr-length ustr)))
 	(let* ((whole (ustr-whole-seq ustr))
 	       (latter (list-tail whole pos))
-	       (former (list-head whole pos)))
+	       (former (take whole pos)))
 	  (ustr-set-former-seq! ustr former)
 	  (ustr-set-latter-seq! ustr latter)
 	  #t)

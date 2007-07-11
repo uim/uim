@@ -28,26 +28,35 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 
+;; To find deprecated procedure invocation, type as follows (or type
+;; it into M-x grep). But replacement of the deprecated procedures are
+;; not necessary for uim 1.5. Keeping in mind avoiding the procedures
+;; on writing a new code is enough.  -- YamaKen 2007-07-11
+;;
+;; $ egrep '\((string-list-concat|string-find|truncate-list|list-head|nconc|string-to-list|symbolconc|nth|nthcdr|copy-list|digit->string|puts|siod-print|print|feature\?|uim-symbol-value-str)\b' *.scm
+
 (use srfi-1)
 (use srfi-34)
 
 
+;; TODO: rewrite list processing with 'string-append'
 (define string-list-concat
   (lambda (lst)
     (apply string-append (reverse lst))))
 
+;; TODO: replace with 'member'
 (define string-find
   (lambda (lst str)
     (member str lst)))
 
-;; should be obsoleted by 'take'
+;; TODO: replace with 'take'
 (define truncate-list
   (lambda (lst n)
     (guard (err
 	    (else #f))
       (take lst n))))
 
-;; should be obsoleted by 'take'
+;; TODO: replace with 'take'
 (define list-head take)
 
 (define nconc
@@ -58,6 +67,7 @@
 	  (set-cdr! (last-pair lst) obj)
 	  lst))))
 
+;; TODO: rewrite list processing with 'string->list'
 ;; split EUC-JP string into reversed character list
 (define string-to-list
   (lambda (s)
@@ -67,29 +77,32 @@
 		(list->string (list c)))
 	      (reverse! (string->list s)))))))
 
-;; symbol-append is not yet defined at here.
+;; TODO: replace with symbol-append
+;;
+;; Since symbol-append is not yet defined at here, enclose into closure.
 ;;(define symbolconc symbol-append)
 (define symbolconc
   (lambda args
     (apply symbol-append args)))
 
-;; should be obsoleted by list-ref
+;; TODO: replace with list-ref
 (define nth
   (lambda (k lst)
     (list-ref lst k)))
 
-;; should be obsoleted by list-tail
+;; TODO: replace with list-tail
 (define nthcdr
   (lambda (k lst)
     (guard (err
 	    (else #f))
       (list-tail lst k))))
 
-;; should be obsoleted by list-copy of SRFI-1
+;; TODO: replace with list-copy of SRFI-1
 (define copy-list
   (lambda (lst)
     (append lst '())))
 
+;; TODO: replace with number->string
 (define digit->string
   (lambda (n)
     (and (number? n)
@@ -98,18 +111,20 @@
 ;;
 ;; SIOD compatibility
 ;;
+
+;; TODO: replace with 'display'
 (define puts display)
 
-;; TODO: Rename to more appropriate name such as 'inspect' (the name
-;; came from debugging terms) or simply 'writeln'. But since I don't
-;; know Scheme culture enough, I can't determine what is appropriate.
+;; TODO: replace with 'writeln'
 (define siod-print
   (lambda (obj)
     (write obj)
     (newline)))
 
+;; TODO: replace with 'writeln'
 (define print siod-print)
 
+;; TODO: replace with 'provided?'
 (define feature?
   (lambda (sym)
     (provided? (symbol->string sym))))

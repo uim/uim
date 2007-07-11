@@ -42,6 +42,12 @@
 ;; generic utilities
 ;;
 
+(define writeln
+  (lambda (obj . args)
+    (let-optionals* args ((port (current-output-port)))
+      (write obj port)
+      (newline))))
+
 ;; Make escaped string literal to print a form.
 ;;
 ;; (string-escape "a str\n") -> "\"a str\\n\""
@@ -242,11 +248,11 @@
 		     (lambda init-lst
 		       (cond
 			((null? init-lst)
-			 (copy-list defaults))
+			 (list-copy defaults))
 			;; fast path
 			((= (length init-lst)
 			    (length defaults))
-			 (copy-list init-lst))
+			 (list-copy init-lst))
 			;; others
 			((< (length init-lst)
 			    (length defaults))
@@ -254,7 +260,7 @@
 							  (length init-lst)))
 				(complemented-init-lst (append init-lst
 							       rest-defaults)))
-			   (copy-list complemented-init-lst)))
+			   (list-copy complemented-init-lst)))
 			(else
 			 #f))))))
       (eval (list 'define creator-sym creator)

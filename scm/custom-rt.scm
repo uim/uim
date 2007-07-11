@@ -130,7 +130,7 @@
   (lambda (keys)
     (map (lambda (key)
 	   (if (symbol? key)
-	       (symbolconc key '?)
+	       (symbol-append key '?)
 	       key))
 	 keys)))
 
@@ -190,7 +190,7 @@
 ;; lightweight implementation
 (define custom-key-exist?
   (lambda (sym)
-    (let ((key-sym (symbolconc sym '?)))
+    (let ((key-sym (symbol-append sym '?)))
       (and (symbol-bound? sym)
 	   (list? (symbol-value sym))
 	   (symbol-bound? key-sym)
@@ -209,7 +209,7 @@
 	  ((custom-key-exist? sym)
 	   (set-symbol-value! sym val)
 	   (let ((key-val (custom-modify-key-predicate-names val)))
-	     (eval (list 'define (symbolconc sym '?)
+	     (eval (list 'define (symbol-append sym '?)
 			 (list 'make-key-predicate (list 'quote key-val)))
 		   (interaction-environment)))
 	   #t)
@@ -241,7 +241,7 @@
 		(begin
 		  (if (eq? (car type)
 			   'key)
-		      (eval (list 'define (symbolconc sym '?) list)
+		      (eval (list 'define (symbol-append sym '?) list)
 			    (interaction-environment)))
 		  (custom-set-value! sym default))))))))  ;; to apply hooks
 

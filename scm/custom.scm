@@ -568,7 +568,7 @@
 	   (if (eq? (custom-type sym)
 		    'key)
 	       (let ((key-val (custom-modify-key-predicate-names val)))
-		 (eval (list 'define (symbolconc sym '?)
+		 (eval (list 'define (symbol-append sym '?)
 			     (list 'make-key-predicate (list 'quote key-val)))
 		       (interaction-environment))))
 	   (custom-call-hook-procs sym custom-set-hooks)
@@ -684,7 +684,7 @@
 	  (type (custom-type sym)))
       (cond
        ((eq? type 'integer)
-	(digit->string val))
+	(number->string val))
        ((eq? type 'string)
 	(string-escape val))
        ((eq? type 'pathname)

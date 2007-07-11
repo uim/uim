@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4674 (new repository)
+;; These tests are passed at revision 4704 (new repository)
 
 ;; TODO:
 ;;
