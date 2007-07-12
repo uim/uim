@@ -361,6 +361,17 @@
       (and c
            (context-im c)))))
 
+(define context-update-preedit
+  (lambda (context segments)
+    (im-clear-preedit context)
+    (for-each (lambda (segment)
+		(if segment
+		    (let ((attr (car segment))
+			  (str (cdr segment)))
+		      (im-pushback-preedit context attr str))))
+	      segments)
+    (im-update-preedit context)))
+
 ;; Backward compatibility. The term 'commit' is incorrect. No commit
 ;; operation is performed by this. This actually instructs 'pass-through' the
 ;; input key. The key filtering interface will be replaced with 'filtered'

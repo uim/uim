@@ -43,10 +43,9 @@
 ;;
 
 (define writeln
-  (lambda (obj . args)
-    (let-optionals* args ((port (current-output-port)))
-      (write obj port)
-      (newline))))
+  (lambda args
+    (apply write args)
+    (newline)))
 
 ;; Make escaped string literal to print a form.
 ;;
@@ -115,14 +114,15 @@
 	'()
 	(cdr (fold-right (lambda (kar kdr)
 			   (cons* sep kar kdr))
-			 '()
-			 lst)))))
+			 '() lst)))))
 
 ;; downward compatible with SRFI-13 string-join
 (define string-join
   (lambda (str-list sep)
     (apply string-append (list-join str-list sep))))
 
+;; Split pattern has been changed from uim 1.5.0. See
+;; doc/COMPATIBILITY and test-util.scm.
 (define string-split
   (lambda (str sep)
     (let ((slen (string-length str))
@@ -146,13 +146,13 @@
 
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
+;; FIXME: remove the closure overhead
 (define compose
   (lambda funcs
-    (reduce (lambda (f g)
-	      (lambda (arg)
-		(f (g arg))))
-	    values
-	    (reverse funcs))))
+    (reduce-right (lambda (f g)
+		    (lambda (x)
+		      (f (g x))))
+		  values funcs)))
 
 (define method-delegator-new
   (lambda (dest-getter method)
@@ -196,8 +196,7 @@
 (define try-load
   (lambda (file)
     (guard (err
-	    (else
-	     #f))
+	    (else #f))
       ;; to suppress error message, check file existence first
       (and (file-readable? (make-scm-pathname file))
 	   (load file)))))
@@ -207,8 +206,7 @@
 (define try-require
   (lambda (file)
     (guard (err
-	    (else
-	     #f))
+	    (else #f))
       ;; to suppress error message, check file existence first
       (and (file-readable? (make-scm-pathname file))
 	   (require file)))))
@@ -233,7 +231,8 @@
 		       (getter-sym (symbol-append rec-sym hyphen-sym elem-sym))
 		       (getter (lambda (rec)
 				 (list-ref rec index)))
-		       (setter-sym (symbol-append rec-sym hyphen-sym 'set- elem-sym '!))
+		       (setter-sym (symbol-append
+				    rec-sym hyphen-sym 'set- elem-sym '!))
 		       (setter (lambda (rec val)
 				 (set-car! (list-tail rec index)
 					   val))))
@@ -327,14 +326,3 @@
     (separator-background          . "")
     (reversed-separator-foreground . "black")
     (reversed-separator-background . "blue")))
-
-(define context-update-preedit
-  (lambda (context segments)
-    (im-clear-preedit context)
-    (for-each (lambda (segment)
-		(if segment
-		    (let ((attr (car segment))
-			  (str (cdr segment)))
-		      (im-pushback-preedit context attr str))))
-	      segments)
-    (im-update-preedit context)))
