@@ -28,9 +28,7 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 
-(use srfi-1)
-(use srfi-6)
-(use srfi-34)
+(require-extension (srfi 1 6 34))
 
 (require "ichar.scm")
 (require "deprecated-util.scm")

@@ -34,8 +34,7 @@
 ;; configuration for special platforms such as embedded environments
 ;;   -- YamaKen 2005-01-29
 
-(use srfi-23)
-(use srfi-34)
+(require-extension (srfi 23 34))
 
 (define enable-action? #t)
 

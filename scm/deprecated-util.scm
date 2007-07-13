@@ -35,8 +35,7 @@
 ;;
 ;; $ egrep '\((string-list-concat|string-find|truncate-list|list-head|nconc|string-to-list|symbolconc|nth|nthcdr|copy-list|digit->string|puts|siod-print|print|feature\?|uim-symbol-value-str)\b' *.scm
 
-(use srfi-1)
-(use srfi-34)
+(require-extension (srfi 1 34))
 
 
 ;; TODO: rewrite list processing with 'string-append'

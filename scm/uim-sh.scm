@@ -30,7 +30,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(use srfi-34)
+(require-extension (srfi 34))
 
 (define uim-sh-prompt "uim> ")
 (define uim-sh-opt-batch #f)
