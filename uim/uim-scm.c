@@ -1018,6 +1018,8 @@ uim_scm_init(const char *verbose_level)
   ScmStorageConf storage_conf;
   long vlevel = 2;
   ScmObj output_port;
+  const char *sys_load_path;
+  char **argp, *argv[8];
 
   if (initialized)
     return;
@@ -1029,17 +1031,25 @@ uim_scm_init(const char *verbose_level)
     vlevel = atoi(verbose_level) % 10;
   }
 
+  argp = argv;
+  *argp++ = "dummy";  /* command name */
 #if SCM_USE_MULTIBYTE_CHAR
-  /* *GC safe operation*
-   * 
+  /*
    * Set the raw unibyte codec which accepts all (multi)byte sequence
    * although it slashes a multibyte character on Scheme-level
    * character processing. Since current uim implementation treats a
    * multibyte character as string, it is not a problem. The name
    * "ISO-8859-1" is a dummy name for the codec.
    */
-  scm_current_char_codec = scm_mb_find_codec("ISO-8859-1");
+  *argp++ = "-C";
+  *argp++ = "ISO-8859-1";
 #endif
+  sys_load_path = getenv("LIBUIM_SYSTEM_SCM_FILES");
+  if (sys_load_path) {
+    *argp++ = "--system-load-path";
+    *argp++ = (char *)sys_load_path;  /* safe */
+  }
+  *argp++ = NULL;
 
   /* 128KB/heap, max 0.99GB on 32-bit systems. Since maximum length of list can
    * be represented by a Scheme integer, SCM_INT_MAX limits the number of cons
@@ -1049,7 +1059,7 @@ uim_scm_init(const char *verbose_level)
   storage_conf.n_heaps_max          = SCM_INT_MAX / storage_conf.heap_size;
   storage_conf.n_heaps_init         = 1;
   storage_conf.symbol_hash_size     = 1024;
-  scm_initialize(&storage_conf);
+  scm_initialize(&storage_conf, (const char *const *)&argv);
   scm_set_fatal_error_callback(exit_hook);
 
   /* GC safe */
