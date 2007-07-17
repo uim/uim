@@ -723,7 +723,7 @@ uim_get_im_name(uim_context uc, int nth)
    * unprotected variable causes unexpected sweep, l_freelist is not
    * supposed to be broken.  -- 2007-04-05 YamaKen
    *
-   * $ uim/uim-fep
+   * $ fep/uim-fep
    * lt-uim-fep: ../sigscheme/src/storage-gc.c:178: scm_alloc_cell: Assertion `!((scm_uintobj_t)(((scm_g_instance_static_gc).l_freelist)) % sizeof(ScmCell))' failed.
    */
   return uim_scm_refer_c_str(uim_scm_callf("im-name", "o", im));

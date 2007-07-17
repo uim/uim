@@ -102,8 +102,9 @@ uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
 uim_bool uim_scm_gc_protectedp(uim_lisp obj);
 uim_bool uim_scm_gc_protected_contextp(void);
 /* for semantic assertions */
-#define uim_scm_gc_any_contextp()                                            \
-  (!uim_scm_gc_protected_contextp() || uim_scm_gc_protected_contextp())
+#define uim_scm_gc_any_contextp()					\
+  (uim_scm_is_alive()							\
+   && (!uim_scm_gc_protected_contextp() || uim_scm_gc_protected_contextp()))
 
 /* evaluations */
 uim_lisp uim_scm_symbol_value(const char *symbol_str);

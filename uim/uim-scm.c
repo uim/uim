@@ -392,9 +392,7 @@ uim_scm_gc_protected_contextp(void)
 uim_bool
 uim_scm_is_alive(void)
 {
-  assert(uim_scm_gc_any_contextp());
-
-  return (!sscm_is_exit_with_fatal_error);
+  return (initialized && !sscm_is_exit_with_fatal_error);
 }
 
 long
@@ -1061,6 +1059,7 @@ uim_scm_init(const char *verbose_level)
   storage_conf.symbol_hash_size     = 1024;
   scm_initialize(&storage_conf, (const char *const *)&argv);
   scm_set_fatal_error_callback(exit_hook);
+  initialized = UIM_TRUE;  /* init here for uim_scm_gc_protect() */
 
   /* GC safe */
   output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
@@ -1079,7 +1078,6 @@ uim_scm_init(const char *verbose_level)
   scm_require_module("siod");
 
   uim_scm_set_verbose_level(vlevel);
-  initialized = UIM_TRUE;
 }
 
 void
