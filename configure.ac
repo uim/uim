@@ -1285,7 +1285,6 @@ else
   AX_CFLAGS_GCC_OPTION([-Wno-unused-function], [UIM_SCM_CFLAGS])
   AX_LANG_WNOERROR  # end AC_LANG_WERROR
 fi
-AC_SUBST(UIM_SCM_CFLAGS)
 
 AC_ARG_ENABLE(warnings-into-error,
     AC_HELP_STRING([--enable-warnings-into-error],
@@ -1300,11 +1299,16 @@ AC_ARG_ENABLE(warnings-into-error,
 	    ;;
 	esac
     ], [
+	    # Enable -Werror by default if --enable-debug. But since
+	    # the C89 string length limit always cause the warnings, I
+	    # disable it for uim-scm.c.  -- YamaKen 2007-07-19
 	    if test x$enable_debug = xyes; then
 	      CFLAGS="$CFLAGS -Werror"
 	      CXXFLAGS="$CXXFLAGS -Werror"
+  	      AX_CFLAGS_GCC_OPTION([-Wno-error], [UIM_SCM_CFLAGS])
 	    fi
     ])
+AC_SUBST(UIM_SCM_CFLAGS)
 
 
 if test x$enable_compat_scm = xyes; then
