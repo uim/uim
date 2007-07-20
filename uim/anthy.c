@@ -156,8 +156,7 @@ get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
 
   buf = malloc(buflen + 1);
   anthy_get_segment(ac, seg, nth, buf, buflen + 1);
-  buf_ = uim_scm_make_str(buf);
-  free(buf);
+  buf_ = uim_scm_make_str_directly(buf);
 
   return buf_;
 }
@@ -267,8 +266,7 @@ get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
 
   buf = malloc(buflen + 1);
   anthy_get_prediction(ac, nth, buf, buflen + 1);
-  buf_ = uim_scm_make_str(buf);
-  free(buf);
+  buf_ = uim_scm_make_str_directly(buf);
 
   return buf_;
 #else

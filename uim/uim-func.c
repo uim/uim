@@ -331,7 +331,7 @@ im_acquire_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
   enum UTextArea text_id;
   enum UTextOrigin origin;
   char *former, *latter, *cv_former, *cv_latter;
-  uim_lisp former_, latter_, ret;
+  uim_lisp former_, latter_;
 
   uc = retrieve_uim_context(uc_);
 
@@ -354,17 +354,14 @@ im_acquire_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
    * needed.  -- YamaKen 2006-10-07 */
   cv_former = uc->conv_if->convert(uc->inbound_conv, former);
   cv_latter = uc->conv_if->convert(uc->inbound_conv, latter);
-  former_ = (TEXT_EMPTYP(cv_former)) ? uim_scm_null() : MAKE_STR(cv_former);
-  latter_ = (TEXT_EMPTYP(cv_latter)) ? uim_scm_null() : MAKE_STR(cv_latter);
-
-  ret = uim_scm_callf("ustr-new", "oo", former_, latter_);
-
   free(former);
   free(latter);
-  free(cv_former);
-  free(cv_latter);
+  former_
+    = (TEXT_EMPTYP(cv_former)) ? uim_scm_null() : MAKE_STR_DIRECTLY(cv_former);
+  latter_
+    = (TEXT_EMPTYP(cv_latter)) ? uim_scm_null() : MAKE_STR_DIRECTLY(cv_latter);
 
-  return ret;
+  return uim_scm_callf("ustr-new", "oo", former_, latter_);
 }
 
 static uim_lisp

@@ -41,7 +41,7 @@ extern "C" {
 #define MAKE_BOOL uim_scm_make_bool
 #define MAKE_INT  uim_scm_make_int
 #define MAKE_STR  uim_scm_make_str
-#define MAKE_STR_DIRECTLY make_str_directly
+#define MAKE_STR_DIRECTLY uim_scm_make_str_directly
 #define MAKE_SYM  uim_scm_make_symbol
 #define MAKE_PTR  uim_scm_make_ptr
 #define MAKE_FPTR uim_scm_make_func_ptr
