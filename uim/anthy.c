@@ -331,6 +331,7 @@ uim_anthy_plugin_instance_quit(void)
   if (initialized) {
     uim_scm_callf("for-each", "vo", "anthy-lib-free-context", context_list);
     context_list = uim_scm_null();
+    uim_scm_gc_unprotect(&context_list);
 
     anthy_quit();
     initialized = UIM_FALSE;
