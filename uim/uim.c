@@ -140,51 +140,25 @@ uim_create_context(void *ptr,
 
   assert(uim_scm_gc_any_contextp());
 
-  if (!uim_initialized) {
-    fprintf(stderr, "uim_create_context() before uim_init()\n");
-    return NULL;
-  }
   if (!uim_scm_is_alive())
     return NULL;
 
   uc = malloc(sizeof(*uc));
   if (!uc)
     return NULL;
+  memset(uc, 0, sizeof(*uc));
 
   /* encoding handlings */
   if (!enc)
     enc = "UTF-8";
   uc->client_encoding = strdup(enc);
   uc->conv_if = (conv) ? conv : uim_iconv;
-  uc->outbound_conv = NULL;
-  uc->inbound_conv = NULL;
 
   /* variables */
   uc->is_enabled = UIM_TRUE;
-  uc->nr_modes = 0;
-  uc->modes = NULL;
-  uc->mode = 0;
-  uc->propstr = NULL;
 
   /* core callbacks */
   uc->commit_cb = commit_cb;
-  uc->preedit_clear_cb = NULL;
-  uc->preedit_pushback_cb = NULL;
-  uc->preedit_update_cb = NULL;
-  uc->candidate_selector_activate_cb = NULL;
-  uc->candidate_selector_select_cb = NULL;
-  uc->candidate_selector_shift_page_cb = NULL;
-  uc->candidate_selector_deactivate_cb = NULL;
-  uc->acquire_text_cb = NULL;
-  uc->delete_text_cb = NULL;
-
-  /* non-core callbacks */
-  uc->mode_list_update_cb = NULL;
-  uc->mode_update_cb = NULL;
-  uc->prop_list_update_cb  = NULL;
-  uc->configuration_changed_cb = NULL;
-  uc->switch_app_global_im_cb = NULL;
-  uc->switch_system_global_im_cb = NULL;
 
   /* foreign context objects */
   uc->ptr = ptr;
