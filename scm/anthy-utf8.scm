@@ -30,6 +30,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1 8))
+
 (require "util.scm")
 (require "ustr.scm")
 (require "japanese.scm")
@@ -71,6 +73,15 @@
 
 ;; I don't think the key needs to be customizable.
 (define-key anthy-space-key? '(" "))
+
+;; Handle Anthy's version scheme like 7100b, 8158memm.
+(define anthy-utf8-version->major.minor
+  (lambda (vstr)
+    (if (string=? vstr "(unknown)")
+	'("-1" . "")
+	(receive (maj min) (span char-numeric? (string->list vstr))
+	  (cons (list->string maj)
+		(list->string min))))))
 
 (define anthy-utf8-prepare-input-rule-activation
   (lambda (ac)
@@ -323,7 +334,8 @@
      (if (symbol-bound? 'anthy-utf8-lib-init)
          (begin
 	   (set! anthy-utf8-lib-initialized? (anthy-utf8-lib-init))
-	   (set! anthy-version (anthy-utf8-lib-get-anthy-version))))
+	   (set! anthy-version (anthy-utf8-version->major.minor
+				(anthy-utf8-lib-get-anthy-version)))))
      (if anthy-utf8-lib-initialized?
 	 (anthy-utf8-context-set-ac-id!
 	  ac (anthy-utf8-lib-alloc-context anthy-utf8-encoding)))
@@ -446,7 +458,7 @@
 (define anthy-utf8-release-handler
   (lambda (ac)
     (let ((ac-id (anthy-utf8-context-ac-id ac)))
-      (if (number? ac-id)
+      (if ac-id
 	  (anthy-utf8-lib-free-context ac-id)))))
 
 (define anthy-utf8-flush
@@ -537,7 +549,7 @@
     (let* ((ac-id (anthy-utf8-context-ac-id ac))
 	   (kana (anthy-utf8-context-kana-mode ac))
 	   (preconv-str (anthy-utf8-make-whole-string ac #t anthy-type-hiragana)))
-      (if (and (number? (anthy-utf8-context-ac-id ac))
+      (if (and ac-id
 	       (> (string-length preconv-str)
 		  0))
 	  (begin

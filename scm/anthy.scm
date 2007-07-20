@@ -453,7 +453,7 @@
 (define anthy-release-handler
   (lambda (ac)
     (let ((ac-id (anthy-context-ac-id ac)))
-      (if (number? ac-id)
+      (if ac-id
 	  (anthy-lib-free-context ac-id)))))
 
 (define anthy-flush
