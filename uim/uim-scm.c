@@ -1086,6 +1086,9 @@ uim_scm_init(const char *verbose_level, const char *system_load_path)
 void
 uim_scm_quit(void)
 {
+  if (!initialized)
+    return;
+
   scm_finalize();
   sscm_is_exit_with_fatal_error = UIM_FALSE;
   uim_output = NULL;
