@@ -1016,12 +1016,11 @@ exit_hook(void)
 }
 
 void
-uim_scm_init(const char *verbose_level)
+uim_scm_init(const char *verbose_level, const char *system_load_path)
 {
   ScmStorageConf storage_conf;
   long vlevel = 2;
   ScmObj output_port;
-  const char *sys_load_path;
   char **argp, *argv[8];
 
   if (initialized)
@@ -1047,10 +1046,9 @@ uim_scm_init(const char *verbose_level)
   *argp++ = "-C";
   *argp++ = "ISO-8859-1";
 #endif
-  sys_load_path = getenv("LIBUIM_SYSTEM_SCM_FILES");
-  if (sys_load_path) {
+  if (system_load_path) {
     *argp++ = "--system-load-path";
-    *argp++ = (char *)sys_load_path;  /* safe */
+    *argp++ = (char *)system_load_path;  /* safe */
   }
   *argp++ = NULL;
 
