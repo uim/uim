@@ -146,6 +146,7 @@ const char *
 uim_scm_refer_c_str(uim_lisp str);
 uim_lisp
 uim_scm_make_str(const char *str);
+uim_lisp uim_scm_make_str_directly(char *str);
 
 char *
 uim_scm_c_symbol(uim_lisp str);

@@ -97,6 +97,7 @@ static void *uim_scm_c_int_internal(void *uim_lisp_integer);
 static void *uim_scm_make_int_internal(void *integer);
 static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
 static void *uim_scm_make_str_internal(const char *str);
+static void *uim_scm_make_str_directly_internal(char *str);
 static void *uim_scm_make_symbol_internal(const char *name);
 static void *uim_scm_make_ptr_internal(void *ptr);
 static void *uim_scm_make_func_ptr_internal(uim_func_ptr func_ptr);
@@ -270,6 +271,21 @@ static void *
 uim_scm_make_str_internal(const char *str)
 {
   return (void *)SCM_MAKE_STRING_COPYING(str, SCM_STRLEN_UNKNOWN);
+}
+
+uim_lisp
+uim_scm_make_str_directly(char *str)
+{
+  assert(uim_scm_gc_any_contextp());
+  assert(str);
+
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_str_directly_internal, (void *)str);
+}
+
+static void *
+uim_scm_make_str_directly_internal(char *str)
+{
+  return (void *)SCM_MAKE_STRING(str, SCM_STRLEN_UNKNOWN);
 }
 
 char *
