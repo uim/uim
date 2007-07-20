@@ -384,7 +384,17 @@
                                       c
                                       (im-retrieve-context c))
                                   #t)))
-    
+
+;; Deprecated
+(define im-get-raw-key-str
+  (lambda (key state)
+    (and (integer? key)
+	     (<= key 255)
+	     (integer? state)
+	     (or (= state 0)
+		 (= state (assq-cdr 'Shift_key key-state-alist)))
+	     (charcode->string (ichar-upcase key)))))
+
 
 ;;
 ;; dispatchers

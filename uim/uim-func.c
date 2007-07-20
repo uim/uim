@@ -149,31 +149,6 @@ im_commit(uim_lisp uc_, uim_lisp str_)
 }
 
 static uim_lisp
-im_get_raw_key_str(uim_lisp key_, uim_lisp key_state_)
-{
-  int key;
-  int key_state = uim_scm_c_int(key_state_);
-  char buf[2];
-  
-  if (uim_scm_integerp(key_)) {
-    key = uim_scm_c_int(key_);
-  } else {
-    return uim_scm_f();
-  }
-  if ((key_state != 0 && key_state != UMod_Shift) ||
-      key > 255) {
-    return uim_scm_f();
-  }
-  
-  buf[0] = key;
-  buf[1] = 0;
-  if (key_state == UMod_Shift) {
-    buf[0] = toupper((unsigned char)buf[0]);
-  }
-  return uim_scm_make_str(buf);
-}
-
-static uim_lisp
 im_set_encoding(uim_lisp uc_, uim_lisp enc_)
 {
   uim_context uc;
@@ -490,7 +465,4 @@ uim_init_im_subrs(void)
   uim_scm_init_subr_1("im-raise-configuration-change", raise_configuration_change);
   uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);
   uim_scm_init_subr_2("im-switch-system-global-im", switch_system_global_im);
-
-  /* should be replaced with generic Scheme code */
-  uim_scm_init_subr_2("im-get-raw-key-str", im_get_raw_key_str);
 }
