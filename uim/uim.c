@@ -55,6 +55,14 @@ struct uim_get_candidate_args {
 };
 static void *uim_get_candidate_internal(struct uim_get_candidate_args *args);
 static uim_lisp get_nth_im(uim_context uc, int nth);
+#ifdef ENABLE_ANTHY_STATIC
+void uim_anthy_plugin_instance_init(void);
+void uim_anthy_plugin_instance_quit(void);
+#endif
+#ifdef ENABLE_ANTHY_UTF8_STATIC
+void uim_anthy_utf8_plugin_instance_init(void);
+void uim_anthy_utf8_plugin_instance_quit(void);
+#endif
 
 static uim_bool uim_initialized;
 static uim_lisp protected0, protected1;
@@ -97,6 +105,9 @@ uim_init_internal(void *dummy)
 #ifdef ENABLE_ANTHY_STATIC
   uim_anthy_plugin_instance_init();
 #endif
+#ifdef ENABLE_ANTHY_UTF8_STATIC
+  uim_anthy_utf8_plugin_instance_init();
+#endif
 
   if (uim_issetugid()) {
     scm_files = SCM_FILES;
@@ -122,6 +133,9 @@ uim_quit(void)
   uim_quit_plugin();
 #ifdef ENABLE_ANTHY_STATIC
   uim_anthy_plugin_instance_quit();
+#endif
+#ifdef ENABLE_ANTHY_UTF8_STATIC
+  uim_anthy_utf8_plugin_instance_quit();
 #endif
   uim_scm_quit();
   uim_initialized = UIM_FALSE;

@@ -35,8 +35,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <iconv.h>
-#include <errno.h>
 
 #include <anthy/anthy.h>
 
@@ -45,11 +43,16 @@
 #include "plugin.h"
 
 
+#ifdef ENABLE_ANTHY_UTF8_STATIC
+void uim_anthy_utf8_plugin_instance_init(void);
+void uim_anthy_utf8_plugin_instance_quit(void);
+#endif
+
 static uim_bool initialized;
 static uim_lisp context_list;
 
-static iconv_t iconv_cd_e2u;
-static iconv_t iconv_cd_u2e;
+static void *iconv_cd_e2u;
+static void *iconv_cd_u2e;
 
 
 static uim_lisp
@@ -82,10 +85,10 @@ create_context(uim_lisp encoding_)
   encoding = uim_scm_c_int(encoding_);
 
   if (!iconv_cd_e2u)
-    iconv_cd_e2u = (iconv_t)uim_iconv->create("UTF-8", "EUC-JP");
+    iconv_cd_e2u = uim_iconv->create("UTF-8", "EUC-JP");
 
   if (!iconv_cd_u2e)
-    iconv_cd_u2e = (iconv_t)uim_iconv->create("EUC-JP", "UTF-8");
+    iconv_cd_u2e = uim_iconv->create("EUC-JP", "UTF-8");
 
   ac = anthy_create_context();
   if (ac) {
@@ -319,7 +322,7 @@ eucjp_to_utf8(uim_lisp str_)
     return uim_scm_make_str("〓");
 
   str = uim_scm_refer_c_str(str_);
-  convstr= uim_iconv->convert(iconv_cd_e2u, str);
+  convstr = uim_iconv->convert(iconv_cd_e2u, str);
   utf8_ = uim_scm_make_str(convstr);
   free(convstr);
 
@@ -337,19 +340,19 @@ utf8_to_eucjp(uim_lisp str_)
     return uim_scm_make_str("");
 
   str = uim_scm_refer_c_str(str_);
-  convstr= uim_iconv->convert(iconv_cd_u2e, str);
+  convstr = uim_iconv->convert(iconv_cd_u2e, str);
   eucjp_ = uim_scm_make_str(convstr);
   free(convstr);
 
   return eucjp_;
 }
 
-#ifndef ENABLE_ANTHY_STATIC
+#ifndef ENABLE_ANTHY_UTF8_STATIC
 void
 uim_plugin_instance_init(void)
 #else
 void
-uim_anthy_plugin_instance_init(void)
+uim_anthy_utf8_plugin_instance_init(void)
 #endif
 {
   context_list = uim_scm_null();
@@ -376,12 +379,12 @@ uim_anthy_plugin_instance_init(void)
   uim_scm_init_subr_1("anthy-utf8-lib-utf8-to-eucjp", utf8_to_eucjp);
 }
 
-#ifndef ENABLE_ANTHY_STATIC
+#ifndef ENABLE_ANTHY_UTF8_STATIC
 void
 uim_plugin_instance_quit(void)
 #else
 void
-uim_anthy_plugin_instance_quit(void)
+uim_anthy_utf8_plugin_instance_quit(void)
 #endif
 {
   if (initialized) {

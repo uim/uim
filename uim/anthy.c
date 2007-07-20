@@ -41,6 +41,11 @@
 #include "plugin.h"
 
 
+#ifdef ENABLE_ANTHY_STATIC
+void uim_anthy_plugin_instance_init(void);
+void uim_anthy_plugin_instance_quit(void);
+#endif
+
 static uim_bool initialized;
 static uim_lisp context_list;
 

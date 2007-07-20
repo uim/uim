@@ -1250,6 +1250,24 @@ AC_ARG_ENABLE(anthy-static,
 
 AM_CONDITIONAL(ENABLE_ANTHY_STATIC, test x$build_anthy_static = xyes)
 
+AC_ARG_ENABLE(anthy-utf8-static,
+    AC_HELP_STRING([--enable-anthy-utf8-static],
+		   [@<:@default=no@:>@]),
+    [
+        case $enable_anthy_utf8_static in
+	yes)
+	    build_anthy_utf8_static="yes"
+	    ;;
+	no|*)
+	    build_anthy_utf8_static="no"
+	    ;;
+	esac
+    ], [
+	    build_anthy_utf8_static="no"
+    ])
+
+AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
+
 #
 # Compiler options
 #
