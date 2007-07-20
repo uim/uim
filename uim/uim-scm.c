@@ -797,12 +797,9 @@ uim_scm_callf_internal(struct callf_args *args)
       arg = SCM_MAKE_INT(va_arg(args->args, intmax_t));
       break;
 
-    /* FIXME: enable R6RS chars by default */
-#if SCM_USE_CHAR
     case 'c':
       arg = SCM_MAKE_CHAR(va_arg(args->args, int));
       break;
-#endif
 
     case 's':
       arg = SCM_MAKE_STRING_COPYING(va_arg(args->args, const char *),
@@ -827,7 +824,7 @@ uim_scm_callf_internal(struct callf_args *args)
       break;
 
     default:
-      assert(scm_false);
+      SCM_NOTREACHED;
     }
     SCM_QUEUE_ADD(argq, arg);
   }
