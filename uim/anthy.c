@@ -29,7 +29,7 @@
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 */
-/**/
+
 #include <config.h>
 
 #include <stdlib.h>
@@ -40,24 +40,13 @@
 #include "uim-scm.h"
 #include "plugin.h"
 
-#define MAX_CONTEXT 256
+static uim_bool initialized;
+static uim_lisp context_list;
 
 /* handle anthy's version scheme like 7100b, 8158memm */
 static char *anthy_version_major;
 static char *anthy_version_minor;
 
-static struct context {
-  anthy_context_t ac;
-} *context_slot;
-
-static anthy_context_t 
-get_anthy_context(int id)
-{
-  if (id < 0 || id >= MAX_CONTEXT) {
-    return NULL;
-  }
-  return context_slot[id].ac;
-}
 
 static uim_lisp
 anthy_version()
@@ -103,22 +92,14 @@ get_anthy_version()
 static uim_lisp
 init_anthy_lib(void)
 {
-  int i;
+  if (!initialized) {
+    if (anthy_init() == -1)
+      return uim_scm_f();
 
-  if (context_slot)
-    return uim_scm_t();
+    get_anthy_version();
 
-  if (anthy_init() == -1)
-    return uim_scm_f();
-
-  get_anthy_version();
-
-  context_slot = malloc(sizeof(struct context) * MAX_CONTEXT);
-  if (!context_slot)
-    return uim_scm_f();
-
-  for (i = 0; i < MAX_CONTEXT; i++)
-    context_slot[i].ac = NULL;
+    initialized = UIM_TRUE;
+  }
 
   return uim_scm_t();
 }
@@ -126,105 +107,92 @@ init_anthy_lib(void)
 static uim_lisp
 create_context(void)
 {
-  int i;
-  if (!context_slot) {
-    return uim_scm_f();
+  anthy_context_t ac;
+  uim_lisp ac_;
+
+  ac = anthy_create_context();
+  if (ac) {
+    ac_ = uim_scm_make_ptr(ac);
+    context_list = uim_scm_callf("cons", "oo", ac_, context_list);
+    return ac_;
   }
 
-  for (i = 0; i < MAX_CONTEXT; i++) {
-    if (!context_slot[i].ac) {
-      anthy_context_t ac = anthy_create_context();
-      if (!ac) {
-	return uim_scm_f();
-      }
-      context_slot[i].ac = ac;
-      return uim_scm_make_int(i);
-    }
-  }
   return uim_scm_f();
 }
 
 
 static uim_lisp
-release_context(uim_lisp id_)
+release_context(uim_lisp ac_)
 {
-  int id = uim_scm_c_int(id_);
-  if (context_slot[id].ac) {
-    anthy_release_context(context_slot[id].ac);
-    context_slot[id].ac = NULL;
-  }
+  anthy_context_t ac;
+
+  context_list = uim_scm_callf("delete!", "oo", ac_, context_list);
+
+  ac = uim_scm_c_ptr(ac_);
+  anthy_release_context(ac);
+
   return uim_scm_f();
 }
 
 static uim_lisp
-set_string(uim_lisp id_, uim_lisp str_)
+set_string(uim_lisp ac_, uim_lisp str_)
 {
-  int id = uim_scm_c_int(id_);
-  char *str;
-  anthy_context_t ac = get_anthy_context(id);
-  if (!ac) {
-    return uim_scm_f();
-  }
-  str = uim_scm_c_str(str_);
+  anthy_context_t ac;
+  const char *str;
+
+  ac = uim_scm_c_ptr(ac_);
+  str = uim_scm_refer_c_str(str_);
   anthy_set_string(ac, str);
-  free(str);
+
   return uim_scm_f();
 }
 
 static uim_lisp
-get_nr_segments(uim_lisp id_)
+get_nr_segments(uim_lisp ac_)
 {
-  int id = uim_scm_c_int(id_);
-  struct anthy_conv_stat acs;
-  anthy_context_t ac = get_anthy_context(id);
-  if (!ac) {
-    return uim_scm_f();
-  }
-  anthy_get_stat(ac, &acs);
-
-  return uim_scm_make_int(acs.nr_segment);
-}
-
-static uim_lisp
-get_nr_candidates(uim_lisp id_, uim_lisp nth_)
-{
-  int id, nth;
   anthy_context_t ac;
   struct anthy_conv_stat cs;
-  id = uim_scm_c_int(id_);
-  nth = uim_scm_c_int(nth_);
-  ac = get_anthy_context(id);
-  if (!ac) {
-    return uim_scm_f();
-  }
+
+  ac = uim_scm_c_ptr(ac_);
   anthy_get_stat(ac, &cs);
-  if (nth < cs.nr_segment) {
-    struct anthy_segment_stat ss;
-    anthy_get_segment_stat(ac, nth, &ss);
-    return uim_scm_make_int(ss.nr_candidate);
-  }
-  return uim_scm_f();
+
+  return uim_scm_make_int(cs.nr_segment);
 }
 
 static uim_lisp
-get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
+get_nr_candidates(uim_lisp ac_, uim_lisp nth_)
 {
-  int id, seg, nth, buflen;
+  anthy_context_t ac;
+  int nth;
+  struct anthy_conv_stat cs;
+  struct anthy_segment_stat ss;
+
+  ac = uim_scm_c_ptr(ac_);
+  nth = uim_scm_c_int(nth_);
+
+  anthy_get_stat(ac, &cs);
+  if (!(0 <= nth && nth < cs.nr_segment))
+    return uim_scm_f();  /* FIXME: uim_scm_error() */
+
+  anthy_get_segment_stat(ac, nth, &ss);
+  return uim_scm_make_int(ss.nr_candidate);
+}
+
+static uim_lisp
+get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
+{
+  anthy_context_t ac;
+  int seg, nth, buflen;
   char *buf;
   uim_lisp buf_;
-  anthy_context_t ac;
   
-  id = uim_scm_c_int(id_);
+  ac = uim_scm_c_ptr(ac_);
   seg = uim_scm_c_int(seg_);
   nth  = uim_scm_c_int(nth_);
-  ac = get_anthy_context(id);
-
-  if (!ac)
-    return uim_scm_f();
 
   buflen = anthy_get_segment(ac, seg, nth, NULL, 0);
   if (buflen == -1)
-    return uim_scm_f();
+    return uim_scm_f();  /* FIXME: uim_scm_error() */
 
   buf = malloc(buflen + 1);
   anthy_get_segment(ac, seg, nth, buf, buflen + 1);
@@ -235,81 +203,85 @@ get_nth_candidate(uim_lisp id_, uim_lisp seg_, uim_lisp nth_)
 }
 
 static uim_lisp
-get_unconv_candidate(uim_lisp id_, uim_lisp seg_)
+get_unconv_candidate(uim_lisp ac_, uim_lisp seg_)
 {
-  return get_nth_candidate(id_, seg_, uim_scm_make_int(NTH_UNCONVERTED_CANDIDATE));
+  uim_lisp nth_;
+
+  nth_ = uim_scm_make_int(NTH_UNCONVERTED_CANDIDATE);
+  return get_nth_candidate(ac_, seg_, nth_);
 }
 
 static uim_lisp
-get_segment_length(uim_lisp id_, uim_lisp nth_)
+get_segment_length(uim_lisp ac_, uim_lisp nth_)
 {
-  int id, nth;
   anthy_context_t ac;
+  int nth;
   struct anthy_conv_stat cs;
-  id = uim_scm_c_int(id_);
+  struct anthy_segment_stat ss;
+
+  ac = uim_scm_c_ptr(ac_);
   nth = uim_scm_c_int(nth_);
-  ac = get_anthy_context(id);
-  if (!ac) {
-    return uim_scm_f();
-  }
+
   anthy_get_stat(ac, &cs);
-  if (nth < cs.nr_segment) {
-    struct anthy_segment_stat ss;
-    anthy_get_segment_stat(ac, nth, &ss);
-    return uim_scm_make_int(ss.seg_len);
-  }
-  return uim_scm_f();
+  if (!(0 <= nth && nth < cs.nr_segment))
+    return uim_scm_f();  /* FIXME: uim_scm_error() */
+
+  anthy_get_segment_stat(ac, nth, &ss);
+  return uim_scm_make_int(ss.seg_len);
 }
 
 static uim_lisp
-resize_segment(uim_lisp id_, uim_lisp seg_, uim_lisp cnt_)
+resize_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp cnt_)
 {
-  int id = uim_scm_c_int(id_);
-  int seg = uim_scm_c_int(seg_);
-  int cnt = uim_scm_c_int(cnt_);
-  anthy_context_t ac = get_anthy_context(id);
+  anthy_context_t ac;
+  int seg, cnt;
+
+  ac = uim_scm_c_ptr(ac_);
+  seg = uim_scm_c_int(seg_);
+  cnt = uim_scm_c_int(cnt_);
+
   anthy_resize_segment(ac, seg, cnt);
   return uim_scm_f();
 }
 
 static uim_lisp
-commit_segment(uim_lisp id_, uim_lisp s_, uim_lisp nth_)
+commit_segment(uim_lisp ac_, uim_lisp s_, uim_lisp nth_)
 {
-  int id = uim_scm_c_int(id_);
-  int s = uim_scm_c_int(s_);
-  int nth = uim_scm_c_int(nth_);
-  anthy_context_t ac = get_anthy_context(id);
+  anthy_context_t ac;
+  int s, nth;
+
+  ac = uim_scm_c_ptr(ac_);
+  s = uim_scm_c_int(s_);
+  nth = uim_scm_c_int(nth_);
+
   anthy_commit_segment(ac, s, nth);
   return uim_scm_f();
 }
 
 static uim_lisp
-set_prediction_src_string(uim_lisp id_, uim_lisp str_)
+set_prediction_src_string(uim_lisp ac_, uim_lisp str_)
 {
 #ifdef HAS_ANTHY_PREDICTION
-  int id = uim_scm_c_int(id_);
-  const char *str = uim_scm_refer_c_str(str_);
-  anthy_context_t ac = get_anthy_context(id);
-  if (!ac) {
-    return uim_scm_f();
-  }
+  anthy_context_t ac;
+  const char *str;
+
+  ac = uim_scm_c_ptr(ac_);
+  str = uim_scm_refer_c_str(str_);
+
   anthy_set_prediction_string(ac, str);
-  return uim_scm_f();
-#else
-  return uim_scm_f();
 #endif
+  return uim_scm_f();
 }
 
 static uim_lisp
-get_nr_predictions(uim_lisp id_)
+get_nr_predictions(uim_lisp ac_)
 {
 #ifdef HAS_ANTHY_PREDICTION
-  int id = uim_scm_c_int(id_);
-  anthy_context_t ac = get_anthy_context(id);
+  anthy_context_t ac;
   struct anthy_prediction_stat ps;
-  if (!ac) {
-    return uim_scm_f();
-  }
+
+  ac = uim_scm_c_ptr(ac_);
+
   anthy_get_prediction_stat(ac, &ps);
   return uim_scm_make_int(ps.nr_prediction);
 #else
@@ -318,26 +290,26 @@ get_nr_predictions(uim_lisp id_)
 }
 
 static uim_lisp
-get_nth_prediction(uim_lisp id_, uim_lisp nth_)
+get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
 {
 #ifdef HAS_ANTHY_PREDICTION
-  int id  = uim_scm_c_int(id_);
-  int nth = uim_scm_c_int(nth_); 
-  int buflen;
+  anthy_context_t ac;
+  int nth, buflen;
   char *buf;
   uim_lisp buf_;
-  anthy_context_t ac = get_anthy_context(id);
-  if (!ac) {
-    return uim_scm_f();
-  }
+
+  ac = uim_scm_c_ptr(ac_);
+  nth = uim_scm_c_int(nth_); 
+
   buflen = anthy_get_prediction(ac, nth, NULL, 0);
-  if (buflen == -1) {
+  if (buflen == -1)
     return uim_scm_f();
-  }
-  buf = (char *)malloc(buflen + 1);
+
+  buf = malloc(buflen + 1);
   anthy_get_prediction(ac, nth, buf, buflen + 1);
   buf_ = uim_scm_make_str(buf);
   free(buf);
+
   return buf_;
 #else
   return uim_scm_f();
@@ -345,16 +317,14 @@ get_nth_prediction(uim_lisp id_, uim_lisp nth_)
 }
 
 static uim_lisp
-commit_nth_prediction(uim_lisp id_, uim_lisp nth_)
+commit_nth_prediction(uim_lisp ac_, uim_lisp nth_)
 {
 #ifdef HAS_ANTHY_COMMIT_PREDICTION
-  int id  = uim_scm_c_int(id_);
-  int nth = uim_scm_c_int(nth_); 
-  anthy_context_t ac = get_anthy_context(id);
+  anthy_context_t ac;
+  int nth;
 
-  if (!ac) {
-    return uim_scm_f();
-  }
+  ac = uim_scm_c_ptr(ac_);
+  nth = uim_scm_c_int(nth_); 
 
   return anthy_commit_prediction(ac, nth) ? uim_scm_f() : uim_scm_t();
 #else
@@ -370,6 +340,9 @@ void
 uim_anthy_plugin_instance_init(void)
 #endif
 {
+  context_list = uim_scm_null();
+  uim_scm_gc_protect(&context_list);
+
   uim_scm_init_subr_0("anthy-lib-init", init_anthy_lib);
   uim_scm_init_subr_0("anthy-lib-alloc-context", create_context);
   uim_scm_init_subr_1("anthy-lib-free-context", release_context);
@@ -397,22 +370,11 @@ void
 uim_anthy_plugin_instance_quit(void)
 #endif
 {
-  int i;
+  if (initialized) {
+    uim_scm_callf("for-each", "vo", "anthy-lib-free-context", context_list);
+    context_list = uim_scm_null();
 
-  if (!context_slot) {
-    return;
-  }
-
-  for (i = 0; i < MAX_CONTEXT; i++) {
-    if (context_slot[i].ac) {
-      anthy_release_context(context_slot[i].ac);
-    }
-  }
-
-  anthy_quit();
-
-  if (context_slot) {
-    free(context_slot);
-    context_slot = NULL;
+    anthy_quit();
+    initialized = UIM_FALSE;
   }
 }

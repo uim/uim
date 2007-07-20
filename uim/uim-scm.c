@@ -831,6 +831,11 @@ uim_scm_callf_internal(struct callf_args *args)
       assert(scm_gc_protectedp(arg));
       break;
 
+    case 'v':
+      arg = scm_symbol_value(scm_intern(va_arg(args->args, const char *)),
+			     SCM_INTERACTION_ENV);
+      break;
+
     default:
       SCM_NOTREACHED;
     }

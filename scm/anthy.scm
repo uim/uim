@@ -532,7 +532,7 @@
     (let* ((ac-id (anthy-context-ac-id ac))
 	   (kana (anthy-context-kana-mode ac))
 	   (preconv-str (anthy-make-whole-string ac #t anthy-type-hiragana)))
-      (if (and (number? (anthy-context-ac-id ac))
+      (if (and ac-id
 	       (> (string-length preconv-str)
 		  0))
 	  (begin
