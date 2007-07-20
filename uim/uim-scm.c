@@ -136,7 +136,8 @@ uim_scm_error_internal(struct uim_scm_error_args *args)
 FILE *
 uim_scm_get_output(void)
 {
-  assert(uim_scm_gc_any_contextp());
+  /* semantic assertion */
+  assert(!uim_scm_is_initialized() || uim_scm_is_initialized());
 
   return uim_output;
 }
@@ -144,7 +145,8 @@ uim_scm_get_output(void)
 void
 uim_scm_set_output(FILE *fp)
 {
-  assert(uim_scm_gc_any_contextp());
+  /* semantic assertion */
+  assert(!uim_scm_is_initialized() || uim_scm_is_initialized());
 
   uim_output = fp;
 }
@@ -387,6 +389,12 @@ uim_bool
 uim_scm_gc_protected_contextp(void)
 {
   return (initialized && scm_gc_protected_contextp());
+}
+
+uim_bool
+uim_scm_is_initialized(void)
+{
+  return initialized;
 }
 
 uim_bool

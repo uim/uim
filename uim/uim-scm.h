@@ -85,6 +85,7 @@ uim_scm_get_output(void);
 void
 uim_scm_set_output(FILE *fp);
   
+uim_bool uim_scm_is_initialized(void);
 uim_bool
 uim_scm_is_alive(void);
 long
@@ -103,7 +104,7 @@ uim_bool uim_scm_gc_protectedp(uim_lisp obj);
 uim_bool uim_scm_gc_protected_contextp(void);
 /* for semantic assertions */
 #define uim_scm_gc_any_contextp()					\
-  (uim_scm_is_alive()							\
+  (uim_scm_is_initialized()						\
    && (!uim_scm_gc_protected_contextp() || uim_scm_gc_protected_contextp()))
 
 /* evaluations */
