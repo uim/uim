@@ -40,53 +40,15 @@
 #include "uim-scm.h"
 #include "plugin.h"
 
+
 static uim_bool initialized;
 static uim_lisp context_list;
-
-/* handle anthy's version scheme like 7100b, 8158memm */
-static char *anthy_version_major;
-static char *anthy_version_minor;
 
 
 static uim_lisp
 anthy_version()
 {
-  return uim_scm_cons(uim_scm_make_str(anthy_version_major),
-		      uim_scm_make_str(anthy_version_minor));
-}
-
-static void
-get_anthy_version()
-{
-  const char *str;
-
-  free(anthy_version_major);
-  free(anthy_version_minor);
-
-  str = anthy_get_version_string();
-
-  if (!str || (!strcmp(str, "(unknown)"))) {
-    anthy_version_major = strdup("-1");
-    anthy_version_minor = strdup("");
-  } else {
-    int len, i;
-
-    len = strlen(str);
-    for (i = 0; str[i] != '\0'; i++) {
-      if (isalpha((unsigned char)str[i]))
-        break;
-    }
-
-    if (i != len) {
-      anthy_version_major = malloc(i + 1);
-      anthy_version_minor = malloc(len - i + 1);
-      strlcpy(anthy_version_major, str, i + 1);
-      strlcpy(anthy_version_minor, &str[i], len - i + 1);
-    } else {
-      anthy_version_major = strdup(str);
-      anthy_version_minor = strdup("");
-    }
-  }
+  return uim_scm_make_str(anthy_get_version_string());
 }
 
 static uim_lisp
@@ -95,8 +57,6 @@ init_anthy_lib(void)
   if (!initialized) {
     if (anthy_init() == -1)
       return uim_scm_f();
-
-    get_anthy_version();
 
     initialized = UIM_TRUE;
   }

@@ -30,6 +30,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1 8))
+
 (require "util.scm")
 (require "ustr.scm")
 (require "japanese.scm")
@@ -67,6 +69,15 @@
 
 ;; I don't think the key needs to be customizable.
 (define-key anthy-space-key? '(" "))
+
+;; Handle Anthy's version scheme like 7100b, 8158memm.
+(define anthy-version->major.minor
+  (lambda (vstr)
+    (if (string=? vstr "(unknown)")
+	'("-1" . "")
+	(receive (maj min) (span char-numeric? (string->list vstr))
+	  (cons (list->string maj)
+		(list->string min))))))
 
 (define anthy-prepare-input-rule-activation
   (lambda (ac)
@@ -319,7 +330,8 @@
      (if (symbol-bound? 'anthy-lib-init)
          (begin
 	   (set! anthy-lib-initialized? (anthy-lib-init))
-	   (set! anthy-version (anthy-lib-get-anthy-version))))
+	   (set! anthy-version (anthy-version->major.minor
+				(anthy-lib-get-anthy-version)))))
      (if anthy-lib-initialized?
 	 (anthy-context-set-ac-id! ac (anthy-lib-alloc-context)))
      (anthy-context-set-widgets! ac anthy-widgets)
