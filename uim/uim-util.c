@@ -50,6 +50,12 @@ static uim_lisp protected;
 
 /* define constants as procedure to ensure unmodifiable */
 static uim_lisp
+uim_version()
+{
+  return uim_scm_make_str(PACKAGE_VERSION);
+}
+
+static uim_lisp
 sys_libdir()
 {
   return uim_scm_make_str(LIBDIR);
@@ -279,6 +285,8 @@ uim_init_util_subrs(void)
 {
   protected = uim_scm_f();
   uim_scm_gc_protect(&protected);
+
+  uim_scm_init_subr_0("uim-version", uim_version);
 
   uim_scm_init_subr_0("sys-libdir", sys_libdir);
   uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
