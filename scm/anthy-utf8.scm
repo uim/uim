@@ -180,7 +180,7 @@
 		   '(ja_halfwidth_alnum
 		     "a"
 		     "半角英数"
-		     "半角英数モード"))
+		     "半角英数入力モード"))
 		 (lambda (ac)
 		   (and (anthy-utf8-context-on ac)
 			(anthy-utf8-context-alnum ac)

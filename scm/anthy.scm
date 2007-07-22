@@ -176,7 +176,7 @@
 		   '(ja_halfwidth_alnum
 		     "a"
 		     "È¾³Ñ±Ñ¿ô"
-		     "È¾³Ñ±Ñ¿ô¥â¡¼¥É"))
+		     "È¾³Ñ±Ñ¿ôÆþÎÏ¥â¡¼¥É"))
 		 (lambda (ac)
 		   (and (anthy-context-on ac)
 			(anthy-context-alnum ac)
