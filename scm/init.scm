@@ -34,7 +34,13 @@
 ;; configuration for special platforms such as embedded environments
 ;;   -- YamaKen 2005-01-29
 
-(require-extension (srfi 23 34))
+(require-extension (srfi 23 34 60) (siod))
+
+;; Disable SIOD compatibilities.
+(undefine bit-and)
+(undefine bit-or)
+(undefine bit-xor)
+(undefine bit-not)
 
 (define enable-action? #t)
 

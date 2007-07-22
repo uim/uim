@@ -49,22 +49,22 @@
 ;
 (define shift-key-mask
   (lambda (state)
-    (= (bit-and state 1) 1)))
+    (= (bitwise-and state 1) 1)))
 (define control-key-mask
   (lambda (state)
-    (= (bit-and state 2) 2)))
+    (= (bitwise-and state 2) 2)))
 (define alt-key-mask
   (lambda (state)
-    (= (bit-and state 4) 4)))
+    (= (bitwise-and state 4) 4)))
 (define meta-key-mask
   (lambda (state)
-    (= (bit-and state 8) 8)))
+    (= (bitwise-and state 8) 8)))
 (define super-key-mask
   (lambda (state)
-    (= (bit-and state 64) 64)))
+    (= (bitwise-and state 64) 64)))
 (define hyper-key-mask
   (lambda (state)
-    (= (bit-and state 128) 128)))
+    (= (bitwise-and state 128) 128)))
 
 (define modifier-key-mask
   (lambda (state)
@@ -193,8 +193,8 @@
 	       (rest (cdr parsed)))
 	  (cond
 	   ((modifier-key? prefix 0)
-	    (let ((key-state (bit-or key-state
-				     (cdr (assq prefix key-state-alist)))))
+	    (let ((key-state (bitwise-ior key-state
+					  (cdr (assq prefix key-state-alist)))))
 	      (parse-key-str rest translators key key-state)))
 	   ((translator-prefix? prefix)
 	    (let* ((translator
@@ -205,15 +205,17 @@
 			  (list translated-key key-state))))
 		     ((eq? prefix 'IgnoreShift)
 		      (lambda (key key-state)
-			(let ((translated-key-state (bit-and key-state
-                                                             (bit-not 1))))
+			(let ((translated-key-state
+			       (bitwise-and key-state
+					    (bitwise-not 1))))
 			  (list key translated-key-state))))
 		     ((eq? prefix 'IgnoreRegularShift)
 		      (lambda (key key-state)
-			(let ((translated-key-state (if (ichar-graphic? key)
-							(bit-and key-state
-								 (bit-not 1))
-							key-state)))
+			(let ((translated-key-state
+			       (if (ichar-graphic? key)
+				   (bitwise-and key-state
+						(bitwise-not 1))
+				   key-state)))
 			  (list key translated-key-state))))))
 		   (translators (cons translator
 				      translators)))

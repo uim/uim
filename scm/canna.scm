@@ -950,7 +950,7 @@
 
 (define canna-separator
   (lambda (cc)
-    (let ((attr (bit-or preedit-separator preedit-underline)))
+    (let ((attr (bitwise-ior preedit-separator preedit-underline)))
       (if canna-show-segment-separator?
 	  (cons attr canna-segment-separator)
 	  #f))))
@@ -1041,8 +1041,8 @@
     (append-map
      (lambda (seg-idx cand-idx)
        (let* ((attr (if (= seg-idx cur-seg)
-			(bit-or preedit-reverse
-				preedit-cursor)
+			(bitwise-ior preedit-reverse
+				     preedit-cursor)
 			preedit-underline))
 	      (cand (if (> cand-idx canna-candidate-type-katakana)
 			(canna-lib-get-nth-candidate cc-id seg-idx cand-idx)

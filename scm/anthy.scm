@@ -1321,8 +1321,8 @@
 
 (define anthy-separator
   (lambda (ac)
-    (let ((attr (bit-or preedit-separator
-			preedit-underline)))
+    (let ((attr (bitwise-ior preedit-separator
+			     preedit-underline)))
       (if anthy-show-segment-separator?
 	  (cons attr anthy-segment-separator)
 	  #f))))
@@ -1404,7 +1404,7 @@
 	 (not (anthy-context-prediction-index ac)))
         (anthy-input-state-preedit ac)
 	(let ((cand (anthy-get-prediction-string ac)))
-	  (list (cons (bit-or preedit-reverse preedit-cursor) cand))))))
+	  (list (cons (bitwise-ior preedit-reverse preedit-cursor) cand))))))
 
 (define anthy-converting-state-preedit
   (lambda (ac)
@@ -1415,8 +1415,8 @@
       (append-map
        (lambda (seg-idx cand-idx)
 	 (let* ((attr (if (= seg-idx cur-seg)
-			  (bit-or preedit-reverse
-				  preedit-cursor)
+			  (bitwise-ior preedit-reverse
+				       preedit-cursor)
 			  preedit-underline))
 		(cand (if (> cand-idx anthy-candidate-type-halfwidth-alnum)
 			  (anthy-lib-get-nth-candidate ac-id seg-idx cand-idx)

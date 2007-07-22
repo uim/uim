@@ -1097,9 +1097,7 @@ uim_scm_init(const char *verbose_level, const char *system_load_path)
   uim_scm_callf("provide", "s", "debug");
 #endif
 
-  scm_require_module("srfi-23");
   scm_require_module("srfi-34");
-  scm_require_module("siod");
 
   uim_scm_set_verbose_level(vlevel);
 }

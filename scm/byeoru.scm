@@ -1769,7 +1769,7 @@
      (and (not (ustr-cursor-at-beginning? convl))
 	  (cons preedit-underline
 		(apply string-append (ustr-former-seq convl))))
-     (cons (bit-or preedit-reverse underline preedit-cursor)
+     (cons (bitwise-ior preedit-reverse underline preedit-cursor)
 	   (apply string-append (ustr-former-seq convr)))
      (and (not (ustr-cursor-at-end? convr))
 	  (cons preedit-underline

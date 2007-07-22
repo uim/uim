@@ -750,7 +750,7 @@
 		  (not (skk-context-candidate-window sc))))
 		(im-pushback-preedit
 		 sc
-		 (bit-or skk-preedit-attr-conv-body preedit-cursor)
+		 (bitwise-ior skk-preedit-attr-conv-body preedit-cursor)
 		 (if skk-show-annotation-in-preedit?
 		     (skk-lib-eval-candidate (skk-get-current-candidate sc))
 		     (skk-lib-eval-candidate
@@ -758,7 +758,7 @@
 		       (skk-get-current-candidate sc)))))
 		(im-pushback-preedit
 		 sc
-		 (bit-or skk-preedit-attr-conv-body preedit-cursor)
+		 (bitwise-ior skk-preedit-attr-conv-body preedit-cursor)
 		 ""))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-okuri
