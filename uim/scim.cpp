@@ -197,7 +197,7 @@ init_scim()
              * If no SocketFrontend is runnig, launch a SCIM daemon.
              */
             fprintf(stderr, "launch SCIM daemon\n");
-            char *new_argv [] = { (char*)"--no-stay", 0 };
+            char *new_argv [] = { (char *)"--no-stay", 0 };
             scim_launch( true,
                          "simple", //FIX ME
                          (engine_list.size () ? scim_combine_string_list( engine_list, ',' ) : "all"),
@@ -278,7 +278,7 @@ search_uuid_by_imname( String imname )
     fprintf(stderr, "search imname = %s\n", imname.c_str() );
 
     
-    std::vector<SCIMInputMethod*>::iterator it = im_list.begin();
+    std::vector<SCIMInputMethod *>::iterator it = im_list.begin();
     for ( ; it != im_list.end(); ++it )
     {
         fprintf(stderr, "im = %s\n", WideStr_to_CStr( (*it)->imname));
@@ -337,7 +337,7 @@ alloc_id( uim_lisp name_ )
     context->instance->signal_connect_register_properties( slot( cb_prop_register) );
     context->instance->signal_connect_update_property( slot( cb_prop_update) );
     */
-    context->instance->set_frontend_data( static_cast <void*> (context) );
+    context->instance->set_frontend_data( static_cast <void *> (context) );
 
     // and store the context
     context_list.push_back( context );
@@ -357,7 +357,7 @@ free_id(uim_lisp id_)
 
 static SCIMContext *get_context_from_id(int id)
 {
-    std::vector<SCIMContext*>::iterator it = context_list.begin();
+    std::vector<SCIMContext *>::iterator it = context_list.begin();
     for ( ; it != context_list.end(); ++it )
     {
         if ( id == (*it)->id )
@@ -450,7 +450,7 @@ get_nth_candidate( uim_lisp id_, uim_lisp idx_ )
 static void cb_commit( IMEngineInstanceBase *instance, const WideString &wstr )
 {
     fprintf(stderr, "cb_commit\n");
-    SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
+    SCIMContext *ic = static_cast<SCIMContext *>(instance->get_frontend_data());
     if ( !ic )
     {
         return;
@@ -469,7 +469,7 @@ static void cb_preedit_update( IMEngineInstanceBase *instance, const WideString 
 {    
     fprintf(stderr, "cb_preedit_update : preedit_str = [%s]\n", WideStr_to_CStr(wstr));
 
-    SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
+    SCIMContext *ic = static_cast<SCIMContext *>(instance->get_frontend_data());
     if ( !ic )
     {
         return;
@@ -486,7 +486,7 @@ static void cb_preedit_hide( IMEngineInstanceBase *instance )
 {
     fprintf(stderr, "cb_preedit_hide\n");
 
-    SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
+    SCIMContext *ic = static_cast<SCIMContext *>(instance->get_frontend_data());
     if ( !ic )
     {
         return;
@@ -501,7 +501,7 @@ static void cb_preedit_caret( IMEngineInstanceBase *instance, int caret )
 {
     fprintf(stderr, "cb_preedit_caret\n");
 
-    SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
+    SCIMContext *ic = static_cast<SCIMContext *>(instance->get_frontend_data());
     if ( !ic )
     {
         return;
@@ -517,7 +517,7 @@ static void cb_lookup_update( IMEngineInstanceBase *instance, const LookupTable 
 {
     fprintf(stderr, "cb_lookup_update\n");
 
-    SCIMContext *ic = static_cast<SCIMContext*>(instance->get_frontend_data());
+    SCIMContext *ic = static_cast<SCIMContext *>(instance->get_frontend_data());
     if ( !ic )
     {
         return;
@@ -642,19 +642,19 @@ uim_keysymbol_to_scim_keysymbol( const char *sym, KeyEvent *key )
         char *symbol;
         unsigned int keycode;
     } keycode_map[] = {
-        {(char*)"Escape", SCIM_KEY_Escape},
-        {(char*)"Tab", SCIM_KEY_Tab},
-        {(char*)"BackSpace", SCIM_KEY_BackSpace},
-        {(char*)"Delete", SCIM_KEY_Delete},
-        {(char*)"Return", SCIM_KEY_Return},
-        {(char*)"Left", SCIM_KEY_Left},
-        {(char*)"Up", SCIM_KEY_Up},
-        {(char*)"Right", SCIM_KEY_Right},
-        {(char*)"Down", SCIM_KEY_Down},
-        {(char*)"Prior", SCIM_KEY_Prior},
-        {(char*)"Next", SCIM_KEY_Next},
-        {(char*)"Home", SCIM_KEY_Home},
-        {(char*)"End", SCIM_KEY_End},
+        {(char *)"Escape", SCIM_KEY_Escape},
+        {(char *)"Tab", SCIM_KEY_Tab},
+        {(char *)"BackSpace", SCIM_KEY_BackSpace},
+        {(char *)"Delete", SCIM_KEY_Delete},
+        {(char *)"Return", SCIM_KEY_Return},
+        {(char *)"Left", SCIM_KEY_Left},
+        {(char *)"Up", SCIM_KEY_Up},
+        {(char *)"Right", SCIM_KEY_Right},
+        {(char *)"Down", SCIM_KEY_Down},
+        {(char *)"Prior", SCIM_KEY_Prior},
+        {(char *)"Next", SCIM_KEY_Next},
+        {(char *)"Home", SCIM_KEY_Home},
+        {(char *)"End", SCIM_KEY_End},
         {NULL, 0}
     };
 
