@@ -65,7 +65,9 @@ enum learning_mode {
 };
 
 struct canna_context {
-  char diclist[BUFSIZE];
+#ifdef UIM_CANNA_DEBUG
+  char *diclist;
+#endif
 
   int rk_context_id;
   int rk_mode;
@@ -119,7 +121,7 @@ create_context(void)
   struct canna_context *cc;
   uim_lisp cc_;
   int dic_num;
-  char *buf;
+  char *diclist, *buf;
   int buflen, i;
 
   if (rk_initialized == -1) {
@@ -140,16 +142,18 @@ create_context(void)
   cc->rk_mode = (RK_XFER << RK_XFERBITS) | RK_KFER;
   cc->max_cand_num_list = NULL;
   cc->segment_num = -1;
-  cc->diclist[0] = '\0';
 
-  dic_num = RkGetDicList(cc->rk_context_id, cc->diclist, BUFSIZE);
+  diclist = malloc(BUFSIZE);
+  diclist[0] = '\0';
+
+  dic_num = RkGetDicList(cc->rk_context_id, diclist, BUFSIZE);
   if (dic_num == ERR) {
     /* invalid context number */
     return uim_scm_f();
   }
 
   /* buf[] = "dicname1\0dicname2\0dicname3\0...dicname_n\0\0" */
-  buf = cc->diclist;
+  buf = diclist;
   for (i = 0; i < dic_num; i++) {
     if (RkMountDic(cc->rk_context_id, buf, 0) == ERR) {
       fprintf(stderr, "Failed to mount dictionary %s\n", buf);
@@ -157,6 +161,11 @@ create_context(void)
     buflen = strlen(buf) + sizeof((char)'\0');
     buf += buflen;
   }
+#ifdef UIM_CANNA_DEBUG
+  cc->diclist = diclist;
+#else
+  free(diclist);
+#endif
 
   cc_ = uim_scm_make_ptr(cc);
   context_list = uim_scm_callf("cons", "oo", cc_, context_list);
@@ -182,6 +191,9 @@ release_context(uim_lisp cc_)
   } else {
     ok = uim_scm_f();
   }
+#ifdef UIM_CANNA_DEBUG
+  free(cc->diclist);
+#endif
   free(cc);
 
   return ok;
