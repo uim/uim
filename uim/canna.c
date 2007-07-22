@@ -151,7 +151,7 @@ create_context(void)
   /* buf[] = "dicname1\0dicname2\0dicname3\0...dicname_n\0\0" */
   buf = cc->diclist;
   for (i = 0; i < dic_num; i++) {
-    if (RkMountDic(cc->rk_context_id, buf, 0) != ERR) {
+    if (RkMountDic(cc->rk_context_id, buf, 0) == ERR) {
       fprintf(stderr, "Failed to mount dictionary %s\n", buf);
     }
     buflen = strlen(buf) + sizeof((char)'\0');
