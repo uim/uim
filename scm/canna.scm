@@ -395,7 +395,7 @@
 
 (define (canna-release-handler cc)
   (let ((cc-id (canna-context-cc-id cc)))
-    (if (number? cc-id)
+    (if cc-id
         (canna-lib-release-context cc-id))))
 
 (define (canna-flush cc)
@@ -470,7 +470,7 @@
 (define (canna-begin-conv cc)
   (let ((cc-id (canna-context-cc-id cc))
 	(preconv-str (canna-make-whole-string cc #t canna-type-hiragana)))
-    (if (and (number? cc-id)
+    (if (and cc-id
              (> (string-length preconv-str) 0))
 	(let ((num (canna-lib-begin-conversion cc-id preconv-str)))
 	  (if num
