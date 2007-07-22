@@ -117,29 +117,35 @@ get_nr_segments(uim_lisp ac_)
 {
   anthy_context_t ac;
   struct anthy_conv_stat cs;
+  int err;
 
   ac = uim_scm_c_ptr(ac_);
-  anthy_get_stat(ac, &cs);
+  err = anthy_get_stat(ac, &cs);
+  if (err)
+    return uim_scm_f();
 
   return uim_scm_make_int(cs.nr_segment);
 }
 
 static uim_lisp
-get_nr_candidates(uim_lisp ac_, uim_lisp nth_)
+get_nr_candidates(uim_lisp ac_, uim_lisp seg_)
 {
   anthy_context_t ac;
-  int nth;
+  int seg, err;
   struct anthy_conv_stat cs;
   struct anthy_segment_stat ss;
 
   ac = uim_scm_c_ptr(ac_);
-  nth = uim_scm_c_int(nth_);
+  seg = uim_scm_c_int(seg_);
 
-  anthy_get_stat(ac, &cs);
-  if (!(0 <= nth && nth < cs.nr_segment))
+  err = anthy_get_stat(ac, &cs);
+  if (err || !(0 <= seg && seg < cs.nr_segment))
     return uim_scm_f();  /* FIXME: uim_scm_error() */
 
-  anthy_get_segment_stat(ac, nth, &ss);
+  err = anthy_get_segment_stat(ac, seg, &ss);
+  if (err)
+    return uim_scm_f();
+
   return uim_scm_make_int(ss.nr_candidate);
 }
 
@@ -160,7 +166,11 @@ get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
     return uim_scm_f();  /* FIXME: uim_scm_error() */
 
   buf = malloc(buflen + 1);
-  anthy_get_segment(ac, seg, nth, buf, buflen + 1);
+  buflen = anthy_get_segment(ac, seg, nth, buf, buflen + 1);
+  if (buflen == -1) {
+    free(buf);
+    return uim_scm_f();
+  }
   buf_ = uim_scm_make_str_directly(buf);
 
   return buf_;
@@ -176,49 +186,52 @@ get_unconv_candidate(uim_lisp ac_, uim_lisp seg_)
 }
 
 static uim_lisp
-get_segment_length(uim_lisp ac_, uim_lisp nth_)
+get_segment_length(uim_lisp ac_, uim_lisp seg_)
 {
   anthy_context_t ac;
-  int nth;
+  int seg, err;
   struct anthy_conv_stat cs;
   struct anthy_segment_stat ss;
 
   ac = uim_scm_c_ptr(ac_);
-  nth = uim_scm_c_int(nth_);
+  seg = uim_scm_c_int(seg_);
 
-  anthy_get_stat(ac, &cs);
-  if (!(0 <= nth && nth < cs.nr_segment))
+  err = anthy_get_stat(ac, &cs);
+  if (err || !(0 <= seg && seg < cs.nr_segment))
     return uim_scm_f();  /* FIXME: uim_scm_error() */
 
-  anthy_get_segment_stat(ac, nth, &ss);
+  err = anthy_get_segment_stat(ac, seg, &ss);
+  if (err)
+    return uim_scm_f();
+
   return uim_scm_make_int(ss.seg_len);
 }
 
 static uim_lisp
-resize_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp cnt_)
+resize_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp delta_)
 {
   anthy_context_t ac;
-  int seg, cnt;
+  int seg, delta;
 
   ac = uim_scm_c_ptr(ac_);
   seg = uim_scm_c_int(seg_);
-  cnt = uim_scm_c_int(cnt_);
+  delta = uim_scm_c_int(delta_);
 
-  anthy_resize_segment(ac, seg, cnt);
+  anthy_resize_segment(ac, seg, delta);
   return uim_scm_f();
 }
 
 static uim_lisp
-commit_segment(uim_lisp ac_, uim_lisp s_, uim_lisp nth_)
+commit_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
 {
   anthy_context_t ac;
-  int s, nth;
+  int seg, nth;
 
   ac = uim_scm_c_ptr(ac_);
-  s = uim_scm_c_int(s_);
+  seg = uim_scm_c_int(seg_);
   nth = uim_scm_c_int(nth_);
 
-  anthy_commit_segment(ac, s, nth);
+  anthy_commit_segment(ac, seg, nth);
   return uim_scm_f();
 }
 
@@ -243,14 +256,15 @@ get_nr_predictions(uim_lisp ac_)
 #ifdef HAS_ANTHY_PREDICTION
   anthy_context_t ac;
   struct anthy_prediction_stat ps;
+  int err;
 
   ac = uim_scm_c_ptr(ac_);
 
-  anthy_get_prediction_stat(ac, &ps);
-  return uim_scm_make_int(ps.nr_prediction);
-#else
-  return uim_scm_f();
+  err = anthy_get_prediction_stat(ac, &ps);
+  if (!err)
+    return uim_scm_make_int(ps.nr_prediction);
 #endif
+  return uim_scm_f();
 }
 
 static uim_lisp
@@ -270,7 +284,11 @@ get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
     return uim_scm_f();
 
   buf = malloc(buflen + 1);
-  anthy_get_prediction(ac, nth, buf, buflen + 1);
+  buflen = anthy_get_prediction(ac, nth, buf, buflen + 1);
+  if (buflen == -1) {
+    free(buf);
+    return uim_scm_f();
+  }
   buf_ = uim_scm_make_str_directly(buf);
 
   return buf_;
@@ -284,12 +302,14 @@ commit_nth_prediction(uim_lisp ac_, uim_lisp nth_)
 {
 #ifdef HAS_ANTHY_COMMIT_PREDICTION
   anthy_context_t ac;
-  int nth;
+  int nth, err;
 
   ac = uim_scm_c_ptr(ac_);
   nth = uim_scm_c_int(nth_); 
 
-  return anthy_commit_prediction(ac, nth) ? uim_scm_f() : uim_scm_t();
+  err = anthy_commit_prediction(ac, nth);
+
+  return uim_scm_make_bool(!err);
 #else
   return uim_scm_f();
 #endif
