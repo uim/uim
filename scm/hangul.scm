@@ -40,7 +40,7 @@
 	 (generic-commit-key? non-existent-key?)
 	 (generic-proc-input-state-with-preedit-with-this-env
 	  (%%enclose-another-env generic-proc-input-state-with-preedit
-				 (the-environment))))
+				 (%%current-environment))))
     (lambda (gc key state rkc)  ;; "gc" stands for "generic-context"
       (generic-proc-input-state-with-preedit-with-this-env gc key state rkc))))
 
@@ -52,7 +52,7 @@
 	 (generic-proc-input-state-with-preedit
 	  hangul-proc-on-mode-with-preedit)
 	 (generic-proc-input-state-with-this-env
-	  (%%enclose-another-env generic-proc-input-state (the-environment))))
+	  (%%enclose-another-env generic-proc-input-state (%%current-environment))))
     (lambda (gc key state)  ;; "gc" stands for "generic-context"
       (generic-proc-input-state-with-this-env gc key state))))
 
@@ -60,7 +60,7 @@
 (define hangul-key-press-handler
   (let* ((generic-proc-input-state hangul-proc-on-mode)
 	 (generic-key-press-handler-with-this-env
-	  (%%enclose-another-env generic-key-press-handler (the-environment))))
+	  (%%enclose-another-env generic-key-press-handler (%%current-environment))))
     (lambda (gc key state)
       (generic-key-press-handler-with-this-env gc key state))))
 

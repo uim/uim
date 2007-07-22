@@ -37,6 +37,7 @@
 (require-extension (srfi 23 34 60) (siod))
 
 ;; Disable SIOD compatibilities.
+(undefine the-environment)
 (undefine bit-and)
 (undefine bit-or)
 (undefine bit-xor)

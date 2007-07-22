@@ -208,7 +208,7 @@
 	(if (pair? pos)
 	    (let ((code (car pos)))
 	      (uim-db-insert-code! pos (list 'uim-db-break
-					     '(the-environment)
+					     '(%%current-environment)
 					     uim-db-next-id))
 	      (uim-db-puts "Breakpoint "
 			   uim-db-next-id
