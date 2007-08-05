@@ -86,6 +86,7 @@ uim_sh(struct uim_sh_args *c_args)
   editline_init();
 #endif
 
+  uim_scm_require_file("uim-sh.scm");
 #ifdef UIM_SH_USE_EXIT_HOOK
   /*
      is not working even if uim_siod_fatal is accessible. outermost
