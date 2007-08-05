@@ -117,3 +117,7 @@
 			(uim-sh-loop))
 		      #f)))))
     #t))
+
+;; Verbose level must be greater than or equal to 1 to print anything.
+(if (< (verbose) 1)
+    (verbose 1))

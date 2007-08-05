@@ -67,14 +67,24 @@
 #define UIM_VLEVEL_PLUGIN 3
 
 #ifdef DEBUG
-#define DPRINTFN(n,x)  if ((n) <= uim_scm_get_verbose_level()) fprintf x;
+#define DPRINTFN(n,x)  if ((n) <= verbose_level()) fprintf x;
 #else
 #define DPRINTFN(n,x)
 #endif
 
+static int get_verbose_level(void);
 static void *plugin_unload_internal(void *uim_lisp_name);
 static void *uim_quit_plugin_internal(void *dummy);
 
+
+static long 
+verbose_level(void)
+{
+  uim_lisp vlevel;
+
+  vlevel = uim_scm_callf("verbose", "");
+  return uim_scm_c_int(vlevel);
+}
 
 static uim_lisp 
 plugin_load(uim_lisp _name)

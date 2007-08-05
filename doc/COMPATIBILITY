@@ -174,8 +174,8 @@ Summary: Stricter argument precondition requirements
 Affects: IM developers, Bridge developers
 Updates: C API
 Version: 1.5.0
-Revision: ac4519, ac4520
-Date: 2007-03-26
+Revision: ac4519, ac4520, ac4788
+Date: 2007-03-26, 2007-08-05
 Modifier: YamaKen
 Related: uim-scm API reorganization in uim 1.5.0
 URL:
@@ -186,8 +186,11 @@ Changes:
   (changed) uim_scm_symbol_value_int()
   (changed) uim_scm_symbol_value_str()
   (changed) uim_scm_symbol_value_bool()
+  (removed) uim_scm_get_verbose_level()
+  (removed) uim_scm_set_verbose_level()
 Description:
-  The arguments now requires that non-NULL string.
+  The arguments now requires non-NULL string. If you want to access
+  the verbose-level, use uim_scm_callf() instead.
 ------------------------------------------------------------------------------
 Summary: Change return type of uim_set_candidate_selector_cb() to void
 Affects: Bridge developers

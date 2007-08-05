@@ -169,3 +169,4 @@
 
 
 (prealloc-heaps-for-heavy-job)
+(verbose 1)

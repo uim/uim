@@ -88,10 +88,6 @@ uim_scm_set_output(FILE *fp);
 uim_bool uim_scm_is_initialized(void);
 uim_bool
 uim_scm_is_alive(void);
-long
-uim_scm_get_verbose_level(void);
-void
-uim_scm_set_verbose_level(long new_value);
 void
 uim_scm_set_lib_path(const char *path);
 

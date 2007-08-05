@@ -177,7 +177,6 @@ main(int argc, char *argv[])
   setenv("LIBUIM_VANILLA", "1", 1);
   
   uim_init();
-  uim_scm_set_verbose_level(1);
 
   args.argc = argc;
   args.argv = argv;

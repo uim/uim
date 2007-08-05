@@ -80,16 +80,12 @@ main(int argc, char *argv[])
 static void *
 uim_sh(struct uim_sh_args *c_args)
 {
-  long verbose;
   uim_lisp args;
 
 #ifdef LIBEDIT
   editline_init();
 #endif
 
-  verbose = uim_scm_get_verbose_level();
-  uim_scm_set_verbose_level(1);
-  uim_scm_require_file("uim-sh.scm");
 #ifdef UIM_SH_USE_EXIT_HOOK
   /*
      is not working even if uim_siod_fatal is accessible. outermost
@@ -98,13 +94,6 @@ uim_sh(struct uim_sh_args *c_args)
   if (uim_siod_fatal)
     return (void *)EXIT_FAILURE;
 #endif
-
-  /*
-    verbose level must be greater than or equal to 1 to print anything
-  */
-  if (verbose < 1)
-    verbose = 1;
-  uim_scm_set_verbose_level(verbose);
 
   args = uim_scm_c_strs_into_list(c_args->argc,
 				  (const char *const *)c_args->argv);

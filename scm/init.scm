@@ -43,6 +43,12 @@
 (undefine bit-xor)
 (undefine bit-not)
 
+(let ((vlevel (getenv "LIBUIM_VERBOSE")))
+  (if (and vlevel
+	   (not (setugid?)))
+      (guard (err (else #f))
+	(verbose (string->number vlevel)))))
+
 (define enable-action? #t)
 
 ;; SIOD compatibility for SigScheme

@@ -419,22 +419,6 @@ uim_scm_is_alive(void)
   return (initialized && !sscm_is_exit_with_fatal_error);
 }
 
-long
-uim_scm_get_verbose_level(void)
-{
-  assert(uim_scm_gc_any_contextp());
-
-  return (long)scm_get_verbose_level();
-}
-
-void
-uim_scm_set_verbose_level(long new_value)
-{
-  assert(uim_scm_gc_any_contextp());
-
-  scm_set_verbose_level(new_value);
-}
-
 void
 uim_scm_set_lib_path(const char *path)
 {
@@ -1037,10 +1021,9 @@ exit_hook(void)
 }
 
 void
-uim_scm_init(const char *verbose_level, const char *system_load_path)
+uim_scm_init(const char *system_load_path)
 {
   ScmStorageConf storage_conf;
-  long vlevel = 2;
   ScmObj output_port;
   char **argp, *argv[8];
 
@@ -1049,10 +1032,6 @@ uim_scm_init(const char *verbose_level, const char *system_load_path)
 
   if (!uim_output)
     uim_output = stderr;
-
-  if (verbose_level && isdigit((unsigned char)verbose_level[0])) {
-    vlevel = atoi(verbose_level) % 10;
-  }
 
   argp = argv;
   *argp++ = "dummy";  /* command name */
@@ -1098,8 +1077,6 @@ uim_scm_init(const char *verbose_level, const char *system_load_path)
 #endif
 
   scm_require_module("srfi-34");
-
-  uim_scm_set_verbose_level(vlevel);
 }
 
 void

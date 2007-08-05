@@ -74,14 +74,13 @@ static uim_lisp protected0, protected1;
 int
 uim_init(void)
 {
-  char *verbose, *sys_load_path;
+  char *sys_load_path;
 
   if (uim_initialized)
     return OK;
 
-  verbose = getenv("LIBUIM_VERBOSE");
   sys_load_path = (uim_issetugid()) ? NULL : getenv("LIBUIM_SYSTEM_SCM_FILES");
-  uim_scm_init(verbose, sys_load_path);
+  uim_scm_init(sys_load_path);
 
   return (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_init_internal, NULL);
 }
