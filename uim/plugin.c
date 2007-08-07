@@ -72,7 +72,7 @@
 #define DPRINTFN(n,x)
 #endif
 
-static int get_verbose_level(void);
+static long verbose_level(void);
 static void *plugin_unload_internal(void *uim_lisp_name);
 static void *uim_quit_plugin_internal(void *dummy);
 
