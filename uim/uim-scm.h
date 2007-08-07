@@ -79,12 +79,6 @@ typedef void *(*uim_gc_gate_func_ptr)(void *);
 #endif
 
 
-/* 'uim_scm' prefix is not appropriate for these functions... any ideas? */
-FILE *
-uim_scm_get_output(void);
-void
-uim_scm_set_output(FILE *fp);
-  
 uim_bool uim_scm_is_initialized(void);
 uim_bool
 uim_scm_is_alive(void);

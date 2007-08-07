@@ -61,13 +61,9 @@
 #include "uim-compat-scm.c"
 #endif
 
-/* FIXME: illegal internal access */
-#define scm_out SCM_GLOBAL_VAR(port, scm_out)
-#define scm_err SCM_GLOBAL_VAR(port, scm_err)
 
 static uim_lisp protected;
 static uim_bool initialized, sscm_is_exit_with_fatal_error;
-static FILE *uim_output = NULL;
 
 static void uim_scm_error(const char *msg, uim_lisp errobj);
 struct uim_scm_error_args {
@@ -132,24 +128,6 @@ uim_scm_error_internal(struct uim_scm_error_args *args)
   /* FIXME: don't terminate the process */
   scm_error_obj(NULL, args->msg, (ScmObj)args->errobj);
   SCM_NOTREACHED;
-}
-
-FILE *
-uim_scm_get_output(void)
-{
-  /* semantic assertion */
-  assert(!uim_scm_is_initialized() || uim_scm_is_initialized());
-
-  return uim_output;
-}
-
-void
-uim_scm_set_output(FILE *fp)
-{
-  /* semantic assertion */
-  assert(!uim_scm_is_initialized() || uim_scm_is_initialized());
-
-  uim_output = fp;
 }
 
 void
@@ -1024,14 +1002,10 @@ void
 uim_scm_init(const char *system_load_path)
 {
   ScmStorageConf storage_conf;
-  ScmObj output_port;
   char **argp, *argv[8];
 
   if (initialized)
     return;
-
-  if (!uim_output)
-    uim_output = stderr;
 
   argp = argv;
   *argp++ = "dummy";  /* command name */
@@ -1064,10 +1038,6 @@ uim_scm_init(const char *system_load_path)
   scm_set_fatal_error_callback(exit_hook);
   initialized = UIM_TRUE;  /* init here for uim_scm_gc_protect() */
 
-  /* GC safe */
-  output_port = scm_make_shared_file_port(uim_output, "uim", SCM_PORTFLAG_OUTPUT);
-  scm_out = scm_err = output_port;
-
   protected = (uim_lisp)SCM_FALSE;
   uim_scm_gc_protect(&protected);
 
@@ -1087,6 +1057,5 @@ uim_scm_quit(void)
 
   scm_finalize();
   sscm_is_exit_with_fatal_error = UIM_FALSE;
-  uim_output = NULL;
   initialized = UIM_FALSE;
 }

@@ -127,7 +127,8 @@
         (set! *uim-sh-process* (run-process "uim/uim-sh"
                                             "-b"
                                             :input :pipe
-                                            :output :pipe)))
+                                            :output :pipe))
+	(uim '(%%set-current-error-port! (current-output-port))))
       (define (*uim-sh-teardown-proc*)
         (close-input-port (process-input *uim-sh-process*))
         (set! *uim-sh-process* #f))
@@ -159,6 +160,7 @@
                                                 "-b"
                                                 :input :pipe
                                                 :output :pipe))
+	    (uim '(%%set-current-error-port! (current-output-port)))
             (additional-setup-proc))))
 
       (define (make-uim-sh-teardown-proc . args)

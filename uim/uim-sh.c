@@ -60,8 +60,6 @@ main(int argc, char *argv[])
   struct uim_sh_args c_args;
   int err;
 
-  uim_scm_set_output(stdout);
-  
   /* TODO: be able to suppress ordinary initialization process */
   uim_init();
 
