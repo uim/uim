@@ -65,12 +65,12 @@
 static uim_lisp protected;
 static uim_bool initialized, sscm_is_exit_with_fatal_error;
 
-static void uim_scm_error(const char *msg, uim_lisp errobj);
-struct uim_scm_error_args {
+static void *uim_scm_error_internal(const char *msg);
+struct uim_scm_error_obj_args {
   const char *msg;
   uim_lisp errobj;
 };
-static void *uim_scm_error_internal(struct uim_scm_error_args *args);
+static void *uim_scm_error_obj_internal(struct uim_scm_error_obj_args *args);
 
 struct call_args {
   uim_lisp proc;
@@ -108,10 +108,27 @@ struct cons_args {
 };
 static void *uim_scm_cons_internal(struct cons_args *args);
 
-static void
-uim_scm_error(const char *msg, uim_lisp errobj)
+
+void
+uim_scm_error(const char *msg)
 {
-  struct uim_scm_error_args args;
+  assert(uim_scm_gc_any_contextp());
+  assert(msg);
+
+  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_error_internal, msg);
+}
+
+static void *
+uim_scm_error_internal(const char *msg)
+{
+  scm_plain_error(msg);
+  SCM_NOTREACHED;
+}
+
+void
+uim_scm_error_obj(const char *msg, uim_lisp errobj)
+{
+  struct uim_scm_error_obj_args args;
 
   assert(uim_scm_gc_any_contextp());
   assert(msg);
@@ -119,11 +136,11 @@ uim_scm_error(const char *msg, uim_lisp errobj)
 
   args.msg = msg;
   args.errobj = errobj;
-  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_error_internal, &args);
+  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_error_obj_internal, &args);
 }
 
 static void *
-uim_scm_error_internal(struct uim_scm_error_args *args)
+uim_scm_error_obj_internal(struct uim_scm_error_obj_args *args)
 {
   /* FIXME: don't terminate the process */
   scm_error_obj(NULL, args->msg, (ScmObj)args->errobj);
@@ -172,7 +189,7 @@ uim_scm_c_int_internal(void *uim_lisp_integer)
   integer = (uim_lisp)uim_lisp_integer;
 
   if (!SCM_INTP((ScmObj)integer))
-    uim_scm_error("uim_scm_c_int: number required but got ", integer);
+    uim_scm_error_obj("uim_scm_c_int: number required but got ", integer);
 
   c_int = SCM_INT_VALUE((ScmObj)integer);
   return (void *)(intptr_t)c_int;
@@ -228,8 +245,8 @@ uim_scm_refer_c_str_internal(void *uim_lisp_str)
   } else if (SCM_SYMBOLP((ScmObj)str)) {
     c_str = SCM_SYMBOL_NAME((ScmObj)str);
   } else {
-    uim_scm_error("uim_scm_refer_c_str: string or symbol required but got ",
-                  str);
+    uim_scm_error_obj("uim_scm_refer_c_str: string or symbol required but got ",
+		      str);
     SCM_NOTREACHED;
   }
 
@@ -297,7 +314,7 @@ uim_scm_c_ptr(uim_lisp ptr)
   assert(uim_scm_gc_protectedp(ptr));
 
   if (!SCM_C_POINTERP((ScmObj)ptr))
-    uim_scm_error("uim_scm_c_ptr: C pointer required but got ", ptr);
+    uim_scm_error_obj("uim_scm_c_ptr: C pointer required but got ", ptr);
 
   return SCM_C_POINTER_VALUE((ScmObj)ptr);
 }
@@ -324,8 +341,7 @@ uim_scm_c_func_ptr(uim_lisp func_ptr)
   assert(uim_scm_gc_protectedp(func_ptr));
 
   if (!SCM_C_FUNCPOINTERP((ScmObj)func_ptr))
-    uim_scm_error("uim_scm_c_func_ptr: C function pointer required but got ",
-                  func_ptr);
+    uim_scm_error_obj("uim_scm_c_func_ptr: C function pointer required but got ", func_ptr);
 
   return SCM_C_FUNCPOINTER_VALUE((ScmObj)func_ptr);
 }

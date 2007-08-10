@@ -79,12 +79,14 @@ typedef void *(*uim_gc_gate_func_ptr)(void *);
 #endif
 
 
+/* subsystem interfaces */
 uim_bool uim_scm_is_initialized(void);
 uim_bool
 uim_scm_is_alive(void);
 void
 uim_scm_set_lib_path(const char *path);
 
+/* GC protections */
 void
 uim_scm_gc_protect(uim_lisp *location);
 void uim_scm_gc_unprotect(uim_lisp *location);
@@ -96,6 +98,11 @@ uim_bool uim_scm_gc_protected_contextp(void);
 #define uim_scm_gc_any_contextp()					\
   (uim_scm_is_initialized()						\
    && (!uim_scm_gc_protected_contextp() || uim_scm_gc_protected_contextp()))
+
+/* errors: can be caught by SRFI-34 'guard' */
+void uim_scm_error(const char *msg);
+void uim_scm_error_obj(const char *msg, uim_lisp errobj);
+void uim_scm_ensure(uim_bool cond);
 
 /* evaluations */
 uim_lisp uim_scm_symbol_value(const char *symbol_str);
@@ -118,8 +125,6 @@ uim_lisp uim_scm_call_with_guard(uim_lisp failed,
 uim_lisp uim_scm_callf(const char *proc, const char *args_fmt, ...);
 uim_lisp uim_scm_callf_with_guard(uim_lisp failed,
                                   const char *proc, const char *args_fmt, ...);
-
-void uim_scm_ensure(uim_bool cond);
 
 /* type conversions */
 uim_bool
@@ -153,6 +158,7 @@ uim_scm_c_func_ptr(uim_lisp func_ptr);
 uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr);
 
+/* procedure initializers */
 void
 uim_scm_init_subr_0(const char *name, uim_lisp (*fcn)(void));
 void 

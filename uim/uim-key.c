@@ -410,13 +410,8 @@ define_key(uim_lisp args, uim_lisp env)
 {
   uim_lisp form, predicate_sym, sources;
 
-  if (uim_scm_length(args) != 2) {
-#if 0
-    uim_scm_error("define-key: invalid form", args);
-#else
-    return uim_scm_f();
-#endif
-  }
+  if (uim_scm_length(args) != 2)
+    uim_scm_error_obj("define-key: invalid form", args);
 
   predicate_sym = CAR(args);
   sources = CAR(CDR(args));
