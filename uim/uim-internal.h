@@ -109,6 +109,7 @@ struct uim_context_ {
 
 void uim_scm_init(const char *system_load_path);
 void uim_scm_quit(void);
+void uim_scm_set_fatal_error_hook(void (*hook)(void));
 
 void uim_init_plugin(void);
 void uim_quit_plugin(void);

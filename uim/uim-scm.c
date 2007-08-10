@@ -110,6 +110,12 @@ static void *uim_scm_cons_internal(struct cons_args *args);
 
 
 void
+uim_scm_set_fatal_error_hook(void (*hook)(void))
+{
+  scm_set_fatal_error_callback(hook);
+}
+
+void
 uim_scm_error(const char *msg)
 {
   assert(uim_scm_gc_any_contextp());

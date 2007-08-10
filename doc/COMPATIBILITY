@@ -174,8 +174,8 @@ Summary: Stricter argument precondition requirements
 Affects: IM developers, Bridge developers
 Updates: C API
 Version: 1.5.0
-Revision: ac4519, ac4520, ac4788, ac4807
-Date: 2007-03-26, 2007-08-05, 2007-08-07
+Revision: ac4519, ac4520
+Date: 2007-03-26
 Modifier: YamaKen
 Related: uim-scm API reorganization in uim 1.5.0
 URL:
@@ -186,14 +186,8 @@ Changes:
   (changed) uim_scm_symbol_value_int()
   (changed) uim_scm_symbol_value_str()
   (changed) uim_scm_symbol_value_bool()
-  (removed) uim_scm_get_verbose_level()
-  (removed) uim_scm_set_verbose_level()
-  (removed) uim_scm_get_output()
-  (removed) uim_scm_set_output()
 Description:
-  - The arguments now requires non-NULL string
-  - If you want to access the verbose-level, use uim_scm_callf() instead
-  - If you want to redirect stderr, use %%set-current-error-port!
+  The arguments now requires non-NULL string
 ------------------------------------------------------------------------------
 Summary: Change return type of uim_set_candidate_selector_cb() to void
 Affects: Bridge developers
@@ -331,7 +325,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: SigScheme introduction to uim
@@ -349,6 +343,9 @@ Changes:
       (new) uim_scm_callf_with_guard()
       (new) uim_scm_null()
       (new) uim_scm_make_str_directly()
+      (new) uim_scm_error()
+      (new) uim_scm_error_obj()
+      (new) uim_scm_set_fatal_error_hook()
       (new) MAKE_BOOL()
       (new) MAKE_INT()
       (new) MAKE_STR()
@@ -397,6 +394,10 @@ Changes:
   (removed) uim_scm_nth()
   (removed) uim_scm_nreverse()
   (removed) uim_scm_provide()
+  (removed) uim_scm_get_verbose_level()
+  (removed) uim_scm_set_verbose_level()
+  (removed) uim_scm_get_output()
+  (removed) uim_scm_set_output()
   (removed) struct uim_api_tbl
   (removed) im-return-str
   (removed) im-return-str-list
@@ -413,6 +414,8 @@ Description:
     uim_list5() have been callable from non-Scheme context, to use with
     uim_scm_call*()
   - 1st arg of uim_scm_init_fsubr() (name) has been qualified as const
+  - If you want to access the verbose-level, use uim_scm_callf() instead
+  - If you want to redirect stderr, use %%set-current-error-port!
 ------------------------------------------------------------------------------
 Summary: GC protection API change
 Affects: uim developers, IM developers
