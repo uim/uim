@@ -76,7 +76,8 @@ static uim_lisp protected0, protected1;
 static void
 fatal_error_hook(void)
 {
-  uim_fatal_error("fatal error in Scheme interpreter");
+  /* error message is already printed by the Scheme interpreter */
+  uim_fatal_error(NULL);
 }
 
 int
@@ -163,9 +164,6 @@ uim_create_context(void *ptr,
   uim_lisp lang_, engine_;
 
   assert(uim_scm_gc_any_contextp());
-
-  if (!uim_scm_is_alive())
-    return NULL;
 
   uc = malloc(sizeof(*uc));
   if (!uc)

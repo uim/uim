@@ -81,8 +81,6 @@ typedef void *(*uim_gc_gate_func_ptr)(void *);
 
 /* subsystem interfaces */
 uim_bool uim_scm_is_initialized(void);
-uim_bool
-uim_scm_is_alive(void);
 void
 uim_scm_set_lib_path(const char *path);
 

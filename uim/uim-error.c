@@ -81,11 +81,13 @@ uim_catch_error_begin(void)
     if (SETJMP(env)) {
       guarded = 0;
 
-      fputs("ERROR: ", stderr);
-      if (fatal_errored)
-	fputs("fatal: ", stderr);
-      fputs(err_msg, stderr);
-      fputs("\n", stderr);
+      if (err_msg) {
+	fputs("ERROR: ", stderr);
+	if (fatal_errored)
+	  fputs("fatal: ", stderr);
+	fputs(err_msg, stderr);
+	fputs("\n", stderr);
+      }
 
       return UIM_TRUE;
     }
@@ -105,6 +107,8 @@ uim_catch_error_end(void)
 void
 uim_throw_error(const char *msg)
 {
+  assert(msg || !msg);
+
   if (!guarded)
     exit(EXIT_FAILURE);
 
@@ -115,6 +119,8 @@ uim_throw_error(const char *msg)
 void
 uim_fatal_error(const char *msg)
 {
+  assert(msg || !msg);
+
   fatal_errored = UIM_TRUE;
   uim_throw_error(msg);
 }

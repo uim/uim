@@ -63,7 +63,7 @@
 
 
 static uim_lisp protected;
-static uim_bool initialized, sscm_is_exit_with_fatal_error;
+static uim_bool initialized;
 
 static void *uim_scm_error_internal(const char *msg);
 struct uim_scm_error_obj_args {
@@ -148,7 +148,6 @@ uim_scm_error_obj(const char *msg, uim_lisp errobj)
 static void *
 uim_scm_error_obj_internal(struct uim_scm_error_obj_args *args)
 {
-  /* FIXME: don't terminate the process */
   scm_error_obj(NULL, args->msg, (ScmObj)args->errobj);
   SCM_NOTREACHED;
 }
@@ -411,12 +410,6 @@ uim_bool
 uim_scm_is_initialized(void)
 {
   return initialized;
-}
-
-uim_bool
-uim_scm_is_alive(void)
-{
-  return (initialized && !sscm_is_exit_with_fatal_error);
 }
 
 void
@@ -1011,15 +1004,6 @@ uim_scm_init_fsubr(const char *name,
   scm_register_func(name, (scm_syntax_variadic_0)func, SCM_SYNTAX_VARIADIC_0);
 }
 
-static void
-exit_hook(void)
-{
-  sscm_is_exit_with_fatal_error = UIM_TRUE;
-  /* FIXME: Add longjmp() to outermost uim API call, and make all API
-   * calls uim_scm_is_alive()-sensitive. It should be fixed on uim
-   * 1.5.  -- YamaKen 2006-06-06, 2006-12-27 */
-}
-
 void
 uim_scm_init(const char *system_load_path)
 {
@@ -1057,7 +1041,6 @@ uim_scm_init(const char *system_load_path)
   storage_conf.n_heaps_init         = 1;
   storage_conf.symbol_hash_size     = 1024;
   scm_initialize(&storage_conf, (const char *const *)&argv);
-  scm_set_fatal_error_callback(exit_hook);
   initialized = UIM_TRUE;  /* init here for uim_scm_gc_protect() */
 
   protected = (uim_lisp)SCM_FALSE;
@@ -1078,6 +1061,5 @@ uim_scm_quit(void)
     return;
 
   scm_finalize();
-  sscm_is_exit_with_fatal_error = UIM_FALSE;
   initialized = UIM_FALSE;
 }
