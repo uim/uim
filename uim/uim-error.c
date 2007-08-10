@@ -34,11 +34,13 @@
 #include <config.h>
 
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 #include <setjmp.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "uim.h"
+#include "uim-internal.h"
 
 
 #if HAVE_SIGSETJMP
@@ -159,3 +161,22 @@ uim_calloc(size_t nmemb, size_t size)
   return p;
 }
 
+char *
+uim_strdup(const char *s)
+{
+    char *copied;
+
+#if HAVE_STRDUP
+    copied = strdup(s);
+    if (!copied)
+      uim_fatal_error("strdup() failed");
+#else
+    size_t size;
+
+    size = strlen(s) + sizeof("");
+    copied = uim_malloc(size);
+    strcpy(copied, s);
+#endif
+
+    return copied;
+}

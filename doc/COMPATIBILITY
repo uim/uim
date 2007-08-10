@@ -80,7 +80,7 @@ Summary: Fatal error handling helpers for plugin developers
 Affects: IM developers, uim developers
 Updates: C API
 Version: 1.5.0
-Revision: ac4814
+Revision: ac4814, ac4816
 Date: 2007-08-11
 Modifier: YamaKen
 Related: Exception-based libuim error handling
@@ -93,6 +93,7 @@ Changes:
       (new) uim_malloc()
       (new) uim_realloc()
       (new) uim_calloc()
+      (new) uim_strdup()
 Description:
 ------------------------------------------------------------------------------
 Summary: New utility procedures in uim 1.5.0

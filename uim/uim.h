@@ -943,6 +943,7 @@ void uim_fatal_error(const char *msg);  /* Disables uim */
 void *uim_malloc(size_t size);
 void *uim_realloc(void *p, size_t size);
 void *uim_calloc(size_t nmemb, size_t size);
+char *uim_strdup(const char *s);
 
 #ifdef __cplusplus
 }
