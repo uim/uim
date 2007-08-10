@@ -35,7 +35,8 @@ pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-custom.h
 
 libuim_la_SOURCES = uim-scm.c \
-		uim-internal.h uim.c uim-key.c uim-func.c uim-util.c \
+		uim-internal.h uim-error.c uim.c \
+		uim-key.c uim-func.c uim-util.c \
 		iconv.c plugin.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \

@@ -47,6 +47,8 @@
 
 #define OK 0
 
+static void fatal_error_hook(void);
+
 static void *uim_init_internal(void *dummy);
 struct uim_get_candidate_args {
   uim_context uc;
@@ -71,6 +73,12 @@ static uim_lisp protected0, protected1;
 /****************************************************************
  * Core APIs                                                    *
  ****************************************************************/
+static void
+fatal_error_hook(void)
+{
+  uim_fatal_error("fatal error in Scheme interpreter");
+}
+
 int
 uim_init(void)
 {
@@ -79,8 +87,11 @@ uim_init(void)
   if (uim_initialized)
     return OK;
 
+  uim_init_error();
+
   sys_load_path = (uim_issetugid()) ? NULL : getenv("LIBUIM_SYSTEM_SCM_FILES");
   uim_scm_init(sys_load_path);
+  uim_scm_set_fatal_error_hook(fatal_error_hook);
 
   return (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_init_internal, NULL);
 }

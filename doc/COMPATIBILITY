@@ -57,6 +57,44 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Exception-based libuim error handling
+Affects: uim developers
+Updates: internal C API
+Version: 1.5.0
+Revision: ac4814
+Date: 2007-08-11
+Modifier: YamaKen
+Related: Fatal error handling helpers for plugin developers
+	 uim-scm API reorganization in uim 1.5.0
+         uim_scm_error()
+         uim_scm_error_obj()
+         uim_scm_set_fatal_error_hook()
+URL:
+Changes:
+      (new) uim_catch_error_begin()
+      (new) uim_catch_error_end()
+      (new) uim_throw_error()
+Description:
+------------------------------------------------------------------------------
+Summary: Fatal error handling helpers for plugin developers
+Affects: IM developers, uim developers
+Updates: C API
+Version: 1.5.0
+Revision: ac4814
+Date: 2007-08-11
+Modifier: YamaKen
+Related: Exception-based libuim error handling
+	 uim-scm API reorganization in uim 1.5.0
+         uim_scm_error()
+         uim_scm_error_obj()
+URL:
+Changes:
+      (new) uim_fatal_error()
+      (new) uim_malloc()
+      (new) uim_realloc()
+      (new) uim_calloc()
+Description:
+------------------------------------------------------------------------------
 Summary: New utility procedures in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: Scheme API

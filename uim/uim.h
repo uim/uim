@@ -937,6 +937,13 @@ uim_set_im_switch_request_cb(uim_context uc,
 			     void (*sw_app_im_cb)(void *ptr, const char *name),
 			     void (*sw_system_im_cb)(void *ptr, const char *name));
 
+
+/* For plugins implementation. Bridges should not use these functions. */
+void uim_fatal_error(const char *msg);  /* Disables uim */
+void *uim_malloc(size_t size);
+void *uim_realloc(void *p, size_t size);
+void *uim_calloc(size_t nmemb, size_t size);
+
 #ifdef __cplusplus
 }
 #endif

@@ -107,6 +107,11 @@ struct uim_context_ {
 };
 
 
+void     uim_init_error(void);
+uim_bool uim_catch_error_begin(void);
+void     uim_catch_error_end(void);
+void     uim_throw_error(const char *msg);
+
 void uim_scm_init(const char *system_load_path);
 void uim_scm_quit(void);
 void uim_scm_set_fatal_error_hook(void (*hook)(void));
