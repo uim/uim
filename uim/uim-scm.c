@@ -324,6 +324,19 @@ uim_scm_c_ptr(uim_lisp ptr)
   return SCM_C_POINTER_VALUE((ScmObj)ptr);
 }
 
+void
+uim_scm_nullify_c_ptr(uim_lisp ptr)
+{
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(ptr));
+
+  if (!SCM_C_POINTERP((ScmObj)ptr))
+    uim_scm_error_obj("uim_scm_nullify_c_ptr: C pointer required but got ",
+		      ptr);
+
+  SCM_C_POINTER_SET_VALUE((ScmObj)ptr, NULL);
+}
+
 uim_lisp
 uim_scm_make_ptr(void *ptr)
 {
