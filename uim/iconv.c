@@ -127,15 +127,15 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
   assert(fromcode);
 
   if (check_encoding_equivalence(tocode, fromcode))
-    return 1;
+    return UIM_TRUE;
 
   /* TODO cache the result */
   ic = (iconv_t)uim_iconv_open(tocode, fromcode);
-  if (ic == (iconv_t)-1) {
-    return 0;
-  }
+  if (ic == (iconv_t)-1)
+    return UIM_FALSE;
   iconv_close(ic);
-  return 1;
+
+  return UIM_TRUE;
 }
 
 static const char **
