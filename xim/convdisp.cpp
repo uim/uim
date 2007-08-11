@@ -51,7 +51,7 @@
 #include "xdispatch.h"
 #include "util.h"
 
-#include "uim/uim-compat-scm.h"
+#include "uim/uim-scm.h"
 
 #define UNDERLINE_HEIGHT	2
 #define DEFAULT_FONT_SIZE	16

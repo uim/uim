@@ -59,7 +59,7 @@
 
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
-#include "uim/uim-compat-scm.h"
+#include "uim/uim-scm.h"
 
 #ifndef XK_dead_horn
 #define XK_dead_horn	0xfe62
@@ -154,7 +154,7 @@ void XimServer::customContext(const char *custom, const char *val) {
 
     // Updated global IM of XimServer
     if (!strcmp(custom, "custom-preserved-default-im-name") &&
-		    uim_scm_symbol_value_bool("custom-activate-default-im-name?"))
+	uim_scm_symbol_value_bool("custom-activate-default-im-name?"))
 	set_im(++val);
 
 #if HAVE_XFT_UTF8_STRING
@@ -163,7 +163,7 @@ void XimServer::customContext(const char *custom, const char *val) {
 #endif
 
     if (!strcmp(custom, "bridge-show-input-state?") &&
-		    !uim_scm_symbol_value_bool("bridge-show-input-state?")) {
+	!uim_scm_symbol_value_bool("bridge-show-input-state?")) {
 	Canddisp *disp = canddisp_singleton();
 	disp->hide_caret_state();
     }

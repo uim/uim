@@ -54,7 +54,7 @@
 
 #include "uim/uim-util.h"
 #include "uim/uim-im-switcher.h"
-#include "uim/uim-compat-scm.h"
+#include "uim/uim-scm.h"
 
 Display *XimServer::gDpy;
 std::map<Window, XimServer *> XimServer::gServerMap;

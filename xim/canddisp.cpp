@@ -43,9 +43,7 @@
 
 #include "uim/uim.h"
 #include "uim/uim-util.h"
-#ifdef UIM_COMPAT_SCM
-#include "uim/uim-compat-scm.h"
-#endif /* UIM_COMPAT_SCM */
+#include "uim/uim-scm.h"
 
 #include "ximserver.h"
 #include "xim.h"
@@ -75,20 +73,15 @@ static const char *candwin_command(void)
     const char *user_config;
 
     /*
-      XXX: We should drop uim-compat-scm API. -- omote 07/12/2005
-
       Search order of candwin_command be summarized as follows
-      if UIM_COMPAT_SCM is defined.
 	 1. UIM_CANDWIN_PROG -- mainly for debugging purpose
 	 2. value in 'uim-candwin-prog' symbol
 	 3. default toolkit's candwin program determined by ./configure
      */
 
     user_config = getenv("UIM_CANDWIN_PROG");
-#ifdef UIM_COMPAT_SCM
     if (!user_config)
 	user_config = uim_scm_symbol_value_str("uim-candwin-prog");
-#endif
 
     if (user_config) {
 	asprintf(&candwin_prog, UIM_LIBEXECDIR "/%s", user_config);

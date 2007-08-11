@@ -33,11 +33,18 @@
 
 #include <config.h>
 
+#include <string.h>
+
 #include "uim-internal.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "uim-scm-abbrev.h"
 
+
+static uim_bool
+string_equalp(uim_lisp x, uim_lisp y)
+{
+  return (strcmp(uim_scm_refer_c_str(x), uim_scm_refer_c_str(y)) == 0);
+}
 
 static uim_lisp
 str_seq_equal(uim_lisp seq, uim_lisp rule)
@@ -49,7 +56,7 @@ str_seq_equal(uim_lisp seq, uim_lisp rule)
     return uim_scm_f();
   }
   for (i = 0; i < sl; i++) {
-    if (!uim_scm_string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
+    if (!string_equalp(uim_scm_car(seq), uim_scm_car(rule))) {
       return uim_scm_f();
     }
     seq = uim_scm_cdr(seq);
@@ -76,7 +83,7 @@ str_seq_partial(uim_lisp seq, uim_lisp rule)
   }
   /* Obviously. sl < rl */
   for (i = 0; i < sl; i++) {
-    if (!uim_scm_string_equal(uim_scm_car(seq), uim_scm_car(rule))) {
+    if (!string_equalp(uim_scm_car(seq), uim_scm_car(rule))) {
       return uim_scm_f();
     }
     seq = uim_scm_cdr(seq);

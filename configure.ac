@@ -765,18 +765,6 @@ AC_ARG_ENABLE(debug,
     enable_debug="no"
   ])
 
-AC_ARG_ENABLE(compat-scm,
-  AC_HELP_STRING([--disable-compat-scm],
-                 [disable obsolete part of uim-scm API (experimental)]),
-  [
-    if test "$enable_compat_scm" != "no" ;then
-      enable_compat_scm="yes"
-    fi
-  ],
-  [
-    enable_compat_scm="yes"
-  ])
-
 AC_ARG_ENABLE(fep,
   AC_HELP_STRING([--disable-fep],
                  [disable uim-fep]),
@@ -964,7 +952,6 @@ AM_CONDITIONAL(DICT, test x$use_dict = xyes)
 AM_CONDITIONAL(EB, test x$use_eb = xyes)
 AM_CONDITIONAL(LIBEDIT, test x$use_libedit = xyes)
 AM_CONDITIONAL(DEBUG, test x$enable_debug = xyes)
-AM_CONDITIONAL(COMPAT_SCM, test x$enable_compat_scm = xyes)
 AM_CONDITIONAL(NEED_SETENV_C, test $ac_cv_func_setenv = no -o $ac_cv_func_unsetenv = no)
 AM_CONDITIONAL(NEED_STRSEP_C, test $ac_cv_func_strsep = no)
 AM_CONDITIONAL(GCC, test x$ac_cv_c_compiler_gnu = xyes)
@@ -1330,11 +1317,6 @@ AC_ARG_ENABLE(warnings-into-error,
 AC_SUBST(UIM_SCM_CFLAGS)
 
 
-if test x$enable_compat_scm = xyes; then
-  AC_DEFINE(UIM_COMPAT_SCM, 1,
-            [Enable obsolete part of uim-scm API])
-fi
-
 # Checks for system services
 
 
@@ -1421,6 +1403,5 @@ AC_MSG_RESULT([
 Configure Result for developers:
 
    DEBUG           : ${enable_debug}
-   COMPAT_SCM      : ${enable_compat_scm}
 ])
 fi

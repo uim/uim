@@ -48,7 +48,7 @@
 #include "connection.h"
 #include "util.h"
 
-#include "uim/uim-compat-scm.h"
+#include "uim/uim-scm.h"
  
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>

@@ -4,7 +4,7 @@ include $(top_builddir)/sigscheme/sigscheme.mk
 
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = uim-compat-scm.c encoding-table.c test-gc.c
+EXTRA_DIST = encoding-table.c test-gc.c
 
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
@@ -41,10 +41,6 @@ libuim_la_SOURCES = uim-scm.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
 		rk.c bsdlook.c
-
-if COMPAT_SCM
-  pkginclude_HEADERS += uim-compat-scm.h
-endif
 
 libuim_custom_la_SOURCES = uim-custom.c
 

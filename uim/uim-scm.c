@@ -57,10 +57,6 @@
 /* To avoid macro name conflict with SigScheme, uim-scm-abbrev.h should not
  * be included. */
 
-#ifdef UIM_COMPAT_SCM
-#include "uim-compat-scm.c"
-#endif
-
 
 static uim_lisp protected;
 static uim_bool initialized;
