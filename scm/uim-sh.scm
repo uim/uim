@@ -85,8 +85,8 @@
 	     (else
 	      (error "invalid action on option table")))
 	    (rec rest))
-	  (or args
-	      '())))))
+	  args
+	  '()))))  ;; an action possibly returns #f
 
 (define uim-sh-loop
   (lambda (my-read)
