@@ -125,10 +125,8 @@ uim_lisp uim_scm_callf_with_guard(uim_lisp failed,
                                   const char *proc, const char *args_fmt, ...);
 
 /* type conversions */
-uim_bool
-uim_scm_c_bool(uim_lisp val);
-uim_lisp
-uim_scm_make_bool(uim_bool val);
+long uim_scm_c_bool(uim_lisp val);
+uim_lisp uim_scm_make_bool(long val);
 
 long uim_scm_c_int(uim_lisp integer);
 uim_lisp uim_scm_make_int(long integer);

@@ -172,16 +172,18 @@ uim_scm_ensure(uim_bool cond)
   SCM_ENSURE(cond);
 }
 
-uim_bool
+/* can be passed to uim_scm_list2null_term_array() */
+long
 uim_scm_c_bool(uim_lisp val)
 {
   assert(uim_scm_gc_any_contextp());
 
-  return UIM_SCM_NFALSEP(val);
+  return (UIM_SCM_NFALSEP(val)) ? UIM_TRUE : UIM_FALSE;
 }
 
+/* can be passed to uim_scm_array2list() */
 uim_lisp
-uim_scm_make_bool(uim_bool val)
+uim_scm_make_bool(long val)
 {
   assert(uim_scm_gc_any_contextp());
 

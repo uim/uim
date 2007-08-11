@@ -57,6 +57,26 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Bit width extension of uim_scm_c_bool() and uim_scm_make_bool()
+Affects: uim developers
+Updates: C API
+Version: 1.5.0
+Revision: ac4820
+Date: 2007-08-11
+Modifier: YamaKen
+Related: uim-scm API reorganization in uim 1.5.0
+         uim_scm_array2list()
+         uim_scm_null_term_array2list()
+         uim_scm_list2null_term_array()
+URL:
+Changes:
+  (changed) uim_scm_c_bool()
+  (changed) uim_scm_make_bool()
+Description:
+  To make passing these 2 functions to the array<->list conversion
+  functions directly, the C side of bool representation is changed
+  from int to long. This change is required for 64-bit platforms.
+------------------------------------------------------------------------------
 Summary: Exception-based libuim error handling
 Affects: uim developers
 Updates: internal C API
@@ -368,6 +388,7 @@ Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446,
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: SigScheme introduction to uim
+	 Bit width extension of uim_scm_c_bool() and uim_scm_make_bool()
 URL:
 Changes:
       (new) uim_scm_is_initialized()
