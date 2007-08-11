@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iconv.h>
+#include <assert.h>
 
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
@@ -45,6 +46,8 @@
 #include "uim-internal.h"
 #include "uim-util.h"
 
+
+#define MBCHAR_LEN_MAX 6  /* assumes CESU-8 */
 
 static void *uim_iconv_open(const char *tocode, const char *fromcode);
 static int uim_iconv_is_convertible(const char *tocode, const char *fromcode);
@@ -77,6 +80,9 @@ check_encoding_equivalence(const char *tocode, const char *fromcode)
   int alias_tocode_alloced = 0;
   int alias_fromcode_alloced = 0;
   int found = 0;
+
+  assert(tocode);
+  assert(fromcode);
 
   alias_tocode = uim_get_encoding_alias(tocode);
   alias_fromcode = uim_get_encoding_alias(fromcode);
@@ -117,6 +123,9 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
+  assert(tocode);
+  assert(fromcode);
+
   if (check_encoding_equivalence(tocode, fromcode))
     return 1;
 
@@ -134,6 +143,8 @@ uim_get_encoding_alias(const char *encoding)
 {
   int i, j;
   const char **alias;
+
+  assert(encoding);
 
   for (i = 0; (alias = uim_encoding_list[i]); i++) {
     for (j = 0; alias[j]; j++) {
@@ -153,6 +164,9 @@ uim_iconv_open(const char *tocode, const char *fromcode)
   int alias_tocode_alloced = 0;
   int alias_fromcode_alloced = 0;
   int opened = 0;
+
+  assert(tocode);
+  assert(fromcode);
 
   alias_tocode = uim_get_encoding_alias(tocode);
   alias_fromcode = uim_get_encoding_alias(fromcode);
@@ -194,6 +208,9 @@ uim_iconv_create(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
+  assert(tocode);
+  assert(fromcode);
+
   if (check_encoding_equivalence(tocode, fromcode))
     return NULL;
 
@@ -209,32 +226,36 @@ static char *
 uim_iconv_code_conv(void *obj, const char *str)
 {
   iconv_t ic;
-  size_t len;
-  size_t buflen;
-  char *realbuf;
-  char *outbuf;
-  const char *inbuf;
+  size_t len, bufsize;
+  char *outbuf, *realbuf;
+  const char *inbuf, *src;
 
-  ic = (iconv_t)obj;
   if (!str)
     return NULL;
 
-  if (!ic)
-    return strdup(str);
+  ic = (iconv_t)obj;
+  if (ic) {
+    len = strlen(str);
+    bufsize = (len + sizeof("")) * MBCHAR_LEN_MAX;
+    realbuf = alloca(bufsize);
+    memset(realbuf, 0, bufsize);
 
-  len = strlen(str);
-  buflen = (len * 6)+3;
-  realbuf = alloca(buflen);
-  outbuf = realbuf;
-  inbuf = str;
-  memset(realbuf, 0, buflen);
-  iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &buflen);
-  return strdup(realbuf);
+    inbuf = str;
+    outbuf = realbuf;
+    iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &bufsize);
+    src = realbuf;
+  } else {
+    src = str;
+  }
+
+  return strdup(src);
 }
 
 static void
 uim_iconv_release(void *obj)
 {
   int err;
-  err = iconv_close((iconv_t)obj);
+
+  if (obj)
+    err = iconv_close((iconv_t)obj);
 }
