@@ -183,6 +183,7 @@ uim_lisp
 uim_scm_f(void);
 uim_lisp uim_scm_null(void);
 #define uim_scm_null_list uim_scm_null
+uim_lisp uim_scm_eof(void);
 
 /* list constructors */
 uim_lisp uim_scm_quote(uim_lisp obj);
@@ -193,6 +194,11 @@ uim_lisp uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
                        uim_lisp elm4);
 uim_lisp uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
                        uim_lisp elm4, uim_lisp elm5);
+
+/* C array <-> Scheme list converters */
+uim_lisp uim_scm_array2list(void **ary, size_t size, uim_lisp (*conv)(void *));
+uim_lisp uim_scm_null_term_array2list(void **ary, uim_lisp (*conv)(void *));
+void **uim_scm_list2null_term_array(uim_lisp lst, void *(*conv)(uim_lisp));
 
 /* predicates */
 uim_bool
