@@ -50,11 +50,13 @@
 
 #include "editline.h"
 
+
+#define UIM_SH_FALLBACK_PROMPT "uim-sh> "
+
 static EditLine *el;
 static History *hist;
 static HistEvent hev;
 static uim_lisp uim_editline_readline(void);
-static void *uim_editline_readline_internal(void *dummy);
 static char *prompt(EditLine *e);
 
 void
@@ -82,35 +84,25 @@ editline_quit(void)
 static uim_lisp
 uim_editline_readline(void)
 {
-  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_editline_readline_internal, NULL);
-}
-
-static void *
-uim_editline_readline_internal(void *dummy)
-{
     const char *line;
     int count = 0;
-    uim_lisp ret;
 
     line = el_gets(el, &count);
 
-    if(count > 0 && line) {
+    if (count > 0 && line)
 	history(hist, &hev, H_ENTER, line);
-	ret = uim_scm_make_str(line);
-    } else {
-	ret = uim_scm_make_str("");
-    }
+    else
+        line = "";
 
-    return (void *)ret;
+    return uim_scm_make_str(line);
 }
 
-static char *prompt(EditLine *e) {
-    char *p;
+static char *
+prompt(EditLine *e)
+{
+  char *p;
 
-    p = uim_scm_symbol_value_str("uim-sh-prompt"); /* XXX */
+  p = uim_scm_symbol_value_str("uim-sh-prompt");
 
-    if(!p)
-	return "uim-sh> ";
-    else
-	return p;
+  return (p) ? p : UIM_SH_FALLBACK_PROMPT;
 }
