@@ -161,19 +161,19 @@ uim_calloc(size_t nmemb, size_t size)
 char *
 uim_strdup(const char *s)
 {
-    char *copied;
+  char *copied;
 
 #if HAVE_STRDUP
-    copied = strdup(s);
-    if (!copied)
-      uim_fatal_error("strdup() failed");
+  copied = strdup(s);
+  if (!copied)
+    uim_fatal_error("strdup() failed");
 #else
-    size_t size;
+  size_t size;
 
-    size = strlen(s) + sizeof("");
-    copied = uim_malloc(size);
-    strcpy(copied, s);
+  size = strlen(s) + sizeof("");
+  copied = uim_malloc(size);
+  strcpy(copied, s);
 #endif
 
-    return copied;
+  return copied;
 }

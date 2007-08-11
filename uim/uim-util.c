@@ -289,10 +289,7 @@ setugidp(void)
 {
   assert(uim_scm_gc_any_contextp());
 
-  if (uim_issetugid()) {
-    return uim_scm_t();
-  }
-  return uim_scm_f();
+  return uim_scm_make_bool(uim_issetugid());
 }
 
 void

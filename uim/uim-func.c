@@ -112,7 +112,7 @@ im_pushback_preedit(uim_lisp uc_, uim_lisp attr_, uim_lisp str_)
 
   converted_str = uc->conv_if->convert(uc->outbound_conv, str);
   if (uc->preedit_pushback_cb)
-      uc->preedit_pushback_cb(uc->ptr, attr, converted_str);
+    uc->preedit_pushback_cb(uc->ptr, attr, converted_str);
   free(converted_str);
 
   return uim_scm_f();
