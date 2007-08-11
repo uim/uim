@@ -39,39 +39,23 @@
 #include "uim-scm.h"
 
 
-struct uim_sh_args {
-  int argc;
-  char **argv;
-};
-static void *uim_sh(struct uim_sh_args *c_args);
-
 int
 main(int argc, char *argv[])
 {
-  struct uim_sh_args c_args;
+  uim_lisp args;
 
   /* TODO: be able to suppress ordinary initialization process */
   uim_init();
 
-  c_args.argc = argc;
-  c_args.argv = argv;
-  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_sh, &c_args);
+  uim_scm_require_file("uim-sh.scm");
+
+  args = uim_scm_null();
+  uim_scm_gc_protect(&args);
+  args = uim_scm_array2list((void **)argv, argc,
+			    (uim_lisp (*)(void *))uim_scm_make_str);
+  uim_scm_callf("uim-sh", "o", args);
 
   uim_quit();
 
   return EXIT_SUCCESS;
-}
-
-static void *
-uim_sh(struct uim_sh_args *c_args)
-{
-  uim_lisp args;
-
-  uim_scm_require_file("uim-sh.scm");
-
-  args = uim_scm_array2list((void **)c_args->argv, c_args->argc,
-			    (uim_lisp (*)(void *))uim_scm_make_str);
-  uim_scm_callf("uim-sh", "o", args);
-
-  return NULL;
 }
