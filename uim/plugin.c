@@ -117,7 +117,7 @@ plugin_load(uim_lisp _name)
     path_car = uim_scm_car(path_cdr);
     path = uim_scm_refer_c_str(path_car);
     len = strlen(path) + 1 + strlen(PLUGIN_PREFIX) + strlen(plugin_name)+ strlen(PLUGIN_SUFFIX) + 1;
-    plugin_lib_filename = malloc(sizeof(char) * len);
+    plugin_lib_filename = uim_malloc(sizeof(char) * len);
     snprintf(plugin_lib_filename, len, "%s/%s%s%s",
 	     path, PLUGIN_PREFIX, plugin_name, PLUGIN_SUFFIX);
     fd = open(plugin_lib_filename, O_RDONLY);
@@ -140,7 +140,7 @@ plugin_load(uim_lisp _name)
     path_car = uim_scm_car(path_cdr);
     path = uim_scm_refer_c_str(path_car);
     len = strlen(path) + 1 + strlen(plugin_name)+ strlen(".scm") + 1;
-    plugin_scm_filename = malloc(sizeof(char) * len);
+    plugin_scm_filename = uim_malloc(sizeof(char) * len);
     snprintf(plugin_scm_filename, len, "%s/%s.scm", path, plugin_name);
     fd = open(plugin_scm_filename, O_RDONLY);
     if (fd >= 0) {
@@ -244,17 +244,25 @@ plugin_unload_internal(void *uim_lisp_name)
 void
 uim_init_plugin(void)
 {
+  if (uim_catch_error_begin())
+    return;
+
   uim_scm_init_subr_1("load-plugin", plugin_load);
   uim_scm_init_subr_1("unload-plugin", plugin_unload);
 
-  return;
+  uim_catch_error_end();
 }
 
 /* Called from uim_quit */
 void
 uim_quit_plugin(void)
 {
+  if (uim_catch_error_begin())
+    return;
+
   uim_scm_call_with_gc_ready_stack(uim_quit_plugin_internal, NULL);
+
+  uim_catch_error_end();
 }
 
 static void *

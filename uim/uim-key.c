@@ -382,12 +382,18 @@ uim_press_key(uim_context uc, int key, int state)
 {
   uim_bool filtered;
 
+  if (uim_catch_error_begin())
+    return PASSTHROUGH;
+
   assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(key >= 0);
   assert(state >= 0);
 
   filtered = filter_key(uc, key, state, UIM_TRUE);
+
+  uim_catch_error_end();
+
   return (filtered) ? FILTERED : PASSTHROUGH;
 }
 
@@ -396,12 +402,18 @@ uim_release_key(uim_context uc, int key, int state)
 {
   uim_bool filtered;
 
+  if (uim_catch_error_begin())
+    return PASSTHROUGH;
+
   assert(uim_scm_gc_any_contextp());
   assert(uc);
   assert(key >= 0);
   assert(state >= 0);
 
   filtered = filter_key(uc, key, state, UIM_FALSE);
+
+  uim_catch_error_end();
+
   return (filtered) ? FILTERED : PASSTHROUGH;
 }
 

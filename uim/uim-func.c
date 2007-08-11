@@ -205,7 +205,7 @@ im_pushback_mode_list(uim_lisp uc_, uim_lisp str_)
   uc = retrieve_uim_context(uc_);
   str = uim_scm_refer_c_str(str_);
 
-  uc->modes = realloc(uc->modes, sizeof(char *) * (uc->nr_modes + 1));
+  uc->modes = uim_realloc(uc->modes, sizeof(char *) * (uc->nr_modes + 1));
   uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->outbound_conv, str);
   uc->nr_modes++;
 

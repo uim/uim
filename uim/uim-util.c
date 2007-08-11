@@ -243,6 +243,10 @@ const char *
 uim_get_language_name_from_locale(const char *locale)
 {
   uim_lisp lang_code, lang_name;
+  const char *name;
+
+  if (uim_catch_error_begin())
+    return "-";
 
   assert(uim_scm_gc_any_contextp());
   assert(locale);
@@ -253,20 +257,32 @@ uim_get_language_name_from_locale(const char *locale)
     lang_code = uim_scm_callf("langgroup-primary-lang-code", "s", locale);
   protected =
     lang_name = uim_scm_callf("lang-code->lang-name", "o", lang_code);
-  return uim_scm_refer_c_str(lang_name);
+  name = uim_scm_refer_c_str(lang_name);
+
+  uim_catch_error_end();
+
+  return name;
 }
 
 const char *
 uim_get_language_code_from_language_name(const char *language_name)
 {
   uim_lisp lang_code;
+  const char *name;
+
+  if (uim_catch_error_begin())
+    return "-";
 
   assert(uim_scm_gc_any_contextp());
   assert(language_name);
 
   protected =
     lang_code = uim_scm_callf("lang-name->lang-code", "s", language_name);
-  return uim_scm_refer_c_str(lang_code);
+  name = uim_scm_refer_c_str(lang_code);
+
+  uim_catch_error_end();
+
+  return name;
 }
 
 static uim_lisp

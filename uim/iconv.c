@@ -88,13 +88,13 @@ check_encoding_equivalence(const char *tocode, const char *fromcode)
   alias_fromcode = uim_get_encoding_alias(fromcode);
 
   if (!alias_tocode) {
-    alias_tocode = malloc(sizeof(char *) * 2);
+    alias_tocode = uim_malloc(sizeof(char *) * 2);
     alias_tocode[0] = tocode;
     alias_tocode[1] = NULL;
     alias_tocode_alloced = 1;
   }
   if (!alias_fromcode) {
-    alias_fromcode = malloc(sizeof(char *) * 2);
+    alias_fromcode = uim_malloc(sizeof(char *) * 2);
     alias_fromcode[0] = fromcode;
     alias_fromcode[1] = NULL;
     alias_fromcode_alloced = 1;
@@ -123,6 +123,9 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
+  if (uim_catch_error_begin())
+    return UIM_FALSE;
+
   assert(tocode);
   assert(fromcode);
 
@@ -134,6 +137,8 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
   if (ic == (iconv_t)-1)
     return UIM_FALSE;
   iconv_close(ic);
+
+  uim_catch_error_end();
 
   return UIM_TRUE;
 }
@@ -172,13 +177,13 @@ uim_iconv_open(const char *tocode, const char *fromcode)
   alias_fromcode = uim_get_encoding_alias(fromcode);
 
   if (!alias_tocode) {
-    alias_tocode = malloc(sizeof(char *) * 2);
+    alias_tocode = uim_malloc(sizeof(char *) * 2);
     alias_tocode[0] = tocode;
     alias_tocode[1] = NULL;
     alias_tocode_alloced = 1;
   }
   if (!alias_fromcode) {
-    alias_fromcode = malloc(sizeof(char *) * 2);
+    alias_fromcode = uim_malloc(sizeof(char *) * 2);
     alias_fromcode[0] = fromcode;
     alias_fromcode[1] = NULL;
     alias_fromcode_alloced = 1;
@@ -208,6 +213,9 @@ uim_iconv_create(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
+  if (uim_catch_error_begin())
+    return NULL;
+
   assert(tocode);
   assert(fromcode);
 
@@ -219,6 +227,9 @@ uim_iconv_create(const char *tocode, const char *fromcode)
     /* since iconv_t is not explicit pointer, use 0 instead of NULL */
     ic = (iconv_t)0;
   }
+
+  uim_catch_error_end();
+
   return (void *)ic;
 }
 
@@ -227,8 +238,11 @@ uim_iconv_code_conv(void *obj, const char *str)
 {
   iconv_t ic;
   size_t len, bufsize;
-  char *outbuf, *realbuf;
+  char *outbuf, *realbuf, *copied;
   const char *inbuf, *src;
+
+  if (uim_catch_error_begin())
+    return NULL;
 
   if (!str)
     return NULL;
@@ -248,7 +262,11 @@ uim_iconv_code_conv(void *obj, const char *str)
     src = str;
   }
 
-  return strdup(src);
+  copied = uim_strdup(src);
+
+  uim_catch_error_end();
+
+  return copied;
 }
 
 static void
@@ -256,6 +274,11 @@ uim_iconv_release(void *obj)
 {
   int err;
 
+  if (uim_catch_error_begin())
+    return;
+
   if (obj)
     err = iconv_close((iconv_t)obj);
+
+  uim_catch_error_end();
 }
