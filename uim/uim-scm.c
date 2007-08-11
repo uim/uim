@@ -133,7 +133,7 @@ uim_scm_error(const char *msg)
   assert(uim_scm_gc_any_contextp());
   assert(msg);
 
-  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_error_internal, msg);
+  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_error_internal, (char *)msg);
 }
 
 static void *
@@ -239,7 +239,7 @@ uim_scm_c_str(uim_lisp str)
 
   c_str = uim_scm_refer_c_str(str);
 
-  return (c_str) ? strdup(c_str) : NULL;
+  return (c_str) ? scm_strdup(c_str) : NULL;
 }
 
 const char *
@@ -308,7 +308,7 @@ uim_scm_c_symbol(uim_lisp symbol)
   assert(uim_scm_gc_any_contextp());
   assert(uim_scm_gc_protectedp(symbol));
 
-  return strdup((char *)SCM_SYMBOL_NAME((ScmObj)symbol));
+  return scm_strdup((char *)SCM_SYMBOL_NAME((ScmObj)symbol));
 }
 
 uim_lisp
