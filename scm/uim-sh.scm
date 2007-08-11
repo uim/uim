@@ -30,7 +30,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 34))
+(require-extension (srfi 6 34))
 
 (define uim-sh-prompt "uim> ")
 (define uim-sh-opt-batch #f)
@@ -40,23 +40,20 @@
 (define uim-editline-enabled #f)
 
 (define uim-sh-loop
-  (lambda ()
-    (if (not uim-sh-opt-batch)
+  (lambda (my-read)
+    (if (and (not uim-sh-opt-batch)
+	     (not uim-editline-enabled))
 	(display uim-sh-prompt))
     ;; Non-recoverable read error is turned into fatal errorr such as
     ;; non-ASCII char in token on a non-Unicode port.
-    (let* ((expr (guard (read-err
-			 (else (%%fatal-error read-err)))
-		   (read)))
-	   (eof  (eof-object? expr)))
-      (if (not eof)
-	  (begin
-	    ((if  uim-sh-opt-strict-batch
-		  (lambda args #f)
-		  writeln)
-	     (eval expr (interaction-environment)))
-	    (uim-sh-loop))
-	  #f))))
+    (let ((expr (guard (read-err
+			(else (%%fatal-error read-err)))
+		  (my-read))))
+      (and (not (eof-object? expr))
+	   (let ((res (eval expr (interaction-environment))))
+	     (if (not uim-sh-opt-strict-batch)
+		 (writeln res))
+	     (uim-sh-loop my-read))))))
 
 (define uim-sh-parse-args
   (lambda (args)
@@ -84,43 +81,35 @@
 	(display "  -r [module] Load and import module.\n"))
     (display "  -h        show this help\n")))
 
-;; TODO: Loop even if error has occur. This is required to run GaUnit-based
-;; unit test for uim
+;; Loop even if error has been occurred. This is required to run
+;; GaUnit-based unit test for uim.
 (define uim-sh
   (lambda (args)
     (uim-sh-parse-args args)
-    (if uim-sh-opt-help
-	(uim-sh-usage)
-	(begin
-	  (if (and uim-editline-enabled
-		   (symbol-bound? 'uim-editline-readline))
-	      (activate-editline))
-	  (if (guard (err
-		      (else
-                       (%%inspect-error err)))
-		(uim-sh-loop))
-	      (uim-sh args))))))
+    (let ((my-read (if uim-editline-enabled
+		       uim-editline-read
+		       read)))
+      (if uim-sh-opt-help
+	  (uim-sh-usage)
+	  (let reloop ()
+	    (and (guard (err (else
+			      (%%inspect-error err)
+			      #t))
+		   (uim-sh-loop my-read))
+		 (reloop)))))))
 
-(define uim-sh-loop-orig ())
-(define activate-editline
-  (lambda ()
-    (set! uim-sh-loop-orig uim-sh-loop)
-    (set! uim-sh-loop
-	  (lambda ()
-	    (if uim-sh-opt-batch
-		(uim-sh-loop-orig)
-		(let* ((line (uim-editline-readline))
-		       (expr (read-from-string line))
-		       (eof (eq? (eof-val) expr)))
-		  (if (not eof)
-		      (begin
-			((if uim-sh-opt-strict-batch
-			     (lambda args #f)
-			     writeln)
-			 (eval expr (interaction-environment)))
-			(uim-sh-loop))
-		      #f)))))
-    #t))
+(define uim-editline-read
+  (let ((p (open-input-string "")))
+    (lambda ()
+      (let ((expr (read p)))
+	(if (eof-object? expr)
+	    (let ((line (uim-editline-readline)))
+	      (if (eof-object? line)
+		  line
+		  (begin
+		    (set! p (open-input-string line))
+		    (uim-editline-read))))
+	    expr)))))
 
 ;; Verbose level must be greater than or equal to 1 to print anything.
 (if (< (verbose) 1)

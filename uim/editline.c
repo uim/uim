@@ -89,12 +89,12 @@ uim_editline_readline(void)
 
   line = el_gets(el, &count);
 
-  if (count > 0 && line)
+  if (count > 0 && line) {
     history(hist, &hev, H_ENTER, line);
-  else
-    line = "";
-
-  return uim_scm_make_str(line);
+    return uim_scm_make_str(line);
+  } else {
+    return uim_scm_eof();
+  }
 }
 
 static char *

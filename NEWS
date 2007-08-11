@@ -5,6 +5,14 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     - Fix fullwidth middle dot in halfwidth katakana table for
       Japanese kana-keyboard
 
+  - uim-sh
+    - Fix infinite loop on a non-recoverable read error such as
+      non-ASCII char in token on a non-Unicode port
+    - Fix broken editline feature by SIOD dependencies
+    - Fix EOF (^d) ignorance on editline feature is enabled
+    - Fix ignorance of multiple expressions on a line on editline
+      feature is enabled
+
 Overview of changes from 1.4.0-beta to 1.4.0
 ==
 * Fixed
