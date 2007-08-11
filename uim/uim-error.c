@@ -35,7 +35,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <setjmp.h>
 #include <stdio.h>
 #include <assert.h>
 
@@ -43,21 +42,12 @@
 #include "uim-internal.h"
 
 
-#if HAVE_SIGSETJMP
-#define JMP_BUF           sigjmp_buf
-#define SETJMP(env)       sigsetjmp((env), 1)
-#define LONGJMP(env, val) siglongjmp((env), (val))
-#else
-#define JMP_BUF           jmp_buf
-#define SETJMP(env)       setjmp(env)
-#define LONGJMP(env, val) longjmp((env), (val))
-#endif
 
 /* Immediately returns UIM_TRUE if uim is disabled by a fatal error. */
 
+JMP_BUF uim_catch_block_env;
 static uim_bool fatal_errored;
 static int guarded;
-static JMP_BUF env;
 static const char *err_msg;
 
 
@@ -70,32 +60,39 @@ uim_init_error(void)
   /* fatal_errored must not be cleared even if libuim is re-initialized. */
 }
 
-/* can be nested */
+void
+uim_print_caught_error(void)
+{
+  if (err_msg) {
+    fputs("ERROR: ", stderr);
+    if (fatal_errored)
+      fputs("fatal: ", stderr);
+    fputs(err_msg, stderr);
+    fputs("\n", stderr);
+  }
+}
+
 uim_bool
-uim_catch_error_begin(void)
+uim_caught_fatal_error(void)
+{
+  return fatal_errored;
+}
+
+uim_bool
+uim_catch_error_begin_pre(void)
 {
   assert(guarded >= 0);
 
-  if (fatal_errored)
-    return UIM_TRUE;
+  return !guarded++;
+}
 
-  if (!guarded++) {
-    if (SETJMP(env)) {
-      guarded = 0;
+uim_bool
+uim_catch_error_begin_post(void)
+{
+  guarded = 0;
+  uim_print_caught_error();
 
-      if (err_msg) {
-	fputs("ERROR: ", stderr);
-	if (fatal_errored)
-	  fputs("fatal: ", stderr);
-	fputs(err_msg, stderr);
-	fputs("\n", stderr);
-      }
-
-      return UIM_TRUE;
-    }
-  }
-
-  return UIM_FALSE;
+  return UIM_TRUE;
 }
 
 void
@@ -115,7 +112,7 @@ uim_throw_error(const char *msg)
     exit(EXIT_FAILURE);
 
   err_msg = msg;
-  LONGJMP(env, guarded);
+  LONGJMP(uim_catch_block_env, guarded);
 }
 
 void

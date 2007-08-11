@@ -35,12 +35,26 @@
 
 #include <config.h>
 
+#include <setjmp.h>
+
 #include "uim.h"
 #include "uim-scm.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
+#if HAVE_SIGSETJMP
+#define JMP_BUF           sigjmp_buf
+#define SETJMP(env)       sigsetjmp((env), 1)
+#define LONGJMP(env, val) siglongjmp((env), (val))
+#else
+#define JMP_BUF           jmp_buf
+#define SETJMP(env)       setjmp(env)
+#define LONGJMP(env, val) longjmp((env), (val))
+#endif
+
 
 struct uim_candidate_ {
   char *str;         /* candidate */
@@ -106,11 +120,21 @@ struct uim_context_ {
   void (*switch_system_global_im_cb)(void *ptr, const char *name);
 };
 
-
+/* internal functions */
 void     uim_init_error(void);
-uim_bool uim_catch_error_begin(void);
-void     uim_catch_error_end(void);
-void     uim_throw_error(const char *msg);
+void     uim_print_caught_error(void);
+uim_bool uim_caught_fatal_error(void);
+uim_bool uim_catch_error_begin_pre(void);
+uim_bool uim_catch_error_begin_post(void);
+
+/* can be nested */
+#define uim_catch_error_begin()						\
+  (uim_caught_fatal_error()						\
+   || (uim_catch_error_begin_pre()					\
+       && SETJMP(uim_catch_block_env)					\
+       && uim_catch_error_begin_post()))
+void    uim_catch_error_end(void);
+void    uim_throw_error(const char *msg);
 
 void uim_scm_init(const char *system_load_path);
 void uim_scm_quit(void);
@@ -127,6 +151,10 @@ void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);
 
 uim_bool uim_issetugid(void);
+
+
+/* don't touch directly */
+extern JMP_BUF uim_catch_block_env;
 
 #ifdef __cplusplus
 }

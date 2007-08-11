@@ -81,8 +81,8 @@ Summary: Exception-based libuim error handling
 Affects: uim developers
 Updates: internal C API
 Version: 1.5.0
-Revision: ac4814, ac4815
-Date: 2007-08-11
+Revision: ac4814, ac4815, ac4829
+Date: 2007-08-11, 2007-08-12
 Modifier: YamaKen
 Related: Fatal error handling helpers for plugin developers
 	 uim-scm API reorganization in uim 1.5.0
