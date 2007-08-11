@@ -77,24 +77,24 @@ editline_init(void)
 void
 editline_quit(void)
 {
-    history_end(hist);
-    el_end(el);
+  history_end(hist);
+  el_end(el);
 }
 
 static uim_lisp
 uim_editline_readline(void)
 {
-    const char *line;
-    int count = 0;
+  const char *line;
+  int count = 0;
 
-    line = el_gets(el, &count);
+  line = el_gets(el, &count);
 
-    if (count > 0 && line)
-	history(hist, &hev, H_ENTER, line);
-    else
-        line = "";
+  if (count > 0 && line)
+    history(hist, &hev, H_ENTER, line);
+  else
+    line = "";
 
-    return uim_scm_make_str(line);
+  return uim_scm_make_str(line);
 }
 
 static char *
