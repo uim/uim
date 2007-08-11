@@ -37,15 +37,11 @@
 
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-scm-abbrev.h"
 
 #ifdef LIBEDIT
 #include "editline.h"
 #endif
 
-#ifdef UIM_SH_USE_EXIT_HOOK
-extern int uim_siod_fatal;
-#endif
 
 struct uim_sh_args {
   int argc;
@@ -57,17 +53,13 @@ int
 main(int argc, char *argv[])
 {
   struct uim_sh_args c_args;
-  int err;
 
   /* TODO: be able to suppress ordinary initialization process */
   uim_init();
 
   c_args.argc = argc;
   c_args.argv = argv;
-  err = (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_sh,
-					      &c_args);
-  if (err)
-    return err;
+  uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_sh, &c_args);
 
   uim_quit();
 
@@ -84,30 +76,14 @@ uim_sh(struct uim_sh_args *c_args)
 #endif
 
   uim_scm_require_file("uim-sh.scm");
-#ifdef UIM_SH_USE_EXIT_HOOK
-  /*
-     is not working even if uim_siod_fatal is accessible. outermost
-     *catch affects me?
-  */
-  if (uim_siod_fatal)
-    return (void *)EXIT_FAILURE;
-#endif
 
   args = uim_scm_array2list((void **)c_args->argv, c_args->argc,
 			    (uim_lisp (*)(void *))uim_scm_make_str);
   uim_scm_callf("uim-sh", "o", args);
 
-#ifdef UIM_SH_USE_EXIT_HOOK
-  /* is not working even if uim_siod_fatal is accessible. outermost
-   * *catch affects me?
-   */
-  if (uim_siod_fatal)
-    return (void *)EXIT_FAILURE;
-#endif
-
 #ifdef LIBEDIT
   editline_quit();
 #endif
 
-  return (void *)EXIT_SUCCESS;
+  return NULL;
 }
