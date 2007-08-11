@@ -30,19 +30,68 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 6 34))
+(require-extension (srfi 1 2 6 23 34))
 
 (define uim-sh-prompt "uim> ")
-(define uim-sh-opt-batch #f)
-(define uim-sh-opt-strict-batch #f)
-(define uim-sh-opt-help #f)
 
-(define uim-editline-enabled #f)
+(define uim-sh-option-table
+  `((("-b" "--batch")          . batch)
+    (("-B" "--strict-batch")   . strict-batch)
+    (("-h" "--help")           . help)
+    (("-r" "--require-module") . ,(lambda (args)
+				    (and-let* ((name (safe-car args))
+					       ((require-module name)))
+				      (safe-cdr args))))
+    (("--editline")            . ,(lambda (args)
+				    (require-module "editline")
+				    args))))
+
+(define uim-sh-usage
+  (lambda ()
+    (display "Usage: uim-sh [options] [file ...]
+  -b
+  --batch                 batch mode. suppress shell prompts
+  -B
+  --strict-batch          strict batch mode, implies -b. suppress shell prompts
+                          and evaluated results
+  -r <name>
+  --require-module <name> require module
+  --editline              require editline module for Emacs-like line editing
+  -h
+  --help                  show this help
+  file                    absolute path or relative to system scm directory\n")))
+
+(define uim-sh-define-opt-vars
+  (lambda ()
+    (for-each (lambda (name)
+		(eval `(define ,(symbol-append 'uim-sh-opt- name) #f)
+		      (interaction-environment)))
+	      (filter symbol? (map cdr uim-sh-option-table)))))
+
+(define uim-sh-parse-args
+  (lambda (args)
+    (uim-sh-define-opt-vars)
+    (let rec ((args args))
+      (or (and-let* (((pair? args))
+		     (opt (car args))
+		     (rest (cdr args))
+		     (ent (assoc opt uim-sh-option-table member))
+		     (action (cdr ent)))
+	    (cond
+	     ((symbol? action)
+	      (set-symbol-value! (symbol-append 'uim-sh-opt- action) #t))
+	     ((procedure? action)
+	      (set! rest (action rest)))
+	     (else
+	      (error "invalid action on option table")))
+	    (rec rest))
+	  (or args
+	      '())))))
 
 (define uim-sh-loop
   (lambda (my-read)
     (if (and (not uim-sh-opt-batch)
-	     (not uim-editline-enabled))
+	     (not (provided? "editline")))
 	(display uim-sh-prompt))
     ;; Non-recoverable read error is turned into fatal errorr such as
     ;; non-ASCII char in token on a non-Unicode port.
@@ -55,40 +104,15 @@
 		 (writeln res))
 	     (uim-sh-loop my-read))))))
 
-(define uim-sh-parse-args
-  (lambda (args)
-    (let ((batch? (or (member "-b" args)
-		      (member "--batch" args)))
-	  (strict-batch? (or (member "-B" args)
-			     (member "--strict-batch" args))))
-    (set! uim-sh-opt-batch (or batch?
-			       strict-batch?))
-    (set! uim-sh-opt-strict-batch strict-batch?)
-    (set! uim-sh-opt-help (or (member "-h" args)
-			      (member "--help" args)))
-    (if (symbol-bound? 'uim-editline-readline)
-	(set! uim-editline-enabled (or (and (member "-r" args)
-					    (member "editline" args))
-				       (member "--editline" args)))))))
-
-(define uim-sh-usage
-  (lambda ()
-    (display "Usage: uim-sh [options]
-  -b        batch mode. suppress shell prompts
-  -B        strict batch mode, implies -b. suppress shell prompts and
-            evaluated results\n")
-    (if (symbol-bound? 'uim-editline-readline)
-	(display "  -r [module] Load and import module.\n"))
-    (display "  -h        show this help\n")))
-
 ;; Loop even if error has been occurred. This is required to run
 ;; GaUnit-based unit test for uim.
 (define uim-sh
   (lambda (args)
-    (uim-sh-parse-args args)
-    (let ((my-read (if uim-editline-enabled
+    (let ((files (uim-sh-parse-args (cdr args))) ;; drop the command name
+	  (my-read (if (provided? "editline")
 		       uim-editline-read
 		       read)))
+      (for-each require files)
       (if uim-sh-opt-help
 	  (uim-sh-usage)
 	  (let reloop ()

@@ -38,10 +38,6 @@
 #include "uim.h"
 #include "uim-scm.h"
 
-#ifdef LIBEDIT
-#include "editline.h"
-#endif
-
 
 struct uim_sh_args {
   int argc;
@@ -71,19 +67,11 @@ uim_sh(struct uim_sh_args *c_args)
 {
   uim_lisp args;
 
-#ifdef LIBEDIT
-  editline_init();
-#endif
-
   uim_scm_require_file("uim-sh.scm");
 
   args = uim_scm_array2list((void **)c_args->argv, c_args->argc,
 			    (uim_lisp (*)(void *))uim_scm_make_str);
   uim_scm_callf("uim-sh", "o", args);
-
-#ifdef LIBEDIT
-  editline_quit();
-#endif
 
   return NULL;
 }

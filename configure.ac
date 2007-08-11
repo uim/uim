@@ -901,7 +901,7 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
      LDFLAGS="${LDFLAGS} -L$libedit_path/lib"
      AC_CHECK_LIB(edit, el_init,	
      		[
-		   LIBEDIT_LIBS="-ledit -lcurses -l$libedit_path/lib"
+		   LIBEDIT_LIBS="-ledit -lcurses -L$libedit_path/lib"
 		   AC_SUBST(LIBEDIT_LIBS)
 		], [ 
                    AC_MSG_WARN("libedit not found. Disabled...")

@@ -181,10 +181,13 @@ uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_sh_CFLAGS =
 uim_sh_LDADD = libuim.la
 uim_sh_SOURCES = uim-sh.c
+
 if LIBEDIT
-  uim_sh_CFLAGS += -DLIBEDIT
-  uim_sh_SOURCES += editline.c editline.h
-  uim_sh_LDADD += -ledit -lcurses
+  uim_plugin_LTLIBRARIES += libuim-editline.la
+  libuim_editline_la_SOURCES = editline.c
+  libuim_editline_la_LIBADD = @LIBEDIT_LIBS@ libuim.la
+  libuim_editline_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+  libuim_editline_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
 uim_module_manager_LIBS =

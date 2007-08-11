@@ -30,25 +30,12 @@
   SUCH DAMAGE.
 */
 
-/*
- * Currently defined as 1 to be compatible with previous code. If no
- * distro packagers need this, please remove
- */
-#define UIM_EDITLINE_SEPARATED_BUILD 1
 
 #include <histedit.h>
 
-#if UIM_EDITLINE_SEPARATED_BUILD
-#include <uim/uim.h>
-#include <uim/uim-scm.h>
-#include <uim/plugin.h>
-#else
 #include "uim.h"
 #include "uim-scm.h"
 #include "plugin.h"
-#endif
-
-#include "editline.h"
 
 
 #define UIM_SH_FALLBACK_PROMPT "uim-sh> "
@@ -60,7 +47,7 @@ static uim_lisp uim_editline_readline(void);
 static char *prompt(EditLine *e);
 
 void
-editline_init(void)
+uim_plugin_instance_init(void)
 {
   el = el_init("uim", stdin, stdout, stderr);
   el_set(el, EL_PROMPT, &prompt);
@@ -72,10 +59,12 @@ editline_init(void)
   el_source(el, NULL);
 
   uim_scm_init_subr_0("uim-editline-readline", uim_editline_readline);
+
+  uim_scm_callf("provide", "s", "editline");
 }
 
 void
-editline_quit(void)
+uim_plugin_instance_quit(void)
 {
   history_end(hist);
   el_end(el);
