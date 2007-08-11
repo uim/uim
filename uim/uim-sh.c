@@ -37,7 +37,6 @@
 
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
 #include "uim-scm-abbrev.h"
 
 #ifdef LIBEDIT
@@ -94,8 +93,8 @@ uim_sh(struct uim_sh_args *c_args)
     return (void *)EXIT_FAILURE;
 #endif
 
-  args = uim_scm_c_strs_into_list(c_args->argc,
-				  (const char *const *)c_args->argv);
+  args = uim_scm_array2list((void **)c_args->argv, c_args->argc,
+			    (uim_lisp (*)(void *))uim_scm_make_str);
   uim_scm_callf("uim-sh", "o", args);
 
 #ifdef UIM_SH_USE_EXIT_HOOK
