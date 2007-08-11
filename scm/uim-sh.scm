@@ -43,7 +43,11 @@
   (lambda ()
     (if (not uim-sh-opt-batch)
 	(display uim-sh-prompt))
-    (let* ((expr (read))
+    ;; Non-recoverable read error is turned into fatal errorr such as
+    ;; non-ASCII char in token on a non-Unicode port.
+    (let* ((expr (guard (read-err
+			 (else (%%fatal-error read-err)))
+		   (read)))
 	   (eof  (eof-object? expr)))
       (if (not eof)
 	  (begin
