@@ -91,6 +91,7 @@
 (define uim-sh-loop
   (lambda (my-read)
     (if (and (not uim-sh-opt-batch)
+	     (not uim-sh-opt-strict-batch)
 	     (not (provided? "editline")))
 	(display uim-sh-prompt))
     ;; Non-recoverable read error is turned into fatal errorr such as
