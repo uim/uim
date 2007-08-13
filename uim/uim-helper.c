@@ -177,6 +177,22 @@ uim_helper_get_pathname(void)
   return path;
 }
 
+int
+uim_helper_check_connection_fd(int fd)
+{
+  uid_t euid;
+  gid_t egid;
+  if (getpeereid(fd, &euid, &egid) < 0) {
+    perror("getpeereid failed");
+    return -1;
+  }
+  if ((euid != 0) && (euid != getuid())) {
+    fprintf(stderr, "uid mismatch\n");
+    return -1;
+  }
+  return 0;
+}
+
 int uim_helper_fd_readable(int fd)
 {
   return uim_helper_fd(fd, READ);
