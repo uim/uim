@@ -184,7 +184,7 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
       argv[1] = NULL;
     } else {
       argv[0] = (char *)command;
-      str = p = strdup(option);
+      str = p = uim_strdup(option);
       for (ap = &argv[1]; (*ap = strsep(&p, " ")) != NULL;) {
 	if (**ap != '\0')
 	  if (++ap >= &argv[9])
@@ -194,7 +194,7 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
     }
     if (uim_issetugid()) {
       int cmd_len = strlen(command) + 30;
-      char *fullpath_command = malloc(cmd_len);
+      char *fullpath_command = uim_malloc(cmd_len);
       char *cmd_name = strrchr(command, '/');
 
       if (cmd_name && cmd_name + 1 != '\0')
@@ -242,7 +242,7 @@ uim_ipc_send_command(int *pid,
 		     FILE **read_fp, FILE **write_fp,
 		     const char *command, const char *str)
 {
-  char *tmp = strdup("");
+  char *tmp = uim_strdup("");
   char buf[8192];
 
   if (*read_fp == NULL || *write_fp == NULL) {
@@ -279,7 +279,7 @@ uim_ipc_send_command(int *pid,
       break;
     }
 
-    tmp = realloc(tmp, strlen(tmp) + strlen(buf) + 1);
+    tmp = uim_realloc(tmp, strlen(tmp) + strlen(buf) + 1);
     strcat(tmp, buf);
   }
  
