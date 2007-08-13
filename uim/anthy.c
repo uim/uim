@@ -62,6 +62,18 @@ validate_segment_index(anthy_context_t ac, int i)
     uim_scm_error_obj("invalid segment index", uim_scm_make_int(i));
 }
 
+static anthy_context_t
+get_anthy_context(uim_lisp ac_)
+{
+  anthy_context_t ac;
+
+  ac = uim_scm_c_ptr(ac_);
+  if (!ac)
+    uim_fatal_error("NULL anthy_context_t");
+
+  return ac;
+}
+
 static uim_lisp
 anthy_version()
 {
@@ -105,8 +117,9 @@ release_context(uim_lisp ac_)
 
   context_list = uim_scm_callf("delete!", "oo", ac_, context_list);
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   anthy_release_context(ac);
+  uim_scm_nullify_c_ptr(ac_);
 
   return uim_scm_f();
 }
@@ -117,7 +130,7 @@ set_string(uim_lisp ac_, uim_lisp str_)
   anthy_context_t ac;
   const char *str;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   str = uim_scm_refer_c_str(str_);
   anthy_set_string(ac, str);
 
@@ -131,7 +144,7 @@ get_nr_segments(uim_lisp ac_)
   struct anthy_conv_stat cs;
   int err;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   err = anthy_get_stat(ac, &cs);
   if (err)
     uim_fatal_error("anthy_get_stat() failed");
@@ -146,7 +159,7 @@ get_nr_candidates(uim_lisp ac_, uim_lisp seg_)
   int seg, err;
   struct anthy_segment_stat ss;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   seg = uim_scm_c_int(seg_);
 
   validate_segment_index(ac, seg);
@@ -166,7 +179,7 @@ get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
   char *buf;
   uim_lisp buf_;
   
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   seg = uim_scm_c_int(seg_);
   nth  = uim_scm_c_int(nth_);
 
@@ -201,7 +214,7 @@ get_segment_length(uim_lisp ac_, uim_lisp seg_)
   int seg, err;
   struct anthy_segment_stat ss;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   seg = uim_scm_c_int(seg_);
 
   validate_segment_index(ac, seg);
@@ -219,7 +232,7 @@ resize_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp delta_)
   anthy_context_t ac;
   int seg, delta;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   seg = uim_scm_c_int(seg_);
   delta = uim_scm_c_int(delta_);
 
@@ -233,7 +246,7 @@ commit_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
   anthy_context_t ac;
   int seg, nth;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   seg = uim_scm_c_int(seg_);
   nth = uim_scm_c_int(nth_);
 
@@ -248,7 +261,7 @@ set_prediction_src_string(uim_lisp ac_, uim_lisp str_)
   anthy_context_t ac;
   const char *str;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   str = uim_scm_refer_c_str(str_);
 
   anthy_set_prediction_string(ac, str);
@@ -264,7 +277,7 @@ get_nr_predictions(uim_lisp ac_)
   struct anthy_prediction_stat ps;
   int err;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
 
   err = anthy_get_prediction_stat(ac, &ps);
   if (err)
@@ -284,7 +297,7 @@ get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
   char *buf;
   uim_lisp buf_;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   nth = uim_scm_c_int(nth_); 
 
   buflen = anthy_get_prediction(ac, nth, NULL, 0);
@@ -312,7 +325,7 @@ commit_nth_prediction(uim_lisp ac_, uim_lisp nth_)
   anthy_context_t ac;
   int nth, err;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = get_anthy_context(ac_);
   nth = uim_scm_c_int(nth_); 
 
   err = anthy_commit_prediction(ac, nth);
