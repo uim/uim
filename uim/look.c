@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "uim.h"
 #include "uim-scm.h"
 #include "uim-helper.h"
 #include "plugin.h"
@@ -51,17 +52,13 @@ uim_look_look(uim_lisp dict_, uim_lisp str_)
   uim_lisp ret_ = uim_scm_f();
 
   ctx = uim_look_init();
-
   if (!ctx)
-    return ret_; /* XXX: fatal */
+    uim_fatal_error("uim_look_init() failed");
 
   if (!uim_look_open_dict(dict, ctx))
     return ret_;
 
-  dict_str = strdup(str);
-  if (!dict_str)
-    return ret_; /* XXX: fatal */
-
+  dict_str = uim_strdup(str);
   len = strlen(str);
 
   ret_ = uim_scm_null_list();
