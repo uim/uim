@@ -86,7 +86,8 @@ unused_ic_id(void)
       return i;
   }
 
-  ic_array = realloc(ic_array, sizeof(struct ic_) * (nr_input_contexts + 1));
+  ic_array = uim_realloc(ic_array,
+			 sizeof(struct ic_) * (nr_input_contexts + 1));
   ic_array[nr_input_contexts].mic = NULL;
   nr_input_contexts++;
 
@@ -103,10 +104,11 @@ pushback_input_method(MInputMethod *im, char *lib_lang, char *name)
   else
     lang = lib_lang;
 
-  im_array = realloc(im_array, sizeof(struct im_) * (nr_input_methods + 1));
+  im_array = uim_realloc(im_array,
+			 sizeof(struct im_) * (nr_input_methods + 1));
   im_array[nr_input_methods].im = im;
-  im_array[nr_input_methods].name = strdup(name);
-  im_array[nr_input_methods].lang = strdup(lang);
+  im_array[nr_input_methods].name = uim_strdup(name);
+  im_array[nr_input_methods].lang = uim_strdup(lang);
 
   nr_input_methods++;
 }
@@ -238,7 +240,7 @@ convert_mtext2str(MText *mtext)
   mconv_encode(converter, mtext);
   buffer_for_converter[converter->nbytes] = 0;
 
-  return strdup(buffer_for_converter);
+  return uim_strdup(buffer_for_converter);
 }
 
 static uim_lisp
@@ -748,7 +750,7 @@ fill_new_candidates(uim_lisp id_)
   old_cands_free(ic_array[id].old_candidates);
   ic_array[id].old_candidates = ic_array[id].new_candidates;
 
-  new_cands = malloc (cands_num * sizeof(char *) + 2);
+  new_cands = uim_malloc(cands_num * sizeof(char *) + 2);
 
   if (mplist_key(group) == Mtext) {
     for (i = 0; mplist_key(group) != Mnil; group = mplist_next(group)) {

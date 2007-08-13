@@ -136,7 +136,7 @@ prime_get_ud_path(void)
     return NULL;
 
   len = strlen(home) + strlen("/.uim.d");
-  path = (char *)malloc(len + 1);
+  path = uim_malloc(len + 1);
   snprintf(path, len + 1, "%s/.uim.d", home);
   if (!check_dir(path)) {
     free(path);
@@ -144,7 +144,7 @@ prime_get_ud_path(void)
   }
 
   len += strlen("/socket");
-  path = (char *)realloc(path, len + 1);
+  path = uim_realloc(path, len + 1);
   strlcat(path, "/socket", len + 1);
   if (!check_dir(path)) {
     free(path);
@@ -152,7 +152,7 @@ prime_get_ud_path(void)
   }
 
   len += strlen("/uim-prime");
-  path = (char *)realloc(path, len + 1);
+  path = uim_realloc(path, len + 1);
   strlcat(path, "/uim-prime", len + 1);
 
   return path;
@@ -194,7 +194,7 @@ prime_read_msg_from_ud(int fd)
       clear_prime_fd();
       return NULL;
     }
-    read_buf = (char *)realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
+    read_buf = realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
     if (!read_buf)
       return NULL;
     strcat(read_buf, buf);
@@ -235,7 +235,7 @@ prime_send_command(uim_lisp str_)
       return uim_scm_make_str("error\n\t\n\n");
   } else {
     int len = strlen(str);
-    char *buf = malloc(len + 2);
+    char *buf = uim_malloc(len + 2);
     snprintf(buf, len + 2,"%s\n", str);
     result = uim_ipc_send_command(&prime_pid, &primer, &primew, prime_command,
 				  buf);
@@ -270,7 +270,7 @@ prime_lib_init(uim_lisp use_udp_)
     if (prime_fd == -1) {
       unlink(prime_ud_path);
       len = strlen("-u ") + strlen(prime_ud_path) + 1;
-      option = malloc(len);
+      option = uim_malloc(len);
       snprintf(option, len, "-u %s", prime_ud_path);
       prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew,
 						   prime_command, option);
