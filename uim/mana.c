@@ -72,7 +72,7 @@ mana_ipc_send_command(pid_t *pid,
 		      FILE **read_fp, FILE **write_fp,
 		      const char *str)
 {
-  char *tmp = strdup("");
+  char *tmp = uim_strdup("");
   char buf[8192];
 
   struct sigaction act, oact;
@@ -133,7 +133,7 @@ mana_ipc_send_command(pid_t *pid,
 
   while (fgets (buf, sizeof(buf), *read_fp) != NULL) {
 
-    tmp = realloc(tmp, strlen(tmp) + strlen(buf) + 1);
+    tmp = uim_realloc(tmp, strlen(tmp) + strlen(buf) + 1);
     strcat(tmp, buf);
 
     if (strchr( buf, '\n' )) {
@@ -207,7 +207,7 @@ mana_eval(uim_lisp buf_)
 #endif
 
   len = strlen("'") + strlen(ret_buf) + 1;
-  eval_buf = malloc(len);
+  eval_buf = uim_malloc(len);
   snprintf(eval_buf, len, "'%s", ret_buf);
   ret = uim_scm_eval_c_string(eval_buf);
   free(ret_buf);
