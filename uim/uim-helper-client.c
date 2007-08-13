@@ -127,7 +127,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   if (uim_helper_check_connection_fd(fd))
     goto error;
 
-  uim_read_buf = strdup("");
+  uim_read_buf = uim_strdup("");
   uim_disconnect_cb = disconnect_cb;
   uim_fd = fd;
 

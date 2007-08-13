@@ -95,11 +95,14 @@ uim_helper_send_message(int fd, const char *message)
   sig_t old_sigpipe;
   char *buf, *bufp;
 
-  if (fd < 0 || !message)
+  if (uim_catch_error_begin())
     return;
 
+  if (fd < 0 || !message)
+    uim_fatal_error("uim_helper_send_message()");
+
   len = strlen(message) + 1;
-  buf = malloc(len + 1);
+  buf = uim_malloc(len + 1);
   snprintf(buf, len + 1, "%s\n", message);
 
   old_sigpipe = signal(SIGPIPE, SIG_IGN);
@@ -119,6 +122,9 @@ uim_helper_send_message(int fd, const char *message)
   }
   free(buf);
   signal(SIGPIPE, old_sigpipe);
+
+  uim_catch_error_end();
+
   return;
 }
 
@@ -142,6 +148,9 @@ uim_helper_get_pathname(void)
   struct passwd *pw;
   int len;
  
+  if (uim_catch_error_begin())
+    return NULL;
+
   pw = getpwuid(getuid());
   if (pw)
     home = pw->pw_dir;
@@ -150,29 +159,31 @@ uim_helper_get_pathname(void)
     home = getenv("HOME");
 
   if (!home)
-    return NULL;
+    uim_fatal_error("uim_helper_get_pathname()");
 
   /* check ~/.uim.d/ */
   len = strlen(home) + strlen("/.uim.d");
-  path = (char *)malloc(len + 1);
+  path = uim_malloc(len + 1);
   snprintf(path, len + 1, "%s/.uim.d", home);
   if (!check_dir(path)) {
     free(path);
-    return NULL;
+    uim_fatal_error("uim_helper_get_pathname()");
   }
 
   /* check ~/.uim.d/socket/ */
   len += strlen("/socket");
-  path = (char *)realloc(path, len + 1);
+  path = uim_realloc(path, len + 1);
   strlcat(path, "/socket", len + 1);
   if (!check_dir(path)) {
     free(path);
-    return NULL;
+    uim_fatal_error("uim_helper_get_pathname()");
   }
 
   len += strlen("/uim-helper");
-  path = (char *)realloc(path, len + 1);
+  path = uim_realloc(path, len + 1);
   strlcat(path, "/uim-helper", len + 1);
+
+  uim_catch_error_end();
 
   return path;
 }
@@ -224,7 +235,7 @@ uim_helper_buffer_append(char *buf, const char *fragment, size_t fragment_size)
 
   buf_size = strlen(buf);
   extended_size = buf_size + fragment_size + 1;
-  buf = (char *)realloc(buf, extended_size);
+  buf = realloc(buf, extended_size);
   if (buf) {
     memcpy(&buf[buf_size], fragment, fragment_size);
     buf[extended_size - 1] = '\0';
@@ -247,15 +258,21 @@ uim_helper_buffer_get_message(char *buf)
   size_t msg_size;
   char *msg, *msg_term;
 
+  if (uim_catch_error_begin())
+    return NULL;
+
   msg_term = strstr(buf, "\n\n");
   if (msg_term) {
     msg_size = msg_term + 2 - buf;
-    msg = (char *)malloc(msg_size + 1);
+    msg = uim_malloc(msg_size + 1);
     memcpy(msg, buf, msg_size);
     msg[msg_size] = '\0';
     uim_helper_buffer_shift(buf, msg_size);
     return msg;
   }
+
+  uim_catch_error_end();
+
   return NULL;
 }
 

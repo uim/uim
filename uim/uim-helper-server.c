@@ -52,6 +52,7 @@
 #endif
 
 #include "uim.h"
+#include "uim-internal.h"
 #include "uim-helper.h"
 
 
@@ -140,9 +141,9 @@ get_unused_client(void)
   }
 
   nr_client_slots++;
-  clients = realloc(clients, sizeof(struct client) * nr_client_slots);
-  clients[nr_client_slots - 1].rbuf = strdup("");
-  clients[nr_client_slots - 1].wbuf = strdup("");
+  clients = uim_realloc(clients, sizeof(struct client) * nr_client_slots);
+  clients[nr_client_slots - 1].rbuf = uim_strdup("");
+  clients[nr_client_slots - 1].wbuf = uim_strdup("");
 
   return &clients[nr_client_slots - 1];
 }
@@ -153,11 +154,11 @@ close_client(struct client *cl)
   close(cl->fd);
   if (cl->rbuf) {
     free(cl->rbuf);
-    cl->rbuf = strdup("");
+    cl->rbuf = uim_strdup("");
   }
   if (cl->wbuf) {
     free(cl->wbuf);
-    cl->wbuf = strdup("");
+    cl->wbuf = uim_strdup("");
   }
   cl->fd = -1;
 }
@@ -296,7 +297,7 @@ write_message(struct client *cl)
   }
   if (out_len == 0) {
     free(cl->wbuf);
-    cl->wbuf = strdup("");
+    cl->wbuf = uim_strdup("");
     FD_CLR(cl->fd, &s_fdset_write);    
   } else {
     uim_helper_buffer_shift(cl->wbuf, message_len - out_len);
@@ -369,6 +370,8 @@ main(int argc, char **argv)
 {
   char *path;
   int server_fd;
+
+  uim_init_error();
 
   path = uim_helper_get_pathname();
   if (!path)
