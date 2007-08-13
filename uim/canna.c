@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <assert.h>
 
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
@@ -81,20 +82,30 @@ static char *cannaserver = NULL;
 static uim_lisp context_list;
 
 
-#ifdef UIM_CANNA_DEBUG
 static struct canna_context *
 get_canna_context(uim_lisp cc_)
 {
   struct canna_context *cc;
 
   cc = uim_scm_c_ptr(cc_);
+  if (!cc)
+    uim_fatal_error("NULL canna_context");
+  assert(cc->rk_context_id != -1);
+#ifdef UIM_CANNA_DEBUG
   printf("rk_context_id: %d\n", cc->rk_context_id);
   printf("segment_num: %d\n", cc->segment_num);
+#endif
+
   return cc;
 }
-#else
-#define get_canna_context(cc_) ((struct canna_context *)uim_scm_c_ptr(cc_))
-#endif
+
+static void
+validate_segment_index(struct canna_context *cc, int i)
+{
+  assert(VALID_CANNA_CONTEXTP(cc));
+  if (!VALID_SEGMENT_INDEXP(cc, i))
+    uim_scm_error_obj("invalid segment index", uim_scm_make_int(i));
+}
 
 static uim_lisp
 init_canna_lib(uim_lisp str_)
@@ -105,10 +116,8 @@ init_canna_lib(uim_lisp str_)
    * initialization is exist at beginning of create_context(). I don't
    * know why this sequence is needed at here.  -- YamaKen 2007-07-21 */
   if (rk_initialized == -1) {
-    if (RkInitialize(cannaserver) == ERR) {
-      fprintf(stderr, "%s\n", strerror(errno));
-      return uim_scm_f();
-    }
+    if (RkInitialize(cannaserver) == ERR)
+      uim_fatal_error("RkInitialize() failed");
     RkFinalize();
   }
 
@@ -125,31 +134,29 @@ create_context(void)
   int buflen, i;
 
   if (rk_initialized == -1) {
-    if (RkInitialize(cannaserver) == ERR) {
-      fprintf(stderr, "%s\n", strerror(errno));
-      return uim_scm_f();
-    }
+    if (RkInitialize(cannaserver) == ERR)
+      uim_fatal_error("RkInitialize() failed");
     rk_initialized = 1;
   }
 
-  cc = malloc(sizeof(*cc));
+  cc = uim_malloc(sizeof(*cc));
   cc->rk_context_id = RkCreateContext();
   if (cc->rk_context_id == ERR) {
     free(cc);
-    return uim_scm_f();
+    uim_fatal_error("RkCreateContext() failed");
   }    
 
   cc->rk_mode = (RK_XFER << RK_XFERBITS) | RK_KFER;
   cc->max_cand_num_list = NULL;
   cc->segment_num = -1;
 
-  diclist = malloc(BUFSIZE);
+  diclist = uim_malloc(BUFSIZE);
   diclist[0] = '\0';
 
   dic_num = RkGetDicList(cc->rk_context_id, diclist, BUFSIZE);
   if (dic_num == ERR) {
     /* invalid context number */
-    return uim_scm_f();
+    uim_fatal_error("RkGetDicList() failed");
   }
 
   /* buf[] = "dicname1\0dicname2\0dicname3\0...dicname_n\0\0" */
@@ -177,33 +184,33 @@ static uim_lisp
 release_context(uim_lisp cc_)
 {
   struct canna_context *cc;
-  uim_lisp ok;
+  uim_bool err;
 
   context_list = uim_scm_callf("delete!", "oo", cc_, context_list);
 
   cc = get_canna_context(cc_);
-  if (!cc)
-    return uim_scm_f();
+  uim_scm_nullify_c_ptr(cc_);
 
   if (cc->rk_context_id != -1) {
-    ok = MAKE_BOOL(RkCloseContext(cc->rk_context_id) != ERR);
-    cc->rk_context_id = -1;
+    err = (RkCloseContext(cc->rk_context_id) == ERR);
   } else {
-    ok = uim_scm_f();
+    err = UIM_TRUE;
   }
 #ifdef UIM_CANNA_DEBUG
   free(cc->diclist);
 #endif
   free(cc);
 
-  return ok;
+  if (err)
+    uim_fatal_error("canna-lib-release-context failed");
+
+  return uim_scm_f();
 }
 
 static void
 _reset_conversion(struct canna_context *cc)
 {
-  if (!VALID_CANNA_CONTEXTP(cc))
-    return;
+  assert(VALID_CANNA_CONTEXTP(cc));
 
   if (cc->segment_num >= 0) {
      cc->segment_num = -1;
@@ -217,11 +224,10 @@ _update_status(struct canna_context *cc)
   RkStat stat;
   int i;
 
-  if (!VALID_CANNA_CONTEXTP(cc))
-    return;
+  assert(VALID_CANNA_CONTEXTP(cc));
 
   free(cc->max_cand_num_list);
-  cc->max_cand_num_list = malloc(sizeof(int) * cc->segment_num);
+  cc->max_cand_num_list = uim_malloc(sizeof(int) * cc->segment_num);
   for (i = 0; i < cc->segment_num; i++) {
     RkGoTo(cc->rk_context_id, i);
     if (RkGetStat(cc->rk_context_id, &stat) == OK) {
@@ -241,8 +247,6 @@ begin_conversion(uim_lisp cc_, uim_lisp str_)
   int len, segment_num, mode;
 
   cc = get_canna_context(cc_);
-  if (!VALID_CANNA_CONTEXTP(cc))
-    return uim_scm_f();
 
   mode = cc->rk_mode;
   str = uim_scm_refer_c_str(str_);
@@ -250,7 +254,7 @@ begin_conversion(uim_lisp cc_, uim_lisp str_)
 
   segment_num = RkBgnBun(cc->rk_context_id, (char *)str, len, mode);
   if (segment_num == ERR)
-    return uim_scm_f();
+    uim_fatal_error("RkBgnBun() failed");
 
   cc->segment_num = segment_num;
   _update_status(cc);
@@ -268,8 +272,7 @@ get_nth_candidate(uim_lisp cc_, uim_lisp seg_, uim_lisp nth_)
   cc = get_canna_context(cc_);
   seg = uim_scm_c_int(seg_);
   nth = uim_scm_c_int(nth_);
-  if (!VALID_CANNA_CONTEXTP(cc) || !VALID_SEGMENT_INDEXP(cc, seg))
-    return uim_scm_f();
+  validate_segment_index(cc, seg);
 
   RkGoTo(cc->rk_context_id, seg);
 
@@ -279,7 +282,7 @@ get_nth_candidate(uim_lisp cc_, uim_lisp seg_, uim_lisp nth_)
 
   len = RkGetKanji(cc->rk_context_id, (unsigned char *)buf, BUFSIZE);
   if (len == ERR)
-    return uim_scm_f();
+    uim_fatal_error("RkGetKanji() failed");
 #ifdef UIM_CANNA_DEBUG
   printf("nth: %d, kanji: %s\n", nth, buf);
 #endif
@@ -295,14 +298,13 @@ get_unconv_candidate(uim_lisp cc_, uim_lisp seg_)
 
   cc = get_canna_context(cc_);
   seg = uim_scm_c_int(seg_);
-  if (!VALID_CANNA_CONTEXTP(cc) || !VALID_SEGMENT_INDEXP(cc, seg))
-    return uim_scm_f();
+  validate_segment_index(cc, seg);
 
   RkGoTo(cc->rk_context_id, seg);
 
   len = RkGetYomi(cc->rk_context_id, (unsigned char *)buf, BUFSIZE);
   if (len == ERR)
-    return uim_scm_f();
+    uim_fatal_error("RkGetYomi() failed");
 #ifdef UIM_CANNA_DEBUG
   fprintf(stderr, "yomi: %s\n", buf);
 #endif
@@ -316,27 +318,24 @@ get_nr_segments(uim_lisp cc_)
   /* RkStat stat; */
 
   cc = get_canna_context(cc_);
-  if (!VALID_CANNA_CONTEXTP(cc))
-    return uim_scm_f();
 
   return uim_scm_make_int(cc->segment_num);
 }
 
 static uim_lisp
-get_nr_candidate(uim_lisp cc_, uim_lisp seg_)
+get_nr_candidates(uim_lisp cc_, uim_lisp seg_)
 {
   struct canna_context *cc;
   int seg;
 
   cc = get_canna_context(cc_);
   seg = uim_scm_c_int(seg_);
-  if (!VALID_CANNA_CONTEXTP(cc) || !VALID_SEGMENT_INDEXP(cc, seg))
-    return uim_scm_f();
+  validate_segment_index(cc, seg);
 
-  if (cc->max_cand_num_list[seg] != -1)
-    return uim_scm_make_int(cc->max_cand_num_list[seg]);
-  else
-    return uim_scm_f();
+  if (cc->max_cand_num_list[seg] == -1)
+    uim_scm_error("invalid candidate index");
+
+  return uim_scm_make_int(cc->max_cand_num_list[seg]);
 }
 
 static uim_lisp
@@ -348,8 +347,7 @@ resize_segment(uim_lisp cc_, uim_lisp seg_, uim_lisp delta_)
   cc = get_canna_context(cc_);
   seg = uim_scm_c_int(seg_);
   delta = uim_scm_c_int(delta_);
-  if (!VALID_CANNA_CONTEXTP(cc) || !VALID_SEGMENT_INDEXP(cc, seg))
-    return uim_scm_f();
+  validate_segment_index(cc, seg);
 
   RkGoTo(cc->rk_context_id, seg);
   RkNfer(cc->rk_context_id);
@@ -374,9 +372,8 @@ commit_segment(uim_lisp cc_, uim_lisp seg_, uim_lisp nth_)
 #if 0
   seg = uim_scm_c_int(seg_);
   nth = uim_scm_c_int(nth_);
+  validate_segment_index(cc, seg);
 #endif
-  if (!VALID_CANNA_CONTEXTP(cc) /* || !VALID_SEGMENT_INDEXP(cc, seg) */)
-    return uim_scm_f();
 
   RkEndBun(cc->rk_context_id, LEARN_SELECTED_CAND);
   cc->segment_num = -1;
@@ -390,8 +387,6 @@ reset_conversion(uim_lisp cc_)
   struct canna_context *cc;
 
   cc = get_canna_context(cc_);
-  if (!VALID_CANNA_CONTEXTP(cc))
-    return uim_scm_f();
 
   _reset_conversion(cc);
 
@@ -404,14 +399,15 @@ uim_plugin_instance_init(void)
   context_list = uim_scm_null();
   uim_scm_gc_protect(&context_list);
 
-  uim_scm_init_subr_1("canna-lib-init", init_canna_lib);
+  uim_scm_eval_c_string("(require-extension (srfi 1))"); /* for delete! */
 
+  uim_scm_init_subr_1("canna-lib-init", init_canna_lib);
   uim_scm_init_subr_0("canna-lib-alloc-context", create_context);
   uim_scm_init_subr_1("canna-lib-release-context", release_context);
   uim_scm_init_subr_3("canna-lib-get-nth-candidate", get_nth_candidate);
   uim_scm_init_subr_2("canna-lib-get-unconv-candidate", get_unconv_candidate);
   uim_scm_init_subr_1("canna-lib-get-nr-segments",get_nr_segments);
-  uim_scm_init_subr_2("canna-lib-get-nr-candidates", get_nr_candidate);
+  uim_scm_init_subr_2("canna-lib-get-nr-candidates", get_nr_candidates);
   uim_scm_init_subr_3("canna-lib-resize-segment", resize_segment);
   uim_scm_init_subr_2("canna-lib-begin-conversion", begin_conversion);
   uim_scm_init_subr_3("canna-lib-commit-segment", commit_segment);
