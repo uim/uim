@@ -54,9 +54,11 @@
 
 static FILE *mana_r;
 static FILE *mana_w;
-static int mana_pid;
+static pid_t mana_pid;
 
-static char *mana_ipc_send_command(int *pid, FILE **read_fp, FILE **write_fp, const char *str);
+static char *mana_ipc_send_command(pid_t *pid,
+				   FILE **read_fp, FILE **write_fp,
+				   const char *str);
 static uim_lisp mana_init(void);
 static uim_lisp mana_eval(uim_lisp buf_);
 static uim_lisp eucjp_string_length(uim_lisp str_);
@@ -66,9 +68,9 @@ static FILE *log;
 #endif
 
 static char *
-mana_ipc_send_command(int *pid,
-		     FILE **read_fp, FILE **write_fp,
-		     const char *str)
+mana_ipc_send_command(pid_t *pid,
+		      FILE **read_fp, FILE **write_fp,
+		      const char *str)
 {
   char *tmp = strdup("");
   char buf[8192];

@@ -56,7 +56,7 @@
 #define BUFFER_SIZE (4 * 1024)
 
 static FILE *primer, *primew;
-static int prime_pid = 0;
+static pid_t prime_pid = 0;
 
 static char *prime_command = "prime";
 

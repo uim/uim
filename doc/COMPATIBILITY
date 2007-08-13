@@ -57,6 +57,23 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Fix invalid type assumption on PIDs
+Affects: IM developers, uim developers
+Updates: C API
+Version: 1.5.0
+Revision: ac4840
+Date: 2007-08-13
+Modifier: YamaKen
+Related: 
+URL:
+Changes:
+  (changed) uim_ipc_open_command()
+  (changed) uim_ipc_open_command_with_option()
+  (changed) uim_ipc_send_command()
+Description:
+  Fixed invalid type int for PIDs with pid_t. 64-bit systems are
+  possibly (sizeof(int) < sizeof(pid_t))
+------------------------------------------------------------------------------
 Summary: Bit width extension of uim_scm_c_bool() and uim_scm_make_bool()
 Affects: uim developers
 Updates: C API

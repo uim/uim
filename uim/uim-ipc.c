@@ -141,11 +141,13 @@ open_pipe_rw(FILE **fr, FILE **fw)
   return (pid_t) -1;
 }
 
-int
-uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
-		     FILE **write_fp, const char *command, const char *option)
+pid_t
+uim_ipc_open_command_with_option(pid_t old_pid,
+				 FILE **read_fp, FILE **write_fp,
+				 const char *command, const char *option)
 {
-  int new_pid, result;
+  int result;
+  pid_t new_pid;
   char **ap, *argv[10];
   char *str = NULL, *p;
 
@@ -230,15 +232,16 @@ uim_ipc_open_command_with_option(int old_pid, FILE **read_fp,
   return new_pid;
 }
 
-int
-uim_ipc_open_command(int old_pid, FILE **read_fp,
-		     FILE **write_fp, const char *command)
+pid_t
+uim_ipc_open_command(pid_t old_pid,
+		     FILE **read_fp, FILE **write_fp, const char *command)
 {
-  return uim_ipc_open_command_with_option(old_pid, read_fp, write_fp, command, NULL);
+  return uim_ipc_open_command_with_option(old_pid,
+					  read_fp, write_fp, command, NULL);
 }
 
 char *
-uim_ipc_send_command(int *pid,
+uim_ipc_send_command(pid_t *pid,
 		     FILE **read_fp, FILE **write_fp,
 		     const char *command, const char *str)
 {

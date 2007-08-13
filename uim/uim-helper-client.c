@@ -106,7 +106,7 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 
 
   if (connect(fd, (struct sockaddr *)&server,sizeof(server)) < 0) {
-    int serv_pid = 0;
+    pid_t serv_pid = 0;
     char buf[128];
     
     serv_pid = uim_ipc_open_command(serv_pid, &serv_r, &serv_w,
