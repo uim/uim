@@ -177,9 +177,7 @@ prime_read_msg_from_ud(int fd)
   if (fd == -1)
     return NULL;
 
-  read_buf  = strdup("");
-  if (!read_buf)
-    return NULL;
+  read_buf  = uim_strdup("");
 
   for (;;) {
     rc = read(fd, buf, sizeof(buf) - 1);
@@ -194,9 +192,7 @@ prime_read_msg_from_ud(int fd)
       clear_prime_fd();
       return NULL;
     }
-    read_buf = realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
-    if (!read_buf)
-      return NULL;
+    read_buf = uim_realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
     strcat(read_buf, buf);
     len += rc;
 

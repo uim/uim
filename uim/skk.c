@@ -3488,7 +3488,7 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
     if (!match) {
       ca->nr_comps++;
       ca->comps = uim_realloc(ca->comps, sizeof(char *) * ca->nr_comps);
-      ca->comps[ca->nr_comps - 1] = strdup(buf);
+      ca->comps[ca->nr_comps - 1] = uim_strdup(buf);
     }
   }
 
