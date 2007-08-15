@@ -57,6 +57,7 @@
 # include <alloca.h>
 #endif
 
+#include "uim.h"
 #include "uim-scm.h"
 #include "uim-helper.h"
 #include "plugin.h"
@@ -257,12 +258,11 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
   void *addr = NULL;
   int mmap_done = 0;
 
-  if (!(di = (struct dic_info *)malloc(sizeof(struct dic_info))))
-    return NULL;
+  di = (struct dic_info *)uim_malloc(sizeof(struct dic_info));
 
   di->skkserv_hostname = NULL;
   if (use_skkserv) {
-    di->skkserv_hostname = strdup(skkserv_hostname);
+    di->skkserv_hostname = uim_strdup(skkserv_hostname);
     di->skkserv_portnum = skkserv_portnum;
     di->skkserv_family = skkserv_family;
     di->skkserv_state = SKK_SERV_USE | open_skkserv(skkserv_hostname,
@@ -398,7 +398,7 @@ okuri_in_bracket(char *str)
   if (!str)
     return NULL;
 
-  p = strdup(str);
+  p = uim_strdup(str);
   term = next_slash_in_bracket(p);
   *term = '\0';
   return p;
@@ -420,7 +420,7 @@ nth_candidate(char *str, int nth)
   if (*str == '\0')
     return NULL;
 
-  p = strdup(str);
+  p = uim_strdup(str);
   term = next_cand_slash(p);
   *term = '\0';
   return p;
@@ -498,14 +498,14 @@ find_candidate_array_from_line(struct skk_line *sl, const char *okuri,
 
   /* allocate now */
   sl->nr_cand_array++;
-  sl->cands = realloc(sl->cands,
+  sl->cands = uim_realloc(sl->cands,
 		      sizeof(struct skk_cand_array) * sl->nr_cand_array);
   ca = &sl->cands[sl->nr_cand_array - 1];
   ca->is_used = 0;
   ca->cands = NULL;
   ca->nr_cands = 0;
   ca->nr_real_cands = 0;
-  ca->okuri = strdup(okuri);
+  ca->okuri = uim_strdup(okuri);
   ca->line = sl;
   return ca;
 }
@@ -515,10 +515,10 @@ push_back_candidate_to_array(struct skk_cand_array *ca, const char *cand)
 {
   ca->nr_cands++;
   if (ca->cands)
-    ca->cands = realloc(ca->cands, sizeof(char *) * ca->nr_cands);
+    ca->cands = uim_realloc(ca->cands, sizeof(char *) * ca->nr_cands);
   else
-    ca->cands = malloc(sizeof(char *));
-  ca->cands[ca->nr_cands - 1] = strdup(cand);
+    ca->cands = uim_malloc(sizeof(char *));
+  ca->cands[ca->nr_cands - 1] = uim_strdup(cand);
 }
 
 static void
@@ -604,12 +604,12 @@ static struct skk_line *
 alloc_skk_line(const char *word, char okuri_head)
 {
   struct skk_line *sl;
-  sl = malloc(sizeof(struct skk_line));
+  sl = uim_malloc(sizeof(struct skk_line));
   sl->state = 0;
-  sl->head = strdup(word);
+  sl->head = uim_strdup(word);
   sl->okuri_head = okuri_head;
   sl->nr_cand_array = 1;
-  sl->cands = malloc(sizeof(struct skk_cand_array));
+  sl->cands = uim_malloc(sizeof(struct skk_cand_array));
   sl->cands[0].okuri = NULL;
   sl->cands[0].cands = NULL;
   sl->cands[0].nr_cands = 0;
@@ -628,22 +628,22 @@ copy_skk_line(struct skk_line *p)
   if (!p)
     return NULL;
 
-  sl = malloc(sizeof(struct skk_line));
+  sl = uim_malloc(sizeof(struct skk_line));
   sl->state = p->state;
-  sl->head = strdup(p->head);
+  sl->head = uim_strdup(p->head);
   sl->okuri_head = p->okuri_head;
   sl->nr_cand_array = p->nr_cand_array;
-  sl->cands = malloc(sizeof(struct skk_cand_array) * sl->nr_cand_array);
+  sl->cands = uim_malloc(sizeof(struct skk_cand_array) * sl->nr_cand_array);
   for (i = 0; i < sl->nr_cand_array; i++) {
     struct skk_cand_array *ca = &sl->cands[i];
     struct skk_cand_array *q = &p->cands[i];
 
-    ca->okuri = q->okuri ? strdup(q->okuri) : NULL;
+    ca->okuri = q->okuri ? uim_strdup(q->okuri) : NULL;
     ca->nr_cands = q->nr_cands;
     ca->nr_real_cands = q->nr_real_cands;
-    ca->cands = malloc(sizeof(char *) * ca->nr_cands);
+    ca->cands = uim_malloc(sizeof(char *) * ca->nr_cands);
     for (j = 0; j < ca->nr_cands; j++)
-      ca->cands[j] = strdup(q->cands[j]);
+      ca->cands[j] = uim_strdup(q->cands[j]);
     ca->is_used = q->is_used;
     ca->line = sl;
   }
@@ -746,7 +746,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   }
 
   len = strlen(idx) + 2;
-  line = malloc(len);
+  line = uim_malloc(len);
   snprintf(line, len, "%s ", idx);
 
   if (read(skkservsock, &r, 1) <= 0) {
@@ -764,7 +764,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 
       if (r == '\n') {
 	len = strlen(line) + n;
-	line = realloc(line, len + 1);
+	line = uim_realloc(line, len + 1);
 	strlcat(line, buf, len + 1);
 	break;
       }
@@ -773,7 +773,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
       buf[n + 1] = '\0';
       if (n == SKK_SERV_BUFSIZ - 2) {
 	len = strlen(line) + n + 1;
-	line = realloc(line, len + 1);
+	line = uim_realloc(line, len + 1);
 	strlcat(line, buf, len + 1);
 	n = 0;
       } else {
@@ -815,7 +815,7 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
 
   p = find_line(di, n);
   len = calc_line_len(p);
-  line = malloc(len + 1);
+  line = uim_malloc(len + 1);
   /* strncat is used intentionally because *p is too long string */
   line[0] = '\0';
   strncat(line, p, len);
@@ -1000,7 +1000,7 @@ expand_str(const char *p)
     p++;
   }
   buf[i] = '\0';
-  return strdup(buf);
+  return uim_strdup(buf);
 }
 
 static char **
@@ -1030,21 +1030,21 @@ get_purged_words(const char *str)
 	word = p;
 	len = 0;
       } else {
-	char *orig = malloc(len + 1);
+	char *orig = uim_malloc(len + 1);
 	char *expanded_word;
 
 	nr++;
 	if (words)
-	  words = realloc(words, sizeof(char *) * nr);
+	  words = uim_realloc(words, sizeof(char *) * nr);
 	else
-	  words = malloc(sizeof(char *));
+	  words = uim_malloc(sizeof(char *));
 	strlcpy(orig, word, len + 1);
 
 	expanded_word = expand_str(orig);
 	if (expanded_word)
 	  words[nr - 1] = expanded_word;
 	else
-	  words[nr - 1] = strdup(orig);
+	  words[nr - 1] = uim_strdup(orig);
 	free(orig);
       }
     }
@@ -1052,7 +1052,7 @@ get_purged_words(const char *str)
     len++;
   }
   if (words) {
-    words = realloc(words, sizeof(char *) * (nr + 1));
+    words = uim_realloc(words, sizeof(char *) * (nr + 1));
     words[nr] = NULL;
   }
   return words;
@@ -1166,9 +1166,9 @@ skk_store_replaced_numeric_str(uim_lisp head_)
       if (prev_is_num) {
 	/* add number into list */
 	if (!numstr)
-	  numstr = malloc(numlen + 1);
+	  numstr = uim_malloc(numlen + 1);
 	else
-	  numstr = realloc(numstr, numlen + 1);
+	  numstr = uim_realloc(numstr, numlen + 1);
 	strlcpy(numstr, &str[start], numlen + 1);
 	lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
       }
@@ -1182,9 +1182,9 @@ skk_store_replaced_numeric_str(uim_lisp head_)
    */
   if (prev_is_num) {
     if (!numstr)
-      numstr = malloc(numlen + 1);
+      numstr = uim_malloc(numlen + 1);
     else
-      numstr = realloc(numstr, numlen + 1);
+      numstr = uim_realloc(numstr, numlen + 1);
     strlcpy(numstr, &str[start], numlen + 1);
     lst = uim_scm_cons(uim_scm_make_str(numstr), lst);
   }
@@ -1213,7 +1213,7 @@ numeric_wide_or_kanji_conv(const char *numstr, int method)
   int i, len;
 
   len = strlen(numstr);
-  mbstr = malloc(len * 2 + 1);
+  mbstr = uim_malloc(len * 2 + 1);
 
   for (i = 0; i < len; i++) {
     if (method == 1)
@@ -1236,9 +1236,9 @@ numeric_kanji_with_position_conv(const char *numstr)
 
   len = strlen(numstr);
   if (len > 20) /* too big number */
-    return strdup(numstr);
+    return uim_strdup(numstr);
 
-  mbstr = malloc(len * 2 + 1);
+  mbstr = uim_malloc(len * 2 + 1);
   mblen = len * 2;
 
   for (i = 0, j = 0; j < len; i++, j++) {
@@ -1268,7 +1268,7 @@ numeric_kanji_with_position_conv(const char *numstr)
 	    i++;
 	    mblen += 2;
 	    if (mblen > len * 2)
-	      mbstr = realloc(mbstr, mblen + 2);
+	      mbstr = uim_realloc(mbstr, mblen + 2);
 	    strcpy(&mbstr[i * 2], kanji_num_position_list[position]);
 	  }
 	}
@@ -1304,7 +1304,7 @@ numeric_kanji_with_position_conv(const char *numstr)
 	  i++;
 	  mblen += 2;
 	  if (mblen > len * 2)
-	    mbstr = realloc(mbstr, mblen + 2);
+	    mbstr = uim_realloc(mbstr, mblen + 2);
 	  strcpy(&mbstr[i * 2], kanji_num_position_list[position % 4]);
 	}
       }
@@ -1314,7 +1314,7 @@ numeric_kanji_with_position_conv(const char *numstr)
 	i++;
 	mblen += 2;
 	if (mblen > len * 2)
-	  mbstr = realloc(mbstr, mblen + 2);
+	  mbstr = uim_realloc(mbstr, mblen + 2);
 	strcpy(&mbstr[i * 2], kanji_num_position_list[position]);
       }
     }
@@ -1340,9 +1340,9 @@ numeric_kanji_for_check_conv(const char *numstr)
 
   len = strlen(numstr);
   if (len > 20) /* too big number */
-    return strdup(numstr);
+    return uim_strdup(numstr);
 
-  mbstr = malloc(len * 2 + 1);
+  mbstr = uim_malloc(len * 2 + 1);
   mblen = len * 2;
 
   for (i = 0, j = 0; j < len; i++, j++) {
@@ -1372,7 +1372,7 @@ numeric_kanji_for_check_conv(const char *numstr)
 	    i++;
 	    mblen += 2;
 	    if (mblen > len * 2)
-	      mbstr = realloc(mbstr, mblen + 2);
+	      mbstr = uim_realloc(mbstr, mblen + 2);
 	    strcpy(&mbstr[i * 2], kanji_check_num_position_list[position]);
 	  }
 	}
@@ -1390,7 +1390,7 @@ numeric_kanji_for_check_conv(const char *numstr)
 	  i++;
 	  mblen += 2;
 	  if (mblen > len * 2)
-	    mbstr = realloc(mbstr, mblen + 2);
+	    mbstr = uim_realloc(mbstr, mblen + 2);
 	  strcpy(&mbstr[i * 2], kanji_check_num_position_list[position % 4]);
 	}
       }
@@ -1400,7 +1400,7 @@ numeric_kanji_for_check_conv(const char *numstr)
 	i++;
 	mblen += 2;
 	if (mblen > len * 2)
-	  mbstr = realloc(mbstr, mblen + 2);
+	  mbstr = uim_realloc(mbstr, mblen + 2);
 	strcpy(&mbstr[i * 2], kanji_check_num_position_list[position]);
       }
     }
@@ -1424,9 +1424,9 @@ numeric_shogi_conv(const char *numstr)
 
   len = strlen(numstr);
   if (len != 2) /* allow two digit number only */
-    return strdup(numstr);
+    return uim_strdup(numstr);
 
-  mbstr = malloc(5);
+  mbstr = uim_malloc(5);
   strcpy(&mbstr[0], wide_num_list[numstr[0] - '0']);
   strcpy(&mbstr[2], kanji_num_list[numstr[1] - '0']);
   mbstr[4] = '\0';
@@ -1445,7 +1445,7 @@ numeric_convert(const char *numstr, int method)
    */
   switch (method) {
   case 0:
-    ret = strdup(numstr);
+    ret = uim_strdup(numstr);
     break;
   case 1: /* 全角数字 */
   case 2: /* 漢数字 位取り無し */
@@ -1461,7 +1461,7 @@ numeric_convert(const char *numstr, int method)
     ret = numeric_shogi_conv(numstr);
     break;
   default:
-    ret = strdup(numstr);
+    ret = uim_strdup(numstr);
     break;
   }
   return ret;
@@ -1497,7 +1497,7 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
       convlen = strlen(convstr);
 
       newlen = newlen - 2 + convlen;
-      str = realloc(str, newlen + 1);
+      str = uim_realloc(str, newlen + 1);
       memmove(&str[i + convlen], &str[i + 2], newlen - i - convlen + 1);
       memcpy(&str[i], convstr, convlen);
       i = i - 2 + convlen;
@@ -1518,7 +1518,7 @@ replace_numeric(const char *str)
   int prev_is_num = 0;
   int i, j, len, newlen;
 
-  newstr = strdup(str);
+  newstr = uim_strdup(str);
   len = newlen = strlen(newstr);
 
   for (i = 0, j = 0; j < len; i++, j++) {
@@ -1693,12 +1693,12 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 	  if (subca) {
 	    for (j = 0; j < subca->nr_cands; j++) {
 	      if (k == n) {
-		cands = strdup(ca->cands[i]);
+		cands = uim_strdup(ca->cands[i]);
 		sublen = strlen(subca->cands[j]);
 		newlen = strlen(ca->cands[i]) - 2 + sublen;
 		mark = p - ca->cands[i];
 
-		cands = realloc(cands, newlen + 1);
+		cands = uim_realloc(cands, newlen + 1);
 		memmove(&cands[mark + sublen],
 			&cands[mark + 2],
 			newlen - mark - sublen + 1);
@@ -1805,7 +1805,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look
   if (!di)
     return NULL;
 
-  ca = malloc(sizeof(struct skk_comp_array));
+  ca = uim_malloc(sizeof(struct skk_comp_array));
   ca->nr_comps = 0;
   ca->refcount = 0;
   ca->comps = NULL;
@@ -1821,8 +1821,8 @@ make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look
 	/* exclude some entries */
 	sl->state & SKK_LINE_USE_FOR_COMPLETION) {
       ca->nr_comps++;
-      ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
-      ca->comps[ca->nr_comps - 1] = strdup(sl->head);
+      ca->comps = uim_realloc(ca->comps, sizeof(char *) * ca->nr_comps);
+      ca->comps[ca->nr_comps - 1] = uim_strdup(sl->head);
     }
   }
 
@@ -1833,7 +1833,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look
     free(ca);
     ca = NULL;
   } else {
-    ca->head = strdup(s);
+    ca->head = uim_strdup(s);
     ca->next = skk_comp;
     skk_comp = ca;
   }
@@ -2017,7 +2017,7 @@ restore_numeric(const char *s, uim_lisp numlst_)
   char *str;
   uim_lisp ret;
 
-  str = strdup(s);
+  str = uim_strdup(s);
   newlen = len = strlen(str);
 
   for (i = 0, j = 0; j < len; i++, j++) {
@@ -2028,7 +2028,7 @@ restore_numeric(const char *s, uim_lisp numlst_)
       numstr  = uim_scm_refer_c_str(uim_scm_car(numlst_));
       numstrlen = strlen(numstr);
       newlen = newlen - 1 + numstrlen;
-      str = realloc(str, newlen + 1);
+      str = uim_realloc(str, newlen + 1);
       memmove(&str[i + numstrlen], &str[i + 1], newlen - i - numstrlen + 1);
       memcpy(&str[i], numstr, numstrlen);
       i = i  - 1 + numstrlen;
@@ -2150,7 +2150,7 @@ static void push_purged_word(struct skk_cand_array *ca, int nth, int append, cha
     free_allocated_purged_words(purged_words);
 
     len = oldlen + strlen(p) + 3;
-    cand = realloc(cand, len + 1);
+    cand = uim_realloc(cand, len + 1);
     if (cand) {
       cand[oldlen - 1] = '\0';
       strcat(cand, " \"");
@@ -2161,7 +2161,7 @@ static void push_purged_word(struct skk_cand_array *ca, int nth, int append, cha
     }
   } else {
     len = strlen("(skk-ignore-dic-word \"\")") + strlen(p) + 1;
-    cand = realloc(cand, len);
+    cand = uim_realloc(cand, len);
     if (cand) {
       snprintf(cand, len, "(skk-ignore-dic-word \"%s\")", p);
       ca->cands[nth] = cand;
@@ -2495,7 +2495,7 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
     if (nth == -1)
       return;
 
-    str = strdup(ca->cands[nth]);
+    str = uim_strdup(ca->cands[nth]);
 
     if ((i = get_purged_cand_index(ca)) == -1) {
       /* new purged cand in the array */
@@ -2628,48 +2628,48 @@ quote_word(const char *word, const char *prefix)
   int len;
 
   if (prefix)
-    str = strdup(prefix);
+    str = uim_strdup(prefix);
   else
-    str = strdup("");
+    str = uim_strdup("");
 
   for (p = word; *p; p++) {
     len = strlen(str);
 
     switch (*p) {
     case '/':
-	    str = realloc(str, len + strlen("\\057") + 1);
+	    str = uim_realloc(str, len + strlen("\\057") + 1);
 	    strcat(str, "\\057");
 	    break;
     case '[':
-	    str = realloc(str, len + strlen("[") + 1);
+	    str = uim_realloc(str, len + strlen("[") + 1);
 	    strcat(str, "[");
 	    break;
     case ']':
-	    str = realloc(str, len + strlen("]") + 1);
+	    str = uim_realloc(str, len + strlen("]") + 1);
 	    strcat(str, "]");
 	    break;
     case '\n':
-	    str = realloc(str, len + strlen("\\n") + 1);
+	    str = uim_realloc(str, len + strlen("\\n") + 1);
 	    strcat(str, "\\n");
 	    break;
     case '\r':
-	    str = realloc(str, len + strlen("\\r") + 1);
+	    str = uim_realloc(str, len + strlen("\\r") + 1);
 	    strcat(str, "\\r");
 	    break;
     case '\\':
-	    str = realloc(str, len + strlen("\\\\") + 1);
+	    str = uim_realloc(str, len + strlen("\\\\") + 1);
 	    strcat(str, "\\\\");
 	    break;
     case ';':
-	    str = realloc(str, len + strlen("\\073") + 1);
+	    str = uim_realloc(str, len + strlen("\\073") + 1);
 	    strcat(str, "\\073");
 	    break;
     case '"':
-	    str = realloc(str, len + strlen("\\\"") + 1);
+	    str = uim_realloc(str, len + strlen("\\\"") + 1);
 	    strcat(str, "\\\"");
 	    break;
     default:
-	    str = realloc(str, len + 2);
+	    str = uim_realloc(str, len + 2);
 	    str[len] = *p;
 	    str[len + 1] = '\0';
 	    break;
@@ -2677,7 +2677,7 @@ quote_word(const char *word, const char *prefix)
   }
   len = strlen(str);
   if (prefix) {
-    str = realloc(str, len + strlen("\")") + 1);
+    str = uim_realloc(str, len + strlen("\")") + 1);
     strcat(str, "\")");
   }
 
@@ -2714,7 +2714,7 @@ sanitize_word(const char *str, const char *prefix)
   if (is_space_only)
     return NULL;
 
-  return strdup(str);
+  return uim_strdup(str);
 }
 
 static uim_lisp
@@ -2836,9 +2836,7 @@ open_lock(const char *name, int type)
   char *lock_fn;
 
   len = strlen(name) + strlen(".lock") + 1;
-  lock_fn = malloc(len);
-  if (lock_fn == NULL)
-    return -1;
+  lock_fn = uim_malloc(len);
   snprintf(lock_fn, len, "%s.lock", name);
 
   fd = open(lock_fn, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
@@ -2951,17 +2949,17 @@ static void push_back_candidate_array_to_sl(struct skk_line *sl,
   struct skk_cand_array *ca;
 
   sl->nr_cand_array++;
-  sl->cands = realloc(sl->cands,
+  sl->cands = uim_realloc(sl->cands,
 		  sizeof(struct skk_cand_array) * sl->nr_cand_array);
   ca = &sl->cands[sl->nr_cand_array - 1];
   ca->is_used = src_ca->is_used;
   ca->nr_cands = src_ca->nr_cands;
-  ca->cands = malloc(sizeof(char *) * src_ca->nr_cands);
+  ca->cands = uim_malloc(sizeof(char *) * src_ca->nr_cands);
   for (i = 0; i < ca->nr_cands; i++)
-    ca->cands[i] = strdup(src_ca->cands[i]);
+    ca->cands[i] = uim_strdup(src_ca->cands[i]);
 
   ca->nr_real_cands = src_ca->nr_real_cands;
-  ca->okuri = strdup(src_ca->okuri);
+  ca->okuri = uim_strdup(src_ca->okuri);
   ca->line = sl;
 }
 
@@ -3098,9 +3096,7 @@ update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
   struct skk_line *sl, *tmp, *diff, **cache_array;
   int i, diff_len = 0;
 
-  di = (struct dic_info *)malloc(sizeof(struct dic_info));
-  if (di == NULL)
-    return;
+  di = (struct dic_info *)uim_malloc(sizeof(struct dic_info));
   di->cache_len = 0;
   di->head.next = NULL;
 
@@ -3120,12 +3116,8 @@ update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
   }
 
   /* keep original sequence of cache */
-  cache_array = (struct skk_line **)malloc(sizeof(struct skk_line *)
+  cache_array = (struct skk_line **)uim_malloc(sizeof(struct skk_line *)
 		  * skk_dic->cache_len);
-  if (cache_array == NULL) {
-    free(di);
-    return;
-  }
 
   i = 0;
   sl = skk_dic->head.next;
@@ -3203,8 +3195,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
 
     lock_fd = open_lock(fn, F_WRLCK);
     len = strlen(fn) + 5;
-    if (!(tmp_fn = malloc(len)))
-      goto error;
+    tmp_fn = uim_malloc(len);
 
     snprintf(tmp_fn, len, "%s.tmp", fn);
     fp = fopen(tmp_fn, "w");
@@ -3296,7 +3287,7 @@ eval_candidate_with_concat(const char *cand)
 
   /* get quoted str  */
   len = (q - p + 1) - strlen("(concat \"\")");
-  str = malloc(len + 1);
+  str = uim_malloc(len + 1);
   strlcpy(str, p + strlen("(concat \""), len + 1);
 
   expanded_str = expand_str(str);
@@ -3308,7 +3299,7 @@ eval_candidate_with_concat(const char *cand)
   /* get evaluated candidate */
   len = p - cand + strlen(expanded_str);
   if (len > strlen(str))
-    str = realloc(str, len + 1);
+    str = uim_realloc(str, len + 1);
 
   if (p != cand) {
     strlcpy(str, cand, p - cand + 1);
@@ -3368,7 +3359,7 @@ skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
   if (end > len)
     return uim_scm_make_str("");
 
-  s = malloc(end - start + 1);
+  s = uim_malloc(end - start + 1);
 
   for (i = start; i < end; i++) {
     s[j] = str[i];
@@ -3391,7 +3382,7 @@ skk_look_open(uim_lisp fn_)
 
   if ((skk_look_ctx = uim_look_init()) == NULL) {
     use_look = 0;
-    return uim_scm_f(); /* XXX: fatal */
+    uim_fatal_error("uim_look_init() failed");
   }
 
   if (!uim_look_open_dict(fn, skk_look_ctx)) {
@@ -3422,8 +3413,7 @@ look_get_top_word(const char *str)
   if (!use_look)
     return ret_;
 
-  if ((dict_str = strdup(str)) == NULL)
-    return ret_; /* XXX: fatal */
+  dict_str = uim_strdup(str);
 
   uim_look_reset(skk_look_ctx);
   if (uim_look(dict_str, skk_look_ctx) != 0) {
@@ -3461,15 +3451,14 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
   if (!use_look)
     return ;
 
-  if ((dict_str = strdup(str)) == NULL)
-    return ; /* XXX: fatal */
+  dict_str = uim_strdup(str);
 
   uim_look_reset(skk_look_ctx);
   if (uim_look(dict_str, skk_look_ctx) == 0)
     return;
 
   nr_pre = ca->nr_comps;
-  matched = malloc(sizeof(int) * nr_pre);
+  matched = uim_malloc(sizeof(int) * nr_pre);
   for (i = 0; i < nr_pre; i++)
     matched[i] = 0;
 
@@ -3498,7 +3487,7 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
     }
     if (!match) {
       ca->nr_comps++;
-      ca->comps = realloc(ca->comps, sizeof(char *) * ca->nr_comps);
+      ca->comps = uim_realloc(ca->comps, sizeof(char *) * ca->nr_comps);
       ca->comps[ca->nr_comps - 1] = strdup(buf);
     }
   }
