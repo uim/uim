@@ -179,18 +179,35 @@
 	       (reloop)))
 	EX_OK)))))
 
+(define %EDITLINE-PARTIAL-EXPR (list 'partial-expr))
+
+;; SigScheme dependent
+(define %editline-partial-read
+  (lambda args
+    (guard (err
+	    ((string-prefix? "in read: EOF " (cadr err))  ;; XXX
+	     %EDITLINE-PARTIAL-EXPR))
+      (apply read args))))
+
 (define uim-editline-read
-  (let ((p (open-input-string "")))
+  (let ((p (open-input-string ""))
+	(buf ""))
     (lambda ()
-      (let ((expr (read p)))
-	(if (eof-object? expr)
+      (let ((expr (%editline-partial-read p)))
+	(if (or (eof-object? expr)
+		(eq? expr %EDITLINE-PARTIAL-EXPR))
 	    (let ((line (uim-editline-readline)))
 	      (if (eof-object? line)
 		  line
 		  (begin
-		    (set! p (open-input-string line))
+		    (set! buf (if (eq? expr %EDITLINE-PARTIAL-EXPR)
+				  (string-append buf line)
+				  line))
+		    (set! p (open-input-string buf))
 		    (uim-editline-read))))
-	    expr)))))
+	    (begin
+	      (set! buf "")
+	      expr))))))
 
 ;; Verbose level must be greater than or equal to 1 to print anything.
 (if (< (verbose) 1)

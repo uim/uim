@@ -20,6 +20,8 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     - Fix EOF (^d) ignorance on editline feature is enabled
     - Fix ignorance of multiple expressions on a line on editline
       feature is enabled
+    - Fix read error on multi-line expression such as
+      "(define\nfoo\n3)" on editline feature is enabled
     - Fix pseudo -r (require module) option for editline feature with
       real require-module
 
