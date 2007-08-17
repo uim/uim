@@ -2,8 +2,11 @@ Overview of changes from 1.4.x to 1.5.0-alpha
 ==
 * New features
   - uim-sh
-    - Accept script files after options
+    - Accept script file and arguments for SRFI-22 'main' procedure
+      after uim-sh options
     - Add --require-module option (-r for short)
+    - Add --expression option (-e for short)
+    - Add --version option (-V for short)
 
 * Fixed
   - uim Scheme library
@@ -17,7 +20,8 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     - Fix EOF (^d) ignorance on editline feature is enabled
     - Fix ignorance of multiple expressions on a line on editline
       feature is enabled
-    - Fix pseudo -r (require module) option with real require-module
+    - Fix pseudo -r (require module) option for editline feature with
+      real require-module
 
 Overview of changes from 1.4.0-beta to 1.4.0
 ==

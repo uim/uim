@@ -57,7 +57,7 @@
 
 (define uim-sh-usage
   (lambda ()
-    (display "Usage: uim-sh [options] [file ...]
+    (display "Usage: uim-sh [options] [file [arg ...]]
   -b
   --batch                 batch mode. suppress shell prompts
   -B
@@ -67,12 +67,14 @@
   --require-module <name> require module
   --editline              require editline module for Emacs-like line editing
   -e <expr>
-  --expression <expr>     evaluate <expr> (after loading the file)
+  --expression <expr>     evaluate <expr> (after loading the file, and disables
+                          'main' procedure of it)
   -V
   --version               show software version
   -h
   --help                  show this help
   file                    absolute path or relative to system scm directory
+  arg ...                 string argument(s) for 'main' procedure of the file
 ")))
 
 (define uim-sh-display-version
@@ -129,26 +131,45 @@
 ;; GaUnit-based unit test for uim.
 (define uim-sh
   (lambda (args)
-    (let ((files (uim-sh-parse-args (cdr args))) ;; drop the command name
-	  (my-read (if (provided? "editline")
-		       uim-editline-read
-		       read)))
-      (for-each require files)
+    (let* ((file.args (uim-sh-parse-args (cdr args))) ;; drop the command name
+	   (script (safe-car file.args))
+	   (my-read (if (provided? "editline")
+			uim-editline-read
+			read))
+	   (EX_OK       0)
+	   (EX_SOFTWARE 70))
+      (if script
+	  (require script))
       (cond
-       (uim-sh-opt-help    (uim-sh-usage))
-       (uim-sh-opt-version (uim-sh-display-version))
+       (uim-sh-opt-help
+	(uim-sh-usage)
+	EX_OK)
+
+       (uim-sh-opt-version
+	(uim-sh-display-version)
+	EX_OK)
+
        (uim-sh-opt-expression
 	(let* ((expr (read (open-input-string uim-sh-opt-arg-expression)))
 	       (result (eval expr (interaction-environment))))
 	  (write result)
-	  (newline)))
+	  (newline)
+	  EX_OK))
+
+       ((symbol-bound? 'main)
+	(let ((status (main file.args)))
+	  (if (integer? status)
+	      status
+	      EX_SOFTWARE)))
+
        (else
 	(let reloop ()
 	  (and (guard (err (else
 			    (%%inspect-error err)
 			    #t))
 		 (uim-sh-loop my-read))
-	       (reloop))))))))
+	       (reloop)))
+	EX_OK)))))
 
 (define uim-editline-read
   (let ((p (open-input-string "")))

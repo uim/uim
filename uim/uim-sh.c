@@ -33,8 +33,6 @@
 
 */
 
-#include <stdlib.h>
-
 #include "uim.h"
 #include "uim-scm.h"
 
@@ -42,7 +40,8 @@
 int
 main(int argc, char *argv[])
 {
-  uim_lisp args;
+  uim_lisp args, exit_status_;
+  int exit_status;
 
   /* TODO: be able to suppress ordinary initialization process */
   uim_init();
@@ -50,12 +49,16 @@ main(int argc, char *argv[])
   uim_scm_require_file("uim-sh.scm");
 
   args = uim_scm_null();
+  exit_status_ = uim_scm_f();
   uim_scm_gc_protect(&args);
+  uim_scm_gc_protect(&exit_status_);
+
   args = uim_scm_array2list((void **)argv, argc,
 			    (uim_lisp (*)(void *))uim_scm_make_str);
-  uim_scm_callf("uim-sh", "o", args);
+  exit_status_ = uim_scm_callf("uim-sh", "o", args);
+  exit_status  = uim_scm_c_int(exit_status_);
 
   uim_quit();
 
-  return EXIT_SUCCESS;
+  return exit_status;
 }

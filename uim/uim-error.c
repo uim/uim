@@ -37,11 +37,17 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#if HAVE_SYSEXITS_H
+#include "sysexits.h"
+#endif
 
 #include "uim.h"
 #include "uim-internal.h"
 
 
+#ifndef EX_SOFTWARE
+#define EX_SOFTWARE 70
+#endif
 
 /* Immediately returns UIM_TRUE if uim is disabled by a fatal error. */
 
@@ -109,7 +115,7 @@ uim_throw_error(const char *msg)
   assert(msg || !msg);
 
   if (!guarded)
-    exit(EXIT_FAILURE);
+    exit(EX_SOFTWARE);
 
   err_msg = msg;
   LONGJMP(uim_catch_block_env, guarded);

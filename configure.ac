@@ -258,7 +258,7 @@ AC_CHECK_HEADERS([string.h sys/ioctl.h sys/socket.h termios.h sys/termios.h wcha
 AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term.h ncurses/term.h ctype.h pwd.h stdarg.h])
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
-AC_CHECK_HEADERS([sys/param.h strings.h netdb.h])
+AC_CHECK_HEADERS([sys/param.h strings.h netdb.h sysexits.h])
 
 # Check for types
 AC_TYPE_INT8_T
