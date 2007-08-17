@@ -37,14 +37,15 @@
 (define uim-sh-option-table
   `((("-b" "--batch")          . batch)
     (("-B" "--strict-batch")   . strict-batch)
-    (("-h" "--help")           . help)
     (("-r" "--require-module") . ,(lambda (args)
 				    (and-let* ((name (safe-car args))
 					       ((require-module name)))
 				      (safe-cdr args))))
     (("--editline")            . ,(lambda (args)
 				    (require-module "editline")
-				    args))))
+				    args))
+    (("-V" "--version")        . version)
+    (("-h" "--help")           . help)))
 
 (define uim-sh-usage
   (lambda ()
@@ -57,9 +58,18 @@
   -r <name>
   --require-module <name> require module
   --editline              require editline module for Emacs-like line editing
+  -V
+  --version               show software version
   -h
   --help                  show this help
-  file                    absolute path or relative to system scm directory\n")))
+  file                    absolute path or relative to system scm directory
+")))
+
+(define uim-sh-display-version
+  (lambda ()
+    (display "uim-sh ")
+    (display (uim-version))
+    (newline)))
 
 (define uim-sh-define-opt-vars
   (lambda ()
@@ -114,14 +124,16 @@
 		       uim-editline-read
 		       read)))
       (for-each require files)
-      (if uim-sh-opt-help
-	  (uim-sh-usage)
-	  (let reloop ()
-	    (and (guard (err (else
-			      (%%inspect-error err)
-			      #t))
-		   (uim-sh-loop my-read))
-		 (reloop)))))))
+      (cond
+       (uim-sh-opt-help    (uim-sh-usage))
+       (uim-sh-opt-version (uim-sh-display-version))
+       (else
+	(let reloop ()
+	  (and (guard (err (else
+			    (%%inspect-error err)
+			    #t))
+		 (uim-sh-loop my-read))
+	       (reloop))))))))
 
 (define uim-editline-read
   (let ((p (open-input-string "")))
