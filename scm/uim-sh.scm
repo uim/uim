@@ -32,6 +32,8 @@
 
 (require-extension (srfi 1 2 6 23 34))
 
+(define %HYPHEN-SYM (string->symbol "-"))
+
 (define uim-sh-prompt "uim> ")
 (define uim-sh-opt-expression #f)
 (define uim-sh-opt-arg-expression
@@ -84,24 +86,26 @@
     (newline)))
 
 (define uim-sh-define-opt-vars
-  (lambda ()
+  (lambda (opt-table prefix)
     (for-each (lambda (name)
-		(eval `(define ,(symbol-append 'uim-sh-opt- name) #f)
-		      (interaction-environment)))
-	      (filter symbol? (map cdr uim-sh-option-table)))))
+		(let ((sym (symbol-append prefix %HYPHEN-SYM 'opt- name)))
+		  (eval `(define ,sym #f)
+			(interaction-environment))))
+	      (filter symbol? (map cdr opt-table)))))
 
 (define uim-sh-parse-args
-  (lambda (args)
-    (uim-sh-define-opt-vars)
+  (lambda (opt-table prefix args)
+    (uim-sh-define-opt-vars opt-table prefix)
     (let rec ((args args))
       (or (and-let* (((pair? args))
 		     (opt (car args))
 		     (rest (cdr args))
-		     (ent (assoc opt uim-sh-option-table member))
+		     (ent (assoc opt opt-table member))
 		     (action (cdr ent)))
 	    (cond
 	     ((symbol? action)
-	      (set-symbol-value! (symbol-append 'uim-sh-opt- action) #t))
+	      (set-symbol-value!
+	       (symbol-append prefix %HYPHEN-SYM 'opt- action) #t))
 	     ((procedure? action)
 	      (set! rest (action rest)))
 	     (else
@@ -131,7 +135,9 @@
 ;; GaUnit-based unit test for uim.
 (define uim-sh
   (lambda (args)
-    (let* ((file.args (uim-sh-parse-args (cdr args))) ;; drop the command name
+    (let* ((file.args (uim-sh-parse-args uim-sh-option-table
+					 'uim-sh
+					 (cdr args))) ;; drop the command name
 	   (script (safe-car file.args))
 	   (my-read (if (provided? "editline")
 			uim-editline-read
