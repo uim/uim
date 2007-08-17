@@ -158,8 +158,10 @@
        (uim-sh-opt-expression
 	(let* ((expr (read (open-input-string uim-sh-opt-arg-expression)))
 	       (result (eval expr (interaction-environment))))
-	  (write result)
-	  (newline)
+	  (if (not uim-sh-opt-strict-batch)
+	      (begin
+		(write result)
+		(newline)))
 	  EX_OK))
 
        ((symbol-bound? 'main)
