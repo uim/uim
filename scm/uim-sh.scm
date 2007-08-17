@@ -33,6 +33,9 @@
 (require-extension (srfi 1 2 6 23 34))
 
 (define uim-sh-prompt "uim> ")
+(define uim-sh-opt-expression #f)
+(define uim-sh-opt-arg-expression
+  "(error \"no <expr> is passed as argument\")")
 
 (define uim-sh-option-table
   `((("-b" "--batch")          . batch)
@@ -44,6 +47,11 @@
     (("--editline")            . ,(lambda (args)
 				    (require-module "editline")
 				    args))
+    (("-e" "--expression")     . ,(lambda (args)
+				    (set! uim-sh-opt-expression #t)
+				    (and-let* ((expr (safe-car args)))
+				      (set! uim-sh-opt-arg-expression expr)
+				      (safe-cdr args))))
     (("-V" "--version")        . version)
     (("-h" "--help")           . help)))
 
@@ -58,6 +66,8 @@
   -r <name>
   --require-module <name> require module
   --editline              require editline module for Emacs-like line editing
+  -e <expr>
+  --expression <expr>     evaluate <expr> (after loading the file)
   -V
   --version               show software version
   -h
@@ -127,6 +137,11 @@
       (cond
        (uim-sh-opt-help    (uim-sh-usage))
        (uim-sh-opt-version (uim-sh-display-version))
+       (uim-sh-opt-expression
+	(let* ((expr (read (open-input-string uim-sh-opt-arg-expression)))
+	       (result (eval expr (interaction-environment))))
+	  (write result)
+	  (newline)))
        (else
 	(let reloop ()
 	  (and (guard (err (else
