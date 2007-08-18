@@ -140,7 +140,7 @@
 					 (cdr args))) ;; drop the command name
 	   (script (safe-car file.args))
 	   (my-read (if (provided? "editline")
-			uim-editline-read
+			editline-read
 			read))
 	   (EX_OK       0)
 	   (EX_SOFTWARE 70))
@@ -189,14 +189,14 @@
 	     %EDITLINE-PARTIAL-EXPR))
       (apply read args))))
 
-(define uim-editline-read
+(define editline-read
   (let ((p (open-input-string ""))
 	(buf ""))
     (lambda ()
       (let ((expr (%editline-partial-read p)))
 	(if (or (eof-object? expr)
 		(eq? expr %EDITLINE-PARTIAL-EXPR))
-	    (let ((line (uim-editline-readline)))
+	    (let ((line (editline-readline)))
 	      (if (eof-object? line)
 		  line
 		  (begin
@@ -204,7 +204,7 @@
 				  (string-append buf line)
 				  line))
 		    (set! p (open-input-string buf))
-		    (uim-editline-read))))
+		    (editline-read))))
 	    (begin
 	      (set! buf "")
 	      expr))))))

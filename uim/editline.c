@@ -43,7 +43,7 @@
 static EditLine *el;
 static History *hist;
 static HistEvent hev;
-static uim_lisp uim_editline_readline(void);
+static uim_lisp editline_readline(void);
 static char *prompt(EditLine *e);
 
 void
@@ -58,7 +58,7 @@ uim_plugin_instance_init(void)
   el_set(el, EL_HIST, history, hist);
   el_source(el, NULL);
 
-  uim_scm_init_subr_0("uim-editline-readline", uim_editline_readline);
+  uim_scm_init_subr_0("editline-readline", editline_readline);
 
   uim_scm_callf("provide", "s", "editline");
 }
@@ -71,7 +71,7 @@ uim_plugin_instance_quit(void)
 }
 
 static uim_lisp
-uim_editline_readline(void)
+editline_readline(void)
 {
   const char *line;
   int count = 0;
