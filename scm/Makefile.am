@@ -9,7 +9,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  default.scm \
  util.scm deprecated-util.scm ichar.scm ustr.scm i18n.scm iso-639-1.scm \
  key.scm action.scm load-action.scm \
- uim-sh.scm custom.scm custom-rt.scm \
+ uim-sh.scm editline.scm custom.scm custom-rt.scm \
  direct.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
