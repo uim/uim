@@ -38,8 +38,6 @@
 #include "plugin.h"
 
 
-#define UIM_SH_FALLBACK_PROMPT "uim-sh> "
-
 static EditLine *el;
 static History *hist;
 static HistEvent hev;
@@ -89,9 +87,10 @@ editline_readline(void)
 static char *
 prompt(EditLine *e)
 {
-  char *p;
+  uim_lisp p;
 
-  p = uim_scm_symbol_value_str("uim-sh-prompt");
+  p = uim_scm_callf("editline-prompt", "");
 
-  return (p) ? p : UIM_SH_FALLBACK_PROMPT;
+  /* libedit does not free the prompt str */
+  return (char *)uim_scm_refer_c_str(p);
 }

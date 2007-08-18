@@ -140,7 +140,9 @@
 					 (cdr args))) ;; drop the command name
 	   (script (safe-car file.args))
 	   (my-read (if (provided? "editline")
-			editline-read
+			(begin
+			  (set! *editline-prompt-beginning* uim-sh-prompt)
+			  editline-read)
 			read))
 	   (EX_OK       0)
 	   (EX_SOFTWARE 70))
@@ -179,7 +181,16 @@
 	       (reloop)))
 	EX_OK)))))
 
+(define *editline-prompt-beginning*  "> ")
+(define *editline-prompt-succeeding* "")
+(define %*editline-reading* #f)
 (define %EDITLINE-PARTIAL-EXPR (list 'partial-expr))
+
+(define editline-prompt
+  (lambda ()
+    (if %*editline-reading*
+	*editline-prompt-succeeding*
+	*editline-prompt-beginning*)))
 
 ;; SigScheme dependent
 (define %editline-partial-read
@@ -204,9 +215,11 @@
 				  (string-append buf line)
 				  line))
 		    (set! p (open-input-string buf))
+		    (set! %*editline-reading* #t)
 		    (editline-read))))
 	    (begin
 	      (set! buf "")
+	      (set! %*editline-reading* #f)
 	      expr))))))
 
 ;; Verbose level must be greater than or equal to 1 to print anything.
