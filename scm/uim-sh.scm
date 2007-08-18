@@ -30,7 +30,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1 2 6 23 34))
+(require-extension (srfi 1 2 6 23 34 48))
 
 (define %HYPHEN-SYM (string->symbol "-"))
 
@@ -81,8 +81,7 @@
 
 (define uim-sh-display-version
   (lambda ()
-    (display "uim-sh ")
-    (display (uim-version))
+    (format #t "uim-sh ~a [SigScheme ~a]" (uim-version) (sscm-version))
     (newline)))
 
 (define uim-sh-define-opt-vars
