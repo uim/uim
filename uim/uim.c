@@ -79,8 +79,8 @@ static uim_lisp protected0, protected1;
 static void
 fatal_error_hook(void)
 {
-  /* error message is already printed by the Scheme interpreter */
-  uim_fatal_error(NULL);
+  /* actual error message is already printed by the Scheme interpreter */
+  uim_fatal_error("an unrecoverable error raised from Scheme interpreter");
 }
 
 int

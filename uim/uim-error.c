@@ -70,11 +70,15 @@ void
 uim_print_caught_error(void)
 {
   if (err_msg) {
-    fputs("ERROR: ", stderr);
+    fputs("libuim: ", stderr);
     if (fatal_errored)
-      fputs("fatal: ", stderr);
+      fputs("fatal error: ", stderr);
     fputs(err_msg, stderr);
     fputs("\n", stderr);
+    if (fatal_errored) {
+      fputs("libuim: all functionality has been disabled to save user application data", stderr);
+      fputs("\n", stderr);
+    }
   }
 }
 
