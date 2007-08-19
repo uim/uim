@@ -122,6 +122,7 @@ static int
 uim_iconv_is_convertible(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
+  uim_bool result;
 
   if (uim_catch_error_begin())
     return UIM_FALSE;
@@ -129,18 +130,25 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
   assert(tocode);
   assert(fromcode);
 
-  if (check_encoding_equivalence(tocode, fromcode))
-    return UIM_TRUE;
+  do {
+    if (check_encoding_equivalence(tocode, fromcode)) {
+      result = UIM_TRUE;
+      break;
+    }
 
-  /* TODO cache the result */
-  ic = (iconv_t)uim_iconv_open(tocode, fromcode);
-  if (ic == (iconv_t)-1)
-    return UIM_FALSE;
-  iconv_close(ic);
+    /* TODO cache the result */
+    ic = (iconv_t)uim_iconv_open(tocode, fromcode);
+    if (ic == (iconv_t)-1) {
+      result = UIM_FALSE;
+      break;
+    }
+    iconv_close(ic);
+    result = UIM_TRUE;
+  } while (/* CONSTCOND */ 0);
 
   uim_catch_error_end();
 
-  return UIM_TRUE;
+  return result;
 }
 
 static const char **
@@ -219,14 +227,18 @@ uim_iconv_create(const char *tocode, const char *fromcode)
   assert(tocode);
   assert(fromcode);
 
-  if (check_encoding_equivalence(tocode, fromcode))
-    return NULL;
+  do {
+    if (check_encoding_equivalence(tocode, fromcode)) {
+      ic = (iconv_t)0;
+      break;
+    }
 
-  ic = (iconv_t)uim_iconv_open(tocode, fromcode);
-  if (ic == (iconv_t)-1) {
-    /* since iconv_t is not explicit pointer, use 0 instead of NULL */
-    ic = (iconv_t)0;
-  }
+    ic = (iconv_t)uim_iconv_open(tocode, fromcode);
+    if (ic == (iconv_t)-1) {
+      /* since iconv_t is not explicit pointer, use 0 instead of NULL */
+      ic = (iconv_t)0;
+    }
+  } while (/* CONSTCOND */ 0);
 
   uim_catch_error_end();
 
@@ -244,25 +256,29 @@ uim_iconv_code_conv(void *obj, const char *str)
   if (uim_catch_error_begin())
     return NULL;
 
-  if (!str)
-    return NULL;
+  do {
+    if (!str) {
+      copied = NULL;
+      break;
+    }
 
-  ic = (iconv_t)obj;
-  if (ic) {
-    len = strlen(str);
-    bufsize = (len + sizeof("")) * MBCHAR_LEN_MAX;
-    realbuf = alloca(bufsize);
-    memset(realbuf, 0, bufsize);
+    ic = (iconv_t)obj;
+    if (ic) {
+      len = strlen(str);
+      bufsize = (len + sizeof("")) * MBCHAR_LEN_MAX;
+      realbuf = alloca(bufsize);
+      memset(realbuf, 0, bufsize);
 
-    inbuf = str;
-    outbuf = realbuf;
-    iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &bufsize);
-    src = realbuf;
-  } else {
-    src = str;
-  }
+      inbuf = str;
+      outbuf = realbuf;
+      iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &bufsize);
+      src = realbuf;
+    } else {
+      src = str;
+    }
 
-  copied = uim_strdup(src);
+    copied = uim_strdup(src);
+  } while (/* CONSTCOND */ 0);
 
   uim_catch_error_end();
 

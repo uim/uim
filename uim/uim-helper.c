@@ -268,12 +268,13 @@ uim_helper_buffer_get_message(char *buf)
     memcpy(msg, buf, msg_size);
     msg[msg_size] = '\0';
     uim_helper_buffer_shift(buf, msg_size);
-    return msg;
+  } else {
+    msg = NULL;
   }
 
   uim_catch_error_end();
 
-  return NULL;
+  return msg;
 }
 
 /* Public API for uim_issetugid(). */
