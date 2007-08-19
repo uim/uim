@@ -120,7 +120,7 @@
     (apply string-append (list-join str-list sep))))
 
 ;; Split pattern has been changed from uim 1.5.0. See
-;; doc/COMPATIBILITY and test-util.scm.
+;; doc/COMPATIBILITY and test-uim-util.scm.
 (define string-split
   (lambda (str sep)
     (let ((slen (string-length str))

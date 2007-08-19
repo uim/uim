@@ -73,7 +73,10 @@
     (with-char-codec "EUC-JP"
       (lambda ()
 	(map! (lambda (c)
-		(list->string (list c)))
+		(let ((str (list->string (list c))))
+		  (with-char-codec "ISO-8859-1"
+		    (lambda ()
+		      (%%string-reconstruct! str)))))
 	      (reverse! (string->list s)))))))
 
 ;; TODO: replace with symbol-append

@@ -65,7 +65,10 @@
   (lambda (ucs)
     (with-char-codec "UTF-8"
       (lambda ()
-	(list->string (list (integer->char ucs)))))))
+	(let ((str (list->string (list (integer->char ucs)))))
+	  (with-char-codec "ISO-8859-1"
+	    (lambda ()
+	      (%%string-reconstruct! str))))))))
 
 ;;
 ;; R5RS-like character procedures
