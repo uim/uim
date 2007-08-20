@@ -244,7 +244,7 @@ uim_get_language_name_from_locale(const char *locale)
   uim_lisp lang_code, lang_name;
   const char *name;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "-";
 
   assert(uim_scm_gc_any_contextp());
@@ -258,7 +258,7 @@ uim_get_language_name_from_locale(const char *locale)
     lang_name = uim_scm_callf("lang-code->lang-name", "o", lang_code);
   name = uim_scm_refer_c_str(lang_name);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return name;
 }
@@ -269,7 +269,7 @@ uim_get_language_code_from_language_name(const char *language_name)
   uim_lisp lang_code;
   const char *name;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "-";
 
   assert(uim_scm_gc_any_contextp());
@@ -279,7 +279,7 @@ uim_get_language_code_from_language_name(const char *language_name)
     lang_code = uim_scm_callf("lang-name->lang-code", "s", language_name);
   name = uim_scm_refer_c_str(lang_code);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return name;
 }

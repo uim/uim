@@ -244,25 +244,25 @@ plugin_unload_internal(void *uim_lisp_name)
 void
 uim_init_plugin(void)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   uim_scm_init_subr_1("load-plugin", plugin_load);
   uim_scm_init_subr_1("unload-plugin", plugin_unload);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 /* Called from uim_quit */
 void
 uim_quit_plugin(void)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   uim_scm_call_with_gc_ready_stack(uim_quit_plugin_internal, NULL);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 static void *

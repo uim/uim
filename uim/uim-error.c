@@ -49,9 +49,13 @@
 #define EX_SOFTWARE 70
 #endif
 
+static void print_caught_error(void);
+
 /* Immediately returns UIM_TRUE if uim is disabled by a fatal error. */
 
+#if UIM_USE_ERROR_GUARD
 JMP_BUF uim_catch_block_env;
+#endif
 static uim_bool fatal_errored;
 static int guarded;
 static const char *err_msg;
@@ -66,8 +70,8 @@ uim_init_error(void)
   /* fatal_errored must not be cleared even if libuim is re-initialized. */
 }
 
-void
-uim_print_caught_error(void)
+static void
+print_caught_error(void)
 {
   if (err_msg) {
     fputs("libuim: ", stderr);
@@ -82,6 +86,7 @@ uim_print_caught_error(void)
   }
 }
 
+#if UIM_USE_ERROR_GUARD
 uim_bool
 uim_caught_fatal_error(void)
 {
@@ -100,7 +105,7 @@ uim_bool
 uim_catch_error_begin_post(void)
 {
   guarded = 0;
-  uim_print_caught_error();
+  print_caught_error();
 
   return UIM_TRUE;
 }
@@ -112,17 +117,25 @@ uim_catch_error_end(void)
 
   assert(guarded >= 0);
 }
+#endif /* UIM_USE_ERROR_GUARD */
 
 void
 uim_throw_error(const char *msg)
 {
   assert(msg || !msg);
 
-  if (!guarded)
-    exit(EX_SOFTWARE);
-
   err_msg = msg;
+
+  if (!guarded) {
+    print_caught_error();
+    exit(EX_SOFTWARE);
+  }
+
+#if UIM_USE_ERROR_GUARD
+  /* To run print_caught_error() on roomed stack space, exit to the
+   * guarded point first. */
   LONGJMP(uim_catch_block_env, guarded);
+#endif
 }
 
 void

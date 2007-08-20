@@ -1256,6 +1256,8 @@ AC_ARG_ENABLE(anthy-utf8-static,
 
 AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
 
+AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based error handlings])
+
 #
 # Compiler options
 #

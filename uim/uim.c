@@ -94,7 +94,7 @@ uim_init(void)
 
   uim_init_error();
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return FAILED;
 
   sys_load_path = (uim_issetugid()) ? NULL : getenv("LIBUIM_SYSTEM_SCM_FILES");
@@ -103,7 +103,7 @@ uim_init(void)
 
   ret = (int)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_init_internal, NULL);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return ret;
 }
@@ -152,7 +152,7 @@ uim_quit(void)
   if (!uim_initialized)
     return;
 
-  if (uim_catch_error_begin()) {
+  if (UIM_CATCH_ERROR_BEGIN()) {
     /* Leave uim_initialized uncleared to keep libuim disabled. */
     return;
   }
@@ -179,7 +179,7 @@ uim_create_context(void *ptr,
   uim_context uc;
   uim_lisp lang_, engine_;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   assert(uim_scm_gc_any_contextp());
@@ -209,7 +209,7 @@ uim_create_context(void *ptr,
   uim_scm_gc_protect(&uc->sc);
   uim_scm_callf("setup-context", "o", uc->sc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return uc;
 }
@@ -219,7 +219,7 @@ uim_release_context(uim_context uc)
 {
   int i;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -240,13 +240,13 @@ uim_release_context(uim_context uc)
   free(uc->client_encoding);
   free(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_reset_context(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -254,13 +254,13 @@ uim_reset_context(uim_context uc)
 
   uim_scm_callf("reset-handler", "p", uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_focus_in_context(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -268,13 +268,13 @@ uim_focus_in_context(uim_context uc)
 
   uim_scm_callf("focus-in-handler", "p", uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_focus_out_context(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -282,13 +282,13 @@ uim_focus_out_context(uim_context uc)
 
   uim_scm_callf("focus-out-handler", "p", uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_place_context(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -296,13 +296,13 @@ uim_place_context(uim_context uc)
 
   uim_scm_callf("place-handler", "p", uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_displace_context(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -310,7 +310,7 @@ uim_displace_context(uim_context uc)
 
   uim_scm_callf("displace-handler", "p", uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
@@ -319,7 +319,7 @@ uim_set_preedit_cb(uim_context uc,
 		   void (*pushback_cb)(void *ptr, int attr, const char *str),
 		   void (*update_cb)(void *ptr))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -329,7 +329,7 @@ uim_set_preedit_cb(uim_context uc,
   uc->preedit_pushback_cb = pushback_cb;
   uc->preedit_update_cb = update_cb;
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
@@ -340,7 +340,7 @@ uim_set_candidate_selector_cb(uim_context uc,
                               void (*shift_page_cb)(void *ptr, int direction),
                               void (*deactivate_cb)(void *ptr))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -351,7 +351,7 @@ uim_set_candidate_selector_cb(uim_context uc,
   uc->candidate_selector_deactivate_cb = deactivate_cb;
   uc->candidate_selector_shift_page_cb = shift_page_cb;
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 uim_candidate
@@ -360,7 +360,7 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
   struct uim_get_candidate_args args;
   uim_candidate cand;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   assert(uim_scm_gc_any_contextp());
@@ -374,7 +374,7 @@ uim_get_candidate(uim_context uc, int index, int accel_enumeration_hint)
 
   cand = (uim_candidate)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_get_candidate_internal, &args);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return cand;
 }
@@ -409,14 +409,14 @@ uim_get_candidate_internal(struct uim_get_candidate_args *args)
 const char *
 uim_candidate_get_cand_str(uim_candidate cand)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "";
 
   assert(uim_scm_gc_any_contextp());
   if (!cand)
     uim_fatal_error("null candidate");
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return cand->str;
 }
@@ -424,14 +424,14 @@ uim_candidate_get_cand_str(uim_candidate cand)
 const char *
 uim_candidate_get_heading_label(uim_candidate cand)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "";
 
   assert(uim_scm_gc_any_contextp());
   if (!cand)
     uim_fatal_error("null candidate");
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return cand->heading_label;
 }
@@ -439,14 +439,14 @@ uim_candidate_get_heading_label(uim_candidate cand)
 const char *
 uim_candidate_get_annotation_str(uim_candidate cand)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "";
 
   assert(uim_scm_gc_any_contextp());
   if (!cand)
     uim_fatal_error("null candidate");
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return cand->annotation;
 }
@@ -454,7 +454,7 @@ uim_candidate_get_annotation_str(uim_candidate cand)
 void
 uim_candidate_free(uim_candidate cand)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -466,19 +466,19 @@ uim_candidate_free(uim_candidate cand)
   free(cand->annotation);
   free(cand);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 int
 uim_get_candidate_index(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return 0;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return 0;
 }
@@ -486,7 +486,7 @@ uim_get_candidate_index(uim_context uc)
 void
 uim_set_candidate_index(uim_context uc, int nth)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -495,7 +495,7 @@ uim_set_candidate_index(uim_context uc, int nth)
 
   uim_scm_callf("set-candidate-index", "pi", uc, nth);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
@@ -509,7 +509,7 @@ uim_set_text_acquisition_cb(uim_context uc,
 				    	     enum UTextOrigin origin,
 					     int former_len, int latter_len))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -518,7 +518,7 @@ uim_set_text_acquisition_cb(uim_context uc,
   uc->acquire_text_cb = acquire_cb;
   uc->delete_text_cb = delete_cb;
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 uim_bool
@@ -528,7 +528,7 @@ uim_input_string(uim_context uc, const char *str)
   uim_lisp consumed;
   char *conv;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return UIM_FALSE;
 
   assert(uim_scm_gc_any_contextp());
@@ -546,7 +546,7 @@ uim_input_string(uim_context uc, const char *str)
     ret = UIM_FALSE;
   }
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return ret;
 }
@@ -558,7 +558,7 @@ void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -566,7 +566,7 @@ uim_set_configuration_changed_cb(uim_context uc,
 
   uc->configuration_changed_cb = changed_cb;
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
@@ -575,7 +575,7 @@ uim_set_im_switch_request_cb(uim_context uc,
 			     void (*sw_system_im_cb)(void *ptr,
                                                      const char *name))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -584,13 +584,13 @@ uim_set_im_switch_request_cb(uim_context uc,
   uc->switch_app_global_im_cb = sw_app_im_cb;
   uc->switch_system_global_im_cb = sw_system_im_cb;
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_switch_im(uim_context uc, const char *engine)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   /* related to the commit log of r1400:
@@ -609,7 +609,7 @@ uim_switch_im(uim_context uc, const char *engine)
 
   uim_scm_callf("uim-switch-im", "py", uc, engine);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 const char *
@@ -618,7 +618,7 @@ uim_get_current_im_name(uim_context uc)
   uim_lisp im, ret;
   const char *name;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "direct";
 
   assert(uim_scm_gc_any_contextp());
@@ -628,7 +628,7 @@ uim_get_current_im_name(uim_context uc)
   protected1 = ret = uim_scm_callf("im-name", "o", im);
   name = uim_scm_refer_c_str(ret);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return name;
 }
@@ -639,7 +639,7 @@ uim_get_default_im_name(const char *localename)
   uim_lisp ret;
   const char *name;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "direct";
 
   assert(uim_scm_gc_any_contextp());
@@ -648,7 +648,7 @@ uim_get_default_im_name(const char *localename)
   protected0 = ret = uim_scm_callf("uim-get-default-im-name", "s", localename);
   name = uim_scm_refer_c_str(ret);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return name;
 }
@@ -659,7 +659,7 @@ uim_get_im_name_for_locale(const char *localename)
   uim_lisp ret;
   const char *name;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return "direct";
 
   assert(uim_scm_gc_any_contextp());
@@ -669,7 +669,7 @@ uim_get_im_name_for_locale(const char *localename)
     ret = uim_scm_callf("uim-get-im-name-for-locale", "s", localename);
   name = uim_scm_refer_c_str(ret);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return name;
 }
@@ -680,13 +680,13 @@ uim_get_im_name_for_locale(const char *localename)
 int
 uim_get_nr_modes(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return 0;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return uc->nr_modes;
 }
@@ -694,7 +694,7 @@ uim_get_nr_modes(uim_context uc)
 const char *
 uim_get_mode_name(uim_context uc, int nth)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   assert(uim_scm_gc_any_contextp());
@@ -702,7 +702,7 @@ uim_get_mode_name(uim_context uc, int nth)
   assert(nth >= 0);
   assert(nth < uc->nr_modes);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return uc->modes[nth];
 }
@@ -710,13 +710,13 @@ uim_get_mode_name(uim_context uc, int nth)
 int
 uim_get_current_mode(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return 0;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return uc->mode;
 }
@@ -724,7 +724,7 @@ uim_get_current_mode(uim_context uc)
 void
 uim_set_mode(uim_context uc, int mode)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -734,19 +734,19 @@ uim_set_mode(uim_context uc, int mode)
   uc->mode = mode;
   uim_scm_callf("mode-handler", "pi", uc, mode);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr, int mode))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   uc->mode_update_cb = update_cb;
 }
@@ -754,13 +754,13 @@ uim_set_mode_cb(uim_context uc, void (*update_cb)(void *ptr, int mode))
 void
 uim_set_mode_list_update_cb(uim_context uc, void (*update_cb)(void *ptr))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   uc->mode_list_update_cb = update_cb;
 }
@@ -772,7 +772,7 @@ void
 uim_set_prop_list_update_cb(uim_context uc,
 			    void (*update_cb)(void *ptr, const char *str))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -780,7 +780,7 @@ uim_set_prop_list_update_cb(uim_context uc,
 
   uc->prop_list_update_cb = update_cb;
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 /* Obsolete */
@@ -788,19 +788,19 @@ void
 uim_set_prop_label_update_cb(uim_context uc,
 			     void (*update_cb)(void *ptr, const char *str))
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_prop_list_update(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -809,26 +809,26 @@ uim_prop_list_update(uim_context uc)
   if (uc->propstr && uc->prop_list_update_cb)
     uc->prop_list_update_cb(uc->ptr, uc->propstr);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 /* Obsolete */
 void
 uim_prop_label_update(uim_context uc)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
   assert(uc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 void
 uim_prop_activate(uim_context uc, const char *str)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -837,7 +837,7 @@ uim_prop_activate(uim_context uc, const char *str)
       
   uim_scm_callf("prop-activate-handler", "ps", uc, str);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 /****************************************************************
@@ -861,7 +861,7 @@ would not be proper to this function. */
 void
 uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   assert(uim_scm_gc_any_contextp());
@@ -872,13 +872,13 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
   uim_scm_callf("custom-set-handler", "pyo",
                 uc, custom, uim_scm_eval_c_string(val));
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }
 
 uim_bool
 uim_prop_reload_configs(void)
 {
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return UIM_FALSE;
 
   assert(uim_scm_gc_any_contextp());
@@ -886,7 +886,7 @@ uim_prop_reload_configs(void)
   /* FIXME: handle return value properly. */
   uim_scm_callf("custom-reload-user-configs", "");
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return UIM_TRUE;
 }
@@ -900,7 +900,7 @@ uim_get_nr_im(uim_context uc)
   uim_lisp n_;
   int n;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return 0;
 
   assert(uim_scm_gc_any_contextp());
@@ -909,7 +909,7 @@ uim_get_nr_im(uim_context uc)
   protected0 = n_ = uim_scm_callf("uim-n-convertible-ims", "p", uc);
   n = uim_scm_c_int(n_);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return n;
 }
@@ -930,14 +930,14 @@ uim_get_im_name(uim_context uc, int nth)
   uim_lisp im, str_;
   const char *str;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = str_ = uim_scm_callf("im-name", "o", im);
   str = uim_scm_refer_c_str(str_);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return str;
 }
@@ -948,14 +948,14 @@ uim_get_im_language(uim_context uc, int nth)
   uim_lisp im, str_;
   const char *str;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = str_ = uim_scm_callf("im-lang", "o", im);
   str = uim_scm_refer_c_str(str_);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return str;
 }
@@ -966,14 +966,14 @@ uim_get_im_encoding(uim_context uc, int nth)
   uim_lisp im, str_;
   const char *str;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = str_ = uim_scm_callf("im-encoding", "o", im);
   str = uim_scm_refer_c_str(str_);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return str;
 }
@@ -984,14 +984,14 @@ uim_get_im_short_desc(uim_context uc, int nth)
   uim_lisp im, short_desc;
   const char *str;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = short_desc = uim_scm_callf("im-short-desc", "o", im);
   str = UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return str;
 }

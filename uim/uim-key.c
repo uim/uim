@@ -382,7 +382,7 @@ uim_press_key(uim_context uc, int key, int state)
 {
   uim_bool filtered;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return PASSTHROUGH;
 
   assert(uim_scm_gc_any_contextp());
@@ -392,7 +392,7 @@ uim_press_key(uim_context uc, int key, int state)
 
   filtered = filter_key(uc, key, state, UIM_TRUE);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return (filtered) ? FILTERED : PASSTHROUGH;
 }
@@ -402,7 +402,7 @@ uim_release_key(uim_context uc, int key, int state)
 {
   uim_bool filtered;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return PASSTHROUGH;
 
   assert(uim_scm_gc_any_contextp());
@@ -412,7 +412,7 @@ uim_release_key(uim_context uc, int key, int state)
 
   filtered = filter_key(uc, key, state, UIM_FALSE);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return (filtered) ? FILTERED : PASSTHROUGH;
 }

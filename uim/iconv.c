@@ -124,7 +124,7 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
   iconv_t ic;
   uim_bool result;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return UIM_FALSE;
 
   assert(tocode);
@@ -146,7 +146,7 @@ uim_iconv_is_convertible(const char *tocode, const char *fromcode)
     result = UIM_TRUE;
   } while (/* CONSTCOND */ 0);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return result;
 }
@@ -221,7 +221,7 @@ uim_iconv_create(const char *tocode, const char *fromcode)
 {
   iconv_t ic;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   assert(tocode);
@@ -240,7 +240,7 @@ uim_iconv_create(const char *tocode, const char *fromcode)
     }
   } while (/* CONSTCOND */ 0);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return (void *)ic;
 }
@@ -253,7 +253,7 @@ uim_iconv_code_conv(void *obj, const char *str)
   char *outbuf, *realbuf, *copied;
   const char *inbuf, *src;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   do {
@@ -280,7 +280,7 @@ uim_iconv_code_conv(void *obj, const char *str)
     copied = uim_strdup(src);
   } while (/* CONSTCOND */ 0);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return copied;
 }
@@ -290,11 +290,11 @@ uim_iconv_release(void *obj)
 {
   int err;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   if (obj)
     err = iconv_close((iconv_t)obj);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 }

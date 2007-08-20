@@ -95,7 +95,7 @@ uim_helper_send_message(int fd, const char *message)
   sig_t old_sigpipe;
   char *buf, *bufp;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return;
 
   if (fd < 0 || !message)
@@ -123,7 +123,7 @@ uim_helper_send_message(int fd, const char *message)
   free(buf);
   signal(SIGPIPE, old_sigpipe);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return;
 }
@@ -148,7 +148,7 @@ uim_helper_get_pathname(void)
   struct passwd *pw;
   int len;
  
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   pw = getpwuid(getuid());
@@ -183,7 +183,7 @@ uim_helper_get_pathname(void)
   path = uim_realloc(path, len + 1);
   strlcat(path, "/uim-helper", len + 1);
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return path;
 }
@@ -258,7 +258,7 @@ uim_helper_buffer_get_message(char *buf)
   size_t msg_size;
   char *msg, *msg_term;
 
-  if (uim_catch_error_begin())
+  if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
   msg_term = strstr(buf, "\n\n");
@@ -272,7 +272,7 @@ uim_helper_buffer_get_message(char *buf)
     msg = NULL;
   }
 
-  uim_catch_error_end();
+  UIM_CATCH_ERROR_END();
 
   return msg;
 }
