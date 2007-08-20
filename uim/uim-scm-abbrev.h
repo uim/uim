@@ -58,6 +58,7 @@ extern "C" {
 #define CONSP     uim_scm_consp
 #define TRUEP     uim_scm_truep    /* (if obj #t #f) */
 #define FALSEP    uim_scm_falsep
+#define EQ        uim_scm_eq
 
 #define CAR       uim_scm_car
 #define CDR       uim_scm_cdr
