@@ -1279,17 +1279,6 @@ uim_scm_init_subr_5(const char *name,
 }
 
 void
-uim_scm_init_fsubr(const char *name,
-                   uim_lisp (*func)(uim_lisp args, uim_lisp env))
-{
-  assert(uim_scm_gc_protected_contextp());
-  assert(name);
-  assert(func);
-
-  scm_register_func(name, (scm_syntax_variadic_0)func, SCM_SYNTAX_VARIADIC_0);
-}
-
-void
 uim_scm_init(const char *system_load_path)
 {
   ScmStorageConf storage_conf;

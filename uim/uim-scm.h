@@ -173,8 +173,6 @@ uim_scm_init_subr_4(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_li
 void
 uim_scm_init_subr_5(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
 						uim_lisp, uim_lisp));
-void uim_scm_init_fsubr(const char *name,
-                        uim_lisp (*fcn)(uim_lisp args, uim_lisp env));
 
 
 /* constants */
