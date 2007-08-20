@@ -310,6 +310,9 @@
 	   (predicate (make-key-predicate modified-key-strs)))
       (eval (list 'define key-predicate-sym predicate)
 	    (interaction-environment)))))
+(define-macro define-key
+  (lambda (key-predicate-sym key-strs)
+    `(define-key-internal ',key-predicate-sym ,key-strs)))
 
 (define valid-key-str?
   (lambda (key-str)

@@ -417,21 +417,6 @@ uim_release_key(uim_context uc, int key, int state)
   return (filtered) ? FILTERED : PASSTHROUGH;
 }
 
-static uim_lisp
-define_key(uim_lisp args, uim_lisp env)
-{
-  uim_lisp form, predicate_sym, sources;
-
-  if (uim_scm_length(args) != 2)
-    uim_scm_error_obj("define-key: invalid form", args);
-
-  predicate_sym = CAR(args);
-  sources = CAR(CDR(args));
-  form = LIST3(MAKE_SYM("define-key-internal"), QUOTE(predicate_sym), sources);
-
-  return uim_scm_eval(form);
-}
-
 void
 uim_init_key_subrs(void)
 {
@@ -439,5 +424,4 @@ uim_init_key_subrs(void)
   uim_scm_gc_protect(&protected);
 
   define_valid_key_symbols();
-  uim_scm_init_fsubr("define-key", define_key);
 }
