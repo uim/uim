@@ -49,6 +49,7 @@ extern "C" {
 
 #define INTP      uim_scm_integerp
 #define CHARP     uim_scm_charp
+#define VECTORP   uim_scm_vectorp
 #define STRP      uim_scm_stringp
 #define SYMP      uim_scm_symbolp
 #define PTRP      uim_scm_ptrp

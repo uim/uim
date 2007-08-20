@@ -201,6 +201,11 @@ uim_lisp uim_scm_array2list(void **ary, size_t size, uim_lisp (*conv)(void *));
 uim_lisp uim_scm_null_term_array2list(void **ary, uim_lisp (*conv)(void *));
 void **uim_scm_list2null_term_array(uim_lisp lst, void *(*conv)(uim_lisp));
 
+/* C array <-> Scheme vector converters */
+uim_lisp uim_scm_array2vector(void **ary, size_t len, uim_lisp (*conv)(void *));
+void **uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp));
+
+
 /* predicates */
 uim_bool
 uim_scm_nullp(uim_lisp obj);
@@ -209,6 +214,7 @@ uim_scm_consp(uim_lisp obj);
 uim_bool
 uim_scm_integerp(uim_lisp obj);
 uim_bool uim_scm_charp(uim_lisp obj);
+uim_bool uim_scm_vectorp(uim_lisp obj);
 uim_bool
 uim_scm_stringp(uim_lisp obj);
 uim_bool uim_scm_symbolp(uim_lisp obj);
@@ -224,6 +230,11 @@ uim_lisp
 uim_scm_cdr(uim_lisp pair);
 
 long uim_scm_length(uim_lisp lst);
+
+/* vector operations */
+uim_lisp uim_scm_vector_ref(uim_lisp vec, long i);
+void uim_scm_vector_set(uim_lisp vec, long i, uim_lisp elm);
+long uim_scm_vector_length(uim_lisp vec);
 
 
 #ifdef __cplusplus

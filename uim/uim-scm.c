@@ -110,6 +110,18 @@ struct list2array_args {
   void *(*conv)(uim_lisp);
 };
 static void *uim_scm_list2null_term_array_internal(struct list2array_args *args);
+struct array2vector_args {
+  void **ary;
+  size_t len;
+  uim_lisp (*conv)(void *);
+};
+static void *uim_scm_array2vector_internal(struct array2vector_args *args);
+struct vector2array_args {
+  uim_lisp vec;
+  size_t *len;
+  void *(*conv)(uim_lisp);
+};
+static void *uim_scm_vector2array_internal(struct vector2array_args *args);
 static void *uim_scm_eval_internal(void *uim_lisp_obj);
 static void *uim_scm_quote_internal(void *obj);
 struct cons_args {
@@ -759,6 +771,76 @@ uim_scm_list2null_term_array_internal(struct list2array_args *args)
 					  (void *(*)(ScmObj))args->conv);
 }
 
+/* Pass through uim_lisp if (conv == NULL). */
+uim_lisp
+uim_scm_array2vector(void **ary, size_t len, uim_lisp (*conv)(void *))
+{
+  struct array2vector_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(ary);
+  assert(len < SCM_INT_T_MAX);
+  assert(conv || !conv);
+
+  args.ary = ary;
+  args.len = len;
+  args.conv = conv;
+
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_array2vector_internal, &args);
+}
+
+static void *
+uim_scm_array2vector_internal(struct array2vector_args *args)
+{
+  ScmObj *vec;
+  size_t i;
+
+  vec = scm_malloc(args->len * sizeof(ScmObj));
+  for (i = 0; i < args->len; i++)
+    vec[i] = (ScmObj)args->conv(args->ary[i]);
+
+  return (void *)(uintptr_t)SCM_MAKE_VECTOR(vec, args->len);
+}
+
+/* Only accepts proper list. */
+void **
+uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp))
+{
+  struct vector2array_args args;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(vec));
+  assert(len);
+  assert(conv || !conv);
+
+  uim_scm_ensure(uim_scm_vectorp(vec));
+
+  args.vec = vec;
+  args.len = len;
+  args.conv = conv;
+
+  return (void **)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_vector2array_internal, &args);
+}
+  
+static void *
+uim_scm_vector2array_internal(struct vector2array_args *args)
+{
+  void **ary;
+  ScmObj vec_, *vec;
+  size_t len, i;
+
+  vec_ = (ScmObj)args->vec;
+  vec = SCM_VECTOR_VEC(vec_);
+  len = (size_t)SCM_VECTOR_LEN(vec_);
+  *args->len = len;
+
+  ary = scm_malloc(len * sizeof(void *));
+  for (i = 0; i < len; i++)
+    ary[i] = args->conv((uim_lisp)vec[i]);
+
+  return ary;
+}
+
 uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
@@ -789,6 +871,14 @@ uim_scm_charp(uim_lisp obj)
   assert(uim_scm_gc_any_contextp());
 
   return (SCM_CHARP((ScmObj)obj));
+}
+
+uim_bool
+uim_scm_vectorp(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (SCM_VECTORP((ScmObj)obj));
 }
 
 uim_bool
@@ -1062,6 +1152,35 @@ uim_scm_length(uim_lisp lst)
 
   protected = len = (uim_lisp)scm_p_length((ScmObj)lst);
   return uim_scm_c_int(len);
+}
+
+uim_lisp
+uim_scm_vector_ref(uim_lisp vec, long i)
+{
+  assert(uim_scm_gc_protected_contextp());
+  assert(uim_scm_gc_protectedp(vec));
+
+  return (uim_lisp)scm_p_vector_ref((ScmObj)vec, SCM_MAKE_INT(i));
+}
+
+void
+uim_scm_vector_set(uim_lisp vec, long i, uim_lisp elm)
+{
+  assert(uim_scm_gc_protected_contextp());
+  assert(uim_scm_gc_protectedp(vec));
+  assert(uim_scm_gc_protectedp(elm));
+
+  scm_p_vector_setx((ScmObj)vec, SCM_MAKE_INT(i), (ScmObj)elm);
+}
+
+long
+uim_scm_vector_length(uim_lisp vec)
+{
+  assert(uim_scm_gc_protected_contextp());
+  assert(uim_scm_gc_protectedp(vec));
+
+  /* To add type check for vec, SCM_VECTOR_LEN() is not directly used. */
+  return uim_scm_c_int((uim_lisp)scm_p_vector_length((ScmObj)vec));
 }
 
 uim_bool
