@@ -201,7 +201,7 @@ uim_scm_nullp(uim_lisp obj);
 uim_bool
 uim_scm_consp(uim_lisp obj);
 uim_bool
-uim_scm_integerp(uim_lisp obj);
+uim_scm_intp(uim_lisp obj);
 uim_bool uim_scm_charp(uim_lisp obj);
 uim_bool uim_scm_vectorp(uim_lisp obj);
 uim_bool
@@ -234,6 +234,7 @@ long uim_scm_vector_length(uim_lisp vec);
 #define UIM_SCM_FALSEP(x)  (uim_scm_falsep(x))
 #define UIM_SCM_NFALSEP(x) (uim_scm_truep(x))
 
+#define uim_scm_integerp  uim_scm_intp
 #define uim_scm_null_list uim_scm_null
 #endif /* UIM_SCM_USE_DEPRECATED_API */
 

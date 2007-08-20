@@ -876,7 +876,7 @@ uim_scm_consp(uim_lisp obj)
 }
 
 uim_bool
-uim_scm_integerp(uim_lisp obj)
+uim_scm_intp(uim_lisp obj)
 {
   assert(uim_scm_gc_any_contextp());
 

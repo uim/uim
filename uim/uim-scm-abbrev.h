@@ -47,7 +47,7 @@ extern "C" {
 #define MAKE_PTR  uim_scm_make_ptr
 #define MAKE_FPTR uim_scm_make_func_ptr
 
-#define INTP      uim_scm_integerp
+#define INTP      uim_scm_intp
 #define CHARP     uim_scm_charp
 #define VECTORP   uim_scm_vectorp
 #define STRP      uim_scm_stringp
