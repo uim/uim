@@ -228,6 +228,8 @@ uim_lisp
 uim_scm_car(uim_lisp pair);
 uim_lisp
 uim_scm_cdr(uim_lisp pair);
+void uim_scm_set_car(uim_lisp pair, uim_lisp car);
+void uim_scm_set_cdr(uim_lisp pair, uim_lisp cdr);
 
 long uim_scm_length(uim_lisp lst);
 

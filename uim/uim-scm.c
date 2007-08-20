@@ -1123,6 +1123,22 @@ uim_scm_cdr(uim_lisp pair)
   return (uim_lisp)scm_p_cdr((ScmObj)pair);
 }
 
+void
+uim_scm_set_car(uim_lisp pair, uim_lisp car)
+{
+  assert(uim_scm_gc_protected_contextp());
+
+  scm_p_set_carx((ScmObj)pair, (ScmObj)car);
+}
+
+void
+uim_scm_set_cdr(uim_lisp pair, uim_lisp cdr)
+{
+  assert(uim_scm_gc_protected_contextp());
+
+  scm_p_set_cdrx((ScmObj)pair, (ScmObj)cdr);
+}
+
 uim_lisp
 uim_scm_cons(uim_lisp car, uim_lisp cdr)
 {
