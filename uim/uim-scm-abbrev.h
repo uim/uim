@@ -56,6 +56,8 @@ extern "C" {
 #define FPTRP     uim_scm_func_ptrp
 #define NULLP     uim_scm_nullp
 #define CONSP     uim_scm_consp
+#define TRUEP     uim_scm_truep    /* (if obj #t #f) */
+#define FALSEP    uim_scm_falsep
 
 #define CAR       uim_scm_car
 #define CDR       uim_scm_cdr

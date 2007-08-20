@@ -58,6 +58,7 @@
 extern "C" {
 #endif
 
+#define UIM_SCM_USE_DEPRECATED_API 1
 
 /*
   uim companion tools should treat lisp object as opaque. struct
@@ -66,17 +67,6 @@ extern "C" {
 typedef struct uim_opaque * uim_lisp;
 typedef void (*uim_func_ptr)(void);
 typedef void *(*uim_gc_gate_func_ptr)(void *);
-
-#define UIM_SCM_FALSEP(x)  (uim_scm_eq((x), uim_scm_f()))
-#define UIM_SCM_NFALSEP(x) (!uim_scm_eq((x), uim_scm_f()))
-
-#if 1
-/* deprecated: replace with UIM_SCM_N?FALSEP() */
-#define FALSEP(x)  (UIM_SCM_FALSEP(x))
-#define NFALSEP(x) (UIM_SCM_NFALSEP(x))
-#define TRUEP(x) (uim_scm_eq(x, uim_scm_t()))
-#define NTRUEP(x) (!uim_scm_eq(x, uim_scm_t()))
-#endif
 
 
 /* subsystem interfaces */
@@ -181,7 +171,6 @@ uim_scm_t(void);
 uim_lisp
 uim_scm_f(void);
 uim_lisp uim_scm_null(void);
-#define uim_scm_null_list uim_scm_null
 uim_lisp uim_scm_eof(void);
 
 /* list constructors */
@@ -205,6 +194,8 @@ void **uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp));
 
 
 /* predicates */
+uim_bool uim_scm_truep(uim_lisp obj);  /* (if obj #t #f) */
+uim_bool uim_scm_falsep(uim_lisp obj);
 uim_bool
 uim_scm_nullp(uim_lisp obj);
 uim_bool
@@ -235,6 +226,16 @@ long uim_scm_length(uim_lisp lst);
 uim_lisp uim_scm_vector_ref(uim_lisp vec, long i);
 void uim_scm_vector_set(uim_lisp vec, long i, uim_lisp elm);
 long uim_scm_vector_length(uim_lisp vec);
+
+
+#if UIM_SCM_USE_DEPRECATED_API
+/* deprecated: replace with uim_scm_falsep() and uim_scm_truep(), or
+ * FALSEP() and TRUEP() in uim-scm-abbrev.h */
+#define UIM_SCM_FALSEP(x)  (uim_scm_falsep(x))
+#define UIM_SCM_NFALSEP(x) (uim_scm_truep(x))
+
+#define uim_scm_null_list uim_scm_null
+#endif /* UIM_SCM_USE_DEPRECATED_API */
 
 
 #ifdef __cplusplus

@@ -57,6 +57,36 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: uim-scm API truth predicates reorganization in uim 1.5.0
+Affects: uim developers, IM developers
+Updates: C API (uim-scm), libuim ABI
+Version: 1.5.0
+Revision: ac4876
+Date: 2007-08-20
+Modifier: YamaKen
+Related: uim-scm API reorganization in uim 1.5.0
+	 Deprecate truth predicates for uim-scm
+URL:
+Changes:
+         (new) uim_scm_truep()
+         (new) uim_scm_falsep()
+     (changed) FALSEP()
+     (changed) TRUEP()
+  (deprecated) UIM_SCM_FALSEP()
+  (deprecated) UIM_SCM_NFALSEP()
+     (removed) NFALSEP()
+     (removed) NTRUEP()
+Description:
+  - uim-scm truth predicates are now function-based. uim_scm_falsep(obj) as
+    (not obj), and uim_scm_truep(obj) as (if obj #t #f). Don't misunderstand
+    uim_scm_truep(obj) as if (eq? obj #t)
+  - Former main predicates UIM_SCM_FALSEP() and UIM_SCM_NFALSEP() are
+    deprecated
+  - FALSEP() is removed from uim-scm.h, but can be used via uim-scm-abbrev.h
+  - TRUEP() is previously defined as (eq? obj #t) in uim-scm.h. It is now
+    redefined as (if obj #t #f) in uim-scm-abbrev.h and removed from uim-scm.h
+  - NFALSEP() and NTRUEP() are removed from uim-scm.h
+------------------------------------------------------------------------------
 Summary: Fix invalid type assumption on PIDs
 Affects: IM developers, uim developers
 Updates: C API
@@ -404,7 +434,8 @@ Version: 1.5.0
 Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875
 Date: 2007-01-09 -
 Modifier: YamaKen
-Related: SigScheme introduction to uim
+Related: uim-scm API truth predicates reorganization in uim 1.5.0
+	 SigScheme introduction to uim
 	 Bit width extension of uim_scm_c_bool() and uim_scm_make_bool()
 URL:
 Changes:

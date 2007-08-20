@@ -110,7 +110,7 @@ validate_segment_index(struct canna_context *cc, int i)
 static uim_lisp
 init_canna_lib(uim_lisp str_)
 {
-  cannaserver = (NFALSEP(str_)) ? uim_scm_c_str(str_) : NULL;
+  cannaserver = (TRUEP(str_)) ? uim_scm_c_str(str_) : NULL;
 
   /* Immediate init & quit to test cannaserver connectivity? Real
    * initialization is exist at beginning of create_context(). I don't

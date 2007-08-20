@@ -842,6 +842,23 @@ uim_scm_vector2array_internal(struct vector2array_args *args)
   return ary;
 }
 
+/* (if obj #t #f) */
+uim_bool
+uim_scm_truep(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (SCM_TRUEP((ScmObj)obj));
+}
+
+uim_bool
+uim_scm_falsep(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (SCM_FALSEP((ScmObj)obj));
+}
+
 uim_bool
 uim_scm_nullp(uim_lisp obj)
 {
