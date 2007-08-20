@@ -131,6 +131,9 @@ uim_lisp uim_scm_make_bool(long val);
 long uim_scm_c_int(uim_lisp integer);
 uim_lisp uim_scm_make_int(long integer);
 
+long uim_scm_c_char(uim_lisp ch);
+uim_lisp uim_scm_make_char(long ch);
+
 char *
 uim_scm_c_str(uim_lisp str);
 const char *
@@ -205,6 +208,7 @@ uim_bool
 uim_scm_consp(uim_lisp obj);
 uim_bool
 uim_scm_integerp(uim_lisp obj);
+uim_bool uim_scm_charp(uim_lisp obj);
 uim_bool
 uim_scm_stringp(uim_lisp obj);
 uim_bool uim_scm_symbolp(uim_lisp obj);

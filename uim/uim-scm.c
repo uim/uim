@@ -87,6 +87,8 @@ static void *uim_scm_callf_internal(struct callf_args *args);
 
 static void *uim_scm_c_int_internal(void *uim_lisp_integer);
 static void *uim_scm_make_int_internal(void *integer);
+static void *uim_scm_c_char_internal(void *uim_lisp_ch);
+static void *uim_scm_make_char_internal(void *ch);
 static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
 static void *uim_scm_make_str_internal(const char *str);
 static void *uim_scm_make_str_directly_internal(char *str);
@@ -223,6 +225,45 @@ static void *
 uim_scm_make_int_internal(void *integer)
 {
   return (void *)SCM_MAKE_INT((intptr_t)integer);
+}
+
+long
+uim_scm_c_char(uim_lisp ch)
+{
+  assert(uim_scm_gc_any_contextp());
+  assert(uim_scm_gc_protectedp(ch));
+
+  return (long)(intptr_t)uim_scm_call_with_gc_ready_stack(uim_scm_c_char_internal, (void *)ch);
+}
+
+static void *
+uim_scm_c_char_internal(void *uim_lisp_ch)
+{
+  scm_ichar_t ch;
+  uim_lisp ch_;
+
+  ch_ = (uim_lisp)uim_lisp_ch;
+
+  if (!SCM_CHARP((ScmObj)ch_))
+    uim_scm_error_obj("uim_scm_c_char: char required but got ", ch_);
+
+  ch = SCM_CHAR_VALUE((ScmObj)ch_);
+  return (void *)(intptr_t)ch;
+}
+
+uim_lisp
+uim_scm_make_char(long ch)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_make_char_internal,
+                                                    (void *)(intptr_t)ch);
+}
+
+static void *
+uim_scm_make_char_internal(void *ch)
+{
+  return (void *)SCM_MAKE_CHAR((scm_ichar_t)ch);
 }
 
 char *
@@ -740,6 +781,14 @@ uim_scm_integerp(uim_lisp obj)
   assert(uim_scm_gc_any_contextp());
 
   return (SCM_INTP((ScmObj)obj));
+}
+
+uim_bool
+uim_scm_charp(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (SCM_CHARP((ScmObj)obj));
 }
 
 uim_bool
