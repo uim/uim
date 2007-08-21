@@ -89,7 +89,7 @@ Description:
 ------------------------------------------------------------------------------
 Summary: Fix invalid type assumption on PIDs
 Affects: IM developers, uim developers
-Updates: C API
+Updates: C API, libuim ABI
 Version: 1.5.0
 Revision: ac4840
 Date: 2007-08-13
@@ -106,7 +106,7 @@ Description:
 ------------------------------------------------------------------------------
 Summary: Bit width extension of uim_scm_c_bool() and uim_scm_make_bool()
 Affects: uim developers
-Updates: C API
+Updates: C API (uim-scm), libuim ABI
 Version: 1.5.0
 Revision: ac4820
 Date: 2007-08-11
@@ -145,7 +145,7 @@ Description:
 ------------------------------------------------------------------------------
 Summary: Fatal error handling helpers for plugin developers
 Affects: IM developers, uim developers
-Updates: C API
+Updates: C API, libuim ABI
 Version: 1.5.0
 Revision: ac4814, ac4816
 Date: 2007-08-11
@@ -345,7 +345,7 @@ Description:
 ------------------------------------------------------------------------------
 Summary: uim_iconv_open() privatization
 Affects: Bridge developers
-Updates: C API
+Updates: C API, libuim ABI
 Version: 1.5.0
 Revision: ac4377
 Date: 2007-01-11
