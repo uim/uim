@@ -122,7 +122,7 @@ libuim_look_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
-libuim_scm_la_SOURCES = uim-scm.c
+libuim_scm_la_SOURCES = uim-scm-sigscheme.c
 libuim_scm_la_LIBADD = $(GCROOTS_LIBS)
 libuim_scm_la_LDFLAGS = -version-info $(libuim_scm_version) -export-dynamic
 libuim_scm_la_CPPFLAGS = -I$(top_srcdir) \
