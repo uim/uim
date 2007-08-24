@@ -910,37 +910,6 @@ void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr));
 
-/*
- * Set callback functions called when IM-switching of specific set of context
- * is requested.
- *
- * When the functions are called back, bridges should re-initialize the
- * specified input contexts with the IM specified by 2nd argument
- * 'name'. Since the re-initialization method of specified contexts vary for
- * each IM environment, it is delegated to bridges via the callback. For
- * example, ordinary desktop system should send the helper message
- * im_change_whole_desktop in response to @a sw_system_im_cb. But in embedded
- * systems such as Qtopia, nothing to do with @a sw_system_im_cb since only
- * one input context is running on the window system and so system-global.
- *
- * @param uc input context
-
- * @param sw_app_im_cb called when re-initialization of all contexts within
- *        the application that @a uc belongs to, with specified IM is
- *        requested. 1st argument "ptr" corresponds to the 1st argument of
- *        uim_create_context, and 2nd "name" is requested idname of IM. The
- *        originating context is supposed to already be switched, and must not
- *        switched by the callback.
- * @param sw_system_im_cb called when re-initialization of all contexts
- *        running on the system that @a uc is running on, with specified IM is
- *        requested. The originating context is supposed to already be
- *        switched.
- */
-void
-uim_set_im_switch_request_cb(uim_context uc,
-			     void (*sw_app_im_cb)(void *ptr, const char *name),
-			     void (*sw_system_im_cb)(void *ptr, const char *name));
-
 
 /* For plugins implementation. Bridges should not use these functions. */
 void uim_fatal_error(const char *msg);  /* Disables uim */
