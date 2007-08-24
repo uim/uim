@@ -113,8 +113,7 @@ Date: 2007-08-11
 Modifier: YamaKen
 Related: uim-scm API reorganization in uim 1.5.0
          uim_scm_array2list()
-         uim_scm_null_term_array2list()
-         uim_scm_list2null_term_array()
+         uim_scm_list2array()
 URL:
 Changes:
   (changed) uim_scm_c_bool()
@@ -431,7 +430,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4878
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4878, ac4881
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: uim-scm API truth predicates reorganization in uim 1.5.0
@@ -457,8 +456,7 @@ Changes:
       (new) uim_scm_nullify_c_ptr()
       (new) uim_scm_eof()
       (new) uim_scm_array2list()
-      (new) uim_scm_null_term_array2list()
-      (new) uim_scm_list2null_term_array()
+      (new) uim_scm_list2term_array()
       (new) uim_scm_c_char()
       (new) uim_scm_make_char()
       (new) uim_scm_charp()

@@ -185,8 +185,7 @@ uim_lisp uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
 
 /* C array <-> Scheme list converters */
 uim_lisp uim_scm_array2list(void **ary, size_t len, uim_lisp (*conv)(void *));
-uim_lisp uim_scm_null_term_array2list(void **ary, uim_lisp (*conv)(void *));
-void **uim_scm_list2null_term_array(uim_lisp lst, void *(*conv)(uim_lisp));
+void **uim_scm_list2array(uim_lisp lst, size_t *len, void *(*conv)(uim_lisp));
 
 /* C array <-> Scheme vector converters */
 uim_lisp uim_scm_array2vector(void **ary, size_t len, uim_lisp (*conv)(void *));

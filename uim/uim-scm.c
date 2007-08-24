@@ -104,12 +104,12 @@ struct array2list_args {
   uim_lisp (*conv)(void *);
 };
 static void *uim_scm_array2list_internal(struct array2list_args *args);
-static void *uim_scm_null_term_array2list_internal(struct array2list_args *args);
 struct list2array_args {
   uim_lisp lst;
+  size_t *len;
   void *(*conv)(uim_lisp);
 };
-static void *uim_scm_list2null_term_array_internal(struct list2array_args *args);
+static void *uim_scm_list2array_internal(struct list2array_args *args);
 struct array2vector_args {
   void **ary;
   size_t len;
@@ -726,32 +726,9 @@ uim_scm_array2list_internal(struct array2list_args *args)
 				(ScmObj (*)(void *))args->conv);
 }
 
-/* Pass through uim_lisp if (conv == NULL). Terminator is NULL if
- * conv, and uim_scm_eof() if !conv.*/
-uim_lisp
-uim_scm_null_term_array2list(void **ary, uim_lisp (*conv)(void *))
-{
-  struct array2list_args args;
-
-  assert(uim_scm_gc_any_contextp());
-  assert(conv || !conv);
-
-  args.ary = ary;
-  args.conv = conv;
-
-  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_null_term_array2list_internal, &args);
-}
-
-static void *
-uim_scm_null_term_array2list_internal(struct array2list_args *args)
-{
-  return (void *)scm_null_term_array2list(args->ary,
-					  (ScmObj (*)(void *))args->conv);
-}
-
 /* Only accepts proper list. */
 void **
-uim_scm_list2null_term_array(uim_lisp lst, void *(*conv)(uim_lisp))
+uim_scm_list2array(uim_lisp lst, size_t *len, void *(*conv)(uim_lisp))
 {
   struct list2array_args args;
 
@@ -760,16 +737,17 @@ uim_scm_list2null_term_array(uim_lisp lst, void *(*conv)(uim_lisp))
   assert(conv || !conv);
 
   args.lst = lst;
+  args.len = len;
   args.conv = conv;
 
-  return (void **)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_list2null_term_array_internal, &args);
+  return (void **)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_list2array_internal, &args);
 }
   
 static void *
-uim_scm_list2null_term_array_internal(struct list2array_args *args)
+uim_scm_list2array_internal(struct list2array_args *args)
 {
-  return (void *)scm_list2null_term_array((ScmObj)args->lst,
-					  (void *(*)(ScmObj))args->conv);
+  return (void *)scm_list2array((ScmObj)args->lst, args->len,
+				(void *(*)(ScmObj))args->conv);
 }
 
 /* Pass through uim_lisp if (conv == NULL). */
