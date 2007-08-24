@@ -19,9 +19,11 @@ uim_el_helper_agent_SOURCES = uim-el-helper-agent.c uim-el-helper-agent.h \
  output.h debug.c debug.h
 
 uim_el_agent_CPPFLAGS = -I$(top_srcdir)
-uim_el_agent_LDADD = $(top_builddir)/uim/libuim.la
+uim_el_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
+		     $(top_builddir)/uim/libuim.la
 
 uim_el_helper_agent_CPPFLAGS = -I$(top_srcdir)
-uim_el_helper_agent_LDADD = $(top_builddir)/uim/libuim.la
+uim_el_helper_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
+			    $(top_builddir)/uim/libuim.la
 
 endif

@@ -11,4 +11,4 @@ Name: uim
 Description: multilingual input method library
 Version: @VERSION@
 Cflags: -I${includedir}/uim
-Libs: -L${libdir} -luim @LIBINTL@ @LIBICONV@
+Libs: -L${libdir} -luim-scm -luim @LIBINTL@ @LIBICONV@

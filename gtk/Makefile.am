@@ -14,7 +14,8 @@ module_LTLIBRARIES = $(im_uim_la)
 
 im_uim_la_SOURCES = $(IM_UIM_SOURCES)
 im_uim_la_LDFLAGS = -module -avoid-version @GTK2_LIBS@
-im_uim_la_LIBADD = $(top_builddir)/uim/libuim.la $(EBLIB_LIBS)
+im_uim_la_LIBADD = $(top_builddir)/uim/libuim-scm.la \
+		   $(top_builddir)/uim/libuim.la $(EBLIB_LIBS)
 
 
 IM_UIM_SOURCES = \

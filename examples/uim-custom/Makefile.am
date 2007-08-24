@@ -1,4 +1,6 @@
-uim_libs   = $(top_builddir)/uim/libuim-custom.la $(top_builddir)/uim/libuim.la
+uim_libs   = $(top_builddir)/uim/libuim-custom.la \
+	     $(top_builddir)/uim/libuim-scm.la \
+	     $(top_builddir)/uim/libuim.la
 
 noinst_PROGRAMS = uim-custom-variable uim-custom-dump uim-custom-update
 
