@@ -38,6 +38,7 @@
 
 #include <anthy/anthy.h>
 
+#include "uim.h"
 #include "uim-scm.h"
 #include "uim-util.h"
 #include "plugin.h"

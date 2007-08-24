@@ -38,6 +38,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -48,6 +49,7 @@
 #include <strings.h>
 #endif
 
+#include "uim.h"
 #include "uim-scm.h"
 #include "plugin.h"
 #include "uim-helper.h"

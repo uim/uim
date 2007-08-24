@@ -35,7 +35,7 @@
 #ifndef _uim_h_included_
 #define _uim_h_included_
 
-#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {

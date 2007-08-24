@@ -31,6 +31,7 @@
 */
 
 
+#include <stdio.h>
 #include <histedit.h>
 
 #include "uim.h"

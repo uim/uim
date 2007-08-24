@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <anthy/anthy.h>
 
+#include "uim.h"
 #include "uim-scm.h"
 #include "plugin.h"
 

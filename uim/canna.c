@@ -37,11 +37,13 @@
 
 #ifdef HAVE_CANNA_RK_H
 #include <canna/RK.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <assert.h>
 
+#include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "plugin.h"

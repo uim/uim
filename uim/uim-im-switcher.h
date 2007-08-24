@@ -40,6 +40,8 @@
 #ifndef _uim_im_switcher_h_included_
 #define _uim_im_switcher_h_included_
 
+#include "uim.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
