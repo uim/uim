@@ -4,3 +4,4 @@
 libuim_version = 6:0:0
 libuim_scm_version = 0:0:0
 libuim_custom_version = 2:0:0
+libuim_bsdlook_version = 0:0:0

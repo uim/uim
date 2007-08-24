@@ -10,7 +10,7 @@ uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
 CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
 
-lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la
+lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la libuim-bsdlook.la
 
 # Although uim only needs *.so for the plugins, whether *.la is
 # installed or not is system-dependent and uim leaves it untouched. It
@@ -33,6 +33,7 @@ pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h plugin.h \
 		uim-helper.h uim-im-switcher.h \
 		uim-custom.h
+pkginclude_HEADERS += bsdlook.h
 
 libuim_la_SOURCES = \
 		uim-internal.h uim-error.c uim.c \
@@ -40,7 +41,7 @@ libuim_la_SOURCES = \
 		iconv.c plugin.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
-		rk.c bsdlook.c
+		rk.c
 
 libuim_custom_la_SOURCES = uim-custom.c
 
@@ -110,15 +111,21 @@ endif
 
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c
-libuim_skk_la_LIBADD = libuim-scm.la libuim.la @NETLIBS@
+libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
 libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-look.la
 libuim_look_la_SOURCES = look.c
-libuim_look_la_LIBADD = libuim-scm.la libuim.la
+libuim_look_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la
 libuim_look_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_look_la_CPPFLAGS = -I$(top_srcdir)
+
+libuim_bsdlook_la_SOURCES = bsdlook.c
+libuim_bsdlook_la_LIBADD =
+libuim_bsdlook_la_LDFLAGS = -version-info $(libuim_bsdlook_version) \
+			    -export-dynamic
+libuim_bsdlook_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
