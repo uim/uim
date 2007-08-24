@@ -50,6 +50,7 @@ extern "C" {
    || ((major) == UIM_VERSION_MAJOR && (minor) == UIM_VERSION_MINOR	     \
        && (patchlevel) <= UIM_VERSION_PATCHLEVEL))
 
+#ifndef UIM_BOOL_DEFINED
 /*
  * A boolean type for uim to explicitly indicate intention about values
  *
@@ -63,6 +64,9 @@ typedef int uim_bool;
 
 #define UIM_FALSE 0
 #define UIM_TRUE 1
+
+#define UIM_BOOL_DEFINED 1
+#endif /* UIM_BOOL_DEFINED */
 
 
 typedef struct uim_context_ *uim_context;

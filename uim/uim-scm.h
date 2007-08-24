@@ -47,18 +47,34 @@
 */
 
 
-/* API and ABI are unstable */
 #ifndef _uim_scm_h_included_
 #define _uim_scm_h_included_
 
-#include <stdio.h>
-#include "uim.h"
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define UIM_SCM_USE_DEPRECATED_API 1
+
+#ifndef UIM_BOOL_DEFINED
+/*
+ * A boolean type for uim to explicitly indicate intention about values.
+ *
+ *                           *** IMPORTANT ***
+ *
+ * Do not test a value with (val == UIM_TRUE). The UIM_TRUE is only A TYPICAL
+ * VALUE FOR TRUE. Use (val) or (val != UIM_FALSE) instead.
+ *
+ */
+typedef int uim_bool;
+
+#define UIM_FALSE 0
+#define UIM_TRUE 1
+
+#define UIM_BOOL_DEFINED 1
+#endif /* UIM_BOOL_DEFINED */
 
 /*
   uim companion tools should treat lisp object as opaque. struct
@@ -70,7 +86,12 @@ typedef void *(*uim_gc_gate_func_ptr)(void *);
 
 
 /* subsystem interfaces */
+/* uim_scm_init(), uim_scm_quit() and uim_scm_set_fatal_error_hook() are
+ * called from libuim internal. Ordinary user must not call it directly. */
+void uim_scm_init(const char *system_load_path);
+void uim_scm_quit(void);
 uim_bool uim_scm_is_initialized(void);
+void uim_scm_set_fatal_error_hook(void (*hook)(void));
 void
 uim_scm_set_lib_path(const char *path);
 
