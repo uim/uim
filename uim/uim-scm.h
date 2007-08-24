@@ -149,20 +149,18 @@ uim_lisp
 uim_scm_make_func_ptr(uim_func_ptr func_ptr);
 
 /* procedure initializers */
-void
-uim_scm_init_subr_0(const char *name, uim_lisp (*fcn)(void));
-void 
-uim_scm_init_subr_1(const char *name, uim_lisp (*fcn)(uim_lisp));
-void
-uim_scm_init_subr_2(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp));
-void
-uim_scm_init_subr_3(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp));
-void
-uim_scm_init_subr_4(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
-		   				 uim_lisp));
-void
-uim_scm_init_subr_5(const char *name, uim_lisp (*fcn)(uim_lisp, uim_lisp, uim_lisp,
-						uim_lisp, uim_lisp));
+void uim_scm_init_proc0(const char *name, uim_lisp (*func)(void));
+void uim_scm_init_proc1(const char *name, uim_lisp (*func)(uim_lisp));
+void uim_scm_init_proc2(const char *name,
+			uim_lisp (*func)(uim_lisp, uim_lisp));
+void uim_scm_init_proc3(const char *name,
+			uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp));
+void uim_scm_init_proc4(const char *name,
+			uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
+					 uim_lisp));
+void uim_scm_init_proc5(const char *name,
+			uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
+					 uim_lisp, uim_lisp));
 
 
 /* constants */
@@ -235,6 +233,14 @@ long uim_scm_vector_length(uim_lisp vec);
 
 #define uim_scm_integerp  uim_scm_intp
 #define uim_scm_null_list uim_scm_null
+
+#define uim_scm_init_subr_0 uim_scm_init_proc0
+#define uim_scm_init_subr_1 uim_scm_init_proc1
+#define uim_scm_init_subr_2 uim_scm_init_proc2
+#define uim_scm_init_subr_3 uim_scm_init_proc3
+#define uim_scm_init_subr_4 uim_scm_init_proc4
+#define uim_scm_init_subr_5 uim_scm_init_proc5
+
 #endif /* UIM_SCM_USE_DEPRECATED_API */
 
 

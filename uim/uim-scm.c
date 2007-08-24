@@ -1210,7 +1210,7 @@ uim_scm_require_file(const char *fn)
 }
 
 void
-uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
+uim_scm_init_proc0(const char *name, uim_lisp (*func)(void))
 {
   assert(uim_scm_gc_protected_contextp());
   assert(name);
@@ -1220,7 +1220,7 @@ uim_scm_init_subr_0(const char *name, uim_lisp (*func)(void))
 }
 
 void
-uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
+uim_scm_init_proc1(const char *name, uim_lisp (*func)(uim_lisp))
 {
   assert(uim_scm_gc_protected_contextp());
   assert(name);
@@ -1230,7 +1230,7 @@ uim_scm_init_subr_1(const char *name, uim_lisp (*func)(uim_lisp))
 }
 
 void
-uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
+uim_scm_init_proc2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 {
   assert(uim_scm_gc_protected_contextp());
   assert(name);
@@ -1240,8 +1240,8 @@ uim_scm_init_subr_2(const char *name, uim_lisp (*func)(uim_lisp, uim_lisp))
 }
 
 void
-uim_scm_init_subr_3(const char *name,
-		    uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
+uim_scm_init_proc3(const char *name,
+		   uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp))
 {
   assert(uim_scm_gc_protected_contextp());
   assert(name);
@@ -1251,8 +1251,8 @@ uim_scm_init_subr_3(const char *name,
 }
 
 void
-uim_scm_init_subr_4(const char *name,
-		    uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp, uim_lisp))
+uim_scm_init_proc4(const char *name,
+		   uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp, uim_lisp))
 {
   assert(uim_scm_gc_protected_contextp());
   assert(name);
@@ -1262,9 +1262,9 @@ uim_scm_init_subr_4(const char *name,
 }
 
 void
-uim_scm_init_subr_5(const char *name,
-		    uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp, uim_lisp,
-				     uim_lisp))
+uim_scm_init_proc5(const char *name,
+		   uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp, uim_lisp,
+				    uim_lisp))
 {
   assert(uim_scm_gc_protected_contextp());
   assert(name);
