@@ -852,11 +852,9 @@ would not be proper to this function. */
  * time has come.  -- YamaKen 2005-09-12
  */
 /** Update custom value from property message.
- * Update custom value from property message. All variable update is
- * validated by custom APIs rather than arbitrary sexp
- * evaluation. Custom symbol \a custom is quoted in sexp string to be
- * restricted to accept symbol literal only. This prevents arbitrary
- * sexp evaluation.
+ * Update custom value from property message. The implementation
+ * avoids arbitrary sexp evaluation for both custom symbol \a custom
+ * and custom value \a val.
  */
 void
 uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
@@ -869,8 +867,7 @@ uim_prop_update_custom(uim_context uc, const char *custom, const char *val)
   assert(custom);
   assert(val);
 
-  uim_scm_callf("custom-set-handler", "pyo",
-                uc, custom, uim_scm_eval_c_string(val));
+  uim_scm_callf("custom-set-handler", "pys", uc, custom, val);
 
   UIM_CATCH_ERROR_END();
 }

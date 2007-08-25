@@ -734,10 +734,6 @@
     (let ((custom-syms (custom-collect-by-group group)))
       (for-each custom-broadcast-custom custom-syms))))
 
-(define custom-prop-update-custom-handler
-  (lambda (context custom-sym val)
-    (custom-set-value! custom-sym val)))
-
 (define custom-register-cb
   (lambda (hook valid? custom-sym ptr gate-func func)
     (and (valid? custom-sym)

@@ -40,6 +40,8 @@
 
 ;; TODO: write test-custom-rt.scm
 
+(require-extension (srfi 6 34))
+
 (require "util.scm")
 (require "key.scm")
 
@@ -245,11 +247,15 @@
 			    (interaction-environment)))
 		  (custom-set-value! sym default))))))))  ;; to apply hooks
 
-;; lightweight implementation
-;; warning: no validation performed
+;; warning: no validation performed by custom-set-value! on custom-rt.scm
 (define custom-prop-update-custom-handler
-  (lambda (context custom-sym val)
-    (custom-set-value! custom-sym val)))
+  (let ((READ-ERR (list 'read-err))) ;; unique id
+    (lambda (context custom-sym val-str)
+      (let ((val (guard (err
+			 (else READ-ERR))
+		   (read (open-input-string val-str)))))
+	(and (not (eq? val READ-ERR))
+	     (custom-set-value! custom-sym val))))))
 
 ;; custom-reload-user-configs can switch its behavior by
 ;; custom-enable-mtime-aware-user-conf-reloading? since the
