@@ -243,10 +243,8 @@ main_internal(struct main_args *args)
   uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
   uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
 
-  if (!uim_scm_require_file("uim-module-manager.scm")) {
-    perror("failed to require uim-module-manager.scm");
-    exit(EXIT_FAILURE);
-  }
+  if (!uim_scm_require_file("uim-module-manager.scm"))
+    uim_fatal_error("failed to require uim-module-manager.scm");
 
   if (path) {
     char *extra_file = concat(path, "/installed-modules.scm");
