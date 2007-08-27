@@ -873,8 +873,11 @@
 		     last-input-event
 		     ))
 
-  (if uim-emacs
-      (setq uim-deactivate-mark t))
+  ;;(if uim-emacs
+  ;;    (setq uim-deactivate-mark t))
+
+  (if uim-xemacs
+      (setq zmacs-region-stays nil))
 
   (if (not (or uim-translated-key-vector uim-untranslated-key-vector))
       (setq uim-keystroke-displaying nil))
@@ -1144,6 +1147,8 @@
       (if uim-emacs
 	  (setq uim-deactivate-mark nil))
 
+      (if uim-xemacs
+	  (setq zmacs-region-stays t))
       )
 
     (when discard
