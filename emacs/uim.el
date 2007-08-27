@@ -1097,7 +1097,7 @@
 	      (uim-debug (format "issue command %s %s" 
 				 issue-vector-raw count))
 	    
-	      (if (uim-process-keyvec issue-vector-raw count)
+	      (if (uim-process-key-vector issue-vector-raw count)
 		  (setq wait t)))
 	  (when (not wait)
 	    (uim-debug "* reset parameter after issue")
@@ -1358,7 +1358,7 @@
 		    (if uim-prefix-arg
 			(setq count (prefix-numeric-value uim-prefix-arg)))
 
-		    (when (uim-process-keyvec key count)
+		    (when (uim-process-key-vector key count)
 		      ;;(setq uim-stacked-key-vector key)
 		      (setq uim-wait-next-key t)
 		      ;;(setq uim-prefix-arg count)

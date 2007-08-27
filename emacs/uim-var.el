@@ -158,6 +158,8 @@ displayed at the echo area.")
 (defvar uim-toolbar-map nil
   "Empty keymap for preventing toolbar action on XEmacs.")
 
+(defvar uim-dummy-map nil
+  "Dummy keymap to disable uim-mode keymap temporarily.")
 
 ;; uim-el-agent related variables
 (defvar uim-el-agent-process nil

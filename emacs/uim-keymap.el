@@ -126,6 +126,8 @@
   (setq uim-mode-map (make-sparse-keymap))
   (setq uim-preedit-map (make-sparse-keymap))
 
+  (setq uim-dummy-map (make-sparse-keymap))
+
   (define-prefix-command 'uim-escape-map)
 
   ;; set default key-binds
