@@ -257,15 +257,16 @@ displayed at the echo area.")
 (defvar uim-prefix-arg nil
   "Recent current-prefix-arg value.")
 
-;;(defvar uim-prefix-arg-vector-length 0)
-
 ;; unprocessed keys
-(defvar uim-stacked-key-vector nil)
+(defvar uim-wait-next-key nil)
+
+(defvar uim-translated-key-vector nil)
+(defvar uim-untranslated-key-vector nil)
+
 (defvar uim-prefix-arg-vector nil)
-(defvar uim-prefix-ignore-next nil)
 
 ;; if non-nil, pressed keys are displayed at echo region
-(defvar uim-show-keystrokes nil)
+(defvar uim-keystroke-displaying nil)
 
 
 ;; keep original last-input-event to process the event correctly after

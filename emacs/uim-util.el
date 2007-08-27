@@ -305,6 +305,34 @@
 (defun uim-point ()
   (window-point (get-buffer-window (current-buffer))))
 
+(defun uim-get-vector-from-head (vec n)
+  (if (and (<= n (length vec))
+	   (> n 0))
+      (let ((vlist (append vec nil))
+	    (ret '()))
+	(while (> n 0)
+	  (setq ret (append ret (list (car vlist))))
+	  (setq vlist (cdr vlist))
+	  (setq n (- n 1)))
+	(vconcat ret))))
+
+(defun uim-get-vector-from-tail (vec n)
+  (if (and (<= n (length vec))
+	   (> n 0))
+      (vconcat (nthcdr (- (length vec) n) (append vec nil)))))
+
+(defun uim-cut-vector-from-head (vec n)
+  (if (<= n (length vec))
+      (uim-get-vector-from-tail vec (- (length vec) n))))
+
+
+(defun uim-vector-cdr (vec)
+  (if (> (length vec) 1)
+      (uim-get-vector-from-tail vec (- (length vec) 1))))
+
+(defun uim-vector-car (vec)
+  (uim-get-vector-from-head vec 1))
+
 (defun uim-delete-atom (list)
   (if (and list 
 	   (not (atom list)))

@@ -195,7 +195,9 @@
 ;; 
 (defun uim-process-keyvec (uim-key-vector &optional count)
   (let ((bind (uim-key-binding uim-key-vector t))
-	keyvectmp)
+	keyvectmp
+	continue
+	)
     (uim-debug (format "uim-process-keyvec"))
     
     (if uim-emacs
@@ -203,7 +205,12 @@
 	(setq deactivate-mark nil))
     
     (unwind-protect    
-	(cond (count
+	(cond ((keymapp bind)
+	       (uim-debug "bind is keymap")
+	       (setq continue t)
+	       )
+
+	      (count
 	       (setq prefix-arg count)
 	       (uim-command-execute
 		(uim-key-binding uim-key-vector t))
@@ -269,6 +276,7 @@
       (if uim-emacs
 	  (setq uim-deactivate-mark deactivate-mark))
       )
+    continue
     )
   )
   
@@ -511,205 +519,172 @@
   )
 
 
+(defun uim-separate-prefix-vector (key-vector)
+  (let (key-vector-prefix key-vector-main)
+    (setq key-vector-main (uim-last-onestroke-key key-vector))
+    (setq key-vector-prefix 
+	  (uim-get-vector-from-head key-vector
+				    (- (length key-vector)
+				       (length key-vector-main))))
+    ;;(setq key-vector key-vector-main)
+    ;;(setq uim-prefix-arg-vector key-vector-prefix)
+    (list key-vector-main key-vector-prefix))
+  )
+
+
 ;;
 ;; get this-command-keys with symbol lists vector
 ;; 
-(defun uim-this-command-keys (with-arg)
-  (let (keyvec replace-continue fmap-continue bind)
+(defun uim-translate-key (input-vector)
+  (let (translated-vector map (non-error t)
+	(input-vector-main input-vector)
+	(input-vector-prefix nil)
+	input-vector-main-backup
+	translated bind)
 
-    (if uim-xemacs
-	(setq keyvec (this-command-keys)))
+    (uim-debug (format "input-vector: %s" input-vector))
 
-    (if uim-emacs
-	(setq keyvec (this-command-keys-vector)))
+    (catch 'fmap-loop
+      (while input-vector-main
 
-    (if uim-prefix-ignore-next
-	;; avoid mysterious key event on Emacs-21 on terminal
-	;;  ex. C-u 1 0 escape f 
-	(progn
-	  (uim-debug "ignore this key vector")
-	  (setq keyvec nil)
-	  (setq uim-prefix-ignore-next nil)
-	  )
-      (if with-arg
-	  ;; key with prefix arg
-	  (let* ((rkeylist (reverse (append keyvec nil))))
-	    (setq keyvec (uim-last-onestroke-key keyvec))
-	    (if (= (length keyvec) 2)
-		;; Only Emacs-21 returns two stroke keys at 1st time
-		(setq uim-prefix-arg-vector 
-		      (vconcat (reverse (cdr (cdr rkeylist)))))
-	      (setq uim-prefix-arg-vector 
-		    (vconcat (reverse (cdr rkeylist)))))
-	    ;; work around
-	    (if (= (length keyvec) 2)
-		(setq uim-prefix-ignore-next t))
-	    )))
+	(setq input-vector-main-backup input-vector-main)
 
-    (uim-debug (format "keyvec %s" keyvec))
-
-    ;; translate key vector with function-key-map
-
-    (let (fmap key replaced)
-      (let* ((merged-vector (vconcat uim-stacked-key-vector keyvec))
-	     (merged-list (append merged-vector nil))
-	     (stacked-list nil)
-	     merged-list-backup
-	     done)
-	(uim-debug (format "merged-list: %s" merged-list))
-
-	(catch 'fmap-loop
-	  (while merged-list
-
-	    (setq merged-list-backup merged-list)
-
-
-	    (setq bind (uim-key-binding (vconcat merged-list)))
+	(setq bind (uim-key-binding input-vector-main))
 	  
-	    (if (and bind
-		     (not (integerp bind)))
-		(progn
-		  (uim-debug "skip function-key-map lookup")
-		  (setq uim-stacked-key-vector 
-			(vconcat stacked-list merged-list))
-		  (throw 'fmap-loop t))
-
-	      (setq fmap (lookup-key function-key-map (vconcat merged-list)))
+	(if (and bind
+		 (not (integerp bind)))
+	    (progn
+	      (uim-debug "skip function-key-map lookup")
+	      ;;(setq translated-vector input-vector)
+	      (setq translated-vector nil)
+	      (throw 'fmap-loop t))
+	  
+	  (setq translated (lookup-key function-key-map input-vector-main))
 	      
-	      (if (and (or (not fmap)
-			   (integerp fmap))
-		       (boundp 'local-function-key-map))
-		  (setq fmap (lookup-key local-function-key-map 
-					 (vconcat merged-list))))
+	  (if (and (or (not translated)
+		       (integerp translated))
+		   (boundp 'local-function-key-map))
+	      (setq translated (lookup-key local-function-key-map 
+					   input-vector-main)))
+	  
+	  (if (or (not translated)
+		  (integerp translated))
+	      (progn
+		(setq input-vector-main (uim-remove-shift input-vector-main))
+
+		(setq bind (uim-key-binding input-vector-main))
+
+		(if (and bind 
+			 (not (integerp bind)))
+
+		    (progn
+		      (uim-debug "skip function-key-map lookup (remove shift)")
+		      ;;(setq translated-vector input-vector)
+		      (setq translated-vector 
+			    (vconcat input-vector-prefix input-vector-main))
+		      (throw 'fmap-loop t))
+
+		  ;; そうでなかったら，function-key-mapを引いてみる
+		  (setq translated (lookup-key function-key-map 
+					       input-vector-main))
+
+		  (if (and (or (not translated)
+			       (integerp translated))
+			   (boundp 'local-function-key-map))
+		      (setq translated (lookup-key local-function-key-map 
+						   input-vector-main)))
+
+		  (uim-debug "*** cannot remove shift")
+
+		  (if (not translated)
+		      (setq input-vector-main input-vector-main-backup)))))
+
+	  (cond ((not translated)
+		 )
+
+		((vectorp translated)
+		 ;; vector ... replace immediately
+		 (uim-debug (format "translated is vector: %s" translated))
+		 (setq translated-vector 
+		       (vconcat input-vector-prefix translated))
+		 (throw 'fmap-loop t))
+
+		((keymapp translated)
+		 ;; keymap ... wait next input
+		 (uim-debug (format "translated is keymap: %s" translated))
+		 (setq map translated)
+		 (throw 'fmap-loop t))
 
 
-	      (if  (or (not fmap) 
-		       (integerp fmap))
-		  (progn
-		    (setq merged-list
-			  (append (uim-remove-shift (vconcat merged-list)) nil))
-
-		    (setq bind (uim-key-binding (vconcat merged-list)))
-
-		    (if (and bind
-			     (not (integerp bind)))
-			
-			(progn
-			  (uim-debug "skip function-key-map lookup (remove shift)")
-			  (setq uim-stacked-key-vector
-				(vconcat stacked-list merged-list))
-			  (throw 'fmap-loop t))
-
-		      ;; そうでなかったら，function-key-mapを引いてみる
-		      (setq fmap (lookup-key function-key-map
-					     (vconcat merged-list)))
-
-		      (if (and (or (not fmap)
-				   (integerp fmap))
-			       (boundp 'local-function-key-map))
-			  (setq fmap (lookup-key local-function-key-map 
-						 (vconcat merged-list))))
+		((functionp translated)
+		 ;; function ... call immediately and use returned value
+		 (uim-debug (format "translated is function: %s" translated))
+		 ;;(setq func translated)
 
 
-		      (if (not fmap)
-			  (setq merged-list merged-list-backup)))))
+		 (if (not uim-keystroke-displaying)
+		     (setq uim-keystroke-displaying (sit-for echo-keystrokes)))
 
-	      
-	      (cond ((vectorp fmap)
-		     ;; vector: replace
-		     (uim-debug (format "vector: %s" (vconcat merged-list)))
-		     (setq uim-stacked-key-vector 
-			   (vconcat stacked-list fmap))
-		     (throw 'fmap-loop t)
-		     )
-		    ((keymapp fmap)
-		     ;; keymap: wait next
-		     (uim-debug (format "keymap: %s" (vconcat merged-list)))
-		     (setq fmap-continue t)
-		     (setq uim-stacked-key-vector merged-vector)
-		     (throw 'fmap-loop t)
-		     )
-		    ((functionp fmap)
-		     (uim-debug (format "function: %s" (vconcat merged-list)))
-		     (setq fmap (funcall fmap nil))
-		     (if (vectorp fmap)
-			 (setq uim-stacked-key-vector (vconcat stacked-list fmap))
-		       )
-		     (throw 'fmap-loop t)
-		     )
-		    ))
+		 (if uim-keystroke-displaying
+		     (let (message-log-max)
+		       (message (concat (key-description 
+					 (vconcat uim-prefix-arg-vector
+						  input-vector))
+					"-")))
+		   )
 
-	    (setq merged-list merged-list-backup)
-	    
-	    (setq stacked-list (append stacked-list (list (car merged-list))))
-	    (setq merged-list (cdr merged-list))
-	    )
+		 (unwind-protect
+		     (setq translated-vector
+			   (vconcat input-vector-prefix (funcall translated nil)))
+		   (when (not translated-vector)
+		     (setq non-error nil)
+		     (throw 'fmap-loop nil)))
 
-	  (setq uim-stacked-key-vector merged-vector))))
+		 (throw 'fmap-loop t))
+		
+		((stringp translated)
+		 ;; string ... replace
+		 (uim-debug (format "translated is string:%s"
+				    translated))
+		 (setq translated-vector
+		       (char-to-string (aref translated 
+					     (- (length translated) 1))))
+		 (throw 'fmap-loop t))
+		))
+
+	(setq input-vector-main input-vector-main-backup)
+
+	(setq input-vector-prefix
+	      (vconcat input-vector-prefix (uim-vector-car input-vector-main)))
+
+	(setq input-vector-main
+	      (uim-vector-cdr input-vector-main))) ;; end of while
       
-    ;; Replate [escape escape] with [M-escape] on XEmacs
-    ;;   Some special keys cannot be used with escape key on terminal
-    (when (and uim-xemacs
-	       (>= (length uim-stacked-key-vector) 2)
-	       (equal (aref uim-stacked-key-vector 0) 
-		      (uim-xemacs-make-event [(escape)])))
-      ;; append meta
-      (setq uim-stacked-key-vector
-	    (vector
-	     (uim-xemacs-make-event
-	      (vector 
-	       (cons 'meta 
-		     (aref (uim-convert-char-to-symbolvector
-			    (key-description (vconcat
-					      (cdr (append 
-						    uim-stacked-key-vector
-						    nil)))))
-			   0)))))))
-
-
-
-    (uim-debug (format "stacked-key-vector: %s" uim-stacked-key-vector))
-
-    (cond ((and uim-preedit-keymap-enabled
-		(uim-is-escape uim-stacked-key-vector))
-	   (uim-debug "stacked-key is Escape")
-	   ;; Return escape key
-	   (if uim-emacs
-	       (setq keyvec [27]))
-	   (if uim-xemacs
-	       (setq keyvec (vector (uim-xemacs-make-event [escape]))))
-	   (setq uim-stacked-key-vector nil)
-	   )
-	  ((or (and uim-preedit-keymap-enabled
-		      (or 
-		       (and (or (eq (car-safe (aref uim-stacked-key-vector 0))
-				    'menu-bar)
-				(eq (car-safe (aref uim-stacked-key-vector 0))
-				    'tool-bar))
-			    (keymapp (uim-key-binding uim-stacked-key-vector)))
-
-		    (and fmap-continue  ;; wait ESC- key vector
-			    (uim-is-start-with-escape uim-stacked-key-vector))
-		       ))
-	       
-	       (and (not uim-preedit-keymap-enabled)
-		    (or (and fmap-continue 
-			     (not (commandp (uim-key-binding uim-stacked-key-vector t))))
-			(keymapp (uim-key-binding uim-stacked-key-vector t))))
-	       uim-prefix-ignore-next ;; work around for Emacs-21 prefix arg
-	       )
-	   (uim-debug "wait next")
-	   (setq keyvec nil))
-	  (t
-	   ;; No need to wait any more. Return current keys.
-	   (setq keyvec uim-stacked-key-vector)
-	   (setq uim-stacked-key-vector nil))
-	  )
-
-    keyvec
-    )
+      (setq translated-vector nil)) ;; end of catch
+    
+    (uim-debug (format "output vector: %s" translated-vector))
+    (list translated-vector map non-error))
   )
 
+
+
+;; Replate [escape escape] with [M-escape] on XEmacs
+;;   Some special keys cannot be used with escape key on terminal
+(defun uim-translate-escape-meta (input-vector)
+  (if (and uim-xemacs
+	   (>= (length input-vector) 2)
+	   (equal (aref input-vector 0)
+		  (uim-xemacs-make-event [(escape)])))
+      ;; append meta
+      (vconcat 
+       (vector 
+	(uim-xemacs-make-event 
+	 (vector (cons 'meta (aref (uim-convert-char-to-symbolvector
+				   (key-description (uim-vector-cdr 
+						     input-vector))) 0)
+		      ))))
+       (uim-cut-vector-from-head input-vector 2))
+    input-vector))
 
 (provide 'uim-key)
 
