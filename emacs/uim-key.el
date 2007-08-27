@@ -508,16 +508,14 @@
 	 )
 	(uim-xemacs
 	 (if (or window-system
-		 (and (not window-system) uim-use-single-escape-on-terminal))
+		 (and (not window-system) 
+		      uim-use-single-escape-on-terminal))
 	     (uim-is-single-escape keyvec)
-	   (or (equal keyvec (make-vector 2 (uim-xemacs-make-event [(escape)])))
-	       (equal keyvec (vector (uim-xemacs-make-event (uim-convert-char-to-symbolvector "M-ESC"))))
-	       )
-	   )
-	 )
-	)
-  )
-
+	   (or (equal keyvec 
+		      (make-vector 2 (uim-xemacs-make-event [(escape)])))
+	       (equal keyvec 
+		      (vector (uim-xemacs-make-event [(meta escape)]))))
+	   ))))
 
 (defun uim-separate-prefix-vector (key-vector)
   (let (key-vector-prefix key-vector-main)
