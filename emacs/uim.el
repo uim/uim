@@ -1365,6 +1365,9 @@
   ;; initialize keymap
   (uim-init-keymap)
 
+  ;; wrap some functions
+  (uim-this-command-keys-override)
+
   ;; add hook to detect status change of buffer
   (add-hook 'post-command-hook 'uim-post-command)
 

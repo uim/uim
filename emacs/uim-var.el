@@ -294,6 +294,7 @@ displayed at the echo area.")
 (defvar uim-show-im-name t
   "If the value is non-nil, IM name is displayed on mode-line.")
 
+(defvar uim-this-command-keys-original nil)
 
 ;;; Buffer Local Variables
 

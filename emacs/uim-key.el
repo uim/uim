@@ -135,28 +135,36 @@
   (undo-boundary) 
   )
 
+(defun uim-backup-this-command-keys ()
+  (when (not uim-this-command-keys-original)
+    ;;(uim-debug "this-command-keys backup!")
+    (setq uim-this-command-keys-original
+          (symbol-function 'this-command-keys))))
 
-(defun uim-command-execute (keyvec)
-  (uim-debug (format "uim-command-execute: %s" keyvec))
-  (let (this-command-keys-original 
-	(mode uim-mode))
 
-    (fset 'this-command-keys-original
-	  (symbol-function 'this-command-keys))
+(defun uim-this-command-keys-override ()
+  (if (not uim-this-command-keys-original)
+      (progn
+        (uim-backup-this-command-keys)
+        (defun this-command-keys ()
+          (if (and (boundp 'uim-key-vector)
+                   uim-key-vector)
+              uim-key-vector
+            (funcall uim-this-command-keys-original))))))
+
+
+(defun uim-command-execute (uim-key-vector)
+  (uim-debug (format "uim-command-execute: %s" uim-key-vector))
+  (let ((mode uim-mode))
 
     (unwind-protect
 	(progn
-	  (fset 'this-command-keys 
-		'(lambda ()
-		   keyvec))
 	  (setq uim-mode nil)
-	  (setq this-command keyvec)
+	  (setq this-command uim-key-vector)
 	  (run-hooks 'pre-command-hook)
 	  (command-execute this-command)
 	  )
       (progn
-	(fset 'this-command-keys 
-	      (symbol-function 'this-command-keys-original))
 	(setq uim-mode mode)))))
 
 
@@ -186,8 +194,8 @@
 ;;
 ;; Process the key vector returned from Uim.
 ;; 
-(defun uim-process-keyvec (keyvec &optional count)
-  (let ((bind (uim-getbind keyvec))
+(defun uim-process-keyvec (uim-key-vector &optional count)
+  (let ((bind (uim-getbind uim-key-vector))
 	keyvectmp)
     (uim-debug (format "uim-process-keyvec"))
     
@@ -197,25 +205,25 @@
     
     (unwind-protect    
 	(cond ((and (or (keymapp bind) (not bind))
-		    (setq keyvectmp (uim-remove-shift keyvec))
-		    (setq keyvec keyvectmp))
+		    (setq keyvectmp (uim-remove-shift uim-key-vector))
+		    (setq uim-key-vector keyvectmp))
 
 	       (if uim-xemacs
 		   (progn
-		     (setq uim-retry-keys keyvec)
+		     (setq uim-retry-keys uim-key-vector)
 		     (if count (setq prefix-arg count))
 		     (setq unread-command-events
-			   (cons (aref keyvec 0) unread-command-events))))
+			   (cons (aref uim-key-vector 0) unread-command-events))))
 
 	       (if uim-emacs
 		   (progn
-		     (uim-debug (format "retry key is %s / count is %s" keyvec
+		     (uim-debug (format "retry key is %s / count is %s" uim-key-vector
 					count))
-		     (setq uim-retry-keys keyvec)
+		     (setq uim-retry-keys uim-key-vector)
 		     (if count (setq prefix-arg count))
 		     ;; dummy data
 		     (setq unread-command-events
-			   (nconc (listify-key-sequence keyvec)
+			   (nconc (listify-key-sequence uim-key-vector)
 				  unread-command-events)
 			   )
 		     ))
@@ -223,73 +231,51 @@
 	      (count
 	       (setq prefix-arg count)
 	       (uim-command-execute
-		(uim-getbind keyvec))
-		;;(uim-getbind (uim-last-onestroke-key keyvec)))
+		(uim-getbind uim-key-vector))
+		;;(uim-getbind (uim-last-onestroke-key uim-key-vector)))
 	       )
 	      
 	      ((commandp bind)
 
-	       (let (this-command-keys-original)
-		 (fset 'this-command-keys-original
-		       (symbol-function 'this-command-keys))
+	       (if (eq bind 'self-insert-command)
+		   (progn
+		     (setq this-command bind)
+		     (setq last-command-char (aref uim-key-vector 0))
+		     (call-interactively bind)
+		     (uim-concat-undo))
+		 (setq this-command bind)
+		 (uim-debug (format "this-command is %s" this-command))
+		 (setq last-command-char (aref uim-key-vector 0))
 
-		 (unwind-protect
+		 (if uim-xemacs
 		     (progn
-		       (fset 'this-command-keys 
-			     '(lambda ()
-				keyvec))
+		       (setq last-input-event uim-original-input-event)
+		       (handle-pre-motion-command)))
 
-		       (if (eq bind 'self-insert-command)
-			   (progn
-			     (setq this-command bind)
-			     (setq last-command-char (aref keyvec 0))
-			     (call-interactively bind)
-			     (uim-concat-undo))
-			 (setq this-command bind)
-			 (uim-debug (format "this-command is %s" this-command))
-			 (setq last-command-char (aref keyvec 0))
+		 (run-hooks 'pre-command-hook)
+		 (command-execute this-command) 
 
-			 (if uim-xemacs
-			     (progn
-			       (setq last-input-event uim-original-input-event)
-			       (handle-pre-motion-command)))
+		 (if uim-xemacs
+		     (handle-post-motion-command))
 
-			 (run-hooks 'pre-command-hook)
-			 (command-execute this-command) 
-
-			 (if uim-xemacs
-			     (handle-post-motion-command))
-
-			 (uim-flush-concat-undo)
-			 )
-		       )
-		   (fset 'this-command-keys 
-			 (symbol-function 'this-command-keys-original))
-		   )
+		 (uim-flush-concat-undo)
 		 )
 	       )
+
 	      ((or (and uim-emacs
-			(= help-char (aref (uim-last-onestroke-key keyvec) 0)))
+			(= help-char (aref (uim-last-onestroke-key uim-key-vector) 0)))
 		   (and uim-xemacs
 			(equal (uim-xemacs-make-event 
 				(uim-convert-char-to-symbolvector (key-description help-char)))
-			       (aref (uim-last-onestroke-key keyvec) 0))))
+			       (aref (uim-last-onestroke-key uim-key-vector) 0))))
 	       (uim-debug "help-char")
-	       (let (this-command-keys-original 
-		     (mode uim-mode))
-		 (fset 'this-command-keys-original
-		       (symbol-function 'this-command-keys))
+	       (let ((mode uim-mode))
 		 (unwind-protect
 		     (progn
-		       (fset 'this-command-keys 
-			     '(lambda ()
-				keyvec))
 		       (setq uim-mode nil)
 		       (funcall prefix-help-command)
 		       )
 		   (progn
-		     (fset 'this-command-keys 
-			   (symbol-function 'this-command-keys-original))
 		     (setq uim-mode mode))))
 	       )
 	      (t
@@ -298,7 +284,7 @@
 		   (error 'undefined-keystroke-sequence 
 			  (uim-xemacs-make-event 
 			   (uim-convert-char-to-symbolvector 
-			    (key-description keyvec))))
+			    (key-description uim-key-vector))))
 		 (undefined))
 	       )
 	      )
