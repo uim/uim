@@ -77,7 +77,7 @@
 ;;
 ;; Get original key-mapped function
 ;;
-(defun uim-getbind (keyvec)
+(defun uim-getbind (keyvec &optional translation)
   (let (bind 
 	(mode uim-mode))
     (unwind-protect
@@ -90,7 +90,11 @@
 				    'digit-argument 
 				    'negative-argument)))
 	      (setq bind (key-binding keyvec)))
-	  )
+
+	  (if (and (or (not bind)
+		       (integerp bind))
+		   translation)
+	      (setq bind (lookup-key key-translation-map keyvec))))
       (setq uim-mode mode))
     bind
     ))
@@ -195,7 +199,7 @@
 ;; Process the key vector returned from Uim.
 ;; 
 (defun uim-process-keyvec (uim-key-vector &optional count)
-  (let ((bind (uim-getbind uim-key-vector))
+  (let ((bind (uim-getbind uim-key-vector t))
 	keyvectmp)
     (uim-debug (format "uim-process-keyvec"))
     
@@ -207,10 +211,13 @@
 	(cond (count
 	       (setq prefix-arg count)
 	       (uim-command-execute
-		(uim-getbind uim-key-vector))
+		(uim-getbind uim-key-vector t))
 		;;(uim-getbind (uim-last-onestroke-key uim-key-vector)))
 	       )
-	      
+	      ((stringp bind)
+	       (command-execute bind)
+	       (uim-concat-undo)
+	       )
 	      ((commandp bind)
 
 	       (if (eq bind 'self-insert-command)
@@ -701,8 +708,8 @@
 	       
 	       (and (not uim-preedit-keymap-enabled)
 		    (or (and fmap-continue 
-			     (not (commandp (uim-getbind uim-stacked-key-vector))))
-			(keymapp (uim-getbind uim-stacked-key-vector))))
+			     (not (commandp (uim-getbind uim-stacked-key-vector t))))
+			(keymapp (uim-getbind uim-stacked-key-vector t))))
 	       uim-prefix-ignore-next ;; work around for Emacs-21 prefix arg
 	       )
 	   (uim-debug "wait next")
@@ -713,12 +720,6 @@
 	   (setq uim-stacked-key-vector nil))
 	  )
 	
-    ;; convert keyvector with key-translation-map
-    (if keyvec
-	(let ((transvec (lookup-key key-translation-map keyvec)))
-	  (if (vectorp transvec)
-	      (setq keyvec transvec))))
-
     keyvec
     )
   )
