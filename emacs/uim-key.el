@@ -608,7 +608,6 @@
 			    (vconcat input-vector-prefix input-vector-main))
 		      (throw 'fmap-loop t))
 
-		  ;; そうでなかったら，function-key-mapを引いてみる
 		  (setq translated (lookup-key function-key-map 
 					       input-vector-main))
 

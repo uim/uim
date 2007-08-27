@@ -922,7 +922,7 @@
 		   (setq uim-untranslated-key-vector nil))
 
 		  ((vectorp translated)
-		   (setq send t) ;; とりあえずtにしとく
+		   (setq send t) 
 		   (setq uim-translated-key-vector 
 			 (vconcat uim-translated-key-vector translated))
 		   (setq uim-untranslated-key-vector nil))
@@ -1008,7 +1008,6 @@
 
 
     (when send
-      ;; 本当にuim-el-agentに送る場合は後処理
 
       (uim-debug "SEND")
 
