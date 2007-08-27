@@ -54,6 +54,7 @@
 static guint g_mod1_mask, g_mod2_mask, g_mod3_mask, g_mod4_mask, g_mod5_mask;
 static gint g_numlock_mask;
 static guint g_modifier_state, g_pre_modifier_state;
+static KeyCode g_prolongedsound_keycode;
 #endif
 
 void
@@ -228,6 +229,13 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
      break;
     }
   }
+#ifdef GDK_WINDOWING_X11
+  /* 1'. replace keysym for Japanese keyboard */
+  if (*ukey == '\\' &&
+      event->hardware_keycode == g_prolongedsound_keycode) {
+    *ukey = UKey_Yen;
+  }
+#endif
 
   /* 2. check modifier */
   if (mod & GDK_SHIFT_MASK)
@@ -375,5 +383,7 @@ im_uim_init_modifier_keys()
   g_slist_free(mod5_list);
   XFreeModifiermap(map);
   XFree(sym);
+  /* setup keycode hack */
+  g_prolongedsound_keycode = XKeysymToKeycode(display, XK_prolongedsound);
 #endif
 }
