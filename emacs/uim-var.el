@@ -268,8 +268,6 @@ displayed at the echo area.")
 (defvar uim-show-keystrokes nil)
 
 
-(defvar uim-retry-keys nil)
-
 ;; keep original last-input-event to process the event correctly after
 ;; removing Shift modifier
 (defvar uim-original-input-event nil)

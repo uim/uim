@@ -888,7 +888,7 @@
   (if uim-prefix-arg
       (uim-debug (format "uim-prefix-arg %s" uim-prefix-arg)))
 
-  (if (and uim-xemacs (not uim-retry-keys))
+  (if uim-xemacs
       (setq uim-original-input-event (copy-event last-input-event)))
 
   (let ((keyvec (uim-this-command-keys current-prefix-arg))
@@ -979,8 +979,6 @@
 	    (uim-debug "bypass")
 	    (setq bypass t))
 
-
-	  (setq uim-retry-keys nil)
 
 	  (unwind-protect
 	      (if (and uim-preedit-keymap-enabled
