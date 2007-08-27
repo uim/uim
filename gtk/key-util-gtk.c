@@ -231,6 +231,17 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
   }
 #ifdef GDK_WINDOWING_X11
   /* 1'. replace keysym for Japanese keyboard */
+  /*
+   * A hack to distinguish Japanese kana_RO key from yen sign key
+   * (both keys normally generates backslash on ASCII input). See
+   * [uim-en 11] and the follow messages for the discussion.
+   *
+   * This hack assumes that the xmodmap for the Japanese kana
+   * keyboard is defined as follows:
+   * 
+   * yen sign key: keycode X = backslash bar prolongedsound
+   * kana_RO key:  keycode Y = backslash underscore kana_RO
+   */
   if (*ukey == '\\' &&
       event->hardware_keycode == g_prolongedsound_keycode) {
     *ukey = UKey_Yen;
