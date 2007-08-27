@@ -305,4 +305,13 @@
 (defun uim-point ()
   (window-point (get-buffer-window (current-buffer))))
 
+(defun uim-delete-atom (list)
+  (if (and list 
+	   (not (atom list)))
+      (if (and (car list) 
+	       (atom (car list)))
+	  (uim-delete-atom (cdr list))
+	(cons (car list) (uim-delete-atom (cdr list))))
+    list))
+
 (provide 'uim-util)

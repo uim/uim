@@ -1172,15 +1172,7 @@
 
 		  ;; disable buffer-undo temporarily
 		  (when uim-buffer-undo-list-saved
-		    (let (delatom)
-		      (defun delatom (x)
-			(if (and x (not (atom x)))
-			    (if (and (car x) (atom (car x)))
-				(delatom (cdr x))
-			      (cons (car x) (delatom (cdr x))))
-			  x))
-		      (setq buffer-undo-list (delatom buffer-undo-list))
-		      )
+		    (setq buffer-undo-list (uim-delete-atom buffer-undo-list))
 
 		    (setq uim-buffer-undo-list
 			  (append buffer-undo-list uim-buffer-undo-list))
