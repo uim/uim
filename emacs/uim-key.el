@@ -77,24 +77,19 @@
 ;;
 ;; Get original key-mapped function
 ;;
-(defun uim-getbind (keyvec &optional translation)
+(defun uim-key-binding (vec &optional translation)
   (let (bind 
 	(mode uim-mode))
     (unwind-protect
 	(progn
 	  (setq uim-mode nil)
-
-	  (setq bind (key-binding (vector (aref keyvec 0))))
-
-	  (if (not (memq bind (list 'universal-argument 
-				    'digit-argument 
-				    'negative-argument)))
-	      (setq bind (key-binding keyvec)))
+	  (setq bind (key-binding vec))
 
 	  (if (and (or (not bind)
 		       (integerp bind))
 		   translation)
-	      (setq bind (lookup-key key-translation-map keyvec))))
+	      (setq bind (lookup-key key-translation-map vec))))
+
       (setq uim-mode mode))
     bind
     ))
@@ -183,13 +178,13 @@
 (defun uim-process-mouse-event (event)
   (cond (uim-emacs
 	 (let* ((mouse-event (car event))
-		(bind (uim-getbind (vector mouse-event))))
+		(bind (uim-key-binding (vector mouse-event))))
 	   (if (commandp bind)
 	       (call-interactively bind nil (vector event))
 	     (if (not (memq 'down (event-modifiers mouse-event)))
 		 (undefined)))))
 	(uim-xemacs
-	 (let* ((bind (uim-getbind (vector event))))
+	 (let* ((bind (uim-key-binding (vector event))))
 	   (if (commandp bind)
 	       (call-interactively bind nil (vector event))))))
   )
@@ -199,7 +194,7 @@
 ;; Process the key vector returned from Uim.
 ;; 
 (defun uim-process-keyvec (uim-key-vector &optional count)
-  (let ((bind (uim-getbind uim-key-vector t))
+  (let ((bind (uim-key-binding uim-key-vector t))
 	keyvectmp)
     (uim-debug (format "uim-process-keyvec"))
     
@@ -211,8 +206,8 @@
 	(cond (count
 	       (setq prefix-arg count)
 	       (uim-command-execute
-		(uim-getbind uim-key-vector t))
-		;;(uim-getbind (uim-last-onestroke-key uim-key-vector)))
+		(uim-key-binding uim-key-vector t))
+		;;(uim-key-binding (uim-last-onestroke-key uim-key-vector)))
 	       )
 	      ((stringp bind)
 	       (command-execute bind)
@@ -240,7 +235,7 @@
 
 		 (if uim-xemacs
 		     (handle-post-motion-command))
-
+		 
 		 (uim-flush-concat-undo)
 		 )
 	       )
@@ -398,7 +393,7 @@
 (defun uim-remove-shift (input-vector)
   (vconcat (mapcar 
 	   '(lambda (x)
-  (cond (uim-emacs
+	      (cond (uim-emacs
 		     (if (and (integerp x)
 			      (/= (logand (lsh 1 25) x) 0))
 			 (logand (lognot (lsh 1 25)) x)
@@ -407,12 +402,12 @@
 			     (read (replace-match "" nil nil 
 						  key-str))
 			   x))))
-	(uim-xemacs
+		    (uim-xemacs
 		     (let ((key-str 
 			    (key-description input-vector)))
 		       (if (string-match "Sh-" key-str)
 			   (uim-xemacs-make-event 
-			      (uim-convert-char-to-symbolvector 
+			    (uim-convert-char-to-symbolvector 
 			     (replace-match "" nil nil key-str)))
 			 x)))))
 	   (append input-vector nil))))
@@ -482,7 +477,7 @@
 	(uim-xemacs
 	 (or (equal keyvec (vector (uim-xemacs-make-event [escape])))
 	     (and (eq (global-key-binding keyvec) esc-map)
-		  (keymapp (uim-getbind keyvec)))))
+		  (keymapp (uim-key-binding keyvec)))))
 	))
 	 
 
@@ -528,27 +523,27 @@
     (if uim-emacs
 	(setq keyvec (this-command-keys-vector)))
 
-      (if uim-prefix-ignore-next
-	  ;; avoid mysterious key event on Emacs-21 on terminal
-	  ;;  ex. C-u 1 0 escape f 
-	  (progn
-	    (uim-debug "ignore this key vector")
-	    (setq keyvec nil)
-	    (setq uim-prefix-ignore-next nil)
-	    )
-	(if with-arg
-	    ;; key with prefix arg
-	    (let* ((rkeylist (reverse (append keyvec nil))))
-	      (setq keyvec (uim-last-onestroke-key keyvec))
-	      (if (= (length keyvec) 2)
-		  ;; Only Emacs-21 returns two stroke keys at 1st time
-		  (setq uim-prefix-arg-vector 
-			(vconcat (reverse (cdr (cdr rkeylist)))))
+    (if uim-prefix-ignore-next
+	;; avoid mysterious key event on Emacs-21 on terminal
+	;;  ex. C-u 1 0 escape f 
+	(progn
+	  (uim-debug "ignore this key vector")
+	  (setq keyvec nil)
+	  (setq uim-prefix-ignore-next nil)
+	  )
+      (if with-arg
+	  ;; key with prefix arg
+	  (let* ((rkeylist (reverse (append keyvec nil))))
+	    (setq keyvec (uim-last-onestroke-key keyvec))
+	    (if (= (length keyvec) 2)
+		;; Only Emacs-21 returns two stroke keys at 1st time
 		(setq uim-prefix-arg-vector 
-		      (vconcat (reverse (cdr rkeylist)))))
-	      ;; work around
-	      (if (= (length keyvec) 2)
-		  (setq uim-prefix-ignore-next t))
+		      (vconcat (reverse (cdr (cdr rkeylist)))))
+	      (setq uim-prefix-arg-vector 
+		    (vconcat (reverse (cdr rkeylist)))))
+	    ;; work around
+	    (if (= (length keyvec) 2)
+		(setq uim-prefix-ignore-next t))
 	    )))
 
     (uim-debug (format "keyvec %s" keyvec))
@@ -557,7 +552,7 @@
     ;;  detect and convert odd double key vector into single
     ;;  vector (ex. [1 1] to [1])
     (if (and  (>= (length  keyvec) 2)
-	      (not (uim-getbind keyvec)))
+	      (not (uim-key-binding keyvec)))
 	(progn
 	  (uim-debug "*** wrong key vector detected (Emacs22's bug?)")
 	  (setq keyvec (vector (aref keyvec 0)))))
@@ -578,7 +573,7 @@
 	    (setq merged-list-backup merged-list)
 
 
-	    (setq bind (uim-getbind (vconcat merged-list)))
+	    (setq bind (uim-key-binding (vconcat merged-list)))
 	  
 	    (if (and bind
 		     (not (integerp bind)))
@@ -588,8 +583,8 @@
 			(vconcat stacked-list merged-list))
 		  (throw 'fmap-loop t))
 
-	  (setq fmap (lookup-key function-key-map (vconcat merged-list)))
-
+	      (setq fmap (lookup-key function-key-map (vconcat merged-list)))
+	      
 	      (if (and (or (not fmap)
 			   (integerp fmap))
 		       (boundp 'local-function-key-map))
@@ -603,7 +598,7 @@
 		    (setq merged-list
 			  (append (uim-remove-shift (vconcat merged-list)) nil))
 
-		    (setq bind (uim-getbind (vconcat merged-list)))
+		    (setq bind (uim-key-binding (vconcat merged-list)))
 
 		    (if (and bind
 			     (not (integerp bind)))
@@ -618,48 +613,48 @@
 		      (setq fmap (lookup-key function-key-map
 					     (vconcat merged-list)))
 
-	  (if (and (or (not fmap) 
-		       (integerp fmap))
-		   (boundp 'local-function-key-map))
-	      (setq fmap (lookup-key local-function-key-map
-				     (vconcat merged-list))))
+		      (if (and (or (not fmap)
+				   (integerp fmap))
+			       (boundp 'local-function-key-map))
+			  (setq fmap (lookup-key local-function-key-map 
+						 (vconcat merged-list))))
 
 
 		      (if (not fmap)
 			  (setq merged-list merged-list-backup)))))
 
 	      
-	  (cond ((vectorp fmap)
-		 ;; vector: replace
-		 (uim-debug (format "vector: %s" (vconcat merged-list)))
-		 (setq uim-stacked-key-vector 
-		       (vconcat stacked-list fmap))
+	      (cond ((vectorp fmap)
+		     ;; vector: replace
+		     (uim-debug (format "vector: %s" (vconcat merged-list)))
+		     (setq uim-stacked-key-vector 
+			   (vconcat stacked-list fmap))
 		     (throw 'fmap-loop t)
-		 )
-		((keymapp fmap)
-		 ;; keymap: wait next
-		 (uim-debug (format "keymap: %s" (vconcat merged-list)))
-		 (setq fmap-continue t)
-		 (setq uim-stacked-key-vector merged-vector)
+		     )
+		    ((keymapp fmap)
+		     ;; keymap: wait next
+		     (uim-debug (format "keymap: %s" (vconcat merged-list)))
+		     (setq fmap-continue t)
+		     (setq uim-stacked-key-vector merged-vector)
 		     (throw 'fmap-loop t)
-		 )
-		((functionp fmap)
-		 (uim-debug (format "function: %s" (vconcat merged-list)))
-		 (setq fmap (funcall fmap nil))
-		 (if (vectorp fmap)
-		     (setq uim-stacked-key-vector (vconcat stacked-list fmap))
-		   )
+		     )
+		    ((functionp fmap)
+		     (uim-debug (format "function: %s" (vconcat merged-list)))
+		     (setq fmap (funcall fmap nil))
+		     (if (vectorp fmap)
+			 (setq uim-stacked-key-vector (vconcat stacked-list fmap))
+		       )
 		     (throw 'fmap-loop t)
-		)
+		     )
 		    ))
 
 	    (setq merged-list merged-list-backup)
 	    
-	  (setq stacked-list (append stacked-list (list (car merged-list))))
-	  (setq merged-list (cdr merged-list))
-	  )
+	    (setq stacked-list (append stacked-list (list (car merged-list))))
+	    (setq merged-list (cdr merged-list))
+	    )
 
-	    (setq uim-stacked-key-vector merged-vector))))
+	  (setq uim-stacked-key-vector merged-vector))))
       
     ;; Replate [escape escape] with [M-escape] on XEmacs
     ;;   Some special keys cannot be used with escape key on terminal
@@ -700,7 +695,7 @@
 				    'menu-bar)
 				(eq (car-safe (aref uim-stacked-key-vector 0))
 				    'tool-bar))
-			    (keymapp (uim-getbind uim-stacked-key-vector)))
+			    (keymapp (uim-key-binding uim-stacked-key-vector)))
 
 		    (and fmap-continue  ;; wait ESC- key vector
 			    (uim-is-start-with-escape uim-stacked-key-vector))
@@ -708,8 +703,8 @@
 	       
 	       (and (not uim-preedit-keymap-enabled)
 		    (or (and fmap-continue 
-			     (not (commandp (uim-getbind uim-stacked-key-vector t))))
-			(keymapp (uim-getbind uim-stacked-key-vector t))))
+			     (not (commandp (uim-key-binding uim-stacked-key-vector t))))
+			(keymapp (uim-key-binding uim-stacked-key-vector t))))
 	       uim-prefix-ignore-next ;; work around for Emacs-21 prefix arg
 	       )
 	   (uim-debug "wait next")
@@ -719,7 +714,7 @@
 	   (setq keyvec uim-stacked-key-vector)
 	   (setq uim-stacked-key-vector nil))
 	  )
-	
+
     keyvec
     )
   )
