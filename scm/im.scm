@@ -389,12 +389,15 @@
 (define im-get-raw-key-str
   (lambda (key state)
     (and (integer? key)
-	     (<= key 255)
-	     (integer? state)
-	     (or (= state 0)
-		 (= state (assq-cdr 'Shift_key key-state-alist)))
-	     (charcode->string (ichar-upcase key)))))
-
+	 (<= key 255)
+	 (integer? state)
+	 (cond
+	  ((= state 0)
+	   (charcode->string key))
+	  ((= state (assq-cdr 'Shift_key key-state-alist))
+	   (charcode->string (ichar-upcase key)))
+	  (else
+	   #f)))))
 
 ;;
 ;; dispatchers
