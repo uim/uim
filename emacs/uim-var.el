@@ -256,6 +256,10 @@ displayed at the echo area.")
 (defvar uim-last-key-vector nil
   "Recent key vector.")
 
+(defvar uim-ignore-next nil
+  "If the value is non-nil, uim-process-input ignores next input.
+ This variable is used for avoiding FSF Emacs20/21's strange behavior.")
+
 (defvar uim-prefix-arg nil
   "Recent current-prefix-arg value.")
 
