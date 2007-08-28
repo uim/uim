@@ -196,16 +196,16 @@ uim_init_intl_subrs(void)
 {
   intl_init_locale();
 
-  uim_scm_init_subr_0("gettext-package", intl_gettext_package);
-  uim_scm_init_subr_1("textdomain", intl_textdomain);
-  uim_scm_init_subr_2("bindtextdomain", intl_bindtextdomain);
-  uim_scm_init_subr_2("bind-textdomain-codeset", intl_bind_textdomain_codeset);
-  uim_scm_init_subr_1("gettext", intl_gettext);
-  uim_scm_init_subr_2("dgettext", intl_dgettext);
-  uim_scm_init_subr_3("dcgettext", intl_dcgettext);
-  uim_scm_init_subr_3("ngettext", intl_ngettext);
-  uim_scm_init_subr_4("dngettext", intl_dngettext);
-  uim_scm_init_subr_5("dcngettext", intl_dcngettext);
+  uim_scm_init_proc0("gettext-package", intl_gettext_package);
+  uim_scm_init_proc1("textdomain", intl_textdomain);
+  uim_scm_init_proc2("bindtextdomain", intl_bindtextdomain);
+  uim_scm_init_proc2("bind-textdomain-codeset", intl_bind_textdomain_codeset);
+  uim_scm_init_proc1("gettext", intl_gettext);
+  uim_scm_init_proc2("dgettext", intl_dgettext);
+  uim_scm_init_proc3("dcgettext", intl_dcgettext);
+  uim_scm_init_proc3("ngettext", intl_ngettext);
+  uim_scm_init_proc4("dngettext", intl_dngettext);
+  uim_scm_init_proc5("dcngettext", intl_dcngettext);
 
 #if ENABLE_NLS
   uim_scm_callf("provide", "s", "nls");

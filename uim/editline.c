@@ -57,7 +57,7 @@ uim_plugin_instance_init(void)
   el_set(el, EL_HIST, history, hist);
   el_source(el, NULL);
 
-  uim_scm_init_subr_0("editline-readline", editline_readline);
+  uim_scm_init_proc0("editline-readline", editline_readline);
 
   uim_scm_callf("provide", "s", "editline");
 }

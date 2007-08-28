@@ -144,9 +144,9 @@ rk_expect_seq(uim_lisp seq, uim_lisp rules)
 void
 uim_init_rk_subrs(void)
 {
-  uim_scm_init_subr_2("str-seq-equal?", str_seq_equal);
-  uim_scm_init_subr_2("str-seq-partial?", str_seq_partial);
-  uim_scm_init_subr_2("rk-lib-find-seq", rk_find_seq);
-  uim_scm_init_subr_2("rk-lib-find-partial-seq", rk_find_partial_seq);
-  uim_scm_init_subr_2("rk-lib-expect-seq", rk_expect_seq);
+  uim_scm_init_proc2("str-seq-equal?", str_seq_equal);
+  uim_scm_init_proc2("str-seq-partial?", str_seq_partial);
+  uim_scm_init_proc2("rk-lib-find-seq", rk_find_seq);
+  uim_scm_init_proc2("rk-lib-find-partial-seq", rk_find_partial_seq);
+  uim_scm_init_proc2("rk-lib-expect-seq", rk_expect_seq);
 }

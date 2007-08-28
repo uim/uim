@@ -240,8 +240,8 @@ main_internal(struct main_args *args)
     exit(EXIT_FAILURE);
   }
 
-  uim_scm_init_subr_1("write-loader.scm", write_loader_scm);
-  uim_scm_init_subr_1("write-installed-modules.scm", write_installed_modules_scm);
+  uim_scm_init_proc1("write-loader.scm", write_loader_scm);
+  uim_scm_init_proc1("write-installed-modules.scm", write_installed_modules_scm);
 
   if (!uim_scm_require_file("uim-module-manager.scm"))
     uim_fatal_error("failed to require uim-module-manager.scm");

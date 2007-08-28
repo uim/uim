@@ -434,32 +434,32 @@ switch_system_global_im(uim_lisp uc_, uim_lisp name_)
 void
 uim_init_im_subrs(void)
 {
-  uim_scm_init_subr_1("im-retrieve-context", im_retrieve_context);
-  uim_scm_init_subr_2("im-set-encoding",     im_set_encoding);
-  uim_scm_init_subr_2("im-convertible?",     im_convertiblep);
+  uim_scm_init_proc1("im-retrieve-context", im_retrieve_context);
+  uim_scm_init_proc2("im-set-encoding",     im_set_encoding);
+  uim_scm_init_proc2("im-convertible?",     im_convertiblep);
   /**/
-  uim_scm_init_subr_2("im-commit",           im_commit);
+  uim_scm_init_proc2("im-commit",           im_commit);
   /**/
-  uim_scm_init_subr_1("im-clear-preedit",    im_clear_preedit);
-  uim_scm_init_subr_3("im-pushback-preedit", im_pushback_preedit);
-  uim_scm_init_subr_1("im-update-preedit",   im_update_preedit);
+  uim_scm_init_proc1("im-clear-preedit",    im_clear_preedit);
+  uim_scm_init_proc3("im-pushback-preedit", im_pushback_preedit);
+  uim_scm_init_proc1("im-update-preedit",   im_update_preedit);
   /**/
-  uim_scm_init_subr_1("im-clear-mode-list",    im_clear_mode_list);
-  uim_scm_init_subr_2("im-pushback-mode-list", im_pushback_mode_list);
-  uim_scm_init_subr_1("im-update-mode-list",   im_update_mode_list);
-  uim_scm_init_subr_2("im-update-mode",        im_update_mode);
+  uim_scm_init_proc1("im-clear-mode-list",    im_clear_mode_list);
+  uim_scm_init_proc2("im-pushback-mode-list", im_pushback_mode_list);
+  uim_scm_init_proc1("im-update-mode-list",   im_update_mode_list);
+  uim_scm_init_proc2("im-update-mode",        im_update_mode);
   /**/
-  uim_scm_init_subr_2("im-update-prop-list", im_update_prop_list);
+  uim_scm_init_proc2("im-update-prop-list", im_update_prop_list);
   /**/
-  uim_scm_init_subr_3("im-activate-candidate-selector", im_activate_candidate_selector);
-  uim_scm_init_subr_2("im-select-candidate", im_select_candidate);
-  uim_scm_init_subr_2("im-shift-page-candidate", im_shift_page_candidate);
-  uim_scm_init_subr_1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
+  uim_scm_init_proc3("im-activate-candidate-selector", im_activate_candidate_selector);
+  uim_scm_init_proc2("im-select-candidate", im_select_candidate);
+  uim_scm_init_proc2("im-shift-page-candidate", im_shift_page_candidate);
+  uim_scm_init_proc1("im-deactivate-candidate-selector", im_deactivate_candidate_selector);
   /**/
-  uim_scm_init_subr_5("im-acquire-text-internal", im_acquire_text);
-  uim_scm_init_subr_5("im-delete-text-internal", im_delete_text);
+  uim_scm_init_proc5("im-acquire-text-internal", im_acquire_text);
+  uim_scm_init_proc5("im-delete-text-internal", im_delete_text);
   /**/
-  uim_scm_init_subr_1("im-raise-configuration-change", raise_configuration_change);
-  uim_scm_init_subr_2("im-switch-app-global-im", switch_app_global_im);
-  uim_scm_init_subr_2("im-switch-system-global-im", switch_system_global_im);
+  uim_scm_init_proc1("im-raise-configuration-change", raise_configuration_change);
+  uim_scm_init_proc2("im-switch-app-global-im", switch_app_global_im);
+  uim_scm_init_proc2("im-switch-system-global-im", switch_system_global_im);
 }

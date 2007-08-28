@@ -82,7 +82,7 @@ uim_look_look(uim_lisp dict_, uim_lisp str_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_2("look-lib-look", uim_look_look);
+  uim_scm_init_proc2("look-lib-look", uim_look_look);
 }
 
 void

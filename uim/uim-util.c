@@ -315,31 +315,31 @@ uim_init_util_subrs(void)
   protected = uim_scm_f();
   uim_scm_gc_protect(&protected);
 
-  uim_scm_init_subr_0("uim-version", uim_version);
+  uim_scm_init_proc0("uim-version", uim_version);
 
-  uim_scm_init_subr_0("sys-libdir", sys_libdir);
-  uim_scm_init_subr_0("sys-pkglibdir", sys_pkglibdir);
-  uim_scm_init_subr_0("sys-datadir", sys_datadir);
-  uim_scm_init_subr_0("sys-pkgdatadir", sys_pkgdatadir);
+  uim_scm_init_proc0("sys-libdir", sys_libdir);
+  uim_scm_init_proc0("sys-pkglibdir", sys_pkglibdir);
+  uim_scm_init_proc0("sys-datadir", sys_datadir);
+  uim_scm_init_proc0("sys-pkgdatadir", sys_pkgdatadir);
 
-  uim_scm_init_subr_1("file-readable?", file_readablep);
-  uim_scm_init_subr_1("file-writable?", file_writablep);
-  uim_scm_init_subr_1("file-executable?", file_executablep);
-  uim_scm_init_subr_1("file-regular?", file_regularp);
-  uim_scm_init_subr_1("file-directory?", file_directoryp);
-  uim_scm_init_subr_1("file-mtime", file_mtime);
+  uim_scm_init_proc1("file-readable?", file_readablep);
+  uim_scm_init_proc1("file-writable?", file_writablep);
+  uim_scm_init_proc1("file-executable?", file_executablep);
+  uim_scm_init_proc1("file-regular?", file_regularp);
+  uim_scm_init_proc1("file-directory?", file_directoryp);
+  uim_scm_init_proc1("file-mtime", file_mtime);
 
-  uim_scm_init_subr_0("setugid?", setugidp);
+  uim_scm_init_proc0("setugid?", setugidp);
 
-  uim_scm_init_subr_1("getenv", c_getenv);
-  uim_scm_init_subr_3("setenv", c_setenv);
-  uim_scm_init_subr_1("unsetenv", c_unsetenv);
+  uim_scm_init_proc1("getenv", c_getenv);
+  uim_scm_init_proc3("setenv", c_setenv);
+  uim_scm_init_proc1("unsetenv", c_unsetenv);
 
   /* SRFI-13 */
-  uim_scm_init_subr_3("string-contains", string_contains);
-  uim_scm_init_subr_2("string-prefix?", string_prefixp);
-  uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
+  uim_scm_init_proc3("string-contains", string_contains);
+  uim_scm_init_proc2("string-prefix?", string_prefixp);
+  uim_scm_init_proc2("string-prefix-ci?", string_prefix_cip);
 
   /* SRFI-43 */
-  uim_scm_init_subr_1("vector-copy", vector_copy);
+  uim_scm_init_proc1("vector-copy", vector_copy);
 }

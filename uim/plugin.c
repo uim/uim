@@ -247,8 +247,8 @@ uim_init_plugin(void)
   if (UIM_CATCH_ERROR_BEGIN())
     return;
 
-  uim_scm_init_subr_1("load-plugin", plugin_load);
-  uim_scm_init_subr_1("unload-plugin", plugin_unload);
+  uim_scm_init_proc1("load-plugin", plugin_load);
+  uim_scm_init_proc1("unload-plugin", plugin_unload);
 
   UIM_CATCH_ERROR_END();
 }

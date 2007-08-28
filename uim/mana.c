@@ -241,9 +241,9 @@ eucjp_string_length(uim_lisp str_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_0("mana-lib-init", mana_init);
-  uim_scm_init_subr_1("mana-lib-eval", mana_eval);
-  uim_scm_init_subr_1("mana-lib-eucjp-string-length", eucjp_string_length);
+  uim_scm_init_proc0("mana-lib-init", mana_init);
+  uim_scm_init_proc1("mana-lib-eval", mana_eval);
+  uim_scm_init_proc1("mana-lib-eucjp-string-length", eucjp_string_length);
 }
 
 void

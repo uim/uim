@@ -403,17 +403,17 @@ uim_plugin_instance_init(void)
 
   uim_scm_eval_c_string("(require-extension (srfi 1))"); /* for delete! */
 
-  uim_scm_init_subr_1("canna-lib-init", init_canna_lib);
-  uim_scm_init_subr_0("canna-lib-alloc-context", create_context);
-  uim_scm_init_subr_1("canna-lib-release-context", release_context);
-  uim_scm_init_subr_3("canna-lib-get-nth-candidate", get_nth_candidate);
-  uim_scm_init_subr_2("canna-lib-get-unconv-candidate", get_unconv_candidate);
-  uim_scm_init_subr_1("canna-lib-get-nr-segments",get_nr_segments);
-  uim_scm_init_subr_2("canna-lib-get-nr-candidates", get_nr_candidates);
-  uim_scm_init_subr_3("canna-lib-resize-segment", resize_segment);
-  uim_scm_init_subr_2("canna-lib-begin-conversion", begin_conversion);
-  uim_scm_init_subr_3("canna-lib-commit-segment", commit_segment);
-  uim_scm_init_subr_1("canna-lib-reset-conversion", reset_conversion);
+  uim_scm_init_proc1("canna-lib-init", init_canna_lib);
+  uim_scm_init_proc0("canna-lib-alloc-context", create_context);
+  uim_scm_init_proc1("canna-lib-release-context", release_context);
+  uim_scm_init_proc3("canna-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_proc2("canna-lib-get-unconv-candidate", get_unconv_candidate);
+  uim_scm_init_proc1("canna-lib-get-nr-segments",get_nr_segments);
+  uim_scm_init_proc2("canna-lib-get-nr-candidates", get_nr_candidates);
+  uim_scm_init_proc3("canna-lib-resize-segment", resize_segment);
+  uim_scm_init_proc2("canna-lib-begin-conversion", begin_conversion);
+  uim_scm_init_proc3("canna-lib-commit-segment", commit_segment);
+  uim_scm_init_proc1("canna-lib-reset-conversion", reset_conversion);
 }
 
 void

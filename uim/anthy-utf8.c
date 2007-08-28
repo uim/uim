@@ -402,25 +402,25 @@ uim_anthy_utf8_plugin_instance_init(void)
 
   uim_scm_eval_c_string("(require-extension (srfi 1))"); /* for delete! */
 
-  uim_scm_init_subr_0("anthy-utf8-lib-init", init_anthy_lib);
-  uim_scm_init_subr_1("anthy-utf8-lib-alloc-context", create_context);
-  uim_scm_init_subr_1("anthy-utf8-lib-free-context", release_context);
-  uim_scm_init_subr_2("anthy-utf8-lib-set-string", set_string);
-  uim_scm_init_subr_1("anthy-utf8-lib-get-nr-segments",get_nr_segments);
-  uim_scm_init_subr_2("anthy-utf8-lib-get-nr-candidates", get_nr_candidates);
-  uim_scm_init_subr_3("anthy-utf8-lib-get-nth-candidate", get_nth_candidate);
-  uim_scm_init_subr_2("anthy-utf8-lib-get-unconv-candidate", get_unconv_candidate);
-  uim_scm_init_subr_2("anthy-utf8-lib-get-segment-length", get_segment_length);
-  uim_scm_init_subr_3("anthy-utf8-lib-resize-segment", resize_segment);
-  uim_scm_init_subr_3("anthy-utf8-lib-commit-segment", commit_segment);
-  uim_scm_init_subr_0("anthy-utf8-lib-get-anthy-version", anthy_version);
-  uim_scm_init_subr_2("anthy-utf8-lib-set-prediction-src-string", set_prediction_src_string);
-  uim_scm_init_subr_1("anthy-utf8-lib-get-nr-predictions", get_nr_predictions);
-  uim_scm_init_subr_2("anthy-utf8-lib-get-nth-prediction", get_nth_prediction);
-  uim_scm_init_subr_2("anthy-utf8-lib-commit-nth-prediction",
-		      commit_nth_prediction);
-  uim_scm_init_subr_1("anthy-utf8-lib-eucjp-to-utf8", eucjp_to_utf8);
-  uim_scm_init_subr_1("anthy-utf8-lib-utf8-to-eucjp", utf8_to_eucjp);
+  uim_scm_init_proc0("anthy-utf8-lib-init", init_anthy_lib);
+  uim_scm_init_proc1("anthy-utf8-lib-alloc-context", create_context);
+  uim_scm_init_proc1("anthy-utf8-lib-free-context", release_context);
+  uim_scm_init_proc2("anthy-utf8-lib-set-string", set_string);
+  uim_scm_init_proc1("anthy-utf8-lib-get-nr-segments",get_nr_segments);
+  uim_scm_init_proc2("anthy-utf8-lib-get-nr-candidates", get_nr_candidates);
+  uim_scm_init_proc3("anthy-utf8-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_proc2("anthy-utf8-lib-get-unconv-candidate", get_unconv_candidate);
+  uim_scm_init_proc2("anthy-utf8-lib-get-segment-length", get_segment_length);
+  uim_scm_init_proc3("anthy-utf8-lib-resize-segment", resize_segment);
+  uim_scm_init_proc3("anthy-utf8-lib-commit-segment", commit_segment);
+  uim_scm_init_proc0("anthy-utf8-lib-get-anthy-version", anthy_version);
+  uim_scm_init_proc2("anthy-utf8-lib-set-prediction-src-string", set_prediction_src_string);
+  uim_scm_init_proc1("anthy-utf8-lib-get-nr-predictions", get_nr_predictions);
+  uim_scm_init_proc2("anthy-utf8-lib-get-nth-prediction", get_nth_prediction);
+  uim_scm_init_proc2("anthy-utf8-lib-commit-nth-prediction",
+		     commit_nth_prediction);
+  uim_scm_init_proc1("anthy-utf8-lib-eucjp-to-utf8", eucjp_to_utf8);
+  uim_scm_init_proc1("anthy-utf8-lib-utf8-to-eucjp", utf8_to_eucjp);
 }
 
 #ifndef ENABLE_ANTHY_UTF8_STATIC

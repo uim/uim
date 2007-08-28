@@ -3499,28 +3499,28 @@ look_get_comp(struct skk_comp_array *ca, const char *str)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_5("skk-lib-dic-open", skk_dic_open);
-  uim_scm_init_subr_1("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
-  uim_scm_init_subr_1("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
-  uim_scm_init_subr_4("skk-lib-get-entry", skk_get_entry);
-  uim_scm_init_subr_1("skk-lib-store-replaced-numstr", skk_store_replaced_numeric_str);
-  uim_scm_init_subr_2("skk-lib-merge-replaced-numstr", skk_merge_replaced_numeric_str);
-  uim_scm_init_subr_1("skk-lib-replace-numeric", skk_replace_numeric);
-  uim_scm_init_subr_5("skk-lib-get-nth-candidate", skk_get_nth_candidate);
-  uim_scm_init_subr_4("skk-lib-get-nr-candidates", skk_get_nr_candidates);
-  uim_scm_init_subr_5("skk-lib-commit-candidate", skk_commit_candidate);
-  uim_scm_init_subr_5("skk-lib-purge-candidate", skk_purge_candidate);
-  uim_scm_init_subr_5("skk-lib-learn-word", skk_learn_word);
-  uim_scm_init_subr_1("skk-lib-get-annotation", skk_get_annotation);
-  uim_scm_init_subr_1("skk-lib-remove-annotation", skk_remove_annotation);
-  uim_scm_init_subr_3("skk-lib-get-completion", skk_get_completion);
-  uim_scm_init_subr_4("skk-lib-get-nth-completion", skk_get_nth_completion);
-  uim_scm_init_subr_3("skk-lib-get-nr-completions", skk_get_nr_completions);
-  uim_scm_init_subr_2("skk-lib-clear-completions", skk_clear_completions);
-  uim_scm_init_subr_3("skk-lib-get-dcomp-word", skk_get_dcomp_word);
-  uim_scm_init_subr_1("skk-lib-eval-candidate", skk_eval_candidate);
-  uim_scm_init_subr_3("skk-lib-substring", skk_substring);
-  uim_scm_init_subr_1("skk-lib-look-open", skk_look_open);
+  uim_scm_init_proc5("skk-lib-dic-open", skk_dic_open);
+  uim_scm_init_proc1("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
+  uim_scm_init_proc1("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
+  uim_scm_init_proc4("skk-lib-get-entry", skk_get_entry);
+  uim_scm_init_proc1("skk-lib-store-replaced-numstr", skk_store_replaced_numeric_str);
+  uim_scm_init_proc2("skk-lib-merge-replaced-numstr", skk_merge_replaced_numeric_str);
+  uim_scm_init_proc1("skk-lib-replace-numeric", skk_replace_numeric);
+  uim_scm_init_proc5("skk-lib-get-nth-candidate", skk_get_nth_candidate);
+  uim_scm_init_proc4("skk-lib-get-nr-candidates", skk_get_nr_candidates);
+  uim_scm_init_proc5("skk-lib-commit-candidate", skk_commit_candidate);
+  uim_scm_init_proc5("skk-lib-purge-candidate", skk_purge_candidate);
+  uim_scm_init_proc5("skk-lib-learn-word", skk_learn_word);
+  uim_scm_init_proc1("skk-lib-get-annotation", skk_get_annotation);
+  uim_scm_init_proc1("skk-lib-remove-annotation", skk_remove_annotation);
+  uim_scm_init_proc3("skk-lib-get-completion", skk_get_completion);
+  uim_scm_init_proc4("skk-lib-get-nth-completion", skk_get_nth_completion);
+  uim_scm_init_proc3("skk-lib-get-nr-completions", skk_get_nr_completions);
+  uim_scm_init_proc2("skk-lib-clear-completions", skk_clear_completions);
+  uim_scm_init_proc3("skk-lib-get-dcomp-word", skk_get_dcomp_word);
+  uim_scm_init_proc1("skk-lib-eval-candidate", skk_eval_candidate);
+  uim_scm_init_proc3("skk-lib-substring", skk_substring);
+  uim_scm_init_proc1("skk-lib-look-open", skk_look_open);
 }
 
 void

@@ -848,36 +848,36 @@ get_candidate_index(uim_lisp id_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_0("m17nlib-lib-init", init_m17nlib);
-  uim_scm_init_subr_0("m17nlib-lib-nr-input-methods",
-		      get_nr_input_methods);
-  uim_scm_init_subr_1("m17nlib-lib-nth-input-method-lang",
-		      get_input_method_lang);
-  uim_scm_init_subr_1("m17nlib-lib-nth-input-method-name",
-		      get_input_method_name);
-  uim_scm_init_subr_1("m17nlib-lib-nth-input-method-short-desc",
-		      get_input_method_short_desc);
-  uim_scm_init_subr_1("m17nlib-lib-alloc-context", alloc_id);
-  uim_scm_init_subr_1("m17nlib-lib-free-context", free_id);
-  uim_scm_init_subr_2("m17nlib-lib-push-symbol-key", push_symbol_key);
-  uim_scm_init_subr_1("m17nlib-lib-compose-mode?", compose_modep);
-  uim_scm_init_subr_1("m17nlib-lib-preedit-changed?", preedit_changedp);
-  uim_scm_init_subr_1("m17nlib-lib-get-left-of-cursor", get_left_of_cursor);
-  uim_scm_init_subr_1("m17nlib-lib-get-right-of-cursor", get_right_of_cursor);
-  uim_scm_init_subr_1("m17nlib-lib-get-left-of-candidate",
-		      get_left_of_candidate);
-  uim_scm_init_subr_1("m17nlib-lib-get-selected-candidate",
-		      get_selected_candidate);
-  uim_scm_init_subr_1("m17nlib-lib-get-right-of-candidate",
-		      get_right_of_candidate);
-  uim_scm_init_subr_1("m17nlib-lib-get-result", get_result);
-  uim_scm_init_subr_1("m17nlib-lib-commit", commit);
-  uim_scm_init_subr_1("m17nlib-lib-candidate-show?", candidate_showp);
-  uim_scm_init_subr_1("m17nlib-lib-fill-new-candidates!", fill_new_candidates);
-  uim_scm_init_subr_1("m17nlib-lib-candidates-changed?", candidates_changedp);
-  uim_scm_init_subr_1("m17nlib-lib-get-nr-candidates", get_nr_candidates);
-  uim_scm_init_subr_2("m17nlib-lib-get-nth-candidate", get_nth_candidate);
-  uim_scm_init_subr_1("m17nlib-lib-get-candidate-index", get_candidate_index);
+  uim_scm_init_proc0("m17nlib-lib-init", init_m17nlib);
+  uim_scm_init_proc0("m17nlib-lib-nr-input-methods",
+		     get_nr_input_methods);
+  uim_scm_init_proc1("m17nlib-lib-nth-input-method-lang",
+		     get_input_method_lang);
+  uim_scm_init_proc1("m17nlib-lib-nth-input-method-name",
+		     get_input_method_name);
+  uim_scm_init_proc1("m17nlib-lib-nth-input-method-short-desc",
+		     get_input_method_short_desc);
+  uim_scm_init_proc1("m17nlib-lib-alloc-context", alloc_id);
+  uim_scm_init_proc1("m17nlib-lib-free-context", free_id);
+  uim_scm_init_proc2("m17nlib-lib-push-symbol-key", push_symbol_key);
+  uim_scm_init_proc1("m17nlib-lib-compose-mode?", compose_modep);
+  uim_scm_init_proc1("m17nlib-lib-preedit-changed?", preedit_changedp);
+  uim_scm_init_proc1("m17nlib-lib-get-left-of-cursor", get_left_of_cursor);
+  uim_scm_init_proc1("m17nlib-lib-get-right-of-cursor", get_right_of_cursor);
+  uim_scm_init_proc1("m17nlib-lib-get-left-of-candidate",
+		     get_left_of_candidate);
+  uim_scm_init_proc1("m17nlib-lib-get-selected-candidate",
+		     get_selected_candidate);
+  uim_scm_init_proc1("m17nlib-lib-get-right-of-candidate",
+		     get_right_of_candidate);
+  uim_scm_init_proc1("m17nlib-lib-get-result", get_result);
+  uim_scm_init_proc1("m17nlib-lib-commit", commit);
+  uim_scm_init_proc1("m17nlib-lib-candidate-show?", candidate_showp);
+  uim_scm_init_proc1("m17nlib-lib-fill-new-candidates!", fill_new_candidates);
+  uim_scm_init_proc1("m17nlib-lib-candidates-changed?", candidates_changedp);
+  uim_scm_init_proc1("m17nlib-lib-get-nr-candidates", get_nr_candidates);
+  uim_scm_init_proc2("m17nlib-lib-get-nth-candidate", get_nth_candidate);
+  uim_scm_init_proc1("m17nlib-lib-get-candidate-index", get_candidate_index);
 }
 
 void

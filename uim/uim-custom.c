@@ -991,9 +991,9 @@ uim_custom_init(void)
   uim_scm_gc_protect(&return_val);
   uim_scm_gc_protect(&uim_scm_last_val);
 
-  uim_scm_init_subr_3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
-  uim_scm_init_subr_2("custom-global-update-cb-gate",
-		      uim_custom_global_cb_update_cb_gate);
+  uim_scm_init_proc3("custom-update-cb-gate", uim_custom_cb_update_cb_gate);
+  uim_scm_init_proc2("custom-global-update-cb-gate",
+		     uim_custom_global_cb_update_cb_gate);
 
   uim_scm_require_file("custom.scm");
 

@@ -298,8 +298,8 @@ prime_lib_init(uim_lisp use_udp_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_subr_1("prime-lib-init", prime_lib_init);
-  uim_scm_init_subr_1("prime-lib-send-command", prime_send_command);
+  uim_scm_init_proc1("prime-lib-init", prime_lib_init);
+  uim_scm_init_proc1("prime-lib-send-command", prime_send_command);
 }
 
 void
