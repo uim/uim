@@ -228,8 +228,7 @@ uim_bool
 uim_scm_intp(uim_lisp obj);
 uim_bool uim_scm_charp(uim_lisp obj);
 uim_bool uim_scm_vectorp(uim_lisp obj);
-uim_bool
-uim_scm_stringp(uim_lisp obj);
+uim_bool uim_scm_strp(uim_lisp obj);
 uim_bool uim_scm_symbolp(uim_lisp obj);
 uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b);
@@ -259,6 +258,7 @@ long uim_scm_vector_length(uim_lisp vec);
 #define UIM_SCM_NFALSEP(x) (uim_scm_truep(x))
 
 #define uim_scm_integerp  uim_scm_intp
+#define uim_scm_stringp   uim_scm_strp
 #define uim_scm_null_list uim_scm_null
 
 #define uim_scm_init_subr_0 uim_scm_init_proc0

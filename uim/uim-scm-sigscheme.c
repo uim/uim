@@ -868,7 +868,7 @@ uim_scm_vectorp(uim_lisp obj)
 }
 
 uim_bool
-uim_scm_stringp(uim_lisp obj)
+uim_scm_strp(uim_lisp obj)
 {
   assert(uim_scm_gc_any_contextp());
 
