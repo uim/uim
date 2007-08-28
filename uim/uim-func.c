@@ -56,7 +56,7 @@ retrieve_uim_context(uim_lisp c)
   if (CONSP(c))  /* passed as Scheme-side input context */
     c = CAR(c);
 
-  uc = uim_scm_c_ptr(c);
+  uc = C_PTR(c);
   assert(uc);
 
   return uc;
@@ -68,7 +68,7 @@ im_retrieve_context(uim_lisp uc_)
 {
   uim_context uc;
 
-  uc = uim_scm_c_ptr(uc_);
+  uc = C_PTR(uc_);
   assert(uc);
 
   return uc->sc;
@@ -81,7 +81,7 @@ im_convertiblep(uim_lisp id, uim_lisp im_encoding_)
   const char *im_encoding;
 
   uc = retrieve_uim_context(id);
-  im_encoding = uim_scm_refer_c_str(im_encoding_);
+  im_encoding = REFER_C_STR(im_encoding_);
   return MAKE_BOOL(uc->conv_if->is_convertible(uc->client_encoding,
                                                im_encoding));
 }
@@ -107,8 +107,8 @@ im_pushback_preedit(uim_lisp uc_, uim_lisp attr_, uim_lisp str_)
   int attr;
 
   uc = retrieve_uim_context(uc_);
-  attr = uim_scm_c_int(attr_);
-  str = uim_scm_refer_c_str(str_);
+  attr = C_INT(attr_);
+  str = REFER_C_STR(str_);
 
   converted_str = uc->conv_if->convert(uc->outbound_conv, str);
   if (uc->preedit_pushback_cb)
@@ -138,7 +138,7 @@ im_commit(uim_lisp uc_, uim_lisp str_)
   char *converted_str;
 
   uc = retrieve_uim_context(uc_);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   converted_str = uc->conv_if->convert(uc->outbound_conv, str);
   if (uc->commit_cb)
@@ -155,7 +155,7 @@ im_set_encoding(uim_lisp uc_, uim_lisp enc_)
   const char *enc;
 
   uc = retrieve_uim_context(uc_);
-  enc = uim_scm_refer_c_str(enc_);
+  enc = REFER_C_STR(enc_);
 
   if (uc->outbound_conv)
     uc->conv_if->release(uc->outbound_conv);
@@ -203,7 +203,7 @@ im_pushback_mode_list(uim_lisp uc_, uim_lisp str_)
   const char *str;
 
   uc = retrieve_uim_context(uc_);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   uc->modes = uim_realloc(uc->modes, sizeof(char *) * (uc->nr_modes + 1));
   uc->modes[uc->nr_modes] = uc->conv_if->convert(uc->outbound_conv, str);
@@ -232,7 +232,7 @@ im_update_prop_list(uim_lisp uc_, uim_lisp prop_)
   const char *prop;
 
   uc = retrieve_uim_context(uc_);
-  prop = uim_scm_refer_c_str(prop_);
+  prop = REFER_C_STR(prop_);
   
   if (uc->propstr)
     free(uc->propstr);
@@ -251,7 +251,7 @@ im_update_mode(uim_lisp uc_, uim_lisp mode_)
   int mode;
 
   uc = retrieve_uim_context(uc_);
-  mode = uim_scm_c_int(mode_);
+  mode = C_INT(mode_);
 
   uc->mode = mode;
   if (uc->mode_update_cb)
@@ -268,8 +268,8 @@ im_activate_candidate_selector(uim_lisp uc_,
   int nr, display_limit;
 
   uc = retrieve_uim_context(uc_);
-  nr = uim_scm_c_int(nr_);
-  display_limit = uim_scm_c_int(display_limit_);
+  nr = C_INT(nr_);
+  display_limit = C_INT(display_limit_);
 
   if (uc->candidate_selector_activate_cb)
     uc->candidate_selector_activate_cb(uc->ptr, nr, display_limit);
@@ -284,7 +284,7 @@ im_select_candidate(uim_lisp uc_, uim_lisp idx_)
   int idx;
 
   uc = retrieve_uim_context(uc_);
-  idx = uim_scm_c_int(idx_);
+  idx = C_INT(idx_);
 
   if (uc->candidate_selector_select_cb)
     uc->candidate_selector_select_cb(uc->ptr, idx);
@@ -301,7 +301,7 @@ im_shift_page_candidate(uim_lisp uc_, uim_lisp dir_)
   int dir;
 
   uc = retrieve_uim_context(uc_);
-  dir = (uim_scm_c_bool(dir_)) ? 1 : 0;
+  dir = (C_BOOL(dir_)) ? 1 : 0;
     
   if (uc->candidate_selector_shift_page_cb)
     uc->candidate_selector_shift_page_cb(uc->ptr, dir);
@@ -338,10 +338,10 @@ im_acquire_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
   if (!uc->acquire_text_cb)
     return uim_scm_f();
 
-  text_id = uim_scm_c_int(text_id_);
-  origin = uim_scm_c_int(origin_);
-  former_len = uim_scm_c_int(former_len_);
-  latter_len = uim_scm_c_int(latter_len_);
+  text_id = C_INT(text_id_);
+  origin = C_INT(origin_);
+  former_len = C_INT(former_len_);
+  latter_len = C_INT(latter_len_);
 
   err = uc->acquire_text_cb(uc->ptr, text_id, origin,
                             former_len, latter_len, &former, &latter);
@@ -378,14 +378,14 @@ im_delete_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
   if (!uc->delete_text_cb)
     return uim_scm_f();
 
-  text_id = uim_scm_c_int(text_id_);
-  origin = uim_scm_c_int(origin_);
-  former_len = uim_scm_c_int(former_len_);
-  latter_len = uim_scm_c_int(latter_len_);
+  text_id = C_INT(text_id_);
+  origin = C_INT(origin_);
+  former_len = C_INT(former_len_);
+  latter_len = C_INT(latter_len_);
 
   err = uc->delete_text_cb(uc->ptr, text_id, origin, former_len, latter_len);
 
-  return uim_scm_make_bool(!err);
+  return MAKE_BOOL(!err);
 }
 
 static uim_lisp
@@ -408,7 +408,7 @@ switch_app_global_im(uim_lisp uc_, uim_lisp name_)
   const char *name;
 
   uc = retrieve_uim_context(uc_);
-  name = uim_scm_refer_c_str(name_);
+  name = REFER_C_STR(name_);
 
   if (uc->switch_app_global_im_cb)
     uc->switch_app_global_im_cb(uc->ptr, name);
@@ -423,7 +423,7 @@ switch_system_global_im(uim_lisp uc_, uim_lisp name_)
   const char *name;
 
   uc = retrieve_uim_context(uc_);
-  name = uim_scm_refer_c_str(name_);
+  name = REFER_C_STR(name_);
 
   if (uc->switch_system_global_im_cb)
     uc->switch_system_global_im_cb(uc->ptr, name);

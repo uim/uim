@@ -83,7 +83,7 @@ verbose_level(void)
   uim_lisp vlevel;
 
   vlevel = uim_scm_callf("verbose", "");
-  return uim_scm_c_int(vlevel);
+  return C_INT(vlevel);
 }
 
 static uim_lisp 
@@ -100,7 +100,7 @@ plugin_load(uim_lisp _name)
 
   size_t len;
 
-  plugin_name = uim_scm_refer_c_str(_name);
+  plugin_name = REFER_C_STR(_name);
   
   if (plugin_name == NULL) {
     return uim_scm_f();
@@ -109,13 +109,13 @@ plugin_load(uim_lisp _name)
   DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Searching libuim-%s.so.\n", plugin_name));
 
   for (path_cdr = lib_path;
-       !uim_scm_nullp(path_cdr);
-       path_cdr = uim_scm_cdr(path_cdr))
+       !NULLP(path_cdr);
+       path_cdr = CDR(path_cdr))
   {
     int fd;
     const char *path;
-    path_car = uim_scm_car(path_cdr);
-    path = uim_scm_refer_c_str(path_car);
+    path_car = CAR(path_cdr);
+    path = REFER_C_STR(path_car);
     len = strlen(path) + 1 + strlen(PLUGIN_PREFIX) + strlen(plugin_name)+ strlen(PLUGIN_SUFFIX) + 1;
     plugin_lib_filename = uim_malloc(sizeof(char) * len);
     snprintf(plugin_lib_filename, len, "%s/%s%s%s",
@@ -132,13 +132,13 @@ plugin_load(uim_lisp _name)
 
   DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Searching %s.scm.\n", plugin_name));
   for (path_cdr = scm_path;
-       !uim_scm_nullp(path_cdr);
-       path_cdr = uim_scm_cdr(path_cdr))
+       !NULLP(path_cdr);
+       path_cdr = CDR(path_cdr))
   {
     int fd;
     const char *path;
-    path_car = uim_scm_car(path_cdr);
-    path = uim_scm_refer_c_str(path_car);
+    path_car = CAR(path_cdr);
+    path = REFER_C_STR(path_car);
     len = strlen(path) + 1 + strlen(plugin_name)+ strlen(".scm") + 1;
     plugin_scm_filename = uim_malloc(sizeof(char) * len);
     snprintf(plugin_scm_filename, len, "%s/%s.scm", path, plugin_name);
@@ -193,11 +193,11 @@ plugin_load(uim_lisp _name)
 
   {
     uim_lisp form;
-    form = uim_scm_list5(uim_scm_make_symbol("plugin-list-append"),
+    form = LIST5(MAKE_SYM("plugin-list-append"),
 		         _name,
-		         uim_scm_make_ptr(library),
-			 uim_scm_make_func_ptr(plugin_instance_init),
-			 uim_scm_make_func_ptr(plugin_instance_quit));
+		         MAKE_PTR(library),
+			 MAKE_FPTR(plugin_instance_init),
+			 MAKE_FPTR(plugin_instance_quit));
     uim_scm_eval(form);
   }
   free(plugin_scm_filename);
@@ -225,12 +225,12 @@ plugin_unload_internal(void *uim_lisp_name)
   ret = uim_scm_callf("plugin-list-query-library", "o", _name);
   if (FALSEP(ret))
     return uim_scm_f();
-  library = uim_scm_c_ptr(ret);
+  library = C_PTR(ret);
 
   ret = uim_scm_callf("plugin-list-query-instance-quit", "o", _name);
   if (FALSEP(ret))
     return uim_scm_f();
-  plugin_instance_quit = uim_scm_c_func_ptr(ret);
+  plugin_instance_quit = C_FPTR(ret);
 
   (plugin_instance_quit)();
   dlclose(library);
@@ -271,9 +271,9 @@ uim_quit_plugin_internal(void *dummy)
   uim_lisp alist, rest, entry, name;
 
   alist = uim_scm_eval_c_string("plugin-alist");
-  for (rest = alist; !uim_scm_nullp(rest); rest = uim_scm_cdr(rest)) {
-    entry = uim_scm_car(rest);
-    name = uim_scm_car(entry);
+  for (rest = alist; !NULLP(rest); rest = CDR(rest)) {
+    entry = CAR(rest);
+    name = CAR(entry);
 
     plugin_unload(name);
   }

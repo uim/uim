@@ -54,7 +54,7 @@
 static uim_lisp
 intl_gettext_package()
 {
-  return uim_scm_make_str(GETTEXT_PACKAGE);
+  return MAKE_STR(GETTEXT_PACKAGE);
 }
 
 
@@ -66,10 +66,10 @@ intl_textdomain(uim_lisp domainname)
   if (FALSEP(domainname)) {
     new_domain = textdomain(NULL);
   } else {
-    new_domain = textdomain(uim_scm_refer_c_str(domainname));
+    new_domain = textdomain(REFER_C_STR(domainname));
   }
 
-  return uim_scm_make_str(new_domain);
+  return MAKE_STR(new_domain);
 }
 
 static uim_lisp
@@ -77,15 +77,15 @@ intl_bindtextdomain(uim_lisp domainname, uim_lisp dirname)
 {
   const char *domain, *new_dir;
 
-  domain = uim_scm_refer_c_str(domainname);
+  domain = REFER_C_STR(domainname);
 
   if (FALSEP(dirname)) {
     new_dir = bindtextdomain(domain, NULL);
   } else {
-    new_dir = bindtextdomain(domain, uim_scm_refer_c_str(dirname));
+    new_dir = bindtextdomain(domain, REFER_C_STR(dirname));
   }
 
-  return uim_scm_make_str(new_dir);
+  return MAKE_STR(new_dir);
 }
 
 static uim_lisp
@@ -94,15 +94,15 @@ intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
   const char *c_current_codeset, *c_codeset;
   uim_lisp current_codeset;
 
-  if (!uim_scm_stringp(domainname)
-      || !(uim_scm_stringp(codeset) || FALSEP(codeset)))
+  if (!STRP(domainname)
+      || !(STRP(codeset) || FALSEP(codeset)))
     return uim_scm_f();
 
-  c_codeset = (FALSEP(codeset)) ? NULL : uim_scm_refer_c_str(codeset);
-  c_current_codeset = bind_textdomain_codeset(uim_scm_refer_c_str(domainname),
+  c_codeset = (FALSEP(codeset)) ? NULL : REFER_C_STR(codeset);
+  c_current_codeset = bind_textdomain_codeset(REFER_C_STR(domainname),
 					      c_codeset);
   if (c_current_codeset) {
-    current_codeset = uim_scm_make_str(c_current_codeset);
+    current_codeset = MAKE_STR(c_current_codeset);
   } else {
     current_codeset = uim_scm_f();
   }
@@ -113,7 +113,7 @@ intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
 static uim_lisp
 intl_gettext(uim_lisp msgid)
 {
-  return uim_scm_make_str(gettext(uim_scm_refer_c_str(msgid)));
+  return MAKE_STR(gettext(REFER_C_STR(msgid)));
 }
 
 static uim_lisp
@@ -121,48 +121,48 @@ intl_dgettext(uim_lisp domainname, uim_lisp msgid)
 {
   const char *translated;
 
-  if (!uim_scm_stringp(domainname) || !uim_scm_stringp(msgid))
+  if (!STRP(domainname) || !STRP(msgid))
     return uim_scm_f();
 
-  translated = dgettext(uim_scm_refer_c_str(domainname),
-			uim_scm_refer_c_str(msgid));
+  translated = dgettext(REFER_C_STR(domainname),
+			REFER_C_STR(msgid));
 
-  return uim_scm_make_str(translated);
+  return MAKE_STR(translated);
 }
 
 static uim_lisp
 intl_dcgettext(uim_lisp domainname, uim_lisp msgid, uim_lisp category)
 {
-  return uim_scm_make_str(dcgettext(uim_scm_refer_c_str(domainname),
-				    uim_scm_refer_c_str(msgid),
-				    uim_scm_c_int(category)));
+  return MAKE_STR(dcgettext(REFER_C_STR(domainname),
+				    REFER_C_STR(msgid),
+				    C_INT(category)));
 }
 
 static uim_lisp
 intl_ngettext(uim_lisp msgid1, uim_lisp msgid2, uim_lisp n)
 {
-  return uim_scm_make_str(ngettext(uim_scm_refer_c_str(msgid1),
-				   uim_scm_refer_c_str(msgid2),
-				   uim_scm_c_int(n)));
+  return MAKE_STR(ngettext(REFER_C_STR(msgid1),
+				   REFER_C_STR(msgid2),
+				   C_INT(n)));
 }
 
 static uim_lisp
 intl_dngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp n)
 {
-  return uim_scm_make_str(dngettext(uim_scm_refer_c_str(domainname),
-				    uim_scm_refer_c_str(msgid1),
-				    uim_scm_refer_c_str(msgid2),
-				    uim_scm_c_int(n)));
+  return MAKE_STR(dngettext(REFER_C_STR(domainname),
+				    REFER_C_STR(msgid1),
+				    REFER_C_STR(msgid2),
+				    C_INT(n)));
 }
 
 static uim_lisp
 intl_dcngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp n, uim_lisp category)
 {
-  return uim_scm_make_str(dcngettext(uim_scm_refer_c_str(domainname),
-				     uim_scm_refer_c_str(msgid1),
-				     uim_scm_refer_c_str(msgid2),
-				     uim_scm_c_int(n),
-				     uim_scm_c_int(category)));
+  return MAKE_STR(dcngettext(REFER_C_STR(domainname),
+				     REFER_C_STR(msgid1),
+				     REFER_C_STR(msgid2),
+				     C_INT(n),
+				     C_INT(category)));
 }
 
 static void

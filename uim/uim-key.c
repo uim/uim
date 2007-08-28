@@ -294,7 +294,7 @@ uim_key_sym_to_int(uim_lisp sym_)
   char *sym;
   int i;
 
-  sym = uim_scm_refer_c_str(sym_);
+  sym = REFER_C_STR(sym_);
   for (i = 0; key_tab[i].key; i++) {
     if (!strcmp(key_tab[i].str, sym))
       return key_tab[i].key;
@@ -312,10 +312,10 @@ define_valid_key_symbols(void)
 
   valid_key_symbols = uim_scm_null();
   for (i = 0; key_tab[i].key; i++) {
-    valid_key_symbols = uim_scm_cons(MAKE_SYM(key_tab[i].str),
+    valid_key_symbols = CONS(MAKE_SYM(key_tab[i].str),
                                      valid_key_symbols);
   }
-  uim_scm_eval(uim_scm_list3(MAKE_SYM("define"),
+  uim_scm_eval(LIST3(MAKE_SYM("define"),
                              MAKE_SYM("valid-key-symbols"),
                              QUOTE(valid_key_symbols)));
 }
@@ -364,7 +364,7 @@ filter_key(uim_context uc, int key, int state, uim_bool is_press)
 
   handler = (is_press) ? "key-press-handler" : "key-release-handler";
   filtered = uim_scm_callf(handler, "poi", uc, key_, state);
-  return uim_scm_c_bool(filtered);
+  return C_BOOL(filtered);
 }
 
 static int

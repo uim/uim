@@ -395,9 +395,9 @@ uim_get_candidate_internal(struct uim_get_candidate_args *args)
   cand = uim_malloc(sizeof(*cand));
   memset(cand, 0, sizeof(*cand));
 
-  str  = uim_scm_refer_c_str(CAR(triple));
-  head = uim_scm_refer_c_str(CAR(CDR(triple)));
-  ann  = uim_scm_refer_c_str(CAR(CDR(CDR((triple)))));
+  str  = REFER_C_STR(CAR(triple));
+  head = REFER_C_STR(CAR(CDR(triple)));
+  ann  = REFER_C_STR(CAR(CDR(CDR((triple)))));
   cand->str           = uc->conv_if->convert(uc->outbound_conv, str);
   cand->heading_label = uc->conv_if->convert(uc->outbound_conv, head);
   cand->annotation    = uc->conv_if->convert(uc->outbound_conv, ann);
@@ -541,7 +541,7 @@ uim_input_string(uim_context uc, const char *str)
       consumed = uim_scm_callf("input-string-handler", "ps", uc, conv);
     free(conv);
 
-    ret = uim_scm_c_bool(consumed);
+    ret = C_BOOL(consumed);
   } else {
     ret = UIM_FALSE;
   }
@@ -626,7 +626,7 @@ uim_get_current_im_name(uim_context uc)
 
   protected0 = im = uim_scm_callf("uim-context-im", "p", uc);
   protected1 = ret = uim_scm_callf("im-name", "o", im);
-  name = uim_scm_refer_c_str(ret);
+  name = REFER_C_STR(ret);
 
   UIM_CATCH_ERROR_END();
 
@@ -646,7 +646,7 @@ uim_get_default_im_name(const char *localename)
   assert(localename);
 
   protected0 = ret = uim_scm_callf("uim-get-default-im-name", "s", localename);
-  name = uim_scm_refer_c_str(ret);
+  name = REFER_C_STR(ret);
 
   UIM_CATCH_ERROR_END();
 
@@ -667,7 +667,7 @@ uim_get_im_name_for_locale(const char *localename)
 
   protected0 =
     ret = uim_scm_callf("uim-get-im-name-for-locale", "s", localename);
-  name = uim_scm_refer_c_str(ret);
+  name = REFER_C_STR(ret);
 
   UIM_CATCH_ERROR_END();
 
@@ -904,7 +904,7 @@ uim_get_nr_im(uim_context uc)
   assert(uc);
 
   protected0 = n_ = uim_scm_callf("uim-n-convertible-ims", "p", uc);
-  n = uim_scm_c_int(n_);
+  n = C_INT(n_);
 
   UIM_CATCH_ERROR_END();
 
@@ -932,7 +932,7 @@ uim_get_im_name(uim_context uc, int nth)
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = str_ = uim_scm_callf("im-name", "o", im);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   UIM_CATCH_ERROR_END();
 
@@ -950,7 +950,7 @@ uim_get_im_language(uim_context uc, int nth)
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = str_ = uim_scm_callf("im-lang", "o", im);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   UIM_CATCH_ERROR_END();
 
@@ -968,7 +968,7 @@ uim_get_im_encoding(uim_context uc, int nth)
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = str_ = uim_scm_callf("im-encoding", "o", im);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   UIM_CATCH_ERROR_END();
 
@@ -986,7 +986,7 @@ uim_get_im_short_desc(uim_context uc, int nth)
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = short_desc = uim_scm_callf("im-short-desc", "o", im);
-  str = (FALSEP(short_desc)) ? "-" : uim_scm_refer_c_str(short_desc);
+  str = (FALSEP(short_desc)) ? "-" : REFER_C_STR(short_desc);
 
   UIM_CATCH_ERROR_END();
 

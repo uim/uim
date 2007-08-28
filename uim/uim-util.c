@@ -51,31 +51,31 @@ static uim_lisp protected;
 static uim_lisp
 uim_version()
 {
-  return uim_scm_make_str(PACKAGE_VERSION);
+  return MAKE_STR(PACKAGE_VERSION);
 }
 
 static uim_lisp
 sys_libdir()
 {
-  return uim_scm_make_str(LIBDIR);
+  return MAKE_STR(LIBDIR);
 }
 
 static uim_lisp
 sys_pkglibdir()
 {
-  return uim_scm_make_str(PKGLIBDIR);
+  return MAKE_STR(PKGLIBDIR);
 }
 
 static uim_lisp
 sys_datadir()
 {
-  return uim_scm_make_str(DATADIR);
+  return MAKE_STR(DATADIR);
 }
 
 static uim_lisp
 sys_pkgdatadir()
 {
-  return uim_scm_make_str(PKGDATADIR);
+  return MAKE_STR(PKGDATADIR);
 }
 
 static uim_lisp
@@ -84,10 +84,10 @@ file_stat_mode(uim_lisp filename, mode_t mode)
   struct stat st;
   const char *c_filename;
 
-  if (!uim_scm_stringp(filename))
+  if (!STRP(filename))
     return uim_scm_f();
 
-  c_filename = uim_scm_refer_c_str(filename);
+  c_filename = REFER_C_STR(filename);
   if (stat(c_filename, &st) < 0) {
     return uim_scm_f();
   } else {
@@ -128,21 +128,21 @@ file_directoryp(uim_lisp filename)
 static uim_lisp
 file_mtime(uim_lisp f)
 {
-  const char *filename = uim_scm_refer_c_str(f);
+  const char *filename = REFER_C_STR(f);
   struct stat buf;
 
   if(stat(filename, &buf) == 0) {
-    return uim_scm_make_int(buf.st_mtime);
+    return MAKE_INT(buf.st_mtime);
   } else {
     /* FIXME: Write error handling code. */
-    return uim_scm_make_int(0);
+    return MAKE_INT(0);
   }
 }
 
 static uim_lisp
 c_getenv(uim_lisp str_)
 {
-  const char *str = uim_scm_refer_c_str(str_);
+  const char *str = REFER_C_STR(str_);
   char *val;
 
   if (!str) {
@@ -151,7 +151,7 @@ c_getenv(uim_lisp str_)
 
   val = getenv(str);
   if (val) {
-    return uim_scm_make_str(val);
+    return MAKE_STR(val);
   } else {
     return uim_scm_f();
   }
@@ -160,8 +160,8 @@ c_getenv(uim_lisp str_)
 static uim_lisp
 c_setenv(uim_lisp name_, uim_lisp val_, uim_lisp overwrite_)
 {
-  const char *name = uim_scm_refer_c_str(name_);
-  const char *val = uim_scm_refer_c_str(val_);
+  const char *name = REFER_C_STR(name_);
+  const char *val = REFER_C_STR(val_);
   int overwrite = TRUEP(overwrite_);
   int err;
 
@@ -175,7 +175,7 @@ c_setenv(uim_lisp name_, uim_lisp val_, uim_lisp overwrite_)
 static uim_lisp
 c_unsetenv(uim_lisp name_)
 {
-  const char *name = uim_scm_refer_c_str(name_);
+  const char *name = REFER_C_STR(name_);
 
   if (!name) {
     return uim_scm_f();
@@ -193,20 +193,20 @@ string_contains(uim_lisp s1_, uim_lisp s2_, uim_lisp start1_)
   int start1;
   size_t s1len;
 
-  if (!uim_scm_stringp(s1_) || !uim_scm_stringp(s2_))
-    return uim_scm_f();  /* FIXME: uim_scm_error() */
+  if (!STRP(s1_) || !STRP(s2_))
+    return uim_scm_f();  /* FIXME: ERROR() */
 
-  s1 = uim_scm_refer_c_str(s1_);
-  s2 = uim_scm_refer_c_str(s2_);
-  start1 = uim_scm_c_int(start1_);
+  s1 = REFER_C_STR(s1_);
+  s2 = REFER_C_STR(s2_);
+  start1 = C_INT(start1_);
   s1len = strlen(s1);
 
   if (start1 < 0 || s1len < (size_t)start1)
-    return uim_scm_f();  /* FIXME: uim_scm_error() */
+    return uim_scm_f();  /* FIXME: ERROR() */
 
   found = strstr(&s1[start1], s2);
 
-  return (found) ? uim_scm_make_int(found - s1) : uim_scm_f();
+  return (found) ? MAKE_INT(found - s1) : uim_scm_f();
 }
 
 static uim_lisp
@@ -216,11 +216,11 @@ string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
   const char *prefix, *str;
   size_t len;
 
-  if (!uim_scm_stringp(prefix_) || !uim_scm_stringp(str_))
+  if (!STRP(prefix_) || !STRP(str_))
     return uim_scm_f();
 
-  prefix = uim_scm_refer_c_str(prefix_);
-  str = uim_scm_refer_c_str(str_);
+  prefix = REFER_C_STR(prefix_);
+  str = REFER_C_STR(str_);
   len = strlen(prefix);
 
   return (*cmp)(prefix, str, len) ? uim_scm_f() : uim_scm_t();
@@ -273,7 +273,7 @@ uim_get_language_name_from_locale(const char *locale)
     lang_code = uim_scm_callf("langgroup-primary-lang-code", "s", locale);
   protected =
     lang_name = uim_scm_callf("lang-code->lang-name", "o", lang_code);
-  name = uim_scm_refer_c_str(lang_name);
+  name = REFER_C_STR(lang_name);
 
   UIM_CATCH_ERROR_END();
 
@@ -294,7 +294,7 @@ uim_get_language_code_from_language_name(const char *language_name)
 
   protected =
     lang_code = uim_scm_callf("lang-name->lang-code", "s", language_name);
-  name = uim_scm_refer_c_str(lang_code);
+  name = REFER_C_STR(lang_code);
 
   UIM_CATCH_ERROR_END();
 
@@ -306,7 +306,7 @@ setugidp(void)
 {
   assert(uim_scm_gc_any_contextp());
 
-  return uim_scm_make_bool(uim_issetugid());
+  return MAKE_BOOL(uim_issetugid());
 }
 
 void
