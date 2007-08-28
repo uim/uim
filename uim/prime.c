@@ -51,6 +51,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 #include "plugin.h"
 #include "uim-helper.h"
 #include "uim-util.h"
@@ -224,13 +225,13 @@ prime_send_command(uim_lisp str_)
   char *result;
   uim_lisp ret;
 
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   if (use_unix_domain_socket) {
     prime_write_msg_to_ud(prime_fd, str);
     result = prime_read_msg_from_ud(prime_fd);
     if (!result)
-      return uim_scm_make_str("error\n\t\n\n");
+      return MAKE_STR("error\n\t\n\n");
   } else {
     int len = strlen(str);
     char *buf = uim_malloc(len + 2);
@@ -239,10 +240,10 @@ prime_send_command(uim_lisp str_)
 				  buf);
     free(buf);
     if (!result)
-      return uim_scm_make_str("");
+      return MAKE_STR("");
   }
 
-  ret = uim_scm_make_str(result);
+  ret = MAKE_STR(result);
   free(result);
 
   return ret;
@@ -254,7 +255,7 @@ prime_lib_init(uim_lisp use_udp_)
   char *option;
   int len, timeout_count = 0;
 
-  use_unix_domain_socket = uim_scm_c_bool(use_udp_);
+  use_unix_domain_socket = C_BOOL(use_udp_);
 
   if (use_unix_domain_socket) {
     if (prime_fd != -1)

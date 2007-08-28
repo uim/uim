@@ -40,6 +40,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-util.h"
 #include "plugin.h"
 
@@ -65,7 +66,7 @@ validate_segment_index(anthy_context_t ac, int i)
   if (err)
     uim_fatal_error("anthy_get_stat() failed");
   if (!(0 <= i && i < cs.nr_segment))
-    uim_scm_error_obj("invalid segment index", uim_scm_make_int(i));
+    ERROR_OBJ("invalid segment index", MAKE_INT(i));
 }
 
 static anthy_context_t
@@ -73,7 +74,7 @@ get_anthy_context(uim_lisp ac_)
 {
   anthy_context_t ac;
 
-  ac = uim_scm_c_ptr(ac_);
+  ac = C_PTR(ac_);
   if (!ac)
     uim_fatal_error("NULL anthy_context_t");
 
@@ -83,7 +84,7 @@ get_anthy_context(uim_lisp ac_)
 static uim_lisp
 anthy_version()
 {
-  return uim_scm_make_str(anthy_get_version_string());
+  return MAKE_STR(anthy_get_version_string());
 }
 
 static uim_lisp
@@ -107,7 +108,7 @@ create_context(uim_lisp encoding_)
   int encoding;
 
   /* 0: compiled, 1: EUC-JP, 2: UTF-8 */
-  encoding = uim_scm_c_int(encoding_);
+  encoding = C_INT(encoding_);
 
   if (!iconv_cd_e2u)
     iconv_cd_e2u = uim_iconv->create("UTF-8", "EUC-JP");
@@ -120,7 +121,7 @@ create_context(uim_lisp encoding_)
     uim_fatal_error("anthy_create_context() failed");
 
   anthy_context_set_encoding(ac, encoding);
-  ac_ = uim_scm_make_ptr(ac);
+  ac_ = MAKE_PTR(ac);
   context_list = uim_scm_callf("cons", "oo", ac_, context_list);
 
   return ac_;
@@ -148,7 +149,7 @@ set_string(uim_lisp ac_, uim_lisp str_)
   const char *str;
 
   ac = get_anthy_context(ac_);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
   anthy_set_string(ac, str);
 
   return uim_scm_f();
@@ -166,7 +167,7 @@ get_nr_segments(uim_lisp ac_)
   if (err)
     uim_fatal_error("anthy_get_stat() failed");
 
-  return uim_scm_make_int(cs.nr_segment);
+  return MAKE_INT(cs.nr_segment);
 }
 
 static uim_lisp
@@ -177,7 +178,7 @@ get_nr_candidates(uim_lisp ac_, uim_lisp seg_)
   struct anthy_segment_stat ss;
 
   ac = get_anthy_context(ac_);
-  seg = uim_scm_c_int(seg_);
+  seg = C_INT(seg_);
 
   validate_segment_index(ac, seg);
 
@@ -185,7 +186,7 @@ get_nr_candidates(uim_lisp ac_, uim_lisp seg_)
   if (err)
     uim_fatal_error("anthy_get_segment_stat() failed");
 
-  return uim_scm_make_int(ss.nr_candidate);
+  return MAKE_INT(ss.nr_candidate);
 }
 
 static uim_lisp
@@ -197,8 +198,8 @@ get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
   uim_lisp buf_;
   
   ac = get_anthy_context(ac_);
-  seg = uim_scm_c_int(seg_);
-  nth  = uim_scm_c_int(nth_);
+  seg = C_INT(seg_);
+  nth  = C_INT(nth_);
 
   buflen = anthy_get_segment(ac, seg, nth, NULL, 0);
   if (buflen == -1)
@@ -210,7 +211,7 @@ get_nth_candidate(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
     free(buf);
     uim_fatal_error("anthy_get_segment() failed");
   }
-  buf_ = uim_scm_make_str_directly(buf);
+  buf_ = MAKE_STR_DIRECTLY(buf);
 
   return buf_;
 }
@@ -220,7 +221,7 @@ get_unconv_candidate(uim_lisp ac_, uim_lisp seg_)
 {
   uim_lisp nth_;
 
-  nth_ = uim_scm_make_int(NTH_UNCONVERTED_CANDIDATE);
+  nth_ = MAKE_INT(NTH_UNCONVERTED_CANDIDATE);
   return get_nth_candidate(ac_, seg_, nth_);
 }
 
@@ -232,7 +233,7 @@ get_segment_length(uim_lisp ac_, uim_lisp seg_)
   struct anthy_segment_stat ss;
 
   ac = get_anthy_context(ac_);
-  seg = uim_scm_c_int(seg_);
+  seg = C_INT(seg_);
 
   validate_segment_index(ac, seg);
 
@@ -240,7 +241,7 @@ get_segment_length(uim_lisp ac_, uim_lisp seg_)
   if (err)
     uim_fatal_error("anthy_get_segment_stat() failed");
 
-  return uim_scm_make_int(ss.seg_len);
+  return MAKE_INT(ss.seg_len);
 }
 
 static uim_lisp
@@ -250,8 +251,8 @@ resize_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp delta_)
   int seg, delta;
 
   ac = get_anthy_context(ac_);
-  seg = uim_scm_c_int(seg_);
-  delta = uim_scm_c_int(delta_);
+  seg = C_INT(seg_);
+  delta = C_INT(delta_);
 
   anthy_resize_segment(ac, seg, delta);
   return uim_scm_f();
@@ -264,8 +265,8 @@ commit_segment(uim_lisp ac_, uim_lisp seg_, uim_lisp nth_)
   int seg, nth;
 
   ac = get_anthy_context(ac_);
-  seg = uim_scm_c_int(seg_);
-  nth = uim_scm_c_int(nth_);
+  seg = C_INT(seg_);
+  nth = C_INT(nth_);
 
   anthy_commit_segment(ac, seg, nth);
   return uim_scm_f();
@@ -279,7 +280,7 @@ set_prediction_src_string(uim_lisp ac_, uim_lisp str_)
   const char *str;
 
   ac = get_anthy_context(ac_);
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
 
   anthy_set_prediction_string(ac, str);
 #endif
@@ -299,7 +300,7 @@ get_nr_predictions(uim_lisp ac_)
   err = anthy_get_prediction_stat(ac, &ps);
   if (err)
     uim_fatal_error("anthy_get_prediction_stat() failed");
-  return uim_scm_make_int(ps.nr_prediction);
+  return MAKE_INT(ps.nr_prediction);
 #else
   return uim_scm_f();
 #endif
@@ -315,7 +316,7 @@ get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
   uim_lisp buf_;
 
   ac = get_anthy_context(ac_);
-  nth = uim_scm_c_int(nth_); 
+  nth = C_INT(nth_); 
 
   buflen = anthy_get_prediction(ac, nth, NULL, 0);
   if (buflen == -1)
@@ -327,7 +328,7 @@ get_nth_prediction(uim_lisp ac_, uim_lisp nth_)
     free(buf);
     uim_fatal_error("anthy_get_prediction() failed");
   }
-  buf_ = uim_scm_make_str_directly(buf);
+  buf_ = MAKE_STR_DIRECTLY(buf);
 
   return buf_;
 #else
@@ -343,11 +344,11 @@ commit_nth_prediction(uim_lisp ac_, uim_lisp nth_)
   int nth, err;
 
   ac = get_anthy_context(ac_);
-  nth = uim_scm_c_int(nth_); 
+  nth = C_INT(nth_); 
 
   err = anthy_commit_prediction(ac, nth);
 
-  return uim_scm_make_bool(!err);
+  return MAKE_BOOL(!err);
 #else
   return uim_scm_f();
 #endif
@@ -361,11 +362,11 @@ eucjp_to_utf8(uim_lisp str_)
   uim_lisp utf8_;
 
   if (!iconv_cd_e2u)
-    return uim_scm_make_str("〓");
+    return MAKE_STR("〓");
 
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
   convstr = uim_iconv->convert(iconv_cd_e2u, str);
-  utf8_ = uim_scm_make_str(convstr);
+  utf8_ = MAKE_STR(convstr);
   free(convstr);
 
   return utf8_;
@@ -379,11 +380,11 @@ utf8_to_eucjp(uim_lisp str_)
   uim_lisp eucjp_;
 
   if (!iconv_cd_u2e)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
   convstr = uim_iconv->convert(iconv_cd_u2e, str);
-  eucjp_ = uim_scm_make_str(convstr);
+  eucjp_ = MAKE_STR(convstr);
   free(convstr);
 
   return eucjp_;

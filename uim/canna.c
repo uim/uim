@@ -89,7 +89,7 @@ get_canna_context(uim_lisp cc_)
 {
   struct canna_context *cc;
 
-  cc = uim_scm_c_ptr(cc_);
+  cc = C_PTR(cc_);
   if (!cc)
     uim_fatal_error("NULL canna_context");
   assert(cc->rk_context_id != -1);
@@ -106,13 +106,13 @@ validate_segment_index(struct canna_context *cc, int i)
 {
   assert(VALID_CANNA_CONTEXTP(cc));
   if (!VALID_SEGMENT_INDEXP(cc, i))
-    uim_scm_error_obj("invalid segment index", uim_scm_make_int(i));
+    ERROR_OBJ("invalid segment index", MAKE_INT(i));
 }
 
 static uim_lisp
 init_canna_lib(uim_lisp str_)
 {
-  cannaserver = (TRUEP(str_)) ? uim_scm_c_str(str_) : NULL;
+  cannaserver = (TRUEP(str_)) ? C_STR(str_) : NULL;
 
   /* Immediate init & quit to test cannaserver connectivity? Real
    * initialization is exist at beginning of create_context(). I don't
@@ -176,7 +176,7 @@ create_context(void)
   free(diclist);
 #endif
 
-  cc_ = uim_scm_make_ptr(cc);
+  cc_ = MAKE_PTR(cc);
   context_list = uim_scm_callf("cons", "oo", cc_, context_list);
 
   return cc_;
@@ -251,7 +251,7 @@ begin_conversion(uim_lisp cc_, uim_lisp str_)
   cc = get_canna_context(cc_);
 
   mode = cc->rk_mode;
-  str = uim_scm_refer_c_str(str_);
+  str = REFER_C_STR(str_);
   len = strlen(str);
 
   segment_num = RkBgnBun(cc->rk_context_id, (char *)str, len, mode);
@@ -261,7 +261,7 @@ begin_conversion(uim_lisp cc_, uim_lisp str_)
   cc->segment_num = segment_num;
   _update_status(cc);
 
-  return uim_scm_make_int(cc->segment_num);
+  return MAKE_INT(cc->segment_num);
 }
 
 static uim_lisp
@@ -272,8 +272,8 @@ get_nth_candidate(uim_lisp cc_, uim_lisp seg_, uim_lisp nth_)
   char buf[BUFSIZE];
 
   cc = get_canna_context(cc_);
-  seg = uim_scm_c_int(seg_);
-  nth = uim_scm_c_int(nth_);
+  seg = C_INT(seg_);
+  nth = C_INT(nth_);
   validate_segment_index(cc, seg);
 
   RkGoTo(cc->rk_context_id, seg);
@@ -288,7 +288,7 @@ get_nth_candidate(uim_lisp cc_, uim_lisp seg_, uim_lisp nth_)
 #ifdef UIM_CANNA_DEBUG
   printf("nth: %d, kanji: %s\n", nth, buf);
 #endif
-  return uim_scm_make_str(buf);
+  return MAKE_STR(buf);
 }
 
 static uim_lisp
@@ -299,7 +299,7 @@ get_unconv_candidate(uim_lisp cc_, uim_lisp seg_)
   char buf[BUFSIZE];
 
   cc = get_canna_context(cc_);
-  seg = uim_scm_c_int(seg_);
+  seg = C_INT(seg_);
   validate_segment_index(cc, seg);
 
   RkGoTo(cc->rk_context_id, seg);
@@ -310,7 +310,7 @@ get_unconv_candidate(uim_lisp cc_, uim_lisp seg_)
 #ifdef UIM_CANNA_DEBUG
   fprintf(stderr, "yomi: %s\n", buf);
 #endif
-  return uim_scm_make_str(buf);
+  return MAKE_STR(buf);
 }
 
 static uim_lisp
@@ -321,7 +321,7 @@ get_nr_segments(uim_lisp cc_)
 
   cc = get_canna_context(cc_);
 
-  return uim_scm_make_int(cc->segment_num);
+  return MAKE_INT(cc->segment_num);
 }
 
 static uim_lisp
@@ -331,13 +331,13 @@ get_nr_candidates(uim_lisp cc_, uim_lisp seg_)
   int seg;
 
   cc = get_canna_context(cc_);
-  seg = uim_scm_c_int(seg_);
+  seg = C_INT(seg_);
   validate_segment_index(cc, seg);
 
   if (cc->max_cand_num_list[seg] == -1)
-    uim_scm_error("invalid candidate index");
+    ERROR("invalid candidate index");
 
-  return uim_scm_make_int(cc->max_cand_num_list[seg]);
+  return MAKE_INT(cc->max_cand_num_list[seg]);
 }
 
 static uim_lisp
@@ -347,8 +347,8 @@ resize_segment(uim_lisp cc_, uim_lisp seg_, uim_lisp delta_)
   int seg, delta, id;
 
   cc = get_canna_context(cc_);
-  seg = uim_scm_c_int(seg_);
-  delta = uim_scm_c_int(delta_);
+  seg = C_INT(seg_);
+  delta = C_INT(delta_);
   validate_segment_index(cc, seg);
 
   RkGoTo(cc->rk_context_id, seg);
@@ -372,8 +372,8 @@ commit_segment(uim_lisp cc_, uim_lisp seg_, uim_lisp nth_)
 
   cc = get_canna_context(cc_);
 #if 0
-  seg = uim_scm_c_int(seg_);
-  nth = uim_scm_c_int(nth_);
+  seg = C_INT(seg_);
+  nth = C_INT(nth_);
   validate_segment_index(cc, seg);
 #endif
 

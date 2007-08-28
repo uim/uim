@@ -41,6 +41,7 @@
 #include "gettext.h"
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-util.h"
 #include "plugin.h"
 
@@ -251,7 +252,7 @@ compose_modep(uim_lisp id_)
   int id;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
@@ -270,7 +271,7 @@ preedit_changedp(uim_lisp id_)
   int id;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
@@ -290,14 +291,14 @@ get_left_of_cursor(uim_lisp id_)
   char *buf, *p;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   if (ic->cursor_pos == 0)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   buf = convert_mtext2str(ic->preedit);
   p = buf;
@@ -307,7 +308,7 @@ get_left_of_cursor(uim_lisp id_)
   *p = '\0';
 
   buflen = strlen(buf);
-  buf_ = uim_scm_make_str(buf);
+  buf_ = MAKE_STR(buf);
   free(buf);
 
   return buf_;
@@ -321,11 +322,11 @@ get_right_of_cursor(uim_lisp id_)
   char *buf, *p;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   buf = convert_mtext2str(ic->preedit);
   p = buf;
@@ -334,7 +335,7 @@ get_right_of_cursor(uim_lisp id_)
     p = m17nlib_utf8_find_next_char(p);
 
   buflen = strlen(p);
-  buf_ = uim_scm_make_str(p);
+  buf_ = MAKE_STR(p);
   free(buf);
 
   return buf_;
@@ -348,14 +349,14 @@ get_left_of_candidate(uim_lisp id_)
   char *buf, *p;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   if (ic->candidate_from == 0)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   buf = convert_mtext2str(ic->preedit);
   p = buf;
@@ -365,7 +366,7 @@ get_left_of_candidate(uim_lisp id_)
   *p = '\0';
 
   buflen = strlen(buf);
-  buf_ = uim_scm_make_str(buf);
+  buf_ = MAKE_STR(buf);
   free(buf);
 
   return buf_;
@@ -379,17 +380,17 @@ get_selected_candidate(uim_lisp id_)
   char *buf, *p, *start;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   buf = convert_mtext2str(ic->preedit);
   p = buf;
 
   if (!p)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   for (i = 0; i < ic->candidate_from ;i++)
     p = m17nlib_utf8_find_next_char(p);
@@ -400,7 +401,7 @@ get_selected_candidate(uim_lisp id_)
   *p = '\0';
 
   buflen = strlen(start);
-  buf_ = uim_scm_make_str(start);
+  buf_ = MAKE_STR(start);
   free(buf);
 
   return buf_;
@@ -414,11 +415,11 @@ get_right_of_candidate(uim_lisp id_)
   char *buf, *p;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (!ic)
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 
   buf = convert_mtext2str(ic->preedit);
   p = buf;
@@ -427,7 +428,7 @@ get_right_of_candidate(uim_lisp id_)
     p = m17nlib_utf8_find_next_char(p);
 
   buflen = strlen(p);
-  buf_ = uim_scm_make_str(p);
+  buf_ = MAKE_STR(p);
   free(buf);
 
   return buf_;
@@ -436,7 +437,7 @@ get_right_of_candidate(uim_lisp id_)
 static uim_lisp
 get_nr_input_methods()
 {
-  return uim_scm_make_int(nr_input_methods);
+  return MAKE_INT(nr_input_methods);
 }
 
 static uim_lisp
@@ -445,7 +446,7 @@ get_input_method_name(uim_lisp nth_)
   int len, nth;
   char *name;
   
-  nth = uim_scm_c_int(nth_);
+  nth = C_INT(nth_);
 
   if (nth < nr_input_methods) {
     len = strlen(im_array[nth].lang) + strlen(im_array[nth].name) + 7;
@@ -456,7 +457,7 @@ get_input_method_name(uim_lisp nth_)
     else
       snprintf(name, len, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
 
-    return uim_scm_make_str(name);
+    return MAKE_STR(name);
   }
 
   return uim_scm_f();
@@ -465,10 +466,10 @@ get_input_method_name(uim_lisp nth_)
 static uim_lisp
 get_input_method_lang(uim_lisp nth_)
 {
-  int nth = uim_scm_c_int(nth_);
+  int nth = C_INT(nth_);
 
   if (nth < nr_input_methods)
-    return uim_scm_make_str(im_array[nth].lang);
+    return MAKE_STR(im_array[nth].lang);
 
   return uim_scm_f();
 }
@@ -480,7 +481,7 @@ get_input_method_short_desc(uim_lisp nth_)
   char *str = NULL, *p;
   uim_lisp ret;
 
-  nth = uim_scm_c_int(nth_);
+  nth = C_INT(nth_);
 
   if (nth < nr_input_methods) {
     MInputMethod *im;
@@ -488,7 +489,7 @@ get_input_method_short_desc(uim_lisp nth_)
 
     im = im_instance(nth);
     if (!im)
-      return uim_scm_make_str(N_("m17n library IM open error"));
+      return MAKE_STR(N_("m17n library IM open error"));
 
     desc = minput_get_description(im->language, im->name);
     if (desc) {
@@ -524,10 +525,10 @@ get_input_method_short_desc(uim_lisp nth_)
     }
 
     if (str) {
-      ret = uim_scm_make_str(str);
+      ret = MAKE_STR(str);
       free(str);
     } else {
-      ret = uim_scm_make_str(N_("An input method provided by the m17n library"));
+      ret = MAKE_STR(N_("An input method provided by the m17n library"));
     }
   } else
     ret = uim_scm_f();
@@ -584,7 +585,7 @@ alloc_id(uim_lisp name_)
   MInputMethod *im;
 
   id = unused_ic_id();
-  name = uim_scm_refer_c_str(name_);
+  name = REFER_C_STR(name_);
 
   im = find_im_by_name(name);
 
@@ -594,13 +595,13 @@ alloc_id(uim_lisp name_)
   ic_array[id].old_candidates = NULL;
   ic_array[id].new_candidates = NULL;
 
-  return uim_scm_make_int(id);
+  return MAKE_INT(id);
 }
 
 static uim_lisp
 free_id(uim_lisp id_)
 {
-  int id = uim_scm_c_int(id_);
+  int id = C_INT(id_);
 
   if (id < nr_input_contexts) {
     struct ic_ *ic = &ic_array[id];
@@ -621,9 +622,9 @@ push_symbol_key(uim_lisp id_, uim_lisp key_)
   MSymbol key;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
-  key = msymbol(uim_scm_c_str(key_));
+  key = msymbol(C_STR(key_));
 
   if (key == Mnil)
     return uim_scm_f();
@@ -643,7 +644,7 @@ get_result(uim_lisp id_)
   MInputContext *ic;
   uim_lisp  consumed_, commit_string_;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   produced  = mtext();
@@ -656,10 +657,10 @@ get_result(uim_lisp id_)
 
   commit_string = convert_mtext2str(produced);
   m17n_object_unref(produced);
-  commit_string_ = uim_scm_make_str(commit_string);
+  commit_string_ = MAKE_STR(commit_string);
   free(commit_string);
 
-  return uim_scm_cons(consumed_, commit_string_);
+  return CONS(consumed_, commit_string_);
 }
 
 static uim_lisp
@@ -668,7 +669,7 @@ commit(uim_lisp id_)
   int id;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   /* To avoid a bug of m17n-lib */
@@ -683,7 +684,7 @@ candidate_showp(uim_lisp id_)
   int id;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
   if (ic->candidate_show == 1)
@@ -740,7 +741,7 @@ fill_new_candidates(uim_lisp id_)
   char **new_cands;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
   cands_num = calc_cands_num(id);
 
@@ -801,7 +802,7 @@ same_candidatesp(char **old, char **new)
 static uim_lisp
 candidates_changedp(uim_lisp id_)
 {
-  int id = uim_scm_c_int(id_);
+  int id = C_INT(id_);
 
   if (!same_candidatesp(ic_array[id].old_candidates,
 			ic_array[id].new_candidates))
@@ -813,9 +814,9 @@ candidates_changedp(uim_lisp id_)
 static uim_lisp
 get_nr_candidates(uim_lisp id_)
 {
-  int id = uim_scm_c_int(id_);
+  int id = C_INT(id_);
 
-  return uim_scm_make_int(calc_cands_num(id));
+  return MAKE_INT(calc_cands_num(id));
 }
 
 static uim_lisp
@@ -823,14 +824,14 @@ get_nth_candidate(uim_lisp id_, uim_lisp nth_)
 {
   int id, nth, nr;
   
-  id = uim_scm_c_int(id_);
-  nth = uim_scm_c_int(nth_);
+  id = C_INT(id_);
+  nth = C_INT(nth_);
   nr = ic_array[id].nr_candidates;
 
   if (nr >= nth)
-    return uim_scm_make_str(ic_array[id].new_candidates[nth]);
+    return MAKE_STR(ic_array[id].new_candidates[nth]);
   else
-    return uim_scm_make_str("");
+    return MAKE_STR("");
 }
 
 static uim_lisp
@@ -839,10 +840,10 @@ get_candidate_index(uim_lisp id_)
   int id;
   MInputContext *ic;
 
-  id = uim_scm_c_int(id_);
+  id = C_INT(id_);
   ic = ic_array[id].mic;
 
-  return uim_scm_make_int(ic->candidate_index);
+  return MAKE_INT(ic->candidate_index);
 }
 
 void

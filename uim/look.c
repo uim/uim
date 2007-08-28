@@ -35,6 +35,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-helper.h"
 #include "plugin.h"
 
@@ -43,8 +44,8 @@
 static uim_lisp
 uim_look_look(uim_lisp dict_, uim_lisp str_)
 {
-  const char *dict = uim_scm_refer_c_str(dict_);
-  const char *str = uim_scm_refer_c_str(str_);
+  const char *dict = REFER_C_STR(dict_);
+  const char *str = REFER_C_STR(str_);
   uim_look_ctx *ctx;
   char buf[1024];
   char *dict_str;
@@ -69,7 +70,7 @@ uim_look_look(uim_lisp dict_, uim_lisp str_)
       if (strcasecmp(buf, dict_str) == 0)
 	continue;
       if (len < strlen(buf))
-	ret_ = uim_scm_cons(uim_scm_make_str(buf + len), ret_);
+	ret_ = CONS(MAKE_STR(buf + len), ret_);
     }
   }
 

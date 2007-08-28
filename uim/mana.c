@@ -48,6 +48,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 #include "uim-util.h"
 #include "plugin.h"
 
@@ -187,7 +188,7 @@ mana_init(void)
 static uim_lisp
 mana_eval(uim_lisp buf_)
 {
-  const char *buf = uim_scm_refer_c_str(buf_);
+  const char *buf = REFER_C_STR(buf_);
   char *ret_buf;
   char *eval_buf;
   uim_lisp ret;
@@ -220,7 +221,7 @@ mana_eval(uim_lisp buf_)
 static uim_lisp
 eucjp_string_length(uim_lisp str_)
 {
-  const unsigned char *str = (const unsigned char *)uim_scm_refer_c_str(str_);
+  const unsigned char *str = (const unsigned char *)REFER_C_STR(str_);
   int len = strlen((const char *)str);
 
   int ascii = 0;
@@ -235,7 +236,7 @@ eucjp_string_length(uim_lisp str_)
       mbyte++;
   }
 
-  return uim_scm_make_int(ascii + (mbyte / 2));
+  return MAKE_INT(ascii + (mbyte / 2));
 }
 
 void
