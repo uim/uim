@@ -92,15 +92,12 @@ void uim_scm_init(const char *system_load_path);
 void uim_scm_quit(void);
 uim_bool uim_scm_is_initialized(void);
 void uim_scm_set_fatal_error_hook(void (*hook)(void));
-void
-uim_scm_set_lib_path(const char *path);
+void uim_scm_set_lib_path(const char *path);
 
 /* GC protections */
-void
-uim_scm_gc_protect(uim_lisp *location);
+void uim_scm_gc_protect(uim_lisp *location);
 void uim_scm_gc_unprotect(uim_lisp *location);
-void *
-uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
+void *uim_scm_call_with_gc_ready_stack(uim_gc_gate_func_ptr func, void *arg);
 uim_bool uim_scm_gc_protectedp(uim_lisp obj);
 uim_bool uim_scm_gc_protected_contextp(void);
 /* for semantic assertions */
@@ -124,14 +121,10 @@ uim_bool uim_scm_symbol_value_bool(const char *symbol_str);
 int uim_scm_symbol_value_int(const char *symbol_str);
 char *uim_scm_symbol_value_str(const char *symbol_str);
 
-uim_bool
-uim_scm_load_file(const char *fn);
-uim_bool
-uim_scm_require_file(const char *fn);
-uim_lisp
-uim_scm_eval(uim_lisp obj);
-uim_lisp
-uim_scm_eval_c_string(const char *str);
+uim_bool uim_scm_load_file(const char *fn);
+uim_bool uim_scm_require_file(const char *fn);
+uim_lisp uim_scm_eval(uim_lisp obj);
+uim_lisp uim_scm_eval_c_string(const char *str);
 
 uim_lisp uim_scm_call(uim_lisp proc, uim_lisp args);
 uim_lisp uim_scm_call_with_guard(uim_lisp failed,
@@ -150,29 +143,20 @@ uim_lisp uim_scm_make_int(long integer);
 long uim_scm_c_char(uim_lisp ch);
 uim_lisp uim_scm_make_char(long ch);
 
-char *
-uim_scm_c_str(uim_lisp str);
-const char *
-uim_scm_refer_c_str(uim_lisp str);
-uim_lisp
-uim_scm_make_str(const char *str);
+char *uim_scm_c_str(uim_lisp str);
+const char *uim_scm_refer_c_str(uim_lisp str);
+uim_lisp uim_scm_make_str(const char *str);
 uim_lisp uim_scm_make_str_directly(char *str);
 
-char *
-uim_scm_c_symbol(uim_lisp str);
-uim_lisp
-uim_scm_make_symbol(const char *str);
+char *uim_scm_c_symbol(uim_lisp str);
+uim_lisp uim_scm_make_symbol(const char *str);
 
-void *
-uim_scm_c_ptr(uim_lisp ptr);
+void *uim_scm_c_ptr(uim_lisp ptr);
 void uim_scm_nullify_c_ptr(uim_lisp ptr);
-uim_lisp
-uim_scm_make_ptr(void *ptr);
+uim_lisp uim_scm_make_ptr(void *ptr);
 
-uim_func_ptr
-uim_scm_c_func_ptr(uim_lisp func_ptr);
-uim_lisp
-uim_scm_make_func_ptr(uim_func_ptr func_ptr);
+uim_func_ptr uim_scm_c_func_ptr(uim_lisp func_ptr);
+uim_lisp uim_scm_make_func_ptr(uim_func_ptr func_ptr);
 
 /* procedure initializers */
 void uim_scm_init_proc0(const char *name, uim_lisp (*func)(void));
@@ -190,10 +174,8 @@ void uim_scm_init_proc5(const char *name,
 
 
 /* constants */
-uim_lisp
-uim_scm_t(void);
-uim_lisp
-uim_scm_f(void);
+uim_lisp uim_scm_t(void);
+uim_lisp uim_scm_f(void);
 uim_lisp uim_scm_null(void);
 uim_lisp uim_scm_eof(void);
 
@@ -219,27 +201,20 @@ void **uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp));
 /* predicates */
 uim_bool uim_scm_truep(uim_lisp obj);  /* (if obj #t #f) */
 uim_bool uim_scm_falsep(uim_lisp obj);
-uim_bool
-uim_scm_nullp(uim_lisp obj);
-uim_bool
-uim_scm_consp(uim_lisp obj);
+uim_bool uim_scm_nullp(uim_lisp obj);
+uim_bool uim_scm_consp(uim_lisp obj);
 uim_bool uim_scm_listp(uim_lisp obj);  /* does not detect circular list */
-uim_bool
-uim_scm_intp(uim_lisp obj);
+uim_bool uim_scm_intp(uim_lisp obj);
 uim_bool uim_scm_charp(uim_lisp obj);
 uim_bool uim_scm_vectorp(uim_lisp obj);
 uim_bool uim_scm_strp(uim_lisp obj);
 uim_bool uim_scm_symbolp(uim_lisp obj);
-uim_bool
-uim_scm_eq(uim_lisp a, uim_lisp b);
+uim_bool uim_scm_eq(uim_lisp a, uim_lisp b);
 
 /* list operations */
-uim_lisp
-uim_scm_cons(uim_lisp car, uim_lisp cdr);
-uim_lisp
-uim_scm_car(uim_lisp pair);
-uim_lisp
-uim_scm_cdr(uim_lisp pair);
+uim_lisp uim_scm_cons(uim_lisp car, uim_lisp cdr);
+uim_lisp uim_scm_car(uim_lisp pair);
+uim_lisp uim_scm_cdr(uim_lisp pair);
 void uim_scm_set_car(uim_lisp pair, uim_lisp car);
 void uim_scm_set_cdr(uim_lisp pair, uim_lisp cdr);
 
