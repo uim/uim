@@ -98,8 +98,16 @@ uim_helper_send_message(int fd, const char *message)
   if (UIM_CATCH_ERROR_BEGIN())
     return;
 
+#if 0
+  if (fd < 0)
+    uim_fatal_error("uim_helper_send_message(): invaid fd");
+  if (!message)
+    uim_fatal_error("uim_helper_send_message(): NULL message");
+#else
+  /* The condition fd < 0 ordinarily occurs. */
   if (fd < 0 || !message)
-    uim_fatal_error("uim_helper_send_message()");
+    return;
+#endif
 
   len = strlen(message) + 1;
   buf = uim_malloc(len + 1);
