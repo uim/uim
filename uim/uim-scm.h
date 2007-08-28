@@ -111,7 +111,12 @@ uim_bool uim_scm_gc_protected_contextp(void);
 /* errors: can be caught by SRFI-34 'guard' */
 void uim_scm_error(const char *msg);
 void uim_scm_error_obj(const char *msg, uim_lisp errobj);
-void uim_scm_ensure(uim_bool cond);
+#define UIM_SCM_ENSURE(cond, msg)					\
+  ((cond) || (uim_scm_error(msg), UIM_TRUE))
+#define UIM_SCM_ENSURE_OBJ(cond, msg, obj)				\
+  ((cond) || (uim_scm_error_obj((msg), (obj)), UIM_TRUE))
+#define UIM_SCM_ENSURE_TYPE(type, obj)					\
+  UIM_SCM_ENSURE_OBJ(uim_scm_##type##p(obj), #type " required but got", (obj))
 
 /* evaluations */
 uim_lisp uim_scm_symbol_value(const char *symbol_str);
@@ -218,6 +223,7 @@ uim_bool
 uim_scm_nullp(uim_lisp obj);
 uim_bool
 uim_scm_consp(uim_lisp obj);
+uim_bool uim_scm_listp(uim_lisp obj);  /* does not detect circular list */
 uim_bool
 uim_scm_intp(uim_lisp obj);
 uim_bool uim_scm_charp(uim_lisp obj);

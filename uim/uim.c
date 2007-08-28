@@ -390,7 +390,7 @@ uim_get_candidate_internal(struct uim_get_candidate_args *args)
   uc = args->uc;
   triple = uim_scm_callf("get-candidate", "pii",
 			 uc, args->index, args->enum_hint);
-  uim_scm_ensure(uim_scm_length(triple) == 3);
+  ENSURE((uim_scm_length(triple) == 3), "invalid candidate triple");
 
   cand = uim_malloc(sizeof(*cand));
   memset(cand, 0, sizeof(*cand));

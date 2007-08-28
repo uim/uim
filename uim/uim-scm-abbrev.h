@@ -38,6 +38,21 @@
 extern "C" {
 #endif
 
+#define ERROR       uim_scm_error
+#define ERROR_OBJ   uim_scm_error_obj
+#define ENSURE      UIM_SCM_ENSURE
+#define ENSURE_OBJ  UIM_SCM_ENSURE_OBJ
+#define ENSURE_TYPE UIM_SCM_ENSURE_TYPE
+
+#define C_BOOL uim_scm_c_bool
+#define C_INT  uim_scm_c_int
+#define C_CHAR uim_scm_c_char
+#define C_STR  uim_scm_c_str
+#define REFER_C_STR uim_scm_refer_c_str
+#define C_SYM  uim_scm_c_symbol
+#define C_PTR  uim_scm_c_ptr
+#define C_FPTR uim_scm_c_func_ptr
+
 #define MAKE_BOOL uim_scm_make_bool
 #define MAKE_INT  uim_scm_make_int
 #define MAKE_CHAR uim_scm_make_char
@@ -56,6 +71,7 @@ extern "C" {
 #define FPTRP     uim_scm_func_ptrp
 #define NULLP     uim_scm_nullp
 #define CONSP     uim_scm_consp
+#define LISTP     uim_scm_listp    /* does not detect circular list */
 #define TRUEP     uim_scm_truep    /* (if obj #t #f) */
 #define FALSEP    uim_scm_falsep
 #define EQ        uim_scm_eq
@@ -71,6 +87,9 @@ extern "C" {
 #define LIST4     uim_scm_list4
 #define LIST5     uim_scm_list5
 #define QUOTE     uim_scm_quote
+
+#define VECTOR_REF uim_scm_vector_ref
+#define VECTOR_SET uim_scm_vector_set
 
 #ifdef __cplusplus
 }

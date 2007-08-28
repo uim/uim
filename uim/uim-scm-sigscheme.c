@@ -173,14 +173,6 @@ uim_scm_error_obj_internal(struct uim_scm_error_obj_args *args)
   SCM_NOTREACHED;
 }
 
-void
-uim_scm_ensure(uim_bool cond)
-{
-  assert(uim_scm_gc_protected_contextp());
-
-  SCM_ENSURE(cond);
-}
-
 /* can be passed to uim_scm_list2null_term_array() */
 long
 uim_scm_c_bool(uim_lisp val)
@@ -791,7 +783,7 @@ uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp))
   assert(len);
   assert(conv || !conv);
 
-  uim_scm_ensure(uim_scm_vectorp(vec));
+  UIM_SCM_ENSURE_TYPE(vector, vec);
 
   args.vec = vec;
   args.len = len;
@@ -850,6 +842,15 @@ uim_scm_consp(uim_lisp obj)
   assert(uim_scm_gc_any_contextp());
 
   return (SCM_CONSP((ScmObj)obj));
+}
+
+uim_bool
+uim_scm_listp(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  /* does not detect circular list */
+  return (SCM_NULLP((ScmObj)obj) || SCM_CONSP((ScmObj)obj));
 }
 
 uim_bool
@@ -1026,6 +1027,10 @@ uim_scm_callf_internal(struct callf_args *args)
 
     case 'i':
       arg = SCM_MAKE_INT(va_arg(args->args, int));
+      break;
+
+    case 'l':
+      arg = SCM_MAKE_INT(va_arg(args->args, long));
       break;
 
     case 'j':

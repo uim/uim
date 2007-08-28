@@ -430,7 +430,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4877, ac4878, ac4881, ac4882, ac4884, ac4885
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4877, ac4878, ac4881, ac4882, ac4884, ac4885, ac4907
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: uim-scm API truth predicates reorganization in uim 1.5.0
@@ -439,7 +439,6 @@ Related: uim-scm API truth predicates reorganization in uim 1.5.0
 URL:
 Changes:
       (new) uim_scm_is_initialized()
-      (new) uim_scm_ensure()
       (new) uim_scm_symbolp()
       (new) uim_scm_gc_protectedp()
       (new) uim_scm_gc_protected_contextp()
@@ -471,12 +470,26 @@ Changes:
       (new) uim_scm_set_car()
       (new) uim_scm_set_cdr()
       (new) uim_scm_intp()
+      (new) uim_scm_listp()
       (new) uim_scm_init_proc0()
       (new) uim_scm_init_proc1()
       (new) uim_scm_init_proc2()
       (new) uim_scm_init_proc3()
       (new) uim_scm_init_proc4()
       (new) uim_scm_init_proc5()
+      (new) ERROR()
+      (new) ERROR_OBJ()
+      (new) ENSURE()
+      (new) ENSURE_OBJ()
+      (new) ENSURE_TYPE()
+      (new) C_BOOL()
+      (new) C_INT()
+      (new) C_CHAR()
+      (new) C_STR()
+      (new) REFER_C_STR()
+      (new) C_SYM()
+      (new) C_PTR()
+      (new) C_FPTR()
       (new) MAKE_BOOL()
       (new) MAKE_INT()
       (new) MAKE_CHAR()
@@ -493,6 +506,7 @@ Changes:
       (new) FPTRP()
       (new) NULLP()
       (new) CONSP()
+      (new) LISTP()
       (new) EQ()
       (new) CAR()
       (new) CDR()
@@ -505,6 +519,8 @@ Changes:
       (new) LIST4()
       (new) LIST5()
       (new) QUOTE()
+      (new) VECTOR_REF()
+      (new) VECTOR_SET()
   (changed) uim_scm_length()
   (deprecated) uim_scm_null_list()
   (deprecated) uim_scm_integerp()
