@@ -61,7 +61,7 @@ uim_look_look(uim_lisp dict_, uim_lisp str_)
   dict_str = uim_strdup(str);
   len = strlen(str);
 
-  ret_ = uim_scm_null_list();
+  ret_ = uim_scm_null();
   if (uim_look(dict_str, ctx) != 0) {
     uim_look_set(ctx);
     while (uim_look_get(dict_str, buf, sizeof(buf), ctx) != 0) {

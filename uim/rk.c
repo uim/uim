@@ -129,7 +129,7 @@ rk_find_partial_seq(uim_lisp seq, uim_lisp rules)
 static uim_lisp
 rk_expect_seq(uim_lisp seq, uim_lisp rules)
 {
-  uim_lisp cur, res = uim_scm_null_list();
+  uim_lisp cur, res = uim_scm_null();
   for (cur = rules; !uim_scm_nullp(cur); cur = uim_scm_cdr(cur)) {
     uim_lisp rule = uim_scm_car(cur);
     uim_lisp key = CAR(CAR(rule));

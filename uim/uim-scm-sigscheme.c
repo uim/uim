@@ -633,7 +633,7 @@ uim_scm_list1(uim_lisp elm1)
   assert(uim_scm_gc_any_contextp());
   assert(uim_scm_gc_protectedp(elm1));
 
-  return uim_scm_cons(elm1, uim_scm_null_list());
+  return uim_scm_cons(elm1, uim_scm_null());
 }
 
 uim_lisp
