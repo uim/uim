@@ -46,6 +46,7 @@
 
 #include "gettext.h"
 #include "uim-scm.h"
+#include "uim-scm-abbrev.h"
 
 /* for uim_init_intl_subrs() */
 #include "uim-internal.h"
@@ -62,7 +63,7 @@ intl_textdomain(uim_lisp domainname)
 {
   const char *new_domain;
 
-  if (UIM_SCM_FALSEP(domainname)) {
+  if (FALSEP(domainname)) {
     new_domain = textdomain(NULL);
   } else {
     new_domain = textdomain(uim_scm_refer_c_str(domainname));
@@ -78,7 +79,7 @@ intl_bindtextdomain(uim_lisp domainname, uim_lisp dirname)
 
   domain = uim_scm_refer_c_str(domainname);
 
-  if (UIM_SCM_FALSEP(dirname)) {
+  if (FALSEP(dirname)) {
     new_dir = bindtextdomain(domain, NULL);
   } else {
     new_dir = bindtextdomain(domain, uim_scm_refer_c_str(dirname));
@@ -94,10 +95,10 @@ intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
   uim_lisp current_codeset;
 
   if (!uim_scm_stringp(domainname)
-      || !(uim_scm_stringp(codeset) || UIM_SCM_FALSEP(codeset)))
+      || !(uim_scm_stringp(codeset) || FALSEP(codeset)))
     return uim_scm_f();
 
-  c_codeset = (UIM_SCM_FALSEP(codeset)) ? NULL : uim_scm_refer_c_str(codeset);
+  c_codeset = (FALSEP(codeset)) ? NULL : uim_scm_refer_c_str(codeset);
   c_current_codeset = bind_textdomain_codeset(uim_scm_refer_c_str(domainname),
 					      c_codeset);
   if (c_current_codeset) {

@@ -986,7 +986,7 @@ uim_get_im_short_desc(uim_context uc, int nth)
 
   protected0 = im = get_nth_im(uc, nth);
   protected1 = short_desc = uim_scm_callf("im-short-desc", "o", im);
-  str = UIM_SCM_FALSEP(short_desc) ? "-" : uim_scm_refer_c_str(short_desc);
+  str = (FALSEP(short_desc)) ? "-" : uim_scm_refer_c_str(short_desc);
 
   UIM_CATCH_ERROR_END();
 

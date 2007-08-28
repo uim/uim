@@ -223,12 +223,12 @@ plugin_unload_internal(void *uim_lisp_name)
   _name = (uim_lisp)uim_lisp_name;
 
   ret = uim_scm_callf("plugin-list-query-library", "o", _name);
-  if (UIM_SCM_FALSEP(ret))
+  if (FALSEP(ret))
     return uim_scm_f();
   library = uim_scm_c_ptr(ret);
 
   ret = uim_scm_callf("plugin-list-query-instance-quit", "o", _name);
-  if (UIM_SCM_FALSEP(ret))
+  if (FALSEP(ret))
     return uim_scm_f();
   plugin_instance_quit = uim_scm_c_func_ptr(ret);
 

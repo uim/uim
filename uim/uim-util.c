@@ -162,7 +162,7 @@ c_setenv(uim_lisp name_, uim_lisp val_, uim_lisp overwrite_)
 {
   const char *name = uim_scm_refer_c_str(name_);
   const char *val = uim_scm_refer_c_str(val_);
-  int overwrite = UIM_SCM_NFALSEP(overwrite_);
+  int overwrite = TRUEP(overwrite_);
   int err;
 
   if (!name || !val) {

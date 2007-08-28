@@ -179,7 +179,7 @@ uim_scm_c_bool(uim_lisp val)
 {
   assert(uim_scm_gc_any_contextp());
 
-  return (UIM_SCM_NFALSEP(val)) ? UIM_TRUE : UIM_FALSE;
+  return (uim_scm_truep(val)) ? UIM_TRUE : UIM_FALSE;
 }
 
 /* can be passed to uim_scm_array2list() */
@@ -539,12 +539,7 @@ uim_scm_symbol_value_int_internal(const char *symbol_str)
   int val;
 
   val_ = uim_scm_symbol_value(symbol_str);
-
-  if (UIM_SCM_NFALSEP(val_)) {
-    val = uim_scm_c_int(val_);
-  } else {
-    val = 0;
-  }
+  val = (uim_scm_truep(val_)) ? uim_scm_c_int(val_) : 0;
 
   return (void *)(intptr_t)val;
 }
@@ -565,12 +560,7 @@ uim_scm_symbol_value_str_internal(const char *symbol_str)
   char *val;
 
   val_ = uim_scm_symbol_value(symbol_str);
-
-  if (UIM_SCM_NFALSEP(val_)) {
-    val = uim_scm_c_str(val_);
-  } else {
-    val = NULL;
-  }
+  val = (uim_scm_truep(val_)) ? uim_scm_c_str(val_) : NULL;
 
   return val;
 }
