@@ -118,7 +118,7 @@ void uim_scm_error_obj(const char *msg, uim_lisp errobj);
 /* evaluations */
 uim_lisp uim_scm_symbol_value     (const char *symbol_str);
 uim_bool uim_scm_symbol_value_bool(const char *symbol_str);
-int      uim_scm_symbol_value_int (const char *symbol_str);
+long     uim_scm_symbol_value_int (const char *symbol_str);
 char    *uim_scm_symbol_value_str (const char *symbol_str);
 
 uim_lisp uim_scm_eval(uim_lisp obj);

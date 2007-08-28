@@ -430,7 +430,7 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4877, ac4878, ac4881, ac4882, ac4884, ac4885, ac4907, ac4914
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4877, ac4878, ac4881, ac4882, ac4884, ac4885, ac4907, ac4914, ac4920
 Date: 2007-01-09 -
 Modifier: YamaKen
 Related: uim-scm API truth predicates reorganization in uim 1.5.0
@@ -523,6 +523,7 @@ Changes:
       (new) VECTOR_REF()
       (new) VECTOR_SET()
   (changed) uim_scm_length()
+  (changed) uim_scm_symbol_value_int()
   (deprecated) uim_scm_null_list()
   (deprecated) uim_scm_integerp()
   (deprecated) uim_scm_stringp()
@@ -568,6 +569,7 @@ Description:
   - uim-scm has been separated from libuim as libuim-scm
   - uim-scm-abbrev.h is introduced
   - Scheme integer type has been changed to long from int
+  - Return type of uim_scm_symbol_value_int() has been changed to long
   - return type of uim_scm_length() is changed to long from uim_lisp
   - uim_scm_null_list() is renamed to uim_scm_null(). The old name is
     defined as an alias macro (deprecated)
