@@ -980,7 +980,8 @@
 	     (setq send nil)
 	     (setq wait t))
 
-	    (current-prefix-arg
+	    ((or current-prefix-arg
+             uim-prefix-arg)
 	     (setq send nil)
 	     (setq issue t))
 
