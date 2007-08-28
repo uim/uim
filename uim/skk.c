@@ -901,7 +901,7 @@ find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
 
   hs = REFER_C_STR(head_);
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     rs = replace_numeric(hs);
 
   if (okuri_ != uim_scm_null())
@@ -1134,7 +1134,7 @@ skk_get_entry(uim_lisp head_, uim_lisp okuri_head_,
   if (ca && ca->nr_cands > 0 && !is_purged_only(ca))
       return uim_scm_t();
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     return skk_get_entry(head_, okuri_head_, okuri_, uim_scm_f());
 
   return uim_scm_f();
@@ -1669,7 +1669,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   n = C_INT(nth_);
@@ -1758,7 +1758,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_))
@@ -1827,7 +1827,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look
     }
   }
 
-  if UIM_SCM_NFALSEP(use_look_)
+  if (TRUEP(use_look_))
     look_get_comp(ca, s);
 
   if (ca->nr_comps == 0) {
@@ -1869,7 +1869,7 @@ find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 
   hs = REFER_C_STR(head_);
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     rs = replace_numeric(hs);
 
   if (!rs)
@@ -1891,7 +1891,7 @@ skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
     return uim_scm_t();
   }
 
-  if (UIM_SCM_NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
     return skk_get_completion(head_, uim_scm_f(), use_look_);
 
   return uim_scm_f();
@@ -1906,7 +1906,7 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_,
   char *str;
   uim_lisp numlst_ = uim_scm_null();
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_))
@@ -1947,7 +1947,7 @@ skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look
   if (ca)
     n = ca->nr_comps;
 
-  if (UIM_SCM_NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
     return MAKE_INT(n +
 		    C_INT(skk_get_nr_completions(head_, uim_scm_f(), use_look_))); 
 
@@ -1964,7 +1964,7 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
 
   hs = REFER_C_STR(head_);
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     rs = replace_numeric(hs);
 
   if (!rs)
@@ -2004,7 +2004,7 @@ skk_clear_completions(uim_lisp head_, uim_lisp numeric_conv_)
     }
   }
 
-  if (UIM_SCM_NFALSEP(numeric_conv_) && has_numeric_in_head(head_))
+  if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
     skk_clear_completions(head_, uim_scm_f());
 
   return uim_scm_t();
@@ -2055,7 +2055,7 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
   numlst_ = uim_scm_null();
   hs = REFER_C_STR(head_);
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_)) {
@@ -2073,9 +2073,9 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 			sl->state & SKK_LINE_USE_FOR_COMPLETION)
 	  return MAKE_STR(sl->head);
       }
-      if UIM_SCM_NFALSEP(use_look_) {
+      if (TRUEP(use_look_)) {
 	look_ = look_get_top_word(hs);
-	if UIM_SCM_NFALSEP(look_)
+	if (TRUEP(look_))
 	  return look_;
       }
     } else {
@@ -2087,10 +2087,10 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 	  return restore_numeric(sl->head, numlst_);
 	}
       }
-      if UIM_SCM_NFALSEP(use_look_) {
+      if (TRUEP(use_look_)) {
 	look_ = look_get_top_word(rs);
 	free(rs);
-	if UIM_SCM_NFALSEP(look_)
+	if (TRUEP(look_))
 	  return look_;
       } else {
 	free(rs);
@@ -2386,7 +2386,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   nth = C_INT(nth_);
@@ -2533,7 +2533,7 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
 
-  if UIM_SCM_NFALSEP(numeric_conv_)
+  if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_))

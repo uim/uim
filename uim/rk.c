@@ -102,7 +102,7 @@ rk_find_seq(uim_lisp seq, uim_lisp rules)
   for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
     uim_lisp rule = uim_scm_car(rules);
     uim_lisp key = uim_scm_car(uim_scm_car(rule));
-    if UIM_SCM_NFALSEP(str_seq_equal(seq, key)) {
+    if (TRUEP(str_seq_equal(seq, key))) {
       return rule;
     }
   }
@@ -115,7 +115,7 @@ rk_find_partial_seq(uim_lisp seq, uim_lisp rules)
   for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
     uim_lisp rule = uim_scm_car(rules);
     uim_lisp key = uim_scm_car(uim_scm_car(rule));
-    if UIM_SCM_NFALSEP(str_seq_partial(seq, key)) {
+    if (TRUEP(str_seq_partial(seq, key))) {
       return rule;
     }
   }
@@ -134,7 +134,7 @@ rk_expect_seq(uim_lisp seq, uim_lisp rules)
     uim_lisp rule = uim_scm_car(cur);
     uim_lisp key = CAR(CAR(rule));
     uim_lisp e = str_seq_partial(seq, key);
-    if UIM_SCM_NFALSEP(e) {
+    if (TRUEP(e)) {
       res = uim_scm_cons(e, res);
     }
   }
