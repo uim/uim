@@ -116,13 +116,11 @@ void uim_scm_error_obj(const char *msg, uim_lisp errobj);
   UIM_SCM_ENSURE_OBJ(uim_scm_##type##p(obj), #type " required but got", (obj))
 
 /* evaluations */
-uim_lisp uim_scm_symbol_value(const char *symbol_str);
+uim_lisp uim_scm_symbol_value     (const char *symbol_str);
 uim_bool uim_scm_symbol_value_bool(const char *symbol_str);
-int uim_scm_symbol_value_int(const char *symbol_str);
-char *uim_scm_symbol_value_str(const char *symbol_str);
+int      uim_scm_symbol_value_int (const char *symbol_str);
+char    *uim_scm_symbol_value_str (const char *symbol_str);
 
-uim_bool uim_scm_load_file(const char *fn);
-uim_bool uim_scm_require_file(const char *fn);
 uim_lisp uim_scm_eval(uim_lisp obj);
 uim_lisp uim_scm_eval_c_string(const char *str);
 
@@ -132,6 +130,9 @@ uim_lisp uim_scm_call_with_guard(uim_lisp failed,
 uim_lisp uim_scm_callf(const char *proc, const char *args_fmt, ...);
 uim_lisp uim_scm_callf_with_guard(uim_lisp failed,
                                   const char *proc, const char *args_fmt, ...);
+
+uim_bool uim_scm_load_file(const char *fn);
+uim_bool uim_scm_require_file(const char *fn);
 
 /* type conversions */
 long uim_scm_c_bool(uim_lisp val);
@@ -158,6 +159,14 @@ uim_lisp uim_scm_make_ptr(void *ptr);
 uim_func_ptr uim_scm_c_func_ptr(uim_lisp func_ptr);
 uim_lisp uim_scm_make_func_ptr(uim_func_ptr func_ptr);
 
+/* C array <-> Scheme list converters */
+uim_lisp uim_scm_array2list(void **ary, size_t len, uim_lisp (*conv)(void *));
+void **uim_scm_list2array(uim_lisp lst, size_t *len, void *(*conv)(uim_lisp));
+
+/* C array <-> Scheme vector converters */
+uim_lisp uim_scm_array2vector(void **ary, size_t len, uim_lisp (*conv)(void *));
+void **uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp));
+
 /* procedure initializers */
 void uim_scm_init_proc0(const char *name, uim_lisp (*func)(void));
 void uim_scm_init_proc1(const char *name, uim_lisp (*func)(uim_lisp));
@@ -172,6 +181,19 @@ void uim_scm_init_proc5(const char *name,
 			uim_lisp (*func)(uim_lisp, uim_lisp, uim_lisp,
 					 uim_lisp, uim_lisp));
 
+
+/* predicates */
+uim_bool uim_scm_truep(uim_lisp obj);  /* (if obj #t #f) */
+uim_bool uim_scm_falsep(uim_lisp obj);
+uim_bool uim_scm_nullp(uim_lisp obj);
+uim_bool uim_scm_consp(uim_lisp obj);
+uim_bool uim_scm_listp(uim_lisp obj);  /* does not detect circular list */
+uim_bool uim_scm_intp(uim_lisp obj);
+uim_bool uim_scm_charp(uim_lisp obj);
+uim_bool uim_scm_vectorp(uim_lisp obj);
+uim_bool uim_scm_strp(uim_lisp obj);
+uim_bool uim_scm_symbolp(uim_lisp obj);
+uim_bool uim_scm_eq(uim_lisp a, uim_lisp b);
 
 /* constants */
 uim_lisp uim_scm_t(void);
@@ -188,28 +210,6 @@ uim_lisp uim_scm_list4(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
                        uim_lisp elm4);
 uim_lisp uim_scm_list5(uim_lisp elm1, uim_lisp elm2, uim_lisp elm3,
                        uim_lisp elm4, uim_lisp elm5);
-
-/* C array <-> Scheme list converters */
-uim_lisp uim_scm_array2list(void **ary, size_t len, uim_lisp (*conv)(void *));
-void **uim_scm_list2array(uim_lisp lst, size_t *len, void *(*conv)(uim_lisp));
-
-/* C array <-> Scheme vector converters */
-uim_lisp uim_scm_array2vector(void **ary, size_t len, uim_lisp (*conv)(void *));
-void **uim_scm_vector2array(uim_lisp vec, size_t *len, void *(*conv)(uim_lisp));
-
-
-/* predicates */
-uim_bool uim_scm_truep(uim_lisp obj);  /* (if obj #t #f) */
-uim_bool uim_scm_falsep(uim_lisp obj);
-uim_bool uim_scm_nullp(uim_lisp obj);
-uim_bool uim_scm_consp(uim_lisp obj);
-uim_bool uim_scm_listp(uim_lisp obj);  /* does not detect circular list */
-uim_bool uim_scm_intp(uim_lisp obj);
-uim_bool uim_scm_charp(uim_lisp obj);
-uim_bool uim_scm_vectorp(uim_lisp obj);
-uim_bool uim_scm_strp(uim_lisp obj);
-uim_bool uim_scm_symbolp(uim_lisp obj);
-uim_bool uim_scm_eq(uim_lisp a, uim_lisp b);
 
 /* list operations */
 uim_lisp uim_scm_cons(uim_lisp car, uim_lisp cdr);
