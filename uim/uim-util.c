@@ -238,6 +238,23 @@ string_prefix_cip(uim_lisp prefix_, uim_lisp str_)
   return string_prefixp_internal(prefix_, str_, strncasecmp);
 }
 
+/* Limited version of SRFI-43 vector-copy. Only accepts 1st arg. */
+static uim_lisp
+vector_copy(uim_lisp src)
+{
+  long len, i;
+  uim_lisp elm, copied;
+
+  len = uim_scm_vector_length(src);
+  copied = uim_scm_callf("make-vector", "l", len);
+  for (i = 0; i < len; i++) {
+    elm = VECTOR_REF(src, i);
+    VECTOR_SET(copied, i, elm);
+  }
+
+  return copied;
+}
+
 const char *
 uim_get_language_name_from_locale(const char *locale)
 {
@@ -322,4 +339,7 @@ uim_init_util_subrs(void)
   uim_scm_init_subr_3("string-contains", string_contains);
   uim_scm_init_subr_2("string-prefix?", string_prefixp);
   uim_scm_init_subr_2("string-prefix-ci?", string_prefix_cip);
+
+  /* SRFI-43 */
+  uim_scm_init_subr_1("vector-copy", vector_copy);
 }
