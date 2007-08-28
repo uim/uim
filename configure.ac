@@ -454,6 +454,7 @@ AC_CHECK_FUNCS([getpid stat mkdir chmod])
 AC_CHECK_FUNCS([execv execvp])
 AC_CHECK_FUNCS([isascii])
 AC_CHECK_FUNCS([getaddrinfo freeaddrinfo getnameinfo])
+AC_CHECK_FUNCS([issetugid])
 
 # IRIX has a const char return value for gai_strerror()
 AC_CHECK_FUNCS(gai_strerror,[

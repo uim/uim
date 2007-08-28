@@ -285,6 +285,7 @@ uim_helper_is_setugid(void)
   return (uim_issetugid()) ? UIM_TRUE : UIM_FALSE;
 }
 
+#if !HAVE_ISSETUGID
 /* For internal use only. libuim clients should use uim_helper_is_setugid()
  * since this is not a core uim function. */
 uim_bool
@@ -297,3 +298,4 @@ uim_issetugid(void)
 
   return (ruid != euid || rgid != egid);
 }
+#endif /* !HAVE_ISSETUGID */

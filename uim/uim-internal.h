@@ -38,6 +38,9 @@
 #if UIM_USE_ERROR_GUARD
 #include <setjmp.h>
 #endif
+#if HAVE_ISSETUGID
+#include <unistd.h>
+#endif
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -157,7 +160,11 @@ void uim_init_util_subrs(void);
 void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);
 
+#if HAVE_ISSETUGID
+#define uim_issetugid() issetugid()
+#else
 uim_bool uim_issetugid(void);
+#endif
 
 
 #if UIM_USE_ERROR_GUARD
