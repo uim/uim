@@ -99,8 +99,8 @@ intl_bind_textdomain_codeset(uim_lisp domainname, uim_lisp codeset)
     return uim_scm_f();
 
   c_codeset = (FALSEP(codeset)) ? NULL : REFER_C_STR(codeset);
-  c_current_codeset = bind_textdomain_codeset(REFER_C_STR(domainname),
-					      c_codeset);
+  c_current_codeset
+    = bind_textdomain_codeset(REFER_C_STR(domainname), c_codeset);
   if (c_current_codeset) {
     current_codeset = MAKE_STR(c_current_codeset);
   } else {
@@ -134,35 +134,35 @@ static uim_lisp
 intl_dcgettext(uim_lisp domainname, uim_lisp msgid, uim_lisp category)
 {
   return MAKE_STR(dcgettext(REFER_C_STR(domainname),
-				    REFER_C_STR(msgid),
-				    C_INT(category)));
+			    REFER_C_STR(msgid),
+			    C_INT(category)));
 }
 
 static uim_lisp
 intl_ngettext(uim_lisp msgid1, uim_lisp msgid2, uim_lisp n)
 {
   return MAKE_STR(ngettext(REFER_C_STR(msgid1),
-				   REFER_C_STR(msgid2),
-				   C_INT(n)));
+			   REFER_C_STR(msgid2),
+			   C_INT(n)));
 }
 
 static uim_lisp
 intl_dngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp n)
 {
   return MAKE_STR(dngettext(REFER_C_STR(domainname),
-				    REFER_C_STR(msgid1),
-				    REFER_C_STR(msgid2),
-				    C_INT(n)));
+			    REFER_C_STR(msgid1),
+			    REFER_C_STR(msgid2),
+			    C_INT(n)));
 }
 
 static uim_lisp
 intl_dcngettext(uim_lisp domainname, uim_lisp msgid1, uim_lisp msgid2, uim_lisp n, uim_lisp category)
 {
   return MAKE_STR(dcngettext(REFER_C_STR(domainname),
-				     REFER_C_STR(msgid1),
-				     REFER_C_STR(msgid2),
-				     C_INT(n),
-				     C_INT(category)));
+			     REFER_C_STR(msgid1),
+			     REFER_C_STR(msgid2),
+			     C_INT(n),
+			     C_INT(category)));
 }
 
 static void

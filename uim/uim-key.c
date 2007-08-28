@@ -312,12 +312,11 @@ define_valid_key_symbols(void)
 
   valid_key_symbols = uim_scm_null();
   for (i = 0; key_tab[i].key; i++) {
-    valid_key_symbols = CONS(MAKE_SYM(key_tab[i].str),
-                                     valid_key_symbols);
+    valid_key_symbols = CONS(MAKE_SYM(key_tab[i].str), valid_key_symbols);
   }
   uim_scm_eval(LIST3(MAKE_SYM("define"),
-                             MAKE_SYM("valid-key-symbols"),
-                             QUOTE(valid_key_symbols)));
+		     MAKE_SYM("valid-key-symbols"),
+		     QUOTE(valid_key_symbols)));
 }
 
 static const char *

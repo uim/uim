@@ -82,17 +82,13 @@ static uim_lisp
 file_stat_mode(uim_lisp filename, mode_t mode)
 {
   struct stat st;
-  const char *c_filename;
+  int err;
 
-  if (!STRP(filename))
-    return uim_scm_f();
+  err = stat(REFER_C_STR(filename), &st);
+  if (err)
+    ERROR_OBJ("stat failed for file", filename);
 
-  c_filename = REFER_C_STR(filename);
-  if (stat(c_filename, &st) < 0) {
-    return uim_scm_f();
-  } else {
-    return ((st.st_mode & mode) == mode) ? uim_scm_t() : uim_scm_f();
-  }
+  return MAKE_BOOL((st.st_mode & mode) == mode);
 }
 
 static uim_lisp
@@ -126,61 +122,45 @@ file_directoryp(uim_lisp filename)
 }
 
 static uim_lisp
-file_mtime(uim_lisp f)
+file_mtime(uim_lisp filename)
 {
-  const char *filename = REFER_C_STR(f);
-  struct stat buf;
-
-  if(stat(filename, &buf) == 0) {
-    return MAKE_INT(buf.st_mtime);
-  } else {
-    /* FIXME: Write error handling code. */
-    return MAKE_INT(0);
-  }
-}
-
-static uim_lisp
-c_getenv(uim_lisp str_)
-{
-  const char *str = REFER_C_STR(str_);
-  char *val;
-
-  if (!str) {
-    return uim_scm_f();
-  }
-
-  val = getenv(str);
-  if (val) {
-    return MAKE_STR(val);
-  } else {
-    return uim_scm_f();
-  }
-}
-
-static uim_lisp
-c_setenv(uim_lisp name_, uim_lisp val_, uim_lisp overwrite_)
-{
-  const char *name = REFER_C_STR(name_);
-  const char *val = REFER_C_STR(val_);
-  int overwrite = TRUEP(overwrite_);
+  struct stat st;
   int err;
 
-  if (!name || !val) {
-    return uim_scm_f();
-  }
-  err = setenv(name, val, overwrite);
-  return (err) ? uim_scm_f() : uim_scm_t();
+  err = stat(REFER_C_STR(filename), &st);
+  if (err)
+    ERROR_OBJ("stat failed for file", filename);
+
+  return MAKE_INT(st.st_mtime);
 }
 
 static uim_lisp
-c_unsetenv(uim_lisp name_)
+c_getenv(uim_lisp str)
 {
-  const char *name = REFER_C_STR(name_);
+  char *val;
 
-  if (!name) {
-    return uim_scm_f();
-  }
-  unsetenv(name);
+  ENSURE_TYPE(str, str);
+
+  val = getenv(REFER_C_STR(str));
+
+  return (val) ? MAKE_STR(val) : uim_scm_f();
+}
+
+static uim_lisp
+c_setenv(uim_lisp name, uim_lisp val, uim_lisp overwrite)
+{
+  int err;
+
+  err = setenv(REFER_C_STR(name), REFER_C_STR(val), TRUEP(overwrite));
+
+  return MAKE_BOOL(!err);
+}
+
+static uim_lisp
+c_unsetenv(uim_lisp name)
+{
+  unsetenv(REFER_C_STR(name));
+
   return uim_scm_t();
 }
 
@@ -190,11 +170,8 @@ static uim_lisp
 string_contains(uim_lisp s1_, uim_lisp s2_, uim_lisp start1_)
 {
   const char *s1, *s2, *found;
-  int start1;
+  long start1;
   size_t s1len;
-
-  if (!STRP(s1_) || !STRP(s2_))
-    return uim_scm_f();  /* FIXME: ERROR() */
 
   s1 = REFER_C_STR(s1_);
   s2 = REFER_C_STR(s2_);
@@ -202,7 +179,7 @@ string_contains(uim_lisp s1_, uim_lisp s2_, uim_lisp start1_)
   s1len = strlen(s1);
 
   if (start1 < 0 || s1len < (size_t)start1)
-    return uim_scm_f();  /* FIXME: ERROR() */
+    ERROR("string-contains: invalid range");
 
   found = strstr(&s1[start1], s2);
 
@@ -216,14 +193,11 @@ string_prefixp_internal(uim_lisp prefix_, uim_lisp str_,
   const char *prefix, *str;
   size_t len;
 
-  if (!STRP(prefix_) || !STRP(str_))
-    return uim_scm_f();
-
   prefix = REFER_C_STR(prefix_);
   str = REFER_C_STR(str_);
   len = strlen(prefix);
 
-  return (*cmp)(prefix, str, len) ? uim_scm_f() : uim_scm_t();
+  return MAKE_BOOL((*cmp)(prefix, str, len) == 0);
 }
 
 static uim_lisp
