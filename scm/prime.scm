@@ -817,7 +817,7 @@
     (let* ((result (prime-send-command
 		    (prime-util-string-concat arg-list "\t")))
 	   (result-lines (string-split result "\n")))
-      (take! result-lines (- (length result-lines) 1)) ;; drop last "\n"
+      (take! result-lines (- (length result-lines) 2)) ;; drop last ("" "")
       (cdr result-lines)))) ;; drop status line
 
 (define prime-engine-conv-predict
