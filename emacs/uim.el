@@ -886,36 +886,40 @@
 	send-vector
 	send-vector-raw
 	issue-vector
-	send
-	issue
-	sendkey newvec count mouse  wait discard)
+	send issue mouse wait discard)
+
     (setq new-key-vector (uim-this-command-keys-vector))
 
-    (if uim-ignore-next
-	;; workaround for FSF Emacs-20/21
-	(progn
-	  (uim-debug (format "ignore this input %s" new-key-vector))
-	  (setq uim-ignore-next nil)
-	  (setq discard t))
-      
-    (if current-prefix-arg
+    (if (or current-prefix-arg
+	    uim-merge-next)
 	(let (vector-list)
-	  (setq uim-prefix-arg current-prefix-arg)
+
 	  (setq vector-list (uim-separate-prefix-vector new-key-vector))
 	  (setq new-key-vector (car vector-list))
 	  (setq uim-prefix-arg-vector (nth 1 vector-list))
 
-	    ;; Workaround for FSF Emacs-20/21
-	    ;;  Key event beginning with C-u and terminating with ESC-something
-	    ;;  invokes uim-process-input with twice at a time.
-	    ;;  In such a case, uim.el ignores the 2nd vector.
-	    (if (and uim-emacs
-		     (<= emacs-major-version 21)
-		     (>= (length new-key-vector) 2))
-		(setq uim-ignore-next t))
+	  ;; Workaround for FSF Emacs-20/21
+	  ;;  Key event beginning with C-u and terminating with ESC-something
+	  ;;  invokes uim-process-input with twice at a time.
+	  ;;  In such a case, uim.el merges these two inputs.
+	  (if (not uim-merge-next)
+	      (progn
+		;; normal
+		(setq uim-prefix-arg current-prefix-arg)
+		(if (and uim-emacs
+			 (not window-system)
+			 (<= emacs-major-version 21)
+			 (>= (length new-key-vector) 2))
+		    ;; workaround
+		    (setq uim-merge-next t)))
 
+	    ;; uim-merge-next is valid
+	    (setq uim-merge-next nil)
+	    (setq uim-translated-key-vector nil)
+	    (setq uim-untranslated-key-vector nil))
+		
 	  (uim-debug (format "uim-prefix-arg-vector %s" uim-prefix-arg-vector))
-	    (uim-debug (format "set uim-prefix-arg: %s" current-prefix-arg)))))
+	  (uim-debug (format "set uim-prefix-arg: %s" current-prefix-arg))))
 
     (if uim-xemacs
 	(setq uim-original-input-event (copy-event last-input-event)))
@@ -957,6 +961,7 @@
 	  (setq uim-untranslated-key-vector nil)
 	  (setq uim-prefix-arg nil)
 	  (setq uim-prefix-arg-vector nil)
+	  (setq uim-merge-next nil)
 	  (signal 'quit nil)
 	  )))
 
@@ -978,9 +983,9 @@
       (uim-debug (format "send-vector-raw: %s" send-vector-raw))
 
 
-      (cond (discard
+      (cond (uim-merge-next
 	     (setq send nil))
-	    
+
 	    ((or (and uim-emacs 
 		      (eventp event)
 		      (memq (event-basic-type event) 
@@ -1001,7 +1006,7 @@
 	     (setq wait t))
 
 	    ((or current-prefix-arg
-             uim-prefix-arg)
+		 uim-prefix-arg)
 	     (setq send nil)
 	     (setq issue t))
 
@@ -1079,6 +1084,7 @@
 	  (setq uim-untranslated-key-vector nil)
 	  (setq uim-prefix-arg nil)
 	  (setq uim-prefix-arg-vector nil)
+	  (setq uim-merge-next nil)
 	  )))
       
     (when mouse
@@ -1089,6 +1095,7 @@
 	(setq uim-untranslated-key-vector nil)
 	(setq uim-prefix-arg nil)
 	(setq uim-prefix-arg-vector nil)
+	(setq uim-merge-next nil)
 	))
 
 
@@ -1125,6 +1132,7 @@
 	    (setq uim-untranslated-key-vector nil)
 	    (setq uim-prefix-arg nil)
 	    (setq uim-prefix-arg-vector nil)
+	    (setq uim-merge-next nil)
 	    ))))
 
 
@@ -1179,9 +1187,10 @@
 	(setq uim-untranslated-key-vector nil)
 	(setq uim-prefix-arg nil)
 	(setq uim-prefix-arg-vector nil)
+	(setq uim-merge-next nil)
 	))
 
-;; display "ESC ESC ESC" or something
+    ;; display "ESC ESC ESC" or something
     (when (and (or send issue)
 	       (not wait)
 	       uim-keystroke-displaying)
@@ -1518,9 +1527,9 @@
 (defun uim-minibuffer-exit ()
   (if (and uim-initialized
 	   uim-mode)
-      ;(uim-mode-off)
+	;;(uim-mode-off)
       (uim-force-off)
-      ))
+    ))
 
 
 
@@ -1575,7 +1584,8 @@ uim mode facilitates internationalized input through the uim library."
     (if uim-mode
 	(uim-mode-off)
       (uim-mode-on))))
-; compat
+
+;; compat
 (defun uim-mode-switch ()
   (interactive)
   (if uim-mode
