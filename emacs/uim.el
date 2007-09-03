@@ -1340,35 +1340,32 @@
 
 	    (mapcar
 	     '(lambda (x)
-		(let ((start (point)))
-		  
-		  ;; enable buffer-undo temporarily
-		  (when uim-buffer-undo-list-saved
-		    (setq buffer-undo-list nil)
-		    (buffer-enable-undo))
+		;; enable buffer-undo temporarily
+		(when uim-buffer-undo-list-saved
+		  (setq buffer-undo-list nil)
+		  (buffer-enable-undo))
 
-		  (let ((buffer-undo-list-tmp buffer-undo-list))
-		    (unwind-protect
-			(progn
-			  (setq buffer-undo-list nil)
-			  (insert x)
-			  (uim-debug (format "insert %s" x)))
-		      (when buffer-undo-list
-			(setq buffer-undo-list 
-			      (uim-delete-atom buffer-undo-list))
-			(setq buffer-undo-list (cons nil buffer-undo-list))
-			(setq buffer-undo-list
-			      (append buffer-undo-list buffer-undo-list-tmp)))))
+		(let ((buffer-undo-list-tmp buffer-undo-list))
+		  (unwind-protect
+		      (progn
+			(setq buffer-undo-list nil)
+			(insert x)
+			(uim-debug (format "insert %s" x)))
+		    (when buffer-undo-list
+		      (setq buffer-undo-list
+ 			    (append (cons nil 
+					  (uim-delete-atom buffer-undo-list))
+				    buffer-undo-list-tmp))
 
-		  ;; disable buffer-undo temporarily
-		  (when uim-buffer-undo-list-saved
+		      )))
+
+		;; disable buffer-undo temporarily
+		(when uim-buffer-undo-list-saved
 		    
-		    (setq uim-buffer-undo-list
-			  (append buffer-undo-list uim-buffer-undo-list))
-		    (setq buffer-undo-list nil)
-		    (buffer-disable-undo))
-		  )
-		)
+		  (setq uim-buffer-undo-list
+			(append buffer-undo-list uim-buffer-undo-list))
+		  (setq buffer-undo-list nil)
+		  (buffer-disable-undo)))
 	     commit)
 
 	    (if auto-fill-function
