@@ -2075,6 +2075,18 @@
   (lambda (sc)
     (skk-flush sc)))
 
+(define skk-get-candidate-with-okuri
+  (lambda (cand okuri)
+    (let ((pos (string-contains cand ";" 0)))
+      (if pos
+	  (string-append
+	   (substring cand 0 pos)
+	   (skk-make-string okuri skk-type-hiragana)
+	   (substring cand pos (string-length cand)))
+	  (string-append
+	   cand
+	   (skk-make-string okuri skk-type-hiragana))))))
+
 (define skk-get-candidate-handler
   (lambda (sc idx accel-enum-hint)
     (let* ((dcsc (skk-find-descendant-context sc))
@@ -2091,8 +2103,7 @@
        (if (and
 	    (not (null? okuri))
 	    skk-show-candidates-with-okuri?)
-	   (string-append cand
-			  (skk-make-string okuri skk-type-hiragana))
+	   (skk-get-candidate-with-okuri cand okuri)
 	   cand)
        (cond
 	((eq? skk-candidate-selection-style 'uim)
