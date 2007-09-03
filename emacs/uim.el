@@ -1347,14 +1347,22 @@
 		    (setq buffer-undo-list nil)
 		    (buffer-enable-undo))
 
-		  (insert x)
-		  (uim-debug (format "insert %s" x))
+		  (let ((buffer-undo-list-tmp buffer-undo-list))
+		    (unwind-protect
+			(progn
+			  (setq buffer-undo-list nil)
+			  (insert x)
+			  (uim-debug (format "insert %s" x)))
+		      (when buffer-undo-list
+			(setq buffer-undo-list 
+			      (uim-delete-atom buffer-undo-list))
+			(setq buffer-undo-list (cons nil buffer-undo-list))
+			(setq buffer-undo-list
+			      (append buffer-undo-list buffer-undo-list-tmp)))))
 
 		  ;; disable buffer-undo temporarily
 		  (when uim-buffer-undo-list-saved
 		    
-		    (setq buffer-undo-list (uim-delete-atom buffer-undo-list))
-
 		    (setq uim-buffer-undo-list
 			  (append buffer-undo-list uim-buffer-undo-list))
 		    (setq buffer-undo-list nil)
