@@ -231,22 +231,25 @@
              port)
       (im-clear-preedit lc)
       (im-update-preedit lc))))
+
 (define (look-load-personal-dict lc)
-  (if (file-readable? look-personal-dict-filename)
-      (let ((dict (call-with-input-file look-personal-dict-filename
-                    (lambda (port)
-                      (im-clear-preedit lc)
-                      (im-pushback-preedit
-                       lc preedit-reverse
-                       "[loading...]")
-                      (im-update-preedit lc)
-                      (guard (err
-                              (else #f))
-                             (read port))))))
-        (if (and dict
-                 (not (null? dict))
-                 (= (car dict) look-prepared-words))
-            (look-context-set-dict! lc (cdr dict)))))
+  (guard (err
+          (else #f))
+	 (if (file-readable? look-personal-dict-filename)
+	     (let ((dict (call-with-input-file look-personal-dict-filename
+			   (lambda (port)
+			     (im-clear-preedit lc)
+			     (im-pushback-preedit
+			      lc preedit-reverse
+			      "[loading...]")
+			     (im-update-preedit lc)
+			     (guard (err
+				     (else #f))
+				    (read port))))))
+	       (if (and dict
+			(not (null? dict))
+			(= (car dict) look-prepared-words))
+		   (look-context-set-dict! lc (cdr dict))))))
   (im-clear-preedit lc)
   (im-update-preedit lc))
 
