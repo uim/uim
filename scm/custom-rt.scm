@@ -251,11 +251,14 @@
 (define custom-prop-update-custom-handler
   (let ((READ-ERR (list 'read-err))) ;; unique id
     (lambda (context custom-sym val-str)
-      (let ((val (guard (err
-			 (else READ-ERR))
-		   (read (open-input-string val-str)))))
-	(and (not (eq? val READ-ERR))
-	     (custom-set-value! custom-sym val))))))
+      (let* ((val (guard (err
+			  (else READ-ERR))
+		    (read (open-input-string val-str))))
+	     (unquoted-val (and (pair? val)
+				(eq? (car val) 'quote)
+				(cadr val))))
+	(and (not (eq? unquoted-val READ-ERR))
+	     (custom-set-value! custom-sym unquoted-val))))))
 
 ;; custom-reload-user-configs can switch its behavior by
 ;; custom-enable-mtime-aware-user-conf-reloading? since the
