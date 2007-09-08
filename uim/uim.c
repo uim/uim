@@ -80,7 +80,7 @@ static void
 fatal_error_hook(void)
 {
   /* actual error message is already printed by the Scheme interpreter */
-  uim_fatal_error("an unrecoverable error raised from Scheme interpreter");
+  uim_fatal_error("an unhandled error raised from Scheme interpreter");
 }
 
 int

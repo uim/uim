@@ -86,7 +86,7 @@ file_stat_mode(uim_lisp filename, mode_t mode)
 
   err = stat(REFER_C_STR(filename), &st);
   if (err)
-    ERROR_OBJ("stat failed for file", filename);
+    return uim_scm_f();  /* intentionally returns #f instead of error */
 
   return MAKE_BOOL((st.st_mode & mode) == mode);
 }
