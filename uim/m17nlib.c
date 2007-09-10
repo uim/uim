@@ -459,10 +459,17 @@ get_input_method_name(uim_lisp nth_)
 static uim_lisp
 get_input_method_lang(uim_lisp nth_)
 {
-  int nth = C_INT(nth_);
+  int nth;
+  const char *lang;
 
-  if (nth < nr_input_methods)
-    return MAKE_STR(im_array[nth].lang);
+  nth = C_INT(nth_);
+
+  if (nth < nr_input_methods) {
+    lang = im_array[nth].lang;
+    /* "*" is wildcard language. See langgroup-covers? and
+     * find-im-for-locale. */
+    return MAKE_STR((strcmp(lang, "t") == 0) ? "*" : lang);
+  }
 
   return uim_scm_f();
 }
