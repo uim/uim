@@ -98,15 +98,8 @@ unused_ic_id(void)
 }
 
 static void
-pushback_input_method(MInputMethod *im, char *lib_lang, char *name)
+pushback_input_method(MInputMethod *im, char *lang, char *name)
 {
-  const char *lang;
-  
-  if (!strcmp(lib_lang, "t"))
-    lang = "";
-  else
-    lang = lib_lang;
-
   im_array = uim_realloc(im_array,
 			 sizeof(struct im_) * (nr_input_methods + 1));
   im_array[nr_input_methods].im = im;
@@ -452,7 +445,7 @@ get_input_method_name(uim_lisp nth_)
     len = strlen(im_array[nth].lang) + strlen(im_array[nth].name) + 7;
     name = alloca(len);
 
-    if (!strcmp(im_array[nth].lang, ""))
+    if (!strcmp(im_array[nth].lang, "t"))
       snprintf(name, len, "m17n-%s", im_array[nth].name);
     else
       snprintf(name, len, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
@@ -565,7 +558,7 @@ find_im_by_name(const char *name)
   for (i = 0; i < nr_input_methods; i++) {
     char buf[100];
 
-    if (!strcmp(im_array[i].lang, ""))
+    if (!strcmp(im_array[i].lang, "t"))
       snprintf(buf, 100, "%s", im_array[i].name);
     else
       snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
