@@ -94,7 +94,7 @@ release, you have to repeat the following procedure at least three times.
    Final release:
 
      googlecode-upload.py -u yamakenz -p uim \
-                          -s 'uim 1.5.0' -l 'Stable Featured' \
+                          -s 'uim 1.5.0' -l 'Stable,Featured' \
                           uim-1.5.0.tar.bz2
 
    Alpha or beta release:
