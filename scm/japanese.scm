@@ -63,7 +63,13 @@
     ((("?"). ())("бй" "бй" "?"))
     ((("/"). ())("б┐" "б┐" "/"))
     ((("_"). ())("б▓" "б▓" "_"))
-    ((("yen"). ())("бя" "бя" "бя")) ;; XXX
+    ;; Since ordinary Japanese users press the "yen sign" key on
+    ;; Japanese keyboard in romaji-halfwidth-kana-mode "to input
+    ;; character code 134" rather than "to input yen sign symbol", I
+    ;; changed the fullwidth yen sign with backslash.
+    ;;   -- YamaKen 2007-09-17
+    ;; ((("yen"). ())("бя" "бя" "бя")) ;; XXX
+    ((("yen"). ())("бя" "бя" "\\"))
 
     ((("1"). ())("1" "1" "1"))
     ((("2"). ())("2" "2" "2"))
@@ -901,7 +907,13 @@
 
 (define japanese-roma-set-yen-representation
   (lambda ()
-    (set-symbol-value! 'yen "бя"))) ;; XXX
+    ;; Since ordinary Japanese users press the "yen sign" key on
+    ;; Japanese keyboard in alphanumeric-mode "to input character code
+    ;; 134" rather than "to input yen sign symbol", I changed the
+    ;; fullwidth yen sign with backslash.  -- YamaKen 2007-09-17
+    ;;(set-symbol-value! 'yen "бя")  ;; XXX
+    (set-symbol-value! 'yen "\\")
+    ))
 
 ;;
 (require "rk.scm")
