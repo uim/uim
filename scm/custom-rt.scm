@@ -72,7 +72,9 @@
 ;; experimental
 (define custom-update-group-conf-freshness
   (lambda (gsym)
-    (let ((mtime (file-mtime (custom-file-path gsym))))
+    (let ((mtime (guard (err
+			 (else #f))
+		   (file-mtime (custom-file-path gsym)))))
       (set! custom-group-conf-freshnesses
 	    (alist-replace (cons gsym mtime)
 			   custom-group-conf-freshnesses))
@@ -83,8 +85,10 @@
   (lambda (gsym)
     (let ((prev-mtime (assq-cdr gsym custom-group-conf-freshnesses)))
       (or (not prev-mtime)
-	  (not (= (file-mtime (custom-file-path gsym))
-		  prev-mtime))))))
+	  (guard (err
+		  (else #f))
+	    (not (= (file-mtime (custom-file-path gsym))
+		    prev-mtime)))))))
 
 ;; experimental
 (define custom-load-updated-group-conf
