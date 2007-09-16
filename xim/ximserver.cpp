@@ -1296,7 +1296,7 @@ void init_modifier_keys() {
     gMod5Mask = check_modifier(Mod5MaskSyms);
 
 #if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
-    // Init at here with sync to proper update timing although not a modifier.
+    // Init at here to sync with proper update timing although not a modifier.
     gProlongedsoundKeyCode
 	= XKeysymToKeycode(XimServer::gDpy, XK_prolongedsound);
 #endif
