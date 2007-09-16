@@ -1,5 +1,9 @@
 pixmapsdir = @uim_pixmapsdir@
 
+if M17NLIB
+bin_SCRIPTS = uim-m17nlib-relink-icons
+endif
+
 SVGS = unknown.svg
 
 # input methods
@@ -104,9 +108,5 @@ dist-hook:
 
 install-data-hook:
 if M17NLIB
-	for f in $(m17n_db_dir)/icons/*.png; do \
-	  if test -f "$$f"; then \
-	    $(LN_S) -f "$$f" $(DESTDIR)$(pkgdatadir)/pixmaps/m17n-`basename "$$f"`; \
-	  fi \
-	done
+	$(SH) $(srcdir)/uim-m17nlib-relink-icons
 endif

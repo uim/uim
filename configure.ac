@@ -18,6 +18,7 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+AC_PATH_PROG(SH, sh)
 AC_PATH_PROG(RSVG, rsvg)
 AC_PATH_PROGS(MD5, md5 md5sum)
 AC_PATH_PROGS(SHA1, sha1 sha1sum)
@@ -1332,6 +1333,7 @@ AC_SUBST(INCLUDES)
 
 SRCDIR=$srcdir
 AC_SUBST(SRCDIR)
+AC_SUBST(DESTDIR)
 
 AC_SUBST(abs_srcdir)
 AC_SUBST(abs_builddir)
@@ -1368,6 +1370,7 @@ AC_CONFIG_FILES([Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
 		 pixmaps/Makefile
+		 pixmaps/uim-m17nlib-relink-icons
 		 replace/Makefile
 		 uim.pc
 		 uim.desktop.in
