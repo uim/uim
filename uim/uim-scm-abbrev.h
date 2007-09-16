@@ -38,6 +38,8 @@
 extern "C" {
 #endif
 
+#define FOR_EACH    UIM_SCM_FOR_EACH
+
 #define ERROR       uim_scm_error
 #define ERROR_OBJ   uim_scm_error_obj
 #define ENSURE      UIM_SCM_ENSURE

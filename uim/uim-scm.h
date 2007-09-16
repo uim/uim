@@ -58,6 +58,12 @@ extern "C" {
 
 #define UIM_SCM_USE_DEPRECATED_API 1
 
+
+#define UIM_SCM_FOR_EACH(elm, lst)					\
+  while (uim_scm_consp(lst)						\
+	 && ((elm) = uim_scm_car(lst), (lst) = uim_scm_cdr(lst), 1))
+
+
 #ifndef UIM_BOOL_DEFINED
 /*
  * A boolean type for uim to explicitly indicate intention about values.

@@ -433,8 +433,8 @@ Summary: uim-scm API reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4877, ac4878, ac4881, ac4882, ac4884, ac4885, ac4907, ac4914, ac4920
-Date: 2007-01-09 -
+Revision: ac4333, ac4334, ac4339, ac4347, ac4351-ac4353, ac4355, ac4444, ac4446, ac4751, ac4761, ac4764, ac4788, ac4808, ac4812, ac4813, ac4815, ac4817, ac4819, ac4821, ac4830, ac4870, ac4871, ac4873, ac4875, ac4877, ac4878, ac4881, ac4882, ac4884, ac4885, ac4907, ac4914, ac4920, ac4969
+Date: 2007-01-09 - 2007-09-16
 Modifier: YamaKen
 Related: uim-scm API truth predicates reorganization in uim 1.5.0
 	 SigScheme introduction to uim
@@ -481,6 +481,8 @@ Changes:
       (new) uim_scm_init_proc3()
       (new) uim_scm_init_proc4()
       (new) uim_scm_init_proc5()
+      (new) UIM_SCM_FOR_EACH()
+      (new) FOR_EACH()
       (new) ERROR()
       (new) ERROR_OBJ()
       (new) ENSURE()
