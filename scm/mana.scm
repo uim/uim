@@ -846,7 +846,7 @@
         (direct
           (im-commit mc direct))
 
-	;; spcae key => commit
+	;; space key => commit
 	((mana-space-key? key key-state)
 	 (if (mana-context-alnum mc)
 	     (im-commit mc (list-ref

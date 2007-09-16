@@ -681,7 +681,7 @@
        (direct
 	(im-commit ac (anthy-utf8-lib-eucjp-to-utf8 direct)))
 
-       ;; spcae key => commit
+       ;; space key => commit
        ((anthy-space-key? key key-state)
 	(if (anthy-utf8-context-alnum ac)
 	    (im-commit ac (anthy-utf8-lib-eucjp-to-utf8 (list-ref

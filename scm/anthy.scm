@@ -676,7 +676,7 @@
        (direct
 	(im-commit ac direct))
 
-       ;; spcae key => commit
+       ;; space key => commit
        ((anthy-space-key? key key-state)
 	(if (anthy-context-alnum ac)
 	    (im-commit ac (list-ref
