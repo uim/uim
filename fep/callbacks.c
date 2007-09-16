@@ -71,6 +71,7 @@ static const char *s_im_str;
 static char *s_nokori_str;
 static int s_start_callbacks = FALSE;
 
+static void update_current_im_name(void);
 static void configuration_changed_cb(void *ptr);
 static void switch_app_global_im_cb(void *ptr, const char *name);
 static void switch_system_global_im_cb(void *ptr, const char *name);
@@ -341,10 +342,15 @@ char *get_mode_str(void)
   return str;
 }
 
-static void configuration_changed_cb(void *ptr)
+static void update_current_im_name(void)
 {
   s_im_str = uim_get_current_im_name(g_context);
   s_im_str = s_im_str != NULL ? s_im_str : "";
+}
+
+static void configuration_changed_cb(void *ptr)
+{
+  update_current_im_name();
 }
 
 static void switch_app_global_im_cb(void *ptr, const char *name)
@@ -651,6 +657,8 @@ loop_end:
     } else {
       free(labels);
     }
+    /* To make IM-name part of the status line updated. */
+    update_current_im_name();
   }
 
   if (!g_focus_in) {
