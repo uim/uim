@@ -29,13 +29,12 @@
 ;;; NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 ;;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-(require-extension (srfi 6 34))
+(require-extension (srfi 0 6 23 34))
 ;;(require-extension (srfi 13))  ;; string-prefix?
 
 (define *editline-prompt-beginning*  "> ")
 (define *editline-prompt-succeeding* "")
 (define %*editline-reading* #f)
-(define %EDITLINE-PARTIAL-EXPR (list 'partial-expr))
 
 
 (define editline-prompt
@@ -44,12 +43,19 @@
 	*editline-prompt-succeeding*
 	*editline-prompt-beginning*)))
 
-;; SigScheme dependent
+(cond-expand
+ (sigscheme
+  (define %editline-eof-error?
+    (lambda (err)
+      (and (%%error-object? err)
+	   (string-prefix? "in read: EOF " (cadr err)))))) ;; XXX
+ (else
+  (error "cannot detect EOF error")))
+
 (define %editline-partial-read
   (lambda args
     (guard (err
-	    ((string-prefix? "in read: EOF " (cadr err))  ;; XXX
-	     %EDITLINE-PARTIAL-EXPR))
+	    ((%editline-eof-error? err) err))
       (apply read args))))
 
 (define editline-read
@@ -58,12 +64,14 @@
     (lambda ()
       (let ((expr (%editline-partial-read p)))
 	(if (or (eof-object? expr)
-		(eq? expr %EDITLINE-PARTIAL-EXPR))
+		(%editline-eof-error? expr))
 	    (let ((line (editline-readline)))
 	      (if (eof-object? line)
-		  line
+		  (if (%editline-eof-error? expr)
+		      (raise expr)
+		      line)
 		  (begin
-		    (set! buf (if (eq? expr %EDITLINE-PARTIAL-EXPR)
+		    (set! buf (if (%editline-eof-error? expr)
 				  (string-append buf line)
 				  line))
 		    (set! p (open-input-string buf))
