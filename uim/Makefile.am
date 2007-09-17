@@ -11,6 +11,9 @@ uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
 
 lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la libuim-bsdlook.la
+if LIBUIM_X_UTIL
+noinst_LTLIBRARIES = libuim-x-util.la
+endif
 
 # Although uim only needs *.so for the plugins, whether *.la is
 # installed or not is system-dependent and uim leaves it untouched. It
@@ -180,6 +183,11 @@ libuim_custom_enabler_la_SOURCES = uim-custom-enabler.c
 libuim_custom_enabler_la_LIBADD = libuim-custom.la libuim-scm.la libuim.la
 libuim_custom_enabler_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_custom_enabler_la_CPPFLAGS = -I$(top_srcdir)
+
+if LIBUIM_X_UTIL
+libuim_x_util_la_SOURCES = uim-x-util.h uim-x-kana-input-hack.c
+libuim_x_util_la_CPPFLAGS = -I$(top_srcdir)
+endif
 
 
 bin_PROGRAMS = uim-sh uim-module-manager

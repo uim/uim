@@ -46,7 +46,14 @@
 #include <X11/keysym.h>
 #endif
 
+#ifdef GDK_WINDOWING_X11
+#define UIM_GTK_USE_JAPANESE_KANA_KEYBOARD_HACK 1
+#endif
+
 #include "uim/uim.h"
+#if UIM_GTK_USE_JAPANESE_KANA_KEYBOARD_HACK
+#include "uim/uim-x-util.h"
+#endif
 
 #include "key-util-gtk.h"
 
@@ -54,7 +61,6 @@
 static guint g_mod1_mask, g_mod2_mask, g_mod3_mask, g_mod4_mask, g_mod5_mask;
 static gint g_numlock_mask;
 static guint g_modifier_state, g_pre_modifier_state;
-static KeyCode g_prolongedsound_keycode;
 #endif
 
 void
@@ -229,23 +235,9 @@ im_uim_convert_keyevent(GdkEventKey *event, int *ukey, int *umod)
      break;
     }
   }
-#ifdef GDK_WINDOWING_X11
+#if UIM_GTK_USE_JAPANESE_KANA_KEYBOARD_HACK
   /* 1'. replace keysym for Japanese keyboard */
-  /*
-   * A hack to distinguish Japanese kana_RO key from yen sign key
-   * (both keys normally generates backslash on ASCII input). See
-   * [uim-en 11] and the follow messages for the discussion.
-   *
-   * This hack assumes that the xmodmap for the Japanese kana
-   * keyboard is defined as follows:
-   * 
-   * yen sign key: keycode X = backslash bar prolongedsound
-   * kana_RO key:  keycode Y = backslash underscore kana_RO
-   */
-  if (*ukey == '\\' &&
-      event->hardware_keycode == g_prolongedsound_keycode) {
-    *ukey = UKey_Yen;
-  }
+  *ukey = uim_x_kana_input_hack_translate_key(*ukey, event->hardware_keycode);
 #endif
 
   /* 2. check modifier */
@@ -394,7 +386,9 @@ im_uim_init_modifier_keys()
   g_slist_free(mod5_list);
   XFreeModifiermap(map);
   XFree(sym);
-  /* setup keycode hack */
-  g_prolongedsound_keycode = XKeysymToKeycode(display, XK_prolongedsound);
+
+#if UIM_GTK_USE_JAPANESE_KANA_KEYBOARD_HACK
+  uim_x_kana_input_hack_init(display);
+#endif
 #endif
 }

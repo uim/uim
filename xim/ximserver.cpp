@@ -34,6 +34,8 @@
 # include <config.h>
 #endif
 
+#define UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK 1
+
 #include <stdio.h>
 #include <ctype.h>
 #include <locale.h>
@@ -60,6 +62,9 @@
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
 #include "uim/uim-scm.h"
+#if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
+#include "uim/uim-x-util.h"
+#endif
 
 #ifndef XK_dead_horn
 #define XK_dead_horn	0xfe62
@@ -71,8 +76,6 @@
 # endif
 #endif
 
-#define UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK 1
-
 extern int lib_uim_fd;
 extern Atom xim_servers;
 InputContext *InputContext::mFocusedContext = NULL;
@@ -80,9 +83,6 @@ InputContext *InputContext::mFocusedContext = NULL;
 static int check_modifier(std::list<KeySym> list);
 static int gMod1Mask, gMod2Mask, gMod3Mask, gMod4Mask, gMod5Mask;
 static int gXNumLockMask;
-#if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
-static unsigned int gProlongedsoundKeyCode;
-#endif
 
 
 void print_ustring(uString *s)
@@ -1102,18 +1102,7 @@ void keyState::check_key(keyEventX *x)
 	mModifier |= (gMod5Mask & mPreModState);
 
 #if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
-    // A hack to distinguish Japanese kana_RO key from yen sign key
-    // (both keys normally generates backslash on ASCII input). See
-    // [uim-en 11] and the follow messages for the discussion.
-    //
-    // This hack assumes that the xmodmap for the Japanese kana
-    // keyboard is defined as follows:
-    // 
-    // yen sign key: keycode X = backslash bar prolongedsound
-    // kana_RO key:  keycode Y = backslash underscore kana_RO
-    if (x->key_sym == '\\' && x->ev.xkey.keycode == gProlongedsoundKeyCode)
-	mKey = UKey_Yen;
-    else
+    mKey = uim_x_kana_input_hack_translate_key(x->key_sym, x->ev.xkey.keycode);
 #endif
     if (x->key_sym < 128 && x->key_sym >= 32)
 	mKey = x->key_sym;
@@ -1297,8 +1286,7 @@ void init_modifier_keys() {
 
 #if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
     // Init at here to sync with proper update timing although not a modifier.
-    gProlongedsoundKeyCode
-	= XKeysymToKeycode(XimServer::gDpy, XK_prolongedsound);
+    uim_x_kana_input_hack_init(XimServer::gDpy);
 #endif
 }
 
