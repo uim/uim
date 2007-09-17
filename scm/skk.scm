@@ -728,7 +728,8 @@
 	   (not (skk-rk-pending? sc))
 	   (not (string=? (skk-context-dcomp-word sc) "")))
 	  (begin
-	    (im-pushback-preedit sc preedit-cursor "")
+	    (if skk-show-cursor-on-preedit?
+	        (im-pushback-preedit sc preedit-cursor ""))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-dcomp
 	     (skk-dcomp-word-tail sc))
@@ -750,7 +751,10 @@
 		  (not (skk-context-candidate-window sc))))
 		(im-pushback-preedit
 		 sc
-		 (bitwise-ior skk-preedit-attr-conv-body preedit-cursor)
+		 (bitwise-ior skk-preedit-attr-conv-body
+			      (if skk-show-cursor-on-preedit?
+				  preedit-cursor
+				  preedit-none))
 		 (if skk-show-annotation-in-preedit?
 		     (skk-lib-eval-candidate (skk-get-current-candidate sc))
 		     (skk-lib-eval-candidate
@@ -758,7 +762,10 @@
 		       (skk-get-current-candidate sc)))))
 		(im-pushback-preedit
 		 sc
-		 (bitwise-ior skk-preedit-attr-conv-body preedit-cursor)
+		 (bitwise-ior skk-preedit-attr-conv-body
+			      (if skk-show-cursor-on-preedit?
+				  preedit-cursor
+				  preedit-none))
 		 ""))
 	    (im-pushback-preedit
 	     sc skk-preedit-attr-conv-okuri
@@ -825,7 +832,8 @@
 	  (begin
 	    (im-pushback-preedit sc skk-preedit-attr-direct-pending-rk
 				 (rk-pending rkc))
-	    (im-pushback-preedit sc preedit-cursor ""))
+	    (if skk-show-cursor-on-preedit?
+	        (im-pushback-preedit sc preedit-cursor "")))
 	  (begin
 	    (im-pushback-preedit sc skk-preedit-attr-pending-rk
 				 (rk-pending rkc))
