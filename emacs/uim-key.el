@@ -183,11 +183,9 @@
 	  (setcdr (assq 'uim-mode minor-mode-map-alist) uim-dummy-map)
 
 	  (if (and bind
-		   (commandp bind)
-		   (not (eq bind 'digit-argument)))
-	      (command-execute bind)
-	    (uim-debug (format "command-execute %s" uim-key-vector))
-	    (command-execute uim-key-vector))
+		   (eq bind 'digit-argument))
+	      (command-execute uim-key-vector)
+	    (command-execute this-command))
 
 	  (setq last-command this-command)
 	  ;;(setq last-command-char (aref uim-key-vector 0))
