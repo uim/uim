@@ -990,6 +990,12 @@ if test x$use_qt = xyes ; then
     if test ! -d "$QTDIR"; then
       QTDIR="/usr"
     fi
+    AC_MSG_CHECKING(for Qt3 library dir)
+    if test ! -d "$QTDIR"; then
+      AC_MSG_RESULT(no)
+    else
+      AC_MSG_RESULT($QTDIR)
+    fi
 
     # GUESS $QTINCDIR from $QTDIR
     QTINCDIR="$QTDIR/include/qt"
