@@ -42,8 +42,7 @@
 #include <scim.h>
 #include "uim.h"
 #include "uim-scm.h"
-#include "uim-compat-scm.h"
-#include "context.h"
+#include "uim-internal.h"
 
 using namespace scim;
 
@@ -175,7 +174,13 @@ init_scim()
             return uim_scm_f();
         }
 
+#if 0
+	/* for old versions (1.2 or older) of SCIM */
         config = config_module->create_config("scim");
+#else
+	/* for new versions (1.3, 1.4) of SCIM */
+        config = config_module->create_config();
+#endif
         if ( config.null() )
         {
             fprintf(stderr, "create_config failed\n");
@@ -226,7 +231,7 @@ get_input_method_lang(uim_lisp nth_)
 {
     // FIXME
     int nth = uim_scm_c_int( nth_ );
-    if ( nth < im_list.size() )
+    if ( nth < (int)im_list.size() )
     {
         return uim_scm_make_str( im_list.at( nth )->lang.c_str() );
     }
@@ -251,7 +256,7 @@ static uim_lisp
 get_input_method_name(uim_lisp nth_)
 {
     int nth = uim_scm_c_int( nth_ );
-    if ( nth < im_list.size() )
+    if ( nth < (int)im_list.size() )
     {
         // remove space
         String imname = WideStr_to_String( im_list.at( nth )->imname );

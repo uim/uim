@@ -83,7 +83,7 @@ AC_ARG_WITH(scim,
         use_scim="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(SCIM, scim >= 1.2.0, use_scim="yes",use_scim="no")
+        PKG_CHECK_MODULES(SCIM, scim >= 1.3.0, use_scim="yes",use_scim="no")
       ;;
     esac
   ],
@@ -1295,6 +1295,13 @@ else
   AX_CFLAGS_GCC_OPTION([-Wno-redundant-decls], [UIM_SCM_CFLAGS])
   AX_CFLAGS_GCC_OPTION([-Wno-unused-function], [UIM_SCM_CFLAGS])
   AX_LANG_WNOERROR  # end AC_LANG_WERROR
+
+  # Suppress the warnings of libuim-scim
+  AC_LANG_WERROR  # Turn warning-only unknown options into error.
+  AX_CFLAGS_GCC_OPTION([-Wno-unused-function],  [SCIM_CFLAGS])
+  AX_CFLAGS_GCC_OPTION([-Wno-unused-parameter], [SCIM_CFLAGS])
+  AX_CFLAGS_GCC_OPTION([-Wno-unused-variable],  [SCIM_CFLAGS])
+  AX_LANG_WNOERROR  # end AC_LANG_WERROR
 fi
 
 AC_ARG_ENABLE(warnings-into-error,
@@ -1317,9 +1324,11 @@ AC_ARG_ENABLE(warnings-into-error,
 	      CFLAGS="$CFLAGS -Werror"
 	      CXXFLAGS="$CXXFLAGS -Werror"
   	      AX_CFLAGS_GCC_OPTION([-Wno-error], [UIM_SCM_CFLAGS])
+  	      AX_CFLAGS_GCC_OPTION([-Wno-error], [SCIM_CFLAGS])
 	    fi
     ])
 AC_SUBST(UIM_SCM_CFLAGS)
+AC_SUBST(SCIM_CFLAGS)
 
 
 # Checks for system services

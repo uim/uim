@@ -9,6 +9,9 @@ EXTRA_DIST = encoding-table.c test-gc.c
 uim_defs = -DSCM_FILES=\"$(datadir)/uim\"
 # FIXME: $(UIM_SCM_CFLAGS) should only affect on uim-scm.c
 CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
+# FIXME: $(SCIM_CFLAGS) should only affect on scim.cpp
+# 'if SCIM' makes this workaround broken
+CXXFLAGS = @CXXFLAGS@ $(SCIM_CFLAGS)
 
 lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la libuim-bsdlook.la
 if LIBUIM_X_UTIL
