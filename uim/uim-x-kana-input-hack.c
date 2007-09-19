@@ -77,6 +77,37 @@ uim_x_kana_input_hack_translate_key(int ukey, KeyCode hardware_keycode)
   return ukey;
 }
 
+int
+uim_x_kana_input_hack_filter_event(uim_context uc, XEvent *event)
+{
+  unsigned int keycode;
+  int translated_key;
+  KeySym keysym;
+
+  if (event->type != KeyPress && event->type != KeyRelease)
+    return UIM_FALSE;
+
+  /* Only unmodified keys are translated. */
+  if (!event->xkey.state) {
+    keycode = event->xkey.keycode;
+    keysym = XLookupKeysym(&event->xkey, UNMODIFIED_KEYSYM_INDEX);
+    translated_key = uim_x_kana_input_hack_translate_key(keysym, keycode);
+
+    if (translated_key == UKey_Yen) {
+      int not_filtered;
+
+      if (event->type == KeyPress)
+	not_filtered = uim_press_key(uc, translated_key, 0);
+      else
+	not_filtered = uim_release_key(uc, translated_key, 0);
+
+      if (!not_filtered)
+	return UIM_TRUE;
+    }
+  }
+  return UIM_FALSE;
+}
+
 void
 uim_x_kana_input_hack_init(Display *display)
 {

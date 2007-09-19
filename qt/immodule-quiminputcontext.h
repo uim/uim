@@ -36,6 +36,10 @@ SUCH DAMAGE.
 #include <qinputcontext.h>
 #include <qptrlist.h>
 
+#ifdef Q_WS_X11
+#define UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK 1
+#endif
+
 class QString;
 
 class CandidateWindow;
@@ -69,6 +73,9 @@ public:
     virtual QString identifierName();
     virtual QString language();
 
+#ifdef Q_WS_X11
+    virtual bool x11FilterEvent( QWidget *keywidget, XEvent *event );
+#endif
     virtual bool filterEvent( const QEvent *event );
     virtual void reset();
     virtual void setFocus();

@@ -33,6 +33,9 @@ SUCH DAMAGE.
 #include <config.h>
 
 #include <qinputcontext.h>
+#if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
+#include <qwindowdefs.h>
+#endif
 
 #include <locale.h>
 
@@ -41,6 +44,10 @@ SUCH DAMAGE.
 #include "immodule-plugin.h"
 #include "immodule-quiminputcontext_with_slave.h"
 #include "immodule-quiminfomanager.h"
+
+#if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
+#include "uim/uim-x-util.h"
+#endif
 
 QUimInfoManager *UimInputContextPlugin::infoManager = NULL;
 
@@ -117,6 +124,9 @@ UimInputContextPlugin::uimInit()
     if ( !uim_init() ) {
         if (!infoManager)
             infoManager = new QUimInfoManager();
+#if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
+	uim_x_kana_input_hack_init(qt_xdisplay());
+#endif
         uimReady = true;
     }
 }

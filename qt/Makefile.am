@@ -103,10 +103,13 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-qtextutil.cpp immodule-qtextutil.h \
 	immodule-quiminfomanager.cpp immodule-quiminfomanager.h \
 	immodule-subwindow.cpp immodule-subwindow.h
-libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS)
+libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS) @X_CFLAGS@
 libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
 libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim-scm.la \
 					$(top_builddir)/uim/libuim.la
+if LIBUIM_X_UTIL
+libquiminputcontextplugin_la_LIBADD  += $(top_builddir)/uim/libuim-x-util.la
+endif
 
 immodule-candidatewindow.cpp: immodule-candidatewindow.moc
 immodule-qhelpermanager.cpp: immodule-qhelpermanager.moc

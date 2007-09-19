@@ -59,6 +59,12 @@ SUCH DAMAGE.
 #include "immodule-quiminputcontext_compose.h"
 #endif
 
+#if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
+#include <X11/Xlib.h>
+
+#include "uim/uim-x-util.h"
+#endif
+
 #define DEFAULT_SEPARATOR_STR "|"
 
 QUimInputContext *focusedInputContext = NULL;
@@ -171,6 +177,21 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
     return uc;
 }
+
+#ifdef Q_WS_X11
+bool QUimInputContext::x11FilterEvent( QWidget *keywidget, XEvent *event )
+{
+    // to suppress warning
+    keywidget = keywidget;
+    event = event;
+
+#if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
+    return uim_x_kana_input_hack_filter_event( m_uc, event );
+#else
+    return FALSE;
+#endif
+}
+#endif // Q_WS_X11
 
 bool QUimInputContext::filterEvent( const QEvent *event )
 {
