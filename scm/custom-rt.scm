@@ -122,7 +122,8 @@
 		 (not (setugid?)))
 	    (for-each (lambda (gsym)
 			(custom-load-group-conf gsym)
-			(custom-update-group-conf-freshness gsym))
+			(if custom-enable-mtime-aware-user-conf-reloading?
+			    (custom-update-group-conf-freshness gsym)))
 		      (reverse new-groups)))))))
 
 ;; full implementation
