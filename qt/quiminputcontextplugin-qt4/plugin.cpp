@@ -9,6 +9,8 @@
 
 #include "quiminputcontext_with_slave.h"
 
+#define UIM_QT_LIST_SUBIM_AS_QTIM 0
+
 UimInputContextPlugin::UimInputContextPlugin()
 {
     uimReady = false;
@@ -28,10 +30,14 @@ QStringList UimInputContextPlugin::keys() const
 QInputContext *UimInputContextPlugin::create( const QString & key )
 {
     QString imname = QString::null;
-    if ( QString::compare( key, "uim" ) == 0 )
-        imname = uim_get_default_im_name( setlocale( LC_ALL, NULL ) );
+
+#if UIM_QT_LIST_SUBIM_AS_QTIM
+    if ( key.startsWith( "uim-" ) )
+	imname = key.mid( 4 );
     else
-        imname = key.mid( 4 );
+#endif
+    if ( key == "uim" )
+        imname = uim_get_default_im_name( setlocale( LC_ALL, NULL ) );
 
     QStringList langs = createLanguageList( key );
     QUimInputContext *uic = new QUimInputContext( imname.toUtf8(),
@@ -80,6 +86,7 @@ QStringList UimInputContextPlugin::createImList() const
     lst.append( "uim" );
     qDebug( "name = uim" );
 
+#if UIM_QT_LIST_SUBIM_AS_QTIM
     uim_context tmp_uc = uim_create_context( NULL, "UTF-8",
                          NULL, NULL, uim_iconv, NULL );
     int nr = uim_get_nr_im( tmp_uc );
@@ -96,6 +103,7 @@ QStringList UimInputContextPlugin::createImList() const
         }
     }
     uim_release_context( tmp_uc );
+#endif
 
     return lst;
 }
@@ -107,6 +115,7 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
         return "ja:ko:zh:*";
     */
 
+#if UIM_QT_LIST_SUBIM_AS_QTIM
     uim_context tmp_uc = uim_create_context( NULL, "UTF-8",
                          NULL, NULL, uim_iconv, NULL );
     int nr = uim_get_nr_im( tmp_uc );
@@ -126,6 +135,7 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
         }
     }
     uim_release_context( tmp_uc );
+#endif
 
     return QStringList( "" );
 }
