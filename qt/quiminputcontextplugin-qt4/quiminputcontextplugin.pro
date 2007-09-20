@@ -6,6 +6,7 @@ TEMPLATE = lib
 DEPENDPATH += .
 INCLUDEPATH += . /usr/local/include/uim
 CONFIG += qt plugin thread
+QT += qt3support
 LIBS += -luim
 
 # Input

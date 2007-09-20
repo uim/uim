@@ -25,8 +25,8 @@ CandidateWindow::CandidateWindow( QWidget * parent )
     // setup CandidateList
     cList = new QListWidget( this );
     cList->setSelectionMode( QAbstractItemView::SingleSelection );
-    QObject::connect( cList, SIGNAL( clicked( QListWidgetItem * item, Qt::MouseButton button, Qt::KeyboardModifiers modifiers ) ),
-                      this, SLOT( slotCandidateSelected( QListWidgetItem * item ) ) );
+    QObject::connect( cList, SIGNAL( itemClicked( QListWidgetItem * ) ),
+                      this, SLOT( slotCandidateSelected( QListWidgetItem * ) ) );
 
     // setup NumberLabel
     numLabel = new QLabel( this );

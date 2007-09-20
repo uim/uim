@@ -78,6 +78,7 @@ QStringList UimInputContextPlugin::createImList() const
 
     // default
     lst.append( "uim" );
+    qDebug( "name = uim" );
 
     uim_context tmp_uc = uim_create_context( NULL, "UTF-8",
                          NULL, NULL, uim_iconv, NULL );
@@ -126,7 +127,7 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
     }
     uim_release_context( tmp_uc );
 
-    return QStringList();
+    return QStringList( "" );
 }
 
 Q_EXPORT_PLUGIN2( uiminputcontextplugin, UimInputContextPlugin )

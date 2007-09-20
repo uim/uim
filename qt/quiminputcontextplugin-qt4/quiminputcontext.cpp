@@ -393,28 +393,15 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
 
 void QUimInputContext::commitString( const QString& str )
 {
-    if ( isComposing() )
-    {
-        preeditString = QString::null;
-        QInputMethodEvent e;
-        e.setCommitString( str );
-        sendEvent( e );
-        m_isComposing = false;
-        return ;
-    }
+    preeditString = QString::null;
 
-#if 0
-    // for hitting Space-Key when IM is On.
-    // in this case, we should commit the string (Zenkaku-Space)
-    // directly.
-    if ( ! str.isEmpty() )
-    {
-        sendIMEvent( QEvent::InputMethodStart );
-        sendIMEvent( QEvent::InputMethodEnd, str );
-    }
-#endif
+    QInputMethodEvent e;
+    e.setCommitString( str );
+    sendEvent( e );
 
+    m_isComposing = false;
 }
+
 void QUimInputContext::clearPreedit()
 {
     // delete first
