@@ -135,7 +135,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     int key = 0;
     if ( isascii( qkey ) && isprint( qkey ) )
     {
-        int ascii = keyevent->text() [ 0 ].ascii();
+        int ascii = keyevent->text()[ 0 ].toAscii();
         if ( isalpha( ascii ) )
         {
             key = ascii;  // uim needs lower/upper encoded key
@@ -315,7 +315,7 @@ QString QUimInputContext::language()
 void QUimInputContext::commit_cb( void *ptr, const char *str )
 {
     QString qs = QString::fromUtf8( str );
-    qDebug( "commit_cb : str = |%s|", ( const char* ) qs.local8Bit() );
+    qDebug( "commit_cb : str = |%s|", ( const char* ) qs.toLocal8Bit() );
 
     QUimInputContext *ic = ( QUimInputContext * ) ptr;
     ic->commitString( qs );
@@ -332,7 +332,7 @@ void QUimInputContext::clear_cb( void *ptr )
 void QUimInputContext::pushback_cb( void *ptr, int attr, const char *str )
 {
     QString qs = QString::fromUtf8( str );
-    qDebug( "pushback_cb :  str = |%s|", ( const char* ) qs.local8Bit() );
+    qDebug( "pushback_cb :  str = |%s|", ( const char* ) qs.toLocal8Bit() );
 
     if ( !str )
         return ;

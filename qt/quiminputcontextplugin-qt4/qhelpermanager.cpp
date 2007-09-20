@@ -77,7 +77,8 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         else if ( str.startsWith( "prop_activate" ) )
         {
             QStringList list = str.split( "\n" );
-            uim_prop_activate( focusedInputContext->uimContext(), ( const char* ) list[ 1 ] );
+            uim_prop_activate( focusedInputContext->uimContext(),
+			       list[ 1 ].toUtf8() );
         }
         else if ( str.startsWith( "im_list_get" ) )
         {
@@ -108,7 +109,9 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         {
             for ( int i = 0; i < contextList.size(); ++i )
             {
-                uim_prop_update_custom( contextList.at( i ) ->uimContext(), list[ 1 ], list[ 2 ] );
+                uim_prop_update_custom( contextList.at( i ) ->uimContext(),
+					list[ 1 ].toUtf8(),
+					list[ 2 ].toUtf8() );
                 break;  /* all custom variables are global */
             }
         }
@@ -125,7 +128,8 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     {
         if ( focusedInputContext )
         {
-            uim_switch_im( focusedInputContext->uimContext(), ( const char* ) im_name );
+            uim_switch_im( focusedInputContext->uimContext(),
+			   im_name.toUtf8() );
             uim_prop_list_update( focusedInputContext->uimContext() );
             focusedInputContext->readIMConf();
         }
@@ -135,7 +139,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         for ( int i = 0; i < contextList.size(); ++i )
         {
             QUimInputContext *uic = contextList.at( i );
-            uim_switch_im( uic->uimContext(), ( const char* ) im_name );
+            uim_switch_im( uic->uimContext(), im_name.toUtf8() );
             uic->readIMConf();
         }
 
@@ -147,7 +151,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             for ( int i = 0; i < contextList.size(); ++i )
             {
                 QUimInputContext *uic = contextList.at( i );
-                uim_switch_im( uic->uimContext(), ( const char* ) im_name );
+                uim_switch_im( uic->uimContext(), im_name.toUtf8() );
                 uic->readIMConf();
             }
         }
@@ -179,7 +183,7 @@ void QUimHelperManager::sendImList()
         msg += leafstr;
     }
 
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.utf8() );
+    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
 }
 
 void QUimHelperManager::helper_disconnect_cb()
@@ -202,7 +206,7 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
     QString msg = "prop_list_update\ncharset=UTF-8\n";
     msg += QString::fromUtf8( str );
 
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.utf8() );
+    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
 }
 
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
@@ -214,5 +218,5 @@ void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
     QString msg = "prop_label_update\ncharset=UTF-8\n";
     msg += QString::fromUtf8( str );
 
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.utf8() );
+    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
 }

@@ -34,7 +34,8 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
         imname = key.mid( 4 );
 
     QStringList langs = createLanguageList( key );
-    QUimInputContext *uic = new QUimInputContext( imname, langs[ 0 ] );
+    QUimInputContext *uic = new QUimInputContext( imname.toUtf8(),
+						  langs[ 0 ].toUtf8() );
 
     return uic;
 }
@@ -90,7 +91,7 @@ QStringList UimInputContextPlugin::createImList() const
             qs = "uim-" + qs;
             lst << qs;
 
-            qDebug( "name = %s", ( const char* ) qs );
+            qDebug( "name = %s", ( const char* ) qs.toUtf8() );
         }
     }
     uim_release_context( tmp_uc );
