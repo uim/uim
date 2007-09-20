@@ -8,18 +8,17 @@
 
 #include "quiminputcontext.h"
 
-const Qt::WFlags candidateFlag = ( Qt::WType_TopLevel
-                                   | Qt::WStyle_Customize
-                                   | Qt::WStyle_StaysOnTop
-                                   | Qt::WStyle_NoBorder
-                                   | Qt::WStyle_Tool
+const Qt::WFlags candidateFlag = ( Qt::Window
+                                   | Qt::WindowStaysOnTopHint
+                                   | Qt::FramelessWindowHint
+                                   | Qt::Tool
 #if defined(Q_WS_X11)
-                                   | Qt::WX11BypassWM
+                                   | Qt::X11BypassWindowManagerHint
 #endif
                                  );
 
 CandidateWindow::CandidateWindow( QWidget * parent )
-        : QVBoxWidget( parent, candidateFlag ),
+        : Q3VBox( parent, 0, candidateFlag ),
         ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
         displayLimit( 0 ), pageIndex( -1 ), isAlwaysLeft( false )
 {
@@ -199,8 +198,9 @@ void CandidateWindow::setIndex( int totalindex )
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
 
-        if ( cList->item( pos ) && ! ( cList->isSelected( cList->item( pos ) ) ) )
-            cList->setSelected( cList->item( pos ), true );
+        if ( cList->item( pos )
+	     && ! ( cList->currentItem() == cList->item( pos ) ) )
+            cList->setCurrentItem( cList->item( pos ) );
     }
     else
     {
@@ -211,7 +211,7 @@ void CandidateWindow::setIndex( int totalindex )
 void CandidateWindow::setIndexInPage( int index )
 {
     QListWidgetItem * selectedItem = cList->item( index );
-    cList->setSelected( selectedItem, true );
+    cList->setCurrentItem( selectedItem );
 
     slotCandidateSelected( selectedItem );
 }

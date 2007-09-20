@@ -18,3 +18,5 @@ SOURCES += plugin.cpp \
            qhelpermanager.cpp \
            quiminputcontext.cpp \
            candidatewindow.cpp
+
+TARGET = uiminputcontextplugin

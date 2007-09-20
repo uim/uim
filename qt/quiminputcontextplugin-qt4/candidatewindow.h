@@ -1,11 +1,9 @@
 #ifndef _CANDIDATE_WINDOW_H_
 #define _CANDIDATE_WINDOW_H_
 
-class QUimInputContext;
+#include <Qt3Support/Q3VBox>
 
 #include <uim/uim.h>
-
-#include <qvboxwidget.h>
 
 class QLabel;
 class QListWidget;
@@ -13,7 +11,7 @@ class QListWidgetItem;
 
 class QUimInputContext;
 
-class CandidateWindow : public QVBoxWidget
+class CandidateWindow : public Q3VBox
 {
     Q_OBJECT
 

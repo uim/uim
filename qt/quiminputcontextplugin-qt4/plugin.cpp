@@ -129,4 +129,4 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
     return QStringList();
 }
 
-Q_EXPORT_PLUGIN( UimInputContextPlugin )
+Q_EXPORT_PLUGIN2( uiminputcontextplugin, UimInputContextPlugin )

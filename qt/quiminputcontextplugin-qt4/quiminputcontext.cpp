@@ -17,6 +17,9 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 #include "candidatewindow.h"
 #include "qhelpermanager.h"
 
+#include <uim/uim.h>
+#include <uim/uim-scm.h>
+
 #define DEFAULT_SEPARATOR_STR "|"
 
 QUimInputContext *focusedInputContext = NULL;
@@ -393,11 +396,14 @@ void QUimInputContext::commitString( const QString& str )
     if ( isComposing() )
     {
         preeditString = QString::null;
-        sendIMEvent( QEvent::InputMethodEnd, str );
+        QInputMethodEvent e;
+        e.setCommitString( str );
+        sendEvent( e );
         m_isComposing = false;
         return ;
     }
 
+#if 0
     // for hitting Space-Key when IM is On.
     // in this case, we should commit the string (Zenkaku-Space)
     // directly.
@@ -406,6 +412,7 @@ void QUimInputContext::commitString( const QString& str )
         sendIMEvent( QEvent::InputMethodStart );
         sendIMEvent( QEvent::InputMethodEnd, str );
     }
+#endif
 
 }
 void QUimInputContext::clearPreedit()
@@ -436,14 +443,21 @@ void QUimInputContext::updatePreedit()
     // Activating the IM
     if ( ! newString.isEmpty() && ! isComposing() )
     {
-        sendIMEvent( QEvent::InputMethodStart );
+        sendEvent( QInputMethodEvent() );
         m_isComposing = true;
     }
 
     if ( ! newString.isEmpty() )
     {
         qDebug( "cursor = %d, length = %d", cursor, newString.length() );
-        sendIMEvent( QEvent::InputMethodCompose, newString, cursor, selLength );
+
+        QInputMethodEvent::Attribute cursor_attr( QInputMethodEvent::Cursor,
+                                                  cursor, selLength, 0 );
+        QList<QInputMethodEvent::Attribute> attrs;
+        attrs.append( cursor_attr );
+        QInputMethodEvent e( newString, attrs );
+
+        sendEvent( e );
     }
 
     // Preedit's length is Zero, we should deactivate IM and
@@ -451,7 +465,10 @@ void QUimInputContext::updatePreedit()
     // empty string.
     if ( newString.isEmpty() && isComposing() )
     {
-        sendIMEvent( QEvent::InputMethodEnd );
+	QInputMethodEvent e;
+	e.setCommitString( "" );
+
+        sendEvent( e );
         m_isComposing = false;
     }
 
@@ -600,7 +617,7 @@ void QUimInputContext::createUimInfo()
 
 void QUimInputContext::readIMConf()
 {
-    char * leftp = uim_symbol_value_str( "candidate-window-position" );
+    char * leftp = uim_scm_symbol_value_str( "candidate-window-position" );
     if ( leftp && !strcmp( leftp, "left" ) )
         cwin->setAlwaysLeftPosition( true );
     else
