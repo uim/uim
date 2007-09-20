@@ -299,7 +299,6 @@ void QUimInputContext::reset()
 {
     qDebug( "QUimInputContext::reset()" );
 
-    QInputContext::reset();
     preeditString = QString::null;
     candwinIsActive = FALSE;
     cwin->hide();
