@@ -573,9 +573,16 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
 
 	if ( segStrLen ) {
 	    if ( uimAttr & UPreeditAttr_Reverse ) {
+#if 0
+		// FIXME: fmt.foreground() is white (expecting black)
+		QTextFormat fmt = standardFormat( PreeditFormat );
+		segFmt.setForeground( fmt.background() );
+		segFmt.setBackground( fmt.foreground() );
+#else
 		// FIXME: Retrieve customized colors from the text widget
 		segFmt.setForeground( Qt::white );
 		segFmt.setBackground( Qt::black );
+#endif
 	    }
 	    if ( uimAttr & UPreeditAttr_UnderLine ) {
 		segFmt.setFontUnderline( TRUE );
