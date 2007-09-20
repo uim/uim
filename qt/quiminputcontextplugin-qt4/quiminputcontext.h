@@ -39,9 +39,9 @@ public:
 
     virtual bool filterEvent( const QEvent *event );
     virtual void reset();
+    virtual void update();
     virtual void setFocus();
     virtual void unsetFocus();
-    virtual void setMicroFocus( int x, int y, int w, int h, QFont *f = 0 );
     virtual void mouseHandler( int x, QMouseEvent *event );
     virtual bool isComposing() const { return m_isComposing; }
 
@@ -59,6 +59,7 @@ protected:
 
     void createUimInfo();
 private:
+    void setMicroFocus( int x, int y, int w, int h, QFont *f = 0 );
     QString getPreeditString();
     int getPreeditCursorPosition();
     int getPreeditSelectionLength();
@@ -94,7 +95,6 @@ protected:
     bool m_isComposing;
 
     QList<PreeditSegment*> psegs;
-    QString preeditString;
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;

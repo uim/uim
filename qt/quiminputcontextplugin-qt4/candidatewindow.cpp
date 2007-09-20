@@ -1,12 +1,56 @@
-#include "candidatewindow.h"
+/*
+
+Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+3. Neither the name of authors nor the names of its contributors
+may be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
+*/
+
+//#include <config.h>
 
 #include <qapplication.h>
-#include <qdesktopwidget.h>
+#include <QDesktopWidget>
 #include <qlabel.h>
+#include <Q3Header>
+#include <qfontmetrics.h>
 #include <qevent.h>
-#include <qlistwidget.h>
 
+#include "uim/uim.h"
+
+#include "candidatewindow.h"
+#include "subwindow.h"
 #include "quiminputcontext.h"
+
+static const int MIN_CAND_WIDTH = 80;
+
+static const int HEADING_COLUMN = 0;
+static const int CANDIDATE_COLUMN = 1;
+static const int ANNOTATION_COLUMN = 2;
 
 const Qt::WFlags candidateFlag = ( Qt::Window
                                    | Qt::WindowStaysOnTopHint
@@ -17,23 +61,44 @@ const Qt::WFlags candidateFlag = ( Qt::Window
 #endif
                                  );
 
-CandidateWindow::CandidateWindow( QWidget * parent )
-        : Q3VBox( parent, 0, candidateFlag ),
-        ic( NULL ), nrCandidates( 0 ), candidateIndex( -1 ),
-        displayLimit( 0 ), pageIndex( -1 ), isAlwaysLeft( false )
+CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
+        : Q3VBox( parent, name, candidateFlag )
 {
-    // setup CandidateList
-    cList = new QListWidget( this );
-    cList->setSelectionMode( QAbstractItemView::SingleSelection );
-    QObject::connect( cList, SIGNAL( itemClicked( QListWidgetItem * ) ),
-                      this, SLOT( slotCandidateSelected( QListWidgetItem * ) ) );
+    setFrameStyle( Raised | NoFrame );
 
-    // setup NumberLabel
-    numLabel = new QLabel( this );
+    ic = NULL;
+
+    //setup CandidateList
+    cList = new CandidateListView( this, "candidateListView" );
+    cList->setSorting( -1 );
+    cList->setSelectionMode( Q3ListView::Single );
+    cList->addColumn( "0" );
+    cList->setColumnWidthMode( 0, Q3ListView::Maximum );
+    cList->addColumn( "1" );
+    cList->setColumnWidthMode( 1, Q3ListView::Maximum );
+    cList->header() ->hide();
+    cList->setVScrollBarMode( Q3ScrollView::AlwaysOff );
+    cList->setHScrollBarMode( Q3ScrollView::AlwaysOff );
+    cList->setAllColumnsShowFocus( true );
+    QObject::connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
+                      this , SLOT( slotCandidateSelected( Q3ListViewItem * ) ) );
+    QObject::connect( cList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
+                      this , SLOT( slotHookSubwindow( Q3ListViewItem * ) ) );
+
+    //setup NumberLabel
+    numLabel = new QLabel( this, "candidateLabel" );
 
     stores.clear();
-}
 
+    nrCandidates = 0;
+    candidateIndex = -1;
+    displayLimit = 0;
+    pageIndex = -1;
+
+    isAlwaysLeft = false;
+
+    subWin = new SubWindow( 0 );
+}
 
 CandidateWindow::~CandidateWindow()
 {
@@ -56,17 +121,22 @@ void CandidateWindow::activateCandwin( int dLimit )
 {
     candidateIndex = -1;
     displayLimit = dLimit;
+    pageIndex = 0;
 }
 
 void CandidateWindow::deactivateCandwin()
 {
+    subWin->cancelHook();
+
     hide();
     clearCandidates();
 }
 
 void CandidateWindow::clearCandidates()
 {
+#ifdef ENABLE_DEBUG
     qDebug( "clear Candidates" );
+#endif
 
     candidateIndex = -1;
     displayLimit = 0;
@@ -78,9 +148,12 @@ void CandidateWindow::clearCandidates()
     stores.clear();
 }
 
-void CandidateWindow::setCandidates( int dl, const QList<uim_candidate> &candidates )
+
+void CandidateWindow::setCandidates( int dl, const Q3ValueList<uim_candidate> &candidates )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "setCandidates" );
+#endif
 
     // remove old data
     if ( !stores.isEmpty() )
@@ -103,14 +176,20 @@ void CandidateWindow::setCandidates( int dl, const QList<uim_candidate> &candida
 
 void CandidateWindow::setPage( int page )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "setPage : page = %d", page );
+#endif
 
     // clear items
     cList->clear();
 
     // calculate page
     int newpage, lastpage;
-    lastpage = nrCandidates / displayLimit;
+    if ( displayLimit )
+        lastpage = nrCandidates / displayLimit;
+    else
+        lastpage = 0;
+
     if ( page < 0 )
     {
         newpage = lastpage;
@@ -133,7 +212,7 @@ void CandidateWindow::setPage( int page )
         if ( candidateIndex >= 0 )
             newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
         else
-            newindex = newpage * displayLimit;
+            newindex = -1;
     }
     else
     {
@@ -153,28 +232,36 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
-    for ( int i = 0; i < ncandidates; i++ )
+    for ( int i = ncandidates - 1; i >= 0; i-- )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
         QString headString = QString::fromUtf8( ( const char * ) uim_candidate_get_heading_label( cand ) );
-        if ( headString.toInt() < 10 )
-            headString.prepend( "0" );
         QString candString = QString::fromUtf8( ( const char * ) uim_candidate_get_cand_str( cand ) );
 
+        // 2004-12-13 Kazuki Ohta <mover@hct.zaq.ne.jp>
+        // Commented out for the next release.
+//        QString annotationString = QString::fromUtf8( ( const char * ) uim_candidate_get_annotation_str( cand ) );
+        QString annotationString = "";
+
         // insert new item to the candidate list
-        new QListWidgetItem( candString, cList );
+        new Q3ListViewItem( cList, headString, candString, annotationString );
     }
 
     // set index
-    setIndex( newindex );
+    if ( newindex != candidateIndex )
+        setIndex( newindex );
+    else
+        updateLabel();
 
-    // set candwin size
-    //    adjustCandidateWindowSize();
+    // size adjustment
+    adjustSize();
 }
 
 void CandidateWindow::setIndex( int totalindex )
 {
-    qDebug( "setTotalIndex : totalindex = %d", totalindex );
+#ifdef ENABLE_DEBUG
+    qDebug( "setIndex : totalindex = %d", totalindex );
+#endif
 
     // validity check
     if ( totalindex < 0 )
@@ -198,48 +285,69 @@ void CandidateWindow::setIndex( int totalindex )
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
 
-        if ( cList->item( pos )
-	     && ! ( cList->currentItem() == cList->item( pos ) ) )
-            cList->setCurrentItem( cList->item( pos ) );
+        if ( cList->itemAtIndex( pos ) && ! ( cList->itemAtIndex( pos ) ->isSelected() ) )
+            cList->setSelected( cList->itemAtIndex( pos ), true );
     }
     else
     {
-        //        cList->clearSelection();
+        cList->clearSelection();
     }
+
+    updateLabel();
 }
 
 void CandidateWindow::setIndexInPage( int index )
 {
-    QListWidgetItem * selectedItem = cList->item( index );
-    cList->setCurrentItem( selectedItem );
+    Q3ListViewItem * selectedItem = cList->itemAtIndex( index );
+    cList->setSelected( selectedItem, true );
 
     slotCandidateSelected( selectedItem );
 }
 
+
+void CandidateWindow::slotCandidateSelected( Q3ListViewItem * item )
+{
+    candidateIndex = ( pageIndex * displayLimit ) + cList->itemIndex( item );
+    if ( ic && ic->uimContext() )
+        uim_set_candidate_index( ic->uimContext(), candidateIndex );
+    updateLabel();
+}
+
 void CandidateWindow::shiftPage( bool forward )
 {
+#ifdef ENABLE_DEBUG
+    qDebug( "candidateIndex = %d", candidateIndex );
+#endif
+    
     if ( forward )
     {
-        candidateIndex += displayLimit;
+        if ( candidateIndex != -1 )
+            candidateIndex += displayLimit;
         setPage( pageIndex + 1 );
     }
     else
     {
-        if ( candidateIndex < displayLimit )
-            candidateIndex = displayLimit * ( nrCandidates / displayLimit ) + candidateIndex;
-        else
-            candidateIndex -= displayLimit;
+        if (candidateIndex != -1 ) {
+            if ( candidateIndex < displayLimit )
+                candidateIndex = displayLimit * ( nrCandidates / displayLimit ) + candidateIndex;
+            else
+                candidateIndex -= displayLimit;
+        }
 
-        setPage( pageIndex - 1 );
         setPage( pageIndex - 1 );
     }
 
-    //    cList->setSelected(cList->itemAtIndex(candidateIndex%displayLimit), true);
-    if ( ic && ic->uimContext() )
+    if ( candidateIndex != -1 ) {
+        if ( displayLimit )
+            cList->setSelected( cList->itemAtIndex( candidateIndex % displayLimit ), true );
+        else
+            cList->setSelected( cList->itemAtIndex( candidateIndex ), true );
+    }
+    if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
 }
 
-void CandidateWindow::layoutWindow( int x, int y, int w, int h )
+void CandidateWindow::layoutWindow( int x, int y, int /* w */, int h )
 {
     int destX = x;
     int destY = y + h;
@@ -267,10 +375,70 @@ void CandidateWindow::updateLabel()
     numLabel->setText( indexString );
 }
 
-void CandidateWindow::slotCandidateSelected( QListWidgetItem * item )
+void CandidateWindow::slotHookSubwindow( Q3ListViewItem * item )
 {
-    candidateIndex = ( pageIndex * displayLimit ) + cList->row( item );
-    if ( ic && ic->uimContext() )
-        uim_set_candidate_index( ic->uimContext(), candidateIndex );
-    updateLabel();
+    // cancel previous hook
+    subWin->cancelHook();
+
+    // hook annotation
+    QString annotationString = item->text( 2 );
+    if ( !annotationString.isEmpty() )
+    {
+        subWin->hookPopup( "Annotation", annotationString );
+    }
+}
+
+// Moving and Resizing affects the position of Subwindow
+void CandidateWindow::moveEvent( QMoveEvent *e )
+{
+    // move subwindow
+    subWin->layoutWindow( e->pos().x() + width(), e->pos().y() );
+}
+
+void CandidateWindow::resizeEvent( QResizeEvent *e )
+{
+    // move subwindow
+    subWin->layoutWindow( pos().x() + e->size().width(), pos().y() );
+}
+
+
+QSize CandidateWindow::sizeHint( void ) const
+{
+    QSize cListSizeHint = cList->sizeHint();
+
+    int width = cListSizeHint.width();
+    int height = cListSizeHint.height() + numLabel->height();
+
+    return QSize( width, height );
+}
+
+QSize CandidateListView::sizeHint( void ) const
+{
+    if(childCount() == 0)
+        return QSize( MIN_CAND_WIDTH, 0 );
+    
+    int width = 0;
+    int height = 0;
+    Q3ListViewItem *item = firstChild();
+    if ( item )
+        height = item->height() * childCount() + 3;
+    
+    // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
+    // FIXME!:
+    //    There may be more proper way. Now width is adjusted by indeterminal 3 spaces.
+    int maxCharIndex = 0, maxCharCount = 0;
+    for ( int i = 0; i < childCount(); i++ )
+    {
+        if ( maxCharCount < itemAtIndex( i )->text( 1 ).length() )
+        {
+            maxCharIndex = i;
+            maxCharCount = itemAtIndex( i )->text( 1 ).length();
+        }
+    }
+    QFontMetrics fm( font() );
+    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "   " + itemAtIndex( maxCharIndex )->text( 1 ) );
+    if ( width < MIN_CAND_WIDTH )
+        width = MIN_CAND_WIDTH;
+    
+    return QSize( width, height );
 }

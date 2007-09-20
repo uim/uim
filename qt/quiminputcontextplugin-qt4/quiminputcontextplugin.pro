@@ -13,11 +13,13 @@ LIBS += -luim
 HEADERS += qhelpermanager.h \
            quiminputcontext.h \
            plugin.h \
-           candidatewindow.h
+           candidatewindow.h \
+           subwindow.h
 
 SOURCES += plugin.cpp \
            qhelpermanager.cpp \
            quiminputcontext.cpp \
-           candidatewindow.cpp
+           candidatewindow.cpp \
+           subwindow.cpp
 
 TARGET = uiminputcontextplugin

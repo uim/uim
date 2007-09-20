@@ -275,7 +275,7 @@ QUimInputContext * QUimInputContext::focusedIC()
 
 void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
 {
-    // qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
+    qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
     cwin->layoutWindow( x, y, w, h );
 }
 
@@ -299,10 +299,22 @@ void QUimInputContext::reset()
 {
     qDebug( "QUimInputContext::reset()" );
 
-    preeditString = QString::null;
     candwinIsActive = FALSE;
     cwin->hide();
     uim_reset_context( m_uc );
+}
+
+void QUimInputContext::update()
+{
+    qDebug( "QUimInputContext::update()" );
+
+    QWidget *w = focusWidget();
+
+    if ( w ) {
+	QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
+	QPoint p = w->mapToGlobal( mf.topLeft() );
+	setMicroFocus( p.x(), p.y(), mf.width(), mf.height() );
+    }
 }
 
 QString QUimInputContext::identifierName()
@@ -394,8 +406,6 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
 
 void QUimInputContext::commitString( const QString& str )
 {
-    preeditString = QString::null;
-
     QInputMethodEvent e;
     e.setCommitString( str );
     sendEvent( e );
@@ -423,36 +433,23 @@ void QUimInputContext::updatePreedit()
 {
     QString newString = getPreeditString();
 
-    if ( newString.isEmpty() && preeditString.isEmpty() && ! isComposing() )
-        return ;
+    if ( !isComposing() ) {
+	if ( newString.isEmpty() )
+	    return;
 
-    // Activating the IM
-    if ( ! newString.isEmpty() && ! isComposing() )
-    {
-        sendEvent( QInputMethodEvent() );
-        m_isComposing = true;
+	// Start conversion
+	m_isComposing = true;
     }
 
-    if ( ! newString.isEmpty() )
-    {
+    if ( !newString.isEmpty() ) {
         QInputMethodEvent e( newString, getPreeditAttrs() );
-
         sendEvent( e );
+	// Qt4.3.1 does not call back update() here
+	update();
+    } else {
+	// Complete conversion implicitly since the preedit is empty
+	commitString( "" );
     }
-
-    // Preedit's length is Zero, we should deactivate IM and
-    // cancel the inputting, that is, sending IMEnd event with
-    // empty string.
-    if ( newString.isEmpty() && isComposing() )
-    {
-	QInputMethodEvent e;
-	e.setCommitString( "" );
-
-        sendEvent( e );
-        m_isComposing = false;
-    }
-
-    preeditString = newString;
 }
 
 bool QUimInputContext::isPreeditRelocationEnabled()
