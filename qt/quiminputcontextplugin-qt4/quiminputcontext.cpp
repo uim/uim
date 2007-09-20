@@ -10,6 +10,8 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 #include <qwidget.h>
 #include <qpoint.h>
 #include <qlabel.h>
+#include <QInputMethodEvent>
+#include <QTextCharFormat>
 
 #include <ctype.h>
 #include <string.h>
@@ -421,8 +423,6 @@ void QUimInputContext::pushbackPreeditString( int attr, const QString& str )
 void QUimInputContext::updatePreedit()
 {
     QString newString = getPreeditString();
-    int cursor = getPreeditCursorPosition();
-    int selLength = getPreeditSelectionLength();
 
     if ( newString.isEmpty() && preeditString.isEmpty() && ! isComposing() )
         return ;
@@ -436,13 +436,7 @@ void QUimInputContext::updatePreedit()
 
     if ( ! newString.isEmpty() )
     {
-        qDebug( "cursor = %d, length = %d", cursor, newString.length() );
-
-        QInputMethodEvent::Attribute cursor_attr( QInputMethodEvent::Cursor,
-                                                  cursor, selLength, 0 );
-        QList<QInputMethodEvent::Attribute> attrs;
-        attrs.append( cursor_attr );
-        QInputMethodEvent e( newString, attrs );
+        QInputMethodEvent e( newString, getPreeditAttrs() );
 
         sendEvent( e );
     }
@@ -544,6 +538,57 @@ int QUimInputContext::getPreeditSelectionLength()
     }
 
     return 0;
+}
+
+QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
+{
+    const int HIDE_CARET = 0;
+    const int SHOW_CARET = 1;
+    const int DUMMY = 0;
+    QList<QInputMethodEvent::Attribute> attrs;
+
+    QList<PreeditSegment *>::ConstIterator seg = psegs.begin();
+    const QList<PreeditSegment *>::ConstIterator end = psegs.end();
+    int segPos = 0;
+    for ( ; seg != end; ++seg ) {
+	int uimAttr = ( *seg )->attr;
+	int segStrLen = ( *seg )->str.length();
+	QTextCharFormat segFmt;
+
+        if ( uimAttr & UPreeditAttr_Cursor ) {
+	    if ( segStrLen ) {
+		QInputMethodEvent::Attribute dummyCursor( QInputMethodEvent::Cursor,
+							  segStrLen,
+							  HIDE_CARET, DUMMY );
+		attrs << dummyCursor;
+	    } else {
+		QInputMethodEvent::Attribute cursor( QInputMethodEvent::Cursor,
+						     segPos,
+						     SHOW_CARET, DUMMY );
+		attrs << cursor;
+	    }
+	} else if ( uimAttr & UPreeditAttr_Separator ) {
+	    if ( !segStrLen )
+		segStrLen = QString( DEFAULT_SEPARATOR_STR ).length();
+	}
+
+	if ( segStrLen ) {
+	    if ( uimAttr & UPreeditAttr_Reverse ) {
+		// FIXME: Retrieve customized colors from the text widget
+		segFmt.setForeground( Qt::white );
+		segFmt.setBackground( Qt::black );
+	    }
+	    if ( uimAttr & UPreeditAttr_UnderLine ) {
+		segFmt.setFontUnderline( TRUE );
+	    }
+	    QInputMethodEvent::Attribute segAttr( QInputMethodEvent::TextFormat,
+						  segPos, segStrLen, segFmt );
+	    attrs << segAttr;
+	    segPos += segStrLen;
+	}
+    }
+
+    return attrs;
 }
 
 

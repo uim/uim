@@ -62,6 +62,7 @@ private:
     QString getPreeditString();
     int getPreeditCursorPosition();
     int getPreeditSelectionLength();
+    QList<QInputMethodEvent::Attribute> getPreeditAttrs();
 
     /* callbacks for uim */
     static void commit_cb( void *ptr, const char *str );
