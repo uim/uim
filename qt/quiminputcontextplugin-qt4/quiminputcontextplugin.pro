@@ -12,6 +12,7 @@ LIBS += -luim
 # Input
 HEADERS += qhelpermanager.h \
            quiminputcontext.h \
+           quiminputcontext_compose.h \
            plugin.h \
            candidatewindow.h \
            subwindow.h \
@@ -21,6 +22,7 @@ HEADERS += qhelpermanager.h \
 SOURCES += plugin.cpp \
            qhelpermanager.cpp \
            quiminputcontext.cpp \
+           quiminputcontext_compose.cpp \
            candidatewindow.cpp \
            subwindow.cpp \
            quiminfomanager.cpp \

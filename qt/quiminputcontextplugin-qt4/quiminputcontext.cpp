@@ -16,6 +16,7 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 #include <string.h>
 
 #include "quiminputcontext.h"
+#include "quiminputcontext_compose.h"
 #include "plugin.h"
 #include "candidatewindow.h"
 #include "quiminfomanager.h"
@@ -34,6 +35,9 @@ bool disableFocusedContext = false;
 QList<QUimInputContext*> contextList;
 
 QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
+#ifdef Q_WS_X11
+DefTree *QUimInputContext::mTreeTop = NULL;
+#endif
 
 static int unicodeToUKey(ushort c);
 
@@ -65,6 +69,11 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     cwin->setQUimInputContext( this );
     cwin->hide();
 
+#ifdef Q_WS_X11
+    if ( !mTreeTop )
+        create_compose_tree();
+    mCompose = new Compose( mTreeTop, this );
+#endif
     mTextUtil = new QUimTextUtil( this );
 
     // read configuration
@@ -147,7 +156,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         modifier |= UMod_Control;
     if ( keyevent->modifiers() & Qt::AltModifier )
         modifier |= UMod_Alt;
-#if defined(_WS_X11_)
+#if defined(Q_WS_X11)
     if ( keyevent->modifiers() & Qt::MetaModifier )
         modifier |= UMod_Meta;
 #endif
@@ -191,7 +200,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         {
             key = qkey - Qt::Key_F1 + UKey_F1;
         }
-        else if ( qkey >= Qt::Key_Dead_Grave && qkey <= Qt::Key_Dead_Horn ) {
+        else if ( qkey >= Qt::Key_Dead_Grave && qkey <= Qt::Key_Dead_Horn )
+	{
             key = qkey - Qt::Key_Dead_Grave + UKey_Dead_Grave;
         }
         else if ( qkey >= Qt::Key_Kanji && qkey <= Qt::Key_Eisu_toggle )
@@ -241,14 +251,24 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     if ( type == QEvent::KeyPress )
     {
         notFiltered = uim_press_key( m_uc, key, modifier );
+#ifdef Q_WS_X11
+        if ( notFiltered )
+            return mCompose->handle_qkey( keyevent );
+#else
         if ( notFiltered )
             return FALSE;
+#endif
     }
     else if ( type == QEvent::KeyRelease )
     {
         notFiltered = uim_release_key( m_uc, key, modifier );
+#ifdef Q_WS_X11
+        if ( notFiltered )
+            return mCompose->handle_qkey( keyevent );
+#else
         if ( notFiltered )
             return FALSE;
+#endif
     }
 
     return TRUE;
@@ -361,6 +381,9 @@ void QUimInputContext::reset()
     candwinIsActive = FALSE;
     cwin->hide();
     uim_reset_context( m_uc );
+#ifdef Q_WS_X11
+    mCompose->reset();
+#endif
     clearPreedit();
     updatePreedit();
 }

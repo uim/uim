@@ -13,6 +13,10 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 
 class CandidateWindow;
 class QUimHelperManager;
+#ifdef Q_WS_X11
+typedef struct _DefTree DefTree;
+class Compose;
+#endif
 class QUimTextUtil;
 
 class PreeditSegment
@@ -102,6 +106,21 @@ private:
     void switch_app_global_im( const char *str );
     void switch_system_global_im( const char *str );
 
+#ifdef Q_WS_X11
+    // for X11 Compose
+    static DefTree *mTreeTop;
+    static void create_compose_tree( void );
+    static char *get_compose_filename( void );
+    static char *TransFileName( char *name );
+    static void ParseComposeStringFile( FILE *fp );
+    static void FreeComposeTree( DefTree *top );
+    static int parse_compose_line( FILE *fp, char **tokenbuf, size_t *buflen );
+    static int get_mb_string( char *buf, unsigned int ks );
+    static const char *get_encoding( void );
+    static char *get_lang_region( void );
+
+    Compose *mCompose;
+#endif
     QUimTextUtil *mTextUtil;
 
 protected:
