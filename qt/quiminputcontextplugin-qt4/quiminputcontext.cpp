@@ -28,7 +28,6 @@ QUimInputContext *focusedInputContext = NULL;
 bool disableFocusedContext = false;
 
 QList<QUimInputContext*> contextList;
-QList<UIMInfo> uimInfo;
 
 QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
 
@@ -43,6 +42,10 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
 {
     contextList.append( this );
 
+    // must be initialized before createUimContext() call
+    if ( !m_HelperManager )
+        m_HelperManager = new QUimHelperManager();
+
     if ( imname )
         m_uc = createUimContext( imname );
 
@@ -53,11 +56,6 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     cwin = new CandidateWindow( 0 );
     cwin->setQUimInputContext( this );
     cwin->hide();
-
-    if ( !m_HelperManager )
-        m_HelperManager = new QUimHelperManager();
-
-    createUimInfo();
 
     // read configuration
     readIMConf();
@@ -230,6 +228,17 @@ bool QUimInputContext::filterEvent( const QEvent *event )
     return TRUE;
 }
 
+void QUimInputContext::setFocusWidget( QWidget *w )
+{
+    qDebug( "QUimInputContext::setFocusWidget() w = %p", w );
+
+    if ( w )
+	setFocus();
+    else
+	unsetFocus();
+}
+
+// Qt4 does not have QInputContext::setFocus()
 void QUimInputContext::setFocus()
 {
     qDebug( "QUimInputContext: %p->setFocus(), focusWidget()=%p",
@@ -246,12 +255,17 @@ void QUimInputContext::setFocus()
     uim_helper_client_focus_in( m_uc );
     uim_prop_list_update( m_uc );
     uim_prop_label_update( m_uc );
+
+    uim_focus_in_context( m_uc );
 }
 
+// Qt4 does not have QInputContext::unsetFocus()
 void QUimInputContext::unsetFocus()
 {
     qDebug( "QUimInputContext: %p->unsetFocus(), focusWidget()=%p",
             this, focusWidget() );
+
+    uim_focus_out_context( m_uc );
 
     // Don't reset Japanese input context here. Japanese input context
     // sometimes contains a whole paragraph and has minutes of
@@ -302,13 +316,15 @@ void QUimInputContext::reset()
     candwinIsActive = FALSE;
     cwin->hide();
     uim_reset_context( m_uc );
+    clearPreedit();
+    updatePreedit();
 }
 
 void QUimInputContext::update()
 {
-    qDebug( "QUimInputContext::update()" );
-
     QWidget *w = focusWidget();
+
+    qDebug( "QUimInputContext::update() w = %p", w );
 
     if ( w ) {
 	QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
@@ -319,7 +335,7 @@ void QUimInputContext::update()
 
 QString QUimInputContext::identifierName()
 {
-    return ( QString( "uim-" ) + m_imname );
+    return QString( "uim" );
 }
 
 QString QUimInputContext::language()
@@ -426,7 +442,7 @@ void QUimInputContext::clearPreedit()
 void QUimInputContext::pushbackPreeditString( int attr, const QString& str )
 {
     PreeditSegment * ps = new PreeditSegment( attr, str );
-    psegs.push_back( ps );
+    psegs.append( ps );
 }
 
 void QUimInputContext::updatePreedit()
@@ -624,30 +640,6 @@ void QUimInputContext::candidateDeactivate()
 {
     cwin->deactivateCandwin();
     candwinIsActive = false;
-}
-
-void QUimInputContext::createUimInfo()
-{
-    if ( !uimInfo.isEmpty() )
-        return ;
-
-    uim_context tmp_uc = uim_create_context( NULL, "UTF-8", NULL, NULL, uim_iconv, NULL );
-    struct UIMInfo ui;
-    int nr = uim_get_nr_im( tmp_uc );
-    for ( int i = 0; i < nr; i++ )
-    {
-        ui.name = uim_get_im_name( tmp_uc, i );
-        /* return value of uim_get_im_language() is an ISO 639-1
-           compatible language code such as "ja". Since it is unfriendly
-           for human reading, we convert it into friendly one by
-           uim_get_language_name_from_locale() here */
-        const char *langcode = uim_get_im_language( tmp_uc, i );
-        ui.lang = uim_get_language_name_from_locale( langcode );
-        ui.short_desc = uim_get_im_short_desc( tmp_uc, i );
-
-        uimInfo.append( ui );
-    }
-    uim_release_context( tmp_uc );
 }
 
 void QUimInputContext::readIMConf()

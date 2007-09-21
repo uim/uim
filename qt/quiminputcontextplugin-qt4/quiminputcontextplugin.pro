@@ -14,12 +14,14 @@ HEADERS += qhelpermanager.h \
            quiminputcontext.h \
            plugin.h \
            candidatewindow.h \
-           subwindow.h
+           subwindow.h \
+           quiminfomanager.h
 
 SOURCES += plugin.cpp \
            qhelpermanager.cpp \
            quiminputcontext.cpp \
            candidatewindow.cpp \
-           subwindow.cpp
+           subwindow.cpp \
+           quiminfomanager.cpp
 
 TARGET = uiminputcontextplugin

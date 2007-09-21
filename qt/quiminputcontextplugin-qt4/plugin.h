@@ -1,6 +1,8 @@
 #include <qinputcontextplugin.h>
 #include <qstringlist.h>
 
+class QUimInfoManager;
+
 class UimInputContextPlugin : public QInputContextPlugin
 {
     Q_OBJECT
@@ -14,6 +16,8 @@ public:
     QString displayName( const QString &key );
     QString description( const QString &key );
 
+    static QUimInfoManager *getQUimInfoManager();
+
 protected:
     void uimInit();
     void uimQuit();
@@ -21,6 +25,7 @@ protected:
     QStringList createImList() const;
     QStringList createLanguageList( const QString &key ) const;
 
+    static QUimInfoManager *infoManager;
     bool uimReady;
 };
 

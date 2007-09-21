@@ -1,17 +1,53 @@
 /*
-Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
+
+Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+3. Neither the name of authors nor the names of its contributors
+may be used to endorse or promote products derived from this software
+without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
+
 */
-#include "qhelpermanager.h"
+
+//#include <config.h>
 
 #include <qsocketnotifier.h>
 #include <qstring.h>
 #include <qstringlist.h>
+#include <Q3PtrList>
+#include <qtextcodec.h>
 
-#include <uim/uim.h>
-#include <uim/uim-helper.h>
-#include <uim/uim-im-switcher.h>
+#include "uim/uim.h"
+#include "uim/uim-util.h"
+#include "uim/uim-helper.h"
+#include "uim/uim-im-switcher.h"
 
+#include "qhelpermanager.h"
 #include "quiminputcontext.h"
+#include "quiminfomanager.h"
+#include "plugin.h"
 
 static int im_uim_fd = 0;
 static QSocketNotifier *notifier = NULL;
@@ -19,8 +55,7 @@ static QSocketNotifier *notifier = NULL;
 extern QUimInputContext *focusedInputContext;
 extern bool disableFocusedContext;
 
-extern QList<QUimInputContext*> contextList;
-extern QList<UIMInfo> uimInfo;
+extern Q3PtrList<QUimInputContext> contextList;
 
 QUimHelperManager::QUimHelperManager( QObject *parent )
         : QObject( parent )
@@ -55,15 +90,8 @@ void QUimHelperManager::slotStdinActivated( int /*socket*/ )
     QString tmp;
 
     uim_helper_read_proc( im_uim_fd );
-    for ( ;; )
-    {
-        tmp = QString::fromUtf8( uim_helper_get_message() );
-
-        if ( !tmp.isEmpty() )
-            parseHelperStr( tmp );
-        else
-            break;
-    }
+    while ( !( tmp = QString::fromUtf8( uim_helper_get_message() ) ).isEmpty() )
+        parseHelperStr( tmp );
 }
 
 void QUimHelperManager::parseHelperStr( const QString &str )
@@ -84,6 +112,27 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         {
             sendImList();
         }
+        else if ( str.startsWith( "commit_string" ) )
+        {
+            QStringList lines = str.split( "\n" );
+            if ( !lines.isEmpty() && !lines[ 1 ].isEmpty() ) {
+                QString commit_str = QString::null;
+                
+                if ( lines[ 1 ].startsWith( "charset" ) ) {
+                    /* get charset */
+                    QString charset = lines[ 1 ].split( "=" ) [ 1 ];
+
+                    /* convert to unicode */
+                    QTextCodec *codec = QTextCodec::codecForName( charset );
+                    if ( codec && !lines[ 2 ].isEmpty() )
+                        commit_str = codec->toUnicode( lines[ 2 ] );
+                } else {
+                    commit_str = lines[ 1 ];
+                }
+
+                focusedInputContext->commitString( commit_str );
+            }
+        }
         else if ( str.startsWith( "focus_in" ) )
         {
             // We shouldn't do "focusedInputContext = NULL" here, because some
@@ -103,26 +152,36 @@ void QUimHelperManager::parseHelperStr( const QString &str )
     else if ( str.startsWith( "prop_update_custom" ) )
     {
         // for custom api
+        QUimInputContext * cc;
         QStringList list = str.split( "\n" );
         if ( !list.isEmpty() && !list[ 0 ].isEmpty() &&
                 !list[ 1 ].isEmpty() && !list[ 2 ].isEmpty() )
         {
-            for ( int i = 0; i < contextList.size(); ++i )
+            for ( cc = contextList.first(); cc; cc = contextList.next() )
             {
-                uim_prop_update_custom( contextList.at( i ) ->uimContext(),
+                uim_prop_update_custom( cc->uimContext(),
 					list[ 1 ].toUtf8(),
 					list[ 2 ].toUtf8() );
                 break;  /* all custom variables are global */
             }
         }
     }
-}
+    else if ( str.startsWith( "custom_reload_notify" ) )
+    {
+        uim_prop_reload_configs();
 
+        QUimInfoManager *infoManager =
+            UimInputContextPlugin::getQUimInfoManager();
+	infoManager->initUimInfo();
+    }
+}
 
 void QUimHelperManager::parseHelperStrImChange( const QString &str )
 {
+    QUimInputContext * cc;
     QStringList list = str.split( "\n" );
     QString im_name = list[ 1 ];
+    QString im_name_sym = "'" + im_name;
 
     if ( str.startsWith( "im_change_this_text_area_only" ) )
     {
@@ -136,23 +195,26 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     }
     else if ( str.startsWith( "im_change_whole_desktop" ) )
     {
-        for ( int i = 0; i < contextList.size(); ++i )
+        for ( cc = contextList.first(); cc; cc = contextList.next() )
         {
-            QUimInputContext *uic = contextList.at( i );
-            uim_switch_im( uic->uimContext(), im_name.toUtf8() );
-            uic->readIMConf();
+	    uim_switch_im( cc->uimContext(), im_name.toUtf8() );
+            cc->readIMConf();
+            uim_prop_update_custom( cc->uimContext(),
+	                            "custom-preserved-default-im-name",
+				    im_name_sym.toUtf8() );
         }
-
     }
     else if ( str.startsWith( "im_change_this_application_only" ) )
     {
         if ( focusedInputContext )
         {
-            for ( int i = 0; i < contextList.size(); ++i )
+            for ( cc = contextList.first(); cc; cc = contextList.next() )
             {
-                QUimInputContext *uic = contextList.at( i );
-                uim_switch_im( uic->uimContext(), im_name.toUtf8() );
-                uic->readIMConf();
+                uim_switch_im( cc->uimContext(), im_name.toUtf8() );
+                cc->readIMConf();
+                uim_prop_update_custom( cc->uimContext(),
+                                        "custom-preserved-default-im-name",
+                                        im_name_sym.toUtf8() );
             }
         }
     }
@@ -166,14 +228,17 @@ void QUimHelperManager::sendImList()
     QString msg = "im_list\ncharset=UTF-8\n";
     const char* current_im_name = uim_get_current_im_name( focusedInputContext->uimContext() );
 
-    QList<UIMInfo>::iterator it;
-    for ( it = uimInfo.begin(); it != uimInfo.end(); ++it )
+    QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
+    Q3ValueList<uimInfo> info = infoManager->getUimInfo();
+    Q3ValueList<uimInfo>::iterator it;
+
+    for ( it = info.begin(); it != info.end(); ++it )
     {
         QString leafstr;
         leafstr.sprintf( "%s\t%s\t%s\t",
-                         ( *it ).name,
-                         ( *it ).lang,
-                         ( *it ).short_desc );
+                         ( const char * )( *it ).name.toUtf8(),
+                         uim_get_language_name_from_locale( ( *it ).lang.toUtf8() ),
+                         ( const char * )( *it).short_desc.toUtf8() );
 
         if ( QString::compare( ( *it ).name, current_im_name ) == 0 )
             leafstr.append( "selected" );
@@ -183,6 +248,14 @@ void QUimHelperManager::sendImList()
         msg += leafstr;
     }
 
+    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
+}
+
+void QUimHelperManager::send_im_change_whole_desktop( const char *name )
+{
+    QString msg;
+
+    msg.sprintf("im_change_whole_desktop\n%s\n", name);
     uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
 }
 
@@ -200,7 +273,8 @@ void QUimHelperManager::helper_disconnect_cb()
 void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 {
     QUimInputContext *ic = ( QUimInputContext* ) ptr;
-    if (ic != focusedInputContext)
+
+    if ( ic != focusedInputContext || disableFocusedContext )
         return;
 
     QString msg = "prop_list_update\ncharset=UTF-8\n";
@@ -212,7 +286,7 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
 {
     QUimInputContext *ic = ( QUimInputContext* ) ptr;
-    if (ic != focusedInputContext)
+    if ( ic != focusedInputContext || disableFocusedContext )
         return;
 
     QString msg = "prop_label_update\ncharset=UTF-8\n";

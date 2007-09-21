@@ -7,9 +7,13 @@
 
 #include <uim/uim.h>
 
+#include "quiminfomanager.h"
 #include "quiminputcontext_with_slave.h"
 
 #define UIM_QT_LIST_SUBIM_AS_QTIM 0
+
+QUimInfoManager *UimInputContextPlugin::infoManager = NULL;
+
 
 UimInputContextPlugin::UimInputContextPlugin()
 {
@@ -61,10 +65,20 @@ QString UimInputContextPlugin::description( const QString & key )
     return displayName( key ) + ": an input method provided via the uim input method framework";
 }
 
+QUimInfoManager *
+UimInputContextPlugin::getQUimInfoManager()
+{
+    return infoManager;
+}
+
 void UimInputContextPlugin::uimInit()
 {
-    if ( !uim_init() )
+    if ( !uim_init() ) {
+        if (!infoManager)
+            infoManager = new QUimInfoManager();
+
         uimReady = true;
+    }
 }
 
 void UimInputContextPlugin::uimQuit()
@@ -72,6 +86,7 @@ void UimInputContextPlugin::uimQuit()
     if ( uimReady )
     {
         uim_quit();
+        delete infoManager;
         uimReady = false;
     }
 }

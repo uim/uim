@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
+Copyright (c) 2006-2007 uim Project http://code.google.com/p/uim/
 
 All rights reserved.
 
@@ -30,35 +30,60 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UIM_HELPER_MANAGER_H_
-#define _UIM_HELPER_MANAGER_H_
 
-#include <qobject.h>
+//#include <config.h>
 
-class QString;
-class QSocketNotifier;
+#include <Q3ValueList>
 
-class QUimHelperManager : public QObject
+#include "uim/uim.h"
+
+#include "quiminfomanager.h"
+
+
+QUimInfoManager::QUimInfoManager()
 {
-    Q_OBJECT
+    initUimInfo();
+}
 
-public:
-    QUimHelperManager( QObject * parent = 0 );
-    ~QUimHelperManager();
+QUimInfoManager::~QUimInfoManager()
+{
+}
 
-    void checkHelperConnection();
-    void parseHelperStr( const QString &str );
-    void parseHelperStrImChange( const QString &str );
+Q3ValueList<uimInfo>
+QUimInfoManager::getUimInfo()
+{
+    return info;
+}
 
-    void sendImList();
+void
+QUimInfoManager::initUimInfo()
+{
+    info.clear();
 
-    static void helper_disconnect_cb();
-    static void update_prop_list_cb( void *ptr, const char *str );
-    static void update_prop_label_cb( void *ptr, const char *str );
-    static void send_im_change_whole_desktop( const char *str );
+    uim_context tmp_uc = uim_create_context( NULL, "UTF-8", NULL, NULL, NULL, NULL );
+    struct uimInfo ui;
+    int nr = uim_get_nr_im( tmp_uc );
+    for ( int i = 0; i < nr; i++ )
+    {
+        ui.name = uim_get_im_name( tmp_uc, i );
+        ui.lang = uim_get_im_language (tmp_uc, i );
+        ui.short_desc = uim_get_im_short_desc( tmp_uc, i );
 
-public slots:
-    void slotStdinActivated( int );
-};
+        info.append( ui );
+    }
+    uim_release_context( tmp_uc );
+}
 
-#endif /* Not def: _UIM_HELPER_MANAGER_H_ */
+QString
+QUimInfoManager::imLang( const QString &imname )
+{
+    int i, n;
+
+    n = info.count();
+    for (i = 0; i < n; i++) {
+        if ( info[i].name == imname )
+            return info[i].lang;
+    }
+
+    return "";
+}

@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
+Copyright (c) 2006-2007 uim Project http://code.google.com/p/uim/
 
 All rights reserved.
 
@@ -30,35 +30,30 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UIM_HELPER_MANAGER_H_
-#define _UIM_HELPER_MANAGER_H_
+#ifndef _IMMODULE_QUIM_INFO_MANAGER_H_
+#define _IMMODULE_QUIM_INFO_MANAGER_H_
 
-#include <qobject.h>
+#include <Q3ValueList>
 
-class QString;
-class QSocketNotifier;
-
-class QUimHelperManager : public QObject
+struct uimInfo
 {
-    Q_OBJECT
-
-public:
-    QUimHelperManager( QObject * parent = 0 );
-    ~QUimHelperManager();
-
-    void checkHelperConnection();
-    void parseHelperStr( const QString &str );
-    void parseHelperStrImChange( const QString &str );
-
-    void sendImList();
-
-    static void helper_disconnect_cb();
-    static void update_prop_list_cb( void *ptr, const char *str );
-    static void update_prop_label_cb( void *ptr, const char *str );
-    static void send_im_change_whole_desktop( const char *str );
-
-public slots:
-    void slotStdinActivated( int );
+    QString lang;
+    QString name;
+    QString short_desc;
 };
 
-#endif /* Not def: _UIM_HELPER_MANAGER_H_ */
+class QUimInfoManager
+{
+public:
+    QUimInfoManager();
+    ~QUimInfoManager();
+
+    void initUimInfo();
+    Q3ValueList<uimInfo> getUimInfo();
+    QString imLang( const QString &imname );
+
+private:
+    Q3ValueList<uimInfo> info;
+};
+
+#endif /* _IMMODULE_QUIM_INFO_MANAGER_H_ */

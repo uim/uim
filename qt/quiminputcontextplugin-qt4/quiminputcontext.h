@@ -40,10 +40,9 @@ public:
     virtual bool filterEvent( const QEvent *event );
     virtual void reset();
     virtual void update();
-    virtual void setFocus();
-    virtual void unsetFocus();
     virtual void mouseHandler( int x, QMouseEvent *event );
     virtual bool isComposing() const { return m_isComposing; }
+    virtual void setFocusWidget( QWidget *w );
 
     virtual bool isPreeditRelocationEnabled();
 
@@ -51,13 +50,16 @@ public:
 
     static QUimInputContext *focusedIC();
 
+    void commitString( const QString& str );
+
     void readIMConf();
 
 protected:
     uim_context createUimContext( const char *imname );
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
+    virtual void setFocus();    // not a QInputContext func
+    virtual void unsetFocus();  // not a QInputContext func
 
-    void createUimInfo();
 private:
     void setMicroFocus( int x, int y, int w, int h, QFont *f = 0 );
     QString getPreeditString();
@@ -77,7 +79,6 @@ private:
     static void cand_shift_page_cb( void* ptr, int index );
     static void cand_deactivate_cb( void *ptr );
     /* real functions for callbacks (correspond order) */
-    void commitString( const QString& str );
     //preedit
     void clearPreedit();
     void pushbackPreeditString( int attr, const QString& str );
@@ -98,13 +99,6 @@ protected:
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;
-};
-
-struct UIMInfo
-{
-    const char *lang;
-    const char *name;
-    const char *short_desc;
 };
 
 #endif /* Not def: _QUIMINPUT_CONTEXT_H_ */
