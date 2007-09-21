@@ -92,6 +92,10 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
 
     contextList.append( this );
 
+    // must be initialized before createUimContext() call
+    if ( !m_HelperManager )
+        m_HelperManager = new QUimHelperManager();
+
     if ( imname )
         m_uc = createUimContext( imname );
 
@@ -101,9 +105,6 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     cwin = new CandidateWindow( 0 );
     cwin->setQUimInputContext( this );
     cwin->hide();
-
-    if ( !m_HelperManager )
-        m_HelperManager = new QUimHelperManager();
 
 #ifdef Q_WS_X11
     if ( !mTreeTop )
