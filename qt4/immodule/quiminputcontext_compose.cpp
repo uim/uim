@@ -30,10 +30,7 @@
   SUCH DAMAGE.
 */
 
-//#include <config.h>
-// FIXME: define via configure
-#define XLIB_DIR "/usr/share"
-#define strlcpy(dst, src, len) strcpy((dst), (src))
+#include <config.h>
 
 #include <stdio.h>
 #include <ctype.h>
