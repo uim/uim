@@ -8,7 +8,10 @@ QT += qt3support
 
 INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
                @abs_top_builddir@/replace
-QMAKE_LIBDIR += @abs_top_builddir@/uim @abs_top_builddir@/replace
+QMAKE_LIBDIR += @abs_top_builddir@/uim
+# Since the plugin linked with libtool did not work, link the
+# static library directly
+QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
 LIBS += -lreplace -luim -luim-scm
 
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
@@ -16,16 +19,6 @@ QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
 QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
 QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
-
-# I don't know how to set a make variable in qmake project
-# file. So the @LIBTOOL@ is expanded as '@SH@ @top_builddir@/libtool' manually.
-# SHELL = @SH@
-# top_builddir = @top_builddir@
-#QMAKE_LINK_SHLIB_CMD = @LIBTOOL@ --tag=CXX $(AM_LIBTOOLFLAGS)
-QMAKE_LINK_SHLIB_CMD = @SH@ @top_builddir@/libtool --tag=CXX \
-                       $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(LINK) \
-                       $(CXXFLAGS) $(LDFLAGS) \
-                       $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 
 # Input
 HEADERS += qhelpermanager.h \
