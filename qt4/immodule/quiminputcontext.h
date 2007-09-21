@@ -7,6 +7,10 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 #include <qinputcontext.h>
 #include <qevent.h>
 
+#ifdef Q_WS_X11
+#define UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK 1
+#endif
+
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 #include <uim/uim-util.h>
@@ -42,6 +46,9 @@ public:
     virtual QString identifierName();
     virtual QString language();
 
+#ifdef Q_WS_X11
+    virtual bool x11FilterEvent( QWidget *keywidget, XEvent *event );
+#endif
     virtual bool filterEvent( const QEvent *event );
     virtual void reset();
     virtual void update();

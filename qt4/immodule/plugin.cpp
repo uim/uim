@@ -4,8 +4,12 @@
 #include <qinputcontextplugin.h>
 #include <qinputcontext.h>
 #include <qstringlist.h>
+#ifdef Q_WS_X11
+#include <QX11Info>
+#endif
 
-#include <uim/uim.h>
+#include "uim/uim.h"
+#include "uim/uim-x-util.h"
 
 #include "quiminfomanager.h"
 #include "quiminputcontext_with_slave.h"
@@ -76,7 +80,9 @@ void UimInputContextPlugin::uimInit()
     if ( !uim_init() ) {
         if (!infoManager)
             infoManager = new QUimInfoManager();
-
+#if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
+	uim_x_kana_input_hack_init( QX11Info::display() );
+#endif
         uimReady = true;
     }
 }
