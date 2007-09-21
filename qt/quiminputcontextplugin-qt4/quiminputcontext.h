@@ -13,6 +13,7 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 
 class CandidateWindow;
 class QUimHelperManager;
+class QUimTextUtil;
 
 class PreeditSegment
 {
@@ -49,10 +50,19 @@ public:
     uim_context uimContext() { return m_uc; }
 
     static QUimInputContext *focusedIC();
+    static void reloadUim();
 
     void commitString( const QString& str );
 
     void readIMConf();
+
+    QUimTextUtil *textUtil() { return mTextUtil; }
+
+    QString getPreeditString();
+    int getPreeditCursorPosition();
+
+    void saveContext();
+    void restoreContext();
 
 protected:
     uim_context createUimContext( const char *imname );
@@ -62,8 +72,6 @@ protected:
 
 private:
     void setMicroFocus( int x, int y, int w, int h, QFont *f = 0 );
-    QString getPreeditString();
-    int getPreeditCursorPosition();
     int getPreeditSelectionLength();
     QList<QInputMethodEvent::Attribute> getPreeditAttrs();
 
@@ -78,6 +86,9 @@ private:
     static void cand_select_cb( void *ptr, int index );
     static void cand_shift_page_cb( void* ptr, int index );
     static void cand_deactivate_cb( void *ptr );
+    //imsw
+    static void switch_app_global_im_cb( void *ptr, const char *str );
+    static void switch_system_global_im_cb( void *ptr, const char *str );
     /* real functions for callbacks (correspond order) */
     //preedit
     void clearPreedit();
@@ -87,6 +98,11 @@ private:
     void candidateActivate( int nr, int displayLimit );
     void candidateSelect( int index );
     void candidateDeactivate();
+    //imsw
+    void switch_app_global_im( const char *str );
+    void switch_system_global_im( const char *str );
+
+    QUimTextUtil *mTextUtil;
 
 protected:
     QString m_imname;
