@@ -282,6 +282,8 @@ void QUimInputContext::setFocusWidget( QWidget *w )
 {
     qDebug( "QUimInputContext::setFocusWidget() w = %p", w );
 
+    QInputContext::setFocusWidget( w );
+
     if ( w )
 	setFocus();
     else
