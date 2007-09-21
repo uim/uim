@@ -3,11 +3,17 @@
 ######################################################################
 
 TEMPLATE = lib
-DEPENDPATH += .
-INCLUDEPATH += . /usr/local/include/uim
-CONFIG += qt plugin thread
+INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim
+CONFIG += qt plugin thread @QT_CONFIG_OPTS@
 QT += qt3support
-LIBS += -luim
+LIBS += -luim -luim-scm
+
+QMAKE_LIBDIR += @abs_top_builddir@/uim
+QMAKE_CFLAGS_DEBUG     += @CFLAGS@
+QMAKE_CFLAGS_RELEASE   += @CFLAGS@
+QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@
+QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@
+
 
 # Input
 HEADERS += qhelpermanager.h \
@@ -29,3 +35,6 @@ SOURCES += plugin.cpp \
            qtextutil.cpp
 
 TARGET = uiminputcontextplugin
+
+target.path += @DESTDIR@$$[QT_INSTALL_PLUGINS]/inputmethods
+INSTALLS    += target

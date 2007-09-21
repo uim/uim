@@ -359,6 +359,9 @@ void QUimInputContext::reloadUim()
 void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
 {
     qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
+
+    f = f;  // to suppress warning
+
     cwin->layoutWindow( x, y, w, h );
 }
 

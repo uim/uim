@@ -125,10 +125,8 @@ QStringList UimInputContextPlugin::createImList() const
 
 QStringList UimInputContextPlugin::createLanguageList( const QString &key ) const
 {
-    /*
-    if ( key == QString( "uim" ) )
-        return "ja:ko:zh:*";
-    */
+    if ( key == "uim" )
+	return QStringList() << "ja" << "ko" << "zh" << "*";
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
     uim_context tmp_uc = uim_create_context( NULL, "UTF-8",

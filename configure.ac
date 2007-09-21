@@ -22,6 +22,7 @@ AC_PATH_PROG(SH, sh)
 AC_PATH_PROG(RSVG, rsvg)
 AC_PATH_PROGS(MD5, md5 md5sum)
 AC_PATH_PROGS(SHA1, sha1 sha1sum)
+AC_PATH_PROGS(QMAKE_QT4, qmake-qt4 qmake4 qmake)
 
 AM_MAINTAINER_MODE
 
@@ -744,6 +745,28 @@ AC_ARG_WITH(qt-immodule,
     use_qtimmodule="no"
   ])
 
+dnl *****************************
+dnl *** Check for Qt4 Library ***
+dnl *****************************
+AC_ARG_WITH(qt4-immodule,
+  AC_HELP_STRING([--with-qt4-immodule],
+                 [Build qt4-immodule extension
+		  @<:@default=no@:>@]),
+  [
+    case $with_qt4_immodule in
+      no)
+        use_qt4_immodule="no"
+      ;;
+      yes|*)
+        use_qt4_immodule="yes"
+      ;;
+    esac
+
+  ],
+  [
+    use_qt4_immodule="no"
+  ])
+
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
@@ -1292,6 +1315,8 @@ if test "x$enable_debug" = xyes; then
     AX_CFLAGS_GCC_OPTION([-std=c89])
   fi
   AX_LANG_WNOERROR  # end AC_LANG_WERROR
+
+  QT_CONFIG_OPTS="debug"
 else
   CFLAGS="$CFLAGS -DNDEBUG"
   CXXFLAGS="$CXXFLAGS -DNDEBUG"
@@ -1308,6 +1333,8 @@ else
   AX_CFLAGS_GCC_OPTION([-Wno-unused-parameter], [SCIM_CFLAGS])
   AX_CFLAGS_GCC_OPTION([-Wno-unused-variable],  [SCIM_CFLAGS])
   AX_LANG_WNOERROR  # end AC_LANG_WERROR
+
+  QT_CONFIG_OPTS="release"
 fi
 
 AC_ARG_ENABLE(warnings-into-error,
@@ -1335,6 +1362,7 @@ AC_ARG_ENABLE(warnings-into-error,
     ])
 AC_SUBST(UIM_SCM_CFLAGS)
 AC_SUBST(SCIM_CFLAGS)
+AC_SUBST(QT_CONFIG_OPTS)
 
 
 # Checks for system services
@@ -1379,6 +1407,8 @@ AC_CONFIG_FILES([Makefile
 		 qt/chardict/po/Makefile.in
 		 qt/test/Makefile
 		 qt/uimapplet.desktop
+		 qt4/Makefile
+		 qt4/immodule/quiminputcontextplugin.pro
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
@@ -1395,6 +1425,13 @@ AC_CONFIG_FILES([Makefile
 
 AC_OUTPUT
 
+# Generate Makefiles for Qt4 by qmake
+if test x$use_qt4_immodule = xyes; then
+    ${QMAKE_QT4} -o qt4/immodule/Makefile \
+		    qt4/immodule/quiminputcontextplugin.pro
+    ${QMAKE_QT4} -o qt4/edittest/Makefile qt4/edittest/edittest.pro
+fi
+
 AC_MSG_RESULT([
 Configure Result :
 
@@ -1407,8 +1444,9 @@ Configure Result :
    SCIM            : ${use_scim}
    Gtk+            : ${use_gtk2}
    Gnome Applet    : ${use_applet_gnome}
-   Qt              : ${use_qt}
-   Qt immodule     : ${use_qtimmodule}
+   Qt3             : ${use_qt}
+   Qt3 immodule    : ${use_qtimmodule}
+   Qt4 immodule    : ${use_qt4_immodule}
    KDE Applet      : ${use_applet_kde}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
