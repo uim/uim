@@ -94,6 +94,10 @@ QUimInputContext::~QUimInputContext()
         focusedInputContext = NULL;
         disableFocusedContext = true;
     }
+
+#ifdef Q_WS_X11
+    delete mCompose;
+#endif
 }
 
 uim_context QUimInputContext::createUimContext( const char *imname )
