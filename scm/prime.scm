@@ -747,7 +747,8 @@
 ;; uim 1.5.0 revised the specification of string-split as
 ;; follows. Replace prime-util-string-split with the new string-split
 ;; if no other problems are remaining.  -- YamaKen 2007-07-11
-;;   (string-split "\t\t" "\t") => ("" "" "")
+;;   (string-split "\t\t" "\t")  => ("" "" "")
+;;   (string-split "\t1\t" "\t") => ("" "1" "")
 (define prime-util-string-split
   (lambda (string separator)
     (let ((result (list))
@@ -814,10 +815,12 @@
 ;; problem with unix domain socket.
 (define prime-engine-send-command
   (lambda (arg-list)
+    ;; result       ==> "ok\n1\n"
+    ;; result-lines ==> ("ok" "1" "")
     (let* ((result (prime-send-command
 		    (prime-util-string-concat arg-list "\t")))
 	   (result-lines (string-split result "\n")))
-      (take! result-lines (- (length result-lines) 2)) ;; drop last ("" "")
+      (drop-right! result-lines 1) ;; drop last ""
       (cdr result-lines)))) ;; drop status line
 
 (define prime-engine-conv-predict
