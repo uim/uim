@@ -199,8 +199,11 @@ prime_read_msg_from_ud(int fd)
     strcat(read_buf, buf);
     len += rc;
 
-    if (len >= 2 && read_buf[len - 1] == '\n' && read_buf[len - 2] == '\n')
+    if (len >= 2 && read_buf[len - 1] == '\n' && read_buf[len - 2] == '\n') {
+      /* drop last "\n" */
+      read_buf[len - 1] = '\0';
       break;
+    }
   }
 
   return read_buf;
@@ -231,7 +234,7 @@ prime_send_command(uim_lisp str_)
     prime_write_msg_to_ud(prime_fd, str);
     result = prime_read_msg_from_ud(prime_fd);
     if (!result)
-      return MAKE_STR("error\n\t\n\n");
+      return MAKE_STR("error\n\t\n");
   } else {
     int len = strlen(str);
     char *buf = uim_malloc(len + 2);
