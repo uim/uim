@@ -2,8 +2,12 @@ AUTOMAKE_OPTIONS = foreign
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = m4 doc replace sigscheme uim scm test \
-          gtk helper qt qt4 xim fep emacs \
-	  po pixmaps examples
+          gtk helper qt
+if QT4_IMMODULE
+SUBDIRS += qt4
+endif
+SUBDIRS += xim fep emacs po pixmaps examples
+
 EXTRA_DIST = RELNOTE ChangeLog.old autogen.sh make-dist.sh \
 	uim.pc.in uim.desktop uim.spec.in uim.spec \
 	intltool-extract.in intltool-merge.in intltool-update.in

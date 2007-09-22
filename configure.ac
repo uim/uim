@@ -1213,6 +1213,7 @@ fi
 AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
 AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
+AM_CONDITIONAL(QT4_IMMODULE, test x$use_qt4_immodule = xyes)
 
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--enable-pref],
@@ -1409,6 +1410,8 @@ AC_CONFIG_FILES([Makefile
 		 qt/uimapplet.desktop
 		 qt4/Makefile
 		 qt4/immodule/quiminputcontextplugin.pro
+		 qt4/immodule/Makefile
+		 qt4/edittest/Makefile
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
@@ -1427,9 +1430,10 @@ AC_OUTPUT
 
 # Generate Makefiles for Qt4 by qmake
 if test x$use_qt4_immodule = xyes; then
-    ${QMAKE_QT4} -o qt4/immodule/Makefile \
-		    qt4/immodule/quiminputcontextplugin.pro
-    ${QMAKE_QT4} -o qt4/edittest/Makefile qt4/edittest/edittest.pro
+    ${QMAKE_QT4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
+		    ${ac_abs_top_srcdir}/qt4/immodule/quiminputcontextplugin.pro
+    ${QMAKE_QT4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
+                    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
 
 AC_MSG_RESULT([

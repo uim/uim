@@ -108,5 +108,5 @@ dist-hook:
 
 install-data-hook:
 if M17NLIB
-	$(SH) $(srcdir)/uim-m17nlib-relink-icons
+	DESTDIR="$(DESTDIR)" $(SH) $(builddir)/uim-m17nlib-relink-icons
 endif
