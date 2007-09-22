@@ -690,17 +690,15 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
 	QTextCharFormat segFmt;
 
         if ( uimAttr & UPreeditAttr_Cursor ) {
-	    if ( segStrLen ) {
-		QInputMethodEvent::Attribute dummyCursor( QInputMethodEvent::Cursor,
-							  segStrLen,
-							  HIDE_CARET, DUMMY );
-		attrs << dummyCursor;
-	    } else {
-		QInputMethodEvent::Attribute cursor( QInputMethodEvent::Cursor,
-						     segPos,
-						     SHOW_CARET, DUMMY );
-		attrs << cursor;
-	    }
+	    // Transparent cursor is required to set microfocus even
+	    // if the caret is invisible to user.
+	    //
+	    // FIXME: Segment string may be outframed if the cursor is
+	    // located near the right frame.
+	    int visibility = ( segStrLen ) ? HIDE_CARET : SHOW_CARET;
+	    QInputMethodEvent::Attribute cursor( QInputMethodEvent::Cursor,
+						 segPos, visibility, DUMMY );
+	    attrs << cursor;
 	} else if ( uimAttr & UPreeditAttr_Separator ) {
 	    if ( !segStrLen )
 		segStrLen = QString( DEFAULT_SEPARATOR_STR ).length();
