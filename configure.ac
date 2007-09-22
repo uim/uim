@@ -766,6 +766,11 @@ AC_ARG_WITH(qt4-immodule,
   [
     use_qt4_immodule="no"
   ])
+if test x$use_qt4_immodule = xyes; then
+    if test -z "$QMAKE_QT4"; then
+        AC_MSG_ERROR([no qmake for Qt4 found])
+    fi
+fi
 
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
