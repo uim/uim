@@ -385,6 +385,8 @@
 
   ;; override some functions
   (uim-this-command-keys-override)
+  (if (= emacs-major-version 21)
+      (uim-read-char-exclusive-override))
 
   (if (not buffer-read-only)
       (progn 
@@ -431,6 +433,8 @@
 
   ;; restore original functions
   (uim-this-command-keys-restore)
+  (if (= emacs-major-version 21)
+      (uim-read-char-exclusive-restore))
 
   (uim-debug (format "uim-mode: %s" uim-mode))
 

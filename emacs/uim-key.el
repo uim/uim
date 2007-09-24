@@ -156,6 +156,31 @@
 	(setq uim-this-command-keys-original nil))))
 
 
+;; for Emacs21
+(defun uim-read-char-exclusive-override ()
+  (if (not uim-read-char-exclusive-original)
+      (let ((doc (documentation 'read-char-exclusive)))
+	(setq uim-read-char-exclusive-original
+	      (symbol-function 'read-char-exclusive))
+	(eval
+	 `(fset 'read-char-exclusive
+		'(lambda (&optional prompt inherit-input-method)
+		   ,doc
+		   (if (and (boundp 'uim-key-vector) uim-key-vector)
+		       (let (executing-macro)
+			 (funcall uim-read-char-exclusive-original 
+				  prompt inherit-input-method))
+		     (funcall uim-read-char-exclusive-original))))))))
+
+
+;; for Emacs21
+(defun uim-read-char-exclusive-restore ()
+  (if uim-read-char-exclusive-original
+      (progn
+	(fset 'read-char-exclusive uim-read-char-exclusive-original)
+	(setq uim-read-char-exclusive-original nil))))
+
+
 (defun uim-command-execute (uim-key-vector &optional bind)
 
   (uim-debug (format "uim-command-execute: %s %s" uim-key-vector bind))

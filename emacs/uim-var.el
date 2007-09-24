@@ -301,6 +301,8 @@ displayed at the echo area.")
 
 (defvar uim-this-command-keys-original nil)
 
+(defvar uim-read-char-exclusive-original nil)
+
 ;;; Buffer Local Variables
 
 (uim-deflocalvar uim-mode-line-string " U"
