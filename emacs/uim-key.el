@@ -138,10 +138,8 @@
 (defun uim-this-command-keys-override ()
   (if (not uim-this-command-keys-original)
       (let ((doc (documentation 'this-command-keys)))
-
 	(setq uim-this-command-keys-original
 	      (symbol-function 'this-command-keys))
-
 	(eval
 	 `(fset 'this-command-keys 
 		'(lambda ()
@@ -152,8 +150,10 @@
 
 
 (defun uim-this-command-keys-restore ()
-  (fset 'this-command-keys uim-this-command-keys-original)
-  (setq uim-this-command-keys-original nil))
+  (if uim-this-command-keys-original
+      (progn
+	(fset 'this-command-keys uim-this-command-keys-original)
+	(setq uim-this-command-keys-original nil))))
 
 
 (defun uim-command-execute (uim-key-vector &optional bind)
