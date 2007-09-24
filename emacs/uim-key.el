@@ -143,13 +143,15 @@
 
 (defun uim-this-command-keys-override ()
   (if (not uim-this-command-keys-original)
-      (progn
+      (let ((doc (documentation 'this-command-keys)))
         (uim-backup-this-command-keys)
-        (defun this-command-keys ()
-          (if (and (boundp 'uim-key-vector)
-                   uim-key-vector)
-              uim-key-vector
-            (funcall uim-this-command-keys-original))))))
+	(eval 
+	 `(defun this-command-keys ()
+	    ,doc
+	    (if (and (boundp 'uim-key-vector)
+		     uim-key-vector)
+		uim-key-vector
+	      (funcall uim-this-command-keys-original)))))))
 
 
 (defun uim-command-execute (uim-key-vector &optional bind)
