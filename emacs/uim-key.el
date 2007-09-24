@@ -93,7 +93,7 @@
       (setq uim-mode mode))
 
     ;; process autoload keymap
-    (if (commandp bind)
+    (if (and (symbolp bind) (commandp bind))
 	(let ((sf (symbol-function bind)))
 	  (if (and (listp sf)
 		   (eq 'keymap (nth 4 sf)))
