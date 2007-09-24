@@ -91,6 +91,14 @@
 	      (setq bind (lookup-key key-translation-map vec))))
 
       (setq uim-mode mode))
+
+    ;; process autoload keymap
+    (if (commandp bind)
+	(let ((sf (symbol-function bind)))
+	  (if (and (listp sf)
+		   (eq 'keymap (nth 4 sf)))
+	      (lookup-key bind [nil]))))
+
     bind
     ))
 
