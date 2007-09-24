@@ -383,6 +383,9 @@
   ;; Initialize IM encoding
   (uim-im-init)
 
+  ;; override some functions
+  (uim-this-command-keys-override)
+
   (if (not buffer-read-only)
       (progn 
 
@@ -423,9 +426,11 @@
   ;; update mode-line
   (force-mode-line-update)
 
-
   ;; Disable uim-mode
   (setq uim-mode nil)
+
+  ;; restore original functions
+  (uim-this-command-keys-restore)
 
   (uim-debug (format "uim-mode: %s" uim-mode))
 
@@ -1548,9 +1553,6 @@
 
   ;; initialize keymap
   (uim-init-keymap)
-
-  ;; wrap some functions
-  (uim-this-command-keys-override)
 
   ;; add hook to detect status change of buffer
   (add-hook 'post-command-hook 'uim-post-command)

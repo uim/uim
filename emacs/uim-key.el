@@ -134,24 +134,26 @@
   (undo-boundary) 
   )
 
-(defun uim-backup-this-command-keys ()
-  (when (not uim-this-command-keys-original)
-    ;;(uim-debug "this-command-keys backup!")
-    (setq uim-this-command-keys-original
-          (symbol-function 'this-command-keys))))
-
 
 (defun uim-this-command-keys-override ()
   (if (not uim-this-command-keys-original)
       (let ((doc (documentation 'this-command-keys)))
-        (uim-backup-this-command-keys)
-	(eval 
-	 `(defun this-command-keys ()
-	    ,doc
-	    (if (and (boundp 'uim-key-vector)
-		     uim-key-vector)
-		uim-key-vector
-	      (funcall uim-this-command-keys-original)))))))
+
+	(setq uim-this-command-keys-original
+	      (symbol-function 'this-command-keys))
+
+	(eval
+	 `(fset 'this-command-keys 
+		'(lambda ()
+		   ,doc
+		   (if (and (boundp 'uim-key-vector) uim-key-vector)
+		       uim-key-vector
+		     (funcall uim-this-command-keys-original))))))))
+
+
+(defun uim-this-command-keys-restore ()
+  (fset 'this-command-keys uim-this-command-keys-original)
+  (setq uim-this-command-keys-original nil))
 
 
 (defun uim-command-execute (uim-key-vector &optional bind)
