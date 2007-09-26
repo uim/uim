@@ -1401,11 +1401,20 @@
 		    (if uim-prefix-arg
 			(setq count (prefix-numeric-value uim-prefix-arg)))
 
-		    (when (uim-process-key-vector key count)
-		      ;;(setq uim-stacked-key-vector key)
-		      (setq uim-wait-next-key t)
-		      ;;(setq uim-prefix-arg count)
-		      )
+		    ;; remove shift if possible
+		    (if (and (uim-check-shift key)
+			     (not (uim-key-binding key)))
+			;; with shift key but no key bind
+			(let* ((keytmp (uim-remove-shift key))
+			       (translated (nth 0 (uim-translate-key keytmp))))
+			  ;; lookup function-key-map
+			  (if translated
+			      (setq key translated)
+			    (if (uim-key-binding keytmp)
+				(setq key keytmp)))))
+
+		    (if (uim-process-key-vector key count)
+			(setq uim-wait-next-key t))
 		    (setq keyproc-done t))
 		(when (not keyproc-done)
 		  (uim-leave-preedit-mode)

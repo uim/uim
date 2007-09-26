@@ -455,6 +455,18 @@
 
 
 
+(defun uim-check-shift (input-vector)
+  (eval (cons 'or
+	      (mapcar
+	       '(lambda (x)
+		  (or (and uim-emacs
+			   (or (and (integerp x) (/= (logand (lsh 1 25) x) 0))
+			       (string-match "S-" (format "%s" x))))
+		      (and uim-xemacs
+			   (string-match "Sh-" 
+					 (key-description input-vector)))))
+	       (append input-vector nil)))))
+
 
 ;;
 ;; remove Shift modifier from key vector
@@ -598,15 +610,12 @@
   (let (translated-vector map (non-error t)
 	(input-vector-main input-vector)
 	(input-vector-prefix nil)
-	input-vector-main-backup
 	translated bind)
 
     (uim-debug (format "input-vector: %s" input-vector))
 
     (catch 'fmap-loop
       (while input-vector-main
-
-	(setq input-vector-main-backup input-vector-main)
 
 	(setq bind (uim-key-binding input-vector-main))
 	  
@@ -626,37 +635,6 @@
 	      (setq translated (lookup-key local-function-key-map 
 					   input-vector-main)))
 	  
-	  (if (or (not translated)
-		  (integerp translated))
-	      (progn
-		(setq input-vector-main (uim-remove-shift input-vector-main))
-
-		(setq bind (uim-key-binding input-vector-main))
-
-		(if (and bind 
-			 (not (integerp bind)))
-
-		    (progn
-		      (uim-debug "skip function-key-map lookup (remove shift)")
-		      ;;(setq translated-vector input-vector)
-		      (setq translated-vector 
-			    (vconcat input-vector-prefix input-vector-main))
-		      (throw 'fmap-loop t))
-
-		  (setq translated (lookup-key function-key-map 
-					       input-vector-main))
-
-		  (if (and (or (not translated)
-			       (integerp translated))
-			   (boundp 'local-function-key-map))
-		      (setq translated (lookup-key local-function-key-map 
-						   input-vector-main)))
-
-		  (uim-debug "*** cannot remove shift")
-
-		  (if (not translated)
-		      (setq input-vector-main input-vector-main-backup)))))
-
 	  (cond ((not translated)
 		 )
 
@@ -710,7 +688,6 @@
 		 (throw 'fmap-loop t))
 		))
 
-	(setq input-vector-main input-vector-main-backup)
 
 	(setq input-vector-prefix
 	      (vconcat input-vector-prefix (uim-vector-car input-vector-main)))
