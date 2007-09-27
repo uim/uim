@@ -776,16 +776,18 @@
 	    (set! state (car rotate-list))))
 
       (cond
-       ((or
-	 (= state anthy-type-hiragana)
-	 (= state anthy-type-katakana)
-	 (= state anthy-type-halfkana))
+       ((and state
+	     (or
+	      (= state anthy-type-hiragana)
+	      (= state anthy-type-katakana)
+	      (= state anthy-type-halfkana)))
 	(anthy-utf8-context-set-transposing-type! ac state))
-       ((or
-	 (= state anthy-type-halfwidth-alnum)
-	 (= state anthy-candidate-type-upper-halfwidth-alnum)
-	 (= state anthy-type-fullwidth-alnum)
-	 (= state anthy-candidate-type-upper-fullwidth-alnum))
+       ((and state
+	     (or
+	      (= state anthy-type-halfwidth-alnum)
+	      (= state anthy-candidate-type-upper-halfwidth-alnum)
+	      (= state anthy-type-fullwidth-alnum)
+	      (= state anthy-candidate-type-upper-fullwidth-alnum)))
 	(if (not (= (anthy-utf8-context-input-rule ac) anthy-input-rule-kana))
 	    (anthy-utf8-context-set-transposing-type! ac state)))
        (else
