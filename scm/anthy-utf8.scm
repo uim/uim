@@ -884,7 +884,7 @@
 						anthy-nr-candidate-max)))))
       (if (and
 	   compensated-idx
-	   (not (= compensated-pageidx selected-pageidx)))
+	   (not (eqv? compensated-pageidx selected-pageidx)))
 	  (begin
 	    (anthy-utf8-context-set-prediction-index! ac compensated-idx)
 	    (im-select-candidate ac compensated-idx)
