@@ -656,16 +656,18 @@
 	    (set! state (car rotate-list))))
 
       (cond
-       ((or
-	 (= state canna-type-hiragana)
-	 (= state canna-type-katakana)
-	 (= state canna-type-halfkana))
+       ((and state
+	     (or
+	      (= state canna-type-hiragana)
+	      (= state canna-type-katakana)
+	      (= state canna-type-halfkana)))
 	(canna-context-set-transposing-type! cc state))
-       ((or
-	 (= state canna-type-halfwidth-alnum)
-	 (= state canna-candidate-type-upper-halfwidth-alnum)
-	 (= state canna-type-fullwidth-alnum)
-	 (= state canna-candidate-type-upper-fullwidth-alnum))
+       ((and state
+	     (or
+	      (= state canna-type-halfwidth-alnum)
+	      (= state canna-candidate-type-upper-halfwidth-alnum)
+	      (= state canna-type-fullwidth-alnum)
+	      (= state canna-candidate-type-upper-fullwidth-alnum)))
 	(if (not (= (canna-context-input-rule cc) canna-input-rule-kana))
 	    (canna-context-set-transposing-type! cc state)))
        (else

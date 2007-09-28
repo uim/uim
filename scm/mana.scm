@@ -930,16 +930,18 @@
 	    (set! state (car rotate-list))))
 
       (cond
-       ((or
-	 (= state mana-type-hiragana)
-	 (= state mana-type-katakana)
-	 (= state mana-type-halfkana))
+       ((and state
+	     (or
+	      (= state mana-type-hiragana)
+	      (= state mana-type-katakana)
+	      (= state mana-type-halfkana)))
 	(mana-context-set-transposing-type! mc state))
-       ((or
-	 (= state mana-type-halfwidth-alnum)
-	 (= state mana-candidate-type-upper-halfwidth-alnum)
-	 (= state mana-type-fullwidth-alnum)
-	 (= state mana-candidate-type-upper-fullwidth-alnum))
+       ((and state
+	     (or
+	      (= state mana-type-halfwidth-alnum)
+	      (= state mana-candidate-type-upper-halfwidth-alnum)
+	      (= state mana-type-fullwidth-alnum)
+	      (= state mana-candidate-type-upper-fullwidth-alnum)))
 	(if (not (= (mana-context-input-rule mc)
 		    mana-input-rule-kana))
 	    (mana-context-set-transposing-type! mc state)))
