@@ -1126,14 +1126,10 @@
 	(uim-debug (format "issue-vector-raw: %s" issue-vector-raw))
 
 	(unwind-protect
-	    (let (count)
-	      (if uim-prefix-arg
-		  (setq count (prefix-numeric-value uim-prefix-arg)))
-	    
+	    (progn
 	      (uim-debug (format "issue command %s %s" 
-				 issue-vector-raw count))
-	    
-	      (if (uim-process-key-vector issue-vector-raw count)
+				 issue-vector-raw uim-prefix-arg))
+	      (if (uim-process-key-vector issue-vector-raw uim-prefix-arg)
 		  (setq wait t)))
 	  (when (not wait)
 	    (uim-debug "* reset parameter after issue")
@@ -1396,10 +1392,8 @@
 	    ;;  C-o is also processed here ... orz
 	    (let ((inhibit-read-only t))
 	      (unwind-protect
-		  (let (count)
+		  (progn
 		    (uim-debug (format "uim-prefix-arg: %s" uim-prefix-arg))
-		    (if uim-prefix-arg
-			(setq count (prefix-numeric-value uim-prefix-arg)))
 
 		    ;; remove shift if possible
 		    (if (and (uim-check-shift key)
@@ -1413,7 +1407,7 @@
 			    (if (uim-key-binding keytmp)
 				(setq key keytmp)))))
 
-		    (if (uim-process-key-vector key count)
+		    (if (uim-process-key-vector key uim-prefix-arg)
 			(setq uim-wait-next-key t))
 		    (setq keyproc-done t))
 		(when (not keyproc-done)
