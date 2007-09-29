@@ -22,7 +22,7 @@ AC_PATH_PROG(SH, sh)
 AC_PATH_PROG(RSVG, rsvg)
 AC_PATH_PROGS(MD5, md5 md5sum)
 AC_PATH_PROGS(SHA1, sha1 sha1sum)
-AC_PATH_PROGS(QMAKE_QT4, qmake-qt4 qmake4 qmake)
+AX_PATH_QMAKE4
 
 AM_MAINTAINER_MODE
 
@@ -767,7 +767,7 @@ AC_ARG_WITH(qt4-immodule,
     use_qt4_immodule="no"
   ])
 if test x$use_qt4_immodule = xyes; then
-    if test -z "$QMAKE_QT4"; then
+    if test -z "$QMAKE4"; then
         AC_MSG_ERROR([no qmake for Qt4 found])
     fi
 fi
@@ -1435,10 +1435,10 @@ AC_OUTPUT
 
 # Generate Makefiles for Qt4 by qmake
 if test x$use_qt4_immodule = xyes; then
-    ${QMAKE_QT4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
-		    ${ac_abs_top_srcdir}/qt4/immodule/quiminputcontextplugin.pro
-    ${QMAKE_QT4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
-                    ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
+		 ${ac_abs_top_srcdir}/qt4/immodule/quiminputcontextplugin.pro
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
+                 ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
 
 AC_MSG_RESULT([
