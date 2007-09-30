@@ -121,7 +121,7 @@ uim_helper_send_message(int fd, const char *message)
     if ((res = write(fd, bufp, out_len)) < 0) {
       if (errno == EAGAIN || errno == EINTR)
 	continue;
-      fprintf(stderr, "uim_helper_send_message(): unknown error\n");
+      perror("uim_helper_send_message(): unhandled error");
       break;
     }
 

@@ -451,6 +451,7 @@ AC_CHECK_FUNCS([strdup])
 AC_CHECK_FUNCS([asprintf vasprintf])
 # C99 functions
 AC_CHECK_FUNCS([snprintf vsnprintf])
+# FIXME: replace non-standard perror(3)
 AC_REPLACE_FUNCS([getpeereid strsep setenv unsetenv strlcpy strlcat strtonum strtoll])
 AC_CHECK_FUNCS([getpid stat mkdir chmod])
 AC_CHECK_FUNCS([execv execvp])
