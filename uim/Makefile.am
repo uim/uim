@@ -13,9 +13,10 @@ CFLAGS = @CFLAGS@ $(UIM_SCM_CFLAGS)
 # 'if SCIM' makes this workaround broken
 CXXFLAGS = @CXXFLAGS@ $(SCIM_CFLAGS)
 
-lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la libuim-bsdlook.la
+lib_LTLIBRARIES = libuim-scm.la libuim.la libuim-custom.la
+noinst_LTLIBRARIES = libuim-bsdlook.la
 if LIBUIM_X_UTIL
-noinst_LTLIBRARIES = libuim-x-util.la
+noinst_LTLIBRARIES += libuim-x-util.la
 endif
 
 # Although uim only needs *.so for the plugins, whether *.la is
@@ -129,8 +130,6 @@ libuim_look_la_CPPFLAGS = -I$(top_srcdir)
 
 libuim_bsdlook_la_SOURCES = bsdlook.c
 libuim_bsdlook_la_LIBADD =
-libuim_bsdlook_la_LDFLAGS = -version-info $(libuim_bsdlook_version) \
-			    -export-dynamic
 libuim_bsdlook_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
