@@ -1160,9 +1160,9 @@ if test "x$use_qt" = "xyes"; then
     AC_DEFINE_UNQUOTED(KDE_ICONDIR, "$KDE_ICONDIR", [kde icon directory])
 fi
 
-dnl *********************************
-dnl *** test for KDE applet.. XXX ***
-dnl *********************************
+dnl **********************************
+dnl *** test for KDE3 applet.. XXX ***
+dnl **********************************
 AC_ARG_ENABLE(kde-applet,
   AC_HELP_STRING([--enable-kde-applet],
   		 [build uim applet for KDE panel
@@ -1457,7 +1457,7 @@ Configure Result :
    Qt3             : ${use_qt}
    Qt3 immodule    : ${use_qtimmodule}
    Qt4 immodule    : ${use_qt4_immodule}
-   KDE Applet      : ${use_applet_kde}
+   KDE3 Applet     : ${use_applet_kde}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
