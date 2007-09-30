@@ -22,7 +22,8 @@ QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 
 # Input
-HEADERS += qhelpermanager.h \
+HEADERS += debug.h \
+           qhelpermanager.h \
            quiminputcontext.h \
            quiminputcontext_compose.h \
            plugin.h \

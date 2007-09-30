@@ -19,7 +19,8 @@ EXTRA_DIST = COPYING README.en README.ja INDENT \
 	     quiminputcontext_with_slave.h \
 	     quiminputcontext_with_slave.cpp
 
-EXTRA_DIST += qhelpermanager.h \
+EXTRA_DIST += debug.h \
+              qhelpermanager.h \
               quiminputcontext.h \
               quiminputcontext_compose.h \
               plugin.h \

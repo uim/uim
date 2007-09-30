@@ -11,6 +11,7 @@
 #include "uim/uim.h"
 #include "uim/uim-x-util.h"
 
+#include "debug.h"
 #include "quiminfomanager.h"
 #include "quiminputcontext_with_slave.h"
 

@@ -42,6 +42,7 @@ SUCH DAMAGE.
 
 #include "uim/uim.h"
 
+#include "debug.h"
 #include "candidatewindow.h"
 #include "subwindow.h"
 #include "quiminputcontext.h"

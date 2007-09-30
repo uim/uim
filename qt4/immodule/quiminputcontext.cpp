@@ -15,6 +15,7 @@ Copyright (C) 2004 Kazuki Ohta <mover@hct.zaq.ne.jp>
 #include <ctype.h>
 #include <string.h>
 
+#include "debug.h"
 #include "quiminputcontext.h"
 #include "quiminputcontext_compose.h"
 #include "plugin.h"
