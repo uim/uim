@@ -29,6 +29,16 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     - Fix pseudo -r (require module) option for editline feature with
       real require-module
 
+  - uim.el
+    - Fix incorrect handling of the entry of function-key-map
+    - Fix cursor position after inputting characters by uim-input-pad-ja
+      and calling undo command
+    - Support event-apply-*-modifier
+    - Support delete-selection-mode
+    - Support Emacs-23.x experimentally
+    - Support shifted-motion-keys-select-region feature of XEmacs
+    - Support the commands terminated by help-char on XEmacs
+
 Overview of changes from 1.4.0-beta to 1.4.0
 ==
 * Fixed
