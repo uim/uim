@@ -61,16 +61,20 @@
 
 (define prime-app-mode-end-stroke-list #f)
 ;;;; If you're a Vi user, modify the lines below.
-(if prime-custom-app-mode-vi?
-    (begin
-      ;; For Vi users
-      (define-key prime-app-mode-start-key? prime-escape-key?)
-      (set! prime-app-mode-end-stroke-list
-	    '("i" "I" "a" "A" "o" "O" "C" "s" "S" ("c" . ("l" "w" "e" "c" "G")))))
-    (begin
-      ;; Default
-      (define-key prime-app-mode-start-key?  #f)
-      (set! prime-app-mode-end-stroke-list #f)))
+(define prime-configure-app-mode-vi
+  (lambda ()
+    (if prime-custom-app-mode-vi?
+	(begin
+	  ;; For Vi users
+	  (define-key prime-app-mode-start-key? prime-escape-key?)
+	  (set! prime-app-mode-end-stroke-list
+		'("i" "I" "a" "A" "o" "O" "C" "s" "S" ("c" . ("l" "w" "e" "c" "G")))))
+	(begin
+	  ;; Default
+	  (define-key prime-app-mode-start-key?  #f)
+	  (set! prime-app-mode-end-stroke-list #f)))))
+
+(prime-configure-app-mode-vi)
 
 (define prime-cand-select-key?
   (lambda (key key-state)
@@ -2075,8 +2079,8 @@
   (lambda (context key key-state)
     ;(print "prime-release-key-handler")
     (if (or (ichar-control? key)
-	    (= (prime-context-mode context)
-	       prime-mode-latin))
+	    (= (prime-context-mode context) prime-mode-latin)
+	    (= (prime-context-mode context) prime-mode-application))
 	(im-commit-raw context)
 	;; else
 	;; FIXME: update candidate words.

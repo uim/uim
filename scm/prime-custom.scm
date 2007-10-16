@@ -155,6 +155,11 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(custom-add-hook 'prime-custom-app-mode-vi?
+  'custom-set-hooks
+  (lambda ()
+    (prime-configure-app-mode-vi)))
+
 (define-custom 'prime-pseudo-mode-cursor? #f
   '(prime-advanced special-op)
   '(boolean)
