@@ -334,9 +334,10 @@
 	(when uim-emacs
 	  (undefined)
 	  (setq uim-keystroke-displaying nil)
-	  (let (message-log-max)
-	    (message "%s is undefined" (key-description undef)))
-	  ))
+	  (if (>= emacs-major-version 22)
+	      (let (message-log-max)
+		(message "%s is undefined" (key-description undef)))
+	  )))
 
       (if uim-emacs
 	  (setq uim-deactivate-mark deactivate-mark))
