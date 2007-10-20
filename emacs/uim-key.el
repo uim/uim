@@ -333,6 +333,7 @@
 	  )
 	(when uim-emacs
 	  (undefined)
+	  (setq uim-keystroke-displaying nil)
 	  (let (message-log-max)
 	    (message "%s is undefined" (key-description undef)))
 	  ))
@@ -607,7 +608,7 @@
 ;; get this-command-keys with symbol lists vector
 ;; 
 (defun uim-translate-key (input-vector)
-  (let (translated-vector map (non-error t)
+  (let (translated-vector map 
 	(input-vector-main input-vector)
 	(input-vector-prefix nil)
 	translated bind)
@@ -655,8 +656,6 @@
 		((functionp translated)
 		 ;; function ... call immediately and use returned value
 		 (uim-debug (format "translated is function: %s" translated))
-		 ;;(setq func translated)
-
 
 		 (if (not uim-keystroke-displaying)
 		     (setq uim-keystroke-displaying (sit-for echo-keystrokes)))
@@ -669,12 +668,8 @@
 					"-")))
 		   )
 
-		 (unwind-protect
-		     (setq translated-vector
-			   (vconcat input-vector-prefix (funcall translated nil)))
-		   (when (not translated-vector)
-		     (setq non-error nil)
-		     (throw 'fmap-loop nil)))
+		 (setq translated-vector
+		       (vconcat input-vector-prefix (funcall translated nil)))
 
 		 (throw 'fmap-loop t))
 		
@@ -698,7 +693,7 @@
       (setq translated-vector nil)) ;; end of catch
     
     (uim-debug (format "output vector: %s" translated-vector))
-    (list translated-vector map non-error))
+    (list translated-vector map))
   )
 
 

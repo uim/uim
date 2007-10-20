@@ -875,6 +875,17 @@
  
 
 ;;
+;; Reset some global parameters for inputted key processing
+;;
+(defun uim-reset-input-parameter ()
+  (setq uim-translated-key-vector nil)
+  (setq uim-untranslated-key-vector nil)
+  (setq uim-prefix-arg nil)
+  (setq uim-prefix-arg-vector nil)
+  (setq uim-merge-next nil))
+
+
+;;
 ;; Process inputted key
 ;;
 (defun uim-process-input (&optional arg event reg1 reg2)
@@ -882,70 +893,69 @@
 		     last-input-event
 		     ))
 
-  ;;(if uim-emacs
-  ;;    (setq uim-deactivate-mark t))
+  (let (new-key-vector send-vector send-vector-raw issue-vector
+        send issue mouse wait discard
+	(critical t))
 
-  (if uim-xemacs
-      (setq zmacs-region-stays nil))
+    (unwind-protect
+	(progn
 
-  (if (not (or uim-translated-key-vector uim-untranslated-key-vector))
-      (setq uim-keystroke-displaying nil))
+	  (if uim-xemacs
+	      (setq zmacs-region-stays nil))
 
-  (let (new-key-vector
-	send-vector
-	send-vector-raw
-	issue-vector
-	send issue mouse wait discard)
+	  (if (not (or uim-translated-key-vector uim-untranslated-key-vector))
+	      (setq uim-keystroke-displaying nil))
 
-    (setq new-key-vector (uim-this-command-keys-vector))
+	  (setq new-key-vector (uim-this-command-keys-vector))
 
-    (if (or current-prefix-arg
-	    uim-merge-next)
-	(let (vector-list)
+	  (if (or current-prefix-arg
+		  uim-merge-next)
+	      (let (vector-list)
+		(setq vector-list (uim-separate-prefix-vector new-key-vector))
+		(setq new-key-vector (car vector-list))
+		(setq uim-prefix-arg-vector (nth 1 vector-list))
 
-	  (setq vector-list (uim-separate-prefix-vector new-key-vector))
-	  (setq new-key-vector (car vector-list))
-	  (setq uim-prefix-arg-vector (nth 1 vector-list))
+		;; Workaround for FSF Emacs-20/21
+		;;  Key event beginning with C-u and terminating with 
+		;;  ESC-something invokes uim-process-input with twice 
+		;;  at a time.
+		;;  In such a case, uim.el merges these two inputs.
+		(if (not uim-merge-next)
+		    (progn
+		      ;; normal
+		      (setq uim-prefix-arg current-prefix-arg)
+		      (if (and uim-emacs
+			       (not window-system)
+			       (<= emacs-major-version 21)
+			       (>= (length new-key-vector) 2))
+			  ;; workaround
+			  (setq uim-merge-next t)))
 
-	  ;; Workaround for FSF Emacs-20/21
-	  ;;  Key event beginning with C-u and terminating with ESC-something
-	  ;;  invokes uim-process-input with twice at a time.
-	  ;;  In such a case, uim.el merges these two inputs.
-	  (if (not uim-merge-next)
-	      (progn
-		;; normal
-		(setq uim-prefix-arg current-prefix-arg)
-		(if (and uim-emacs
-			 (not window-system)
-			 (<= emacs-major-version 21)
-			 (>= (length new-key-vector) 2))
-		    ;; workaround
-		    (setq uim-merge-next t)))
-
-	    ;; uim-merge-next is valid
-	    (setq uim-merge-next nil)
-	    (setq uim-translated-key-vector nil)
-	    (setq uim-untranslated-key-vector nil))
+		  ;; uim-merge-next is valid
+		  (setq uim-merge-next nil)
+		  (setq uim-translated-key-vector nil)
+		  (setq uim-untranslated-key-vector nil))
 		
-	  (uim-debug (format "uim-prefix-arg-vector %s" uim-prefix-arg-vector))
-	  (uim-debug (format "set uim-prefix-arg: %s" current-prefix-arg))))
+		(uim-debug (format "uim-prefix-arg-vector %s" 
+				   uim-prefix-arg-vector))
+		(uim-debug (format "set uim-prefix-arg: %s" 
+				   current-prefix-arg))))
 
-    (if uim-xemacs
-	(setq uim-original-input-event (copy-event last-input-event)))
+	  (if uim-xemacs
+	      (setq uim-original-input-event (copy-event last-input-event)))
 
-    (setq uim-untranslated-key-vector
-	  (vconcat uim-untranslated-key-vector new-key-vector))
+	  (setq uim-untranslated-key-vector
+		(vconcat uim-untranslated-key-vector new-key-vector))
+	  
+	  (let (translated-list translated map)
+	    
+	    (setq translated-list 
+		  (uim-translate-key uim-untranslated-key-vector))
+	    (setq translated (nth 0 translated-list))
+	    (setq map (nth 1 translated-list))
 
-    (let* ((translated-list (uim-translate-key uim-untranslated-key-vector))
-	   (translated (nth 0 translated-list))
-	   (map (nth 1 translated-list))
-	   (non-error (nth 2 translated-list)))
-
-      (unwind-protect
-	  (progn
 	    (uim-debug (format "translated: %s" translated))
 	    (uim-debug (if map "map: YES" "map: NO"))
-	    (uim-debug (if non-error "non-error: YES" "func: NO"))
 
 	    (cond ((stringp translated)
 		   (setq uim-translated-key-vector translated)
@@ -958,270 +968,232 @@
 		   (setq uim-untranslated-key-vector nil))
 
 		  (map
-		   (setq wait t)
-		   )
+		   (setq wait t))
 
 		  (t
-		   (setq send t)
-		   )
+		   (setq send t))
 		  ))
-	(when (not non-error)
-	  (setq uim-translated-key-vector nil)
-	  (setq uim-untranslated-key-vector nil)
-	  (setq uim-prefix-arg nil)
-	  (setq uim-prefix-arg-vector nil)
-	  (setq uim-merge-next nil)
-	  (signal 'quit nil)
-	  )))
 
-    (when send
+	  (when send
 
-      (uim-debug "pre-SEND")
+	    (uim-debug "pre-SEND")
       
-      (setq send-vector-raw (vconcat uim-translated-key-vector
-				     uim-untranslated-key-vector))
+	    (setq send-vector-raw (vconcat uim-translated-key-vector
+					   uim-untranslated-key-vector))
 
-      (setq send-vector 
-	    (if uim-emacs 
-		send-vector-raw
-	      (if uim-xemacs
-		  (uim-convert-keystr-to-uimagent-vector (key-description send-vector-raw))
-		nil)))
+	    (setq send-vector 
+		  (if uim-emacs 
+		      send-vector-raw
+		    (if uim-xemacs
+			(uim-convert-keystr-to-uimagent-vector (key-description send-vector-raw))
+		      nil)))
 
-      (uim-debug (format "send-vector: %s" send-vector))
-      (uim-debug (format "send-vector-raw: %s" send-vector-raw))
-
-
-      (cond (uim-merge-next
-	     (setq send nil))
-
-	    ((or (and uim-emacs 
-		      (eventp event)
-		      (memq (event-basic-type event) 
-			    '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
-		 (and uim-xemacs 
-		      (string-match "button\\(1\\|2\\|3\\|4\\|5\\)" 
-				    (key-description send-vector-raw))))
-	     (uim-debug "mouse event")
-	     (setq send nil)
-	     (setq mouse t))
-
-	    ((or (and uim-preedit-keymap-enabled
-		      (not window-system)
-		      (not uim-use-single-escape-on-terminal)
-		      (uim-is-single-escape send-vector-raw)))
-	     (uim-debug "half escape found")
-	     (setq send nil)
-	     (setq wait t))
-
-	    ((or current-prefix-arg
-		 uim-prefix-arg)
-	     (setq send nil)
-	     (setq issue t))
-
-	    ((or (eq (car-safe (aref send-vector 0)) 'menu-bar)
-		 (eq (car-safe (aref send-vector 0)) 'tool-bar))
-	     (setq send nil)
-	     (if (not uim-preedit-keymap-enabled)
-		 (setq issue t)
-	       (if (and uim-preedit-keymap-enabled
-			(keymapp (uim-key-binding send-vector)))
-		   (setq wait t)
-		 (setq discard t))))
-
-	    ((and (or (>= (length send-vector) 3)
-		      (and (= (length send-vector) 2)
-			   (not (or (eq (aref send-vector 0) 27)
-				    (eq (aref send-vector 0) 'escape))))))
-	     (uim-debug "too long vector")
-	     (setq send nil)
-	     (if (not uim-preedit-keymap-enabled)
-		 (setq issue t)))
-
-	    ))
+	    (uim-debug (format "send-vector: %s" send-vector))
+	    (uim-debug (format "send-vector-raw: %s" send-vector-raw))
 
 
+	    (cond (uim-merge-next
+		   (setq send nil))
 
-    (when send
+		  ((or (and uim-emacs 
+			    (eventp event)
+			    (memq (event-basic-type event) 
+				  '(mouse-1 mouse-2 mouse-3 mouse-4 mouse-5)))
+		       (and uim-xemacs 
+			    (string-match "button\\(1\\|2\\|3\\|4\\|5\\)" 
+					  (key-description send-vector-raw))))
+		   (uim-debug "mouse event")
+		   (setq send nil)
+		   (setq mouse t))
 
-      (uim-debug "SEND")
+		  ((or (and uim-preedit-keymap-enabled
+			    (not window-system)
+			    (not uim-use-single-escape-on-terminal)
+			    (uim-is-single-escape send-vector-raw)))
+		   (uim-debug "half escape found")
+		   (setq send nil)
+		   (setq wait t))
 
-      ;;(setq uim-last-key-vector send-vector)
-      (setq uim-last-key-vector send-vector-raw)
+		  ((or current-prefix-arg
+		       uim-prefix-arg)
+		   (setq send nil)
+		   (setq issue t))
+		  
+		  ((or (eq (car-safe (aref send-vector 0)) 'menu-bar)
+		       (eq (car-safe (aref send-vector 0)) 'tool-bar))
+		   (setq send nil)
+		   (if (not uim-preedit-keymap-enabled)
+		       (setq issue t)
+		     (if (and uim-preedit-keymap-enabled
+			      (keymapp (uim-key-binding send-vector)))
+			 (setq wait t)
+		       (setq discard t))))
 
-      (when uim-emacs
-	(cond ((equal send-vector [127])   (setq send-vector [backspace]))
-	      ((equal send-vector [27 27]) (setq send-vector [27]))
-	      ((equal send-vector [28])    (setq send-vector [C-\\]))
-	      ((equal send-vector [29])    (setq send-vector [C-\]]))
-	      ((equal send-vector [30])    (setq send-vector [C-~]))
-	      ((equal send-vector [31])    (setq send-vector [C-_]))
-	      ))
+		  ((and (or (>= (length send-vector) 3)
+			    (and (= (length send-vector) 2)
+				 (not (or (eq (aref send-vector 0) 27)
+					  (eq (aref send-vector 0) 'escape))))))
+		   (uim-debug "too long vector")
+		   (setq send nil)
+		   (if (not uim-preedit-keymap-enabled)
+		       (setq issue t)))
 
-      (when uim-xemacs 
+		  ))
 
-	(uim-debug (format "send-vector-raw1.5: %s" send-vector-raw))
 
-	(if (equal (make-vector 2 (uim-xemacs-make-event [(escape)]))
-		   send-vector-raw)
-	    (setq send-vector-raw
-		  (vector (uim-xemacs-make-event [(escape)]))))
+	  (when send
 
-	(setq send-vector-raw (uim-translate-escape-meta send-vector-raw))
+	    (uim-debug "SEND")
 
-	(uim-debug (format "send-vector-raw2: %s" send-vector-raw))
+	    (setq uim-last-key-vector send-vector-raw)
 
-	(setq send-vector 
-	      (uim-convert-keystr-to-uimagent-vector 
-	       (key-description send-vector-raw))))
+	    (when uim-emacs
+	      (cond ((equal send-vector [127])   (setq send-vector [backspace]))
+		    ((equal send-vector [27 27]) (setq send-vector [27]))
+		    ((equal send-vector [28])    (setq send-vector [C-\\]))
+		    ((equal send-vector [29])    (setq send-vector [C-\]]))
+		    ((equal send-vector [30])    (setq send-vector [C-~]))
+		    ((equal send-vector [31])    (setq send-vector [C-_]))
+		    ))
+	    
+	    (when uim-xemacs 
 
-      (uim-debug (format "send:%s issue:%s wait:%s mouse:%s" 
-			 send issue wait mouse))
+	      (uim-debug (format "send-vector-raw1.5: %s" send-vector-raw))
 
-      (unwind-protect
-	  (progn
+	      (if (equal (make-vector 2 (uim-xemacs-make-event [(escape)]))
+			 send-vector-raw)
+		  (setq send-vector-raw
+			(vector (uim-xemacs-make-event [(escape)]))))
+
+	      (setq send-vector-raw (uim-translate-escape-meta send-vector-raw))
+
+	      (uim-debug (format "send-vector-raw2: %s" send-vector-raw))
+
+	      (setq send-vector 
+		    (uim-convert-keystr-to-uimagent-vector 
+		     (key-description send-vector-raw))))
+
+	    (uim-debug (format "send:%s issue:%s wait:%s mouse:%s" 
+			       send issue wait mouse))
+
+
 	    (setq uim-wait-next-key nil)
 	    (uim-do-send-recv-cmd (format "%d %s" 
 					  uim-context-id send-vector))
 	    (setq wait uim-wait-next-key)
 		
-	    (uim-debug "send-recv done"))
+	    (uim-debug "send-recv done")
 
-	(when (not uim-wait-next-key)
-	  (uim-debug "* reset parameter after send")
-	  (setq uim-translated-key-vector nil)
-	  (setq uim-untranslated-key-vector nil)
-	  (setq uim-prefix-arg nil)
-	  (setq uim-prefix-arg-vector nil)
-	  (setq uim-merge-next nil)
-	  )))
+	    (when (not uim-wait-next-key)
+	      (uim-debug "* reset parameter after send")
+	      (uim-reset-input-parameter)))
+	    
+	  (when mouse
+	    (uim-process-mouse-event event)
+	    (uim-debug "* reset parameter after mouse")
+	    (uim-reset-input-parameter))
+
+	  (when issue
+	    (let (issue-vector-raw)
+	      (setq issue-vector-raw (vconcat uim-translated-key-vector
+					      uim-untranslated-key-vector))
+	      
+	      (setq issue-vector 
+		    (if uim-emacs 
+			issue-vector-raw
+		      (if uim-xemacs
+			  (uim-convert-char-to-symbolvector 
+			   (key-description issue-vector-raw)))))
+	      
+	      (setq uim-last-key-vector issue-vector-raw)
       
-    (when mouse
-      (unwind-protect
-	  (uim-process-mouse-event event)
-	(uim-debug "* reset parameter after mouse")
-	(setq uim-translated-key-vector nil)
-	(setq uim-untranslated-key-vector nil)
-	(setq uim-prefix-arg nil)
-	(setq uim-prefix-arg-vector nil)
-	(setq uim-merge-next nil)
-	))
+	      (uim-debug (format "issue-vector-raw: %s" issue-vector-raw))
 
 
-    (when issue
-
-      (let (issue-vector-raw)
-	(setq issue-vector-raw (vconcat uim-translated-key-vector
-					uim-untranslated-key-vector))
-
-	(setq issue-vector 
-	      (if uim-emacs 
-		  issue-vector-raw
-		(if uim-xemacs
-		    (uim-convert-char-to-symbolvector 
-		     (key-description issue-vector-raw)))))
-
-	(setq uim-last-key-vector issue-vector-raw)
-      
-	(uim-debug (format "issue-vector-raw: %s" issue-vector-raw))
-
-	(unwind-protect
-	    (progn
 	      (uim-debug (format "issue command %s %s" 
 				 issue-vector-raw uim-prefix-arg))
-	      (if (uim-process-key-vector issue-vector-raw uim-prefix-arg)
-		  (setq wait t)))
-	  (when (not wait)
-	    (uim-debug "* reset parameter after issue")
-	    (setq uim-translated-key-vector nil)
-	    (setq uim-untranslated-key-vector nil)
-	    (setq uim-prefix-arg nil)
-	    (setq uim-prefix-arg-vector nil)
-	    (setq uim-merge-next nil)
-	    ))))
+	      (setq wait
+		    (uim-process-key-vector issue-vector-raw uim-prefix-arg))  
 
+	      (when (not wait)
+		(uim-debug "* reset parameter after issue")
+		(uim-reset-input-parameter))))
 
-    (when wait
-      (uim-debug "wait next input")
+	  (when wait
+	    (uim-debug "wait next input")
 
+	    (if (and (memq last-command (list 'universal-argument
+					      'digit-argument
+					      'negative-argument))
+		     (current-message))
+		(setq uim-keystroke-displaying t))
 
-      (if (and (memq last-command (list 'universal-argument
-					'digit-argument
-					'negative-argument))
-	       (current-message))
-	  (setq uim-keystroke-displaying t))
+	    (if (not uim-keystroke-displaying)
+		(let ((inhibit-quit t))
+		  (setq uim-keystroke-displaying (sit-for echo-keystrokes))))
 
-      (if (not uim-keystroke-displaying)
-	  (setq uim-keystroke-displaying (sit-for echo-keystrokes)))
-
-      (uim-debug (format "*** uim-keystroke-displaying: %s"
-			 uim-keystroke-displaying))
+	    (uim-debug (format "*** uim-keystroke-displaying: %s"
+			       uim-keystroke-displaying))
     
+	    ;; display "ESC-" or something
+	    (if uim-keystroke-displaying
+		(let (message-log-max)
+		  (uim-debug (format "uim-translated-key-vector %s" 
+				     uim-translated-key-vector))
+		  (message (concat (key-description 
+				    (vconcat uim-prefix-arg-vector
+					     (if uim-xemacs
+						 (uim-translate-escape-meta uim-translated-key-vector)
+					       uim-translated-key-vector)
+					     (if uim-xemacs
+						 (uim-translate-escape-meta uim-untranslated-key-vector)
+					       uim-untranslated-key-vector)))
+				   (if uim-xemacs " ")
+				   "-"))))
 
-      ;; display "ESC-" or something
-      ;;(uim-debug (format "uim-prefix-arg-vector2 %s" uim-prefix-arg-vector))
-      (if uim-keystroke-displaying
-	  (let (message-log-max)
-	    (uim-debug (format "uim-translated-key-vector %s" 
-			       uim-translated-key-vector))
-	    (message (concat (key-description 
-			      (vconcat uim-prefix-arg-vector
-				       (if uim-xemacs
-					   (uim-translate-escape-meta uim-translated-key-vector)
-					 uim-translated-key-vector)
-				       (if uim-xemacs
-					   (uim-translate-escape-meta uim-untranslated-key-vector)
-					 uim-untranslated-key-vector)
+	    (if uim-emacs
+		(setq uim-deactivate-mark nil))
 
-				       )) 
-			     (if uim-xemacs " ")
-			     "-"))))
+	    (if uim-xemacs
+		(setq zmacs-region-stays t))
+	    )
 
-      (if uim-emacs
-	  (setq uim-deactivate-mark nil))
+	  (when discard
+	    (uim-debug "discard input")
+	    (uim-reset-input-parameter))
 
-      (if uim-xemacs
-	  (setq zmacs-region-stays t))
-      )
 
-    (when discard
-      (uim-debug "discard input")
-      (unwind-protect
-	  nil
-	(setq uim-translated-key-vector nil)
-	(setq uim-untranslated-key-vector nil)
-	(setq uim-prefix-arg nil)
-	(setq uim-prefix-arg-vector nil)
-	(setq uim-merge-next nil)
-	))
+	  ;; display "ESC ESC ESC" or something
+	  (when (and (or send issue)
+		     (not wait)
+		     uim-keystroke-displaying)
 
-    ;; display "ESC ESC ESC" or something
-    (when (and (or send issue)
-	       (not wait)
-	       uim-keystroke-displaying)
-
-      (uim-debug (format "update final message %s" uim-last-key-vector))
+	    (uim-debug (format "update final message %s" uim-last-key-vector))
       
-      (let (message-log-max msg)
-	(setq msg (if uim-prefix-arg-vector
-		      (concat " " (key-description uim-prefix-arg-vector) " ")
-		    ""))
+	    (let (message-log-max msg)
+	      (setq msg (if uim-prefix-arg-vector
+			    (concat " " (key-description uim-prefix-arg-vector) " ")
+			  ""))
 
-	(mapcar '(lambda (x)
-		   (setq msg (concat msg
-				     (key-description (vector x)) " ")))
+	      (mapcar '(lambda (x)
+			 (setq msg (concat msg
+					   (key-description (vector x)) " ")))
 		 
-		(append (if uim-xemacs
-			    (uim-translate-escape-meta send-vector-raw)
-			  uim-last-key-vector) nil))
-	(message msg)))
+		      (append (if uim-xemacs
+				  (uim-translate-escape-meta send-vector-raw)
+				uim-last-key-vector) nil))
+	      (message msg)))
 
+	  (if uim-emacs
+	      (setq deactivate-mark uim-deactivate-mark))
+
+	  (setq critical nil))
+
+      (when critical
+	(uim-debug "reset input by error or keyboard-quit")
+	(uim-reset-input-parameter)))
     )
-
-  (if uim-emacs
-      (setq deactivate-mark uim-deactivate-mark))
   )
-
 
 
 
