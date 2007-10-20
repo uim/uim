@@ -1129,12 +1129,18 @@
 		(setq uim-keystroke-displaying t))
 
 	    (if (not uim-keystroke-displaying)
-		(let ((inhibit-quit t))
-		  (setq uim-keystroke-displaying (sit-for echo-keystrokes))))
+		(cond (uim-emacs
+		       (let (key)
+			 (when (setq key (with-timeout (echo-keystrokes nil)
+					   (read-key-sequence-vector nil)))
+			   (setq unread-command-events
+				 (nconc (listify-key-sequence key) 
+					unread-command-events)))
+			 
+			 (setq uim-keystroke-displaying (not key))))
+		      (uim-xemacs
+		       (setq uim-keystroke-displaying (sit-for echo-keystrokes)))))
 
-	    (uim-debug (format "*** uim-keystroke-displaying: %s"
-			       uim-keystroke-displaying))
-    
 	    ;; display "ESC-" or something
 	    (if uim-keystroke-displaying
 		(let (message-log-max)
