@@ -690,21 +690,21 @@
     (if (>= index-no (prime-candidates-get-length context))
 	#f
 	(let ((state (prime-context-state context)))
-	  (if (= state 'prime-state-segment)
+	  (if (eq? state 'prime-state-segment)
 	      (car (nth index-no (prime-context-segment-candidates context)))
 	      (car (nth index-no (prime-context-candidates context))))))))
 
 (define prime-candidates-get-length
   (lambda (context)
     (let ((state (prime-context-state context)))
-      (if (= state 'prime-state-segment)
+      (if (eq? state 'prime-state-segment)
 	  (length (prime-context-segment-candidates context))
 	  (length (prime-context-candidates context))))))
 
 (define prime-candidates-get-index
   (lambda (context)
     (let ((state (prime-context-state context)))
-      (if (= state 'prime-state-segment)
+      (if (eq? state 'prime-state-segment)
 	  (prime-context-segment-nth context)
 	  (prime-context-nth context)))))
 
