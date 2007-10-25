@@ -239,7 +239,7 @@
   '(
    (prime-wide-latin-key?     . prime-command-wide-latin-mode)
    (prime-latin-key?          . prime-command-latin-mode)
-   (prime-app-mode-start-key? . prime-command-app-mode-start)
+;   (prime-app-mode-start-key? . prime-command-app-mode-start)
    ;; Typing mode key bindings
    (prime-typing-mode-hiragana-key?  . prime-command-mode-hiragana)
    (prime-typing-mode-katakana-key?  . prime-command-mode-katakana)
