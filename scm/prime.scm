@@ -1563,21 +1563,21 @@
      ;; right motion
      ((and (> motion-arg 0)
 	   (not (null? (cdr line))))
-      (let ((line-left  (cons (car (or (pair? (prime-editor-get-right line))
-				       '(() . ())))
+      (let ((line-left  (cons (or (safe-car (prime-editor-get-right line))
+				  '())
 			      (prime-editor-get-left line)))
-	    (line-right (cdr (or (pair? (prime-editor-get-right line))
-				 '(() . ())))))
+	    (line-right (or (safe-cdr (prime-editor-get-right line))
+			    '())))
 	(prime-editor-set-left  line line-left)
 	(prime-editor-set-right line line-right))
       (prime-editor-cursor-move line (- motion-arg 1)))
      ;; left motion
      ((and (< motion-arg 0)
 	   (not (null? (car line))))
-      (let ((line-left  (cdr (or (pair? (prime-editor-get-left line))
-				 '(() . ()))))
-	    (line-right (cons (car (or (pair? (prime-editor-get-left line))
-				       '(() . ())))
+      (let ((line-left  (or (safe-cdr (prime-editor-get-left line))
+			    '()))
+	    (line-right (cons (or (safe-car (prime-editor-get-left line))
+				  '())
 			      (prime-editor-get-right line))))
 	(prime-editor-set-left  line line-left)
 	(prime-editor-set-right line line-right))
@@ -1590,13 +1590,13 @@
 
 (define prime-editor-backspace-char
   (lambda (line)
-    (prime-editor-set-left  line (cdr (or (pair? (prime-editor-get-left line))
-					  '(() . ()))))))
+    (prime-editor-set-left  line (or (safe-cdr (prime-editor-get-left line))
+				     '()))))
 
 (define prime-editor-delete-char
   (lambda (line)
-    (prime-editor-set-right line (cdr (or (pair? (prime-editor-get-right line))
-					  '(() . ()))))))
+    (prime-editor-set-right line (or (safe-cdr (prime-editor-get-right line))
+				     '()))))
 
 
 ;; This returns a preediting string.
