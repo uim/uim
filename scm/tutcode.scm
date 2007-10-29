@@ -329,8 +329,7 @@
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
 (define (tutcode-update-preedit pc)
-  (let ((rkc (tutcode-context-rk-context pc))
-        (stat (tutcode-context-state pc)))
+  (let ((stat (tutcode-context-state pc)))
     (im-clear-preedit pc)
     (case stat
       ((tutcode-state-yomi)
@@ -717,6 +716,12 @@
       (not (null? lst))
       (car (caar lst)))))
 
+;;; 現在のstateがpreeditを持つかどうかを返す。
+;;; @param pc コンテキストリスト
+(define (tutcode-state-has-preedit? pc)
+  (memq (tutcode-context-state pc)
+    '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting)))
+
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param pc コンテキストリスト
 ;;; @param key 入力されたキー
@@ -727,16 +732,21 @@
       (begin
         (case (tutcode-context-state pc)
           ((tutcode-state-on)
-           (tutcode-proc-state-on pc key key-state))
+           (tutcode-proc-state-on pc key key-state)
+           (if (tutcode-state-has-preedit? pc)
+             ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
+             (tutcode-update-preedit pc)))
           ((tutcode-state-yomi)
-           (tutcode-proc-state-yomi pc key key-state))
+           (tutcode-proc-state-yomi pc key key-state)
+           (tutcode-update-preedit pc))
           ((tutcode-state-converting)
-           (tutcode-proc-state-converting pc key key-state))
+           (tutcode-proc-state-converting pc key key-state)
+           (tutcode-update-preedit pc))
           ((tutcode-state-bushu)
-           (tutcode-proc-state-bushu pc key key-state))
+           (tutcode-proc-state-bushu pc key key-state)
+           (tutcode-update-preedit pc))
           (else
-           (tutcode-proc-state-off pc key key-state)))
-        (tutcode-update-preedit pc))))
+           (tutcode-proc-state-off pc key key-state))))))
 
 ;;; キーが離されたときの処理を行う。
 ;;; @param pc コンテキストリスト
