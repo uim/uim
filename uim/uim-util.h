@@ -36,6 +36,7 @@
 #define _uim_util_h_included_
 
 #include <stdio.h>
+#include <sys/types.h>
 
 #include "uim.h"
 
