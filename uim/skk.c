@@ -3184,6 +3184,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   struct skk_line *sl;
   struct stat st;
   int len, lock_fd = -1;
+  mode_t umask_val;
 
   if (!skk_dic || skk_dic->cache_modified == 0)
     return uim_scm_f();
@@ -3199,7 +3200,9 @@ skk_save_personal_dictionary(uim_lisp fn_)
     tmp_fn = uim_malloc(len);
 
     snprintf(tmp_fn, len, "%s.tmp", fn);
+    umask_val = umask(S_IRGRP | S_IROTH | S_IWGRP | S_IWOTH);
     fp = fopen(tmp_fn, "w");
+    umask(umask_val);
     if (!fp)
       goto error;
 
