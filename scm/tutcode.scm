@@ -262,7 +262,8 @@
 ;;; @param pc コンテキストリスト
 (define (tutcode-flush pc)
   (rk-flush (tutcode-context-rk-context pc))
-  (tutcode-context-set-state! pc 'tutcode-state-on)
+  (if (tutcode-context-on? pc) ; オフ時に呼ばれた場合はオンにしたら駄目
+    (tutcode-context-set-state! pc 'tutcode-state-on)) ; 変換状態をクリアする
   (tutcode-context-set-head! pc ())
   (tutcode-context-set-nr-candidates! pc 0))
 
