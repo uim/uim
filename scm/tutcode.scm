@@ -137,7 +137,9 @@
 		   (not (tutcode-context-on? tc)))
 		 (lambda (tc)
 		   (tutcode-prepare-activation tc)
-		   (tutcode-context-set-state! tc 'tutcode-state-off)))
+                   (tutcode-flush tc)
+                   (tutcode-context-set-state! tc 'tutcode-state-off)
+                   (tutcode-update-preedit tc))) ; flushでクリアした表示を反映
 
 (register-action 'action_tutcode_hiragana
 		 (lambda (tc)
@@ -150,7 +152,8 @@
 			(not (tutcode-context-katakana-mode? tc))))
 		 (lambda (tc)
 		   (tutcode-prepare-activation tc)
-		   (tutcode-context-set-state! tc 'tutcode-state-on)
+                   (if (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
+                     (tutcode-context-set-state! tc 'tutcode-state-on))
 		   (tutcode-context-set-katakana-mode! tc #f)))
 
 (register-action 'action_tutcode_katakana
@@ -164,7 +167,8 @@
 			(tutcode-context-katakana-mode? tc)))
 		 (lambda (tc)
 		   (tutcode-prepare-activation tc)
-		   (tutcode-context-set-state! tc 'tutcode-state-on)
+                   (if (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
+                     (tutcode-context-set-state! tc 'tutcode-state-on))
 		   (tutcode-context-set-katakana-mode! tc #t)))
 
 ;; Update widget definitions based on action configurations. The
