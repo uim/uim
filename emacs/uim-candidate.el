@@ -50,7 +50,7 @@
 (defun uim-merge-candidate ()
 
   (let ((maxwidth (string-width (nth 1 (car uim-candidate-line-list))))
-	offset mark-base mark-cursor)
+	offset mark-base mark-cursor mark-limit)
 
     ;; format page label
     (setq uim-candidate-page-label
@@ -77,6 +77,10 @@
     (setq uim-candidate-original-str
 	  (buffer-substring uim-candidate-original-start
 			    uim-candidate-original-end))
+
+    (save-excursion
+      (goto-char uim-candidate-original-end)
+      (setq mark-limit (point-marker)))
 
     ;; remove tabs/spaces
     (uim-tab-pad-space uim-candidate-original-start
@@ -158,78 +162,87 @@
 
 		  (setq vhead (point))
 
-		  ;; make new line
-		  (save-excursion
+		  (if (<= (save-excursion
+			    (end-of-line)
+			    (point))
+			  (marker-position mark-limit))
+		  
+		      ;; make new line
+		      (save-excursion
 
-		    (end-of-line)
+			(end-of-line)
 		    
-		    ;; |ABCDEFGH\ + |___aaa__|
-		    ;; |IJKLMN  |
-		    ;;
-		    ;; get region from vhead to physical end
-		    ;;
-		    ;; linetmp = ABCDEFGH
-		    ;; 
-		    (setq linetmp 
-			  (truncate-string-to-width (buffer-substring vhead (point))
-						    (window-width)))
+			;; |ABCDEFGH\ + |___aaa__|
+			;; |IJKLMN  |
+			;;
+			;; get region from vhead to physical end
+			;;
+			;; linetmp = ABCDEFGH
+			;; 
+			(setq linetmp 
+			      (truncate-string-to-width (buffer-substring vhead (point))
+							(window-width)))
 
-		    ;; make padding by truncating linetmp to offset size
-		    ;;  (add space as padding if shortage)
-		    ;;   witdth of padding is equal to offset
-		    ;; 
-		    ;; padding = ABC
-		    ;;
-		    (setq padding
-			  (truncate-string-to-width linetmp offset nil 32))
+			;; make padding by truncating linetmp to offset size
+			;;  (add space as padding if shortage)
+			;;   witdth of padding is equal to offset
+			;; 
+			;; padding = ABC
+			;;
+			(setq padding
+			      (truncate-string-to-width linetmp offset nil 32))
 		      
-		    ;;  overflow = GH
-		    ;;
-		    (let ((candwidth (+ maxwidth 2)))
+			;;  overflow = GH
+			;;
+			(let ((candwidth (+ maxwidth 2)))
 
-		      (if (>= (uim-string-width linetmp) (+ offset candwidth))
-			  (setq overflow 
-				(truncate-string-to-width linetmp 
-							  (uim-string-width linetmp)
-							  (+ offset candwidth) 32))
-			(setq overflow "")))
+			  (if (>= (uim-string-width linetmp) (+ offset candwidth))
+			      (setq overflow 
+				    (truncate-string-to-width linetmp 
+							      (uim-string-width linetmp)
+							      (+ offset candwidth) 32))
+			    (setq overflow "")))
 
-		    ;; index string selected appendix
-		    (save-excursion
-		      (goto-char vhead)
-		      (delete-region vhead (+ vhead (length linetmp)))
+			;; index string selected appendix
+			(save-excursion
+			  (goto-char vhead)
+			  (delete-region vhead (+ vhead (length linetmp)))
 			
-		      (when uim-xemacs
-			(insert " ")
-			(remove-text-properties (- (point) 1) (point)
-						'(face nil))
-			(goto-char (- (point) 1)))
+			  (when uim-xemacs
+			    (insert " ")
+			    (remove-text-properties (- (point) 1) (point)
+						    '(face nil))
+			    (goto-char (- (point) 1)))
 
-		      (insert (concat padding 
-				      candstr
-				      overflow))
+			  (insert (concat padding 
+					  candstr
+					  overflow))
 
-		      (when uim-xemacs
-			(delete-char 1))
+			  (when uim-xemacs
+			    (delete-char 1))
 		      
-		      )
+			  )
 		
-		    (uim-set-candidate-face candidx candsel 
-					    (+ vhead (length padding))
-					    (length candstr))
+			(uim-set-candidate-face candidx candsel 
+						(+ vhead (length padding))
+						(length candstr))
 
 
-		    ;; update merge-end
-		    (save-excursion
-		      (end-of-line)
-		      (setq uim-candidate-end (point)))
+			;; update merge-end
+			(save-excursion
+			  (end-of-line) 
+			  (setq uim-candidate-end 
+			      (if (> (marker-position mark-limit) (point))
+				  (marker-position mark-limit)
+				(point))))
 	      
-		    (setq mergecount (- mergecount 1))
+			(setq mergecount (- mergecount 1))
+			)
 		    )
 
 		  (if uim-show-candidate-upward
-		  (uim-vertical-motion 1))
-		    
+		      (uim-vertical-motion 1))
+
 		  )
 	      ;; append 
 	      (let (vhead)
@@ -248,7 +261,9 @@
 
 		(save-excursion
 		  (end-of-line)
-		  (setq uim-candidate-end (point))))))
+		  (setq uim-candidate-end (point)))
+
+		)))
 	    
 	  (if uim-candidate-line-list
 	      (setq uim-candidate-line-list
@@ -257,22 +272,20 @@
 
 	  )
 	
+	(force-mode-line-update)
+
+	;; update cursor position
+	(goto-char (marker-position mark-cursor))
+	(setq uim-candidate-cursor (point))
+
 	;; move to end of preedit
 	(if uim-show-candidate-upward
 	    (save-excursion
 	      (end-of-line)
 	      (setq uim-candidate-end (point))))
 
-	(force-mode-line-update)
+	(set-marker mark-cursor nil)
 
-	;; update cursor position
-	(when mark-cursor
-	  
-	  (goto-char (marker-position mark-cursor))
-	  (setq uim-candidate-cursor (point))
-
-	  (set-marker mark-cursor nil)
-	  )
 	))
     ))
 
@@ -566,13 +579,13 @@
 					    (+ uim-candidate-vofs 
 					       candlines))
 					   (end-of-line)
-					   (setq dtail(point))))))
+					   (setq dtail (point))))))
 		     (>= (- (- (window-height) 1) (+ winofs 1)) 
 			 candlines))
 
 		(progn
 		  (setq uim-show-candidate-upward nil)
-		  (setq uim-candidate-original-start dhead)
+		  (setq uim-candidate-original-start dhead)		  
 		  (setq uim-candidate-original-end dtail)
 		  )
 
