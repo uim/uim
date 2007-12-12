@@ -517,8 +517,12 @@ void InputContext::review_im(const char *engine)
 	free(mLocaleName);
 	mLocaleName = locale;
     } else {
-	if (!is_locale_included(engine_locales, client_locale))
-	    changeContext(prev_engine);
+	if (!is_locale_included(engine_locales, client_locale)) {
+	    clear();
+	    uim_switch_im(mUc, prev_engine);
+	    free(mEngineName);
+	    mEngineName = strdup(prev_engine);
+	}
     }
     free(prev_engine);
 }
