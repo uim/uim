@@ -251,6 +251,8 @@ displayed at the echo area.")
 
 (defvar uim-update-label-hook nil)
 
+(defvar uim-load-hook nil)
+
 (defvar uim-send-recv-again nil)
 
 (defvar uim-last-key-vector nil

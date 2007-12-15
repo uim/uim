@@ -1645,6 +1645,7 @@ uim mode facilitates internationalized input through the uim library."
 ;; Initialize uim.el 
 (uim-init)
 
+(run-hooks 'uim-load-hook)
 
 (provide 'uim)
 
