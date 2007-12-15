@@ -242,6 +242,15 @@
   )
 
 
+(defun uim-reorder-minor-mode-map-alist ()
+  (interactive)
+  (let ((inhibit-quit t) member)
+    (setq member (assq 'uim-mode minor-mode-map-alist))
+    (if member
+	(setq minor-mode-map-alist 
+	      (cons member 
+		    (delq member minor-mode-map-alist))))))
+
 
 (defun uim-reset-keymap ()
   (uim-init-keymap)
