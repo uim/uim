@@ -34,7 +34,7 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "0.0.8.1")
+(require 'uim-version)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

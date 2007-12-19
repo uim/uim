@@ -1,9 +1,10 @@
-EXTRA_DIST = README.ja
+EXTRA_DIST = README.ja uim-version.el.in
 
 if UIM_EL
 
 uimel_lispdir = $(UIMEL_LISP_DIR)
-dist_uimel_lisp_DATA = uim.el uim-var.el uim-keymap.el uim-key.el uim-util.el \
+dist_uimel_lisp_DATA = uim.el uim-var.el uim-version.el uim-keymap.el \
+ uim-key.el uim-util.el \
  uim-candidate.el uim-preedit.el uim-debug.el uim-leim.el uim-helper.el
 
 bin_PROGRAMS = uim-el-agent uim-el-helper-agent
@@ -25,5 +26,10 @@ uim_el_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
 uim_el_helper_agent_CPPFLAGS = -I$(top_srcdir)
 uim_el_helper_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
 			    $(top_builddir)/uim/libuim.la
+
+if MAINTAINER_MODE
+uim-version.el: uim-version.el.in $(top_srcdir)/configure.ac
+	sed -e 's/@\(VERSION\)@/$(VERSION)/' uim-version.el.in > $@	
+endif
 
 endif
