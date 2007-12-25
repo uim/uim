@@ -45,21 +45,25 @@ void uim_notify_quit(void);
 int uim_notify_info(const char *, va_list);
 int uim_notify_fatal(const char *, va_list);
 
+static int inited = 0;
 int
-uim_knotify_notify_init()
+uim_notify_init()
 {
-  KApplication app(argc, argv, "uim"); // XXX
+  if (!inited) {
+    KApplication app(argc, argv, "uim"); // XXX
+    inited = 1;
+  }
   return 1;
 }
 
 void
-uim_knotify_notify_quit()
+uim_notify_quit()
 {
   return;
 }
 
 int
-uim_knotify_notify_info(int timeout, const char *msg_fmt, va_list ap)
+uim_notify_info(const char *msg_fmt, va_list ap)
 {
   char body[BUFSIZ];
   char body_short[256];
@@ -75,7 +79,7 @@ uim_knotify_notify_info(int timeout, const char *msg_fmt, va_list ap)
 }
 
 int
-uim_knotify_notify_fatal(int timeout, const char *msg_fmt, va_list ap)
+uim_notify_fatal(const char *msg_fmt, va_list ap)
 {
   char body[BUFSIZ];
   char body_short[256];
