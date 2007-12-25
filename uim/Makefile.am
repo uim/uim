@@ -39,7 +39,7 @@ sigscheme-combined:
 pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h plugin.h \
 		uim-helper.h uim-im-switcher.h \
-		uim-custom.h
+		uim-custom.h uim-notify.h
 pkginclude_HEADERS += bsdlook.h
 
 libuim_la_SOURCES = \

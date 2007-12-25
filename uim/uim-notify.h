@@ -21,10 +21,11 @@
 extern "C" {
 #endif
 
+#ifdef UIM_NOTIFY_INTERNAL
+#define NOTIFY_PLUGIN_PATH LIBDIR "/uim/notify"
 #define NOTIFY_PLUGIN_PREFIX "libuimnotify-"
 #define NOTIFY_PLUGIN_SUFFIX ".so"
-
-#define NOTIFY_PLUGIN_PATH LIBDIR "/uim/notify"
+#endif
 
 int uim_notify_load(const char *);
 int uim_notify_init(void);

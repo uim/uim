@@ -49,6 +49,8 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-internal.h"
+
+#define UIM_NOTIFY_INTERNAL
 #include "uim-notify.h"
 
 #ifndef HAVE_DLFUNC
