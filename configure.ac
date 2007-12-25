@@ -2,7 +2,7 @@ AC_PREREQ(2.60b)
 AC_INIT([uim], [1.5.0], [uim-en@googlegroups.com])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
-AM_INIT_AUTOMAKE([1.10 dist-bzip2])
+AM_INIT_AUTOMAKE([1.9 dist-bzip2])
 
 # Enable GNU extensions such as asprintf(3), BSD-originated functions,
 # POSIX features and more on glibc (and some other

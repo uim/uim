@@ -50,6 +50,9 @@ int
 uim_notify_init()
 {
   if (!inited) {
+    int argc = 1;
+    char *argv[1] = { "uim" };
+
     KApplication app(argc, argv, "uim"); // XXX
     inited = 1;
   }
