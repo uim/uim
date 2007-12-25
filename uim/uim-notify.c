@@ -187,7 +187,7 @@ uim_notify_stderr_info(const char *fmt, va_list ap)
 
   vsnprintf(buf, sizeof(buf), fmt, ap);
 
-  return printf("uim [Info]: %s", buf);
+  return fprintf(stderr, "uim [Info]: %s", buf);
 }
 
 static int
@@ -197,6 +197,6 @@ uim_notify_stderr_fatal(const char *fmt, va_list ap)
 
   vsnprintf(buf, sizeof(buf), fmt, ap);
 
-  return printf("uim [Fatal]: %s", buf);
+  return fprintf(stderr, "uim [Fatal]: %s", buf);
 }
 
