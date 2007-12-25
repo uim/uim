@@ -170,7 +170,7 @@ init_scim()
         config_module = new ConfigModule( "simple" );
         if ( !config_module )
         {
-            fprintf(stderr, "Could not create ConfigModule\n");
+            uim_notify_fatal("init_scim: Could not create ConfigModule");
             return uim_scm_f();
         }
 
@@ -183,14 +183,14 @@ init_scim()
 #endif
         if ( config.null() )
         {
-            fprintf(stderr, "create_config failed\n");
+            uim_notify_fatal("init_scim: create_config failed");
             return uim_scm_f();
         }
 
         be = new CommonBackEnd( config, engine_list );
         if ( be.null() )
         {
-            fprintf(stderr, "create CommonBackEnd failed\n");
+            uim_notify_fatal("init_scim: create CommonBackEnd failed");
             return uim_scm_f();
         }
 
@@ -311,7 +311,7 @@ alloc_id( uim_lisp name_ )
     String uuid = search_uuid_by_imname( imname );
     if ( uuid.empty() )
     {
-        fprintf( stderr, "failed to search uuid\n" );
+        uim_notify_fatal( "uim-scim: failed to search uuid" );
         return uim_scm_f();
     }
     context->factory = be->get_factory( uuid );
@@ -323,7 +323,7 @@ alloc_id( uim_lisp name_ )
     context->instance = context->factory->create_instance( "UTF-8", instance_count );
     if ( context->instance.null() )
     {
-        fprintf(stderr, "failed to create IMEngineInstance\n");
+        uim_notify_fatal("uim-scim: failed to create IMEngineInstance");
         return uim_scm_f();
     }
 

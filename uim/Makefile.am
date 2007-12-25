@@ -48,7 +48,7 @@ libuim_la_SOURCES = \
 		iconv.c plugin.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
-		rk.c
+		rk.c uim-notify.c
 
 libuim_custom_la_SOURCES = uim-custom.c
 
@@ -199,7 +199,7 @@ libexec_PROGRAMS = uim-helper-server
 uim_helper_server_LIBS =  
 uim_helper_server_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_helper_server_CFLAGS =
-uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c uim-error.c
+uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c uim-error.c uim-notify.c
 uim_helper_server_LDADD = $(top_builddir)/replace/libreplace.la
 
 uim_sh_LIBS =

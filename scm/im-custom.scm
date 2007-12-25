@@ -545,5 +545,23 @@
 		   uim-xim-use-xft-font?))
 
 
+(define-custom-group 'notify
+		     (N_ "Notify")
+		     (N_ "long description will be here."))
+
+(define-custom 'notify-agent 'stderr
+  '(notify)
+  `(choice
+    ,@(map (lambda (str)
+             (list (string->symbol str) str str))
+           (uim-notify-get-plugins)))
+  (N_ "Notify agent name")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'notify-agent
+		 'custom-set-hooks
+		 (lambda ()
+		   (uim-notify-load (symbol->string notify-agent))))
+
 (if custom-full-featured?
     (for-each require-module installed-im-module-list))

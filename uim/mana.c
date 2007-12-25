@@ -98,9 +98,9 @@ mana_ipc_send_command(pid_t *pid,
         fgets(buf, sizeof(buf), *read_fp);
         if (buf != NULL) {
           if (strcmp(buf, "err") == 0)
-            fprintf(stderr, "mana not found\n");
+            uim_notify_fatal("uim-mana: mana not found");
           else
-            fprintf(stderr, "%s", buf);
+            uim_notify_fatal("uim-mana: %s", buf);
 	}
       }
 
@@ -171,7 +171,7 @@ mana_init(void)
     fclose(mana_r);
     fclose(mana_w);
     mana_r = mana_w = NULL;
-    fprintf(stderr, "mana not found\n");
+    uim_notify_fatal("uim-mana: mana not found");
     return uim_scm_f();
   }
   

@@ -279,7 +279,7 @@ write_message(struct client *cl)
 	fprintf(stderr, "EAGAIN: fd = %d\n", cl->fd);
 #endif
       } else {
-	perror("uim-helper_server write(2) failed");
+	uim_notify_fatal("uim-helper-server: %s", strerror(errno));
 	if (errno == EPIPE) {
 	  fprintf(stderr, "fd = %d\n", cl->fd);
 	  FD_CLR(cl->fd, &s_fdset_read);

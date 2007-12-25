@@ -978,7 +978,7 @@ expand_str(const char *p)
     	  p++;
     	  c = *p;
     	  if (*p == '\0') {
-	    fprintf(stderr, "error in expand_str\n");
+	    uim_notify_fatal("uim-skk: error in expand_str");
 	    return NULL;
 	  }
 	  if (c >= '0' && c <= '7') {
@@ -993,7 +993,7 @@ expand_str(const char *p)
       }
     }
     if ((i + 1) >= BUFSIZ) {
-      fprintf(stderr, "expand_str: too long word\n");
+      uim_notify_fatal("uim-skk: too long word");
       return NULL;
     }
     buf[i] = c;
@@ -3576,7 +3576,7 @@ open_skkserv(const char *hostname, int portnum, int family)
   hints.ai_socktype = SOCK_STREAM;
 
   if ((error = getaddrinfo(hostname, port, &hints, &aitop))) {
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(error));
+    uim_notify_fatal("uim-skk: %s", gai_strerror(error));
     return 0;
   }
 
@@ -3591,7 +3591,7 @@ open_skkserv(const char *hostname, int portnum, int family)
     if (connect(sock, ai->ai_addr, ai->ai_addrlen) == 0)
       break;
     else
-      fprintf(stderr, "connect to %s port %s failed\n", hostname, port);
+      uim_notify_fatal("uim-skk: connect to %s port %s failed", hostname, port);
     close(sock);
     sock = -1;
   }  while ((ai = ai->ai_next) != NULL);
@@ -3602,7 +3602,7 @@ open_skkserv(const char *hostname, int portnum, int family)
     return 0;
 
 #if 0
-  fprintf(stderr, "SKKSERVER=%s\n", hostname);
+  uim_notify_info("uim-skk: SKKSERVER=%s", hostname);
 #endif
   skkservsock = sock;
   rserv = fdopen(sock, "r");

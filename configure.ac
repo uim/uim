@@ -1295,6 +1295,85 @@ AC_ARG_ENABLE(anthy-utf8-static,
 
 AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
 
+# *******************************
+# *** Tests for NOTIFY ***
+# *******************************
+notify_targets='libnotify knotify'
+
+AC_ARG_ENABLE(notify,
+  [  --enable-notify[=mode_list] enable notify module (specify comma separated mode list), HIGHLY EXPERIMENTAL:
+                          libnotify: libnotify
+                          knotify:   KDE notify],
+  [ enable_notify=$enableval
+    have_notify_opt=yes ],
+  [ enable_notify=yes
+    have_notify_opt=no ])
+
+if test "x$enable_notify" != xno; then
+  for i in `echo $enable_notify | sed 's/,/ /g'`; do
+    eval "au_enable_$i=yes"
+  done
+fi
+
+AC_MSG_CHECKING(enable_notify=libnotify)
+if test "x$au_enable_libnotify" = xyes; then
+   AC_MSG_RESULT([yes, configuring libnotify])
+   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4, use_libnotify="yes",
+					       use_libnotify="no")
+   if test "x$use_libnotify" = "xyes"; then
+     AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
+     AC_SUBST(LIBNOTIFY_LIBS)
+     AC_SUBST(LIBNOTIFY_CFLAGS)
+     use_notify="libnotify "
+   fi
+else
+   AC_MSG_RESULT(no)
+fi
+
+AC_MSG_CHECKING(enable_notify=knotify)
+if test "x$au_enable_knotify" = xyes; then
+   AC_MSG_RESULT([yes, configuring knotify])
+   if test "x$use_qt" = "xyes"; then
+     if test "x$KDE_CONFIG" != "xno"; then
+     	KNOTIFY_PREFIX=`kde-config --prefix`
+	KNOTIFY_LIB_DIR=`kde-config --expandvars --install lib`
+	KNOTIFY_DATA_DIR=`kde-config --expandvars --install data`
+	saved_cppflags="${CPPFLAGS}"
+	CPPFLAGS="-I${KNOTIFY_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
+	AC_LANG_PUSH(C++)
+	AC_CHECK_HEADER([${KNOTIFY_PREFIX}/include/kde/knotifyclient.h],
+			[use_knotify="yes" KNOTIFY_INCLUDE_DIR="${KNOTIFY_PREFIX}/include/kde"], [use_knotify="no"])
+	if test "x$use_knotify" = "xno"; then
+	  CPPFLAGS="-I${KNOTIFY_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
+	  AC_CHECK_HEADER([${KNOTIFY_PREFIX}/include/knotifyclient.h],
+	  		  [use_knotify="yes" KNOTIFY_INCLUDE_DIR="${KNOTIFY_PREFIX}/include"], [use_knotify="no"])
+	fi
+	CPPFLAGS="${saved_cppflags}"
+	AC_LANG_POP(C++)
+      else
+	use_knotify="no"
+      fi
+    else
+      use_knotify="no"
+    fi
+fi
+if test "x$use_knotify" = "xyes"; then
+  AC_DEFINE(ENABLE_KNOTIFY, 1, [set notify interface with knotify])
+  AC_SUBST(KNOTIFY_PREFIX)
+  AC_SUBST(KNOTIFY_LIB_DIR)
+  AC_SUBST(KNOTIFY_DATA_DIR)
+  AC_SUBST(KNOTIFY_INCLUDE_DIR)
+  use_notify="${use_notify}knotify "
+fi
+
+if test "x$use_notify" = "x"; then
+  use_notify=none
+fi
+
+AM_CONDITIONAL(LIBNOTIFY, test x$use_libnotify = xyes)
+AM_CONDITIONAL(KNOTIFY, test x$use_knotify = xyes)
+
+
 AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based error handlings])
 
 #
@@ -1427,6 +1506,7 @@ AC_CONFIG_FILES([Makefile
 		 pixmaps/Makefile
 		 pixmaps/uim-m17nlib-relink-icons
 		 replace/Makefile
+		 notify/Makefile
 		 uim.pc
 		 uim.desktop.in
 		 uim.spec
@@ -1465,6 +1545,7 @@ Configure Result :
    DICT            : ${use_dict}
    EB              : ${use_eb}
    libedit         : ${use_libedit}
+   notify          : ${use_notify}
    Default toolkit : ${default_toolkit}
 ])
 

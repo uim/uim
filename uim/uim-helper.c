@@ -202,11 +202,11 @@ uim_helper_check_connection_fd(int fd)
   uid_t euid;
   gid_t egid;
   if (getpeereid(fd, &euid, &egid) < 0) {
-    perror("getpeereid failed");
+    uim_notify_fatal("uim_helper: %s", strerror(errno));
     return -1;
   }
   if ((euid != 0) && (euid != getuid())) {
-    fprintf(stderr, "uid mismatch\n");
+    uim_notify_fatal("uim_helper: uid mismatch");
     return -1;
   }
   return 0;

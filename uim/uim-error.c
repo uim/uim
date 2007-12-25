@@ -43,7 +43,7 @@
 
 #include "uim.h"
 #include "uim-internal.h"
-
+#include "uim-notify.h"
 
 #ifndef EX_SOFTWARE
 #define EX_SOFTWARE 70
@@ -60,7 +60,6 @@ static uim_bool fatal_errored;
 static int guarded;
 static const char *err_msg;
 
-
 void
 uim_init_error(void)
 {
@@ -74,6 +73,7 @@ static void
 print_caught_error(void)
 {
   if (err_msg) {
+    uim_notify_fatal(err_msg); /* XXX: stdout messges will be duplicated */
     fputs("libuim: ", stderr);
     if (fatal_errored)
       fputs("fatal error: ", stderr);
@@ -200,3 +200,4 @@ uim_strdup(const char *s)
 
   return copied;
 }
+

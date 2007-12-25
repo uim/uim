@@ -39,11 +39,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <dirent.h>
 
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
+#include "uim-notify.h"
 
 static uim_lisp protected;
 
@@ -283,6 +285,70 @@ setugidp(void)
   return MAKE_BOOL(uim_issetugid());
 }
 
+static uim_lisp
+uim_scm_notify_get_plugins(void)
+{
+  uim_lisp ret_;
+  DIR *dirp;
+  struct dirent *dp;
+  int plen, slen;
+
+  plen = strlen(NOTIFY_PLUGIN_PREFIX);
+  slen = strlen(NOTIFY_PLUGIN_SUFFIX);
+
+  ret_ = CONS(MAKE_STR("stderr"), uim_scm_null());
+  dirp = opendir(NOTIFY_PLUGIN_PATH);
+  if (dirp) {
+    while ((dp = readdir(dirp)) != NULL) {
+      char name[PATH_MAX];
+      int len = strlen(dp->d_name);
+
+      if ((len < plen + slen) || (sizeof(name) < len) ||
+	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
+	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
+	continue;
+
+      strlcpy(name, dp->d_name + plen, len - plen - slen + 1);
+      ret_ = CONS(MAKE_STR(name), ret_);
+    }
+    (void)closedir(dirp);
+  }
+  return uim_scm_callf("reverse", "o", ret_);
+}
+
+static uim_lisp
+uim_scm_notify_load(uim_lisp name_)
+{
+  const char *name = REFER_C_STR(name_);
+
+  if (uim_notify_load(name))
+    return uim_scm_t();
+  else
+    return uim_scm_f();
+}
+
+static uim_lisp
+uim_scm_notify_info(uim_lisp msg_)
+{
+  const char *msg = REFER_C_STR(msg_);
+
+  if (uim_notify_info("%s", msg))
+    return uim_scm_t();
+  else
+    return uim_scm_f();
+}
+
+static uim_lisp
+uim_scm_notify_fatal(uim_lisp msg_)
+{
+  const char *msg = REFER_C_STR(msg_);
+
+  if (uim_notify_fatal("%s", msg))
+    return uim_scm_t();
+  else
+    return uim_scm_f();
+}
+
 void
 uim_init_util_subrs(void)
 {
@@ -316,4 +382,10 @@ uim_init_util_subrs(void)
 
   /* SRFI-43 */
   uim_scm_init_proc1("vector-copy", vector_copy);
+
+  /* notify */
+  uim_scm_init_proc0("uim-notify-get-plugins", uim_scm_notify_get_plugins);
+  uim_scm_init_proc1("uim-notify-load", uim_scm_notify_load);
+  uim_scm_init_proc1("uim-notify-info", uim_scm_notify_info);
+  uim_scm_init_proc1("uim-notify-fatal", uim_scm_notify_fatal);
 }

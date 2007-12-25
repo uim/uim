@@ -162,7 +162,7 @@ plugin_load(uim_lisp _name)
   free(plugin_lib_filename);
 
   if (library == NULL) {
-    fprintf(stderr, "load failed %s\n", dlerror());
+    uim_notify_fatal("load failed %s", dlerror());
     free(plugin_scm_filename);
     return uim_scm_f();
   }
@@ -172,7 +172,7 @@ plugin_load(uim_lisp _name)
   plugin_instance_quit
     = (void (*)(void))(uintptr_t)dlfunc(library, "uim_plugin_instance_quit");
   if (!plugin_instance_init) {
-    fprintf(stderr, "%s plugin init failed\n", plugin_name);
+    uim_notify_fatal("%s plugin init failed", plugin_name);
     free(plugin_scm_filename);
     return uim_scm_f();
   }
@@ -184,7 +184,7 @@ plugin_load(uim_lisp _name)
 
     succeeded = uim_scm_require_file(plugin_scm_filename);
     if (!succeeded) {
-      fprintf(stderr, "%s plugin subsequent %s loading failed\n",
+      uim_notify_fatal("%s plugin subsequent %s loading failed",
 	      plugin_name, plugin_scm_filename);
       free(plugin_scm_filename);
       return uim_scm_f();

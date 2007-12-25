@@ -165,7 +165,7 @@ create_context(void)
   buf = diclist;
   for (i = 0; i < dic_num; i++) {
     if (RkMountDic(cc->rk_context_id, buf, 0) == ERR) {
-      fprintf(stderr, "Failed to mount dictionary %s\n", buf);
+      uim_notify_fatal("uim-canna: Failed to mount dictionary %s", buf);
     }
     buflen = strlen(buf) + sizeof((char)'\0');
     buf += buflen;
@@ -308,7 +308,7 @@ get_unconv_candidate(uim_lisp cc_, uim_lisp seg_)
   if (len == ERR)
     uim_fatal_error("RkGetYomi() failed");
 #ifdef UIM_CANNA_DEBUG
-  fprintf(stderr, "yomi: %s\n", buf);
+  uim_notify_info("yomi: %s", buf);
 #endif
   return MAKE_STR(buf);
 }
