@@ -238,6 +238,10 @@ uim_release_context(uim_context uc)
   free(uc->propstr);
   free(uc->modes);
   free(uc->client_encoding);
+#ifdef DEBUG
+  /* prevents operating on invalidated uim_context */
+  memset(uc, 0, sizeof(*uc));
+#endif
   free(uc);
 
   UIM_CATCH_ERROR_END();
