@@ -578,6 +578,15 @@ uim_press_key(uim_context uc, int key, int state);
 int
 uim_release_key(uim_context uc, int key, int state);
 
+/**
+ * Change client encoding of an input context.
+ *
+ * @param uc input context
+ * @param encoding client encoding name
+ *
+ * @see uim_create_context
+ */
+void uim_set_client_encoding(uim_context uc, const char *encoding);
 
 
 /* im list */

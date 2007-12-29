@@ -559,6 +559,22 @@ uim_input_string(uim_context uc, const char *str)
  * Optional APIs                                                *
  ****************************************************************/
 void
+uim_set_client_encoding(uim_context uc, const char *encoding)
+{
+  if (UIM_CATCH_ERROR_BEGIN())
+    return;
+
+  assert(uim_scm_gc_any_contextp());
+  assert(uc);
+  assert(encoding);
+
+  free(uc->client_encoding);
+  uc->client_encoding = uim_strdup(encoding);
+
+  UIM_CATCH_ERROR_END();
+}
+
+void
 uim_set_configuration_changed_cb(uim_context uc,
 				 void (*changed_cb)(void *ptr))
 {

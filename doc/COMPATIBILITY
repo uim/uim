@@ -57,6 +57,23 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: New API for client encoding change
+Affects: bridge developers
+Updates: C API, libuim ABI
+Version: 1.5.0
+Revision: ac5069
+Date: 2007-12-29
+Modifier: Etsushi, YamaKen
+Related: bug #13622
+URL:
+Changes:
+      (new) uim_set_client_encoding()
+Description:
+  Some bridges such as uim.el need to change its client-side encoding
+  in response to an IM-side encoding change caused by an IM-switching
+  and notified via the configuration_changed callback. This API
+  provides the proper way for it.
+------------------------------------------------------------------------------
 Summary: uim-scm API truth predicates reorganization in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: C API (uim-scm), libuim ABI
