@@ -54,6 +54,7 @@
 #include "uim.h"
 #include "uim-internal.h"
 #include "uim-helper.h"
+#include "uim-notify.h"
 
 
 struct client {

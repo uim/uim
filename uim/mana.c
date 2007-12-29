@@ -51,6 +51,7 @@
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
 #include "plugin.h"
+#include "uim-notify.h"
 
 #define MANA_COMMAND "mana"
 

@@ -51,6 +51,7 @@
 #include "uim-internal.h"
 #include "uim-helper.h"
 #include "uim-util.h"
+#include "uim-notify.h"
 
 #ifndef HAVE_SIG_T
 typedef void (*sig_t)(int);

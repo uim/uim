@@ -62,6 +62,7 @@
 #include "uim-scm-abbrev.h"
 #include "uim-helper.h"
 #include "plugin.h"
+#include "uim-notify.h"
 
 #include "bsdlook.h"
 

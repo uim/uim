@@ -52,6 +52,7 @@
 #include "uim-scm-abbrev.h"
 #include "plugin.h"
 #include "uim-internal.h"
+#include "uim-notify.h"
 
 #ifndef HAVE_DLFUNC
 #define dlfunc dlsym
