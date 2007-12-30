@@ -45,8 +45,6 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
-
-#define UIM_NOTIFY_INTERNAL
 #include "uim-notify.h"
 
 static uim_lisp protected;
