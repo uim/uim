@@ -160,6 +160,7 @@ void uim_init_util_subrs(void);
 void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);
 
+void uim_set_encoding(uim_context uc, const char *enc);
 #if HAVE_ISSETUGID
 #define uim_issetugid() issetugid()
 #else

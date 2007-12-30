@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 2))
+
 ; Comment should be written in English, UTF-8.
 ;
 (require "util.scm")
@@ -360,6 +362,11 @@
     (let ((c (im-retrieve-context uc)))
       (and c
            (context-im c)))))
+
+(define uim-context-encoding
+  (lambda (uc)
+    (and-let* ((im (uim-context-im uc)))
+      (im-encoding im))))
 
 (define context-update-preedit
   (lambda (context segments)

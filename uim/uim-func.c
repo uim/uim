@@ -159,6 +159,17 @@ im_set_encoding(uim_lisp uc_, uim_lisp enc_)
   uc = retrieve_uim_context(uc_);
   enc = REFER_C_STR(enc_);
 
+  uim_set_encoding(uc, enc);
+
+  return uim_scm_f();
+}
+
+void
+uim_set_encoding(uim_context uc, const char *enc)
+{
+  assert(uc);
+  assert(enc);
+
   if (uc->outbound_conv)
     uc->conv_if->release(uc->outbound_conv);
   if (uc->inbound_conv)
@@ -171,8 +182,6 @@ im_set_encoding(uim_lisp uc_, uim_lisp enc_)
     uc->outbound_conv = uc->conv_if->create(uc->client_encoding, enc);
     uc->inbound_conv  = uc->conv_if->create(enc, uc->client_encoding);
   }
-
-  return uim_scm_f();
 }
 
 static uim_lisp

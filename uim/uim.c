@@ -561,6 +561,8 @@ uim_input_string(uim_context uc, const char *str)
 void
 uim_set_client_encoding(uim_context uc, const char *encoding)
 {
+  uim_lisp im_enc;
+
   if (UIM_CATCH_ERROR_BEGIN())
     return;
 
@@ -570,6 +572,12 @@ uim_set_client_encoding(uim_context uc, const char *encoding)
 
   free(uc->client_encoding);
   uc->client_encoding = uim_strdup(encoding);
+
+  protected0 = im_enc = uim_scm_callf("uim-context-encoding", "p", uc);
+  if (!STRP(im_enc))
+    uim_fatal_error("invalid IM encoding");
+    
+  uim_set_encoding(uc, REFER_C_STR(im_enc));
 
   UIM_CATCH_ERROR_END();
 }
