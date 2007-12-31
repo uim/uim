@@ -63,7 +63,7 @@ send_knotify(char event, char msg, int level)
   QString event(event), fromApp("uim"), text(msg), sound(""), file("");
   int present = KNotifyClient::Messagebox;
 
-  fprintf(stderr, "uim: %s\n", msg);
+  fprintf(stderr, "%s\n", msg);
 
   if (!kapp->dcopClient()->attach()) {
     fprintf(stderr, "uim: cannot connect DCOP\n");
