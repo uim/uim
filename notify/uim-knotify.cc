@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <dcopobject.h>
+#include <dcopclient.h>
 #include <kapplication.h>
 #include <knotifyclient.h>
 
@@ -44,13 +46,6 @@ static int inited = 0;
 int
 uim_notify_plugin_init()
 {
-  if (!inited) {
-    int argc = 1;
-    char *argv[1] = { "uim" };
-
-    KApplication app(argc, argv, "uim"); // XXX
-    inited = 1;
-  }
   return 1;
 }
 
@@ -60,18 +55,39 @@ uim_notify_plugin_quit()
   return;
 }
 
+static int
+send_knotify(char event, char msg, int level)
+{
+  QByteArray data;
+  QDataStream arg(data, IO_WriteOnly);
+  QString event(event), fromApp("uim"), text(msg), sound(""), file("");
+  int present = KNotifyClient::Messagebox;
+
+  fprintf(stderr, "uim: %s\n", msg);
+
+  if (!kapp->dcopClient()->attach()) {
+    fprintf(stderr, "uim: cannot connect DCOP\n");
+    return 0;
+  }
+  arg << event << fromApp << text << sound << file << present << level;
+  if (!kapp->dcopClient()->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)",
+				data)) {
+    fprintf(stderr, "uim: cannot send message via DCOP\n");
+    return 0;
+  }
+  return 1;
+}
+
 int
 uim_notify_plugin_info(const char *msg)
 {
   char body[BUFSIZ];
   char body_short[256];
-  char body_fmt[BUFSIZ];
 
   snprintf(body, sizeof(body), "uim: %s", msg);
   strlcpy(body_short, body, sizeof(body_short));
 
-  KNotifyClient::userEvent(body_short, KNotifyClient::Messagebox);
-  kapp->processEvents();
+  return send_knotify("Info", body_short, KNotifyClient::Notification);
 }
 
 int
@@ -79,11 +95,9 @@ uim_notify_plugin_fatal(const char *msg)
 {
   char body[BUFSIZ];
   char body_short[256];
-  char body_fmt[BUFSIZ];
 
   snprintf(body, sizeof(body), "uim: %s", msg);
   strlcpy(body_short, body, sizeof(body_short));
 
-  KNotifyClient::userEvent(body_short, KNotifyClient::Messagebox, KNotifyClient::Error);
-  kapp->processEvents();
+  return send_knotify("Fatal", body_short, KNotifyClient::Error);
 }
