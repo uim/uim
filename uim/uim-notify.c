@@ -57,13 +57,13 @@
 
 static int uim_notify_stderr_init(void);
 static void uim_notify_stderr_quit(void);
-static int uim_notify_stderr_info(const char *, va_list);
-static int uim_notify_stderr_fatal(const char *, va_list);
+static int uim_notify_stderr_info(const char *);
+static int uim_notify_stderr_fatal(const char *);
 
 static int (*uim_notify_init_func)(void) = uim_notify_stderr_init;
 static void (*uim_notify_quit_func)(void) = uim_notify_stderr_quit;
-static int (*uim_notify_info_func)(const char *, va_list) = uim_notify_stderr_info;
-static int (*uim_notify_fatal_func)(const char *, va_list) = uim_notify_stderr_fatal;
+static int (*uim_notify_info_func)(const char *) = uim_notify_stderr_info;
+static int (*uim_notify_fatal_func)(const char *) = uim_notify_stderr_fatal;
 
 static void *notify_dlhandle = NULL;
 static char notify_agent_name[PATH_MAX];
@@ -108,28 +108,28 @@ uim_notify_load(const char *name)
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_init_func  = (int (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_init");
+    uim_notify_init_func  = (int (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_init");
     if (!uim_notify_init_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_init()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_quit_func  = (void (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_quit");
+    uim_notify_quit_func  = (void (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_quit");
     if (!uim_notify_quit_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_quit()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_info_func  = (int (*)(const char *, va_list))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_info");
+    uim_notify_info_func  = (int (*)(const char *))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_info");
     if (!uim_notify_info_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_info()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_fatal_func = (int (*)(const char *, va_list))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_fatal");
+    uim_notify_fatal_func = (int (*)(const char *))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_fatal");
     if (!uim_notify_fatal_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_fatal()' in %s\n", path);
       dlclose(notify_dlhandle);
@@ -160,27 +160,27 @@ uim_notify_quit(void)
 int
 uim_notify_info(const char *msg_fmt, ...)
 {
-  int ret;
   va_list ap;
+  char msg[BUFSIZ];
 
   va_start(ap, msg_fmt);
-  ret = uim_notify_info_func(msg_fmt, ap);
+  vsnprintf(msg, sizeof(msg), msg_fmt, ap);
   va_end(ap);
 
-  return ret;
+  return uim_notify_info_func(msg);
 }
 
 int
 uim_notify_fatal(const char *msg_fmt, ...)
 {
-  int ret;
   va_list ap;
+  char msg[BUFSIZ];
 
   va_start(ap, msg_fmt);
-  ret = uim_notify_fatal_func(msg_fmt, ap);
+  vsnprintf(msg, sizeof(msg), msg_fmt, ap);
   va_end(ap);
 
-  return ret;
+  return uim_notify_fatal_func(msg);
 }
 
 
@@ -201,22 +201,14 @@ uim_notify_stderr_quit(void)
 }
 
 static int
-uim_notify_stderr_info(const char *fmt, va_list ap)
+uim_notify_stderr_info(const char *msg)
 {
-  char buf[BUFSIZ];
-
-  vsnprintf(buf, sizeof(buf), fmt, ap);
-
-  return fprintf(stderr, "uim [Info]: %s", buf);
+  return fprintf(stderr, "uim [Info]: %s", msg);
 }
 
 static int
-uim_notify_stderr_fatal(const char *fmt, va_list ap)
+uim_notify_stderr_fatal(const char *msg)
 {
-  char buf[BUFSIZ];
-
-  vsnprintf(buf, sizeof(buf), fmt, ap);
-
-  return fprintf(stderr, "uim [Fatal]: %s", buf);
+  return fprintf(stderr, "uim [Fatal]: %s", msg);
 }
 

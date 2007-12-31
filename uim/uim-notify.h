@@ -27,6 +27,12 @@ void uim_notify_quit(void);
 int uim_notify_info(const char *, ...);
 int uim_notify_fatal(const char *, ...);
 
+int uim_notify_plugin_load(const char *);
+int uim_notify_plugin_init(void);
+void uim_notify_plugin_quit(void);
+int uim_notify_plugin_info(const char *);
+int uim_notify_plugin_fatal(const char *);
+
 #ifdef __cplusplus
 }
 #endif

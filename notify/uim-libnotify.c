@@ -38,27 +38,20 @@
 #include <libnotify/notify.h>
 
 #include "config.h"
-#include "uim-libnotify.h"
-
-int uim_notify_init(void);
-void uim_notify_quit(void);
-int uim_notify_info(const char *, va_list);
-int uim_notify_fatal(const char *, va_list);
+#include "uim-notify.h"
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
 
 static int uim_libnotify_timeout = 3000;
 
 static int
-uim_libnotify_notify(int urgency, const char *body_fmt, va_list ap)
+uim_libnotify_notify(int urgency, const char *body)
 {
-  char body[BUFSIZ];
   char body_short[256];
   NotifyNotification *notification;
   GError *error = NULL;
   gboolean ret;
 
-  vsnprintf(body, sizeof(body), body_fmt, ap);
   strlcpy(body_short, body, sizeof(body_short));
 
   fprintf(stderr, "uim: %s\n", body);
@@ -95,26 +88,26 @@ uim_libnotify_notify(int urgency, const char *body_fmt, va_list ap)
   interface
  */
 int
-uim_notify_init(void)
+uim_notify_plugin_init(void)
 {
   return notify_init("uim");
 }
 
 void
-uim_notify_quit(void)
+uim_notify_plugin_quit(void)
 {
   if (notify_is_initted())
     notify_uninit();
 }
 
 int
-uim_notify_info(const char *msg_fmt, va_list ap)
+uim_notify_plugin_info(const char *msg)
 {
-  return uim_libnotify_notify(NOTIFY_URGENCY_NORMAL, msg_fmt, ap);
+  return uim_libnotify_notify(NOTIFY_URGENCY_NORMAL, msg);
 }
 
 int
-uim_notify_fatal(const char *msg_fmt, va_list ap)
+uim_notify_plugin_fatal(const char *msg)
 {
-  return uim_libnotify_notify(NOTIFY_URGENCY_CRITICAL, msg_fmt, ap);
+  return uim_libnotify_notify(NOTIFY_URGENCY_CRITICAL, msg);
 }

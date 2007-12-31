@@ -38,16 +38,11 @@
 #include <knotifyclient.h>
 
 #include "config.h"
-#include "knotify.h"
-
-int uim_notify_init(void);
-void uim_notify_quit(void);
-int uim_notify_info(const char *, va_list);
-int uim_notify_fatal(const char *, va_list);
+#include "uim-notify.h"
 
 static int inited = 0;
 int
-uim_notify_init()
+uim_notify_plugin_init()
 {
   if (!inited) {
     int argc = 1;
@@ -60,21 +55,19 @@ uim_notify_init()
 }
 
 void
-uim_notify_quit()
+uim_notify_plugin_quit()
 {
   return;
 }
 
 int
-uim_notify_info(const char *msg_fmt, va_list ap)
+uim_notify_plugin_info(const char *msg)
 {
   char body[BUFSIZ];
   char body_short[256];
   char body_fmt[BUFSIZ];
 
-  strlcpy(body_fmt, "uim: ", sizeof(body_fmt));
-  strlcat(body_fmt, msg_fmt, sizeof(body_fmt));
-  vsnprintf(body, sizeof(body), body_fmt, ap);
+  snprintf(body, sizeof(body), "uim: %s", msg);
   strlcpy(body_short, body, sizeof(body_short));
 
   KNotifyClient::userEvent(body_short, KNotifyClient::Messagebox);
@@ -82,15 +75,13 @@ uim_notify_info(const char *msg_fmt, va_list ap)
 }
 
 int
-uim_notify_fatal(const char *msg_fmt, va_list ap)
+uim_notify_plugin_fatal(const char *msg)
 {
   char body[BUFSIZ];
   char body_short[256];
   char body_fmt[BUFSIZ];
 
-  strlcpy(body_fmt, "uim: ", sizeof(body_fmt));
-  strlcat(body_fmt, msg_fmt, sizeof(body_fmt));
-  vsnprintf(body, sizeof(body), body_fmt, ap);
+  snprintf(body, sizeof(body), "uim: %s", msg);
   strlcpy(body_short, body, sizeof(body_short));
 
   KNotifyClient::userEvent(body_short, KNotifyClient::Messagebox, KNotifyClient::Error);
