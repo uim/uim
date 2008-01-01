@@ -69,12 +69,8 @@ update_context_encoding(uim_agent_context *ua)
   /* discard current context */
   clear_candidate(ua->cand);
   clear_preedit(ua->pe);
-  uim_release_context(ua->context);
   
-  ua->context = create_context(ua->encoding, ua);
-
-  update_context_im(ua);
-  
+  uim_set_client_encoding(ua->context, ua->encoding);
 }
 
 
