@@ -1,5 +1,3 @@
-;; -*- mode: scheme; coding: utf-8 -*-
-
 ;;; byeoru-symbols.scm: Symbols list for byeoru.scm
 ;;;
 ;;; Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
@@ -1113,3 +1111,8 @@
      1101
      1102
      1103)))
+
+;; Local Variables:
+;; mode: scheme
+;; coding: utf-8
+;; End:

@@ -1,5 +1,3 @@
-;; -*- mode: scheme; coding: utf-8 -*-
-
 ;;; byeoru-custom.scm: Customization variables for byeoru.scm
 ;;;
 ;;; Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
@@ -40,11 +38,15 @@
 (define byeoru-im-long-desc (N_ "A comprehensive input method suite for Hangul. This covers most of the major input methods such as 2-beol and 3-beol variants, and provides features such as Hangul-Chinese conversion. The name 'byeoru' means inkstone in Korean."))
 
 (define byeoru-layout-alist
-  (list 
-   (list 'byeoru-layout-hangul2
+  (list
+   (list 'byeoru-layout-hangul2hanterm
 	 #f				; 2-beol can not be orderless.
-	 (N_ "Hangul 2-beol")
-	 (N_ "Standard Hangul 2-beol keyboard"))
+	 (N_ "Hangul 2-beol Hanterm")
+	 (N_ "Hangul 2-beol keyboard that maps an undefined shifted key to an alphabet"))
+   (list 'byeoru-layout-hangul2windows
+	 #f				; 2-beol can not be orderless.
+	 (N_ "Hangul 2-beol Windows")
+	 (N_ "Hangul 2-beol keyboard that maps an undefined shifted key to a jamo"))
    (list 'byeoru-layout-strict3final
 	 #f				; neither can strict 3-beol.
 	 (N_ "Hangul 3-beol final strict")
@@ -89,7 +91,7 @@
   (N_ "long description will be here."))
 
 ;; Changing keyboard layout should flush the automata.
-(define-custom 'byeoru-layout 'byeoru-layout-hangul2
+(define-custom 'byeoru-layout 'byeoru-layout-hangul2windows
   '(byeoru byeoru-keyboard)
   (cons 'choice
 	(map (lambda (entry)
@@ -165,3 +167,8 @@
   '(boolean)
   (N_ "Represent incomplete syllables using compatibility jamos")
   (N_ "long description will be here."))
+
+;; Local Variables:
+;; mode: scheme
+;; coding: utf-8
+;; End:

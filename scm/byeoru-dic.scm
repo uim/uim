@@ -1,5 +1,3 @@
-;; -*- mode: scheme; coding: utf-8 -*-
-
 ;;; byeoru-dic.scm: Hangul character to Chinese character
 ;;; dictionary for byeoru.scm
 ;;;
@@ -70904,3 +70902,8 @@
      ("黠" . "약을 힐"))
     ("힐난"
      "詰難")))
+
+;; Local Variables:
+;; mode: scheme
+;; coding: utf-8
+;; End:

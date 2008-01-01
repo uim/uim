@@ -1,5 +1,3 @@
-;; -*- mode: scheme; coding: utf-8 -*-
-
 ;;; byeoru.scm: a Hangul input module for uim.
 ;;;
 ;;; Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
@@ -204,7 +202,7 @@
 			 cands))))
 	   layout))))
 
-(define byeoru-layout-hangul2
+(define byeoru-layout-hangul2hanterm
   (byeoru-expand-layout
    ;; Unshifted keys
    '(("q" (choseong-bieub   . 1) (jongseong-bieub   . (3 4)))
@@ -241,6 +239,63 @@
      ("T" (choseong-ssangsios   . 5) (jongseong-ssangsios   . 5))
      ("O" (jungseong-yae        . 1))
      ("P" (jungseong-ye         . 1)))))
+
+(define byeoru-layout-hangul2windows
+  (byeoru-expand-layout
+   ;; Unshifted keys
+   '(("q" (choseong-bieub   . 1) (jongseong-bieub   . (3 4)))
+     ("w" (choseong-jieuj   . 1) (jongseong-jieuj   . (1 4)))
+     ("e" (choseong-digeud  . 1) (jongseong-digeud  . 1))
+     ("r" (choseong-giyeog  . 1) (jongseong-giyeog  . (3 4)))
+     ("t" (choseong-sios    . 1) (jongseong-sios    . (1 4)))
+     ("y" (jungseong-yo     . 1))
+     ("u" (jungseong-yeo    . 1))
+     ("i" (jungseong-ya     . 1))
+     ("o" (jungseong-ae     . (1 4)))
+     ("p" (jungseong-e      . (1 4)))
+     ("a" (choseong-mieum   . 1) (jongseong-mieum   . (1 4)))
+     ("s" (choseong-nieun   . 1) (jongseong-nieun   . 3))
+     ("d" (choseong-ieung   . 1) (jongseong-ieung   . 1))
+     ("f" (choseong-rieul   . 1) (jongseong-rieul   . 3))
+     ("g" (choseong-hieuh   . 1) (jongseong-hieuh   . (1 4)))
+     ("h" (jungseong-o      . 3))
+     ("j" (jungseong-eo     . (1 4)))
+     ("k" (jungseong-a      . (1 4)))
+     ("l" (jungseong-i      . (1 4)))
+     ("z" (choseong-kieuk   . 1) (jongseong-kieuk   . 1))
+     ("x" (choseong-tieut   . 1) (jongseong-tieut   . (1 4)))
+     ("c" (choseong-chieuch . 1) (jongseong-chieuch . 1))
+     ("v" (choseong-pieup   . 1) (jongseong-pieup   . (1 4)))
+     ("b" (jungseong-yu     . 1))
+     ("n" (jungseong-u      . 3))
+     ("m" (jungseong-eu     . 3))
+     ;; Shifted keys
+     ("Q" (choseong-ssangbieub  . 5))
+     ("W" (choseong-ssangjieuj  . 5))
+     ("E" (choseong-ssangdigeud . 5))
+     ("R" (choseong-ssanggiyeog . 5) (jongseong-ssanggiyeog . 5))
+     ("T" (choseong-ssangsios   . 5) (jongseong-ssangsios   . 5))
+     ("Y" (jungseong-yo     . 1))
+     ("U" (jungseong-yeo    . 1))
+     ("I" (jungseong-ya     . 1))
+     ("O" (jungseong-yae    . 1))
+     ("P" (jungseong-ye     . 1))
+     ("A" (choseong-mieum   . 1) (jongseong-mieum   . (1 4)))
+     ("S" (choseong-nieun   . 1) (jongseong-nieun   . 3))
+     ("D" (choseong-ieung   . 1) (jongseong-ieung   . 1))
+     ("F" (choseong-rieul   . 1) (jongseong-rieul   . 3))
+     ("G" (choseong-hieuh   . 1) (jongseong-hieuh   . (1 4)))
+     ("H" (jungseong-o      . 3))
+     ("J" (jungseong-eo     . (1 4)))
+     ("K" (jungseong-a      . (1 4)))
+     ("L" (jungseong-i      . (1 4)))
+     ("Z" (choseong-kieuk   . 1) (jongseong-kieuk   . 1))
+     ("X" (choseong-tieut   . 1) (jongseong-tieut   . (1 4)))
+     ("C" (choseong-chieuch . 1) (jongseong-chieuch . 1))
+     ("V" (choseong-pieup   . 1) (jongseong-pieup   . (1 4)))
+     ("B" (jungseong-yu     . 1))
+     ("N" (jungseong-u      . 3))
+     ("M" (jungseong-eu     . 3)))))
 
 ;; The following definitions of 3-beol variants [final, 390, no-shift]
 ;; are based on the US keyboard layout.  A user of a different layout
@@ -1898,3 +1953,8 @@
  #f
  #f
 )
+
+;; Local Variables:
+;; mode: scheme
+;; coding: utf-8
+;; End:

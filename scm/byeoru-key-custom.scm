@@ -1,5 +1,3 @@
-;; -*- mode: scheme; coding: utf-8 -*-
-
 ;;; byeoru-key-custom.scm: Key customization variables for byeoru.scm
 ;;;
 ;;; Copyright (c) 2003-2007 uim Project http://code.google.com/p/uim/
@@ -132,3 +130,8 @@
   '(key)
   (N_ "[Byeoru] end of word")
   (N_ "long description will be here"))
+
+;; Local Variables:
+;; mode: scheme
+;; coding: utf-8
+;; End:
