@@ -86,17 +86,20 @@ uim_notify_load(const char *name)
     return 0;
   }
 
-  uim_notify_quit_func();
-  if (notify_dlhandle != NULL)
-    dlclose(notify_dlhandle);
-
-  if (strcmp(name, "stderr") == 0) {
-    uim_notify_load_stderr();
-  } else if (strcmp(notify_desc->name, name) == 0) {
+  if (strcmp(notify_desc->name, name) == 0) {
     return 1;
+  } else if (strcmp(name, "stderr") == 0) {
+    uim_notify_quit_func();
+    if (notify_dlhandle != NULL)
+      dlclose(notify_dlhandle);
+    uim_notify_load_stderr();
   } else {
     char path[PATH_MAX];
     const char *str;
+
+    uim_notify_quit_func();
+    if (notify_dlhandle != NULL)
+      dlclose(notify_dlhandle);
 
     snprintf(path, sizeof(path), "%s/%s%s%s", NOTIFY_PLUGIN_PATH, NOTIFY_PLUGIN_PREFIX, name, NOTIFY_PLUGIN_SUFFIX);
 
