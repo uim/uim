@@ -40,6 +40,7 @@
 #include <string.h>
 #include <assert.h>
 #include <dirent.h>
+#include <dlfcn.h>
 
 #include "uim-internal.h"
 #include "uim-scm.h"
@@ -285,6 +286,10 @@ setugidp(void)
   return MAKE_BOOL(uim_issetugid());
 }
 
+#ifndef HAVE_DLFUNC
+#define dlfunc dlsym
+#endif
+
 static uim_lisp
 uim_scm_notify_get_plugins(void)
 {
@@ -292,11 +297,19 @@ uim_scm_notify_get_plugins(void)
   DIR *dirp;
   struct dirent *dp;
   int plen, slen;
+  uim_notify_desc* desc;
+  void *handle;
+  uim_notify_desc* (*desc_func)(void);
+  char *str;
 
   plen = strlen(NOTIFY_PLUGIN_PREFIX);
   slen = strlen(NOTIFY_PLUGIN_SUFFIX);
 
-  ret_ = CONS(MAKE_STR("stderr"), uim_scm_null());
+  desc = uim_notify_stderr_get_desc();
+  ret_ = CONS(LIST3(MAKE_SYM(desc->name),
+		    MAKE_STR(desc->name),
+		    MAKE_STR(desc->desc)),
+	      uim_scm_null());
   dirp = opendir(NOTIFY_PLUGIN_PATH);
   if (dirp) {
     while ((dp = readdir(dirp)) != NULL) {
@@ -308,8 +321,26 @@ uim_scm_notify_get_plugins(void)
 	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
 
-      strlcpy(name, dp->d_name + plen, len - plen - slen + 1);
-      ret_ = CONS(MAKE_STR(name), ret_);
+      handle = dlopen(dp->d_name, RTLD_NOW);
+      if ((str = dlerror()) != NULL) {
+	fprintf(stderr, "load failed %s(%s)\n", dp->d_name, str);
+	continue;
+      }
+      desc_func = (uim_notify_desc* (*)(void))(intptr_t)dlfunc(handle, "uim_notify_plugin_get_desc");
+      if (!desc_func) {
+	fprintf(stderr, "cannot found 'uim_notify_get_desc()' in %s\n", dp->d_name);
+	dlclose(handle);
+	continue;
+      }
+
+      desc = desc_func();
+
+      ret_ = CONS(LIST3(MAKE_SYM(desc->name),
+			MAKE_STR(desc->name),
+			MAKE_STR(desc->desc)),
+		  ret_);
+
+      dlclose(handle);
     }
     (void)closedir(dirp);
   }

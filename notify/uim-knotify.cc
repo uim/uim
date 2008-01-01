@@ -42,7 +42,20 @@
 #include "config.h"
 #include "uim-notify.h"
 
+
 static int inited = 0;
+
+static uim_notify_desc uim_notify_knotify_desc = {
+  "knotify",
+  "Output via knotify",
+};
+
+uim_notify_desc*
+uim_notify_plugin_get_desc(void)
+{
+  return &uim_notify_knotify_desc;
+}
+
 int
 uim_notify_plugin_init()
 {

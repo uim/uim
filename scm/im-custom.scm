@@ -552,9 +552,7 @@
 (define-custom 'notify-agent 'stderr
   '(notify)
   `(choice
-    ,@(map (lambda (str)
-             (list (string->symbol str) str str))
-           (uim-notify-get-plugins)))
+    ,@(uim-notify-get-plugins))
   (N_ "Notify agent name")
   (N_ "long description will be here."))
 

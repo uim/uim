@@ -21,17 +21,31 @@
 extern "C" {
 #endif
 
+typedef struct {
+  char *name;
+  char *desc;
+} uim_notify_desc;
+
+uim_notify_desc* uim_notify_get_desc(void);
 int uim_notify_load(const char *);
 int uim_notify_init(void);
 void uim_notify_quit(void);
 int uim_notify_info(const char *, ...);
 int uim_notify_fatal(const char *, ...);
 
+uim_notify_desc* uim_notify_plugin_get_desc(void);
 int uim_notify_plugin_load(const char *);
 int uim_notify_plugin_init(void);
 void uim_notify_plugin_quit(void);
 int uim_notify_plugin_info(const char *);
 int uim_notify_plugin_fatal(const char *);
+
+/* builtin notify module */
+uim_notify_desc* uim_notify_stderr_get_desc(void);
+int uim_notify_stderr_init(void);
+void uim_notify_stderr_quit(void);
+int uim_notify_stderr_info(const char *);
+int uim_notify_stderr_fatal(const char *);
 
 #ifdef __cplusplus
 }

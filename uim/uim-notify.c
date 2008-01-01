@@ -55,23 +55,21 @@
 #define dlfunc dlsym
 #endif
 
-static int uim_notify_stderr_init(void);
-static void uim_notify_stderr_quit(void);
-static int uim_notify_stderr_info(const char *);
-static int uim_notify_stderr_fatal(const char *);
+static uim_notify_desc uim_notify_stderr_desc;
 
+static uim_notify_desc* (*uim_notify_get_desc_func)(void) = uim_notify_stderr_get_desc;
 static int (*uim_notify_init_func)(void) = uim_notify_stderr_init;
 static void (*uim_notify_quit_func)(void) = uim_notify_stderr_quit;
 static int (*uim_notify_info_func)(const char *) = uim_notify_stderr_info;
 static int (*uim_notify_fatal_func)(const char *) = uim_notify_stderr_fatal;
 
 static void *notify_dlhandle = NULL;
-static char notify_agent_name[PATH_MAX];
+static uim_notify_desc* notify_desc = &uim_notify_stderr_desc;
 
 static void
 uim_notify_load_stderr()
 {
-  strlcpy(notify_agent_name, "stderr", sizeof(notify_agent_name));
+  notify_desc = &uim_notify_stderr_desc;
   uim_notify_init_func  = uim_notify_stderr_init;
   uim_notify_quit_func  = uim_notify_stderr_quit;
   uim_notify_info_func  = uim_notify_stderr_info;
@@ -94,7 +92,7 @@ uim_notify_load(const char *name)
 
   if (strcmp(name, "stderr") == 0) {
     uim_notify_load_stderr();
-  } else if (strcmp(notify_agent_name, name) == 0) {
+  } else if (strcmp(notify_desc->name, name) == 0) {
     return 1;
   } else {
     char path[PATH_MAX];
@@ -105,6 +103,13 @@ uim_notify_load(const char *name)
     notify_dlhandle = dlopen(path, RTLD_NOW);
     if ((str = dlerror()) != NULL) {
       fprintf(stderr, "uim-notify: load failed %s(%s)\n", path, str);
+      uim_notify_load_stderr();
+      return 0;
+    }
+    uim_notify_get_desc_func = (uim_notify_desc* (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
+    if (!uim_notify_get_desc_func) {
+      fprintf(stderr, "uim-notify: cannot found 'uim_notify_get_desc()' in %s\n", path);
+      dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
@@ -137,11 +142,16 @@ uim_notify_load(const char *name)
       return 0;
     }
 
+    notify_desc = uim_notify_get_desc_func();
     uim_notify_init_func();
-
-    strlcpy(notify_agent_name, name, sizeof(notify_agent_name));
   }
   return 1;
+}
+
+uim_notify_desc*
+uim_notify_get_desc(void)
+{
+  return uim_notify_get_desc_func();
 }
 
 int
@@ -188,25 +198,36 @@ uim_notify_fatal(const char *msg_fmt, ...)
 /*
  * builtin functions
  */
-static int
+static uim_notify_desc uim_notify_stderr_desc = {
+  "stderr",
+  "Standard Error output",
+};
+
+uim_notify_desc*
+uim_notify_stderr_get_desc(void)
+{
+  return &uim_notify_stderr_desc;
+}
+
+int
 uim_notify_stderr_init(void)
 {
   return 1;
 }
 
-static void
+void
 uim_notify_stderr_quit(void)
 {
   return;
 }
 
-static int
+int
 uim_notify_stderr_info(const char *msg)
 {
   return fprintf(stderr, "uim [Info]: %s", msg);
 }
 
-static int
+int
 uim_notify_stderr_fatal(const char *msg)
 {
   return fprintf(stderr, "uim [Fatal]: %s", msg);
