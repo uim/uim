@@ -556,10 +556,6 @@
   (N_ "Notify agent name")
   (N_ "long description will be here."))
 
-(custom-add-hook 'notify-agent
-		 'custom-set-hooks
-		 (lambda ()
-		   (uim-notify-load (symbol->string notify-agent))))
 
 (if custom-full-featured?
     (for-each require-module installed-im-module-list))
