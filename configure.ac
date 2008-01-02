@@ -1301,7 +1301,8 @@ AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
 notify_targets='libnotify knotify3'
 
 AC_ARG_ENABLE(notify,
-  [  --enable-notify[=mode_list] enable notify module (specify comma separated mode list), HIGHLY EXPERIMENTAL:
+  [  --enable-notify[=mode_list] (HIGHLY EXPERIMENTAL)
+                          enable notify module (specify comma separated mode list)
                           libnotify: libnotify
                           knotify3:  KDE3 notify],
   [ enable_notify=$enableval
