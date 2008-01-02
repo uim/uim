@@ -13,12 +13,12 @@ libuimnotify_libnotify_la_LIBADD = \
 	@LIBNOTIFY_LIBS@
 endif
 
-if KNOTIFY
-uimnotify_plugin_LTLIBRARIES += libuimnotify-knotify.la
-libuimnotify_knotify_la_SOURCES = uim-knotify.cc
-libuimnotify_knotify_la_CXXFLAGS = -I@KNOTIFY_INCLUDE_DIR@ $(QT_CXXFLAGS)
-libuimnotify_knotify_la_LDFLAGS  = -avoid-version -module -L@KNOTIFY_LIB_DIR@ $(QT_LDFLAGS)
-libuimnotify_knotify_la_LIBADD = \
+if KNOTIFY3
+uimnotify_plugin_LTLIBRARIES += libuimnotify-knotify3.la
+libuimnotify_knotify3_la_SOURCES = uim-knotify3.cc
+libuimnotify_knotify3_la_CXXFLAGS = -I@KNOTIFY3_INCLUDE_DIR@ $(QT_CXXFLAGS)
+libuimnotify_knotify3_la_LDFLAGS  = -avoid-version -module -L@KNOTIFY3_LIB_DIR@ $(QT_LDFLAGS)
+libuimnotify_knotify3_la_LIBADD = \
 	$(top_builddir)/uim/libuim.la \
 	-lkdeui -lkdecore
 endif
