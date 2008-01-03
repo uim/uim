@@ -52,7 +52,8 @@
 #include "uim-notify.h"
 
 #ifndef HAVE_DLFUNC
-#define dlfunc dlsym
+#define dlfunc(handle, symbol) \
+  ((void (*)(void))(uintptr_t)dlsym((handle), (symbol)))
 #endif
 
 static uim_notify_desc uim_notify_stderr_desc;
@@ -109,35 +110,35 @@ uim_notify_load(const char *name)
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_get_desc_func = (uim_notify_desc* (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
+    uim_notify_get_desc_func = (uim_notify_desc* (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
     if (!uim_notify_get_desc_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_get_desc()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_init_func  = (int (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_init");
+    uim_notify_init_func  = (int (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_init");
     if (!uim_notify_init_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_init()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_quit_func  = (void (*)(void))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_quit");
+    uim_notify_quit_func  = (void (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_quit");
     if (!uim_notify_quit_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_quit()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_info_func  = (int (*)(const char *))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_info");
+    uim_notify_info_func  = (int (*)(const char *))dlfunc(notify_dlhandle, "uim_notify_plugin_info");
     if (!uim_notify_info_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_info()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_fatal_func = (int (*)(const char *))(intptr_t)dlfunc(notify_dlhandle, "uim_notify_plugin_fatal");
+    uim_notify_fatal_func = (int (*)(const char *))dlfunc(notify_dlhandle, "uim_notify_plugin_fatal");
     if (!uim_notify_fatal_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_fatal()' in %s\n", path);
       dlclose(notify_dlhandle);

@@ -55,7 +55,8 @@
 #include "uim-notify.h"
 
 #ifndef HAVE_DLFUNC
-#define dlfunc dlsym
+#define dlfunc(handle, symbol) \
+  ((void (*)(void))(uintptr_t)dlsym((handle), (symbol)))
 #endif
 
 #define PLUGIN_PREFIX "libuim-"
@@ -169,9 +170,9 @@ plugin_load(uim_lisp _name)
   }
 
   plugin_instance_init
-    = (void (*)(void))(uintptr_t)dlfunc(library, "uim_plugin_instance_init");
+    = (void (*)(void))dlfunc(library, "uim_plugin_instance_init");
   plugin_instance_quit
-    = (void (*)(void))(uintptr_t)dlfunc(library, "uim_plugin_instance_quit");
+    = (void (*)(void))dlfunc(library, "uim_plugin_instance_quit");
   if (!plugin_instance_init) {
     uim_notify_fatal("%s plugin init failed", plugin_name);
     free(plugin_scm_filename);

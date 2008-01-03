@@ -287,7 +287,8 @@ setugidp(void)
 }
 
 #ifndef HAVE_DLFUNC
-#define dlfunc dlsym
+#define dlfunc(handle, symbol) \
+  ((void (*)(void))(uintptr_t)dlsym((handle), (symbol)))
 #endif
 
 static uim_lisp
@@ -326,7 +327,7 @@ uim_scm_notify_get_plugins(void)
 	fprintf(stderr, "load failed %s(%s)\n", dp->d_name, str);
 	continue;
       }
-      desc_func = (uim_notify_desc* (*)(void))(intptr_t)dlfunc(handle, "uim_notify_plugin_get_desc");
+      desc_func = (uim_notify_desc* (*)(void))dlfunc(handle, "uim_notify_plugin_get_desc");
       if (!desc_func) {
 	fprintf(stderr, "cannot found 'uim_notify_get_desc()' in %s\n", dp->d_name);
 	dlclose(handle);
