@@ -751,7 +751,7 @@ dnl *** Check for Qt4 Library ***
 dnl *****************************
 AC_ARG_WITH(qt4-immodule,
   AC_HELP_STRING([--with-qt4-immodule],
-                 [Build qt4-immodule extension
+                 [Build qt4-immodule extension (experimental)
 		  @<:@default=no@:>@]),
   [
     case $with_qt4_immodule in
