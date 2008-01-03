@@ -416,43 +416,43 @@ displayed at the echo area.")
 ;; for preedit string
 
 ;; plain
-(copy-face 'default 'uim-preedit-face)
+(make-face 'uim-preedit-face)
 
 (copy-face 'uim-preedit-face 'uim-preedit-underline-face)
 (set-face-underline-p        'uim-preedit-underline-face t)
 
 ;; highlight
-(copy-face 'default  'uim-preedit-highlight-face)
+(make-face 'uim-preedit-highlight-face)
 (set-face-foreground 'uim-preedit-highlight-face "White")
 (set-face-background 'uim-preedit-highlight-face "Blue3")
 
 (copy-face 'uim-preedit-highlight-face 'uim-preedit-highlight-underline-face)
-(set-face-underline-p                  'uim-preedit-highlight-underline-face t)
+(set-face-underline-p 'uim-preedit-highlight-underline-face t)
 
 ;; separator
-(copy-face 'default 'uim-separator-face)
+(make-face 'uim-separator-face)
 (set-face-foreground 'uim-separator-face "LightSkyBlue4")
 
 ;; for candidate list
 
 ;; odd line
-(copy-face 'default 'uim-candidate-odd-face)
+(make-face 'uim-candidate-odd-face)
 (set-face-foreground 'uim-candidate-odd-face "blue")
 (set-face-background 'uim-candidate-odd-face "snow1")
 
 ;; even line
-(copy-face 'default 'uim-candidate-even-face)
+(make-face 'uim-candidate-even-face)
 (set-face-foreground 'uim-candidate-even-face "blue")
 (set-face-background 'uim-candidate-even-face "snow2")
 
 ;; focused line
-(copy-face 'default  'uim-candidate-selected-face)
+(make-face 'uim-candidate-selected-face)
 (set-face-foreground 'uim-candidate-selected-face "blue")
 (set-face-background 'uim-candidate-selected-face "snow3")
-;;;(set-face-bold-p     'uim-candidate-selected-face t)
+;;(set-face-bold-p     'uim-candidate-selected-face t)
 
 ;; total number and focused candidate number
-(copy-face 'default 'uim-candidate-nth-face)
+(make-face 'uim-candidate-nth-face)
 (set-face-foreground 'uim-candidate-nth-face "blue")
 (set-face-background 'uim-candidate-nth-face "lavender")
 
