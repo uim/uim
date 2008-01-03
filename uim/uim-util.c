@@ -296,7 +296,7 @@ uim_scm_notify_get_plugins(void)
   uim_lisp ret_;
   DIR *dirp;
   struct dirent *dp;
-  int plen, slen;
+  size_t plen, slen;
   uim_notify_desc* desc;
   void *handle;
   uim_notify_desc* (*desc_func)(void);
@@ -314,7 +314,7 @@ uim_scm_notify_get_plugins(void)
   if (dirp) {
     while ((dp = readdir(dirp)) != NULL) {
       char name[PATH_MAX];
-      int len = strlen(dp->d_name);
+      size_t len = strlen(dp->d_name);
 
       if ((len < plen + slen) || (sizeof(name) < len) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||

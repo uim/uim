@@ -46,6 +46,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
+#include "uim-notify.h"
 #include "plugin.h"
 
 #if 0

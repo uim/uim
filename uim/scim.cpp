@@ -43,6 +43,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-internal.h"
+#include "uim-notify.h"
 
 using namespace scim;
 
