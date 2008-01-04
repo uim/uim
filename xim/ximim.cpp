@@ -50,7 +50,7 @@
 # include <alloca.h>
 #endif
 
-static std::map<int, XimIM *> g_ims;
+static std::map<C16, XimIM *> g_ims;
 
 // tables
 static input_style input_style_tab_with_over_the_spot[] = {
@@ -79,30 +79,30 @@ static input_style input_style_tab_without_over_the_spot[] = {
 
 class XimIM_impl : public XimIM {
 public:
-    XimIM_impl(Connection *c, int id);
+    XimIM_impl(Connection *c, C16 id);
     virtual ~XimIM_impl();
     virtual void create_ic(RxPacket *);
-    virtual void destroy_ic(int);
-    virtual void set_ic_focus(int icid);
+    virtual void destroy_ic(C16);
+    virtual void set_ic_focus(C16 icid);
     virtual void set_ic_values(RxPacket *);
     virtual void get_ic_values(RxPacket *);
-    virtual void unset_ic_focus(int icid);
+    virtual void unset_ic_focus(C16 icid);
     virtual void forward_event(RxPacket *);
-    virtual void send_sync_reply(int icid);
-    virtual void send_sync(int icid);
-    virtual XimIC *get_ic_by_id(int id);
+    virtual void send_sync_reply(C16 icid);
+    virtual void send_sync(C16 icid);
+    virtual XimIC *get_ic_by_id(C16 id);
     virtual void onSendPacket();
     virtual void changeContext(const char *);
 
 private:
-    int unused_ic_id();
+    C16 unused_ic_id();
     void free_all_ic();
     void delete_ic(XimIC *);
     char *mEngineName;
-    std::map<int, XimIC *> m_ics;
+    std::map<C16, XimIC *> m_ics;
 };
 
-XimIM_impl::XimIM_impl(Connection *c, int id) : XimIM(c, id)
+XimIM_impl::XimIM_impl(Connection *c, C16 id) : XimIM(c, id)
 {
     mEngineName = strdup(mConn->getXimServer()->getIMName());
 }
@@ -116,7 +116,7 @@ XimIM_impl::~XimIM_impl()
 void XimIM_impl::create_ic(RxPacket *p)
 {
     XimIC *ic;
-    int icid= unused_ic_id();
+    C16 icid= unused_ic_id();
 
     // create compose table with the first ic
     if (icid == 1)
@@ -139,7 +139,7 @@ void XimIM_impl::create_ic(RxPacket *p)
     mConn->push_packet(t);
 }
 
-void XimIM_impl::destroy_ic(int icid)
+void XimIM_impl::destroy_ic(C16 icid)
 {
     TxPacket *t;
     t = createTxPacket(XIM_DESTROY_IC_REPLY, 0);
@@ -154,7 +154,7 @@ void XimIM_impl::destroy_ic(int icid)
 
 void XimIM_impl::changeContext(const char *engine)
 {
-    std::map<int, XimIC *>::iterator i;
+    std::map<C16, XimIC *>::iterator i;
     for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->changeContext(engine);
     }
@@ -165,7 +165,7 @@ void XimIM_impl::changeContext(const char *engine)
 
 void XimIM_impl::set_ic_values(RxPacket *p)
 {
-    int imid, icid;
+    C16 imid, icid;
     XimIC *ic;
     p->rewind();
     imid = p->getC16();
@@ -194,7 +194,7 @@ void XimIM_impl::set_ic_values(RxPacket *p)
 
 void XimIM_impl::get_ic_values(RxPacket *p)
 {
-    int icid;
+    C16 icid;
     XimIC *ic;
     p->rewind();
     p->getC16();
@@ -207,14 +207,15 @@ void XimIM_impl::get_ic_values(RxPacket *p)
     TxPacket *t = createTxPacket(XIM_GET_IC_VALUES_REPLY, 0);
     t->pushC16(mID);
     t->pushC16(icid);
-    int i, id, l;
+    int i, l;
+    C16 id;
     l = 0;
     for (i = 0; i < len / 2; i++) {
 	id = p->getC16();
 	l += ic->get_ic_atr(id, 0);
 	l += 4;
     }
-    t->pushC16(l);
+    t->pushC16((C16)l);
     t->pushC16(0);
 
     p->rewind();
@@ -231,34 +232,34 @@ void XimIM_impl::get_ic_values(RxPacket *p)
     mConn->push_packet(t);
 }
 
-int XimIM_impl::unused_ic_id()
+C16 XimIM_impl::unused_ic_id()
 {
-    std::map<int, XimIC *>::iterator i;
-    int max_id = 1; // Does ID of input-context start with 1?
+    std::map<C16, XimIC *>::iterator i;
+    C16 max_id = 1; // Does ID of input-context start with 1?
     for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	if (max_id <= (*i).first)
-	    max_id = (*i).first + 1;
+	    max_id = (C16)((*i).first + 1);
     }
     return max_id;
 }
 
-void XimIM_impl::set_ic_focus(int icid)
+void XimIM_impl::set_ic_focus(C16 icid)
 {
     XimIC *ic = get_ic_by_id(icid);
     if (ic)
 	ic->setFocus();
 }
 
-void XimIM_impl::unset_ic_focus(int icid)
+void XimIM_impl::unset_ic_focus(C16 icid)
 {
     XimIC *ic = get_ic_by_id(icid);
     if (ic)
 	ic->unsetFocus();
 }
 
-XimIC *XimIM_impl::get_ic_by_id(int icid)
+XimIC *XimIM_impl::get_ic_by_id(C16 icid)
 {
-    std::map<int, XimIC *>::iterator it;
+    std::map<C16, XimIC *>::iterator it;
     it = m_ics.find(icid);
     if (it == m_ics.end())
 	return 0;
@@ -273,7 +274,8 @@ void XimIM_impl::forward_event(RxPacket *p)
     keyEventX k;
     xEvent ev_raw;
 
-    int imid, icid, flag;
+    C16 imid, icid;
+    int flag;
 
     XimIC *ic;
     imid = p->getC16();
@@ -342,7 +344,7 @@ void XimIM_impl::forward_event(RxPacket *p)
 
 void XimIM_impl::free_all_ic()
 {
-    std::map<int, XimIC *>::iterator i;
+    std::map<C16, XimIC *>::iterator i;
     for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->unsetFocus();
 	delete (*i).second;
@@ -352,7 +354,7 @@ void XimIM_impl::free_all_ic()
 
 void XimIM_impl::delete_ic(XimIC *ic)
 {
-    std::map<int, XimIC *>::iterator it;
+    std::map<C16, XimIC *>::iterator it;
     for (it = m_ics.begin(); it != m_ics.end(); ++it) {
 	if (it->second == ic) {
 	    it->second->unsetFocus();
@@ -363,7 +365,7 @@ void XimIM_impl::delete_ic(XimIC *ic)
     }
 }
 
-void XimIM_impl::send_sync_reply(int icid)
+void XimIM_impl::send_sync_reply(C16 icid)
 {
     TxPacket *t = createTxPacket(XIM_SYNC_REPLY, 0);
     t->pushC16(mID);
@@ -371,7 +373,7 @@ void XimIM_impl::send_sync_reply(int icid)
     mConn->push_packet(t);
 }
 
-void XimIM_impl::send_sync(int icid)
+void XimIM_impl::send_sync(C16 icid)
 {
     TxPacket *t = createTxPacket(XIM_SYNC, 0);
     t->pushC16(mID);
@@ -381,13 +383,13 @@ void XimIM_impl::send_sync(int icid)
 
 void XimIM_impl::onSendPacket()
 {
-    std::map<int, XimIC *>::iterator i;
+    std::map<C16, XimIC *>::iterator i;
     for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->onSendPacket();
     }
 }
 
-XimIM::XimIM(Connection *c, int id)
+XimIM::XimIM(Connection *c, C16 id)
 {
     mConn = c;
     mID = id;
@@ -488,30 +490,30 @@ char *XimIM::utf8_to_native_str(char *str)
     return ret;
 }
 
-int unused_im_id()
+C16 unused_im_id()
 {
-    int max_id;
-    std::map<int, XimIM *>::iterator i;
+    C16 max_id;
+    std::map<C16, XimIM *>::iterator i;
     max_id = 1;
     for (i = g_ims.begin(); i != g_ims.end(); ++i) {
 	if ((*i).first == max_id)
-	    max_id = (*i).first + 1;
+	    max_id = (C16)((*i).first + 1);
     }
     return max_id;
 }
 
-XimIM *create_im(Connection *c, int id)
+XimIM *create_im(Connection *c, C16 id)
 {
     XimIM *im;
     im = new XimIM_impl(c, id);
-    std::pair<int, XimIM *> p(id, im);
+    std::pair<C16, XimIM *> p(id, im);
     g_ims.insert(p);
     return im;
 }
 
-XimIM *get_im_by_id(int id)
+XimIM *get_im_by_id(C16 id)
 {
-    std::map<int, XimIM *>::iterator it;
+    std::map<C16, XimIM *>::iterator it;
     it = g_ims.find(id);
     if (it == g_ims.end())
 	return NULL;
@@ -519,7 +521,7 @@ XimIM *get_im_by_id(int id)
     return it->second;
 }
 
-void close_im(int id)
+void close_im(C16 id)
 {
     XimIM *im;
 
@@ -527,7 +529,7 @@ void close_im(int id)
     if (im)
 	delete im;
 
-    std::map<int, XimIM *>::iterator it;
+    std::map<C16, XimIM *>::iterator it;
     it = g_ims.find(id);
     if (it != g_ims.end())
 	g_ims.erase(it);

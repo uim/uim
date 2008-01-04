@@ -91,16 +91,16 @@ const char *xim_packet_name[] = {
 };
 
 static struct XIMATTRIBUTE {
-    XIMATTRIBUTE(const char *n, int t);
+    XIMATTRIBUTE(const char *n, C16 t);
     static void write_imattr_to_packet(TxPacket *p);
 
     const char *name;
-    int type;
+    C16 type;
 } xim_attributes[] = {
     XIMATTRIBUTE(XNQueryInputStyle, TYPE_XIMSTYLE),
 };
 
-XIMATTRIBUTE::XIMATTRIBUTE(const char *n, int t)
+XIMATTRIBUTE::XIMATTRIBUTE(const char *n, C16 t)
 {
     name = n;
     type = t;
@@ -119,11 +119,11 @@ void XIMATTRIBUTE::write_imattr_to_packet(TxPacket *p)
 	l += strlen(xim_attributes[i].name);
 	l += pad4(strlen(xim_attributes[i].name) + 2);
     }
-    p->pushC16(l);
+    p->pushC16((C16)l);
     for (i = 0; i < (int)(sizeof(xim_attributes) / sizeof(XIMATTRIBUTE)); i++) {
-	p->pushC16((unsigned int)i);
-	p->pushC16((unsigned int)xim_attributes[i].type);
-	p->pushC16((unsigned int)strlen(xim_attributes[i].name));
+	p->pushC16((C16)i);
+	p->pushC16(xim_attributes[i].type);
+	p->pushC16((C16)strlen(xim_attributes[i].name));
 	p->pushBytes(xim_attributes[i].name,
 		     strlen(xim_attributes[i].name));
 	p->pushBytes(tmp, pad4(strlen(xim_attributes[i].name)) + 2);
@@ -131,10 +131,10 @@ void XIMATTRIBUTE::write_imattr_to_packet(TxPacket *p)
 }
 
 static struct XICATTRIBUTE {
-    XICATTRIBUTE(const char *n, int t);
+    XICATTRIBUTE(const char *n, C16 t);
     static void write_icattr_to_packet(TxPacket *p);
     const char *name;
-    int type;
+    C16 type;
 } xic_attributes[] = {
     // the sequence is required to be same as the order of
     // ICATTTRIBUTE defined in ximpn.h
@@ -159,7 +159,7 @@ static struct XICATTRIBUTE {
     XICATTRIBUTE(XNSeparatorofNestedList, TYPE_SEPARATOR),
 };
 
-XICATTRIBUTE::XICATTRIBUTE(const char *n, int t)
+XICATTRIBUTE::XICATTRIBUTE(const char *n, C16 t)
 {
     name = n;
     type = t;
@@ -177,12 +177,12 @@ void XICATTRIBUTE::write_icattr_to_packet(TxPacket *p)
 	l += strlen(xic_attributes[i].name);
 	l += pad4(strlen(xic_attributes[i].name) + 2);
     }
-    p->pushC16(l);
+    p->pushC16((C16)l);
     p->pushC16(0);
     for (i = 0; i < (int)(sizeof(xic_attributes) / sizeof(XICATTRIBUTE)); i++) {
-	p->pushC16((unsigned int)i);
-	p->pushC16((unsigned int)xic_attributes[i].type);
-	p->pushC16((unsigned int)strlen(xic_attributes[i].name));
+	p->pushC16((C16)i);
+	p->pushC16(xic_attributes[i].type);
+	p->pushC16((C16)strlen(xic_attributes[i].name));
 	p->pushBytes(xic_attributes[i].name,
 		     strlen(xic_attributes[i].name));
 	p->pushBytes(tmp, pad4(strlen(xic_attributes[i].name) + 2));
@@ -202,7 +202,7 @@ Connection::Connection(XimServer *svr)
 Connection::~Connection()
 {
     // destruct all the IM created by this Connection
-    std::list<int>::iterator i;
+    std::list<C16>::iterator i;
     for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	close_im(*i);
     }
@@ -320,7 +320,7 @@ XimServer *Connection::getXimServer()
 
 void Connection::OnSend()
 {
-    std::list<int>::iterator i;
+    std::list<C16>::iterator i;
     for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	XimIM *im;
 	im = get_im_by_id(*i);
@@ -331,7 +331,7 @@ void Connection::OnSend()
 
 void Connection::OnClose()
 {
-    std::list<int>::iterator i;
+    std::list<C16>::iterator i;
     for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	close_im(*i);
     }
@@ -348,7 +348,7 @@ void Connection::push_passive_packet(TxPacket *p)
     mPTxQ.push_back(p);
 }
 
-void Connection::push_error_packet(int imid, int icid, int er, const char *str)
+void Connection::push_error_packet(C16 imid, C16 icid, C16 er, const char *str)
 {
     TxPacket *t;
     t = createTxPacket(XIM_ERROR, 0);
@@ -360,11 +360,11 @@ void Connection::push_error_packet(int imid, int icid, int er, const char *str)
     if (icid)
 	m += 2;
 
-    t->pushC16(m);
+    t->pushC16((C16)m);
     t->pushC16(er);
     int l = strlen(str);
     char tmp[4];
-    t->pushC16(l);
+    t->pushC16((C16)l);
     t->pushC16(0);
     t->pushBytes(str, l);
     t->pushBytes(tmp, pad4(l));
@@ -379,9 +379,9 @@ unsigned short Connection::to_hs(unsigned short s)
     unsigned char *v;
     v = (unsigned char *)&s;
     if (host_byte_order == LSB_FIRST)
-	s = (v[0] << 8) + v[1];
+	s = (unsigned short)((v[0] << 8) + v[1]);
     else
-	s = (v[1] << 8) + v[0];
+	s = (unsigned short)((v[1] << 8) + v[0]);
     return s;
 }
 
@@ -495,7 +495,7 @@ void Connection::xim_open(RxPacket *p)
     p->getStr8(buf);
 
     TxPacket *t;
-    int imid;
+    C16 imid;
     XimIM *im;
     imid = unused_im_id();
     mCreatedIm.push_back(imid); // had to be deleted by the creator Connection
@@ -528,7 +528,7 @@ void Connection::xim_open(RxPacket *p)
 
 void Connection::xim_close(RxPacket *p)
 {
-    int imid;
+    C16 imid;
     imid = p->getC16();
     TxPacket *t;
     t = createTxPacket(XIM_CLOSE_REPLY, 0);
@@ -536,7 +536,7 @@ void Connection::xim_close(RxPacket *p)
     t->pushC16(0);
     push_packet(t);
     close_im(imid);
-    std::list<int>::iterator i;
+    std::list<C16>::iterator i;
     for (i = mCreatedIm.begin(); i != mCreatedIm.end(); ++i) {
 	if (*i == imid) {
 	    mCreatedIm.erase(i);
@@ -547,7 +547,7 @@ void Connection::xim_close(RxPacket *p)
 
 void Connection::xim_query_extension(RxPacket *p)
 {
-    int imid;
+    C16 imid;
     imid = p->getC16();
 
     TxPacket *t;
@@ -562,9 +562,9 @@ void Connection::xim_encoding_negotiation(RxPacket *p)
 {
     TxPacket *t;
     t = createTxPacket(XIM_ENCODING_NEGOTIATION_REPLY, 0);
-    C16 l, m, s;
-    int i, idx, index;
-    int imid;
+    C16 l, index;
+    int i, m, s;
+    C16 imid, idx;
     char buf[32];
     XimIM *im;
 
@@ -600,7 +600,7 @@ void Connection::xim_encoding_negotiation(RxPacket *p)
 void Connection::xim_get_im_values(RxPacket *p)
 {
     int l, i;
-    int imid;
+    C16 imid;
     TxPacket *t;
     t = createTxPacket(XIM_GET_IM_VALUES_REPLY, 0);
     imid = p->getC16(); // input-method id
@@ -618,12 +618,14 @@ void Connection::xim_get_im_values(RxPacket *p)
     t->pushC16(16); // length
 
     // XIMATTRIBUTE
-    int nr_style;
+    C16 nr_style;
     struct input_style *is = get_im_by_id(imid)->getInputStyles();
-    for (nr_style = 0; is[nr_style].style; nr_style++);
+    for (nr_style = 0; is[nr_style].style; nr_style++) {
+	;
+    }
 
     t->pushC16(0); // attribute id
-    t->pushC16(nr_style * 4); // length
+    t->pushC16((C16)(nr_style * 4)); // length
 
     t->pushC16(nr_style); // number
     t->pushC16(0);
@@ -636,7 +638,7 @@ void Connection::xim_get_im_values(RxPacket *p)
 
 void Connection::xim_set_ic_values(RxPacket *p)
 {
-    int imid;
+    C16 imid;
     imid = p->getC16();
     p->rewind();
     XimIM *im;
@@ -647,7 +649,7 @@ void Connection::xim_set_ic_values(RxPacket *p)
 
 void Connection::xim_get_ic_values(RxPacket *p)
 {
-    int imid;
+    C16 imid;
     imid = p->getC16();
     p->rewind();
     XimIM *im;
@@ -658,7 +660,7 @@ void Connection::xim_get_ic_values(RxPacket *p)
 void Connection::xim_create_ic(RxPacket *p)
 {
     XimIM *im;
-    int imid;
+    C16 imid;
     imid = p->getC16();
     p->rewind();
     im = get_im_by_id(imid);
@@ -667,8 +669,8 @@ void Connection::xim_create_ic(RxPacket *p)
 
 void Connection::xim_destroy_ic(RxPacket *p)
 {
-    int imid;
-    int icid;
+    C16 imid;
+    C16 icid;
     XimIM *im;
     imid = p->getC16();
     icid = p->getC16();
@@ -678,7 +680,7 @@ void Connection::xim_destroy_ic(RxPacket *p)
 
 void Connection::xim_set_ic_focus(RxPacket *p)
 {
-    int imid;
+    C16 imid;
     XimIM *im;
     imid = p->getC16();
     im = get_im_by_id(imid);
@@ -687,7 +689,7 @@ void Connection::xim_set_ic_focus(RxPacket *p)
 
 void Connection::xim_unset_ic_focus(RxPacket *p)
 {
-    int imid;
+    C16 imid;
     XimIM *im;
     imid = p->getC16();
     im = get_im_by_id(imid);
@@ -696,7 +698,7 @@ void Connection::xim_unset_ic_focus(RxPacket *p)
 
 void Connection::xim_forward_event(RxPacket *p)
 {
-    int imid, icid;
+    C16 imid, icid;
     XimIM *im;
     
     imid = p->getC16();
@@ -738,7 +740,8 @@ void Connection::xim_preedit_caret_reply()
 
 void Connection::xim_error(RxPacket *p)
 {
-    int imid, icid, mask, ecode, len;
+    C16 imid, icid, mask, ecode;
+    int len;
     char *buf;
 
     imid = p->getC16();
@@ -769,8 +772,9 @@ void Connection::xim_error(RxPacket *p)
 
 XimIC *Connection::get_ic(RxPacket *p)
 {
-    int imid, icid;
+    C16 imid, icid;
     XimIM *im;
+
     imid = p->getC16();
     icid = p->getC16();
     p->rewind();

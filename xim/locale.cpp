@@ -600,22 +600,22 @@ utf8_wctomb(unsigned char *dest, uchar wc)
 	return RET_ILSEQ;
     switch (count) { // note: falls through cases (no break)
     case 6:
-	dest[5] = 0x80 | (wc & 0x3f);
+	dest[5] = (unsigned char)(0x80 | (wc & 0x3f));
 	wc = wc >> 6; wc |= 0x4000000;
     case 5:
-	dest[4] = 0x80 | (wc & 0x3f);
+	dest[4] = (unsigned char)(0x80 | (wc & 0x3f));
 	wc = wc >> 6; wc |= 0x200000;
     case 4:
-	dest[3] = 0x80 | (wc & 0x3f);
+	dest[3] = (unsigned char)(0x80 | (wc & 0x3f));
 	wc = wc >> 6; wc |= 0x10000;
     case 3:
-	dest[2] = 0x80 | (wc & 0x3f);
+	dest[2] = (unsigned char)(0x80 | (wc & 0x3f));
 	wc = wc >> 6; wc |= 0x800;
     case 2:
-	dest[1] = 0x80 | (wc & 0x3f);
+	dest[1] = (unsigned char)(0x80 | (wc & 0x3f));
 	wc = wc >> 6; wc |= 0xc0;
     case 1:
-	dest[0] = wc;
+	dest[0] = (unsigned char)wc;
     }
     return count;
 }

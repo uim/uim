@@ -254,7 +254,7 @@ void XConnection::writePendingPacket()
 {
     std::list<TxPacket *>::iterator i, j;
     bool sent_preedit_done = false;
-    int major;
+    C8 major;
 
     while (!mPendingTxQ.empty()) {
 	if (hasSyncFlag() || hasPreeditStartSyncFlag() ||
@@ -312,7 +312,7 @@ void XConnection::writePassivePacket()
 {
     std::list<TxPacket *>::iterator i, j;
     bool sent_preedit_done = false;
-    int major;
+    C8 major;
 
     while (!mPTxQ.empty()) {
 	if (!mPendingTxQ.empty())
@@ -375,7 +375,7 @@ void XConnection::writePassivePacket()
 void XConnection::writeNormalPacket()
 {
     std::list<TxPacket *>::iterator i;
-    int major;
+    C8 major;
 
     while (!mTxQ.empty()) {
 	i = mTxQ.begin();

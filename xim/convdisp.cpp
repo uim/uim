@@ -321,7 +321,7 @@ private:
     void compose_feedback_array(TxPacket *);
   
     Connection *mConn;
-    int mImid, mIcid;
+    C16 mImid, mIcid;
     int mPrevLen;
 };
 
@@ -1160,8 +1160,8 @@ void ConvdispOv::validate_area()
     XGetGeometry(XimServer::gDpy, win,
 		 &r, &x, &x, &w, &h, &tmp, &tmp);
     // Absurd... (cope with Qt from RedHat7.3, and maybe some other)
-    m_atr->area.width = w;
-    m_atr->area.height = h;
+    m_atr->area.width = (unsigned short)w;
+    m_atr->area.height = (unsigned short)h;
 }
 
 void ConvdispOv::update_icxatr()
@@ -1461,7 +1461,7 @@ void ConvdispOv::layoutCharEnt()
 		char *str = im->utf8_to_native_str(utf8);
 		if (!str) {
 		    logical.width = 0;
-		    logical.height = (i > 0) ? m_ce[i - 1].height : 0;
+		    logical.height = (unsigned short)((i > 0) ? m_ce[i - 1].height : 0);
 		} else {
 		    len = strlen(str);
 		    XmbTextExtents(m_atr->font_set, str, len, &ink, &logical);
@@ -1656,7 +1656,7 @@ void ConvdispOs::compose_preedit_array(TxPacket *t)
     int i, len = 0;
     if (c)
 	len = strlen(c);
-    t->pushC16(len); // LENGTH
+    t->pushC16((C16)len); // LENGTH
     for (i = 0; i < len; i++) {
 	t->pushC8(c[i]); // CTEXT
     }
@@ -1672,7 +1672,7 @@ void ConvdispOs::compose_feedback_array(TxPacket *t)
 {
     int i, len, stat, xstat;
     len = m_pe->get_char_count();
-    t->pushC16(len * 4);
+    t->pushC16((C16)(len * 4));
     t->pushC16(0);
     std::list<pe_ustring>::iterator it;
     for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); ++it) {

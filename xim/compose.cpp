@@ -215,7 +215,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
 		switch (c) {
 		case '\\':
 		case '"':
-		    *p++ = c;
+		    *p++ = (char)c;
 		    len++;
 		    break;
 		case 'n':
@@ -279,12 +279,12 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
 		    token = ERROR;
 		    goto string_error;
 		default:
-		    *p++ = c;
+		    *p++ = (char)c;
 		    len++;
 		    break;
 		}
 	    } else {
-		*p++ = c;
+		*p++ = (char)c;
 		len++;
 	    }
 	}
@@ -307,7 +307,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
 		*tokenbuf = (char *)realloc(*tokenbuf,  *buflen);
 	    }
 	    p = *tokenbuf;
-	    *p++ = c;
+	    *p++ = (char)c;
 	    len++;
 	    c = nextch(fp, lastch);
 	    while (isalnum(c) || c == '_' || c == '-') {
@@ -316,7 +316,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
 			*tokenbuf = (char *)realloc(*tokenbuf,  *buflen);
 			p = *tokenbuf + len;
 		}
-		*p++ = c;
+		*p++ = (char)c;
 		len++;
 		c = nextch(fp, lastch);
 	    }

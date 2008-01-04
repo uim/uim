@@ -1106,7 +1106,8 @@ void keyState::check_key(keyEventX *x)
 	mModifier |= (gMod5Mask & mPreModState);
 
 #if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
-    mKey = uim_x_kana_input_hack_translate_key(x->key_sym, x->ev.xkey.keycode);
+    mKey = uim_x_kana_input_hack_translate_key(x->key_sym,
+					       (KeyCode)x->ev.xkey.keycode);
 #endif
     if (x->key_sym < 128 && x->key_sym >= 32)
 	mKey = x->key_sym;

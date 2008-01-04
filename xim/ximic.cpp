@@ -182,12 +182,12 @@ icxatr::~icxatr()
     free(m_locale);
 }
 
-bool icxatr::has_atr(int id)
+bool icxatr::has_atr(C16 id)
 {
     return atr_mask & (1 << id);
 }
 
-void icxatr::set_atr(int id, C8 *val, int o)
+void icxatr::set_atr(C16 id, C8 *val, int o)
 {
     switch (id) {
     case ICA_InputStyle:
@@ -250,7 +250,7 @@ void icxatr::set_atr(int id, C8 *val, int o)
     change_mask |= (1 << id);
 }
 
-bool icxatr::is_changed(int id)
+bool icxatr::is_changed(C16 id)
 {
     if (change_mask & (1 << id))
 	return true;
@@ -258,7 +258,7 @@ bool icxatr::is_changed(int id)
     return false;
 }
 
-void icxatr::unset_change_mask(int id)
+void icxatr::unset_change_mask(C16 id)
 {
     change_mask &= (~(1 << id));
 }
@@ -314,7 +314,7 @@ void icxatr::print()
 
 }
 
-int icxatr::getSize(int id)
+C16 icxatr::getSize(C16 id)
 {
     switch (id) {
     case ICA_FocusWindow:
@@ -338,7 +338,7 @@ bool icxatr::use_xft() {
     return m_use_xft;
 }
 
-XimIC::XimIC(Connection *c, int imid, int icid, const char *engine)
+XimIC::XimIC(Connection *c, C16 imid, C16 icid, const char *engine)
 {
     mConn = c;
     mIMid = imid;
@@ -378,12 +378,12 @@ bool XimIC::isActive()
     return mIsActive;
 }
 
-int XimIC::get_icid()
+C16 XimIC::get_icid()
 {
     return mICid;
 }
 
-int XimIC::get_imid()
+C16 XimIC::get_imid()
 {
     return mIMid;
 }
@@ -436,21 +436,21 @@ void XimIC::send_key_event(XKeyEvent *e)
     t->pushC16(mIMid);
     t->pushC16(mICid);
     t->pushC16(1); // flag, synchronous
-    t->pushC16((e->serial >> 16) & 0xffff);
+    t->pushC16((C16)((e->serial >> 16) & 0xffff));
 
-    t->pushC8(e->type);
-    t->pushC8(e->keycode);
-    t->pushC16(e->serial & 0xffff);
+    t->pushC8((C8)e->type);
+    t->pushC8((C8)e->keycode);
+    t->pushC16((C16)e->serial & 0xffff);
     t->pushC32(e->time);
     t->pushC32(e->root);
     t->pushC32(e->window);
     t->pushC32(e->subwindow);
-    t->pushC16(e->x_root);
-    t->pushC16(e->y_root);
-    t->pushC16(e->x);
-    t->pushC16(e->y);
-    t->pushC16(e->state);
-    t->pushC8(e->same_screen);
+    t->pushC16((C16)e->x_root);
+    t->pushC16((C16)e->y_root);
+    t->pushC16((C16)e->x);
+    t->pushC16((C16)e->y);
+    t->pushC16((C16)e->state);
+    t->pushC8((C8)e->same_screen);
     t->pushC8(0);
     mConn->push_packet(t);
 }
@@ -489,7 +489,7 @@ void XimIC::setICAttrs(void *val, int len)
     int byte_order = mConn->byte_order();
     int i;
     for (i = 0; i < len;) {
-	int atr_id, atr_len;
+	C16 atr_id, atr_len;
 	atr_id = readC16(&p[i], byte_order);
 	i += 2;
 
@@ -508,9 +508,9 @@ void XimIC::setICAttrs(void *val, int len)
     }
 }
 
-int XimIC::get_ic_atr(int id, TxPacket *t)
+C16 XimIC::get_ic_atr(C16 id, TxPacket *t)
 {
-    int l = m_xatr.getSize(id);
+    C16 l = m_xatr.getSize(id);
     if (!t)
 	return l;
 
@@ -547,7 +547,7 @@ int XimIC::lookup_style(unsigned long s)
     return IS_INVALID;
 }
 
-void XimIC::set_ic_attr(int id, C8 *val, int len)
+void XimIC::set_ic_attr(C16 id, C8 *val, int len)
 {
     if (id == ICA_PreeditAttribute || id == ICA_StatusAttributes)
 	setICAttrs(val, len); // list of attribute
@@ -582,11 +582,12 @@ void XimIC::reset_ic()
     s = m_kkContext->get_preedit_string();
     if (!s.empty()) {
 	char *p;
-	int i, len = 0;
+	C16 i;
+	int len = 0;
 	p = get_im_by_id(mIMid)->uStringToCtext(&s);
 	if (p) {
 	    len = strlen(p);
-	    t->pushC16(len); // length of committed strings
+	    t->pushC16((C16)len); // length of committed strings
 	    for (i = 0; i < len; i++) {
 		t->pushC8(p[i]); // put string here
 	    }
@@ -642,7 +643,7 @@ void XimIC::onSendPacket()
     int i, len;
     len = strlen(p);
 
-    t->pushC16(len);
+    t->pushC16((C16)len);
     for (i = 0; i < len; i++) {
 	t->pushC8(p[i]);
     }
@@ -682,7 +683,7 @@ const char *XimIC::get_lang_region()
     return im->get_lang_region();
 }
 
-XimIC *create_ic(Connection *c, RxPacket *p, int imid, int icid, const char *engine)
+XimIC *create_ic(Connection *c, RxPacket *p, C16 imid, C16 icid, const char *engine)
 {
     XimIC *ic;
     ic = new XimIC(c, imid, icid, engine);

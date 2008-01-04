@@ -64,11 +64,11 @@ public:
     virtual int write_to_buf(unsigned char *buf, int buflen, int byte_order) = 0;
 
     virtual void dump(int byte_order) = 0;
-    virtual int get_major() = 0;
+    virtual C8 get_major() = 0;
 
-    virtual int pushC8(unsigned int) = 0;
-    virtual int pushC16(unsigned int) = 0;
-    virtual int pushC32(unsigned int) = 0;
+    virtual int pushC8(C8) = 0;
+    virtual int pushC16(C16) = 0;
+    virtual int pushC32(C32) = 0;
     virtual int pushSTRING(char *) = 0;
     virtual int pushBytes(const char *, int) = 0;
 
@@ -97,7 +97,7 @@ public:
     static int getPacketLength(unsigned char *, int byte_order);
 };
 
-TxPacket *createTxPacket(int major, int minor);
+TxPacket *createTxPacket(C8 major, C8 minor);
 RxPacket *createRxPacket(unsigned char *buf, int byte_order);
 RxPacket *copyRxPacket(RxPacket *packet);
 
@@ -111,7 +111,7 @@ public:
     void push_packet(TxPacket *); // for normal packet for reply
     void push_passive_packet(TxPacket *); // for preceding packet for reply
     int byte_order() {return mByteorder;};
-    void push_error_packet(int imid, int icid, int er, const char *str);
+    void push_error_packet(C16 imid, C16 icid, C16 er, const char *str);
 
     unsigned short to_hs(unsigned short s);
     unsigned int to_hl(unsigned int l);
@@ -162,7 +162,7 @@ private:
     void clear_pending_queue();
 private:
     XimIC *get_ic(RxPacket *);
-    std::list<int> mCreatedIm;
+    std::list<C16> mCreatedIm;
     XimServer *mServer;
     bool mSyncFlag;
     bool mPreeditStartSyncFlag;
@@ -173,19 +173,19 @@ private:
 // definition of IM
 class XimIM {
 public:
-    XimIM(Connection *, int id);
+    XimIM(Connection *, C16 id);
     virtual ~XimIM();
     
     virtual void create_ic(RxPacket *) = 0;
-    virtual void destroy_ic(int) = 0;
-    virtual void set_ic_focus(int icid) = 0;
+    virtual void destroy_ic(C16) = 0;
+    virtual void set_ic_focus(C16 icid) = 0;
     virtual void set_ic_values(RxPacket *) = 0;
     virtual void get_ic_values(RxPacket *) = 0;
-    virtual void unset_ic_focus(int icid) = 0;
+    virtual void unset_ic_focus(C16 icid) = 0;
     virtual void forward_event(RxPacket *) = 0;
-    virtual void send_sync_reply(int icid) = 0;
-    virtual void send_sync(int icid) = 0;
-    virtual XimIC *get_ic_by_id(int icid) = 0;
+    virtual void send_sync_reply(C16 icid) = 0;
+    virtual void send_sync(C16 icid) = 0;
+    virtual XimIC *get_ic_by_id(C16 icid) = 0;
     virtual void onSendPacket() = 0;
     virtual void changeContext(const char *engine) = 0;
     void set_encoding(const char *encoding);
@@ -202,7 +202,7 @@ public:
 protected:
     Connection *mConn;
     Locale *mLocale;
-    int mID;
+    C16 mID;
     char *mEncoding;
     char *mLangRegion;
 
@@ -216,10 +216,10 @@ protected:
     DefTree *mTreeTop;
 };
 
-int unused_im_id();
-XimIM *create_im(Connection *, int id);
-XimIM *get_im_by_id(int id);
-void close_im(int id);
+C16 unused_im_id();
+XimIM *create_im(Connection *, C16 id);
+XimIM *get_im_by_id(C16 id);
+void close_im(C16 id);
 
 
 struct keyEventX {
@@ -238,12 +238,12 @@ class icxatr {
 public:
     icxatr();
     ~icxatr();
-    void set_atr(int id, C8 *v, int byte_order);
-    bool has_atr(int id);
-    bool is_changed(int id);
-    void unset_change_mask(int id);
+    void set_atr(C16 id, C8 *v, int byte_order);
+    bool has_atr(C16 id);
+    bool is_changed(C16 id);
+    void unset_change_mask(C16 id);
     void print();
-    int getSize(int id);
+    C16 getSize(C16 id);
     void set_locale_name(const char *locale);
     bool use_xft();
 
@@ -271,16 +271,16 @@ private:
 // definition of IC
 class XimIC {
 public:
-    XimIC(Connection *, int imid, int icid, const char *engine);
+    XimIC(Connection *, C16 imid, C16 icid, const char *engine);
     ~XimIC();
     void setFocus();
     void unsetFocus();
-    int get_icid();
-    int get_imid();
+    C16 get_icid();
+    C16 get_imid();
 
     void OnKeyEvent(keyEventX );
     void setICAttrs(void *, int);
-    int get_ic_atr(int, TxPacket *);
+    C16 get_ic_atr(C16, TxPacket *);
     void commit_string(const char *s);
     void extra_input(char *t);
     void reset_ic();
@@ -303,7 +303,7 @@ private:
     icxatr m_xatr;
     void send_key_event(XKeyEvent *k);
     int lookup_style(unsigned long);
-    void set_ic_attr(int, C8 *, int );
+    void set_ic_attr(C16, C8 *, int);
     void send_sync();
     
     Connection *mConn;
@@ -311,8 +311,8 @@ private:
     // this after deletion of m_kkContext since it is also refered by
     // m_kkContext.
     Convdisp *mConvdisp;
-    int mICid;
-    int mIMid;
+    C16 mICid;
+    C16 mIMid;
     uString mPending;
     bool mIsActive;
     keyState *m_keyState;
@@ -326,7 +326,7 @@ struct input_style {
     int style;
 };
 
-XimIC *create_ic(Connection *, RxPacket *, int imid, int id, const char *engine);
+XimIC *create_ic(Connection *, RxPacket *, C16 imid, C16 id, const char *engine);
 void procXClientMessage(XClientMessageEvent *m);
 
 #endif

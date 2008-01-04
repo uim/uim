@@ -63,26 +63,26 @@ writeC8(C8 val, int /* byte_order */, unsigned char *buf)
 void writeC16(C16 val, int byte_order, unsigned char *buf)
 {
     if (byte_order == LSB_FIRST) {
-	buf[0] = val & 255;
-	buf[1] = (val >> 8) & 255;
+	buf[0] = (unsigned char)(val & 255);
+	buf[1] = (unsigned char)((val >> 8) & 255);
     } else {
-	buf[1] = val & 255;
-	buf[0] = (val >> 8) & 255;
+	buf[1] = (unsigned char)(val & 255);
+	buf[0] = (unsigned char)((val >> 8) & 255);
     }
 }
 
 void writeC32(unsigned int val, int byte_order, unsigned char *buf)
 {
     if (byte_order == LSB_FIRST) {
-	buf[0] = val & 255;
-	buf[1] = (val >> 8) & 255;
-	buf[2] = (val >> 16) & 255;
-	buf[3] = (val >> 24) & 255;
+	buf[0] = (unsigned char)(val & 255);
+	buf[1] = (unsigned char)((val >> 8) & 255);
+	buf[2] = (unsigned char)((val >> 16) & 255);
+	buf[3] = (unsigned char)((val >> 24) & 255);
     } else {
-	buf[3] = val & 255;
-	buf[2] = (val >> 8) & 255;
-	buf[1] = (val >> 16) & 255;
-	buf[0] = (val >> 24) & 255;
+	buf[3] = (unsigned char)(val & 255);
+	buf[2] = (unsigned char)((val >> 8) & 255);
+	buf[1] = (unsigned char)((val >> 16) & 255);
+	buf[0] = (unsigned char)((val >> 24) & 255);
     }
 }
 
@@ -95,9 +95,9 @@ C16 readC16(unsigned char *buf, int byte_order)
 {
     C16 v;
     if (byte_order == LSB_FIRST)
-	v = buf[0] + buf[1] * 256;
+	v = (C16)(buf[0] + buf[1] * 256);
     else
-	v = buf[1] + buf[0] * 256;
+	v = (C16)(buf[1] + buf[0] * 256);
     return v;
 }
 
@@ -124,7 +124,7 @@ public:
 
 class TxC8 : public TxElement {
 public:
-    TxC8(int v) {
+    TxC8(C8 v) {
 	val = v;
     }
     virtual int get_size() {
@@ -140,7 +140,7 @@ private:
 
 class TxC16 : public TxElement {
 public:
-    TxC16(int v) {
+    TxC16(C16 v) {
 	val = v;
     }
     virtual int get_size() {
@@ -156,7 +156,7 @@ private:
 
 class TxC32 : public TxElement {
 public:
-    TxC32(unsigned int v) {
+    TxC32(C32 v) {
 	val = v;
     }
     virtual int get_size() {
@@ -185,7 +185,7 @@ public:
 	return 2 + m_len + pad4(2 + m_len);
     }
     virtual int write_to_buf(unsigned char *buf, int bo) {
-	writeC16(m_len, bo, buf);
+	writeC16((C16)m_len, bo, buf);
 	memcpy(&buf[2], m_str, m_len);
 	return get_size();
     }
@@ -223,29 +223,29 @@ private:
 
 class TxPacket_impl : public TxPacket {
 public:
-    TxPacket_impl(int major, int minor);
+    TxPacket_impl(C8 major, C8 minor);
     virtual ~TxPacket_impl();
 
     virtual int get_length();
     virtual int write_to_buf(unsigned char *buf, int buflen, int byte_order);
 
     virtual void dump(int byte_order);
-    virtual int get_major();
+    virtual C8 get_major();
 
-    virtual int pushC8(unsigned int);
-    virtual int pushC16(unsigned int);
-    virtual int pushC32(unsigned int);
+    virtual int pushC8(C8);
+    virtual int pushC16(C16);
+    virtual int pushC32(C32);
     virtual int pushSTRING(char *);
     virtual int pushBytes(const char *, int);
 
     virtual int pop_back();
 private:
     void write_header(unsigned char *buf, int l, int byte_order);
-    int m_major, m_minor;
+    C8 m_major, m_minor;
     std::list <TxElement *> m_elms;
 };
 
-TxPacket_impl::TxPacket_impl(int major, int minor)
+TxPacket_impl::TxPacket_impl(C8 major, C8 minor)
 {
     m_major = major;
     m_minor = minor;
@@ -288,7 +288,7 @@ int TxPacket_impl::write_to_buf(unsigned char *buf, int buflen, int byte_order)
     return l;
 }
 
-int TxPacket_impl::pushC8(unsigned int v)
+int TxPacket_impl::pushC8(C8 v)
 {
     TxElement *e;
     e = new TxC8(v);
@@ -296,7 +296,7 @@ int TxPacket_impl::pushC8(unsigned int v)
     return e->get_size();
 }
 
-int TxPacket_impl::pushC16(unsigned int v)
+int TxPacket_impl::pushC16(C16 v)
 {
     TxElement *e;
     e = new TxC16(v);
@@ -304,7 +304,7 @@ int TxPacket_impl::pushC16(unsigned int v)
     return e->get_size();
 }
 
-int TxPacket_impl::pushC32(unsigned int v)
+int TxPacket_impl::pushC32(C32 v)
 {
     TxElement *e;
     e = new TxC32(v);
@@ -343,7 +343,7 @@ void TxPacket_impl::write_header(unsigned char *buf, int l, int byte_order)
 {
     buf[0] = m_major;
     buf[1] = m_minor;
-    writeC16(l / 4 - 1, byte_order, &buf[2]);
+    writeC16((C16)(l / 4 - 1), byte_order, &buf[2]);
 }
 
 void TxPacket_impl::dump(int byte_order)
@@ -357,12 +357,12 @@ void TxPacket_impl::dump(int byte_order)
     free(buf);
 }
 
-int TxPacket_impl::get_major()
+C8 TxPacket_impl::get_major()
 {
     return m_major;
 }
 
-TxPacket *createTxPacket(int major, int minor)
+TxPacket *createTxPacket(C8 major, C8 minor)
 {
     return new TxPacket_impl(major, minor);
 }
