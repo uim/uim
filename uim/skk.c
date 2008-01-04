@@ -2421,7 +2421,8 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	    if (k == nth) {
 	      str = ca->cands[i];
 	      /* reorder sub candidate */
-	      skk_commit_candidate(numstr_, uim_scm_null(), uim_scm_null(), MAKE_INT(j), uim_scm_null());
+	      skk_commit_candidate(numstr_, uim_scm_null(), uim_scm_null(),
+				   MAKE_INT(j), uim_scm_f());
 	      break;
 	    }
 	    k++;
