@@ -170,17 +170,17 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
     backtickが使われます。
 
     UIM_FEP_SETMODE, UIM_FEP_GETMODEの値は
-    $HOME/.uim.d/fep/uim-fep-setmode-$STY-$WINDOW-screen
-    $HOME/.uim.d/fep/uim-fep-getmode-$STY-$WINDOW-screen
+    $HOME/.uim.d/fep/setmode-$STY-$WINDOW-screen
+    $HOME/.uim.d/fep/getmode-$STY-$WINDOW-screen
     になります。
 
   o -f str
     $UIM_FEP_SETMODEと$UIM_FEP_GETMODEのファイル名を
-    uim-fep-setmode-{str}
-    uim-fep-setmode-{str}
+    setmode-{str}
+    setmode-{str}
     にします。{str}は-fオプションの引数です。
-    UIM_FEP_SETMODEとUIM_FEP_GETMODEが置かれるディレクトリは$TMPか
-    TMPが定義されていなければ/tmpです。
+    UIM_FEP_SETMODEとUIM_FEP_GETMODEが置かれるディレクトリは
+    ~/.uim.d/fep/です。
 
   o -d
     候補一覧の表示スタイルをddskkのようにします。
