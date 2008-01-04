@@ -43,8 +43,6 @@
 #include "uim-notify.h"
 
 
-static int inited = 0;
-
 static uim_notify_desc uim_notify_knotify3_desc = {
   "knotify3",
   "Output via knotify",

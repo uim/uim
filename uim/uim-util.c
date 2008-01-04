@@ -314,10 +314,9 @@ uim_scm_notify_get_plugins(void)
   dirp = opendir(NOTIFY_PLUGIN_PATH);
   if (dirp) {
     while ((dp = readdir(dirp)) != NULL) {
-      char name[PATH_MAX];
       size_t len = strlen(dp->d_name);
 
-      if ((len < plen + slen) || (sizeof(name) < len) ||
+      if ((len < plen + slen) || (PATH_MAX < len) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
 	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
