@@ -240,7 +240,7 @@
      ("O" (jungseong-yae        . 1))
      ("P" (jungseong-ye         . 1)))))
 
-(define byeoru-layout-hangul2windows
+(define byeoru-layout-hangul2
   (byeoru-expand-layout
    ;; Unshifted keys
    '(("q" (choseong-bieub   . 1) (jongseong-bieub   . (3 4)))
@@ -1868,18 +1868,11 @@
 	  (context-update-preedit bc segments)))))
 
 (define (byeoru-key-press-handler bc key key-state)
-
-;;    (if (ichar-control? key)	    ; doesn't seem to work.
-;;	(im-commit-raw bc)
-
   (if (byeoru-context-on bc)
       (if (eq? (byeoru-context-mode bc) 'hangul)
 	  (byeoru-proc-input-state bc key key-state)
 	  (byeoru-proc-other-states bc key key-state))
       (byeoru-proc-raw-state bc key key-state))
-
-;;	)
-
   (byeoru-update-preedit bc))
 
 (define (byeoru-key-release-handler bc key key-state)
@@ -1888,21 +1881,31 @@
       ;; don't discard key release event for apps
       (im-commit-raw bc)))
 
-;; Check mouse click while composing, converting, etc.
+(define (byeoru-deactivate-candidate-selector bc)
+  (if (not (eq? (byeoru-context-mode bc) 'hangul))
+      (im-deactivate-candidate-selector bc)))
+
 (define (byeoru-reset-handler bc)
   (if (byeoru-context-on bc)
       (begin
+	(byeoru-deactivate-candidate-selector bc)
 	(byeoru-flush-automata bc)
-	(byeoru-commit bc (byeoru-make-whole-string bc))
+	;; reset-handler does not commit a string
 	(byeoru-clear! bc)
 	(byeoru-update-preedit bc))))
 
 (define (byeoru-focus-out-handler bc)
   (if (byeoru-context-on bc)
       (begin
-	(byeoru-flush-automata bc)
-	(byeoru-commit bc (byeoru-make-whole-string bc))
-	(byeoru-clear! bc)
+	(byeoru-deactivate-candidate-selector bc)
+	(byeoru-flush bc)
+	(byeoru-update-preedit bc))))
+
+(define (byeoru-displace-handler bc)
+  (if (byeoru-context-on bc)
+      (begin
+	(byeoru-deactivate-candidate-selector bc)
+	(byeoru-flush bc)
 	(byeoru-update-preedit bc))))
 
 (define (byeoru-get-candidate-handler bc idx accel-enum-hint)
@@ -1951,7 +1954,7 @@
  #f
  byeoru-focus-out-handler
  #f
- #f
+ byeoru-displace-handler
 )
 
 ;; Local Variables:

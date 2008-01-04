@@ -39,14 +39,14 @@
 
 (define byeoru-layout-alist
   (list
+   (list 'byeoru-layout-hangul2
+	 #f				; 2-beol can not be orderless.
+	 (N_ "Hangul 2-beol Windows")
+	 (N_ "Hangul 2-beol keyboard that maps an undefined shifted key to a jamo"))
    (list 'byeoru-layout-hangul2hanterm
 	 #f				; 2-beol can not be orderless.
 	 (N_ "Hangul 2-beol Hanterm")
 	 (N_ "Hangul 2-beol keyboard that maps an undefined shifted key to an alphabet"))
-   (list 'byeoru-layout-hangul2windows
-	 #f				; 2-beol can not be orderless.
-	 (N_ "Hangul 2-beol Windows")
-	 (N_ "Hangul 2-beol keyboard that maps an undefined shifted key to a jamo"))
    (list 'byeoru-layout-strict3final
 	 #f				; neither can strict 3-beol.
 	 (N_ "Hangul 3-beol final strict")
@@ -91,7 +91,7 @@
   (N_ "long description will be here."))
 
 ;; Changing keyboard layout should flush the automata.
-(define-custom 'byeoru-layout 'byeoru-layout-hangul2windows
+(define-custom 'byeoru-layout 'byeoru-layout-hangul2
   '(byeoru byeoru-keyboard)
   (cons 'choice
 	(map (lambda (entry)
