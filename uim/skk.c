@@ -3582,7 +3582,6 @@ open_skkserv(const char *hostname, int portnum, int family)
     return 0;
   }
 
-  ai = aitop;
   for (ai = aitop; ai; ai = ai->ai_next) {
     if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
       continue;
