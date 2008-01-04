@@ -41,10 +41,6 @@ How to USE
   o LC_ALL LC_CTYPE LANG
     Detecting the language and encoding in accordance with this order.
 
-  o TMP
-    uim-fep-tickと通信するためのsocketを置くディレクトリです。
-    If this variable not defined, /tmp will be used.
-
   o WINDOW
     backtickを使っているときに表示されます。
 
@@ -74,7 +70,7 @@ How to USE
 
   o -b <file>
     Set the socket path which is used by backtik.
-    When you set relative path, its base path is $TMP or /tmp
+    When you set relative path, its base path is ~/.uim.d/fep/
 
   o -w <num>
     Width of status line. This variable is used if it's in from 1 to width of terminal.
@@ -124,7 +120,7 @@ How to use backtick
   o Options of uim-fep-tick
     * -s <file>
       You can specify the socket path.
-      When you set relative path, its base path is $TMP or /tmp
+      When you set relative path, its base path is ~/.uim.d/fep/
 
     * -h Display the help message
 

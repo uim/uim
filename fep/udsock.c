@@ -60,40 +60,103 @@
 #include <sys/stat.h>
 #endif
 
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
 #include "udsock.h"
 
 static int s_send_sockfd = -1;
 static int s_recv_sockfd = -1;
 static struct sockaddr_un s_servaddr;
 
+static uim_bool
+check_dir(const char *dir)
+{
+  struct stat st;
+
+  if (dir == NULL)
+    return UIM_FALSE;
+
+  if (stat(dir, &st) < 0)
+    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+  else {
+    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
+    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
+  }
+}
+
+char *
+get_ud_path(void)
+{
+  char *path, *home = NULL;
+  struct passwd *pw;
+
+  pw = getpwuid(getuid());
+  if (pw)
+    home = pw->pw_dir;
+
+  if (!home && !uim_helper_is_setugid())
+    home = getenv("HOME");
+
+  if (!home)
+    return NULL;
+
+  if (asprintf(&path, "%s/.uim.d", home) == -1)
+    return NULL; /* XXX: fatal */
+
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
+  }
+  free(path);
+
+  if (asprintf(&path, "%s/.uim.d/fep", home) == -1)
+    return NULL; /* XXX: fatal */
+
+  if (!check_dir(path)) {
+    free(path);
+    return NULL;
+  }
+
+  return path;
+}
+
+
 const char *usersockname(const char *file)
 {
   static char buf[UNIX_PATH_MAX];
   char filebuf[UNIX_PATH_MAX];
+  char *sock_dir;
+
   if (file != NULL && file[0] == '/') {
     return file;
   }
+
   if (file == NULL) {
-    struct passwd *pw = getpwuid(getuid());
-    snprintf(filebuf, UNIX_PATH_MAX, "uim-fep-%s", pw->pw_name);
+    strlcpy(filebuf, "backtick", UNIX_PATH_MAX);
   } else {
     strlcpy(filebuf, file, UNIX_PATH_MAX);
   }
-  if (getenv("TMP")) {
-    snprintf(buf, UNIX_PATH_MAX, "%s/%s", getenv("TMP"), filebuf);
-  } else {
-    snprintf(buf, UNIX_PATH_MAX, "/tmp/%s", filebuf);
+
+  sock_dir = get_ud_path();
+  if (!sock_dir) {
+    sendline("uim-fep cannot create directory");
+    exit(EXIT_FAILURE);
   }
+  snprintf(buf, UNIX_PATH_MAX, "%s/%s", sock_dir, filebuf);
+  free(sock_dir);
+
   return buf;
 }
 
 void init_sendsocket(const char *sock_path)
 {
-  sock_path = usersockname(sock_path);
+  const char *path;
+
+  path = usersockname(sock_path);
   s_send_sockfd = socket(PF_UNIX, SOCK_DGRAM, 0);
   memset(&s_servaddr, 0, sizeof(s_servaddr));
   s_servaddr.sun_family = AF_UNIX;
-  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX);
+  strlcpy(s_servaddr.sun_path, path, UNIX_PATH_MAX);
 }
 
 void sendline(const char *buf)
@@ -107,17 +170,19 @@ void sendline(const char *buf)
  */
 void init_recvsocket(const char *sock_path)
 {
-  sock_path = usersockname(sock_path);
-  unlink(sock_path);
+  const char *path;
+
+  path = usersockname(sock_path);
+  unlink(path);
   s_recv_sockfd = socket(PF_UNIX, SOCK_DGRAM, 0);
   memset(&s_servaddr, 0, sizeof(s_servaddr));
   s_servaddr.sun_family = AF_UNIX;
-  strlcpy(s_servaddr.sun_path, sock_path, UNIX_PATH_MAX);
+  strlcpy(s_servaddr.sun_path, path, UNIX_PATH_MAX);
   if (bind(s_recv_sockfd, (struct sockaddr *)&s_servaddr, sizeof(s_servaddr)) < 0) {
-    perror(sock_path);
+    perror(path);
     exit(EXIT_FAILURE);
   }
-  chmod(sock_path, S_IRUSR|S_IWUSR);
+  chmod(path, S_IRUSR|S_IWUSR);
 }
 
 void close_socket(void)

@@ -44,5 +44,6 @@ void sendline(const char *buf);
 void init_recvsocket(const char *sock_path);
 int recvline(char *buf, int n);
 void close_socket(void);
+char *get_ud_path(void);
 
 #endif

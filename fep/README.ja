@@ -61,10 +61,6 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
   o LC_ALL LC_CTYPE LANG
     文字コードを決めるときにこの順番で見ます。
 
-  o TMP
-    uim-fep-tickと通信するためのsocketを置くディレクトリです。
-    定義されていないときは/tmpが使われます。
-
   o WINDOW
     backtickを使っているときに表示されます。
 
@@ -92,8 +88,8 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
     -sl, -sb, -snのように省略できます。
 
   o -b <file>
-    backtickで使うsocketのパスを指定します。相対パスのときは、環境変数TMP
-    か/tmpからのパスになります。
+    backtickで使うsocketのパスを指定します。相対パスのときは、~/.uim.d/fep/
+    からのパスになります。
 
   o -w <数値>
     ステータスラインの幅です。
@@ -216,8 +212,8 @@ uim-fepはuimを利用してコンソールで多言語を入力するためのfepです。
 
   o uim-fep-tickのオプション
     * -s <file>
-      socketのパスを指定できます。相対パスのときは、環境変数TMP
-      か/tmpからのパスになります。
+      socketのパスを指定できます。相対パスのときは、~/.uim.d/fep/
+      からのパスになります。
 
     * -h ヘルプメッセージを表示します。
 

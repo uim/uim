@@ -110,7 +110,6 @@
 #endif
 
 #include <uim/uim.h>
-#include <uim/uim-helper.h>
 
 #include "udsock.h"
 #include "str.h"
@@ -226,58 +225,6 @@ static const char *get_default_im_name(void)
   return engine;
 }
 
-static uim_bool
-check_dir(const char *dir)
-{
-  struct stat st;
-
-  if (dir == NULL)
-    return UIM_FALSE;
-
-  if (stat(dir, &st) < 0)
-    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
-  else {
-    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
-    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
-  }
-}
-
-static char *
-get_ud_path(void)
-{
-  char *path, *home = NULL;
-  struct passwd *pw;
-
-  pw = getpwuid(getuid());
-  if (pw)
-    home = pw->pw_dir;
-
-  if (!home && !uim_helper_is_setugid())
-    home = getenv("HOME");
-
-  if (!home)
-    return NULL;
-
-  if (asprintf(&path, "%s/.uim.d", home) == -1)
-    return NULL; /* XXX: fatal */
-
-  if (!check_dir(path)) {
-    free(path);
-    return NULL;
-  }
-  free(path);
-
-  if (asprintf(&path, "%s/.uim.d/fep", home) == -1)
-    return NULL; /* XXX: fatal */
-
-  if (!check_dir(path)) {
-    free(path);
-    return NULL;
-  }
-
-  return path;
-}
-
 int main(int argc, char **argv)
 {
   /* command will be execed on pty */
@@ -296,7 +243,7 @@ int main(int argc, char **argv)
   };
   FILE *fp;
   const char *suffix = NULL;
-  const char *uim_dir;
+  char *uim_dir;
   const char *sty_str;
   const char *win_str;
   struct stat stat_buf;
@@ -528,6 +475,7 @@ opt_end:
       }
     }
   }
+  free(uim_dir);
 
   snprintf(pid_str, sizeof(pid_str), "%d", getpid());
   setenv("UIM_FEP_PID", pid_str, 1);
