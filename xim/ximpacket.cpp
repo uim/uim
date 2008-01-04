@@ -37,6 +37,7 @@
 #include <list>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "xim.h"
 #include "util.h"
