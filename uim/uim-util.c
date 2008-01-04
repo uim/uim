@@ -315,20 +315,23 @@ uim_scm_notify_get_plugins(void)
   if (dirp) {
     while ((dp = readdir(dirp)) != NULL) {
       size_t len = strlen(dp->d_name);
+      char path[PATH_MAX];
 
-      if ((len < plen + slen) || (PATH_MAX < len) ||
+      if ((len < plen + slen) ||
+	  (PATH_MAX < (strlen(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
 	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
 
-      handle = dlopen(dp->d_name, RTLD_NOW);
+      snprintf(path, PATH_MAX, "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
+      handle = dlopen(path, RTLD_NOW);
       if ((str = dlerror()) != NULL) {
-	fprintf(stderr, "load failed %s(%s)\n", dp->d_name, str);
+	fprintf(stderr, "load failed %s(%s)\n", path, str);
 	continue;
       }
       desc_func = (uim_notify_desc* (*)(void))dlfunc(handle, "uim_notify_plugin_get_desc");
       if (!desc_func) {
-	fprintf(stderr, "cannot found 'uim_notify_get_desc()' in %s\n", dp->d_name);
+	fprintf(stderr, "cannot found 'uim_notify_get_desc()' in %s\n", path);
 	dlclose(handle);
 	continue;
       }
