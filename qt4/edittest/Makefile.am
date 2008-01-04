@@ -9,6 +9,8 @@ all clean mocclean install uninstall:
 distclean:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
+else
+distclean:
 	-rm -f Makefile
 endif
 
