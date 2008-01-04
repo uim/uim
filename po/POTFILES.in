@@ -29,6 +29,8 @@ scm/canna-custom.scm
 scm/canna-key-custom.scm
 scm/custom.scm
 scm/direct.scm
+scm/elatin.scm
+scm/elatin-custom.scm
 scm/generic-custom.scm
 scm/generic-key-custom.scm
 scm/generic.scm

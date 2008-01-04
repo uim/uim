@@ -27,7 +27,7 @@ SVGS += im_switcher.svg uim-dict.svg
 IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 mana.svg \
                 hangul2.svg hangul3.svg romaja.svg \
-                viqr.svg ipa-x-sampa.svg latin.svg \
+                viqr.svg ipa-x-sampa.svg latin.svg elatin.svg \
                 look.svg scim.svg
 GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg
 SVGS += im_subst.svg $(GENERATED_SVGS)
@@ -35,7 +35,7 @@ SVGS += im_subst.svg $(GENERATED_SVGS)
 IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 mana.png \
                 hangul2.png hangul3.png romaja.png \
-                viqr.png ipa-x-sampa.png latin.png \
+                viqr.png ipa-x-sampa.png latin.png elatin.png \
                 look.png scim.png
 
 SVG_PNGS = unknown.png \

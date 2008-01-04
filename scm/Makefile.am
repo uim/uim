@@ -30,6 +30,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  viqr.scm \
  ipa-x-sampa.scm \
  latin.scm \
+ elatin.scm elatin-rules.scm elatin-custom.scm \
  look.scm look-custom.scm \
  m17nlib.scm \
  zaurus.scm \
@@ -57,7 +58,7 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "tcode" "trycode" "tutcode" "byeoru" "latin"
+module_names += "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif
