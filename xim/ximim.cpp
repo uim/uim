@@ -129,7 +129,7 @@ void XimIM_impl::create_ic(RxPacket *p)
 	mConn->terminate();
 	return;
     }
-    std::pair<int, XimIC *> n(ic->get_icid(), ic);
+    std::pair<C16, XimIC *> n(ic->get_icid(), ic);
     m_ics.insert(n);
 
     TxPacket *t;
