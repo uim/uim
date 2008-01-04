@@ -10,6 +10,9 @@ distclean:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 	-rm -f Makefile
+else
+distclean:
+	-rm -f Makefile
 endif
 
 FORCE:
