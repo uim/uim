@@ -3583,7 +3583,7 @@ open_skkserv(const char *hostname, int portnum, int family)
   }
 
   ai = aitop;
-  do {
+  for (ai = aitop; ai; ai = ai->ai_next) {
     if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6)
       continue;
 
@@ -3596,7 +3596,7 @@ open_skkserv(const char *hostname, int portnum, int family)
       uim_notify_fatal("uim-skk: connect to %s port %s failed", hostname, port);
     close(sock);
     sock = -1;
-  }  while ((ai = ai->ai_next) != NULL);
+  }
 
   freeaddrinfo(aitop);
 
