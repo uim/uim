@@ -42,10 +42,8 @@
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
 
-static int uim_libnotify_timeout = 3000;
-
 static int
-uim_libnotify_notify(int urgency, const char *body)
+uim_libnotify_notify(int urgency, int timeout, const char *body)
 {
   char body_short[256];
   NotifyNotification *notification;
@@ -68,8 +66,7 @@ uim_libnotify_notify(int urgency, const char *body)
     return 0;
   }
 
-  if (0 < uim_libnotify_timeout)
-    notify_notification_set_timeout(notification, uim_libnotify_timeout);
+  notify_notification_set_timeout(notification, timeout);
 
   notify_notification_set_urgency(notification, urgency);
 
@@ -114,11 +111,11 @@ uim_notify_plugin_quit(void)
 int
 uim_notify_plugin_info(const char *msg)
 {
-  return uim_libnotify_notify(NOTIFY_URGENCY_NORMAL, msg);
+  return uim_libnotify_notify(NOTIFY_URGENCY_NORMAL, NOTIFY_EXPIRES_DEFAULT, msg);
 }
 
 int
 uim_notify_plugin_fatal(const char *msg)
 {
-  return uim_libnotify_notify(NOTIFY_URGENCY_CRITICAL, msg);
+  return uim_libnotify_notify(NOTIFY_URGENCY_CRITICAL, NOTIFY_EXPIRES_NEVER, msg);
 }
