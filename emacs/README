@@ -7,307 +7,524 @@ All rights reserved.
 This software is released under the BSD license.
 
 
-ABOUT uim.el
+About uim.el
 ============
 
-uim.el is a bridge software between Emacs and uim.
+uim.el is a bridge software connecting uim and your Emacs.
 
-uim.el makes you able to use uim supported IMs from Emacs
-directly.
-
-
-FEATURES
-========
-
-- Inline Candidates Displaying Mode
-
-While most of IMs supported by Emacs display the candidates
-in the echo area, uim.el can display candidates as follows;
-  - display them just below the preedit string
-  - align them in vertical direction
-
-This is a mode called ``inline candidates displaying mode.''
-
-This mode releases users from an affliction that should move
-their eyes from current cursor position to bottom of the
-buffer every selection time.
-
-Also, by aligning candidates vertically, users can select a
-candidate naturally, like using other uim bridges.
-
-
-- Preedit Displaying on the Emacs Buffer
-
-Unlike uim-xim or uim-fep, uim.el displays preedit string on
-the Emacs buffer.  So, the existing characters after the
-cursor are never hidden behind the preedit string.
-
-
-- IM Managing on Each Buffer
-
-uim.el manages the IM on each buffer independently.
-
-Users can use different IM (such as Anthy, Skk, Canna and so
-on) on each buffer and also can do conversion in
-concurrently.
-
-
-REQUIREMENTS
-============
-
-As you guessed, uim.el requires Emacs and uim.
-
-- Emacs: following versions are supported
-
-  - FSF Emacs 20.7
-  - FSF Emacs 21.3.1
-  - FSF Emacs 22.0.50 (CVS version)
-  - XEmacs 21.4.17 (with sumo and mule-sumo)
-
-  * note: Ancient Emacs such as Emacs-19.x or Mule-2.3 are
-          not supported
-
-- uim: 0.4.6 or later
-          (highly recommended to use the latest version)
-
-  Also, you should install some IMs which can be used with
-  uim if required.
-
-
-INSTALLATION
-============
-
-You can install uim.el in usual way
-
- % ./configure
- % make
- % su
- # make install
-
-  * note: It is recommended to remove older version of uim.el
-          before upgrading.
-
-USAGE
-=====
-
-uim.el is implemented as a minor-mode of Emacs.
-
-You can call uim.el from Emacs in two ways; 
-directly or with the LEIM framework.
-
-Though settings of them are different, basic functions are
-same.
-
-If you want to switch between uim.el and other Emacs IMs
-frequently, you should use LEIM framework.
-
-
-[Settings for the minor-mode]
-
-Write the following settings into your .emacs or some other
-file for Emacs customizing.
-
-  ;; read uim.el
-  (require 'uim)
-  ;; uncomment next and comment out previous to load uim.el on-demand
-  ;; (autoload 'uim-mode "uim" nil t)
-
-  ;; set default IM (ex. use Anthy)
-  ;; (setq uim-default-im-engine "anthy")
-
-  ;; key-binding for activate uim (ex. C-o)
-  (global-set-key "\C-o" 'uim-mode)
-
-
-[Settings for the LEIM]
-
-Write the following settings into your .emacs or some other
-file for Emacs customizing.
-
-  ;; read uim.el with LEIM initializing
-  (require 'uim-leim)
-
-  ;; set default IM (ex. use Anthy)
-  (setq default-input-method "japanese-anthy-uim")
-
-  * note: The naming rule of the IMs of LEIM are as follows.
-
-     <lang. of Emacs>-<each IM name of uim>-uim
-
-     for example...
-       - chinese-big5-pinyin-big5-uim
-       - japanese-skk-uim
-       - vietnamese-viqr-uim
-
-     Correspondence between Emacs Language name and uim
-     Language name are described in uim-el/uim.el.
-
-     Also, available names can be listed in the following way;
-
-       M-x set-input-method RET TAB
-
-
-[Path Settings]
-
-You can install uim.el into any directory of your computer
-if you have a permit. 
-
-If you have installed uim.el and its back-end software 
-(i.e., uim-el-agent) into nonstandard directory, you should 
-describe paths to them before uim.el loading as follows.
-
-  ;; path to uim.el and other lisp files
-  (setq load-path (append '("/home/nosuke/uim-el/uim-el") load-path))
-
-  ;; path to uim-el-agent 
-  ;; (path of executable binary file, not a directory)
-  (setq uim-el-agent "/home/nosuke/uim-el/uim-el-agent/uim-el-agent")
+By introducing uim.el, various IMs become available on your Emacs
+through uim.
 
 
 
+Supported Emacs
+===============
 
-CUSTOMIZATION
-=============
+- GNU Emacs 20.x or later
+  * Tested on 20.7.1, 21.4.1 and 22.1.1.
+
+- XEmacs 21.x 
+  * Tested on 21.4.20 (with sumo and mule-sumo).
+
+  NOTE: Older version such as Mule-2.3 and Emacs-19.x are 
+        unsupported.
+  NOTE: Also, it might works on Emacs-23.x (CVS version).
+
+
+
+Quick Start
+===========
+
+uim.el is implemented as a minor-mode of Emacs i.e. uim-mode.
+
+You can use uim.el on your Emacs in two ways; use minor-mode directly 
+or with LEIM.
+
+Both of them require to add some description into your .emacs
+or some other file for Emacs customizing.  uim.el provides 
+the same functions whether it's used with LEIM or not.
+
+If you want to switch between IMs provided by uim.el and other IMs
+under Emacs frequently, LEIM is a better choice.
+
+
+If you want to switch between IMs provided by uim.el and others
+frequently, LEIM is recommended.
+
+
+* Settings for direct use of uim-mode
+
+- Example
+
+    ;; read uim.el
+    (require 'uim)
+    ;; to load uim.el only when needed, uncomment below 
+    ;; and comment out above
+    ;; (autoload 'uim-mode "uim" nil t)
+
+    ;; key-binding for uim-mode toggle (ex. C-o)
+    (global-set-key "\C-o" 'uim-mode)
+
+- Explanation
+
+   First, load uim.el directly by require function.
+
+     (require 'uim)
+
+   Or, if you want to load uim.el only when needed, use autoload 
+   function instead of require.
+
+     (autoload 'uim-mode "uim" nil t)
+
+
+   Next, define a key-binding of "uim-mode" command to toggle
+   uim-mode. For example, if you want to use C-o to toggle uim-mode, 
+   write as follows.
+
+     (global-set-key "\C-o" 'uim-mode)
+
+
+
+* Settings for use with LEIM
+
+   First, load uim-leim.el by require function.  It registers the 
+   IMs of uim on Emacs to use them under LEIM.
+
+     (require 'uim-leim)
+
+
+   In this case, each name of the IMs is translated into a LEIM 
+   style name. The naming rule of LEIM are as follows.
+
+     <Emacs-style language name>-<IM name of uim>-uim
+
+   For example, if it is uim-anthy, it is registered to LEIM as 
+   "japanese-anthy-uim," since IM name of uim is "anthy" and 
+   the Emacs-style language name of Japanese is "japanese."
+
+   To show the names of all available IMs of LEIM, type following 
+   command.
+
+     M-x list-input-method
+
+
+   Default IM of LEIM is specified by a value of 
+   default-input-method variable.  For example, to specify uim-anthy 
+   as default IM of LEIM, write as follows.
+
+     (setq default-input-method "japanese-anthy-uim")
+
+
+
+General Customizing
+===================
+
+* Specify default IM of uim-mode independently from uim global setting
+
+   By default, when uim-mode is enabled, an IM specified by 
+   configuration tools such as uim-pref-gtk is available.
+
+   If you want to use a different IM from uim global setting by 
+   default, set its name to uim-default-im-engine value.  For example, 
+   to use uim-anthy anyway by default, write as follows.
+
+     (setq uim-default-im-engine "anthy")
+
+
+* Enable inline candidates displaying mode by default
+
+   uim.el has a special feature that displaying candidates just below 
+   (or just above) the preedit strings in vertical direction. 
+   This feature is called "inline candidates displaying mode."
+
+   While this mode is one of the most important features of uim.el, 
+   it is invalidated because displayed candidates are collapsed 
+   when Emacs is using proportional fonts.
+
+   If you are using fixed fonts on Emacs, you should enable this mode.
+
+   To enable this by default, write as follows.
+
+     (setq uim-candidate-display-inline t)
+
+
+   To enable (or disable) this mode only under specific major-mode, 
+   make uim-candidate-display-inline as buffer-local variable and then
+   set non-nil (or nil) to it.
+
+   For example, to enable inline candidates displaying mode only 
+   under text-mode, write as follows.
+
+    (setq uim-candidate-display-inline nil)
+
+    (add-hook 'text-mode-hook 
+              (lambda ()
+	        (make-variable-buffer-local 'uim-candidate-display-inline)
+                (setq uim-candidate-display-inline t)))
+
+
+* Change appearances of preedit strings and candidates
+
+   uim.el uses following faces to decorate preedit strings and 
+   candidates.
+
+    - uim-preedit-highlight-face  ... highlighted part of preedit string
+    - uim-separator-face          ... separator of preedit string
+    - uim-candidate-odd-face      ... even number candidates
+    - uim-candidate-even-face     ... odd number candidates
+    - uim-candidate-selected-face ... selected candidate
+    - uim-candidate-nth-face      ... number of selected candidate
+
+   If you want to modify each color of these faces, write as follows.
+
+     (set-face-foreground 'uim-preedit-highlight-face "white")
+     (set-face-background 'uim-preedit-highlight-face "blue")
+     (set-face-foreground 'uim-separator-face "white")
+     (set-face-foreground 'uim-candidate-odd-face "blue")
+     (set-face-background 'uim-candidate-odd-face "white")
+     (set-face-foreground 'uim-candidate-even-face "blue")
+     (set-face-background 'uim-candidate-even-face "yellow")
+     (set-face-foreground 'uim-candidate-selected-face "blue")
+     (set-face-background 'uim-candidate-selected-face "white")
+     (set-face-foreground 'uim-candidate-nth-face "red")
+     (set-face-background 'uim-candidate-nth-face "white")
+
+
+   Colors and their names supported by Emacs can be displayed by 
+   using following command.
+
+     M-x list-colors-display
+
+
+   NOTE: If you are using autoload function to load uim.el, the above 
+        settings should be written inside of uim-load-hook.
+
+     (add-hook 'uim-load-hook
+                '(lambda ()
+                  (set-face-foreground 'uim-preedit-highlight-face "white")
+                  (set-face-background 'uim-preedit-highlight-face "blue")
+
+                    ...
+
+                  (set-face-background 'uim-candidate-nth-face "white")
+                  ))
+
+
+* Put fences / frame to preedit strings and candidates
+
+   uim.el can draw borders of preedit strings and candidates by 
+   ASCII characters.  It's maybe useful when your Emacs or 
+   terminal emulator don't support colored text or underline.
+
+
+   To display fences at both sides of the preedit strings, 
+   write as follows.
+
+     (setq-default uim-preedit-display-fences t)
+
+
+   To display frame around the candidates, write as follows.
+
+     (setq-default uim-candidate-display-frame t)
+
+
+* Enable uim.el by default in specific major-mode 
+
+   To enable uim.el by default in specific major-mode, call uim-mode 
+   function with an argument (1 or larger number) in the hook of
+   the major-mode.
+
+
+   For example, if you are using uim-mode, write as follows.
+
+     (add-hook 'html-mode-hook
+               '(lambda () (uim-mode 1)))
+
+
+   Or, if you are using LEIM, write as follows.
+
+     (add-hook 'html-mode-hook
+               '(lambda () (toggle-input-method)))
+
+
+
+Unusual Customizing
+===================
+
+* Change default input modes of IMs
+
+   To set default input modes (ex. Hiragana, half-width katakana) 
+   of IMs different from global setting of uim, make a list 
+   of default input modes and set it to uim-default-im-prop.
+
+   For example, to change default input modes of Anthy and SKK into 
+   Hiragana mode, write as follows.
+
+     (setq uim-default-im-prop 
+             '("action_anthy_hiragana" "action_skk_hiragana"))
+
+
+   Since there are no document which is organizing the names
+   of such input modes of each IM, you should read scheme files 
+   of uim to obtain them.
+
+   Maybe you can find them by grep scheme files but its not a 
+   good idea.
+
+      grep -r register-action /usr/share/uim/*.scm
+
 
 * Change treatment of Escape-key on terminal-mode
 
-To support function keys, such as F10 and Delete, 
-when Emacs has been executed on terminal 
-window (i.e., with -nw option), uim.el 
-doesn't pass  single Escape-key to uim by default.
+   To recognize special keys such as function keys and arrow keys
+   on Emacs in terminal emulator, uim.el doesn't pass single 
+   Escape-key to uim by default.  Therefore, to invoke uim function 
+   bound to a Escape-key, you must press Escape-key in two times.
 
-If you want to invoke uim function bound to a Escape-key,
-press Escape-key in two times.
+   If you dislike this specification, you can invalidate this 
+   setting while preedit strings are displayed by setting 
+   non-nil value to uim-use-single-escape-on-terminal variable.
 
-
-Following is a configuration to invalidate this 
-setting while preedits are displayed.
-
-  ;; enable single Escape-key pressing on terminal
-  (setq uim-use-single-escape-on-terminal t)
-
-  * note: This configuration is unrecommended.
+     (setq uim-use-single-escape-on-terminal t)
 
 
-
-* Change candidate style
-
-If you want to enable inline candidates displaying mode by
-default, write as follows.
-
-   ;; set inline candidates displaying mode as default
-   (setq uim-candidate-display-inline t)
+   NOTE: This configuration is unrecommended because it invalidate
+         not only special keys such as function keys and arrow keys
+         but key-bindings which use Alt key. 
 
 
-Also, to switch candidates displaying mode immediately,
-write as follows.
+Commands
+========
 
-    ;; switch candidate displaying mode immediately
-    ;; (ex. binding to M-;)
-    (global-set-key "\M-;" 'uim-switch-candidate-display-mode)
+* uim-mode
 
-
-
-* Change appearances of preedits and candidates
-
-You can change appearances of preedit and candidates in the
-following way.
-
-  ;; text color and background color of preedit
-  (set-face-foreground 'uim-preedit-highlight-face "white")
-  (set-face-background 'uim-preedit-highlight-face "blue")
-
-  ;; separator color
-  (set-face-foreground 'uim-separator-face "white")
-
-  ;; text color and background color of odd number candidates
-  (set-face-foreground 'uim-candidate-odd-face "blue")
-  (set-face-background 'uim-candidate-odd-face "white")
-
-  ;; text color and background color of even number candidates
-  (set-face-foreground 'uim-candidate-even-face "blue")
-  (set-face-background 'uim-candidate-even-face "white")
-
-  ;; text color and background color of a selected candidate
-  (set-face-foreground 'uim-candidate-selected-face "blue")
-  (set-face-background 'uim-candidate-selected-face "white")
-
-  ;; text color and background color of page number of candidates
-  (set-face-foreground 'uim-candidate-nth-face "red")
-  (set-face-background 'uim-candidate-nth-face "white")
+   Toggle uim.el when using uim-mode directly.
 
 
-* Display fences / frame (for poor Emacs environment)
+* uim-im-switch
 
-You also can use ASCII character as border of preedit and
-candidates.  It's maybe useful when using Emacs-20.x with
-terminal mode.
-
-  ;; display fences both sides of preedit
-  (setq-default uim-preedit-display-fences t)
-
-  ;; display frame of candidates
-  (setq-default uim-candidate-display-frame t)
+   Change an IM of current buffer when using uim-mode directly.
+   After calling this command, available IMs can be shown by typing
+   tab key.
+  
 
 
-* Change IMs settings
+   NOTE: Use set-input-method command instead of this if you are 
+         using LEIM.
 
-To overwrite default properties of each IM, write as
-follows.  
 
-  ;; set initial mode of anthy and skk to Hiragana mode
-  (setq uim-default-im-prop 
-          '("action_anthy_hiragana" "action_skk_hiragana"))
+* uim-switch-candidate-display-mode
+
+   Toggle inline candidates display mode in current buffer.
+
+
+* uim-reorder-minor-mode-map-alist
+
+   Move uim.el's key-map to the head of the minor-mode key-map list.
+   Details are described in the FAQ section.
+
+
+* uim-el-version
+
+   Show the version number of uim.el.
 
 
 
-* Activate uim.el 
+FAQ
+===
 
-To enable uim from the beginning in particular major-mode, 
-write as follows.
+Q. After enabling gtags-mode, uim-anthy cannot be toggled.
+   I'm using Alt+space to toggle uim-anthy.
 
-  ;; enable uim automatically on html-mode
-  ;;  for minor-mode
-  (add-hook 'html-mode-hook
-             (lambda () (uim-mode 1)))
+A. When Emacs is running on a terminal emulator and a minor-mode 
+   which has a key-map for Escape-prefix (ex. gtags-mode) is loaded 
+   after uim.el, such a problem occurs.
 
-  ;;  for LEIM
-  (add-hook 'html-mode-hook
-             (lambda () (toggle-input-method)))
+   This problem can be solved by moving the key-map of uim.el to 
+   the head of minor-mode key-map list after enable the other 
+   minor-mode.
 
-
-
-MISC COMMANDS
-=============
-
-If you want to switch IM on minor-mode, just type following
-keys.
-
-  M-x uim-im-switch
-
-  * note: Use set-input-method instead of this if you are
-         using LEIM framework.
+   uim-reorder-minor-mode-alist function do this.
 
 
+   For example, if you are starting gtags-mode like this,
+  
+        (add-hook 'c-mode-common-hook
+                  '(lambda ()
+                     (gtags-mode 1)))
 
-KNOWN PROBLEMS
-==============
+   modify it to call uim-reorder-minor-mode-alist after starting
+   gtags-mode, like this.
 
-See official web page.
-
-
-
-GET THE LATEST VERSION
-======================
-
-You can get the latest version of uim.el from the following URL.
-
-http://garakuta.homelinux.org/~nosuke/tsubo/uim-el.html
-
+     (add-hook 'c-mode-common-hook
+               '(lambda ()
+                  (gtags-mode 1)
+                  (uim-reorder-minor-mode-map-alist)))
 
 
-CONTACT
-=======
+Q. When I edit a LaTeX file, the characters are wiggled whenever 
+   uim.el display/erase candidates.  What happen?
 
-Konosuke Watanabe <sasugaanija@gmail.com>
+A. This is caused by the officious behavior of latex-mode of Emacs-22.x 
+   that change the font size of character after "^" and "_" to smaller.
 
+   If you cannot ignore this, disable scaling of superscript and 
+   subscript of latex-mode by adding the below into .emacs.
+
+      (add-hook 'latex-mode-hook
+             '(lambda ()
+                (setq tex-verbatim-face nil)
+                (defun tex-font-lock-suscript () nil)))
+
+
+Q. Sometimes, inline candidates displaying mode is suddenly disabled.
+   Why?
+   
+A. Probably, there is an overlay close to the region where uim.el
+   plans to display candidates.
+
+   Because of technical reasons, uim.el cannot display candidates over
+   the region which has an overlay.  If an overlay exists on the region 
+   where uim.el plans to display candidates, inline candidates displaying 
+   mode is temporarily disabled.
+
+   For example, flyspell-mode, show-paren-mode and mmm-mode are using
+   overlay.  Also, it's used at the header area of Mew.
+   Please note that inline candidates displaying mode might be
+   turned off when you use uim.el with such modes.
+
+   
+ Q. Candidates are collapsed when proportional fonts are used on Emacs.
+    How can I fix it?
+
+ A. Sorry, as long as you use proportional fonts, the collapse of 
+    inline-displayed candidates cannot be prevented.
+
+    If you want to use proportional fonts anyway, please disable inline 
+    candidates displaying mode, or else settle for the collapse.
+
+
+ Q. When uim.el is enabled, some key-bindings don't operate correctly.
+    Why?
+
+ A. uim.el always grabs all of key inputs and passes them to uim.
+    Therefore, some key-bindings which are implemented with particular 
+    way might don't operate correctly when uim.el is enabled.
+
+    Even though we modified uim.el to support such a key-binding 
+    whenever we find it, some key-bindings which we've never used 
+    might not operate correctly.
+
+    If you've found a key-binding doesn't work correctly when
+    uim.el is enabled, please report it to the bugzilla or the ML.
+    
+
+ Q. ***-mode shows strange behavior when being used with uim.el. Why?
+
+ A. Some particular modes might show odd behavior when used with  
+    uim.el because of previously described features of it.
+
+    If you've found such a mode, please report it to the bugzilla
+    or the ML.
+
+
+ Q. Sometimes, Emacs lose control suddenly.  Few seconds after, 
+    it becomes available again but uim-mode is invalidated. 
+
+ A. Maybe a back-end program of uim.el (uim-el-agent or
+    uim-el-helper-agent) has crashed.
+
+    If it can reproduce, please report it to the bugzilla or the ML.
+
+
+ Q. I'm using uim-anthy.  When the Emacs is running on a terminal 
+    emulator, the segments cannot be shrinked/extended by pressing
+    shift-left/shift-right.  Why?
+
+ A. Probably, its caused by one of following three reasons;
+
+      1) shift-left/right is defined as a shortcut key of 
+         your window manager or terminal emulator
+
+      2) your terminal emulator cannot recognize/process shift-arrow
+
+      3) your Emacs cannot understand escape sequences of shift-arrow
+         passed by the terminal emulator
+
+
+    1) is simple.  Just edit configuration of your window manager
+    or terminal emulator and invalidate such harmful shortcuts.
+  
+
+    2) is serious.  You must use alternative key bindings to 
+    shrink/extend segment or must switch to other terminal emulator
+    which supports shift-arrow.
+
+
+    3) can be fixed by adding some settings which are 
+    pairs of escape sequences and corresponding key sequences
+    into your .emacs.
+
+    For example, GNU Emacs can support most of the major terminal 
+    emulators by adding the below settings.
+
+      ;; xterm, mlterm
+      (define-key function-key-map [27 79 49 59 50 65] [S-up])
+      (define-key function-key-map [27 79 49 59 50 66] [S-down])
+      (define-key function-key-map [27 79 49 59 50 67] [S-right])
+      (define-key function-key-map [27 79 49 59 50 68] [S-left])
+
+      (define-key function-key-map [27 79 49 59 53 65] [C-up])
+      (define-key function-key-map [27 79 49 59 53 66] [C-down])
+      (define-key function-key-map [27 79 49 59 53 67] [C-right])
+      (define-key function-key-map [27 79 49 59 53 68] [C-left])
+
+      (define-key function-key-map [27 79 49 59 54 65] [C-S-up])
+      (define-key function-key-map [27 79 49 59 54 66] [C-S-down])
+      (define-key function-key-map [27 79 49 59 54 67] [C-S-right])
+      (define-key function-key-map [27 79 49 59 54 68] [C-S-left])
+
+      ;; mrxvt
+      (define-key function-key-map [27 91 49 59 50 65] [S-up])
+      (define-key function-key-map [27 91 49 59 50 66] [S-down])
+      (define-key function-key-map [27 91 49 59 50 67] [S-right])
+      (define-key function-key-map [27 91 49 59 50 68] [S-left])
+
+      (define-key function-key-map [27 91 49 59 53 65] [C-up])
+      (define-key function-key-map [27 91 49 59 53 66] [C-down])
+      (define-key function-key-map [27 91 49 59 53 67] [C-right])
+      (define-key function-key-map [27 91 49 59 53 68] [C-left])
+
+      (define-key function-key-map [27 91 49 59 54 65] [C-S-up])
+      (define-key function-key-map [27 91 49 59 54 66] [C-S-down])
+      (define-key function-key-map [27 91 49 59 54 67] [C-S-right])
+      (define-key function-key-map [27 91 49 59 54 68] [C-S-left])
+
+      ;; urxvt
+      (define-key function-key-map [27 91 97] [S-up])
+      (define-key function-key-map [27 91 98] [S-down])
+      (define-key function-key-map [27 91 99] [S-right])
+      (define-key function-key-map [27 91 100] [S-left])
+
+      (define-key function-key-map [27 79 97] [C-up])
+      (define-key function-key-map [27 79 98] [C-down])
+      (define-key function-key-map [27 79 99] [C-right])
+      (define-key function-key-map [27 79 100] [C-left])
+
+
+Q. I'm using Japanese kana-input mode.  Always "ろ" is inserted 
+   whenever I press each of "ー" and "ろ".  How can I input "ー" 
+   with "ー" key?
+
+A. Unfortunately, we have no idea.
+
+   At least, ELISP program of GNU Emacs cannot distinguish 
+   these two keys.  GNU Emacs just recognize that "\" (backslash)
+   key has been pressed.
+
+
+Q. uim.el cannot be executed on Emacs that checked out from CVS 
+   server today's morning!  Please fix it ASAP!
+
+A. Sorry, currently, we don't support cutting-edge of CVS of Emacs aggressively 
+   since it often contains strange bugs.
