@@ -40,15 +40,25 @@ GTK_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk/gtk-rc-get-immodule-file
 install-data-hook: gtk-rc-get-immodule-file
 	if test -z $(DESTDIR); then \
 	  if test $(libdir) = $(GTK_LIBDIR); then \
-	    gtk-query-immodules-2.0 > `$(GTK_RC_GET_IMMODULE_FILE)`; \
+	    if type gtk-query-immodules-2.0 > /dev/null 2>&1; then \
+	      gtk-query-immodules-2.0 > `$(GTK_RC_GET_IMMODULE_FILE)`; \
+	      echo "*** Updated \"`$(GTK_RC_GET_IMMODULE_FILE)`\". ***"; \
+	    else \
+	      echo "********************** Warning ***********************"; \
+	      echo " gtk-query-immodules-2.0 not found"; \
+	      echo " Please make be sure to update"; \
+	      echo " \"`$(GTK_RC_GET_IMMODULE_FILE)`\""; \
+	      echo " manually."; \
+	      echo "******************************************************"; \
+	    fi \
 	  else \
 	    $(mkinstalldirs) $(sysconfdir)/gtk-2.0; \
 	    GTK_PATH=$(uim_gtk_im_module_path) gtk-query-immodules-2.0 > $(uim_gtk_im_module_file); \
-	    echo -n; \
+	    echo "********************************************************"; \
 	    echo "You need to set"; \
 	    echo "GTK_IM_MODULE_FILE=$(uim_gtk_im_module_file)"; \
-	    echo "environment variable to use the module."; \
-	    echo -n; \
+	    echo "environment variable to use this module."; \
+	    echo "********************************************************"; \
 	  fi \
 	fi
 uninstall-hook:
