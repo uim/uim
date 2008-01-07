@@ -36,25 +36,26 @@ gtk_rc_get_immodule_file_SOURCES = gtk-rc-get-immodule-file.c
 gtk_rc_get_immodule_file_CFLAGS = @GTK2_CFLAGS@
 gtk_rc_get_immodule_file_LDADD = @GTK2_LIBS@
 GTK_RC_GET_IMMODULE_FILE = $(top_builddir)/gtk/gtk-rc-get-immodule-file
+QUERY_COMMAND = gtk-query-immodules-2.0
 
 install-data-hook: gtk-rc-get-immodule-file
 	if test -z $(DESTDIR); then \
 	  if test $(libdir) = $(GTK_LIBDIR); then \
-	    if type gtk-query-immodules-2.0 > /dev/null 2>&1; then \
-	      gtk-query-immodules-2.0 > `$(GTK_RC_GET_IMMODULE_FILE)`; \
+	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
+	      $(QUERY_COMMAND) > `$(GTK_RC_GET_IMMODULE_FILE)`; \
 	      echo "*** Updated \"`$(GTK_RC_GET_IMMODULE_FILE)`\". ***"; \
 	    else \
 	      echo "********************** Warning ***********************"; \
-	      echo " gtk-query-immodules-2.0 not found"; \
+	      echo " $(QUERY_COMMAND) not found"; \
 	      echo " Please make be sure to update"; \
 	      echo " \"`$(GTK_RC_GET_IMMODULE_FILE)`\""; \
 	      echo " manually."; \
 	      echo "******************************************************"; \
 	    fi \
 	  else \
-	    if type gtk-query-immodules-2.0 > /dev/null 2>&1; then \
+	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
 	      $(mkinstalldirs) $(sysconfdir)/gtk-2.0; \
-	      GTK_PATH=$(uim_gtk_im_module_path) gtk-query-immodules-2.0 > $(uim_gtk_im_module_file); \
+	      GTK_PATH=$(uim_gtk_im_module_path) $(QUERY_COMMAND) > $(uim_gtk_im_module_file); \
 	      echo "******************************************************"; \
 	      echo " You need to set"; \
 	      echo " GTK_IM_MODULE_FILE=$(uim_gtk_im_module_file)"; \
@@ -62,7 +63,7 @@ install-data-hook: gtk-rc-get-immodule-file
 	      echo "******************************************************"; \
 	    else \
 	      echo "********************** Warning ***********************"; \
-	      echo " gtk-query-immodules-2.0 not found"; \
+	      echo " $(QUERY_COMMAND) not found"; \
 	      echo " Please make be sure to update"; \
 	      echo " \"$(uim_gtk_im_module_file)\""; \
 	      echo " manually, and set"; \
@@ -74,11 +75,11 @@ install-data-hook: gtk-rc-get-immodule-file
 	fi
 uninstall-hook:
 	if test -z $(DESTDIR); then \
-	  if type gtk-query-immodules-2.0 > /dev/null 2>&1; then \
+	  if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
 	    if test $(libdir) = $(GTK_LIBDIR); then \
-	      gtk-query-immodules-2.0 > `$(GTK_RC_GET_IMMODULE_FILE)`; \
+	      $(QUERY_COMMAND) > `$(GTK_RC_GET_IMMODULE_FILE)`; \
 	    else \
-	      GTK_PATH=$(uim_gtk_im_module_path) gtk-query-immodules-2.0 > $(uim_gtk_im_module_file); \
+	      GTK_PATH=$(uim_gtk_im_module_path) $(QUERY_COMMAND) > $(uim_gtk_im_module_file); \
 	    fi \
 	  fi \
 	fi
