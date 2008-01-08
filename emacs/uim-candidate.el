@@ -552,11 +552,10 @@
     (if (>= (max (+ uim-max-candlabel 6) 
 		 (+ (string-width uim-candidate-page-label) 2))
 	    (window-width))
-	(progn
-	  (setq display-inline nil)
-	  (uim-debug "disable inline: window is too thin")
-	  ))
+	(setq display-inline nil))
 
+    (if (/= (window-hscroll) 0)
+	(setq display-inline nil))
 
     (if display-inline
 	(uim-make-candlist (cdr candidate)))
