@@ -47,7 +47,7 @@ install-data-hook: gtk-rc-get-immodule-file
 	    else \
 	      echo "********************** Warning ***********************"; \
 	      echo " $(QUERY_COMMAND) not found"; \
-	      echo " Please make be sure to update"; \
+	      echo " Please make sure to update"; \
 	      echo " \"`$(GTK_RC_GET_IMMODULE_FILE)`\""; \
 	      echo " manually."; \
 	      echo "******************************************************"; \
@@ -64,7 +64,7 @@ install-data-hook: gtk-rc-get-immodule-file
 	    else \
 	      echo "********************** Warning ***********************"; \
 	      echo " $(QUERY_COMMAND) not found"; \
-	      echo " Please make be sure to update"; \
+	      echo " Please make sure to update"; \
 	      echo " \"$(uim_gtk_im_module_file)\""; \
 	      echo " manually, and set"; \
 	      echo " GTK_IM_MODULE_FILE=$(uim_gtk_im_module_file)"; \
