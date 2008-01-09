@@ -30,6 +30,8 @@
 
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -37,7 +39,6 @@
 #include <glib.h>
 #include <libnotify/notify.h>
 
-#include "config.h"
 #include "uim-notify.h"
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"

@@ -30,6 +30,8 @@
 
 */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -39,7 +41,6 @@
 #include <kapplication.h>
 #include <knotifyclient.h>
 
-#include "config.h"
 #include "uim-notify.h"
 
 
