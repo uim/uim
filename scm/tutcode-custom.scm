@@ -79,3 +79,36 @@
   '(boolean)
   (N_ "Use Dvorak keyboard")
   (N_ "long description will be here."))
+
+;;
+;; candidate window
+;;
+
+(define-custom 'tutcode-use-candidate-window? #t
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Use candidate window")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-op-count 5
+  '(tutcode candwin)
+  '(integer 0 99)
+  (N_ "Conversion key press count to show candidate window")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-nr-candidate-max 10
+  '(tutcode candwin)
+  '(integer 1 20)
+  (N_ "Number of candidates in candidate window at a time")
+  (N_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'tutcode-candidate-op-count
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-candidate-window?))
+
+(custom-add-hook 'tutcode-nr-candidate-max
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-candidate-window?))

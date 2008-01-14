@@ -58,7 +58,6 @@
 ;;;  - 後置型交ぜ書き変換
 ;;;  - 交ぜ書き変換辞書への登録・削除、
 ;;;  - 読みを伸ばしたり縮めたりする機能、読みの補完機能
-;;;  - 候補選択ウィンドウの使用
 ;;;
 ;;; 【設定例】
 ;;; * コード表の一部を変更したい場合は、例えば~/.uimで以下のように記述する。
@@ -200,7 +199,9 @@
      ;;; 交ぜ書き変換の選択中の候補の番号
      (nth 0)
      ;;; 交ぜ書き変換の候補数
-     (nr-candidates 0))))
+     (nr-candidates 0)
+     ;;; 候補ウィンドウを表示中かどうか
+     (candidate-window #f))))
 (define-record 'tutcode-context tutcode-context-rec-spec)
 (define tutcode-context-new-internal tutcode-context-new)
 (define tutcode-context-katakana-mode? tutcode-context-katakana-mode)
@@ -269,7 +270,8 @@
   (if (tutcode-context-on? pc) ; オフ時に呼ばれた場合はオンにしたら駄目
     (tutcode-context-set-state! pc 'tutcode-state-on)) ; 変換状態をクリアする
   (tutcode-context-set-head! pc ())
-  (tutcode-context-set-nr-candidates! pc 0))
+  (tutcode-context-set-nr-candidates! pc 0)
+  (tutcode-reset-candidate-window pc))
 
 ;;; 変換対象の文字列リストから文字列を作る。
 ;;; @param sl 文字列リスト
@@ -325,11 +327,27 @@
         (tutcode-context-set-nr-candidates! pc
          (skk-lib-get-nr-candidates yomi "" "" #f))
         (tutcode-context-set-state! pc 'tutcode-state-converting)
-        ;; 候補が1個しかない場合は自動的に確定する
         (if (= (tutcode-context-nr-candidates pc) 1)
-          (im-commit pc (tutcode-prepare-commit-string pc))))
-      ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
+          ;; 候補が1個しかない場合は自動的に確定する
+          (im-commit pc (tutcode-prepare-commit-string pc))
+          (begin
+            (tutcode-check-candidate-window-begin pc)
+            (if (tutcode-context-candidate-window pc)
+              (im-select-candidate pc 0)))))
+      ;(tutcode-flush pc) ; 候補無し時flushすると入力した文字列が消えてがっかり
       )))
+
+;;; 候補ウィンドウの表示を開始する
+(define (tutcode-check-candidate-window-begin pc)
+  (if (and (not (tutcode-context-candidate-window pc))
+           tutcode-use-candidate-window?
+           (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
+    (begin
+      (tutcode-context-set-candidate-window! pc #t)
+      (im-activate-candidate-selector
+        pc
+        (tutcode-context-nr-candidates pc)
+        tutcode-nr-candidate-max))))
 
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
@@ -579,9 +597,28 @@
     (if (>= (- nth 1) 0)
       (tutcode-context-set-nth! pc (- nth 1)))))
 
+;;; 交ぜ書き変換中の選択候補番号を+1か-1する。
+;;; @param pc コンテキストリスト
+;;; @param incr #t:+1の場合, #f:-1の場合
+(define (tutcode-change-candidate-index pc incr)
+  (if incr
+    (tutcode-incr-candidate-index pc)
+    (tutcode-decr-candidate-index pc))
+  (tutcode-check-candidate-window-begin pc)
+  (if (tutcode-context-candidate-window pc)
+    (im-select-candidate pc (tutcode-context-nth pc))))
+
+;;; 候補ウィンドウを閉じる
+(define (tutcode-reset-candidate-window pc)
+  (if (tutcode-context-candidate-window pc)
+    (begin
+      (im-deactivate-candidate-selector pc)
+      (tutcode-context-set-candidate-window! pc #f))))
+
 ;;; 交ぜ書き変換の候補選択状態から、読み入力状態に戻す。
 ;;; @param pc コンテキストリスト
 (define (tutcode-back-to-yomi-state pc)
+  (tutcode-reset-candidate-window pc)
   (tutcode-context-set-state! pc 'tutcode-state-yomi)
   (tutcode-context-set-nr-candidates! pc 0))
 
@@ -592,11 +629,17 @@
 (define (tutcode-proc-state-converting pc key key-state)
   (cond
     ((tutcode-next-candidate-key? key key-state)
-      (tutcode-incr-candidate-index pc))
+      (tutcode-change-candidate-index pc #t))
     ((tutcode-prev-candidate-key? key key-state)
-      (tutcode-decr-candidate-index pc))
+      (tutcode-change-candidate-index pc #f))
     ((tutcode-cancel-key? key key-state)
       (tutcode-back-to-yomi-state pc))
+    ((tutcode-next-page-key? key key-state)
+      (if (tutcode-context-candidate-window pc)
+        (im-shift-page-candidate pc #t)))
+    ((tutcode-prev-page-key? key key-state)
+      (if (tutcode-context-candidate-window pc)
+        (im-shift-page-candidate pc #f)))
     ((or
       (tutcode-commit-key? key key-state)
       (tutcode-return-key? key key-state))
@@ -782,8 +825,17 @@
 (define tutcode-place-handler tutcode-focus-in-handler)
 (define tutcode-displace-handler tutcode-focus-out-handler)
 
-(define (tutcode-get-candidate-handler tc idx) #f)
-(define (tutcode-set-candidate-index-handler tc idx) #f)
+;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
+(define (tutcode-get-candidate-handler tc idx accel-enum-hint)
+  (let ((cand (tutcode-get-nth-candidate tc idx)))
+    (list cand (digit->string (+ idx 1)) "")))
+
+;;; 候補ウィンドウが候補を選択したときに呼ぶ関数
+(define (tutcode-set-candidate-index-handler tc idx)
+  (if (tutcode-context-candidate-window tc)
+    (begin
+      (tutcode-context-set-nth! tc idx)
+      (tutcode-update-preedit tc))))
 
 (tutcode-configure-widgets)
 

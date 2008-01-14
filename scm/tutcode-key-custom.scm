@@ -101,6 +101,18 @@
 	       (N_ "[TUT-Code] previous candidate")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-next-page-key '(generic-next-page-key)
+               '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] next page of candidate window")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-prev-page-key '(generic-prev-page-key)
+               '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] previous page of candidate window")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-backspace-key '(generic-backspace-key)
                '(tutcode-keys2)
 	       '(key)
