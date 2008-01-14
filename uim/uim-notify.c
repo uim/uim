@@ -56,19 +56,31 @@
   ((void (*)(void))(uintptr_t)dlsym((handle), (symbol)))
 #endif
 
-static uim_notify_desc uim_notify_stderr_desc;
+static void uim_notify_load_stderr(void);
 
-static uim_notify_desc* (*uim_notify_get_desc_func)(void) = uim_notify_stderr_get_desc;
+/* builtin notify module */
+static int uim_notify_stderr_init(void);
+static void uim_notify_stderr_quit(void);
+static int uim_notify_stderr_info(const char *);
+static int uim_notify_stderr_fatal(const char *);
+
+
+static const uim_notify_desc uim_notify_stderr_desc = {
+  "stderr",
+  "Standard Error output",
+};
+
+static const uim_notify_desc* (*uim_notify_get_desc_func)(void) = uim_notify_stderr_get_desc;
 static int (*uim_notify_init_func)(void) = uim_notify_stderr_init;
 static void (*uim_notify_quit_func)(void) = uim_notify_stderr_quit;
 static int (*uim_notify_info_func)(const char *) = uim_notify_stderr_info;
 static int (*uim_notify_fatal_func)(const char *) = uim_notify_stderr_fatal;
 
 static void *notify_dlhandle = NULL;
-static uim_notify_desc* notify_desc = &uim_notify_stderr_desc;
+static const uim_notify_desc* notify_desc = &uim_notify_stderr_desc;
 
 static void
-uim_notify_load_stderr()
+uim_notify_load_stderr(void)
 {
   notify_desc = &uim_notify_stderr_desc;
   uim_notify_init_func  = uim_notify_stderr_init;
@@ -110,7 +122,7 @@ uim_notify_load(const char *name)
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_get_desc_func = (uim_notify_desc* (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
+    uim_notify_get_desc_func = (const uim_notify_desc* (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
     if (!uim_notify_get_desc_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_get_desc()' in %s\n", path);
       dlclose(notify_dlhandle);
@@ -152,7 +164,7 @@ uim_notify_load(const char *name)
   return 1;
 }
 
-uim_notify_desc*
+const uim_notify_desc*
 uim_notify_get_desc(void)
 {
   return uim_notify_get_desc_func();
@@ -202,36 +214,31 @@ uim_notify_fatal(const char *msg_fmt, ...)
 /*
  * builtin functions
  */
-static uim_notify_desc uim_notify_stderr_desc = {
-  "stderr",
-  "Standard Error output",
-};
-
-uim_notify_desc*
+const uim_notify_desc*
 uim_notify_stderr_get_desc(void)
 {
   return &uim_notify_stderr_desc;
 }
 
-int
+static int
 uim_notify_stderr_init(void)
 {
   return 1;
 }
 
-void
+static void
 uim_notify_stderr_quit(void)
 {
   return;
 }
 
-int
+static int
 uim_notify_stderr_info(const char *msg)
 {
   return fprintf(stderr, "uim [Info]: %s", msg);
 }
 
-int
+static int
 uim_notify_stderr_fatal(const char *msg)
 {
   return fprintf(stderr, "uim [Fatal]: %s", msg);

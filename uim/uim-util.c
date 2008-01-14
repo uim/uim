@@ -298,7 +298,7 @@ uim_scm_notify_get_plugins(void)
   DIR *dirp;
   struct dirent *dp;
   size_t plen, slen;
-  uim_notify_desc* desc;
+  const uim_notify_desc* desc;
   void *handle;
   uim_notify_desc* (*desc_func)(void);
   char *str;

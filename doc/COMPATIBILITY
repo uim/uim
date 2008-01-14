@@ -61,7 +61,7 @@ Summary: New API for client encoding change
 Affects: bridge developers
 Updates: C API, libuim ABI
 Version: 1.5.0
-Revision: ac5069
+Revision: ac5069, ac5071
 Date: 2007-12-29
 Modifier: Etsushi, YamaKen
 Related: bug #13622
