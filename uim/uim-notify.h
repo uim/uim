@@ -54,14 +54,14 @@ void uim_notify_quit(void);
 int uim_notify_load(const char *name);
 
 /* API for notification facility users */
-const uim_notify_desc* uim_notify_get_desc(void);
+const uim_notify_desc *uim_notify_get_desc(void);
 int uim_notify_info(const char *msg_fmt, ...);
 int uim_notify_fatal(const char *msg_fmt, ...);
 
-/* API for pluggable notification mechanism providers */
+/* API for pluggable notification agent implementors */
 int uim_notify_plugin_init(void);
 void uim_notify_plugin_quit(void);
-const uim_notify_desc* uim_notify_plugin_get_desc(void);
+const uim_notify_desc *uim_notify_plugin_get_desc(void);
 int uim_notify_plugin_info(const char *msg);
 int uim_notify_plugin_fatal(const char *msg);
 

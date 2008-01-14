@@ -59,7 +59,7 @@
 static void uim_notify_load_stderr(void);
 
 /* builtin notify module */
-static const uim_notify_desc* uim_notify_stderr_get_desc(void);
+static const uim_notify_desc *uim_notify_stderr_get_desc(void);
 static int uim_notify_stderr_init(void);
 static void uim_notify_stderr_quit(void);
 static int uim_notify_stderr_info(const char *);
@@ -71,14 +71,14 @@ static const uim_notify_desc uim_notify_stderr_desc = {
   "Standard Error output",
 };
 
-static const uim_notify_desc* (*uim_notify_get_desc_func)(void) = uim_notify_stderr_get_desc;
+static const uim_notify_desc *(*uim_notify_get_desc_func)(void) = uim_notify_stderr_get_desc;
 static int (*uim_notify_init_func)(void) = uim_notify_stderr_init;
 static void (*uim_notify_quit_func)(void) = uim_notify_stderr_quit;
 static int (*uim_notify_info_func)(const char *) = uim_notify_stderr_info;
 static int (*uim_notify_fatal_func)(const char *) = uim_notify_stderr_fatal;
 
 static void *notify_dlhandle = NULL;
-static const uim_notify_desc* notify_desc = &uim_notify_stderr_desc;
+static const uim_notify_desc *notify_desc = &uim_notify_stderr_desc;
 
 static void
 uim_notify_load_stderr(void)
@@ -123,7 +123,7 @@ uim_notify_load(const char *name)
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_get_desc_func = (const uim_notify_desc* (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
+    uim_notify_get_desc_func = (const uim_notify_desc *(*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
     if (!uim_notify_get_desc_func) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_get_desc()' in %s\n", path);
       dlclose(notify_dlhandle);
@@ -165,7 +165,7 @@ uim_notify_load(const char *name)
   return 1;
 }
 
-const uim_notify_desc*
+const uim_notify_desc *
 uim_notify_get_desc(void)
 {
   return uim_notify_get_desc_func();
@@ -220,9 +220,9 @@ uim_scm_notify_get_plugins(void)
   DIR *dirp;
   struct dirent *dp;
   size_t plen, slen;
-  const uim_notify_desc* desc;
+  const uim_notify_desc *desc;
   void *handle;
-  uim_notify_desc* (*desc_func)(void);
+  uim_notify_desc *(*desc_func)(void);
   char *str;
 
   plen = strlen(NOTIFY_PLUGIN_PREFIX);
@@ -251,7 +251,7 @@ uim_scm_notify_get_plugins(void)
 	fprintf(stderr, "load failed %s(%s)\n", path, str);
 	continue;
       }
-      desc_func = (uim_notify_desc* (*)(void))dlfunc(handle, "uim_notify_plugin_get_desc");
+      desc_func = (uim_notify_desc *(*)(void))dlfunc(handle, "uim_notify_plugin_get_desc");
       if (!desc_func) {
 	fprintf(stderr, "cannot found 'uim_notify_get_desc()' in %s\n", path);
 	dlclose(handle);
@@ -318,7 +318,7 @@ uim_init_notify_subrs(void)
 /*
  * builtin functions
  */
-static const uim_notify_desc*
+static const uim_notify_desc *
 uim_notify_stderr_get_desc(void)
 {
   return &uim_notify_stderr_desc;
