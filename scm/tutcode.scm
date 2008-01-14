@@ -116,6 +116,16 @@
 ;;; tutcode-context-new時に反映する。
 (define tutcode-rule-userconfig ())
 
+;;; 候補選択用ラベル文字のリスト
+(define tutcode-heading-label-char-list
+  '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
+    "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
+    "k" "l" "m" "n" "o" "p" "q" "r" "s" "t"
+    "u" "v" "w" "x" "y" "z"
+    "A" "B" "C" "D" "E" "F" "G" "H" "I" "J"
+    "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
+    "U" "V" "W" "X" "Y" "Z"))
+
 ;;; implementations
 
 ;;; 交ぜ書き変換辞書の初期化が終わっているかどうか
@@ -306,6 +316,30 @@
       (tutcode-save-personal-dictionary))
     (tutcode-flush pc)
     res))
+
+;;; 指定されたラベル文字に対応する候補を確定する
+(define (tutcode-commit-by-label-key pc ch)
+  (let* ((nr (tutcode-context-nr-candidates pc))
+         (nth (tutcode-context-nth pc))
+         (cur-page (cond
+                     ((= tutcode-nr-candidate-max 0) 0)
+                     (else
+                       (quotient nth tutcode-nr-candidate-max))))
+         (cur-offset (* cur-page tutcode-nr-candidate-max))
+         (cur-labels (list-tail tutcode-heading-label-char-list cur-offset))
+         (target-labels (member ch cur-labels))
+         (offset (if target-labels
+                   (- (length cur-labels) (length target-labels))
+                   (+ (length cur-labels)
+                      (- (length tutcode-heading-label-char-list)
+                         (length
+                           (member ch tutcode-heading-label-char-list))))))
+         (idx (+ cur-offset offset)))
+    (if (and (>= idx 0)
+             (< idx nr))
+      (begin
+        (tutcode-context-set-nth! pc idx)
+        (im-commit pc (tutcode-prepare-commit-string pc))))))
 
 ;;; 交ぜ書き変換の読み/部首合成変換の部首(文字列リストhead)に文字列を追加する。
 ;;; @param pc コンテキストリスト
@@ -583,27 +617,19 @@
               ;; 合成失敗時は入力し直しを待つ
               )))))))
 
-;;; 交ぜ書き変換中の選択候補番号を1増やす。
+;;; 新しい候補を選択する
 ;;; @param pc コンテキストリスト
-(define (tutcode-incr-candidate-index pc)
-  (let ((nth (tutcode-context-nth pc)))
-    (if (< (+ nth 1) (tutcode-context-nr-candidates pc))
-      (tutcode-context-set-nth! pc (+ nth 1)))))
-
-;;; 交ぜ書き変換中の選択候補番号を1減らす。
-;;; @param pc コンテキストリスト
-(define (tutcode-decr-candidate-index pc)
-  (let ((nth (tutcode-context-nth pc)))
-    (if (>= (- nth 1) 0)
-      (tutcode-context-set-nth! pc (- nth 1)))))
-
-;;; 交ぜ書き変換中の選択候補番号を+1か-1する。
-;;; @param pc コンテキストリスト
-;;; @param incr #t:+1の場合, #f:-1の場合
-(define (tutcode-change-candidate-index pc incr)
-  (if incr
-    (tutcode-incr-candidate-index pc)
-    (tutcode-decr-candidate-index pc))
+;;; @param num 現在の候補番号から新候補番号までのオフセット
+(define (tutcode-change-candidate-index pc num)
+  (let* ((nr (tutcode-context-nr-candidates pc))
+         (nth (tutcode-context-nth pc))
+         (new-nth (+ nth num)))
+    (cond
+      ((< new-nth 0)
+       (set! new-nth 0))
+      ((>= new-nth nr)
+       (set! new-nth (- nr 1))))
+    (tutcode-context-set-nth! pc new-nth))
   (tutcode-check-candidate-window-begin pc)
   (if (tutcode-context-candidate-window pc)
     (im-select-candidate pc (tutcode-context-nth pc))))
@@ -622,6 +648,11 @@
   (tutcode-context-set-state! pc 'tutcode-state-yomi)
   (tutcode-context-set-nr-candidates! pc 0))
 
+;;; 入力されたキーが候補ラベル文字かどうかを調べる
+;;; @param key 入力されたキー
+(define (tutcode-heading-label-char? key)
+  (member (charcode->string key) tutcode-heading-label-char-list))
+
 ;;; 交ぜ書き変換の候補選択状態のときのキー入力を処理する。
 ;;; @param pc コンテキストリスト
 ;;; @param key 入力されたキー
@@ -629,21 +660,22 @@
 (define (tutcode-proc-state-converting pc key key-state)
   (cond
     ((tutcode-next-candidate-key? key key-state)
-      (tutcode-change-candidate-index pc #t))
+      (tutcode-change-candidate-index pc 1))
     ((tutcode-prev-candidate-key? key key-state)
-      (tutcode-change-candidate-index pc #f))
+      (tutcode-change-candidate-index pc -1))
     ((tutcode-cancel-key? key key-state)
       (tutcode-back-to-yomi-state pc))
     ((tutcode-next-page-key? key key-state)
-      (if (tutcode-context-candidate-window pc)
-        (im-shift-page-candidate pc #t)))
+      (tutcode-change-candidate-index pc tutcode-nr-candidate-max))
     ((tutcode-prev-page-key? key key-state)
-      (if (tutcode-context-candidate-window pc)
-        (im-shift-page-candidate pc #f)))
+      (tutcode-change-candidate-index pc (- tutcode-nr-candidate-max)))
     ((or
       (tutcode-commit-key? key key-state)
       (tutcode-return-key? key key-state))
       (im-commit pc (tutcode-prepare-commit-string pc)))
+    ((and tutcode-commit-candidate-by-label-key?
+          (tutcode-heading-label-char? key))
+      (tutcode-commit-by-label-key pc (charcode->string key)))
     (else
       (im-commit pc (tutcode-prepare-commit-string pc))
       (tutcode-proc-state-on pc key key-state))))
@@ -827,8 +859,9 @@
 
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
 (define (tutcode-get-candidate-handler tc idx accel-enum-hint)
-  (let ((cand (tutcode-get-nth-candidate tc idx)))
-    (list cand (digit->string (+ idx 1)) "")))
+  (let ((cand (tutcode-get-nth-candidate tc idx))
+        (n (remainder idx (length tutcode-heading-label-char-list))))
+    (list cand (nth n tutcode-heading-label-char-list) "")))
 
 ;;; 候補ウィンドウが候補を選択したときに呼ぶ関数
 (define (tutcode-set-candidate-index-handler tc idx)

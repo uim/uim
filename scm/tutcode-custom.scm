@@ -90,6 +90,12 @@
   (N_ "Use candidate window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-commit-candidate-by-label-key? #t
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Commit candidate by heading label keys")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-candidate-op-count 5
   '(tutcode candwin)
   '(integer 0 99)
