@@ -49,7 +49,7 @@ static uim_notify_desc uim_notify_knotify3_desc = {
   "Output via knotify",
 };
 
-uim_notify_desc*
+const uim_notify_desc *
 uim_notify_plugin_get_desc(void)
 {
   return &uim_notify_knotify3_desc;

@@ -90,7 +90,7 @@ static uim_notify_desc uim_notify_libnotify_desc = {
   "Output via libnotify",
 };
 
-uim_notify_desc*
+const uim_notify_desc *
 uim_notify_plugin_get_desc(void)
 {
   return &uim_notify_libnotify_desc;
