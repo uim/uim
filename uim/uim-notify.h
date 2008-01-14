@@ -65,9 +65,6 @@ const uim_notify_desc* uim_notify_plugin_get_desc(void);
 int uim_notify_plugin_info(const char *msg);
 int uim_notify_plugin_fatal(const char *msg);
 
-/* builtin notify module */
-const uim_notify_desc* uim_notify_stderr_get_desc(void);
-
 #ifdef __cplusplus
 }
 #endif

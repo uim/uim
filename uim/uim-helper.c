@@ -51,7 +51,17 @@
 #include "uim-internal.h"
 #include "uim-helper.h"
 #include "uim-util.h"
+
+/*
+ * uim-notify is disabled since I'm not confident about:
+ *   1. its stability when low-level error handling is being involved
+ *   2. whether these errors should be notified to endusers
+ * -- 2008-01-15 YamaKen */
+#define USE_UIM_NOTIFY 0
+
+#if USE_UIM_NOTIFY
 #include "uim-notify.h"
+#endif
 
 #ifndef HAVE_SIG_T
 typedef void (*sig_t)(int);
@@ -203,11 +213,19 @@ uim_helper_check_connection_fd(int fd)
   uid_t euid;
   gid_t egid;
   if (getpeereid(fd, &euid, &egid) < 0) {
+#if USE_UIM_NOTIFY
     uim_notify_fatal("uim_helper: %s", strerror(errno));
+#else
+    perror("getpeereid failed");
+#endif
     return -1;
   }
   if ((euid != 0) && (euid != getuid())) {
+#if USE_UIM_NOTIFY
     uim_notify_fatal("uim_helper: uid mismatch");
+#else
+    fprintf(stderr, "uid mismatch\n");
+#endif
     return -1;
   }
   return 0;

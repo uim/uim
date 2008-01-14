@@ -54,7 +54,6 @@
 #include "uim.h"
 #include "uim-internal.h"
 #include "uim-helper.h"
-#include "uim-notify.h"
 
 
 struct client {
@@ -280,7 +279,7 @@ write_message(struct client *cl)
 	fprintf(stderr, "EAGAIN: fd = %d\n", cl->fd);
 #endif
       } else {
-	uim_notify_fatal("uim-helper-server: %s", strerror(errno));
+	perror("uim-helper_server write(2) failed");
 	if (errno == EPIPE) {
 	  fprintf(stderr, "fd = %d\n", cl->fd);
 	  FD_CLR(cl->fd, &s_fdset_read);

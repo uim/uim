@@ -59,6 +59,7 @@
 static void uim_notify_load_stderr(void);
 
 /* builtin notify module */
+static const uim_notify_desc* uim_notify_stderr_get_desc(void);
 static int uim_notify_stderr_init(void);
 static void uim_notify_stderr_quit(void);
 static int uim_notify_stderr_info(const char *);
@@ -209,12 +210,115 @@ uim_notify_fatal(const char *msg_fmt, ...)
   return uim_notify_fatal_func(msg);
 }
 
+/*
+ * Scheme interfaces
+ */
+static uim_lisp
+uim_scm_notify_get_plugins(void)
+{
+  uim_lisp ret_;
+  DIR *dirp;
+  struct dirent *dp;
+  size_t plen, slen;
+  const uim_notify_desc* desc;
+  void *handle;
+  uim_notify_desc* (*desc_func)(void);
+  char *str;
+
+  plen = strlen(NOTIFY_PLUGIN_PREFIX);
+  slen = strlen(NOTIFY_PLUGIN_SUFFIX);
+
+  desc = uim_notify_stderr_get_desc();
+  ret_ = CONS(LIST3(MAKE_SYM(desc->name),
+		    MAKE_STR(desc->name),
+		    MAKE_STR(desc->desc)),
+	      uim_scm_null());
+  dirp = opendir(NOTIFY_PLUGIN_PATH);
+  if (dirp) {
+    while ((dp = readdir(dirp)) != NULL) {
+      size_t len = strlen(dp->d_name);
+      char path[PATH_MAX];
+
+      if ((len < plen + slen) ||
+	  (PATH_MAX < (strlen(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
+	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
+	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
+	continue;
+
+      snprintf(path, PATH_MAX, "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
+      handle = dlopen(path, RTLD_NOW);
+      if ((str = dlerror()) != NULL) {
+	fprintf(stderr, "load failed %s(%s)\n", path, str);
+	continue;
+      }
+      desc_func = (uim_notify_desc* (*)(void))dlfunc(handle, "uim_notify_plugin_get_desc");
+      if (!desc_func) {
+	fprintf(stderr, "cannot found 'uim_notify_get_desc()' in %s\n", path);
+	dlclose(handle);
+	continue;
+      }
+
+      desc = desc_func();
+
+      ret_ = CONS(LIST3(MAKE_SYM(desc->name),
+			MAKE_STR(desc->name),
+			MAKE_STR(desc->desc)),
+		  ret_);
+
+      dlclose(handle);
+    }
+    (void)closedir(dirp);
+  }
+  return uim_scm_callf("reverse", "o", ret_);
+}
+
+static uim_lisp
+uim_scm_notify_load(uim_lisp name_)
+{
+  const char *name = REFER_C_STR(name_);
+
+  if (uim_notify_load(name))
+    return uim_scm_t();
+  else
+    return uim_scm_f();
+}
+
+static uim_lisp
+uim_scm_notify_info(uim_lisp msg_)
+{
+  const char *msg = REFER_C_STR(msg_);
+
+  if (uim_notify_info("%s", msg))
+    return uim_scm_t();
+  else
+    return uim_scm_f();
+}
+
+static uim_lisp
+uim_scm_notify_fatal(uim_lisp msg_)
+{
+  const char *msg = REFER_C_STR(msg_);
+
+  if (uim_notify_fatal("%s", msg))
+    return uim_scm_t();
+  else
+    return uim_scm_f();
+}
+
+void
+uim_init_notify_subrs(void)
+{
+  uim_scm_init_proc0("uim-notify-get-plugins", uim_scm_notify_get_plugins);
+  uim_scm_init_proc1("uim-notify-load", uim_scm_notify_load);
+  uim_scm_init_proc1("uim-notify-info", uim_scm_notify_info);
+  uim_scm_init_proc1("uim-notify-fatal", uim_scm_notify_fatal);
+}
 
 
 /*
  * builtin functions
  */
-const uim_notify_desc*
+static const uim_notify_desc*
 uim_notify_stderr_get_desc(void)
 {
   return &uim_notify_stderr_desc;

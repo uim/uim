@@ -156,6 +156,7 @@ void uim_quit_plugin(void);
 void uim_init_im_subrs(void);
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
+void uim_init_notify_subrs(void);
 
 void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);

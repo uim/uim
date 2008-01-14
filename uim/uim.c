@@ -121,6 +121,7 @@ uim_init_internal(void *dummy)
   uim_init_im_subrs();
   uim_init_intl_subrs();
   uim_init_util_subrs();
+  uim_init_notify_subrs();
   uim_init_key_subrs();
   uim_init_rk_subrs();
   uim_init_plugin();

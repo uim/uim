@@ -43,7 +43,10 @@
 
 #include "uim.h"
 #include "uim-internal.h"
+#if 0 /* FIXME: temporarily disabled -- YamaKen 2008-01-15 */
 #include "uim-notify.h"
+#endif
+
 
 #ifndef EX_SOFTWARE
 #define EX_SOFTWARE 70
@@ -60,6 +63,7 @@ static uim_bool fatal_errored;
 static int guarded;
 static const char *err_msg;
 
+
 void
 uim_init_error(void)
 {
@@ -73,7 +77,13 @@ static void
 print_caught_error(void)
 {
   if (err_msg) {
+#if 0 /* FIXME: temporarily disabled -- YamaKen 2008-01-15 */
+    /* Since this function will also be called on hard situations such
+     * as memory exhaustion, this uim_notify_fatal() call need a
+     * careful review. I'll do it until uim 1.5.0.
+     *   -- YamaKen 2008-01-15 */
     uim_notify_fatal(err_msg); /* XXX: stdout messges will be duplicated */
+#else
     fputs("libuim: ", stderr);
     if (fatal_errored)
       fputs("fatal error: ", stderr);
@@ -83,6 +93,7 @@ print_caught_error(void)
       fputs("libuim: all functionality has been disabled to save user application data", stderr);
       fputs("\n", stderr);
     }
+#endif
   }
 }
 
@@ -200,4 +211,3 @@ uim_strdup(const char *s)
 
   return copied;
 }
-
