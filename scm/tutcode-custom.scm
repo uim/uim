@@ -68,6 +68,12 @@
   (N_ "Code table file")
   (N_ "Code table name is 'filename-rule' when code table file name is 'filename.scm'."))
 
+(define-custom 'tutcode-enable-mazegaki-learning? #t
+  '(tutcode)
+  '(boolean)
+  (N_ "Enable learning in mazegaki conversion")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-with-vi? #f
   '(tutcode)
   '(boolean)

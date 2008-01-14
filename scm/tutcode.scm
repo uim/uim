@@ -50,6 +50,8 @@
 ;;;   そのため、学習機能もSKKと同様の動作になります:
 ;;;     確定した候補は次回の変換から先頭に来ます。
 ;;;     確定した候補は個人辞書(~/.mazegaki.dic)に保存されます。
+;;;   これらの学習機能をオフにするには、
+;;;   tutcode-enable-mazegaki-learning?変数を#fに設定してください。
 ;;; 
 ;;; * 活用する語の変換は自動的には行いません。
 ;;;   読みに明示的に"―"を付加して変換してください。
@@ -254,7 +256,9 @@
 
 ;;; 交ぜ書き変換用個人辞書を書き込む。
 (define (tutcode-save-personal-dictionary)
-  (if (not (setugid?))
+  (if (and
+        tutcode-enable-mazegaki-learning?
+        (not (setugid?)))
       (skk-lib-save-personal-dictionary tutcode-personal-dic-filename)))
 
 ;;; キーストロークから文字への変換のためのrk-push-key!を呼び出す。
@@ -308,12 +312,17 @@
 ;;; @param pc コンテキストリスト
 (define (tutcode-prepare-commit-string pc)
   (let* ((res (tutcode-get-current-candidate pc)))
-    ;; skk-lib-commit-candidateを呼ぶと学習も行われる
-    (skk-lib-commit-candidate
-      (tutcode-make-string (tutcode-context-head pc)) "" ""
-        (tutcode-context-nth pc) #f)
-    (if (> (tutcode-context-nth pc) 0)
-      (tutcode-save-personal-dictionary))
+    ;; いつも特定のラベルキーで特定の候補を確定する使い方ができるように、
+    ;; tutcode-enable-mazegaki-learning?が#fの場合は候補の並び順を変えない。
+    ;; (例:「かい」の変換において、常にdキーで「悔」、eキーで「恢」を確定)
+    (if tutcode-enable-mazegaki-learning?
+      (begin
+        ;; skk-lib-commit-candidateを呼ぶと学習が行われ、候補順が変更される
+        (skk-lib-commit-candidate
+          (tutcode-make-string (tutcode-context-head pc)) "" ""
+          (tutcode-context-nth pc) #f)
+        (if (> (tutcode-context-nth pc) 0)
+          (tutcode-save-personal-dictionary))))
     (tutcode-flush pc)
     res))
 
