@@ -70,33 +70,11 @@ struct uim_notify_agent {
 };
 
 static void uim_notify_load_stderr(void);
-
-/* builtin notify module */
 static const uim_notify_desc *uim_notify_stderr_get_desc(void);
-static int uim_notify_stderr_init(void);
-static void uim_notify_stderr_quit(void);
-static int uim_notify_stderr_info(const char *);
-static int uim_notify_stderr_fatal(const char *);
-
-
-static const uim_notify_desc uim_notify_stderr_desc = {
-  "stderr",
-  "Standard Error output",
-};
 
 static struct uim_notify_agent agent_body;
 static struct uim_notify_agent *agent = &agent_body;
 static void *notify_dlhandle = NULL;
-
-static void
-uim_notify_load_stderr(void)
-{
-  agent->init = uim_notify_stderr_init;
-  agent->quit = uim_notify_stderr_quit;
-  agent->notify_info = uim_notify_stderr_info;
-  agent->notify_fatal = uim_notify_stderr_fatal;
-  notify_dlhandle = NULL;
-}
 
 int
 uim_notify_load(const char *name)
@@ -324,6 +302,27 @@ uim_init_notify_subrs(void)
 /*
  * builtin 'stderr' notification agent
  */
+static int uim_notify_stderr_init(void);
+static void uim_notify_stderr_quit(void);
+static int uim_notify_stderr_info(const char *);
+static int uim_notify_stderr_fatal(const char *);
+
+static const uim_notify_desc uim_notify_stderr_desc = {
+  "stderr",
+  "Standard Error output",
+};
+
+static void
+uim_notify_load_stderr(void)
+{
+  agent->desc = uim_notify_stderr_get_desc;
+  agent->init = uim_notify_stderr_init;
+  agent->quit = uim_notify_stderr_quit;
+  agent->notify_info = uim_notify_stderr_info;
+  agent->notify_fatal = uim_notify_stderr_fatal;
+  notify_dlhandle = NULL;
+}
+
 static const uim_notify_desc *
 uim_notify_stderr_get_desc(void)
 {
