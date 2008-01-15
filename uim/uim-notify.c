@@ -51,6 +51,11 @@
 #include "uim-internal.h"
 #include "uim-notify.h"
 
+
+#define NOTIFY_PLUGIN_PATH LIBDIR "/uim/notify"
+#define NOTIFY_PLUGIN_PREFIX "libuimnotify-"
+#define NOTIFY_PLUGIN_SUFFIX ".so"
+
 #ifndef HAVE_DLFUNC
 #define dlfunc(handle, symbol) \
   ((void (*)(void))(uintptr_t)dlsym((handle), (symbol)))

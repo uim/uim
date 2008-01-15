@@ -174,10 +174,6 @@ uim_bool uim_issetugid(void);
 extern JMP_BUF uim_catch_block_env;
 #endif
 
-#define NOTIFY_PLUGIN_PATH LIBDIR "/uim/notify"
-#define NOTIFY_PLUGIN_PREFIX "libuimnotify-"
-#define NOTIFY_PLUGIN_SUFFIX ".so"
-
 #ifdef __cplusplus
 }
 #endif

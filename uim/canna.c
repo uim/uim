@@ -309,7 +309,7 @@ get_unconv_candidate(uim_lisp cc_, uim_lisp seg_)
   if (len == ERR)
     uim_fatal_error("RkGetYomi() failed");
 #ifdef UIM_CANNA_DEBUG
-  uim_notify_info("yomi: %s", buf);
+  fprintf(stderr, "yomi: %s\n", buf);
 #endif
   return MAKE_STR(buf);
 }

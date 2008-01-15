@@ -56,7 +56,8 @@
  * uim-notify is disabled since I'm not confident about:
  *   1. its stability when low-level error handling is being involved
  *   2. whether these errors should be notified to endusers
- * -- 2008-01-15 YamaKen */
+ * -- 2008-01-15 YamaKen
+ */
 #define USE_UIM_NOTIFY 0
 
 #if USE_UIM_NOTIFY

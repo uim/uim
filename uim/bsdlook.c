@@ -404,11 +404,11 @@ look_print_from(char *string, uim_look_ctx *ctx)
 	for (; front < back && compare(string, front, ctx) == EQUAL; ++front) {
 		for (; front < back && *front != '\n'; ++front)
 			if (putchar(*front) == EOF) {
-				uim_notify_fatal("bsdlook(print_from): stdout");
+				fprintf(stderr, "print_from: stdout");
 				return;
 			}
 		if (putchar('\n') == EOF) {
-			uim_notify_fatal("bsdlook(print_from): stdout");
+			fprintf(stderr, "print_from: stdout");
 			return;
 		}
 	}
