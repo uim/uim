@@ -265,10 +265,7 @@ uim_scm_notify_load(uim_lisp name_)
 {
   const char *name = REFER_C_STR(name_);
 
-  if (uim_notify_load(name))
-    return uim_scm_t();
-  else
-    return uim_scm_f();
+  return MAKE_BOOL(uim_notify_load(name));
 }
 
 static uim_lisp
@@ -276,10 +273,7 @@ uim_scm_notify_info(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
-  if (uim_notify_info("%s", msg))
-    return uim_scm_t();
-  else
-    return uim_scm_f();
+  return MAKE_BOOL(uim_notify_info("%s", msg));
 }
 
 static uim_lisp
@@ -287,10 +281,7 @@ uim_scm_notify_fatal(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
-  if (uim_notify_fatal("%s", msg))
-    return uim_scm_t();
-  else
-    return uim_scm_f();
+  return MAKE_BOOL(uim_notify_fatal("%s", msg));
 }
 
 void
