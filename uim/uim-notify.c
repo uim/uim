@@ -61,6 +61,14 @@
   ((void (*)(void))(uintptr_t)dlsym((handle), (symbol)))
 #endif
 
+struct uim_notify_agent {
+  const uim_notify_desc *(*desc)(void);
+  int (*init)(void);
+  void (*quit)(void);
+  int (*notify_info)(const char *);
+  int (*notify_fatal)(const char *);
+};
+
 static void uim_notify_load_stderr(void);
 
 /* builtin notify module */
@@ -76,12 +84,8 @@ static const uim_notify_desc uim_notify_stderr_desc = {
   "Standard Error output",
 };
 
-static const uim_notify_desc *(*uim_notify_get_desc_func)(void) = uim_notify_stderr_get_desc;
-static int (*uim_notify_init_func)(void) = uim_notify_stderr_init;
-static void (*uim_notify_quit_func)(void) = uim_notify_stderr_quit;
-static int (*uim_notify_info_func)(const char *) = uim_notify_stderr_info;
-static int (*uim_notify_fatal_func)(const char *) = uim_notify_stderr_fatal;
-
+static struct uim_notify_agent agent_body;
+static struct uim_notify_agent *agent = &agent_body;
 static void *notify_dlhandle = NULL;
 static const uim_notify_desc *notify_desc = &uim_notify_stderr_desc;
 
@@ -89,18 +93,18 @@ static void
 uim_notify_load_stderr(void)
 {
   notify_desc = &uim_notify_stderr_desc;
-  uim_notify_init_func  = uim_notify_stderr_init;
-  uim_notify_quit_func  = uim_notify_stderr_quit;
-  uim_notify_info_func  = uim_notify_stderr_info;
-  uim_notify_fatal_func = uim_notify_stderr_fatal;
+  agent->init = uim_notify_stderr_init;
+  agent->quit = uim_notify_stderr_quit;
+  agent->notify_info = uim_notify_stderr_info;
+  agent->notify_fatal = uim_notify_stderr_fatal;
   notify_dlhandle = NULL;
 }
 
 int
 uim_notify_load(const char *name)
 {
-  if (uim_notify_quit_func == NULL) {
-    fprintf(stderr, "uim-notify: notify module is not loaded\n");
+  if (!agent->quit) {
+    fprintf(stderr, "uim-notify: notification agent module is not loaded\n");
     uim_notify_load_stderr();
     return 0;
   }
@@ -108,64 +112,64 @@ uim_notify_load(const char *name)
   if (strcmp(notify_desc->name, name) == 0) {
     return 1;
   } else if (strcmp(name, "stderr") == 0) {
-    uim_notify_quit_func();
-    if (notify_dlhandle != NULL)
+    agent->quit();
+    if (notify_dlhandle)
       dlclose(notify_dlhandle);
     uim_notify_load_stderr();
   } else {
     char path[PATH_MAX];
     const char *str;
 
-    uim_notify_quit_func();
-    if (notify_dlhandle != NULL)
+    agent->quit();
+    if (notify_dlhandle)
       dlclose(notify_dlhandle);
 
     snprintf(path, sizeof(path), "%s/%s%s%s", NOTIFY_PLUGIN_PATH, NOTIFY_PLUGIN_PREFIX, name, NOTIFY_PLUGIN_SUFFIX);
 
     notify_dlhandle = dlopen(path, RTLD_NOW);
-    if ((str = dlerror()) != NULL) {
+    if ((str = dlerror())) {
       fprintf(stderr, "uim-notify: load failed %s(%s)\n", path, str);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_get_desc_func = (const uim_notify_desc *(*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
-    if (!uim_notify_get_desc_func) {
+    agent->desc = (const uim_notify_desc *(*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_get_desc");
+    if (!agent->desc) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_get_desc()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_init_func  = (int (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_init");
-    if (!uim_notify_init_func) {
+    agent->init = (int (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_init");
+    if (!agent->init) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_init()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_quit_func  = (void (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_quit");
-    if (!uim_notify_quit_func) {
+    agent->quit = (void (*)(void))dlfunc(notify_dlhandle, "uim_notify_plugin_quit");
+    if (!agent->quit) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_quit()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_info_func  = (int (*)(const char *))dlfunc(notify_dlhandle, "uim_notify_plugin_info");
-    if (!uim_notify_info_func) {
+    agent->notify_info = (int (*)(const char *))dlfunc(notify_dlhandle, "uim_notify_plugin_info");
+    if (!agent->notify_info) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_info()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
-    uim_notify_fatal_func = (int (*)(const char *))dlfunc(notify_dlhandle, "uim_notify_plugin_fatal");
-    if (!uim_notify_fatal_func) {
+    agent->notify_fatal = (int (*)(const char *))dlfunc(notify_dlhandle, "uim_notify_plugin_fatal");
+    if (!agent->notify_fatal) {
       fprintf(stderr, "uim-notify: cannot found 'uim_notify_fatal()' in %s\n", path);
       dlclose(notify_dlhandle);
       uim_notify_load_stderr();
       return 0;
     }
 
-    notify_desc = uim_notify_get_desc_func();
-    uim_notify_init_func();
+    notify_desc = agent->desc();
+    agent->init();
   }
   return 1;
 }
@@ -173,19 +177,19 @@ uim_notify_load(const char *name)
 const uim_notify_desc *
 uim_notify_get_desc(void)
 {
-  return uim_notify_get_desc_func();
+  return agent->desc();
 }
 
 int
 uim_notify_init(void)
 {
-  return uim_notify_init_func();
+  return agent->init();
 }
 
 void
 uim_notify_quit(void)
 {
-  uim_notify_quit_func();
+  agent->quit();
   return;
 }
 
@@ -199,7 +203,7 @@ uim_notify_info(const char *msg_fmt, ...)
   vsnprintf(msg, sizeof(msg), msg_fmt, ap);
   va_end(ap);
 
-  return uim_notify_info_func(msg);
+  return agent->notify_info(msg);
 }
 
 int
@@ -212,7 +216,7 @@ uim_notify_fatal(const char *msg_fmt, ...)
   vsnprintf(msg, sizeof(msg), msg_fmt, ap);
   va_end(ap);
 
-  return uim_notify_fatal_func(msg);
+  return agent->notify_fatal(msg);
 }
 
 /*
@@ -321,7 +325,7 @@ uim_init_notify_subrs(void)
 
 
 /*
- * builtin functions
+ * builtin 'stderr' notification agent
  */
 static const uim_notify_desc *
 uim_notify_stderr_get_desc(void)
