@@ -87,12 +87,10 @@ static const uim_notify_desc uim_notify_stderr_desc = {
 static struct uim_notify_agent agent_body;
 static struct uim_notify_agent *agent = &agent_body;
 static void *notify_dlhandle = NULL;
-static const uim_notify_desc *notify_desc = &uim_notify_stderr_desc;
 
 static void
 uim_notify_load_stderr(void)
 {
-  notify_desc = &uim_notify_stderr_desc;
   agent->init = uim_notify_stderr_init;
   agent->quit = uim_notify_stderr_quit;
   agent->notify_info = uim_notify_stderr_info;
@@ -103,13 +101,13 @@ uim_notify_load_stderr(void)
 int
 uim_notify_load(const char *name)
 {
-  if (!agent->quit) {
+  if (!agent->quit || !agent->desc) {
     fprintf(stderr, "uim-notify: notification agent module is not loaded\n");
     uim_notify_load_stderr();
     return 0;
   }
 
-  if (strcmp(notify_desc->name, name) == 0) {
+  if (strcmp(agent->desc()->name, name) == 0) {
     return 1;
   } else if (strcmp(name, "stderr") == 0) {
     agent->quit();
@@ -168,7 +166,6 @@ uim_notify_load(const char *name)
       return 0;
     }
 
-    notify_desc = agent->desc();
     agent->init();
   }
   return 1;
