@@ -182,16 +182,17 @@ distribute_message(char *msg, struct client *cl)
 static int
 reflect_message_fragment(struct client *cl)
 {
-  int rc;
+  ssize_t rc;
   char *msg;
 
   /* do read */
   rc = read(cl->fd, read_buf, sizeof(read_buf));
-  if (rc <= 0) {
-    if (rc < 0 && (errno == EAGAIN || errno == EINTR))
+  if (rc == -1) {
+    if (errno == EAGAIN || errno == EINTR)
       return 0;
     return -1;
-  }
+  } else if (rc == 0)
+    return -1;
 
   cl->rbuf = uim_helper_buffer_append(cl->rbuf, read_buf, rc);
 

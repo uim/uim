@@ -819,13 +819,17 @@ static void main_loop(void)
       int start, end;
 
 #ifdef __CYGWIN32__
-      if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) <= 0) {
+      if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) == -1 || len == 0) {
         debug2(("pipe closed\n"));
         close(s_setmode_fd);
         s_setmode_fd = open(s_path_setmode, O_RDONLY | O_NONBLOCK);
       }
 #else
-      len = read(s_setmode_fd, buf, sizeof(buf) - 1);
+      if ((len = read(s_setmode_fd, buf, sizeof(buf) - 1)) == -1 || len == 0) {
+        /* XXX: fatal */
+        debug2(("cannot read setmode file\n"));
+        return;
+      }
 #endif
 
       for (end = len - 1; end >= 0 && !isdigit((unsigned char)buf[end]); --end);
@@ -855,7 +859,7 @@ static void main_loop(void)
         focus_in();
       }
 
-      if ((len = read_stdin(buf, sizeof(buf) - 1)) <= 0) {
+      if ((len = read_stdin(buf, sizeof(buf) - 1)) == -1 || len == 0) {
         /* ここにはこないと思う */
         return;
       }
@@ -895,11 +899,18 @@ static void main_loop(void)
               t.tv_sec = 0;
               t.tv_usec = g_opt.timeout;
               if (my_select(g_win_in + 1, &fds, &t) > 0) {
-                len += read_stdin(buf + len, sizeof(buf) - len - 1);
-                buf[len] = '\0';
-                debug(("read_again \"%s\"\n", buf));
-                i--;
-                continue;
+                ssize_t nr;
+
+                if ((nr = read_stdin(buf + len, sizeof(buf) - len - 1)) != -1) {
+                  len += nr;
+                  buf[len] = '\0';
+                  debug(("read_again \"%s\"\n", buf));
+                  i--;
+                  continue;
+                } else {
+                  /* XXX: fatal */
+                  return;
+                }
               }
             }
 
@@ -940,7 +951,7 @@ static void main_loop(void)
 
     /* input from pty (child process) */
     if (!g_opt.print_key && FD_ISSET(s_master, &fds)) {
-      if ((len = read(s_master, buf, sizeof(buf) - 1)) <= 0) {
+      if ((len = read(s_master, buf, sizeof(buf) - 1)) == -1 || len == 0) {
         /* 子プロセスが終了した */
         return;
       }
@@ -993,14 +1004,14 @@ static void recover_loop(void)
       continue;
     }
     if (FD_ISSET(g_win_in, &fds)) {
-      if ((len = read(g_win_in, buf, sizeof(buf))) <= 0) {
+      if ((len = read(g_win_in, buf, sizeof(buf))) == -1 || len == 0) {
         /* ここにはこないと思う */
         return;
       }
       write(s_master, buf, len);
     }
     if (FD_ISSET(s_master, &fds)) {
-      if ((len = read(s_master, buf, sizeof(buf))) <= 0) {
+      if ((len = read(s_master, buf, sizeof(buf))) == -1 || len == 0) {
         /* 子プロセスが終了した */
         return;
       }

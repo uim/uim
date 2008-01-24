@@ -727,6 +727,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   int n = 0, ret, len;
   char buf[SKK_SERV_BUFSIZ];
   char *line, *idx;
+  ssize_t nr;
 
   if (!(di->skkserv_state & SKK_SERV_CONNECTED)) {
     if (!((di->skkserv_state |= open_skkserv(di->skkserv_hostname,
@@ -751,15 +752,14 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   line = uim_malloc(len);
   snprintf(line, len, "%s ", idx);
 
-  if (read(skkservsock, &r, 1) <= 0) {
+  if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
     skkserv_disconnected(di);
     return NULL;
   }
 
   if (r == '1') {  /* succeeded */
     while (1) {
-      ret = read(skkservsock, &r, 1);
-      if (ret <= 0) {
+      if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
 	skkserv_disconnected(di);
 	return NULL;
       }
@@ -786,7 +786,8 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
     free(line);
     return sl;
   } else {
-    while (read(skkservsock, &r, 1) > 0 && r != '\n');
+    while ((nr = read(skkservsock, &r, 1)) != -1 && nr != 0 && r != '\n')
+      ;
     return NULL;
   }
 }

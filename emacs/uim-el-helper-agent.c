@@ -206,7 +206,8 @@ read_command()
   debug_printf(DEBUG_NOTE, "read command\n");
 
   do {
-	len = read(STDIN_FILENO, rbuf, sizeof(rbuf) - 1);
+	if ((len = read(STDIN_FILENO, rbuf, sizeof(rbuf) - 1)) == -1 || len == 0)
+	   return; /* XXX */
 	rbuf[len] = '\0';
 
 	if (strlen(cmdbuf) + len + 1 > cmdbuf_len) {

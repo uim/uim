@@ -185,7 +185,7 @@ uim_helper_read_proc(int fd)
 
   while (uim_helper_fd_readable(fd) > 0) {
     rc = read(fd, uim_recv_buf, sizeof(uim_recv_buf));
-    if (rc == 0 || (rc < 0 && errno != EAGAIN)) {
+    if (rc == 0 || (rc == -1 && errno != EAGAIN)) {
       uim_helper_close_client_fd(fd);
       return;
     } else if (rc > 0) {

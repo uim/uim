@@ -69,6 +69,7 @@ open_pipe_rw(FILE **fr, FILE **fw)
   int pipe_fd[2];
   pid_t pid;
   int res;
+  ssize_t nr;
 
   if (pipe(pipe_fd) < 0)
     return (pid_t)-1;
@@ -120,7 +121,9 @@ open_pipe_rw(FILE **fr, FILE **fw)
       *fw = fdopen(fdw[1], "w");
   }
 
-  read(pipe_fd[0], &pid, sizeof(pid_t));
+  if ((nr = read(pipe_fd[0], &pid, sizeof(pid_t))) == -1 || nr == 0)
+    goto err0;
+
   close(pipe_fd[0]);
   close(pipe_fd[1]);
 
