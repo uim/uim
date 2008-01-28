@@ -1215,7 +1215,7 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     if (!cd)
 	return strlcpy(utf8, inbuf, len + 1);
 
-    outbuf = (char *)malloc(outbufsize);
+    outbuf = (char *)malloc(outbufsize + 1);
     if (!outbuf) {
 	uim_iconv->release(cd);
 	utf8[0] = '\0';
@@ -1235,6 +1235,8 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
 	return 0;
     }
     uim_iconv->release(cd);
+
+    *outchar = '\0';
 
     strlcpy(utf8, outbuf, outbufsize - outbytesleft + 1);
     free(outbuf);
