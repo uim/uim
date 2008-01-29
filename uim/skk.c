@@ -754,6 +754,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 
   if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
     skkserv_disconnected(di);
+    free(line);
     return NULL;
   }
 
@@ -761,6 +762,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
     while (1) {
       if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
 	skkserv_disconnected(di);
+	free(line);
 	return NULL;
       }
 
@@ -788,6 +790,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
   } else {
     while ((nr = read(skkservsock, &r, 1)) != -1 && nr != 0 && r != '\n')
       ;
+    free(line);
     return NULL;
   }
 }
