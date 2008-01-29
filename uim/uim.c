@@ -123,8 +123,10 @@ uim_create_context(void *ptr,
     return NULL;
   }
   get_context_id(uc);
-  if (uc->id == -1)
+  if (uc->id == -1) {
+    free(uc);
     return NULL;
+  }
 
   uc->ptr = ptr;
   uc->is_enable = 1;
