@@ -226,8 +226,8 @@ uim_scm_notify_get_plugins(void)
   uim_notify_desc *(*desc_func)(void);
   char *str;
 
-  plen = strlen(NOTIFY_PLUGIN_PREFIX);
-  slen = strlen(NOTIFY_PLUGIN_SUFFIX);
+  plen = sizeof(NOTIFY_PLUGIN_PREFIX);
+  slen = sizeof(NOTIFY_PLUGIN_SUFFIX);
 
   desc = uim_notify_stderr_get_desc();
   ret_ = CONS(LIST3(MAKE_SYM(desc->name),
@@ -241,7 +241,7 @@ uim_scm_notify_get_plugins(void)
       char path[PATH_MAX];
 
       if ((len < plen + slen) ||
-	  (PATH_MAX < (strlen(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
+	  (PATH_MAX < (sizeof(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
 	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
