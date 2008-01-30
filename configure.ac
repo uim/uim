@@ -1322,45 +1322,45 @@ fi
 
 AC_MSG_CHECKING([whether libnotify is requested])
 if test "x$au_enable_libnotify" = xyes; then
-   AC_MSG_RESULT([yes])
-   PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4, use_libnotify="yes",
+  AC_MSG_RESULT([yes])
+  PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4, use_libnotify="yes",
 					       use_libnotify="no")
-   if test "x$use_libnotify" = "xyes"; then
-     AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
-     AC_SUBST(LIBNOTIFY_LIBS)
-     AC_SUBST(LIBNOTIFY_CFLAGS)
-     use_notify="${use_notify}libnotify "
-   fi
+  if test "x$use_libnotify" = "xyes"; then
+    AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
+    AC_SUBST(LIBNOTIFY_LIBS)
+    AC_SUBST(LIBNOTIFY_CFLAGS)
+    use_notify="${use_notify}libnotify "
+  fi
 else
-   AC_MSG_RESULT(no)
+  AC_MSG_RESULT(no)
 fi
 
 AC_MSG_CHECKING([whether knotify3 is requested])
 if test "x$au_enable_knotify3" = xyes; then
-   AC_MSG_RESULT([yes])
-   if test "x$use_qt" = "xyes"; then
-     if test "x$KDE_CONFIG" != "xno"; then
-     	KNOTIFY3_PREFIX=`kde-config --prefix`
-	KNOTIFY3_LIB_DIR=`kde-config --expandvars --install lib`
-	KNOTIFY3_DATA_DIR=`kde-config --expandvars --install data`
-	saved_cppflags="${CPPFLAGS}"
-	CPPFLAGS="-I${KNOTIFY3_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
-	AC_LANG_PUSH(C++)
-	AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/kde/knotifyclient.h],
-			[use_knotify3="yes" KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include/kde"], [use_knotify3="no"])
-	if test "x$use_knotify3" = "xno"; then
-	  CPPFLAGS="-I${KNOTIFY3_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
-	  AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/knotifyclient.h],
-	  		  [use_knotify3="yes" KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include"], [use_knotify3="no"])
-	fi
-	CPPFLAGS="${saved_cppflags}"
-	AC_LANG_POP(C++)
-      else
-	use_knotify3="no"
+  AC_MSG_RESULT([yes])
+  if test "x$use_qt" = "xyes"; then
+    if test "x$KDE_CONFIG" != "xno"; then
+      KNOTIFY3_PREFIX=`kde-config --prefix`
+      KNOTIFY3_LIB_DIR=`kde-config --expandvars --install lib`
+      KNOTIFY3_DATA_DIR=`kde-config --expandvars --install data`
+      saved_cppflags="${CPPFLAGS}"
+      CPPFLAGS="-I${KNOTIFY3_PREFIX}/include/kde ${CPPFLAGS} ${QT_CXXFLAGS}"
+      AC_LANG_PUSH(C++)
+      AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/kde/knotifyclient.h],
+                      [use_knotify3="yes" KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include/kde"], [use_knotify3="no"])
+      if test "x$use_knotify3" = "xno"; then
+        CPPFLAGS="-I${KNOTIFY3_PREFIX}/include ${saved_cppflags} ${QT_CXXFLAGS}"
+        AC_CHECK_HEADER([${KNOTIFY3_PREFIX}/include/knotifyclient.h],
+                        [use_knotify3="yes" KNOTIFY3_INCLUDE_DIR="${KNOTIFY3_PREFIX}/include"], [use_knotify3="no"])
       fi
+      CPPFLAGS="${saved_cppflags}"
+      AC_LANG_POP(C++)
     else
       use_knotify3="no"
     fi
+  else
+    use_knotify3="no"
+  fi
 else
   AC_MSG_RESULT(no)
 fi
