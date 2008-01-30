@@ -73,23 +73,14 @@ struct uim_notify_agent {
 };
 
 static my_dlfunc_t load_func(const char *path, const char *name);
+
+/* FIXME: Move these decls to the 'stderr' agent section and make
+ * invisible from other part of uim-notify.  -- YamaKen 2008-01-30 */
 static void uim_notify_load_stderr(void);
-
 static const uim_notify_desc *uim_notify_stderr_get_desc(void);
-static int uim_notify_stderr_init(void);
-static void uim_notify_stderr_quit(void);
-static int uim_notify_stderr_info(const char *);
-static int uim_notify_stderr_fatal(const char *);
 
 
-static struct uim_notify_agent agent_body = {
-  uim_notify_stderr_get_desc,
-  uim_notify_stderr_init,
-  uim_notify_stderr_quit,
-  uim_notify_stderr_info,
-  uim_notify_stderr_fatal
-};
-
+static struct uim_notify_agent agent_body;
 static struct uim_notify_agent *agent = &agent_body;
 static void *notify_dlhandle = NULL;
 
@@ -176,6 +167,12 @@ uim_notify_get_desc(void)
 int
 uim_notify_init(void)
 {
+  /* Since a cyclic init/quit sequence leaves *agent uncleared,
+   * explicit initialization is required. Such data initialization is
+   * needed for some embedded platforms such as Qtopia.
+   *   -- YamaKen 2008-01-30 */
+  uim_notify_load_stderr();
+
   return agent->init();
 }
 
@@ -310,6 +307,11 @@ uim_init_notify_subrs(void)
 /*
  * builtin 'stderr' notification agent
  */
+static int uim_notify_stderr_init(void);
+static void uim_notify_stderr_quit(void);
+static int uim_notify_stderr_info(const char *);
+static int uim_notify_stderr_fatal(const char *);
+
 static const uim_notify_desc uim_notify_stderr_desc = {
   "stderr",
   "Standard Error output",
@@ -344,12 +346,14 @@ uim_notify_stderr_quit(void)
   return;
 }
 
+/* FIXME: accept extra args */
 static int
 uim_notify_stderr_info(const char *msg)
 {
   return fprintf(stderr, "uim [Info]: %s", msg);
 }
 
+/* FIXME: accept extra args */
 static int
 uim_notify_stderr_fatal(const char *msg)
 {

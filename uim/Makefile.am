@@ -39,8 +39,11 @@ sigscheme-combined:
 pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h plugin.h \
 		uim-helper.h uim-im-switcher.h \
-		uim-custom.h uim-notify.h
+		uim-custom.h
 pkginclude_HEADERS += bsdlook.h
+if NOTIFY
+pkginclude_HEADERS += uim-notify.h
+endif
 
 libuim_la_SOURCES = \
 		uim-internal.h uim-error.c uim.c \
@@ -48,7 +51,10 @@ libuim_la_SOURCES = \
 		iconv.c plugin.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
-		rk.c uim-notify.c
+		rk.c
+if NOTIFY
+libuim_la_SOURCES += uim-notify.c
+endif
 
 libuim_custom_la_SOURCES = uim-custom.c
 

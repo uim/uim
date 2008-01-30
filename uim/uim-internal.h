@@ -156,10 +156,18 @@ void uim_quit_plugin(void);
 void uim_init_im_subrs(void);
 void uim_init_key_subrs(void);
 void uim_init_util_subrs(void);
+#if UIM_USE_NOTIFY
 void uim_init_notify_subrs(void);
+#endif
 
 void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);
+
+#if !UIM_USE_NOTIFY
+/* FIXME: Output to stderr */
+#define uim_notify_info printf
+#define uim_notify_fatal printf
+#endif
 
 void uim_set_encoding(uim_context uc, const char *enc);
 #if HAVE_ISSETUGID

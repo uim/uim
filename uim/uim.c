@@ -43,6 +43,9 @@
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
+#if UIM_USE_NOTIFY
+#include "uim-notify.h"
+#endif
 
 
 enum uim_result {
@@ -121,7 +124,10 @@ uim_init_internal(void *dummy)
   uim_init_im_subrs();
   uim_init_intl_subrs();
   uim_init_util_subrs();
-  uim_init_notify_subrs();
+#if UIM_USE_NOTIFY
+  uim_notify_init();  /* init uim-notify facility */
+  uim_init_notify_subrs();  /* init Scheme interface of uim-notify */
+#endif
   uim_init_key_subrs();
   uim_init_rk_subrs();
   uim_init_plugin();
@@ -164,6 +170,9 @@ uim_quit(void)
 #endif
 #ifdef ENABLE_ANTHY_UTF8_STATIC
   uim_anthy_utf8_plugin_instance_quit();
+#endif
+#if UIM_USE_NOTIFY
+  uim_notify_quit();
 #endif
   uim_scm_quit();
   uim_initialized = UIM_FALSE;

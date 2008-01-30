@@ -22,6 +22,7 @@ AC_PATH_PROG(SH, sh)
 AC_PATH_PROG(RSVG, rsvg)
 AC_PATH_PROGS(MD5, md5 md5sum)
 AC_PATH_PROGS(SHA1, sha1 sha1sum)
+AC_PATH_PROGS(SED, sed gsed)
 AX_PATH_QMAKE4
 
 AM_MAINTAINER_MODE
@@ -1295,45 +1296,48 @@ AC_ARG_ENABLE(anthy-utf8-static,
 
 AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
 
-# *******************************
-# *** Tests for NOTIFY ***
-# *******************************
-notify_targets='libnotify knotify3'
+# ****************************
+# *** Tests for uim-notify ***
+# ****************************
+notify_targets='stderr libnotify knotify3'
 
 AC_ARG_ENABLE(notify,
-  [  --enable-notify[=mode_list] (HIGHLY EXPERIMENTAL)
-                          enable notify module (specify comma separated mode list)
-                          libnotify: libnotify
-                          knotify3:  KDE3 notify],
+  AS_HELP_STRING([--enable-notify@<:@=agent-list@:>@ (HIGHLY EXPERIMENTAL)],
+                 [enable system message notification for users
+		  (specify comma separated notification agent list
+		  from stderr, libnotify and knotify3)]),
   [ enable_notify=$enableval
     have_notify_opt=yes ],
   [ enable_notify=yes
     have_notify_opt=no ])
 
 if test "x$enable_notify" != xno; then
-  for i in `echo $enable_notify | sed 's/,/ /g'`; do
+  AC_DEFINE(UIM_USE_NOTIFY, 1, [Define to 1 if you want to use uim-notify])
+  use_notify="${use_notify}stderr "
+
+  for i in `echo $enable_notify | ${SED} 's/,/ /g'`; do
     eval "au_enable_$i=yes"
   done
 fi
 
-AC_MSG_CHECKING(enable_notify=libnotify)
+AC_MSG_CHECKING([whether libnotify is requested])
 if test "x$au_enable_libnotify" = xyes; then
-   AC_MSG_RESULT([yes, configuring libnotify])
+   AC_MSG_RESULT([yes])
    PKG_CHECK_MODULES(LIBNOTIFY, libnotify >= 0.4, use_libnotify="yes",
 					       use_libnotify="no")
    if test "x$use_libnotify" = "xyes"; then
      AC_DEFINE(ENABLE_LIBNOTIFY, 1, [set notify interface with libnotify])
      AC_SUBST(LIBNOTIFY_LIBS)
      AC_SUBST(LIBNOTIFY_CFLAGS)
-     use_notify="libnotify "
+     use_notify="${use_notify}libnotify "
    fi
 else
    AC_MSG_RESULT(no)
 fi
 
-AC_MSG_CHECKING(enable_notify=knotify3)
+AC_MSG_CHECKING([whether knotify3 is requested])
 if test "x$au_enable_knotify3" = xyes; then
-   AC_MSG_RESULT([yes, configuring knotify3])
+   AC_MSG_RESULT([yes])
    if test "x$use_qt" = "xyes"; then
      if test "x$KDE_CONFIG" != "xno"; then
      	KNOTIFY3_PREFIX=`kde-config --prefix`
@@ -1357,6 +1361,8 @@ if test "x$au_enable_knotify3" = xyes; then
     else
       use_knotify3="no"
     fi
+else
+  AC_MSG_RESULT(no)
 fi
 if test "x$use_knotify3" = "xyes"; then
   AC_DEFINE(ENABLE_KNOTIFY3, 1, [set notify interface with knotify3])
@@ -1371,6 +1377,7 @@ if test "x$use_notify" = "x"; then
   use_notify=none
 fi
 
+AM_CONDITIONAL(NOTIFY, test "x$enable_notify" != xno)
 AM_CONDITIONAL(LIBNOTIFY, test x$use_libnotify = xyes)
 AM_CONDITIONAL(KNOTIFY3, test x$use_knotify3 = xyes)
 
