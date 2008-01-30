@@ -212,7 +212,7 @@ uim_notify_fatal(const char *msg_fmt, ...)
  * Scheme interfaces
  */
 static uim_lisp
-uim_scm_notify_get_plugins(void)
+notify_get_plugins(void)
 {
   uim_lisp ret_;
   DIR *dirp;
@@ -271,7 +271,7 @@ uim_scm_notify_get_plugins(void)
 }
 
 static uim_lisp
-uim_scm_notify_load(uim_lisp name_)
+notify_load(uim_lisp name_)
 {
   const char *name = REFER_C_STR(name_);
 
@@ -279,7 +279,7 @@ uim_scm_notify_load(uim_lisp name_)
 }
 
 static uim_lisp
-uim_scm_notify_info(uim_lisp msg_)
+notify_info(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
@@ -287,7 +287,7 @@ uim_scm_notify_info(uim_lisp msg_)
 }
 
 static uim_lisp
-uim_scm_notify_fatal(uim_lisp msg_)
+notify_fatal(uim_lisp msg_)
 {
   const char *msg = REFER_C_STR(msg_);
 
@@ -297,10 +297,10 @@ uim_scm_notify_fatal(uim_lisp msg_)
 void
 uim_init_notify_subrs(void)
 {
-  uim_scm_init_proc0("uim-notify-get-plugins", uim_scm_notify_get_plugins);
-  uim_scm_init_proc1("uim-notify-load", uim_scm_notify_load);
-  uim_scm_init_proc1("uim-notify-info", uim_scm_notify_info);
-  uim_scm_init_proc1("uim-notify-fatal", uim_scm_notify_fatal);
+  uim_scm_init_proc0("uim-notify-get-plugins", notify_get_plugins);
+  uim_scm_init_proc1("uim-notify-load", notify_load);
+  uim_scm_init_proc1("uim-notify-info", notify_info);
+  uim_scm_init_proc1("uim-notify-fatal", notify_fatal);
 }
 
 
