@@ -40,7 +40,6 @@ pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h plugin.h \
 		uim-helper.h uim-im-switcher.h \
 		uim-custom.h
-pkginclude_HEADERS += bsdlook.h
 if NOTIFY
 pkginclude_HEADERS += uim-notify.h
 endif
@@ -123,18 +122,18 @@ if PRIME
 endif
 
 uim_plugin_LTLIBRARIES += libuim-skk.la
-libuim_skk_la_SOURCES = skk.c
+libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
 libuim_skk_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_skk_la_CPPFLAGS = -I$(top_srcdir)
 
 uim_plugin_LTLIBRARIES += libuim-look.la
-libuim_look_la_SOURCES = look.c
+libuim_look_la_SOURCES = look.c bsdlook.h
 libuim_look_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la
 libuim_look_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_look_la_CPPFLAGS = -I$(top_srcdir)
 
-libuim_bsdlook_la_SOURCES = bsdlook.c
+libuim_bsdlook_la_SOURCES = bsdlook.h bsdlook.c
 libuim_bsdlook_la_LIBADD =
 libuim_bsdlook_la_CPPFLAGS = -I$(top_srcdir)
 
