@@ -39,6 +39,7 @@
 #include <X11/keysym.h>
 #include <X11/Xos.h>
 #include <list>
+#include <stdio.h>
 #include "ximserver.h"
 #include "ximpn.h"
 #include "compose.h"
