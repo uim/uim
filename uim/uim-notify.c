@@ -350,13 +350,13 @@ uim_notify_stderr_quit(void)
 static int
 uim_notify_stderr_info(const char *msg)
 {
-  return fprintf(stderr, "uim [Info]: %s", msg);
+  return fprintf(stderr, "uim [Info]: %s\n", msg);
 }
 
 /* FIXME: accept extra args */
 static int
 uim_notify_stderr_fatal(const char *msg)
 {
-  return fprintf(stderr, "uim [Fatal]: %s", msg);
+  return fprintf(stderr, "uim [Fatal]: %s\n", msg);
 }
 
