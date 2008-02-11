@@ -89,7 +89,7 @@ Example:
   "Overwrite this variable if uim-el-helper-agent is not in command path.
 
 Example:
-(setq uim-el-agent \"~/uim/emacs/uim-el-helper-agent\")
+(setq uim-el-helper-agent \"~/uim/emacs/uim-el-helper-agent\")
 " )
 
 ;; display fences on both edges of preedit
