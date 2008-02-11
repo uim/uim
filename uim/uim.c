@@ -36,6 +36,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#if !UIM_USE_NOTIFY
+#include <stdarg.h>
+#endif
 
 #include "uim.h"
 #include "uim-internal.h"
@@ -708,6 +711,38 @@ uim_get_im_name_for_locale(const char *localename)
 
   return name;
 }
+
+#if !UIM_USE_NOTIFY
+uim_bool
+uim_notify_info(const char *msg_fmt, ...)
+{
+  va_list args;
+  int ret;
+
+  va_start(args, msg_fmt);
+  fputs("libuim: [info] ", stderr);
+  ret = vfprintf(stderr, msg_fmt, args);
+  fputs("\n", stderr);
+  va_end(args);
+
+  return (ret >= 0);
+}
+
+uim_bool
+uim_notify_fatal(const char *msg_fmt, ...)
+{
+  va_list args;
+  int ret;
+
+  va_start(args, msg_fmt);
+  fputs("libuim: [fatal] ", stderr);
+  ret = vfprintf(stderr, msg_fmt, args);
+  fputs("\n", stderr);
+  va_end(args);
+
+  return (ret >= 0);
+}
+#endif  /* !UIM_USE_NOTIFY */
 
 /****************************************************************
  * Legacy 'mode' API                                            *
