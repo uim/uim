@@ -53,7 +53,6 @@ uim_bool uim_notify_init(void);
 void uim_notify_quit(void);
 uim_bool uim_notify_load(const char *name);
 
-/* API for notification facility users */
 const uim_notify_desc *uim_notify_get_desc(void);
 uim_bool uim_notify_info(const char *msg_fmt, ...);
 uim_bool uim_notify_fatal(const char *msg_fmt, ...);
