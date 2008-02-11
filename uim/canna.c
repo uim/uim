@@ -47,6 +47,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-notify.h"
+#include "gettext.h"
 #include "plugin.h"
 
 #if 0
@@ -166,7 +167,10 @@ create_context(void)
   buf = diclist;
   for (i = 0; i < dic_num; i++) {
     if (RkMountDic(cc->rk_context_id, buf, 0) == ERR) {
-      uim_notify_fatal("uim-canna: Failed to mount dictionary %s", buf);
+      /* FIXME: gettext here to expand %s in accordance with the
+       * locale for the selected notification agent. See also the TODO
+       * comment of uim-notify.h  -- YamaKen 2008-02-11 */
+      uim_notify_fatal(N_("uim-canna: Failed to mount dictionary %s."), buf);
     }
     buflen = strlen(buf) + sizeof((char)'\0');
     buf += buflen;

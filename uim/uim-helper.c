@@ -58,9 +58,10 @@
  *   2. whether these errors should be notified to endusers
  * -- 2008-01-15 YamaKen
  */
+#undef USE_UIM_NOTIFY
 #define USE_UIM_NOTIFY 0
 
-#if USE_UIM_NOTIFY
+#if USE_UIM_NOTIFY && !UIM_NON_LIBUIM_PROG
 #include "uim-notify.h"
 #endif
 
@@ -214,7 +215,7 @@ uim_helper_check_connection_fd(int fd)
   uid_t euid;
   gid_t egid;
   if (getpeereid(fd, &euid, &egid) < 0) {
-#if USE_UIM_NOTIFY
+#if USE_UIM_NOTIFY && !UIM_NON_LIBUIM_PROG
     uim_notify_fatal("uim_helper: %s", strerror(errno));
 #else
     perror("getpeereid failed");
@@ -222,7 +223,7 @@ uim_helper_check_connection_fd(int fd)
     return -1;
   }
   if ((euid != 0) && (euid != getuid())) {
-#if USE_UIM_NOTIFY
+#if USE_UIM_NOTIFY && !UIM_NON_LIBUIM_PROG
     uim_notify_fatal("uim_helper: uid mismatch");
 #else
     fprintf(stderr, "uid mismatch\n");

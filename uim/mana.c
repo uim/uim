@@ -52,6 +52,7 @@
 #include "uim-util.h"
 #include "plugin.h"
 #include "uim-notify.h"
+#include "gettext.h"
 
 #define MANA_COMMAND "mana"
 
@@ -99,7 +100,7 @@ mana_ipc_send_command(pid_t *pid,
         fgets(buf, sizeof(buf), *read_fp);
         if (buf != NULL) {
           if (strcmp(buf, "err") == 0)
-            uim_notify_fatal("uim-mana: mana not found");
+            uim_notify_fatal(N_("uim-mana: Command 'mana' not found."));
           else
             uim_notify_fatal("uim-mana: %s", buf);
 	}
@@ -172,7 +173,7 @@ mana_init(void)
     fclose(mana_r);
     fclose(mana_w);
     mana_r = mana_w = NULL;
-    uim_notify_fatal("uim-mana: mana not found");
+    uim_notify_fatal(N_("uim-mana: Command 'mana' not found."));
     return uim_scm_f();
   }
   

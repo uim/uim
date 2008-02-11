@@ -57,4 +57,9 @@ scm/tutcode-key-custom.scm
 scm/tutcode.scm
 scm/viqr.scm
 uim.desktop.in.in
+uim/uim-error.c
+uim/plugin.c
+uim/canna.c
+uim/mana.c
+uim/skk.c
 uim/m17nlib.c

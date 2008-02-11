@@ -63,6 +63,7 @@
 #include "uim-helper.h"
 #include "plugin.h"
 #include "uim-notify.h"
+#include "gettext.h"
 
 #include "bsdlook.h"
 
@@ -983,7 +984,7 @@ expand_str(const char *p)
     	  p++;
     	  c = *p;
     	  if (*p == '\0') {
-	    uim_notify_fatal("uim-skk: error in expand_str");
+	    uim_notify_fatal(N_("uim-skk: error in expand_str"));
 	    return NULL;
 	  }
 	  if (c >= '0' && c <= '7') {
@@ -998,7 +999,7 @@ expand_str(const char *p)
       }
     }
     if ((i + 1) >= BUFSIZ) {
-      uim_notify_fatal("uim-skk: too long word");
+      uim_notify_fatal(N_("uim-skk: too long word"));
       return NULL;
     }
     buf[i] = c;
@@ -3596,7 +3597,10 @@ open_skkserv(const char *hostname, int portnum, int family)
     if (connect(sock, ai->ai_addr, ai->ai_addrlen) == 0)
       break;
     else
-      uim_notify_fatal("uim-skk: connect to %s port %s failed", hostname, port);
+      /* FIXME: gettext here to expand %s in accordance with the
+       * locale for the selected notification agent. See also the TODO
+       * comment of uim-notify.h  -- YamaKen 2008-02-11 */
+      uim_notify_fatal(N_("uim-skk: connect to %s port %s failed"), hostname, port);
     close(sock);
     sock = -1;
   }

@@ -32,9 +32,16 @@
 
 /*                         !WARNING!
 
-   This API is experimental.
+   This API is experimental and unstable.
 
 */
+
+/* TODO: Add a new API to get the locale for the currently activated
+ * notification agent to gettext message strings contain format string
+ * such as "uim-canna: Failed to mount dictionary %s." in client
+ * side. The locale of the process is not appropriate since it may be
+ * ja_JP.eucJP and so on and ordinary notification agents expect
+ * UTF-8.  -- YamaKen 2008-02-11 */
 
 #ifndef _uim_notify_h_included_
 #define _uim_notify_h_included_

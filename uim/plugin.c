@@ -52,7 +52,10 @@
 #include "uim-scm-abbrev.h"
 #include "plugin.h"
 #include "uim-internal.h"
+#if UIM_USE_NOTIFY
 #include "uim-notify.h"
+#endif
+#include "gettext.h"
 
 #ifndef HAVE_DLFUNC
 #define dlfunc(handle, symbol) \
@@ -164,7 +167,7 @@ plugin_load(uim_lisp _name)
   free(plugin_lib_filename);
 
   if (library == NULL) {
-    uim_notify_fatal("load failed %s", dlerror());
+    uim_notify_fatal(N_("%s plugin: Load failed."), dlerror());
     free(plugin_scm_filename);
     return uim_scm_f();
   }
@@ -174,7 +177,7 @@ plugin_load(uim_lisp _name)
   plugin_instance_quit
     = (void (*)(void))dlfunc(library, "uim_plugin_instance_quit");
   if (!plugin_instance_init) {
-    uim_notify_fatal("%s plugin init failed", plugin_name);
+    uim_notify_fatal(N_("%s plugin: Init failed."), plugin_name);
     free(plugin_scm_filename);
     return uim_scm_f();
   }
@@ -186,8 +189,11 @@ plugin_load(uim_lisp _name)
 
     succeeded = uim_scm_require_file(plugin_scm_filename);
     if (!succeeded) {
-      uim_notify_fatal("%s plugin subsequent %s loading failed",
-	      plugin_name, plugin_scm_filename);
+      /* FIXME: gettext here to expand %s in accordance with the
+       * locale for the selected notification agent. See also the TODO
+       * comment of uim-notify.h  -- YamaKen 2008-02-11 */
+      uim_notify_fatal(N_("%s plugin: Subsequent %s load failed."),
+		       plugin_name, plugin_scm_filename);
       free(plugin_scm_filename);
       return uim_scm_f();
     }

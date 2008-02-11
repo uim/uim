@@ -46,6 +46,7 @@
 #if UIM_USE_NOTIFY && !UIM_NON_LIBUIM_PROG
 #include "uim-notify.h"
 #endif
+#include "gettext.h"
 
 
 #ifndef EX_SOFTWARE
@@ -53,7 +54,7 @@
 #endif
 
 #define ERRMSG_UIM_HAS_BEEN_DISABLED					\
-  "All functionality has been disabled to save user application data."
+  N_("All functionality has been disabled to save user application data.")
 
 static void print_caught_error(void);
 
@@ -87,7 +88,8 @@ print_caught_error(void)
     fputs(err_msg, stderr);
     fputs("\n", stderr);
     if (fatal_errored) {
-      fputs("libuim: " ERRMSG_UIM_HAS_BEEN_DISABLED, stderr);
+      fputs("libuim: ", stderr);
+      fputs(ERRMSG_UIM_HAS_BEEN_DISABLED, stderr);
       fputs("\n", stderr);
     }
 

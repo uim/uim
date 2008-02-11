@@ -68,6 +68,7 @@ uim_notify_plugin_quit()
   return;
 }
 
+/* FIXME: gettext msg */
 static uim_bool
 send_knotify(const char *eventstr, const char *msg, int level)
 {
@@ -78,20 +79,20 @@ send_knotify(const char *eventstr, const char *msg, int level)
   QString event(eventstr), fromApp("uim"), text, sound(""), file("");
   int present = KNotifyClient::Messagebox | level;
 
-  snprintf(body, sizeof(body), "uim: %s", msg);
+  snprintf(body, sizeof(body), "libuim: %s", msg);
   fprintf(stderr, "%s\n", msg);
 
   strlcpy(body_short, body, sizeof(body_short));
   text = body_short;
 
   if (!kapp->dcopClient()->attach()) {
-    fprintf(stderr, "uim: cannot connect DCOP\n");
+    fprintf(stderr, "libuim: cannot connect DCOP\n");
     return UIM_FALSE;
   }
   arg << event << fromApp << text << sound << file << present << level;
   if (!kapp->dcopClient()->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)",
 				data)) {
-    fprintf(stderr, "uim: cannot send message via DCOP\n");
+    fprintf(stderr, "libuim: cannot send message via DCOP\n");
     return UIM_FALSE;
   }
   return UIM_TRUE;

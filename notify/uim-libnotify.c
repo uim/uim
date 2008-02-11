@@ -44,7 +44,8 @@
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
 
-static int
+/* FIXME: gettext body */
+static uim_bool
 uim_libnotify_notify(int urgency, int timeout, const char *body)
 {
   char body_short[256];
@@ -54,7 +55,7 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
 
   strlcpy(body_short, body, sizeof(body_short));
 
-  fprintf(stderr, "uim: %s\n", body);
+  fprintf(stderr, "libuim: %s\n", body);
 
   if (!notify_is_initted()) {
     fprintf(stderr, "libnotify: libnotify is not initted\n");
