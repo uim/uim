@@ -41,6 +41,7 @@
 #include <kapplication.h>
 #include <knotifyclient.h>
 
+#include "uim.h"  // for uim_bool
 #include "uim-notify.h"
 
 
@@ -55,10 +56,10 @@ uim_notify_plugin_get_desc(void)
   return &uim_notify_knotify3_desc;
 }
 
-int
+uim_bool
 uim_notify_plugin_init()
 {
-  return 1;
+  return UIM_TRUE;
 }
 
 void
@@ -67,7 +68,7 @@ uim_notify_plugin_quit()
   return;
 }
 
-static int
+static uim_bool
 send_knotify(const char *eventstr, const char *msg, int level)
 {
   char body[BUFSIZ];
@@ -85,24 +86,24 @@ send_knotify(const char *eventstr, const char *msg, int level)
 
   if (!kapp->dcopClient()->attach()) {
     fprintf(stderr, "uim: cannot connect DCOP\n");
-    return 0;
+    return UIM_FALSE;
   }
   arg << event << fromApp << text << sound << file << present << level;
   if (!kapp->dcopClient()->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)",
 				data)) {
     fprintf(stderr, "uim: cannot send message via DCOP\n");
-    return 0;
+    return UIM_FALSE;
   }
-  return 1;
+  return UIM_TRUE;
 }
 
-int
+uim_bool
 uim_notify_plugin_info(const char *msg)
 {
   return send_knotify("Info", msg, KNotifyClient::Notification);
 }
 
-int
+uim_bool
 uim_notify_plugin_fatal(const char *msg)
 {
   return send_knotify("Fatal", msg, KNotifyClient::Error);

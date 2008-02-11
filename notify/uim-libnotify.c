@@ -39,6 +39,7 @@
 #include <glib.h>
 #include <libnotify/notify.h>
 
+#include "uim.h"  /* for uim_bool */
 #include "uim-notify.h"
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
@@ -57,14 +58,14 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
 
   if (!notify_is_initted()) {
     fprintf(stderr, "libnotify: libnotify is not initted\n");
-    return 0;
+    return UIM_FALSE;
   }
 
   notification = notify_notification_new("uim", body_short, UIM_ICON, NULL);
 
   if (!notification) {
     fprintf(stderr, "notify_notification_new: can not create notification object\n");
-    return 0;
+    return UIM_FALSE;
   }
 
   notify_notification_set_timeout(notification, timeout);
@@ -74,12 +75,12 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
   ret = notify_notification_show(notification, &error);
   if (error) {
     fprintf(stderr, "notify_notification_show: %s\n", error->message);
-    return 0;
+    return UIM_FALSE;
   }
 
   g_object_unref(G_OBJECT(notification));
 
-  return 1;
+  return UIM_TRUE;
 }
 
 /*
@@ -96,7 +97,7 @@ uim_notify_plugin_get_desc(void)
   return &uim_notify_libnotify_desc;
 }
 
-int
+uim_bool
 uim_notify_plugin_init(void)
 {
   return notify_init("uim");
@@ -109,13 +110,13 @@ uim_notify_plugin_quit(void)
     notify_uninit();
 }
 
-int
+uim_bool
 uim_notify_plugin_info(const char *msg)
 {
   return uim_libnotify_notify(NOTIFY_URGENCY_NORMAL, NOTIFY_EXPIRES_DEFAULT, msg);
 }
 
-int
+uim_bool
 uim_notify_plugin_fatal(const char *msg)
 {
   return uim_libnotify_notify(NOTIFY_URGENCY_CRITICAL, NOTIFY_EXPIRES_NEVER, msg);

@@ -164,7 +164,7 @@ void uim_init_rk_subrs(void);
 void uim_init_intl_subrs(void);
 
 #if UIM_USE_NOTIFY
-int uim_notify_fatal_raw(const char *msg);
+uim_bool uim_notify_fatal_raw(const char *msg);
 #else
 /* FIXME: Output to stderr */
 #define uim_notify_info printf

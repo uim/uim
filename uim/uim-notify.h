@@ -49,21 +49,21 @@ typedef struct uim_notify_desc_ {
 } uim_notify_desc;
 
 /* API for notification facility users */
-int uim_notify_init(void);
+uim_bool uim_notify_init(void);
 void uim_notify_quit(void);
-int uim_notify_load(const char *name);
+uim_bool uim_notify_load(const char *name);
 
 /* API for notification facility users */
 const uim_notify_desc *uim_notify_get_desc(void);
-int uim_notify_info(const char *msg_fmt, ...);
-int uim_notify_fatal(const char *msg_fmt, ...);
+uim_bool uim_notify_info(const char *msg_fmt, ...);
+uim_bool uim_notify_fatal(const char *msg_fmt, ...);
 
 /* API for pluggable notification agent implementors */
-int uim_notify_plugin_init(void);
+uim_bool uim_notify_plugin_init(void);
 void uim_notify_plugin_quit(void);
 const uim_notify_desc *uim_notify_plugin_get_desc(void);
-int uim_notify_plugin_info(const char *msg);
-int uim_notify_plugin_fatal(const char *msg);
+uim_bool uim_notify_plugin_info(const char *msg);
+uim_bool uim_notify_plugin_fatal(const char *msg);
 
 #ifdef __cplusplus
 }

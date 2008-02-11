@@ -100,7 +100,7 @@ load_func(const char *path, const char *name)
   return f;
 }
 
-int
+uim_bool
 uim_notify_load(const char *name)
 {
   if (!agent->quit || !agent->desc) {
@@ -164,7 +164,7 @@ uim_notify_get_desc(void)
   return agent->desc();
 }
 
-int
+uim_bool
 uim_notify_init(void)
 {
   /* Since a cyclic init/quit sequence leaves *agent uncleared,
@@ -182,7 +182,7 @@ uim_notify_quit(void)
   agent->quit();
 }
 
-int
+uim_bool
 uim_notify_info(const char *msg_fmt, ...)
 {
   va_list ap;
@@ -195,7 +195,7 @@ uim_notify_info(const char *msg_fmt, ...)
   return agent->notify_info(msg);
 }
 
-int
+uim_bool
 uim_notify_fatal(const char *msg_fmt, ...)
 {
   va_list ap;
@@ -209,7 +209,7 @@ uim_notify_fatal(const char *msg_fmt, ...)
 }
 
 /* Low stack-consumption version of uim_notify_fatal(). */
-int
+uim_bool
 uim_notify_fatal_raw(const char *msg)
 {
   return agent->notify_fatal(msg);
@@ -314,10 +314,10 @@ uim_init_notify_subrs(void)
 /*
  * builtin 'stderr' notification agent
  */
-static int uim_notify_stderr_init(void);
+static uim_bool uim_notify_stderr_init(void);
 static void uim_notify_stderr_quit(void);
-static int uim_notify_stderr_info(const char *);
-static int uim_notify_stderr_fatal(const char *);
+static uim_bool uim_notify_stderr_info(const char *);
+static uim_bool uim_notify_stderr_fatal(const char *);
 
 static const uim_notify_desc uim_notify_stderr_desc = {
   "stderr",
@@ -341,10 +341,10 @@ uim_notify_stderr_get_desc(void)
   return &uim_notify_stderr_desc;
 }
 
-static int
+static uim_bool
 uim_notify_stderr_init(void)
 {
-  return 1;
+  return UIM_TRUE;
 }
 
 static void
@@ -353,7 +353,7 @@ uim_notify_stderr_quit(void)
   return;
 }
 
-static int
+static uim_bool
 uim_notify_stderr_info(const char *msg)
 {
   fputs("libuim: [info] ", stderr);
@@ -363,7 +363,7 @@ uim_notify_stderr_info(const char *msg)
   return UIM_TRUE;
 }
 
-static int
+static uim_bool
 uim_notify_stderr_fatal(const char *msg)
 {
   /* To reduce stack consumption on hard situations such as memory
