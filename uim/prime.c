@@ -183,7 +183,7 @@ prime_read_msg_from_ud(int fd)
   read_buf  = uim_strdup("");
 
   for (;;) {
-    if ((rc = read(fd, buf, sizeof(buf) - 1)) == -1) {
+    if ((rc = read(fd, buf, sizeof(buf) - 1)) == -1 || rc == 0) {
       perror("disconnected");
       if (errno == EAGAIN || errno == EINTR)
 	continue;
