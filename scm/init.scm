@@ -123,7 +123,8 @@
 (require-custom "im-custom.scm")
 (load-modules)
 
-(uim-notify-load (symbol->string notify-agent))
+(if (symbol-bound? 'uim-notify-load)
+    (uim-notify-load (symbol->string notify-agent)))
 
 (or (getenv "LIBUIM_VANILLA")
     (load-user-conf)
