@@ -40,9 +40,9 @@ pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
 		uim-util.h plugin.h \
 		uim-helper.h uim-im-switcher.h \
 		uim-custom.h
-if NOTIFY
+# Install even if !NOTIFY since plugins will need this to use
+# uim_notify_{info,fatal}().  -- YamaKen 2008-02-12
 pkginclude_HEADERS += uim-notify.h
-endif
 
 libuim_la_SOURCES = \
 		uim-internal.h uim-error.c uim.c \
