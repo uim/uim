@@ -203,6 +203,8 @@ libexec_PROGRAMS = uim-helper-server
 
 uim_helper_server_LIBS =  
 uim_helper_server_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
+# uim-notify workaround for uim-error.c combined with non-libuim program
+uim_helper_server_CPPFLAGS += -DUIM_NON_LIBUIM_PROG
 uim_helper_server_CFLAGS =
 uim_helper_server_SOURCES = uim-helper.c uim-helper-server.c uim-error.c
 uim_helper_server_LDADD = $(top_builddir)/replace/libreplace.la

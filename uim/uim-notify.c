@@ -208,6 +208,13 @@ uim_notify_fatal(const char *msg_fmt, ...)
   return agent->notify_fatal(msg);
 }
 
+/* Low stack-consumption version of uim_notify_fatal(). */
+int
+uim_notify_fatal_raw(const char *msg)
+{
+  return agent->notify_fatal(msg);
+}
+
 /*
  * Scheme interfaces
  */
@@ -346,17 +353,25 @@ uim_notify_stderr_quit(void)
   return;
 }
 
-/* FIXME: accept extra args */
 static int
 uim_notify_stderr_info(const char *msg)
 {
-  return fprintf(stderr, "uim [Info]: %s\n", msg);
+  fputs("libuim: [info] ", stderr);
+  fputs(msg, stderr);
+  fputs("\n", stderr);
+
+  return UIM_TRUE;
 }
 
-/* FIXME: accept extra args */
 static int
 uim_notify_stderr_fatal(const char *msg)
 {
-  return fprintf(stderr, "uim [Fatal]: %s\n", msg);
-}
+  /* To reduce stack consumption on hard situations such as memory
+   * exhaustion, printf()s with indirect directives are intentionally
+   * avoided here.  -- YamaKen 2008-02-11 */
+  fputs("libuim: [fatal] ", stderr);
+  fputs(msg, stderr);
+  fputs("\n", stderr);
 
+  return UIM_TRUE;
+}

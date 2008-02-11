@@ -43,7 +43,7 @@
 
 #include "uim.h"
 #include "uim-internal.h"
-#if 0 /* FIXME: temporarily disabled -- YamaKen 2008-01-15 */
+#if UIM_USE_NOTIFY && !UIM_NON_LIBUIM_PROG
 #include "uim-notify.h"
 #endif
 
@@ -51,6 +51,9 @@
 #ifndef EX_SOFTWARE
 #define EX_SOFTWARE 70
 #endif
+
+#define ERRMSG_UIM_HAS_BEEN_DISABLED					\
+  "All functionality has been disabled to save user application data."
 
 static void print_caught_error(void);
 
@@ -77,23 +80,32 @@ static void
 print_caught_error(void)
 {
   if (err_msg) {
-#if 0 /* FIXME: temporarily disabled -- YamaKen 2008-01-15 */
-    /* Since this function will also be called on hard situations such
-     * as memory exhaustion, this uim_notify_fatal() call need a
-     * careful review. I'll do it until uim 1.5.0.
-     *   -- YamaKen 2008-01-15 */
-    uim_notify_fatal(err_msg); /* XXX: stdout messges will be duplicated */
-#else
+    /* Print the error to stderr first. */
     fputs("libuim: ", stderr);
     if (fatal_errored)
-      fputs("fatal error: ", stderr);
+      fputs("[fatal] ", stderr);
     fputs(err_msg, stderr);
     fputs("\n", stderr);
     if (fatal_errored) {
-      fputs("libuim: all functionality has been disabled to save user application data", stderr);
+      fputs("libuim: " ERRMSG_UIM_HAS_BEEN_DISABLED, stderr);
       fputs("\n", stderr);
     }
-#endif
+
+    /* And notify user of it via uim-notify in addition to the stderr msg. */
+#if UIM_USE_NOTIFY && !UIM_NON_LIBUIM_PROG
+    /* Since this function will also be called on hard situations such
+     * as memory exhaustion, these uim_notify_*() calls may be failed
+     * to notify user of the error, due to the memory shortage.
+     *   -- YamaKen 2008-02-11 */
+
+    /* XXX: stderr messges will be duplicated */
+    if (fatal_errored) {
+      uim_notify_fatal_raw(err_msg);
+      uim_notify_fatal_raw(ERRMSG_UIM_HAS_BEEN_DISABLED);
+    } else {
+      uim_notify_info(err_msg);
+    }
+#endif  /* UIM_USE_NOTIFY */
   }
 }
 
