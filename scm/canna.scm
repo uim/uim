@@ -647,7 +647,7 @@
 	    (if (and lst
 	    	     (not (null? (cdr lst))))
 		(set! state (car (cdr lst)))
-		(if (not (null? rorate-list))
+		(if (not (null? rotate-list))
 		    (set! state (canna-rotate-transposing-alnum-type
 				 (canna-context-transposing-type cc)
 				 (car rotate-list))))))
