@@ -18,6 +18,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
  canna.scm canna-custom.scm canna-key-custom.scm \
+ sj3.scm sj3-custom.scm sj3-key-custom.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
  mana.scm mana-custom.scm mana-key-custom.scm \
@@ -48,6 +49,9 @@ if ANTHY_UTF8
 endif
 if CANNA
   module_names += "canna"
+endif
+if SJ3
+  module_names += "sj3"
 endif
 if MANA
   module_names += "mana"

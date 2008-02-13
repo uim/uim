@@ -81,6 +81,14 @@ if CANNA
   libuim_canna_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
+if SJ3
+uim_plugin_LTLIBRARIES += libuim-sj3.la
+libuim_sj3_la_SOURCES = sj3.c
+libuim_sj3_la_LIBADD = @SJ3_LIBS@ libuim.la
+libuim_sj3_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_sj3_la_CPPFLAGS = -I$(top_srcdir) @SJ3_CFLAGS@
+endif
+
 if ANTHY
 if ENABLE_ANTHY_STATIC
   libuim_la_SOURCES += anthy.c

@@ -166,6 +166,22 @@ AC_ARG_WITH(canna,
 	use_canna="no"
 ])
 
+# *********************
+# *** Tests for SJ3 ***
+# *********************
+AC_ARG_WITH(sj3,
+	AS_HELP_STRING([--with-sj3], [Build with libsj3lib.a
+					    @<:@default=no@:>@]),
+	[
+	if test "x$with_sj3" = "xyes"; then
+	        PKG_CHECK_MODULES(SJ3, sj3lib >= 2.0.1.21, use_sj3="yes",use_sj3="no")
+	else
+		use_sj3="no"
+	fi
+	],[
+	        PKG_CHECK_MODULES(SJ3, sj3lib >= 2.0.1.21, use_sj3="yes",use_sj3="no")
+])
+
 # ***********************
 # *** Tests for Mana ***
 # ***********************
@@ -969,6 +985,7 @@ AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(ANTHY_UTF8, test x$use_anthy_utf8 = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
+AM_CONDITIONAL(SJ3, test x$use_sj3 = xyes)
 AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
 AM_CONDITIONAL(SKK, true)
@@ -1536,6 +1553,7 @@ Configure Result :
    Anthy           : ${use_anthy}
    Anthy (UTF-8)   : ${use_anthy_utf8}
    Canna           : ${use_canna}
+   SJ3             : ${use_sj3}
    Mana            : ${use_mana}
    PRIME           : ${use_prime}
    m17n-lib        : ${use_m17nlib}

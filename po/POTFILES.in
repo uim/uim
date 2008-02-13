@@ -50,6 +50,8 @@ scm/pyload.scm
 scm/scim.scm
 scm/skk-custom.scm
 scm/skk-key-custom.scm
+scm/sj3-custom.scm
+scm/sj3-key-custom.scm
 scm/tcode.scm
 scm/trycode.scm
 scm/tutcode-custom.scm
