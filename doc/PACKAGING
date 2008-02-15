@@ -1,0 +1,29 @@
+Notes for Packagers and System Integrators
+==========================================
+
+- The option "--enable-debug" and/or "--enable-backtrace" makes uim
+  (in accurately, underlying SigScheme interpreter) quite
+  heavy. Please keep them unspecified for normal library
+
+- Use the bundled SigScheme, and do not depend on external SigScheme
+  package. Since the SigScheme interpreter is completely embedded into
+  libuim without linking to libsscm, and exposing no
+  SigScheme-specific symbols regardless of environment-dependent
+  symbol exportation control existence such as -export-symbols of
+  libtool or version script of ld, no conflict with libsscm occurs
+
+- libuim links to libgcroots although SigScheme is embedded into
+  libuim. Although libgcroots is also bundled in uim, it should be
+  managed as a separated package since both libsscm and libuim which
+  provided by separated package depends on it. Add
+  '--with-libgcroots=installed' to configure options for uim to
+  disable build and install of the bundled version of libgcroots
+
+- libuim ABI and so libtool-version has been updated due to the GC
+  protection API change which required to fix the GC problem
+
+- For uim-m17nlib, the command 'uim-m17nlib-relink-icons' to import
+  icons from m17n-db is provided. Run it when m17n-db has been
+  updated. Whether making the command itself available for users or
+  just use it as post-package-install script is the system
+  integrator's choice

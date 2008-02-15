@@ -103,6 +103,4 @@ developers.
   as static and wrapped into uim-scm.c by direct inclusion rather than linked
   via public symbols. After elaboration of uim-scm API, the Scheme interpreter
   implementation can be switched to another one such as uim-scm-scheme48.c or
-  uim-scm-gauche.c. But *.[hc] under uim/ and *.scm are still depending on
-  SIOD-specific (and emulated by SigScheme) features and behaviors in several
-  ways.
+  uim-scm-gauche.c.

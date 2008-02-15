@@ -1,0 +1,75 @@
+Environment variables for uim
+=============================
+
+libuim accepts some enviroment variables mainly for debugging purpose.
+
+
+- LIBUIM_USER_SCM_FILE
+
+  This variable takes a file path as a value. If this variable is
+  defined, uim reads the file as user customization file instead of
+  ~/.uim
+
+- LIBUIM_SCM_FILES
+
+  This variable takes a directory path as a value. If this variable is
+  defined, uim add the value to the search path of .scm files.
+
+- LIBUIM_SYSTEM_SCM_FILES
+
+  This variable takes a directory path as a value. If this variable is
+  defined, uim add the value to the search path of .scm files provided
+  by underlying Scheme interpreter (i.e. SigScheme libraries).
+
+- LIBUIM_PLUGIN_LIB_DIR
+
+  This variable takes a directory path as a value. If this variable is
+  defined, uim add the value to the search path of plugin files.
+
+- LIBUIM_VERBOSE
+
+  This variable takes a number as a value. 0-10 can be specified. If
+  LIBUIM_VERBOSE is greater than or equal to 5, uim shows backtrace
+  when error occured.
+
+- LIBUIM_VANILLA
+
+  This variable takes an integer value. uim changes its behavior as
+  follows if variable is defined.
+
+  * LIBUIM_VANILLA=2 : vanilla + toppings
+
+    Disable ~/.uim, user customs and lazy loading, but enable loading
+    modules.
+
+  * LIBUIM_VANILLA=1 : pure vanilla
+
+    Disable ~/.uim, user customs, lazy loading, loading modules.
+
+  * undefined : fully flavored
+
+    Enable ~/.uim, user customs, lazy loading if required, and loading
+    modules.
+
+- LIBUIM_ENABLE_EMERGENCY_KEY
+
+  If this variable is set to 1, the 'emergency key' to toggle these 2
+  modes is enabled.
+
+  * Normal mode
+
+    Key inputs are processed by uim.
+
+  * Emergency mode
+
+    Key inputs are bypassed to application without being processed by uim.
+
+  The emergency key is currently hardcoded to "<Shift>backspace".
+
+- UIM_IM_ENGINE
+
+  This obsolete variable takes an input method name as a value. The
+  specified IM is selected as default IM. This variable is purely
+  provided for debugging purpose and takes effect if and only if
+  --enable-debug option is specified at configure time. The term 'IM
+  engine' is not appropriate for current uim design.

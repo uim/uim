@@ -2,11 +2,13 @@
 COMPATIBILITY       Tracks API/ABI compatibility change
 CUSTOM              Usage of uim-custom API for developers
 DOT-UIM             Usage of the user customization file
+ENV                 Environment variables
 HELPER-CANDWIN      Protocol between candidatewindow apps and uim-xim
 HELPER-PROTOCOL     Description of the helper message protocol 
 KEY                 KEY customizationg guide
+PACKAGING           Notes for packagers and system integrators
 PLUGIN              Description of the plugin
-RELEASING           Release procedure (obsolete)
+RELEASING           Release procedure
 UIM-SCM             Usage of uim-scm API for developers
 UIM-SH              How to use uim-sh to debug interactively
 UNIT-TEST           usage of the unit testing framework for uim for developers

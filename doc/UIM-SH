@@ -1,16 +1,39 @@
 uim-sh
+======
 
- There is uim interactive shell for debugging, batch processing and
- serving as generic inferior process.
+uim provides an interactive shell for debugging, batch processing and
+serving as generic inferior process.
+
 
 Usage
- uim-sh [options]
-  -b        batch mode. suppress shell prompts
-  -B        strict batch mode, implies -b. suppress shell prompts and
-            evaluated results
-  -h        show help
+-----
+
+----------------------------------------------------------------
+ uim-sh [options] [file [arg ...]]
+  -b
+  --batch                 batch mode. suppress shell prompts
+  -B
+  --strict-batch          strict batch mode, implies -b. suppress shell prompts
+                          and evaluated results
+  -r <name>
+  --require-module <name> require module
+  --editline              require editline module for Emacs-like line editing
+  -e <expr>
+  --expression <expr>     evaluate <expr> (after loading the file, and disables
+                          'main' procedure of it)
+  -V
+  --version               show software version
+  -h
+  --help                  show this help
+  file                    absolute path or relative to system scm directory
+  arg ...                 string argument(s) for 'main' procedure of the file
+----------------------------------------------------------------
+
 
 Examples
+--------
+
+----------------------------------------------------------------
  $ uim-sh
  uim> (car '(foo bar))
  foo
@@ -22,8 +45,12 @@ Examples
  ()
  uim> ^D
  $
+----------------------------------------------------------------
+
 
 Debugging with Emacs
+--------------------
+
  1. Add following form to your .emacs
 
   (setq scheme-program-name "uim-sh")
