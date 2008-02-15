@@ -75,33 +75,11 @@
 (define (sj3-lib-get-nr-candidates sc-ctx seg)
   (sj3-get-nr-douon
    (car (list-ref sc-ctx seg)))) ;; yomi
-(define (japanese-split-euc-kana str)
-  (define kana-table
-    (append (apply append (map cdar ja-kana-hiragana-rule))
-            (apply append (map cadr ja-kana-hiragana-rule))))
-  (let loop ((str str)
-             (rest '()))
-    (cond ((equal? str "")
-           (if (null? rest)
-               (list "")
-               (reverse rest)))
-          ((< (string-length str) 2)
-           (loop "" (cons str rest)))
-          (else
-           (let ((len (string-length str))
-                 (word (substring str 0 2))) ;; XXX: assume 2byte euc
-             (if (find (lambda (x) (equal? x word)) kana-table)
-                 ;; put kana
-                 (loop (substring str 2 len) (cons word rest))
-                 ;; put unknown char (ascii?)
-                 ;; XXX: if char is unknown multibyte char,
-                 ;;      this process maybe crash next "string-append" step.
-                 (loop (substring str 1 len) (cons (substring str 0 1) rest))))))))
 (define (sj3-lib-resize-segment sc seg cnt)
   (let ((sc-ctx (sj3-context-sc-ctx sc)))
     (cond ((< cnt 0) ;; shrink segment
            (let* ((str (car (list-ref sc-ctx seg)))
-                  (kana-list (japanese-split-euc-kana str))
+                  (kana-list (reverse (string-to-list str)))
                   (left  (apply string-append (take kana-list (+ (length kana-list) cnt))))
                   (right (apply string-append (take-right kana-list (* cnt -1))))
                   (left-douon (sj3-getdouon left))
@@ -131,7 +109,7 @@
           ((and (< 0 cnt) ;; extend segment
                 (< (+ seg 1) (length sc-ctx)))
            (let* ((right-str (car (list-ref sc-ctx (+ seg 1))))
-                  (kana-list (japanese-split-euc-kana right-str))
+                  (kana-list (reverse (string-to-list right-str)))
                   (left (string-append (car (list-ref sc-ctx seg)) (car kana-list)))
                   (right (apply string-append (cdr kana-list)))
                   (left-douon (sj3-getdouon left))
@@ -163,7 +141,7 @@
         (let ((entry (list-ref douon delta)))
           (if (= 2 (length entry))
               (sj3-lib-gakusyuu (list-ref entry 1)))))))
-(define (sj3-lib-reset-conversion sc)
+(define (sj3-lib-reset-conversion sc-ctx)
   #f)
 
 
