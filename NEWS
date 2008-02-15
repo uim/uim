@@ -1,43 +1,127 @@
 Overview of changes from 1.4.x to 1.5.0-alpha
 ==
 * New features
+
+  - uim-sj3 (new IM)
+    A Japanese multi-segment input method
+
+  - uim-elatin (new IM)
+    Emacs-style Latin characters input method
+
+  - uim-look (new IM)
+    Dictionary-based completion input method
+
+  - uim-anthy-utf8 (new IM)
+    UTF-8 -based uim-anthy
+
+  - uim-tutcode
+    * Updated the composition table
+    * Bushu composition
+    * Mazegaki conversion with learning capability
+    * Candidate window support
+    * Commit by label key
+    * Dvorak keyboard support
+
+  - uim-trycode
+    * Updated the composition table to 2007-12-10 version
+
+  - uim-skk
+    * 'look' -based completion
+    * IPv6 skkserver support
+
+  - uim-byeoru
+    * 2-beol layout which works like MS-Windows IME (ChangBeom Yoon)
+
+  - uim-m17nlib
+    * 'uim-m17nlib-relink-icons' command to import icons from m17n-db
+
+  - Qt4 bridge (experimental)
+
+  - GTK+ bridge
+  - Qt3 bridge
+  - XIM bridge
+    * Japanese kana-keyboard input hack to distinguish 'kana_RO' key
+      and backslash key
+
+  - uim-notify (experimental)
+    uim to user message notification system
+
+  - Emergency disablement of all uim functionality on fatal error to
+    protect user application data
+
   - uim-sh
-    - Accept script file and arguments for SRFI-22 'main' procedure
+    * Accept script file and arguments for SRFI-22 'main' procedure
       after uim-sh options
-    - Add --require-module option (-r for short)
-    - Add --expression option (-e for short)
-    - Add --version option (-V for short)
+    * --require-module option (-r for short)
+    * --expression option (-e for short)
+    * --version option (-V for short)
 
 * Fixed
-  - uim Scheme library
-    - Fix fullwidth middle dot in halfwidth katakana table for
-      Japanese kana-keyboard
+  - uim-skk
+    * Fix showing okuri-ari word with an annotation
+    * Don't add preedit-cursor when skk-show-cursor-on-preedit? is #f
 
-  - uim-fep
-    - Fix the unupdated IM-name of the status line on IM-switching by
-      an external IM switcher
+  - uim-tutcode
+    * Fix to be able to select URL candidate at Firefox URL field
+
+  - uim-tcode
+    * Fix composition rules ([uim-ja 29])
+
+  - uim-m17nlib
+    * Fix opening all of registered m17n IM at startup unnecessarily
+    * Fix listing incomplete IMs
+
+  - uim-scim
+    * Fix compilation failure
+
+  - Japanese composition table
+    * Fix some rules
+    * Fix fullwidth middle dot in halfwidth katakana table for
+      Japanese kana-keyboard
+    * Replace fullwidth yen sign for romaji-halfwidth-kana-mode and
+      alphanumeric-mode since ordinary Japanese users just expect to
+      input character code 134 rather than yen sign symbol
 
   - uim-sh
-    - Fix infinite loop on a non-recoverable read error such as
+    * Fix infinite loop on a non-recoverable read error such as
       non-ASCII char in token on a non-Unicode port
-    - Fix broken editline feature by SIOD dependencies
-    - Fix EOF (^d) ignorance on editline feature is enabled
-    - Fix ignorance of multiple expressions on a line on editline
+    * Fix broken editline feature by SIOD dependencies
+    * Fix EOF (^d) ignorance on editline feature is enabled
+    * Fix ignorance of multiple expressions on a line on editline
       feature is enabled
-    - Fix read error on multi-line expression such as
+    * Fix read error on multi-line expression such as
       "(define\nfoo\n3)" on editline feature is enabled
-    - Fix pseudo -r (require module) option for editline feature with
+    * Fix pseudo -r (require module) option for editline feature with
       real require-module
 
+  - GTK+ bridge
+    * Fix token buffer usage of X11 Compose
+    * Fix freeing strings allocated by glib
+    * Fix broken gtk.immodules installation depending on GTK+ location
+
+  - Qt3 bridge
+  - XIM bridge
+    * Fix token buffer usage of X11 Compose
+
+  - uim-fep
+    * Fix the unupdated IM-name of the status line on IM-switching by
+      an external IM switcher
+    * Fix hardcoded temporary directory location
+
   - uim.el
-    - Fix incorrect handling of the entry of function-key-map
-    - Fix cursor position after inputting characters by uim-input-pad-ja
+    * Fix incorrect handling of the entry of function-key-map
+    * Fix cursor position after inputting characters by uim-input-pad-ja
       and calling undo command
-    - Support event-apply-*-modifier
-    - Support delete-selection-mode
-    - Support Emacs-23.x experimentally
-    - Support shifted-motion-keys-select-region feature of XEmacs
-    - Support the commands terminated by help-char on XEmacs
+    * Support event-apply-*-modifier
+    * Support delete-selection-mode
+    * Support Emacs-23.x experimentally
+    * Support shifted-motion-keys-select-region feature of XEmacs
+    * Support the commands terminated by help-char on XEmacs
+
+* Others
+  - Split libuim-scm off from libuim
+  - Various API and ABI changes (see doc/COMPATIBILITY)
+
 
 Overview of changes from 1.4.0-beta to 1.4.0
 ==
