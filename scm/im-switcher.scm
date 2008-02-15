@@ -42,10 +42,14 @@
     (anthy  . "A")
     (canna  . "C")
     (mana   . "M")
+    (sj3    . "3")
     (skk    . "S")
     (tcode  . "T")
+    (tutcode . "U")
     (byeoru . "B")
-    (anthy-utf8 . "A")))
+    (anthy-utf8 . "A")
+    (elatin . "E")
+    (look   . "L")))
 
 (define imsw-default-iconic-label "IM")
 
