@@ -30,6 +30,7 @@
 
 */
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,7 +53,7 @@ struct uim_sj3_error {
 static uim_lisp
 uim_sj3_make_error(char *error)
 {
-  return uim_scm_cons(uim_scm_make_symbol("error"), uim_scm_make_symbol(error));
+  return CONS(MAKE_SYM("error"), MAKE_SYM(error));
 }
 
 #define uim_sj3_server_down_error() uim_sj3_make_error("*SJ3-SERVER-DOWN-ERROR*")
@@ -62,13 +63,19 @@ uim_sj3_make_error(char *error)
 static uim_lisp
 uim_sj3_select_error(int errno, const struct uim_sj3_error *error)
 {
+  uim_lisp ret_ = uim_scm_null();
 
   while (error->error != NULL) {
-    if (errno == error->errno)
-      return uim_sj3_make_error(error->error);
+    if (errno & error->errno)
+      ret_ = CONS(MAKE_SYM(error->error), ret_);
     error++;
   }
-  return uim_sj3_internal_error();
+
+  if (NULLP(ret_))
+    return uim_sj3_internal_error();
+
+  return ret_ = CONS(MAKE_SYM("error"),
+		     uim_scm_callf("reverse", "o", ret_));
 }
 
 
@@ -133,7 +140,7 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
 
   for (i = 0; i < dict_num; i++) {
     dict_list[i] = strdup(REFER_C_STR(uim_scm_car(dict_list_)));
-    dict_list_ = uim_scm_cdr(dict_list_);
+    dict_list_ = CDR(dict_list_);
   }
 
   ret = sj3_open_with_list(sname, uname, dict_num, dict_list, err_num, err_index);
@@ -184,7 +191,7 @@ const static struct uim_sj3_error uim_sj3_close_error[] = {
 };
 
 static uim_lisp
-uim_sj3_close()
+uim_sj3_close(void)
 {
   int ret;
 
@@ -449,7 +456,7 @@ uim_sj3_syoukyo(uim_lisp yomi_, uim_lisp kanji_, uim_lisp hinsi_)
 }
 
 static uim_lisp
-uim_sj3_lockserv()
+uim_sj3_lockserv(void)
 {
   int ret;
 
@@ -465,7 +472,7 @@ uim_sj3_lockserv()
 }
 
 static uim_lisp
-uim_sj3_unlockserv()
+uim_sj3_unlockserv(void)
 {
   int ret;
 
