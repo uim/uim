@@ -44,7 +44,9 @@
 ;; canna emulating functions
 ;;
 (define (sj3-lib-init server)
-  (sj3-lib-open server sj3-user))
+  (if sj3-use-remote-server?
+      (sj3-lib-open server sj3-user)
+      (sj3-lib-open "" sj3-user)))
 (define (sj3-lib-alloc-context)
   #t)
 (define (sj3-getdouon str)

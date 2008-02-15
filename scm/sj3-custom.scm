@@ -301,74 +301,23 @@
 ;; sj3-server-name
 ;;
 
-; TODO: support sj3server on other host
-(define sj3-server-name "")
-;(define sj3-server-name "localhost")
-;(define sj3-server-name "127.0.0.1")
-
-;; warning: must be defined before custom-preserved-sj3-server-name
-(define-custom 'custom-activate-sj3-server-name? #f
+(define-custom 'sj3-use-remote-server? #f
   '(sj3-advanced sj3server)
   '(boolean)
-  (N_ "Specify SJ3 server")
+  (N_ "Use value of use remote SJ3 server")
   (N_ "long description will be here."))
 
-(define-custom 'custom-preserved-sj3-server-name ""
+
+(define-custom 'sj3-server-name "localhost"
   '(sj3-advanced sj3server)
   '(string ".*")
   (N_ "SJ3 server name")
   (N_ "long description will be here."))
 
-;; activity dependency
-(custom-add-hook 'custom-preserved-sj3-server-name
-		 'custom-activity-hooks
-		 (lambda ()
-		   custom-activate-sj3-server-name?))
-
-(define custom-hook-get-sj3-server-name
-  (lambda ()
-    (set! custom-activate-sj3-server-name? sj3-server-name)
-    (set! custom-preserved-sj3-server-name (or sj3-server-name
-						 custom-preserved-sj3-server-name
-						 ""))))
-
-;; decode #f from sj3-server-name
-(custom-add-hook 'custom-activate-sj3-server-name?
-		 'custom-get-hooks
-		 custom-hook-get-sj3-server-name)
 (custom-add-hook 'sj3-server-name
-		 'custom-get-hooks
-		 custom-hook-get-sj3-server-name)
-
-(define custom-hook-set-sj3-server-name
-  (lambda ()
-    (set! sj3-server-name
-	  (and custom-activate-sj3-server-name?
-	       custom-preserved-sj3-server-name))))
-
-;; encode #f into sj3-server-name
-(custom-add-hook 'custom-activate-sj3-server-name?
-		 'custom-set-hooks
-		 custom-hook-set-sj3-server-name)
-(custom-add-hook 'custom-preserved-sj3-server-name
-		 'custom-set-hooks
-		 custom-hook-set-sj3-server-name)
-
-(define custom-hook-literalize-preserved-sj3-server-name
-  (lambda ()
-    (string-append
-     "(define custom-preserved-sj3-server-name "
-     (custom-value-as-literal 'custom-preserved-sj3-server-name)
-     ")\n"
-     "(define sj3-server-name "
-     (if sj3-server-name
-	 (string-append "\"" sj3-server-name "\"")
-	 "#f")
-     ")")))
-
-(custom-add-hook 'custom-preserved-sj3-server-name
-		 'custom-literalize-hooks
-		 custom-hook-literalize-preserved-sj3-server-name)
+                 'custom-activity-hooks
+                 (lambda ()
+                   sj3-use-remote-server?))
 
 (define-custom 'sj3-user (getenv "USER")
   '(sj3-advanced sj3server)
