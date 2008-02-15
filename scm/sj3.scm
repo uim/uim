@@ -76,15 +76,11 @@
   (sj3-get-nr-douon
    (car (list-ref sc-ctx seg)))) ;; yomi
 (define (sj3-lib-resize-segment sc seg cnt)
-  (define (split-kana str)
-    (let ((kana (reverse (string-to-list str))))
-      (if (null? kana)
-            (list "")
-            kana)))
   (let ((sc-ctx (sj3-context-sc-ctx sc)))
-    (cond ((< cnt 0) ;; shrink segment
+    (cond ((and (< cnt 0) ;; shrink segment
+                (< 1 (length (string-to-list (car (list-ref sc-ctx seg))))))
            (let* ((str (car (list-ref sc-ctx seg)))
-                  (kana-list (split-kana str))
+                  (kana-list (reverse (string-to-list str)))
                   (left  (apply string-append (take kana-list (+ (length kana-list) cnt))))
                   (right (apply string-append (take-right kana-list (* cnt -1))))
                   (left-douon (sj3-getdouon left))
@@ -111,10 +107,11 @@
                 sc
                 (append not-edited-head edited-head edited-tail not-edited-tail)))
              #t))
-          ((and (< 0 cnt) ;; extend segment
-                (< (+ seg 1) (length sc-ctx)))
+          ((and (< 0 cnt) ;; stretch segment
+                (< (+ seg 1) (length sc-ctx))
+                (< 0 (length (string-to-list (car (list-ref sc-ctx (+ seg 1)))))))
            (let* ((right-str (car (list-ref sc-ctx (+ seg 1))))
-                  (kana-list (split-kana right-str))
+                  (kana-list (reverse (string-to-list right-str)))
                   (left (string-append (car (list-ref sc-ctx seg)) (car kana-list)))
                   (right (apply string-append (cdr kana-list)))
                   (left-douon (sj3-getdouon left))
