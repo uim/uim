@@ -30,7 +30,12 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * IPv6 skkserver support
 
   - uim-byeoru
-    * 2-beol layout which works like MS-Windows IME (ChangBeom Yoon)
+    * Korean-Chinese dictionary newly includes word table in addition to
+      character information
+    * Added a 2-beol layout which works like MS-Windows IME, i.e.,
+      it maps an undefined shifted key to a jamo rather than an alphabet
+      (ChangBeom Yoon)
+    * a 2-beol layout can enter a compound jongseong
 
   - uim-m17nlib
     * 'uim-m17nlib-relink-icons' command to import icons from m17n-db
