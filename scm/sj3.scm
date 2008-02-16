@@ -78,57 +78,47 @@
   (sj3-get-nr-douon
    (car (list-ref sc-ctx seg)))) ;; yomi
 (define (sj3-lib-resize-segment sc seg cnt)
-  (let ((sc-ctx (sj3-context-sc-ctx sc)))
+  (let* ((sc-ctx (sj3-context-sc-ctx sc))
+         (kana-str (car (list-ref sc-ctx seg)))
+         (kana-list (reverse (string-to-list kana-str))))
     (cond ((and (< cnt 0) ;; shrink segment
-                (< 1 (length (string-to-list (car (list-ref sc-ctx seg))))))
-           (let* ((str (car (list-ref sc-ctx seg)))
-                  (kana-list (reverse (string-to-list str)))
-                  (left  (apply string-append (take kana-list (+ (length kana-list) cnt))))
-                  (right (apply string-append (take-right kana-list (* cnt -1))))
-                  (left-douon (sj3-getdouon left))
-                  (right-douon (sj3-getdouon right)))
-             ;; move char from left segment strings(len = cnt) to right segment.
-             ;; in prolog like expression,
-             ;; [ not-edited-head ... | edited-head  | edited-tail    | not-edited-tail ...]
-             ;;                         ^seg
-             ;;  -> [not-edited ...   | rest | [[cnt | left] | rest ] | not-edited-tail ...]
-             (let* ((not-edited-head (if (< 0 seg)
-                                         (take sc-ctx seg)
-                                         '()))
-                    (not-edited-tail (if (< (+ seg 2) (length sc-ctx))
-                                         (take-right sc-ctx (+ seg 1))
-                                         '()))
-                    ;; re-costruct sc-ctx
-                    (edited-head (list (append (list left) (car left-douon))))
-                    (edited-tail (if (< (length sc-ctx) (+ seg 2))
-                                     (list (append (list right) (car right-douon)))
-                                     (let* ((right-str (string-append right (car (list-ref sc-ctx (+ seg 1)))))
-                                            (right-str-douon (sj3-getdouon right-str)))
-                                       (list (append (list right-str) (car right-str-douon)))))))
-               (sj3-context-set-sc-ctx!
-                sc
-                (append not-edited-head edited-head edited-tail not-edited-tail)))
-             #t))
+                (< 1 (length kana-list)))
+           (let* ((not-edited-head (if (< 0 seg)
+                                       (take sc-ctx seg)
+                                       '()))
+                  (edited-head (list (list (apply string-append (drop-right kana-list (* -1 cnt))))))
+                  (edited-tail (if (= (+ 1 seg) (length sc-ctx)) ;; end of segments
+                                   (list (take-right kana-list (* -1 cnt)))
+                                   (let* ((next-char (car (take-right kana-list (* -1 cnt))))
+                                          (kana-next-str (car (list-ref sc-ctx (+ 1 seg)))))
+                                     (list (list (string-append next-char kana-next-str))))))
+                  (not-edited-tail (if (= (+ 1 seg) (length sc-ctx))
+                                       '()
+                                       (drop sc-ctx (+ seg 2)))))
+             (sj3-context-set-sc-ctx!
+              sc
+              (append not-edited-head edited-head edited-tail not-edited-tail)))
+           #t)
           ((and (< 0 cnt) ;; stretch segment
                 (< (+ seg 1) (length sc-ctx))
                 (< 0 (length (string-to-list (car (list-ref sc-ctx (+ seg 1)))))))
-           (let* ((right-str (car (list-ref sc-ctx (+ seg 1))))
-                  (kana-list (reverse (string-to-list right-str)))
-                  (left (string-append (car (list-ref sc-ctx seg)) (car kana-list)))
-                  (right (apply string-append (cdr kana-list)))
-                  (left-douon (sj3-getdouon left))
-                  (right-douon (sj3-getdouon right)))
-             (let* ((not-edited-head (if (< 0 seg)
-                                         (take sc-ctx seg)
-                                         '()))
-                    (not-edited-tail (if (< (+ seg 2) (length sc-ctx))
-                                         (take-right sc-ctx (+ seg 1))
-                                         '()))
-                    (edited-head (list (append (list left) (car left-douon))))
-                    (edited-tail (list (append (list right) (car right-douon)))))
-               (sj3-context-set-sc-ctx!
-                sc
-                (append not-edited-head edited-head edited-tail not-edited-tail))))
+           (let* ((next-str (car (list-ref sc-ctx (+ seg 1))))
+                  (next-kana-list (reverse (string-to-list next-str)))
+                  (not-edited-head (if (< 0 seg)
+                                       (take sc-ctx seg)
+                                       '()))
+                  (edited-head (list (list (apply string-append
+                                                  (append kana-list
+                                                          (take next-kana-list cnt))))))
+                  (edited-tail (if (= 1 (length next-kana-list))
+                                   '()
+                                   (list (list (apply string-append (drop next-kana-list cnt))))))
+                  (not-edited-tail (if (< (length sc-ctx) 2)
+                                       '()
+                                       (drop sc-ctx (+ 2 seg)))))
+             (sj3-context-set-sc-ctx!
+              sc
+              (append not-edited-head edited-head edited-tail not-edited-tail)))
            #t)
           (else
            #t))))
