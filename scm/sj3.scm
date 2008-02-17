@@ -62,24 +62,23 @@
 (define (sj3-get-nth-douon str nth)
   (let ((douon (sj3-getdouon str)))
     (car (list-ref douon nth))))
+(define (sj3-get-nth-yomi sc-ctx nth)
+  (car (list-ref sc-ctx nth)))
 (define (sj3-lib-get-nth-candidate sc-ctx seg nth)
-  (sj3-get-nth-douon
-   (car (list-ref sc-ctx seg)) ;; yomi
-   nth))
+  (sj3-get-nth-douon (sj3-get-nth-yomi sc-ctx seg) nth))
 (define (sj3-lib-release-context sc)
   #t)
 (define (sj3-lib-get-unconv-candidate sc-ctx seg-idx)
-  #f)
+  (sj3-get-nth-yomi sc-ctx seg-idx))
 (define (sj3-lib-get-nr-segments sc-ctx)
   (length sc-ctx))
 (define (sj3-get-nr-douon str)
   (length (sj3-getdouon str)))
 (define (sj3-lib-get-nr-candidates sc-ctx seg)
-  (sj3-get-nr-douon
-   (car (list-ref sc-ctx seg)))) ;; yomi
+  (sj3-get-nr-douon (sj3-get-nth-yomi sc-ctx seg)))
 (define (sj3-lib-resize-segment sc seg cnt)
   (let* ((sc-ctx (sj3-context-sc-ctx sc))
-         (kana-str (car (list-ref sc-ctx seg)))
+         (kana-str (sj3-get-nth-yomi sc-ctx seg))
          (kana-list (reverse (string-to-list kana-str))))
     (cond ((and (< cnt 0) ;; shrink segment
                 (< 1 (length kana-list)))
@@ -90,7 +89,7 @@
                   (edited-tail (if (= (+ 1 seg) (length sc-ctx)) ;; end of segments
                                    (list (take-right kana-list (* -1 cnt)))
                                    (let* ((next-char (car (take-right kana-list (* -1 cnt))))
-                                          (kana-next-str (car (list-ref sc-ctx (+ 1 seg)))))
+                                          (kana-next-str (sj3-get-nth-yomi sc-ctx (+ 1 seg))))
                                      (list (list (string-append next-char kana-next-str))))))
                   (not-edited-tail (if (= (+ 1 seg) (length sc-ctx))
                                        '()
@@ -101,8 +100,8 @@
            #t)
           ((and (< 0 cnt) ;; stretch segment
                 (< (+ seg 1) (length sc-ctx))
-                (< 0 (length (string-to-list (car (list-ref sc-ctx (+ seg 1)))))))
-           (let* ((next-str (car (list-ref sc-ctx (+ seg 1))))
+                (< 0 (length (string-to-list (sj3-get-nth-yomi sc-ctx (+ seg 1))))))
+           (let* ((next-str (sj3-get-nth-yomi sc-ctx (+ seg 1)))
                   (next-kana-list (reverse (string-to-list next-str)))
                   (not-edited-head (if (< 0 seg)
                                        (take sc-ctx seg)
@@ -130,7 +129,7 @@
           (else
            #f))))
 (define (sj3-lib-commit-segment sc-ctx seg delta)
-  (let ((douon (sj3-getdouon (car (list-ref sc-ctx seg)))))
+  (let ((douon (sj3-getdouon (sj3-get-nth-yomi sc-ctx seg))))
     (if (< delta (length douon))
         (let ((entry (list-ref douon delta)))
           (if (= 2 (length entry))
