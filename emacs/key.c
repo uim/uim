@@ -130,76 +130,374 @@ convert_keyname_e2u(const char *keyname)
 	return UKey_Eisu_Shift;
   else if (strcmp("eisu-toggle", keyname) == 0)
 	return UKey_Eisu_toggle;
-  else if (strcmp("f1", keyname) == 0)
-	return UKey_F1;
-  else if (strcmp("f2", keyname) == 0)
-	return UKey_F2;
-  else if (strcmp("f3", keyname) == 0)
-	return UKey_F3;
-  else if (strcmp("f4", keyname) == 0)
-	return UKey_F4;
-  else if (strcmp("f5", keyname) == 0)
-	return UKey_F5;
-  else if (strcmp("f6", keyname) == 0)
-	return UKey_F6;
-  else if (strcmp("f7", keyname) == 0)
-	return UKey_F7;
-  else if (strcmp("f8", keyname) == 0)
-	return UKey_F8;
-  else if (strcmp("f9", keyname) == 0)
-	return UKey_F9;
-  else if (strcmp("f10", keyname) == 0)
-	return UKey_F10;
-  else if (strcmp("f11", keyname) == 0)
-	return UKey_F11;
-  else if (strcmp("f12", keyname) == 0)
-	return UKey_F12;
-  else if (strcmp("f13", keyname) == 0)
-	return UKey_F13;
-  else if (strcmp("f14", keyname) == 0)
-	return UKey_F14;
-  else if (strcmp("f15", keyname) == 0)
-	return UKey_F15;
-  else if (strcmp("f16", keyname) == 0)
-	return UKey_F16;
-  else if (strcmp("f17", keyname) == 0)
-	return UKey_F17;
-  else if (strcmp("f18", keyname) == 0)
-	return UKey_F18;
-  else if (strcmp("f19", keyname) == 0)
-	return UKey_F19;
-  else if (strcmp("f20", keyname) == 0)
-	return UKey_F20;
-  else if (strcmp("f21", keyname) == 0)
-	return UKey_F21;
-  else if (strcmp("f22", keyname) == 0)
-	return UKey_F22;
-  else if (strcmp("f23", keyname) == 0)
-	return UKey_F23;
-  else if (strcmp("f24", keyname) == 0)
-	return UKey_F24;
-  else if (strcmp("f25", keyname) == 0)
-	return UKey_F25;
-  else if (strcmp("f26", keyname) == 0)
-	return UKey_F26;
-  else if (strcmp("f27", keyname) == 0)
-	return UKey_F27;
-  else if (strcmp("f28", keyname) == 0)
-	return UKey_F28;
-  else if (strcmp("f29", keyname) == 0)
-	return UKey_F29;
-  else if (strcmp("f30", keyname) == 0)
-	return UKey_F30;
-  else if (strcmp("f31", keyname) == 0)
-	return UKey_F31;
-  else if (strcmp("f32", keyname) == 0)
-	return UKey_F32;
-  else if (strcmp("f33", keyname) == 0)
-	return UKey_F33;
-  else if (strcmp("f34", keyname) == 0)
-	return UKey_F34;
-  else if (strcmp("f35", keyname) == 0)
-	return UKey_F35;
+  else if (strcmp("Caps_Lock", keyname) == 0)
+	return UKey_Caps_Lock;
+  else if (strcmp("Num_Lock", keyname) == 0)
+	return UKey_Num_Lock;
+  else if (strcmp("Scroll_Lock", keyname) == 0)
+	return UKey_Scroll_Lock;
+  else if (strcmp("Yen", keyname) == 0)
+	return UKey_Yen;
+  else if (strcmp("Multi_key", keyname) == 0)
+	return UKey_Multi_key;
+  else if (strcmp("Codeinput", keyname) == 0)
+	return UKey_Codeinput;
+  else if (strcmp("SingleCandidate", keyname) == 0)
+	return UKey_SingleCandidate;
+  else if (strcmp("MultipleCandidate", keyname) == 0)
+	return UKey_MultipleCandidate;
+  else if (strcmp("PreviousCandidate", keyname) == 0)
+	return UKey_PreviousCandidate;
+  else if (strcmp("Mode_switch", keyname) == 0)
+	return UKey_Mode_switch;
+  else if (strncmp("f", keyname, strlen("f")) == 0) {
+	keyname += strlen("f");
+	if (strcmp("1", keyname) == 0)
+	  return UKey_F1;
+	else if (strcmp("2", keyname) == 0)
+	  return UKey_F2;
+	else if (strcmp("3", keyname) == 0)
+	  return UKey_F3;
+	else if (strcmp("4", keyname) == 0)
+	  return UKey_F4;
+	else if (strcmp("5", keyname) == 0)
+	  return UKey_F5;
+	else if (strcmp("6", keyname) == 0)
+	  return UKey_F6;
+	else if (strcmp("7", keyname) == 0)
+	  return UKey_F7;
+	else if (strcmp("8", keyname) == 0)
+	  return UKey_F8;
+	else if (strcmp("9", keyname) == 0)
+	  return UKey_F9;
+	else if (strcmp("10", keyname) == 0)
+	  return UKey_F10;
+	else if (strcmp("11", keyname) == 0)
+	  return UKey_F11;
+	else if (strcmp("12", keyname) == 0)
+	  return UKey_F12;
+	else if (strcmp("13", keyname) == 0)
+	  return UKey_F13;
+	else if (strcmp("14", keyname) == 0)
+	  return UKey_F14;
+	else if (strcmp("15", keyname) == 0)
+	  return UKey_F15;
+	else if (strcmp("16", keyname) == 0)
+	  return UKey_F16;
+	else if (strcmp("17", keyname) == 0)
+	  return UKey_F17;
+	else if (strcmp("18", keyname) == 0)
+	  return UKey_F18;
+	else if (strcmp("19", keyname) == 0)
+	  return UKey_F19;
+	else if (strcmp("20", keyname) == 0)
+	  return UKey_F20;
+	else if (strcmp("21", keyname) == 0)
+	  return UKey_F21;
+	else if (strcmp("22", keyname) == 0)
+	  return UKey_F22;
+	else if (strcmp("23", keyname) == 0)
+	  return UKey_F23;
+	else if (strcmp("24", keyname) == 0)
+	  return UKey_F24;
+	else if (strcmp("25", keyname) == 0)
+	  return UKey_F25;
+	else if (strcmp("26", keyname) == 0)
+	  return UKey_F26;
+	else if (strcmp("27", keyname) == 0)
+	  return UKey_F27;
+	else if (strcmp("28", keyname) == 0)
+	  return UKey_F28;
+	else if (strcmp("29", keyname) == 0)
+	  return UKey_F29;
+	else if (strcmp("30", keyname) == 0)
+	  return UKey_F30;
+	else if (strcmp("31", keyname) == 0)
+	  return UKey_F31;
+	else if (strcmp("32", keyname) == 0)
+	  return UKey_F32;
+	else if (strcmp("33", keyname) == 0)
+	  return UKey_F33;
+	else if (strcmp("34", keyname) == 0)
+	  return UKey_F34;
+	else if (strcmp("35", keyname) == 0)
+	  return UKey_F35;
+  } else if (strcmp("Hangul", keyname) == 0)
+	  return UKey_Hangul;
+  else if (strncmp("Hangul_", keyname, strlen("Hangul_")) == 0) {
+	keyname += strlen("Hangul_");
+	if (strcmp("Start", keyname) == 0)
+	  return UKey_Hangul_Start;
+	else if (strcmp("End", keyname) == 0)
+	  return UKey_Hangul_End;
+	else if (strcmp("Hanja", keyname) == 0)
+	  return UKey_Hangul_Hanja;
+	else if (strcmp("Jamo", keyname) == 0)
+	  return UKey_Hangul_Jamo;
+	else if (strcmp("Romaja", keyname) == 0)
+	  return UKey_Hangul_Romaja;
+	else if (strcmp("Codeinput", keyname) == 0)
+	  return UKey_Hangul_Codeinput;
+	else if (strcmp("Jeonja", keyname) == 0)
+	  return UKey_Hangul_Jeonja;
+	else if (strcmp("Banja", keyname) == 0)
+	  return UKey_Hangul_Banja;
+	else if (strcmp("PreHanja", keyname) == 0)
+	  return UKey_Hangul_PreHanja;
+	else if (strcmp("PostHanja", keyname) == 0)
+	  return UKey_Hangul_PostHanja;
+	else if (strcmp("SingleCandidate", keyname) == 0)
+	  return UKey_Hangul_SingleCandidate;
+	else if (strcmp("MultipleCandidate", keyname) == 0)
+	  return UKey_Hangul_MultipleCandidate;
+	else if (strcmp("PreviousCandidate", keyname) == 0)
+	  return UKey_Hangul_PreviousCandidate;
+	else if (strcmp("Special", keyname) == 0)
+	  return UKey_Hangul_Special;
+  } else if (strncmp("Dead_", keyname, strlen("Dead_")) == 0) {
+	keyname += strlen("Dead_");
+	if (strcmp("Grave", keyname) == 0)
+	  return UKey_Dead_Grave;
+	else if (strcmp("Acute", keyname) == 0)
+	  return UKey_Dead_Acute;
+	else if (strcmp("Circumflex", keyname) == 0)
+	  return UKey_Dead_Circumflex;
+	else if (strcmp("Tilde", keyname) == 0)
+	  return UKey_Dead_Tilde;
+	else if (strcmp("Macron", keyname) == 0)
+	  return UKey_Dead_Macron;
+	else if (strcmp("Breve", keyname) == 0)
+	  return UKey_Dead_Breve;
+	else if (strcmp("Abovedot", keyname) == 0)
+	  return UKey_Dead_Abovedot;
+	else if (strcmp("Diaeresis", keyname) == 0)
+	  return UKey_Dead_Diaeresis;
+	else if (strcmp("Abovering", keyname) == 0)
+	  return UKey_Dead_Abovering;
+	else if (strcmp("Doubleacute", keyname) == 0)
+	  return UKey_Dead_Doubleacute;
+	else if (strcmp("Caron", keyname) == 0)
+	  return UKey_Dead_Caron;
+	else if (strcmp("Cedilla", keyname) == 0)
+	  return UKey_Dead_Cedilla;
+	else if (strcmp("Ogonek", keyname) == 0)
+	  return UKey_Dead_Ogonek;
+	else if (strcmp("Iota", keyname) == 0)
+	  return UKey_Dead_Iota;
+	else if (strcmp("VoicedSound", keyname) == 0)
+	  return UKey_Dead_VoicedSound;
+	else if (strcmp("SemivoicedSound", keyname) == 0)
+	  return UKey_Dead_SemivoicedSound;
+	else if (strcmp("Belowdot", keyname) == 0)
+	  return UKey_Dead_Belowdot;
+	else if (strcmp("Hook", keyname) == 0)
+	  return UKey_Dead_Hook;
+	else if (strcmp("Horn", keyname) == 0)
+	  return UKey_Dead_Horn;
+  } else if (strncmp("Kana_", keyname, strlen("Kana_")) == 0) {
+	keyname += strlen("Kana_");
+	if (strcmp("Fullstop", keyname) == 0)
+	  return UKey_Kana_Fullstop;
+	else if (strcmp("OpeningBracket", keyname) == 0)
+	  return UKey_Kana_OpeningBracket;
+	else if (strcmp("ClosingBracket", keyname) == 0)
+	  return UKey_Kana_ClosingBracket;
+	else if (strcmp("Comma", keyname) == 0)
+	  return UKey_Kana_Comma;
+	else if (strcmp("Conjunctive", keyname) == 0)
+	  return UKey_Kana_Conjunctive;
+	else if (strcmp("WO", keyname) == 0)
+	  return UKey_Kana_WO;
+	else if (strcmp("a", keyname) == 0)
+	  return UKey_Kana_a;
+	else if (strcmp("i", keyname) == 0)
+	  return UKey_Kana_i;
+	else if (strcmp("u", keyname) == 0)
+	  return UKey_Kana_u;
+	else if (strcmp("e", keyname) == 0)
+	  return UKey_Kana_e;
+	else if (strcmp("o", keyname) == 0)
+	  return UKey_Kana_o;
+	else if (strcmp("ya", keyname) == 0)
+	  return UKey_Kana_ya;
+	else if (strcmp("yu", keyname) == 0)
+	  return UKey_Kana_yu;
+	else if (strcmp("yo", keyname) == 0)
+	  return UKey_Kana_yo;
+	else if (strcmp("tsu", keyname) == 0)
+	  return UKey_Kana_tsu;
+	else if (strcmp("ProlongedSound", keyname) == 0)
+	  return UKey_Kana_ProlongedSound;
+	else if (strcmp("A", keyname) == 0)
+	  return UKey_Kana_A;
+	else if (strcmp("I", keyname) == 0)
+	  return UKey_Kana_I;
+	else if (strcmp("U", keyname) == 0)
+	  return UKey_Kana_U;
+	else if (strcmp("E", keyname) == 0)
+	  return UKey_Kana_E;
+	else if (strcmp("O", keyname) == 0)
+	  return UKey_Kana_O;
+	else if (strcmp("KA", keyname) == 0)
+	  return UKey_Kana_KA;
+	else if (strcmp("KI", keyname) == 0)
+	  return UKey_Kana_KI;
+	else if (strcmp("KU", keyname) == 0)
+	  return UKey_Kana_KU;
+	else if (strcmp("KE", keyname) == 0)
+	  return UKey_Kana_KE;
+	else if (strcmp("KO", keyname) == 0)
+	  return UKey_Kana_KO;
+	else if (strcmp("SA", keyname) == 0)
+	  return UKey_Kana_SA;
+	else if (strcmp("SHI", keyname) == 0)
+	  return UKey_Kana_SHI;
+	else if (strcmp("SU", keyname) == 0)
+	  return UKey_Kana_SU;
+	else if (strcmp("SE", keyname) == 0)
+	  return UKey_Kana_SE;
+	else if (strcmp("SO", keyname) == 0)
+	  return UKey_Kana_SO;
+	else if (strcmp("TA", keyname) == 0)
+	  return UKey_Kana_TA;
+	else if (strcmp("CHI", keyname) == 0)
+	  return UKey_Kana_CHI;
+	else if (strcmp("TSU", keyname) == 0)
+	  return UKey_Kana_TSU;
+	else if (strcmp("TE", keyname) == 0)
+	  return UKey_Kana_TE;
+	else if (strcmp("TO", keyname) == 0)
+	  return UKey_Kana_TO;
+	else if (strcmp("NA", keyname) == 0)
+	  return UKey_Kana_NA;
+	else if (strcmp("NI", keyname) == 0)
+	  return UKey_Kana_NI;
+	else if (strcmp("NU", keyname) == 0)
+	  return UKey_Kana_NU;
+	else if (strcmp("NE", keyname) == 0)
+	  return UKey_Kana_NE;
+	else if (strcmp("NO", keyname) == 0)
+	  return UKey_Kana_NO;
+	else if (strcmp("HA", keyname) == 0)
+	  return UKey_Kana_HA;
+	else if (strcmp("HI", keyname) == 0)
+	  return UKey_Kana_HI;
+	else if (strcmp("FU", keyname) == 0)
+	  return UKey_Kana_FU;
+	else if (strcmp("HE", keyname) == 0)
+	  return UKey_Kana_HE;
+	else if (strcmp("HO", keyname) == 0)
+	  return UKey_Kana_HO;
+	else if (strcmp("MA", keyname) == 0)
+	  return UKey_Kana_MA;
+	else if (strcmp("MI", keyname) == 0)
+	  return UKey_Kana_MI;
+	else if (strcmp("MU", keyname) == 0)
+	  return UKey_Kana_MU;
+	else if (strcmp("ME", keyname) == 0)
+	  return UKey_Kana_ME;
+	else if (strcmp("MO", keyname) == 0)
+	  return UKey_Kana_MO;
+	else if (strcmp("YA", keyname) == 0)
+	  return UKey_Kana_YA;
+	else if (strcmp("YU", keyname) == 0)
+	  return UKey_Kana_YU;
+	else if (strcmp("YO", keyname) == 0)
+	  return UKey_Kana_YO;
+	else if (strcmp("RA", keyname) == 0)
+	  return UKey_Kana_RA;
+	else if (strcmp("RI", keyname) == 0)
+	  return UKey_Kana_RI;
+	else if (strcmp("RU", keyname) == 0)
+	  return UKey_Kana_RU;
+	else if (strcmp("RE", keyname) == 0)
+	  return UKey_Kana_RE;
+	else if (strcmp("RO", keyname) == 0)
+	  return UKey_Kana_RO;
+	else if (strcmp("WA", keyname) == 0)
+	  return UKey_Kana_WA;
+	else if (strcmp("N", keyname) == 0)
+	  return UKey_Kana_N;
+	else if (strcmp("VoicedSound", keyname) == 0)
+	  return UKey_Kana_VoicedSound;
+	else if (strcmp("SemivoicedSound", keyname) == 0)
+	  return UKey_Kana_SemivoicedSound;
+  } else if (strncmp("Private", keyname, strlen("Private")) == 0) {
+	keyname += strlen("Private");
+	if (strcmp("1", keyname) == 0)
+	  return UKey_Private1;
+	else if (strcmp("2", keyname) == 0)
+	  return UKey_Private2;
+	else if (strcmp("3", keyname) == 0)
+	  return UKey_Private3;
+	else if (strcmp("4", keyname) == 0)
+	  return UKey_Private4;
+	else if (strcmp("5", keyname) == 0)
+	  return UKey_Private5;
+	else if (strcmp("6", keyname) == 0)
+	  return UKey_Private6;
+	else if (strcmp("7", keyname) == 0)
+	  return UKey_Private7;
+	else if (strcmp("8", keyname) == 0)
+	  return UKey_Private8;
+	else if (strcmp("9", keyname) == 0)
+	  return UKey_Private9;
+	else if (strcmp("10", keyname) == 0)
+	  return UKey_Private10;
+	else if (strcmp("11", keyname) == 0)
+	  return UKey_Private11;
+	else if (strcmp("12", keyname) == 0)
+	  return UKey_Private12;
+	else if (strcmp("13", keyname) == 0)
+	  return UKey_Private13;
+	else if (strcmp("14", keyname) == 0)
+	  return UKey_Private14;
+	else if (strcmp("15", keyname) == 0)
+	  return UKey_Private15;
+	else if (strcmp("16", keyname) == 0)
+	  return UKey_Private16;
+	else if (strcmp("17", keyname) == 0)
+	  return UKey_Private17;
+	else if (strcmp("18", keyname) == 0)
+	  return UKey_Private18;
+	else if (strcmp("19", keyname) == 0)
+	  return UKey_Private19;
+	else if (strcmp("20", keyname) == 0)
+	  return UKey_Private20;
+	else if (strcmp("21", keyname) == 0)
+	  return UKey_Private21;
+	else if (strcmp("22", keyname) == 0)
+	  return UKey_Private22;
+	else if (strcmp("23", keyname) == 0)
+	  return UKey_Private23;
+	else if (strcmp("24", keyname) == 0)
+	  return UKey_Private24;
+	else if (strcmp("25", keyname) == 0)
+	  return UKey_Private25;
+	else if (strcmp("26", keyname) == 0)
+	  return UKey_Private26;
+	else if (strcmp("27", keyname) == 0)
+	  return UKey_Private27;
+	else if (strcmp("28", keyname) == 0)
+	  return UKey_Private28;
+	else if (strcmp("29", keyname) == 0)
+	  return UKey_Private29;
+	else if (strcmp("30", keyname) == 0)
+	  return UKey_Private30;
+  } else if (strcmp("Shift_key", keyname) == 0)
+	return UKey_Shift_key;
+  else if (strcmp("Alt_key", keyname) == 0)
+	return UKey_Alt_key;
+  else if (strcmp("Control_key", keyname) == 0)
+	return UKey_Control_key;
+  else if (strcmp("Meta_key", keyname) == 0)
+	return UKey_Meta_key;
+  else if (strcmp("Super_key", keyname) == 0)
+	return UKey_Super_key;
+  else if (strcmp("Hyper_key", keyname) == 0)
+	return UKey_Hyper_key;
   else
 	return UKey_Other;
+
+  return UKey_Other;
 }
