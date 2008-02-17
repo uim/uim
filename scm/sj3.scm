@@ -50,15 +50,25 @@
 (define (sj3-lib-alloc-context)
   #t)
 (define (sj3-getdouon str)
-  (let ((douon (sj3-lib-getdouon str)))
-    (if (find (lambda (l)
-                (if (and (list? l)
-                         (equal? str (car l)))
-                    #t
-                    #f))
-              douon)
-        douon
-        (append douon (list (list str))))))
+  (define (make-map-from-kana-string str)
+    (map (lambda (x) (apply string-append x))
+         (apply zip (map (lambda (c)
+                           (ja-find-kana-list-from-rule ja-rk-rule-basic c))
+                         (reverse (string-to-list str))))))
+  (let ((douon (sj3-lib-getdouon str))
+        (kana-list (make-map-from-kana-string str)))
+    (define (find-douon str)
+      (find (lambda (l)
+              (and (list? l)
+                   (equal? str (car l))))
+            douon))
+    (append douon
+            (reverse (fold (lambda (kana-str e)
+                             (if (not (find-douon kana-str))
+                                 (cons (list kana-str) e)
+                                 e))
+                           '()
+                           kana-list)))))
 (define (sj3-get-nth-douon str nth)
   (let ((douon (sj3-getdouon str)))
     (car (list-ref douon nth))))
@@ -439,7 +449,7 @@
       (if (= rule sj3-input-rule-kana)
 	  (ja-make-kana-str
 	   (ja-make-kana-str-list
-	    (string-to-list 
+	    (string-to-list
 	     (string-append
 	      (string-append-map-ustr-former extract-kana preconv-str)
 	      (if convert-pending-into-kana?
