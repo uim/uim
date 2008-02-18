@@ -100,15 +100,10 @@ uim_sj3_open(uim_lisp sname_, uim_lisp uname_)
   char *uname = uim_strdup(REFER_C_STR(uname_));
   int ret;
 
-  if (!sname || !uname)
-    return uim_scm_f();
-
   ret = sj3_open(sname, uname);
 
-  if (!sname)
-    free(sname);
-  if (!uname)
-    free(uname);
+  free(sname);
+  free(uname);
 
   if (ret == 0) {
     uim_sj3_is_open = 1;
@@ -131,9 +126,6 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
   int ret;
   uim_lisp ret_;
 
-  if (!sname || !uname)
-    return uim_scm_f();
-
   dict_num = uim_scm_length(dict_list_);
 
   dict_list = uim_malloc(sizeof(char *) * dict_num);
@@ -145,32 +137,23 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
 
   ret = sj3_open_with_list(sname, uname, dict_num, dict_list, err_num, err_index);
 
-  if (!sname)
-    free(sname);
-  if (!uname)
+  free(sname);
   free(uname);
 
   if (ret != 0) {
-    for (i = 0; i < dict_num; i++) {
-      if (!dict_list[i])
-	free(dict_list[i]);
-    }
-    if (!dict_list)
-      free(dict_list);
+    for (i = 0; i < dict_num; i++)
+      free(dict_list[i]);
+    free(dict_list);
     return uim_sj3_select_error(ret, uim_sj3_open_error);
   }
 
   ret_ = uim_scm_null();
-  for (i = 0; i < *err_num; i++) {
+  for (i = 0; i < *err_num; i++)
     ret_ = CONS(MAKE_STR(dict_list[*err_index[i]]), ret_);
-  }
 
-  for (i = 0; i < dict_num; i++) {
-    if (!dict_list[i])
-      free(dict_list[i]);
-  }
-  if (!dict_list)
-    free(dict_list);
+  for (i = 0; i < dict_num; i++)
+    free(dict_list[i]);
+  free(dict_list);
 
   return uim_scm_callf("reverse", "o", ret_);
 }
@@ -238,13 +221,10 @@ uim_sj3_getkan(uim_lisp yomi_)
     char *kanji_str;
 
     yomi_str = uim_malloc(bun[i].srclen + 1);
-    if (!yomi_str)
-      return uim_sj3_internal_error(); /* XXX: fatal */
     strlcpy(yomi_str, (const char *)bun[i].srcstr, bun[i].srclen + 1);
 
     kanji_str = uim_malloc(bun[i].destlen + 1);
-    if (!kanji_str)
-      return uim_sj3_internal_error(); /* XXX: fatal */
+
     strlcpy(kanji_str, (const char *)bun[i].deststr, bun[i].destlen + 1);
 
     ret_ = CONS(LIST3(uim_scm_make_str(yomi_str),
@@ -323,10 +303,12 @@ uim_sj3_gakusyuu2(uim_lisp yomi1_, uim_lisp yomi2_, uim_lisp dcid_)
   struct studyrec *dcid;
   int ret;
 
-  if (uim_scm_stringp(yomi2_)) {
+  if (STRP(yomi2_)) {
+    /* split bunsetu |yomi1yomi2| -> |yomi1|yomi2| */
     yomi2 = REFER_C_STR(yomi2_);
     dcid = C_PTR(dcid_);
   } else {
+    /* merge bunsetu |yomi1|yomi2| -> |yomi1| */
     yomi2 = NULL;
     dcid = NULL;
   }
