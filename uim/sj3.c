@@ -58,7 +58,7 @@ uim_sj3_make_error_pair(char *sym, char *str)
 {
   char error_str[BUFSIZ];
 
-  snprintf(error_str, sizeof(error_str), "In uim-sj3, %s", str);
+  snprintf(error_str, sizeof(error_str), "In uim-sj3, %s", _(str));
   uim_notify_fatal(error_str);
   return MAKE_SYM(sym);
 }
@@ -69,9 +69,9 @@ uim_sj3_make_error(char *sym, char *str)
   return CONS(MAKE_SYM("error"), uim_sj3_make_error_pair(sym, str));
 }
 
-#define uim_sj3_server_down_error() uim_sj3_make_error("*SJ3-SERVER-DOWN-ERROR*" , "Serverdown.")
-#define uim_sj3_undefined_error()   uim_sj3_make_error("*SJ3-UNDEFINED-ERROR*"   , "Undefined error.")
-#define uim_sj3_internal_error()    uim_sj3_make_error("*SJ3-UIM-INTERNAL-ERROR*", "Internal error.")
+#define uim_sj3_server_down_error() uim_sj3_make_error("*SJ3-SERVER-DOWN-ERROR*" , N_("Serverdown."))
+#define uim_sj3_undefined_error()   uim_sj3_make_error("*SJ3-UNDEFINED-ERROR*"   , N_("Undefined error."))
+#define uim_sj3_internal_error()    uim_sj3_make_error("*SJ3-UIM-INTERNAL-ERROR*", N_("Internal error."))
 
 static uim_lisp
 uim_sj3_select_error(int errno, const struct uim_sj3_error *error)
@@ -93,16 +93,16 @@ uim_sj3_select_error(int errno, const struct uim_sj3_error *error)
 
 
 const static struct uim_sj3_error uim_sj3_open_error[] = {
-  { SJ3_NORMAL_END,        "*SJ3-NORMAL-END*"       , "Normal end." },
-  { SJ3_SERVER_DEAD,       "*SJ3-SERVER-DEAD*"      , "Server is dead." },
-  { SJ3_CONNECT_ERROR,     "*SJ3-CONNECT-ERROR*"    , "Connect failed." },
-  { SJ3_ALREADY_CONNECTED, "*SJ3-ALREADY-CONNECTED*", "Already connected." },
-  { SJ3_CANNOT_OPEN_MDICT, "*SJ3-CANNOT-OPEN-MDICT*", "Cannot open main dictionary file." },
-  { SJ3_CANNOT_OPEN_UDICT, "*SJ3-CANNOT-OPEN-UDICT*", "Cannot open user dictionary file." },
-  { SJ3_CANNOT_OPEN_STUDY, "*SJ3-CANNOT-OPEN-STUDY*", "Cannot open study file." },
-  { SJ3_CANNOT_MAKE_UDIR,  "*SJ3-CANNOT-MAKE-UDIR*",  "Cannot make user dictionary directory." },
-  { SJ3_CANNOT_MAKE_UDICT, "*SJ3-CANNOT-MAKE-UDICT*", "Cannot make user dictionary file." },
-  { SJ3_CANNOT_MAKE_STUDY, "*SJ3-CANNOT-MAKE-STUDY*", "Cannot make study file." },
+  { SJ3_NORMAL_END,        "*SJ3-NORMAL-END*"       , N_("Normal end.") },
+  { SJ3_SERVER_DEAD,       "*SJ3-SERVER-DEAD*"      , N_("Server is dead.") },
+  { SJ3_CONNECT_ERROR,     "*SJ3-CONNECT-ERROR*"    , N_("Connect failed.") },
+  { SJ3_ALREADY_CONNECTED, "*SJ3-ALREADY-CONNECTED*", N_("Already connected.") },
+  { SJ3_CANNOT_OPEN_MDICT, "*SJ3-CANNOT-OPEN-MDICT*", N_("Cannot open main dictionary file.") },
+  { SJ3_CANNOT_OPEN_UDICT, "*SJ3-CANNOT-OPEN-UDICT*", N_("Cannot open user dictionary file.") },
+  { SJ3_CANNOT_OPEN_STUDY, "*SJ3-CANNOT-OPEN-STUDY*", N_("Cannot open study file.") },
+  { SJ3_CANNOT_MAKE_UDIR,  "*SJ3-CANNOT-MAKE-UDIR*",  N_("Cannot make user dictionary directory.") },
+  { SJ3_CANNOT_MAKE_UDICT, "*SJ3-CANNOT-MAKE-UDICT*", N_("Cannot make user dictionary file.") },
+  { SJ3_CANNOT_MAKE_STUDY, "*SJ3-CANNOT-MAKE-STUDY*", N_("Cannot make study file.")},
   { -1, NULL, NULL }
 };
 
@@ -173,16 +173,16 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
 
 
 const static struct uim_sj3_error uim_sj3_close_error[] = {
-  { SJ3_NORMAL_END,        "*SJ3-NORMAL-END*"       , "Normal end." },
-  { SJ3_SERVER_DEAD,       "*SJ3-SERVER-DEAD*"      , "Server is dead." },
-  { SJ3_DISCONNECT_ERROR,  "*SJ3-DISCONNECT-ERROR*" , "Server is disconnected." },
-  { SJ3_NOT_CONNECTED,     "*SJ3-NOT-CONNECTED*"    , "Server is not connected." },
-  { SJ3_NOT_OPENED_MDICT,  "*SJ3-NOT-OPENED-MDICT*" , "Main dictionary file is not opened." },
-  { SJ3_NOT_OPENED_UDICT,  "*SJ3-NOT-OPENED-UDICT*" , "User dictionary file is not opened." },
-  { SJ3_NOT_OPENED_STUDY,  "*SJ3-NOT-OPENED-STUDY*" , "Study file is not opened." },
-  { SJ3_CLOSE_MDICT_ERROR, "*SJ3-CLOSE-MDICT-ERROR*", "Main dictionary file cannot clese." },
-  { SJ3_CLOSE_UDICT_ERROR, "*SJ3-CLOSE-UDICT-ERROR*", "User dictionary file cannot clese." },
-  { SJ3_CLOSE_STUDY_ERROR, "*SJ3-CLOSE-STUDY-ERROR*", "Study file cannot clese." },
+  { SJ3_NORMAL_END,        "*SJ3-NORMAL-END*"       , N_("Normal end.") },
+  { SJ3_SERVER_DEAD,       "*SJ3-SERVER-DEAD*"      , N_("Server is dead.") },
+  { SJ3_DISCONNECT_ERROR,  "*SJ3-DISCONNECT-ERROR*" , N_("Server is disconnected.") },
+  { SJ3_NOT_CONNECTED,     "*SJ3-NOT-CONNECTED*"    , N_("Server is not connected.") },
+  { SJ3_NOT_OPENED_MDICT,  "*SJ3-NOT-OPENED-MDICT*" , N_("Main dictionary file is not opened.") },
+  { SJ3_NOT_OPENED_UDICT,  "*SJ3-NOT-OPENED-UDICT*" , N_("User dictionary file is not opened.") },
+  { SJ3_NOT_OPENED_STUDY,  "*SJ3-NOT-OPENED-STUDY*" , N_("Study file is not opened.") },
+  { SJ3_CLOSE_MDICT_ERROR, "*SJ3-CLOSE-MDICT-ERROR*", N_("Main dictionary file cannot clese.") },
+  { SJ3_CLOSE_UDICT_ERROR, "*SJ3-CLOSE-UDICT-ERROR*", N_("User dictionary file cannot clese.") },
+  { SJ3_CLOSE_STUDY_ERROR, "*SJ3-CLOSE-STUDY-ERROR*", N_("Study file cannot clese.") },
   { 0, NULL, NULL }
 };
 
@@ -215,7 +215,7 @@ uim_sj3_getkan(uim_lisp yomi_)
   uim_lisp ret_ = uim_scm_f();
 
   if (255 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", "Yomi string is too long.");
+    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   bunsetu_cnt = sj3_getkan_euc((unsigned char *)yomi, bun, (unsigned char *)kanji, sizeof(kanji));
 
@@ -223,7 +223,7 @@ uim_sj3_getkan(uim_lisp yomi_)
     return uim_sj3_server_down_error();
 
   if (bun[bunsetu_cnt - 1].destlen == 0) /* too large? */
-    return uim_sj3_make_error("*SJ3-TOO-SHORT-BUFFER-SIZE*", "Too short buffer size.");
+    return uim_sj3_make_error("*SJ3-TOO-SHORT-BUFFER-SIZE*", N_(" Buffer size is too short."));
 
   if (bunsetu_cnt == 0)
     return MAKE_STR("");
@@ -260,7 +260,7 @@ uim_sj3_douoncnt(uim_lisp yomi_)
   int ret;
 
   if (63 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", "Yomi string is too long.");
+    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   ret = sj3_douoncnt_euc((unsigned char *)yomi);
   if (ret == -1)
@@ -279,7 +279,7 @@ uim_sj3_getdouon(uim_lisp yomi_)
   uim_lisp ret_ = uim_scm_f();
 
   if (255 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", "Yomi string is too long.");
+    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   douon_cnt = sj3_getdouon_euc((unsigned char *)yomi, douon);
   if (douon_cnt == -1)
@@ -374,18 +374,18 @@ const static struct {
 };
 
 const static struct uim_sj3_error uim_sj3_touroku_syoukyo_error[] = {
-  { SJ3_DICT_ERROR,     "*SJ3-DICT-ERROR*"    , "Dictionary error." },
-  { SJ3_DICT_LOCKED,    "*SJ3-DICT-LOCKED*"   , "Dictionary is locked." },
-  { SJ3_BAD_YOMI_STR,   "*SJ3-BAD-YOMI-STR*"  , "Invalid yomi string."},
-  { SJ3_BAD_KANJI_STR,  "*SJ3-BAD-KANJI-STR*" , "Invalid kanji string." },
-  { SJ3_BAD_HINSI_CODE, "*SJ3-BAD-HINSI-CODE*", "Invalid hinsi code." },
-  { SJ3_WORD_EXIST,     "*SJ3-WORD-EXIST*"    , "Word exist." },
-  { SJ3_DOUON_FULL,     "*SJ3-DOUON-FULL*"    , "Douon is full." },
-  { SJ3_DICT_FULL,      "*SJ3-DICT-FULL*"     , "Dictionary is full." },
-  { SJ3_INDEX_FULL,     "*SJ3-INDEX-FULL*"    , "Index is full." },
-  { SJ3_TOUROKU_FAILED, "*SJ3-TOUROKU-FAILED*", "Touroku failed." },
-  { SJ3_WORD_NOT_EXIST, "*SJ3-WORD-NOT-EXIST*", "Word does not exist." },
-  { SJ3_SYOUKYO_FAILED, "*SJ3-SYOUKYO-FAILED*", "Syoukyo is failed." },
+  { SJ3_DICT_ERROR,     "*SJ3-DICT-ERROR*"    , N_("Dictionary error.") },
+  { SJ3_DICT_LOCKED,    "*SJ3-DICT-LOCKED*"   , N_("Dictionary is locked.") },
+  { SJ3_BAD_YOMI_STR,   "*SJ3-BAD-YOMI-STR*"  , N_("Invalid yomi string.") },
+  { SJ3_BAD_KANJI_STR,  "*SJ3-BAD-KANJI-STR*" , N_("Invalid kanji string.") },
+  { SJ3_BAD_HINSI_CODE, "*SJ3-BAD-HINSI-CODE*", N_("Invalid hinsi code.") },
+  { SJ3_WORD_EXIST,     "*SJ3-WORD-EXIST*"    , N_("Word exist.") },
+  { SJ3_DOUON_FULL,     "*SJ3-DOUON-FULL*"    , N_("Douon is full.") },
+  { SJ3_DICT_FULL,      "*SJ3-DICT-FULL*"     , N_("Dictionary is full.") },
+  { SJ3_INDEX_FULL,     "*SJ3-INDEX-FULL*"    , N_("Index is full.") },
+  { SJ3_TOUROKU_FAILED, "*SJ3-TOUROKU-FAILED*", N_("Touroku failed.") },
+  { SJ3_WORD_NOT_EXIST, "*SJ3-WORD-NOT-EXIST*", N_("Word does not exist.") },
+  { SJ3_SYOUKYO_FAILED, "*SJ3-SYOUKYO-FAILED*", N_("Syoukyo failed.") },
   { 0, NULL, NULL }
 };
 
@@ -399,7 +399,7 @@ uim_sj3_touroku(uim_lisp yomi_, uim_lisp kanji_, uim_lisp hinsi_)
   int ret;
 
   if (31 < strlen(yomi) || 31 < strlen(kanji))
-    return uim_sj3_make_error("*SJ3-KANJI-STRING-TOO-LONG*", "Kanji string is too long.");
+    return uim_sj3_make_error("*SJ3-KANJI-STRING-TOO-LONG*", N_("Kanji string is too long."));
 
   while (1) {
     if (uim_sj3_hinsi[i].name == NULL)
@@ -430,7 +430,7 @@ uim_sj3_syoukyo(uim_lisp yomi_, uim_lisp kanji_, uim_lisp hinsi_)
   int ret;
 
   if (31 < strlen(yomi) || 31 < strlen(kanji))
-    return uim_sj3_make_error("*SJ3-KANJI-STRING-TOO-LONG*", "Kanji string is too long.");
+    return uim_sj3_make_error("*SJ3-KANJI-STRING-TOO-LONG*", N_("Kanji string is too long."));
 
   while (1) {
     if (uim_sj3_hinsi[i].name == NULL)

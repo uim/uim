@@ -62,6 +62,7 @@ uim.desktop.in.in
 uim/uim-error.c
 uim/plugin.c
 uim/canna.c
+uim/sj3.c
 uim/mana.c
 uim/skk.c
 uim/m17nlib.c
