@@ -194,6 +194,7 @@ prime_read_msg_from_ud(int fd)
       clear_prime_fd();
       return NULL;
     }
+    buf[rc] = '\0';
     read_buf = uim_realloc(read_buf, strlen(read_buf) + strlen(buf) + 1);
     strcat(read_buf, buf);
     len += rc;
