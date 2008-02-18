@@ -188,8 +188,6 @@ prime_read_msg_from_ud(int fd)
       if (errno == EAGAIN || errno == EINTR)
 	continue;
 
-      buf[rc] = '\0';
-
       free(read_buf);
       clear_prime_fd();
       return NULL;
