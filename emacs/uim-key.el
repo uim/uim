@@ -55,6 +55,7 @@
 	((string= keyname "ESC") "escape")
 	((string= keyname "DEL") "delete")
 	((string= keyname "SPC") "space")
+	((string= keyname "multi-key") "Multi_key")
 	(t keyname)))
 
 
@@ -219,16 +220,15 @@
 	  (setq map (cdr (assq 'uim-mode minor-mode-map-alist)))
 	  (setcdr (assq 'uim-mode minor-mode-map-alist) uim-dummy-map)
 
-	  (if (and bind
-		   (eq bind 'digit-argument))
+	  (if (or (and bind
+		       (eq bind 'digit-argument))	  
+		  (and uim-xemacs
+		       (not (eventp last-command-char))))
 	      (command-execute uim-key-vector)
 	    (command-execute this-command))
 
 	  (setq last-command this-command)
 	  ;;(setq last-command-char (aref uim-key-vector 0))
-
-	  (uim-debug (format "* last-command-char is set %s"
-			     last-command-char))
 
 	  (if uim-xemacs
 	      (handle-post-motion-command))
@@ -630,13 +630,21 @@
 	      (throw 'fmap-loop t))
 	  
 	  (setq translated (lookup-key function-key-map input-vector-main))
-	      
+
 	  (if (and (or (not translated)
 		       (integerp translated))
 		   (boundp 'local-function-key-map))
 	      (setq translated (lookup-key local-function-key-map 
 					   input-vector-main)))
-	  
+
+	  (if (and (symbolp translated) (commandp translated))
+	      (let ((sf (symbol-function translated)))
+		(if (and (listp sf)
+			 (eq 'autoload (nth 0 sf))
+			 (or (eq 'keymap (nth 4 sf))
+			     (eq 'macro  (nth 4 sf))))
+		    (load (nth 1 sf)))))
+
 	  (cond ((not translated)
 		 )
 
@@ -652,7 +660,6 @@
 		 (uim-debug (format "translated is keymap: %s" translated))
 		 (setq map translated)
 		 (throw 'fmap-loop t))
-
 
 		((functionp translated)
 		 ;; function ... call immediately and use returned value

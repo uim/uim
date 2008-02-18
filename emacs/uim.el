@@ -937,6 +937,7 @@
 	    (uim-debug (if map "map: YES" "map: NO"))
 
 	    (cond ((stringp translated)
+		   (setq issue t)
 		   (setq uim-translated-key-vector translated)
 		   (setq uim-untranslated-key-vector nil))
 
