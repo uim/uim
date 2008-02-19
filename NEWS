@@ -1,3 +1,25 @@
+Overview of changes from 1.4.1 to 1.4.2
+==
+* Fixed
+  - uim Scheme library
+    - Fix memory alignment of symbol names, which can be a problem
+      with jemalloc in FreeBSD 7 and Firefox 3.
+    - Fix string buffer usage.
+
+  - libuim
+    - Fix leak in file descriptors when uim-helper-server is not
+      working.
+
+  - GTK+ bridge
+    - Fix token buffer usage of X11 Compose
+    - Fix freeing strings allocated by glib
+  - Qt bridge
+    - Fix token buffer usage of X11 Compose
+  - XIM bridge
+    - Fix token buffer usage of X11 Compose
+    - Fix compilation with GCC-4.3
+    
+
 Overview of changes from 1.4.0 to 1.4.1
 ==
 * Fixed

@@ -1,20 +1,26 @@
-uim 1.4.1 Release Note
+uim 1.4.2 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.4.1 is latest stable release of uim.
+This distribution of uim 1.4.2 is latest stable release of uim.
 
 Please report us if you find a problem.
 
-Homepage:            http://uim.freedesktop.org/
-Mailinglist:         uim@freedesktop.org
+Homepage:            http://code.google.com/p/uim/
+Mailinglist:         uim-en@googlegroups.com
 Bug tracking system: http://bugs.freedesktop.org/
 
 
 What's New
 ----------
+Several bug fixes against 1.4.1, including memory related problem in
+embedded scheme interpreter.  See NEWS for the detailed changes.
+
+
+What's New in 1.4.1
+-------------------
 Several bug fixes against uim 1.4.0.
 See NEWS for the detailed changes.
 
