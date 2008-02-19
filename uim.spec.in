@@ -2,7 +2,7 @@ Summary: A multilingual input method library
 Name: uim
 Version: @VERSION@
 Release: 1
-URL: http://uim.freedesktop.org/
+URL: http://code.google.com/p/uim/
 Source0: %{name}-%{version}.tar.gz
 License: BSD
 Group: System Environment/Libraries

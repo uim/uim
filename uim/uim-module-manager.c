@@ -1,7 +1,7 @@
 /*
   uim-module-manager.c: source file for uim-module-manager.
 
-  Copyright (c) 2005-2008 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2005-2008 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 

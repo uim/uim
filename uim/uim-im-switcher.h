@@ -1,7 +1,7 @@
 /*
   uim-im-switcher.h: provides optional input method switching feature
 
-  Copyright (c) 2003-2008 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 

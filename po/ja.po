@@ -98,7 +98,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
-"Report-Msgid-Bugs-To: uim@freedesktop.org\n"
+"Report-Msgid-Bugs-To: code.google.com/p/uim\n"
 "POT-Creation-Date: 2006-08-14 12:58+0900\n"
 "PO-Revision-Date: 2006-06-04 10:49+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
@@ -311,7 +311,7 @@ msgstr ""
 #: helper/dict-word-list-win-gtk.c:609
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-"Copyright 2004-2008 uim Project http://uim.freedesktop.org/\n"
+"Copyright 2004-2008 uim Project http://code.google.com/p/uim/\n"
 "All rights reserved."
 msgstr ""
 
@@ -2818,7 +2818,7 @@ msgstr "入力メソッド (uim)"
 # する。Wikipedia側が不適切と思われる場合はそちらも修正する
 #.
 #.
-#. Copyright (c) 2003-2008 uim Project http://uim.freedesktop.org/
+#. Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
 #.
 #. All rights reserved.
 #.

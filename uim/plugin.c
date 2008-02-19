@@ -3,7 +3,7 @@
 
   plugin.c: Plugin support for uim.
 
-  Copyright (c) 2004-2008 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2004-2008 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 

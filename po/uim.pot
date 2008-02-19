@@ -218,7 +218,7 @@ msgstr ""
 #: helper/dict-word-list-win-gtk.c:609
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-"Copyright 2004-2008 uim Project http://uim.freedesktop.org/\n"
+"Copyright 2004-2008 uim Project http://code.google.com/p/uim/\n"
 "All rights reserved."
 msgstr ""
 
@@ -2701,7 +2701,7 @@ msgstr ""
 
 #.
 #.
-#. Copyright (c) 2003-2008 uim Project http://uim.freedesktop.org/
+#. Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
 #.
 #. All rights reserved.
 #.

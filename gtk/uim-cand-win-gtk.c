@@ -1,6 +1,6 @@
 /*
 
-  copyright (c) 2003-2008 uim Project http://uim.freedesktop.org/
+  copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
