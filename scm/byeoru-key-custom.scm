@@ -2,7 +2,7 @@
 
 ;;; byeoru-key-custom.scm: Key customization variables for byeoru.scm
 ;;;
-;;; Copyright (c) 2003-2007 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2003-2008 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;

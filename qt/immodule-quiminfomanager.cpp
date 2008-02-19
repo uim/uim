@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2006-2007 uim Project http://uim.freedesktop.org/
+Copyright (c) 2006-2008 uim Project http://uim.freedesktop.org/
 
 All rights reserved.
 

@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2003,2004 Masahito Omote <omote@utyuuzin.net>
- *                2005-2007 uim Project http://uim.freedesktop.org/
+ *                2005-2008 uim Project http://uim.freedesktop.org/
  *
  *  All rights reserved.
  *

@@ -1,6 +1,6 @@
 ;;; lazy-load.scm: Lazy IM loading support
 ;;;
-;;; Copyright (c) 2005-2007 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2005-2008 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
