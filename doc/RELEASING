@@ -64,13 +64,13 @@ release, you have to repeat the following procedure at least three times.
 
    On an alpha release, branch the tree at first.
 
-   svn cp svn+ssh://svn.freedesktop.org/svn/uim/trunk \
-          svn+ssh://svn.freedesktop.org/svn/uim/branches/x.y
+   svn cp https://uim.googlecode.com/svn/trunk \
+          https://uim.googlecode.com/svn/branches/x.y
 
    And then tag.
 
-   svn cp svn+ssh://svn.freedesktop.org/svn/uim/branches/x.y \
-          svn+ssh://svn.freedesktop.org/svn/uim/tags/uim-x.y.z-alpha
+   svn cp https://uim.googlecode.com/svn/branches/x.y \
+          https://uim.googlecode.com/svn/tags/uim-x.y.z-alpha
 
 10. Export the fresh tagged tree from svn.
 
@@ -85,21 +85,47 @@ release, you have to repeat the following procedure at least three times.
 
 12. Copy the source tarball to the download site.
 
-   Place alpha and beta into /unstable, final releases into /stable, and
-   snapshots into /snapshots
+   Upload the file by the official uploading script:
 
-   http://code.google.com/p/uim/releases/uim/stable/
-   http://code.google.com/p/uim/releases/uim/unstable/
-   http://code.google.com/p/uim/releases/uim/snapshots/
+     http://code.google.com/p/support/wiki/ScriptedUploads
+
+   Don't forget adding appropriate tags as follows.
+
+   Final release:
+
+     googlecode-upload.py -u yamakenz -p uim \
+                          -s 'uim 1.5.0' -l 'Stable,Featured' \
+                          uim-1.5.0.tar.bz2
+
+   Alpha or beta release:
+
+     googlecode-upload.py -u yamakenz -p uim \
+                          -s 'uim 1.5.0-alpha' -l 'Unstable' \
+                          uim-1.5.0-alpha.tar.bz2
+
+   Snapshot release:
+
+     googlecode-upload.py -u yamakenz -p uim \
+                          -s 'uim trunk-snapshot20070703' -l 'Snapshot' \
+                          uim-trunk-snapshot20070703.tar.bz2
+
+   And untag 'Featured' from previous final release files by the web
+   interface.
 
 13. Update the web pages.
 
    http://code.google.com/p/uim/
+   http://code.google.com/p/uim/wiki/FrontPage
    http://code.google.com/p/uim/wiki/UimDownload
 
+   Update FrontPage first and copy it into the project description
+   (homepage).
+
+   <obsolete>
    The checksums of the files must not directly be written into the
    anyone-rewritable wikipage, to prevent spoofings. It should be a link to the
    release announce which contain the checksum information.
+   </obsolete>
 
 14. Send a message to uim-en@googlegroups.com
 
@@ -113,3 +139,7 @@ release, you have to repeat the following procedure at least three times.
    SHA1 (uim-1.4.0-example.tar.bz2) = c870c3e8585ce8e4200fe3247021802d922781c6
 
    <append RELNOTE here>
+
+15. Update Freshmeat entry
+
+   http://freshmeat.net/projects/uim-inputmethod/
