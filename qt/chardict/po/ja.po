@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: uim-chardict-qt 1.1.0\n"
-"Report-Msgid-Bugs-To: uim@lists.freedesktop.org\n"
+"Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2005-12-09 14:52+0900\n"
 "PO-Revision-Date: 2005-12-06 16:15+900\n"
 "Last-Translator: Daichi Kawahata <daichik@users.sourceforge.net>\n"
