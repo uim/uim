@@ -2,7 +2,7 @@
 
 MAKE=make
 
-UIM_REPOSITORY="http://anonsvn.freedesktop.org/svn/uim"
+UIM_REPOSITORY="http://uim.googlecode.com/svn"
 SSCM_REPOSITORY="${UIM_REPOSITORY}/sigscheme-trunk"
 LIBGCROOTS_REPOSITORY="${UIM_REPOSITORY}/libgcroots-trunk"
 TAGS_REPOSITORY="${UIM_REPOSITORY}/tags"

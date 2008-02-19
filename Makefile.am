@@ -19,7 +19,7 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 # $(distdir) does work as a part of $(RELEASE_URL) when configured as a
 # subpackage.
 DIST_NAME = $(PACKAGE)-$(VERSION)$(RELEASE_SUFFIX)
-UIM_REPOSITORY = http://anonsvn.freedesktop.org/svn/uim
+UIM_REPOSITORY = http://uim.googlecode.com/svn
 TAGS_REPOSITORY = $(UIM_REPOSITORY)/tags
 #RELEASE_URL     = $(UIM_REPOSITORY)/trunk
 RELEASE_URL     = $(TAGS_REPOSITORY)/$(DIST_NAME)

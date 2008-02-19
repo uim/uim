@@ -39,7 +39,7 @@ release, you have to repeat the following procedure at least three times.
 
 4. Export a fresh tree from svn.
 
-   svn export http://anonsvn.freedesktop.org/svn/uim/trunk
+   svn export http://uim.googlecode.com/svn/trunk
 
 5. Do test.
 
@@ -74,7 +74,7 @@ release, you have to repeat the following procedure at least three times.
 
 10. Export the fresh tagged tree from svn.
 
-   svn export http://anonsvn.freedesktop.org/svn/uim/tags/uim-x.y.z-alpha
+   svn export http://uim.googlecode.com/svn/tags/uim-x.y.z-alpha
 
 11. Make the distribution.
 
