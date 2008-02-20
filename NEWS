@@ -10,6 +10,9 @@ Overview of changes from 1.4.1 to 1.4.2
     - Fix leak in file descriptors when uim-helper-server is not
       working.
 
+  - uim-prime
+    - Handle unix domain socket timeout
+
   - GTK+ bridge
     - Fix token buffer usage of X11 Compose
     - Fix freeing strings allocated by glib
@@ -18,7 +21,9 @@ Overview of changes from 1.4.1 to 1.4.2
   - XIM bridge
     - Fix token buffer usage of X11 Compose
     - Fix compilation with GCC-4.3
-    
+
+  - uim-toolbar-gtk-systray
+    - Adjust focus padding in systray
 
 Overview of changes from 1.4.0 to 1.4.1
 ==
