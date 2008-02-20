@@ -6,6 +6,8 @@ Overview of changes from 1.4.1 to 1.4.2
       with jemalloc in FreeBSD 7 and Firefox 3
     - Fix string buffer usage
     - Fix possible memory leak
+    - Fix compilation on Mac OS X 10.5
+    - Support OpenBSD PowerPC and x86_64 in libgcroots
 
   - libuim
     - Fix leak in file descriptors when uim-helper-server is not
