@@ -14,6 +14,9 @@ Overview of changes from 1.4.1 to 1.4.2
   - uim-prime
     - Handle unix domain socket timeout
 
+  - uim-m17nlib
+    - Fix listing incomplete IMs
+
   - Japanese composition table
     - Fix fullwidth middle dot in halfwidth katakana table for
       Japanese kana-keyboard
