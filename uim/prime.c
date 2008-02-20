@@ -224,6 +224,7 @@ static uim_lisp
 prime_lib_init(uim_lisp use_udp_)
 {
   char *option;
+  int timeout_count = 0;
 
   use_unix_domain_socket = uim_scm_c_bool(use_udp_);
 
@@ -247,8 +248,11 @@ prime_lib_init(uim_lisp use_udp_)
 	return uim_scm_f();
       else {
 	prime_fd = prime_init_ud(prime_ud_path);
-	while (prime_fd == -1)
+	while (prime_fd == -1 && timeout_count < 100) {
+	  usleep(100000);
 	  prime_fd = prime_init_ud(prime_ud_path);
+	  timeout_count++;
+	}
       }
     }
 
