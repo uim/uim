@@ -72,6 +72,9 @@ Overview of changes from 1.4.x to 1.5.0-alpha
   - uim-tcode
     * Fix composition rules ([uim-ja 29])
 
+  - uim-prime
+    * Handle unix domain socket timeout
+
   - uim-m17nlib
     * Fix opening all of registered m17n IM at startup unnecessarily
     * Fix listing incomplete IMs
@@ -122,6 +125,9 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * Support Emacs-23.x experimentally
     * Support shifted-motion-keys-select-region feature of XEmacs
     * Support the commands terminated by help-char on XEmacs
+
+  - uim-toolbar-gtk-systray
+    * Adjust focus padding in systray
 
 * Others
   - Split libuim-scm off from libuim
