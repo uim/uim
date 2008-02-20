@@ -2,16 +2,21 @@ Overview of changes from 1.4.1 to 1.4.2
 ==
 * Fixed
   - uim Scheme library
-    - Fix memory alignment of symbol names, which can be a problem
-      with jemalloc in FreeBSD 7 and Firefox 3.
-    - Fix string buffer usage.
+    - Fix memory alignment of symbol name, which can be a problem
+      with jemalloc in FreeBSD 7 and Firefox 3
+    - Fix string buffer usage
+    - Fix possible memory leak
 
   - libuim
     - Fix leak in file descriptors when uim-helper-server is not
-      working.
+      working
 
   - uim-prime
     - Handle unix domain socket timeout
+
+  - Japanese composition table
+    - Fix fullwidth middle dot in halfwidth katakana table for
+      Japanese kana-keyboard
 
   - GTK+ bridge
     - Fix token buffer usage of X11 Compose
