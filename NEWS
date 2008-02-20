@@ -9,7 +9,7 @@ Overview of changes from 1.4.1 to 1.4.2
 
   - libuim
     - Fix leak in file descriptors when uim-helper-server is not
-      working
+      working (Christian Biere)
 
   - uim-prime
     - Handle unix domain socket timeout
