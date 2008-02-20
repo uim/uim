@@ -497,6 +497,10 @@ prop_button_create(GtkWidget *widget, const gchar *icon_name,
     button = gtk_button_new_with_label(label);
   }
 
+  if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+		      OBJECT_DATA_TOOLBAR_TYPE)) == TYPE_ICON)
+    gtk_widget_set_name(button, "uim-systray-button");
+
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE,
@@ -672,6 +676,11 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
       continue;
 
     tool_button = gtk_button_new();
+
+    if (GPOINTER_TO_INT(g_object_get_data(G_OBJECT(widget),
+			OBJECT_DATA_TOOLBAR_TYPE)) == TYPE_ICON)
+      gtk_widget_set_name(tool_button, "uim-systray-button");
+
     g_object_set_data(G_OBJECT(tool_button), OBJECT_DATA_BUTTON_TYPE,
 		      GINT_TO_POINTER(BUTTON_TOOL));
     g_object_set_data(G_OBJECT(tool_button), OBJECT_DATA_COMMAND,
@@ -905,6 +914,10 @@ toolbar_new(gint type)
   } else {
     button = gtk_button_new_with_label(" x");
   }
+
+  if (type == TYPE_ICON)
+    gtk_widget_set_name(button, "uim-systray-button");
+
   gtk_button_set_relief(GTK_BUTTON(button), GTK_RELIEF_NONE);
   gtk_size_group_add_widget(sg, button);
   g_signal_connect(G_OBJECT(button), "button-press-event",
@@ -949,5 +962,14 @@ uim_toolbar_applet_new(void)
 GtkWidget *
 uim_toolbar_trayicon_new(void)
 {
+  gtk_rc_parse_string("\n"
+		      "   style \"uim-systray-button-style\"\n"
+		      "   {\n"
+		      "      GtkWidget::focus-line-width=0\n"
+		      "      GtkWidget::focus-padding=0\n"
+		      "   }\n" "\n"
+		      "    widget \"*.uim-systray-button\" style \"uim-systray-button-style\"\n"
+		      "\n");
+
   return toolbar_new(TYPE_ICON);
 }
