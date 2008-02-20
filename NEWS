@@ -66,9 +66,6 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * Fix showing okuri-ari word with an annotation
     * Don't add preedit-cursor when skk-show-cursor-on-preedit? is #f
 
-  - uim-tutcode
-    * Fix to be able to select URL candidate at Firefox URL field
-
   - uim-tcode
     * Fix composition rules ([uim-ja 29])
 
