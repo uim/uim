@@ -199,11 +199,18 @@ init_m17nlib()
   }
 
   for (elm = imlist; mplist_key(elm) != Mnil; elm = mplist_next(elm)) {
-    MDatabase *mdb = mplist_value(elm);
-    MSymbol *tag = mdatabase_tag(mdb); /* tag[1]: lang, tag[2]: name */
+    MDatabase *mdb;
+    MSymbol *tag, lang, imname;
+    uim_bool is_complete_im;
 
-    if (tag[1] != Mnil) {
-      MInputMethod *im = minput_open_im(tag[1], tag[2], NULL);
+    mdb = mplist_value(elm);
+    tag = mdatabase_tag(mdb);
+    lang = tag[1];
+    imname = tag[2];
+    is_complete_im = (lang != Mnil && imname != Mnil);  /* [uim-ja 30] */
+
+    if (is_complete_im) {
+      MInputMethod *im = minput_open_im(lang, imname, NULL);
 
       if (im)
 	pushback_input_method(im, msymbol_name(im->language),
