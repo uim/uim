@@ -55,7 +55,6 @@
 	((string= keyname "ESC") "escape")
 	((string= keyname "DEL") "delete")
 	((string= keyname "SPC") "space")
-	((string= keyname "multi-key") "Multi_key")
 	(t keyname)))
 
 

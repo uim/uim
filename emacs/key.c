@@ -130,25 +130,34 @@ convert_keyname_e2u(const char *keyname)
 	return UKey_Eisu_Shift;
   else if (strcmp("eisu-toggle", keyname) == 0)
 	return UKey_Eisu_toggle;
-  else if (strcmp("Caps_Lock", keyname) == 0)
-	return UKey_Caps_Lock;
-  else if (strcmp("Num_Lock", keyname) == 0)
-	return UKey_Num_Lock;
-  else if (strcmp("Scroll_Lock", keyname) == 0)
-	return UKey_Scroll_Lock;
-  else if (strcmp("Yen", keyname) == 0)
-	return UKey_Yen;
-  else if (strcmp("Multi_key", keyname) == 0)
-	return UKey_Multi_key;
-  else if (strcmp("Codeinput", keyname) == 0)
-	return UKey_Codeinput;
-  else if (strcmp("SingleCandidate", keyname) == 0)
-	return UKey_SingleCandidate;
-  else if (strcmp("MultipleCandidate", keyname) == 0)
-	return UKey_MultipleCandidate;
-  else if (strcmp("PreviousCandidate", keyname) == 0)
-	return UKey_PreviousCandidate;
-  else if (strcmp("Mode_switch", keyname) == 0)
+  else if (strcmp("Caps_Lock", keyname) == 0
+           || strcmp("caps-lock", keyname) == 0)
+    return UKey_Caps_Lock;
+  else if (strcmp("Num_Lock", keyname) == 0
+           || strcmp("num-lock", keyname) == 0)
+    return UKey_Num_Lock;
+  else if (strcmp("Scroll_Lock", keyname) == 0
+           || strcmp("scroll-lock", keyname) == 0)
+    return UKey_Scroll_Lock;
+  else if (strcmp("yen", keyname) == 0)
+    return UKey_Yen;
+  else if (strcmp("Multi_key", keyname) == 0
+           || strcmp("multi-key", keyname) == 0)
+    return UKey_Multi_key;
+  else if (strcmp("Codeinput", keyname) == 0
+           || strcmp("codeinput", keyname) == 0)
+    return UKey_Codeinput;
+  else if (strcmp("SingleCandidate", keyname) == 0
+           || strcmp("singlecandidate", keyname) == 0)
+    return UKey_SingleCandidate;
+  else if (strcmp("MultipleCandidate", keyname) == 0
+           || strcmp("multiplecandidate", keyname) == 0)
+    return UKey_MultipleCandidate;
+  else if (strcmp("PreviousCandidate", keyname) == 0
+           || strcmp("previouscandidate", keyname) == 0)
+    return UKey_PreviousCandidate;
+  else if (strcmp("Mode_switch", keyname) == 0
+           || strcmp("mode-switch", keyname) == 0)
 	return UKey_Mode_switch;
   else if (strncmp("f", keyname, strlen("f")) == 0) {
 	keyname += strlen("f");
@@ -254,57 +263,87 @@ convert_keyname_e2u(const char *keyname)
 	  return UKey_Hangul_PreviousCandidate;
 	else if (strcmp("Special", keyname) == 0)
 	  return UKey_Hangul_Special;
-  } else if (strncmp("Dead_", keyname, strlen("Dead_")) == 0) {
-	keyname += strlen("Dead_");
-	if (strcmp("Grave", keyname) == 0)
+  } else if (strncmp("hangul-", keyname, strlen("hangul-")) == 0) {
+    keyname += strlen("hangul-");
+	if (strcmp("start", keyname) == 0)
+	  return UKey_Hangul_Start;
+	else if (strcmp("end", keyname) == 0)
+	  return UKey_Hangul_End;
+	else if (strcmp("hanja", keyname) == 0)
+	  return UKey_Hangul_Hanja;
+	else if (strcmp("jamo", keyname) == 0)
+	  return UKey_Hangul_Jamo;
+	else if (strcmp("romaja", keyname) == 0)
+	  return UKey_Hangul_Romaja;
+	else if (strcmp("codeinput", keyname) == 0)
+	  return UKey_Hangul_Codeinput;
+	else if (strcmp("jeonja", keyname) == 0)
+	  return UKey_Hangul_Jeonja;
+	else if (strcmp("banja", keyname) == 0)
+	  return UKey_Hangul_Banja;
+	else if (strcmp("prehanja", keyname) == 0)
+	  return UKey_Hangul_PreHanja;
+	else if (strcmp("posthanja", keyname) == 0)
+	  return UKey_Hangul_PostHanja;
+	else if (strcmp("singlecandidate", keyname) == 0)
+	  return UKey_Hangul_SingleCandidate;
+	else if (strcmp("multiplecandidate", keyname) == 0)
+	  return UKey_Hangul_MultipleCandidate;
+	else if (strcmp("previouscandidate", keyname) == 0)
+	  return UKey_Hangul_PreviousCandidate;
+	else if (strcmp("special", keyname) == 0)
+	  return UKey_Hangul_Special;
+  } else if (strncmp("dead-", keyname, strlen("dead-")) == 0) {
+	keyname += strlen("dead-");
+	if (strcmp("grave", keyname) == 0)
 	  return UKey_Dead_Grave;
-	else if (strcmp("Acute", keyname) == 0)
+	else if (strcmp("acute", keyname) == 0)
 	  return UKey_Dead_Acute;
-	else if (strcmp("Circumflex", keyname) == 0)
+	else if (strcmp("circumflex", keyname) == 0)
 	  return UKey_Dead_Circumflex;
-	else if (strcmp("Tilde", keyname) == 0)
+	else if (strcmp("tilde", keyname) == 0)
 	  return UKey_Dead_Tilde;
-	else if (strcmp("Macron", keyname) == 0)
+	else if (strcmp("macron", keyname) == 0)
 	  return UKey_Dead_Macron;
-	else if (strcmp("Breve", keyname) == 0)
+	else if (strcmp("breve", keyname) == 0)
 	  return UKey_Dead_Breve;
-	else if (strcmp("Abovedot", keyname) == 0)
+	else if (strcmp("abovedot", keyname) == 0)
 	  return UKey_Dead_Abovedot;
-	else if (strcmp("Diaeresis", keyname) == 0)
+	else if (strcmp("diaeresis", keyname) == 0)
 	  return UKey_Dead_Diaeresis;
-	else if (strcmp("Abovering", keyname) == 0)
+	else if (strcmp("abovering", keyname) == 0)
 	  return UKey_Dead_Abovering;
-	else if (strcmp("Doubleacute", keyname) == 0)
+	else if (strcmp("doubleacute", keyname) == 0)
 	  return UKey_Dead_Doubleacute;
-	else if (strcmp("Caron", keyname) == 0)
+	else if (strcmp("caron", keyname) == 0)
 	  return UKey_Dead_Caron;
-	else if (strcmp("Cedilla", keyname) == 0)
+	else if (strcmp("cedilla", keyname) == 0)
 	  return UKey_Dead_Cedilla;
-	else if (strcmp("Ogonek", keyname) == 0)
+	else if (strcmp("ogonek", keyname) == 0)
 	  return UKey_Dead_Ogonek;
-	else if (strcmp("Iota", keyname) == 0)
+	else if (strcmp("iota", keyname) == 0)
 	  return UKey_Dead_Iota;
-	else if (strcmp("VoicedSound", keyname) == 0)
+	else if (strcmp("voicedsound", keyname) == 0)
 	  return UKey_Dead_VoicedSound;
-	else if (strcmp("SemivoicedSound", keyname) == 0)
+	else if (strcmp("semivoicedsound", keyname) == 0)
 	  return UKey_Dead_SemivoicedSound;
-	else if (strcmp("Belowdot", keyname) == 0)
+	else if (strcmp("belowdot", keyname) == 0)
 	  return UKey_Dead_Belowdot;
-	else if (strcmp("Hook", keyname) == 0)
+	else if (strcmp("hook", keyname) == 0)
 	  return UKey_Dead_Hook;
-	else if (strcmp("Horn", keyname) == 0)
+	else if (strcmp("horn", keyname) == 0)
 	  return UKey_Dead_Horn;
-  } else if (strncmp("Kana_", keyname, strlen("Kana_")) == 0) {
-	keyname += strlen("Kana_");
-	if (strcmp("Fullstop", keyname) == 0)
+  } else if (strncmp("kana_", keyname, strlen("kana_")) == 0) {
+	keyname += strlen("kana_");
+    if (strcmp("fullstop", keyname) == 0)
 	  return UKey_Kana_Fullstop;
-	else if (strcmp("OpeningBracket", keyname) == 0)
+	else if (strcmp("openingbracket", keyname) == 0)
 	  return UKey_Kana_OpeningBracket;
-	else if (strcmp("ClosingBracket", keyname) == 0)
+	else if (strcmp("closingbracket", keyname) == 0)
 	  return UKey_Kana_ClosingBracket;
-	else if (strcmp("Comma", keyname) == 0)
+	else if (strcmp("comma", keyname) == 0)
 	  return UKey_Kana_Comma;
-	else if (strcmp("Conjunctive", keyname) == 0)
+	else if (strcmp("conjunctive", keyname) == 0)
 	  return UKey_Kana_Conjunctive;
 	else if (strcmp("WO", keyname) == 0)
 	  return UKey_Kana_WO;
@@ -326,8 +365,6 @@ convert_keyname_e2u(const char *keyname)
 	  return UKey_Kana_yo;
 	else if (strcmp("tsu", keyname) == 0)
 	  return UKey_Kana_tsu;
-	else if (strcmp("ProlongedSound", keyname) == 0)
-	  return UKey_Kana_ProlongedSound;
 	else if (strcmp("A", keyname) == 0)
 	  return UKey_Kana_A;
 	else if (strcmp("I", keyname) == 0)
@@ -418,84 +455,12 @@ convert_keyname_e2u(const char *keyname)
 	  return UKey_Kana_WA;
 	else if (strcmp("N", keyname) == 0)
 	  return UKey_Kana_N;
-	else if (strcmp("VoicedSound", keyname) == 0)
-	  return UKey_Kana_VoicedSound;
-	else if (strcmp("SemivoicedSound", keyname) == 0)
-	  return UKey_Kana_SemivoicedSound;
-  } else if (strncmp("Private", keyname, strlen("Private")) == 0) {
-	keyname += strlen("Private");
-	if (strcmp("1", keyname) == 0)
-	  return UKey_Private1;
-	else if (strcmp("2", keyname) == 0)
-	  return UKey_Private2;
-	else if (strcmp("3", keyname) == 0)
-	  return UKey_Private3;
-	else if (strcmp("4", keyname) == 0)
-	  return UKey_Private4;
-	else if (strcmp("5", keyname) == 0)
-	  return UKey_Private5;
-	else if (strcmp("6", keyname) == 0)
-	  return UKey_Private6;
-	else if (strcmp("7", keyname) == 0)
-	  return UKey_Private7;
-	else if (strcmp("8", keyname) == 0)
-	  return UKey_Private8;
-	else if (strcmp("9", keyname) == 0)
-	  return UKey_Private9;
-	else if (strcmp("10", keyname) == 0)
-	  return UKey_Private10;
-	else if (strcmp("11", keyname) == 0)
-	  return UKey_Private11;
-	else if (strcmp("12", keyname) == 0)
-	  return UKey_Private12;
-	else if (strcmp("13", keyname) == 0)
-	  return UKey_Private13;
-	else if (strcmp("14", keyname) == 0)
-	  return UKey_Private14;
-	else if (strcmp("15", keyname) == 0)
-	  return UKey_Private15;
-	else if (strcmp("16", keyname) == 0)
-	  return UKey_Private16;
-	else if (strcmp("17", keyname) == 0)
-	  return UKey_Private17;
-	else if (strcmp("18", keyname) == 0)
-	  return UKey_Private18;
-	else if (strcmp("19", keyname) == 0)
-	  return UKey_Private19;
-	else if (strcmp("20", keyname) == 0)
-	  return UKey_Private20;
-	else if (strcmp("21", keyname) == 0)
-	  return UKey_Private21;
-	else if (strcmp("22", keyname) == 0)
-	  return UKey_Private22;
-	else if (strcmp("23", keyname) == 0)
-	  return UKey_Private23;
-	else if (strcmp("24", keyname) == 0)
-	  return UKey_Private24;
-	else if (strcmp("25", keyname) == 0)
-	  return UKey_Private25;
-	else if (strcmp("26", keyname) == 0)
-	  return UKey_Private26;
-	else if (strcmp("27", keyname) == 0)
-	  return UKey_Private27;
-	else if (strcmp("28", keyname) == 0)
-	  return UKey_Private28;
-	else if (strcmp("29", keyname) == 0)
-	  return UKey_Private29;
-	else if (strcmp("30", keyname) == 0)
-	  return UKey_Private30;
-  } else if (strcmp("Shift_key", keyname) == 0)
-	return UKey_Shift_key;
-  else if (strcmp("Alt_key", keyname) == 0)
-	return UKey_Alt_key;
-  else if (strcmp("Control_key", keyname) == 0)
-	return UKey_Control_key;
-  else if (strcmp("Meta_key", keyname) == 0)
-	return UKey_Meta_key;
-  else if (strcmp("Super_key", keyname) == 0)
-	return UKey_Super_key;
-  else if (strcmp("Hyper_key", keyname) == 0)
-	return UKey_Hyper_key;
+  } else if (strcmp("prolongedsound", keyname) == 0)
+	  return UKey_Kana_ProlongedSound;
+  else if (strcmp("voicedsound", keyname) == 0)
+	return UKey_Kana_VoicedSound;
+  else if (strcmp("semivoicedsound", keyname) == 0)
+	return UKey_Kana_SemivoicedSound;
   else
 	return UKey_Other;
 
