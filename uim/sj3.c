@@ -292,6 +292,27 @@ uim_sj3_getdouon(uim_lisp yomi_)
 }
 
 static uim_lisp
+uim_sj3_getnthdouon(uim_lisp yomi_, uim_lisp nth_)
+{
+  const char *yomi = REFER_C_STR(yomi_);
+  int douon_cnt;
+  struct douon douon[BUFSIZ];
+  int nth = C_INT(nth_);
+  uim_lisp ret_ = uim_scm_f();
+
+  if (255 < strlen(yomi))
+    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
+
+  douon_cnt = sj3_getdouon_euc((unsigned char *)yomi, douon);
+  if (douon_cnt == -1)
+    return uim_sj3_server_down_error();
+
+  if (douon_cnt < nth)
+	  return uim_scm_f();
+  return MAKE_STR((char *)douon[nth].ddata);
+}
+
+static uim_lisp
 uim_sj3_gakusyuu(uim_lisp dcid_)
 {
   struct studyrec *dcid = C_PTR(dcid_);
@@ -492,6 +513,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc1("sj3-lib-getkan", uim_sj3_getkan);
   uim_scm_init_proc1("sj3-lib-douoncnt", uim_sj3_douoncnt);
   uim_scm_init_proc1("sj3-lib-getdouon", uim_sj3_getdouon);
+  uim_scm_init_proc2("sj3-lib-get-nth-douon", uim_sj3_getnthdouon);
   uim_scm_init_proc1("sj3-lib-gakusyuu", uim_sj3_gakusyuu);
   uim_scm_init_proc3("sj3-lib-gakusyuu2", uim_sj3_gakusyuu2);
   uim_scm_init_proc3("sj3-lib-touroku", uim_sj3_touroku);
