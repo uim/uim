@@ -128,7 +128,7 @@
            (sj3-context-set-sc-ctx! sc (cdr ret))
            (- (length ret) 1))
           (else
-           #f))))
+           0))))
 (define (sj3-lib-commit-segment sc-ctx seg delta)
   (let ((douon (sj3-getdouon (sj3-get-nth-yomi sc-ctx seg))))
     (if (< delta (length douon))
