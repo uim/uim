@@ -26,7 +26,6 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * Updated the composition table to 2007-12-10 version
 
   - uim-skk
-    * 'look' -based completion
     * IPv6 skkserver support
 
   - uim-byeoru
@@ -70,19 +69,16 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * Fix composition rules ([uim-ja 29])
 
   - uim-prime
-    * Handle unix domain socket timeout
+    * Fix to be able to select URL candidate at Firefox URL field
 
   - uim-m17nlib
     * Fix opening all of registered m17n IM at startup unnecessarily
-    * Fix listing incomplete IMs
 
   - uim-scim
     * Fix compilation failure
 
   - Japanese composition table
     * Fix some rules
-    * Fix fullwidth middle dot in halfwidth katakana table for
-      Japanese kana-keyboard
     * Replace fullwidth yen sign for romaji-halfwidth-kana-mode and
       alphanumeric-mode since ordinary Japanese users just expect to
       input character code 134 rather than yen sign symbol
@@ -100,13 +96,7 @@ Overview of changes from 1.4.x to 1.5.0-alpha
       real require-module
 
   - GTK+ bridge
-    * Fix token buffer usage of X11 Compose
-    * Fix freeing strings allocated by glib
     * Fix broken gtk.immodules installation depending on GTK+ location
-
-  - Qt3 bridge
-  - XIM bridge
-    * Fix token buffer usage of X11 Compose
 
   - uim-fep
     * Fix the unupdated IM-name of the status line on IM-switching by
@@ -123,12 +113,68 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * Support shifted-motion-keys-select-region feature of XEmacs
     * Support the commands terminated by help-char on XEmacs
 
-  - uim-toolbar-gtk-systray
-    * Adjust focus padding in systray
-
 * Others
   - Split libuim-scm off from libuim
   - Various API and ABI changes (see doc/COMPATIBILITY)
+
+
+Overview of changes from 1.4.1 to 1.4.2
+==
+* Fixed
+  - uim Scheme library
+    - Fix memory alignment of symbol name, which can be a problem
+      with jemalloc in FreeBSD 7 and Firefox 3
+    - Fix string buffer usage
+    - Fix possible memory leak
+    - Fix compilation on Mac OS X 10.5
+    - Support OpenBSD PowerPC and x86_64 in libgcroots
+
+  - libuim
+    - Fix leak in file descriptors when uim-helper-server is not
+      working (Christian Biere)
+
+  - uim-prime
+    - Handle unix domain socket timeout
+
+  - uim-m17nlib
+    - Fix listing incomplete IMs
+
+  - Japanese composition table
+    - Fix fullwidth middle dot in halfwidth katakana table for
+      Japanese kana-keyboard
+
+  - GTK+ bridge
+    - Fix token buffer usage of X11 Compose
+    - Fix freeing strings allocated by glib
+  - Qt bridge
+    - Fix token buffer usage of X11 Compose
+  - XIM bridge
+    - Fix token buffer usage of X11 Compose
+    - Fix compilation with GCC-4.3
+
+  - uim-toolbar-gtk-systray
+    - Adjust focus padding in systray
+
+
+Overview of changes from 1.4.0 to 1.4.1
+==
+* Fixed
+  - libuim
+    - Fix crash in a context using toggled IM when updating the custom
+      setting by uim-pref
+
+  - Anthy, Canna, Mana
+    - Fix crash with Kana input mode
+    - Fix crash upon converting a preedit string into alphanumeric
+      characters
+
+  - Pinyin (Simplified, Unicode, Traditional)
+    - Fix crash upon selecting a candidate with numeric keys
+
+  - uim Scheme library
+    - Support SIOD compatible behavior with syntax 'if'
+
+  - Fix compilation in qt directory with --disable-nls option
 
 
 Overview of changes from 1.4.0-beta to 1.4.0
