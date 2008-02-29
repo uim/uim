@@ -64,14 +64,14 @@ uim_sj3_make_error_pair(char *sym, char *str)
 }
 
 static uim_lisp
-uim_sj3_make_error(char *sym, char *str)
+uim_sj3_make_single_error(char *sym, char *str)
 {
-  return CONS(MAKE_SYM("error"), uim_sj3_make_error_pair(sym, str));
+  return CONS(MAKE_SYM("error"), LIST1(uim_sj3_make_error_pair(sym, str)));
 }
 
-#define uim_sj3_server_down_error() uim_sj3_make_error("*SJ3-SERVER-DOWN-ERROR*" , N_("Serverdown."))
-#define uim_sj3_undefined_error()   uim_sj3_make_error("*SJ3-UNDEFINED-ERROR*"   , N_("Undefined error."))
-#define uim_sj3_internal_error()    uim_sj3_make_error("*SJ3-UIM-INTERNAL-ERROR*", N_("Internal error."))
+#define uim_sj3_server_down_error() uim_sj3_make_single_error("*SJ3-SERVER-DOWN-ERROR*" , N_("Serverdown."))
+#define uim_sj3_undefined_error()   uim_sj3_make_single_error("*SJ3-UNDEFINED-ERROR*"   , N_("Undefined error."))
+#define uim_sj3_internal_error()    uim_sj3_make_single_error("*SJ3-UIM-INTERNAL-ERROR*", N_("Internal error."))
 
 static uim_lisp
 uim_sj3_select_error(int errno, const struct uim_sj3_error *error)
@@ -215,7 +215,7 @@ uim_sj3_getkan(uim_lisp yomi_)
   uim_lisp ret_ = uim_scm_f();
 
   if (255 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
+    return uim_sj3_make_single_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   bunsetu_cnt = sj3_getkan_euc((unsigned char *)yomi, bun, (unsigned char *)kanji, sizeof(kanji));
 
@@ -223,7 +223,7 @@ uim_sj3_getkan(uim_lisp yomi_)
     return uim_sj3_server_down_error();
 
   if (bun[bunsetu_cnt - 1].destlen == 0) /* too large? */
-    return uim_sj3_make_error("*SJ3-TOO-SHORT-BUFFER-SIZE*", N_(" Buffer size is too short."));
+    return uim_sj3_make_single_error("*SJ3-TOO-SHORT-BUFFER-SIZE*", N_(" Buffer size is too short."));
 
   if (bunsetu_cnt == 0)
     return MAKE_STR("");
@@ -260,7 +260,7 @@ uim_sj3_douoncnt(uim_lisp yomi_)
   int ret;
 
   if (63 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
+    return uim_sj3_make_single_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   ret = sj3_douoncnt_euc((unsigned char *)yomi);
   if (ret == -1)
@@ -279,7 +279,7 @@ uim_sj3_getdouon(uim_lisp yomi_)
   uim_lisp ret_ = uim_scm_f();
 
   if (255 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
+    return uim_sj3_make_single_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   douon_cnt = sj3_getdouon_euc((unsigned char *)yomi, douon);
   if (douon_cnt == -1)
@@ -298,10 +298,9 @@ uim_sj3_getnthdouon(uim_lisp yomi_, uim_lisp nth_)
   int douon_cnt;
   struct douon douon[BUFSIZ];
   int nth = C_INT(nth_);
-  uim_lisp ret_ = uim_scm_f();
 
   if (255 < strlen(yomi))
-    return uim_sj3_make_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
+    return uim_sj3_make_single_error("*SJ3-YOMI-STRING-TOO-LONG*", N_("Yomi string is too long."));
 
   douon_cnt = sj3_getdouon_euc((unsigned char *)yomi, douon);
   if (douon_cnt == -1)
@@ -420,7 +419,7 @@ uim_sj3_touroku(uim_lisp yomi_, uim_lisp kanji_, uim_lisp hinsi_)
   int ret;
 
   if (31 < strlen(yomi) || 31 < strlen(kanji))
-    return uim_sj3_make_error("*SJ3-KANJI-STRING-TOO-LONG*", N_("Kanji string is too long."));
+    return uim_sj3_make_single_error("*SJ3-KANJI-STRING-TOO-LONG*", N_("Kanji string is too long."));
 
   while (1) {
     if (uim_sj3_hinsi[i].name == NULL)
@@ -451,7 +450,7 @@ uim_sj3_syoukyo(uim_lisp yomi_, uim_lisp kanji_, uim_lisp hinsi_)
   int ret;
 
   if (31 < strlen(yomi) || 31 < strlen(kanji))
-    return uim_sj3_make_error("*SJ3-KANJI-STRING-TOO-LONG*", N_("Kanji string is too long."));
+    return uim_sj3_make_single_error("*SJ3-KANJI-STRING-TOO-LONG*", N_("Kanji string is too long."));
 
   while (1) {
     if (uim_sj3_hinsi[i].name == NULL)
