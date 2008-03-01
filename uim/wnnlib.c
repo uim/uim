@@ -597,10 +597,6 @@
  * displayBuf: これはデータ構造を示すための例文です
  */
 
-#ifndef lint
-static char	*rcsid = "$Id: wnnlib.c,v 10.15 1999/05/25 06:24:01 ishisone Exp $";
-#endif
-
 #ifdef DEBUG_WNNLIB
 #include	<stdio.h>
 #endif
@@ -1326,7 +1322,6 @@ doKantanSConvert(jcConvBuf *buf, int cl)
 	int	next = cl + 1;
 	jcClause	*clp;
 	int	len, newlen, diff;
-	wchar	*dispp;
 	wchar	savechar;
 	wchar	*savep;
 	int	nsbun;
@@ -1469,7 +1464,6 @@ unconvert(jcConvBuf *buf, int start, int end)
 {
 	jcClause	*clps, *clpe;
 	int	diff, len;
-	int	n;
 	wchar	savechar;
 
 	TRACE("unconvert", "Enter")
@@ -2489,8 +2483,6 @@ uim_wnn_jcUnconvert(uim_lisp buf_)
 int
 jcCancel(jcConvBuf *buf)
 {
-	int len;
-
 	TRACE("jcCancel", "Enter")
 
 	CHECKFIXED(buf);
@@ -2695,8 +2687,6 @@ uim_wnn_jcKana(uim_lisp buf_, uim_lisp small_, uim_lisp kind_)
 int
 jcFix(jcConvBuf *buf)
 {
-	int	i;
-
 	TRACE("jcFix", "Enter")
 
 	if (buf->fixed) {
@@ -2725,8 +2715,6 @@ uim_wnn_jcFix(uim_lisp buf_)
 int
 jcFix1(jcConvBuf *buf)
 {
-	int	i;
-
 	TRACE("jcFix1", "Enter")
 
 	if (buf->fixed) {
@@ -2879,9 +2867,6 @@ uim_wnn_jcCandidateInfo(uim_lisp buf_, uim_lisp small_)
 int
 jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
 {
-	int	ns;
-	wchar	*p;
-
 	TRACE("jcGetCandidates", "Enter")
 
 	CHECKFIXED(buf);
