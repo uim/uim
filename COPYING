@@ -113,3 +113,25 @@ Permission to modify the code and to distribute modified code is granted,
 provided the above notices are retained, and a notice that the code was
 modified is included with the above copyright notice.
 -----------------------------------------------------------------------------
+
+
+uim/wnnlib.h and uim/wnnlib.c is covered by:
+-----------------------------------------------------------------------------
+Copyright (c) 1989  Software Research Associates, Inc.
+Copyright (c) 1998  MORIBE, Hideyuki
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted, provided
+that the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation, and that the name of Software Research Associates not be
+used in advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.  Software Research
+Associates makes no representations about the suitability of this software
+for any purpose.  It is provided "as is" without express or implied
+warranty.
+
+Author:  Makoto Ishisone, Software Research Associates, Inc., Japan
+         ishisone@sra.co.jp
+         MORIBE, Hideyuki
+-----------------------------------------------------------------------------

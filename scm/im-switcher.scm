@@ -41,6 +41,7 @@
   '((direct . "-")
     (anthy  . "A")
     (canna  . "C")
+    (wnn    . "W")
     (mana   . "M")
     (sj3    . "3")
     (skk    . "S")

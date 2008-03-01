@@ -166,6 +166,21 @@ AC_ARG_WITH(canna,
 	use_canna="no"
 ])
 
+AC_ARG_WITH(wnn,
+	AS_HELP_STRING([--with-wnn], [Build with libwnn
+					@<:@default=no@:>@]),
+	[
+	if test "x$with_wnn" = "xyes"; then
+		AC_CHECK_HEADERS([jllib.h],
+    		 [AC_CHECK_LIB(wnn, jl_open_lang, use_wnn=yes, use_wnn=no)
+		 ], [use_wnn="no"], [])
+	else
+		use_wnn="no"
+	fi
+	],[
+	use_wnn="no"
+])
+
 # *********************
 # *** Tests for SJ3 ***
 # *********************
@@ -985,6 +1000,7 @@ AM_CONDITIONAL(SCIM, test x$use_scim = xyes)
 AM_CONDITIONAL(ANTHY, test x$use_anthy = xyes)
 AM_CONDITIONAL(ANTHY_UTF8, test x$use_anthy_utf8 = xyes)
 AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
+AM_CONDITIONAL(WNN, test x$use_wnn = xyes)
 AM_CONDITIONAL(SJ3, test x$use_sj3 = xyes)
 AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
@@ -1553,6 +1569,7 @@ Configure Result :
    Anthy           : ${use_anthy}
    Anthy (UTF-8)   : ${use_anthy_utf8}
    Canna           : ${use_canna}
+   Wnn             : ${use_wnn}
    SJ3             : ${use_sj3}
    Mana            : ${use_mana}
    PRIME           : ${use_prime}
