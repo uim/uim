@@ -623,10 +623,6 @@ static char	*rcsid = "$Id: wnnlib.c,v 10.15 1999/05/25 06:24:01 ishisone Exp $";
 #include "gettext.h"
 #include "plugin.h"
 
-#ifndef NULL
-#define NULL	0
-#endif
-
 #ifdef DEBUG_WNNLIB
 #ifdef __STDC__
 static void showBuffers(jcConvBuf *, char *);
@@ -672,7 +668,6 @@ extern char	*memset();
 #endif
 #endif
 
-#ifdef __STDC__
 /* ファンクションプロトタイプ宣言 */
 static int wstrlen(wchar *);
 static void moveKBuf(jcConvBuf *, int, int);
@@ -694,28 +689,6 @@ static int getCandidates(jcConvBuf *, int);
 static int setCandidate(jcConvBuf *, int);
 static void checkCandidates(jcConvBuf *, int, int);
 static int forceStudy(jcConvBuf *, int);
-#else
-static int wstrlen();
-static void moveKBuf();
-static void moveDBuf();
-static void moveCInfo();
-static int resizeBuffer();
-static int resizeCInfo();
-static void setCurClause();
-static int getHint();
-static int renConvert();
-static int tanConvert();
-static int doKanrenConvert();
-static int doKantanDConvert();
-static int doKantanSConvert();
-static int unconvert();
-static int expandOrShrink();
-static int makeConverted();
-static int getCandidates();
-static int setCandidate();
-static void checkCandidates();
-static int forceStudy();
-#endif
 
 /* エラー番号 */
 int	jcErrno;
@@ -725,8 +698,7 @@ int	jcErrno;
  */
 
 static int
-wstrcmp(s1, s2)
-wchar *s1, *s2;
+wstrcmp(wchar *s1, wchar *s2)
 {
         while (*s1 && *s1 == *s2)
                 s1++, s2++;
@@ -735,11 +707,8 @@ wchar *s1, *s2;
 
 #ifdef OVERLAP_BCOPY
 #undef bcopy
-static
-bcopy(from, to, n)
-register char *from;
-register char *to;
-register int n;
+static void
+bcopy(char *from, char *to, int n)
 {
 	if (n <= 0 || from == to) return;
 
@@ -761,8 +730,7 @@ register int n;
 
 /* wstrlen -- wchar 型文字列の strlen */
 static int
-wstrlen(s)
-wchar *s;
+wstrlen(wchar *s)
 {
 	int	n = 0;
 
@@ -804,10 +772,7 @@ wstoeuc(char *euc, wchar *wstr, int len)
 
 /* moveKBuf -- かなバッファの指定された文節の先頭からあとを動かす */
 static void
-moveKBuf(buf, cl, move)
-jcConvBuf *buf;
-int cl;
-int move;
+moveKBuf(jcConvBuf *buf, int cl, int move)
 {
 	jcClause	*clp = buf->clauseInfo + cl;
 	jcClause	*clpend;
@@ -836,10 +801,7 @@ int move;
 
 /* moveDBuf -- 表示バッファの指定された文節の先頭からあとを動かす */
 static void
-moveDBuf(buf, cl, move)
-jcConvBuf *buf;
-int cl;
-int move;
+moveDBuf(jcConvBuf *buf, int cl, int move)
 {
 	jcClause	*clp = buf->clauseInfo + cl;
 	jcClause	*clpend;
@@ -870,10 +832,7 @@ int move;
 
 /* moveCInfo -- ClauseInfo の指定された文節の先頭からあとを動かす */
 static void
-moveCInfo(buf, cl, move)
-jcConvBuf *buf;
-int cl;
-int move;
+moveCInfo(jcConvBuf *buf, int cl, int move)
 {
 	jcClause	*clp = buf->clauseInfo + cl;
 	int		len;
@@ -906,9 +865,7 @@ int move;
 
 /* resizeBuffer -- かな/表示バッファの大きさを変える */
 static int
-resizeBuffer(buf, len)
-jcConvBuf *buf;
-int len;
+resizeBuffer(jcConvBuf *buf, int len)
 {
 	wchar	*kbufold, *dbufold;
 	wchar	*kbufnew, *dbufnew;
@@ -961,9 +918,7 @@ int len;
 
 /* resizeCInfo -- clauseInfo バッファの大きさを変える */
 static int
-resizeCInfo(buf, size)
-jcConvBuf *buf;
-int size;
+resizeCInfo(jcConvBuf *buf, int size)
 {
 	jcClause	*cinfonew;
 
@@ -984,9 +939,7 @@ int size;
 
 /* setCurClause -- カレント文節を設定する */
 static void
-setCurClause(buf, cl)
-jcConvBuf *buf;
-int cl;		/* カレント小文節番号 */
+setCurClause(jcConvBuf *buf, int cl)
 {
 	jcClause	*clp = buf->clauseInfo;
 	int		i;
@@ -1009,10 +962,7 @@ int cl;		/* カレント小文節番号 */
 
 /* getHint -- 文節の前後の接続情報を得る */
 static int
-getHint(buf, start, end)
-jcConvBuf *buf;
-int start;
-int end;
+getHint(jcConvBuf *buf, int start, int end)
 {
 	jcClause *cinfo = buf->clauseInfo;
 	int hint = 0;
@@ -1037,9 +987,7 @@ int end;
 
 /* renConvert -- カレント文節から後ろを連文節変換する */
 static int
-renConvert(buf, small)
-jcConvBuf *buf;
-int small;
+renConvert(jcConvBuf *buf, int small)
 {
 	TRACE("renConvert", "Enter")
 
@@ -1070,9 +1018,7 @@ int small;
 
 /* tanConvert -- カレント文節を単文節変換する */
 static int
-tanConvert(buf, small)
-jcConvBuf *buf;
-int small;
+tanConvert(jcConvBuf *buf, int small)
 {
 	TRACE("tanConvert", "Enter")
 
@@ -1141,9 +1087,7 @@ int small;
 
 /* doKanrenConvert -- 指定された文節から後ろを連文節変換する */
 static int
-doKanrenConvert(buf, cl)
-jcConvBuf *buf;
-int cl;
+doKanrenConvert(jcConvBuf *buf, int cl)
 {
 	jcClause	*clp;
 	wchar	*kanap, *dispp;
@@ -1254,10 +1198,7 @@ int cl;
 
 /* doKantanDConvert -- 指定された範囲の文節を大文節として単文節変換する */
 static int
-doKantanDConvert(buf, cls, cle)
-jcConvBuf *buf;
-int cls;
-int cle;
+doKantanDConvert(jcConvBuf *buf, int cls, int cle)
 {
 	jcClause	*clps, *clpe;
 	int	len, diff, newlen;
@@ -1380,9 +1321,7 @@ int cle;
 
 /* doKantanSConvert -- 指定された文節を小文節として単文節変換する */
 static int
-doKantanSConvert(buf, cl)
-jcConvBuf *buf;
-int cl;
+doKantanSConvert(jcConvBuf *buf, int cl)
 {
 	int	next = cl + 1;
 	jcClause	*clp;
@@ -1468,9 +1407,7 @@ int cl;
 /* makeConverted -- 指定された文節の直前までが jllib で変換されている
    ことを保証する */
 static int
-makeConverted(buf, cl)
-jcConvBuf *buf;
-int cl;
+makeConverted(jcConvBuf *buf, int cl)
 {
 	int	nsbun;
 	int	next;
@@ -1528,10 +1465,7 @@ int cl;
 
 /* unconvert -- 指定された範囲の文節を一つの無変換の文節にする */
 static int
-unconvert(buf, start, end)
-jcConvBuf *buf;
-int start;
-int end;
+unconvert(jcConvBuf *buf, int start, int end)
 {
 	jcClause	*clps, *clpe;
 	int	diff, len;
@@ -1637,11 +1571,7 @@ int end;
 }
 
 static int
-expandOrShrink(buf, small, expand, convf)
-jcConvBuf *buf;
-int small;
-int expand;
-int convf;
+expandOrShrink(jcConvBuf *buf, int small, int expand, int convf)
 {
 	jcClause	*clp, *clpe;
 	wchar	*kanap, *dispp;
@@ -1901,9 +1831,7 @@ int convf;
 
 /* getCandidates -- 全候補を取り出す。ただし、既に取り出し済みなら何もしない */
 static int
-getCandidates(buf, small)
-jcConvBuf *buf;
-int small;
+getCandidates(jcConvBuf *buf, int small)
 {
 	int start, end;
 	
@@ -1981,9 +1909,7 @@ int small;
 
 /* setCandidate -- 指定された候補でバッファを置き換える */
 static int
-setCandidate(buf, n)
-jcConvBuf *buf;
-int n;
+setCandidate(jcConvBuf *buf, int n)
 {
 	int	start = buf->candClause;
 	int 	end = buf->candClauseEnd;
@@ -2149,10 +2075,7 @@ int n;
 
 /* checkCandidates -- 全候補が有効かチェックして、必要な処理を行なう */
 static void
-checkCandidates(buf, cls, cle)
-jcConvBuf *buf;
-int cls;
-int cle;
+checkCandidates(jcConvBuf *buf, int cls, int cle)
 {
 	/* 文節番号 cls から cle - 1 までの文節が変更される
 	 * 次候補バッファにはいっている候補文節がこの中に含まれていれば
@@ -2175,9 +2098,7 @@ int cle;
 
 /* forceStudy -- 未変換および疑似変換文節の学習 */
 static int
-forceStudy(buf, n)
-jcConvBuf *buf;
-int n;
+forceStudy(jcConvBuf *buf, int n)
 {
 	int i, j, k;
 	int status;
@@ -2336,10 +2257,7 @@ int n;
 
 /* jcCreateBuf -- 変換バッファの作成 */
 jcConvBuf *
-jcCreateBuffer(wnn, nclause, buffersize)
-struct wnn_buf *wnn;
-int nclause;
-int buffersize;
+jcCreateBuffer(struct wnn_buf *wnn, int nclause, int buffersize)
 {
 	jcConvBuf	*buf;
 
@@ -2403,9 +2321,7 @@ uim_wnn_jcCreateBuffer(uim_lisp wnn_, uim_lisp nclause_, uim_lisp buffersize_)
 
 /* jcDestroyBuffer -- 変換バッファの消去 */
 int
-jcDestroyBuffer(buf, savedic)
-jcConvBuf *buf;
-int savedic;
+jcDestroyBuffer(jcConvBuf *buf, int savedic)
 {
 	TRACE("jcDestroyBuffer", "Enter")
 
@@ -2438,8 +2354,7 @@ uim_wnn_jcDestroyBuffer(uim_lisp buf_, uim_lisp savedic_)
 
 /* jcClear -- wnnlib の初期化 (新たな変換を始める毎に呼ばなければならない) */
 int
-jcClear(buf)
-jcConvBuf *buf;
+jcClear(jcConvBuf *buf)
 {
 	TRACE("jcClear", "Enter")
 
@@ -2471,11 +2386,7 @@ uim_wnn_jcClear(uim_lisp buf_)
 
 /* jcConvert -- カレント文節以降をかな漢字変換する */
 int
-jcConvert(buf, small, tan, jump)
-jcConvBuf *buf;
-int small;
-int tan;
-int jump;
+jcConvert(jcConvBuf *buf, int small, int tan, int jump)
 {
 	int	ret;
 
@@ -2520,8 +2431,7 @@ uim_wnn_jcConvert(uim_lisp buf_, uim_lisp small_, uim_lisp tan_, uim_lisp jump_)
 
 /* jcUnconvert -- カレント大文節を無変換の状態に戻す */
 int
-jcUnconvert(buf)
-jcConvBuf *buf;
+jcUnconvert(jcConvBuf *buf)
 {
 	jcClause	*clp = buf->clauseInfo + buf->curClause;
 
@@ -2577,8 +2487,7 @@ uim_wnn_jcUnconvert(uim_lisp buf_)
 
 /* jcCancel -- 入力中の全文節を無変換状態にする */
 int
-jcCancel(buf)
-jcConvBuf *buf;
+jcCancel(jcConvBuf *buf)
 {
 	int len;
 
@@ -2629,10 +2538,7 @@ uim_wnn_jcCancel(uim_lisp buf_)
 
 /* jcExpand -- カレント文節を１文字広げる */
 int
-jcExpand(buf, small, convf)
-jcConvBuf *buf;
-int small;
-int convf;
+jcExpand(jcConvBuf *buf, int small, int convf)
 {
 	TRACE("jcExpand", "Enter")
 
@@ -2649,10 +2555,7 @@ uim_wnn_jcExpand(uim_lisp buf_, uim_lisp small_, uim_lisp convf_)
 
 /* jcShrink -- カレント文節を１文字縮める */
 int
-jcShrink(buf, small, convf)
-jcConvBuf *buf;
-int small;
-int convf;
+jcShrink(jcConvBuf *buf, int small, int convf)
 {
 	TRACE("jcShrink", "Enter")
 
@@ -2669,10 +2572,7 @@ uim_wnn_jcShrink(uim_lisp buf_, uim_lisp small_, uim_lisp convf_)
 
 /* jcKana -- カレント文節をかなにする */
 int
-jcKana(buf, small, kind)
-jcConvBuf *buf;
-int small;
-int kind;
+jcKana(jcConvBuf *buf, int small, int kind)
 {
 	jcClause	*clp;
 	wchar		*kanap, *kanaendp, *dispp;
@@ -2793,8 +2693,7 @@ uim_wnn_jcKana(uim_lisp buf_, uim_lisp small_, uim_lisp kind_)
 
 /* jcFix -- 確定する */
 int
-jcFix(buf)
-jcConvBuf *buf;
+jcFix(jcConvBuf *buf)
 {
 	int	i;
 
@@ -2824,8 +2723,7 @@ uim_wnn_jcFix(uim_lisp buf_)
 
 /* jcFix1 -- 最初の一文字だけを確定する */
 int
-jcFix1(buf)
-jcConvBuf *buf;
+jcFix1(jcConvBuf *buf)
 {
 	int	i;
 
@@ -2874,10 +2772,7 @@ uim_wnn_jcFix1(uim_lisp buf_)
 
 /* jcNext -- カレント文節を次候補/前候補で置き換える */
 int
-jcNext(buf, small, prev)
-jcConvBuf *buf;
-int small;
-int prev;
+jcNext(jcConvBuf *buf, int small, int prev)
 {
 	int	n;
 
@@ -2929,11 +2824,7 @@ uim_wnn_jcNext(uim_lisp buf_, uim_lisp small_, uim_lisp prev_)
  *		      もし次候補がまだバッファに入っていなければ用意する
  */
 int
-jcCandidateInfo(buf, small, ncandp, curcandp)
-jcConvBuf *buf;
-int small;
-int *ncandp;
-int *curcandp;
+jcCandidateInfo(jcConvBuf *buf, int small, int *ncandp, int *curcandp)
 {
 	int 	cand, ncand;
 
@@ -2986,10 +2877,7 @@ uim_wnn_jcCandidateInfo(uim_lisp buf_, uim_lisp small_)
 
 /* jcGetCandidate -- 指定された番号の候補を取り出す */
 int
-jcGetCandidate(buf, n, candstr)
-jcConvBuf *buf;
-int n;
-wchar *candstr;
+jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
 {
 	int	ns;
 	wchar	*p;
@@ -3032,9 +2920,7 @@ uim_wnn_jcGetCandidate(uim_lisp buf_, uim_lisp n_)
 
 /* jcSelect -- 表示バッファを指定された候補と置き換える */
 int
-jcSelect(buf, n)
-jcConvBuf *buf;
-int n;
+jcSelect(jcConvBuf *buf, int n)
 {
 	TRACE("jcSelect", "Enter")
 
@@ -3076,8 +2962,7 @@ uim_wnn_jcSelect(uim_lisp buf_, uim_lisp n_)
 
 /* jcDotOffset -- 大文節の先頭からのドットのオフセットを返す */
 int
-jcDotOffset(buf)
-jcConvBuf *buf;
+jcDotOffset(jcConvBuf *buf)
 {
 	TRACE("jcDotOffset", "Enter")
 
@@ -3092,9 +2977,7 @@ uim_wnn_jcDotOffset(uim_lisp buf_)
 
 /* jcIsConverted -- 指定された文節が変換されているかどうかを返す */
 int
-jcIsConverted(buf, cl)
-jcConvBuf *buf;
-int cl;
+jcIsConverted(jcConvBuf *buf, int cl)
 {
 	TRACE("jcIsConverted", "Enter")
 
@@ -3123,10 +3006,7 @@ uim_wnn_jcIsConverted(uim_lisp buf_, uim_lisp cl_)
 
 /* jcMove -- ドット・カレント文節を移動する */
 int
-jcMove(buf, small, dir)
-jcConvBuf *buf;
-int small;
-int dir;
+jcMove(jcConvBuf *buf, int small, int dir)
 {
 	jcClause	*clp = buf->clauseInfo + buf->curClause;
 	int		i;
@@ -3240,8 +3120,7 @@ uim_wnn_jcMove(uim_lisp buf_, uim_lisp small_, uim_lisp dir_)
 
 /* jcTop -- ドット・カレント文節を文の先頭に移動する */
 int
-jcTop(buf)
-jcConvBuf *buf;
+jcTop(jcConvBuf *buf)
 {
 	TRACE("jcTop", "Enter")
 
@@ -3260,8 +3139,7 @@ uim_wnn_jcTop(uim_lisp buf_)
 
 /* jcBottom -- ドット・カレント文節を文の最後に移動する */
 int
-jcBottom(buf)
-jcConvBuf *buf;
+jcBottom(jcConvBuf *buf)
 {
 	TRACE("jcBottom", "Enter")
 
@@ -3293,9 +3171,7 @@ uim_wnn_jcBottom(uim_lisp buf_)
 
 /* jcInsertChar -- ドットの位置に一文字挿入する */
 int
-jcInsertChar(buf, c)
-jcConvBuf *buf;
-int c;
+jcInsertChar(jcConvBuf *buf, int c)
 {
 	jcClause	*clp;
 	wchar	*dot, *dispdot;
@@ -3394,9 +3270,7 @@ uim_wnn_jcInsertChar(uim_lisp buf_, uim_lisp c_)
 
 /* jcDeleteChar -- ドットの前または後ろの一文字を削除する */
 int
-jcDeleteChar(buf, prev)
-jcConvBuf *buf;
-int prev;
+jcDeleteChar(jcConvBuf *buf, int prev)
 {
 	jcClause	*clp;
 	wchar		*dot, *dispdot;
@@ -3526,8 +3400,7 @@ uim_wnn_jcDeleteChar(uim_lisp buf_, uim_lisp prev_)
 
 /* jcKillLine -- ドット以降を削除する */
 int
-jcKillLine(buf)
-jcConvBuf *buf;
+jcKillLine(jcConvBuf *buf)
 {
 	int cc = buf->curClause;
 
@@ -3597,9 +3470,7 @@ uim_wnn_jcKillLine(uim_lisp buf_)
 
 /* jcChangeClause -- カレント大文節を指定された文字列で置き換える */
 int
-jcChangeClause(buf, str)
-jcConvBuf *buf;
-wchar *str;
+jcChangeClause(jcConvBuf *buf, wchar *str)
 {
 	jcClause	*clps, *clpe;
 	wchar	*p;
@@ -3696,8 +3567,7 @@ uim_wnn_jcChangeClause(uim_lisp buf_, uim_lisp str_)
 
 /* jcSaveDic -- 辞書・頻度ファイルをセーブする */
 int
-jcSaveDic(buf)
-jcConvBuf *buf;
+jcSaveDic(jcConvBuf *buf)
 {
 	TRACE("jcSaveDic", "Enter")
 
@@ -3713,28 +3583,13 @@ uim_wnn_jcSaveDic(uim_lisp buf_)
 /* サーバとの接続のための関数群 */
 
 struct wnn_buf *
-jcOpen(server, envname, override, rcfile, errmsg, confirm, timeout)
-char *server;
-char *envname;
-int override;
-char *rcfile;
-void (*errmsg)();
-int (*confirm)();
-int timeout;
+jcOpen(char *server, char *envname, int override, char *rcfile, void (*errmsg)(), int (*confirm)(), int timeout)
 {
     return jcOpen2(server, envname, override, rcfile, rcfile, errmsg, confirm, timeout);
 }
 
 struct wnn_buf *
-jcOpen2(server, envname, override, rcfile4, rcfile6, errmsg, confirm, timeout)
-char *server;
-char *envname;
-int override;
-char *rcfile4;		/* wnnenvrc for Wnn4 */
-char *rcfile6;		/* wnnenvrc for Wnn6 */
-void (*errmsg)();
-int (*confirm)();
-int timeout;
+jcOpen2(char *server, char *envname, int override, char *rcfile4, char *rcfile6, void (*errmsg)(), int (*confirm)(), int timeout)
 {
     struct wnn_buf *wnnbuf;
     struct wnn_env *wnnenv;
@@ -3878,8 +3733,7 @@ uim_wnn_jcOpen(uim_lisp server_, uim_lisp envname_, uim_lisp rcfile_, uim_lisp t
 }
 
 int
-jcClose(wnnbuf)
-struct wnn_buf *wnnbuf;
+jcClose(struct wnn_buf *wnnbuf)
 {
     TRACE("jcClose", "Enter")
 
@@ -3895,8 +3749,7 @@ uim_wnn_jcClose(uim_lisp wnnbuf_)
 }
 
 int
-jcIsConnect(wnnbuf)
-struct wnn_buf *wnnbuf;
+jcIsConnect(struct wnn_buf *wnnbuf)
 {
     TRACE("jcIsConnect", "Enter")
 
@@ -3914,9 +3767,7 @@ uim_wnn_jcIsConnect(uim_lisp wnnbuf_)
 
 #ifdef DEBUG_WNNLIB
 static void
-printBuffer(start, end)
-wchar *start;
-wchar *end;
+printBuffer(wchar *start, wchar *end)
 {
 	wchar wc;
 
@@ -3936,9 +3787,7 @@ wchar *end;
 }
 
 static void
-showBuffers(buf, tag)
-jcConvBuf *buf;
-char *tag;
+showBuffers(jcConvBuf *buf, char *tag)
 {
 	int i;
 	jcClause *clp = buf->clauseInfo;

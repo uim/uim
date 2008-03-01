@@ -140,7 +140,6 @@ typedef struct {
 	int		clauseSize;	/* clauseInfo の大きさ */
 } jcConvBuf;
 
-#ifdef __STDC__
 extern struct wnn_buf *jcOpen(char *server, char *envname,
 				int override, char *rcfile,
 				void (*error)(), int (*confirm)(),
@@ -178,36 +177,5 @@ extern int jcTop(jcConvBuf *buf);
 extern int jcBottom(jcConvBuf *buf);
 extern int jcChangeClause(jcConvBuf *buf, wchar *str);
 extern int jcSaveDic(jcConvBuf *buf);
-#else
-extern struct wnn_buf *jcOpen();
-extern struct wnn_buf *jcOpen2();
-extern int jcClose();
-extern int jcIsConnect();
-extern jcConvBuf *jcCreateBuffer();
-extern int jcDestroyBuffer();
-extern int jcClear();
-extern int jcInsertChar();
-extern int jcDeleteChar();
-extern int jcKillLine();
-extern int jcConvert();
-extern int jcUnconvert();
-extern int jcCancel();
-extern int jcExpand();
-extern int jcShrink();
-extern int jcKana();
-extern int jcFix();
-extern int jcNext();
-extern int jcCandidateInfo();
-extern int jcGetCandidate();
-extern int jcSelect();
-extern int jcDotOffset();
-extern int jcIsConverted();
-extern int jcMove();
-extern int jcTop();
-extern int jcBottom();
-extern int jcChangeClause();
-extern int jcSaveDic();
-#endif
-
 
 #endif /* _wnnlib_h */
