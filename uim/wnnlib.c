@@ -620,13 +620,8 @@
 #include "plugin.h"
 
 #ifdef DEBUG_WNNLIB
-#ifdef __STDC__
 static void showBuffers(jcConvBuf *, char *);
 static void printBuffer(wchar *start, wchar *end);
-#else
-static void showBuffers();
-static void printBuffer();
-#endif
 #define	TRACE(f, m)	fprintf(stderr, "%s: %s\n", (f), (m));
 #else
 #define	TRACE(f, m)
