@@ -107,14 +107,19 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * Fix hardcoded temporary directory location
 
   - uim.el
-    * Fix incorrect handling of the entry of function-key-map
-    * Fix cursor position after inputting characters by uim-input-pad-ja
-      and calling undo command
+    * Fix function-key-map handling
+    * Fix cursor position bug caused by using uim-input-pad-ja
+    * Fix font-face configuration problem
+    * Fix buffer destroying bug caused by using proportional fonts with
+      inline candidate display mode
     * Support event-apply-*-modifier
     * Support delete-selection-mode
     * Support Emacs-23.x experimentally
     * Support shifted-motion-keys-select-region feature of XEmacs
     * Support the commands terminated by help-char on XEmacs
+    * Support Multi_key on XEmacs
+    * Support some minor keysyms
+    * Support horizontally scrolled buffer
 
 * Others
   - Split libuim-scm off from libuim
