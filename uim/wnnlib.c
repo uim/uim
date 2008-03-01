@@ -315,7 +315,7 @@
  * 	び出す。override が True の場合、既に環境がサーバ側にあっても、
  *	環境を再初期化する。
  *
- * int jcClose(struct wnn_buf *wnnbuf)
+ * void jcClose(struct wnn_buf *wnnbuf)
  *	jl_close を呼び出し、jcOpen で獲得した wnnbuf の解放とサーバと
  *	の接続を切る。
  *
@@ -731,7 +731,7 @@ wstrlen(wchar *s)
 }
 
 static int
-euctows(wchar *wstr, char *euc, int len)
+euctows(wchar *wstr, const char *euc, int len)
 {
   int i, j;
   wchar wc;
@@ -746,7 +746,7 @@ euctows(wchar *wstr, char *euc, int len)
 }
 
 static int
-wstoeuc(char *euc, wchar *wstr, int len)
+wstoeuc(char *euc, const wchar *wstr, int len)
 {
   int i, j;
   wchar wc;
@@ -3239,13 +3239,15 @@ uim_wnn_jcInsertChar(uim_lisp buf_, uim_lisp c_)
   if (INTP(c_))
     return MAKE_BOOL(jcInsertChar(C_PTR(buf_), C_INT(c_)) == 0);
   else if (STRP(c_)) {
-    char *euc = REFER_C_STR(c_);
+    const char *euc = REFER_C_STR(c_);
     wchar wc;
 
     euctows(&wc, euc, 1);
 
     return MAKE_BOOL(jcInsertChar(C_PTR(buf_), wc) == 0);
   }
+  uim_notify_fatal("In uim_wnn_jcInsertChar, argument must be string or integer.");
+  return uim_scm_f();
 }
 
 /* jcDeleteChar -- ドットの前または後ろの一文字を削除する */
@@ -3536,7 +3538,7 @@ static uim_lisp
 uim_wnn_jcChangeClause(uim_lisp buf_, uim_lisp str_)
 {
   wchar wstr[BUFSIZ];
-  char *str = REFER_C_STR(str_);
+  const char *str = REFER_C_STR(str_);
 
   if (BUFSIZ * 2 < strlen(str))
     return uim_scm_f();
@@ -3704,15 +3706,23 @@ static uim_lisp
 uim_wnn_jcOpen(uim_lisp server_, uim_lisp envname_, uim_lisp rcfile_, uim_lisp timeout_)
 {
   struct wnn_buf *wnnbuf;
+  char *server  = uim_strdup(REFER_C_STR(server_));
+  char *envname = uim_strdup(REFER_C_STR(envname_));
+  char *rcfile  = uim_strdup(REFER_C_STR(rcfile_));
+
   /* XXX: no errmsg, no conform */
-  wnnbuf = jcOpen(REFER_C_STR(server_), REFER_C_STR(envname_), 0, REFER_C_STR(rcfile_), uim_notify_info, uim_wnn_confirm, C_INT(timeout_));
+  wnnbuf = jcOpen(server, envname, 0, rcfile, (void (*)())uim_notify_info, uim_wnn_confirm, C_INT(timeout_));
+
+  free(server);
+  free(envname);
+  free(rcfile);
 
   if (!wnnbuf)
     return uim_scm_f();
   return MAKE_PTR(wnnbuf);
 }
 
-int
+void
 jcClose(struct wnn_buf *wnnbuf)
 {
     TRACE("jcClose", "Enter")

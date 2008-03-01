@@ -148,7 +148,7 @@ extern struct wnn_buf *jcOpen2(char *server, char *envname,
 				int override, char *rcfile4, char *rcfile6,
 				void (*error)(), int (*confirm)(),
 				int timeout);
-extern int jcClose(struct wnn_buf *wnn);
+extern void jcClose(struct wnn_buf *wnn);
 extern int jcIsConnect(struct wnn_buf *wnn);
 extern jcConvBuf *jcCreateBuffer(struct wnn_buf *wnn,
 					int clause, int buffersize);
