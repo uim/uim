@@ -74,7 +74,8 @@
 (define (sj3-lib-get-nr-segments sc-ctx)
   (length sc-ctx))
 (define (sj3-get-nr-douon str)
-  (+ 3 (sj3-lib-douoncnt str))) ;; add hiragana, katakana, halfkana
+  (+ (sj3-lib-douoncnt str)
+     (length (sj3-make-map-from-kana-string str))))
 (define (sj3-lib-get-nr-candidates sc-ctx seg)
   (sj3-get-nr-douon (sj3-get-nth-yomi sc-ctx seg)))
 (define (sj3-lib-resize-segment sc seg cnt)
@@ -128,7 +129,7 @@
            (sj3-context-set-sc-ctx! sc (cdr ret))
            (- (length ret) 1))
           (else
-           0))))
+           (length (sj3-make-map-from-kana-string str))))))
 (define (sj3-lib-commit-segment sc-ctx seg delta)
   (let ((douon (sj3-getdouon (sj3-get-nth-yomi sc-ctx seg))))
     (if (< delta (length douon))
