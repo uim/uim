@@ -44,6 +44,9 @@
 (sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (string-append (sys-realpath ".")
 						     "/sigscheme/lib"))
 (sys-putenv "LIBUIM_SCM_FILES" (string-append (sys-realpath ".") "/scm"))
+;; FIXME: '.libs' is hardcoded
+(sys-putenv "LIBUIM_PLUGIN_LIB_DIR"
+	    (string-append (sys-realpath ".") "/uim/.libs"))
 (sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)
 (sys-putenv "LIBUIM_VANILLA" "1")
 
