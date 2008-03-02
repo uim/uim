@@ -164,6 +164,9 @@ libuim_scm_la_CPPFLAGS = -I$(top_srcdir) \
 			 -I$(top_srcdir)/sigscheme/src \
 			 -I$(top_builddir)/sigscheme/src \
 			 $(GCROOTS_CFLAGS)
+if DEBUG
+  libuim_scm_la_CPPFLAGS += -DDEBUG=1 -DDEBUG_SCM=1
+endif
 # Since the generated Makefile will have the order
 # '$(libuim_scm_la_CFLAGS) $(CFLAGS)', overriding -Werror in $CFLAGS
 # by -Wno-error in $UIM_SCM_CFLAGS does not work.
@@ -192,9 +195,8 @@ if ENABLE_ANTHY_UTF8_STATIC
   libuim_la_LIBADD += @ANTHY_LIBS@
   libuim_la_CPPFLAGS += -DENABLE_ANTHY_UTF8_STATIC
 endif
-
 if DEBUG
-libuim_la_CPPFLAGS += -DDEBUG -DDEBUG_SCM=1
+  libuim_la_CPPFLAGS += -DDEBUG=1 -DDEBUG_SCM=1
 endif
 
 libuim_custom_la_LDFLAGS = -version-info $(libuim_custom_version) \
