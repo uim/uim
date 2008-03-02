@@ -37,6 +37,7 @@
 #include <pwd.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/param.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <stdlib.h>

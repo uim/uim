@@ -37,6 +37,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <sys/param.h>
 #include <sys/un.h>
 #include <netinet/in.h>
 #include <netdb.h>
