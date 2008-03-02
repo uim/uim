@@ -369,13 +369,12 @@ uim_helper_server_process_connection(int server_fd)
 int
 main(int argc, char **argv)
 {
-  char *path;
+  char path[MAXPATHLEN];
   int server_fd;
 
   uim_init_error();
 
-  path = uim_helper_get_pathname();
-  if (!path)
+  if (!uim_helper_get_pathname(path, sizeof(path)))
     return 0;
 
   unlink(path);
@@ -387,7 +386,6 @@ main(int argc, char **argv)
   FD_ZERO(&s_fdset_write);
   s_max_fd = 0;
   server_fd = init_server_fd(path);
-  free(path);
 
   printf("waiting\n\n");
   fflush(stdout);

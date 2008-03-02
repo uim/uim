@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2008 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -31,21 +31,25 @@
 
 */
 
-#ifndef UDSOCK_H
-#define UDSOCK_H
+#ifndef UIM_POSIX_H
+#define UIM_POSIX_H
 
 #include "uim.h"
 
-#ifndef UNIX_PATH_MAX
-#define UNIX_PATH_MAX 100
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-const char *usersockname(const char *file);
-void init_sendsocket(const char *sock_path);
-void sendline(const char *buf);
-void init_recvsocket(const char *sock_path);
-int recvline(char *buf, int n);
-void close_socket(void);
-uim_bool get_ud_path(char *, int);
+uim_bool uim_get_user_name(char *, int, int);
+uim_bool uim_get_home_directory(char *, int, int);
+uim_bool uim_check_dir(const char *);
+uim_bool uim_get_config_path(char *, int, int);
+
+void uim_init_posix_subrs(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
+

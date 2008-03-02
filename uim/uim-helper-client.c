@@ -74,22 +74,19 @@ get_server_command(void)
 int uim_helper_init_client_fd(void (*disconnect_cb)(void))
 {
   struct sockaddr_un server;
-  char *path;
+  char path[MAXPATHLEN];
   FILE *serv_r = NULL, *serv_w = NULL;
   int fd = -1;
   
   uim_fd = -1;
-  
-  path = uim_helper_get_pathname();
-  if (!path)
+
+  if (!uim_helper_get_pathname(path, sizeof(path)))
     goto error;
 
   memset(&server, 0, sizeof(server));
   server.sun_family = PF_UNIX;
   strlcpy(server.sun_path, path, sizeof(server.sun_path));
 
-  free(path);
-  
   fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (fd < 0) {
     perror("fail to create socket");

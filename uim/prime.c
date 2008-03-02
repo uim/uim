@@ -55,6 +55,7 @@
 #include "plugin.h"
 #include "uim-helper.h"
 #include "uim-util.h"
+#include "uim-posix.h"
 
 #define BUFFER_SIZE (4 * 1024)
 
@@ -63,7 +64,7 @@ static pid_t prime_pid = 0;
 
 static char *prime_command = "prime";
 
-static char *prime_ud_path;
+static char prime_ud_path[MAXPATHLEN];
 static int prime_fd = -1;
 static uim_bool use_unix_domain_socket;
 
@@ -73,7 +74,7 @@ prime_init_ud(char *path)
   int fd;
   struct sockaddr_un server;
     
-  if (!path)
+  if (path[0] == '\0')
     return -1;
 
   memset(&server, 0, sizeof(server));
@@ -109,56 +110,28 @@ prime_init_ud(char *path)
 }
 
 static uim_bool
-check_dir(const char *dir)
+prime_get_ud_path(char *prime_path, int len)
 {
-  struct stat st;
+  char socket_path[MAXPATHLEN], ud_path[MAXPATHLEN];
 
-  if (stat(dir, &st) < 0)
-    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
-  else {
-    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
-    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
-  }
-}
+  if (len <= 0)
+    return UIM_FALSE;
 
-static char *
-prime_get_ud_path(void)
-{
-  char *path, *home = NULL;
-  struct passwd *pw;
-  int len;
- 
-  pw = getpwuid(getuid());
-  if (pw)
-    home = pw->pw_dir;
-
-  if (!home && !uim_helper_is_setugid())
-    home = getenv("HOME");
-  
-  if (!home)
-    return NULL;
-
-  len = strlen(home) + strlen("/.uim.d");
-  path = uim_malloc(len + 1);
-  snprintf(path, len + 1, "%s/.uim.d", home);
-  if (!check_dir(path)) {
-    free(path);
-    return NULL;
+  if (!uim_get_config_path(ud_path, sizeof(ud_path), !uim_helper_is_setugid())) {
+    prime_path[0] = '\0';
+    return UIM_FALSE;
   }
 
-  len += strlen("/socket");
-  path = uim_realloc(path, len + 1);
-  strlcat(path, "/socket", len + 1);
-  if (!check_dir(path)) {
-    free(path);
-    return NULL;
+  snprintf(socket_path, len, "%s/socket", ud_path);
+
+  if (!uim_check_dir(socket_path)) {
+    prime_path[0] = '\0';
+    return UIM_FALSE;
   }
 
-  len += strlen("/uim-prime");
-  path = uim_realloc(path, len + 1);
-  strlcat(path, "/uim-prime", len + 1);
+  snprintf(prime_path, len, "%s/uim-prime", ud_path);
 
-  return path;
+  return UIM_TRUE;
 }
 
 static void
@@ -166,8 +139,7 @@ clear_prime_fd()
 {
   close(prime_fd);
   prime_fd = -1;
-  free(prime_ud_path);
-  prime_ud_path = NULL;
+  prime_ud_path[0] = '\0';
 }
 
 static char *
@@ -262,10 +234,9 @@ prime_lib_init(uim_lisp use_udp_)
     if (prime_fd != -1)
       return uim_scm_t();
 
-    prime_ud_path = prime_get_ud_path();
-    if (!prime_ud_path)
+    if (!prime_get_ud_path(prime_ud_path, sizeof(prime_ud_path)))
       return uim_scm_f();
-      
+
     prime_fd = prime_init_ud(prime_ud_path);
     if (prime_fd == -1) {
       unlink(prime_ud_path);

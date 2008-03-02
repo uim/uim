@@ -49,7 +49,7 @@ char *uim_helper_get_message(void);
 void uim_helper_send_message(int fd, const char *message);
 
 /* functions for libuim server/client's implementation */
-char *uim_helper_get_pathname(void);
+uim_bool uim_helper_get_pathname(char *, int);
 int uim_helper_str_terminated(const char *str);
 int uim_helper_check_connection_fd(int fd);
 int uim_helper_fd_readable(int fd);

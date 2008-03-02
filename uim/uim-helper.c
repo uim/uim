@@ -51,6 +51,7 @@
 #include "uim-internal.h"
 #include "uim-helper.h"
 #include "uim-util.h"
+#include "uim-posix.h"
 
 /*
  * uim-notify is disabled since I'm not confident about:
@@ -162,51 +163,52 @@ check_dir(const char *dir)
   }
 }
 
-char *
-uim_helper_get_pathname(void)
+uim_bool
+uim_helper_get_pathname(char *helper_path, int len)
 {
-  char *path, *home = NULL;
+  char socket_path[MAXPATHLEN], ud_path[MAXPATHLEN];
   struct passwd *pw;
-  int len;
- 
-  if (UIM_CATCH_ERROR_BEGIN())
-    return NULL;
+
+  if (len <= 0)
+    return UIM_FALSE;
+
+  if (UIM_CATCH_ERROR_BEGIN()) {
+    helper_path[0] = '\0';
+    return UIM_FALSE;
+  }
 
   pw = getpwuid(getuid());
-  if (pw)
-    home = pw->pw_dir;
-
-  if (!home && !uim_issetugid())
-    home = getenv("HOME");
-
-  if (!home)
+  if (!pw) {
     uim_fatal_error("uim_helper_get_pathname()");
+    endpwent();
+    helper_path[0] = '\0';
+    return UIM_FALSE;
+  }
+
+  snprintf(ud_path, len, "%s/.uim.d", pw->pw_dir);
+  endpwent();
 
   /* check ~/.uim.d/ */
-  len = strlen(home) + strlen("/.uim.d");
-  path = uim_malloc(len + 1);
-  snprintf(path, len + 1, "%s/.uim.d", home);
-  if (!check_dir(path)) {
-    free(path);
+  if (!check_dir(ud_path)) {
     uim_fatal_error("uim_helper_get_pathname()");
+    helper_path[0] = '\0';
+    return UIM_FALSE;
   }
 
   /* check ~/.uim.d/socket/ */
-  len += strlen("/socket");
-  path = uim_realloc(path, len + 1);
-  strlcat(path, "/socket", len + 1);
-  if (!check_dir(path)) {
-    free(path);
+  snprintf(socket_path, sizeof(socket_path), "%s/socket", ud_path);
+
+  if (!check_dir(socket_path)) {
     uim_fatal_error("uim_helper_get_pathname()");
+    helper_path[0] = '\0';
+    return UIM_FALSE;
   }
 
-  len += strlen("/uim-helper");
-  path = uim_realloc(path, len + 1);
-  strlcat(path, "/uim-helper", len + 1);
+  snprintf(helper_path, len, "%s/uim-helper", ud_path);
 
   UIM_CATCH_ERROR_END();
 
-  return path;
+  return UIM_TRUE;
 }
 
 int

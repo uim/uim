@@ -62,62 +62,30 @@
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
+#include "uim-posix.h"
 #include "udsock.h"
 
 static int s_send_sockfd = -1;
 static int s_recv_sockfd = -1;
 static struct sockaddr_un s_servaddr;
 
-static uim_bool
-check_dir(const char *dir)
+uim_bool
+get_ud_path(char *path, int len)
 {
-  struct stat st;
-
-  if (dir == NULL)
+  if (len <= 0)
     return UIM_FALSE;
 
-  if (stat(dir, &st) < 0)
-    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
-  else {
-    mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
-    return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
-  }
-}
-
-char *
-get_ud_path(void)
-{
-  char *path, *home = NULL;
-  struct passwd *pw;
-
-  pw = getpwuid(getuid());
-  if (pw)
-    home = pw->pw_dir;
-
-  if (!home && !uim_helper_is_setugid())
-    home = getenv("HOME");
-
-  if (!home)
-    return NULL;
-
-  if (asprintf(&path, "%s/.uim.d", home) == -1)
-    return NULL; /* XXX: fatal */
-
-  if (!check_dir(path)) {
-    free(path);
-    return NULL;
-  }
-  free(path);
-
-  if (asprintf(&path, "%s/.uim.d/fep", home) == -1)
-    return NULL; /* XXX: fatal */
-
-  if (!check_dir(path)) {
-    free(path);
-    return NULL;
+  if (!uim_get_config_path(path, len, !uim_helper_is_setugid())) {
+    path[0] = '\0';
+    return UIM_FALSE;
   }
 
-  return path;
+  strlcat(path, "/fep", len);
+
+  if (!uim_check_dir(path))
+    return UIM_FALSE;
+
+  return UIM_TRUE;
 }
 
 
@@ -125,7 +93,7 @@ const char *usersockname(const char *file)
 {
   static char buf[UNIX_PATH_MAX];
   char filebuf[UNIX_PATH_MAX];
-  char *sock_dir;
+  char sock_dir[UNIX_PATH_MAX];
 
   if (file != NULL && file[0] == '/') {
     return file;
@@ -137,8 +105,7 @@ const char *usersockname(const char *file)
     strlcpy(filebuf, file, UNIX_PATH_MAX);
   }
 
-  sock_dir = get_ud_path();
-  if (!sock_dir) {
+  if (!get_ud_path(sock_dir, sizeof(sock_dir))) {
     sendline("uim-fep cannot create directory");
     exit(EXIT_FAILURE);
   }

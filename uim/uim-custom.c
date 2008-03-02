@@ -1032,7 +1032,7 @@ uim_conf_path(const char *subpath)
 {
   char *dir;
 
-  UIM_EVAL_STRING(NULL, "(string-append (or (getenv \"HOME\") \"\") \"/.uim.d\")");
+  UIM_EVAL_STRING(NULL, "(string-append (or (home-directory (user-name)) \"\") \"/.uim.d\")");
   dir = uim_scm_c_str(uim_scm_return_value());
   if (subpath) {
     UIM_EVAL_FSTRING2(NULL, "\"%s/%s\"", dir, subpath);

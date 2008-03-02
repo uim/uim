@@ -33,14 +33,9 @@
 
 #include <config.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <dirent.h>
-#include <dlfcn.h>
 
 #include "uim-internal.h"
 #include "uim-scm.h"
@@ -78,92 +73,6 @@ static uim_lisp
 sys_pkgdatadir()
 {
   return MAKE_STR(PKGDATADIR);
-}
-
-static uim_lisp
-file_stat_mode(uim_lisp filename, mode_t mode)
-{
-  struct stat st;
-  int err;
-
-  err = stat(REFER_C_STR(filename), &st);
-  if (err)
-    return uim_scm_f();  /* intentionally returns #f instead of error */
-
-  return MAKE_BOOL((st.st_mode & mode) == mode);
-}
-
-static uim_lisp
-file_readablep(uim_lisp filename)
-{
-  return file_stat_mode(filename, S_IRUSR);
-}
-
-static uim_lisp
-file_writablep(uim_lisp filename)
-{
-  return file_stat_mode(filename, S_IWUSR);
-}
-
-static uim_lisp
-file_executablep(uim_lisp filename)
-{
-  return file_stat_mode(filename, S_IXUSR);
-}
-
-static uim_lisp
-file_regularp(uim_lisp filename)
-{
-  return file_stat_mode(filename, S_IFREG);
-}
-
-static uim_lisp
-file_directoryp(uim_lisp filename)
-{
-  return file_stat_mode(filename, S_IFDIR);
-}
-
-static uim_lisp
-file_mtime(uim_lisp filename)
-{
-  struct stat st;
-  int err;
-
-  err = stat(REFER_C_STR(filename), &st);
-  if (err)
-    ERROR_OBJ("stat failed for file", filename);
-
-  return MAKE_INT(st.st_mtime);
-}
-
-static uim_lisp
-c_getenv(uim_lisp str)
-{
-  char *val;
-
-  ENSURE_TYPE(str, str);
-
-  val = getenv(REFER_C_STR(str));
-
-  return (val) ? MAKE_STR(val) : uim_scm_f();
-}
-
-static uim_lisp
-c_setenv(uim_lisp name, uim_lisp val, uim_lisp overwrite)
-{
-  int err;
-
-  err = setenv(REFER_C_STR(name), REFER_C_STR(val), TRUEP(overwrite));
-
-  return MAKE_BOOL(!err);
-}
-
-static uim_lisp
-c_unsetenv(uim_lisp name)
-{
-  unsetenv(REFER_C_STR(name));
-
-  return uim_scm_t();
 }
 
 /* Limited version of SRFI-13 string-contains. The number of args are
@@ -277,14 +186,6 @@ uim_get_language_code_from_language_name(const char *language_name)
   return name;
 }
 
-static uim_lisp
-setugidp(void)
-{
-  assert(uim_scm_gc_any_contextp());
-
-  return MAKE_BOOL(uim_issetugid());
-}
-
 void
 uim_init_util_subrs(void)
 {
@@ -297,19 +198,6 @@ uim_init_util_subrs(void)
   uim_scm_init_proc0("sys-pkglibdir", sys_pkglibdir);
   uim_scm_init_proc0("sys-datadir", sys_datadir);
   uim_scm_init_proc0("sys-pkgdatadir", sys_pkgdatadir);
-
-  uim_scm_init_proc1("file-readable?", file_readablep);
-  uim_scm_init_proc1("file-writable?", file_writablep);
-  uim_scm_init_proc1("file-executable?", file_executablep);
-  uim_scm_init_proc1("file-regular?", file_regularp);
-  uim_scm_init_proc1("file-directory?", file_directoryp);
-  uim_scm_init_proc1("file-mtime", file_mtime);
-
-  uim_scm_init_proc0("setugid?", setugidp);
-
-  uim_scm_init_proc1("getenv", c_getenv);
-  uim_scm_init_proc3("setenv", c_setenv);
-  uim_scm_init_proc1("unsetenv", c_unsetenv);
 
   /* SRFI-13 */
   uim_scm_init_proc3("string-contains", string_contains);

@@ -319,7 +319,7 @@
                  (lambda ()
                    sj3-use-remote-server?))
 
-(define-custom 'sj3-user (getenv "USER")
+(define-custom 'sj3-user (or (home-directory (user-name)) "")
   '(sj3-advanced sj3server)
   '(string ".*")
   (N_ "SJ3 user name")

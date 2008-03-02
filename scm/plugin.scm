@@ -37,7 +37,7 @@
 (define uim-plugin-lib-load-path
   (if (setugid?)
       (list (string-append (sys-pkglibdir) "/plugin"))
-      (let ((home-dir (getenv "HOME"))
+      (let ((home-dir (or (home-directory (user-name)) ""))
 	    (ld-library-path (getenv "LD_LIBRARY_PATH")))
 	(filter string?
 		(append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
@@ -53,7 +53,7 @@
 (define uim-plugin-scm-load-path
   (if (setugid?)
       (list (sys-pkgdatadir))
-      (let ((home-dir (getenv "HOME")))
+      (let ((home-dir (or (home-directory (user-name)) "")))
 	(filter string?
 		(list (getenv "LIBUIM_SCM_FILES")
 		      (if home-dir
@@ -128,7 +128,7 @@
 ;; TODO: write test
 (define load-module-conf
   (lambda ()
-    (let* ((home-dir (getenv "HOME"))
+    (let* ((home-dir (or (home-directory (user-name)) ""))
 	   (user-module-dir (if home-dir
 				(string-append home-dir "/.uim.d/plugin/")
 				#f))
@@ -155,7 +155,7 @@
 ;; TODO: write test
 (define load-enabled-modules
   (lambda ()
-    (let* ((home-dir (getenv "HOME"))
+    (let* ((home-dir (or (home-directory (user-name)) ""))
 	   (user-module-dir (if home-dir
 				(string-append home-dir "/.uim.d/plugin/")
 				#f))

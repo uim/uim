@@ -55,7 +55,7 @@
   (N_ "long description will be here."))
 
 (define-custom 'tutcode-personal-dic-filename
-  (string-append (or (getenv "HOME") "") "/.mazegaki.dic")
+  (string-append (or (home-directory (user-name)) "") "/.mazegaki.dic")
   '(tutcode tutcode-dict)
   '(pathname regular-file)
   (N_ "Personal mazegaki dictionary file")

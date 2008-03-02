@@ -243,7 +243,7 @@ int main(int argc, char **argv)
   };
   FILE *fp;
   const char *suffix = NULL;
-  char *uim_dir;
+  char uim_dir[UNIX_PATH_MAX];
   const char *sty_str;
   const char *win_str;
   struct stat stat_buf;
@@ -415,7 +415,7 @@ opt_end:
   tcgetattr(g_win_in, &s_save_tios);
   setupterm(NULL, g_win_out, NULL);
 
-  if ((uim_dir = get_ud_path()) == NULL) {
+  if (!get_ud_path(uim_dir, sizeof(uim_dir))) {
     sendline("uim-fep cannot make directory");
     return EXIT_FAILURE;
   }
@@ -475,7 +475,6 @@ opt_end:
       }
     }
   }
-  free(uim_dir);
 
   snprintf(pid_str, sizeof(pid_str), "%d", getpid());
   setenv("UIM_FEP_PID", pid_str, 1);

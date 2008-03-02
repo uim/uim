@@ -68,7 +68,7 @@
 
 (define load-user-conf
   (lambda ()
-    (let ((home-dir (getenv "HOME")))
+    (let ((home-dir (or (home-directory (user-name)) "")))
       (if (or
 	   (setugid?)
 	   (not home-dir))

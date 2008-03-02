@@ -47,7 +47,7 @@
   (N_ "long description will be here."))
 
 (define-custom 'look-personal-dict-filename
-  (string-append (or (getenv "HOME") "") "/.look-uim-dict")
+  (string-append (or (home-directory (user-name)) "") "/.look-uim-dict")
   '(look)
   '(pathname regular-file)
   (N_ "Personal dictionary file")
