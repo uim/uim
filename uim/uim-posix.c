@@ -60,7 +60,11 @@ uim_get_user_name(char *name, int len, int uid)
     name[0] = '\0';
     return UIM_FALSE;
   }
-  strlcpy(name, pw->pw_name, len);
+  if (strlcpy(name, pw->pw_name, len) >= (size_t)len) {
+    name[0] = '\0';
+    endpwent();
+    return UIM_FALSE;
+  }
   endpwent();
   return UIM_TRUE;
 }
@@ -88,7 +92,11 @@ uim_get_home_directory(char *home, int len, int uid)
     home[0] = '\0';
     return UIM_FALSE;
   }
-  strlcpy(home, pw->pw_dir, len);
+  if (strlcpy(home, pw->pw_dir, len) >= (size_t)len) {
+    home[0] = '\0';
+    endpwent();
+    return UIM_FALSE;
+  }
   endpwent();
   return UIM_TRUE;
 }
@@ -152,7 +160,8 @@ uim_get_config_path(char *path, int len, int is_getenv)
     if (!home_env)
       return UIM_FALSE;
 
-    strlcpy(home, home_env, sizeof(home));
+    if (strlcpy(home, home_env, sizeof(home)) >= sizeof(home))
+      return UIM_FALSE;
   }
 
   if (snprintf(path, len, "%s/.uim.d", home) == -1)

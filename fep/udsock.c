@@ -80,10 +80,15 @@ get_ud_path(char *path, int len)
     return UIM_FALSE;
   }
 
-  strlcat(path, "/fep", len);
-
-  if (!uim_check_dir(path))
+  if (strlcat(path, "/fep", len) >= (size_t)len) {
+    path[0] = '\0';
     return UIM_FALSE;
+  }
+
+  if (!uim_check_dir(path)) {
+    path[0] = '\0';
+    return UIM_FALSE;
+  }
 
   return UIM_TRUE;
 }

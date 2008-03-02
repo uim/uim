@@ -172,44 +172,49 @@ uim_helper_get_pathname(char *helper_path, int len)
   if (len <= 0)
     return UIM_FALSE;
 
-  if (UIM_CATCH_ERROR_BEGIN()) {
-    helper_path[0] = '\0';
+  if (UIM_CATCH_ERROR_BEGIN())
     return UIM_FALSE;
-  }
 
   pw = getpwuid(getuid());
   if (!pw) {
-    uim_fatal_error("uim_helper_get_pathname()");
     endpwent();
-    helper_path[0] = '\0';
-    return UIM_FALSE;
+    goto path_error;
   }
 
-  strlcpy(helper_path, pw->pw_dir, len);
-  strlcat(helper_path, "/.uim.d", len);
+  if (strlcpy(helper_path, pw->pw_dir, len) >= (size_t)len) {
+    endpwent();
+    goto path_error;
+  }
+  if (strlcat(helper_path, "/.uim.d", len) >= (size_t)len) {
+    endpwent();
+    goto path_error;
+  }
   endpwent();
 
   /* check ~/.uim.d/ */
-  if (!check_dir(helper_path)) {
-    uim_fatal_error("uim_helper_get_pathname()");
-    helper_path[0] = '\0';
-    return UIM_FALSE;
-  }
+  if (!check_dir(helper_path))
+    goto path_error;
 
   /* check ~/.uim.d/socket/ */
-  strlcat(helper_path, "/socket", len);
+  if (strlcat(helper_path, "/socket", len) >= (size_t)len)
+    goto path_error;
 
-  if (!check_dir(helper_path)) {
-    uim_fatal_error("uim_helper_get_pathname()");
-    helper_path[0] = '\0';
-    return UIM_FALSE;
-  }
+  if (!check_dir(helper_path))
+    goto path_error;
 
-  strlcat(helper_path, "/uim-helper", len);
+  if (strlcat(helper_path, "/uim-helper", len) >= (size_t)len)
+    goto path_error;
 
   UIM_CATCH_ERROR_END();
 
   return UIM_TRUE;
+
+ path_error:
+  uim_fatal_error("uim_helper_get_pathname()");
+  helper_path[0] = '\0';
+
+  UIM_CATCH_ERROR_END();
+  return UIM_FALSE;
 }
 
 int
