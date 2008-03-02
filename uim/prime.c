@@ -130,7 +130,7 @@ prime_get_ud_path(char *prime_path, int len)
     return UIM_FALSE;
   }
 
-  snprintf(prime_path, len, "%s/uim-prime", ud_path);
+  snprintf(prime_path, len, "%s/uim-prime", socket_path);
 
   return UIM_TRUE;
 }

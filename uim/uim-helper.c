@@ -205,7 +205,7 @@ uim_helper_get_pathname(char *helper_path, int len)
     return UIM_FALSE;
   }
 
-  snprintf(helper_path, len, "%s/uim-helper", ud_path);
+  snprintf(helper_path, len, "%s/uim-helper", socket_path);
 
   UIM_CATCH_ERROR_END();
 
