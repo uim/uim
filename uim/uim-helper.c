@@ -167,7 +167,6 @@ check_dir(const char *dir)
 uim_bool
 uim_helper_get_pathname(char *helper_path, int len)
 {
-  char socket_path[MAXPATHLEN], ud_path[MAXPATHLEN];
   struct passwd *pw;
 
   if (len <= 0)
@@ -186,26 +185,27 @@ uim_helper_get_pathname(char *helper_path, int len)
     return UIM_FALSE;
   }
 
-  snprintf(ud_path, len, "%s/.uim.d", pw->pw_dir);
+  strlcpy(helper_path, pw->pw_dir, len);
+  strlcat(helper_path, "/.uim.d", len);
   endpwent();
 
   /* check ~/.uim.d/ */
-  if (!check_dir(ud_path)) {
+  if (!check_dir(helper_path)) {
     uim_fatal_error("uim_helper_get_pathname()");
     helper_path[0] = '\0';
     return UIM_FALSE;
   }
 
   /* check ~/.uim.d/socket/ */
-  snprintf(socket_path, sizeof(socket_path), "%s/socket", ud_path);
+  strlcat(helper_path, "/socket", len);
 
-  if (!check_dir(socket_path)) {
+  if (!check_dir(helper_path)) {
     uim_fatal_error("uim_helper_get_pathname()");
     helper_path[0] = '\0';
     return UIM_FALSE;
   }
 
-  snprintf(helper_path, len, "%s/uim-helper", socket_path);
+  strlcat(helper_path, "/uim-helper", len);
 
   UIM_CATCH_ERROR_END();
 

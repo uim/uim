@@ -113,24 +113,22 @@ prime_init_ud(char *path)
 static uim_bool
 prime_get_ud_path(char *prime_path, int len)
 {
-  char socket_path[MAXPATHLEN], ud_path[MAXPATHLEN];
-
   if (len <= 0)
     return UIM_FALSE;
 
-  if (!uim_get_config_path(ud_path, sizeof(ud_path), !uim_helper_is_setugid())) {
+  if (!uim_get_config_path(prime_path, len, !uim_helper_is_setugid())) {
     prime_path[0] = '\0';
     return UIM_FALSE;
   }
 
-  snprintf(socket_path, len, "%s/socket", ud_path);
+  strlcat(prime_path, "/socket", len);
 
-  if (!uim_check_dir(socket_path)) {
+  if (!uim_check_dir(prime_path)) {
     prime_path[0] = '\0';
     return UIM_FALSE;
   }
 
-  snprintf(prime_path, len, "%s/uim-prime", socket_path);
+  strlcat(prime_path, "/uim-prime", len);
 
   return UIM_TRUE;
 }
