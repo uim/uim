@@ -51,7 +51,6 @@
 
 #include "uim-internal.h"
 #include "uim-helper.h"
-#include "uim-util.h"
 #include "uim-posix.h"
 
 /*

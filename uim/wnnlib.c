@@ -597,6 +597,7 @@
  * displayBuf: これはデータ構造を示すための例文です
  */
 
+#include <config.h>
 #ifdef DEBUG_WNNLIB
 #include	<stdio.h>
 #endif

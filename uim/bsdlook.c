@@ -32,6 +32,7 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
 #include "bsdlook.h"
 
 #ifndef lint
