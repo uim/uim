@@ -115,7 +115,6 @@ const char *usersockname(const char *file)
     exit(EXIT_FAILURE);
   }
   snprintf(buf, UNIX_PATH_MAX, "%s/%s", sock_dir, filebuf);
-  free(sock_dir);
 
   return buf;
 }
