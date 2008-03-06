@@ -267,11 +267,13 @@ uim_iconv_code_conv(void *obj, const char *str)
       len = strlen(str);
       bufsize = (len + sizeof("")) * MBCHAR_LEN_MAX;
       realbuf = alloca(bufsize);
-      memset(realbuf, 0, bufsize);
+      bufsize--;
 
       inbuf = str;
       outbuf = realbuf;
       iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &bufsize);
+      iconv(ic, NULL, NULL, &outbuf, &bufsize);
+      *outbuf = '\0';
       src = realbuf;
     } else {
       src = str;

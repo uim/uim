@@ -1234,6 +1234,14 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
 	utf8[0] = '\0';
 	return 0;
     }
+    ret_val = iconv(cd, NULL, NULL, &outchar, &outbytesleft);
+    if (ret_val == (size_t)-1 && errno != E2BIG) {
+	//perror("error in iconv");
+	uim_iconv->release(cd);
+	free(outbuf);
+	utf8[0] = '\0';
+	return 0;
+    }
     uim_iconv->release(cd);
 
     *outchar = '\0';

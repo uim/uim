@@ -277,7 +277,12 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
     inbytesleft = strlen(inbuf);
     outbytesleft = outbufsize - 1;
     ret_val = iconv(m_iconv_cd, (ICONV_CONST char **)&inchar, &inbytesleft, &outchar, &outbytesleft);
-
+    if (ret_val == (size_t)-1 && errno != E2BIG) {
+	//perror("error in iconv");
+	free(outbuf);
+	return NULL;
+    }
+    ret_val = iconv(m_iconv_cd, NULL, NULL, &outchar, &outbytesleft);
     if (ret_val == (size_t)-1 && errno != E2BIG) {
 	//perror("error in iconv");
 	free(outbuf);
