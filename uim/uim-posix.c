@@ -268,6 +268,12 @@ setugidp(void)
   return MAKE_BOOL(uim_issetugid());
 }
 
+static uim_lisp
+c_sleep(uim_lisp seconds_)
+{
+  return MAKE_INT(sleep((unsigned int)C_INT(seconds_)));
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -286,4 +292,5 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("getenv", c_getenv);
   uim_scm_init_proc3("setenv", c_setenv);
   uim_scm_init_proc1("unsetenv", c_unsetenv);
+  uim_scm_init_proc1("sleep", c_sleep);
 }
