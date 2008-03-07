@@ -251,7 +251,7 @@ UTF8_Locale::~UTF8_Locale()
 
 char *UTF8_Locale::utf8_to_native_str(char *utf8) {
     size_t outbufsize = BUFSIZ;
-    char *inbuf, *outbuf, *convstr = NULL;
+    char *inbuf, outbuf[BUFSIZ], *convstr = NULL;
     char *inchar;
     char *outchar;
     size_t inbytesleft, outbytesleft;
@@ -268,10 +268,6 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
     if (!m_iconv_cd)
 	return strdup(inbuf);
 
-    outbuf = (char *)malloc(outbufsize);
-    if (!outbuf)
-	return NULL;
-
     inchar = inbuf;
     outchar = outbuf;
     inbytesleft = strlen(inbuf);
@@ -279,26 +275,22 @@ char *UTF8_Locale::utf8_to_native_str(char *utf8) {
     ret_val = iconv(m_iconv_cd, (ICONV_CONST char **)&inchar, &inbytesleft, &outchar, &outbytesleft);
     if (ret_val == (size_t)-1 && errno != E2BIG) {
 	//perror("error in iconv");
-	free(outbuf);
 	return NULL;
     }
     ret_val = iconv(m_iconv_cd, NULL, NULL, &outchar, &outbytesleft);
     if (ret_val == (size_t)-1 && errno != E2BIG) {
 	//perror("error in iconv");
-	free(outbuf);
 	return NULL;
     }
 
     convstr = (char *)malloc(outbufsize - outbytesleft);
     if (!convstr) {
-	free(outbuf);
 	return NULL;
     }
 
     *outchar = '\0';
 
     strlcpy(convstr, outbuf, outbufsize - outbytesleft);
-    free(outbuf);
     return convstr;
 }
 
