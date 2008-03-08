@@ -172,8 +172,14 @@ AC_ARG_WITH(wnn,
 	[
 	if test "x$with_wnn" = "xyes"; then
 		AC_CHECK_HEADERS([jllib.h],
-    		 [AC_CHECK_LIB(wnn, jl_open_lang, use_wnn=yes, use_wnn=no)
+		 [AC_CHECK_LIB(wnn, jl_open_lang, use_wnn=yes, use_wnn=no)
 		 ], [use_wnn="no"], [])
+		if test x"$use_wnn" = "xno"; then
+		   AC_CHECKING(libwnn requires libcrypt)
+		   AC_CHECK_HEADERS([jllib.h],
+		   [AC_CHECK_LIB(wnn, jl_open_lang, use_wnn=yes, use_wnn=no)
+		   ], [use_wnn="no"], [crypt])
+		fi
 	else
 		use_wnn="no"
 	fi
