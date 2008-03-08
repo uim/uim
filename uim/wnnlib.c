@@ -614,8 +614,8 @@
 #include	<sys/types.h>
 #include	<pwd.h>
 
-#ifndef WNNLIBDIR
-#define WNNLIBDIR	"/usr/local/lib/wnn"
+#ifndef WNNENVDIR
+#define WNNENVDIR	WNNLIBDIR "/wnn"
 #endif
 
 #include "uim.h"
@@ -3734,12 +3734,12 @@ jcOpen2(char *server, char *envname, int override, char *rcfile4, char *rcfile6,
 		rcfile = "wnnenvrc";
 #endif
 	    } else {
-#if defined(WNNLIBDIR) && JSERVER_VERSION > 0x4030
+#if defined(WNNENVDIR) && JSERVER_VERSION > 0x4030
 		static char envrc[256];
 		rcfile = envrc;
-		(void)snprintf(rcfile, sizeof(envrc), "%s/ja_JP/wnnenvrc", WNNLIBDIR);
+		(void)snprintf(rcfile, sizeof(envrc), "%s/ja_JP/wnnenvrc", WNNENVDIR);
 		if (access(rcfile, R_OK) != 0)
-		    (void) snprintf(rcfile, sizeof(envrc), "%s/wnnenvrc", WNNLIBDIR);
+		    (void) snprintf(rcfile, sizeof(envrc), "%s/wnnenvrc", WNNENVDIR);
 #else
 		rcfile = "wnnenvrc";
 #endif
