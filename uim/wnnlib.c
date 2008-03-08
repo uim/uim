@@ -301,7 +301,13 @@
  *	/usr/local/lib/wnn に決めうち。(オーバーライドすることはできる)
  *
  * --- kinput2 version 3.0 リリース ---
+ *
+ * ver ?.??	01/01/10
+ *	Wnn7 対応。とはいっても最小限の対応で、Wnn7 の新しい機能を
+ *	利用できるわけではない。
+ *	使用されていない変数を削除。
  */
+
 
 /*
  * ファンクション
@@ -620,6 +626,29 @@
 #include "gettext.h"
 #include "plugin.h"
 
+/*
+ * Wnn7 では大胆にもいくつかの API 関数にバッファサイズを指定する
+ * 引数を追加しているため、バージョンを調べ、それによって引数を
+ * 変更しなければならない。とりあえず本プログラムでは Wnn7 の引数に合わせる。
+ */
+
+/* Wnn7 かどうかの判定 */
+#ifdef WNN_RENSOU
+#define WNN7
+#endif
+
+#ifdef WNN7
+#define ki2_jl_get_yomi			jl_get_yomi
+#define ki2_jl_get_kanji		jl_get_kanji
+#define ki2_jl_get_zenkouho_kanji	jl_get_zenkouho_kanji
+#define ki2_jl_fuzokugo_get		jl_fuzokugo_get
+#else
+#define ki2_jl_get_yomi(a, b, c, d, sz)		jl_get_yomi(a, b, c, d)
+#define ki2_jl_get_kanji(a, b, c, d, sz)	jl_get_kanji(a, b, c, d)
+#define ki2_jl_get_zenkouho_kanji(a, b, c, sz)	jl_get_zenkouho_kanji(a, b, c)
+#define ki2_jl_fuzokugo_get(a, b, sz)		jl_fuzokugo_get(a, b)
+#endif /* WNN7 */
+
 #ifdef DEBUG_WNNLIB
 static void showBuffers(jcConvBuf *, char *);
 static void printBuffer(wchar *start, wchar *end);
@@ -636,6 +665,9 @@ static void printBuffer(wchar *start, wchar *end);
 #define KANABEG	0xa4a1	/* 'ぁ' */
 #define KANAEND	0xa4f3	/* 'ん' */
 #define KATAOFFSET	0x100	/* カタカナとひらがなのコード・オフセット */
+
+/* 1文節の読み・漢字を取り出すバッファのサイズ */
+#define CL_BUFSZ	512
 
 /* デフォルトのバッファサイズ */
 #define DEF_BUFFERSIZE	100	/* 100 文字 */
@@ -661,6 +693,7 @@ extern char	*memset();
 #endif
 
 /* ファンクションプロトタイプ宣言 */
+static wchar *wstrcpy(wchar *, wchar *);
 static int wstrlen(wchar *);
 static void moveKBuf(jcConvBuf *, int, int);
 static void moveDBuf(jcConvBuf *, int, int);
@@ -689,14 +722,6 @@ int	jcErrno;
  *	portability のためのファンクション
  */
 
-static int
-wstrcmp(wchar *s1, wchar *s2)
-{
-        while (*s1 && *s1 == *s2)
-                s1++, s2++;
-        return (int)(*s1 - *s2);
-}
-
 #ifdef OVERLAP_BCOPY
 #undef bcopy
 static void
@@ -719,6 +744,24 @@ bcopy(char *from, char *to, int n)
 /*
  *	wnnlib 内部で使われるファンクション
  */
+static int
+wstrcmp(wchar *s1, wchar *s2)
+{
+        while (*s1 && *s1 == *s2)
+                s1++, s2++;
+        return (int)(*s1 - *s2);
+}
+
+static wchar *
+wstrcpy(wchar *s1, wchar *s2)
+{
+	wchar   *ret = s1;
+
+	while (*s1++ = *s2++)
+		;
+
+	return ret;
+}
 
 /* wstrlen -- wchar 型文字列の strlen */
 static int
@@ -840,8 +883,8 @@ moveCInfo(jcConvBuf *buf, int cl, int move)
 			    len * sizeof(jcClause));
 	}
 	buf->nClause += move;
-	
-	/* 
+
+	/*
 	 * 候補を取り出している文節があれば、無効にしておく。
 	 *
 	 * ただし、候補を取り出した結果、文節数が変化した場合には、
@@ -1163,7 +1206,7 @@ doKanrenConvert(jcConvBuf *buf, int cl)
 		/* jl_get_kanji は、NULL までコピーするので注意 */
 		len = jl_kanji_len(buf->wnn, cl, n);
 		savechar = dispp[len];
-		(void)jl_get_kanji(buf->wnn, cl, n, dispp);
+		(void)ki2_jl_get_kanji(buf->wnn, cl, n, dispp, len);
 		dispp[len] = savechar;
 		dispp += len;
 
@@ -1290,7 +1333,7 @@ doKantanDConvert(jcConvBuf *buf, int cls, int cle)
 		/* jl_get_kanji は、NULL までコピーするので注意 */
 		len = jl_kanji_len(buf->wnn, cls, n);
 		savechar = dispp[len];
-		(void)jl_get_kanji(buf->wnn, cls, n, dispp);
+		(void)ki2_jl_get_kanji(buf->wnn, cls, n, dispp, len);
 		dispp[len] = savechar;
 		dispp += len;
 
@@ -1384,7 +1427,7 @@ doKantanSConvert(jcConvBuf *buf, int cl)
 	/* 表示バッファへ変換文字列をコピー */
 	/* jl_get_kanji では、最後の NULL もコピーされるので注意 */
 	savechar = clp->dispp[len];
-	(void)jl_get_kanji(buf->wnn, cl, next, clp->dispp);
+	(void)ki2_jl_get_kanji(buf->wnn, cl, next, clp->dispp, len);
 	clp->dispp[len] = savechar;
 
 	/* 次の clauseInfo の設定 */
@@ -1650,7 +1693,7 @@ expandOrShrink(jcConvBuf *buf, int small, int expand, int convf)
 		 * の文節の長さが 1 であった場合、伸ばした結果カレント
 		 * 文節より後の文節がなくなる) か start + 2 になる
 		 */
-		 
+
 		/* まず、伸縮後のカレント文節の長さを計算する */
 		ksize = buf->clauseInfo[end].kanap - clp->kanap + len;
 
@@ -1723,7 +1766,7 @@ expandOrShrink(jcConvBuf *buf, int small, int expand, int convf)
 	/* すべての文節が変換されていることを保証する */
 	makeConverted(buf, buf->nClause);
 
-	/* 
+	/*
 	 * 文節の長さを変更する。この時、前文節に接続可能にしておくと
 	 * 困ることがある。例えば「無量大数」と入力しようとして、
 	 *   a) "むりょうたいすう" を変換すると"無料 対数" となる。
@@ -1786,7 +1829,7 @@ expandOrShrink(jcConvBuf *buf, int small, int expand, int convf)
 			int i = jl_kanji_len(buf->wnn, start, end);
 			wchar c = dispp[i];
 
-			(void)jl_get_kanji(buf->wnn, start, end, dispp);
+			(void)ki2_jl_get_kanji(buf->wnn, start, end, dispp, i);
 			dispp[i] = c;	/* 元に戻す */
 			dispp += i;	/* 位置の更新 */
 			clp->conv = 1;
@@ -1824,7 +1867,7 @@ static int
 getCandidates(jcConvBuf *buf, int small)
 {
 	int start, end;
-	
+
 	TRACE("getCandidates", "Enter")
 
 	/*
@@ -1838,7 +1881,7 @@ getCandidates(jcConvBuf *buf, int small)
 		if (buf->candKind == CAND_SMALL &&
 		    buf->candClause == buf->curClause)
 			return 0;
-					    
+
 		/* カレント小文節の候補を取り出す */
 		start = buf->curClause;
 		end = start + 1;
@@ -1914,11 +1957,11 @@ setCandidate(jcConvBuf *buf, int n)
 		n, buf->candKind == CAND_SMALL ? "small" : "large");
 	showBuffers(buf, "setCandiate (before)");
 #endif
-	
+
 	clp = buf->clauseInfo + start;
 	oldlen = (buf->clauseInfo + end)->dispp - clp->dispp;
 	oldclen = jl_bun_suu(buf->wnn);
-	
+
 	if (buf->candKind == CAND_SMALL) {
 		/* カレント小文節を、指定候補で置き換える */
 		if (jl_set_jikouho(buf->wnn, n) < 0) {
@@ -1932,7 +1975,7 @@ setCandidate(jcConvBuf *buf, int n)
 			return -1;
 		}
 	}
-	
+
 	/* 変換後の文節数のチェックする */
 	newclen = jl_bun_suu(buf->wnn);
 	if (newclen < 0) {
@@ -1941,7 +1984,7 @@ setCandidate(jcConvBuf *buf, int n)
 	}
 	cdiff = newclen - oldclen;
 	newend = end + cdiff;
-	
+
 	/* 変換後のディスプレイバッファのサイズをチェックする */
 	newlen = jl_kanji_len(buf->wnn, start, newend);
 	if (newlen <= 0) {
@@ -1953,7 +1996,7 @@ setCandidate(jcConvBuf *buf, int n)
 #ifdef DEBUG_WNNLIB
 	{
 		wchar	candstr[1024];
-		
+
 		fprintf(stderr, "Candidate[%s]: '",
 			buf->candKind == CAND_SMALL ? "small" : "large");
 		if (newlen >= 1024) {
@@ -1962,7 +2005,7 @@ setCandidate(jcConvBuf *buf, int n)
 				 newlen);
 		} else {
 			candstr[0] = 0;
-			jl_get_zenkouho_kanji(buf->wnn, n, candstr);
+			ki2_jl_get_zenkouho_kanji(buf->wnn, n, candstr, sizeof(candstr));
 			printBuffer (candstr, candstr + newlen);
 		}
 		fprintf(stderr, "'\n");
@@ -1980,20 +2023,21 @@ setCandidate(jcConvBuf *buf, int n)
 		int	buflen = (buf->displayEnd - buf->displayBuf) + bdiff;
 		wchar	*dispp = clp->dispp;
 		wchar	tmp;
-	
+
 		if (buflen > buf->bufferSize
 		    && resizeBuffer(buf, buflen) < 0) {
 			return -1;
 		}
-		
+
 		moveDBuf(buf, end, bdiff);
-	
+
 		/*
 		 * 候補文字列の挿入は、jl_get_kanji() を用いるので、
 		 * それが設定する最後の NUL 文字に注意。
 		 */
 		tmp = dispp[newlen];
-		if (jl_get_kanji(buf->wnn, start, newend, dispp) <= 0) {
+		if (ki2_jl_get_kanji(buf->wnn, start, newend,
+				     dispp, newlen) <= 0) {
 			jcErrno = JE_WNNERROR;
 			return -1;
 		}
@@ -2011,12 +2055,12 @@ setCandidate(jcConvBuf *buf, int n)
 	{
 		wchar	*kanap, *dispp;
 		int	i, j;
-		
+
 		if (buf->nClause + cdiff > buf->clauseSize
         	    && resizeCInfo(buf, buf->nClause + cdiff) < 0) {
 			return -1;
 		}
-	
+
 		moveCInfo(buf, end, cdiff);
 
 		kanap = clp->kanap;
@@ -2040,7 +2084,7 @@ setCandidate(jcConvBuf *buf, int n)
 		 */
 		for (i = 0; i < start; i++)
 			buf->clauseInfo[i].ltop = jl_dai_top(buf->wnn, i);
-		for (i = newend; i < newclen; i++)	
+		for (i = newend; i < newclen; i++)
 			buf->clauseInfo[i].ltop = jl_dai_top(buf->wnn, i);
 	}
 
@@ -2092,7 +2136,7 @@ forceStudy(jcConvBuf *buf, int n)
 {
 	int i, j, k;
 	int status;
-	wchar yomi[512], kanji[512];
+	wchar yomi[CL_BUFSZ], kanji[CL_BUFSZ];
 
 	TRACE("forceStudy", "Enter")
 
@@ -2173,13 +2217,20 @@ forceStudy(jcConvBuf *buf, int n)
 		 * ここでは jllib の読みデータを使用する
 		 */
 
+		/* 読み文字列と変換済文字列の長さチェック */
+		if (jl_yomi_len(buf->wnn, i, j) >= CL_BUFSZ ||
+		    jl_kanji_len(buf->wnn, i, j) >= CL_BUFSZ) {
+			/* バッファオーバフローを避ける */
+			continue;
+		}
+
 		/* 読み文字列の取り出し */
-		if (jl_get_yomi(buf->wnn, i, j, yomi) < 0) {
+		if (ki2_jl_get_yomi(buf->wnn, i, j, yomi, CL_BUFSZ) < 0) {
 			jcErrno = JE_WNNERROR;
 			return -1;
 		}
 		/* 変換済み文字列を取り出す */
-		if (jl_get_kanji(buf->wnn, i, j, kanji) < 0) {
+		if (ki2_jl_get_kanji(buf->wnn, i, j, kanji, CL_BUFSZ) < 0) {
 			jcErrno = JE_WNNERROR;
 			return -1;
 		}
@@ -2217,7 +2268,10 @@ forceStudy(jcConvBuf *buf, int n)
 			return -1;
 		}
 		for (k = 0; k < status; k++) {
-			jl_get_zenkouho_kanji(buf->wnn, k, kanji);
+			ki2_jl_get_zenkouho_kanji(buf->wnn, k, kanji,
+						  CL_BUFSZ);
+			/* 必ず NUL ターミネートされるようにしておく */
+			kanji[CL_BUFSZ - 1] = 0;
 			if (wstrcmp(yomi, kanji) != 0)
 				continue;
 			if (jl_set_jikouho(buf->wnn, k) < 0) {
@@ -2863,7 +2917,9 @@ uim_wnn_jcCandidateInfo(uim_lisp buf_, uim_lisp small_)
 int
 jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
 {
-	TRACE("jcGetCandidates", "Enter")
+	wchar	tmp[CL_BUFSZ];
+
+	TRACE("jcGetCandidate", "Enter")
 
 	CHECKFIXED(buf);
 
@@ -2880,7 +2936,9 @@ jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
 	}
 
 	/* 文字列をコピー */
-	jl_get_zenkouho_kanji(buf->wnn, n, candstr);
+	ki2_jl_get_zenkouho_kanji(buf->wnn, n, tmp, CL_BUFSZ);
+	tmp[CL_BUFSZ - 1] = 0;
+	wstrcpy(candstr, tmp);
 
 	return 0;
 }
@@ -3630,7 +3688,7 @@ jcOpen2(char *server, char *envname, int override, char *rcfile4, char *rcfile6,
 	char fzk[1024];
 	int serv_ver, lib_ver;
 
-	if (jl_fuzokugo_get(wnnbuf, fzk) != -1) {
+	if (ki2_jl_fuzokugo_get(wnnbuf, fzk, 1024) != -1) {
 	    env_exists = 1;
 	    TRACE("jcOpen2", "env exists");
 	} else {
@@ -3817,7 +3875,7 @@ showBuffers(jcConvBuf *buf, char *tag)
 		fprintf(stderr, "'\n");
 		if (clp->conv == 1) {
 			fprintf(stderr, "clause[%d]: Yomi = '", i);
-			(void)jl_get_yomi(buf->wnn, i, i + 1, ws);
+			(void)ki2_jl_get_yomi(buf->wnn, i, i + 1, ws, sizeof(ws));
 			printBuffer(ws, ws + jl_yomi_len(buf->wnn, i, i + 1));
 			fprintf(stderr, "'\n");
 		}
@@ -3826,7 +3884,7 @@ showBuffers(jcConvBuf *buf, char *tag)
 		fprintf(stderr, "'\n");
 		if (clp->conv == 1) {
 			fprintf(stderr, "clause[%d]: Conv = '", i);
-			(void)jl_get_kanji(buf->wnn, i, i + 1, ws);
+			(void)ki2_jl_get_kanji(buf->wnn, i, i + 1, ws, sizeof(ws));
 			printBuffer(ws, ws + jl_kanji_len(buf->wnn, i, i + 1));
 			fprintf(stderr, "'\n");
 		}
