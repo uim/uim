@@ -3985,7 +3985,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc1("wnn-lib-clear", uim_wnn_jcClear);
   uim_scm_init_proc4("wnn-lib-convert", uim_wnn_jcConvert);
   uim_scm_init_proc1("wnn-lib-unconvert", uim_wnn_jcUnconvert);
-  uim_scm_init_proc1("wnn-lib-cansel", uim_wnn_jcCancel);
+  uim_scm_init_proc1("wnn-lib-cancel", uim_wnn_jcCancel);
   uim_scm_init_proc3("wnn-lib-expand", uim_wnn_jcExpand);
   uim_scm_init_proc3("wnn-lib-shrink", uim_wnn_jcShrink);
   uim_scm_init_proc3("wnn-lib-kana", uim_wnn_jcKana);
