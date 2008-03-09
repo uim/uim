@@ -2940,7 +2940,7 @@ jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr, int len)
 	/* 文字列をコピー */
 	ki2_jl_get_zenkouho_kanji(buf->wnn, n, tmp, CL_BUFSZ);
 	tmp[CL_BUFSZ - 1] = 0;
-	wstrncpy(candstr, tmp, len);
+	wstrncpy(candstr, tmp, len / sizeof(wchar));
 
 	return 0;
 }

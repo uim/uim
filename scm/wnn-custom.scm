@@ -321,7 +321,7 @@
 
 (define-custom 'wnn-rcfile ""
   '(wnn-advanced wnnserver)
-  '(string ".*")
+  '(pathname regular-file)
   (N_ "Wnn resource file")
   (N_ "long description will be here."))
 
