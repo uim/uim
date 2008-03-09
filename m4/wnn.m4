@@ -35,7 +35,7 @@ dnl
   if test x"$use_wnn" = "xno"; then
      AC_CHECKING(libwnn requires libcrypt)
      AC_CHECK_HEADERS([jllib.h],
-     [AC_CHECK_LIB(wnn, jl_connect_lang, use_wnn=yes, use_wnn=no, -lcrypt)
+     [AC_CHECK_LIB(wnn, jl_connect_lang, [use_wnn=yes WNN_LIBADD="-lcrypt"], use_wnn=no, -lcrypt)
      ], [use_wnn="no"], [])
   fi
 
@@ -51,4 +51,5 @@ dnl
   AC_DEFINE_UNQUOTED(WNNLIBDIR, "$wnn_libraries", [wnn library dir])
   AC_SUBST(WNN_CPPFLAGS)
   AC_SUBST(WNN_LIBS)
+  AC_SUBST(WNN_LIBADD)
 ])

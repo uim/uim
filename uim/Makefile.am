@@ -85,7 +85,7 @@ endif
 if WNN
 uim_plugin_LTLIBRARIES += libuim-wnn.la
 libuim_wnn_la_SOURCES = wnnlib.h wnnlib.c
-libuim_wnn_la_LIBADD = libuim.la $(WNN_LIBS) -lwnn
+libuim_wnn_la_LIBADD = libuim.la $(WNN_LIBS) -lwnn @WNN_LIBADD@
 libuim_wnn_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_wnn_la_CPPFLAGS = -I$(top_srcdir) $(WNN_CPPFLAGS)
 endif
