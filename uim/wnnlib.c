@@ -3939,13 +3939,10 @@ uim_wnn_jc_dump_jconvbuf(uim_lisp buf_)
     ret_ = CONS(CONS(MAKE_SYM("display-buf"), MAKE_STR("")), ret_);
   }
 
-  clause = buf->curClause - 1;
+  clause = buf->curClause;
   clauseinfo = buf->clauseInfo;
 
-  if (clause < 0) {
-    kana_ = MAKE_STR("");
-    disp_ = MAKE_STR("");
-  } else {
+  if (clause != buf->nClause) {
     len = clauseinfo[clause + 1].kanap - clauseinfo[clause].kanap;
     wstr = uim_malloc(sizeof(wchar) * (len + 1));
     str  = uim_malloc(sizeof(wchar) * (len + 1));
