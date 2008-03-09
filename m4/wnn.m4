@@ -35,8 +35,8 @@ dnl
   if test x"$use_wnn" = "xno"; then
      AC_CHECKING(libwnn requires libcrypt)
      AC_CHECK_HEADERS([jllib.h],
-     [AC_CHECK_LIB(wnn, jl_open_lang, use_wnn=yes, use_wnn=no)
-     ], [use_wnn="no"], [crypt])
+     [AC_CHECK_LIB(wnn, jl_connect_lang, use_wnn=yes, use_wnn=no, -lcrypt)
+     ], [use_wnn="no"], [])
   fi
 
   if test x"$use_wnn" = "xyes"; then
