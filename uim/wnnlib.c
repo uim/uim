@@ -426,7 +426,7 @@
  *	次候補の情報を返す。
  *	次候補一覧を出すためには最初にこの関数を呼ぶとよい。
  *
- * int jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
+ * int jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr, int len)
  *	指定された候補番号の文字列を返す。カレント候補番号はこの番号に
  *	変わる。表示バッファは変化しない。
  *	大昔の wnnlib は次候補が用意されていなければ用意したが、このバージョン
@@ -693,7 +693,7 @@ extern char	*memset();
 #endif
 
 /* ファンクションプロトタイプ宣言 */
-static wchar *wstrcpy(wchar *, wchar *);
+static wchar *wstrncpy(wchar *, wchar *, int);
 static int wstrlen(wchar *);
 static void moveKBuf(jcConvBuf *, int, int);
 static void moveDBuf(jcConvBuf *, int, int);
@@ -752,13 +752,15 @@ wstrcmp(wchar *s1, wchar *s2)
         return (int)(*s1 - *s2);
 }
 
-static wchar *
-wstrcpy(wchar *s1, wchar *s2)
+wchar *
+wstrncpy(wchar *s1, wchar *s2, int n)
 {
-	wchar   *ret = s1;
+	wchar	*ret = s1;
 
-	while (*s1++ = *s2++)
+	while (n-- > 0 && (*s1++ = *s2++))
 		;
+	while (n-- > 0)
+		*s1++ = 0;
 
 	return ret;
 }
@@ -2915,7 +2917,7 @@ uim_wnn_jcCandidateInfo(uim_lisp buf_, uim_lisp small_)
 
 /* jcGetCandidate -- 指定された番号の候補を取り出す */
 int
-jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
+jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr, int len)
 {
 	wchar	tmp[CL_BUFSZ];
 
@@ -2938,7 +2940,7 @@ jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr)
 	/* 文字列をコピー */
 	ki2_jl_get_zenkouho_kanji(buf->wnn, n, tmp, CL_BUFSZ);
 	tmp[CL_BUFSZ - 1] = 0;
-	wstrcpy(candstr, tmp);
+	wstrncpy(candstr, tmp, len);
 
 	return 0;
 }
@@ -2949,7 +2951,7 @@ uim_wnn_jcGetCandidate(uim_lisp buf_, uim_lisp n_)
   wchar buf[BUFSIZ];
   char str[BUFSIZ * sizeof(wchar)];
 
-  if (jcGetCandidate(C_PTR(buf_), C_INT(n_), buf) != 0)
+  if (jcGetCandidate(C_PTR(buf_), C_INT(n_), buf, sizeof(buf)) != 0)
     return uim_scm_f();
   if (sizeof(str) < wstrlen(buf) * sizeof(wchar))
     return uim_scm_f();

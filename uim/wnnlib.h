@@ -168,7 +168,7 @@ extern int jcFix1(jcConvBuf *buf);
 extern int jcNext(jcConvBuf *buf, int small, int prev);
 extern int jcCandidateInfo(jcConvBuf *buf, int small,
 			   int *ncandp, int *curcandp);
-extern int jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr);
+extern int jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr, int);
 extern int jcSelect(jcConvBuf *buf, int n);
 extern int jcDotOffset(jcConvBuf *buf);
 extern int jcIsConverted(jcConvBuf *buf, int cl);
