@@ -237,7 +237,7 @@ uim_sj3_getkan(uim_lisp yomi_)
     return uim_sj3_server_down_error();
 
   if (bun[bunsetu_cnt - 1].destlen == 0) /* too large? */
-    return uim_sj3_make_single_error("*SJ3-TOO-SHORT-BUFFER-SIZE*", N_(" Buffer size is too short."));
+    return uim_sj3_make_single_error("*SJ3-TOO-SHORT-BUFFER-SIZE*", N_("Buffer size is too short."));
 
   if (bunsetu_cnt == 0)
     return MAKE_STR("");
