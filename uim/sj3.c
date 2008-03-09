@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/param.h>
 
 #include <sj3lib.h>
 
@@ -44,6 +45,13 @@
 #include "uim-notify.h"
 #include "gettext.h"
 #include "plugin.h"
+
+#ifndef MAXHOSTNAMELEN
+#define MAXHOSTNAMELEN 256
+#endif
+#ifndef MAXLOGNAME
+#define MAXLOGNAME 32
+#endif
 
 static int uim_sj3_is_open = 0;
 
@@ -109,14 +117,17 @@ const static struct uim_sj3_error uim_sj3_open_error[] = {
 static uim_lisp
 uim_sj3_open(uim_lisp sname_, uim_lisp uname_)
 {
-  char *sname = uim_strdup(REFER_C_STR(sname_));
-  char *uname = uim_strdup(REFER_C_STR(uname_));
+  char sname[MAXHOSTNAMELEN];
+  char uname[MAXLOGNAME];
   int ret;
 
-  ret = sj3_open(sname, uname);
+  if (strlcpy(sname, REFER_C_STR(sname_), sizeof(sname)) >= sizeof(sname))
+    return uim_sj3_make_single_error("*SJ3-SERVER-NAME-TOO-LONG*", N_("Server name is too long."));
 
-  free(sname);
-  free(uname);
+  if (strlcpy(uname, REFER_C_STR(uname_), sizeof(uname)) >= sizeof(uname))
+    return uim_sj3_make_single_error("*SJ3-USER-NAME-TOO-LONG*", N_("User name is too long."));
+
+  ret = sj3_open(sname, uname);
 
   if (ret == 0) {
     uim_sj3_is_open = 1;
@@ -129,8 +140,8 @@ uim_sj3_open(uim_lisp sname_, uim_lisp uname_)
 static uim_lisp
 uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
 {
-  char *sname = uim_strdup(REFER_C_STR(sname_));
-  char *uname = uim_strdup(REFER_C_STR(uname_));
+  char sname[MAXHOSTNAMELEN];
+  char uname[MAXLOGNAME];
   int dict_num;
   char **dict_list;
   int *err_num = NULL;
@@ -138,6 +149,12 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
   int i;
   int ret;
   uim_lisp ret_;
+
+  if (strlcpy(sname, REFER_C_STR(sname_), sizeof(sname)) >= sizeof(sname))
+    return uim_sj3_make_single_error("*SJ3-SERVER-NAME-TOO-LONG*", N_("Server name is too long."));
+
+  if (strlcpy(uname, REFER_C_STR(uname_), sizeof(uname)) >= sizeof(uname))
+    return uim_sj3_make_single_error("*SJ3-USER-NAME-TOO-LONG*", N_("User name is too long."));
 
   dict_num = uim_scm_length(dict_list_);
 
@@ -149,9 +166,6 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
   }
 
   ret = sj3_open_with_list(sname, uname, dict_num, dict_list, err_num, err_index);
-
-  free(sname);
-  free(uname);
 
   if (ret != 0) {
     for (i = 0; i < dict_num; i++)
