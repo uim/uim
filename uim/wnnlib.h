@@ -140,42 +140,34 @@ typedef struct {
 	int		clauseSize;	/* clauseInfo の大きさ */
 } jcConvBuf;
 
-extern struct wnn_buf *jcOpen(char *server, char *envname,
-				int override, char *rcfile,
-				void (*error)(), int (*confirm)(),
-				int timeout);
-extern struct wnn_buf *jcOpen2(char *server, char *envname,
-				int override, char *rcfile4, char *rcfile6,
-				void (*error)(), int (*confirm)(),
-				int timeout);
-extern void jcClose(struct wnn_buf *wnn);
-extern int jcIsConnect(struct wnn_buf *wnn);
-extern jcConvBuf *jcCreateBuffer(struct wnn_buf *wnn,
-					int clause, int buffersize);
-extern int jcDestroyBuffer(jcConvBuf *buf, int savedic);
-extern int jcClear(jcConvBuf *buf);
-extern int jcInsertChar(jcConvBuf *buf, int c);
-extern int jcDeleteChar(jcConvBuf *buf, int prev);
-extern int jcKillLine(jcConvBuf *buf);
-extern int jcConvert(jcConvBuf *buf, int small, int tan, int jump);
-extern int jcUnconvert(jcConvBuf *buf);
-extern int jcCancel(jcConvBuf *buf);
-extern int jcExpand(jcConvBuf *buf, int small, int convf);
-extern int jcShrink(jcConvBuf *buf, int small, int convf);
-extern int jcKana(jcConvBuf *buf, int small, int kind);
-extern int jcFix(jcConvBuf *buf);
-extern int jcFix1(jcConvBuf *buf);
-extern int jcNext(jcConvBuf *buf, int small, int prev);
-extern int jcCandidateInfo(jcConvBuf *buf, int small,
-			   int *ncandp, int *curcandp);
-extern int jcGetCandidate(jcConvBuf *buf, int n, wchar *candstr, int);
-extern int jcSelect(jcConvBuf *buf, int n);
-extern int jcDotOffset(jcConvBuf *buf);
-extern int jcIsConverted(jcConvBuf *buf, int cl);
-extern int jcMove(jcConvBuf *buf, int small, int dir);
-extern int jcTop(jcConvBuf *buf);
-extern int jcBottom(jcConvBuf *buf);
-extern int jcChangeClause(jcConvBuf *buf, wchar *str);
-extern int jcSaveDic(jcConvBuf *buf);
+struct wnn_buf *jcOpen(char *, char *, int, char *, void (*)(), int (*)(), int);
+struct wnn_buf *jcOpen2(char *, char *, int, char *, char *, void (*)(), int (*)(), int);
+void jcClose(struct wnn_buf *);
+int jcIsConnect(struct wnn_buf *);
+jcConvBuf *jcCreateBuffer(struct wnn_buf *, int, int);
+int jcDestroyBuffer(jcConvBuf *, int);
+int jcClear(jcConvBuf *);
+int jcInsertChar(jcConvBuf *, int);
+int jcDeleteChar(jcConvBuf *, int);
+int jcKillLine(jcConvBuf *);
+int jcConvert(jcConvBuf *, int, int, int);
+int jcUnconvert(jcConvBuf *);
+int jcCancel(jcConvBuf *);
+int jcExpand(jcConvBuf *, int, int);
+int jcShrink(jcConvBuf *, int, int);
+int jcKana(jcConvBuf *, int, int);
+int jcFix(jcConvBuf *);
+int jcFix1(jcConvBuf *);
+int jcNext(jcConvBuf *, int, int);
+int jcCandidateInfo(jcConvBuf *, int, int *, int *);
+int jcGetCandidate(jcConvBuf *, int, wchar *, int);
+int jcSelect(jcConvBuf *, int);
+int jcDotOffset(jcConvBuf *);
+int jcIsConverted(jcConvBuf *, int);
+int jcMove(jcConvBuf *, int, int);
+int jcTop(jcConvBuf *);
+int jcBottom(jcConvBuf *);
+int jcChangeClause(jcConvBuf *, wchar *);
+int jcSaveDic(jcConvBuf *);
 
 #endif /* _wnnlib_h */
