@@ -43,7 +43,7 @@ install-data-hook: gtk-rc-get-immodule-file
 	  if test $(libdir) = $(GTK_LIBDIR); then \
 	    if type $(QUERY_COMMAND) > /dev/null 2>&1; then \
 	      $(QUERY_COMMAND) > `$(GTK_RC_GET_IMMODULE_FILE)`; \
-	      echo "*** Updated \"`$(GTK_RC_GET_IMMODULE_FILE)`\". ***"; \
+	      echo "*** \"`$(GTK_RC_GET_IMMODULE_FILE)`\" is updated. ***";  \
 	    else \
 	      echo "********************** Warning ***********************"; \
 	      echo " $(QUERY_COMMAND) not found"; \
