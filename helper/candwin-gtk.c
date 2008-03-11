@@ -40,6 +40,7 @@
 #include <gdk/gdkx.h>
 #include <glib.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
