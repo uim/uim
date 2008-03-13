@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1 2 6 23 34 48))
+
 (require "ustr.scm")
 (require "japanese.scm")
 (require "japanese-kana.scm")
@@ -47,6 +49,49 @@
   (if sj3-use-remote-server?
       (sj3-lib-open server sj3-user)
       (sj3-lib-open "" sj3-user)))
+
+;; error recovery
+(define (sj3-lib-error? result)
+  (and (list? result)
+       (eq? (car result) 'error)))
+(define (sj3-connect-wait sc w)
+  (let ((stime (time)))
+    (let loop ((now (time)))
+      (let ((diff (- w (string->number (difftime now stime)))))
+        (if (< diff 0)
+            #t
+            (begin
+              (im-clear-preedit sc)
+              (im-pushback-preedit
+               sc preedit-reverse
+               (format #f (N_ "[Please wait ~asec...]") diff))
+              (im-update-preedit sc)
+              (sleep 1)
+              (loop (time))))))))
+(define (sj3-connect-retry sc)
+  (set! sj3-init-lib-ok? #f)
+  (sj3-cancel-conv sc)
+  (let loop ((fib1 1) (fib2 1))
+    (if (sj3-lib-error? (sj3-lib-init sj3-server-name))
+        (begin
+          (im-clear-preedit sc)
+          (im-pushback-preedit
+           sc preedit-reverse
+           (N_ "[Reconnecting...]"))
+          (im-update-preedit sc)
+          (sleep 1)
+          (sj3-connect-wait sc fib1)
+          (loop fib2 (+ fib1 fib2)))
+        (set! sj3-init-lib-ok? #t))))
+(define (sj3-lib-funcall sc f . args)
+  (let ((ret (apply f args)))
+    (if (sj3-lib-error? ret)
+        (begin (if sj3-init-lib-ok?
+                   (sj3-lib-close))
+               (sj3-connect-retry sc)
+               (apply f args))
+        ret)))
+
 (define (sj3-lib-alloc-context)
   #t)
 (define (sj3-make-map-from-kana-string str)
@@ -55,7 +100,7 @@
                          (ja-find-kana-list-from-rule ja-rk-rule-basic c))
                        (reverse (string-to-list str))))))
 (define (sj3-getdouon sc str)
-  (let ((douon (sj3-lib-getdouon str))
+  (let ((douon (sj3-lib-funcall sc sj3-lib-getdouon str))
         (kana-list (sj3-make-map-from-kana-string str)))
     (append douon
             (map list kana-list))))
@@ -64,9 +109,9 @@
     (car (list-ref sc-ctx nth))))
 (define (sj3-lib-get-nth-candidate sc seg nth)
   (let* ((yomi (sj3-get-nth-yomi sc seg))
-         (cnt (sj3-lib-douoncnt yomi)))
+         (cnt (sj3-lib-funcall sc sj3-lib-douoncnt yomi)))
     (if (< nth cnt)
-        (sj3-lib-get-nth-douon yomi nth)
+        (sj3-lib-funcall sc sj3-lib-get-nth-douon yomi nth)
         (list-ref (sj3-make-map-from-kana-string yomi) (- nth cnt)))))
 (define (sj3-lib-release-context sc)
   #t)
@@ -76,7 +121,7 @@
   (let ((sc-ctx (sj3-context-sc-ctx sc)))
     (length sc-ctx)))
 (define (sj3-get-nr-douon sc str)
-  (+ (sj3-lib-douoncnt str)
+  (+ (sj3-lib-funcall sc sj3-lib-douoncnt str)
      (length (sj3-make-map-from-kana-string str))))
 (define (sj3-lib-get-nr-candidates sc seg)
   (sj3-get-nr-douon sc (sj3-get-nth-yomi sc seg)))
@@ -126,7 +171,7 @@
           (else
            #t))))
 (define (sj3-lib-begin-conversion sc str)
-  (let ((ret (sj3-lib-getkan str)))
+  (let ((ret (sj3-lib-funcall sc sj3-lib-getkan str)))
     (cond ((list? ret)
            (sj3-context-set-sc-ctx! sc (cdr ret))
            (- (length ret) 1))
@@ -137,7 +182,7 @@
     (if (< delta (length douon))
         (let ((entry (list-ref douon delta)))
           (if (= 2 (length entry))
-              (sj3-lib-gakusyuu (list-ref entry 1)))))))
+              (sj3-lib-funcall sc sj3-lib-gakusyuu (list-ref entry 1)))))))
 (define (sj3-lib-reset-conversion sc)
   #f)
 
