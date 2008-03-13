@@ -36,11 +36,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <pwd.h>
+#include <errno.h>
 #include <assert.h>
 
 #include "uim-internal.h"
@@ -269,6 +272,48 @@ setugidp(void)
 }
 
 static uim_lisp
+time_t_to_uim_lisp(time_t t)
+{
+  char t_str[64];
+
+  snprintf(t_str, sizeof(t_str), "%.32g", (double)t);
+  return MAKE_STR(t_str);
+}
+
+static uim_bool
+uim_lisp_to_time_t(time_t *t, uim_lisp t_)
+{
+  const char *t_str = REFER_C_STR(t_);
+  char *end;
+
+  *t = (time_t)strtod(t_str, &end);
+  return *end == '\0';
+}
+
+static uim_lisp
+c_time(void)
+{
+  time_t now;
+
+  if ((time(&now)) == (time_t) -1)
+    return CONS(MAKE_SYM("error"), MAKE_STR(strerror(errno)));
+  return time_t_to_uim_lisp(now);
+}
+
+static uim_lisp
+c_difftime(uim_lisp time1_, uim_lisp time0_)
+{
+  time_t time1, time0;
+
+  if (!uim_lisp_to_time_t(&time1, time1_))
+    return uim_scm_f();
+  if (!uim_lisp_to_time_t(&time0, time0_))
+    return uim_scm_f();
+  return time_t_to_uim_lisp(difftime(time1, time0));
+}
+
+
+static uim_lisp
 c_sleep(uim_lisp seconds_)
 {
   return MAKE_INT(sleep((unsigned int)C_INT(seconds_)));
@@ -292,5 +337,9 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("getenv", c_getenv);
   uim_scm_init_proc3("setenv", c_setenv);
   uim_scm_init_proc1("unsetenv", c_unsetenv);
+
+  uim_scm_init_proc0("time", c_time);
+  uim_scm_init_proc2("difftime", c_difftime);
+
   uim_scm_init_proc1("sleep", c_sleep);
 }
