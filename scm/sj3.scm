@@ -54,33 +54,35 @@
        (apply zip (map (lambda (c)
                          (ja-find-kana-list-from-rule ja-rk-rule-basic c))
                        (reverse (string-to-list str))))))
-(define (sj3-getdouon str)
+(define (sj3-getdouon sc str)
   (let ((douon (sj3-lib-getdouon str))
         (kana-list (sj3-make-map-from-kana-string str)))
     (append douon
             (map list kana-list))))
-(define (sj3-get-nth-yomi sc-ctx nth)
-  (car (list-ref sc-ctx nth)))
-(define (sj3-lib-get-nth-candidate sc-ctx seg nth)
-  (let* ((yomi (sj3-get-nth-yomi sc-ctx seg))
+(define (sj3-get-nth-yomi sc nth)
+  (let ((sc-ctx (sj3-context-sc-ctx sc)))
+    (car (list-ref sc-ctx nth))))
+(define (sj3-lib-get-nth-candidate sc seg nth)
+  (let* ((yomi (sj3-get-nth-yomi sc seg))
          (cnt (sj3-lib-douoncnt yomi)))
     (if (< nth cnt)
         (sj3-lib-get-nth-douon yomi nth)
         (list-ref (sj3-make-map-from-kana-string yomi) (- nth cnt)))))
 (define (sj3-lib-release-context sc)
   #t)
-(define (sj3-lib-get-unconv-candidate sc-ctx seg-idx)
-  (sj3-get-nth-yomi sc-ctx seg-idx))
-(define (sj3-lib-get-nr-segments sc-ctx)
-  (length sc-ctx))
-(define (sj3-get-nr-douon str)
+(define (sj3-lib-get-unconv-candidate sc seg-idx)
+  (sj3-get-nth-yomi sc seg-idx))
+(define (sj3-lib-get-nr-segments sc)
+  (let ((sc-ctx (sj3-context-sc-ctx sc)))
+    (length sc-ctx)))
+(define (sj3-get-nr-douon sc str)
   (+ (sj3-lib-douoncnt str)
      (length (sj3-make-map-from-kana-string str))))
-(define (sj3-lib-get-nr-candidates sc-ctx seg)
-  (sj3-get-nr-douon (sj3-get-nth-yomi sc-ctx seg)))
+(define (sj3-lib-get-nr-candidates sc seg)
+  (sj3-get-nr-douon sc (sj3-get-nth-yomi sc seg)))
 (define (sj3-lib-resize-segment sc seg cnt)
   (let* ((sc-ctx (sj3-context-sc-ctx sc))
-         (kana-str (sj3-get-nth-yomi sc-ctx seg))
+         (kana-str (sj3-get-nth-yomi sc seg))
          (kana-list (reverse (string-to-list kana-str))))
     (cond ((and (< cnt 0) ;; shrink segment
                 (< 1 (length kana-list)))
@@ -91,7 +93,7 @@
                   (edited-tail (if (= (+ 1 seg) (length sc-ctx)) ;; end of segments
                                    (list (take-right kana-list (* -1 cnt)))
                                    (let* ((next-char (car (take-right kana-list (* -1 cnt))))
-                                          (kana-next-str (sj3-get-nth-yomi sc-ctx (+ 1 seg))))
+                                          (kana-next-str (sj3-get-nth-yomi sc (+ 1 seg))))
                                      (list (list (string-append next-char kana-next-str))))))
                   (not-edited-tail (if (= (+ 1 seg) (length sc-ctx))
                                        '()
@@ -102,8 +104,8 @@
            #t)
           ((and (< 0 cnt) ;; stretch segment
                 (< (+ seg 1) (length sc-ctx))
-                (< 0 (length (string-to-list (sj3-get-nth-yomi sc-ctx (+ seg 1))))))
-           (let* ((next-str (sj3-get-nth-yomi sc-ctx (+ seg 1)))
+                (< 0 (length (string-to-list (sj3-get-nth-yomi sc (+ seg 1))))))
+           (let* ((next-str (sj3-get-nth-yomi sc (+ seg 1)))
                   (next-kana-list (reverse (string-to-list next-str)))
                   (not-edited-head (if (< 0 seg)
                                        (take sc-ctx seg)
@@ -130,13 +132,13 @@
            (- (length ret) 1))
           (else
            (length (sj3-make-map-from-kana-string str))))))
-(define (sj3-lib-commit-segment sc-ctx seg delta)
-  (let ((douon (sj3-getdouon (sj3-get-nth-yomi sc-ctx seg))))
+(define (sj3-lib-commit-segment sc seg delta)
+  (let ((douon (sj3-getdouon sc (sj3-get-nth-yomi sc seg))))
     (if (< delta (length douon))
         (let ((entry (list-ref douon delta)))
           (if (= 2 (length entry))
               (sj3-lib-gakusyuu (list-ref entry 1)))))))
-(define (sj3-lib-reset-conversion sc-ctx)
+(define (sj3-lib-reset-conversion sc)
   #f)
 
 
@@ -495,9 +497,8 @@
   (sj3-context-new id im))
 
 (define (sj3-release-handler sc)
-  (let ((sc-ctx (sj3-context-sc-ctx sc)))
-    (if sc-ctx
-        (sj3-lib-release-context sc-ctx))))
+  (if sc
+      (sj3-lib-release-context sc)))
 
 (define (sj3-flush sc)
   (rk-flush (sj3-context-rkc sc))
@@ -586,11 +587,10 @@
 
 (define sj3-cancel-conv
   (lambda (sc)
-    (let ((sc-ctx (sj3-context-sc-ctx sc)))
-      (sj3-reset-candidate-window sc)
-      (sj3-context-set-state! sc #f)
-      (ustr-clear! (sj3-context-segments sc))
-      (sj3-lib-reset-conversion sc-ctx))))
+    (sj3-reset-candidate-window sc)
+    (sj3-context-set-state! sc #f)
+    (ustr-clear! (sj3-context-segments sc))
+    (sj3-lib-reset-conversion sc)))
 
 (define (sj3-proc-input-state-no-preedit sc key key-state)
   (let
@@ -1101,7 +1101,7 @@
     (let* ((preconv
 	    (ja-join-vu (string-to-list
 			 (sj3-make-whole-string sc #t sj3-type-hiragana))))
-	   (unconv-candidate (sj3-lib-get-unconv-candidate sc-ctx seg-idx))
+	   (unconv-candidate (sj3-lib-get-unconv-candidate sc seg-idx))
 	   (unconv (if unconv-candidate
 		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
@@ -1148,7 +1148,7 @@
 				     preedit-cursor)
 			preedit-underline))
 	      (cand (if (> cand-idx sj3-candidate-type-katakana)
-			(sj3-lib-get-nth-candidate sc-ctx seg-idx cand-idx)
+			(sj3-lib-get-nth-candidate sc seg-idx cand-idx)
 			(sj3-get-raw-candidate sc sc-ctx seg-idx cand-idx)))
 	      (seg (list (cons attr cand))))
 	 (if (and separator
@@ -1186,20 +1186,19 @@
     (string-append-map (lambda (seg-idx cand-idx)
 			 (if (> cand-idx sj3-candidate-type-katakana)
 			     (sj3-lib-get-nth-candidate
-			      sc-ctx seg-idx cand-idx)
+			      sc seg-idx cand-idx)
 			     (sj3-get-raw-candidate
 			      sc sc-ctx seg-idx cand-idx)))
 		       (iota (ustr-length segments))
 		       (ustr-whole-seq segments))))
 
 (define (sj3-commit-string sc)
-  (let ((sc-ctx (sj3-context-sc-ctx sc))
-        (segments (sj3-context-segments sc)))
-    (if sc-ctx
+  (let ((segments (sj3-context-segments sc)))
+    (if sc
 	(begin
 	  (for-each (lambda (seg-idx cand-idx)
 		      (if (> cand-idx sj3-candidate-type-katakana)
-			  (sj3-lib-commit-segment sc-ctx seg-idx cand-idx)))
+			  (sj3-lib-commit-segment sc seg-idx cand-idx)))
 		    (iota (ustr-length segments))
 		    (ustr-whole-seq segments))
 	  (if (every (lambda (x) (<= x sj3-candidate-type-katakana))
@@ -1228,16 +1227,14 @@
 	 (cur-seg (ustr-cursor-pos segments)))
     (sj3-reset-candidate-window sc)
     (sj3-lib-resize-segment sc cur-seg cnt)
-    (let* ((sc-ctx (sj3-context-sc-ctx sc))
-           (resized-nseg (sj3-lib-get-nr-segments sc-ctx))
+    (let* ((resized-nseg (sj3-lib-get-nr-segments sc))
            (latter-nseg (- resized-nseg cur-seg)))
       (ustr-set-latter-seq! segments (make-list latter-nseg 0)))))
 
 (define (sj3-move-candidate sc offset)
-  (let* ((sc-ctx (sj3-context-sc-ctx sc))
-	 (segments (sj3-context-segments sc))
+  (let* ((segments (sj3-context-segments sc))
 	 (cur-seg (ustr-cursor-pos segments))
-	 (max (sj3-lib-get-nr-candidates sc-ctx cur-seg))
+	 (max (sj3-lib-get-nr-candidates sc cur-seg))
 	 (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
 		0
 		(+ (ustr-cursor-frontside segments) offset)))
@@ -1263,10 +1260,9 @@
 
 (define sj3-move-candidate-in-page
   (lambda (sc numeralc)
-    (let* ((sc-ctx (sj3-context-sc-ctx sc))
-	   (segments (sj3-context-segments sc))
+    (let* ((segments (sj3-context-segments sc))
 	   (cur-seg (ustr-cursor-pos segments))
-	   (max (sj3-lib-get-nr-candidates sc-ctx cur-seg))
+	   (max (sj3-lib-get-nr-candidates sc cur-seg))
 	   (n (ustr-cursor-frontside segments))
 	   (cur-page (if (= sj3-nr-candidate-max 0)
 			 0
@@ -1448,16 +1444,14 @@
   (if (sj3-context-on sc)
       (begin
 	(if (sj3-context-state sc)
-	  (let ((sc-ctx (sj3-context-sc-ctx sc)))
-	    (sj3-lib-reset-conversion sc-ctx)))
+            (sj3-lib-reset-conversion sc))
 	(sj3-flush sc))))
 
 ;;;
 (define (sj3-get-candidate-handler sc idx ascel-enum-hint)
-  (let* ((sc-ctx (sj3-context-sc-ctx sc))
-	 (cur-seg (ustr-cursor-pos (sj3-context-segments sc)))
+  (let* ((cur-seg (ustr-cursor-pos (sj3-context-segments sc)))
 	 (cand (sj3-lib-get-nth-candidate
-		sc-ctx cur-seg idx)))
+		sc cur-seg idx)))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (sj3-set-candidate-index-handler sc idx)
