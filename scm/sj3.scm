@@ -52,8 +52,7 @@
 
 ;; error recovery
 (define (sj3-lib-error? result)
-  (and (list? result)
-       (not (null? result))
+  (and (pair? result)
        (eq? (car result) 'error)))
 (define (sj3-connect-wait sc w)
   (let ((stime (time)))
