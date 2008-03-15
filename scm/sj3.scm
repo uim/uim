@@ -1248,7 +1248,7 @@
 		    (ustr-whole-seq segments))
 	  (if (every (lambda (x) (<= x sj3-candidate-type-katakana))
 		     (ustr-whole-seq segments))
-	      (sj3-lib-reset-conversion sc-ctx))))))
+	      (sj3-lib-reset-conversion sc))))))
 
 (define (sj3-do-commit sc)
     (im-commit sc (sj3-get-commit-string sc))
