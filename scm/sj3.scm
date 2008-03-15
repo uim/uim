@@ -1142,7 +1142,7 @@
 	      right-str))))
 
 (define sj3-get-raw-candidate
-  (lambda (sc sc-ctx seg-idx cand-idx)
+  (lambda (sc seg-idx cand-idx)
     (let* ((preconv
 	    (ja-join-vu (string-to-list
 			 (sj3-make-whole-string sc #t sj3-type-hiragana))))
@@ -1182,8 +1182,7 @@
 	    "????")))))) ;; shouldn't happen
 
 (define (sj3-compose-state-preedit sc)
-  (let* ((sc-ctx (sj3-context-sc-ctx sc))
-	 (segments (sj3-context-segments sc))
+  (let* ((segments (sj3-context-segments sc))
 	 (cur-seg (ustr-cursor-pos segments))
 	 (separator (sj3-separator sc)))
     (append-map
@@ -1194,7 +1193,7 @@
 			preedit-underline))
 	      (cand (if (> cand-idx sj3-candidate-type-katakana)
 			(sj3-lib-get-nth-candidate sc seg-idx cand-idx)
-			(sj3-get-raw-candidate sc sc-ctx seg-idx cand-idx)))
+			(sj3-get-raw-candidate sc seg-idx cand-idx)))
 	      (seg (list (cons attr cand))))
 	 (if (and separator
 		  (< 0 seg-idx))
@@ -1226,14 +1225,13 @@
 		(string-append-map-ustr-latter extract-kana preconv-str))))))
 
 (define (sj3-get-commit-string sc)
-  (let ((sc-ctx (sj3-context-sc-ctx sc))
-	(segments (sj3-context-segments sc)))
+  (let ((segments (sj3-context-segments sc)))
     (string-append-map (lambda (seg-idx cand-idx)
 			 (if (> cand-idx sj3-candidate-type-katakana)
 			     (sj3-lib-get-nth-candidate
 			      sc seg-idx cand-idx)
 			     (sj3-get-raw-candidate
-			      sc sc-ctx seg-idx cand-idx)))
+			      sc seg-idx cand-idx)))
 		       (iota (ustr-length segments))
 		       (ustr-whole-seq segments))))
 
@@ -1392,80 +1390,79 @@
 	(ustr-cursor-set-frontside! segments state)))))
 
 (define (sj3-proc-compose-state sc key key-state)
-  (let ((sc-ctx (sj3-context-sc-ctx sc)))
-    (cond
-     ((sj3-prev-page-key? key key-state)
-      (if (sj3-context-candidate-window sc)
-	  (im-shift-page-candidate sc #f)))
+  (cond
+   ((sj3-prev-page-key? key key-state)
+    (if (sj3-context-candidate-window sc)
+        (im-shift-page-candidate sc #f)))
 
-     ((sj3-next-page-key? key key-state)
-      (if (sj3-context-candidate-window sc)
-	  (im-shift-page-candidate sc #t)))
+   ((sj3-next-page-key? key key-state)
+    (if (sj3-context-candidate-window sc)
+        (im-shift-page-candidate sc #t)))
 
-     ((sj3-commit-key? key key-state)
-      (sj3-do-commit sc))
+   ((sj3-commit-key? key key-state)
+    (sj3-do-commit sc))
 
-     ((sj3-extend-segment-key? key key-state)
-      (sj3-resize-segment sc 1))
+   ((sj3-extend-segment-key? key key-state)
+    (sj3-resize-segment sc 1))
 
-     ((sj3-shrink-segment-key? key key-state)
-      (sj3-resize-segment sc -1))
+   ((sj3-shrink-segment-key? key key-state)
+    (sj3-resize-segment sc -1))
 
-     ((sj3-next-segment-key? key key-state)
-      (sj3-move-segment sc 1))
+   ((sj3-next-segment-key? key key-state)
+    (sj3-move-segment sc 1))
 
-     ((sj3-prev-segment-key? key key-state)
-      (sj3-move-segment sc -1))
+   ((sj3-prev-segment-key? key key-state)
+    (sj3-move-segment sc -1))
 
-     ((sj3-beginning-of-preedit-key? key key-state)
-      (begin
-	(ustr-cursor-move-beginning! (sj3-context-segments sc))
-	(sj3-reset-candidate-window sc)))
+   ((sj3-beginning-of-preedit-key? key key-state)
+    (begin
+      (ustr-cursor-move-beginning! (sj3-context-segments sc))
+      (sj3-reset-candidate-window sc)))
 
-     ((sj3-end-of-preedit-key? key key-state)
-      (begin
-	(ustr-cursor-move-end! (sj3-context-segments sc))
-	(sj3-correct-segment-cursor (sj3-context-segments sc))
-	(sj3-reset-candidate-window sc)))
+   ((sj3-end-of-preedit-key? key key-state)
+    (begin
+      (ustr-cursor-move-end! (sj3-context-segments sc))
+      (sj3-correct-segment-cursor (sj3-context-segments sc))
+      (sj3-reset-candidate-window sc)))
 
-     ((sj3-backspace-key? key key-state)
-      (sj3-cancel-conv sc))
+   ((sj3-backspace-key? key key-state)
+    (sj3-cancel-conv sc))
 
-     ((sj3-next-candidate-key? key key-state)
-      (sj3-move-candidate sc 1))
+   ((sj3-next-candidate-key? key key-state)
+    (sj3-move-candidate sc 1))
 
-     ((sj3-prev-candidate-key? key key-state)
-      (sj3-move-candidate sc -1))
+   ((sj3-prev-candidate-key? key key-state)
+    (sj3-move-candidate sc -1))
 
-     ((or (sj3-transpose-as-hiragana-key? key key-state)
-	  (sj3-transpose-as-katakana-key? key key-state)
-	  (sj3-transpose-as-halfkana-key? key key-state)
-	  (and
-	   (not (= (sj3-context-input-rule sc) sj3-input-rule-kana))
-	   (or
-	    (sj3-transpose-as-halfwidth-alnum-key? key key-state)
-	    (sj3-transpose-as-fullwidth-alnum-key? key key-state))))
-      (sj3-set-segment-transposing sc key key-state))
+   ((or (sj3-transpose-as-hiragana-key? key key-state)
+        (sj3-transpose-as-katakana-key? key key-state)
+        (sj3-transpose-as-halfkana-key? key key-state)
+        (and
+         (not (= (sj3-context-input-rule sc) sj3-input-rule-kana))
+         (or
+          (sj3-transpose-as-halfwidth-alnum-key? key key-state)
+          (sj3-transpose-as-fullwidth-alnum-key? key key-state))))
+    (sj3-set-segment-transposing sc key key-state))
 
-     ((sj3-cancel-key? key key-state)
-      (sj3-cancel-conv sc))
+   ((sj3-cancel-key? key key-state)
+    (sj3-cancel-conv sc))
 
-     ((and sj3-select-candidate-by-numeral-key?
-	   (ichar-numeric? key)
-	   (sj3-context-candidate-window sc))
-      (sj3-move-candidate-in-page sc key))
+   ((and sj3-select-candidate-by-numeral-key?
+         (ichar-numeric? key)
+         (sj3-context-candidate-window sc))
+    (sj3-move-candidate-in-page sc key))
 
-     ((and (modifier-key-mask key-state)
-	   (not (shift-key-mask key-state)))
-      #f)
+   ((and (modifier-key-mask key-state)
+         (not (shift-key-mask key-state)))
+    #f)
 
-     ((symbol? key)
-      #f)
+   ((symbol? key)
+    #f)
 
-     (else
-      (begin
-	(sj3-do-commit sc)
-	(sj3-proc-input-state sc key key-state))))))
+   (else
+    (begin
+      (sj3-do-commit sc)
+      (sj3-proc-input-state sc key key-state)))))
 
 (define (sj3-press-key-handler sc key key-state)
   (if (ichar-control? key)
