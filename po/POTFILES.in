@@ -59,6 +59,9 @@ scm/tutcode-custom.scm
 scm/tutcode-key-custom.scm
 scm/tutcode.scm
 scm/viqr.scm
+scm/wnn-custom.scm
+scm/wnn-key-custom.scm
+scm/wnn.scm
 uim.desktop.in.in
 uim/uim-error.c
 uim/plugin.c
