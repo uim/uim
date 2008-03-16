@@ -55,20 +55,25 @@
       (set! wnn-buf (wnn-lib-open "" "uim" wnn-rcfile 0))))
 (define (wnn-lib-alloc-context)
   (wnn-lib-create-buffer wnn-buf 0 0))
-(define (wnn-lib-get-nth-candidate wc-ctx seg nth)
-  (wnn-move wc-ctx seg)
-  (wnn-lib-candidate-info wc-ctx #t)
-  (wnn-lib-get-candidate wc-ctx nth))
-(define (wnn-lib-release-context wc-ctx)
-  (wnn-lib-destroy-buffer wc-ctx #f))
-(define (wnn-lib-get-unconv-candidate wc-ctx seg-idx)
-  (wnn-move wc-ctx seg-idx)
-  (cdr (assoc 'kanap (cdr (assoc 'clause-info (wnn-lib-get-jconvbuf wc-ctx))))))
-(define (wnn-lib-get-nr-segments wc-ctx)
-  (cdr (assoc 'cur-n-clause (wnn-lib-get-jconvbuf wc-ctx))))
-(define (wnn-lib-get-nr-candidates wc-ctx seg)
-  (wnn-move wc-ctx seg)
-  (cdr (assoc 'ncand (wnn-lib-candidate-info wc-ctx #t))))
+(define (wnn-lib-get-nth-candidate wc seg nth)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-move wc-ctx seg)
+    (wnn-lib-candidate-info wc-ctx #t)
+    (wnn-lib-get-candidate wc-ctx nth)))
+(define (wnn-lib-release-context wc)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-lib-destroy-buffer wc-ctx #f)))
+(define (wnn-lib-get-unconv-candidate wc seg-idx)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-move wc-ctx seg-idx)
+    (cdr (assoc 'kanap (cdr (assoc 'clause-info (wnn-lib-get-jconvbuf wc-ctx)))))))
+(define (wnn-lib-get-nr-segments wc)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (cdr (assoc 'cur-n-clause (wnn-lib-get-jconvbuf wc-ctx)))))
+(define (wnn-lib-get-nr-candidates wc seg)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-move wc-ctx seg)
+    (cdr (assoc 'ncand (wnn-lib-candidate-info wc-ctx #t)))))
 (define (wnn-lib-resize-segment wc seg cnt)
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
     (wnn-move wc-ctx seg)
@@ -83,13 +88,15 @@
     (for-each (lambda (c) (wnn-lib-insert-char wc-ctx c))
               (reverse (string-to-list str)))
     (wnn-lib-convert wc-ctx #f #f #t)
-    (wnn-lib-get-nr-segments wc-ctx)))
-(define (wnn-lib-commit-segment wc-ctx seg delta)
-  (wnn-lib-fix wc-ctx)
-  (wnn-lib-clear wc-ctx)
-  #t)
-(define (wnn-lib-reset-conversion wc-ctx)
-  (wnn-lib-clear wc-ctx))
+    (wnn-lib-get-nr-segments wc)))
+(define (wnn-lib-commit-segment wc seg delta)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-lib-fix wc-ctx)
+    (wnn-lib-clear wc-ctx)
+    #t))
+(define (wnn-lib-reset-conversion wc)
+  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-lib-clear wc-ctx)))
 
 
 (define wnn-init-lib-ok? #f)
@@ -449,7 +456,7 @@
 (define (wnn-release-handler wc)
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
     (if wc-ctx
-        (wnn-lib-release-context wc-ctx))))
+        (wnn-lib-release-context wc))))
 
 (define (wnn-flush wc)
   (rk-flush (wnn-context-rkc wc))
@@ -522,7 +529,7 @@
 
 (define (wnn-begin-conv wc)
   (let ((wc-ctx (wnn-context-wc-ctx wc))
-	(preconv-str (wnn-make-whole-string wc #t wnn-type-hiragana)))
+        (preconv-str (wnn-make-whole-string wc #t wnn-type-hiragana)))
     (if (and wc-ctx
              (> (string-length preconv-str) 0))
 	(let ((num (wnn-lib-begin-conversion wc preconv-str)))
@@ -538,11 +545,10 @@
 
 (define wnn-cancel-conv
   (lambda (wc)
-    (let ((wc-ctx (wnn-context-wc-ctx wc)))
-      (wnn-reset-candidate-window wc)
-      (wnn-context-set-state! wc #f)
-      (ustr-clear! (wnn-context-segments wc))
-      (wnn-lib-reset-conversion wc-ctx))))
+    (wnn-reset-candidate-window wc)
+    (wnn-context-set-state! wc #f)
+    (ustr-clear! (wnn-context-segments wc))
+    (wnn-lib-reset-conversion wc)))
 
 (define (wnn-proc-input-state-no-preedit wc key key-state)
   (let
@@ -1049,11 +1055,11 @@
 	      right-str))))
 
 (define wnn-get-raw-candidate
-  (lambda (wc wc-ctx seg-idx cand-idx)
+  (lambda (wc seg-idx cand-idx)
     (let* ((preconv
 	    (ja-join-vu (string-to-list
 			 (wnn-make-whole-string wc #t wnn-type-hiragana))))
-	   (unconv-candidate (wnn-lib-get-unconv-candidate wc-ctx seg-idx))
+	   (unconv-candidate (wnn-lib-get-unconv-candidate wc seg-idx))
 	   (unconv (if unconv-candidate
 		       (ja-join-vu (string-to-list unconv-candidate))
 		       '()))
@@ -1089,8 +1095,7 @@
 	    "????")))))) ;; shouldn't happen
 
 (define (wnn-compose-state-preedit wc)
-  (let* ((wc-ctx (wnn-context-wc-ctx wc))
-	 (segments (wnn-context-segments wc))
+  (let* ((segments (wnn-context-segments wc))
 	 (cur-seg (ustr-cursor-pos segments))
 	 (separator (wnn-separator wc)))
     (append-map
@@ -1100,8 +1105,8 @@
 				     preedit-cursor)
 			preedit-underline))
 	      (cand (if (> cand-idx wnn-candidate-type-katakana)
-			(wnn-lib-get-nth-candidate wc-ctx seg-idx cand-idx)
-			(wnn-get-raw-candidate wc wc-ctx seg-idx cand-idx)))
+			(wnn-lib-get-nth-candidate wc seg-idx cand-idx)
+			(wnn-get-raw-candidate wc seg-idx cand-idx)))
 	      (seg (list (cons attr cand))))
 	 (if (and separator
 		  (< 0 seg-idx))
@@ -1133,14 +1138,13 @@
 		(string-append-map-ustr-latter extract-kana preconv-str))))))
 
 (define (wnn-get-commit-string wc)
-  (let ((wc-ctx (wnn-context-wc-ctx wc))
-	(segments (wnn-context-segments wc)))
+  (let ((segments (wnn-context-segments wc)))
     (string-append-map (lambda (seg-idx cand-idx)
 			 (if (> cand-idx wnn-candidate-type-katakana)
 			     (wnn-lib-get-nth-candidate
-			      wc-ctx seg-idx cand-idx)
+			      wc seg-idx cand-idx)
 			     (wnn-get-raw-candidate
-			      wc wc-ctx seg-idx cand-idx)))
+			      wc seg-idx cand-idx)))
 		       (iota (ustr-length segments))
 		       (ustr-whole-seq segments))))
 
@@ -1151,12 +1155,12 @@
 	(begin
 	  (for-each (lambda (seg-idx cand-idx)
 		      (if (> cand-idx wnn-candidate-type-katakana)
-			  (wnn-lib-commit-segment wc-ctx seg-idx cand-idx)))
+			  (wnn-lib-commit-segment wc seg-idx cand-idx)))
 		    (iota (ustr-length segments))
 		    (ustr-whole-seq segments))
 	  (if (every (lambda (x) (<= x wnn-candidate-type-katakana))
 		     (ustr-whole-seq segments))
-	      (wnn-lib-reset-conversion wc-ctx))))))
+	      (wnn-lib-reset-conversion wc))))))
 
 (define (wnn-do-commit wc)
     (im-commit wc (wnn-get-commit-string wc))
@@ -1180,16 +1184,14 @@
 	 (cur-seg (ustr-cursor-pos segments)))
     (wnn-reset-candidate-window wc)
     (wnn-lib-resize-segment wc cur-seg cnt)
-    (let* ((wc-ctx (wnn-context-wc-ctx wc))
-           (resized-nseg (wnn-lib-get-nr-segments wc-ctx))
+    (let* ((resized-nseg (wnn-lib-get-nr-segments wc))
            (latter-nseg (- resized-nseg cur-seg)))
       (ustr-set-latter-seq! segments (make-list latter-nseg 0)))))
 
 (define (wnn-move-candidate wc offset)
-  (let* ((wc-ctx (wnn-context-wc-ctx wc))
-	 (segments (wnn-context-segments wc))
+  (let* ((segments (wnn-context-segments wc))
 	 (cur-seg (ustr-cursor-pos segments))
-	 (max (wnn-lib-get-nr-candidates wc-ctx cur-seg))
+	 (max (wnn-lib-get-nr-candidates wc cur-seg))
 	 (n (if (< (ustr-cursor-frontside segments) 0) ;; segment-transposing
 		0
 		(+ (ustr-cursor-frontside segments) offset)))
@@ -1215,10 +1217,9 @@
 
 (define wnn-move-candidate-in-page
   (lambda (wc numeralc)
-    (let* ((wc-ctx (wnn-context-wc-ctx wc))
-	   (segments (wnn-context-segments wc))
+    (let* ((segments (wnn-context-segments wc))
 	   (cur-seg (ustr-cursor-pos segments))
-	   (max (wnn-lib-get-nr-candidates wc-ctx cur-seg))
+	   (max (wnn-lib-get-nr-candidates wc cur-seg))
 	   (n (ustr-cursor-frontside segments))
 	   (cur-page (if (= wnn-nr-candidate-max 0)
 			 0
@@ -1303,80 +1304,79 @@
 	(ustr-cursor-set-frontside! segments state)))))
 
 (define (wnn-proc-compose-state wc key key-state)
-  (let ((wc-ctx (wnn-context-wc-ctx wc)))
-    (cond
-     ((wnn-prev-page-key? key key-state)
-      (if (wnn-context-candidate-window wc)
-	  (im-shift-page-candidate wc #f)))
+  (cond
+   ((wnn-prev-page-key? key key-state)
+    (if (wnn-context-candidate-window wc)
+        (im-shift-page-candidate wc #f)))
 
-     ((wnn-next-page-key? key key-state)
-      (if (wnn-context-candidate-window wc)
-	  (im-shift-page-candidate wc #t)))
+   ((wnn-next-page-key? key key-state)
+    (if (wnn-context-candidate-window wc)
+        (im-shift-page-candidate wc #t)))
 
-     ((wnn-commit-key? key key-state)
-      (wnn-do-commit wc))
+   ((wnn-commit-key? key key-state)
+    (wnn-do-commit wc))
 
-     ((wnn-extend-segment-key? key key-state)
-      (wnn-resize-segment wc 1))
+   ((wnn-extend-segment-key? key key-state)
+    (wnn-resize-segment wc 1))
 
-     ((wnn-shrink-segment-key? key key-state)
-      (wnn-resize-segment wc -1))
+   ((wnn-shrink-segment-key? key key-state)
+    (wnn-resize-segment wc -1))
 
-     ((wnn-next-segment-key? key key-state)
-      (wnn-move-segment wc 1))
+   ((wnn-next-segment-key? key key-state)
+    (wnn-move-segment wc 1))
 
-     ((wnn-prev-segment-key? key key-state)
-      (wnn-move-segment wc -1))
+   ((wnn-prev-segment-key? key key-state)
+    (wnn-move-segment wc -1))
 
-     ((wnn-beginning-of-preedit-key? key key-state)
-      (begin
-	(ustr-cursor-move-beginning! (wnn-context-segments wc))
-	(wnn-reset-candidate-window wc)))
+   ((wnn-beginning-of-preedit-key? key key-state)
+    (begin
+      (ustr-cursor-move-beginning! (wnn-context-segments wc))
+      (wnn-reset-candidate-window wc)))
 
-     ((wnn-end-of-preedit-key? key key-state)
-      (begin
-	(ustr-cursor-move-end! (wnn-context-segments wc))
-	(wnn-correct-segment-cursor (wnn-context-segments wc))
-	(wnn-reset-candidate-window wc)))
+   ((wnn-end-of-preedit-key? key key-state)
+    (begin
+      (ustr-cursor-move-end! (wnn-context-segments wc))
+      (wnn-correct-segment-cursor (wnn-context-segments wc))
+      (wnn-reset-candidate-window wc)))
 
-     ((wnn-backspace-key? key key-state)
-      (wnn-cancel-conv wc))
+   ((wnn-backspace-key? key key-state)
+    (wnn-cancel-conv wc))
 
-     ((wnn-next-candidate-key? key key-state)
-      (wnn-move-candidate wc 1))
+   ((wnn-next-candidate-key? key key-state)
+    (wnn-move-candidate wc 1))
 
-     ((wnn-prev-candidate-key? key key-state)
-      (wnn-move-candidate wc -1))
+   ((wnn-prev-candidate-key? key key-state)
+    (wnn-move-candidate wc -1))
 
-     ((or (wnn-transpose-as-hiragana-key? key key-state)
-	  (wnn-transpose-as-katakana-key? key key-state)
-	  (wnn-transpose-as-halfkana-key? key key-state)
-	  (and
-	   (not (= (wnn-context-input-rule wc) wnn-input-rule-kana))
-	   (or
-	    (wnn-transpose-as-halfwidth-alnum-key? key key-state)
-	    (wnn-transpose-as-fullwidth-alnum-key? key key-state))))
-      (wnn-set-segment-transposing wc key key-state))
+   ((or (wnn-transpose-as-hiragana-key? key key-state)
+        (wnn-transpose-as-katakana-key? key key-state)
+        (wnn-transpose-as-halfkana-key? key key-state)
+        (and
+         (not (= (wnn-context-input-rule wc) wnn-input-rule-kana))
+         (or
+          (wnn-transpose-as-halfwidth-alnum-key? key key-state)
+          (wnn-transpose-as-fullwidth-alnum-key? key key-state))))
+    (wnn-set-segment-transposing wc key key-state))
 
-     ((wnn-cancel-key? key key-state)
-      (wnn-cancel-conv wc))
+   ((wnn-cancel-key? key key-state)
+    (wnn-cancel-conv wc))
 
-     ((and wnn-select-candidate-by-numeral-key?
-	   (ichar-numeric? key)
-	   (wnn-context-candidate-window wc))
-      (wnn-move-candidate-in-page wc key))
+   ((and wnn-select-candidate-by-numeral-key?
+         (ichar-numeric? key)
+         (wnn-context-candidate-window wc))
+    (wnn-move-candidate-in-page wc key))
 
-     ((and (modifier-key-mask key-state)
-	   (not (shift-key-mask key-state)))
-      #f)
+   ((and (modifier-key-mask key-state)
+         (not (shift-key-mask key-state)))
+    #f)
 
-     ((symbol? key)
-      #f)
+   ((symbol? key)
+    #f)
 
-     (else
-      (begin
-	(wnn-do-commit wc)
-	(wnn-proc-input-state wc key key-state))))))
+   (else
+    (begin
+      (wnn-do-commit wc)
+      (wnn-proc-input-state wc key key-state)))))
 
 (define (wnn-press-key-handler wc key key-state)
   (if (ichar-control? key)
@@ -1400,16 +1400,14 @@
   (if (wnn-context-on wc)
       (begin
 	(if (wnn-context-state wc)
-	  (let ((wc-ctx (wnn-context-wc-ctx wc)))
-	    (wnn-lib-reset-conversion wc-ctx)))
+	    (wnn-lib-reset-conversion wc))
 	(wnn-flush wc))))
 
 ;;;
 (define (wnn-get-candidate-handler wc idx ascel-enum-hint)
-  (let* ((wc-ctx (wnn-context-wc-ctx wc))
-	 (cur-seg (ustr-cursor-pos (wnn-context-segments wc)))
+  (let* ((cur-seg (ustr-cursor-pos (wnn-context-segments wc)))
 	 (cand (wnn-lib-get-nth-candidate
-		wc-ctx cur-seg idx)))
+		wc cur-seg idx)))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (wnn-set-candidate-index-handler wc idx)
