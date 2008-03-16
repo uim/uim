@@ -36,7 +36,7 @@ IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
                 mana.png \
                 hangul2.png hangul3.png romaja.png \
                 viqr.png ipa-x-sampa.png latin.png elatin.png \
-                look.png scim.png sj3.png wnn.svg
+                look.png scim.png sj3.png wnn.png
 
 SVG_PNGS = unknown.png \
            direct.png skk.png tcode.png tutcode.png trycode.png byeoru.png \
