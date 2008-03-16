@@ -74,7 +74,7 @@
   (let loop ((fib1 1) (fib2 1))
     (if (sj3-lib-error? (sj3-lib-init sj3-server-name))
         (begin
-          (uim-notify-info (N_ "Reconnecting sj3 server."))
+          (uim-notify-info (N_ "Reconnecting to sj3 server."))
           (im-clear-preedit sc)
           (im-pushback-preedit
            sc preedit-reverse
