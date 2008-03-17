@@ -34,9 +34,12 @@
 /* FIXME! This is a ad-hoc solution to advance
    annotation related discussion. */
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #include <eb/eb.h>
 #include <eb/text.h>
 #include <eb/font.h>
