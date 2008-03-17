@@ -232,7 +232,7 @@
           (if (and (number? idx)
                    (< 0 idx)
                    (= (+ last (cdar l1))
-                      (cdr (list-ref l2 idx 1))))
+                      (cdr (list-ref l2 idx))))
               (loop (cdr l1) (cdar l1) (cons idx rest))
               (loop (cdr l1) (cdar l1) rest))))))
 (define (sj3-filter-move-segment l1 l2)
