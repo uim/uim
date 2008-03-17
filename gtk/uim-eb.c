@@ -158,8 +158,8 @@ go_text_eb (uim_eb *ueb, EB_Position position, GString *str)
 {
   EB_Hookset hookset;
   char text[MAX_TEXT + 1];
-  int text_length;
-  int bytes;
+  ssize_t text_length;
+  ssize_t bytes;
   int i;
 
   if (eb_seek_text(&ueb->book, &position) != EB_SUCCESS) {
