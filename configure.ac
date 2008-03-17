@@ -190,7 +190,7 @@ AC_ARG_WITH(sj3,
 		use_sj3="no"
 	fi
 	],[
-	        PKG_CHECK_MODULES(SJ3, sj3lib >= 2.0.1.21, use_sj3="yes",use_sj3="no")
+	        use_sj3="no"
 ])
 
 # ***********************
