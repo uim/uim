@@ -113,7 +113,4 @@ CFLAGS=$save_CFLAGS
 LDFLAGS=$save_LDFLAGS
 LIBS=$save_LIBS
 AC_MSG_RESULT($try_eb)
-if test ${try_eb} != yes; then
-   AC_MSG_ERROR(EB Library not available)
-fi
 ])
