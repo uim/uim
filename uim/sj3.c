@@ -254,9 +254,9 @@ uim_sj3_getkan(uim_lisp yomi_)
 
     strlcpy(kanji_str, (const char *)bun[i].deststr, bun[i].destlen + 1);
 
-    ret_ = CONS(LIST3(uim_scm_make_str(yomi_str),
-		      uim_scm_make_str(kanji_str),
-		      uim_scm_make_ptr(&bun[i].dcid)),
+    ret_ = CONS(LIST3(MAKE_STR(yomi_str),
+		      MAKE_STR(kanji_str),
+		      MAKE_PTR(&bun[i].dcid)),
 		ret_);
 
     free(yomi_str);
@@ -322,7 +322,7 @@ uim_sj3_getnthdouon(uim_lisp yomi_, uim_lisp nth_)
 
   if (douon_cnt < nth)
 	  return uim_scm_f();
-  return MAKE_STR((char *)douon[nth].ddata);
+  return LIST2(MAKE_STR((char *)douon[nth].ddata), MAKE_PTR(&douon[nth].dcid));
 }
 
 static uim_lisp
