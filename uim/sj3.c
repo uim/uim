@@ -66,7 +66,7 @@ uim_sj3_make_error_pair(char *sym, char *str)
 {
   char error_str[BUFSIZ];
 
-  snprintf(error_str, sizeof(error_str), "In uim-sj3, %s", _(str));
+  snprintf(error_str, sizeof(error_str), "%1$s %2$s", _("In uim-sj3,"), _(str));
   uim_notify_fatal(error_str);
   return MAKE_SYM(sym);
 }
