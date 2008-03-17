@@ -181,7 +181,7 @@ AC_ARG_WITH(wnn,
 # *** Tests for SJ3 ***
 # *********************
 AC_ARG_WITH(sj3,
-	AS_HELP_STRING([--with-sj3], [Build with libsj3lib.a
+	AS_HELP_STRING([--with-sj3], [Build with sj3lib
 					    @<:@default=no@:>@]),
 	[
 	if test "x$with_sj3" = "xyes"; then
