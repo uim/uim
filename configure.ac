@@ -898,46 +898,23 @@ dnl ****************************
 dnl *** Tests for EB Library ***
 dnl ****************************
 
-use_eb="no"
 AC_ARG_WITH(eb,
-  AS_HELP_STRING([--without-eb],
-                 [Don't build against EB]),
+  AS_HELP_STRING([--with-eb],
+                 [Build with EB @<:@default=no@:>@]),
   [
   if test "x$with_eb" = "xyes"; then
-    _SAVE_LDFLAGS=$LDFLAGS
-    EB_LDFLAGS="-lz"
-    LDFLAGS="$LDFLAGS $EB_LDFLAGS"
-    AC_CHECK_LIB(eb, eb_initialize_library, HAVE_EBLIB=yes, HAVE_EBLIB=no)
-    if test "x$HAVE_EBLIB" = "xyes"; then
-      AC_CHECK_HEADER(eb/eb.h, HAVE_EBLIB=yes, HAVE_EBLIB=no)
-      if test "x$HAVE_EBLIB" = "xyes"; then
-        AC_DEFINE(HAVE_EBLIB, 1,
-           [Define to 1 if you have EB library and header file])
-        EBLIB_LIBS="-leb -lz"
-        use_eb="yes"
-      fi
-    LDFLAGS=$_SAVE_LDFLAGS
-    fi
+    eb_LIB_EB4()
+    use_eb="$try_eb"
+  else
+    use_eb="no"
   fi
   ],
   [
-  _SAVE_LDFLAGS=$LDFLAGS
-  EB_LDFLAGS="-lz"
-  LDFLAGS="$LDFLAGS $EB_LDFLAGS"
-  AC_CHECK_LIB(eb, eb_initialize_library, HAVE_EBLIB=yes, HAVE_EBLIB=no)
-  if test "x$HAVE_EBLIB" = "xyes"; then
-    AC_CHECK_HEADER(eb/eb.h, HAVE_EBLIB=yes, HAVE_EBLIB=no)
-    if test "x$HAVE_EBLIB" = "xyes"; then
-      AC_DEFINE(HAVE_EBLIB, 1,
-         [Define to 1 if you have EB library and header file])
-      EBLIB_LIBS="-leb -lz"
-      use_eb="yes"
-    fi
-  fi
-  LDFLAGS=$_SAVE_LDFLAGS
+  use_eb="no"
 ])
-
-AC_SUBST(EBLIB_LIBS)
+if test "x$use_eb" = "xyes"; then
+  AC_DEFINE(HAVE_EBLIB, 1, [Define to 1 if you have EB library and header file])
+fi
 
 # Check whether user wants libedit support
 # This code was based on openssh-4.1p1
