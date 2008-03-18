@@ -230,7 +230,7 @@
         (reverse rest)
         (let ((idx (sj3-find-index (lambda (x) (= (caar l1) (car x))) l2)))
           (if (and (number? idx)
-                   (< 0 idx)
+                   (<= 0 idx)
                    (= (+ last (cdar l1))
                       (cdr (list-ref l2 idx))))
               (loop (cdr l1) (cdar l1) (cons idx rest))
