@@ -128,7 +128,7 @@ switch_context_im(uim_agent_context *ua, const char *im)
 	ua->encoding = strdup(encoding);
 
 	update_context_encoding(ua);
-
+	update_context_im(ua);
   }
 
   uim_prop_list_update(ua->context);
