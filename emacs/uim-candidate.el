@@ -66,7 +66,6 @@
 
     ;; mark current-point
     (setq mark-base (point-marker))
-    ;;(uim-debug (format "before: %s" (marker-position mark-base)))
 
     ;; save font-lock face
     (when uim-xemacs
@@ -92,8 +91,6 @@
       (setq base-ofs (- (marker-position mark-base) uim-candidate-start))
       (setq uim-candidate-start (+ uim-candidate-start base-ofs)))
 
-    ;;(uim-debug (format "after: %s" (marker-position mark-base)))
-
     (set-marker mark-base nil)
 
     (goto-char uim-candidate-start)
@@ -102,8 +99,6 @@
       (uim-vertical-motion 0)
       (setq offset 
 	    (uim-string-width (buffer-substring (point) uim-candidate-start))))
-
-    ;;(uim-debug (format "offset: %s" offset))
 
     ;; if offset + maxwidth >= window-width then reduce offset
     (if (>= (+ offset maxwidth 2) (window-width))
@@ -617,20 +612,13 @@
 		      (if (> vshift winofs)
 			  (recenter 0)
 			(save-excursion 
-			  ;;(uim-debug (format "vshift %s" vshift))
 			  (uim-vertical-motion (- (- (window-height)
 						     candlines 2)))
 			  (recenter 0))))
 		  ;; disable inline display
 		  (setq display-inline nil)
 		  
-		  ;;(uim-debug (format "ol-down %s" ol-down))
-		  
 		  ))))))
-
-    (if (not display-inline)
-	(uim-debug "disable inline"))
-
 
     (if display-inline
 	;; inline candidate display mode

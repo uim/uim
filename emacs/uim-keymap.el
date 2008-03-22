@@ -195,7 +195,6 @@
   (when (not uim-preedit-keymap-enabled)
 
     (setq uim-preedit-keymap-enabled t)
-    (uim-debug "enable preedit keymap")
 
     (setcdr (assq 'uim-mode minor-mode-map-alist) 
 	    uim-preedit-map) 
@@ -220,7 +219,6 @@
 (defun uim-disable-preedit-keymap ()
   (when uim-preedit-keymap-enabled
     (setq uim-preedit-keymap-enabled nil)
-    (uim-debug "disable preedit keymap")
 
     ;; enable other keymaps
     (when uim-minor-mode-map-alist

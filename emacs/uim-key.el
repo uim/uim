@@ -191,15 +191,11 @@
 
 (defun uim-command-execute (uim-key-vector &optional bind)
 
-  (uim-debug (format "uim-command-execute: %s %s" uim-key-vector bind))
-
   (let (map
 	(buffer (current-buffer)))
 
     (unwind-protect
 	(progn
-
-	  (uim-debug (format "last-command: %s" last-command))
 
 	  (if (and bind
 		   (commandp bind))
@@ -239,7 +235,6 @@
       (if (and buffer 
 	       (buffer-live-p buffer))
 	  (progn 
-	    (uim-debug "back to original buf")
 	    (set-buffer buffer)
 	    (setcdr (assq 'uim-mode minor-mode-map-alist) map)
 	    ))
@@ -281,7 +276,6 @@
 	vtmp
 	continue
 	)
-    (uim-debug (format "uim-process-key-vector: %s" key-vector))
     
     (if uim-emacs
 	;; for transient-mark-mode
@@ -289,18 +283,15 @@
 
     (unwind-protect
 	(cond ((keymapp bind)
-	       (uim-debug "bind is keymap")
 	       (setq continue t)
 	       )
 
 	      ((stringp bind)
-	       (uim-debug "bind is string")
 	       (if count
 		   (setq prefix-arg count))
 	       (uim-command-execute key-vector bind))
 
 	      ((commandp bind)
-	       (uim-debug "bind is command")
 	       (if count
 		   (setq prefix-arg count))
 	       (uim-command-execute key-vector bind))
@@ -315,14 +306,12 @@
 				(uim-convert-char-to-symbolvector 
 				 (key-description help-char)))
 			       vtmp)))
-	       (uim-debug "help-char found")
 	       (uim-command-execute key-vector))
 
 	      (t
 	       (setq undef key-vector)))
       
       (when undef
-	(uim-debug "undefined key")
 	(uim-flush-concat-undo)
 	(if uim-xemacs
 	    (error 'undefined-keystroke-sequence 
@@ -564,7 +553,6 @@
 	 
 
 (defun uim-is-start-with-escape (keyvec)
-;  (uim-debug (format "uim-is-start-width-escape: %s" keyvec))
   (cond (uim-emacs
 	 (uim-is-single-escape (vector (aref keyvec 0))))
 	(uim-xemacs
@@ -573,7 +561,6 @@
 
 
 (defun uim-is-escape (keyvec)
-;  (uim-debug (format "uim-is-escape %s" keyvec))
   (cond (uim-emacs
 	 (if (or window-system
 		 (and (not window-system) uim-use-single-escape-on-terminal))
@@ -613,8 +600,6 @@
 	(input-vector-prefix nil)
 	translated bind)
 
-    (uim-debug (format "input-vector: %s" input-vector))
-
     (catch 'fmap-loop
       (while input-vector-main
 
@@ -623,7 +608,6 @@
 	(if (and bind
 		 (not (integerp bind)))
 	    (progn
-	      (uim-debug "skip function-key-map lookup")
 	      ;;(setq translated-vector input-vector)
 	      (setq translated-vector nil)
 	      (throw 'fmap-loop t))
@@ -649,21 +633,17 @@
 
 		((vectorp translated)
 		 ;; vector ... replace immediately
-		 (uim-debug (format "translated is vector: %s" translated))
 		 (setq translated-vector 
 		       (vconcat input-vector-prefix translated))
 		 (throw 'fmap-loop t))
 
 		((keymapp translated)
 		 ;; keymap ... wait next input
-		 (uim-debug (format "translated is keymap: %s" translated))
 		 (setq map translated)
 		 (throw 'fmap-loop t))
 
 		((functionp translated)
 		 ;; function ... call immediately and use returned value
-		 (uim-debug (format "translated is function: %s" translated))
-
 		 (if (not uim-keystroke-displaying)
 		     (setq uim-keystroke-displaying (sit-for echo-keystrokes)))
 
@@ -682,8 +662,6 @@
 		
 		((stringp translated)
 		 ;; string ... replace
-		 (uim-debug (format "translated is string:%s"
-				    translated))
 		 (setq translated-vector
 		       (char-to-string (aref translated 
 					     (- (length translated) 1))))
@@ -699,7 +677,6 @@
       
       (setq translated-vector nil)) ;; end of catch
     
-    (uim-debug (format "output vector: %s" translated-vector))
     (list translated-vector map))
   )
 

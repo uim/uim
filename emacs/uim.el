@@ -114,8 +114,6 @@
 ;;
 (defun uim-update-default-engine (engine)
 
-;  (uim-debug (format "update-default-engine: %s" engine))
-
   (when (not (equal uim-default-im-engine engine))
     (setq uim-default-im-engine engine)
     (run-hooks 'uim-update-default-engine-hook)
@@ -128,8 +126,6 @@
 (defun uim-update-current-engine (engine)
 
   (setq engine (car engine))
-
-  (uim-debug (format "update-current-engine: %s" engine))
 
   (when (not (equal uim-current-im-engine engine))
     (setq uim-current-im-engine engine) 
@@ -227,10 +223,6 @@
   ;; detect switching of current buffer
   (when (not (eq uim-recent-buffer (current-buffer)))
 
-    (uim-debug (format "current-buffer changed (from %s to %s)"
-		       uim-focused-buffer
-		       (current-buffer)))
-
     ;; update recent bufferto detect next change
     (setq uim-recent-buffer (current-buffer))
     
@@ -240,18 +232,13 @@
 	(save-current-buffer
 	  (set-buffer uim-focused-buffer)
 	(when (and uim-initialized uim-mode)
-	  (uim-debug (format "unfocused %s" (buffer-name (current-buffer))))
 	    (uim-unfocused)
 	    )))
 	    
     ;; set Uim focus to current buffer if it has Uim context
     (when (and uim-initialized uim-mode)
-      (uim-debug (format "focused %s" (buffer-name (current-buffer))))
 	  (uim-focused)
 	  )
-
-    (uim-debug (format "current-buffer %s / uim-focused-buffer %s" 
-		       (current-buffer) uim-focused-buffer ))
     )
   )
 
@@ -276,7 +263,6 @@
 ;; Update process encoding 
 ;; 
 (defun uim-change-process-encoding (outcode)
-  (uim-debug (format "set-process-encoding to %s" outcode))
   (set-process-coding-system uim-el-agent-process outcode 'iso-8859-1)
   )
 
@@ -328,8 +314,6 @@
 ;;
 (defun uim-init-buffer ()
 
-  (uim-debug (format "initialize buffer: %s" (current-buffer)))
-
   ;; if buffer has no context
   (setq uim-context-id (uim-context-create))
 
@@ -373,8 +357,6 @@
 ;; Activate uim
 ;;
 (defun uim-mode-on ()
-
-  (uim-debug "uim-mode-on")
 
   (if uim-mode
       (message "uim.el: uim-mode is already activated. (buffer %s)" 
@@ -436,8 +418,6 @@
   (if (= emacs-major-version 21)
       (uim-read-char-exclusive-restore))
 
-  (uim-debug (format "uim-mode: %s" uim-mode))
-
   )
 
 
@@ -446,9 +426,6 @@
 ;;   This function is called by uim-initialized buffer only
 ;;
 (defun uim-kill-buffer ()
-
-  (uim-debug (format "kill-bufer %s"
-		     (buffer-name (current-buffer))))
 
   ;; unfocus
   (if (eq uim-focused-buffer (current-buffer))
@@ -463,8 +440,6 @@
 ;; Reset context
 ;;
 (defun uim-change-major-mode ()
-
-  (uim-debug "uim-change-major-mode")
 
   (when uim-initialized
        (uim-unfocused)
@@ -537,7 +512,6 @@
 ;;
 (defun uim-restore-undo ()
   (when uim-buffer-undo-list-saved
-    (uim-debug "restore undo list")
     (buffer-enable-undo)
     (setq buffer-undo-list uim-buffer-undo-list)
     (setq uim-buffer-undo-list-saved nil))
@@ -549,7 +523,6 @@
 ;;
 (defun uim-save-undo ()
   (when (not uim-buffer-undo-list-saved)
-    (uim-debug "save undo list")
     (setq uim-buffer-undo-list buffer-undo-list)
     (buffer-disable-undo)
     (setq uim-buffer-undo-list-saved 't))
@@ -679,8 +652,6 @@
 ;; 
 (defun uim-send-cmd (cmd serial)
 
-  (uim-debug (concat (format "%s " serial) cmd " (" (current-time-string) ")"))
-
   ;; check process status and start if it's not running
   (if (not uim-el-agent-process)
       (setq uim-el-agent-process (uim-el-agent-start)))
@@ -690,6 +661,9 @@
 	(save-current-buffer
 	  (set-buffer uim-el-agent-buffer)
 	  (erase-buffer))
+
+        (uim-debug (format "%s"
+                           (concat (format "%s " serial) cmd)))
 	
 	(process-send-string uim-el-agent-process
 			     (concat (format "%s " serial) cmd "\n"))
@@ -741,8 +715,6 @@
 	(helper-filter (process-filter uim-el-helper-agent-process)))
 
     (set-process-filter uim-el-helper-agent-process nil)
-
-    (uim-debug "wait recv")
 
     (let ((start (nth 1 (current-time)))
 	  (accept uim-el-agent-accept-timeout))
@@ -915,10 +887,7 @@
 		  (setq uim-translated-key-vector nil)
 		  (setq uim-untranslated-key-vector nil))
 		
-		(uim-debug (format "uim-prefix-arg-vector %s" 
-				   uim-prefix-arg-vector))
-		(uim-debug (format "set uim-prefix-arg: %s" 
-				   current-prefix-arg))))
+		))
 
 	  (if uim-xemacs
 	      (setq uim-original-input-event (copy-event last-input-event)))
@@ -932,9 +901,6 @@
 		  (uim-translate-key uim-untranslated-key-vector))
 	    (setq translated (nth 0 translated-list))
 	    (setq map (nth 1 translated-list))
-
-	    (uim-debug (format "translated: %s" translated))
-	    (uim-debug (if map "map: YES" "map: NO"))
 
 	    (cond ((stringp translated)
 		   (setq issue t)
@@ -956,8 +922,6 @@
 
 	  (when send
 
-	    (uim-debug "pre-SEND")
-      
 	    (setq send-vector-raw (vconcat uim-translated-key-vector
 					   uim-untranslated-key-vector))
 
@@ -967,10 +931,6 @@
 		    (if uim-xemacs
 			(uim-convert-keystr-to-uimagent-vector (key-description send-vector-raw))
 		      nil)))
-
-	    (uim-debug (format "send-vector: %s" send-vector))
-	    (uim-debug (format "send-vector-raw: %s" send-vector-raw))
-
 
 	    (cond (uim-merge-next
 		   (setq send nil))
@@ -982,7 +942,6 @@
 		       (and uim-xemacs 
 			    (string-match "button\\(1\\|2\\|3\\|4\\|5\\)" 
 					  (key-description send-vector-raw))))
-		   (uim-debug "mouse event")
 		   (setq send nil)
 		   (setq mouse t))
 
@@ -990,7 +949,6 @@
 			    (not window-system)
 			    (not uim-use-single-escape-on-terminal)
 			    (uim-is-single-escape send-vector-raw)))
-		   (uim-debug "half escape found")
 		   (setq send nil)
 		   (setq wait t))
 
@@ -1013,7 +971,6 @@
 			    (and (= (length send-vector) 2)
 				 (not (or (eq (aref send-vector 0) 27)
 					  (eq (aref send-vector 0) 'escape))))))
-		   (uim-debug "too long vector")
 		   (setq send nil)
 		   (if (not uim-preedit-keymap-enabled)
 		       (setq issue t)))
@@ -1022,8 +979,6 @@
 
 
 	  (when send
-
-	    (uim-debug "SEND")
 
 	    (setq uim-last-key-vector send-vector-raw)
 
@@ -1038,8 +993,6 @@
 	    
 	    (when uim-xemacs 
 
-	      (uim-debug (format "send-vector-raw1.5: %s" send-vector-raw))
-
 	      (if (equal (make-vector 2 (uim-xemacs-make-event [(escape)]))
 			 send-vector-raw)
 		  (setq send-vector-raw
@@ -1047,30 +1000,20 @@
 
 	      (setq send-vector-raw (uim-translate-escape-meta send-vector-raw))
 
-	      (uim-debug (format "send-vector-raw2: %s" send-vector-raw))
-
 	      (setq send-vector 
 		    (uim-convert-keystr-to-uimagent-vector 
 		     (key-description send-vector-raw))))
-
-	    (uim-debug (format "send:%s issue:%s wait:%s mouse:%s" 
-			       send issue wait mouse))
-
 
 	    (setq uim-wait-next-key nil)
 	    (uim-do-send-recv-cmd (format "%d %s" 
 					  uim-context-id send-vector))
 	    (setq wait uim-wait-next-key)
 		
-	    (uim-debug "send-recv done")
-
 	    (when (not uim-wait-next-key)
-	      (uim-debug "* reset parameter after send")
 	      (uim-reset-input-parameter)))
 	    
 	  (when mouse
 	    (uim-process-mouse-event event)
-	    (uim-debug "* reset parameter after mouse")
 	    (uim-reset-input-parameter))
 
 	  (when issue
@@ -1087,20 +1030,13 @@
 	      
 	      (setq uim-last-key-vector issue-vector-raw)
       
-	      (uim-debug (format "issue-vector-raw: %s" issue-vector-raw))
-
-
-	      (uim-debug (format "issue command %s %s" 
-				 issue-vector-raw uim-prefix-arg))
 	      (setq wait
 		    (uim-process-key-vector issue-vector-raw uim-prefix-arg))  
 
 	      (when (not wait)
-		(uim-debug "* reset parameter after issue")
 		(uim-reset-input-parameter))))
 
 	  (when wait
-	    (uim-debug "wait next input")
 
 	    (if (and (memq last-command (list 'universal-argument
 					      'digit-argument
@@ -1124,8 +1060,6 @@
 	    ;; display "ESC-" or something
 	    (if uim-keystroke-displaying
 		(let (message-log-max)
-		  (uim-debug (format "uim-translated-key-vector %s" 
-				     uim-translated-key-vector))
 		  (message (concat (key-description 
 				    (vconcat uim-prefix-arg-vector
 					     (if uim-xemacs
@@ -1145,7 +1079,6 @@
 	    )
 
 	  (when discard
-	    (uim-debug "discard input")
 	    (uim-reset-input-parameter))
 
 
@@ -1154,8 +1087,6 @@
 		     (not wait)
 		     uim-keystroke-displaying)
 
-	    (uim-debug (format "update final message %s" uim-last-key-vector))
-      
 	    (let (message-log-max msg)
 	      (setq msg (if uim-prefix-arg-vector
 			    (concat " " (key-description uim-prefix-arg-vector) " ")
@@ -1176,7 +1107,6 @@
 	  (setq critical nil))
 
       (when critical
-	(uim-debug "reset input by error or keyboard-quit")
 	(uim-reset-input-parameter)))
     )
   )
@@ -1208,10 +1138,9 @@
 	  candidate-existed
 	  key commit preedit candidate default im label imlist helpermsg
 	  )
-      
+
       (uim-debug (format "%s" str))
       
-
       (let ((modified (buffer-modified-p)))
 
 	;; remove candidate anyway
@@ -1244,9 +1173,7 @@
 	
 	    (cond ((string= rcode "n") ;; uim returns key code
 		   (if uim-last-key-vector
-		       (progn
-			 (setq key uim-last-key-vector)
-			 (uim-debug (format "last-key: %s" key)))
+		       (setq key uim-last-key-vector)
 		     (setq key (car rval)))
 		   )
 		  ((string= rcode "s") ;; commit string
@@ -1312,8 +1239,7 @@
 		  (unwind-protect
 		      (progn
 			(setq buffer-undo-list nil)
-			(insert x)
-			(uim-debug (format "insert %s" x)))
+			(insert x))
 		    (when buffer-undo-list
 		      (setq buffer-undo-list
  			    (append (cons nil 
@@ -1344,14 +1270,12 @@
 	  (let (keyproc-done
 		(buffer-undo-list-saved uim-buffer-undo-list-saved))
 	    (when buffer-undo-list-saved
-	      (uim-debug "call restore undo 2")
 	      (uim-restore-undo))
 	    ;; process raw key
 	    ;;  C-o is also processed here ... orz
 	    (let ((inhibit-read-only t))
 	      (unwind-protect
 		  (progn
-		    (uim-debug (format "uim-prefix-arg: %s" uim-prefix-arg))
 
 		    ;; remove shift if possible
 		    (if (and (uim-check-shift key)
@@ -1369,9 +1293,7 @@
 			(setq uim-wait-next-key t))
 		    (setq keyproc-done t))
 		(when (not keyproc-done)
-		  (uim-leave-preedit-mode)
-		  (uim-debug "leave preedit mode forcibly")
-		  )
+		  (uim-leave-preedit-mode))
 		)
 	      ;; following expressions will not be evaluated
 	      ;; when an error occurs in this function...
@@ -1380,7 +1302,6 @@
 		(throw 'process-agent-output t))
 	    ;; save undo hisotry again
 	    (when buffer-undo-list-saved
-	      (uim-debug "call save undo 2")
 	      (uim-save-undo))))
 
       (setq uim-original-cursor (uim-point))
@@ -1393,7 +1314,6 @@
 	    ;; save undo list if not saved
 	    (when (not uim-buffer-undo-list-saved)
 	      (uim-flush-concat-undo)
-	      (uim-debug "call save undo 3")
 	      (uim-save-undo))
 
 	    ;; change keymap and freeze faces at first time
@@ -1435,7 +1355,6 @@
 
 	;; restore undo-list if saved
 	(when uim-buffer-undo-list-saved
-	  (uim-debug "call restore undo 3")
 	  (uim-restore-undo))
 
 	;; no raw-key and no preedit/candidate
@@ -1449,7 +1368,6 @@
       (when (and candidate-existed
 		 (not uim-candidate-displayed) 
 		 uim-window-force-scrolled) 
-	(uim-debug "recenter: window-force-scrolled is true")
 	(setq uim-window-force-scrolled nil)
 	(recenter))
 
@@ -1459,9 +1377,6 @@
 	    (setq uim-send-recv-again t)
 	    (uim-update-im-label))
 	(setq uim-send-recv-again nil))
-
-      (uim-debug (format "uim-original-cursor %s" uim-original-cursor))
-      (uim-debug "process-agent-output done")
       ))
   )
 

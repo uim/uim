@@ -130,7 +130,6 @@
 ;; Replace tabs to the same width white spaces.
 ;;
 (defun uim-replace-tab (start end)
-  ;;(uim-debug (format "uim-replace-tab %s %s" start end))
   (let (tpos (cnt 0) (ofs 0) tabwidth)
     (save-excursion
       (goto-char start)
@@ -160,7 +159,6 @@
 ;; Replace tabs and spaces.
 ;;
 (defun uim-tab-pad-space (start end)
-  ;;(uim-debug (format "uim-tab-pad-space %s %s" start end))
   (let (org lstart lend (endorg end) tabspace)
     (setq org (point))
     (save-excursion
@@ -299,7 +297,6 @@
 
 
 (defun uim-goto-char (pt)
-  ;;(uim-debug (format "uim-goto-char: %s" pt))
   (set-window-point (get-buffer-window (current-buffer)) pt))
 
 (defun uim-point ()

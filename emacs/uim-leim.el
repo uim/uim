@@ -180,7 +180,6 @@
   (interactive)
   (message "uim.el: use \"M-x set-input-method\" when using LEIM"))
 
-(uim-debug "LEIM")
 (uim-leim-init)
   
 (provide 'uim-leim)

@@ -66,7 +66,6 @@
 
 
 (defun uim-helper-message-processor ()
-  (uim-debug "uim-helper-message-processor")
     (let (eom msg)
       (while (setq eom (string-match "\n" uim-helper-message))
 	(setq msg (substring uim-helper-message 0 (+ eom 1)))
@@ -79,7 +78,6 @@
 
 (defun uim-helper-filter (process output)
   (let ((inhibit-quit t))
-    (uim-debug "*** uim-helper-filter")
     (setq uim-helper-message (concat uim-helper-message output))
     (uim-helper-message-processor)
     )
