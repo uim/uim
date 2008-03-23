@@ -124,7 +124,6 @@
       #t)))
 
 (eval
- (if (version>=? *gaunit-version* "0.0.6")
    '(begin
       (define (*uim-sh-setup-proc*)
         (set! *uim-sh-process* (run-process "uim/uim-sh"
@@ -145,67 +144,6 @@
              (define-test-case arg ...)
              (gaunit-delete-default-setup-proc! *uim-sh-setup-proc*)
              (gaunit-delete-default-teardown-proc! *uim-sh-teardown-proc*))))))
-
-   '(begin
-      (define (**default-test-suite**)
-        (with-module test.unit *default-test-suite*))
-      (define <test-case>
-        (with-module test.unit <test-case>))
-      (define make-tests
-        (with-module test.unit make-tests))
-      (define add-test-case!
-        (with-module test.unit add-test-case!))
-
-      (define (make-uim-sh-setup-proc . args)
-        (let-optionals* args ((additional-setup-proc (lambda () #f)))
-          (lambda ()
-            (set! *uim-sh-process* (run-process "uim/uim-sh"
-                                                "-b"
-                                                :input :pipe
-                                                :output :pipe))
-	    (uim '(%%set-current-error-port! (current-output-port)))
-            (additional-setup-proc))))
-
-      (define (make-uim-sh-teardown-proc . args)
-        (let-optionals* args ((additional-teardown-proc (lambda () #f)))
-          (lambda ()
-            (close-input-port (process-input *uim-sh-process*))
-            (set! *uim-sh-process* #f)
-            (additional-teardown-proc))))
-
-      (define-syntax define-uim-test-case
-        (syntax-rules ()
-          ((_ name) #f)
-          ((_ name rest ...)
-           (add-test-case! (**default-test-suite**)
-                           (make-uim-test-case name rest ...)))))
-
-      (define-syntax make-uim-test-case
-        (syntax-rules (setup teardown)
-          ((_ name (setup setup-proc) (teardown teardown-proc) test ...)
-           (make <test-case>
-             :name name
-             :setup (make-uim-sh-setup-proc setup-proc)
-             :teardown (make-uim-sh-teardown-proc teardown-proc)
-             :tests (make-tests test ...)))
-          ((_ name (setup proc) test ...)
-           (make <test-case>
-             :name name
-             :setup (make-uim-sh-setup-proc proc)
-             :teardown (make-uim-sh-teardown-proc)
-             :tests (make-tests test ...)))
-          ((_ name (teardown proc) test ...)
-           (make <test-case>
-             :name name
-             :setup (make-uim-sh-setup-proc)
-             :teardown (make-uim-sh-teardown-proc proc)
-             :tests (make-tests test ...)))
-          ((_ name test ...)
-           (make <test-case>
-             :name name
-             :setup (make-uim-sh-setup-proc)
-             :teardown (make-uim-sh-teardown-proc)
-             :tests (make-tests test ...)))))))
  (current-module))
 
 (provide "test/uim-test-utils")
