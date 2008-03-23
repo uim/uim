@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4403 (new repository)
+;; These tests are passed at revision 5326 (new repository)
 
 (use test.unit)
 (use file.util)
@@ -37,9 +37,15 @@
 (require "test/uim-test-utils")
 
 (let* ((current-lang #f)
-       (lang "en_US")
+       ;; At least on glibc 2.6.1-1ubuntu9 on Ubuntu 7.10, gettext(3)
+       ;; does not read the translation for "en_US" and "C". So I
+       ;; specify "ja_JP" as an arbitrary locale for these tests.
+       ;;   -- YamaKen 2008-03-23
+       ;;(lang "en_US")  ;; doesn't work
+       ;;(lang "C")      ;; doesn't work
+       (lang "ja_JP")
        (locale-dir (build-path "test" "locale"))
-       (LC_MESSAGES-dir (build-path locale-dir "en_US" "LC_MESSAGES"))
+       (LC_MESSAGES-dir (build-path locale-dir lang "LC_MESSAGES"))
        (domain "uim")
        (msgid "hello")
        (msgstr "Hello"))
@@ -77,7 +83,9 @@
        (remove-directory* locale-dir)))
     ("test gettext"
      (assert-equal msgid (uim `(gettext ,msgid)))
-     (uim `(bindtextdomain ,domain ,locale-dir))
+     (assert-equal locale-dir (uim `(bindtextdomain ,domain ,locale-dir)))
+     (assert-equal locale-dir (uim `(bindtextdomain ,domain #f)))
      (assert-equal msgstr (uim `(dgettext ,domain ,msgid)))
-     (uim `(textdomain ,domain))
+     (assert-equal domain (uim `(textdomain ,domain)))
+     (assert-equal domain (uim `(textdomain #f)))
      (assert-equal msgstr (uim `(gettext ,msgid))))))
