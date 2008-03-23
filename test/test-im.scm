@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4676 (new repository)
+;; These tests are passed at revision 5328 (new repository)
 
 (use test.unit)
 
@@ -49,14 +49,33 @@
   (setup
    (lambda ()
      (uim '(begin
+	     (require-extension (srfi 1))
 	     (require-module "anthy")
 	     (require-module "canna")
 	     (require-module "skk")
 	     (require-module "tcode")
-	     (set! enabled-im-list (append (delete 'm17n-en-ispell
-						   enabled-im-list)
-					   '(test-im test-im2)))
-	     (set! enabled-im-list (delete 'look enabled-im-list))
+	     ;; Disable IMs that affect the default IM selection.
+	     (define test-im-disabled-im-list '(look
+						m17n-unicode
+						m17n-rfc1345
+						m17n-en-ispell
+						m17n-latn-pre
+						m17n-latn-post
+						m17n-bopo-kbd
+						m17n-zh-quick
+						m17n-zh-cangjie
+						m17n-zh-tonepy
+						m17n-zh-tonepy-b5
+						m17n-zh-tonepy-gb
+						m17n-zh-py
+						m17n-zh-py-b5
+						m17n-zh-py-gb
+						m17n-syrc-phonetic
+						))
+	     (set! enabled-im-list
+		   (append (lset-difference eq? enabled-im-list
+					        test-im-disabled-im-list)
+			   '(test-im test-im2)))
 	     (for-each require-module installed-im-module-list)
 	     (define prev-im #f)
 	     (define prev-nr-ims (length im-list))
