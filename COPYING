@@ -37,9 +37,6 @@ Supplementary explanation (only for help and not legal):
   must be distributed under the terms of the license specified therein.
   Each file indicates its copyright holder in its header.
 
-  * scm/PY-old.scm is come from emacs, so you can use, modify,
-     distribute and sell this under the terms of GPL *only*.
-
   * scm/py.scm is come from m17n-lib,you can use, modify, distribute
     and sell this under the terms of LGPL *only*.
 
