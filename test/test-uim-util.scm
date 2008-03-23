@@ -189,16 +189,16 @@
    (assert-true  (uim-bool '(string-prefix? "foo_ba"   "foo_bar")))
    (assert-true  (uim-bool '(string-prefix? "foo_bar"  "foo_bar")))
    (assert-false (uim-bool '(string-prefix? "foo_bar_" "foo_bar")))
-   (assert-false (uim-bool '(string-prefix? #f         "foo_bar")))
-   (assert-false (uim-bool '(string-prefix? "foo_bar"  #f)))
+   (assert-error (lambda () (uim-bool '(string-prefix? #f         "foo_bar"))))
+   (assert-error (lambda () (uim-bool '(string-prefix? "foo_bar"  #f))))
    (assert-false (uim-bool '(string-prefix? "Foo"      "foo_bar")))
    (assert-false (uim-bool '(string-prefix? "oo_"      "foo_bar")))
    (assert-false (uim-bool '(string-prefix? "bar"      "foo_bar")))
 
    (assert-true  (uim-bool '(string-prefix? ""    "")))
    (assert-false (uim-bool '(string-prefix? "foo" "")))
-   (assert-false (uim-bool '(string-prefix? #f    "")))
-   (assert-false (uim-bool '(string-prefix? ""    #f))))
+   (assert-error (lambda () (uim-bool '(string-prefix? #f    ""))))
+   (assert-error (lambda () (uim-bool '(string-prefix? ""    #f)))))
 
   ("test string-prefix-ci?"
    (assert-true  (uim-bool '(string-prefix-ci? ""         "foo_bar")))
@@ -210,8 +210,8 @@
    (assert-true  (uim-bool '(string-prefix-ci? "foo_ba"   "foo_bar")))
    (assert-true  (uim-bool '(string-prefix-ci? "foo_bar"  "foo_bar")))
    (assert-false (uim-bool '(string-prefix-ci? "foo_bar_" "foo_bar")))
-   (assert-false (uim-bool '(string-prefix-ci? #f         "foo_bar")))
-   (assert-false (uim-bool '(string-prefix-ci? "foo_bar"  #f)))
+   (assert-error (lambda () (uim-bool '(string-prefix-ci? #f         "foo_bar"))))
+   (assert-error (lambda () (uim-bool '(string-prefix-ci? "foo_bar"  #f))))
    (assert-true  (uim-bool '(string-prefix-ci? "Foo"      "foo_bar")))
    (assert-true  (uim-bool '(string-prefix-ci? "fOo"      "foo_bar")))
    (assert-true  (uim-bool '(string-prefix-ci? "fOO"      "foo_bar")))
@@ -222,8 +222,8 @@
 
    (assert-true  (uim-bool '(string-prefix-ci? ""    "")))
    (assert-false (uim-bool '(string-prefix-ci? "foo" "")))
-   (assert-false (uim-bool '(string-prefix-ci? #f    "")))
-   (assert-false (uim-bool '(string-prefix-ci? ""    #f))))
+   (assert-error (lambda () (uim-bool '(string-prefix-ci? #f    ""))))
+   (assert-error (lambda () (uim-bool '(string-prefix-ci? ""    #f)))))
 
   ("test string=?"
    (assert-true  (uim-bool '(string=? "foo1" "foo1")))

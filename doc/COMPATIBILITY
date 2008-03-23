@@ -281,6 +281,8 @@ URL:
 Changes:
   (removed) join
       (new) list-join
+  (changed) string-prefix?
+  (changed) string-prefix-ci?
   (changed) string-split
   (changed) string-join
   (changed) sublist
@@ -288,6 +290,8 @@ Changes:
   (changed) file-mtime
 Description:
   - 'join' has been replaced with 'list-join'. The args are swapped
+  - 'string-prefix?' and 'string-prefix-ci?' now rejects non-string
+    args as error instead of returning #f
   - Now string-split produces empty strings as follows. See
     test-uim-utils.scm for further information.
       uim 1.4: (string-split "hhh" "h")  ==> ()
