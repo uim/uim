@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 2))
+(require-extension (srfi 2 6 23 34))
 
 ; Comment should be written in English, UTF-8.
 ;
@@ -129,6 +129,15 @@
 		mode key-press key-release reset
 		get-candidate set-candidate-index prop input-string
 		focus-in focus-out place displace)
+    ;; Rejects symbols that cannot be valid external representation such
+    ;; as "scim-Probhat(phonetic)", "3foo", "#foo", ...
+    (if (guard (err (else #t))
+	  (not (eq? name
+		    (read (open-input-string (symbol->string name))))))
+	(begin
+	  (if (symbol-bound? 'uim-notify-fatal)
+	      (uim-notify-fatal (N_ "invalid IM name")))
+	  (error "invalid IM name")))
     (and (or (null? enabled-im-list)  ;; bootstrap
 	     (memq name enabled-im-list)
 	     (eq? name 'direct))  ;; direct IM must always be enabled
