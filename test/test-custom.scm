@@ -2319,12 +2319,16 @@
 		 (uim '(custom-value 'test-nr-candidate-max)))
    ;; valid value
    (assert-true  (uim-bool '(custom-prop-update-custom-handler
-			     test-context 'test-nr-candidate-max 5)))
+			     test-context 'test-nr-candidate-max "5")))
+   (assert-true  (uim-bool '(custom-prop-update-custom-handler
+			     test-context 'test-nr-candidate-max "'5")))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))
    ;; invalid value is ignored
    (assert-false (uim-bool '(custom-prop-update-custom-handler
-			     test-context 'test-nr-candidate-max 25)))
+			     test-context 'test-nr-candidate-max "25")))
+   (assert-false (uim-bool '(custom-prop-update-custom-handler
+			     test-context 'test-nr-candidate-max "'25")))
    (assert-equal 5
 		 (uim '(custom-value 'test-nr-candidate-max)))))
 

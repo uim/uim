@@ -252,16 +252,17 @@
 			    (interaction-environment)))
 		  (custom-set-value! sym default))))))))  ;; to apply hooks
 
-;; warning: no validation performed by custom-set-value! on custom-rt.scm
+;; warning: no validation is performed by custom-set-value! on custom-rt.scm
 (define custom-prop-update-custom-handler
   (let ((READ-ERR (list 'read-err))) ;; unique id
     (lambda (context custom-sym val-str)
       (let* ((val (guard (err
 			  (else READ-ERR))
 		    (read (open-input-string val-str))))
-	     (unquoted-val (and (pair? val)
-				(eq? (car val) 'quote)
-				(cadr val))))
+	     (unquoted-val (or (and (pair? val)
+				    (eq? (car val) 'quote)
+				    (cadr val))
+			       val)))
 	(and (not (eq? unquoted-val READ-ERR))
 	     (custom-set-value! custom-sym unquoted-val))))))
 
