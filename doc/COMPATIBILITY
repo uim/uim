@@ -57,18 +57,87 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Responsibility migration of gettext() invocation
+Affects: Helper program developers, Bridge developers
+Updates: Scheme API, C API
+Version: 1.5.0
+Revision: ac4336, ac4337, ac4352, ac4394
+Date: 2007-01-09, 2007-01-12
+Modifier: YamaKen
+Related: uim-scm API reorganization in uim 1.5.0
+URL:
+Changes:
+     (changed) custom-label
+     (changed) custom-desc
+     (changed) custom-group-label
+     (changed) custom-group-desc
+     (changed) custom-choice-label
+     (changed) custom-choice-desc
+     (changed) lang-code->lang-name
+     (changed) uim_get_language_name_from_locale()
+Description:
+  gettext()ing strings returned by above APIs in libuim or Scheme
+  codes was a design error since it assumes existence of the concept
+  "system-wide character encoding". But on current uim API, character
+  encoding is not a system-wide property but per-IM-context one. So
+  above APIs cannot determine appropriate encoding for the result
+  since some IM contexts may have different character encoding. To
+  avoid this problem, they now return raw untranslated strings. Client
+  codes are responsible to translate them. But to remain legacy
+  uim-custom codes unchanged, API functions exported via uim-custom.h
+  are still returns TRANSLATED strings.
+------------------------------------------------------------------------------
+Summary: Experimental user notification facility (uim-notify)
+Affects: uim developers, IM developers
+Updates: C API, Scheme API
+Version: 1.5.0
+Revision: ac5061-ac5067, ac5073-ac5084, ac5093-ac5094, ac5107,
+          ac5126-ac5138, ac5147, ac5150, ac5153-ac5156, ac5159-ac5163
+Date: 2007-09-29 - 2008-02-12
+Modifier: Iwata, YamaKen, Etsushi Kato
+Related: Exception-based libuim error handling
+URL:
+  http://www.mail-archive.com/uim-en@googlegroups.com/msg00048.html
+Changes:
+      (new) uim_notify_init()
+      (new) uim_notify_quit()
+      (new) uim_notify_load()
+      (new) uim_notify_get_desc()
+      (new) uim_notify_info()
+      (new) uim_notify_fatal()
+      (new) uim_notify_plugin_init()
+      (new) uim_notify_plugin_quit()
+      (new) uim_notify_plugin_get_desc()
+      (new) uim_notify_plugin_info()
+      (new) uim_notify_plugin_fatal()
+      (new) uim-notify-get-plugins
+      (new) uim-notify-load
+      (new) uim-notify-info
+      (new) uim-notify-fatal
+Description:
+  To notify users important messages from IM and libuim such as
+  "Opening dictionary file 'foo.dic' failed.", uim need some
+  sophisticated mechanism to achieve it. This API set and
+  implementation provides an experimental solution for it. The API and
+  the notification agent plugins, and module and code organizations
+  are all experimental although working well. We should redesign the
+  mechanism once well experienced.
+------------------------------------------------------------------------------
 Summary: New utility procedures in uim 1.5.0
 Affects: uim developers, IM developers
 Updates: Scheme API
 Version: 1.5.0
-Revision: ac5264
+Revision: ac5264, ac5276, ac5294
 Date: 2008-03-02
 Modifier: Iwata
-Related:
+Related: uim-sj3
 URL:
 Changes:
       (new) user-name
       (new) home-directory
+      (new) sleep
+      (new) time
+      (new) difftime
 Description:
 ------------------------------------------------------------------------------
 Summary: Change API to know operations are success or not
