@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 4674 (new repository)
+;; These tests are passed at revision 5325 (new repository)
 
 (use test.unit)
 
@@ -62,9 +62,13 @@
    (assert-equal '("" "" "")
 		 (uim '(locale-new "deu_DE")))
    (assert-equal '("" "" "")
+		 (uim '(locale-new "de_de_DE")))
+   (assert-equal '("" "" "")
 		 (uim '(locale-new "de_D")))
    (assert-equal '("" "" "")
 		 (uim '(locale-new "de_DEU")))
+   (assert-equal '("" "" "")
+		 (uim '(locale-new "de_de_DEU")))
    (assert-equal '("" "" "")
 		 (uim '(locale-new "_DE")))
    (assert-equal '("" "" "")

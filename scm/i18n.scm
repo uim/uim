@@ -103,11 +103,12 @@
 	   ;; detect delimiter with empty part such as "ja_", "_JP" or
 	   ;; "ja."
 	   (invalid-pair? (lambda (orig-str pair)
-			    (and (not (= (length pair)
-					 2))
-				 (not (= (string-length
-					  (apply string-append pair))
-					 (string-length orig-str))))))
+			    (case (length pair)
+			      ((1) #f)
+			      ((2)
+			       (or (zero? (string-length (car pair)))
+				   (zero? (string-length (cadr pair)))))
+			      (else #t))))
 	   (locale-split (lambda (locale delimiter)
 			   (let* ((pair (string-split locale delimiter))
 				  (invalid? (invalid-pair? locale pair))
