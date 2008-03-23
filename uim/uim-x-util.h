@@ -31,8 +31,8 @@
 
 */
 
-#ifndef _uim_x_util_included_
-#define _uim_x_util_included_
+#ifndef UIM_X_UTIL_H
+#define UIM_X_UTIL_H
 
 #include <X11/Xlib.h>
 
@@ -48,4 +48,4 @@ void uim_x_kana_input_hack_init(Display *display);
 }
 #endif
 
-#endif /* _uim_x_util_included_ */
+#endif /* UIM_X_UTIL_H */

@@ -31,8 +31,8 @@ SUCH DAMAGE.
 
 */
 
-#ifndef _DEBUG_H_
-#define _DEBUG_H_
+#ifndef DEBUG_H
+#define DEBUG_H
 
 #include <QtGlobal>
 
@@ -41,4 +41,4 @@ SUCH DAMAGE.
 #define qDebug if (true) ; else qDebug
 #endif
 
-#endif /* !defined(_DEBUG_H_) */
+#endif /* !defined(DEBUG_H) */

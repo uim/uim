@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef _canddisp_h_included_
-#define _canddisp_h_included_
+#ifndef CANDDISP_H
+#define CANDDISP_H
 
 #include <vector>
 

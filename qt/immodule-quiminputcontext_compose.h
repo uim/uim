@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef _QUIMINPUT_CONTEXT_COMPOSE_H_
-#define _QUIMINPUT_CONTEXT_COMPOSE_H_
+#ifndef QUIMINPUT_CONTEXT_COMPOSE_H
+#define QUIMINPUT_CONTEXT_COMPOSE_H
 
 #include <X11/X.h>
 #undef KeyPress

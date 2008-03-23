@@ -37,8 +37,8 @@
    information
 */
 
-#ifndef _uim_im_switcher_h_included_
-#define _uim_im_switcher_h_included_
+#ifndef UIM_IM_SWITCHER_H
+#define UIM_IM_SWITCHER_H
 
 #include "uim.h"
 

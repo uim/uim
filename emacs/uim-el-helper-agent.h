@@ -34,8 +34,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _uim_helper_agent_h_included_
-#define _uim_helper_agent_h_included_
+#ifndef UIM_HELPER_AGENT_H
+#define UIM_HELPER_AGENT_H
 
 #include "helper-server.h"
 #include "helper-message.h"

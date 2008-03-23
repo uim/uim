@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UIM_HELPER_MANAGER_H_
-#define _UIM_HELPER_MANAGER_H_
+#ifndef UIM_HELPER_MANAGER_H
+#define UIM_HELPER_MANAGER_H
 
 #include <qobject.h>
 
@@ -61,4 +61,4 @@ public slots:
     void slotStdinActivated( int );
 };
 
-#endif /* Not def: _UIM_HELPER_MANAGER_H_ */
+#endif /* Not def: UIM_HELPER_MANAGER_H */

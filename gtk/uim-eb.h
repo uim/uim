@@ -34,8 +34,8 @@
 /* FIXME! This is a ad-hoc solution to advance
    annotation related discussion. */
 
-#ifndef _uim_eb_h_included_
-#define _uim_eb_h_included_
+#ifndef UIM_EB_H
+#define UIM_EB_H
 
 #include <gtk/gtk.h>
 
@@ -50,4 +50,4 @@ void    uim_eb_destroy     (uim_eb *ueb);
 
 G_END_DECLS
 
-#endif /* _uim_eb_h_included_ */
+#endif /* UIM_EB_H */

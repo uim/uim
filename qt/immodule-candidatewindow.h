@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _CANDIDATE_WINDOW_H_
-#define _CANDIDATE_WINDOW_H_
+#ifndef CANDIDATE_WINDOW_H
+#define CANDIDATE_WINDOW_H
 
 #include <uim/uim.h>
 
@@ -146,4 +146,4 @@ public:
 
     QSize sizeHint( void ) const;
 };
-#endif /* Not def: _CANDIDATE_WINDOW_H_ */
+#endif /* Not def: CANDIDATE_WINDOW_H */

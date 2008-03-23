@@ -31,8 +31,8 @@
 
 */
 
-#ifndef __dict_anthy_word_list_gtk_h_includeded__
-#define __dict_anthy_word_list_gtk_h_includeded__
+#ifndef DICT_ANTHY_WORD_LIST_GTK_H
+#define DICT_ANTHY_WORD_LIST_GTK_H
 
 #include <gtk/gtk.h>
 
@@ -79,4 +79,4 @@ GType dict_enum_dictionary_type_get_type (void);
 
 DictEnumDictionaryType dict_get_dictionary_type(GtkWidget *window);
 
-#endif /* __dict_anthy_word_list_gtk_h_includeded__ */
+#endif /* DICT_ANTHY_WORD_LIST_GTK_H */

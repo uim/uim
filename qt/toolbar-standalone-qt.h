@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _UIM_TOOLBAR_DRAGGING_HANDLER_H_
-#define _UIM_TOOLBAR_DRAGGING_HANDLER_H_
+#ifndef UIM_TOOLBAR_DRAGGING_HANDLER_H
+#define UIM_TOOLBAR_DRAGGING_HANDLER_H
 
 #include <qframe.h>
 #include <qevent.h>
@@ -83,4 +83,4 @@ private:
     int offsetY;
 };
 
-#endif  /* _UIM_TOOLBAR_DRAGGING_HANDLER_H_ */
+#endif  /* UIM_TOOLBAR_DRAGGING_HANDLER_H */

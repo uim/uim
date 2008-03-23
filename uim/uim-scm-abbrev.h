@@ -31,8 +31,8 @@
 
 */
 
-#ifndef _uim_scm_abbrev_h_included_
-#define _uim_scm_abbrev_h_included_
+#ifndef UIM_SCM_ABBREV_H
+#define UIM_SCM_ABBREV_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,4 +96,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif /* _uim_scm_abbrev_h_included_ */
+#endif /* UIM_SCM_ABBREV_H */

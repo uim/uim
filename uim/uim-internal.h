@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef _uim_internal_h_included_
-#define _uim_internal_h_included_
+#ifndef UIM_INTERNAL_H
+#define UIM_INTERNAL_H
 
 #include <config.h>
 

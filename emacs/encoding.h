@@ -34,8 +34,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _uim_agent_encoding_h_included_
-#define _uim_agent_encoding_h_included_
+#ifndef UIM_AGENT_ENCODING_H
+#define UIM_AGENT_ENCODING_H
 
 #include <string.h>
 #include <stdlib.h>

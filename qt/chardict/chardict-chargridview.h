@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _CHAR_GRID_VIEW_H_
-#define _CHAR_GRID_VIEW_H_
+#ifndef CHAR_GRID_VIEW_H
+#define CHAR_GRID_VIEW_H
 
 #include <qgridview.h>
 #include <qstringlist.h>
@@ -71,4 +71,4 @@ protected:
     QFont m_font;
 };
 
-#endif /* Not def: _CHAR_GRID_VIEW_H_ */
+#endif /* Not def: CHAR_GRID_VIEW_H */

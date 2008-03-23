@@ -31,8 +31,8 @@
 
 */
 
-#ifndef _uim_helper_h_included_
-#define _uim_helper_h_included_
+#ifndef UIM_HELPER_H
+#define UIM_HELPER_H
 
 #ifdef __cplusplus
 extern "C" {

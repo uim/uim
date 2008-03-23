@@ -43,8 +43,8 @@
  * ja_JP.eucJP and so on and ordinary notification agents expect
  * UTF-8.  -- YamaKen 2008-02-11 */
 
-#ifndef _uim_notify_h_included_
-#define _uim_notify_h_included_
+#ifndef UIM_NOTIFY_H
+#define UIM_NOTIFY_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -75,4 +75,4 @@ uim_bool uim_notify_plugin_fatal(const char *msg);
 }
 #endif
 
-#endif  /* _uim_notify_h_included_ */
+#endif  /* UIM_NOTIFY_H */

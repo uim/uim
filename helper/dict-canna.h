@@ -29,8 +29,8 @@
  *  SUCH DAMAGE.
  */
 
-#ifndef __dict_canna_h_included__
-#define __dict_canna_h_included__
+#ifndef DICT_CANNA_H
+#define DICT_CANNA_H
 
 #include "dict-word.h"
 #include "dict-dict.h"
@@ -39,4 +39,4 @@
 #define CANNA_PRIV_DIC_BUFLEN	1024
 #define CANNA_STD_CONTEXT	0
 
-#endif /* __dict_canna_h_included__ */
+#endif /* DICT_CANNA_H */

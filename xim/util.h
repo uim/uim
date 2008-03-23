@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef _util_h_included_
-#define _util_h_included_
+#ifndef UTIL_H
+#define UTIL_H
 
 // fd dispatch
 #define READ_OK 1

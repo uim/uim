@@ -47,8 +47,8 @@
 */
 
 
-#ifndef _uim_scm_h_included_
-#define _uim_scm_h_included_
+#ifndef UIM_SCM_H
+#define UIM_SCM_H
 
 #include <stdlib.h>
 

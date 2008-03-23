@@ -39,8 +39,8 @@
  *   * uim-pref用に修正
  */
 
-#ifndef __dict_word_h_included__
-#define __dict_word_h_included__
+#ifndef DICT_WORD_H
+#define DICT_WORD_H
 
 /*
  *  enumではなく文字列に変更?
@@ -102,4 +102,4 @@ uim_word *word_last      (uim_word *list);
 
 uim_word_type dict_identifier_to_word_type(char *identifier);
 int dict_identifier_to_support_type(char *identifier);
-#endif /* __dict_word_h_included__ */
+#endif /* DICT_WORD_H */

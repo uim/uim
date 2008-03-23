@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef _compose_h_included_
-#define _compose_h_included_
+#ifndef COMPOSE_H
+#define COMPOSE_H
 
 #include <X11/X.h>
 

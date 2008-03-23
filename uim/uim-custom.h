@@ -32,8 +32,8 @@
 */
 
 
-#ifndef _uim_custom_h_included_
-#define _uim_custom_h_included_
+#ifndef UIM_CUSTOM_H
+#define UIM_CUSTOM_H
 
 #include "uim.h"
 
@@ -191,4 +191,4 @@ void uim_custom_key_list_free(struct uim_custom_key **list);
 #ifdef __cplusplus
 }
 #endif
-#endif  /* _uim_custom_h_included_ */
+#endif  /* UIM_CUSTOM_H */

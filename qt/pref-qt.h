@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _UIM_PREF_QT_H_
-#define _UIM_PREF_QT_H_
+#ifndef UIM_PREF_QT_H
+#define UIM_PREF_QT_H
 
 #include <qdialog.h>
 #include <qdict.h>
@@ -138,4 +138,4 @@ protected:
     QPtrList<UimCustomItemIface> m_customIfaceList;
 };
 
-#endif /* Not def: _UIM_PREF_QT_H_ */
+#endif /* Not def: UIM_PREF_QT_H */

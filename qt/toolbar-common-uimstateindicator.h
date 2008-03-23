@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _UIM_STATE_INDICATOR_H_
-#define _UIM_STATE_INDICATOR_H_
+#ifndef UIM_STATE_INDICATOR_H
+#define UIM_STATE_INDICATOR_H
 
 #include <qhbox.h>
 #include <qintdict.h>
@@ -113,4 +113,4 @@ protected:
 };
 
 
-#endif /* Not def: _UIM_STATE_INDICATOR_H_ */
+#endif /* Not def: UIM_STATE_INDICATOR_H */

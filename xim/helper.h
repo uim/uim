@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef _helper_included_
-#define _helper_h_included_
+#ifndef HELPER_H
+#define HELPER_H
 
 void check_helper_connection();
 void helper_disconnect_cb();

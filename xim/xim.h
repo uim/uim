@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef _xim_h_included_
-#define _xim_h_included_
+#ifndef XIM_H
+#define XIM_H
 
 #include <X11/X.h>
 #include <X11/Xlib.h>

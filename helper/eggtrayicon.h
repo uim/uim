@@ -18,8 +18,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __EGG_TRAY_ICON_H__
-#define __EGG_TRAY_ICON_H__
+#ifndef EGG_TRAY_ICON_H
+#define EGG_TRAY_ICON_H
 
 #include <gtk/gtkplug.h>
 #ifdef GDK_WINDOWING_X11
@@ -77,4 +77,4 @@ GtkOrientation egg_tray_icon_get_orientation (EggTrayIcon *icon);
 
 G_END_DECLS
 
-#endif /* __EGG_TRAY_ICON_H__ */
+#endif /* EGG_TRAY_ICON_H */

@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _CUSTOMWIDGETS_H_
-#define _CUSTOMWIDGETS_H_
+#ifndef CUSTOMWIDGETS_H
+#define CUSTOMWIDGETS_H
 
 #include <uim/uim.h>
 #include <uim/uim-custom.h>
@@ -303,4 +303,4 @@ protected:
     QString m_keystr; 
 };
 
-#endif /* Not def: _CUSTOMWIDGETS_H_ */
+#endif /* Not def: CUSTOMWIDGETS_H */

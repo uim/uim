@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _UNICODE_VIEW_WIDGET_H_
-#define _UNICODE_VIEW_WIDGET_H_
+#ifndef UNICODE_VIEW_WIDGET_H
+#define UNICODE_VIEW_WIDGET_H
 
 #include "chardict-qt.h"
 
@@ -71,4 +71,4 @@ protected:
     CharGridView *m_charGridView;
 };
 
-#endif /* Not def: _UNICODE_VIEW_WIDGET_H_ */
+#endif /* Not def: UNICODE_VIEW_WIDGET_H */

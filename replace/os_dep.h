@@ -31,8 +31,8 @@
 
 */
 
-#ifndef _os_dep_h_included_
-#define _os_dep_h_included_
+#ifndef OS_DEP_H
+#define OS_DEP_H
 
 /* stdint.h compatible type definitions */
 #if HAVE_STDINT_H

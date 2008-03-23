@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _QUIM_HELPER_TOOLBAR_H_
-#define _QUIM_HELPER_TOOLBAR_H_
+#ifndef QUIM_HELPER_TOOLBAR_H
+#define QUIM_HELPER_TOOLBAR_H
 
 #include <qhbox.h>
 #include <qevent.h>

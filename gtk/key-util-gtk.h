@@ -35,8 +35,8 @@
  * key utility for uim-gtk
  */
 
-#ifndef _key_util_gtk_h_included_
-#define _key_util_gtk_h_included_
+#ifndef KEY_UTIL_GTK_H
+#define KEY_UTIL_GTK_H
 
 /*
  * Initialize modifier key mappings.

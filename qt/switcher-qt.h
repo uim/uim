@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _IM_SWITCHER_QT_H_
-#define _IM_SWITCHER_QT_H_
+#ifndef IM_SWITCHER_QT_H
+#define IM_SWITCHER_QT_H
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
@@ -82,4 +82,4 @@ protected:
     QPushButton *cancelButton;
 };
 
-#endif /* Not def: _IM_SWITCHER_QT_H_ */
+#endif /* Not def: IM_SWITCHER_QT_H */

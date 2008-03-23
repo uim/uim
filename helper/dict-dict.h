@@ -31,8 +31,8 @@
 
 */
 
-#ifndef __dict_dict_h_includeded__
-#define __dict_dict_h_includeded__
+#ifndef DICT_DICT_H
+#define DICT_DICT_H
 
 #include "dict-word.h"
 
@@ -105,4 +105,4 @@ typedef enum {
   DICT_ENUM_DICTIONARY_TYPE_UNKOWN
 } DictEnumDictionaryType;
 
-#endif /* __dict_dict_h_includeded__ */
+#endif /* DICT_DICT_H */

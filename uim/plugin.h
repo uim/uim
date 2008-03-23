@@ -32,8 +32,8 @@
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 */
-#ifndef _uim_plugin_h_included_
-#define _uim_plugin_h_included_
+#ifndef UIM_PLUGIN_H
+#define UIM_PLUGIN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,4 +45,4 @@ void uim_plugin_instance_quit(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /* _uim_plugin_h_included_ */
+#endif /* UIM_PLUGIN_H */

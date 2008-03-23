@@ -35,8 +35,8 @@
 */
 
 
-#ifndef _uim_agent_debug_h_included_
-#define _uim_agent_debug_h_included_
+#ifndef UIM_AGENT_DEBUG_H
+#define UIM_AGENT_DEBUG_H
 
 #include <stdio.h>
 #include <stdarg.h>

@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef _BUSHU_VIEW_WIDGET_H_
-#define _BUSHU_VIEW_WIDGET_H_
+#ifndef BUSHU_VIEW_WIDGET_H
+#define BUSHU_VIEW_WIDGET_H
 
 #include "chardict-qt.h"
 
@@ -68,4 +68,4 @@ protected:
     CharGridView *m_charGridView;
 };
 
-#endif /* Not def: _BUSHU_VIEW_WIDGET_H_ */
+#endif /* Not def: BUSHU_VIEW_WIDGET_H */

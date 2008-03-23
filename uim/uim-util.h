@@ -32,8 +32,8 @@
 
 */
 
-#ifndef _uim_util_h_included_
-#define _uim_util_h_included_
+#ifndef UIM_UTIL_H
+#define UIM_UTIL_H
 
 #include <stdio.h>
 #include <sys/types.h>

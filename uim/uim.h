@@ -32,8 +32,8 @@
 */
 
 /* API and ABI is unstable */
-#ifndef _uim_h_included_
-#define _uim_h_included_
+#ifndef UIM_H
+#define UIM_H
 
 #include <stdlib.h>
 
@@ -931,4 +931,4 @@ char *uim_strdup(const char *s);
 }
 #endif
 
-#endif /* _uim_h_included_ */
+#endif /* UIM_H */

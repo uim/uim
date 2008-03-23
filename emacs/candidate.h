@@ -34,8 +34,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _uim_agent_candidate_h_included_
-#define _uim_agent_candidate_h_included_
+#ifndef UIM_AGENT_CANDIDATE_H
+#define UIM_AGENT_CANDIDATE_H
 
 #include <stdlib.h>
 #include <string.h>

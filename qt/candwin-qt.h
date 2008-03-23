@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef _UIM_CANDWIN_QT_H_
-#define _UIM_CANDWIN_QT_H_
+#ifndef UIM_CANDWIN_QT_H
+#define UIM_CANDWIN_QT_H
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
@@ -136,4 +136,4 @@ public:
     }
 };
 
-#endif  /* _UIM_CANDWIN_QT_H_ */
+#endif  /* UIM_CANDWIN_QT_H */

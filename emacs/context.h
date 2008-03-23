@@ -34,8 +34,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _uim_agent_context_h_included_
-#define _uim_agent_context_h_included_
+#ifndef UIM_AGENT_CONTEXT_H
+#define UIM_AGENT_CONTEXT_H
 
 #include <string.h>
 #include <stdlib.h>
