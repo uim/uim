@@ -166,6 +166,9 @@ AC_ARG_WITH(canna,
 	use_canna="no"
 ])
 
+# *********************
+# *** Tests for Wnn ***
+# *********************
 AC_ARG_WITH(wnn,
 	AS_HELP_STRING([--with-wnn], [Build with libwnn
 					@<:@default=no@:>@]),

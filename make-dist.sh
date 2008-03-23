@@ -7,16 +7,17 @@ SSCM_REPOSITORY="${UIM_REPOSITORY}/sigscheme-trunk"
 LIBGCROOTS_REPOSITORY="${UIM_REPOSITORY}/libgcroots-trunk"
 TAGS_REPOSITORY="${UIM_REPOSITORY}/tags"
 #SSCM_URL="${SSCM_REPOSITORY}"
-SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.7.3"
+SSCM_URL="${TAGS_REPOSITORY}/sigscheme-0.8.1"
 #LIBGCROOTS_URL="${LIBGCROOTS_REPOSITORY}"
-LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.1.4"
-RELEASE_SUFFIX="-beta"
+LIBGCROOTS_URL="${TAGS_REPOSITORY}/libgcroots-0.2.1"
+RELEASE_SUFFIX="-alpha"
 
 CONF_COMMON="--enable-maintainer-mode --disable-warnings-into-error"
 CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-gnome-applet --disable-kde-applet --disable-pref --disable-dict --without-anthy --without-canna --without-mana --without-prime --without-m17nlib --without-scim --without-gtk2 --without-gnome2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
 CONF_DEFAULT="$CONF_COMMON"
 # --without-scim since it is broken
-CONF_FULL="$CONF_COMMON --enable-debug --enable-fep --enable-emacs --enable-scim --enable-gnome-applet --enable-kde-applet --enable-pref --enable-dict --with-anthy --with-canna --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --enable-compat-scm --with-eb --with-libedit"
+# FIXME: hardcoded --with-eb-conf
+CONF_FULL="$CONF_COMMON --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-kde-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gnome2 --with-qt --with-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=/etc/eb.conf --with-libedit"
 
 
 svn export $SSCM_URL sigscheme
