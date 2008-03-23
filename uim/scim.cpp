@@ -45,6 +45,8 @@
 #include "uim-internal.h"
 #include "uim-notify.h"
 
+// FIXME: unconditional fprintf()s
+
 using namespace scim;
 
 typedef struct SCIMInputMethod SCIMInputMethod;
@@ -144,6 +146,16 @@ create_im_list()
     for ( ; it != factories.end(); ++it )
     {
         SCIMInputMethod *scim_im = new SCIMInputMethod();
+	// FIXME: IMEngineFactoryBase::get_name() returns the IM name
+	// for humans (and it is recommended to be 'localized'). So it
+	// does not fit the uim's symbolic IM name (idname), and
+	// causes parse errors on Scheme when being read as Scheme
+	// symbol. For example, an IM name "scim-Probhat(phonetic)"
+	// cannot be a safe Scheme symbol since it contains
+	// parenthesis. Some character replacements and
+	// anti-message-translation (localization) is required to
+	// provide uim IMs. uim rejects IMs that have invalid IM
+	// name.  -- YamaKen 2008-03-24
         scim_im->imname = (*it)->get_name();
         scim_im->lang = (*it)->get_language();
         scim_im->uuid = (*it)->get_uuid();
