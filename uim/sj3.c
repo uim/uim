@@ -161,7 +161,7 @@ uim_sj3_open_with_list(uim_lisp sname_, uim_lisp uname_, uim_lisp dict_list_)
   dict_list = uim_malloc(sizeof(char *) * dict_num);
 
   for (i = 0; i < dict_num; i++) {
-    dict_list[i] = uim_strdup(REFER_C_STR(uim_scm_car(dict_list_)));
+    dict_list[i] = uim_strdup(REFER_C_STR(CAR(dict_list_)));
     dict_list_ = CDR(dict_list_);
   }
 
@@ -280,7 +280,7 @@ uim_sj3_douoncnt(uim_lisp yomi_)
   if (ret == -1)
     return uim_sj3_server_down_error();
 
-  return uim_scm_make_int(ret);
+  return MAKE_INT(ret);
 }
 
 static uim_lisp
