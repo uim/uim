@@ -194,9 +194,9 @@ const static struct uim_sj3_error uim_sj3_close_error[] = {
   { SJ3_NOT_OPENED_MDICT,  "*SJ3-NOT-OPENED-MDICT*" , N_("Main dictionary file is not opened.") },
   { SJ3_NOT_OPENED_UDICT,  "*SJ3-NOT-OPENED-UDICT*" , N_("User dictionary file is not opened.") },
   { SJ3_NOT_OPENED_STUDY,  "*SJ3-NOT-OPENED-STUDY*" , N_("Study file is not opened.") },
-  { SJ3_CLOSE_MDICT_ERROR, "*SJ3-CLOSE-MDICT-ERROR*", N_("Main dictionary file cannot clese.") },
-  { SJ3_CLOSE_UDICT_ERROR, "*SJ3-CLOSE-UDICT-ERROR*", N_("User dictionary file cannot clese.") },
-  { SJ3_CLOSE_STUDY_ERROR, "*SJ3-CLOSE-STUDY-ERROR*", N_("Study file cannot clese.") },
+  { SJ3_CLOSE_MDICT_ERROR, "*SJ3-CLOSE-MDICT-ERROR*", N_("Main dictionary file cannot close.") },
+  { SJ3_CLOSE_UDICT_ERROR, "*SJ3-CLOSE-UDICT-ERROR*", N_("User dictionary file cannot close.") },
+  { SJ3_CLOSE_STUDY_ERROR, "*SJ3-CLOSE-STUDY-ERROR*", N_("Study file cannot close.") },
   { 0, NULL, NULL }
 };
 
