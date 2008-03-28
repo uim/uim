@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2008-03-28 13:08+0900\n"
-"PO-Revision-Date: 2008-03-28 14:06+0900\n"
+"PO-Revision-Date: 2008-03-28 14:13+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -2667,11 +2667,11 @@ msgstr "編集領域で使用されるフォント名 (アンチエイリアス�
 
 #: scm/im-custom.scm:549
 msgid "Notify"
-msgstr ""
+msgstr "状態通知"
 
 #: scm/im-custom.scm:556
 msgid "Notify agent name"
-msgstr ""
+msgstr "状態通知に使用するエージェント"
 
 #: scm/ipa-x-sampa.scm:227 scm/ipa-x-sampa.scm:228
 msgid "International Phonetic Alphabet (X-SAMPA)"
