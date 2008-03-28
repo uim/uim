@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2008-03-28 13:08+0900\n"
-"PO-Revision-Date: 2008-03-28 14:13+0900\n"
+"PO-Revision-Date: 2008-03-28 14:26+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -3299,7 +3299,7 @@ msgstr "[Look] 予測入力が有効になる文字数"
 
 #: scm/look-custom.scm:65
 msgid "[Look] Prepared words for prediction"
-msgstr "予測入力の学習に必要とする連接単語数"
+msgstr "[Look] 予測入力の学習に必要とする連接単語数"
 
 #: scm/look-custom.scm:71
 msgid "[Look] left fence character of candidate"
