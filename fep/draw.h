@@ -31,8 +31,8 @@
 
 */
 
-#ifndef DRAW_H
-#define DRAW_H
+#ifndef UIM_FEP_DRAW_H
+#define UIM_FEP_DRAW_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

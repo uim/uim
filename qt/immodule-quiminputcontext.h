@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef QUIMINPUT_CONTEXT_H
-#define QUIMINPUT_CONTEXT_H
+#ifndef UIM_QT_IMMODULE_QUIMINPUTCONTEXT_H
+#define UIM_QT_IMMODULE_QUIMINPUTCONTEXT_H
 
 #include <qinputcontext.h>
 #include <qptrlist.h>
@@ -164,4 +164,4 @@ protected:
     static QUimHelperManager *m_HelperManager;
 };
 
-#endif /* Not def: QUIMINPUT_CONTEXT_H */
+#endif /* Not def: UIM_QT_IMMODULE_QUIMINPUTCONTEXT_H */

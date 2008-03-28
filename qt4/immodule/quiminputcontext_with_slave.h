@@ -32,8 +32,8 @@
 
 */
 
-#ifndef QUIMINPUT_CONTEXT_WITH_SLAVE_H
-#define QUIMINPUT_CONTEXT_WITH_SLAVE_H
+#ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
+#define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H
 
 #include "quiminputcontext.h"
 
@@ -70,4 +70,4 @@ protected:
     QInputContext *slave;
 };
 
-#endif /* Not def: QUIMINPUT_CONTEXT_WITH_SLAVE_H */
+#endif /* Not def: UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_WITH_SLAVE_H */

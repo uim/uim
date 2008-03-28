@@ -31,8 +31,8 @@
 
 */
 
-#ifndef OS_DEP_H
-#define OS_DEP_H
+#ifndef UIM_REPLACE_OS_DEP_H
+#define UIM_REPLACE_OS_DEP_H
 
 /* stdint.h compatible type definitions */
 #if HAVE_STDINT_H
@@ -122,4 +122,4 @@ long long strtonum(const char *numstr, long long minval, long long maxval, const
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* UIM_REPLACE_OS_DEP_H */

@@ -31,8 +31,8 @@
  *  SUCH DAMAGE.
  */
 
-#ifndef WORD_LIST_VIEW_H
-#define WORD_LIST_VIEW_H
+#ifndef UIM_DICT_WORD_LIST_VIEW_H
+#define UIM_DICT_WORD_LIST_VIEW_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -127,4 +127,4 @@ GtkSelectionMode word_list_view_get_selection_mode (WordListView *);
 #ifdef __cplusplus
 }
 #endif
-#endif /* WORD_LIST_VIEW_H */
+#endif /* UIM_DICT_WORD_LIST_VIEW_H */

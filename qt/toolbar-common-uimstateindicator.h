@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef UIM_STATE_INDICATOR_H
-#define UIM_STATE_INDICATOR_H
+#ifndef UIM_QT_TOOLBAR_COMMON_UIM_STATE_INDICATOR_H
+#define UIM_QT_TOOLBAR_COMMON_UIM_STATE_INDICATOR_H
 
 #include <qhbox.h>
 #include <qintdict.h>
@@ -113,4 +113,4 @@ protected:
 };
 
 
-#endif /* Not def: UIM_STATE_INDICATOR_H */
+#endif /* Not def: UIM_QT_TOOLBAR_COMMON_UIM_STATE_INDICATOR_H */

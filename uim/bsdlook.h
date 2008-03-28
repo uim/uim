@@ -31,8 +31,8 @@
 
 */
 
-#ifndef BSDLOOK_H
-#define BSDLOOK_H
+#ifndef UIM_BSDLOOK_H
+#define UIM_BSDLOOK_H
 
 #include <stdlib.h>
 
@@ -50,4 +50,4 @@ void		 uim_look_set_option_dictionary_order(int, uim_look_ctx *);
 void		 uim_look_set_option_ignore_case(int, uim_look_ctx *);
 
 
-#endif /* BSDLOOK_H */
+#endif /* UIM_BSDLOOK_H */

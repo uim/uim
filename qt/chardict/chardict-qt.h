@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef UIM_CHARDICT_QT_H
-#define UIM_CHARDICT_QT_H
+#ifndef UIM_QT_CHARDICT_CHARDICT_QT_H
+#define UIM_QT_CHARDICT_CHARDICT_QT_H
 
 #include <qstring.h>
 #include <qwidget.h>
@@ -100,4 +100,4 @@ signals:
     void charSelected( const QString & );
 };
 
-#endif /* Not def: UIM_CHARDICT_QT_H */
+#endif /* Not def: UIM_QT_CHARDICT_CHARDICT_QT_H */

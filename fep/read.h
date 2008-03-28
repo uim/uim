@@ -31,8 +31,8 @@
 
 */
 
-#ifndef READ_H
-#define READ_H
+#ifndef UIM_FEP_READ_H
+#define UIM_FEP_READ_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

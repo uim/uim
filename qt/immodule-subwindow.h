@@ -30,8 +30,8 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-#ifndef SUBWINDOW_H
-#define SUBWINDOW_H
+#ifndef UIM_QT_IMMODULE_SUBWINDOW_H
+#define UIM_QT_IMMODULE_SUBWINDOW_H
 
 #include <qvbox.h>
 #include <qtimer.h>
@@ -73,4 +73,4 @@ protected:
     QTimer *m_hookTimer;
 };
 
-#endif /* Not def: SUBWINDOW_H */
+#endif /* Not def: UIM_QT_IMMODULE_SUBWINDOW_H */

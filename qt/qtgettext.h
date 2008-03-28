@@ -30,8 +30,8 @@
  SUCH DAMAGE.
 
 */
-#ifndef QT_GETTEXT_H
-#define QT_GETTEXT_H
+#ifndef UIM_QT_QTGETTEXT_H
+#define UIM_QT_QTGETTEXT_H
 
 #include <config.h>
 #include "uim/gettext.h"
@@ -62,4 +62,4 @@
 #define mygettext(String) QString::fromLocal8Bit( (const char *)(String) )
 #endif /* ENABLE_NLS */
 
-#endif /* Not def: QT_GETTEXT_H */
+#endif /* Not def: UIM_QT_QTGETTEXT_H */
