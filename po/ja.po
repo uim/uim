@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2008-03-28 10:49+0900\n"
-"PO-Revision-Date: 2008-03-28 11:48+0900\n"
+"PO-Revision-Date: 2008-03-28 12:39+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -4423,225 +4423,184 @@ msgstr "VIetnamese Quoted-Readable"
 
 #: scm/wnn-custom.scm:35
 msgid "Wnn"
-msgstr ""
+msgstr "Wnn"
 
 #: scm/wnn-custom.scm:43
-#, fuzzy
 msgid "Wnn server"
-msgstr "Canna サーバ"
+msgstr "Wnn サーバ"
 
 #: scm/wnn-custom.scm:47
-#, fuzzy
 msgid "Wnn (advanced)"
-msgstr "Canna (高度)"
+msgstr "Wnn (高度)"
 
 #: scm/wnn-custom.scm:307
 msgid "Use value of use remote Wnn server"
-msgstr ""
+msgstr "ローカルマシン以外のWnnサーバに接続する"
 
 #: scm/wnn-custom.scm:314
-#, fuzzy
 msgid "Wnn server name"
-msgstr "Cannaサーバ名"
+msgstr "Wnnサーバ名"
 
 #: scm/wnn-custom.scm:325
 msgid "Wnn resource file"
-msgstr ""
+msgstr "Wnn設定ファイル"
 
 #: scm/wnn-key-custom.scm:35
-#, fuzzy
 msgid "Wnn key bindings 1"
-msgstr "Canna キー設定1"
+msgstr "Wnn キー設定1"
 
 #: scm/wnn-key-custom.scm:39
-#, fuzzy
 msgid "Wnn key bindings 2"
-msgstr "Canna キー設定2"
+msgstr "Wnn キー設定2"
 
+# Wnn
 #: scm/wnn-key-custom.scm:43
-#, fuzzy
 msgid "Wnn key bindings 3"
-msgstr "Canna キー設定3"
+msgstr "Wnn キー設定3"
 
 #: scm/wnn-key-custom.scm:47
-#, fuzzy
 msgid "Wnn key bindings 4"
-msgstr "Canna キー設定4"
+msgstr "Wnn キー設定4"
 
 #: scm/wnn-key-custom.scm:53
-#, fuzzy
 msgid "[Wnn] next segment"
-msgstr "[Canna] 次の文節"
+msgstr "[Wnn] 次の文節"
 
 #: scm/wnn-key-custom.scm:59
-#, fuzzy
 msgid "[Wnn] previous segment"
-msgstr "[Canna] 前の文節"
+msgstr "[Wnn] 前の文節"
 
 #: scm/wnn-key-custom.scm:65
-#, fuzzy
 msgid "[Wnn] extend segment"
-msgstr "[Canna] 文節を伸ばす"
+msgstr "[Wnn] 文節を伸ばす"
 
 #: scm/wnn-key-custom.scm:71
-#, fuzzy
 msgid "[Wnn] shrink segment"
-msgstr "[Canna] 文節を縮める"
+msgstr "[Wnn] 文節を縮める"
 
 #: scm/wnn-key-custom.scm:77
-#, fuzzy
 msgid "[Wnn] convert to hiragana"
-msgstr "[Canna] ひらがなに変換"
+msgstr "[Wnn] ひらがなに変換"
 
 #: scm/wnn-key-custom.scm:83
-#, fuzzy
 msgid "[Wnn] convert to katakana"
-msgstr "[Canna] カタカナに変換"
+msgstr "[Wnn] カタカナに変換"
 
 #: scm/wnn-key-custom.scm:89
-#, fuzzy
 msgid "[Wnn] convert to halfwidth katakana"
-msgstr "[Canna] 半角カタカナに変換"
+msgstr "[Wnn] 半角カタカナに変換"
 
 #: scm/wnn-key-custom.scm:95
-#, fuzzy
 msgid "[Wnn] convert to halfwidth alphanumeric"
-msgstr "[Canna] 半角英数字に変換"
+msgstr "[Wnn] 半角英数字に変換"
 
 #: scm/wnn-key-custom.scm:101
-#, fuzzy
 msgid "[Wnn] convert to fullwidth alphanumeric"
-msgstr "[Canna] 全角英数字に変換"
+msgstr "[Wnn] 全角英数字に変換"
 
 #: scm/wnn-key-custom.scm:107
-#, fuzzy
 msgid "[Wnn] commit as transposed kana"
-msgstr "[Canna] かな/カナ反転確定"
+msgstr "[Wnn] かな/カナ反転確定"
 
 #: scm/wnn-key-custom.scm:116
-#, fuzzy
 msgid "[Wnn] on"
-msgstr "[Canna] オン"
+msgstr "[Wnn] オン"
 
 #: scm/wnn-key-custom.scm:123
-#, fuzzy
 msgid "[Wnn] off"
-msgstr "[Canna] オフ"
+msgstr "[Wnn] オフ"
 
 #: scm/wnn-key-custom.scm:129
-#, fuzzy
 msgid "[Wnn] begin conversion"
-msgstr "[Canna] 変換開始"
+msgstr "[Wnn] 変換開始"
 
 #: scm/wnn-key-custom.scm:135
-#, fuzzy
 msgid "[Wnn] commit"
-msgstr "[Canna] 確定"
+msgstr "[Wnn] 確定"
 
 #: scm/wnn-key-custom.scm:141
-#, fuzzy
 msgid "[Wnn] cancel"
-msgstr "[Canna] キャンセル"
+msgstr "[Wnn] キャンセル"
 
 #: scm/wnn-key-custom.scm:147
-#, fuzzy
 msgid "[Wnn] next candidate"
-msgstr "[Canna] 次候補"
+msgstr "[Wnn] 次候補"
 
 #: scm/wnn-key-custom.scm:153
-#, fuzzy
 msgid "[Wnn] previous candidate"
-msgstr "[Canna] 前候補"
+msgstr "[Wnn] 前候補"
 
 #: scm/wnn-key-custom.scm:159
-#, fuzzy
 msgid "[Wnn] next page of candidate window"
-msgstr "[Canna] 候補ウィンドウの次ページ"
+msgstr "[Wnn] 候補ウィンドウの次ページ"
 
 #: scm/wnn-key-custom.scm:165
-#, fuzzy
 msgid "[Wnn] previous page of candidate window"
-msgstr "[Canna] 候補ウィンドウの前ページ"
+msgstr "[Wnn] 候補ウィンドウの前ページ"
 
 #: scm/wnn-key-custom.scm:174
-#, fuzzy
 msgid "[Wnn] beginning of preedit"
-msgstr "[Canna] 編集領域の先頭"
+msgstr "[Wnn] 編集領域の先頭"
 
 #: scm/wnn-key-custom.scm:180
-#, fuzzy
 msgid "[Wnn] end of preedit"
-msgstr "[Canna] 編集領域の末尾"
+msgstr "[Wnn] 編集領域の末尾"
 
 #: scm/wnn-key-custom.scm:186
-#, fuzzy
 msgid "[Wnn] erase after cursor"
-msgstr "[Canna] カーソル以降を消去"
+msgstr "[Wnn] カーソル以降を消去"
 
 #: scm/wnn-key-custom.scm:192
-#, fuzzy
 msgid "[Wnn] erase before cursor"
-msgstr "[Canna] カーソル以前を消去"
+msgstr "[Wnn] カーソル以前を消去"
 
 #: scm/wnn-key-custom.scm:198
-#, fuzzy
 msgid "[Wnn] backspace"
-msgstr "[Canna] バックスペース"
+msgstr "[Wnn] バックスペース"
 
 #: scm/wnn-key-custom.scm:204
-#, fuzzy
 msgid "[Wnn] delete"
-msgstr "[Canna] デリート"
+msgstr "[Wnn] デリート"
 
 #: scm/wnn-key-custom.scm:210
-#, fuzzy
 msgid "[Wnn] go left"
-msgstr "[Canna] 左に移動"
+msgstr "[Wnn] 左に移動"
 
 #: scm/wnn-key-custom.scm:216
-#, fuzzy
 msgid "[Wnn] go right"
-msgstr "[Canna] 右に移動"
+msgstr "[Wnn] 右に移動"
 
 #: scm/wnn-key-custom.scm:222
-#, fuzzy
 msgid "[Wnn] ESC keys on vi-cooperative mode"
-msgstr "[Canna] vi協調モードでESCとして扱うキー"
+msgstr "[Wnn] vi協調モードでESCとして扱うキー"
 
 #: scm/wnn-key-custom.scm:232
-#, fuzzy
 msgid "[Wnn] hiragana mode"
-msgstr "[Canna] ひらがな入力モード"
+msgstr "[Wnn] ひらがな入力モード"
 
 #: scm/wnn-key-custom.scm:238
-#, fuzzy
 msgid "[Wnn] katakana mode"
-msgstr "[Canna] カタカナ入力モード"
+msgstr "[Wnn] カタカナ入力モード"
 
 #: scm/wnn-key-custom.scm:244
-#, fuzzy
 msgid "[Wnn] halfwidth katakana mode"
-msgstr "[Canna] 半角カタカナ入力モード"
+msgstr "[Wnn] 半角カタカナ入力モード"
 
 #: scm/wnn-key-custom.scm:250
-#, fuzzy
 msgid "[Wnn] halfwidth alphanumeric mode"
-msgstr "[Canna] 半角英数入力モード"
+msgstr "[Wnn] 半角英数入力モード"
 
 #: scm/wnn-key-custom.scm:256
-#, fuzzy
 msgid "[Wnn] fullwidth alphanumeric mode"
-msgstr "[Canna] 全角英数入力モード"
+msgstr "[Wnn] 全角英数入力モード"
 
 #: scm/wnn-key-custom.scm:262
-#, fuzzy
 msgid "[Wnn] toggle hiragana/katakana mode"
-msgstr "[Canna] ひらがな/カタカナ入力モードを反転"
+msgstr "[Wnn] ひらがな/カタカナ入力モードを反転"
 
 #: scm/wnn-key-custom.scm:268
-#, fuzzy
 msgid "[Wnn] toggle kana/alphanumeric mode"
-msgstr "[Canna] かな/英数入力モードを反転"
+msgstr "[Wnn] かな/英数入力モードを反転"
 
 #: uim.desktop.in.in.h:1
 msgid "Customize uim input method environment"
