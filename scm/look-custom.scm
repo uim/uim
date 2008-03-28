@@ -43,26 +43,26 @@
 (define-custom 'look-dict "/usr/share/dict/words"
   '(look)
   '(pathname regular-file)
-  (N_ "Use UNIX look dictionary file")
+  (N_ "[Look] Use UNIX look dictionary file")
   (N_ "long description will be here."))
 
 (define-custom 'look-personal-dict-filename
   (string-append (or (home-directory (user-name)) "") "/.look-uim-dict")
   '(look)
   '(pathname regular-file)
-  (N_ "Personal dictionary file")
+  (N_ "[Look] Personal dictionary file")
   (N_ "long description will be here."))
 
 (define-custom 'look-beginning-character-length 1
   '(look)
   '(integer 1 65535)
-  (N_ "beginning character length of predicting")
+  (N_ "[Look] beginning character length of predicting")
   (N_ "long description will be here."))
 
 (define-custom 'look-prepared-words 0
   '(look)
   '(integer 0 65535)
-  (N_ "Prepared words for prediction")
+  (N_ "[Look] Prepared words for prediction")
   (N_ "long description will be here."))
 
 (define-custom 'look-fence-left "{"
