@@ -99,8 +99,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2008-03-28 00:10+0900\n"
-"PO-Revision-Date: 2007-03-27 01:25+0900\n"
+"POT-Creation-Date: 2008-03-28 10:49+0900\n"
+"PO-Revision-Date: 2008-03-28 11:48+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -3789,239 +3789,196 @@ msgstr "SCIMライブラリが提供する入力方式"
 
 #: scm/sj3-custom.scm:35
 msgid "SJ3"
-msgstr ""
+msgstr "SJ3"
 
 #: scm/sj3-custom.scm:43
-#, fuzzy
 msgid "SJ3 server"
-msgstr "Canna サーバ"
+msgstr "SJ3 サーバ"
 
 #: scm/sj3-custom.scm:47
-#, fuzzy
 msgid "SJ3 (advanced)"
-msgstr "SKK (高度)"
+msgstr "SJ3 (高度)"
 
 #: scm/sj3-custom.scm:307
 msgid "Use value of use remote SJ3 server"
-msgstr ""
+msgstr "ローカルマシン以外のSJ3サーバに接続する"
 
 #: scm/sj3-custom.scm:314
-#, fuzzy
 msgid "SJ3 server name"
-msgstr "Cannaサーバ名"
+msgstr "SJ3サーバ名"
 
 #: scm/sj3-custom.scm:325
-#, fuzzy
 msgid "SJ3 user name"
-msgstr "Cannaサーバ名"
+msgstr "SJ3ユーザ名"
 
 #: scm/sj3-key-custom.scm:35
-#, fuzzy
 msgid "SJ3 key bindings 1"
-msgstr "SKK キー設定1"
+msgstr "SJ3 キー設定1"
 
 #: scm/sj3-key-custom.scm:39
-#, fuzzy
 msgid "SJ3 key bindings 2"
-msgstr "SKK キー設定2"
+msgstr "SJ3 キー設定2"
 
 #: scm/sj3-key-custom.scm:43
-#, fuzzy
 msgid "SJ3 key bindings 3"
-msgstr "SKK キー設定3"
+msgstr "SJ3 キー設定3"
 
 #: scm/sj3-key-custom.scm:47
-#, fuzzy
 msgid "SJ3 key bindings 4"
-msgstr "SKK キー設定1"
+msgstr "SJ3 キー設定4"
 
 #: scm/sj3-key-custom.scm:53
-#, fuzzy
 msgid "[SJ3] next segment"
-msgstr "[Mana] 次文節"
+msgstr "[SJ3] 次文節"
 
 #: scm/sj3-key-custom.scm:59
-#, fuzzy
 msgid "[SJ3] previous segment"
-msgstr "[Mana] 前文節"
+msgstr "[SJ3] 前文節"
 
 #: scm/sj3-key-custom.scm:65
-#, fuzzy
 msgid "[SJ3] extend segment"
-msgstr "[Mana] 文節を伸ばす"
+msgstr "[SJ3] 文節を伸ばす"
 
 #: scm/sj3-key-custom.scm:71
-#, fuzzy
 msgid "[SJ3] shrink segment"
-msgstr "[Mana] 文節を縮める"
+msgstr "[SJ3] 文節を縮める"
 
 #: scm/sj3-key-custom.scm:77
-#, fuzzy
 msgid "[SJ3] convert to hiragana"
-msgstr "[Mana] ひらがなに変換"
+msgstr "[SJ3] ひらがなに変換"
 
 #: scm/sj3-key-custom.scm:83
-#, fuzzy
 msgid "[SJ3] convert to katakana"
-msgstr "[Mana] カタカナに変換"
+msgstr "[SJ3] カタカナに変換"
 
 #: scm/sj3-key-custom.scm:89
-#, fuzzy
 msgid "[SJ3] convert to halfwidth katakana"
-msgstr "[Mana] 半角カタカナに変換"
+msgstr "[SJ3] 半角カタカナに変換"
 
 #: scm/sj3-key-custom.scm:95
-#, fuzzy
 msgid "[SJ3] convert to halfwidth alphanumeric"
-msgstr "[Mana] 半角英数字に変換"
+msgstr "[SJ3] 半角英数字に変換"
 
 #: scm/sj3-key-custom.scm:101
-#, fuzzy
 msgid "[SJ3] convert to fullwidth alphanumeric"
-msgstr "[Mana] 全角英数字に変換"
+msgstr "[SJ3] 全角英数字に変換"
 
 #: scm/sj3-key-custom.scm:107
-#, fuzzy
 msgid "[SJ3] commit as transposed kana"
-msgstr "[Mana] かな/カナ反転確定"
+msgstr "[SJ3] かな/カナ反転確定"
 
 #: scm/sj3-key-custom.scm:116
-#, fuzzy
 msgid "[SJ3] on"
-msgstr "[SKK] オン"
+msgstr "[SJ3] オン"
 
 #: scm/sj3-key-custom.scm:123
-#, fuzzy
 msgid "[SJ3] off"
-msgstr "[Mana] オフ"
+msgstr "[SJ3] オフ"
 
 #: scm/sj3-key-custom.scm:129
-#, fuzzy
 msgid "[SJ3] begin conversion"
-msgstr "[SKK] 変換開始"
+msgstr "[SJ3] 変換開始"
 
 #: scm/sj3-key-custom.scm:135
-#, fuzzy
 msgid "[SJ3] commit"
-msgstr "[SKK] 確定"
+msgstr "[SJ3] 確定"
 
 #: scm/sj3-key-custom.scm:141
-#, fuzzy
 msgid "[SJ3] cancel"
-msgstr "[SKK] キャンセル"
+msgstr "[SJ3] キャンセル"
 
 #: scm/sj3-key-custom.scm:147
-#, fuzzy
 msgid "[SJ3] next candidate"
-msgstr "[SKK] 次候補"
+msgstr "[SJ3] 次候補"
 
 #: scm/sj3-key-custom.scm:153
-#, fuzzy
 msgid "[SJ3] previous candidate"
-msgstr "[SKK] 前候補"
+msgstr "[SJ3] 前候補"
 
 #: scm/sj3-key-custom.scm:159
-#, fuzzy
 msgid "[SJ3] next page of candidate window"
-msgstr "[SKK] 候補ウィンドウの次ページ"
+msgstr "[SJ3] 候補ウィンドウの次ページ"
 
 #: scm/sj3-key-custom.scm:165
-#, fuzzy
 msgid "[SJ3] previous page of candidate window"
-msgstr "[SKK] 候補ウィンドウの前ページ"
+msgstr "[SJ3] 候補ウィンドウの前ページ"
 
 #: scm/sj3-key-custom.scm:174
-#, fuzzy
 msgid "[SJ3] beginning of preedit"
-msgstr "[Mana] 編集領域の先頭"
+msgstr "[SJ3] 編集領域の先頭"
 
 #: scm/sj3-key-custom.scm:180
-#, fuzzy
 msgid "[SJ3] end of preedit"
-msgstr "[Mana] 編集領域の末尾"
+msgstr "[SJ3] 編集領域の末尾"
 
 #: scm/sj3-key-custom.scm:186
-#, fuzzy
 msgid "[SJ3] erase after cursor"
-msgstr "[Mana] カーソル以降を消去"
+msgstr "[SJ3] カーソル以降を消去"
 
 #: scm/sj3-key-custom.scm:192
-#, fuzzy
 msgid "[SJ3] erase before cursor"
-msgstr "[Mana] カーソル以前を消去"
+msgstr "[SJ3] カーソル以前を消去"
 
 #: scm/sj3-key-custom.scm:198
-#, fuzzy
 msgid "[SJ3] backspace"
-msgstr "[SKK] バックスペース"
+msgstr "[SJ3] バックスペース"
 
 #: scm/sj3-key-custom.scm:204
-#, fuzzy
 msgid "[SJ3] delete"
-msgstr "[Mana] デリート"
+msgstr "[SJ3] デリート"
 
 #: scm/sj3-key-custom.scm:210
-#, fuzzy
 msgid "[SJ3] go left"
-msgstr "[SKK] 左に移動"
+msgstr "[SJ3] 左に移動"
 
 #: scm/sj3-key-custom.scm:216
-#, fuzzy
 msgid "[SJ3] go right"
-msgstr "[SKK] 右に移動"
+msgstr "[SJ3] 右に移動"
 
 #: scm/sj3-key-custom.scm:222
-#, fuzzy
 msgid "[SJ3] ESC keys on vi-cooperative mode"
-msgstr "[SKK] vi協調モードでESCとして扱うキー"
+msgstr "[SJ3] vi協調モードでESCとして扱うキー"
 
 #: scm/sj3-key-custom.scm:232
-#, fuzzy
 msgid "[SJ3] hiragana mode"
-msgstr "[Mana] ひらがな入力モード"
+msgstr "[SJ3] ひらがな入力モード"
 
 #: scm/sj3-key-custom.scm:238
-#, fuzzy
 msgid "[SJ3] katakana mode"
-msgstr "[Mana] カタカナ入力モード"
+msgstr "[SJ3] カタカナ入力モード"
 
 #: scm/sj3-key-custom.scm:244
-#, fuzzy
 msgid "[SJ3] halfwidth katakana mode"
-msgstr "[SKK] 半角カタカナ入力モード"
+msgstr "[SJ3] 半角カタカナ入力モード"
 
 #: scm/sj3-key-custom.scm:250
-#, fuzzy
 msgid "[SJ3] halfwidth alphanumeric mode"
-msgstr "[Mana] 半角英数字入力モード"
+msgstr "[SJ3] 半角英数字入力モード"
 
 #: scm/sj3-key-custom.scm:256
-#, fuzzy
 msgid "[SJ3] fullwidth alphanumeric mode"
-msgstr "[Mana] 全角英数字入力モード"
+msgstr "[SJ3] 全角英数字入力モード"
 
 #: scm/sj3-key-custom.scm:262
-#, fuzzy
 msgid "[SJ3] toggle hiragana/katakana mode"
-msgstr "[SKK] ひらがな/カタカナ入力モードを反転"
+msgstr "[SJ3] ひらがな/カタカナ入力モードを反転"
 
 #: scm/sj3-key-custom.scm:268
-#, fuzzy
 msgid "[SJ3] toggle kana/alphanumeric mode"
-msgstr "[Mana] かな/英数入力モードを反転"
+msgstr "[SJ3] かな/英数入力モードを反転"
 
 #: scm/sj3.scm:67
 #, scheme-format
 msgid "[Please wait ~asec...]"
-msgstr ""
+msgstr "[~a秒お待ちください...]"
 
 #: scm/sj3.scm:77
 msgid "Reconnecting to sj3 server."
-msgstr ""
+msgstr "sj3サーバに再接続しています。"
 
 #: scm/sj3.scm:81
 msgid "[Reconnecting...]"
-msgstr ""
+msgstr "[再接続中...]"
 
 #: scm/skk-custom.scm:35
 msgid "SKK"
@@ -4734,172 +4691,162 @@ msgstr ""
 
 #: uim/sj3.c:69
 msgid "In uim-sj3, "
-msgstr ""
+msgstr "uim-sj3でエラーが発生しました。"
 
 #: uim/sj3.c:80
 msgid "Serverdown."
-msgstr ""
+msgstr "サーバがダウンしています。"
 
 #: uim/sj3.c:81
 msgid "Undefined error."
-msgstr ""
+msgstr "未定義のエラーです。"
 
 #: uim/sj3.c:82
 msgid "Internal error."
-msgstr ""
+msgstr "内部エラーです。"
 
 #: uim/sj3.c:104 uim/sj3.c:190
 msgid "Normal end."
-msgstr ""
+msgstr "正常終了しました。"
 
 #: uim/sj3.c:105 uim/sj3.c:191
 msgid "Server is dead."
-msgstr ""
+msgstr "サーバがダウンしました。"
 
 #: uim/sj3.c:106
-#, fuzzy
 msgid "Connect failed."
-msgstr "単語の削除に失敗しました。"
+msgstr "接続に失敗しました。"
 
 #: uim/sj3.c:107
 msgid "Already connected."
-msgstr ""
+msgstr "すでに接続しています。"
 
 #: uim/sj3.c:108
-#, fuzzy
 msgid "Cannot open main dictionary file."
-msgstr "辞書を開くことができません。\n"
+msgstr "メイン辞書のファイルを開くことができません。"
 
 #: uim/sj3.c:109
-#, fuzzy
 msgid "Cannot open user dictionary file."
-msgstr "辞書を開くことができません。\n"
+msgstr "個人辞書を開くことができません。"
 
 #: uim/sj3.c:110
 msgid "Cannot open study file."
-msgstr ""
+msgstr "学習ファイルを開くことができません。"
 
 #: uim/sj3.c:111
-#, fuzzy
 msgid "Cannot make user dictionary directory."
-msgstr "日本語辞書ツール"
+msgstr "個人辞書のディレクトリを作成できません。"
 
 #: uim/sj3.c:112
-#, fuzzy
 msgid "Cannot make user dictionary file."
-msgstr "Canna個人辞書"
+msgstr "個人辞書のファイルを作成できません。"
 
 #: uim/sj3.c:113
 msgid "Cannot make study file."
-msgstr ""
+msgstr "学習ファイルを作成できません。"
 
 #: uim/sj3.c:125 uim/sj3.c:154
 msgid "Server name is too long."
-msgstr ""
+msgstr "サーバ名が長過ぎます。"
 
 #: uim/sj3.c:128 uim/sj3.c:157
 msgid "User name is too long."
-msgstr ""
+msgstr "ユーザ名が長過ぎます。"
 
 #: uim/sj3.c:192
 msgid "Server is disconnected."
-msgstr ""
+msgstr "サーバから切断されました。"
 
 #: uim/sj3.c:193
 msgid "Server is not connected."
-msgstr ""
+msgstr "サーバに接続していません。"
 
 #: uim/sj3.c:194
 msgid "Main dictionary file is not opened."
-msgstr ""
+msgstr "メイン辞書ファイルを開いていません。"
 
 #: uim/sj3.c:195
-#, fuzzy
 msgid "User dictionary file is not opened."
-msgstr "個人辞書ファイル"
+msgstr "個人辞書ファイルを開いていません。"
 
 #: uim/sj3.c:196
 msgid "Study file is not opened."
-msgstr ""
+msgstr "学習ファイルを開いていません。"
 
 #: uim/sj3.c:197
-msgid "Main dictionary file cannot clese."
-msgstr ""
+msgid "Main dictionary file cannot close."
+msgstr "メイン辞書ファイルを閉じることができません。"
 
 #: uim/sj3.c:198
-#, fuzzy
-msgid "User dictionary file cannot clese."
-msgstr "個人辞書ファイル"
+msgid "User dictionary file cannot close."
+msgstr "個人辞書ファイルを閉じることができません。"
 
 #: uim/sj3.c:199
-msgid "Study file cannot clese."
-msgstr ""
+#, fuzzy
+msgid "Study file cannot close."
+msgstr "学習ファイルを閉じることができません。"
 
 #: uim/sj3.c:232 uim/sj3.c:277 uim/sj3.c:296 uim/sj3.c:317
 msgid "Yomi string is too long."
-msgstr ""
+msgstr "読みが長過ぎます。"
 
 #. too large?
 #: uim/sj3.c:240
 msgid "Buffer size is too short."
-msgstr ""
+msgstr "バッファに入りきりません。"
 
 #: uim/sj3.c:411
-#, fuzzy
 msgid "Dictionary error."
-msgstr "辞書ファイル"
+msgstr "辞書にエラーがあります。"
 
 #: uim/sj3.c:412
-#, fuzzy
 msgid "Dictionary is locked."
-msgstr "辞書ファイル"
+msgstr "辞書がロックされています。"
 
 #: uim/sj3.c:413
 msgid "Invalid yomi string."
-msgstr ""
+msgstr "読みの文字列が不正です。"
 
 #: uim/sj3.c:414
 msgid "Invalid kanji string."
-msgstr ""
+msgstr "漢字の文字列が不正です。"
 
 #: uim/sj3.c:415
 msgid "Invalid hinsi code."
-msgstr ""
+msgstr "品詞の種別が不正です。"
 
 #: uim/sj3.c:416
-#, fuzzy
 msgid "Word exist."
-msgstr "単語の種類"
+msgstr "単語はすでに登録されています。"
 
 #: uim/sj3.c:417
 msgid "Douon is full."
-msgstr ""
+msgstr "同音漢字はこれ以上登録できません。"
 
 #: uim/sj3.c:418
 #, fuzzy
 msgid "Dictionary is full."
-msgstr "辞書ファイル"
+msgstr "辞書はこれ以上登録できません。"
 
 #: uim/sj3.c:419
 msgid "Index is full."
-msgstr ""
+msgstr "登録数が限界です。"
 
 #: uim/sj3.c:420
-#, fuzzy
 msgid "Touroku failed."
-msgstr "単語の削除に失敗しました。"
+msgstr "単語の登録に失敗しました。"
 
 #: uim/sj3.c:421
 msgid "Word does not exist."
-msgstr ""
+msgstr "単語が存在しません。"
 
 #: uim/sj3.c:422
 msgid "Syoukyo failed."
-msgstr ""
+msgstr "単語の消去に失敗しました。"
 
 #: uim/sj3.c:436 uim/sj3.c:467
 msgid "Kanji string is too long."
-msgstr ""
+msgstr "漢字が長過ぎます。"
 
 #: uim/skk.c:987
 msgid "uim-skk: error in expand_str"
