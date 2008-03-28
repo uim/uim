@@ -99,8 +99,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2008-03-28 10:49+0900\n"
-"PO-Revision-Date: 2008-03-28 12:39+0900\n"
+"POT-Creation-Date: 2008-03-28 13:08+0900\n"
+"PO-Revision-Date: 2008-03-28 14:06+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -3275,105 +3275,91 @@ msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力
 
 #: scm/look-custom.scm:31 scm/look.scm:77 scm/look.scm:559
 msgid "Look"
-msgstr ""
+msgstr "Look"
 
 #: scm/look-custom.scm:32 scm/look.scm:560
-#, fuzzy
 msgid "Tiny predictive input method"
-msgstr "日本語の予測変換入力方式"
+msgstr "とてもちいさな予測変換入力方式"
 
 #: scm/look-custom.scm:39
-#, fuzzy
 msgid "Look key bindings"
-msgstr "SKK キー設定1"
+msgstr "Look キー設定"
 
-#: scm/look-custom.scm:46 scm/skk-custom.scm:460
-#, fuzzy
-msgid "Use UNIX look dictionary file"
-msgstr "個人辞書ファイル"
+#: scm/look-custom.scm:46
+msgid "[Look] Use UNIX look dictionary file"
+msgstr "[Look] lookで使用される辞書ファイル名"
 
-#: scm/look-custom.scm:53 scm/skk-custom.scm:400
-msgid "Personal dictionary file"
-msgstr "個人辞書ファイル"
+#: scm/look-custom.scm:53
+msgid "[Look] Personal dictionary file"
+msgstr "[Look] 個人辞書ファイル"
 
 #: scm/look-custom.scm:59
-msgid "beginning character length of predicting"
-msgstr ""
+msgid "[Look] beginning character length of predicting"
+msgstr "[Look] 予測入力が有効になる文字数"
 
 #: scm/look-custom.scm:65
-msgid "Prepared words for prediction"
-msgstr ""
+msgid "[Look] Prepared words for prediction"
+msgstr "予測入力の学習に必要とする連接単語数"
 
 #: scm/look-custom.scm:71
-msgid "[Look] left fence  character of candidate"
-msgstr ""
+msgid "[Look] left fence character of candidate"
+msgstr "[Look] 候補の左側のフェンス文字"
 
 #: scm/look-custom.scm:77
 msgid "[Look] right fence character of candidate"
-msgstr ""
+msgstr "[Look] 候補の右側のフェンス文字"
 
 #: scm/look-custom.scm:83
-#, fuzzy
 msgid "[Look] on"
-msgstr "[Byeoru] オン"
+msgstr "[Look] オン"
 
 #: scm/look-custom.scm:89
-#, fuzzy
 msgid "[Look] off"
-msgstr "[Byeoru] オフ"
+msgstr "[Look] オフ"
 
 #: scm/look-custom.scm:95
-#, fuzzy
 msgid "[Look] completion character"
-msgstr "[SKK] 次の補完候補"
+msgstr "[Look] 補完後確定"
 
 #: scm/look-custom.scm:101
-#, fuzzy
 msgid "[Look] next character"
-msgstr "ラテン文字"
+msgstr "[Look] 次の文字"
 
 #: scm/look-custom.scm:107
-#, fuzzy
 msgid "[Look] previous character"
-msgstr "[SKK] 前候補"
+msgstr "[Look] 前の文字"
 
 #: scm/look-custom.scm:113
-#, fuzzy
 msgid "[Look] next candidate"
-msgstr "[SKK] 次候補"
+msgstr "[Look] 次候補"
 
 #: scm/look-custom.scm:119
-#, fuzzy
 msgid "[Look] previous candidate"
-msgstr "[SKK] 前候補"
+msgstr "[Look] 前候補"
 
 #: scm/look-custom.scm:125
-#, fuzzy
 msgid "[Look] save dictionary"
-msgstr "辞書の編集"
+msgstr "[Look] 辞書の保存"
 
 #: scm/look-custom.scm:131
 msgid "[Look] load dictionary"
-msgstr ""
+msgstr "[Look] 辞書の読み出し"
 
 #: scm/look.scm:51
 msgid "Sleep"
-msgstr ""
+msgstr "休眠"
 
 #: scm/look.scm:52
-#, fuzzy
 msgid "Look Sleep Input Mode"
-msgstr "直接入力モード"
+msgstr "Look休眠入力モード"
 
 #: scm/look.scm:64
-#, fuzzy
 msgid "Look Direct Input Mode"
 msgstr "直接入力モード"
 
 #: scm/look.scm:78
-#, fuzzy
 msgid "Look Input Mode"
-msgstr "入力モード"
+msgstr "Look入力モード"
 
 #: scm/mana-custom.scm:35
 msgid "Mana"
@@ -4079,6 +4065,10 @@ msgstr "SKKサーバのアドレスファミリ"
 msgid "System dictionary file"
 msgstr "辞書ファイル"
 
+#: scm/skk-custom.scm:400
+msgid "Personal dictionary file"
+msgstr "個人辞書ファイル"
+
 #: scm/skk-custom.scm:407
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr "個人辞書ファイル (uim専用)"
@@ -4110,6 +4100,11 @@ msgstr "動的補完を有効にする"
 #: scm/skk-custom.scm:454
 msgid "Use UNIX look command for completion"
 msgstr "アルファベット変換時の補完にlookコマンドを使用"
+
+#: scm/skk-custom.scm:460
+#, fuzzy
+msgid "Use UNIX look dictionary file"
+msgstr "個人辞書ファイル"
 
 #: scm/skk-custom.scm:475
 msgid "Show annotation of candidate word"
