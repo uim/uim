@@ -68,7 +68,7 @@
 (define-custom 'look-fence-left "{"
   '(look)
   '(string ".*")
-  (N_ "[Look] left fence  character of candidate")
+  (N_ "[Look] left fence character of candidate")
   (N_ "long description will be here"))
 
 (define-custom 'look-fence-right "}"
