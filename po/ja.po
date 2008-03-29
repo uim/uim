@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2008-03-29 20:06+0900\n"
-"PO-Revision-Date: 2008-03-28 14:26+0900\n"
+"PO-Revision-Date: 2008-03-29 20:15+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -427,7 +427,7 @@ msgstr "向き"
 
 #: ../helper/eggtrayicon.c:119
 msgid "The orientation of the tray."
-msgstr "トレーの向き"
+msgstr "トレイの向き"
 
 #: ../helper/im-switcher-gtk.c:283 ../qt/switcher-qt.cpp:103
 msgid "InputMethodName"
@@ -1494,7 +1494,7 @@ msgstr "[Anthy] 前予測候補"
 
 #: ../scm/anthy-utf8-custom.scm:38
 msgid "Anthy (UTF-8)"
-msgstr ""
+msgstr "Anthy (UTF-8)"
 
 #: ../scm/byeoru-custom.scm:35
 msgid "Byeoru"
@@ -1517,24 +1517,24 @@ msgstr ""
 
 #. 2-beol can not be orderless.
 #: ../scm/byeoru-custom.scm:44
-#, fuzzy
 msgid "Hangul 2-beol Windows"
-msgstr "ハングル2ボル式"
+msgstr "ハングル2ボル式 (Windows互換)"
 
 #: ../scm/byeoru-custom.scm:45
 msgid "Hangul 2-beol keyboard that maps an undefined shifted key to a jamo"
-msgstr ""
+msgstr "ハングル2ボル式キーボード (未定義のシフト同時押しキーを字母にマップ)"
 
 #. 2-beol can not be orderless.
 #: ../scm/byeoru-custom.scm:48
-#, fuzzy
 msgid "Hangul 2-beol Hanterm"
-msgstr "ハングル2ボル式"
+msgstr "ハングル2ボル式 (Hanterm互換)"
 
 #: ../scm/byeoru-custom.scm:49
 msgid ""
 "Hangul 2-beol keyboard that maps an undefined shifted key to an alphabet"
 msgstr ""
+"ハングル2ボル式キーボード (未定義のシフト同時押しキーをアルファベットにマッ"
+"プ)"
 
 #. neither can strict 3-beol.
 #: ../scm/byeoru-custom.scm:52
@@ -1925,393 +1925,344 @@ msgid "Pass through all user input without any modification"
 msgstr "全てのユーザ入力を素通し"
 
 #: ../scm/elatin-custom.scm:34
-#, fuzzy
 msgid "ELatin"
-msgstr "ラテン語"
+msgstr "ELatin"
 
 #: ../scm/elatin-custom.scm:35
-#, fuzzy
 msgid "Emacs-style Latin characters input"
-msgstr "ラテン文字"
+msgstr "Emacsスタイルのラテン文字入力方式"
 
 #: ../scm/elatin-custom.scm:36
 msgid ""
 "An input method for entering Latin letters used in European languages with "
 "the key translations adopted in Emacs."
 msgstr ""
+"ヨーロッパ系言語で使われるラテン文字の入力方式 (Emacsで採用されている変換方式"
+"を使用)"
 
 #: ../scm/elatin-custom.scm:50
-#, fuzzy
 msgid "British"
-msgstr "アイルランド語"
+msgstr "イギリス英語"
 
 #: ../scm/elatin-custom.scm:53
-#, fuzzy
 msgid "Catalan prefix"
-msgstr "カタロニア語"
+msgstr "カタロニア語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:56
-#, fuzzy
 msgid "Danish postfix"
-msgstr "デンマーク語"
+msgstr "デンマーク語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:59
 msgid "Danish alternative postfix"
-msgstr ""
+msgstr "デンマーク語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:62
-#, fuzzy
 msgid "Danish keyboard"
-msgstr "キーボード"
+msgstr "デンマーク語キーボード"
 
 #: ../scm/elatin-custom.scm:65 ../scm/iso-639-1.scm:71
 msgid "Dutch"
 msgstr "オランダ語"
 
 #: ../scm/elatin-custom.scm:68
-#, fuzzy
 msgid "English Dvorak"
-msgstr "英語"
+msgstr "英語 (Dvorak)"
 
 #: ../scm/elatin-custom.scm:71
-#, fuzzy
 msgid "Esperanto prefix"
-msgstr "エスペラント"
+msgstr "エスペラント (前置修飾)"
 
 #: ../scm/elatin-custom.scm:74
-#, fuzzy
 msgid "Esperanto postfix"
-msgstr "エスペラント"
+msgstr "エスペラント (後置修飾)"
 
 #: ../scm/elatin-custom.scm:77
 msgid "Esperanto alternative postfix"
-msgstr ""
+msgstr "エスペラント (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:80
-#, fuzzy
 msgid "Finnish postfix"
-msgstr "フィンランド語"
+msgstr "フィンランド語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:83
 msgid "Finnish alternative postfix"
-msgstr ""
+msgstr "フィンランド語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:86
-#, fuzzy
 msgid "Finnish keyboard"
-msgstr "フィンランド語"
+msgstr "フィンランド語キーボード"
 
 #: ../scm/elatin-custom.scm:89
-#, fuzzy
 msgid "French prefix"
-msgstr "フランス語"
+msgstr "フランス語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:92
-#, fuzzy
 msgid "French postfix"
-msgstr "フランス語"
+msgstr "フランス語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:95
 msgid "French alternative postfix"
-msgstr ""
+msgstr "フランス語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:98
-#, fuzzy
 msgid "French keyboard"
-msgstr "キーボード"
+msgstr "フランス語キーボード"
 
 #: ../scm/elatin-custom.scm:101
-#, fuzzy
 msgid "French AZERTY"
-msgstr "フランス語"
+msgstr "フランス語 (AZERTY配列)"
 
 #: ../scm/elatin-custom.scm:104
-#, fuzzy
 msgid "German prefix"
-msgstr "ドイツ語"
+msgstr "ドイツ語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:107
-#, fuzzy
 msgid "German postfix"
-msgstr "ドイツ語"
+msgstr "ドイツ語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:110
 msgid "German alternative postfix"
-msgstr ""
+msgstr "ドイツ語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:113 ../scm/iso-639-1.scm:86
 msgid "German"
 msgstr "ドイツ語"
 
 #: ../scm/elatin-custom.scm:116
-#, fuzzy
 msgid "Icelandic postfix"
-msgstr "アイスランド語"
+msgstr "アイスランド語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:119
 msgid "Icelandic alternative postfix"
-msgstr ""
+msgstr "アイスランド語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:122
-#, fuzzy
 msgid "Icelandic keyboard"
-msgstr "アイスランド語"
+msgstr "アイスランド語キーボード"
 
 #: ../scm/elatin-custom.scm:125
 msgid "Irish prefix"
-msgstr ""
+msgstr "アイルランド語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:128
-#, fuzzy
 msgid "Italian postfix"
-msgstr "イタリア語"
+msgstr "イタリア語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:131
 msgid "Italian alternative postfix"
-msgstr ""
+msgstr "イタリア語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:134
-#, fuzzy
 msgid "Italian keyboard"
-msgstr "イタリア語"
+msgstr "イタリア語キーボード"
 
 #: ../scm/elatin-custom.scm:137
-#, fuzzy
 msgid "Latin prefix"
-msgstr "ラテン入力"
+msgstr "ラテン文字 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:140
-#, fuzzy
 msgid "Latin postfix"
-msgstr "ラテン入力"
+msgstr "ラテン文字 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:143
 msgid "Latin alternative postfix"
-msgstr ""
+msgstr "ラテン文字 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:146
 msgid "Latin-1 prefix"
-msgstr ""
+msgstr "Latin-1文字集合 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:149
-#, fuzzy
 msgid "Latin-1 postfix"
-msgstr "ラテン入力"
+msgstr "Latin-1文字集合 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:152
 msgid "Latin-1 alternative postfix"
-msgstr ""
+msgstr "Latin-1文字集合 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:155
 msgid "Latin-2 prefix"
-msgstr ""
+msgstr "Latin-2文字集合 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:158
-#, fuzzy
 msgid "Latin-2 postfix"
-msgstr "ラテン入力"
+msgstr "Latin-2文字集合 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:161
 msgid "Latin-2 alternative postfix"
-msgstr ""
+msgstr "Latin-2文字集合 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:164
 msgid "Latin-3 prefix"
-msgstr ""
+msgstr "Latin-3文字集合 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:167
-#, fuzzy
 msgid "Latin-3 postfix"
-msgstr "ラテン入力"
+msgstr "Latin-3文字集合 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:170
 msgid "Latin-3 alternative postfix"
-msgstr ""
+msgstr "Latin-3文字集合 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:173
-#, fuzzy
 msgid "Latin-4 postfix"
-msgstr "ラテン入力"
+msgstr "Latin-4文字集合 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:176
 msgid "Latin-4 alternative postfix"
-msgstr ""
+msgstr "Latin-4文字集合 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:179
-#, fuzzy
 msgid "Latin-5 postfix"
-msgstr "ラテン入力"
+msgstr "Latin-5文字集合 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:182
 msgid "Latin-5 alternative postfix"
-msgstr ""
+msgstr "Latin-5文字集合 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:185
 msgid "Latin-8 prefix"
-msgstr ""
+msgstr "Latin-8文字集合 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:188
 msgid "Latin-9 prefix"
-msgstr ""
+msgstr "Latin-9文字集合 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:191
 msgid "Latvian keyboard"
-msgstr ""
+msgstr "ラトビア語キーボード"
 
 #: ../scm/elatin-custom.scm:194
-#, fuzzy
 msgid "Lithuanian keyboard"
-msgstr "リトアニア語"
+msgstr "リトアニア語キーボード"
 
 #: ../scm/elatin-custom.scm:197
-#, fuzzy
 msgid "Lithuanian numeric"
-msgstr "リトアニア語"
+msgstr "リトアニア語 (数字キー入力)"
 
 #: ../scm/elatin-custom.scm:200
-#, fuzzy
 msgid "Norwegian postfix"
-msgstr "ノルウェー語"
+msgstr "ノルウェー語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:203
 msgid "Norwegian alternative postfix"
-msgstr ""
+msgstr "ノルウェー語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:206
-#, fuzzy
 msgid "Norwegian keyboard"
-msgstr "ノルウェー語"
+msgstr "ノルウェー語キーボード"
 
 #: ../scm/elatin-custom.scm:209
-#, fuzzy
 msgid "Polish slash"
-msgstr "ポーランド語"
+msgstr "ポーランド語 (スラッシュ文字式)"
 
 #: ../scm/elatin-custom.scm:212
-#, fuzzy
 msgid "Portuguese prefix"
-msgstr "ポルトガル語"
+msgstr "ポルトガル語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:215
-#, fuzzy
 msgid "Romanian prefix"
-msgstr "ルーマニア語"
+msgstr "ルーマニア語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:218
 msgid "Romanian alternative prefix"
-msgstr ""
+msgstr "ルーマニア語 (亜流前置修飾)"
 
 #: ../scm/elatin-custom.scm:221
 msgid "Scandinavian postfix"
-msgstr ""
+msgstr "スカンジナビア語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:224
 msgid "Scandinavian alternative postfix"
-msgstr ""
+msgstr "スカンジナビア語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:227 ../scm/iso-639-1.scm:153
 msgid "Slovenian"
 msgstr "スロベニア語"
 
 #: ../scm/elatin-custom.scm:230
-#, fuzzy
 msgid "Spanish prefix"
-msgstr "スペイン語"
+msgstr "スペイン語 (前置修飾)"
 
 #: ../scm/elatin-custom.scm:233
-#, fuzzy
 msgid "Spanish postfix"
-msgstr "スペイン語"
+msgstr "スペイン語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:236
 msgid "Spanish alternative postfix"
-msgstr ""
+msgstr "スペイン語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:239
-#, fuzzy
 msgid "Spanish keyboard"
-msgstr "スペイン語"
+msgstr "スペイン語キーボード"
 
 #: ../scm/elatin-custom.scm:242
-#, fuzzy
 msgid "Swedish postfix"
-msgstr "スウェーデン語"
+msgstr "スウェーデン語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:245
 msgid "Swedish alternative postfix"
-msgstr ""
+msgstr "スウェーデン語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:248
-#, fuzzy
 msgid "Swedish keyboard"
-msgstr "スウェーデン語"
+msgstr "スウェーデン語キーボード"
 
 #: ../scm/elatin-custom.scm:251
-#, fuzzy
 msgid "Turkish postfix"
-msgstr "トルコ語"
+msgstr "トルコ語 (後置修飾)"
 
 #: ../scm/elatin-custom.scm:254
 msgid "Turkish alternative postfix"
-msgstr ""
+msgstr "トルコ語 (亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:257
 msgid "Turkish Latin-3 postfix"
-msgstr ""
+msgstr "トルコ語 (Latin-3, 後置修飾)"
 
 #: ../scm/elatin-custom.scm:260
 msgid "Turkish Latin-3 alternative postfix"
-msgstr ""
+msgstr "トルコ語 (Latin-3, 亜流後置修飾)"
 
 #: ../scm/elatin-custom.scm:262
-#, fuzzy
 msgid "Latin characters keyboard layout"
-msgstr "ハングルキーボードのレイアウト"
+msgstr "ラテン文字のキーボード配列"
 
 #: ../scm/elatin-custom.scm:280
-#, fuzzy
 msgid "ESC turns off composition mode (for vi users)"
-msgstr "ESCキーでハングルモードをオフにする (viユーザ向け)"
+msgstr "ESCキーでラテン文字入力モードをオフにする (viユーザ向け)"
 
 #: ../scm/elatin-custom.scm:285
-#, fuzzy
 msgid "ELatin key bindings"
-msgstr "Mana キー設定1"
+msgstr "ELatin キー設定"
 
 #: ../scm/elatin-custom.scm:291
-#, fuzzy
 msgid "[ELatin] on"
-msgstr "[Mana] オン"
+msgstr "[ELatin] オン"
 
 #: ../scm/elatin-custom.scm:297
-#, fuzzy
 msgid "[ELatin] off"
-msgstr "[Mana] オフ"
+msgstr "[ELatin] オフ"
 
 #: ../scm/elatin-custom.scm:303
-#, fuzzy
 msgid "[ELatin] backspace"
-msgstr "[Mana] バックスペース"
+msgstr "[ELatin] バックスペース"
 
 #: ../scm/elatin.scm:114
-#, fuzzy
 msgid "ELatin mode off"
-msgstr "ラテン入力モード"
+msgstr "ELatinモード オフ"
 
 #: ../scm/elatin.scm:115
-#, fuzzy
 msgid "ELatin composition off"
-msgstr "ラテン入力"
+msgstr "ELatin変換 オフ"
 
 #: ../scm/elatin.scm:127
-#, fuzzy
 msgid "ELatin mode on"
-msgstr "ラテン入力モード"
+msgstr "ELatinモード オン"
 
 #: ../scm/elatin.scm:128
-#, fuzzy
 msgid "ELatin composition on"
-msgstr "ラテン入力"
+msgstr "ELatin変換 オン"
 
 #: ../scm/generic-custom.scm:36
 msgid "Other input methods"
@@ -2435,7 +2386,7 @@ msgstr "ローマ字入力式ハングル入力方式"
 
 #: ../scm/im.scm:139
 msgid "invalid IM name"
-msgstr ""
+msgstr "不正なIM名"
 
 #: ../scm/im-custom.scm:45
 msgid "Global settings"
@@ -3653,7 +3604,7 @@ msgstr "PRIME オン"
 
 #: ../scm/prime-custom.scm:206
 msgid "Peculiar"
-msgstr ""
+msgstr "特有"
 
 #: ../scm/prime-custom.scm:207
 msgid "Application specific input mode"
@@ -4021,12 +3972,10 @@ msgid "Advanced settings for SKK"
 msgstr "SKKの高度な設定"
 
 #: ../scm/skk-custom.scm:52
-#, fuzzy
 msgid "SKK server"
-msgstr "Canna サーバ"
+msgstr "SKK サーバ"
 
 #: ../scm/skk-custom.scm:57
-#, fuzzy
 msgid "Dictionary files"
 msgstr "辞書ファイル"
 
@@ -4091,9 +4040,8 @@ msgid "Address family of skkserv"
 msgstr "SKKサーバのアドレスファミリ"
 
 #: ../scm/skk-custom.scm:393
-#, fuzzy
 msgid "System dictionary file"
-msgstr "辞書ファイル"
+msgstr "システム辞書ファイル"
 
 #: ../scm/skk-custom.scm:400
 msgid "Personal dictionary file"
@@ -4132,9 +4080,8 @@ msgid "Use UNIX look command for completion"
 msgstr "アルファベット変換時の補完にlookコマンドを使用"
 
 #: ../scm/skk-custom.scm:460
-#, fuzzy
 msgid "Use UNIX look dictionary file"
-msgstr "個人辞書ファイル"
+msgstr "UNIX look辞書ファイル"
 
 #: ../scm/skk-custom.scm:475
 msgid "Show annotation of candidate word"
@@ -4309,42 +4256,36 @@ msgid "A kanji direct input method"
 msgstr "漢字直接入力方式"
 
 #: ../scm/trycode.scm:1647
-#, fuzzy
 msgid "Try-Code"
-msgstr "T-Code"
+msgstr "Try-Code"
 
 #: ../scm/tutcode-custom.scm:35 ../scm/tutcode.scm:889
 msgid "TUT-Code"
 msgstr "TUT-Code"
 
 #: ../scm/tutcode-custom.scm:36
-#, fuzzy
 msgid "uim version of TUT-Code input method"
-msgstr "SKK入力方式のuim版"
+msgstr "TUT-Code入力方式のuim版"
 
 #: ../scm/tutcode-custom.scm:43
-#, fuzzy
 msgid "TUT-Code dictionaries"
-msgstr "SKK 辞書"
+msgstr "TUT-Code 辞書"
 
 #: ../scm/tutcode-custom.scm:44
-#, fuzzy
 msgid "Dictionary settings for TUT-Code"
-msgstr "SKKの辞書設定"
+msgstr "TUT-Codeの辞書設定"
 
 #: ../scm/tutcode-custom.scm:54
-#, fuzzy
 msgid "Mazegaki dictionary file"
-msgstr "個人辞書ファイル"
+msgstr "混ぜ書き辞書ファイル"
 
 #: ../scm/tutcode-custom.scm:61
-#, fuzzy
 msgid "Personal mazegaki dictionary file"
-msgstr "個人辞書ファイル"
+msgstr "混ぜ書き個人辞書ファイル"
 
 #: ../scm/tutcode-custom.scm:68
 msgid "Code table file"
-msgstr ""
+msgstr "コード表ファイル"
 
 #: ../scm/tutcode-custom.scm:69
 msgid ""
@@ -4354,11 +4295,11 @@ msgstr ""
 
 #: ../scm/tutcode-custom.scm:74
 msgid "Enable learning in mazegaki conversion"
-msgstr ""
+msgstr "混ぜ書き変換の学習を有効にする"
 
 #: ../scm/tutcode-custom.scm:86
 msgid "Use Dvorak keyboard"
-msgstr ""
+msgstr "Dvorakキーボードを使用する"
 
 #: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
@@ -4381,62 +4322,52 @@ msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:65
-#, fuzzy
 msgid "[TUT-Code] mazegaki conversion mode"
-msgstr "[Canna] 変換開始"
+msgstr "[TUT-Code] 混ぜ書き変換モード"
 
 #: ../scm/tutcode-key-custom.scm:71
 msgid "[TUT-Code] bushu conversion mode"
-msgstr ""
+msgstr "[TUT-Code] 部首変換モード"
 
 #: ../scm/tutcode-key-custom.scm:77
-#, fuzzy
 msgid "[TUT-Code] begin conversion"
-msgstr "[Canna] 変換開始"
+msgstr "[TUT-Code] 変換開始"
 
 #: ../scm/tutcode-key-custom.scm:83
-#, fuzzy
 msgid "[TUT-Code] commit"
-msgstr "[TUT-Code] オン"
+msgstr "[TUT-Code] 確定"
 
 #: ../scm/tutcode-key-custom.scm:89
-#, fuzzy
 msgid "[TUT-Code] cancel"
-msgstr "[TUT-Code] バックスペース"
+msgstr "[TUT-Code] キャンセル"
 
 #: ../scm/tutcode-key-custom.scm:95
-#, fuzzy
 msgid "[TUT-Code] next candidate"
-msgstr "[Canna] 次候補"
+msgstr "[TUT-Code] 次候補"
 
 #: ../scm/tutcode-key-custom.scm:101
-#, fuzzy
 msgid "[TUT-Code] previous candidate"
-msgstr "[Canna] 前候補"
+msgstr "[TUT-Code] 前候補"
 
 #: ../scm/tutcode-key-custom.scm:107
-#, fuzzy
 msgid "[TUT-Code] next page of candidate window"
-msgstr "[Canna] 候補ウィンドウの次ページ"
+msgstr "[TUT-Code] 候補ウィンドウの次ページ"
 
 #: ../scm/tutcode-key-custom.scm:113
-#, fuzzy
 msgid "[TUT-Code] previous page of candidate window"
-msgstr "[Canna] 候補ウィンドウの前ページ"
+msgstr "[TUT-Code] 候補ウィンドウの前ページ"
 
 #: ../scm/tutcode-key-custom.scm:119
 msgid "[TUT-Code] backspace"
 msgstr "[TUT-Code] バックスペース"
 
 #: ../scm/tutcode-key-custom.scm:125
-#, fuzzy
 msgid "[TUT-Code] return"
-msgstr "[TUT-Code] オン"
+msgstr "[TUT-Code] リターン"
 
 #: ../scm/tutcode-key-custom.scm:131
-#, fuzzy
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
-msgstr "[Canna] vi協調モードでESCとして扱うキー"
+msgstr "[TUT-Code] vi協調モードでESCとして扱うキー"
 
 #: ../scm/viqr.scm:206
 msgid "VIQR"
@@ -4641,11 +4572,11 @@ msgstr "入力メソッド"
 #: ../uim/canna.c:173
 #, c-format
 msgid "uim-canna: Failed to mount dictionary %s."
-msgstr ""
+msgstr "uim-canna: 辞書ファイル %s のマウントに失敗しました。"
 
 #: ../uim/m17nlib.c:492
 msgid "m17n library IM open error"
-msgstr ""
+msgstr "m17nライブラリ IMオープンエラー"
 
 #: ../uim/m17nlib.c:531
 msgid "An input method provided by the m17n library"
@@ -4653,17 +4584,17 @@ msgstr "m17nライブラリが提供する入力方式"
 
 #: ../uim/mana.c:103 ../uim/mana.c:176
 msgid "uim-mana: Command 'mana' not found."
-msgstr ""
+msgstr "uim-mana: コマンド 'mana' が見つかりません。"
 
 #: ../uim/plugin.c:170
 #, c-format
 msgid "%s plugin: Load failed."
-msgstr ""
+msgstr "%sプラグイン: ロード失敗。"
 
 #: ../uim/plugin.c:180
 #, c-format
 msgid "%s plugin: Init failed."
-msgstr ""
+msgstr "%sプラグイン: 初期化失敗。"
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
@@ -4671,7 +4602,7 @@ msgstr ""
 #: ../uim/plugin.c:195
 #, c-format
 msgid "%s plugin: Subsequent %s load failed."
-msgstr ""
+msgstr "%sプラグイン: 続く %s のロードに失敗。"
 
 #: ../uim/sj3.c:69
 msgid "In uim-sj3, "
@@ -4766,7 +4697,6 @@ msgid "User dictionary file cannot close."
 msgstr "個人辞書ファイルを閉じることができません。"
 
 #: ../uim/sj3.c:199
-#, fuzzy
 msgid "Study file cannot close."
 msgstr "学習ファイルを閉じることができません。"
 
@@ -4808,7 +4738,6 @@ msgid "Douon is full."
 msgstr "同音漢字はこれ以上登録できません。"
 
 #: ../uim/sj3.c:418
-#, fuzzy
 msgid "Dictionary is full."
 msgstr "辞書はこれ以上登録できません。"
 
@@ -4850,7 +4779,7 @@ msgstr ""
 
 #: ../uim/uim-error.c:57
 msgid "All functionality has been disabled to save user application data."
-msgstr ""
+msgstr "ユーザアプリケーションデータを保護するため、全機能を停止しました。"
 
 #~ msgid "Standard Hangul 2-beol keyboard"
 #~ msgstr "標準のハングル2ボル式"
