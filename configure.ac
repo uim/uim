@@ -929,6 +929,8 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
    if test "x$with_libedit" != "xno"; then
         use_libedit="yes"
 	libedit_path="$withval"
+   else
+        use_libedit="no"
    fi
   ],
   [use_libedit="yes"])
@@ -1517,6 +1519,7 @@ AC_CONFIG_FILES([Makefile
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
+		 emacs/uim-version.el
 		 test/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile

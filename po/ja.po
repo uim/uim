@@ -4277,11 +4277,11 @@ msgstr "TUT-Codeの辞書設定"
 
 #: ../scm/tutcode-custom.scm:54
 msgid "Mazegaki dictionary file"
-msgstr "混ぜ書き辞書ファイル"
+msgstr "交ぜ書き変換辞書ファイル"
 
 #: ../scm/tutcode-custom.scm:61
 msgid "Personal mazegaki dictionary file"
-msgstr "混ぜ書き個人辞書ファイル"
+msgstr "交ぜ書き変換個人用辞書ファイル"
 
 #: ../scm/tutcode-custom.scm:68
 msgid "Code table file"
@@ -4292,10 +4292,12 @@ msgid ""
 "Code table name is 'filename-rule' when code table file name is 'filename."
 "scm'."
 msgstr ""
+"コード表ファイル名がfilename.scmの場合、そのファイル内のfilename-rule変数を"
+"コード表として使用する"
 
 #: ../scm/tutcode-custom.scm:74
 msgid "Enable learning in mazegaki conversion"
-msgstr "混ぜ書き変換の学習を有効にする"
+msgstr "交ぜ書き変換の学習を有効にする"
 
 #: ../scm/tutcode-custom.scm:86
 msgid "Use Dvorak keyboard"
@@ -4323,11 +4325,11 @@ msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:65
 msgid "[TUT-Code] mazegaki conversion mode"
-msgstr "[TUT-Code] 混ぜ書き変換モード"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
 
 #: ../scm/tutcode-key-custom.scm:71
 msgid "[TUT-Code] bushu conversion mode"
-msgstr "[TUT-Code] 部首変換モード"
+msgstr "[TUT-Code] 部首合成変換モード"
 
 #: ../scm/tutcode-key-custom.scm:77
 msgid "[TUT-Code] begin conversion"

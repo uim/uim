@@ -27,9 +27,4 @@ uim_el_helper_agent_CPPFLAGS = -I$(top_srcdir)
 uim_el_helper_agent_LDADD = $(top_builddir)/uim/libuim-scm.la \
 			    $(top_builddir)/uim/libuim.la
 
-if MAINTAINER_MODE
-uim-version.el: uim-version.el.in $(top_srcdir)/configure.ac
-	sed -e 's/@\(VERSION\)@/$(VERSION)/' uim-version.el.in > $@	
-endif
-
 endif
