@@ -1,5 +1,5 @@
 Overview of changes from 1.4.x to 1.5.0-alpha
-==
+=============================================
 * New features
 
   - uim-wnn (new IM)
@@ -43,6 +43,7 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * 'uim-m17nlib-relink-icons' command to import icons from m17n-db
 
   - Qt4 bridge (experimental)
+    * Basically working but still having some known bugs (#13910, #13911)
 
   - GTK+ bridge
   - Qt3 bridge
@@ -53,7 +54,7 @@ Overview of changes from 1.4.x to 1.5.0-alpha
   - uim-notify (experimental)
     uim to user message notification system
 
-  - Emergency disablement of all uim functionality on fatal error to
+  - Emergency disablement of all uim functionality on fatal errors to
     protect user application data
 
   - uim-sh
@@ -62,6 +63,26 @@ Overview of changes from 1.4.x to 1.5.0-alpha
     * --require-module option (-r for short)
     * --expression option (-e for short)
     * --version option (-V for short)
+
+  - uim-scm
+    * SIOD compatibility has been disabled
+    * Multibyte character processing
+    * Character codec handling procedures
+    * All string procedures of R5RS
+    * R5RS characters
+    * R5RS vectors
+    * R5RS promises (delay and force)
+    * SRFI-0  Feature-based conditional expansion construct
+    * SRFI-1  List Library (full-featured)
+    * SRFI-2  An AND with local bindings, a guarded LET* special form
+    * SRFI-8  Binding to multiple values
+    * SRFI-9  Defining Record Types
+    * SRFI-43 Vector library
+    * SRFI-55 require-extension
+    * SRFI-69 Basic hash tables
+    * SRFI-95 Sorting and Merging
+    * define-macro
+    * let-optionals* for optional argument processing
 
 * Fixed
   - uim-skk
@@ -127,7 +148,7 @@ Overview of changes from 1.4.x to 1.5.0-alpha
 
 
 Overview of changes from 1.4.1 to 1.4.2
-==
+=======================================
 * Fixed
   - uim Scheme library
     - Fix memory alignment of symbol name, which can be a problem

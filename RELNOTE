@@ -1,15 +1,20 @@
-uim 1.4.0 Release Note
-======================
+uim 1.5.0-alpha Release Note
+============================
 
 About This Release
 ------------------
 
-This distribution of uim 1.4.0 is latest stable release of uim.
+This distribution of uim 1.5.0-alpha is a preview release for testing
+purpose. Since it may contain serious unknown problems, it should not be
+used for important work. For such situations, use our latest stable
+release uim 1.4.2.
 
-This release is for internal improvement. The non-standards-conformant
-Scheme interpreter of libuim has been replaced with newly developed
-SigScheme to make a room for next leap. There is no user-visible feature
-changes other than resource consumption reduction.
+This release achieved both considerable internal improvement and many
+user-visible new feature additions.
+
+The complicated legacy C part of uim which prevented extensions, design
+improvements and automated input method tests have been turned into Scheme
+codes or optimized out.
 
 Please report us if you find a problem.
 
@@ -21,17 +26,19 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
-  - Fix the license terms of replace/strsep.c and replace/setenv.c
-    accidencially mis-modified in r790. I apologize the careless treatment of
-    the license
-
-  - The modified version of SIOD interpreter has been replaced with
-    SigScheme 0.7.4
-
-  - [CRITICAL] Fix GC crash on SPARC, IA-64, m68k, and possibly MIPS, Alpha, by
-    introduction of libgcroots
-
 See NEWS for the fully detailed changes.
+
+  - New IM uim-wnn
+  - New IM uim-sj3
+  - New IM uim-elatin
+  - New IM uim-look
+  - New IM uim-anthy-utf8
+  - Improved uim-tutcode with many long-awaited features
+  - Experimental Qt4 bridge
+  - Experimental uim to user message notification system
+  - Emergency disablement of all uim functionality on fatal errors to
+    protect user application data
+  - Many R5RS/SRFI features of the embedded Scheme interpreter
 
 
 Notes for Packagers and System Integrators
@@ -55,21 +62,12 @@ Notes for Packagers and System Integrators
     '--with-libgcroots=installed' to configure options for uim to disable
     build and install of the bundled version of libgcroots
 
-  - libuim ABI and so libtool-version has been updated due to the GC
-    protection API change which required to fix the GC problem
+  - libuim ABI and so libtool-version has been updated due to the
+    libuim-scm separation and some API changes
 
 
 Roadmap
 -------
-
-  - uim 1.5.0
-
-    Release for internal simplification. Few user-visible changes.
-
-    The complicated C part of uim which prevents extensions, design
-    improvements and automated input method tests will be turned into
-    Scheme codes or optimized out.
-
 
   - uim 1.6.0 and later
 
@@ -79,10 +77,6 @@ Roadmap
     development.
 
 
-Thanks
-------
+  - uim 2.0.0
 
-Hans-J. Boehm and all authors of Boehm GC for the useful codes.
-
-Tanaka Akira for letting me realize about the GC problem through the
-presentation at Binary 2.0 Conference 2006.
+    Overall uim API will be revised.
