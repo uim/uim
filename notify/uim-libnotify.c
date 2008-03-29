@@ -37,6 +37,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <glib.h>
+#include <glib/gconvert.h>
 #include <libnotify/notify.h>
 
 #include "uim.h"  /* for uim_bool */
@@ -52,17 +53,26 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
   NotifyNotification *notification;
   GError *error = NULL;
   gboolean ret;
+  gchar *gmsg;
+  gsize read, written;
 
   strlcpy(body_short, body, sizeof(body_short));
 
   fprintf(stderr, "libuim: %s\n", body);
+
+  gmsg = g_locale_to_utf8(body_short, -1, &read, &written, NULL);
+
+  if (!gmsg) {
+    fprintf(stderr, "libnotify: cannot convert to utf8\n");
+    return UIM_FALSE;
+  }
 
   if (!notify_is_initted()) {
     fprintf(stderr, "libnotify: libnotify is not initted\n");
     return UIM_FALSE;
   }
 
-  notification = notify_notification_new("uim", body_short, UIM_ICON, NULL);
+  notification = notify_notification_new("uim", gmsg, UIM_ICON, NULL);
 
   if (!notification) {
     fprintf(stderr, "notify_notification_new: can not create notification object\n");
@@ -79,6 +89,7 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
     return UIM_FALSE;
   }
 
+  g_free(gmsg);
   g_object_unref(G_OBJECT(notification));
 
   return UIM_TRUE;
