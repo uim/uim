@@ -34,5 +34,5 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;
 
-(defconst uim-el-version "@VERSION@")
+(defconst uim-el-version "@PACKAGE_VERSION@")
 (provide 'uim-version)

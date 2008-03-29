@@ -9,15 +9,15 @@ all clean mocclean install uninstall:
 distclean:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
-	-rm -f Makefile
+	-rm -f Makefile quiminputcontextplugin.pro
 else
 distclean:
-	-rm -f Makefile
+	-rm -f Makefile quiminputcontextplugin.pro
 endif
 
 FORCE:
 
-EXTRA_DIST = COPYING README.en README.ja INDENT \
+EXTRA_DIST = README.en README.ja INDENT \
 	     quiminputcontextplugin.pro.in \
 	     quiminputcontext_with_slave.h \
 	     quiminputcontext_with_slave.cpp
