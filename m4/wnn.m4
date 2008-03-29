@@ -13,8 +13,10 @@ dnl
 
   if test "x$wnn_libraries" != "x" ; then
       WNN_LIBS="-L$wnn_libraries"
+      wnnlibdir="$wnn_libraries"
   elif test "x$prefix" != "xNONE"; then
       WNN_LIBS="-L$prefix/lib"
+      wnnlibdir="$prefix/lib"
   fi
 
   if test "x$wnn_includes" != "x" ; then
@@ -48,7 +50,13 @@ dnl
   CPPFLAGS="$ac_save_CPPFLAGS"
   LIBS="$ac_save_LIBS"
 
-  AC_DEFINE_UNQUOTED(WNNLIBDIR, "$wnn_libraries", [wnn library dir])
+  if test "x$wnnlibdir" != "x" ; then
+    AC_DEFINE_UNQUOTED(WNNLIBDIR, "$wnnlibdir", [Wnn library directory])
+  else
+    AC_MSG_WARN([****** Cannot found path of Wnn library. Please set this option with --with-wnn-libraries])
+    AC_DEFINE_UNQUOTED(WNNLIBDIR, "$ac_default_prefix/lib", [Wnn library directory])
+  fi
+
   AC_SUBST(WNN_CPPFLAGS)
   AC_SUBST(WNN_LIBS)
   AC_SUBST(WNN_LIBADD)
