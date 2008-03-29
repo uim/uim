@@ -34,8 +34,8 @@
 //
 // dispatcher of Xlib events for window.
 //
-#ifndef XDISPATCH_H
-#define XDISPATCH_H
+#ifndef UIM_XIM_XDISPATCH_H
+#define UIM_XIM_XDISPATCH_H
 
 #include <X11/X.h>
 

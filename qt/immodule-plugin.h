@@ -31,8 +31,8 @@ SUCH DAMAGE.
 
 */
 
-#ifndef IMMODULE_PLUGIN_H
-#define IMMODULE_PLUGIN_H
+#ifndef UIM_QT_IMMODULE_PLUGIN_H
+#define UIM_QT_IMMODULE_PLUGIN_H
 
 #include <qinputcontextplugin.h>
 

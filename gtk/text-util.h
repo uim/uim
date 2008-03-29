@@ -35,8 +35,8 @@
  * Text acquisition and injection utility
  */
 
-#ifndef TEXT_UTIL_H
-#define TEXT_UTIL_H
+#ifndef UIM_GTK_TEXT_UTIL_H
+#define UIM_GTK_TEXT_UTIL_H
 
 int im_uim_acquire_primary_text(IMUIMContext *uic, enum UTextOrigin origin,
 				int former_req_len, int latter_req_len,

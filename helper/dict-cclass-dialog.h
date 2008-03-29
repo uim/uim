@@ -31,12 +31,12 @@
  *  SUCH DAMAGE.
  */
 
-#ifndef DICT_CCLASS_DIALOG_H
-#define DICT_CCLASS_DIALOG_H
+#ifndef UIM_DICT_CCLASS_DIALOG_H
+#define UIM_DICT_CCLASS_DIALOG_H
 
 #include <gtk/gtk.h>
 #include "dict-canna-cclass.h"
 
 gchar *cclass_dialog(gint cclass_type, gint system);
 
-#endif /* DICT_CCLASS_DIALOG_H */
+#endif /* UIM_DICT_CCLASS_DIALOG_H */

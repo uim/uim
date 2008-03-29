@@ -32,8 +32,8 @@
 
 // -*- C++ -*-
 // XIM related constant numbers
-#ifndef XIMPN_H
-#define XIMPN_H
+#ifndef UIM_XIM_XIMPN_H
+#define UIM_XIM_XIMPN_H
 
 // MAJOR number or XIM request
 //

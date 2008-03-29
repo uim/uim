@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef UIM_XIM_UTIL_H
+#define UIM_XIM_UTIL_H
 
 // fd dispatch
 #define READ_OK 1

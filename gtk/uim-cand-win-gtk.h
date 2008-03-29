@@ -31,8 +31,8 @@
 
 */
 
-#ifndef UIM_CAND_WIN_GTK_H
-#define UIM_CAND_WIN_GTK_H
+#ifndef UIM_GTK_UIM_CAND_WIN_GTK_H
+#define UIM_GTK_UIM_CAND_WIN_GTK_H
 
 #include <gtk/gtk.h>
 
@@ -123,4 +123,4 @@ void		uim_cand_win_gtk_get_window_pos_type	(UIMCandWinGtk *cwin);
 
 G_END_DECLS
 
-#endif /*UIM_CAND_WIN_GTK_H */
+#endif /*UIM_GTK_UIM_CAND_WIN_GTK_H */

@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef CONVDISP_H
-#define CONVDISP_H
+#ifndef UIM_XIM_CONVDISP_H
+#define UIM_XIM_CONVDISP_H
 
 #include "ximserver.h"
 #include <vector>

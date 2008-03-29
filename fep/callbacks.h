@@ -31,8 +31,8 @@
 
 */
 
-#ifndef CALLBACKS_H
-#define CALLBACKS_H
+#ifndef UIM_FEP_CALLBACKS_H
+#define UIM_FEP_CALLBACKS_H
 
 struct preedit_tag {
   /* Ê¸»úÎó¤ÎÉý */

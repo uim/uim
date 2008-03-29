@@ -75,8 +75,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef DICT_CANNA_CCLASS_H
-#define DICT_CANNA_CCLASS_H
+#ifndef UIM_DICT_CANNA_CCLASS_H
+#define UIM_DICT_CANNA_CCLASS_H
 
 #include "dict-word.h"
 
@@ -125,4 +125,4 @@ const char  *find_code_from_desc        (const char *desc, int type);
 int    find_cclass_type_from_code (const char *code);
 int    find_cclass_type_from_desc (const char *desc);
 
-#endif /* DICT_CANNA_CCLASS_H */
+#endif /* UIM_DICT_CANNA_CCLASS_H */

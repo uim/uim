@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef XIMSERVER_H
-#define XIMSERVER_H
+#ifndef UIM_XIM_XIMSERVER_H
+#define UIM_XIM_XIMSERVER_H
 
 #include <X11/X.h>
 #include <X11/Xlib.h>

@@ -31,8 +31,8 @@
 
 */
 
-#ifndef UDSOCK_H
-#define UDSOCK_H
+#ifndef UIM_FEP_UDSOCK_H
+#define UIM_FEP_UDSOCK_H
 
 #include "uim.h"
 

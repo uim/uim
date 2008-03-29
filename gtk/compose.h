@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef COMPOSE_H
-#define COMPOSE_H
+#ifndef UIM_GTK_COMPOSE_H
+#define UIM_GTK_COMPOSE_H
 
 #include <X11/X.h>
 

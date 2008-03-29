@@ -30,8 +30,8 @@
   SUCH DAMAGE.
 */
 
-#ifndef CONNECTION_H
-#define CONNECTION_H
+#ifndef UIM_XIM_CONNECTION_H
+#define UIM_XIM_CONNECTION_H
 
 #include "xim.h"
 #include "xdispatch.h"

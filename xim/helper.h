@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef HELPER_H
-#define HELPER_H
+#ifndef UIM_XIM_HELPER_H
+#define UIM_XIM_HELPER_H
 
 void check_helper_connection();
 void helper_disconnect_cb();

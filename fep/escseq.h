@@ -31,8 +31,8 @@
 
 */
 
-#ifndef ESCSEQ_H
-#define ESCSEQ_H
+#ifndef UIM_FEP_ESCSEQ_H
+#define UIM_FEP_ESCSEQ_H
 
 struct point_tag {
   int row;

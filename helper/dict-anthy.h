@@ -31,8 +31,8 @@
  *  SUCH DAMAGE.
  */
 
-#ifndef DICT_ANTHY_H
-#define DICT_ANTHY_H
+#ifndef UIM_DICT_ANTHY_H
+#define UIM_DICT_ANTHY_H
 
 #include "dict-word.h"
 #include "dict-dict.h"
@@ -57,4 +57,4 @@ int    dict_anthy_delete_priv_dic         (char  *phon,
 #ifdef __cplusplus
 }
 #endif
-#endif /* DICT_ANTHY_H */
+#endif /* UIM_DICT_ANTHY_H */

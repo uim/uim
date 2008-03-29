@@ -31,8 +31,8 @@
 
 */
 
-#ifndef DICT_UTIL_H
-#define DICT_UTIL_H
+#ifndef UIM_DICT_UTIL_H
+#define UIM_DICT_UTIL_H
 
 #include <glib.h>
 
@@ -43,4 +43,4 @@ gchar *utf8_convert    (const gchar *in);
 gchar *utf8_to_eucjp   (const gchar *utf8);
 gchar *eucjp_to_utf8   (const gchar *eucjp);
 
-#endif /* DICT_UTIL_H */
+#endif /* UIM_DICT_UTIL_H */

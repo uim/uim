@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef COMPOSE_H
-#define COMPOSE_H
+#ifndef UIM_XIM_COMPOSE_H
+#define UIM_XIM_COMPOSE_H
 
 #include <X11/X.h>
 

@@ -31,8 +31,8 @@
 
 */
 
-#ifndef STR_H
-#define STR_H
+#ifndef UIM_FEP_STR_H
+#define UIM_FEP_STR_H
 
 void init_str(void);
 const char *get_enc(void);

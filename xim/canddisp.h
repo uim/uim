@@ -31,8 +31,8 @@
 */
 
 // -*- C++ -*-
-#ifndef CANDDISP_H
-#define CANDDISP_H
+#ifndef UIM_XIM_CANDDISP_H
+#define UIM_XIM_CANDDISP_H
 
 #include <vector>
 

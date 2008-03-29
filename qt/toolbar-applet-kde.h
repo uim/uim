@@ -31,8 +31,8 @@
 
 */
 
-#ifndef TOOLBAR_APPLET_KDE_H
-#define TOOLBAR_APPLET_KDE_H
+#ifndef UIM_QT_TOOLBAR_APPLET_KDE_H
+#define UIM_QT_TOOLBAR_APPLET_KDE_H
 
 #include <kpanelapplet.h>
 

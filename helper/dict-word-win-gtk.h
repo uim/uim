@@ -31,8 +31,8 @@
 
 */
 
-#ifndef DICT_ANTHY_WORD_GTK_H
-#define DICT_ANTHY_WORD_GTK_H
+#ifndef UIM_DICT_ANTHY_WORD_GTK_H
+#define UIM_DICT_ANTHY_WORD_GTK_H
 
 #include <gtk/gtk.h>
 #include "dict-dict.h"
@@ -101,4 +101,4 @@ gboolean   word_window_is_continuance_mode (WordWindow *window);
 
 G_END_DECLS
 
-#endif /* DICT_ANTHY_WORD_GTK_H */
+#endif /* UIM_DICT_ANTHY_WORD_GTK_H */

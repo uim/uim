@@ -31,8 +31,8 @@
 
 */
 
-#ifndef KEY_H
-#define KEY_H
+#ifndef UIM_FEP_KEY_H
+#define UIM_FEP_KEY_H
 
 int tty2key(char key);
 int tty2key_state(char key);

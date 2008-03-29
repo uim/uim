@@ -31,8 +31,8 @@
 
 */
 
-#ifndef HELPER_H
-#define HELPER_H
+#ifndef UIM_FEP_HELPER_H
+#define UIM_FEP_HELPER_H
 
 #define str_has_prefix(str, prefix) (strncmp((str), (prefix), strlen((prefix))) == 0)
 
