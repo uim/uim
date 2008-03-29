@@ -1519,6 +1519,7 @@ AC_CONFIG_FILES([Makefile
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
+		 emacs/uim-version.el
 		 test/Makefile
 		 examples/Makefile
 		 examples/uim-custom/Makefile
