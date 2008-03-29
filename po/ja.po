@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2008-03-28 13:08+0900\n"
+"POT-Creation-Date: 2008-03-29 20:06+0900\n"
 "PO-Revision-Date: 2008-03-28 14:26+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -108,467 +108,467 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 # 他のGNOMEアプレットのですます調に合わせた
-#: helper/GNOME_UimApplet.server.in.in.h:1
+#: ../helper/GNOME_UimApplet.server.in.in.h:1
 msgid "Indicates and controls the state of input method (for uim)"
 msgstr "入力メソッド (uim) の状態を表示・制御します"
 
 # 「表示器」は他のGNOMEアプレットの訳語に従った
-#: helper/GNOME_UimApplet.server.in.in.h:2
+#: ../helper/GNOME_UimApplet.server.in.in.h:2
 msgid "Input Method Indicator"
 msgstr "入力メソッド表示器"
 
-#: helper/GNOME_UimApplet.server.in.in.h:3
+#: ../helper/GNOME_UimApplet.server.in.in.h:3
 msgid "Utilities"
 msgstr "ユーティリティ"
 
-#: helper/GNOME_UimApplet.server.in.in.h:4
+#: ../helper/GNOME_UimApplet.server.in.in.h:4
 msgid "uim Applet Factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: helper/GNOME_UimApplet.server.in.in.h:5
+#: ../helper/GNOME_UimApplet.server.in.in.h:5
 msgid "uim applet factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: helper/dict-anthy.c:82 helper/dict-main-gtk.c:166
-#: helper/dict-word-list-win-gtk.c:348 helper/dict-word.c:139
-#: helper/dict-word.c:154
+#: ../helper/dict-anthy.c:82 ../helper/dict-main-gtk.c:166
+#: ../helper/dict-word-list-win-gtk.c:348 ../helper/dict-word.c:139
+#: ../helper/dict-word.c:154
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
-#: helper/dict-canna.c:86 helper/dict-main-gtk.c:188
-#: helper/dict-word-list-win-gtk.c:352 helper/dict-word.c:141
-#: helper/dict-word.c:156
+#: ../helper/dict-canna.c:86 ../helper/dict-main-gtk.c:188
+#: ../helper/dict-word-list-win-gtk.c:352 ../helper/dict-word.c:141
+#: ../helper/dict-word.c:156
 msgid "Canna private dictionary"
 msgstr "Canna個人辞書"
 
 #. construct dialog
-#: helper/dict-cclass-dialog.c:69 helper/dict-cclass-dialog.c:106
-#: helper/dict-word-list-view-gtk.c:269
+#: ../helper/dict-cclass-dialog.c:69 ../helper/dict-cclass-dialog.c:106
+#: ../helper/dict-word-list-view-gtk.c:269
 msgid "Part of Speech"
 msgstr "品詞"
 
-#: helper/dict-cclass-dialog.c:115
+#: ../helper/dict-cclass-dialog.c:115
 msgid "Example"
 msgstr "例"
 
-#: helper/dict-main-gtk.c:274
+#: ../helper/dict-main-gtk.c:274
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
 
-#: helper/dict-word-list-view-gtk.c:130
+#: ../helper/dict-word-list-view-gtk.c:130
 msgid "Show part of speech column"
 msgstr "品詞欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:131
-#: helper/dict-word-list-view-gtk.c:140
-#: helper/dict-word-list-view-gtk.c:148
-#: helper/dict-word-list-view-gtk.c:155
-#: helper/dict-word-list-view-gtk.c:163
-#: helper/dict-word-list-view-gtk.c:164
+#: ../helper/dict-word-list-view-gtk.c:131
+#: ../helper/dict-word-list-view-gtk.c:140
+#: ../helper/dict-word-list-view-gtk.c:148
+#: ../helper/dict-word-list-view-gtk.c:155
+#: ../helper/dict-word-list-view-gtk.c:163
+#: ../helper/dict-word-list-view-gtk.c:164
 msgid "to be written"
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:139
+#: ../helper/dict-word-list-view-gtk.c:139
 msgid "Show freq column"
 msgstr "使用頻度欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:147
+#: ../helper/dict-word-list-view-gtk.c:147
 msgid "Show okuri column"
 msgstr "送り仮名欄を表示"
 
-#: helper/dict-word-list-view-gtk.c:156
+#: ../helper/dict-word-list-view-gtk.c:156
 msgid "to be written "
 msgstr ""
 
-#: helper/dict-word-list-view-gtk.c:201
+#: ../helper/dict-word-list-view-gtk.c:201
 msgid "Word Type"
 msgstr "単語の種類"
 
-#: helper/dict-word-list-view-gtk.c:219
+#: ../helper/dict-word-list-view-gtk.c:219
 msgid "Phonetic"
 msgstr "読み方"
 
-#: helper/dict-word-list-view-gtk.c:251
+#: ../helper/dict-word-list-view-gtk.c:251
 msgid "Literal"
 msgstr "書き方"
 
-#: helper/dict-word-list-view-gtk.c:287
+#: ../helper/dict-word-list-view-gtk.c:287
 msgid "Frequency"
 msgstr "使用頻度"
 
-#: helper/dict-word-list-view-gtk.c:299
+#: ../helper/dict-word-list-view-gtk.c:299
 msgid "Okuri"
 msgstr "送り仮名"
 
-#: helper/dict-word-list-win-gtk.c:98
+#: ../helper/dict-word-list-win-gtk.c:98
 msgid "_Dictionary"
 msgstr "辞書"
 
-#: helper/dict-word-list-win-gtk.c:99
+#: ../helper/dict-word-list-win-gtk.c:99
 msgid "_Select"
 msgstr "選択..."
 
-#: helper/dict-word-list-win-gtk.c:100
+#: ../helper/dict-word-list-win-gtk.c:100
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: helper/dict-word-list-win-gtk.c:101
+#: ../helper/dict-word-list-win-gtk.c:101
 msgid "_Option"
 msgstr "オプション(_O)"
 
-#: helper/dict-word-list-win-gtk.c:102
+#: ../helper/dict-word-list-win-gtk.c:102
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: helper/dict-word-list-win-gtk.c:103
+#: ../helper/dict-word-list-win-gtk.c:103
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: helper/dict-word-list-win-gtk.c:104
+#: ../helper/dict-word-list-win-gtk.c:104
 msgid "Quit uim-dict"
 msgstr "uim-dict を終了します"
 
-#: helper/dict-word-list-win-gtk.c:105
+#: ../helper/dict-word-list-win-gtk.c:105
 msgid "A_dd..."
 msgstr "追加(_D)..."
 
-#: helper/dict-word-list-win-gtk.c:106
+#: ../helper/dict-word-list-win-gtk.c:106
 msgid "Add a new word"
 msgstr "新しい単語を追加します"
 
-#: helper/dict-word-list-win-gtk.c:107
+#: ../helper/dict-word-list-win-gtk.c:107
 msgid "_Remove..."
 msgstr "削除(_R)..."
 
-#: helper/dict-word-list-win-gtk.c:108
+#: ../helper/dict-word-list-win-gtk.c:108
 msgid "Remove the selected word"
 msgstr "選択した単語を削除します"
 
-#: helper/dict-word-list-win-gtk.c:109
+#: ../helper/dict-word-list-win-gtk.c:109
 msgid "_Edit..."
 msgstr "編集(_E)..."
 
-#: helper/dict-word-list-win-gtk.c:110
+#: ../helper/dict-word-list-win-gtk.c:110
 msgid "Edit the selected word"
 msgstr "選択した単語を編集します"
 
-#: helper/dict-word-list-win-gtk.c:111
+#: ../helper/dict-word-list-win-gtk.c:111
 msgid "_Popup Menu"
 msgstr "ポップアップメニュー(_P)"
 
-#: helper/dict-word-list-win-gtk.c:112
+#: ../helper/dict-word-list-win-gtk.c:112
 msgid "Show popup menu"
 msgstr "ポップアップ・メニューを表示します"
 
-#: helper/dict-word-list-win-gtk.c:113
+#: ../helper/dict-word-list-win-gtk.c:113
 msgid "_About"
 msgstr "このプログラムについて(_A)"
 
-#: helper/dict-word-list-win-gtk.c:114
-#: helper/dict-word-list-win-gtk.c:614
+#: ../helper/dict-word-list-win-gtk.c:114
+#: ../helper/dict-word-list-win-gtk.c:614
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
-#: helper/dict-word-list-win-gtk.c:203
-#: helper/dict-word-list-win-gtk.c:204
+#: ../helper/dict-word-list-win-gtk.c:203
+#: ../helper/dict-word-list-win-gtk.c:204
 msgid "dictionary type"
 msgstr "辞書の種類"
 
-#: helper/dict-word-list-win-gtk.c:222
+#: ../helper/dict-word-list-win-gtk.c:222
 msgid "Couldn't open the dictionary.\n"
 msgstr "辞書を開くことができません。\n"
 
-#: helper/dict-word-list-win-gtk.c:241
+#: ../helper/dict-word-list-win-gtk.c:241
 msgid "Edit the dictionary"
 msgstr "辞書の編集"
 
-#: helper/dict-word-list-win-gtk.c:363
+#: ../helper/dict-word-list-win-gtk.c:363
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: helper/dict-word-list-win-gtk.c:465
+#: ../helper/dict-word-list-win-gtk.c:465
 msgid "Are you sure to remove seleted words?"
 msgstr "選択した複数の単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:471
+#: ../helper/dict-word-list-win-gtk.c:471
 msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
-#: helper/dict-word-list-win-gtk.c:500
+#: ../helper/dict-word-list-win-gtk.c:500
 msgid "Word deletion succeded."
 msgstr "単語の削除に成功しました。"
 
-#: helper/dict-word-list-win-gtk.c:506
+#: ../helper/dict-word-list-win-gtk.c:506
 msgid "Word deletion failed."
 msgstr "単語の削除に失敗しました。"
 
-#: helper/dict-word-list-win-gtk.c:573
+#: ../helper/dict-word-list-win-gtk.c:573
 msgid "uim-dict"
 msgstr "uim-dict"
 
-#: helper/dict-word-list-win-gtk.c:584
+#: ../helper/dict-word-list-win-gtk.c:584
 msgid ""
 "Copyright (C) 2003-2004 Masahito Omote\n"
 "Copyright (C) 2004-2008 uim Project\n"
 "All rights reserved."
 msgstr ""
 
-#: helper/dict-word-list-win-gtk.c:608
+#: ../helper/dict-word-list-win-gtk.c:608
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
 "Copyright 2004-2008 uim Project http://code.google.com/p/uim/\n"
 "All rights reserved."
 msgstr ""
 
-#: helper/dict-word-win-gtk.c:52
+#: ../helper/dict-word-win-gtk.c:52
 msgid "Substantive"
 msgstr "名詞"
 
-#: helper/dict-word-win-gtk.c:53
+#: ../helper/dict-word-win-gtk.c:53
 msgid "Verb"
 msgstr "動詞"
 
-#: helper/dict-word-win-gtk.c:54
+#: ../helper/dict-word-win-gtk.c:54
 msgid "Adjective"
 msgstr "形容詞"
 
-#: helper/dict-word-win-gtk.c:55
+#: ../helper/dict-word-win-gtk.c:55
 msgid "Adverb"
 msgstr "副詞"
 
-#: helper/dict-word-win-gtk.c:56
+#: ../helper/dict-word-win-gtk.c:56
 msgid "Etc"
 msgstr "その他"
 
-#: helper/dict-word-win-gtk.c:147
+#: ../helper/dict-word-win-gtk.c:147
 msgid "Necessary infomation"
 msgstr "必須項目"
 
-#: helper/dict-word-win-gtk.c:167
+#: ../helper/dict-word-win-gtk.c:167
 msgid "Additional infomation"
 msgstr "追加項目"
 
 #. action area
-#: helper/dict-word-win-gtk.c:181
+#: ../helper/dict-word-win-gtk.c:181
 msgid "continuance"
 msgstr "連続"
 
-#: helper/dict-word-win-gtk.c:193
+#: ../helper/dict-word-win-gtk.c:193
 msgid "Add"
 msgstr "追加"
 
-#: helper/dict-word-win-gtk.c:199
+#: ../helper/dict-word-win-gtk.c:199
 msgid "Clear"
 msgstr "消去"
 
-#: helper/dict-word-win-gtk.c:206
+#: ../helper/dict-word-win-gtk.c:206
 msgid "Add a word"
 msgstr "単語を追加"
 
-#: helper/dict-word-win-gtk.c:246
+#: ../helper/dict-word-win-gtk.c:246
 #, c-format
 msgid "Edit the word (%s)"
 msgstr "単語 (%s) を編集"
 
-#: helper/dict-word-win-gtk.c:249
+#: ../helper/dict-word-win-gtk.c:249
 #, c-format
 msgid "Add a word (%s)"
 msgstr "単語 (%s) を追加"
 
-#: helper/dict-word-win-gtk.c:274
+#: ../helper/dict-word-win-gtk.c:274
 msgid "_Phonetic:"
 msgstr "読み方(_P):"
 
-#: helper/dict-word-win-gtk.c:284
+#: ../helper/dict-word-win-gtk.c:284
 msgid "_Literal:"
 msgstr "書き方(_L):"
 
-#: helper/dict-word-win-gtk.c:294
+#: ../helper/dict-word-win-gtk.c:294
 msgid "Part of _Speech:"
 msgstr "品詞(_S):"
 
-#: helper/dict-word-win-gtk.c:324
+#: ../helper/dict-word-win-gtk.c:324
 msgid "_Frequency:"
 msgstr "頻度(_F):"
 
-#: helper/dict-word-win-gtk.c:355
+#: ../helper/dict-word-win-gtk.c:355
 msgid "Part of Speech(_narrow):"
 msgstr "品詞(狭義)(_N):"
 
-#: helper/dict-word-win-gtk.c:368
+#: ../helper/dict-word-win-gtk.c:368
 msgid "_Browse..."
 msgstr "参照(_B)..."
 
-#: helper/dict-word-win-gtk.c:498
+#: ../helper/dict-word-win-gtk.c:498
 msgid "Word registration failed."
 msgstr "単語の登録に失敗しました。"
 
-#: helper/dict-word-win-gtk.c:505
+#: ../helper/dict-word-win-gtk.c:505
 msgid "Word registration succeded."
 msgstr "単語の登録に成功しました。"
 
-#: helper/dict-word-win-gtk.c:535
+#: ../helper/dict-word-win-gtk.c:535
 msgid "Phonetic is emtpy!"
 msgstr "読み方が入力されていません！"
 
-#: helper/dict-word-win-gtk.c:550
+#: ../helper/dict-word-win-gtk.c:550
 msgid "Literal is emtpy!"
 msgstr "書き方が入力されていません！"
 
-#: helper/dict-word-win-gtk.c:568
+#: ../helper/dict-word-win-gtk.c:568
 msgid "Part of speech is emtpy!"
 msgstr "品詞が入力されていません！"
 
-#: helper/eggtrayicon.c:118
+#: ../helper/eggtrayicon.c:118
 msgid "Orientation"
 msgstr "向き"
 
-#: helper/eggtrayicon.c:119
+#: ../helper/eggtrayicon.c:119
 msgid "The orientation of the tray."
 msgstr "トレーの向き"
 
-#: helper/im-switcher-gtk.c:283 qt/switcher-qt.cpp:103
+#: ../helper/im-switcher-gtk.c:283 ../qt/switcher-qt.cpp:103
 msgid "InputMethodName"
 msgstr "入力方式名"
 
-#: helper/im-switcher-gtk.c:292 qt/switcher-qt.cpp:104
+#: ../helper/im-switcher-gtk.c:292 ../qt/switcher-qt.cpp:104
 msgid "Language"
 msgstr "言語名"
 
-#: helper/im-switcher-gtk.c:301 qt/switcher-qt.cpp:105
+#: ../helper/im-switcher-gtk.c:301 ../qt/switcher-qt.cpp:105
 msgid "Description"
 msgstr "説明"
 
-#: helper/im-switcher-gtk.c:332 qt/switcher-qt.cpp:71
+#: ../helper/im-switcher-gtk.c:332 ../qt/switcher-qt.cpp:71
 msgid "uim input method switcher"
 msgstr "uim 入力方式切り換え"
 
-#: helper/im-switcher-gtk.c:361 qt/switcher-qt.cpp:109
-#: scm/im-custom.scm:434
+#: ../helper/im-switcher-gtk.c:361 ../qt/switcher-qt.cpp:109
+#: ../scm/im-custom.scm:434
 msgid "Effective coverage"
 msgstr "変更の適用範囲"
 
-#: helper/im-switcher-gtk.c:369 qt/switcher-qt.cpp:110
-#: scm/im-custom.scm:426
+#: ../helper/im-switcher-gtk.c:369 ../qt/switcher-qt.cpp:110
+#: ../scm/im-custom.scm:426
 msgid "whole desktop"
 msgstr "デスクトップ全体"
 
 #. default is "whole desktop"
-#: helper/im-switcher-gtk.c:370 qt/switcher-qt.cpp:113
+#: ../helper/im-switcher-gtk.c:370 ../qt/switcher-qt.cpp:113
 msgid "current application only"
 msgstr "現在のアプリケーションのみ"
 
-#: helper/im-switcher-gtk.c:371 qt/switcher-qt.cpp:115
+#: ../helper/im-switcher-gtk.c:371 ../qt/switcher-qt.cpp:115
 msgid "current text area only"
 msgstr "現在のテキスト領域のみ"
 
-#: helper/input-pad-ja.c:491
+#: ../helper/input-pad-ja.c:491
 msgid "ja-pad"
 msgstr "ja-pad"
 
-#: helper/input-pad-ja.c:513
+#: ../helper/input-pad-ja.c:513
 msgid "hiragana"
 msgstr "ひらがな"
 
-#: helper/input-pad-ja.c:516
+#: ../helper/input-pad-ja.c:516
 msgid "katakana"
 msgstr "カタカナ"
 
-#: helper/input-pad-ja.c:519
+#: ../helper/input-pad-ja.c:519
 msgid "eisu"
 msgstr "英数"
 
-#: helper/input-pad-ja.c:522
+#: ../helper/input-pad-ja.c:522
 msgid "symbol"
 msgstr "記号"
 
-#: helper/input-pad-ja.c:525
+#: ../helper/input-pad-ja.c:525
 msgid "omission"
 msgstr "省略記号"
 
-#: helper/input-pad-ja.c:528
+#: ../helper/input-pad-ja.c:528
 msgid "unit"
 msgstr "単位記号"
 
-#: helper/input-pad-ja.c:531
+#: ../helper/input-pad-ja.c:531
 msgid "number"
 msgstr "数字"
 
-#: helper/input-pad-ja.c:534
+#: ../helper/input-pad-ja.c:534
 msgid "academic"
 msgstr "学術記号"
 
-#: helper/input-pad-ja.c:537
+#: ../helper/input-pad-ja.c:537
 msgid "greek"
 msgstr "ギリシャ語"
 
-#: helper/input-pad-ja.c:540
+#: ../helper/input-pad-ja.c:540
 msgid "cyrillic"
 msgstr "ロシア語"
 
-#: helper/input-pad-ja.c:543
+#: ../helper/input-pad-ja.c:543
 msgid "line"
 msgstr "罫線"
 
-#: helper/pref-gtk-custom-widgets.c:449
+#: ../helper/pref-gtk-custom-widgets.c:449
 msgid "Specify file"
 msgstr "ファイルを指定して下さい"
 
-#: helper/pref-gtk-custom-widgets.c:497
-#: helper/pref-gtk-custom-widgets.c:501 qt/pref-customwidgets.cpp:183
-#: qt/pref-customwidgets.cpp:187
+#: ../helper/pref-gtk-custom-widgets.c:497
+#: ../helper/pref-gtk-custom-widgets.c:501 ../qt/pref-customwidgets.cpp:183
+#: ../qt/pref-customwidgets.cpp:187
 msgid "Select..."
 msgstr "選択..."
 
-#: helper/pref-gtk-custom-widgets.c:1196
+#: ../helper/pref-gtk-custom-widgets.c:1196
 msgid "Enabled"
 msgstr "有効"
 
-#: helper/pref-gtk-custom-widgets.c:1222
+#: ../helper/pref-gtk-custom-widgets.c:1222
 msgid "Enabled items"
 msgstr "有効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1300
+#: ../helper/pref-gtk-custom-widgets.c:1300
 msgid "Disabled"
 msgstr "無効"
 
-#: helper/pref-gtk-custom-widgets.c:1326
+#: ../helper/pref-gtk-custom-widgets.c:1326
 msgid "Disabled items"
 msgstr "無効なアイテム"
 
-#: helper/pref-gtk-custom-widgets.c:1364
-#: helper/pref-gtk-custom-widgets.c:1902
+#: ../helper/pref-gtk-custom-widgets.c:1364
+#: ../helper/pref-gtk-custom-widgets.c:1902
 msgid "Edit..."
 msgstr "編集..."
 
-#: helper/pref-gtk-custom-widgets.c:1517 qt/pref-customwidgets.cpp:878
+#: ../helper/pref-gtk-custom-widgets.c:1517 ../qt/pref-customwidgets.cpp:878
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
-#: helper/pref-gtk-custom-widgets.c:1518
+#: ../helper/pref-gtk-custom-widgets.c:1518
 msgid "Grabbing keys"
 msgstr "キーを取得中"
 
-#: helper/pref-gtk-custom-widgets.c:1739
+#: ../helper/pref-gtk-custom-widgets.c:1739
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1778
+#: ../helper/pref-gtk-custom-widgets.c:1778
 msgid "Key preference"
 msgstr "キー設定"
 
-#: helper/pref-gtk-custom-widgets.c:1824
+#: ../helper/pref-gtk-custom-widgets.c:1824
 msgid "Key:"
 msgstr "キー:"
 
-#: helper/pref-gtk-custom-widgets.c:1847
+#: ../helper/pref-gtk-custom-widgets.c:1847
 msgid "Grab..."
 msgstr "取得..."
 
-#: helper/pref-gtk.c:146
+#: ../helper/pref-gtk.c:146
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -576,7 +576,7 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "保存しますか？"
 
-#: helper/pref-gtk.c:218 qt/pref-qt.cpp:266
+#: ../helper/pref-gtk.c:218 ../qt/pref-qt.cpp:266
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -584,32 +584,32 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "本当に終了しますか？"
 
-#: helper/pref-gtk.c:258 qt/pref-qt.cpp:141
+#: ../helper/pref-gtk.c:258 ../qt/pref-qt.cpp:141
 msgid "Group"
 msgstr "グループ"
 
 #. Defaults button
-#: helper/pref-gtk.c:350
+#: ../helper/pref-gtk.c:350
 msgid "_Defaults"
 msgstr "標準(_D)"
 
-#: helper/pref-gtk.c:355
+#: ../helper/pref-gtk.c:355
 msgid "Revert all changes to default"
 msgstr "全ての変更を標準に戻す"
 
-#: helper/pref-gtk.c:365
+#: ../helper/pref-gtk.c:365
 msgid "Apply all changes"
 msgstr "全ての設定変更を適用"
 
-#: helper/pref-gtk.c:373
+#: ../helper/pref-gtk.c:373
 msgid "Quit this application without applying changes"
 msgstr "設定変更を適用せず終了"
 
-#: helper/pref-gtk.c:384
+#: ../helper/pref-gtk.c:384
 msgid "Quit this application with applying changes"
 msgstr "設定を保存して終了"
 
-#: helper/pref-gtk.c:533 qt/pref-qt.cpp:109
+#: ../helper/pref-gtk.c:533 ../qt/pref-qt.cpp:109
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -622,100 +622,100 @@ msgstr ""
 "設定が反映されない場合は、このファイルの内容を確認して下さい。"
 
 #. Feel free to put your names here translators
-#: helper/toolbar-applet-gnome.c:161
+#: ../helper/toolbar-applet-gnome.c:161
 msgid "TRANSLATORS"
 msgstr ""
 "TOKUNAGA Hiroyuki <tkng@xem.jp>\n"
 "Daichi Kawahata <daichik@users.sourceforge.net>"
 
-#: helper/toolbar-applet-gnome.c:164
+#: ../helper/toolbar-applet-gnome.c:164
 msgid "uim Applet"
 msgstr "uimアプレット"
 
-#: helper/toolbar-applet-gnome.c:166
+#: ../helper/toolbar-applet-gnome.c:166
 msgid "Applet for indicating uim's status"
 msgstr "uimの状態を示すアプレット"
 
-#: helper/toolbar-common-gtk.c:84
-#: qt/toolbar-common-quimhelpertoolbar.cpp:78
-#: qt/toolbar-common-quimhelpertoolbar.cpp:140
+#: ../helper/toolbar-common-gtk.c:84
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
 msgid "Switch input method"
 msgstr "入力方式の切り換え"
 
-#: helper/toolbar-common-gtk.c:93
-#: qt/toolbar-common-quimhelpertoolbar.cpp:79
-#: qt/toolbar-common-quimhelpertoolbar.cpp:165
+#: ../helper/toolbar-common-gtk.c:93
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
 msgid "Preference"
 msgstr "設定"
 
-#: helper/toolbar-common-gtk.c:102
-#: qt/toolbar-common-quimhelpertoolbar.cpp:80
-#: qt/toolbar-common-quimhelpertoolbar.cpp:189
+#: ../helper/toolbar-common-gtk.c:102
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
 msgid "Japanese dictionary editor"
 msgstr "日本語辞書ツール"
 
-#: helper/toolbar-common-gtk.c:111
-#: qt/toolbar-common-quimhelpertoolbar.cpp:81
-#: qt/toolbar-common-quimhelpertoolbar.cpp:213
+#: ../helper/toolbar-common-gtk.c:111
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
 msgid "Input pad"
 msgstr "入力パッド"
 
-#: helper/toolbar-common-gtk.c:120
-#: qt/toolbar-common-quimhelpertoolbar.cpp:82
-#: qt/toolbar-common-quimhelpertoolbar.cpp:237
+#: ../helper/toolbar-common-gtk.c:120
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
 msgid "Handwriting input pad"
 msgstr "手書き入力パッド"
 
-#: helper/toolbar-common-gtk.c:133
-#: qt/toolbar-common-quimhelpertoolbar.cpp:83
-#: qt/toolbar-common-quimhelpertoolbar.cpp:260
+#: ../helper/toolbar-common-gtk.c:133
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
 msgid "Help"
 msgstr "ヘルプ"
 
-#: helper/toolbar-common-gtk.c:816
-#: qt/toolbar-common-quimhelpertoolbar.cpp:85
+#: ../helper/toolbar-common-gtk.c:816
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
 msgid "Quit this toolbar"
 msgstr "終了"
 
-#: helper/toolbar-standalone-gtk.c:277
+#: ../helper/toolbar-standalone-gtk.c:277
 #, c-format
 msgid "Unable to parse the geometry string '%s'"
 msgstr "ジオメトリ文字列 '%s' を解析できません"
 
-#: qt/pref-customwidgets.cpp:349 qt/pref-customwidgets.cpp:632
+#: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
 msgid "Edit"
 msgstr "編集"
 
-#: qt/pref-customwidgets.cpp:881
+#: ../qt/pref-customwidgets.cpp:881
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
-#: qt/pref-qt.cpp:117
+#: ../qt/pref-qt.cpp:117
 msgid "~/.uim exists!"
 msgstr "~/.uim が存在します！"
 
-#: qt/pref-qt.cpp:159
+#: ../qt/pref-qt.cpp:159
 msgid "Defaults"
 msgstr "標準"
 
-#: qt/pref-qt.cpp:162 qt/pref-qt.cpp:249 qt/pref-qt.cpp:356
-#: qt/switcher-qt.cpp:120
+#: ../qt/pref-qt.cpp:162 ../qt/pref-qt.cpp:249 ../qt/pref-qt.cpp:356
+#: ../qt/switcher-qt.cpp:120
 msgid "OK"
 msgstr "OK"
 
-#: qt/pref-qt.cpp:165
+#: ../qt/pref-qt.cpp:165
 msgid "Apply"
 msgstr "適用"
 
-#: qt/pref-qt.cpp:169 qt/pref-qt.cpp:250 qt/switcher-qt.cpp:125
+#: ../qt/pref-qt.cpp:169 ../qt/pref-qt.cpp:250 ../qt/switcher-qt.cpp:125
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: qt/pref-qt.cpp:247
+#: ../qt/pref-qt.cpp:247
 msgid "Save Confirm"
 msgstr "保存確認"
 
-#: qt/pref-qt.cpp:248
+#: ../qt/pref-qt.cpp:248
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -723,789 +723,789 @@ msgstr ""
 "値が変更されました。\n"
 "保存しますか？"
 
-#: qt/pref-qt.cpp:265
+#: ../qt/pref-qt.cpp:265
 msgid "Quit Confirm"
 msgstr "終了確認"
 
-#: qt/pref-qt.cpp:268
+#: ../qt/pref-qt.cpp:268
 msgid "Yes"
 msgstr "はい"
 
-#: qt/pref-qt.cpp:269
+#: ../qt/pref-qt.cpp:269
 msgid "No"
 msgstr "いいえ"
 
-#: qt/pref-qt.cpp:352
+#: ../qt/pref-qt.cpp:352
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
-#: scm/action.scm:491 scm/action.scm:492
+#: ../scm/action.scm:491 ../scm/action.scm:492
 msgid "unknown"
 msgstr "不明"
 
-#: scm/action.scm:531
+#: ../scm/action.scm:531
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr "日本語かな漢字変換エンジン、例"
 
 # FIXME: 元メッセージと共にtoolbar-common-gtk.cのメッセージに同期
-#: scm/action.scm:536 scm/action.scm:537
+#: ../scm/action.scm:536 ../scm/action.scm:537
 msgid "exec im-switcher"
 msgstr "入力方式の切り換え"
 
-#: scm/anthy-custom.scm:35 scm/anthy-utf8-custom.scm:35
+#: ../scm/anthy-custom.scm:35 ../scm/anthy-utf8-custom.scm:35
 msgid "Anthy"
 msgstr "Anthy"
 
-#: scm/anthy-custom.scm:36 scm/anthy-utf8-custom.scm:36
-#: scm/anthy-utf8-custom.scm:39 scm/canna-custom.scm:36
-#: scm/mana-custom.scm:36 scm/sj3-custom.scm:36 scm/wnn-custom.scm:36
+#: ../scm/anthy-custom.scm:36 ../scm/anthy-utf8-custom.scm:36
+#: ../scm/anthy-utf8-custom.scm:39 ../scm/canna-custom.scm:36
+#: ../scm/mana-custom.scm:36 ../scm/sj3-custom.scm:36 ../scm/wnn-custom.scm:36
 msgid "A multi-segment kana-kanji conversion engine"
 msgstr "連文節かな漢字変換エンジン"
 
-#: scm/anthy-custom.scm:43 scm/anthy-utf8-custom.scm:50
+#: ../scm/anthy-custom.scm:43 ../scm/anthy-utf8-custom.scm:50
 msgid "Anthy (advanced)"
 msgstr "Anthy (高度)"
 
-#: scm/anthy-custom.scm:44 scm/anthy-utf8-custom.scm:51
+#: ../scm/anthy-custom.scm:44 ../scm/anthy-utf8-custom.scm:51
 msgid "Advanced settings for Anthy"
 msgstr "Anthyの高度な設定"
 
-#: scm/anthy-custom.scm:47 scm/anthy-utf8-custom.scm:54
+#: ../scm/anthy-custom.scm:47 ../scm/anthy-utf8-custom.scm:54
 msgid "Prediction"
 msgstr "予測入力"
 
-#: scm/anthy-custom.scm:48 scm/anthy-custom.scm:58
-#: scm/anthy-custom.scm:64 scm/anthy-custom.scm:79
-#: scm/anthy-custom.scm:85 scm/anthy-custom.scm:91
-#: scm/anthy-custom.scm:97 scm/anthy-custom.scm:185
-#: scm/anthy-custom.scm:204 scm/anthy-custom.scm:213
-#: scm/anthy-custom.scm:255 scm/anthy-custom.scm:264
-#: scm/anthy-custom.scm:302 scm/anthy-custom.scm:308
-#: scm/anthy-custom.scm:314 scm/anthy-custom.scm:341
-#: scm/anthy-custom.scm:347 scm/anthy-key-custom.scm:37
-#: scm/anthy-key-custom.scm:41 scm/anthy-key-custom.scm:45
-#: scm/anthy-key-custom.scm:49 scm/anthy-utf8-custom.scm:55
-#: scm/anthy-utf8-custom.scm:65 scm/anthy-utf8-custom.scm:71
-#: scm/anthy-utf8-custom.scm:86 scm/anthy-utf8-custom.scm:92
-#: scm/anthy-utf8-custom.scm:98 scm/anthy-utf8-custom.scm:104
-#: scm/anthy-utf8-custom.scm:192 scm/anthy-utf8-custom.scm:211
-#: scm/anthy-utf8-custom.scm:220 scm/anthy-utf8-custom.scm:262
-#: scm/anthy-utf8-custom.scm:271 scm/anthy-utf8-custom.scm:309
-#: scm/anthy-utf8-custom.scm:315 scm/anthy-utf8-custom.scm:321
-#: scm/anthy-utf8-custom.scm:348 scm/anthy-utf8-custom.scm:354
-#: scm/byeoru-custom.scm:83 scm/byeoru-custom.scm:87
-#: scm/byeoru-custom.scm:91 scm/byeoru-custom.scm:106
-#: scm/byeoru-custom.scm:113 scm/byeoru-custom.scm:116
-#: scm/byeoru-custom.scm:119 scm/byeoru-custom.scm:121
-#: scm/byeoru-custom.scm:133 scm/byeoru-custom.scm:139
-#: scm/byeoru-custom.scm:145 scm/byeoru-custom.scm:156
-#: scm/byeoru-custom.scm:162 scm/byeoru-custom.scm:169
-#: scm/byeoru-key-custom.scm:37 scm/byeoru-key-custom.scm:41
-#: scm/canna-custom.scm:44 scm/canna-custom.scm:48
-#: scm/canna-custom.scm:58 scm/canna-custom.scm:64
-#: scm/canna-custom.scm:79 scm/canna-custom.scm:85
-#: scm/canna-custom.scm:91 scm/canna-custom.scm:97
-#: scm/canna-custom.scm:186 scm/canna-custom.scm:205
-#: scm/canna-custom.scm:214 scm/canna-custom.scm:256
-#: scm/canna-custom.scm:265 scm/canna-custom.scm:314
-#: scm/canna-custom.scm:320 scm/canna-custom.scm:377
-#: scm/canna-custom.scm:383 scm/canna-key-custom.scm:37
-#: scm/canna-key-custom.scm:41 scm/canna-key-custom.scm:45
-#: scm/canna-key-custom.scm:49 scm/elatin-custom.scm:44
-#: scm/elatin-custom.scm:51 scm/elatin-custom.scm:54
-#: scm/elatin-custom.scm:57 scm/elatin-custom.scm:60
-#: scm/elatin-custom.scm:63 scm/elatin-custom.scm:66
-#: scm/elatin-custom.scm:69 scm/elatin-custom.scm:72
-#: scm/elatin-custom.scm:75 scm/elatin-custom.scm:78
-#: scm/elatin-custom.scm:81 scm/elatin-custom.scm:84
-#: scm/elatin-custom.scm:87 scm/elatin-custom.scm:90
-#: scm/elatin-custom.scm:93 scm/elatin-custom.scm:96
-#: scm/elatin-custom.scm:99 scm/elatin-custom.scm:102
-#: scm/elatin-custom.scm:105 scm/elatin-custom.scm:108
-#: scm/elatin-custom.scm:111 scm/elatin-custom.scm:114
-#: scm/elatin-custom.scm:117 scm/elatin-custom.scm:120
-#: scm/elatin-custom.scm:123 scm/elatin-custom.scm:126
-#: scm/elatin-custom.scm:129 scm/elatin-custom.scm:132
-#: scm/elatin-custom.scm:135 scm/elatin-custom.scm:138
-#: scm/elatin-custom.scm:141 scm/elatin-custom.scm:144
-#: scm/elatin-custom.scm:147 scm/elatin-custom.scm:150
-#: scm/elatin-custom.scm:153 scm/elatin-custom.scm:156
-#: scm/elatin-custom.scm:159 scm/elatin-custom.scm:162
-#: scm/elatin-custom.scm:165 scm/elatin-custom.scm:168
-#: scm/elatin-custom.scm:171 scm/elatin-custom.scm:174
-#: scm/elatin-custom.scm:177 scm/elatin-custom.scm:180
-#: scm/elatin-custom.scm:183 scm/elatin-custom.scm:186
-#: scm/elatin-custom.scm:189 scm/elatin-custom.scm:192
-#: scm/elatin-custom.scm:195 scm/elatin-custom.scm:198
-#: scm/elatin-custom.scm:201 scm/elatin-custom.scm:204
-#: scm/elatin-custom.scm:207 scm/elatin-custom.scm:210
-#: scm/elatin-custom.scm:213 scm/elatin-custom.scm:216
-#: scm/elatin-custom.scm:219 scm/elatin-custom.scm:222
-#: scm/elatin-custom.scm:225 scm/elatin-custom.scm:228
-#: scm/elatin-custom.scm:231 scm/elatin-custom.scm:234
-#: scm/elatin-custom.scm:237 scm/elatin-custom.scm:240
-#: scm/elatin-custom.scm:243 scm/elatin-custom.scm:246
-#: scm/elatin-custom.scm:249 scm/elatin-custom.scm:252
-#: scm/elatin-custom.scm:255 scm/elatin-custom.scm:258
-#: scm/elatin-custom.scm:261 scm/elatin-custom.scm:263
-#: scm/elatin-custom.scm:281 scm/elatin-custom.scm:286
-#: scm/generic-custom.scm:37 scm/generic-custom.scm:43
-#: scm/generic-custom.scm:49 scm/generic-custom.scm:55
-#: scm/generic-custom.scm:61 scm/generic-key-custom.scm:37
-#: scm/generic-key-custom.scm:41 scm/im-custom.scm:46
-#: scm/im-custom.scm:50 scm/im-custom.scm:55 scm/im-custom.scm:60
-#: scm/im-custom.scm:65 scm/im-custom.scm:70 scm/im-custom.scm:75
-#: scm/im-custom.scm:80 scm/im-custom.scm:85 scm/im-custom.scm:90
-#: scm/im-custom.scm:95 scm/im-custom.scm:100 scm/im-custom.scm:105
-#: scm/im-custom.scm:110 scm/im-custom.scm:121 scm/im-custom.scm:131
-#: scm/im-custom.scm:205 scm/im-custom.scm:309 scm/im-custom.scm:315
-#: scm/im-custom.scm:321 scm/im-custom.scm:331 scm/im-custom.scm:359
-#: scm/im-custom.scm:380 scm/im-custom.scm:386 scm/im-custom.scm:453
-#: scm/im-custom.scm:459 scm/im-custom.scm:465 scm/im-custom.scm:471
-#: scm/im-custom.scm:477 scm/im-custom.scm:483 scm/im-custom.scm:501
-#: scm/im-custom.scm:507 scm/im-custom.scm:514 scm/im-custom.scm:524
-#: scm/im-custom.scm:528 scm/im-custom.scm:534 scm/im-custom.scm:540
-#: scm/im-custom.scm:550 scm/im-custom.scm:557 scm/look-custom.scm:40
-#: scm/look-custom.scm:47 scm/look-custom.scm:54
-#: scm/look-custom.scm:60 scm/look-custom.scm:66
-#: scm/mana-custom.scm:54 scm/mana-custom.scm:60
-#: scm/mana-custom.scm:75 scm/mana-custom.scm:81
-#: scm/mana-custom.scm:87 scm/mana-custom.scm:93
-#: scm/mana-custom.scm:181 scm/mana-custom.scm:200
-#: scm/mana-custom.scm:209 scm/mana-custom.scm:251
-#: scm/mana-custom.scm:260 scm/mana-custom.scm:298
-#: scm/mana-custom.scm:304 scm/mana-key-custom.scm:37
-#: scm/mana-key-custom.scm:41 scm/mana-key-custom.scm:45
-#: scm/mana-key-custom.scm:49 scm/prime-custom.scm:64
-#: scm/prime-custom.scm:70 scm/prime-custom.scm:76
-#: scm/prime-custom.scm:84 scm/prime-custom.scm:90
-#: scm/prime-custom.scm:96 scm/prime-custom.scm:114
-#: scm/prime-custom.scm:120 scm/prime-custom.scm:127
-#: scm/prime-custom.scm:134 scm/prime-custom.scm:142
-#: scm/prime-custom.scm:150 scm/prime-custom.scm:156
-#: scm/prime-custom.scm:167 scm/prime-key-custom.scm:65
-#: scm/prime-key-custom.scm:69 scm/prime-key-custom.scm:73
-#: scm/sj3-custom.scm:44 scm/sj3-custom.scm:48 scm/sj3-custom.scm:58
-#: scm/sj3-custom.scm:64 scm/sj3-custom.scm:79 scm/sj3-custom.scm:85
-#: scm/sj3-custom.scm:91 scm/sj3-custom.scm:97 scm/sj3-custom.scm:186
-#: scm/sj3-custom.scm:205 scm/sj3-custom.scm:214
-#: scm/sj3-custom.scm:256 scm/sj3-custom.scm:265
-#: scm/sj3-custom.scm:308 scm/sj3-custom.scm:315
-#: scm/sj3-custom.scm:326 scm/sj3-custom.scm:332
-#: scm/sj3-custom.scm:338 scm/sj3-key-custom.scm:36
-#: scm/sj3-key-custom.scm:40 scm/sj3-key-custom.scm:44
-#: scm/sj3-key-custom.scm:48 scm/skk-custom.scm:53
-#: scm/skk-custom.scm:58 scm/skk-custom.scm:69 scm/skk-custom.scm:75
-#: scm/skk-custom.scm:83 scm/skk-custom.scm:89 scm/skk-custom.scm:95
-#: scm/skk-custom.scm:101 scm/skk-custom.scm:227
-#: scm/skk-custom.scm:246 scm/skk-custom.scm:255
-#: scm/skk-custom.scm:286 scm/skk-custom.scm:295
-#: scm/skk-custom.scm:338 scm/skk-custom.scm:344
-#: scm/skk-custom.scm:355 scm/skk-custom.scm:366
-#: scm/skk-custom.scm:382 scm/skk-custom.scm:394
-#: scm/skk-custom.scm:401 scm/skk-custom.scm:408
-#: scm/skk-custom.scm:425 scm/skk-custom.scm:431
-#: scm/skk-custom.scm:437 scm/skk-custom.scm:443
-#: scm/skk-custom.scm:449 scm/skk-custom.scm:455
-#: scm/skk-custom.scm:461 scm/skk-custom.scm:476
-#: scm/skk-custom.scm:482 scm/skk-custom.scm:503
-#: scm/skk-custom.scm:509 scm/skk-custom.scm:516
-#: scm/skk-key-custom.scm:65 scm/skk-key-custom.scm:69
-#: scm/skk-key-custom.scm:73 scm/skk-key-custom.scm:78
-#: scm/skk-key-custom.scm:82 scm/skk-key-custom.scm:86
-#: scm/tutcode-custom.scm:55 scm/tutcode-custom.scm:62
-#: scm/tutcode-custom.scm:75 scm/tutcode-custom.scm:81
-#: scm/tutcode-custom.scm:87 scm/tutcode-custom.scm:97
-#: scm/tutcode-custom.scm:103 scm/tutcode-custom.scm:109
-#: scm/tutcode-custom.scm:115 scm/tutcode-key-custom.scm:38
-#: scm/tutcode-key-custom.scm:42 scm/wnn-custom.scm:44
-#: scm/wnn-custom.scm:48 scm/wnn-custom.scm:58 scm/wnn-custom.scm:64
-#: scm/wnn-custom.scm:79 scm/wnn-custom.scm:85 scm/wnn-custom.scm:91
-#: scm/wnn-custom.scm:97 scm/wnn-custom.scm:186
-#: scm/wnn-custom.scm:205 scm/wnn-custom.scm:214
-#: scm/wnn-custom.scm:256 scm/wnn-custom.scm:265
-#: scm/wnn-custom.scm:308 scm/wnn-custom.scm:315
-#: scm/wnn-custom.scm:326 scm/wnn-custom.scm:332
-#: scm/wnn-custom.scm:338 scm/wnn-key-custom.scm:36
-#: scm/wnn-key-custom.scm:40 scm/wnn-key-custom.scm:44
-#: scm/wnn-key-custom.scm:48
+#: ../scm/anthy-custom.scm:48 ../scm/anthy-custom.scm:58
+#: ../scm/anthy-custom.scm:64 ../scm/anthy-custom.scm:79
+#: ../scm/anthy-custom.scm:85 ../scm/anthy-custom.scm:91
+#: ../scm/anthy-custom.scm:97 ../scm/anthy-custom.scm:185
+#: ../scm/anthy-custom.scm:204 ../scm/anthy-custom.scm:213
+#: ../scm/anthy-custom.scm:255 ../scm/anthy-custom.scm:264
+#: ../scm/anthy-custom.scm:302 ../scm/anthy-custom.scm:308
+#: ../scm/anthy-custom.scm:314 ../scm/anthy-custom.scm:341
+#: ../scm/anthy-custom.scm:347 ../scm/anthy-key-custom.scm:37
+#: ../scm/anthy-key-custom.scm:41 ../scm/anthy-key-custom.scm:45
+#: ../scm/anthy-key-custom.scm:49 ../scm/anthy-utf8-custom.scm:55
+#: ../scm/anthy-utf8-custom.scm:65 ../scm/anthy-utf8-custom.scm:71
+#: ../scm/anthy-utf8-custom.scm:86 ../scm/anthy-utf8-custom.scm:92
+#: ../scm/anthy-utf8-custom.scm:98 ../scm/anthy-utf8-custom.scm:104
+#: ../scm/anthy-utf8-custom.scm:192 ../scm/anthy-utf8-custom.scm:211
+#: ../scm/anthy-utf8-custom.scm:220 ../scm/anthy-utf8-custom.scm:262
+#: ../scm/anthy-utf8-custom.scm:271 ../scm/anthy-utf8-custom.scm:309
+#: ../scm/anthy-utf8-custom.scm:315 ../scm/anthy-utf8-custom.scm:321
+#: ../scm/anthy-utf8-custom.scm:348 ../scm/anthy-utf8-custom.scm:354
+#: ../scm/byeoru-custom.scm:83 ../scm/byeoru-custom.scm:87
+#: ../scm/byeoru-custom.scm:91 ../scm/byeoru-custom.scm:106
+#: ../scm/byeoru-custom.scm:113 ../scm/byeoru-custom.scm:116
+#: ../scm/byeoru-custom.scm:119 ../scm/byeoru-custom.scm:121
+#: ../scm/byeoru-custom.scm:133 ../scm/byeoru-custom.scm:139
+#: ../scm/byeoru-custom.scm:145 ../scm/byeoru-custom.scm:156
+#: ../scm/byeoru-custom.scm:162 ../scm/byeoru-custom.scm:169
+#: ../scm/byeoru-key-custom.scm:37 ../scm/byeoru-key-custom.scm:41
+#: ../scm/canna-custom.scm:44 ../scm/canna-custom.scm:48
+#: ../scm/canna-custom.scm:58 ../scm/canna-custom.scm:64
+#: ../scm/canna-custom.scm:79 ../scm/canna-custom.scm:85
+#: ../scm/canna-custom.scm:91 ../scm/canna-custom.scm:97
+#: ../scm/canna-custom.scm:186 ../scm/canna-custom.scm:205
+#: ../scm/canna-custom.scm:214 ../scm/canna-custom.scm:256
+#: ../scm/canna-custom.scm:265 ../scm/canna-custom.scm:314
+#: ../scm/canna-custom.scm:320 ../scm/canna-custom.scm:377
+#: ../scm/canna-custom.scm:383 ../scm/canna-key-custom.scm:37
+#: ../scm/canna-key-custom.scm:41 ../scm/canna-key-custom.scm:45
+#: ../scm/canna-key-custom.scm:49 ../scm/elatin-custom.scm:44
+#: ../scm/elatin-custom.scm:51 ../scm/elatin-custom.scm:54
+#: ../scm/elatin-custom.scm:57 ../scm/elatin-custom.scm:60
+#: ../scm/elatin-custom.scm:63 ../scm/elatin-custom.scm:66
+#: ../scm/elatin-custom.scm:69 ../scm/elatin-custom.scm:72
+#: ../scm/elatin-custom.scm:75 ../scm/elatin-custom.scm:78
+#: ../scm/elatin-custom.scm:81 ../scm/elatin-custom.scm:84
+#: ../scm/elatin-custom.scm:87 ../scm/elatin-custom.scm:90
+#: ../scm/elatin-custom.scm:93 ../scm/elatin-custom.scm:96
+#: ../scm/elatin-custom.scm:99 ../scm/elatin-custom.scm:102
+#: ../scm/elatin-custom.scm:105 ../scm/elatin-custom.scm:108
+#: ../scm/elatin-custom.scm:111 ../scm/elatin-custom.scm:114
+#: ../scm/elatin-custom.scm:117 ../scm/elatin-custom.scm:120
+#: ../scm/elatin-custom.scm:123 ../scm/elatin-custom.scm:126
+#: ../scm/elatin-custom.scm:129 ../scm/elatin-custom.scm:132
+#: ../scm/elatin-custom.scm:135 ../scm/elatin-custom.scm:138
+#: ../scm/elatin-custom.scm:141 ../scm/elatin-custom.scm:144
+#: ../scm/elatin-custom.scm:147 ../scm/elatin-custom.scm:150
+#: ../scm/elatin-custom.scm:153 ../scm/elatin-custom.scm:156
+#: ../scm/elatin-custom.scm:159 ../scm/elatin-custom.scm:162
+#: ../scm/elatin-custom.scm:165 ../scm/elatin-custom.scm:168
+#: ../scm/elatin-custom.scm:171 ../scm/elatin-custom.scm:174
+#: ../scm/elatin-custom.scm:177 ../scm/elatin-custom.scm:180
+#: ../scm/elatin-custom.scm:183 ../scm/elatin-custom.scm:186
+#: ../scm/elatin-custom.scm:189 ../scm/elatin-custom.scm:192
+#: ../scm/elatin-custom.scm:195 ../scm/elatin-custom.scm:198
+#: ../scm/elatin-custom.scm:201 ../scm/elatin-custom.scm:204
+#: ../scm/elatin-custom.scm:207 ../scm/elatin-custom.scm:210
+#: ../scm/elatin-custom.scm:213 ../scm/elatin-custom.scm:216
+#: ../scm/elatin-custom.scm:219 ../scm/elatin-custom.scm:222
+#: ../scm/elatin-custom.scm:225 ../scm/elatin-custom.scm:228
+#: ../scm/elatin-custom.scm:231 ../scm/elatin-custom.scm:234
+#: ../scm/elatin-custom.scm:237 ../scm/elatin-custom.scm:240
+#: ../scm/elatin-custom.scm:243 ../scm/elatin-custom.scm:246
+#: ../scm/elatin-custom.scm:249 ../scm/elatin-custom.scm:252
+#: ../scm/elatin-custom.scm:255 ../scm/elatin-custom.scm:258
+#: ../scm/elatin-custom.scm:261 ../scm/elatin-custom.scm:263
+#: ../scm/elatin-custom.scm:281 ../scm/elatin-custom.scm:286
+#: ../scm/generic-custom.scm:37 ../scm/generic-custom.scm:43
+#: ../scm/generic-custom.scm:49 ../scm/generic-custom.scm:55
+#: ../scm/generic-custom.scm:61 ../scm/generic-key-custom.scm:37
+#: ../scm/generic-key-custom.scm:41 ../scm/im-custom.scm:46
+#: ../scm/im-custom.scm:50 ../scm/im-custom.scm:55 ../scm/im-custom.scm:60
+#: ../scm/im-custom.scm:65 ../scm/im-custom.scm:70 ../scm/im-custom.scm:75
+#: ../scm/im-custom.scm:80 ../scm/im-custom.scm:85 ../scm/im-custom.scm:90
+#: ../scm/im-custom.scm:95 ../scm/im-custom.scm:100 ../scm/im-custom.scm:105
+#: ../scm/im-custom.scm:110 ../scm/im-custom.scm:121 ../scm/im-custom.scm:131
+#: ../scm/im-custom.scm:205 ../scm/im-custom.scm:309 ../scm/im-custom.scm:315
+#: ../scm/im-custom.scm:321 ../scm/im-custom.scm:331 ../scm/im-custom.scm:359
+#: ../scm/im-custom.scm:380 ../scm/im-custom.scm:386 ../scm/im-custom.scm:453
+#: ../scm/im-custom.scm:459 ../scm/im-custom.scm:465 ../scm/im-custom.scm:471
+#: ../scm/im-custom.scm:477 ../scm/im-custom.scm:483 ../scm/im-custom.scm:501
+#: ../scm/im-custom.scm:507 ../scm/im-custom.scm:514 ../scm/im-custom.scm:524
+#: ../scm/im-custom.scm:528 ../scm/im-custom.scm:534 ../scm/im-custom.scm:540
+#: ../scm/im-custom.scm:550 ../scm/im-custom.scm:557 ../scm/look-custom.scm:40
+#: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
+#: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
+#: ../scm/mana-custom.scm:54 ../scm/mana-custom.scm:60
+#: ../scm/mana-custom.scm:75 ../scm/mana-custom.scm:81
+#: ../scm/mana-custom.scm:87 ../scm/mana-custom.scm:93
+#: ../scm/mana-custom.scm:181 ../scm/mana-custom.scm:200
+#: ../scm/mana-custom.scm:209 ../scm/mana-custom.scm:251
+#: ../scm/mana-custom.scm:260 ../scm/mana-custom.scm:298
+#: ../scm/mana-custom.scm:304 ../scm/mana-key-custom.scm:37
+#: ../scm/mana-key-custom.scm:41 ../scm/mana-key-custom.scm:45
+#: ../scm/mana-key-custom.scm:49 ../scm/prime-custom.scm:64
+#: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
+#: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
+#: ../scm/prime-custom.scm:96 ../scm/prime-custom.scm:114
+#: ../scm/prime-custom.scm:120 ../scm/prime-custom.scm:127
+#: ../scm/prime-custom.scm:134 ../scm/prime-custom.scm:142
+#: ../scm/prime-custom.scm:150 ../scm/prime-custom.scm:156
+#: ../scm/prime-custom.scm:167 ../scm/prime-key-custom.scm:65
+#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
+#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:58
+#: ../scm/sj3-custom.scm:64 ../scm/sj3-custom.scm:79 ../scm/sj3-custom.scm:85
+#: ../scm/sj3-custom.scm:91 ../scm/sj3-custom.scm:97 ../scm/sj3-custom.scm:186
+#: ../scm/sj3-custom.scm:205 ../scm/sj3-custom.scm:214
+#: ../scm/sj3-custom.scm:256 ../scm/sj3-custom.scm:265
+#: ../scm/sj3-custom.scm:308 ../scm/sj3-custom.scm:315
+#: ../scm/sj3-custom.scm:326 ../scm/sj3-custom.scm:332
+#: ../scm/sj3-custom.scm:338 ../scm/sj3-key-custom.scm:36
+#: ../scm/sj3-key-custom.scm:40 ../scm/sj3-key-custom.scm:44
+#: ../scm/sj3-key-custom.scm:48 ../scm/skk-custom.scm:53
+#: ../scm/skk-custom.scm:58 ../scm/skk-custom.scm:69 ../scm/skk-custom.scm:75
+#: ../scm/skk-custom.scm:83 ../scm/skk-custom.scm:89 ../scm/skk-custom.scm:95
+#: ../scm/skk-custom.scm:101 ../scm/skk-custom.scm:227
+#: ../scm/skk-custom.scm:246 ../scm/skk-custom.scm:255
+#: ../scm/skk-custom.scm:286 ../scm/skk-custom.scm:295
+#: ../scm/skk-custom.scm:338 ../scm/skk-custom.scm:344
+#: ../scm/skk-custom.scm:355 ../scm/skk-custom.scm:366
+#: ../scm/skk-custom.scm:382 ../scm/skk-custom.scm:394
+#: ../scm/skk-custom.scm:401 ../scm/skk-custom.scm:408
+#: ../scm/skk-custom.scm:425 ../scm/skk-custom.scm:431
+#: ../scm/skk-custom.scm:437 ../scm/skk-custom.scm:443
+#: ../scm/skk-custom.scm:449 ../scm/skk-custom.scm:455
+#: ../scm/skk-custom.scm:461 ../scm/skk-custom.scm:476
+#: ../scm/skk-custom.scm:482 ../scm/skk-custom.scm:503
+#: ../scm/skk-custom.scm:509 ../scm/skk-custom.scm:516
+#: ../scm/skk-key-custom.scm:65 ../scm/skk-key-custom.scm:69
+#: ../scm/skk-key-custom.scm:73 ../scm/skk-key-custom.scm:78
+#: ../scm/skk-key-custom.scm:82 ../scm/skk-key-custom.scm:86
+#: ../scm/tutcode-custom.scm:55 ../scm/tutcode-custom.scm:62
+#: ../scm/tutcode-custom.scm:75 ../scm/tutcode-custom.scm:81
+#: ../scm/tutcode-custom.scm:87 ../scm/tutcode-custom.scm:97
+#: ../scm/tutcode-custom.scm:103 ../scm/tutcode-custom.scm:109
+#: ../scm/tutcode-custom.scm:115 ../scm/tutcode-key-custom.scm:38
+#: ../scm/tutcode-key-custom.scm:42 ../scm/wnn-custom.scm:44
+#: ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:58 ../scm/wnn-custom.scm:64
+#: ../scm/wnn-custom.scm:79 ../scm/wnn-custom.scm:85 ../scm/wnn-custom.scm:91
+#: ../scm/wnn-custom.scm:97 ../scm/wnn-custom.scm:186
+#: ../scm/wnn-custom.scm:205 ../scm/wnn-custom.scm:214
+#: ../scm/wnn-custom.scm:256 ../scm/wnn-custom.scm:265
+#: ../scm/wnn-custom.scm:308 ../scm/wnn-custom.scm:315
+#: ../scm/wnn-custom.scm:326 ../scm/wnn-custom.scm:332
+#: ../scm/wnn-custom.scm:338 ../scm/wnn-key-custom.scm:36
+#: ../scm/wnn-key-custom.scm:40 ../scm/wnn-key-custom.scm:44
+#: ../scm/wnn-key-custom.scm:48
 msgid "long description will be here."
 msgstr "詳細記述予定"
 
-#: scm/anthy-custom.scm:57 scm/anthy-utf8-custom.scm:64
-#: scm/canna-custom.scm:57 scm/mana-custom.scm:53
-#: scm/sj3-custom.scm:57 scm/wnn-custom.scm:57
+#: ../scm/anthy-custom.scm:57 ../scm/anthy-utf8-custom.scm:64
+#: ../scm/canna-custom.scm:57 ../scm/mana-custom.scm:53
+#: ../scm/sj3-custom.scm:57 ../scm/wnn-custom.scm:57
 msgid "Show segment separator"
 msgstr "文節区切りを表示"
 
-#: scm/anthy-custom.scm:63 scm/anthy-utf8-custom.scm:70
-#: scm/canna-custom.scm:63 scm/im-custom.scm:84
-#: scm/mana-custom.scm:59 scm/sj3-custom.scm:63 scm/wnn-custom.scm:63
+#: ../scm/anthy-custom.scm:63 ../scm/anthy-utf8-custom.scm:70
+#: ../scm/canna-custom.scm:63 ../scm/im-custom.scm:84
+#: ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:63 ../scm/wnn-custom.scm:63
 msgid "Segment separator"
 msgstr "文節区切り"
 
-#: scm/anthy-custom.scm:78 scm/anthy-utf8-custom.scm:85
-#: scm/canna-custom.scm:78 scm/generic-custom.scm:42
-#: scm/mana-custom.scm:74 scm/sj3-custom.scm:78 scm/skk-custom.scm:68
-#: scm/tutcode-custom.scm:96 scm/wnn-custom.scm:78
+#: ../scm/anthy-custom.scm:78 ../scm/anthy-utf8-custom.scm:85
+#: ../scm/canna-custom.scm:78 ../scm/generic-custom.scm:42
+#: ../scm/mana-custom.scm:74 ../scm/sj3-custom.scm:78 ../scm/skk-custom.scm:68
+#: ../scm/tutcode-custom.scm:96 ../scm/wnn-custom.scm:78
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
 
-#: scm/anthy-custom.scm:84 scm/anthy-utf8-custom.scm:91
-#: scm/canna-custom.scm:84 scm/generic-custom.scm:48
-#: scm/mana-custom.scm:80 scm/sj3-custom.scm:84 scm/skk-custom.scm:94
-#: scm/tutcode-custom.scm:108 scm/wnn-custom.scm:84
+#: ../scm/anthy-custom.scm:84 ../scm/anthy-utf8-custom.scm:91
+#: ../scm/canna-custom.scm:84 ../scm/generic-custom.scm:48
+#: ../scm/mana-custom.scm:80 ../scm/sj3-custom.scm:84 ../scm/skk-custom.scm:94
+#: ../scm/tutcode-custom.scm:108 ../scm/wnn-custom.scm:84
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
 
-#: scm/anthy-custom.scm:90 scm/anthy-utf8-custom.scm:97
-#: scm/canna-custom.scm:90 scm/generic-custom.scm:54
-#: scm/mana-custom.scm:86 scm/prime-custom.scm:113
-#: scm/sj3-custom.scm:90 scm/skk-custom.scm:100
-#: scm/tutcode-custom.scm:114 scm/wnn-custom.scm:90
+#: ../scm/anthy-custom.scm:90 ../scm/anthy-utf8-custom.scm:97
+#: ../scm/canna-custom.scm:90 ../scm/generic-custom.scm:54
+#: ../scm/mana-custom.scm:86 ../scm/prime-custom.scm:113
+#: ../scm/sj3-custom.scm:90 ../scm/skk-custom.scm:100
+#: ../scm/tutcode-custom.scm:114 ../scm/wnn-custom.scm:90
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
 
-#: scm/anthy-custom.scm:96 scm/anthy-utf8-custom.scm:103
-#: scm/canna-custom.scm:96 scm/generic-custom.scm:60
-#: scm/mana-custom.scm:92 scm/prime-custom.scm:149
-#: scm/sj3-custom.scm:96 scm/wnn-custom.scm:96
+#: ../scm/anthy-custom.scm:96 ../scm/anthy-utf8-custom.scm:103
+#: ../scm/canna-custom.scm:96 ../scm/generic-custom.scm:60
+#: ../scm/mana-custom.scm:92 ../scm/prime-custom.scm:149
+#: ../scm/sj3-custom.scm:96 ../scm/wnn-custom.scm:96
 msgid "Select candidate by numeral keys"
 msgstr "数字キーで候補を選択する"
 
-#: scm/anthy-custom.scm:126 scm/anthy-utf8-custom.scm:133
-#: scm/canna-custom.scm:126 scm/mana-custom.scm:122
-#: scm/prime-custom.scm:186 scm/sj3-custom.scm:126
-#: scm/skk-custom.scm:178 scm/wnn-custom.scm:126
+#: ../scm/anthy-custom.scm:126 ../scm/anthy-utf8-custom.scm:133
+#: ../scm/canna-custom.scm:126 ../scm/mana-custom.scm:122
+#: ../scm/prime-custom.scm:186 ../scm/sj3-custom.scm:126
+#: ../scm/skk-custom.scm:178 ../scm/wnn-custom.scm:126
 msgid "Direct input"
 msgstr "直接入力"
 
-#: scm/anthy-custom.scm:127 scm/anthy-utf8-custom.scm:134
-#: scm/canna-custom.scm:127 scm/mana-custom.scm:123
-#: scm/sj3-custom.scm:127 scm/skk-custom.scm:179
-#: scm/wnn-custom.scm:127
+#: ../scm/anthy-custom.scm:127 ../scm/anthy-utf8-custom.scm:134
+#: ../scm/canna-custom.scm:127 ../scm/mana-custom.scm:123
+#: ../scm/sj3-custom.scm:127 ../scm/skk-custom.scm:179
+#: ../scm/wnn-custom.scm:127
 msgid "Direct input mode"
 msgstr "直接入力モード"
 
-#: scm/anthy-custom.scm:131 scm/anthy-utf8-custom.scm:138
-#: scm/canna-custom.scm:131 scm/mana-custom.scm:127
-#: scm/sj3-custom.scm:131 scm/skk-custom.scm:183
-#: scm/wnn-custom.scm:131
+#: ../scm/anthy-custom.scm:131 ../scm/anthy-utf8-custom.scm:138
+#: ../scm/canna-custom.scm:131 ../scm/mana-custom.scm:127
+#: ../scm/sj3-custom.scm:131 ../scm/skk-custom.scm:183
+#: ../scm/wnn-custom.scm:131
 msgid "Hiragana"
 msgstr "ひらがな"
 
-#: scm/anthy-custom.scm:132 scm/anthy-utf8-custom.scm:139
-#: scm/canna-custom.scm:132 scm/mana-custom.scm:128
-#: scm/sj3-custom.scm:132 scm/skk-custom.scm:184
-#: scm/wnn-custom.scm:132
+#: ../scm/anthy-custom.scm:132 ../scm/anthy-utf8-custom.scm:139
+#: ../scm/canna-custom.scm:132 ../scm/mana-custom.scm:128
+#: ../scm/sj3-custom.scm:132 ../scm/skk-custom.scm:184
+#: ../scm/wnn-custom.scm:132
 msgid "Hiragana input mode"
 msgstr "ひらがな入力モード"
 
-#: scm/anthy-custom.scm:136 scm/anthy-utf8-custom.scm:143
-#: scm/canna-custom.scm:136 scm/mana-custom.scm:132
-#: scm/sj3-custom.scm:136 scm/skk-custom.scm:188
-#: scm/wnn-custom.scm:136
+#: ../scm/anthy-custom.scm:136 ../scm/anthy-utf8-custom.scm:143
+#: ../scm/canna-custom.scm:136 ../scm/mana-custom.scm:132
+#: ../scm/sj3-custom.scm:136 ../scm/skk-custom.scm:188
+#: ../scm/wnn-custom.scm:136
 msgid "Katakana"
 msgstr "カタカナ"
 
-#: scm/anthy-custom.scm:137 scm/anthy-utf8-custom.scm:144
-#: scm/canna-custom.scm:137 scm/mana-custom.scm:133
-#: scm/sj3-custom.scm:137 scm/skk-custom.scm:189
-#: scm/wnn-custom.scm:137
+#: ../scm/anthy-custom.scm:137 ../scm/anthy-utf8-custom.scm:144
+#: ../scm/canna-custom.scm:137 ../scm/mana-custom.scm:133
+#: ../scm/sj3-custom.scm:137 ../scm/skk-custom.scm:189
+#: ../scm/wnn-custom.scm:137
 msgid "Katakana input mode"
 msgstr "カタカナ入力モード"
 
-#: scm/anthy-custom.scm:141 scm/anthy-utf8-custom.scm:148
-#: scm/canna-custom.scm:141 scm/mana-custom.scm:137
-#: scm/sj3-custom.scm:141 scm/skk-custom.scm:193
-#: scm/wnn-custom.scm:141
+#: ../scm/anthy-custom.scm:141 ../scm/anthy-utf8-custom.scm:148
+#: ../scm/canna-custom.scm:141 ../scm/mana-custom.scm:137
+#: ../scm/sj3-custom.scm:141 ../scm/skk-custom.scm:193
+#: ../scm/wnn-custom.scm:141
 msgid "Halfwidth Katakana"
 msgstr "半角カタカナ"
 
-#: scm/anthy-custom.scm:142 scm/anthy-utf8-custom.scm:149
-#: scm/canna-custom.scm:142 scm/mana-custom.scm:138
-#: scm/sj3-custom.scm:142 scm/skk-custom.scm:194
-#: scm/wnn-custom.scm:142
+#: ../scm/anthy-custom.scm:142 ../scm/anthy-utf8-custom.scm:149
+#: ../scm/canna-custom.scm:142 ../scm/mana-custom.scm:138
+#: ../scm/sj3-custom.scm:142 ../scm/skk-custom.scm:194
+#: ../scm/wnn-custom.scm:142
 msgid "Halfwidth Katakana input mode"
 msgstr "半角カタカナ入力モード"
 
-#: scm/anthy-custom.scm:146 scm/anthy-utf8-custom.scm:153
-#: scm/canna-custom.scm:146 scm/mana-custom.scm:142
-#: scm/sj3-custom.scm:146 scm/wnn-custom.scm:146
+#: ../scm/anthy-custom.scm:146 ../scm/anthy-utf8-custom.scm:153
+#: ../scm/canna-custom.scm:146 ../scm/mana-custom.scm:142
+#: ../scm/sj3-custom.scm:146 ../scm/wnn-custom.scm:146
 msgid "Halfwidth Alphanumeric"
 msgstr "半角英数"
 
-#: scm/anthy-custom.scm:147 scm/anthy-utf8-custom.scm:154
-#: scm/canna-custom.scm:147 scm/mana-custom.scm:143
-#: scm/sj3-custom.scm:147 scm/wnn-custom.scm:147
+#: ../scm/anthy-custom.scm:147 ../scm/anthy-utf8-custom.scm:154
+#: ../scm/canna-custom.scm:147 ../scm/mana-custom.scm:143
+#: ../scm/sj3-custom.scm:147 ../scm/wnn-custom.scm:147
 msgid "Halfwidth Alphanumeric input mode"
 msgstr "半額英数字入力モード"
 
-#: scm/anthy-custom.scm:151 scm/anthy-utf8-custom.scm:158
-#: scm/canna-custom.scm:152 scm/mana-custom.scm:147
-#: scm/prime-custom.scm:201 scm/sj3-custom.scm:152
-#: scm/skk-custom.scm:198 scm/wnn-custom.scm:152
+#: ../scm/anthy-custom.scm:151 ../scm/anthy-utf8-custom.scm:158
+#: ../scm/canna-custom.scm:152 ../scm/mana-custom.scm:147
+#: ../scm/prime-custom.scm:201 ../scm/sj3-custom.scm:152
+#: ../scm/skk-custom.scm:198 ../scm/wnn-custom.scm:152
 msgid "Fullwidth Alphanumeric"
 msgstr "全角英数"
 
-#: scm/anthy-custom.scm:152 scm/anthy-utf8-custom.scm:159
-#: scm/canna-custom.scm:153 scm/mana-custom.scm:148
-#: scm/prime-custom.scm:202 scm/sj3-custom.scm:153
-#: scm/skk-custom.scm:199 scm/wnn-custom.scm:153
+#: ../scm/anthy-custom.scm:152 ../scm/anthy-utf8-custom.scm:159
+#: ../scm/canna-custom.scm:153 ../scm/mana-custom.scm:148
+#: ../scm/prime-custom.scm:202 ../scm/sj3-custom.scm:153
+#: ../scm/skk-custom.scm:199 ../scm/wnn-custom.scm:153
 msgid "Fullwidth Alphanumeric input mode"
 msgstr "全角英数字入力モード"
 
-#: scm/anthy-custom.scm:159 scm/anthy-utf8-custom.scm:166
-#: scm/canna-custom.scm:160 scm/mana-custom.scm:155
-#: scm/sj3-custom.scm:160 scm/skk-custom.scm:206
-#: scm/wnn-custom.scm:160
+#: ../scm/anthy-custom.scm:159 ../scm/anthy-utf8-custom.scm:166
+#: ../scm/canna-custom.scm:160 ../scm/mana-custom.scm:155
+#: ../scm/sj3-custom.scm:160 ../scm/skk-custom.scm:206
+#: ../scm/wnn-custom.scm:160
 msgid "Romaji"
 msgstr "ローマ字"
 
-#: scm/anthy-custom.scm:160 scm/anthy-utf8-custom.scm:167
-#: scm/canna-custom.scm:161 scm/mana-custom.scm:156
-#: scm/sj3-custom.scm:161 scm/skk-custom.scm:207
-#: scm/wnn-custom.scm:161
+#: ../scm/anthy-custom.scm:160 ../scm/anthy-utf8-custom.scm:167
+#: ../scm/canna-custom.scm:161 ../scm/mana-custom.scm:156
+#: ../scm/sj3-custom.scm:161 ../scm/skk-custom.scm:207
+#: ../scm/wnn-custom.scm:161
 msgid "Romaji input mode"
 msgstr "ローマ字入力モード"
 
-#: scm/anthy-custom.scm:164 scm/anthy-utf8-custom.scm:171
-#: scm/canna-custom.scm:165 scm/mana-custom.scm:160
-#: scm/sj3-custom.scm:165 scm/wnn-custom.scm:165
+#: ../scm/anthy-custom.scm:164 ../scm/anthy-utf8-custom.scm:171
+#: ../scm/canna-custom.scm:165 ../scm/mana-custom.scm:160
+#: ../scm/sj3-custom.scm:165 ../scm/wnn-custom.scm:165
 msgid "Kana"
 msgstr "かな"
 
-#: scm/anthy-custom.scm:165 scm/anthy-utf8-custom.scm:172
-#: scm/canna-custom.scm:166 scm/mana-custom.scm:161
-#: scm/sj3-custom.scm:166 scm/wnn-custom.scm:166
+#: ../scm/anthy-custom.scm:165 ../scm/anthy-utf8-custom.scm:172
+#: ../scm/canna-custom.scm:166 ../scm/mana-custom.scm:161
+#: ../scm/sj3-custom.scm:166 ../scm/wnn-custom.scm:166
 msgid "Kana input mode"
 msgstr "かな入力モード"
 
-#: scm/anthy-custom.scm:169 scm/anthy-utf8-custom.scm:176
-#: scm/canna-custom.scm:170 scm/mana-custom.scm:165
-#: scm/sj3-custom.scm:170 scm/skk-custom.scm:211
-#: scm/wnn-custom.scm:170
+#: ../scm/anthy-custom.scm:169 ../scm/anthy-utf8-custom.scm:176
+#: ../scm/canna-custom.scm:170 ../scm/mana-custom.scm:165
+#: ../scm/sj3-custom.scm:170 ../scm/skk-custom.scm:211
+#: ../scm/wnn-custom.scm:170
 msgid "AZIK"
 msgstr "AZIK"
 
-#: scm/anthy-custom.scm:170 scm/anthy-utf8-custom.scm:177
-#: scm/canna-custom.scm:171 scm/mana-custom.scm:166
-#: scm/sj3-custom.scm:171 scm/skk-custom.scm:212
-#: scm/wnn-custom.scm:171
+#: ../scm/anthy-custom.scm:170 ../scm/anthy-utf8-custom.scm:177
+#: ../scm/canna-custom.scm:171 ../scm/mana-custom.scm:166
+#: ../scm/sj3-custom.scm:171 ../scm/skk-custom.scm:212
+#: ../scm/wnn-custom.scm:171
 msgid "AZIK extended romaji input mode"
 msgstr "AZIK拡張ローマ字入力モード"
 
-#: scm/anthy-custom.scm:179 scm/anthy-custom.scm:180
-#: scm/anthy-utf8-custom.scm:186 scm/anthy-utf8-custom.scm:187
-#: scm/canna-custom.scm:180 scm/canna-custom.scm:181
-#: scm/mana-custom.scm:175 scm/mana-custom.scm:176
-#: scm/sj3-custom.scm:180 scm/sj3-custom.scm:181
-#: scm/skk-custom.scm:221 scm/skk-custom.scm:222
-#: scm/wnn-custom.scm:180 scm/wnn-custom.scm:181
+#: ../scm/anthy-custom.scm:179 ../scm/anthy-custom.scm:180
+#: ../scm/anthy-utf8-custom.scm:186 ../scm/anthy-utf8-custom.scm:187
+#: ../scm/canna-custom.scm:180 ../scm/canna-custom.scm:181
+#: ../scm/mana-custom.scm:175 ../scm/mana-custom.scm:176
+#: ../scm/sj3-custom.scm:180 ../scm/sj3-custom.scm:181
+#: ../scm/skk-custom.scm:221 ../scm/skk-custom.scm:222
+#: ../scm/wnn-custom.scm:180 ../scm/wnn-custom.scm:181
 msgid "Input mode"
 msgstr "入力モード"
 
-#: scm/anthy-custom.scm:182 scm/anthy-custom.scm:183
-#: scm/anthy-utf8-custom.scm:189 scm/anthy-utf8-custom.scm:190
-#: scm/canna-custom.scm:183 scm/canna-custom.scm:184
-#: scm/mana-custom.scm:178 scm/mana-custom.scm:179
-#: scm/sj3-custom.scm:183 scm/sj3-custom.scm:184
-#: scm/skk-custom.scm:224 scm/skk-custom.scm:225
-#: scm/wnn-custom.scm:183 scm/wnn-custom.scm:184
+#: ../scm/anthy-custom.scm:182 ../scm/anthy-custom.scm:183
+#: ../scm/anthy-utf8-custom.scm:189 ../scm/anthy-utf8-custom.scm:190
+#: ../scm/canna-custom.scm:183 ../scm/canna-custom.scm:184
+#: ../scm/mana-custom.scm:178 ../scm/mana-custom.scm:179
+#: ../scm/sj3-custom.scm:183 ../scm/sj3-custom.scm:184
+#: ../scm/skk-custom.scm:224 ../scm/skk-custom.scm:225
+#: ../scm/wnn-custom.scm:183 ../scm/wnn-custom.scm:184
 msgid "Kana input method"
 msgstr "かな入力方式"
 
 # 「ツールバー上に表示するボタン」だと単に「ツールバー上への表示用途」というカテ
 # ゴリの限定の意に誤読されるので採用しない
-#: scm/anthy-custom.scm:184 scm/anthy-utf8-custom.scm:191
-#: scm/canna-custom.scm:185 scm/mana-custom.scm:180
-#: scm/sj3-custom.scm:185 scm/skk-custom.scm:226
-#: scm/wnn-custom.scm:185
+#: ../scm/anthy-custom.scm:184 ../scm/anthy-utf8-custom.scm:191
+#: ../scm/canna-custom.scm:185 ../scm/mana-custom.scm:180
+#: ../scm/sj3-custom.scm:185 ../scm/skk-custom.scm:226
+#: ../scm/wnn-custom.scm:185
 msgid "Enabled toolbar buttons"
 msgstr "有効にするボタン"
 
-#: scm/anthy-custom.scm:203 scm/anthy-utf8-custom.scm:210
-#: scm/canna-custom.scm:204 scm/mana-custom.scm:199
-#: scm/sj3-custom.scm:204 scm/skk-custom.scm:245
-#: scm/wnn-custom.scm:204
+#: ../scm/anthy-custom.scm:203 ../scm/anthy-utf8-custom.scm:210
+#: ../scm/canna-custom.scm:204 ../scm/mana-custom.scm:199
+#: ../scm/sj3-custom.scm:204 ../scm/skk-custom.scm:245
+#: ../scm/wnn-custom.scm:204
 msgid "Default input mode"
 msgstr "標準の入力モード"
 
-#: scm/anthy-custom.scm:212 scm/anthy-utf8-custom.scm:219
-#: scm/canna-custom.scm:213 scm/mana-custom.scm:208
-#: scm/sj3-custom.scm:213 scm/skk-custom.scm:254
-#: scm/wnn-custom.scm:213
+#: ../scm/anthy-custom.scm:212 ../scm/anthy-utf8-custom.scm:219
+#: ../scm/canna-custom.scm:213 ../scm/mana-custom.scm:208
+#: ../scm/sj3-custom.scm:213 ../scm/skk-custom.scm:254
+#: ../scm/wnn-custom.scm:213
 msgid "Input mode menu items"
 msgstr "入力モードのメニュー項目"
 
-#: scm/anthy-custom.scm:254 scm/anthy-utf8-custom.scm:261
-#: scm/canna-custom.scm:255 scm/mana-custom.scm:250
-#: scm/sj3-custom.scm:255 scm/skk-custom.scm:285
-#: scm/wnn-custom.scm:255
+#: ../scm/anthy-custom.scm:254 ../scm/anthy-utf8-custom.scm:261
+#: ../scm/canna-custom.scm:255 ../scm/mana-custom.scm:250
+#: ../scm/sj3-custom.scm:255 ../scm/skk-custom.scm:285
+#: ../scm/wnn-custom.scm:255
 msgid "Default kana input method"
 msgstr "標準のかな入力方式"
 
-#: scm/anthy-custom.scm:263 scm/anthy-utf8-custom.scm:270
-#: scm/canna-custom.scm:264 scm/mana-custom.scm:259
-#: scm/sj3-custom.scm:264 scm/skk-custom.scm:294
-#: scm/wnn-custom.scm:264
+#: ../scm/anthy-custom.scm:263 ../scm/anthy-utf8-custom.scm:270
+#: ../scm/canna-custom.scm:264 ../scm/mana-custom.scm:259
+#: ../scm/sj3-custom.scm:264 ../scm/skk-custom.scm:294
+#: ../scm/wnn-custom.scm:264
 msgid "Kana input method menu items"
 msgstr "かな入力方式のメニュー項目"
 
-#: scm/anthy-custom.scm:301 scm/anthy-utf8-custom.scm:308
+#: ../scm/anthy-custom.scm:301 ../scm/anthy-utf8-custom.scm:308
 msgid "Enable input prediction"
 msgstr "予測入力を有効にする"
 
-#: scm/anthy-custom.scm:307 scm/anthy-utf8-custom.scm:314
+#: ../scm/anthy-custom.scm:307 ../scm/anthy-utf8-custom.scm:314
 msgid "Select prediction candidate by numeral keys"
 msgstr "数字キーで予測候補を選択する"
 
-#: scm/anthy-custom.scm:313 scm/anthy-utf8-custom.scm:320
+#: ../scm/anthy-custom.scm:313 ../scm/anthy-utf8-custom.scm:320
 msgid "Show selected prediction candidate in preedit area"
 msgstr "編集領域内に選んだ予測候補を表示する"
 
-#: scm/anthy-custom.scm:340 scm/anthy-utf8-custom.scm:347
-#: scm/canna-custom.scm:376 scm/mana-custom.scm:297
-#: scm/prime-custom.scm:155 scm/sj3-custom.scm:331
-#: scm/skk-custom.scm:502 scm/tutcode-custom.scm:80
-#: scm/wnn-custom.scm:331
+#: ../scm/anthy-custom.scm:340 ../scm/anthy-utf8-custom.scm:347
+#: ../scm/canna-custom.scm:376 ../scm/mana-custom.scm:297
+#: ../scm/prime-custom.scm:155 ../scm/sj3-custom.scm:331
+#: ../scm/skk-custom.scm:502 ../scm/tutcode-custom.scm:80
+#: ../scm/wnn-custom.scm:331
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
 
-#: scm/anthy-custom.scm:346 scm/anthy-utf8-custom.scm:353
-#: scm/canna-custom.scm:382 scm/mana-custom.scm:303
-#: scm/sj3-custom.scm:337 scm/wnn-custom.scm:337
+#: ../scm/anthy-custom.scm:346 ../scm/anthy-utf8-custom.scm:353
+#: ../scm/canna-custom.scm:382 ../scm/mana-custom.scm:303
+#: ../scm/sj3-custom.scm:337 ../scm/wnn-custom.scm:337
 msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr "直接入力モード(off状態)時も入力モード切り替えキーを有効にする"
 
-#: scm/anthy-key-custom.scm:36
+#: ../scm/anthy-key-custom.scm:36
 msgid "Anthy key bindings 1"
 msgstr "Anthy キー設定1"
 
-#: scm/anthy-key-custom.scm:40
+#: ../scm/anthy-key-custom.scm:40
 msgid "Anthy key bindings 2"
 msgstr "Anthy キー設定2"
 
-#: scm/anthy-key-custom.scm:44
+#: ../scm/anthy-key-custom.scm:44
 msgid "Anthy key bindings 3"
 msgstr "Anthy キー設定3"
 
-#: scm/anthy-key-custom.scm:48
+#: ../scm/anthy-key-custom.scm:48
 msgid "Anthy key bindings 4"
 msgstr "Anthy キー設定4"
 
-#: scm/anthy-key-custom.scm:54
+#: ../scm/anthy-key-custom.scm:54
 msgid "[Anthy] next segment"
 msgstr "[Anthy] 次文節"
 
-#: scm/anthy-key-custom.scm:55 scm/anthy-key-custom.scm:61
-#: scm/anthy-key-custom.scm:67 scm/anthy-key-custom.scm:73
-#: scm/anthy-key-custom.scm:79 scm/anthy-key-custom.scm:85
-#: scm/anthy-key-custom.scm:91 scm/anthy-key-custom.scm:97
-#: scm/anthy-key-custom.scm:103 scm/anthy-key-custom.scm:109
-#: scm/anthy-key-custom.scm:119 scm/anthy-key-custom.scm:125
-#: scm/anthy-key-custom.scm:131 scm/anthy-key-custom.scm:137
-#: scm/anthy-key-custom.scm:143 scm/anthy-key-custom.scm:149
-#: scm/anthy-key-custom.scm:155 scm/anthy-key-custom.scm:161
-#: scm/anthy-key-custom.scm:167 scm/anthy-key-custom.scm:177
-#: scm/anthy-key-custom.scm:183 scm/anthy-key-custom.scm:189
-#: scm/anthy-key-custom.scm:195 scm/anthy-key-custom.scm:201
-#: scm/anthy-key-custom.scm:207 scm/anthy-key-custom.scm:213
-#: scm/anthy-key-custom.scm:219 scm/anthy-key-custom.scm:225
-#: scm/anthy-key-custom.scm:235 scm/anthy-key-custom.scm:241
-#: scm/anthy-key-custom.scm:247 scm/anthy-key-custom.scm:253
-#: scm/anthy-key-custom.scm:259 scm/anthy-key-custom.scm:265
-#: scm/anthy-key-custom.scm:271 scm/anthy-key-custom.scm:277
-#: scm/anthy-key-custom.scm:283 scm/byeoru-key-custom.scm:48
-#: scm/byeoru-key-custom.scm:54 scm/byeoru-key-custom.scm:60
-#: scm/byeoru-key-custom.scm:66 scm/byeoru-key-custom.scm:72
-#: scm/byeoru-key-custom.scm:78 scm/byeoru-key-custom.scm:84
-#: scm/byeoru-key-custom.scm:90 scm/byeoru-key-custom.scm:96
-#: scm/byeoru-key-custom.scm:102 scm/byeoru-key-custom.scm:108
-#: scm/byeoru-key-custom.scm:114 scm/byeoru-key-custom.scm:120
-#: scm/byeoru-key-custom.scm:126 scm/byeoru-key-custom.scm:132
-#: scm/canna-key-custom.scm:55 scm/canna-key-custom.scm:61
-#: scm/canna-key-custom.scm:67 scm/canna-key-custom.scm:73
-#: scm/canna-key-custom.scm:79 scm/canna-key-custom.scm:85
-#: scm/canna-key-custom.scm:91 scm/canna-key-custom.scm:97
-#: scm/canna-key-custom.scm:103 scm/canna-key-custom.scm:109
-#: scm/canna-key-custom.scm:118 scm/canna-key-custom.scm:125
-#: scm/canna-key-custom.scm:131 scm/canna-key-custom.scm:137
-#: scm/canna-key-custom.scm:143 scm/canna-key-custom.scm:149
-#: scm/canna-key-custom.scm:155 scm/canna-key-custom.scm:161
-#: scm/canna-key-custom.scm:167 scm/canna-key-custom.scm:176
-#: scm/canna-key-custom.scm:182 scm/canna-key-custom.scm:188
-#: scm/canna-key-custom.scm:194 scm/canna-key-custom.scm:200
-#: scm/canna-key-custom.scm:206 scm/canna-key-custom.scm:212
-#: scm/canna-key-custom.scm:218 scm/canna-key-custom.scm:224
-#: scm/canna-key-custom.scm:234 scm/canna-key-custom.scm:240
-#: scm/canna-key-custom.scm:246 scm/canna-key-custom.scm:252
-#: scm/canna-key-custom.scm:258 scm/canna-key-custom.scm:264
-#: scm/canna-key-custom.scm:270 scm/elatin-custom.scm:292
-#: scm/elatin-custom.scm:298 scm/elatin-custom.scm:304
-#: scm/generic-key-custom.scm:48 scm/generic-key-custom.scm:54
-#: scm/generic-key-custom.scm:60 scm/generic-key-custom.scm:66
-#: scm/generic-key-custom.scm:72 scm/generic-key-custom.scm:78
-#: scm/generic-key-custom.scm:84 scm/generic-key-custom.scm:90
-#: scm/generic-key-custom.scm:96 scm/generic-key-custom.scm:106
-#: scm/generic-key-custom.scm:112 scm/generic-key-custom.scm:118
-#: scm/generic-key-custom.scm:124 scm/generic-key-custom.scm:130
-#: scm/generic-key-custom.scm:136 scm/generic-key-custom.scm:142
-#: scm/generic-key-custom.scm:148 scm/generic-key-custom.scm:154
-#: scm/look-custom.scm:72 scm/look-custom.scm:78
-#: scm/look-custom.scm:84 scm/look-custom.scm:90
-#: scm/look-custom.scm:96 scm/look-custom.scm:102
-#: scm/look-custom.scm:108 scm/look-custom.scm:114
-#: scm/look-custom.scm:120 scm/look-custom.scm:126
-#: scm/look-custom.scm:132 scm/mana-key-custom.scm:55
-#: scm/mana-key-custom.scm:61 scm/mana-key-custom.scm:67
-#: scm/mana-key-custom.scm:73 scm/mana-key-custom.scm:79
-#: scm/mana-key-custom.scm:85 scm/mana-key-custom.scm:91
-#: scm/mana-key-custom.scm:97 scm/mana-key-custom.scm:103
-#: scm/mana-key-custom.scm:109 scm/mana-key-custom.scm:119
-#: scm/mana-key-custom.scm:125 scm/mana-key-custom.scm:131
-#: scm/mana-key-custom.scm:137 scm/mana-key-custom.scm:143
-#: scm/mana-key-custom.scm:149 scm/mana-key-custom.scm:155
-#: scm/mana-key-custom.scm:161 scm/mana-key-custom.scm:167
-#: scm/mana-key-custom.scm:177 scm/mana-key-custom.scm:183
-#: scm/mana-key-custom.scm:189 scm/mana-key-custom.scm:195
-#: scm/mana-key-custom.scm:201 scm/mana-key-custom.scm:207
-#: scm/mana-key-custom.scm:213 scm/mana-key-custom.scm:219
-#: scm/mana-key-custom.scm:225 scm/mana-key-custom.scm:233
-#: scm/mana-key-custom.scm:239 scm/mana-key-custom.scm:245
-#: scm/mana-key-custom.scm:251 scm/mana-key-custom.scm:257
-#: scm/mana-key-custom.scm:263 scm/mana-key-custom.scm:269
-#: scm/prime-key-custom.scm:80 scm/prime-key-custom.scm:86
-#: scm/prime-key-custom.scm:92 scm/prime-key-custom.scm:98
-#: scm/prime-key-custom.scm:104 scm/prime-key-custom.scm:110
-#: scm/prime-key-custom.scm:119 scm/prime-key-custom.scm:125
-#: scm/prime-key-custom.scm:131 scm/prime-key-custom.scm:137
-#: scm/prime-key-custom.scm:143 scm/prime-key-custom.scm:149
-#: scm/prime-key-custom.scm:155 scm/prime-key-custom.scm:161
-#: scm/prime-key-custom.scm:167 scm/prime-key-custom.scm:173
-#: scm/prime-key-custom.scm:182 scm/prime-key-custom.scm:188
-#: scm/prime-key-custom.scm:194 scm/prime-key-custom.scm:200
-#: scm/prime-key-custom.scm:206 scm/prime-key-custom.scm:212
-#: scm/prime-key-custom.scm:218 scm/prime-key-custom.scm:224
-#: scm/prime-key-custom.scm:230 scm/prime-key-custom.scm:236
-#: scm/sj3-key-custom.scm:54 scm/sj3-key-custom.scm:60
-#: scm/sj3-key-custom.scm:66 scm/sj3-key-custom.scm:72
-#: scm/sj3-key-custom.scm:78 scm/sj3-key-custom.scm:84
-#: scm/sj3-key-custom.scm:90 scm/sj3-key-custom.scm:96
-#: scm/sj3-key-custom.scm:102 scm/sj3-key-custom.scm:108
-#: scm/sj3-key-custom.scm:117 scm/sj3-key-custom.scm:124
-#: scm/sj3-key-custom.scm:130 scm/sj3-key-custom.scm:136
-#: scm/sj3-key-custom.scm:142 scm/sj3-key-custom.scm:148
-#: scm/sj3-key-custom.scm:154 scm/sj3-key-custom.scm:160
-#: scm/sj3-key-custom.scm:166 scm/sj3-key-custom.scm:175
-#: scm/sj3-key-custom.scm:181 scm/sj3-key-custom.scm:187
-#: scm/sj3-key-custom.scm:193 scm/sj3-key-custom.scm:199
-#: scm/sj3-key-custom.scm:205 scm/sj3-key-custom.scm:211
-#: scm/sj3-key-custom.scm:217 scm/sj3-key-custom.scm:223
-#: scm/sj3-key-custom.scm:233 scm/sj3-key-custom.scm:239
-#: scm/sj3-key-custom.scm:245 scm/sj3-key-custom.scm:251
-#: scm/sj3-key-custom.scm:257 scm/sj3-key-custom.scm:263
-#: scm/sj3-key-custom.scm:269 scm/skk-key-custom.scm:93
-#: scm/skk-key-custom.scm:99 scm/skk-key-custom.scm:105
-#: scm/skk-key-custom.scm:111 scm/skk-key-custom.scm:117
-#: scm/skk-key-custom.scm:123 scm/skk-key-custom.scm:129
-#: scm/skk-key-custom.scm:135 scm/skk-key-custom.scm:141
-#: scm/skk-key-custom.scm:151 scm/skk-key-custom.scm:157
-#: scm/skk-key-custom.scm:163 scm/skk-key-custom.scm:169
-#: scm/skk-key-custom.scm:175 scm/skk-key-custom.scm:181
-#: scm/skk-key-custom.scm:187 scm/skk-key-custom.scm:193
-#: scm/skk-key-custom.scm:199 scm/skk-key-custom.scm:205
-#: scm/skk-key-custom.scm:211 scm/skk-key-custom.scm:217
-#: scm/skk-key-custom.scm:229 scm/skk-key-custom.scm:247
-#: scm/skk-key-custom.scm:253 scm/skk-key-custom.scm:259
-#: scm/skk-key-custom.scm:265 scm/skk-key-custom.scm:271
-#: scm/skk-key-custom.scm:277 scm/skk-key-custom.scm:283
-#: scm/tutcode-key-custom.scm:48 scm/tutcode-key-custom.scm:54
-#: scm/tutcode-key-custom.scm:60 scm/tutcode-key-custom.scm:66
-#: scm/tutcode-key-custom.scm:72 scm/tutcode-key-custom.scm:78
-#: scm/tutcode-key-custom.scm:84 scm/tutcode-key-custom.scm:90
-#: scm/tutcode-key-custom.scm:96 scm/tutcode-key-custom.scm:102
-#: scm/tutcode-key-custom.scm:108 scm/tutcode-key-custom.scm:114
-#: scm/tutcode-key-custom.scm:120 scm/tutcode-key-custom.scm:126
-#: scm/tutcode-key-custom.scm:132 scm/wnn-key-custom.scm:54
-#: scm/wnn-key-custom.scm:60 scm/wnn-key-custom.scm:66
-#: scm/wnn-key-custom.scm:72 scm/wnn-key-custom.scm:78
-#: scm/wnn-key-custom.scm:84 scm/wnn-key-custom.scm:90
-#: scm/wnn-key-custom.scm:96 scm/wnn-key-custom.scm:102
-#: scm/wnn-key-custom.scm:108 scm/wnn-key-custom.scm:117
-#: scm/wnn-key-custom.scm:124 scm/wnn-key-custom.scm:130
-#: scm/wnn-key-custom.scm:136 scm/wnn-key-custom.scm:142
-#: scm/wnn-key-custom.scm:148 scm/wnn-key-custom.scm:154
-#: scm/wnn-key-custom.scm:160 scm/wnn-key-custom.scm:166
-#: scm/wnn-key-custom.scm:175 scm/wnn-key-custom.scm:181
-#: scm/wnn-key-custom.scm:187 scm/wnn-key-custom.scm:193
-#: scm/wnn-key-custom.scm:199 scm/wnn-key-custom.scm:205
-#: scm/wnn-key-custom.scm:211 scm/wnn-key-custom.scm:217
-#: scm/wnn-key-custom.scm:223 scm/wnn-key-custom.scm:233
-#: scm/wnn-key-custom.scm:239 scm/wnn-key-custom.scm:245
-#: scm/wnn-key-custom.scm:251 scm/wnn-key-custom.scm:257
-#: scm/wnn-key-custom.scm:263 scm/wnn-key-custom.scm:269
+#: ../scm/anthy-key-custom.scm:55 ../scm/anthy-key-custom.scm:61
+#: ../scm/anthy-key-custom.scm:67 ../scm/anthy-key-custom.scm:73
+#: ../scm/anthy-key-custom.scm:79 ../scm/anthy-key-custom.scm:85
+#: ../scm/anthy-key-custom.scm:91 ../scm/anthy-key-custom.scm:97
+#: ../scm/anthy-key-custom.scm:103 ../scm/anthy-key-custom.scm:109
+#: ../scm/anthy-key-custom.scm:119 ../scm/anthy-key-custom.scm:125
+#: ../scm/anthy-key-custom.scm:131 ../scm/anthy-key-custom.scm:137
+#: ../scm/anthy-key-custom.scm:143 ../scm/anthy-key-custom.scm:149
+#: ../scm/anthy-key-custom.scm:155 ../scm/anthy-key-custom.scm:161
+#: ../scm/anthy-key-custom.scm:167 ../scm/anthy-key-custom.scm:177
+#: ../scm/anthy-key-custom.scm:183 ../scm/anthy-key-custom.scm:189
+#: ../scm/anthy-key-custom.scm:195 ../scm/anthy-key-custom.scm:201
+#: ../scm/anthy-key-custom.scm:207 ../scm/anthy-key-custom.scm:213
+#: ../scm/anthy-key-custom.scm:219 ../scm/anthy-key-custom.scm:225
+#: ../scm/anthy-key-custom.scm:235 ../scm/anthy-key-custom.scm:241
+#: ../scm/anthy-key-custom.scm:247 ../scm/anthy-key-custom.scm:253
+#: ../scm/anthy-key-custom.scm:259 ../scm/anthy-key-custom.scm:265
+#: ../scm/anthy-key-custom.scm:271 ../scm/anthy-key-custom.scm:277
+#: ../scm/anthy-key-custom.scm:283 ../scm/byeoru-key-custom.scm:48
+#: ../scm/byeoru-key-custom.scm:54 ../scm/byeoru-key-custom.scm:60
+#: ../scm/byeoru-key-custom.scm:66 ../scm/byeoru-key-custom.scm:72
+#: ../scm/byeoru-key-custom.scm:78 ../scm/byeoru-key-custom.scm:84
+#: ../scm/byeoru-key-custom.scm:90 ../scm/byeoru-key-custom.scm:96
+#: ../scm/byeoru-key-custom.scm:102 ../scm/byeoru-key-custom.scm:108
+#: ../scm/byeoru-key-custom.scm:114 ../scm/byeoru-key-custom.scm:120
+#: ../scm/byeoru-key-custom.scm:126 ../scm/byeoru-key-custom.scm:132
+#: ../scm/canna-key-custom.scm:55 ../scm/canna-key-custom.scm:61
+#: ../scm/canna-key-custom.scm:67 ../scm/canna-key-custom.scm:73
+#: ../scm/canna-key-custom.scm:79 ../scm/canna-key-custom.scm:85
+#: ../scm/canna-key-custom.scm:91 ../scm/canna-key-custom.scm:97
+#: ../scm/canna-key-custom.scm:103 ../scm/canna-key-custom.scm:109
+#: ../scm/canna-key-custom.scm:118 ../scm/canna-key-custom.scm:125
+#: ../scm/canna-key-custom.scm:131 ../scm/canna-key-custom.scm:137
+#: ../scm/canna-key-custom.scm:143 ../scm/canna-key-custom.scm:149
+#: ../scm/canna-key-custom.scm:155 ../scm/canna-key-custom.scm:161
+#: ../scm/canna-key-custom.scm:167 ../scm/canna-key-custom.scm:176
+#: ../scm/canna-key-custom.scm:182 ../scm/canna-key-custom.scm:188
+#: ../scm/canna-key-custom.scm:194 ../scm/canna-key-custom.scm:200
+#: ../scm/canna-key-custom.scm:206 ../scm/canna-key-custom.scm:212
+#: ../scm/canna-key-custom.scm:218 ../scm/canna-key-custom.scm:224
+#: ../scm/canna-key-custom.scm:234 ../scm/canna-key-custom.scm:240
+#: ../scm/canna-key-custom.scm:246 ../scm/canna-key-custom.scm:252
+#: ../scm/canna-key-custom.scm:258 ../scm/canna-key-custom.scm:264
+#: ../scm/canna-key-custom.scm:270 ../scm/elatin-custom.scm:292
+#: ../scm/elatin-custom.scm:298 ../scm/elatin-custom.scm:304
+#: ../scm/generic-key-custom.scm:48 ../scm/generic-key-custom.scm:54
+#: ../scm/generic-key-custom.scm:60 ../scm/generic-key-custom.scm:66
+#: ../scm/generic-key-custom.scm:72 ../scm/generic-key-custom.scm:78
+#: ../scm/generic-key-custom.scm:84 ../scm/generic-key-custom.scm:90
+#: ../scm/generic-key-custom.scm:96 ../scm/generic-key-custom.scm:106
+#: ../scm/generic-key-custom.scm:112 ../scm/generic-key-custom.scm:118
+#: ../scm/generic-key-custom.scm:124 ../scm/generic-key-custom.scm:130
+#: ../scm/generic-key-custom.scm:136 ../scm/generic-key-custom.scm:142
+#: ../scm/generic-key-custom.scm:148 ../scm/generic-key-custom.scm:154
+#: ../scm/look-custom.scm:72 ../scm/look-custom.scm:78
+#: ../scm/look-custom.scm:84 ../scm/look-custom.scm:90
+#: ../scm/look-custom.scm:96 ../scm/look-custom.scm:102
+#: ../scm/look-custom.scm:108 ../scm/look-custom.scm:114
+#: ../scm/look-custom.scm:120 ../scm/look-custom.scm:126
+#: ../scm/look-custom.scm:132 ../scm/mana-key-custom.scm:55
+#: ../scm/mana-key-custom.scm:61 ../scm/mana-key-custom.scm:67
+#: ../scm/mana-key-custom.scm:73 ../scm/mana-key-custom.scm:79
+#: ../scm/mana-key-custom.scm:85 ../scm/mana-key-custom.scm:91
+#: ../scm/mana-key-custom.scm:97 ../scm/mana-key-custom.scm:103
+#: ../scm/mana-key-custom.scm:109 ../scm/mana-key-custom.scm:119
+#: ../scm/mana-key-custom.scm:125 ../scm/mana-key-custom.scm:131
+#: ../scm/mana-key-custom.scm:137 ../scm/mana-key-custom.scm:143
+#: ../scm/mana-key-custom.scm:149 ../scm/mana-key-custom.scm:155
+#: ../scm/mana-key-custom.scm:161 ../scm/mana-key-custom.scm:167
+#: ../scm/mana-key-custom.scm:177 ../scm/mana-key-custom.scm:183
+#: ../scm/mana-key-custom.scm:189 ../scm/mana-key-custom.scm:195
+#: ../scm/mana-key-custom.scm:201 ../scm/mana-key-custom.scm:207
+#: ../scm/mana-key-custom.scm:213 ../scm/mana-key-custom.scm:219
+#: ../scm/mana-key-custom.scm:225 ../scm/mana-key-custom.scm:233
+#: ../scm/mana-key-custom.scm:239 ../scm/mana-key-custom.scm:245
+#: ../scm/mana-key-custom.scm:251 ../scm/mana-key-custom.scm:257
+#: ../scm/mana-key-custom.scm:263 ../scm/mana-key-custom.scm:269
+#: ../scm/prime-key-custom.scm:80 ../scm/prime-key-custom.scm:86
+#: ../scm/prime-key-custom.scm:92 ../scm/prime-key-custom.scm:98
+#: ../scm/prime-key-custom.scm:104 ../scm/prime-key-custom.scm:110
+#: ../scm/prime-key-custom.scm:119 ../scm/prime-key-custom.scm:125
+#: ../scm/prime-key-custom.scm:131 ../scm/prime-key-custom.scm:137
+#: ../scm/prime-key-custom.scm:143 ../scm/prime-key-custom.scm:149
+#: ../scm/prime-key-custom.scm:155 ../scm/prime-key-custom.scm:161
+#: ../scm/prime-key-custom.scm:167 ../scm/prime-key-custom.scm:173
+#: ../scm/prime-key-custom.scm:182 ../scm/prime-key-custom.scm:188
+#: ../scm/prime-key-custom.scm:194 ../scm/prime-key-custom.scm:200
+#: ../scm/prime-key-custom.scm:206 ../scm/prime-key-custom.scm:212
+#: ../scm/prime-key-custom.scm:218 ../scm/prime-key-custom.scm:224
+#: ../scm/prime-key-custom.scm:230 ../scm/prime-key-custom.scm:236
+#: ../scm/sj3-key-custom.scm:54 ../scm/sj3-key-custom.scm:60
+#: ../scm/sj3-key-custom.scm:66 ../scm/sj3-key-custom.scm:72
+#: ../scm/sj3-key-custom.scm:78 ../scm/sj3-key-custom.scm:84
+#: ../scm/sj3-key-custom.scm:90 ../scm/sj3-key-custom.scm:96
+#: ../scm/sj3-key-custom.scm:102 ../scm/sj3-key-custom.scm:108
+#: ../scm/sj3-key-custom.scm:117 ../scm/sj3-key-custom.scm:124
+#: ../scm/sj3-key-custom.scm:130 ../scm/sj3-key-custom.scm:136
+#: ../scm/sj3-key-custom.scm:142 ../scm/sj3-key-custom.scm:148
+#: ../scm/sj3-key-custom.scm:154 ../scm/sj3-key-custom.scm:160
+#: ../scm/sj3-key-custom.scm:166 ../scm/sj3-key-custom.scm:175
+#: ../scm/sj3-key-custom.scm:181 ../scm/sj3-key-custom.scm:187
+#: ../scm/sj3-key-custom.scm:193 ../scm/sj3-key-custom.scm:199
+#: ../scm/sj3-key-custom.scm:205 ../scm/sj3-key-custom.scm:211
+#: ../scm/sj3-key-custom.scm:217 ../scm/sj3-key-custom.scm:223
+#: ../scm/sj3-key-custom.scm:233 ../scm/sj3-key-custom.scm:239
+#: ../scm/sj3-key-custom.scm:245 ../scm/sj3-key-custom.scm:251
+#: ../scm/sj3-key-custom.scm:257 ../scm/sj3-key-custom.scm:263
+#: ../scm/sj3-key-custom.scm:269 ../scm/skk-key-custom.scm:93
+#: ../scm/skk-key-custom.scm:99 ../scm/skk-key-custom.scm:105
+#: ../scm/skk-key-custom.scm:111 ../scm/skk-key-custom.scm:117
+#: ../scm/skk-key-custom.scm:123 ../scm/skk-key-custom.scm:129
+#: ../scm/skk-key-custom.scm:135 ../scm/skk-key-custom.scm:141
+#: ../scm/skk-key-custom.scm:151 ../scm/skk-key-custom.scm:157
+#: ../scm/skk-key-custom.scm:163 ../scm/skk-key-custom.scm:169
+#: ../scm/skk-key-custom.scm:175 ../scm/skk-key-custom.scm:181
+#: ../scm/skk-key-custom.scm:187 ../scm/skk-key-custom.scm:193
+#: ../scm/skk-key-custom.scm:199 ../scm/skk-key-custom.scm:205
+#: ../scm/skk-key-custom.scm:211 ../scm/skk-key-custom.scm:217
+#: ../scm/skk-key-custom.scm:229 ../scm/skk-key-custom.scm:247
+#: ../scm/skk-key-custom.scm:253 ../scm/skk-key-custom.scm:259
+#: ../scm/skk-key-custom.scm:265 ../scm/skk-key-custom.scm:271
+#: ../scm/skk-key-custom.scm:277 ../scm/skk-key-custom.scm:283
+#: ../scm/tutcode-key-custom.scm:48 ../scm/tutcode-key-custom.scm:54
+#: ../scm/tutcode-key-custom.scm:60 ../scm/tutcode-key-custom.scm:66
+#: ../scm/tutcode-key-custom.scm:72 ../scm/tutcode-key-custom.scm:78
+#: ../scm/tutcode-key-custom.scm:84 ../scm/tutcode-key-custom.scm:90
+#: ../scm/tutcode-key-custom.scm:96 ../scm/tutcode-key-custom.scm:102
+#: ../scm/tutcode-key-custom.scm:108 ../scm/tutcode-key-custom.scm:114
+#: ../scm/tutcode-key-custom.scm:120 ../scm/tutcode-key-custom.scm:126
+#: ../scm/tutcode-key-custom.scm:132 ../scm/wnn-key-custom.scm:54
+#: ../scm/wnn-key-custom.scm:60 ../scm/wnn-key-custom.scm:66
+#: ../scm/wnn-key-custom.scm:72 ../scm/wnn-key-custom.scm:78
+#: ../scm/wnn-key-custom.scm:84 ../scm/wnn-key-custom.scm:90
+#: ../scm/wnn-key-custom.scm:96 ../scm/wnn-key-custom.scm:102
+#: ../scm/wnn-key-custom.scm:108 ../scm/wnn-key-custom.scm:117
+#: ../scm/wnn-key-custom.scm:124 ../scm/wnn-key-custom.scm:130
+#: ../scm/wnn-key-custom.scm:136 ../scm/wnn-key-custom.scm:142
+#: ../scm/wnn-key-custom.scm:148 ../scm/wnn-key-custom.scm:154
+#: ../scm/wnn-key-custom.scm:160 ../scm/wnn-key-custom.scm:166
+#: ../scm/wnn-key-custom.scm:175 ../scm/wnn-key-custom.scm:181
+#: ../scm/wnn-key-custom.scm:187 ../scm/wnn-key-custom.scm:193
+#: ../scm/wnn-key-custom.scm:199 ../scm/wnn-key-custom.scm:205
+#: ../scm/wnn-key-custom.scm:211 ../scm/wnn-key-custom.scm:217
+#: ../scm/wnn-key-custom.scm:223 ../scm/wnn-key-custom.scm:233
+#: ../scm/wnn-key-custom.scm:239 ../scm/wnn-key-custom.scm:245
+#: ../scm/wnn-key-custom.scm:251 ../scm/wnn-key-custom.scm:257
+#: ../scm/wnn-key-custom.scm:263 ../scm/wnn-key-custom.scm:269
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
-#: scm/anthy-key-custom.scm:60
+#: ../scm/anthy-key-custom.scm:60
 msgid "[Anthy] previous segment"
 msgstr "[Anthy] 前文節"
 
-#: scm/anthy-key-custom.scm:66
+#: ../scm/anthy-key-custom.scm:66
 msgid "[Anthy] extend segment"
 msgstr "[Anthy] 文節を伸ばす"
 
-#: scm/anthy-key-custom.scm:72
+#: ../scm/anthy-key-custom.scm:72
 msgid "[Anthy] shrink segment"
 msgstr "[Anthy] 文節を縮める"
 
-#: scm/anthy-key-custom.scm:78
+#: ../scm/anthy-key-custom.scm:78
 msgid "[Anthy] convert to hiragana"
 msgstr "[Anthy] ひらがなに変換"
 
-#: scm/anthy-key-custom.scm:84
+#: ../scm/anthy-key-custom.scm:84
 msgid "[Anthy] convert to katakana"
 msgstr "[Anthy] カタカナに変換"
 
-#: scm/anthy-key-custom.scm:90
+#: ../scm/anthy-key-custom.scm:90
 msgid "[Anthy] convert to halfwidth katakana"
 msgstr "[Anthy] 半角カタカナに変換"
 
-#: scm/anthy-key-custom.scm:96
+#: ../scm/anthy-key-custom.scm:96
 msgid "[Anthy] convert to halfwidth alphanumeric"
 msgstr "[Anthy] 半角英数字に変換"
 
-#: scm/anthy-key-custom.scm:102
+#: ../scm/anthy-key-custom.scm:102
 msgid "[Anthy] convert to fullwidth alphanumeric"
 msgstr "[Anthy] 全角英数字に変換"
 
-#: scm/anthy-key-custom.scm:108
+#: ../scm/anthy-key-custom.scm:108
 msgid "[Anthy] commit as transposed kana"
 msgstr "[Anthy] かな/カナ反転確定"
 
-#: scm/anthy-key-custom.scm:118
+#: ../scm/anthy-key-custom.scm:118
 msgid "[Anthy] on"
 msgstr "[Anthy] オン"
 
-#: scm/anthy-key-custom.scm:124
+#: ../scm/anthy-key-custom.scm:124
 msgid "[Anthy] off"
 msgstr "[Anthy] オフ"
 
-#: scm/anthy-key-custom.scm:130
+#: ../scm/anthy-key-custom.scm:130
 msgid "[Anthy] begin conversion"
 msgstr "[Anthy] 変換開始"
 
-#: scm/anthy-key-custom.scm:136
+#: ../scm/anthy-key-custom.scm:136
 msgid "[Anthy] commit"
 msgstr "[Anthy] 確定"
 
-#: scm/anthy-key-custom.scm:142
+#: ../scm/anthy-key-custom.scm:142
 msgid "[Anthy] cancel"
 msgstr "[Anthy] キャンセル"
 
-#: scm/anthy-key-custom.scm:148
+#: ../scm/anthy-key-custom.scm:148
 msgid "[Anthy] next candidate"
 msgstr "[Anthy] 次候補"
 
-#: scm/anthy-key-custom.scm:154
+#: ../scm/anthy-key-custom.scm:154
 msgid "[Anthy] previous candidate"
 msgstr "[Anthy] 前候補"
 
-#: scm/anthy-key-custom.scm:160
+#: ../scm/anthy-key-custom.scm:160
 msgid "[Anthy] next page of candidate window"
 msgstr "[Anthy] 候補ウィンドウの次ページ"
 
-#: scm/anthy-key-custom.scm:166
+#: ../scm/anthy-key-custom.scm:166
 msgid "[Anthy] previous page of candidate window"
 msgstr "[Anthy] 候補ウィンドウの前ページ"
 
-#: scm/anthy-key-custom.scm:176
+#: ../scm/anthy-key-custom.scm:176
 msgid "[Anthy] beginning of preedit"
 msgstr "[Anthy] 編集領域の先頭"
 
-#: scm/anthy-key-custom.scm:182
+#: ../scm/anthy-key-custom.scm:182
 msgid "[Anthy] end of preedit"
 msgstr "[Anthy] 編集領域の末尾"
 
-#: scm/anthy-key-custom.scm:188
+#: ../scm/anthy-key-custom.scm:188
 msgid "[Anthy] erase after cursor"
 msgstr "[Anthy] カーソル以降を消去"
 
-#: scm/anthy-key-custom.scm:194
+#: ../scm/anthy-key-custom.scm:194
 msgid "[Anthy] erase before cursor"
 msgstr "[Anthy] カーソル以前を消去"
 
-#: scm/anthy-key-custom.scm:200
+#: ../scm/anthy-key-custom.scm:200
 msgid "[Anthy] backspace"
 msgstr "[Anthy] バックスペース"
 
-#: scm/anthy-key-custom.scm:206
+#: ../scm/anthy-key-custom.scm:206
 msgid "[Anthy] delete"
 msgstr "[Anthy] デリート"
 
-#: scm/anthy-key-custom.scm:212
+#: ../scm/anthy-key-custom.scm:212
 msgid "[Anthy] go left"
 msgstr "[Anthy] 左に移動"
 
-#: scm/anthy-key-custom.scm:218
+#: ../scm/anthy-key-custom.scm:218
 msgid "[Anthy] go right"
 msgstr "[Anthy] 右に移動"
 
-#: scm/anthy-key-custom.scm:224
+#: ../scm/anthy-key-custom.scm:224
 msgid "[Anthy] ESC keys on vi-cooperative mode"
 msgstr "[Anthy] vi協調モードでESCとして扱うキー"
 
-#: scm/anthy-key-custom.scm:234
+#: ../scm/anthy-key-custom.scm:234
 msgid "[Anthy] hiragana mode"
 msgstr "[Anthy] ひらがな入力モード"
 
-#: scm/anthy-key-custom.scm:240
+#: ../scm/anthy-key-custom.scm:240
 msgid "[Anthy] katakana mode"
 msgstr "[Anthy] カタカナ入力モード"
 
-#: scm/anthy-key-custom.scm:246
+#: ../scm/anthy-key-custom.scm:246
 msgid "[Anthy] halfwidth katakana mode"
 msgstr "[Anthy] 半角カタカナ入力モード"
 
-#: scm/anthy-key-custom.scm:252
+#: ../scm/anthy-key-custom.scm:252
 msgid "[Anthy] halfwidth alphanumeric mode"
 msgstr "[Anthy] 半角英数入力モード"
 
-#: scm/anthy-key-custom.scm:258
+#: ../scm/anthy-key-custom.scm:258
 msgid "[Anthy] fullwidth alphanumeric mode"
 msgstr "[Anthy] 全角英数入力モード"
 
-#: scm/anthy-key-custom.scm:264
+#: ../scm/anthy-key-custom.scm:264
 msgid "[Anthy] toggle hiragana/katakana mode"
 msgstr "[Anthy] ひらがな/カタカナ入力モードを反転"
 
-#: scm/anthy-key-custom.scm:270
+#: ../scm/anthy-key-custom.scm:270
 msgid "[Anthy] toggle kana/alphanumeric mode"
 msgstr "[Anthy] かな/英数入力モードを反転"
 
-#: scm/anthy-key-custom.scm:276
+#: ../scm/anthy-key-custom.scm:276
 msgid "[Anthy] Next prediction candidate"
 msgstr "[Anthy] 次予測候補"
 
-#: scm/anthy-key-custom.scm:282
+#: ../scm/anthy-key-custom.scm:282
 msgid "[Anthy] Previous prediction candidate"
 msgstr "[Anthy] 前予測候補"
 
-#: scm/anthy-utf8-custom.scm:38
+#: ../scm/anthy-utf8-custom.scm:38
 msgid "Anthy (UTF-8)"
 msgstr ""
 
-#: scm/byeoru-custom.scm:35
+#: ../scm/byeoru-custom.scm:35
 msgid "Byeoru"
 msgstr "Byeoru"
 
-#: scm/byeoru-custom.scm:36
+#: ../scm/byeoru-custom.scm:36
 msgid "The Byeoru Hangul input suite"
 msgstr "Byeoru ハングル入力スイート"
 
 #. for future use
-#: scm/byeoru-custom.scm:38
+#: ../scm/byeoru-custom.scm:38
 msgid ""
 "A comprehensive input method suite for Hangul. This covers most of the major "
 "input methods such as 2-beol and 3-beol variants, and provides features such "
@@ -1516,390 +1516,390 @@ msgstr ""
 "す。このスイート名 \"Byeoru\" は韓国語で \"硯\" を意味します。"
 
 #. 2-beol can not be orderless.
-#: scm/byeoru-custom.scm:44
+#: ../scm/byeoru-custom.scm:44
 #, fuzzy
 msgid "Hangul 2-beol Windows"
 msgstr "ハングル2ボル式"
 
-#: scm/byeoru-custom.scm:45
+#: ../scm/byeoru-custom.scm:45
 msgid "Hangul 2-beol keyboard that maps an undefined shifted key to a jamo"
 msgstr ""
 
 #. 2-beol can not be orderless.
-#: scm/byeoru-custom.scm:48
+#: ../scm/byeoru-custom.scm:48
 #, fuzzy
 msgid "Hangul 2-beol Hanterm"
 msgstr "ハングル2ボル式"
 
-#: scm/byeoru-custom.scm:49
+#: ../scm/byeoru-custom.scm:49
 msgid ""
 "Hangul 2-beol keyboard that maps an undefined shifted key to an alphabet"
 msgstr ""
 
 #. neither can strict 3-beol.
-#: scm/byeoru-custom.scm:52
+#: ../scm/byeoru-custom.scm:52
 msgid "Hangul 3-beol final strict"
 msgstr "ハングル3ボル式最終版 (厳密)"
 
-#: scm/byeoru-custom.scm:53
+#: ../scm/byeoru-custom.scm:53
 msgid "Hangul 3-beol that forbids composition of precomposed jamos"
 msgstr "構成済み字母の合成を禁止するハングル3ボル式"
 
 #. generous 3-beol can be orderless.
-#: scm/byeoru-custom.scm:56
+#: ../scm/byeoru-custom.scm:56
 msgid "Hangul 3-beol final generous"
 msgstr "ハングル3ボル式最終版 (寛容)"
 
-#: scm/byeoru-custom.scm:57
+#: ../scm/byeoru-custom.scm:57
 msgid "Hangul 3-beol that allows composition of precomposed jamos"
 msgstr "構成済み字母の合成を許可するハングル3ボル式"
 
-#: scm/byeoru-custom.scm:60
+#: ../scm/byeoru-custom.scm:60
 msgid "Hangul 390 strict"
 msgstr "ハングル390式 (厳密)"
 
-#: scm/byeoru-custom.scm:61
+#: ../scm/byeoru-custom.scm:61
 msgid "Hangul 390 that forbids composition of precomposed jamos"
 msgstr "構成済み字母の合成を禁止するハングル390式"
 
-#: scm/byeoru-custom.scm:64
+#: ../scm/byeoru-custom.scm:64
 msgid "Hangul 390 generous"
 msgstr "ハングル390式 (寛容)"
 
-#: scm/byeoru-custom.scm:65
+#: ../scm/byeoru-custom.scm:65
 msgid "Hangul 390 that allows composition of precomposed jamos"
 msgstr "構成済み字母の合成を許可するハングル390式"
 
-#: scm/byeoru-custom.scm:68
+#: ../scm/byeoru-custom.scm:68
 msgid "Hangul 3-beol no-shift"
 msgstr "ハングル3ボル式 (シフトなし)"
 
-#: scm/byeoru-custom.scm:69
+#: ../scm/byeoru-custom.scm:69
 msgid "Hangul 3-beol that does not require any shift key press"
 msgstr "シフトキー押下を必要としないハングル3ボル式"
 
 #. romaja can not be orderless.
-#: scm/byeoru-custom.scm:72
+#: ../scm/byeoru-custom.scm:72
 msgid "Hangul romaja"
 msgstr "ハングルローマ字式"
 
-#: scm/byeoru-custom.scm:73
+#: ../scm/byeoru-custom.scm:73
 msgid "Hangul romaja in the style of HWP 2004"
 msgstr "HWP2004スタイルのハングルローマ字式"
 
-#: scm/byeoru-custom.scm:82
+#: ../scm/byeoru-custom.scm:82
 msgid "Keyboard"
 msgstr "キーボード"
 
-#: scm/byeoru-custom.scm:86 scm/elatin-custom.scm:43
+#: ../scm/byeoru-custom.scm:86 ../scm/elatin-custom.scm:43
 msgid "Properties"
 msgstr "プロパティ"
 
-#: scm/byeoru-custom.scm:90
+#: ../scm/byeoru-custom.scm:90
 msgid "Workarounds"
 msgstr "その他"
 
-#: scm/byeoru-custom.scm:105
+#: ../scm/byeoru-custom.scm:105
 msgid "Hangul keyboard layout"
 msgstr "ハングルキーボードのレイアウト"
 
-#: scm/byeoru-custom.scm:112
+#: ../scm/byeoru-custom.scm:112
 msgid "ordered"
 msgstr "順序あり"
 
-#: scm/byeoru-custom.scm:115
+#: ../scm/byeoru-custom.scm:115
 msgid "orderless"
 msgstr "順序なし"
 
-#: scm/byeoru-custom.scm:118
+#: ../scm/byeoru-custom.scm:118
 msgid "more orderless"
 msgstr "さらに順序なし"
 
-#: scm/byeoru-custom.scm:120
+#: ../scm/byeoru-custom.scm:120
 msgid "Jamo input is"
 msgstr "字母入力"
 
-#: scm/byeoru-custom.scm:132
+#: ../scm/byeoru-custom.scm:132
 msgid "ESC turns off Hangul mode (for vi users)"
 msgstr "ESCキーでハングルモードをオフにする (viユーザ向け)"
 
-#: scm/byeoru-custom.scm:138
+#: ../scm/byeoru-custom.scm:138
 msgid "Default unit of commitment is word"
 msgstr "標準の確定単位を単語にする"
 
-#: scm/byeoru-custom.scm:144
+#: ../scm/byeoru-custom.scm:144
 msgid "Shifted roman vowel inputs an isolated vowel"
 msgstr "シフト+ローマ字母音で単母音を入力する"
 
-#: scm/byeoru-custom.scm:155
+#: ../scm/byeoru-custom.scm:155
 msgid "Candidate window size"
 msgstr "候補ウィンドウのサイズ"
 
-#: scm/byeoru-custom.scm:161
+#: ../scm/byeoru-custom.scm:161
 msgid "Symbol cache size"
 msgstr "記号のキャッシュサイズ"
 
-#: scm/byeoru-custom.scm:168
+#: ../scm/byeoru-custom.scm:168
 msgid "Represent incomplete syllables using compatibility jamos"
 msgstr "互換字母を使用して構成中の音節を表す"
 
-#: scm/byeoru-key-custom.scm:36
+#: ../scm/byeoru-key-custom.scm:36
 msgid "Byeoru key bindings 1"
 msgstr "Byeoru キー設定1"
 
-#: scm/byeoru-key-custom.scm:40
+#: ../scm/byeoru-key-custom.scm:40
 msgid "Byeoru key bindings 2"
 msgstr "Byeoru キー設定2"
 
-#: scm/byeoru-key-custom.scm:47
+#: ../scm/byeoru-key-custom.scm:47
 msgid "[Byeoru] on"
 msgstr "[Byeoru] オン"
 
-#: scm/byeoru-key-custom.scm:53
+#: ../scm/byeoru-key-custom.scm:53
 msgid "[Byeoru] off"
 msgstr "[Byeoru] オフ"
 
-#: scm/byeoru-key-custom.scm:59
+#: ../scm/byeoru-key-custom.scm:59
 msgid "[Byeoru] convert Hangul to Chinese characters"
 msgstr "[Byeoru] ハングルから漢字へ変換"
 
-#: scm/byeoru-key-custom.scm:65
+#: ../scm/byeoru-key-custom.scm:65
 msgid "[Byeoru] confirm conversion"
 msgstr "[Byeoru] 変換確定"
 
-#: scm/byeoru-key-custom.scm:71
+#: ../scm/byeoru-key-custom.scm:71
 msgid "[Byeoru] cancel conversion"
 msgstr "[Byeoru] 変換キャンセル"
 
-#: scm/byeoru-key-custom.scm:77
+#: ../scm/byeoru-key-custom.scm:77
 msgid "[Byeoru] next candidate"
 msgstr "[Byeoru] 次候補"
 
-#: scm/byeoru-key-custom.scm:83
+#: ../scm/byeoru-key-custom.scm:83
 msgid "[Byeoru] previous candidate"
 msgstr "[Byeoru] 前候補"
 
-#: scm/byeoru-key-custom.scm:89
+#: ../scm/byeoru-key-custom.scm:89
 msgid "[Byeoru] next page of candidate window"
 msgstr "[Byeoru] 候補ウィンドウの次ページ"
 
-#: scm/byeoru-key-custom.scm:95
+#: ../scm/byeoru-key-custom.scm:95
 msgid "[Byeoru] previous page of candidate window"
 msgstr "[Byeoru] 候補ウィンドウの前ページ"
 
-#: scm/byeoru-key-custom.scm:101
+#: ../scm/byeoru-key-custom.scm:101
 msgid "[Byeoru] backspace"
 msgstr "[Byeoru] バックスペース"
 
-#: scm/byeoru-key-custom.scm:107
+#: ../scm/byeoru-key-custom.scm:107
 msgid "[Byeoru] delete"
 msgstr "[Byeoru] デリート"
 
-#: scm/byeoru-key-custom.scm:113
+#: ../scm/byeoru-key-custom.scm:113
 msgid "[Byeoru] go left"
 msgstr "[Byeoru] 左に移動"
 
-#: scm/byeoru-key-custom.scm:119
+#: ../scm/byeoru-key-custom.scm:119
 msgid "[Byeoru] go right"
 msgstr "[Byeoru] 右に移動"
 
-#: scm/byeoru-key-custom.scm:125
+#: ../scm/byeoru-key-custom.scm:125
 msgid "[Byeoru] beginning of word"
 msgstr "[Byeoru] 単語の先頭"
 
-#: scm/byeoru-key-custom.scm:131
+#: ../scm/byeoru-key-custom.scm:131
 msgid "[Byeoru] end of word"
 msgstr "[Byeoru] 単語の末尾"
 
-#: scm/canna-custom.scm:35
+#: ../scm/canna-custom.scm:35
 msgid "Canna"
 msgstr "Canna"
 
-#: scm/canna-custom.scm:43
+#: ../scm/canna-custom.scm:43
 msgid "Canna server"
 msgstr "Canna サーバ"
 
-#: scm/canna-custom.scm:47
+#: ../scm/canna-custom.scm:47
 msgid "Canna (advanced)"
 msgstr "Canna (高度)"
 
-#: scm/canna-custom.scm:313
+#: ../scm/canna-custom.scm:313
 msgid "Specify Canna server"
 msgstr "Cannaサーバを指定する"
 
-#: scm/canna-custom.scm:319
+#: ../scm/canna-custom.scm:319
 msgid "Canna server name"
 msgstr "Cannaサーバ名"
 
-#: scm/canna-key-custom.scm:36
+#: ../scm/canna-key-custom.scm:36
 msgid "Canna key bindings 1"
 msgstr "Canna キー設定1"
 
-#: scm/canna-key-custom.scm:40
+#: ../scm/canna-key-custom.scm:40
 msgid "Canna key bindings 2"
 msgstr "Canna キー設定2"
 
-#: scm/canna-key-custom.scm:44
+#: ../scm/canna-key-custom.scm:44
 msgid "Canna key bindings 3"
 msgstr "Canna キー設定3"
 
-#: scm/canna-key-custom.scm:48
+#: ../scm/canna-key-custom.scm:48
 msgid "Canna key bindings 4"
 msgstr "Canna キー設定4"
 
-#: scm/canna-key-custom.scm:54
+#: ../scm/canna-key-custom.scm:54
 msgid "[Canna] next segment"
 msgstr "[Canna] 次の文節"
 
-#: scm/canna-key-custom.scm:60
+#: ../scm/canna-key-custom.scm:60
 msgid "[Canna] previous segment"
 msgstr "[Canna] 前の文節"
 
-#: scm/canna-key-custom.scm:66
+#: ../scm/canna-key-custom.scm:66
 msgid "[Canna] extend segment"
 msgstr "[Canna] 文節を伸ばす"
 
-#: scm/canna-key-custom.scm:72
+#: ../scm/canna-key-custom.scm:72
 msgid "[Canna] shrink segment"
 msgstr "[Canna] 文節を縮める"
 
-#: scm/canna-key-custom.scm:78
+#: ../scm/canna-key-custom.scm:78
 msgid "[Canna] convert to hiragana"
 msgstr "[Canna] ひらがなに変換"
 
-#: scm/canna-key-custom.scm:84
+#: ../scm/canna-key-custom.scm:84
 msgid "[Canna] convert to katakana"
 msgstr "[Canna] カタカナに変換"
 
-#: scm/canna-key-custom.scm:90
+#: ../scm/canna-key-custom.scm:90
 msgid "[Canna] convert to halfwidth katakana"
 msgstr "[Canna] 半角カタカナに変換"
 
-#: scm/canna-key-custom.scm:96
+#: ../scm/canna-key-custom.scm:96
 msgid "[Canna] convert to halfwidth alphanumeric"
 msgstr "[Canna] 半角英数字に変換"
 
-#: scm/canna-key-custom.scm:102
+#: ../scm/canna-key-custom.scm:102
 msgid "[Canna] convert to fullwidth alphanumeric"
 msgstr "[Canna] 全角英数字に変換"
 
-#: scm/canna-key-custom.scm:108
+#: ../scm/canna-key-custom.scm:108
 msgid "[Canna] commit as transposed kana"
 msgstr "[Canna] かな/カナ反転確定"
 
-#: scm/canna-key-custom.scm:117
+#: ../scm/canna-key-custom.scm:117
 msgid "[Canna] on"
 msgstr "[Canna] オン"
 
-#: scm/canna-key-custom.scm:124
+#: ../scm/canna-key-custom.scm:124
 msgid "[Canna] off"
 msgstr "[Canna] オフ"
 
-#: scm/canna-key-custom.scm:130
+#: ../scm/canna-key-custom.scm:130
 msgid "[Canna] begin conversion"
 msgstr "[Canna] 変換開始"
 
-#: scm/canna-key-custom.scm:136
+#: ../scm/canna-key-custom.scm:136
 msgid "[Canna] commit"
 msgstr "[Canna] 確定"
 
-#: scm/canna-key-custom.scm:142
+#: ../scm/canna-key-custom.scm:142
 msgid "[Canna] cancel"
 msgstr "[Canna] キャンセル"
 
-#: scm/canna-key-custom.scm:148
+#: ../scm/canna-key-custom.scm:148
 msgid "[Canna] next candidate"
 msgstr "[Canna] 次候補"
 
-#: scm/canna-key-custom.scm:154
+#: ../scm/canna-key-custom.scm:154
 msgid "[Canna] previous candidate"
 msgstr "[Canna] 前候補"
 
-#: scm/canna-key-custom.scm:160
+#: ../scm/canna-key-custom.scm:160
 msgid "[Canna] next page of candidate window"
 msgstr "[Canna] 候補ウィンドウの次ページ"
 
-#: scm/canna-key-custom.scm:166
+#: ../scm/canna-key-custom.scm:166
 msgid "[Canna] previous page of candidate window"
 msgstr "[Canna] 候補ウィンドウの前ページ"
 
-#: scm/canna-key-custom.scm:175
+#: ../scm/canna-key-custom.scm:175
 msgid "[Canna] beginning of preedit"
 msgstr "[Canna] 編集領域の先頭"
 
-#: scm/canna-key-custom.scm:181
+#: ../scm/canna-key-custom.scm:181
 msgid "[Canna] end of preedit"
 msgstr "[Canna] 編集領域の末尾"
 
-#: scm/canna-key-custom.scm:187
+#: ../scm/canna-key-custom.scm:187
 msgid "[Canna] erase after cursor"
 msgstr "[Canna] カーソル以降を消去"
 
-#: scm/canna-key-custom.scm:193
+#: ../scm/canna-key-custom.scm:193
 msgid "[Canna] erase before cursor"
 msgstr "[Canna] カーソル以前を消去"
 
-#: scm/canna-key-custom.scm:199
+#: ../scm/canna-key-custom.scm:199
 msgid "[Canna] backspace"
 msgstr "[Canna] バックスペース"
 
-#: scm/canna-key-custom.scm:205
+#: ../scm/canna-key-custom.scm:205
 msgid "[Canna] delete"
 msgstr "[Canna] デリート"
 
-#: scm/canna-key-custom.scm:211
+#: ../scm/canna-key-custom.scm:211
 msgid "[Canna] go left"
 msgstr "[Canna] 左に移動"
 
-#: scm/canna-key-custom.scm:217
+#: ../scm/canna-key-custom.scm:217
 msgid "[Canna] go right"
 msgstr "[Canna] 右に移動"
 
-#: scm/canna-key-custom.scm:223
+#: ../scm/canna-key-custom.scm:223
 msgid "[Canna] ESC keys on vi-cooperative mode"
 msgstr "[Canna] vi協調モードでESCとして扱うキー"
 
-#: scm/canna-key-custom.scm:233
+#: ../scm/canna-key-custom.scm:233
 msgid "[Canna] hiragana mode"
 msgstr "[Canna] ひらがな入力モード"
 
-#: scm/canna-key-custom.scm:239
+#: ../scm/canna-key-custom.scm:239
 msgid "[Canna] katakana mode"
 msgstr "[Canna] カタカナ入力モード"
 
-#: scm/canna-key-custom.scm:245
+#: ../scm/canna-key-custom.scm:245
 msgid "[Canna] halfwidth katakana mode"
 msgstr "[Canna] 半角カタカナ入力モード"
 
-#: scm/canna-key-custom.scm:251
+#: ../scm/canna-key-custom.scm:251
 msgid "[Canna] halfwidth alphanumeric mode"
 msgstr "[Canna] 半角英数入力モード"
 
-#: scm/canna-key-custom.scm:257
+#: ../scm/canna-key-custom.scm:257
 msgid "[Canna] fullwidth alphanumeric mode"
 msgstr "[Canna] 全角英数入力モード"
 
-#: scm/canna-key-custom.scm:263
+#: ../scm/canna-key-custom.scm:263
 msgid "[Canna] toggle hiragana/katakana mode"
 msgstr "[Canna] ひらがな/カタカナ入力モードを反転"
 
-#: scm/canna-key-custom.scm:269
+#: ../scm/canna-key-custom.scm:269
 msgid "[Canna] toggle kana/alphanumeric mode"
 msgstr "[Canna] かな/英数入力モードを反転"
 
-#: scm/custom.scm:748
+#: ../scm/custom.scm:748
 msgid "-"
 msgstr "-"
 
-#: scm/custom.scm:749
+#: ../scm/custom.scm:749
 msgid "Main settings of this group"
 msgstr "このグループのメイン設定"
 
-#: scm/custom.scm:752
+#: ../scm/custom.scm:752
 msgid "Hidden settings"
 msgstr "隠し設定"
 
-#: scm/custom.scm:753
+#: ../scm/custom.scm:753
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
@@ -1907,671 +1907,671 @@ msgstr ""
 "このグループの隠し設定です。uim_customクライアントからは見えません。\n"
 "内部変数の管理を行うために存在します。"
 
-#: scm/direct.scm:53
+#: ../scm/direct.scm:53
 msgid "direct"
 msgstr "直接入力"
 
-#: scm/direct.scm:54 scm/generic.scm:72 scm/m17nlib.scm:63
-#: scm/scim.scm:63
+#: ../scm/direct.scm:54 ../scm/generic.scm:72 ../scm/m17nlib.scm:63
+#: ../scm/scim.scm:63
 msgid "Direct Input Mode"
 msgstr "直接入力モード"
 
-#: scm/direct.scm:131 scm/look.scm:63
+#: ../scm/direct.scm:131 ../scm/look.scm:63
 msgid "Direct"
 msgstr "直接入力"
 
-#: scm/direct.scm:132
+#: ../scm/direct.scm:132
 msgid "Pass through all user input without any modification"
 msgstr "全てのユーザ入力を素通し"
 
-#: scm/elatin-custom.scm:34
+#: ../scm/elatin-custom.scm:34
 #, fuzzy
 msgid "ELatin"
 msgstr "ラテン語"
 
-#: scm/elatin-custom.scm:35
+#: ../scm/elatin-custom.scm:35
 #, fuzzy
 msgid "Emacs-style Latin characters input"
 msgstr "ラテン文字"
 
-#: scm/elatin-custom.scm:36
+#: ../scm/elatin-custom.scm:36
 msgid ""
 "An input method for entering Latin letters used in European languages with "
 "the key translations adopted in Emacs."
 msgstr ""
 
-#: scm/elatin-custom.scm:50
+#: ../scm/elatin-custom.scm:50
 #, fuzzy
 msgid "British"
 msgstr "アイルランド語"
 
-#: scm/elatin-custom.scm:53
+#: ../scm/elatin-custom.scm:53
 #, fuzzy
 msgid "Catalan prefix"
 msgstr "カタロニア語"
 
-#: scm/elatin-custom.scm:56
+#: ../scm/elatin-custom.scm:56
 #, fuzzy
 msgid "Danish postfix"
 msgstr "デンマーク語"
 
-#: scm/elatin-custom.scm:59
+#: ../scm/elatin-custom.scm:59
 msgid "Danish alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:62
+#: ../scm/elatin-custom.scm:62
 #, fuzzy
 msgid "Danish keyboard"
 msgstr "キーボード"
 
-#: scm/elatin-custom.scm:65 scm/iso-639-1.scm:71
+#: ../scm/elatin-custom.scm:65 ../scm/iso-639-1.scm:71
 msgid "Dutch"
 msgstr "オランダ語"
 
-#: scm/elatin-custom.scm:68
+#: ../scm/elatin-custom.scm:68
 #, fuzzy
 msgid "English Dvorak"
 msgstr "英語"
 
-#: scm/elatin-custom.scm:71
+#: ../scm/elatin-custom.scm:71
 #, fuzzy
 msgid "Esperanto prefix"
 msgstr "エスペラント"
 
-#: scm/elatin-custom.scm:74
+#: ../scm/elatin-custom.scm:74
 #, fuzzy
 msgid "Esperanto postfix"
 msgstr "エスペラント"
 
-#: scm/elatin-custom.scm:77
+#: ../scm/elatin-custom.scm:77
 msgid "Esperanto alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:80
+#: ../scm/elatin-custom.scm:80
 #, fuzzy
 msgid "Finnish postfix"
 msgstr "フィンランド語"
 
-#: scm/elatin-custom.scm:83
+#: ../scm/elatin-custom.scm:83
 msgid "Finnish alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:86
+#: ../scm/elatin-custom.scm:86
 #, fuzzy
 msgid "Finnish keyboard"
 msgstr "フィンランド語"
 
-#: scm/elatin-custom.scm:89
+#: ../scm/elatin-custom.scm:89
 #, fuzzy
 msgid "French prefix"
 msgstr "フランス語"
 
-#: scm/elatin-custom.scm:92
+#: ../scm/elatin-custom.scm:92
 #, fuzzy
 msgid "French postfix"
 msgstr "フランス語"
 
-#: scm/elatin-custom.scm:95
+#: ../scm/elatin-custom.scm:95
 msgid "French alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:98
+#: ../scm/elatin-custom.scm:98
 #, fuzzy
 msgid "French keyboard"
 msgstr "キーボード"
 
-#: scm/elatin-custom.scm:101
+#: ../scm/elatin-custom.scm:101
 #, fuzzy
 msgid "French AZERTY"
 msgstr "フランス語"
 
-#: scm/elatin-custom.scm:104
+#: ../scm/elatin-custom.scm:104
 #, fuzzy
 msgid "German prefix"
 msgstr "ドイツ語"
 
-#: scm/elatin-custom.scm:107
+#: ../scm/elatin-custom.scm:107
 #, fuzzy
 msgid "German postfix"
 msgstr "ドイツ語"
 
-#: scm/elatin-custom.scm:110
+#: ../scm/elatin-custom.scm:110
 msgid "German alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:113 scm/iso-639-1.scm:86
+#: ../scm/elatin-custom.scm:113 ../scm/iso-639-1.scm:86
 msgid "German"
 msgstr "ドイツ語"
 
-#: scm/elatin-custom.scm:116
+#: ../scm/elatin-custom.scm:116
 #, fuzzy
 msgid "Icelandic postfix"
 msgstr "アイスランド語"
 
-#: scm/elatin-custom.scm:119
+#: ../scm/elatin-custom.scm:119
 msgid "Icelandic alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:122
+#: ../scm/elatin-custom.scm:122
 #, fuzzy
 msgid "Icelandic keyboard"
 msgstr "アイスランド語"
 
-#: scm/elatin-custom.scm:125
+#: ../scm/elatin-custom.scm:125
 msgid "Irish prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:128
+#: ../scm/elatin-custom.scm:128
 #, fuzzy
 msgid "Italian postfix"
 msgstr "イタリア語"
 
-#: scm/elatin-custom.scm:131
+#: ../scm/elatin-custom.scm:131
 msgid "Italian alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:134
+#: ../scm/elatin-custom.scm:134
 #, fuzzy
 msgid "Italian keyboard"
 msgstr "イタリア語"
 
-#: scm/elatin-custom.scm:137
+#: ../scm/elatin-custom.scm:137
 #, fuzzy
 msgid "Latin prefix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:140
+#: ../scm/elatin-custom.scm:140
 #, fuzzy
 msgid "Latin postfix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:143
+#: ../scm/elatin-custom.scm:143
 msgid "Latin alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:146
+#: ../scm/elatin-custom.scm:146
 msgid "Latin-1 prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:149
+#: ../scm/elatin-custom.scm:149
 #, fuzzy
 msgid "Latin-1 postfix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:152
+#: ../scm/elatin-custom.scm:152
 msgid "Latin-1 alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:155
+#: ../scm/elatin-custom.scm:155
 msgid "Latin-2 prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:158
+#: ../scm/elatin-custom.scm:158
 #, fuzzy
 msgid "Latin-2 postfix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:161
+#: ../scm/elatin-custom.scm:161
 msgid "Latin-2 alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:164
+#: ../scm/elatin-custom.scm:164
 msgid "Latin-3 prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:167
+#: ../scm/elatin-custom.scm:167
 #, fuzzy
 msgid "Latin-3 postfix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:170
+#: ../scm/elatin-custom.scm:170
 msgid "Latin-3 alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:173
+#: ../scm/elatin-custom.scm:173
 #, fuzzy
 msgid "Latin-4 postfix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:176
+#: ../scm/elatin-custom.scm:176
 msgid "Latin-4 alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:179
+#: ../scm/elatin-custom.scm:179
 #, fuzzy
 msgid "Latin-5 postfix"
 msgstr "ラテン入力"
 
-#: scm/elatin-custom.scm:182
+#: ../scm/elatin-custom.scm:182
 msgid "Latin-5 alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:185
+#: ../scm/elatin-custom.scm:185
 msgid "Latin-8 prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:188
+#: ../scm/elatin-custom.scm:188
 msgid "Latin-9 prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:191
+#: ../scm/elatin-custom.scm:191
 msgid "Latvian keyboard"
 msgstr ""
 
-#: scm/elatin-custom.scm:194
+#: ../scm/elatin-custom.scm:194
 #, fuzzy
 msgid "Lithuanian keyboard"
 msgstr "リトアニア語"
 
-#: scm/elatin-custom.scm:197
+#: ../scm/elatin-custom.scm:197
 #, fuzzy
 msgid "Lithuanian numeric"
 msgstr "リトアニア語"
 
-#: scm/elatin-custom.scm:200
+#: ../scm/elatin-custom.scm:200
 #, fuzzy
 msgid "Norwegian postfix"
 msgstr "ノルウェー語"
 
-#: scm/elatin-custom.scm:203
+#: ../scm/elatin-custom.scm:203
 msgid "Norwegian alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:206
+#: ../scm/elatin-custom.scm:206
 #, fuzzy
 msgid "Norwegian keyboard"
 msgstr "ノルウェー語"
 
-#: scm/elatin-custom.scm:209
+#: ../scm/elatin-custom.scm:209
 #, fuzzy
 msgid "Polish slash"
 msgstr "ポーランド語"
 
-#: scm/elatin-custom.scm:212
+#: ../scm/elatin-custom.scm:212
 #, fuzzy
 msgid "Portuguese prefix"
 msgstr "ポルトガル語"
 
-#: scm/elatin-custom.scm:215
+#: ../scm/elatin-custom.scm:215
 #, fuzzy
 msgid "Romanian prefix"
 msgstr "ルーマニア語"
 
-#: scm/elatin-custom.scm:218
+#: ../scm/elatin-custom.scm:218
 msgid "Romanian alternative prefix"
 msgstr ""
 
-#: scm/elatin-custom.scm:221
+#: ../scm/elatin-custom.scm:221
 msgid "Scandinavian postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:224
+#: ../scm/elatin-custom.scm:224
 msgid "Scandinavian alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:227 scm/iso-639-1.scm:153
+#: ../scm/elatin-custom.scm:227 ../scm/iso-639-1.scm:153
 msgid "Slovenian"
 msgstr "スロベニア語"
 
-#: scm/elatin-custom.scm:230
+#: ../scm/elatin-custom.scm:230
 #, fuzzy
 msgid "Spanish prefix"
 msgstr "スペイン語"
 
-#: scm/elatin-custom.scm:233
+#: ../scm/elatin-custom.scm:233
 #, fuzzy
 msgid "Spanish postfix"
 msgstr "スペイン語"
 
-#: scm/elatin-custom.scm:236
+#: ../scm/elatin-custom.scm:236
 msgid "Spanish alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:239
+#: ../scm/elatin-custom.scm:239
 #, fuzzy
 msgid "Spanish keyboard"
 msgstr "スペイン語"
 
-#: scm/elatin-custom.scm:242
+#: ../scm/elatin-custom.scm:242
 #, fuzzy
 msgid "Swedish postfix"
 msgstr "スウェーデン語"
 
-#: scm/elatin-custom.scm:245
+#: ../scm/elatin-custom.scm:245
 msgid "Swedish alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:248
+#: ../scm/elatin-custom.scm:248
 #, fuzzy
 msgid "Swedish keyboard"
 msgstr "スウェーデン語"
 
-#: scm/elatin-custom.scm:251
+#: ../scm/elatin-custom.scm:251
 #, fuzzy
 msgid "Turkish postfix"
 msgstr "トルコ語"
 
-#: scm/elatin-custom.scm:254
+#: ../scm/elatin-custom.scm:254
 msgid "Turkish alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:257
+#: ../scm/elatin-custom.scm:257
 msgid "Turkish Latin-3 postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:260
+#: ../scm/elatin-custom.scm:260
 msgid "Turkish Latin-3 alternative postfix"
 msgstr ""
 
-#: scm/elatin-custom.scm:262
+#: ../scm/elatin-custom.scm:262
 #, fuzzy
 msgid "Latin characters keyboard layout"
 msgstr "ハングルキーボードのレイアウト"
 
-#: scm/elatin-custom.scm:280
+#: ../scm/elatin-custom.scm:280
 #, fuzzy
 msgid "ESC turns off composition mode (for vi users)"
 msgstr "ESCキーでハングルモードをオフにする (viユーザ向け)"
 
-#: scm/elatin-custom.scm:285
+#: ../scm/elatin-custom.scm:285
 #, fuzzy
 msgid "ELatin key bindings"
 msgstr "Mana キー設定1"
 
-#: scm/elatin-custom.scm:291
+#: ../scm/elatin-custom.scm:291
 #, fuzzy
 msgid "[ELatin] on"
 msgstr "[Mana] オン"
 
-#: scm/elatin-custom.scm:297
+#: ../scm/elatin-custom.scm:297
 #, fuzzy
 msgid "[ELatin] off"
 msgstr "[Mana] オフ"
 
-#: scm/elatin-custom.scm:303
+#: ../scm/elatin-custom.scm:303
 #, fuzzy
 msgid "[ELatin] backspace"
 msgstr "[Mana] バックスペース"
 
-#: scm/elatin.scm:114
+#: ../scm/elatin.scm:114
 #, fuzzy
 msgid "ELatin mode off"
 msgstr "ラテン入力モード"
 
-#: scm/elatin.scm:115
+#: ../scm/elatin.scm:115
 #, fuzzy
 msgid "ELatin composition off"
 msgstr "ラテン入力"
 
-#: scm/elatin.scm:127
+#: ../scm/elatin.scm:127
 #, fuzzy
 msgid "ELatin mode on"
 msgstr "ラテン入力モード"
 
-#: scm/elatin.scm:128
+#: ../scm/elatin.scm:128
 #, fuzzy
 msgid "ELatin composition on"
 msgstr "ラテン入力"
 
-#: scm/generic-custom.scm:36
+#: ../scm/generic-custom.scm:36
 msgid "Other input methods"
 msgstr "その他の入力方式"
 
-#: scm/generic-key-custom.scm:36
+#: ../scm/generic-key-custom.scm:36
 msgid "Global key bindings 1"
 msgstr "全体キー設定1"
 
-#: scm/generic-key-custom.scm:40
+#: ../scm/generic-key-custom.scm:40
 msgid "Global key bindings 2"
 msgstr "全体キー設定2"
 
-#: scm/generic-key-custom.scm:47
+#: ../scm/generic-key-custom.scm:47
 msgid "[Global] on"
 msgstr "[全体] オン"
 
-#: scm/generic-key-custom.scm:53
+#: ../scm/generic-key-custom.scm:53
 msgid "[Global] off"
 msgstr "[全体] オフ"
 
-#: scm/generic-key-custom.scm:59
+#: ../scm/generic-key-custom.scm:59
 msgid "[Global] begin conversion"
 msgstr "[全体] 変換開始"
 
-#: scm/generic-key-custom.scm:65
+#: ../scm/generic-key-custom.scm:65
 msgid "[Global] commit"
 msgstr "[全体] 確定"
 
-#: scm/generic-key-custom.scm:71
+#: ../scm/generic-key-custom.scm:71
 msgid "[Global] cancel"
 msgstr "[全体] キャンセル"
 
-#: scm/generic-key-custom.scm:77
+#: ../scm/generic-key-custom.scm:77
 msgid "[Global] next candidate"
 msgstr "[全体] 次候補"
 
-#: scm/generic-key-custom.scm:83
+#: ../scm/generic-key-custom.scm:83
 msgid "[Global] previous candidate"
 msgstr "[全体] 前候補"
 
-#: scm/generic-key-custom.scm:89
+#: ../scm/generic-key-custom.scm:89
 msgid "[Global] next page of candidate window"
 msgstr "[全体] 候補ウィンドウの次ページ"
 
-#: scm/generic-key-custom.scm:95
+#: ../scm/generic-key-custom.scm:95
 msgid "[Global] previous page of candidate window"
 msgstr "[全体] 候補ウィンドウの前ページ"
 
-#: scm/generic-key-custom.scm:105
+#: ../scm/generic-key-custom.scm:105
 msgid "[Global] beginning of preedit"
 msgstr "[全体] 編集領域の先頭"
 
-#: scm/generic-key-custom.scm:111
+#: ../scm/generic-key-custom.scm:111
 msgid "[Global] end of preedit"
 msgstr "[全体] 編集領域の末尾"
 
-#: scm/generic-key-custom.scm:117
+#: ../scm/generic-key-custom.scm:117
 msgid "[Global] erase after cursor"
 msgstr "[全体] カーソル以降を消去"
 
-#: scm/generic-key-custom.scm:123
+#: ../scm/generic-key-custom.scm:123
 msgid "[Global] erase before cursor"
 msgstr "[全体] カーソル以前を消去"
 
-#: scm/generic-key-custom.scm:129
+#: ../scm/generic-key-custom.scm:129
 msgid "[Global] backspace"
 msgstr "[全体] バックスペース"
 
-#: scm/generic-key-custom.scm:135
+#: ../scm/generic-key-custom.scm:135
 msgid "[Global] delete"
 msgstr "[全体] デリート"
 
-#: scm/generic-key-custom.scm:141
+#: ../scm/generic-key-custom.scm:141
 msgid "[Global] go left"
 msgstr "[全体] 左に移動"
 
-#: scm/generic-key-custom.scm:147
+#: ../scm/generic-key-custom.scm:147
 msgid "[Global] go right"
 msgstr "[全体] 右に移動"
 
-#: scm/generic-key-custom.scm:153
+#: ../scm/generic-key-custom.scm:153
 msgid "[Global] return"
 msgstr "[全体] リターン"
 
-#: scm/generic.scm:71 scm/m17nlib.scm:62 scm/scim.scm:62
+#: ../scm/generic.scm:71 ../scm/m17nlib.scm:62 ../scm/scim.scm:62
 msgid "off"
 msgstr "オフ"
 
-#: scm/generic.scm:86 scm/m17nlib.scm:76 scm/scim.scm:76
+#: ../scm/generic.scm:86 ../scm/m17nlib.scm:76 ../scm/scim.scm:76
 msgid "on"
 msgstr "オン"
 
-#: scm/generic.scm:87 scm/m17nlib.scm:77 scm/scim.scm:77
+#: ../scm/generic.scm:87 ../scm/m17nlib.scm:77 ../scm/scim.scm:77
 msgid " Mode"
 msgstr " モード"
 
-#: scm/hangul.scm:111
+#: ../scm/hangul.scm:111
 msgid "Hangul (2-beol)"
 msgstr "2ボル式ハングル"
 
-#: scm/hangul.scm:112
+#: ../scm/hangul.scm:112
 msgid "2-beol style hangul input method"
 msgstr "2ボル式ハングル入力方式"
 
-#: scm/hangul.scm:120
+#: ../scm/hangul.scm:120
 msgid "Hangul (3-beol)"
 msgstr "3ボル式ハングル"
 
-#: scm/hangul.scm:121
+#: ../scm/hangul.scm:121
 msgid "3-beol style hangul input method"
 msgstr "3ボル式ハングル入力方式"
 
-#: scm/hangul.scm:128
+#: ../scm/hangul.scm:128
 msgid "Hangul (Romaja)"
 msgstr "ローマ字入力式ハングル"
 
-#: scm/hangul.scm:129
+#: ../scm/hangul.scm:129
 msgid "Romaja input style hangul input method"
 msgstr "ローマ字入力式ハングル入力方式"
 
-#: scm/im.scm:139
+#: ../scm/im.scm:139
 msgid "invalid IM name"
 msgstr ""
 
-#: scm/im-custom.scm:45
+#: ../scm/im-custom.scm:45
 msgid "Global settings"
 msgstr "全体設定"
 
-#: scm/im-custom.scm:49
+#: ../scm/im-custom.scm:49
 msgid "Toolbar"
 msgstr "ツールバー"
 
-#: scm/im-custom.scm:54
+#: ../scm/im-custom.scm:54
 msgid "Advanced settings"
 msgstr "高度な設定"
 
-#: scm/im-custom.scm:59
+#: ../scm/im-custom.scm:59
 msgid "Buttons"
 msgstr "ボタン"
 
-#: scm/im-custom.scm:64
+#: ../scm/im-custom.scm:64
 msgid "Menu-based IM switcher"
 msgstr "入力方式切り換えメニュー"
 
-#: scm/im-custom.scm:69
+#: ../scm/im-custom.scm:69
 msgid "Candidate window"
 msgstr "候補ウィンドウ"
 
-#: scm/im-custom.scm:74
+#: ../scm/im-custom.scm:74
 msgid "Annotation"
 msgstr "註釈"
 
-#: scm/im-custom.scm:79
+#: ../scm/im-custom.scm:79
 msgid "Dictionary"
 msgstr "辞書"
 
-#: scm/im-custom.scm:89
+#: ../scm/im-custom.scm:89
 msgid "Mode transition"
 msgstr "モード遷移"
 
-#: scm/im-custom.scm:94
+#: ../scm/im-custom.scm:94
 msgid "Special operation"
 msgstr "特殊操作"
 
-#: scm/im-custom.scm:99 scm/im-custom.scm:130
+#: ../scm/im-custom.scm:99 ../scm/im-custom.scm:130
 msgid "Default input method"
 msgstr "標準の入力方式"
 
-#: scm/im-custom.scm:104
+#: ../scm/im-custom.scm:104
 msgid "Input method deployment"
 msgstr "入力方式の利用準備"
 
-#: scm/im-custom.scm:109
+#: ../scm/im-custom.scm:109
 msgid "Visual preference"
 msgstr "視覚設定"
 
-#: scm/im-custom.scm:120
+#: ../scm/im-custom.scm:120
 msgid "Specify default IM"
 msgstr "標準の入力方式を指定"
 
-#: scm/im-custom.scm:204
+#: ../scm/im-custom.scm:204
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: scm/im-custom.scm:308
+#: ../scm/im-custom.scm:308
 msgid "Input method toggle"
 msgstr "入力方式の一時切り換え"
 
-#: scm/im-custom.scm:314
+#: ../scm/im-custom.scm:314
 msgid "Enable input method toggle by hot keys"
 msgstr "ホットキーによる入力方式の正副一時切り換えを有効にする"
 
-#: scm/im-custom.scm:320
+#: ../scm/im-custom.scm:320
 msgid "Input method toggle key"
 msgstr "一時切り換えキー"
 
-#: scm/im-custom.scm:330
+#: ../scm/im-custom.scm:330
 msgid "Alternative input method"
 msgstr "副入力方式"
 
-#: scm/im-custom.scm:356 scm/skk-custom.scm:80 scm/skk-custom.scm:423
+#: ../scm/im-custom.scm:356 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim"
 msgstr "uim"
 
-#: scm/im-custom.scm:356 scm/skk-custom.scm:80 scm/skk-custom.scm:423
+#: ../scm/im-custom.scm:356 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: scm/im-custom.scm:357
+#: ../scm/im-custom.scm:357
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: scm/im-custom.scm:357
+#: ../scm/im-custom.scm:357
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: scm/im-custom.scm:358
+#: ../scm/im-custom.scm:358
 msgid "Preedit color"
 msgstr "編集領域の配色"
 
-#: scm/im-custom.scm:371 scm/im-custom.scm:372
+#: ../scm/im-custom.scm:371 ../scm/im-custom.scm:372
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: scm/im-custom.scm:374 scm/im-custom.scm:375
+#: ../scm/im-custom.scm:374 ../scm/im-custom.scm:375
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: scm/im-custom.scm:377 scm/im-custom.scm:378
+#: ../scm/im-custom.scm:377 ../scm/im-custom.scm:378
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
 # 「候補ウィンドウの位置」では何を規定する位置なのか不明瞭な印象を受ける。具体例
 # が出たら追記する事 -- YamaKen 2005-12-07 
-#: scm/im-custom.scm:379
+#: ../scm/im-custom.scm:379
 msgid "Candidate window position"
 msgstr "候補ウィンドウの表示位置"
 
-#: scm/im-custom.scm:385
+#: ../scm/im-custom.scm:385
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: scm/im-custom.scm:419
+#: ../scm/im-custom.scm:419
 msgid "Enable menu-based input method switcher"
 msgstr "入力方式切り換えメニューを有効にする"
 
-#: scm/im-custom.scm:420
+#: ../scm/im-custom.scm:420
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "ツールバーに入力方式切り換えメニューを表示"
 
-#: scm/im-custom.scm:427
+#: ../scm/im-custom.scm:427
 msgid "All input method of text areas on the system are changed."
 msgstr "全てのテキスト領域の入力方式が変更されます。"
 
-#: scm/im-custom.scm:429
+#: ../scm/im-custom.scm:429
 msgid "focused application only"
 msgstr "フォーカスされたアプリケーションのみ"
 
-#: scm/im-custom.scm:430
+#: ../scm/im-custom.scm:430
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
@@ -2579,11 +2579,11 @@ msgstr ""
 "フォーカスされたアプリケーションのみの入力方式が変更されます。他のテキスト領"
 "域はそのままです。"
 
-#: scm/im-custom.scm:432
+#: ../scm/im-custom.scm:432
 msgid "focused text area only"
 msgstr "フォーカスされたテキスト領域のみ"
 
-#: scm/im-custom.scm:433
+#: ../scm/im-custom.scm:433
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
@@ -2591,2046 +2591,2076 @@ msgstr ""
 "フォーカスされたテスト領域のみの入力方式が変更されます。他のテキスト領域はそ"
 "のままです。"
 
-#: scm/im-custom.scm:435
+#: ../scm/im-custom.scm:435
 msgid "Specify where the IM switching takes effect."
 msgstr "入力方式の切り換えを有効にする範囲を指定します。"
 
-#: scm/im-custom.scm:446
+#: ../scm/im-custom.scm:446
 msgid "full-featured input method switcher"
 msgstr "フル機能の入力方式切り換えツール"
 
-#: scm/im-custom.scm:447
+#: ../scm/im-custom.scm:447
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr "ツールバーにuim入力方式切り換えツールを起動するボタンを表示します。"
 
-#: scm/im-custom.scm:452
+#: ../scm/im-custom.scm:452
 msgid "preference tool"
 msgstr "設定"
 
-#: scm/im-custom.scm:458
+#: ../scm/im-custom.scm:458
 msgid "Japanese dictionary tool"
 msgstr "日本語辞書ツール"
 
-#: scm/im-custom.scm:464
+#: ../scm/im-custom.scm:464
 msgid "input pad"
 msgstr "入力パッド"
 
-#: scm/im-custom.scm:470
+#: ../scm/im-custom.scm:470
 msgid "handwriting-input pad"
 msgstr "手書き入力パッド"
 
-#: scm/im-custom.scm:476
+#: ../scm/im-custom.scm:476
 msgid "help"
 msgstr "ヘルプ"
 
-#: scm/im-custom.scm:482
+#: ../scm/im-custom.scm:482
 msgid "Show input mode nearby cursor"
 msgstr "カーソルの側に入力モードを表示"
 
-#: scm/im-custom.scm:488
+#: ../scm/im-custom.scm:488
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "カーソルの側に入力モードを表示する時間"
 
-#: scm/im-custom.scm:489
+#: ../scm/im-custom.scm:489
 msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
-#: scm/im-custom.scm:500
+#: ../scm/im-custom.scm:500
 msgid "EB library"
 msgstr "EBライブラリ"
 
-#: scm/im-custom.scm:506
+#: ../scm/im-custom.scm:506
 msgid "Use EB library to search annotations"
 msgstr "註釈の検索にEBライブラリを使用する"
 
-#: scm/im-custom.scm:513
+#: ../scm/im-custom.scm:513
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: scm/im-custom.scm:523
+#: ../scm/im-custom.scm:523
 msgid "XIM"
 msgstr "XIM"
 
-#: scm/im-custom.scm:527
+#: ../scm/im-custom.scm:527
 msgid "Preedit settings of XIM"
 msgstr "XIMの編集領域"
 
-#: scm/im-custom.scm:533
+#: ../scm/im-custom.scm:533
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "編集領域のフォントにアンチエイリアスをかける"
 
-#: scm/im-custom.scm:539
+#: ../scm/im-custom.scm:539
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
 
-#: scm/im-custom.scm:549
+#: ../scm/im-custom.scm:549
 msgid "Notify"
 msgstr "状態通知"
 
-#: scm/im-custom.scm:556
+#: ../scm/im-custom.scm:556
 msgid "Notify agent name"
 msgstr "状態通知に使用するエージェント"
 
-#: scm/ipa-x-sampa.scm:227 scm/ipa-x-sampa.scm:228
+#: ../scm/ipa-x-sampa.scm:227 ../scm/ipa-x-sampa.scm:228
 msgid "International Phonetic Alphabet (X-SAMPA)"
 msgstr "国際音声記号 (拡張SAM音声記号)"
 
 # FIXME: http://ja.wikipedia.org/wiki/ISO_639 の表で使われている表記に同期
 # する。Wikipedia側が不適切と思われる場合はそちらも修正する
-#: scm/iso-639-1.scm:37
+#: ../scm/iso-639-1.scm:37
 msgid "Abkhazian"
 msgstr "アブハズ語"
 
-#: scm/iso-639-1.scm:38
+#: ../scm/iso-639-1.scm:38
 msgid "Afar"
 msgstr "アファル語"
 
-#: scm/iso-639-1.scm:39
+#: ../scm/iso-639-1.scm:39
 msgid "Afrikaans"
 msgstr "アフリカーンス語"
 
-#: scm/iso-639-1.scm:40
+#: ../scm/iso-639-1.scm:40
 msgid "Albanian"
 msgstr "アルバニア語"
 
-#: scm/iso-639-1.scm:41
+#: ../scm/iso-639-1.scm:41
 msgid "Amharic"
 msgstr "アムハラ語"
 
-#: scm/iso-639-1.scm:42
+#: ../scm/iso-639-1.scm:42
 msgid "Arabic"
 msgstr "アラビア語"
 
-#: scm/iso-639-1.scm:43
+#: ../scm/iso-639-1.scm:43
 msgid "Armenian"
 msgstr "アルメニア語"
 
-#: scm/iso-639-1.scm:44
+#: ../scm/iso-639-1.scm:44
 msgid "Assamese"
 msgstr "アッサム語"
 
-#: scm/iso-639-1.scm:45
+#: ../scm/iso-639-1.scm:45
 msgid "Aymara"
 msgstr "アイマラ語"
 
-#: scm/iso-639-1.scm:46
+#: ../scm/iso-639-1.scm:46
 msgid "Azerbaijani"
 msgstr "アゼルバイジャン語"
 
-#: scm/iso-639-1.scm:47
+#: ../scm/iso-639-1.scm:47
 msgid "Bashkir"
 msgstr "バシキール語"
 
-#: scm/iso-639-1.scm:48
+#: ../scm/iso-639-1.scm:48
 msgid "Basque"
 msgstr "バスク語"
 
 # 日本語においては「ベンガル語」で統一されているようなので(Bangla)は訳さない
-#: scm/iso-639-1.scm:49
+#: ../scm/iso-639-1.scm:49
 msgid "Bengali (Bangla)"
 msgstr "ベンガル語"
 
-#: scm/iso-639-1.scm:50
+#: ../scm/iso-639-1.scm:50
 msgid "Bengali"
 msgstr "ベンガル語"
 
-#: scm/iso-639-1.scm:51
+#: ../scm/iso-639-1.scm:51
 msgid "Bhutani"
 msgstr "ブータン語"
 
-#: scm/iso-639-1.scm:52
+#: ../scm/iso-639-1.scm:52
 msgid "Bihari"
 msgstr "ビハリ語"
 
-#: scm/iso-639-1.scm:53
+#: ../scm/iso-639-1.scm:53
 msgid "Bislama"
 msgstr "ビスラマ語"
 
-#: scm/iso-639-1.scm:54
+#: ../scm/iso-639-1.scm:54
 msgid "Breton"
 msgstr "ブルトン語"
 
-#: scm/iso-639-1.scm:55
+#: ../scm/iso-639-1.scm:55
 msgid "Bulgarian"
 msgstr "ブルガリア語"
 
-#: scm/iso-639-1.scm:56
+#: ../scm/iso-639-1.scm:56
 msgid "Burmese"
 msgstr "ビルマ語"
 
-#: scm/iso-639-1.scm:57
+#: ../scm/iso-639-1.scm:57
 msgid "Byelorussian (Belarusian)"
 msgstr "ベラルーシ語"
 
-#: scm/iso-639-1.scm:58
+#: ../scm/iso-639-1.scm:58
 msgid "Byelorussian"
 msgstr "ベラルーシ語"
 
-#: scm/iso-639-1.scm:59
+#: ../scm/iso-639-1.scm:59
 msgid "Cambodian"
 msgstr "カンボジア語"
 
-#: scm/iso-639-1.scm:60
+#: ../scm/iso-639-1.scm:60
 msgid "Catalan"
 msgstr "カタロニア語"
 
-#: scm/iso-639-1.scm:61
+#: ../scm/iso-639-1.scm:61
 msgid "Chewa"
 msgstr "チェワ語"
 
-#: scm/iso-639-1.scm:62
+#: ../scm/iso-639-1.scm:62
 msgid "Chinese (Simplified)"
 msgstr "中国語 (簡体字)"
 
-#: scm/iso-639-1.scm:63 scm/iso-639-1.scm:64
+#: ../scm/iso-639-1.scm:63 ../scm/iso-639-1.scm:64
 msgid "Chinese (Traditional)"
 msgstr "中国語 (繁体字)"
 
-#: scm/iso-639-1.scm:65
+#: ../scm/iso-639-1.scm:65
 msgid "Chinese"
 msgstr "中国語"
 
-#: scm/iso-639-1.scm:66
+#: ../scm/iso-639-1.scm:66
 msgid "Corsican"
 msgstr "コルシカ語"
 
-#: scm/iso-639-1.scm:67
+#: ../scm/iso-639-1.scm:67
 msgid "Croatian"
 msgstr "クロアチア語"
 
-#: scm/iso-639-1.scm:68
+#: ../scm/iso-639-1.scm:68
 msgid "Czech"
 msgstr "チェコ語"
 
-#: scm/iso-639-1.scm:69
+#: ../scm/iso-639-1.scm:69
 msgid "Danish"
 msgstr "デンマーク語"
 
-#: scm/iso-639-1.scm:70
+#: ../scm/iso-639-1.scm:70
 msgid "Dhivehi"
 msgstr "ディヴェヒ語"
 
-#: scm/iso-639-1.scm:72 scm/prime-custom.scm:54
-#: scm/prime-custom.scm:62 scm/prime-custom.scm:196
+#: ../scm/iso-639-1.scm:72 ../scm/prime-custom.scm:54
+#: ../scm/prime-custom.scm:62 ../scm/prime-custom.scm:196
 msgid "English"
 msgstr "英語"
 
-#: scm/iso-639-1.scm:73
+#: ../scm/iso-639-1.scm:73
 msgid "Esperanto"
 msgstr "エスペラント"
 
-#: scm/iso-639-1.scm:74
+#: ../scm/iso-639-1.scm:74
 msgid "Estonian"
 msgstr "エストニア語"
 
-#: scm/iso-639-1.scm:75
+#: ../scm/iso-639-1.scm:75
 msgid "Faeroese"
 msgstr "フェロー語"
 
-#: scm/iso-639-1.scm:76
+#: ../scm/iso-639-1.scm:76
 msgid "Farsi"
 msgstr "近代ペルシア語"
 
-#: scm/iso-639-1.scm:77
+#: ../scm/iso-639-1.scm:77
 msgid "Fiji"
 msgstr "フィジー語"
 
-#: scm/iso-639-1.scm:78
+#: ../scm/iso-639-1.scm:78
 msgid "Finnish"
 msgstr "フィンランド語"
 
-#: scm/iso-639-1.scm:79
+#: ../scm/iso-639-1.scm:79
 msgid "Flemish"
 msgstr "フラマン語"
 
 #. defined as "nl" in the source
-#: scm/iso-639-1.scm:80
+#: ../scm/iso-639-1.scm:80
 msgid "French"
 msgstr "フランス語"
 
-#: scm/iso-639-1.scm:81
+#: ../scm/iso-639-1.scm:81
 msgid "Frisian"
 msgstr "フリースラント語"
 
-#: scm/iso-639-1.scm:82
+#: ../scm/iso-639-1.scm:82
 msgid "Galician"
 msgstr "ガリチア語"
 
-#: scm/iso-639-1.scm:83
+#: ../scm/iso-639-1.scm:83
 msgid "Gaelic (Scottish)"
 msgstr "ゲール語 (スコットランド語)"
 
-#: scm/iso-639-1.scm:84
+#: ../scm/iso-639-1.scm:84
 msgid "Gaelic (Manx)"
 msgstr "ゲール語 (マン島語)"
 
-#: scm/iso-639-1.scm:85
+#: ../scm/iso-639-1.scm:85
 msgid "Georgian"
 msgstr "グルジア語"
 
-#: scm/iso-639-1.scm:87
+#: ../scm/iso-639-1.scm:87
 msgid "Greek"
 msgstr "ギリシャ語"
 
-#: scm/iso-639-1.scm:88
+#: ../scm/iso-639-1.scm:88
 msgid "Greenlandic"
 msgstr "グリーンランド語"
 
-#: scm/iso-639-1.scm:89
+#: ../scm/iso-639-1.scm:89
 msgid "Guarani"
 msgstr "グアラニー語"
 
-#: scm/iso-639-1.scm:90
+#: ../scm/iso-639-1.scm:90
 msgid "Gujarati"
 msgstr "グジャラート語"
 
-#: scm/iso-639-1.scm:91
+#: ../scm/iso-639-1.scm:91
 msgid "Hausa"
 msgstr "ハウサ語"
 
-#: scm/iso-639-1.scm:92
+#: ../scm/iso-639-1.scm:92
 msgid "Hebrew"
 msgstr "ヘブライ語"
 
-#: scm/iso-639-1.scm:93
+#: ../scm/iso-639-1.scm:93
 msgid "Hindi"
 msgstr "ヒンディー語"
 
-#: scm/iso-639-1.scm:94
+#: ../scm/iso-639-1.scm:94
 msgid "Hungarian"
 msgstr "ハンガリー語"
 
-#: scm/iso-639-1.scm:95
+#: ../scm/iso-639-1.scm:95
 msgid "Icelandic"
 msgstr "アイスランド語"
 
-#: scm/iso-639-1.scm:96
+#: ../scm/iso-639-1.scm:96
 msgid "Indonesian"
 msgstr "インドネシア語"
 
-#: scm/iso-639-1.scm:97
+#: ../scm/iso-639-1.scm:97
 msgid "Interlingua"
 msgstr "インターリングア"
 
-#: scm/iso-639-1.scm:98
+#: ../scm/iso-639-1.scm:98
 msgid "Interlingue"
 msgstr "インターリング"
 
-#: scm/iso-639-1.scm:99
+#: ../scm/iso-639-1.scm:99
 msgid "Inuktitut"
 msgstr "イヌクティトット語"
 
-#: scm/iso-639-1.scm:100
+#: ../scm/iso-639-1.scm:100
 msgid "Inupiak"
 msgstr "イヌピアック語"
 
-#: scm/iso-639-1.scm:101
+#: ../scm/iso-639-1.scm:101
 msgid "Irish"
 msgstr "アイルランド語"
 
-#: scm/iso-639-1.scm:102
+#: ../scm/iso-639-1.scm:102
 msgid "Italian"
 msgstr "イタリア語"
 
-#: scm/iso-639-1.scm:103 scm/prime-custom.scm:50
-#: scm/prime-custom.scm:61 scm/prime-custom.scm:191
+#: ../scm/iso-639-1.scm:103 ../scm/prime-custom.scm:50
+#: ../scm/prime-custom.scm:61 ../scm/prime-custom.scm:191
 msgid "Japanese"
 msgstr "日本語"
 
-#: scm/iso-639-1.scm:104
+#: ../scm/iso-639-1.scm:104
 msgid "Javanese"
 msgstr "ジャワ語"
 
-#: scm/iso-639-1.scm:105
+#: ../scm/iso-639-1.scm:105
 msgid "Kannada"
 msgstr "カンナダ語"
 
-#: scm/iso-639-1.scm:106
+#: ../scm/iso-639-1.scm:106
 msgid "Kashmiri"
 msgstr "カシミール語"
 
-#: scm/iso-639-1.scm:107
+#: ../scm/iso-639-1.scm:107
 msgid "Kazakh"
 msgstr "カザフ語"
 
-#: scm/iso-639-1.scm:108
+#: ../scm/iso-639-1.scm:108
 msgid "Kinyarwanda (Ruanda)"
 msgstr "キンヤルワンダ語"
 
-#: scm/iso-639-1.scm:109
+#: ../scm/iso-639-1.scm:109
 msgid "Kirghiz"
 msgstr "キルギス語"
 
-#: scm/iso-639-1.scm:110
+#: ../scm/iso-639-1.scm:110
 msgid "Kirundi (Rundi)"
 msgstr "キルンディ語"
 
-#: scm/iso-639-1.scm:111
+#: ../scm/iso-639-1.scm:111
 msgid "Konkani"
 msgstr "コンカニ語"
 
 #. defined as "kok" in ISO 639-2
-#: scm/iso-639-1.scm:112
+#: ../scm/iso-639-1.scm:112
 msgid "Korean"
 msgstr "韓国語"
 
-#: scm/iso-639-1.scm:113
+#: ../scm/iso-639-1.scm:113
 msgid "Kurdish"
 msgstr "クルド語"
 
-#: scm/iso-639-1.scm:114
+#: ../scm/iso-639-1.scm:114
 msgid "Laothian"
 msgstr "ラオス語"
 
-#: scm/iso-639-1.scm:115
+#: ../scm/iso-639-1.scm:115
 msgid "Latin"
 msgstr "ラテン語"
 
-#: scm/iso-639-1.scm:116
+#: ../scm/iso-639-1.scm:116
 msgid "Latvian (Lettish)"
 msgstr "ラトビア語"
 
-#: scm/iso-639-1.scm:117
+#: ../scm/iso-639-1.scm:117
 msgid "Lingala"
 msgstr "リンガラ語"
 
-#: scm/iso-639-1.scm:118
+#: ../scm/iso-639-1.scm:118
 msgid "Lithuanian"
 msgstr "リトアニア語"
 
-#: scm/iso-639-1.scm:119
+#: ../scm/iso-639-1.scm:119
 msgid "Macedonian"
 msgstr "マケドニア語"
 
-#: scm/iso-639-1.scm:120
+#: ../scm/iso-639-1.scm:120
 msgid "Malagasy"
 msgstr "マラガスカル語"
 
-#: scm/iso-639-1.scm:121
+#: ../scm/iso-639-1.scm:121
 msgid "Malay"
 msgstr "マレー語"
 
-#: scm/iso-639-1.scm:122
+#: ../scm/iso-639-1.scm:122
 msgid "Malayalam"
 msgstr "マラヤラム語"
 
-#: scm/iso-639-1.scm:123
+#: ../scm/iso-639-1.scm:123
 msgid "Maltese"
 msgstr "マルタ語"
 
-#: scm/iso-639-1.scm:124
+#: ../scm/iso-639-1.scm:124
 msgid "Maori"
 msgstr "マオリ語"
 
-#: scm/iso-639-1.scm:125
+#: ../scm/iso-639-1.scm:125
 msgid "Marathi"
 msgstr "マラーティー語"
 
-#: scm/iso-639-1.scm:126
+#: ../scm/iso-639-1.scm:126
 msgid "Moldavian"
 msgstr "モルドバ語"
 
-#: scm/iso-639-1.scm:127
+#: ../scm/iso-639-1.scm:127
 msgid "Mongolian"
 msgstr "モンゴル語"
 
-#: scm/iso-639-1.scm:128
+#: ../scm/iso-639-1.scm:128
 msgid "Myanmar"
 msgstr "ミャンマー語"
 
-#: scm/iso-639-1.scm:129
+#: ../scm/iso-639-1.scm:129
 msgid "Nauru"
 msgstr "ナウル語"
 
-#: scm/iso-639-1.scm:130
+#: ../scm/iso-639-1.scm:130
 msgid "Nepali"
 msgstr "ネパール語"
 
-#: scm/iso-639-1.scm:131
+#: ../scm/iso-639-1.scm:131
 msgid "Norwegian"
 msgstr "ノルウェー語"
 
-#: scm/iso-639-1.scm:132
+#: ../scm/iso-639-1.scm:132
 msgid "Occitan"
 msgstr "オクシタン語"
 
-#: scm/iso-639-1.scm:133
+#: ../scm/iso-639-1.scm:133
 msgid "Oriya"
 msgstr "オリヤ語"
 
-#: scm/iso-639-1.scm:134
+#: ../scm/iso-639-1.scm:134
 msgid "Oromo (Afan, Galla)"
 msgstr "オロモ語"
 
-#: scm/iso-639-1.scm:135
+#: ../scm/iso-639-1.scm:135
 msgid "Pashto (Pushto)"
 msgstr "パシュトー語"
 
-#: scm/iso-639-1.scm:136
+#: ../scm/iso-639-1.scm:136
 msgid "Polish"
 msgstr "ポーランド語"
 
-#: scm/iso-639-1.scm:137
+#: ../scm/iso-639-1.scm:137
 msgid "Portuguese"
 msgstr "ポルトガル語"
 
-#: scm/iso-639-1.scm:138
+#: ../scm/iso-639-1.scm:138
 msgid "Punjabi"
 msgstr "パンジャブ語"
 
-#: scm/iso-639-1.scm:139
+#: ../scm/iso-639-1.scm:139
 msgid "Quechua"
 msgstr "ケチュア語"
 
-#: scm/iso-639-1.scm:140
+#: ../scm/iso-639-1.scm:140
 msgid "Romanian"
 msgstr "ルーマニア語"
 
-#: scm/iso-639-1.scm:141
+#: ../scm/iso-639-1.scm:141
 msgid "Russian"
 msgstr "ロシア語"
 
-#: scm/iso-639-1.scm:142
+#: ../scm/iso-639-1.scm:142
 msgid "Samoan"
 msgstr "サモア語"
 
-#: scm/iso-639-1.scm:143
+#: ../scm/iso-639-1.scm:143
 msgid "Sangro"
 msgstr "サングロ語"
 
-#: scm/iso-639-1.scm:144
+#: ../scm/iso-639-1.scm:144
 msgid "Sanskrit"
 msgstr "サンスクリット語"
 
-#: scm/iso-639-1.scm:145
+#: ../scm/iso-639-1.scm:145
 msgid "Serbian"
 msgstr "セルビア語"
 
-#: scm/iso-639-1.scm:146
+#: ../scm/iso-639-1.scm:146
 msgid "Sesotho"
 msgstr "ソト語"
 
-#: scm/iso-639-1.scm:147
+#: ../scm/iso-639-1.scm:147
 msgid "Setswana"
 msgstr "ツワナ語"
 
-#: scm/iso-639-1.scm:148
+#: ../scm/iso-639-1.scm:148
 msgid "Shona"
 msgstr "ショナ語"
 
-#: scm/iso-639-1.scm:149
+#: ../scm/iso-639-1.scm:149
 msgid "Sindhi"
 msgstr "シンディ語"
 
-#: scm/iso-639-1.scm:150
+#: ../scm/iso-639-1.scm:150
 msgid "Sinhalese"
 msgstr "シンハラ語"
 
-#: scm/iso-639-1.scm:151
+#: ../scm/iso-639-1.scm:151
 msgid "Siswati"
 msgstr "シスワティ語"
 
-#: scm/iso-639-1.scm:152
+#: ../scm/iso-639-1.scm:152
 msgid "Slovak"
 msgstr "スロバキア語"
 
-#: scm/iso-639-1.scm:154
+#: ../scm/iso-639-1.scm:154
 msgid "Somali"
 msgstr "ソマリ語"
 
-#: scm/iso-639-1.scm:155
+#: ../scm/iso-639-1.scm:155
 msgid "Spanish"
 msgstr "スペイン語"
 
-#: scm/iso-639-1.scm:156
+#: ../scm/iso-639-1.scm:156
 msgid "Sundanese"
 msgstr "スンダ語"
 
-#: scm/iso-639-1.scm:157
+#: ../scm/iso-639-1.scm:157
 msgid "Swahili (Kiswahili)"
 msgstr "スワヒリ語"
 
-#: scm/iso-639-1.scm:158
+#: ../scm/iso-639-1.scm:158
 msgid "Swedish"
 msgstr "スウェーデン語"
 
-#: scm/iso-639-1.scm:159
+#: ../scm/iso-639-1.scm:159
 msgid "Syriac"
 msgstr "シリア語"
 
 #. defined as "syr" in ISO 639-2
-#: scm/iso-639-1.scm:160
+#: ../scm/iso-639-1.scm:160
 msgid "Tagalog"
 msgstr "タガログ語"
 
-#: scm/iso-639-1.scm:161
+#: ../scm/iso-639-1.scm:161
 msgid "Tajik"
 msgstr "タジクスタン語"
 
-#: scm/iso-639-1.scm:162
+#: ../scm/iso-639-1.scm:162
 msgid "Tamil"
 msgstr "タミル語"
 
-#: scm/iso-639-1.scm:163
+#: ../scm/iso-639-1.scm:163
 msgid "Tatar"
 msgstr "タタール語"
 
-#: scm/iso-639-1.scm:164
+#: ../scm/iso-639-1.scm:164
 msgid "Telugu"
 msgstr "テルグ語"
 
-#: scm/iso-639-1.scm:165
+#: ../scm/iso-639-1.scm:165
 msgid "Thai"
 msgstr "タイ語"
 
-#: scm/iso-639-1.scm:166
+#: ../scm/iso-639-1.scm:166
 msgid "Tibetan"
 msgstr "チベット語"
 
-#: scm/iso-639-1.scm:167
+#: ../scm/iso-639-1.scm:167
 msgid "Tigrinya"
 msgstr "チグリヤナ語"
 
-#: scm/iso-639-1.scm:168
+#: ../scm/iso-639-1.scm:168
 msgid "Tonga"
 msgstr "トンガ語"
 
-#: scm/iso-639-1.scm:169
+#: ../scm/iso-639-1.scm:169
 msgid "Tsonga"
 msgstr "ツォンガ語"
 
-#: scm/iso-639-1.scm:170
+#: ../scm/iso-639-1.scm:170
 msgid "Turkish"
 msgstr "トルコ語"
 
-#: scm/iso-639-1.scm:171
+#: ../scm/iso-639-1.scm:171
 msgid "Turkmen"
 msgstr "トルクメニスタン語"
 
-#: scm/iso-639-1.scm:172
+#: ../scm/iso-639-1.scm:172
 msgid "Twi"
 msgstr "チュイ語"
 
-#: scm/iso-639-1.scm:173
+#: ../scm/iso-639-1.scm:173
 msgid "Uighur"
 msgstr "ウイグル語"
 
-#: scm/iso-639-1.scm:174
+#: ../scm/iso-639-1.scm:174
 msgid "Ukrainian"
 msgstr "ウクライナ語"
 
-#: scm/iso-639-1.scm:175
+#: ../scm/iso-639-1.scm:175
 msgid "Urdu"
 msgstr "ウルドゥー語"
 
-#: scm/iso-639-1.scm:176
+#: ../scm/iso-639-1.scm:176
 msgid "Uzbek"
 msgstr "ウズベク語"
 
-#: scm/iso-639-1.scm:177
+#: ../scm/iso-639-1.scm:177
 msgid "Vietnamese"
 msgstr "ベトナム語"
 
-#: scm/iso-639-1.scm:178
+#: ../scm/iso-639-1.scm:178
 msgid "Welsh"
 msgstr "ウェールズ語"
 
-#: scm/iso-639-1.scm:179
+#: ../scm/iso-639-1.scm:179
 msgid "Wolof"
 msgstr "ヴォラフ語"
 
-#: scm/iso-639-1.scm:180
+#: ../scm/iso-639-1.scm:180
 msgid "Xhosa"
 msgstr "コーサ語"
 
-#: scm/iso-639-1.scm:181
+#: ../scm/iso-639-1.scm:181
 msgid "Yiddish"
 msgstr "イディッシュ語"
 
-#: scm/iso-639-1.scm:182
+#: ../scm/iso-639-1.scm:182
 msgid "Yoruba"
 msgstr "ヨルバ語"
 
-#: scm/iso-639-1.scm:183
+#: ../scm/iso-639-1.scm:183
 msgid "Zulu"
 msgstr "ズール語"
 
-#: scm/latin.scm:1562
+#: ../scm/latin.scm:1562
 msgid "Latin compose"
 msgstr "ラテン入力"
 
-#: scm/latin.scm:1563
+#: ../scm/latin.scm:1563
 msgid "Latin Compose Mode"
 msgstr "ラテン入力モード"
 
-#: scm/latin.scm:1751
+#: ../scm/latin.scm:1751
 msgid "Latin characters"
 msgstr "ラテン文字"
 
-#: scm/latin.scm:1752
+#: ../scm/latin.scm:1752
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力方式"
 
-#: scm/look-custom.scm:31 scm/look.scm:77 scm/look.scm:559
+#.
+#. Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
+#.
+#. All rights reserved.
+#.
+#. Redistribution and use in source and binary forms, with or without
+#. modification, are permitted provided that the following conditions
+#. are met:
+#. 1. Redistributions of source code must retain the above copyright
+#. notice, this list of conditions and the following disclaimer.
+#. 2. Redistributions in binary form must reproduce the above copyright
+#. notice, this list of conditions and the following disclaimer in the
+#. documentation and/or other materials provided with the distribution.
+#. 3. Neither the name of authors nor the names of its contributors
+#. may be used to endorse or promote products derived from this software
+#. without specific prior written permission.
+#.
+#. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ``AS IS'' AND
+#. ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#. IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#. ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE
+#. FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+#. DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+#. OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#. HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#. LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+#. OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#. SUCH DAMAGE.
+#.
+#. do you like nethack?
+#: ../scm/look-custom.scm:31 ../scm/look.scm:77 ../scm/look.scm:559
 msgid "Look"
 msgstr "Look"
 
-#: scm/look-custom.scm:32 scm/look.scm:560
+#: ../scm/look-custom.scm:32 ../scm/look.scm:560
 msgid "Tiny predictive input method"
 msgstr "とてもちいさな予測変換入力方式"
 
-#: scm/look-custom.scm:39
+#: ../scm/look-custom.scm:39
 msgid "Look key bindings"
 msgstr "Look キー設定"
 
-#: scm/look-custom.scm:46
+#: ../scm/look-custom.scm:46
 msgid "[Look] Use UNIX look dictionary file"
 msgstr "[Look] lookで使用される辞書ファイル名"
 
-#: scm/look-custom.scm:53
+#: ../scm/look-custom.scm:53
 msgid "[Look] Personal dictionary file"
 msgstr "[Look] 個人辞書ファイル"
 
-#: scm/look-custom.scm:59
+#: ../scm/look-custom.scm:59
 msgid "[Look] beginning character length of predicting"
 msgstr "[Look] 予測入力が有効になる文字数"
 
-#: scm/look-custom.scm:65
+#: ../scm/look-custom.scm:65
 msgid "[Look] Prepared words for prediction"
 msgstr "[Look] 予測入力の学習に必要とする連接単語数"
 
-#: scm/look-custom.scm:71
+#: ../scm/look-custom.scm:71
 msgid "[Look] left fence character of candidate"
 msgstr "[Look] 候補の左側のフェンス文字"
 
-#: scm/look-custom.scm:77
+#: ../scm/look-custom.scm:77
 msgid "[Look] right fence character of candidate"
 msgstr "[Look] 候補の右側のフェンス文字"
 
-#: scm/look-custom.scm:83
+#: ../scm/look-custom.scm:83
 msgid "[Look] on"
 msgstr "[Look] オン"
 
-#: scm/look-custom.scm:89
+#: ../scm/look-custom.scm:89
 msgid "[Look] off"
 msgstr "[Look] オフ"
 
-#: scm/look-custom.scm:95
+#: ../scm/look-custom.scm:95
 msgid "[Look] completion character"
 msgstr "[Look] 補完後確定"
 
-#: scm/look-custom.scm:101
+#: ../scm/look-custom.scm:101
 msgid "[Look] next character"
 msgstr "[Look] 次の文字"
 
-#: scm/look-custom.scm:107
+#: ../scm/look-custom.scm:107
 msgid "[Look] previous character"
 msgstr "[Look] 前の文字"
 
-#: scm/look-custom.scm:113
+#: ../scm/look-custom.scm:113
 msgid "[Look] next candidate"
 msgstr "[Look] 次候補"
 
-#: scm/look-custom.scm:119
+#: ../scm/look-custom.scm:119
 msgid "[Look] previous candidate"
 msgstr "[Look] 前候補"
 
-#: scm/look-custom.scm:125
+#: ../scm/look-custom.scm:125
 msgid "[Look] save dictionary"
 msgstr "[Look] 辞書の保存"
 
-#: scm/look-custom.scm:131
+#: ../scm/look-custom.scm:131
 msgid "[Look] load dictionary"
 msgstr "[Look] 辞書の読み出し"
 
-#: scm/look.scm:51
+#: ../scm/look.scm:51
 msgid "Sleep"
 msgstr "休眠"
 
-#: scm/look.scm:52
+#: ../scm/look.scm:52
 msgid "Look Sleep Input Mode"
 msgstr "Look休眠入力モード"
 
-#: scm/look.scm:64
+#: ../scm/look.scm:64
 msgid "Look Direct Input Mode"
 msgstr "直接入力モード"
 
-#: scm/look.scm:78
+#: ../scm/look.scm:78
 msgid "Look Input Mode"
 msgstr "Look入力モード"
 
-#: scm/mana-custom.scm:35
+#: ../scm/mana-custom.scm:35
 msgid "Mana"
 msgstr "Mana"
 
-#: scm/mana-custom.scm:43
+#: ../scm/mana-custom.scm:43
 msgid "Mana (advanced)"
 msgstr "Mana (高度)"
 
-#: scm/mana-custom.scm:44
+#: ../scm/mana-custom.scm:44
 msgid "Advanced settings for Mana"
 msgstr "Manaの詳細設定"
 
-#: scm/mana-key-custom.scm:36
+#: ../scm/mana-key-custom.scm:36
 msgid "Mana key bindings 1"
 msgstr "Mana キー設定1"
 
-#: scm/mana-key-custom.scm:40
+#: ../scm/mana-key-custom.scm:40
 msgid "Mana key bindings 2"
 msgstr "Mana キー設定2"
 
-#: scm/mana-key-custom.scm:44
+#: ../scm/mana-key-custom.scm:44
 msgid "Mana key bindings 3"
 msgstr "Mana キー設定3"
 
-#: scm/mana-key-custom.scm:48
+#: ../scm/mana-key-custom.scm:48
 msgid "Mana key bindings 4"
 msgstr "Mana キー設定4"
 
-#: scm/mana-key-custom.scm:54
+#: ../scm/mana-key-custom.scm:54
 msgid "[Mana] next segment"
 msgstr "[Mana] 次文節"
 
-#: scm/mana-key-custom.scm:60
+#: ../scm/mana-key-custom.scm:60
 msgid "[Mana] previous segment"
 msgstr "[Mana] 前文節"
 
-#: scm/mana-key-custom.scm:66
+#: ../scm/mana-key-custom.scm:66
 msgid "[Mana] extend segment"
 msgstr "[Mana] 文節を伸ばす"
 
-#: scm/mana-key-custom.scm:72
+#: ../scm/mana-key-custom.scm:72
 msgid "[Mana] shrink segment"
 msgstr "[Mana] 文節を縮める"
 
-#: scm/mana-key-custom.scm:78
+#: ../scm/mana-key-custom.scm:78
 msgid "[Mana] convert to hiragana"
 msgstr "[Mana] ひらがなに変換"
 
-#: scm/mana-key-custom.scm:84
+#: ../scm/mana-key-custom.scm:84
 msgid "[Mana] convert to katakana"
 msgstr "[Mana] カタカナに変換"
 
-#: scm/mana-key-custom.scm:90
+#: ../scm/mana-key-custom.scm:90
 msgid "[Mana] convert to halfwidth katakana"
 msgstr "[Mana] 半角カタカナに変換"
 
-#: scm/mana-key-custom.scm:96
+#: ../scm/mana-key-custom.scm:96
 msgid "[Mana] convert to halfwidth alphanumeric"
 msgstr "[Mana] 半角英数字に変換"
 
-#: scm/mana-key-custom.scm:102
+#: ../scm/mana-key-custom.scm:102
 msgid "[Mana] convert to fullwidth alphanumeric"
 msgstr "[Mana] 全角英数字に変換"
 
-#: scm/mana-key-custom.scm:108
+#: ../scm/mana-key-custom.scm:108
 msgid "[Mana] commit as transposed kana"
 msgstr "[Mana] かな/カナ反転確定"
 
-#: scm/mana-key-custom.scm:118
+#: ../scm/mana-key-custom.scm:118
 msgid "[Mana] on"
 msgstr "[Mana] オン"
 
-#: scm/mana-key-custom.scm:124
+#: ../scm/mana-key-custom.scm:124
 msgid "[Mana] off"
 msgstr "[Mana] オフ"
 
-#: scm/mana-key-custom.scm:130
+#: ../scm/mana-key-custom.scm:130
 msgid "[Mana] begin conversion"
 msgstr "[Mana] 変換開始"
 
-#: scm/mana-key-custom.scm:136
+#: ../scm/mana-key-custom.scm:136
 msgid "[Mana] commit"
 msgstr "[Mana] 確定"
 
-#: scm/mana-key-custom.scm:142
+#: ../scm/mana-key-custom.scm:142
 msgid "[Mana] cancel"
 msgstr "[Mana] キャンセル"
 
-#: scm/mana-key-custom.scm:148
+#: ../scm/mana-key-custom.scm:148
 msgid "[Mana] next candidate"
 msgstr "[Mana] 次候補"
 
-#: scm/mana-key-custom.scm:154
+#: ../scm/mana-key-custom.scm:154
 msgid "[Mana] previous candidate"
 msgstr "[Mana] 前候補"
 
-#: scm/mana-key-custom.scm:160
+#: ../scm/mana-key-custom.scm:160
 msgid "[Mana] next page of candidate window"
 msgstr "[Mana] 候補ウィンドウの次ページ"
 
-#: scm/mana-key-custom.scm:166
+#: ../scm/mana-key-custom.scm:166
 msgid "[Mana] previous page of candidate window"
 msgstr "[Mana] 候補ウィンドウの前ページ"
 
-#: scm/mana-key-custom.scm:176
+#: ../scm/mana-key-custom.scm:176
 msgid "[Mana] beginning of preedit"
 msgstr "[Mana] 編集領域の先頭"
 
-#: scm/mana-key-custom.scm:182
+#: ../scm/mana-key-custom.scm:182
 msgid "[Mana] end of preedit"
 msgstr "[Mana] 編集領域の末尾"
 
-#: scm/mana-key-custom.scm:188
+#: ../scm/mana-key-custom.scm:188
 msgid "[Mana] erase after cursor"
 msgstr "[Mana] カーソル以降を消去"
 
-#: scm/mana-key-custom.scm:194
+#: ../scm/mana-key-custom.scm:194
 msgid "[Mana] erase before cursor"
 msgstr "[Mana] カーソル以前を消去"
 
-#: scm/mana-key-custom.scm:200
+#: ../scm/mana-key-custom.scm:200
 msgid "[Mana] backspace"
 msgstr "[Mana] バックスペース"
 
-#: scm/mana-key-custom.scm:206
+#: ../scm/mana-key-custom.scm:206
 msgid "[Mana] delete"
 msgstr "[Mana] デリート"
 
-#: scm/mana-key-custom.scm:212
+#: ../scm/mana-key-custom.scm:212
 msgid "[Mana] go left"
 msgstr "[Mana] 左に移動"
 
-#: scm/mana-key-custom.scm:218
+#: ../scm/mana-key-custom.scm:218
 msgid "[Mana] go right"
 msgstr "[Mana] 右に移動"
 
-#: scm/mana-key-custom.scm:224
+#: ../scm/mana-key-custom.scm:224
 msgid "[Mana] ESC keys on vi-cooperative mode"
 msgstr "[Mana] vi協調モードでESCとして扱うキー"
 
-#: scm/mana-key-custom.scm:232
+#: ../scm/mana-key-custom.scm:232
 msgid "[Mana] hiragana mode"
 msgstr "[Mana] ひらがな入力モード"
 
-#: scm/mana-key-custom.scm:238
+#: ../scm/mana-key-custom.scm:238
 msgid "[Mana] katakana mode"
 msgstr "[Mana] カタカナ入力モード"
 
-#: scm/mana-key-custom.scm:244
+#: ../scm/mana-key-custom.scm:244
 msgid "[Mana] halfwidth katakana mode"
 msgstr "[Mana] 半角カタカナ入力モード"
 
-#: scm/mana-key-custom.scm:250
+#: ../scm/mana-key-custom.scm:250
 msgid "[Mana] halfwidth alphanumeric mode"
 msgstr "[Mana] 半角英数字入力モード"
 
-#: scm/mana-key-custom.scm:256
+#: ../scm/mana-key-custom.scm:256
 msgid "[Mana] fullwidth alphanumeric mode"
 msgstr "[Mana] 全角英数字入力モード"
 
-#: scm/mana-key-custom.scm:262
+#: ../scm/mana-key-custom.scm:262
 msgid "[Mana] toggle hiragana/katakana mode"
 msgstr "[Mana] ひらがな/カタカナ入力モードを反転"
 
-#: scm/mana-key-custom.scm:268
+#: ../scm/mana-key-custom.scm:268
 msgid "[Mana] toggle kana/alphanumeric mode"
 msgstr "[Mana] かな/英数入力モードを反転"
 
-#: scm/prime-custom.scm:34
+#: ../scm/prime-custom.scm:34
 msgid "PRIME"
 msgstr "PRIME"
 
-#: scm/prime-custom.scm:35
+#: ../scm/prime-custom.scm:35
 msgid "Japanese predictive input method"
 msgstr "日本語の予測変換入力方式"
 
-#: scm/prime-custom.scm:42
+#: ../scm/prime-custom.scm:42
 msgid "PRIME (advanced)"
 msgstr "PRIME (高度)"
 
-#: scm/prime-custom.scm:43
+#: ../scm/prime-custom.scm:43
 msgid "Advanced settings for PRIME"
 msgstr "PRIME の詳細設定"
 
-#: scm/prime-custom.scm:46
+#: ../scm/prime-custom.scm:46
 msgid "Language choice"
 msgstr "言語選択"
 
-#: scm/prime-custom.scm:47
+#: ../scm/prime-custom.scm:47
 msgid "Language settings"
 msgstr "言語設定"
 
-#: scm/prime-custom.scm:51
+#: ../scm/prime-custom.scm:51
 msgid "Japanese specific settings"
 msgstr "日本語固有の設定"
 
-#: scm/prime-custom.scm:55
+#: ../scm/prime-custom.scm:55
 msgid "English specific settings"
 msgstr "英語固有の設定"
 
-#: scm/prime-custom.scm:63
+#: ../scm/prime-custom.scm:63
 msgid "Default language"
 msgstr "標準の言語"
 
-#: scm/prime-custom.scm:69
+#: ../scm/prime-custom.scm:69
 msgid "Language toggle key"
 msgstr "言語切り換えキー"
 
-#: scm/prime-custom.scm:75
+#: ../scm/prime-custom.scm:75
 msgid "Enable auto register mode"
 msgstr "自動登録モードを有効にする"
 
-#: scm/prime-custom.scm:81
+#: ../scm/prime-custom.scm:81
 msgid "Wide width (Zenkaku)"
 msgstr "全角"
 
-#: scm/prime-custom.scm:82
+#: ../scm/prime-custom.scm:82
 msgid "Half width (Hankaku)"
 msgstr "半角"
 
-#: scm/prime-custom.scm:83
+#: ../scm/prime-custom.scm:83
 msgid "Space character"
 msgstr "空白文字"
 
-#: scm/prime-custom.scm:89
+#: ../scm/prime-custom.scm:89
 msgid "Alternative space character key"
 msgstr "全角半角を反転した空白文字キー"
 
-#: scm/prime-custom.scm:95
+#: ../scm/prime-custom.scm:95
 msgid "Use UNIX domain socket to communicate with PRIME"
 msgstr "PRIMEとの通信にUNIXドメインソケットを使用する"
 
-#: scm/prime-custom.scm:119
+#: ../scm/prime-custom.scm:119
 msgid "Always showing candidate window"
 msgstr "常に候補ウィンドウを表示する"
 
-#: scm/prime-custom.scm:126
+#: ../scm/prime-custom.scm:126
 msgid "Show usage examples of candidate words"
 msgstr "候補単語の用例を表示"
 
-#: scm/prime-custom.scm:133
+#: ../scm/prime-custom.scm:133
 msgid "Show candidate annotations"
 msgstr "候補単語の註釈を表示"
 
-#: scm/prime-custom.scm:141
+#: ../scm/prime-custom.scm:141
 msgid "Show candidate forms"
 msgstr "候補単語の活用形を表示"
 
-#: scm/prime-custom.scm:166
+#: ../scm/prime-custom.scm:166
 msgid "Enable pseudo mode cursor"
 msgstr "擬似モードカーソルを有効にする"
 
-#: scm/prime-custom.scm:187
+#: ../scm/prime-custom.scm:187
 msgid "PRIME off"
 msgstr "PRIME オフ"
 
-#: scm/prime-custom.scm:192 scm/prime-custom.scm:197
+#: ../scm/prime-custom.scm:192 ../scm/prime-custom.scm:197
 msgid "PRIME on"
 msgstr "PRIME オン"
 
-#: scm/prime-custom.scm:206
+#: ../scm/prime-custom.scm:206
 msgid "Peculiar"
 msgstr ""
 
-#: scm/prime-custom.scm:207
+#: ../scm/prime-custom.scm:207
 msgid "Application specific input mode"
 msgstr "アプリケーション特有の入力モード"
 
-#: scm/prime-key-custom.scm:64
+#: ../scm/prime-key-custom.scm:64
 msgid "PRIME key bindings 1"
 msgstr "PRIME キー設定1"
 
-#: scm/prime-key-custom.scm:68
+#: ../scm/prime-key-custom.scm:68
 msgid "PRIME key bindings 2"
 msgstr "PRIME キー設定2"
 
-#: scm/prime-key-custom.scm:72
+#: ../scm/prime-key-custom.scm:72
 msgid "PRIME key bindings 3"
 msgstr "PRIME キー設定3"
 
-#: scm/prime-key-custom.scm:79
+#: ../scm/prime-key-custom.scm:79
 msgid "[PRIME] prime-register-key"
 msgstr "[PRIME] 単語登録キー"
 
-#: scm/prime-key-custom.scm:85
+#: ../scm/prime-key-custom.scm:85
 msgid "[PRIME] prime-typing-mode-hiragana-key"
 msgstr "[PRIME] 入力モードのひらがなキー"
 
-#: scm/prime-key-custom.scm:91
+#: ../scm/prime-key-custom.scm:91
 msgid "[PRIME] prime-typing-mode-katakana-key"
 msgstr "[PRIME] 入力モードのカタカナキー"
 
-#: scm/prime-key-custom.scm:97
+#: ../scm/prime-key-custom.scm:97
 msgid "[PRIME] prime-typing-mode-hankana-key"
 msgstr "[PRIME] 入力モードの半角カタカナキー"
 
-#: scm/prime-key-custom.scm:103
+#: ../scm/prime-key-custom.scm:103
 msgid "[PRIME] prime-typing-mode-wideascii-key"
 msgstr "[PRIME] 入力モードの全角英数字キー"
 
-#: scm/prime-key-custom.scm:109
+#: ../scm/prime-key-custom.scm:109
 msgid "[PRIME] prime-typing-mode-ascii-key"
 msgstr "[PRIME] 入力モードの半角英数字キー"
 
-#: scm/prime-key-custom.scm:118
+#: ../scm/prime-key-custom.scm:118
 msgid "[PRIME] on"
 msgstr "[PRIME] オン"
 
-#: scm/prime-key-custom.scm:124
+#: ../scm/prime-key-custom.scm:124
 msgid "[PRIME] off"
 msgstr "[PRIME] オフ"
 
-#: scm/prime-key-custom.scm:130
+#: ../scm/prime-key-custom.scm:130
 msgid "[PRIME] fullwidth alphanumeric mode"
 msgstr "[PRIME] 全角英数字モード"
 
-#: scm/prime-key-custom.scm:136
+#: ../scm/prime-key-custom.scm:136
 msgid "[PRIME] begin conversion"
 msgstr "[PRIME] 変換開始"
 
-#: scm/prime-key-custom.scm:142
+#: ../scm/prime-key-custom.scm:142
 msgid "[PRIME] commit"
 msgstr "[PRIME] 確定"
 
-#: scm/prime-key-custom.scm:148
+#: ../scm/prime-key-custom.scm:148
 msgid "[PRIME] cancel"
 msgstr "[PRIME] キャンセル"
 
-#: scm/prime-key-custom.scm:154
+#: ../scm/prime-key-custom.scm:154
 msgid "[PRIME] next candidate"
 msgstr "[PRIME] 次候補"
 
-#: scm/prime-key-custom.scm:160
+#: ../scm/prime-key-custom.scm:160
 msgid "[PRIME] previous candidate"
 msgstr "[PRIME] 前候補"
 
-#: scm/prime-key-custom.scm:166
+#: ../scm/prime-key-custom.scm:166
 msgid "[PRIME] next page of candidate window"
 msgstr "[PRIME] 候補ウィンドウの次ページ"
 
-#: scm/prime-key-custom.scm:172
+#: ../scm/prime-key-custom.scm:172
 msgid "[PRIME] previous page of candidate window"
 msgstr "[PRIME] 候補ウィンドウの前ページ"
 
-#: scm/prime-key-custom.scm:181
+#: ../scm/prime-key-custom.scm:181
 msgid "[PRIME] beginning of preedit"
 msgstr "[PRIME] 編集領域の先頭"
 
-#: scm/prime-key-custom.scm:187
+#: ../scm/prime-key-custom.scm:187
 msgid "[PRIME] end of preedit"
 msgstr "[PRIME] 編集領域の末尾"
 
-#: scm/prime-key-custom.scm:193
+#: ../scm/prime-key-custom.scm:193
 msgid "[PRIME] backspace"
 msgstr "[PRIME] バックスペース"
 
-#: scm/prime-key-custom.scm:199
+#: ../scm/prime-key-custom.scm:199
 msgid "[PRIME] delete"
 msgstr "[PRIME] デリート"
 
-#: scm/prime-key-custom.scm:205
+#: ../scm/prime-key-custom.scm:205
 msgid "[PRIME] go left"
 msgstr "[PRIME] 左に移動"
 
-#: scm/prime-key-custom.scm:211
+#: ../scm/prime-key-custom.scm:211
 msgid "[PRIME] go right"
 msgstr "[PRIME] 右に移動"
 
-#: scm/prime-key-custom.scm:217
+#: ../scm/prime-key-custom.scm:217
 msgid "[PRIME] shrink segment"
 msgstr "[PRIME] 文節を縮める"
 
-#: scm/prime-key-custom.scm:223
+#: ../scm/prime-key-custom.scm:223
 msgid "[PRIME] extend segment"
 msgstr "[PRIME] 文節を伸ばす"
 
-#: scm/prime-key-custom.scm:229
+#: ../scm/prime-key-custom.scm:229
 msgid "[PRIME] next candidate in English mode"
 msgstr "[PRIME] 英語モードでの次候補"
 
-#: scm/prime-key-custom.scm:235
+#: ../scm/prime-key-custom.scm:235
 msgid "[PRIME] Direct key in English mode"
 msgstr "[PRIME] 英語モードでの直接入力キー"
 
-#: scm/pyload.scm:42
+#: ../scm/pyload.scm:42
 msgid "New Pinyin (Simplified)"
 msgstr "新ピンイン (簡体字)"
 
-#: scm/pyload.scm:43
+#: ../scm/pyload.scm:43
 msgid "Pinyin input method (Simplified Chinese version)"
 msgstr "ピンイン入力方式 (簡体字版)"
 
-#: scm/pyload.scm:55
+#: ../scm/pyload.scm:55
 msgid "Pinyin (Unicode)"
 msgstr "ピンイン (ユニコード)"
 
-#: scm/pyload.scm:56
+#: ../scm/pyload.scm:56
 msgid "Pinyin input method (Unicode version)"
 msgstr "ピンイン入力方式 (ユニコード版)"
 
-#: scm/pyload.scm:68
+#: ../scm/pyload.scm:68
 msgid "Pinyin (Traditional)"
 msgstr "ピンイン (繁体字)"
 
-#: scm/pyload.scm:69
+#: ../scm/pyload.scm:69
 msgid "Pinyin input method (Traditional Chinese version)"
 msgstr "ピンイン入力方式 (繁体字版)"
 
-#: scm/scim.scm:338
+#: ../scm/scim.scm:338
 msgid "An input method provided by the scim library"
 msgstr "SCIMライブラリが提供する入力方式"
 
-#: scm/sj3-custom.scm:35
+#: ../scm/sj3-custom.scm:35
 msgid "SJ3"
 msgstr "SJ3"
 
-#: scm/sj3-custom.scm:43
+#: ../scm/sj3-custom.scm:43
 msgid "SJ3 server"
 msgstr "SJ3 サーバ"
 
-#: scm/sj3-custom.scm:47
+#: ../scm/sj3-custom.scm:47
 msgid "SJ3 (advanced)"
 msgstr "SJ3 (高度)"
 
-#: scm/sj3-custom.scm:307
+#: ../scm/sj3-custom.scm:307
 msgid "Use value of use remote SJ3 server"
 msgstr "ローカルマシン以外のSJ3サーバに接続する"
 
-#: scm/sj3-custom.scm:314
+#: ../scm/sj3-custom.scm:314
 msgid "SJ3 server name"
 msgstr "SJ3サーバ名"
 
-#: scm/sj3-custom.scm:325
+#: ../scm/sj3-custom.scm:325
 msgid "SJ3 user name"
 msgstr "SJ3ユーザ名"
 
-#: scm/sj3-key-custom.scm:35
+#: ../scm/sj3-key-custom.scm:35
 msgid "SJ3 key bindings 1"
 msgstr "SJ3 キー設定1"
 
-#: scm/sj3-key-custom.scm:39
+#: ../scm/sj3-key-custom.scm:39
 msgid "SJ3 key bindings 2"
 msgstr "SJ3 キー設定2"
 
-#: scm/sj3-key-custom.scm:43
+#: ../scm/sj3-key-custom.scm:43
 msgid "SJ3 key bindings 3"
 msgstr "SJ3 キー設定3"
 
-#: scm/sj3-key-custom.scm:47
+#: ../scm/sj3-key-custom.scm:47
 msgid "SJ3 key bindings 4"
 msgstr "SJ3 キー設定4"
 
-#: scm/sj3-key-custom.scm:53
+#: ../scm/sj3-key-custom.scm:53
 msgid "[SJ3] next segment"
 msgstr "[SJ3] 次文節"
 
-#: scm/sj3-key-custom.scm:59
+#: ../scm/sj3-key-custom.scm:59
 msgid "[SJ3] previous segment"
 msgstr "[SJ3] 前文節"
 
-#: scm/sj3-key-custom.scm:65
+#: ../scm/sj3-key-custom.scm:65
 msgid "[SJ3] extend segment"
 msgstr "[SJ3] 文節を伸ばす"
 
-#: scm/sj3-key-custom.scm:71
+#: ../scm/sj3-key-custom.scm:71
 msgid "[SJ3] shrink segment"
 msgstr "[SJ3] 文節を縮める"
 
-#: scm/sj3-key-custom.scm:77
+#: ../scm/sj3-key-custom.scm:77
 msgid "[SJ3] convert to hiragana"
 msgstr "[SJ3] ひらがなに変換"
 
-#: scm/sj3-key-custom.scm:83
+#: ../scm/sj3-key-custom.scm:83
 msgid "[SJ3] convert to katakana"
 msgstr "[SJ3] カタカナに変換"
 
-#: scm/sj3-key-custom.scm:89
+#: ../scm/sj3-key-custom.scm:89
 msgid "[SJ3] convert to halfwidth katakana"
 msgstr "[SJ3] 半角カタカナに変換"
 
-#: scm/sj3-key-custom.scm:95
+#: ../scm/sj3-key-custom.scm:95
 msgid "[SJ3] convert to halfwidth alphanumeric"
 msgstr "[SJ3] 半角英数字に変換"
 
-#: scm/sj3-key-custom.scm:101
+#: ../scm/sj3-key-custom.scm:101
 msgid "[SJ3] convert to fullwidth alphanumeric"
 msgstr "[SJ3] 全角英数字に変換"
 
-#: scm/sj3-key-custom.scm:107
+#: ../scm/sj3-key-custom.scm:107
 msgid "[SJ3] commit as transposed kana"
 msgstr "[SJ3] かな/カナ反転確定"
 
-#: scm/sj3-key-custom.scm:116
+#: ../scm/sj3-key-custom.scm:116
 msgid "[SJ3] on"
 msgstr "[SJ3] オン"
 
-#: scm/sj3-key-custom.scm:123
+#: ../scm/sj3-key-custom.scm:123
 msgid "[SJ3] off"
 msgstr "[SJ3] オフ"
 
-#: scm/sj3-key-custom.scm:129
+#: ../scm/sj3-key-custom.scm:129
 msgid "[SJ3] begin conversion"
 msgstr "[SJ3] 変換開始"
 
-#: scm/sj3-key-custom.scm:135
+#: ../scm/sj3-key-custom.scm:135
 msgid "[SJ3] commit"
 msgstr "[SJ3] 確定"
 
-#: scm/sj3-key-custom.scm:141
+#: ../scm/sj3-key-custom.scm:141
 msgid "[SJ3] cancel"
 msgstr "[SJ3] キャンセル"
 
-#: scm/sj3-key-custom.scm:147
+#: ../scm/sj3-key-custom.scm:147
 msgid "[SJ3] next candidate"
 msgstr "[SJ3] 次候補"
 
-#: scm/sj3-key-custom.scm:153
+#: ../scm/sj3-key-custom.scm:153
 msgid "[SJ3] previous candidate"
 msgstr "[SJ3] 前候補"
 
-#: scm/sj3-key-custom.scm:159
+#: ../scm/sj3-key-custom.scm:159
 msgid "[SJ3] next page of candidate window"
 msgstr "[SJ3] 候補ウィンドウの次ページ"
 
-#: scm/sj3-key-custom.scm:165
+#: ../scm/sj3-key-custom.scm:165
 msgid "[SJ3] previous page of candidate window"
 msgstr "[SJ3] 候補ウィンドウの前ページ"
 
-#: scm/sj3-key-custom.scm:174
+#: ../scm/sj3-key-custom.scm:174
 msgid "[SJ3] beginning of preedit"
 msgstr "[SJ3] 編集領域の先頭"
 
-#: scm/sj3-key-custom.scm:180
+#: ../scm/sj3-key-custom.scm:180
 msgid "[SJ3] end of preedit"
 msgstr "[SJ3] 編集領域の末尾"
 
-#: scm/sj3-key-custom.scm:186
+#: ../scm/sj3-key-custom.scm:186
 msgid "[SJ3] erase after cursor"
 msgstr "[SJ3] カーソル以降を消去"
 
-#: scm/sj3-key-custom.scm:192
+#: ../scm/sj3-key-custom.scm:192
 msgid "[SJ3] erase before cursor"
 msgstr "[SJ3] カーソル以前を消去"
 
-#: scm/sj3-key-custom.scm:198
+#: ../scm/sj3-key-custom.scm:198
 msgid "[SJ3] backspace"
 msgstr "[SJ3] バックスペース"
 
-#: scm/sj3-key-custom.scm:204
+#: ../scm/sj3-key-custom.scm:204
 msgid "[SJ3] delete"
 msgstr "[SJ3] デリート"
 
-#: scm/sj3-key-custom.scm:210
+#: ../scm/sj3-key-custom.scm:210
 msgid "[SJ3] go left"
 msgstr "[SJ3] 左に移動"
 
-#: scm/sj3-key-custom.scm:216
+#: ../scm/sj3-key-custom.scm:216
 msgid "[SJ3] go right"
 msgstr "[SJ3] 右に移動"
 
-#: scm/sj3-key-custom.scm:222
+#: ../scm/sj3-key-custom.scm:222
 msgid "[SJ3] ESC keys on vi-cooperative mode"
 msgstr "[SJ3] vi協調モードでESCとして扱うキー"
 
-#: scm/sj3-key-custom.scm:232
+#: ../scm/sj3-key-custom.scm:232
 msgid "[SJ3] hiragana mode"
 msgstr "[SJ3] ひらがな入力モード"
 
-#: scm/sj3-key-custom.scm:238
+#: ../scm/sj3-key-custom.scm:238
 msgid "[SJ3] katakana mode"
 msgstr "[SJ3] カタカナ入力モード"
 
-#: scm/sj3-key-custom.scm:244
+#: ../scm/sj3-key-custom.scm:244
 msgid "[SJ3] halfwidth katakana mode"
 msgstr "[SJ3] 半角カタカナ入力モード"
 
-#: scm/sj3-key-custom.scm:250
+#: ../scm/sj3-key-custom.scm:250
 msgid "[SJ3] halfwidth alphanumeric mode"
 msgstr "[SJ3] 半角英数字入力モード"
 
-#: scm/sj3-key-custom.scm:256
+#: ../scm/sj3-key-custom.scm:256
 msgid "[SJ3] fullwidth alphanumeric mode"
 msgstr "[SJ3] 全角英数字入力モード"
 
-#: scm/sj3-key-custom.scm:262
+#: ../scm/sj3-key-custom.scm:262
 msgid "[SJ3] toggle hiragana/katakana mode"
 msgstr "[SJ3] ひらがな/カタカナ入力モードを反転"
 
-#: scm/sj3-key-custom.scm:268
+#: ../scm/sj3-key-custom.scm:268
 msgid "[SJ3] toggle kana/alphanumeric mode"
 msgstr "[SJ3] かな/英数入力モードを反転"
 
-#: scm/sj3.scm:67
+#: ../scm/sj3.scm:67
 #, scheme-format
 msgid "[Please wait ~asec...]"
 msgstr "[~a秒お待ちください...]"
 
-#: scm/sj3.scm:77
+#: ../scm/sj3.scm:77
 msgid "Reconnecting to sj3 server."
 msgstr "sj3サーバに再接続しています。"
 
-#: scm/sj3.scm:81
+#: ../scm/sj3.scm:81
 msgid "[Reconnecting...]"
 msgstr "[再接続中...]"
 
-#: scm/skk-custom.scm:35
+#: ../scm/skk-custom.scm:35
 msgid "SKK"
 msgstr "SKK"
 
-#: scm/skk-custom.scm:36
+#: ../scm/skk-custom.scm:36
 msgid "uim version of SKK input method"
 msgstr "SKK入力方式のuim版"
 
-#: scm/skk-custom.scm:43
+#: ../scm/skk-custom.scm:43
 msgid "SKK dictionaries"
 msgstr "SKK 辞書"
 
-#: scm/skk-custom.scm:44
+#: ../scm/skk-custom.scm:44
 msgid "Dictionary settings for SKK"
 msgstr "SKKの辞書設定"
 
-#: scm/skk-custom.scm:47
+#: ../scm/skk-custom.scm:47
 msgid "SKK (advanced)"
 msgstr "SKK (高度)"
 
-#: scm/skk-custom.scm:48
+#: ../scm/skk-custom.scm:48
 msgid "Advanced settings for SKK"
 msgstr "SKKの高度な設定"
 
-#: scm/skk-custom.scm:52
+#: ../scm/skk-custom.scm:52
 #, fuzzy
 msgid "SKK server"
 msgstr "Canna サーバ"
 
-#: scm/skk-custom.scm:57
+#: ../scm/skk-custom.scm:57
 #, fuzzy
 msgid "Dictionary files"
 msgstr "辞書ファイル"
 
-#: scm/skk-custom.scm:74 scm/tutcode-custom.scm:102
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:102
 msgid "Commit candidate by heading label keys"
 msgstr "見出し表示のキーで候補を確定する"
 
-#: scm/skk-custom.scm:81
+#: ../scm/skk-custom.scm:81
 msgid "ddskk-like"
 msgstr "ddskk風"
 
-#: scm/skk-custom.scm:81 scm/skk-custom.scm:422
+#: ../scm/skk-custom.scm:81 ../scm/skk-custom.scm:422
 msgid "Similar to ddskk"
 msgstr "ddskk風"
 
-#: scm/skk-custom.scm:82
+#: ../scm/skk-custom.scm:82
 msgid "Candidate selection style"
 msgstr "候補選択スタイル"
 
-#: scm/skk-custom.scm:88
+#: ../scm/skk-custom.scm:88
 msgid "Set candidate window behavior manually"
 msgstr "候補ウィンドウの挙動を手動で設定する"
 
-#: scm/skk-custom.scm:337
+#: ../scm/skk-custom.scm:337
 msgid "Use skkserv instead of SKK-JISYO"
 msgstr "辞書ファイルの代わりにSKKサーバを使用"
 
-#: scm/skk-custom.scm:343
+#: ../scm/skk-custom.scm:343
 msgid "Use value of environment variable SKKSERVER"
 msgstr "環境変数SKKSERVERを使用"
 
-#: scm/skk-custom.scm:354
+#: ../scm/skk-custom.scm:354
 msgid "Hostname of skkserv"
 msgstr "SKKサーバのホスト名"
 
-#: scm/skk-custom.scm:365
+#: ../scm/skk-custom.scm:365
 msgid "Port number of skkserv"
 msgstr "SKKサーバのポート番号"
 
-#: scm/skk-custom.scm:376
+#: ../scm/skk-custom.scm:376
 msgid "Auto"
 msgstr "自動"
 
-#: scm/skk-custom.scm:377
+#: ../scm/skk-custom.scm:377
 msgid "IPv4"
 msgstr "IPv4"
 
-#: scm/skk-custom.scm:378
+#: ../scm/skk-custom.scm:378
 msgid "Forces skkserv to use IPv4 addresses only"
 msgstr "SKKサーバとの接続にIPv4のみを使う"
 
-#: scm/skk-custom.scm:379
+#: ../scm/skk-custom.scm:379
 msgid "IPv6"
 msgstr "IPv6"
 
-#: scm/skk-custom.scm:380
+#: ../scm/skk-custom.scm:380
 msgid "Forces skkserv to use IPv6 addresses only"
 msgstr "SKKサーバとの接続にIPv6のみを使う"
 
-#: scm/skk-custom.scm:381
+#: ../scm/skk-custom.scm:381
 msgid "Address family of skkserv"
 msgstr "SKKサーバのアドレスファミリ"
 
-#: scm/skk-custom.scm:393
+#: ../scm/skk-custom.scm:393
 #, fuzzy
 msgid "System dictionary file"
 msgstr "辞書ファイル"
 
-#: scm/skk-custom.scm:400
+#: ../scm/skk-custom.scm:400
 msgid "Personal dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/skk-custom.scm:407
+#: ../scm/skk-custom.scm:407
 msgid "Personal dictionary file (dedicated to uim)"
 msgstr "個人辞書ファイル (uim専用)"
 
-#: scm/skk-custom.scm:422
+#: ../scm/skk-custom.scm:422
 msgid "ddskk"
 msgstr "ddskk"
 
-#: scm/skk-custom.scm:424
+#: ../scm/skk-custom.scm:424
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: scm/skk-custom.scm:430
+#: ../scm/skk-custom.scm:430
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
-#: scm/skk-custom.scm:436
+#: ../scm/skk-custom.scm:436
 msgid "Use numeric conversion"
 msgstr "数値変換を使用する"
 
-#: scm/skk-custom.scm:442
+#: ../scm/skk-custom.scm:442
 msgid "Enable auto conversion with punctuation marks"
 msgstr "句読点での自動変換を有効にする"
 
-#: scm/skk-custom.scm:448
+#: ../scm/skk-custom.scm:448
 msgid "Enable dynamic completion"
 msgstr "動的補完を有効にする"
 
-#: scm/skk-custom.scm:454
+#: ../scm/skk-custom.scm:454
 msgid "Use UNIX look command for completion"
 msgstr "アルファベット変換時の補完にlookコマンドを使用"
 
-#: scm/skk-custom.scm:460
+#: ../scm/skk-custom.scm:460
 #, fuzzy
 msgid "Use UNIX look dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/skk-custom.scm:475
+#: ../scm/skk-custom.scm:475
 msgid "Show annotation of candidate word"
 msgstr "候補の註釈を表示する"
 
-#: scm/skk-custom.scm:481
+#: ../scm/skk-custom.scm:481
 msgid "Show annotation also in preedit area"
 msgstr "編集領域内にも註釈を表示する"
 
-#: scm/skk-custom.scm:508
+#: ../scm/skk-custom.scm:508
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr "Enterキーを単に確定のために使う (egg風の操作)"
 
-#: scm/skk-custom.scm:515
+#: ../scm/skk-custom.scm:515
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr "改行をネイティブキーイベントの代わりにASCII文字列として確定する"
 
-#: scm/skk-key-custom.scm:64
+#: ../scm/skk-key-custom.scm:64
 msgid "SKK key bindings 1"
 msgstr "SKK キー設定1"
 
-#: scm/skk-key-custom.scm:68
+#: ../scm/skk-key-custom.scm:68
 msgid "SKK key bindings 2"
 msgstr "SKK キー設定2"
 
-#: scm/skk-key-custom.scm:72
+#: ../scm/skk-key-custom.scm:72
 msgid "SKK key bindings 3"
 msgstr "SKK キー設定3"
 
-#: scm/skk-key-custom.scm:77
+#: ../scm/skk-key-custom.scm:77
 msgid "Completion"
 msgstr "補完"
 
-#: scm/skk-key-custom.scm:81
+#: ../scm/skk-key-custom.scm:81
 msgid "Dynamic completion"
 msgstr "動的補完"
 
-#: scm/skk-key-custom.scm:85
+#: ../scm/skk-key-custom.scm:85
 msgid "Latin conversion"
 msgstr "アルファベット変換"
 
-#: scm/skk-key-custom.scm:92
+#: ../scm/skk-key-custom.scm:92
 msgid "[SKK] on"
 msgstr "[SKK] オン"
 
-#: scm/skk-key-custom.scm:98
+#: ../scm/skk-key-custom.scm:98
 msgid "[SKK] latin mode"
 msgstr "[SKK] 半角英数入力モード"
 
-#: scm/skk-key-custom.scm:104
+#: ../scm/skk-key-custom.scm:104
 msgid "[SKK] wide-latin mode"
 msgstr "[SKK] 全角英数入力モード"
 
-#: scm/skk-key-custom.scm:110
+#: ../scm/skk-key-custom.scm:110
 msgid "[SKK] kanji mode"
 msgstr "[SKK] 漢字入力モード"
 
-#: scm/skk-key-custom.scm:116
+#: ../scm/skk-key-custom.scm:116
 msgid "[SKK] halfwidth katakana mode"
 msgstr "[SKK] 半角カタカナ入力モード"
 
-#: scm/skk-key-custom.scm:122
+#: ../scm/skk-key-custom.scm:122
 msgid "[SKK] toggle hiragana/katakana mode"
 msgstr "[SKK] ひらがな/カタカナ入力モードを反転"
 
-#: scm/skk-key-custom.scm:128
+#: ../scm/skk-key-custom.scm:128
 msgid "[SKK] begin conversion"
 msgstr "[SKK] 変換開始"
 
-#: scm/skk-key-custom.scm:134
+#: ../scm/skk-key-custom.scm:134
 msgid "[SKK] commit"
 msgstr "[SKK] 確定"
 
-#: scm/skk-key-custom.scm:140
+#: ../scm/skk-key-custom.scm:140
 msgid "[SKK] cancel"
 msgstr "[SKK] キャンセル"
 
-#: scm/skk-key-custom.scm:150
+#: ../scm/skk-key-custom.scm:150
 msgid "[SKK] return"
 msgstr "[SKK] リターン"
 
-#: scm/skk-key-custom.scm:156
+#: ../scm/skk-key-custom.scm:156
 msgid "[SKK] begin latin conversion"
 msgstr "[SKK] アルファベット変換開始"
 
-#: scm/skk-key-custom.scm:162
+#: ../scm/skk-key-custom.scm:162
 msgid "[SKK] commit as fullwidth alphanumeric"
 msgstr "[SKK] 全角英数字として確定"
 
-#: scm/skk-key-custom.scm:168
+#: ../scm/skk-key-custom.scm:168
 msgid "[SKK] commit as opposite case in latin conversion"
 msgstr "[SKK] 大文字/小文字を反転して確定"
 
-#: scm/skk-key-custom.scm:174
+#: ../scm/skk-key-custom.scm:174
 msgid "[SKK] begin completion"
 msgstr "[SKK] 補完開始"
 
-#: scm/skk-key-custom.scm:180
+#: ../scm/skk-key-custom.scm:180
 msgid "[SKK] next completion candidate"
 msgstr "[SKK] 次の補完候補"
 
-#: scm/skk-key-custom.scm:186
+#: ../scm/skk-key-custom.scm:186
 msgid "[SKK] previous completion candidate"
 msgstr "[SKK] 前の補完候補"
 
-#: scm/skk-key-custom.scm:192
+#: ../scm/skk-key-custom.scm:192
 msgid "[SKK] new completion using current completion"
 msgstr "[SKK] 現在の補完候補から新規に補完"
 
-#: scm/skk-key-custom.scm:198
+#: ../scm/skk-key-custom.scm:198
 msgid "[SKK] begin conversion with completion"
 msgstr "[SKK] 動的補完された語を変換開始"
 
-#: scm/skk-key-custom.scm:204
+#: ../scm/skk-key-custom.scm:204
 msgid "[SKK] commit the first candidate with completion"
 msgstr "[SKK] 動的補完された語を変換、確定"
 
-#: scm/skk-key-custom.scm:210
+#: ../scm/skk-key-custom.scm:210
 msgid "[SKK] join prefix or suffix"
 msgstr "[SKK] 接頭辞、接尾辞の入力"
 
-#: scm/skk-key-custom.scm:216
+#: ../scm/skk-key-custom.scm:216
 msgid "[SKK] ESC keys on vi-cooperative mode"
 msgstr "[SKK] vi協調モードでESCとして扱うキー"
 
-#: scm/skk-key-custom.scm:222
+#: ../scm/skk-key-custom.scm:222
 msgid "[SKK] no-operation on no-preedit state"
 msgstr "[SKK] 編集領域がない時に何もせず消費するキー"
 
-#: scm/skk-key-custom.scm:223
+#: ../scm/skk-key-custom.scm:223
 msgid "See [Anthy-dev 1616] and related messages for further information"
 msgstr "詳細は[Anthy-dev 1616]とそれに連なる投稿を参照してください"
 
-#: scm/skk-key-custom.scm:228
+#: ../scm/skk-key-custom.scm:228
 msgid "[SKK] purge the entry from dictionary"
 msgstr "[SKK] 個人辞書中の単語を削除"
 
-#: scm/skk-key-custom.scm:246
+#: ../scm/skk-key-custom.scm:246
 msgid "[SKK] next candidate"
 msgstr "[SKK] 次候補"
 
-#: scm/skk-key-custom.scm:252
+#: ../scm/skk-key-custom.scm:252
 msgid "[SKK] previous candidate"
 msgstr "[SKK] 前候補"
 
-#: scm/skk-key-custom.scm:258
+#: ../scm/skk-key-custom.scm:258
 msgid "[SKK] next page of candidate window"
 msgstr "[SKK] 候補ウィンドウの次ページ"
 
-#: scm/skk-key-custom.scm:264
+#: ../scm/skk-key-custom.scm:264
 msgid "[SKK] previous page of candidate window"
 msgstr "[SKK] 候補ウィンドウの前ページ"
 
-#: scm/skk-key-custom.scm:270
+#: ../scm/skk-key-custom.scm:270
 msgid "[SKK] backspace"
 msgstr "[SKK] バックスペース"
 
-#: scm/skk-key-custom.scm:276
+#: ../scm/skk-key-custom.scm:276
 msgid "[SKK] go left"
 msgstr "[SKK] 左に移動"
 
-#: scm/skk-key-custom.scm:282
+#: ../scm/skk-key-custom.scm:282
 msgid "[SKK] go right"
 msgstr "[SKK] 右に移動"
 
-#: scm/tcode.scm:1645
+#: ../scm/tcode.scm:1645
 msgid "T-Code"
 msgstr "T-Code"
 
-#: scm/tcode.scm:1646 scm/trycode.scm:1648 scm/tutcode.scm:890
+#: ../scm/tcode.scm:1646 ../scm/trycode.scm:1648 ../scm/tutcode.scm:890
 msgid "A kanji direct input method"
 msgstr "漢字直接入力方式"
 
-#: scm/trycode.scm:1647
+#: ../scm/trycode.scm:1647
 #, fuzzy
 msgid "Try-Code"
 msgstr "T-Code"
 
-#: scm/tutcode-custom.scm:35 scm/tutcode.scm:889
+#: ../scm/tutcode-custom.scm:35 ../scm/tutcode.scm:889
 msgid "TUT-Code"
 msgstr "TUT-Code"
 
-#: scm/tutcode-custom.scm:36
+#: ../scm/tutcode-custom.scm:36
 #, fuzzy
 msgid "uim version of TUT-Code input method"
 msgstr "SKK入力方式のuim版"
 
-#: scm/tutcode-custom.scm:43
+#: ../scm/tutcode-custom.scm:43
 #, fuzzy
 msgid "TUT-Code dictionaries"
 msgstr "SKK 辞書"
 
-#: scm/tutcode-custom.scm:44
+#: ../scm/tutcode-custom.scm:44
 #, fuzzy
 msgid "Dictionary settings for TUT-Code"
 msgstr "SKKの辞書設定"
 
-#: scm/tutcode-custom.scm:54
+#: ../scm/tutcode-custom.scm:54
 #, fuzzy
 msgid "Mazegaki dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/tutcode-custom.scm:61
+#: ../scm/tutcode-custom.scm:61
 #, fuzzy
 msgid "Personal mazegaki dictionary file"
 msgstr "個人辞書ファイル"
 
-#: scm/tutcode-custom.scm:68
+#: ../scm/tutcode-custom.scm:68
 msgid "Code table file"
 msgstr ""
 
-#: scm/tutcode-custom.scm:69
+#: ../scm/tutcode-custom.scm:69
 msgid ""
 "Code table name is 'filename-rule' when code table file name is 'filename."
 "scm'."
 msgstr ""
 
-#: scm/tutcode-custom.scm:74
+#: ../scm/tutcode-custom.scm:74
 msgid "Enable learning in mazegaki conversion"
 msgstr ""
 
-#: scm/tutcode-custom.scm:86
+#: ../scm/tutcode-custom.scm:86
 msgid "Use Dvorak keyboard"
 msgstr ""
 
-#: scm/tutcode-key-custom.scm:37
+#: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
 msgstr "TUT-Code キー設定1"
 
-#: scm/tutcode-key-custom.scm:41
+#: ../scm/tutcode-key-custom.scm:41
 msgid "TUT-Code key bindings 2"
 msgstr "TUT-Code キー設定2"
 
-#: scm/tutcode-key-custom.scm:47
+#: ../scm/tutcode-key-custom.scm:47
 msgid "[TUT-Code] on"
 msgstr "[TUT-Code] オン"
 
-#: scm/tutcode-key-custom.scm:53
+#: ../scm/tutcode-key-custom.scm:53
 msgid "[TUT-Code] off"
 msgstr "[TUT-Code] オフ"
 
-#: scm/tutcode-key-custom.scm:59
+#: ../scm/tutcode-key-custom.scm:59
 msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
 
-#: scm/tutcode-key-custom.scm:65
+#: ../scm/tutcode-key-custom.scm:65
 #, fuzzy
 msgid "[TUT-Code] mazegaki conversion mode"
 msgstr "[Canna] 変換開始"
 
-#: scm/tutcode-key-custom.scm:71
+#: ../scm/tutcode-key-custom.scm:71
 msgid "[TUT-Code] bushu conversion mode"
 msgstr ""
 
-#: scm/tutcode-key-custom.scm:77
+#: ../scm/tutcode-key-custom.scm:77
 #, fuzzy
 msgid "[TUT-Code] begin conversion"
 msgstr "[Canna] 変換開始"
 
-#: scm/tutcode-key-custom.scm:83
+#: ../scm/tutcode-key-custom.scm:83
 #, fuzzy
 msgid "[TUT-Code] commit"
 msgstr "[TUT-Code] オン"
 
-#: scm/tutcode-key-custom.scm:89
+#: ../scm/tutcode-key-custom.scm:89
 #, fuzzy
 msgid "[TUT-Code] cancel"
 msgstr "[TUT-Code] バックスペース"
 
-#: scm/tutcode-key-custom.scm:95
+#: ../scm/tutcode-key-custom.scm:95
 #, fuzzy
 msgid "[TUT-Code] next candidate"
 msgstr "[Canna] 次候補"
 
-#: scm/tutcode-key-custom.scm:101
+#: ../scm/tutcode-key-custom.scm:101
 #, fuzzy
 msgid "[TUT-Code] previous candidate"
 msgstr "[Canna] 前候補"
 
-#: scm/tutcode-key-custom.scm:107
+#: ../scm/tutcode-key-custom.scm:107
 #, fuzzy
 msgid "[TUT-Code] next page of candidate window"
 msgstr "[Canna] 候補ウィンドウの次ページ"
 
-#: scm/tutcode-key-custom.scm:113
+#: ../scm/tutcode-key-custom.scm:113
 #, fuzzy
 msgid "[TUT-Code] previous page of candidate window"
 msgstr "[Canna] 候補ウィンドウの前ページ"
 
-#: scm/tutcode-key-custom.scm:119
+#: ../scm/tutcode-key-custom.scm:119
 msgid "[TUT-Code] backspace"
 msgstr "[TUT-Code] バックスペース"
 
-#: scm/tutcode-key-custom.scm:125
+#: ../scm/tutcode-key-custom.scm:125
 #, fuzzy
 msgid "[TUT-Code] return"
 msgstr "[TUT-Code] オン"
 
-#: scm/tutcode-key-custom.scm:131
+#: ../scm/tutcode-key-custom.scm:131
 #, fuzzy
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr "[Canna] vi協調モードでESCとして扱うキー"
 
-#: scm/viqr.scm:206
+#: ../scm/viqr.scm:206
 msgid "VIQR"
 msgstr "VIQR"
 
-#: scm/viqr.scm:207
+#: ../scm/viqr.scm:207
 msgid "VIetnamese Quoted-Readable"
 msgstr "VIetnamese Quoted-Readable"
 
-#: scm/wnn-custom.scm:35
+#: ../scm/wnn-custom.scm:35
 msgid "Wnn"
 msgstr "Wnn"
 
-#: scm/wnn-custom.scm:43
+#: ../scm/wnn-custom.scm:43
 msgid "Wnn server"
 msgstr "Wnn サーバ"
 
-#: scm/wnn-custom.scm:47
+#: ../scm/wnn-custom.scm:47
 msgid "Wnn (advanced)"
 msgstr "Wnn (高度)"
 
-#: scm/wnn-custom.scm:307
+#: ../scm/wnn-custom.scm:307
 msgid "Use value of use remote Wnn server"
 msgstr "ローカルマシン以外のWnnサーバに接続する"
 
-#: scm/wnn-custom.scm:314
+#: ../scm/wnn-custom.scm:314
 msgid "Wnn server name"
 msgstr "Wnnサーバ名"
 
-#: scm/wnn-custom.scm:325
+#: ../scm/wnn-custom.scm:325
 msgid "Wnn resource file"
 msgstr "Wnn設定ファイル"
 
-#: scm/wnn-key-custom.scm:35
+#: ../scm/wnn-key-custom.scm:35
 msgid "Wnn key bindings 1"
 msgstr "Wnn キー設定1"
 
-#: scm/wnn-key-custom.scm:39
+#: ../scm/wnn-key-custom.scm:39
 msgid "Wnn key bindings 2"
 msgstr "Wnn キー設定2"
 
 # Wnn
-#: scm/wnn-key-custom.scm:43
+#: ../scm/wnn-key-custom.scm:43
 msgid "Wnn key bindings 3"
 msgstr "Wnn キー設定3"
 
-#: scm/wnn-key-custom.scm:47
+#: ../scm/wnn-key-custom.scm:47
 msgid "Wnn key bindings 4"
 msgstr "Wnn キー設定4"
 
-#: scm/wnn-key-custom.scm:53
+#: ../scm/wnn-key-custom.scm:53
 msgid "[Wnn] next segment"
 msgstr "[Wnn] 次の文節"
 
-#: scm/wnn-key-custom.scm:59
+#: ../scm/wnn-key-custom.scm:59
 msgid "[Wnn] previous segment"
 msgstr "[Wnn] 前の文節"
 
-#: scm/wnn-key-custom.scm:65
+#: ../scm/wnn-key-custom.scm:65
 msgid "[Wnn] extend segment"
 msgstr "[Wnn] 文節を伸ばす"
 
-#: scm/wnn-key-custom.scm:71
+#: ../scm/wnn-key-custom.scm:71
 msgid "[Wnn] shrink segment"
 msgstr "[Wnn] 文節を縮める"
 
-#: scm/wnn-key-custom.scm:77
+#: ../scm/wnn-key-custom.scm:77
 msgid "[Wnn] convert to hiragana"
 msgstr "[Wnn] ひらがなに変換"
 
-#: scm/wnn-key-custom.scm:83
+#: ../scm/wnn-key-custom.scm:83
 msgid "[Wnn] convert to katakana"
 msgstr "[Wnn] カタカナに変換"
 
-#: scm/wnn-key-custom.scm:89
+#: ../scm/wnn-key-custom.scm:89
 msgid "[Wnn] convert to halfwidth katakana"
 msgstr "[Wnn] 半角カタカナに変換"
 
-#: scm/wnn-key-custom.scm:95
+#: ../scm/wnn-key-custom.scm:95
 msgid "[Wnn] convert to halfwidth alphanumeric"
 msgstr "[Wnn] 半角英数字に変換"
 
-#: scm/wnn-key-custom.scm:101
+#: ../scm/wnn-key-custom.scm:101
 msgid "[Wnn] convert to fullwidth alphanumeric"
 msgstr "[Wnn] 全角英数字に変換"
 
-#: scm/wnn-key-custom.scm:107
+#: ../scm/wnn-key-custom.scm:107
 msgid "[Wnn] commit as transposed kana"
 msgstr "[Wnn] かな/カナ反転確定"
 
-#: scm/wnn-key-custom.scm:116
+#: ../scm/wnn-key-custom.scm:116
 msgid "[Wnn] on"
 msgstr "[Wnn] オン"
 
-#: scm/wnn-key-custom.scm:123
+#: ../scm/wnn-key-custom.scm:123
 msgid "[Wnn] off"
 msgstr "[Wnn] オフ"
 
-#: scm/wnn-key-custom.scm:129
+#: ../scm/wnn-key-custom.scm:129
 msgid "[Wnn] begin conversion"
 msgstr "[Wnn] 変換開始"
 
-#: scm/wnn-key-custom.scm:135
+#: ../scm/wnn-key-custom.scm:135
 msgid "[Wnn] commit"
 msgstr "[Wnn] 確定"
 
-#: scm/wnn-key-custom.scm:141
+#: ../scm/wnn-key-custom.scm:141
 msgid "[Wnn] cancel"
 msgstr "[Wnn] キャンセル"
 
-#: scm/wnn-key-custom.scm:147
+#: ../scm/wnn-key-custom.scm:147
 msgid "[Wnn] next candidate"
 msgstr "[Wnn] 次候補"
 
-#: scm/wnn-key-custom.scm:153
+#: ../scm/wnn-key-custom.scm:153
 msgid "[Wnn] previous candidate"
 msgstr "[Wnn] 前候補"
 
-#: scm/wnn-key-custom.scm:159
+#: ../scm/wnn-key-custom.scm:159
 msgid "[Wnn] next page of candidate window"
 msgstr "[Wnn] 候補ウィンドウの次ページ"
 
-#: scm/wnn-key-custom.scm:165
+#: ../scm/wnn-key-custom.scm:165
 msgid "[Wnn] previous page of candidate window"
 msgstr "[Wnn] 候補ウィンドウの前ページ"
 
-#: scm/wnn-key-custom.scm:174
+#: ../scm/wnn-key-custom.scm:174
 msgid "[Wnn] beginning of preedit"
 msgstr "[Wnn] 編集領域の先頭"
 
-#: scm/wnn-key-custom.scm:180
+#: ../scm/wnn-key-custom.scm:180
 msgid "[Wnn] end of preedit"
 msgstr "[Wnn] 編集領域の末尾"
 
-#: scm/wnn-key-custom.scm:186
+#: ../scm/wnn-key-custom.scm:186
 msgid "[Wnn] erase after cursor"
 msgstr "[Wnn] カーソル以降を消去"
 
-#: scm/wnn-key-custom.scm:192
+#: ../scm/wnn-key-custom.scm:192
 msgid "[Wnn] erase before cursor"
 msgstr "[Wnn] カーソル以前を消去"
 
-#: scm/wnn-key-custom.scm:198
+#: ../scm/wnn-key-custom.scm:198
 msgid "[Wnn] backspace"
 msgstr "[Wnn] バックスペース"
 
-#: scm/wnn-key-custom.scm:204
+#: ../scm/wnn-key-custom.scm:204
 msgid "[Wnn] delete"
 msgstr "[Wnn] デリート"
 
-#: scm/wnn-key-custom.scm:210
+#: ../scm/wnn-key-custom.scm:210
 msgid "[Wnn] go left"
 msgstr "[Wnn] 左に移動"
 
-#: scm/wnn-key-custom.scm:216
+#: ../scm/wnn-key-custom.scm:216
 msgid "[Wnn] go right"
 msgstr "[Wnn] 右に移動"
 
-#: scm/wnn-key-custom.scm:222
+#: ../scm/wnn-key-custom.scm:222
 msgid "[Wnn] ESC keys on vi-cooperative mode"
 msgstr "[Wnn] vi協調モードでESCとして扱うキー"
 
-#: scm/wnn-key-custom.scm:232
+#: ../scm/wnn-key-custom.scm:232
 msgid "[Wnn] hiragana mode"
 msgstr "[Wnn] ひらがな入力モード"
 
-#: scm/wnn-key-custom.scm:238
+#: ../scm/wnn-key-custom.scm:238
 msgid "[Wnn] katakana mode"
 msgstr "[Wnn] カタカナ入力モード"
 
-#: scm/wnn-key-custom.scm:244
+#: ../scm/wnn-key-custom.scm:244
 msgid "[Wnn] halfwidth katakana mode"
 msgstr "[Wnn] 半角カタカナ入力モード"
 
-#: scm/wnn-key-custom.scm:250
+#: ../scm/wnn-key-custom.scm:250
 msgid "[Wnn] halfwidth alphanumeric mode"
 msgstr "[Wnn] 半角英数入力モード"
 
-#: scm/wnn-key-custom.scm:256
+#: ../scm/wnn-key-custom.scm:256
 msgid "[Wnn] fullwidth alphanumeric mode"
 msgstr "[Wnn] 全角英数入力モード"
 
-#: scm/wnn-key-custom.scm:262
+#: ../scm/wnn-key-custom.scm:262
 msgid "[Wnn] toggle hiragana/katakana mode"
 msgstr "[Wnn] ひらがな/カタカナ入力モードを反転"
 
-#: scm/wnn-key-custom.scm:268
+#: ../scm/wnn-key-custom.scm:268
 msgid "[Wnn] toggle kana/alphanumeric mode"
 msgstr "[Wnn] かな/英数入力モードを反転"
 
-#: uim.desktop.in.in.h:1
+#: ../uim.desktop.in.in.h:1
 msgid "Customize uim input method environment"
 msgstr "入力メソッド環境 (uim) を設定します"
 
-#: uim.desktop.in.in.h:2
+#: ../uim.desktop.in.in.h:2
 msgid "Input Method"
 msgstr "入力メソッド"
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: uim/canna.c:173
+#: ../uim/canna.c:173
 #, c-format
 msgid "uim-canna: Failed to mount dictionary %s."
 msgstr ""
 
-#: uim/m17nlib.c:492
+#: ../uim/m17nlib.c:492
 msgid "m17n library IM open error"
 msgstr ""
 
-#: uim/m17nlib.c:531
+#: ../uim/m17nlib.c:531
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
-#: uim/mana.c:103 uim/mana.c:176
+#: ../uim/mana.c:103 ../uim/mana.c:176
 msgid "uim-mana: Command 'mana' not found."
 msgstr ""
 
-#: uim/plugin.c:170
+#: ../uim/plugin.c:170
 #, c-format
 msgid "%s plugin: Load failed."
 msgstr ""
 
-#: uim/plugin.c:180
+#: ../uim/plugin.c:180
 #, c-format
 msgid "%s plugin: Init failed."
 msgstr ""
@@ -4638,187 +4668,187 @@ msgstr ""
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: uim/plugin.c:195
+#: ../uim/plugin.c:195
 #, c-format
 msgid "%s plugin: Subsequent %s load failed."
 msgstr ""
 
-#: uim/sj3.c:69
+#: ../uim/sj3.c:69
 msgid "In uim-sj3, "
 msgstr "uim-sj3でエラーが発生しました。"
 
-#: uim/sj3.c:80
+#: ../uim/sj3.c:80
 msgid "Serverdown."
 msgstr "サーバがダウンしています。"
 
-#: uim/sj3.c:81
+#: ../uim/sj3.c:81
 msgid "Undefined error."
 msgstr "未定義のエラーです。"
 
-#: uim/sj3.c:82
+#: ../uim/sj3.c:82
 msgid "Internal error."
 msgstr "内部エラーです。"
 
-#: uim/sj3.c:104 uim/sj3.c:190
+#: ../uim/sj3.c:104 ../uim/sj3.c:190
 msgid "Normal end."
 msgstr "正常終了しました。"
 
-#: uim/sj3.c:105 uim/sj3.c:191
+#: ../uim/sj3.c:105 ../uim/sj3.c:191
 msgid "Server is dead."
 msgstr "サーバがダウンしました。"
 
-#: uim/sj3.c:106
+#: ../uim/sj3.c:106
 msgid "Connect failed."
 msgstr "接続に失敗しました。"
 
-#: uim/sj3.c:107
+#: ../uim/sj3.c:107
 msgid "Already connected."
 msgstr "すでに接続しています。"
 
-#: uim/sj3.c:108
+#: ../uim/sj3.c:108
 msgid "Cannot open main dictionary file."
 msgstr "メイン辞書のファイルを開くことができません。"
 
-#: uim/sj3.c:109
+#: ../uim/sj3.c:109
 msgid "Cannot open user dictionary file."
 msgstr "個人辞書を開くことができません。"
 
-#: uim/sj3.c:110
+#: ../uim/sj3.c:110
 msgid "Cannot open study file."
 msgstr "学習ファイルを開くことができません。"
 
-#: uim/sj3.c:111
+#: ../uim/sj3.c:111
 msgid "Cannot make user dictionary directory."
 msgstr "個人辞書のディレクトリを作成できません。"
 
-#: uim/sj3.c:112
+#: ../uim/sj3.c:112
 msgid "Cannot make user dictionary file."
 msgstr "個人辞書のファイルを作成できません。"
 
-#: uim/sj3.c:113
+#: ../uim/sj3.c:113
 msgid "Cannot make study file."
 msgstr "学習ファイルを作成できません。"
 
-#: uim/sj3.c:125 uim/sj3.c:154
+#: ../uim/sj3.c:125 ../uim/sj3.c:154
 msgid "Server name is too long."
 msgstr "サーバ名が長過ぎます。"
 
-#: uim/sj3.c:128 uim/sj3.c:157
+#: ../uim/sj3.c:128 ../uim/sj3.c:157
 msgid "User name is too long."
 msgstr "ユーザ名が長過ぎます。"
 
-#: uim/sj3.c:192
+#: ../uim/sj3.c:192
 msgid "Server is disconnected."
 msgstr "サーバから切断されました。"
 
-#: uim/sj3.c:193
+#: ../uim/sj3.c:193
 msgid "Server is not connected."
 msgstr "サーバに接続していません。"
 
-#: uim/sj3.c:194
+#: ../uim/sj3.c:194
 msgid "Main dictionary file is not opened."
 msgstr "メイン辞書ファイルを開いていません。"
 
-#: uim/sj3.c:195
+#: ../uim/sj3.c:195
 msgid "User dictionary file is not opened."
 msgstr "個人辞書ファイルを開いていません。"
 
-#: uim/sj3.c:196
+#: ../uim/sj3.c:196
 msgid "Study file is not opened."
 msgstr "学習ファイルを開いていません。"
 
-#: uim/sj3.c:197
+#: ../uim/sj3.c:197
 msgid "Main dictionary file cannot close."
 msgstr "メイン辞書ファイルを閉じることができません。"
 
-#: uim/sj3.c:198
+#: ../uim/sj3.c:198
 msgid "User dictionary file cannot close."
 msgstr "個人辞書ファイルを閉じることができません。"
 
-#: uim/sj3.c:199
+#: ../uim/sj3.c:199
 #, fuzzy
 msgid "Study file cannot close."
 msgstr "学習ファイルを閉じることができません。"
 
-#: uim/sj3.c:232 uim/sj3.c:277 uim/sj3.c:296 uim/sj3.c:317
+#: ../uim/sj3.c:232 ../uim/sj3.c:277 ../uim/sj3.c:296 ../uim/sj3.c:317
 msgid "Yomi string is too long."
 msgstr "読みが長過ぎます。"
 
 #. too large?
-#: uim/sj3.c:240
+#: ../uim/sj3.c:240
 msgid "Buffer size is too short."
 msgstr "バッファに入りきりません。"
 
-#: uim/sj3.c:411
+#: ../uim/sj3.c:411
 msgid "Dictionary error."
 msgstr "辞書にエラーがあります。"
 
-#: uim/sj3.c:412
+#: ../uim/sj3.c:412
 msgid "Dictionary is locked."
 msgstr "辞書がロックされています。"
 
-#: uim/sj3.c:413
+#: ../uim/sj3.c:413
 msgid "Invalid yomi string."
 msgstr "読みの文字列が不正です。"
 
-#: uim/sj3.c:414
+#: ../uim/sj3.c:414
 msgid "Invalid kanji string."
 msgstr "漢字の文字列が不正です。"
 
-#: uim/sj3.c:415
+#: ../uim/sj3.c:415
 msgid "Invalid hinsi code."
 msgstr "品詞の種別が不正です。"
 
-#: uim/sj3.c:416
+#: ../uim/sj3.c:416
 msgid "Word exist."
 msgstr "単語はすでに登録されています。"
 
-#: uim/sj3.c:417
+#: ../uim/sj3.c:417
 msgid "Douon is full."
 msgstr "同音漢字はこれ以上登録できません。"
 
-#: uim/sj3.c:418
+#: ../uim/sj3.c:418
 #, fuzzy
 msgid "Dictionary is full."
 msgstr "辞書はこれ以上登録できません。"
 
-#: uim/sj3.c:419
+#: ../uim/sj3.c:419
 msgid "Index is full."
 msgstr "登録数が限界です。"
 
-#: uim/sj3.c:420
+#: ../uim/sj3.c:420
 msgid "Touroku failed."
 msgstr "単語の登録に失敗しました。"
 
-#: uim/sj3.c:421
+#: ../uim/sj3.c:421
 msgid "Word does not exist."
 msgstr "単語が存在しません。"
 
-#: uim/sj3.c:422
+#: ../uim/sj3.c:422
 msgid "Syoukyo failed."
 msgstr "単語の消去に失敗しました。"
 
-#: uim/sj3.c:436 uim/sj3.c:467
+#: ../uim/sj3.c:436 ../uim/sj3.c:467
 msgid "Kanji string is too long."
 msgstr "漢字が長過ぎます。"
 
-#: uim/skk.c:987
+#: ../uim/skk.c:987
 msgid "uim-skk: error in expand_str"
 msgstr ""
 
-#: uim/skk.c:1002
+#: ../uim/skk.c:1002
 msgid "uim-skk: too long word"
 msgstr ""
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: uim/skk.c:3603
+#: ../uim/skk.c:3603
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
 
-#: uim/uim-error.c:57
+#: ../uim/uim-error.c:57
 msgid "All functionality has been disabled to save user application data."
 msgstr ""
 
