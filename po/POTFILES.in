@@ -71,3 +71,4 @@ uim/plugin.c
 uim/sj3.c
 uim/skk.c
 uim/uim-error.c
+uim/wnnlib.c

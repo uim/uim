@@ -613,6 +613,7 @@
 #include	<string.h>
 #include	<sys/types.h>
 #include	<pwd.h>
+#include	<gettext.h>
 
 #ifndef WNNENVDIR
 #define WNNENVDIR	WNNLIBDIR "/wnn"
@@ -3734,6 +3735,9 @@ jcOpen2(char *server, char *envname, int override, char *rcfile4, char *rcfile6,
 		rcfile = "@DEFAULT";
 #else
 		rcfile = "wnnenvrc";
+		if (access(rcfile, R_OK) != 0)
+			uim_notify_fatal(_("uim-wnn: \"%s\" is not exist. Please run uim-pref and set \"Wnn resource file\" (maybe file name is \"wnnenvrc\")."),
+			    rcfile);
 #endif
 	    } else {
 #if defined(WNNENVDIR) && JSERVER_VERSION > 0x4030
@@ -3745,6 +3749,9 @@ jcOpen2(char *server, char *envname, int override, char *rcfile4, char *rcfile6,
 #else
 		rcfile = "wnnenvrc";
 #endif
+		if (access(rcfile, R_OK) != 0)
+			uim_notify_fatal(_("uim-wnn: \"%s\" is not exist. Please run uim-pref and set \"Wnn resource file\" (maybe file name is \"wnnenvrc\")."),
+				rcfile);
 	    }
         }
     }
