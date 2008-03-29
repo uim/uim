@@ -4,6 +4,8 @@ uimnotify_plugin_LTLIBRARIES =
 uimnotify_plugindir = $(pkglibdir)/notify
 
 if LIBNOTIFY
+# XXX
+CFLAGS+= -Wno-error
 uimnotify_plugin_LTLIBRARIES += libuimnotify-libnotify.la
 libuimnotify_libnotify_la_SOURCES = uim-libnotify.c
 libuimnotify_libnotify_la_CFLAGS = @LIBNOTIFY_CFLAGS@
