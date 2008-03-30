@@ -238,6 +238,22 @@ AC_ARG_WITH(prime,
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
 ])
 
+# ***********************
+# *** Tests for cURL ***
+# ***********************
+AC_ARG_WITH(curl,
+	AS_HELP_STRING([--with-curl], [Build with libcurl
+					@<:@default=no@:>@]),
+	[
+	if test "x$with_curl" = "xyes"; then
+		PKG_CHECK_MODULES(CURL, libcurl >= 7.16.4, use_curl="yes", use_curl="no")
+	else
+		use_curl="no"
+	fi
+	],[
+	use_curl="no"
+])
+
 PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
 AC_PATH_XTRA
 
@@ -983,6 +999,7 @@ AM_CONDITIONAL(SJ3, test x$use_sj3 = xyes)
 AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
 AM_CONDITIONAL(SKK, true)
+AM_CONDITIONAL(CURL, test x$use_curl = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
@@ -1554,6 +1571,7 @@ Configure Result :
    PRIME           : ${use_prime}
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
+   cURL            : ${use_curl}
    Gtk+            : ${use_gtk2}
    Gnome Applet    : ${use_applet_gnome}
    Qt3             : ${use_qt}

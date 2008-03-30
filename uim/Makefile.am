@@ -138,6 +138,14 @@ if PRIME
   libuim_prime_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
+if CURL
+uim_plugin_LTLIBRARIES += libuim-curl.la
+libuim_curl_la_SOURCES = curl.c
+libuim_curl_la_LIBADD = @CURL_LIBS@ libuim.la
+libuim_curl_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_curl_la_CPPFLAGS = -I$(top_srcdir) @CURL_CFLAGS@
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
