@@ -54,7 +54,7 @@
 ;;                            <list2record> <record-copy>
 ;;                            <record-ref> <record-set!>)
 ;;
-;; <record name>   ::= <symbol>
+;; <record name>   ::= <identifier>
 ;; <list2record>   ::= <procedure>
 ;; <record-copy>   ::= <procedure>
 ;; <record-ref>    ::= <procedure>
@@ -171,49 +171,61 @@
 		    (record-set! rec index val))))
       (%retrieve-record-accessor index setter))))
 
-(define %define-record-generic
-  (lambda (rec-name fld-specs list->record record-copy record-ref record-set!)
-    ;; define record field specs
-    (eval `(define ,(make-record-spec-name rec-name) ',fld-specs)
-	  (interaction-environment))
-    ;; define record object constructor
-    (let ((constructor-name (make-record-constructor-name rec-name))
-	  (constructor (%make-record-constructor
-			rec-name fld-specs list->record)))
-      (eval `(define ,constructor-name ,constructor)
-	    (interaction-environment)))
-    ;; define record object duplicator
-    (eval `(define ,(make-record-duplicator-name rec-name) ,record-copy)
-	  (interaction-environment))
-    ;; define record field accessors
-    (for-each (lambda (fld-name index)
-		(let ((getter-name (make-record-getter-name rec-name fld-name))
-		      (getter      (%make-record-getter index record-ref))
-		      (setter-name (make-record-setter-name rec-name fld-name))
-		      (setter      (%make-record-setter index record-set!)))
-		  (eval `(define ,getter-name ,getter)
-			(interaction-environment))
-		  (eval `(define ,setter-name ,setter)
-			(interaction-environment))))
-	      (map record-field-spec-name fld-specs)
-	      (iota (length fld-specs)))))
+(define-macro %define-record-getter
+  (lambda (rec-name fld-name index record-ref)
+    (let ((getter-name (make-record-getter-name rec-name fld-name))
+	  (getter      (%make-record-getter index record-ref)))
+      `(define ,getter-name ,getter))))
+
+(define-macro %define-record-setter
+  (lambda (rec-name fld-name index record-set!)
+    (let ((setter-name (make-record-setter-name rec-name fld-name))
+	  (setter      (%make-record-setter index record-set!)))
+      `(define ,setter-name ,setter))))
+
+;;(define-macro %define-record-accessors
+;;  (lambda (rec-name fld-specs record-ref record-set!)
+;;    (cons 'begin
+;;	  (map (lambda (fld-name index)
+;;		 `(begin
+;;		    (%define-record-getter ,rec-name ,fld-name ,index
+;;					   ,record-ref)
+;;		    (%define-record-setter ,rec-name ,fld-name ,index
+;;					   ,record-set!)))
+;;	       (map record-field-spec-name fld-specs)
+;;	       (iota (length fld-specs))))))
 
 (define-macro define-record-generic
   (lambda (rec-name fld-specs list->record record-copy record-ref record-set!)
-    `(%define-record-generic
-      ',rec-name ,fld-specs
-      ,list->record ,record-copy ,record-ref ,record-set!)))
+    `(begin
+       ;; define record field specs
+       (define ,(make-record-spec-name rec-name) ,fld-specs)
+       ;; define record object constructor
+       (define ,(make-record-constructor-name rec-name)
+	 (%make-record-constructor ',rec-name ,fld-specs ,list->record))
+       ;; define record object duplicator
+       (define ,(make-record-duplicator-name rec-name) ,record-copy)
+       ;; define record field accessors
+       (cons 'begin
+	     ,(map (lambda (fld-name index)
+		     `(begin
+			(%define-record-getter ,rec-name ,fld-name ,index
+					       ,record-ref)
+			(%define-record-setter ,rec-name ,fld-name ,index
+					       ,record-set!)))
+		   (map record-field-spec-name (eval fld-specs (interaction-environment)))
+		   (iota (length (eval fld-specs (interaction-environment)))))))))
 
 (define-macro define-vector-record
   (lambda (rec-name fld-specs)
-    `(%define-record-generic
-      ',rec-name ,fld-specs
-      list->vector vector-copy vector-ref vector-set!)))
+    `(define-record-generic
+       ,rec-name ,fld-specs
+       list->vector vector-copy vector-ref vector-set!)))
 
 (define-macro define-list-record
   (lambda (rec-name fld-specs)
-    `(%define-record-generic
-       ',rec-name ,fld-specs
+    `(define-record-generic
+       ,rec-name ,fld-specs
        list-copy list-copy list-ref %list-set!)))
 
 ;; Backward compatibility
@@ -223,7 +235,7 @@
 ;; (e.g. (list-ref spec 2) and so on may be used)
 (define define-record
   (lambda (rec-name fld-specs)
-    (eval `(define-list-record ,rec-name ',fld-specs)
+    (eval `(define-list-record ,rec-name ,fld-specs)
 	  (interaction-environment))
     (let ((constructor-name (make-record-constructor-name rec-name))
 	  (legacy-constructor-name (symbol-append rec-name %HYPHEN-SYM 'new)))

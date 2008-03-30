@@ -185,10 +185,6 @@
   (lambda (klass method-name proc)
     `(%class-set-method! ,klass ',method-name ,proc)))
 
-(define make-class-object-name
-  (lambda (class-name)
-    class-name))
-
 (define %make-class
   (lambda (super fld-specs+ method-names+)
     (let ((ancestors (if (eq? super class)  ;; bootstrap
@@ -205,37 +201,34 @@
       (class-set-method-names! klass method-names)
       klass)))
 
-(define %define-class
-  (lambda (name super fld-specs+ method-names+)
-    (let ((klass (%make-class super fld-specs+ method-names+)))
-      ;; define class object
-      (eval `(define ,(make-class-object-name name) ',klass)
-	    (interaction-environment))
-      ;; define instance structure as record
-      ;; FIXME: hardcoded define-vector-record
-      (eval `(define-vector-record ,name ',(class-field-specs klass))
-	    (interaction-environment))
-      ;; redefine record object constructor as accepting class-less args
-      (let* ((constructor-name (make-record-constructor-name name))
-	     (orig-constructor (symbol-value constructor-name))
-	     (constructor (lambda args
-			    (apply orig-constructor (cons klass args)))))
-	(eval `(define ,constructor-name ,constructor)
-	      (interaction-environment)))
-      ;; define method dispatchers
-      ;; overwrites <class>-copy defined by define-*-record
-      (for-each (lambda (method-name)
-		  (let ((dispatcher-name
-			 (make-method-dispatcher-name name method-name))
-			(dispatcher
-			 (make-method-dispatcher klass method-name)))
-		    (eval `(define ,dispatcher-name ,dispatcher)
-			  (interaction-environment))))
-		(vector->list (class-method-names klass))))))
+(define-macro %define-methods
+  (lambda (klass-name method-names)
+    (cons 'begin
+	  (map (lambda (method-name)
+		 `(define ,(make-method-dispatcher-name klass-name method-name)
+	            (make-method-dispatcher ,klass-name ',method-name)))
+	       method-names))))
 
 (define-macro define-class
   (lambda (name super fld-specs+ method-names+)
-    `(%define-class ',name ,super ,fld-specs+ ,method-names+)))
+    (let ((klass (apply %make-class
+			(eval `(list ,super ,fld-specs+ ,method-names+)
+			      (interaction-environment)))))
+      `(begin
+	 ;; define class object
+	 (define ,name ',klass)
+	 ;; define instance structure as record
+	 ;; FIXME: hardcoded define-vector-record
+	 (define-vector-record ,name (class-field-specs ',klass))
+	 ;; redefine record object constructor as accepting class-less args
+	 (define ,(make-record-constructor-name name)
+	   (let ((orig-constructor ,(make-record-constructor-name name)))
+	     (lambda args
+	       (apply orig-constructor (cons ',klass args)))))
+	 ;; define method dispatchers
+	 ;; overwrites <class>-copy defined by define-*-record
+	 (%define-methods ,name ,(vector->list (class-method-names klass)))))))
+
 
 ;;
 ;; method call
