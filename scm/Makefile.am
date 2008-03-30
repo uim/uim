@@ -7,7 +7,8 @@ GENERATED_SCM_FILES = installed-modules.scm loader.scm
 SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  im-switcher.scm \
  default.scm \
- util.scm deprecated-util.scm ichar.scm ustr.scm i18n.scm iso-639-1.scm \
+ util.scm deprecated-util.scm ichar.scm light-record.scm wlos.scm \
+ ustr.scm i18n.scm iso-639-1.scm \
  key.scm action.scm load-action.scm \
  uim-sh.scm editline.scm custom.scm custom-rt.scm \
  direct.scm \
