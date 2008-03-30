@@ -152,6 +152,7 @@ uim_init_internal(void *dummy)
   uim_scm_set_lib_path(scm_files);
 
   uim_scm_require_file("init.scm");
+  uim_scm_callf("provide", "s", "uim");
 
   uim_initialized = UIM_TRUE;
 
