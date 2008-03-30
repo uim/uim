@@ -114,17 +114,13 @@ uim_curl_fetch_simple(uim_lisp url_)
   res = curl_easy_perform(curl);
   curl_easy_cleanup(curl);
   curl_global_cleanup();
-  if(ua != NULL)
-    free(ua);
 
-  fetched_str_ = MAKE_STR(chunk.str);
+  fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
 
-  if(chunk.str != NULL && chunk.size > 0) {
-    free(chunk.str);
-    return fetched_str_;
-  }
+  free(ua);
+  free(chunk.str);
 
-  return uim_scm_f();
+  return fetched_str_;
 }
 
 static uim_lisp
@@ -178,17 +174,13 @@ uim_curl_post(uim_lisp url_, uim_lisp post_)
   curl_easy_cleanup(curl);
   curl_formfree(post_first);
   curl_global_cleanup();
-  if(ua != NULL)
-    free(ua);
 
-  fetched_str_ = MAKE_STR(chunk.str);
+  fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
 
-  if(chunk.str != NULL && chunk.size > 0) {
-    free(chunk.str);
-    return fetched_str_;
-  }
+  free(ua);
+  free(chunk.str);
 
-  return uim_scm_f();
+  return fetched_str_;
 }
 
 static uim_lisp
@@ -243,7 +235,7 @@ void uim_plugin_instance_init(void)
 {
   uim_scm_init_proc1("curl-fetch-simple", uim_curl_fetch_simple);
   uim_scm_init_proc1("curl-url-escape", uim_curl_url_escape);
-  uim_scm_init_proc1("curl-url-escape", uim_curl_url_unescape);
+  uim_scm_init_proc1("curl-url-unescape", uim_curl_url_unescape);
   uim_scm_init_proc2("curl-post", uim_curl_post);
 }
 
