@@ -1538,6 +1538,8 @@ AC_CONFIG_FILES([Makefile
 		 emacs/Makefile
 		 emacs/uim-version.el
 		 test/Makefile
+		 test2/Makefile
+		 test2/run-singletest.sh
 		 examples/Makefile
 		 examples/uim-custom/Makefile
 		 pixmaps/Makefile
