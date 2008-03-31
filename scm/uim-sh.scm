@@ -145,8 +145,6 @@
 			read))
 	   (EX_OK       0)
 	   (EX_SOFTWARE 70))
-      (if script
-	  (require script))
       (cond
        (uim-sh-opt-help
 	(uim-sh-usage)
@@ -165,11 +163,14 @@
 		(newline)))
 	  EX_OK))
 
-       ((symbol-bound? 'main)
-	(let ((status (main file.args)))
-	  (if (integer? status)
-	      status
-	      EX_SOFTWARE)))
+       (script
+	(require script)
+	(if (symbol-bound? 'main)
+	    (let ((status (main file.args)))
+	      (if (integer? status)
+		  status
+		  EX_SOFTWARE))
+	    EX_OK))
 
        (else
 	(let reloop ()
