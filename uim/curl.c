@@ -94,6 +94,7 @@ uim_curl_fetch_simple(uim_lisp url_)
   struct curl_memory_struct chunk;
   uim_lisp fetched_str_;
   char *ua;
+  char *referer;
 
   curl = curl_easy_init();
 
@@ -105,9 +106,12 @@ uim_curl_fetch_simple(uim_lisp url_)
   curl_easy_setopt(curl, CURLOPT_URL, url);
 
   ua = uim_scm_symbol_value_str("uim-curl-user-agent");
+  referer = uim_scm_symbol_value_str("uim-curl-referer");
 
   curl_easy_setopt(curl, CURLOPT_USERAGENT,
 		   (ua != NULL) ? ua : "libcurl-agent/1.0");
+  curl_easy_setopt(curl, CURLOPT_REFERER,
+		   (referer != NULL) ? referer : "");
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, uim_curl_write_func);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
@@ -118,6 +122,7 @@ uim_curl_fetch_simple(uim_lisp url_)
   fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
 
   free(ua);
+  free(referer);
   free(chunk.str);
 
   return fetched_str_;
@@ -135,6 +140,7 @@ uim_curl_post(uim_lisp url_, uim_lisp post_)
   struct curl_httppost* post_first = NULL;
   struct curl_httppost* post_last = NULL;
   char *ua;
+  char *referer;
 
   curl = curl_easy_init();
 
@@ -146,9 +152,12 @@ uim_curl_post(uim_lisp url_, uim_lisp post_)
   curl_easy_setopt(curl, CURLOPT_URL, url);
 
   ua = uim_scm_symbol_value_str("uim-curl-user-agent");
+  referer = uim_scm_symbol_value_str("uim-curl-referer");
 
   curl_easy_setopt(curl, CURLOPT_USERAGENT,
 		   (ua != NULL) ? ua : "libcurl-agent/1.0");
+  curl_easy_setopt(curl, CURLOPT_REFERER,
+		   (referer != NULL) ? referer : "");
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, uim_curl_write_func);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
@@ -178,6 +187,7 @@ uim_curl_post(uim_lisp url_, uim_lisp post_)
   fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
 
   free(ua);
+  free(referer);
   free(chunk.str);
 
   return fetched_str_;
