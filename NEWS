@@ -1,3 +1,20 @@
+Overview of changes from 1.5.0-alpha 1.5.0-beta
+===============================================
+* New features
+  - Provide 'uim' on Scheme (See "Feature provision of 'uim'" of
+    doc/COMPATIBILITY for further information)
+
+* Fixed
+  - uim-wnn
+    * Check file existence of rcfile
+    * Set correct place of WNNLIBDIR when --without-wnn-libraries
+
+  - uim-sh
+    * Fix falling into eval loop after script execution
+
+  - Update translations
+
+
 Overview of changes from 1.4.x to 1.5.0-alpha
 =============================================
 * New features
