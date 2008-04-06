@@ -141,10 +141,10 @@ void update_backtick(void)
   char sendbuf[CANDSIZE];
   if (s_candbuf[0] == '\0') {
     /* モード表示 */
-    sprintf(sendbuf, "%s%s", s_win_no, s_modebuf);
+    snprintf(sendbuf, sizeof(sendbuf), "%s%s", s_win_no, s_modebuf);
   } else {
     /* 候補一覧表示 */
-    sprintf(sendbuf, "%s", s_candbuf);
+    strlcpy(sendbuf,  s_candbuf, sizeof(sendbuf));
   }
   sendline(sendbuf);
 }

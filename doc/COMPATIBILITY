@@ -57,6 +57,20 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Feature provision of 'uim'
+Affects: uim developers, IM developers
+Updates:
+Version: 1.5.0-beta
+Revision: ac5370
+Date: 2008-03-31
+Modifier: YamaKen
+Related:
+URL:
+Changes:
+Description:
+  To allow (provided? "uim") and (cond-expand (uim ...)), init_uim()
+  calls (provide "uim").
+------------------------------------------------------------------------------
 Summary: Responsibility migration of gettext() invocation
 Affects: Helper program developers, Bridge developers
 Updates: Scheme API, C API

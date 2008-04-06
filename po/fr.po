@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2008-03-29 20:06+0900\n"
+"POT-Creation-Date: 2008-03-30 06:19+0900\n"
 "PO-Revision-Date: 2006-05-21 11:21+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -4728,6 +4728,13 @@ msgstr ""
 
 #: ../uim/uim-error.c:57
 msgid "All functionality has been disabled to save user application data."
+msgstr ""
+
+#: ../uim/wnnlib.c:3739 ../uim/wnnlib.c:3753
+#, c-format
+msgid ""
+"uim-wnn: \"%s\" is not exist. Please run uim-pref and set \"Wnn resource file"
+"\" (maybe file name is \"wnnenvrc\")."
 msgstr ""
 
 #~ msgid "Spellcheck"
