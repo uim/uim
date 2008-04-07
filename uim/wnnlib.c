@@ -3766,7 +3766,7 @@ static int
 uim_wnn_confirm(char *msg)
 {
   /* XXX */
-  printf("wnn confirm: %s\n", msg);
+  fprintf(stderr, "wnn confirm: %s\n", msg);
   return 1; /* return Y */
 }
 
