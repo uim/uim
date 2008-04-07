@@ -1,6 +1,8 @@
-uim_tests = 
-uim_optional_tests = test-template.scm
-uim_xfail_tests =
+uim_tests = \
+        test-fail.scm \
+        test-template.scm
+uim_optional_tests =
+uim_xfail_tests = test-fail.scm
 
 TESTS_ENVIRONMENT = $(SH) $(top_builddir)/test2/run-singletest.sh
 TESTS = $(uim_tests) $(uim_optional_tests)
