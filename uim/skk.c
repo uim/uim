@@ -50,6 +50,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <pwd.h>
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
@@ -2841,11 +2842,9 @@ open_lock(const char *name, int type)
 {
   int fd, len;
   struct flock fl;
-  char *lock_fn;
+  char lock_fn[MAXPATHLEN];
 
-  len = strlen(name) + strlen(".lock") + 1;
-  lock_fn = uim_malloc(len);
-  snprintf(lock_fn, len, "%s.lock", name);
+  snprintf(lock_fn, sizeof(lock_fn), "%s.lock", name);
 
   fd = open(lock_fn, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
   if (fd == -1) {
@@ -2862,7 +2861,6 @@ open_lock(const char *name, int type)
     fd = -1;
   }
 
-  free(lock_fn);
   return fd;
 }
 
@@ -3187,7 +3185,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
 {
   FILE *fp;
   const char *fn = REFER_C_STR(fn_);
-  char *tmp_fn = NULL;
+  char tmp_fn[MAXPATHLEN];
   struct skk_line *sl;
   struct stat st;
   int len, lock_fd = -1;
@@ -3203,10 +3201,8 @@ skk_save_personal_dictionary(uim_lisp fn_)
     }
 
     lock_fd = open_lock(fn, F_WRLCK);
-    len = strlen(fn) + 5;
-    tmp_fn = uim_malloc(len);
 
-    snprintf(tmp_fn, len, "%s.tmp", fn);
+    snprintf(tmp_fn, sizeof(tmp_fn), "%s.tmp", fn);
     umask_val = umask(S_IRGRP | S_IROTH | S_IWGRP | S_IWOTH);
     fp = fopen(tmp_fn, "w");
     umask(umask_val);
@@ -3235,7 +3231,6 @@ skk_save_personal_dictionary(uim_lisp fn_)
 
 error:
   close_lock(lock_fd);
-  free(tmp_fn);
   return uim_scm_f();
 }
 

@@ -437,18 +437,15 @@ static uim_lisp
 get_input_method_name(uim_lisp nth_)
 {
   int len, nth;
-  char *name;
+  char name[BUFSIZ];
   
   nth = C_INT(nth_);
 
   if (nth < nr_input_methods) {
-    len = strlen(im_array[nth].lang) + strlen(im_array[nth].name) + 7;
-    name = alloca(len);
-
     if (!strcmp(im_array[nth].lang, "t"))
-      snprintf(name, len, "m17n-%s", im_array[nth].name);
+      snprintf(name, sizeof(name), "m17n-%s", im_array[nth].name);
     else
-      snprintf(name, len, "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
+      snprintf(name, sizeof(name), "m17n-%s-%s", im_array[nth].lang, im_array[nth].name);
 
     return MAKE_STR(name);
   }
@@ -566,9 +563,9 @@ find_im_by_name(const char *name)
     char buf[100];
 
     if (!strcmp(im_array[i].lang, "t"))
-      snprintf(buf, 100, "%s", im_array[i].name);
+      strlcpy(buf, im_array[i].name, sizeof(buf));
     else
-      snprintf(buf, 100, "%s-%s", im_array[i].lang, im_array[i].name);
+      snprintf(buf, sizeof(buf), "%s-%s", im_array[i].lang, im_array[i].name);
 
     if (!strcmp(im_name, buf))
       return im_instance(i);

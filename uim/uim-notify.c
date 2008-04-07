@@ -250,7 +250,7 @@ notify_get_plugins(void)
 	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
 
-      snprintf(path, PATH_MAX, "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
+      snprintf(path, sizeof(path), "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
       handle = dlopen(path, RTLD_NOW);
       if ((str = dlerror()) != NULL) {
 	fprintf(stderr, "load failed %s(%s)\n", path, str);

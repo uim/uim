@@ -114,7 +114,7 @@ const char *usersockname(const char *file)
     sendline("uim-fep cannot create directory");
     exit(EXIT_FAILURE);
   }
-  snprintf(buf, UNIX_PATH_MAX, "%s/%s", sock_dir, filebuf);
+  snprintf(buf, sizeof(buf), "%s/%s", sock_dir, filebuf);
 
   return buf;
 }
