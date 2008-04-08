@@ -436,7 +436,7 @@ get_nr_input_methods()
 static uim_lisp
 get_input_method_name(uim_lisp nth_)
 {
-  int len, nth;
+  int nth;
   char name[BUFSIZ];
   
   nth = C_INT(nth_);

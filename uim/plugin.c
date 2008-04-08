@@ -46,6 +46,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <pwd.h>
+#include <sys/param.h>
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -103,8 +104,7 @@ plugin_load(uim_lisp _name)
   void (*plugin_instance_init)(void);
   void (*plugin_instance_quit)(void);
 
-  size_t len;
-
+  plugin_lib_filename[0] = plugin_scm_filename[0] = '\0';
   plugin_name = REFER_C_STR(_name);
   
   if (plugin_name == NULL) {
@@ -174,7 +174,7 @@ plugin_load(uim_lisp _name)
 
   DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Calling plugin_instance_init() for %s.\n", plugin_name));
   (plugin_instance_init)();
-  if (plugin_scm_filename) {
+  if (plugin_scm_filename[0] != '\0') {
     uim_bool succeeded;
 
     succeeded = uim_scm_require_file(plugin_scm_filename);

@@ -50,7 +50,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <pwd.h>
+#include <sys/param.h>
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
@@ -2840,7 +2840,7 @@ write_out_line(FILE *fp, struct skk_line *sl)
 static int
 open_lock(const char *name, int type)
 {
-  int fd, len;
+  int fd;
   struct flock fl;
   char lock_fn[MAXPATHLEN];
 
@@ -3188,7 +3188,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   char tmp_fn[MAXPATHLEN];
   struct skk_line *sl;
   struct stat st;
-  int len, lock_fd = -1;
+  int lock_fd = -1;
   mode_t umask_val;
 
   if (!skk_dic || skk_dic->cache_modified == 0)
