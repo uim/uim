@@ -2847,10 +2847,8 @@ open_lock(const char *name, int type)
   snprintf(lock_fn, sizeof(lock_fn), "%s.lock", name);
 
   fd = open(lock_fn, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-  if (fd == -1) {
-    free(lock_fn);
+  if (fd == -1)
     return fd;
-  }
 
   fl.l_type = type;
   fl.l_whence = SEEK_SET;
