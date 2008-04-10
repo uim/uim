@@ -425,7 +425,7 @@ fprint_ll(FILE *f, long long n)
 
 int main(void) {
 	FILE *f;
-	long long i, llmin, llmax = 0;
+	long long i, llmin, llmax = 0, llmin1, llmax1;
 
 	if((f = fopen(DATA,"w")) == NULL)
 		exit(1);
@@ -443,7 +443,9 @@ int main(void) {
 #endif
 
 	/* Sanity check */
-	if (llmin + 1 < llmin || llmin - 1 < llmin || llmax + 1 > llmax
+	llmin1 = llmin - 1;
+	llmax1 = llmax + 1;
+	if (llmin + 1 < llmin || llmin1 < llmin || llmax1 > llmax
 	    || llmax - 1 > llmax || llmin == llmax || llmin == 0
 	    || llmax == 0 || llmax < LONG_MAX || llmin > LONG_MIN) {
 		fprintf(f, "unknown unknown\n");
