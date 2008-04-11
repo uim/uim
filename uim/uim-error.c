@@ -226,19 +226,3 @@ uim_strdup(const char *s)
 
   return copied;
 }
-
-int
-uim_asprintf(char **ret, const char *fmt, ...)
-{
-  va_list ap;
-  int i;
-
-  va_start(ap, fmt);
-  i = vasprintf(ret, fmt, ap);
-  va_end(ap);
-
-  if (i < 0 || *ret == NULL)
-    uim_fatal_error("asprintf() failed");
-
-  return i;
-}
