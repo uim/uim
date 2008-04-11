@@ -35,6 +35,7 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/param.h>
 
 #include <canna/RK.h>
 
@@ -100,26 +101,21 @@ dict_canna_exit(void)
   return 0;
 }
 
-static char *
-dict_canna_get_priv_dic_dir()
+static int
+dict_canna_get_priv_dic_dir(char *dirname, size_t len)
 {
   struct passwd *pw;
-  char *username;
-  char *dirname = NULL;
   char dir[] = ":user/";
 
-  if ((pw = getpwuid(getuid()))) {
-    if ((username = strdup(pw->pw_name))) {
-      int len;
-      /* dirname := ":user/username" */
-      len = strlen(dir) + strlen(username) + 1;
-      if ((dirname = malloc(len))) {
-	snprintf(dirname, len, "%s%s", dir, username);
-      }
-    }
+  if ((pw = getpwuid(getuid())) != NULL) {
+    /* dirname := ":user/username" */
+    snprintf(dirname, len, "%s%s", dir, pw->pw_name);
+    endpwent();
+    return 1;
   }
+  endpwent();
 
-  return dirname;
+  return 0;
 }
 
 static void
@@ -207,9 +203,9 @@ dict_canna_read_priv_dic_list(uim_word **head)
 
   unsigned char buf[CANNA_PRIV_DIC_BUFLEN];
   unsigned char dicname[] = CANNA_DEFAULT_PRIV_DICNAME;
-  char *dirname;
+  char dirname[MAXPATHLEN];
 
-  if (!(dirname = dict_canna_get_priv_dic_dir()))
+  if (!dict_canna_get_priv_dic_dir(dirname, sizeof(dirname)))
     return status;
 
   status = RkGetWordTextDic(CANNA_STD_CONTEXT, (unsigned char *)dirname,
@@ -224,7 +220,6 @@ dict_canna_read_priv_dic_list(uim_word **head)
     status = RkGetWordTextDic(CANNA_STD_CONTEXT, (unsigned char *)"",
 			      (unsigned char *)"", buf, CANNA_PRIV_DIC_BUFLEN);
   }
-  free(dirname);
 
   return status;
 }
@@ -244,16 +239,12 @@ dict_canna_add_entry_to_priv_dic(char *phon, char *desc, char *cclass_native,
   status = RkMountDic(CANNA_STD_CONTEXT, dicname, 0);
 
   if (status == 0) {
-    int len;
-    len = strlen(phon) + strlen(cclass_native) + strlen(desc) + 4;
-    entry = malloc(len);
-    if (entry) {
-      snprintf(entry, len, "%s %s %s\n", phon, cclass_native, desc);
+    if (asprintf(&entry, "%s %s %s\n", phon, cclass_native, desc) < 0 || entry == NULL) {
       status = RkDefineDic(CANNA_STD_CONTEXT, dicname, entry);
       free(entry);
     }
     RkUnmountDic(CANNA_STD_CONTEXT, dicname);
-  } 
+  }
   RkFinalize();
 
   return status ? 0 : 1;
@@ -274,16 +265,12 @@ dict_canna_delete_entry_from_priv_dic(char *phon, char *desc,
   status = RkMountDic(CANNA_STD_CONTEXT, dicname, 0);
 
   if (status == 0) {
-    int len;
-    len = strlen(phon) + strlen(cclass_native) + strlen(desc) + 4;
-    entry = malloc(len);
-    if (entry) {
-      snprintf(entry, len, "%s %s %s\n", phon, cclass_native, desc);
+    if (asprintf(&entry, "%s %s %s\n", phon, cclass_native, desc) < 0 || entry == NULL) {
       status = RkDeleteDic(CANNA_STD_CONTEXT, dicname, entry);
       free(entry);
     }
     RkUnmountDic(CANNA_STD_CONTEXT, dicname);
-  } 
+  }
   RkFinalize();
 
   return status ? 0 : 1;
