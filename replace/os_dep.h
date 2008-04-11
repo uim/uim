@@ -58,64 +58,64 @@ extern "C" {
 
 #ifndef HAVE_GETPEEREID
 #include <sys/types.h>
-#define getpeereid	uim_getpeereid
+#define getpeereid	uim_internal_getpeereid
 int getpeereid(int , uid_t *, gid_t *);
 #endif
 
 #ifndef HAVE_SETENV
-#define setenv	uim_setenv
+#define setenv	uim_internal_setenv
 int setenv(const char *, const char *, int);
 #endif
 
 #ifndef HAVE_UNSETENV
-#define unsetenv	uim_unsetenv
+#define unsetenv	uim_internal_unsetenv
 void unsetenv(const char *);
 #endif
 
 #ifndef HAVE_STRSEP
-#define strsep	uim_strsep
+#define strsep	uim_internal_strsep
 char *strsep(char **stringp, const char *delim);
 #endif
 
 #ifndef HAVE_STRLCPY
-#define strlcpy	uim_strlcpy
+#define strlcpy	uim_internal_strlcpy
 size_t strlcpy(char *dst, const char *src, size_t siz);
 #endif
 
 #ifndef HAVE_STRLCAT
-#define strlcat	uim_strlcat
+#define strlcat	uim_internal_strlcat
 size_t strlcat(char *dst, const char *src, size_t siz);
 #endif
 
 #include "fake-rfc2553.h"
 
 #ifndef HAVE_VASPRINTF
-#define vasprintf	uim_vasprintf
+#define vasprintf	uim_internal_vasprintf
 int vasprintf(char **ret, const char *format, va_list ap);
 #endif
 
 #ifndef HAVE_ASPRINTF
-#define asprintf	uim_asprintf
+#define asprintf	uim_internal_asprintf
 int asprintf(char **ret, const char *format, ...);
 #endif
 
 #if !defined(HAVE_VSNPRINTF) || defined(BROKEN_SNPRINTF)
-#define vsnprintf	uim_vsnprintf
+#define vsnprintf	uim_internal_vsnprintf
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 #endif
 
 #if !defined(HAVE_SNPRINTF) || defined(BROKEN_SNPRINTF)
-#define snprintf	uim_snprintf
+#define snprintf	uim_internal_snprintf
 int snprintf(char *str, size_t size, const char *format, ...);
 #endif
 
 #ifndef HAVE_STRTOLL
-#define strtoll	uim_strtoll
+#define strtoll	uim_internal_strtoll
 long long strtoll(const char *, char **, int);
 #endif
 
 #ifndef HAVE_STRTONUM
-#define strtonum	uim_strtonum
+#define strtonum	uim_internal_strtonum
 long long strtonum(const char *numstr, long long minval, long long maxval, const char **errstrp);
 #endif
 
