@@ -228,7 +228,7 @@ uim_strdup(const char *s)
 }
 
 int
-uim_asnprintf(char **ret, const char *fmt, ...)
+uim_asprintf(char **ret, const char *fmt, ...)
 {
   va_list ap;
   int i;
