@@ -105,7 +105,7 @@ void
 uim_helper_send_message(int fd, const char *message)
 {
   int res;
-  int len, out_len;
+  int out_len;
   sig_t old_sigpipe;
   char *buf, *bufp;
 
@@ -123,13 +123,12 @@ uim_helper_send_message(int fd, const char *message)
     return;
 #endif
 
-  len = strlen(message) + 1;
-  buf = uim_malloc(len + 1);
-  snprintf(buf, len + 1, "%s\n", message);
+  if (uim_asprintf(&buf, "%s\n", message) || buf == NULL)
+    return;
 
   old_sigpipe = signal(SIGPIPE, SIG_IGN);
 
-  out_len = len;
+  out_len = strlen(buf);
   bufp = buf;
   while (out_len > 0) {
     if ((res = write(fd, bufp, out_len)) < 0) {

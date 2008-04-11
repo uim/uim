@@ -207,9 +207,9 @@ prime_send_command(uim_lisp str_)
     if (!result)
       return MAKE_STR("error\n\t\n");
   } else {
-    int len = strlen(str);
-    char *buf = uim_malloc(len + 2);
-    snprintf(buf, len + 2,"%s\n", str);
+    char *buf;
+    if (uim_asprintf(&buf, "%s\n", str) < 0 || buf == NULL)
+      return MAKE_STR("");
     result = uim_ipc_send_command(&prime_pid, &primer, &primew, prime_command,
 				  buf);
     free(buf);
@@ -227,7 +227,7 @@ static uim_lisp
 prime_lib_init(uim_lisp use_udp_)
 {
   char *option;
-  int len, timeout_count = 0;
+  int timeout_count = 0;
 
   use_unix_domain_socket = C_BOOL(use_udp_);
 
@@ -241,9 +241,8 @@ prime_lib_init(uim_lisp use_udp_)
     prime_fd = prime_init_ud(prime_ud_path);
     if (prime_fd == -1) {
       unlink(prime_ud_path);
-      len = strlen("-u ") + strlen(prime_ud_path) + 1;
-      option = uim_malloc(len);
-      snprintf(option, len, "-u %s", prime_ud_path);
+      if (uim_asprintf(&option, "-u %s", prime_ud_path) < 0 || option == NULL)
+	return uim_scm_f();
       prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew,
 						   prime_command, option);
       free(option);

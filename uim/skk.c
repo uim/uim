@@ -750,9 +750,10 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
     return NULL;
   }
 
-  len = strlen(idx) + 2;
-  line = uim_malloc(len);
-  snprintf(line, len, "%s ", idx);
+  if (uim_asprintf(&line, "%s ", idx) < 0 || line == NULL) {
+    skkserv_disconnected(di);
+    return NULL;
+  }
 
   if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
     skkserv_disconnected(di);

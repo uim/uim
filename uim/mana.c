@@ -194,7 +194,6 @@ mana_eval(uim_lisp buf_)
   char *ret_buf;
   char *eval_buf;
   uim_lisp ret;
-  int len;
 
   if (mana_pid == 0)
     return uim_scm_f();
@@ -210,9 +209,10 @@ mana_eval(uim_lisp buf_)
   fflush(log);
 #endif
 
-  len = strlen("'") + strlen(ret_buf) + 1;
-  eval_buf = uim_malloc(len);
-  snprintf(eval_buf, len, "'%s", ret_buf);
+  if (uim_asprintf(&eval_buf, "'%s", ret_buf) < 0 || eval_buf == NULL) {
+    free(ret_buf);
+    return uim_scm_f();
+  }
   ret = uim_scm_eval_c_string(eval_buf);
   free(ret_buf);
   free(eval_buf);
