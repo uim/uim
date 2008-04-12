@@ -123,7 +123,7 @@ uim_helper_send_message(int fd, const char *message)
     return;
 #endif
 
-  if (uim_asprintf(&buf, "%s\n", message) || buf == NULL)
+  if (uim_asprintf(&buf, "%s\n", message) < 0 || buf == NULL)
     return;
 
   old_sigpipe = signal(SIGPIPE, SIG_IGN);
