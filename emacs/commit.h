@@ -41,7 +41,7 @@
 
 #include "output.h"
 
-char *add_commit_string(char *comstr, const char *str, size_t len);
+char *add_commit_string(char *comstr, const char *str);
 int show_commit_string(char *comstr);
 void reset_commit_string(char *comstr);
 
