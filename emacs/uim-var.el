@@ -113,6 +113,11 @@ displayed at the echo area.")
   "If the value is non-nil, appendixes are displayed with candidates."
   )
 
+;; allow resize of echo region
+(defvar uim-allow-resize-echo-region t
+  "If the value is nil, uim.el uses only the 1st line of the echo-region and
+keeps the size of it when showing the candidates.")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -180,6 +185,8 @@ displayed at the echo area.")
 (defvar uim-helper-message ""
   "Buffer to store message from uim-el-helper-agent.")
 
+(defconst uim-el-candidates-buffer-name " *uim-candidates*"
+  "Name of the buffer used to estimate candidates size.")
 
 ;; Timeout related variables (wait output from uim-el-agent)
 (defvar uim-el-agent-timeout 3)
@@ -404,6 +411,8 @@ displayed at the echo area.")
 
 ;; save top point of current window to lock scroll
 (uim-deflocalvar uim-window-force-scrolled nil)
+
+(uim-deflocalvar uim-window-force-scrolled-original nil)
 
 (uim-deflocalvar uim-buffer-read-only nil)
 

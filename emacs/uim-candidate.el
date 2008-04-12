@@ -289,12 +289,20 @@
 (defun uim-echo-candidate (cand)
 
   ;; display candidate in minibuffer 
-
-  (let ((cands "")
+  (let* ((cands "")
 	(selstart 0)
 	(selend 0)
 	(page-current (format "%d" (caar cand)))
 	(page-total (format "%d" (cdar cand)))
+	 (cand-height 0)
+	 (displayed nil)
+	 (echo-max-height 1)
+	 (page-space (- (string-width page-total) 
+			(string-width page-current)))
+	 (page-label (concat (if (> page-space 0) 
+				 (make-string page-space 32))
+			     page-current  "/" page-total " "))
+	 cands-tmp
 	)
 
     (setq cand (cdr cand))
@@ -321,56 +329,85 @@
 	) cand)
 
     
-    (if (and uim-emacs
+    (setq cands-tmp (concat page-label cands))
+    
+    (if (and uim-allow-resize-echo-region
+	     uim-emacs
 	     (>= emacs-major-version 21))
 	;; Emcas-21 or Emacs-22
-	(let ((page-space (- (string-width page-total) 
-			     (string-width page-current)))
-	      message-log-max)
-	  (setq cands 
-		(concat (if (> page-space 0) (make-string page-space 32))
-			page-current  "/" page-total " " cands))
-	  (message cands)
-	  )
-      ;; Emacs-20 or XEmacs
-      (let* ((page-space (- (string-width page-total) 
-			    (string-width page-current)))
-	     (page-label (concat (if (> page-space 0) 
-				     (make-string page-space 32))
-				  page-current  "/" page-total " "))
-	     (page-width (string-width page-label))
-	     (cands-width (string-width cands))
-	     (echoreg-width (- (- (window-width) 1) page-width)))
+	(let (message-log-max)
 
-	(cond ((>= echoreg-width cands-width)
-	       (setq cands
-		     (concat page-label cands)))
+	  (save-excursion
+	    (set-buffer (get-buffer-create uim-el-candidates-buffer-name))
+	    (erase-buffer)
+	    (insert cands-tmp)
+	    (setq cand-height (+ (uim-vertical-distance 1 (buffer-end 1)) 1))
+	    (let ((current-minibuf (window-buffer (minibuffer-window))))
+	      (set-window-buffer (minibuffer-window) 
+				 uim-el-candidates-buffer-name)
+	      (set-buffer (window-buffer (minibuffer-window)))
+	      ;; estimate height of candidates in mini buffer
+	      (setq cand-height (+ (uim-vertical-distance 1 (buffer-end 1)) 1))
+	      (set-window-buffer (minibuffer-window) current-minibuf))
+
+	    (message cands-tmp)
+	    (if (= (setq echo-max-height (window-height (minibuffer-window)))
+		   cand-height)
+		(setq displayed t)))))
+    
+    (if (not displayed)
+	;; Emacs-20 or XEmacs or uim-allow-resize-echo-region is nil 
+	;; or too small frame
+	(let* ((trimmed "")
+	     (page-width (string-width page-label))
+	       (page-cands-width (string-width cands-tmp))
+	     (cands-width (string-width cands))
+	       (candreg-width (- (- (* (window-width) echo-max-height) 1)
+				 page-width)))
+
+	  (cond ((>= candreg-width cands-width)
+		 (setq trimmed cands-tmp))
+
+		((<= (window-width) page-width)
+		 ;; this part might not be reached
+		 (setq trimmed (truncate-string-to-width page-label
+							 (- (window-width) 1))))
+
+		((<= (window-width) (+ page-width 6))
+		 (setq trimmed (concat page-label
+				       (make-string 
+					(- (window-width) page-width 1)
+
+					?.))))
 
 	      ((= selstart 0)
 	       ;; | 10/134 [1.xxxxx] 2.yyyyy 3.zzzzz ...|
 	       (setq cands 
 		     (truncate-string-to-width cands
-					       (if (> echoreg-width 3)
-						   (- echoreg-width 3)
+						 (if (> candreg-width 3)
+						     (- candreg-width 3)
 						 0)))
-	       (setq cands
+		 (setq trimmed
 		     (concat page-label
 			     cands
-			     (make-string (- echoreg-width
+			       (make-string (- candreg-width
 					     (string-width cands))
 					  ?.)))
 
 	       )
-	      ((> (string-width (substring cands 0 selstart))
-		  (+ (- cands-width echoreg-width) 3))
+
+		((<= (string-width (substring cands selstart))
+		     (- candreg-width 3)) ;; at least 1 dot
 	       ;; | 10/134 ...yyy [3.zzzzz] 
 	       (setq cands
 		     (truncate-string-to-width cands
 					       cands-width 
-					       (+ (- cands-width echoreg-width) 3)))
-	       (setq cands
+						 (+ (- cands-width 
+						       candreg-width) 3)))
+
+		 (setq trimmed
 		     (concat page-label
-			     (make-string (- echoreg-width 
+			       (make-string (- candreg-width 
 					     (string-width cands))
 					  ?.)
 			     cands)))
@@ -379,21 +416,17 @@
 	       (setq cands 
 		     (concat "..."
 			     (truncate-string-to-width (substring cands selstart)
-						       (if (> echoreg-width 6)
-							   (- echoreg-width 6)
-							 0))
-			     ))
-	       (setq cands
+							 (if (> candreg-width 6)
+							     (- candreg-width 6)
+							   0))))
+		 (setq trimmed
 		     (concat page-label
 			     cands
-			     (make-string (- echoreg-width 
+			       (make-string (- candreg-width 
 					     (string-width cands))
-					  ?.))))))
-
+					    ?.)))))
       (let (message-log-max)
-	(message cands))
-      )
-    
+	    (message trimmed))))
     )
   )
 
@@ -499,7 +532,6 @@
 ;;
 (defun uim-show-candidate (candidate)
 
-
   ;; separate appendix (for prime...)
   (setq candidate
 	(cons (car candidate)
@@ -542,7 +574,8 @@
   (setq uim-candidate-original-start nil)
   (setq uim-candidate-original-end nil)
 
-  (let ((display-inline uim-candidate-display-inline))
+  (let ((display-inline uim-candidate-display-inline)
+	(upward-end-line nil))
 
     (if (>= (max (+ uim-max-candlabel 6) 
 		 (+ (string-width uim-candidate-page-label) 2))
@@ -560,7 +593,9 @@
 	(save-excursion
 	  (goto-char uim-candidate-start)
 
-	  (let ((winofs (uim-get-window-offset))
+	  (let ((winofs (save-excursion
+			  (goto-char uim-candidate-cursor)
+			  (uim-get-window-offset)))
 		(candlines (+ 1 (length uim-candidate-line-list)))
 		ol-down dhead dtail uhead utail)
 	    
@@ -574,14 +609,16 @@
 					       candlines))
 					   (end-of-line)
 					   (setq dtail (point))))))
+		     ;; 
+		     (save-excursion
+		       (goto-char uim-candidate-cursor)
 		     (>= (- (- (window-height) 1) (+ winofs 1)) 
-			 candlines))
+			   (+ candlines 1))))
 
 		(progn
 		  (setq uim-show-candidate-upward nil)
 		  (setq uim-candidate-original-start dhead)		  
-		  (setq uim-candidate-original-end dtail)
-		  )
+		  (setq uim-candidate-original-end dtail))
 
 	      (if (and (>= winofs candlines)
 		       (not (uim-check-overlay
@@ -594,27 +631,27 @@
 			       (setq utail (point)))))
 		       )
 		  (progn
+		    (save-excursion
+		      (setq upward-end-line (uim-get-window-offset)))
 		    (setq uim-show-candidate-upward t)
 		    (setq uim-candidate-original-start uhead)
-		    (setq uim-candidate-original-end utail)
-		    )
+		    (setq uim-candidate-original-end utail))
 		
-		;; scroll anyway
-		(if (not ol-down)
-		    (let* ((fspace (- (- (- (window-height) 1) winofs) 1))
-			   (vshift (- candlines fspace)))
+		;; Scroll buffer to show all candidates
+		(if (and (not ol-down)
+			 (>= (- (window-height) 1) (+ candlines 1)))
+		    (progn
 		      (setq uim-show-candidate-upward nil)
+		      (if (not uim-window-force-scrolled-original)
+			  (setq uim-window-force-scrolled-original 
+				(window-start)))
 		      (setq uim-window-force-scrolled t)
-
 		      (setq uim-candidate-original-start dhead)
 		      (setq uim-candidate-original-end dtail)
 
-		      (if (> vshift winofs)
-			  (recenter 0)
 			(save-excursion 
-			  (uim-vertical-motion (- (- (window-height)
-						     candlines 2)))
-			  (recenter 0))))
+			  (goto-char uim-candidate-cursor)
+			  (recenter (- (- (- (window-height) 1) candlines) 1))))
 		  ;; disable inline display
 		  (setq display-inline nil)
 		  
@@ -623,7 +660,11 @@
     (if display-inline
 	;; inline candidate display mode
 	(let ((inhibit-read-only t))
-	  (uim-merge-candidate))
+	  (uim-merge-candidate)
+	  (if uim-show-candidate-upward 
+	      (save-excursion
+		(recenter upward-end-line)))
+	  )
       ;; display in echo region
       (uim-echo-candidate candidate)
       )

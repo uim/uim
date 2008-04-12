@@ -1369,8 +1369,10 @@
 		 (not uim-candidate-displayed) 
 		 uim-window-force-scrolled) 
 	(setq uim-window-force-scrolled nil)
-	(recenter))
-
+	(save-excursion
+	  (goto-char uim-window-force-scrolled-original)
+	  (recenter 0))
+	(setq uim-window-force-scrolled-original nil))
 
       (if (not uim-send-recv-again)
 	  (when label 
