@@ -69,7 +69,6 @@ update_prop_list(property *prop, const char *encoding, const char *str)
 void
 announce_prop_list_update(property *prop, const char *encoding)
 {
-  unsigned len;
   char *buf;
 
   if (prop->list == NULL) {
@@ -79,11 +78,7 @@ announce_prop_list_update(property *prop, const char *encoding)
 
 #define PROP_LIST_FORMAT "prop_list_update\ncharset=%s\n%s"
 
-  len = strlen(PROP_LIST_FORMAT) + strlen(encoding)
-	+ strlen(prop->list) + 1;
-
-  buf = (char *)malloc(len);
-  snprintf(buf, len, PROP_LIST_FORMAT, encoding, prop->list);
+  asprintf(&buf, PROP_LIST_FORMAT, encoding, prop->list);
 
   helper_send_message(buf);
   free(buf);
@@ -111,10 +106,7 @@ show_prop(property *prop)
 
   a_printf(" ( l ");
 
-  buf = (char *)malloc(strlen(prop->list) + 1);
-  strcpy(buf, prop->list);
-
-  head = buf;
+  head = buf = strdup(prop->list);
 
 #define PART_BRANCH "branch"
 #define PART_LEAF   "leaf"

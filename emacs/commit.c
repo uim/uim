@@ -37,7 +37,7 @@
 #include "commit.h"
 
 char *
-add_commit_string(char *comstr, const char *str)
+add_commit_string(char *comstr, const char *str, size_t len)
 {
   int buflen;
 
@@ -58,7 +58,7 @@ add_commit_string(char *comstr, const char *str)
 	debug_printf(DEBUG_NOTE,
 				 "add_commit_string comstr: %s (%p)\n", comstr, comstr); 
 
-	strcat(comstr, str);
+	strlcat(comstr, str, len);
   }
 
   debug_printf(DEBUG_NOTE,

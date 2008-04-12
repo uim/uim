@@ -44,7 +44,7 @@ commit_cb(void *ptr, const char *str)
 
   debug_printf(DEBUG_NOTE, "commit_cb\n");
 
-  ua->comstr = add_commit_string(ua->comstr, str);
+  ua->comstr = add_commit_string(ua->comstr, str, strlen(ua->comstr));
 }
 
 

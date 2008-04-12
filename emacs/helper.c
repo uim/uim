@@ -40,7 +40,7 @@ static void
 helper_send_im_list(void)
 {
   int nim, i;
-  int len = 0, buflen;
+  int buflen;
   char *buf;
   const char *current_im_name;
   uim_agent_context *ua;
@@ -63,51 +63,43 @@ helper_send_im_list(void)
 
 #define HEADER_FORMAT "im_list\ncharset=%s\n"
 
-  len += strlen(HEADER_FORMAT) + strlen(ua->encoding);
-  len += strlen("selected") ;
-
   for (i = 0; i < uim_get_nr_im(ua->context); i++) {
 	const char *name, *lang, *shortd;
 	name = uim_get_im_name(ua->context, i);
 	lang = uim_get_im_language(ua->context, i);
 	shortd = uim_get_im_short_desc(ua->context, i);
-
-	len += name ? strlen(name) : 0;
-	len += lang ? strlen(lang) : 0;
-	len += shortd ? strlen(shortd) : 0;
-	len += strlen( "\t\t\t\n");
   }
 
-  len ++;
-
-  buf = (char *)malloc(sizeof(char) * len);
-
-  buflen = snprintf(buf, len, HEADER_FORMAT, ua->encoding);
+  buflen = asprintf(&buf,  HEADER_FORMAT, ua->encoding);
 
 #undef HEADER_FORMAT
 
   for (i = 0 ; i < uim_get_nr_im(ua->context); i++) {
-	const char *name, *lang, *shortd;	
+	const char *name, *lang, *shortd;
+	char *tmpbuf;
+
 	name = uim_get_im_name(ua->context, i);
 	lang = uim_get_im_language(ua->context, i);
 	shortd = uim_get_im_short_desc(ua->context, i);
 
 	debug_printf(DEBUG_NOTE, " [%d] = %s %s %s\n", i, name, lang, shortd);
-
-	buflen += snprintf(buf + buflen, len - buflen,
-					   "%s\t%s\t%s\t%s\n",
+	if (asprintf(&tmpbuf, "%s\t%s\t%s\t%s\n",
 					   name ? name : "" ,
 					   lang ? lang : "" ,
 					   shortd ? shortd : "" ,
-					   strcmp(name, 
+					   strcmp(name,
 							  (current_im_name == NULL ? "" : current_im_name))
-					   == 0 ? "selected" : "");
+					    == 0 ? "selected" : "") < 0 || tmpbuf == NULL)
+		break;
+
+	strlcat(buf, tmpbuf, buflen);
+	free(tmpbuf);
   }
 
   helper_send_message(buf);
 
   debug_printf(DEBUG_NOTE, " im_list = \"%s\"\n", buf);
-  
+
   free(buf);
 
   if (dummy_agent_context)
@@ -282,17 +274,11 @@ helper_handler(uim_agent_context *ua, char *helper_message)
 void
 helper_send_im_change_whole_desktop(const char *name)
 {
-  int len = 0;
   char *buf;
 
 #define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
 
-  len += strlen(HEADER_FORMAT);
-  len += name ? strlen(name) : 0;
-
-  buf = (char *)malloc(sizeof(char) * len);
-
-  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+  asprintf(&buf, HEADER_FORMAT, name ? name : "");
 
   helper_send_message(buf);
 

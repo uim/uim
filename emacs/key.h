@@ -43,7 +43,7 @@
 
 #include "uim-el-types.h"
 
-void convert_keyname_a2e(char *keyname, const char *name);
+void convert_keyname_a2e(char *keyname, const char *name, size_t len);
 enum UKey convert_keyname_e2u( const char *keyname );
 
 #endif

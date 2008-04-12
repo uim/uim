@@ -41,24 +41,24 @@
   (for XEmacs)
 */
 void
-convert_keyname_a2e(char *keyname, const char *name)
+convert_keyname_a2e(char *keyname, const char *name, size_t keyname_len)
 {
   if (strcmp(name, "BS") == 0)
-	strcpy(keyname, "backspace");
+	strlcpy(keyname, "backspace", keyname_len);
   else if (strcmp(name, "TAB") == 0)
-	strcpy(keyname, "tab");
+	strlcpy(keyname, "tab", keyname_len);
   else if (strcmp(name, "RET") == 0)
-	strcpy(keyname, "return");
+	strlcpy(keyname, "return", keyname_len);
   else if (strcmp(name, "ESC") == 0)
-	strcpy(keyname, "escape");
+	strlcpy(keyname, "escape", keyname_len);
   else if (strcmp(name, "DEL") == 0)
-	strcpy(keyname, "delete");
+	strlcpy(keyname, "delete", keyname_len);
   else if (strcmp(name, "DEL") == 0)
-	strcpy(keyname, "delete");
+	strlcpy(keyname, "delete", keyname_len);
   else if (strcmp(name, "SPC") == 0)
-	strcpy(keyname, "space");
+	strlcpy(keyname, "space", keyname_len);
   else
-	strcpy(keyname, name);
+	strlcpy(keyname, name, keyname_len);
 }
 
 

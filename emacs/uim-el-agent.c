@@ -49,8 +49,6 @@
 
 #include "uim-el-agent.h"
 
-
-
 /* called when owner buffer is killed  */
 static int
 cmd_release(int context_id)
@@ -420,7 +418,7 @@ process_command(int serial, int cid, char *cmd)
 
 
 static int
-analyze_keyvector(char *vector, uim_key *ukey, char *keyname)
+analyze_keyvector(char *vector, uim_key *ukey, char *keyname, size_t keyname_len)
 {
   char *p1, *p2, *c;
   int key;
@@ -523,9 +521,9 @@ analyze_keyvector(char *vector, uim_key *ukey, char *keyname)
 			if (*p1 >= 'A' && *p1 <= 'Z')
 			  /* if the first character is upper case, 
 				 it can be considered as XEmacs style abbrev */
-			  convert_keyname_a2e(keyname, p1);
+				convert_keyname_a2e(keyname, p1, keyname_len);
 			else
-			  strcpy(keyname, p1);
+			strlcpy(keyname, p1, keyname_len);
 
 			ukey->key = convert_keyname_e2u(keyname);
 		  }
@@ -721,7 +719,7 @@ main(int argc, char *argv[])
 	  keyname[0] = '\0';
 
 
-	  if (analyze_keyvector(p1, &ukey, keyname) > 0) {
+	  if (analyze_keyvector(p1, &ukey, keyname, sizeof(keyname)) > 0) {
 
 	  	a_printf("( %d %d ", serial, cid);
 		if (process_keyvector(serial, cid, ukey, keyname) < 0)

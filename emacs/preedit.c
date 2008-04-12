@@ -65,8 +65,7 @@ add_preedit(preedit *pe, int attr, const char *str)
   }
 
   if (strlen(str) > 0) {
-	pb->str = (char *)malloc(strlen(str) + 1);
-	strcpy(pb->str, str);
+	pb->str = strdup(str);
 	pe->length += strlen(str);
   } else {
 	pb->str = NULL;

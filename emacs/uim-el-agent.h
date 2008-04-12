@@ -72,7 +72,7 @@ static void check_prop_list_update(uim_agent_context *ua);
 static int process_command(int serial, int cid, char *cmd);
 static int process_keyvector(int serial, int cid,
 							 uim_key ukey, const char *keyname);
-static int analyze_keyvector(char *vector, uim_key *ukey, char *keyname);
+static int analyze_keyvector(char *vector, uim_key *ukey, char *keyname, size_t keyname_len);
 
 void cleanup(void);
 
