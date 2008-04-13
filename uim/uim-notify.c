@@ -228,7 +228,7 @@ notify_get_plugins(void)
   const uim_notify_desc *desc;
   void *handle;
   uim_notify_desc *(*desc_func)(void);
-  char *str;
+  const char *str;
 
   plen = sizeof(NOTIFY_PLUGIN_PREFIX);
   slen = sizeof(NOTIFY_PLUGIN_SUFFIX);
@@ -243,11 +243,10 @@ notify_get_plugins(void)
     while ((dp = readdir(dirp)) != NULL) {
       size_t len = strlen(dp->d_name);
       char path[PATH_MAX];
-
       if ((len < plen + slen) ||
 	  (PATH_MAX < (sizeof(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
-	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
+	  (strcmp(dp->d_name + len + 1 - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
 
       snprintf(path, sizeof(path), "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
