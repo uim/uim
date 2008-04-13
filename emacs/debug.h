@@ -35,8 +35,8 @@
 */
 
 
-#ifndef UIM_AGENT_DEBUG_H
-#define UIM_AGENT_DEBUG_H
+#ifndef UIM_EMACS_DEBUG_H
+#define UIM_EMACS_DEBUG_H
 
 #include <config.h>
 

@@ -34,8 +34,8 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef UIM_AGENT_H
-#define UIM_AGENT_H
+#ifndef UIM_EMACS_UIM_EL_AGENT_H
+#define UIM_EMACS_UIM_EL_AGENT_H
 
 #include <config.h>
 
