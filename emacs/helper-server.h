@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_HELPER_SERVER_H
 #define UIM_AGENT_HELPER_SERVER_H
 
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/select.h>
 

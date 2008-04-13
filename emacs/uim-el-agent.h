@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_H
 #define UIM_AGENT_H
 
+#include <config.h>
+
 #include "debug.h"
 #include "output.h"
 #include "uim-el-types.h"

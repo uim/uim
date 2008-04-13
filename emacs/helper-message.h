@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_HELPER_MESSAGE_H
 #define UIM_AGENT_HELPER_MESSAGE_H
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

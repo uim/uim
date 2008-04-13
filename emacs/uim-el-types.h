@@ -37,6 +37,8 @@
 #ifndef UIM_EL_TYPES_H
 #define UIM_EL_TYPES_H
 
+#include <config.h>
+
 typedef struct candidate {
   char *str;
   char *label;

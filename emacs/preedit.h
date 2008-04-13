@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_PREEDIT_H
 #define UIM_AGENT_PREEDIT_H
 
+#include <config.h>
+
 #include <stdlib.h>
 #include <string.h>
 

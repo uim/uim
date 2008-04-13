@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_COMMIT_H
 #define UIM_AGENT_COMMIT_H
 
+#include <config.h>
+
 #include <stdlib.h>
 
 #include "output.h"

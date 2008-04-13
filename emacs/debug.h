@@ -38,6 +38,8 @@
 #ifndef UIM_AGENT_DEBUG_H
 #define UIM_AGENT_DEBUG_H
 
+#include <config.h>
+
 #include <stdio.h>
 #include <stdarg.h>
 

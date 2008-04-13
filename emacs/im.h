@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_IM_H
 #define UIM_AGENT_IM_H
 
+#include <config.h>
+
 #include <string.h>
 #include <locale.h>
 #include <stdlib.h>

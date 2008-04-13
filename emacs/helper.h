@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_HELPER_H
 #define UIM_AGENT_HELPER_H
 
+#include <config.h>
+
 #include <string.h>
 #include <stdlib.h>
 

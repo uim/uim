@@ -37,6 +37,8 @@
 #ifndef UIM_AGENT_KEY_H
 #define UIM_AGENT_KEY_H
 
+#include <config.h>
+
 #include <string.h>
 
 #include <uim/uim.h>
