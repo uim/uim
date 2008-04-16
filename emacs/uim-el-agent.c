@@ -90,7 +90,7 @@ cmd_unfocused(int context_id)
 {
   uim_agent_context *ua = get_uim_agent_context(context_id);
 
-  if (ua == current) {
+  if (ua) {
 	/* keep preedit if exists */
 	show_preedit_uim_agent_context(ua);
 	show_candidate_uim_agent_context(ua);

@@ -299,8 +299,6 @@
 (defun uim-goto-char (pt)
   (set-window-point (get-buffer-window (current-buffer)) pt))
 
-(defun uim-point ()
-  (window-point (get-buffer-window (current-buffer))))
 
 (defun uim-get-vector-from-head (vec n)
   (if (and (<= n (length vec))

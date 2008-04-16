@@ -1156,8 +1156,7 @@
 	  (setq preedit-existed t)
 	  (let ((inhibit-read-only t))
 	    (uim-remove-preedit))
-	  (setq uim-preedit-displayed nil)
-	  (uim-goto-char uim-original-cursor))
+	  (setq uim-preedit-displayed nil))
 
 	;; restore cursor point
 	(when (and uim-preedit-keymap-enabled uim-original-cursor)
@@ -1304,7 +1303,7 @@
 	    (when buffer-undo-list-saved
 	      (uim-save-undo))))
 
-      (setq uim-original-cursor (uim-point))
+      (setq uim-original-cursor (point))
 
 
       (if (or preedit candidate)
@@ -1334,7 +1333,7 @@
 
 	    (uim-goto-char uim-preedit-cursor)
 
-	    (setq uim-candidate-cursor (uim-point))
+	    (setq uim-candidate-cursor (point))
 
 	    ;; show candidate
 	    (when (and candidate
