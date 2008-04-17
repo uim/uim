@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <locale.h>
 #include <iconv.h>
 #include <errno.h>
@@ -363,42 +364,19 @@ modmask(char *name)
     return(mask);
 }
 
-char *
-XimIM::TransFileName(char *name)
+int
+XimIM::TransFileName(char *transname, const char *name, size_t len)
 {
-    char *home = NULL, *lcCompose = NULL;
-    char *i = name, *ret, *j;
-    int l = 0;
+    char *home = NULL;
+    char lcCompose[MAXPATHLEN];
+    const char *i = name;
+    char *j;
+    char ret[MAXPATHLEN];
 
-    while (*i) {
-	if (*i == '%') {
-	    i++;
-	    switch (*i) {
-	    case '%':
-		l++;
-		break;
-	    case 'H':
-		home = getenv("HOME");
-		if (home)
-		    l += strlen(home);
-		break;
-	    case 'L':
-		lcCompose = get_compose_filename();
-		if (lcCompose)
-		    l += strlen(lcCompose);
-		break;
-	    }
-	} else {
-	    l++;
-	}
-	i++;
-    }
-
-    j = ret = (char *)malloc(l + 1);
-    if (ret == NULL)
-	return ret;
+    j = ret;
     i = name;
-    while (*i) {
+    lcCompose[0] = ret[0] = '\0';
+    while (*i && j - ret < MAXPATHLEN - 1) {
 	if (*i == '%') {
 	    i++;
 	    switch (*i) {
@@ -406,16 +384,17 @@ XimIM::TransFileName(char *name)
 		*j++ = '%';
 		break;
 	    case 'H':
+		home = getenv("HOME");
 		if (home) {
-		    strcpy(j, home);
+		    strlcat(ret, home, sizeof(ret));
 		    j += strlen(home);
 		}
 		break;
 	    case 'L':
-		if (lcCompose) {
-		    strcpy(j, lcCompose);
+		get_compose_filename(lcCompose, sizeof(lcCompose));
+		if (lcCompose[0] != '\0') {
+		    strlcat(ret, lcCompose, sizeof(ret));
 		    j += strlen(lcCompose);
-		    free(lcCompose);
 		}
 		break;
 	    }
@@ -423,9 +402,11 @@ XimIM::TransFileName(char *name)
 	} else {
 	    *j++ = *i++;
 	}
+	*j = '\0';
     }
-    *j = '\0';
-    return ret;
+    strlcpy(transname, ret, len);
+
+    return 1;
 }
 
 #ifndef MB_LEN_MAX
@@ -496,16 +477,15 @@ XimIM::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     n = 0;
     do {
 	if ((token == KEY) && (strcmp("include", *tokenbuf) == 0)) {
-	    char *filename;
+	    char filename[MAXPATHLEN];
 	    FILE *infp;
 	    token = nexttoken(fp, tokenbuf, &lastch, buflen);
 	    if (token != KEY && token != STRING)
 		goto error;
 
-	    if ((filename = TransFileName(*tokenbuf)) == NULL)
+	    if (!TransFileName(filename, *tokenbuf, sizeof(filename)) || filename[0] == '\0')
 		goto error;
 	    infp = fopen(filename, "r");
-	    free(filename);
 	    if (infp == NULL)
 		goto error;
 	    ParseComposeStringFile(infp);
@@ -695,41 +675,29 @@ XimIM::ParseComposeStringFile(FILE *fp)
 void XimIM::create_compose_tree()
 {
     FILE *fp = NULL;
-    char *name, *tmpname = NULL;
+    char name[MAXPATHLEN];
     const char *lang_region, *encoding;
+    char *compose_env;
 
-    name = getenv("XCOMPOSEFILE");
+    name[0] = '\0';
+    compose_env = getenv("XCOMPOSEFILE");
 
-    if (name == NULL) {
+    if (compose_env != NULL) {
+	strlcpy(name, compose_env, sizeof(name));
+    } else {
 	char *home = getenv("HOME");
 	if (home != NULL) {
-	    int hl = strlen(home);
-	    tmpname = name = (char *)malloc(hl + 10 + 1);
-	    if (name != NULL) {
-		strcpy(name, home);
-		strcpy(name + hl, "/.XCompose");
-		fp = fopen(name, "r");
-		if (fp == NULL) {
-		    free(name);
-		    name = tmpname = NULL;
-		}
-	    }
+	    snprintf(name, sizeof(name), "%s/.XCompose", home);
+	    fp = fopen(name, "r");
+	    if (fp == NULL)
+		name[0] = '\0';
 	}
     }
 
-    if (name == NULL) {
-	tmpname = name = get_compose_filename();
-    }
-
-    if (name == NULL)
+    if (name[0] == '\0' && !get_compose_filename(name, sizeof(name)))
 	return;
-    if (fp == NULL) {
-	fp = fopen(name, "r");
-    }
-    if (tmpname != NULL) {
-	free(tmpname);
-    }
-    if (fp == NULL)
+
+    if (fp == NULL && ((fp = fopen(name, "r")) == NULL))
 	return;
 
     lang_region = get_lang_region();
@@ -749,61 +717,40 @@ DefTree *XimIM::get_compose_tree()
     return mTreeTop;
 }
 
-char *XimIM::get_compose_filename()
+int XimIM::get_compose_filename(char *filename, size_t len)
 {
-    char *compose_dir_file;
-    char *locale;
+    char compose_dir_file[MAXPATHLEN], name[MAXPATHLEN];
+    char locale[BUFSIZ];
     const char *lang_region, *encoding;
 
     FILE *fp;
-    char buf[XLC_BUFSIZE], *name = NULL, *filename = NULL;
+    char buf[XLC_BUFSIZE];
     const char *xlib_dir = XLIB_DIR ;
 
     lang_region = get_lang_region();
     encoding = get_encoding();
 
     if (lang_region == NULL || encoding == NULL)
-	return NULL;
+	return 0;
 
-    locale = (char *)malloc(strlen(lang_region) + strlen(encoding) + 2);
-    if (locale == NULL)
-	return NULL;
-    sprintf(locale, "%s.%s", lang_region, encoding);
-
-    compose_dir_file = (char *)malloc(strlen(XLIB_DIR) + strlen(COMPOSE_DIR_FILE) + 2);
-    if (compose_dir_file == NULL) {
-	free(locale);
-	return NULL;
-    }
-    sprintf(compose_dir_file, "%s/%s", XLIB_DIR, COMPOSE_DIR_FILE);
+    snprintf(locale, sizeof(locale), "%s.%s", lang_region, encoding);
+    snprintf(compose_dir_file, sizeof(compose_dir_file), "%s/%s", XLIB_DIR, COMPOSE_DIR_FILE);
 
     fp = fopen(compose_dir_file, "r");
     if (fp == NULL) {
 	/* retry with fallback file */
 	if (strcmp(FALLBACK_XLIB_DIR, XLIB_DIR)) {
-	    compose_dir_file = (char *)realloc(compose_dir_file,
-			    strlen(FALLBACK_XLIB_DIR) +
-			    strlen(COMPOSE_DIR_FILE) + 2);
-	    if (compose_dir_file == NULL) {
-		free(locale);
-		return NULL;
-	    }
-	    sprintf(compose_dir_file, "%s/%s",
+	    snprintf(compose_dir_file, sizeof(compose_dir_file), "%s/%s",
 			    FALLBACK_XLIB_DIR, COMPOSE_DIR_FILE);
 	    fp = fopen(compose_dir_file, "r");
-	    if (fp == NULL) {
-		free(locale);
-		free(compose_dir_file);
-		return NULL;
-	    }
+	    if (fp == NULL)
+		return 0;
 	    xlib_dir = FALLBACK_XLIB_DIR;
-	} else {
-	    free(locale);
-	    free(compose_dir_file);
-	    return NULL;
-	}
+	} else
+	    return 0;
     }
 
+    name[0] = '\0';
     while (fgets(buf, XLC_BUFSIZE, fp) != NULL) {
 	char *p = buf;
 	int n;
@@ -820,28 +767,17 @@ char *XimIM::get_compose_filename()
 	}
 	from = args[1], to = args[0];
 	if (!strcmp(from, locale)) {
-	    name = (char *)malloc(strlen(to) + 1);
-	    if (name != NULL) {
-		strcpy(name, to);
-	    }
+	    strlcpy(name, to, sizeof(name));
 	    break;
 	}
     }
     fclose(fp);
-    free(locale);
-    free(compose_dir_file);
 
-    if (name == NULL)
-	return NULL;
+    if (name[0] == '\0')
+	return 0;
+    snprintf(filename, len, "%s/%s/%s", xlib_dir, XLOCALE_DIR, name);
 
-    filename = (char *)malloc(strlen(xlib_dir) + strlen(XLOCALE_DIR) +
-		    strlen(name) + 3);
-    if (filename == NULL)
-	return NULL;
-    sprintf(filename, "%s/%s/%s", xlib_dir, XLOCALE_DIR, name);
-    free(name);
-
-    return filename;
+    return 1;
 }
 
 static int

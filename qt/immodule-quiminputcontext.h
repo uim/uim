@@ -139,14 +139,14 @@ private:
     // for X11 Compose
     static DefTree *mTreeTop;
     static void create_compose_tree( void );
-    static char *get_compose_filename( void );
-    static char *TransFileName( char *name );
+    static int get_compose_filename( char *filename, size_t len );
+    static int TransFileName( char *transname, const char *name, size_t len );
     static void ParseComposeStringFile( FILE *fp );
     static void FreeComposeTree( DefTree *top );
     static int parse_compose_line( FILE *fp, char **tokenbuf, size_t *buflen );
     static int get_mb_string( char *buf, unsigned int ks );
     static const char *get_encoding( void );
-    static char *get_lang_region( void );
+    static int get_lang_region( char *lang_region, size_t len );
 
     Compose *mCompose;
 #endif

@@ -711,6 +711,7 @@ void im_uim_create_compose_tree()
     char lang_region[BUFSIZ];
     const char *encoding;
     char *compose_env;
+    int ret;
 
     name[0] = '\0';
     compose_env = getenv("XCOMPOSEFILE");
@@ -733,9 +734,9 @@ void im_uim_create_compose_tree()
     if (fp == NULL && ((fp = fopen(name, "r")) == NULL))
 	return;
 
-    get_lang_region(lang_region, sizeof(lang_region));
+    ret = get_lang_region(lang_region, sizeof(lang_region));
     g_get_charset(&encoding);
-    if (lang_region == NULL || encoding == NULL) {
+    if (!ret || encoding == NULL) {
 	fprintf(stderr, "Warning: locale name is NULL\n");
 	fclose(fp);
 	return;

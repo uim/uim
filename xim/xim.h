@@ -208,8 +208,8 @@ protected:
     char *mLangRegion;
 
     // for Compose
-    char *get_compose_filename();
-    char *TransFileName(char *name);
+    int get_compose_filename(char *filename, size_t len);
+    int TransFileName(char *transname, const char *name, size_t len);
     void ParseComposeStringFile(FILE *fp);
     void FreeComposeTree(DefTree *top);
     int parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen);
