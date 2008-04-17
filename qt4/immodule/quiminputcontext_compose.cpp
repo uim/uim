@@ -39,6 +39,9 @@
 #include <sys/stat.h>
 #include <locale.h>
 #include <errno.h>
+#ifdef HAVE_LANGINFO_CODESET
+#include <langinfo.h>
+#endif
 
 #include "uim/uim.h"
 
@@ -111,7 +114,7 @@ bool Compose::handle_qkey(QKeyEvent *event)
             xkeysym = qkey;
 	}
     } else if (qkey >= Qt::Key_Dead_Grave && qkey <= Qt::Key_Dead_Horn) {
-        xkeysym = qkey + 0xec00;
+        xkeysym = qkey + 0xec00 - 0x01000000;
     } else {
         switch (qkey) {
         case Qt::Key_Escape: xkeysym = XK_Escape; break;
@@ -582,9 +585,27 @@ QUimInputContext::TransFileName(char *name)
 const char *
 QUimInputContext::get_encoding()
 {
-   QTextCodec *codec = QTextCodec::codecForLocale();
+#if 0
+    // starting from Qt 4.2.0, QTextCodec::codecForLocale()->name()
+    // returns "System" 
+    QTextCodec *codec = QTextCodec::codecForLocale();
 
-   return codec->name();
+    return codec->name();
+#else
+
+#ifdef HAVE_LANGINFO_CODESET
+    return nl_langinfo(CODESET);
+#else
+    char *p;
+
+    p = setlocale(LC_CTYPE, NULL);
+    if (p)
+	p = strchr(p, '.');
+
+    return p ? p + 1 : "UTF-8";
+#endif
+
+#endif
 }
 
 char *
@@ -992,7 +1013,8 @@ char *QUimInputContext::get_compose_filename()
 	char *p = buf;
 	int n;
 	char *args[2], *from, *to;
-	while ((unsigned char)isspace(*p)) {
+	// isspace for tab doesn't seem to work with Qt4...
+	while ((unsigned char)isspace(*p) || *p == '\t') {
 	    ++p;
 	}
 	if (iscomment(*p)) {
@@ -1035,7 +1057,8 @@ parse_line(char *line, char **argv, int argsize)
     char *p = line;
 
     while (argc < argsize) {
-	while ((unsigned char)isspace(*p)) {
+	// isspace for tab doesn't seem to work with Qt4...
+	while ((unsigned char)isspace(*p) || *p == '\t') {
 	    ++p;
 	}
 	if (*p == '\0') {
