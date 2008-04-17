@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <pwd.h>
@@ -82,6 +83,8 @@ static long verbose_level(void);
 static void *plugin_unload_internal(void *uim_lisp_name);
 static void *uim_quit_plugin_internal(void *dummy);
 
+static uim_lisp module_unbind(uim_lisp, uim_lisp, uim_lisp);
+static uim_lisp module_bind(uim_lisp);
 
 static long 
 verbose_level(void)
@@ -245,6 +248,8 @@ uim_init_plugin(void)
 
   uim_scm_init_proc1("load-plugin", plugin_load);
   uim_scm_init_proc1("unload-plugin", plugin_unload);
+  uim_scm_init_proc1("module-bind", module_bind);
+  uim_scm_init_proc3("module-unbind", module_unbind);
 
   UIM_CATCH_ERROR_END();
 }
@@ -275,4 +280,53 @@ uim_quit_plugin_internal(void *dummy)
   }
 
   return NULL;
+}
+
+static uim_lisp
+module_unbind(uim_lisp lib_ptr,
+	      uim_lisp init_proc,
+	      uim_lisp quit_proc)
+{
+  void *library;
+  void (*plugin_instance_quit)(void);
+
+  library = C_PTR(lib_ptr);
+  plugin_instance_quit = C_FPTR(quit_proc);
+
+  (plugin_instance_quit)();
+  dlclose(library);
+
+  return uim_scm_t();
+}
+
+static uim_lisp
+module_bind(uim_lisp name)
+{
+  void *library;
+  void (*plugin_instance_init)(void);
+  void (*plugin_instance_quit)(void);
+
+  DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Loading %s", REFER_C_STR(name)));
+  library = dlopen(REFER_C_STR(name), RTLD_NOW);
+
+  if (library == NULL) {
+    uim_notify_fatal(N_("module: %s: Load failed."), dlerror());
+    return uim_scm_f();
+  }
+
+  plugin_instance_init
+    = (void (*)(void))dlfunc(library, "uim_plugin_instance_init");
+  plugin_instance_quit
+    = (void (*)(void))dlfunc(library, "uim_plugin_instance_quit");
+  if (!plugin_instance_init) {
+    uim_notify_fatal(N_("module: %s: Initialize failed."), REFER_C_STR(name));
+    return uim_scm_f();
+  }
+	
+  DPRINTFN(UIM_VLEVEL_PLUGIN, (stderr, "Calling plugin_instance_init() for %s.\n", REFER_C_STR(name)));
+  (plugin_instance_init)();
+
+  return LIST3(MAKE_PTR(library),
+	       MAKE_FPTR(plugin_instance_init),
+	       MAKE_FPTR(plugin_instance_quit));
 }
