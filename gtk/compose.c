@@ -391,13 +391,10 @@ TransFileName(char *transname, const char *name, size_t len)
     char *j;
     char ret[MAXPATHLEN];
 
-    home = getenv("HOME");
-    get_compose_filename(lcCompose, sizeof(lcCompose));
-
     j = ret;
     i = name;
-    lcCompose[0] = '\0';
-    while (*i) {
+    lcCompose[0] = ret[0] = '\0';
+    while (*i && j - ret < MAXPATHLEN - 1) {
 	if (*i == '%') {
 	    i++;
 	    switch (*i) {
@@ -405,12 +402,14 @@ TransFileName(char *transname, const char *name, size_t len)
 		*j++ = '%';
 		break;
 	    case 'H':
+		home = getenv("HOME");
 		if (home) {
 		    strlcat(ret, home, sizeof(ret));
 		    j += strlen(home);
 		}
 		break;
 	    case 'L':
+		get_compose_filename(lcCompose, sizeof(lcCompose));
 		if (lcCompose[0] != '\0') {
 		    strlcat(ret, lcCompose, sizeof(ret));
 		    j += strlen(lcCompose);
@@ -421,8 +420,8 @@ TransFileName(char *transname, const char *name, size_t len)
 	} else {
 	    *j++ = *i++;
 	}
+	*j = '\0';
     }
-    *j = '\0';
     strlcpy(transname, ret, len);
     return 1;
 }
