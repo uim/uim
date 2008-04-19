@@ -52,18 +52,31 @@
 #define DPRINTFN(n,x)
 #endif
 
+static uim_lisp uim_curl_fetch_simple(uim_lisp);
+static void *uim_curl_fetch_simple_internal(void *);
+
+struct uim_curl_post_args {
+  uim_lisp url;
+  uim_lisp post;
+};
+static uim_lisp uim_curl_post(uim_lisp, uim_lisp);
+static void *uim_curl_post_internal(struct uim_curl_post_args *);
+
+static uim_lisp uim_curl_url_escape(uim_lisp);
+static void *uim_curl_url_escape_internal(void *);
+
+static uim_lisp uim_curl_url_unescape(uim_lisp);
+static void *uim_curl_url_unescape_internal(void *);
+
+void uim_plugin_instance_init(void);
+void uim_plugin_instance_quit(void);
+
 struct curl_memory_struct {
   char *str;
   size_t size;
 };
-
 static size_t uim_curl_write_func(void *, size_t, size_t, void *);
-static uim_lisp uim_curl_fetch_simple(uim_lisp);
-static uim_lisp uim_curl_post(uim_lisp, uim_lisp);
-static uim_lisp uim_curl_url_escape(uim_lisp);
-static uim_lisp uim_curl_url_unescape(uim_lisp);
-void uim_plugin_instance_init(void);
-void uim_plugin_instance_quit(void);
+static CURLcode uim_curl_perform(CURL *);
 
 static size_t
 uim_curl_write_func(void *ptr, size_t size, size_t nmemb, void *data)
@@ -72,9 +85,9 @@ uim_curl_write_func(void *ptr, size_t size, size_t nmemb, void *data)
   size_t realsize = size * nmemb;
 
   if(mem->str != NULL)
-    mem->str = realloc(mem->str, mem->size + realsize + 1);
+    mem->str = uim_realloc(mem->str, mem->size + realsize + 1);
   else
-    mem->str = malloc(realsize + 1);
+    mem->str = uim_malloc(realsize + 1);
 
   if(mem->str != NULL) {
     memcpy(&(mem->str[mem->size]), ptr, realsize);
@@ -88,13 +101,18 @@ uim_curl_write_func(void *ptr, size_t size, size_t nmemb, void *data)
 static uim_lisp
 uim_curl_fetch_simple(uim_lisp url_)
 {
-  const char *url = REFER_C_STR(url_);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_curl_fetch_simple_internal,
+						    (void *)url_);
+}
+
+static void *
+uim_curl_fetch_simple_internal(void *url_)
+{
+  const char *url = REFER_C_STR((uim_lisp)url_);
   CURL *curl;
   CURLcode res;
   struct curl_memory_struct chunk;
   uim_lisp fetched_str_;
-  char *ua;
-  char *referer;
 
   curl = curl_easy_init();
 
@@ -104,6 +122,26 @@ uim_curl_fetch_simple(uim_lisp url_)
   memset(&chunk, 0, sizeof(struct curl_memory_struct));
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, uim_curl_write_func);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+
+  res = uim_curl_perform(curl);
+
+  fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
+
+  curl_easy_cleanup(curl);
+  curl_global_cleanup();
+  free(chunk.str);
+
+  return (void *)fetched_str_;
+}
+
+static CURLcode
+uim_curl_perform(CURL *curl)
+{
+  char *ua;
+  char *referer;
+  CURLcode res;
 
   ua = uim_scm_symbol_value_str("uim-curl-user-agent");
   referer = uim_scm_symbol_value_str("uim-curl-referer");
@@ -112,35 +150,38 @@ uim_curl_fetch_simple(uim_lisp url_)
 		   (ua != NULL) ? ua : "libcurl-agent/1.0");
   curl_easy_setopt(curl, CURLOPT_REFERER,
 		   (referer != NULL) ? referer : "");
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, uim_curl_write_func);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
   res = curl_easy_perform(curl);
-  curl_easy_cleanup(curl);
-  curl_global_cleanup();
-
-  fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
 
   free(ua);
   free(referer);
-  free(chunk.str);
 
-  return fetched_str_;
+  return res;
 }
 
 static uim_lisp
 uim_curl_post(uim_lisp url_, uim_lisp post_)
 {
+  struct uim_curl_post_args args;
+
+  args.url = url_;
+  args.post = post_;
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_curl_post_internal,
+						    &args);
+}
+
+static void *
+uim_curl_post_internal(struct uim_curl_post_args *args)
+{
+  uim_lisp post_ = args->post;
   uim_lisp post_car_, post_cdr_;
   uim_lisp fetched_str_;
-  const char *url = REFER_C_STR(url_);
+  const char *url = REFER_C_STR(args->url);
   CURL *curl;
   CURLcode res;
   struct curl_memory_struct chunk;
   struct curl_httppost* post_first = NULL;
   struct curl_httppost* post_last = NULL;
-  char *ua;
-  char *referer;
 
   curl = curl_easy_init();
 
@@ -150,14 +191,6 @@ uim_curl_post(uim_lisp url_, uim_lisp post_)
   memset(&chunk, 0, sizeof(struct curl_memory_struct));
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
-
-  ua = uim_scm_symbol_value_str("uim-curl-user-agent");
-  referer = uim_scm_symbol_value_str("uim-curl-referer");
-
-  curl_easy_setopt(curl, CURLOPT_USERAGENT,
-		   (ua != NULL) ? ua : "libcurl-agent/1.0");
-  curl_easy_setopt(curl, CURLOPT_REFERER,
-		   (referer != NULL) ? referer : "");
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, uim_curl_write_func);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
@@ -178,26 +211,29 @@ uim_curl_post(uim_lisp url_, uim_lisp post_)
 
   curl_easy_setopt(curl, CURLOPT_HTTPPOST, post_first);
 
-  res = curl_easy_perform(curl);
+  res = uim_curl_perform(curl);
+
+  fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
 
   curl_easy_cleanup(curl);
   curl_formfree(post_first);
   curl_global_cleanup();
-
-  fetched_str_ = (chunk.str != NULL) ? MAKE_STR(chunk.str) : uim_scm_f();
-
-  free(ua);
-  free(referer);
   free(chunk.str);
 
-  return fetched_str_;
+  return (void *)fetched_str_;
 }
 
 static uim_lisp
 uim_curl_url_escape(uim_lisp url_)
 {
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_curl_url_escape_internal,
+						    (void *)url_);
+}
+static void *
+uim_curl_url_escape_internal(void *url_)
+{
   uim_lisp escaped_url_;
-  const char *unescaped_url = REFER_C_STR(url_);
+  const char *unescaped_url = REFER_C_STR((uim_lisp)url_);
   char *escaped_url;
   CURL *curl;
 
@@ -213,14 +249,21 @@ uim_curl_url_escape(uim_lisp url_)
   curl_easy_cleanup(curl);
   curl_global_cleanup();
 
-  return escaped_url_;
+  return (void *)escaped_url_;
 }
 
 static uim_lisp
 uim_curl_url_unescape(uim_lisp url_)
 {
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_curl_url_unescape_internal,
+						    (void *)url_);
+}
+
+static void *
+uim_curl_url_unescape_internal(void *url_)
+{
   uim_lisp unescaped_url_;
-  const char *escaped_url = REFER_C_STR(url_);
+  const char *escaped_url = REFER_C_STR((uim_lisp)url_);
   char *unescaped_url;
   int len; /* curl_easy_unescape uses int, not size_t */
   CURL *curl;
@@ -238,7 +281,7 @@ uim_curl_url_unescape(uim_lisp url_)
   curl_easy_cleanup(curl);
   curl_global_cleanup();
 
-  return unescaped_url_;
+  return (void *)unescaped_url_;
 }
 
 void uim_plugin_instance_init(void)
