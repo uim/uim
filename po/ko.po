@@ -4662,7 +4662,7 @@ msgstr ""
 
 #: ../uim/uim-error.c:57
 msgid "All functionality has been disabled to save user application data."
-msgstr ""
+msgstr "회복할 수 없는 오류가 발생하여 uim의 모든 기능을 정지하였습니다."
 
 #: ../uim/wnnlib.c:3739 ../uim/wnnlib.c:3753
 #, c-format
