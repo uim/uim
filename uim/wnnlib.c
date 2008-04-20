@@ -1407,7 +1407,7 @@ doKantanSConvert(jcConvBuf *buf, int cl)
 
 	/* 変換文字列の長さのチェック */
 	clp = buf->clauseInfo + cl;
-	len = jl_kanji_len(buf->wnn, cl);
+	len = jl_kanji_len(buf->wnn, cl, -1);
 	diff = len - ((clp + 1)->dispp - clp->dispp);
 	newlen = (buf->displayEnd - buf->displayBuf) + diff;
 	if (newlen > buf->bufferSize) {
