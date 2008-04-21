@@ -243,8 +243,8 @@ notify_get_plugins(void)
     while ((dp = readdir(dirp)) != NULL) {
       size_t len = strlen(dp->d_name);
       char path[PATH_MAX];
-      if ((len < plen + slen) ||
-	  (PATH_MAX < (sizeof(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
+      if ((len < plen + slen - 1) ||
+	  (PATH_MAX < (sizeof(NOTIFY_PLUGIN_PATH "/") + len)) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
 	  (strcmp(dp->d_name + len + 1 - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
