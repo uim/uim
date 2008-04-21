@@ -423,6 +423,7 @@ TransFileName(char *transname, const char *name, size_t len)
 	*j = '\0';
     }
     strlcpy(transname, ret, len);
+
     return 1;
 }
 
@@ -830,6 +831,7 @@ get_compose_filename(char *filename, size_t len)
 	return 0;
 
     snprintf(filename, len, "%s/%s/%s", xlib_dir, XLOCALE_DIR, name);
+
     return 1;
 }
 

@@ -464,7 +464,7 @@ XimIM::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 
     struct DefBuffer buf[SEQUENCE_MAX];
     int i, n;
-    const char *encoding = get_encoding();;
+    const char *encoding = get_encoding();
 
     do {
 	token = nexttoken(fp, tokenbuf, &lastch, buflen);
@@ -775,6 +775,7 @@ int XimIM::get_compose_filename(char *filename, size_t len)
 
     if (name[0] == '\0')
 	return 0;
+
     snprintf(filename, len, "%s/%s/%s", xlib_dir, XLOCALE_DIR, name);
 
     return 1;

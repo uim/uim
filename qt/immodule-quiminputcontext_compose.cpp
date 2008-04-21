@@ -563,9 +563,9 @@ QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 const char *
 QUimInputContext::get_encoding()
 {
-   QTextCodec *codec = QTextCodec::codecForLocale();
+    QTextCodec *codec = QTextCodec::codecForLocale();
 
-   return codec->name();
+    return codec->name();
 }
 
 int
@@ -582,7 +582,7 @@ QUimInputContext::get_lang_region(char *locale, size_t len)
     if (p)
         *p = '\0';
 
-    return 1;   
+    return 1;
 }
 
 int
@@ -653,7 +653,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 	    if (token != KEY && token != STRING)
 		goto error;
 
-	    if ((!TransFileName(filename, *tokenbuf, sizeof(filename))) || filename[0] == '\0')
+	    if (!TransFileName(filename, *tokenbuf, sizeof(filename)) || filename[0] == '\0')
 		goto error;
 	    infp = fopen(filename, "r");
 	    if (infp == NULL)

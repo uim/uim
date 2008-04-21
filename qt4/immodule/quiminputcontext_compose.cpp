@@ -674,7 +674,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 	    if (token != KEY && token != STRING)
 		goto error;
 
-	    if ((!TransFileName(filename, *tokenbuf, sizeof(filename))) || filename[0] == '\0')
+	    if (!TransFileName(filename, *tokenbuf, sizeof(filename)) || filename[0] == '\0')
 		goto error;
 	    infp = fopen(filename, "r");
 	    if (infp == NULL)
@@ -895,9 +895,8 @@ void QUimInputContext::create_compose_tree()
 	}
     }
 
-    if (name[0] == '\0' && !get_compose_filename(name, sizeof(name))) {
+    if (name[0] == '\0' && !get_compose_filename(name, sizeof(name)))
 	return;
-    }
 
     if (fp == NULL && ((fp = fopen(name, "r")) == NULL))
 	return;
