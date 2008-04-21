@@ -228,7 +228,7 @@ notify_get_plugins(void)
   const uim_notify_desc *desc;
   void *handle;
   uim_notify_desc *(*desc_func)(void);
-  char *str;
+  const char *str;
 
   plen = sizeof(NOTIFY_PLUGIN_PREFIX);
   slen = sizeof(NOTIFY_PLUGIN_SUFFIX);
@@ -243,14 +243,13 @@ notify_get_plugins(void)
     while ((dp = readdir(dirp)) != NULL) {
       size_t len = strlen(dp->d_name);
       char path[PATH_MAX];
-
-      if ((len < plen + slen) ||
-	  (PATH_MAX < (sizeof(NOTIFY_PLUGIN_PATH "/") + len + 1)) ||
+      if ((len < plen + slen - 1) ||
+	  (PATH_MAX < (sizeof(NOTIFY_PLUGIN_PATH "/") + len)) ||
 	  (strcmp(dp->d_name, NOTIFY_PLUGIN_PREFIX) <= 0) ||
-	  (strcmp(dp->d_name + len - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
+	  (strcmp(dp->d_name + len + 1 - slen, NOTIFY_PLUGIN_SUFFIX) != 0))
 	continue;
 
-      snprintf(path, PATH_MAX, "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
+      snprintf(path, sizeof(path), "%s/%s", NOTIFY_PLUGIN_PATH, dp->d_name);
       handle = dlopen(path, RTLD_NOW);
       if ((str = dlerror()) != NULL) {
 	fprintf(stderr, "load failed %s(%s)\n", path, str);
