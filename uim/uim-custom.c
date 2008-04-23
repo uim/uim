@@ -98,10 +98,10 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1); \
     if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
+      if(uim_asprintf(&buf, sexp_tmpl, arg1) > 0 && buf != NULL) { \
+        UIM_EVAL_STRING_INTERNAL(uc, buf); \
+        free(buf); \
+      } \
     } \
   }
 
@@ -111,10 +111,10 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2); \
     if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
+      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2) > 0 && buf != NULL) { \
+        UIM_EVAL_STRING_INTERNAL(uc, buf); \
+        free(buf); \
+      } \
     } \
   }
 
@@ -124,10 +124,10 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3); \
     if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
+      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3) > 0 && buf != NULL) { \
+        UIM_EVAL_STRING_INTERNAL(uc, buf); \
+        free(buf); \
+      } \
     } \
   }
 
@@ -137,10 +137,12 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4); \
     if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3, arg4); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
+      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3, arg4) > 0 && \
+         buf != NULL) \
+      { \
+        UIM_EVAL_STRING_INTERNAL(uc, buf); \
+        free(buf); \
+      } \
     } \
   }
 
@@ -150,10 +152,12 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
     if (form_size != -1) { \
-      buf = malloc(form_size); \
-      snprintf(buf, form_size, sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
-      UIM_EVAL_STRING_INTERNAL(uc, buf); \
-      free(buf); \
+      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3, arg4, arg5) > 0 && \
+         buf != NULL) \
+      { \
+        UIM_EVAL_STRING_INTERNAL(uc, buf); \
+        free(buf); \
+      } \
     } \
   }
 
@@ -1291,7 +1295,6 @@ uim_custom_broadcast(void)
 {
   char **custom_syms, **sym;
   char *value, *msg;
-  size_t msg_size;
 
   if (helper_fd < 0) {
     helper_fd = uim_helper_init_client_fd(helper_disconnect_cb);
@@ -1301,14 +1304,12 @@ uim_custom_broadcast(void)
   for (sym = custom_syms; *sym; sym++) {
     value = uim_custom_value_as_literal(*sym);
     if (value) {
-      msg_size = sizeof(custom_msg_tmpl) + strlen(*sym) + strlen(value);
-      msg = (char *)malloc(msg_size);
-      if (!msg) {
+      if(uim_asprintf(&msg, custom_msg_tmpl, *sym, value) < 0 || msg == NULL)
+      {
 	free(value);
 	uim_custom_symbol_list_free(custom_syms);
 	return UIM_FALSE;
       }
-      snprintf(msg, msg_size, custom_msg_tmpl, *sym, value);
       uim_helper_send_message(helper_fd, msg);
       free(msg);
       free(value);
