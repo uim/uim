@@ -198,16 +198,19 @@
 (define module-load
   (lambda (module-name)
     (and-let* ((lib-path (find-module-lib-path uim-plugin-lib-load-path module-name))
-	       (scm-path (find-module-scm-path uim-plugin-scm-load-path module-name))
+
 	       (proc-ptrs (module-bind lib-path))
 	       (library-ptr (car proc-ptrs))
 	       (init-proc (car (cdr proc-ptrs)))
-	       (quit-proc (car (cdr (cdr proc-ptrs)))))
+	       (quit-proc (car (cdr (cdr proc-ptrs))))
+	       (scm-path '()))
 	      (if (not (and (null? proc-ptrs)
 			    (null? init-proc)
 			    (null? quit-proc)))
 		  (begin
-		    (try-require scm-path)
+		    (set! scm-path (find-module-scm-path
+				    uim-plugin-scm-load-path module-name))
+		    (if (not scm-path) (try-require scm-path))
 		    (plugin-list-append module-name
 					library-ptr
 					init-proc
