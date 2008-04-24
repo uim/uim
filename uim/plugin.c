@@ -83,8 +83,15 @@ static long verbose_level(void);
 static void *plugin_unload_internal(void *uim_lisp_name);
 static void *uim_quit_plugin_internal(void *dummy);
 
+struct module_unbind_args {
+  uim_lisp lib_ptr;
+  uim_lisp init_proc;
+  uim_lisp quit_proc;
+};
 static uim_lisp module_unbind(uim_lisp, uim_lisp, uim_lisp);
+static void *module_unbind_internal(struct module_unbind_args *);
 static uim_lisp module_bind(uim_lisp);
+static void *module_bind_internal(uim_lisp);
 
 static long 
 verbose_level(void)
@@ -254,6 +261,15 @@ uim_init_plugin(void)
   UIM_CATCH_ERROR_END();
 }
 
+static void *
+uim_quit_plugin_internal(void *uim_lisp_name)
+{
+  uim_lisp ret;
+  ret = uim_scm_callf("module-unload-all", "");
+
+  return ret;
+}
+
 /* Called from uim_quit */
 void
 uim_quit_plugin(void)
@@ -266,32 +282,27 @@ uim_quit_plugin(void)
   UIM_CATCH_ERROR_END();
 }
 
-static void *
-uim_quit_plugin_internal(void *dummy)
-{
-  uim_lisp alist, rest, entry, name;
-
-  alist = uim_scm_eval_c_string("plugin-alist");
-  for (rest = alist; !NULLP(rest); rest = CDR(rest)) {
-    entry = CAR(rest);
-    name = CAR(entry);
-
-    plugin_unload(name);
-  }
-
-  return NULL;
-}
-
 static uim_lisp
 module_unbind(uim_lisp lib_ptr,
 	      uim_lisp init_proc,
 	      uim_lisp quit_proc)
 {
+  struct module_unbind_args args;
+  args.lib_ptr = lib_ptr;
+  args.init_proc = init_proc;
+  args.quit_proc = quit_proc;
+
+  return uim_scm_call_with_gc_ready_stack(module_unbind_internal, (void *)&args);
+}
+
+static void *
+module_unbind_internal(struct module_unbind_args *args)
+{
   void *library;
   void (*plugin_instance_quit)(void);
 
-  library = C_PTR(lib_ptr);
-  plugin_instance_quit = C_FPTR(quit_proc);
+  library = C_PTR(args->lib_ptr);
+  plugin_instance_quit = C_FPTR(args->quit_proc);
 
   (plugin_instance_quit)();
   dlclose(library);
@@ -301,6 +312,12 @@ module_unbind(uim_lisp lib_ptr,
 
 static uim_lisp
 module_bind(uim_lisp name)
+{
+  return uim_scm_call_with_gc_ready_stack(module_bind_internal, (void *)name);
+}
+
+static void *
+module_bind_internal(uim_lisp name)
 {
   void *library;
   void (*plugin_instance_init)(void);

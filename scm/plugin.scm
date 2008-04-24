@@ -197,8 +197,9 @@
 
 (define module-load
   (lambda (module-name)
-    (and-let* ((lib-path (find-module-lib-path uim-plugin-lib-load-path module-name))
-
+    (and-let* ((module-not-exists? (not (plugin-list-query module-name)))
+	       (lib-path (find-module-lib-path uim-plugin-lib-load-path
+					       module-name))
 	       (proc-ptrs (module-bind lib-path))
 	       (library-ptr (car proc-ptrs))
 	       (init-proc (car (cdr proc-ptrs)))
@@ -210,18 +211,25 @@
 		  (begin
 		    (set! scm-path (find-module-scm-path
 				    uim-plugin-scm-load-path module-name))
-		    (if (not scm-path) (try-require scm-path))
 		    (plugin-list-append module-name
 					library-ptr
 					init-proc
 					quit-proc)
+		    (if (string? scm-path) (try-require scm-path))
 		    #t)
 		  #f))))
 
 (define module-unload
   (lambda (module-name)
-    (and-let* ((library-ptr (plugin-list-query-library module-name))
+    (and-let* ((module-exists? (plugin-list-query module-name))
+	       (library-ptr (plugin-list-query-library module-name))
 	       (init-proc (plugin-list-query-instance-init module-name))
 	       (quit-proc (plugin-list-query-instance-quit module-name)))
 	      (module-unbind library-ptr init-proc quit-proc)
 	      (plugin-list-delete module-name) #t)))
+
+(define module-unload-all
+  (lambda ()
+    (for-each (lambda (module-entry)
+                      (module-unload (car module-entry)))
+     plugin-alist) #t))
