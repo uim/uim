@@ -1022,7 +1022,9 @@ AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
 
 # To get qt/chardict/po working, 0.35.2 is required. 0.35.[01] has a hard-coded
 # $(top_builddir) bug.  -- YamaKen 2006-12-28
-IT_PROG_INTLTOOL([0.35.2], [no-xml])
+#
+# 0.36.3 or later is required to resolve a 'make check' problem ([uim-ja 87]).
+IT_PROG_INTLTOOL([0.36.3], [no-xml])
 IT_PO_SUBDIR([qt/chardict/po])
 
 
