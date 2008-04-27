@@ -78,7 +78,7 @@ release, you have to repeat the following procedure at least three times.
 
 11. Make the distribution.
 
-   cd x.y.z
+   cd uim-x.y.z
    ./make-dist.sh
 
    Release suffixes such as '-alpha' and '-beta' is automatically appended.
