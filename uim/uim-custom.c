@@ -408,15 +408,14 @@ c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const 
 
   for (bufp = buf, elem = list; *elem; elem++) {
     if (elem != list) {
-      strcpy(bufp, sep);
+      strlcat(buf, sep, buf_size);
       bufp += strlen(sep);
     }
     str = (*mapper)(*elem);
-    strcpy(bufp, str);
+    strlcat(buf, str, buf_size);
     bufp += strlen(str);
     free(str);
   }
-  buf[buf_size - 1] = '\0';
 
   return buf;
 }
