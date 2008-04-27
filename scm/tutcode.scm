@@ -90,7 +90,10 @@
 (require-custom "tutcode-custom.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "tutcode-key-custom.scm")
-(load-plugin "skk") ;SKK形式の交ぜ書き辞書の検索のため、libuim-skk.soをロード
+;;(load-plugin "skk") ;SKK形式の交ぜ書き辞書の検索のため、libuim-skk.soをロード
+;; FIXME: Temporary workaround for the module system reorganization
+(and-let* ((lib-path (find-module-lib-path uim-plugin-lib-load-path "skk"))
+	   (proc-ptrs (%%dynlib-bind lib-path))))
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 
 ;;; user configs
