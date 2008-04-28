@@ -43,7 +43,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "gettext.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 
 #ifdef DEBUG

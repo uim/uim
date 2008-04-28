@@ -1,7 +1,7 @@
 /*
   $Id:$
 
-  plugin.h:
+  dynlib.h: Bare dynamic library load/unload support for uim
 
   Copyright (c) 2004-2008 uim Project http://code.google.com/p/uim/
 
@@ -32,8 +32,8 @@
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 */
-#ifndef UIM_PLUGIN_H
-#define UIM_PLUGIN_H
+#ifndef UIM_DYNLIB_H
+#define UIM_DYNLIB_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,4 +49,4 @@ void uim_dynlib_instance_quit(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /* UIM_PLUGIN_H */
+#endif /* UIM_DYNLIB_H */

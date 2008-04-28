@@ -36,7 +36,7 @@
 
 #include "uim.h"
 #include "uim-scm.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 
 static EditLine *el;

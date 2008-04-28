@@ -1,7 +1,7 @@
 /*
   $Id:$
 
-  plugin.c: Plugin support for uim.
+  dynlib.c: Bare dynamic library load/unload support for uim
 
   Copyright (c) 2004-2008 uim Project http://code.google.com/p/uim/
 

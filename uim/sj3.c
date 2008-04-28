@@ -44,7 +44,7 @@
 #include "uim-helper.h"
 #include "uim-notify.h"
 #include "gettext.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 #ifndef MAXHOSTNAMELEN
 #define MAXHOSTNAMELEN 256

@@ -61,16 +61,16 @@ Summary: Plugin loding and unloading schemes are changed
 Affects: uim developers, IM developers
 Updates: libuim ABI, Scheme API
 Version: 1.6.0
-Revision: ac5424
-Date: 2008-04-17
-Modifier: Masahito Omote
+Revision: ac5424, ac5456, ac5457
+Date: 2008-04-17 -
+Modifier: Masahito Omote, YamaKen
 Related:
 URL:
 Changes:
      (added) module-load
      (added) module-unload
-     (added) module-bind
-     (added) module-unbind
+     (added) %%dynlib-bind
+     (added) %%dynlib-unbind
 Description:
   New API for loding/unloading modules rewritten in C and Scheme. module-load
   and module-unload are the same ones as load-plugin/unload-plugin written in

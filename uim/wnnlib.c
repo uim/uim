@@ -625,7 +625,7 @@
 #include "uim-helper.h"
 #include "uim-notify.h"
 #include "gettext.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 /*
  * Wnn7 では大胆にもいくつかの API 関数にバッファサイズを指定する

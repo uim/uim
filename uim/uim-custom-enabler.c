@@ -42,7 +42,7 @@
 */
 
 
-#include "plugin.h"
+#include "dynlib.h"
 #include "uim-custom.h"
 
 uim_bool uim_custom_init(void);

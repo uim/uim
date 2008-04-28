@@ -37,7 +37,7 @@ sigscheme-combined:
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme/src combined
 
 pkginclude_HEADERS = uim-scm.h uim-scm-abbrev.h uim.h \
-		uim-util.h uim-posix.h plugin.h \
+		uim-util.h uim-posix.h dynlib.h \
 		uim-helper.h uim-im-switcher.h \
 		uim-custom.h
 # Install even if !NOTIFY since plugins will need this to use
@@ -47,7 +47,7 @@ pkginclude_HEADERS += uim-notify.h
 libuim_la_SOURCES = \
 		uim-internal.h uim-error.c uim.c \
 		uim-key.c uim-func.c uim-util.c uim-posix.c \
-		iconv.c plugin.c \
+		iconv.c dynlib.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
 		rk.c

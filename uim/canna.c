@@ -48,7 +48,7 @@
 #include "uim-scm-abbrev.h"
 #include "uim-notify.h"
 #include "gettext.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 #if 0
 #define UIM_CANNA_DEBUG

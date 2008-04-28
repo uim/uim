@@ -62,7 +62,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-helper.h"
-#include "plugin.h"
+#include "dynlib.h"
 #include "uim-notify.h"
 #include "gettext.h"
 

@@ -42,7 +42,7 @@
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-util.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 
 #ifdef ENABLE_ANTHY_UTF8_STATIC

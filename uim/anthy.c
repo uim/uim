@@ -40,7 +40,7 @@
 #include "uim.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
-#include "plugin.h"
+#include "dynlib.h"
 
 
 #ifdef ENABLE_ANTHY_STATIC
