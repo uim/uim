@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 5460 (new repository)
+;; These tests are passed at revision 5461 (new repository)
 
 (use test.unit)
 

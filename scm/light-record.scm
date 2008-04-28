@@ -227,17 +227,3 @@
     `(define-record-generic
        ,rec-name ,fld-specs
        list-copy list-copy list-ref %list-set!)))
-
-;; Backward compatibility
-;;
-;; See test/test-util.scm to know what define-record does. fld-specs
-;; requires list of list rather than alist to keep extensibility
-;; (e.g. (list-ref spec 2) and so on may be used)
-(define define-record
-  (lambda (rec-name fld-specs)
-    (eval `(define-list-record ,rec-name ',fld-specs)
-	  (interaction-environment))
-    (let ((constructor-name (make-record-constructor-name rec-name))
-	  (legacy-constructor-name (symbol-append rec-name %HYPHEN-SYM 'new)))
-      (eval `(define ,legacy-constructor-name ,constructor-name)
-	    (interaction-environment)))))

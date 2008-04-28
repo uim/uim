@@ -33,7 +33,7 @@
 ;; not necessary for uim 1.5. Keeping in mind avoiding the procedures
 ;; on writing a new code is enough.  -- YamaKen 2007-07-11
 ;;
-;; $ egrep '\((string-list-concat|string-find|truncate-list|list-head|nconc|string-to-list|symbolconc|nth|nthcdr|copy-list|digit->string|puts|siod-print|print|feature\?|uim-symbol-value-str)\b' *.scm
+;; $ egrep '\((string-list-concat|string-find|truncate-list|list-head|nconc|string-to-list|symbolconc|nth|nthcdr|copy-list|digit->string|puts|siod-print|print|feature\?|uim-symbol-value-str|define-record)\b' *.scm
 
 (require-extension (srfi 1 34))
 
@@ -109,6 +109,20 @@
   (lambda (n)
     (and (number? n)
          (number->string n))))
+
+;; TODO: Replace with define-vector-record or define-list-record
+;;
+;; See test/test-util.scm to know what define-record does. fld-specs
+;; requires list of list rather than alist to keep extensibility
+;; (e.g. (list-ref spec 2) and so on may be used)
+(define define-record
+  (lambda (rec-name fld-specs)
+    (eval `(define-list-record ,rec-name ',fld-specs)
+	  (interaction-environment))
+    (let ((constructor-name (make-record-constructor-name rec-name))
+	  (legacy-constructor-name (symbol-append rec-name %HYPHEN-SYM 'new)))
+      (eval `(define ,legacy-constructor-name ,constructor-name)
+	    (interaction-environment)))))
 
 ;;
 ;; SIOD compatibility
