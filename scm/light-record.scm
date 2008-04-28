@@ -235,7 +235,7 @@
 ;; (e.g. (list-ref spec 2) and so on may be used)
 (define define-record
   (lambda (rec-name fld-specs)
-    (eval `(define-list-record ,rec-name ,fld-specs)
+    (eval `(define-list-record ,rec-name ',fld-specs)
 	  (interaction-environment))
     (let ((constructor-name (make-record-constructor-name rec-name))
 	  (legacy-constructor-name (symbol-append rec-name %HYPHEN-SYM 'new)))

@@ -114,6 +114,11 @@
     (if (not (retrieve-im 'direct))
 	(require-module "direct"))))
 
+;; FIXME: Temporary workaround to resolve circular dependency of
+;; util.scm and light-record.scm. Record users should explicitly
+;; require light-record.scm.  -- YamaKen 2008-04-29
+(require "light-record.scm")
+
 (require "plugin.scm")
 (require "custom-rt.scm")
 (require "key.scm")

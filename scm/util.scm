@@ -218,51 +218,6 @@
 	   (definition (list 'lambda args body)))
       (eval definition another-env))))
 
-;; See test/test-util.scm to know what define-record does.
-;; rec-spec requires list of list rather than alist to keep
-;; extensibility (e.g. (nth 2 spec) and so on may be used)
-(define define-record
-  (lambda (rec-sym rec-spec)
-    (for-each (lambda (spec index)
-		(let* ((elem-sym (list-ref spec 0))
-		       (default  (list-ref spec 1))
-		       (getter-sym (symbol-append rec-sym hyphen-sym elem-sym))
-		       (getter (lambda (rec)
-				 (list-ref rec index)))
-		       (setter-sym (symbol-append
-				    rec-sym hyphen-sym 'set- elem-sym '!))
-		       (setter (lambda (rec val)
-				 (set-car! (list-tail rec index)
-					   val))))
-		  (eval (list 'define getter-sym getter)
-			(interaction-environment))
-		  (eval (list 'define setter-sym setter)
-			(interaction-environment))))
-	      rec-spec
-	      (iota (length rec-spec)))
-    (let ((creator-sym (symbol-append rec-sym hyphen-sym 'new))
-	  (creator (let ((defaults (map cadr rec-spec)))
-		     (lambda init-lst
-		       (cond
-			((null? init-lst)
-			 (list-copy defaults))
-			;; fast path
-			((= (length init-lst)
-			    (length defaults))
-			 (list-copy init-lst))
-			;; others
-			((< (length init-lst)
-			    (length defaults))
-			 (let* ((rest-defaults (list-tail defaults
-							  (length init-lst)))
-				(complemented-init-lst (append init-lst
-							       rest-defaults)))
-			   (list-copy complemented-init-lst)))
-			(else
-			 #f))))))
-      (eval (list 'define creator-sym creator)
-	    (interaction-environment)))))
-
 ;; for direct candidate selection
 (define number->candidate-index
   (lambda (n)
