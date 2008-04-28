@@ -200,7 +200,7 @@
     (and-let* ((module-not-exists? (not (plugin-list-query module-name)))
 	       (lib-path (find-module-lib-path uim-plugin-lib-load-path
 					       module-name))
-	       (proc-ptrs (module-bind lib-path))
+	       (proc-ptrs (%%dynlib-bind lib-path))
 	       (library-ptr (car proc-ptrs))
 	       (init-proc (car (cdr proc-ptrs)))
 	       (quit-proc (car (cdr (cdr proc-ptrs))))
@@ -225,7 +225,7 @@
 	       (library-ptr (plugin-list-query-library module-name))
 	       (init-proc (plugin-list-query-instance-init module-name))
 	       (quit-proc (plugin-list-query-instance-quit module-name)))
-	      (module-unbind library-ptr init-proc quit-proc)
+	      (%%dynlib-unbind library-ptr init-proc quit-proc)
 	      (plugin-list-delete module-name) #t)))
 
 (define module-unload-all

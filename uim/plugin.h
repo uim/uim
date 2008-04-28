@@ -39,8 +39,12 @@
 extern "C" {
 #endif
 
-void uim_plugin_instance_init(void);
-void uim_plugin_instance_quit(void);
+void uim_dynlib_instance_init(void);
+void uim_dynlib_instance_quit(void);
+
+/* Temporary backward compatibility */
+#define uim_plugin_instance_init uim_dynlib_instance_init
+#define uim_plugin_instance_quit uim_dynlib_instance_quit
 
 #ifdef __cplusplus
 }

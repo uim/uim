@@ -135,7 +135,7 @@ uim_init_internal(void *dummy)
 #endif
   uim_init_key_subrs();
   uim_init_rk_subrs();
-  uim_init_plugin();
+  uim_init_dynlib();
 #ifdef ENABLE_ANTHY_STATIC
   uim_anthy_plugin_instance_init();
 #endif
@@ -170,7 +170,6 @@ uim_quit(void)
     return;
   }
 
-  uim_quit_plugin();
 #ifdef ENABLE_ANTHY_STATIC
   uim_anthy_plugin_instance_quit();
 #endif
@@ -180,6 +179,8 @@ uim_quit(void)
 #if UIM_USE_NOTIFY
   uim_notify_quit();
 #endif
+  uim_scm_callf("module-unload-all", "");
+  uim_quit_dynlib();
   uim_scm_quit();
   uim_initialized = UIM_FALSE;
 }

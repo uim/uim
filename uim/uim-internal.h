@@ -150,8 +150,8 @@ void     uim_catch_error_end(void);
 /* throw recoverable error */
 void    uim_throw_error(const char *msg);
 
-void uim_init_plugin(void);
-void uim_quit_plugin(void);
+void uim_init_dynlib(void);
+void uim_quit_dynlib(void);
 
 void uim_init_im_subrs(void);
 void uim_init_key_subrs(void);
