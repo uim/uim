@@ -70,10 +70,12 @@
 ;; <default value> ::= <any Scheme object>
 
 (require-extension (srfi 1 23))
-;;(require-extension (srfi 43))  ;; vector-copy
+(cond-expand
+ (uim)
+ (else
+  (require-extension (srfi 43)))) ;; vector-copy
 
 (require "util.scm")
-;;(require "./util")
 
 
 (define %HYPHEN-SYM (string->symbol "-"))

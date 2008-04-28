@@ -30,9 +30,10 @@
 ;;  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (require-extension (unittest))
-(set! *test-track-progress* #t)
 
 (require "light-record.scm")
+
+(set! *test-track-progress* #f)
 
 (define dummy (lambda () (+ 1 2) #f))
 
