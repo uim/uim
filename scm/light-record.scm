@@ -1,6 +1,6 @@
 ;;; light-record.scm: Lightweight record types
 ;;;
-;;; Copyright (c) 2007 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2007-2008 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -151,8 +151,8 @@
 					(set-car! (cdr l) v)))
 		((2 . ,%list-set!) . ,(lambda (l v)
 					(set-car! (cddr l) v))))))
-    (lambda (index accessor)
-      (let ((pool-key (cons index accessor)))
+    (lambda (index key accessor)
+      (let ((pool-key (cons index key)))
 	(cond
 	 ((assoc pool-key pool) => cdr)
 	 (else
@@ -163,25 +163,23 @@
   (lambda (index record-ref)
     (let ((getter (lambda (rec)
 		    (record-ref rec index))))
-      (%retrieve-record-accessor index getter))))
+      (%retrieve-record-accessor index record-ref getter))))
 
 (define %make-record-setter
   (lambda (index record-set!)
     (let ((setter (lambda (rec val)
 		    (record-set! rec index val))))
-      (%retrieve-record-accessor index setter))))
+      (%retrieve-record-accessor index record-set! setter))))
 
 (define-macro %define-record-getter
   (lambda (rec-name fld-name index record-ref)
-    (let ((getter-name (make-record-getter-name rec-name fld-name))
-	  (getter      (%make-record-getter index record-ref)))
-      `(define ,getter-name ,getter))))
+    (let ((getter-name (make-record-getter-name rec-name fld-name)))
+      `(define ,getter-name (%make-record-getter ,index ,record-ref)))))
 
 (define-macro %define-record-setter
   (lambda (rec-name fld-name index record-set!)
-    (let ((setter-name (make-record-setter-name rec-name fld-name))
-	  (setter      (%make-record-setter index record-set!)))
-      `(define ,setter-name ,setter))))
+    (let ((setter-name (make-record-setter-name rec-name fld-name)))
+      `(define ,setter-name (%make-record-setter ,index ,record-set!)))))
 
 ;;(define-macro %define-record-accessors
 ;;  (lambda (rec-name fld-specs record-ref record-set!)
@@ -206,8 +204,8 @@
        ;; define record object duplicator
        (define ,(make-record-duplicator-name rec-name) ,record-copy)
        ;; define record field accessors
-       (cons 'begin
-	     ,(map (lambda (fld-name index)
+       ,(cons 'begin
+	      (map (lambda (fld-name index)
 		     `(begin
 			(%define-record-getter ,rec-name ,fld-name ,index
 					       ,record-ref)
