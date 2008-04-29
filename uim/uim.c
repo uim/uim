@@ -125,6 +125,10 @@ uim_init_internal(void *dummy)
   uim_scm_gc_protect(&protected0);
   uim_scm_gc_protect(&protected1);
 
+  /* To allow (cond-expand (uim ...)) in early initialization stages,
+   * provision of the "uim" should be performed as early as possible. */
+  uim_scm_callf("provide", "s", "uim");
+
   uim_init_im_subrs();
   uim_init_intl_subrs();
   uim_init_posix_subrs();
@@ -152,7 +156,6 @@ uim_init_internal(void *dummy)
   uim_scm_set_lib_path(scm_files);
 
   uim_scm_require_file("init.scm");
-  uim_scm_callf("provide", "s", "uim");
 
   uim_initialized = UIM_TRUE;
 
