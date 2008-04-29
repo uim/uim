@@ -60,9 +60,9 @@ The changes are described below in most recently updated order.
 Summary: Feature provision of 'uim'
 Affects: uim developers, IM developers
 Updates:
-Version: 1.5.0-beta
-Revision: ac5370
-Date: 2008-03-31
+Version: 1.5.0
+Revision: ac5370, ac5464
+Date: 2008-03-31, 2008-04-29
 Modifier: YamaKen
 Related:
 URL:
