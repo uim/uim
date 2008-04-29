@@ -64,6 +64,10 @@
       (write s p)
       (get-output-string p))))
 
+;; TODO: write test
+(define number->symbol
+  (compose string->symbol number->string))
+
 ;; procedural 'or' for use with 'apply'
 ;; e.g. (apply proc-or boolean-lst)
 ;; should be deprecated and replaced with a proper, Schemer's way
@@ -95,6 +99,21 @@
   (lambda (lst start len)
     (take (drop lst start)
 	  len)))
+
+;;; Merged from composer branch
+;;; TODO: Merge with trunk, write test
+;;;
+;;(define sublist
+;;  (lambda (lst start end)
+;;    (list-tail (list-head lst (+ end 1))
+;;	       start)))
+;;
+;;;; .parameter len Length to get. -1 means end of original lst
+;;(define sublist-rel
+;;  (lambda (lst start len)
+;;    (if (negative? len)
+;;	(list-tail lst start)
+;;	(sublist lst start (+ start len)))))
 
 (define alist-replace
   (lambda (kons alist)
@@ -176,6 +195,13 @@
     (max bottom
 	 (min x ceiling))))
 
+(define inc
+  (lambda (n)
+    (+ n 1)))
+
+(define dec
+  (lambda (n)
+    (- n 1)))
 
 ;;
 ;; uim-specific utilities
@@ -229,6 +255,17 @@
       (- n 1))
      (else
       n))))
+
+;; TODO: write test
+;; Compensates an index number for an enumerable container
+;; .parameter idx Item index. Negative value instructs (abs idx)
+;; items before from last item
+;; .parameter size Size of the enumerable container
+(define compensate-index
+  (lambda (idx size)
+    (if (negative? idx)
+        (max 0 (+ size idx))
+        (clamp idx 0 (dec size)))))
 
 ;; update style-element vars
 ;; style-spec requires list of (style-element-name . validator)
