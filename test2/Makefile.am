@@ -3,7 +3,8 @@
 uim_tests = \
         test-fail.scm \
         test-light-record.scm \
-        test-template.scm
+        test-template.scm \
+        test-wlos.scm
 uim_optional_tests =
 uim_xfail_tests = test-fail.scm
 

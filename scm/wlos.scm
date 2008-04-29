@@ -1,6 +1,6 @@
 ;;; wlos.scm: Wacky Lightweight Object System
 ;;;
-;;; Copyright (c) 2007 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2007-2008 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -113,14 +113,37 @@
 ;;   objects. This feature is the main reason why WLOS is named as
 ;;   'wacky'.
 
+;; API
+;;
+;; class:
+;; - (define-class name super fld-specs+ method-names+)
+;; - (class-superclass klass)
+;; - (class-is-a? klass another)
+;; - (class-find-method klass method-name)
+;; - (class-set-method! klass method-name proc)
+;;
+;; mehtod:
+;; - (make-method-dispatcher-name class-name method-name)
+;; - (make-method-dispatcher klass method-name)
+;; - (make-call-by-name-method-dispatcher method-name)
+;; - (call-method method-name . self.args)
+;; - (call-supermethod method-name . self.args)
+;; - (method-fold obj . method-forms)
+;;
+;; object:
+;; - (object-superclass self)
+;; - (object-is-a? self klass)
+;; - (object-derive self)
 
 (require-extension (srfi 1 23))
-;;(require-extension (srfi 43))  ;; vector-copy, vector-index, vector-append
+;; vector-copy, vector-index, vector-append
+(cond-expand
+ (uim)
+ (else
+  (require-extension (srfi 43))))
 
 (require "util.scm")  ;; safe-car, symbol-append
-(require "ng/light-record.scm")
-;;(require "./util")
-;;(require "./light-record")
+(require "light-record.scm")
 
 
 (define %HYPHEN-SYM (string->symbol "-"))
@@ -164,6 +187,7 @@
 
 (define %class-method-index
   (lambda (klass method-name)
+    ;; FIXME: replace with faster implementation
     (vector-index (lambda (x)
 		    (eq? x method-name))
 		  (class-method-names klass))))
@@ -359,76 +383,3 @@
 	  (singleton-class (vector-copy (object-class self))))
       (object-set-class! derived singleton-class)
       derived)))
-
-
-;;
-;; Examples
-;;
-
-(define-class comparable object
-  '()
-  '(<
-    <=
-    >
-    >=))
-
-(define-class comparable-number-str comparable
-  '(value)
-  '())
-
-(define make-comparable-number-str-compare
-  (lambda (compare)
-    (lambda (self other)
-      (compare (string->number (comparable-number-str-value self))
-	       (string->number (comparable-number-str-value other))))))
-
-(class-set-method! comparable-number-str equal?
-		   (make-comparable-number-str-compare =))
-
-(class-set-method! comparable-number-str <
-		   (make-comparable-number-str-compare <))
-
-(class-set-method! comparable-number-str <=
-		   (make-comparable-number-str-compare <=))
-
-(class-set-method! comparable-number-str >
-		   (make-comparable-number-str-compare >))
-
-(class-set-method! comparable-number-str >=
-		   (make-comparable-number-str-compare >=))
-
-(define ok
-  (lambda ()
-    (display "OK")
-    (newline)
-    #t))
-
-(define foo (make-comparable-number-str "31"))
-(define bar (make-comparable-number-str "153"))
-
-;; call by index
-(and (comparable-<  foo bar)
-     (comparable-<= foo bar)
-     (comparable->  bar foo)
-     (comparable->= bar foo)
-     (not (comparable-equal? foo bar))
-     (comparable-equal? foo (object-copy foo))
-     (ok))
-
-;; call by name
-(and (call-method '<  foo bar)
-     (call-method '<= foo bar)
-     (call-method '>  bar foo)
-     (call-method '>= bar foo)
-     (not (call-method 'equal? foo bar))
-     (call-method 'equal? foo (object-copy foo))
-     (ok))
-
-(require-extension (srfi 95))
-(define comparables
-  (map make-comparable-number-str
-       '("3" "-5" "13" "-1" "0" "43")))
-(define sorted (sort comparables comparable-<))
-(and (equal? '("-5" "-1" "0" "3" "13" "43")
-	     (map comparable-number-str-value sorted))
-     (ok))

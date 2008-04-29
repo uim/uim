@@ -1,4 +1,4 @@
-;;  test-template.scm: Unit tests for light-record.scm
+;;  test-light-record.scm: Unit tests for light-record.scm
 ;;
 ;;; Copyright (c) 2008 uim Project http://code.google.com/p/uim/
 ;;
