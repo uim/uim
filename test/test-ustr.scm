@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 5329 (new repository)
+;; These tests are passed at revision 5469 (new repository)
 
 (use test.unit)
 
@@ -69,14 +69,14 @@
 
   ("test ustr-new"
    ;; single sequence goes into former
-   (assert-equal '(("o" "l" "l" "e" "h") ())
+   (assert-equal '(("o" "l" "l" "e" "h") . ())
 		 (uim '(ustr-new '("h" "e" "l" "l" "o"))))
    ;; dual sequences are go into former and latter
-   (assert-equal '(("l" "e" "h") ("l" "o"))
+   (assert-equal '(("l" "e" "h") . ("l" "o"))
 		 (uim '(ustr-new '("h" "e" "l")
 				 '("l" "o"))))
    ;; latter sequence only
-   (assert-equal '(() ("h" "e" "l" "l" "o"))
+   (assert-equal '(() . ("h" "e" "l" "l" "o"))
 		 (uim '(ustr-new ()
 				 '("h" "e" "l" "l" "o")))))
 
@@ -290,7 +290,7 @@
    (assert-false (uim-bool '(ustr-empty? ustrj-f)))
    (assert-false (uim-bool '(ustr-empty? ustrj-l)))
 
-   (assert-equal '(() ())
+   (assert-equal '(() . ())
 		 (uim 'ustre))
    (assert-true  (uim-bool '(ustr-empty? ustre))))
 

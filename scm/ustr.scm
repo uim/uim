@@ -46,19 +46,24 @@
 ;; private accessors for use in ustr.scm. Users of ustr should use
 ;; ustr-former-seq, ustr-set-former-seq!, ustr-latter-seq and
 ;; ustr-set-latter-seq! instead.
-(define ustr-rec-spec
-  '((former ())  ;; reversed order
-    (latter ())))
-(define-record 'ustr ustr-rec-spec)
-(define ustr-new-internal ustr-new)
+
+;;(define ustr-rec-spec
+;;  '((former ())  ;; reversed order
+;;    (latter ())))
+;;(define-record 'ustr ustr-rec-spec)
+;;(define ustr-new-internal ustr-new)
+(define ustr-former car)
+(define ustr-set-former! set-car!)
+(define ustr-latter cdr)
+(define ustr-set-latter! set-cdr!)
 
 (define ustr-new
   (lambda args
-    (let* ((former-seq (and (not (null? args))
-			    (car args)))
-	   (latter-seq (and (not (null? (cdr args)))
-			    (cadr args)))
-	   (ustr (ustr-new-internal)))
+    (let ((former-seq (and (not (null? args))
+			   (car args)))
+	  (latter-seq (and (not (null? (cdr args)))
+			   (cadr args)))
+	  (ustr (cons () ())))
       (and former-seq
 	   (ustr-set-former-seq! ustr former-seq))
       (and latter-seq
@@ -109,6 +114,14 @@
   (lambda (ustr other)
     (ustr-set-former! ustr (ustr-former other))
     (ustr-set-latter! ustr (ustr-latter other))))
+
+;; TODO: write test 
+;; TODO: Rename to ustr-copy to conform to the standard naming
+;; convention of light-record.scm.
+(define ustr-dup
+  (lambda (ustr)
+    (cons (ustr-former ustr)
+	  (ustr-latter ustr))))
 
 ;; ignores cursor position
 (define ustr=
