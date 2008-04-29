@@ -64,10 +64,6 @@
       (write s p)
       (get-output-string p))))
 
-;; TODO: write test
-(define number->symbol
-  (compose string->symbol number->string))
-
 ;; procedural 'or' for use with 'apply'
 ;; e.g. (apply proc-or boolean-lst)
 ;; should be deprecated and replaced with a proper, Schemer's way
@@ -202,6 +198,10 @@
 (define dec
   (lambda (n)
     (- n 1)))
+
+;; TODO: write test
+(define number->symbol
+  (compose string->symbol number->string))
 
 ;;
 ;; uim-specific utilities
