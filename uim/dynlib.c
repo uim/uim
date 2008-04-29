@@ -153,7 +153,7 @@ dynlib_bind_internal(uim_lisp name)
   dynlib_instance_quit
     = (void (*)(void))dlfunc(library, "uim_dynlib_instance_quit");
   if (!dynlib_instance_init) {
-    uim_notify_fatal(N_("dynlib: %s: Initialize failed."), REFER_C_STR(name));
+    uim_notify_fatal(N_("dynlib: %s: Initialization failed."), REFER_C_STR(name));
     return uim_scm_f();
   }
 	
