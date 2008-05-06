@@ -116,7 +116,6 @@ release, you have to repeat the following procedure at least three times.
 
    http://code.google.com/p/uim/
    http://code.google.com/p/uim/wiki/FrontPage
-   http://code.google.com/p/uim/wiki/UimDownload
 
    Update FrontPage first and copy it into the project description
    (homepage).
@@ -131,7 +130,7 @@ release, you have to repeat the following procedure at least three times.
 
    <write announcement here>
    
-     http://code.google.com/p/uim/wiki/UimDownload
+     http://code.google.com/p/uim/downloads/
 
    MD5 (uim-1.4.0-example.tar.gz) = cff14a6ad95a6a1303b527a86d27bff4
    MD5 (uim-1.4.0-example.tar.bz2) = b2e96af101a0c51df697990f6311f6f2
