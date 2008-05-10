@@ -33,6 +33,8 @@
 ;; - write test
 ;; - describe naming conventions and standard actions such as act_std_commit
 
+(require-extension (srfi 2))
+
 (require "util.scm")
 (require "i18n.scm")
 (require "event.scm")
@@ -133,9 +135,8 @@
 ;; as appropriate different figure.
 (define action-status
   (lambda (act)
-    (let ((proc (action-status-proc act)))
-      (and proc
-	   (proc act)))))
+    (and-let* ((proc (action-status-proc act)))
+      (proc act))))
 
 ;; usage: (action-status-encoder-selected anthy-direct-mode?)
 (define action-status-encoder-selected
@@ -178,19 +179,17 @@
 
 (define actionset-fetch-action
   (lambda (actset owner act-id)
-    (let ((skeleton (actionset-fetch-action-skeleton actset)))
-      (and skeleton
-	   (action-skeleton-bless skeleton owner)))))
+    (and-let* ((skeleton (actionset-fetch-action-skeleton actset act-id)))
+      (action-skeleton-bless skeleton owner))))
 
 (define actionset-handle-event
   (lambda (actset owner ev)
     (and actset
 	 (case (event-type ev)
 	   ((action)
-	    (let* ((act-id (action-event-action-id ev))
-		   (act (actionset-fetch-action actset owner act-id)))
-	      (and act
-		   (action-activate! act))))
+	    (and-let* ((act-id (action-event-action-id ev))
+		       (act (actionset-fetch-action actset owner act-id)))
+	      (action-activate! act)))
 
 	   (else
 	    #f)))))

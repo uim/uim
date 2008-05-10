@@ -34,6 +34,8 @@
 ;; component organization such as nested composer (input method) based
 ;; on loose relationships.  -- YamaKen 2005-02-18
 
+(require-extension (sscm-ext))
+
 (require "util.scm")
 ;;(require "utext.scm")
 (require "ng-key.scm")
@@ -78,23 +80,20 @@
 ;; define-record
 ;; TODO: write test
 (define define-event
-  (lambda args
-    (let* ((name (car args))
-           (base-spec (alist-replace (list 'type name)
-                                     (cadr args)))
-           (ext-spec (if (null? (cddr args))
-			 '()
-			 (car (cddr args))))
-           (base-defaults (map cadr base-spec))
-           (ext-defaults (map cadr ext-spec))
-           (creator (lambda args
-                      (append base-defaults
-                              args
-                              (list-tail ext-defaults (length args))))))
-      (define-record (symbolconc name %HYPHEN-SYM 'event) (append base-spec ext-spec))
-      (eval (list 'define (symbolconc name %HYPHEN-SYM 'event-new) creator)
-	    (interaction-environment))
-      (set! valid-event-types (cons name valid-event-types)))))
+  (lambda (name base-spec . rest)
+    (let-optionals* rest ((ext-spec ()))
+      (let* ((base-spec (alist-replace (list 'type name) base-spec))
+	     (base-defaults (map record-field-spec-default-value base-spec))
+	     (ext-defaults (map record-field-spec-default-value ext-spec))
+	     (creator (lambda args
+			(append base-defaults
+				args
+				(list-tail ext-defaults (length args))))))
+	(define-record (symbol-append name %HYPHEN-SYM 'event)
+	  (append base-spec ext-spec))
+	(eval (list 'define (symbol-append name %HYPHEN-SYM 'event-new) creator)
+	      (interaction-environment))
+	(set! valid-event-types (cons name valid-event-types))))))
 
 (define event-external-state
   (lambda (ev state-id)
@@ -288,5 +287,5 @@
 (define key-event-print-inspected
   (lambda (msg ev)
     (if inspect-key-event-translation?
-	(puts (string-append msg
-			     (key-event-inspect ev))))))
+	(display (string-append msg
+				(key-event-inspect ev))))))
