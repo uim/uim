@@ -36,6 +36,11 @@
 
 (require-extension (srfi 23 34 60) (siod))
 
+;; FIXME: Temporary workaround to resolve circular dependency of
+;; util.scm, deprecated-util.scm and light-record.scm. Record users
+;; should explicitly require light-record.scm.  -- YamaKen 2008-04-29
+(require "light-record.scm")
+
 ;; Disable SIOD compatibilities.
 (undefine the-environment)
 (undefine bit-and)
@@ -113,11 +118,6 @@
     ;; must be loaded at last of IMs
     (if (not (retrieve-im 'direct))
 	(require-module "direct"))))
-
-;; FIXME: Temporary workaround to resolve circular dependency of
-;; util.scm and light-record.scm. Record users should explicitly
-;; require light-record.scm.  -- YamaKen 2008-04-29
-(require "light-record.scm")
 
 (require "plugin.scm")
 (require "custom-rt.scm")
