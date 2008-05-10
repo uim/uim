@@ -70,28 +70,28 @@
     mod_ignore_Super
     mod_ignore_Hyper))
 
-(define mod_None           0)     
-(define mod_Shift_L        1)     
-(define mod_Shift_R        2)     
-(define mod_Shift          4)     
-(define mod_Control_L      8)     
-(define mod_Control_R      16)    
-(define mod_Control        32)    
-(define mod_Alt_L          64)    
-(define mod_Alt_R          128)   
-(define mod_Alt	           256)   
-(define mod_Meta_L         512)   
-(define mod_Meta_R         1024)  
-(define mod_Meta           2048)  
-(define mod_Super_L        4096)  
-(define mod_Super_R        8192)  
-(define mod_Super          16384) 
-(define mod_Hyper_L        32768) 
-(define mod_Hyper_R        65536) 
+(define mod_None           0)
+(define mod_Shift_L        1)
+(define mod_Shift_R        2)
+(define mod_Shift          4)
+(define mod_Control_L      8)
+(define mod_Control_R      16)
+(define mod_Control        32)
+(define mod_Alt_L          64)
+(define mod_Alt_R          128)
+(define mod_Alt	           256)
+(define mod_Meta_L         512)
+(define mod_Meta_R         1024)
+(define mod_Meta           2048)
+(define mod_Super_L        4096)
+(define mod_Super_R        8192)
+(define mod_Super          16384)
+(define mod_Hyper_L        32768)
+(define mod_Hyper_R        65536)
 (define mod_Hyper          131072)
 (define mod_Caps_Lock      262144)
-;;(define  524288)  
-;;(define  1048576) 
+;;(define  524288)
+;;(define  1048576)
 (define mod_ignore_Shift   2097152)
 (define mod_ignore_Control 4194304)
 (define mod_ignore_Alt     8388608)
@@ -182,7 +182,7 @@
     lkey_Page_Down
     lkey_End
     lkey_Insert
-			   
+
     lkey_Shift_L
     lkey_Shift_R
     lkey_Control_L
@@ -380,7 +380,7 @@
 
 ;; added on demand
 (define valid-physical-keys '(pkey_VoidSymbol))
-    
+
 ;; API
 (define physical-key?
   (lambda (key)
