@@ -105,7 +105,8 @@ libquiminputcontextplugin_la_SOURCES = \
 	immodule-subwindow.cpp immodule-subwindow.h
 libquiminputcontextplugin_la_CXXFLAGS = $(QT_CXXFLAGS) @X_CFLAGS@
 libquiminputcontextplugin_la_LDFLAGS  = $(QT_LDFLAGS) -avoid-version
-libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim-scm.la \
+libquiminputcontextplugin_la_LIBADD   = $(top_builddir)/uim/libuim-counted-init.la \
+					$(top_builddir)/uim/libuim-scm.la \
 					$(top_builddir)/uim/libuim.la
 if LIBUIM_X_UTIL
 libquiminputcontextplugin_la_LIBADD  += $(top_builddir)/uim/libuim-x-util.la
@@ -182,7 +183,8 @@ uim_pref_qt_SOURCES = \
 
 uim_pref_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_pref_qt_LDFLAGS  = $(QT_LDFLAGS)
-uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-custom.la \
+uim_pref_qt_LDADD    = $(top_builddir)/uim/libuim-counted-init.la \
+		       $(top_builddir)/uim/libuim-custom.la \
 		       $(top_builddir)/uim/libuim-scm.la \
 		       $(top_builddir)/uim/libuim.la
 

@@ -59,6 +59,7 @@
 #include <qmessagebox.h>
 #include <qsettings.h>
 
+#include "uim/counted-init.h"
 #include "qtgettext.h"
 
 #include <stdlib.h>
@@ -70,7 +71,7 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
     : QDialog( parent, name ),
       m_isValueChanged( false )
 {
-    uim_init();
+    uim_counted_init();
     if (uim_custom_enable()) {
         checkDotUimFile();        
         setupWidgets();
@@ -78,7 +79,7 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
 #if defined(ENABLE_DEBUG)
         qDebug("uim_custom_enable() failed.");
 #endif
-        uim_quit();
+        uim_counted_quit();
         QApplication::exit( -1 );
     }
 
@@ -87,7 +88,7 @@ UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
 
 UimPrefDialog::~UimPrefDialog()
 {
-    uim_quit();
+    uim_counted_quit();
 }
 
 void UimPrefDialog::checkDotUimFile()

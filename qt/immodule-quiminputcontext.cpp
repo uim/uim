@@ -375,27 +375,6 @@ QUimInputContext * QUimInputContext::focusedIC()
     return focusedInputContext;
 }
 
-void QUimInputContext::reloadUim()
-{
-    QUimInputContext *ic;
-    QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
-
-    for ( ic = contextList.first(); ic; ic = contextList.next() )
-    {
-        ic->reset();
-        uim_release_context( ic->m_uc );
-    }
-
-    uim_quit();
-    uim_init();
-    infoManager->initUimInfo();
-
-    for ( ic = contextList.first(); ic; ic = contextList.next() )
-    {
-        ic->m_uc = ic->createUimContext( ic->m_imname );
-    }
-}
-
 void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont * /* f */)
 {
 #ifdef ENABLE_DEBUG
