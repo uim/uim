@@ -91,8 +91,8 @@
 	      "    (" (symbol->string name) "\n"
 	      "     \"" (im-lang im) "\"\n"
 	      "     \"" (im-encoding im) "\"\n"
-	      "     \"" (im-name-label im) "\"\n"
-	      "     \"" (im-short-desc im) "\"\n"
+	      "     " (string-escape (im-name-label im)) "\n"
+	      "     " (string-escape (im-short-desc im)) "\n"
 	      "     \"" (im-module-name im) "\")\n"
 	      )))
 	 im-names)))
