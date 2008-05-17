@@ -208,8 +208,7 @@ prime_send_command(uim_lisp str_)
       return MAKE_STR("error\n\t\n");
   } else {
     char *buf;
-    if (uim_asprintf(&buf, "%s\n", str) < 0 || buf == NULL)
-      return MAKE_STR("");
+    uim_asprintf(&buf, "%s\n", str);
     result = uim_ipc_send_command(&prime_pid, &primer, &primew, prime_command,
 				  buf);
     free(buf);
@@ -241,8 +240,7 @@ prime_lib_init(uim_lisp use_udp_)
     prime_fd = prime_init_ud(prime_ud_path);
     if (prime_fd == -1) {
       unlink(prime_ud_path);
-      if (uim_asprintf(&option, "-u %s", prime_ud_path) < 0 || option == NULL)
-	return uim_scm_f();
+      uim_asprintf(&option, "-u %s", prime_ud_path);
       prime_pid = uim_ipc_open_command_with_option(prime_pid, &primer, &primew,
 						   prime_command, option);
       free(option);

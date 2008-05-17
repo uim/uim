@@ -209,10 +209,7 @@ mana_eval(uim_lisp buf_)
   fflush(log);
 #endif
 
-  if (uim_asprintf(&eval_buf, "'%s", ret_buf) < 0 || eval_buf == NULL) {
-    free(ret_buf);
-    return uim_scm_f();
-  }
+  uim_asprintf(&eval_buf, "'%s", ret_buf);
   ret = uim_scm_eval_c_string(eval_buf);
   free(ret_buf);
   free(eval_buf);

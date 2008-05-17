@@ -98,10 +98,9 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1); \
     if (form_size != -1) { \
-      if(uim_asprintf(&buf, sexp_tmpl, arg1) > 0 && buf != NULL) { \
-        UIM_EVAL_STRING_INTERNAL(uc, buf); \
-        free(buf); \
-      } \
+      uim_asprintf(&buf, sexp_tmpl, arg1); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
     } \
   }
 
@@ -111,10 +110,9 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2); \
     if (form_size != -1) { \
-      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2) > 0 && buf != NULL) { \
-        UIM_EVAL_STRING_INTERNAL(uc, buf); \
-        free(buf); \
-      } \
+      uim_asprintf(&buf, sexp_tmpl, arg1, arg2); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
     } \
   }
 
@@ -124,10 +122,9 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3); \
     if (form_size != -1) { \
-      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3) > 0 && buf != NULL) { \
-        UIM_EVAL_STRING_INTERNAL(uc, buf); \
-        free(buf); \
-      } \
+      uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
     } \
   }
 
@@ -137,12 +134,9 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4); \
     if (form_size != -1) { \
-      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3, arg4) > 0 && \
-         buf != NULL) \
-      { \
-        UIM_EVAL_STRING_INTERNAL(uc, buf); \
-        free(buf); \
-      } \
+      uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3, arg4); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
     } \
   }
 
@@ -152,12 +146,9 @@
     char *buf; \
     form_size = uim_sizeof_sexp_str(sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
     if (form_size != -1) { \
-      if(uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3, arg4, arg5) > 0 && \
-         buf != NULL) \
-      { \
-        UIM_EVAL_STRING_INTERNAL(uc, buf); \
-        free(buf); \
-      } \
+      uim_asprintf(&buf, sexp_tmpl, arg1, arg2, arg3, arg4, arg5); \
+      UIM_EVAL_STRING_INTERNAL(uc, buf); \
+      free(buf); \
     } \
   }
 
@@ -1304,12 +1295,17 @@ uim_custom_broadcast(void)
   for (sym = custom_syms; *sym; sym++) {
     value = uim_custom_value_as_literal(*sym);
     if (value) {
-      if(uim_asprintf(&msg, custom_msg_tmpl, *sym, value) < 0 || msg == NULL)
-      {
+#if 1
+      uim_asprintf(&msg, custom_msg_tmpl, *sym, value);
+#else
+      /* old behavior: useless since other memory exhaustions disable uim */
+      if (asprintf(&msg, custom_msg_tmpl, *sym, value) < 0 || !msg) {
+	free(msg);
 	free(value);
 	uim_custom_symbol_list_free(custom_syms);
 	return UIM_FALSE;
       }
+#endif
       uim_helper_send_message(helper_fd, msg);
       free(msg);
       free(value);
