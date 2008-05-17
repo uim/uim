@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: uim 1.4.0\n"
+"Project-Id-Version: uim 1.5.1\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2008-03-30 06:19+0900\n"
-"PO-Revision-Date: 2007-03-27 01:28+0900\n"
+"PO-Revision-Date: 2008-05-17 12:32+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
