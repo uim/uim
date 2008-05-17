@@ -401,7 +401,6 @@ c_list_to_str(const void *const *list, char *(*mapper)(const void *elem), const 
     free(str);
   }
   buf = (char *)malloc(buf_size);
-  buf[0] = '\0';
 
   for (bufp = buf, elem = list; *elem; elem++) {
     if (elem != list) {
