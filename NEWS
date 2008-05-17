@@ -2,8 +2,12 @@ Overview of changes from 1.5.0 to 1.5.1
 =======================================
 * Fixes
   - uim Scheme library
-    * Fix unescaped strings in generated loader.scm which causes uim
-      initialization error on m17n-vi-han (bug #15901)
+    * [CRITICAL] Fix unescaped strings in generated loader.scm which
+      causes uim initialization error on m17n-vi-han (bug #15901)
+
+  - uim-pref-qt
+    * [CRITICAL] Fix improper uim initialization which causes
+      uim-pref-qt unworking (bug #15853)
 
 
 Overview of changes from 1.5.0-beta2 to 1.5.0
