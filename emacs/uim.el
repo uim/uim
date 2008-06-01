@@ -64,7 +64,7 @@
   (if (not (assq 'uim-mode minor-mode-map-alist))
       (setq minor-mode-map-alist
 	    (cons
-	     (cons 'uim-mode uim-mode-map)
+	     (cons 'uim-mode nil)
 	     minor-mode-map-alist))))
 
 
@@ -183,6 +183,20 @@
 ;; Focused 
 ;;
 (defun uim-focused ()
+  (if uim-preedit-keymap-enabled
+      (progn
+	;; If preedit strings and/or candidates are displayed,
+	;; other keymaps of minor-mode-map-alist should be disabled.
+	;; Since minor-mode-map-alist is not a buffer local variable, 
+	;; we must re-enable the other keymaps of minor-mode-map-alist
+	;; when the focus has moved to other buffer.
+	;; So, we also need to re-disable other keymaps of minor-mode-map-alist
+	;; when the focus has move to a buffer which have
+	;; preedit strings and/or candidates.
+	(uim-disable-other-minor-mode-map)
+	(uim-enable-preedit-keymap))
+    (uim-enable-mode-keymap))
+
   (uim-change-process-encoding uim-decoding-code)
   (setq uim-focused-buffer (current-buffer))
   (uim-do-send-recv-cmd (format "%d FOCUSED" uim-context-id))
@@ -196,6 +210,9 @@
   ;; don't send a message to uim-el-agent if it has been dead
   (if uim-el-agent-process
       (uim-do-send-recv-cmd (format "%d UNFOCUSED" uim-context-id)))
+  ;; Enable other keymaps of minor-mode-map-alist.  See uim-focused.
+  (if uim-preedit-keymap-enabled
+      (uim-enable-other-minor-mode-map))
   )
 
 
@@ -1116,6 +1133,7 @@
 (defun uim-enter-preedit-mode ()
   ;; change keymap and freeze faces at first time
   (uim-enable-preedit-keymap)
+  (uim-disable-other-minor-mode-map)
   (when (= (minibuffer-depth) 0)
     (uim-freeze-buffer)
     (setq uim-buffer-read-only buffer-read-only)
@@ -1431,6 +1449,7 @@
 
   ;; initialize minor-mode
   (uim-init-minor-mode)
+  (uim-enable-mode-keymap)
 
   ;; initialize keymap
   (uim-init-keymap)
