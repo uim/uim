@@ -206,13 +206,10 @@ read_command()
   debug_printf(DEBUG_NOTE, "read command\n");
 
   do {
-	if ((len = read(STDIN_FILENO, rbuf, sizeof(rbuf) - 1)) == -1 || len == 0) {
-	  rbuf[0] = '\n';
-	  rbuf[1] = '\0';
-	  len = 1;
+	if ((len = read(STDIN_FILENO, rbuf, sizeof(rbuf) - 1)) == -1)
 	  debug_printf(DEBUG_NOTE, "stdin has corrupted\n");
-	} else
-	  rbuf[len] = '\0';
+
+	rbuf[len] = '\0';
 
 	if (strlen(cmdbuf) + len + 1 > cmdbuf_len) {
 	  cmdbuf_len += DEFAULT_MESSAGE_SIZE;
