@@ -120,8 +120,10 @@ init_canna_lib(uim_lisp str_)
    * initialization is exist at beginning of create_context(). I don't
    * know why this sequence is needed at here.  -- YamaKen 2007-07-21 */
   if (rk_initialized == -1) {
-    if (RkInitialize(cannaserver) == ERR)
-      uim_fatal_error("RkInitialize() failed");
+    if (RkInitialize(cannaserver) == ERR) {
+      uim_notify_fatal("RkInitialize() failed");
+      return uim_scm_f();
+    }
     RkFinalize();
   }
 
@@ -138,8 +140,10 @@ create_context(void)
   int buflen, i;
 
   if (rk_initialized == -1) {
-    if (RkInitialize(cannaserver) == ERR)
-      uim_fatal_error("RkInitialize() failed");
+    if (RkInitialize(cannaserver) == ERR) {
+      uim_notify_fatal("RkInitialize() failed");
+      return uim_scm_f();
+    }
     rk_initialized = 1;
   }
 
