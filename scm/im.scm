@@ -246,18 +246,28 @@
 
 (define next-im
   (lambda (name)
-    (let* ((im-names (map car im-list))
+    (let* ((im-names enabled-im-list)
 	   (im-rest (memq name im-names)))
       (or (and im-rest
 	       (pair? (cdr im-rest))
 	       (cadr im-rest))
 	  (car im-names)))))
 
+(define next-im-for-switch-im
+  (lambda (name)
+    (let ((im (next-im name)))
+      (or
+       (and
+	switch-im-skip-direct-im?
+	(eq? im 'direct)
+	(next-im im))
+       im))))
+
 ;; 'switch-im' is not a API but an IM-switching method. Don't confuse with
 ;; im-switch-im
 (define switch-im
   (lambda (uc name)
-    (im-switch-im uc (next-im name))))
+    (im-switch-im uc (next-im-for-switch-im name))))
 
 ;; FIXME: Input states are kept only if the state is appeared in the
 ;; toolbar.

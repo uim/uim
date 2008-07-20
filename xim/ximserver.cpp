@@ -1105,10 +1105,6 @@ void keyState::check_key(keyEventX *x)
     if (x->state & Mod5Mask)
 	mModifier |= (gMod5Mask & mPreModState);
 
-#if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
-    mKey = uim_x_kana_input_hack_translate_key(x->key_sym,
-					       (KeyCode)x->ev.xkey.keycode);
-#endif
     if (x->key_sym < 128 && x->key_sym >= 32)
 	mKey = x->key_sym;
     else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
@@ -1165,6 +1161,10 @@ void keyState::check_key(keyEventX *x)
 	    mKey = UKey_Other;
 	}
     }
+#if UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK
+    mKey = uim_x_kana_input_hack_translate_key(mKey,
+					       (KeyCode)x->ev.xkey.keycode);
+#endif
 }
 
 bool keyState::check_compose()

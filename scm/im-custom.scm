@@ -274,34 +274,38 @@
 ;;
 ;; im-switching
 ;;
+(define-custom-group 'im-switching
+  (N_ "Input method switching")
+  (N_ "long description will be here."))
 
-;; I think that current "im-switching by hotkey" feature is not
-;; useful. So commented out them to avoid confusion of users.
-;;   -- YamaKen 2005-02-01
+(define-custom 'enable-im-switch #f
+  '(global im-switching)
+  '(boolean)
+  (N_ "Enable IM switching by hotkey")
+  (N_ "long description will be here."))
 
-;;(define-custom-group 'im-switching
-;;		     (N_ "Input method switching")
-;;		     (N_ "long description will be here."))
-;;
-;;(define-custom 'enable-im-switch #f
-;;  '(global im-switching)
-;;  '(boolean)
-;;  (N_ "Enable IM switching by hotkey")
-;;  (N_ "long description will be here."))
-;;
-;;(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
-;;  '(global im-switching)
-;;  '(key)
-;;  (N_ "IM switching key")
-;;  (N_ "long description will be here."))
-;;
-;;;; activity dependency
-;;(custom-add-hook 'switch-im-key?
-;;		 'custom-activity-hooks
-;;		 (lambda ()
-;;		   enable-im-switch))
+(define-custom 'switch-im-key '("<Control>Shift_key" "<Shift>Control_key")
+  '(global im-switching)
+  '(key)
+  (N_ "IM switching key")
+  (N_ "long description will be here."))
 
-(define-key switch-im-key? '())
+(define-custom 'switch-im-skip-direct-im? #f
+  '(global im-switching)
+  '(boolean)
+  (N_ "Skip direct method for IM switching by hotkey")
+  (N_ "long description will be here."))
+
+;; activity dependency
+(custom-add-hook 'switch-im-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   enable-im-switch))
+
+(custom-add-hook 'switch-im-skip-direct-im?
+		 'custom-activity-hooks
+		 (lambda ()
+		   enable-im-switch))
 
 ;; im-toggle 
 (define-custom-group 'im-toggle

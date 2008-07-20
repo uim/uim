@@ -212,8 +212,8 @@
 	  (setq last-command-char 
 		(aref (uim-get-vector-from-tail uim-key-vector 1) 0))
 	  
-	  (setq map (cdr (assq 'uim-mode minor-mode-map-alist)))
-	  (setcdr (assq 'uim-mode minor-mode-map-alist) uim-dummy-map)
+	  ;; backup current keymap of uim-mode
+	  (setq map (uim-disable-keymap))
 
 	  (if (or (and bind
 		       (eq bind 'digit-argument))	  
@@ -236,7 +236,8 @@
 	       (buffer-live-p buffer))
 	  (progn 
 	    (set-buffer buffer)
-	    (setcdr (assq 'uim-mode minor-mode-map-alist) map)
+	    ;; restore keymap of uim-mode
+	    (uim-set-keymap map)
 	    ))
       )))
 

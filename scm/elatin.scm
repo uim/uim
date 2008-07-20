@@ -36,6 +36,7 @@
 (require "util.scm")
 (require "rk.scm")
 (require "elatin-rules.scm")
+(require-custom "generic-key-custom.scm")
 (require-custom "elatin-custom.scm")
 
 (define elatin-context-rec-spec

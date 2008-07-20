@@ -59,7 +59,7 @@
 (define-key prime-escape-key?         '("escape" "<Control>["))
 (define-key prime-space-key?          '(" "))
 
-(define prime-app-mode-end-stroke-list #f)
+(define prime-app-mode-end-stroke-list '())
 ;;;; If you're a Vi user, modify the lines below.
 (define prime-configure-app-mode-vi
   (lambda ()
@@ -72,7 +72,7 @@
 	(begin
 	  ;; Default
 	  (define-key prime-app-mode-start-key?  #f)
-	  (set! prime-app-mode-end-stroke-list #f)))))
+	  (set! prime-app-mode-end-stroke-list '())))))
 
 (prime-configure-app-mode-vi)
 

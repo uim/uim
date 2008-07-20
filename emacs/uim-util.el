@@ -270,7 +270,7 @@
     (save-excursion
       (when (and (char-after)
 		 (= (char-after) ?\t))
-	(insert-char 32)
+	(insert-char 32 1)
 	(setq dummy-space t)
 	))
 
@@ -291,7 +291,7 @@
       )
 
     (if dummy-space
-	(delete-char))
+	(delete-char 1))
     i
     ))
 
