@@ -151,7 +151,10 @@ create_context(void)
   cc->rk_context_id = RkCreateContext();
   if (cc->rk_context_id == ERR) {
     free(cc);
-    uim_fatal_error("RkCreateContext() failed");
+    RkFinalize();
+    rk_initialized = -1;
+    uim_notify_fatal("RkCreateContext() failed");
+    return uim_scm_f();
   }    
 
   cc->rk_mode = (RK_XFER << RK_XFERBITS) | RK_KFER;
