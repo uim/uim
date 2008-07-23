@@ -213,7 +213,7 @@ release_context(uim_lisp cc_)
   free(cc);
 
   if (err)
-    uim_fatal_error("canna-lib-release-context failed");
+    uim_notify_fatal("canna-lib-release-context failed");
 
   return uim_scm_f();
 }
@@ -264,8 +264,10 @@ begin_conversion(uim_lisp cc_, uim_lisp str_)
   len = strlen(str);
 
   segment_num = RkBgnBun(cc->rk_context_id, (char *)str, len, mode);
-  if (segment_num == ERR)
-    uim_fatal_error("RkBgnBun() failed");
+  if (segment_num == ERR) {
+    uim_notify_fatal("RkBgnBun() failed");
+    return uim_scm_f();
+  }
 
   cc->segment_num = segment_num;
   _update_status(cc);
