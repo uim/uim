@@ -20,14 +20,12 @@ msgid "Indicates and controls the state of input method (for uim)"
 msgstr ""
 
 #: ../helper/GNOME_UimApplet.server.in.in.h:2
-#, fuzzy
 msgid "Input Method Indicator"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../helper/GNOME_UimApplet.server.in.in.h:3
-#, fuzzy
 msgid "Utilities"
-msgstr "Utilitaire"
+msgstr ""
 
 #: ../helper/GNOME_UimApplet.server.in.in.h:4
 msgid "uim Applet Factory"
@@ -330,9 +328,8 @@ msgid "Part of speech is emtpy!"
 msgstr ""
 
 #: ../helper/eggtrayicon.c:118
-#, fuzzy
 msgid "Orientation"
-msgstr "Annotation"
+msgstr ""
 
 #: ../helper/eggtrayicon.c:119
 msgid "The orientation of the tray."
@@ -410,9 +407,8 @@ msgid "academic"
 msgstr ""
 
 #: ../helper/input-pad-ja.c:537
-#, fuzzy
 msgid "greek"
-msgstr "Grec"
+msgstr ""
 
 #: ../helper/input-pad-ja.c:540
 msgid "cyrillic"
@@ -1813,14 +1809,12 @@ msgid "Pass through all user input without any modification"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:34
-#, fuzzy
 msgid "ELatin"
-msgstr "Latin"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:35
-#, fuzzy
 msgid "Emacs-style Latin characters input"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:36
 msgid ""
@@ -1829,19 +1823,16 @@ msgid ""
 msgstr ""
 
 #: ../scm/elatin-custom.scm:50
-#, fuzzy
 msgid "British"
-msgstr "Irlandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:53
-#, fuzzy
 msgid "Catalan prefix"
-msgstr "Catalan"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:56
-#, fuzzy
 msgid "Danish postfix"
-msgstr "Danois"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:59
 msgid "Danish alternative postfix"
@@ -1856,47 +1847,40 @@ msgid "Dutch"
 msgstr "Hollandais"
 
 #: ../scm/elatin-custom.scm:68
-#, fuzzy
 msgid "English Dvorak"
-msgstr "Anglais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:71
-#, fuzzy
 msgid "Esperanto prefix"
-msgstr "Esperanto"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:74
-#, fuzzy
 msgid "Esperanto postfix"
-msgstr "Esperanto"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:77
 msgid "Esperanto alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:80
-#, fuzzy
 msgid "Finnish postfix"
-msgstr "Finlandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:83
 msgid "Finnish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:86
-#, fuzzy
 msgid "Finnish keyboard"
-msgstr "Finlandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:89
-#, fuzzy
 msgid "French prefix"
-msgstr "Français"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:92
-#, fuzzy
 msgid "French postfix"
-msgstr "Français"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:95
 msgid "French alternative postfix"
@@ -1907,19 +1891,16 @@ msgid "French keyboard"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:101
-#, fuzzy
 msgid "French AZERTY"
-msgstr "Français"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:104
-#, fuzzy
 msgid "German prefix"
-msgstr "Allemand"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:107
-#, fuzzy
 msgid "German postfix"
-msgstr "Allemand"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:110
 msgid "German alternative postfix"
@@ -1930,36 +1911,32 @@ msgid "German"
 msgstr "Allemand"
 
 #: ../scm/elatin-custom.scm:116
-#, fuzzy
 msgid "Icelandic postfix"
-msgstr "Islandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:119
 msgid "Icelandic alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:122
-#, fuzzy
 msgid "Icelandic keyboard"
-msgstr "Islandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:125
 msgid "Irish prefix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:128
-#, fuzzy
 msgid "Italian postfix"
-msgstr "Italien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:131
 msgid "Italian alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:134
-#, fuzzy
 msgid "Italian keyboard"
-msgstr "Italien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:137
 msgid "Latin prefix"
@@ -2038,43 +2015,36 @@ msgid "Latvian keyboard"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:194
-#, fuzzy
 msgid "Lithuanian keyboard"
-msgstr "Lituanien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:197
-#, fuzzy
 msgid "Lithuanian numeric"
-msgstr "Lituanien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:200
-#, fuzzy
 msgid "Norwegian postfix"
-msgstr "Norvégien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:203
 msgid "Norwegian alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:206
-#, fuzzy
 msgid "Norwegian keyboard"
-msgstr "Norvégien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:209
-#, fuzzy
 msgid "Polish slash"
-msgstr "Polonais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:212
-#, fuzzy
 msgid "Portuguese prefix"
-msgstr "Portugais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:215
-#, fuzzy
 msgid "Romanian prefix"
-msgstr "Roumain"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:218
 msgid "Romanian alternative prefix"
@@ -2093,42 +2063,36 @@ msgid "Slovenian"
 msgstr "Slovène"
 
 #: ../scm/elatin-custom.scm:230
-#, fuzzy
 msgid "Spanish prefix"
-msgstr "Espagnol"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:233
-#, fuzzy
 msgid "Spanish postfix"
-msgstr "Espagnol"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:236
 msgid "Spanish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:239
-#, fuzzy
 msgid "Spanish keyboard"
-msgstr "Espagnol"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:242
-#, fuzzy
 msgid "Swedish postfix"
-msgstr "Suédois"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:245
 msgid "Swedish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:248
-#, fuzzy
 msgid "Swedish keyboard"
-msgstr "Suédois"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:251
-#, fuzzy
 msgid "Turkish postfix"
-msgstr "Turque"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:254
 msgid "Turkish alternative postfix"
@@ -2143,9 +2107,8 @@ msgid "Turkish Latin-3 alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:262
-#, fuzzy
 msgid "Latin characters keyboard layout"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:280
 msgid "ESC turns off composition mode (for vi users)"
@@ -2156,14 +2119,12 @@ msgid "ELatin key bindings"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:291
-#, fuzzy
 msgid "[ELatin] on"
-msgstr "Latin"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:297
-#, fuzzy
 msgid "[ELatin] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:303
 msgid "[ELatin] backspace"
@@ -2178,9 +2139,8 @@ msgid "ELatin composition off"
 msgstr ""
 
 #: ../scm/elatin.scm:127
-#, fuzzy
 msgid "ELatin mode on"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/elatin.scm:128
 msgid "ELatin composition on"
@@ -3172,23 +3132,20 @@ msgid "Look"
 msgstr ""
 
 #: ../scm/look-custom.scm:32 ../scm/look.scm:560
-#, fuzzy
 msgid "Tiny predictive input method"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/look-custom.scm:39
 msgid "Look key bindings"
 msgstr ""
 
 #: ../scm/look-custom.scm:46
-#, fuzzy
 msgid "[Look] Use UNIX look dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/look-custom.scm:53
-#, fuzzy
 msgid "[Look] Personal dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/look-custom.scm:59
 msgid "[Look] beginning character length of predicting"
@@ -3215,14 +3172,12 @@ msgid "[Look] off"
 msgstr ""
 
 #: ../scm/look-custom.scm:95
-#, fuzzy
 msgid "[Look] completion character"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/look-custom.scm:101
-#, fuzzy
 msgid "[Look] next character"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/look-custom.scm:107
 msgid "[Look] previous character"
@@ -3237,9 +3192,8 @@ msgid "[Look] previous candidate"
 msgstr ""
 
 #: ../scm/look-custom.scm:125
-#, fuzzy
 msgid "[Look] save dictionary"
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #: ../scm/look-custom.scm:131
 msgid "[Look] load dictionary"
@@ -3258,9 +3212,8 @@ msgid "Look Direct Input Mode"
 msgstr ""
 
 #: ../scm/look.scm:78
-#, fuzzy
 msgid "Look Input Mode"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../scm/mana-custom.scm:35
 msgid "Mana"
@@ -3683,9 +3636,8 @@ msgid "SJ3 server"
 msgstr ""
 
 #: ../scm/sj3-custom.scm:47
-#, fuzzy
 msgid "SJ3 (advanced)"
-msgstr "SKK (avancé)"
+msgstr ""
 
 #: ../scm/sj3-custom.scm:307
 msgid "Use value of use remote SJ3 server"
@@ -3756,14 +3708,12 @@ msgid "[SJ3] commit as transposed kana"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:116
-#, fuzzy
 msgid "[SJ3] on"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:123
-#, fuzzy
 msgid "[SJ3] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:129
 msgid "[SJ3] begin conversion"
@@ -3774,9 +3724,8 @@ msgid "[SJ3] commit"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:141
-#, fuzzy
 msgid "[SJ3] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:147
 msgid "[SJ3] next candidate"
@@ -3815,9 +3764,8 @@ msgid "[SJ3] backspace"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:204
-#, fuzzy
 msgid "[SJ3] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:210
 msgid "[SJ3] go left"
@@ -3832,14 +3780,12 @@ msgid "[SJ3] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:232
-#, fuzzy
 msgid "[SJ3] hiragana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:238
-#, fuzzy
 msgid "[SJ3] katakana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:244
 msgid "[SJ3] halfwidth katakana mode"
@@ -3903,9 +3849,8 @@ msgid "SKK server"
 msgstr ""
 
 #: ../scm/skk-custom.scm:57
-#, fuzzy
 msgid "Dictionary files"
-msgstr "Fichier dictionnaire"
+msgstr ""
 
 #: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:102
 msgid "Commit candidate by heading label keys"
@@ -3944,9 +3889,8 @@ msgid "Port number of skkserv"
 msgstr ""
 
 #: ../scm/skk-custom.scm:376
-#, fuzzy
 msgid "Auto"
-msgstr "_A propos"
+msgstr ""
 
 #: ../scm/skk-custom.scm:377
 msgid "IPv4"
@@ -3969,9 +3913,8 @@ msgid "Address family of skkserv"
 msgstr ""
 
 #: ../scm/skk-custom.scm:393
-#, fuzzy
 msgid "System dictionary file"
-msgstr "Fichier dictionnaire"
+msgstr ""
 
 #: ../scm/skk-custom.scm:400
 msgid "Personal dictionary file"
@@ -4010,9 +3953,8 @@ msgid "Use UNIX look command for completion"
 msgstr ""
 
 #: ../scm/skk-custom.scm:460
-#, fuzzy
 msgid "Use UNIX look dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/skk-custom.scm:475
 msgid "Show annotation of candidate word"
@@ -4199,23 +4141,20 @@ msgid "uim version of TUT-Code input method"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:43
-#, fuzzy
 msgid "TUT-Code dictionaries"
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:44
 msgid "Dictionary settings for TUT-Code"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:54
-#, fuzzy
 msgid "Mazegaki dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:61
-#, fuzzy
 msgid "Personal mazegaki dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:68
 msgid "Code table file"
@@ -4272,9 +4211,8 @@ msgid "[TUT-Code] commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:89
-#, fuzzy
 msgid "[TUT-Code] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:95
 msgid "[TUT-Code] next candidate"
@@ -4321,9 +4259,8 @@ msgid "Wnn server"
 msgstr ""
 
 #: ../scm/wnn-custom.scm:47
-#, fuzzy
 msgid "Wnn (advanced)"
-msgstr "Canna (avancé)"
+msgstr ""
 
 #: ../scm/wnn-custom.scm:307
 msgid "Use value of use remote Wnn server"
@@ -4394,14 +4331,12 @@ msgid "[Wnn] commit as transposed kana"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:116
-#, fuzzy
 msgid "[Wnn] on"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:123
-#, fuzzy
 msgid "[Wnn] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:129
 msgid "[Wnn] begin conversion"
@@ -4412,9 +4347,8 @@ msgid "[Wnn] commit"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:141
-#, fuzzy
 msgid "[Wnn] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:147
 msgid "[Wnn] next candidate"
@@ -4453,9 +4387,8 @@ msgid "[Wnn] backspace"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:204
-#, fuzzy
 msgid "[Wnn] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:210
 msgid "[Wnn] go left"
@@ -4474,9 +4407,8 @@ msgid "[Wnn] hiragana mode"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:238
-#, fuzzy
 msgid "[Wnn] katakana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:244
 msgid "[Wnn] halfwidth katakana mode"
@@ -4503,9 +4435,8 @@ msgid "Customize uim input method environment"
 msgstr ""
 
 #: ../uim.desktop.in.in.h:2
-#, fuzzy
 msgid "Input Method"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
@@ -4578,14 +4509,12 @@ msgid "Already connected."
 msgstr ""
 
 #: ../uim/sj3.c:108
-#, fuzzy
 msgid "Cannot open main dictionary file."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../uim/sj3.c:109
-#, fuzzy
 msgid "Cannot open user dictionary file."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../uim/sj3.c:110
 msgid "Cannot open study file."
@@ -4596,9 +4525,8 @@ msgid "Cannot make user dictionary directory."
 msgstr ""
 
 #: ../uim/sj3.c:112
-#, fuzzy
 msgid "Cannot make user dictionary file."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../uim/sj3.c:113
 msgid "Cannot make study file."
@@ -4625,9 +4553,8 @@ msgid "Main dictionary file is not opened."
 msgstr ""
 
 #: ../uim/sj3.c:195
-#, fuzzy
 msgid "User dictionary file is not opened."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../uim/sj3.c:196
 msgid "Study file is not opened."
@@ -4638,9 +4565,8 @@ msgid "Main dictionary file cannot close."
 msgstr ""
 
 #: ../uim/sj3.c:198
-#, fuzzy
 msgid "User dictionary file cannot close."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../uim/sj3.c:199
 msgid "Study file cannot close."
@@ -4656,14 +4582,12 @@ msgid "Buffer size is too short."
 msgstr ""
 
 #: ../uim/sj3.c:411
-#, fuzzy
 msgid "Dictionary error."
-msgstr "Fichier dictionnaire"
+msgstr ""
 
 #: ../uim/sj3.c:412
-#, fuzzy
 msgid "Dictionary is locked."
-msgstr "Fichier dictionnaire"
+msgstr ""
 
 #: ../uim/sj3.c:413
 msgid "Invalid yomi string."
@@ -4686,9 +4610,8 @@ msgid "Douon is full."
 msgstr ""
 
 #: ../uim/sj3.c:418
-#, fuzzy
 msgid "Dictionary is full."
-msgstr "Fichier dictionnaire"
+msgstr ""
 
 #: ../uim/sj3.c:419
 msgid "Index is full."
