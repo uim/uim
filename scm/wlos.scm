@@ -67,7 +67,7 @@
 ;;
 ;; - Call by index
 ;;
-;;   Normal method call on WLOS is performed by retrieving the method
+;;   Normal method call on WLOS is performed by retrieving a method
 ;;   by integer index to the method table, as like as vptr-based
 ;;   method call on C++. So an inheritance is required to make a method
 ;;   polymorphic.
@@ -86,11 +86,11 @@
 ;;
 ;; - No type check
 ;;
-;;   An object instance cannot be distinguished from its real data
+;;   An object instance cannot be distinguished from its actual data
 ;;   type such as vector or list. And both method dispatcher and
-;;   method itself do not check whether the receiver object is
+;;   method itself does not check whether the receiver object is
 ;;   suitable for the method. Ensuring method & receiver combination
-;;   proper is user responsibility.
+;;   valid is user's responsibility.
 ;;
 ;; - No information hiding
 ;;
@@ -98,18 +98,18 @@
 ;;   some of them, make them inaccesible or rename to a private name.
 ;;
 ;;     ;; inhibit object copy and modification of 'var' field
-;;     (define my-object-copy #f)
-;;     (define my-object-set-var! #f)
+;;     (define foo-copy #f)
+;;     (define foo-set-var! #f)
 ;;
-;;     ;; make equal? method dispatcher for my-object private
-;;     (define %my-object-equal? my-object-equal?)
-;;     (define my-object-equal? #f)
+;;     ;; make equal? method dispatcher for class bar private
+;;     (define %bar-equal? bar-equal?)
+;;     (define bar-equal? #f)
 ;;
 ;; - Alternative list-based object (not implemented yet)
 ;;
 ;;   In addition to the normal vector-based object, list-based object
-;;   will also be able to be used to save memory consumption. The
-;;   list-based object will allow sharing some fields between multiple
+;;   will also be available to save memory consumption. The list-based
+;;   object will allow sharing some tail fields between multiple
 ;;   objects. This feature is the main reason why WLOS is named as
 ;;   'wacky'.
 
@@ -313,7 +313,7 @@
       (apply (class-find-method (object-class (car self.args)) method-name)
 	     self.args))))
 
-;; Method call cascading on popular OO language such as
+;; Method call cascading on typical OO language such as
 ;;
 ;;   obj.method1(arg ...).method2(arg ...).method3 
 ;;
