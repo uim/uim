@@ -108,7 +108,7 @@
 
 (define make-record-constructor-name
   (lambda (rec-name)
-    (symbol-append 'make %HYPHEN-SYM rec-name)))
+    (symbol-append 'make- rec-name)))
 
 (define make-record-duplicator-name
   (lambda (rec-name)
