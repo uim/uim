@@ -105,11 +105,12 @@
 ;;     (define %bar-equal? bar-equal?)
 ;;     (define bar-equal? #f)
 ;;
-;; - Alternative list-based object (not implemented yet)
+;; - Alternative list-based object representation
 ;;
 ;;   In addition to the normal vector-based object, list-based object
-;;   will also be available to save memory consumption. The list-based
-;;   object will allow sharing some tail fields between multiple
+;;   is also available to save memory consumption. The list-based
+;;   object allows sharing some common tail fields (physically tail
+;;   fields, but logically ancestral-class fields) between multiple
 ;;   objects. This feature is the main reason why WLOS is named as
 ;;   'wacky'.
 
@@ -122,7 +123,7 @@
 ;; - (class-find-method klass method-name)
 ;; - (class-set-method! klass method-name proc)
 ;;
-;; mehtod:
+;; method:
 ;; - (make-method-dispatcher-name class-name method-name)
 ;; - (make-method-dispatcher klass method-name)
 ;; - (make-call-by-name-method-dispatcher method-name)
@@ -131,8 +132,12 @@
 ;; - (method-fold obj . method-forms)
 ;;
 ;; object:
+;; - (object-class self)
 ;; - (object-superclass self)
 ;; - (object-is-a? self klass)
+;; - (object-equal? self)
+;; - (object-copy self)
+;; - (object-partial-clone self last-shared-field-name)
 ;; - (object-derive self)
 
 (require-extension (srfi 1 23))
@@ -165,6 +170,75 @@
       vector-append
       (lambda vectors
 	(list->vector (append-map vector->list vectors)))))
+
+;;
+;; dual-form record for WLOS objects
+;;
+(define %vector-based-wlos-record? vector?)
+(define %list-based-wlos-record? list?)
+
+(define %make-vector-based-wlos-record-constructor-name
+  (lambda (rec-name)
+    (symbol-append 'make-vector-based- rec-name)))
+
+(define %make-list-based-wlos-record-constructor-name
+  (lambda (rec-name)
+    (symbol-append 'make-list-based- rec-name)))
+
+(define %list->vector-based-wlos-record list->vector)
+
+;; index 0 is located on last cell
+(define %list->list-based-wlos-record reverse)
+
+(define %wlos-record->list
+  (lambda (rec)
+    ((if (%vector-based-wlos-record? rec)
+	 vector->list
+	 reverse)
+     rec)))
+
+(define %wlos-record-copy
+  (lambda (rec)
+    ((if (%vector-based-wlos-record? rec)
+	 vector-copy
+	 list-copy)
+     rec)))
+
+(define %wlos-record-ref
+  (lambda (rec index)
+    (if (%vector-based-wlos-record? rec)
+	(vector-ref rec index)
+	;; FIXME: optimize to 1-pass implementation
+	(list-ref rec
+		  (- (length rec)
+		     index)))))
+
+(define %wlos-record-set!
+  (lambda (rec index val)
+    (if (%vector-based-wlos-record? rec)
+	(vector-set! rec index val)
+	;; FIXME: optimize to 1-pass implementation
+	(%list-set! rec
+		    (- (length rec)
+		       index)
+		    val))))
+
+(define-macro %define-wlos-record
+  (lambda (rec-name fld-specs)
+    `(begin
+       ;; make-<rec-name> is bind to make-vector-based-<rec-name> by default
+       (define-record-generic
+	 ,rec-name ,fld-specs
+	 %list->vector-based-wlos-record
+	 %wlos-record-copy %wlos-record-ref %wlos-record-set!)
+       ;; make-vector-based-<rec-name>
+       (define ,(%make-vector-based-wlos-record-constructor-name rec-name)
+	 ,(make-record-constructor-name rec-name))
+       ;; make-list-based-<rec-name>
+       (define ,(%make-list-based-wlos-record-constructor-name rec-name)
+	 (%make-record-constructor ',rec-name ,fld-specs
+				   %list->list-based-wlos-record)))))
+
 
 ;;
 ;; class
@@ -242,13 +316,23 @@
 	 ;; define class object
 	 (define ,name ',klass)
 	 ;; define instance structure as record
-	 ;; FIXME: hardcoded define-vector-record
-	 (define-vector-record ,name (class-field-specs ',klass))
-	 ;; redefine record object constructor as accepting class-less args
-	 (define ,(make-record-constructor-name name)
-	   (let ((orig-constructor ,(make-record-constructor-name name)))
+	 (%define-wlos-record ,name (class-field-specs ',klass))
+	 ;; redefine record object constructors as accepting class-less args
+	 ;;   make-vector-based-<class>
+	 (define ,(%make-vector-based-wlos-record-constructor-name name)
+	   (let ((orig-constructor
+		  ,(%make-vector-based-wlos-record-constructor-name name)))
 	     (lambda args
 	       (apply orig-constructor (cons ',klass args)))))
+	 ;;   make-list-based-<class>
+	 (define ,(%make-list-based-wlos-record-constructor-name name)
+	   (let ((orig-constructor
+		  ,(%make-list-based-wlos-record-constructor-name name)))
+	     (lambda args
+	       (apply orig-constructor (cons ',klass args)))))
+	 ;;   make-<class> is bind to make-vector-based-<class> by default
+	 (define ,(make-record-constructor-name name)
+	   ,(%make-vector-based-wlos-record-constructor-name name))
 	 ;; define method dispatchers
 	 ;; overwrites <class>-copy defined by define-*-record
 	 (%define-methods ,name ,(vector->list (class-method-names klass)))))))
@@ -360,10 +444,34 @@
   '()
   ;; method names
   '(equal?
-    copy))  ;; intentionally overwrites copy procedure defined by define-record
+    copy   ;; intentionally overwrites copy procedure defined by define-record
+    partial-clone))
 
-(class-set-method! object equal? equal?)
-(class-set-method! object copy   vector-copy)
+;; Since there is no way to distinguish whether a field value is expected
+;; to be an WLOS object or normal Scheme object, auto-generated object
+;; equivalence predicate below is next to useless. Define your own ones by
+;; hand if needed.  -- YamaKen 2008-08-12
+(define make-object-equal?
+  (lambda (fld-equal?)
+    (lambda (self other)
+      (and (object-is-a? other (object-class self))
+	   (let ((self-flds (cdr (%wlos-record->list self)))
+		 (other-flds (cdr (%wlos-record->list other))))
+	     ;; Above object-is-a? predicate already ensured proper
+	     ;; fields existence. So true value on an unmatched length
+	     ;; lists is not a problem.
+	     (every fld-equal? self-flds other-flds))))))
+
+(class-set-method! object equal? (make-object-equal? equal?))
+;;(class-set-method! object equal? eq?)
+(class-set-method! object copy   %wlos-record-copy)
+
+;; optimization: intentionally overwrites the default definition
+(define object-class
+  (lambda (self)
+    (if (vector? self)
+	(vector-ref self 0)
+	(last self))))
 
 (define object-superclass
   (lambda (self)
@@ -372,6 +480,19 @@
 (define object-is-a?
   (lambda (self klass)
     (class-is-a? (object-class self) klass)))
+
+(class-set-method! object partial-clone
+  (lambda (self last-shared-field-name)
+    (if (not (%list-based-wlos-record? self))
+	(error "object-partial-clone: list-based object required but got " self))
+    (let* ((klass (object-class self))
+	   (fld-names (map record-field-spec-name
+			   (class-field-specs klass)))
+	   (tail-len (+ (list-index fld-names last-shared-field-name)
+			1))
+	   (shared-tail (take-right self tail-len))
+	   (copied-head (drop-right self tail-len)))
+      (append! copied-head shared-tail))))
 
 ;; Makes singleton object which allows per-object method redefinition.
 ;;

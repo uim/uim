@@ -33,7 +33,7 @@
 
 (require "wlos.scm")
 
-(set! *test-track-progress* #t)
+(set! *test-track-progress* #f)
 
 
 (test-begin "object")
@@ -45,6 +45,8 @@
 (test-error (class-superclass object))
 ;; object identity
 (test-true  (object-equal? (make-object) (make-object)))
+(test-true  (let ((o (make-object)))
+	      (object-equal? o o)))
 (test-false (eq? (make-object) (make-object)))
 ;; object-equal? is not a identity comparison method
 (test-true  (object-equal? (make-object)
@@ -93,12 +95,8 @@
 	    (comparable-class (make-comparable)))
 ;; equal?
 (test-true  (procedure? comparable-equal?))
-(test-eq    equal?
-	    (class-find-method comparable 'equal?))
 ;; copy
 (test-true  (procedure? comparable-copy))
-(test-eq    vector-copy
-	    (class-find-method comparable 'copy))
 ;; <
 (test-true  (procedure? comparable-<))
 (test-eq    %undefined-method
@@ -170,12 +168,8 @@
 	    (comparable-number-str-class (make-comparable-number-str)))
 ;; equal?
 (test-true  (procedure? comparable-number-str-equal?))
-(test-eq    equal?
-	    (class-find-method comparable-number-str 'equal?))
 ;; copy
 (test-true  (procedure? comparable-number-str-copy))
-(test-eq    vector-copy
-	    (class-find-method comparable-number-str 'copy))
 ;; <
 (test-true  (procedure? comparable-number-str-<))
 (test-eq    %undefined-method
