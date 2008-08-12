@@ -332,13 +332,10 @@
 ;; .parameter ... args for the method
 ;; .returns Result of actual invocation of the forwarded method
 (define composer-delegate-method
-  (lambda args
-    (let* ((method (car args))
-	   (self (cadr args))
-	   (method-args (cddr args))
-	   (child (composer-active-child self))))
+  (lambda (method self . method-args)
+    (let ((child (composer-active-child self)))
       (and child
-	   (apply method (cons child method-args)))))
+	   (apply method (cons child method-args))))))
 
 ;; CAUTION: The field order WILL sometimes be changed without notification to
 ;; be optimized. Don't rely on current layout. See also the comment at end of
@@ -372,37 +369,30 @@
 
 (define composer-base-rec-spec
   '((opaque0          #f)    ;; reserved field to hold context for subclass
-    (private-children #f)    ;; don't touch this directly
-    (private-parent   #f)    ;; don't touch this directly
-    (actset           #f)    ;; actionset
+    (%children        #f)    ;; don't touch this directly
+    (%parent          #f)    ;; don't touch this directly
+    (%actset          #f)    ;; actionset
     (methods          #f)))  ;; must be placed at same position of composer rec
 (define-record 'composer-base composer-base-rec-spec)
 (define composer-base-new-internal composer-base-new)
 
 (define composer-base-new
-  (lambda args
-    (let ((methods (car args))
-	  (children (cadr args))
-	  (actset (and (not (null? (cddr args)))
-		       (car (cddr args)))))
+  (lambda (methods children . rest)
+    (let-optionals* rest ((actset #f))
       (composer-base-new-internal methods #f children actset))))
 
 ;; (Re)initialize composer-base part of derived object
 ;; Parent is kept untouched
 (define composer-base-initialize!
-  (lambda args
-    (let ((self (car args))
-	  (methods (cadr args))
-	  (children (car (cddr args)))
-	  (actset (and (not (null? (cdr (cddr args))))
-		       (cadr (cddr args)))))
+  (lambda (self methods children . rest)
+    (let-optionals* rest ((actset #f))
       (composer-base-set-methods! self methods)
-      (composer-base-set-private-children! self children)
-      (composer-base-set-actset! self actset)
+      (composer-base-set-%children! self children)
+      (composer-base-set-%actset! self actset)
       self)))
 
-(define composer-base-parent-internal composer-base-private-parent)
-(define composer-base-set-parent! composer-base-set-private-parent!)
+(define composer-base-parent-internal composer-base-%parent)
+(define composer-base-set-parent! composer-base-set-%parent!)
 
 (define composer-base-finalize!
   (lambda (self)
@@ -424,17 +414,17 @@
   (lambda (self)
     (composer-delegate-method composer-current-locale self)))
 
-(define composer-base-children composer-base-private-children)
-(define composer-base-set-children! composer-base-set-private-children!)
+(define composer-base-children composer-base-%children)
+(define composer-base-set-children! composer-base-set-%children!)
 
 (define composer-base-filter-event!
   (lambda (self ev)
-    (or (actionset-handle-event (composer-base-actset self) self ev)
+    (or (actionset-handle-event (composer-base-%actset self) self ev)
 	(composer-delegate-method composer-filter-event! self ev))))
 
 (define composer-base-filter-upward-event!
   (lambda (self sender ev)
-    (or (actionset-handle-event (composer-base-actset self) self ev)
+    (or (actionset-handle-event (composer-base-%actset self) self ev)
 	(composer-raise-event self ev))))
 
 (define composer-base-text-length
@@ -458,7 +448,7 @@
 
 (define composer-base-action
   (lambda (self act-id)
-      (or (actionset-fetch-action (composer-base-actset self) self act-id)
+      (or (actionset-fetch-action (composer-base-%actset self) self act-id)
 	  (composer-delegate-method composer-action self act-id))))
 
 (define composer-base-choosable
