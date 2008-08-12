@@ -1,6 +1,7 @@
 # Type 'make check' to run all tests.
 
 uim_tests = \
+        test-composer.scm \
         test-fail.scm \
         test-light-record.scm \
         test-template.scm \

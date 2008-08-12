@@ -32,6 +32,7 @@
 ;; TODO: write test
 
 (require "util.scm")
+(require "wlos.scm")
 (require "i18n.scm")
 (require "event.scm")
 (require "ustr.scm")
@@ -42,29 +43,31 @@
 ;;
 ;; composer
 ;;
+(define-class composer object
+  '()
+  '(;; object structure maintenance
+    %parent                  ;; returns parent composer
+    set-parent!              ;; store parent by composer-specific way
+    finalize!                ;; finalize composer object
+    ;; information about the composer
+    idname                   ;; symbol that identifies the composer
+    indication               ;; visual information about the composer
+    current-locale           ;; indicates what is currently composing
+    ;; core methods
+    children                 ;; ustr of child composers
+    filter-event!            ;; filter an event sent from parent
+    filter-upward-event!     ;; filter an event sent from a child
+    text-length              ;; text length counted in logical character
+    text                     ;; preedit text (as utext)
+    supply-surrounding-text  ;; returns surrounding text to a child
+    held-events              ;; source of composed text
+    ;; manipulator exportations
+    action                   ;; fetch a blessed action
+    choosable))              ;; fetch a choosable object
 
-;; To minimize memory consumption, composer record has a special field layout.
-;; The method table is not stored at index 0 but 4. And index 0-3 is reserved
-;; for subclass to hold context specific information. Arbitrary length tail of
-;; composer instance can be shared between multiple instances as follows.
-;;
-;; (define foo-composer-shared-tail (list f2 f3 foo-methods))
-;; (define foo-composer-new
-;;   (lambda (f0 f1)
-;;     (cons f0 (cons f1 foo-composer-shared-tail))))
-;;
-;; The primary variable 'parent' is relocateable to arbitrary field to support
-;; per class different requirements about tail sharing.
-;;
-;; See comoser-base definitions as actual example.
-
-(define composer-rec-spec
-  '((opaque0        #f)    ;; reserved field for subclass (least common)
-    (opaque1        #f)    ;; reserved field for subclass
-    (opaque2        #f)    ;; reserved field for subclass
-    (opaque3        #f)    ;; reserved field for subclass (most common)
-    (methods        #f)))  ;; the position must be kept in subclass
-(define-record 'composer composer-rec-spec)
+(define %composer-undefined-method
+  (lambda (self . args)
+    (error "composer: undefined method")))
 
 ;; Get a composer as parent of the composer for internal use
 ;;
@@ -74,17 +77,17 @@
 ;;
 ;; .parameter self Abstract composer object
 ;; .returns Parent composer
-(define composer-parent-internal
+(class-set-method! composer %parent
   (lambda (self)
-    ((composer-mtbl-parent-internal (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; Set a composer as parent of the composer
 ;; .parameter self Abstract composer object
 ;; .parameter parent A composer
 ;; .returns self
-(define composer-set-parent!
-  (lambda (self)
-    ((composer-mtbl-set-parent! (composer-methods self)) self) self))
+(class-set-method! composer set-parent!
+  (lambda (self parent)
+    (%composer-undefined-method)))
 
 ;; Finalize composer object
 ;;
@@ -94,24 +97,24 @@
 ;; this.
 ;;
 ;; .parameter self Abstract composer object
-(define composer-finalize!
+(class-set-method! composer finalize!
   (lambda (self)
-    ((composer-mtbl-finalize! (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; FIXME: describe naming rule
 ;; Get a symbol for programs that uniquely identifies the class of composer
 ;; .parameter self Abstract composer object
 ;; .returns A symbol such as 'anthy
-(define composer-idname
+(class-set-method! composer idname
   (lambda (self)
-    ((composer-mtbl-idname (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; Get a indication object providing information about the composer for human
 ;; .parameter self Abstract composer object
 ;; .returns An indication object
-(define composer-indication
+(class-set-method! composer indication
   (lambda (self)
-    ((composer-mtbl-indication (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; Get a locale object that indicates what is currently composing
 ;;
@@ -119,9 +122,9 @@
 ;;
 ;; .parameter self Abstract composer object
 ;; .returns A locale object
-(define composer-current-locale
+(class-set-method! composer current-locale
   (lambda (self)
-    ((composer-mtbl-current-locale (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; Get an ustr of child composers
 ;;
@@ -132,9 +135,9 @@
 ;;
 ;; .parameter self Abstract composer object
 ;; .returns An ustr of child composers. empty ustr if no children
-(define composer-children
+(class-set-method! composer children
   (lambda (self)
-    ((composer-mtbl-children (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; Filter an event sent from parent
 ;;
@@ -144,9 +147,9 @@
 ;; .parameter self Abstract composer object
 ;; .parameter ev An downward event
 ;; .returns #f if not filtered. Otherwise filtered
-(define composer-filter-event!
+(class-set-method! composer filter-event!
   (lambda (self ev)
-    ((composer-mtbl-filter-event! (composer-methods self)) self ev)))
+    (%composer-undefined-method)))
 
 ;; Filter an event sent from a child
 ;;
@@ -158,9 +161,9 @@
 ;; not originated composer but adjacent child who has relayed it
 ;; .parameter ev An upward event
 ;; .returns #f if not filtered. Otherwise filtered
-(define composer-filter-upward-event!
+(class-set-method! composer filter-upward-event!
   (lambda (self sender ev)
-    ((composer-mtbl-filter-upward-event! (composer-methods self)) self sender ev)))
+    (%composer-undefined-method)))
 
 ;; Get length of preedit text of composer
 ;;
@@ -168,9 +171,9 @@
 ;;
 ;; .parameter self Abstract composer object
 ;; .returns Preedit length counted in logical char
-(define composer-text-length
+(class-set-method! composer text-length
   (lambda (self)
-    ((composer-mtbl-text-length (composer-methods self)) self)))
+    (%composer-undefined-method)))
 
 ;; Get preedit text of composer
 ;; .parameter self Abstract composer object
@@ -178,9 +181,9 @@
 ;; .parameter len Length of text to get counted in logical char. -1 means end
 ;; of text
 ;; .returns utext
-(define composer-text
+(class-set-method! composer text
   (lambda (self start len)
-    ((composer-mtbl-text (composer-methods self)) self start len)))
+    (%composer-undefined-method)))
 
 ;; Returns surrounding text in response to request from a child
 ;;
@@ -198,9 +201,9 @@
 ;; character. -1 or longer than available text indicates that as long as
 ;; possible
 ;; .returns ustr of uchar (editable utext)
-(define composer-supply-surrounding-text
+(class-set-method! composer supply-surrounding-text
   (lambda (self former-len latter-len)
-    ((composer-mtbl-supply-surrounding-text (composer-methods self)) self former-len latter-len)))
+    (%composer-undefined-method)))
 
 ;; Get source event sequence of preedit text of composer
 ;;
@@ -219,25 +222,25 @@
 ;; .parameter start Start position in logical char
 ;; .parameter len Length of logical char list to get. -1 means end of text
 ;; .returns List of event
-(define composer-held-events
+(class-set-method! composer held-events
   (lambda (self start len)
-    ((composer-mtbl-held-events (composer-methods self)) self start len)))
+    (%composer-undefined-method)))
 
 ;; Fetch a blessed action of the composer or descendants
 ;; .parameter self Abstract composer object
 ;; .parameter act-id A symbol as action ID
 ;; .returns concrete action object or #f if not found
-(define composer-action
+(class-set-method! composer action
   (lambda (self act-id)
-    ((composer-mtbl-action (composer-methods self)) self act-id)))
+    (%composer-undefined-method)))
 
 ;; Fetch a choosable object of the composer or descendants
 ;; .parameter self Abstract composer object
 ;; .parameter cho-id A symbol as choosable ID
 ;; .returns choosable object or #f if not found
-(define composer-choosable
+(class-set-method! composer choosable
   (lambda (self cho-id)
-    ((composer-mtbl-choosable (composer-methods self)) self cho-id)))
+    (%composer-undefined-method)))
 
 ;; non-polymorphic methods
 
@@ -247,7 +250,7 @@
 ;; .returns Result of composer-filter-upward-event!
 (define composer-raise-event
   (lambda (self ev)
-    (composer-filter-upward-event! (composer-parent-internal self) self ev)))
+    (composer-filter-upward-event! (composer-%parent self) self ev)))
 
 ;; Get active child composer
 ;; .parameter self Abstract composer object
@@ -317,7 +320,7 @@
 ;; .returns ustr of uchar (editable utext)
 (define composer-surrounding-text
   (lambda (self former-len latter-len)
-    (composer-supply-surrounding-text (composer-parent-internal self) former-len latter-len)))
+    (composer-supply-surrounding-text (composer-%parent self) former-len latter-len)))
 
 ;; Activate an action by name
 ;; .parameter self Abstract composer object
@@ -337,149 +340,108 @@
       (and child
 	   (apply method (cons child method-args))))))
 
-;; CAUTION: The field order WILL sometimes be changed without notification to
-;; be optimized. Don't rely on current layout. See also the comment at end of
-;; this file.
-(define composer-mtbl-rec-spec
-  '(;; object structure maintenance
-    (parent-internal         #f)    ;; don't invoke this directly
-    (set-parent!             #f)    ;; store parent by composer specific way
-    (finalize!               #f)    ;; finalize composer object
-    ;; information about the composer
-    (idname                  #f)    ;; symbol that identifies the composer
-    (indication              #f)    ;; visual information about the composer
-    (current-locale          #f)    ;; indicates what is currently composing
-    ;; core methods
-    (children                #f)    ;; ustr of child composers
-    (filter-event!           #f)    ;; filter an event sent from parent
-    (filter-upward-event!    #f)    ;; filter an event sent from a child
-    (text-length             #f)    ;; text length counted in logical character
-    (text                    #f)    ;; preedit text (as utext)
-    (supply-surrounding-text #f)    ;; returns surrounding text to a child
-    (held-events             #f)    ;; source of composed text
-    ;; manipulator exportations
-    (action                  #f)    ;; fetch a blessed action
-    (choosable               #f)))  ;; fetch a choosable object
-(define-record 'composer-mtbl composer-mtbl-rec-spec)
-
 
 ;;
-;; Useful base implementation of composer
+;; composer-base: Base implementation for ordinary composers
 ;;
+(define-class composer-base composer
+  '((%actset     #f)    ;; actionset
+    (%parent-var #f)
+    (%children   #f))
+  '())
 
-(define composer-base-rec-spec
-  '((opaque0          #f)    ;; reserved field to hold context for subclass
-    (%children        #f)    ;; don't touch this directly
-    (%parent          #f)    ;; don't touch this directly
-    (%actset          #f)    ;; actionset
-    (methods          #f)))  ;; must be placed at same position of composer rec
-(define-record 'composer-base composer-base-rec-spec)
-(define composer-base-new-internal composer-base-new)
+(define %make-vector-based-composer-base.orig make-vector-based-composer-base)
+(define %make-list-based-composer-base.orig make-list-based-composer-base)
 
-(define composer-base-new
-  (lambda (methods children . rest)
-    (let-optionals* rest ((actset #f))
-      (composer-base-new-internal methods #f children actset))))
+(define %make-make-composer-base
+  (lambda (make.orig)
+    (lambda (children . rest)
+      (let-optionals* rest ((actset #f))
+	(make.orig actset #f children)))))
+
+(define make-vector-based-composer-base
+  (%make-make-composer-base %make-vector-based-composer-base.orig))
+(define make-list-based-composer-base
+  (%make-make-composer-base %make-list-based-composer-base.orig))
+(define make-composer-base make-vector-based-composer-base)
 
 ;; (Re)initialize composer-base part of derived object
 ;; Parent is kept untouched
 (define composer-base-initialize!
-  (lambda (self methods children . rest)
+  (lambda (self children . rest)
     (let-optionals* rest ((actset #f))
-      (composer-base-set-methods! self methods)
       (composer-base-set-%children! self children)
       (composer-base-set-%actset! self actset)
       self)))
 
-(define composer-base-parent-internal composer-base-%parent)
-(define composer-base-set-parent! composer-base-set-%parent!)
+(class-set-method! composer-base %parent
+  (lambda (self)
+    (composer-base-%parent-var self)))
 
-(define composer-base-finalize!
+(class-set-method! composer-base set-parent!
+  (lambda (self parent)
+    (composer-base-set-%parent-var! self parent)))
+
+(class-set-method! composer-base finalize!
   (lambda (self)
     (map-ustr-whole composer-finalize! (composer-children self))
     (ustr-clear! (composer-base-children self))))
 
-(define composer-base-idname
+(class-set-method! composer-base idname
   (lambda (self)
     'composer-base))
 
-(define composer-base-indication
+(class-set-method! composer-base indication
   (lambda (self)
     (indication-new 'null
 		    ""
 		    "composer-base"
 		    (N_ "An internal composer"))))
 
-(define composer-base-current-locale
+(class-set-method! composer-base current-locale
   (lambda (self)
     (composer-delegate-method composer-current-locale self)))
 
-(define composer-base-children composer-base-%children)
+(class-set-method! composer-base children
+  composer-base-%children)
+
 (define composer-base-set-children! composer-base-set-%children!)
 
-(define composer-base-filter-event!
+(class-set-method! composer-base filter-event!
   (lambda (self ev)
     (or (actionset-handle-event (composer-base-%actset self) self ev)
 	(composer-delegate-method composer-filter-event! self ev))))
 
-(define composer-base-filter-upward-event!
+(class-set-method! composer-base filter-upward-event!
   (lambda (self sender ev)
     (or (actionset-handle-event (composer-base-%actset self) self ev)
 	(composer-raise-event self ev))))
 
-(define composer-base-text-length
+(class-set-method! composer-base text-length
   (lambda (self)
     (apply + (map-ustr-whole composer-text-length
 			     (composer-children self)))))
 
-(define composer-base-text
+(class-set-method! composer-base text
   (lambda (self start len)
     (let ((whole (append-map composer-text (composer-children self))))
       (sublist-rel whole start len))))
 
 ;; delegates to parent
-(define composer-base-supply-surrounding-text composer-surrounding-text)
+(class-set-method! composer-base supply-surrounding-text
+  composer-surrounding-text)
 
 ;; FIXME: don't count in events but in characters
-(define composer-base-held-events
+(class-set-method! composer-base held-events
   (lambda (self start len)
     (let ((whole (append-map composer-held-events (composer-children self))))
       (sublist-rel whole start len))))
 
-(define composer-base-action
+(class-set-method! composer-base action
   (lambda (self act-id)
       (or (actionset-fetch-action (composer-base-%actset self) self act-id)
 	  (composer-delegate-method composer-action self act-id))))
 
-(define composer-base-choosable
+(class-set-method! composer-base choosable
   (lambda (self cho-id)
     (composer-delegate-method composer-choosable self cho-id)))
-
-(define composer-base-method-table
-  (composer-mtbl-new
-   composer-base-finalize!
-   composer-base-idname
-   composer-base-indication
-   composer-base-current-locale
-   composer-base-children
-   composer-base-filter-event!
-   composer-base-filter-upward-event!
-   composer-base-text-length
-   composer-base-text
-   composer-base-supply-surrounding-text
-   composer-base-held-events
-   composer-base-action
-   composer-base-choosable))
-
-;; To make your own method table, perform as follows. The copy-list
-;; and setter combination is recommended to avoid being affected by
-;; change of composer-mtbl definition about ordering or new
-;; member.
-;;
-;;(define foo-composer-method-table
-;;  (let ((m (copy-list composer-base-method-table)))
-;;    (composer-mtbl-set-text!         m foo-composer-text)
-;;    (composer-mtbl-set-filter-event! m foo-composer-filter-event!)
-;;    m))
-;;
-;;(composer-base-new foo-composer-method-table ())
