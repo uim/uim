@@ -338,7 +338,10 @@
                      (else
                        (quotient nth tutcode-nr-candidate-max))))
          (cur-offset (* cur-page tutcode-nr-candidate-max))
-         (cur-labels (list-tail tutcode-heading-label-char-list cur-offset))
+         (cur-labels (list-tail
+                       tutcode-heading-label-char-list
+                       (remainder cur-offset
+                                  (length tutcode-heading-label-char-list))))
          (target-labels (member ch cur-labels))
          (offset (if target-labels
                    (- (length cur-labels) (length target-labels))
