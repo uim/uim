@@ -98,7 +98,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
 
     isAlwaysLeft = false;
 
-    subWin = new SubWindow( 0 );
+    subWin = NULL;
 }
 
 CandidateWindow::~CandidateWindow()
@@ -123,11 +123,15 @@ void CandidateWindow::activateCandwin( int dLimit )
     candidateIndex = -1;
     displayLimit = dLimit;
     pageIndex = 0;
+
+    if ( !subWin )
+        subWin = new SubWindow( this );
 }
 
 void CandidateWindow::deactivateCandwin()
 {
-    subWin->cancelHook();
+    if ( subWin )
+        subWin->cancelHook();
 
     hide();
     clearCandidates();
@@ -378,14 +382,16 @@ void CandidateWindow::updateLabel()
 
 void CandidateWindow::slotHookSubwindow( Q3ListViewItem * item )
 {
-    // cancel previous hook
-    subWin->cancelHook();
+    if ( subWin ) {
+        // cancel previous hook
+        subWin->cancelHook();
 
-    // hook annotation
-    QString annotationString = item->text( 2 );
-    if ( !annotationString.isEmpty() )
-    {
-        subWin->hookPopup( "Annotation", annotationString );
+        // hook annotation
+        QString annotationString = item->text( 2 );
+        if ( !annotationString.isEmpty() )
+        {
+            subWin->hookPopup( "Annotation", annotationString );
+        }
     }
 }
 
@@ -393,13 +399,15 @@ void CandidateWindow::slotHookSubwindow( Q3ListViewItem * item )
 void CandidateWindow::moveEvent( QMoveEvent *e )
 {
     // move subwindow
-    subWin->layoutWindow( e->pos().x() + width(), e->pos().y() );
+    if ( subWin )
+        subWin->layoutWindow( e->pos().x() + width(), e->pos().y() );
 }
 
 void CandidateWindow::resizeEvent( QResizeEvent *e )
 {
     // move subwindow
-    subWin->layoutWindow( pos().x() + e->size().width(), pos().y() );
+    if ( subWin )
+        subWin->layoutWindow( pos().x() + e->size().width(), pos().y() );
 }
 
 
