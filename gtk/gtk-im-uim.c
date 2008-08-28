@@ -1250,11 +1250,11 @@ im_uim_set_use_preedit(GtkIMContext *ic, gboolean use_preedit)
       uic->preedit_window = gtk_window_new(GTK_WINDOW_POPUP);
       preedit_label = gtk_label_new("");
       gtk_container_add(GTK_CONTAINER(uic->preedit_window), preedit_label);
+      gtk_widget_show(preedit_label);
     }
     uic->preedit_handler_id =
       g_signal_connect(G_OBJECT(ic), "preedit-changed",
 		       G_CALLBACK(show_preedit), preedit_label);
-    gtk_widget_show_all(uic->preedit_window);
   } else {
     if (uic->preedit_handler_id) {
       g_signal_handler_disconnect(G_OBJECT(ic), uic->preedit_handler_id);

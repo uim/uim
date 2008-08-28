@@ -126,7 +126,6 @@ void XimIM_impl::create_ic(RxPacket *p)
     if (!ic) {
 	mConn->push_error_packet(mID, icid,
 				 ERR_Style, "invalid im style");
-	mConn->terminate();
 	return;
     }
     std::pair<C16, XimIC *> n(ic->get_icid(), ic);

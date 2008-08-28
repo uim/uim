@@ -613,10 +613,6 @@ void Connection::xim_get_im_values(RxPacket *p)
 	rlen += 4;
     }
 
-    // since only one IMAttribute...
-    t->pushC16(imid);
-    t->pushC16(16); // length
-
     // XIMATTRIBUTE
     C16 nr_style;
     struct input_style *is = get_im_by_id(imid)->getInputStyles();
@@ -624,8 +620,12 @@ void Connection::xim_get_im_values(RxPacket *p)
 	;
     }
 
+    // since only one IMAttribute...
+    t->pushC16(imid);
+    t->pushC16((C16)(8 + nr_style * 4));
+
     t->pushC16(0); // attribute id
-    t->pushC16((C16)(nr_style * 4)); // length
+    t->pushC16((C16)(4 + nr_style * 4)); // length
 
     t->pushC16(nr_style); // number
     t->pushC16(0);
