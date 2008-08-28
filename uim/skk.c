@@ -3587,19 +3587,20 @@ open_skkserv(const char *hostname, int portnum, int family)
 
     if (connect(sock, ai->ai_addr, ai->ai_addrlen) == 0)
       break;
-    else
-      /* FIXME: gettext here to expand %s in accordance with the
-       * locale for the selected notification agent. See also the TODO
-       * comment of uim-notify.h  -- YamaKen 2008-02-11 */
-      uim_notify_fatal(N_("uim-skk: connect to %s port %s failed"), hostname, port);
+
     close(sock);
     sock = -1;
   }
 
   freeaddrinfo(aitop);
 
-  if (sock == -1)
+  if (sock == -1) {
+    /* FIXME: gettext here to expand %s in accordance with the
+     * locale for the selected notification agent. See also the TODO
+     * comment of uim-notify.h  -- YamaKen 2008-02-11 */
+    uim_notify_fatal(N_("uim-skk: connect to %s port %s failed"), hostname, port);
     return 0;
+  }
 
 #if 0
   uim_notify_info("uim-skk: SKKSERVER=%s", hostname);
