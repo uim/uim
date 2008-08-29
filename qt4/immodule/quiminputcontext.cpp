@@ -291,10 +291,27 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             case Qt::Key_SingleCandidate: key = UKey_SingleCandidate; break;
             case Qt::Key_MultipleCandidate: key = UKey_MultipleCandidate; break;
             case Qt::Key_PreviousCandidate: key = UKey_PreviousCandidate; break;
-            case Qt::Key_Shift: key = UKey_Shift_key; break;
-            case Qt::Key_Control: key = UKey_Control_key; break;
-            case Qt::Key_Alt: key = UKey_Alt_key; break;
-            case Qt::Key_Meta: key = UKey_Meta_key; break;
+            // Qt4 seems to add its own modifier even the event is
+            // KeyPress, which differs from ordinary model.  So remove
+            // them for uim.
+            case Qt::Key_Shift: key = UKey_Shift_key; 
+                if ( type == QEvent::KeyPress )
+                    modifier &= ~UMod_Shift;
+                break;
+            case Qt::Key_Control: key = UKey_Control_key;
+                if ( type == QEvent::KeyPress )
+        	    modifier &= ~UMod_Control;
+		break;
+            case Qt::Key_Alt: key = UKey_Alt_key;
+                if ( type == QEvent::KeyPress )
+                    modifier &= ~UMod_Alt;
+                break;
+            case Qt::Key_Meta: key = UKey_Meta_key;
+#ifdef Q_WS_X11
+                if ( type == QEvent::KeyPress )
+                    modifier &= ~UMod_Meta;
+#endif
+                break;
             case Qt::Key_CapsLock: key = UKey_Caps_Lock; break;
             case Qt::Key_NumLock: key = UKey_Num_Lock; break;
             case Qt::Key_ScrollLock: key = UKey_Scroll_Lock; break;
