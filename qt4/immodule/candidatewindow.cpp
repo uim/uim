@@ -81,6 +81,8 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     cList->setVScrollBarMode( Q3ScrollView::AlwaysOff );
     cList->setHScrollBarMode( Q3ScrollView::AlwaysOff );
     cList->setAllColumnsShowFocus( true );
+    QSizePolicy sp( QSizePolicy::Preferred, QSizePolicy::Preferred, false );
+    cList->setSizePolicy( sp );
     QObject::connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
                       this , SLOT( slotCandidateSelected( Q3ListViewItem * ) ) );
     QObject::connect( cList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
@@ -88,6 +90,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
 
     //setup NumberLabel
     numLabel = new QLabel( this, "candidateLabel" );
+    numLabel->adjustSize();
 
     stores.clear();
 
@@ -434,7 +437,7 @@ QSize CandidateListView::sizeHint( void ) const
     
     // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
     // FIXME!:
-    //    There may be more proper way. Now width is adjusted by indeterminal 3 spaces.
+    //    There may be more proper way. Now width is adjusted by indeterminal 3 'J'.
     int maxCharIndex = 0, maxCharCount = 0;
     for ( int i = 0; i < childCount(); i++ )
     {
@@ -445,7 +448,7 @@ QSize CandidateListView::sizeHint( void ) const
         }
     }
     QFontMetrics fm( font() );
-    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "   " + itemAtIndex( maxCharIndex )->text( 1 ) );
+    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "JJJ" + itemAtIndex( maxCharIndex )->text( 1 ) );
     if ( width < MIN_CAND_WIDTH )
         width = MIN_CAND_WIDTH;
     
