@@ -5,6 +5,7 @@ Overview of changes from 1.5.2 to 1.5.3
     * [CRITICAL] Fix bug with Qt4 >= 4.4.1, which makes applications
       infinite loop at the startup
     * [CRITICAL] Fix uim-helper handling which could cause unexpected crashes
+    * Fix key press with shift, control, alt, ane meta keys
 
   - uim-xim
     * Fix some minor protocol errors
