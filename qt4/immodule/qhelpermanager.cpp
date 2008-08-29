@@ -55,7 +55,7 @@ static QSocketNotifier *notifier = NULL;
 extern QUimInputContext *focusedInputContext;
 extern bool disableFocusedContext;
 
-extern Q3PtrList<QUimInputContext> contextList;
+extern QList<QUimInputContext *> contextList;
 
 QUimHelperManager::QUimHelperManager( QObject *parent )
         : QObject( parent )
@@ -152,14 +152,14 @@ void QUimHelperManager::parseHelperStr( const QString &str )
     else if ( str.startsWith( "prop_update_custom" ) )
     {
         // for custom api
-        QUimInputContext * cc;
         QStringList list = str.split( "\n" );
         if ( !list.isEmpty() && !list[ 0 ].isEmpty() &&
                 !list[ 1 ].isEmpty() && !list[ 2 ].isEmpty() )
         {
-            for ( cc = contextList.first(); cc; cc = contextList.next() )
+            QList<QUimInputContext *>::iterator it;
+            for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
-                uim_prop_update_custom( cc->uimContext(),
+                uim_prop_update_custom( ( *it )->uimContext(),
 					list[ 1 ].toUtf8(),
 					list[ 2 ].toUtf8() );
                 break;  /* all custom variables are global */
@@ -178,7 +178,6 @@ void QUimHelperManager::parseHelperStr( const QString &str )
 
 void QUimHelperManager::parseHelperStrImChange( const QString &str )
 {
-    QUimInputContext * cc;
     QStringList list = str.split( "\n" );
     QString im_name = list[ 1 ];
     QString im_name_sym = "'" + im_name;
@@ -195,11 +194,12 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     }
     else if ( str.startsWith( "im_change_whole_desktop" ) )
     {
-        for ( cc = contextList.first(); cc; cc = contextList.next() )
+        QList<QUimInputContext *>::iterator it;
+        for ( it = contextList.begin(); it != contextList.end(); ++it )
         {
-	    uim_switch_im( cc->uimContext(), im_name.toUtf8() );
-            cc->readIMConf();
-            uim_prop_update_custom( cc->uimContext(),
+            uim_switch_im( ( *it )->uimContext(), im_name.toUtf8() );
+            ( *it )->readIMConf();
+            uim_prop_update_custom( ( *it )->uimContext(),
 	                            "custom-preserved-default-im-name",
 				    im_name_sym.toUtf8() );
         }
@@ -208,11 +208,12 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     {
         if ( focusedInputContext )
         {
-            for ( cc = contextList.first(); cc; cc = contextList.next() )
+            QList<QUimInputContext *>::iterator it;
+            for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
-                uim_switch_im( cc->uimContext(), im_name.toUtf8() );
-                cc->readIMConf();
-                uim_prop_update_custom( cc->uimContext(),
+                uim_switch_im( ( *it )->uimContext(), im_name.toUtf8() );
+                ( *it )->readIMConf();
+                uim_prop_update_custom( ( *it )->uimContext(),
                                         "custom-preserved-default-im-name",
                                         im_name_sym.toUtf8() );
             }
