@@ -262,6 +262,7 @@ void CandidateWindow::setPage( int page )
         updateLabel();
 
     // size adjustment
+    cList->updateGeometry();
     adjustSize();
 }
 
