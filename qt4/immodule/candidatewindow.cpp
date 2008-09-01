@@ -438,7 +438,7 @@ QSize CandidateListView::sizeHint( void ) const
     
     // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
     // FIXME!:
-    //    There may be more proper way. Now width is adjusted by indeterminal 3 'J'.
+    //    There may be more proper way. Now width is adjusted by indeterminal 5 'J'.
     int maxCharIndex = 0, maxCharCount = 0;
     for ( int i = 0; i < childCount(); i++ )
     {
@@ -449,7 +449,8 @@ QSize CandidateListView::sizeHint( void ) const
         }
     }
     QFontMetrics fm( font() );
-    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "JJJ" + itemAtIndex( maxCharIndex )->text( 1 ) );
+    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "JJJJJ" + itemAtIndex( maxCharIndex )->text( 1 ) ) + itemMargin() * 4 + frameWidth() * 2;
+
     if ( width < MIN_CAND_WIDTH )
         width = MIN_CAND_WIDTH;
     
