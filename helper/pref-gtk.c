@@ -389,11 +389,19 @@ create_setting_button_box(const char *group_name)
 static GtkWidget *
 create_group_widget(const char *group_name)
 {
+  GtkWidget *scrolled_win;
   GtkWidget *vbox;
   GtkWidget *group_label;
   struct uim_custom_group *group;
   char *label_text;
+
+  scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
+				 GTK_POLICY_NEVER,
+				 GTK_POLICY_AUTOMATIC);
   vbox = gtk_vbox_new(FALSE, 8);
+  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled_win),
+					vbox);
 
   gtk_container_set_border_width(GTK_CONTAINER(vbox), 4);
 
@@ -414,7 +422,7 @@ create_group_widget(const char *group_name)
 
   uim_custom_group_free(group);
 
-  return vbox;
+  return scrolled_win;
 }
 
 static void create_sub_group_widgets(GtkWidget *parent_widget, const char *parent_group)
