@@ -264,23 +264,6 @@ keeps the size of it when showing the candidates.")
 
 (defvar uim-send-recv-again nil)
 
-(defvar uim-last-key-vector nil
-  "Recent key vector.")
-
-;; workaround for FSF Emacs-20/21
-(defvar uim-merge-next nil
-  "If the value is non-nil, uim-process-input merges next input.")
-
-(defvar uim-prefix-arg nil
-  "Recent current-prefix-arg value.")
-
-;; unprocessed keys
-(defvar uim-wait-next-key nil)
-
-(defvar uim-translated-key-vector nil)
-(defvar uim-untranslated-key-vector nil)
-
-(defvar uim-prefix-arg-vector nil)
 
 ;; if non-nil, pressed keys are displayed at echo region
 (defvar uim-keystroke-displaying nil)
@@ -315,6 +298,24 @@ keeps the size of it when showing the candidates.")
 (defvar uim-read-char-exclusive-original nil)
 
 ;;; Buffer Local Variables
+
+(uim-deflocalvar uim-last-key-vector nil
+		 "Recent key vector.")
+
+;; workaround for FSF Emacs-20/21
+(uim-deflocalvar uim-merge-next nil
+"If the value is non-nil, uim-process-input merges next input.")
+
+(uim-deflocalvar uim-prefix-arg nil "Recent current-prefix-arg value.")
+
+;; unprocessed keys
+(uim-deflocalvar uim-wait-next-key nil)
+
+(uim-deflocalvar uim-translated-key-vector nil)
+(uim-deflocalvar uim-untranslated-key-vector nil)
+
+(uim-deflocalvar uim-prefix-arg-vector nil)
+
 
 (uim-deflocalvar uim-mode-line-string " U"
 		 "mode-line string of uim-mode.")
