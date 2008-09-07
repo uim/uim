@@ -1,10 +1,10 @@
-uim 1.5.2 Release Note
+uim 1.5.3 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.5.2 is latest stable release of uim.
+This distribution of uim 1.5.3 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -15,7 +15,7 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Critical bug fixes for uim.el users and a few minor fixes against 1.5.1. See NEWS for the detailed changes.
+Critical bug fixes for Qt4 bridge.  Also a few minor fixes against 1.5.2. See NEWS for the detailed changes.
 
 
 What's New in 1.5.0
