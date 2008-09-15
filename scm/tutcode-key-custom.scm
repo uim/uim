@@ -59,6 +59,12 @@
 	       (N_ "[TUT-Code] toggle hiragana/katakana mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-kigou-toggle-key '("<IgnoreShift><Control>_")
+               '(tutcode-keys1 mode-transition)
+               '(key)
+               (N_ "[TUT-Code] toggle kigou mode")
+               (N_ "long description will be here"))
+
 (define-custom 'tutcode-mazegaki-start-sequence "alj"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")
