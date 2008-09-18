@@ -147,14 +147,14 @@
 (define rk-backspace
   (lambda (context)
     (if
-     (not (null? (rk-context-seq context)))
+     (pair? (rk-context-seq context))
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
        ;; If the sequence contains only non-representable keysyms after
        ;; the deletion, flush them.
        (if (and
-	    (not (null? (rk-context-seq context)))
+	    (pair? (rk-context-seq context))
 	    (null? (remove
 		    (lambda (x)
 		     (and
@@ -169,7 +169,7 @@
 (define rk-delete
   (lambda (context)
     (if
-     (not (null? (rk-context-seq context)))
+     (pair? (rk-context-seq context))
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
