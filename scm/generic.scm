@@ -209,9 +209,15 @@
   (lambda (pc key state rkc)
     (cond
      ((generic-off-key? key state)
-      (rk-flush rkc)
-      (generic-context-set-on! pc #f)
-      #f)
+      (let ((cands (generic-context-cands pc)))
+	(if (not (null? cands))
+	    (begin
+	      (im-commit pc (nth (generic-context-rk-nth pc) cands))
+	      (generic-context-flush pc))
+	    (if (not (string=? (rk-pending rkc) "")) ;; flush pending rk
+		(generic-context-flush pc)))
+	(generic-context-set-on! pc #f)
+	#f))
      ((generic-prev-candidate-key? key state)
       (generic-context-set-converting! pc #t)
       (generic-proc-converting-state pc key state)
