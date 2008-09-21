@@ -109,6 +109,7 @@
      (candidate-op-count    0)
      (raw-commit            #f)
      (converting            #f)
+     (multi-cand-input      #f)
      (cands                 ()))))
 (define-record 'generic-context generic-context-rec-spec)
 (define generic-context-new-internal generic-context-new)
@@ -126,6 +127,7 @@
     (generic-context-set-rk-nth! pc 0)
     (generic-context-set-candidate-op-count! pc 0)
     (generic-context-set-converting! pc #f)
+    (generic-context-set-multi-cand-input! pc #f)
     (generic-context-set-cands! pc '())
     (rk-flush (generic-context-rk-context pc))))
 
@@ -229,9 +231,8 @@
      ((generic-backspace-key? key state)
       (rk-backspace rkc)
       (generic-context-set-rk-nth! pc 0)
-      (let* ((cs (rk-current-seq rkc))
-	     (cands (if cs (cadr cs) '())))
-	(generic-context-set-cands! pc cands))
+      (generic-update-input-state-cands pc key state
+					rkc (rk-context-seq rkc) #f)
       #f)
      ((generic-commit-key? key state)
       (generic-commit pc)
@@ -250,6 +251,58 @@
       #f)
      (else
       #t))))
+
+(define generic-update-input-state-cands
+  (lambda (pc key state rkc prev-seq res)
+    (let* ((cs (rk-current-seq rkc))
+	   (cands (if cs (cadr cs) '())))
+      (generic-context-set-cands! pc cands)
+      (if (not (rk-partial? rkc)) ;; exact match or no-match
+	  (begin
+	    (if cs
+		(if (null? (cdr cands)) 
+		    ;; single candidate
+		    (begin
+		      (im-commit pc
+				 (nth (generic-context-rk-nth pc) cands))
+		      (generic-context-flush pc)
+		      (im-deactivate-candidate-selector pc))
+		    ;; show candidates for the Pinyin like input method
+		    (if (and generic-use-candidate-window?
+			     generic-show-candidate-implicitly?)
+			(begin
+			  (im-activate-candidate-selector
+			   pc (length cands) generic-nr-candidate-max)
+			  (im-select-candidate pc 0)
+			  (generic-context-set-converting! pc #t)
+			  (generic-context-set-candidate-op-count!
+			   pc
+			   (+ 1 (generic-context-candidate-op-count pc)))))))
+	    ;; commit no-matching key
+	    (if (and
+		 (not cs)
+		 (null? (rk-context-seq rkc))
+		 (or
+		  (null? prev-seq)
+		  res)
+		 (not (generic-backspace-key? key state))) ;; mmm...
+		(im-commit-raw pc)))
+	  ;; partial match
+	  (begin
+	    (if cs
+		(if (not (null? (cdr cands)))
+		    ;; show candidates even in input-state
+		    (begin
+		      (if (and generic-use-candidate-window?
+			       generic-show-candidate-implicitly?)
+			  (begin
+			    (im-activate-candidate-selector
+			     pc (length cands) generic-nr-candidate-max)
+			    (im-select-candidate pc 0)
+			    (generic-context-set-candidate-op-count!
+			     pc (+ 1 (generic-context-candidate-op-count pc)))
+			    (generic-context-set-multi-cand-input! pc #t)
+			    ))))))))))
 
 (define generic-proc-input-state
   (lambda (pc key state)
@@ -272,28 +325,151 @@
 	       (generic-context-set-candidate-op-count! pc 0)
 	       (generic-context-set-cands! pc '())
 	       (im-deactivate-candidate-selector pc)))
+	 (generic-update-input-state-cands pc key state rkc seq res))))))
 
-	 (let* ((cs (rk-current-seq rkc))
-		(cands (if cs (cadr cs) '())))
-	   (generic-context-set-cands! pc cands)
-	   (if (not (rk-partial? rkc)) ;; exact match or no-match
-	       (begin
-		 (if (and
-		      cs
-		      (null? (cdr cands)))
-		     (begin
-		       (im-commit pc
-				  (nth (generic-context-rk-nth pc) cands))
-		       (generic-context-flush pc)
-		       (im-deactivate-candidate-selector pc)))
-		 ;; commit no-matching key
-		 (if (and
-		      (not cs)
-		      (null? (rk-context-seq rkc))
-		      (or
-		       (null? seq)
-		       res))
-		     (im-commit-raw pc))))))))))
+(define generic-proc-specific-multi-cand-input-state
+  (lambda (pc key state rkc)
+    (cond
+     ((generic-off-key? key state)
+      (let ((cands (generic-context-cands pc)))
+	(if (not (null? cands))
+	    (begin
+	      (im-commit pc (nth (generic-context-rk-nth pc) cands))
+	      (generic-context-flush pc))
+	    (if (not (string=? (rk-pending rkc) "")) ;; flush pending rk
+		(generic-context-flush pc)))
+	(generic-context-set-on! pc #f)
+	(im-deactivate-candidate-selector pc)
+	#f))
+     ((generic-prev-candidate-key? key state)
+      (generic-context-set-converting! pc #t)
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-proc-converting-state pc key state)
+      #f)
+     ((generic-next-candidate-key? key state)
+      (generic-context-set-converting! pc #t)
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-proc-converting-state pc key state)
+      #f)
+     ((generic-prev-page-key? key state)
+      (generic-context-set-converting! pc #t)
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-proc-converting-state pc key state)
+      #f)
+     ((generic-next-page-key? key state)
+      (generic-context-set-converting! pc #t)
+      (generic-context-set-multi-cand-input! pc #f)
+      (im-shift-page-candidate pc #t)
+      #f)
+     ((generic-backspace-key? key state)
+      (rk-backspace rkc)
+      (generic-context-set-rk-nth! pc 0)
+      (generic-update-multi-cand-state-cands pc key state
+					     rkc (rk-context-seq rkc) #f)
+      #f)
+     ((generic-commit-key? key state)
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-commit pc)
+      #f)
+     ((generic-cancel-key? key state)
+      (im-deactivate-candidate-selector pc)
+      (generic-context-flush pc)
+      #f)
+     ((symbol? key)
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-commit pc)
+      (im-commit-raw pc)
+      #f)
+     ((and generic-commit-candidate-by-numeral-key?
+	   (ichar-numeric? key))
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-commit-by-numkey pc key)
+      #f)
+
+     ((and (modifier-key-mask state)
+	   (not (shift-key-mask state)))
+      (generic-context-set-multi-cand-input! pc #f)
+      (generic-commit pc)
+      (im-commit-raw pc)
+      #f)
+     (else
+      #t))))
+
+(define generic-update-multi-cand-state-cands
+  (lambda (pc key state rkc prev-seq res)
+    (let* ((cs (rk-current-seq rkc))
+	   (cands (if cs (cadr cs) '())))
+      (generic-context-set-cands! pc cands)
+      (if (not (rk-partial? rkc)) ;; exact match or no-match
+	  (begin
+	    (if cs
+		(if (null? (cdr cands))
+		    (begin
+		      (im-commit pc
+				 (nth (generic-context-rk-nth pc) cands))
+		      (generic-context-flush pc)
+		      (im-deactivate-candidate-selector pc))
+		    ;; show candidates for the Pinyin like input method
+		    (if (and
+			 generic-use-candidate-window?
+			 generic-show-candidate-implicitly?)
+			(begin
+			  (im-activate-candidate-selector
+			   pc (length cands) generic-nr-candidate-max)
+			  (im-select-candidate pc 0)
+			  (generic-context-set-converting! pc #t)))))
+	    ;; commit no-matching key (backspace only)
+	    (if (and
+		 (not cs)
+		 (null? (rk-context-seq rkc))
+		 (or
+		  (null? prev-seq)
+		  res)
+		 (generic-backspace-key? key state))
+		(begin
+		  (im-deactivate-candidate-selector pc)
+		  (generic-context-set-candidate-op-count! pc 0)
+		  (generic-context-set-multi-cand-input! pc #f))))
+	  ;; partial match
+	  (begin
+	    (if cs
+		(if (not (null? (cdr cands)))
+		    (begin
+		      (im-activate-candidate-selector
+		       pc (length cands) generic-nr-candidate-max)
+		      (im-select-candidate pc 0))
+		    ;; single candidate
+		    (begin
+		      (im-deactivate-candidate-selector pc)
+		      (generic-context-set-candidate-op-count! pc 0)
+		      (generic-context-set-multi-cand-input! pc #f)))
+		;; no-candidate
+		(begin
+		  (im-deactivate-candidate-selector pc)
+		  (generic-context-set-candidate-op-count! pc 0)
+		  (generic-context-set-multi-cand-input! pc #f))))))))
+
+(define generic-proc-multi-cand-input-state
+  (lambda (pc key state)
+    (let* ((rkc (generic-context-rk-context pc))
+    	   (seq (rk-context-seq rkc))
+	   (res #f))
+      (and
+       (generic-proc-specific-multi-cand-input-state pc key state rkc)
+       (begin
+	 (set! res
+	       (rk-push-key!
+		rkc
+		(charcode->string key)))
+         (if res
+	     ;; commit matched word and continue new rk
+	     (begin
+	       (im-commit pc (nth (generic-context-rk-nth pc) res))
+	       (generic-context-set-rk-nth! pc 0)
+	       (generic-context-set-candidate-op-count! pc 0)
+	       (im-deactivate-candidate-selector pc)
+	       (generic-context-set-multi-cand-input! pc #f)))
+	 (generic-update-multi-cand-state-cands pc key state rkc seq res))))))
 
 (define generic-proc-converting-state
   (lambda (pc key state)
@@ -396,9 +572,8 @@
 	     (im-deactivate-candidate-selector pc)
 	     (generic-context-set-candidate-op-count! pc 0)
 	     (generic-context-set-converting! pc #f)
-	     (let* ((cs (rk-current-seq rkc))
-		    (cands (if cs (cadr cs) '())))
-	       (generic-context-set-cands! pc cands))
+	     (generic-update-input-state-cands pc key state
+					       rkc (rk-context-seq rkc) #f)
 	     #f)
 	   #t)
        (if (generic-commit-key? key state)
@@ -458,7 +633,9 @@
 	(if (generic-context-on pc)
 	    (if (generic-context-converting pc)
 		(generic-proc-converting-state pc key state)
-		(generic-proc-input-state pc key state))
+		(if (generic-context-multi-cand-input pc)
+		    (generic-proc-multi-cand-input-state pc key state)
+		    (generic-proc-input-state pc key state)))
 	    (generic-proc-off-mode pc key state)))
     (generic-update-preedit pc)
     ()))
