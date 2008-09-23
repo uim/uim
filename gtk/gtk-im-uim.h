@@ -54,6 +54,9 @@
 #define IM_UIM_USE_SNOOPER      0
 #define IM_UIM_USE_TOPLEVEL     1
 
+/* enable per page candidates handling */
+#define IM_UIM_USE_NEW_PAGE_HANDLING	1
+
 typedef struct _IMUIMContext {
   struct _GtkIMContext parent;
   struct _GtkIMContext *slave;

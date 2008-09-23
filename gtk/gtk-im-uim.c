@@ -647,16 +647,53 @@ update_prop_list_cb(void *ptr, const char *str)
   }
 }
 
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+static GSList *
+get_page_candidates(IMUIMContext *uic,
+		    guint page,
+		    guint nr,
+		    guint display_limit)
+{
+  gint i, page_nr, start;
+  GSList *list = NULL;
+
+  start = page * display_limit;
+  if ((nr - start) > display_limit)
+    page_nr = display_limit;
+  else
+    page_nr = nr - start;
+
+  for (i = start; i < (start + page_nr); i++) {
+    uim_candidate cand = uim_get_candidate(uic->uc, i,
+		    display_limit ? (int)(i % display_limit) : i);
+    list = g_slist_prepend(list, cand);
+  }
+  list = g_slist_reverse(list);
+
+  return list;
+}
+
+static void
+free_candidates(GSList *candidates)
+{
+  g_slist_foreach(candidates, (GFunc)uim_candidate_free, NULL);
+  g_slist_free(candidates);
+}
+#endif /* IM_UIM_USE_NEW_PAGE_HANDLING */
+ 
 static void
 cand_activate_cb(void *ptr, int nr, int display_limit)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
   GSList *list = NULL;
+#if !IM_UIM_USE_NEW_PAGE_HANDLING
   uim_candidate cand;
   gint i;
+#endif
 
   uic->cwin_is_active = TRUE;
 
+#if !IM_UIM_USE_NEW_PAGE_HANDLING
   for (i = 0; i < nr; i++) {
     cand = uim_get_candidate(uic->uc, i, display_limit ? i % display_limit : i);
     list = g_slist_prepend(list, cand);
@@ -667,6 +704,16 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
 
   g_slist_foreach(list, (GFunc)uim_candidate_free, NULL);
   g_slist_free(list);
+#else
+  list = get_page_candidates(uic, 0, nr, display_limit);
+
+  uim_cand_win_gtk_set_nr_candidates(uic->cwin, nr, display_limit);
+  uic->cwin->candidate_index = -1; /* Don't select any candidate at first */
+  uim_cand_win_gtk_set_page_candidates(uic->cwin, 0, list);
+  uim_cand_win_gtk_set_page(uic->cwin, 0);
+
+  free_candidates(list);
+#endif /* IM_UIM_USE_NEW_PAGE_HANDLING */
 
   layout_candwin(uic);
   gtk_widget_show(GTK_WIDGET(uic->cwin));
@@ -683,9 +730,22 @@ static void
 cand_select_cb(void *ptr, int index)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+  guint new_page;
+#endif
 
   layout_candwin(uic);
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+  new_page = uim_cand_win_gtk_query_new_page_by_cand_select(uic->cwin, index);
 
+  if (!uic->cwin->stores->pdata[new_page]) {
+    guint nr = uic->cwin->nr_candidates;
+    guint display_limit = uic->cwin->display_limit;
+    GSList *list = get_page_candidates(uic, new_page, nr, display_limit);
+    uim_cand_win_gtk_set_page_candidates(uic->cwin, new_page, list);
+    free_candidates(list);
+  }
+#endif /* IM_UIM_USE_NEW_PAGE_HANDLING */
   g_signal_handlers_block_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
   uim_cand_win_gtk_set_index(uic->cwin, index);
   g_signal_handlers_unblock_by_func(uic->cwin, (gpointer)(uintptr_t)index_changed_cb, uic);
@@ -695,11 +755,25 @@ static void
 cand_shift_page_cb(void *ptr, int direction)
 {
   IMUIMContext *uic = (IMUIMContext *)ptr;
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+  guint new_page;
+#endif
 
   layout_candwin(uic);
 
   g_signal_handlers_block_by_func(uic->cwin,
 				  (gpointer)(uintptr_t)index_changed_cb, uic);
+#if IM_UIM_USE_NEW_PAGE_HANDLING
+  new_page = uim_cand_win_gtk_query_new_page_by_shift_page(uic->cwin,
+							 direction);
+  if (!uic->cwin->stores->pdata[new_page]) {
+    guint nr = uic->cwin->nr_candidates;
+    guint display_limit = uic->cwin->display_limit;
+    GSList *list = get_page_candidates(uic, new_page, nr, display_limit);
+    uim_cand_win_gtk_set_page_candidates(uic->cwin, new_page, list);
+    free_candidates(list);
+  }
+#endif /* IM_UIM_USE_NEW_PAGE_HANDLING */
   uim_cand_win_gtk_shift_page(uic->cwin, direction);
   if (uic->cwin->candidate_index != -1)
     uim_set_candidate_index(uic->uc, uic->cwin->candidate_index);
