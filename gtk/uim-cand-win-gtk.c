@@ -692,6 +692,7 @@ uim_cand_win_gtk_set_index(UIMCandWinGtk *cwin, gint index)
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cwin->view));
 
     gtk_tree_selection_unselect_all(selection);
+    update_label(cwin);
   }
 }
 
