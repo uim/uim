@@ -110,7 +110,7 @@
 
 (define-custom 'tutcode-nr-candidate-max 10
   '(tutcode candwin)
-  '(integer 1 20)
+  '(integer 1 99)
   (N_ "Number of candidates in candidate window at a time")
   (N_ "long description will be here."))
 
