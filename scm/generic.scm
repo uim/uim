@@ -382,8 +382,8 @@
       #f)
      ((and generic-commit-candidate-by-numeral-key?
 	   (ichar-numeric? key))
-      (generic-context-set-multi-cand-input! pc #f)
-      (generic-commit-by-numkey pc key)
+      (if (generic-commit-by-numkey pc key)
+	  (generic-context-set-multi-cand-input! pc #f))
       #f)
 
      ((and (modifier-key-mask state)
