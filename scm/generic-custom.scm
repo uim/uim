@@ -60,7 +60,7 @@
   (N_ "Select candidate by numeral keys")
   (N_ "long description will be here."))
 
-(define-custom 'generic-show-candidate-implicitly? #f
+(define-custom 'generic-show-candidate-implicitly? #t
   '(other-ims candwin)
   '(boolean)
   (N_ "Show candidate window without explicit conversion action")
