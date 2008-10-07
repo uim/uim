@@ -44,6 +44,7 @@
 #include "uim/uim.h"
 #include "compose.h"
 
+#define UIM_XIM_USE_NEW_PAGE_HANDLING 1
 
 // preedit ornament
 #define PE_NORMAL 0
@@ -53,6 +54,9 @@
 
 typedef wchar_t uchar;
 typedef std::list<uchar> uString;
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+typedef std::vector<const char *> CandList;
+#endif
 struct pe_ustring {
     uString s;
     int stat;
@@ -169,6 +173,10 @@ public:
     void candidate_shift_page(int direction);
     void candidate_deactivate();
     void candidate_update();
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    void prepare_page_candidates(int page);
+    int prepare_page_candidates_by_index(int index);
+#endif
     void update_prop_list(const char *str);
     void update_prop_label(const char *str);
     bool hasActiveCandwin();
@@ -210,12 +218,18 @@ private:
     Convdisp *mConvdisp;
     uim_context mUc;
     bool mCandwinActive;
-    int mDisplayLimit;
+    uint mDisplayLimit;
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    uint mNumCandidates;
+#endif
     int mNumPage;
     int current_cand_selection;
     int current_page;
     bool need_hilite_selected_cand;
     std::vector<const char *> active_candidates;
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    std::vector<CandList> mCandidateSlot;
+#endif
     char *mEngineName;
     char *mLocaleName;
     bool mCaretStateShown;

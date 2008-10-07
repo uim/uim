@@ -248,6 +248,99 @@ void CandidateWindow::deactivateCand()
     hide();
     isActive = false;
 }
+void CandidateWindow::setNrCandidates( const QStringList &list )
+{
+#if defined(ENABLE_DEBUG)
+    qDebug( "uim-candwin-qt: setNrCandidates()" );
+#endif
+    if ( list[ 1 ].isEmpty() || list[ 2 ].isEmpty() )
+        return ;
+
+    // remove old data
+    cList->clear();
+    stores.clear();
+
+    // set default value
+    candidateIndex = -1;
+    nrCandidates = list[ 1 ].toInt();
+    displayLimit = list[ 2 ].toInt();
+    needHilite = false;
+    isActive = true;
+
+    // setup dummy stores
+    for ( int i = 0; i < nrCandidates; i++ ) {
+	CandData d;
+	stores.append( d );
+    }
+}
+void CandidateWindow::setPageCandidates( const QStringList &list )
+{
+#if defined(ENABLE_DEBUG)
+    qDebug( "uim-candwin-qt: setPageCandidates()" );
+#endif
+    /**
+     * format: set_page_candidates\ncharset=$charset\npage=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
+     */
+
+    int page = 0;
+
+    // get charset and create codec
+    QTextCodec *codec = NULL;
+    if ( !list[ 1 ].isEmpty() && list[ 1 ].startsWith( "charset" ) )
+    {
+        const QStringList l = QStringList::split( "=", list[ 1 ] );
+        codec = QTextCodec::codecForName( l[ 1 ] );
+    }
+
+    // get page
+    if ( !list[ 2 ].isEmpty() && list[ 2 ].startsWith( "page" ) )
+    {
+        const QStringList l = QStringList::split( "=", list[ 2 ] );
+        page = l[ 1 ].toInt();
+    }
+
+    for ( int i = 3; !list[ i ].isNull(); i++ )
+    {
+        // case list[i] = ""
+        if ( list[ i ].isEmpty() )
+            break;
+
+        // split heading_label and cand_str
+        QStringList l = QStringList::split( "\t", list [ i ], true );
+
+        // store data
+        CandData &d = stores[page * displayLimit + i - 3];
+        QString headString;
+        if ( codec )
+            headString = codec->toUnicode( l [ 0 ] );
+        else
+            headString = l [ 0 ];
+
+        d.label = headString;
+
+	// XXX Current prime (0.4.6) may return candidate string
+	// containing "\t", and we can't handle annotation in another
+	// window yet.
+	l.pop_front();
+	QString candString = l.join( "\t" );
+
+        if ( codec )
+            d.str = codec->toUnicode( candString );
+        else
+            d.str = candString;
+    }
+}
+void CandidateWindow::showPage( const QStringList &list )
+{
+#if defined(ENABLE_DEBUG)
+    qDebug( "uim-candwin-qt: showPage()" );
+#endif
+    const int page = list[ 1 ].toInt();
+
+    setPage( page );
+    adjustCandidateWindowSize();
+    show();
+}
 void CandidateWindow::slotStdinActivated( int fd )
 {
     char buf[ 4096 ];
@@ -300,6 +393,12 @@ void CandidateWindow::strParse( const QString& str )
             moveCand( list );
         else if ( QString::compare( "deactivate", ( *it ) ) == 0 )
             deactivateCand();
+        else if ( QString::compare( "set_nr_candidates", ( *it ) ) == 0 )
+            setNrCandidates( list );
+        else if ( QString::compare( "set_page_candidates", ( *it ) ) == 0 )
+            setPageCandidates( list );
+        else if ( QString::compare( "show_page", ( *it ) ) == 0 )
+            showPage( list );
     }
 }
 

@@ -64,6 +64,10 @@ public:
     void showCand();
     void deactivateCand();
 
+    void setNrCandidates( const QStringList &list );
+    void setPageCandidates( const QStringList &list );
+    void showPage( const QStringList &list );
+
 public slots:
     void slotStdinActivated( int );
     void slotCandidateSelected( QListViewItem* );
@@ -112,7 +116,7 @@ public:
         {
             QListViewItemIterator it( firstChild() );
             uint j = 0;
-            for ( ; it.current() && it.current() != item; ++it, ++j );
+            for ( ; it.current() && it.current() != item; ++it, ++j ) ;
 
             if ( !it.current() )
                 return -1;

@@ -333,6 +333,9 @@ InputContext::InputContext(XimServer *svr, XimIC *ic, const char *engine)
     mFocusedContext = this;
     createUimContext(engine);
     mCandwinActive = false;
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    mNumCandidates = 0;
+#endif
     mNumPage = 1;
     mDisplayLimit = 0;
     mCaretStateShown = false;
@@ -802,14 +805,31 @@ XimIC *InputContext::get_ic()
 void InputContext::candidate_activate(int nr, int display_limit)
 {
     int i;
+#if !UIM_XIM_USE_NEW_PAGE_HANDLING
     const char *cand_str;
     const char *heading_label;
     uim_candidate cand[nr];
-    std::vector<const char *> candidates;
     char *str;
+#else
+    std::vector<CandList>::iterator slot_it;
+#endif
+    std::vector<const char *> candidates;
+    std::vector<const char *>::iterator it;
 
     Canddisp *disp = canddisp_singleton();
 
+    mDisplayLimit = display_limit;
+    if (display_limit)
+	mNumPage = (nr - 1) / display_limit + 1;
+#if !UIM_XIM_USE_NEW_PAGE_HANDLING
+    /* remove old data */
+    if (!active_candidates.empty()) {
+	for (it = active_candidates.begin();
+	     it != active_candidates.end();
+	     ++it)
+	    free((char *)*it);
+    }
+    active_candidates.clear();
     for (i = 0; i < nr; i++) {
 	cand[i] = uim_get_candidate(mUc, i,
 			display_limit ? i % display_limit : i);
@@ -827,14 +847,33 @@ void InputContext::candidate_activate(int nr, int display_limit)
 	}
     }
     disp->activate(candidates, display_limit);
+    active_candidates = candidates;
     for (i = 0; i < nr; i++) {
 	uim_candidate_free(cand[i]);
     }
+#else /* !UIM_XIM_USE_NEW_PAGE_HANDLING */
+    mNumCandidates = nr;
+    /* remove old data */
+    for (slot_it = mCandidateSlot.begin();
+	 slot_it != mCandidateSlot.end();
+	 ++slot_it) {
+	if (*slot_it != (CandList)0) {
+	    for (it = (*slot_it).begin(); it != (*slot_it).end(); ++it)
+		free((char *)*it);
+	}
+    }
+    mCandidateSlot.clear();
+
+    /* setup dummy data */
+    for (i = 0; i < mNumPage; i++)
+    	mCandidateSlot.push_back((CandList)0);
+
+    prepare_page_candidates(0);
+    disp->set_nr_candidates(nr, display_limit);
+    disp->set_page_candidates(0, mCandidateSlot[0]);
+    disp->show_page(0);
+#endif /* !UIM_XIM_USE_NEW_PAGE_HANDLING */
     mCandwinActive = true;
-    active_candidates = candidates;
-    mDisplayLimit = display_limit;
-    if (display_limit)
-	mNumPage = (nr - 1) / display_limit + 1;
 
     current_cand_selection = 0;
     current_page = 0;
@@ -845,14 +884,90 @@ void InputContext::candidate_update()
 {
     Canddisp *disp = canddisp_singleton();
 
+#if !UIM_XIM_USE_NEW_PAGE_HANDLING
     disp->activate(active_candidates, mDisplayLimit);
+#else
+    prepare_page_candidates(current_page);
+    disp->set_nr_candidates(mNumCandidates, mDisplayLimit);
+    disp->set_page_candidates(current_page, mCandidateSlot[current_page]);
+    disp->show_page(current_page);
+#endif
     disp->select(current_cand_selection, need_hilite_selected_cand);
     disp->show();
 }
 
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+void InputContext::prepare_page_candidates(int page)
+{
+    int i;
+    int page_nr, start;
+    const char *cand_str;
+    const char *heading_label;
+    char *str;
+    CandList candidates;
+
+    if (page < 0)
+	return;
+
+    if (mCandidateSlot[page] != (CandList)0)
+	return;
+
+    start = page * mDisplayLimit;
+    if (mDisplayLimit && (mNumCandidates - start) > mDisplayLimit)
+	page_nr = mDisplayLimit;
+    else
+	page_nr = mNumCandidates - start;
+
+    uim_candidate cand[page_nr];
+
+    for (i = 0; i < page_nr; i++) {
+	cand[i] = uim_get_candidate(mUc, (i + start),
+			mDisplayLimit ? (i + start) % mDisplayLimit :
+					(i + start));
+	cand_str = uim_candidate_get_cand_str(cand[i]);
+	heading_label = uim_candidate_get_heading_label(cand[i]);
+	//annotation_str = uim_candidate_get_annotation(cand[i]);
+	if (cand_str && heading_label) {
+	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + 2);
+	    sprintf(str, "%s\t%s", heading_label, cand_str);
+	    candidates.push_back((const char *)str);
+	}
+	else {
+	    fprintf(stderr, "Warning: cand_str at %d is NULL\n", i);
+	    candidates.push_back((const char *)strdup("\t"));
+	}
+    }
+
+    for (i = 0; i < page_nr; i++)
+	uim_candidate_free(cand[i]);
+
+    mCandidateSlot[page] = candidates;
+}
+
+int InputContext::prepare_page_candidates_by_index(int index)
+{
+    int page;
+
+    page = mDisplayLimit ? index / mDisplayLimit : 0;
+    prepare_page_candidates(page);
+
+    return page;
+}
+#endif
+
 void InputContext::candidate_select(int index)
 {
     Canddisp *disp = canddisp_singleton();
+
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    int new_page = prepare_page_candidates_by_index(index);
+
+    if (new_page < 0)
+	return;	// shouldn't happen
+
+    if (current_page != new_page)
+	disp->set_page_candidates(new_page, mCandidateSlot[new_page]);
+#endif
     disp->select(index, need_hilite_selected_cand);
     current_cand_selection = index;
     if (mDisplayLimit)
@@ -879,10 +994,20 @@ void InputContext::candidate_shift_page(int direction)
 
 	new_index = (current_page * mDisplayLimit) + (current_cand_selection % mDisplayLimit);
 
+#if !UIM_XIM_USE_NEW_PAGE_HANDLING
 	if (new_index >= active_candidates.size())
 	    current_cand_selection = active_candidates.size() - 1;
+#else
+	if (new_index >= mNumCandidates)
+	    current_cand_selection = mNumCandidates - 1;
+#endif
 	else
 	    current_cand_selection = new_index;
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    	Canddisp *disp = canddisp_singleton();
+	prepare_page_candidates(current_page);
+	disp->set_page_candidates(current_page, mCandidateSlot[current_page]);
+#endif
     }
     candidate_select(current_cand_selection);
     if (need_hilite_selected_cand)
@@ -896,9 +1021,24 @@ void InputContext::candidate_deactivate()
 	Canddisp *disp = canddisp_singleton();
 
 	disp->deactivate();
+#if !UIM_XIM_USE_NEW_PAGE_HANDLING
 	for (i = active_candidates.begin(); i != active_candidates.end(); ++i) {
 	    free((char *)*i);
 	}
+	active_candidates.clear();
+#else
+	int j;
+	for (j = 0; j < mNumPage; j++) {
+	    if ((CandList)mCandidateSlot[j] != (CandList)0) {
+		for (i = mCandidateSlot[j].begin();
+		     i != mCandidateSlot[j].end();
+		     ++i) {
+		    free((char *)*i);
+		}
+	    }
+	}
+	mCandidateSlot.clear();
+#endif
 	mCandwinActive = false;
 	current_cand_selection = 0;
     }

@@ -138,6 +138,48 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
     check_connection();
 }
 
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+void Canddisp::set_nr_candidates(int nr, int display_limit)
+{
+    if (!candwin_w)
+	return;
+
+    fprintf(candwin_w, "set_nr_candidates\n");
+    fprintf(candwin_w, "%d\n", nr);
+    fprintf(candwin_w, "%d\n", display_limit);
+    fprintf(candwin_w, "\n");
+    fflush(candwin_w);
+    check_connection();
+}
+
+void Canddisp::set_page_candidates(int page, CandList candidates)
+{
+    std::vector<const char *>::iterator i;
+
+    if (!candwin_w)
+	return;
+
+    fprintf(candwin_w, "set_page_candidates\ncharset=UTF-8\npage=%d\n", page);
+    for (i = candidates.begin(); i != candidates.end(); ++i)
+	fprintf(candwin_w, "%s\n", *i);
+    fprintf(candwin_w, "\n");
+    fflush(candwin_w);
+    check_connection();
+}
+
+void Canddisp::show_page(int page)
+{
+    if (!candwin_w)
+	return;
+
+    fprintf(candwin_w, "show_page\n");
+    fprintf(candwin_w, "%d\n", page);
+    fprintf(candwin_w, "\n");
+    fflush(candwin_w);
+    check_connection();
+}
+#endif /* UIM_XIM_USE_NEW_PAGE_HANDLING */
+
 void Canddisp::select(int index, bool need_hilite)
 {
     if (!candwin_w)

@@ -96,6 +96,7 @@ UIMCandidateWindow *candidate_window_new(void);
 static gint uim_cand_win_gtk_get_index(UIMCandidateWindow *cwin);
 static void uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index);
 static void uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page);
+static void uim_cand_win_gtk_set_page_candidates(UIMCandidateWindow *cwin, guint page, GSList *candidates);
 
 static void uim_cand_win_gtk_layout(void);
 
@@ -150,6 +151,9 @@ static void candwin_update(gchar **str);
 static void candwin_move(char **str);
 static void candwin_show(void);
 static void candwin_deactivate(void);
+static void candwin_set_nr_candidates(gchar **str);
+static void candwin_set_page_candidates(gchar **str);
+static void candwin_show_page(gchar **str);
 static void str_parse(char *str);
 
 static void index_changed_cb(UIMCandidateWindow *cwin)
@@ -286,8 +290,10 @@ cb_tree_view_destroy(GtkWidget *widget, GPtrArray *stores)
 
   for (i = cwin->stores->len - 1; i >= 0; i--) {
     GtkListStore *store = g_ptr_array_remove_index(cwin->stores, i);
-    gtk_list_store_clear(store);
-    g_object_unref(G_OBJECT(store));
+    if (store) {
+      gtk_list_store_clear(store);
+      g_object_unref(G_OBJECT(store));
+    }
   }
   g_ptr_array_free(cwin->stores, TRUE);
 }
@@ -405,8 +411,10 @@ candwin_activate(gchar **str)
   /* remove old data */
   for (i = cwin->stores->len - 1; i >= 0; i--) {
     GtkListStore *store = g_ptr_array_remove_index(cwin->stores, i);
-    gtk_list_store_clear(store);
-    g_object_unref(G_OBJECT(store));
+    if (store) {
+      gtk_list_store_clear(store);
+      g_object_unref(G_OBJECT(store));
+    }
   }
 
   if (!strncmp(str[1], "charset=", 8))
@@ -546,6 +554,99 @@ caret_state_hide()
   gtk_widget_hide(cwin->caret_state_indicator);
 }
 
+static void
+candwin_set_nr_candidates(gchar **str)
+{
+  guint nr, display_limit;
+  gint i, nr_stores = 1;
+
+  sscanf(str[1], "%ud", &nr);
+  sscanf(str[2], "%ud", &display_limit);
+
+  cwin->candidate_index = -1;
+  cwin->nr_candidates = nr;
+  cwin->display_limit = display_limit;
+  cwin->need_hilite = FALSE;
+  cwin->is_active = TRUE;
+
+  if (cwin->stores == NULL)
+    cwin->stores = g_ptr_array_new();
+
+  /* remove old data */
+  for (i = cwin->stores->len - 1; i >= 0; i--) {
+    GtkListStore *store = g_ptr_array_remove_index(cwin->stores, i);
+    if (store) {
+      gtk_list_store_clear(store);
+      g_object_unref(G_OBJECT(store));
+    }
+  }
+
+  /* calculate number of GtkListStores to create */
+  if (display_limit) {
+    nr_stores = nr / display_limit;
+    if (nr > display_limit * nr_stores)
+      nr_stores++;
+  }
+
+  /* setup dummy array */
+  for (i = 0; i < nr_stores; i++)
+    g_ptr_array_add(cwin->stores, NULL);
+}
+
+static void
+candwin_set_page_candidates(gchar **str)
+{
+  gsize rbytes, wbytes;
+  gint i;
+  guint j = 1;
+  gchar *utf8_str;
+  const gchar *charset;
+  GSList *candidates = NULL;
+  int page;
+
+  if (!strncmp(str[1], "charset=", 8))
+    charset = str[1] + 8;
+  else
+    charset = "UTF-8";
+
+  if (!strncmp(str[2], "page=", 5)) {
+    page = atoi(str[2] + 5);
+    i = 3;
+  } else {
+    /* shouldn't happen */
+    page = 0;
+    i = 2;
+  }
+
+  for ( ; str[i]; i++) {
+    if (strcmp(str[i], "") == 0) {
+      break;
+    }
+    utf8_str = g_convert(str[i],
+			 -1,
+			 "UTF-8",
+			 charset,
+			 &rbytes, &wbytes, NULL);
+
+    candidates = g_slist_prepend(candidates, utf8_str);
+    j++;
+  }
+  candidates = g_slist_reverse(candidates);
+
+  uim_cand_win_gtk_set_page_candidates(cwin, page, candidates);
+}
+
+static void
+candwin_show_page(gchar **str)
+{
+  int page;
+
+  sscanf(str[1], "%d", &page);
+
+  uim_cand_win_gtk_set_page(cwin, page);
+  gtk_widget_show_all(GTK_WIDGET(cwin));
+}
+
 static void str_parse(gchar *str)
 {
   gchar **tmp;
@@ -573,6 +674,12 @@ static void str_parse(gchar *str)
       caret_state_update();
     } else if (strcmp("hide_caret_state", command) == 0) {
       caret_state_hide();
+    } else if (strcmp("set_nr_candidates", command) == 0) {
+      candwin_set_nr_candidates(tmp);
+    } else if (strcmp("set_page_candidates", command) == 0) {
+      candwin_set_page_candidates(tmp);
+    } else if (strcmp("show_page", command) == 0) {
+      candwin_show_page(tmp);
     }
   }
   g_strfreev(tmp);
@@ -679,6 +786,7 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
 ->view));
 
     gtk_tree_selection_unselect_all(selection);
+    update_label(cwin);
   }
 }
 
@@ -695,20 +803,15 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
   len = cwin->stores->len;
   g_return_if_fail(len);
 
-  if (page < 0) {
-    gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
-			    GTK_TREE_MODEL(cwin->stores->pdata[len - 1]));
+  if (page < 0)
     new_page = len - 1;
-  } else if (page >= (gint) len) {
-    gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
-			    GTK_TREE_MODEL(cwin->stores->pdata[0]));
+  else if (page >= (gint) len)
     new_page = 0;
-  } else {
-    gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
-
-			    GTK_TREE_MODEL(cwin->stores->pdata[page]));
+  else
     new_page = page;
-  }
+
+  gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
+			  GTK_TREE_MODEL(cwin->stores->pdata[new_page]));
 
   cwin->page_index = new_page;
 
@@ -728,8 +831,50 @@ uim_cand_win_gtk_set_page(UIMCandidateWindow *cwin, gint page)
  /* shrink the window */
   gtk_window_resize(GTK_WINDOW(cwin), CANDWIN_DEFAULT_WIDTH, 1);
 
-  if (new_index != -1)
-    uim_cand_win_gtk_set_index(cwin, new_index);
+  uim_cand_win_gtk_set_index(cwin, new_index);
+}
+
+/* copied from uim-cand-win-gtk.c and adjusted */
+static void
+uim_cand_win_gtk_set_page_candidates(UIMCandidateWindow *cwin,
+				     guint page,
+				     GSList *candidates)
+{
+  GtkListStore *store;
+  GSList *node;
+  gint j, len;
+
+  g_return_if_fail(UIM_IS_CANDIDATE_WINDOW(cwin));
+
+  if (candidates == NULL)
+    return;
+
+  len = g_slist_length(candidates);
+
+  /* create GtkListStores, and set candidates */
+  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+
+  cwin->stores->pdata[page] = store;
+  /* set candidates */
+  for (j = 0, node = g_slist_nth(candidates, j);
+       j < len;
+       j++, node = g_slist_next(node))
+  {
+    GtkTreeIter ti;
+
+    if (node) {
+      gchar *str = node->data;
+      gchar **column = g_strsplit(str, "\t", 2);
+      gtk_list_store_append(store, &ti);
+      gtk_list_store_set(store, &ti,
+			 COLUMN_HEADING, column[0],
+			 COLUMN_CANDIDATE, column[1],
+			 TERMINATOR);
+
+      g_strfreev(column);
+      g_free(str);
+    }
+  }
 }
 
 static void

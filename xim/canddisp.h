@@ -34,6 +34,7 @@
 #ifndef UIM_XIM_CANDDISP_H
 #define UIM_XIM_CANDDISP_H
 
+#include "ximserver.h"
 #include <vector>
 
 class Canddisp {
@@ -49,6 +50,11 @@ public:
     void show_caret_state(const char *str, int timeout);
     void update_caret_state();
     void hide_caret_state();
+#if UIM_XIM_USE_NEW_PAGE_HANDLING
+    void set_nr_candidates(int nr, int display_limit);
+    void set_page_candidates(int page, CandList candidates);
+    void show_page(int page);
+#endif
 private:
     void check_connection();
 };

@@ -573,7 +573,7 @@ main(int argc, char **argv)
 {
     const char *locale;
 
-    printf("UIM-XIM bridge. Now supporting multiple locales.\n");
+    printf("uim <-> XIM bridge. Supporting multiple locales.\n");
 
     get_runtime_env();
 
