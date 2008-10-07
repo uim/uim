@@ -658,7 +658,7 @@ get_page_candidates(IMUIMContext *uic,
   GSList *list = NULL;
 
   start = page * display_limit;
-  if ((nr - start) > display_limit)
+  if (display_limit && (nr - start) > display_limit)
     page_nr = display_limit;
   else
     page_nr = nr - start;
