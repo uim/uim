@@ -105,7 +105,10 @@ CandidateWindow::~CandidateWindow()
     {
         // clear stored candidate datas
         for ( unsigned int i = 0; i < stores.size(); i++ )
-            uim_candidate_free( stores[ i ] );
+	{
+	    if ( stores[ i ] )
+		uim_candidate_free( stores[ i ] );
+	}
         stores.clear();
     }
 }
@@ -143,7 +146,10 @@ void CandidateWindow::clearCandidates()
 
     // clear stored candidate datas
     for ( unsigned int i = 0; i < stores.size(); i++ )
-        uim_candidate_free( stores[ i ] );
+    {
+	if ( stores[ i ] )
+	    uim_candidate_free( stores[ i ] );
+    }
     stores.clear();
 }
 
@@ -172,6 +178,55 @@ void CandidateWindow::setCandidates( int dl, const QValueList<uim_candidate> &ca
     // shift to default page
     setPage( 0 );
 }
+
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+void CandidateWindow::setNrCandidates( int nrCands, int dLimit )
+{
+#ifdef ENABLE_DEBUG
+    qDebug( "setNrCandidates" );
+#endif
+    // remove old data
+    if ( !stores.isEmpty() )
+	clearCandidates();
+
+    candidateIndex = -1;
+    displayLimit = dLimit;
+    nrCandidates = nrCands;
+    pageIndex = 0;
+
+    // setup dummy candidates
+    for ( int i = 0; i < nrCandidates; i++ )
+    {
+	uim_candidate d = NULL;
+	stores.append( d );
+    }
+
+    if ( !subWin )
+	subWin = new SubWindow( this );
+}
+
+void CandidateWindow::setPageCandidates( int page, const QValueList<uim_candidate> &candidates )
+{
+#ifdef ENABLE_DEBUG
+    qDebug( "setPageCandidates" );
+#endif
+
+    if ( candidates.isEmpty() )
+	return;
+
+    // set candidates
+    int i, start, pageNr;
+    start = page * displayLimit;
+
+    if ( displayLimit && ( nrCandidates - start ) > displayLimit )
+	pageNr = displayLimit;
+    else
+	pageNr = nrCandidates - start;
+
+    for ( i = 0; i < pageNr; i++ )
+	stores[ start + i ] = candidates[ i ];
+}
+#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
 void CandidateWindow::setPage( int page )
 {
