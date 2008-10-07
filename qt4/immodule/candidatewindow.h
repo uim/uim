@@ -70,10 +70,17 @@ public:
     void setIndex( int totalindex );
     void setIndexInPage( int index );
 
+    void setNrCandidates( int nrCands, int dLimit );
+    void setPageCandidates( int page, const Q3ValueList<uim_candidate> &candidates );
+
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
     QSize sizeHint(void) const;
 
+    int nrCandidates;
+    int displayLimit;
+    int candidateIndex;
+    int pageIndex;
 protected slots:
     void slotCandidateSelected( Q3ListViewItem* );
     void slotHookSubwindow( Q3ListViewItem* );
@@ -92,10 +99,6 @@ protected:
 
     Q3ValueList<uim_candidate> stores;
 
-    int nrCandidates;
-    int candidateIndex;
-    int displayLimit;
-    int pageIndex;
 
     bool isAlwaysLeft;
 
