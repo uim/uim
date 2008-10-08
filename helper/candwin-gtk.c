@@ -488,6 +488,7 @@ candwin_activate(gchar **str)
       }
     }
   }
+  g_slist_free(candidates);
 
   uim_cand_win_gtk_set_page(cwin, 0);
   update_label(cwin);
@@ -634,6 +635,7 @@ candwin_set_page_candidates(gchar **str)
   candidates = g_slist_reverse(candidates);
 
   uim_cand_win_gtk_set_page_candidates(cwin, page, candidates);
+  g_slist_free(candidates);
 }
 
 static void
