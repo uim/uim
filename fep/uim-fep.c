@@ -674,7 +674,7 @@ static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *win
     return pid;
   }
 }
-#elif defined(__svr4__) || defined(__sgi__)
+#elif defined(__svr4__) || defined(__sgi__) || defined(__SVR4)
 static pid_t my_forkpty(int *amaster, struct termios *termp, struct winsize *winp)
 {
   pid_t pid;
