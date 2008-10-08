@@ -808,7 +808,6 @@ void InputContext::candidate_activate(int nr, int display_limit)
 #if !UIM_XIM_USE_NEW_PAGE_HANDLING
     const char *cand_str;
     const char *heading_label;
-    uim_candidate cand[nr];
     char *str;
 #else
     std::vector<CandList>::iterator slot_it;
@@ -831,11 +830,12 @@ void InputContext::candidate_activate(int nr, int display_limit)
     }
     active_candidates.clear();
     for (i = 0; i < nr; i++) {
-	cand[i] = uim_get_candidate(mUc, i,
+	uim_candidate cand;
+	cand = uim_get_candidate(mUc, i,
 			display_limit ? i % display_limit : i);
-	cand_str = uim_candidate_get_cand_str(cand[i]);
-	heading_label = uim_candidate_get_heading_label(cand[i]);
-	//annotation_str = uim_candidate_get_annotation(cand[i]);
+	cand_str = uim_candidate_get_cand_str(cand);
+	heading_label = uim_candidate_get_heading_label(cand);
+	//annotation_str = uim_candidate_get_annotation(cand);
 	if (cand_str && heading_label) {
 	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + 2);
 	    sprintf(str, "%s\t%s", heading_label, cand_str);
@@ -845,12 +845,10 @@ void InputContext::candidate_activate(int nr, int display_limit)
 	    fprintf(stderr, "Warning: cand_str at %d is NULL\n", i);
 	    candidates.push_back((const char *)strdup("\t"));
 	}
+	uim_candidate_free(cand);
     }
     disp->activate(candidates, display_limit);
     active_candidates = candidates;
-    for (i = 0; i < nr; i++) {
-	uim_candidate_free(cand[i]);
-    }
 #else /* !UIM_XIM_USE_NEW_PAGE_HANDLING */
     mNumCandidates = nr;
     /* remove old data */
@@ -918,15 +916,14 @@ void InputContext::prepare_page_candidates(int page)
     else
 	page_nr = mNumCandidates - start;
 
-    uim_candidate cand[page_nr];
-
     for (i = 0; i < page_nr; i++) {
-	cand[i] = uim_get_candidate(mUc, (i + start),
+	uim_candidate cand;
+	cand = uim_get_candidate(mUc, (i + start),
 			mDisplayLimit ? (i + start) % mDisplayLimit :
 					(i + start));
-	cand_str = uim_candidate_get_cand_str(cand[i]);
-	heading_label = uim_candidate_get_heading_label(cand[i]);
-	//annotation_str = uim_candidate_get_annotation(cand[i]);
+	cand_str = uim_candidate_get_cand_str(cand);
+	heading_label = uim_candidate_get_heading_label(cand);
+	//annotation_str = uim_candidate_get_annotation(cand);
 	if (cand_str && heading_label) {
 	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + 2);
 	    sprintf(str, "%s\t%s", heading_label, cand_str);
@@ -936,10 +933,8 @@ void InputContext::prepare_page_candidates(int page)
 	    fprintf(stderr, "Warning: cand_str at %d is NULL\n", i);
 	    candidates.push_back((const char *)strdup("\t"));
 	}
+	uim_candidate_free(cand);
     }
-
-    for (i = 0; i < page_nr; i++)
-	uim_candidate_free(cand[i]);
 
     mCandidateSlot[page] = candidates;
 }
