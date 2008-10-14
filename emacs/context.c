@@ -320,6 +320,7 @@ release_uim_agent_context(int context_id)
 	  else
 		agent_context_list_head = ptr->next;
 
+	  free(ua);
 	  free(ptr);
 
 	  return context_id;
