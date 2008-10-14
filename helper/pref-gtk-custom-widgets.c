@@ -301,7 +301,7 @@ add_custom_type_integer(GtkWidget *vbox, struct uim_custom *custom)
 						  custom->range->as_int.max, /* maximum */
 						  1.0,
 						  10.0,
-						  100.0);
+						  0);
   spin = gtk_spin_button_new(adjustment, 1.0, 0);
   gtk_size_group_add_widget(spin_button_sgroup, spin);
   gtk_box_pack_end (GTK_BOX (hbox), spin, FALSE, TRUE, 0);
