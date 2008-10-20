@@ -231,17 +231,6 @@ quit_confirm(void)
   }
 }
 
-static gboolean
-key_press_cb(GtkWidget *widget, GdkEventKey *event)
-{
-  if (event->keyval == GDK_Escape) {
-    quit_confirm();
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
 static gint
 delete_event_cb(GtkWidget *widget, gpointer data)
 {
@@ -509,8 +498,6 @@ create_pref_window(void)
 
   g_signal_connect(G_OBJECT (window), "delete_event",
 		   G_CALLBACK (delete_event_cb), NULL);
-  g_signal_connect(G_OBJECT (window), "key_press_event",
-		   G_CALLBACK (key_press_cb), NULL);
 
 
   pref_hbox = gtk_hbox_new(FALSE, 8);
