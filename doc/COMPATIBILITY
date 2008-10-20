@@ -60,7 +60,7 @@ The changes are described below in most recently updated order.
 Summary: New helper-candwin protocol about setting the candidates
 Affects: Helper program developers
 Updates: Helper-candwin protocol
-Version: 1.6.0
+Version: 1.5.4
 Revision: ac5584
 Date: 2008-10-07
 Modifier: Etsushi Kato
