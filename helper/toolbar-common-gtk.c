@@ -845,7 +845,6 @@ register_icon(const gchar *name)
   GtkIconSet *icon_set;
   GdkPixbuf *pixbuf;
   GString *filename;
-  GError *error = NULL;
 
   g_return_val_if_fail(uim_factory, FALSE);
 
@@ -856,9 +855,8 @@ register_icon(const gchar *name)
   g_string_append(filename, name);
   g_string_append(filename, ".png");
 
-  pixbuf = gdk_pixbuf_new_from_file(filename->str, &error);
+  pixbuf = gdk_pixbuf_new_from_file(filename->str, NULL);
   if (!pixbuf) {
-    fprintf(stderr, "error: %s\n", error->message);
     g_string_free(filename, TRUE);
     return FALSE;
   }
