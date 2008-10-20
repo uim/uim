@@ -68,3 +68,16 @@
  (N_ "Pinyin (Traditional)")
  (N_ "Pinyin input method (Traditional Chinese version)")
  pinyin-big5-init-handler)
+
+(define py-new-init-handler
+  (lambda (id im arg)
+    (require "py-new.scm")
+    (generic-context-new id im py-new-rule #f)))
+
+(generic-register-im
+ 'py-new
+ "zh_TW:zh_HK"
+ "UTF-8"
+ (N_ "Py new")
+ (N_ "Py new input method")
+ py-new-init-handler)

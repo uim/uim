@@ -57,6 +57,23 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: New helper-candwin protocol about setting the candidates
+Affects: Helper program developers
+Updates: Helper-candwin protocol
+Version: 1.6.0
+Revision: ac5584
+Date: 2008-10-07
+Modifier: Etsushi Kato
+Related:
+URL:
+Changes:
+  (new) "set_nr_candidates"
+  (new) "set_page_candidates"
+  (new) "show_page"
+Description:
+  New helper-candwin message from uim-xim to uim-candwin-{gtk,qt} for 
+  the light weight page handling.
+------------------------------------------------------------------------------
 Summary: Feature provision of 'uim'
 Affects: uim developers, IM developers
 Updates:

@@ -259,8 +259,10 @@ uim_cand_win_gtk_dispose (GObject *obj)
   if (cwin->stores) {
     guint i;
 
-    for (i = 0; i < cwin->stores->len; i++)
-      g_object_unref(G_OBJECT(cwin->stores->pdata[i]));
+    for (i = 0; i < cwin->stores->len; i++) {
+      if (cwin->stores->pdata[i])
+	g_object_unref(G_OBJECT(cwin->stores->pdata[i]));
+    }
     g_ptr_array_free(cwin->stores, TRUE);
     cwin->stores = NULL;
   }
@@ -460,6 +462,44 @@ tree_view_button_press(GtkWidget *widget, GdkEventButton *event, gpointer data)
 }
 
 void
+uim_cand_win_gtk_set_nr_candidates(UIMCandWinGtk *cwin,
+				   guint nr,
+				   guint display_limit)
+{
+  gint i, nr_stores = 1;
+
+  g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
+
+  cwin->nr_candidates = nr;
+  cwin->display_limit = display_limit;
+
+  if (cwin->stores == NULL)
+    cwin->stores = g_ptr_array_new();
+
+  /* remove old data */
+  if (cwin->page_index >= 0 && cwin->page_index < (int) cwin->stores->len) {
+    /* Remove data from current page to shrink the window */
+    if (cwin->stores->pdata[cwin->page_index])
+      gtk_list_store_clear(cwin->stores->pdata[cwin->page_index]);
+  }
+  for (i = cwin->stores->len - 1; i >= 0; i--) {
+    GtkListStore *store = g_ptr_array_remove_index(cwin->stores, i);
+    if (G_OBJECT(store))
+      g_object_unref(G_OBJECT(store));
+  }
+  /* calculate number of GtkListStores to create */
+  if (display_limit) {
+    nr_stores = nr / display_limit;
+    if (cwin->nr_candidates > display_limit * nr_stores)
+      nr_stores++;
+  }
+
+  /* setup dummy array */
+  for (i = 0; i < nr_stores; i++)
+    g_ptr_array_add(cwin->stores, NULL);
+}
+
+void
 uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 				guint display_limit,
 				GSList *candidates)
@@ -474,11 +514,13 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
   /* remove old data */
   if (cwin->page_index >= 0 && cwin->page_index < (int) cwin->stores->len) {
     /* Remove data from current page to shrink the window */
-    gtk_list_store_clear(cwin->stores->pdata[cwin->page_index]);
+    if (cwin->stores->pdata[cwin->page_index])
+      gtk_list_store_clear(cwin->stores->pdata[cwin->page_index]);
   }
   for (i = cwin->stores->len - 1; i >= 0; i--) {
     GtkListStore *store = g_ptr_array_remove_index(cwin->stores, i);
-    g_object_unref(G_OBJECT(store));
+    if (store)
+      g_object_unref(G_OBJECT(store));
   }
 
   cwin->candidate_index = -1;
@@ -549,6 +591,50 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 }
 
 void
+uim_cand_win_gtk_set_page_candidates(UIMCandWinGtk *cwin,
+				     guint page,
+				     GSList *candidates)
+{
+  GtkListStore *store;
+  GSList *node;
+  gint j, len;
+
+  g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
+
+  if (candidates == NULL)
+    return;
+
+  cwin->sub_window.active = FALSE;
+  len = g_slist_length(candidates);
+
+  /* create GtkListStores, and set candidates */
+  store = gtk_list_store_new(NR_COLUMNS,
+			     G_TYPE_STRING,
+			     G_TYPE_STRING,
+			     G_TYPE_STRING);
+
+  cwin->stores->pdata[page] = store;
+
+  /* set candidates */
+  for (j = 0, node = g_slist_nth(candidates, j);
+       j < len;
+       j++, node = g_slist_next(node))
+  {
+    GtkTreeIter ti;
+
+    if (node) {
+      uim_candidate cand = node->data;
+      gtk_list_store_append(store, &ti);
+      gtk_list_store_set(store, &ti,
+			 COLUMN_HEADING,    uim_candidate_get_heading_label(cand),
+			 COLUMN_CANDIDATE,  uim_candidate_get_cand_str(cand),
+			 COLUMN_ANNOTATION, NULL, /*uim_candidate_get_annotation(cand),*/
+			 TERMINATOR);
+    }
+  }
+}
+
+void
 uim_cand_win_gtk_clear_candidates(UIMCandWinGtk *cwin)
 {
   uim_cand_win_gtk_set_candidates(cwin, 0, NULL);
@@ -606,6 +692,7 @@ uim_cand_win_gtk_set_index(UIMCandWinGtk *cwin, gint index)
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cwin->view));
 
     gtk_tree_selection_unselect_all(selection);
+    update_label(cwin);
   }
 }
 
@@ -638,19 +725,15 @@ uim_cand_win_gtk_set_page(UIMCandWinGtk *cwin, gint page)
   len = cwin->stores->len;
   g_return_if_fail(len);
 
-  if (page < 0) {
-    gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
-			    GTK_TREE_MODEL(cwin->stores->pdata[len - 1]));
+  if (page < 0)
     new_page = len - 1;
-  } else if (page >= (gint) len) {
-    gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
-			    GTK_TREE_MODEL(cwin->stores->pdata[0]));
+  else if (page >= (gint) len)
     new_page = 0;
-  } else {
-    gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
-			    GTK_TREE_MODEL(cwin->stores->pdata[page]));
+  else
     new_page = page;
-  }
+
+  gtk_tree_view_set_model(GTK_TREE_VIEW(cwin->view),
+			  GTK_TREE_MODEL(cwin->stores->pdata[new_page]));
 
   cwin->page_index = new_page;
 
@@ -691,6 +774,50 @@ uim_cand_win_gtk_shift_page(UIMCandWinGtk *cwin, gboolean forward)
   } else {
     uim_cand_win_gtk_set_page(cwin, cwin->page_index - 1);
   }
+}
+
+guint
+uim_cand_win_gtk_query_new_page_by_cand_select(UIMCandWinGtk *cwin, gint index)
+{
+  guint new_page;
+
+  g_return_val_if_fail(UIM_IS_CAND_WIN_GTK(cwin), 0);
+
+  if (index >= (gint)cwin->nr_candidates)
+    index = 0;
+
+  if (index >= 0 && cwin->display_limit)
+    new_page = index / cwin->display_limit;
+  else
+    new_page = cwin->page_index;
+
+  return new_page;
+}
+
+guint
+uim_cand_win_gtk_query_new_page_by_shift_page(UIMCandWinGtk *cwin,
+					    gboolean forward)
+{
+  gint index;
+  guint new_page, len;
+
+  g_return_val_if_fail(UIM_IS_CAND_WIN_GTK(cwin), 0);
+
+  len = cwin->stores->len;
+
+  if (forward)
+    index = cwin->page_index + 1;
+  else
+    index = cwin->page_index - 1;
+
+  if (index < 0)
+    new_page = len - 1;
+  else if (index >= (gint)len)
+    new_page = 0;
+  else
+    new_page = index;
+
+  return new_page;
 }
 
 void

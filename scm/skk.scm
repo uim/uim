@@ -1112,12 +1112,11 @@
 		(skk-rk-pending? sc)
 		(not (rk-current-seq rkc)))
 	       ;; ddskk compatible behavior but not in SKK speciation
-	       (begin
+	       (let ((str (rk-push-key! rkc (charcode->string
+					      (ichar-downcase key)))))
 		 (skk-context-set-state! sc 'skk-state-kanji)
-		 (skk-append-string sc (rk-push-key!
-					rkc
-					(charcode->string
-					 (ichar-downcase key))))
+		 (if str
+		   (skk-append-string sc str))
 		 #f)
 	       (let* ((residual-kana (rk-push-key-last! rkc)))
 		 ;; handle preceding "n"

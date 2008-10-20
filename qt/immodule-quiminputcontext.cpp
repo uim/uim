@@ -500,16 +500,14 @@ void QUimInputContext::cand_select_cb( void *ptr, int index )
     ic->candidateSelect( index );
 }
 
-void QUimInputContext::cand_shift_page_cb( void *ptr, int direction )
+void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
 {
 #ifdef ENABLE_DEBUG
     qDebug( "cand_shift_page_cb" );
 #endif
 
     QUimInputContext *ic = ( QUimInputContext* ) ptr;
-    CandidateWindow *cwin = ic->cwin;
-
-    cwin->shiftPage( direction );
+    ic->candidateShiftPage( (bool)forward );
 }
 
 void QUimInputContext::cand_deactivate_cb( void *ptr )
@@ -677,11 +675,47 @@ int QUimInputContext::getPreeditSelectionLength()
 }
 
 
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+void QUimInputContext::prepare_page_candidates( int page )
+{
+    QValueList<uim_candidate> list;
+    list.clear();
+
+    if ( page < 0 )
+	return;
+
+    if (pageFilled[ page ] )
+	return;
+
+    /* set page candidates */
+    uim_candidate cand;
+    int pageNr, start, nrCandidates, displayLimit;
+
+    nrCandidates = cwin->nrCandidates;
+    displayLimit = cwin->displayLimit;
+    start = page * displayLimit;
+
+    if ( displayLimit && ( nrCandidates - start ) > displayLimit )
+	pageNr = displayLimit;
+    else
+	pageNr = nrCandidates - start;
+
+    for ( int i = start; i < ( pageNr + start ); i++ )
+    {
+        cand = uim_get_candidate( m_uc, i, displayLimit ? i % displayLimit : i );
+        list.append( cand );
+    }
+    pageFilled[ page ] = true;
+    cwin->setPageCandidates( page, list );
+}
+#endif
+
 void QUimInputContext::candidateActivate( int nr, int displayLimit )
 {
     QValueList<uim_candidate> list;
     list.clear();
 
+#if !UIM_QT_USE_NEW_PAGE_HANDLING
     cwin->activateCandwin( displayLimit );
 
     /* set candidates */
@@ -693,13 +727,56 @@ void QUimInputContext::candidateActivate( int nr, int displayLimit )
     }
     cwin->setCandidates( displayLimit, list );
 
+#else /* !UIM_QT_USE_NEW_PAGE_HANDLING */
+    nrPages = displayLimit ? ( nr - 1 ) / displayLimit + 1 : 1;
+    pageFilled.clear();
+    for ( int i = 0; i < nrPages; i++ )
+	pageFilled.append( false );
+
+    cwin->setNrCandidates( nr, displayLimit );
+
+    // set page candidates
+    prepare_page_candidates( 0 );
+    cwin->setPage( 0 );
+#endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
     cwin->popup();
     candwinIsActive = true;
 }
 
 void QUimInputContext::candidateSelect( int index )
 {
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    int new_page;
+
+    if ( index >= cwin->nrCandidates )
+	index = 0;
+
+    if ( index >= 0 && cwin->displayLimit )
+	new_page = index / cwin->displayLimit;
+    else
+	new_page = cwin->pageIndex;
+
+    prepare_page_candidates( new_page );
+#endif
     cwin->setIndex( index );
+}
+
+void QUimInputContext::candidateShiftPage( bool forward )
+{
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    int new_page, index;
+
+    index = forward ? cwin->pageIndex + 1 : cwin->pageIndex - 1;
+    if ( index < 0 )
+	new_page = nrPages - 1;
+    else if ( index >= nrPages )
+	new_page = 0;
+    else
+	new_page = index;
+
+    prepare_page_candidates( new_page );
+#endif
+    cwin->shiftPage( forward );
 }
 
 void QUimInputContext::candidateDeactivate()

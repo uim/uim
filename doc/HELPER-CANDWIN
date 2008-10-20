@@ -21,6 +21,9 @@ Recieving Message format BNF
 	      show       |
 	      hide       |
 	      deactivate |
+	      set_nr_candidates |
+	      set_page_candidates |
+	      show_page  |
 	      show_caret_state |
 	      update_caret_state |
 	      hide_caret_state) "\n"
@@ -38,7 +41,7 @@ Recieving Message format BNF
    activate = "activate" "\n" label
    label = charset_specifier display_limit_str "\n" candidate_strs
    display_limit_str = display_limit_label num
-   display_limit_label = "display_limit"
+   display_limit_label = "display_limit="
    candidate_strs = candidate_str candidate_str candidate_str ....
    candidate_str = cand_head "\t" cand_candidate "\n"
    cand_head = str
@@ -71,19 +74,47 @@ Recieving Message format BNF
 
     deactivate = "deactivate" "\n"
 
-  7. show_caret_state
+  7. set_nr_candidates
+    Activating the candidate window with nr_cands and display_limit
+    value.  This can be used as a replacement of 'activate' message in
+    combination with following 'set_page_candidates' and 'show_page'
+    message for the efficient candidate page handling.
+
+    activate = "set_nr_candidates" "\n" nr_cands "\n" display_limit "\n"
+    nr_cands = num
+    display_limit = num
+
+  8. set_page_candidates
+    Set heading labels and candidates to the selected page of the
+    candidate window. The order of candidates must be as is.
+
+    set_page_candidates = "set_page_candidates" "\n" label
+    label = charset_specifier page_str "\n" candidate_strs
+    page_str = page_label num
+    page_label = "page="
+    candidate_strs = candidate_str candidate_str candidate_str ....
+    candidate_str = cand_head "\t" cand_candidate "\n"
+    cand_head = str
+    cand_candidate = str
+
+  9. show_page
+    Selecting the specified page of the candidate window.
+
+    show_page = "show_page" "\n" num "\n"
+
+  10. show_caret_state
     Show caret state of the input mode
 
     show_caret_state = "show_caret_state" "\n" timeout "\n" caret_state "\n"
     timeout = num
     caret_state = str
 
-  8. update_caret_state
+  11. update_caret_state
     Update caret state of the input mode
 
     update_caret_state = "update_caret_state" "\n"
 
-  9. hide_caret_state
+  12. hide_caret_state
     Hide caret state of the input mode
 
     hide_caret_state = "hide_caret_state" "\n"

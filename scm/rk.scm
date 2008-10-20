@@ -73,7 +73,7 @@
 	   (longest-head (reverse (rk-find-longest-head rseq rule)))
 	   (head
 	    (truncate-list seq
-			   (- (length seq) (length longest-tail))))
+			   (- len (length longest-tail))))
 	   (partial (rk-lib-find-partial-seq seq rule))
 	   (tail-partial
 	    (if (not (null? longest-tail))
@@ -95,7 +95,7 @@
        (if (not tail-partial)
 	   (let ((matched (rk-lib-find-seq (reverse longest-head) rule))
 		 (tail (reverse (truncate-list (reverse seq)
-					       (- (length seq)
+					       (- len
 						  (length longest-head))))))
 	     (if matched
 		 (set! res (cadr matched)))
@@ -147,14 +147,14 @@
 (define rk-backspace
   (lambda (context)
     (if
-     (> (length (rk-context-seq context)) 0)
+     (pair? (rk-context-seq context))
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))
        ;; If the sequence contains only non-representable keysyms after
        ;; the deletion, flush them.
        (if (and
-	    (not (null? (rk-context-seq context)))
+	    (pair? (rk-context-seq context))
 	    (null? (remove
 		    (lambda (x)
 		     (and
@@ -169,7 +169,7 @@
 (define rk-delete
   (lambda (context)
     (if
-     (> (length (rk-context-seq context)) 0)
+     (pair? (rk-context-seq context))
      (begin
        (rk-context-set-seq! context
 		 (cdr (rk-context-seq context)))

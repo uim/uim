@@ -41,6 +41,7 @@
 #ifdef Q_WS_X11
 #define UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK 1
 #endif
+#define UIM_QT_USE_NEW_PAGE_HANDLING 1
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
@@ -139,11 +140,15 @@ private:
     //candidate
     void candidateActivate( int nr, int displayLimit );
     void candidateSelect( int index );
+    void candidateShiftPage( bool forward );
     void candidateDeactivate();
     //imsw
     void switch_app_global_im( const char *str );
     void switch_system_global_im( const char *str );
 
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    void prepare_page_candidates( int page );
+#endif
 #ifdef Q_WS_X11
     // for X11 Compose
     static DefTree *mTreeTop;
@@ -172,6 +177,11 @@ protected:
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;
+
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    QList<bool> pageFilled;
+    int nrPages;
+#endif
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H */

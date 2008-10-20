@@ -60,6 +60,13 @@
   (N_ "Select candidate by numeral keys")
   (N_ "long description will be here."))
 
+(define-custom 'generic-show-candidate-implicitly? #t
+  '(other-ims candwin)
+  '(boolean)
+  (N_ "Show candidate window without explicit conversion action")
+  (N_ "long description will be here."))
+
+
 ;; activity dependency
 (custom-add-hook 'generic-candidate-op-count
 		 'custom-activity-hooks
@@ -72,6 +79,11 @@
 		   generic-use-candidate-window?))
 
 (custom-add-hook 'generic-commit-candidate-by-numeral-key?
+		 'custom-activity-hooks
+		 (lambda ()
+		   generic-use-candidate-window?))
+
+(custom-add-hook 'generic-show-candidate-implicitly?
 		 'custom-activity-hooks
 		 (lambda ()
 		   generic-use-candidate-window?))

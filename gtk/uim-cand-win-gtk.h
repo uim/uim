@@ -96,6 +96,12 @@ UIMCandWinGtk  *uim_cand_win_gtk_new			(void);
 void		uim_cand_win_gtk_set_candidates		(UIMCandWinGtk *cwin,
 							 guint disp_limit,
 							 GSList *candidates);
+void		uim_cand_win_gtk_set_page_candidates	(UIMCandWinGtk *cwin,
+							 guint page,
+							 GSList *candidates);
+void		uim_cand_win_gtk_set_nr_candidates	(UIMCandWinGtk *cwin,
+							 guint nr,
+							 guint disp_limit);
 void		uim_cand_win_gtk_clear_candidates	(UIMCandWinGtk *cwin);
 guint		uim_cand_win_gtk_get_nr_candidates	(UIMCandWinGtk *cwin);
 gint		uim_cand_win_gtk_get_index		(UIMCandWinGtk *cwin);
@@ -107,6 +113,12 @@ gint		uim_cand_win_gtk_get_page		(UIMCandWinGtk *cwin);
 void		uim_cand_win_gtk_set_page		(UIMCandWinGtk *cwin,
 							 gint page);
 void		uim_cand_win_gtk_shift_page		(UIMCandWinGtk *cwin,
+							 gboolean forward);
+guint		uim_cand_win_gtk_query_new_page_by_cand_select
+							(UIMCandWinGtk *cwin,
+							 gint index);
+guint		uim_cand_win_gtk_query_new_page_by_shift_page
+							(UIMCandWinGtk *cwin,
 							 gboolean forward);
 
 void		uim_cand_win_gtk_set_scrollable		(UIMCandWinGtk *cwin,

@@ -70,10 +70,17 @@ public:
     void setIndex( int totalindex );
     void setIndexInPage( int index );
 
+    void setNrCandidates( int nrCands, int dLimit );
+    void setPageCandidates( int page, const QValueList<uim_candidate> &candidates );
+
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
     QSize sizeHint(void) const;
 
+    int nrCandidates;
+    int candidateIndex;
+    int displayLimit;
+    int pageIndex;
 protected slots:
     void slotCandidateSelected( QListViewItem* );
     void slotHookSubwindow( QListViewItem* );
@@ -91,11 +98,6 @@ protected:
     QLabel *numLabel;
 
     QValueList<uim_candidate> stores;
-
-    int nrCandidates;
-    int candidateIndex;
-    int displayLimit;
-    int pageIndex;
 
     bool isAlwaysLeft;
 
