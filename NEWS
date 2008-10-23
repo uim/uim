@@ -1,3 +1,36 @@
+Overview of changes from 1.5.3 to 1.5.4
+=======================================
+* Enhancements
+  - Generic IM
+    * Cache candidates to improve the performance
+    * Add an option to show candidate window automatically when
+      multiple candidates are found
+
+  - uim-tutcode
+    * New symbol (kigou) input mode
+  
+  - GTK+ bridge
+  - Qt{3,4} bridge
+  - XIM bridge
+    * Improve the performance upon activating the window with large
+      number of candidates
+
+* Fixes
+  - uim.el
+    * Plug memory leak.
+    * Ignore 'd' command if valid uim-default-im-engine is defined
+
+  - uim-fep
+    * Fix compilation with Solaris' cc
+
+  - uim-skk
+    * Fix handling in non-matching upper case character in
+      skk-proc-state-direct.
+
+  - uim-pref-gtk
+    * Fix warning with GTK+-2.14.x
+
+
 Overview of changes from 1.5.2 to 1.5.3
 =======================================
 * Fixes
