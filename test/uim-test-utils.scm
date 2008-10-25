@@ -41,12 +41,10 @@
 (if (version<? *gaunit-version* "0.1.1")
     (error "GaUnit 0.1.1 is required"))
 
-(sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (string-append (sys-realpath ".")
-						     "/sigscheme/lib"))
-(sys-putenv "LIBUIM_SCM_FILES" (string-append (sys-realpath ".") "/scm"))
+(sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (uim-test-build-path "sigscheme" "lib"))
+(sys-putenv "LIBUIM_SCM_FILES" (uim-test-build-path "scm"))
 ;; FIXME: '.libs' is hardcoded
-(sys-putenv "LIBUIM_PLUGIN_LIB_DIR"
-	    (string-append (sys-realpath ".") "/uim/.libs"))
+(sys-putenv "LIBUIM_PLUGIN_LIB_DIR" (uim-test-build-path "uim" ".libs"))
 (sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)
 (sys-putenv "LIBUIM_VANILLA" "1")
 
@@ -124,9 +122,9 @@
       #t)))
 
 (eval
-   '(begin
+   `(begin
       (define (*uim-sh-setup-proc*)
-        (set! *uim-sh-process* (run-process "uim/uim-sh"
+        (set! *uim-sh-process* (run-process ,(uim-test-build-path "uim" "uim-sh")
                                             "-b"
                                             :input :pipe
                                             :output :pipe))

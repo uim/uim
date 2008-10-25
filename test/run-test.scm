@@ -33,20 +33,19 @@
 (use file.util)
 (use test.unit)
 
-(add-load-path ".")
+(define (uim-test-build-path . components)
+  (let* ((test-dir (sys-dirname *program-name*))
+         (top-dir (sys-realpath (build-path test-dir ".."))))
+    (apply build-path top-dir components)))
 
-(if (symbol-bound? 'main)
-    (define _main main))
+(define-macro (%add-top-path-to-load-path)
+  `(add-load-path ,(uim-test-build-path)))
+(%add-top-path-to-load-path)
 
+(define gaunit-main main)
 (define (main args)
-  (let ((dir (sys-dirname (car args))))
-    (for-each (lambda (test-script)
-                (load (string-join (list dir test-script) "/")))
-              (directory-list dir
-                              :filter (lambda (x)
-                                        (and (rxmatch #/^test-.+\.scm$/ x)
-					     (not (string=? "test-example.scm"
-							    x))))))
-    (if (symbol-bound? '_main)
-        (_main `(,(car args) "-vp" ,@(cdr args)))
-        (run-all-test))))
+  (gaunit-main
+   (append args
+           (if (symbol-bound? 'glob)
+             (glob (uim-test-build-path "test" "**" "test-*.scm"))
+             (sys-glob (uim-test-build-path "test" "test-*.scm"))))))

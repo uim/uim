@@ -1095,7 +1095,7 @@
 		 (uim '(string-escape "\a\B")))
    ;; complex
    (assert-equal "\"\\\"a string\\\" in two-line\\nstring\\n\""
-		 (uim '(string-escape "\"a\ string\" in two-line\nstring\n"))))
+		 (uim '(string-escape "\"a string\" in two-line\nstring\n"))))
 
   ("test compose"
    (uim '(define test-list '(0 1 2 3 4 5)))
