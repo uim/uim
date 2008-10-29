@@ -1,5 +1,5 @@
 AC_PREREQ(2.60b)
-AC_INIT([uim], [1.5.4], [uim-en@googlegroups.com])
+AC_INIT([uim], [1.5.5], [uim-en@googlegroups.com])
 AC_CONFIG_SRCDIR([uim/uim.c])
 AC_CONFIG_HEADERS([uim/config.h])
 AM_INIT_AUTOMAKE([1.10 dist-bzip2])
