@@ -38,8 +38,8 @@
 ;; backtrace following an error.
 (define UIM-SH-MULTILINE-ERROR #t)
 
-(if (version<? *gaunit-version* "0.1.1")
-    (error "GaUnit 0.1.1 is required"))
+(if (version<? *gaunit-version* "0.1.6")
+    (error "GaUnit 0.1.6 is required"))
 
 (sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (uim-test-build-path "sigscheme" "lib"))
 (sys-putenv "LIBUIM_SCM_FILES" (uim-test-build-path "scm"))
@@ -131,6 +131,7 @@
 	(uim '(%%set-current-error-port! (current-output-port))))
       (define (*uim-sh-teardown-proc*)
         (close-input-port (process-input *uim-sh-process*))
+        (process-wait *uim-sh-process*)
         (set! *uim-sh-process* #f))
 
       (define-syntax define-uim-test-case

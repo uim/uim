@@ -44,8 +44,10 @@
 
 (define gaunit-main main)
 (define (main args)
-  (gaunit-main
-   (append args
-           (if (symbol-bound? 'glob)
-             (glob (uim-test-build-path "test" "**" "test-*.scm"))
-             (sys-glob (uim-test-build-path "test" "test-*.scm"))))))
+  (let ((args (if (null? (cdr args))
+                (append args
+                        (if (symbol-bound? 'glob)
+                          (glob (uim-test-build-path "test" "test-*.scm"))
+                          (sys-glob (uim-test-build-path "test" "test-*.scm"))))
+                args)))
+    (gaunit-main args)))
