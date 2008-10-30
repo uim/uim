@@ -1347,11 +1347,8 @@ im_uim_set_client_window(GtkIMContext *ic, GdkWindow *w)
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 
   if (w) {
-    g_object_ref(w);
     uic->win = w;
   } else {
-    if (uic->win)
-      g_object_unref(uic->win);
     uic->win = NULL;
   }
   update_client_widget(uic);

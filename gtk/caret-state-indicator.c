@@ -89,6 +89,20 @@ caret_state_indicator_paint_window(GtkWidget *window)
   return FALSE;
 }
 
+static gint
+caret_state_indicator_destroy_cb(GtkWidget *window)
+{
+  GList *label_list, *frame_list;
+
+  label_list = g_object_get_data(G_OBJECT(window), "labels");
+  frame_list = g_object_get_data(G_OBJECT(window), "frames");
+
+  g_list_free(label_list);
+  g_list_free(frame_list);
+
+  return FALSE;
+}
+
 GtkWidget *
 caret_state_indicator_new(void)
 {
@@ -110,6 +124,9 @@ caret_state_indicator_new(void)
 
   g_signal_connect(window, "expose_event",
 		   G_CALLBACK(caret_state_indicator_paint_window), 
+		   NULL);
+  g_signal_connect(window, "destroy",
+		   G_CALLBACK(caret_state_indicator_destroy_cb), 
 		   NULL);
 
   gtk_misc_set_alignment(GTK_MISC(label), 0.5, 0.5);
