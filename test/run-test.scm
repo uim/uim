@@ -35,7 +35,10 @@
 
 (define (uim-test-build-path . components)
   (let* ((test-dir (sys-dirname *program-name*))
-         (top-dir (sys-realpath (build-path test-dir ".."))))
+         (top-dir (sys-normalize-pathname (build-path test-dir "..")
+                                          :absolute #t
+                                          :expand #t
+                                          :canonicalize #t)))
     (apply build-path top-dir components)))
 
 (define-macro (%add-top-path-to-load-path)
