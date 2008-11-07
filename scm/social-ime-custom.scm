@@ -298,7 +298,7 @@
 
 
 ;;
-;; social-ime-server-name
+;; social-ime-server
 ;;
 
 (define-custom 'social-ime-url "http://www.social-ime.com/api/"
@@ -312,6 +312,21 @@
   '(string ".*")
   (N_ "Social-IME user name")
   (N_ "long description will be here."))
+
+(define-custom 'social-ime-publicity 'private
+  '(social-ime-advanced social-ime-server)
+  (list 'choice
+        (list 'private (N_ "Private") (N_ "Private"))
+        (list 'public  (N_ "Public")
+              (N_ "If publicity mode is public and commit words are over 10 characters, ime server posts these words twitter.com too")))
+  (N_ "Social-IME publicity mode.")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'social-ime-publicity
+                 'custom-activity-hooks
+                 (lambda ()
+                   ;; XXX
+                   #f))
 
 (define-custom 'social-ime-use-with-vi? #f
   '(social-ime-advanced special-op)
