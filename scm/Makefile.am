@@ -39,6 +39,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  m17nlib.scm \
  zaurus.scm \
  scim.scm \
+ social-ime.scm social-ime-custom.scm social-ime-key-custom.scm \
  uim-module-manager.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
@@ -76,6 +77,9 @@ endif
 module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"  "look"
 if SCIM
   module_names += "scim"
+endif
+if CURL
+  module_names += "social-ime"
 endif
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
