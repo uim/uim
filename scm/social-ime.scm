@@ -91,6 +91,20 @@
    str
    (social-ime-conversion-make-resize-query seg-cnts)))
 
+(define (social-ime-conversion-make-commit-query seg-cnts delta)
+  (string-append
+   (social-ime-conversion-make-resize-query seg-cnts)
+   (apply string-append
+          (map (lambda (idx seg)
+                 (if (not (= seg 0))
+                     (format "&commit[~a]=~a" idx seg)
+                     ""))
+               (iota (length delta))
+               delta))))
+(define (social-ime-send-commit str resize delta)
+  (let ((ret (social-ime-conversion-make-commit-query resize delta)))
+    (if (not (string=? ret ""))
+        (social-ime-conversion str ret))))
 
 (define (social-ime-lib-init)
   #t)
@@ -145,8 +159,12 @@
      (make-list (length cand) 0))
     (social-ime-context-set-sc-ctx! sc sc-ctx)
     (length cand)))
-(define (social-ime-lib-commit-segment sc seg delta)
-  #t)
+(define (social-ime-lib-commit-segments sc delta)
+  (let* ((sc-ctx (social-ime-context-sc-ctx sc))
+         (str (social-ime-internal-context-str sc-ctx))
+         (seg-cnts (social-ime-internal-context-seg-cnts sc-ctx)))
+    (social-ime-send-commit str seg-cnts delta)
+    #t))
 (define (social-ime-lib-reset-conversion sc)
   #f)
 
@@ -1204,11 +1222,7 @@
           (segments (social-ime-context-segments sc)))
       (if sc-ctx
           (begin
-            (for-each (lambda (seg-idx cand-idx)
-                        (if (> cand-idx social-ime-candidate-type-katakana)
-                            (social-ime-lib-commit-segment sc seg-idx cand-idx)))
-                      (iota (ustr-length segments))
-                      (ustr-whole-seq segments))
+            (social-ime-lib-commit-segments sc (ustr-whole-seq segments))
             (if (every (lambda (x) (<= x social-ime-candidate-type-katakana))
                        (ustr-whole-seq segments))
                 (social-ime-lib-reset-conversion sc))))))
