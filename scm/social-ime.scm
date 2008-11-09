@@ -103,7 +103,10 @@
 (define (social-ime-lib-release-context sc)
   #t)
 (define (social-ime-lib-get-unconv-candidate sc seg-idx)
-  #t)
+  (let* ((sc-ctx (social-ime-context-sc-ctx sc))
+         (cand (social-ime-internal-context-candidates sc-ctx)))
+    ;; XXX
+    (car (take-right (list-ref cand seg-idx) 1))))
 (define (social-ime-lib-get-nr-segments sc)
   (let* ((sc-ctx (social-ime-context-sc-ctx sc))
          (cand (social-ime-internal-context-candidates sc-ctx)))
