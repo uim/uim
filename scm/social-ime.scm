@@ -61,7 +61,7 @@
   (define (make-query user)
         (format "~a/?string=~a&charset=EUC-JP&applicartion=uim~a~a"
                 social-ime-url
-                str
+                (curl-url-escape str)
                 user
                 opts
                 ))
