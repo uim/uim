@@ -29,6 +29,7 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;
 
+(use gauche.version)
 (use gauche.interactive)
 (use file.util)
 (use test.unit)
@@ -47,10 +48,13 @@
 
 (define gaunit-main main)
 (define (main args)
-  (let ((args (if (null? (cdr args))
-                (append args
-                        (if (symbol-bound? 'glob)
-                          (glob (uim-test-build-path "test" "test-*.scm"))
-                          (sys-glob (uim-test-build-path "test" "test-*.scm"))))
-                args)))
+  (let ((args
+         (if (null? (cdr args))
+           (append args
+                   (if (version<? (gauche-version) "0.8.13")
+                     (append
+                      (sys-glob (uim-test-build-path "test" "test-*.scm"))
+                      (sys-glob (uim-test-build-path "test" "*" "test-*.scm")))
+                     (glob (uim-test-build-path "test" "**" "test-*.scm"))))
+           args)))
     (gaunit-main args)))
