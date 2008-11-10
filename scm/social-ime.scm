@@ -59,23 +59,33 @@
 
 (define (social-ime-conversion str opts)
   (define (make-query user)
-        (format "~a/?string=~a&charset=EUC-JP&applicartion=uim~a~a"
+        (format "~a?string=~a&charset=EUC-JP&applicartion=uim~a~a"
                 social-ime-url
                 (curl-url-escape str)
                 user
-                opts
-                ))
+                opts))
+  (define (parse str)
+    (and-let* ((ret1 (if (string? str)
+                         (string-split str "\n")
+                         '("")))
+               (col (if (equal? '("") (take-right ret1 1))
+                        (drop-right ret1 1)
+                        ret1))
+               (ret2 (map (lambda (s)
+                            (and-let* ((ret (string-split s "\t"))
+                                       (low (if (equal? '("") (take-right ret 1))
+                                                (drop-right ret 1)
+                                              ret)))
+                                      low))
+                          col)))
+              ret2))
   (let* ((user (if (string=? social-ime-user "")
-                  ""
-                  (format "&user=~a" (curl-url-escape social-ime-user))))
-         (ret (curl-fetch-simple (make-query user)))
-         ;; easy parser
-         (cand (drop-right (string-split ret "\n") 1)))
-    (and cand
-         (map (lambda (x)
-                (drop-right (string-split x "\t") 1))
-              cand)
-         )))
+                   ""
+                   (format "&user=~a" (curl-url-escape social-ime-user))))
+         (ret (curl-fetch-simple (make-query user))))
+    (if (string? ret)
+        (parse ret)
+        (list (list str)))))
 
 (define (social-ime-conversion-make-resize-query seg-cnts)
   (apply string-append
