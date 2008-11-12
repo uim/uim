@@ -28,7 +28,7 @@ for developers.
 
     http://www.shiro.dreamhost.com/scheme/gauche/
 
-  - GaUnit 0.1.1
+  - GaUnit 0.1.6
 
     http://www.cozmixng.org/~kou/download/index.html.en
     http://www.cozmixng.org/~rwiki/index.rb?cmd=view;name=GaUnit%3A%3AREADME.en
@@ -50,11 +50,11 @@ for developers.
 
      Selective:
 
-       $ gosh -I. test/test-foo.scm
+       $ gosh -I. test/run-test.scm test/test-foo.scm
 
      With options:
 
-       $ gosh -I. test/test-util.scm -vv -c "list procedures"
+       $ gosh -I. test/run-test.scm test/test-util.scm -vv -c "list procedures"
 
      Refer the document of GaUnit or specify -h to see all options.
 
