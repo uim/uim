@@ -109,6 +109,7 @@ uim_eb_destroy (uim_eb *ueb)
   eb_ref_count--;
   if (eb_ref_count == 0)
     eb_finalize_library();
+  free(ueb);
 }
 
 
