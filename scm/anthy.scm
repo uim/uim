@@ -742,6 +742,30 @@
      (else
       state))))
 
+(define anthy-learn-transposing-text
+  (lambda (ac)
+    (let ((ac-id (anthy-context-ac-id ac))
+          (transposing-type (anthy-context-transposing-type ac))
+          (preconv-str (anthy-make-whole-string ac #t anthy-type-hiragana))
+          (type #f))
+      (define (expand-segment)
+        (if (not (= (anthy-lib-get-nr-segments ac-id) 1))
+          (begin
+            (anthy-lib-resize-segment ac-id 0 1)
+            (expand-segment))))
+      (cond
+       ((= transposing-type anthy-type-hiragana)
+        (set! type anthy-candidate-type-hiragana))
+       ((= transposing-type anthy-type-katakana)
+        (set! type anthy-candidate-type-katakana)))
+       (if (and ac-id
+        	(> (string-length preconv-str) 0)
+        	type)
+          (begin
+            (anthy-lib-set-string ac-id preconv-str)
+            (expand-segment)
+            (anthy-lib-commit-segment ac-id 0 type))))))
+
 (define anthy-proc-transposing-state
   (lambda (ac key key-state)
     (let ((rotate-list '())
@@ -790,6 +814,7 @@
 	 ; commit
 	 (if (anthy-commit-key? key key-state)
 	     (begin
+	       (anthy-learn-transposing-text ac)
 	       (im-commit ac (anthy-transposing-text ac))
 	       (anthy-flush ac)
 	       #f)
