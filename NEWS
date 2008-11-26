@@ -1,3 +1,18 @@
+Overview of changes from 1.5.4 to 1.5.5
+=======================================
+* Enhancements
+  - uim-anthy
+  - uim-anthy-utf8
+    * Learn transposing Katakana/Hiragana string (bug #18630)
+
+  - misc Japanese IM
+    - AZIK roma-kana table update
+
+* Fixes
+  - GTK+ bridge
+    * Plug memory leaks
+
+
 Overview of changes from 1.5.3 to 1.5.4
 =======================================
 * Enhancements
