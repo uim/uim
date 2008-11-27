@@ -331,7 +331,7 @@ word_window_necessary_create(WordWindow *window)
   gtk_table_attach(GTK_TABLE(table1), alignment,
 		   1, 2, 4, 5, GTK_FILL, 0, 5, 5);
   gtk_widget_show(alignment);
-  adjustment_freq = (GtkAdjustment*)gtk_adjustment_new(1.0, 1.0, 65535.0, 1.0, 100.0, 100.0);
+  adjustment_freq = (GtkAdjustment*)gtk_adjustment_new(1.0, 1.0, 65535.0, 1.0, 100.0, 0);
   spin_freq = gtk_spin_button_new(adjustment_freq, 1.0, 0);
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), spin_freq);
   gtk_container_add(GTK_CONTAINER(alignment), spin_freq);
