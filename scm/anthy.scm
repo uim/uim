@@ -758,13 +758,13 @@
         (set! type anthy-candidate-type-hiragana))
        ((= transposing-type anthy-type-katakana)
         (set! type anthy-candidate-type-katakana)))
-       (if (and ac-id
-        	(> (string-length preconv-str) 0)
-        	type)
-          (begin
-            (anthy-lib-set-string ac-id preconv-str)
-            (expand-segment)
-            (anthy-lib-commit-segment ac-id 0 type))))))
+      (if (and ac-id
+               (> (string-length preconv-str) 0)
+               type)
+        (begin
+          (anthy-lib-set-string ac-id preconv-str)
+          (expand-segment)
+          (anthy-lib-commit-segment ac-id 0 type))))))
 
 (define anthy-proc-transposing-state
   (lambda (ac key key-state)
