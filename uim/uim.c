@@ -43,6 +43,7 @@
 #include "uim.h"
 #include "uim-internal.h"
 #include "uim-util.h"
+#include "uim-iconv.h"
 #include "uim-posix.h"
 #include "uim-im-switcher.h"
 #include "uim-scm.h"
@@ -131,6 +132,7 @@ uim_init_internal(void *dummy)
 
   uim_init_im_subrs();
   uim_init_intl_subrs();
+  uim_init_iconv_subrs();
   uim_init_posix_subrs();
   uim_init_util_subrs();
 #if UIM_USE_NOTIFY

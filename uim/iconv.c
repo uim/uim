@@ -45,7 +45,9 @@
 #include "uim.h"
 #include "uim-internal.h"
 #include "uim-util.h"
-
+#include "uim-scm.h"
+#include "uim-scm-abbrev.h"
+#include "uim-iconv.h"
 
 #define MBCHAR_LEN_MAX 6  /* assumes CESU-8 */
 
@@ -299,4 +301,49 @@ uim_iconv_release(void *obj)
     err = iconv_close((iconv_t)obj);
 
   UIM_CATCH_ERROR_END();
+}
+
+static uim_lisp
+uim_ext_iconv_open(uim_lisp tocode_, uim_lisp fromcode_)
+{
+  const char *tocode = REFER_C_STR(tocode_);
+  const char *fromcode = REFER_C_STR(fromcode_);
+  iconv_t ic;
+
+  ic = uim_iconv_create(tocode, fromcode);
+  if (!ic)
+    return uim_scm_f();
+
+  return MAKE_PTR(ic);
+}
+
+static uim_lisp
+uim_ext_iconv_code_conv(uim_lisp ic_, uim_lisp inbuf_)
+{
+  uim_lisp outbuf_;
+  char *outbuf;
+
+  outbuf = uim_iconv_code_conv(C_PTR(ic_), REFER_C_STR(inbuf_));
+  if (!outbuf)
+    return uim_scm_f();
+
+  outbuf_ = MAKE_STR(outbuf);
+  free(outbuf);
+
+  return outbuf_;
+}
+
+static uim_lisp
+uim_ext_iconv_release(uim_lisp ic_)
+{
+  uim_iconv_release(C_PTR(ic_));
+  return uim_scm_t();
+}
+
+void
+uim_init_iconv_subrs(void)
+{
+  uim_scm_init_proc2("iconv-open", uim_ext_iconv_open);
+  uim_scm_init_proc2("iconv-code-conv", uim_ext_iconv_code_conv);
+  uim_scm_init_proc1("iconv-release", uim_ext_iconv_release);
 }
