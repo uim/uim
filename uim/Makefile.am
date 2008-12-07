@@ -48,7 +48,7 @@ pkginclude_HEADERS += uim-notify.h
 libuim_la_SOURCES = \
 		uim-internal.h uim-error.c uim.c \
 		uim-key.c uim-func.c uim-util.c uim-posix.c \
-		iconv.c dynlib.c \
+		uim-iconv.h iconv.c dynlib.c \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
 		rk.c
