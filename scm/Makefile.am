@@ -40,6 +40,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  zaurus.scm \
  scim.scm \
  social-ime.scm social-ime-custom.scm social-ime-key-custom.scm \
+ ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
  uim-module-manager.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
@@ -80,6 +81,7 @@ if SCIM
 endif
 if CURL
   module_names += "social-ime"
+  module_names += "ajax-ime"
 endif
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
