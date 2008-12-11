@@ -139,22 +139,31 @@ uim_curl_fetch_simple_internal(void *url_)
 static CURLcode
 uim_curl_perform(CURL *curl)
 {
+  uim_lisp use_proxy_;
   char *ua;
   char *referer;
+  char *http_proxy;
   CURLcode res;
 
   ua = uim_scm_symbol_value_str("uim-curl-user-agent");
   referer = uim_scm_symbol_value_str("uim-curl-referer");
+  use_proxy_ = uim_scm_symbol_value_bool("uim-curl-use-proxy?");
+  http_proxy = uim_scm_symbol_value_str("uim-curl-http-proxy");
 
   curl_easy_setopt(curl, CURLOPT_USERAGENT,
 		   (ua != NULL) ? ua : "libcurl-agent/1.0");
   curl_easy_setopt(curl, CURLOPT_REFERER,
 		   (referer != NULL) ? referer : "");
+  if(TRUEP(use_proxy_)) {
+    curl_easy_setopt(curl, CURLOPT_PROXY,
+		     (http_proxy != NULL) ? http_proxy : "");
+  }
 
   res = curl_easy_perform(curl);
 
   free(ua);
   free(referer);
+  free(http_proxy);
 
   return res;
 }
@@ -296,108 +305,3 @@ void uim_plugin_instance_quit(void)
 {
   return;
 }
-
-#ifdef DEBUG
-void test1(void);
-void test2(void);
-void test3(void);
-void test4(void);
-void test5(void);
-
-int main(int argc, char *argv[])
-{
-
-  uim_init();
-  uim_plugin_instance_init();
-
-  test1();
-  test2();
-  test3();
-  test4();
-  test5();
-  uim_quit();
-}
-
-void test1(void)
-{
-  CURL *curl;
-  char urlbase[] = "http://d.hatena.ne.jp/keyword/";
-  char url[1000];
-  uim_lisp uim_curl_str;
-  struct curl_memory_struct chunk;
-
-  curl = curl_easy_init();
-
-  if(curl == NULL)
-    exit(-1);
-  memset(&chunk, 0, sizeof(struct curl_memory_struct));
-
-  snprintf(url, sizeof(url), "%s%s", urlbase, "テスト");
-
-  curl_easy_setopt(curl, CURLOPT_URL, url);
-  curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, uim_curl_write_func);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
-
-  curl_easy_perform(curl);
-  curl_easy_cleanup(curl);
-  curl_global_cleanup();
-  uim_curl_str = MAKE_STR(chunk.str);
-
-  printf("%s\n",chunk.str);
-}
-
-
-void test2(void)
-{
-  uim_lisp url, form, result;
-
-  url = MAKE_STR("http://d.hatena.ne.jp/keyword/テスト");
-  form = LIST2(MAKE_SYM("curl-fetch-simple"), url);
-  result = uim_scm_eval(form);
-
-  printf("%s\n", REFER_C_STR(result));
-}
-
-void test3(void)
-{
-  uim_lisp url, form, result;
-
-  url = MAKE_STR("http://ja.wikipedia.org/wiki/テスト");
-  form = LIST2(MAKE_SYM("curl-fetch-simple"), url);
-  result = uim_scm_eval(form);
-
-  printf("%s\n", REFER_C_STR(result));
-}
-
-void test4(void)
-{
-  uim_lisp url, form, result;
-  uim_lisp postdata;
-
-  url = MAKE_STR("http://search.hatena.ne.jp/search");
-  /* '((name . value) (name . value) (name . value) ...) */
-  postdata = QUOTE(LIST3(CONS(MAKE_STR("submit"), MAKE_STR("検索")),
-			 CONS(MAKE_STR("ie"), MAKE_STR("utf8")),
-			 CONS(MAKE_STR("word"), MAKE_STR("日本"))));
-
-  form = LIST3(MAKE_SYM("curl-post"), url, postdata);
-  result = uim_scm_eval(form);
-  printf("%s\n", REFER_C_STR(result));
-}
-
-void test5(void)
-{
-  uim_lisp url, form, result;
-  uim_lisp ua;
-  url = MAKE_STR("http://www.ugtop.com/spill.shtml");
-  form = LIST2(MAKE_SYM("curl-fetch-simple"), url);
-  result = uim_scm_eval(form);
-  printf("%s\n", REFER_C_STR(result));
-
-  ua = uim_scm_eval_c_string("(define uim-curl-user-agent \"Mozilla/5.0\")");
-  form = LIST2(MAKE_SYM("curl-fetch-simple"), url);
-  result = uim_scm_eval(form);
-  printf("%s\n", REFER_C_STR(result));
-}
-#endif
