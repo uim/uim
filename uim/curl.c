@@ -84,6 +84,19 @@ uim_curl_write_func(void *ptr, size_t size, size_t nmemb, void *data)
   struct curl_memory_struct *mem = (struct curl_memory_struct *)data;
   size_t realsize = size * nmemb;
 
+  /*
+   * We know that it isn't possible to overflow during multiplication if
+   * neither operand uses any of the most significant half of the bits in
+   * a size_t.
+   */
+  if((unsigned long long)((nmemb | size) &
+	((unsigned long long)SIZE_MAX << (sizeof(size_t) << 2))) &&
+     (realsize / size != nmemb))
+    return 0;
+
+  if(SIZE_MAX - mem->size - 1 < realsize)
+    realsize = SIZE_MAX - mem->size - 1;
+
   if(mem->str != NULL)
     mem->str = uim_realloc(mem->str, mem->size + realsize + 1);
   else
