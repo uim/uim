@@ -260,4 +260,4 @@
   (assert-equal 5  (uim '(clamp 10 -5 5)))
   #f)
 
-(provide "test/util/test-list")
+(provide "test/util/test-misc")
