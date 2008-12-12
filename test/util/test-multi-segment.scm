@@ -29,7 +29,7 @@
 
 (define-module test.util.test-multi-segment
   (use test.unit.test-case)
-  (use test.uim-test-utils-new))
+  (use test.uim-test))
 (select-module test.util.test-multi-segment)
 
 (define (setup)
@@ -42,31 +42,31 @@
 
 (define (no-test-make-index-list)
   (uim '(define old-lst '(0 1 2 3 4)))
-  (assert-false (uim-bool '(multi-segment-make-index-list -1 old-lst)))
-  (assert-equal ()
-		 (uim '(multi-segment-make-index-list 0 old-lst)))
-  (assert-equal '(0)
-		 (uim '(multi-segment-make-index-list 1 old-lst)))
-  (assert-equal '(0 1)
-		 (uim '(multi-segment-make-index-list 2 old-lst)))
-  (assert-equal '(0 1 2 3 4)
-		 (uim '(multi-segment-make-index-list 5 old-lst)))
-  (assert-equal '(0 1 2 3 4 0)
-		 (uim '(multi-segment-make-index-list 6 old-lst)))
-  (assert-equal '(0 1 2 3 4 0 0)
-		 (uim '(multi-segment-make-index-list 7 old-lst)))
+  (assert-uim-false '(multi-segment-make-index-list -1 old-lst))
+  (assert-uim-equal '()
+                    '(multi-segment-make-index-list 0 old-lst))
+  (assert-uim-equal '(0)
+                    '(multi-segment-make-index-list 1 old-lst))
+  (assert-uim-equal '(0 1)
+                    '(multi-segment-make-index-list 2 old-lst))
+  (assert-uim-equal '(0 1 2 3 4)
+                    '(multi-segment-make-index-list 5 old-lst))
+  (assert-uim-equal '(0 1 2 3 4 0)
+                    '(multi-segment-make-index-list 6 old-lst))
+  (assert-uim-equal '(0 1 2 3 4 0 0)
+                    '(multi-segment-make-index-list 7 old-lst))
   #f)
 
 (define (no-test-opposite-kana)
-  (assert-equal (uim 'multi-segment-type-katakana)
-                (uim '(multi-segment-opposite-kana
-                       multi-segment-type-hiragana)))
-  (assert-equal (uim 'multi-segment-type-hiragana)
-                (uim '(multi-segment-opposite-kana
-                       multi-segment-type-katakana)))
-  (assert-equal (uim 'multi-segment-type-hiragana)
-                (uim '(multi-segment-opposite-kana
-                       multi-segment-type-hankana)))
+  (assert-uim-equal (uim 'multi-segment-type-katakana)
+                    '(multi-segment-opposite-kana
+                      multi-segment-type-hiragana))
+  (assert-uim-equal (uim 'multi-segment-type-hiragana)
+                    '(multi-segment-opposite-kana
+                      multi-segment-type-katakana))
+  (assert-uim-equal (uim 'multi-segment-type-hiragana)
+                    '(multi-segment-opposite-kana
+                      multi-segment-type-hankana))
   #f)
 
 (provide "test/util/test-multi-segment")

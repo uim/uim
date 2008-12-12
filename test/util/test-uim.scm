@@ -29,7 +29,7 @@
 
 (define-module test.util.test-uim
   (use test.unit.test-case)
-  (use test.uim-test-utils-new))
+  (use test.uim-test))
 (select-module test.util.test-uim)
 
 (define (setup)
@@ -39,68 +39,64 @@
   (uim-test-teardown))
 
 (define (test-make-scm-pathname)
-  (assert-equal (uim '(string-append (load-path) "/"))
-                (uim '(make-scm-pathname "")))
-  (assert-equal (uim '(string-append (load-path) "/file"))
-                (uim '(make-scm-pathname "file")))
-  (assert-equal "/absolute/path/file"
-                (uim '(make-scm-pathname "/absolute/path/file")))
-  (assert-equal "/"
-                (uim '(make-scm-pathname "/")))
+  (assert-uim-equal (uim '(string-append (load-path) "/"))
+                    '(make-scm-pathname ""))
+  (assert-uim-equal (uim '(string-append (load-path) "/file"))
+                    '(make-scm-pathname "file"))
+  (assert-uim-equal "/absolute/path/file"
+                    '(make-scm-pathname "/absolute/path/file"))
+  (assert-uim-equal "/"
+                    '(make-scm-pathname "/"))
   #f)
 
 (define (test-interaction-environment)
-  (assert-true  (uim-bool '(eval '(symbol-bound? 'filter-map)
-                                 (interaction-environment))))
-  (assert-false (uim-bool '(eval '(symbol-bound? 'filter-baz)
-                                 (interaction-environment))))
+  (assert-uim-true  '(eval '(symbol-bound? 'filter-map)
+                           (interaction-environment)))
+  (assert-uim-false '(eval '(symbol-bound? 'filter-baz)
+                           (interaction-environment)))
   ;; SigScheme: syntactic keyword 'define' cannot be evaluated as value
   (uim '(eval (list 'define 'filter-baz filter-map)
               (interaction-environment)))
-  (assert-true  (uim-bool '(eval '(symbol-bound? 'filter-baz)
-                                 (interaction-environment))))
-  (assert-true  (uim-bool '(eq? filter-baz filter-map)))
+  (assert-uim-true  '(eval '(symbol-bound? 'filter-baz)
+                           (interaction-environment)))
+  (assert-uim-true  '(eq? filter-baz filter-map))
   #f)
 
 (define (test-%%enclose-another-env)
-  (assert-equal 3
-                (uim '(let* ((x 1)
-                             (y 2)
-                             (closure (lambda ()
-                                        (+ x y))))
-                        (closure))))
-  (assert-equal 10
-                (uim '(let* ((x 1)
-                             (y 2)
-                             (closure (lambda ()
-                                        (+ x y)))
-                             ;; SIOD: broken frame for SigScheme
-                             ;;			      (another-env '((x . 4)
-                             ;;					     (y . 6)))
-                             ;; SigScheme: valid 2-frame env
-                             (another-env '(((x) . (4))
-                                            ((y) . (6))))
-                             )
-                        (set! closure
-                              (%%enclose-another-env closure another-env))
-                        (closure))))
+  (assert-uim-equal 3
+                    '(let* ((x 1)
+                            (y 2)
+                            (closure (lambda ()
+                                       (+ x y))))
+                       (closure)))
+  (assert-uim-equal 10
+                    '(let* ((x 1)
+                            (y 2)
+                            (closure (lambda ()
+                                       (+ x y)))
+                            ;; SIOD: broken frame for SigScheme
+                            ;;  (another-env '((x . 4)
+                            ;;                 (y . 6)))
+                            ;; SigScheme: valid 2-frame env
+                            (another-env '(((x) . (4))
+                                           ((y) . (6)))))
+                       (set! closure
+                             (%%enclose-another-env closure another-env))
+                       (closure)))
   ;; causes error since z is not exist in the another-env
-  (assert-error (lambda ()
-                  (uim '(let* ((x 1)
-                               (y 2)
-                               (z 3)
-                               (closure (lambda ()
-                                          (+ x y z)))
-                               ;; SIOD: broken frame for SigScheme
-                               ;;				(another-env '((x . 4)
-                               ;;					       (y . 6)))
-                               ;; SigScheme: valid 2-frame env
-                               (another-env '(((x) . (4))
-                                              ((y) . (6))))
-                               )
-                          (set! closure
-                                (%%enclose-another-env closure another-env))
-                          (closure)))))
+  (assert-uim-error '(let* ((x 1)
+                            (y 2)
+                            (z 3)
+                            (closure (lambda ()
+                                       (+ x y z)))
+                            ;; SIOD: broken frame for SigScheme
+                            ;;  (another-env '((x . 4)
+                            ;;                 (y . 6)))
+                            ;; SigScheme: valid 2-frame env
+                            (another-env '(((x) . (4))
+                                           ((y) . (6)))))
+                       (set! closure (%%enclose-another-env closure another-env))
+                       (closure)))
   #f)
 
 (provide "test/util/test-uim")

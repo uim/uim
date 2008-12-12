@@ -31,7 +31,7 @@
 
 (define-module test.util.test-character-predicate
   (use test.unit.test-case)
-  (use test.uim-test-utils-new))
+  (use test.uim-test))
 (select-module test.util.test-character-predicate)
 
 (define (setup)
@@ -41,185 +41,185 @@
   (uim-test-teardown))
 
 (define (test-ichar-control?)
-  (assert-false (uim-bool '(ichar-control? 'symbol)))
-  (assert-false (uim-bool '(ichar-control? "string")))
-  (assert-false (uim-bool '(ichar-control? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-control? car)))
-  (assert-true  (uim-bool '(ichar-control? 0)))    ; NUL
-  (assert-true  (uim-bool '(ichar-control? 1)))    ; SOH
-  (assert-true  (uim-bool '(ichar-control? 31)))   ; US
-  (assert-false (uim-bool '(ichar-control? 32)))   ; SPACE
-  (assert-false (uim-bool '(ichar-control? 33)))   ; !
-  (assert-false (uim-bool '(ichar-control? 47)))   ; /
-  (assert-false (uim-bool '(ichar-control? 48)))   ; 0
-  (assert-false (uim-bool '(ichar-control? 57)))   ; 9
-  (assert-false (uim-bool '(ichar-control? 58)))   ; :
-  (assert-false (uim-bool '(ichar-control? 64)))   ; @
-  (assert-false (uim-bool '(ichar-control? 65)))   ; A
-  (assert-false (uim-bool '(ichar-control? 90)))   ; Z
-  (assert-false (uim-bool '(ichar-control? 91)))   ; [
-  (assert-false (uim-bool '(ichar-control? 96)))   ; `
-  (assert-false (uim-bool '(ichar-control? 97)))   ; a
-  (assert-false (uim-bool '(ichar-control? 122)))  ; z
-  (assert-false (uim-bool '(ichar-control? 123)))  ; {
-  (assert-false (uim-bool '(ichar-control? 126)))  ; ~
-  (assert-true  (uim-bool '(ichar-control? 127)))  ; DEL
+  (assert-uim-false '(ichar-control? 'symbol))
+  (assert-uim-false '(ichar-control? "string"))
+  (assert-uim-false '(ichar-control? '(0 1 2)))
+  (assert-uim-false '(ichar-control? car))
+  (assert-uim-true  '(ichar-control? 0))    ; NUL
+  (assert-uim-true  '(ichar-control? 1))    ; SOH
+  (assert-uim-true  '(ichar-control? 31))   ; US
+  (assert-uim-false '(ichar-control? 32))   ; SPACE
+  (assert-uim-false '(ichar-control? 33))   ; !
+  (assert-uim-false '(ichar-control? 47))   ; /
+  (assert-uim-false '(ichar-control? 48))   ; 0
+  (assert-uim-false '(ichar-control? 57))   ; 9
+  (assert-uim-false '(ichar-control? 58))   ; :
+  (assert-uim-false '(ichar-control? 64))   ; @
+  (assert-uim-false '(ichar-control? 65))   ; A
+  (assert-uim-false '(ichar-control? 90))   ; Z
+  (assert-uim-false '(ichar-control? 91))   ; [
+  (assert-uim-false '(ichar-control? 96))   ; `
+  (assert-uim-false '(ichar-control? 97))   ; a
+  (assert-uim-false '(ichar-control? 122))  ; z
+  (assert-uim-false '(ichar-control? 123))  ; {
+  (assert-uim-false '(ichar-control? 126))  ; ~
+  (assert-uim-true  '(ichar-control? 127))  ; DEL
   #f)
 
 (define (test-ichar-upper-case?)
-  (assert-false (uim-bool '(ichar-upper-case? 'symbol)))
-  (assert-false (uim-bool '(ichar-upper-case? "string")))
-  (assert-false (uim-bool '(ichar-upper-case? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-upper-case? car)))
-  (assert-false (uim-bool '(ichar-upper-case? 0)))   ; NUL
-  (assert-false (uim-bool '(ichar-upper-case? 1)))   ; SOH
-  (assert-false (uim-bool '(ichar-upper-case? 31)))  ; US
-  (assert-false (uim-bool '(ichar-upper-case? 32)))  ; SPACE
-  (assert-false (uim-bool '(ichar-upper-case? 33)))  ; !
-  (assert-false (uim-bool '(ichar-upper-case? 47)))  ; /
-  (assert-false (uim-bool '(ichar-upper-case? 48)))  ; 0
-  (assert-false (uim-bool '(ichar-upper-case? 57)))  ; 9
-  (assert-false (uim-bool '(ichar-upper-case? 58)))  ; :
-  (assert-false (uim-bool '(ichar-upper-case? 64)))  ; @
-  (assert-true  (uim-bool '(ichar-upper-case? 65)))  ; A
-  (assert-true  (uim-bool '(ichar-upper-case? 90)))  ; Z
-  (assert-false (uim-bool '(ichar-upper-case? 91)))  ; [
-  (assert-false (uim-bool '(ichar-upper-case? 96)))  ; `
-  (assert-false (uim-bool '(ichar-upper-case? 97)))  ; a
-  (assert-false (uim-bool '(ichar-upper-case? 122))) ; z
-  (assert-false (uim-bool '(ichar-upper-case? 123))) ; {
-  (assert-false (uim-bool '(ichar-upper-case? 126))) ; ~
-  (assert-false (uim-bool '(ichar-upper-case? 127))) ; DEL
+  (assert-uim-false '(ichar-upper-case? 'symbol))
+  (assert-uim-false '(ichar-upper-case? "string"))
+  (assert-uim-false '(ichar-upper-case? '(0 1 2)))
+  (assert-uim-false '(ichar-upper-case? car))
+  (assert-uim-false '(ichar-upper-case? 0))   ; NUL
+  (assert-uim-false '(ichar-upper-case? 1))   ; SOH
+  (assert-uim-false '(ichar-upper-case? 31))  ; US
+  (assert-uim-false '(ichar-upper-case? 32))  ; SPACE
+  (assert-uim-false '(ichar-upper-case? 33))  ; !
+  (assert-uim-false '(ichar-upper-case? 47))  ; /
+  (assert-uim-false '(ichar-upper-case? 48))  ; 0
+  (assert-uim-false '(ichar-upper-case? 57))  ; 9
+  (assert-uim-false '(ichar-upper-case? 58))  ; :
+  (assert-uim-false '(ichar-upper-case? 64))  ; @
+  (assert-uim-true  '(ichar-upper-case? 65))  ; A
+  (assert-uim-true  '(ichar-upper-case? 90))  ; Z
+  (assert-uim-false '(ichar-upper-case? 91))  ; [
+  (assert-uim-false '(ichar-upper-case? 96))  ; `
+  (assert-uim-false '(ichar-upper-case? 97))  ; a
+  (assert-uim-false '(ichar-upper-case? 122)) ; z
+  (assert-uim-false '(ichar-upper-case? 123)) ; {
+  (assert-uim-false '(ichar-upper-case? 126)) ; ~
+  (assert-uim-false '(ichar-upper-case? 127)) ; DEL
   #f)
 
 (define (test-ichar-lower-case?)
-  (assert-false (uim-bool '(ichar-lower-case? 'symbol)))
-  (assert-false (uim-bool '(ichar-lower-case? "string")))
-  (assert-false (uim-bool '(ichar-lower-case? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-lower-case? car)))
-  (assert-false (uim-bool '(ichar-lower-case? 0)))   ; NUL
-  (assert-false (uim-bool '(ichar-lower-case? 1)))   ; SOH
-  (assert-false (uim-bool '(ichar-lower-case? 31)))  ; US
-  (assert-false (uim-bool '(ichar-lower-case? 32)))  ; SPACE
-  (assert-false (uim-bool '(ichar-lower-case? 33)))  ; !
-  (assert-false (uim-bool '(ichar-lower-case? 47)))  ; /
-  (assert-false (uim-bool '(ichar-lower-case? 48)))  ; 0
-  (assert-false (uim-bool '(ichar-lower-case? 57)))  ; 9
-  (assert-false (uim-bool '(ichar-lower-case? 58)))  ; :
-  (assert-false (uim-bool '(ichar-lower-case? 64)))  ; @
-  (assert-false (uim-bool '(ichar-lower-case? 65)))  ; A
-  (assert-false (uim-bool '(ichar-lower-case? 90)))  ; Z
-  (assert-false (uim-bool '(ichar-lower-case? 91)))  ; [
-  (assert-false (uim-bool '(ichar-lower-case? 96)))  ; `
-  (assert-true  (uim-bool '(ichar-lower-case? 97)))  ; a
-  (assert-true  (uim-bool '(ichar-lower-case? 122))) ; z
-  (assert-false (uim-bool '(ichar-lower-case? 123))) ; {
-  (assert-false (uim-bool '(ichar-lower-case? 126))) ; ~
-  (assert-false (uim-bool '(ichar-lower-case? 127))) ; DEL
+  (assert-uim-false '(ichar-lower-case? 'symbol))
+  (assert-uim-false '(ichar-lower-case? "string"))
+  (assert-uim-false '(ichar-lower-case? '(0 1 2)))
+  (assert-uim-false '(ichar-lower-case? car))
+  (assert-uim-false '(ichar-lower-case? 0))   ; NUL
+  (assert-uim-false '(ichar-lower-case? 1))   ; SOH
+  (assert-uim-false '(ichar-lower-case? 31))  ; US
+  (assert-uim-false '(ichar-lower-case? 32))  ; SPACE
+  (assert-uim-false '(ichar-lower-case? 33))  ; !
+  (assert-uim-false '(ichar-lower-case? 47))  ; /
+  (assert-uim-false '(ichar-lower-case? 48))  ; 0
+  (assert-uim-false '(ichar-lower-case? 57))  ; 9
+  (assert-uim-false '(ichar-lower-case? 58))  ; :
+  (assert-uim-false '(ichar-lower-case? 64))  ; @
+  (assert-uim-false '(ichar-lower-case? 65))  ; A
+  (assert-uim-false '(ichar-lower-case? 90))  ; Z
+  (assert-uim-false '(ichar-lower-case? 91))  ; [
+  (assert-uim-false '(ichar-lower-case? 96))  ; `
+  (assert-uim-true  '(ichar-lower-case? 97))  ; a
+  (assert-uim-true  '(ichar-lower-case? 122)) ; z
+  (assert-uim-false '(ichar-lower-case? 123)) ; {
+  (assert-uim-false '(ichar-lower-case? 126)) ; ~
+  (assert-uim-false '(ichar-lower-case? 127)) ; DEL
   #f)
 
 (define (test-ichar-alphabetic?)
-  (assert-false (uim-bool '(ichar-alphabetic? 'symbol)))
-  (assert-false (uim-bool '(ichar-alphabetic? "string")))
-  (assert-false (uim-bool '(ichar-alphabetic? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-alphabetic? car)))
-  (assert-false (uim-bool '(ichar-alphabetic? 0)))   ; NUL
-  (assert-false (uim-bool '(ichar-alphabetic? 1)))   ; SOH
-  (assert-false (uim-bool '(ichar-alphabetic? 31)))  ; US
-  (assert-false (uim-bool '(ichar-alphabetic? 32)))  ; SPACE
-  (assert-false (uim-bool '(ichar-alphabetic? 33)))  ; !
-  (assert-false (uim-bool '(ichar-alphabetic? 47)))  ; /
-  (assert-false (uim-bool '(ichar-alphabetic? 48)))  ; 0
-  (assert-false (uim-bool '(ichar-alphabetic? 57)))  ; 9
-  (assert-false (uim-bool '(ichar-alphabetic? 58)))  ; :
-  (assert-false (uim-bool '(ichar-alphabetic? 64)))  ; @
-  (assert-true  (uim-bool '(ichar-alphabetic? 65)))  ; A
-  (assert-true  (uim-bool '(ichar-alphabetic? 90)))  ; Z
-  (assert-false (uim-bool '(ichar-alphabetic? 91)))  ; [
-  (assert-false (uim-bool '(ichar-alphabetic? 96)))  ; `
-  (assert-true  (uim-bool '(ichar-alphabetic? 97)))  ; a
-  (assert-true  (uim-bool '(ichar-alphabetic? 122))) ; z
-  (assert-false (uim-bool '(ichar-alphabetic? 123))) ; {
-  (assert-false (uim-bool '(ichar-alphabetic? 126))) ; ~
-  (assert-false (uim-bool '(ichar-alphabetic? 127))) ; DEL
+  (assert-uim-false '(ichar-alphabetic? 'symbol))
+  (assert-uim-false '(ichar-alphabetic? "string"))
+  (assert-uim-false '(ichar-alphabetic? '(0 1 2)))
+  (assert-uim-false '(ichar-alphabetic? car))
+  (assert-uim-false '(ichar-alphabetic? 0))   ; NUL
+  (assert-uim-false '(ichar-alphabetic? 1))   ; SOH
+  (assert-uim-false '(ichar-alphabetic? 31))  ; US
+  (assert-uim-false '(ichar-alphabetic? 32))  ; SPACE
+  (assert-uim-false '(ichar-alphabetic? 33))  ; !
+  (assert-uim-false '(ichar-alphabetic? 47))  ; /
+  (assert-uim-false '(ichar-alphabetic? 48))  ; 0
+  (assert-uim-false '(ichar-alphabetic? 57))  ; 9
+  (assert-uim-false '(ichar-alphabetic? 58))  ; :
+  (assert-uim-false '(ichar-alphabetic? 64))  ; @
+  (assert-uim-true  '(ichar-alphabetic? 65))  ; A
+  (assert-uim-true  '(ichar-alphabetic? 90))  ; Z
+  (assert-uim-false '(ichar-alphabetic? 91))  ; [
+  (assert-uim-false '(ichar-alphabetic? 96))  ; `
+  (assert-uim-true  '(ichar-alphabetic? 97))  ; a
+  (assert-uim-true  '(ichar-alphabetic? 122)) ; z
+  (assert-uim-false '(ichar-alphabetic? 123)) ; {
+  (assert-uim-false '(ichar-alphabetic? 126)) ; ~
+  (assert-uim-false '(ichar-alphabetic? 127)) ; DEL
   #f)
 
 (define (test-ichar-numeric?)
-  (assert-false (uim-bool '(ichar-numeric? 'symbol)))
-  (assert-false (uim-bool '(ichar-numeric? "string")))
-  (assert-false (uim-bool '(ichar-numeric? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-numeric? car)))
-  (assert-false (uim-bool '(ichar-numeric? 0)))        ; NUL
-  (assert-false (uim-bool '(ichar-numeric? 1)))        ; SOH
-  (assert-false (uim-bool '(ichar-numeric? 31)))       ; US
-  (assert-false (uim-bool '(ichar-numeric? 32))) ; SPACE
-  (assert-false (uim-bool '(ichar-numeric? 33))) ; !
-  (assert-false (uim-bool '(ichar-numeric? 47))) ; /
-  (assert-true  (uim-bool '(ichar-numeric? 48))) ; 0
-  (assert-true  (uim-bool '(ichar-numeric? 57))) ; 9
-  (assert-false (uim-bool '(ichar-numeric? 58))) ; :
-  (assert-false (uim-bool '(ichar-numeric? 64))) ; @
-  (assert-false (uim-bool '(ichar-numeric? 65))) ; A
-  (assert-false (uim-bool '(ichar-numeric? 90))) ; Z
-  (assert-false (uim-bool '(ichar-numeric? 91))) ; [
-  (assert-false (uim-bool '(ichar-numeric? 96))) ; `
-  (assert-false (uim-bool '(ichar-numeric? 97))) ; a
-  (assert-false (uim-bool '(ichar-numeric? 122)))        ; z
-  (assert-false (uim-bool '(ichar-numeric? 123)))        ; {
-  (assert-false (uim-bool '(ichar-numeric? 126)))        ; ~
-  (assert-false (uim-bool '(ichar-numeric? 127))) ; DEL
+  (assert-uim-false '(ichar-numeric? 'symbol))
+  (assert-uim-false '(ichar-numeric? "string"))
+  (assert-uim-false '(ichar-numeric? '(0 1 2)))
+  (assert-uim-false '(ichar-numeric? car))
+  (assert-uim-false '(ichar-numeric? 0))        ; NUL
+  (assert-uim-false '(ichar-numeric? 1))        ; SOH
+  (assert-uim-false '(ichar-numeric? 31))       ; US
+  (assert-uim-false '(ichar-numeric? 32)) ; SPACE
+  (assert-uim-false '(ichar-numeric? 33)) ; !
+  (assert-uim-false '(ichar-numeric? 47)) ; /
+  (assert-uim-true  '(ichar-numeric? 48)) ; 0
+  (assert-uim-true  '(ichar-numeric? 57)) ; 9
+  (assert-uim-false '(ichar-numeric? 58)) ; :
+  (assert-uim-false '(ichar-numeric? 64)) ; @
+  (assert-uim-false '(ichar-numeric? 65)) ; A
+  (assert-uim-false '(ichar-numeric? 90)) ; Z
+  (assert-uim-false '(ichar-numeric? 91)) ; [
+  (assert-uim-false '(ichar-numeric? 96)) ; `
+  (assert-uim-false '(ichar-numeric? 97)) ; a
+  (assert-uim-false '(ichar-numeric? 122))        ; z
+  (assert-uim-false '(ichar-numeric? 123))        ; {
+  (assert-uim-false '(ichar-numeric? 126))        ; ~
+  (assert-uim-false '(ichar-numeric? 127)) ; DEL
   #f)
 
 (define (test-ichar-printable?)
-  (assert-false (uim-bool '(ichar-printable? 'symbol)))
-  (assert-false (uim-bool '(ichar-printable? "string")))
-  (assert-false (uim-bool '(ichar-printable? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-printable? car)))
-  (assert-false (uim-bool '(ichar-printable? 0)))    ; NUL
-  (assert-false (uim-bool '(ichar-printable? 1)))    ; SOH
-  (assert-false (uim-bool '(ichar-printable? 31)))   ; US
-  (assert-true  (uim-bool '(ichar-printable? 32)))   ; SPACE
-  (assert-true  (uim-bool '(ichar-printable? 33)))   ; !
-  (assert-true  (uim-bool '(ichar-printable? 47)))   ; /
-  (assert-true  (uim-bool '(ichar-printable? 48)))   ; 0
-  (assert-true  (uim-bool '(ichar-printable? 57)))   ; 9
-  (assert-true  (uim-bool '(ichar-printable? 58)))   ; :
-  (assert-true  (uim-bool '(ichar-printable? 64)))   ; @
-  (assert-true  (uim-bool '(ichar-printable? 65)))   ; A
-  (assert-true  (uim-bool '(ichar-printable? 90)))   ; Z
-  (assert-true  (uim-bool '(ichar-printable? 91)))   ; [
-  (assert-true  (uim-bool '(ichar-printable? 96)))   ; `
-  (assert-true  (uim-bool '(ichar-printable? 97)))   ; a
-  (assert-true  (uim-bool '(ichar-printable? 122)))  ; z
-  (assert-true  (uim-bool '(ichar-printable? 123)))  ; {
-  (assert-true  (uim-bool '(ichar-printable? 126)))  ; ~
-  (assert-false (uim-bool '(ichar-printable? 127)))  ; DEL
+  (assert-uim-false '(ichar-printable? 'symbol))
+  (assert-uim-false '(ichar-printable? "string"))
+  (assert-uim-false '(ichar-printable? '(0 1 2)))
+  (assert-uim-false '(ichar-printable? car))
+  (assert-uim-false '(ichar-printable? 0))    ; NUL
+  (assert-uim-false '(ichar-printable? 1))    ; SOH
+  (assert-uim-false '(ichar-printable? 31))   ; US
+  (assert-uim-true  '(ichar-printable? 32))   ; SPACE
+  (assert-uim-true  '(ichar-printable? 33))   ; !
+  (assert-uim-true  '(ichar-printable? 47))   ; /
+  (assert-uim-true  '(ichar-printable? 48))   ; 0
+  (assert-uim-true  '(ichar-printable? 57))   ; 9
+  (assert-uim-true  '(ichar-printable? 58))   ; :
+  (assert-uim-true  '(ichar-printable? 64))   ; @
+  (assert-uim-true  '(ichar-printable? 65))   ; A
+  (assert-uim-true  '(ichar-printable? 90))   ; Z
+  (assert-uim-true  '(ichar-printable? 91))   ; [
+  (assert-uim-true  '(ichar-printable? 96))   ; `
+  (assert-uim-true  '(ichar-printable? 97))   ; a
+  (assert-uim-true  '(ichar-printable? 122))  ; z
+  (assert-uim-true  '(ichar-printable? 123))  ; {
+  (assert-uim-true  '(ichar-printable? 126))  ; ~
+  (assert-uim-false '(ichar-printable? 127))  ; DEL
   #f)
 
 (define (test-ichar-graphic?)
-  (assert-false (uim-bool '(ichar-graphic? 'symbol)))
-  (assert-false (uim-bool '(ichar-graphic? "string")))
-  (assert-false (uim-bool '(ichar-graphic? '(0 1 2))))
-  (assert-false (uim-bool '(ichar-graphic? car)))
-  (assert-false (uim-bool '(ichar-graphic? 0)))    ; NUL
-  (assert-false (uim-bool '(ichar-graphic? 1)))    ; SOH
-  (assert-false (uim-bool '(ichar-graphic? 31)))   ; US
-  (assert-false (uim-bool '(ichar-graphic? 32)))   ; SPACE
-  (assert-true  (uim-bool '(ichar-graphic? 33)))   ; !
-  (assert-true  (uim-bool '(ichar-graphic? 47)))   ; /
-  (assert-true  (uim-bool '(ichar-graphic? 48)))   ; 0
-  (assert-true  (uim-bool '(ichar-graphic? 57)))   ; 9
-  (assert-true  (uim-bool '(ichar-graphic? 58)))   ; :
-  (assert-true  (uim-bool '(ichar-graphic? 64)))   ; @
-  (assert-true  (uim-bool '(ichar-graphic? 65)))   ; A
-  (assert-true  (uim-bool '(ichar-graphic? 90)))   ; Z
-  (assert-true  (uim-bool '(ichar-graphic? 91)))   ; [
-  (assert-true  (uim-bool '(ichar-graphic? 96)))   ; `
-  (assert-true  (uim-bool '(ichar-graphic? 97)))   ; a
-  (assert-true  (uim-bool '(ichar-graphic? 122)))  ; z
-  (assert-true  (uim-bool '(ichar-graphic? 123)))  ; {
-  (assert-true  (uim-bool '(ichar-graphic? 126)))  ; ~
-  (assert-false (uim-bool '(ichar-graphic? 127)))  ; DEL
+  (assert-uim-false '(ichar-graphic? 'symbol))
+  (assert-uim-false '(ichar-graphic? "string"))
+  (assert-uim-false '(ichar-graphic? '(0 1 2)))
+  (assert-uim-false '(ichar-graphic? car))
+  (assert-uim-false '(ichar-graphic? 0))    ; NUL
+  (assert-uim-false '(ichar-graphic? 1))    ; SOH
+  (assert-uim-false '(ichar-graphic? 31))   ; US
+  (assert-uim-false '(ichar-graphic? 32))   ; SPACE
+  (assert-uim-true  '(ichar-graphic? 33))   ; !
+  (assert-uim-true  '(ichar-graphic? 47))   ; /
+  (assert-uim-true  '(ichar-graphic? 48))   ; 0
+  (assert-uim-true  '(ichar-graphic? 57))   ; 9
+  (assert-uim-true  '(ichar-graphic? 58))   ; :
+  (assert-uim-true  '(ichar-graphic? 64))   ; @
+  (assert-uim-true  '(ichar-graphic? 65))   ; A
+  (assert-uim-true  '(ichar-graphic? 90))   ; Z
+  (assert-uim-true  '(ichar-graphic? 91))   ; [
+  (assert-uim-true  '(ichar-graphic? 96))   ; `
+  (assert-uim-true  '(ichar-graphic? 97))   ; a
+  (assert-uim-true  '(ichar-graphic? 122))  ; z
+  (assert-uim-true  '(ichar-graphic? 123))  ; {
+  (assert-uim-true  '(ichar-graphic? 126))  ; ~
+  (assert-uim-false '(ichar-graphic? 127))  ; DEL
   #f)
 
 (provide "test/util/test-character-predicate")

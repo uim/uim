@@ -29,7 +29,7 @@
 
 (define-module test.util.test-string-list
   (use test.unit.test-case)
-  (use test.uim-test-utils-new))
+  (use test.uim-test))
 (select-module test.util.test-string-list)
 
 (define (setup)
@@ -39,33 +39,33 @@
   (uim-test-teardown))
 
 (define (test-string-list-concat)
-  (assert-equal ""
-                (uim '(string-list-concat ())))
-  (assert-equal ""
-                (uim '(string-list-concat '(""))))
-  (assert-equal "foo"
-                (uim '(string-list-concat '("foo"))))
-  (assert-equal "barfoo"
-                (uim '(string-list-concat '("foo" "bar"))))
-  (assert-equal "bazbarfoo"
-                (uim '(string-list-concat '("foo" "bar" "baz"))))
+  (assert-uim-equal ""
+                    '(string-list-concat ()))
+  (assert-uim-equal ""
+                    '(string-list-concat '("")))
+  (assert-uim-equal "foo"
+                    '(string-list-concat '("foo")))
+  (assert-uim-equal "barfoo"
+                    '(string-list-concat '("foo" "bar")))
+  (assert-uim-equal "bazbarfoo"
+                    '(string-list-concat '("foo" "bar" "baz")))
   #f)
 
 (define (test-string-find)
-  (assert-false (uim-bool '(string-find () "")))
-  (assert-false (uim-bool '(string-find () "quux")))
-  (assert-false (uim-bool '(string-find '("foo") "")))
-  (assert-true  (uim-bool '(string-find '("foo") "foo")))
-  (assert-false (uim-bool '(string-find '("foo") "quux")))
-  (assert-false (uim-bool '(string-find '("foo" "bar") "")))
-  (assert-true  (uim-bool '(string-find '("foo" "bar") "foo")))
-  (assert-true  (uim-bool '(string-find '("foo" "bar") "bar")))
-  (assert-false (uim-bool '(string-find '("foo" "bar") "quux")))
-  (assert-false (uim-bool '(string-find '("foo" "bar" "baz") "")))
-  (assert-true  (uim-bool '(string-find '("foo" "bar" "baz") "foo")))
-  (assert-true  (uim-bool '(string-find '("foo" "bar" "baz") "bar")))
-  (assert-true  (uim-bool '(string-find '("foo" "bar" "baz") "baz")))
-  (assert-false (uim-bool '(string-find '("foo" "bar" "baz") "quux")))
+  (assert-uim-false '(string-find () ""))
+  (assert-uim-false '(string-find () "quux"))
+  (assert-uim-false '(string-find '("foo") ""))
+  (assert-uim-true  '(string-find '("foo") "foo"))
+  (assert-uim-false '(string-find '("foo") "quux"))
+  (assert-uim-false '(string-find '("foo" "bar") ""))
+  (assert-uim-true  '(string-find '("foo" "bar") "foo"))
+  (assert-uim-true  '(string-find '("foo" "bar") "bar"))
+  (assert-uim-false '(string-find '("foo" "bar") "quux"))
+  (assert-uim-false '(string-find '("foo" "bar" "baz") ""))
+  (assert-uim-true  '(string-find '("foo" "bar" "baz") "foo"))
+  (assert-uim-true  '(string-find '("foo" "bar" "baz") "bar"))
+  (assert-uim-true  '(string-find '("foo" "bar" "baz") "baz"))
+  (assert-uim-false '(string-find '("foo" "bar" "baz") "quux"))
   #f)
 
 (provide "test/util/test-string-list")

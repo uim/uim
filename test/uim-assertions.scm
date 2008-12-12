@@ -34,23 +34,18 @@
 (select-module test.uim-assertions)
 
 (define (assert-uim-equal expected uim-expression)
-  (assert-equal expected (uim uim-expression))
-  #f)
+  (assert-equal expected (uim uim-expression)))
 
 (define (assert-uim-raw-equal expected uim-expression-string)
-  (assert-equal expected (uim-raw uim-expression-string))
-  #f)
+  (assert-equal expected (uim-raw uim-expression-string)))
 
 (define (assert-uim-true uim-expression)
-  (assert-true (uim-bool uim-expression))
-  #f)
+  (assert-true (uim-bool uim-expression)))
 
 (define (assert-uim-false uim-expression)
-  (assert-false (uim-bool uim-expression))
-  #f)
+  (assert-false (uim-bool uim-expression)))
 
 (define (assert-uim-error uim-expression)
-  (assert-error (lambda () (uim uim-expression)))
-  #f)
+  (assert-error (lambda () (uim uim-expression))))
 
 (provide "test/uim-assertions")

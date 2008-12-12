@@ -29,7 +29,7 @@
 
 (define-module test.util.test-misc
   (use test.unit.test-case)
-  (use test.uim-test-utils-new))
+  (use test.uim-test))
 (select-module test.util.test-misc)
 
 (define (setup)
@@ -56,208 +56,208 @@
 
 (define (test-string-escape)
   ;; empty string
-  (assert-equal "\"\""
-                (uim '(string-escape "")))
+  (assert-uim-equal "\"\""
+                    '(string-escape ""))
   ;; single character
   ;; R5RS
-  (assert-equal "\"\\\"\""
-                (uim '(string-escape "\"")))
-  (assert-equal "\"\\\\\""
-                (uim '(string-escape "\\")))
+  (assert-uim-equal "\"\\\"\""
+                    '(string-escape "\""))
+  (assert-uim-equal "\"\\\\\""
+                    '(string-escape "\\"))
 
   ;; R6RS(SRFI-75) and C89 (uim-sh)
-  (assert-equal "\"\\t\""
-                (uim '(string-escape "\t"))) ;; #\tab
-  (assert-equal "\"\\n\""
-                (uim '(string-escape "\n"))) ;; #\linefeed
-  (assert-equal "\"\\f\""
-                (uim '(string-escape "\f"))) ;; #\page
-  (assert-equal "\"\\r\""
-                (uim '(string-escape "\r"))) ;; #\return
+  (assert-uim-equal "\"\\t\""
+                    '(string-escape "\t")) ;; #\tab
+  (assert-uim-equal "\"\\n\""
+                    '(string-escape "\n")) ;; #\linefeed
+  (assert-uim-equal "\"\\f\""
+                    '(string-escape "\f")) ;; #\page
+  (assert-uim-equal "\"\\r\""
+                    '(string-escape "\r")) ;; #\return
 
   ;; R6RS(SRFI-75) and C89 (uim-sh), but Gauche isn't
   ;; supported escape sequences. We can replace uim-raw with
   ;; uim after "test-gauche-unsupported-escape-sequences"
   ;; test fails which means Gauche supports them.
-  (assert-equal "\"\\a\""
-                (uim-raw "(string-escape \"\\a\")"))  ;; #\alarm
-  (assert-equal "\"\\b\""
-                (uim-raw "(string-escape \"\\b\")"))  ;; #\backspace
-  (assert-equal "\"\\v\""
-                (uim-raw "(string-escape \"\\v\")"))  ;; #\vtab
+  (assert-uim-raw-equal "\"\\a\""
+                        "(string-escape \"\\a\")")  ;; #\alarm
+  (assert-uim-raw-equal "\"\\b\""
+                        "(string-escape \"\\b\")")  ;; #\backspace
+  (assert-uim-raw-equal "\"\\v\""
+                        "(string-escape \"\\v\")")  ;; #\vtab
 
   ;; R5RS
-  (assert-equal "\"a\""
-                (uim '(string-escape "a")))
-  (assert-equal "\"b\""
-                (uim '(string-escape "b")))
-  (assert-equal "\"c\""
-                (uim '(string-escape "c")))
-  (assert-equal "\"a\""
-                (uim '(string-escape "\a")))
-  (assert-equal "\"b\""
-                (uim '(string-escape "\b")))
-  (assert-equal "\"c\""
-                (uim '(string-escape "\c")))
-  (assert-equal "\"A\""
-                (uim '(string-escape "A")))
-  (assert-equal "\"B\""
-                (uim '(string-escape "B")))
-  (assert-equal "\"C\""
-                (uim '(string-escape "C")))
-  (assert-equal "\"A\""
-                (uim '(string-escape "\A")))
-  (assert-equal "\"B\""
-                (uim '(string-escape "\B")))
-  (assert-equal "\"C\""
-                (uim '(string-escape "\C")))
+  (assert-uim-equal "\"a\""
+                    '(string-escape "a"))
+  (assert-uim-equal "\"b\""
+                    '(string-escape "b"))
+  (assert-uim-equal "\"c\""
+                    '(string-escape "c"))
+  (assert-uim-equal "\"a\""
+                    '(string-escape "\a"))
+  (assert-uim-equal "\"b\""
+                    '(string-escape "\b"))
+  (assert-uim-equal "\"c\""
+                    '(string-escape "\c"))
+  (assert-uim-equal "\"A\""
+                    '(string-escape "A"))
+  (assert-uim-equal "\"B\""
+                    '(string-escape "B"))
+  (assert-uim-equal "\"C\""
+                    '(string-escape "C"))
+  (assert-uim-equal "\"A\""
+                    '(string-escape "\A"))
+  (assert-uim-equal "\"B\""
+                    '(string-escape "\B"))
+  (assert-uim-equal "\"C\""
+                    '(string-escape "\C"))
   ;; 2 characters
-  (assert-equal "\"\\\"\\\"\""
-                (uim '(string-escape "\"\"")))
-  (assert-equal "\"\\\\\\\"\""
-                (uim '(string-escape "\\\"")))
-  (assert-equal "\"\\\\\\\\\""
-                (uim '(string-escape "\\\\")))
-  (assert-equal "\"\\r\\n\""
-                (uim '(string-escape "\r\n")))
-  (assert-equal "\"aB\""
-                (uim '(string-escape "aB")))
-  (assert-equal "\"aB\""
-                (uim '(string-escape "a\B")))
-  (assert-equal "\"aB\""
-                (uim '(string-escape "\a\B")))
+  (assert-uim-equal "\"\\\"\\\"\""
+                    '(string-escape "\"\""))
+  (assert-uim-equal "\"\\\\\\\"\""
+                    '(string-escape "\\\""))
+  (assert-uim-equal "\"\\\\\\\\\""
+                    '(string-escape "\\\\"))
+  (assert-uim-equal "\"\\r\\n\""
+                    '(string-escape "\r\n"))
+  (assert-uim-equal "\"aB\""
+                    '(string-escape "aB"))
+  (assert-uim-equal "\"aB\""
+                    '(string-escape "a\B"))
+  (assert-uim-equal "\"aB\""
+                    '(string-escape "\a\B"))
   ;; complex
-  (assert-equal "\"\\\"a string\\\" in two-line\\nstring\\n\""
-                (uim '(string-escape "\"a string\" in two-line\nstring\n")))
+  (assert-uim-equal "\"\\\"a string\\\" in two-line\\nstring\\n\""
+                    '(string-escape "\"a string\" in two-line\nstring\n"))
   #f)
 
 (define (test-compose)
   (uim '(define test-list '(0 1 2 3 4 5)))
-  (assert-true  (uim-bool '(procedure? (compose))))
-  (assert-true  (uim-bool '(procedure? (compose car))))
-  (assert-true  (uim-bool '(procedure? (compose car cdr))))
-  (assert-true  (uim-bool '(procedure? (compose car cdr list))))
-  (assert-equal '(0 1 2 3 4 5)
-                (uim '((compose) test-list)))
-  (assert-equal 0
-                (uim '((compose car) test-list)))
-  (assert-equal 1
-                (uim '((compose car cdr) test-list)))
-  (assert-equal 2
-                (uim '((compose car cdr cdr) test-list)))
-  (assert-equal 4
-                (uim '((compose car cdr reverse) test-list)))
-  (assert-equal 3
-                (uim '((compose car cdr cdr reverse) test-list)))
+  (assert-uim-true  '(procedure? (compose)))
+  (assert-uim-true  '(procedure? (compose car)))
+  (assert-uim-true  '(procedure? (compose car cdr)))
+  (assert-uim-true  '(procedure? (compose car cdr list)))
+  (assert-uim-equal '(0 1 2 3 4 5)
+                    '((compose) test-list))
+  (assert-uim-equal 0
+                    '((compose car) test-list))
+  (assert-uim-equal 1
+                    '((compose car cdr) test-list))
+  (assert-uim-equal 2
+                    '((compose car cdr cdr) test-list))
+  (assert-uim-equal 4
+                    '((compose car cdr reverse) test-list))
+  (assert-uim-equal 3
+                    '((compose car cdr cdr reverse) test-list))
   #f)
 
 (define (test-safe-car)
-  (assert-equal 1
-                (uim '(safe-car '(1 2))))
-  (assert-equal 1
-                (uim '(safe-car '(1 . 2))))
-  (assert-false (uim '(safe-car '())))
-  (assert-false (uim '(safe-car 1)))
+  (assert-uim-equal 1
+                    '(safe-car '(1 2)))
+  (assert-uim-equal 1
+                    '(safe-car '(1 . 2)))
+  (assert-uim-false '(safe-car '()))
+  (assert-uim-false '(safe-car 1))
   #f)
 
 (define (test-safe-cdr)
-  (assert-equal '(2)
-                (uim '(safe-cdr '(1 2))))
-  (assert-equal 2
-                (uim '(safe-cdr '(1 . 2))))
-  (assert-false (uim '(safe-cdr '())))
-  (assert-false (uim '(safe-cdr 1)))
+  (assert-uim-equal '(2)
+                    '(safe-cdr '(1 2)))
+  (assert-uim-equal 2
+                    '(safe-cdr '(1 . 2)))
+  (assert-uim-false '(safe-cdr '()))
+  (assert-uim-false '(safe-cdr 1))
   #f)
 
 (define (test-assq-cdr)
-  (assert-equal '(2)
-                (uim '(assq-cdr 1 '((1 2)))))
-  (assert-equal 2
-                (uim '(assq-cdr 1 '((1 . 2)))))
-  (assert-false (uim '(assq-cdr 2 '((1 2)))))
-  (assert-false (uim '(assq-cdr 2 '((1 . 2)))))
-  (assert-equal '(2)
-                (uim '(assq-cdr 1 '((3 4) (1 2)))))
-  (assert-equal 2
-                (uim '(assq-cdr 1 '((3 . 4) (1 . 2)))))
-  (assert-equal '(4)
-                (uim '(assq-cdr 3 '((3 4) (1 2)))))
-  (assert-equal 4
-                (uim '(assq-cdr 3 '((3 . 4) (1 . 2)))))
-  (assert-false (uim '(assq-cdr 1 '())))
-  (assert-error (lambda () (uim '(assq-cdr 1 1))))
+  (assert-uim-equal '(2)
+                    '(assq-cdr 1 '((1 2))))
+  (assert-uim-equal 2
+                    '(assq-cdr 1 '((1 . 2))))
+  (assert-uim-false '(assq-cdr 2 '((1 2))))
+  (assert-uim-false '(assq-cdr 2 '((1 . 2))))
+  (assert-uim-equal '(2)
+                    '(assq-cdr 1 '((3 4) (1 2))))
+  (assert-uim-equal 2
+                    '(assq-cdr 1 '((3 . 4) (1 . 2))))
+  (assert-uim-equal '(4)
+                    '(assq-cdr 3 '((3 4) (1 2))))
+  (assert-uim-equal 4
+                    '(assq-cdr 3 '((3 . 4) (1 . 2))))
+  (assert-uim-false '(assq-cdr 1 '()))
+  (assert-uim-error '(assq-cdr 1 1))
   #f)
 
 (define (test-clamp)
-  (assert-equal 0 (uim '(clamp -2 0 -1)))
-  (assert-equal 0 (uim '(clamp -1 0 -1)))
-  (assert-equal 0 (uim '(clamp 0  0 -1)))
-  (assert-equal 0 (uim '(clamp 1  0 -1)))
-  (assert-equal 0 (uim '(clamp 2  0 -1)))
-  (assert-equal 0 (uim '(clamp 10 0 -1)))
+  (assert-uim-equal 0  '(clamp -2 0 -1))
+  (assert-uim-equal 0  '(clamp -1 0 -1))
+  (assert-uim-equal 0  '(clamp 0  0 -1))
+  (assert-uim-equal 0  '(clamp 1  0 -1))
+  (assert-uim-equal 0  '(clamp 2  0 -1))
+  (assert-uim-equal 0  '(clamp 10 0 -1))
 
-  (assert-equal -2 (uim '(clamp -2 -2 0)))
-  (assert-equal -1 (uim '(clamp -1 -2 0)))
-  (assert-equal 0  (uim '(clamp 0  -2 0)))
-  (assert-equal 0  (uim '(clamp 1  -2 0)))
-  (assert-equal 0  (uim '(clamp 2  -2 0)))
-  (assert-equal 0  (uim '(clamp 10 -2 0)))
+  (assert-uim-equal -2 '(clamp -2 -2 0))
+  (assert-uim-equal -1 '(clamp -1 -2 0))
+  (assert-uim-equal 0  '(clamp 0  -2 0))
+  (assert-uim-equal 0  '(clamp 1  -2 0))
+  (assert-uim-equal 0  '(clamp 2  -2 0))
+  (assert-uim-equal 0  '(clamp 10 -2 0))
 
-  (assert-equal -1 (uim '(clamp -2 -1 0)))
-  (assert-equal -1 (uim '(clamp -1 -1 0)))
-  (assert-equal 0  (uim '(clamp 0  -1 0)))
-  (assert-equal 0  (uim '(clamp 1  -1 0)))
-  (assert-equal 0  (uim '(clamp 2  -1 0)))
-  (assert-equal 0  (uim '(clamp 10 -1 0)))
+  (assert-uim-equal -1 '(clamp -2 -1 0))
+  (assert-uim-equal -1 '(clamp -1 -1 0))
+  (assert-uim-equal 0  '(clamp 0  -1 0))
+  (assert-uim-equal 0  '(clamp 1  -1 0))
+  (assert-uim-equal 0  '(clamp 2  -1 0))
+  (assert-uim-equal 0  '(clamp 10 -1 0))
 
-  (assert-equal 0 (uim '(clamp -2 0 0)))
-  (assert-equal 0 (uim '(clamp -1 0 0)))
-  (assert-equal 0 (uim '(clamp 0  0 0)))
-  (assert-equal 0 (uim '(clamp 1  0 0)))
-  (assert-equal 0 (uim '(clamp 2  0 0)))
-  (assert-equal 0 (uim '(clamp 10 0 0)))
+  (assert-uim-equal 0  '(clamp -2 0 0))
+  (assert-uim-equal 0  '(clamp -1 0 0))
+  (assert-uim-equal 0  '(clamp 0  0 0))
+  (assert-uim-equal 0  '(clamp 1  0 0))
+  (assert-uim-equal 0  '(clamp 2  0 0))
+  (assert-uim-equal 0  '(clamp 10 0 0))
 
-  (assert-equal 0 (uim '(clamp -2 0 1)))
-  (assert-equal 0 (uim '(clamp -1 0 1)))
-  (assert-equal 0 (uim '(clamp 0  0 1)))
-  (assert-equal 1 (uim '(clamp 1  0 1)))
-  (assert-equal 1 (uim '(clamp 2  0 1)))
-  (assert-equal 1 (uim '(clamp 10 0 1)))
+  (assert-uim-equal 0  '(clamp -2 0 1))
+  (assert-uim-equal 0  '(clamp -1 0 1))
+  (assert-uim-equal 0  '(clamp 0  0 1))
+  (assert-uim-equal 1  '(clamp 1  0 1))
+  (assert-uim-equal 1  '(clamp 2  0 1))
+  (assert-uim-equal 1  '(clamp 10 0 1))
 
-  (assert-equal 0 (uim '(clamp -2 0 2)))
-  (assert-equal 0 (uim '(clamp -1 0 2)))
-  (assert-equal 0 (uim '(clamp 0  0 2)))
-  (assert-equal 1 (uim '(clamp 1  0 2)))
-  (assert-equal 2 (uim '(clamp 2  0 2)))
-  (assert-equal 2 (uim '(clamp 10 0 2)))
+  (assert-uim-equal 0  '(clamp -2 0 2))
+  (assert-uim-equal 0  '(clamp -1 0 2))
+  (assert-uim-equal 0  '(clamp 0  0 2))
+  (assert-uim-equal 1  '(clamp 1  0 2))
+  (assert-uim-equal 2  '(clamp 2  0 2))
+  (assert-uim-equal 2  '(clamp 10 0 2))
 
-  (assert-equal 0 (uim '(clamp -2 0 3)))
-  (assert-equal 0 (uim '(clamp -1 0 3)))
-  (assert-equal 0 (uim '(clamp 0  0 3)))
-  (assert-equal 1 (uim '(clamp 1  0 3)))
-  (assert-equal 2 (uim '(clamp 2  0 3)))
-  (assert-equal 3 (uim '(clamp 10 0 3)))
+  (assert-uim-equal 0  '(clamp -2 0 3))
+  (assert-uim-equal 0  '(clamp -1 0 3))
+  (assert-uim-equal 0  '(clamp 0  0 3))
+  (assert-uim-equal 1  '(clamp 1  0 3))
+  (assert-uim-equal 2  '(clamp 2  0 3))
+  (assert-uim-equal 3  '(clamp 10 0 3))
 
-  (assert-equal 1 (uim '(clamp -2 1 3)))
-  (assert-equal 1 (uim '(clamp -1 1 3)))
-  (assert-equal 1 (uim '(clamp 0  1 3)))
-  (assert-equal 1 (uim '(clamp 1  1 3)))
-  (assert-equal 2 (uim '(clamp 2  1 3)))
-  (assert-equal 3 (uim '(clamp 10 1 3)))
+  (assert-uim-equal 1  '(clamp -2 1 3))
+  (assert-uim-equal 1  '(clamp -1 1 3))
+  (assert-uim-equal 1  '(clamp 0  1 3))
+  (assert-uim-equal 1  '(clamp 1  1 3))
+  (assert-uim-equal 2  '(clamp 2  1 3))
+  (assert-uim-equal 3  '(clamp 10 1 3))
 
-  (assert-equal -1 (uim '(clamp -2 -1 3)))
-  (assert-equal -1 (uim '(clamp -1 -1 3)))
-  (assert-equal 0  (uim '(clamp 0  -1 3)))
-  (assert-equal 1  (uim '(clamp 1  -1 3)))
-  (assert-equal 2  (uim '(clamp 2  -1 3)))
-  (assert-equal 3  (uim '(clamp 10 -1 3)))
+  (assert-uim-equal -1 '(clamp -2 -1 3))
+  (assert-uim-equal -1 '(clamp -1 -1 3))
+  (assert-uim-equal 0  '(clamp 0  -1 3))
+  (assert-uim-equal 1  '(clamp 1  -1 3))
+  (assert-uim-equal 2  '(clamp 2  -1 3))
+  (assert-uim-equal 3  '(clamp 10 -1 3))
 
-  (assert-equal -2 (uim '(clamp -2 -5 5)))
-  (assert-equal -1 (uim '(clamp -1 -5 5)))
-  (assert-equal 0  (uim '(clamp 0  -5 5)))
-  (assert-equal 1  (uim '(clamp 1  -5 5)))
-  (assert-equal 2  (uim '(clamp 2  -5 5)))
-  (assert-equal 5  (uim '(clamp 10 -5 5)))
+  (assert-uim-equal -2 '(clamp -2 -5 5))
+  (assert-uim-equal -1 '(clamp -1 -5 5))
+  (assert-uim-equal 0  '(clamp 0  -5 5))
+  (assert-uim-equal 1  '(clamp 1  -5 5))
+  (assert-uim-equal 2  '(clamp 2  -5 5))
+  (assert-uim-equal 5  '(clamp 10 -5 5))
   #f)
 
 (provide "test/util/test-misc")
