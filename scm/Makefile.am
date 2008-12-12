@@ -41,6 +41,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  scim.scm \
  social-ime.scm social-ime-custom.scm social-ime-key-custom.scm \
  ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
+ yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
  uim-module-manager.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
@@ -82,6 +83,9 @@ endif
 if CURL
   module_names += "social-ime"
   module_names += "ajax-ime"
+if EXPAT
+  module_names += "yahoo-jp"
+endif
 endif
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
