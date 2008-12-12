@@ -147,6 +147,14 @@ libuim_curl_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_curl_la_CPPFLAGS = -I$(top_srcdir) @CURL_CFLAGS@
 endif
 
+if EXPAT
+uim_plugin_LTLIBRARIES += libuim-expat.la
+libuim_expat_la_SOURCES = expat.c
+libuim_expat_la_LIBADD = @EXPAT_LIBS@ libuim.la
+libuim_expat_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_expat_la_CPPFLAGS = -I$(top_srcdir) @EXPAT_CFLAGS@
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
