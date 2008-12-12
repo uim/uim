@@ -152,7 +152,7 @@ uim_curl_fetch_simple_internal(void *url_)
 static CURLcode
 uim_curl_perform(CURL *curl)
 {
-  uim_lisp use_proxy_;
+  uim_bool use_proxy;
   char *ua;
   char *referer;
   char *http_proxy;
@@ -160,14 +160,14 @@ uim_curl_perform(CURL *curl)
 
   ua = uim_scm_symbol_value_str("uim-curl-user-agent");
   referer = uim_scm_symbol_value_str("uim-curl-referer");
-  use_proxy_ = uim_scm_symbol_value_bool("uim-curl-use-proxy?");
+  use_proxy = uim_scm_symbol_value_bool("uim-curl-use-proxy?");
   http_proxy = uim_scm_symbol_value_str("uim-curl-http-proxy");
 
   curl_easy_setopt(curl, CURLOPT_USERAGENT,
 		   (ua != NULL) ? ua : "libcurl-agent/1.0");
   curl_easy_setopt(curl, CURLOPT_REFERER,
 		   (referer != NULL) ? referer : "");
-  if(TRUEP(use_proxy_)) {
+  if (use_proxy) {
     curl_easy_setopt(curl, CURLOPT_PROXY,
 		     (http_proxy != NULL) ? http_proxy : "");
   }
