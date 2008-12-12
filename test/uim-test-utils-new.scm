@@ -64,13 +64,19 @@
                  '(r))
   (not (zero? (apply selector-select *uim-sh-selector* timeout))))
 
-(define (uim-sh-write sexp out)
+(define (uim-sh-output out thunk)
   (set! (port-buffering out) :none)
   (with-output-to-port out
     (lambda ()
-      (write sexp)
+      (thunk)
       (newline)
       (flush))))
+
+(define (uim-sh-write sexp out)
+  (uim-sh-output out (lambda () (write sexp))))
+
+(define (uim-sh-display string out)
+  (uim-sh-output out (lambda () (display string))))
 
 (define (uim-sh-read in)
   (set! (port-buffering in) :none)
@@ -103,6 +109,10 @@
 
 (define (uim sexp)
   (uim-sh-write sexp (process-input *uim-sh-process*))
+  (uim-sh-read (process-output *uim-sh-process*)))
+
+(define (uim-raw string)
+  (uim-sh-display string (process-input *uim-sh-process*))
   (uim-sh-read (process-output *uim-sh-process*)))
 
 (define (uim-bool sexp)
