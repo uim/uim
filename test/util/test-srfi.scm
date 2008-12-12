@@ -28,6 +28,8 @@
 ;;;
 
 (define-module test.util.test-srfi
+  (use srfi-1)
+  (use gauche.sequence)
   (use test.unit.test-case)
   (use test.uim-test))
 (select-module test.util.test-srfi)
@@ -193,12 +195,16 @@
   (assert-uim-true  '(any string? lst2))
   (assert-uim-true  '(any string? lst3))
   (assert-uim-false '(any string? lst4))
-  (assert-uim-true  '(any proc-or lst2))
+  (assert-uim-equal 1
+                    '(any proc-or lst2))
   (assert-uim-false '(any proc-or lst6))
-  (assert-uim-true  '(any proc-or lst2 lst6))
-  (assert-uim-true  '(any proc-or lst6 lst2))
+  (assert-uim-equal 1
+                    '(any proc-or lst2 lst6))
+  (assert-uim-equal 1
+                    '(any proc-or lst6 lst2))
   (assert-uim-false '(any proc-or lst6 lst7))
-  (assert-uim-true  '(any proc-or lst5 lst6 lst7))
+  (assert-uim-equal 1
+                    '(any proc-or lst5 lst6 lst7))
   (assert-uim-false '(any string? '()))
   #f)
 
@@ -207,13 +213,17 @@
   (assert-uim-false '(every string? lst2))
   (assert-uim-true  '(every string? lst3))
   (assert-uim-false '(every string? lst4))
-  (assert-uim-true  '(every proc-or lst))
+  (assert-uim-equal (last (uim 'lst))
+                    '(every proc-or lst))
   (assert-uim-false '(every proc-or lst2))
   (assert-uim-false '(every proc-or lst6))
-  (assert-uim-true  '(every proc-or lst2 lst6))
-  (assert-uim-true  '(every proc-or lst6 lst2))
+  (assert-uim-equal "2"
+                    '(every proc-or lst2 lst6))
+  (assert-uim-equal "2"
+                    '(every proc-or lst6 lst2))
   (assert-uim-false '(every proc-or lst6 lst7))
-  (assert-uim-true  '(every proc-or lst4 lst6 lst7))
+  (assert-uim-equal 2
+                    '(every proc-or lst4 lst6 lst7))
   (assert-uim-false '(every proc-or lst5 lst6 lst7))
   (assert-uim-true  '(every string? '()))
   #f)
