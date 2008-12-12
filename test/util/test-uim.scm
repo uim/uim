@@ -27,10 +27,10 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-(define-module test.util.test-r5rs
+(define-module test.util.test-uim
   (use test.unit.test-case)
   (use test.uim-test-utils-new))
-(select-module test.util.test-r5rs)
+(select-module test.util.test-uim)
 
 (define (setup)
   (uim-test-setup))
