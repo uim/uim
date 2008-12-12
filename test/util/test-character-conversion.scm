@@ -114,10 +114,8 @@
 
 (define (test-string->alphabetic-ichar)
   (assert-uim-false '(string->alphabetic-ichar ""))    ; NUL
-  ;; FIXME: Since these control chars are normalized to "\x01" and so on by
-  ;; Gauche at first, uim-sh cannot interpret them without SRFI-75 support.
-  ;;(assert-uim-false '(string->alphabetic-ichar ""))  ; SOH
-  ;;(assert-uim-false '(string->alphabetic-ichar ""))  ; US
+  (assert-uim-raw-false "(string->alphabetic-ichar \"\")")  ; SOH
+  (assert-uim-raw-false "(string->alphabetic-ichar \"\")")  ; US
   (assert-uim-false '(string->alphabetic-ichar " "))   ; SPACE
   (assert-uim-false '(string->alphabetic-ichar "!"))   ; !
   (assert-uim-false '(string->alphabetic-ichar "/"))   ; /
@@ -137,7 +135,7 @@
   (assert-uim-false '(string->alphabetic-ichar "zz"))  ; zz
   (assert-uim-false '(string->alphabetic-ichar "{"))   ; {
   (assert-uim-false '(string->alphabetic-ichar "~"))   ; ~
-  ;;(assert-uim-false '(string->alphabetic-ichar "")) ; DEL
+  (assert-uim-raw-false "(string->alphabetic-ichar \"\")") ; DEL
   #f)
 
 (provide "test/util/test-character-conversion")

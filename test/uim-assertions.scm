@@ -36,14 +36,20 @@
 (define (assert-uim-equal expected uim-expression)
   (assert-equal expected (uim uim-expression)))
 
-(define (assert-uim-raw-equal expected uim-expression-string)
-  (assert-equal expected (uim-raw uim-expression-string)))
-
 (define (assert-uim-true uim-expression)
   (assert-true (uim uim-expression)))
 
 (define (assert-uim-false uim-expression)
   (assert-false (uim uim-expression)))
+
+(define (assert-uim-raw-equal expected uim-expression-string)
+  (assert-equal expected (uim-raw uim-expression-string)))
+
+(define (assert-uim-raw-true uim-expression-string)
+  (assert-true (uim-raw uim-expression-string)))
+
+(define (assert-uim-raw-false uim-expression-string)
+  (assert-false (uim-raw uim-expression-string)))
 
 (define (assert-uim-error uim-expression)
   (assert-error (lambda () (uim uim-expression))))
