@@ -256,7 +256,9 @@ uim_iconv_code_conv(void *obj, const char *instr)
   size_t outbufsiz, outs;
   char   *outbuf, *out;
   size_t ret = 0;
+  size_t nconv = 0;
   size_t idx = 0;
+  char *str = NULL;
 
   if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
@@ -271,12 +273,11 @@ uim_iconv_code_conv(void *obj, const char *instr)
   out = outbuf = uim_malloc(outbufsiz);
 
   while (ins > 0) {
-    out = outbuf + idx;
+    out = outbuf;
     outs = outbufsiz;
 
     ret = iconv(cd, (ICONV_CONST char **)&in, &ins, &out, &outs);
-    idx += outbufsiz - outs;
-
+    nconv = outbufsiz - outs;
     if (ret == (size_t)-1) {
       switch (errno) {
       case EINVAL:
@@ -295,13 +296,21 @@ uim_iconv_code_conv(void *obj, const char *instr)
     } else {
       /* XXX: irreversible characters */
     }
+    if (nconv > 0) {
+      if (str == NULL)
+	str = uim_malloc(nconv + 1);
+      else
+	str = uim_realloc(str, idx + nconv + 1);
+      memcpy(&str[idx], outbuf, nconv);
+      idx += nconv;
+    }
   }
   do {
-    out = outbuf + idx;
+    out = outbuf;
     outs = outbufsiz;
 
     ret = iconv(cd, NULL, NULL, &out, &outs);
-    idx += outbufsiz - outs;
+    nconv = outbufsiz - outs;
 
     if (ret == (size_t)-1) {
       outbufsiz *= 2;
@@ -310,14 +319,29 @@ uim_iconv_code_conv(void *obj, const char *instr)
     } else {
       /* XXX: irreversible characters */
     }
+    if (nconv > 0) {
+      if (str == NULL)
+	str = uim_malloc(nconv + 1);
+      else
+	str = uim_realloc(str, idx + nconv + 1);
+      memcpy(&str[idx], outbuf, nconv);
+      idx += nconv;
+    }
   } while (ret == (size_t)-1);
 
-  *out = '\0';
+  if (str == NULL)
+    str = uim_strdup("");
+  else
+    str[idx] = '\0';
+  free(outbuf);
+
   UIM_CATCH_ERROR_END();
 
-  return outbuf;
+  return str;
 
  err:
+  free(outbuf);
+
   UIM_CATCH_ERROR_END();
 
   return uim_strdup("");
