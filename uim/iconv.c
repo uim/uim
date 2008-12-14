@@ -248,45 +248,76 @@ uim_iconv_create(const char *tocode, const char *fromcode)
 }
 
 static char *
-uim_iconv_code_conv(void *obj, const char *str)
+uim_iconv_code_conv(void *obj, const char *instr)
 {
-  iconv_t ic;
-  size_t len, bufsize;
-  char *outbuf, *realbuf, *copied;
-  const char *inbuf, *src;
+  iconv_t cd = (iconv_t)obj;
+  size_t ins;
+  const char *in;
+  size_t outbufsiz, outs;
+  char   *outbuf, *out;
+  size_t ret = 0;
+  size_t idx = 0;
 
   if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
-  do {
-    if (!str) {
-      copied = NULL;
-      break;
-    }
+  ins = strlen(instr);
+  in = instr;
 
-    ic = (iconv_t)obj;
-    if (ic) {
-      len = strlen(str);
-      bufsize = (len + sizeof("")) * MBCHAR_LEN_MAX;
-      realbuf = alloca(bufsize);
-      bufsize--;
+  outbufsiz = BUFSIZ;
+  out = outbuf = uim_malloc(outbufsiz);
 
-      inbuf = str;
-      outbuf = realbuf;
-      iconv(ic, (ICONV_CONST char **)&inbuf, &len, &outbuf, &bufsize);
-      iconv(ic, NULL, NULL, &outbuf, &bufsize);
-      *outbuf = '\0';
-      src = realbuf;
+  while (ins > 0) {
+    out = outbuf + idx;
+    outs = outbufsiz;
+
+    ret = iconv(cd, (ICONV_CONST char **)&in, &ins, &out, &outs);
+    idx += outbufsiz - outs;
+
+    if (ret == (size_t)-1) {
+      switch (errno) {
+      case EINVAL:
+	/*
+	 * XXX: assume input string is stateless charset
+	 */
+	goto err;
+      case E2BIG:
+	outbufsiz *= 2;
+	out = uim_realloc(outbuf, outbufsiz);
+	outbuf = out;
+	break;
+      default:
+	goto err;
+      }
     } else {
-      src = str;
+      /* XXX: irreversible characters */
     }
+  }
+  do {
+    out = outbuf + idx;
+    outs = outbufsiz;
 
-    copied = uim_strdup(src);
-  } while (/* CONSTCOND */ 0);
+    ret = iconv(cd, NULL, NULL, &out, &outs);
+    idx += outbufsiz - outs;
 
+    if (ret == (size_t)-1) {
+      outbufsiz *= 2;
+      out = uim_realloc(outbuf, outbufsiz);
+      outbuf = out;
+    } else {
+      /* XXX: irreversible characters */
+    }
+  } while (ret == (size_t)-1);
+
+  *out = '\0';
   UIM_CATCH_ERROR_END();
 
-  return copied;
+  return outbuf;
+
+ err:
+  UIM_CATCH_ERROR_END();
+
+  return uim_strdup("");
 }
 
 static void
