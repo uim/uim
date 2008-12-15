@@ -1125,13 +1125,7 @@ KeySymToUcs4(KeySym keysym)
 
 int
 mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
-    size_t outbufsize = len + 1;
-    const char *inbuf;
     char *outbuf;
-    char *inchar;
-    char *outchar;
-    size_t inbytesleft, outbytesleft;
-    size_t ret_val;
     iconv_t cd;
 
     if (!uim_iconv->is_convertible("UTF-8", enc)) {
@@ -1140,53 +1134,16 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
 	return 0;
     }
 
-    inbuf = str;
-    if (!inbuf) {
-	utf8[0] = '\0';
-	return 0;
-    }
-
     cd = (iconv_t)uim_iconv->create("UTF-8", enc);
 
-    // no conversion needed
-    if (!cd)
-	return strlcpy(utf8, inbuf, len + 1);
+    outbuf = uim_iconv->convert(cd, str);
 
-    outbuf = (char *)malloc(outbufsize);
-    if (!outbuf) {
-	uim_iconv->release(cd);
-	utf8[0] = '\0';
-	return 0;
-    }
-    inchar = (char *)inbuf;
-    outchar = outbuf;
-    inbytesleft = strlen(inbuf);
-    outbytesleft = outbufsize - 1;
-    ret_val = iconv(cd, (ICONV_CONST char **)&inchar, &inbytesleft, &outchar, &outbytesleft);
-
-    if (ret_val == (size_t)-1 && errno != E2BIG) {
-	//perror("error in iconv");
-	uim_iconv->release(cd);
-	free(outbuf);
-	utf8[0] = '\0';
-	return 0;
-    }
-    ret_val = iconv(cd, NULL, NULL, &outchar, &outbytesleft);
-    if (ret_val == (size_t)-1 && errno != E2BIG) {
-	//perror("error in iconv");
-	uim_iconv->release(cd);
-	free(outbuf);
-	utf8[0] = '\0';
-	return 0;
-    }
     uim_iconv->release(cd);
-
-    *outchar = '\0';
 
     strlcpy(utf8, outbuf, len + 1);
     free(outbuf);
 
-    return outbufsize - outbytesleft - 1;
+    return strlen(utf8);
 }
 
 /*
