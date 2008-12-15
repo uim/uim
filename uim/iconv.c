@@ -281,9 +281,6 @@ uim_iconv_code_conv(void *obj, const char *instr)
     if (ret == (size_t)-1) {
       switch (errno) {
       case EINVAL:
-	/*
-	 * XXX: assume input string is stateless charset
-	 */
 	goto err;
       case E2BIG:
 	outbufsiz *= 2;
