@@ -269,7 +269,7 @@ uim_iconv_code_conv(void *obj, const char *instr)
   ins = strlen(instr);
   in = instr;
 
-  outbufsiz = BUFSIZ;
+  outbufsiz = (ins + sizeof("")) * MBCHAR_LEN_MAX;
   out = outbuf = uim_malloc(outbufsiz);
 
   while (ins > 0) {
