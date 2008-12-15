@@ -37,6 +37,7 @@
 #include <string.h>
 #include <iconv.h>
 #include <assert.h>
+#include <errno.h>
 
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
