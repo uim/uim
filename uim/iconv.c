@@ -254,7 +254,7 @@ uim_iconv_code_conv(void *obj, const char *instr)
   size_t ins;
   const char *in;
   size_t outbufsiz, outs;
-  char   *outbuf, *out;
+  char   *outbuf = NULL, *out;
   size_t ret = 0;
   size_t nconv = 0;
   size_t idx = 0;
@@ -340,7 +340,8 @@ uim_iconv_code_conv(void *obj, const char *instr)
   if (str)
     free(str);
 
-  free(outbuf);
+  if (outbuf)
+    free(outbuf);
 
   UIM_CATCH_ERROR_END();
 
