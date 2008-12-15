@@ -263,7 +263,7 @@ uim_iconv_code_conv(void *obj, const char *instr)
   if (UIM_CATCH_ERROR_BEGIN())
     return NULL;
 
-  if (!instr)
+  if (!obj || !instr)
     goto err;
 
   ins = strlen(instr);
