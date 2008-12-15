@@ -340,6 +340,9 @@ uim_iconv_code_conv(void *obj, const char *instr)
   return str;
 
  err:
+  if (str)
+    free(str);
+
   free(outbuf);
 
   UIM_CATCH_ERROR_END();
