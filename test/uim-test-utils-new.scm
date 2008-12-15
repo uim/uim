@@ -25,7 +25,7 @@
 ;;; WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 ;;; OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-;;;;
+;;;
 
 (define-module test.uim-test-utils-new
   (use gauche.process)
@@ -78,42 +78,37 @@
 (define (uim-sh-display string out)
   (uim-sh-output out (lambda () (display string))))
 
-(define (uim-sh-read in)
+(define (uim-sh-read-block in)
   (set! (port-buffering in) :none)
-  (uim-sh-select in)
-  (let ((uim-sh-output (with-error-handler
-                         (lambda (err)
-                           ;; (report-error err)
-                           (read-line in) ;; ignore read error
-                           #f)
-                         (lambda ()
-                           (read in)))))
-    (if (eq? 'Error: uim-sh-output)
-	(error (uim-sh-read-error in))
-	uim-sh-output)))
+  (let ((result (call-with-output-string
+                  (lambda (out)
+                    (let loop ((ready (uim-sh-select in '(1 0))))
+                      (when ready
+                        (display (read-block 4096 in) out)
+                        (loop (uim-sh-select in 1))))))))
+    (if (string-prefix? "Error:" result)
+      (error (string-trim-both result))
+      result)))
 
-(define (uim-sh-read-error in)
-  (let* ((blocks (if *uim-sh-multiline-error*
-		     (unfold (lambda (in)
-			       (not (or (char-ready? in)
-					(begin
-					  (sys-nanosleep 100000000) ;; 0.1s
-					  (char-ready? in)))))
-			     (lambda (in)
-			       (read-block 4096 in))
-			     values
-			     in)
-		     (list (read-line in))))
-	 (msg (string-trim-both (string-concatenate blocks))))
-    msg))
+(define (uim-read-from-string string)
+  (read-from-string string))
+
+(define (uim-read in)
+  (uim-read-from-string (uim-sh-read-block in)))
+
+(define (uim-eval sexp)
+  (uim-sh-write sexp (process-input *uim-sh-process*))
+  (uim-sh-read-block (process-output *uim-sh-process*)))
 
 (define (uim sexp)
-  (uim-sh-write sexp (process-input *uim-sh-process*))
-  (uim-sh-read (process-output *uim-sh-process*)))
+  (uim-read-from-string (uim-eval sexp)))
+
+(define (uim-eval-raw string)
+  (uim-sh-display string (process-input *uim-sh-process*))
+  (uim-sh-read-block (process-output *uim-sh-process*)))
 
 (define (uim-raw string)
-  (uim-sh-display string (process-input *uim-sh-process*))
-  (uim-sh-read (process-output *uim-sh-process*)))
+  (uim-read-from-string (uim-eval-raw string)))
 
 (define (uim-bool sexp)
   (not (not (uim sexp))))

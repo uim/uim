@@ -53,13 +53,12 @@
   (assert-uim-false '(symbol-bound? 'test-rec-set-fourth!))
   (assert-uim-false '(symbol-bound? 'test-rec-set-fifth!))
 
-  (assert-uim-true  '(begin
-                       (define-record 'test-rec
-                         '((first #f)
-                           (second foo)
-                           (third "bar")
-                           (fourth 4)))
-                       #t)) ;; suppress closure result
+  (uim-eval '(begin
+               (define-record 'test-rec
+                 '((first #f)
+                   (second foo)
+                   (third "bar")
+                   (fourth 4)))))
 
   (assert-uim-true  '(symbol-bound? 'test-rec-new))
   (assert-uim-true  '(symbol-bound? 'test-rec-first))
@@ -89,13 +88,12 @@
   #f)
 
 (define (define-record)
-  (uim '(begin
-          (define-record 'test-rec
-            '((first #f)
-              (second foo)
-              (third "bar")
-              (fourth 4)))
-          #t)))  ;; suppress closure result
+  (uim-eval '(begin
+               (define-record 'test-rec
+                 '((first #f)
+                   (second foo)
+                   (third "bar")
+                   (fourth 4))))))
 
 (define (test-getters)
   (define-record)
