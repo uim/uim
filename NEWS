@@ -4,7 +4,7 @@ Overview of changes from 1.5.x to 1.6.0-alpha
   - uim-social-ime (new IM)
     A web based Japanese multi-segment input method
   - uim-ajax-ime (new IM)
-    A web based Japanese input method
+    A web based Japanese single-segment input method
 
 * Others
 
