@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2009-01-05 20:32+0900\n"
+"PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4957,9 +4957,8 @@ msgid "Yahoo-Jp server"
 msgstr ""
 
 #: ../scm/yahoo-jp-custom.scm:47
-#, fuzzy
 msgid "Yahoo-Jp (advanced)"
-msgstr "Mana (avancé)"
+msgstr ""
 
 #: ../scm/yahoo-jp-custom.scm:307
 msgid "Yahoo-Jp server url"
@@ -5042,9 +5041,8 @@ msgid "[Yahoo-Jp] commit"
 msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:141
-#, fuzzy
 msgid "[Yahoo-Jp] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:147
 msgid "[Yahoo-Jp] next candidate"

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2009-01-05 20:38+0900\n"
+"PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4982,24 +4982,20 @@ msgid "Yahoo-Jp api key"
 msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:35
-#, fuzzy
 msgid "Yahoo-Jp key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:39
-#, fuzzy
 msgid "Yahoo-Jp key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:43
-#, fuzzy
 msgid "Yahoo-Jp key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:47
-#, fuzzy
 msgid "Yahoo-Jp key bindings 4"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:53
 msgid "[Yahoo-Jp] next segment"
@@ -5050,79 +5046,64 @@ msgid "[Yahoo-Jp] off"
 msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:129
-#, fuzzy
 msgid "[Yahoo-Jp] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:135
-#, fuzzy
 msgid "[Yahoo-Jp] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:141
-#, fuzzy
 msgid "[Yahoo-Jp] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:147
-#, fuzzy
 msgid "[Yahoo-Jp] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:153
-#, fuzzy
 msgid "[Yahoo-Jp] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:159
-#, fuzzy
 msgid "[Yahoo-Jp] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:165
-#, fuzzy
 msgid "[Yahoo-Jp] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:174
-#, fuzzy
 msgid "[Yahoo-Jp] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:180
-#, fuzzy
 msgid "[Yahoo-Jp] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:186
-#, fuzzy
 msgid "[Yahoo-Jp] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:192
-#, fuzzy
 msgid "[Yahoo-Jp] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:198
-#, fuzzy
 msgid "[Yahoo-Jp] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:204
-#, fuzzy
 msgid "[Yahoo-Jp] delete"
-msgstr "[벼루] 삭제"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:210
-#, fuzzy
 msgid "[Yahoo-Jp] go left"
-msgstr "[벼루] 단어모드에서 왼쪽으로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:216
-#, fuzzy
 msgid "[Yahoo-Jp] go right"
-msgstr "[벼루] 단어모드에서 오른쪽으로"
+msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:222
 msgid "[Yahoo-Jp] ESC keys on vi-cooperative mode"
