@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2008-03-30 06:25+0900\n"
+"PO-Revision-Date: 2009-01-05 20:19+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -4633,216 +4633,175 @@ msgstr ""
 
 #: ../scm/social-ime-custom.scm:43
 msgid "Social-IME server"
-msgstr ""
+msgstr "Social-IME サーバ"
 
 #: ../scm/social-ime-custom.scm:47
-#, fuzzy
 msgid "Social-IME (advanced)"
-msgstr "PRIME (高度)"
+msgstr "Social-IME (高度)"
 
 #: ../scm/social-ime-custom.scm:307
 msgid "Social-IME server url"
-msgstr ""
+msgstr "Social-IMEサーバを指定する"
 
 #: ../scm/social-ime-custom.scm:313
-#, fuzzy
 msgid "Social-IME user name"
-msgstr "SJ3ユーザ名"
+msgstr "Social-IMEユーザ名"
 
 #: ../scm/social-ime-key-custom.scm:35
-#, fuzzy
 msgid "Social-IME key bindings 1"
-msgstr "PRIME キー設定1"
+msgstr "Social-IME キー設定1"
 
 #: ../scm/social-ime-key-custom.scm:39
-#, fuzzy
 msgid "Social-IME key bindings 2"
-msgstr "PRIME キー設定2"
+msgstr "Social-IME キー設定2"
 
 #: ../scm/social-ime-key-custom.scm:43
-#, fuzzy
 msgid "Social-IME key bindings 3"
-msgstr "PRIME キー設定3"
+msgstr "Social-IME キー設定3"
 
 #: ../scm/social-ime-key-custom.scm:47
-#, fuzzy
 msgid "Social-IME key bindings 4"
-msgstr "PRIME キー設定1"
+msgstr "Social-IME キー設定4"
 
 #: ../scm/social-ime-key-custom.scm:53
-#, fuzzy
 msgid "[Social-IME] next segment"
-msgstr "[SJ3] 次文節"
+msgstr "[Social-IME] 次文節"
 
 #: ../scm/social-ime-key-custom.scm:59
-#, fuzzy
 msgid "[Social-IME] previous segment"
-msgstr "[SJ3] 前文節"
+msgstr "[Social-IME] 前文節"
 
 #: ../scm/social-ime-key-custom.scm:65
-#, fuzzy
 msgid "[Social-IME] extend segment"
-msgstr "[PRIME] 文節を伸ばす"
+msgstr "[Social-IME] 文節を伸ばす"
 
 #: ../scm/social-ime-key-custom.scm:71
-#, fuzzy
 msgid "[Social-IME] shrink segment"
-msgstr "[PRIME] 文節を縮める"
+msgstr "[Social-IME] 文節を縮める"
 
 #: ../scm/social-ime-key-custom.scm:77
-#, fuzzy
 msgid "[Social-IME] convert to hiragana"
-msgstr "[SJ3] ひらがなに変換"
+msgstr "[Social-IME] ひらがなに変換"
 
 #: ../scm/social-ime-key-custom.scm:83
-#, fuzzy
 msgid "[Social-IME] convert to katakana"
-msgstr "[SJ3] カタカナに変換"
+msgstr "[Social-IME] カタカナに変換"
 
 #: ../scm/social-ime-key-custom.scm:89
-#, fuzzy
 msgid "[Social-IME] convert to halfwidth katakana"
-msgstr "[SJ3] 半角カタカナに変換"
+msgstr "[Social-IME] 半角カタカナに変換"
 
 #: ../scm/social-ime-key-custom.scm:95
-#, fuzzy
 msgid "[Social-IME] convert to halfwidth alphanumeric"
-msgstr "[SJ3] 半角英数字に変換"
+msgstr "[Social-IME] 半角英数字に変換"
 
 #: ../scm/social-ime-key-custom.scm:101
-#, fuzzy
 msgid "[Social-IME] convert to fullwidth alphanumeric"
-msgstr "[SJ3] 全角英数字に変換"
+msgstr "[Social-IME] 全角英数字に変換"
 
 #: ../scm/social-ime-key-custom.scm:107
-#, fuzzy
 msgid "[Social-IME] commit as transposed kana"
-msgstr "[SJ3] かな/カナ反転確定"
+msgstr "[Social-IME] かな/カナ反転確定"
 
 #: ../scm/social-ime-key-custom.scm:116
-#, fuzzy
 msgid "[Social-IME] on"
-msgstr "[PRIME] オン"
+msgstr "[Social-IME] オン"
 
 #: ../scm/social-ime-key-custom.scm:123
-#, fuzzy
 msgid "[Social-IME] off"
-msgstr "[PRIME] オフ"
+msgstr "[Social-IME] オフ"
 
 #: ../scm/social-ime-key-custom.scm:129
-#, fuzzy
 msgid "[Social-IME] begin conversion"
-msgstr "[PRIME] 変換開始"
+msgstr "[Social-IME] 変換開始"
 
 #: ../scm/social-ime-key-custom.scm:135
-#, fuzzy
 msgid "[Social-IME] commit"
-msgstr "[PRIME] 確定"
+msgstr "[Social-IME] 確定"
 
 #: ../scm/social-ime-key-custom.scm:141
-#, fuzzy
 msgid "[Social-IME] cancel"
-msgstr "[PRIME] キャンセル"
+msgstr "[Social-IME] キャンセル"
 
 #: ../scm/social-ime-key-custom.scm:147
-#, fuzzy
 msgid "[Social-IME] next candidate"
-msgstr "[PRIME] 次候補"
+msgstr "[Social-IME] 次候補"
 
 #: ../scm/social-ime-key-custom.scm:153
-#, fuzzy
 msgid "[Social-IME] previous candidate"
-msgstr "[PRIME] 前候補"
+msgstr "[Social-IME] 前候補"
 
 #: ../scm/social-ime-key-custom.scm:159
-#, fuzzy
 msgid "[Social-IME] next page of candidate window"
-msgstr "[PRIME] 候補ウィンドウの次ページ"
+msgstr "[Social-IME] 候補ウィンドウの次ページ"
 
 #: ../scm/social-ime-key-custom.scm:165
-#, fuzzy
 msgid "[Social-IME] previous page of candidate window"
-msgstr "[PRIME] 候補ウィンドウの前ページ"
+msgstr "[Social-IME] 候補ウィンドウの前ページ"
 
 #: ../scm/social-ime-key-custom.scm:174
-#, fuzzy
 msgid "[Social-IME] beginning of preedit"
-msgstr "[PRIME] 編集領域の先頭"
+msgstr "[Social-IME] 編集領域の先頭"
 
 #: ../scm/social-ime-key-custom.scm:180
-#, fuzzy
 msgid "[Social-IME] end of preedit"
-msgstr "[PRIME] 編集領域の末尾"
+msgstr "[Social-IME] 編集領域の末尾"
 
 #: ../scm/social-ime-key-custom.scm:186
-#, fuzzy
 msgid "[Social-IME] erase after cursor"
-msgstr "[全体] カーソル以降を消去"
+msgstr "[Social-IME] カーソル以降を消去"
 
 #: ../scm/social-ime-key-custom.scm:192
-#, fuzzy
 msgid "[Social-IME] erase before cursor"
-msgstr "[全体] カーソル以前を消去"
+msgstr "[Social-IME] カーソル以前を消去"
 
 #: ../scm/social-ime-key-custom.scm:198
-#, fuzzy
 msgid "[Social-IME] backspace"
-msgstr "[PRIME] バックスペース"
+msgstr "[Social-IME] バックスペース"
 
 #: ../scm/social-ime-key-custom.scm:204
-#, fuzzy
 msgid "[Social-IME] delete"
-msgstr "[PRIME] デリート"
+msgstr "[Social-IME] デリート"
 
 #: ../scm/social-ime-key-custom.scm:210
-#, fuzzy
 msgid "[Social-IME] go left"
-msgstr "[PRIME] 左に移動"
+msgstr "[Social-IME] 左に移動"
 
 #: ../scm/social-ime-key-custom.scm:216
-#, fuzzy
 msgid "[Social-IME] go right"
-msgstr "[PRIME] 右に移動"
+msgstr "[Social-IME] 右に移動"
 
 #: ../scm/social-ime-key-custom.scm:222
-#, fuzzy
 msgid "[Social-IME] ESC keys on vi-cooperative mode"
-msgstr "[SJ3] vi協調モードでESCとして扱うキー"
+msgstr "[Social-IME] vi協調モードでESCとして扱うキー"
 
 #: ../scm/social-ime-key-custom.scm:232
-#, fuzzy
 msgid "[Social-IME] hiragana mode"
-msgstr "[SJ3] ひらがな入力モード"
+msgstr "[Social-IME] ひらがな入力モード"
 
 #: ../scm/social-ime-key-custom.scm:238
-#, fuzzy
 msgid "[Social-IME] katakana mode"
-msgstr "[SJ3] カタカナ入力モード"
+msgstr "[Social-IME] カタカナ入力モード"
 
 #: ../scm/social-ime-key-custom.scm:244
-#, fuzzy
 msgid "[Social-IME] halfwidth katakana mode"
-msgstr "[SJ3] 半角カタカナ入力モード"
+msgstr "[Social-IME] 半角カタカナ入力モード"
 
 #: ../scm/social-ime-key-custom.scm:250
-#, fuzzy
 msgid "[Social-IME] halfwidth alphanumeric mode"
-msgstr "[SJ3] 半角英数字入力モード"
+msgstr "[Social-IME] 半角英数字入力モード"
 
 #: ../scm/social-ime-key-custom.scm:256
-#, fuzzy
 msgid "[Social-IME] fullwidth alphanumeric mode"
-msgstr "[PRIME] 全角英数字モード"
+msgstr "[Social-IME] 全角英数字モード"
 
 #: ../scm/social-ime-key-custom.scm:262
-#, fuzzy
 msgid "[Social-IME] toggle hiragana/katakana mode"
-msgstr "[SJ3] ひらがな/カタカナ入力モードを反転"
+msgstr "[Social-IME] ひらがな/カタカナ入力モードを反転"
 
 #: ../scm/social-ime-key-custom.scm:268
-#, fuzzy
 msgid "[Social-IME] toggle kana/alphanumeric mode"
-msgstr "[SJ3] かな/英数入力モードを反転"
+msgstr "[Social-IME] かな/英数入力モードを反転"
 
 #: ../scm/tcode.scm:1645
 msgid "T-Code"

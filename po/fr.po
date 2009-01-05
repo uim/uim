@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2006-05-21 11:21+0900\n"
+"PO-Revision-Date: 2009-01-05 20:22+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4472,9 +4472,8 @@ msgid "Social-IME server"
 msgstr ""
 
 #: ../scm/social-ime-custom.scm:47
-#, fuzzy
 msgid "Social-IME (advanced)"
-msgstr "PRIME (avancé)"
+msgstr ""
 
 #: ../scm/social-ime-custom.scm:307
 msgid "Social-IME server url"
@@ -4541,14 +4540,12 @@ msgid "[Social-IME] commit as transposed kana"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:116
-#, fuzzy
 msgid "[Social-IME] on"
-msgstr "[PRIME] sactivé"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:123
-#, fuzzy
 msgid "[Social-IME] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:129
 msgid "[Social-IME] begin conversion"
@@ -4559,9 +4556,8 @@ msgid "[Social-IME] commit"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:141
-#, fuzzy
 msgid "[Social-IME] cancel"
-msgstr "[PRIME] annuler"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:147
 msgid "[Social-IME] next candidate"
@@ -4600,9 +4596,8 @@ msgid "[Social-IME] backspace"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:204
-#, fuzzy
 msgid "[Social-IME] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:210
 msgid "[Social-IME] go left"

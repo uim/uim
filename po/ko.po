@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2007-03-27 01:28+0900\n"
+"PO-Revision-Date: 2009-01-05 20:25+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4511,33 +4511,28 @@ msgid "Social-IME user name"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:35
-#, fuzzy
 msgid "Social-IME key bindings 1"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:39
-#, fuzzy
 msgid "Social-IME key bindings 2"
-msgstr "전체적인 키 설정 2"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:43
-#, fuzzy
 msgid "Social-IME key bindings 3"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:47
-#, fuzzy
 msgid "Social-IME key bindings 4"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:53
 msgid "[Social-IME] next segment"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:59
-#, fuzzy
 msgid "[Social-IME] previous segment"
-msgstr "[전체] 위 후보"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:65
 msgid "[Social-IME] extend segment"
@@ -4572,89 +4567,72 @@ msgid "[Social-IME] commit as transposed kana"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:116
-#, fuzzy
 msgid "[Social-IME] on"
-msgstr "[전체] 켜기"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:123
-#, fuzzy
 msgid "[Social-IME] off"
-msgstr "[전체] 끄기"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:129
-#, fuzzy
 msgid "[Social-IME] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:135
-#, fuzzy
 msgid "[Social-IME] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:141
-#, fuzzy
 msgid "[Social-IME] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:147
-#, fuzzy
 msgid "[Social-IME] next candidate"
-msgstr "[전체] 아래 후보"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:153
-#, fuzzy
 msgid "[Social-IME] previous candidate"
-msgstr "[전체] 위 후보"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:159
-#, fuzzy
 msgid "[Social-IME] next page of candidate window"
-msgstr "[전체] 후보창에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:165
-#, fuzzy
 msgid "[Social-IME] previous page of candidate window"
-msgstr "[전체] 후보창에서 위 페이지로"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:174
-#, fuzzy
 msgid "[Social-IME] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:180
-#, fuzzy
 msgid "[Social-IME] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:186
-#, fuzzy
 msgid "[Social-IME] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:192
-#, fuzzy
 msgid "[Social-IME] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:198
-#, fuzzy
 msgid "[Social-IME] backspace"
-msgstr "[전체] 백스페이스"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:204
-#, fuzzy
 msgid "[Social-IME] delete"
-msgstr "[전체] 삭제"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:210
-#, fuzzy
 msgid "[Social-IME] go left"
-msgstr "[전체] 왼쪽으로"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:216
-#, fuzzy
 msgid "[Social-IME] go right"
-msgstr "[전체] 오른쪽으로"
+msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:222
 msgid "[Social-IME] ESC keys on vi-cooperative mode"
