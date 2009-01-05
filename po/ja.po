@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2009-01-05 20:19+0900\n"
+"PO-Revision-Date: 2009-01-05 20:39+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -766,7 +766,7 @@ msgstr "連文節かな漢字変換エンジン"
 
 #: ../scm/ajax-ime-custom.scm:43
 msgid "Ajax-IME server"
-msgstr ""
+msgstr "Ajax-IME サーバ"
 
 #: ../scm/ajax-ime-custom.scm:44 ../scm/ajax-ime-custom.scm:48
 #: ../scm/ajax-ime-custom.scm:58 ../scm/ajax-ime-custom.scm:64
@@ -961,7 +961,7 @@ msgstr "詳細記述予定"
 #: ../scm/ajax-ime-custom.scm:47
 #, fuzzy
 msgid "Ajax-IME (advanced)"
-msgstr "PRIME (高度)"
+msgstr "Ajax-IME (高度)"
 
 #: ../scm/ajax-ime-custom.scm:57 ../scm/anthy-custom.scm:57
 #: ../scm/anthy-utf8-custom.scm:64 ../scm/canna-custom.scm:57
@@ -1241,7 +1241,7 @@ msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:309
 msgid "Server url of Ajax IME."
-msgstr ""
+msgstr "Ajax IMEサーバを指定する"
 
 #: ../scm/ajax-ime-custom.scm:315 ../scm/anthy-custom.scm:340
 #: ../scm/anthy-utf8-custom.scm:347 ../scm/canna-custom.scm:376
@@ -1261,29 +1261,24 @@ msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr "直接入力モード(off状態)時も入力モード切り替えキーを有効にする"
 
 #: ../scm/ajax-ime-key-custom.scm:35
-#, fuzzy
 msgid "Ajax-IME key bindings 1"
-msgstr "PRIME キー設定1"
+msgstr "Ajax-IME キー設定1"
 
 #: ../scm/ajax-ime-key-custom.scm:39
-#, fuzzy
 msgid "Ajax-IME key bindings 2"
-msgstr "PRIME キー設定2"
+msgstr "Ajax-IME キー設定2"
 
 #: ../scm/ajax-ime-key-custom.scm:43
-#, fuzzy
 msgid "Ajax-IME key bindings 3"
-msgstr "PRIME キー設定3"
+msgstr "Ajax-IME キー設定3"
 
 #: ../scm/ajax-ime-key-custom.scm:47
-#, fuzzy
 msgid "Ajax-IME key bindings 4"
-msgstr "PRIME キー設定1"
+msgstr "Ajax-IME キー設定1"
 
 #: ../scm/ajax-ime-key-custom.scm:53
-#, fuzzy
 msgid "[Ajax-IME] next segment"
-msgstr "[Mana] 次文節"
+msgstr "[Ajax-IME] 次文節"
 
 #: ../scm/ajax-ime-key-custom.scm:54 ../scm/ajax-ime-key-custom.scm:60
 #: ../scm/ajax-ime-key-custom.scm:66 ../scm/ajax-ime-key-custom.scm:72
@@ -1489,174 +1484,140 @@ msgid "long description will be here"
 msgstr "詳細記述予定"
 
 #: ../scm/ajax-ime-key-custom.scm:59
-#, fuzzy
 msgid "[Ajax-IME] previous segment"
-msgstr "[Mana] 前文節"
+msgstr "[Ajax-IME] 前文節"
 
 #: ../scm/ajax-ime-key-custom.scm:65
-#, fuzzy
 msgid "[Ajax-IME] extend segment"
-msgstr "[PRIME] 文節を伸ばす"
+msgstr "[Ajax-IME] 文節を伸ばす"
 
 #: ../scm/ajax-ime-key-custom.scm:71
-#, fuzzy
 msgid "[Ajax-IME] shrink segment"
-msgstr "[PRIME] 文節を縮める"
+msgstr "[Ajax-IME] 文節を縮める"
 
 #: ../scm/ajax-ime-key-custom.scm:77
-#, fuzzy
 msgid "[Ajax-IME] convert to hiragana"
-msgstr "[Mana] ひらがなに変換"
+msgstr "[Ajax-IME] ひらがなに変換"
 
 #: ../scm/ajax-ime-key-custom.scm:83
-#, fuzzy
 msgid "[Ajax-IME] convert to katakana"
-msgstr "[Mana] カタカナに変換"
+msgstr "[Ajax-IME] カタカナに変換"
 
 #: ../scm/ajax-ime-key-custom.scm:89
-#, fuzzy
 msgid "[Ajax-IME] convert to halfwidth katakana"
-msgstr "[Mana] 半角カタカナに変換"
+msgstr "[Ajax-IME] 半角カタカナに変換"
 
 #: ../scm/ajax-ime-key-custom.scm:95
-#, fuzzy
 msgid "[Ajax-IME] convert to halfwidth alphanumeric"
-msgstr "[Mana] 半角英数字に変換"
+msgstr "[Ajax-IME] 半角英数字に変換"
 
 #: ../scm/ajax-ime-key-custom.scm:101
-#, fuzzy
 msgid "[Ajax-IME] convert to fullwidth alphanumeric"
-msgstr "[Mana] 全角英数字に変換"
+msgstr "[Ajax-IME] 全角英数字に変換"
 
 #: ../scm/ajax-ime-key-custom.scm:107
-#, fuzzy
 msgid "[Ajax-IME] commit as transposed kana"
-msgstr "[Mana] かな/カナ反転確定"
+msgstr "[Ajax-IME] かな/カナ反転確定"
 
 #: ../scm/ajax-ime-key-custom.scm:116
-#, fuzzy
 msgid "[Ajax-IME] on"
-msgstr "[PRIME] オン"
+msgstr "[Ajax-IME] オン"
 
 #: ../scm/ajax-ime-key-custom.scm:123
-#, fuzzy
 msgid "[Ajax-IME] off"
-msgstr "[PRIME] オフ"
+msgstr "[Ajax-IME] オフ"
 
 #: ../scm/ajax-ime-key-custom.scm:129
-#, fuzzy
 msgid "[Ajax-IME] begin conversion"
-msgstr "[PRIME] 変換開始"
+msgstr "[Ajax-IME] 変換開始"
 
 #: ../scm/ajax-ime-key-custom.scm:135
-#, fuzzy
 msgid "[Ajax-IME] commit"
-msgstr "[PRIME] 確定"
+msgstr "[Ajax-IME] 確定"
 
 #: ../scm/ajax-ime-key-custom.scm:141
-#, fuzzy
 msgid "[Ajax-IME] cancel"
-msgstr "[PRIME] キャンセル"
+msgstr "[Ajax-IME] キャンセル"
 
 #: ../scm/ajax-ime-key-custom.scm:147
-#, fuzzy
 msgid "[Ajax-IME] next candidate"
-msgstr "[PRIME] 次候補"
+msgstr "[Ajax-IME] 次候補"
 
 #: ../scm/ajax-ime-key-custom.scm:153
-#, fuzzy
 msgid "[Ajax-IME] previous candidate"
-msgstr "[PRIME] 前候補"
+msgstr "[Ajax-IME] 前候補"
 
 #: ../scm/ajax-ime-key-custom.scm:159
-#, fuzzy
 msgid "[Ajax-IME] next page of candidate window"
-msgstr "[PRIME] 候補ウィンドウの次ページ"
+msgstr "[Ajax-IME] 候補ウィンドウの次ページ"
 
 #: ../scm/ajax-ime-key-custom.scm:165
-#, fuzzy
 msgid "[Ajax-IME] previous page of candidate window"
-msgstr "[PRIME] 候補ウィンドウの前ページ"
+msgstr "[Ajax-IME] 候補ウィンドウの前ページ"
 
 #: ../scm/ajax-ime-key-custom.scm:174
-#, fuzzy
 msgid "[Ajax-IME] beginning of preedit"
-msgstr "[PRIME] 編集領域の先頭"
+msgstr "[Ajax-IME] 編集領域の先頭"
 
 #: ../scm/ajax-ime-key-custom.scm:180
-#, fuzzy
 msgid "[Ajax-IME] end of preedit"
-msgstr "[PRIME] 編集領域の末尾"
+msgstr "[Ajax-IME] 編集領域の末尾"
 
 #: ../scm/ajax-ime-key-custom.scm:186
-#, fuzzy
 msgid "[Ajax-IME] erase after cursor"
-msgstr "[Mana] カーソル以降を消去"
+msgstr "[Ajax-IME] カーソル以降を消去"
 
 #: ../scm/ajax-ime-key-custom.scm:192
-#, fuzzy
 msgid "[Ajax-IME] erase before cursor"
-msgstr "[Mana] カーソル以前を消去"
+msgstr "[Ajax-IME] カーソル以前を消去"
 
 #: ../scm/ajax-ime-key-custom.scm:198
-#, fuzzy
 msgid "[Ajax-IME] backspace"
-msgstr "[PRIME] バックスペース"
+msgstr "[Ajax-IME] バックスペース"
 
 #: ../scm/ajax-ime-key-custom.scm:204
-#, fuzzy
 msgid "[Ajax-IME] delete"
-msgstr "[PRIME] デリート"
+msgstr "[Ajax-IME] デリート"
 
 #: ../scm/ajax-ime-key-custom.scm:210
-#, fuzzy
 msgid "[Ajax-IME] go left"
-msgstr "[PRIME] 左に移動"
+msgstr "[Ajax-IME] 左に移動"
 
 #: ../scm/ajax-ime-key-custom.scm:216
-#, fuzzy
 msgid "[Ajax-IME] go right"
-msgstr "[PRIME] 右に移動"
+msgstr "[Ajax-IME] 右に移動"
 
 #: ../scm/ajax-ime-key-custom.scm:222
-#, fuzzy
 msgid "[Ajax-IME] ESC keys on vi-cooperative mode"
-msgstr "[Mana] vi協調モードでESCとして扱うキー"
+msgstr "[Ajax-IME] vi協調モードでESCとして扱うキー"
 
 #: ../scm/ajax-ime-key-custom.scm:232
-#, fuzzy
 msgid "[Ajax-IME] hiragana mode"
-msgstr "[Mana] ひらがな入力モード"
+msgstr "[Ajax-IME] ひらがな入力モード"
 
 #: ../scm/ajax-ime-key-custom.scm:238
-#, fuzzy
 msgid "[Ajax-IME] katakana mode"
-msgstr "[Mana] カタカナ入力モード"
+msgstr "[Ajax-IME] カタカナ入力モード"
 
 #: ../scm/ajax-ime-key-custom.scm:244
-#, fuzzy
 msgid "[Ajax-IME] halfwidth katakana mode"
-msgstr "[Mana] 半角カタカナ入力モード"
+msgstr "[Ajax-IME] 半角カタカナ入力モード"
 
 #: ../scm/ajax-ime-key-custom.scm:250
-#, fuzzy
 msgid "[Ajax-IME] halfwidth alphanumeric mode"
-msgstr "[Mana] 半角英数字入力モード"
+msgstr "[Ajax-IME] 半角英数字入力モード"
 
 #: ../scm/ajax-ime-key-custom.scm:256
-#, fuzzy
 msgid "[Ajax-IME] fullwidth alphanumeric mode"
-msgstr "[PRIME] 全角英数字モード"
+msgstr "[Ajax-IME] 全角英数字モード"
 
 #: ../scm/ajax-ime-key-custom.scm:262
-#, fuzzy
 msgid "[Ajax-IME] toggle hiragana/katakana mode"
-msgstr "[Mana] ひらがな/カタカナ入力モードを反転"
+msgstr "[Ajax-IME] ひらがな/カタカナ入力モードを反転"
 
 #: ../scm/ajax-ime-key-custom.scm:268
-#, fuzzy
 msgid "[Ajax-IME] toggle kana/alphanumeric mode"
-msgstr "[Mana] かな/英数入力モードを反転"
+msgstr "[Ajax-IME] かな/英数入力モードを反転"
 
 #: ../scm/anthy-custom.scm:35 ../scm/anthy-utf8-custom.scm:35
 msgid "Anthy"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2009-01-05 20:22+0900\n"
+"PO-Revision-Date: 2009-01-05 20:32+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -852,9 +852,8 @@ msgid "long description will be here."
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:47
-#, fuzzy
 msgid "Ajax-IME (advanced)"
-msgstr "PRIME (avancé)"
+msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:57 ../scm/anthy-custom.scm:57
 #: ../scm/anthy-utf8-custom.scm:64 ../scm/canna-custom.scm:57
@@ -1411,14 +1410,12 @@ msgid "[Ajax-IME] commit as transposed kana"
 msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:116
-#, fuzzy
 msgid "[Ajax-IME] on"
-msgstr "[PRIME] sactivé"
+msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:123
-#, fuzzy
 msgid "[Ajax-IME] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:129
 msgid "[Ajax-IME] begin conversion"
@@ -1429,9 +1426,8 @@ msgid "[Ajax-IME] commit"
 msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:141
-#, fuzzy
 msgid "[Ajax-IME] cancel"
-msgstr "[PRIME] annuler"
+msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:147
 msgid "[Ajax-IME] next candidate"
@@ -1470,9 +1466,8 @@ msgid "[Ajax-IME] backspace"
 msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:204
-#, fuzzy
 msgid "[Ajax-IME] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/ajax-ime-key-custom.scm:210
 msgid "[Ajax-IME] go left"
