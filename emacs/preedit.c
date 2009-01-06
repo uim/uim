@@ -40,7 +40,7 @@ preedit *
 create_preedit()
 {
   preedit *pe;
-  pe = (preedit *)malloc(sizeof(preedit));
+  pe = uim_malloc(sizeof(preedit));
   pe->valid = 0;
   pe->head = pe->tail = NULL;
 
@@ -54,7 +54,7 @@ add_preedit(preedit *pe, int attr, const char *str)
 
   pe->valid = 1;
 
-  pb = (preedit_buffer *)malloc(sizeof(preedit_buffer));
+  pb = uim_malloc(sizeof(preedit_buffer));
 
   if (pe->head == NULL) {
 	pe->head = pb;

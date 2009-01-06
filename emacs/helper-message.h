@@ -43,6 +43,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <uim/uim.h>
+
 #include "output.h"
 
 void helper_send_message(const char *message);

@@ -148,7 +148,7 @@ switch_context_im_all(const char *im)
   update_default_engine(im);
 
   /* check focus state when change IM of current application */
-  quot_im_name = (char *)malloc(strlen(im) + 2);
+  quot_im_name = uim_malloc(strlen(im) + 2);
   quot_im_name[0] = '\'';
   quot_im_name[1] = '\0';
   strcat(quot_im_name, im);
@@ -217,7 +217,7 @@ create_uim_agent_context(const char *encoding)
 
   debug_printf(DEBUG_NOTE, "create_uim_agent_context\n");
 
-  ret = (uim_agent_context *)malloc(sizeof(uim_agent_context));
+  ret = uim_malloc(sizeof(uim_agent_context));
 
   if (encoding) {
 	ret->encoding = strdup(encoding);
@@ -255,7 +255,7 @@ new_uim_agent_context(int id, const char *encoding)
   
   debug_printf(DEBUG_NOTE, "add_uim_agent_context(%d)\n", id);
 
-  ptr = (uim_agent_context_list *)malloc(sizeof(uim_agent_context_list));
+  ptr = uim_malloc(sizeof(uim_agent_context_list));
 
   ptr->agent_context = create_uim_agent_context(encoding);
   ptr->next = NULL;

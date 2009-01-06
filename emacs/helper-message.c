@@ -51,7 +51,7 @@ helper_message_encode(const char *src)
   if (src) length = strlen(src);
 
   /* 24bit -> 32bit */
-  outbuf = (char *)malloc((length + 2) / 3 * 4 + 1);
+  outbuf = uim_malloc((length + 2) / 3 * 4 + 1);
 
   ob = outbuf;
 
@@ -98,8 +98,8 @@ helper_message_decode(const char *src)
   char *outbuf, *ob;
 
   if (src) length = strlen(src);
-  
-  outbuf = (char *)malloc(length / 4 * 3 + 1);
+
+  outbuf = uim_malloc(length / 4 * 3 + 1);
 
   ob = outbuf;
 

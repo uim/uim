@@ -41,7 +41,7 @@ create_prop()
 {
   property *prop;
 
-  prop = (property *)malloc(sizeof(property));
+  prop = uim_malloc(sizeof(property));
 
   prop->valid = 0;
 

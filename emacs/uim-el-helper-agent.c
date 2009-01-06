@@ -276,7 +276,7 @@ main(int argc, char *argv[])
   a_printf("OK\n");
 
   cmdbuf_len = DEFAULT_MESSAGE_SIZE;
-  cmdbuf = (char *)malloc(cmdbuf_len);
+  cmdbuf = uim_malloc(cmdbuf_len);
   cmdbuf[0] = '\0';
 
   while (1) {

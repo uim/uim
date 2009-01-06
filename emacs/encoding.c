@@ -64,7 +64,7 @@ search_im_encoding(const char *im)
 im_encoding *
 new_im_encoding(const char *im, const char *encoding)
 {
-  im_encoding *im_enc = (im_encoding *)malloc(sizeof(im_encoding));
+  im_encoding *im_enc = uim_malloc(sizeof(im_encoding));
 
   debug_printf(DEBUG_NOTE, "new_im_encoding\n");
 

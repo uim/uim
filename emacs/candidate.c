@@ -41,7 +41,7 @@ create_candidate()
 {
   candidate_info *cand;
 
-  cand = (candidate_info *)malloc(sizeof(candidate_info));
+  cand = uim_malloc(sizeof(candidate_info));
   cand->valid = 0;
 
   return cand;
@@ -61,7 +61,7 @@ new_candidate(uim_context context, candidate_info *cand, int num, int limit)
   cand->disp_limit = limit;
   cand->num = num;
 
-  cand->cand_array = (candidate *)malloc(sizeof(candidate) * num);
+  cand->cand_array = uim_malloc(sizeof(candidate) * num);
 
   /* get candidates from context */
   for (i = 0; i < num; i ++) {
