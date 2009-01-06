@@ -480,6 +480,7 @@ free_skk_line(struct skk_line *sl)
   }
   free(sl->head);
   free(sl->cands);
+  free(sl);
 }
 
 static struct skk_cand_array *
@@ -3530,25 +3531,24 @@ uim_plugin_instance_quit(void)
 {
   struct skk_line *sl, *tmp;
 
-  if (!skk_dic)
-    return;
-
-  if (skk_dic->addr)
-    munmap(skk_dic->addr, skk_dic->size);
-
-  sl = skk_dic->head.next;
-  while (sl) {
-    tmp = sl;
-    sl = sl->next;
-    free_skk_line(tmp);
+  if (skk_dic) {
+    if (skk_dic->addr)
+      munmap(skk_dic->addr, skk_dic->size);
+  
+    sl = skk_dic->head.next;
+    while (sl) {
+      tmp = sl;
+      sl = sl->next;
+      free_skk_line(tmp);
+    }
+  
+    if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
+      close_skkserv();
+    free(skk_dic->skkserv_hostname);
+  
+    free(skk_dic);
+    skk_dic = NULL;
   }
-
-  if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
-    close_skkserv();
-  free(skk_dic->skkserv_hostname);
-
-  free(skk_dic);
-  skk_dic = NULL;
 
   if (use_look && skk_look_ctx) {
     uim_look_finish(skk_look_ctx);
