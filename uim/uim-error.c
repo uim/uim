@@ -188,11 +188,15 @@ uim_malloc(size_t size)
 void *
 uim_realloc(void *p, size_t size)
 {
-  p = realloc(p, size);
-  if (!p)
-    uim_fatal_error("realloc() failed");
+  void *newp;
 
-  return p;
+  newp = realloc(p, size);
+  if (!newp) {
+    free(p);
+    uim_fatal_error("realloc() failed");
+  }
+
+  return newp;
 }
 
 void *
