@@ -41,6 +41,8 @@
 
 #include <stdlib.h>
 
+#include <uim/uim.h>
+
 #include "output.h"
 
 char *add_commit_string(char *comstr, const char *str);

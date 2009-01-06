@@ -213,7 +213,7 @@ read_command()
 
 	if (strlen(cmdbuf) + len + 1 > cmdbuf_len) {
 	  cmdbuf_len += DEFAULT_MESSAGE_SIZE;
-	  cmdbuf = (char *)realloc(cmdbuf, cmdbuf_len);
+	  cmdbuf = uim_realloc(cmdbuf, cmdbuf_len);
 	  debug_printf(DEBUG_NOTE, "cmdbuf has extended\n");
 	}
 

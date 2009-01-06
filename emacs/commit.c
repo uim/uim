@@ -52,7 +52,7 @@ add_commit_string(char *comstr, const char *str)
 				 "add_commit_string comstr: len:%d (%p)\n", 
 				 buflen + strlen(str) + 1, comstr); 
 
-	comstr = (char *)realloc(comstr, buflen + strlen(str) + 1);
+	comstr = uim_realloc(comstr, buflen + strlen(str) + 1);
 	comstr[buflen] = '\0';
 
 	debug_printf(DEBUG_NOTE,
