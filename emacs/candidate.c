@@ -66,8 +66,8 @@ new_candidate(uim_context context, candidate_info *cand, int num, int limit)
   /* get candidates from context */
   for (i = 0; i < num; i ++) {
 	u_cand = uim_get_candidate(context, i, limit ? i % limit : i);
-	cand->cand_array[i].str = strdup(uim_candidate_get_cand_str(u_cand));
-	cand->cand_array[i].label = strdup(uim_candidate_get_heading_label(u_cand));
+	cand->cand_array[i].str = uim_strdup(uim_candidate_get_cand_str(u_cand));
+	cand->cand_array[i].label = uim_strdup(uim_candidate_get_heading_label(u_cand));
 	uim_candidate_free(u_cand);
   }
 

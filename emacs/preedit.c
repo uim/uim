@@ -65,7 +65,7 @@ add_preedit(preedit *pe, int attr, const char *str)
   }
 
   if (strlen(str) > 0) {
-	pb->str = strdup(str);
+	pb->str = uim_strdup(str);
 	pe->length += strlen(str);
   } else {
 	pb->str = NULL;

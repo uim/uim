@@ -68,10 +68,10 @@ new_im_encoding(const char *im, const char *encoding)
 
   debug_printf(DEBUG_NOTE, "new_im_encoding\n");
 
-  im_enc->im = strdup(im);
+  im_enc->im = uim_strdup(im);
 
   if (encoding != NULL)
-	im_enc->encoding = strdup( encoding );
+	im_enc->encoding = uim_strdup( encoding );
   else
 	im_enc->encoding = NULL;
 
@@ -107,7 +107,7 @@ set_im_encoding(const char *im, const char *encoding)
 	free(im_enc->encoding);
 
 	if (encoding)
-	  im_enc->encoding = strdup(encoding);
+	  im_enc->encoding = uim_strdup(encoding);
 	else
 	  im_enc->encoding = NULL;
 

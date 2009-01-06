@@ -60,7 +60,7 @@ update_prop_list(property *prop, const char *encoding, const char *str)
 
   free(prop->list);
 
-  prop->list = strdup(str);
+  prop->list = uim_strdup(str);
   
   prop->list_update = 1;
 }
@@ -106,7 +106,7 @@ show_prop(property *prop)
 
   a_printf(" ( l ");
 
-  head = buf = strdup(prop->list);
+  head = buf = uim_strdup(prop->list);
 
 #define PART_BRANCH "branch"
 #define PART_LEAF   "leaf"

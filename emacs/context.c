@@ -105,7 +105,7 @@ switch_context_im(uim_agent_context *ua, const char *im)
   free(ua->im);
 
   if (im)
-	ua->im = strdup(im);
+	ua->im = uim_strdup(im);
   else
 	ua->im = NULL;
 
@@ -125,7 +125,7 @@ switch_context_im(uim_agent_context *ua, const char *im)
 				 "different encoding %s %s\n", ua->encoding, encoding);
 
 	free(ua->encoding);
-	ua->encoding = strdup(encoding);
+	ua->encoding = uim_strdup(encoding);
 
 	update_context_encoding(ua);
 	update_context_im(ua);
@@ -220,18 +220,18 @@ create_uim_agent_context(const char *encoding)
   ret = uim_malloc(sizeof(uim_agent_context));
 
   if (encoding) {
-	ret->encoding = strdup(encoding);
+	ret->encoding = uim_strdup(encoding);
   } else {
 	if (debug_level > 0)
-	  ret->encoding = strdup("EUC-JP");
+	  ret->encoding = uim_strdup("EUC-JP");
 	else
-	  ret->encoding = strdup("UTF-8");
+	  ret->encoding = uim_strdup("UTF-8");
   }
 
   ret->context = create_context(ret->encoding, ret);
 
   if ((im = uim_get_default_im_name(setlocale(LC_ALL, NULL))))
-	ret->im = strdup(im);
+	ret->im = uim_strdup(im);
   else
 	ret->im = NULL;
 
@@ -385,12 +385,12 @@ update_context_configuration(uim_agent_context *ua)
   
   /* update IM name */
   free(ua->im);
-  ua->im = strdup(uim_get_current_im_name(ua->context));
+  ua->im = uim_strdup(uim_get_current_im_name(ua->context));
 
   debug_printf(DEBUG_NOTE, "ua->im %s\n", ua->im);
 
   free(ua->encoding);
-  ua->encoding = strdup(get_im_encoding(ua->im));
+  ua->encoding = uim_strdup(get_im_encoding(ua->im));
 
   debug_printf(DEBUG_NOTE, "ua->encoding %s\n", ua->encoding);
 

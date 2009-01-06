@@ -46,7 +46,7 @@ void
 update_default_engine(const char *engine_name)
 {
   free(default_engine_name);
-  default_engine_name = strdup(engine_name);
+  default_engine_name = uim_strdup(engine_name);
 
   default_engine_updated = 1;
 }
