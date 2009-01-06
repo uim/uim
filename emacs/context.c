@@ -306,6 +306,7 @@ release_uim_agent_context(int context_id)
 	  /* free others */
 	  free(ua->encoding);
 	  free(ua->im);
+	  free(ua->prop->list);
 	  free(ua->prop);
 	  free(ua->comstr);
 
