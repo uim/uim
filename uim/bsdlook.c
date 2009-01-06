@@ -166,10 +166,12 @@ uim_look_finish(uim_look_ctx *ctx)
 	if (!ctx)
 		return;
 
-	if (ctx->front0 != MAP_FAILED && munmap(ctx->front0, ctx->len) == -1)
+	if (ctx->front0 > 0 && munmap(ctx->front0, ctx->len) == -1)
 		perror("uim_look_finish");
 
-	close(ctx->fd);
+	if (ctx->fd > 0)
+		close(ctx->fd);
+
 	free(ctx);
 	return;
 }
