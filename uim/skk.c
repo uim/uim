@@ -3534,18 +3534,18 @@ uim_plugin_instance_quit(void)
   if (skk_dic) {
     if (skk_dic->addr)
       munmap(skk_dic->addr, skk_dic->size);
-  
+
     sl = skk_dic->head.next;
     while (sl) {
       tmp = sl;
       sl = sl->next;
       free_skk_line(tmp);
     }
-  
+
     if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
       close_skkserv();
     free(skk_dic->skkserv_hostname);
-  
+
     free(skk_dic);
     skk_dic = NULL;
   }
