@@ -104,7 +104,7 @@ set_im_encoding(const char *im, const char *encoding)
   im_enc = search_im_encoding(im);
 
   if (im_enc != NULL) {
-	if (im_enc->encoding) free(im_enc->encoding);
+	free(im_enc->encoding);
 
 	if (encoding)
 	  im_enc->encoding = strdup(encoding);

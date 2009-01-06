@@ -45,7 +45,7 @@ int default_engine_updated = 0;
 void
 update_default_engine(const char *engine_name)
 {
-  if (default_engine_name) free(default_engine_name);
+  free(default_engine_name);
   default_engine_name = strdup(engine_name);
 
   default_engine_updated = 1;

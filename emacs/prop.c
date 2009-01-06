@@ -58,7 +58,7 @@ update_prop_list(property *prop, const char *encoding, const char *str)
 
   prop->valid = 1;
 
-  if (prop->list != NULL) free(prop->list);
+  free(prop->list);
 
   prop->list = strdup(str);
   

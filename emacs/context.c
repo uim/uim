@@ -102,7 +102,7 @@ switch_context_im(uim_agent_context *ua, const char *im)
   encoding = get_im_encoding(im);
 
   /* update IM name */
-  if (ua->im) free(ua->im);
+  free(ua->im);
 
   if (im)
 	ua->im = strdup(im);
@@ -124,7 +124,7 @@ switch_context_im(uim_agent_context *ua, const char *im)
 	debug_printf(DEBUG_NOTE, 
 				 "different encoding %s %s\n", ua->encoding, encoding);
 
-	if (ua->encoding) free(ua->encoding);
+	free(ua->encoding);
 	ua->encoding = strdup(encoding);
 
 	update_context_encoding(ua);
@@ -384,12 +384,12 @@ update_context_configuration(uim_agent_context *ua)
   debug_printf(DEBUG_NOTE, "update_context_configuration\n");
   
   /* update IM name */
-  if (ua->im) free(ua->im);
+  free(ua->im);
   ua->im = strdup(uim_get_current_im_name(ua->context));
 
   debug_printf(DEBUG_NOTE, "ua->im %s\n", ua->im);
 
-  if (ua->encoding) free(ua->encoding);
+  free(ua->encoding);
   ua->encoding = strdup(get_im_encoding(ua->im));
 
   debug_printf(DEBUG_NOTE, "ua->encoding %s\n", ua->encoding);
