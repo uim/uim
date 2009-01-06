@@ -70,7 +70,7 @@ helper_send_im_list(void)
 	shortd = uim_get_im_short_desc(ua->context, i);
   }
 
-  buflen = asprintf(&buf,  HEADER_FORMAT, ua->encoding);
+  buflen = uim_asprintf(&buf,  HEADER_FORMAT, ua->encoding);
 
 #undef HEADER_FORMAT
 
@@ -83,7 +83,7 @@ helper_send_im_list(void)
 	shortd = uim_get_im_short_desc(ua->context, i);
 
 	debug_printf(DEBUG_NOTE, " [%d] = %s %s %s\n", i, name, lang, shortd);
-	if (asprintf(&tmpbuf, "%s\t%s\t%s\t%s\n",
+	if (uim_asprintf(&tmpbuf, "%s\t%s\t%s\t%s\n",
 					   name ? name : "" ,
 					   lang ? lang : "" ,
 					   shortd ? shortd : "" ,
@@ -278,7 +278,7 @@ helper_send_im_change_whole_desktop(const char *name)
 
 #define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
 
-  asprintf(&buf, HEADER_FORMAT, name ? name : "");
+  uim_asprintf(&buf, HEADER_FORMAT, name ? name : "");
 
   helper_send_message(buf);
 

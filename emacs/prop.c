@@ -78,7 +78,7 @@ announce_prop_list_update(property *prop, const char *encoding)
 
 #define PROP_LIST_FORMAT "prop_list_update\ncharset=%s\n%s"
 
-  asprintf(&buf, PROP_LIST_FORMAT, encoding, prop->list);
+  uim_asprintf(&buf, PROP_LIST_FORMAT, encoding, prop->list);
 
   helper_send_message(buf);
   free(buf);
