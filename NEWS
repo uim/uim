@@ -7,10 +7,18 @@ Overview of changes from 1.5.4 to 1.5.5
 
   - misc Japanese IM
     * AZIK roma-kana table update
+    * Don't use "nwa", "nwi", "nwu", "nwe", "nwo" roma-kana sequences
+      by default
 
 * Fixes
   - GTK+ bridge
+  - uim.el
+  - uim-skk
+  - uim-look
     * Plug memory leaks
+
+  - uim-dict-gtk
+    * Fix warning with GTK+-2.14.x
 
 
 Overview of changes from 1.5.3 to 1.5.4
