@@ -163,14 +163,14 @@ uim_look_get(char *string, char *dst, size_t len, uim_look_ctx *ctx)
 void
 uim_look_finish(uim_look_ctx *ctx)
 {
-	if (!ctx || ctx->front0 == 0)
+	if (!ctx)
 		return;
 
-	if (munmap(ctx->front0, ctx->len) == -1) {
+	if (ctx->front0 != MAP_FAILED && munmap(ctx->front0, ctx->len) == -1)
 		perror("uim_look_finish");
-		return;
-	}
+
 	close(ctx->fd);
+	free(ctx);
 	return;
 }
 
