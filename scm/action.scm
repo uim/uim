@@ -359,6 +359,13 @@
 	   (branches (map widget-compose-live-branch
 			  widgets))
 	   (widget-config-tree (apply string-append branches)))
+      (if (eq? bridge-show-with?
+               'bridge-show-input-state-with-mode)
+          (if (eq? (context-current-mode context) 0)
+              (set! bridge-show-input-state? #f)
+              (begin
+                (set! bridge-show-input-state-time-length 0)
+                (set! bridge-show-input-state? #t))))
       (im-update-prop-list context widget-config-tree))))
 
 ;; API for uim developers

@@ -1096,6 +1096,8 @@ void InputContext::update_prop_list(const char *str)
     // mismatch during IM switch caused from context-update-widgets.
     uim_bool show_caret_state =
 	uim_scm_symbol_value_bool("bridge-show-input-state?");
+    char *show_caret_with =
+	uim_scm_c_symbol(uim_scm_symbol_value("bridge-show-with?"));
     if (show_caret_state == UIM_TRUE) {
 	char *label;
 	int timeout;
@@ -1107,6 +1109,9 @@ void InputContext::update_prop_list(const char *str)
 	disp->show_caret_state(label, timeout);
 	free(label);
 	mCaretStateShown = true;
+    } else if (strcmp(show_caret_with, "bridge-show-input-state-with-mode") == 0) {
+	Canddisp *disp = canddisp_singleton();
+	disp->hide_caret_state();
     }
 #endif
 }

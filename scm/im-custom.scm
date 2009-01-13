@@ -486,6 +486,23 @@
   (N_ "Show input mode nearby cursor")
   (N_ "long description will be here."))
 
+(define-custom 'bridge-show-with? 'bridge-show-input-state-with-mode
+  '(global visual-preference)
+  (list 'choice
+        (list 'bridge-show-input-state-with-mode
+              (N_ "With mode")
+              (N_ "long description will be here."))
+        (list 'bridge-show-input-state-with-time
+              (N_ "With time")
+              (N_ "long description will be here.")))
+  (N_ "Show input mode")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'bridge-show-with?
+		 'custom-activity-hooks
+		 (lambda ()
+                   bridge-show-input-state?))
+
 (define-custom 'bridge-show-input-state-time-length 3
   '(global visual-preference)
   '(integer 0 100)
@@ -495,7 +512,9 @@
 (custom-add-hook 'bridge-show-input-state-time-length
 		 'custom-activity-hooks
 		 (lambda ()
-		   bridge-show-input-state?))
+		   (and bridge-show-input-state?
+                        (eq? bridge-show-with?
+                             'bridge-show-input-state-with-time))))
 
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
