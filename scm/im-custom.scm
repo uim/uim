@@ -486,7 +486,7 @@
   (N_ "Show input mode nearby cursor")
   (N_ "long description will be here."))
 
-(define-custom 'bridge-show-with? 'bridge-show-input-state-with-mode
+(define-custom 'bridge-show-with? 'bridge-show-input-state-with-time
   '(global visual-preference)
   (list 'choice
         (list 'bridge-show-input-state-with-mode

@@ -651,6 +651,7 @@ update_prop_list_cb(void *ptr, const char *str)
       gtk_widget_hide(uic->caret_state_indicator);
     }
   }
+  free(show_state_with);
 }
 
 #if IM_UIM_USE_NEW_PAGE_HANDLING

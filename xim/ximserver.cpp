@@ -1113,6 +1113,7 @@ void InputContext::update_prop_list(const char *str)
 	Canddisp *disp = canddisp_singleton();
 	disp->hide_caret_state();
     }
+    free(show_caret_with);
 #endif
 }
 
