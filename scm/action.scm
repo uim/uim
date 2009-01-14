@@ -360,7 +360,7 @@
 			  widgets))
 	   (widget-config-tree (apply string-append branches)))
       (if (eq? bridge-show-with?
-               'bridge-show-input-state-with-mode)
+               'mode)
           (if (eq? (context-current-mode context) 0)
               (set! bridge-show-input-state? #f)
               (begin

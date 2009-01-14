@@ -647,7 +647,7 @@ update_prop_list_cb(void *ptr, const char *str)
 	caret_state_indicator_set_timeout(uic->caret_state_indicator,
 					timeout * 1000);
       gtk_widget_show_all(uic->caret_state_indicator);
-    } else if (strcmp(show_state_with, "bridge-show-input-state-with-mode") == 0) {
+    } else if (strcmp(show_state_with, "mode") == 0) {
       gtk_widget_hide(uic->caret_state_indicator);
     }
   }

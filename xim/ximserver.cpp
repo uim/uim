@@ -1109,7 +1109,7 @@ void InputContext::update_prop_list(const char *str)
 	disp->show_caret_state(label, timeout);
 	free(label);
 	mCaretStateShown = true;
-    } else if (strcmp(show_caret_with, "bridge-show-input-state-with-mode") == 0) {
+    } else if (strcmp(show_caret_with, "mode") == 0) {
 	Canddisp *disp = canddisp_singleton();
 	disp->hide_caret_state();
     }
