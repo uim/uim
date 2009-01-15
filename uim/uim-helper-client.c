@@ -153,7 +153,6 @@ uim_helper_close_client_fd(int fd)
   if (uim_disconnect_cb)
     uim_disconnect_cb();
 
-  free(uim_read_buf);
   uim_fd = -1;
 }
 
