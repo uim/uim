@@ -62,8 +62,9 @@ static GtkWidget *pref_ok_button = NULL;
 
 enum
 {
-  GROUP_COLUMN=0,
-  GROUP_WIDGET=1,
+  GROUP_COLUMN = 0,
+  GROUP_WIDGET = 1,
+  GROUP_SYM = 2,
   NUM_COLUMNS
 };
 
@@ -128,7 +129,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   GtkTreeStore *store;
   GtkTreeIter iter;
   GtkTreeModel *model;
-  char *group_name;
+  char *group_name, *group_sym;
   GtkWidget *group_widget;
 
 /*
@@ -161,10 +162,16 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   gtk_tree_model_get(model, &iter,
 		     GROUP_COLUMN, &group_name,
 		     GROUP_WIDGET, &group_widget,
+		     GROUP_SYM, &group_sym,
 		     -1);
 
   if (group_name == NULL)
     return TRUE;
+
+  if (group_widget == NULL) {
+    group_widget = create_group_widget(group_sym);
+    gtk_tree_store_set(store, &iter, GROUP_WIDGET, group_widget, -1);
+  }
 
   /* hide current selected group's widget */
   if (current_group_widget)
@@ -180,6 +187,7 @@ pref_tree_selection_changed(GtkTreeSelection *selection,
   current_group_widget = group_widget;
 
   free(group_name);
+  free(group_sym);
   return TRUE;
 }
 
@@ -250,7 +258,8 @@ create_pref_treeview(void)
   GtkTreePath *first_path;
   tree_store = gtk_tree_store_new (NUM_COLUMNS,
 				   G_TYPE_STRING,
-				   GTK_TYPE_WIDGET);
+				   GTK_TYPE_WIDGET,
+				   G_TYPE_STRING);
 
   pref_tree_view = gtk_tree_view_new();
 
@@ -266,10 +275,20 @@ create_pref_treeview(void)
   for (grp = primary_groups; *grp; grp++) {
     struct uim_custom_group *group = uim_custom_group_get(*grp);
     gtk_tree_store_append (tree_store, &iter, NULL/* parent iter */);
-    gtk_tree_store_set (tree_store, &iter,
-			GROUP_COLUMN, group->label,
-			GROUP_WIDGET, create_group_widget(*grp),
-			-1);
+    /* only set the widget of the first row for now */
+    if (grp == primary_groups) {
+      gtk_tree_store_set (tree_store, &iter,
+			  GROUP_COLUMN, group->label,
+			  GROUP_WIDGET, create_group_widget(*grp),
+			  GROUP_SYM, *grp,
+			  -1);
+    } else {
+      gtk_tree_store_set (tree_store, &iter,
+			  GROUP_COLUMN, group->label,
+			  GROUP_WIDGET, NULL,
+			  GROUP_SYM, *grp,
+			  -1);
+    }
     uim_custom_group_free(group);
   }
   uim_custom_symbol_list_free( primary_groups );
