@@ -267,12 +267,12 @@ uim_helper_buffer_append(char *buf, const char *fragment, size_t fragment_size)
 {
   size_t buf_size, extended_size;
 
-  buf_size = strlen(buf);
-  extended_size = buf_size + fragment_size + 1;
-  buf = realloc(buf, extended_size);
   if (buf) {
-    memcpy(&buf[buf_size], fragment, fragment_size);
-    buf[extended_size - 1] = '\0';
+	  buf_size = strlen(buf);
+	  extended_size = buf_size + fragment_size + 1;
+	  buf = uim_realloc(buf, extended_size);
+	  memcpy(&buf[buf_size], fragment, fragment_size);
+	  buf[extended_size - 1] = '\0';
   }
 
   return buf;
@@ -293,6 +293,9 @@ uim_helper_buffer_get_message(char *buf)
   char *msg, *msg_term;
 
   if (UIM_CATCH_ERROR_BEGIN())
+    return NULL;
+
+  if (!buf)
     return NULL;
 
   msg_term = strstr(buf, "\n\n");
