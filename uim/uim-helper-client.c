@@ -125,7 +125,8 @@ int uim_helper_init_client_fd(void (*disconnect_cb)(void))
   if (uim_helper_check_connection_fd(fd))
     goto error;
 
-  uim_read_buf = uim_strdup("");
+  if (!uim_read_buf)
+    uim_read_buf = uim_strdup("");
   uim_disconnect_cb = disconnect_cb;
   uim_fd = fd;
 
@@ -153,8 +154,6 @@ uim_helper_close_client_fd(int fd)
   if (uim_disconnect_cb)
     uim_disconnect_cb();
 
-  free(uim_read_buf);
-  uim_read_buf = NULL;
   uim_fd = -1;
 }
 
