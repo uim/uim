@@ -514,7 +514,7 @@
 		 (lambda ()
 		   (and bridge-show-input-state?
                         (eq? bridge-show-with?
-                             'bridge-show-input-state-with-time))))
+                             'time))))
 
 ;; EB Library support
 ;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
