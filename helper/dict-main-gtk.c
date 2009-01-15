@@ -50,7 +50,6 @@
 #include "dict-word-list-view-gtk.h"
 
 static unsigned int read_tag;
-static int uim_fd;  /* file descriptor to connect helper message bus */
 static int ae_mode; /* add mode or edit mode */
 static int g_startup_dictionary;
 
@@ -59,43 +58,6 @@ enum {
   MODE_ADD,
   NR_MODE
 };
-
-static void
-helper_disconnect_cb(void)
-{
-  uim_fd = -1;
-  g_source_remove(read_tag);
-}
-
-static gboolean
-fd_read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
-{
-  char *tmp;
-  int fd = g_io_channel_unix_get_fd(channel);
-
-  uim_helper_read_proc(fd);
-  while ((tmp = uim_helper_get_message())) {
-    /* parse_helper_str(tmp); */
-    g_free(tmp);
-    tmp = NULL;
-  }
-  return TRUE;
-}
-
-static void
-check_helper_connection(void)
-{
-  if (uim_fd < 0) {
-    uim_fd = uim_helper_init_client_fd(helper_disconnect_cb);
-    if (uim_fd > 0) {
-      GIOChannel *channel;
-      channel = g_io_channel_unix_new(uim_fd);
-      read_tag = g_io_add_watch(channel, G_IO_IN | G_IO_HUP | G_IO_ERR,
-				fd_read_cb, NULL);
-      g_io_channel_unref(channel);
-    }
-  }
-}
 
 static char *
 get_error_msg(void)
@@ -274,10 +236,6 @@ main(int argc, char *argv[])
     g_printerr(_("Error:%s\n"), get_error_msg());
     exit(EXIT_FAILURE);
   }
-
-  /* connect to uim helper message bus */
-  uim_fd = -1;
-  check_helper_connection();
 
   gtk_main ();
 
