@@ -49,7 +49,6 @@
 #include "dict-word-list-win-gtk.h"
 #include "dict-word-list-view-gtk.h"
 
-static unsigned int read_tag;
 static int ae_mode; /* add mode or edit mode */
 static int g_startup_dictionary;
 
