@@ -258,7 +258,7 @@ void CustomPathnameEdit::slotFileDialogFilterSelected( const QString & text )
 
 //----------------------------------------------------------------------------------------
 CustomChoiceCombo::CustomChoiceCombo( struct uim_custom *c, QWidget *parent, const char *name)
-    : QComboBox( parent, name ),
+    : QComboBox( FALSE, parent, name ),
       UimCustomItemIface( c )
 {
     QObject::connect( this, SIGNAL(activated(int)),
