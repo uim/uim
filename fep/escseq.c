@@ -779,6 +779,7 @@ static void change_background_attr(struct attribute_tag *from, struct attribute_
 static const char *attr2escseq(const struct attribute_tag *attr)
 {
   static char escseq[20];
+  char numstr[20];
   int add_semicolon = FALSE;
   if (!attr->underline && !attr->standout && !attr->bold && !attr->blink
       && attr->foreground == FALSE && attr->background == FALSE) {
@@ -787,47 +788,49 @@ static const char *attr2escseq(const struct attribute_tag *attr)
   strlcpy(escseq, "\033[", sizeof(escseq));
   if (attr->underline && s_enter_underline_num != NULL) {
     add_semicolon = TRUE;
-    strcat(escseq, s_enter_underline_num);
+    strlcat(escseq, s_enter_underline_num, sizeof(escseq));
   }
   if (attr->standout && s_enter_standout_num != NULL) {
     if (add_semicolon) {
-      strcat(escseq, ";");
+      strlcat(escseq, ";", sizeof(escseq));
     } else {
       add_semicolon = TRUE;
     }
-    strcat(escseq, s_enter_standout_num);
+    strlcat(escseq, s_enter_standout_num, sizeof(escseq));
   }
   if (attr->bold && s_bold_num != NULL) {
     if (add_semicolon) {
-      strcat(escseq, ";");
+      strlcat(escseq, ";", sizeof(escseq));
     } else {
       add_semicolon = TRUE;
     }
-    strcat(escseq, s_bold_num);
+    strlcat(escseq, s_bold_num, sizeof(escseq));
   }
   if (attr->blink && s_blink_num != NULL) {
     if (add_semicolon) {
-      strcat(escseq, ";");
+      strlcat(escseq, ";", sizeof(escseq));
     } else {
       add_semicolon = TRUE;
     }
-    strcat(escseq, s_blink_num);
+    strlcat(escseq, s_blink_num, sizeof(escseq));
   }
   if (attr->foreground != FALSE) {
     if (add_semicolon) {
-      strcat(escseq, ";");
+      strlcat(escseq, ";", sizeof(escseq));
     } else {
       add_semicolon = TRUE;
     }
-    sprintf(escseq + strlen(escseq), "%d", attr->foreground);
+    snprintf(numstr, sizeof(numstr), "%d", attr->foreground);
+    strlcat(escseq, numstr, sizeof(escseq));
   }
   if (attr->background != FALSE) {
     if (add_semicolon) {
-      strcat(escseq, ";");
+      strlcat(escseq, ";", sizeof(escseq));
     }
-    sprintf(escseq + strlen(escseq), "%d", attr->background);
+    snprintf(numstr, sizeof(numstr), "%d", attr->background);
+    strlcat(escseq, numstr, sizeof(escseq));
   }
-  strcat(escseq, "m");
+  strlcat(escseq, "m", sizeof(escseq));
   debug2(("attr2escseq underline = %d standout = %d bold = %d blink = %d fore = %d back = %d\n",
       attr->underline, attr->standout, attr->bold, attr->blink,
       attr->foreground, attr->background));
