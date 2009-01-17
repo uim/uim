@@ -1,10 +1,10 @@
-uim 1.5.4 Release Note
+uim 1.5.5 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.5.4 is latest stable release of uim.
+This distribution of uim 1.5.5 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -15,9 +15,9 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Minor enhancement about the performance of candidate window behavior
-with GTK+/Qt/XIM bridges.  Also a few minor fixes against 1.5.3. See
-NEWS for the detailed changes.
+Plugged memory leaks in general, and improved startup time of uim-pref
+tool.  Also a few minor fixes/enhancements against 1.5.4. See NEWS for
+the detailed changes.
 
 
 What's New in 1.5.0
