@@ -54,9 +54,6 @@
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
-#ifdef HAVE_ALLOCA_H
-# include <alloca.h>
-#endif
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -740,18 +737,18 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
       return NULL;
   }
 
-  len = strlen(s) + 2;
-  idx = alloca(len);
-  snprintf(idx, len, "%s%c", s, okuri_head);
+  uim_asprintf(&idx, "%s%c", s, okuri_head);
 
   fprintf(wserv, "1%s \n", idx);
   ret = fflush(wserv);
   if (ret != 0 && errno == EPIPE) {
+    free(idx);
     skkserv_disconnected(di);
     return NULL;
   }
 
   uim_asprintf(&line, "%s ", idx);
+  free(idx);
 
   if ((nr = read(skkservsock, &r, 1)) == -1 || nr == 0) {
     skkserv_disconnected(di);
@@ -808,14 +805,14 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
   if (!di->addr)
     return NULL;
 
-  len = strlen(s) + 2;
-  idx = alloca(len);
-  snprintf(idx, len, "%s%c", s, okuri_head);
+  uim_asprintf(&idx, "%s%c", s, okuri_head);
 
   if (okuri_head)
     n = do_search_line(di, idx, di->first, di->border - 1, -1);
   else
     n = do_search_line(di, idx, di->border, di->size - 1, 1);
+
+  free(idx);
 
   if (n == -1)
     return NULL;
@@ -2775,12 +2772,13 @@ parse_dic_line(struct dic_info *di, char *line, int is_personal)
   struct skk_line *sl;
   int i;
 
-  buf = alloca(strlen(line) + 1);
-  strcpy(buf, line);
+  buf = uim_strdup(line);
   sep = strchr(buf, ' ');
 
-  if (!sep || (sep == buf))
+  if (!sep || (sep == buf)) {
+    free(buf);
     return;
+  }
 
   *sep = '\0';
   if ((!skk_isascii(buf[0]) || buf[0] == '>') && skk_islower(sep[-1])) {
@@ -2800,6 +2798,7 @@ parse_dic_line(struct dic_info *di, char *line, int is_personal)
     sl->state = SKK_LINE_USE_FOR_COMPLETION;
   }
   add_line_to_cache_head(di, sl);
+  free(buf);
 }
 
 static void
