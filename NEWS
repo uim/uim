@@ -10,6 +10,10 @@ Overview of changes from 1.5.4 to 1.5.5
     * Don't use "nwa", "nwi", "nwu", "nwe", "nwo" roma-kana sequences
       by default
 
+  - uim-pref-gtk
+  - uim-pref-qt
+    * Reduced startup time
+
 * Fixes
   - GTK+ bridge
   - uim.el
