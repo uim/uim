@@ -266,7 +266,7 @@ static void start_preedit(void)
       }
     }
     debug2(("s_head.row = %d s_head.col = %d\n", s_head.row, s_head.col));
-    s_line2width = malloc(sizeof(int));
+    s_line2width = uim_malloc(sizeof(int));
     s_line2width[0] = s_head.col;
     s_preedit_lines = 1;
   }
@@ -976,7 +976,7 @@ static void erase_preedit(void)
     free(s_prev_line2width);
   }
   s_prev_line2width = s_line2width;
-  s_line2width = malloc(sizeof(int));
+  s_line2width = uim_malloc(sizeof(int));
   s_line2width[0] = s_head.col;
   erase_prev_preedit();
 }
@@ -992,7 +992,7 @@ static void set_line2width(struct preedit_tag *preedit)
   }
   s_prev_line2width = s_line2width;
   s_prev_preedit_lines = s_preedit_lines;
-  s_line2width = malloc(sizeof(int));
+  s_line2width = uim_malloc(sizeof(int));
   s_preedit_lines = 1;
 
   for (i = 0; i < preedit->nr_psegs; i++) {

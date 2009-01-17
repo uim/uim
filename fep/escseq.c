@@ -856,7 +856,7 @@ static void set_attr(const char *str, int len)
     /* s_escseq_buf には'\0'は含まれない */
     int escseq_buf_len = strlen(s_escseq_buf);
     must_free = TRUE;
-    free_str = str = malloc(escseq_buf_len + len + 1);
+    free_str = str = uim_malloc(escseq_buf_len + len + 1);
     memcpy((char *)str, s_escseq_buf, escseq_buf_len);
     memcpy((char *)str + escseq_buf_len, tmp_str, len);
     ((char *)str)[escseq_buf_len + len] = '\0';
@@ -869,7 +869,7 @@ static void set_attr(const char *str, int len)
     str++;
     if (str == end) {
       int escseq_buf_len = end - start;
-      s_escseq_buf = malloc(escseq_buf_len + 1);
+      s_escseq_buf = uim_malloc(escseq_buf_len + 1);
       memcpy(s_escseq_buf, start, escseq_buf_len);
       s_escseq_buf[escseq_buf_len] = '\0';
     }
@@ -877,7 +877,7 @@ static void set_attr(const char *str, int len)
     else if (str[0] == '[') {
       int nr_params = 1;
       /* ^[[1;2;3の1, 2, 3を入れる */
-      int *params = malloc(sizeof(int));
+      int *params = uim_malloc(sizeof(int));
       params[0] = 0;
       str++;
 
@@ -900,7 +900,7 @@ static void set_attr(const char *str, int len)
 
       if (str == end) {
         int escseq_buf_len = end - start;
-        s_escseq_buf = malloc(escseq_buf_len + 1);
+        s_escseq_buf = uim_malloc(escseq_buf_len + 1);
         memcpy(s_escseq_buf, start, escseq_buf_len);
         s_escseq_buf[escseq_buf_len] = '\0';
       }
@@ -1056,7 +1056,7 @@ void put_erase(int n)
     return;
   }
 
-  spaces = malloc(n + 1);
+  spaces = uim_malloc(n + 1);
   for (i = 0; i < n; i++) {
     spaces[i] = ' ';
   }
@@ -1200,7 +1200,7 @@ char *cut_padding(const char *escseq)
   if (escseq == NULL) {
     return NULL;
   }
-  cut_str = malloc(strlen(escseq) + 1);
+  cut_str = uim_malloc(strlen(escseq) + 1);
   for (i = 0, j = 0; escseq[i] != '\0';) {
     if (escseq[i] == '$' && escseq[i + 1] == '<') {
       int i2 = i + 1;

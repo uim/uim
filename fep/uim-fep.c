@@ -228,7 +228,7 @@ static const char *get_default_im_name(void)
 int main(int argc, char **argv)
 {
   /* command will be execed on pty */
-  const char **command = malloc(sizeof(const char *) * (argc + 1));
+  const char **command = uim_malloc(sizeof(const char *) * (argc + 1));
   char *engine;
   char *sock_path = NULL; /* Socket for backtick */
   int gnu_screen = FALSE;
@@ -1025,7 +1025,7 @@ static void recover_loop(void)
  */
 static struct winsize *get_winsize(void)
 {
-  struct winsize *win = malloc(sizeof(struct winsize));
+  struct winsize *win = uim_malloc(sizeof(struct winsize));
   ioctl(g_win_in, TIOCGWINSZ, win);
   if (g_opt.status_type == LASTLINE) {
     win->ws_row--;

@@ -128,7 +128,7 @@ static int str2wcstr(const char *str, wchar_t **wcstr)
     return 0;
   }
 
-  *wcstr = malloc(sizeof(wchar_t) * (str_byte + 1));
+  *wcstr = uim_malloc(sizeof(wchar_t) * (str_byte + 1));
   nr_wchars = mbstowcs(*wcstr, str, str_byte);
   assert((size_t)nr_wchars != (size_t)-1);
   (*wcstr)[str_byte] = 0;
@@ -292,7 +292,7 @@ static int byte2width(char *str, int n)
     n = str_byte;
   }
 
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
+  wcstr = uim_malloc(sizeof(wchar_t) * str_byte);
 
   save_str = str;
 
@@ -402,7 +402,7 @@ static int byte2width2(char *str, int n)
     n = str_byte;
   }
 
-  wcstr = malloc(sizeof(wchar_t) * str_byte);
+  wcstr = uim_malloc(sizeof(wchar_t) * str_byte);
 
   save_str = str;
 
@@ -768,7 +768,7 @@ char *tab2space(const char *tabstr)
     }
   }
 
-  spacestr = malloc((tabstr_len - tabcount) + (TAB_WIDTH * tabcount) + 1);
+  spacestr = uim_malloc((tabstr_len - tabcount) + (TAB_WIDTH * tabcount) + 1);
 
   for (i = 0, j = 0; i < tabstr_len + 1; i++, j++) {
     if (tabstr[i] == '\t') {

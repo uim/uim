@@ -380,7 +380,7 @@ static void activate_cb(void *ptr, int nr, int display_limit)
   s_candidate.nr = nr;
   s_candidate.limit = display_limit;
   s_candidate.page = 0;
-  s_candidate.cand_col = malloc(nr * sizeof(int));
+  s_candidate.cand_col = uim_malloc(nr * sizeof(int));
   make_page_strs();
 }
 
@@ -498,7 +498,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
       int *rval = width2byte2(str, 1);
       int first_char_byte = rval[0];
       int first_char_width = rval[1];
-      char *first_char = malloc(first_char_byte + 1);
+      char *first_char = uim_malloc(first_char_byte + 1);
       strlcpy(first_char, str, first_char_byte + 1);
       cursor = FALSE;
       pushback_cb(NULL, attr - UPreeditAttr_Reverse, first_char);
@@ -676,7 +676,7 @@ loop_end:
  */
 struct preedit_tag *create_preedit(void)
 {
-  struct preedit_tag *p = malloc(sizeof(struct preedit_tag));
+  struct preedit_tag *p = uim_malloc(sizeof(struct preedit_tag));
   p->nr_psegs = 0;
   p->width = 0;
   p->cursor = 0;
@@ -710,7 +710,7 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
   int i;
   struct preedit_tag *dup_p = create_preedit();
   *dup_p = *p;
-  dup_p->pseg = malloc(sizeof(struct preedit_segment_tag) * (p->nr_psegs));
+  dup_p->pseg = uim_malloc(sizeof(struct preedit_segment_tag) * (p->nr_psegs));
   for (i = 0; i < p->nr_psegs; i++) {
     dup_p->pseg[i].attr = p->pseg[i].attr;
     dup_p->pseg[i].str = strdup(p->pseg[i].str);
@@ -755,7 +755,7 @@ static void make_page_strs(void)
     int cand_label_width = strwidth(cand_str_label);
     int cand_width = cand_label_width + strlen(":") + strwidth(cand_str_cand) + strlen(" ");
     int cand_byte = strlen(cand_str_label) + strlen(":") + strlen(cand_str_cand) + strlen(" ");
-    char *cand_str = malloc(cand_byte + 1);
+    char *cand_str = uim_malloc(cand_byte + 1);
 
     if (g_opt.ddskk) {
       index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - index - 1);
@@ -838,7 +838,7 @@ static void make_page_strs(void)
         s_candidate.index_col[s_candidate.nr_pages] = UNDEFINED;
       } else {
         int index_byte = index_width + 2/* utf-8 */;
-        char *index_str = malloc(index_byte + 1);
+        char *index_str = uim_malloc(index_byte + 1);
         int i;
         if (g_opt.ddskk) {
           sprintf(index_str, "[%s %d]", s_nokori_str, s_candidate.nr - index - 1);
@@ -955,7 +955,7 @@ static void set_candidate(void)
     /* 現在の候補のインデックスの幅 */
     int cand_index_width = numwidth(s_candidate.index + 1);
     int i;
-    s_index_str = malloc(right_edge_cand_index_width + 1);
+    s_index_str = uim_malloc(right_edge_cand_index_width + 1);
     for (i = 0; i < right_edge_cand_index_width - cand_index_width; i++) {
       s_index_str[i] = ' ';
     }
