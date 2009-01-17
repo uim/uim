@@ -192,22 +192,17 @@ static void send_im_list(void)
   int nr_im = uim_get_nr_im(g_context);
   const char *current_im_name = uim_get_current_im_name(g_context);
   const char *enc = get_enc();
-  char *message = malloc(strlen("im_list\ncharset=") + strlen(enc) + strlen("\n") + 1);
-  sprintf(message, "im_list\ncharset=%s\n", enc);
+  char *message;
 
+  uim_asprintf(&message, "im_list\ncharset=%s\n", enc);
   for (i = 0; i < nr_im; i++) {
     const char *name = uim_get_im_name(g_context, i);
     const char *langcode = uim_get_im_language(g_context, i);
     const char *lang = uim_get_language_name_from_locale(langcode);
     const char *short_desc = uim_get_im_short_desc(g_context, i);
+    char *im_str;
 
-    char *im_str = malloc(strlen(name) + strlen("\t") +
-        (lang != NULL ? strlen(lang) : 0) + strlen("\t") +
-        (short_desc != NULL ? strlen(short_desc) : 0) + strlen("\t") +
-        (strcmp(name, current_im_name) == 0 ? strlen("selected") : 0) +
-        strlen("\n") + 1);
-
-    sprintf(im_str, "%s\t%s\t%s\t%s\n", name,
+    uim_asprintf(&im_str, "%s\t%s\t%s\t%s\n", name,
         (lang != NULL ? lang : ""),
         (short_desc != NULL ? short_desc : ""),
         (strcmp(name, current_im_name) == 0 ? "selected" : ""));

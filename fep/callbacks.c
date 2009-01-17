@@ -335,8 +335,7 @@ char *get_mode_str(void)
 
   assert(!s_start_callbacks);
 
-  str = malloc(strlen(s_im_str) + strlen(s_label_str) + strlen("[]") + 1);
-  sprintf(str, "%s[%s]", s_im_str, s_label_str);
+  uim_asprintf(&str, "%s[%s]", s_im_str, s_label_str);
   strhead(str, s_max_width);
 
   return str;
@@ -360,19 +359,10 @@ static void switch_app_global_im_cb(void *ptr, const char *name)
 static void switch_system_global_im_cb(void *ptr, const char *name)
 {
   char *buf;
-  int len = 0;
 
-#define HEADER_FORMAT "im_change_whole_desktop\n%s\n"
-
-  len += strlen(HEADER_FORMAT);
-  len += name ? strlen(name) : 0;
-
-  buf = malloc(len);
-  snprintf(buf, len, HEADER_FORMAT, name ? name : "");
+  uim_asprintf(&buf, "im_change_whole_desktop\n%s\n", name ? name : "");
   uim_helper_send_message(g_helper_fd, buf);
   free(buf);
-
-#undef HEADER_FORMAT
 }
 
 /*
@@ -666,8 +656,7 @@ loop_end:
   }
 
   enc = get_enc();
-  message_buf = malloc(strlen("prop_list_update\ncharset=") + strlen(enc) + strlen("\n") + strlen(str) + 1);
-  sprintf(message_buf, "prop_list_update\ncharset=%s\n%s", enc, str);
+  uim_asprintf(&message_buf, "prop_list_update\ncharset=%s\n%s", enc, str);
   uim_helper_send_message(g_helper_fd, message_buf);
   free(message_buf);
   debug(("prop_list_update_cb send message\n"));
