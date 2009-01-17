@@ -63,7 +63,7 @@
 static FILE *primer, *primew;
 static pid_t prime_pid = 0;
 
-static char *prime_command = "/Library/PRIME/bin/prime";
+static char *prime_command = "prime";
 
 static char prime_ud_path[MAXPATHLEN];
 static int prime_fd = -1;
