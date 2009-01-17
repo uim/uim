@@ -45,6 +45,7 @@
 #include <qvgroupbox.h>
 #include <qmap.h>
 #include <qptrlist.h>
+#include <qsplitter.h>
 
 #include <uim/uim.h>
 #include <uim/uim-custom.h>
@@ -116,9 +117,9 @@ public:
     GroupPageWidget( QWidget *parent, const char *group_name );
 
     void setDefault();
+    void setupWidgets();
 
 protected:
-    void setupWidgets( const char *group_name );
 
     UimCustomItemIface *addCustom( QVGroupBox *vbox, const char *custom_sym );
     UimCustomItemIface *addCustomTypeBool( QVGroupBox *vbox, struct uim_custom *custom );
@@ -136,6 +137,8 @@ signals:
 
 protected:
     QPtrList<UimCustomItemIface> m_customIfaceList;
+    QString m_group_sym;
+    bool m_widget_created;
 };
 
 #endif /* Not def: UIM_QT_PREF_QT_H */

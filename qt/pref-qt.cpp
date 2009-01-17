@@ -65,6 +65,9 @@
 #include <stdlib.h>
 #include <locale.h>
 
+#define DEFAULT_WINDOW_WIDTH 800
+#define DEFAULT_WINDOW_HEIGHT 600
+
 #define _FU8(String) QString::fromUtf8(String)
 
 UimPrefDialog::UimPrefDialog( QWidget *parent, const char *name )
@@ -146,14 +149,14 @@ void UimPrefDialog::createMainWidgets()
                       this, SLOT(slotSelectionChanged( QListViewItem * )) );
 
     /* Contents Frame */
-    QWidget *rightSideWidget = new QWidget( mainSplitter );
-    QVBoxLayout *rightVLayout = new QVBoxLayout( rightSideWidget );
-    m_groupWidgetStack = new QWidgetStack( rightSideWidget );
-    rightVLayout->setSpacing( 6 );
-    rightVLayout->addWidget( m_groupWidgetStack );
+    QScrollView *rightSideWidget = new QScrollView( mainSplitter );
+    rightSideWidget->setResizePolicy(QScrollView::AutoOneFit);
+    m_groupWidgetStack = new QWidgetStack( rightSideWidget->viewport() );
+    rightSideWidget->addChild(m_groupWidgetStack);
 
     /* Buttons */
     QWidget *buttonHWidget = new QWidget( this );
+    buttonHWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed);
     QHBoxLayout *buttonHLayout = new QHBoxLayout( buttonHWidget );
     buttonHLayout->setMargin( 6 );
     buttonHLayout->setSpacing( 6 );
@@ -200,6 +203,9 @@ void UimPrefDialog::createGroupWidgets()
             item = new QListViewItem( m_groupListView, _FU8(group->label) );
 
         GroupPageWidget *w = new GroupPageWidget( m_groupWidgetStack, *grp );
+        if ( grp == primary_groups )
+            w->setupWidgets();
+
         QObject::connect( w, SIGNAL(customValueChanged()),
                           this, SLOT(slotCustomValueChanged()) );
 
@@ -229,6 +235,7 @@ void UimPrefDialog::slotSelectionChanged( QListViewItem * item )
     
     /* switch group widget */
     QString grpname = item->text( 0 );
+    ((GroupPageWidget *)m_groupWidgetsDict[grpname])->setupWidgets();
     m_groupWidgetStack->raiseWidget( m_groupWidgetsDict[grpname] );
 
 #if 0
@@ -385,16 +392,20 @@ GroupPageWidget::GroupPageWidget( QWidget *parent, const char *group_name )
     m_customIfaceList.clear();
     m_customIfaceList.setAutoDelete( false );
     
-    setupWidgets( group_name );
+    m_group_sym = group_name;
+    m_widget_created = false;
 }
 
-void GroupPageWidget::setupWidgets( const char *group_name )
+void GroupPageWidget::setupWidgets()
 {
+    if ( m_widget_created )
+        return;
+
     QVBoxLayout *vLayout = new QVBoxLayout( this );
     vLayout->setMargin( 6 );
     vLayout->setSpacing( 3 );
     
-    struct uim_custom_group *group = uim_custom_group_get( group_name );
+    struct uim_custom_group *group = uim_custom_group_get( (const char *)m_group_sym );
     if( group == NULL )
         return;
 
@@ -434,7 +445,7 @@ void GroupPageWidget::setupWidgets( const char *group_name )
         uim_custom_symbol_list_free( custom_syms );
     }
 #else
-    char **sub_groups = uim_custom_group_subgroups( group_name );
+    char **sub_groups = uim_custom_group_subgroups( (const char *)m_group_sym );
     char **sgrp;
     for( sgrp = sub_groups; *sgrp; sgrp++ )
     {
@@ -452,7 +463,7 @@ void GroupPageWidget::setupWidgets( const char *group_name )
         }
 
 	/* XXX quick hack to use AND expression of groups */
-	QString groups( group_name );
+	QString groups( m_group_sym );
 	groups += " '";
 	groups += *sgrp;
         char **custom_syms = uim_custom_collect_by_group( groups );
@@ -479,6 +490,8 @@ void GroupPageWidget::setupWidgets( const char *group_name )
 
     /* bottom up */
     vLayout->addStretch();    
+
+    m_widget_created = true;
 }
 
 /*
@@ -643,6 +656,7 @@ int main( int argc, char **argv )
     QApplication a( argc, argv );
 
     UimPrefDialog *dlg = new UimPrefDialog();
+    dlg->resize( DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT );
     a.setMainWidget( dlg );
     dlg->show();
 
