@@ -755,7 +755,7 @@ static void make_page_strs(void)
     int cand_label_width = strwidth(cand_str_label);
     int cand_width = cand_label_width + strlen(":") + strwidth(cand_str_cand) + strlen(" ");
     int cand_byte = strlen(cand_str_label) + strlen(":") + strlen(cand_str_cand) + strlen(" ");
-    char *cand_str = uim_malloc(cand_byte + 1);
+    char *cand_str;
 
     if (g_opt.ddskk) {
       index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - index - 1);
@@ -763,7 +763,7 @@ static void make_page_strs(void)
       index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
     }
 
-    sprintf(cand_str, "%s:%s ", cand_str_label, cand_str_cand);
+    uim_asprintf(&cand_str, "%s:%s ", cand_str_label, cand_str_cand);
     uim_candidate_free(cand);
     free(cand_str_cand);
 
@@ -838,12 +838,12 @@ static void make_page_strs(void)
         s_candidate.index_col[s_candidate.nr_pages] = UNDEFINED;
       } else {
         int index_byte = index_width + 2/* utf-8 */;
-        char *index_str = uim_malloc(index_byte + 1);
+        char *index_str;
         int i;
         if (g_opt.ddskk) {
-          sprintf(index_str, "[%s %d]", s_nokori_str, s_candidate.nr - index - 1);
+          uim_asprintf(&index_str, "[%s %d]", s_nokori_str, s_candidate.nr - index - 1);
         } else {
-          sprintf(index_str, "[%d/%d]", index + 1, s_candidate.nr);
+          uim_asprintf(&index_str, "[%d/%d]", index + 1, s_candidate.nr);
           for (i = 0; i < numwidth(index + 1); i++) {
             index_str[1 + i] = ' ';
           }
@@ -954,13 +954,15 @@ static void set_candidate(void)
     int right_edge_cand_index_width = numwidth(right_edge_cand_index + 1);
     /* 現在の候補のインデックスの幅 */
     int cand_index_width = numwidth(s_candidate.index + 1);
-    int i;
-    s_index_str = uim_malloc(right_edge_cand_index_width + 1);
-    for (i = 0; i < right_edge_cand_index_width - cand_index_width; i++) {
-      s_index_str[i] = ' ';
-    }
-    s_index_str[i] = '\0';
-    sprintf(s_index_str, "%s%d", s_index_str, s_candidate.index + 1);
+    int padlen = right_edge_cand_index_width - cand_index_width;
+    char *pad;
+
+    pad = uim_malloc(padlen + 1);
+    memset(pad, ' ', padlen);
+    pad[padlen] = '\0';
+    uim_asprintf(&s_index_str, "%s%d", pad, s_candidate.index + 1);
+    free(pad);
+
     if (g_opt.ddskk) {
       index_width = strlen("[xxxx ]") + numwidth(s_candidate.nr - s_candidate.index - 1);
     } else {
