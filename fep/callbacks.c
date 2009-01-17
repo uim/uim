@@ -511,11 +511,10 @@ static void pushback_cb(void *ptr, int attr, const char *str)
     }
     /* attrが前と同じ場合は前の文字列に付け足す */
     if (s_preedit->nr_psegs > 0 && s_preedit->pseg[s_preedit->nr_psegs - 1].attr == attr) {
-      /* char *tmp_str = s_preedit->pseg[s_preedit->nr_psegs - 1].str; */
-      /* s_preedit->pseg[s_preedit->nr_psegs - 1].str = malloc(strlen(tmp_str) + strlen(str) + 1); */
-      s_preedit->pseg[s_preedit->nr_psegs - 1].str = realloc(s_preedit->pseg[s_preedit->nr_psegs - 1].str, strlen(s_preedit->pseg[s_preedit->nr_psegs - 1].str) + strlen(str) + 1);
-      /* sprintf(s_preedit->pseg[s_preedit->nr_psegs - 1].str, "%s%s", tmp_str, str); */
-      strcat(s_preedit->pseg[s_preedit->nr_psegs - 1].str, str);
+      char *tmp_str = s_preedit->pseg[s_preedit->nr_psegs - 1].str;
+
+      uim_asprintf(&s_preedit->pseg[s_preedit->nr_psegs - 1].str, "%s%s", tmp_str, str);
+      free(tmp_str);
     } else {
       s_preedit->pseg = realloc(s_preedit->pseg,
           sizeof(struct preedit_segment_tag) * (s_preedit->nr_psegs + 1));
@@ -570,6 +569,9 @@ static void prop_list_update_cb(void *ptr, const char *str)
     char *label;
     int label_width;
     int max_label_width = 0;
+    char *pad;
+    int padlen;
+    char *oldlabels;
 
     error = TRUE;
 
@@ -630,11 +632,14 @@ static void prop_list_update_cb(void *ptr, const char *str)
     }
 
     label_width = strwidth(label);
-    labels = realloc(labels, strlen(labels) + strlen(label) + (max_label_width - label_width) + 1);
-    for (i = 0; i < (max_label_width - label_width); i++) {
-      strcat(labels, " ");
-    }
-    strcat(labels, label);
+
+    oldlabels = labels;
+    padlen = max_label_width - label_width;
+    pad = uim_malloc(padlen + 1);
+    memset(pad, ' ', padlen);
+    pad[padlen] = '\0';
+    uim_asprintf(&labels, "%s%s%s", oldlabels, label, pad);
+    free(oldlabels);
   }
 
 loop_end:
