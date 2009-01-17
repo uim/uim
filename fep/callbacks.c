@@ -640,6 +640,7 @@ static void prop_list_update_cb(void *ptr, const char *str)
     pad[padlen] = '\0';
     uim_asprintf(&labels, "%s%s%s", oldlabels, label, pad);
     free(oldlabels);
+    free(pad);
   }
 
 loop_end:
