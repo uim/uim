@@ -736,6 +736,7 @@ static void make_page_strs(void)
   int page_byte = 0;
   int page_width = 0;
   int index_in_page = 0;
+  char *old_str;
 
   int index;
 
@@ -825,8 +826,9 @@ static void make_page_strs(void)
 
       page_width += cand_width;
       page_byte += cand_byte;
-      page_str = uim_realloc(page_str, page_byte + 1);
-      strcat(page_str, cand_str);
+      old_str = page_str;
+      uim_asprintf(&page_str, "%s%s", old_str, cand_str);
+      free(old_str);
 
       index_in_page++;
       if (index_in_page == s_candidate.limit || index + 1 == s_candidate.nr) {
@@ -853,8 +855,9 @@ static void make_page_strs(void)
         assert(page_width + index_width <= s_max_width);
         s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
         page_byte += index_byte;
-        page_str = uim_realloc(page_str, page_byte + 1);
-        strcat(page_str, index_str);
+        old_str = page_str;
+        uim_asprintf(&page_str, "%s%s", old_str, index_str);
+        free(old_str);
         free(index_str);
       }
       s_candidate.page_strs = uim_realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));

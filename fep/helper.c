@@ -193,6 +193,7 @@ static void send_im_list(void)
   const char *current_im_name = uim_get_current_im_name(g_context);
   const char *enc = get_enc();
   char *message;
+  char *oldmessage;
 
   uim_asprintf(&message, "im_list\ncharset=%s\n", enc);
   for (i = 0; i < nr_im; i++) {
@@ -207,8 +208,9 @@ static void send_im_list(void)
         (short_desc != NULL ? short_desc : ""),
         (strcmp(name, current_im_name) == 0 ? "selected" : ""));
 
-    message = uim_realloc(message, strlen(message) + strlen(im_str) + 1);
-    strcat(message, im_str);
+    oldmessage = message;
+    uim_asprintf(&message, "%s%s", oldmessage, im_str);
+    free(oldmessage);
     free(im_str);
   }
   uim_helper_send_message(g_helper_fd, message);
