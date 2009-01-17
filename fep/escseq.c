@@ -892,7 +892,7 @@ static void set_attr(const char *str, int len)
         }
         if (str[0] == ';') {
           nr_params++;
-          params = realloc(params, sizeof(int) * nr_params);
+          params = uim_realloc(params, sizeof(int) * nr_params);
           params[nr_params - 1] = 0;
           str++;
         }

@@ -516,7 +516,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
       uim_asprintf(&s_preedit->pseg[s_preedit->nr_psegs - 1].str, "%s%s", tmp_str, str);
       free(tmp_str);
     } else {
-      s_preedit->pseg = realloc(s_preedit->pseg,
+      s_preedit->pseg = uim_realloc(s_preedit->pseg,
           sizeof(struct preedit_segment_tag) * (s_preedit->nr_psegs + 1));
       s_preedit->pseg[s_preedit->nr_psegs].str = uim_strdup(str);
       s_preedit->pseg[s_preedit->nr_psegs].attr = attr;
@@ -768,9 +768,9 @@ static void make_page_strs(void)
     free(cand_str_cand);
 
     if (index_in_page == 0) {
-      s_candidate.page2index = realloc(s_candidate.page2index, (s_candidate.nr_pages + 1) * sizeof(int));
+      s_candidate.page2index = uim_realloc(s_candidate.page2index, (s_candidate.nr_pages + 1) * sizeof(int));
       s_candidate.page2index[s_candidate.nr_pages] = index;
-      s_candidate.index_col = realloc(s_candidate.index_col, (s_candidate.nr_pages + 1) * sizeof(int));
+      s_candidate.index_col = uim_realloc(s_candidate.index_col, (s_candidate.nr_pages + 1) * sizeof(int));
     }
 
     if (page_width + cand_width + index_width > s_max_width && index_in_page != 0) {
@@ -824,7 +824,7 @@ static void make_page_strs(void)
 
       page_width += cand_width;
       page_byte += cand_byte;
-      page_str = realloc(page_str, page_byte + 1);
+      page_str = uim_realloc(page_str, page_byte + 1);
       strcat(page_str, cand_str);
 
       index_in_page++;
@@ -852,11 +852,11 @@ static void make_page_strs(void)
         assert(page_width + index_width <= s_max_width);
         s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
         page_byte += index_byte;
-        page_str = realloc(page_str, page_byte + 1);
+        page_str = uim_realloc(page_str, page_byte + 1);
         strcat(page_str, index_str);
         free(index_str);
       }
-      s_candidate.page_strs = realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));
+      s_candidate.page_strs = uim_realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));
       s_candidate.page_strs[s_candidate.nr_pages] = uim_strdup(page_str);
       s_candidate.nr_pages++; 
 

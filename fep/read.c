@@ -122,7 +122,7 @@ void unget_stdin(const char *str, int count)
     return;
   }
   debug(("unget count = %d s_buf_size = %d\n", count, s_buf_size));
-  s_unget_buf = realloc(s_unget_buf, s_buf_size + count);
+  s_unget_buf = uim_realloc(s_unget_buf, s_buf_size + count);
   memcpy(s_unget_buf + s_buf_size, str, count);
   s_buf_size += count;
 }

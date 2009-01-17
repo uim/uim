@@ -1000,7 +1000,7 @@ static void set_line2width(struct preedit_tag *preedit)
     int seg_w = strwidth(seg_str);
     while (line_width + seg_w >= g_win->ws_col) {
       if (lineno + 1 == s_preedit_lines) {
-        s_line2width = realloc(s_line2width, sizeof(int) * ++s_preedit_lines);
+        s_line2width = uim_realloc(s_line2width, sizeof(int) * ++s_preedit_lines);
       }
       if (line_width + seg_w > g_win->ws_col) {
         int *byte_width = width2byte(seg_str, g_win->ws_col - line_width);
@@ -1019,7 +1019,7 @@ static void set_line2width(struct preedit_tag *preedit)
   }
   if (s_preedit_lines > s_prev_preedit_lines) {
     int i;
-    s_prev_line2width = realloc(s_prev_line2width, sizeof(int) * s_preedit_lines);
+    s_prev_line2width = uim_realloc(s_prev_line2width, sizeof(int) * s_preedit_lines);
     for (i = s_prev_preedit_lines; i < s_preedit_lines; i++) {
       s_prev_line2width[i] = 0;
     }

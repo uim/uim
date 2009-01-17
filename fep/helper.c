@@ -207,7 +207,7 @@ static void send_im_list(void)
         (short_desc != NULL ? short_desc : ""),
         (strcmp(name, current_im_name) == 0 ? "selected" : ""));
 
-    message = realloc(message, strlen(message) + strlen(im_str) + 1);
+    message = uim_realloc(message, strlen(message) + strlen(im_str) + 1);
     strcat(message, im_str);
     free(im_str);
   }
