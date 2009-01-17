@@ -438,14 +438,18 @@ static void deactivate_cb(void *ptr)
 
 void commit_cb(void *ptr, const char *commit_str)
 {
+  char *oldstr;
+
   debug2(("commit_cb(commit_str = \"%s\")\n", commit_str));
   return_if_fail(commit_str != NULL);
   if (strlen(commit_str) == 0) {
     return;
   }
   start_callbacks();
-  s_commit_str = realloc(s_commit_str, strlen(s_commit_str) + strlen(commit_str) + 1);
-  strcat(s_commit_str, commit_str);
+
+  oldstr = s_commit_str;
+  uim_asprintf(&s_commit_str, "%s%s", oldstr, commit_str);
+  free(oldstr);
 }
 
 static void clear_cb(void *ptr)
