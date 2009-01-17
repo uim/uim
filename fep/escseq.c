@@ -164,7 +164,7 @@ void init_escseq(const struct attribute_tag *attr_uim)
   escseq2n2(orig_pair, &s_orig_fore_num, &s_orig_back_num);
   s_enter_uim_mode = attr2escseq(&s_attr_uim);
   if (s_enter_uim_mode != NULL) {
-    s_enter_uim_mode = strdup(s_enter_uim_mode);
+    s_enter_uim_mode = uim_strdup(s_enter_uim_mode);
   }
 
   fixtty();

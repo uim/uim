@@ -133,13 +133,13 @@ void init_callbacks(void)
   if (g_opt.statusline_width != UNDEFINED && g_opt.statusline_width <= s_max_width) {
     s_max_width = g_opt.statusline_width;
   }
-  s_commit_str = strdup("");
-  s_candidate_str = strdup("");
-  s_statusline_str = strdup("");
+  s_commit_str = uim_strdup("");
+  s_candidate_str = uim_strdup("");
+  s_statusline_str = uim_strdup("");
   s_candidate_col = UNDEFINED;
-  s_index_str = strdup("");
+  s_index_str = uim_strdup("");
   s_mode = uim_get_current_mode(g_context);
-  s_label_str = strdup("");
+  s_label_str = uim_strdup("");
   s_preedit = create_preedit();
   uim_set_preedit_cb(g_context, clear_cb, pushback_cb, update_cb);
   uim_set_mode_cb(g_context, mode_update_cb);
@@ -219,19 +219,19 @@ int end_callbacks(void)
   free(s_index_str);
 
   if (s_candidate.nr != UNDEFINED) {
-    s_statusline_str = strdup(s_candidate.page_strs[s_candidate.page]);
+    s_statusline_str = uim_strdup(s_candidate.page_strs[s_candidate.page]);
     if (s_candidate.index != UNDEFINED) {
       set_candidate();
     } else {
-      s_candidate_str = strdup("");
+      s_candidate_str = uim_strdup("");
       s_candidate_col = UNDEFINED;
-      s_index_str = strdup("");
+      s_index_str = uim_strdup("");
     }
   } else {
-    s_statusline_str = strdup("");
-    s_candidate_str = strdup("");
+    s_statusline_str = uim_strdup("");
+    s_candidate_str = uim_strdup("");
     s_candidate_col = UNDEFINED;
-    s_index_str = strdup("");
+    s_index_str = uim_strdup("");
   }
 
   return TRUE;
@@ -243,12 +243,12 @@ int end_callbacks(void)
  */
 char *get_commit_str(void)
 {
-  char *return_value = strdup(s_commit_str);
+  char *return_value = uim_strdup(s_commit_str);
 
   assert(!s_start_callbacks);
 
   free(s_commit_str);
-  s_commit_str = strdup("");
+  s_commit_str = uim_strdup("");
   return return_value;
 }
 
@@ -259,7 +259,7 @@ char *get_commit_str(void)
 char *get_statusline_str(void)
 {
   assert(!s_start_callbacks);
-  return strdup(s_statusline_str);
+  return uim_strdup(s_statusline_str);
 }
 
 /*
@@ -269,7 +269,7 @@ char *get_statusline_str(void)
 char *get_candidate_str(void)
 {
   assert(!s_start_callbacks);
-  return strdup(s_candidate_str);
+  return uim_strdup(s_candidate_str);
 }
 
 /*
@@ -289,7 +289,7 @@ int get_candidate_col(void)
 char *get_index_str(void)
 {
   assert(!s_start_callbacks);
-  return strdup(s_index_str);
+  return uim_strdup(s_index_str);
 }
 
 /*
@@ -518,7 +518,7 @@ static void pushback_cb(void *ptr, int attr, const char *str)
     } else {
       s_preedit->pseg = realloc(s_preedit->pseg,
           sizeof(struct preedit_segment_tag) * (s_preedit->nr_psegs + 1));
-      s_preedit->pseg[s_preedit->nr_psegs].str = strdup(str);
+      s_preedit->pseg[s_preedit->nr_psegs].str = uim_strdup(str);
       s_preedit->pseg[s_preedit->nr_psegs].attr = attr;
       s_preedit->nr_psegs++;
     }
@@ -551,7 +551,7 @@ static void prop_list_update_cb(void *ptr, const char *str)
 {
   char *line;
   int error = TRUE; /* str が "" のときはerrorにする*/
-  char *labels = strdup("");
+  char *labels = uim_strdup("");
   char *dup_str;
 
   const char *enc;
@@ -560,7 +560,7 @@ static void prop_list_update_cb(void *ptr, const char *str)
   debug(("prop_list_update_cb\n"));
   debug2(("str = %s", str));
 
-  dup_str = line = strdup(str);
+  dup_str = line = uim_strdup(str);
 
   while (line[0] != '\0') {
     int i;
@@ -713,7 +713,7 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
   dup_p->pseg = uim_malloc(sizeof(struct preedit_segment_tag) * (p->nr_psegs));
   for (i = 0; i < p->nr_psegs; i++) {
     dup_p->pseg[i].attr = p->pseg[i].attr;
-    dup_p->pseg[i].str = strdup(p->pseg[i].str);
+    dup_p->pseg[i].str = uim_strdup(p->pseg[i].str);
   }
   return dup_p;
 }
@@ -731,7 +731,7 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 static void make_page_strs(void)
 {
   /* NULLをreallocしてゴミにならないように */
-  char *page_str = strdup("");
+  char *page_str = uim_strdup("");
   int page_byte = 0;
   int page_width = 0;
   int index_in_page = 0;
@@ -857,14 +857,14 @@ static void make_page_strs(void)
         free(index_str);
       }
       s_candidate.page_strs = realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));
-      s_candidate.page_strs[s_candidate.nr_pages] = strdup(page_str);
+      s_candidate.page_strs[s_candidate.nr_pages] = uim_strdup(page_str);
       s_candidate.nr_pages++; 
 
       page_byte = 0;
       page_width = 0;
       index_in_page = 0;
       free(page_str);
-      page_str = strdup("");
+      page_str = uim_strdup("");
     }
     free(cand_str);
   }
@@ -945,7 +945,7 @@ static void set_candidate(void)
   int index_width;
 
   if (s_candidate.index_col[s_candidate.page] == UNDEFINED) {
-    s_index_str = strdup("");
+    s_index_str = uim_strdup("");
     index_width = 0;
   } else {
     /* 右端の候補のインデックス */
@@ -971,12 +971,12 @@ static void set_candidate(void)
 
   s_candidate_col = s_candidate.cand_col[s_candidate.index];
   if (s_candidate_col == UNDEFINED) {
-    s_candidate_str = strdup("");
+    s_candidate_str = uim_strdup("");
     return;
   }
   cand = uim_get_candidate(g_context, s_candidate.index, 0);
   if (uim_candidate_get_cand_str(cand) == NULL) {
-    s_candidate_str = strdup("");
+    s_candidate_str = uim_strdup("");
     s_candidate_col = UNDEFINED;
     uim_candidate_free(cand);
     return;

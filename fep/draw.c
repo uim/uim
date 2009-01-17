@@ -351,16 +351,16 @@ static void draw_statusline(int force, int restore, int visible, int draw_backgr
 
   /* static変数の初期化 1回しか実行されない */
   if (statusline_str == NULL) {
-    statusline_str = strdup("");
+    statusline_str = uim_strdup("");
   }
   if (candidate_str == NULL) {
-    candidate_str = strdup("");
+    candidate_str = uim_strdup("");
   }
   if (index_str == NULL) {
-    index_str = strdup("");
+    index_str = uim_strdup("");
   }
   if (mode_str == NULL) {
-    mode_str = strdup("");
+    mode_str = uim_strdup("");
   }
 
   prev_statusline_str = statusline_str;

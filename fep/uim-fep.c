@@ -260,7 +260,7 @@ int main(int argc, char **argv)
   command[1] = NULL;
 
   init_str();
-  engine = strdup(get_default_im_name());
+  engine = uim_strdup(get_default_im_name());
 
   while ((op = getopt(argc, argv, "e:s:u:b:w:t:C:f:SXciodKvh")) != -1) {
     int i;
@@ -311,7 +311,7 @@ int main(int argc, char **argv)
         break;
 
       case 'u':
-        engine = strdup(optarg);
+        engine = uim_strdup(optarg);
         break;
 
       case 'c':
