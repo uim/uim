@@ -53,6 +53,7 @@
 #include "uim-scm-abbrev.h"
 #include "uim-posix.h"
 #include "uim-notify.h"
+#include "gettext.h"
 
 uim_bool
 uim_get_user_name(char *name, int len, int uid)
@@ -328,14 +329,16 @@ typedef struct {
 } opt_args;
 
 static int
-make_args_or(const opt_args *list, char *arg)
+make_args_or(const opt_args *list, char *arg, const char **errstrp)
 {
   int flags = 0;
   int i = 0;
+  const static char *err = N_("Invalid argument");
 
+  *errstrp = NULL;
   while (1) {
     if (list[i].arg == 0) {
-      uim_notify_fatal("Unknown flag %s", arg);
+      *errstrp = err;
       return 0;
     }
     if (strcmp(list[i].arg, arg) == 0) {
@@ -411,13 +414,28 @@ c_file_open(uim_lisp path_, uim_lisp flags_, uim_lisp mode_)
 {
   int flags = 0;
   int mode = 0;
+  const char *errstr;
 
   while (!NULLP(flags_)) {
-    flags |= make_args_or(open_flags, C_SYM(CAR(flags_)));
+    char *f = C_SYM(CAR(flags_));
+
+    flags |= make_args_or(open_flags, f, &errstr);
+    free(f);
+    if (errstr) {
+      uim_notify_fatal("file-open: %s", errstr);
+      ERROR_OBJ(errstr, CAR(flags_));
+    }
     flags_ = CDR(flags_);
   }
   while (!NULLP(mode_)) {
-    mode |= make_args_or(open_mode, C_SYM(CAR(mode_)));
+    char *m = C_SYM(CAR(mode_));
+
+    mode |= make_args_or(open_mode, m, &errstr);
+    free(m);
+    if (errstr) {
+      uim_notify_fatal("file-open: %s", errstr);
+      ERROR_OBJ(errstr, CAR(mode_));
+    }
     mode_ = CDR(mode_);
   }
   return MAKE_INT(open(REFER_C_STR(path_), flags, mode));
