@@ -325,10 +325,10 @@ c_sleep(uim_lisp seconds_)
 typedef struct {
   int flag;
   char *arg;
-} or_args;
+} opt_args;
 
 static int
-make_args_or(const or_args *list, char *arg)
+make_args_or(const opt_args *list, char *arg)
 {
   int flags = 0;
   int i = 0;
@@ -348,7 +348,7 @@ make_args_or(const or_args *list, char *arg)
 }
 
 static uim_lisp
-make_arg_list(const or_args *list)
+make_arg_list(const opt_args *list)
 {
   uim_lisp ret_;
   int i = 0;
@@ -361,7 +361,7 @@ make_arg_list(const or_args *list)
   return ret_;
 }
 
-const static or_args open_flags[] = {
+const static opt_args open_flags[] = {
   { O_CREAT,    "$O_CREAT" },
   { O_EXCL,     "$O_EXCL" },
   { O_EXLOCK,   "$O_EXLOCK" },
@@ -373,7 +373,7 @@ const static or_args open_flags[] = {
   { 0, 0 }
 };
 
-const static or_args open_mode[] = {
+const static opt_args open_mode[] = {
   { S_IRWXU, "$S_IRWXU" },
   { S_IRUSR, "$S_IRUSR" },
   { S_IWUSR, "$S_IWUSR" },
