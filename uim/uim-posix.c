@@ -45,11 +45,14 @@
 #include <pwd.h>
 #include <errno.h>
 #include <assert.h>
+#include <fcntl.h>
 
+#include "uim.h"
 #include "uim-internal.h"
 #include "uim-scm.h"
 #include "uim-scm-abbrev.h"
 #include "uim-posix.h"
+#include "uim-notify.h"
 
 uim_bool
 uim_get_user_name(char *name, int len, int uid)
@@ -319,6 +322,154 @@ c_sleep(uim_lisp seconds_)
   return MAKE_INT(sleep((unsigned int)C_INT(seconds_)));
 }
 
+typedef struct {
+  int flag;
+  char *arg;
+} or_args;
+
+static int
+make_args_or(const or_args *list, char *arg)
+{
+  int flags = 0;
+  int i = 0;
+
+  while (1) {
+    if (list[i].arg == 0) {
+      uim_notify_fatal("Unknown flag %s", arg);
+      return 0;
+    }
+    if (strcmp(list[i].arg, arg) == 0) {
+      flags = list[i].flag;
+      break;
+    }
+    i++;
+  }
+  return flags;
+}
+
+static uim_lisp
+make_arg_list(const or_args *list)
+{
+  uim_lisp ret_;
+  int i = 0;
+
+  ret_ = uim_scm_null();
+  while (list[i].arg != 0) {
+    ret_ = CONS(MAKE_SYM(list[i].arg), ret_);
+    i++;
+  }
+  return ret_;
+}
+
+const static or_args open_flags[] = {
+  { O_CREAT,    "$O_CREAT" },
+  { O_EXCL,     "$O_EXCL" },
+  { O_EXLOCK,   "$O_EXLOCK" },
+  { O_NONBLOCK, "$O_NONBLOCK" },
+  { O_RDONLY,   "$O_RDONLY" },
+  { O_RDWR,     "$O_RDWR" },
+  { O_SHLOCK,   "$O_SHLOCK" },
+  { O_TRUNC,    "$O_TRUNC" },
+  { 0, 0 }
+};
+
+const static or_args open_mode[] = {
+  { S_IRWXU, "$S_IRWXU" },
+  { S_IRUSR, "$S_IRUSR" },
+  { S_IWUSR, "$S_IWUSR" },
+  { S_IXUSR, "$S_IXUSR" },
+
+  { S_IRWXG, "$S_IRWXG" },
+  { S_IRGRP, "$S_IRGRP" },
+  { S_IWGRP, "$S_IWGRP" },
+  { S_IXGRP, "$S_IXGRP" },
+
+  { S_IRWXO, "$S_IRWXO" },
+  { S_IROTH, "$S_IROTH" },
+  { S_IWOTH, "$S_IWOTH" },
+  { S_IXOTH, "$S_IXOTH" },
+  { 0, 0 }
+};
+
+
+static uim_lisp uim_lisp_open_flags;
+static uim_lisp
+c_file_open_flags(void)
+{
+  return uim_lisp_open_flags;
+}
+
+static uim_lisp uim_lisp_open_mode;
+static uim_lisp
+c_file_open_mode(void)
+{
+  return uim_lisp_open_mode;
+}
+
+static uim_lisp
+c_file_open(uim_lisp path_, uim_lisp flags_, uim_lisp mode_)
+{
+  int flags = 0;
+  int mode = 0;
+
+  while (!NULLP(flags_)) {
+    flags |= make_args_or(open_flags, C_SYM(CAR(flags_)));
+    flags_ = CDR(flags_);
+  }
+  while (!NULLP(mode_)) {
+    mode |= make_args_or(open_mode, C_SYM(CAR(mode_)));
+    mode_ = CDR(mode_);
+  }
+  return MAKE_INT(open(REFER_C_STR(path_), flags, mode));
+}
+
+static uim_lisp
+c_file_close(uim_lisp fd_)
+{
+  return MAKE_INT(close(C_INT(fd_)));
+}
+
+static uim_lisp
+c_file_read(uim_lisp d_, uim_lisp nbytes_)
+{
+  char *buf;
+  uim_lisp ret1_, ret2_;
+  int nbytes = C_INT(nbytes_);
+  int i;
+  char *p;
+
+  buf = uim_malloc(C_INT(nbytes_));
+  ret1_ = MAKE_INT((int)read(C_INT(d_), buf, nbytes));
+
+  p = buf;
+  ret2_ = uim_scm_null();
+  for (i = 0; i < nbytes; i++) {
+    ret2_ = CONS(MAKE_INT(*p), ret2_);
+    p++;
+  }
+  free(buf);
+  return CONS(ret1_, uim_scm_callf("reverse", "o", ret2_));
+}
+
+static uim_lisp
+c_file_write(uim_lisp d_, uim_lisp buf_)
+{
+  int nbytes = uim_scm_length(buf_);
+  uim_lisp ret_;
+  char *buf;
+  int i;
+  char *p;
+
+  buf = p = uim_malloc(nbytes);
+  for (i = 0; i < nbytes; i++) {
+    *p = (char)C_INT(CAR(buf_));
+    p++;
+  }
+  ret_ = MAKE_INT((int)write(C_INT(d_), buf, nbytes));
+  free(buf);
+  return ret_;
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -342,4 +493,17 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc2("difftime", c_difftime);
 
   uim_scm_init_proc1("sleep", c_sleep);
+
+  uim_scm_init_proc3("file-open", c_file_open);
+  uim_scm_init_proc1("file-close", c_file_close);
+  uim_scm_init_proc2("file-read", c_file_read);
+  uim_scm_init_proc2("file-write", c_file_write);
+
+  uim_scm_gc_protect(&uim_lisp_open_flags);
+  uim_scm_gc_protect(&uim_lisp_open_mode);
+  uim_lisp_open_flags = make_arg_list(open_flags);
+  uim_lisp_open_mode = make_arg_list(open_mode);
+
+  uim_scm_init_proc0("file-open-flags?", c_file_open_flags);
+  uim_scm_init_proc0("file-open-mode?", c_file_open_mode);
 }
