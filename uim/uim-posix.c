@@ -331,48 +331,18 @@ typedef struct {
   char *arg;
 } opt_args;
 
-static const char *
-find_flags_equal(const opt_args *list, int flag, const char **errstrp)
+static uim_lisp
+make_arg_list(const opt_args *list)
 {
-  char *arg = NULL;
+  uim_lisp ret_;
   int i = 0;
-  const static char *err = N_("Invalid argument");
 
-  *errstrp = NULL;
-  while (1) {
-    if (list[i].arg == 0) {
-      *errstrp = err;
-      return 0;
-    }
-    if (list[i].flag == flag) {
-      arg = list[i].arg;
-      break;
-    }
+  ret_ = uim_scm_null();
+  while (list[i].arg != 0) {
+    ret_ = CONS(CONS(MAKE_SYM(list[i].arg), MAKE_INT(list[i].flag)), ret_);
     i++;
   }
-  return arg;
-}
-
-static int
-find_args_equal(const opt_args *list, char *arg, const char **errstrp)
-{
-  int flags = 0;
-  int i = 0;
-  const static char *err = N_("Invalid argument");
-
-  *errstrp = NULL;
-  while (1) {
-    if (list[i].arg == 0) {
-      *errstrp = err;
-      return 0;
-    }
-    if (strcmp(list[i].arg, arg) == 0) {
-      flags = list[i].flag;
-      break;
-    }
-    i++;
-  }
-  return flags;
+  return ret_;
 }
 
 static uim_lisp
@@ -388,20 +358,6 @@ ref_args_or(const opt_args *list, int flags)
     i++;
   }
   return uim_scm_callf("reverse", "o", ret_);
-}
-
-static uim_lisp
-make_arg_list(const opt_args *list)
-{
-  uim_lisp ret_;
-  int i = 0;
-
-  ret_ = uim_scm_null();
-  while (list[i].arg != 0) {
-    ret_ = CONS(MAKE_SYM(list[i].arg), ret_);
-    i++;
-  }
-  return ret_;
 }
 
 const static opt_args open_flags[] = {
@@ -458,28 +414,13 @@ c_file_open(uim_lisp path_, uim_lisp flags_, uim_lisp mode_)
 {
   int flags = 0;
   int mode = 0;
-  const char *errstr;
 
   while (!NULLP(flags_)) {
-    char *f = C_SYM(CAR(flags_));
-
-    flags |= find_args_equal(open_flags, f, &errstr);
-    free(f);
-    if (errstr) {
-      uim_notify_fatal("file-open: %s", errstr);
-      ERROR_OBJ(errstr, CAR(flags_));
-    }
+    flags |= C_INT(CAR(flags_));
     flags_ = CDR(flags_);
   }
   while (!NULLP(mode_)) {
-    char *m = C_SYM(CAR(mode_));
-
-    mode |= find_args_equal(open_mode, m, &errstr);
-    free(m);
-    if (errstr) {
-      uim_notify_fatal("file-open: %s", errstr);
-      ERROR_OBJ(errstr, CAR(mode_));
-    }
+    mode |= C_INT(CAR(mode_));
     mode_ = CDR(mode_);
   }
   return MAKE_INT(open(REFER_C_STR(path_), flags, mode));
@@ -554,22 +495,21 @@ const static opt_args ai_flags[] = {
   { AI_PASSIVE,     "$AI_PASSIVE" },
   { 0, 0 }
 };
+static uim_lisp uim_lisp_ai_flags;
+static uim_lisp
+c_addrinfo_ref_ai_flags_alist(void)
+{
+  return uim_lisp_ai_flags;
+}
+
 static uim_lisp
 c_addrinfo_set_ai_flags(uim_lisp addrinfo_, uim_lisp ai_flags_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
   int flags = 0;
-  const char *errstr;
 
   while (!NULLP(ai_flags_)) {
-    char *f = C_SYM(CAR(ai_flags_));
-
-    flags |= find_args_equal(ai_flags, f, &errstr);
-    free(f);
-    if (errstr) {
-      uim_notify_fatal("addrinfo-set-ai-flags!: %s", errstr);
-      ERROR_OBJ(errstr, CAR(ai_flags_));
-    }
+    flags |= C_INT(CAR(ai_flags_));
     ai_flags_ = CDR(ai_flags_);
   }
 
@@ -592,36 +532,26 @@ const static opt_args ai_family[] = {
   { 0, 0 }
 };
 
+static uim_lisp uim_lisp_ai_family;
+static uim_lisp
+c_addrinfo_ref_ai_family_alist(void)
+{
+  return uim_lisp_ai_family;
+}
 static uim_lisp
 c_addrinfo_set_ai_family(uim_lisp addrinfo_, uim_lisp ai_family_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  char *f = C_SYM(ai_family_);
-  int family;
-  const char *errstr;
 
-  family = find_args_equal(ai_family, f, &errstr);
-  free(f);
-  if (errstr) {
-    uim_notify_fatal("addrinfo-set-ai-family!: %s", errstr);
-    ERROR_OBJ(errstr, ai_family_);
-  }
-  addrinfo->ai_family = family;
+  addrinfo->ai_family = C_INT(ai_family_);
   return uim_scm_t();
 }
 static uim_lisp
 c_addrinfo_ref_ai_family(uim_lisp addrinfo_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  const char *family;
-  const char *errstr;
 
-  family = find_flags_equal(ai_family, addrinfo->ai_family, &errstr);
-  if (errstr) {
-    uim_notify_fatal("addrinfo-ai-family?: %s", errstr);
-    ERROR_OBJ(errstr, addrinfo_);
-  }
-  return MAKE_SYM(family);
+  return MAKE_INT(addrinfo->ai_family);
 }
 
 const static opt_args ai_socktype[] = {
@@ -631,36 +561,26 @@ const static opt_args ai_socktype[] = {
   { 0, 0 }
 };
 
+static uim_lisp uim_lisp_ai_socktype;
+static uim_lisp
+c_addrinfo_ref_ai_socktype_alist(void)
+{
+  return uim_lisp_ai_socktype;
+}
 static uim_lisp
 c_addrinfo_set_ai_socktype(uim_lisp addrinfo_, uim_lisp ai_socktype_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  char *f = C_SYM(ai_socktype_);
-  int socktype;
-  const char *errstr;
 
-  socktype = find_args_equal(ai_socktype, f, &errstr);
-  free(f);
-  if (errstr) {
-    uim_notify_fatal("addrinfo-set-ai-socktype!: %s", errstr);
-    ERROR_OBJ(errstr, ai_socktype_);
-  }
-  addrinfo->ai_socktype = socktype;
+  addrinfo->ai_socktype = C_INT(ai_socktype_);
   return uim_scm_t();
 }
 static uim_lisp
 c_addrinfo_ref_ai_socktype(uim_lisp addrinfo_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  const char *socktype;
-  const char *errstr;
 
-  socktype = find_flags_equal(ai_socktype, addrinfo->ai_socktype, &errstr);
-  if (errstr) {
-    uim_notify_fatal("addrinfo-ai-socktype?: %s", errstr);
-    ERROR_OBJ(errstr, addrinfo_);
-  }
-  return MAKE_SYM(socktype);
+  return MAKE_INT(addrinfo->ai_socktype);
 }
 
 const static opt_args ai_protocol[] = {
@@ -669,36 +589,26 @@ const static opt_args ai_protocol[] = {
   { 0, 0 }
 };
 
+static uim_lisp uim_lisp_ai_protocol;
+static uim_lisp
+c_addrinfo_ref_ai_protocol_alist(void)
+{
+  return uim_lisp_ai_protocol;
+}
 static uim_lisp
 c_addrinfo_set_ai_protocol(uim_lisp addrinfo_, uim_lisp ai_protocol_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  char *f = C_SYM(ai_protocol_);
-  int protocol;
-  const char *errstr;
 
-  protocol = find_args_equal(ai_protocol, f, &errstr);
-  free(f);
-  if (errstr) {
-    uim_notify_fatal("addrinfo-set-ai-protocol!: %s", errstr);
-    ERROR_OBJ(errstr, ai_protocol_);
-  }
-  addrinfo->ai_protocol = protocol;
+  addrinfo->ai_protocol = C_INT(ai_protocol_);
   return uim_scm_t();
 }
 static uim_lisp
 c_addrinfo_ref_ai_protocol(uim_lisp addrinfo_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  const char *protocol;
-  const char *errstr;
 
-  protocol = find_flags_equal(ai_protocol, addrinfo->ai_protocol, &errstr);
-  if (errstr) {
-    uim_notify_fatal("addrinfo-ai-protocol?: %s", errstr);
-    ERROR_OBJ(errstr, addrinfo_);
-  }
-  return MAKE_SYM(protocol);
+  return MAKE_INT(addrinfo->ai_protocol);
 }
 
 static uim_lisp
@@ -760,35 +670,7 @@ c_freeaddrinfo(uim_lisp addrinfo_)
 static uim_lisp
 c_socket(uim_lisp domain_, uim_lisp type_, uim_lisp protocol_)
 {
-  int domain;
-  int type;
-  int protocol;
-  char *sym;
-  const char *errstr;
-
-  sym = C_SYM(domain_);
-  domain = find_args_equal(ai_family, sym, &errstr);
-  free(sym);
-  if (errstr) {
-    uim_notify_fatal("socket: %s", errstr);
-    ERROR_OBJ(errstr, domain_);
-  }
-  sym = C_SYM(type_);
-  type = find_args_equal(ai_socktype, sym, &errstr);
-  free(sym);
-  if (errstr) {
-    uim_notify_fatal("socket: %s", errstr);
-    ERROR_OBJ(errstr, type_);
-  }
-  sym = C_SYM(protocol_);
-  protocol = find_args_equal(ai_protocol, sym, &errstr);
-  free(sym);
-  if (errstr) {
-    uim_notify_fatal("socket: %s", errstr);
-    ERROR_OBJ(errstr, protocol_);
-  }
-
-  return MAKE_INT(socket(domain, type, protocol));
+  return MAKE_INT(socket(C_INT(domain_), C_INT(type_), C_INT(protocol_)));
 }
 
 static uim_lisp
@@ -822,29 +704,50 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("sleep", c_sleep);
 
   uim_scm_init_proc3("file-open", c_file_open);
-  uim_scm_init_proc1("file-close", c_file_close);
-  uim_scm_init_proc2("file-read", c_file_read);
-  uim_scm_init_proc2("file-write", c_file_write);
-
+  uim_scm_init_proc0("file-open-flags?", c_file_open_flags);
+  uim_scm_init_proc0("file-open-mode?", c_file_open_mode);
   uim_scm_gc_protect(&uim_lisp_open_flags);
   uim_scm_gc_protect(&uim_lisp_open_mode);
   uim_lisp_open_flags = make_arg_list(open_flags);
   uim_lisp_open_mode = make_arg_list(open_mode);
+  uim_scm_eval_c_string("(define open-flags-alist (file-open-flags?))");
+  uim_scm_eval_c_string("(define open-mode-alist (file-open-mode?))");
 
-  uim_scm_init_proc0("file-open-flags?", c_file_open_flags);
-  uim_scm_init_proc0("file-open-mode?", c_file_open_mode);
+  uim_scm_init_proc1("file-close", c_file_close);
+  uim_scm_init_proc2("file-read", c_file_read);
+  uim_scm_init_proc2("file-write", c_file_write);
 
   uim_scm_init_proc0("make-addrinfo", c_make_addrinfo);
   uim_scm_init_proc1("delete-addrinfo", c_delete_addrinfo);
 
   uim_scm_init_proc2("addrinfo-set-ai-flags!", c_addrinfo_set_ai_flags);
   uim_scm_init_proc1("addrinfo-ai-flags?", c_addrinfo_ref_ai_flags);
+  uim_scm_init_proc0("addrinfo-ai-flags-alist?", c_addrinfo_ref_ai_flags_alist);
+  uim_scm_gc_protect(&uim_lisp_ai_flags);
+  uim_lisp_ai_flags = make_arg_list(ai_flags);
+  uim_scm_eval_c_string("(define addirinfo-ai-flags-alist (addrinfo-ai-flags-alist?))");
+
   uim_scm_init_proc2("addrinfo-set-ai-family!", c_addrinfo_set_ai_family);
   uim_scm_init_proc1("addrinfo-ai-family?", c_addrinfo_ref_ai_family);
+  uim_scm_init_proc0("addrinfo-ai-family-alist?", c_addrinfo_ref_ai_family_alist);
+  uim_scm_gc_protect(&uim_lisp_ai_family);
+  uim_lisp_ai_family = make_arg_list(ai_family);
+  uim_scm_eval_c_string("(define addirinfo-ai-family-alist (addrinfo-ai-family-alist?))");
+
   uim_scm_init_proc2("addrinfo-set-ai-socktype!", c_addrinfo_set_ai_socktype);
   uim_scm_init_proc1("addrinfo-ai-socktype?", c_addrinfo_ref_ai_socktype);
+  uim_scm_init_proc0("addrinfo-ai-socktype-alist?", c_addrinfo_ref_ai_socktype_alist);
+  uim_scm_gc_protect(&uim_lisp_ai_socktype);
+  uim_lisp_ai_socktype = make_arg_list(ai_socktype);
+  uim_scm_eval_c_string("(define addirinfo-ai-socktype-alist (addrinfo-ai-socktype-alist?))");
+
   uim_scm_init_proc2("addrinfo-set-ai-protocol!", c_addrinfo_set_ai_protocol);
   uim_scm_init_proc1("addrinfo-ai-protocol?", c_addrinfo_ref_ai_protocol);
+  uim_scm_init_proc0("addrinfo-ai-protocol-alist?", c_addrinfo_ref_ai_protocol_alist);
+  uim_scm_gc_protect(&uim_lisp_ai_protocol);
+  uim_lisp_ai_protocol = make_arg_list(ai_protocol);
+  uim_scm_eval_c_string("(define addirinfo-ai-protocol-alist (addrinfo-ai-protocol-alist?))");
+
   uim_scm_init_proc1("addrinfo-ai-addrlen?", c_addrinfo_ref_ai_addrlen);
   uim_scm_init_proc1("addrinfo-ai-addr?", c_addrinfo_ref_ai_addr);
 
