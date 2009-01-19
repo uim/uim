@@ -413,7 +413,7 @@ const static opt_args open_flags[] = {
   { O_NONBLOCK, "$O_NONBLOCK" },
   { O_RDONLY,   "$O_RDONLY" },
   { O_RDWR,     "$O_RDWR" },
-#ifdef
+#ifdef O_SHLOCK
   { O_SHLOCK,   "$O_SHLOCK" },
 #endif
   { O_TRUNC,    "$O_TRUNC" },
