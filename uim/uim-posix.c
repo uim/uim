@@ -475,13 +475,13 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
   int nbytes = uim_scm_length(buf_);
   uim_lisp ret_;
   char *buf;
-  int i;
   char *p;
 
   buf = p = uim_malloc(nbytes);
-  for (i = 0; i < nbytes; i++) {
+  while (!NULLP(buf_)) {
     *p = (char)C_INT(CAR(buf_));
     p++;
+    buf_ = CDR(buf_);
   }
   ret_ = MAKE_INT((int)write(C_INT(d_), buf, nbytes));
   free(buf);
