@@ -29,9 +29,33 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1 2))
+(use util)
 (module-load "socket")
 
-(define addirinfo-ai-flags-alist (addrinfo-ai-flags-alist?))
-(define addirinfo-ai-family-alist (addrinfo-ai-family-alist?))
-(define addirinfo-ai-socktype-alist (addrinfo-ai-socktype-alist?))
-(define addirinfo-ai-protocol-alist (addrinfo-ai-protocol-alist?))
+(define addrinfo-ai-flags-alist (addrinfo-ai-flags-alist?))
+(define addrinfo-ai-family-alist (addrinfo-ai-family-alist?))
+(define addrinfo-ai-socktype-alist (addrinfo-ai-socktype-alist?))
+(define addrinfo-ai-protocol-alist (addrinfo-ai-protocol-alist?))
+
+(define (addrinfo-ai-flags-number l)
+  (map (lambda (s)
+         (assq-cdr s addrinfo-ai-flags-alist))
+       l))
+(define (addrinfo-ai-family-number s)
+  (assq-cdr s addrinfo-ai-family-alist))
+(define (addrinfo-ai-socktype-number s)
+  (assq-cdr s addrinfo-ai-socktype-alist))
+(define (addrinfo-ai-protocol-number s)
+  (assq-cdr s addrinfo-ai-protocol-alist))
+
+(define (string->socket-buf str)
+  (map char->integer (string->list str)))
+(define (socket-buf->string buf)
+  (list->string (map integer->char buf)))
+
+(define (call-with-getaddrinfo hostname servname hint thunk)
+  (let* ((res (getaddrinfo hostname servname hint))
+         (ret (thunk res)))
+    (freeaddrinfo (car res))
+    ret))
