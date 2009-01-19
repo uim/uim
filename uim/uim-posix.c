@@ -329,7 +329,7 @@ typedef struct {
 } opt_args;
 
 static int
-make_args_or(const opt_args *list, char *arg, const char **errstrp)
+find_args_equal(const opt_args *list, char *arg, const char **errstrp)
 {
   int flags = 0;
   int i = 0;
@@ -419,7 +419,7 @@ c_file_open(uim_lisp path_, uim_lisp flags_, uim_lisp mode_)
   while (!NULLP(flags_)) {
     char *f = C_SYM(CAR(flags_));
 
-    flags |= make_args_or(open_flags, f, &errstr);
+    flags |= find_args_equal(open_flags, f, &errstr);
     free(f);
     if (errstr) {
       uim_notify_fatal("file-open: %s", errstr);
@@ -430,7 +430,7 @@ c_file_open(uim_lisp path_, uim_lisp flags_, uim_lisp mode_)
   while (!NULLP(mode_)) {
     char *m = C_SYM(CAR(mode_));
 
-    mode |= make_args_or(open_mode, m, &errstr);
+    mode |= find_args_equal(open_mode, m, &errstr);
     free(m);
     if (errstr) {
       uim_notify_fatal("file-open: %s", errstr);
