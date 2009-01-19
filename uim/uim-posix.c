@@ -407,11 +407,15 @@ make_arg_list(const opt_args *list)
 const static opt_args open_flags[] = {
   { O_CREAT,    "$O_CREAT" },
   { O_EXCL,     "$O_EXCL" },
+#ifdef O_EXLOCK
   { O_EXLOCK,   "$O_EXLOCK" },
+#endif
   { O_NONBLOCK, "$O_NONBLOCK" },
   { O_RDONLY,   "$O_RDONLY" },
   { O_RDWR,     "$O_RDWR" },
+#ifdef
   { O_SHLOCK,   "$O_SHLOCK" },
+#endif
   { O_TRUNC,    "$O_TRUNC" },
   { 0, 0 }
 };
