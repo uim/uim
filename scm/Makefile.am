@@ -42,7 +42,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  social-ime.scm social-ime-custom.scm social-ime-key-custom.scm \
  ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
  yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
- uim-module-manager.scm
+ uim-module-manager.scm \
+ socket.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 

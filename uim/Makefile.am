@@ -52,6 +52,13 @@ libuim_la_SOURCES = \
 		uim-ipc.c uim-helper.c uim-helper-client.c \
 		gettext.h intl.c \
 		rk.c
+
+uim_plugin_LTLIBRARIES += libuim-socket.la
+libuim_socket_la_SOURCES = socket.c
+libuim_socket_la_LIBADD = libuim-scm.la libuim.la
+libuim_socket_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_socket_la_CPPFLAGS = -I$(top_srcdir)
+
 if NOTIFY
 libuim_la_SOURCES += uim-notify.c
 endif
