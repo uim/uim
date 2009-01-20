@@ -43,6 +43,7 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <sys/un.h>
 
 #include "uim.h"
 #include "uim-internal.h"
@@ -293,6 +294,70 @@ c_connect(uim_lisp s_, uim_lisp name_, uim_lisp namelen_)
   return MAKE_INT(connect(C_INT(s_), C_PTR(name_), C_INT(namelen_)));
 }
 
+static uim_lisp
+c_make_sockaddr_un(void)
+{
+  struct sockaddr_un *sun;
+
+  sun = uim_malloc(sizeof(struct sockaddr_un));
+  memset(sun, 0, sizeof(struct sockaddr_un));
+  return MAKE_PTR(sun);
+}
+
+static uim_lisp
+c_delete_sockaddr_un(uim_lisp sun_)
+{
+  struct sockaddr_un *sun = C_PTR(sun_);
+
+  free(sun);
+  return uim_scm_t();
+}
+
+static uim_lisp
+c_set_sockaddr_un_sun_family(uim_lisp sun_, uim_lisp family_)
+{
+  struct sockaddr_un *sun = C_PTR(sun_);
+
+  sun->sun_family = C_INT(family_);
+  return uim_scm_t();
+}
+static uim_lisp
+c_ref_sockaddr_un_sun_family(uim_lisp sun_)
+{
+  struct sockaddr_un *sun = C_PTR(sun_);
+
+  return MAKE_INT(sun->sun_family);
+}
+
+static uim_lisp
+c_set_sockaddr_un_sun_path(uim_lisp sun_, uim_lisp path_)
+{
+  struct sockaddr_un *sun = C_PTR(sun_);
+
+  strlcpy(sun->sun_path, REFER_C_STR(path_), sizeof(sun->sun_path));
+  return uim_scm_t();
+}
+static uim_lisp
+c_ref_sockaddr_un_sun_path(uim_lisp sun_)
+{
+  struct sockaddr_un *sun = C_PTR(sun_);
+
+  return MAKE_STR(sun->sun_path);
+}
+
+#ifndef SUN_LEN
+#define SUN_LEN(su) \
+  (sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
+#endif
+
+static uim_lisp
+c_sun_len(uim_lisp sun_)
+{
+  struct sockaddr_un *sun = C_PTR(sun_);
+
+  return MAKE_INT(SUN_LEN(sun));
+}
+
 void
 uim_plugin_instance_init(void)
 {
@@ -325,6 +390,17 @@ uim_plugin_instance_init(void)
 
   uim_scm_init_proc1("addrinfo-ai-addrlen?", c_addrinfo_ref_ai_addrlen);
   uim_scm_init_proc1("addrinfo-ai-addr?", c_addrinfo_ref_ai_addr);
+
+  uim_scm_init_proc0("make-sockaddr-un", c_make_sockaddr_un);
+  uim_scm_init_proc1("delete-sockaddr-un", c_delete_sockaddr_un);
+
+  uim_scm_init_proc2("sockaddr-set-un-sun-family!", c_set_sockaddr_un_sun_family);
+  uim_scm_init_proc1("sockaddr-un-sun-family?", c_ref_sockaddr_un_sun_family);
+
+  uim_scm_init_proc2("sockaddr-set-un-sun-path!", c_set_sockaddr_un_sun_path);
+  uim_scm_init_proc1("sockaddr-un-sun-path?", c_ref_sockaddr_un_sun_path);
+
+  uim_scm_init_proc1("sun-len", c_sun_len);
 
   uim_scm_init_proc3("getaddrinfo", c_getaddrinfo);
   uim_scm_init_proc1("freeaddrinfo", c_freeaddrinfo);
