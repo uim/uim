@@ -1,6 +1,6 @@
 ;;; socket.scm: socket library for uim.
 ;;;
-;;; Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -115,3 +115,8 @@
         (list->string (reverse rest))
         (loop (socket-read-char port) (cons c rest)))))
 
+(define (socket-read-buffer port len)
+  (list->string (map (lambda (i) (socket-read-char port)) (iota len))))
+
+(define (socket-get-buffer port)
+  (socket-buf->string (inbuf? port)))
