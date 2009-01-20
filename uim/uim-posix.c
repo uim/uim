@@ -444,7 +444,7 @@ c_file_read(uim_lisp d_, uim_lisp nbytes_)
   p = buf;
   ret2_ = uim_scm_null();
   for (i = 0; i < nbytes; i++) {
-    ret2_ = CONS(MAKE_INT(*p), ret2_);
+    ret2_ = CONS(MAKE_INT(*p & 0xff), ret2_);
     p++;
   }
   free(buf);
