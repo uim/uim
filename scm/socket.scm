@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1 2))
+(require-extension (srfi 1 2 9))
 (use util)
 (module-load "socket")
 
@@ -53,9 +53,65 @@
   (map char->integer (string->list str)))
 (define (socket-buf->string buf)
   (list->string (map integer->char buf)))
+(define (file-read-string s len)
+    (socket-buf->string (file-read s len)))
+(define (file-write-string s str)
+  (file-write s (string->socket-buf str)))
 
-(define (call-with-getaddrinfo hostname servname hint thunk)
-  (let* ((res (getaddrinfo hostname servname hint))
+(define (call-with-getaddrinfo-hints flags family socktype protocol thunk)
+  (let* ((hints (make-addrinfo)))
+    (and flags    (addrinfo-set-ai-flags!    hints (addrinfo-ai-flags-number    flags)))
+    (and family   (addrinfo-set-ai-family!   hints (addrinfo-ai-family-number   family)))
+    (and socktype (addrinfo-set-ai-socktype! hints (addrinfo-ai-socktype-number socktype)))
+    (and protocol (addrinfo-set-ai-socktype! hints (addrinfo-ai-protocol-number protocol)))
+    (let ((ret (thunk hints)))
+      (delete-addrinfo hints)
+      ret)))
+
+(define (call-with-getaddrinfo hostname servname hints thunk)
+  (let* ((res (getaddrinfo hostname servname hints))
          (ret (thunk res)))
     (freeaddrinfo (car res))
     ret))
+
+(define (call-with-sockaddr-un family path thunk)
+  (let* ((sun (make-sockaddr-un)))
+    (sockaddr-set-un-sun-family! sun family)
+    (sockaddr-set-un-sun-path! sun path)
+    (let ((ret (thunk sun)))
+      (delete-sockaddr-un sun))))
+
+(define socket-bufsiz 16384)
+
+(define-record-type socket-port
+  (make-socket-port fd inbufsiz inbuf) socket-port?
+  (fd       fd?       fd!)
+  (inbufsiz inbufsiz? inbufsiz!)
+  (inbuf    inbuf?    inbuf!))
+
+(define (open-socket-port fd)
+  (make-socket-port fd socket-bufsiz '()))
+
+(define (socket-read-char port)
+  (if (null? (inbuf? port))
+      (inbuf! port (file-read (fd? port) (inbufsiz? port))))
+  (let ((c (car (inbuf? port))))
+    (inbuf! port (cdr (inbuf? port)))
+    (integer->char c)))
+
+(define (socket-peek-char port)
+  (if (null? (inbuf? port))
+      (inbuf! port (file-read (fd? port) (inbufsiz? port))))
+  (let ((c (car (inbuf? port))))
+    (integer->char c)))
+
+(define (socket-display str port)
+  (file-write (fd? port) (string->socket-buf str)))
+
+(define (socket-read-line port)
+  (let loop ((c (socket-read-char port))
+             (rest '()))
+    (if (eq? #\newline c)
+        (list->string (reverse rest))
+        (loop (socket-read-char port) (cons c rest)))))
+
