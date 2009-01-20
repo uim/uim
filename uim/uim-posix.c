@@ -342,21 +342,6 @@ make_arg_list(const opt_args *list)
   return ret_;
 }
 
-static uim_lisp
-ref_args_or(const opt_args *list, int flags)
-{
-  int i = 0;
-  uim_lisp ret_ = uim_scm_null();
-
-  while (list[i].arg != 0) {
-    if (list[i].flag & flags) {
-      ret_ = CONS(MAKE_SYM(list[i].arg), ret_);
-    }
-    i++;
-  }
-  return uim_scm_callf("reverse", "o", ret_);
-}
-
 const static opt_args open_flags[] = {
   { O_CREAT,    "$O_CREAT" },
   { O_EXCL,     "$O_EXCL" },
@@ -433,22 +418,29 @@ static uim_lisp
 c_file_read(uim_lisp d_, uim_lisp nbytes_)
 {
   char *buf;
-  uim_lisp ret1_, ret2_;
+  uim_lisp ret_;
   int nbytes = C_INT(nbytes_);
   int i;
+  int nr;
   char *p;
 
-  buf = uim_malloc(C_INT(nbytes_));
-  ret1_ = MAKE_INT((int)read(C_INT(d_), buf, nbytes));
+  buf = uim_malloc(nbytes);
+  if ((nr = read(C_INT(d_), buf, nbytes)) == -1) {
+    char err[BUFSIZ];
+
+    snprintf(err, sizeof(err), "file-read: %s", strerror(errno));
+    uim_notify_fatal(err);
+    ERROR_OBJ(err, d_);
+  }
 
   p = buf;
-  ret2_ = uim_scm_null();
-  for (i = 0; i < nbytes; i++) {
-    ret2_ = CONS(MAKE_INT(*p & 0xff), ret2_);
+  ret_ = uim_scm_null();
+  for (i = 0; i < nr; i++) {
+    ret_ = CONS(MAKE_INT(*p & 0xff), ret_);
     p++;
   }
   free(buf);
-  return CONS(ret1_, uim_scm_callf("reverse", "o", ret2_));
+  return uim_scm_callf("reverse", "o", ret_);
 }
 
 static uim_lisp
