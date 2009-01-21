@@ -2730,9 +2730,11 @@ uim_wnn_jcKana(uim_lisp buf_, uim_lisp small_, uim_lisp kind_)
     kind = JC_HIRAGANA;
   else if (strcmp(kind_str, "katakana") == 0)
     kind = JC_KATAKANA;
-  else
+  else {
+    free(kind_str);
     return uim_scm_f();
-
+  }
+  free(kind_str);
   return MAKE_BOOL(jcKana(C_PTR(buf_), C_BOOL(small_), kind) == 0);
 }
 
@@ -3155,8 +3157,11 @@ uim_wnn_jcMove(uim_lisp buf_, uim_lisp small_, uim_lisp dir_)
     dir = JC_FORWARD;
   else if (strcmp("backward", dir_str) == 0)
     dir = JC_BACKWARD;
-  else
+  else {
+    free(dir_str);
     return uim_scm_f();
+  }
+  free(dir_str);
   return MAKE_BOOL(jcMove(C_PTR(buf_), C_BOOL(small_), dir) == 0);
 }
 
