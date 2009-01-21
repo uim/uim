@@ -1,6 +1,6 @@
 ;;; http-clietn.scm: http client library for uim.
 ;;;
-;;; Copyright (c) 2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

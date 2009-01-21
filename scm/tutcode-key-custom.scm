@@ -1,6 +1,6 @@
 ;;; tutcode-key-custom.scm: Customization variables for tutcode key bindings
 ;;;
-;;; Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

@@ -1,6 +1,6 @@
 ;;; ajax-ime-custom.scm: Customization variables for ajax-ime.scm
 ;;;
-;;; Copyright (c) 2008 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2008-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

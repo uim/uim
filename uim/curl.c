@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2008 uim Project http://uim.freedesktop.org/
+  Copyright (c) 2008-2009 uim Project http://uim.freedesktop.org/
 
   All rights reserved.
 
