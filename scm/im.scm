@@ -38,7 +38,6 @@
 (require "load-action.scm")
 
 ;; config
-(define enable-im-switch #f)
 (define default-im-name #f)
 
 ;; preedit attributes: should be moved to another file
@@ -454,7 +453,7 @@
        ((and enable-im-toggle?
 	     (toggle-im-key? key state))
 	(toggle-im uc c))
-       ((and enable-im-switch
+       ((and enable-im-switch?
 	     (switch-im-key? key state))
 	(switch-im uc (im-name im)))
        ((modifier-key? key state)
