@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.1\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2008-03-30 06:19+0900\n"
+"POT-Creation-Date: 2009-01-21 13:55+0900\n"
 "PO-Revision-Date: 2008-05-17 12:32+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -129,13 +129,13 @@ msgstr "uimアプレット・ファクトリ"
 msgid "uim applet factory"
 msgstr "uimアプレット・ファクトリ"
 
-#: ../helper/dict-anthy.c:82 ../helper/dict-main-gtk.c:166
+#: ../helper/dict-anthy.c:82 ../helper/dict-main-gtk.c:127
 #: ../helper/dict-word-list-win-gtk.c:348 ../helper/dict-word.c:139
 #: ../helper/dict-word.c:154
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
-#: ../helper/dict-canna.c:86 ../helper/dict-main-gtk.c:188
+#: ../helper/dict-canna.c:86 ../helper/dict-main-gtk.c:149
 #: ../helper/dict-word-list-win-gtk.c:352 ../helper/dict-word.c:141
 #: ../helper/dict-word.c:156
 msgid "Canna private dictionary"
@@ -151,7 +151,7 @@ msgstr "品詞"
 msgid "Example"
 msgstr "例"
 
-#: ../helper/dict-main-gtk.c:274
+#: ../helper/dict-main-gtk.c:235
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
@@ -446,12 +446,12 @@ msgid "uim input method switcher"
 msgstr "uim 入力方式切り換え"
 
 #: ../helper/im-switcher-gtk.c:361 ../qt/switcher-qt.cpp:109
-#: ../scm/im-custom.scm:434
+#: ../scm/im-custom.scm:438
 msgid "Effective coverage"
 msgstr "変更の適用範囲"
 
 #: ../helper/im-switcher-gtk.c:369 ../qt/switcher-qt.cpp:110
-#: ../scm/im-custom.scm:426
+#: ../scm/im-custom.scm:430
 msgid "whole desktop"
 msgstr "デスクトップ全体"
 
@@ -568,7 +568,7 @@ msgstr "キー:"
 msgid "Grab..."
 msgstr "取得..."
 
-#: ../helper/pref-gtk.c:146
+#: ../helper/pref-gtk.c:147
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -576,7 +576,7 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "保存しますか？"
 
-#: ../helper/pref-gtk.c:218 ../qt/pref-qt.cpp:266
+#: ../helper/pref-gtk.c:226 ../qt/pref-qt.cpp:274
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -584,32 +584,32 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "本当に終了しますか？"
 
-#: ../helper/pref-gtk.c:258 ../qt/pref-qt.cpp:141
+#: ../helper/pref-gtk.c:278 ../qt/pref-qt.cpp:145
 msgid "Group"
 msgstr "グループ"
 
 #. Defaults button
-#: ../helper/pref-gtk.c:350
+#: ../helper/pref-gtk.c:380
 msgid "_Defaults"
 msgstr "標準(_D)"
 
-#: ../helper/pref-gtk.c:355
+#: ../helper/pref-gtk.c:385
 msgid "Revert all changes to default"
 msgstr "全ての変更を標準に戻す"
 
-#: ../helper/pref-gtk.c:365
+#: ../helper/pref-gtk.c:395
 msgid "Apply all changes"
 msgstr "全ての設定変更を適用"
 
-#: ../helper/pref-gtk.c:373
+#: ../helper/pref-gtk.c:403
 msgid "Quit this application without applying changes"
 msgstr "設定変更を適用せず終了"
 
-#: ../helper/pref-gtk.c:384
+#: ../helper/pref-gtk.c:414
 msgid "Quit this application with applying changes"
 msgstr "設定を保存して終了"
 
-#: ../helper/pref-gtk.c:533 ../qt/pref-qt.cpp:109
+#: ../helper/pref-gtk.c:573 ../qt/pref-qt.cpp:113
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -690,32 +690,32 @@ msgstr "編集"
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
-#: ../qt/pref-qt.cpp:117
+#: ../qt/pref-qt.cpp:121
 msgid "~/.uim exists!"
 msgstr "~/.uim が存在します！"
 
-#: ../qt/pref-qt.cpp:159
+#: ../qt/pref-qt.cpp:163
 msgid "Defaults"
 msgstr "標準"
 
-#: ../qt/pref-qt.cpp:162 ../qt/pref-qt.cpp:249 ../qt/pref-qt.cpp:356
+#: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
 #: ../qt/switcher-qt.cpp:120
 msgid "OK"
 msgstr "OK"
 
-#: ../qt/pref-qt.cpp:165
+#: ../qt/pref-qt.cpp:169
 msgid "Apply"
 msgstr "適用"
 
-#: ../qt/pref-qt.cpp:169 ../qt/pref-qt.cpp:250 ../qt/switcher-qt.cpp:125
+#: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:125
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../qt/pref-qt.cpp:247
+#: ../qt/pref-qt.cpp:255
 msgid "Save Confirm"
 msgstr "保存確認"
 
-#: ../qt/pref-qt.cpp:248
+#: ../qt/pref-qt.cpp:256
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -723,19 +723,19 @@ msgstr ""
 "値が変更されました。\n"
 "保存しますか？"
 
-#: ../qt/pref-qt.cpp:265
+#: ../qt/pref-qt.cpp:273
 msgid "Quit Confirm"
 msgstr "終了確認"
 
-#: ../qt/pref-qt.cpp:268
+#: ../qt/pref-qt.cpp:276
 msgid "Yes"
 msgstr "はい"
 
-#: ../qt/pref-qt.cpp:269
+#: ../qt/pref-qt.cpp:277
 msgid "No"
 msgstr "いいえ"
 
-#: ../qt/pref-qt.cpp:352
+#: ../qt/pref-qt.cpp:360
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
@@ -851,21 +851,23 @@ msgstr "予測入力"
 #: ../scm/elatin-custom.scm:281 ../scm/elatin-custom.scm:286
 #: ../scm/generic-custom.scm:37 ../scm/generic-custom.scm:43
 #: ../scm/generic-custom.scm:49 ../scm/generic-custom.scm:55
-#: ../scm/generic-custom.scm:61 ../scm/generic-key-custom.scm:37
-#: ../scm/generic-key-custom.scm:41 ../scm/im-custom.scm:46
-#: ../scm/im-custom.scm:50 ../scm/im-custom.scm:55 ../scm/im-custom.scm:60
-#: ../scm/im-custom.scm:65 ../scm/im-custom.scm:70 ../scm/im-custom.scm:75
-#: ../scm/im-custom.scm:80 ../scm/im-custom.scm:85 ../scm/im-custom.scm:90
-#: ../scm/im-custom.scm:95 ../scm/im-custom.scm:100 ../scm/im-custom.scm:105
-#: ../scm/im-custom.scm:110 ../scm/im-custom.scm:121 ../scm/im-custom.scm:131
-#: ../scm/im-custom.scm:205 ../scm/im-custom.scm:309 ../scm/im-custom.scm:315
-#: ../scm/im-custom.scm:321 ../scm/im-custom.scm:331 ../scm/im-custom.scm:359
-#: ../scm/im-custom.scm:380 ../scm/im-custom.scm:386 ../scm/im-custom.scm:453
-#: ../scm/im-custom.scm:459 ../scm/im-custom.scm:465 ../scm/im-custom.scm:471
-#: ../scm/im-custom.scm:477 ../scm/im-custom.scm:483 ../scm/im-custom.scm:501
-#: ../scm/im-custom.scm:507 ../scm/im-custom.scm:514 ../scm/im-custom.scm:524
-#: ../scm/im-custom.scm:528 ../scm/im-custom.scm:534 ../scm/im-custom.scm:540
-#: ../scm/im-custom.scm:550 ../scm/im-custom.scm:557 ../scm/look-custom.scm:40
+#: ../scm/generic-custom.scm:61 ../scm/generic-custom.scm:67
+#: ../scm/generic-key-custom.scm:37 ../scm/generic-key-custom.scm:41
+#: ../scm/im-custom.scm:46 ../scm/im-custom.scm:50 ../scm/im-custom.scm:55
+#: ../scm/im-custom.scm:60 ../scm/im-custom.scm:65 ../scm/im-custom.scm:70
+#: ../scm/im-custom.scm:75 ../scm/im-custom.scm:80 ../scm/im-custom.scm:85
+#: ../scm/im-custom.scm:90 ../scm/im-custom.scm:95 ../scm/im-custom.scm:100
+#: ../scm/im-custom.scm:105 ../scm/im-custom.scm:110 ../scm/im-custom.scm:121
+#: ../scm/im-custom.scm:131 ../scm/im-custom.scm:205 ../scm/im-custom.scm:279
+#: ../scm/im-custom.scm:285 ../scm/im-custom.scm:291 ../scm/im-custom.scm:297
+#: ../scm/im-custom.scm:313 ../scm/im-custom.scm:319 ../scm/im-custom.scm:325
+#: ../scm/im-custom.scm:335 ../scm/im-custom.scm:363 ../scm/im-custom.scm:384
+#: ../scm/im-custom.scm:390 ../scm/im-custom.scm:457 ../scm/im-custom.scm:463
+#: ../scm/im-custom.scm:469 ../scm/im-custom.scm:475 ../scm/im-custom.scm:481
+#: ../scm/im-custom.scm:487 ../scm/im-custom.scm:505 ../scm/im-custom.scm:511
+#: ../scm/im-custom.scm:518 ../scm/im-custom.scm:528 ../scm/im-custom.scm:532
+#: ../scm/im-custom.scm:538 ../scm/im-custom.scm:544 ../scm/im-custom.scm:554
+#: ../scm/im-custom.scm:561 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
 #: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
 #: ../scm/mana-custom.scm:54 ../scm/mana-custom.scm:60
@@ -1327,24 +1329,25 @@ msgstr "[Anthy] 次文節"
 #: ../scm/tutcode-key-custom.scm:96 ../scm/tutcode-key-custom.scm:102
 #: ../scm/tutcode-key-custom.scm:108 ../scm/tutcode-key-custom.scm:114
 #: ../scm/tutcode-key-custom.scm:120 ../scm/tutcode-key-custom.scm:126
-#: ../scm/tutcode-key-custom.scm:132 ../scm/wnn-key-custom.scm:54
-#: ../scm/wnn-key-custom.scm:60 ../scm/wnn-key-custom.scm:66
-#: ../scm/wnn-key-custom.scm:72 ../scm/wnn-key-custom.scm:78
-#: ../scm/wnn-key-custom.scm:84 ../scm/wnn-key-custom.scm:90
-#: ../scm/wnn-key-custom.scm:96 ../scm/wnn-key-custom.scm:102
-#: ../scm/wnn-key-custom.scm:108 ../scm/wnn-key-custom.scm:117
-#: ../scm/wnn-key-custom.scm:124 ../scm/wnn-key-custom.scm:130
-#: ../scm/wnn-key-custom.scm:136 ../scm/wnn-key-custom.scm:142
-#: ../scm/wnn-key-custom.scm:148 ../scm/wnn-key-custom.scm:154
-#: ../scm/wnn-key-custom.scm:160 ../scm/wnn-key-custom.scm:166
-#: ../scm/wnn-key-custom.scm:175 ../scm/wnn-key-custom.scm:181
-#: ../scm/wnn-key-custom.scm:187 ../scm/wnn-key-custom.scm:193
-#: ../scm/wnn-key-custom.scm:199 ../scm/wnn-key-custom.scm:205
-#: ../scm/wnn-key-custom.scm:211 ../scm/wnn-key-custom.scm:217
-#: ../scm/wnn-key-custom.scm:223 ../scm/wnn-key-custom.scm:233
-#: ../scm/wnn-key-custom.scm:239 ../scm/wnn-key-custom.scm:245
-#: ../scm/wnn-key-custom.scm:251 ../scm/wnn-key-custom.scm:257
-#: ../scm/wnn-key-custom.scm:263 ../scm/wnn-key-custom.scm:269
+#: ../scm/tutcode-key-custom.scm:132 ../scm/tutcode-key-custom.scm:138
+#: ../scm/wnn-key-custom.scm:54 ../scm/wnn-key-custom.scm:60
+#: ../scm/wnn-key-custom.scm:66 ../scm/wnn-key-custom.scm:72
+#: ../scm/wnn-key-custom.scm:78 ../scm/wnn-key-custom.scm:84
+#: ../scm/wnn-key-custom.scm:90 ../scm/wnn-key-custom.scm:96
+#: ../scm/wnn-key-custom.scm:102 ../scm/wnn-key-custom.scm:108
+#: ../scm/wnn-key-custom.scm:117 ../scm/wnn-key-custom.scm:124
+#: ../scm/wnn-key-custom.scm:130 ../scm/wnn-key-custom.scm:136
+#: ../scm/wnn-key-custom.scm:142 ../scm/wnn-key-custom.scm:148
+#: ../scm/wnn-key-custom.scm:154 ../scm/wnn-key-custom.scm:160
+#: ../scm/wnn-key-custom.scm:166 ../scm/wnn-key-custom.scm:175
+#: ../scm/wnn-key-custom.scm:181 ../scm/wnn-key-custom.scm:187
+#: ../scm/wnn-key-custom.scm:193 ../scm/wnn-key-custom.scm:199
+#: ../scm/wnn-key-custom.scm:205 ../scm/wnn-key-custom.scm:211
+#: ../scm/wnn-key-custom.scm:217 ../scm/wnn-key-custom.scm:223
+#: ../scm/wnn-key-custom.scm:233 ../scm/wnn-key-custom.scm:239
+#: ../scm/wnn-key-custom.scm:245 ../scm/wnn-key-custom.scm:251
+#: ../scm/wnn-key-custom.scm:257 ../scm/wnn-key-custom.scm:263
+#: ../scm/wnn-key-custom.scm:269
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
@@ -2248,25 +2251,29 @@ msgstr "[ELatin] オフ"
 msgid "[ELatin] backspace"
 msgstr "[ELatin] バックスペース"
 
-#: ../scm/elatin.scm:114
+#: ../scm/elatin.scm:115
 msgid "ELatin mode off"
 msgstr "ELatinモード オフ"
 
-#: ../scm/elatin.scm:115
+#: ../scm/elatin.scm:116
 msgid "ELatin composition off"
 msgstr "ELatin変換 オフ"
 
-#: ../scm/elatin.scm:127
+#: ../scm/elatin.scm:128
 msgid "ELatin mode on"
 msgstr "ELatinモード オン"
 
-#: ../scm/elatin.scm:128
+#: ../scm/elatin.scm:129
 msgid "ELatin composition on"
 msgstr "ELatin変換 オン"
 
 #: ../scm/generic-custom.scm:36
 msgid "Other input methods"
 msgstr "その他の入力方式"
+
+#: ../scm/generic-custom.scm:66
+msgid "Show candidate window without explicit conversion action"
+msgstr ""
 
 #: ../scm/generic-key-custom.scm:36
 msgid "Global key bindings 1"
@@ -2384,7 +2391,7 @@ msgstr "ローマ字入力式ハングル"
 msgid "Romaja input style hangul input method"
 msgstr "ローマ字入力式ハングル入力方式"
 
-#: ../scm/im.scm:139
+#: ../scm/im.scm:138
 msgid "invalid IM name"
 msgstr "不正なIM名"
 
@@ -2448,81 +2455,99 @@ msgstr "標準の入力方式を指定"
 msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
-#: ../scm/im-custom.scm:308
+#: ../scm/im-custom.scm:278
+#, fuzzy
+msgid "Input method switching"
+msgstr "uim 入力方式切り換え"
+
+#: ../scm/im-custom.scm:284
+#, fuzzy
+msgid "Enable IM switching by hotkey"
+msgstr "ホットキーによる入力方式の正副一時切り換えを有効にする"
+
+#: ../scm/im-custom.scm:290
+msgid "IM switching key"
+msgstr ""
+
+#: ../scm/im-custom.scm:296
+msgid "Skip direct method for IM switching by hotkey"
+msgstr ""
+
+#: ../scm/im-custom.scm:312
 msgid "Input method toggle"
 msgstr "入力方式の一時切り換え"
 
-#: ../scm/im-custom.scm:314
+#: ../scm/im-custom.scm:318
 msgid "Enable input method toggle by hot keys"
 msgstr "ホットキーによる入力方式の正副一時切り換えを有効にする"
 
-#: ../scm/im-custom.scm:320
+#: ../scm/im-custom.scm:324
 msgid "Input method toggle key"
 msgstr "一時切り換えキー"
 
-#: ../scm/im-custom.scm:330
+#: ../scm/im-custom.scm:334
 msgid "Alternative input method"
 msgstr "副入力方式"
 
-#: ../scm/im-custom.scm:356 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
+#: ../scm/im-custom.scm:360 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim"
 msgstr "uim"
 
-#: ../scm/im-custom.scm:356 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
+#: ../scm/im-custom.scm:360 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim native"
 msgstr "uimネイティブ"
 
-#: ../scm/im-custom.scm:357
+#: ../scm/im-custom.scm:361
 msgid "ATOK like"
 msgstr "ATOK風"
 
-#: ../scm/im-custom.scm:357
+#: ../scm/im-custom.scm:361
 msgid "Similar to ATOK"
 msgstr "ATOK風"
 
-#: ../scm/im-custom.scm:358
+#: ../scm/im-custom.scm:362
 msgid "Preedit color"
 msgstr "編集領域の配色"
 
-#: ../scm/im-custom.scm:371 ../scm/im-custom.scm:372
+#: ../scm/im-custom.scm:375 ../scm/im-custom.scm:376
 msgid "Adjacent to cursor"
 msgstr "カーソルに隣接"
 
-#: ../scm/im-custom.scm:374 ../scm/im-custom.scm:375
+#: ../scm/im-custom.scm:378 ../scm/im-custom.scm:379
 msgid "Left end of preedit area"
 msgstr "編集領域の左端"
 
-#: ../scm/im-custom.scm:377 ../scm/im-custom.scm:378
+#: ../scm/im-custom.scm:381 ../scm/im-custom.scm:382
 msgid "Right end of preedit area"
 msgstr "編集領域の右端"
 
 # 「候補ウィンドウの位置」では何を規定する位置なのか不明瞭な印象を受ける。具体例
 # が出たら追記する事 -- YamaKen 2005-12-07 
-#: ../scm/im-custom.scm:379
+#: ../scm/im-custom.scm:383
 msgid "Candidate window position"
 msgstr "候補ウィンドウの表示位置"
 
-#: ../scm/im-custom.scm:385
+#: ../scm/im-custom.scm:389
 msgid "Enable lazy input method loading for fast startup"
 msgstr "高速起動のための遅延ローディングを有効にする"
 
-#: ../scm/im-custom.scm:419
+#: ../scm/im-custom.scm:423
 msgid "Enable menu-based input method switcher"
 msgstr "入力方式切り換えメニューを有効にする"
 
-#: ../scm/im-custom.scm:420
+#: ../scm/im-custom.scm:424
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "ツールバーに入力方式切り換えメニューを表示"
 
-#: ../scm/im-custom.scm:427
+#: ../scm/im-custom.scm:431
 msgid "All input method of text areas on the system are changed."
 msgstr "全てのテキスト領域の入力方式が変更されます。"
 
-#: ../scm/im-custom.scm:429
+#: ../scm/im-custom.scm:433
 msgid "focused application only"
 msgstr "フォーカスされたアプリケーションのみ"
 
-#: ../scm/im-custom.scm:430
+#: ../scm/im-custom.scm:434
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
@@ -2530,11 +2555,11 @@ msgstr ""
 "フォーカスされたアプリケーションのみの入力方式が変更されます。他のテキスト領"
 "域はそのままです。"
 
-#: ../scm/im-custom.scm:432
+#: ../scm/im-custom.scm:436
 msgid "focused text area only"
 msgstr "フォーカスされたテキスト領域のみ"
 
-#: ../scm/im-custom.scm:433
+#: ../scm/im-custom.scm:437
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
@@ -2542,85 +2567,85 @@ msgstr ""
 "フォーカスされたテスト領域のみの入力方式が変更されます。他のテキスト領域はそ"
 "のままです。"
 
-#: ../scm/im-custom.scm:435
+#: ../scm/im-custom.scm:439
 msgid "Specify where the IM switching takes effect."
 msgstr "入力方式の切り換えを有効にする範囲を指定します。"
 
-#: ../scm/im-custom.scm:446
+#: ../scm/im-custom.scm:450
 msgid "full-featured input method switcher"
 msgstr "フル機能の入力方式切り換えツール"
 
-#: ../scm/im-custom.scm:447
+#: ../scm/im-custom.scm:451
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr "ツールバーにuim入力方式切り換えツールを起動するボタンを表示します。"
 
-#: ../scm/im-custom.scm:452
+#: ../scm/im-custom.scm:456
 msgid "preference tool"
 msgstr "設定"
 
-#: ../scm/im-custom.scm:458
+#: ../scm/im-custom.scm:462
 msgid "Japanese dictionary tool"
 msgstr "日本語辞書ツール"
 
-#: ../scm/im-custom.scm:464
+#: ../scm/im-custom.scm:468
 msgid "input pad"
 msgstr "入力パッド"
 
-#: ../scm/im-custom.scm:470
+#: ../scm/im-custom.scm:474
 msgid "handwriting-input pad"
 msgstr "手書き入力パッド"
 
-#: ../scm/im-custom.scm:476
+#: ../scm/im-custom.scm:480
 msgid "help"
 msgstr "ヘルプ"
 
-#: ../scm/im-custom.scm:482
+#: ../scm/im-custom.scm:486
 msgid "Show input mode nearby cursor"
 msgstr "カーソルの側に入力モードを表示"
 
-#: ../scm/im-custom.scm:488
+#: ../scm/im-custom.scm:492
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "カーソルの側に入力モードを表示する時間"
 
-#: ../scm/im-custom.scm:489
+#: ../scm/im-custom.scm:493
 msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
-#: ../scm/im-custom.scm:500
+#: ../scm/im-custom.scm:504
 msgid "EB library"
 msgstr "EBライブラリ"
 
-#: ../scm/im-custom.scm:506
+#: ../scm/im-custom.scm:510
 msgid "Use EB library to search annotations"
 msgstr "註釈の検索にEBライブラリを使用する"
 
-#: ../scm/im-custom.scm:513
+#: ../scm/im-custom.scm:517
 msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
-#: ../scm/im-custom.scm:523
+#: ../scm/im-custom.scm:527
 msgid "XIM"
 msgstr "XIM"
 
-#: ../scm/im-custom.scm:527
+#: ../scm/im-custom.scm:531
 msgid "Preedit settings of XIM"
 msgstr "XIMの編集領域"
 
-#: ../scm/im-custom.scm:533
+#: ../scm/im-custom.scm:537
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr "編集領域のフォントにアンチエイリアスをかける"
 
-#: ../scm/im-custom.scm:539
+#: ../scm/im-custom.scm:543
 msgid "Font name for preedit area (anti-aliased)"
 msgstr "編集領域で使用されるフォント名 (アンチエイリアス時)"
 
-#: ../scm/im-custom.scm:549
+#: ../scm/im-custom.scm:553
 msgid "Notify"
 msgstr "状態通知"
 
-#: ../scm/im-custom.scm:556
+#: ../scm/im-custom.scm:560
 msgid "Notify agent name"
 msgstr "状態通知に使用するエージェント"
 
@@ -4251,7 +4276,7 @@ msgstr "[SKK] 右に移動"
 msgid "T-Code"
 msgstr "T-Code"
 
-#: ../scm/tcode.scm:1646 ../scm/trycode.scm:1648 ../scm/tutcode.scm:890
+#: ../scm/tcode.scm:1646 ../scm/trycode.scm:1648 ../scm/tutcode.scm:1075
 msgid "A kanji direct input method"
 msgstr "漢字直接入力方式"
 
@@ -4259,7 +4284,7 @@ msgstr "漢字直接入力方式"
 msgid "Try-Code"
 msgstr "Try-Code"
 
-#: ../scm/tutcode-custom.scm:35 ../scm/tutcode.scm:889
+#: ../scm/tutcode-custom.scm:35 ../scm/tutcode.scm:1074
 msgid "TUT-Code"
 msgstr "TUT-Code"
 
@@ -4324,50 +4349,55 @@ msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:65
+#, fuzzy
+msgid "[TUT-Code] toggle kigou mode"
+msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
+
+#: ../scm/tutcode-key-custom.scm:71
 msgid "[TUT-Code] mazegaki conversion mode"
 msgstr "[TUT-Code] 交ぜ書き変換モード"
 
-#: ../scm/tutcode-key-custom.scm:71
+#: ../scm/tutcode-key-custom.scm:77
 msgid "[TUT-Code] bushu conversion mode"
 msgstr "[TUT-Code] 部首合成変換モード"
 
-#: ../scm/tutcode-key-custom.scm:77
+#: ../scm/tutcode-key-custom.scm:83
 msgid "[TUT-Code] begin conversion"
 msgstr "[TUT-Code] 変換開始"
 
-#: ../scm/tutcode-key-custom.scm:83
+#: ../scm/tutcode-key-custom.scm:89
 msgid "[TUT-Code] commit"
 msgstr "[TUT-Code] 確定"
 
-#: ../scm/tutcode-key-custom.scm:89
+#: ../scm/tutcode-key-custom.scm:95
 msgid "[TUT-Code] cancel"
 msgstr "[TUT-Code] キャンセル"
 
-#: ../scm/tutcode-key-custom.scm:95
+#: ../scm/tutcode-key-custom.scm:101
 msgid "[TUT-Code] next candidate"
 msgstr "[TUT-Code] 次候補"
 
-#: ../scm/tutcode-key-custom.scm:101
+#: ../scm/tutcode-key-custom.scm:107
 msgid "[TUT-Code] previous candidate"
 msgstr "[TUT-Code] 前候補"
 
-#: ../scm/tutcode-key-custom.scm:107
+#: ../scm/tutcode-key-custom.scm:113
 msgid "[TUT-Code] next page of candidate window"
 msgstr "[TUT-Code] 候補ウィンドウの次ページ"
 
-#: ../scm/tutcode-key-custom.scm:113
+#: ../scm/tutcode-key-custom.scm:119
 msgid "[TUT-Code] previous page of candidate window"
 msgstr "[TUT-Code] 候補ウィンドウの前ページ"
 
-#: ../scm/tutcode-key-custom.scm:119
+#: ../scm/tutcode-key-custom.scm:125
 msgid "[TUT-Code] backspace"
 msgstr "[TUT-Code] バックスペース"
 
-#: ../scm/tutcode-key-custom.scm:125
+#: ../scm/tutcode-key-custom.scm:131
 msgid "[TUT-Code] return"
 msgstr "[TUT-Code] リターン"
 
-#: ../scm/tutcode-key-custom.scm:131
+#: ../scm/tutcode-key-custom.scm:137
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr "[TUT-Code] vi協調モードでESCとして扱うキー"
 
@@ -4571,7 +4601,7 @@ msgstr "入力メソッド"
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/canna.c:173
+#: ../uim/canna.c:180
 #, c-format
 msgid "uim-canna: Failed to mount dictionary %s."
 msgstr "uim-canna: 辞書ファイル %s のマウントに失敗しました。"
@@ -4763,18 +4793,18 @@ msgstr "単語の消去に失敗しました。"
 msgid "Kanji string is too long."
 msgstr "漢字が長過ぎます。"
 
-#: ../uim/skk.c:987
+#: ../uim/skk.c:988
 msgid "uim-skk: error in expand_str"
 msgstr ""
 
-#: ../uim/skk.c:1002
+#: ../uim/skk.c:1003
 msgid "uim-skk: too long word"
 msgstr ""
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/skk.c:3603
+#: ../uim/skk.c:3610
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
@@ -4788,7 +4818,9 @@ msgstr "ユーザアプリケーションデータを保護するため、全機
 msgid ""
 "uim-wnn: \"%s\" is not exist. Please run uim-pref and set \"Wnn resource file"
 "\" (maybe file name is \"wnnenvrc\")."
-msgstr "uim-wnn: \"%s\"は存在しません。uim-prefを起動して、\"Wnn設定ファイル\"を設定してください(おそらくファイル名は\"wnnenvrc\"です)。"
+msgstr ""
+"uim-wnn: \"%s\"は存在しません。uim-prefを起動して、\"Wnn設定ファイル\"を設定"
+"してください(おそらくファイル名は\"wnnenvrc\"です)。"
 
 #~ msgid "Standard Hangul 2-beol keyboard"
 #~ msgstr "標準のハングル2ボル式"
