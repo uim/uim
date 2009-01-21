@@ -278,7 +278,7 @@
   (N_ "Input method switching")
   (N_ "long description will be here."))
 
-(define-custom 'enable-im-switch #f
+(define-custom 'enable-im-switch? #f
   '(global im-switching)
   '(boolean)
   (N_ "Enable IM switching by hotkey")
@@ -297,15 +297,15 @@
   (N_ "long description will be here."))
 
 ;; activity dependency
-(custom-add-hook 'switch-im-key?
+(custom-add-hook 'switch-im-key
 		 'custom-activity-hooks
 		 (lambda ()
-		   enable-im-switch))
+		   enable-im-switch?))
 
 (custom-add-hook 'switch-im-skip-direct-im?
 		 'custom-activity-hooks
 		 (lambda ()
-		   enable-im-switch))
+		   enable-im-switch?))
 
 ;; im-toggle 
 (define-custom-group 'im-toggle
