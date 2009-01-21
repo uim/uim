@@ -43,18 +43,16 @@
 ;;
 ;; canna emulating functions
 ;;
-(define wnn-buf #f) ;; XXX
-
 (define (wnn-move wc-ctx nth)
   (wnn-lib-top wc-ctx)
   (if (< 0 nth)
       (for-each (lambda (x) (wnn-lib-move wc-ctx #t 'forward)) (iota nth))))
 (define (wnn-lib-init server)
   (if wnn-use-remote-server?
-      (set! wnn-buf (wnn-lib-open server "uim" wnn-rcfile 0))
-      (set! wnn-buf (wnn-lib-open "" "uim" wnn-rcfile 0))))
-(define (wnn-lib-alloc-context)
-  (wnn-lib-create-buffer wnn-buf 0 0))
+      (wnn-lib-open server "uim" wnn-rcfile 0)
+      (wnn-lib-open "" "uim" wnn-rcfile 0)))
+(define (wnn-lib-alloc-context wc)
+  (wnn-lib-create-buffer (wnn-context-wnn-buf wc) 0 0))
 (define (wnn-lib-get-nth-candidate wc seg nth)
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
     (wnn-move wc-ctx seg)
@@ -62,6 +60,7 @@
     (wnn-lib-get-candidate wc-ctx nth)))
 (define (wnn-lib-release-context wc)
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
+    (wnn-lib-close (wnn-context-wnn-buf wc))
     (wnn-lib-destroy-buffer wc-ctx #t)))
 (define (wnn-lib-get-unconv-candidate wc seg-idx)
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
@@ -99,8 +98,6 @@
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
     (wnn-lib-clear wc-ctx)))
 
-
-(define wnn-init-lib-ok? #f)
 
 (define wnn-type-direct	   ja-type-direct)
 (define wnn-type-hiragana	   ja-type-hiragana)
@@ -328,6 +325,7 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'wnn-buf            #f)
     (list 'wc-ctx             #f) ;; wnn-internal-context
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
@@ -346,9 +344,9 @@
 (define (wnn-context-new id im)
   (let ((wc (wnn-context-new-internal id im))
 	(rkc (rk-context-new ja-rk-rule #t #f)))
-;    (wnn-context-set-wc-ctx! wc (if wnn-init-lib-ok?
-;				      (wnn-lib-alloc-context) ()))
-    (wnn-context-set-wc-ctx! wc (wnn-lib-alloc-context))
+    (if (not (wnn-context-wnn-buf wc))
+        (wnn-context-set-wnn-buf! wc (wnn-lib-init wnn-server-name)))
+    (wnn-context-set-wc-ctx! wc (wnn-lib-alloc-context wc))
     (wnn-context-set-widgets! wc wnn-widgets)
     (wnn-context-set-rkc! wc rkc)
     (wnn-context-set-preconv-ustr! wc (ustr-new '()))
@@ -448,10 +446,6 @@
     (wnn-make-raw-string (wnn-get-raw-str-seq wc) wide? upper?)))
 
 (define (wnn-init-handler id im arg)
-  (if (not wnn-init-lib-ok?)
-      (begin
-	(wnn-lib-init wnn-server-name)
-	(set! wnn-init-lib-ok? #t)))
   (wnn-context-new id im))
 
 (define (wnn-release-handler wc)
