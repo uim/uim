@@ -2456,26 +2456,24 @@ msgid "Enabled input methods"
 msgstr "使用可能にする入力方式"
 
 #: ../scm/im-custom.scm:278
-#, fuzzy
 msgid "Input method switching"
-msgstr "uim 入力方式切り換え"
+msgstr "入力方式の一時切り換え"
 
 #: ../scm/im-custom.scm:284
-#, fuzzy
 msgid "Enable IM switching by hotkey"
-msgstr "ホットキーによる入力方式の正副一時切り換えを有効にする"
+msgstr "ホットキーによる入力方式の一時切り換えを有効にする"
 
 #: ../scm/im-custom.scm:290
 msgid "IM switching key"
-msgstr ""
+msgstr "一時切り換えキー"
 
 #: ../scm/im-custom.scm:296
 msgid "Skip direct method for IM switching by hotkey"
-msgstr ""
+msgstr "直接入力方式を飛ばして切り換える"
 
 #: ../scm/im-custom.scm:312
 msgid "Input method toggle"
-msgstr "入力方式の一時切り換え"
+msgstr "入力方式の正副一時切り換え"
 
 #: ../scm/im-custom.scm:318
 msgid "Enable input method toggle by hot keys"
@@ -4349,9 +4347,8 @@ msgid "[TUT-Code] toggle hiragana/katakana mode"
 msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:65
-#, fuzzy
 msgid "[TUT-Code] toggle kigou mode"
-msgstr "[TUT-Code] ひらがな/カタカナ入力モードを反転"
+msgstr "[TUT-Code] 記号入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:71
 msgid "[TUT-Code] mazegaki conversion mode"
