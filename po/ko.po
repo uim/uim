@@ -671,14 +671,12 @@ msgid "Anthy (advanced)"
 msgstr ""
 
 #: ../scm/anthy-custom.scm:44 ../scm/anthy-utf8-custom.scm:51
-#, fuzzy
 msgid "Advanced settings for Anthy"
-msgstr "고급 설정"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:47 ../scm/anthy-utf8-custom.scm:54
-#, fuzzy
 msgid "Prediction"
-msgstr "편집영역 색상"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:48 ../scm/anthy-custom.scm:58
 #: ../scm/anthy-custom.scm:64 ../scm/anthy-custom.scm:79
@@ -892,9 +890,8 @@ msgstr ""
 #: ../scm/canna-custom.scm:127 ../scm/mana-custom.scm:123
 #: ../scm/sj3-custom.scm:127 ../scm/skk-custom.scm:179
 #: ../scm/wnn-custom.scm:127
-#, fuzzy
 msgid "Direct input mode"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:131 ../scm/anthy-utf8-custom.scm:138
 #: ../scm/canna-custom.scm:131 ../scm/mana-custom.scm:127
@@ -907,9 +904,8 @@ msgstr ""
 #: ../scm/canna-custom.scm:132 ../scm/mana-custom.scm:128
 #: ../scm/sj3-custom.scm:132 ../scm/skk-custom.scm:184
 #: ../scm/wnn-custom.scm:132
-#, fuzzy
 msgid "Hiragana input mode"
-msgstr "두번째 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:136 ../scm/anthy-utf8-custom.scm:143
 #: ../scm/canna-custom.scm:136 ../scm/mana-custom.scm:132
@@ -922,9 +918,8 @@ msgstr ""
 #: ../scm/canna-custom.scm:137 ../scm/mana-custom.scm:133
 #: ../scm/sj3-custom.scm:137 ../scm/skk-custom.scm:189
 #: ../scm/wnn-custom.scm:137
-#, fuzzy
 msgid "Katakana input mode"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:141 ../scm/anthy-utf8-custom.scm:148
 #: ../scm/canna-custom.scm:141 ../scm/mana-custom.scm:137
@@ -977,9 +972,8 @@ msgstr ""
 #: ../scm/canna-custom.scm:161 ../scm/mana-custom.scm:156
 #: ../scm/sj3-custom.scm:161 ../scm/skk-custom.scm:207
 #: ../scm/wnn-custom.scm:161
-#, fuzzy
 msgid "Romaji input mode"
-msgstr "입력기 전환"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:164 ../scm/anthy-utf8-custom.scm:171
 #: ../scm/canna-custom.scm:165 ../scm/mana-custom.scm:160
@@ -990,9 +984,8 @@ msgstr ""
 #: ../scm/anthy-custom.scm:165 ../scm/anthy-utf8-custom.scm:172
 #: ../scm/canna-custom.scm:166 ../scm/mana-custom.scm:161
 #: ../scm/sj3-custom.scm:166 ../scm/wnn-custom.scm:166
-#, fuzzy
 msgid "Kana input mode"
-msgstr "사용가능한 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:169 ../scm/anthy-utf8-custom.scm:176
 #: ../scm/canna-custom.scm:170 ../scm/mana-custom.scm:165
@@ -1015,9 +1008,8 @@ msgstr ""
 #: ../scm/sj3-custom.scm:180 ../scm/sj3-custom.scm:181
 #: ../scm/skk-custom.scm:221 ../scm/skk-custom.scm:222
 #: ../scm/wnn-custom.scm:180 ../scm/wnn-custom.scm:181
-#, fuzzy
 msgid "Input mode"
-msgstr "입력 패드"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:182 ../scm/anthy-custom.scm:183
 #: ../scm/anthy-utf8-custom.scm:189 ../scm/anthy-utf8-custom.scm:190
@@ -1026,9 +1018,8 @@ msgstr "입력 패드"
 #: ../scm/sj3-custom.scm:183 ../scm/sj3-custom.scm:184
 #: ../scm/skk-custom.scm:224 ../scm/skk-custom.scm:225
 #: ../scm/wnn-custom.scm:183 ../scm/wnn-custom.scm:184
-#, fuzzy
 msgid "Kana input method"
-msgstr "사용가능한 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:184 ../scm/anthy-utf8-custom.scm:191
 #: ../scm/canna-custom.scm:185 ../scm/mana-custom.scm:180
@@ -1041,43 +1032,37 @@ msgstr ""
 #: ../scm/canna-custom.scm:204 ../scm/mana-custom.scm:199
 #: ../scm/sj3-custom.scm:204 ../scm/skk-custom.scm:245
 #: ../scm/wnn-custom.scm:204
-#, fuzzy
 msgid "Default input mode"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:212 ../scm/anthy-utf8-custom.scm:219
 #: ../scm/canna-custom.scm:213 ../scm/mana-custom.scm:208
 #: ../scm/sj3-custom.scm:213 ../scm/skk-custom.scm:254
 #: ../scm/wnn-custom.scm:213
-#, fuzzy
 msgid "Input mode menu items"
-msgstr "입력기 이용 준비"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:254 ../scm/anthy-utf8-custom.scm:261
 #: ../scm/canna-custom.scm:255 ../scm/mana-custom.scm:250
 #: ../scm/sj3-custom.scm:255 ../scm/skk-custom.scm:285
 #: ../scm/wnn-custom.scm:255
-#, fuzzy
 msgid "Default kana input method"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:263 ../scm/anthy-utf8-custom.scm:270
 #: ../scm/canna-custom.scm:264 ../scm/mana-custom.scm:259
 #: ../scm/sj3-custom.scm:264 ../scm/skk-custom.scm:294
 #: ../scm/wnn-custom.scm:264
-#, fuzzy
 msgid "Kana input method menu items"
-msgstr "사용가능한 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:301 ../scm/anthy-utf8-custom.scm:308
-#, fuzzy
 msgid "Enable input prediction"
-msgstr "사용가능한 입력기"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:307 ../scm/anthy-utf8-custom.scm:314
-#, fuzzy
 msgid "Select prediction candidate by numeral keys"
-msgstr "숫자키로 후보를 선택"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:313 ../scm/anthy-utf8-custom.scm:320
 msgid "Show selected prediction candidate in preedit area"
@@ -1098,24 +1083,20 @@ msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr ""
 
 #: ../scm/anthy-key-custom.scm:36
-#, fuzzy
 msgid "Anthy key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:40
-#, fuzzy
 msgid "Anthy key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:44
-#, fuzzy
 msgid "Anthy key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:48
-#, fuzzy
 msgid "Anthy key bindings 4"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:54
 msgid "[Anthy] next segment"
@@ -1313,84 +1294,68 @@ msgid "[Anthy] on"
 msgstr ""
 
 #: ../scm/anthy-key-custom.scm:124
-#, fuzzy
 msgid "[Anthy] off"
-msgstr "[벼루] 영문모드로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:130
-#, fuzzy
 msgid "[Anthy] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:136
-#, fuzzy
 msgid "[Anthy] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:142
-#, fuzzy
 msgid "[Anthy] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:148
-#, fuzzy
 msgid "[Anthy] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:154
-#, fuzzy
 msgid "[Anthy] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:160
-#, fuzzy
 msgid "[Anthy] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:166
-#, fuzzy
 msgid "[Anthy] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:176
-#, fuzzy
 msgid "[Anthy] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:182
-#, fuzzy
 msgid "[Anthy] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:188
-#, fuzzy
 msgid "[Anthy] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:194
-#, fuzzy
 msgid "[Anthy] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:200
-#, fuzzy
 msgid "[Anthy] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:206
-#, fuzzy
 msgid "[Anthy] delete"
-msgstr "[벼루] 삭제"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:212
-#, fuzzy
 msgid "[Anthy] go left"
-msgstr "[벼루] 단어모드에서 왼쪽으로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:218
-#, fuzzy
 msgid "[Anthy] go right"
-msgstr "[벼루] 단어모드에서 오른쪽으로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:224
 msgid "[Anthy] ESC keys on vi-cooperative mode"
@@ -1425,14 +1390,12 @@ msgid "[Anthy] toggle kana/alphanumeric mode"
 msgstr ""
 
 #: ../scm/anthy-key-custom.scm:276
-#, fuzzy
 msgid "[Anthy] Next prediction candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:282
-#, fuzzy
 msgid "[Anthy] Previous prediction candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/anthy-utf8-custom.scm:38
 msgid "Anthy (UTF-8)"
@@ -1669,24 +1632,20 @@ msgid "Canna server name"
 msgstr ""
 
 #: ../scm/canna-key-custom.scm:36
-#, fuzzy
 msgid "Canna key bindings 1"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:40
-#, fuzzy
 msgid "Canna key bindings 2"
-msgstr "전체적인 키 설정 2"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:44
-#, fuzzy
 msgid "Canna key bindings 3"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:48
-#, fuzzy
 msgid "Canna key bindings 4"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:54
 msgid "[Canna] next segment"
@@ -1733,84 +1692,68 @@ msgid "[Canna] on"
 msgstr ""
 
 #: ../scm/canna-key-custom.scm:124
-#, fuzzy
 msgid "[Canna] off"
-msgstr "[전체] 끄기"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:130
-#, fuzzy
 msgid "[Canna] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:136
-#, fuzzy
 msgid "[Canna] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:142
-#, fuzzy
 msgid "[Canna] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:148
-#, fuzzy
 msgid "[Canna] next candidate"
-msgstr "[전체] 아래 후보"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:154
-#, fuzzy
 msgid "[Canna] previous candidate"
-msgstr "[전체] 위 후보"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:160
-#, fuzzy
 msgid "[Canna] next page of candidate window"
-msgstr "[전체] 후보창에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:166
-#, fuzzy
 msgid "[Canna] previous page of candidate window"
-msgstr "[전체] 후보창에서 위 페이지로"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:175
-#, fuzzy
 msgid "[Canna] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:181
-#, fuzzy
 msgid "[Canna] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:187
-#, fuzzy
 msgid "[Canna] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:193
-#, fuzzy
 msgid "[Canna] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:199
-#, fuzzy
 msgid "[Canna] backspace"
-msgstr "[전체] 백스페이스"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:205
-#, fuzzy
 msgid "[Canna] delete"
-msgstr "[전체] 삭제"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:211
-#, fuzzy
 msgid "[Canna] go left"
-msgstr "[전체] 왼쪽으로"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:217
-#, fuzzy
 msgid "[Canna] go right"
-msgstr "[전체] 오른쪽으로"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:223
 msgid "[Canna] ESC keys on vi-cooperative mode"
@@ -1853,9 +1796,8 @@ msgid "Main settings of this group"
 msgstr ""
 
 #: ../scm/custom.scm:752
-#, fuzzy
 msgid "Hidden settings"
-msgstr "고급 설정"
+msgstr ""
 
 #: ../scm/custom.scm:753
 msgid ""
@@ -1869,9 +1811,8 @@ msgstr ""
 
 #: ../scm/direct.scm:54 ../scm/generic.scm:72 ../scm/m17nlib.scm:63
 #: ../scm/scim.scm:63
-#, fuzzy
 msgid "Direct Input Mode"
-msgstr "입력기"
+msgstr ""
 
 #: ../scm/direct.scm:131 ../scm/look.scm:63
 msgid "Direct"
@@ -1912,9 +1853,8 @@ msgid "Danish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:62
-#, fuzzy
 msgid "Danish keyboard"
-msgstr "자판"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:65 ../scm/iso-639-1.scm:71
 msgid "Dutch"
@@ -1961,9 +1901,8 @@ msgid "French alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:98
-#, fuzzy
 msgid "French keyboard"
-msgstr "자판"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:101
 msgid "French AZERTY"
@@ -2182,19 +2121,16 @@ msgid "Turkish Latin-3 alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:262
-#, fuzzy
 msgid "Latin characters keyboard layout"
-msgstr "한글 자판 배열"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:280
-#, fuzzy
 msgid "ESC turns off composition mode (for vi users)"
-msgstr "ESC를 누르면 영문모드로 (vi 사용자용)"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:285
-#, fuzzy
 msgid "ELatin key bindings"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:291
 msgid "[ELatin] on"
@@ -2205,9 +2141,8 @@ msgid "[ELatin] off"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:303
-#, fuzzy
 msgid "[ELatin] backspace"
-msgstr "[전체] 백스페이스"
+msgstr ""
 
 #: ../scm/elatin.scm:115
 msgid "ELatin mode off"
@@ -2326,29 +2261,24 @@ msgid " Mode"
 msgstr " 모드"
 
 #: ../scm/hangul.scm:111
-#, fuzzy
 msgid "Hangul (2-beol)"
-msgstr "두벌식 (윈도우즈식)"
+msgstr ""
 
 #: ../scm/hangul.scm:112
-#, fuzzy
 msgid "2-beol style hangul input method"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/hangul.scm:120
-#, fuzzy
 msgid "Hangul (3-beol)"
-msgstr "세벌식 순아래"
+msgstr ""
 
 #: ../scm/hangul.scm:121
-#, fuzzy
 msgid "3-beol style hangul input method"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/hangul.scm:128
-#, fuzzy
 msgid "Hangul (Romaja)"
-msgstr "로마자"
+msgstr ""
 
 #: ../scm/hangul.scm:129
 msgid "Romaja input style hangul input method"
@@ -2419,14 +2349,12 @@ msgid "Enabled input methods"
 msgstr "사용가능한 입력기"
 
 #: ../scm/im-custom.scm:278
-#, fuzzy
 msgid "Input method switching"
-msgstr "uim 입력기 전환"
+msgstr ""
 
 #: ../scm/im-custom.scm:284
-#, fuzzy
 msgid "Enable IM switching by hotkey"
-msgstr "단축키로 입력기 토글"
+msgstr ""
 
 #: ../scm/im-custom.scm:290
 msgid "IM switching key"
@@ -2679,9 +2607,8 @@ msgid "Bislama"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:54
-#, fuzzy
 msgid "Breton"
-msgstr "버튼"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:55
 msgid "Bulgarian"
@@ -2696,9 +2623,8 @@ msgid "Byelorussian (Belarusian)"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:58
-#, fuzzy
 msgid "Byelorussian"
-msgstr "벼루"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:59
 msgid "Cambodian"
@@ -2855,9 +2781,8 @@ msgid "Inuktitut"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:100
-#, fuzzy
 msgid "Inupiak"
-msgstr "입력 패드"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:101
 msgid "Irish"
@@ -3241,14 +3166,12 @@ msgid "Look"
 msgstr ""
 
 #: ../scm/look-custom.scm:32 ../scm/look.scm:560
-#, fuzzy
 msgid "Tiny predictive input method"
-msgstr "두번째 입력기"
+msgstr ""
 
 #: ../scm/look-custom.scm:39
-#, fuzzy
 msgid "Look key bindings"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/look-custom.scm:46
 msgid "[Look] Use UNIX look dictionary file"
@@ -3259,9 +3182,8 @@ msgid "[Look] Personal dictionary file"
 msgstr ""
 
 #: ../scm/look-custom.scm:59
-#, fuzzy
 msgid "[Look] beginning character length of predicting"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/look-custom.scm:65
 msgid "[Look] Prepared words for prediction"
@@ -3280,33 +3202,28 @@ msgid "[Look] on"
 msgstr ""
 
 #: ../scm/look-custom.scm:89
-#, fuzzy
 msgid "[Look] off"
-msgstr "[벼루] 영문모드로"
+msgstr ""
 
 #: ../scm/look-custom.scm:95
 msgid "[Look] completion character"
 msgstr ""
 
 #: ../scm/look-custom.scm:101
-#, fuzzy
 msgid "[Look] next character"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/look-custom.scm:107
-#, fuzzy
 msgid "[Look] previous character"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/look-custom.scm:113
-#, fuzzy
 msgid "[Look] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/look-custom.scm:119
-#, fuzzy
 msgid "[Look] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/look-custom.scm:125
 msgid "[Look] save dictionary"
@@ -3329,9 +3246,8 @@ msgid "Look Direct Input Mode"
 msgstr ""
 
 #: ../scm/look.scm:78
-#, fuzzy
 msgid "Look Input Mode"
-msgstr "입력기"
+msgstr ""
 
 #: ../scm/mana-custom.scm:35
 msgid "Mana"
@@ -3342,29 +3258,24 @@ msgid "Mana (advanced)"
 msgstr ""
 
 #: ../scm/mana-custom.scm:44
-#, fuzzy
 msgid "Advanced settings for Mana"
-msgstr "고급 설정"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:36
-#, fuzzy
 msgid "Mana key bindings 1"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:40
-#, fuzzy
 msgid "Mana key bindings 2"
-msgstr "전체적인 키 설정 2"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:44
-#, fuzzy
 msgid "Mana key bindings 3"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:48
-#, fuzzy
 msgid "Mana key bindings 4"
-msgstr "전체적인 키 설정 1"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:54
 msgid "[Mana] next segment"
@@ -3411,84 +3322,68 @@ msgid "[Mana] on"
 msgstr ""
 
 #: ../scm/mana-key-custom.scm:124
-#, fuzzy
 msgid "[Mana] off"
-msgstr "[전체] 끄기"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:130
-#, fuzzy
 msgid "[Mana] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:136
-#, fuzzy
 msgid "[Mana] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:142
-#, fuzzy
 msgid "[Mana] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:148
-#, fuzzy
 msgid "[Mana] next candidate"
-msgstr "[전체] 아래 후보"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:154
-#, fuzzy
 msgid "[Mana] previous candidate"
-msgstr "[전체] 위 후보"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:160
-#, fuzzy
 msgid "[Mana] next page of candidate window"
-msgstr "[전체] 후보창에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:166
-#, fuzzy
 msgid "[Mana] previous page of candidate window"
-msgstr "[전체] 후보창에서 위 페이지로"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:176
-#, fuzzy
 msgid "[Mana] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:182
-#, fuzzy
 msgid "[Mana] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:188
-#, fuzzy
 msgid "[Mana] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:194
-#, fuzzy
 msgid "[Mana] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:200
-#, fuzzy
 msgid "[Mana] backspace"
-msgstr "[전체] 백스페이스"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:206
-#, fuzzy
 msgid "[Mana] delete"
-msgstr "[전체] 삭제"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:212
-#, fuzzy
 msgid "[Mana] go left"
-msgstr "[전체] 왼쪽으로"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:218
-#, fuzzy
 msgid "[Mana] go right"
-msgstr "[전체] 오른쪽으로"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:224
 msgid "[Mana] ESC keys on vi-cooperative mode"
@@ -3527,28 +3422,24 @@ msgid "PRIME"
 msgstr ""
 
 #: ../scm/prime-custom.scm:35
-#, fuzzy
 msgid "Japanese predictive input method"
-msgstr "두번째 입력기"
+msgstr ""
 
 #: ../scm/prime-custom.scm:42
 msgid "PRIME (advanced)"
 msgstr ""
 
 #: ../scm/prime-custom.scm:43
-#, fuzzy
 msgid "Advanced settings for PRIME"
-msgstr "고급 설정"
+msgstr ""
 
 #: ../scm/prime-custom.scm:46
-#, fuzzy
 msgid "Language choice"
-msgstr "언어"
+msgstr ""
 
 #: ../scm/prime-custom.scm:47
-#, fuzzy
 msgid "Language settings"
-msgstr "고급 설정"
+msgstr ""
 
 #: ../scm/prime-custom.scm:51
 msgid "Japanese specific settings"
@@ -3559,19 +3450,16 @@ msgid "English specific settings"
 msgstr ""
 
 #: ../scm/prime-custom.scm:63
-#, fuzzy
 msgid "Default language"
-msgstr "디폴트 입력기"
+msgstr ""
 
 #: ../scm/prime-custom.scm:69
-#, fuzzy
 msgid "Language toggle key"
-msgstr "입력기 토글키"
+msgstr ""
 
 #: ../scm/prime-custom.scm:75
-#, fuzzy
 msgid "Enable auto register mode"
-msgstr "사용가능한 입력기"
+msgstr ""
 
 #: ../scm/prime-custom.scm:81
 msgid "Wide width (Zenkaku)"
@@ -3594,14 +3482,12 @@ msgid "Use UNIX domain socket to communicate with PRIME"
 msgstr ""
 
 #: ../scm/prime-custom.scm:119
-#, fuzzy
 msgid "Always showing candidate window"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/prime-custom.scm:126
-#, fuzzy
 msgid "Show usage examples of candidate words"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/prime-custom.scm:133
 msgid "Show candidate annotations"
@@ -3612,9 +3498,8 @@ msgid "Show candidate forms"
 msgstr ""
 
 #: ../scm/prime-custom.scm:166
-#, fuzzy
 msgid "Enable pseudo mode cursor"
-msgstr "사용가능한 입력기"
+msgstr ""
 
 #: ../scm/prime-custom.scm:187
 msgid "PRIME off"
@@ -3633,19 +3518,16 @@ msgid "Application specific input mode"
 msgstr ""
 
 #: ../scm/prime-key-custom.scm:64
-#, fuzzy
 msgid "PRIME key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:68
-#, fuzzy
 msgid "PRIME key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:72
-#, fuzzy
 msgid "PRIME key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:79
 msgid "[PRIME] prime-register-key"
@@ -3684,69 +3566,56 @@ msgid "[PRIME] fullwidth alphanumeric mode"
 msgstr ""
 
 #: ../scm/prime-key-custom.scm:136
-#, fuzzy
 msgid "[PRIME] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:142
-#, fuzzy
 msgid "[PRIME] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:148
-#, fuzzy
 msgid "[PRIME] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:154
-#, fuzzy
 msgid "[PRIME] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:160
-#, fuzzy
 msgid "[PRIME] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:166
-#, fuzzy
 msgid "[PRIME] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:172
-#, fuzzy
 msgid "[PRIME] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:181
-#, fuzzy
 msgid "[PRIME] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:187
-#, fuzzy
 msgid "[PRIME] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:193
-#, fuzzy
 msgid "[PRIME] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:199
-#, fuzzy
 msgid "[PRIME] delete"
-msgstr "[벼루] 삭제"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:205
-#, fuzzy
 msgid "[PRIME] go left"
-msgstr "[벼루] 단어모드에서 왼쪽으로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:211
-#, fuzzy
 msgid "[PRIME] go right"
-msgstr "[벼루] 단어모드에서 오른쪽으로"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:217
 msgid "[PRIME] shrink segment"
@@ -3777,9 +3646,8 @@ msgid "Pinyin (Unicode)"
 msgstr ""
 
 #: ../scm/pyload.scm:56
-#, fuzzy
 msgid "Pinyin input method (Unicode version)"
-msgstr "uim 입력기 전환"
+msgstr ""
 
 #: ../scm/pyload.scm:68
 msgid "Pinyin (Traditional)"
@@ -3818,24 +3686,20 @@ msgid "SJ3 user name"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:35
-#, fuzzy
 msgid "SJ3 key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:39
-#, fuzzy
 msgid "SJ3 key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:43
-#, fuzzy
 msgid "SJ3 key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:47
-#, fuzzy
 msgid "SJ3 key bindings 4"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:53
 msgid "[SJ3] next segment"
@@ -3886,79 +3750,64 @@ msgid "[SJ3] off"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:129
-#, fuzzy
 msgid "[SJ3] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:135
-#, fuzzy
 msgid "[SJ3] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:141
-#, fuzzy
 msgid "[SJ3] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:147
-#, fuzzy
 msgid "[SJ3] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:153
-#, fuzzy
 msgid "[SJ3] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:159
-#, fuzzy
 msgid "[SJ3] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:165
-#, fuzzy
 msgid "[SJ3] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:174
-#, fuzzy
 msgid "[SJ3] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:180
-#, fuzzy
 msgid "[SJ3] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:186
-#, fuzzy
 msgid "[SJ3] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:192
-#, fuzzy
 msgid "[SJ3] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:198
-#, fuzzy
 msgid "[SJ3] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:204
-#, fuzzy
 msgid "[SJ3] delete"
-msgstr "[벼루] 삭제"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:210
-#, fuzzy
 msgid "[SJ3] go left"
-msgstr "[벼루] 단어모드에서 왼쪽으로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:216
-#, fuzzy
 msgid "[SJ3] go right"
-msgstr "[벼루] 단어모드에서 오른쪽으로"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:222
 msgid "[SJ3] ESC keys on vi-cooperative mode"
@@ -4014,9 +3863,8 @@ msgid "uim version of SKK input method"
 msgstr ""
 
 #: ../scm/skk-custom.scm:43
-#, fuzzy
 msgid "SKK dictionaries"
-msgstr "사전"
+msgstr ""
 
 #: ../scm/skk-custom.scm:44
 msgid "Dictionary settings for SKK"
@@ -4027,42 +3875,36 @@ msgid "SKK (advanced)"
 msgstr ""
 
 #: ../scm/skk-custom.scm:48
-#, fuzzy
 msgid "Advanced settings for SKK"
-msgstr "고급 설정"
+msgstr ""
 
 #: ../scm/skk-custom.scm:52
 msgid "SKK server"
 msgstr ""
 
 #: ../scm/skk-custom.scm:57
-#, fuzzy
 msgid "Dictionary files"
-msgstr "사전"
+msgstr ""
 
 #: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:102
-#, fuzzy
 msgid "Commit candidate by heading label keys"
-msgstr "숫자키로 후보를 선택"
+msgstr ""
 
 #: ../scm/skk-custom.scm:81
 msgid "ddskk-like"
 msgstr ""
 
 #: ../scm/skk-custom.scm:81 ../scm/skk-custom.scm:422
-#, fuzzy
 msgid "Similar to ddskk"
-msgstr "ATOK와 비슷하게"
+msgstr ""
 
 #: ../scm/skk-custom.scm:82
-#, fuzzy
 msgid "Candidate selection style"
-msgstr "한자메뉴창의 크기"
+msgstr ""
 
 #: ../scm/skk-custom.scm:88
-#, fuzzy
 msgid "Set candidate window behavior manually"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/skk-custom.scm:337
 msgid "Use skkserv instead of SKK-JISYO"
@@ -4105,14 +3947,12 @@ msgid "Address family of skkserv"
 msgstr ""
 
 #: ../scm/skk-custom.scm:393
-#, fuzzy
 msgid "System dictionary file"
-msgstr "일본어 사전 도구"
+msgstr ""
 
 #: ../scm/skk-custom.scm:400
-#, fuzzy
 msgid "Personal dictionary file"
-msgstr "일본어 사전 도구"
+msgstr ""
 
 #: ../scm/skk-custom.scm:407
 msgid "Personal dictionary file (dedicated to uim)"
@@ -4131,9 +3971,8 @@ msgid "Use recursive learning"
 msgstr ""
 
 #: ../scm/skk-custom.scm:436
-#, fuzzy
 msgid "Use numeric conversion"
-msgstr "[벼루] 메뉴에서 빠져나오기"
+msgstr ""
 
 #: ../scm/skk-custom.scm:442
 msgid "Enable auto conversion with punctuation marks"
@@ -4168,19 +4007,16 @@ msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:64
-#, fuzzy
 msgid "SKK key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:68
-#, fuzzy
 msgid "SKK key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:72
-#, fuzzy
 msgid "SKK key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:77
 msgid "Completion"
@@ -4191,9 +4027,8 @@ msgid "Dynamic completion"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:85
-#, fuzzy
 msgid "Latin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:92
 msgid "[SKK] on"
@@ -4220,29 +4055,24 @@ msgid "[SKK] toggle hiragana/katakana mode"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:128
-#, fuzzy
 msgid "[SKK] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:134
-#, fuzzy
 msgid "[SKK] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:140
-#, fuzzy
 msgid "[SKK] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:150
-#, fuzzy
 msgid "[SKK] return"
-msgstr "[전체] 리턴"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:156
-#, fuzzy
 msgid "[SKK] begin latin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:162
 msgid "[SKK] commit as fullwidth alphanumeric"
@@ -4253,28 +4083,24 @@ msgid "[SKK] commit as opposite case in latin conversion"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:174
-#, fuzzy
 msgid "[SKK] begin completion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:180
-#, fuzzy
 msgid "[SKK] next completion candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:186
-#, fuzzy
 msgid "[SKK] previous completion candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:192
 msgid "[SKK] new completion using current completion"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:198
-#, fuzzy
 msgid "[SKK] begin conversion with completion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:204
 msgid "[SKK] commit the first candidate with completion"
@@ -4301,48 +4127,40 @@ msgid "[SKK] purge the entry from dictionary"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:246
-#, fuzzy
 msgid "[SKK] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:252
-#, fuzzy
 msgid "[SKK] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:258
-#, fuzzy
 msgid "[SKK] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:264
-#, fuzzy
 msgid "[SKK] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:270
-#, fuzzy
 msgid "[SKK] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:276
-#, fuzzy
 msgid "[SKK] go left"
-msgstr "[벼루] 단어모드에서 왼쪽으로"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:282
-#, fuzzy
 msgid "[SKK] go right"
-msgstr "[벼루] 단어모드에서 오른쪽으로"
+msgstr ""
 
 #: ../scm/tcode.scm:1645
 msgid "T-Code"
 msgstr ""
 
 #: ../scm/tcode.scm:1646 ../scm/trycode.scm:1648 ../scm/tutcode.scm:1075
-#, fuzzy
 msgid "A kanji direct input method"
-msgstr "두번째 입력기"
+msgstr ""
 
 #: ../scm/trycode.scm:1647
 msgid "Try-Code"
@@ -4365,9 +4183,8 @@ msgid "Dictionary settings for TUT-Code"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:54
-#, fuzzy
 msgid "Mazegaki dictionary file"
-msgstr "일본어 사전 도구"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:61
 msgid "Personal mazegaki dictionary file"
@@ -4392,14 +4209,12 @@ msgid "Use Dvorak keyboard"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:37
-#, fuzzy
 msgid "TUT-Code key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:41
-#, fuzzy
 msgid "TUT-Code key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:47
 msgid "[TUT-Code] on"
@@ -4426,49 +4241,40 @@ msgid "[TUT-Code] bushu conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:83
-#, fuzzy
 msgid "[TUT-Code] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:89
-#, fuzzy
 msgid "[TUT-Code] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:95
-#, fuzzy
 msgid "[TUT-Code] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:101
-#, fuzzy
 msgid "[TUT-Code] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:107
-#, fuzzy
 msgid "[TUT-Code] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:113
-#, fuzzy
 msgid "[TUT-Code] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:119
-#, fuzzy
 msgid "[TUT-Code] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:125
-#, fuzzy
 msgid "[TUT-Code] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:131
-#, fuzzy
 msgid "[TUT-Code] return"
-msgstr "[전체] 리턴"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:137
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
@@ -4507,24 +4313,20 @@ msgid "Wnn resource file"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:35
-#, fuzzy
 msgid "Wnn key bindings 1"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:39
-#, fuzzy
 msgid "Wnn key bindings 2"
-msgstr "벼루 키 설정 2"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:43
-#, fuzzy
 msgid "Wnn key bindings 3"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:47
-#, fuzzy
 msgid "Wnn key bindings 4"
-msgstr "벼루 키 설정 1"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:53
 msgid "[Wnn] next segment"
@@ -4575,79 +4377,64 @@ msgid "[Wnn] off"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:129
-#, fuzzy
 msgid "[Wnn] begin conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:135
-#, fuzzy
 msgid "[Wnn] commit"
-msgstr "[전체] 확정"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:141
-#, fuzzy
 msgid "[Wnn] cancel"
-msgstr "[전체] 취소"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:147
-#, fuzzy
 msgid "[Wnn] next candidate"
-msgstr "[벼루] 메뉴에서 아래로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:153
-#, fuzzy
 msgid "[Wnn] previous candidate"
-msgstr "[벼루] 메뉴에서 위로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:159
-#, fuzzy
 msgid "[Wnn] next page of candidate window"
-msgstr "[벼루] 메뉴에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:165
-#, fuzzy
 msgid "[Wnn] previous page of candidate window"
-msgstr "[벼루] 메뉴에서 위 페이지로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:174
-#, fuzzy
 msgid "[Wnn] beginning of preedit"
-msgstr "[전체] 편집영역의 처음으로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:180
-#, fuzzy
 msgid "[Wnn] end of preedit"
-msgstr "[전체] 편집영역의 끝으로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:186
-#, fuzzy
 msgid "[Wnn] erase after cursor"
-msgstr "[전체] 커서 다음을 삭제"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:192
-#, fuzzy
 msgid "[Wnn] erase before cursor"
-msgstr "[전체] 커서 이전을 삭제"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:198
-#, fuzzy
 msgid "[Wnn] backspace"
-msgstr "[벼루] 백스페이스"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:204
-#, fuzzy
 msgid "[Wnn] delete"
-msgstr "[벼루] 삭제"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:210
-#, fuzzy
 msgid "[Wnn] go left"
-msgstr "[벼루] 단어모드에서 왼쪽으로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:216
-#, fuzzy
 msgid "[Wnn] go right"
-msgstr "[벼루] 단어모드에서 오른쪽으로"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:222
 msgid "[Wnn] ESC keys on vi-cooperative mode"
