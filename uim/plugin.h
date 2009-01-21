@@ -3,7 +3,7 @@
 
   plugin.h:
 
-  Copyright (c) 2004-2008 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2004-2009 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 

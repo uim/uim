@@ -218,14 +218,14 @@ msgstr ""
 #: ../helper/dict-word-list-win-gtk.c:584
 msgid ""
 "Copyright (C) 2003-2004 Masahito Omote\n"
-"Copyright (C) 2004-2008 uim Project\n"
+"Copyright (C) 2004-2009 uim Project\n"
 "All rights reserved."
 msgstr ""
 
 #: ../helper/dict-word-list-win-gtk.c:608
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
-"Copyright 2004-2008 uim Project http://code.google.com/p/uim/\n"
+"Copyright 2004-2009 uim Project http://code.google.com/p/uim/\n"
 "All rights reserved."
 msgstr ""
 
@@ -3109,7 +3109,7 @@ msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 
 #.
-#. Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
+#. Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
 #.
 #. All rights reserved.
 #.

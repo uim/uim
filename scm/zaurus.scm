@@ -1,6 +1,6 @@
 ;; zaurus.scm: platform-specific support for Sharp Zaurus PDA
 ;;;
-;;; Copyright (c) 2003-2008 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
