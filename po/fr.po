@@ -664,9 +664,8 @@ msgid "Advanced settings for Anthy"
 msgstr "Paramètres avancés pour Anthy"
 
 #: ../scm/anthy-custom.scm:47 ../scm/anthy-utf8-custom.scm:54
-#, fuzzy
 msgid "Prediction"
-msgstr "Breton"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:48 ../scm/anthy-custom.scm:58
 #: ../scm/anthy-custom.scm:64 ../scm/anthy-custom.scm:79
@@ -844,9 +843,8 @@ msgstr ""
 #: ../scm/canna-custom.scm:78 ../scm/generic-custom.scm:42
 #: ../scm/mana-custom.scm:74 ../scm/sj3-custom.scm:78 ../scm/skk-custom.scm:68
 #: ../scm/tutcode-custom.scm:96 ../scm/wnn-custom.scm:78
-#, fuzzy
 msgid "Use candidate window"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:84 ../scm/anthy-utf8-custom.scm:91
 #: ../scm/canna-custom.scm:84 ../scm/generic-custom.scm:48
@@ -874,17 +872,15 @@ msgstr ""
 #: ../scm/canna-custom.scm:126 ../scm/mana-custom.scm:122
 #: ../scm/prime-custom.scm:186 ../scm/sj3-custom.scm:126
 #: ../scm/skk-custom.scm:178 ../scm/wnn-custom.scm:126
-#, fuzzy
 msgid "Direct input"
-msgstr "Direct"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:127 ../scm/anthy-utf8-custom.scm:134
 #: ../scm/canna-custom.scm:127 ../scm/mana-custom.scm:123
 #: ../scm/sj3-custom.scm:127 ../scm/skk-custom.scm:179
 #: ../scm/wnn-custom.scm:127
-#, fuzzy
 msgid "Direct input mode"
-msgstr "Méthode d'entrée par défaut"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:131 ../scm/anthy-utf8-custom.scm:138
 #: ../scm/canna-custom.scm:131 ../scm/mana-custom.scm:127
@@ -897,25 +893,22 @@ msgstr ""
 #: ../scm/canna-custom.scm:132 ../scm/mana-custom.scm:128
 #: ../scm/sj3-custom.scm:132 ../scm/skk-custom.scm:184
 #: ../scm/wnn-custom.scm:132
-#, fuzzy
 msgid "Hiragana input mode"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:136 ../scm/anthy-utf8-custom.scm:143
 #: ../scm/canna-custom.scm:136 ../scm/mana-custom.scm:132
 #: ../scm/sj3-custom.scm:136 ../scm/skk-custom.scm:188
 #: ../scm/wnn-custom.scm:136
-#, fuzzy
 msgid "Katakana"
-msgstr "Kana"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:137 ../scm/anthy-utf8-custom.scm:144
 #: ../scm/canna-custom.scm:137 ../scm/mana-custom.scm:133
 #: ../scm/sj3-custom.scm:137 ../scm/skk-custom.scm:189
 #: ../scm/wnn-custom.scm:137
-#, fuzzy
 msgid "Katakana input mode"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:141 ../scm/anthy-utf8-custom.scm:148
 #: ../scm/canna-custom.scm:141 ../scm/mana-custom.scm:137
@@ -928,9 +921,8 @@ msgstr ""
 #: ../scm/canna-custom.scm:142 ../scm/mana-custom.scm:138
 #: ../scm/sj3-custom.scm:142 ../scm/skk-custom.scm:194
 #: ../scm/wnn-custom.scm:142
-#, fuzzy
 msgid "Halfwidth Katakana input mode"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:146 ../scm/anthy-utf8-custom.scm:153
 #: ../scm/canna-custom.scm:146 ../scm/mana-custom.scm:142
@@ -962,17 +954,15 @@ msgstr ""
 #: ../scm/canna-custom.scm:160 ../scm/mana-custom.scm:155
 #: ../scm/sj3-custom.scm:160 ../scm/skk-custom.scm:206
 #: ../scm/wnn-custom.scm:160
-#, fuzzy
 msgid "Romaji"
-msgstr "Roumain"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:160 ../scm/anthy-utf8-custom.scm:167
 #: ../scm/canna-custom.scm:161 ../scm/mana-custom.scm:156
 #: ../scm/sj3-custom.scm:161 ../scm/skk-custom.scm:207
 #: ../scm/wnn-custom.scm:161
-#, fuzzy
 msgid "Romaji input mode"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:164 ../scm/anthy-utf8-custom.scm:171
 #: ../scm/canna-custom.scm:165 ../scm/mana-custom.scm:160
@@ -983,9 +973,8 @@ msgstr "Kana"
 #: ../scm/anthy-custom.scm:165 ../scm/anthy-utf8-custom.scm:172
 #: ../scm/canna-custom.scm:166 ../scm/mana-custom.scm:161
 #: ../scm/sj3-custom.scm:166 ../scm/wnn-custom.scm:166
-#, fuzzy
 msgid "Kana input mode"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:169 ../scm/anthy-utf8-custom.scm:176
 #: ../scm/canna-custom.scm:170 ../scm/mana-custom.scm:165
@@ -1008,9 +997,8 @@ msgstr ""
 #: ../scm/sj3-custom.scm:180 ../scm/sj3-custom.scm:181
 #: ../scm/skk-custom.scm:221 ../scm/skk-custom.scm:222
 #: ../scm/wnn-custom.scm:180 ../scm/wnn-custom.scm:181
-#, fuzzy
 msgid "Input mode"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:182 ../scm/anthy-custom.scm:183
 #: ../scm/anthy-utf8-custom.scm:189 ../scm/anthy-utf8-custom.scm:190
@@ -1033,17 +1021,15 @@ msgstr ""
 #: ../scm/canna-custom.scm:204 ../scm/mana-custom.scm:199
 #: ../scm/sj3-custom.scm:204 ../scm/skk-custom.scm:245
 #: ../scm/wnn-custom.scm:204
-#, fuzzy
 msgid "Default input mode"
-msgstr "Méthode d'entrée par défaut"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:212 ../scm/anthy-utf8-custom.scm:219
 #: ../scm/canna-custom.scm:213 ../scm/mana-custom.scm:208
 #: ../scm/sj3-custom.scm:213 ../scm/skk-custom.scm:254
 #: ../scm/wnn-custom.scm:213
-#, fuzzy
 msgid "Input mode menu items"
-msgstr "Entrées de menu de la méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:254 ../scm/anthy-utf8-custom.scm:261
 #: ../scm/canna-custom.scm:255 ../scm/mana-custom.scm:250
@@ -1060,9 +1046,8 @@ msgid "Kana input method menu items"
 msgstr "Entrées de menu de la méthode d'entrée Kana"
 
 #: ../scm/anthy-custom.scm:301 ../scm/anthy-utf8-custom.scm:308
-#, fuzzy
 msgid "Enable input prediction"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/anthy-custom.scm:307 ../scm/anthy-utf8-custom.scm:314
 msgid "Select prediction candidate by numeral keys"
@@ -1310,9 +1295,8 @@ msgid "[Anthy] commit"
 msgstr ""
 
 #: ../scm/anthy-key-custom.scm:142
-#, fuzzy
 msgid "[Anthy] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:148
 msgid "[Anthy] next candidate"
@@ -1347,14 +1331,12 @@ msgid "[Anthy] erase before cursor"
 msgstr ""
 
 #: ../scm/anthy-key-custom.scm:200
-#, fuzzy
 msgid "[Anthy] backspace"
-msgstr "Anthy (avancé)"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:206
-#, fuzzy
 msgid "[Anthy] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/anthy-key-custom.scm:212
 msgid "[Anthy] go left"
@@ -1487,9 +1469,8 @@ msgstr ""
 
 #. romaja can not be orderless.
 #: ../scm/byeoru-custom.scm:72
-#, fuzzy
 msgid "Hangul romaja"
-msgstr "Hangul (Romaja)"
+msgstr ""
 
 #: ../scm/byeoru-custom.scm:73
 msgid "Hangul romaja in the style of HWP 2004"
@@ -1540,9 +1521,8 @@ msgid "Shifted roman vowel inputs an isolated vowel"
 msgstr ""
 
 #: ../scm/byeoru-custom.scm:155
-#, fuzzy
 msgid "Candidate window size"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/byeoru-custom.scm:161
 msgid "Symbol cache size"
@@ -1601,9 +1581,8 @@ msgid "[Byeoru] backspace"
 msgstr ""
 
 #: ../scm/byeoru-key-custom.scm:107
-#, fuzzy
 msgid "[Byeoru] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/byeoru-key-custom.scm:113
 msgid "[Byeoru] go left"
@@ -1622,9 +1601,8 @@ msgid "[Byeoru] end of word"
 msgstr ""
 
 #: ../scm/canna-custom.scm:35
-#, fuzzy
 msgid "Canna"
-msgstr "Kana"
+msgstr ""
 
 #: ../scm/canna-custom.scm:43
 msgid "Canna server"
@@ -1715,9 +1693,8 @@ msgid "[Canna] commit"
 msgstr ""
 
 #: ../scm/canna-key-custom.scm:142
-#, fuzzy
 msgid "[Canna] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:148
 msgid "[Canna] next candidate"
@@ -1728,9 +1705,8 @@ msgid "[Canna] previous candidate"
 msgstr ""
 
 #: ../scm/canna-key-custom.scm:160
-#, fuzzy
 msgid "[Canna] next page of candidate window"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:166
 msgid "[Canna] previous page of candidate window"
@@ -1753,14 +1729,12 @@ msgid "[Canna] erase before cursor"
 msgstr ""
 
 #: ../scm/canna-key-custom.scm:199
-#, fuzzy
 msgid "[Canna] backspace"
-msgstr "Canna (avancé)"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:205
-#, fuzzy
 msgid "[Canna] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/canna-key-custom.scm:211
 msgid "[Canna] go left"
@@ -1811,9 +1785,8 @@ msgid "Main settings of this group"
 msgstr ""
 
 #: ../scm/custom.scm:752
-#, fuzzy
 msgid "Hidden settings"
-msgstr "Paramètres avancés"
+msgstr ""
 
 #: ../scm/custom.scm:753
 msgid ""
@@ -1822,9 +1795,8 @@ msgid ""
 msgstr ""
 
 #: ../scm/direct.scm:53
-#, fuzzy
 msgid "direct"
-msgstr "Direct"
+msgstr ""
 
 #: ../scm/direct.scm:54 ../scm/generic.scm:72 ../scm/m17nlib.scm:63
 #: ../scm/scim.scm:63
@@ -1840,14 +1812,12 @@ msgid "Pass through all user input without any modification"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:34
-#, fuzzy
 msgid "ELatin"
-msgstr "Latin"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:35
-#, fuzzy
 msgid "Emacs-style Latin characters input"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:36
 msgid ""
@@ -1856,14 +1826,12 @@ msgid ""
 msgstr ""
 
 #: ../scm/elatin-custom.scm:50
-#, fuzzy
 msgid "British"
-msgstr "Irlandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:53
-#, fuzzy
 msgid "Catalan prefix"
-msgstr "Catalan"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:56
 msgid "Danish postfix"
@@ -1882,42 +1850,36 @@ msgid "Dutch"
 msgstr "Hollandais"
 
 #: ../scm/elatin-custom.scm:68
-#, fuzzy
 msgid "English Dvorak"
-msgstr "Anglais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:71
-#, fuzzy
 msgid "Esperanto prefix"
-msgstr "Esperanto"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:74
-#, fuzzy
 msgid "Esperanto postfix"
-msgstr "Esperanto"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:77
 msgid "Esperanto alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:80
-#, fuzzy
 msgid "Finnish postfix"
-msgstr "Finlandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:83
 msgid "Finnish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:86
-#, fuzzy
 msgid "Finnish keyboard"
-msgstr "Finlandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:89
-#, fuzzy
 msgid "French prefix"
-msgstr "Français"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:92
 msgid "French postfix"
@@ -1932,14 +1894,12 @@ msgid "French keyboard"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:101
-#, fuzzy
 msgid "French AZERTY"
-msgstr "Français"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:104
-#, fuzzy
 msgid "German prefix"
-msgstr "Allemand"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:107
 msgid "German postfix"
@@ -1954,36 +1914,32 @@ msgid "German"
 msgstr "Allemand"
 
 #: ../scm/elatin-custom.scm:116
-#, fuzzy
 msgid "Icelandic postfix"
-msgstr "Islandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:119
 msgid "Icelandic alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:122
-#, fuzzy
 msgid "Icelandic keyboard"
-msgstr "Islandais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:125
 msgid "Irish prefix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:128
-#, fuzzy
 msgid "Italian postfix"
-msgstr "Italien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:131
 msgid "Italian alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:134
-#, fuzzy
 msgid "Italian keyboard"
-msgstr "Italien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:137
 msgid "Latin prefix"
@@ -2062,43 +2018,36 @@ msgid "Latvian keyboard"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:194
-#, fuzzy
 msgid "Lithuanian keyboard"
-msgstr "Lituanien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:197
-#, fuzzy
 msgid "Lithuanian numeric"
-msgstr "Lituanien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:200
-#, fuzzy
 msgid "Norwegian postfix"
-msgstr "Norvégien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:203
 msgid "Norwegian alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:206
-#, fuzzy
 msgid "Norwegian keyboard"
-msgstr "Norvégien"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:209
-#, fuzzy
 msgid "Polish slash"
-msgstr "Polonais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:212
-#, fuzzy
 msgid "Portuguese prefix"
-msgstr "Portugais"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:215
-#, fuzzy
 msgid "Romanian prefix"
-msgstr "Roumain"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:218
 msgid "Romanian alternative prefix"
@@ -2117,42 +2066,36 @@ msgid "Slovenian"
 msgstr "Slovène"
 
 #: ../scm/elatin-custom.scm:230
-#, fuzzy
 msgid "Spanish prefix"
-msgstr "Espagnol"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:233
-#, fuzzy
 msgid "Spanish postfix"
-msgstr "Espagnol"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:236
 msgid "Spanish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:239
-#, fuzzy
 msgid "Spanish keyboard"
-msgstr "Espagnol"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:242
-#, fuzzy
 msgid "Swedish postfix"
-msgstr "Suédois"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:245
 msgid "Swedish alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:248
-#, fuzzy
 msgid "Swedish keyboard"
-msgstr "Suédois"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:251
-#, fuzzy
 msgid "Turkish postfix"
-msgstr "Turque"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:254
 msgid "Turkish alternative postfix"
@@ -2167,9 +2110,8 @@ msgid "Turkish Latin-3 alternative postfix"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:262
-#, fuzzy
 msgid "Latin characters keyboard layout"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:280
 msgid "ESC turns off composition mode (for vi users)"
@@ -2180,14 +2122,12 @@ msgid "ELatin key bindings"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:291
-#, fuzzy
 msgid "[ELatin] on"
-msgstr "Latin"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:297
-#, fuzzy
 msgid "[ELatin] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:303
 msgid "[ELatin] backspace"
@@ -2218,19 +2158,16 @@ msgid "Show candidate window without explicit conversion action"
 msgstr ""
 
 #: ../scm/generic-key-custom.scm:36
-#, fuzzy
 msgid "Global key bindings 1"
-msgstr "Paramètres globaux"
+msgstr ""
 
 #: ../scm/generic-key-custom.scm:40
-#, fuzzy
 msgid "Global key bindings 2"
-msgstr "Paramètres globaux"
+msgstr ""
 
 #: ../scm/generic-key-custom.scm:47
-#, fuzzy
 msgid "[Global] on"
-msgstr "Paramètres globaux"
+msgstr ""
 
 #: ../scm/generic-key-custom.scm:53
 msgid "[Global] off"
@@ -2245,9 +2182,8 @@ msgid "[Global] commit"
 msgstr ""
 
 #: ../scm/generic-key-custom.scm:71
-#, fuzzy
 msgid "[Global] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/generic-key-custom.scm:77
 msgid "[Global] next candidate"
@@ -2286,9 +2222,8 @@ msgid "[Global] backspace"
 msgstr ""
 
 #: ../scm/generic-key-custom.scm:135
-#, fuzzy
 msgid "[Global] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/generic-key-custom.scm:141
 msgid "[Global] go left"
@@ -2299,9 +2234,8 @@ msgid "[Global] go right"
 msgstr ""
 
 #: ../scm/generic-key-custom.scm:153
-#, fuzzy
 msgid "[Global] return"
-msgstr "Paramètres globaux"
+msgstr ""
 
 #: ../scm/generic.scm:71 ../scm/m17nlib.scm:62 ../scm/scim.scm:62
 msgid "off"
@@ -2316,33 +2250,28 @@ msgid " Mode"
 msgstr ""
 
 #: ../scm/hangul.scm:111
-#, fuzzy
 msgid "Hangul (2-beol)"
-msgstr "Hangul (Romaja)"
+msgstr ""
 
 #: ../scm/hangul.scm:112
-#, fuzzy
 msgid "2-beol style hangul input method"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: ../scm/hangul.scm:120
-#, fuzzy
 msgid "Hangul (3-beol)"
-msgstr "Hangul (Romaja)"
+msgstr ""
 
 #: ../scm/hangul.scm:121
-#, fuzzy
 msgid "3-beol style hangul input method"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: ../scm/hangul.scm:128
 msgid "Hangul (Romaja)"
 msgstr "Hangul (Romaja)"
 
 #: ../scm/hangul.scm:129
-#, fuzzy
 msgid "Romaja input style hangul input method"
-msgstr "Méthode d'entrée Kana par défaut"
+msgstr ""
 
 #: ../scm/im.scm:138
 msgid "invalid IM name"
@@ -2393,9 +2322,8 @@ msgid "Default input method"
 msgstr "Méthode d'entrée par défaut"
 
 #: ../scm/im-custom.scm:104
-#, fuzzy
 msgid "Input method deployment"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../scm/im-custom.scm:109
 msgid "Visual preference"
@@ -2426,23 +2354,20 @@ msgid "Skip direct method for IM switching by hotkey"
 msgstr ""
 
 #: ../scm/im-custom.scm:312
-#, fuzzy
 msgid "Input method toggle"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../scm/im-custom.scm:318
-#, fuzzy
 msgid "Enable input method toggle by hot keys"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/im-custom.scm:324
 msgid "Input method toggle key"
 msgstr ""
 
 #: ../scm/im-custom.scm:334
-#, fuzzy
 msgid "Alternative input method"
-msgstr "Autres méthodes d'entrée"
+msgstr ""
 
 #: ../scm/im-custom.scm:360 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim"
@@ -2477,18 +2402,16 @@ msgid "Right end of preedit area"
 msgstr ""
 
 #: ../scm/im-custom.scm:383
-#, fuzzy
 msgid "Candidate window position"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/im-custom.scm:389
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
 #: ../scm/im-custom.scm:423
-#, fuzzy
 msgid "Enable menu-based input method switcher"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/im-custom.scm:424
 msgid "Show menu-based IM switcher on toolbar."
@@ -2523,9 +2446,8 @@ msgid "Specify where the IM switching takes effect."
 msgstr ""
 
 #: ../scm/im-custom.scm:450
-#, fuzzy
 msgid "full-featured input method switcher"
-msgstr "Méthode d'entrée par défaut"
+msgstr ""
 
 #: ../scm/im-custom.scm:451
 msgid ""
@@ -2538,9 +2460,8 @@ msgid "preference tool"
 msgstr ""
 
 #: ../scm/im-custom.scm:462
-#, fuzzy
 msgid "Japanese dictionary tool"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/im-custom.scm:468
 msgid "input pad"
@@ -2583,9 +2504,8 @@ msgid "XIM"
 msgstr ""
 
 #: ../scm/im-custom.scm:531
-#, fuzzy
 msgid "Preedit settings of XIM"
-msgstr "Paramètres avancés pour PRIME"
+msgstr ""
 
 #: ../scm/im-custom.scm:537
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
@@ -2660,14 +2580,12 @@ msgid "Bengali (Bangla)"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:50
-#, fuzzy
 msgid "Bengali"
-msgstr "Népalais"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:51
-#, fuzzy
 msgid "Bhutani"
-msgstr "Bihari"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:52
 msgid "Bihari"
@@ -2694,9 +2612,8 @@ msgid "Byelorussian (Belarusian)"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:58
-#, fuzzy
 msgid "Byelorussian"
-msgstr "Russe"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:59
 msgid "Cambodian"
@@ -2756,9 +2673,8 @@ msgid "Estonian"
 msgstr "Estonien"
 
 #: ../scm/iso-639-1.scm:75
-#, fuzzy
 msgid "Faeroese"
-msgstr "Farsi"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:76
 msgid "Farsi"
@@ -2773,9 +2689,8 @@ msgid "Finnish"
 msgstr "Finlandais"
 
 #: ../scm/iso-639-1.scm:79
-#, fuzzy
 msgid "Flemish"
-msgstr "Polonais"
+msgstr ""
 
 #. defined as "nl" in the source
 #: ../scm/iso-639-1.scm:80
@@ -2900,9 +2815,8 @@ msgid "Kirundi (Rundi)"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:111
-#, fuzzy
 msgid "Konkani"
-msgstr "Coréen"
+msgstr ""
 
 #. defined as "kok" in ISO 639-2
 #: ../scm/iso-639-1.scm:112
@@ -2970,9 +2884,8 @@ msgid "Mongolian"
 msgstr "Mongol"
 
 #: ../scm/iso-639-1.scm:128
-#, fuzzy
 msgid "Myanmar"
-msgstr "Aymara"
+msgstr ""
 
 #: ../scm/iso-639-1.scm:129
 msgid "Nauru"
@@ -3242,9 +3155,8 @@ msgid "Look"
 msgstr ""
 
 #: ../scm/look-custom.scm:32 ../scm/look.scm:560
-#, fuzzy
 msgid "Tiny predictive input method"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/look-custom.scm:39
 msgid "Look key bindings"
@@ -3255,9 +3167,8 @@ msgid "[Look] Use UNIX look dictionary file"
 msgstr ""
 
 #: ../scm/look-custom.scm:53
-#, fuzzy
 msgid "[Look] Personal dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/look-custom.scm:59
 msgid "[Look] beginning character length of predicting"
@@ -3284,14 +3195,12 @@ msgid "[Look] off"
 msgstr ""
 
 #: ../scm/look-custom.scm:95
-#, fuzzy
 msgid "[Look] completion character"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/look-custom.scm:101
-#, fuzzy
 msgid "[Look] next character"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/look-custom.scm:107
 msgid "[Look] previous character"
@@ -3306,9 +3215,8 @@ msgid "[Look] previous candidate"
 msgstr ""
 
 #: ../scm/look-custom.scm:125
-#, fuzzy
 msgid "[Look] save dictionary"
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #: ../scm/look-custom.scm:131
 msgid "[Look] load dictionary"
@@ -3331,9 +3239,8 @@ msgid "Look Input Mode"
 msgstr ""
 
 #: ../scm/mana-custom.scm:35
-#, fuzzy
 msgid "Mana"
-msgstr "Kana"
+msgstr ""
 
 #: ../scm/mana-custom.scm:43
 msgid "Mana (advanced)"
@@ -3400,14 +3307,12 @@ msgid "[Mana] commit as transposed kana"
 msgstr ""
 
 #: ../scm/mana-key-custom.scm:118
-#, fuzzy
 msgid "[Mana] on"
-msgstr "[PRIME] sactivé"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:124
-#, fuzzy
 msgid "[Mana] off"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:130
 msgid "[Mana] begin conversion"
@@ -3418,9 +3323,8 @@ msgid "[Mana] commit"
 msgstr ""
 
 #: ../scm/mana-key-custom.scm:142
-#, fuzzy
 msgid "[Mana] cancel"
-msgstr "[PRIME] annuler"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:148
 msgid "[Mana] next candidate"
@@ -3459,9 +3363,8 @@ msgid "[Mana] backspace"
 msgstr ""
 
 #: ../scm/mana-key-custom.scm:206
-#, fuzzy
 msgid "[Mana] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:212
 msgid "[Mana] go left"
@@ -3480,9 +3383,8 @@ msgid "[Mana] hiragana mode"
 msgstr ""
 
 #: ../scm/mana-key-custom.scm:238
-#, fuzzy
 msgid "[Mana] katakana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/mana-key-custom.scm:244
 msgid "[Mana] halfwidth katakana mode"
@@ -3509,9 +3411,8 @@ msgid "PRIME"
 msgstr "PRIME"
 
 #: ../scm/prime-custom.scm:35
-#, fuzzy
 msgid "Japanese predictive input method"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/prime-custom.scm:42
 msgid "PRIME (advanced)"
@@ -3522,14 +3423,12 @@ msgid "Advanced settings for PRIME"
 msgstr "Paramètres avancés pour PRIME"
 
 #: ../scm/prime-custom.scm:46
-#, fuzzy
 msgid "Language choice"
-msgstr "Langue"
+msgstr ""
 
 #: ../scm/prime-custom.scm:47
-#, fuzzy
 msgid "Language settings"
-msgstr "Paramètres avancés"
+msgstr ""
 
 #: ../scm/prime-custom.scm:51
 msgid "Japanese specific settings"
@@ -3540,18 +3439,16 @@ msgid "English specific settings"
 msgstr ""
 
 #: ../scm/prime-custom.scm:63
-#, fuzzy
 msgid "Default language"
-msgstr "Méthode d'entrée par défaut"
+msgstr ""
 
 #: ../scm/prime-custom.scm:69
 msgid "Language toggle key"
 msgstr ""
 
 #: ../scm/prime-custom.scm:75
-#, fuzzy
 msgid "Enable auto register mode"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/prime-custom.scm:81
 msgid "Wide width (Zenkaku)"
@@ -3562,9 +3459,8 @@ msgid "Half width (Hankaku)"
 msgstr ""
 
 #: ../scm/prime-custom.scm:83
-#, fuzzy
 msgid "Space character"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/prime-custom.scm:89
 msgid "Alternative space character key"
@@ -3575,9 +3471,8 @@ msgid "Use UNIX domain socket to communicate with PRIME"
 msgstr ""
 
 #: ../scm/prime-custom.scm:119
-#, fuzzy
 msgid "Always showing candidate window"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/prime-custom.scm:126
 msgid "Show usage examples of candidate words"
@@ -3592,9 +3487,8 @@ msgid "Show candidate forms"
 msgstr ""
 
 #: ../scm/prime-custom.scm:166
-#, fuzzy
 msgid "Enable pseudo mode cursor"
-msgstr "Méthodes d'entrée activées"
+msgstr ""
 
 #: ../scm/prime-custom.scm:187
 msgid "PRIME off"
@@ -3665,18 +3559,16 @@ msgid "[PRIME] begin conversion"
 msgstr ""
 
 #: ../scm/prime-key-custom.scm:142
-#, fuzzy
 msgid "[PRIME] commit"
-msgstr "[PRIME] sactivé"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:148
 msgid "[PRIME] cancel"
 msgstr "[PRIME] annuler"
 
 #: ../scm/prime-key-custom.scm:154
-#, fuzzy
 msgid "[PRIME] next candidate"
-msgstr "[PRIME] annuler"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:160
 msgid "[PRIME] previous candidate"
@@ -3695,38 +3587,32 @@ msgid "[PRIME] beginning of preedit"
 msgstr ""
 
 #: ../scm/prime-key-custom.scm:187
-#, fuzzy
 msgid "[PRIME] end of preedit"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:193
-#, fuzzy
 msgid "[PRIME] backspace"
-msgstr "[PRIME] annuler"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:199
 msgid "[PRIME] delete"
 msgstr "[PRIME] effacer"
 
 #: ../scm/prime-key-custom.scm:205
-#, fuzzy
 msgid "[PRIME] go left"
-msgstr "[PRIME] désactivé"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:211
-#, fuzzy
 msgid "[PRIME] go right"
-msgstr "[PRIME] sactivé"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:217
-#, fuzzy
 msgid "[PRIME] shrink segment"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:223
-#, fuzzy
 msgid "[PRIME] extend segment"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/prime-key-custom.scm:229
 msgid "[PRIME] next candidate in English mode"
@@ -3749,9 +3635,8 @@ msgid "Pinyin (Unicode)"
 msgstr "Pinyin (Unicode)"
 
 #: ../scm/pyload.scm:56
-#, fuzzy
 msgid "Pinyin input method (Unicode version)"
-msgstr "Pinyin (Unicode)"
+msgstr ""
 
 #: ../scm/pyload.scm:68
 msgid "Pinyin (Traditional)"
@@ -3762,9 +3647,8 @@ msgid "Pinyin input method (Traditional Chinese version)"
 msgstr ""
 
 #: ../scm/scim.scm:338
-#, fuzzy
 msgid "An input method provided by the scim library"
-msgstr "Une méthode d'entrée fournie par la bibliothèqye m17n-lib"
+msgstr ""
 
 #: ../scm/sj3-custom.scm:35
 msgid "SJ3"
@@ -3775,9 +3659,8 @@ msgid "SJ3 server"
 msgstr ""
 
 #: ../scm/sj3-custom.scm:47
-#, fuzzy
 msgid "SJ3 (advanced)"
-msgstr "SKK (avancé)"
+msgstr ""
 
 #: ../scm/sj3-custom.scm:307
 msgid "Use value of use remote SJ3 server"
@@ -3848,9 +3731,8 @@ msgid "[SJ3] commit as transposed kana"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:116
-#, fuzzy
 msgid "[SJ3] on"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:123
 msgid "[SJ3] off"
@@ -3865,9 +3747,8 @@ msgid "[SJ3] commit"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:141
-#, fuzzy
 msgid "[SJ3] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:147
 msgid "[SJ3] next candidate"
@@ -3906,9 +3787,8 @@ msgid "[SJ3] backspace"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:204
-#, fuzzy
 msgid "[SJ3] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:210
 msgid "[SJ3] go left"
@@ -3923,14 +3803,12 @@ msgid "[SJ3] ESC keys on vi-cooperative mode"
 msgstr ""
 
 #: ../scm/sj3-key-custom.scm:232
-#, fuzzy
 msgid "[SJ3] hiragana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:238
-#, fuzzy
 msgid "[SJ3] katakana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/sj3-key-custom.scm:244
 msgid "[SJ3] halfwidth katakana mode"
@@ -3974,14 +3852,12 @@ msgid "uim version of SKK input method"
 msgstr ""
 
 #: ../scm/skk-custom.scm:43
-#, fuzzy
 msgid "SKK dictionaries"
-msgstr "Dictionnaire"
+msgstr ""
 
 #: ../scm/skk-custom.scm:44
-#, fuzzy
 msgid "Dictionary settings for SKK"
-msgstr "Paramètres avancés pour SKK"
+msgstr ""
 
 #: ../scm/skk-custom.scm:47
 msgid "SKK (advanced)"
@@ -3996,18 +3872,16 @@ msgid "SKK server"
 msgstr ""
 
 #: ../scm/skk-custom.scm:57
-#, fuzzy
 msgid "Dictionary files"
-msgstr "Dictionnaire"
+msgstr ""
 
 #: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:102
 msgid "Commit candidate by heading label keys"
 msgstr ""
 
 #: ../scm/skk-custom.scm:81
-#, fuzzy
 msgid "ddskk-like"
-msgstr "ddskk"
+msgstr ""
 
 #: ../scm/skk-custom.scm:81 ../scm/skk-custom.scm:422
 msgid "Similar to ddskk"
@@ -4062,18 +3936,16 @@ msgid "Address family of skkserv"
 msgstr ""
 
 #: ../scm/skk-custom.scm:393
-#, fuzzy
 msgid "System dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/skk-custom.scm:400
 msgid "Personal dictionary file"
 msgstr "Fichier du dictionnaire personnel"
 
 #: ../scm/skk-custom.scm:407
-#, fuzzy
 msgid "Personal dictionary file (dedicated to uim)"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/skk-custom.scm:422
 msgid "ddskk"
@@ -4104,9 +3976,8 @@ msgid "Use UNIX look command for completion"
 msgstr ""
 
 #: ../scm/skk-custom.scm:460
-#, fuzzy
 msgid "Use UNIX look dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/skk-custom.scm:475
 msgid "Show annotation of candidate word"
@@ -4141,14 +4012,12 @@ msgid "Completion"
 msgstr "Complètement"
 
 #: ../scm/skk-key-custom.scm:81
-#, fuzzy
 msgid "Dynamic completion"
-msgstr "Complètement"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:85
-#, fuzzy
 msgid "Latin conversion"
-msgstr "Caractères latins"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:92
 msgid "[SKK] on"
@@ -4159,18 +4028,16 @@ msgid "[SKK] latin mode"
 msgstr "[SKK] mode latin"
 
 #: ../scm/skk-key-custom.scm:104
-#, fuzzy
 msgid "[SKK] wide-latin mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:110
 msgid "[SKK] kanji mode"
 msgstr "[SKK] mode kanji"
 
 #: ../scm/skk-key-custom.scm:116
-#, fuzzy
 msgid "[SKK] halfwidth katakana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:122
 msgid "[SKK] toggle hiragana/katakana mode"
@@ -4181,23 +4048,20 @@ msgid "[SKK] begin conversion"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:134
-#, fuzzy
 msgid "[SKK] commit"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:140
 msgid "[SKK] cancel"
 msgstr "[SKK] annuler"
 
 #: ../scm/skk-key-custom.scm:150
-#, fuzzy
 msgid "[SKK] return"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:156
-#, fuzzy
 msgid "[SKK] begin latin conversion"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:162
 msgid "[SKK] commit as fullwidth alphanumeric"
@@ -4252,9 +4116,8 @@ msgid "[SKK] purge the entry from dictionary"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:246
-#, fuzzy
 msgid "[SKK] next candidate"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:252
 msgid "[SKK] previous candidate"
@@ -4269,28 +4132,24 @@ msgid "[SKK] previous page of candidate window"
 msgstr ""
 
 #: ../scm/skk-key-custom.scm:270
-#, fuzzy
 msgid "[SKK] backspace"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:276
-#, fuzzy
 msgid "[SKK] go left"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/skk-key-custom.scm:282
-#, fuzzy
 msgid "[SKK] go right"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/tcode.scm:1645
 msgid "T-Code"
 msgstr ""
 
 #: ../scm/tcode.scm:1646 ../scm/trycode.scm:1648 ../scm/tutcode.scm:1075
-#, fuzzy
 msgid "A kanji direct input method"
-msgstr "Méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/trycode.scm:1647
 msgid "Try-Code"
@@ -4313,14 +4172,12 @@ msgid "Dictionary settings for TUT-Code"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:54
-#, fuzzy
 msgid "Mazegaki dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:61
-#, fuzzy
 msgid "Personal mazegaki dictionary file"
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:68
 msgid "Code table file"
@@ -4381,9 +4238,8 @@ msgid "[TUT-Code] commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:95
-#, fuzzy
 msgid "[TUT-Code] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:101
 msgid "[TUT-Code] next candidate"
@@ -4430,9 +4286,8 @@ msgid "Wnn server"
 msgstr ""
 
 #: ../scm/wnn-custom.scm:47
-#, fuzzy
 msgid "Wnn (advanced)"
-msgstr "Canna (avancé)"
+msgstr ""
 
 #: ../scm/wnn-custom.scm:307
 msgid "Use value of use remote Wnn server"
@@ -4503,9 +4358,8 @@ msgid "[Wnn] commit as transposed kana"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:116
-#, fuzzy
 msgid "[Wnn] on"
-msgstr "[SKK] activé"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:123
 msgid "[Wnn] off"
@@ -4520,9 +4374,8 @@ msgid "[Wnn] commit"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:141
-#, fuzzy
 msgid "[Wnn] cancel"
-msgstr "[SKK] annuler"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:147
 msgid "[Wnn] next candidate"
@@ -4561,9 +4414,8 @@ msgid "[Wnn] backspace"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:204
-#, fuzzy
 msgid "[Wnn] delete"
-msgstr "[PRIME] effacer"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:210
 msgid "[Wnn] go left"
@@ -4582,9 +4434,8 @@ msgid "[Wnn] hiragana mode"
 msgstr ""
 
 #: ../scm/wnn-key-custom.scm:238
-#, fuzzy
 msgid "[Wnn] katakana mode"
-msgstr "[SKK] mode latin"
+msgstr ""
 
 #: ../scm/wnn-key-custom.scm:244
 msgid "[Wnn] halfwidth katakana mode"
