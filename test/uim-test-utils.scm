@@ -41,12 +41,25 @@
 (if (version<? *gaunit-version* "0.1.1")
     (error "GaUnit 0.1.1 is required"))
 
-(sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (string-append (sys-realpath ".")
-						     "/sigscheme/lib"))
-(sys-putenv "LIBUIM_SCM_FILES" (string-append (sys-realpath ".") "/scm"))
+(sys-putenv "LIBUIM_SYSTEM_SCM_FILES"
+	    (string-append (sys-normalize-pathname "."
+						   :absolute #t
+						   :expand #t
+						   :canonicalize #t)
+			   "/sigscheme/lib"))
+(sys-putenv "LIBUIM_SCM_FILES"
+	    (string-append (sys-normalize-pathname "."
+						   :absolute #t
+						   :expand #t
+						   :canonicalize #t)
+			   "/scm"))
 ;; FIXME: '.libs' is hardcoded
 (sys-putenv "LIBUIM_PLUGIN_LIB_DIR"
-	    (string-append (sys-realpath ".") "/uim/.libs"))
+	    (string-append (sys-normalize-pathname "."
+						   :absolute #t
+						   :expand #t
+						   :canonicalize #t)
+						   "/uim/.libs"))
 (sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)
 (sys-putenv "LIBUIM_VANILLA" "1")
 
@@ -133,6 +146,7 @@
 	(uim '(%%set-current-error-port! (current-output-port))))
       (define (*uim-sh-teardown-proc*)
         (close-input-port (process-input *uim-sh-process*))
+        (process-wait *uim-sh-process*)
         (set! *uim-sh-process* #f))
 
       (define-syntax define-uim-test-case
