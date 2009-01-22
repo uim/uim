@@ -1106,8 +1106,12 @@ void InputContext::update_prop_list(const char *str)
 	int timeout;
 	Canddisp *disp = canddisp_singleton();
 
-	timeout =
-	    uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+	if (strcmp(show_caret_with, "time") == 0)
+	    timeout =
+		uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+	else
+	    timeout = 0;
+
 	label = get_caret_state_label_from_prop_list(str);
 	disp->show_caret_state(label, timeout);
 	free(label);
