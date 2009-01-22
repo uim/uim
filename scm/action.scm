@@ -353,6 +353,8 @@
       (if (not (null? (filter-map widget-update-state! widgets)))
           (context-propagate-widget-states context)))))
 
+(define bridge-show-input-state-mode-on? #f)
+
 (define context-propagate-prop-list-update
   (lambda (context)
     (let* ((widgets (context-widgets context))
@@ -362,10 +364,8 @@
       (if (eq? bridge-show-with?
                'mode)
           (if (eq? (context-current-mode context) 0)
-              (set! bridge-show-input-state? #f)
-              (begin
-                (set! bridge-show-input-state-time-length 0)
-                (set! bridge-show-input-state? #t))))
+              (set! bridge-show-input-state-mode-on? #f)
+              (set! bridge-show-input-state-mode-on? #t)))
       (im-update-prop-list context widget-config-tree))))
 
 ;; API for uim developers

@@ -619,6 +619,8 @@ update_prop_list_cb(void *ptr, const char *str)
   GString *prop_list;
   uim_bool show_state;
   char *show_state_with;
+  uim_bool show_state_mode;
+  uim_bool show_state_mode_on;
 
   if (uic != focused_context || disable_focused_context)
     return;
@@ -631,8 +633,11 @@ update_prop_list_cb(void *ptr, const char *str)
 
   show_state = uim_scm_symbol_value_bool("bridge-show-input-state?");
   show_state_with = uim_scm_c_symbol(uim_scm_symbol_value("bridge-show-with?"));
+  show_state_mode = (strcmp(show_state_with, "mode") == 0);
+  show_state_mode_on = uim_scm_symbol_value_bool("bridge-show-input-state-mode-on?");
+
   if (uic->win) {
-    if (show_state) {
+    if (show_state && !(show_state_mode && !show_state_mode_on)) {
       gint timeout;
       gint x, y;
       GString *label;
@@ -641,13 +646,16 @@ update_prop_list_cb(void *ptr, const char *str)
       label = get_caret_state_label_from_prop_list(str);
       caret_state_indicator_update(uic->caret_state_indicator, x, y, label->str);
       g_string_free(label, TRUE);
-      timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+      if (strcmp(show_state_with, "time") == 0)
+	timeout = uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+      else
+	timeout = 0;
 
       if (timeout != 0)
 	caret_state_indicator_set_timeout(uic->caret_state_indicator,
 					timeout * 1000);
       gtk_widget_show_all(uic->caret_state_indicator);
-    } else if (strcmp(show_state_with, "mode") == 0) {
+    } else if (show_state_mode && !show_state_mode_on) {
       gtk_widget_hide(uic->caret_state_indicator);
     }
   }

@@ -1098,7 +1098,10 @@ void InputContext::update_prop_list(const char *str)
 	uim_scm_symbol_value_bool("bridge-show-input-state?");
     char *show_caret_with =
 	uim_scm_c_symbol(uim_scm_symbol_value("bridge-show-with?"));
-    if (show_caret_state == UIM_TRUE) {
+    uim_bool show_caret_mode = (strcmp(show_caret_with, "mode") == 0);
+    uim_bool show_caret_mode_on = uim_scm_symbol_value_bool("bridge-show-input-state-mode-on?");
+
+    if (show_caret_state == UIM_TRUE && !(show_caret_mode && !show_caret_mode_on)) {
 	char *label;
 	int timeout;
 	Canddisp *disp = canddisp_singleton();
@@ -1109,7 +1112,7 @@ void InputContext::update_prop_list(const char *str)
 	disp->show_caret_state(label, timeout);
 	free(label);
 	mCaretStateShown = true;
-    } else if (strcmp(show_caret_with, "mode") == 0) {
+    } else if (show_caret_mode && !show_caret_mode_on) {
 	Canddisp *disp = canddisp_singleton();
 	disp->hide_caret_state();
     }
