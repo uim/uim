@@ -124,6 +124,9 @@ AC_ARG_WITH(anthy,
 if test "x$use_anthy" = "xyes"; then
   ANTHY_LIBS="-lanthy -lanthydic"
   ANTHY_CFLAGS=""
+  PKG_CHECK_EXISTS(anthy >= 8622,
+		   [AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
+		    "libanthy can handle UTF-8")])
 fi
 AC_SUBST(ANTHY_LIBS)
 AC_SUBST(ANTHY_CFLAGS)
@@ -141,8 +144,11 @@ AC_ARG_WITH(anthy-utf8,
         use_anthy_utf8="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(ANTHY_UTF8, anthy >= 8622, use_anthy_utf8="yes",
-						     use_anthy_utf8="no")
+        PKG_CHECK_MODULES(ANTHY_UTF8, anthy >= 8622,
+			  [use_anthy_utf8="yes"
+			   AC_DEFINE(LIBANTHY_UTF8_CAPABLE, 1,
+				     [libanthy can handle UTF-8])],
+			   use_anthy_utf8="no")
       ;;
     esac
   ],

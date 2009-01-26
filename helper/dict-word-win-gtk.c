@@ -395,7 +395,13 @@ word_window_set_word (WordWindow *window, uim_word *w)
   adj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(window->freq));
   gtk_adjustment_set_value(adj, w->freq);
 
-  cclass_type = find_cclass_type_from_desc(w->cclass_code);
+  if (!strcmp(w->charset, "UTF-8")) {
+    gchar *desc = utf8_to_eucjp(w->cclass_code);
+    cclass_type = find_cclass_type_from_desc(desc);
+    g_free(desc);
+  } else
+    cclass_type = find_cclass_type_from_desc(w->cclass_code);
+
   if (cclass_type >= 0)
     gtk_combo_box_set_active(GTK_COMBO_BOX(window->combobox_pos_broad),
 			     cclass_type);
@@ -432,7 +438,7 @@ word_window_add(WordWindow *window)
 {
   gboolean valid;
   const char *utf8_phonetic, *utf8_literal, *utf8_cclass_desc;
-  char *phonetic, *literal, *cclass_desc, *cclass_native = NULL;
+  gchar *phonetic, *literal, *cclass_desc, *cclass_native = NULL;
   gint freq, ret, pos_id;
   GtkWidget *dialog;
   uim_word_type type;
@@ -451,7 +457,7 @@ word_window_add(WordWindow *window)
 
   phonetic    = charset_convert(utf8_phonetic,    "UTF-8", window->dict->charset);
   literal     = charset_convert(utf8_literal,     "UTF-8", window->dict->charset);
-  cclass_desc = charset_convert(utf8_cclass_desc, "UTF-8", window->dict->charset);
+  cclass_desc = utf8_to_eucjp(utf8_cclass_desc);
   type = dict_identifier_to_word_type(window->dict->identifier);
 
   if (cclass_desc)
@@ -656,7 +662,7 @@ word_window_cclass_reset (WordWindow *window)
     break;
   }
 
-  utf8_desc = charset_convert(desc, window->dict->charset, "UTF-8");
+  utf8_desc = eucjp_to_utf8(desc);
   if (utf8_desc) {
     gtk_entry_set_text(entry, utf8_desc);
     g_free(utf8_desc);
@@ -687,7 +693,6 @@ button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
 
   cclass_desc = find_desc_from_code_with_type(cclass_code, type);
 
-  /* FIXME!! cclass_desc is encoded in UTF-8 */
   if (cclass_desc) {
     utf8_cclass_desc = charset_convert(cclass_desc, "EUC-JP", "UTF-8");
   } else {
