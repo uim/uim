@@ -39,11 +39,13 @@
 #include <stdlib.h>
 #include <glib.h>
 
+#include <anthy/anthy.h>
 #include <anthy/dicutil.h>
 
 #include "gettext.h"
 #include "dict-anthy.h"
 #include "dict-canna-cclass.h"
+#include "dict-util.h"
 
 static uim_dict *uim_dict_anthy_open        (const char *identifier);
 static void      uim_dict_anthy_close       (uim_dict *dict);
@@ -86,6 +88,9 @@ static int
 dict_anthy_init(void)
 {
   anthy_dic_util_init();
+#if LIBANTHY_UTF8_CAPABLE
+  anthy_dic_util_set_encoding(ANTHY_UTF8_ENCODING);
+#endif
   return 0;
 }
 
@@ -130,10 +135,21 @@ dict_anthy_read_priv_dic_list(uim_word **head)
 	  break;
       }
 
+#if LIBANTHY_UTF8_CAPABLE
+      {
+	gchar *cclass_code_utf8 = eucjp_to_utf8(cclass_code);
+	word_append(head, WORD_TYPE_ANTHY, "UTF-8",
+		    phon, desc, cclass_code_utf8, cclass_native,
+		    anthy_priv_dic_get_freq(),
+		    0, NULL);
+	g_free(cclass_code_utf8);
+      }
+#else /* EUC-JP */
       word_append(head, WORD_TYPE_ANTHY, "EUC-JP",
 		  phon, desc, cclass_code, cclass_native,
 		  anthy_priv_dic_get_freq(),
 		  0, NULL);
+#endif
     }
     ret = anthy_priv_dic_select_next_entry();
   }
@@ -195,7 +211,11 @@ uim_dict_anthy_open(const char *identifier)
   dict->funcs      = &uim_dict_class_anthy;
   dict->identifier = strdup(identifier);
   dict->filename   = NULL;
+#if LIBANTHY_UTF8_CAPABLE
+  dict->charset    = strdup("UTF-8");
+#else
   dict->charset    = strdup("EUC-JP");
+#endif
   dict->ref_count  = 0; /* at this point, no window refers this */
   dict->word_list  = NULL;
 
