@@ -705,6 +705,7 @@ word_list_key_press_cb(GtkWidget *widget, GdkEventKey *event,
 {
   switch (event->keyval) {
   case GDK_Delete:
+  case GDK_BackSpace:
     ACTIVATE_ACTION(window, "RemoveWord");
     break;
   default:
