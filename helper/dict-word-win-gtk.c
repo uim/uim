@@ -34,6 +34,7 @@
 #include <config.h>
 
 #include <stdlib.h>
+#include <string.h>
 #include <gtk/gtk.h>
 
 #include "gettext.h"
@@ -98,8 +99,7 @@ word_window_get_type(void) {
       0, /* n_preallocs */
       (GInstanceInitFunc)word_window_init /* instance_init */
     };
-    type = g_type_register_static(GTK_TYPE_DIALOG,
-				  "WordWindow", &info, 0);
+    type = g_type_register_static(GTK_TYPE_DIALOG, "WordWindow", &info, 0);
   }
   return type;
 }
@@ -178,10 +178,11 @@ word_window_init(WordWindow *window)
   gtk_box_pack_start(GTK_BOX(hbox), table, TRUE, TRUE, 0);
 
   /* action area */
-  window->continuance = check = gtk_check_button_new_with_label(_("continuance"));
+  check = gtk_check_button_new_with_label(_("continuance"));
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(window)->action_area),
 		     check, FALSE, FALSE, 0);
   gtk_widget_show(check);
+  window->continuance = check;
 
 #if 0
   vbox2 = gtk_vbutton_box_new();
@@ -204,10 +205,11 @@ word_window_init(WordWindow *window)
 #endif
 
   gtk_window_set_title(GTK_WINDOW(window), _("Add a word"));
+  gtk_dialog_add_button(GTK_DIALOG(window),
+			GTK_STOCK_CLEAR, WORD_WINDOW_RESPONSE_CLEAR);
   gtk_dialog_add_buttons(GTK_DIALOG(window),
-			 GTK_STOCK_ADD,   WORD_WINDOW_RESPONSE_ADD,
-			 GTK_STOCK_CLEAR, WORD_WINDOW_RESPONSE_CLEAR,
-			 GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+			 GTK_STOCK_ADD,WORD_WINDOW_RESPONSE_ADD,
 			 NULL);
   gtk_box_pack_start(GTK_BOX(GTK_DIALOG(window)->vbox), vbox1,
 		     TRUE, TRUE, 0);
@@ -243,10 +245,12 @@ word_window_new(WordWindowType mode, uim_dict *dict)
   word_window_cclass_reset(WORD_WINDOW(widget));
 
   if (mode == WORD_WINDOW_MODE_EDIT) {
-	  g_snprintf(title, sizeof(title), _("Edit the word (%s)"), _(dict->identifier));
+    g_snprintf(title, sizeof(title), _("Edit the word (%s)"),
+	       _(dict->identifier));
     gtk_widget_hide(WORD_WINDOW(widget)->continuance);
   } else {
-	  g_snprintf(title, sizeof(title), _("Add a word (%s)"), _(dict->identifier));
+    g_snprintf(title, sizeof(title), _("Add a word (%s)"),
+	       _(dict->identifier));
   }
 
   gtk_window_set_title(GTK_WINDOW(widget), title);
@@ -273,28 +277,23 @@ word_window_necessary_create(WordWindow *window)
 
   label = gtk_label_new_with_mnemonic(_("_Phonetic:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-  gtk_table_attach(GTK_TABLE(table1), label,
-		   0, 1, 0, 1, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 0, 1, GTK_FILL, 0, 5, 5);
 
   entry_phon = gtk_entry_new();
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry_phon);
-  gtk_table_attach(GTK_TABLE(table1), entry_phon,
-		   1, 2, 0, 1, 0, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table1), entry_phon, 1, 2, 0, 1, 0, 0, 5, 5);
 
   label = gtk_label_new_with_mnemonic(_("_Literal:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-  gtk_table_attach(GTK_TABLE(table1), label,
-		   0, 1, 1, 2, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 1, 2, GTK_FILL, 0, 5, 5);
 
   entry_desc = gtk_entry_new();
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry_desc);
-  gtk_table_attach(GTK_TABLE(table1), entry_desc,
-		   1, 2, 1, 2, 0, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table1), entry_desc, 1, 2, 1, 2, 0, 0, 5, 5);
 
   label = gtk_label_new_with_mnemonic(_("Part of _Speech:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
-  gtk_table_attach(GTK_TABLE(table1), label,
-		   0, 1, 2, 3, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 2, 3, GTK_FILL, 0, 5, 5);
   {
     GtkWidget *alignment_pos_broad;
     gint pos_num;
@@ -324,14 +323,14 @@ word_window_necessary_create(WordWindow *window)
   label = gtk_label_new_with_mnemonic(_("_Frequency:"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
   gtk_widget_show(label);
-  gtk_table_attach(GTK_TABLE(table1), label,
-		   0, 1, 4, 5, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table1), label, 0, 1, 4, 5, GTK_FILL, 0, 5, 5);
 
   alignment = gtk_alignment_new(0.0, 0.5, 0.0, 0.0);
   gtk_table_attach(GTK_TABLE(table1), alignment,
 		   1, 2, 4, 5, GTK_FILL, 0, 5, 5);
   gtk_widget_show(alignment);
-  adjustment_freq = (GtkAdjustment*)gtk_adjustment_new(1.0, 1.0, 65535.0, 1.0, 100.0, 0);
+  adjustment_freq = (GtkAdjustment*)gtk_adjustment_new(1.0, 1.0, 65535.0,
+						       1.0, 100.0, 0);
   spin_freq = gtk_spin_button_new(adjustment_freq, 1.0, 0);
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), spin_freq);
   gtk_container_add(GTK_CONTAINER(alignment), spin_freq);
@@ -355,20 +354,17 @@ word_window_additional_create(WordWindow *window)
   label = gtk_label_new_with_mnemonic(_("Part of Speech(_narrow):"));
   gtk_misc_set_alignment(GTK_MISC(label), 1.0, 0.5);
   gtk_widget_show(label);
-  gtk_table_attach(GTK_TABLE(table), label,
-		   0, 1, 0, 1, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1, GTK_FILL, 0, 5, 5);
 
   entry = gtk_entry_new();
   gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry);
   gtk_widget_show(entry);
-  gtk_table_attach(GTK_TABLE(table), entry,
-		   1, 2, 0, 1, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table), entry, 1, 2, 0, 1, GTK_FILL, 0, 5, 5);
 
   button = gtk_button_new_with_mnemonic(_("_Browse..."));
   gtk_widget_show(button);
-  gtk_table_attach(GTK_TABLE(table), button,
-		   2, 3, 0, 1, GTK_FILL, 0, 5, 5);
+  gtk_table_attach(GTK_TABLE(table), button, 2, 3, 0, 1, GTK_FILL, 0, 5, 5);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(button_cclass_browse_clicked_cb), window);
 
@@ -386,9 +382,9 @@ word_window_set_word (WordWindow *window, uim_word *w)
 
   g_return_if_fail(IS_WORD_WINDOW(window));
 
-  phonetic = charset_convert(w->phon,        w->charset, "UTF-8");
-  literal  = charset_convert(w->desc,        w->charset, "UTF-8");
-  cclass   = charset_convert(w->cclass_code, w->charset, "UTF-8");
+  phonetic = charset_convert(w->phon, w->charset, "UTF-8");
+  literal = charset_convert(w->desc, w->charset, "UTF-8");
+  cclass = charset_convert(w->cclass_code, w->charset, "UTF-8");
 
   gtk_entry_set_text(GTK_ENTRY(window->phon), phonetic);
   gtk_entry_set_text(GTK_ENTRY(window->desc), literal);
@@ -449,21 +445,21 @@ word_window_add(WordWindow *window)
   valid = word_window_validate_values(window);
   if (!valid) return;
 
-  utf8_phonetic    = gtk_entry_get_text(GTK_ENTRY(window->phon));
-  utf8_literal     = gtk_entry_get_text(GTK_ENTRY(window->desc));
+  utf8_phonetic = gtk_entry_get_text(GTK_ENTRY(window->phon));
+  utf8_literal = gtk_entry_get_text(GTK_ENTRY(window->desc));
   utf8_cclass_desc = gtk_entry_get_text(GTK_ENTRY(window->cclass_code));
   pos_id = gtk_combo_box_get_active(GTK_COMBO_BOX(window->combobox_pos_broad));
   freq = gtk_spin_button_get_value(GTK_SPIN_BUTTON(window->freq));
 
-  phonetic    = charset_convert(utf8_phonetic,    "UTF-8", window->dict->charset);
-  literal     = charset_convert(utf8_literal,     "UTF-8", window->dict->charset);
+  phonetic = charset_convert(utf8_phonetic, "UTF-8", window->dict->charset);
+  literal = charset_convert(utf8_literal, "UTF-8", window->dict->charset);
   cclass_desc = utf8_to_eucjp(utf8_cclass_desc);
   type = dict_identifier_to_word_type(window->dict->identifier);
 
   if (cclass_desc)
-	  cclass_native = g_strdup(find_code_from_desc(cclass_desc, pos_id));
+    cclass_native = g_strdup(find_code_from_desc(cclass_desc, pos_id));
   if (!cclass_native)
-	  cclass_native = g_strdup("");
+    cclass_native = g_strdup("");
 
   if (phonetic != NULL && literal != NULL) {
 #if 1 /* FIXME! */
@@ -606,6 +602,7 @@ word_window_response(GtkDialog *dialog, gint arg)
     word_window_clear(WORD_WINDOW(dialog));
     break;
   case GTK_RESPONSE_CLOSE:
+  case GTK_RESPONSE_CANCEL:
     gtk_idle_add(idle_wordwin_destroy, dialog);
     uim_dict_unref(WORD_WINDOW(dialog)->dict);
     break;
@@ -694,7 +691,7 @@ button_cclass_browse_clicked_cb(GtkButton *button, WordWindow *window)
   cclass_desc = find_desc_from_code_with_type(cclass_code, type);
 
   if (cclass_desc) {
-    utf8_cclass_desc = charset_convert(cclass_desc, "EUC-JP", "UTF-8");
+    utf8_cclass_desc = eucjp_to_utf8(cclass_desc);
   } else {
     utf8_cclass_desc = g_strdup("");
   }
