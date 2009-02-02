@@ -596,6 +596,43 @@ c__exit(uim_lisp status_)
   return uim_scm_t();
 }
 
+const static opt_args waitpid_options[] = {
+#ifdef WCONTINUED
+  { WCONTINUED, "$WCONTINUED" },
+#endif
+#ifdef WNOHANG
+  { WNOHANG,    "$WNOHANG" },
+#endif
+#ifdef WUNTRACED
+  { WUNTRACED,  "$WUNTRACED" },
+#endif
+  { 0, 0 }
+};
+static uim_lisp uim_lisp_process_waitpid_options;
+static uim_lisp
+c_process_waitpid_options(void)
+{
+  return uim_lisp_process_waitpid_options;
+}
+static uim_lisp
+c_process_waitpid(uim_lisp pid_, uim_lisp options_)
+{
+  uim_lisp ret_ = uim_scm_null();
+  int status;
+
+  ret_ = MAKE_INT(waitpid(C_INT(pid_), &status, C_INT(options_)));
+  if (WIFEXITED(status))
+    return LIST5(ret_, uim_scm_t(), uim_scm_f(), uim_scm_f(), MAKE_INT(WEXITSTATUS(status)));
+  else if (WIFSIGNALED(status))
+    return LIST5(ret_, uim_scm_f(), uim_scm_t(), uim_scm_f(), MAKE_INT(WTERMSIG(status)));
+#ifdef WIFSTOPPED
+  else if (WIFSTOPPED(status))
+    return LIST5(ret_, uim_scm_f(), uim_scm_f(), uim_scm_t(), MAKE_INT(WSTOPSIG(status)));
+#endif
+
+  return LIST5(ret_, uim_scm_f(), uim_scm_f(), uim_scm_f(), MAKE_INT(status));
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -646,4 +683,9 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc0("parent-process-id",  c_parent_process_id);
   uim_scm_init_proc0("process-fork", c_process_fork);
   uim_scm_init_proc1("_exit", c__exit);
+  uim_scm_init_proc2("process-waitpid", c_process_waitpid);
+  uim_scm_init_proc0("process-waitpid-options?", c_process_waitpid_options);
+  uim_scm_gc_protect(&uim_lisp_process_waitpid_options);
+  uim_lisp_process_waitpid_options = make_arg_list(waitpid_options);
+  uim_scm_eval_c_string("(define process-waitpid-options-alist (process-waitpid-options?))");
 }
