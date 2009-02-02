@@ -1,2 +1,20 @@
 noinst_LTLIBRARIES = libreplace.la
-libreplace_la_SOURCES = strsep.c getpeereid.c setenv.c os_dep.h strlcpy.c strlcat.c fake-rfc2553.c fake-rfc2553.h bsd-asprintf.c bsd-snprintf.c strtoll.c strtonum.c bsd-poll.c bsd-poll.h bsd-misc.c bsd-waitpid.c bsd-waitpid.h
+
+libreplace_la_SOURCES = \
+	bsd-asprintf.c \
+	bsd-misc.c \
+	bsd-poll.c \
+	bsd-poll.h \
+	bsd-snprintf.c \
+	bsd-waitpid.c \
+	bsd-waitpid.h \
+	fake-rfc2553.c \
+	fake-rfc2553.h \
+	getpeereid.c \
+	os_dep.h \
+	setenv.c \
+	strlcat.c \
+	strlcpy.c \
+	strsep.c \
+	strtoll.c \
+	strtonum.c
