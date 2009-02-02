@@ -513,6 +513,7 @@ const static opt_args poll_flags[] = {
 #ifdef POLLWRBAND
   { POLLWRBAND, "$POLLWRBAND"},
 #endif
+  { 0, 0 }
 };
 
 static uim_lisp uim_lisp_poll_flags;
