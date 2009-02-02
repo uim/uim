@@ -119,6 +119,20 @@ long long strtoll(const char *, char **, int);
 long long strtonum(const char *numstr, long long minval, long long maxval, const char **errstrp);
 #endif
 
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#elif HAVE_SYS_POLL_H
+#include <sys/poll.h>
+#else
+#include "bsd-poll.h"
+#endif
+
+#ifndef HAVE_POLL
+#define poll	uim_internal_poll
+int
+poll(struct pollfd *, nfds_t, int);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

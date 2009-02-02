@@ -320,6 +320,7 @@ AC_CHECK_HEADERS([sys/time.h sys/stat.h sys/un.h getopt.h assert.h signal.h term
 AC_CHECK_HEADERS([pty.h utmp.h util.h libutil.h])
 AC_CHECK_HEADERS([curses.h stropts.h])
 AC_CHECK_HEADERS([sys/param.h strings.h netdb.h sysexits.h])
+AC_CHECK_HEADERS([poll.h sys/poll.h])
 
 # Check for types
 AC_TYPE_INT8_T
@@ -519,6 +520,7 @@ AC_CHECK_FUNCS([execv execvp])
 AC_CHECK_FUNCS([isascii])
 AC_CHECK_FUNCS([getaddrinfo freeaddrinfo getnameinfo])
 AC_CHECK_FUNCS([issetugid])
+AC_CHECK_FUNCS([poll])
 
 # IRIX has a const char return value for gai_strerror()
 AC_CHECK_FUNCS(gai_strerror,[
