@@ -15,8 +15,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "includes.h"
+#include <config.h>
 
+#if 0
 #include <sys/types.h>
 #ifdef HAVE_SYS_SELECT_H
 # include <sys/select.h>
@@ -24,8 +25,10 @@
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
 #endif
+#endif
 
 #include <string.h>
+#if 0
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -225,6 +228,7 @@ mysignal(int sig, mysig_t act)
 	return (signal(sig, act));
 #endif
 }
+#endif /* 0 */
 
 #ifndef HAVE_STRDUP
 char *

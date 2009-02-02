@@ -216,17 +216,9 @@ uim_strdup(const char *s)
 {
   char *copied;
 
-#if HAVE_STRDUP
   copied = strdup(s);
   if (!copied)
     uim_fatal_error("strdup() failed");
-#else
-  size_t size;
-
-  size = strlen(s) + sizeof("");
-  copied = uim_malloc(size);
-  strcpy(copied, s);
-#endif
 
   return copied;
 }

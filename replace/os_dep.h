@@ -87,6 +87,11 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 size_t strlcat(char *dst, const char *src, size_t siz);
 #endif
 
+#ifndef HAVE_STRDUP
+#define strdup	uim_internal_strdup
+char *strdup(const char *);
+#endif
+
 #include "fake-rfc2553.h"
 
 #ifndef HAVE_VASPRINTF
