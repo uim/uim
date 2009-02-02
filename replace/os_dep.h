@@ -121,7 +121,7 @@ long long strtonum(const char *numstr, long long minval, long long maxval, const
 
 #ifdef HAVE_POLL_H
 #include <poll.h>
-#elif HAVE_SYS_POLL_H
+#elif defined(HAVE_SYS_POLL_H)
 #include <sys/poll.h>
 #else
 #include "bsd-poll.h"
