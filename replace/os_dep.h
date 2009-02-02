@@ -138,6 +138,18 @@ int
 poll(struct pollfd *, nfds_t, int);
 #endif
 
+#ifdef HAVE_WAITPID
+#include <sys/wait.h>
+#else
+#include "bsd-waitpid.h"
+#endif
+
+#ifndef HAVE_WAITPID
+#define waitpid	uim_internal_waitpid
+pid_t
+waitpid(pid_t, int *, int);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
