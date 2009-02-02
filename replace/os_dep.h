@@ -150,6 +150,12 @@ pid_t
 waitpid(pid_t, int *, int);
 #endif
 
+#ifndef HAVE_DAEMON
+#define daemon	uim_internal_daemon
+int
+daemon(int, int);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

@@ -8,6 +8,7 @@ libreplace_la_SOURCES = \
 	bsd-snprintf.c \
 	bsd-waitpid.c \
 	bsd-waitpid.h \
+	daemon.c \
 	fake-rfc2553.c \
 	fake-rfc2553.h \
 	getpeereid.c \

@@ -522,6 +522,7 @@ AC_CHECK_FUNCS([getaddrinfo freeaddrinfo getnameinfo])
 AC_CHECK_FUNCS([issetugid])
 AC_CHECK_FUNCS([poll])
 AC_CHECK_FUNCS([waitpid])
+AC_CHECK_FUNCS([daemon])
 
 # IRIX has a const char return value for gai_strerror()
 AC_CHECK_FUNCS(gai_strerror,[

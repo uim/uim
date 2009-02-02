@@ -639,6 +639,12 @@ c_process_waitpid(uim_lisp pid_, uim_lisp options_)
   return LIST5(ret_, uim_scm_f(), uim_scm_f(), uim_scm_f(), MAKE_INT(status));
 }
 
+static uim_lisp
+c_daemon(uim_lisp nochdir_, uim_lisp noclose_)
+{
+  return MAKE_INT(daemon(C_BOOL(nochdir_), C_BOOL(noclose_)));
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -695,4 +701,6 @@ uim_init_posix_subrs(void)
   uim_scm_gc_protect(&uim_lisp_process_waitpid_options);
   uim_lisp_process_waitpid_options = make_arg_list(waitpid_options);
   uim_scm_eval_c_string("(define process-waitpid-options-alist (process-waitpid-options?))");
+
+  uim_scm_init_proc2("daemon", c_daemon);
 }
