@@ -485,6 +485,12 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
   return ret_;
 }
 
+static uim_lisp
+c_duplicate_fileno(uim_lisp oldd_)
+{
+  return MAKE_INT(dup(C_INT(oldd_)));
+}
+
 const static opt_args poll_flags[] = {
   { POLLIN,     "$POLLIN" },
 #ifdef POLLPRI
@@ -670,6 +676,7 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("file-close", c_file_close);
   uim_scm_init_proc2("file-read", c_file_read);
   uim_scm_init_proc2("file-write", c_file_write);
+  uim_scm_init_proc1("duplicate-fileno", c_duplicate_fileno);
 
   uim_scm_init_proc2("file-poll", c_file_poll);
   uim_scm_init_proc0("file-poll-flags?", c_file_poll_flags);
