@@ -573,6 +573,28 @@ c_file_ready(uim_lisp fd_)
     return uim_scm_t();
 }
 
+static uim_lisp
+c_current_process_id(void)
+{
+  return MAKE_INT(getpid());
+}
+static uim_lisp
+c_parent_process_id(void)
+{
+  return MAKE_INT(getppid());
+}
+static uim_lisp
+c_process_fork(void)
+{
+  return MAKE_INT(fork());
+}
+static uim_lisp
+c__exit(uim_lisp status_)
+{
+  _exit(C_INT(status_));
+  return uim_scm_t();
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -618,4 +640,9 @@ uim_init_posix_subrs(void)
   uim_scm_eval_c_string("(define poll-flags-alist (file-poll-flags?))");
 
   uim_scm_init_proc1("file-ready?", c_file_ready);
+
+  uim_scm_init_proc0("current-process-id", c_current_process_id);
+  uim_scm_init_proc0("parent-process-id",  c_parent_process_id);
+  uim_scm_init_proc0("process-fork", c_process_fork);
+  uim_scm_init_proc1("_exit", c__exit);
 }
