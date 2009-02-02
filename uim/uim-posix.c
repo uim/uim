@@ -47,6 +47,14 @@
 #include <assert.h>
 #include <fcntl.h>
 
+#ifdef HAVE_POLL_H
+#include <poll.h>
+#elif defined(HAVE_SYS_POLL_H)
+#include <sys/poll.h>
+#else
+#include "bsd-poll.h"
+#endif
+
 #include "uim.h"
 #include "uim-internal.h"
 #include "uim-scm.h"
@@ -342,6 +350,21 @@ make_arg_list(const opt_args *list)
   return ret_;
 }
 
+static uim_lisp
+make_args_or(const opt_args *list, int flag)
+{
+  uim_lisp ret_;
+  int i = 0;
+
+  ret_ = uim_scm_null();
+  while (list[i].arg != 0) {
+    if (list[i].flag & flag)
+      ret_ = CONS(MAKE_SYM(list[i].arg), ret_);
+    i++;
+  }
+  return uim_scm_callf("reverse", "o", ret_);
+}
+
 const static opt_args open_flags[] = {
   { O_CREAT,    "$O_CREAT" },
   { O_EXCL,     "$O_EXCL" },
@@ -462,6 +485,76 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
   return ret_;
 }
 
+const static opt_args poll_flags[] = {
+  { POLLIN,     "$POLLIN" },
+#ifdef POLLPRI
+  { POLLPRI,    "$POLLPRI" },
+#endif
+  { POLLOUT,    "$POLLOUT" },
+  { POLLERR,    "$POLLERR" },
+#ifdef POLLHUP
+  { POLLHUP,    "$POLLHUP"},
+#endif
+#ifdef POLLNVAL
+  { POLLNVAL,   "$POLLNVAL"},
+#endif
+#ifdef POLLRDNORM
+  { POLLRDNORM, "$POLLRDNORM"},
+#endif
+#ifdef POLLNORM
+  { POLLNORM,   "$POLLNORM"},
+#endif
+#ifdef POLLWRNORM
+  { POLLWRNORM, "$POLLWRNORM"},
+#endif
+#ifdef POLLRDBAND
+  { POLLRDBAND, "$POLLRDBAND"},
+#endif
+#ifdef POLLWRBAND
+  { POLLWRBAND, "$POLLWRBAND"},
+#endif
+};
+
+static uim_lisp uim_lisp_poll_flags;
+static uim_lisp
+c_file_poll_flags(void)
+{
+  return uim_lisp_poll_flags;
+}
+
+static uim_lisp
+c_file_poll(uim_lisp fds_, uim_lisp timeout_)
+{
+  struct pollfd *fds;
+  int timeout = C_INT(timeout_);
+  int nfds = uim_scm_length(fds_);
+  uim_lisp fd_ = uim_scm_f();
+  int i;
+  int ret;
+  uim_lisp ret_;
+
+  fds = uim_calloc(nfds, sizeof(struct pollfd));
+
+  for (i = 0; i < nfds; i++) {
+    fd_ = CAR(fds_);
+    fds[i].fd = C_INT(CAR(fd_));
+    fds[i].events = C_INT(CDR(fd_));
+    fds_ = CDR(fds_);
+  }
+
+  ret = poll(fds, nfds, timeout);
+  if (ret == -1)
+    return uim_scm_f();
+  else if (ret == 0)
+    return uim_scm_null();
+
+  ret_ = uim_scm_null();
+  for (i = 0; i < ret; i++)
+    ret_ = CONS(CONS(MAKE_INT(fds[i].fd), make_args_or(poll_flags, fds[i].revents)), ret_);
+  free(fds);
+  return uim_scm_callf("reverse", "o", ret_);
+}
+
 
 void
 uim_init_posix_subrs(void)
@@ -500,4 +593,10 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("file-close", c_file_close);
   uim_scm_init_proc2("file-read", c_file_read);
   uim_scm_init_proc2("file-write", c_file_write);
+
+  uim_scm_init_proc2("file-poll", c_file_poll);
+  uim_scm_init_proc0("file-poll-flags?", c_file_poll_flags);
+  uim_scm_gc_protect(&uim_lisp_poll_flags);
+  uim_lisp_poll_flags = make_arg_list(poll_flags);
+  uim_scm_eval_c_string("(define poll-flags-alist (file-poll-flags?))");
 }
