@@ -40,6 +40,10 @@ Supplementary explanation (only for help and not legal):
   * scm/py.scm is come from m17n-lib,you can use, modify, distribute
     and sell this under the terms of LGPL *only*.
 
+  * scm/input-stream.scm is public domain. 'Unless specified otherwise,
+    all the code and the documentation on this site is in public domain.'
+    http://okmij.org/ftp/
+
   * helper/eggtrayicon.[ch] is come from libegg, so you can use,
     modify, distribute and sell uim-toolbar-gtk-systray under the
     terms of LGPL *only*.
