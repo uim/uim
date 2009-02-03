@@ -202,12 +202,11 @@
 (define *gensym-counter* 0)
 (define gensym
   (lambda args
-    (let-optionals* args ((prefix "g"))
-      (set! *gensym-counter* (inc *gensym-counter*))
-      (let ((new (string->symbol (format "~a~X" prefix *gensym-counter*))))
-        (if (symbol-bound? new)
-            (gensym)
-            new)))))
+    (set! *gensym-counter* (inc *gensym-counter*))
+    (let ((new (string->symbol (format "~a~X" (if (pair? args) (car args) "g") *gensym-counter*))))
+      (if (symbol-bound? new)
+          (gensym)
+          new))))
 
 ;; TODO: write test
 (define number->symbol
