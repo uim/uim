@@ -30,7 +30,7 @@
 
 /* OPENBSD ORIGINAL: lib/libc/gen/daemon.c */
 
-#include "includes.h"
+#include <config.h>
 
 #ifndef HAVE_DAEMON
 
@@ -47,6 +47,9 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+
+/* XXX */
+#undef HAVE_CYGWIN
 
 int
 daemon(int nochdir, int noclose)
