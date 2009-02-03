@@ -157,6 +157,36 @@
   (lambda args
     (string->symbol (string-append-map symbol->string args))))
 
+(define call-with-output-string
+  (lambda (proc)
+    (let ((out (open-output-string)))
+      (proc out)
+      (get-output-string out))))
+
+(define call-with-input-string
+  (lambda (str proc)
+    (let ((in (open-input-string str)))
+      (proc in))))
+
+(define call-with-string-io
+  (lambda (str proc)
+    (let ((out (open-output-string))
+          (in  (open-input-string str)))
+      (proc in out)
+      (get-output-string out))))
+
+(define write-to-string
+  (lambda (obj . args)
+    (call-with-output-string
+     (lambda (port) ((if (pair? args) (car args) write) obj port)))))
+
+(define read-from-string
+  (lambda (string)
+    (call-with-input-string
+     string
+     (lambda (port)
+       (read port)))))
+
 ;; only accepts single-arg functions
 ;; (define caddr (compose car cdr cdr))
 ;; FIXME: remove the closure overhead
