@@ -224,7 +224,7 @@ c_addrinfo_ref_ai_addr(uim_lisp addrinfo_)
 static uim_lisp
 c_getaddrinfo(uim_lisp hostname_, uim_lisp servname_, uim_lisp hint_)
 {
-  const char *hostname = REFER_C_STR(hostname_);
+  const char *hostname;
   char *servname = NULL;
   struct addrinfo *hints = C_PTR(hint_);
   struct addrinfo *res, *res0;
@@ -237,6 +237,10 @@ c_getaddrinfo(uim_lisp hostname_, uim_lisp servname_, uim_lisp hint_)
     servname = C_STR(servname_);
   }
 
+  if (FALSEP(hostname_))
+    hostname = NULL;
+  else
+    hostname = REFER_C_STR(hostname_);
   error = getaddrinfo(hostname, servname, hints, &res0);
   if (error) {
     const char *errstr = gai_strerror(error);
