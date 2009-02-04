@@ -74,21 +74,6 @@ make_arg_list(const opt_args *list)
 }
 
 static uim_lisp
-ref_args_or(const opt_args *list, int flags)
-{
-  int i = 0;
-  uim_lisp ret_ = uim_scm_null();
-
-  while (list[i].arg != 0) {
-    if (list[i].flag & flags) {
-      ret_ = CONS(MAKE_SYM(list[i].arg), ret_);
-    }
-    i++;
-  }
-  return uim_scm_callf("reverse", "o", ret_);
-}
-
-static uim_lisp
 c_make_addrinfo()
 {
   struct addrinfo *addrinfo = uim_malloc(sizeof(struct addrinfo));
@@ -121,14 +106,8 @@ static uim_lisp
 c_addrinfo_set_ai_flags(uim_lisp addrinfo_, uim_lisp ai_flags_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
-  int flags = 0;
 
-  while (!NULLP(ai_flags_)) {
-    flags |= C_INT(CAR(ai_flags_));
-    ai_flags_ = CDR(ai_flags_);
-  }
-
-  addrinfo->ai_flags = flags;
+  addrinfo->ai_flags = C_INT(ai_flags_);
   return uim_scm_t();
 }
 static uim_lisp
@@ -136,7 +115,7 @@ c_addrinfo_ref_ai_flags(uim_lisp addrinfo_)
 {
   struct addrinfo *addrinfo = C_PTR(addrinfo_);
 
-  return ref_args_or(ai_flags, addrinfo->ai_flags);
+  return MAKE_INT(addrinfo->ai_flags);
 }
 
 const static opt_args ai_family[] = {

@@ -60,10 +60,11 @@
 
 (define (call-with-getaddrinfo-hints flags family socktype protocol thunk)
   (let* ((hints (make-addrinfo)))
-    (and flags    (addrinfo-set-ai-flags!    hints (addrinfo-ai-flags-number    flags)))
+    (and flags    (addrinfo-set-ai-flags!    hints
+                                             (apply logior (addrinfo-ai-flags-number flags))))
     (and family   (addrinfo-set-ai-family!   hints (addrinfo-ai-family-number   family)))
     (and socktype (addrinfo-set-ai-socktype! hints (addrinfo-ai-socktype-number socktype)))
-    (and protocol (addrinfo-set-ai-socktype! hints (addrinfo-ai-protocol-number protocol)))
+    (and protocol (addrinfo-set-ai-protocol! hints (addrinfo-ai-protocol-number protocol)))
     (let ((ret (thunk hints)))
       (delete-addrinfo hints)
       ret)))

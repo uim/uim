@@ -350,21 +350,6 @@ make_arg_list(const opt_args *list)
   return ret_;
 }
 
-static uim_lisp
-make_args_or(const opt_args *list, int flag)
-{
-  uim_lisp ret_;
-  int i = 0;
-
-  ret_ = uim_scm_null();
-  while (list[i].arg != 0) {
-    if (list[i].flag & flag)
-      ret_ = CONS(MAKE_SYM(list[i].arg), ret_);
-    i++;
-  }
-  return uim_scm_callf("reverse", "o", ret_);
-}
-
 const static opt_args open_flags[] = {
   { O_CREAT,    "$O_CREAT" },
   { O_EXCL,     "$O_EXCL" },
@@ -417,18 +402,7 @@ c_file_open_mode(void)
 static uim_lisp
 c_file_open(uim_lisp path_, uim_lisp flags_, uim_lisp mode_)
 {
-  int flags = 0;
-  int mode = 0;
-
-  while (!NULLP(flags_)) {
-    flags |= C_INT(CAR(flags_));
-    flags_ = CDR(flags_);
-  }
-  while (!NULLP(mode_)) {
-    mode |= C_INT(CAR(mode_));
-    mode_ = CDR(mode_);
-  }
-  return MAKE_INT(open(REFER_C_STR(path_), flags, mode));
+  return MAKE_INT(open(REFER_C_STR(path_), C_INT(flags_), C_INT(mode_)));
 }
 
 static uim_lisp
@@ -557,7 +531,7 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
 
   ret_ = uim_scm_null();
   for (i = 0; i < ret; i++)
-    ret_ = CONS(CONS(MAKE_INT(fds[i].fd), make_args_or(poll_flags, fds[i].revents)), ret_);
+    ret_ = CONS(CONS(MAKE_INT(fds[i].fd), MAKE_INT(fds[i].revents)), ret_);
   free(fds);
   return uim_scm_callf("reverse", "o", ret_);
 }
