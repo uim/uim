@@ -349,6 +349,17 @@ c_sun_len(uim_lisp sun_)
   return MAKE_INT(SUN_LEN(sun));
 }
 
+static uim_lisp
+c_getpeereid(uim_lisp s_)
+{
+  uid_t euid;
+  gid_t egid;
+
+  if (getpeereid(C_INT(s_), &euid, &egid) == -1)
+    return uim_scm_f();
+  return CONS(MAKE_INT(euid), MAKE_INT(egid));
+}
+
 void
 uim_plugin_instance_init(void)
 {
@@ -399,6 +410,8 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc3("connect", c_connect);
   uim_scm_init_proc3("bind", c_bind);
   uim_scm_init_proc2("listen", c_listen);
+
+  uim_scm_init_proc1("getpeereid", c_getpeereid);
 }
 
 void
