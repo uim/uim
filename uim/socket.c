@@ -286,6 +286,12 @@ c_listen(uim_lisp s_, uim_lisp backlog_)
 }
 
 static uim_lisp
+c_accept(uim_lisp s_, uim_lisp name_, uim_lisp namelen_)
+{
+  return MAKE_INT(accept(C_INT(s_), C_PTR(name_), C_INT(namelen_)));
+}
+
+static uim_lisp
 c_make_sockaddr_un(void)
 {
   struct sockaddr_un *sun;
@@ -410,6 +416,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc3("connect", c_connect);
   uim_scm_init_proc3("bind", c_bind);
   uim_scm_init_proc2("listen", c_listen);
+  uim_scm_init_proc3("accept", c_accept);
 
   uim_scm_init_proc1("getpeereid", c_getpeereid);
 }
