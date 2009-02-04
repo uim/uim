@@ -290,9 +290,26 @@ c_listen(uim_lisp s_, uim_lisp backlog_)
 }
 
 static uim_lisp
-c_accept(uim_lisp s_, uim_lisp name_, uim_lisp namelen_)
+c_make_sockaddr_storage(void)
 {
-  return MAKE_INT(accept(C_INT(s_), C_PTR(name_), C_INT(namelen_)));
+  return MAKE_PTR(uim_malloc(sizeof(struct sockaddr_storage)));
+}
+
+static uim_lisp
+c_delete_sockaddr_storage(uim_lisp storage_)
+{
+  free(C_PTR(storage_));
+  return uim_scm_t();
+}
+
+static uim_lisp
+c_accept(uim_lisp s_, uim_lisp storage_)
+{
+  socklen_t storagelen;
+  struct sockaddr_storage *storage = C_PTR(storage_);
+
+  storagelen = sizeof(struct sockaddr_storage);
+  return MAKE_INT(accept(C_INT(s_), (struct sockaddr *)storage, &storagelen));
 }
 
 static uim_lisp
@@ -420,7 +437,10 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc3("connect", c_connect);
   uim_scm_init_proc3("bind", c_bind);
   uim_scm_init_proc2("listen", c_listen);
-  uim_scm_init_proc3("accept", c_accept);
+
+  uim_scm_init_proc0("make-sockaddr-storage", c_make_sockaddr_storage);
+  uim_scm_init_proc1("delete-sockaddr-storage", c_delete_sockaddr_storage);
+  uim_scm_init_proc2("accept", c_accept);
 
   uim_scm_init_proc1("getpeereid", c_getpeereid);
 }
