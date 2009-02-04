@@ -276,6 +276,18 @@ c_unsetenv(uim_lisp name)
 }
 
 static uim_lisp
+c_getuid(void)
+{
+  return MAKE_INT(getuid());
+}
+
+static uim_lisp
+c_getgid(void)
+{
+  return MAKE_INT(getgid());
+}
+
+static uim_lisp
 setugidp(void)
 {
   assert(uim_scm_gc_any_contextp());
@@ -632,6 +644,8 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("file-directory?", file_directoryp);
   uim_scm_init_proc1("file-mtime", file_mtime);
 
+  uim_scm_init_proc0("getuid", c_getuid);
+  uim_scm_init_proc0("getgid", c_getgid);
   uim_scm_init_proc0("setugid?", setugidp);
 
   uim_scm_init_proc1("getenv", c_getenv);
