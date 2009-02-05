@@ -109,7 +109,6 @@
                   )
           str)))
   (define (fetch url)
-    (print `(req ,(car (assq-cdr ajax-ime-url ajax-ime-url-alist)) ,(make-query)))
     (and-let* ((utf8-str (http:get (car (assq-cdr ajax-ime-url ajax-ime-url-alist))
                                    (make-query)
                                    80
