@@ -30,6 +30,7 @@
 ;;;;
 
 (require-extension (srfi 1 2))
+(require "posix.scm")
 (require "socket.scm")
 
 (define (http:open hostname servname)
@@ -61,12 +62,12 @@
         (string->list str))))
 
 (define (http:read-header port)
-  (let loop ((str (socket-read-line port))
+  (let loop ((str (file-read-line port))
              (rest '()))
     (if (or (null? str)
             (string=? "\r" str))
         (reverse rest)
-        (loop (socket-read-line port) (cons str rest)))))
+        (loop (file-read-line port) (cons str rest)))))
 
 (define (http:find-body-length l)
   (and-let* ((req (map (lambda (q)
@@ -100,14 +101,14 @@
 
 (define (http:get hostname path servname request-alist)
     (and-let* ((socket (http:open hostname servname))
-               (port (open-socket-port socket))
+               (port (open-file-port socket))
                (request (http:make-get-request-string hostname path request-alist))
-               (nr (socket-display request port))
+               (nr (file-display request port))
                (header (http:read-header port)))
       (let* ((body-length (http:find-body-length header))
              (body (if body-length
-                       (socket-read-buffer port body-length)
-                       (socket-get-buffer port))))
+                       (file-read-buffer port body-length)
+                       (file-get-buffer port))))
         (file-close socket)
         body)))
 

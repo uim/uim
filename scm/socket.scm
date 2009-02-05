@@ -49,15 +49,6 @@
 (define (addrinfo-ai-protocol-number s)
   (assq-cdr s addrinfo-ai-protocol-alist))
 
-(define (string->socket-buf str)
-  (map char->integer (string->list str)))
-(define (socket-buf->string buf)
-  (list->string (map integer->char buf)))
-(define (file-read-string s len)
-    (socket-buf->string (file-read s len)))
-(define (file-write-string s str)
-  (file-write s (string->socket-buf str)))
-
 (define (call-with-getaddrinfo-hints flags family socktype protocol thunk)
   (let* ((hints (make-addrinfo)))
     (and flags    (addrinfo-set-ai-flags!    hints
@@ -82,42 +73,3 @@
     (let ((ret (thunk sun)))
       (delete-sockaddr-un sun))))
 
-(define socket-bufsiz 16384)
-
-(define-record-type socket-port
-  (make-socket-port fd inbufsiz inbuf) socket-port?
-  (fd       fd?       fd!)
-  (inbufsiz inbufsiz? inbufsiz!)
-  (inbuf    inbuf?    inbuf!))
-
-(define (open-socket-port fd)
-  (make-socket-port fd socket-bufsiz '()))
-
-(define (socket-read-char port)
-  (if (null? (inbuf? port))
-      (inbuf! port (file-read (fd? port) (inbufsiz? port))))
-  (let ((c (car (inbuf? port))))
-    (inbuf! port (cdr (inbuf? port)))
-    (integer->char c)))
-
-(define (socket-peek-char port)
-  (if (null? (inbuf? port))
-      (inbuf! port (file-read (fd? port) (inbufsiz? port))))
-  (let ((c (car (inbuf? port))))
-    (integer->char c)))
-
-(define (socket-display str port)
-  (file-write (fd? port) (string->socket-buf str)))
-
-(define (socket-read-line port)
-  (let loop ((c (socket-read-char port))
-             (rest '()))
-    (if (eq? #\newline c)
-        (list->string (reverse rest))
-        (loop (socket-read-char port) (cons c rest)))))
-
-(define (socket-read-buffer port len)
-  (list->string (map (lambda (i) (socket-read-char port)) (iota len))))
-
-(define (socket-get-buffer port)
-  (socket-buf->string (inbuf? port)))
