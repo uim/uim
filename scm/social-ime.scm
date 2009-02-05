@@ -35,11 +35,10 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
+(require "http-client.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "social-ime-custom.scm")
 (require-custom "social-ime-key-custom.scm")
-
-(module-load "curl")
 
 ;;; implementations
 
@@ -60,8 +59,8 @@
 (define (social-ime-conversion str opts)
   (define (make-query user)
         (format "~a?string=~a&charset=EUC-JP&applicartion=uim~a~a"
-                social-ime-url
-                (curl-url-escape str)
+                social-ime-path
+                (http:encode-uri-string str)
                 user
                 opts))
   (define (parse str)
@@ -81,8 +80,8 @@
               ret2))
   (let* ((user (if (string=? social-ime-user "")
                    ""
-                   (format "&user=~a" (curl-url-escape social-ime-user))))
-         (ret (curl-fetch-simple (make-query user))))
+                   (format "&user=~a" (http:encode-uri-string social-ime-user))))
+         (ret (http:get social-ime-server (make-query user) 80 '())))
     (if (string? ret)
         (parse ret)
         (list (list str)))))

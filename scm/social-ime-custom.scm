@@ -301,10 +301,16 @@
 ;; social-ime-server
 ;;
 
-(define-custom 'social-ime-url "http://www.social-ime.com/api/"
+(define-custom 'social-ime-server "www.social-ime.com"
   '(social-ime-advanced social-ime-server)
   '(string ".*")
-  (N_ "Social-IME server url")
+  (N_ "Social-IME server address")
+  (N_ "long description will be here."))
+
+(define-custom 'social-ime-path "/api/"
+  '(social-ime-advanced social-ime-server)
+  '(string ".*")
+  (N_ "Social-IME server path")
   (N_ "long description will be here."))
 
 (define-custom 'social-ime-user (or (user-name) "")

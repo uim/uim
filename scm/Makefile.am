@@ -82,13 +82,13 @@ module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"  "look"
 if SCIM
   module_names += "scim"
 endif
+# web based IMs
 if CURL
-  module_names += "social-ime"
 if EXPAT
   module_names += "yahoo-jp"
 endif
 endif
-  module_names += "ajax-ime"
+  module_names += "ajax-ime" "social-ime"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
