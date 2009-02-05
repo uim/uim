@@ -36,11 +36,10 @@
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
 (require "input-parse.scm")
+(require "http-client.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "ajax-ime-custom.scm")
 (require-custom "ajax-ime-key-custom.scm")
-
-(module-load "curl")
 
 ;;; implementations
 
@@ -59,8 +58,8 @@
 (define ajax-ime-internal-context-new-internal ajax-ime-internal-context-new)
 
 (define ajax-ime-url-alist
-  '((ajax-ime . "http://api.chasen.org/ajaxime/")
-    (cha-ime  . "http://cl.naist.jp/~mamoru-k/chaime/api.cgi")))
+  '((ajax-ime . ("api.chasen.org" . "/ajaxime/"))
+    (cha-ime  . ("cl.naist.jp" . "/~mamoru-k/chaime/api.cgi"))))
 
 (define (ajax-ime-parse str)
   (define (ajax-ime:parse-quoted-word1 port)
@@ -104,13 +103,17 @@
     (let ((utf8-str (icovn-convert "UTF-8" "EUC-JP" str)))
       (if utf8-str
           (format "~a?action=conv&to=ime&query=~a~a"
-                  (cdr (assoc ajax-ime-url ajax-ime-url-alist))
-                  (curl-url-escape utf8-str)
+                  (cdr (assq-cdr ajax-ime-url ajax-ime-url-alist))
+                  (http:encode-uri-string utf8-str)
                   opts
                   )
           str)))
   (define (fetch url)
-    (and-let* ((utf8-str (curl-fetch-simple (make-query)))
+    (print `(req ,(car (assq-cdr ajax-ime-url ajax-ime-url-alist)) ,(make-query)))
+    (and-let* ((utf8-str (http:get (car (assq-cdr ajax-ime-url ajax-ime-url-alist))
+                                   (make-query)
+                                   80
+                                   '()))
                (euc-str (icovn-convert "EUC-JP" "UTF-8" utf8-str)))
               euc-str))
   (ajax-ime-parse (fetch (make-query))))

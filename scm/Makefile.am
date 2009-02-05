@@ -84,11 +84,11 @@ if SCIM
 endif
 if CURL
   module_names += "social-ime"
-  module_names += "ajax-ime"
 if EXPAT
   module_names += "yahoo-jp"
 endif
 endif
+  module_names += "ajax-ime"
 
 UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
