@@ -174,20 +174,21 @@
    (format "User-Agent: uim/~a\n" (uim-version))
    (http:make-request-string request-alist)))
 
-(define (http:get hostname path servname request-alist)
-  (let ((file (http:open hostname servname)))
-    (call-with-open-file-port
-     file
-     (lambda (port)
-       (and-let* ((request (http:make-get-request-string hostname path request-alist))
-                  (nr (file-display request port))
-                  (header (http:read-header port))
-                  (parsed-header (http:parse-header header)))
+(define (http:get hostname path servname . args)
+  (let-optionals* args ((request-alist '()))
+    (let ((file (http:open hostname servname)))
+      (call-with-open-file-port
+       file
+       (lambda (port)
+         (and-let* ((request (http:make-get-request-string hostname path request-alist))
+                    (nr (file-display request port))
+                    (header (http:read-header port))
+                    (parsed-header (http:parse-header header)))
 
-     (let ((content-length (http:content-length? parsed-header)))
-       (cond (content-length
-              (file-read-buffer port content-length))
-             ((http:chunked? parsed-header)
-              (http:read-chunk port))
-             (else
-              (file-get-buffer port)))))))))
+      (let ((content-length (http:content-length? parsed-header)))
+        (cond (content-length
+               (file-read-buffer port content-length))
+              ((http:chunked? parsed-header)
+               (http:read-chunk port))
+              (else
+               (file-get-buffer port))))))))))
