@@ -35,11 +35,11 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
+(require "http-client.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "yahoo-jp-custom.scm")
 (require-custom "yahoo-jp-key-custom.scm")
 
-(module-load "curl")
 (module-load "expat")
 
 ;;; implementations
@@ -70,9 +70,9 @@
       ret))
   (define (make-query appid)
     (format "~aconversion?appid=~a&sentence=~a~a"
-            yahoo-jp-url
+            yahoo-jp-path
             appid
-            (curl-url-escape (fromconv str))
+            (http:encode-uri-string (fromconv str))
             opts))
   (define (parse str)
     (let ((parser (xml-parser-create "UTF-8"))
@@ -111,7 +111,7 @@
                            #f)
                     yahoo-jp-appid))
          (ret (and appid
-                   (curl-fetch-simple (make-query appid)))))
+                   (http:get yahoo-jp-server (make-query appid) 80))))
     (if (string? ret)
         (parse ret)
         (cons '() (list (list str))))))

@@ -301,10 +301,16 @@
 ;; yahoo-jp-server
 ;;
 
-(define-custom 'yahoo-jp-url "http://jlp.yahooapis.jp/JIMService/V1/"
+(define-custom 'yahoo-jp-server "jlp.yahooapis.jp"
   '(yahoo-jp-advanced yahoo-jp-server)
   '(string ".*")
-  (N_ "Yahoo-Jp server url")
+  (N_ "Yahoo-Jp server address")
+  (N_ "long description will be here."))
+
+(define-custom 'yahoo-jp-path "/JIMService/V1/"
+  '(yahoo-jp-advanced yahoo-jp-server)
+  '(string ".*")
+  (N_ "Yahoo-Jp service path")
   (N_ "long description will be here."))
 
 (define-custom 'yahoo-jp-appid ""
