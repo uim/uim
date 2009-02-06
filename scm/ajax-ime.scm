@@ -108,11 +108,13 @@
                   opts
                   )
           str)))
+  (define proxy (and (eq? http-proxy-setting 'user)
+                     (make-http-proxy http-proxy-hostname http-proxy-port)))
   (define (fetch url)
     (and-let* ((utf8-str (http:get (car (assq-cdr ajax-ime-url ajax-ime-url-alist))
                                    (make-query)
                                    80
-                                   '()))
+                                   proxy))
                (euc-str (icovn-convert "EUC-JP" "UTF-8" utf8-str)))
               euc-str))
   (ajax-ime-parse (fetch (make-query))))

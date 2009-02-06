@@ -81,7 +81,9 @@
   (let* ((user (if (string=? social-ime-user "")
                    ""
                    (format "&user=~a" (http:encode-uri-string social-ime-user))))
-         (ret (http:get social-ime-server (make-query user) 80 '())))
+         (proxy (and (eq? http-proxy-setting 'user)
+                     (make-http-proxy http-proxy-hostname http-proxy-port)))
+         (ret (http:get social-ime-server (make-query user) 80 proxy)))
     (if (string? ret)
         (parse ret)
         (list (list str)))))

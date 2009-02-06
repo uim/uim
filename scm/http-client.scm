@@ -29,26 +29,34 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1 2))
+(require-extension (srfi 1 2 9))
 (require "posix.scm")
 (require "socket.scm")
 (require "input-parse.scm")
 
 (define (http:open hostname servname)
-  (call-with-getaddrinfo-hints
-   '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-   (lambda (hints)
-     (call-with-getaddrinfo
-      hostname servname hints
-      (lambda (res)
-        (let* ((res0 (car res))
-               (s (socket (addrinfo-ai-family? res0)
-                          (addrinfo-ai-socktype? res0)
-                          (addrinfo-ai-protocol? res0))))
-          (connect s
-                   (addrinfo-ai-addr? res0)
-                   (addrinfo-ai-addrlen? res0))
-          s))))))
+  (filter integer?
+          (call-with-getaddrinfo-hints
+           '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+           (lambda (hints)
+             (call-with-getaddrinfo
+              hostname servname hints
+              (lambda (res)
+                (map (lambda (res0)
+                       (let ((s (socket (addrinfo-ai-family? res0)
+                                        (addrinfo-ai-socktype? res0)
+                                        (addrinfo-ai-protocol? res0))))
+                         (if (< s 0)
+                             #f
+                             (if (< (connect s
+                                             (addrinfo-ai-addr? res0)
+                                             (addrinfo-ai-addrlen? res0))
+                                    0)
+                                 (begin
+                                   (file-close s)
+                                   #f
+                                   s)))))
+                     res)))))))
 
 (define (http:encode-uri-string str)
   (define hex '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"))
@@ -133,7 +141,7 @@
                         (status-code
                          (next-token '(#\space) '(#\space) "Invalid header" port))
                         (reason-phrase
-                         (next-token '(#\space) '(#\space #\return *eof*) "Invalid header" port)))
+                         (next-token '(#\space) '(#\return *eof*) "Invalid header" port)))
                     (loop (cdr lines)
                           (cdr state)
                           (cons (cons 'header
@@ -167,21 +175,42 @@
          (append request-alist)))
    "\n"))
 
-(define (http:make-get-request-string hostname path request-alist)
+(define-record-type http-proxy
+  (make-http-proxy hostname port) http-proxy?
+  (hostname hostname? hostname!)
+  (port     port?     port!))
+
+(define (http:make-proxy-request-string hostname port)
   (string-append
+   (format "CONNECT ~a:~d HTTP/1.1\n\n" hostname port)))
+
+(define (http:make-get-request-string hostname path servname proxy request-alist)
+  (string-append
+   (if proxy
+       (http:make-proxy-request-string hostname servname)
+       "")
    (format "GET ~a HTTP/1.1\n" path)
    (format "Host: ~a\n" hostname)
    (format "User-Agent: uim/~a\n" (uim-version))
    (http:make-request-string request-alist)))
 
-(define (http:get hostname path servname . args)
-  (let-optionals* args ((request-alist '()))
-    (let ((file (http:open hostname servname)))
+(define (http:get hostname path . args)
+  (let-optionals* args ((servname 80)
+                        (proxy #f)
+                        (request-alist '()))
+    (let ((file (if proxy
+                    (http:open (hostname? proxy) (port? proxy))
+                    (http:open hostname servname))))
+      (if (null? file)
+          (uim-notify-fatal "cannot connect server"))
       (call-with-open-file-port
-       file
+       (car file)
        (lambda (port)
-         (and-let* ((request (http:make-get-request-string hostname path request-alist))
+         (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
                     (nr (file-display request port))
+                    (proxy-header (if proxy
+                                      (http:read-header port)
+                                      '()))
                     (header (http:read-header port))
                     (parsed-header (http:parse-header header)))
 

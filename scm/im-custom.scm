@@ -579,6 +579,49 @@
   (N_ "Notify agent name")
   (N_ "long description will be here."))
 
+(define-custom-group 'http
+		     (N_ "Http")
+		     (N_ "long description will be here."))
+
+(define-custom 'http-proxy-setting 'direct
+  '(http)
+  (list 'choice
+        (list 'direct
+              (N_ "Direct")
+              (N_ "Direct connection, no proxy."))
+        (list 'user
+              (N_ "User")
+              (N_ "Use proxy."))
+        ;;(list 'system
+        ;;      (N_ "System")
+        ;;      (N_ "Use proxy with system setting.")))
+        )
+  (N_ "Proxy setting")
+  (N_ "long description will be here."))
+
+(define-custom 'http-proxy-hostname "localhost"
+  '(http)
+  '(string ".*")
+  (N_ "Http proxy hostname")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'http-proxy-hostname
+		 'custom-activity-hooks
+		 (lambda ()
+                   (eq? http-proxy-setting
+                        'user)))
+
+(define-custom 'http-proxy-port 8080
+  '(http)
+  '(integer 0 65535)
+  (N_ "Http proxy port")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'http-proxy-port
+		 'custom-activity-hooks
+		 (lambda ()
+                   (eq? http-proxy-setting
+                        'user)))
 
 (if custom-full-featured?
     (for-each require-module installed-im-module-list))
