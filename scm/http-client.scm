@@ -32,6 +32,7 @@
 (require-extension (srfi 1 2))
 (require "posix.scm")
 (require "socket.scm")
+(require "input-parse.scm")
 
 (define (http:open hostname servname)
   (call-with-getaddrinfo-hints
@@ -61,6 +62,94 @@
           (hex-format2 (char->integer c)))
         (string->list str))))
 
+(define (http:read-chunk port)
+  (define (hex-decode str)
+    (define hex-alist '((#\0 . 0)  (#\1 . 1)  (#\2 . 2)  (#\3 . 3) (#\4 . 4)
+                        (#\5 . 5)  (#\6 . 6)  (#\7 . 7)  (#\8 . 8) (#\9 . 9)
+                        (#\a . 10) (#\A . 10) (#\b . 11) (#\B . 11)
+                        (#\c . 12) (#\C . 12) (#\d . 13) (#\D . 13)
+                        (#\e . 14) (#\E . 14) (#\f . 15) (#\F . 15)))
+    (let ((n (reverse
+              (map (lambda (c)
+                     (assq-cdr c hex-alist))
+                   (string->list str)))))
+      (let loop ((l n)
+                 (sum 0))
+        (if (null? l)
+            sum
+            (loop (map (lambda (x) (* 16 x)) (cdr l))
+                  (+ sum (car l)))))))
+  (define (http:drop-cr line)
+    (apply string-append (string-split line "\r")))
+  (define (http:drop-space line)
+    (apply string-append (string-split line " ")))
+
+  (let loop ((len-str (http:drop-space (http:drop-cr (file-read-line port))))
+             (rest '()))
+    (let ((len (guard (err
+                       (else #f))
+                      (hex-decode len-str))))
+      (if (or (not len) (= len 0))
+          (apply string-append (reverse rest))
+          (let ((buf (file-read-buffer port len)))
+            (file-read-line port) ;; blank
+            (loop (http:drop-cr (file-read-line port)) (cons buf rest)))))))
+
+(define (http:header-field-search l h)
+  (find (lambda (x)
+          (and (string? (car x))
+               (string-ci=? (car x) h))) l))
+
+(define (http:chunked? l)
+  (and-let* ((f (http:header-field-search l "transfer-encoding"))
+             (l (string-split (cdr f) ";"))
+             (ent (find (lambda (ent)
+                          (string=? "chunked" ent))
+                        l)))
+            #t))
+(define (http:content-length? l)
+  (and-let* ((ret (http:header-field-search l "content-length")))
+            (guard (err
+                    (else #f))
+                   (string->number (cdr ret)))))
+
+(define (http:parse-header lines)
+  (let loop ((lines lines)
+             (state '(status header))
+             (rest '()))
+    (if (null? lines)
+        (reverse rest)
+        (call-with-input-string
+         (car lines)
+         (lambda (port)
+           (cond ((eq? 'status (car state))
+                  (let ((version
+                         (find-string-from-port?
+                          "HTTP/"
+                          port))
+                        (version-number
+                         (next-token '(#\space #\.) '(#\space) "Invalid header"
+                                     port))
+                        (status-code
+                         (next-token '(#\space) '(#\space) "Invalid header" port))
+                        (reason-phrase
+                         (next-token '(#\space) '(#\space #\return *eof*) "Invalid header" port)))
+                    (loop (cdr lines)
+                          (cdr state)
+                          (cons (cons 'header
+                                      (list (cons 'version-number version-number)
+                                            (cons 'status-code status-code)
+                                            (cons 'reason-phrase reason-phrase)))
+                                rest))))
+                 ((eq? 'header (car state))
+                  (let ((field-name
+                         (next-token '(#\space #\tab) '(#\:) "Invalid header" port))
+                        (field-value
+                         (next-token '(#\: #\space #\tab) '(#\return *eof*) "Invalid header" port)))
+                    (loop (cdr lines)
+                          state
+                          (cons (cons field-name field-value) rest))))))))))
+
 (define (http:read-header port)
   (let loop ((str (file-read-line port))
              (rest '()))
@@ -68,20 +157,6 @@
             (string=? "\r" str))
         (reverse rest)
         (loop (file-read-line port) (cons str rest)))))
-
-(define (http:find-body-length l)
-  (and-let* ((req (map (lambda (q)
-                         (string-split
-                          (car (string-split q "\r"))
-                          ": "))
-                       l))
-             (cl (find (lambda (q)
-                         (and (= 2 (length q))
-                              (string-ci=? "content-length" (car q))))
-                       req)))
-    (guard (err
-            (else #f))
-           (string->number (cadr cl)))))
 
 (define (http:make-request-string request-alist)
   (string-append
@@ -94,21 +169,25 @@
 
 (define (http:make-get-request-string hostname path request-alist)
   (string-append
-   (format "GET ~a HTTP/1.0\n" path)
+   (format "GET ~a HTTP/1.1\n" path)
    (format "Host: ~a\n" hostname)
-   (format "User-Agent: uim-~a\n" (uim-version))
+   (format "User-Agent: uim/~a\n" (uim-version))
    (http:make-request-string request-alist)))
 
 (define (http:get hostname path servname request-alist)
-    (and-let* ((socket (http:open hostname servname))
-               (port (open-file-port socket))
-               (request (http:make-get-request-string hostname path request-alist))
-               (nr (file-display request port))
-               (header (http:read-header port)))
-      (let* ((body-length (http:find-body-length header))
-             (body (if body-length
-                       (file-read-buffer port body-length)
-                       (file-get-buffer port))))
-        (file-close socket)
-        body)))
+  (let ((file (http:open hostname servname)))
+    (call-with-open-file-port
+     file
+     (lambda (port)
+       (and-let* ((request (http:make-get-request-string hostname path request-alist))
+                  (nr (file-display request port))
+                  (header (http:read-header port))
+                  (parsed-header (http:parse-header header)))
 
+     (let ((content-length (http:content-length? parsed-header)))
+       (cond (content-length
+              (file-read-buffer port content-length))
+             ((http:chunked? parsed-header)
+              (http:read-chunk port))
+             (else
+              (file-get-buffer port)))))))))
