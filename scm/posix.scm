@@ -51,6 +51,12 @@
 (define (open-file-port fd)
   (make-file-port fd file-bufsiz '()))
 
+(define (call-with-open-file-port fd thunk)
+  (and (< 0 fd)
+       (let ((ret (thunk (open-file-port fd))))
+         (file-close fd)
+         ret)))
+
 (define (file-read-char port)
   (if (null? (inbuf? port))
       (inbuf! port (file-read (fd? port) (inbufsiz? port))))
