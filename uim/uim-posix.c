@@ -587,6 +587,16 @@ c_file_ready(uim_lisp fd_)
 }
 
 static uim_lisp
+c_create_pipe(void)
+{
+  int fildes[2];
+
+  if (pipe(fildes) == -1)
+    return uim_scm_f();
+  return CONS(MAKE_INT(fildes[0]), MAKE_INT(fildes[1]));
+}
+
+static uim_lisp
 c_current_process_id(void)
 {
   return MAKE_INT(getpid());
@@ -699,6 +709,8 @@ uim_init_posix_subrs(void)
   uim_scm_eval_c_string("(define poll-flags-alist (file-poll-flags?))");
 
   uim_scm_init_proc1("file-ready?", c_file_ready);
+
+  uim_scm_init_proc0("create-pipe", c_create_pipe);
 
   uim_scm_init_proc0("current-process-id", c_current_process_id);
   uim_scm_init_proc0("parent-process-id",  c_parent_process_id);
