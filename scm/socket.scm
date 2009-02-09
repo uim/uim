@@ -71,5 +71,6 @@
     (sockaddr-set-un-sun-family! sun family)
     (sockaddr-set-un-sun-path! sun path)
     (let ((ret (thunk sun)))
-      (delete-sockaddr-un sun))))
+      (delete-sockaddr-un sun)
+      ret)))
 
