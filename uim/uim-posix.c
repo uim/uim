@@ -161,6 +161,15 @@ uim_check_dir(const char *dir)
   }
 }
 
+static uim_lisp
+c_check_dir(uim_lisp dir_)
+{
+  if (!uim_check_dir(REFER_C_STR(dir_))) {
+    return uim_scm_f();
+  }
+  return uim_scm_t();
+}
+
 uim_bool
 uim_get_config_path(char *path, int len, int is_getenv)
 {
@@ -187,6 +196,16 @@ uim_get_config_path(char *path, int len, int is_getenv)
   }
 
   return UIM_TRUE;
+}
+
+static uim_lisp
+c_get_config_path(uim_lisp is_getenv_)
+{
+  char path[MAXPATHLEN];
+
+  if (!uim_get_config_path(path, sizeof(path), C_BOOL(is_getenv_)))
+    return uim_scm_f();
+  return MAKE_STR(path);
 }
 
 static uim_lisp
@@ -243,6 +262,24 @@ file_mtime(uim_lisp filename)
     ERROR_OBJ("stat failed for file", filename);
 
   return MAKE_INT(st.st_mtime);
+}
+
+static uim_lisp
+c_unlink(uim_lisp path_)
+{
+  return MAKE_INT(unlink(REFER_C_STR(path_)));
+}
+
+static uim_lisp
+c_mkdir(uim_lisp path_, uim_lisp mode_)
+{
+  return MAKE_INT(mkdir(REFER_C_STR(path_), C_INT(mode_)));
+}
+
+static uim_lisp
+c_chdir(uim_lisp path_)
+{
+  return MAKE_INT(chdir(REFER_C_STR(path_)));
 }
 
 static uim_lisp
@@ -751,12 +788,19 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc0("user-name", user_name);
   uim_scm_init_proc1("home-directory", home_directory);
 
+  uim_scm_init_proc1("create/check-directory!", c_check_dir);
+  uim_scm_init_proc1("get-config-path!", c_get_config_path);
+
   uim_scm_init_proc1("file-readable?", file_readablep);
   uim_scm_init_proc1("file-writable?", file_writablep);
   uim_scm_init_proc1("file-executable?", file_executablep);
   uim_scm_init_proc1("file-regular?", file_regularp);
   uim_scm_init_proc1("file-directory?", file_directoryp);
   uim_scm_init_proc1("file-mtime", file_mtime);
+
+  uim_scm_init_proc1("unlink", c_unlink);
+  uim_scm_init_proc2("mkdir", c_mkdir);
+  uim_scm_init_proc1("chdir", c_chdir);
 
   uim_scm_init_proc0("getuid", c_getuid);
   uim_scm_init_proc0("getgid", c_getgid);
