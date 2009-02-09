@@ -296,6 +296,12 @@ setugidp(void)
 }
 
 static uim_lisp
+c_setsid(void)
+{
+  return MAKE_INT(setsid());
+}
+
+static uim_lisp
 time_t_to_uim_lisp(time_t t)
 {
   char t_str[64];
@@ -755,6 +761,8 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc0("getuid", c_getuid);
   uim_scm_init_proc0("getgid", c_getgid);
   uim_scm_init_proc0("setugid?", setugidp);
+
+  uim_scm_init_proc0("setsid", c_setsid);
 
   uim_scm_init_proc1("getenv", c_getenv);
   uim_scm_init_proc3("setenv", c_setenv);
