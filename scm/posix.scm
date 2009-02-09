@@ -106,3 +106,40 @@
     (if envp
         (execve file argv envp)
         (execvp file argv))))
+
+(define (process-io file . args)
+  (let-optionals* args ((argv (list file)))
+    (and-let* ((pin (create-pipe))
+               (pout (create-pipe))
+               (pin-in  (car pin))
+               (pin-out (cdr pin))
+               (pout-in  (car pout))
+               (pout-out (cdr pout)))
+      (let ((pid (process-fork)))
+        (cond ((< pid 0)
+               (begin
+                 (uim-notify-fatal "cannot fork")
+                 (file-close pin-in)
+                 (file-close pin-out)
+                 (file-close pout-in)
+                 (file-close pout-out)
+                 #f))
+              ((= 0 pid) ;; child
+               (setsid)
+               (file-close pin-out)
+               (if (< (duplicate-fileno pin-in 0) 0)
+                   (uim-notify-fatal "cannot duplicate stdin"))
+               (file-close pin-in)
+
+               (file-close pout-in)
+               (if (< (duplicate-fileno pout-out 1) 0)
+                   (uim-notify-fatal "cannot duplicate stdout"))
+               (file-close pout-out)
+
+               (process-execute file argv)
+               (_exit 1)
+               )
+              (else ;; parent
+               (file-close pin-in)
+               (file-close pout-out)
+               (cons pout-in pin-out)))))))
