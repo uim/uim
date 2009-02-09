@@ -90,5 +90,5 @@
   (file-buf->string (inbuf? port)))
 
 (define (duplicate-fileno oldd . args)
-  (let-optionals* args ((newd . #f))
+  (let-optionals* args ((newd #f))
      (duplicate2-fileno oldd newd)))
