@@ -60,15 +60,19 @@
 (define (file-read-char port)
   (if (null? (inbuf? port))
       (inbuf! port (file-read (fd? port) (inbufsiz? port))))
-  (let ((c (car (inbuf? port))))
-    (inbuf! port (cdr (inbuf? port)))
-    (integer->char c)))
+  (if (null? (inbuf? port))
+      #f
+      (let ((c (car (inbuf? port))))
+        (inbuf! port (cdr (inbuf? port)))
+        (integer->char c))))
 
 (define (file-peek-char port)
   (if (null? (inbuf? port))
       (inbuf! port (file-read (fd? port) (inbufsiz? port))))
-  (let ((c (car (inbuf? port))))
-    (integer->char c)))
+  (if (null? (inbuf? port))
+      #f
+      (let ((c (car (inbuf? port))))
+        (integer->char c))))
 
 (define (file-display str port)
   (file-write (fd? port) (string->file-buf str)))
@@ -79,9 +83,12 @@
 (define (file-read-line port)
   (let loop ((c (file-read-char port))
              (rest '()))
-    (if (eq? #\newline c)
-        (list->string (reverse rest))
-        (loop (file-read-char port) (cons c rest)))))
+    (cond ((eq? #\newline c)
+           (list->string (reverse rest)))
+          ((eq? #f c)
+           #f)
+          (else
+           (loop (file-read-char port) (cons c rest))))))
 
 (define (file-read-buffer port len)
   (list->string (map (lambda (i) (file-read-char port)) (iota len))))
