@@ -682,7 +682,7 @@ c_execve(uim_lisp file_, uim_lisp argv_, uim_lisp envp_)
   }
   argv[argv_len] = NULL;
 
-  if (FALSEP(envp_)) {
+  if (FALSEP(envp_) || NULLP(envp_)) {
     envp_len = 0;
     envp = NULL;
   } else {
