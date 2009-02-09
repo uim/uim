@@ -54,8 +54,8 @@
                                     0)
                                  (begin
                                    (file-close s)
-                                   #f
-                                   s)))))
+                                   #f)
+                                 s))))
                      res)))))))
 
 (define (http:encode-uri-string str)
