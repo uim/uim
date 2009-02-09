@@ -490,7 +490,7 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
 }
 
 static uim_lisp
-c_duplicate_fileno(uim_lisp oldd_, uim_lisp newd_)
+c_duplicate2_fileno(uim_lisp oldd_, uim_lisp newd_)
 {
   if (FALSEP(newd_))
     return MAKE_INT(dup(C_INT(oldd_)));
@@ -700,7 +700,7 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc1("file-close", c_file_close);
   uim_scm_init_proc2("file-read", c_file_read);
   uim_scm_init_proc2("file-write", c_file_write);
-  uim_scm_init_proc2("duplicate-fileno", c_duplicate_fileno);
+  uim_scm_init_proc2("duplicate2-fileno", c_duplicate2_fileno);
 
   uim_scm_init_proc2("file-poll", c_file_poll);
   uim_scm_init_proc0("file-poll-flags?", c_file_poll_flags);
