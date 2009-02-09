@@ -661,6 +661,84 @@ c_daemon(uim_lisp nochdir_, uim_lisp noclose_)
   return MAKE_INT(daemon(C_BOOL(nochdir_), C_BOOL(noclose_)));
 }
 
+static uim_lisp
+c_execve(uim_lisp file_, uim_lisp argv_, uim_lisp envp_)
+{
+  char **argv;
+  char **envp;
+  int i;
+  int argv_len = uim_scm_length(argv_);
+  int envp_len;
+  uim_lisp ret_;
+
+  if (argv_len < 1)
+    return uim_scm_f();
+
+  argv = uim_malloc(sizeof(char *) * (argv_len + 1));
+
+  for (i = 0; i < argv_len; i++) {
+    argv[i] = uim_strdup(REFER_C_STR(CAR(argv_)));
+    argv_ = CDR(argv_);
+  }
+  argv[argv_len] = NULL;
+
+  if (FALSEP(envp_)) {
+    envp_len = 0;
+    envp = NULL;
+  } else {
+    envp_len = uim_scm_length(envp_);
+    envp = uim_malloc(sizeof(char *) * (envp_len + 1));
+
+    for (i = 0; i < envp_len; i++) {
+      uim_lisp env_ = CAR(envp_);
+
+      uim_asprintf(&envp[i], "%s=%s", REFER_C_STR(CAR(env_)), REFER_C_STR(CDR(env_)));
+      envp_ = CDR(envp_);
+    }
+    envp[envp_len] = NULL;
+  }
+
+  ret_ = MAKE_INT(execve(REFER_C_STR(file_), argv, envp));
+
+  for (i = 0; i < argv_len; i++)
+    free(argv[i]);
+  free(argv);
+
+  for (i = 0; i < envp_len; i++)
+    free(envp[i]);
+  free(envp);
+
+  return ret_;
+}
+
+static uim_lisp
+c_execvp(uim_lisp file_, uim_lisp argv_)
+{
+  char **argv;
+  int i;
+  int len = uim_scm_length(argv_);
+  uim_lisp ret_;
+
+  if (len < 1)
+    return uim_scm_f();
+
+  argv = uim_malloc(sizeof(char *) * (len + 1));
+
+  for (i = 0; i < len; i++) {
+    argv[i] = uim_strdup(REFER_C_STR(CAR(argv_)));
+    argv_ = CDR(argv_);
+  }
+  argv[len] = NULL;
+
+  ret_ = MAKE_INT(execvp(REFER_C_STR(file_), argv));
+
+  for (i = 0; i < len; i++)
+    free(argv[i]);
+  free(argv);
+
+  return ret_;
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -723,4 +801,7 @@ uim_init_posix_subrs(void)
   uim_scm_eval_c_string("(define process-waitpid-options-alist (process-waitpid-options?))");
 
   uim_scm_init_proc2("daemon", c_daemon);
+
+  uim_scm_init_proc3("execve", c_execve);
+  uim_scm_init_proc2("execvp", c_execvp);
 }

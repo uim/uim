@@ -92,3 +92,10 @@
 (define (duplicate-fileno oldd . args)
   (let-optionals* args ((newd #f))
      (duplicate2-fileno oldd newd)))
+
+(define (process-execute file . args)
+  (let-optionals* args ((argv (list file))
+                        (envp #f))
+    (if envp
+        (execve file argv envp)
+        (execvp file argv))))
