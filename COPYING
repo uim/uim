@@ -44,6 +44,10 @@ Supplementary explanation (only for help and not legal):
     all the code and the documentation on this site is in public domain.'
     http://okmij.org/ftp/
 
+  * scm/match.scm is public domain. 'Feel free to copy, distribute, and
+    modify this software as desired.  No warranties nor guarantees of
+    any kind apply.'
+
   * helper/eggtrayicon.[ch] is come from libegg, so you can use,
     modify, distribute and sell uim-toolbar-gtk-systray under the
     terms of LGPL *only*.
