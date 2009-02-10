@@ -143,3 +143,17 @@
                (file-close pin-in)
                (file-close pout-out)
                (cons pout-in pin-out)))))))
+
+(define (process-with-daemon file . args)
+  (let-optionals* args ((argv (list file)))
+    (let ((pid (process-fork)))
+      (cond ((< pid 0)
+             (begin
+               (uim-notify-fatal "cannot fork")
+               #f))
+            ((= 0 pid) ;; child
+             (daemon 0 1)
+             (process-execute file argv)
+             (_exit 1))
+            (else
+             pid)))))
