@@ -31,6 +31,7 @@
 
 (require-extension (srfi 1 2 9))
 (use util)
+(require "fileio.scm")
 (module-load "socket")
 
 (define addrinfo-ai-flags-alist (addrinfo-ai-flags-alist?))

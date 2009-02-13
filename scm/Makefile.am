@@ -43,7 +43,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  ajax-ime.scm ajax-ime-custom.scm ajax-ime-key-custom.scm \
  yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
  uim-module-manager.scm \
- posix.scm socket.scm http-client.scm \
+ posix.scm fileio.scm socket.scm http-client.scm \
  input-parse.scm match.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)

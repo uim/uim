@@ -53,6 +53,12 @@ libuim_la_SOURCES = \
 		gettext.h intl.c \
 		rk.c
 
+uim_plugin_LTLIBRARIES += libuim-fileio.la
+libuim_fileio_la_SOURCES = fileio.c
+libuim_fileio_la_LIBADD = libuim-scm.la libuim.la
+libuim_fileio_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_fileio_la_CPPFLAGS = -I$(top_srcdir)
+
 uim_plugin_LTLIBRARIES += libuim-socket.la
 libuim_socket_la_SOURCES = socket.c
 libuim_socket_la_LIBADD = libuim-scm.la libuim.la
