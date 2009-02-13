@@ -30,7 +30,6 @@
 ;;;;
 
 (require-extension (srfi 1 2 9))
-(require "posix.scm")
 (require "socket.scm")
 (require "input-parse.scm")
 
