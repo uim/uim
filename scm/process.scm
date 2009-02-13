@@ -1,4 +1,4 @@
-;;; posix.scm: posix functions for uim.
+;;; process.scm: process operation functions for uim.
 ;;;
 ;;; Copyright (c) 2009-2009 uim Project http://code.google.com/p/uim/
 ;;;
@@ -28,6 +28,13 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
+
+(require "fileio.scm")
+(and (not (provided? "process"))
+     (module-load "process")
+     (provide "process"))
+
+(define process-waitpid-options-alist (process-waitpid-options?))
 
 (define (process-execute file . args)
   (let-optionals* args ((argv (list file))

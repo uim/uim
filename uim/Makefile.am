@@ -65,6 +65,12 @@ libuim_socket_la_LIBADD = libuim-scm.la libuim.la
 libuim_socket_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_socket_la_CPPFLAGS = -I$(top_srcdir)
 
+uim_plugin_LTLIBRARIES += libuim-process.la
+libuim_process_la_SOURCES = process.c
+libuim_process_la_LIBADD = libuim-scm.la libuim.la
+libuim_process_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_process_la_CPPFLAGS = -I$(top_srcdir)
+
 if NOTIFY
 libuim_la_SOURCES += uim-notify.c
 endif
