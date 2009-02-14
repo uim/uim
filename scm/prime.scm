@@ -933,7 +933,7 @@
     (car (prime-engine-send-command prime-connection (list "conv_commit" prime-session)))))
 
 (define prime-engine-modify-cursor-internal
-  (lambda (prime-session prime-connection command)
+  (lambda (prime-connection prime-session command)
     (prime-util-string-split
      (car (prime-engine-send-command prime-connection (list command prime-session)))
      "\t")))
