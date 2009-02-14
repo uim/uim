@@ -100,7 +100,7 @@ msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
 "POT-Creation-Date: 2009-01-05 15:55+0900\n"
-"PO-Revision-Date: 2009-01-05 20:52+0900\n"
+"PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
@@ -1273,7 +1273,7 @@ msgstr "Ajax-IME キー設定3"
 
 #: ../scm/ajax-ime-key-custom.scm:47
 msgid "Ajax-IME key bindings 4"
-msgstr "Ajax-IME キー設定1"
+msgstr "Ajax-IME キー設定4"
 
 #: ../scm/ajax-ime-key-custom.scm:53
 msgid "[Ajax-IME] next segment"
