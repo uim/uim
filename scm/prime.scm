@@ -47,6 +47,7 @@
 (require-custom "generic-key-custom.scm")
 (require-custom "prime-custom.scm")
 (require-custom "prime-key-custom.scm")
+(require-extension (srfi 1 2 48))
 
 ;; config function
 ;; should be replaced with boolean custom variable  -- YamaKen 2005-01-15
@@ -854,8 +855,7 @@
 (define prime-socket-path!
   (lambda ()
     (let ((config-path (get-config-path! #f)))
-      (if (and (create/check-directory! (format "~a/socket" config-path))
-               (create/check-directory! (format "~a/socket/uim-prime" config-path)))
+      (if (create/check-directory! (format "~a/socket" config-path))
           (format "~a/socket/uim-prime" config-path)
           (begin
             (uim-notify-fatal "cannot create socket directory")
