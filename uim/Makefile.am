@@ -150,14 +150,6 @@ libuim_mana_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_mana_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
-if PRIME
-  uim_plugin_LTLIBRARIES += libuim-prime.la
-  libuim_prime_la_SOURCES = prime.c
-  libuim_prime_la_LIBADD = libuim-scm.la libuim.la
-  libuim_prime_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-  libuim_prime_la_CPPFLAGS = -I$(top_srcdir)
-endif
-
 if CURL
 uim_plugin_LTLIBRARIES += libuim-curl.la
 libuim_curl_la_SOURCES = curl.c

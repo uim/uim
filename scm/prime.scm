@@ -42,6 +42,8 @@
 
 (require "util.scm")
 (require "japanese.scm")
+(require "process.scm")
+(require "socket.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "prime-custom.scm")
 (require-custom "prime-key-custom.scm")
@@ -552,7 +554,7 @@
     (if (not (prime-context-session context))
 	(begin
 	  ;; The prime server is initialized here.
-	  (prime-lib-init prime-use-unixdomain?)
+	  (prime-context-set-connection! context (prime-connection-init))
 	  (let* ((connection (prime-context-connection context))
                  (session (prime-engine-session-start connection)))
 	    (prime-custom-init connection)
@@ -810,25 +812,90 @@
 ;;;; prime-engine: Functions to connect with a prime server.
 ;;;; ------------------------------------------------------------
 
+(define prime-open-unix-domain-socket
+  (lambda (socket-path)
+    (let ((s (socket (addrinfo-ai-family-number '$PF_LOCAL)
+                     (addrinfo-ai-socktype-number '$SOCK_STREAM)
+                     0)))
+      (if (< s 0)
+          #f
+          (call-with-sockaddr-un
+           (addrinfo-ai-family-number '$PF_LOCAL)
+           socket-path
+           (lambda (sun)
+             (if (< (connect s sun (sun-len sun))
+                    0)
+                 (begin
+                   (file-close s)
+                   #f)
+                 (cons s s))))))))
+
+(define prime-open-with-unix-domain-socket
+  (lambda (socket-path)
+    (let ((fds (prime-open-unix-domain-socket socket-path)))
+      (or fds
+          (begin
+            (unlink socket-path)
+            (process-with-daemon "prime" (list "prime" "-u" socket-path))
+            (let loop ((fds (prime-open-unix-domain-socket socket-path))
+                       (giveup 100))
+              (cond ((= giveup 0)
+                     (uim-notify-fatal
+                      (format "cannot create socket file \"~a\"" socket-path))
+                     #f ;; XXX
+                     )
+                    ((not fds)
+                     (sleep 1)
+                     (loop (prime-open-unix-domain-socket socket-path)
+                           (dec giveup)))
+                    (else
+                     fds))))))))
+
+(define prime-socket-path!
+  (lambda ()
+    (let ((config-path (get-config-path! #f)))
+      (if (and (create/check-directory! (format "~a/socket" config-path))
+               (create/check-directory! (format "~a/socket/uim-prime" config-path)))
+          (format "~a/socket/uim-prime" config-path)
+          (begin
+            (uim-notify-fatal "cannot create socket directory")
+            #f)))))
+
+(define prime-open-with-pipe
+  (lambda (path)
+    (process-io path)))
+
+(define prime-connection-init
+  (lambda ()
+    (let ((fds (if prime-use-unixdomain?
+                   (prime-open-with-unix-domain-socket (prime-socket-path!))
+                   (prime-open-with-pipe "prime"))))
+      (cons (open-file-port (car fds))
+            (open-file-port (cdr fds))))))
+
 (define prime-send-command
-  (lambda (command)
-    (let ((result (prime-lib-send-command command)))
-      (let loop ((buffer result))
-	(if (string=? buffer "")
-	    (loop (prime-lib-send-command ""))
-	    buffer)))))
+  (lambda (connection msg)
+    (let ((iport (car connection))
+          (oport (cdr connection)))
+      (file-display msg oport)
+      (let loop ((line (file-read-line iport))
+                 (rest '()))
+        (if (or (not line) ;; XXX: eof?
+                (= 0 (string-length line))
+                (string=? line ""))
+            (reverse rest) ;; drop last "\n"
+            (loop (file-read-line iport) (cons line rest)))))))
 
 ;; Don't append "\n" to arg-list in this function. That will cause a
 ;; problem with unix domain socket.
 (define prime-engine-send-command
   (lambda (connection arg-list)
-    ;; result       ==> "ok\n1\n"
-    ;; result-lines ==> ("ok" "1" "")
+    ;; result       ==> ("ok" "1")
     (let* ((result (prime-send-command
-		    (prime-util-string-concat arg-list "\t")))
-	   (result-lines (string-split result "\n")))
-      (drop-right! result-lines 1) ;; drop last ""
-      (cdr result-lines)))) ;; drop status line
+                    connection
+		    (string-append (prime-util-string-concat arg-list "\t")
+                                   "\n"))))
+      (cdr result)))) ;; drop status line
 
 (define prime-engine-conv-predict
   (lambda (prime-connection prime-session)
