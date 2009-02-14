@@ -517,6 +517,7 @@
     (list 'candidates         ())
     (list 'mode               prime-mode-latin)
     (list 'last-word          "")  ;; PRIMEやPOBoxの用語でいうContext
+    (list 'connection         #f)
     (list 'session            #f)  ; the actual value is -default or -register.
 					; language of the current session.
     (list 'language           prime-custom-default-language)
@@ -552,13 +553,14 @@
 	(begin
 	  ;; The prime server is initialized here.
 	  (prime-lib-init prime-use-unixdomain?)
-	  (let ((session (prime-engine-session-start)))
-	    (prime-custom-init)
+	  (let* ((connection (prime-context-connection context))
+                 (session (prime-engine-session-start connection)))
+	    (prime-custom-init connection)
 	    (prime-context-set-fund-line!  context (cons () ()))
 	    (prime-context-set-session!    context session)
 	    (prime-context-set-lang-session-list!
 	     context
-	     (list (cons (prime-engine-session-language-get session) session)))
+	     (list (cons (prime-engine-session-language-get connection session) session)))
 	    (prime-context-history-update! context))))
     context))
 
@@ -593,7 +595,8 @@
            (root-context (im-retrieve-context uc)))
       (map
        (lambda (lang-pair)
-	 (prime-engine-session-end (cdr lang-pair)))
+	 (prime-engine-session-end (prime-context-connection context)
+                                   (cdr lang-pair)))
        (prime-context-lang-session-list context))
       (if parent-context
 	  (begin
@@ -665,7 +668,7 @@
 
 (define prime-context-reset-preedit-line!
  (lambda (context)
-   (prime-engine-edit-erase (prime-context-session context))))
+   (prime-engine-edit-erase (prime-context-connection context) (prime-context-session context))))
 
 ;; This returns a duplicated list of the current preedition.
 (define prime-context-copy-preedit-line
@@ -818,7 +821,7 @@
 ;; Don't append "\n" to arg-list in this function. That will cause a
 ;; problem with unix domain socket.
 (define prime-engine-send-command
-  (lambda (arg-list)
+  (lambda (connection arg-list)
     ;; result       ==> "ok\n1\n"
     ;; result-lines ==> ("ok" "1" "")
     (let* ((result (prime-send-command
@@ -828,17 +831,17 @@
       (cdr result-lines)))) ;; drop status line
 
 (define prime-engine-conv-predict
-  (lambda (prime-session)
-    (cdr (prime-engine-conv-convert-internal prime-session "conv_predict"))))
+  (lambda (prime-connection prime-session)
+    (cdr (prime-engine-conv-convert-internal prime-connection prime-session "conv_predict"))))
 
 (define prime-engine-conv-convert
-  (lambda (prime-session)
-    (cdr (prime-engine-conv-convert-internal prime-session "conv_convert"))))
+  (lambda (prime-connection prime-session)
+    (cdr (prime-engine-conv-convert-internal prime-connection prime-session "conv_convert"))))
 
 (define prime-engine-conv-convert-internal
-  (lambda (prime-session command)
+  (lambda (prime-connection prime-session command)
     (let* ((result
-	    (prime-engine-send-command (list command prime-session)))
+	    (prime-engine-send-command prime-connection (list command prime-session)))
 	   (index (prime-util-string-to-integer (car result)))
 	   (words (map
 		   (lambda (string-line)
@@ -850,82 +853,90 @@
       (cons index words))))
 
 (define prime-engine-conv-select
-  (lambda (prime-session index-no)
-    (prime-engine-send-command (list "conv_select"
+  (lambda (prime-connection prime-session index-no)
+    (prime-engine-send-command prime-connection
+                               (list "conv_select"
 				     prime-session
 				     (digit->string index-no)))))
 
 ;; This sends a conv_commit command to the server and returns the commited
 ;; string.
 (define prime-engine-conv-commit
-  (lambda (prime-session)
-    (car (prime-engine-send-command (list "conv_commit" prime-session)))))
+  (lambda (prime-connection prime-session)
+    (car (prime-engine-send-command prime-connection (list "conv_commit" prime-session)))))
 
 (define prime-engine-modify-cursor-internal
-  (lambda (prime-session command)
+  (lambda (prime-session prime-connection command)
     (prime-util-string-split
-     (car (prime-engine-send-command (list command prime-session)))
+     (car (prime-engine-send-command prime-connection (list command prime-session)))
      "\t")))
 
 (define prime-engine-modify-cursor-right
-  (lambda (prime-session)
-    (prime-engine-modify-cursor-internal prime-session "modify_cursor_right")))
+  (lambda (prime-connection prime-session)
+    (prime-engine-modify-cursor-internal prime-connection prime-session "modify_cursor_right")))
 (define prime-engine-modify-cursor-left
-  (lambda (prime-session)
-    (prime-engine-modify-cursor-internal prime-session "modify_cursor_left")))
+  (lambda (prime-connection prime-session)
+    (prime-engine-modify-cursor-internal prime-connection prime-session "modify_cursor_left")))
 (define prime-engine-modify-cursor-right-edge
-  (lambda (prime-session)
-    (prime-engine-modify-cursor-internal prime-session
+  (lambda (prime-connection prime-session)
+    (prime-engine-modify-cursor-internal prime-connection
+                                         prime-session
 					 "modify_cursor_right_edge")))
 (define prime-engine-modify-cursor-left-edge
-  (lambda (prime-session)
-    (prime-engine-modify-cursor-internal prime-session
+  (lambda (prime-connection prime-session)
+    (prime-engine-modify-cursor-internal prime-connection
+                                         prime-session
 					 "modify_cursor_left_edge")))
 (define prime-engine-modify-cursor-expand
-  (lambda (prime-session)
-    (prime-engine-modify-cursor-internal prime-session
+  (lambda (prime-connection prime-session)
+    (prime-engine-modify-cursor-internal prime-connection
+                                         prime-session
 					 "modify_cursor_expand")))
 (define prime-engine-modify-cursor-shrink
-  (lambda (prime-session)
-    (prime-engine-modify-cursor-internal prime-session
+  (lambda (prime-connection prime-session)
+    (prime-engine-modify-cursor-internal prime-connection
+                                         prime-session
 					 "modify_cursor_shrink")))
 
 (define prime-engine-segment-select
-  (lambda (prime-session index-no)
-    (prime-util-string-split 
-     (car (prime-engine-send-command (list "segment_select"
+  (lambda (prime-connection prime-session index-no)
+    (prime-util-string-split
+     (car (prime-engine-send-command prime-connection
+                                     (list "segment_select"
 					   prime-session
 					   (digit->string index-no))))
      "\t")))
 
 (define prime-engine-segment-reconvert
-  (lambda (prime-session)
-    (prime-engine-conv-convert-internal prime-session "segment_reconvert")))
+  (lambda (prime-connection prime-session)
+    (prime-engine-conv-convert-internal prime-connection prime-session "segment_reconvert")))
 
 (define prime-engine-context-reset
-  (lambda (prime-session)
-    (prime-engine-send-command (list "context_reset" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "context_reset" prime-session))))
 
 
 ;; session operations
 (define prime-engine-session-start
-  (lambda ()
-    (car (prime-engine-send-command (list "session_start")))))
+  (lambda (prime-connection)
+    (car (prime-engine-send-command prime-connection (list "session_start")))))
 (define prime-engine-session-end
-  (lambda (prime-session)
-    (prime-engine-send-command (list "session_end" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "session_end" prime-session))))
 
 (define prime-engine-session-language-set
-  (lambda (language)
+  (lambda (prime-connection language)
     (let ((language-string (if (eq? language 'English) "English" "Japanese")))
       (car (prime-engine-send-command
+            prime-connection
 	    (list "session_start" language-string))))))
 
 (define prime-engine-session-language-get
-  (lambda (prime-session)
+  (lambda (prime-connection prime-session)
     (let ((language-string
 	   (nth 1 (prime-util-string-split 
 		   (car (prime-engine-send-command
+                         prime-connection
 			 (list "session_get_env" prime-session "language")))
 		   "\t"))))
       (if (string=? language-string "English")
@@ -933,59 +944,62 @@
 
 ;; composing operations
 (define prime-engine-edit-insert
-  (lambda (prime-session string)
-    (prime-engine-send-command (list "edit_insert"    prime-session string))))
+  (lambda (prime-connection prime-session string)
+    (prime-engine-send-command prime-connection (list "edit_insert"    prime-session string))))
 (define prime-engine-edit-delete
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_delete"    prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_delete"    prime-session))))
 (define prime-engine-edit-backspace
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_backspace" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_backspace" prime-session))))
 (define prime-engine-edit-erase
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_erase"     prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_erase"     prime-session))))
 
 ;; This sends a edit_commit command to the server and returns the commited
 ;; string.
 (define prime-engine-edit-commit
-  (lambda (prime-session)
-    (car (prime-engine-send-command (list "edit_commit" prime-session)))))
+  (lambda (prime-connection prime-session)
+    (car (prime-engine-send-command prime-connection (list "edit_commit" prime-session)))))
 
 ;; cursor operations
 (define prime-engine-edit-cursor-left
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_cursor_left" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_cursor_left" prime-session))))
 (define prime-engine-edit-cursor-right
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_cursor_right" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_cursor_right" prime-session))))
 (define prime-engine-edit-cursor-left-edge
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_cursor_left_edge" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_cursor_left_edge" prime-session))))
 (define prime-engine-edit-cursor-right-edge
-  (lambda (prime-session)
-    (prime-engine-send-command (list "edit_cursor_right_edge" prime-session))))
+  (lambda (prime-connection prime-session)
+    (prime-engine-send-command prime-connection (list "edit_cursor_right_edge" prime-session))))
 
 ;; preedition-getting operations
 (define prime-engine-edit-get-preedition
-  (lambda (prime-session)
+  (lambda (prime-connection prime-session)
     (prime-util-string-split (car (prime-engine-send-command
+                                   prime-connection
 				   (list "edit_get_preedition" prime-session)))
 			     "\t")))
 (define prime-engine-edit-get-query-string
-  (lambda (prime-session)
+  (lambda (prime-connection prime-session)
     (car (prime-engine-send-command
+          prime-connection
 	  (list "edit_get_query_string" prime-session)))))
 
 ;; mode operations
 (define prime-engine-edit-set-mode
-  (lambda (prime-session mode)
-    (prime-engine-send-command (list "edit_set_mode" prime-session mode))))
+  (lambda (prime-connection prime-session mode)
+    (prime-engine-send-command prime-connection (list "edit_set_mode" prime-session mode))))
 
 (define prime-engine-preedit-convert-input
-  (lambda (string)
+  (lambda (prime-connection string)
     (if (string=? string "")
 	'("")
 	(let ((conversion (car (prime-engine-send-command
+                                prime-connection
 				(list "preedit_convert_input" string)))))
 	  (cond
 	   ;; counversion could be (), in case a suikyo table is broken.
@@ -996,19 +1010,20 @@
  	    (prime-util-string-split conversion "\t")))))))
 
 (define prime-engine-learn-word
-  (lambda (pron literal pos context suffix rest)
-    (prime-engine-send-command (list "learn_word"
+  (lambda (prime-connection pron literal pos context suffix rest)
+    (prime-engine-send-command prime-connection
+                               (list "learn_word"
 				     pron literal pos context suffix rest))))
 
 ;; This returns a version string of the PRIME server.
 (define prime-engine-get-version
-  (lambda ()
-    (car (prime-engine-send-command '("get_version")))))
+  (lambda (prime-connection)
+    (car (prime-engine-send-command prime-connection '("get_version")))))
 
 (define prime-engine-get-env
-  (lambda (env-name)
+  (lambda (prime-connection env-name)
     (let* ((result (prime-util-string-split
-		    (car (prime-engine-send-command (list "get_env" env-name)))
+		    (car (prime-engine-send-command prime-connection (list "get_env" env-name)))
 		    "\t"))
 	   (result-type (car result)))
       (cond
@@ -1025,8 +1040,8 @@
       )))
 
 (define prime-engine-get-env-typing-method
-  (lambda ()
-    (prime-engine-get-env "typing_method")
+  (lambda (prime-connection)
+    (prime-engine-get-env prime-connection "typing_method")
     ))
 
 ;;;; ------------------------------------------------------------
@@ -1054,7 +1069,8 @@
   (lambda (context mode-string)
     (if (eq? (prime-context-state context) 'prime-state-converting)
 	(prime-convert-cancel context))
-    (prime-engine-edit-set-mode (prime-context-session context) mode-string)))
+    (prime-engine-edit-set-mode (prime-context-connection context)
+                                (prime-context-session context) mode-string)))
     
 ;; This sets the typing mode to the default/Hiragana mode.
 (define prime-command-mode-hiragana
@@ -1194,6 +1210,7 @@
   (lambda (context key key-state)
     (prime-context-set-state! context 'prime-state-segment)
     (let ((conversion (prime-engine-segment-reconvert
+                       (prime-context-connection context)
 		       (prime-context-session context))))
       (prime-context-set-segment-nth!        context (car conversion))
       (prime-context-set-segment-candidates! context (cdr conversion)))))
@@ -1208,7 +1225,8 @@
     (prime-modify-reset! context)
     (prime-context-set-modification!
      context
-     (prime-engine-modify-cursor-right (prime-context-session context)))
+     (prime-engine-modify-cursor-right (prime-context-connection context)
+                                       (prime-context-session context)))
     ))
 
 (define prime-command-modify-cursor-left
@@ -1216,7 +1234,8 @@
     (prime-modify-reset! context)
     (prime-context-set-modification!
      context
-     (prime-engine-modify-cursor-left (prime-context-session context)))
+     (prime-engine-modify-cursor-left (prime-context-connection context)
+                                      (prime-context-session context)))
     ))
 
 (define prime-command-modify-cursor-right-edge
@@ -1224,7 +1243,8 @@
     (prime-modify-reset! context)
     (prime-context-set-modification!
      context
-     (prime-engine-modify-cursor-right-edge (prime-context-session context)))
+     (prime-engine-modify-cursor-right-edge (prime-context-connection context)
+                                            (prime-context-session context)))
     ))
 
 (define prime-command-modify-cursor-left-edge
@@ -1232,7 +1252,8 @@
     (prime-modify-reset! context)
     (prime-context-set-modification!
      context
-     (prime-engine-modify-cursor-left-edge (prime-context-session context)))
+     (prime-engine-modify-cursor-left-edge (prime-context-connection context)
+                                           (prime-context-session context)))
     ))
 
 (define prime-command-modify-cursor-expand
@@ -1240,7 +1261,8 @@
     (prime-modify-reset! context)
     (prime-context-set-modification!
      context
-     (prime-engine-modify-cursor-expand (prime-context-session context)))
+     (prime-engine-modify-cursor-expand (prime-context-connection context)
+                                        (prime-context-session context)))
     ))
 
 (define prime-command-modify-cursor-shrink
@@ -1248,7 +1270,8 @@
     (prime-modify-reset! context)
     (prime-context-set-modification!
      context
-     (prime-engine-modify-cursor-shrink (prime-context-session context)))
+     (prime-engine-modify-cursor-shrink (prime-context-connection context)
+                                        (prime-context-session context)))
     ))
 
 (define prime-modify-reset!
@@ -1291,6 +1314,7 @@
     (prime-context-set-segment-nth! context selection-index)
     (prime-context-set-modification! context
 				     (prime-engine-segment-select
+                                      (prime-context-connection context)
 				      (prime-context-session context)
 				      selection-index))))
 
@@ -1304,15 +1328,18 @@
 
 (define prime-command-preedit-cancel
   (lambda (context key key-state)
-    (prime-engine-edit-erase (prime-context-session context))))
+    (prime-engine-edit-erase (prime-context-connection context)
+                             (prime-context-session context))))
 
 (define prime-command-preedit-backspace
   (lambda (context key key-state)
-    (prime-engine-edit-backspace (prime-context-session context))))
+    (prime-engine-edit-backspace (prime-context-connection context)
+                                 (prime-context-session context))))
 
 (define prime-command-preedit-delete
   (lambda (context key key-state)
-    (prime-engine-edit-delete (prime-context-session context))))
+    (prime-engine-edit-delete (prime-context-connection context)
+                              (prime-context-session context))))
 
 (define prime-command-preedit-commit
   (lambda (context key key-state)
@@ -1330,23 +1357,28 @@
 
 (define prime-command-preedit-cursor-left-edge
   (lambda (context key key-state)
-    (prime-engine-edit-cursor-left-edge (prime-context-session context))))
+    (prime-engine-edit-cursor-left-edge (prime-context-connection context)
+                                        (prime-context-session context))))
 
 (define prime-command-preedit-cursor-right-edge
   (lambda (context key key-state)
-    (prime-engine-edit-cursor-right-edge (prime-context-session context))))
+    (prime-engine-edit-cursor-right-edge (prime-context-connection context)
+                                         (prime-context-session context))))
 
 (define prime-command-preedit-cursor-left
   (lambda (context key key-state)
-    (prime-engine-edit-cursor-left (prime-context-session context))))
+    (prime-engine-edit-cursor-left (prime-context-connection context)
+                                   (prime-context-session context))))
 
 (define prime-command-preedit-cursor-right
   (lambda (context key key-state)
-    (prime-engine-edit-cursor-right (prime-context-session context))))
+    (prime-engine-edit-cursor-right (prime-context-connection context)
+                                    (prime-context-session context))))
 
 (define prime-command-preedit-input
   (lambda (context key key-state)
-    (prime-engine-edit-insert (prime-context-session context)
+    (prime-engine-edit-insert (prime-context-connection context)
+                              (prime-context-session context)
 			      (charcode->string key))))
 
 (define prime-command-preedit-commit-candidate
@@ -1612,7 +1644,8 @@
 ;; This returns a query string for PRIME server.
 (define prime-preedit-get-string-raw
   (lambda (context)
-    (prime-engine-edit-get-query-string (prime-context-session context))))
+    (prime-engine-edit-get-query-string (prime-context-connection context)
+                                        (prime-context-session context))))
 
 ;; This returns a commited string of register mode.
 (define prime-fund-get-line-string
@@ -1625,8 +1658,8 @@
 ;;;; ------------------------------------------------------------
 
 (define prime-custom-init
-  (lambda ()
-    (let ((typing-method (prime-engine-get-env-typing-method)))
+  (lambda (prime-connection)
+    (let ((typing-method (prime-engine-get-env-typing-method prime-connection)))
       (cond
        ((eq? typing-method 'unknown)
         #f)
@@ -1650,7 +1683,8 @@
 	(im-commit-raw context)
 	(begin
 	  ;; Reset the current prime-context
-	  (prime-engine-context-reset (prime-context-session context))
+	  (prime-engine-context-reset (prime-context-connection context)
+                                      (prime-context-session context))
 
 	  (im-commit-raw context)
 	  (prime-context-set-last-word! context "")
@@ -1660,7 +1694,8 @@
 (define prime-commit-without-learning
   (lambda (context string)
     ;; Reset the current prime-context
-    (prime-engine-context-reset (prime-context-session context))
+    (prime-engine-context-reset (prime-context-connection context)
+                                (prime-context-session context))
 
     (if (prime-context-parent-context context)
 	(prime-commit-to-fund-line context string)
@@ -1690,19 +1725,21 @@
 
 (define prime-commit-preedition
   (lambda (context)
-    (let ((commited-string (prime-engine-edit-commit 
+    (let ((commited-string (prime-engine-edit-commit
+                            (prime-context-connection context)
 			    (prime-context-session context))))
       (prime-commit-string context commited-string))))
 
 (define prime-commit-conversion
   (lambda (context)
-    (let ((commited-string (prime-engine-conv-commit 
+    (let ((commited-string (prime-engine-conv-commit
+                            (prime-context-connection context)
 			    (prime-context-session context))))
       (prime-commit-string context commited-string))))
 
 (define prime-commit-segment
   (lambda (context)
-;    (prime-engine-modify-commit (prime-context-session-default context))
+;    (prime-engine-modify-commit (prime-context-connection context) (prime-context-session-default context))
     (prime-context-set-state! context 'prime-state-modifying)))
 
 (define prime-commit-segment-nth
@@ -1712,7 +1749,9 @@
 
 (define prime-commit-candidate
   (lambda (context index-no)
-    (prime-engine-conv-select (prime-context-session context) index-no)
+    (prime-engine-conv-select (prime-context-connection context)
+                              (prime-context-session context)
+                              index-no)
     (prime-commit-conversion context)))
 
 (define prime-commit-to-fund-line
@@ -1738,7 +1777,7 @@
 	  (rest    (or (safe-car (safe-cdr (assoc "suffix"      assoc-list)))
 		       "")))
       
-      (prime-engine-learn-word key value part prime-context suffix rest)
+      (prime-engine-learn-word (prime-context-connection context) key value part prime-context suffix rest)
       (prime-context-set-last-word! context
 				    (string-append value suffix rest))
       )))
@@ -1781,11 +1820,14 @@
     (if (prime-get-current-candidate context)
 	;; If the selection-index is a valid number, sends the number
 	;; to the server.
-	(prime-engine-conv-select (prime-context-session context)
+	(prime-engine-conv-select (prime-context-connection context)
+                                  (prime-context-session context)
 				  selection-index)
 	(begin
 	  (prime-context-set-nth! context 0)
-	  (prime-engine-conv-select (prime-context-session context) 0)
+	  (prime-engine-conv-select (prime-context-connection context)
+                                    (prime-context-session context)
+                                    0)
 	  (if prime-auto-register-mode?
 	      (prime-register-mode-on context))))))
 
@@ -1800,14 +1842,16 @@
   (lambda (context)
     (prime-context-set-candidates!  ;; FIXME: candidates -> conversions
      context
-     (prime-engine-conv-predict (prime-context-session context)))))
+     (prime-engine-conv-predict (prime-context-connection context)
+                                (prime-context-session context)))))
 
 ;; This executes 'conv_convert' to get candidate words and stores them.
 (define prime-convert-get-conversion
   (lambda (context)
     (prime-context-set-candidates!  ;; FIXME: candidates -> conversions
      context
-     (prime-engine-conv-convert (prime-context-session context)))))
+     (prime-engine-conv-convert (prime-context-connection context)
+                                (prime-context-session context)))))
 
 ;;;; ------------------------------------------------------------
 ;;;; prime-commit
@@ -1833,7 +1877,8 @@
 	    ;; Store the current preedition into the context
 	    (prime-context-set-preedit-line!
 	     context
-	     (prime-engine-edit-get-preedition session)))
+	     (prime-engine-edit-get-preedition (prime-context-connection context)
+                                               session)))
 
 	(prime-update-state context)
 	(prime-update-preedit context)
@@ -2063,7 +2108,7 @@
     ;(print "prime-release-handler")
     (let ((session (prime-context-session context)))
       (if session
-	  (prime-engine-session-end session)))
+	  (prime-engine-session-end (prime-context-connection context) session)))
     ))
 
 (define prime-press-key-handler
@@ -2114,7 +2159,8 @@
 	   (session (safe-cdr (assoc language lang-session-list))))
       (if (not session)
 	  (begin
-	    (set! session (prime-engine-session-language-set language))
+	    (set! session (prime-engine-session-language-set (prime-context-connection context)
+                                                             language))
 	    (prime-context-set-lang-session-list!
 	     context
 	     (cons (cons language session) lang-session-list))))
