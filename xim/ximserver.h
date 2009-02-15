@@ -218,9 +218,9 @@ private:
     Convdisp *mConvdisp;
     uim_context mUc;
     bool mCandwinActive;
-    uint mDisplayLimit;
+    int mDisplayLimit;
 #if UIM_XIM_USE_NEW_PAGE_HANDLING
-    uint mNumCandidates;
+    int mNumCandidates;
 #endif
     int mNumPage;
     int current_cand_selection;

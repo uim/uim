@@ -972,7 +972,7 @@ void InputContext::candidate_select(int index)
 void InputContext::candidate_shift_page(int direction)
 {
     int new_page;
-    uint new_index;
+    int new_index;
 
     if (mDisplayLimit) {
 	if (direction)
