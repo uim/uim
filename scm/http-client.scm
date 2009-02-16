@@ -34,28 +34,29 @@
 (require "input-parse.scm")
 
 (define (http:open hostname servname)
-  (filter integer?
-          (call-with-getaddrinfo-hints
-           '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-           (lambda (hints)
-             (call-with-getaddrinfo
-              hostname servname hints
-              (lambda (res)
-                (map (lambda (res0)
-                       (let ((s (socket (addrinfo-ai-family? res0)
-                                        (addrinfo-ai-socktype? res0)
-                                        (addrinfo-ai-protocol? res0))))
-                         (if (< s 0)
-                             #f
-                             (if (< (connect s
-                                             (addrinfo-ai-addr? res0)
-                                             (addrinfo-ai-addrlen? res0))
-                                    0)
-                                 (begin
-                                   (file-close s)
-                                   #f)
-                                 s))))
-                     res)))))))
+  (call/cc
+   (lambda (fd)
+     (call-with-getaddrinfo-hints
+      '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+      (lambda (hints)
+        (call-with-getaddrinfo
+         hostname servname hints
+         (lambda (res)
+           (map (lambda (res0)
+                  (let ((s (socket (addrinfo-ai-family? res0)
+                                   (addrinfo-ai-socktype? res0)
+                                   (addrinfo-ai-protocol? res0))))
+                    (if (< s 0)
+                        #f
+                        (if (< (connect s
+                                        (addrinfo-ai-addr? res0)
+                                        (addrinfo-ai-addrlen? res0))
+                               0)
+                            (begin
+                              (file-close s)
+                              #f)
+                            (fd s)))))
+                res))))))))
 
 (define (http:encode-uri-string str)
   (define hex '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"))
@@ -200,10 +201,10 @@
     (let ((file (if proxy
                     (http:open (hostname? proxy) (port? proxy))
                     (http:open hostname servname))))
-      (if (null? file)
+      (if (not file)
           (uim-notify-fatal "cannot connect server"))
       (call-with-open-file-port
-       (car file)
+       file
        (lambda (port)
          (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
                     (nr (file-display request port))
