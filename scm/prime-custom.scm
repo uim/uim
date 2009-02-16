@@ -89,11 +89,44 @@
   (N_ "Alternative space character key")
   (N_ "long description will be here."))
 
-(define-custom 'prime-use-unixdomain? #t
+(define-custom 'prime-server-setting? 'unixdomain
   '(prime advanced)
-  '(boolean)
-  (N_ "Use UNIX domain socket to communicate with PRIME")
+  (list 'choice
+        (list 'unixdomain
+              (N_ "Unix domain")
+              (N_ "Use UNIX domain socket to communicate with PRIME."))
+        (list 'tcpserver
+              (N_ "TCP server")
+              (N_ "Use tcp server to communicate with PRIME"))
+        (list 'pipe
+              (N_ "Pipe")
+              (N_ "Use pipe. spawn new prime process to communicate with PRIME")))
+  (N_ "Prime connection setting")
   (N_ "long description will be here."))
+
+(define-custom 'prime-tcpserver-name "localhost"
+  '(prime advanced)
+  '(string ".*")
+  (N_ "PRIME server address")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'prime-tcpserver-name
+		 'custom-activity-hooks
+		 (lambda ()
+                   (eq? prime-server-setting?
+                        'tcpserver)))
+
+(define-custom 'prime-tcpserver-port 1180
+  '(prime advanced)
+  '(integer 0 65535)
+  (N_ "PRIME server port")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'prime-tcpserver-port
+		 'custom-activity-hooks
+		 (lambda ()
+                   (eq? prime-server-setting?
+                        'tcpserver)))
 
 ;(define-custom 'prime-use-candidate-window? #t
 ;  '(prime candwin)

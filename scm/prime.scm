@@ -861,15 +861,46 @@
             (uim-notify-fatal "cannot create socket directory")
             #f)))))
 
+(define prime-open-with-tcp-socket
+  (lambda (hostname servname)
+    (call/cc
+     (lambda (fds)
+       (call-with-getaddrinfo-hints
+        '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+        (lambda (hints)
+          (call-with-getaddrinfo
+           hostname servname hints
+           (lambda (res)
+             (map (lambda (res0)
+                    (let ((s (socket (addrinfo-ai-family? res0)
+                                     (addrinfo-ai-socktype? res0)
+                                     (addrinfo-ai-protocol? res0))))
+                      (if (< s 0)
+                          #f
+                          (if (< (connect s
+                                          (addrinfo-ai-addr? res0)
+                                          (addrinfo-ai-addrlen? res0))
+                                 0)
+                              (begin
+                                (file-close s)
+                                   #f)
+                              (fds (cons s s))))))
+                  res)))))))))
+
 (define prime-open-with-pipe
   (lambda (path)
     (process-io path)))
 
 (define prime-connection-init
   (lambda ()
-    (let ((fds (if prime-use-unixdomain?
-                   (prime-open-with-unix-domain-socket (prime-socket-path!))
-                   (prime-open-with-pipe "prime"))))
+    (let ((fds (cond ((eq? prime-server-setting? 'unixdomain)
+                      (prime-open-with-unix-domain-socket (prime-socket-path!)))
+                     ((eq? prime-server-setting? 'tcpserver)
+                      (prime-open-with-tcp-socket prime-tcpserver-name prime-tcpserver-port))
+                     ((eq? prime-server-setting? 'pipe)
+                      (prime-open-with-pipe "prime"))
+                     (else
+                      (uim-notify-fatal "Prime connection is not defined")))))
       (cons (open-file-port (car fds))
             (open-file-port (cdr fds))))))
 
