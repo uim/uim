@@ -289,6 +289,24 @@ c_listen(uim_lisp s_, uim_lisp backlog_)
   return MAKE_INT(listen(C_INT(s_), C_INT(backlog_)));
 }
 
+const static opt_args shutdown_how[] = {
+  { SHUT_RD,   "$SHUT_RD" },
+  { SHUT_WR,   "$SHUT_WR" },
+  { SHUT_RDWR, "$SHUT_RDWR" },
+  { 0, 0 }
+};
+static uim_lisp uim_lisp_shutdown_how_alist;
+static uim_lisp
+c_shutdown_how_alist(void)
+{
+  return uim_lisp_shutdown_how_alist;
+}
+static uim_lisp
+c_shutdown(uim_lisp s_, uim_lisp how_)
+{
+  return MAKE_INT(shutdown(C_INT(s_), C_INT(how_)));
+}
+
 static uim_lisp
 c_make_sockaddr_storage(void)
 {
@@ -437,6 +455,10 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc3("connect", c_connect);
   uim_scm_init_proc3("bind", c_bind);
   uim_scm_init_proc2("listen", c_listen);
+  uim_scm_init_proc2("shutdown", c_shutdown);
+  uim_scm_init_proc0("shutdown-how-alist?", c_shutdown_how_alist);
+  uim_scm_gc_protect(&uim_lisp_shutdown_how_alist);
+  uim_lisp_shutdown_how_alist = make_arg_list(shutdown_how);
 
   uim_scm_init_proc0("make-sockaddr-storage", c_make_sockaddr_storage);
   uim_scm_init_proc1("delete-sockaddr-storage", c_delete_sockaddr_storage);

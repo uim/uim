@@ -77,3 +77,5 @@
       (delete-sockaddr-un sun)
       ret)))
 
+
+(define shutdown-how-alist (shutdown-how-alist?))
