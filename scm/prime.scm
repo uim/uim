@@ -863,14 +863,14 @@
 
 (define prime-open-with-tcp-socket
   (lambda (hostname servname)
-    (call/cc
-     (lambda (fds)
-       (call-with-getaddrinfo-hints
-        '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-        (lambda (hints)
-          (call-with-getaddrinfo
-           hostname servname hints
-           (lambda (res)
+    (call-with-getaddrinfo-hints
+     '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+     (lambda (hints)
+       (call-with-getaddrinfo
+        hostname servname hints
+        (lambda (res)
+          (call/cc
+           (lambda (fds)
              (map (lambda (res0)
                     (let ((s (socket (addrinfo-ai-family? res0)
                                      (addrinfo-ai-socktype? res0)
@@ -906,16 +906,18 @@
 
 (define prime-send-command
   (lambda (connection msg)
-    (let ((iport (car connection))
-          (oport (cdr connection)))
-      (file-display msg oport)
-      (let loop ((line (file-read-line iport))
-                 (rest '()))
-        (if (or (not line) ;; XXX: eof?
-                (= 0 (string-length line))
-                (string=? line ""))
-            (reverse rest) ;; drop last "\n"
-            (loop (file-read-line iport) (cons line rest)))))))
+    (if (pair? connection)
+        (let ((iport (car connection))
+              (oport (cdr connection)))
+          (file-display msg oport)
+          (let loop ((line (file-read-line iport))
+                     (rest '()))
+            (if (or (not line) ;; XXX: eof?
+                    (= 0 (string-length line))
+                    (string=? line ""))
+                (reverse rest) ;; drop last "\n"
+                (loop (file-read-line iport) (cons line rest)))))
+        #f)))
 
 ;; Don't append "\n" to arg-list in this function. That will cause a
 ;; problem with unix domain socket.
@@ -927,6 +929,15 @@
 		    (string-append (prime-util-string-concat arg-list "\t")
                                    "\n"))))
       (cdr result)))) ;; drop status line
+
+(define prime-engine-close
+  (lambda (prime-connection)
+    (if (pair? prime-connection)
+        (let ((iport (car prime-connection))
+              (oport (cdr prime-connection)))
+          (file-display "close\n" oport)
+          (close-file-port (car prime-connection))
+          (close-file-port (cdr prime-connection))))))
 
 (define prime-engine-conv-predict
   (lambda (prime-connection prime-session)
@@ -2207,6 +2218,11 @@
     (let ((session (prime-context-session context)))
       (if session
 	  (prime-engine-session-end (prime-context-connection context) session)))
+    (let ((connection (prime-context-connection context)))
+      (if (pair? connection)
+          (begin
+            (prime-engine-close connection)
+            (prime-context-set-connection! context #f))))
     ))
 
 (define prime-press-key-handler
