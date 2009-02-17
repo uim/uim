@@ -34,14 +34,14 @@
 (require "input-parse.scm")
 
 (define (http:open hostname servname)
-  (call/cc
-   (lambda (fd)
-     (call-with-getaddrinfo-hints
-      '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-      (lambda (hints)
-        (call-with-getaddrinfo
-         hostname servname hints
-         (lambda (res)
+  (call-with-getaddrinfo-hints
+   '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+   (lambda (hints)
+     (call-with-getaddrinfo
+      hostname servname hints
+      (lambda (res)
+        (call/cc
+         (lambda (fd)
            (map (lambda (res0)
                   (let ((s (socket (addrinfo-ai-family? res0)
                                    (addrinfo-ai-socktype? res0)
