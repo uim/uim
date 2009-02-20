@@ -287,22 +287,6 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
 }
 
 static uim_lisp
-c_file_set_nonblocking(uim_lisp fd_)
-{
-  int fd = C_INT(fd_);
-  int flag;
-
-  if ((flag = fcntl(fd, F_GETFL)) == -1) {
-    return uim_scm_f();
-  }
-  flag |= O_NONBLOCK;
-  if (fcntl(fd, F_SETFL, flag) == -1) {
-    uim_scm_f();
-  }
-  return uim_scm_t();
-}
-
-static uim_lisp
 c_file_ready(uim_lisp fd_)
 {
   struct pollfd pfd;
@@ -351,7 +335,6 @@ uim_plugin_instance_init(void)
   uim_scm_gc_protect(&uim_lisp_poll_flags);
   uim_lisp_poll_flags = make_arg_list(poll_flags);
 
-  uim_scm_init_proc1("file-nonblocking!", c_file_set_nonblocking);
   uim_scm_init_proc1("file-ready?", c_file_ready);
 
   uim_scm_init_proc0("create-pipe", c_create_pipe);
