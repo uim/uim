@@ -117,7 +117,11 @@
                                    proxy))
                (euc-str (icovn-convert "EUC-JP" "UTF-8" utf8-str)))
               euc-str))
-  (ajax-ime-parse (fetch (make-query))))
+
+  (let ((ret (fetch (make-query))))
+    (if ret
+        (ajax-ime-parse (fetch (make-query)))
+        '(""))))
 
 (define (ajax-ime-lib-init)
   #t)
