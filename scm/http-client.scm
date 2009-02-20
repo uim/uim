@@ -58,6 +58,19 @@
                             (fd s)))))
                 res))))))))
 
+(define (http:socket-ready? port)
+  (let* ((fd (fd? port))
+         (fds (list (cons fd (assq-cdr '$POLLIN poll-flags-alist))))
+         (ret (file-poll fds http-timeout)))
+    (cond ((not ret)
+           (uim-notify-fatal "socket error")
+           #f)
+          ((null? ret)
+           (uim-notify-info "socket timeout")
+           #f)
+          (else
+           #t))))
+
 (define (http:encode-uri-string str)
   (define hex '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"))
   (define (hex-format2 x)
@@ -208,16 +221,17 @@
        (lambda (port)
          (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
                     (nr (file-display request port))
+                    (ready? (http:socket-ready? port))
                     (proxy-header (if proxy
                                       (http:read-header port)
                                       '()))
                     (header (http:read-header port))
                     (parsed-header (http:parse-header header)))
+             (let ((content-length (http:content-length? parsed-header)))
+               (cond (content-length
+                      (file-read-buffer port content-length))
+                     ((http:chunked? parsed-header)
+                      (http:read-chunk port))
+                     (else
+                      (file-get-buffer port))))))))))
 
-      (let ((content-length (http:content-length? parsed-header)))
-        (cond (content-length
-               (file-read-buffer port content-length))
-              ((http:chunked? parsed-header)
-               (http:read-chunk port))
-              (else
-               (file-get-buffer port))))))))))

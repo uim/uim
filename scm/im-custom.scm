@@ -623,5 +623,11 @@
                    (eq? http-proxy-setting
                         'user)))
 
+(define-custom 'http-timeout 3000
+  '(http)
+  '(integer 0 65535)
+  (N_ "Timeout")
+  (N_ "Timeout of http connection (msec)."))
+
 (if custom-full-featured?
     (for-each require-module installed-im-module-list))
