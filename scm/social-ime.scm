@@ -52,7 +52,9 @@
    (list
     (list 'str         "")
     (list 'candidates  '())
-    (list 'seg-cnts '()))))
+    (list 'seg-cnts '())
+    (list 'prediction-candidates '())
+    (list 'prediction-nr '()))))
 (define-record 'social-ime-internal-context social-ime-internal-context-rec-spec)
 (define social-ime-internal-context-new-internal social-ime-internal-context-new)
 
@@ -116,11 +118,42 @@
   (let ((ret (social-ime-conversion-make-commit-query resize delta)))
     (if (not (string=? ret ""))
         (social-ime-conversion str ret))))
+(define (social-ime-predict str opts)
+  (define (make-query user)
+        (format "~a?string=~a&charset=EUC-JP&applicartion=uim~a~a"
+		social-ime-prediction-api-path
+                (http:encode-uri-string str)
+                user
+                opts))
+  (define (parse str)
+    (and-let* ((ret1 (if (string? str)
+                         (string-split str "\n")
+                         '("")))
+               (col (if (equal? '("") (take-right ret1 1))
+                        (drop-right ret1 1)
+                        ret1))
+               (ret2 (map (lambda (s)
+                            (and-let* ((ret (string-split s "\t"))
+                                       (low (if (equal? '("") (take-right ret 1))
+                                                (drop-right ret 1)
+                                              ret)))
+                                      low))
+                          col)))
+              (car ret2)))
+  (let* ((user (if (string=? social-ime-user "")
+                   ""
+                   (format "&user=~a" (http:encode-uri-string social-ime-user))))
+         (proxy (and (eq? http-proxy-setting 'user)
+                     (make-http-proxy http-proxy-hostname http-proxy-port)))
+         (ret (http:get social-ime-server (make-query user) 80 proxy)))
+    (if (string? ret)
+        (parse ret)
+        (list str))))
 
 (define (social-ime-lib-init)
   #t)
 (define (social-ime-lib-alloc-context)
-  #t)
+  (social-ime-internal-context-new-internal))
 (define (social-ime-lib-get-nth-candidate sc seg nth)
   (let* ((sc-ctx (social-ime-context-sc-ctx sc))
          (cand (social-ime-internal-context-candidates sc-ctx)))
@@ -162,13 +195,12 @@
     #t))
 (define (social-ime-lib-begin-conversion sc str)
   (let* ((cand (social-ime-conversion str ""))
-         (sc-ctx (social-ime-internal-context-new-internal)))
+         (sc-ctx (social-ime-context-sc-ctx sc)))
     (social-ime-internal-context-set-str! sc-ctx str)
     (social-ime-internal-context-set-candidates! sc-ctx cand)
     (social-ime-internal-context-set-seg-cnts!
      sc-ctx
      (make-list (length cand) 0))
-    (social-ime-context-set-sc-ctx! sc sc-ctx)
     (length cand)))
 (define (social-ime-lib-commit-segments sc delta)
   (let* ((sc-ctx (social-ime-context-sc-ctx sc))
@@ -177,6 +209,21 @@
     (social-ime-send-commit str seg-cnts delta)
     #t))
 (define (social-ime-lib-reset-conversion sc)
+  #f)
+(define (social-ime-lib-set-prediction-src-string sc str)
+  (let ((sc-ctx (social-ime-context-sc-ctx sc))
+	(cands (social-ime-predict str "")))
+    (social-ime-internal-context-set-prediction-candidates! sc-ctx cands)
+    (social-ime-internal-context-set-prediction-nr! sc-ctx (length cands)))
+  #f)
+(define (social-ime-lib-get-nr-predictions sc)
+  (let ((sc-ctx (social-ime-context-sc-ctx sc)))
+    (social-ime-internal-context-prediction-nr sc-ctx)))
+(define (social-ime-lib-get-nth-prediction sc nth)
+  (let* ((sc-ctx (social-ime-context-sc-ctx sc))
+         (cands (social-ime-internal-context-prediction-candidates sc-ctx)))
+    (list-ref cands nth)))
+(define (social-ime-lib-commit-nth-prediction sc nth)
   #f)
 
 
@@ -408,12 +455,15 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'sc-ctx             ()) ;; social-ime-internal-context
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
     (list 'segments	      #f) ;; ustr of candidate indices
     (list 'candidate-window   #f)
     (list 'candidate-op-count 0)
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
     (list 'kana-mode          social-ime-type-hiragana)
     (list 'alnum	      #f)
     (list 'alnum-type	      social-ime-type-halfwidth-alnum)
@@ -545,9 +595,12 @@
   (ustr-clear! (social-ime-context-segments sc))
   (social-ime-context-set-transposing! sc #f)
   (social-ime-context-set-state! sc #f)
-  (if (social-ime-context-candidate-window sc)
+  (if (or
+       (social-ime-context-candidate-window sc)
+       (social-ime-context-prediction-window sc))
       (im-deactivate-candidate-selector sc))
   (social-ime-context-set-candidate-window! sc #f)
+  (social-ime-context-set-prediction-window! sc #f)
   (social-ime-context-set-candidate-op-count! sc 0))
 
 (define (social-ime-begin-input sc key key-state)
@@ -602,7 +655,9 @@
 			      (social-ime-context-transposing-state-preedit sc)
 			      (if (social-ime-context-state sc)
 				  (social-ime-compose-state-preedit sc)
-				  (social-ime-input-state-preedit sc)))
+				  (if (social-ime-context-predicting sc)
+				      (social-ime-predicting-state-preedit sc)
+				      (social-ime-input-state-preedit sc))))
 			  ())))
 	(context-update-preedit sc segments))
       (social-ime-context-set-commit-raw! sc #f)))
@@ -856,6 +911,176 @@
 	   (social-ime-flush sc)
 	   (social-ime-proc-input-state sc key key-state))))))))
 
+(define (social-ime-move-prediction sc offset)
+  (let* ((nr (social-ime-lib-get-nr-predictions sc))
+         (idx (social-ime-context-prediction-index sc))
+         (n (if (not idx)
+		0
+		(+ idx offset)))
+         (compensated-n (cond
+			 ((>= n nr)
+			  0)
+			 ((< n 0)
+			  (- nr 1))
+			 (else
+			  n))))
+    (im-select-candidate sc compensated-n)
+    (social-ime-context-set-prediction-index! sc compensated-n)))
+
+(define (social-ime-move-prediction-in-page sc numeralc)
+  (let* ((nr (social-ime-lib-get-nr-predictions sc))
+	 (p-idx (social-ime-context-prediction-index sc))
+	 (n (if (not p-idx)
+		0
+		p-idx))
+	 (cur-page (if (= social-ime-nr-candidate-max 0)
+		       0
+		       (quotient n social-ime-nr-candidate-max)))
+	 (pageidx (- (numeric-ichar->integer numeralc) 1))
+	 (compensated-pageidx (cond
+			       ((< pageidx 0) ; pressing key_0
+				(+ pageidx 10))
+			       (else
+				pageidx)))
+	 (idx (+ (* cur-page social-ime-nr-candidate-max) compensated-pageidx))
+	 (compensated-idx (cond
+			   ((>= idx nr)
+			    #f)
+			   (else
+			    idx)))
+	 (selected-pageidx (if (not p-idx)
+			       #f
+			       (if (= social-ime-nr-candidate-max 0)
+				   p-idx
+				   (remainder p-idx
+					      social-ime-nr-candidate-max)))))
+    (if (and
+	 compensated-idx
+	 (not (eqv? compensated-pageidx selected-pageidx)))
+	(begin
+	  (social-ime-context-set-prediction-index! sc compensated-idx)
+	  (im-select-candidate sc compensated-idx)
+	  #t)
+	#f)))
+
+(define (social-ime-prediction-select-non-existing-index? sc numeralc)
+  (let* ((nr (social-ime-lib-get-nr-predictions sc))
+	 (p-idx (social-ime-context-prediction-index sc))
+	 (cur-page (if (= social-ime-nr-candidate-max 0)
+		       0
+		       (quotient p-idx social-ime-nr-candidate-max)))
+	 (pageidx (- (numeric-ichar->integer numeralc) 1))
+	 (compensated-pageidx (cond
+			       ((< pageidx 0) ; pressing key_0
+				(+ pageidx 10))
+			       (else
+				pageidx)))
+	 (idx (+ (* cur-page social-ime-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+        #t
+        #f)))
+
+(define (social-ime-prediction-keys-handled? sc key key-state)
+  (cond
+   ((social-ime-next-prediction-key? key key-state)
+    (social-ime-move-prediction sc 1)
+    #t)
+   ((social-ime-prev-prediction-key? key key-state)
+    (social-ime-move-prediction sc -1)
+    #t)
+   ((and
+     social-ime-select-prediction-by-numeral-key?
+     (ichar-numeric? key))
+    (social-ime-move-prediction-in-page sc key))
+   ((and
+     (social-ime-context-prediction-index sc)
+     (social-ime-prev-page-key? key key-state))
+    (im-shift-page-candidate sc #f)
+    #t)
+   ((and
+     (social-ime-context-prediction-index sc)
+     (social-ime-next-page-key? key key-state))
+    (im-shift-page-candidate sc #t)
+    #t)
+   (else
+    #f)))
+
+(define (social-ime-proc-prediction-state sc key key-state)
+  (cond
+   ;; prediction index change
+   ((social-ime-prediction-keys-handled? sc key key-state))
+
+   ;; cancel
+   ((social-ime-cancel-key? key key-state)
+    (if (social-ime-context-prediction-index sc)
+	(social-ime-reset-prediction-window sc)
+	(begin
+	  (social-ime-reset-prediction-window sc)
+	  (social-ime-proc-input-state sc key key-state))))
+
+   ;; commit
+   ((and
+     (social-ime-context-prediction-index sc)
+     (social-ime-commit-key? key key-state))
+    (social-ime-do-commit-prediction sc))
+   (else
+    (if (and
+	 social-ime-use-implicit-commit-prediction?
+	 (social-ime-context-prediction-index sc))
+	(cond
+	 ((or
+	   ;; check keys used in social-ime-proc-input-state-with-preedit
+	   (social-ime-begin-conv-key? key key-state)
+	   (social-ime-backspace-key? key key-state)
+	   (social-ime-delete-key? key key-state)
+	   (social-ime-kill-key? key key-state)
+	   (social-ime-kill-backward-key? key key-state)
+	   (and
+	    (not (social-ime-context-alnum sc))
+	    (social-ime-commit-as-opposite-kana-key? key key-state))
+	   (social-ime-transpose-as-hiragana-key? key key-state)
+	   (social-ime-transpose-as-katakana-key? key key-state)
+	   (social-ime-transpose-as-halfkana-key? key key-state)
+	   (and
+	    (not (= (social-ime-context-input-rule sc) social-ime-input-rule-kana))
+	    (or
+	     (social-ime-transpose-as-halfwidth-alnum-key? key key-state)
+	     (social-ime-transpose-as-fullwidth-alnum-key? key key-state)))
+	   (social-ime-hiragana-key? key key-state)
+	   (social-ime-katakana-key? key key-state)
+	   (social-ime-halfkana-key? key key-state)
+	   (social-ime-halfwidth-alnum-key? key key-state)
+	   (social-ime-fullwidth-alnum-key? key key-state)
+	   (and
+	    (not (social-ime-context-alnum sc))
+	    (social-ime-kana-toggle-key? key key-state))
+	   (social-ime-alkana-toggle-key? key key-state)
+	   (social-ime-go-left-key? key key-state)
+	   (social-ime-go-right-key? key key-state)
+	   (social-ime-beginning-of-preedit-key? key key-state)
+	   (social-ime-end-of-preedit-key? key key-state)
+	   (and
+	    (modifier-key-mask key-state)
+	    (not (shift-key-mask key-state))))
+	  ;; go back to unselected prediction
+	  (social-ime-reset-prediction-window sc)
+	  (social-ime-check-prediction sc))
+	 ((and
+	   (ichar-numeric? key)
+	   social-ime-select-prediction-by-numeral-key?
+	   (not (social-ime-prediction-select-non-existing-index? sc key)))
+	  (social-ime-context-set-predicting! sc #f)
+	  (social-ime-context-set-prediction-index! sc #f)
+	  (social-ime-proc-input-state sc key key-state))
+	 (else
+	  ;; implicit commit
+	  (social-ime-do-commit-prediction sc)
+	  (social-ime-proc-input-state sc key key-state)))
+	(begin
+	  (social-ime-context-set-predicting! sc #f)
+	  (social-ime-context-set-prediction-index! sc #f)
+	  (social-ime-proc-input-state sc key key-state))))))
+
 (define (social-ime-proc-input-state-with-preedit sc key key-state)
   (let ((preconv-str (social-ime-context-preconv-ustr sc))
 	(raw-str (social-ime-context-raw-ustr sc))
@@ -865,6 +1090,7 @@
     (cond
      ;; begin conversion
      ((social-ime-begin-conv-key? key key-state)
+      (social-ime-reset-prediction-window sc)
       (social-ime-begin-conv sc))
 
      ;; backspace
@@ -916,6 +1142,7 @@
 	   (or
 	    (social-ime-transpose-as-halfwidth-alnum-key? key key-state)
 	    (social-ime-transpose-as-fullwidth-alnum-key? key key-state))))
+      (social-ime-reset-prediction-window sc)
       (social-ime-proc-transposing-state sc key key-state))
 
      ((social-ime-hiragana-key? key key-state)
@@ -1084,10 +1311,41 @@
 		(ustr-insert-elem! preconv-str residual-kana)
 		(rk-flush rkc)))))))
 
+(define (social-ime-reset-prediction-window sc)
+  (if (social-ime-context-prediction-window sc)
+      (im-deactivate-candidate-selector sc))
+  (social-ime-context-set-predicting! sc #f)
+  (social-ime-context-set-prediction-window! sc #f)
+  (social-ime-context-set-prediction-index! sc #f))
+
+(define (social-ime-check-prediction sc)
+  (if (and
+       (not (social-ime-context-state sc))
+       (not (social-ime-context-transposing sc))
+       (not (social-ime-context-predicting sc)))
+      (let ((preconv-str
+	     (social-ime-make-whole-string sc #t (social-ime-context-kana-mode sc))))
+	(if (not (string=? preconv-str ""))
+	    (begin
+	      (social-ime-lib-set-prediction-src-string sc preconv-str)
+	      (let ((nr (social-ime-lib-get-nr-predictions sc)))
+		(if (and
+		     nr
+		     (> nr 0))
+		    (begin
+		      (im-activate-candidate-selector
+		       sc nr social-ime-nr-candidate-max)
+		      (social-ime-context-set-prediction-window! sc #t)
+		      (social-ime-context-set-predicting! sc #t))
+		    (social-ime-reset-prediction-window sc))))
+	    (social-ime-reset-prediction-window sc)))))
+
 (define (social-ime-proc-input-state sc key key-state)
   (if (social-ime-has-preedit? sc)
       (social-ime-proc-input-state-with-preedit sc key key-state)
-      (social-ime-proc-input-state-no-preedit sc key key-state)))
+      (social-ime-proc-input-state-no-preedit sc key key-state))
+  (if social-ime-use-prediction?
+      (social-ime-check-prediction sc)))
 
 (define social-ime-separator
   (lambda (sc)
@@ -1174,6 +1432,14 @@
 		"???") ;; FIXME
 	    "????")))))) ;; shouldn't happen
 
+(define (social-ime-predicting-state-preedit sc)
+  (if (or
+       (not social-ime-use-implicit-commit-prediction?)
+       (not (social-ime-context-prediction-index sc)))
+      (social-ime-input-state-preedit sc)
+      (let ((cand (social-ime-get-prediction-string sc)))
+	(list (cons (bitwise-ior preedit-reverse preedit-cursor) cand)))))
+
 (define (social-ime-compose-state-preedit sc)
   (let* ((segments (social-ime-context-segments sc))
 	 (cur-seg (ustr-cursor-pos segments))
@@ -1243,6 +1509,22 @@
     (social-ime-commit-string sc)
     (social-ime-reset-candidate-window sc)
     (social-ime-flush sc))
+
+(define (social-ime-get-prediction-string sc)
+  (social-ime-lib-get-nth-prediction
+   sc
+   (social-ime-context-prediction-index sc)))
+
+(define (social-ime-learn-prediction-string sc)
+  (social-ime-lib-commit-nth-prediction
+   sc
+   (social-ime-context-prediction-index sc)))
+
+(define (social-ime-do-commit-prediction sc)
+  (im-commit sc (social-ime-get-prediction-string sc))
+  (social-ime-learn-prediction-string sc)
+  (social-ime-reset-prediction-window sc)
+  (social-ime-flush sc))
 
 (define social-ime-correct-segment-cursor
   (lambda (segments)
@@ -1462,7 +1744,9 @@
               (social-ime-proc-transposing-state sc key key-state)
               (if (social-ime-context-state sc)
                   (social-ime-proc-compose-state sc key key-state)
-                  (social-ime-proc-input-state sc key key-state)))
+		  (if (social-ime-context-predicting sc)
+		      (social-ime-proc-prediction-state sc key key-state)
+		      (social-ime-proc-input-state sc key key-state))))
 	  (social-ime-proc-raw-state sc key key-state)))
   (social-ime-update-preedit sc))
 
@@ -1482,13 +1766,19 @@
 ;;;
 (define (social-ime-get-candidate-handler sc idx ascel-enum-hint)
   (let* ((cur-seg (ustr-cursor-pos (social-ime-context-segments sc)))
-	 (cand (social-ime-lib-get-nth-candidate
-		sc cur-seg idx)))
+	 (cand (if (social-ime-context-state sc)
+		   (social-ime-lib-get-nth-candidate sc cur-seg idx)
+		   (social-ime-lib-get-nth-prediction sc idx))))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (social-ime-set-candidate-index-handler sc idx)
-  (ustr-cursor-set-frontside! (social-ime-context-segments sc) idx)
-  (social-ime-update-preedit sc))
+  (cond
+   ((social-ime-context-state sc)
+    (ustr-cursor-set-frontside! (social-ime-context-segments sc) idx)
+    (social-ime-update-preedit sc))
+   ((social-ime-context-predicting sc)
+    (social-ime-context-set-prediction-index! sc idx)
+    (social-ime-update-preedit sc))))
 
 (define (social-ime-proc-raw-state sc key key-state)
   (if (not (social-ime-begin-input sc key key-state))

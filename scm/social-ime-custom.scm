@@ -47,6 +47,9 @@
 		     (N_ "Social-IME (advanced)")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'social-ime-prediction
+		     (N_ "Prediction")
+		     (N_ "long description will be here."))
 ;;
 ;; segment separator
 ;;
@@ -313,6 +316,12 @@
   (N_ "Social-IME server path")
   (N_ "long description will be here."))
 
+(define-custom 'social-ime-prediction-api-path "/api2/predict.php"
+  '(social-ime-advanced social-ime-server)
+  '(string ".*")
+  (N_ "Social-IME server prediction API path")
+  (N_ "long description will be here."))
+
 (define-custom 'social-ime-user (or (user-name) "")
   '(social-ime-advanced social-ime-server)
   '(string ".*")
@@ -330,3 +339,33 @@
   '(boolean)
   (N_ "Enable input mode transition keys in direct (off state) input mode")
   (N_ "long description will be here."))
+
+;; prediction
+(define-custom 'social-ime-use-prediction? #f
+  '(social-ime-advanced social-ime-prediction)
+  '(boolean)
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'social-ime-select-prediction-by-numeral-key? #f
+  '(social-ime-advanced social-ime-prediction)
+  '(boolean)
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom 'social-ime-use-implicit-commit-prediction? #t
+  '(social-ime-advanced social-ime-prediction)
+  '(boolean)
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'social-ime-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not social-ime-use-candidate-window?)
+                       (set! social-ime-use-prediction? #f))))
+
+(custom-add-hook 'social-ime-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   social-ime-use-candidate-window?))
