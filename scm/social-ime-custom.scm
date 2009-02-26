@@ -369,3 +369,9 @@
                  'custom-activity-hooks
                  (lambda ()
                    social-ime-use-candidate-window?))
+
+(define-custom 'social-ime-prediction-cache-words 256
+  '(social-ime-advanced social-ime-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
+  (N_ "long description will be here."))

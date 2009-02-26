@@ -118,7 +118,25 @@
   (let ((ret (social-ime-conversion-make-commit-query resize delta)))
     (if (not (string=? ret ""))
         (social-ime-conversion str ret))))
-(define (social-ime-predict str opts)
+(define (social-ime-predict-memoize! sc str cand)
+  (let ((cache (social-ime-context-prediction-cache sc)))
+    (social-ime-context-set-prediction-cache!
+     sc
+     (append (if (<= social-ime-prediction-cache-words
+                     (length cache))
+                 (cdr cache)
+                 cache)
+             (list (cons str cand))))))
+(define (social-ime-predict sc str opts)
+  (let ((ret (assoc str (social-ime-context-prediction-cache sc))))
+    (if ret
+        (cdr ret)
+        (let ((cand (social-ime-predict-from-server str opts)))
+          (if (not (or (equal? cand '(""))
+                       (equal? cand (list str))))
+              (social-ime-predict-memoize! sc str cand))
+          cand))))
+(define (social-ime-predict-from-server str opts)
   (define (make-query user)
         (format "~a?string=~a&charset=EUC-JP&applicartion=uim~a~a"
 		social-ime-prediction-api-path
@@ -212,7 +230,7 @@
   #f)
 (define (social-ime-lib-set-prediction-src-string sc str)
   (let ((sc-ctx (social-ime-context-sc-ctx sc))
-	(cands (social-ime-predict str "")))
+	(cands (social-ime-predict sc str "")))
     (social-ime-internal-context-set-prediction-candidates! sc-ctx cands)
     (social-ime-internal-context-set-prediction-nr! sc-ctx (length cands)))
   #f)
@@ -464,6 +482,7 @@
     (list 'candidate-op-count 0)
     (list 'prediction-window  #f)
     (list 'prediction-index   #f)
+    (list 'prediction-cache   '())
     (list 'kana-mode          social-ime-type-hiragana)
     (list 'alnum	      #f)
     (list 'alnum-type	      social-ime-type-halfwidth-alnum)
