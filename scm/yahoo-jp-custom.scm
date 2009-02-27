@@ -47,6 +47,10 @@
 		     (N_ "Yahoo-Jp (advanced)")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'yahoo-jp-prediction
+  (N_ "Prediction")
+  (N_ "long description will be here."))
+
 ;;
 ;; segment separator
 ;;
@@ -329,4 +333,40 @@
   '(yahoo-jp-advanced mode-transition)
   '(boolean)
   (N_ "Enable input mode transition keys in direct (off state) input mode")
+  (N_ "long description will be here."))
+
+;; prediction
+(define-custom 'yahoo-jp-use-prediction? #f
+  '(yahoo-jp-advanced yahoo-jp-prediction)
+  '(boolean)
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'yahoo-jp-select-prediction-by-numeral-key? #f
+  '(yahoo-jp-advanced yahoo-jp-prediction)
+  '(boolean)
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom 'yahoo-jp-use-implicit-commit-prediction? #t
+  '(yahoo-jp-advanced yahoo-jp-prediction)
+  '(boolean)
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'yahoo-jp-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not yahoo-jp-use-candidate-window?)
+                       (set! yahoo-jp-use-prediction? #f))))
+
+(custom-add-hook 'yahoo-jp-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   yahoo-jp-use-candidate-window?))
+
+(define-custom 'yahoo-jp-prediction-cache-words 256
+  '(yahoo-jp-advanced yahoo-jp-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
   (N_ "long description will be here."))

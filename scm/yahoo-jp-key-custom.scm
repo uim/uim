@@ -267,3 +267,15 @@
 	       '(key)
 	       (N_ "[Yahoo-Jp] toggle kana/alphanumeric mode")
 	       (N_ "long description will be here"))
+
+(define-custom 'yahoo-jp-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
+               '(yahoo-jp-keys4 prediction)
+               '(key)
+               (N_ "[Yahoo-Jp] Next prediction candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'yahoo-jp-prev-prediction-key '(generic-prev-candidate-key)
+               '(yahoo-jp-keys4 prediction)
+               '(key)
+               (N_ "[Yahoo-Jp] Previous prediction candidate")
+               (N_ "long description will be here"))

@@ -53,7 +53,10 @@
    context-rec-spec
    (list
     (list 'yomi-seg    '())
-    (list 'candidates  '()))))
+    (list 'candidates  '())
+    (list 'seg-cnts '())
+    (list 'prediction-candidates '())
+    (list 'prediction-nr '()))))
 (define-record 'yahoo-jp-internal-context yahoo-jp-internal-context-rec-spec)
 (define yahoo-jp-internal-context-new-internal yahoo-jp-internal-context-new)
 
@@ -118,6 +121,26 @@
         (parse ret)
         (cons '() (list (list str))))))
 
+(define (yahoo-jp-predict-memoize! yc str cand)
+  (let ((cache (yahoo-jp-context-prediction-cache yc)))
+    (yahoo-jp-context-set-prediction-cache!
+     yc
+     (append (if (<= yahoo-jp-prediction-cache-words
+                     (length cache))
+                 (cdr cache)
+                 cache)
+             (list (cons str cand))))))
+(define (yahoo-jp-predict yc str opts)
+  (let ((ret (assoc str (yahoo-jp-context-prediction-cache yc))))
+    (if ret
+        (cdr ret)
+        (let ((cand (yahoo-jp-predict-from-server str opts)))
+          (if (not (null? (car cand)))
+              (yahoo-jp-predict-memoize! yc str cand))
+          cand))))
+(define (yahoo-jp-predict-from-server str opts)
+  (cadr (yahoo-jp-conversion str (string-append "&mode=predictive" opts))))
+
 (define (yahoo-jp-conversion-make-resize-query yomi-seg)
   (let ((len (length yomi-seg)))
     (apply string-append (map (lambda (idx)
@@ -132,7 +155,7 @@
 (define (yahoo-jp-lib-init)
   #t)
 (define (yahoo-jp-lib-alloc-context)
-  #t)
+  (yahoo-jp-internal-context-new-internal))
 (define (yahoo-jp-lib-get-nth-candidate yc seg nth)
   (let* ((yx-ctx (yahoo-jp-context-yx-ctx yc))
          (cand (yahoo-jp-internal-context-candidates yx-ctx)))
@@ -208,16 +231,29 @@
   (let* ((yomi-seg-and-cand (yahoo-jp-conversion str ""))
          (yomi-seg (car yomi-seg-and-cand))
          (cand (cdr yomi-seg-and-cand))
-         (yx-ctx (yahoo-jp-internal-context-new-internal)))
+         (yx-ctx (yahoo-jp-context-yx-ctx yc)))
     (yahoo-jp-internal-context-set-yomi-seg! yx-ctx yomi-seg)
     (yahoo-jp-internal-context-set-candidates! yx-ctx cand)
-    (yahoo-jp-context-set-yx-ctx! yc yx-ctx)
     (length cand)))
 (define (yahoo-jp-lib-commit-segments yc delta)
   #t)
 (define (yahoo-jp-lib-reset-conversion yc)
   #f)
-
+(define (yahoo-jp-lib-set-prediction-src-string yc str)
+  (let ((yx-ctx (yahoo-jp-context-yx-ctx yc))
+       (cands (yahoo-jp-predict yc str "")))
+    (yahoo-jp-internal-context-set-prediction-candidates! yx-ctx cands)
+    (yahoo-jp-internal-context-set-prediction-nr! yx-ctx (length cands)))
+  #f)
+(define (yahoo-jp-lib-get-nr-predictions yc)
+  (let ((yx-ctx (yahoo-jp-context-yx-ctx yc)))
+    (yahoo-jp-internal-context-prediction-nr yx-ctx)))
+(define (yahoo-jp-lib-get-nth-prediction yc nth)
+  (let* ((yx-ctx (yahoo-jp-context-yx-ctx yc))
+         (cands (yahoo-jp-internal-context-prediction-candidates yx-ctx)))
+    (list-ref cands nth)))
+(define (yahoo-jp-lib-commit-nth-prediction yc nth)
+  #f)
 
 (define yahoo-jp-init-lib-ok? #f)
 
@@ -447,12 +483,16 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'yx-ctx             ()) ;; yahoo-jp-internal-context
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
     (list 'segments	      #f) ;; ustr of candidate indices
     (list 'candidate-window   #f)
     (list 'candidate-op-count 0)
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
+    (list 'prediction-cache   '())
     (list 'kana-mode          yahoo-jp-type-hiragana)
     (list 'alnum	      #f)
     (list 'alnum-type	      yahoo-jp-type-halfwidth-alnum)
@@ -584,9 +624,12 @@
   (ustr-clear! (yahoo-jp-context-segments yc))
   (yahoo-jp-context-set-transposing! yc #f)
   (yahoo-jp-context-set-state! yc #f)
-  (if (yahoo-jp-context-candidate-window yc)
+  (if (or
+       (yahoo-jp-context-candidate-window yc)
+       (yahoo-jp-context-prediction-window yc))
       (im-deactivate-candidate-selector yc))
   (yahoo-jp-context-set-candidate-window! yc #f)
+  (yahoo-jp-context-set-prediction-window! yc #f)
   (yahoo-jp-context-set-candidate-op-count! yc 0))
 
 (define (yahoo-jp-begin-input yc key key-state)
@@ -641,7 +684,9 @@
 			      (yahoo-jp-context-transposing-state-preedit yc)
 			      (if (yahoo-jp-context-state yc)
 				  (yahoo-jp-compose-state-preedit yc)
-				  (yahoo-jp-input-state-preedit yc)))
+                                  (if (yahoo-jp-context-predicting yc)
+                                      (yahoo-jp-predicting-state-preedit yc)
+                                      (yahoo-jp-input-state-preedit yc))))
 			  ())))
 	(context-update-preedit yc segments))
       (yahoo-jp-context-set-commit-raw! yc #f)))
@@ -895,6 +940,176 @@
 	   (yahoo-jp-flush yc)
 	   (yahoo-jp-proc-input-state yc key key-state))))))))
 
+(define (yahoo-jp-move-prediction yc offset)
+  (let* ((nr (yahoo-jp-lib-get-nr-predictions yc))
+         (idx (yahoo-jp-context-prediction-index yc))
+         (n (if (not idx)
+		0
+		(+ idx offset)))
+         (compensated-n (cond
+			 ((>= n nr)
+			  0)
+			 ((< n 0)
+			  (- nr 1))
+			 (else
+			  n))))
+    (im-select-candidate yc compensated-n)
+    (yahoo-jp-context-set-prediction-index! yc compensated-n)))
+
+(define (yahoo-jp-move-prediction-in-page yc numeralc)
+  (let* ((nr (yahoo-jp-lib-get-nr-predictions yc))
+	 (p-idx (yahoo-jp-context-prediction-index yc))
+	 (n (if (not p-idx)
+		0
+		p-idx))
+	 (cur-page (if (= yahoo-jp-nr-candidate-max 0)
+		       0
+		       (quotient n yahoo-jp-nr-candidate-max)))
+	 (pageidx (- (numeric-ichar->integer numeralc) 1))
+	 (compensated-pageidx (cond
+			       ((< pageidx 0) ; pressing key_0
+				(+ pageidx 10))
+			       (else
+				pageidx)))
+	 (idx (+ (* cur-page yahoo-jp-nr-candidate-max) compensated-pageidx))
+	 (compensated-idx (cond
+			   ((>= idx nr)
+			    #f)
+			   (else
+			    idx)))
+	 (selected-pageidx (if (not p-idx)
+			       #f
+			       (if (= yahoo-jp-nr-candidate-max 0)
+				   p-idx
+				   (remainder p-idx
+					      yahoo-jp-nr-candidate-max)))))
+    (if (and
+	 compensated-idx
+	 (not (eqv? compensated-pageidx selected-pageidx)))
+	(begin
+	  (yahoo-jp-context-set-prediction-index! yc compensated-idx)
+	  (im-select-candidate yc compensated-idx)
+	  #t)
+	#f)))
+
+(define (yahoo-jp-prediction-select-non-existing-index? yc numeralc)
+  (let* ((nr (yahoo-jp-lib-get-nr-predictions yc))
+	 (p-idx (yahoo-jp-context-prediction-index yc))
+	 (cur-page (if (= yahoo-jp-nr-candidate-max 0)
+		       0
+		       (quotient p-idx yahoo-jp-nr-candidate-max)))
+	 (pageidx (- (numeric-ichar->integer numeralc) 1))
+	 (compensated-pageidx (cond
+			       ((< pageidx 0) ; pressing key_0
+				(+ pageidx 10))
+			       (else
+				pageidx)))
+	 (idx (+ (* cur-page yahoo-jp-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+        #t
+        #f)))
+
+(define (yahoo-jp-prediction-keys-handled? yc key key-state)
+  (cond
+   ((yahoo-jp-next-prediction-key? key key-state)
+    (yahoo-jp-move-prediction yc 1)
+    #t)
+   ((yahoo-jp-prev-prediction-key? key key-state)
+    (yahoo-jp-move-prediction yc -1)
+    #t)
+   ((and
+     yahoo-jp-select-prediction-by-numeral-key?
+     (ichar-numeric? key))
+    (yahoo-jp-move-prediction-in-page yc key))
+   ((and
+     (yahoo-jp-context-prediction-index yc)
+     (yahoo-jp-prev-page-key? key key-state))
+    (im-shift-page-candidate yc #f)
+    #t)
+   ((and
+     (yahoo-jp-context-prediction-index yc)
+     (yahoo-jp-next-page-key? key key-state))
+    (im-shift-page-candidate yc #t)
+    #t)
+   (else
+    #f)))
+
+(define (yahoo-jp-proc-prediction-state yc key key-state)
+  (cond
+   ;; prediction index change
+   ((yahoo-jp-prediction-keys-handled? yc key key-state))
+
+   ;; cancel
+   ((yahoo-jp-cancel-key? key key-state)
+    (if (yahoo-jp-context-prediction-index yc)
+	(yahoo-jp-reset-prediction-window yc)
+	(begin
+	  (yahoo-jp-reset-prediction-window yc)
+	  (yahoo-jp-proc-input-state yc key key-state))))
+
+   ;; commit
+   ((and
+     (yahoo-jp-context-prediction-index yc)
+     (yahoo-jp-commit-key? key key-state))
+    (yahoo-jp-do-commit-prediction yc))
+   (else
+    (if (and
+	 yahoo-jp-use-implicit-commit-prediction?
+	 (yahoo-jp-context-prediction-index yc))
+	(cond
+	 ((or
+	   ;; check keys used in yahoo-jp-proc-input-state-with-preedit
+	   (yahoo-jp-begin-conv-key? key key-state)
+	   (yahoo-jp-backspace-key? key key-state)
+	   (yahoo-jp-delete-key? key key-state)
+	   (yahoo-jp-kill-key? key key-state)
+	   (yahoo-jp-kill-backward-key? key key-state)
+	   (and
+	    (not (yahoo-jp-context-alnum yc))
+	    (yahoo-jp-commit-as-opposite-kana-key? key key-state))
+	   (yahoo-jp-transpose-as-hiragana-key? key key-state)
+	   (yahoo-jp-transpose-as-katakana-key? key key-state)
+	   (yahoo-jp-transpose-as-halfkana-key? key key-state)
+	   (and
+	    (not (= (yahoo-jp-context-input-rule yc) yahoo-jp-input-rule-kana))
+	    (or
+	     (yahoo-jp-transpose-as-halfwidth-alnum-key? key key-state)
+	     (yahoo-jp-transpose-as-fullwidth-alnum-key? key key-state)))
+	   (yahoo-jp-hiragana-key? key key-state)
+	   (yahoo-jp-katakana-key? key key-state)
+	   (yahoo-jp-halfkana-key? key key-state)
+	   (yahoo-jp-halfwidth-alnum-key? key key-state)
+	   (yahoo-jp-fullwidth-alnum-key? key key-state)
+	   (and
+	    (not (yahoo-jp-context-alnum yc))
+	    (yahoo-jp-kana-toggle-key? key key-state))
+	   (yahoo-jp-alkana-toggle-key? key key-state)
+	   (yahoo-jp-go-left-key? key key-state)
+	   (yahoo-jp-go-right-key? key key-state)
+	   (yahoo-jp-beginning-of-preedit-key? key key-state)
+	   (yahoo-jp-end-of-preedit-key? key key-state)
+	   (and
+	    (modifier-key-mask key-state)
+	    (not (shift-key-mask key-state))))
+	  ;; go back to unselected prediction
+	  (yahoo-jp-reset-prediction-window yc)
+	  (yahoo-jp-check-prediction yc))
+	 ((and
+	   (ichar-numeric? key)
+	   yahoo-jp-select-prediction-by-numeral-key?
+	   (not (yahoo-jp-prediction-select-non-existing-index? yc key)))
+	  (yahoo-jp-context-set-predicting! yc #f)
+	  (yahoo-jp-context-set-prediction-index! yc #f)
+	  (yahoo-jp-proc-input-state yc key key-state))
+	 (else
+	  ;; implicit commit
+	  (yahoo-jp-do-commit-prediction yc)
+	  (yahoo-jp-proc-input-state yc key key-state)))
+	(begin
+	  (yahoo-jp-context-set-predicting! yc #f)
+	  (yahoo-jp-context-set-prediction-index! yc #f)
+	  (yahoo-jp-proc-input-state yc key key-state))))))
+
 (define (yahoo-jp-proc-input-state-with-preedit yc key key-state)
   (let ((preconv-str (yahoo-jp-context-preconv-ustr yc))
 	(raw-str (yahoo-jp-context-raw-ustr yc))
@@ -955,6 +1170,7 @@
 	   (or
 	    (yahoo-jp-transpose-as-halfwidth-alnum-key? key key-state)
 	    (yahoo-jp-transpose-as-fullwidth-alnum-key? key key-state))))
+      (yahoo-jp-reset-prediction-window yc)
       (yahoo-jp-proc-transposing-state yc key key-state))
 
      ((yahoo-jp-hiragana-key? key key-state)
@@ -1123,10 +1339,41 @@
 		(ustr-insert-elem! preconv-str residual-kana)
 		(rk-flush rkc)))))))
 
+(define (yahoo-jp-reset-prediction-window yc)
+  (if (yahoo-jp-context-prediction-window yc)
+      (im-deactivate-candidate-selector yc))
+  (yahoo-jp-context-set-predicting! yc #f)
+  (yahoo-jp-context-set-prediction-window! yc #f)
+  (yahoo-jp-context-set-prediction-index! yc #f))
+
+(define (yahoo-jp-check-prediction yc)
+  (if (and
+       (not (yahoo-jp-context-state yc))
+       (not (yahoo-jp-context-transposing yc))
+       (not (yahoo-jp-context-predicting yc)))
+      (let ((preconv-str
+            (yahoo-jp-make-whole-string yc #t (yahoo-jp-context-kana-mode yc))))
+       (if (not (string=? preconv-str ""))
+           (begin
+             (yahoo-jp-lib-set-prediction-src-string yc preconv-str)
+             (let ((nr (yahoo-jp-lib-get-nr-predictions yc)))
+               (if (and
+                    nr
+                    (> nr 0))
+                   (begin
+                     (im-activate-candidate-selector
+                      yc nr yahoo-jp-nr-candidate-max)
+                     (yahoo-jp-context-set-prediction-window! yc #t)
+                     (yahoo-jp-context-set-predicting! yc #t))
+                   (yahoo-jp-reset-prediction-window yc))))
+           (yahoo-jp-reset-prediction-window yc)))))
+
 (define (yahoo-jp-proc-input-state yc key key-state)
   (if (yahoo-jp-has-preedit? yc)
       (yahoo-jp-proc-input-state-with-preedit yc key key-state)
-      (yahoo-jp-proc-input-state-no-preedit yc key key-state)))
+      (yahoo-jp-proc-input-state-no-preedit yc key key-state))
+  (if yahoo-jp-use-prediction?
+      (yahoo-jp-check-prediction yc)))
 
 (define yahoo-jp-separator
   (lambda (yc)
@@ -1213,6 +1460,14 @@
 		"???") ;; FIXME
 	    "????")))))) ;; shouldn't happen
 
+(define (yahoo-jp-predicting-state-preedit yc)
+  (if (or
+       (not yahoo-jp-use-implicit-commit-prediction?)
+       (not (yahoo-jp-context-prediction-index yc)))
+      (yahoo-jp-input-state-preedit yc)
+      (let ((cand (yahoo-jp-get-prediction-string yc)))
+       (list (cons (bitwise-ior preedit-reverse preedit-cursor) cand)))))
+
 (define (yahoo-jp-compose-state-preedit yc)
   (let* ((segments (yahoo-jp-context-segments yc))
 	 (cur-seg (ustr-cursor-pos segments))
@@ -1282,6 +1537,22 @@
     (yahoo-jp-commit-string yc)
     (yahoo-jp-reset-candidate-window yc)
     (yahoo-jp-flush yc))
+
+(define (yahoo-jp-get-prediction-string yc)
+  (yahoo-jp-lib-get-nth-prediction
+   yc
+   (yahoo-jp-context-prediction-index yc)))
+
+(define (yahoo-jp-learn-prediction-string yc)
+  (yahoo-jp-lib-commit-nth-prediction
+   yc
+   (yahoo-jp-context-prediction-index yc)))
+
+(define (yahoo-jp-do-commit-prediction yc)
+  (im-commit yc (yahoo-jp-get-prediction-string yc))
+  (yahoo-jp-learn-prediction-string yc)
+  (yahoo-jp-reset-prediction-window yc)
+  (yahoo-jp-flush yc))
 
 (define yahoo-jp-correct-segment-cursor
   (lambda (segments)
@@ -1501,7 +1772,9 @@
               (yahoo-jp-proc-transposing-state yc key key-state)
               (if (yahoo-jp-context-state yc)
                   (yahoo-jp-proc-compose-state yc key key-state)
-                  (yahoo-jp-proc-input-state yc key key-state)))
+                  (if (yahoo-jp-context-predicting yc)
+                      (yahoo-jp-proc-prediction-state yc key key-state)
+                      (yahoo-jp-proc-input-state yc key key-state))))
 	  (yahoo-jp-proc-raw-state yc key key-state)))
   (yahoo-jp-update-preedit yc))
 
@@ -1521,13 +1794,19 @@
 ;;;
 (define (yahoo-jp-get-candidate-handler yc idx ascel-enum-hint)
   (let* ((cur-seg (ustr-cursor-pos (yahoo-jp-context-segments yc)))
-	 (cand (yahoo-jp-lib-get-nth-candidate
-		yc cur-seg idx)))
+         (cand (if (yahoo-jp-context-state yc)
+                   (yahoo-jp-lib-get-nth-candidate yc cur-seg idx)
+                   (yahoo-jp-lib-get-nth-prediction yc idx))))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (yahoo-jp-set-candidate-index-handler yc idx)
-  (ustr-cursor-set-frontside! (yahoo-jp-context-segments yc) idx)
-  (yahoo-jp-update-preedit yc))
+    (cond
+     ((yahoo-jp-context-state yc)
+      (ustr-cursor-set-frontside! (yahoo-jp-context-segments yc) idx)
+      (yahoo-jp-update-preedit yc))
+     ((yahoo-jp-context-predicting yc)
+      (yahoo-jp-context-set-prediction-index! yc idx)
+      (yahoo-jp-update-preedit yc))))
 
 (define (yahoo-jp-proc-raw-state yc key key-state)
   (if (not (yahoo-jp-begin-input yc key key-state))
