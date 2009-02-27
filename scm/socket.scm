@@ -77,5 +77,10 @@
       (delete-sockaddr-un sun)
       ret)))
 
+(define (call-with-sockaddr-storage thunk)
+  (let* ((ss (make-sockaddr-storage))
+         (ret (thunk ss)))
+    (delete-sockaddr-storage ss)
+    ret))
 
 (define shutdown-how-alist (shutdown-how-alist?))
