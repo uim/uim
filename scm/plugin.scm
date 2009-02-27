@@ -42,7 +42,7 @@
 	(filter string?
 		(append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
 			      (if home-dir
-				  (string-append home-dir "/.uim.d/plugin")
+				  (string-append (get-config-path! #f) "/plugin")
 				  '())
 			      (string-append (sys-pkglibdir) "/plugin"))
 			;; XXX
@@ -57,7 +57,7 @@
 	(filter string?
 		(list (getenv "LIBUIM_SCM_FILES")
 		      (if home-dir
-			  (string-append home-dir "/.uim.d/plugin")
+			  (string-append (get-config-path! #f) "/plugin")
 			  '())
 		      (sys-pkgdatadir))))))
 
@@ -130,7 +130,7 @@
   (lambda ()
     (let* ((home-dir (or (home-directory (user-name)) ""))
 	   (user-module-dir (if home-dir
-				(string-append home-dir "/.uim.d/plugin/")
+				(string-append (get-config-path! #f) "/plugin/")
 				#f))
 	   (conf-file "installed-modules.scm")
 	   (user-conf-file (if user-module-dir
@@ -157,7 +157,7 @@
   (lambda ()
     (let* ((home-dir (or (home-directory (user-name)) ""))
 	   (user-module-dir (if home-dir
-				(string-append home-dir "/.uim.d/plugin/")
+				(string-append (get-config-path! #f) "/plugin/")
 				#f))
 	   (file "loader.scm")
 	   (user-file (if user-module-dir
