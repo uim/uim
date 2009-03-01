@@ -1023,7 +1023,7 @@
 	       (not (shift-key-mask key-state))))
 	     ;; go back to unselected prediction
 	     (anthy-utf8-reset-prediction-window ac)
-	     (anthy-utf8-check-prediction ac))
+	     (anthy-utf8-check-prediction ac #f))
 	    ((and
 	      (ichar-numeric? key)
 	      anthy-select-prediction-by-numeral-key?
@@ -1053,7 +1053,11 @@
        ((anthy-begin-conv-key? key key-state)
 	(anthy-utf8-reset-prediction-window ac)
 	(anthy-utf8-begin-conv ac))
-       
+
+       ;; prediction 
+       ((anthy-next-prediction-key? key key-state)
+	(anthy-utf8-check-prediction ac #t))
+
        ;; backspace
        ((anthy-backspace-key? key key-state)
 	(if (not (rk-backspace rkc))
@@ -1319,17 +1323,31 @@
     (anthy-utf8-context-set-prediction-index! ac #f)))
 
 (define anthy-utf8-check-prediction
-  (lambda (ac)
+  (lambda (ac force-check?)
     (if (and
 	 (not (anthy-utf8-context-converting ac))
 	 (not (anthy-utf8-context-transposing ac))
 	 (not (anthy-utf8-context-predicting ac)))
-	(let ((preconv-str
-	       (anthy-utf8-make-whole-string ac #t (anthy-utf8-context-kana-mode ac)))
-	      (ac-id (anthy-utf8-context-ac-id ac)))
-	  (if (not (string=? preconv-str ""))
+	(let* ((use-pending-rk-for-prediction? #f)
+               (preconv-str
+		(anthy-utf8-make-whole-string
+		 ac
+		 (not use-pending-rk-for-prediction?)
+		 (anthy-utf8-context-kana-mode ac)))
+	       (ac-id (anthy-utf8-context-ac-id ac))
+	       (preedit-len
+		(+
+		 (ustr-length (anthy-utf8-context-preconv-ustr ac))
+		 (if (not use-pending-rk-for-prediction?)
+		     0
+		     (string-length
+		      (rk-pending (anthy-utf8-context-rkc ac)))))))
+	  (if (or
+	       (>= preedit-len anthy-prediction-start-char-count)
+	       force-check?)
 	      (begin
-		(anthy-utf8-lib-set-prediction-src-string ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
+		(anthy-utf8-lib-set-prediction-src-string
+		 ac-id (anthy-utf8-lib-eucjp-to-utf8 preconv-str))
 		(let ((nr (anthy-utf8-lib-get-nr-predictions ac-id)))
 		  (if (and
 		       nr
@@ -1348,8 +1366,9 @@
 	(anthy-utf8-proc-input-state-with-preedit ac key key-state)
 	(anthy-utf8-proc-input-state-no-preedit ac key key-state))
     (if (and
-         anthy-use-prediction?)
-	 (anthy-utf8-check-prediction ac))))
+         anthy-use-prediction?
+         (not (anthy-utf8-context-predicting ac)))
+	 (anthy-utf8-check-prediction ac #f))))
 
 (define anthy-separator
   (lambda (ac)

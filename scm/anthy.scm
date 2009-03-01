@@ -1018,7 +1018,7 @@
 	       (not (shift-key-mask key-state))))
 	     ;; go back to unselected prediction
 	     (anthy-reset-prediction-window ac)
-	     (anthy-check-prediction ac))
+	     (anthy-check-prediction ac #f))
 	    ((and
 	      (ichar-numeric? key)
 	      anthy-select-prediction-by-numeral-key?
@@ -1048,7 +1048,11 @@
        ((anthy-begin-conv-key? key key-state)
 	(anthy-reset-prediction-window ac)
 	(anthy-begin-conv ac))
-       
+
+       ;; prediction 
+       ((anthy-next-prediction-key? key key-state)
+	(anthy-check-prediction ac #t))
+
        ;; backspace
        ((anthy-backspace-key? key key-state)
 	(if (not (rk-backspace rkc))
@@ -1314,15 +1318,25 @@
     (anthy-context-set-prediction-index! ac #f)))
 
 (define anthy-check-prediction
-  (lambda (ac)
+  (lambda (ac force-check?)
     (if (and
 	 (not (anthy-context-converting ac))
 	 (not (anthy-context-transposing ac))
 	 (not (anthy-context-predicting ac)))
-	(let ((preconv-str
-	       (anthy-make-whole-string ac #t (anthy-context-kana-mode ac)))
-	      (ac-id (anthy-context-ac-id ac)))
-	  (if (not (string=? preconv-str ""))
+	(let* ((use-pending-rk-for-prediction? #f)
+	       (preconv-str
+		(anthy-make-whole-string ac #t (anthy-context-kana-mode ac)))
+	       (ac-id (anthy-context-ac-id ac))
+	       (preedit-len
+		(+
+		 (ustr-length (anthy-context-preconv-ustr ac))
+		 (if (not use-pending-rk-for-prediction?)
+		     0
+		     (string-length
+		      (rk-pending (anthy-context-rkc ac)))))))
+	  (if (or
+	       (>= preedit-len anthy-prediction-start-char-count)
+	       force-check?)
 	      (begin
 		(anthy-lib-set-prediction-src-string ac-id preconv-str)
 		(let ((nr (anthy-lib-get-nr-predictions ac-id)))
@@ -1343,8 +1357,9 @@
 	(anthy-proc-input-state-with-preedit ac key key-state)
 	(anthy-proc-input-state-no-preedit ac key key-state))
     (if (and
-         anthy-use-prediction?)
-	 (anthy-check-prediction ac))))
+	 anthy-use-prediction?
+	 (not (anthy-context-predicting ac)))
+	(anthy-check-prediction ac #f))))
 
 (define anthy-separator
   (lambda (ac)

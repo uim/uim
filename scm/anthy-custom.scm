@@ -313,6 +313,12 @@
   (N_ "Show selected prediction candidate in preedit area")
   (N_ "long description will be here."))
 
+(define-custom 'anthy-prediction-start-char-count 1
+  '(anthy-advanced prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
 (custom-add-hook 'anthy-use-candidate-window?
 		 'custom-get-hooks
 		 (lambda ()
@@ -330,6 +336,11 @@
 		   anthy-use-prediction?))
 
 (custom-add-hook 'anthy-use-implicit-commit-prediction?
+		 'custom-activity-hooks
+		 (lambda ()
+		   anthy-use-prediction?))
+
+(custom-add-hook 'anthy-prediction-start-char-count
 		 'custom-activity-hooks
 		 (lambda ()
 		   anthy-use-prediction?))
