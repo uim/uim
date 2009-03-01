@@ -1069,7 +1069,7 @@
 	    (not (shift-key-mask key-state))))
 	  ;; go back to unselected prediction
 	  (social-ime-reset-prediction-window sc)
-	  (social-ime-check-prediction sc))
+	  (social-ime-check-prediction sc #f))
 	 ((and
 	   (ichar-numeric? key)
 	   social-ime-select-prediction-by-numeral-key?
@@ -1097,6 +1097,10 @@
      ((social-ime-begin-conv-key? key key-state)
       (social-ime-reset-prediction-window sc)
       (social-ime-begin-conv sc))
+
+     ;; prediction
+     ((social-ime-next-prediction-key? key key-state)
+      (social-ime-check-prediction sc #t))
 
      ;; backspace
      ((social-ime-backspace-key? key key-state)
@@ -1323,14 +1327,27 @@
   (social-ime-context-set-prediction-window! sc #f)
   (social-ime-context-set-prediction-index! sc #f))
 
-(define (social-ime-check-prediction sc)
+(define (social-ime-check-prediction sc force-check?)
   (if (and
        (not (social-ime-context-state sc))
        (not (social-ime-context-transposing sc))
        (not (social-ime-context-predicting sc)))
-      (let ((preconv-str
-	     (social-ime-make-whole-string sc #t (social-ime-context-kana-mode sc))))
-	(if (not (string=? preconv-str ""))
+      (let* ((use-pending-rk-for-prediction? #t)
+	     (preconv-str
+	      (social-ime-make-whole-string
+	       sc
+	       (not use-pending-rk-for-prediction?)
+	       (social-ime-context-kana-mode sc)))
+	     (preedit-len (+
+			   (ustr-length (social-ime-context-preconv-ustr sc))
+			   (if (not use-pending-rk-for-prediction?)
+			       0
+			       (string-length (rk-pending
+					       (social-ime-context-rkc
+						sc)))))))
+	(if (or
+	     (>= preedit-len social-ime-prediction-start-char-count)
+	     force-check?)
 	    (begin
 	      (social-ime-lib-set-prediction-src-string sc preconv-str)
 	      (let ((nr (social-ime-lib-get-nr-predictions sc)))
@@ -1350,7 +1367,7 @@
       (social-ime-proc-input-state-with-preedit sc key key-state)
       (social-ime-proc-input-state-no-preedit sc key key-state))
   (if social-ime-use-prediction?
-      (social-ime-check-prediction sc)))
+      (social-ime-check-prediction sc #f)))
 
 (define social-ime-separator
   (lambda (sc)

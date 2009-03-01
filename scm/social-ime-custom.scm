@@ -359,6 +359,18 @@
   (N_ "Show selected prediction candidate in preedit area")
   (N_ "long description will be here."))
 
+(define-custom 'social-ime-prediction-cache-words 256
+  '(social-ime-advanced social-ime-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
+  (N_ "long description will be here."))
+
+(define-custom 'social-ime-prediction-start-char-count 2
+  '(social-ime-advanced social-ime-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
 (custom-add-hook 'social-ime-use-candidate-window?
                  'custom-get-hooks
                  (lambda ()
@@ -370,8 +382,22 @@
                  (lambda ()
                    social-ime-use-candidate-window?))
 
-(define-custom 'social-ime-prediction-cache-words 256
-  '(social-ime-advanced social-ime-prediction)
-  '(integer 1 65535)
-  (N_ "Number of cache of prediction candidates")
-  (N_ "long description will be here."))
+(custom-add-hook 'social-ime-select-prediction-by-numeral-key?
+                 'custom-activity-hooks
+                 (lambda ()
+                   social-ime-use-prediction?))
+
+(custom-add-hook 'social-ime-use-implicit-commit-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   social-ime-use-prediction?))
+
+(custom-add-hook 'social-ime-prediction-cache-words
+                 'custom-activity-hooks
+                 (lambda ()
+                   social-ime-use-prediction?))
+
+(custom-add-hook 'social-ime-prediction-start-char-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   social-ime-use-prediction?))
