@@ -66,7 +66,8 @@
 (define (call-with-getaddrinfo hostname servname hints thunk)
   (let* ((res (getaddrinfo hostname servname hints))
          (ret (thunk res)))
-    (freeaddrinfo (car res))
+    (if (not (null? res))
+        (freeaddrinfo (car res)))
     ret))
 
 (define (call-with-sockaddr-un family path thunk)

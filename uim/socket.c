@@ -244,10 +244,7 @@ c_getaddrinfo(uim_lisp hostname_, uim_lisp servname_, uim_lisp hint_)
   error = getaddrinfo(hostname, servname, hints, &res0);
   if (error) {
     const char *errstr = gai_strerror(error);
-
-    free(servname);
-    uim_notify_fatal("getaddrinfo: %s", gai_strerror(error));
-    ERROR_OBJ(errstr, CONS(hostname_, servname_));
+    uim_notify_fatal("getaddrinfo: %s", errstr);
   }
 
   free(servname);

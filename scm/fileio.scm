@@ -64,7 +64,8 @@
   (fd! port #f))
 
 (define (call-with-open-file-port fd thunk)
-  (and (< 0 fd)
+  (and (not (null? fd))
+       (< 0 fd)
        (let ((ret (thunk (open-file-port fd))))
          (file-close fd)
          ret)))
