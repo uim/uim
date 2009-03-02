@@ -50,7 +50,8 @@
   (file-write s (string->file-buf str)))
 
 (define-record-type file-port
-  (make-file-port fd inbufsiz inbuf read write) file-port?
+  (make-file-port context fd inbufsiz inbuf read write) file-port?
+  (context  context?  context!)
   (fd       fd?       fd!)
   (inbufsiz inbufsiz? inbufsiz!)
   (inbuf    inbuf?    inbuf!)
@@ -58,11 +59,12 @@
   (write    write?    write!))
 
 (define (open-file-port fd)
-  (make-file-port fd file-bufsiz '() file-read file-write))
+  (make-file-port fd fd file-bufsiz '() file-read file-write))
 
 (define (close-file-port port)
   (inbuf! port '())
-  (file-close (fd? port))
+  (file-close (context? port))
+  (context! port #f)
   (fd! port #f))
 
 (define (call-with-open-file-port fd thunk)
@@ -74,7 +76,7 @@
 
 (define (file-read-char port)
   (if (null? (inbuf? port))
-      (inbuf! port ((read? port) (fd? port) (inbufsiz? port))))
+      (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
   (if (null? (inbuf? port))
       #f
       (let ((c (car (inbuf? port))))
@@ -83,17 +85,17 @@
 
 (define (file-peek-char port)
   (if (null? (inbuf? port))
-      (inbuf! port ((read? port) (fd? port) (inbufsiz? port))))
+      (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
   (if (null? (inbuf? port))
       #f
       (let ((c (car (inbuf? port))))
         (integer->char c))))
 
 (define (file-display str port)
-  ((write? port) (fd? port) (string->file-buf str)))
+  ((write? port) (context? port) (string->file-buf str)))
 
 (define (file-newline str port)
-  ((write? port) (fd? port) '(#\newline)))
+  ((write? port) (context? port) '(#\newline)))
 
 (define (file-read-line port)
   (let loop ((c (file-read-char port))
