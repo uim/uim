@@ -32,6 +32,9 @@
 (require-extension (srfi 1 2 9))
 (require "socket.scm")
 (require "input-parse.scm")
+(define openssl-loaded?
+  (guard (err (else #f))
+	 (require "openssl.scm")))
 
 (define (http:open hostname servname)
   (call-with-getaddrinfo-hints
@@ -193,6 +196,11 @@
   (hostname hostname? hostname!)
   (port     port?     port!))
 
+(define-record-type http-ssl
+  (make-http-ssl method port) http-ssl?
+  (method method? method!)
+  (port   port?   port!))
+
 (define (http:make-proxy-request-string hostname port)
   (string-append
    (format "CONNECT ~a:~d HTTP/1.1\n\n" hostname port)))
@@ -210,13 +218,24 @@
 (define (http:get hostname path . args)
   (let-optionals* args ((servname 80)
                         (proxy #f)
+                        (ssl #f)
                         (request-alist '()))
-    (let ((file (if proxy
-                    (http:open (hostname? proxy) (port? proxy))
-                    (http:open hostname servname))))
+    (let* ((with-ssl? (and openssl-loaded?
+                           (http-ssl? ssl)))
+           (call-with-open-file-port-function
+            (if with-ssl?
+                ;; cut
+                (lambda (file thunk)
+                  (call-with-open-openssl-file-port file (method? ssl) thunk))
+                call-with-open-file-port))
+           (file (if (http-proxy? proxy)
+                     (http:open (hostname? proxy) (port? proxy))
+                     (if with-ssl?
+                         (http:open hostname (port? ssl))
+                         (http:open hostname servname)))))
       (if (not file)
           (uim-notify-fatal "cannot connect server"))
-      (call-with-open-file-port
+      (call-with-open-file-port-function
        file
        (lambda (port)
          (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
