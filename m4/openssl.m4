@@ -12,7 +12,7 @@ dnl
 saved_CPPFLAGS="$CPPFLAGS"
 saved_LDFLAGS="$LDFLAGS"
 saved_saved_LIBS="$LIBS"
-AC_ARG_WITH(ssl-dir,
+AC_ARG_WITH(openssl-dir,
 	[  --with-openssl-dir=PATH     Specify path to OpenSSL installation ],
 	[
 		if test "x$withval" != "xno" ; then
