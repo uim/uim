@@ -84,8 +84,7 @@
   (let* ((user (if (string=? social-ime-user "")
                    ""
                    (format "&user=~a" (http:encode-uri-string social-ime-user))))
-         (proxy (and (eq? http-proxy-setting 'user)
-                     (make-http-proxy http-proxy-hostname http-proxy-port)))
+         (proxy (make-http-proxy-from-custom))
          (ret (http:get social-ime-server (make-query user) 80 proxy)))
     (if (string? ret)
         (social-ime-parse-csv ret)
@@ -147,8 +146,7 @@
   (let* ((user (if (string=? social-ime-user "")
                    ""
                    (format "&user=~a" (http:encode-uri-string social-ime-user))))
-         (proxy (and (eq? http-proxy-setting 'user)
-                     (make-http-proxy http-proxy-hostname http-proxy-port)))
+         (proxy (make-http-proxy-from-custom))
          (ret (http:get social-ime-server (make-query user) 80 proxy)))
     (if (string? ret)
         (car (social-ime-parse-csv ret))

@@ -108,8 +108,7 @@
                   opts
                   )
           str)))
-  (define proxy (and (eq? http-proxy-setting 'user)
-                     (make-http-proxy http-proxy-hostname http-proxy-port)))
+  (define proxy (make-http-proxy-from-custom))
   (define (fetch url)
     (and-let* ((utf8-str (http:get (car (assq-cdr ajax-ime-url ajax-ime-url-alist))
                                    (make-query)

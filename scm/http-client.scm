@@ -196,6 +196,10 @@
   (hostname hostname? hostname!)
   (port     port?     port!))
 
+(define (make-http-proxy-from-custom)
+  (and (eq? http-proxy-setting 'user)
+       (make-http-proxy http-proxy-hostname http-proxy-port)))
+
 (define-record-type http-ssl
   (make-http-ssl method port) http-ssl?
   (method method? method!)

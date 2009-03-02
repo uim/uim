@@ -113,8 +113,7 @@
                     (begin (uim-notify-fatal (N_ "Please regist Api key from <a href='http://developer.yahoo.co.jp/'>developer network</a> and set value on advanced menu."))
                            #f)
                     yahoo-jp-appid))
-         (proxy (and (eq? http-proxy-setting 'user)
-                     (make-http-proxy http-proxy-hostname http-proxy-port)))
+         (proxy (make-http-proxy-from-custom))
          (ret (and appid
                    (http:get yahoo-jp-server (make-query appid) 80 proxy))))
     (if (string? ret)
