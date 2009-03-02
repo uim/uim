@@ -32,9 +32,7 @@
 (require-extension (srfi 1 2 9))
 (require "socket.scm")
 (require "input-parse.scm")
-(define openssl-loaded?
-  (guard (err (else #f))
-	 (require "openssl.scm")))
+(require "openssl.scm")
 
 (define (http:open hostname servname)
   (call-with-getaddrinfo-hints
@@ -224,7 +222,7 @@
                         (proxy #f)
                         (ssl #f)
                         (request-alist '()))
-    (let* ((with-ssl? (and openssl-loaded?
+    (let* ((with-ssl? (and (provided? "openssl")
                            (http-ssl? ssl)))
            (call-with-open-file-port-function
             (if with-ssl?

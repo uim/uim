@@ -33,7 +33,8 @@
 (require "fileio.scm")
 
 (and (not (provided? "openssl"))
-     (module-load "openssl")
+     (guard (err (else #f))
+            (module-load "openssl"))
 
      ;; init
      (SSL-load-error-strings)
