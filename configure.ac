@@ -266,6 +266,21 @@ AC_ARG_WITH(curl,
 expat_found=no
 AM_WITH_EXPAT
 
+# ***********************
+# *** Tests for OpenSSL ***
+# ***********************
+AC_ARG_ENABLE(openssl,
+  AC_HELP_STRING([--enable-openssl],
+                 [enable openssl @<:@default=no@:>@]),
+  [
+    use_openssl="yes"
+    AM_WITH_OPENSSL
+  ],
+  [
+    use_openssl="no"
+  ])
+
+
 PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
 AC_PATH_XTRA
 
@@ -1019,6 +1034,7 @@ AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
 AM_CONDITIONAL(SKK, true)
 AM_CONDITIONAL(CURL, test x$use_curl = xyes)
 AM_CONDITIONAL(EXPAT, test x$expat_found = xyes)
+AM_CONDITIONAL(OPENSSL, test x$use_openssl = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
@@ -1596,6 +1612,7 @@ Configure Result :
    SCIM            : ${use_scim}
    cURL            : ${use_curl}
    expat           : ${expat_found}
+   OpenSSL         : ${use_openssl}
    Gtk+            : ${use_gtk2}
    Gnome Applet    : ${use_applet_gnome}
    Qt3             : ${use_qt}

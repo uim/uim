@@ -166,6 +166,14 @@ libuim_expat_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_expat_la_CPPFLAGS = -I$(top_srcdir) @EXPAT_CFLAGS@
 endif
 
+if OPENSSL
+uim_plugin_LTLIBRARIES += libuim-openssl.la
+libuim_openssl_la_SOURCES = openssl.c
+libuim_openssl_la_LIBADD = @OPENSSL_LIBS@ libuim.la
+libuim_openssl_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_openssl_la_CPPFLAGS = -I$(top_srcdir) @OPENSSL_CPPFLAGS@
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@

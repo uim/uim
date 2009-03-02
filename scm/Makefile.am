@@ -44,6 +44,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  yahoo-jp.scm yahoo-jp-custom.scm yahoo-jp-key-custom.scm \
  uim-module-manager.scm \
  fileio.scm socket.scm http-client.scm process.scm \
+ openssl.scm \
  input-parse.scm match.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
