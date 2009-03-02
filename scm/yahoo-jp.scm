@@ -114,8 +114,10 @@
                            #f)
                     yahoo-jp-appid))
          (proxy (make-http-proxy-from-custom))
+         (ssl (and yahoo-jp-use-ssl?
+                   (make-http-ssl (SSLv3-client-method) 443)))
          (ret (and appid
-                   (http:get yahoo-jp-server (make-query appid) 80 proxy))))
+                   (http:get yahoo-jp-server (make-query appid) 80 proxy ssl))))
     (if (string? ret)
         (parse ret)
         (cons '() (list (list str))))))

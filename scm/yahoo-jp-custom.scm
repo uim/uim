@@ -323,6 +323,12 @@
   (N_ "Yahoo-Jp api key")
   (N_ "long description will be here."))
 
+(define-custom 'yahoo-jp-use-ssl? #f
+  '(yahoo-jp-advanced yahoo-jp-server)
+  '(boolean)
+  (N_ "Use SSL")
+  (N_ "long description will be here."))
+
 (define-custom 'yahoo-jp-use-with-vi? #f
   '(yahoo-jp-advanced special-op)
   '(boolean)
