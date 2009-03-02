@@ -67,6 +67,12 @@ typedef struct {
 } opt_args;
 
 static uim_lisp
+make_arg_cons(const opt_args *arg)
+{
+  return CONS(MAKE_SYM(arg->arg), MAKE_INT(arg->flag));
+}
+
+static uim_lisp
 make_arg_list(const opt_args *list)
 {
   uim_lisp ret_;
@@ -74,7 +80,8 @@ make_arg_list(const opt_args *list)
 
   ret_ = uim_scm_null();
   while (list[i].arg != 0) {
-    ret_ = CONS(CONS(MAKE_SYM(list[i].arg), MAKE_INT(list[i].flag)), ret_);
+    ret_ = CONS((uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)make_arg_cons,
+							   (void *)&list[i]), ret_);
     i++;
   }
   return ret_;
@@ -320,10 +327,10 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc3("file-open", c_file_open);
   uim_scm_init_proc0("file-open-flags?", c_file_open_flags);
   uim_scm_init_proc0("file-open-mode?", c_file_open_mode);
-  uim_scm_gc_protect(&uim_lisp_open_flags);
-  uim_scm_gc_protect(&uim_lisp_open_mode);
   uim_lisp_open_flags = make_arg_list(open_flags);
   uim_lisp_open_mode = make_arg_list(open_mode);
+  uim_scm_gc_protect(&uim_lisp_open_flags);
+  uim_scm_gc_protect(&uim_lisp_open_mode);
 
   uim_scm_init_proc1("file-close", c_file_close);
   uim_scm_init_proc2("file-read", c_file_read);
@@ -332,8 +339,8 @@ uim_plugin_instance_init(void)
 
   uim_scm_init_proc2("file-poll", c_file_poll);
   uim_scm_init_proc0("file-poll-flags?", c_file_poll_flags);
-  uim_scm_gc_protect(&uim_lisp_poll_flags);
   uim_lisp_poll_flags = make_arg_list(poll_flags);
+  uim_scm_gc_protect(&uim_lisp_poll_flags);
 
   uim_scm_init_proc1("file-ready?", c_file_ready);
 

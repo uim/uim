@@ -60,6 +60,12 @@ typedef struct {
 } opt_args;
 
 static uim_lisp
+make_arg_cons(const opt_args *arg)
+{
+  return CONS(MAKE_SYM(arg->arg), MAKE_INT(arg->flag));
+}
+
+static uim_lisp
 make_arg_list(const opt_args *list)
 {
   uim_lisp ret_;
@@ -67,7 +73,8 @@ make_arg_list(const opt_args *list)
 
   ret_ = uim_scm_null();
   while (list[i].arg != 0) {
-    ret_ = CONS(CONS(MAKE_SYM(list[i].arg), MAKE_INT(list[i].flag)), ret_);
+    ret_ = CONS((uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)make_arg_cons,
+							   (void *)&list[i]), ret_);
     i++;
   }
   return ret_;
@@ -411,26 +418,26 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc2("addrinfo-set-ai-flags!", c_addrinfo_set_ai_flags);
   uim_scm_init_proc1("addrinfo-ai-flags?", c_addrinfo_ref_ai_flags);
   uim_scm_init_proc0("addrinfo-ai-flags-alist?", c_addrinfo_ref_ai_flags_alist);
-  uim_scm_gc_protect(&uim_lisp_ai_flags);
   uim_lisp_ai_flags = make_arg_list(ai_flags);
+  uim_scm_gc_protect(&uim_lisp_ai_flags);
 
   uim_scm_init_proc2("addrinfo-set-ai-family!", c_addrinfo_set_ai_family);
   uim_scm_init_proc1("addrinfo-ai-family?", c_addrinfo_ref_ai_family);
   uim_scm_init_proc0("addrinfo-ai-family-alist?", c_addrinfo_ref_ai_family_alist);
-  uim_scm_gc_protect(&uim_lisp_ai_family);
   uim_lisp_ai_family = make_arg_list(ai_family);
+  uim_scm_gc_protect(&uim_lisp_ai_family);
 
   uim_scm_init_proc2("addrinfo-set-ai-socktype!", c_addrinfo_set_ai_socktype);
   uim_scm_init_proc1("addrinfo-ai-socktype?", c_addrinfo_ref_ai_socktype);
   uim_scm_init_proc0("addrinfo-ai-socktype-alist?", c_addrinfo_ref_ai_socktype_alist);
-  uim_scm_gc_protect(&uim_lisp_ai_socktype);
   uim_lisp_ai_socktype = make_arg_list(ai_socktype);
+  uim_scm_gc_protect(&uim_lisp_ai_socktype);
 
   uim_scm_init_proc2("addrinfo-set-ai-protocol!", c_addrinfo_set_ai_protocol);
   uim_scm_init_proc1("addrinfo-ai-protocol?", c_addrinfo_ref_ai_protocol);
   uim_scm_init_proc0("addrinfo-ai-protocol-alist?", c_addrinfo_ref_ai_protocol_alist);
-  uim_scm_gc_protect(&uim_lisp_ai_protocol);
   uim_lisp_ai_protocol = make_arg_list(ai_protocol);
+  uim_scm_gc_protect(&uim_lisp_ai_protocol);
 
   uim_scm_init_proc1("addrinfo-ai-addrlen?", c_addrinfo_ref_ai_addrlen);
   uim_scm_init_proc1("addrinfo-ai-addr?", c_addrinfo_ref_ai_addr);
@@ -454,8 +461,8 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc2("listen", c_listen);
   uim_scm_init_proc2("shutdown", c_shutdown);
   uim_scm_init_proc0("shutdown-how-alist?", c_shutdown_how_alist);
-  uim_scm_gc_protect(&uim_lisp_shutdown_how_alist);
   uim_lisp_shutdown_how_alist = make_arg_list(shutdown_how);
+  uim_scm_gc_protect(&uim_lisp_shutdown_how_alist);
 
   uim_scm_init_proc0("make-sockaddr-storage", c_make_sockaddr_storage);
   uim_scm_init_proc1("delete-sockaddr-storage", c_delete_sockaddr_storage);

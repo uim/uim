@@ -53,6 +53,12 @@ typedef struct {
 } opt_args;
 
 static uim_lisp
+make_arg_cons(const opt_args *arg)
+{
+  return CONS(MAKE_SYM(arg->arg), MAKE_INT(arg->flag));
+}
+
+static uim_lisp
 make_arg_list(const opt_args *list)
 {
   uim_lisp ret_;
@@ -60,7 +66,8 @@ make_arg_list(const opt_args *list)
 
   ret_ = uim_scm_null();
   while (list[i].arg != 0) {
-    ret_ = CONS(CONS(MAKE_SYM(list[i].arg), MAKE_INT(list[i].flag)), ret_);
+    ret_ = CONS((uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)make_arg_cons,
+							   (void *)&list[i]), ret_);
     i++;
   }
   return ret_;
@@ -218,8 +225,8 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc1("_exit", c__exit);
   uim_scm_init_proc2("process-waitpid", c_process_waitpid);
   uim_scm_init_proc0("process-waitpid-options?", c_process_waitpid_options);
-  uim_scm_gc_protect(&uim_lisp_process_waitpid_options);
   uim_lisp_process_waitpid_options = make_arg_list(waitpid_options);
+  uim_scm_gc_protect(&uim_lisp_process_waitpid_options);
   uim_scm_eval_c_string("(define process-waitpid-options-alist (process-waitpid-options?))");
 
   uim_scm_init_proc2("daemon", c_daemon);
