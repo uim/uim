@@ -30,7 +30,7 @@
 ;;;;
 
 (require "i18n.scm")
-
+(require "openssl.scm")
 
 (define yahoo-jp-im-name-label (N_ "Yahoo-Jp"))
 (define yahoo-jp-im-short-desc (N_ "A multi-segment kana-kanji conversion engine"))
@@ -328,6 +328,11 @@
   '(boolean)
   (N_ "Use SSL")
   (N_ "long description will be here."))
+
+(custom-add-hook 'yahoo-jp-use-ssl?
+                 'custom-activity-hooks
+                 (lambda ()
+                   (provided? "openssl")))
 
 (define-custom 'yahoo-jp-use-with-vi? #f
   '(yahoo-jp-advanced special-op)
