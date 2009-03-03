@@ -1094,7 +1094,7 @@
 	    (not (shift-key-mask key-state))))
 	  ;; go back to unselected prediction
 	  (yahoo-jp-reset-prediction-window yc)
-	  (yahoo-jp-check-prediction yc))
+	  (yahoo-jp-check-prediction yc #f))
 	 ((and
 	   (ichar-numeric? key)
 	   yahoo-jp-select-prediction-by-numeral-key?
@@ -1121,6 +1121,10 @@
      ;; begin conversion
      ((yahoo-jp-begin-conv-key? key key-state)
       (yahoo-jp-begin-conv yc))
+
+     ;; prediction
+     ((yahoo-jp-next-prediction-key? key key-state)
+      (yahoo-jp-check-prediction yc #t))
 
      ;; backspace
      ((yahoo-jp-backspace-key? key key-state)
@@ -1347,34 +1351,47 @@
   (yahoo-jp-context-set-prediction-window! yc #f)
   (yahoo-jp-context-set-prediction-index! yc #f))
 
-(define (yahoo-jp-check-prediction yc)
+(define (yahoo-jp-check-prediction yc force-check?)
   (if (and
        (not (yahoo-jp-context-state yc))
        (not (yahoo-jp-context-transposing yc))
        (not (yahoo-jp-context-predicting yc)))
-      (let ((preconv-str
-            (yahoo-jp-make-whole-string yc #t (yahoo-jp-context-kana-mode yc))))
-       (if (not (string=? preconv-str ""))
-           (begin
-             (yahoo-jp-lib-set-prediction-src-string yc preconv-str)
-             (let ((nr (yahoo-jp-lib-get-nr-predictions yc)))
-               (if (and
-                    nr
-                    (> nr 0))
-                   (begin
+      (let* ((use-pending-rk-for-prediction? #t)
+             (preconv-str
+              (yahoo-jp-make-whole-string
+               yc
+               (not use-pending-rk-for-prediction?)
+               (yahoo-jp-context-kana-mode yc)))
+             (preedit-len (+
+                           (ustr-length (yahoo-jp-context-preconv-ustr yc))
+                           (if (not use-pending-rk-for-prediction?)
+                               0
+                               (string-length (rk-pending
+                                               (yahoo-jp-context-rkc
+                                                yc)))))))
+        (if (or
+             (>= preedit-len yahoo-jp-prediction-start-char-count)
+             force-check?)
+            (begin
+              (yahoo-jp-lib-set-prediction-src-string yc preconv-str)
+              (let ((nr (yahoo-jp-lib-get-nr-predictions yc)))
+                (if (and
+                     nr
+                     (> nr 0))
+                    (begin
                      (im-activate-candidate-selector
                       yc nr yahoo-jp-nr-candidate-max)
                      (yahoo-jp-context-set-prediction-window! yc #t)
                      (yahoo-jp-context-set-predicting! yc #t))
-                   (yahoo-jp-reset-prediction-window yc))))
-           (yahoo-jp-reset-prediction-window yc)))))
+                    (yahoo-jp-reset-prediction-window yc))))
+            (yahoo-jp-reset-prediction-window yc)))))
 
 (define (yahoo-jp-proc-input-state yc key key-state)
   (if (yahoo-jp-has-preedit? yc)
       (yahoo-jp-proc-input-state-with-preedit yc key key-state)
       (yahoo-jp-proc-input-state-no-preedit yc key key-state))
   (if yahoo-jp-use-prediction?
-      (yahoo-jp-check-prediction yc)))
+      (yahoo-jp-check-prediction yc #f)))
 
 (define yahoo-jp-separator
   (lambda (yc)

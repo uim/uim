@@ -381,3 +381,40 @@
   '(integer 1 65535)
   (N_ "Number of cache of prediction candidates")
   (N_ "long description will be here."))
+
+(define-custom 'yahoo-jp-prediction-start-char-count 2
+  '(yahoo-jp-advanced yahoo-jp-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'yahoo-jp-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not yahoo-jp-use-candidate-window?)
+                       (set! yahoo-jp-use-prediction? #f))))
+
+(custom-add-hook 'yahoo-jp-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   yahoo-jp-use-candidate-window?))
+
+(custom-add-hook 'yahoo-jp-select-prediction-by-numeral-key?
+                 'custom-activity-hooks
+                 (lambda ()
+                   yahoo-jp-use-prediction?))
+
+(custom-add-hook 'yahoo-jp-use-implicit-commit-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   yahoo-jp-use-prediction?))
+
+(custom-add-hook 'yahoo-jp-prediction-cache-words
+                 'custom-activity-hooks
+                 (lambda ()
+                   yahoo-jp-use-prediction?))
+
+(custom-add-hook 'yahoo-jp-prediction-start-char-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   yahoo-jp-use-prediction?))
