@@ -29,6 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "i18n.scm")
 (require "fileio.scm")
 (and (not (provided? "process"))
      (module-load "process")
@@ -54,7 +55,7 @@
       (let ((pid (process-fork)))
         (cond ((< pid 0)
                (begin
-                 (uim-notify-fatal "cannot fork")
+                 (uim-notify-fatal (N_ "cannot fork"))
                  (file-close pin-in)
                  (file-close pin-out)
                  (file-close pout-in)
@@ -64,12 +65,12 @@
                (setsid)
                (file-close pin-out)
                (if (< (duplicate-fileno pin-in 0) 0)
-                   (uim-notify-fatal "cannot duplicate stdin"))
+                   (uim-notify-fatal (N_ "cannot duplicate stdin")))
                (file-close pin-in)
 
                (file-close pout-in)
                (if (< (duplicate-fileno pout-out 1) 0)
-                   (uim-notify-fatal "cannot duplicate stdout"))
+                   (uim-notify-fatal (N_ "cannot duplicate stdout")))
                (file-close pout-out)
 
                (process-execute file argv)
@@ -85,7 +86,7 @@
     (let ((pid (process-fork)))
       (cond ((< pid 0)
              (begin
-               (uim-notify-fatal "cannot fork")
+               (uim-notify-fatal (N_ "cannot fork"))
                #f))
             ((= 0 pid) ;; child
              (daemon 0 1)

@@ -52,6 +52,7 @@ scm/mana-key-custom.scm
 scm/prime-custom.scm
 scm/prime-key-custom.scm
 scm/prime.scm
+scm/process.scm
 scm/pyload.scm
 scm/scim.scm
 scm/sj3-custom.scm
