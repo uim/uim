@@ -1038,6 +1038,8 @@
 	  (begin
 	    (anthy-utf8-context-set-predicting! ac #f)
 	    (anthy-utf8-context-set-prediction-index! ac #f)
+	    (if (not anthy-use-prediction?)
+		(anthy-utf8-reset-prediction-window ac))
 	    (anthy-utf8-proc-input-state ac key key-state)))))))
 
 (define anthy-utf8-proc-input-state-with-preedit
@@ -1060,8 +1062,6 @@
 
        ;; backspace
        ((anthy-backspace-key? key key-state)
-	(if (not anthy-use-prediction?)
-	    (anthy-utf8-reset-prediction-window ac))
 	(if (not (rk-backspace rkc))
             (begin
 	      (ustr-cursor-delete-backside! preconv-str)
@@ -1077,8 +1077,6 @@
 
        ;; delete
        ((anthy-delete-key? key key-state)
-	(if (not anthy-use-prediction?)
-	    (anthy-utf8-reset-prediction-window ac))
 	(if (not (rk-delete rkc))
             (begin
 	      (ustr-cursor-delete-frontside! preconv-str)
@@ -1086,15 +1084,11 @@
 
        ;; kill
        ((anthy-kill-key? key key-state)
-	(if (not anthy-use-prediction?)
-	    (anthy-utf8-reset-prediction-window ac))
 	(ustr-clear-latter! preconv-str)
 	(ustr-clear-latter! raw-str))
        
        ;; kill-backward
        ((anthy-kill-backward-key? key key-state)
-	(if (not anthy-use-prediction?)
-	    (anthy-utf8-reset-prediction-window ac))
 	(rk-flush rkc)
 	(ustr-clear-former! preconv-str)
 	(ustr-clear-former! raw-str))
@@ -1233,8 +1227,6 @@
 
        (else	
 	;; handle "n1" sequence as "ん1"
-	(if (not anthy-use-prediction?)
-	    (anthy-utf8-reset-prediction-window ac))
 	(if (and (not (anthy-utf8-context-alnum ac))
 		 (not (ichar-alphabetic? key))
 		 (not (string-find

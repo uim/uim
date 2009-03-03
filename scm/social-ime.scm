@@ -1082,6 +1082,8 @@
 	(begin
 	  (social-ime-context-set-predicting! sc #f)
 	  (social-ime-context-set-prediction-index! sc #f)
+	  (if (not social-ime-use-prediction?)
+	      (social-ime-reset-prediction-window sc))
 	  (social-ime-proc-input-state sc key key-state))))))
 
 (define (social-ime-proc-input-state-with-preedit sc key key-state)
@@ -1102,8 +1104,6 @@
 
      ;; backspace
      ((social-ime-backspace-key? key key-state)
-      (if (not social-ime-use-prediction?)
-	  (social-ime-reset-prediction-window sc))
       (if (not (rk-backspace rkc))
 	  (begin
 	    (ustr-cursor-delete-backside! preconv-str)
@@ -1119,8 +1119,6 @@
 
      ;; delete
      ((social-ime-delete-key? key key-state)
-      (if (not social-ime-use-prediction?)
-	  (social-ime-reset-prediction-window sc))
       (if (not (rk-delete rkc))
 	  (begin
 	    (ustr-cursor-delete-frontside! preconv-str)
@@ -1128,15 +1126,11 @@
 
        ;; kill
      ((social-ime-kill-key? key key-state)
-      (if (not social-ime-use-prediction?)
-	  (social-ime-reset-prediction-window sc))
       (ustr-clear-latter! preconv-str)
       (ustr-clear-latter! raw-str))
      
      ;; kill-backward
      ((social-ime-kill-backward-key? key key-state)
-      (if (not social-ime-use-prediction?)
-	  (social-ime-reset-prediction-window sc))
       (rk-flush rkc)
       (ustr-clear-former! preconv-str)
       (ustr-clear-former! raw-str))
@@ -1259,8 +1253,6 @@
 
      (else
       ;; handle "n1" sequence as "¤ó1"
-      (if (not social-ime-use-prediction?)
-	  (social-ime-reset-prediction-window sc))
       (if (and (not (social-ime-context-alnum sc))
 	       (not (ichar-alphabetic? key))
 	       (not (string-find
