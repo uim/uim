@@ -1055,6 +1055,8 @@
 
        ;; backspace
        ((anthy-backspace-key? key key-state)
+	(if (not anthy-use-prediction?)
+	    (anthy-reset-prediction-window ac))
 	(if (not (rk-backspace rkc))
             (begin
 	      (ustr-cursor-delete-backside! preconv-str)
@@ -1070,6 +1072,8 @@
 
        ;; delete
        ((anthy-delete-key? key key-state)
+	(if (not anthy-use-prediction?)
+	    (anthy-reset-prediction-window ac))
 	(if (not (rk-delete rkc))
             (begin
 	      (ustr-cursor-delete-frontside! preconv-str)
@@ -1077,11 +1081,15 @@
 
        ;; kill
        ((anthy-kill-key? key key-state)
+	(if (not anthy-use-prediction?)
+	    (anthy-reset-prediction-window ac))
 	(ustr-clear-latter! preconv-str)
 	(ustr-clear-latter! raw-str))
        
        ;; kill-backward
        ((anthy-kill-backward-key? key key-state)
+	(if (not anthy-use-prediction?)
+	    (anthy-reset-prediction-window ac))
 	(rk-flush rkc)
 	(ustr-clear-former! preconv-str)
 	(ustr-clear-former! raw-str))
@@ -1220,6 +1228,8 @@
 
        (else	
 	;; handle "n1" sequence as "¤ó1"
+	(if (not anthy-use-prediction?)
+	    (anthy-reset-prediction-window ac))
 	(if (and (not (anthy-context-alnum ac))
 		 (not (ichar-alphabetic? key))
 		 (not (string-find
