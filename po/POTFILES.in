@@ -80,6 +80,7 @@ uim/canna.c
 uim/m17nlib.c
 uim/mana.c
 uim/dynlib.c
+uim/openssl.c
 uim/sj3.c
 uim/skk.c
 uim/uim-error.c

@@ -32,6 +32,7 @@
 */
 
 #include <config.h>
+#include <string.h>
 #include <openssl/crypto.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -41,6 +42,7 @@
 #include "uim-scm-abbrev.h"
 #include "uim-posix.h"
 #include "uim-notify.h"
+#include "gettext.h"
 #include "dynlib.h"
 
 #ifdef USE_OPENSSL_ENGINE
@@ -278,17 +280,32 @@ c_TLSv1_client_method(void)
 static uim_lisp
 c_DTLSv1_method(void)
 {
+#ifdef HAVE_OPENSSL_DTLSv1
   return MAKE_PTR(DTLSv1_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: DTLSv1_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 static uim_lisp
 c_DTLSv1_server_method(void)
 {
+#ifdef HAVE_OPENSSL_DTLSv1
   return MAKE_PTR(DTLSv1_server_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: DTLSv1_server_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 static uim_lisp
 c_DTLSv1_client_method(void)
 {
+#ifdef HAVE_OPENSSL_DTLSv1
   return MAKE_PTR(DTLSv1_client_method());
+#else
+  uim_notify_fatal(N_("uim-openssl: DTLSv1_client_method() is not supported on this system"));
+  return uim_scm_f();
+#endif
 }
 
 

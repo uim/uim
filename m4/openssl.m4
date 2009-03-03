@@ -186,6 +186,38 @@ Also see contrib/findssl.sh for help identifying header/library mismatches.])
 	]
 )
 
+AC_MSG_CHECKING([if programs using OpenSSL DTLSv1 functions will link])
+AC_LINK_IFELSE(
+	[AC_LANG_SOURCE([[
+#include <openssl/ssl.h>
+int main(void) { DTLSv1_method(); }
+	]])],
+	[
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(HAVE_OPENSSL_DTLSv1, 1, [Define 1 if have DTLSv1 OpenSSL support])
+	],
+	[
+		AC_MSG_RESULT(no)
+		saved_LIBS="$LIBS"
+		LIBS="$LIBS -ldl"
+		AC_MSG_CHECKING([if programs using OpenSSL need -ldl])
+		AC_LINK_IFELSE(
+			[AC_LANG_SOURCE([[
+#include <openssl/ssl.h>
+int main(void) { DTLSv1_method(); }
+			]])],
+			[
+				AC_MSG_RESULT(yes)
+				AC_DEFINE(HAVE_OPENSSL_DTLSv1, 1, [Define 1 if have DTLSv1 OpenSSL support])
+			],
+			[
+				AC_MSG_RESULT(no)
+				LIBS="$saved_LIBS"
+			]
+		)
+	]
+)
+
 AC_MSG_CHECKING([if programs using OpenSSL functions will link])
 AC_LINK_IFELSE(
 	[AC_LANG_SOURCE([[

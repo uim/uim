@@ -224,7 +224,8 @@
                         (ssl #f)
                         (request-alist '()))
     (let* ((with-ssl? (and (provided? "openssl")
-                           (http-ssl? ssl)))
+                           (http-ssl? ssl)
+                           (method? ssl)))
            (call-with-open-file-port-function
             (if with-ssl?
                 ;; cut
