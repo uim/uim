@@ -38,6 +38,7 @@ scm/generic-custom.scm
 scm/generic-key-custom.scm
 scm/generic.scm
 scm/hangul.scm
+scm/http-client.scm
 scm/im.scm
 scm/im-custom.scm
 scm/ipa-x-sampa.scm

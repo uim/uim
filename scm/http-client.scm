@@ -30,6 +30,7 @@
 ;;;;
 
 (require-extension (srfi 1 2 9))
+(require "i18n.scm")
 (require "socket.scm")
 (require "input-parse.scm")
 (require "openssl.scm")
@@ -64,10 +65,10 @@
          (fds (list (cons fd (assq-cdr '$POLLIN poll-flags-alist))))
          (ret (file-poll fds http-timeout)))
     (cond ((not ret)
-           (uim-notify-fatal "socket error")
+           (uim-notify-fatal (N_ "socket error"))
            #f)
           ((null? ret)
-           (uim-notify-info "socket timeout")
+           (uim-notify-info (N_ "socket timeout"))
            #f)
           (else
            #t))))
@@ -150,12 +151,12 @@
                           "HTTP/"
                           port))
                         (version-number
-                         (next-token '(#\space #\.) '(#\space) "Invalid header"
+                         (next-token '(#\space #\.) '(#\space) (N_ "Invalid header")
                                      port))
                         (status-code
-                         (next-token '(#\space) '(#\space) "Invalid header" port))
+                         (next-token '(#\space) '(#\space) (N_ "Invalid header") port))
                         (reason-phrase
-                         (next-token '(#\space) '(#\return *eof*) "Invalid header" port)))
+                         (next-token '(#\space) '(#\return *eof*) (N_ "Invalid header") port)))
                     (loop (cdr lines)
                           (cdr state)
                           (cons (cons 'header
@@ -165,9 +166,9 @@
                                 rest))))
                  ((eq? 'header (car state))
                   (let ((field-name
-                         (next-token '(#\space #\tab) '(#\:) "Invalid header" port))
+                         (next-token '(#\space #\tab) '(#\:) (N_ "Invalid header") port))
                         (field-value
-                         (next-token '(#\: #\space #\tab) '(#\return *eof*) "Invalid header" port)))
+                         (next-token '(#\: #\space #\tab) '(#\return *eof*) (N_ "Invalid header") port)))
                     (loop (cdr lines)
                           state
                           (cons (cons field-name field-value) rest))))))))))
@@ -236,7 +237,7 @@
                          (http:open hostname (port? ssl))
                          (http:open hostname servname)))))
       (if (not file)
-          (uim-notify-fatal "cannot connect server"))
+          (uim-notify-fatal (N_ "cannot connect server")))
       (call-with-open-file-port-function
        file
        (lambda (port)
