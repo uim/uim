@@ -42,6 +42,7 @@
 
 (require "util.scm")
 (require "japanese.scm")
+(require "i18n.scm")
 (require "process.scm")
 (require "socket.scm")
 (require-custom "generic-key-custom.scm")
@@ -842,7 +843,7 @@
                        (giveup 100))
               (cond ((= giveup 0)
                      (uim-notify-fatal
-                      (format "cannot create socket file \"~a\"" socket-path))
+                      (format (N_ "cannot create socket file \"~a\"") socket-path))
                      #f ;; XXX
                      )
                     ((not fds)
@@ -858,7 +859,7 @@
       (if (create/check-directory! (format "~a/socket" config-path))
           (format "~a/socket/uim-prime" config-path)
           (begin
-            (uim-notify-fatal "cannot create socket directory")
+            (uim-notify-fatal (N_ "cannot create socket directory"))
             #f)))))
 
 (define prime-open-with-tcp-socket
@@ -900,7 +901,7 @@
                      ((eq? prime-server-setting? 'pipe)
                       (prime-open-with-pipe "prime"))
                      (else
-                      (uim-notify-fatal "Prime connection is not defined")))))
+                      (uim-notify-fatal (N_ "Prime connection is not defined"))))))
       (cons (open-file-port (car fds))
             (open-file-port (cdr fds))))))
 
