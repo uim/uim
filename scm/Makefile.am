@@ -12,6 +12,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  event.scm ng-key.scm ng-action.scm composer.scm \
  key.scm action.scm load-action.scm \
  uim-sh.scm editline.scm custom.scm custom-rt.scm \
+ uim-help.scm \
  direct.scm \
  rk.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \

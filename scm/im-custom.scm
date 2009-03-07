@@ -49,6 +49,10 @@
 		     (N_ "Toolbar")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'toolbar-help
+                     (N_ "Help")
+                     (N_ "long description will be here."))
+
 ;; subgroup
 (define-custom-group 'advanced
 		     (N_ "Advanced settings")
@@ -479,6 +483,29 @@
   '(boolean)
   (N_ "help")
   (N_ "long description will be here."))
+
+(define-custom 'toolbar-help-browser 'system
+  '(toolbar toolbar-help)
+  (list 'choice
+        (list 'system
+              (N_ "System")
+              (N_ "long description will be here."))
+        (list 'manual
+              (N_ "Manual")
+              (N_ "long description will be here.")))
+  (N_ "Document browser")
+  (N_ "long description will be here."))
+
+(define-custom 'toolbar-help-browser-name "firefox"
+  '(toolbar toolbar-help)
+  '(string ".*")
+  (N_ "Browser name")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'toolbar-help-browser-name
+		 'custom-activity-hooks
+		 (lambda ()
+                   (eq? toolbar-help-browser 'manual)))
 
 (define-custom 'bridge-show-input-state? #f
   '(global visual-preference)

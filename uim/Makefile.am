@@ -256,7 +256,7 @@ libuim_x_util_la_CFLAGS = @X_CFLAGS@
 endif
 
 
-bin_PROGRAMS = uim-sh uim-module-manager
+bin_PROGRAMS = uim-sh uim-module-manager uim-help
 libexec_PROGRAMS = uim-helper-server
 
 uim_helper_server_LIBS =  
@@ -272,6 +272,12 @@ uim_sh_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
 uim_sh_CFLAGS =
 uim_sh_LDADD = libuim-scm.la libuim.la
 uim_sh_SOURCES = uim-sh.c
+
+uim_help_LIBS =
+uim_help_CPPFLAGS = $(uim_defs) -I$(top_srcdir)
+uim_help_CFLAGS =
+uim_help_LDADD = libuim-scm.la libuim.la
+uim_help_SOURCES = uim-help.c
 
 if LIBEDIT
   uim_plugin_LTLIBRARIES += libuim-editline.la
