@@ -32,10 +32,20 @@
 (require-extension (srfi 9 48))
 (require "process.scm")
 
+(define uim-help-branch #f)
+
 (define toolbar-help-url "http://code.google.com/p/uim/wiki/")
 
 (define toolbar-help-url-locale-alist
   '(("ja" . "http://anthy.sourceforge.jp/cgi-bin/hikija/hiki.cgi?")))
+
+(define (uim-help-set-branch! fd)
+  (let ((port (open-file-port fd)))
+    (let loop ((line (file-read-line port)))
+      (let ((ret (string-split line "\t")))
+        (if (string=? (car ret) "branch")
+            (set! uim-help-branch (string->symbol (list-ref ret 1)))
+            (loop (file-read-line port)))))))
 
 (define (make-wikiname im)
   (apply string-append
@@ -52,13 +62,13 @@
          (format "~aUim~a" (cdr ret) (make-wikiname im)))
       toolbar-help-url))
 
-(define (uim-help im)
+(define (uim-help args)
   (let ((cmd (cond ((eq? toolbar-help-browser 'system)
                     "xdg-open")
                    ((eq? toolbar-help-browser 'manual)
                     toolbar-help-browser-name)
                    (else
                     #f))))
-    (if cmd
-        (process-execute cmd (list cmd (select-url-from-im im)))
+    (if (and cmd uim-help-branch)
+        (process-execute cmd (list cmd (select-url-from-im uim-help-branch)))
         255)))

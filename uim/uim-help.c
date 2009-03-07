@@ -41,8 +41,6 @@
 #include "uim-helper.h"
 #include "uim-scm-abbrev.h"
 
-char branch[BUFSIZ];
-
 int uim_fd = -1;
 
 static void
@@ -54,63 +52,38 @@ uim_help_disconnect_cb(void)
 static int
 uim_help_get_current_branch(void)
 {
-  FILE *uim_fp = NULL;
-
   uim_fd = uim_helper_init_client_fd(uim_help_disconnect_cb);
   uim_helper_client_get_prop_list();
 
-  if ((uim_fp = fdopen(uim_fd, "r")) == NULL) {
-    perror("fdopen");
-    uim_helper_close_client_fd(uim_fd);
-    return 0;
-  }
-
   /* TODO: trap signal */
-  while (1) {
-    const char prot_branch[] = "branch\t";
-    char buf[BUFSIZ];
+  uim_scm_callf("uim-help-set-branch!", "o", MAKE_INT(uim_fd));
 
-    fgets(buf, sizeof(buf), uim_fp);
-    if (strncmp(buf, prot_branch, sizeof(prot_branch) - 1) == 0) {
-      char *p = buf + sizeof(prot_branch) - 1;
-      size_t len = strlen(p);
-
-      if (len > 0)
-	strlcpy(branch, p, len);
-      p = strchr(branch, '\t');
-      if (!p) {
-	uim_helper_close_client_fd(uim_fd);
-	return 0;
-      }
-      *p = '\0';
-      break;
-    }
-  }
   uim_helper_close_client_fd(uim_fd);
   return 1;
 }
 
 int
-main(void)
+main(int argc, char *argv[])
 {
-  uim_lisp branch_, exit_status_;
+  uim_lisp args, exit_status_;
   int exit_status;
 
   /* TODO: be able to suppress ordinary initialization process */
   uim_init();
 
+  uim_scm_require_file("uim-help.scm");
+
   if (!uim_help_get_current_branch())
     return 1;
 
-  uim_scm_require_file("uim-help.scm");
-  branch_ = uim_scm_null();
-  uim_scm_gc_protect(&branch_);
-  branch_ = MAKE_SYM(branch);
-
+  args = uim_scm_null();
   exit_status_ = uim_scm_f();
+  uim_scm_gc_protect(&args);
   uim_scm_gc_protect(&exit_status_);
 
-  exit_status_ = uim_scm_callf("uim-help", "o", branch_);
+  args = uim_scm_array2list((void **)argv, argc,
+			    (uim_lisp (*)(void *))uim_scm_make_str);
+  exit_status_ = uim_scm_callf("uim-help", "o", args);
   exit_status  = uim_scm_c_int(exit_status_);
 
   uim_quit();
