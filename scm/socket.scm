@@ -42,9 +42,10 @@
 (define addrinfo-ai-protocol-alist (addrinfo-ai-protocol-alist?))
 
 (define (addrinfo-ai-flags-number l)
-  (map (lambda (s)
-         (assq-cdr s addrinfo-ai-flags-alist))
-       l))
+  (apply logior
+         (map (lambda (s)
+                (assq-cdr s addrinfo-ai-flags-alist))
+              l)))
 (define (addrinfo-ai-family-number s)
   (assq-cdr s addrinfo-ai-family-alist))
 (define (addrinfo-ai-socktype-number s)
@@ -54,8 +55,7 @@
 
 (define (call-with-getaddrinfo-hints flags family socktype protocol thunk)
   (let* ((hints (make-addrinfo)))
-    (and flags    (addrinfo-set-ai-flags!    hints
-                                             (apply logior (addrinfo-ai-flags-number flags))))
+    (and flags    (addrinfo-set-ai-flags!    hints (addrinfo-ai-flags-number flags)))
     (and family   (addrinfo-set-ai-family!   hints (addrinfo-ai-family-number   family)))
     (and socktype (addrinfo-set-ai-socktype! hints (addrinfo-ai-socktype-number socktype)))
     (and protocol (addrinfo-set-ai-protocol! hints (addrinfo-ai-protocol-number protocol)))
