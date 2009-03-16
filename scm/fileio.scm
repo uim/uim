@@ -40,6 +40,18 @@
 (define open-mode-alist (file-open-mode?))
 (define poll-flags-alist (file-poll-flags?))
 
+(define (fileio-set-flag l alist)
+  (apply logior
+         (map (lambda (s)
+                (assq-cdr s alist))
+              l)))
+(define (open-flags-number l)
+  (fileio-set-flag l open-flags-alist))
+(define (open-mode-number l)
+  (fileio-set-flag l open-mode-alist))
+(define (poll-flags-number l)
+   (fileio-set-flag l poll-flags-alist))
+
 (define (string->file-buf str)
   (map char->integer (string->list str)))
 (define (file-buf->string buf)
