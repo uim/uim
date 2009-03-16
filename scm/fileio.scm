@@ -36,20 +36,20 @@
 
 (define file-bufsiz 16384)
 
-(define open-flags-alist (file-open-flags?))
-(define open-mode-alist (file-open-mode?))
-(define poll-flags-alist (file-poll-flags?))
+(define file-open-flags-alist (file-open-flags?))
+(define file-open-mode-alist (file-open-mode?))
+(define file-poll-flags-alist (file-poll-flags?))
 
-(define (fileio-set-flag l alist)
+(define (file-set-flag l alist)
   (apply logior
          (map (lambda (s)
                 (assq-cdr s alist))
               l)))
-(define (open-flags-number l)
+(define (file-open-flags-number l)
   (fileio-set-flag l open-flags-alist))
-(define (open-mode-number l)
+(define (file-open-mode-number l)
   (fileio-set-flag l open-mode-alist))
-(define (poll-flags-number l)
+(define (file-poll-flags-number l)
    (fileio-set-flag l poll-flags-alist))
 
 (define (string->file-buf str)

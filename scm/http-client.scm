@@ -62,7 +62,7 @@
 
 (define (http:socket-ready? port)
   (let* ((fd (fd? port))
-         (fds (list (cons fd (assq-cdr '$POLLIN poll-flags-alist))))
+         (fds (list (cons fd (assq-cdr '$POLLIN file-poll-flags-alist))))
          (ret (file-poll fds http-timeout)))
     (cond ((not ret)
            (uim-notify-fatal (N_ "socket error"))
