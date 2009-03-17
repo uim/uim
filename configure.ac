@@ -13,6 +13,7 @@ AC_GNU_SOURCE
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_OBJC
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
@@ -1364,13 +1365,13 @@ AM_CONDITIONAL(ENABLE_ANTHY_UTF8_STATIC, test x$build_anthy_utf8_static = xyes)
 # ****************************
 # *** Tests for uim-notify ***
 # ****************************
-notify_targets='stderr libnotify knotify3'
+notify_targets='stderr libnotify knotify3 growl'
 
 AC_ARG_ENABLE(notify,
   AS_HELP_STRING([--enable-notify@<:@=agent-list@:>@ (HIGHLY EXPERIMENTAL)],
                  [enable system message notification for users
 		  (specify comma separated notification agent list
-		  from stderr, libnotify and knotify3)]),
+		  from stderr, libnotify, knotify3 and growl)]),
   [ enable_notify=$enableval
     have_notify_opt=yes ],
   [ enable_notify=yes
@@ -1438,6 +1439,15 @@ if test "x$use_knotify3" = "xyes"; then
   use_notify="${use_notify}knotify3 "
 fi
 
+AC_MSG_CHECKING([whether growl is requested])
+if test "x$au_enable_growl" = xyes; then
+  AC_MSG_RESULT([yes])
+  use_growl="yes"
+  use_notify="${use_notify}growl "
+else
+  AC_MSG_RESULT(no)
+fi
+
 if test "x$use_notify" = "x"; then
   use_notify=none
 fi
@@ -1445,6 +1455,7 @@ fi
 AM_CONDITIONAL(NOTIFY, test "x$enable_notify" != xno)
 AM_CONDITIONAL(LIBNOTIFY, test x$use_libnotify = xyes)
 AM_CONDITIONAL(KNOTIFY3, test x$use_knotify3 = xyes)
+AM_CONDITIONAL(GROWL, test x$use_growl = xyes)
 
 
 AC_DEFINE(UIM_USE_ERROR_GUARD, 1, [Define to 1 if you want to use longjmp-based error handlings])

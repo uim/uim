@@ -20,3 +20,12 @@ libuimnotify_knotify3_la_CXXFLAGS = -I@KNOTIFY3_INCLUDE_DIR@ $(QT_CXXFLAGS)
 libuimnotify_knotify3_la_LDFLAGS  = -avoid-version -module -L@KNOTIFY3_LIB_DIR@ $(QT_LDFLAGS)
 libuimnotify_knotify3_la_LIBADD = -lkdeui -lkdecore $(top_builddir)/replace/libreplace.la
 endif
+
+if GROWL
+uimnotify_plugin_LTLIBRARIES += libuimnotify-growl.la
+libuimnotify_growl_la_SOURCES = uim-growl.m
+# FIXME: configuration for Growl framework path
+libuimnotify_growl_la_OBJCFLAGS = -x objective-c -F../../../Sources/Growl
+libuimnotify_growl_la_LDFLAGS  = -avoid-version -module -framework Cocoa -F../../../Sources/Growl -framework Growl
+libuimnotify_growl_la_LIBADD = $(top_builddir)/replace/libreplace.la
+endif
