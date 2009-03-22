@@ -293,118 +293,118 @@
 
   (assert-uim-equal '(() . ())
                     'ustre)
-  (assert-true  (uim-bool '(ustr-empty? ustre))))
+  (assert-uim-true  '(ustr-empty? ustre)))
 
 (define (test-ustr-clear!)
-  (assert-false (uim-bool '(ustr-empty? ustra-fl)))
+  (assert-uim-false '(ustr-empty? ustra-fl))
   (uim-eval '(ustr-clear! ustra-fl))
-  (assert-true  (uim-bool '(ustr-empty? ustra-fl)))
+  (assert-uim-true  '(ustr-empty? ustra-fl))
 
-  (assert-false (uim-bool '(ustr-empty? ustra-f)))
+  (assert-uim-false '(ustr-empty? ustra-f))
   (uim-eval '(ustr-clear! ustra-f))
-  (assert-true  (uim-bool '(ustr-empty? ustra-f)))
+  (assert-uim-true  '(ustr-empty? ustra-f))
 
-  (assert-false (uim-bool '(ustr-empty? ustra-l)))
+  (assert-uim-false '(ustr-empty? ustra-l))
   (uim-eval '(ustr-clear! ustra-l))
-  (assert-true  (uim-bool '(ustr-empty? ustra-l)))
+  (assert-uim-true  '(ustr-empty? ustra-l))
 
-  (assert-true  (uim-bool '(ustr-empty? ustre)))
+  (assert-uim-true  '(ustr-empty? ustre))
   (uim-eval '(ustr-clear! ustre))
-  (assert-true  (uim-bool '(ustr-empty? ustre))))
+  (assert-uim-true  '(ustr-empty? ustre)))
 
 (define (test-ustr-clear-former!)
-  (assert-false (uim-bool '(ustr-empty? ustra-fl)))
+  (assert-uim-false '(ustr-empty? ustra-fl))
   (uim-eval '(ustr-clear-former! ustra-fl))
-  (assert-false (uim-bool '(ustr-empty? ustra-fl)))
+  (assert-uim-false '(ustr-empty? ustra-fl))
 
-  (assert-false (uim-bool '(ustr-empty? ustra-f)))
+  (assert-uim-false '(ustr-empty? ustra-f))
   (uim-eval '(ustr-clear-former! ustra-f))
-  (assert-true  (uim-bool '(ustr-empty? ustra-f)))
+  (assert-uim-true  '(ustr-empty? ustra-f))
 
-  (assert-false (uim-bool '(ustr-empty? ustra-l)))
+  (assert-uim-false '(ustr-empty? ustra-l))
   (uim-eval '(ustr-clear-former! ustra-l))
-  (assert-false (uim-bool '(ustr-empty? ustra-l)))
+  (assert-uim-false '(ustr-empty? ustra-l))
 
-  (assert-true  (uim-bool '(ustr-empty? ustre)))
+  (assert-uim-true  '(ustr-empty? ustre))
   (uim-eval '(ustr-clear-former! ustre))
-  (assert-true  (uim-bool '(ustr-empty? ustre))))
+  (assert-uim-true  '(ustr-empty? ustre)))
 
 (define (test-ustr-clear-latter!)
-  (assert-false (uim-bool '(ustr-empty? ustra-fl)))
+  (assert-uim-false '(ustr-empty? ustra-fl))
   (uim-eval '(ustr-clear-latter! ustra-fl))
-  (assert-false (uim-bool '(ustr-empty? ustra-fl)))
+  (assert-uim-false '(ustr-empty? ustra-fl))
 
-  (assert-false (uim-bool '(ustr-empty? ustra-f)))
+  (assert-uim-false '(ustr-empty? ustra-f))
   (uim-eval '(ustr-clear-latter! ustra-f))
-  (assert-false (uim-bool '(ustr-empty? ustra-f)))
+  (assert-uim-false '(ustr-empty? ustra-f))
 
-  (assert-false (uim-bool '(ustr-empty? ustra-l)))
+  (assert-uim-false '(ustr-empty? ustra-l))
   (uim-eval '(ustr-clear-latter! ustra-l))
-  (assert-true  (uim-bool '(ustr-empty? ustra-l)))
+  (assert-uim-true  '(ustr-empty? ustra-l))
 
-  (assert-true  (uim-bool '(ustr-empty? ustre)))
+  (assert-uim-true  '(ustr-empty? ustre))
   (uim-eval '(ustr-clear-latter! ustre))
-  (assert-true  (uim-bool '(ustr-empty? ustre))))
+  (assert-uim-true  '(ustr-empty? ustre)))
 
 (define (test-ustr-copy!)
-  (assert-false (uim-bool '(equal? ustr-fl ustra-fl)))
+  (assert-uim-false '(equal? ustr-fl ustra-fl))
   (uim-eval '(ustr-copy! ustr-fl ustra-fl))
-  (assert-true (uim-bool '(equal? ustr-fl ustra-fl)))
+  (assert-uim-true '(equal? ustr-fl ustra-fl))
 
-  (assert-false (uim-bool '(equal? ustr-f ustra-f)))
+  (assert-uim-false '(equal? ustr-f ustra-f))
   (uim-eval '(ustr-copy! ustr-f ustra-f))
-  (assert-true (uim-bool '(equal? ustr-f ustra-f)))
+  (assert-uim-true '(equal? ustr-f ustra-f))
 
-  (assert-false (uim-bool '(equal? ustr-l ustra-l)))
+  (assert-uim-false '(equal? ustr-l ustra-l))
   (uim-eval '(ustr-copy! ustr-l ustra-l))
-  (assert-true (uim-bool '(equal? ustr-l ustra-l))))
+  (assert-uim-true '(equal? ustr-l ustra-l)))
 
 (define (test-ustr=)
-  (assert-true  (uim-bool '(ustr= equal? ustr-fl ustr-fl)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-fl ustr-f)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-f ustr-fl)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-fl ustr-l)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-l ustr-fl)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-f ustr-f)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-l ustr-f)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-f ustr-l)))
-  (assert-true  (uim-bool '(ustr= equal? ustr-l ustr-l)))
-  (assert-false (uim-bool '(ustr= equal? ustr-l ustre)))
-  (assert-false (uim-bool '(ustr= equal? ustre ustr-l)))
+  (assert-uim-true  '(ustr= equal? ustr-fl ustr-fl))
+  (assert-uim-true  '(ustr= equal? ustr-fl ustr-f))
+  (assert-uim-true  '(ustr= equal? ustr-f ustr-fl))
+  (assert-uim-true  '(ustr= equal? ustr-fl ustr-l))
+  (assert-uim-true  '(ustr= equal? ustr-l ustr-fl))
+  (assert-uim-true  '(ustr= equal? ustr-f ustr-f))
+  (assert-uim-true  '(ustr= equal? ustr-l ustr-f))
+  (assert-uim-true  '(ustr= equal? ustr-f ustr-l))
+  (assert-uim-true  '(ustr= equal? ustr-l ustr-l))
+  (assert-uim-false '(ustr= equal? ustr-l ustre))
+  (assert-uim-false '(ustr= equal? ustre ustr-l))
 
-  (assert-true  (uim-bool '(ustr= string=? ustra-fl ustra-fl)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-fl ustra-f)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-f ustra-fl)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-fl ustra-l)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-l ustra-fl)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-f ustra-f)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-l ustra-f)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-f ustra-l)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-l ustra-l)))
-  (assert-false (uim-bool '(ustr= string=? ustra-fl ustre)))
-  (assert-false (uim-bool '(ustr= string=? ustre ustra-fl)))
-  (assert-false (uim-bool '(ustr= string=? ustra-f ustre)))
-  (assert-false (uim-bool '(ustr= string=? ustre ustra-f)))
-  (assert-false (uim-bool '(ustr= string=? ustra-l ustre)))
-  (assert-false (uim-bool '(ustr= string=? ustre ustra-l)))
+  (assert-uim-true  '(ustr= string=? ustra-fl ustra-fl))
+  (assert-uim-true  '(ustr= string=? ustra-fl ustra-f))
+  (assert-uim-true  '(ustr= string=? ustra-f ustra-fl))
+  (assert-uim-true  '(ustr= string=? ustra-fl ustra-l))
+  (assert-uim-true  '(ustr= string=? ustra-l ustra-fl))
+  (assert-uim-true  '(ustr= string=? ustra-f ustra-f))
+  (assert-uim-true  '(ustr= string=? ustra-l ustra-f))
+  (assert-uim-true  '(ustr= string=? ustra-f ustra-l))
+  (assert-uim-true  '(ustr= string=? ustra-l ustra-l))
+  (assert-uim-false '(ustr= string=? ustra-fl ustre))
+  (assert-uim-false '(ustr= string=? ustre ustra-fl))
+  (assert-uim-false '(ustr= string=? ustra-f ustre))
+  (assert-uim-false '(ustr= string=? ustre ustra-f))
+  (assert-uim-false '(ustr= string=? ustra-l ustre))
+  (assert-uim-false '(ustr= string=? ustre ustra-l))
   (uim-eval '(ustr-set-former-seq! ustra-f '("h" "e" "l" "l" "o" "!")))
-  (assert-false (uim-bool '(ustr= string=? ustra-fl ustra-f)))
-  (assert-false (uim-bool '(ustr= string=? ustra-f ustra-fl)))
-  (assert-false (uim-bool '(ustr= string=? ustra-l ustra-f)))
-  (assert-false (uim-bool '(ustr= string=? ustra-f ustra-l)))
-  (assert-true  (uim-bool '(ustr= string=? ustra-f ustra-f)))
+  (assert-uim-false '(ustr= string=? ustra-fl ustra-f))
+  (assert-uim-false '(ustr= string=? ustra-f ustra-fl))
+  (assert-uim-false '(ustr= string=? ustra-l ustra-f))
+  (assert-uim-false '(ustr= string=? ustra-f ustra-l))
+  (assert-uim-true  '(ustr= string=? ustra-f ustra-f))
 
-  (assert-true  (uim-bool '(ustr= equal? ustrj-fl ustrj-fl)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-fl ustrj-f)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-f ustrj-fl)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-fl ustrj-l)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-l ustrj-fl)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-f ustrj-f)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-l ustrj-f)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-f ustrj-l)))
-  (assert-true  (uim-bool '(ustr= equal? ustrj-l ustrj-l)))
-  (assert-false (uim-bool '(ustr= equal? ustrj-l ustre)))
-  (assert-false (uim-bool '(ustr= equal? ustre ustrj-l))))
+  (assert-uim-true  '(ustr= equal? ustrj-fl ustrj-fl))
+  (assert-uim-true  '(ustr= equal? ustrj-fl ustrj-f))
+  (assert-uim-true  '(ustr= equal? ustrj-f ustrj-fl))
+  (assert-uim-true  '(ustr= equal? ustrj-fl ustrj-l))
+  (assert-uim-true  '(ustr= equal? ustrj-l ustrj-fl))
+  (assert-uim-true  '(ustr= equal? ustrj-f ustrj-f))
+  (assert-uim-true  '(ustr= equal? ustrj-l ustrj-f))
+  (assert-uim-true  '(ustr= equal? ustrj-f ustrj-l))
+  (assert-uim-true  '(ustr= equal? ustrj-l ustrj-l))
+  (assert-uim-false '(ustr= equal? ustrj-l ustre))
+  (assert-uim-false '(ustr= equal? ustre ustrj-l)))
 
 (define (test-ustr-length)
   (assert-uim-equal 5
@@ -1217,16 +1217,16 @@
                     '(string-append-map-ustr-latter cdr ustre)))
 
 (define (test-ustr-cursor-at-beginning?)
-  (assert-false (uim-bool '(ustr-cursor-at-beginning? ustra-fl)))
-  (assert-false (uim-bool '(ustr-cursor-at-beginning? ustra-f)))
-  (assert-true  (uim-bool '(ustr-cursor-at-beginning? ustra-l)))
-  (assert-true  (uim-bool '(ustr-cursor-at-beginning? ustre))))
+  (assert-uim-false '(ustr-cursor-at-beginning? ustra-fl))
+  (assert-uim-false '(ustr-cursor-at-beginning? ustra-f))
+  (assert-uim-true  '(ustr-cursor-at-beginning? ustra-l))
+  (assert-uim-true  '(ustr-cursor-at-beginning? ustre)))
 
 (define (test-ustr-cursor-at-end?)
-  (assert-false (uim-bool '(ustr-cursor-at-end? ustra-fl)))
-  (assert-true  (uim-bool '(ustr-cursor-at-end? ustra-f)))
-  (assert-false (uim-bool '(ustr-cursor-at-end? ustra-l)))
-  (assert-true  (uim-bool '(ustr-cursor-at-end? ustre))))
+  (assert-uim-false '(ustr-cursor-at-end? ustra-fl))
+  (assert-uim-true  '(ustr-cursor-at-end? ustra-f))
+  (assert-uim-false '(ustr-cursor-at-end? ustra-l))
+  (assert-uim-true  '(ustr-cursor-at-end? ustre)))
 
 (define (test-ustr-cursor-pos)
   (assert-uim-equal 3
@@ -1257,65 +1257,65 @@
   ;; former-latter
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
-  (assert-true  (uim-bool '(ustr-set-cursor-pos! ustra-fl 0)))
+  (assert-uim-true  '(ustr-set-cursor-pos! ustra-fl 0))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustra-fl))
-  (assert-true  (uim-bool '(ustr-set-cursor-pos! ustra-fl 5)))
+  (assert-uim-true  '(ustr-set-cursor-pos! ustra-fl 5))
   (assert-uim-equal 5
                     '(ustr-cursor-pos ustra-fl))
-  (assert-true  (uim-bool '(ustr-set-cursor-pos! ustra-fl 2)))
+  (assert-uim-true  '(ustr-set-cursor-pos! ustra-fl 2))
   (assert-uim-equal 2
                     '(ustr-cursor-pos ustra-fl))
-  (assert-false (uim-bool '(ustr-set-cursor-pos! ustra-fl -1)))
-  (assert-false (uim-bool '(ustr-set-cursor-pos! ustra-fl 6)))
+  (assert-uim-false '(ustr-set-cursor-pos! ustra-fl -1))
+  (assert-uim-false '(ustr-set-cursor-pos! ustra-fl 6))
   ;; empty
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
-  (assert-true  (uim-bool '(ustr-set-cursor-pos! ustra-fl 0)))
+  (assert-uim-true  '(ustr-set-cursor-pos! ustra-fl 0))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
-  (assert-false (uim-bool '(ustr-set-cursor-pos! ustre -1)))
-  (assert-false (uim-bool '(ustr-set-cursor-pos! ustre 1))))
+  (assert-uim-false '(ustr-set-cursor-pos! ustre -1))
+  (assert-uim-false '(ustr-set-cursor-pos! ustre 1)))
 
 (define (test-ustr-cursor-move!)
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
-  (assert-false (uim-bool '(ustr-cursor-move! ustra-fl -4)))
+  (assert-uim-false '(ustr-cursor-move! ustra-fl -4))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
 
-  (assert-false (uim-bool '(ustr-cursor-move! ustra-fl 3)))
+  (assert-uim-false '(ustr-cursor-move! ustra-fl 3))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
 
-  (assert-true  (uim-bool '(ustr-cursor-move! ustra-fl 2)))
+  (assert-uim-true  '(ustr-cursor-move! ustra-fl 2))
   (assert-uim-equal 5
                     '(ustr-cursor-pos ustra-fl))
 
-  (assert-true  (uim-bool '(ustr-cursor-move! ustra-fl -3)))
+  (assert-uim-true  '(ustr-cursor-move! ustra-fl -3))
   (assert-uim-equal 2
                     '(ustr-cursor-pos ustra-fl))
 
-  (assert-true  (uim-bool '(ustr-cursor-move! ustra-fl 1)))
+  (assert-uim-true  '(ustr-cursor-move! ustra-fl 1))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
 
-  (assert-true  (uim-bool '(ustr-cursor-move! ustra-fl 0)))
+  (assert-uim-true  '(ustr-cursor-move! ustra-fl 0))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
 
-  (assert-true  (uim-bool '(ustr-cursor-move! ustra-fl -3)))
+  (assert-uim-true  '(ustr-cursor-move! ustra-fl -3))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustra-fl))
 
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
-  (assert-true  (uim-bool '(ustr-cursor-move! ustra-fl 0)))
+  (assert-uim-true  '(ustr-cursor-move! ustra-fl 0))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
 
-  (assert-false (uim-bool '(ustr-cursor-move! ustre -1)))
-  (assert-false (uim-bool '(ustr-cursor-move! ustre 1))))
+  (assert-uim-false '(ustr-cursor-move! ustre -1))
+  (assert-uim-false '(ustr-cursor-move! ustre 1)))
 
 (define (test-ustr-cursor-move-backward!)
   (assert-uim-equal 3
@@ -1456,7 +1456,7 @@
                     '(ustr-length ustrj-fl))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustrj-fl))
-  (assert-true  (uim-bool '(ustr-cursor-delete-frontside! ustrj-fl)))
+  (assert-uim-true  '(ustr-cursor-delete-frontside! ustrj-fl))
   (assert-uim-equal '("じゃ" "ジャ" "ｼﾞｬ")
                     '(ustr-cursor-frontside ustrj-fl))
   (assert-uim-equal 4
@@ -1472,7 +1472,7 @@
                     '(ustr-length ustrj-f))
   (assert-uim-equal 5
                     '(ustr-cursor-pos ustrj-f))
-  (assert-false (uim-bool '(ustr-cursor-delete-frontside! ustrj-f)))
+  (assert-uim-false '(ustr-cursor-delete-frontside! ustrj-f))
   (assert-uim-error '(ustr-cursor-frontside ustrj-f))
   (assert-uim-equal 5
                     '(ustr-length ustrj-f))
@@ -1488,7 +1488,7 @@
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
-  (assert-true  (uim-bool '(ustr-cursor-delete-frontside! ustrj-l)))
+  (assert-uim-true  '(ustr-cursor-delete-frontside! ustrj-l))
   (assert-uim-equal '("ほ" "ホ" "ﾎ")
                     '(ustr-cursor-frontside ustrj-l))
   (assert-uim-equal 4
@@ -1504,7 +1504,7 @@
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
-  (assert-false (uim-bool '(ustr-cursor-delete-frontside! ustre)))
+  (assert-uim-false '(ustr-cursor-delete-frontside! ustre))
   (assert-uim-error '(ustr-cursor-frontside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
@@ -1519,7 +1519,7 @@
                     '(ustr-length ustrj-fl))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustrj-fl))
-  (assert-true  (uim-bool '(ustr-cursor-delete-backside! ustrj-fl)))
+  (assert-uim-true  '(ustr-cursor-delete-backside! ustrj-fl))
   (assert-uim-equal '("ほ" "ホ" "ﾎ")
                     '(ustr-cursor-backside ustrj-fl))
   (assert-uim-equal 4
@@ -1536,7 +1536,7 @@
                     '(ustr-length ustrj-f))
   (assert-uim-equal 5
                     '(ustr-cursor-pos ustrj-f))
-  (assert-true  (uim-bool '(ustr-cursor-delete-backside! ustrj-f)))
+  (assert-uim-true  '(ustr-cursor-delete-backside! ustrj-f))
   (assert-uim-equal '("ご" "ゴ" "ｺﾞ")
                     '(ustr-cursor-backside ustrj-f))
   (assert-uim-equal 4
@@ -1552,7 +1552,7 @@
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
-  (assert-false (uim-bool '(ustr-cursor-delete-backside! ustrj-l)))
+  (assert-uim-false '(ustr-cursor-delete-backside! ustrj-l))
   (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
@@ -1565,7 +1565,7 @@
   (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
-  (assert-false (uim-bool '(ustr-cursor-delete-backside! ustre)))
+  (assert-uim-false '(ustr-cursor-delete-backside! ustre))
   (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre)))
