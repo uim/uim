@@ -35,26 +35,6 @@
 
 (require "test/uim-test-utils")
 
-(define-uim-test-case "testcase uim-util"
-  (setup
-   (lambda ()
-     (uim '(require "util.scm"))
-     (uim '(define lst '(1 2 3 4)))))
-
-  ("test nthcdr"
-   (assert-equal '(1 2 3 4)
-		 (uim '(nthcdr 0 lst)))
-   (assert-equal '(2 3 4)
-		 (uim '(nthcdr 1 lst)))
-   (assert-equal '(3 4)
-		 (uim '(nthcdr 2 lst)))
-   (assert-equal '(4)
-		 (uim '(nthcdr 3 lst)))
-   (assert-equal ()
-		 (uim '(nthcdr 4 lst)))
-   (assert-equal #f
-		 (uim '(nthcdr 5 lst)))))
-
 ;; this test assumes that string encoding of Gauche is configured as
 ;; UTF-8
 (define-uim-test-case "testcase uim-util rk"

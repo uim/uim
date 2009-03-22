@@ -567,4 +567,20 @@
                     '(list-join '(() () ()) "/"))
   #f)
 
+(define (test-nthcdr)
+  (uim-eval '(define lst '(1 2 3 4)))
+  (assert-uim-equal '(1 2 3 4)
+                    '(nthcdr 0 lst))
+  (assert-uim-equal '(2 3 4)
+                    '(nthcdr 1 lst))
+  (assert-uim-equal '(3 4)
+                    '(nthcdr 2 lst))
+  (assert-uim-equal '(4)
+                    '(nthcdr 3 lst))
+  (assert-uim-equal ()
+                    '(nthcdr 4 lst))
+  (assert-uim-equal #f
+                    '(nthcdr 5 lst))
+  #f)
+
 (provide "test/util/test-list")
