@@ -1,5 +1,3 @@
-#!/usr/bin/env gosh
-
 ;;; Copyright (c) 2004-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
@@ -29,43 +27,78 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 5329 (new repository)
+(define-module test.test-example
+  (use test.unit.test-case)
+  (use test.uim-test))
+(select-module test.test-example)
 
-(use test.unit)
+;; setup procedure is evaluated before each test to prepare
+;; common testing environment for each test.
+(define (setup)
+  ;; (uim-test-setup) setup inferior uim-sh process up.
+  ;; Don't omit it.
+  (uim-test-setup)
 
-(require "test/uim-test-utils")
+  ;; User specific setup expressions are here.
 
-;; group related tests into a testcase
-(define-uim-test-case "testcase integer operations"
-  ;; Define test. Inferior uim-sh process is newly prepared for each
-  ;; test.
-  ("test +"
-   ;; assert-equal accepts <expect> <test>. The procedure 'uim' sends
-   ;; an expression to the inferior uim-sh process, and receives the
-   ;; evaluated result. Then gosh compares the two values.
-   (assert-equal 5
-		 (uim '(+ 2 3)))
-   (assert-equal -1
-		 (uim '(+ 2 -3))))
+  ;; The expressions are defined in gosh, not uim-sh.
+  (use srfi-1)
 
-  ;; another test in the testcase
-  ("test -"
-   (assert-equal -1
-		 (uim '(- 2 3)))
-   (assert-equal 5
-		 (uim '(- 2 -3)))
+  ;; The procedure 'uim-eval' can send an expression to inferior uim-sh
+  ;; process.
+  (uim-eval '(require "util.scm"))
 
-   ;; When <extected> and the actual evaluated values are different,
-   ;; it is countted as failure and reported.
-   (assert-equal 1
-		 (uim '(- 0 -1))))
+  (uim-eval '(begin
+               (define even?
+                 (lambda (x)
+                   (= (remainder x 2) 0)))
+               (define odd?
+                 (lambda (x)
+                   (= (remainder x 2) 1)))))
+  )
 
-  ("test /"
-   ;; 'assert-error' asserts that the procedure passed causes an
-   ;; error.
-   (assert-error (lambda ()
-		   (uim '(/ 5 0))))))
+;; setup procedure is evaluated after each test to clean up
+;; testing environment for each test.
+(define (teardown)
+  ;; (uim-test-teardown) tear inferior uim-sh process down.
+  ;; Don't omit it.
+  (uim-test-teardown)
 
+  ;; User specific teardown expressions are here.
+  ;; Normally, no expressions are needed.
+  )
+
+;; Define test. Inferior uim-sh process is newly prepared for each
+;; test.
+(define (test-+)
+  ;; assert-uim-equal accepts <expect> <expression>. <expression> is sent to
+  ;; the inferior uim-sh process, and receives the evaluated result.
+  ;; Then gosh compares the two values.
+  (assert-uim-equal 5 '(+ 2 3))
+  (assert-uim-equal -1 '(+ 2 -3))
+
+  ;; The last #f is just for inhibiting an optimization of gosh.
+  ;; gosh optimize the last return location. So, backtrace for the last
+  ;; assertion ("(assert-uim-equal -1 '(+ 2 -3))" in this test procedure)
+  ;; is omitted when the last assertion is failed.
+  #f)
+
+;; another test in the testcase
+(define (test--)
+  (assert-uim-equal -1 '(- 2 3))
+  (assert-uim-equal 5 '(- 2 -3))
+
+  ;; When <extected> and the actual evaluated values are different,
+  ;; it is countted as failure and reported.
+  (assert-uim-equal 1 '(- 0 -1))
+
+  #f)
+
+(define (test-/)
+  ;; 'assert-uim-error' asserts that the procedure passed causes an
+  ;; error.
+  (assert-uim-error '(/ 5 0))
+  #f)
 
 ;; The procedures are defined in gosh, not uim-sh.
 (define my-even?
@@ -75,64 +108,52 @@
   (lambda (x)
     (= (remainder x 2) 1)))
 
-;; one more testcase
-(define-uim-test-case "testcase integer predicates"
-  ;; Optional setup procedure is evaluated for each test to prepare
-  ;; common testing environment for each test.
-  (setup
-   (lambda ()
-     ;; The expressions are defined in gosh, not uim-sh.
-     (use srfi-1)
+;; Inferior uim-sh process is newly prepared and the setup procedure
+;; is evaluated.
+(define (test-even?)
+  ;; Boolean tests must be used 'assert-uim-true' or
+  ;; 'assert-uim-false' instead of 'assert-uim-equal' with
+  ;; #t or #f. This is required to adapt SIOD's false value
+  ;; '()' to #f.
+  (assert-uim-true  '(even? 2))
+  (assert-uim-false '(even? 3))
+  #f)
 
-     ;; The procedure 'uim' can send an expression to inferior uim-sh
-     ;; process.
-     (uim '(require "util.scm"))
+;; Another uim-sh process is newly prepared and the setup procedure
+;; is evaluated.
+(define (test-odd?)
+  (assert-uim-false '(odd? 2))
+  (assert-uim-true  '(odd? 3))
+  #f)
 
-     ;; Some Scheme objects that the external form is not defined in
-     ;; R5RS such as procedure cannot parsed by gosh. So such forms
-     ;; must wrapped into a block ending with a safe object.
-     (uim '(begin
-	     (define even?
-	       (lambda (x)
-		 (= (remainder x 2) 0)))
-	     (define odd?
-	       (lambda (x)
-		 (= (remainder x 2) 1)))
-	     #f))))
+(define (test-odd?-#2)
+  ;; another way to test the even?. This focuses on difference of
+  ;; implementation's own behavior rather than correctness of
+  ;; user-procedure definition.
 
-  ;; Inferior uim-sh process is newly prepared and the setup procedure
-  ;; is evaluated.
-  ("test even?"
-   ;; Boolean tests must be wrapped into 'uim-bool' instead of
-   ;; 'uim'. This is required to adapt SIOD's false value '()' to
-   ;; #f. It will be unified into 'uim' once the R5RS-compliant
-   ;; SigScheme has become default implementation for uim.
-   (assert-true  (uim-bool '(even? 2)))
-   (assert-false (uim-bool '(even? 3))))
+  ;; Boolean tests without 'assert-uim-true' nor
+  ;; 'assert-uim-false' must be wrapped into 'uim-bool'.
+  ;; This is required to adapt SIOD's false value '()' to
+  ;; #f. It will be unified into 'assert-uim-equal' once the
+  ;; R5RS-compliant SigScheme has become default
+  ;; implementation for uim.
+  (assert-equal (my-odd? 2)
+                (uim-bool '(odd? 2)))
+  (assert-equal (my-odd? 3)
+                (uim-bool '(odd? 3)))
+  #f)
 
-  ;; Another uim-sh process is newly prepared and the setup procedure
-  ;; is evaluated.
-  ("test odd?"
-   (assert-false (uim-bool '(odd? 2)))
-   (assert-true  (uim-bool '(odd? 3))))
+(define (test-difference-of-Gauche-and-uim)
+  ;; developer can write complex tests using Gauche's stable and
+  ;; wide-variety libraries. This is an useless example using 'every'
+  ;; from SRFI-1.
+  (assert-true (every (lambda (x)
+                        (every (lambda (gosh-op uim-op)
+                                 (equal? (gosh-op x)
+                                         (uim-bool (list uim-op x))))
+                               (list my-even? my-odd?)
+                               '(even? odd?)))
+                      '(-3 -2 -1 0 1 2 3)))
+  #f)
 
-  ("test odd? #2"
-   ;; another way to test the even?. This focuses on difference of
-   ;; implementation's own behavior rather than correctness of
-   ;; user-procedure definition.
-   (assert-equal (my-odd? 2)
-		 (uim-bool '(odd? 2)))
-   (assert-equal (my-odd? 3)
-		 (uim-bool '(odd? 3))))
-
-  ("test difference of Gauche and uim"
-   ;; developer can write complex tests using Gauche's stable and
-   ;; wide-variety libraries. This is an useless example using 'every'
-   ;; from SRFI-1.
-   (assert-true (every (lambda (x)
-			 (every (lambda (gosh-op uim-op)
-				  (equal? (gosh-op x)
-					  (uim-bool (list uim-op x))))
-				(list my-even? my-odd?)
-				'(even? odd?)))
-		       '(-3 -2 -1 0 1 2 3)))))
+(provide "test/test-example")
