@@ -161,4 +161,21 @@
 (define (uim-test-teardown)
   (uim-sh-teardown))
 
+(define (uim-test-with-environment-variables variables thunk)
+  (let ((original-values '()))
+    (for-each (lambda (pair)
+                (let ((name (car pair))
+                      (value (cdr pair)))
+                  (push! original-values (cons name (sys-getenv name)))
+                  (sys-putenv name value)))
+              variables)
+    (thunk)
+    (for-each (lambda (pair)
+                (let ((name (car pair))
+                      (value (cdr pair)))
+                  (if value
+                    (sys-putenv name value)
+                    (sys-unsetenv name))))
+              original-values)))
+
 (provide "test/uim-test-utils-new")

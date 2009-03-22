@@ -86,19 +86,13 @@
                  (build-path LC_MESSAGES-dir #`",|domain|.po")
                  :wait #t)
 
-    (sys-putenv "LANG" lang)
-    (sys-putenv "LC_ALL" lang)
-    (uim-test-setup)
-    (if current-LANG
-      (sys-putenv "LANG" current-LANG)
-      (sys-unsetenv "LANG"))
-    (if current-LC_ALL
-      (sys-putenv "LC_ALL" current-LC_ALL)
-      (sys-unsetenv "LC_ALL"))))
+    (uim-test-with-environment-variables
+     `(("LANG" . ,lang)
+       ("LC_ALL" . ,lang))
+     uim-test-setup)))
 
 (define (teardown)
   (uim-test-teardown)
-
   (remove-directory* locale-dir))
 
 (define (test-gettext)
