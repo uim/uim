@@ -51,6 +51,12 @@
 (define (assert-uim-raw-false uim-expression-string)
   (assert-false (uim-raw uim-expression-string)))
 
+(define (assert-uim-equal-ces expected uim-expression ces)
+  (assert-equal expected (uim-ces uim-expression ces)))
+
+(define (assert-uim-equal-euc-jp expected uim-expression)
+  (assert-uim-equal-ces expected uim-expression "euc-jp"))
+
 (define (assert-uim-error uim-expression)
   (assert-error (lambda () (uim uim-expression))))
 

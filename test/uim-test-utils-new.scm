@@ -30,6 +30,7 @@
 (define-module test.uim-test-utils-new
   (use gauche.process)
   (use gauche.selector)
+  (use gauche.charconv)
   (use gauche.version)
   (use srfi-1)
   (use srfi-13)
@@ -109,6 +110,19 @@
 
 (define (uim-raw string)
   (uim-read-from-string (uim-eval-raw string)))
+
+(define (uim-eval-ces sexp uim-sh-ces)
+  (call-with-output-conversion (process-input *uim-sh-process*)
+    (lambda (uim-sh-input)
+      (uim-sh-write sexp uim-sh-input))
+    :encoding uim-sh-ces)
+  (call-with-input-conversion (process-output *uim-sh-process*)
+    (lambda (uim-sh-output)
+      (uim-sh-read-block uim-sh-output))
+    :encoding uim-sh-ces))
+
+(define (uim-ces sexp ces)
+  (uim-read-from-string (uim-eval-ces sexp ces)))
 
 (define (uim-bool sexp)
   (not (not (uim sexp))))
