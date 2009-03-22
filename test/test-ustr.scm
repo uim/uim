@@ -439,10 +439,8 @@
                     '(ustr-nth ustra-fl 3))
   (assert-uim-equal "o"
                     '(ustr-nth ustra-fl 4))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-fl 5))))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-fl -1))))
+  (assert-uim-error '(ustr-nth ustra-fl 5))
+  (assert-uim-error '(ustr-nth ustra-fl -1))
 
   (assert-uim-equal "h"
                     '(ustr-nth ustra-f 0))
@@ -454,10 +452,8 @@
                     '(ustr-nth ustra-f 3))
   (assert-uim-equal "o"
                     '(ustr-nth ustra-f 4))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-f 5))))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-f -1))))
+  (assert-uim-error '(ustr-nth ustra-f 5))
+  (assert-uim-error '(ustr-nth ustra-f -1))
 
   (assert-uim-equal "h"
                     '(ustr-nth ustra-l 0))
@@ -469,13 +465,10 @@
                     '(ustr-nth ustra-l 3))
   (assert-uim-equal "o"
                     '(ustr-nth ustra-l 4))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-l 5))))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-l -1))))
+  (assert-uim-error '(ustr-nth ustra-l 5))
+  (assert-uim-error '(ustr-nth ustra-l -1))
 
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustre 0)))))
+  (assert-uim-error '(ustr-nth ustre 0)))
 
 (define (test-ustr-set-nth!)
   (assert-uim-equal "h"
@@ -488,10 +481,8 @@
                     '(ustr-nth ustra-fl 3))
   (assert-uim-equal "o"
                     '(ustr-nth ustra-fl 4))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-fl 5))))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-fl -1))))
+  (assert-uim-error '(ustr-nth ustra-fl 5))
+  (assert-uim-error '(ustr-nth ustra-fl -1))
   ;; position 0
   (assert-uim-equal 5
                     '(ustr-length ustra-fl))
@@ -577,10 +568,8 @@
                     '(ustr-length ustra-fl))
   (assert-uim-equal 3
                     '(ustr-cursor-pos ustra-fl))
-  (assert-error (lambda ()
-                  (uim '(ustr-set-nth! ustra-fl 5 "5"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-fl 5))))
+  (assert-uim-error '(ustr-set-nth! ustra-fl 5 "5"))
+  (assert-uim-error '(ustr-nth ustra-fl 5))
   (assert-uim-equal '("H" "E" "L")
                     '(ustr-former-seq ustra-fl))
   (assert-uim-equal '("|" "O")
@@ -598,10 +587,8 @@
                     '(ustr-length ustra-f))
   (assert-uim-equal 5
                     '(ustr-cursor-pos ustra-f))
-  (assert-error (lambda ()
-                  (uim '(ustr-set-nth! ustra-f 5 "5"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-nth ustra-f 5))))
+  (assert-uim-error '(ustr-set-nth! ustra-f 5 "5"))
+  (assert-uim-error '(ustr-nth ustra-f 5))
   (assert-uim-equal '("h" "e" "l" "l" "o")
                     '(ustr-former-seq ustra-f))
   (assert-uim-equal '()
@@ -662,15 +649,12 @@
                                 (nthcdr 0 (ustr-latter ustra-fl)))))
   (assert-true  (uim-bool '(eq? (ustr-ref ustra-fl 4)
                                 (nthcdr 1 (ustr-latter ustra-fl)))))
-  (assert-error (lambda ()
-                  (uim '(ustr-ref ustra-fl 5))))
-  (assert-error (lambda ()
-                  (uim '(ustr-ref ustra-fl -1))))
+  (assert-uim-error '(ustr-ref ustra-fl 5))
+  (assert-uim-error '(ustr-ref ustra-fl -1))
   ;; former-str
   (assert-true  (uim-bool '(eq? (ustr-ref ustra-f 4)
                                 (nthcdr 0 (ustr-former ustra-f)))))
-  (assert-error (lambda ()
-                  (uim '(ustr-ref ustra-f 5))))
+  (assert-uim-error '(ustr-ref ustra-f 5))
   ;; latter-str
   (assert-true  (uim-bool '(eq? (ustr-ref ustra-l 0)
                                 (nthcdr 0 (ustr-latter ustra-l))))))
@@ -715,16 +699,14 @@
                       ("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ") ("よ" "ヨ" "ﾖ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
   (uim-eval '(ustr-append! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
                                      ("よ" "ヨ" "ﾖ"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 8
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -734,16 +716,14 @@
                       ("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ") ("よ" "ヨ" "ﾖ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
   (uim-eval '(ustr-append! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
                                    ("よ" "ヨ" "ﾖ"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 3
                     '(ustr-length ustre))
   (assert-uim-equal 0
@@ -787,15 +767,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
   (uim-eval '(ustr-append! ustrj-l ()))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -804,15 +782,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
   (uim-eval '(ustr-append! ustre ()))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
@@ -858,8 +834,7 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -877,8 +852,7 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
@@ -930,15 +904,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
   (uim-eval '(ustr-prepend! ustrj-l ()))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -947,15 +919,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
   (uim-eval '(ustr-prepend! ustre ()))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
@@ -1443,12 +1413,9 @@
   (assert-uim-equal "l"
                     '(ustr-cursor-frontside ustra-fl))
   ;; former
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustr-f))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustrj-f))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustra-f))))
+  (assert-uim-error '(ustr-cursor-frontside ustr-f))
+  (assert-uim-error '(ustr-cursor-frontside ustrj-f))
+  (assert-uim-error '(ustr-cursor-frontside ustra-f))
   ;; latter
   (assert-uim-equal '("h" . "H")
                     '(ustr-cursor-frontside ustr-l))
@@ -1457,8 +1424,7 @@
   (assert-uim-equal "h"
                     '(ustr-cursor-frontside ustra-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustre)))))
+  (assert-uim-error '(ustr-cursor-frontside ustre)))
 
 (define (test-ustr-cursor-backside)
   ;; former-latter
@@ -1476,15 +1442,11 @@
   (assert-uim-equal "o"
                     '(ustr-cursor-backside ustra-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustr-l))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustra-l))))
+  (assert-uim-error '(ustr-cursor-backside ustr-l))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
+  (assert-uim-error '(ustr-cursor-backside ustra-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre)))))
+  (assert-uim-error '(ustr-cursor-backside ustre)))
 
 (define (test-ustr-cursor-delete-frontside!)
   ;; former-latter
@@ -1505,15 +1467,13 @@
                       ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-fl))
   ;; former
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustrj-f))))
+  (assert-uim-error '(ustr-cursor-frontside ustrj-f))
   (assert-uim-equal 5
                     '(ustr-length ustrj-f))
   (assert-uim-equal 5
                     '(ustr-cursor-pos ustrj-f))
   (assert-false (uim-bool '(ustr-cursor-delete-frontside! ustrj-f)))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustrj-f))))
+  (assert-uim-error '(ustr-cursor-frontside ustrj-f))
   (assert-uim-equal 5
                     '(ustr-length ustrj-f))
   (assert-uim-equal 5
@@ -1539,15 +1499,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustre))))
+  (assert-uim-error '(ustr-cursor-frontside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
   (assert-false (uim-bool '(ustr-cursor-delete-frontside! ustre)))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustre))))
+  (assert-uim-error '(ustr-cursor-frontside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
@@ -1589,15 +1547,13 @@
                       ("ご" "ゴ" "ｺﾞ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
   (assert-false (uim-bool '(ustr-cursor-delete-backside! ustrj-l)))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -1606,13 +1562,11 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-false (uim-bool '(ustr-cursor-delete-backside! ustre)))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre)))
 
@@ -1653,8 +1607,7 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ") ("んー" "ンー" "ﾝｰ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -1671,8 +1624,7 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (uim-eval '(ustr-insert-elem! ustre '("んー" "ンー" "ﾝｰ")))
@@ -1703,8 +1655,7 @@
                       ("んー" "ンー" "ﾝｰ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-fl))
   ;; former
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustrj-f))))
+  (assert-uim-error '(ustr-cursor-frontside ustrj-f))
   (assert-uim-equal 5
                     '(ustr-length ustrj-f))
   (assert-uim-equal 5
@@ -1737,14 +1688,12 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustre))))
+  (assert-uim-error '(ustr-cursor-frontside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-false (uim-bool '(ustr-cursor-set-frontside! ustre
                                                        '("んー" "ンー" "ﾝｰ"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-frontside ustre))))
+  (assert-uim-error '(ustr-cursor-frontside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal '()
@@ -1788,16 +1737,14 @@
                       ("ご" "ゴ" "ｺﾞ") ("んー" "ンー" "ﾝｰ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
   (assert-false (uim-bool '(ustr-cursor-set-backside! ustrj-l
                                                       '("んー" "ンー" "ﾝｰ"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -1806,14 +1753,12 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-false (uim-bool '(ustr-cursor-set-backside! ustre
                                                       '("んー" "ンー" "ﾝｰ"))))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal '()
@@ -1859,8 +1804,7 @@
                       ("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ") ("よ" "ヨ" "ﾖ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -1878,8 +1822,7 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
@@ -1931,15 +1874,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-f))
   ;; latter
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustrj-l))
   (uim-eval '(ustr-insert-seq! ustrj-l ()))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustrj-l))))
+  (assert-uim-error '(ustr-cursor-backside ustrj-l))
   (assert-uim-equal 5
                     '(ustr-length ustrj-l))
   (assert-uim-equal 0
@@ -1948,15 +1889,13 @@
                       ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ"))
                     '(ustr-whole-seq ustrj-l))
   ;; empty
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre))
   (uim-eval '(ustr-insert-seq! ustre ()))
-  (assert-error (lambda ()
-                  (uim '(ustr-cursor-backside ustre))))
+  (assert-uim-error '(ustr-cursor-backside ustre))
   (assert-uim-equal 0
                     '(ustr-length ustre))
   (assert-uim-equal 0
