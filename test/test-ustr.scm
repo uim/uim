@@ -1,5 +1,3 @@
-#!/usr/bin/env gosh
-
 ;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
