@@ -27,10 +27,10 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(define-module test.test-i18n
+(define-module test.i18n.test-base
   (use test.unit.test-case)
   (use test.uim-test))
-(select-module test.test-i18n)
+(select-module test.i18n.test-base)
 
 (define (setup)
   (uim-test-setup))
@@ -333,33 +333,4 @@
   (assert-uim-false '(langgroup-covers? "zh_CN:zh_TW:zh_HK" "zh"))
   #f)
 
-;; (define-uim-test-case "testcase i18n ISO 639-1 language code #1"
-;;   (setup
-;;    (lambda ()
-;;      (sys-putenv "LC_ALL" "C")))
-
-(define (test-lang-code->lang-name-in-en-locale)
-  (assert-uim-equal "Japanese"
-                    '(lang-code->lang-name "ja"))
-  (assert-uim-equal "English"
-                    '(lang-code->lang-name "en"))
-  (assert-uim-equal "Chinese"
-                    '(lang-code->lang-name "zh"))
-  #f)
-
-;(define-uim-test-case "testcase i18n ISO 639-1 language code #2"
-;  (setup
-;   (lambda ()
-;     (sys-putenv "LC_ALL" "ja_JP")))
-;
-;  ("test lang-code->lang-name in ja_JP locale"
-;   (uim '(bind_textdomain_codeset "uim" "UTF-8"))
-;   (assert-uim-equal "日本語"
-;		     '(lang-code->lang-name "ja"))
-;   (assert-uim-equal "英語"
-;		     '(lang-code->lang-name "en"))
-;   (assert-uim-equal "中国語"
-;		     '(lang-code->lang-name "zh"))))
-
-
-(provide "test/test-i18n")
+(provide "test/i18n/test-base")
