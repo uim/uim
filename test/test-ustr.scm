@@ -36,34 +36,34 @@
 
 (define (setup)
   (uim-test-setup)
-  (uim '(require "ustr.scm"))
-  (uim '(define-record 'ja-kana
-          '((hiragana "")
-            (katakana "")
-            (hankaku  ""))))
-  (uim '(define ustr-f (ustr-new '(("h" . "H") ("e" . "E") ("l" . "L")
-                                   ("l" . "L") ("o" . "O")))))
-  (uim '(define ustr-fl (ustr-new '(("h" . "H") ("e" . "E") ("l" . "L"))
-                                  '(("l" . "L") ("o" . "O")))))
-  (uim '(define ustr-l (ustr-new ()
-                                 '(("h" . "H") ("e" . "E") ("l" . "L")
-                                   ("l" . "L") ("o" . "O")))))
-  (uim '(define ustra-f (ustr-new '("h" "e" "l" "l" "o"))))
-  (uim '(define ustra-fl (ustr-new '("h" "e" "l")
-                                   '("l" "o"))))
-  (uim '(define ustra-l (ustr-new ()
-                                  '("h" "e" "l" "l" "o"))))
-  (uim '(define ustrj-f (ustr-new '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ")
-                                    ("ん" "ン" "ﾝ") ("ご" "ゴ" "ｺﾞ")
-                                    ("じゃ" "ジャ" "ｼﾞｬ")))))
-  (uim '(define ustrj-fl (ustr-new '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ")
-                                     ("ん" "ン" "ﾝ"))
-                                   '(("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ")))))
-  (uim '(define ustrj-l (ustr-new ()
-                                  '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ")
-                                    ("ん" "ン" "ﾝ") ("ご" "ゴ" "ｺﾞ")
-                                    ("じゃ" "ジャ" "ｼﾞｬ")))))
-  (uim '(define ustre (ustr-new ()))))
+  (uim-eval '(require "ustr.scm"))
+  (uim-eval '(define-record 'ja-kana
+               '((hiragana "")
+                 (katakana "")
+                 (hankaku  ""))))
+  (uim-eval '(define ustr-f (ustr-new '(("h" . "H") ("e" . "E") ("l" . "L")
+                                        ("l" . "L") ("o" . "O")))))
+  (uim-eval '(define ustr-fl (ustr-new '(("h" . "H") ("e" . "E") ("l" . "L"))
+                                       '(("l" . "L") ("o" . "O")))))
+  (uim-eval '(define ustr-l (ustr-new ()
+                                      '(("h" . "H") ("e" . "E") ("l" . "L")
+                                        ("l" . "L") ("o" . "O")))))
+  (uim-eval '(define ustra-f (ustr-new '("h" "e" "l" "l" "o"))))
+  (uim-eval '(define ustra-fl (ustr-new '("h" "e" "l")
+                                        '("l" "o"))))
+  (uim-eval '(define ustra-l (ustr-new ()
+                                       '("h" "e" "l" "l" "o"))))
+  (uim-eval '(define ustrj-f (ustr-new '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ")
+                                         ("ん" "ン" "ﾝ") ("ご" "ゴ" "ｺﾞ")
+                                         ("じゃ" "ジャ" "ｼﾞｬ")))))
+  (uim-eval '(define ustrj-fl (ustr-new '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ")
+                                          ("ん" "ン" "ﾝ"))
+                                        '(("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ")))))
+  (uim-eval '(define ustrj-l (ustr-new ()
+                                       '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ")
+                                         ("ん" "ン" "ﾝ") ("ご" "ゴ" "ｺﾞ")
+                                         ("じゃ" "ジャ" "ｼﾞｬ")))))
+  (uim-eval '(define ustre (ustr-new ()))))
 
 (define (teardown)
   (uim-test-teardown))
@@ -153,8 +153,8 @@
   (assert-equal '("h" "e" "l")
                 (uim '(ustr-former-seq ustra-fl)))
   (assert-equal '("l" "o")
-		 (uim '(ustr-latter-seq ustra-fl)))
-  (uim '(ustr-set-whole-seq! ustra-fl '("w" "o" "r" "L" "d")))
+                (uim '(ustr-latter-seq ustra-fl)))
+  (uim-eval '(ustr-set-whole-seq! ustra-fl '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-fl)))
   (assert-equal '("w" "o" "r" "L" "d")
@@ -168,7 +168,7 @@
                 (uim '(ustr-former-seq ustra-f)))
   (assert-equal ()
                 (uim '(ustr-latter-seq ustra-f)))
-  (uim '(ustr-set-whole-seq! ustra-f '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-whole-seq! ustra-f '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-f)))
   (assert-equal '("w" "o" "r" "L" "d")
@@ -182,7 +182,7 @@
                 (uim '(ustr-former-seq ustra-l)))
   (assert-equal '("h" "e" "l" "l" "o")
                 (uim '(ustr-latter-seq ustra-l)))
-  (uim '(ustr-set-whole-seq! ustra-l '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-whole-seq! ustra-l '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-l)))
   (assert-equal '("w" "o" "r" "L" "d")
@@ -198,13 +198,13 @@
                 (uim '(ustr-former-seq ustra-fl)))
   (assert-equal '("l" "o")
                 (uim '(ustr-latter-seq ustra-fl)))
-  (uim '(ustr-set-former-seq! ustra-fl '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-former-seq! ustra-fl '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d" "l" "o")
                 (uim '(ustr-whole-seq ustra-fl)))
   (assert-equal '("w" "o" "r" "L" "d")
                 (uim '(ustr-former-seq ustra-fl)))
   (assert-equal '("l" "o")
-		 (uim '(ustr-latter-seq ustra-fl)))
+                (uim '(ustr-latter-seq ustra-fl)))
   ;; former
   (assert-equal '("h" "e" "l" "l" "o")
                 (uim '(ustr-whole-seq ustra-f)))
@@ -212,7 +212,7 @@
                 (uim '(ustr-former-seq ustra-f)))
   (assert-equal ()
                 (uim '(ustr-latter-seq ustra-f)))
-  (uim '(ustr-set-former-seq! ustra-f '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-former-seq! ustra-f '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-f)))
   (assert-equal '("w" "o" "r" "L" "d")
@@ -226,7 +226,7 @@
                 (uim '(ustr-former-seq ustra-l)))
   (assert-equal '("h" "e" "l" "l" "o")
                 (uim '(ustr-latter-seq ustra-l)))
-  (uim '(ustr-set-former-seq! ustra-l '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-former-seq! ustra-l '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d" "h" "e" "l" "l" "o")
                 (uim '(ustr-whole-seq ustra-l)))
   (assert-equal '("w" "o" "r" "L" "d")
@@ -242,7 +242,7 @@
                 (uim '(ustr-former-seq ustra-fl)))
   (assert-equal '("l" "o")
                 (uim '(ustr-latter-seq ustra-fl)))
-  (uim '(ustr-set-latter-seq! ustra-fl '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-latter-seq! ustra-fl '("w" "o" "r" "L" "d")))
   (assert-equal '("h" "e" "l" "w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-fl)))
   (assert-equal '("h" "e" "l")
@@ -256,7 +256,7 @@
                 (uim '(ustr-former-seq ustra-f)))
   (assert-equal ()
                 (uim '(ustr-latter-seq ustra-f)))
-  (uim '(ustr-set-latter-seq! ustra-f '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-latter-seq! ustra-f '("w" "o" "r" "L" "d")))
   (assert-equal '("h" "e" "l" "l" "o" "w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-f)))
   (assert-equal '("h" "e" "l" "l" "o")
@@ -270,7 +270,7 @@
                 (uim '(ustr-former-seq ustra-l)))
   (assert-equal '("h" "e" "l" "l" "o")
                 (uim '(ustr-latter-seq ustra-l)))
-  (uim '(ustr-set-latter-seq! ustra-l '("w" "o" "r" "L" "d")))
+  (uim-eval '(ustr-set-latter-seq! ustra-l '("w" "o" "r" "L" "d")))
   (assert-equal '("w" "o" "r" "L" "d")
                 (uim '(ustr-whole-seq ustra-l)))
   (assert-equal ()
@@ -297,66 +297,66 @@
 
 (define (test-ustr-clear!)
   (assert-false (uim-bool '(ustr-empty? ustra-fl)))
-  (uim '(ustr-clear! ustra-fl))
+  (uim-eval '(ustr-clear! ustra-fl))
   (assert-true  (uim-bool '(ustr-empty? ustra-fl)))
 
   (assert-false (uim-bool '(ustr-empty? ustra-f)))
-  (uim '(ustr-clear! ustra-f))
+  (uim-eval '(ustr-clear! ustra-f))
   (assert-true  (uim-bool '(ustr-empty? ustra-f)))
 
   (assert-false (uim-bool '(ustr-empty? ustra-l)))
-  (uim '(ustr-clear! ustra-l))
+  (uim-eval '(ustr-clear! ustra-l))
   (assert-true  (uim-bool '(ustr-empty? ustra-l)))
 
   (assert-true  (uim-bool '(ustr-empty? ustre)))
-  (uim '(ustr-clear! ustre))
+  (uim-eval '(ustr-clear! ustre))
   (assert-true  (uim-bool '(ustr-empty? ustre))))
 
 (define (test-ustr-clear-former!)
   (assert-false (uim-bool '(ustr-empty? ustra-fl)))
-  (uim '(ustr-clear-former! ustra-fl))
+  (uim-eval '(ustr-clear-former! ustra-fl))
   (assert-false (uim-bool '(ustr-empty? ustra-fl)))
 
   (assert-false (uim-bool '(ustr-empty? ustra-f)))
-  (uim '(ustr-clear-former! ustra-f))
+  (uim-eval '(ustr-clear-former! ustra-f))
   (assert-true  (uim-bool '(ustr-empty? ustra-f)))
 
   (assert-false (uim-bool '(ustr-empty? ustra-l)))
-  (uim '(ustr-clear-former! ustra-l))
+  (uim-eval '(ustr-clear-former! ustra-l))
   (assert-false (uim-bool '(ustr-empty? ustra-l)))
 
   (assert-true  (uim-bool '(ustr-empty? ustre)))
-  (uim '(ustr-clear-former! ustre))
+  (uim-eval '(ustr-clear-former! ustre))
   (assert-true  (uim-bool '(ustr-empty? ustre))))
 
 (define (test-ustr-clear-latter!)
   (assert-false (uim-bool '(ustr-empty? ustra-fl)))
-  (uim '(ustr-clear-latter! ustra-fl))
+  (uim-eval '(ustr-clear-latter! ustra-fl))
   (assert-false (uim-bool '(ustr-empty? ustra-fl)))
 
   (assert-false (uim-bool '(ustr-empty? ustra-f)))
-  (uim '(ustr-clear-latter! ustra-f))
+  (uim-eval '(ustr-clear-latter! ustra-f))
   (assert-false (uim-bool '(ustr-empty? ustra-f)))
 
   (assert-false (uim-bool '(ustr-empty? ustra-l)))
-  (uim '(ustr-clear-latter! ustra-l))
+  (uim-eval '(ustr-clear-latter! ustra-l))
   (assert-true  (uim-bool '(ustr-empty? ustra-l)))
 
   (assert-true  (uim-bool '(ustr-empty? ustre)))
-  (uim '(ustr-clear-latter! ustre))
+  (uim-eval '(ustr-clear-latter! ustre))
   (assert-true  (uim-bool '(ustr-empty? ustre))))
 
 (define (test-ustr-copy!)
   (assert-false (uim-bool '(equal? ustr-fl ustra-fl)))
-  (uim '(ustr-copy! ustr-fl ustra-fl))
+  (uim-eval '(ustr-copy! ustr-fl ustra-fl))
   (assert-true (uim-bool '(equal? ustr-fl ustra-fl)))
 
   (assert-false (uim-bool '(equal? ustr-f ustra-f)))
-  (uim '(ustr-copy! ustr-f ustra-f))
+  (uim-eval '(ustr-copy! ustr-f ustra-f))
   (assert-true (uim-bool '(equal? ustr-f ustra-f)))
 
   (assert-false (uim-bool '(equal? ustr-l ustra-l)))
-  (uim '(ustr-copy! ustr-l ustra-l))
+  (uim-eval '(ustr-copy! ustr-l ustra-l))
   (assert-true (uim-bool '(equal? ustr-l ustra-l))))
 
 (define (test-ustr=)
@@ -387,7 +387,7 @@
   (assert-false (uim-bool '(ustr= string=? ustre ustra-f)))
   (assert-false (uim-bool '(ustr= string=? ustra-l ustre)))
   (assert-false (uim-bool '(ustr= string=? ustre ustra-l)))
-  (uim '(ustr-set-former-seq! ustra-f '("h" "e" "l" "l" "o" "!")))
+  (uim-eval '(ustr-set-former-seq! ustra-f '("h" "e" "l" "l" "o" "!")))
   (assert-false (uim-bool '(ustr= string=? ustra-fl ustra-f)))
   (assert-false (uim-bool '(ustr= string=? ustra-f ustra-fl)))
   (assert-false (uim-bool '(ustr= string=? ustra-l ustra-f)))
@@ -497,7 +497,7 @@
                 (uim '(ustr-length ustra-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
-  (uim '(ustr-set-nth! ustra-fl 0 "H"))
+  (uim-eval '(ustr-set-nth! ustra-fl 0 "H"))
   (assert-equal "H"
                 (uim '(ustr-nth ustra-fl 0)))
   (assert-equal '("H" "e" "l")
@@ -512,8 +512,8 @@
   (assert-equal 5
                 (uim '(ustr-length ustra-fl)))
   (assert-equal 3
-		 (uim '(ustr-cursor-pos ustra-fl)))
-  (uim '(ustr-set-nth! ustra-fl 1 "E"))
+                (uim '(ustr-cursor-pos ustra-fl)))
+  (uim-eval '(ustr-set-nth! ustra-fl 1 "E"))
   (assert-equal "E"
                 (uim '(ustr-nth ustra-fl 1)))
   (assert-equal '("H" "E" "l")
@@ -529,7 +529,7 @@
                 (uim '(ustr-length ustra-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
-  (uim '(ustr-set-nth! ustra-fl 2 "L"))
+  (uim-eval '(ustr-set-nth! ustra-fl 2 "L"))
   (assert-equal "L"
                 (uim '(ustr-nth ustra-fl 2)))
   (assert-equal '("H" "E" "L")
@@ -545,7 +545,7 @@
                 (uim '(ustr-length ustra-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
-  (uim '(ustr-set-nth! ustra-fl 3 "|"))
+  (uim-eval '(ustr-set-nth! ustra-fl 3 "|"))
   (assert-equal "|"
                 (uim '(ustr-nth ustra-fl 3)))
   (assert-equal '("H" "E" "L")
@@ -561,7 +561,7 @@
                 (uim '(ustr-length ustra-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
-  (uim '(ustr-set-nth! ustra-fl 4 "O"))
+  (uim-eval '(ustr-set-nth! ustra-fl 4 "O"))
   (assert-equal "O"
                 (uim '(ustr-nth ustra-fl 4)))
   (assert-equal '("H" "E" "L")
@@ -619,7 +619,7 @@
                 (uim '(ustr-length ustra-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-f)))
-  (uim '(ustr-set-nth! ustra-f 4 "O"))
+  (uim-eval '(ustr-set-nth! ustra-f 4 "O"))
   (assert-equal "O"
                 (uim '(ustr-nth ustra-f 4)))
   (assert-equal '("h" "e" "l" "l" "O")
@@ -639,7 +639,7 @@
                 (uim '(ustr-length ustra-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-l)))
-  (uim '(ustr-set-nth! ustra-l 0 "H"))
+  (uim-eval '(ustr-set-nth! ustra-l 0 "H"))
   (assert-equal "H"
                 (uim '(ustr-nth ustra-l 0)))
   (assert-equal ()
@@ -683,8 +683,8 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-append! ustrj-fl '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                 ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-append! ustrj-fl '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                      ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("ん" "ン" "ﾝ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 8
@@ -702,8 +702,8 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-append! ustrj-f '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-append! ustrj-f '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                     ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("じゃ" "ジャ" "ｼﾞｬ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 8
@@ -721,27 +721,27 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-append! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-append! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                     ("よ" "ヨ" "ﾖ"))))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustrj-l))))
   (assert-equal 8
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
-		 (uim '(ustr-cursor-pos ustrj-l)))
+                (uim '(ustr-cursor-pos ustrj-l)))
   (assert-equal '(("に" "ニ" "ﾆ") ("ほ" "ホ" "ﾎ") ("ん" "ン" "ﾝ")
                   ("ご" "ゴ" "ｺﾞ") ("じゃ" "ジャ" "ｼﾞｬ")
                   ("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ") ("よ" "ヨ" "ﾖ"))
-		 (uim '(ustr-whole-seq ustrj-l)))
+                (uim '(ustr-whole-seq ustrj-l)))
   ;; empty
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustre))))
   (assert-equal 0
-		 (uim '(ustr-length ustre)))
+                (uim '(ustr-length ustre)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustre)))
-  (uim '(ustr-append! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                              ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-append! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                   ("よ" "ヨ" "ﾖ"))))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustre))))
   (assert-equal 3
@@ -759,7 +759,7 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-append! ustrj-fl ()))
+  (uim-eval '(ustr-append! ustrj-fl ()))
   (assert-equal '("ん" "ン" "ﾝ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 5
@@ -776,7 +776,7 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-append! ustrj-f ()))
+  (uim-eval '(ustr-append! ustrj-f ()))
   (assert-equal '("じゃ" "ジャ" "ｼﾞｬ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 5
@@ -793,7 +793,7 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-append! ustrj-l ()))
+  (uim-eval '(ustr-append! ustrj-l ()))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustrj-l))))
   (assert-equal 5
@@ -810,7 +810,7 @@
                 (uim '(ustr-length ustre)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustre)))
-  (uim '(ustr-append! ustre ()))
+  (uim-eval '(ustr-append! ustre ()))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustre))))
   (assert-equal 0
@@ -826,8 +826,8 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-prepend! ustrj-fl '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                  ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-prepend! ustrj-fl '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                       ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("ん" "ン" "ﾝ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 8
@@ -845,8 +845,8 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-prepend! ustrj-f '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                 ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-prepend! ustrj-f '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                      ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("じゃ" "ジャ" "ｼﾞｬ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 8
@@ -864,8 +864,8 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-prepend! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                 ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-prepend! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                      ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("よ" "ヨ" "ﾖ")
                 (uim '(ustr-cursor-backside ustrj-l)))
   (assert-equal 8
@@ -883,8 +883,8 @@
                 (uim '(ustr-length ustre)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustre)))
-  (uim '(ustr-prepend! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                               ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-prepend! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                    ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("よ" "ヨ" "ﾖ")
                 (uim '(ustr-cursor-backside ustre)))
   (assert-equal 3
@@ -902,7 +902,7 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-prepend! ustrj-fl ()))
+  (uim-eval '(ustr-prepend! ustrj-fl ()))
   (assert-equal '("ん" "ン" "ﾝ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 5
@@ -919,7 +919,7 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-prepend! ustrj-f ()))
+  (uim-eval '(ustr-prepend! ustrj-f ()))
   (assert-equal '("じゃ" "ジャ" "ｼﾞｬ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 5
@@ -936,7 +936,7 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-prepend! ustrj-l ()))
+  (uim-eval '(ustr-prepend! ustrj-l ()))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustrj-l))))
   (assert-equal 5
@@ -953,7 +953,7 @@
                 (uim '(ustr-length ustre)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustre)))
-  (uim '(ustr-prepend! ustre ()))
+  (uim-eval '(ustr-prepend! ustre ()))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustre))))
   (assert-equal 0
@@ -1351,15 +1351,15 @@
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-backward! ustra-fl))
+  (uim-eval '(ustr-cursor-move-backward! ustra-fl))
   (assert-equal 2
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-backward! ustra-fl))
+  (uim-eval '(ustr-cursor-move-backward! ustra-fl))
   (assert-equal 1
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-backward! ustra-fl))
+  (uim-eval '(ustr-cursor-move-backward! ustra-fl))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-fl)))
 
@@ -1369,7 +1369,7 @@
   ;; start from end of string
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-f)))
-  (uim '(ustr-cursor-move-backward! ustra-f))
+  (uim-eval '(ustr-cursor-move-backward! ustra-f))
   (assert-equal 4
                 (uim '(ustr-cursor-pos ustra-f))))
 
@@ -1377,11 +1377,11 @@
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-forward! ustra-fl))
+  (uim-eval '(ustr-cursor-move-forward! ustra-fl))
   (assert-equal 4
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-forward! ustra-fl))
+  (uim-eval '(ustr-cursor-move-forward! ustra-fl))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-fl)))
 
@@ -1392,7 +1392,7 @@
   ;; start from beginning of string
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-l)))
-  (uim '(ustr-cursor-move-forward! ustra-l))
+  (uim-eval '(ustr-cursor-move-forward! ustra-l))
   (assert-equal 1
                 (uim '(ustr-cursor-pos ustra-l))))
 
@@ -1400,18 +1400,18 @@
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-beginning! ustra-fl))
+  (uim-eval '(ustr-cursor-move-beginning! ustra-fl))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-beginning! ustra-fl))
+  (uim-eval '(ustr-cursor-move-beginning! ustra-fl))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-fl)))
 
   ;; start from end of string
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-f)))
-  (uim '(ustr-cursor-move-beginning! ustra-f))
+  (uim-eval '(ustr-cursor-move-beginning! ustra-f))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-f))))
 
@@ -1419,18 +1419,18 @@
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-end! ustra-fl))
+  (uim-eval '(ustr-cursor-move-end! ustra-fl))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-fl)))
 
-  (uim '(ustr-cursor-move-end! ustra-fl))
+  (uim-eval '(ustr-cursor-move-end! ustra-fl))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-fl)))
 
   ;; start from beginning of string
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustra-l)))
-  (uim '(ustr-cursor-move-end! ustra-l))
+  (uim-eval '(ustr-cursor-move-end! ustra-l))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustra-l))))
 
@@ -1624,7 +1624,7 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-insert-elem! ustrj-fl '("んー" "ンー" "ﾝｰ")))
+  (uim-eval '(ustr-insert-elem! ustrj-fl '("んー" "ンー" "ﾝｰ")))
   (assert-equal '("んー" "ンー" "ﾝｰ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 6
@@ -1642,7 +1642,7 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-insert-elem! ustrj-f '("んー" "ンー" "ﾝｰ")))
+  (uim-eval '(ustr-insert-elem! ustrj-f '("んー" "ンー" "ﾝｰ")))
   (assert-equal '("んー" "ンー" "ﾝｰ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 6
@@ -1659,7 +1659,7 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-insert-elem! ustrj-l '("んー" "ンー" "ﾝｰ")))
+  (uim-eval '(ustr-insert-elem! ustrj-l '("んー" "ンー" "ﾝｰ")))
   (assert-equal '("んー" "ンー" "ﾝｰ")
                 (uim '(ustr-cursor-backside ustrj-l)))
   (assert-equal 6
@@ -1675,7 +1675,7 @@
                   (uim '(ustr-cursor-backside ustre))))
   (assert-equal 0
                 (uim '(ustr-length ustre)))
-  (uim '(ustr-insert-elem! ustre '("んー" "ンー" "ﾝｰ")))
+  (uim-eval '(ustr-insert-elem! ustre '("んー" "ンー" "ﾝｰ")))
   (assert-equal '("んー" "ンー" "ﾝｰ")
                 (uim '(ustr-cursor-backside ustre)))
   (assert-equal 1
@@ -1827,8 +1827,8 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-insert-seq! ustrj-fl '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                     ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-insert-seq! ustrj-fl '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                          ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("よ" "ヨ" "ﾖ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 8
@@ -1846,8 +1846,8 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-insert-seq! ustrj-f '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                    ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-insert-seq! ustrj-f '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                         ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("よ" "ヨ" "ﾖ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 8
@@ -1865,8 +1865,8 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-insert-seq! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                    ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-insert-seq! ustrj-l '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                         ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("よ" "ヨ" "ﾖ")
                 (uim '(ustr-cursor-backside ustrj-l)))
   (assert-equal 8
@@ -1884,8 +1884,8 @@
                 (uim '(ustr-length ustre)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustre)))
-  (uim '(ustr-insert-seq! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
-                                  ("よ" "ヨ" "ﾖ"))))
+  (uim-eval '(ustr-insert-seq! ustre '(("んー" "ンー" "ﾝｰ") ("か" "カ" "ｶ")
+                                       ("よ" "ヨ" "ﾖ"))))
   (assert-equal '("よ" "ヨ" "ﾖ")
                 (uim '(ustr-cursor-backside ustre)))
   (assert-equal 3
@@ -1903,7 +1903,7 @@
                 (uim '(ustr-length ustrj-fl)))
   (assert-equal 3
                 (uim '(ustr-cursor-pos ustrj-fl)))
-  (uim '(ustr-insert-seq! ustrj-fl ()))
+  (uim-eval '(ustr-insert-seq! ustrj-fl ()))
   (assert-equal '("ん" "ン" "ﾝ")
                 (uim '(ustr-cursor-backside ustrj-fl)))
   (assert-equal 5
@@ -1920,7 +1920,7 @@
                 (uim '(ustr-length ustrj-f)))
   (assert-equal 5
                 (uim '(ustr-cursor-pos ustrj-f)))
-  (uim '(ustr-insert-seq! ustrj-f ()))
+  (uim-eval '(ustr-insert-seq! ustrj-f ()))
   (assert-equal '("じゃ" "ジャ" "ｼﾞｬ")
                 (uim '(ustr-cursor-backside ustrj-f)))
   (assert-equal 5
@@ -1937,7 +1937,7 @@
                 (uim '(ustr-length ustrj-l)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustrj-l)))
-  (uim '(ustr-insert-seq! ustrj-l ()))
+  (uim-eval '(ustr-insert-seq! ustrj-l ()))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustrj-l))))
   (assert-equal 5
@@ -1954,7 +1954,7 @@
                 (uim '(ustr-length ustre)))
   (assert-equal 0
                 (uim '(ustr-cursor-pos ustre)))
-  (uim '(ustr-insert-seq! ustre ()))
+  (uim-eval '(ustr-insert-seq! ustre ()))
   (assert-error (lambda ()
                   (uim '(ustr-cursor-backside ustre))))
   (assert-equal 0
