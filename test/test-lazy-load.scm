@@ -47,24 +47,24 @@
    '(begin
       (set! im-list ())
       (undefine *hangul.scm-loaded*)))
-  (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
+  (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
 
   (uim-eval
    '(define init-handler
       (stub-im-generate-init-handler 'hangul2 "hangul")))
-  (assert-true  (uim-bool '(procedure? init-handler)))
-  (assert-false (uim-bool '(retrieve-im 'hangul2)))
+  (assert-uim-true  '(procedure? init-handler))
+  (assert-uim-false '(retrieve-im 'hangul2))
   (uim-eval
    '(define test-context
       (init-handler 0 #f #f)))
-  (assert-equal 'hangul2
-                (uim '(im-name (retrieve-im 'hangul2))))
-  (assert-equal "hangul"
-                (uim '(im-module-name (retrieve-im 'hangul2))))
-  (assert-equal 'hangul2
-                (uim '(im-name (context-im test-context))))
-  (assert-equal "hangul"
-                (uim '(im-module-name (context-im test-context))))
+  (assert-uim-equal 'hangul2
+                    '(im-name (retrieve-im 'hangul2)))
+  (assert-uim-equal "hangul"
+                    '(im-module-name (retrieve-im 'hangul2)))
+  (assert-uim-equal 'hangul2
+                    '(im-name (context-im test-context)))
+  (assert-uim-equal "hangul"
+                    '(im-module-name (context-im test-context)))
   #f)
 
 (define (test-register-stub-im)
@@ -72,7 +72,7 @@
    '(begin
       (set! im-list ())
       (undefine *hangul.scm-loaded*)))
-  (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
+  (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
 
   (uim-eval
    '(begin
@@ -85,33 +85,33 @@
        "hangul")
       (define init-handler (im-init-handler (retrieve-im 'hangul2)))
       (im-set-init-handler! (retrieve-im 'hangul2) 'init)))
-  (assert-equal '(hangul2
-                  "ko"
-                  "UTF-8"
-                  "Hangul (2-bul)"
-                  "2-bul style hangul input method"
-                  ;; replace () with #f for R5RS compliant interpreter
-                  #f ;; arg
-                  init
-                  #f  ;; release-handler
-                  #f  ;; mode-handler
-                  #f  ;; press-key-handler
-                  #f  ;; release-key-handler
-                  #f  ;; reset-handler
-                  #f  ;; get-candidate-handler
-                  #f  ;; set-candidate-index-handler
-                  #f  ;; prop-activate-handler
-                  #f  ;; input-string-handler
-                  #f  ;; focus-in-handler
-                  #f  ;; focus-out-handler
-                  #f  ;; place-handler
-                  #f  ;; displace-handler
-                  "hangul")
-                (uim '(retrieve-im 'hangul2)))
+  (assert-uim-equal '(hangul2
+                      "ko"
+                      "UTF-8"
+                      "Hangul (2-bul)"
+                      "2-bul style hangul input method"
+                      ;; replace () with #f for R5RS compliant interpreter
+                      #f ;; arg
+                      init
+                      #f ;; release-handler
+                      #f ;; mode-handler
+                      #f ;; press-key-handler
+                      #f ;; release-key-handler
+                      #f ;; reset-handler
+                      #f ;; get-candidate-handler
+                      #f ;; set-candidate-index-handler
+                      #f ;; prop-activate-handler
+                      #f ;; input-string-handler
+                      #f ;; focus-in-handler
+                      #f ;; focus-out-handler
+                      #f ;; place-handler
+                      #f ;; displace-handler
+                      "hangul")
+                    '(retrieve-im 'hangul2))
   (uim-eval '(im-set-init-handler! (retrieve-im 'hangul2) init-handler))
 
-  (assert-true  (uim-bool '(procedure? (im-init-handler
-                                        (retrieve-im 'hangul2)))))
+  (assert-uim-true  '(procedure? (im-init-handler
+                                  (retrieve-im 'hangul2))))
   ;; to prevent SEGV on create-context
   (uim-eval
    '(begin
@@ -128,24 +128,24 @@
 
       (define test-context (assv 0 context-list))))
 
-  (assert-equal 'hangul2
-                (uim '(im-name (context-im test-context))))
-  (assert-equal "hangul"
-                (uim '(im-module-name (context-im test-context))))
+  (assert-uim-equal 'hangul2
+                    '(im-name (context-im test-context)))
+  (assert-uim-equal "hangul"
+                    '(im-module-name (context-im test-context)))
   (uim-eval '(define test-hangul2 (retrieve-im 'hangul2)))
-  (assert-equal 'hangul2
-                (uim '(im-name test-hangul2)))
-  (assert-equal "hangul"
-                (uim '(im-module-name test-hangul2)))
-  (assert-true  (uim-bool '(procedure? (im-init-handler test-hangul2))))
-  (assert-false (uim-bool '(procedure? (im-release-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-mode-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-key-press-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-key-release-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-reset-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-get-candidate-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-set-candidate-index-handler test-hangul2))))
-  (assert-true  (uim-bool '(procedure? (im-prop-activate-handler test-hangul2))))
+  (assert-uim-equal 'hangul2
+                    '(im-name test-hangul2))
+  (assert-uim-equal "hangul"
+                    '(im-module-name test-hangul2))
+  (assert-uim-true  '(procedure? (im-init-handler test-hangul2)))
+  (assert-uim-false '(procedure? (im-release-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-mode-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-key-press-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-key-release-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-reset-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-get-candidate-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-set-candidate-index-handler test-hangul2)))
+  (assert-uim-true  '(procedure? (im-prop-activate-handler test-hangul2)))
   #f)
 
 (define (test-stub-im-generate-stub-im-list)
@@ -154,66 +154,66 @@
       (set! im-list ())
       (undefine *tcode.scm-loaded*)
       (undefine *hangul.scm-loaded*)))
-  (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
-  (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
+  (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
+  (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
 
-  (assert-false (uim-bool '(retrieve-im 'tcode)))
-  (assert-false (uim-bool '(retrieve-im 'hangul2)))
-  (assert-false (uim-bool '(retrieve-im 'hangul3)))
+  (assert-uim-false '(retrieve-im 'tcode))
+  (assert-uim-false '(retrieve-im 'hangul2))
+  (assert-uim-false '(retrieve-im 'hangul3))
 
-  (assert-equal ()
-                (uim '(stub-im-generate-stub-im-list ())))
-  (assert-equal (list
-                 (string-append
-                  "    (hangul2\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (2-beol)\"\n"
-                  "     \"2-beol style hangul input method\"\n"
-                  "     \"hangul\")\n"))
-                (uim '(stub-im-generate-stub-im-list '(hangul2))))
-  (assert-equal (list
-                 (string-append
-                  "    (hangul3\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (3-beol)\"\n"
-                  "     \"3-beol style hangul input method\"\n"
-                  "     \"hangul\")\n"))
-                (uim '(stub-im-generate-stub-im-list '(hangul3))))
-  (assert-equal (list
-                 (string-append
-                  "    (tcode\n"
-                  "     \"ja\"\n"
-                  "     \"EUC-JP\"\n"
-                  "     \"T-Code\"\n"
-                  "     \"A kanji direct input method\"\n"
-                  "     \"tcode\")\n"))
-                (uim '(stub-im-generate-stub-im-list '(tcode))))
+  (assert-uim-equal ()
+                    '(stub-im-generate-stub-im-list ()))
+  (assert-uim-equal (list
+                     (string-append
+                      "    (hangul2\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (2-beol)\"\n"
+                      "     \"2-beol style hangul input method\"\n"
+                      "     \"hangul\")\n"))
+                    '(stub-im-generate-stub-im-list '(hangul2)))
+  (assert-uim-equal (list
+                     (string-append
+                      "    (hangul3\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (3-beol)\"\n"
+                      "     \"3-beol style hangul input method\"\n"
+                      "     \"hangul\")\n"))
+                    '(stub-im-generate-stub-im-list '(hangul3)))
+  (assert-uim-equal (list
+                     (string-append
+                      "    (tcode\n"
+                      "     \"ja\"\n"
+                      "     \"EUC-JP\"\n"
+                      "     \"T-Code\"\n"
+                      "     \"A kanji direct input method\"\n"
+                      "     \"tcode\")\n"))
+                    '(stub-im-generate-stub-im-list '(tcode)))
 
-  (assert-equal (list
-                 (string-append
-                  "    (hangul2\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (2-beol)\"\n"
-                  "     \"2-beol style hangul input method\"\n"
-                  "     \"hangul\")\n")
-                 (string-append
-                  "    (tcode\n"
-                  "     \"ja\"\n"
-                  "     \"EUC-JP\"\n"
-                  "     \"T-Code\"\n"
-                  "     \"A kanji direct input method\"\n"
-                  "     \"tcode\")\n")
-                 (string-append
-                  "    (hangul3\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (3-beol)\"\n"
-                  "     \"3-beol style hangul input method\"\n"
-                  "     \"hangul\")\n"))
-                (uim '(stub-im-generate-stub-im-list '(hangul2 tcode hangul3))))
+  (assert-uim-equal (list
+                     (string-append
+                      "    (hangul2\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (2-beol)\"\n"
+                      "     \"2-beol style hangul input method\"\n"
+                      "     \"hangul\")\n")
+                     (string-append
+                      "    (tcode\n"
+                      "     \"ja\"\n"
+                      "     \"EUC-JP\"\n"
+                      "     \"T-Code\"\n"
+                      "     \"A kanji direct input method\"\n"
+                      "     \"tcode\")\n")
+                     (string-append
+                      "    (hangul3\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (3-beol)\"\n"
+                      "     \"3-beol style hangul input method\"\n"
+                      "     \"hangul\")\n"))
+                    '(stub-im-generate-stub-im-list '(hangul2 tcode hangul3)))
   #f)
 
 (define (test-stub-im-generate-all-stub-im-list)
@@ -223,36 +223,36 @@
       (undefine *tcode.scm-loaded*)
       (undefine *hangul.scm-loaded*)
       (set! installed-im-module-list '("tcode" "hangul"))))
-  (assert-equal (list
-                 (string-append
-                  "    (tcode\n"
-                  "     \"ja\"\n"
-                  "     \"EUC-JP\"\n"
-                  "     \"T-Code\"\n"
-                  "     \"A kanji direct input method\"\n"
-                  "     \"tcode\")\n")
-                 (string-append
-                  "    (hangul2\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (2-beol)\"\n"
-                  "     \"2-beol style hangul input method\"\n"
-                  "     \"hangul\")\n")
-                 (string-append
-                  "    (hangul3\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (3-beol)\"\n"
-                  "     \"3-beol style hangul input method\"\n"
-                  "     \"hangul\")\n")
-                 (string-append
-                  "    (romaja\n"
-                  "     \"ko\"\n"
-                  "     \"UTF-8\"\n"
-                  "     \"Hangul (Romaja)\"\n"
-                  "     \"Romaja input style hangul input method\"\n"
-                  "     \"hangul\")\n"))
-                (uim '(stub-im-generate-all-stub-im-list)))
+  (assert-uim-equal (list
+                     (string-append
+                      "    (tcode\n"
+                      "     \"ja\"\n"
+                      "     \"EUC-JP\"\n"
+                      "     \"T-Code\"\n"
+                      "     \"A kanji direct input method\"\n"
+                      "     \"tcode\")\n")
+                     (string-append
+                      "    (hangul2\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (2-beol)\"\n"
+                      "     \"2-beol style hangul input method\"\n"
+                      "     \"hangul\")\n")
+                     (string-append
+                      "    (hangul3\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (3-beol)\"\n"
+                      "     \"3-beol style hangul input method\"\n"
+                      "     \"hangul\")\n")
+                     (string-append
+                      "    (romaja\n"
+                      "     \"ko\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Hangul (Romaja)\"\n"
+                      "     \"Romaja input style hangul input method\"\n"
+                      "     \"hangul\")\n"))
+                    '(stub-im-generate-all-stub-im-list))
 
   (uim-eval
    '(begin
@@ -260,8 +260,8 @@
       (undefine *tcode.scm-loaded*)
       (undefine *hangul.scm-loaded*)
       (set! installed-im-module-list '())))
-  (assert-equal ()
-                (uim '(stub-im-generate-all-stub-im-list)))
+  (assert-uim-equal ()
+                    '(stub-im-generate-all-stub-im-list))
   #f)
 
 (provide "test/test-lazy-load")
