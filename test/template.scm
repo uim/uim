@@ -1,5 +1,3 @@
-#!/usr/bin/env gosh
-
 ;;; Copyright (c) 2004-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
@@ -29,17 +27,25 @@
 ;;; ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ;;;;
 
-(use test.unit)
+;;; * replace 'foo'.
+;;; * filename is 'test/test-foo.scm'
 
-(require "test/uim-test-utils")
+(define-module test.test-foo
+  (use test.unit.test-case)
+  (use test.uim-test))
+(select-module test.test-foo)
 
-(define-uim-test-case "testcase foo procedures"
-  (setup
-   (lambda ()
-     ))
+(define (setup)
+  (uim-test-setup))
 
-  ("test foo"
-   (assert-equal 'expect
-		 (uim '(foo)))
-   (assert-false (uim-bool '(foo? 2)))
-   (assert-true  (uim-bool '(foo? 3)))))
+(define (teardown)
+  (uim-test-teardown))
+
+(define (test-foo)
+  (assert-uim-equal 'expect
+                    '(foo))
+  (assert-uim-false '(foo? 2))
+  (assert-uim-true  '(foo? 3))
+  #f)
+
+(provide "test/test-foo")
