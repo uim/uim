@@ -79,11 +79,11 @@
   ;; supported escape sequences. We can replace uim-raw with
   ;; uim after "test-gauche-unsupported-escape-sequences"
   ;; test fails which means Gauche supports them.
-  (assert-uim-raw-equal "\"\\a\""
+  (assert-uim-equal-raw "\"\\a\""
                         "(string-escape \"\\a\")")  ;; #\alarm
-  (assert-uim-raw-equal "\"\\b\""
+  (assert-uim-equal-raw "\"\\b\""
                         "(string-escape \"\\b\")")  ;; #\backspace
-  (assert-uim-raw-equal "\"\\v\""
+  (assert-uim-equal-raw "\"\\v\""
                         "(string-escape \"\\v\")")  ;; #\vtab
 
   ;; R5RS

@@ -114,8 +114,8 @@
 
 (define (test-string->alphabetic-ichar)
   (assert-uim-false     '(string->alphabetic-ichar ""))       ; NUL
-  (assert-uim-raw-false "(string->alphabetic-ichar \"\")")  ; SOH
-  (assert-uim-raw-false "(string->alphabetic-ichar \"\")")  ; US
+  (assert-uim-false-raw "(string->alphabetic-ichar \"\")")  ; SOH
+  (assert-uim-false-raw "(string->alphabetic-ichar \"\")")  ; US
   (assert-uim-false     '(string->alphabetic-ichar " "))      ; SPACE
   (assert-uim-false     '(string->alphabetic-ichar "!"))      ; !
   (assert-uim-false     '(string->alphabetic-ichar "/"))      ; /
@@ -135,7 +135,7 @@
   (assert-uim-false     '(string->alphabetic-ichar "zz"))     ; zz
   (assert-uim-false     '(string->alphabetic-ichar "{"))      ; {
   (assert-uim-false     '(string->alphabetic-ichar "~"))      ; ~
-  (assert-uim-raw-false "(string->alphabetic-ichar \"\")")  ; DEL
+  (assert-uim-false-raw "(string->alphabetic-ichar \"\")")  ; DEL
   #f)
 
 (provide "test/util/test-character-conversion")
