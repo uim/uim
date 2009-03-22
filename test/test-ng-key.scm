@@ -40,581 +40,581 @@
   (uim-test-teardown))
 
 (define (test-modifier-symbol?)
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_None)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Shift)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Shift_R)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Control)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Control_R)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Control_L)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Alt)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Alt_R)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Alt_L)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Meta)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Meta_R)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Meta_L)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Super)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Super_R)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Super_L)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Hyper)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Hyper_R)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Hyper_L)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_Caps_Lock)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_ignore_Shift)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_ignore_Control)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_ignore_Alt)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_ignore_Meta)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_ignore_Super)))
-  (assert-true  (uim-bool '(modifier-symbol? 'mod_ignore_Hyper)))
+  (assert-uim-true-value '(modifier-symbol? 'mod_None))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Shift))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Shift_R))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Shift_L))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Control))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Control_R))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Control_L))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Alt))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Alt_R))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Alt_L))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Meta))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Meta_R))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Meta_L))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Super))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Super_R))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Super_L))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Hyper))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Hyper_R))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Hyper_L))
+  (assert-uim-true-value '(modifier-symbol? 'mod_Caps_Lock))
+  (assert-uim-true-value '(modifier-symbol? 'mod_ignore_Shift))
+  (assert-uim-true-value '(modifier-symbol? 'mod_ignore_Control))
+  (assert-uim-true-value '(modifier-symbol? 'mod_ignore_Alt))
+  (assert-uim-true-value '(modifier-symbol? 'mod_ignore_Meta))
+  (assert-uim-true-value '(modifier-symbol? 'mod_ignore_Super))
+  (assert-uim-true-value '(modifier-symbol? 'mod_ignore_Hyper))
   #f)
 
 (define (test-modifier-has?)
-  (assert-true  (uim-bool '(modifier-has? mod_None mod_None)))
-  (assert-false (uim-bool '(modifier-has? mod_None mod_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_None mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-has? mod_None mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-has? mod_None mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_None mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? mod_None mod_None))
+  (assert-uim-false '(modifier-has? mod_None mod_Shift))
+  (assert-uim-false '(modifier-has? mod_None mod_Shift_L))
+  (assert-uim-false '(modifier-has? mod_None mod_Shift_R))
+  (assert-uim-false '(modifier-has? mod_None mod_ignore_Shift))
+  (assert-uim-false '(modifier-has? mod_None mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-has? mod_Shift mod_None)))
-  (assert-true  (uim-bool '(modifier-has? mod_Shift mod_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? mod_Shift mod_None))
+  (assert-uim-true  '(modifier-has? mod_Shift mod_Shift))
+  (assert-uim-false '(modifier-has? mod_Shift mod_Shift_L))
+  (assert-uim-false '(modifier-has? mod_Shift mod_Shift_R))
+  (assert-uim-false '(modifier-has? mod_Shift mod_ignore_Shift))
+  (assert-uim-false '(modifier-has? mod_Shift mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-has? mod_Shift_L mod_None)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_L mod_Shift)))
-  (assert-true  (uim-bool '(modifier-has? mod_Shift_L mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_L mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_L mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_L mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? mod_Shift_L mod_None))
+  (assert-uim-false '(modifier-has? mod_Shift_L mod_Shift))
+  (assert-uim-true  '(modifier-has? mod_Shift_L mod_Shift_L))
+  (assert-uim-false '(modifier-has? mod_Shift_L mod_Shift_R))
+  (assert-uim-false '(modifier-has? mod_Shift_L mod_ignore_Shift))
+  (assert-uim-false '(modifier-has? mod_Shift_L mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-has? mod_Shift_R mod_None)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_R mod_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_R mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-has? mod_Shift_R mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_R mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_Shift_R mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? mod_Shift_R mod_None))
+  (assert-uim-false '(modifier-has? mod_Shift_R mod_Shift))
+  (assert-uim-false '(modifier-has? mod_Shift_R mod_Shift_L))
+  (assert-uim-true  '(modifier-has? mod_Shift_R mod_Shift_R))
+  (assert-uim-false '(modifier-has? mod_Shift_R mod_ignore_Shift))
+  (assert-uim-false '(modifier-has? mod_Shift_R mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-has? mod_ignore_Shift mod_None)))
-  (assert-false (uim-bool '(modifier-has? mod_ignore_Shift mod_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_ignore_Shift mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-has? mod_ignore_Shift mod_Shift_R)))
-  (assert-true  (uim-bool '(modifier-has? mod_ignore_Shift mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_ignore_Shift mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? mod_ignore_Shift mod_None))
+  (assert-uim-false '(modifier-has? mod_ignore_Shift mod_Shift))
+  (assert-uim-false '(modifier-has? mod_ignore_Shift mod_Shift_L))
+  (assert-uim-false '(modifier-has? mod_ignore_Shift mod_Shift_R))
+  (assert-uim-true  '(modifier-has? mod_ignore_Shift mod_ignore_Shift))
+  (assert-uim-false '(modifier-has? mod_ignore_Shift mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-has? (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_None)))
-  (assert-true  (uim-bool '(modifier-has? (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift)))
-  (assert-true  (uim-bool '(modifier-has? (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-has? (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-has? (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-has? (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? (bitwise-ior mod_Shift
+                                                 mod_Shift_L
+                                                 mod_Shift_R)
+                                    mod_None))
+  (assert-uim-true  '(modifier-has? (bitwise-ior mod_Shift
+                                                 mod_Shift_L
+                                                 mod_Shift_R)
+                                    mod_Shift))
+  (assert-uim-true  '(modifier-has? (bitwise-ior mod_Shift
+                                                 mod_Shift_L
+                                                 mod_Shift_R)
+                                    mod_Shift_L))
+  (assert-uim-true  '(modifier-has? (bitwise-ior mod_Shift
+                                                 mod_Shift_L
+                                                 mod_Shift_R)
+                                    mod_Shift_R))
+  (assert-uim-false '(modifier-has? (bitwise-ior mod_Shift
+                                                 mod_Shift_L
+                                                 mod_Shift_R)
+                                    mod_ignore_Shift))
+  (assert-uim-false '(modifier-has? (bitwise-ior mod_Shift
+                                                 mod_Shift_L
+                                                 mod_Shift_R)
+                                    mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-has? mod_Caps_Lock mod_None)))
-  (assert-false (uim-bool '(modifier-has? mod_Caps_Lock mod_Shift)))
-  (assert-false (uim-bool '(modifier-has? mod_Caps_Lock mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-has? mod_Caps_Lock mod_Shift_R)))
-  (assert-true  (uim-bool '(modifier-has? mod_Caps_Lock mod_Caps_Lock)))
+  (assert-uim-true  '(modifier-has? mod_Caps_Lock mod_None))
+  (assert-uim-false '(modifier-has? mod_Caps_Lock mod_Shift))
+  (assert-uim-false '(modifier-has? mod_Caps_Lock mod_Shift_L))
+  (assert-uim-false '(modifier-has? mod_Caps_Lock mod_Shift_R))
+  (assert-uim-true  '(modifier-has? mod_Caps_Lock mod_Caps_Lock))
   #f)
 
 (define (test-modifier-aggregate)
-  (assert-equal (uim 'mod_None)
-                (uim '(modifier-aggregate mod_None mod_None)))
-  (assert-equal (uim 'mod_None)
-                (uim '(modifier-aggregate mod_None mod_Shift_L)))
-  (assert-equal (uim 'mod_None)
-                (uim '(modifier-aggregate mod_None mod_Shift_R)))
-  (assert-equal (uim 'mod_None)
-                (uim '(modifier-aggregate mod_None mod_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate mod_None mod_ignore_Shift)))
+  (assert-uim-equal (uim 'mod_None)
+                    '(modifier-aggregate mod_None mod_None))
+  (assert-uim-equal (uim 'mod_None)
+                    '(modifier-aggregate mod_None mod_Shift_L))
+  (assert-uim-equal (uim 'mod_None)
+                    '(modifier-aggregate mod_None mod_Shift_R))
+  (assert-uim-equal (uim 'mod_None)
+                    '(modifier-aggregate mod_None mod_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate mod_None mod_ignore_Shift))
 
-  (assert-equal (uim 'mod_Shift_L)
-                (uim '(modifier-aggregate mod_Shift_L mod_None)))
-  (assert-equal (uim 'mod_Shift_L)
-                (uim '(modifier-aggregate mod_Shift_L mod_Shift_L)))
-  (assert-equal (uim 'mod_Shift_L)
-                (uim '(modifier-aggregate mod_Shift_L mod_Shift_R)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate mod_Shift_L mod_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate mod_Shift_L mod_ignore_Shift)))
+  (assert-uim-equal (uim 'mod_Shift_L)
+                    '(modifier-aggregate mod_Shift_L mod_None))
+  (assert-uim-equal (uim 'mod_Shift_L)
+                    '(modifier-aggregate mod_Shift_L mod_Shift_L))
+  (assert-uim-equal (uim 'mod_Shift_L)
+                    '(modifier-aggregate mod_Shift_L mod_Shift_R))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate mod_Shift_L mod_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate mod_Shift_L mod_ignore_Shift))
 
-  (assert-equal (uim 'mod_Shift_R)
-                (uim '(modifier-aggregate mod_Shift_R mod_None)))
-  (assert-equal (uim 'mod_Shift_R)
-                (uim '(modifier-aggregate mod_Shift_R mod_Shift_L)))
-  (assert-equal (uim 'mod_Shift_R)
-                (uim '(modifier-aggregate mod_Shift_R mod_Shift_R)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate mod_Shift_R mod_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate mod_Shift_R mod_ignore_Shift)))
+  (assert-uim-equal (uim 'mod_Shift_R)
+                    '(modifier-aggregate mod_Shift_R mod_None))
+  (assert-uim-equal (uim 'mod_Shift_R)
+                    '(modifier-aggregate mod_Shift_R mod_Shift_L))
+  (assert-uim-equal (uim 'mod_Shift_R)
+                    '(modifier-aggregate mod_Shift_R mod_Shift_R))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate mod_Shift_R mod_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate mod_Shift_R mod_ignore_Shift))
 
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate mod_Shift mod_None)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate mod_Shift mod_Shift_L)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate mod_Shift mod_Shift_R)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate mod_Shift mod_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate mod_Shift mod_ignore_Shift)))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate mod_Shift mod_None))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate mod_Shift mod_Shift_L))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate mod_Shift mod_Shift_R))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate mod_Shift mod_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate mod_Shift mod_ignore_Shift))
 
-  (assert-equal (uim '(bitwise-ior mod_Shift_L mod_Shift_R))
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift_L
-						       mod_Shift_R)
-                                          mod_None)))
-  (assert-equal (uim '(bitwise-ior mod_Shift_L mod_Shift_R))
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift_L)))
-  (assert-equal (uim '(bitwise-ior mod_Shift_L mod_Shift_R))
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift_R)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift_L
-						       mod_Shift_R)
-                                          mod_ignore_Shift)))
+  (assert-uim-equal (uim '(bitwise-ior mod_Shift_L mod_Shift_R))
+                    '(modifier-aggregate (bitwise-ior mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_None))
+  (assert-uim-equal (uim '(bitwise-ior mod_Shift_L mod_Shift_R))
+                    '(modifier-aggregate (bitwise-ior mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_Shift_L))
+  (assert-uim-equal (uim '(bitwise-ior mod_Shift_L mod_Shift_R))
+                    '(modifier-aggregate (bitwise-ior mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_Shift_R))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate (bitwise-ior mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate (bitwise-ior mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_ignore_Shift))
 
-  (assert-equal (uim '(bitwise-ior mod_Shift mod_Shift_L mod_Shift_R))
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_None)))
-  (assert-equal (uim '(bitwise-ior mod_Shift mod_Shift_L mod_Shift_R))
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift_L)))
-  (assert-equal (uim '(bitwise-ior mod_Shift mod_Shift_L mod_Shift_R))
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift_R)))
-  (assert-equal (uim 'mod_Shift)
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R)
-                                          mod_ignore_Shift)))
-  (assert-equal (uim 'mod_ignore_Shift)
-                (uim '(modifier-aggregate (bitwise-ior mod_Shift
-						       mod_Shift_L
-						       mod_Shift_R
-						       mod_ignore_Shift)
-                                          mod_ignore_Shift)))
+  (assert-uim-equal (uim '(bitwise-ior mod_Shift mod_Shift_L mod_Shift_R))
+                    '(modifier-aggregate (bitwise-ior mod_Shift
+                                                      mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_None))
+  (assert-uim-equal (uim '(bitwise-ior mod_Shift mod_Shift_L mod_Shift_R))
+                    '(modifier-aggregate (bitwise-ior mod_Shift
+                                                      mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_Shift_L))
+  (assert-uim-equal (uim '(bitwise-ior mod_Shift mod_Shift_L mod_Shift_R))
+                    '(modifier-aggregate (bitwise-ior mod_Shift
+                                                      mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_Shift_R))
+  (assert-uim-equal (uim 'mod_Shift)
+                    '(modifier-aggregate (bitwise-ior mod_Shift
+                                                      mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate (bitwise-ior mod_Shift
+                                                      mod_Shift_L
+                                                      mod_Shift_R)
+                                         mod_ignore_Shift))
+  (assert-uim-equal (uim 'mod_ignore_Shift)
+                    '(modifier-aggregate (bitwise-ior mod_Shift
+                                                      mod_Shift_L
+                                                      mod_Shift_R
+                                                      mod_ignore_Shift)
+                                         mod_ignore_Shift))
   #f)
 
 (define (test-modifier-match?)
-  (assert-true  (uim-bool '(modifier-match? mod_None mod_None)))
-  (assert-false (uim-bool '(modifier-match? mod_None mod_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_None mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-match? mod_None mod_Shift_R)))
-  (assert-true  (uim-bool '(modifier-match? mod_None mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_None mod_Caps_Lock)))
-  (assert-false (uim-bool '(modifier-match? mod_None
-                                            (bitwise-ior mod_Shift
-							 mod_ignore_Shift))))
-  (assert-false (uim-bool '(modifier-match? mod_None
-                                            (bitwise-ior mod_Shift_L
-							 mod_ignore_Shift))))
-  (assert-false (uim-bool '(modifier-match? mod_None
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_R
-							 mod_Shift_L
-							 mod_ignore_Shift))))
+  (assert-uim-true  '(modifier-match? mod_None mod_None))
+  (assert-uim-false '(modifier-match? mod_None mod_Shift))
+  (assert-uim-false '(modifier-match? mod_None mod_Shift_L))
+  (assert-uim-false '(modifier-match? mod_None mod_Shift_R))
+  (assert-uim-true  '(modifier-match? mod_None mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? mod_None mod_Caps_Lock))
+  (assert-uim-false '(modifier-match? mod_None
+                                      (bitwise-ior mod_Shift
+                                                   mod_ignore_Shift)))
+  (assert-uim-false '(modifier-match? mod_None
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_ignore_Shift)))
+  (assert-uim-false '(modifier-match? mod_None
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_R
+                                                   mod_Shift_L
+                                                   mod_ignore_Shift)))
 
-  (assert-false (uim-bool '(modifier-match? mod_Shift mod_None)))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift mod_Shift)))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift mod_Caps_Lock)))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R))))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R))))
+  (assert-uim-false '(modifier-match? mod_Shift mod_None))
+  (assert-uim-true  '(modifier-match? mod_Shift mod_Shift))
+  (assert-uim-true  '(modifier-match? mod_Shift mod_Shift_L))
+  (assert-uim-true  '(modifier-match? mod_Shift mod_Shift_R))
+  (assert-uim-false '(modifier-match? mod_Shift mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? mod_Shift mod_Caps_Lock))
+  (assert-uim-true  '(modifier-match? mod_Shift
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R)))
+  (assert-uim-true  '(modifier-match? mod_Shift
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R)))
 
-  (assert-false (uim-bool '(modifier-match? mod_Shift_L mod_None)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_L mod_Shift)))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift_L mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_L mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_L mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_L mod_Caps_Lock)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_L
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R))))
+  (assert-uim-false '(modifier-match? mod_Shift_L mod_None))
+  (assert-uim-false '(modifier-match? mod_Shift_L mod_Shift))
+  (assert-uim-true  '(modifier-match? mod_Shift_L mod_Shift_L))
+  (assert-uim-false '(modifier-match? mod_Shift_L mod_Shift_R))
+  (assert-uim-false '(modifier-match? mod_Shift_L mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? mod_Shift_L mod_Caps_Lock))
+  (assert-uim-false '(modifier-match? mod_Shift_L
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R)))
 
-  (assert-false (uim-bool '(modifier-match? mod_Shift_R mod_None)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_R mod_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_R mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-match? mod_Shift_R mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_R mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_Shift_R mod_Caps_Lock)))
+  (assert-uim-false '(modifier-match? mod_Shift_R mod_None))
+  (assert-uim-false '(modifier-match? mod_Shift_R mod_Shift))
+  (assert-uim-false '(modifier-match? mod_Shift_R mod_Shift_L))
+  (assert-uim-true  '(modifier-match? mod_Shift_R mod_Shift_R))
+  (assert-uim-false '(modifier-match? mod_Shift_R mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? mod_Shift_R mod_Caps_Lock))
 
-  (assert-true  (uim-bool '(modifier-match? mod_ignore_Shift mod_None)))
-  (assert-true  (uim-bool '(modifier-match? mod_ignore_Shift mod_Shift)))
-  (assert-true  (uim-bool '(modifier-match? mod_ignore_Shift mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-match? mod_ignore_Shift mod_Shift_R)))
-  (assert-true  (uim-bool '(modifier-match? mod_ignore_Shift mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? mod_ignore_Shift mod_Caps_Lock)))
-  (assert-true  (uim-bool '(modifier-match? mod_ignore_Shift
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R))))
-  (assert-false (uim-bool '(modifier-match? mod_ignore_Shift
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_L))))
+  (assert-uim-true  '(modifier-match? mod_ignore_Shift mod_None))
+  (assert-uim-true  '(modifier-match? mod_ignore_Shift mod_Shift))
+  (assert-uim-true  '(modifier-match? mod_ignore_Shift mod_Shift_L))
+  (assert-uim-true  '(modifier-match? mod_ignore_Shift mod_Shift_R))
+  (assert-uim-true  '(modifier-match? mod_ignore_Shift mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? mod_ignore_Shift mod_Caps_Lock))
+  (assert-uim-true  '(modifier-match? mod_ignore_Shift
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R)))
+  (assert-uim-false '(modifier-match? mod_ignore_Shift
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_L)))
 
   ;; multiple modifiers
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_None)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_Shift)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_Shift_L)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_Control_L)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control_L))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Control_L))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control
-							 mod_Control_L))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_Shift_L
-							 mod_Control_L)
-                                            mod_Caps_Lock)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_None))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Shift))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Shift_L))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Control_L))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control
+                                                   mod_Control_L)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Shift_R))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Caps_Lock))
 
   ;; multiple modifiers with ignore_Shift
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_None)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_Shift)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_Control_L)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control_L))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Control_L))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control
-							 mod_Control_L))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control))))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_Shift_R)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_ignore_Shift)))
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Shift_L
-							 mod_Control_L)
-                                            mod_Caps_Lock)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_None))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Shift))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Shift_L))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Control_L))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control
+                                                   mod_Control_L)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control)))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Shift_R))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_ignore_Shift))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Shift_L
+                                                   mod_Control_L)
+                                      mod_Caps_Lock))
 
   ;; ignoring Shift
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            mod_None)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            mod_Control_L)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            mod_Control_R)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            mod_Control)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Control_L
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Control
-							 mod_Control_L
-							 mod_Control_R))))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      mod_None))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      mod_Control_L))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      mod_Control_R))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      mod_Control))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Control_L
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R)))
 
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            mod_Shift)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Control_L))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Control))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Control_L
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Control
-							 mod_Control_L
-							 mod_Control_R))))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      mod_Shift))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Control_L)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Control)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Control_L
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R)))
 
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            mod_Shift_L)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control_L))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control_L
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Control
-							 mod_Control_L
-							 mod_Control_R))))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      mod_Shift_L))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control_L)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control_L
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R)))
 
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_L))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R
-							 mod_Control))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_L
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift_L
-							 mod_Shift_R
-							 mod_Control
-							 mod_Control_L
-							 mod_Control_R))))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_L)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_L
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R)))
 
-  (assert-false (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_L))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control_L
-							 mod_Control_R))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_Control)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control
-							 mod_Control_L
-							 mod_Control_R))))
+  (assert-uim-false '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_L)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control_L
+                                                   mod_Control_R)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_Control)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R)))
 
   ;; ignoring multiple modifiers
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_ignore_Control
-							 mod_Alt)
-                                            mod_Alt)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_ignore_Control
-							 mod_Alt)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control
-							 mod_Control_L
-							 mod_Control_R
-							 mod_Alt))))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_ignore_Control
-							 mod_ignore_Alt)
-                                            mod_None)))
-  (assert-true  (uim-bool '(modifier-match? (bitwise-ior mod_ignore_Shift
-							 mod_ignore_Control
-							 mod_ignore_Alt)
-                                            (bitwise-ior mod_Shift
-							 mod_Shift_L
-							 mod_Shift_R
-							 mod_Control
-							 mod_Control_L
-							 mod_Control_R
-							 mod_Alt
-							 mod_Alt_L
-							 mod_Alt_R))))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_ignore_Control
+                                                   mod_Alt)
+                                      mod_Alt))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_ignore_Control
+                                                   mod_Alt)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R
+                                                   mod_Alt)))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_ignore_Control
+                                                   mod_ignore_Alt)
+                                      mod_None))
+  (assert-uim-true  '(modifier-match? (bitwise-ior mod_ignore_Shift
+                                                   mod_ignore_Control
+                                                   mod_ignore_Alt)
+                                      (bitwise-ior mod_Shift
+                                                   mod_Shift_L
+                                                   mod_Shift_R
+                                                   mod_Control
+                                                   mod_Control_L
+                                                   mod_Control_R
+                                                   mod_Alt
+                                                   mod_Alt_L
+                                                   mod_Alt_R)))
   #f)
 
 (define (test-logical-key?)
-  (assert-false (uim-bool '(logical-key? 'lkey_Nonexistent)))
-  (assert-false (uim-bool '(logical-key? 'pkey_qwerty_a)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_VoidSymbol)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_BackSpace)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_Shift_L)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_Thumb_Shift_L)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_F1)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_space)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_0)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_a)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_A)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_yen)))
-  (assert-true  (uim-bool '(logical-key? 'lkey_dead_grave)))
+  (assert-uim-false      '(logical-key? 'lkey_Nonexistent))
+  (assert-uim-false      '(logical-key? 'pkey_qwerty_a))
+  (assert-uim-true-value '(logical-key? 'lkey_VoidSymbol))
+  (assert-uim-true-value '(logical-key? 'lkey_BackSpace))
+  (assert-uim-true-value '(logical-key? 'lkey_Shift_L))
+  (assert-uim-true-value '(logical-key? 'lkey_Thumb_Shift_L))
+  (assert-uim-true-value '(logical-key? 'lkey_F1))
+  (assert-uim-true-value '(logical-key? 'lkey_space))
+  (assert-uim-true-value '(logical-key? 'lkey_0))
+  (assert-uim-true-value '(logical-key? 'lkey_a))
+  (assert-uim-true-value '(logical-key? 'lkey_A))
+  (assert-uim-true-value '(logical-key? 'lkey_yen))
+  (assert-uim-true-value '(logical-key? 'lkey_dead_grave))
   #f)
 
 (define (test-physical-key?)
-  (assert-false (uim-bool '(physical-key? 'pkey_Nonexistent)))
-  (assert-false (uim-bool '(physical-key? 'lkey_a)))
-  (assert-true  (uim-bool '(physical-key? 'pkey_VoidSymbol)))
-  (assert-false (uim-bool '(physical-key? 'pkey_qwerty_BackSpace)))
-  (assert-false (uim-bool '(physical-key? 'pkey_qwerty_Shift_L)))
-  (assert-false (uim-bool '(physical-key? 'pkey_qwerty_F1)))
-  (assert-false (uim-bool '(physical-key? 'pkey_qwerty_space)))
-  (assert-false (uim-bool '(physical-key? 'pkey_qwerty_0)))
-  (assert-false (uim-bool '(physical-key? 'pkey_qwerty_a)))
-  (assert-false (uim-bool '(physical-key? 'pkey_jp106_yen)))
+  (assert-uim-false      '(physical-key? 'pkey_Nonexistent))
+  (assert-uim-false      '(physical-key? 'lkey_a))
+  (assert-uim-true-value '(physical-key? 'pkey_VoidSymbol))
+  (assert-uim-false      '(physical-key? 'pkey_qwerty_BackSpace))
+  (assert-uim-false      '(physical-key? 'pkey_qwerty_Shift_L))
+  (assert-uim-false      '(physical-key? 'pkey_qwerty_F1))
+  (assert-uim-false      '(physical-key? 'pkey_qwerty_space))
+  (assert-uim-false      '(physical-key? 'pkey_qwerty_0))
+  (assert-uim-false      '(physical-key? 'pkey_qwerty_a))
+  (assert-uim-false      '(physical-key? 'pkey_jp106_yen))
   ;; Temporarily disabled  -- YamaKen 2008-05-10
-  ;;(uim '(require "physical-key.scm"))
-  ;;(assert-false (uim-bool '(physical-key? 'pkey_Nonexistent)))
-  ;;(assert-false (uim-bool '(physical-key? 'lkey_a)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_VoidSymbol)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_qwerty_BackSpace)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_qwerty_Shift_L)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_qwerty_F1)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_qwerty_space)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_qwerty_0)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_qwerty_a)))
-  ;;(assert-true  (uim-bool '(physical-key? 'pkey_jp106_yen)))
+  ;;(uim-eval '(require "physical-key.scm"))
+  ;;(assert-uim-false      '(physical-key? 'pkey_Nonexistent))
+  ;;(assert-uim-false      '(physical-key? 'lkey_a))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_VoidSymbol))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_qwerty_BackSpace))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_qwerty_Shift_L))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_qwerty_F1))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_qwerty_space))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_qwerty_0))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_qwerty_a))
+  ;;(assert-uim-true-value '(physical-key? 'pkey_jp106_yen))
   #f)
 
 
