@@ -269,15 +269,15 @@
                                               "unknown"
                                               "Unknown")))))
 
-  (assert-false (uim-bool '(indicator-id test-indicator)))
-  (assert-false (uim-bool '(indicator-activity-pred test-indicator)))
-  (assert-false (uim-bool '(indicator-handler test-indicator)))
+  (assert-uim-false '(indicator-id test-indicator))
+  (assert-uim-false '(indicator-activity-pred test-indicator))
+  (assert-uim-false '(indicator-handler test-indicator))
   #f)
 
 (define (test-register-action)
   (uim-eval '(set! action-list ()))
-  (assert-equal 0
-                (uim '(length action-list)))
+  (assert-uim-equal 0
+                    '(length action-list))
   (uim-eval '(register-action
               'action_test_hiragana
               (lambda (tc)
@@ -292,10 +292,10 @@
               (lambda (tc)
                 (test-context-set-on! tc #t)
                 (test-context-set-kana-mode! tc test-type-hiragana))))
-  (assert-equal 1
-                (uim '(length action-list)))
-  (assert-equal 'action_test_hiragana
-                (uim '(caar action-list)))
+  (assert-uim-equal 1
+                    '(length action-list))
+  (assert-uim-equal 'action_test_hiragana
+                    '(caar action-list))
 
   (uim-eval '(register-action
               'action_test_katakana
@@ -311,10 +311,10 @@
               (lambda (tc)
                 (test-context-set-on! tc #t)
                 (test-context-set-kana-mode! tc test-type-katakana))))
-  (assert-equal 2
-                (uim '(length action-list)))
-  (assert-equal 'action_test_katakana
-                (uim '(caar action-list)))
+  (assert-uim-equal 2
+                    '(length action-list))
+  (assert-uim-equal 'action_test_katakana
+                    '(caar action-list))
 
   (uim-eval '(register-action
               'action_test_hankana
@@ -330,112 +330,112 @@
               (lambda (tc)
                 (test-context-set-on! tc #t)
                 (test-context-set-kana-mode! tc test-type-hankana))))
-  (assert-equal 3
-                (uim '(length action-list)))
-  (assert-equal 'action_test_hankana
-                (uim '(caar action-list))))
+  (assert-uim-equal 3
+                    '(length action-list))
+  (assert-uim-equal 'action_test_hankana
+                    '(caar action-list)))
 
 (define (test-fetch-action)
-  (assert-equal 'action_test_hiragana
-                (uim '(action-id (fetch-action 'action_test_hiragana))))
-  (assert-equal 'action_test_katakana
-                (uim '(action-id (fetch-action 'action_test_katakana))))
-  (assert-equal 'action_test_hankana
-                (uim '(action-id (fetch-action 'action_test_hankana))))
+  (assert-uim-equal 'action_test_hiragana
+                    '(action-id (fetch-action 'action_test_hiragana)))
+  (assert-uim-equal 'action_test_katakana
+                    '(action-id (fetch-action 'action_test_katakana)))
+  (assert-uim-equal 'action_test_hankana
+                    '(action-id (fetch-action 'action_test_hankana)))
   #f)
 
 (define (test-action-active?)
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hiragana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_katakana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hankana)
-                                           tc)))
-  (assert-true  (uim-bool '(action-active? (fetch-action 'action_test_direct)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_zenkaku)
-                                           tc)))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hiragana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_katakana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hankana)
+                                     tc))
+  (assert-uim-true  '(action-active? (fetch-action 'action_test_direct)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_zenkaku)
+                                     tc))
 
   (uim-eval '(test-context-set-wide-latin! tc #t))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hiragana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_katakana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hankana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_direct)
-                                           tc)))
-  (assert-true  (uim-bool '(action-active? (fetch-action 'action_test_zenkaku)
-                                           tc)))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hiragana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_katakana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hankana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_direct)
+                                     tc))
+  (assert-uim-true  '(action-active? (fetch-action 'action_test_zenkaku)
+                                     tc))
 
   (uim-eval '(test-context-set-on! tc #t))
-  (assert-true  (uim-bool '(action-active? (fetch-action 'action_test_hiragana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_katakana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hankana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_direct)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_zenkaku)
-                                           tc)))
+  (assert-uim-true  '(action-active? (fetch-action 'action_test_hiragana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_katakana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hankana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_direct)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_zenkaku)
+                                     tc))
 
   (uim-eval '(test-context-set-kana-mode! tc test-type-katakana))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hiragana)
-                                           tc)))
-  (assert-true  (uim-bool '(action-active? (fetch-action 'action_test_katakana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_hankana)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_direct)
-                                           tc)))
-  (assert-false (uim-bool '(action-active? (fetch-action 'action_test_zenkaku)
-                                           tc)))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hiragana)
+                                     tc))
+  (assert-uim-true  '(action-active? (fetch-action 'action_test_katakana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_hankana)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_direct)
+                                     tc))
+  (assert-uim-false '(action-active? (fetch-action 'action_test_zenkaku)
+                                     tc))
   #f)
 
 (define (test-action-indicate)
-  (assert-equal '(figure_ja_hiragana
-                  "あ"
-                  "ひらがな"
-                  "ひらがな入力モード")
-                (uim '(action-indicate (fetch-action 'action_test_hiragana)
-                                       tc)))
-  (assert-equal '(figure_ja_katakana
-                  "ア"
-                  "カタカナ"
-                  "カタカナ入力モード")
-                (uim '(action-indicate (fetch-action 'action_test_katakana)
-                                       tc)))
-  (assert-equal '(figure_ja_kana
-                  "か"
-                  "かな"
-                  "かな入力モード")
-                (uim '(action-indicate (fetch-action 'action_test_kana)
-                                       tc)))
+  (assert-uim-equal '(figure_ja_hiragana
+                      "あ"
+                      "ひらがな"
+                      "ひらがな入力モード")
+                    '(action-indicate (fetch-action 'action_test_hiragana)
+                                      tc))
+  (assert-uim-equal '(figure_ja_katakana
+                      "ア"
+                      "カタカナ"
+                      "カタカナ入力モード")
+                    '(action-indicate (fetch-action 'action_test_katakana)
+                                      tc))
+  (assert-uim-equal '(figure_ja_kana
+                      "か"
+                      "かな"
+                      "かな入力モード")
+                    '(action-indicate (fetch-action 'action_test_kana)
+                                      tc))
   ;; no action
-  (assert-equal (uim 'fallback-indication)
-                (uim '(action-indicate #f tc)))
+  (assert-uim-equal (uim 'fallback-indication)
+                    '(action-indicate #f tc))
   ;; no indication handler
-  (assert-equal (uim 'fallback-indication)
-                (uim '(action-indicate (action-new) tc)))
+  (assert-uim-equal (uim 'fallback-indication)
+                    '(action-indicate (action-new) tc))
   #f)
 
 (define (test-actions-new)
-  (assert-equal '(action_test_katakana
-                  action_test_kana
-                  action_test_hiragana)
-                (uim '(map action-id (actions-new '(action_test_katakana
-                                                    action_test_kana
-                                                    action_test_hiragana)))))
-  (assert-equal (uim ''(action_test_katakana
-                        action_test_kana
-                        action_test_hiragana))
-                (uim '(map action-id (actions-new '(action_test_katakana
-                                                    action_test_kana
-                                                    action_nonexistent
-                                                    action_test_hiragana)))))
-  (assert-equal ()
-                (uim '(map action-id (actions-new ()))))
+  (assert-uim-equal '(action_test_katakana
+                      action_test_kana
+                      action_test_hiragana)
+                    '(map action-id (actions-new '(action_test_katakana
+                                                   action_test_kana
+                                                   action_test_hiragana))))
+  (assert-uim-equal (uim ''(action_test_katakana
+                            action_test_kana
+                            action_test_hiragana))
+                    '(map action-id (actions-new '(action_test_katakana
+                                                   action_test_kana
+                                                   action_nonexistent
+                                                   action_test_hiragana))))
+  (assert-uim-equal ()
+                    '(map action-id (actions-new ())))
   #f)
 
 (define (test-activity-indicator-new)
@@ -445,46 +445,46 @@
                                                 action_test_hankana
                                                 action_test_direct
                                                 action_test_zenkaku))))
-  (assert-equal '(figure_ja_direct
-                  "a"
-                  "直接入力"
-                  "直接(無変換)入力モード")
-                (uim '(action-indicate indicator tc)))
+  (assert-uim-equal '(figure_ja_direct
+                      "a"
+                      "直接入力"
+                      "直接(無変換)入力モード")
+                    '(action-indicate indicator tc))
 
   (uim-eval '(test-context-set-wide-latin! tc #t))
-  (assert-equal '(figure_ja_zenkaku
-                  "Ａ"
-                  "全角英数"
-                  "全角英数入力モード")
-                (uim '(action-indicate indicator tc)))
+  (assert-uim-equal '(figure_ja_zenkaku
+                      "Ａ"
+                      "全角英数"
+                      "全角英数入力モード")
+                    '(action-indicate indicator tc))
 
   (uim-eval '(test-context-set-on! tc #t))
-  (assert-equal '(figure_ja_hiragana
-                  "あ"
-                  "ひらがな"
-                  "ひらがな入力モード")
-                (uim '(action-indicate indicator tc)))
+  (assert-uim-equal '(figure_ja_hiragana
+                      "あ"
+                      "ひらがな"
+                      "ひらがな入力モード")
+                    '(action-indicate indicator tc))
 
   (uim-eval '(test-context-set-kana-mode! tc test-type-katakana))
-  (assert-equal '(figure_ja_katakana
-                  "ア"
-                  "カタカナ"
-                  "カタカナ入力モード")
-                (uim '(action-indicate indicator tc)))
-   ;; no activity case
+  (assert-uim-equal '(figure_ja_katakana
+                      "ア"
+                      "カタカナ"
+                      "カタカナ入力モード")
+                    '(action-indicate indicator tc))
+  ;; no activity case
   (uim-eval '(define test-type-invalid 100))
   (uim-eval '(test-context-set-kana-mode! tc test-type-invalid))
-  (assert-equal '(unknown
-                  "?"
-                  "unknown"
-                  "unknown")
-                (uim '(action-indicate indicator tc)))
+  (assert-uim-equal '(unknown
+                      "?"
+                      "unknown"
+                      "unknown")
+                    '(action-indicate indicator tc))
   #f)
 
 (define (test-register-widget)
   (uim-eval '(set! widget-proto-list ()))
-  (assert-equal 0
-                (uim '(length widget-proto-list)))
+  (assert-uim-equal 0
+                    '(length widget-proto-list))
 
   (uim-eval
    '(begin
@@ -498,10 +498,10 @@
                       action_test_direct
                       action_test_zenkaku)))
       #t))
-  (assert-equal 1
-                (uim '(length widget-proto-list)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(caar widget-proto-list)))
+  (assert-uim-equal 1
+                    '(length widget-proto-list))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(caar widget-proto-list))
 
   (uim-eval
    '(begin
@@ -511,10 +511,10 @@
                         fallback-indication))
        (actions-new '(action_test_direct)))
       #t))
-  (assert-equal 1
-                (uim '(length widget-proto-list)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(caar widget-proto-list)))
+  (assert-uim-equal 1
+                    '(length widget-proto-list))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(caar widget-proto-list))
 
   (uim-eval
    '(begin
@@ -525,139 +525,145 @@
        (actions-new '(action_test_roma
                       action_test_kana)))
       #t))
-  (assert-equal 2
-                (uim '(length widget-proto-list)))
-  (assert-equal 'widget_test_kana_input_method
-                (uim '(caar widget-proto-list)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(car (cadr widget-proto-list))))
+  (assert-uim-equal 2
+                    '(length widget-proto-list))
+  (assert-uim-equal 'widget_test_kana_input_method
+                    '(caar widget-proto-list))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(car (cadr widget-proto-list)))
   #f)
 
 (define (test-widget-new)
-  (assert-false (uim-bool '(widget-new 'widget_test_nonexistent tc)))
+  (assert-uim-false '(widget-new 'widget_test_nonexistent tc))
   ;; widget_test_input_mode
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(widget-id test-input-mode)))
-  (assert-equal 'action_test_direct
-                (uim '(action-id (widget-activity test-input-mode))))
+  (uim-eval
+   '(define test-input-mode
+      (widget-new 'widget_test_input_mode tc)))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(widget-id test-input-mode))
+  (assert-uim-equal 'action_test_direct
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; widget_test_input_mode with default value
-  (uim-eval '(define default-widget_test_input_mode 'action_test_hiragana))
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
-  (assert-equal 'action_test_hiragana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (uim-eval
+   '(begin
+      (define default-widget_test_input_mode 'action_test_hiragana)
+      (define test-input-mode
+        (widget-new 'widget_test_input_mode tc))))
+  (assert-uim-equal 'action_test_hiragana
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; widget_test_input_mode with default value #2
-  (uim-eval '(define default-widget_test_input_mode 'action_test_katakana))
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
-  (assert-equal 'action_test_katakana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (uim-eval
+   '(begin
+      (define default-widget_test_input_mode 'action_test_katakana)
+      (define test-input-mode
+        (widget-new 'widget_test_input_mode tc))))
+  (assert-uim-equal 'action_test_katakana
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; widget_test_input_mode with default value #3
-  (uim-eval '(define default-widget_test_input_mode 'action_test_zenkaku))
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
-  (assert-equal 'action_test_zenkaku
-                (uim '(action-id (widget-activity test-input-mode))))
+  (uim-eval
+   '(begin
+      (define default-widget_test_input_mode 'action_test_zenkaku)
+      (define test-input-mode
+        (widget-new 'widget_test_input_mode tc))))
+  (assert-uim-equal 'action_test_zenkaku
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; widget_test_input_mode with invalid default value
-  (uim-eval '(define default-widget_test_input_mode 'action_nonexistent))
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
-  (assert-equal 'action_test_zenkaku
-                (uim '(action-id (widget-activity test-input-mode))))
+  (uim-eval
+   '(begin
+      (define default-widget_test_input_mode 'action_nonexistent)
+      (define test-input-mode
+        (widget-new 'widget_test_input_mode tc))))
+  (assert-uim-equal 'action_test_zenkaku
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; widget_test_kana_input_method
-  (assert-true  (uim-bool '(begin (define test-kana-input-method
-                                    (widget-new 'widget_test_kana_input_method tc))
-                                  #t)))
-  (assert-equal 'action_test_roma
-                (uim '(action-id (widget-activity test-kana-input-method))))
+  (uim-eval
+   '(define test-kana-input-method
+      (widget-new 'widget_test_kana_input_method tc)))
+  (assert-uim-equal 'action_test_roma
+                    '(action-id (widget-activity test-kana-input-method)))
 
   ;; widget_test_kana_input_method with default value
-  (uim-eval '(define default-widget_test_kana_input_method 'action_test_kana))
-  (assert-true  (uim-bool '(begin (define test-kana-input-method
-                                    (widget-new 'widget_test_kana_input_method tc))
-                                  #t)))
-  (assert-equal 'action_test_kana
-                (uim '(action-id (widget-activity test-kana-input-method))))
+  (uim-eval
+   '(begin
+      (define default-widget_test_kana_input_method 'action_test_kana)
+      (define test-kana-input-method
+        (widget-new 'widget_test_kana_input_method tc))))
+  (assert-uim-equal 'action_test_kana
+                    '(action-id (widget-activity test-kana-input-method)))
 
   ;; widget_test_kana_input_method with invalid default value
-  (uim-eval '(define default-widget_test_kana_input_method 'action_nonexistent))
-  (assert-true  (uim-bool '(begin (define test-kana-input-method
-                                    (widget-new 'widget_test_kana_input_method tc))
-                                  #t)))
-  (assert-equal 'action_test_kana
-                (uim '(action-id (widget-activity test-kana-input-method))))
+  (uim-eval
+   '(begin
+      (define default-widget_test_kana_input_method 'action_nonexistent)
+      (define test-kana-input-method
+        (widget-new 'widget_test_kana_input_method tc))))
+  (assert-uim-equal 'action_test_kana
+                    '(action-id (widget-activity test-kana-input-method)))
   #f)
 
 (define (test-widget-activity)
-   ;;; widget_test_input_mode
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
+  ;; widget_test_input_mode
+  (uim-eval
+   '(define test-input-mode
+      (widget-new 'widget_test_input_mode tc)))
   ;; action_test_direct (initial activity)
-  (assert-false (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hiragana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_direct
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-false '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hiragana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_direct
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; action_test_direct -> action_test_hiragana
   (uim-eval '(test-context-set-wide-latin! tc #t))
   (uim-eval '(test-context-set-on! tc #t))
-  (assert-equal (uim 'test-type-hiragana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_hiragana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-equal (uim 'test-type-hiragana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_hiragana
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; action_test_hiragana -> action_test_katakana
   (uim-eval '(test-context-set-wide-latin! tc #f))
   (uim-eval '(test-context-set-kana-mode! tc test-type-katakana))
-  (assert-true  (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-katakana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_katakana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-katakana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_katakana
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; action_test_katakana -> action_test_hankana
   (uim-eval '(test-context-set-kana-mode! tc test-type-hankana))
-  (assert-true  (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hankana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_hankana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hankana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_hankana
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; action_test_hankana -> action_test_direct
   (uim-eval '(test-context-set-on! tc #f))
-  (assert-false (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hankana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_direct
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-false '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hankana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_direct
+                    '(action-id (widget-activity test-input-mode)))
 
   ;; action_test_direct -> invalid
   (uim-eval '(define test-type-invalid 100))
   (uim-eval '(test-context-set-on! tc #t))
   (uim-eval '(test-context-set-kana-mode! tc test-type-invalid))
-  (assert-true  (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-invalid)
-                (uim '(test-context-kana-mode tc)))
-  (assert-false (uim-bool '(widget-activity test-input-mode)))
+  (assert-uim-true  '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-invalid)
+                    '(test-context-kana-mode tc))
+  (assert-uim-false '(widget-activity test-input-mode))
 
   ;; duplicate activity
   (uim-eval
@@ -678,136 +684,136 @@
         (widget-new 'widget_test_invalid_input_mode tc))))
 
   ;; action_test_direct and action_test_alt_direct are conflicted
-  (assert-false (uim-bool '(widget-activity test-invalid-input-mode)))
+  (assert-uim-false '(widget-activity test-invalid-input-mode))
   ;; conflicted -> action_test_hiragana
-  (assert-true  (uim-bool '(widget-activate! test-invalid-input-mode
-                                             'action_test_hiragana)))
-  (assert-equal 'action_test_hiragana
-                (uim '(action-id (widget-activity test-invalid-input-mode))))
+  (assert-uim-true  '(widget-activate! test-invalid-input-mode
+                                       'action_test_hiragana))
+  (assert-uim-equal 'action_test_hiragana
+                    '(action-id (widget-activity test-invalid-input-mode)))
   ;; action_test_hiragana -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-invalid-input-mode
-                                             'action_test_katakana)))
-  (assert-equal 'action_test_katakana
-                (uim '(action-id (widget-activity test-invalid-input-mode))))
+  (assert-uim-true  '(widget-activate! test-invalid-input-mode
+                                       'action_test_katakana))
+  (assert-uim-equal 'action_test_katakana
+                    '(action-id (widget-activity test-invalid-input-mode)))
   #f)
 
 (define (test-widget-activate!)
-   ;;; widget_test_input_mode
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
+  ;; widget_test_input_mode
+  (uim-eval
+   '(define test-input-mode
+      (widget-new 'widget_test_input_mode tc)))
   ;; action_test_direct (initial activity)
-  (assert-false (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hiragana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_direct
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-false '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hiragana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_direct
+                    '(action-id (widget-activity test-input-mode)))
   ;; action_test_direct -> action_test_hiragana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hiragana)))
-  (assert-true  (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hiragana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_hiragana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_hiragana))
+  (assert-uim-true  '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hiragana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_hiragana
+                    '(action-id (widget-activity test-input-mode)))
   ;; action_test_hiragana -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
-  (assert-true  (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-katakana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_katakana
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_katakana))
+  (assert-uim-true  '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-katakana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_katakana
+                    '(action-id (widget-activity test-input-mode)))
   ;; action_test_katakana -> action_test_hankana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hankana)))
-  (assert-true  (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hankana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_hankana
-		 (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_hankana))
+  (assert-uim-true  '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hankana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_hankana
+                    '(action-id (widget-activity test-input-mode)))
   ;; action_test_hankana -> action_test_zenkaku
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_zenkaku)))
-  (assert-false (uim-bool '(test-context-on tc)))
-  (assert-true  (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hankana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_zenkaku
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_zenkaku))
+  (assert-uim-false '(test-context-on tc))
+  (assert-uim-true  '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hankana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_zenkaku
+                    '(action-id (widget-activity test-input-mode)))
   ;; action_test_zenkaku -> action_test_direct
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_direct)))
-  (assert-false (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hankana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_direct
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_direct))
+  (assert-uim-false '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hankana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_direct
+                    '(action-id (widget-activity test-input-mode)))
   ;; action_test_direct -> invalid
-  (assert-false (uim-bool '(widget-activate! test-input-mode
-                                             'action_nonexistent)))
-  (assert-false (uim-bool '(test-context-on tc)))
-  (assert-false (uim-bool '(test-context-wide-latin tc)))
-  (assert-equal (uim 'test-type-hankana)
-                (uim '(test-context-kana-mode tc)))
-  (assert-equal 'action_test_direct
-                (uim '(action-id (widget-activity test-input-mode))))
+  (assert-uim-false '(widget-activate! test-input-mode
+                                       'action_nonexistent))
+  (assert-uim-false '(test-context-on tc))
+  (assert-uim-false '(test-context-wide-latin tc))
+  (assert-uim-equal (uim 'test-type-hankana)
+                    '(test-context-kana-mode tc))
+  (assert-uim-equal 'action_test_direct
+                    '(action-id (widget-activity test-input-mode)))
   #f)
 
 (define (test-widget-configuration)
   ;; widget_test_input_mode
-  (assert-true  (uim-bool '(begin (define test-input-mode
-                                    (widget-new 'widget_test_input_mode tc))
-                                  #t)))
-  (assert-equal '(action_unknown
-                  (figure_ja_hiragana
-                   "あ"
-                   "ひらがな"
-                   "ひらがな入力モード")
-                  (figure_ja_katakana
-                   "ア"
-                   "カタカナ"
-                   "カタカナ入力モード")
-                  (figure_ja_hankana
-                   "ｱ"
-                   "半角カタカナ"
-                   "半角カタカナ入力モード")
-                  (figure_ja_direct
-                   "a"
-                   "直接入力"
-                   "直接(無変換)入力モード")
-                  (figure_ja_zenkaku
-                   "Ａ"
-                   "全角英数"
-                   "全角英数入力モード"))
-                (uim '(widget-configuration test-input-mode)))
+  (uim-eval
+   '(define test-input-mode
+      (widget-new 'widget_test_input_mode tc)))
+  (assert-uim-equal '(action_unknown
+                      (figure_ja_hiragana
+                       "あ"
+                       "ひらがな"
+                       "ひらがな入力モード")
+                      (figure_ja_katakana
+                       "ア"
+                       "カタカナ"
+                       "カタカナ入力モード")
+                      (figure_ja_hankana
+                       "ｱ"
+                       "半角カタカナ"
+                       "半角カタカナ入力モード")
+                      (figure_ja_direct
+                       "a"
+                       "直接入力"
+                       "直接(無変換)入力モード")
+                      (figure_ja_zenkaku
+                       "Ａ"
+                       "全角英数"
+                       "全角英数入力モード"))
+                    '(widget-configuration test-input-mode))
 
   ;; widget_test_kana_input_method
   (uim-eval
    '(define test-kana-input-method
       (widget-new 'widget_test_kana_input_method tc)))
-  (assert-equal '(action_unknown
-                  (figure_ja_roma
-                   "Ｒ"
-                   "ローマ字"
-                   "ローマ字入力モード")
-                  (figure_ja_kana
-                   "か"
-                   "かな"
-                   "かな入力モード"))
-                (uim '(widget-configuration test-kana-input-method)))
+  (assert-uim-equal '(action_unknown
+                      (figure_ja_roma
+                       "Ｒ"
+                       "ローマ字"
+                       "ローマ字入力モード")
+                      (figure_ja_kana
+                       "か"
+                       "かな"
+                       "かな入力モード"))
+                    '(widget-configuration test-kana-input-method))
 
   ;; widget_test_null
   (uim-eval
    '(define test-null
       (widget-new 'widget_test_null tc)))
-  (assert-equal '(action_unknown)
-                (uim '(widget-configuration test-null)))
+  (assert-uim-equal '(action_unknown)
+                    '(widget-configuration test-null))
   #f)
 
 (define (test-widget-state)
@@ -815,50 +821,50 @@
   (uim-eval
    '(define test-input-mode
       (widget-new 'widget_test_input_mode tc)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
-                                         '(figure_ja_direct
-                                           "a"
-                                           "直接入力"
-                                           "直接(無変換)入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-false (uim-bool '(widget-activate! test-input-mode
-                                             'action_nonexistent)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-state test-input-mode))))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_direct)
+                                   '(figure_ja_direct
+                                     "a"
+                                     "直接入力"
+                                     "直接(無変換)入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_katakana))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-false '(widget-activate! test-input-mode
+                                       'action_nonexistent))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-state test-input-mode)))
 
   ;; widget_test_kana_input_method
   (uim-eval
    '(define test-kana-input-method
       (widget-new 'widget_test_kana_input_method tc)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_roma)
-                                         '(figure_ja_roma
-                                           "Ｒ"
-                                           "ローマ字"
-                                           "ローマ字入力モード"))
-                                   (widget-state test-kana-input-method))))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_roma)
+                                   '(figure_ja_roma
+                                     "Ｒ"
+                                     "ローマ字"
+                                     "ローマ字入力モード"))
+                             (widget-state test-kana-input-method)))
 
   ;; widget_test_null
   (uim-eval
    '(define test-null
       (widget-new 'widget_test_null tc)))
-  (assert-true  (uim-bool '(equal? (list #f
-                                         '(unknown
-                                           "?"
-                                           "unknown"
-                                           "unknown"))
-                                   (widget-state test-null))))
+  (assert-uim-true  '(equal? (list #f
+                                   '(unknown
+                                     "?"
+                                     "unknown"
+                                     "unknown"))
+                             (widget-state test-null)))
   #f)
 
 (define (test-widget-update-configuration!)
@@ -866,109 +872,109 @@
   (uim-eval
    '(define test-input-mode
       (widget-new 'widget_test_input_mode tc)))
-  (assert-equal '(action_unknown
-                  (figure_ja_hiragana
-                   "あ"
-                   "ひらがな"
-                   "ひらがな入力モード")
-                  (figure_ja_katakana
-                   "ア"
-                   "カタカナ"
-                   "カタカナ入力モード")
-                  (figure_ja_hankana
-                   "ｱ"
-                   "半角カタカナ"
-                   "半角カタカナ入力モード")
-                  (figure_ja_direct
-                   "a"
-                   "直接入力"
-                   "直接(無変換)入力モード")
-                  (figure_ja_zenkaku
-                   "Ａ"
-                   "全角英数"
-                   "全角英数入力モード"))
-                (uim '(widget-configuration test-input-mode)))
-  (assert-false (uim-bool '(widget-prev-config test-input-mode)))
-  (assert-true  (uim-bool '(widget-update-configuration! test-input-mode)))
-  (assert-equal '(action_unknown
-                  (figure_ja_hiragana
-                   "あ"
-                   "ひらがな"
-                   "ひらがな入力モード")
-                  (figure_ja_katakana
-                   "ア"
-                   "カタカナ"
-                   "カタカナ入力モード")
-                  (figure_ja_hankana
-                   "ｱ"
-                   "半角カタカナ"
-                   "半角カタカナ入力モード")
-                  (figure_ja_direct
-                   "a"
-                   "直接入力"
-                   "直接(無変換)入力モード")
-                  (figure_ja_zenkaku
-                   "Ａ"
-                   "全角英数"
-                   "全角英数入力モード"))
-                (uim '(widget-configuration test-input-mode)))
-  (assert-equal '(action_unknown
-                  (figure_ja_hiragana
-                   "あ"
-                   "ひらがな"
-                   "ひらがな入力モード")
-                  (figure_ja_katakana
-                   "ア"
-                   "カタカナ"
-                   "カタカナ入力モード")
-                  (figure_ja_hankana
-                   "ｱ"
-                   "半角カタカナ"
-                   "半角カタカナ入力モード")
-                  (figure_ja_direct
-                   "a"
-                   "直接入力"
-                   "直接(無変換)入力モード")
-                  (figure_ja_zenkaku
-                   "Ａ"
-                   "全角英数"
-                   "全角英数入力モード"))
-                (uim '(widget-prev-config test-input-mode)))
-  (assert-false (uim-bool '(widget-update-configuration! test-input-mode)))
-  (assert-equal '(action_unknown
-                  (figure_ja_hiragana
-                   "あ"
-                   "ひらがな"
-                   "ひらがな入力モード")
-                  (figure_ja_katakana
-                   "ア"
-                   "カタカナ"
-                   "カタカナ入力モード")
-                  (figure_ja_hankana
-                   "ｱ"
-                   "半角カタカナ"
-                   "半角カタカナ入力モード")
-                  (figure_ja_direct
-                   "a"
-                   "直接入力"
-                   "直接(無変換)入力モード")
-                  (figure_ja_zenkaku
-                   "Ａ"
-                   "全角英数"
-                   "全角英数入力モード"))
-                (uim '(widget-prev-config test-input-mode)))
+  (assert-uim-equal '(action_unknown
+                      (figure_ja_hiragana
+                       "あ"
+                       "ひらがな"
+                       "ひらがな入力モード")
+                      (figure_ja_katakana
+                       "ア"
+                       "カタカナ"
+                       "カタカナ入力モード")
+                      (figure_ja_hankana
+                       "ｱ"
+                       "半角カタカナ"
+                       "半角カタカナ入力モード")
+                      (figure_ja_direct
+                       "a"
+                       "直接入力"
+                       "直接(無変換)入力モード")
+                      (figure_ja_zenkaku
+                       "Ａ"
+                       "全角英数"
+                       "全角英数入力モード"))
+                    '(widget-configuration test-input-mode))
+  (assert-uim-false '(widget-prev-config test-input-mode))
+  (assert-uim-true  '(widget-update-configuration! test-input-mode))
+  (assert-uim-equal '(action_unknown
+                      (figure_ja_hiragana
+                       "あ"
+                       "ひらがな"
+                       "ひらがな入力モード")
+                      (figure_ja_katakana
+                       "ア"
+                       "カタカナ"
+                       "カタカナ入力モード")
+                      (figure_ja_hankana
+                       "ｱ"
+                       "半角カタカナ"
+                       "半角カタカナ入力モード")
+                      (figure_ja_direct
+                       "a"
+                       "直接入力"
+                       "直接(無変換)入力モード")
+                      (figure_ja_zenkaku
+                       "Ａ"
+                       "全角英数"
+                       "全角英数入力モード"))
+                    '(widget-configuration test-input-mode))
+  (assert-uim-equal '(action_unknown
+                      (figure_ja_hiragana
+                       "あ"
+                       "ひらがな"
+                       "ひらがな入力モード")
+                      (figure_ja_katakana
+                       "ア"
+                       "カタカナ"
+                       "カタカナ入力モード")
+                      (figure_ja_hankana
+                       "ｱ"
+                       "半角カタカナ"
+                       "半角カタカナ入力モード")
+                      (figure_ja_direct
+                       "a"
+                       "直接入力"
+                       "直接(無変換)入力モード")
+                      (figure_ja_zenkaku
+                       "Ａ"
+                       "全角英数"
+                       "全角英数入力モード"))
+                    '(widget-prev-config test-input-mode))
+  (assert-uim-false '(widget-update-configuration! test-input-mode))
+  (assert-uim-equal '(action_unknown
+                      (figure_ja_hiragana
+                       "あ"
+                       "ひらがな"
+                       "ひらがな入力モード")
+                      (figure_ja_katakana
+                       "ア"
+                       "カタカナ"
+                       "カタカナ入力モード")
+                      (figure_ja_hankana
+                       "ｱ"
+                       "半角カタカナ"
+                       "半角カタカナ入力モード")
+                      (figure_ja_direct
+                       "a"
+                       "直接入力"
+                       "直接(無変換)入力モード")
+                      (figure_ja_zenkaku
+                       "Ａ"
+                       "全角英数"
+                       "全角英数入力モード"))
+                    '(widget-prev-config test-input-mode))
 
   ;; widget_test_null
   (uim-eval
    '(define test-null
       (widget-new 'widget_test_null tc)))
-  (assert-equal '(action_unknown)
-                (uim '(widget-configuration test-null)))
-  (assert-false (uim-bool '(widget-prev-config test-null)))
+  (assert-uim-equal '(action_unknown)
+                    '(widget-configuration test-null))
+  (assert-uim-false '(widget-prev-config test-null))
   ;; initial update (widget_test_null with fallback-indication)
-  (assert-true  (uim-bool '(widget-update-configuration! test-null)))
+  (assert-uim-true  '(widget-update-configuration! test-null))
   ;; subsequent update
-  (assert-false (uim-bool '(widget-update-configuration! test-null)))
+  (assert-uim-false '(widget-update-configuration! test-null))
   #f)
 
 (define (test-widget-update-state!)
@@ -978,85 +984,83 @@
       (widget-new 'widget_test_input_mode tc)))
 
   ;; initial state
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
-                                         '(figure_ja_direct
-                                           "a"
-                                           "直接入力"
-                                           "直接(無変換)入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-false (uim-bool '(widget-prev-state test-input-mode)))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_direct)
+                                   '(figure_ja_direct
+                                     "a"
+                                     "直接入力"
+                                     "直接(無変換)入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-false '(widget-prev-state test-input-mode))
   ;; initial update
-  (assert-true  (uim-bool '(widget-update-state! test-input-mode)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
-                                         '(figure_ja_direct
-                                           "a"
-                                           "直接入力"
-                                           "直接(無変換)入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
-                                         '(figure_ja_direct
-                                           "a"
-                                           "直接入力"
-                                           "直接(無変換)入力モード"))
-                                   (widget-prev-state test-input-mode))))
+  (assert-uim-true  '(widget-update-state! test-input-mode))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_direct)
+                                   '(figure_ja_direct
+                                     "a"
+                                     "直接入力"
+                                     "直接(無変換)入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_direct)
+                                   '(figure_ja_direct
+                                     "a"
+                                     "直接入力"
+                                     "直接(無変換)入力モード"))
+                             (widget-prev-state test-input-mode)))
   ;; action_test_direct -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_direct)
-                                         '(figure_ja_direct
-                                           "a"
-                                           "直接入力"
-                                           "直接(無変換)入力モード"))
-                                   (widget-prev-state test-input-mode))))
-  (assert-true  (uim-bool '(widget-update-state! test-input-mode)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-prev-state test-input-mode))))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_katakana))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_direct)
+                                   '(figure_ja_direct
+                                     "a"
+                                     "直接入力"
+                                     "直接(無変換)入力モード"))
+                             (widget-prev-state test-input-mode)))
+  (assert-uim-true  '(widget-update-state! test-input-mode))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-prev-state test-input-mode)))
   ;; action_test_katakana -> action_test_katakana
-  (assert-false (uim-bool '(widget-update-state! test-input-mode)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-prev-state test-input-mode))))
+  (assert-uim-false '(widget-update-state! test-input-mode))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-prev-state test-input-mode)))
   ;; invalid activation
-  (assert-false (uim-bool '(widget-activate! test-input-mode
-                                             'action_nonexistent)))
-  (assert-false (uim-bool '(widget-update-state! test-input-mode)))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-state test-input-mode))))
-  (assert-true  (uim-bool '(equal? (list (fetch-action 'action_test_katakana)
-                                         '(figure_ja_katakana
-                                           "ア"
-                                           "カタカナ"
-                                           "カタカナ入力モード"))
-                                   (widget-prev-state test-input-mode))))
+  (assert-uim-false '(widget-activate! test-input-mode 'action_nonexistent))
+  (assert-uim-false '(widget-update-state! test-input-mode))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-state test-input-mode)))
+  (assert-uim-true  '(equal? (list (fetch-action 'action_test_katakana)
+                                   '(figure_ja_katakana
+                                     "ア"
+                                     "カタカナ"
+                                     "カタカナ入力モード"))
+                             (widget-prev-state test-input-mode)))
 
   ;; widget_test_null
   (uim-eval
@@ -1064,202 +1068,202 @@
       (widget-new 'widget_test_null tc)))
 
   ;; initial state
-  (assert-true  (uim-bool '(equal? (list #f
-                                         '(unknown
-                                           "?"
-                                           "unknown"
-                                           "unknown"))
-                                   (widget-state test-null))))
-  (assert-false (uim-bool '(widget-prev-state test-null)))
+  (assert-uim-true  '(equal? (list #f
+                                   '(unknown
+                                     "?"
+                                     "unknown"
+                                     "unknown"))
+                             (widget-state test-null)))
+  (assert-uim-false '(widget-prev-state test-null))
   ;; initial update
-  (assert-true  (uim-bool '(widget-update-state! test-null)))
-  (assert-true  (uim-bool '(equal? (list #f
-                                         '(unknown
-                                           "?"
-                                           "unknown"
-                                           "unknown"))
-                                   (widget-state test-null))))
-  (assert-true  (uim-bool '(equal? (list #f
-                                         '(unknown
-                                           "?"
-                                           "unknown"
-                                           "unknown"))
-                                   (widget-prev-state test-null))))
+  (assert-uim-true  '(widget-update-state! test-null))
+  (assert-uim-true  '(equal? (list #f
+                                   '(unknown
+                                     "?"
+                                     "unknown"
+                                     "unknown"))
+                             (widget-state test-null)))
+  (assert-uim-true  '(equal? (list #f
+                                   '(unknown
+                                     "?"
+                                     "unknown"
+                                     "unknown"))
+                             (widget-prev-state test-null)))
   ;; subsequent update
-  (assert-false (uim-bool '(widget-update-state! test-null)))
-  (assert-true  (uim-bool '(equal? (list #f
-                                         '(unknown
-                                           "?"
-                                           "unknown"
-                                           "unknown"))
-                                   (widget-state test-null))))
-  (assert-true  (uim-bool '(equal? (list #f
-                                         '(unknown
-                                           "?"
-                                           "unknown"
-                                           "unknown"))
-                                   (widget-prev-state test-null))))
+  (assert-uim-false '(widget-update-state! test-null))
+  (assert-uim-true  '(equal? (list #f
+                                   '(unknown
+                                     "?"
+                                     "unknown"
+                                     "unknown"))
+                             (widget-state test-null)))
+  (assert-uim-true  '(equal? (list #f
+                                   '(unknown
+                                     "?"
+                                     "unknown"
+                                     "unknown"))
+                             (widget-prev-state test-null)))
   #f)
 
 (define (test-widget-debug-message)
   (uim-eval
    '(define test-input-mode
       (widget-new 'widget_test_input_mode tc)))
-  (assert-equal "something in somewhere. debug widget_test_input_mode."
-                (uim '(widget-debug-message test-input-mode
-                                            "somewhere"
-                                            "something")))
+  (assert-uim-equal "something in somewhere. debug widget_test_input_mode."
+                    '(widget-debug-message test-input-mode
+                                           "somewhere"
+                                           "something"))
   #f)
 
 (define (test-indication-compose-label)
-  (assert-equal "figure_ja_hiragana\tあ\tひらがな\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_hiragana)
-                                        tc))))
-  (assert-equal "figure_ja_katakana\tア\tカタカナ\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_katakana)
-                                        tc))))
-  (assert-equal "figure_ja_hankana\tｱ\t半角カタカナ\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_hankana)
-                                        tc))))
-  (assert-equal "figure_ja_direct\ta\t直接入力\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_direct)
-                                        tc))))
-  (assert-equal "figure_ja_zenkaku\tＡ\t全角英数\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_zenkaku)
-                                        tc))))
-  (assert-equal "figure_ja_roma\tＲ\tローマ字\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_roma)
-                                        tc))))
-  (assert-equal "figure_ja_kana\tか\tかな\n"
-                (uim '(indication-compose-label
-                       (action-indicate (fetch-action 'action_test_kana)
-                                        tc))))
+  (assert-uim-equal "figure_ja_hiragana\tあ\tひらがな\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_hiragana)
+                                       tc)))
+  (assert-uim-equal "figure_ja_katakana\tア\tカタカナ\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_katakana)
+                                       tc)))
+  (assert-uim-equal "figure_ja_hankana\tｱ\t半角カタカナ\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_hankana)
+                                       tc)))
+  (assert-uim-equal "figure_ja_direct\ta\t直接入力\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_direct)
+                                       tc)))
+  (assert-uim-equal "figure_ja_zenkaku\tＡ\t全角英数\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_zenkaku)
+                                       tc)))
+  (assert-uim-equal "figure_ja_roma\tＲ\tローマ字\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_roma)
+                                       tc)))
+  (assert-uim-equal "figure_ja_kana\tか\tかな\n"
+                    '(indication-compose-label
+                      (action-indicate (fetch-action 'action_test_kana)
+                                       tc)))
   #f)
 
 (define (test-indication-compose-branch)
-  (assert-equal "branch\tfigure_ja_hiragana\tあ\tひらがな\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_hiragana)
-                                        tc))))
-  (assert-equal "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_katakana)
-                                        tc))))
-  (assert-equal "branch\tfigure_ja_hankana\tｱ\t半角カタカナ\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_hankana)
-                                        tc))))
-  (assert-equal "branch\tfigure_ja_direct\ta\t直接入力\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_direct)
-                                        tc))))
-  (assert-equal "branch\tfigure_ja_zenkaku\tＡ\t全角英数\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_zenkaku)
-                                        tc))))
-  (assert-equal "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_roma)
-                                        tc))))
-  (assert-equal "branch\tfigure_ja_kana\tか\tかな\n"
-                (uim '(indication-compose-branch
-                       (action-indicate (fetch-action 'action_test_kana)
-                                        tc))))
+  (assert-uim-equal "branch\tfigure_ja_hiragana\tあ\tひらがな\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_hiragana)
+                                       tc)))
+  (assert-uim-equal "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_katakana)
+                                       tc)))
+  (assert-uim-equal "branch\tfigure_ja_hankana\tｱ\t半角カタカナ\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_hankana)
+                                       tc)))
+  (assert-uim-equal "branch\tfigure_ja_direct\ta\t直接入力\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_direct)
+                                       tc)))
+  (assert-uim-equal "branch\tfigure_ja_zenkaku\tＡ\t全角英数\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_zenkaku)
+                                       tc)))
+  (assert-uim-equal "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_roma)
+                                       tc)))
+  (assert-uim-equal "branch\tfigure_ja_kana\tか\tかな\n"
+                    '(indication-compose-branch
+                      (action-indicate (fetch-action 'action_test_kana)
+                                       tc)))
   #f)
 
 (define (test-indication-compose-leaf)
   ;; inactive leaves
-  (assert-equal "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_hiragana)
-                                        tc)
-                       'action_test_hiragana
-                       #f)))
-  (assert-equal "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_katakana)
-                                        tc)
-                       'action_test_katakana
-                       #f)))
-  (assert-equal "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_hankana)
-                                        tc)
-                       'action_test_hankana
-                       #f)))
-  (assert-equal "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_direct)
-                                        tc)
-                       'action_test_direct
-                       #f)))
-  (assert-equal "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_zenkaku)
-                                        tc)
-                       'action_test_zenkaku
-                       #f)))
-  (assert-equal "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_roma)
-                                        tc)
-                       'action_test_roma
-                       #f)))
-  (assert-equal "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_kana)
-                                        tc)
-                       'action_test_kana
-                       #f)))
+  (assert-uim-equal "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_hiragana)
+                                       tc)
+                      'action_test_hiragana
+                      #f))
+  (assert-uim-equal "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_katakana)
+                                       tc)
+                      'action_test_katakana
+                      #f))
+  (assert-uim-equal "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_hankana)
+                                       tc)
+                      'action_test_hankana
+                      #f))
+  (assert-uim-equal "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_direct)
+                                       tc)
+                      'action_test_direct
+                      #f))
+  (assert-uim-equal "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_zenkaku)
+                                       tc)
+                      'action_test_zenkaku
+                      #f))
+  (assert-uim-equal "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_roma)
+                                       tc)
+                      'action_test_roma
+                      #f))
+  (assert-uim-equal "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_kana)
+                                       tc)
+                      'action_test_kana
+                      #f))
   ;; active leaves
-  (assert-equal "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_hiragana)
-                                        tc)
-                       'action_test_hiragana
-                       #t)))
-  (assert-equal "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_katakana)
-                                        tc)
-                       'action_test_katakana
-                       #t)))
-  (assert-equal "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_hankana)
-                                        tc)
-                       'action_test_hankana
-                       #t)))
-  (assert-equal "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_direct)
-                                        tc)
-                       'action_test_direct
-                       #t)))
-  (assert-equal "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_zenkaku)
-                                        tc)
-                       'action_test_zenkaku
-                       #t)))
-  (assert-equal "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_roma)
-                                        tc)
-                       'action_test_roma
-                       #t)))
-  (assert-equal "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t*\n"
-                (uim '(indication-compose-leaf
-                       (action-indicate (fetch-action 'action_test_kana)
-                                        tc)
-                       'action_test_kana
-                       #t)))
+  (assert-uim-equal "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_hiragana)
+                                       tc)
+                      'action_test_hiragana
+                      #t))
+  (assert-uim-equal "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_katakana)
+                                       tc)
+                      'action_test_katakana
+                      #t))
+  (assert-uim-equal "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_hankana)
+                                       tc)
+                      'action_test_hankana
+                      #t))
+  (assert-uim-equal "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_direct)
+                                       tc)
+                      'action_test_direct
+                      #t))
+  (assert-uim-equal "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_zenkaku)
+                                       tc)
+                      'action_test_zenkaku
+                      #t))
+  (assert-uim-equal "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_roma)
+                                       tc)
+                      'action_test_roma
+                      #t))
+  (assert-uim-equal "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t*\n"
+                    '(indication-compose-leaf
+                      (action-indicate (fetch-action 'action_test_kana)
+                                       tc)
+                      'action_test_kana
+                      #t))
   #f)
 
 (define (test-widget-compose-live-branch)
@@ -1268,41 +1272,41 @@
    '(define test-input-mode
       (widget-new 'widget_test_input_mode tc)))
 
-  (assert-equal (string-append
-                 "branch\tfigure_ja_direct\ta\t直接入力\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
-                (uim '(widget-compose-live-branch test-input-mode)))
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_zenkaku)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_zenkaku\tＡ\t全角英数\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n")
-                (uim '(widget-compose-live-branch test-input-mode)))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_direct\ta\t直接入力\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+                    '(widget-compose-live-branch test-input-mode))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_zenkaku))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_zenkaku\tＡ\t全角英数\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t*\n")
+                    '(widget-compose-live-branch test-input-mode))
 
   ;; prop_test_kana_input_method
   (uim-eval
    '(define test-kana-input-method
       (widget-new 'widget_test_kana_input_method tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim '(widget-compose-live-branch test-kana-input-method)))
-  (assert-true  (uim-bool '(widget-activate! test-kana-input-method
-                                             'action_test_kana)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_kana\tか\tかな\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t*\n")
-                (uim '(widget-compose-live-branch test-kana-input-method)))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    '(widget-compose-live-branch test-kana-input-method))
+  (assert-uim-true  '(widget-activate! test-kana-input-method
+                                       'action_test_kana))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_kana\tか\tかな\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t*\n")
+                    '(widget-compose-live-branch test-kana-input-method))
   #f)
 
 (define (test-context-init-widgets!)
@@ -1316,9 +1320,9 @@
                                   widget_test_kana_input_method))
       #f))
 
-  (assert-equal '(widget_test_input_mode
-                  widget_test_kana_input_method)
-                (uim '(map widget-id test-widget-conf)))
+  (assert-uim-equal '(widget_test_input_mode
+                      widget_test_kana_input_method)
+                    '(map widget-id test-widget-conf))
   ;; contains a non-existent widget
   (uim-eval
    '(begin
@@ -1326,23 +1330,23 @@
                                   widget_test_nonexistent
                                   widget_test_kana_input_method))
       #f))
-  (assert-equal '(widget_test_input_mode
-                  widget_test_kana_input_method)
-                (uim '(map widget-id test-widget-conf)))
+  (assert-uim-equal '(widget_test_input_mode
+                      widget_test_kana_input_method)
+                    '(map widget-id test-widget-conf))
   ;; no widgets
   (uim-eval
    '(begin
       (context-init-widgets! tc ())
       #f))
-  (assert-equal '(widget_fallback)
-                (uim '(map widget-id test-widget-conf)))
+  (assert-uim-equal '(widget_fallback)
+                    '(map widget-id test-widget-conf))
   ;; null widget
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_null))
       #f))
-  (assert-equal '(widget_test_null)
-                (uim '(map widget-id test-widget-conf)))
+  (assert-uim-equal '(widget_test_null)
+                    '(map widget-id test-widget-conf))
   #f)
 
 (define (test-context-update-widgets)
@@ -1364,12 +1368,12 @@
       (context-update-widgets tc)
       #f))
 
-  (assert-equal '(widget_test_input_mode
-                  widget_test_kana_input_method)
-                (uim '(map widget-id test-widget-conf)))
-  (assert-equal '(widget_test_input_mode
-                  widget_test_kana_input_method)
-                (uim '(map widget-id test-widget-state)))
+  (assert-uim-equal '(widget_test_input_mode
+                      widget_test_kana_input_method)
+                    '(map widget-id test-widget-conf))
+  (assert-uim-equal '(widget_test_input_mode
+                      widget_test_kana_input_method)
+                    '(map widget-id test-widget-state))
   ;; duplicate update
   (uim-eval
    '(begin
@@ -1395,17 +1399,17 @@
    '(begin
       (define test-widget-conf '())
       (define test-widget-state '())))
-  (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-                                                  (context-widgets tc))
-                                            'action_test_katakana)))
+  (assert-uim-true '(widget-activate! (assq 'widget_test_input_mode
+                                            (context-widgets tc))
+                                      'action_test_katakana))
   (uim-eval
    '(begin
       (context-update-widgets tc)
       #f))
   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
-  (assert-equal '(widget_test_input_mode
-                  widget_test_kana_input_method)
-                (uim '(map widget-id test-widget-state)))
+  (assert-uim-equal '(widget_test_input_mode
+                      widget_test_kana_input_method)
+                    '(map widget-id test-widget-state))
   ;; duplicate state update
   (uim-eval
    '(begin
@@ -1447,105 +1451,105 @@
       (context-update-widgets tc)
       #f))
 
-   (assert-equal '(widget_test_input_mode
-		   widget_test_kana_input_method)
-		 (uim '(map widget-id test-widget-conf)))
-   (assert-true  (null? (uim '(map widget-id test-widget-state))))
-   ;; duplicate configuration update
-   (uim-eval
-    '(begin
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-update-widgets tc)
-       #f))
-   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
-   (assert-true  (null? (uim '(map widget-id test-widget-state))))
-   ;; configuration & state update
-   (uim-eval
-    '(begin
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-init-widgets! tc '(widget_test_input_mode))
-       (context-update-widgets tc)
-       #f))
-   (assert-equal '(widget_test_input_mode)
-		 (uim '(map widget-id test-widget-conf)))
-   (assert-equal '(widget_test_input_mode)
-		 (uim '(map widget-id test-widget-state)))
-   ;; duplicate configuration & state update
-   (uim-eval
-    '(begin
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-update-widgets tc)
-       #f))
-   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
-   (assert-true  (null? (uim '(map widget-id test-widget-state))))
-   ;; The framework can't detect the configuration information
-   ;; invalidation when violently reconfigured by
-   ;; context-set-widgets!.
-   (uim-eval
-    '(begin
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-set-widgets!
-        tc
-        (filter (lambda (widget)
-                  (not (eq? (widget-id widget)
-                            'widget_test_kana_input_method)))
-                (context-widgets tc)))
-       (context-update-widgets tc)
-       #f))
-   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
-   (assert-true  (null? (uim '(map widget-id test-widget-state))))
+  (assert-uim-equal '(widget_test_input_mode
+                      widget_test_kana_input_method)
+                    '(map widget-id test-widget-conf))
+  (assert-true  (null? (uim '(map widget-id test-widget-state))))
+  ;; duplicate configuration update
+  (uim-eval
+   '(begin
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-update-widgets tc)
+      #f))
+  (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+  (assert-true  (null? (uim '(map widget-id test-widget-state))))
+  ;; configuration & state update
+  (uim-eval
+   '(begin
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-init-widgets! tc '(widget_test_input_mode))
+      (context-update-widgets tc)
+      #f))
+  (assert-uim-equal '(widget_test_input_mode)
+                    '(map widget-id test-widget-conf))
+  (assert-uim-equal '(widget_test_input_mode)
+                    '(map widget-id test-widget-state))
+  ;; duplicate configuration & state update
+  (uim-eval
+   '(begin
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-update-widgets tc)
+      #f))
+  (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+  (assert-true  (null? (uim '(map widget-id test-widget-state))))
+  ;; The framework can't detect the configuration information
+  ;; invalidation when violently reconfigured by
+  ;; context-set-widgets!.
+  (uim-eval
+   '(begin
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-set-widgets!
+       tc
+       (filter (lambda (widget)
+                 (not (eq? (widget-id widget)
+                           'widget_test_kana_input_method)))
+               (context-widgets tc)))
+      (context-update-widgets tc)
+      #f))
+  (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+  (assert-true  (null? (uim '(map widget-id test-widget-state))))
 
-   (uim-eval
-    '(begin
-       ;; no widgets
-       (context-init-widgets! tc ())
-       ;; initial update (widget_fallback)
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-update-widgets tc)
-       #f))
-   (assert-equal '(widget_fallback)
-		 (uim '(map widget-id test-widget-conf)))
-   (assert-equal '(widget_fallback)
-		 (uim '(map widget-id test-widget-state)))
+  (uim-eval
+   '(begin
+      ;; no widgets
+      (context-init-widgets! tc ())
+      ;; initial update (widget_fallback)
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-update-widgets tc)
+      #f))
+  (assert-uim-equal '(widget_fallback)
+                    '(map widget-id test-widget-conf))
+  (assert-uim-equal '(widget_fallback)
+                    '(map widget-id test-widget-state))
 
-   ;; subsequent update
-   (uim-eval
-    '(begin
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-update-widgets tc)
-       #f))
-   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
-   (assert-true  (null? (uim '(map widget-id test-widget-state))))
+  ;; subsequent update
+  (uim-eval
+   '(begin
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-update-widgets tc)
+      #f))
+  (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+  (assert-true  (null? (uim '(map widget-id test-widget-state))))
 
-   (uim-eval
-    '(begin
-       ;; null widget
-       (context-init-widgets! tc '(widget_test_null))
-       ;; initial update (widget_test_null with fallback-indication)
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-update-widgets tc)
-       #f))
-   (assert-equal '(widget_test_null)
-		 (uim '(map widget-id test-widget-conf)))
-   (assert-equal '(widget_test_null)
-		 (uim '(map widget-id test-widget-state)))
-   ;; subsequent update
-   (uim-eval
-    '(begin
-       (define test-widget-conf '())
-       (define test-widget-state '())
-       (context-update-widgets tc)
-       #f))
-   (assert-true  (null? (uim '(map widget-id test-widget-conf))))
-   (assert-true  (null? (uim '(map widget-id test-widget-state))))
-   #f)
+  (uim-eval
+   '(begin
+      ;; null widget
+      (context-init-widgets! tc '(widget_test_null))
+      ;; initial update (widget_test_null with fallback-indication)
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-update-widgets tc)
+      #f))
+  (assert-uim-equal '(widget_test_null)
+                    '(map widget-id test-widget-conf))
+  (assert-uim-equal '(widget_test_null)
+                    '(map widget-id test-widget-state))
+  ;; subsequent update
+  (uim-eval
+   '(begin
+      (define test-widget-conf '())
+      (define test-widget-state '())
+      (context-update-widgets tc)
+      #f))
+  (assert-true  (null? (uim '(map widget-id test-widget-conf))))
+  (assert-true  (null? (uim '(map widget-id test-widget-state))))
+  #f)
 
 (define (test-context-propagate-prop-list-update)
   (uim-eval
@@ -1558,34 +1562,34 @@
       (context-init-widgets! tc '(widget_test_input_mode
                                   widget_test_kana_input_method))
       (context-propagate-prop-list-update tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_direct\ta\t直接入力\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim 'test-prop-list))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_direct\ta\t直接入力\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    'test-prop-list)
 
   ;; 2 widgets (updated state)
-  (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-                                                  (context-widgets tc))
-                                            'action_test_katakana)))
+  (assert-uim-true '(widget-activate! (assq 'widget_test_input_mode
+                                            (context-widgets tc))
+                                      'action_test_katakana))
   (uim-eval '(context-propagate-prop-list-update tc))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim 'test-prop-list))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    'test-prop-list)
 
   ;; 2 widgets with non-existent
   (uim-eval
@@ -1594,32 +1598,32 @@
                                   widget_test_nonexistent
                                   widget_test_input_mode))
       (context-propagate-prop-list-update tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-                 "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
-                (uim 'test-prop-list))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+                     "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+                    'test-prop-list)
 
   ;; no widgets
   (uim-eval
    '(begin
       (context-init-widgets! tc ())
       (context-propagate-prop-list-update tc)))
-  (assert-equal "branch\tunknown\t?\tunknown\n"
-                (uim 'test-prop-list))
+  (assert-uim-equal "branch\tunknown\t?\tunknown\n"
+                    'test-prop-list)
   ;; widget_test_null
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_null))
       (context-propagate-prop-list-update tc)))
-  (assert-equal "branch\tunknown\t?\tunknown\n"
-                (uim 'test-prop-list))
+  (assert-uim-equal "branch\tunknown\t?\tunknown\n"
+                    'test-prop-list)
   #f)
 
 ;; TODO: context-update-mode
@@ -1631,39 +1635,39 @@
                                   widget_test_kana_input_method))
       ;; initial state
       (context-propagate-widget-states tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_direct\ta\t直接入力\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim 'test-prop-list))
-  (assert-false (uim-bool 'test-prop-label))
-  (assert-equal 3
-                (uim 'test-updated-mode))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_direct\ta\t直接入力\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    'test-prop-list)
+  (assert-uim-false 'test-prop-label)
+  (assert-uim-equal 3
+                    'test-updated-mode)
   ;; 2 widgets (updated state)
-  (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-                                                  (context-widgets tc))
-                                            'action_test_katakana)))
+  (assert-uim-true '(widget-activate! (assq 'widget_test_input_mode
+                                            (context-widgets tc))
+                                      'action_test_katakana))
   (uim-eval '(context-propagate-widget-states tc))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim 'test-prop-list))
-  (assert-false (uim-bool 'test-prop-label))
-  (assert-equal 1
-                (uim 'test-updated-mode))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    'test-prop-list)
+  (assert-uim-false 'test-prop-label)
+  (assert-uim-equal 1
+                    'test-updated-mode)
   ;; 2 widgets with non-existent
   (uim-eval
    '(begin
@@ -1671,40 +1675,40 @@
                                   widget_test_nonexistent
                                   widget_test_input_mode))
       (context-propagate-widget-states tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-                 "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
-                (uim 'test-prop-list))
-  (assert-false (uim-bool 'test-prop-label))
-  (assert-equal 1
-                (uim 'test-updated-mode))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+                     "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+                    'test-prop-list)
+  (assert-uim-false 'test-prop-label)
+  (assert-uim-equal 1
+                    'test-updated-mode)
   ;; no widgets
   (uim-eval
    '(begin
       (context-init-widgets! tc ())
       (context-propagate-widget-states tc)))
-  (assert-equal "branch\tunknown\t?\tunknown\n"
-                (uim 'test-prop-list))
-  (assert-false (uim-bool 'test-prop-label))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal "branch\tunknown\t?\tunknown\n"
+                    'test-prop-list)
+  (assert-uim-false 'test-prop-label)
+  (assert-uim-equal 0
+                    'test-updated-mode)
   ;; widget_test_null
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_null))
       (context-propagate-widget-states tc)))
-  (assert-equal "branch\tunknown\t?\tunknown\n"
-                (uim 'test-prop-list))
-  (assert-false (uim-bool 'test-prop-label))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal "branch\tunknown\t?\tunknown\n"
+                    'test-prop-list)
+  (assert-uim-false 'test-prop-label)
+  (assert-uim-equal 0
+                    'test-updated-mode)
   #f)
 
 (define (test-context-propagate-widget-configuration)
@@ -1715,61 +1719,61 @@
                                   widget_test_kana_input_method))
       ;; initial state
       (context-propagate-widget-configuration tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_direct\ta\t直接入力\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim 'test-prop-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-mode-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-updated-mode-list))
-  (assert-equal 3
-                (uim 'test-updated-mode))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_direct\ta\t直接入力\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t*\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    'test-prop-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-mode-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-updated-mode-list)
+  (assert-uim-equal 3
+                    'test-updated-mode)
   ;; 2 widgets (updated state)
-  (assert-true (uim-bool '(widget-activate! (assq 'widget_test_input_mode
-                                                  (context-widgets tc))
-                                            'action_test_katakana)))
+  (assert-uim-true '(widget-activate! (assq 'widget_test_input_mode
+                                            (context-widgets tc))
+                                      'action_test_katakana))
   (uim-eval '(context-propagate-widget-configuration tc))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
-                (uim 'test-prop-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-mode-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-updated-mode-list))
-  (assert-equal 1
-                (uim 'test-updated-mode))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n"
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n")
+                    'test-prop-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-mode-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-updated-mode-list)
+  (assert-uim-equal 1
+                    'test-updated-mode)
   ;; 2 widgets with non-existent
   (uim-eval
    '(begin
@@ -1777,57 +1781,57 @@
                                   widget_test_nonexistent
                                   widget_test_input_mode))
       (context-propagate-widget-configuration tc)))
-  (assert-equal (string-append
-                 "branch\tfigure_ja_roma\tＲ\tローマ字\n"
-                 "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
-                 "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
-                 "branch\tfigure_ja_katakana\tア\tカタカナ\n"
-                 "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
-                 "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
-                 "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
-                 "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
-                 "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
-                (uim 'test-prop-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-mode-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-updated-mode-list))
-  (assert-equal 1
-                (uim 'test-updated-mode))
+  (assert-uim-equal (string-append
+                     "branch\tfigure_ja_roma\tＲ\tローマ字\n"
+                     "leaf\tfigure_ja_roma\tＲ\tローマ字\tローマ字入力モード\taction_test_roma\t*\n"
+                     "leaf\tfigure_ja_kana\tか\tかな\tかな入力モード\taction_test_kana\t\n"
+                     "branch\tfigure_ja_katakana\tア\tカタカナ\n"
+                     "leaf\tfigure_ja_hiragana\tあ\tひらがな\tひらがな入力モード\taction_test_hiragana\t\n"
+                     "leaf\tfigure_ja_katakana\tア\tカタカナ\tカタカナ入力モード\taction_test_katakana\t*\n"
+                     "leaf\tfigure_ja_hankana\tｱ\t半角カタカナ\t半角カタカナ入力モード\taction_test_hankana\t\n"
+                     "leaf\tfigure_ja_direct\ta\t直接入力\t直接(無変換)入力モード\taction_test_direct\t\n"
+                     "leaf\tfigure_ja_zenkaku\tＡ\t全角英数\t全角英数入力モード\taction_test_zenkaku\t\n")
+                    'test-prop-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-mode-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-updated-mode-list)
+  (assert-uim-equal 1
+                    'test-updated-mode)
   ;; no widgets
   (uim-eval
    '(begin
       (context-init-widgets! tc ())
       (context-propagate-widget-configuration tc)))
-  (assert-equal "branch\tunknown\t?\tunknown\n"
-                (uim 'test-prop-list))
-  (assert-equal '("unknown")
-                (uim 'test-mode-list))
-  (assert-equal '("unknown")
-                (uim 'test-updated-mode-list))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal "branch\tunknown\t?\tunknown\n"
+                    'test-prop-list)
+  (assert-uim-equal '("unknown")
+                    'test-mode-list)
+  (assert-uim-equal '("unknown")
+                    'test-updated-mode-list)
+  (assert-uim-equal 0
+                    'test-updated-mode)
   ;; widget_test_null
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_null))
       (context-propagate-widget-configuration tc)))
-  (assert-equal "branch\tunknown\t?\tunknown\n"
-                (uim 'test-prop-list))
-  (assert-equal '("unknown")
-                (uim 'test-mode-list))
-  (assert-equal '("unknown")
-                (uim 'test-updated-mode-list))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal "branch\tunknown\t?\tunknown\n"
+                    'test-prop-list)
+  (assert-uim-equal '("unknown")
+                    'test-mode-list)
+  (assert-uim-equal '("unknown")
+                    'test-updated-mode-list)
+  (assert-uim-equal 0
+                    'test-updated-mode)
   #f)
 
 (define (test-context-prop-activate-handler)
@@ -1837,209 +1841,208 @@
       (context-init-widgets! tc '(widget_test_input_mode
                                   widget_test_kana_input_method))
       (set! test-activated #f)))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_hiragana")
-                                #t)))
-  (assert-equal 'action_test_hiragana
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_hiragana")
+                          #t))
+  (assert-uim-equal 'action_test_hiragana
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_zenkaku")
-                                #t)))
-  (assert-equal 'action_test_zenkaku
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_zenkaku")
+                          #t))
+  (assert-uim-equal 'action_test_zenkaku
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-equal 'action_test_kana
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-equal 'action_test_kana
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_direct")
-                                #t)))
-  (assert-equal 'action_test_direct
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_direct")
+                          #t))
+  (assert-uim-equal 'action_test_direct
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_direct")
-                                #t)))
-  (assert-equal 'action_test_direct
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_direct")
+                          #t))
+  (assert-uim-equal 'action_test_direct
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_nonexistent")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_nonexistent")
+                          #t))
+  (assert-uim-false 'test-activated)
   ;; 1 widget
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_kana_input_method))
       (set! test-activated #f)))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_hiragana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_hiragana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_zenkaku")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_zenkaku")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-equal 'action_test_kana
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-equal 'action_test_kana
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_direct")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_direct")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_direct")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_direct")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_nonexistent")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_nonexistent")
+                          #t))
+  (assert-uim-false 'test-activated)
   ;; no widgets
   (uim-eval
    '(begin
       (context-init-widgets! tc ())
       (set! test-activated #f)))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_hiragana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_hiragana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_direct")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_direct")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_nonexistent")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_nonexistent")
+                          #t))
+  (assert-uim-false 'test-activated)
   ;; widget_test_null (no action handlers)
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_null))
       (set! test-activated #f)))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_hiragana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_hiragana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_direct")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_direct")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_nonexistent")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_nonexistent")
+                          #t))
+  (assert-uim-false 'test-activated)
   #f)
 
 (define (test-context-find-mode-widget)
   (uim-eval
    '(context-init-widgets! tc '(widget_test_input_mode
                                 widget_test_kana_input_method)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(widget-id (context-find-mode-widget tc))))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(widget-id (context-find-mode-widget tc)))
   (uim-eval
    '(context-init-widgets! tc '(widget_test_kana_input_method
                                 widget_test_input_mode)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(widget-id (context-find-mode-widget tc))))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(widget-id (context-find-mode-widget tc)))
   (uim-eval
    '(context-init-widgets! tc '(widget_test_kana_input_method
                                 widget_test_input_mode
                                 widget_test_null)))
-  (assert-equal 'widget_test_input_mode
-                (uim '(widget-id (context-find-mode-widget tc))))
+  (assert-uim-equal 'widget_test_input_mode
+                    '(widget-id (context-find-mode-widget tc)))
   (uim-eval
    '(context-init-widgets! tc '(widget_test_kana_input_method
                                 widget_test_null)))
-  (assert-false (uim-bool '(context-find-mode-widget tc)))
+  (assert-uim-false '(context-find-mode-widget tc))
   (uim-eval
    '(context-init-widgets! tc ()))
-  (assert-false (uim-bool '(context-find-mode-widget tc)))
+  (assert-uim-false '(context-find-mode-widget tc))
   #f)
 
 (define (test-widget-action-id->mode-value)
   (uim-eval
    '(define mw (widget-new 'widget_test_input_mode tc)))
-  (assert-equal 0
-                (uim '(widget-action-id->mode-value mw
-                                                    'action_test_hiragana)))
-  (assert-equal 1
-                (uim '(widget-action-id->mode-value mw
-                                                    'action_test_katakana)))
-  (assert-equal 2
-                (uim '(widget-action-id->mode-value mw
-                                                    'action_test_hankana)))
-  (assert-equal 3
-                (uim '(widget-action-id->mode-value mw
-                                                    'action_test_direct)))
-  (assert-equal 4
-                (uim '(widget-action-id->mode-value mw
-                                                    'action_test_zenkaku)))
-  (assert-error (lambda ()
-                  (uim '(widget-action-id->mode-value mw 'action_test_nonexistent))))
+  (assert-uim-equal 0
+                    '(widget-action-id->mode-value mw
+                                                   'action_test_hiragana))
+  (assert-uim-equal 1
+                    '(widget-action-id->mode-value mw
+                                                   'action_test_katakana))
+  (assert-uim-equal 2
+                    '(widget-action-id->mode-value mw
+                                                   'action_test_hankana))
+  (assert-uim-equal 3
+                    '(widget-action-id->mode-value mw
+                                                   'action_test_direct))
+  (assert-uim-equal 4
+                    '(widget-action-id->mode-value mw
+                                                   'action_test_zenkaku))
+  (assert-uim-error '(widget-action-id->mode-value mw 'action_test_nonexistent))
   #f)
 
 (define (test-widget-mode-value->action-id)
   (uim-eval
    '(define mw (widget-new 'widget_test_input_mode tc)))
 
-  (assert-equal 'action_test_hiragana
-                (uim '(widget-mode-value->action-id mw 0)))
-  (assert-equal 'action_test_katakana
-                (uim '(widget-mode-value->action-id mw 1)))
-  (assert-equal 'action_test_hankana
-                (uim '(widget-mode-value->action-id mw 2)))
-  (assert-equal 'action_test_direct
-                (uim '(widget-mode-value->action-id mw 3)))
-  (assert-equal 'action_test_zenkaku
-                (uim '(widget-mode-value->action-id mw 4)))
-  (assert-false (uim-bool '(widget-mode-value->action-id mw 5)))
-  (assert-false (uim-bool '(widget-mode-value->action-id mw -1)))
+  (assert-uim-equal 'action_test_hiragana
+                    '(widget-mode-value->action-id mw 0))
+  (assert-uim-equal 'action_test_katakana
+                    '(widget-mode-value->action-id mw 1))
+  (assert-uim-equal 'action_test_hankana
+                    '(widget-mode-value->action-id mw 2))
+  (assert-uim-equal 'action_test_direct
+                    '(widget-mode-value->action-id mw 3))
+  (assert-uim-equal 'action_test_zenkaku
+                    '(widget-mode-value->action-id mw 4))
+  (assert-uim-false '(widget-mode-value->action-id mw 5))
+  (assert-uim-false '(widget-mode-value->action-id mw -1))
   #f)
 
 (define (test-context-current-mode)
@@ -2051,49 +2054,41 @@
       (define test-input-mode (context-find-mode-widget tc))))
 
   ;; action_test_direct (initial activity)
-  (assert-equal 3
-                (uim '(context-current-mode tc)))
+  (assert-uim-equal 3
+                    '(context-current-mode tc))
   ;; action_test_direct -> action_test_hiragana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hiragana)))
-  (assert-equal 0
-                (uim '(context-current-mode tc)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hiragana))
+  (assert-uim-equal 0
+                    '(context-current-mode tc))
   ;; action_test_hiragana -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
-  (assert-equal 1
-                (uim '(context-current-mode tc)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_katakana))
+  (assert-uim-equal 1
+                    '(context-current-mode tc))
   ;; action_test_katakana -> action_test_hankana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hankana)))
-  (assert-equal 2
-                (uim '(context-current-mode tc)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hankana))
+  (assert-uim-equal 2
+                    '(context-current-mode tc))
   ;; action_test_hankana -> action_test_zenkaku
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_zenkaku)))
-  (assert-equal 4
-                (uim '(context-current-mode tc)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_zenkaku))
+  (assert-uim-equal 4
+                    '(context-current-mode tc))
   ;; action_test_zenkaku -> action_test_direct
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_direct)))
-  (assert-equal 3
-                (uim '(context-current-mode tc)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_direct))
+  (assert-uim-equal 3
+                    '(context-current-mode tc))
   ;; action_test_direct -> invalid
-  (assert-false (uim-bool '(widget-activate! test-input-mode
-                                             'action_nonexistent)))
-  (assert-equal 3
-                (uim '(context-current-mode tc)))
-  (assert-error (lambda ()
-                  (uim '(context-current-mode #f))))
+  (assert-uim-false '(widget-activate! test-input-mode 'action_nonexistent))
+  (assert-uim-equal 3
+                    '(context-current-mode tc))
+  (assert-uim-error '(context-current-mode #f))
 
   ;; no mode-widget
   (uim-eval
    '(context-init-widgets! tc '(widget_test_null
                                 widget_test_kana_input_method)))
-  (assert-equal 0
-                (uim '(context-current-mode tc)))
-  (assert-error (lambda ()
-                  (uim '(context-current-mode #f))))
+  (assert-uim-equal 0
+                    '(context-current-mode tc))
+  (assert-uim-error '(context-current-mode #f))
 
   ;; no activity
   (uim-eval
@@ -2105,10 +2100,9 @@
        #f) ;; has no actions
       (context-init-widgets! tc '(widget_test_dummy_input_mode
                                   widget_test_kana_input_method))))
-  (assert-equal 0
-                (uim '(context-current-mode tc)))
-  (assert-error (lambda ()
-                  (uim '(context-current-mode #f))))
+  (assert-uim-equal 0
+                    '(context-current-mode tc))
+  (assert-uim-error '(context-current-mode #f))
 
   ;; duplicate activity
   (uim-eval
@@ -2127,20 +2121,17 @@
                                   widget_test_kana_input_method))))
   ;; context-current-mode returns 0 rather than 3 when
   ;; action_test_direct and action_test_alt_direct are conflicted.
-  (assert-equal 0
-                (uim '(context-current-mode tc)))
+  (assert-uim-equal 0
+                    '(context-current-mode tc))
   ;; action_test_direct -> action_test_hiragana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hiragana)))
-  (assert-equal 0
-                (uim '(context-current-mode tc)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hiragana))
+  (assert-uim-equal 0
+                    '(context-current-mode tc))
   ;; action_test_hiragana -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
-  (assert-equal 1
-                (uim '(context-current-mode tc)))
-  (assert-error (lambda ()
-                  (uim '(context-current-mode #f))))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_katakana))
+  (assert-uim-equal 1
+                    '(context-current-mode tc))
+  (assert-uim-error '(context-current-mode #f))
   #f)
 
 (define (test-context-update-mode)
@@ -2156,46 +2147,39 @@
       (define test-input-mode (context-find-mode-widget tc))))
   ;; action_test_direct (initial activity)
   (uim-eval '(context-update-mode tc))
-  (assert-equal 3
-                (uim 'test-updated-mode))
+  (assert-uim-equal 3
+                    'test-updated-mode)
   ;; action_test_direct -> action_test_hiragana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hiragana)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hiragana))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal 0
+                    'test-updated-mode)
   ;; action_test_hiragana -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_katakana))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 1
-                (uim 'test-updated-mode))
+  (assert-uim-equal 1
+                    'test-updated-mode)
   ;; action_test_katakana -> action_test_hankana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hankana)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hankana))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 2
-                (uim 'test-updated-mode))
+  (assert-uim-equal 2
+                    'test-updated-mode)
   ;; action_test_hankana -> action_test_zenkaku
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_zenkaku)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_zenkaku))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 4
-                (uim 'test-updated-mode))
+  (assert-uim-equal 4
+                    'test-updated-mode)
   ;; action_test_zenkaku -> action_test_direct
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_direct)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_direct))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 3
-                (uim 'test-updated-mode))
+  (assert-uim-equal 3
+                    'test-updated-mode)
   ;; action_test_direct -> invalid
-  (assert-false (uim-bool '(widget-activate! test-input-mode
-                                             'action_nonexistent)))
+  (assert-uim-false '(widget-activate! test-input-mode 'action_nonexistent))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 3
-                (uim 'test-updated-mode))
-  (assert-error (lambda ()
-                  (uim '(context-current-mode #f))))
+  (assert-uim-equal 3
+                    'test-updated-mode)
+  (assert-uim-error '(context-current-mode #f))
 
   ;; no mode-widget
   (uim-eval
@@ -2203,8 +2187,8 @@
       (context-init-widgets! tc '(widget_test_null
                                   widget_test_kana_input_method))
       (context-update-mode tc)))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal 0
+                    'test-updated-mode)
 
   ;; no activity
   (uim-eval
@@ -2217,8 +2201,8 @@
       (context-init-widgets! tc '(widget_test_dummy_input_mode
                                   widget_test_kana_input_method))
       (context-update-mode tc)))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal 0
+                    'test-updated-mode)
 
   ;; duplicate activity
   (uim-eval
@@ -2238,20 +2222,18 @@
       ;; context-current-mode returns 0 rather than 3 when
       ;; action_test_direct and action_test_alt_direct are conflicted.
       (context-update-mode tc)))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal 0
+                    'test-updated-mode)
   ;; action_test_direct -> action_test_hiragana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hiragana)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hiragana))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal 0
+                    'test-updated-mode)
   ;; action_test_hiragana -> action_test_katakana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_katakana)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_katakana))
   (uim-eval '(context-update-mode tc))
-  (assert-equal 1
-                (uim 'test-updated-mode))
+  (assert-uim-equal 1
+                    'test-updated-mode)
   #f)
 
 (define (test-context-update-mode-list)
@@ -2263,38 +2245,37 @@
       ;; initial state
       (context-update-mode-list tc)))
 
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-mode-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-updated-mode-list))
-  (assert-equal 3
-                (uim 'test-updated-mode))
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-mode-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-updated-mode-list)
+  (assert-uim-equal 3
+                    'test-updated-mode)
   ;; action_test_direct -> action_test_hankana
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hankana)))
+  (assert-uim-true  '(widget-activate! test-input-mode 'action_test_hankana))
   (uim-eval '(context-update-mode-list tc))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-mode-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-updated-mode-list))
-  (assert-equal 2
-                (uim 'test-updated-mode))
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-mode-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "全角英数")
+                    'test-updated-mode-list)
+  (assert-uim-equal 2
+                    'test-updated-mode)
   ;; duplicate activity
   (uim-eval
    '(begin
@@ -2312,24 +2293,24 @@
                                   widget_test_kana_input_method))
       (test-context-set-on! tc #f)
       (context-update-mode-list tc)))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-mode-list))
-  (assert-equal '("ひらがな"
-                  "カタカナ"
-                  "半角カタカナ"
-                  "直接入力"
-                  "直接入力"
-                  "全角英数")
-                (uim 'test-updated-mode-list))
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "直接入力"
+                      "全角英数")
+                    'test-mode-list)
+  (assert-uim-equal '("ひらがな"
+                      "カタカナ"
+                      "半角カタカナ"
+                      "直接入力"
+                      "直接入力"
+                      "全角英数")
+                    'test-updated-mode-list)
   ;; context-current-mode returns 0 rather than 3 when
   ;; action_test_direct and action_test_alt_direct are conflicted.
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal 0
+                    'test-updated-mode)
 
   ;; no activity
   (uim-eval
@@ -2341,15 +2322,15 @@
        #f) ;; has no actions
       (context-init-widgets! tc '(widget_test_dummy_input_mode
                                   widget_test_kana_input_method))))
-  (assert-true  (uim-bool '(widget-activate! test-input-mode
-                                             'action_test_hankana)))
+  (assert-uim-true  '(widget-activate! test-input-mode
+                                       'action_test_hankana))
   (uim-eval '(context-update-mode-list tc))
-  (assert-equal ()
-                (uim 'test-mode-list))
-  (assert-equal ()
-                (uim 'test-updated-mode-list))
-  (assert-equal 0
-                (uim 'test-updated-mode))
+  (assert-uim-equal ()
+                    'test-mode-list)
+  (assert-uim-equal ()
+                    'test-updated-mode-list)
+  (assert-uim-equal 0
+                    'test-updated-mode)
   #f)
 
 (define (test-context-mode-handler)
@@ -2359,111 +2340,111 @@
       (context-init-widgets! tc '(widget_test_input_mode
                                   widget_test_kana_input_method))
       (set! test-activated #f)))
-  (assert-true  (uim-bool '(and (context-mode-handler tc 0)
-                                #t)))
-  (assert-equal 'action_test_hiragana
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-mode-handler tc 0)
+                          #t))
+  (assert-uim-equal 'action_test_hiragana
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-mode-handler tc 4)
-                                #t)))
-  (assert-equal 'action_test_zenkaku
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-mode-handler tc 4)
+                          #t))
+  (assert-uim-equal 'action_test_zenkaku
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-equal 'action_test_kana
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-equal 'action_test_kana
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-mode-handler tc 3)
-                                #t)))
-  (assert-equal 'action_test_direct
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-mode-handler tc 3)
+                          #t))
+  (assert-uim-equal 'action_test_direct
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-mode-handler tc 3)
-                                #t)))
-  (assert-equal 'action_test_direct
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-mode-handler tc 3)
+                          #t))
+  (assert-uim-equal 'action_test_direct
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc -1)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc -1)
+                          #t))
+  (assert-uim-false 'test-activated)
   ;; 1 widget
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_kana_input_method))
       (set! test-activated #f)))
-  (assert-false (uim-bool '(and (context-mode-handler tc 0)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 0)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc 4)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 4)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-true  (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-equal 'action_test_kana
-                (uim 'test-activated))
+  (assert-uim-true  '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-equal 'action_test_kana
+                    'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc 3)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 3)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc 3)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 3)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc -1)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc -1)
+                          #t))
+  (assert-uim-false 'test-activated)
   ;; no widgets
   (uim-eval
    '(begin
       (context-init-widgets! tc ())
       (set! test-activated #f)))
-  (assert-false (uim-bool '(and (context-mode-handler tc 0)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 0)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc 3)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 3)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc -1)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc -1)
+                          #t))
+  (assert-uim-false 'test-activated)
   ;; widget_test_null (no action handlers)
   (uim-eval
    '(begin
       (context-init-widgets! tc '(widget_test_null))
       (set! test-activated #f)))
-  (assert-false (uim-bool '(and (context-mode-handler tc 0)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 0)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-prop-activate-handler
-                                 tc
-                                 "action_test_kana")
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-prop-activate-handler
+                           tc
+                           "action_test_kana")
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc 3)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc 3)
+                          #t))
+  (assert-uim-false 'test-activated)
   (uim-eval '(set! test-activated #f))
-  (assert-false (uim-bool '(and (context-mode-handler tc -1)
-                                #t)))
-  (assert-false (uim-bool 'test-activated))
+  (assert-uim-false '(and (context-mode-handler tc -1)
+                          #t))
+  (assert-uim-false 'test-activated)
   #f)
 
 (provide "test/test-action")
