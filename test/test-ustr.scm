@@ -1902,3 +1902,5 @@
                     '(ustr-length ustre))
   (assert-uim-equal 0
                     '(ustr-cursor-pos ustre)))
+
+(provide "test/test-ustr")
