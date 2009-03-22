@@ -129,19 +129,17 @@
 
 ;; only the tricky tests require this 'require' emulation.
 (define (uim-define-siod-compatible-require)
-  (uim
-   '(begin
-      (define require
-        (lambda (filename)
-          (let* ((provided-str (string-append "*" filename "-loaded*"))
-                 (provided-sym (string->symbol provided-str)))
-            (if (not (symbol-bound? provided-sym))
-                (begin
-                  (load filename)
-                  (eval (list 'define provided-sym #t)
-                        (interaction-environment))))
-            provided-sym)))
-      #t)))
+  (uim-eval
+   '(define require
+      (lambda (filename)
+        (let* ((provided-str (string-append "*" filename "-loaded*"))
+               (provided-sym (string->symbol provided-str)))
+          (if (not (symbol-bound? provided-sym))
+            (begin
+              (load filename)
+              (eval (list 'define provided-sym #t)
+                    (interaction-environment))))
+          provided-sym)))))
 
 (define (uim-sh-setup)
   (set! *uim-sh-process* (run-process `(,(uim-test-build-path "uim" "uim-sh")
