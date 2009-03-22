@@ -99,4 +99,33 @@
                        (closure)))
   #f)
 
+(define (test-getenv)
+  (assert-uim-equal (sys-getenv "PWD")
+                    '(getenv "PWD"))
+  (assert-uim-false '(getenv "UIM_NONEXISTING_ENV"))
+  #f)
+
+(define (test-setenv)
+  (assert-uim-false '(getenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-true  '(setenv "UIM_NONEXISTING_ENV" "FOO" #f))
+  (assert-uim-equal "FOO"
+                    '(getenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-true  '(setenv "UIM_NONEXISTING_ENV" "BAR" #f))
+  (assert-uim-equal "FOO"
+                    '(getenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-true  '(setenv "UIM_NONEXISTING_ENV" "BAR" #t))
+  (assert-uim-equal "BAR"
+                    '(getenv "UIM_NONEXISTING_ENV"))
+  #f)
+
+(define (test-unsetenv)
+  (assert-uim-true  '(setenv "UIM_NONEXISTING_ENV" "BAR" #t))
+  (assert-uim-equal "BAR"
+                    '(getenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-true  '(unsetenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-false '(getenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-true  '(unsetenv "UIM_NONEXISTING_ENV"))
+  (assert-uim-false '(getenv "UIM_NONEXISTING_ENV"))
+  #f)
+
 (provide "test/util/test-uim")

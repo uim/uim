@@ -41,32 +41,6 @@
      (uim '(require "util.scm"))
      (uim '(define lst '(1 2 3 4)))))
 
-  ("test getenv"
-   (assert-equal (sys-getenv "PWD")
-		 (uim '(getenv "PWD")))
-   (assert-false (uim-bool '(getenv "UIM_NONEXISTING_ENV"))))
-
-  ("test setenv"
-   (assert-false (uim-bool '(getenv "UIM_NONEXISTING_ENV")))
-   (assert-true  (uim-bool '(setenv "UIM_NONEXISTING_ENV" "FOO" #f)))
-   (assert-equal "FOO"
-		 (uim '(getenv "UIM_NONEXISTING_ENV")))
-   (assert-true  (uim-bool '(setenv "UIM_NONEXISTING_ENV" "BAR" #f)))
-   (assert-equal "FOO"
-		 (uim '(getenv "UIM_NONEXISTING_ENV")))
-   (assert-true  (uim-bool '(setenv "UIM_NONEXISTING_ENV" "BAR" #t)))
-   (assert-equal "BAR"
-		 (uim '(getenv "UIM_NONEXISTING_ENV"))))
-
-  ("test unsetenv"
-   (assert-true  (uim-bool '(setenv "UIM_NONEXISTING_ENV" "BAR" #t)))
-   (assert-equal "BAR"
-		 (uim '(getenv "UIM_NONEXISTING_ENV")))
-   (assert-true  (uim-bool '(unsetenv "UIM_NONEXISTING_ENV")))
-   (assert-false (uim-bool '(getenv "UIM_NONEXISTING_ENV")))
-   (assert-true  (uim-bool '(unsetenv "UIM_NONEXISTING_ENV")))
-   (assert-false (uim-bool '(getenv "UIM_NONEXISTING_ENV"))))
-
   ;; See "Specification changes of utility procedures" of doc/COMPATIBILITY
 ;;  ("test string-split (uim 1.4)"
 ;;   ;; ordinary split
