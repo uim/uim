@@ -144,8 +144,8 @@
       #t)))
 
 (define (uim-sh-setup)
-  (set! *uim-sh-process* (run-process (uim-test-build-path "uim" "uim-sh")
-                                      "-b"
+  (set! *uim-sh-process* (run-process `(,(uim-test-build-path "uim" "uim-sh")
+                                        "-b")
                                       :input :pipe
                                       :output :pipe))
   (uim '(%%set-current-error-port! (current-output-port))))
