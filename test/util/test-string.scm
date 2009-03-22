@@ -27,10 +27,10 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-(define-module test.util.test-string-list
+(define-module test.util.test-string
   (use test.unit.test-case)
   (use test.uim-test))
-(select-module test.util.test-string-list)
+(select-module test.util.test-string)
 
 (define (setup)
   (uim-test-setup))
@@ -74,4 +74,4 @@
   (assert-uim-false '(string-find '("foo" "bar" "baz") "quux"))
   #f)
 
-(provide "test/util/test-string-list")
+(provide "test/util/test-string")
