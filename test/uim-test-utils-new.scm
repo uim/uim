@@ -65,28 +65,28 @@
                  '(r))
   (not (zero? (apply selector-select *uim-sh-selector* timeout))))
 
-(define (uim-sh-output out thunk)
+(define (uim-sh-output out writer)
   (set! (port-buffering out) :none)
-  (with-output-to-port out
-    (lambda ()
-      (thunk)
-      (newline)
-      (flush))))
+  (writer out)
+  (newline out)
+  (flush out))
 
 (define (uim-sh-write sexp out)
-  (uim-sh-output out (lambda () (write sexp))))
+  (uim-sh-output out (lambda (out) (write sexp out))))
 
 (define (uim-sh-display string out)
-  (uim-sh-output out (lambda () (display string))))
+  (uim-sh-output out (lambda (out) (display string out))))
 
 (define (uim-sh-read-block in)
-  (set! (port-buffering in) :none)
+  (set! (port-buffering in) :modest)
   (let ((result (call-with-output-string
                   (lambda (out)
                     (let loop ((ready (uim-sh-select in '(1 0))))
-                      (when ready
-                        (display (read-block 4096 in) out)
-                        (loop (uim-sh-select in 1))))))))
+                      (and-let* (ready
+                                 (block (read-block 4096 in))
+                                 ((not (eof-object? block))))
+                                (display block out)
+                                (loop (uim-sh-select in 1))))))))
     (if (string-prefix? "Error:" result)
       (error (string-trim-both result))
       result)))
