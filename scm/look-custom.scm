@@ -59,6 +59,12 @@
   (N_ "[Look] beginning character length of predicting")
   (N_ "long description will be here."))
 
+(define-custom 'look-candidates-max 20
+  '(look)
+  '(integer 1 65535)
+  (N_ "[Look] max words of candidates")
+  (N_ "long description will be here."))
+
 (define-custom 'look-prepared-words 0
   '(look)
   '(integer 0 65535)
