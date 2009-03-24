@@ -394,7 +394,7 @@
 
 (define (look-look lc look-dict str)
   (let* ((learned (look-search-learned lc str))
-         (looked (look-lib-look #t #t look-dict str)))
+         (looked (look-lib-look #t #t look-candidates-max look-dict str)))
     (look-context-set-dictlen! lc (length learned))
     (append learned looked)))
 

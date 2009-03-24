@@ -42,7 +42,7 @@
 #include "bsdlook.h"
 
 static uim_lisp
-uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp dict_, uim_lisp str_)
+uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp words_, uim_lisp dict_, uim_lisp str_)
 {
   const char *dict = REFER_C_STR(dict_);
   const char *str = REFER_C_STR(str_);
@@ -51,6 +51,7 @@ uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp dict_, uim_lisp str_)
   char *dict_str;
   size_t len;
   uim_lisp ret_ = uim_scm_f();
+  int words = -1;
 
   ctx = uim_look_init();
 
@@ -66,6 +67,9 @@ uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp dict_, uim_lisp str_)
   dict_str = uim_strdup(str);
   len = strlen(str);
 
+  if (INTP(words_))
+    words = C_INT(words_);
+
   ret_ = uim_scm_null();
   if (uim_look(dict_str, ctx) != 0) {
     uim_look_set(ctx);
@@ -75,6 +79,11 @@ uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp dict_, uim_lisp str_)
 	continue;
       if (len < strlen(buf))
 	ret_ = CONS(MAKE_STR(buf + len), ret_);
+      if (words != -1) {
+	words--;
+	if (words == 0)
+	  break;
+      }
     }
   }
 
@@ -87,7 +96,7 @@ uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp dict_, uim_lisp str_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_proc4("look-lib-look", uim_look_look);
+  uim_scm_init_proc5("look-lib-look", uim_look_look);
 }
 
 void
