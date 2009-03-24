@@ -42,7 +42,7 @@
 #include "bsdlook.h"
 
 static uim_lisp
-uim_look_look(uim_lisp dict_, uim_lisp str_)
+uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp dict_, uim_lisp str_)
 {
   const char *dict = REFER_C_STR(dict_);
   const char *str = REFER_C_STR(str_);
@@ -53,6 +53,10 @@ uim_look_look(uim_lisp dict_, uim_lisp str_)
   uim_lisp ret_ = uim_scm_f();
 
   ctx = uim_look_init();
+
+  uim_look_set_option_dictionary_order(C_BOOL(isdict_), ctx);
+  uim_look_set_option_ignore_case(C_BOOL(iscase_), ctx);
+
   if (!ctx)
     uim_fatal_error("uim_look_init() failed");
 
@@ -83,7 +87,7 @@ uim_look_look(uim_lisp dict_, uim_lisp str_)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_proc2("look-lib-look", uim_look_look);
+  uim_scm_init_proc4("look-lib-look", uim_look_look);
 }
 
 void
