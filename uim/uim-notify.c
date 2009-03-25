@@ -52,7 +52,7 @@
 #include "uim-notify.h"
 
 
-#define NOTIFY_PLUGIN_PATH LIBDIR "/uim/notify"
+#define NOTIFY_PLUGIN_PATH PKGLIBDIR "/notify"
 #define NOTIFY_PLUGIN_PREFIX "libuimnotify-"
 #define NOTIFY_PLUGIN_SUFFIX ".so"
 
