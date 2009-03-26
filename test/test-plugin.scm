@@ -1,5 +1,3 @@
-#!/usr/bin/env gosh
-
 ;;; Copyright (c) 2005-2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
@@ -29,26 +27,27 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 5329 (new repository)
+(define-module test.test-plugin
+  (use test.unit.test-case)
+  (use test.uim-test))
+(select-module test.test-plugin)
 
-(use test.unit)
+(define (setup)
+  (uim-test-setup)
+  ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+  (uim-eval '(load-enabled-modules))
 
-(require "test/uim-test-utils")
+  (uim-define-siod-compatible-require))
 
-(define-uim-test-case "testcase module"
-  (setup
-   (lambda ()
-     ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
-     (uim '(load-enabled-modules))
+(define (teardown)
+  (uim-test-teardown))
 
-     (uim-define-siod-compatible-require)
-     (uim '(begin
-	     ))))
-
-  ("test require-module"
-   (uim '(set! im-list ()))
-   (uim '(undefine *tcode.scm-loaded*))
-   (uim '(undefine *hangul.scm-loaded*))
+(define (test-require-module)
+   (uim-eval
+    '(begin
+       (set! im-list ())
+       (undefine *tcode.scm-loaded*)
+       (undefine *hangul.scm-loaded*)))
    (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
    (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
    (assert-false (uim-bool '(retrieve-im 'tcode)))
@@ -66,9 +65,9 @@
    (assert-equal "hangul"
 		 (uim '(im-module-name (retrieve-im 'hangul2))))
    ;; raw require does not set im-module-name
-   (uim '(set! im-list ()))
+   (uim-eval '(set! im-list ()))
 
-   (uim '(undefine *tcode.scm-loaded*))
+   (uim-eval '(undefine *tcode.scm-loaded*))
    (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
    (assert-false (uim-bool '(retrieve-im 'tcode)))
    (assert-true  (uim-bool '(require "tcode.scm")))
@@ -82,4 +81,6 @@
 
    ;; TODO: test load-plugin (requires complete unload-plugin
    ;; implementation)
-   ))
+   )
+
+(provide "test/test-plugin")
