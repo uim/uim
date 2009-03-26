@@ -48,36 +48,36 @@
        (set! im-list ())
        (undefine *tcode.scm-loaded*)
        (undefine *hangul.scm-loaded*)))
-   (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
-   (assert-false (uim-bool '(symbol-bound? '*hangul.scm-loaded*)))
-   (assert-false (uim-bool '(retrieve-im 'tcode)))
-   (assert-false (uim-bool '(retrieve-im 'hangul2)))
+   (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
+   (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
+   (assert-uim-false '(retrieve-im 'tcode))
+   (assert-uim-false '(retrieve-im 'hangul2))
    ;; im-module-name == im-name
-   (assert-true  (uim-bool '(require-module "tcode")))
-   (assert-equal 'tcode
-		 (uim '(im-name (retrieve-im 'tcode))))
-   (assert-equal "tcode"
-		 (uim '(im-module-name (retrieve-im 'tcode))))
+   (assert-uim-true-value  '(require-module "tcode"))
+   (assert-uim-equal 'tcode
+		     '(im-name (retrieve-im 'tcode)))
+   (assert-uim-equal "tcode"
+		     '(im-module-name (retrieve-im 'tcode)))
    ;; im-module-name != im-name
-   (assert-true  (uim-bool '(require-module "hangul")))
-   (assert-equal 'hangul2
-		 (uim '(im-name (retrieve-im 'hangul2))))
-   (assert-equal "hangul"
-		 (uim '(im-module-name (retrieve-im 'hangul2))))
+   (assert-uim-true-value  '(require-module "hangul"))
+   (assert-uim-equal 'hangul2
+		     '(im-name (retrieve-im 'hangul2)))
+   (assert-uim-equal "hangul"
+		     '(im-module-name (retrieve-im 'hangul2)))
    ;; raw require does not set im-module-name
    (uim-eval '(set! im-list ()))
 
    (uim-eval '(undefine *tcode.scm-loaded*))
-   (assert-false (uim-bool '(symbol-bound? '*tcode.scm-loaded*)))
-   (assert-false (uim-bool '(retrieve-im 'tcode)))
-   (assert-true  (uim-bool '(require "tcode.scm")))
+   (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
+   (assert-uim-false '(retrieve-im 'tcode))
+   (assert-uim-true-value  '(require "tcode.scm"))
 
-   (assert-equal 'tcode
-		 (uim '(im-name (retrieve-im 'tcode))))
-   (assert-false (uim-bool '(im-module-name (retrieve-im 'tcode))))
+   (assert-uim-equal 'tcode
+		     '(im-name (retrieve-im 'tcode)))
+   (assert-uim-false '(im-module-name (retrieve-im 'tcode)))
    ;; nonexistent module
    ;; TODO: suppress "ERROR:" message in try-require
-   ;;(assert-false (uim-bool '(require-module "nonexistent")))
+   ;;(assert-uim-false '(require-module "nonexistent"))
 
    ;; TODO: test load-plugin (requires complete unload-plugin
    ;; implementation)
