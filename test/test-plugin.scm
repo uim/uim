@@ -75,9 +75,9 @@
    (assert-uim-equal 'tcode
 		     '(im-name (retrieve-im 'tcode)))
    (assert-uim-false '(im-module-name (retrieve-im 'tcode)))
+
    ;; nonexistent module
-   ;; TODO: suppress "ERROR:" message in try-require
-   ;;(assert-uim-false '(require-module "nonexistent"))
+   (assert-uim-false '(require-module "nonexistent"))
 
    ;; TODO: test load-plugin (requires complete unload-plugin
    ;; implementation)
