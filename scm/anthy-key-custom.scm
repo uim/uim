@@ -271,13 +271,13 @@
 	       (N_ "long description will be here"))
 
 (define-custom 'anthy-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
-               '(anthy-keys4 prediction)
+               '(anthy-keys4 anthy-prediction)
 	       '(key)
 	       (N_ "[Anthy] Next prediction candidate")
 	       (N_ "long description will be here"))
 
 (define-custom 'anthy-prev-prediction-key '(generic-prev-candidate-key)
-               '(anthy-keys4 prediction)
+               '(anthy-keys4 anthy-prediction)
 	       '(key)
 	       (N_ "[Anthy] Previous prediction candidate")
 	       (N_ "long description will be here"))

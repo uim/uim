@@ -50,7 +50,7 @@
 		     (N_ "Anthy (advanced)")
 		     (N_ "Advanced settings for Anthy"))
 
-(define-custom-group 'prediction
+(define-custom-group 'anthy-prediction
 		     (N_ "Prediction")
 		     (N_ "long description will be here."))
 
@@ -303,25 +303,25 @@
 		   (anthy-utf8-configure-widgets)))
 
 (define-custom 'anthy-use-prediction? #f
-  '(anthy-advanced prediction)
+  '(anthy-advanced anthy-prediction)
   '(boolean)
   (N_ "Enable input prediction")
   (N_ "long description will be here."))
 
 (define-custom 'anthy-select-prediction-by-numeral-key? #f
-  '(anthy-advanced prediction)
+  '(anthy-advanced anthy-prediction)
   '(boolean)
   (N_ "Select prediction candidate by numeral keys")
   (N_ "long description will be here."))
 
 (define-custom 'anthy-use-implicit-commit-prediction? #t
-  '(anthy-advanced prediction)
+  '(anthy-advanced anthy-prediction)
   '(boolean)
   (N_ "Show selected prediction candidate in preedit area")
   (N_ "long description will be here."))
 
 (define-custom 'anthy-prediction-start-char-count 1
-  '(anthy-advanced prediction)
+  '(anthy-advanced anthy-prediction)
   '(integer 1 65535)
   (N_ "Character count to start input prediction")
   (N_ "long description will be here."))

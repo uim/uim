@@ -269,13 +269,13 @@
 	       (N_ "long description will be here"))
 
 (define-custom 'social-ime-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
-               '(social-ime-keys4 prediction)
+               '(social-ime-keys4 social-ime-prediction)
                '(key)
                (N_ "[Social-IME] Next prediction candidate")
                (N_ "long description will be here"))
 
 (define-custom 'social-ime-prev-prediction-key '(generic-prev-candidate-key)
-               '(social-ime-keys4 prediction)
+               '(social-ime-keys4 social-ime-prediction)
                '(key)
                (N_ "[Social-IME] Previous prediction candidate")
                (N_ "long description will be here"))
