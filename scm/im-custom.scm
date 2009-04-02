@@ -614,7 +614,7 @@
   '(http)
   (list 'choice
         (list 'direct
-              (N_ "Direct")
+              (N_ "Direct connection")
               (N_ "Direct connection, no proxy."))
         (list 'user
               (N_ "User")
