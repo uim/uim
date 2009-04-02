@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2009-01-05 15:55+0900\n"
+"POT-Creation-Date: 2009-04-02 11:43+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -35,13 +35,13 @@ msgstr ""
 msgid "uim applet factory"
 msgstr ""
 
-#: ../helper/dict-anthy.c:82 ../helper/dict-main-gtk.c:166
+#: ../helper/dict-anthy.c:84 ../helper/dict-main-gtk.c:127
 #: ../helper/dict-word-list-win-gtk.c:348 ../helper/dict-word.c:139
 #: ../helper/dict-word.c:154
 msgid "Anthy private dictionary"
 msgstr ""
 
-#: ../helper/dict-canna.c:87 ../helper/dict-main-gtk.c:188
+#: ../helper/dict-canna.c:87 ../helper/dict-main-gtk.c:149
 #: ../helper/dict-word-list-win-gtk.c:352 ../helper/dict-word.c:141
 #: ../helper/dict-word.c:156
 msgid "Canna private dictionary"
@@ -57,7 +57,7 @@ msgstr ""
 msgid "Example"
 msgstr "Exemple"
 
-#: ../helper/dict-main-gtk.c:274
+#: ../helper/dict-main-gtk.c:235
 #, c-format
 msgid "Error:%s\n"
 msgstr ""
@@ -228,23 +228,23 @@ msgid ""
 "All rights reserved."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:52
+#: ../helper/dict-word-win-gtk.c:53
 msgid "Substantive"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:53
+#: ../helper/dict-word-win-gtk.c:54
 msgid "Verb"
 msgstr "Verbe"
 
-#: ../helper/dict-word-win-gtk.c:54
+#: ../helper/dict-word-win-gtk.c:55
 msgid "Adjective"
 msgstr "Adjectif"
 
-#: ../helper/dict-word-win-gtk.c:55
+#: ../helper/dict-word-win-gtk.c:56
 msgid "Adverb"
 msgstr "Adverbe"
 
-#: ../helper/dict-word-win-gtk.c:56
+#: ../helper/dict-word-win-gtk.c:57
 msgid "Etc"
 msgstr ""
 
@@ -261,33 +261,33 @@ msgstr ""
 msgid "continuance"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:193
+#: ../helper/dict-word-win-gtk.c:194
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../helper/dict-word-win-gtk.c:199
+#: ../helper/dict-word-win-gtk.c:200
 msgid "Clear"
 msgstr "Effacer"
 
-#: ../helper/dict-word-win-gtk.c:206
+#: ../helper/dict-word-win-gtk.c:207
 msgid "Add a word"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:246
+#: ../helper/dict-word-win-gtk.c:248
 #, c-format
 msgid "Edit the word (%s)"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:249
+#: ../helper/dict-word-win-gtk.c:252
 #, c-format
 msgid "Add a word (%s)"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:274
+#: ../helper/dict-word-win-gtk.c:278
 msgid "_Phonetic:"
 msgstr "_Phonétique :"
 
-#: ../helper/dict-word-win-gtk.c:284
+#: ../helper/dict-word-win-gtk.c:286
 msgid "_Literal:"
 msgstr ""
 
@@ -295,35 +295,35 @@ msgstr ""
 msgid "Part of _Speech:"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:324
+#: ../helper/dict-word-win-gtk.c:323
 msgid "_Frequency:"
 msgstr "_Fréquence :"
 
-#: ../helper/dict-word-win-gtk.c:355
+#: ../helper/dict-word-win-gtk.c:354
 msgid "Part of Speech(_narrow):"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:368
+#: ../helper/dict-word-win-gtk.c:365
 msgid "_Browse..."
 msgstr "_Parcourir ..."
 
-#: ../helper/dict-word-win-gtk.c:498
+#: ../helper/dict-word-win-gtk.c:500
 msgid "Word registration failed."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:505
+#: ../helper/dict-word-win-gtk.c:507
 msgid "Word registration succeded."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:535
+#: ../helper/dict-word-win-gtk.c:537
 msgid "Phonetic is emtpy!"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:550
+#: ../helper/dict-word-win-gtk.c:552
 msgid "Literal is emtpy!"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:568
+#: ../helper/dict-word-win-gtk.c:570
 msgid "Part of speech is emtpy!"
 msgstr ""
 
@@ -352,12 +352,12 @@ msgid "uim input method switcher"
 msgstr ""
 
 #: ../helper/im-switcher-gtk.c:361 ../qt/switcher-qt.cpp:109
-#: ../scm/im-custom.scm:438
+#: ../scm/im-custom.scm:442
 msgid "Effective coverage"
 msgstr ""
 
 #: ../helper/im-switcher-gtk.c:369 ../qt/switcher-qt.cpp:110
-#: ../scm/im-custom.scm:430
+#: ../scm/im-custom.scm:434
 msgid "whole desktop"
 msgstr ""
 
@@ -474,44 +474,44 @@ msgstr ""
 msgid "Grab..."
 msgstr ""
 
-#: ../helper/pref-gtk.c:146
+#: ../helper/pref-gtk.c:147
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
 msgstr ""
 
-#: ../helper/pref-gtk.c:218 ../qt/pref-qt.cpp:267
+#: ../helper/pref-gtk.c:226 ../qt/pref-qt.cpp:274
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
 msgstr ""
 
-#: ../helper/pref-gtk.c:258 ../qt/pref-qt.cpp:142
+#: ../helper/pref-gtk.c:278 ../qt/pref-qt.cpp:145
 msgid "Group"
 msgstr "Groupe"
 
 #. Defaults button
-#: ../helper/pref-gtk.c:350
+#: ../helper/pref-gtk.c:380
 msgid "_Defaults"
 msgstr ""
 
-#: ../helper/pref-gtk.c:355
+#: ../helper/pref-gtk.c:385
 msgid "Revert all changes to default"
 msgstr ""
 
-#: ../helper/pref-gtk.c:365
+#: ../helper/pref-gtk.c:395
 msgid "Apply all changes"
 msgstr ""
 
-#: ../helper/pref-gtk.c:373
+#: ../helper/pref-gtk.c:403
 msgid "Quit this application without applying changes"
 msgstr ""
 
-#: ../helper/pref-gtk.c:384
+#: ../helper/pref-gtk.c:414
 msgid "Quit this application with applying changes"
 msgstr ""
 
-#: ../helper/pref-gtk.c:541 ../qt/pref-qt.cpp:110
+#: ../helper/pref-gtk.c:573 ../qt/pref-qt.cpp:113
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -564,7 +564,7 @@ msgstr ""
 
 #: ../helper/toolbar-common-gtk.c:133
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:260 ../scm/im-custom.scm:53
 msgid "Help"
 msgstr "Aide"
 
@@ -586,62 +586,62 @@ msgstr "Édition"
 msgid "Key Grab Dialog"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:118
+#: ../qt/pref-qt.cpp:121
 msgid "~/.uim exists!"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:160
+#: ../qt/pref-qt.cpp:163
 msgid "Defaults"
 msgstr "Options par défaut"
 
-#: ../qt/pref-qt.cpp:163 ../qt/pref-qt.cpp:250 ../qt/pref-qt.cpp:357
+#: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
 #: ../qt/switcher-qt.cpp:120
 msgid "OK"
 msgstr "OK"
 
-#: ../qt/pref-qt.cpp:166
+#: ../qt/pref-qt.cpp:169
 msgid "Apply"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:170 ../qt/pref-qt.cpp:251 ../qt/switcher-qt.cpp:125
+#: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:125
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../qt/pref-qt.cpp:248
+#: ../qt/pref-qt.cpp:255
 msgid "Save Confirm"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:249
+#: ../qt/pref-qt.cpp:256
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:266
+#: ../qt/pref-qt.cpp:273
 msgid "Quit Confirm"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:269
+#: ../qt/pref-qt.cpp:276
 msgid "Yes"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:270
+#: ../qt/pref-qt.cpp:277
 msgid "No"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:353
+#: ../qt/pref-qt.cpp:360
 msgid "Show this dialog on startup"
 msgstr ""
 
-#: ../scm/action.scm:491 ../scm/action.scm:492
+#: ../scm/action.scm:498 ../scm/action.scm:499
 msgid "unknown"
 msgstr "inconnu"
 
-#: ../scm/action.scm:531
+#: ../scm/action.scm:538
 msgid "Japanese Kana Kanji Conversion Engine, Example"
 msgstr ""
 
-#: ../scm/action.scm:536 ../scm/action.scm:537
+#: ../scm/action.scm:543 ../scm/action.scm:544
 msgid "exec im-switcher"
 msgstr ""
 
@@ -678,18 +678,19 @@ msgstr ""
 #: ../scm/anthy-custom.scm:204 ../scm/anthy-custom.scm:213
 #: ../scm/anthy-custom.scm:255 ../scm/anthy-custom.scm:264
 #: ../scm/anthy-custom.scm:302 ../scm/anthy-custom.scm:308
-#: ../scm/anthy-custom.scm:314 ../scm/anthy-custom.scm:341
-#: ../scm/anthy-custom.scm:347 ../scm/anthy-key-custom.scm:37
-#: ../scm/anthy-key-custom.scm:41 ../scm/anthy-key-custom.scm:45
-#: ../scm/anthy-key-custom.scm:49 ../scm/anthy-utf8-custom.scm:55
-#: ../scm/anthy-utf8-custom.scm:65 ../scm/anthy-utf8-custom.scm:71
-#: ../scm/anthy-utf8-custom.scm:86 ../scm/anthy-utf8-custom.scm:92
-#: ../scm/anthy-utf8-custom.scm:98 ../scm/anthy-utf8-custom.scm:104
-#: ../scm/anthy-utf8-custom.scm:192 ../scm/anthy-utf8-custom.scm:211
-#: ../scm/anthy-utf8-custom.scm:220 ../scm/anthy-utf8-custom.scm:262
-#: ../scm/anthy-utf8-custom.scm:271 ../scm/anthy-utf8-custom.scm:309
-#: ../scm/anthy-utf8-custom.scm:315 ../scm/anthy-utf8-custom.scm:321
-#: ../scm/anthy-utf8-custom.scm:348 ../scm/anthy-utf8-custom.scm:354
+#: ../scm/anthy-custom.scm:314 ../scm/anthy-custom.scm:320
+#: ../scm/anthy-custom.scm:352 ../scm/anthy-custom.scm:358
+#: ../scm/anthy-key-custom.scm:37 ../scm/anthy-key-custom.scm:41
+#: ../scm/anthy-key-custom.scm:45 ../scm/anthy-key-custom.scm:49
+#: ../scm/anthy-utf8-custom.scm:55 ../scm/anthy-utf8-custom.scm:65
+#: ../scm/anthy-utf8-custom.scm:71 ../scm/anthy-utf8-custom.scm:86
+#: ../scm/anthy-utf8-custom.scm:92 ../scm/anthy-utf8-custom.scm:98
+#: ../scm/anthy-utf8-custom.scm:104 ../scm/anthy-utf8-custom.scm:192
+#: ../scm/anthy-utf8-custom.scm:211 ../scm/anthy-utf8-custom.scm:220
+#: ../scm/anthy-utf8-custom.scm:262 ../scm/anthy-utf8-custom.scm:271
+#: ../scm/anthy-utf8-custom.scm:309 ../scm/anthy-utf8-custom.scm:315
+#: ../scm/anthy-utf8-custom.scm:321 ../scm/anthy-utf8-custom.scm:327
+#: ../scm/anthy-utf8-custom.scm:359 ../scm/anthy-utf8-custom.scm:365
 #: ../scm/byeoru-custom.scm:83 ../scm/byeoru-custom.scm:87
 #: ../scm/byeoru-custom.scm:91 ../scm/byeoru-custom.scm:106
 #: ../scm/byeoru-custom.scm:113 ../scm/byeoru-custom.scm:116
@@ -750,43 +751,49 @@ msgstr ""
 #: ../scm/generic-custom.scm:49 ../scm/generic-custom.scm:55
 #: ../scm/generic-custom.scm:61 ../scm/generic-custom.scm:67
 #: ../scm/generic-key-custom.scm:37 ../scm/generic-key-custom.scm:41
-#: ../scm/im-custom.scm:46 ../scm/im-custom.scm:50 ../scm/im-custom.scm:55
-#: ../scm/im-custom.scm:60 ../scm/im-custom.scm:65 ../scm/im-custom.scm:70
-#: ../scm/im-custom.scm:75 ../scm/im-custom.scm:80 ../scm/im-custom.scm:85
-#: ../scm/im-custom.scm:90 ../scm/im-custom.scm:95 ../scm/im-custom.scm:100
-#: ../scm/im-custom.scm:105 ../scm/im-custom.scm:110 ../scm/im-custom.scm:121
-#: ../scm/im-custom.scm:131 ../scm/im-custom.scm:205 ../scm/im-custom.scm:279
-#: ../scm/im-custom.scm:285 ../scm/im-custom.scm:291 ../scm/im-custom.scm:297
-#: ../scm/im-custom.scm:313 ../scm/im-custom.scm:319 ../scm/im-custom.scm:325
-#: ../scm/im-custom.scm:335 ../scm/im-custom.scm:363 ../scm/im-custom.scm:384
-#: ../scm/im-custom.scm:390 ../scm/im-custom.scm:457 ../scm/im-custom.scm:463
-#: ../scm/im-custom.scm:469 ../scm/im-custom.scm:475 ../scm/im-custom.scm:481
-#: ../scm/im-custom.scm:487 ../scm/im-custom.scm:505 ../scm/im-custom.scm:511
-#: ../scm/im-custom.scm:518 ../scm/im-custom.scm:528 ../scm/im-custom.scm:532
-#: ../scm/im-custom.scm:538 ../scm/im-custom.scm:544 ../scm/im-custom.scm:554
-#: ../scm/im-custom.scm:561 ../scm/look-custom.scm:40
+#: ../scm/im-custom.scm:46 ../scm/im-custom.scm:50 ../scm/im-custom.scm:54
+#: ../scm/im-custom.scm:59 ../scm/im-custom.scm:64 ../scm/im-custom.scm:69
+#: ../scm/im-custom.scm:74 ../scm/im-custom.scm:79 ../scm/im-custom.scm:84
+#: ../scm/im-custom.scm:89 ../scm/im-custom.scm:94 ../scm/im-custom.scm:99
+#: ../scm/im-custom.scm:104 ../scm/im-custom.scm:109 ../scm/im-custom.scm:114
+#: ../scm/im-custom.scm:125 ../scm/im-custom.scm:135 ../scm/im-custom.scm:209
+#: ../scm/im-custom.scm:283 ../scm/im-custom.scm:289 ../scm/im-custom.scm:295
+#: ../scm/im-custom.scm:301 ../scm/im-custom.scm:317 ../scm/im-custom.scm:323
+#: ../scm/im-custom.scm:329 ../scm/im-custom.scm:339 ../scm/im-custom.scm:367
+#: ../scm/im-custom.scm:388 ../scm/im-custom.scm:394 ../scm/im-custom.scm:461
+#: ../scm/im-custom.scm:467 ../scm/im-custom.scm:473 ../scm/im-custom.scm:479
+#: ../scm/im-custom.scm:485 ../scm/im-custom.scm:492 ../scm/im-custom.scm:495
+#: ../scm/im-custom.scm:497 ../scm/im-custom.scm:503 ../scm/im-custom.scm:514
+#: ../scm/im-custom.scm:521 ../scm/im-custom.scm:524 ../scm/im-custom.scm:526
+#: ../scm/im-custom.scm:551 ../scm/im-custom.scm:557 ../scm/im-custom.scm:564
+#: ../scm/im-custom.scm:574 ../scm/im-custom.scm:578 ../scm/im-custom.scm:584
+#: ../scm/im-custom.scm:590 ../scm/im-custom.scm:600 ../scm/im-custom.scm:607
+#: ../scm/im-custom.scm:611 ../scm/im-custom.scm:627 ../scm/im-custom.scm:633
+#: ../scm/im-custom.scm:645 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
 #: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
-#: ../scm/mana-custom.scm:54 ../scm/mana-custom.scm:60
-#: ../scm/mana-custom.scm:75 ../scm/mana-custom.scm:81
-#: ../scm/mana-custom.scm:87 ../scm/mana-custom.scm:93
-#: ../scm/mana-custom.scm:181 ../scm/mana-custom.scm:200
-#: ../scm/mana-custom.scm:209 ../scm/mana-custom.scm:251
-#: ../scm/mana-custom.scm:260 ../scm/mana-custom.scm:298
-#: ../scm/mana-custom.scm:304 ../scm/mana-key-custom.scm:37
-#: ../scm/mana-key-custom.scm:41 ../scm/mana-key-custom.scm:45
-#: ../scm/mana-key-custom.scm:49 ../scm/prime-custom.scm:64
-#: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
-#: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
-#: ../scm/prime-custom.scm:96 ../scm/prime-custom.scm:114
-#: ../scm/prime-custom.scm:120 ../scm/prime-custom.scm:127
-#: ../scm/prime-custom.scm:134 ../scm/prime-custom.scm:142
-#: ../scm/prime-custom.scm:150 ../scm/prime-custom.scm:156
-#: ../scm/prime-custom.scm:167 ../scm/prime-key-custom.scm:65
-#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
-#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:58
-#: ../scm/sj3-custom.scm:64 ../scm/sj3-custom.scm:79 ../scm/sj3-custom.scm:85
-#: ../scm/sj3-custom.scm:91 ../scm/sj3-custom.scm:97 ../scm/sj3-custom.scm:186
+#: ../scm/look-custom.scm:72 ../scm/mana-custom.scm:54
+#: ../scm/mana-custom.scm:60 ../scm/mana-custom.scm:75
+#: ../scm/mana-custom.scm:81 ../scm/mana-custom.scm:87
+#: ../scm/mana-custom.scm:93 ../scm/mana-custom.scm:181
+#: ../scm/mana-custom.scm:200 ../scm/mana-custom.scm:209
+#: ../scm/mana-custom.scm:251 ../scm/mana-custom.scm:260
+#: ../scm/mana-custom.scm:298 ../scm/mana-custom.scm:304
+#: ../scm/mana-key-custom.scm:37 ../scm/mana-key-custom.scm:41
+#: ../scm/mana-key-custom.scm:45 ../scm/mana-key-custom.scm:49
+#: ../scm/prime-custom.scm:64 ../scm/prime-custom.scm:70
+#: ../scm/prime-custom.scm:76 ../scm/prime-custom.scm:84
+#: ../scm/prime-custom.scm:90 ../scm/prime-custom.scm:105
+#: ../scm/prime-custom.scm:111 ../scm/prime-custom.scm:123
+#: ../scm/prime-custom.scm:147 ../scm/prime-custom.scm:153
+#: ../scm/prime-custom.scm:160 ../scm/prime-custom.scm:167
+#: ../scm/prime-custom.scm:175 ../scm/prime-custom.scm:183
+#: ../scm/prime-custom.scm:189 ../scm/prime-custom.scm:200
+#: ../scm/prime-key-custom.scm:65 ../scm/prime-key-custom.scm:69
+#: ../scm/prime-key-custom.scm:73 ../scm/sj3-custom.scm:44
+#: ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:58 ../scm/sj3-custom.scm:64
+#: ../scm/sj3-custom.scm:79 ../scm/sj3-custom.scm:85 ../scm/sj3-custom.scm:91
+#: ../scm/sj3-custom.scm:97 ../scm/sj3-custom.scm:186
 #: ../scm/sj3-custom.scm:205 ../scm/sj3-custom.scm:214
 #: ../scm/sj3-custom.scm:256 ../scm/sj3-custom.scm:265
 #: ../scm/sj3-custom.scm:308 ../scm/sj3-custom.scm:315
@@ -813,14 +820,18 @@ msgstr ""
 #: ../scm/skk-key-custom.scm:73 ../scm/skk-key-custom.scm:78
 #: ../scm/skk-key-custom.scm:82 ../scm/skk-key-custom.scm:86
 #: ../scm/social-ime-custom.scm:44 ../scm/social-ime-custom.scm:48
-#: ../scm/social-ime-custom.scm:58 ../scm/social-ime-custom.scm:64
-#: ../scm/social-ime-custom.scm:79 ../scm/social-ime-custom.scm:85
-#: ../scm/social-ime-custom.scm:91 ../scm/social-ime-custom.scm:97
-#: ../scm/social-ime-custom.scm:186 ../scm/social-ime-custom.scm:205
-#: ../scm/social-ime-custom.scm:214 ../scm/social-ime-custom.scm:256
-#: ../scm/social-ime-custom.scm:265 ../scm/social-ime-custom.scm:308
-#: ../scm/social-ime-custom.scm:314 ../scm/social-ime-custom.scm:320
-#: ../scm/social-ime-custom.scm:326 ../scm/social-ime-key-custom.scm:36
+#: ../scm/social-ime-custom.scm:52 ../scm/social-ime-custom.scm:61
+#: ../scm/social-ime-custom.scm:67 ../scm/social-ime-custom.scm:82
+#: ../scm/social-ime-custom.scm:88 ../scm/social-ime-custom.scm:94
+#: ../scm/social-ime-custom.scm:100 ../scm/social-ime-custom.scm:189
+#: ../scm/social-ime-custom.scm:208 ../scm/social-ime-custom.scm:217
+#: ../scm/social-ime-custom.scm:259 ../scm/social-ime-custom.scm:268
+#: ../scm/social-ime-custom.scm:311 ../scm/social-ime-custom.scm:317
+#: ../scm/social-ime-custom.scm:323 ../scm/social-ime-custom.scm:329
+#: ../scm/social-ime-custom.scm:335 ../scm/social-ime-custom.scm:341
+#: ../scm/social-ime-custom.scm:348 ../scm/social-ime-custom.scm:354
+#: ../scm/social-ime-custom.scm:360 ../scm/social-ime-custom.scm:366
+#: ../scm/social-ime-custom.scm:372 ../scm/social-ime-key-custom.scm:36
 #: ../scm/social-ime-key-custom.scm:40 ../scm/social-ime-key-custom.scm:44
 #: ../scm/social-ime-key-custom.scm:48 ../scm/tutcode-custom.scm:55
 #: ../scm/tutcode-custom.scm:62 ../scm/tutcode-custom.scm:75
@@ -838,14 +849,18 @@ msgstr ""
 #: ../scm/wnn-custom.scm:338 ../scm/wnn-key-custom.scm:36
 #: ../scm/wnn-key-custom.scm:40 ../scm/wnn-key-custom.scm:44
 #: ../scm/wnn-key-custom.scm:48 ../scm/yahoo-jp-custom.scm:44
-#: ../scm/yahoo-jp-custom.scm:48 ../scm/yahoo-jp-custom.scm:58
-#: ../scm/yahoo-jp-custom.scm:64 ../scm/yahoo-jp-custom.scm:79
-#: ../scm/yahoo-jp-custom.scm:85 ../scm/yahoo-jp-custom.scm:91
-#: ../scm/yahoo-jp-custom.scm:97 ../scm/yahoo-jp-custom.scm:186
-#: ../scm/yahoo-jp-custom.scm:205 ../scm/yahoo-jp-custom.scm:214
-#: ../scm/yahoo-jp-custom.scm:256 ../scm/yahoo-jp-custom.scm:265
-#: ../scm/yahoo-jp-custom.scm:308 ../scm/yahoo-jp-custom.scm:314
-#: ../scm/yahoo-jp-custom.scm:320 ../scm/yahoo-jp-custom.scm:326
+#: ../scm/yahoo-jp-custom.scm:48 ../scm/yahoo-jp-custom.scm:52
+#: ../scm/yahoo-jp-custom.scm:62 ../scm/yahoo-jp-custom.scm:68
+#: ../scm/yahoo-jp-custom.scm:83 ../scm/yahoo-jp-custom.scm:89
+#: ../scm/yahoo-jp-custom.scm:95 ../scm/yahoo-jp-custom.scm:101
+#: ../scm/yahoo-jp-custom.scm:190 ../scm/yahoo-jp-custom.scm:209
+#: ../scm/yahoo-jp-custom.scm:218 ../scm/yahoo-jp-custom.scm:260
+#: ../scm/yahoo-jp-custom.scm:269 ../scm/yahoo-jp-custom.scm:312
+#: ../scm/yahoo-jp-custom.scm:318 ../scm/yahoo-jp-custom.scm:324
+#: ../scm/yahoo-jp-custom.scm:330 ../scm/yahoo-jp-custom.scm:341
+#: ../scm/yahoo-jp-custom.scm:347 ../scm/yahoo-jp-custom.scm:354
+#: ../scm/yahoo-jp-custom.scm:360 ../scm/yahoo-jp-custom.scm:366
+#: ../scm/yahoo-jp-custom.scm:383 ../scm/yahoo-jp-custom.scm:389
 #: ../scm/yahoo-jp-key-custom.scm:36 ../scm/yahoo-jp-key-custom.scm:40
 #: ../scm/yahoo-jp-key-custom.scm:44 ../scm/yahoo-jp-key-custom.scm:48
 msgid "long description will be here."
@@ -858,16 +873,16 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:57 ../scm/anthy-custom.scm:57
 #: ../scm/anthy-utf8-custom.scm:64 ../scm/canna-custom.scm:57
 #: ../scm/mana-custom.scm:53 ../scm/sj3-custom.scm:57
-#: ../scm/social-ime-custom.scm:57 ../scm/wnn-custom.scm:57
-#: ../scm/yahoo-jp-custom.scm:57
+#: ../scm/social-ime-custom.scm:60 ../scm/wnn-custom.scm:57
+#: ../scm/yahoo-jp-custom.scm:61
 msgid "Show segment separator"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:63 ../scm/anthy-custom.scm:63
 #: ../scm/anthy-utf8-custom.scm:70 ../scm/canna-custom.scm:63
-#: ../scm/im-custom.scm:84 ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:63
-#: ../scm/social-ime-custom.scm:63 ../scm/wnn-custom.scm:63
-#: ../scm/yahoo-jp-custom.scm:63
+#: ../scm/im-custom.scm:88 ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:63
+#: ../scm/social-ime-custom.scm:66 ../scm/wnn-custom.scm:63
+#: ../scm/yahoo-jp-custom.scm:67
 msgid "Segment separator"
 msgstr ""
 
@@ -875,8 +890,8 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:85 ../scm/canna-custom.scm:78
 #: ../scm/generic-custom.scm:42 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:78 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:78 ../scm/tutcode-custom.scm:96
-#: ../scm/wnn-custom.scm:78 ../scm/yahoo-jp-custom.scm:78
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:96
+#: ../scm/wnn-custom.scm:78 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr ""
 
@@ -884,174 +899,174 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:91 ../scm/canna-custom.scm:84
 #: ../scm/generic-custom.scm:48 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:84 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:84 ../scm/tutcode-custom.scm:108
-#: ../scm/wnn-custom.scm:84 ../scm/yahoo-jp-custom.scm:84
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:108
+#: ../scm/wnn-custom.scm:84 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:90 ../scm/anthy-custom.scm:90
 #: ../scm/anthy-utf8-custom.scm:97 ../scm/canna-custom.scm:90
 #: ../scm/generic-custom.scm:54 ../scm/mana-custom.scm:86
-#: ../scm/prime-custom.scm:113 ../scm/sj3-custom.scm:90
-#: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:90
+#: ../scm/prime-custom.scm:146 ../scm/sj3-custom.scm:90
+#: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
 #: ../scm/tutcode-custom.scm:114 ../scm/wnn-custom.scm:90
-#: ../scm/yahoo-jp-custom.scm:90
+#: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:96 ../scm/anthy-custom.scm:96
 #: ../scm/anthy-utf8-custom.scm:103 ../scm/canna-custom.scm:96
 #: ../scm/generic-custom.scm:60 ../scm/mana-custom.scm:92
-#: ../scm/prime-custom.scm:149 ../scm/sj3-custom.scm:96
-#: ../scm/social-ime-custom.scm:96 ../scm/wnn-custom.scm:96
-#: ../scm/yahoo-jp-custom.scm:96
+#: ../scm/prime-custom.scm:182 ../scm/sj3-custom.scm:96
+#: ../scm/social-ime-custom.scm:99 ../scm/wnn-custom.scm:96
+#: ../scm/yahoo-jp-custom.scm:100
 msgid "Select candidate by numeral keys"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:126 ../scm/anthy-custom.scm:126
 #: ../scm/anthy-utf8-custom.scm:133 ../scm/canna-custom.scm:126
-#: ../scm/mana-custom.scm:122 ../scm/prime-custom.scm:186
+#: ../scm/mana-custom.scm:122 ../scm/prime-custom.scm:219
 #: ../scm/sj3-custom.scm:126 ../scm/skk-custom.scm:178
-#: ../scm/social-ime-custom.scm:126 ../scm/wnn-custom.scm:126
-#: ../scm/yahoo-jp-custom.scm:126
+#: ../scm/social-ime-custom.scm:129 ../scm/wnn-custom.scm:126
+#: ../scm/yahoo-jp-custom.scm:130
 msgid "Direct input"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:127 ../scm/anthy-custom.scm:127
 #: ../scm/anthy-utf8-custom.scm:134 ../scm/canna-custom.scm:127
 #: ../scm/mana-custom.scm:123 ../scm/sj3-custom.scm:127
-#: ../scm/skk-custom.scm:179 ../scm/social-ime-custom.scm:127
-#: ../scm/wnn-custom.scm:127 ../scm/yahoo-jp-custom.scm:127
+#: ../scm/skk-custom.scm:179 ../scm/social-ime-custom.scm:130
+#: ../scm/wnn-custom.scm:127 ../scm/yahoo-jp-custom.scm:131
 msgid "Direct input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:131 ../scm/anthy-custom.scm:131
 #: ../scm/anthy-utf8-custom.scm:138 ../scm/canna-custom.scm:131
 #: ../scm/mana-custom.scm:127 ../scm/sj3-custom.scm:131
-#: ../scm/skk-custom.scm:183 ../scm/social-ime-custom.scm:131
-#: ../scm/wnn-custom.scm:131 ../scm/yahoo-jp-custom.scm:131
+#: ../scm/skk-custom.scm:183 ../scm/social-ime-custom.scm:134
+#: ../scm/wnn-custom.scm:131 ../scm/yahoo-jp-custom.scm:135
 msgid "Hiragana"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:132 ../scm/anthy-custom.scm:132
 #: ../scm/anthy-utf8-custom.scm:139 ../scm/canna-custom.scm:132
 #: ../scm/mana-custom.scm:128 ../scm/sj3-custom.scm:132
-#: ../scm/skk-custom.scm:184 ../scm/social-ime-custom.scm:132
-#: ../scm/wnn-custom.scm:132 ../scm/yahoo-jp-custom.scm:132
+#: ../scm/skk-custom.scm:184 ../scm/social-ime-custom.scm:135
+#: ../scm/wnn-custom.scm:132 ../scm/yahoo-jp-custom.scm:136
 msgid "Hiragana input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:136 ../scm/anthy-custom.scm:136
 #: ../scm/anthy-utf8-custom.scm:143 ../scm/canna-custom.scm:136
 #: ../scm/mana-custom.scm:132 ../scm/sj3-custom.scm:136
-#: ../scm/skk-custom.scm:188 ../scm/social-ime-custom.scm:136
-#: ../scm/wnn-custom.scm:136 ../scm/yahoo-jp-custom.scm:136
+#: ../scm/skk-custom.scm:188 ../scm/social-ime-custom.scm:139
+#: ../scm/wnn-custom.scm:136 ../scm/yahoo-jp-custom.scm:140
 msgid "Katakana"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:137 ../scm/anthy-custom.scm:137
 #: ../scm/anthy-utf8-custom.scm:144 ../scm/canna-custom.scm:137
 #: ../scm/mana-custom.scm:133 ../scm/sj3-custom.scm:137
-#: ../scm/skk-custom.scm:189 ../scm/social-ime-custom.scm:137
-#: ../scm/wnn-custom.scm:137 ../scm/yahoo-jp-custom.scm:137
+#: ../scm/skk-custom.scm:189 ../scm/social-ime-custom.scm:140
+#: ../scm/wnn-custom.scm:137 ../scm/yahoo-jp-custom.scm:141
 msgid "Katakana input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:141 ../scm/anthy-custom.scm:141
 #: ../scm/anthy-utf8-custom.scm:148 ../scm/canna-custom.scm:141
 #: ../scm/mana-custom.scm:137 ../scm/sj3-custom.scm:141
-#: ../scm/skk-custom.scm:193 ../scm/social-ime-custom.scm:141
-#: ../scm/wnn-custom.scm:141 ../scm/yahoo-jp-custom.scm:141
+#: ../scm/skk-custom.scm:193 ../scm/social-ime-custom.scm:144
+#: ../scm/wnn-custom.scm:141 ../scm/yahoo-jp-custom.scm:145
 msgid "Halfwidth Katakana"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:142 ../scm/anthy-custom.scm:142
 #: ../scm/anthy-utf8-custom.scm:149 ../scm/canna-custom.scm:142
 #: ../scm/mana-custom.scm:138 ../scm/sj3-custom.scm:142
-#: ../scm/skk-custom.scm:194 ../scm/social-ime-custom.scm:142
-#: ../scm/wnn-custom.scm:142 ../scm/yahoo-jp-custom.scm:142
+#: ../scm/skk-custom.scm:194 ../scm/social-ime-custom.scm:145
+#: ../scm/wnn-custom.scm:142 ../scm/yahoo-jp-custom.scm:146
 msgid "Halfwidth Katakana input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:146 ../scm/anthy-custom.scm:146
 #: ../scm/anthy-utf8-custom.scm:153 ../scm/canna-custom.scm:146
 #: ../scm/mana-custom.scm:142 ../scm/sj3-custom.scm:146
-#: ../scm/social-ime-custom.scm:146 ../scm/wnn-custom.scm:146
-#: ../scm/yahoo-jp-custom.scm:146
+#: ../scm/social-ime-custom.scm:149 ../scm/wnn-custom.scm:146
+#: ../scm/yahoo-jp-custom.scm:150
 msgid "Halfwidth Alphanumeric"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:147 ../scm/anthy-custom.scm:147
 #: ../scm/anthy-utf8-custom.scm:154 ../scm/canna-custom.scm:147
 #: ../scm/mana-custom.scm:143 ../scm/sj3-custom.scm:147
-#: ../scm/social-ime-custom.scm:147 ../scm/wnn-custom.scm:147
-#: ../scm/yahoo-jp-custom.scm:147
+#: ../scm/social-ime-custom.scm:150 ../scm/wnn-custom.scm:147
+#: ../scm/yahoo-jp-custom.scm:151
 msgid "Halfwidth Alphanumeric input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:152 ../scm/anthy-custom.scm:151
 #: ../scm/anthy-utf8-custom.scm:158 ../scm/canna-custom.scm:152
-#: ../scm/mana-custom.scm:147 ../scm/prime-custom.scm:201
+#: ../scm/mana-custom.scm:147 ../scm/prime-custom.scm:234
 #: ../scm/sj3-custom.scm:152 ../scm/skk-custom.scm:198
-#: ../scm/social-ime-custom.scm:152 ../scm/wnn-custom.scm:152
-#: ../scm/yahoo-jp-custom.scm:152
+#: ../scm/social-ime-custom.scm:155 ../scm/wnn-custom.scm:152
+#: ../scm/yahoo-jp-custom.scm:156
 msgid "Fullwidth Alphanumeric"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:153 ../scm/anthy-custom.scm:152
 #: ../scm/anthy-utf8-custom.scm:159 ../scm/canna-custom.scm:153
-#: ../scm/mana-custom.scm:148 ../scm/prime-custom.scm:202
+#: ../scm/mana-custom.scm:148 ../scm/prime-custom.scm:235
 #: ../scm/sj3-custom.scm:153 ../scm/skk-custom.scm:199
-#: ../scm/social-ime-custom.scm:153 ../scm/wnn-custom.scm:153
-#: ../scm/yahoo-jp-custom.scm:153
+#: ../scm/social-ime-custom.scm:156 ../scm/wnn-custom.scm:153
+#: ../scm/yahoo-jp-custom.scm:157
 msgid "Fullwidth Alphanumeric input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:160 ../scm/anthy-custom.scm:159
 #: ../scm/anthy-utf8-custom.scm:166 ../scm/canna-custom.scm:160
 #: ../scm/mana-custom.scm:155 ../scm/sj3-custom.scm:160
-#: ../scm/skk-custom.scm:206 ../scm/social-ime-custom.scm:160
-#: ../scm/wnn-custom.scm:160 ../scm/yahoo-jp-custom.scm:160
+#: ../scm/skk-custom.scm:206 ../scm/social-ime-custom.scm:163
+#: ../scm/wnn-custom.scm:160 ../scm/yahoo-jp-custom.scm:164
 msgid "Romaji"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:161 ../scm/anthy-custom.scm:160
 #: ../scm/anthy-utf8-custom.scm:167 ../scm/canna-custom.scm:161
 #: ../scm/mana-custom.scm:156 ../scm/sj3-custom.scm:161
-#: ../scm/skk-custom.scm:207 ../scm/social-ime-custom.scm:161
-#: ../scm/wnn-custom.scm:161 ../scm/yahoo-jp-custom.scm:161
+#: ../scm/skk-custom.scm:207 ../scm/social-ime-custom.scm:164
+#: ../scm/wnn-custom.scm:161 ../scm/yahoo-jp-custom.scm:165
 msgid "Romaji input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:165 ../scm/anthy-custom.scm:164
 #: ../scm/anthy-utf8-custom.scm:171 ../scm/canna-custom.scm:165
 #: ../scm/mana-custom.scm:160 ../scm/sj3-custom.scm:165
-#: ../scm/social-ime-custom.scm:165 ../scm/wnn-custom.scm:165
-#: ../scm/yahoo-jp-custom.scm:165
+#: ../scm/social-ime-custom.scm:168 ../scm/wnn-custom.scm:165
+#: ../scm/yahoo-jp-custom.scm:169
 msgid "Kana"
 msgstr "Kana"
 
 #: ../scm/ajax-ime-custom.scm:166 ../scm/anthy-custom.scm:165
 #: ../scm/anthy-utf8-custom.scm:172 ../scm/canna-custom.scm:166
 #: ../scm/mana-custom.scm:161 ../scm/sj3-custom.scm:166
-#: ../scm/social-ime-custom.scm:166 ../scm/wnn-custom.scm:166
-#: ../scm/yahoo-jp-custom.scm:166
+#: ../scm/social-ime-custom.scm:169 ../scm/wnn-custom.scm:166
+#: ../scm/yahoo-jp-custom.scm:170
 msgid "Kana input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:170 ../scm/anthy-custom.scm:169
 #: ../scm/anthy-utf8-custom.scm:176 ../scm/canna-custom.scm:170
 #: ../scm/mana-custom.scm:165 ../scm/sj3-custom.scm:170
-#: ../scm/skk-custom.scm:211 ../scm/social-ime-custom.scm:170
-#: ../scm/wnn-custom.scm:170 ../scm/yahoo-jp-custom.scm:170
+#: ../scm/skk-custom.scm:211 ../scm/social-ime-custom.scm:173
+#: ../scm/wnn-custom.scm:170 ../scm/yahoo-jp-custom.scm:174
 msgid "AZIK"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:171 ../scm/anthy-custom.scm:170
 #: ../scm/anthy-utf8-custom.scm:177 ../scm/canna-custom.scm:171
 #: ../scm/mana-custom.scm:166 ../scm/sj3-custom.scm:171
-#: ../scm/skk-custom.scm:212 ../scm/social-ime-custom.scm:171
-#: ../scm/wnn-custom.scm:171 ../scm/yahoo-jp-custom.scm:171
+#: ../scm/skk-custom.scm:212 ../scm/social-ime-custom.scm:174
+#: ../scm/wnn-custom.scm:171 ../scm/yahoo-jp-custom.scm:175
 msgid "AZIK extended romaji input mode"
 msgstr ""
 
@@ -1062,9 +1077,9 @@ msgstr ""
 #: ../scm/mana-custom.scm:175 ../scm/mana-custom.scm:176
 #: ../scm/sj3-custom.scm:180 ../scm/sj3-custom.scm:181
 #: ../scm/skk-custom.scm:221 ../scm/skk-custom.scm:222
-#: ../scm/social-ime-custom.scm:180 ../scm/social-ime-custom.scm:181
+#: ../scm/social-ime-custom.scm:183 ../scm/social-ime-custom.scm:184
 #: ../scm/wnn-custom.scm:180 ../scm/wnn-custom.scm:181
-#: ../scm/yahoo-jp-custom.scm:180 ../scm/yahoo-jp-custom.scm:181
+#: ../scm/yahoo-jp-custom.scm:184 ../scm/yahoo-jp-custom.scm:185
 msgid "Input mode"
 msgstr ""
 
@@ -1075,49 +1090,49 @@ msgstr ""
 #: ../scm/mana-custom.scm:178 ../scm/mana-custom.scm:179
 #: ../scm/sj3-custom.scm:183 ../scm/sj3-custom.scm:184
 #: ../scm/skk-custom.scm:224 ../scm/skk-custom.scm:225
-#: ../scm/social-ime-custom.scm:183 ../scm/social-ime-custom.scm:184
+#: ../scm/social-ime-custom.scm:186 ../scm/social-ime-custom.scm:187
 #: ../scm/wnn-custom.scm:183 ../scm/wnn-custom.scm:184
-#: ../scm/yahoo-jp-custom.scm:183 ../scm/yahoo-jp-custom.scm:184
+#: ../scm/yahoo-jp-custom.scm:187 ../scm/yahoo-jp-custom.scm:188
 msgid "Kana input method"
 msgstr "Méthode d'entrée Kana"
 
 #: ../scm/ajax-ime-custom.scm:185 ../scm/anthy-custom.scm:184
 #: ../scm/anthy-utf8-custom.scm:191 ../scm/canna-custom.scm:185
 #: ../scm/mana-custom.scm:180 ../scm/sj3-custom.scm:185
-#: ../scm/skk-custom.scm:226 ../scm/social-ime-custom.scm:185
-#: ../scm/wnn-custom.scm:185 ../scm/yahoo-jp-custom.scm:185
+#: ../scm/skk-custom.scm:226 ../scm/social-ime-custom.scm:188
+#: ../scm/wnn-custom.scm:185 ../scm/yahoo-jp-custom.scm:189
 msgid "Enabled toolbar buttons"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:204 ../scm/anthy-custom.scm:203
 #: ../scm/anthy-utf8-custom.scm:210 ../scm/canna-custom.scm:204
 #: ../scm/mana-custom.scm:199 ../scm/sj3-custom.scm:204
-#: ../scm/skk-custom.scm:245 ../scm/social-ime-custom.scm:204
-#: ../scm/wnn-custom.scm:204 ../scm/yahoo-jp-custom.scm:204
+#: ../scm/skk-custom.scm:245 ../scm/social-ime-custom.scm:207
+#: ../scm/wnn-custom.scm:204 ../scm/yahoo-jp-custom.scm:208
 msgid "Default input mode"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:213 ../scm/anthy-custom.scm:212
 #: ../scm/anthy-utf8-custom.scm:219 ../scm/canna-custom.scm:213
 #: ../scm/mana-custom.scm:208 ../scm/sj3-custom.scm:213
-#: ../scm/skk-custom.scm:254 ../scm/social-ime-custom.scm:213
-#: ../scm/wnn-custom.scm:213 ../scm/yahoo-jp-custom.scm:213
+#: ../scm/skk-custom.scm:254 ../scm/social-ime-custom.scm:216
+#: ../scm/wnn-custom.scm:213 ../scm/yahoo-jp-custom.scm:217
 msgid "Input mode menu items"
 msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:255 ../scm/anthy-custom.scm:254
 #: ../scm/anthy-utf8-custom.scm:261 ../scm/canna-custom.scm:255
 #: ../scm/mana-custom.scm:250 ../scm/sj3-custom.scm:255
-#: ../scm/skk-custom.scm:285 ../scm/social-ime-custom.scm:255
-#: ../scm/wnn-custom.scm:255 ../scm/yahoo-jp-custom.scm:255
+#: ../scm/skk-custom.scm:285 ../scm/social-ime-custom.scm:258
+#: ../scm/wnn-custom.scm:255 ../scm/yahoo-jp-custom.scm:259
 msgid "Default kana input method"
 msgstr "Méthode d'entrée Kana par défaut"
 
 #: ../scm/ajax-ime-custom.scm:264 ../scm/anthy-custom.scm:263
 #: ../scm/anthy-utf8-custom.scm:270 ../scm/canna-custom.scm:264
 #: ../scm/mana-custom.scm:259 ../scm/sj3-custom.scm:264
-#: ../scm/skk-custom.scm:294 ../scm/social-ime-custom.scm:264
-#: ../scm/wnn-custom.scm:264 ../scm/yahoo-jp-custom.scm:264
+#: ../scm/skk-custom.scm:294 ../scm/social-ime-custom.scm:267
+#: ../scm/wnn-custom.scm:264 ../scm/yahoo-jp-custom.scm:268
 msgid "Kana input method menu items"
 msgstr "Entrées de menu de la méthode d'entrée Kana"
 
@@ -1133,20 +1148,20 @@ msgstr ""
 msgid "Server url of Ajax IME."
 msgstr ""
 
-#: ../scm/ajax-ime-custom.scm:315 ../scm/anthy-custom.scm:340
-#: ../scm/anthy-utf8-custom.scm:347 ../scm/canna-custom.scm:376
-#: ../scm/mana-custom.scm:297 ../scm/prime-custom.scm:155
+#: ../scm/ajax-ime-custom.scm:315 ../scm/anthy-custom.scm:351
+#: ../scm/anthy-utf8-custom.scm:358 ../scm/canna-custom.scm:376
+#: ../scm/mana-custom.scm:297 ../scm/prime-custom.scm:188
 #: ../scm/sj3-custom.scm:331 ../scm/skk-custom.scm:502
-#: ../scm/social-ime-custom.scm:319 ../scm/tutcode-custom.scm:80
-#: ../scm/wnn-custom.scm:331 ../scm/yahoo-jp-custom.scm:319
+#: ../scm/social-ime-custom.scm:334 ../scm/tutcode-custom.scm:80
+#: ../scm/wnn-custom.scm:331 ../scm/yahoo-jp-custom.scm:340
 msgid "Enable vi-cooperative mode"
 msgstr ""
 
-#: ../scm/ajax-ime-custom.scm:321 ../scm/anthy-custom.scm:346
-#: ../scm/anthy-utf8-custom.scm:353 ../scm/canna-custom.scm:382
+#: ../scm/ajax-ime-custom.scm:321 ../scm/anthy-custom.scm:357
+#: ../scm/anthy-utf8-custom.scm:364 ../scm/canna-custom.scm:382
 #: ../scm/mana-custom.scm:303 ../scm/sj3-custom.scm:337
-#: ../scm/social-ime-custom.scm:325 ../scm/wnn-custom.scm:337
-#: ../scm/yahoo-jp-custom.scm:325
+#: ../scm/social-ime-custom.scm:340 ../scm/wnn-custom.scm:337
+#: ../scm/yahoo-jp-custom.scm:346
 msgid "Enable input mode transition keys in direct (off state) input mode"
 msgstr ""
 
@@ -1241,12 +1256,12 @@ msgstr ""
 #: ../scm/generic-key-custom.scm:118 ../scm/generic-key-custom.scm:124
 #: ../scm/generic-key-custom.scm:130 ../scm/generic-key-custom.scm:136
 #: ../scm/generic-key-custom.scm:142 ../scm/generic-key-custom.scm:148
-#: ../scm/generic-key-custom.scm:154 ../scm/look-custom.scm:72
-#: ../scm/look-custom.scm:78 ../scm/look-custom.scm:84
-#: ../scm/look-custom.scm:90 ../scm/look-custom.scm:96
-#: ../scm/look-custom.scm:102 ../scm/look-custom.scm:108
-#: ../scm/look-custom.scm:114 ../scm/look-custom.scm:120
-#: ../scm/look-custom.scm:126 ../scm/look-custom.scm:132
+#: ../scm/generic-key-custom.scm:154 ../scm/look-custom.scm:78
+#: ../scm/look-custom.scm:84 ../scm/look-custom.scm:90
+#: ../scm/look-custom.scm:96 ../scm/look-custom.scm:102
+#: ../scm/look-custom.scm:108 ../scm/look-custom.scm:114
+#: ../scm/look-custom.scm:120 ../scm/look-custom.scm:126
+#: ../scm/look-custom.scm:132 ../scm/look-custom.scm:138
 #: ../scm/mana-key-custom.scm:55 ../scm/mana-key-custom.scm:61
 #: ../scm/mana-key-custom.scm:67 ../scm/mana-key-custom.scm:73
 #: ../scm/mana-key-custom.scm:79 ../scm/mana-key-custom.scm:85
@@ -1327,6 +1342,7 @@ msgstr ""
 #: ../scm/social-ime-key-custom.scm:239 ../scm/social-ime-key-custom.scm:245
 #: ../scm/social-ime-key-custom.scm:251 ../scm/social-ime-key-custom.scm:257
 #: ../scm/social-ime-key-custom.scm:263 ../scm/social-ime-key-custom.scm:269
+#: ../scm/social-ime-key-custom.scm:275 ../scm/social-ime-key-custom.scm:281
 #: ../scm/tutcode-key-custom.scm:48 ../scm/tutcode-key-custom.scm:54
 #: ../scm/tutcode-key-custom.scm:60 ../scm/tutcode-key-custom.scm:66
 #: ../scm/tutcode-key-custom.scm:72 ../scm/tutcode-key-custom.scm:78
@@ -1370,6 +1386,7 @@ msgstr ""
 #: ../scm/yahoo-jp-key-custom.scm:239 ../scm/yahoo-jp-key-custom.scm:245
 #: ../scm/yahoo-jp-key-custom.scm:251 ../scm/yahoo-jp-key-custom.scm:257
 #: ../scm/yahoo-jp-key-custom.scm:263 ../scm/yahoo-jp-key-custom.scm:269
+#: ../scm/yahoo-jp-key-custom.scm:275 ../scm/yahoo-jp-key-custom.scm:281
 msgid "long description will be here"
 msgstr ""
 
@@ -1522,19 +1539,28 @@ msgid "Advanced settings for Anthy"
 msgstr "Paramètres avancés pour Anthy"
 
 #: ../scm/anthy-custom.scm:47 ../scm/anthy-utf8-custom.scm:54
+#: ../scm/social-ime-custom.scm:51 ../scm/yahoo-jp-custom.scm:51
 msgid "Prediction"
 msgstr ""
 
 #: ../scm/anthy-custom.scm:301 ../scm/anthy-utf8-custom.scm:308
+#: ../scm/social-ime-custom.scm:347 ../scm/yahoo-jp-custom.scm:353
 msgid "Enable input prediction"
 msgstr ""
 
 #: ../scm/anthy-custom.scm:307 ../scm/anthy-utf8-custom.scm:314
+#: ../scm/social-ime-custom.scm:353 ../scm/yahoo-jp-custom.scm:359
 msgid "Select prediction candidate by numeral keys"
 msgstr ""
 
 #: ../scm/anthy-custom.scm:313 ../scm/anthy-utf8-custom.scm:320
+#: ../scm/social-ime-custom.scm:359 ../scm/yahoo-jp-custom.scm:365
 msgid "Show selected prediction candidate in preedit area"
+msgstr ""
+
+#: ../scm/anthy-custom.scm:319 ../scm/anthy-utf8-custom.scm:326
+#: ../scm/social-ime-custom.scm:371 ../scm/yahoo-jp-custom.scm:388
+msgid "Character count to start input prediction"
 msgstr ""
 
 #: ../scm/anthy-key-custom.scm:36
@@ -2588,7 +2614,25 @@ msgstr "Hangul (Romaja)"
 msgid "Romaja input style hangul input method"
 msgstr ""
 
-#: ../scm/im.scm:139
+#: ../scm/http-client.scm:68
+msgid "socket error"
+msgstr ""
+
+#: ../scm/http-client.scm:71
+msgid "socket timeout"
+msgstr ""
+
+#: ../scm/http-client.scm:154 ../scm/http-client.scm:157
+#: ../scm/http-client.scm:159 ../scm/http-client.scm:169
+#: ../scm/http-client.scm:171
+msgid "Invalid header"
+msgstr ""
+
+#: ../scm/http-client.scm:241
+msgid "cannot connect server"
+msgstr ""
+
+#: ../scm/im.scm:138
 msgid "invalid IM name"
 msgstr ""
 
@@ -2600,242 +2644,310 @@ msgstr "Paramètres globaux"
 msgid "Toolbar"
 msgstr "Barre d'outils"
 
-#: ../scm/im-custom.scm:54
+#: ../scm/im-custom.scm:58
 msgid "Advanced settings"
 msgstr "Paramètres avancés"
 
-#: ../scm/im-custom.scm:59
+#: ../scm/im-custom.scm:63
 msgid "Buttons"
 msgstr "Boutons"
 
-#: ../scm/im-custom.scm:64
+#: ../scm/im-custom.scm:68
 msgid "Menu-based IM switcher"
 msgstr ""
 
-#: ../scm/im-custom.scm:69
+#: ../scm/im-custom.scm:73
 msgid "Candidate window"
 msgstr "Fenêtre des candidats"
 
-#: ../scm/im-custom.scm:74
+#: ../scm/im-custom.scm:78
 msgid "Annotation"
 msgstr "Annotation"
 
-#: ../scm/im-custom.scm:79
+#: ../scm/im-custom.scm:83
 msgid "Dictionary"
 msgstr "Dictionnaire"
 
-#: ../scm/im-custom.scm:89
+#: ../scm/im-custom.scm:93
 msgid "Mode transition"
 msgstr ""
 
-#: ../scm/im-custom.scm:94
+#: ../scm/im-custom.scm:98
 msgid "Special operation"
 msgstr ""
 
-#: ../scm/im-custom.scm:99 ../scm/im-custom.scm:130
+#: ../scm/im-custom.scm:103 ../scm/im-custom.scm:134
 msgid "Default input method"
 msgstr "Méthode d'entrée par défaut"
 
-#: ../scm/im-custom.scm:104
+#: ../scm/im-custom.scm:108
 msgid "Input method deployment"
 msgstr ""
 
-#: ../scm/im-custom.scm:109
+#: ../scm/im-custom.scm:113
 msgid "Visual preference"
 msgstr ""
 
-#: ../scm/im-custom.scm:120
+#: ../scm/im-custom.scm:124
 msgid "Specify default IM"
 msgstr ""
 
-#: ../scm/im-custom.scm:204
+#: ../scm/im-custom.scm:208
 msgid "Enabled input methods"
 msgstr "Méthodes d'entrée activées"
 
-#: ../scm/im-custom.scm:278
+#: ../scm/im-custom.scm:282
 msgid "Input method switching"
 msgstr ""
 
-#: ../scm/im-custom.scm:284
+#: ../scm/im-custom.scm:288
 msgid "Enable IM switching by hotkey"
 msgstr ""
 
-#: ../scm/im-custom.scm:290
+#: ../scm/im-custom.scm:294
 msgid "IM switching key"
 msgstr ""
 
-#: ../scm/im-custom.scm:296
+#: ../scm/im-custom.scm:300
 msgid "Skip direct method for IM switching by hotkey"
 msgstr ""
 
-#: ../scm/im-custom.scm:312
+#: ../scm/im-custom.scm:316
 msgid "Input method toggle"
 msgstr ""
 
-#: ../scm/im-custom.scm:318
+#: ../scm/im-custom.scm:322
 msgid "Enable input method toggle by hot keys"
 msgstr ""
 
-#: ../scm/im-custom.scm:324
+#: ../scm/im-custom.scm:328
 msgid "Input method toggle key"
 msgstr ""
 
-#: ../scm/im-custom.scm:334
+#: ../scm/im-custom.scm:338
 msgid "Alternative input method"
 msgstr ""
 
-#: ../scm/im-custom.scm:360 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
+#: ../scm/im-custom.scm:364 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim"
 msgstr "uim"
 
-#: ../scm/im-custom.scm:360 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
+#: ../scm/im-custom.scm:364 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:423
 msgid "uim native"
 msgstr "uim natif"
 
-#: ../scm/im-custom.scm:361
+#: ../scm/im-custom.scm:365
 msgid "ATOK like"
 msgstr "comme ATOK"
 
-#: ../scm/im-custom.scm:361
+#: ../scm/im-custom.scm:365
 msgid "Similar to ATOK"
 msgstr "Semblable à ATOK"
 
-#: ../scm/im-custom.scm:362
+#: ../scm/im-custom.scm:366
 msgid "Preedit color"
 msgstr ""
 
-#: ../scm/im-custom.scm:375 ../scm/im-custom.scm:376
+#: ../scm/im-custom.scm:379 ../scm/im-custom.scm:380
 msgid "Adjacent to cursor"
 msgstr ""
 
-#: ../scm/im-custom.scm:378 ../scm/im-custom.scm:379
+#: ../scm/im-custom.scm:382 ../scm/im-custom.scm:383
 msgid "Left end of preedit area"
 msgstr ""
 
-#: ../scm/im-custom.scm:381 ../scm/im-custom.scm:382
+#: ../scm/im-custom.scm:385 ../scm/im-custom.scm:386
 msgid "Right end of preedit area"
 msgstr ""
 
-#: ../scm/im-custom.scm:383
+#: ../scm/im-custom.scm:387
 msgid "Candidate window position"
 msgstr ""
 
-#: ../scm/im-custom.scm:389
+#: ../scm/im-custom.scm:393
 msgid "Enable lazy input method loading for fast startup"
 msgstr ""
 
-#: ../scm/im-custom.scm:423
+#: ../scm/im-custom.scm:427
 msgid "Enable menu-based input method switcher"
 msgstr ""
 
-#: ../scm/im-custom.scm:424
+#: ../scm/im-custom.scm:428
 msgid "Show menu-based IM switcher on toolbar."
 msgstr ""
 
-#: ../scm/im-custom.scm:431
+#: ../scm/im-custom.scm:435
 msgid "All input method of text areas on the system are changed."
 msgstr ""
 
-#: ../scm/im-custom.scm:433
+#: ../scm/im-custom.scm:437
 msgid "focused application only"
 msgstr ""
 
-#: ../scm/im-custom.scm:434
+#: ../scm/im-custom.scm:438
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
 msgstr ""
 
-#: ../scm/im-custom.scm:436
+#: ../scm/im-custom.scm:440
 msgid "focused text area only"
 msgstr ""
 
-#: ../scm/im-custom.scm:437
+#: ../scm/im-custom.scm:441
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
 msgstr ""
 
-#: ../scm/im-custom.scm:439
+#: ../scm/im-custom.scm:443
 msgid "Specify where the IM switching takes effect."
 msgstr ""
 
-#: ../scm/im-custom.scm:450
+#: ../scm/im-custom.scm:454
 msgid "full-featured input method switcher"
 msgstr ""
 
-#: ../scm/im-custom.scm:451
+#: ../scm/im-custom.scm:455
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr ""
 
-#: ../scm/im-custom.scm:456
+#: ../scm/im-custom.scm:460
 msgid "preference tool"
 msgstr ""
 
-#: ../scm/im-custom.scm:462
+#: ../scm/im-custom.scm:466
 msgid "Japanese dictionary tool"
 msgstr ""
 
-#: ../scm/im-custom.scm:468
+#: ../scm/im-custom.scm:472
 msgid "input pad"
 msgstr ""
 
-#: ../scm/im-custom.scm:474
+#: ../scm/im-custom.scm:478
 msgid "handwriting-input pad"
 msgstr ""
 
-#: ../scm/im-custom.scm:480
+#: ../scm/im-custom.scm:484
 msgid "help"
 msgstr "aide"
 
-#: ../scm/im-custom.scm:486
+#: ../scm/im-custom.scm:491
+msgid "System"
+msgstr ""
+
+#: ../scm/im-custom.scm:494
+msgid "Manual"
+msgstr ""
+
+#: ../scm/im-custom.scm:496
+msgid "Document browser"
+msgstr ""
+
+#: ../scm/im-custom.scm:502
+msgid "Browser name"
+msgstr ""
+
+#: ../scm/im-custom.scm:513
 msgid "Show input mode nearby cursor"
 msgstr ""
 
-#: ../scm/im-custom.scm:492
+#: ../scm/im-custom.scm:520
+msgid "With mode"
+msgstr ""
+
+#: ../scm/im-custom.scm:523
+msgid "With time"
+msgstr ""
+
+#: ../scm/im-custom.scm:525
+msgid "Show input mode"
+msgstr ""
+
+#: ../scm/im-custom.scm:536
 msgid "Time length for showing input mode nearby the cursor"
 msgstr ""
 
-#: ../scm/im-custom.scm:493
+#: ../scm/im-custom.scm:537
 msgid "Set 0 to show indicator always."
 msgstr ""
 
-#: ../scm/im-custom.scm:504
+#: ../scm/im-custom.scm:550
 msgid "EB library"
 msgstr ""
 
-#: ../scm/im-custom.scm:510
+#: ../scm/im-custom.scm:556
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: ../scm/im-custom.scm:517
+#: ../scm/im-custom.scm:563
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: ../scm/im-custom.scm:527
+#: ../scm/im-custom.scm:573
 msgid "XIM"
 msgstr ""
 
-#: ../scm/im-custom.scm:531
+#: ../scm/im-custom.scm:577
 msgid "Preedit settings of XIM"
 msgstr ""
 
-#: ../scm/im-custom.scm:537
+#: ../scm/im-custom.scm:583
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: ../scm/im-custom.scm:543
+#: ../scm/im-custom.scm:589
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
-#: ../scm/im-custom.scm:553
+#: ../scm/im-custom.scm:599
 msgid "Notify"
 msgstr ""
 
-#: ../scm/im-custom.scm:560
+#: ../scm/im-custom.scm:606
 msgid "Notify agent name"
+msgstr ""
+
+#: ../scm/im-custom.scm:610
+msgid "Http"
+msgstr ""
+
+#: ../scm/im-custom.scm:617
+msgid "Direct connection"
+msgstr ""
+
+#: ../scm/im-custom.scm:618
+msgid "Direct connection, no proxy."
+msgstr ""
+
+#: ../scm/im-custom.scm:620
+msgid "User"
+msgstr ""
+
+#: ../scm/im-custom.scm:621
+msgid "Use proxy."
+msgstr ""
+
+#: ../scm/im-custom.scm:626
+msgid "Proxy setting"
+msgstr ""
+
+#: ../scm/im-custom.scm:632
+msgid "Http proxy hostname"
+msgstr ""
+
+#: ../scm/im-custom.scm:644
+msgid "Http proxy port"
+msgstr ""
+
+#: ../scm/im-custom.scm:656
+msgid "Timeout"
+msgstr ""
+
+#: ../scm/im-custom.scm:657
+msgid "Timeout of http connection (msec)."
 msgstr ""
 
 #: ../scm/ipa-x-sampa.scm:227 ../scm/ipa-x-sampa.scm:228
@@ -2975,7 +3087,7 @@ msgid "Dhivehi"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:72 ../scm/prime-custom.scm:54
-#: ../scm/prime-custom.scm:62 ../scm/prime-custom.scm:196
+#: ../scm/prime-custom.scm:62 ../scm/prime-custom.scm:229
 msgid "English"
 msgstr "Anglais"
 
@@ -3097,7 +3209,7 @@ msgid "Italian"
 msgstr "Italien"
 
 #: ../scm/iso-639-1.scm:103 ../scm/prime-custom.scm:50
-#: ../scm/prime-custom.scm:61 ../scm/prime-custom.scm:191
+#: ../scm/prime-custom.scm:61 ../scm/prime-custom.scm:224
 msgid "Japanese"
 msgstr "Japonais"
 
@@ -3490,50 +3602,54 @@ msgid "[Look] beginning character length of predicting"
 msgstr ""
 
 #: ../scm/look-custom.scm:65
-msgid "[Look] Prepared words for prediction"
+msgid "[Look] max words of candidates"
 msgstr ""
 
 #: ../scm/look-custom.scm:71
-msgid "[Look] left fence character of candidate"
+msgid "[Look] Prepared words for prediction"
 msgstr ""
 
 #: ../scm/look-custom.scm:77
-msgid "[Look] right fence character of candidate"
+msgid "[Look] left fence character of candidate"
 msgstr ""
 
 #: ../scm/look-custom.scm:83
-msgid "[Look] on"
+msgid "[Look] right fence character of candidate"
 msgstr ""
 
 #: ../scm/look-custom.scm:89
-msgid "[Look] off"
+msgid "[Look] on"
 msgstr ""
 
 #: ../scm/look-custom.scm:95
-msgid "[Look] completion character"
+msgid "[Look] off"
 msgstr ""
 
 #: ../scm/look-custom.scm:101
-msgid "[Look] next character"
+msgid "[Look] completion character"
 msgstr ""
 
 #: ../scm/look-custom.scm:107
-msgid "[Look] previous character"
+msgid "[Look] next character"
 msgstr ""
 
 #: ../scm/look-custom.scm:113
-msgid "[Look] next candidate"
+msgid "[Look] previous character"
 msgstr ""
 
 #: ../scm/look-custom.scm:119
-msgid "[Look] previous candidate"
+msgid "[Look] next candidate"
 msgstr ""
 
 #: ../scm/look-custom.scm:125
-msgid "[Look] save dictionary"
+msgid "[Look] previous candidate"
 msgstr ""
 
 #: ../scm/look-custom.scm:131
+msgid "[Look] save dictionary"
+msgstr ""
+
+#: ../scm/look-custom.scm:137
 msgid "[Look] load dictionary"
 msgstr ""
 
@@ -3781,43 +3897,75 @@ msgstr ""
 msgid "Alternative space character key"
 msgstr ""
 
-#: ../scm/prime-custom.scm:95
-msgid "Use UNIX domain socket to communicate with PRIME"
+#: ../scm/prime-custom.scm:96
+msgid "Unix domain"
 msgstr ""
 
-#: ../scm/prime-custom.scm:119
+#: ../scm/prime-custom.scm:97
+msgid "Use UNIX domain socket to communicate with PRIME."
+msgstr ""
+
+#: ../scm/prime-custom.scm:99
+msgid "TCP server"
+msgstr ""
+
+#: ../scm/prime-custom.scm:100
+msgid "Use tcp server to communicate with PRIME"
+msgstr ""
+
+#: ../scm/prime-custom.scm:102
+msgid "Pipe"
+msgstr ""
+
+#: ../scm/prime-custom.scm:103
+msgid "Use pipe. spawn new prime process to communicate with PRIME"
+msgstr ""
+
+#: ../scm/prime-custom.scm:104
+msgid "Prime connection setting"
+msgstr ""
+
+#: ../scm/prime-custom.scm:110
+msgid "PRIME server address"
+msgstr ""
+
+#: ../scm/prime-custom.scm:122
+msgid "PRIME server port"
+msgstr ""
+
+#: ../scm/prime-custom.scm:152
 msgid "Always showing candidate window"
 msgstr ""
 
-#: ../scm/prime-custom.scm:126
+#: ../scm/prime-custom.scm:159
 msgid "Show usage examples of candidate words"
 msgstr ""
 
-#: ../scm/prime-custom.scm:133
+#: ../scm/prime-custom.scm:166
 msgid "Show candidate annotations"
 msgstr ""
 
-#: ../scm/prime-custom.scm:141
+#: ../scm/prime-custom.scm:174
 msgid "Show candidate forms"
 msgstr ""
 
-#: ../scm/prime-custom.scm:166
+#: ../scm/prime-custom.scm:199
 msgid "Enable pseudo mode cursor"
 msgstr ""
 
-#: ../scm/prime-custom.scm:187
+#: ../scm/prime-custom.scm:220
 msgid "PRIME off"
 msgstr "PRIME désactivé"
 
-#: ../scm/prime-custom.scm:192 ../scm/prime-custom.scm:197
+#: ../scm/prime-custom.scm:225 ../scm/prime-custom.scm:230
 msgid "PRIME on"
 msgstr "PRIME sactivé"
 
-#: ../scm/prime-custom.scm:206
+#: ../scm/prime-custom.scm:239
 msgid "Peculiar"
 msgstr ""
 
-#: ../scm/prime-custom.scm:207
+#: ../scm/prime-custom.scm:240
 msgid "Application specific input mode"
 msgstr ""
 
@@ -3935,6 +4083,31 @@ msgstr ""
 
 #: ../scm/prime-key-custom.scm:235
 msgid "[PRIME] Direct key in English mode"
+msgstr ""
+
+#: ../scm/prime.scm:846
+#, scheme-format
+msgid "cannot create socket file \"~a\""
+msgstr ""
+
+#: ../scm/prime.scm:862
+msgid "cannot create socket directory"
+msgstr ""
+
+#: ../scm/prime.scm:904
+msgid "Prime connection is not defined"
+msgstr ""
+
+#: ../scm/process.scm:58 ../scm/process.scm:89
+msgid "cannot fork"
+msgstr ""
+
+#: ../scm/process.scm:68
+msgid "cannot duplicate stdin"
+msgstr ""
+
+#: ../scm/process.scm:73
+msgid "cannot duplicate stdout"
 msgstr ""
 
 #: ../scm/pyload.scm:42
@@ -4470,12 +4643,24 @@ msgstr ""
 msgid "Social-IME (advanced)"
 msgstr ""
 
-#: ../scm/social-ime-custom.scm:307
-msgid "Social-IME server url"
+#: ../scm/social-ime-custom.scm:310
+msgid "Social-IME server address"
 msgstr ""
 
-#: ../scm/social-ime-custom.scm:313
+#: ../scm/social-ime-custom.scm:316
+msgid "Social-IME server path"
+msgstr ""
+
+#: ../scm/social-ime-custom.scm:322
+msgid "Social-IME server prediction API path"
+msgstr ""
+
+#: ../scm/social-ime-custom.scm:328
 msgid "Social-IME user name"
+msgstr ""
+
+#: ../scm/social-ime-custom.scm:365 ../scm/yahoo-jp-custom.scm:382
+msgid "Number of cache of prediction candidates"
 msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:35
@@ -4632,6 +4817,14 @@ msgstr ""
 
 #: ../scm/social-ime-key-custom.scm:268
 msgid "[Social-IME] toggle kana/alphanumeric mode"
+msgstr ""
+
+#: ../scm/social-ime-key-custom.scm:274
+msgid "[Social-IME] Next prediction candidate"
+msgstr ""
+
+#: ../scm/social-ime-key-custom.scm:280
+msgid "[Social-IME] Previous prediction candidate"
 msgstr ""
 
 #: ../scm/tcode.scm:1645
@@ -4960,12 +5153,20 @@ msgstr ""
 msgid "Yahoo-Jp (advanced)"
 msgstr ""
 
-#: ../scm/yahoo-jp-custom.scm:307
-msgid "Yahoo-Jp server url"
+#: ../scm/yahoo-jp-custom.scm:311
+msgid "Yahoo-Jp server address"
 msgstr ""
 
-#: ../scm/yahoo-jp-custom.scm:313
+#: ../scm/yahoo-jp-custom.scm:317
+msgid "Yahoo-Jp service path"
+msgstr ""
+
+#: ../scm/yahoo-jp-custom.scm:323
 msgid "Yahoo-Jp api key"
+msgstr ""
+
+#: ../scm/yahoo-jp-custom.scm:329
+msgid "Use SSL"
 msgstr ""
 
 #: ../scm/yahoo-jp-key-custom.scm:35
@@ -5124,7 +5325,15 @@ msgstr ""
 msgid "[Yahoo-Jp] toggle kana/alphanumeric mode"
 msgstr ""
 
-#: ../scm/yahoo-jp.scm:110
+#: ../scm/yahoo-jp-key-custom.scm:274
+msgid "[Yahoo-Jp] Next prediction candidate"
+msgstr ""
+
+#: ../scm/yahoo-jp-key-custom.scm:280
+msgid "[Yahoo-Jp] Previous prediction candidate"
+msgstr ""
+
+#: ../scm/yahoo-jp.scm:113
 msgid ""
 "Please regist Api key from <a href='http://developer.yahoo.co.jp/'>developer "
 "network</a> and set value on advanced menu."
@@ -5166,6 +5375,18 @@ msgstr ""
 #: ../uim/dynlib.c:156
 #, c-format
 msgid "dynlib: %s: Initialization failed."
+msgstr ""
+
+#: ../uim/openssl.c:286
+msgid "uim-openssl: DTLSv1_method() is not supported on this system"
+msgstr ""
+
+#: ../uim/openssl.c:296
+msgid "uim-openssl: DTLSv1_server_method() is not supported on this system"
+msgstr ""
+
+#: ../uim/openssl.c:306
+msgid "uim-openssl: DTLSv1_client_method() is not supported on this system"
 msgstr ""
 
 #: ../uim/sj3.c:69
@@ -5325,18 +5546,18 @@ msgstr ""
 msgid "Kanji string is too long."
 msgstr ""
 
-#: ../uim/skk.c:986
+#: ../uim/skk.c:984
 msgid "uim-skk: error in expand_str"
 msgstr ""
 
-#: ../uim/skk.c:1001
+#: ../uim/skk.c:999
 msgid "uim-skk: too long word"
 msgstr ""
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/skk.c:3601
+#: ../uim/skk.c:3586
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
@@ -5345,7 +5566,7 @@ msgstr ""
 msgid "All functionality has been disabled to save user application data."
 msgstr ""
 
-#: ../uim/wnnlib.c:3739 ../uim/wnnlib.c:3753
+#: ../uim/wnnlib.c:3744 ../uim/wnnlib.c:3758
 #, c-format
 msgid ""
 "uim-wnn: \"%s\" is not exist. Please run uim-pref and set \"Wnn resource file"
