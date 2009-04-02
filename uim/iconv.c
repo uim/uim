@@ -381,17 +381,13 @@ uim_ext_iconv_open(uim_lisp tocode_, uim_lisp fromcode_)
 static uim_lisp
 uim_ext_iconv_code_conv(uim_lisp ic_, uim_lisp inbuf_)
 {
-  uim_lisp outbuf_;
   char *outbuf;
 
   outbuf = uim_iconv_code_conv(C_PTR(ic_), REFER_C_STR(inbuf_));
   if (!outbuf)
     return uim_scm_f();
 
-  outbuf_ = MAKE_STR(outbuf);
-  free(outbuf);
-
-  return outbuf_;
+  return MAKE_STR_DIRECTLY(outbuf);
 }
 
 static uim_lisp

@@ -1480,7 +1480,6 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
   int convlen;
   const char *numstr;
   char *convstr;
-  uim_lisp merged_str;
 
   if (str_ == uim_scm_null())
     return uim_scm_null();
@@ -1510,9 +1509,7 @@ skk_merge_replaced_numeric_str(uim_lisp str_, uim_lisp numlst_)
     }
   }
 
-  merged_str = MAKE_STR(str);
-  free(str);
-  return merged_str;
+  return MAKE_STR_DIRECTLY(str);
 }
 
 static char *
@@ -1546,12 +1543,10 @@ static uim_lisp
 skk_replace_numeric(uim_lisp head_)
 {
   char *str;
-  uim_lisp result;
-
+  
   str = replace_numeric(REFER_C_STR(head_));
-  result = MAKE_STR(str);
-  free(str);
-  return result;
+
+  return MAKE_STR_DIRECTLY(str);
 }
 
 static char *
@@ -1662,7 +1657,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   int n;
   struct skk_cand_array *ca, *subca;
   int i, j, k = 0;
-  char *cands = NULL;
+  const char *cands = NULL;
   char *p;
   const char *numstr;
   int method_place = 0;
@@ -1697,19 +1692,19 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 	  if (subca) {
 	    for (j = 0; j < subca->nr_cands; j++) {
 	      if (k == n) {
-		cands = uim_strdup(ca->cands[i]);
+		char *str;
+		str = uim_strdup(ca->cands[i]);
 		sublen = strlen(subca->cands[j]);
 		newlen = strlen(ca->cands[i]) - 2 + sublen;
 		mark = p - ca->cands[i];
 
-		cands = uim_realloc(cands, newlen + 1);
-		memmove(&cands[mark + sublen],
-			&cands[mark + 2],
+		str = uim_realloc(str, newlen + 1);
+		memmove(&str[mark + sublen],
+			&str[mark + 2],
 			newlen - mark - sublen + 1);
-		memcpy(&cands[mark], subca->cands[j], sublen);
+		memcpy(&str[mark], subca->cands[j], sublen);
 
-		str_ = MAKE_STR(cands);
-		free(cands);
+		str_ = MAKE_STR_DIRECTLY(str);
 		return skk_merge_replaced_numeric_str(str_, numlst_);
 	      }
 	      k++;
@@ -2019,7 +2014,6 @@ restore_numeric(const char *s, uim_lisp numlst_)
   int i, j, len, newlen, numstrlen;
   const char *numstr;
   char *str;
-  uim_lisp ret;
 
   str = uim_strdup(s);
   newlen = len = strlen(str);
@@ -2040,10 +2034,7 @@ restore_numeric(const char *s, uim_lisp numlst_)
       numlst_ = CDR(numlst_);
     }
   }
-  ret = MAKE_STR(str);
-  free(str);
-
-  return ret;
+  return MAKE_STR_DIRECTLY(str);
 }
 
 static uim_lisp
@@ -3214,6 +3205,12 @@ skk_save_personal_dictionary(uim_lisp fn_)
       write_out_line(fp, sl);
   }
 
+  if (fflush(fp) != 0)
+    goto error;
+
+  if (fsync(fileno(fp)) != 0)
+    goto error;
+
   if (fclose(fp) != 0)
     goto error;
 
@@ -3253,7 +3250,6 @@ static uim_lisp
 skk_remove_annotation(uim_lisp str_)
 {
   char *str, *sep;
-  uim_lisp res;
 
   if (str_ == uim_scm_null())
     return uim_scm_null();
@@ -3263,9 +3259,7 @@ skk_remove_annotation(uim_lisp str_)
   if (sep && (*(sep + 1) != '\0')) {
     *sep = '\0';
   }
-  res = MAKE_STR(str);
-  free(str);
-  return res;
+  return MAKE_STR_DIRECTLY(str);
 }
 
 static char *
@@ -3319,7 +3313,6 @@ skk_eval_candidate(uim_lisp str_)
 {
   const char *cand;
   char *str;
-  uim_lisp cand_;
 
   if (str_ == uim_scm_null())
     return uim_scm_null();
@@ -3331,10 +3324,7 @@ skk_eval_candidate(uim_lisp str_)
   if (!str)
     return str_;
 
-  cand_ = MAKE_STR(str);
-  free(str);
-
-  return cand_;
+  return MAKE_STR_DIRECTLY(str);
 }
 
 /* only for siod */
@@ -3346,7 +3336,6 @@ skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
   int start;
   int end;
   int len;
-  uim_lisp ret;
   int i, j = 0;
 
   str = REFER_C_STR(str_);
@@ -3368,10 +3357,7 @@ skk_substring(uim_lisp str_, uim_lisp start_, uim_lisp end_)
     j++;
   }
   s[j] = '\0';
-  ret = MAKE_STR(s);
-  free(s);
-
-  return ret;
+  return MAKE_STR_DIRECTLY(s);
 }
 
 static uim_lisp
