@@ -322,7 +322,7 @@
   (N_ "Social-IME server prediction API path")
   (N_ "long description will be here."))
 
-(define-custom 'social-ime-user (or (user-name) "")
+(define-custom 'social-ime-user ""
   '(social-ime-advanced social-ime-server)
   '(string ".*")
   (N_ "Social-IME user name")
