@@ -371,6 +371,12 @@
   (N_ "Character count to start input prediction")
   (N_ "long description will be here."))
 
+(define-custom 'social-ime-warn-connection? #t
+  '(social-ime-advanced social-ime-server)
+  '(boolean)
+  (N_ "Show caveat for the connection")
+  (N_ "long description will be here."))
+
 (custom-add-hook 'social-ime-use-candidate-window?
                  'custom-get-hooks
                  (lambda ()

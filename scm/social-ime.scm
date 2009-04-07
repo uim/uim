@@ -581,6 +581,8 @@
     (social-ime-make-raw-string (social-ime-get-raw-str-seq sc) wide? upper?)))
 
 (define (social-ime-init-handler id im arg)
+  (if social-ime-warn-connection?
+    (uim-notify-info (N_ "Caveat: All the request to Social IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting.")))
   (if (not social-ime-init-lib-ok?)
       (begin
 	(social-ime-lib-init)

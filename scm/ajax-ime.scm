@@ -511,6 +511,8 @@
     (ajax-ime-make-raw-string (ajax-ime-get-raw-str-seq ac) wide? upper?)))
 
 (define (ajax-ime-init-handler id im arg)
+  (if ajax-ime-warn-connection?
+    (uim-notify-info (N_ "Caveat: All the request to Ajax-IME/ChaIME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting.")))
   (if (not ajax-ime-init-lib-ok?)
       (begin
 	(ajax-ime-lib-init)

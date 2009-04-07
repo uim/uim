@@ -309,6 +309,12 @@
   (N_ "Server url of Ajax IME.")
   (N_ "long description will be here."))
 
+(define-custom 'ajax-ime-warn-connection? #t
+  '(ajax-ime-advanced ajax-ime-server)
+  '(boolean)
+  (N_ "Show caveat for the connection")
+  (N_ "long description will be here."))
+
 (define-custom 'ajax-ime-use-with-vi? #f
   '(ajax-ime-advanced special-op)
   '(boolean)
