@@ -581,8 +581,6 @@
     (social-ime-make-raw-string (social-ime-get-raw-str-seq sc) wide? upper?)))
 
 (define (social-ime-init-handler id im arg)
-  (if social-ime-warn-connection?
-    (uim-notify-info (N_ "Caveat: All the request to Social IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting.")))
   (if (not social-ime-init-lib-ok?)
       (begin
 	(social-ime-lib-init)
@@ -1787,6 +1785,10 @@
             (social-ime-lib-reset-conversion sc))
 	(social-ime-flush sc))))
 
+(define (social-ime-focus-in-handler sc)
+  (if social-ime-warn-connection?
+    (uim-notify-info (N_ "Caveat: All the request to Social IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting."))))
+
 ;;;
 (define (social-ime-get-candidate-handler sc idx ascel-enum-hint)
   (let* ((cur-seg (ustr-cursor-pos (social-ime-context-segments sc)))
@@ -1826,7 +1828,7 @@
  social-ime-set-candidate-index-handler
  context-prop-activate-handler
  #f
- #f
+ social-ime-focus-in-handler
  #f
  #f
  #f
