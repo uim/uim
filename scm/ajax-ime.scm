@@ -43,7 +43,7 @@
 
 ;;; implementations
 
-(define ajax-ime-prev-warn-connection-time (time))
+(define ajax-ime-prev-warn-connection-time "0")
 
 ;;
 ;; canna emulating functions

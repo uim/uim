@@ -42,7 +42,7 @@
 
 ;;; implementations
 
-(define social-ime-prev-warn-connection-time (time))
+(define social-ime-prev-warn-connection-time "0")
 
 ;;
 ;; canna emulating functions
