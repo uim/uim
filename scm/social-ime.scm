@@ -42,6 +42,8 @@
 
 ;;; implementations
 
+(define social-ime-prev-warn-connection-time (time))
+
 ;;
 ;; canna emulating functions
 ;;
@@ -582,7 +584,13 @@
 
 (define (social-ime-init-handler id im arg)
   (if social-ime-warn-connection?
-    (uim-notify-info (N_ "Caveat: All the request to Social IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting.")))
+    (let ((diff (string->number
+		  (difftime (time) social-ime-prev-warn-connection-time))))
+      (if (or (not diff)
+	      (> diff 5))
+	(begin
+	  (uim-notify-info (N_ "Caveat: All the request to Social IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Social-IME (advanced) setting."))
+	  (set! social-ime-prev-warn-connection-time (time))))))
   (if (not social-ime-init-lib-ok?)
       (begin
 	(social-ime-lib-init)

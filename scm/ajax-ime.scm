@@ -43,6 +43,8 @@
 
 ;;; implementations
 
+(define ajax-ime-prev-warn-connection-time (time))
+
 ;;
 ;; canna emulating functions
 ;;
@@ -512,7 +514,13 @@
 
 (define (ajax-ime-init-handler id im arg)
   (if ajax-ime-warn-connection?
-    (uim-notify-info (N_ "Caveat: All the request to Ajax-IME/ChaIME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting.")))
+    (let ((diff (string->number
+		  (difftime (time) ajax-ime-prev-warn-connection-time))))
+      (if (or (not diff)
+	      (> diff 5))
+	(begin
+	  (uim-notify-info (N_ "Caveat: All the request to Ajax-IME/ChaIME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting."))
+	  (set! ajax-ime-prev-warn-connection-time (time))))))
   (if (not ajax-ime-init-lib-ok?)
       (begin
 	(ajax-ime-lib-init)
