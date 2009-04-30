@@ -43,7 +43,9 @@
 
 #include "uim.h"  // for uim_bool
 #include "uim-notify.h"
+#include "gettext.h"
 
+#define UGETTEXT(str)	(dgettext(GETTEXT_PACKAGE, (str)))
 
 static uim_notify_desc uim_notify_knotify3_desc = {
   "knotify3",
@@ -68,7 +70,6 @@ uim_notify_plugin_quit()
   return;
 }
 
-/* FIXME: gettext msg */
 static uim_bool
 send_knotify(const char *eventstr, const char *msg, int level)
 {
@@ -79,8 +80,8 @@ send_knotify(const char *eventstr, const char *msg, int level)
   QString event(eventstr), fromApp("uim"), text, sound(""), file("");
   int present = KNotifyClient::Messagebox | level;
 
-  snprintf(body, sizeof(body), "libuim: %s", msg);
-  fprintf(stderr, "%s\n", msg);
+  snprintf(body, sizeof(body), "libuim: %s", UGETTEXT(msg));
+  fprintf(stderr, "%s\n", UGETTEXT(msg));
 
   strlcpy(body_short, body, sizeof(body_short));
   text = body_short;

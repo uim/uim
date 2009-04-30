@@ -42,27 +42,26 @@
 
 #include "uim.h"  /* for uim_bool */
 #include "uim-notify.h"
+#include "gettext.h"
 
+#define UGETTEXT(str)	(dgettext(GETTEXT_PACKAGE, (str)))
 
 static uim_bool
 uim_growl_notify(int prio, BOOL is_sticky, const char *body)
 {
   char body_short[256];
-
-  BOOL ret;
-  char *msg;
-  NSString *string;
   const char *str[3] = {"uim notify info", "dummy", "uim notify fatal"};
+  const char *title[3] = {"Info", "dummy", "Fatal"};
 
   if (prio > 2 || prio < 0)
     return UIM_FALSE;
 
-  strlcpy(body_short, body, sizeof(body_short));
+  strlcpy(body_short, UGETTEXT(body), sizeof(body_short));
 
-  fprintf(stderr, "libuim: %s\n", body);
+  fprintf(stderr, "libuim: %s\n", UGETTEXT(body));
 
   [GrowlApplicationBridge
-	  notifyWithTitle:@"uim Notification"
+	  notifyWithTitle:[NSString stringWithCString:title[prio]]
 	      description:[NSString stringWithUTF8String:body_short]
 	 notificationName:[NSString stringWithCString:str[prio]]
 		 iconData:nil

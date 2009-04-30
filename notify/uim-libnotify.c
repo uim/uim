@@ -42,10 +42,11 @@
 
 #include "uim.h"  /* for uim_bool */
 #include "uim-notify.h"
+#include "gettext.h"
 
 #define UIM_ICON UIM_PIXMAPSDIR "/uim-icon.png"
+#define UGETTEXT(str)	(dgettext(GETTEXT_PACKAGE, (str)))
 
-/* FIXME: gettext body */
 static uim_bool
 uim_libnotify_notify(int urgency, int timeout, const char *body)
 {
@@ -56,9 +57,9 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
   gchar *gmsg;
   gsize read, written;
 
-  strlcpy(body_short, body, sizeof(body_short));
+  strlcpy(body_short, UGETTEXT(body), sizeof(body_short));
 
-  fprintf(stderr, "libuim: %s\n", body);
+  fprintf(stderr, "libuim: %s\n", UGETTEXT(body));
 
   gmsg = g_locale_to_utf8(body_short, -1, &read, &written, NULL);
 
