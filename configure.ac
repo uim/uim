@@ -710,7 +710,7 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[gettext package name])
 
 AM_GNU_GETTEXT([external], [need-ngettext])
-AM_GNU_GETTEXT_VERSION(0.12)
+AM_GNU_GETTEXT_VERSION([0.17])
 
 # FIXME: Probably voilent way  -- YamaKen 2005-01-07
 if test x$prefix = xNONE; then
