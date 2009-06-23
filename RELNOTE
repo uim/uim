@@ -1,10 +1,10 @@
-uim 1.5.5 Release Note
+uim 1.5.6 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.5.5 is latest stable release of uim.
+This distribution of uim 1.5.6 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -15,9 +15,7 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Plugged memory leaks in general, and improved startup time of uim-pref
-tool.  Also a few minor fixes/enhancements against 1.5.4. See NEWS for
-the detailed changes.
+Bug fix for uim-xim.  See NEWS for the detailed changes.
 
 
 What's New in 1.5.0
@@ -73,7 +71,13 @@ Notes for Packagers and System Integrators
 Roadmap
 -------
 
-  - uim 1.6.0 and later
+  - uim 1.6.0
+
+    Additional input methods, notification support, internal
+    improvement will be featured.
+
+
+  - uim 1.7.0 and later
 
     The time for drastic reconstruction. Many user-visible changes.
 

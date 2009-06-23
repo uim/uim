@@ -1,4 +1,16 @@
-Overview of changes from 1.5.4 to 1.5.5
+Overview of changes from 1.5.5 to 1.5.6
+=======================================
+* Enhancement
+  - uim-dict-gtk
+    * Support UTF-8 chracters with Anthy personal dictionary
+
+* Fixes
+  - XIM bridge (uim-xim)
+    * Fix segfault with latest X.Org
+    * Fix segfault with PRIME
+
+
+ Overview of changes from 1.5.4 to 1.5.5
 =======================================
 * Enhancements
   - uim-anthy
