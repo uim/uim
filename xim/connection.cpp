@@ -48,7 +48,7 @@
 # include <alloca.h>
 #endif
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 4096
 #define TRANSPORT_UNIT 20
 #define TRANSPORT_MAX 20	// Emacs's XIM won't work correctly when the value is 100
 
