@@ -11,6 +11,7 @@ aclocal -I m4 \
   && perl -i -pe 's%"(POTFILES.(skip|ignore))"%"\$SRCDIR/$1"%g' intltool-update.in \
   && perl -i -pe 's%(-f "\$SRCDIR/../\$dummy")%$1 and ! -f "../\$dummy"%' intltool-update.in \
   && cp po/Makefile.in.in qt/chardict/po \
+  && perl -i -pe 's/check: all.*$/check: all/' qt/chardict/po/Makefile.in.in \
   && ed qt/chardict/po/Makefile.in.in <<EOT
 /^check:
 +
