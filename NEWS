@@ -2,7 +2,7 @@ Overview of changes from 1.5.5 to 1.5.6
 =======================================
 * Enhancement
   - uim-dict-gtk
-    * Support UTF-8 chracters with Anthy personal dictionary
+    * Support UTF-8 characters with Anthy personal dictionary
 
 * Fixes
   - XIM bridge (uim-xim)
