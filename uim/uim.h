@@ -43,7 +43,7 @@ extern "C" {
 
 #define UIM_VERSION_MAJOR      (1)
 #define UIM_VERSION_MINOR      (5)
-#define UIM_VERSION_PATCHLEVEL (6)
+#define UIM_VERSION_PATCHLEVEL (7)
 #define UIM_VERSION_REQUIRE(major, minor, patchlevel)			     \
   ((major) < UIM_VERSION_MAJOR						     \
    || ((major) == UIM_VERSION_MAJOR && (minor) < UIM_VERSION_MINOR)	     \
