@@ -3,7 +3,7 @@
 # Makefile.qmake is only exist when --enable-qt4-immodule
 if QT4_IMMODULE
 all clean mocclean install uninstall:
-	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
+	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake INSTALL_ROOT=$(DESTDIR) $@
 
 # *.pro is required to run Makefile.qmake. So distclean-am is deferred.
 distclean:

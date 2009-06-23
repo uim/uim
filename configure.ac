@@ -773,13 +773,13 @@ AC_ARG_ENABLE(gnome-applet,
         use_applet_gnome="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
+        PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0 libgnomeui-2.0, use_applet_gnome="yes",use_applet_gnome="no")
         PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
       ;;
     esac
   ],
   [
-    PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0, use_applet_gnome="yes",use_applet_gnome="no")
+    PKG_CHECK_MODULES(APPLET_GNOME, libpanelapplet-2.0 libgnomeui-2.0, use_applet_gnome="yes",use_applet_gnome="no")
     PKG_CHECK_MODULES(APPLET_2_14, libpanelapplet-2.0 >= 2.14.0, panelapplet_have_set_background_api="yes",panelapplet_have_set_background_api="no")
   ])
 
