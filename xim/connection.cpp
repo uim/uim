@@ -48,7 +48,7 @@
 # include <alloca.h>
 #endif
 
-#define BUF_SIZE 4096
+#define INIT_BUF_SIZE 1024
 #define TRANSPORT_UNIT 20
 #define TRANSPORT_MAX 20	// Emacs's XIM won't work correctly when the value is 100
 
@@ -136,8 +136,9 @@ XConnection::XConnection(XimServer *svr, Window clientWin, Window commWin) :
 {
     mClientWin = clientWin;
     mCommWin = commWin;
-    mBuf.buf = (char *)malloc(BUF_SIZE);
+    mBuf.buf = (char *)malloc(INIT_BUF_SIZE);
     mBuf.len = 0;
+    mBuf.size = INIT_BUF_SIZE;
     add_window_watch(mClientWin, this, STRUCTURE_NOTIFY_MASK);
     mIsValid = true;
 }
@@ -222,9 +223,14 @@ bool XConnection::readToBuf(XClientMessageEvent *ev)
 	unsigned long nrItems;
 	unsigned long remain;
 	char *data;
+
+	while (ev->data.l[0] >= mBuf.size) {
+	    mBuf.size += 1024;
+	    mBuf.buf = (char *)realloc(mBuf.buf, mBuf.size);
+	}
 	do {
 	    XGetWindowProperty(XimServer::gDpy, ev->window, ev->data.l[1],
-			       offset, BUF_SIZE - mBuf.len, True,
+			       offset, mBuf.size - mBuf.len, True,
 			       AnyPropertyType,
 			       &type, &format, &nrItems, &remain,
 			       (unsigned char **)(uintptr_t)&data);
@@ -240,10 +246,12 @@ bool XConnection::readToBuf(XClientMessageEvent *ev)
 	} while (remain > 0);
     } else if (ev->format == 8) {
 	// direct
-	if (mBuf.len + TRANSPORT_UNIT >= BUF_SIZE)
-	    return false;
+	if ((mBuf.len + TRANSPORT_UNIT) >= mBuf.size) {
+	    mBuf.size += TRANSPORT_UNIT;
+	    mBuf.buf = (char *)realloc(mBuf.buf, mBuf.size);
+	}
 	memcpy(&mBuf.buf[mBuf.len], ev->data.b, TRANSPORT_UNIT);
-	mBuf.len += TRANSPORT_UNIT;// XXX may over run
+	mBuf.len += TRANSPORT_UNIT;
     } else
 	return false;
 

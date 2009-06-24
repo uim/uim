@@ -62,6 +62,7 @@ private:
     struct {
 	char *buf;
 	int len;
+	long size;
     } mBuf;
 };
 
