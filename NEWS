@@ -11,6 +11,21 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 * Others
 
 
+Overview of changes from 1.5.5 to 1.5.6
+=======================================
+* Enhancement
+  - uim-dict-gtk
+    * Support UTF-8 characters with Anthy personal dictionary
+
+* Fixes
+  - XIM bridge (uim-xim)
+    * Fix segfault with latest X.Org
+    * Fix segfault with PRIME
+
+* Others
+  - Apply build fix from Fedora
+
+
 Overview of changes from 1.5.4 to 1.5.5
 =======================================
 * Enhancements
