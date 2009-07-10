@@ -28,6 +28,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 95))
+
 (require-custom "generic-key-custom.scm")
 (require-custom "look-custom.scm")
 
@@ -119,21 +121,6 @@
               l)))
 (define (look-internal:make-string n c)
   (apply string-append (map (lambda (x) (symbol->string c)) (iota n))))
-;; XXX: slow quick-sort
-(define (look-internal:qsort! data proc)
-  (let ((pivot 0)
-        (left '())
-        (right '()))
-    (if (< (length data) 2)
-        data
-        (begin
-          (set! pivot (car data))
-          (for-each (lambda (x)
-                      (if (proc x pivot)
-                          (set! left (cons x left ))
-                          (set! right (cons x right))))
-                    (cdr data))
-          (append (look-internal:qsort! left proc) (cons pivot (look-internal:qsort! right proc)))))))
 (define (look-to-lower-string str)
   (apply string-append
          (map (lambda (c)
@@ -144,9 +131,7 @@
 
 (define (look-history-sort li lessf)
   ;;(map car li))
-  (map car (look-internal:qsort!
-            li
-            (lambda (x y) (lessf (cdr x) (cdr y))))))
+  (map car (sort! li (lambda (x y) (lessf (cdr x) (cdr y))))))
 
 (define (look-history-eow? x)
   (eq? #t (car x)))
