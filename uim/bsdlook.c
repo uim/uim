@@ -434,11 +434,11 @@ static int
 compare(char *s1, char *s2, uim_look_ctx *ctx)
 {
 	int ch;
-	char *back = ctx->back;
+	unsigned char *back = (unsigned char *)ctx->back;
 	int fflag = ctx->fflag, dflag = ctx->dflag;
 
-	for (; *s1 && s2 < back && *s2 != '\n'; ++s1, ++s2) {
-		ch = *s2;
+	for (; (unsigned char)*s1 && (unsigned char *)s2 < back && *s2 != '\n'; ++s1, ++s2) {
+		ch = (unsigned char)*s2;
 		if (fflag)
 			ch = FOLD(ch);
 		if (dflag)
@@ -448,10 +448,10 @@ compare(char *s1, char *s2, uim_look_ctx *ctx)
 			++s2;		/* Ignore character in comparison. */
 			continue;
 		}
-		if (*s1 != ch)
-			return (*s1 < ch ? LESS : GREATER);
+		if ((unsigned char)*s1 != ch)
+			return ((unsigned char)*s1 < ch ? LESS : GREATER);
 	}
-	return (*s1 ? GREATER : EQUAL);
+	return ((unsigned char)*s1 ? GREATER : EQUAL);
 }
 
 #if 0
