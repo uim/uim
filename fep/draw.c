@@ -52,6 +52,7 @@
 #ifdef HAVE_ASSERT_H
 #include <assert.h>
 #endif
+#include <stdio.h>
 
 #define WINNOSIZE 5
 #define MODESIZE 50
