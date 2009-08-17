@@ -174,6 +174,14 @@ libuim_openssl_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_openssl_la_CPPFLAGS = -I$(top_srcdir) @OPENSSL_CPPFLAGS@
 endif
 
+if SQLITE3
+uim_plugin_LTLIBRARIES += libuim-sqlite3.la
+libuim_sqlite3_la_SOURCES = sqlite3.c
+libuim_sqlite3_la_LIBADD = @SQLITE3_LIBS@ libuim.la
+libuim_sqlite3_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_sqlite3_la_CPPFLAGS = -I$(top_srcdir) @SQLITE3_CFLAGS@
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@

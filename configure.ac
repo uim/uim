@@ -282,6 +282,22 @@ AC_ARG_ENABLE(openssl,
   ])
 
 
+# *************************
+# *** Tests for SQLite3 ***
+# *************************
+AC_ARG_WITH(sqlite3,
+	AS_HELP_STRING([--with-sqlite3], [Build with SQLite3
+					@<:@default=no@:>@]),
+	[
+	if test "x$with_sqlite3" = "xyes"; then
+		PKG_CHECK_MODULES(SQLITE3, sqlite3 >= 3.0.0, use_sqlite3="yes", use_sqlite3="no")
+	else
+		use_sqlite3="no"
+	fi
+	],[
+	use_sqlite3="no"
+])
+
 PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
 AC_PATH_XTRA
 
@@ -1036,6 +1052,7 @@ AM_CONDITIONAL(SKK, true)
 AM_CONDITIONAL(CURL, test x$use_curl = xyes)
 AM_CONDITIONAL(EXPAT, test x$expat_found = xyes)
 AM_CONDITIONAL(OPENSSL, test x$use_openssl = xyes)
+AM_CONDITIONAL(SQLITE3, test x$use_sqlite3 = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
@@ -1624,6 +1641,7 @@ Configure Result :
    cURL            : ${use_curl}
    expat           : ${expat_found}
    OpenSSL         : ${use_openssl}
+   SQLite3         : ${use_sqlite3}
    Gtk+            : ${use_gtk2}
    Gnome Applet    : ${use_applet_gnome}
    Qt3             : ${use_qt}
