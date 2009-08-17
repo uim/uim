@@ -656,5 +656,7 @@
   (N_ "Timeout")
   (N_ "Timeout of http connection (msec)."))
 
+(load "predict-custom.scm")
+
 (if custom-full-featured?
     (for-each require-module installed-im-module-list))

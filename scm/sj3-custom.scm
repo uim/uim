@@ -47,6 +47,10 @@
 		     (N_ "SJ3 (advanced)")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'sj3-prediction
+		     (N_ "Prediction")
+		     (N_ "long description will be here."))
+
 ;;
 ;; segment separator
 ;;
@@ -336,3 +340,65 @@
   '(boolean)
   (N_ "Enable input mode transition keys in direct (off state) input mode")
   (N_ "long description will be here."))
+
+;; prediction
+(define-custom 'sj3-use-prediction? #f
+  '(sj3-advanced sj3-prediction)
+  '(boolean)
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'sj3-select-prediction-by-numeral-key? #f
+  '(sj3-advanced sj3-prediction)
+  '(boolean)
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom 'sj3-use-implicit-commit-prediction? #t
+  '(sj3-advanced sj3-prediction)
+  '(boolean)
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
+
+(define-custom 'sj3-prediction-cache-words 256
+  '(sj3-advanced sj3-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
+  (N_ "long description will be here."))
+
+(define-custom 'sj3-prediction-start-char-count 2
+  '(sj3-advanced sj3-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'sj3-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not sj3-use-candidate-window?)
+                       (set! sj3-use-prediction? #f))))
+
+(custom-add-hook 'sj3-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   sj3-use-candidate-window?))
+
+(custom-add-hook 'sj3-select-prediction-by-numeral-key?
+                 'custom-activity-hooks
+                 (lambda ()
+                   sj3-use-prediction?))
+
+(custom-add-hook 'sj3-use-implicit-commit-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   sj3-use-prediction?))
+
+(custom-add-hook 'sj3-prediction-cache-words
+                 'custom-activity-hooks
+                 (lambda ()
+                   sj3-use-prediction?))
+
+(custom-add-hook 'sj3-prediction-start-char-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   sj3-use-prediction?))

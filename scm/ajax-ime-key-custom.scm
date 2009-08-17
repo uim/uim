@@ -267,3 +267,15 @@
 	       '(key)
 	       (N_ "[Ajax-IME] toggle kana/alphanumeric mode")
 	       (N_ "long description will be here"))
+
+(define-custom 'ajax-ime-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
+               '(ajax-ime-keys4 ajax-ime-prediction)
+               '(key)
+               (N_ "[Ajax-IME] Next prediction candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'ajax-ime-prev-prediction-key '(generic-prev-candidate-key)
+               '(ajax-ime-keys4 ajax-ime-prediction)
+               '(key)
+               (N_ "[Ajax-IME] Previous prediction candidate")
+               (N_ "long description will be here"))

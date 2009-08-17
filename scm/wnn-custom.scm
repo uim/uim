@@ -47,6 +47,10 @@
 		     (N_ "Wnn (advanced)")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'wnn-prediction
+		     (N_ "Prediction")
+		     (N_ "long description will be here."))
+
 ;;
 ;; segment separator
 ;;
@@ -336,3 +340,65 @@
   '(boolean)
   (N_ "Enable input mode transition keys in direct (off state) input mode")
   (N_ "long description will be here."))
+
+;; prediction
+(define-custom 'wnn-use-prediction? #f
+  '(wnn-advanced wnn-prediction)
+  '(boolean)
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'wnn-select-prediction-by-numeral-key? #f
+  '(wnn-advanced wnn-prediction)
+  '(boolean)
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom 'wnn-use-implicit-commit-prediction? #t
+  '(wnn-advanced wnn-prediction)
+  '(boolean)
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
+
+(define-custom 'wnn-prediction-cache-words 256
+  '(wnn-advanced wnn-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
+  (N_ "long description will be here."))
+
+(define-custom 'wnn-prediction-start-char-count 2
+  '(wnn-advanced wnn-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'wnn-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not wnn-use-candidate-window?)
+                       (set! wnn-use-prediction? #f))))
+
+(custom-add-hook 'wnn-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   wnn-use-candidate-window?))
+
+(custom-add-hook 'wnn-select-prediction-by-numeral-key?
+                 'custom-activity-hooks
+                 (lambda ()
+                   wnn-use-prediction?))
+
+(custom-add-hook 'wnn-use-implicit-commit-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   wnn-use-prediction?))
+
+(custom-add-hook 'wnn-prediction-cache-words
+                 'custom-activity-hooks
+                 (lambda ()
+                   wnn-use-prediction?))
+
+(custom-add-hook 'wnn-prediction-start-char-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   wnn-use-prediction?))

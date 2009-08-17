@@ -267,3 +267,15 @@
 	       '(key)
 	       (N_ "[Wnn] toggle kana/alphanumeric mode")
 	       (N_ "long description will be here"))
+
+(define-custom 'wnn-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
+               '(wnn-keys4 wnn-prediction)
+               '(key)
+               (N_ "[Wnn] Next prediction candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'wnn-prev-prediction-key '(generic-prev-candidate-key)
+               '(wnn-keys4 wnn-prediction)
+               '(key)
+               (N_ "[Wnn] Previous prediction candidate")
+               (N_ "long description will be here"))

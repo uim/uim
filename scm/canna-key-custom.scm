@@ -268,3 +268,15 @@
 	       '(key)
 	       (N_ "[Canna] toggle kana/alphanumeric mode")
 	       (N_ "long description will be here"))
+
+(define-custom 'canna-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
+               '(canna-keys4 canna-prediction)
+               '(key)
+               (N_ "[Canna] Next prediction candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'canna-prev-prediction-key '(generic-prev-candidate-key)
+               '(canna-keys4 canna-prediction)
+               '(key)
+               (N_ "[Canna] Previous prediction candidate")
+               (N_ "long description will be here"))

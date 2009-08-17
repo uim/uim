@@ -35,6 +35,7 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
+(require "generic-predict.scm")
 (require "input-parse.scm")
 (require "http-client.scm")
 (require-custom "generic-key-custom.scm")
@@ -393,6 +394,7 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'ac-ctx             ()) ;; ajax-ime-internal-context
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
@@ -404,7 +406,48 @@
     (list 'alnum-type	      ajax-ime-type-halfwidth-alnum)
     (list 'commit-raw         #t)
     (list 'input-rule         ajax-ime-input-rule-roma)
-    (list 'raw-ustr	      #f))))
+    (list 'raw-ustr           #f)
+    (list 'prediction-ctx     #f)
+    (list 'prediction-word    '())
+    (list 'prediction-candidates '())
+    (list 'prediction-appendix '())
+    (list 'prediction-nr      '())
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
+    (list 'prediction-cache   '()))))
+
+(define (ajax-ime-predict ac str)
+  (predict-meta-search
+   (ajax-ime-context-prediction-ctx ac)
+   str))
+(define (ajax-ime-lib-set-prediction-src-string ac str)
+  (let* ((ret      (ajax-ime-predict ac str))
+         (word     (predict-meta-word? ret))
+         (cands    (predict-meta-candidates? ret))
+         (appendix (predict-meta-appendix? ret)))
+    (ajax-ime-context-set-prediction-word! ac word)
+    (ajax-ime-context-set-prediction-candidates! ac cands)
+    (ajax-ime-context-set-prediction-appendix! ac appendix)
+    (ajax-ime-context-set-prediction-nr! ac (length cands)))
+  #f)
+(define (ajax-ime-lib-get-nr-predictions ac)
+  (ajax-ime-context-prediction-nr ac))
+(define (ajax-ime-lib-get-nth-word ac nth)
+  (let ((word (ajax-ime-context-prediction-word ac)))
+    (list-ref word nth)))
+(define (ajax-ime-lib-get-nth-prediction ac nth)
+  (let ((cands (ajax-ime-context-prediction-candidates ac)))
+    (list-ref cands nth)))
+(define (ajax-ime-lib-get-nth-appendix ac nth)
+  (let ((appendix (ajax-ime-context-prediction-appendix ac)))
+    (list-ref appendix nth)))
+(define (ajax-ime-lib-commit-nth-prediction ac nth)
+  (predict-meta-commit
+   (ajax-ime-context-prediction-ctx ac)
+   (ajax-ime-lib-get-nth-word ac nth)
+   (ajax-ime-lib-get-nth-prediction ac nth)
+   (ajax-ime-lib-get-nth-appendix ac nth)))
+
 (define-record 'ajax-ime-context ajax-ime-context-rec-spec)
 (define ajax-ime-context-new-internal ajax-ime-context-new)
 
@@ -422,6 +465,8 @@
     (if using-kana-table?
         (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-kana)
         (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-roma))
+    (ajax-ime-context-set-prediction-ctx! ac (predict-make-meta-search))
+    (predict-meta-open (ajax-ime-context-prediction-ctx ac) "ajax-ime")
     ac))
 
 (define (ajax-ime-commit-raw ac)
@@ -538,9 +583,11 @@
   (ustr-clear! (ajax-ime-context-segments ac))
   (ajax-ime-context-set-transposing! ac #f)
   (ajax-ime-context-set-state! ac #f)
-  (if (ajax-ime-context-candidate-window ac)
+  (if (or (ajax-ime-context-candidate-window ac)
+          (ajax-ime-context-prediction-window ac))
       (im-deactivate-candidate-selector ac))
   (ajax-ime-context-set-candidate-window! ac #f)
+  (ajax-ime-context-set-prediction-window! ac #f)
   (ajax-ime-context-set-candidate-op-count! ac 0))
 
 (define (ajax-ime-begin-input ac key key-state)
@@ -595,7 +642,9 @@
 			      (ajax-ime-context-transposing-state-preedit ac)
 			      (if (ajax-ime-context-state ac)
 				  (ajax-ime-compose-state-preedit ac)
-				  (ajax-ime-input-state-preedit ac)))
+				  (if (ajax-ime-context-predicting ac)
+                                      (ajax-ime-predicting-state-preedit ac)
+                                      (ajax-ime-input-state-preedit ac))))
 			  ())))
 	(context-update-preedit ac segments))
       (ajax-ime-context-set-commit-raw! ac #f)))
@@ -849,6 +898,176 @@
 	   (ajax-ime-flush ac)
 	   (ajax-ime-proc-input-state ac key key-state))))))))
 
+(define (ajax-ime-move-prediction ac offset)
+  (let* ((nr (ajax-ime-lib-get-nr-predictions ac))
+         (idx (ajax-ime-context-prediction-index ac))
+         (n (if (not idx)
+                0
+                (+ idx offset)))
+         (compensated-n (cond
+                         ((>= n nr)
+                          0)
+                        ((< n 0)
+                         (- nr 1))
+                        (else
+                         n))))
+    (im-select-candidate ac compensated-n)
+    (ajax-ime-context-set-prediction-index! ac compensated-n)))
+
+(define (ajax-ime-move-prediction-in-page ac numeralc)
+  (let* ((nr (ajax-ime-lib-get-nr-predictions ac))
+         (p-idx (ajax-ime-context-prediction-index ac))
+         (n (if (not p-idx)
+                0
+                p-idx))
+         (cur-page (if (= ajax-ime-nr-candidate-max 0)
+                       0
+                       (quotient n ajax-ime-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page ajax-ime-nr-candidate-max) compensated-pageidx))
+         (compensated-idx (cond
+                           ((>= idx nr)
+                            #f)
+                           (else
+                            idx)))
+         (selected-pageidx (if (not p-idx)
+                               #f
+                               (if (= ajax-ime-nr-candidate-max 0)
+                                   p-idx
+                                   (remainder p-idx
+                                              ajax-ime-nr-candidate-max)))))
+    (if (and
+         compensated-idx
+         (not (eqv? compensated-pageidx selected-pageidx)))
+        (begin
+          (ajax-ime-context-set-prediction-index! ac compensated-idx)
+          (im-select-candidate ac compensated-idx)
+          #t)
+       #f)))
+
+(define (ajax-ime-prediction-select-non-existing-index? ac numeralc)
+  (let* ((nr (ajax-ime-lib-get-nr-predictions ac))
+         (p-idx (ajax-ime-context-prediction-index ac))
+         (cur-page (if (= ajax-ime-nr-candidate-max 0)
+                       0
+                       (quotient p-idx ajax-ime-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page ajax-ime-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+        #t
+        #f)))
+
+(define (ajax-ime-prediction-keys-handled? ac key key-state)
+  (cond
+   ((ajax-ime-next-prediction-key? key key-state)
+    (ajax-ime-move-prediction ac 1)
+    #t)
+   ((ajax-ime-prev-prediction-key? key key-state)
+    (ajax-ime-move-prediction ac -1)
+    #t)
+   ((and
+     ajax-ime-select-prediction-by-numeral-key?
+     (ichar-numeric? key))
+    (ajax-ime-move-prediction-in-page ac key))
+   ((and
+     (ajax-ime-context-prediction-index ac)
+     (ajax-ime-prev-page-key? key key-state))
+    (im-shift-page-candidate ac #f)
+    #t)
+   ((and
+     (ajax-ime-context-prediction-index ac)
+     (ajax-ime-next-page-key? key key-state))
+    (im-shift-page-candidate ac #t)
+    #t)
+   (else
+    #f)))
+
+(define (ajax-ime-proc-prediction-state ac key key-state)
+  (cond
+   ;; prediction index change
+   ((ajax-ime-prediction-keys-handled? ac key key-state))
+
+   ;; cancel
+   ((ajax-ime-cancel-key? key key-state)
+    (if (ajax-ime-context-prediction-index ac)
+        (ajax-ime-reset-prediction-window ac)
+        (begin
+          (ajax-ime-reset-prediction-window ac)
+          (ajax-ime-proc-input-state ac key key-state))))
+
+   ;; commit
+   ((and
+     (ajax-ime-context-prediction-index ac)
+     (ajax-ime-commit-key? key key-state))
+    (ajax-ime-do-commit-prediction ac))
+   (else
+    (if (and
+         ajax-ime-use-implicit-commit-prediction?
+         (ajax-ime-context-prediction-index ac))
+        (cond
+         ((or
+           ;; check keys used in ajax-ime-proc-input-state-with-preedit
+           (ajax-ime-begin-conv-key? key key-state)
+           (ajax-ime-backspace-key? key key-state)
+           (ajax-ime-delete-key? key key-state)
+           (ajax-ime-kill-key? key key-state)
+           (ajax-ime-kill-backward-key? key key-state)
+           (and
+            (not (ajax-ime-context-alnum ac))
+            (ajax-ime-commit-as-opposite-kana-key? key key-state))
+           (ajax-ime-transpose-as-hiragana-key? key key-state)
+           (ajax-ime-transpose-as-katakana-key? key key-state)
+           (ajax-ime-transpose-as-halfkana-key? key key-state)
+           (and
+            (not (= (ajax-ime-context-input-rule ac) ajax-ime-input-rule-kana))
+            (or
+             (ajax-ime-transpose-as-halfwidth-alnum-key? key key-state)
+             (ajax-ime-transpose-as-fullwidth-alnum-key? key key-state)))
+           (ajax-ime-hiragana-key? key key-state)
+           (ajax-ime-katakana-key? key key-state)
+           (ajax-ime-halfkana-key? key key-state)
+           (ajax-ime-halfwidth-alnum-key? key key-state)
+           (ajax-ime-fullwidth-alnum-key? key key-state)
+           (and
+            (not (ajax-ime-context-alnum ac))
+            (ajax-ime-kana-toggle-key? key key-state))
+           (ajax-ime-alkana-toggle-key? key key-state)
+           (ajax-ime-go-left-key? key key-state)
+           (ajax-ime-go-right-key? key key-state)
+           (ajax-ime-beginning-of-preedit-key? key key-state)
+           (ajax-ime-end-of-preedit-key? key key-state)
+           (and
+            (modifier-key-mask key-state)
+            (not (shift-key-mask key-state))))
+          ;; go back to unselected prediction
+          (ajax-ime-reset-prediction-window ac)
+          (ajax-ime-check-prediction ac #f))
+         ((and
+           (ichar-numeric? key)
+           ajax-ime-select-prediction-by-numeral-key?
+           (not (ajax-ime-prediction-select-non-existing-index? ac key)))
+          (ajax-ime-context-set-predicting! ac #f)
+          (ajax-ime-context-set-prediction-index! ac #f)
+          (ajax-ime-proc-input-state ac key key-state))
+         (else
+          ;; implicit commit
+          (ajax-ime-do-commit-prediction ac)
+          (ajax-ime-proc-input-state ac key key-state)))
+        (begin
+          (ajax-ime-context-set-predicting! ac #f)
+          (ajax-ime-context-set-prediction-index! ac #f)
+          (ajax-ime-proc-input-state ac key key-state))))))
+
 (define (ajax-ime-proc-input-state-with-preedit ac key key-state)
   (let ((preconv-str (ajax-ime-context-preconv-ustr ac))
 	(raw-str (ajax-ime-context-raw-ustr ac))
@@ -858,7 +1077,12 @@
     (cond
      ;; begin conversion
      ((ajax-ime-begin-conv-key? key key-state)
+      (ajax-ime-reset-prediction-window ac)
       (ajax-ime-begin-conv ac))
+
+     ;; prediction
+     ((ajax-ime-next-prediction-key? key key-state)
+      (ajax-ime-check-prediction ac #t))
 
      ;; backspace
      ((ajax-ime-backspace-key? key key-state)
@@ -909,6 +1133,7 @@
 	   (or
 	    (ajax-ime-transpose-as-halfwidth-alnum-key? key key-state)
 	    (ajax-ime-transpose-as-fullwidth-alnum-key? key key-state))))
+      (ajax-ime-reset-prediction-window ac)
       (ajax-ime-proc-transposing-state ac key key-state))
 
      ((ajax-ime-hiragana-key? key key-state)
@@ -1077,10 +1302,54 @@
 		(ustr-insert-elem! preconv-str residual-kana)
 		(rk-flush rkc)))))))
 
+(define (ajax-ime-reset-prediction-window ac)
+  (if (ajax-ime-context-prediction-window ac)
+      (im-deactivate-candidate-selector ac))
+  (ajax-ime-context-set-predicting! ac #f)
+  (ajax-ime-context-set-prediction-window! ac #f)
+  (ajax-ime-context-set-prediction-index! ac #f))
+
+(define (ajax-ime-check-prediction ac force-check?)
+  (if (and
+       (not (ajax-ime-context-state ac))
+       (not (ajax-ime-context-transposing ac))
+       (not (ajax-ime-context-predicting ac)))
+      (let* ((use-pending-rk-for-prediction? #t)
+	     (preconv-str
+	      (ajax-ime-make-whole-string
+	       ac
+	       (not use-pending-rk-for-prediction?)
+	       (ajax-ime-context-kana-mode ac)))
+	     (preedit-len (+
+			   (ustr-length (ajax-ime-context-preconv-ustr ac))
+			   (if (not use-pending-rk-for-prediction?)
+			       0
+			       (string-length (rk-pending
+					       (ajax-ime-context-rkc
+						ac)))))))
+	(if (or
+	     (>= preedit-len ajax-ime-prediction-start-char-count)
+	     force-check?)
+	    (begin
+	      (ajax-ime-lib-set-prediction-src-string ac preconv-str)
+	      (let ((nr (ajax-ime-lib-get-nr-predictions ac)))
+		(if (and
+		     nr
+		     (> nr 0))
+		    (begin
+		      (im-activate-candidate-selector
+		       ac nr ajax-ime-nr-candidate-max)
+		      (ajax-ime-context-set-prediction-window! ac #t)
+		      (ajax-ime-context-set-predicting! ac #t))
+		    (ajax-ime-reset-prediction-window ac))))
+	    (ajax-ime-reset-prediction-window ac)))))
+
 (define (ajax-ime-proc-input-state ac key key-state)
   (if (ajax-ime-has-preedit? ac)
       (ajax-ime-proc-input-state-with-preedit ac key key-state)
-      (ajax-ime-proc-input-state-no-preedit ac key key-state)))
+      (ajax-ime-proc-input-state-no-preedit ac key key-state))
+  (if ajax-ime-use-prediction?
+      (ajax-ime-check-prediction ac #f)))
 
 (define ajax-ime-separator
   (lambda (ac)
@@ -1167,6 +1436,14 @@
 		"???") ;; FIXME
 	    "????")))))) ;; shouldn't happen
 
+(define (ajax-ime-predicting-state-preedit ac)
+  (if (or
+       (not ajax-ime-use-implicit-commit-prediction?)
+       (not (ajax-ime-context-prediction-index ac)))
+      (ajax-ime-input-state-preedit ac)
+      (let ((cand (ajax-ime-get-prediction-string ac)))
+        (list (cons (bitwise-ior preedit-reverse preedit-cursor) cand)))))
+
 (define (ajax-ime-compose-state-preedit ac)
   (let* ((segments (ajax-ime-context-segments ac))
 	 (cur-seg (ustr-cursor-pos segments))
@@ -1240,6 +1517,22 @@
     (ajax-ime-commit-string ac)
     (ajax-ime-reset-candidate-window ac)
     (ajax-ime-flush ac))
+
+(define (ajax-ime-get-prediction-string ac)
+  (ajax-ime-lib-get-nth-prediction
+   ac
+   (ajax-ime-context-prediction-index ac)))
+
+(define (ajax-ime-learn-prediction-string ac)
+  (ajax-ime-lib-commit-nth-prediction
+   ac
+   (ajax-ime-context-prediction-index ac)))
+
+(define (ajax-ime-do-commit-prediction ac)
+  (im-commit ac (ajax-ime-get-prediction-string ac))
+  (ajax-ime-learn-prediction-string ac)
+  (ajax-ime-reset-prediction-window ac)
+  (ajax-ime-flush ac))
 
 (define ajax-ime-correct-segment-cursor
   (lambda (segments)
@@ -1459,7 +1752,9 @@
               (ajax-ime-proc-transposing-state ac key key-state)
               (if (ajax-ime-context-state ac)
                   (ajax-ime-proc-compose-state ac key key-state)
-                  (ajax-ime-proc-input-state ac key key-state)))
+                  (if (ajax-ime-context-predicting ac)
+                      (ajax-ime-proc-prediction-state ac key key-state)
+                      (ajax-ime-proc-input-state ac key key-state))))
 	  (ajax-ime-proc-raw-state ac key key-state)))
   (ajax-ime-update-preedit ac))
 
@@ -1479,13 +1774,19 @@
 ;;;
 (define (ajax-ime-get-candidate-handler ac idx ascel-enum-hint)
   (let* ((cur-seg (ustr-cursor-pos (ajax-ime-context-segments ac)))
-	 (cand (ajax-ime-lib-get-nth-candidate
-		ac cur-seg idx)))
+         (cand (if (ajax-ime-context-state ac)
+                   (ajax-ime-lib-get-nth-candidate ac cur-seg idx)
+                   (ajax-ime-lib-get-nth-prediction ac idx))))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (ajax-ime-set-candidate-index-handler ac idx)
-  (ustr-cursor-set-frontside! (ajax-ime-context-segments ac) idx)
-  (ajax-ime-update-preedit ac))
+    (cond
+     ((ajax-ime-context-state ac)
+      (ustr-cursor-set-frontside! (ajax-ime-context-segments ac) idx)
+      (ajax-ime-update-preedit ac))
+     ((ajax-ime-context-predicting ac)
+      (ajax-ime-context-set-prediction-index! ac idx)
+      (ajax-ime-update-preedit ac))))
 
 (define (ajax-ime-proc-raw-state ac key key-state)
   (if (not (ajax-ime-begin-input ac key key-state))

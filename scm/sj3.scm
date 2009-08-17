@@ -35,6 +35,7 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
+(require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "sj3-custom.scm")
 (require-custom "sj3-key-custom.scm")
@@ -188,11 +189,14 @@
            (length (sj3-make-map-from-kana-string str))))))
 (define (sj3-lib-commit-segment sc seg delta)
   ;; segment learnining
-  (let ((douon (sj3-getdouon sc (sj3-get-nth-yomi sc seg))))
+  (let* ((yomi (sj3-get-nth-yomi sc seg))
+         (douon (sj3-getdouon sc yomi)))
     (if (< delta (length douon))
         (let ((entry (list-ref douon delta)))
           (if (= 2 (length entry))
-              (sj3-lib-funcall sc sj3-lib-gakusyuu (list-ref entry 1)))))))
+              (begin
+                (predict-meta-commit (sj3-context-prediction-ctx sc) yomi (list-ref entry 0) "")
+                (sj3-lib-funcall sc sj3-lib-gakusyuu (list-ref entry 1))))))))
 
 ;; return alist of cons'ed offset and length
 ;; ("abc" "d" "efgh") => ((3 . 3) (4 . 1) (8 . 4))
@@ -307,7 +311,6 @@
 
 (define (sj3-lib-reset-conversion sc)
   #f)
-
 
 (define sj3-init-lib-ok? #f)
 
@@ -537,6 +540,7 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'sc-ctx             ()) ;; sj3-internal-context
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
@@ -548,9 +552,49 @@
     (list 'alnum-type	      sj3-type-halfwidth-alnum)
     (list 'commit-raw         #t)
     (list 'input-rule         sj3-input-rule-roma)
-    (list 'raw-ustr	      #f))))
+    (list 'raw-ustr	      #f)
+    (list 'prediction-ctx     #f)
+    (list 'prediction-word '())
+    (list 'prediction-candidates '())
+    (list 'prediction-appendix '())
+    (list 'prediction-nr '())
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
+    (list 'prediction-cache   '()))))
 (define-record 'sj3-context sj3-context-rec-spec)
 (define sj3-context-new-internal sj3-context-new)
+
+(define (sj3-predict sc str)
+  (predict-meta-search
+   (sj3-context-prediction-ctx sc)
+   str))
+(define (sj3-lib-set-prediction-src-string sc str)
+  (let* ((ret (sj3-predict sc str))
+         (word  (predict-meta-word? ret))
+         (cands (predict-meta-candidates? ret))
+         (appendix (predict-meta-appendix? ret)))
+    (sj3-context-set-prediction-word! sc word)
+    (sj3-context-set-prediction-candidates! sc cands)
+    (sj3-context-set-prediction-appendix! sc appendix)
+    (sj3-context-set-prediction-nr! sc (length cands)))
+  #f)
+(define (sj3-lib-get-nr-predictions sc)
+  (sj3-context-prediction-nr sc))
+(define (sj3-lib-get-nth-word sc nth)
+  (let ((word (sj3-context-prediction-word sc)))
+    (list-ref word nth)))
+(define (sj3-lib-get-nth-prediction sc nth)
+  (let ((cands (sj3-context-prediction-candidates sc)))
+    (list-ref cands nth)))
+(define (sj3-lib-get-nth-appendix sc nth)
+  (let ((appendix (sj3-context-prediction-candidates sc)))
+    (list-ref appendix nth)))
+(define (sj3-lib-commit-nth-prediction sc nth)
+  (predict-meta-commit
+   (sj3-context-prediction-ctx sc)
+   (sj3-lib-get-nth-word sc nth)
+   (sj3-lib-get-nth-prediction sc nth)
+   (sj3-lib-get-nth-appendix sc nth)))
 
 (define (sj3-context-new id im)
   (let ((sc (sj3-context-new-internal id im))
@@ -566,6 +610,9 @@
     (if using-kana-table?
         (sj3-context-set-input-rule! sc sj3-input-rule-kana)
         (sj3-context-set-input-rule! sc sj3-input-rule-roma))
+    (sj3-context-set-prediction-ctx! sc (predict-make-meta-search))
+    (predict-meta-open (sj3-context-prediction-ctx sc) "sj3")
+    (predict-meta-set-external-charset! (sj3-context-prediction-ctx sc) "EUC-JP")
     sc))
 
 (define (sj3-commit-raw sc)
@@ -674,9 +721,11 @@
   (ustr-clear! (sj3-context-segments sc))
   (sj3-context-set-transposing! sc #f)
   (sj3-context-set-state! sc #f)
-  (if (sj3-context-candidate-window sc)
+  (if (or (sj3-context-candidate-window sc)
+          (sj3-context-prediction-window sc))
       (im-deactivate-candidate-selector sc))
   (sj3-context-set-candidate-window! sc #f)
+  (sj3-context-set-prediction-window! sc #f)
   (sj3-context-set-candidate-op-count! sc 0))
 
 (define (sj3-begin-input sc key key-state)
@@ -731,8 +780,10 @@
 			      (sj3-context-transposing-state-preedit sc)
 			      (if (sj3-context-state sc)
 				  (sj3-compose-state-preedit sc)
-				  (sj3-input-state-preedit sc)))
-			  ())))
+                                  (if (sj3-context-predicting sc)
+                                      (sj3-predicting-state-preedit sc)
+                                      (sj3-input-state-preedit sc))))
+                          ())))
 	(context-update-preedit sc segments))
       (sj3-context-set-commit-raw! sc #f)))
 
@@ -985,6 +1036,176 @@
 	   (sj3-flush sc)
 	   (sj3-proc-input-state sc key key-state))))))))
 
+(define (sj3-move-prediction sc offset)
+  (let* ((nr (sj3-lib-get-nr-predictions sc))
+         (idx (sj3-context-prediction-index sc))
+         (n (if (not idx)
+                0
+                (+ idx offset)))
+         (compensated-n (cond
+                         ((>= n nr)
+                          0)
+                        ((< n 0)
+                         (- nr 1))
+                        (else
+                         n))))
+    (im-select-candidate sc compensated-n)
+    (sj3-context-set-prediction-index! sc compensated-n)))
+
+(define (sj3-move-prediction-in-page sc numeralc)
+  (let* ((nr (sj3-lib-get-nr-predictions sc))
+         (p-idx (sj3-context-prediction-index sc))
+         (n (if (not p-idx)
+                0
+                p-idx))
+         (cur-page (if (= sj3-nr-candidate-max 0)
+                       0
+                       (quotient n sj3-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page sj3-nr-candidate-max) compensated-pageidx))
+         (compensated-idx (cond
+                           ((>= idx nr)
+                            #f)
+                           (else
+                            idx)))
+         (selected-pageidx (if (not p-idx)
+                               #f
+                               (if (= sj3-nr-candidate-max 0)
+                                   p-idx
+                                   (remainder p-idx
+                                              sj3-nr-candidate-max)))))
+    (if (and
+         compensated-idx
+         (not (eqv? compensated-pageidx selected-pageidx)))
+        (begin
+          (sj3-context-set-prediction-index! sc compensated-idx)
+          (im-select-candidate sc compensated-idx)
+          #t)
+       #f)))
+
+(define (sj3-prediction-select-non-existing-index? sc numeralc)
+  (let* ((nr (sj3-lib-get-nr-predictions sc))
+         (p-idx (sj3-context-prediction-index sc))
+         (cur-page (if (= sj3-nr-candidate-max 0)
+                       0
+                       (quotient p-idx sj3-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page sj3-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+        #t
+        #f)))
+
+(define (sj3-prediction-keys-handled? sc key key-state)
+  (cond
+   ((sj3-next-prediction-key? key key-state)
+    (sj3-move-prediction sc 1)
+    #t)
+   ((sj3-prev-prediction-key? key key-state)
+    (sj3-move-prediction sc -1)
+    #t)
+   ((and
+     sj3-select-prediction-by-numeral-key?
+     (ichar-numeric? key))
+    (sj3-move-prediction-in-page sc key))
+   ((and
+     (sj3-context-prediction-index sc)
+     (sj3-prev-page-key? key key-state))
+    (im-shift-page-candidate sc #f)
+    #t)
+   ((and
+     (sj3-context-prediction-index sc)
+     (sj3-next-page-key? key key-state))
+    (im-shift-page-candidate sc #t)
+    #t)
+   (else
+    #f)))
+
+(define (sj3-proc-prediction-state sc key key-state)
+  (cond
+   ;; prediction index change
+   ((sj3-prediction-keys-handled? sc key key-state))
+
+   ;; cancel
+   ((sj3-cancel-key? key key-state)
+    (if (sj3-context-prediction-index sc)
+        (sj3-reset-prediction-window sc)
+        (begin
+          (sj3-reset-prediction-window sc)
+          (sj3-proc-input-state sc key key-state))))
+
+   ;; commit
+   ((and
+     (sj3-context-prediction-index sc)
+     (sj3-commit-key? key key-state))
+    (sj3-do-commit-prediction sc))
+   (else
+    (if (and
+         sj3-use-implicit-commit-prediction?
+         (sj3-context-prediction-index sc))
+        (cond
+         ((or
+           ;; check keys used in sj3-proc-input-state-with-preedit
+           (sj3-begin-conv-key? key key-state)
+           (sj3-backspace-key? key key-state)
+           (sj3-delete-key? key key-state)
+           (sj3-kill-key? key key-state)
+           (sj3-kill-backward-key? key key-state)
+           (and
+            (not (sj3-context-alnum sc))
+            (sj3-commit-as-opposite-kana-key? key key-state))
+           (sj3-transpose-as-hiragana-key? key key-state)
+           (sj3-transpose-as-katakana-key? key key-state)
+           (sj3-transpose-as-halfkana-key? key key-state)
+           (and
+            (not (= (sj3-context-input-rule sc) sj3-input-rule-kana))
+            (or
+             (sj3-transpose-as-halfwidth-alnum-key? key key-state)
+             (sj3-transpose-as-fullwidth-alnum-key? key key-state)))
+           (sj3-hiragana-key? key key-state)
+           (sj3-katakana-key? key key-state)
+           (sj3-halfkana-key? key key-state)
+           (sj3-halfwidth-alnum-key? key key-state)
+           (sj3-fullwidth-alnum-key? key key-state)
+           (and
+            (not (sj3-context-alnum sc))
+            (sj3-kana-toggle-key? key key-state))
+           (sj3-alkana-toggle-key? key key-state)
+           (sj3-go-left-key? key key-state)
+           (sj3-go-right-key? key key-state)
+           (sj3-beginning-of-preedit-key? key key-state)
+           (sj3-end-of-preedit-key? key key-state)
+           (and
+            (modifier-key-mask key-state)
+            (not (shift-key-mask key-state))))
+          ;; go back to unselected prediction
+          (sj3-reset-prediction-window sc)
+          (sj3-check-prediction sc #f))
+         ((and
+           (ichar-numeric? key)
+           sj3-select-prediction-by-numeral-key?
+           (not (sj3-prediction-select-non-existing-index? sc key)))
+          (sj3-context-set-predicting! sc #f)
+          (sj3-context-set-prediction-index! sc #f)
+          (sj3-proc-input-state sc key key-state))
+         (else
+          ;; implicit commit
+          (sj3-do-commit-prediction sc)
+          (sj3-proc-input-state sc key key-state)))
+        (begin
+          (sj3-context-set-predicting! sc #f)
+          (sj3-context-set-prediction-index! sc #f)
+          (sj3-proc-input-state sc key key-state))))))
+
 (define (sj3-proc-input-state-with-preedit sc key key-state)
   (let ((preconv-str (sj3-context-preconv-ustr sc))
 	(raw-str (sj3-context-raw-ustr sc))
@@ -994,7 +1215,12 @@
     (cond
      ;; begin conversion
      ((sj3-begin-conv-key? key key-state)
+      (sj3-reset-prediction-window sc)
       (sj3-begin-conv sc))
+
+     ;; prediction
+     ((sj3-next-prediction-key? key key-state)
+      (sj3-check-prediction sc #t))
 
      ;; backspace
      ((sj3-backspace-key? key key-state)
@@ -1045,6 +1271,7 @@
 	   (or
 	    (sj3-transpose-as-halfwidth-alnum-key? key key-state)
 	    (sj3-transpose-as-fullwidth-alnum-key? key key-state))))
+      (sj3-reset-prediction-window sc)
       (sj3-proc-transposing-state sc key key-state))
 
      ((sj3-hiragana-key? key key-state)
@@ -1213,10 +1440,54 @@
 		(ustr-insert-elem! preconv-str residual-kana)
 		(rk-flush rkc)))))))
 
+(define (sj3-reset-prediction-window sc)
+  (if (sj3-context-prediction-window sc)
+      (im-deactivate-candidate-selector sc))
+  (sj3-context-set-predicting! sc #f)
+  (sj3-context-set-prediction-window! sc #f)
+  (sj3-context-set-prediction-index! sc #f))
+
+(define (sj3-check-prediction sc force-check?)
+  (if (and
+       (not (sj3-context-state sc))
+       (not (sj3-context-transposing sc))
+       (not (sj3-context-predicting sc)))
+      (let* ((use-pending-rk-for-prediction? #t)
+	     (preconv-str
+	      (sj3-make-whole-string
+	       sc
+	       (not use-pending-rk-for-prediction?)
+	       (sj3-context-kana-mode sc)))
+	     (preedit-len (+
+			   (ustr-length (sj3-context-preconv-ustr sc))
+			   (if (not use-pending-rk-for-prediction?)
+			       0
+			       (string-length (rk-pending
+					       (sj3-context-rkc
+						sc)))))))
+	(if (or
+	     (>= preedit-len sj3-prediction-start-char-count)
+	     force-check?)
+	    (begin
+	      (sj3-lib-set-prediction-src-string sc preconv-str)
+	      (let ((nr (sj3-lib-get-nr-predictions sc)))
+		(if (and
+		     nr
+		     (> nr 0))
+		    (begin
+		      (im-activate-candidate-selector
+		       sc nr sj3-nr-candidate-max)
+		      (sj3-context-set-prediction-window! sc #t)
+		      (sj3-context-set-predicting! sc #t))
+		    (sj3-reset-prediction-window sc))))
+	    (sj3-reset-prediction-window sc)))))
+
 (define (sj3-proc-input-state sc key key-state)
   (if (sj3-has-preedit? sc)
       (sj3-proc-input-state-with-preedit sc key key-state)
-      (sj3-proc-input-state-no-preedit sc key key-state)))
+      (sj3-proc-input-state-no-preedit sc key key-state))
+  (if sj3-use-prediction?
+      (sj3-check-prediction sc #f)))
 
 (define sj3-separator
   (lambda (sc)
@@ -1303,6 +1574,14 @@
 		"???") ;; FIXME
 	    "????")))))) ;; shouldn't happen
 
+(define (sj3-predicting-state-preedit sc)
+  (if (or
+       (not sj3-use-implicit-commit-prediction?)
+       (not (sj3-context-prediction-index sc)))
+      (sj3-input-state-preedit sc)
+      (let ((cand (sj3-get-prediction-string sc)))
+        (list (cons (bitwise-ior preedit-reverse preedit-cursor) cand)))))
+
 (define (sj3-compose-state-preedit sc)
   (let* ((segments (sj3-context-segments sc))
 	 (cur-seg (ustr-cursor-pos segments))
@@ -1382,6 +1661,22 @@
     (sj3-commit-string sc)
     (sj3-reset-candidate-window sc)
     (sj3-flush sc))
+
+(define (sj3-get-prediction-string sc)
+  (sj3-lib-get-nth-prediction
+   sc
+   (sj3-context-prediction-index sc)))
+
+(define (sj3-learn-prediction-string sc)
+  (sj3-lib-commit-nth-prediction
+   sc
+   (sj3-context-prediction-index sc)))
+
+(define (sj3-do-commit-prediction sc)
+  (im-commit sc (sj3-get-prediction-string sc))
+  (sj3-learn-prediction-string sc)
+  (sj3-reset-prediction-window sc)
+  (sj3-flush sc))
 
 (define sj3-correct-segment-cursor
   (lambda (segments)
@@ -1601,7 +1896,9 @@
               (sj3-proc-transposing-state sc key key-state)
               (if (sj3-context-state sc)
                   (sj3-proc-compose-state sc key key-state)
-                  (sj3-proc-input-state sc key key-state)))
+                  (if (sj3-context-predicting sc)
+                      (sj3-proc-prediction-state sc key key-state)
+                      (sj3-proc-input-state sc key key-state))))
 	  (sj3-proc-raw-state sc key key-state)))
   (sj3-update-preedit sc))
 
@@ -1621,13 +1918,19 @@
 ;;;
 (define (sj3-get-candidate-handler sc idx ascel-enum-hint)
   (let* ((cur-seg (ustr-cursor-pos (sj3-context-segments sc)))
-	 (cand (sj3-lib-get-nth-candidate
-		sc cur-seg idx)))
+         (cand (if (sj3-context-state sc)
+                   (sj3-lib-get-nth-candidate sc cur-seg idx)
+                   (sj3-lib-get-nth-prediction sc idx))))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (sj3-set-candidate-index-handler sc idx)
-  (ustr-cursor-set-frontside! (sj3-context-segments sc) idx)
-  (sj3-update-preedit sc))
+  (cond
+   ((sj3-context-state sc)
+    (ustr-cursor-set-frontside! (sj3-context-segments sc) idx)
+    (sj3-update-preedit sc))
+   ((sj3-context-predicting sc)
+    (sj3-context-set-prediction-index! sc idx)
+    (sj3-update-preedit sc))))
 
 (define (sj3-proc-raw-state sc key key-state)
   (if (not (sj3-begin-input sc key key-state))

@@ -33,6 +33,7 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
+(require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "wnn-custom.scm")
 (require-custom "wnn-key-custom.scm")
@@ -59,9 +60,11 @@
     (wnn-lib-candidate-info wc-ctx #t)
     (wnn-lib-get-candidate wc-ctx nth)))
 (define (wnn-lib-release-context wc)
-  (let ((wc-ctx (wnn-context-wc-ctx wc)))
-    (wnn-lib-close (wnn-context-wnn-buf wc))
-    (wnn-lib-destroy-buffer wc-ctx #t)))
+;  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+;    (wnn-lib-close (wnn-context-wnn-buf wc))
+;    (wnn-lib-destroy-buffer wc-ctx #t)
+;    (wnn-context-set-wc-ctx! wc #f)))
+  #t)
 (define (wnn-lib-get-unconv-candidate wc seg-idx)
   (let ((wc-ctx (wnn-context-wc-ctx wc)))
     (wnn-move wc-ctx seg-idx)
@@ -89,7 +92,12 @@
     (wnn-lib-convert wc-ctx #f #f #t)
     (wnn-lib-get-nr-segments wc)))
 (define (wnn-lib-commit-segment wc seg delta)
-  (let ((wc-ctx (wnn-context-wc-ctx wc)))
+  (let* ((wc-ctx (wnn-context-wc-ctx wc)))
+    (predict-meta-commit
+     (wnn-context-prediction-ctx wc)
+     (cdr (assoc 'kanap (cdr (assoc 'clause-info (wnn-lib-get-jconvbuf wc-ctx)))))
+     (wnn-lib-get-candidate wc-ctx delta)
+     "")
     (wnn-lib-fix wc-ctx)
     (wnn-lib-save-dic wc-ctx)
     (wnn-lib-clear wc-ctx)
@@ -325,6 +333,7 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'wnn-buf            #f)
     (list 'wc-ctx             #f) ;; wnn-internal-context
     (list 'preconv-ustr	      #f) ;; preedit strings
@@ -337,9 +346,50 @@
     (list 'alnum-type	      wnn-type-halfwidth-alnum)
     (list 'commit-raw         #t)
     (list 'input-rule         wnn-input-rule-roma)
-    (list 'raw-ustr	      #f))))
+    (list 'raw-ustr	      #f)
+    (list 'prediction-ctx     #f)
+    (list 'prediction-word    '())
+    (list 'prediction-candidates '())
+    (list 'prediction-nr      '())
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
+    (list 'prediction-cache   '()))))
+
 (define-record 'wnn-context wnn-context-rec-spec)
 (define wnn-context-new-internal wnn-context-new)
+
+(define (wnn-predict wc str)
+  (predict-meta-search
+   (wnn-context-prediction-ctx wc)
+   str))
+(define (wnn-lib-set-prediction-src-string wc str)
+  (let* ((ret      (wnn-predict wc str))
+         (word     (predict-meta-word? ret))
+         (cands    (predict-meta-candidates? ret))
+         (appendix (predict-meta-appendix? ret)))
+    (wnn-context-set-prediction-word! wc word)
+    (wnn-context-set-prediction-candidates! wc cands)
+    (wnn-context-set-prediction-appendix! wc appendix)
+    (wnn-context-set-prediction-nr! wc (length cands)))
+  #f)
+(define (wnn-lib-get-nr-predictions wc)
+  (wnn-context-prediction-nr wc))
+(define (wnn-lib-get-nth-word wc nth)
+  (let ((word (wnn-context-prediction-word wc)))
+    (list-ref word nth)))
+(define (wnn-lib-get-nth-prediction wc nth)
+  (let ((cands (wnn-context-prediction-candidates wc)))
+    (list-ref cands nth)))
+(define (wnn-lib-get-nth-appendix wc nth)
+  (let ((appendix (wnn-context-prediction-appendix wc)))
+    (list-ref appendix nth)))
+(define (wnn-lib-commit-nth-prediction wc nth)
+  (predict-meta-commit
+   (wnn-context-prediction-ctx wc)
+   (wnn-lib-get-nth-word sc nth)
+   (wnn-lib-get-nth-prediction wc nth)
+   (wnn-lib-get-nth-appendix sc nth)))
+
 
 (define (wnn-context-new id im)
   (let ((wc (wnn-context-new-internal id im))
@@ -355,6 +405,9 @@
     (if using-kana-table?
         (wnn-context-set-input-rule! wc wnn-input-rule-kana)
         (wnn-context-set-input-rule! wc wnn-input-rule-roma))
+    (wnn-context-set-prediction-ctx! wc (predict-make-meta-search))
+    (predict-meta-open (wnn-context-prediction-ctx wc) "wnn")
+    (predict-meta-set-external-charset! (wnn-context-prediction-ctx wc) "EUC-JP")
     wc))
 
 (define (wnn-commit-raw wc)
@@ -460,9 +513,11 @@
   (ustr-clear! (wnn-context-segments wc))
   (wnn-context-set-transposing! wc #f)
   (wnn-context-set-state! wc #f)
-  (if (wnn-context-candidate-window wc)
+  (if (or (wnn-context-candidate-window wc)
+          (wnn-context-prediction-window wc))
       (im-deactivate-candidate-selector wc))
   (wnn-context-set-candidate-window! wc #f)
+  (wnn-context-set-prediction-window! wc #f)
   (wnn-context-set-candidate-op-count! wc 0))
 
 (define (wnn-begin-input wc key key-state)
@@ -517,8 +572,10 @@
 			      (wnn-context-transposing-state-preedit wc)
 			      (if (wnn-context-state wc)
 				  (wnn-compose-state-preedit wc)
-				  (wnn-input-state-preedit wc)))
-			  ())))
+                                  (if (wnn-context-predicting wc)
+                                      (wnn-predicting-state-preedit wc)
+                                      (wnn-input-state-preedit wc))))
+                          ())))
 	(context-update-preedit wc segments))
       (wnn-context-set-commit-raw! wc #f)))
 
@@ -771,6 +828,176 @@
 	   (wnn-flush wc)
 	   (wnn-proc-input-state wc key key-state))))))))
 
+(define (wnn-move-prediction wc offset)
+  (let* ((nr (wnn-lib-get-nr-predictions wc))
+         (idx (wnn-context-prediction-index wc))
+         (n (if (not idx)
+                0
+                (+ idx offset)))
+         (compensated-n (cond
+                         ((>= n nr)
+                          0)
+                        ((< n 0)
+                         (- nr 1))
+                        (else
+                         n))))
+    (im-select-candidate wc compensated-n)
+    (wnn-context-set-prediction-index! wc compensated-n)))
+
+(define (wnn-move-prediction-in-page wc numeralc)
+  (let* ((nr (wnn-lib-get-nr-predictions wc))
+         (p-idx (wnn-context-prediction-index wc))
+         (n (if (not p-idx)
+                0
+                p-idx))
+         (cur-page (if (= wnn-nr-candidate-max 0)
+                       0
+                       (quotient n wnn-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page wnn-nr-candidate-max) compensated-pageidx))
+         (compensated-idx (cond
+                           ((>= idx nr)
+                            #f)
+                           (else
+                            idx)))
+         (selected-pageidx (if (not p-idx)
+                               #f
+                               (if (= wnn-nr-candidate-max 0)
+                                   p-idx
+                                   (remainder p-idx
+                                              wnn-nr-candidate-max)))))
+    (if (and
+         compensated-idx
+         (not (eqv? compensated-pageidx selected-pageidx)))
+        (begin
+          (wnn-context-set-prediction-index! wc compensated-idx)
+          (im-select-candidate wc compensated-idx)
+          #t)
+       #f)))
+
+(define (wnn-prediction-select-non-existing-index? wc numeralc)
+  (let* ((nr (wnn-lib-get-nr-predictions wc))
+         (p-idx (wnn-context-prediction-index wc))
+         (cur-page (if (= wnn-nr-candidate-max 0)
+                       0
+                       (quotient p-idx wnn-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page wnn-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+        #t
+        #f)))
+
+(define (wnn-prediction-keys-handled? wc key key-state)
+  (cond
+   ((wnn-next-prediction-key? key key-state)
+    (wnn-move-prediction wc 1)
+    #t)
+   ((wnn-prev-prediction-key? key key-state)
+    (wnn-move-prediction wc -1)
+    #t)
+   ((and
+     wnn-select-prediction-by-numeral-key?
+     (ichar-numeric? key))
+    (wnn-move-prediction-in-page wc key))
+   ((and
+     (wnn-context-prediction-index wc)
+     (wnn-prev-page-key? key key-state))
+    (im-shift-page-candidate wc #f)
+    #t)
+   ((and
+     (wnn-context-prediction-index wc)
+     (wnn-next-page-key? key key-state))
+    (im-shift-page-candidate wc #t)
+    #t)
+   (else
+    #f)))
+
+(define (wnn-proc-prediction-state wc key key-state)
+  (cond
+   ;; prediction index change
+   ((wnn-prediction-keys-handled? wc key key-state))
+
+   ;; cancel
+   ((wnn-cancel-key? key key-state)
+    (if (wnn-context-prediction-index wc)
+        (wnn-reset-prediction-window wc)
+        (begin
+          (wnn-reset-prediction-window wc)
+          (wnn-proc-input-state wc key key-state))))
+
+   ;; commit
+   ((and
+     (wnn-context-prediction-index wc)
+     (wnn-commit-key? key key-state))
+    (wnn-do-commit-prediction wc))
+   (else
+    (if (and
+         wnn-use-implicit-commit-prediction?
+         (wnn-context-prediction-index wc))
+        (cond
+         ((or
+           ;; check keys used in wnn-proc-input-state-with-preedit
+           (wnn-begin-conv-key? key key-state)
+           (wnn-backspace-key? key key-state)
+           (wnn-delete-key? key key-state)
+           (wnn-kill-key? key key-state)
+           (wnn-kill-backward-key? key key-state)
+           (and
+            (not (wnn-context-alnum wc))
+            (wnn-commit-as-opposite-kana-key? key key-state))
+           (wnn-transpose-as-hiragana-key? key key-state)
+           (wnn-transpose-as-katakana-key? key key-state)
+           (wnn-transpose-as-halfkana-key? key key-state)
+           (and
+            (not (= (wnn-context-input-rule wc) wnn-input-rule-kana))
+            (or
+             (wnn-transpose-as-halfwidth-alnum-key? key key-state)
+             (wnn-transpose-as-fullwidth-alnum-key? key key-state)))
+           (wnn-hiragana-key? key key-state)
+           (wnn-katakana-key? key key-state)
+           (wnn-halfkana-key? key key-state)
+           (wnn-halfwidth-alnum-key? key key-state)
+           (wnn-fullwidth-alnum-key? key key-state)
+           (and
+            (not (wnn-context-alnum wc))
+            (wnn-kana-toggle-key? key key-state))
+           (wnn-alkana-toggle-key? key key-state)
+           (wnn-go-left-key? key key-state)
+           (wnn-go-right-key? key key-state)
+           (wnn-beginning-of-preedit-key? key key-state)
+           (wnn-end-of-preedit-key? key key-state)
+           (and
+            (modifier-key-mask key-state)
+            (not (shift-key-mask key-state))))
+          ;; go back to unselected prediction
+          (wnn-reset-prediction-window wc)
+          (wnn-check-prediction wc #f))
+         ((and
+           (ichar-numeric? key)
+           wnn-select-prediction-by-numeral-key?
+           (not (wnn-prediction-select-non-existing-index? wc key)))
+          (wnn-context-set-predicting! wc #f)
+          (wnn-context-set-prediction-index! wc #f)
+          (wnn-proc-input-state wc key key-state))
+         (else
+          ;; implicit commit
+          (wnn-do-commit-prediction wc)
+          (wnn-proc-input-state wc key key-state)))
+        (begin
+          (wnn-context-set-predicting! wc #f)
+          (wnn-context-set-prediction-index! wc #f)
+          (wnn-proc-input-state wc key key-state))))))
+
 (define (wnn-proc-input-state-with-preedit wc key key-state)
   (let ((preconv-str (wnn-context-preconv-ustr wc))
 	(raw-str (wnn-context-raw-ustr wc))
@@ -780,7 +1007,12 @@
     (cond
      ;; begin conversion
      ((wnn-begin-conv-key? key key-state)
+      (wnn-reset-prediction-window wc)
       (wnn-begin-conv wc))
+
+     ;; prediction
+     ((wnn-next-prediction-key? key key-state)
+      (wnn-check-prediction wc #t))
 
      ;; backspace
      ((wnn-backspace-key? key key-state)
@@ -831,6 +1063,7 @@
 	   (or
 	    (wnn-transpose-as-halfwidth-alnum-key? key key-state)
 	    (wnn-transpose-as-fullwidth-alnum-key? key key-state))))
+      (wnn-reset-prediction-window wc)
       (wnn-proc-transposing-state wc key key-state))
 
      ((wnn-hiragana-key? key key-state)
@@ -999,10 +1232,54 @@
 		(ustr-insert-elem! preconv-str residual-kana)
 		(rk-flush rkc)))))))
 
+(define (wnn-reset-prediction-window wc)
+  (if (wnn-context-prediction-window wc)
+      (im-deactivate-candidate-selector wc))
+  (wnn-context-set-predicting! wc #f)
+  (wnn-context-set-prediction-window! wc #f)
+  (wnn-context-set-prediction-index! wc #f))
+
+(define (wnn-check-prediction wc force-check?)
+  (if (and
+       (not (wnn-context-state wc))
+       (not (wnn-context-transposing wc))
+       (not (wnn-context-predicting wc)))
+      (let* ((use-pending-rk-for-prediction? #t)
+	     (preconv-str
+	      (wnn-make-whole-string
+	       wc
+	       (not use-pending-rk-for-prediction?)
+	       (wnn-context-kana-mode wc)))
+	     (preedit-len (+
+			   (ustr-length (wnn-context-preconv-ustr wc))
+			   (if (not use-pending-rk-for-prediction?)
+			       0
+			       (string-length (rk-pending
+					       (wnn-context-rkc
+						wc)))))))
+	(if (or
+	     (>= preedit-len wnn-prediction-start-char-count)
+	     force-check?)
+	    (begin
+	      (wnn-lib-set-prediction-src-string wc preconv-str)
+	      (let ((nr (wnn-lib-get-nr-predictions wc)))
+		(if (and
+		     nr
+		     (> nr 0))
+		    (begin
+		      (im-activate-candidate-selector
+		       wc nr wnn-nr-candidate-max)
+		      (wnn-context-set-prediction-window! wc #t)
+		      (wnn-context-set-predicting! wc #t))
+		    (wnn-reset-prediction-window wc))))
+	    (wnn-reset-prediction-window wc)))))
+
 (define (wnn-proc-input-state wc key key-state)
   (if (wnn-has-preedit? wc)
       (wnn-proc-input-state-with-preedit wc key key-state)
-      (wnn-proc-input-state-no-preedit wc key key-state)))
+      (wnn-proc-input-state-no-preedit wc key key-state))
+  (if wnn-use-prediction?
+      (wnn-check-prediction wc #f)))
 
 (define wnn-separator
   (lambda (wc)
@@ -1089,6 +1366,14 @@
 		"???") ;; FIXME
 	    "????")))))) ;; shouldn't happen
 
+(define (wnn-predicting-state-preedit wc)
+  (if (or
+       (not wnn-use-implicit-commit-prediction?)
+       (not (wnn-context-prediction-index wc)))
+      (wnn-input-state-preedit wc)
+      (let ((cand (wnn-get-prediction-string wc)))
+        (list (cons (bitwise-ior preedit-reverse preedit-cursor) cand)))))
+
 (define (wnn-compose-state-preedit wc)
   (let* ((segments (wnn-context-segments wc))
 	 (cur-seg (ustr-cursor-pos segments))
@@ -1162,6 +1447,22 @@
     (wnn-commit-string wc)
     (wnn-reset-candidate-window wc)
     (wnn-flush wc))
+
+(define (wnn-get-prediction-string wc)
+  (wnn-lib-get-nth-prediction
+   wc
+   (wnn-context-prediction-index wc)))
+
+(define (wnn-learn-prediction-string wc)
+  (wnn-lib-commit-nth-prediction
+   wc
+   (wnn-context-prediction-index wc)))
+
+(define (wnn-do-commit-prediction wc)
+  (im-commit wc (wnn-get-prediction-string wc))
+  (wnn-learn-prediction-string wc)
+  (wnn-reset-prediction-window wc)
+  (wnn-flush wc))
 
 (define wnn-correct-segment-cursor
   (lambda (segments)
@@ -1381,7 +1682,9 @@
               (wnn-proc-transposing-state wc key key-state)
               (if (wnn-context-state wc)
                   (wnn-proc-compose-state wc key key-state)
-                  (wnn-proc-input-state wc key key-state)))
+                  (if (wnn-context-predicting wc)
+                      (wnn-proc-prediction-state wc key key-state)
+                      (wnn-proc-input-state wc key key-state))))
 	  (wnn-proc-raw-state wc key key-state)))
   (wnn-update-preedit wc))
 
@@ -1401,13 +1704,19 @@
 ;;;
 (define (wnn-get-candidate-handler wc idx ascel-enum-hint)
   (let* ((cur-seg (ustr-cursor-pos (wnn-context-segments wc)))
-	 (cand (wnn-lib-get-nth-candidate
-		wc cur-seg idx)))
+         (cand (if (wnn-context-state wc)
+                   (wnn-lib-get-nth-candidate wc cur-seg idx)
+                   (wnn-lib-get-nth-prediction wc idx))))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (wnn-set-candidate-index-handler wc idx)
-  (ustr-cursor-set-frontside! (wnn-context-segments wc) idx)
-  (wnn-update-preedit wc))
+  (cond
+   ((wnn-context-state wc)
+    (ustr-cursor-set-frontside! (wnn-context-segments wc) idx)
+    (wnn-update-preedit wc))
+   ((wnn-context-predicting wc)
+    (wnn-context-set-prediction-index! wc idx)
+    (wnn-update-preedit wc))))
 
 (define (wnn-proc-raw-state wc key key-state)
   (if (not (wnn-begin-input wc key key-state))

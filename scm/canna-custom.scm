@@ -47,6 +47,10 @@
 		     (N_ "Canna (advanced)")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'canna-prediction
+		     (N_ "Prediction")
+		     (N_ "long description will be here."))
+
 ;;
 ;; segment separator
 ;;
@@ -381,3 +385,65 @@
   '(boolean)
   (N_ "Enable input mode transition keys in direct (off state) input mode")
   (N_ "long description will be here."))
+
+;; prediction
+(define-custom 'canna-use-prediction? #f
+  '(canna-advanced canna-prediction)
+  '(boolean)
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'canna-select-prediction-by-numeral-key? #f
+  '(canna-advanced canna-prediction)
+  '(boolean)
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom 'canna-use-implicit-commit-prediction? #t
+  '(canna-advanced canna-prediction)
+  '(boolean)
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
+
+(define-custom 'canna-prediction-cache-words 256
+  '(canna-advanced canna-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
+  (N_ "long description will be here."))
+
+(define-custom 'canna-prediction-start-char-count 2
+  '(canna-advanced canna-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'canna-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not canna-use-candidate-window?)
+                       (set! canna-use-prediction? #f))))
+
+(custom-add-hook 'canna-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   canna-use-candidate-window?))
+
+(custom-add-hook 'canna-select-prediction-by-numeral-key?
+                 'custom-activity-hooks
+                 (lambda ()
+                   canna-use-prediction?))
+
+(custom-add-hook 'canna-use-implicit-commit-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   canna-use-prediction?))
+
+(custom-add-hook 'canna-prediction-cache-words
+                 'custom-activity-hooks
+                 (lambda ()
+                   canna-use-prediction?))
+
+(custom-add-hook 'canna-prediction-start-char-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   canna-use-prediction?))

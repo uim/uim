@@ -47,6 +47,10 @@
 		     (N_ "Ajax-IME (advanced)")
 		     (N_ "long description will be here."))
 
+(define-custom-group 'ajax-ime-prediction
+                    (N_ "Prediction")
+                    (N_ "long description will be here."))
+
 ;;
 ;; segment separator
 ;;
@@ -326,3 +330,65 @@
   '(boolean)
   (N_ "Enable input mode transition keys in direct (off state) input mode")
   (N_ "long description will be here."))
+
+;; prediction
+(define-custom 'ajax-ime-use-prediction? #f
+  '(ajax-ime-advanced ajax-ime-prediction)
+  '(boolean)
+  (N_ "Enable input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'ajax-ime-select-prediction-by-numeral-key? #f
+  '(ajax-ime-advanced ajax-ime-prediction)
+  '(boolean)
+  (N_ "Select prediction candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom 'ajax-ime-use-implicit-commit-prediction? #t
+  '(ajax-ime-advanced ajax-ime-prediction)
+  '(boolean)
+  (N_ "Show selected prediction candidate in preedit area")
+  (N_ "long description will be here."))
+
+(define-custom 'ajax-ime-prediction-cache-words 256
+  '(ajax-ime-advanced ajax-ime-prediction)
+  '(integer 1 65535)
+  (N_ "Number of cache of prediction candidates")
+  (N_ "long description will be here."))
+
+(define-custom 'ajax-ime-prediction-start-char-count 2
+  '(ajax-ime-advanced ajax-ime-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'ajax-ime-use-candidate-window?
+                 'custom-get-hooks
+                 (lambda ()
+                   (if (not ajax-ime-use-candidate-window?)
+                       (set! ajax-ime-use-prediction? #f))))
+
+(custom-add-hook 'ajax-ime-use-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   ajax-ime-use-candidate-window?))
+
+(custom-add-hook 'ajax-ime-select-prediction-by-numeral-key?
+                 'custom-activity-hooks
+                 (lambda ()
+                   ajax-ime-use-prediction?))
+
+(custom-add-hook 'ajax-ime-use-implicit-commit-prediction?
+                 'custom-activity-hooks
+                 (lambda ()
+                   ajax-ime-use-prediction?))
+
+(custom-add-hook 'ajax-ime-prediction-cache-words
+                 'custom-activity-hooks
+                 (lambda ()
+                   ajax-ime-use-prediction?))
+
+(custom-add-hook 'ajax-ime-prediction-start-char-count
+                 'custom-activity-hooks
+                 (lambda ()
+                   ajax-ime-use-prediction?))

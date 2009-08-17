@@ -33,10 +33,10 @@
 (require "japanese.scm")
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
+(require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "canna-custom.scm")
 (require-custom "canna-key-custom.scm")
-
 
 ;;; implementations
 
@@ -267,6 +267,7 @@
     (list 'state              #f)
     (list 'transposing        #f)
     (list 'transposing-type    0)
+    (list 'predicting         #f)
     (list 'cc-id              ()) ;; canna-context-id
     (list 'preconv-ustr	      #f) ;; preedit strings
     (list 'rkc                ())
@@ -278,9 +279,49 @@
     (list 'alnum-type	      canna-type-halfwidth-alnum)
     (list 'commit-raw         #t)
     (list 'input-rule         canna-input-rule-roma)
-    (list 'raw-ustr	      #f))))
+    (list 'raw-ustr	      #f)
+    (list 'prediction-ctx     #f)
+    (list 'prediction-word    '())
+    (list 'prediction-candidates '())
+    (list 'prediction-appendix '())
+    (list 'prediction-nr      '())
+    (list 'prediction-window  #f)
+    (list 'prediction-index   #f)
+    (list 'prediction-cache   '()))))
 (define-record 'canna-context canna-context-rec-spec)
 (define canna-context-new-internal canna-context-new)
+
+(define (canna-predict cc str)
+  (predict-meta-search
+   (canna-context-prediction-ctx cc)
+   str))
+(define (canna-lib-set-prediction-src-string cc str)
+  (let* ((ret      (canna-predict cc str))
+         (word     (predict-meta-word? ret))
+         (cands    (predict-meta-candidates? ret))
+         (appendix (predict-meta-appendix? ret)))
+    (canna-context-set-prediction-word! cc word)
+    (canna-context-set-prediction-candidates! cc cands)
+    (canna-context-set-prediction-appendix! cc cands)
+    (canna-context-set-prediction-nr! cc (length cands)))
+  #f)
+(define (canna-lib-get-nr-predictions cc)
+  (canna-context-prediction-nr cc))
+(define (canna-lib-get-nth-word cc nth)
+  (let ((word (canna-context-prediction-word cc)))
+    (list-ref word nth)))
+(define (canna-lib-get-nth-prediction cc nth)
+  (let ((cands (canna-context-prediction-candidates cc)))
+    (list-ref cands nth)))
+(define (canna-lib-get-nth-appendix cc nth)
+  (let ((appendix (canna-context-prediction-candidates cc)))
+    (list-ref appendix nth)))
+(define (canna-lib-commit-nth-prediction cc nth)
+  (predict-meta-commit
+   (canna-context-prediction-ctx cc)
+   (canna-lib-get-nth-word cc nth)
+   (canna-lib-get-nth-prediction cc nth)
+   (canna-lib-get-nth-appendix cc nth)))
 
 (define (canna-context-new id im)
   (let ((cc (canna-context-new-internal id im))
@@ -296,6 +337,8 @@
     (if using-kana-table?
         (canna-context-set-input-rule! cc canna-input-rule-kana)
         (canna-context-set-input-rule! cc canna-input-rule-roma))
+    (canna-context-set-prediction-ctx! cc (predict-make-meta-search))
+    (predict-meta-open (canna-context-prediction-ctx cc) "canna")
     cc))
 
 (define (canna-commit-raw cc)
@@ -405,9 +448,11 @@
   (ustr-clear! (canna-context-segments cc))
   (canna-context-set-transposing! cc #f)
   (canna-context-set-state! cc #f)
-  (if (canna-context-candidate-window cc)
+  (if (or (canna-context-candidate-window cc)
+          (canna-context-prediction-window cc))
       (im-deactivate-candidate-selector cc))
   (canna-context-set-candidate-window! cc #f)
+  (canna-context-set-prediction-window! cc #f)
   (canna-context-set-candidate-op-count! cc 0))
 
 (define (canna-begin-input cc key key-state)
@@ -462,7 +507,9 @@
 			      (canna-context-transposing-state-preedit cc)
 			      (if (canna-context-state cc)
 				  (canna-compose-state-preedit cc)
-				  (canna-input-state-preedit cc)))
+                                  (if (canna-context-predicting cc)
+                                      (canna-predicting-state-preedit cc)
+                                      (canna-input-state-preedit cc))))
 			  ())))
 	(context-update-preedit cc segments))
       (canna-context-set-commit-raw! cc #f)))
@@ -717,6 +764,176 @@
 	   (canna-flush cc)
 	   (canna-proc-input-state cc key key-state))))))))
 
+(define (canna-move-prediction cc offset)
+  (let* ((nr (canna-lib-get-nr-predictions cc))
+         (idx (canna-context-prediction-index cc))
+         (n (if (not idx)
+                0
+                (+ idx offset)))
+         (compensated-n (cond
+                         ((>= n nr)
+                          0)
+                        ((< n 0)
+                         (- nr 1))
+                        (else
+                         n))))
+    (im-select-candidate cc compensated-n)
+    (canna-context-set-prediction-index! cc compensated-n)))
+
+(define (canna-move-prediction-in-page sc numeralc)
+  (let* ((nr (canna-lib-get-nr-predictions sc))
+         (p-idx (canna-context-prediction-index sc))
+         (n (if (not p-idx)
+                0
+                p-idx))
+         (cur-page (if (= canna-nr-candidate-max 0)
+                       0
+                       (quotient n canna-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page canna-nr-candidate-max) compensated-pageidx))
+         (compensated-idx (cond
+                           ((>= idx nr)
+                            #f)
+                           (else
+                            idx)))
+         (selected-pageidx (if (not p-idx)
+                               #f
+                               (if (= canna-nr-candidate-max 0)
+                                   p-idx
+                                   (remainder p-idx
+                                              canna-nr-candidate-max)))))
+    (if (and
+         compensated-idx
+         (not (eqv? compensated-pageidx selected-pageidx)))
+        (begin
+          (canna-context-set-prediction-index! sc compensated-idx)
+          (im-select-candidate sc compensated-idx)
+          #t)
+       #f)))
+
+(define (canna-prediction-select-non-existing-index? cc numeralc)
+  (let* ((nr (canna-lib-get-nr-predictions cc))
+         (p-idx (canna-context-prediction-index cc))
+         (cur-page (if (= canna-nr-candidate-max 0)
+                       0
+                       (quotient p-idx canna-nr-candidate-max)))
+         (pageidx (- (numeric-ichar->integer numeralc) 1))
+         (compensated-pageidx (cond
+                               ((< pageidx 0) ; pressing key_0
+                                (+ pageidx 10))
+                               (else
+                                pageidx)))
+         (idx (+ (* cur-page canna-nr-candidate-max) compensated-pageidx)))
+    (if (>= idx nr)
+        #t
+        #f)))
+
+(define (canna-prediction-keys-handled? cc key key-state)
+  (cond
+   ((canna-next-prediction-key? key key-state)
+    (canna-move-prediction cc 1)
+    #t)
+   ((canna-prev-prediction-key? key key-state)
+    (canna-move-prediction cc -1)
+    #t)
+   ((and
+     canna-select-prediction-by-numeral-key?
+     (ichar-numeric? key))
+    (canna-move-prediction-in-page cc key))
+   ((and
+     (canna-context-prediction-index cc)
+     (canna-prev-page-key? key key-state))
+    (im-shift-page-candidate cc #f)
+    #t)
+   ((and
+     (canna-context-prediction-index cc)
+     (canna-next-page-key? key key-state))
+    (im-shift-page-candidate cc #t)
+    #t)
+   (else
+    #f)))
+
+(define (canna-proc-prediction-state cc key key-state)
+  (cond
+   ;; prediction index change
+   ((canna-prediction-keys-handled? cc key key-state))
+
+   ;; cancel
+   ((canna-cancel-key? key key-state)
+    (if (canna-context-prediction-index cc)
+        (canna-reset-prediction-window cc)
+        (begin
+          (canna-reset-prediction-window cc)
+          (canna-proc-input-state cc key key-state))))
+
+   ;; commit
+   ((and
+     (canna-context-prediction-index cc)
+     (canna-commit-key? key key-state))
+    (canna-do-commit-prediction cc))
+   (else
+    (if (and
+         canna-use-implicit-commit-prediction?
+         (canna-context-prediction-index cc))
+        (cond
+         ((or
+           ;; check keys used in canna-proc-input-state-with-preedit
+           (canna-begin-conv-key? key key-state)
+           (canna-backspace-key? key key-state)
+           (canna-delete-key? key key-state)
+           (canna-kill-key? key key-state)
+           (canna-kill-backward-key? key key-state)
+           (and
+            (not (canna-context-alnum cc))
+            (canna-commit-as-opposite-kana-key? key key-state))
+           (canna-transpose-as-hiragana-key? key key-state)
+           (canna-transpose-as-katakana-key? key key-state)
+           (canna-transpose-as-halfkana-key? key key-state)
+           (and
+            (not (= (canna-context-input-rule cc) canna-input-rule-kana))
+            (or
+             (canna-transpose-as-halfwidth-alnum-key? key key-state)
+             (canna-transpose-as-fullwidth-alnum-key? key key-state)))
+           (canna-hiragana-key? key key-state)
+           (canna-katakana-key? key key-state)
+           (canna-halfkana-key? key key-state)
+           (canna-halfwidth-alnum-key? key key-state)
+           (canna-fullwidth-alnum-key? key key-state)
+           (and
+            (not (canna-context-alnum cc))
+            (canna-kana-toggle-key? key key-state))
+           (canna-alkana-toggle-key? key key-state)
+           (canna-go-left-key? key key-state)
+           (canna-go-right-key? key key-state)
+           (canna-beginning-of-preedit-key? key key-state)
+           (canna-end-of-preedit-key? key key-state)
+           (and
+            (modifier-key-mask key-state)
+            (not (shift-key-mask key-state))))
+          ;; go back to unselected prediction
+          (canna-reset-prediction-window cc)
+          (canna-check-prediction cc #f))
+         ((and
+           (ichar-numeric? key)
+           canna-select-prediction-by-numeral-key?
+           (not (canna-prediction-select-non-existing-index? cc key)))
+          (canna-context-set-predicting! cc #f)
+          (canna-context-set-prediction-index! cc #f)
+          (canna-proc-input-state cc key key-state))
+         (else
+          ;; implicit commit
+          (canna-do-commit-prediction cc)
+          (canna-proc-input-state cc key key-state)))
+        (begin
+          (canna-context-set-predicting! cc #f)
+          (canna-context-set-prediction-index! cc #f)
+          (canna-proc-input-state cc key key-state))))))
+
 (define (canna-proc-input-state-with-preedit cc key key-state)
   (let ((preconv-str (canna-context-preconv-ustr cc))
 	(raw-str (canna-context-raw-ustr cc))
@@ -726,7 +943,12 @@
     (cond
      ;; begin conversion
      ((canna-begin-conv-key? key key-state)
+      (canna-reset-prediction-window cc)
       (canna-begin-conv cc))
+
+     ;; prediction
+     ((canna-next-prediction-key? key key-state)
+      (canna-check-prediction cc #t))
 
      ;; backspace
      ((canna-backspace-key? key key-state)
@@ -777,6 +999,7 @@
 	   (or
 	    (canna-transpose-as-halfwidth-alnum-key? key key-state)
 	    (canna-transpose-as-fullwidth-alnum-key? key key-state))))
+      (canna-reset-prediction-window cc)
       (canna-proc-transposing-state cc key key-state))
 
      ((canna-hiragana-key? key key-state)
@@ -945,10 +1168,54 @@
 		(ustr-insert-elem! preconv-str residual-kana)
 		(rk-flush rkc)))))))
 
+(define (canna-reset-prediction-window cc)
+  (if (canna-context-prediction-window cc)
+      (im-deactivate-candidate-selector cc))
+  (canna-context-set-predicting! cc #f)
+  (canna-context-set-prediction-window! cc #f)
+  (canna-context-set-prediction-index! cc #f))
+
+(define (canna-check-prediction cc force-check?)
+  (if (and
+       (not (canna-context-state cc))
+       (not (canna-context-transposing cc))
+       (not (canna-context-predicting cc)))
+      (let* ((use-pending-rk-for-prediction? #t)
+	     (preconv-str
+	      (canna-make-whole-string
+	       cc
+	       (not use-pending-rk-for-prediction?)
+	       (canna-context-kana-mode cc)))
+	     (preedit-len (+
+			   (ustr-length (canna-context-preconv-ustr cc))
+			   (if (not use-pending-rk-for-prediction?)
+			       0
+			       (string-length (rk-pending
+					       (canna-context-rkc
+						cc)))))))
+	(if (or
+	     (>= preedit-len canna-prediction-start-char-count)
+	     force-check?)
+	    (begin
+	      (canna-lib-set-prediction-src-string cc preconv-str)
+	      (let ((nr (canna-lib-get-nr-predictions cc)))
+		(if (and
+		     nr
+		     (> nr 0))
+		    (begin
+		      (im-activate-candidate-selector
+		       cc nr canna-nr-candidate-max)
+		      (canna-context-set-prediction-window! cc #t)
+		      (canna-context-set-predicting! cc #t))
+		    (canna-reset-prediction-window cc))))
+	    (canna-reset-prediction-window cc)))))
+
 (define (canna-proc-input-state cc key key-state)
   (if (canna-has-preedit? cc)
       (canna-proc-input-state-with-preedit cc key key-state)
-      (canna-proc-input-state-no-preedit cc key key-state)))
+      (canna-proc-input-state-no-preedit cc key key-state))
+  (if canna-use-prediction?
+      (canna-check-prediction cc #f)))
 
 (define canna-separator
   (lambda (cc)
@@ -1035,6 +1302,14 @@
 		"???") ;; FIXME
 	    "????")))))) ;; shouldn't happen
 
+(define (canna-predicting-state-preedit cc)
+  (if (or
+       (not canna-use-implicit-commit-prediction?)
+       (not (canna-context-prediction-index cc)))
+      (canna-input-state-preedit cc)
+      (let ((cand (canna-get-prediction-string cc)))
+        (list (cons (bitwise-ior preedit-reverse preedit-cursor) cand)))))
+
 (define (canna-compose-state-preedit cc)
   (let* ((cc-id (canna-context-cc-id cc))
 	 (segments (canna-context-segments cc))
@@ -1110,6 +1385,22 @@
     (canna-commit-string cc)
     (canna-reset-candidate-window cc)
     (canna-flush cc))
+
+(define (canna-get-prediction-string cc)
+  (canna-lib-get-nth-prediction
+   cc
+   (canna-context-prediction-index cc)))
+
+(define (canna-learn-prediction-string cc)
+  (canna-lib-commit-nth-prediction
+   cc
+   (canna-context-prediction-index cc)))
+
+(define (canna-do-commit-prediction cc)
+  (im-commit cc (canna-get-prediction-string cc))
+  (canna-learn-prediction-string cc)
+  (canna-reset-prediction-window cc)
+  (canna-flush cc))
 
 (define canna-correct-segment-cursor
   (lambda (segments)
@@ -1333,7 +1624,9 @@
               (canna-proc-transposing-state cc key key-state)
               (if (canna-context-state cc)
                   (canna-proc-compose-state cc key key-state)
-                  (canna-proc-input-state cc key key-state)))
+                  (if (canna-context-predicting cc)
+                      (canna-proc-prediction-state cc key key-state)
+                      (canna-proc-input-state cc key key-state))))
 	  (canna-proc-raw-state cc key key-state)))
   (canna-update-preedit cc))
 
@@ -1355,13 +1648,19 @@
 (define (canna-get-candidate-handler cc idx accel-enum-hint)
   (let* ((cc-id (canna-context-cc-id cc))
 	 (cur-seg (ustr-cursor-pos (canna-context-segments cc)))
-	 (cand (canna-lib-get-nth-candidate
-		cc-id cur-seg idx)))
+         (cand (if (canna-context-state cc)
+                   (canna-lib-get-nth-candidate cc-id cur-seg idx)
+                   (canna-lib-get-nth-prediction cc idx))))
     (list cand (digit->string (+ idx 1)) "")))
 
 (define (canna-set-candidate-index-handler cc idx)
-  (ustr-cursor-set-frontside! (canna-context-segments cc) idx)
-  (canna-update-preedit cc))
+  (cond
+   ((canna-context-state cc)
+    (ustr-cursor-set-frontside! (canna-context-segments cc) idx)
+    (canna-update-preedit cc))
+   ((canna-context-predicting cc)
+    (canna-context-set-prediction-index! cc idx)
+    (canna-update-preedit cc))))
 
 (define (canna-proc-raw-state cc key key-state)
   (if (not (canna-begin-input cc key key-state))

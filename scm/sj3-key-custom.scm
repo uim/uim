@@ -267,3 +267,15 @@
 	       '(key)
 	       (N_ "[SJ3] toggle kana/alphanumeric mode")
 	       (N_ "long description will be here"))
+
+(define-custom 'sj3-next-prediction-key '("tab" "down" "<IgnoreCase><Control>n" "<IgnoreCase><Control>i")
+               '(sj3-keys4 sj3-prediction)
+               '(key)
+               (N_ "[SJ3] Next prediction candidate")
+               (N_ "long description will be here"))
+
+(define-custom 'sj3-prev-prediction-key '(generic-prev-candidate-key)
+               '(sj3-keys4 sj3-prediction)
+               '(key)
+               (N_ "[SJ3] Previous prediction candidate")
+               (N_ "long description will be here"))
