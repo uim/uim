@@ -386,9 +386,9 @@
 (define (wnn-lib-commit-nth-prediction wc nth)
   (predict-meta-commit
    (wnn-context-prediction-ctx wc)
-   (wnn-lib-get-nth-word sc nth)
+   (wnn-lib-get-nth-word wc nth)
    (wnn-lib-get-nth-prediction wc nth)
-   (wnn-lib-get-nth-appendix sc nth)))
+   (wnn-lib-get-nth-appendix wc nth)))
 
 
 (define (wnn-context-new id im)
