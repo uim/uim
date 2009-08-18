@@ -1,5 +1,5 @@
 # openssl.m4
-# Configure paths for libwnn
+# Configure paths for openssl
 
 dnl AM_PATH_OPENSSL([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Test for OpenSSL, and define OPENSSL_CPPFLAGS and OEPNSSL_LIBS
