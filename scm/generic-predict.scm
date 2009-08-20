@@ -29,7 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1))
+(require-extension (srfi 1 48))
 
 (require "util.scm")
 (require "wlos.scm")
