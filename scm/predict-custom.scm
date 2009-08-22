@@ -1,6 +1,6 @@
 ;;; predict-custom.scm: Customization variables for predict-*.scm
 ;;;
-;;; Copyright (c) 2008-2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

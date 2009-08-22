@@ -1,6 +1,6 @@
 ;;; sqlite3.scm: sqlite3 for uim.
 ;;;
-;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
