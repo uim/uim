@@ -287,8 +287,11 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
     return uim_scm_null();
 
   ret_ = uim_scm_null();
-  for (i = 0; i < ret; i++)
-    ret_ = CONS(CONS(MAKE_INT(fds[i].fd), MAKE_INT(fds[i].revents)), ret_);
+
+  for (i = 0; i < nfds; i++)
+    if (fds[i].revents != 0)
+      ret_ = CONS(CONS(MAKE_INT(fds[i].fd), MAKE_INT(fds[i].revents)), ret_);
+
   free(fds);
   return uim_scm_callf("reverse", "o", ret_);
 }
