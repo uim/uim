@@ -60,19 +60,6 @@
                             (fd s)))))
                 res))))))))
 
-(define (http:socket-ready? port)
-  (let* ((fd (fd? port))
-         (fds (list (cons fd (assq-cdr '$POLLIN file-poll-flags-alist))))
-         (ret (file-poll fds http-timeout)))
-    (cond ((not ret)
-           (uim-notify-fatal (N_ "socket error"))
-           #f)
-          ((null? ret)
-           (uim-notify-info (N_ "socket timeout"))
-           #f)
-          (else
-           #t))))
-
 (define (http:encode-uri-string str)
   (define hex '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"))
   (define (hex-format2 x)
@@ -244,7 +231,7 @@
        (lambda (port)
          (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
                     (nr (file-display request port))
-                    (ready? (http:socket-ready? port))
+                    (ready? (file-ready? port http-timeout))
                     (proxy-header (if proxy
                                       (http:read-header port)
                                       '()))
