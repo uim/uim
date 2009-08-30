@@ -297,24 +297,6 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
 }
 
 static uim_lisp
-c_file_ready(uim_lisp fd_)
-{
-  struct pollfd pfd;
-  int ndfs;
-
-  pfd.fd = C_INT(fd_);
-  pfd.events = POLLIN;
-  ndfs = poll(&pfd, 1, 0);
-
-  if (ndfs < 0) {
-    return uim_scm_f();
-  } else if (ndfs == 0)
-    return uim_scm_f();
-  else
-    return uim_scm_t();
-}
-
-static uim_lisp
 c_create_pipe(void)
 {
   int fildes[2];
@@ -344,8 +326,6 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc0("file-poll-flags?", c_file_poll_flags);
   uim_lisp_poll_flags = make_arg_list(poll_flags);
   uim_scm_gc_protect(&uim_lisp_poll_flags);
-
-  uim_scm_init_proc1("file-ready?", c_file_ready);
 
   uim_scm_init_proc0("create-pipe", c_create_pipe);
 }

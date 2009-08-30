@@ -128,3 +128,16 @@
 (define (duplicate-fileno oldd . args)
   (let-optionals* args ((newd #f))
      (duplicate2-fileno oldd newd)))
+
+(define (file-ready? port timeout)
+  (let* ((fd (fd? port))
+         (fds (list (cons fd (assq-cdr '$POLLIN file-poll-flags-alist))))
+         (ret (file-poll fds timeout)))
+    (cond ((not ret)
+           (uim-notify-fatal (N_ "poll error"))
+           #f)
+          ((null? ret)
+           (uim-notify-info (N_ "timeout"))
+           #f)
+          (else
+           #t))))
