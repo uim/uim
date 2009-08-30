@@ -389,6 +389,8 @@ keeps the size of it when showing the candidates.")
 
 (uim-deflocalvar uim-candidate-cursor nil)
 
+(uim-deflocalvar uim-candidate-in-echo-region nil)
+
 (uim-deflocalvar uim-show-candidate-upward nil)
 
 

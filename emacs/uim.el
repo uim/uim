@@ -618,7 +618,8 @@
 (defun uim-window-changed ()
   (let (candidate-displayed)
   
-    (when (and uim-candidate-displayed
+    (when (and (not uim-candidate-in-echo-region)
+	       uim-candidate-displayed
 	       uim-candidate-display-inline)
       (setq candidate-displayed uim-candidate-displayed)
 

@@ -303,6 +303,7 @@
 				 (make-string page-space 32))
 			     page-current  "/" page-total " "))
 	 cands-tmp
+	 (uim-candidate-in-echo-region t)
 	)
 
     (setq cand (cdr cand))
