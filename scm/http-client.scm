@@ -206,7 +206,7 @@
        (lambda (port)
          (and-let* ((request (http:make-get-request-string hostname path servname proxy request-alist))
                     (nr (file-display request port))
-                    (ready? (file-ready? port http-timeout))
+                    (ready? (file-ready? (list (fd? port)) http-timeout))
                     (proxy-header (if proxy
                                       (http:read-header port)
                                       '()))
