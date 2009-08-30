@@ -29,7 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 9))
+(require-extension (srfi 9 48))
+
 (and (not (provided? "fileio"))
      (module-load "fileio")
      (provide "fileio"))
@@ -135,7 +136,7 @@
                    fd-list))
          (ret (file-poll fds timeout)))
     (cond ((not ret)
-           (uim-notify-fatal (N_ "poll error"))
+           (uim-notify-fatal (format "~a: '~a'" (N_ "poll error") (posix-error-string)))
            #f)
           ((null? ret)
            (uim-notify-info (N_ "timeout"))
