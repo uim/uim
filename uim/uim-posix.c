@@ -379,6 +379,12 @@ c_sleep(uim_lisp seconds_)
   return MAKE_INT(sleep((unsigned int)C_INT(seconds_)));
 }
 
+static uim_lisp
+c_error_string()
+{
+  return MAKE_STR(strerror(errno));
+}
+
 void
 uim_init_posix_subrs(void)
 {
@@ -413,4 +419,6 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc2("difftime", c_difftime);
 
   uim_scm_init_proc1("sleep", c_sleep);
+
+  uim_scm_init_proc0("posix-error-string", c_error_string);
 }
