@@ -35,31 +35,6 @@
 (require "input-parse.scm")
 (require "openssl.scm")
 
-(define (http:open hostname servname)
-  (call-with-getaddrinfo-hints
-   '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-   (lambda (hints)
-     (call-with-getaddrinfo
-      hostname servname hints
-      (lambda (res)
-        (call/cc
-         (lambda (fd)
-           (map (lambda (res0)
-                  (let ((s (socket (addrinfo-ai-family? res0)
-                                   (addrinfo-ai-socktype? res0)
-                                   (addrinfo-ai-protocol? res0))))
-                    (if (< s 0)
-                        #f
-                        (if (< (connect s
-                                        (addrinfo-ai-addr? res0)
-                                        (addrinfo-ai-addrlen? res0))
-                               0)
-                            (begin
-                              (file-close s)
-                              #f)
-                            (fd s)))))
-                res))))))))
-
 (define (http:encode-uri-string str)
   (define hex '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F"))
   (define (hex-format2 x)
@@ -220,10 +195,10 @@
                   (call-with-open-openssl-file-port file (method? ssl) thunk))
                 call-with-open-file-port))
            (file (if (http-proxy? proxy)
-                     (http:open (hostname? proxy) (port? proxy))
+                     (tcp-connect (hostname? proxy) (port? proxy))
                      (if with-ssl?
-                         (http:open hostname (port? ssl))
-                         (http:open hostname servname)))))
+                         (tcp-connect hostname (port? ssl))
+                         (tcp-connect hostname servname)))))
       (if (not file)
           (uim-notify-fatal (N_ "cannot connect server")))
       (call-with-open-file-port-function

@@ -816,21 +816,8 @@
 
 (define prime-open-unix-domain-socket
   (lambda (socket-path)
-    (let ((s (socket (addrinfo-ai-family-number '$PF_LOCAL)
-                     (addrinfo-ai-socktype-number '$SOCK_STREAM)
-                     0)))
-      (if (< s 0)
-          #f
-          (call-with-sockaddr-un
-           (addrinfo-ai-family-number '$PF_LOCAL)
-           socket-path
-           (lambda (sun)
-             (if (< (connect s sun (sun-len sun))
-                    0)
-                 (begin
-                   (file-close s)
-                   #f)
-                 (cons s s))))))))
+    (and-let* ((fd (unix-domain-socket-connect socket-path)))
+      (cons fd fd))))
 
 (define prime-open-with-unix-domain-socket
   (lambda (socket-path)
@@ -864,29 +851,8 @@
 
 (define prime-open-with-tcp-socket
   (lambda (hostname servname)
-    (call-with-getaddrinfo-hints
-     '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
-     (lambda (hints)
-       (call-with-getaddrinfo
-        hostname servname hints
-        (lambda (res)
-          (call/cc
-           (lambda (fds)
-             (map (lambda (res0)
-                    (let ((s (socket (addrinfo-ai-family? res0)
-                                     (addrinfo-ai-socktype? res0)
-                                     (addrinfo-ai-protocol? res0))))
-                      (if (< s 0)
-                          #f
-                          (if (< (connect s
-                                          (addrinfo-ai-addr? res0)
-                                          (addrinfo-ai-addrlen? res0))
-                                 0)
-                              (begin
-                                (file-close s)
-                                   #f)
-                              (fds (cons s s))))))
-                  res)))))))))
+    (and-let* ((fd (tcp-connect prime-tcpserver-name prime-tcpserver-port)))
+      (cons fd fd))))
 
 (define prime-open-with-pipe
   (lambda (path)

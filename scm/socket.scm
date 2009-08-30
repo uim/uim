@@ -85,3 +85,45 @@
     ret))
 
 (define shutdown-how-alist (shutdown-how-alist?))
+
+(define (tcp-connect hostname servname)
+  (call-with-getaddrinfo-hints
+   '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+   (lambda (hints)
+     (call-with-getaddrinfo
+      hostname servname hints
+      (lambda (res)
+        (call/cc
+         (lambda (fd)
+           (map (lambda (res0)
+                  (let ((s (socket (addrinfo-ai-family? res0)
+                                   (addrinfo-ai-socktype? res0)
+                                   (addrinfo-ai-protocol? res0))))
+                    (if (< s 0)
+                        #f
+                        (if (< (connect s
+                                        (addrinfo-ai-addr? res0)
+                                        (addrinfo-ai-addrlen? res0))
+                               0)
+                            (begin
+                              (file-close s)
+                              #f)
+                            (fd s)))))
+                res))))))))
+
+(define (unix-domain-socket-connect socket-path)
+  (let ((s (socket (addrinfo-ai-family-number '$PF_LOCAL)
+                   (addrinfo-ai-socktype-number '$SOCK_STREAM)
+                   0)))
+    (if (< s 0)
+        #f
+        (call-with-sockaddr-un
+         (addrinfo-ai-family-number '$PF_LOCAL)
+         socket-path
+         (lambda (sun)
+           (if (< (connect s sun (sun-len sun))
+                  0)
+               (begin
+                 (file-close s)
+                 #f)
+               s))))))
