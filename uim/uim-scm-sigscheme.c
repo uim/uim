@@ -884,6 +884,22 @@ uim_scm_symbolp(uim_lisp obj)
 }
 
 uim_bool
+uim_scm_ptrp(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (SCM_C_POINTERP((ScmObj)obj));
+}
+
+uim_bool
+uim_scm_func_ptrp(uim_lisp obj)
+{
+  assert(uim_scm_gc_any_contextp());
+
+  return (SCM_C_FUNCPOINTERP((ScmObj)obj));
+}
+
+uim_bool
 uim_scm_eq(uim_lisp a, uim_lisp b)
 {
   assert(uim_scm_gc_any_contextp());

@@ -199,6 +199,8 @@ uim_bool uim_scm_charp(uim_lisp obj);
 uim_bool uim_scm_vectorp(uim_lisp obj);
 uim_bool uim_scm_strp(uim_lisp obj);
 uim_bool uim_scm_symbolp(uim_lisp obj);
+uim_bool uim_scm_ptrp(uim_lisp obj);
+uim_bool uim_scm_func_ptrp(uim_lisp obj);
 uim_bool uim_scm_eq(uim_lisp a, uim_lisp b);
 
 /* constants */
