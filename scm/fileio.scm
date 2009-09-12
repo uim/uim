@@ -91,7 +91,7 @@
   (if (null? (inbuf? port))
       (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
   (if (null? (inbuf? port))
-      #f
+      (make-fileio-eof)
       (let ((c (car (inbuf? port))))
         (inbuf! port (cdr (inbuf? port)))
         (integer->char c))))
@@ -100,7 +100,7 @@
   (if (null? (inbuf? port))
       (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
   (if (null? (inbuf? port))
-      #f
+      (make-fileio-eof)
       (let ((c (car (inbuf? port))))
         (integer->char c))))
 
@@ -115,8 +115,8 @@
              (rest '()))
     (cond ((eq? #\newline c)
            (list->string (reverse rest)))
-          ((eq? #f c)
-           #f)
+          ((fileio-eof-object? c)
+           (make-fileio-eof))
           (else
            (loop (file-read-char port) (cons c rest))))))
 

@@ -306,6 +306,22 @@ c_create_pipe(void)
   return CONS(MAKE_INT(fildes[0]), MAKE_INT(fildes[1]));
 }
 
+static int c_fileio_eof;
+
+static uim_lisp
+c_make_fileio_eof(void)
+{
+  return MAKE_PTR(&c_fileio_eof);
+}
+
+static uim_lisp
+c_is_fileio_eof(uim_lisp obj)
+{
+  if (!PTRP(obj))
+    return uim_scm_f();
+  return MAKE_BOOL(&c_fileio_eof == C_PTR(obj));
+}
+
 void
 uim_plugin_instance_init(void)
 {
@@ -328,6 +344,9 @@ uim_plugin_instance_init(void)
   uim_scm_gc_protect(&uim_lisp_poll_flags);
 
   uim_scm_init_proc0("create-pipe", c_create_pipe);
+
+  uim_scm_init_proc0("make-fileio-eof", c_make_fileio_eof);
+  uim_scm_init_proc1("fileio-eof-object?", c_is_fileio_eof);
 }
 
 void
