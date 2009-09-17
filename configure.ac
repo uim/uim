@@ -1359,7 +1359,10 @@ fi
 AC_MSG_CHECKING([whether knotify3 is requested])
 if test "x$au_enable_knotify3" = xyes; then
   AC_MSG_RESULT([yes])
-  if test "x$use_qt" = "xyes"; then
+  if test "x$use_qt4_immodule" = "xyes"; then
+    AC_MSG_WARN([knotify3 couldn't be used with qt4-immodule enabled])
+    use_knotify3="no"
+  elif test "x$use_qt" = "xyes"; then
     if test "x$KDE_CONFIG" != "xno"; then
       KNOTIFY3_PREFIX=`kde-config --prefix`
       KNOTIFY3_LIB_DIR=`kde-config --expandvars --install lib`
