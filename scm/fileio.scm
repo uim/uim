@@ -118,7 +118,7 @@
   ((write? port) (context? port) (string->file-buf str)))
 
 (define (file-newline port)
-  ((write? port) (context? port) '(#\newline)))
+  ((write? port) (context? port) (string->file-buf (list->string '(#\newline)))))
 
 (define (file-read-line port)
   (let loop ((c (file-read-char port))
