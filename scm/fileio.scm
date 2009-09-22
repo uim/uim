@@ -98,7 +98,7 @@
         (inbuf! port ((read? port) (context? port) (inbufsiz? port)))))
   (let ((buf (inbuf? port)))
     (if (or (eof-object? buf)
-            (null? buf))
+            (null? buf)) ;; disconnect?
         buf
         (let ((c (car buf)))
           (inbuf! port (cdr buf))
