@@ -137,6 +137,56 @@
 (define (file-get-buffer port)
   (file-buf->string (inbuf? port)))
 
+(define (file-write-sexp l port)
+  ((write? port) (context? port) (string->file-buf (write-to-string l))))
+
+;; XXX: multi ports are not considered
+(define %*file-reading* #f)
+
+(cond-expand
+ (sigscheme
+  (define %file-eof-error?
+    (lambda (err)
+      (and (%%error-object? err)
+           (string-prefix? "in read: EOF " (cadr err)))))) ;; XXX
+ (else
+  (error "cannot detect EOF error")))
+
+(define (%file-partial-read . args)
+  (guard (err
+          ((%file-eof-error? err) err))
+         (apply read args)))
+
+(define file-read-sexp
+  (let ((p (open-input-string ""))
+        (buf ""))
+    (lambda (port)
+      (let ((expr (%file-partial-read p)))
+
+        (if (or (eof-object? expr)
+                (%file-eof-error? expr))
+            (let ((line (file-read-line port)))
+              (if (null? line) ;; disconnect?
+                  (begin
+                    (set! buf "")
+                    (set! %*file-reading* #f)
+                    expr)
+                  (if (eof-object? line)
+                      (if (%file-eof-error? expr)
+                          (raise expr)
+                          line)
+                      (begin
+                        (set! buf (if (%file-eof-error? expr)
+                                      (string-append buf line)
+                                      line))
+                        (set! p (open-input-string buf))
+                        (set! %*file-reading* #t)
+                        (file-read-sexp port)))))
+            (begin
+              (set! buf "")
+              (set! %*file-reading* #f)
+              expr))))))
+
 (define (duplicate-fileno oldd . args)
   (let-optionals* args ((newd #f))
      (duplicate2-fileno oldd newd)))
