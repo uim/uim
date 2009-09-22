@@ -58,7 +58,10 @@
 (define (file-buf->string buf)
   (list->string (map integer->char buf)))
 (define (file-read-string s len)
-    (file-buf->string (file-read s len)))
+  (let ((ret (file-read s len)))
+    (if (eof-object? ret)
+        ret
+        (file-buf->string ret))))
 (define (file-write-string s str)
   (file-write s (string->file-buf str)))
 
@@ -89,20 +92,27 @@
 
 (define (file-read-char port)
   (if (null? (inbuf? port))
-      (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
-  (if (null? (inbuf? port))
-      (make-fileio-eof)
-      (let ((c (car (inbuf? port))))
-        (inbuf! port (cdr (inbuf? port)))
-        (integer->char c))))
+      (begin
+        ;; XXX: block
+        (file-ready? (list (fd? port)) -1)
+        (inbuf! port ((read? port) (context? port) (inbufsiz? port)))))
+  (let ((buf (inbuf? port)))
+    (if (or (eof-object? buf)
+            (null? buf))
+        buf
+        (let ((c (car buf)))
+          (inbuf! port (cdr buf))
+          (integer->char c)))))
 
 (define (file-peek-char port)
   (if (null? (inbuf? port))
       (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
-  (if (null? (inbuf? port))
-      (make-fileio-eof)
-      (let ((c (car (inbuf? port))))
-        (integer->char c))))
+  (let ((buf (inbuf? port)))
+    (if (or (eof-object? buf)
+            (null? buf)) ;; disconnect?
+        buf
+        (let ((c (car buf)))
+          (integer->char c)))))
 
 (define (file-display str port)
   ((write? port) (context? port) (string->file-buf str)))
@@ -115,8 +125,9 @@
              (rest '()))
     (cond ((eq? #\newline c)
            (list->string (reverse rest)))
-          ((fileio-eof-object? c)
-           (make-fileio-eof))
+          ((or (eof-object? c)
+               (null? c)) ;; disconnect?
+           c)
           (else
            (loop (file-read-char port) (cons c rest))))))
 
