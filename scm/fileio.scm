@@ -117,7 +117,7 @@
 (define (file-display str port)
   ((write? port) (context? port) (string->file-buf str)))
 
-(define (file-newline str port)
+(define (file-newline port)
   ((write? port) (context? port) '(#\newline)))
 
 (define (file-read-line port)
