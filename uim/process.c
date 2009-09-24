@@ -238,4 +238,5 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+  uim_scm_gc_unprotect(&uim_lisp_process_waitpid_options);
 }

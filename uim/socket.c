@@ -474,5 +474,10 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+  uim_scm_gc_unprotect(&uim_lisp_ai_flags);
+  uim_scm_gc_unprotect(&uim_lisp_ai_family);
+  uim_scm_gc_unprotect(&uim_lisp_ai_socktype);
+  uim_scm_gc_unprotect(&uim_lisp_ai_protocol);
+  uim_scm_gc_unprotect(&uim_lisp_shutdown_how_alist);
 }
 

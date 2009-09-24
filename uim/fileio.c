@@ -328,4 +328,7 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+  uim_scm_gc_unprotect(&uim_lisp_open_flags);
+  uim_scm_gc_unprotect(&uim_lisp_open_mode);
+  uim_scm_gc_unprotect(&uim_lisp_poll_flags);
 }
