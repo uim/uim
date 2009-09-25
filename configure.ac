@@ -1253,7 +1253,7 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
-AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
+AC_PATH_PROGS(KDE_CONFIG, [kde-config kde4-config], [no])
 if test "x$use_qt" = "xyes" || test "x$use_qt4" = "xyes"; then
     if test "x$KDE_CONFIG" != "xno"; then
 	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
