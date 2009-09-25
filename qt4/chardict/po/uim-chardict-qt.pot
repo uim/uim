@@ -1,0 +1,545 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR uim Developers
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: uim@lists.freedesktop.org\n"
+"POT-Creation-Date: 2005-12-09 14:52+0900\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: qt4/chardict/bushuviewwidget.cpp:72
+msgid "Bushu List"
+msgstr ""
+
+#: qt4/chardict/qt4.cpp:113
+msgid "Mode:"
+msgstr ""
+
+#: qt4/chardict/qt4.cpp:115
+msgid "Bushu Search"
+msgstr ""
+
+#: qt4/chardict/qt4.cpp:116
+msgid "Unicode Search"
+msgstr ""
+
+#: qt4/chardict/qt4.cpp:122
+msgid "Select Font"
+msgstr ""
+
+#: qt4/chardict/qt4.cpp:126
+msgid "Chars:"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:66
+msgid "Basic Latin"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:67
+msgid "Latin-1 Supplement"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:68
+msgid "Latin Extended-A"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:69
+msgid "Latin Extended-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:70
+msgid "IPA Extensions"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:71
+msgid "Spacing Modifier Letters"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:72
+msgid "Combining Diacritical Marks"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:73
+msgid "Greek and Coptic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:74
+msgid "Cyrillic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:75
+msgid "Cyrillic Supplement"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:76
+msgid "Armenian"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:77
+msgid "Hebrew"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:78
+msgid "Arabic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:79
+msgid "Syriac"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:80
+msgid "Thaana"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:81
+msgid "Devanagari"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:82
+msgid "Bengali"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:83
+msgid "Gurmukhi"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:84
+msgid "Gujarati"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:85
+msgid "Oriya"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:86
+msgid "Tamil"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:87
+msgid "Telugu"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:88
+msgid "Kannada"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:89
+msgid "Malayalam"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:90
+msgid "Sinhala"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:91
+msgid "Thai"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:92
+msgid "Lao"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:93
+msgid "Tibetan"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:94
+msgid "Myanmar"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:95
+msgid "Georgian"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:96
+msgid "Hangul Jamo"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:97
+msgid "Ethiopic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:98
+msgid "Cherokee"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:99
+msgid "Unified Canadian Aboriginal Syllabics"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:100
+msgid "Ogham"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:101
+msgid "Runic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:102
+msgid "Tagalog"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:103
+msgid "Hanunoo"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:104
+msgid "Buhid"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:105
+msgid "Tagbanwa"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:106
+msgid "Khmer"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:107
+msgid "Mongolian"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:108
+msgid "Limbu"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:109
+msgid "Tai Letters"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:110
+msgid "Khmer Symbols"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:111
+msgid "Phonetic Extensions"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:112
+msgid "Latin Extended Additional"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:113
+msgid "Greek Extended-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:114
+msgid "General Punctuation"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:115
+msgid "Superscripts and Subscripts"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:116
+msgid "Currency Symbols"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:117
+msgid "Combining Diacritical Marks for Symbols"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:118
+msgid "Letterlike Symbols"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:119
+msgid "Number Forms"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:120
+msgid "Arrows"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:121
+msgid "Mathematical Operators"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:122
+msgid "Miscellaneous Technical"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:123
+msgid "Control Pictures"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:124
+msgid "Optical Character Recognition"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:125
+msgid "Enclosed Alphanumerics"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:126
+msgid "Box Drawing"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:127
+msgid "Block Elements"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:128
+msgid "Geometric Shapes"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:129
+msgid "Miscellaneous Symbols"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:130
+msgid "Dingbats"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:131
+msgid "Miscellaneous Mathematical Symbols-A"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:132
+msgid "Supplemental Arrows-A"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:133
+msgid "Braille Patterns"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:134
+msgid "Supplemental Arrows-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:135
+msgid "Miscellaneous Mathematical Symbols-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:136
+msgid "Supplemental Mathematical Operators"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:137
+msgid "Miscellaneous Symbols and Arrows-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:138
+msgid "CJK Radicals Supplemental"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:139
+msgid "Kangxi Radicals"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:140
+msgid "Ideographic Description Characters"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:141
+msgid "CJK Symbols and Punctuation"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:142
+msgid "Hiragana"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:143
+msgid "Katakana"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:144
+msgid "Bopomofo"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:145
+msgid "Hangul Compatibility Jamo"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:146
+msgid "Kanbun"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:147
+msgid "Bopomofo Extended-B 1F00"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:148
+msgid "Katakana Phonetic Extensions"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:149
+msgid "Enclosed CJK Letters and Months"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:150
+msgid "CJK Compatibility"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:151
+msgid "CJK Unified Ideographs Extension and"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:152
+msgid "Yijing Hexagram Symbols-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:153
+msgid "CJK Unified Ideographs"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:154
+msgid "Yi Syllables"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:155
+msgid "Yi Radicals"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:156
+msgid "Hangul Syllables"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:157
+msgid "High Surrogates"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:158
+msgid "High Private Use Surrogates"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:159
+msgid "Low Surrogates"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:160
+msgid "Private Use Area"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:161
+msgid "CJK Compatibility Ideographs"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:162
+msgid "Alphabetic Presentation Forms"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:163
+msgid "Arabic Presentation Forms-A"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:164
+msgid "Variation Selectors"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:165
+msgid "Combining Half Marks"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:166
+msgid "CJK Compatibility Forms-A"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:167
+msgid "Small Form Variants"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:168
+msgid "Arabic Presentation Forms-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:169
+msgid "Halfwidth and Fullwidth Forms-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:170
+msgid "Specials"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:171
+msgid "Linear B Syllabary"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:172
+msgid "Linear B Ideograms"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:173
+msgid "Aegean Numbers"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:174
+msgid "Old Italic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:175
+msgid "Gothic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:176
+msgid "Ugaritic"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:177
+msgid "Deseret"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:178
+msgid "Shavian"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:179
+msgid "Osmanya"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:180
+msgid "Cypriot Syllabary"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:181
+msgid "Byzantine Musical Symbols-B 4DC0"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:182
+msgid "Musical Symbols-B 4DC0 1D000"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:183
+msgid "Tai Xuan Jing Symbols-B 4DC0 1D000 1D100"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:184
+msgid "Mathematical Alphanumeric Symbols-B 4DC0 1D000 1D100 1D300"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:185
+msgid "CJK Unified Ideographs Extension B 4DC0 1D000 1D100 1D300 1D400"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:186
+msgid "CJK Compatibility Ideographs Supplemental 2E80"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:187
+msgid "Tags"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:188
+msgid "Variation Selectors Supplemental 2E80 2F800"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:189
+msgid "Supplementary Private Use Area-A"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:190
+msgid "Supplementary Private Use Area-B"
+msgstr ""
+
+#: qt4/chardict/unicodeviewwidget.cpp:214
+msgid "UnicodeBlock List"
+msgstr ""

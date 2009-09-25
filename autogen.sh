@@ -1,5 +1,20 @@
 #!/bin/sh
 
+generate_makefile_in_in() {
+  cp po/Makefile.in.in $1 \
+    && perl -i -pe 's/check: all.*$/check: all/' $1/Makefile.in.in \
+    && ed $1/Makefile.in.in <<EOT
+/^check:
++
+.,/^$/d
+i
+# The test is removed for $1  -- YamaKen
+
+.
+wq
+EOT
+}
+
 aclocal -I m4 \
   && libtoolize --force --copy \
   && autoheader \
@@ -10,18 +25,8 @@ aclocal -I m4 \
   && perl -i -pe 's/\bscm\b/scm-workaround/g' intltool-update.in \
   && perl -i -pe 's%"(POTFILES.(skip|ignore))"%"\$SRCDIR/$1"%g' intltool-update.in \
   && perl -i -pe 's%(-f "\$SRCDIR/../\$dummy")%$1 and ! -f "../\$dummy"%' intltool-update.in \
-  && cp po/Makefile.in.in qt/chardict/po \
-  && perl -i -pe 's/check: all.*$/check: all/' qt/chardict/po/Makefile.in.in \
-  && ed qt/chardict/po/Makefile.in.in <<EOT
-/^check:
-+
-.,/^$/d
-i
-# The test is removed for qt/chardict/po  -- YamaKen
-
-.
-wq
-EOT
+  && generate_makefile_in_in qt/chardict/po \
+  && generate_makefile_in_in qt4/chardict/po
 
 # Since intltool 0.32 and later does not include po/Makevars into Makefile by
 # default as we expected, I do the '# Makevars' workaround here. See

@@ -1,0 +1,22 @@
+TEMPLATE = app
+CONFIG += @QT_CONFIG_OPTS@
+
+INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
+               @abs_top_builddir@/replace ..
+QMAKE_LIBDIR += @abs_top_builddir@/uim
+QMAKE_LIBDIR += @abs_top_builddir@/replace
+LIBS += -lreplace -luim -luim-scm -luim-x-util
+
+QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
+QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
+QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
+QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
+
+# Input
+HEADERS += qt4.h
+SOURCES += qt4.cpp
+
+TARGET = uim-im-switcher-qt4
+
+target.path += @DESTDIR@@exec_prefix@/bin
+INSTALLS    += target

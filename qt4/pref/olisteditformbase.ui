@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0" stdsetdef="1">
+  <author></author>
+  <comment></comment>
+  <exportmacro></exportmacro>
+  <class>OListEditFormBase</class>
+  <widget class="QDialog" name="OListEditFormBase">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>380</width>
+        <height>200</height>
+      </rect>
+    </property>
+    <property name="sizePolicy">
+      <sizepolicy>
+        <hsizetype>5</hsizetype>
+        <vsizetype>5</vsizetype>
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+      </sizepolicy>
+    </property>
+    <property name="windowTitle">
+      <string>OListEditBase</string>
+    </property>
+    <layout class="QGridLayout">
+      <item row="0" column="0">
+        <layout class="QHBoxLayout">
+          <item>
+            <widget class="QTreeWidget" name="m_listView">
+              <property name="selectionMode">
+                <enum>QAbstractItemView::SingleSelection</enum>
+              </property>
+              <column>
+                <property name="text">
+                  <string>Available Items</string>
+                </property>
+                <property name="clickable">
+                  <bool>false</bool>
+                </property>
+                <property name="resizable">
+                  <bool>true</bool>
+                </property>
+              </column>
+            </widget>
+          </item>
+          <item>
+            <layout class="QVBoxLayout">
+              <item>
+                <widget class="QPushButton" name="m_upButton">
+                  <property name="text">
+                    <string>Up</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QPushButton" name="m_downButton">
+                  <property name="text">
+                    <string>Down</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <spacer name="spacer2">
+                  <property name="sizeHint">
+                    <size>
+                      <width>20</width>
+                      <height>140</height>
+                    </size>
+                  </property>
+                  <property name="sizeType">
+                    <enum>QSizePolicy::Expanding</enum>
+                  </property>
+                  <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                  </property>
+                </spacer>
+              </item>
+              <item>
+                <widget class="QPushButton" name="m_okButton">
+                  <property name="text">
+                    <string>OK</string>
+                  </property>
+                </widget>
+              </item>
+              <item>
+                <widget class="QPushButton" name="m_cancelButton">
+                  <property name="text">
+                    <string>Cancel</string>
+                  </property>
+                </widget>
+              </item>
+            </layout>
+          </item>
+        </layout>
+      </item>
+    </layout>
+  </widget>
+  <layoutdefault spacing="6" margin="11"/>
+  <connections>
+    <connection>
+      <sender>m_okButton</sender>
+      <signal>clicked()</signal>
+      <receiver>OListEditFormBase</receiver>
+      <slot>accept()</slot>
+    </connection>
+    <connection>
+      <sender>m_cancelButton</sender>
+      <signal>clicked()</signal>
+      <receiver>OListEditFormBase</receiver>
+      <slot>reject()</slot>
+    </connection>
+  </connections>
+</ui>
