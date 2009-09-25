@@ -108,6 +108,7 @@ void UimImSwitcher::createGUI()
         << _( "InputMethodName" ) << _( "Language" ) << _( "Description" ) );
     listview->setShowGrid( false );
     listview->horizontalHeader()->setStretchLastSection( true );
+    listview->setAttribute( Qt::WA_InputMethodEnabled, false );
 
     /* radio buttons for the switcher coverage */
     wholeButton = new QRadioButton( _( "whole desktop" ) );
