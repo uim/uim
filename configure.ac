@@ -1356,16 +1356,18 @@ AC_ARG_ENABLE(pref,
 	;;
     esac ],
   [
-    if test x"$default_toolkit" = "xgtk" && test x"$use_gtk2_4" = "xyes"; then
+    if test x"$default_toolkit" = "xgtk" && \
+       test x"$use_gtk2_4" = "xyes"; then
+      use_pref="yes"
+    elif test x"$default_toolkit" = "xqt" && \
+         test x"$use_qt" = "xyes"; then
+      use_pref="yes"
+    elif test x"$default_toolkit" = "xqt4" && \
+         test x"$use_qt4" = "xyes"; then
       use_pref="yes"
     else
-      if test x"$default_toolkit" = "xqt" && \
-         test x"$use_qt" = "xyes"; then
-	use_pref="yes"
-      else
-	use_pref="no"
-	AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
-      fi
+      use_pref="no"
+      AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
     fi
   ])
 AM_CONDITIONAL(PREF, test x"$use_pref" = "xyes")

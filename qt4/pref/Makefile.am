@@ -1,8 +1,7 @@
 .PHONY: mocclean FORCE
 
-# Makefile.qmake is only exist when --enable-pref and --enable-qt4
+# Makefile.qmake is only exist when --enable-qt4
 if QT4
-if PREF
 all clean mocclean install uninstall:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake INSTALL_ROOT=$(DESTDIR) $@
 
@@ -11,7 +10,6 @@ distclean:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 	-rm -f Makefile uim-pref-qt4.pro
-endif
 else
 distclean:
 	-rm -f Makefile uim-pref-qt4.pro
