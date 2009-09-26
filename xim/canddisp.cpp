@@ -53,6 +53,8 @@
 
 #if defined(USE_QT_CANDWIN)
   #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-qt")
+#elif defined(USE_QT4_CANDWIN)
+  #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-qt4")
 #elif defined(USE_GTK_CANDWIN) && defined(USE_GTK2)
   #define DEFAULT_CANDWIN_PROG	(UIM_LIBEXECDIR "/uim-candwin-gtk")
 #else

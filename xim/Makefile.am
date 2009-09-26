@@ -18,6 +18,9 @@ endif
 if DEFAULT_TOOLKIT_QT
 uim_xim_CPPFLAGS += -DUSE_QT_CANDWIN
 endif
+if DEFAULT_TOOLKIT_QT4
+uim_xim_CPPFLAGS += -DUSE_QT4_CANDWIN
+endif
 
 if WITH_XFT
 uim_xim_CFLAGS += @XFT_CFLAGS@

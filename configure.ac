@@ -892,7 +892,7 @@ fi
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-                 [Determine default toolkit (gtk or qt)
+                 [Determine default toolkit (gtk, qt, or qt4)
 		  @<:@default=gtk@:>@]),
   [
   if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
@@ -900,6 +900,9 @@ AC_ARG_ENABLE(default-toolkit,
   fi
   if test x"$enable_default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
      default_toolkit="qt"
+  fi
+  if test x"$enable_default_toolkit" = "xqt4" && test x"$use_qt4" = "xyes"; then
+     default_toolkit="qt4"
   fi
   ],
   [])
@@ -1076,6 +1079,7 @@ AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test x$default_toolkit = xqt4)
 AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
@@ -1339,13 +1343,15 @@ AC_ARG_ENABLE(pref,
 	if test x"$default_toolkit" = "xgtk" && \
 	   test x"$use_gtk2_4" = "xyes"; then
 	  use_pref="yes"
+	elif test x"$default_toolkit" = "xqt" && \
+	     test x"$use_qt" = "xyes"; then
+	  use_pref="yes"
+	elif test x"$default_toolkit" = "xqt4" && \
+	     test x"$use_qt4" = "xyes"; then
+	  use_pref="yes"
 	else
-	  if test x"$default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
-	    use_pref="yes"
-	  else
-	    use_pref="no"
-	    AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
-	  fi
+	  use_pref="no"
+	  AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
 	fi
 	;;
     esac ],
@@ -1619,6 +1625,8 @@ AC_CONFIG_FILES([Makefile
 		 qt/test/Makefile
 		 qt/uimapplet.desktop
 		 qt4/Makefile
+		 qt4/candwin/Makefile
+		 qt4/candwin/uim-candwin-qt4.pro
 		 qt4/chardict/Makefile
 		 qt4/chardict/uim-chardict-qt4.pro
 		 qt4/chardict/po/Makefile.in
@@ -1653,6 +1661,8 @@ AC_OUTPUT
 
 # Generate Makefiles for Qt4 by qmake
 if test x$use_qt4 = xyes; then
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
+		 ${ac_abs_top_srcdir}/qt4/candwin/uim-candwin-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
 		 ${ac_abs_top_srcdir}/qt4/chardict/uim-chardict-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
