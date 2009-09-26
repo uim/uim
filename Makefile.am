@@ -3,9 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = m4 doc replace sigscheme uim scm test test2 \
           gtk helper qt notify
-if QT4_IMMODULE
 SUBDIRS += qt4
-endif
 SUBDIRS += xim fep emacs po pixmaps examples
 
 EXTRA_DIST = RELNOTE ChangeLog.old autogen.sh make-dist.sh \
