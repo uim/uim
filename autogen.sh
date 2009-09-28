@@ -18,8 +18,11 @@ EOT
 fix_acloacl_m4() {
   # need workaround if intltool >= 0.40.4
   if test $INTLTOOL_VERSION_MAJOR -eq 0 \
-       -a $INTLTOOL_VERSION_MINOR -gt 39 \
-       -a $INTLTOOL_VERSION_MICRO -gt 3; then
+       -a $INTLTOOL_VERSION_MINOR -eq 40 \
+       -a $INTLTOOL_VERSION_MICRO -gt 3 \
+     -o \
+          $INTLTOOL_VERSION_MAJOR -eq 0 \
+       -a $INTLTOOL_VERSION_MINOR -gt 40; then
     echo "modify aclocal.m4"
     ed aclocal.m4 << EOT
 /^    \[sed '\/\^POTFILES
