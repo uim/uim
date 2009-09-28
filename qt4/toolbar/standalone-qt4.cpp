@@ -81,7 +81,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
     int panelHeight = 64; // FIXME!
     int screenwidth = QApplication::desktop()->screenGeometry().width();
     int screenheight = QApplication::desktop()->screenGeometry().height();
-    QPoint p( screenwidth - width() - panelHeight, screenheight - height() - panelHeight );
+    QPoint p( screenwidth - panelHeight - toolbar->width() - h->width(), screenheight - height() - panelHeight );
     move( p );
 
     // Enable Dragging Feature
