@@ -15,7 +15,32 @@ wq
 EOT
 }
 
+fix_acloacl_m4() {
+  # need workaround if intltool >= 0.40.4
+  if test $INTLTOOL_VERSION_MAJOR -eq 0 \
+       -a $INTLTOOL_VERSION_MINOR -gt 39 \
+       -a $INTLTOOL_VERSION_MICRO -gt 3; then
+    echo "modify aclocal.m4"
+    ed aclocal.m4 << EOT
+/^    \[sed '\/\^POTFILES
+i
+    mv "\$1/Makefile" "\$1/Makefile.tmp"
+.
+/\$1\/Makefile.in
+s/Makefile.in/Makefile.tmp/
+wq
+EOT
+  fi
+}
+
+# check intltool version to examine whether fixes for aclocal.m4 is needed
+INTLTOOL_VERSION=`intltoolize --version | sed -e "s/.* \([0-9]*\.[0-9]*\.[0-9]*\)/\1/"`
+INTLTOOL_VERSION_MAJOR=`echo $INTLTOOL_VERSION | cut -d '.' -f 1`
+INTLTOOL_VERSION_MINOR=`echo $INTLTOOL_VERSION | cut -d '.' -f 2`
+INTLTOOL_VERSION_MICRO=`echo $INTLTOOL_VERSION | cut -d '.' -f 3`
+
 aclocal -I m4 \
+  && fix_acloacl_m4 \
   && libtoolize --force --copy \
   && autoheader \
   && automake --add-missing --foreign --copy \
