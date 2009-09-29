@@ -138,7 +138,7 @@
 (define (http:read-header port)
   (let loop ((str (file-read-line port))
              (rest '()))
-    (if (or (fileio-eof-object? str)
+    (if (or (eof-object? str)
             (null? str)
             (string=? "\r" str))
         (reverse rest)
