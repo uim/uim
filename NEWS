@@ -8,6 +8,15 @@ Overview of changes from 1.5.x to 1.6.0-alpha
   - uim-yahoo-jp (new IM)
     A web based Japanese multi-segment input method
 
+  - Ported Qt4 tools from Qt3
+    * uim-toolbar-qt4
+    * uim-pref-qt4
+    * uim-chardict-qt4
+    * uim-candwin-qt4
+
+* Fixes
+  - Fix pot file installation of uim-chardict-qt
+
 * Others
 
 
