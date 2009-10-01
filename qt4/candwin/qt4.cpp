@@ -299,7 +299,7 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
         page = l[ 1 ].toInt();
     }
 
-    int len = list.length();
+    int len = list.count();
     for ( int i = 3; i < len; i++ )
     {
         // case list[i] = ""
