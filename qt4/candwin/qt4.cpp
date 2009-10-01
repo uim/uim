@@ -112,7 +112,7 @@ CandidateWindow::~CandidateWindow()
 void CandidateWindow::activateCand( const QStringList &list )
 {
 #if defined(ENABLE_DEBUG)
-    qDebug( "uim-helper-candwin-qt: activateCand()" );
+    qDebug( "uim-candwin-qt4: activateCand()" );
 #endif
     /**
      * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
@@ -185,7 +185,7 @@ void CandidateWindow::activateCand( const QStringList &list )
 void CandidateWindow::selectCand( const QStringList &list )
 {
 #if defined(ENABLE_DEBUG)
-    qDebug( "uim-helper-candwin-qt: selectCand()" );
+    qDebug( "uim-candwin-qt4: selectCand()" );
 #endif
     const int index = list[ 1 ].toInt();
     needHilite = (list[ 2 ].toInt() == 1) ? TRUE : FALSE;
@@ -197,7 +197,7 @@ void CandidateWindow::selectCand( const QStringList &list )
 void CandidateWindow::moveCand( const QStringList &list )
 {
 #if defined(ENABLE_DEBUG)
-    qDebug( "uim-helper-candwin-qt: moveCand()" );
+    qDebug( "uim-candwin-qt4: moveCand()" );
 #endif
     if ( list[ 1 ].isEmpty() || list[ 2 ].isEmpty() )
         return ;
@@ -235,7 +235,7 @@ void CandidateWindow::moveCand( const QStringList &list )
 void CandidateWindow::showCand()
 {
 #if defined(ENABLE_DEBUG)
-    qDebug( "uim-helper-candwin-qt: showCand()" );
+    qDebug( "uim-candwin-qt4: showCand()" );
 #endif
     if ( isActive )
         show();
@@ -243,7 +243,7 @@ void CandidateWindow::showCand()
 void CandidateWindow::deactivateCand()
 {
 #if defined(ENABLE_DEBUG)
-    qDebug( "uim-helper-candwin-qt: deactivateCand()" );
+    qDebug( "uim-candwin-qt4: deactivateCand()" );
 #endif
     hide();
     isActive = false;
