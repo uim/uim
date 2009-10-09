@@ -109,7 +109,7 @@ uim_notify_load(const char *name)
     return UIM_FALSE;
   }
 
-  if (strcmp(agent->desc()->name, name) == 0) {
+  if (getenv("UIM_DISABLE_NOTIFY") != NULL || strcmp(agent->desc()->name, name) == 0) {
     return UIM_TRUE;
   } else if (strcmp(name, "stderr") == 0) {
     agent->quit();
@@ -238,6 +238,10 @@ notify_get_plugins(void)
 		    MAKE_STR(desc->name),
 		    MAKE_STR(desc->desc)),
 	      uim_scm_null());
+
+  if (getenv("UIM_DISABLE_NOTIFY") != NULL)
+    return uim_scm_callf("reverse", "o", ret_);
+
   dirp = opendir(NOTIFY_PLUGIN_PATH);
   if (dirp) {
     while ((dp = readdir(dirp)) != NULL) {
