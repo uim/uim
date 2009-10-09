@@ -80,7 +80,8 @@ UIM_MODULE_MANAGER = $(top_builddir)/uim/uim-module-manager
 UIM_MODULE_MANAGER_ENV = \
         LIBUIM_SYSTEM_SCM_FILES=$(abs_top_srcdir)/sigscheme/lib \
         LIBUIM_SCM_FILES=$(abs_srcdir) \
-        LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs
+        LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs \
+        UIM_DISABLE_NOTIFY=1
 
 installed-modules.scm loader.scm: $(SCM_FILES)
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \
