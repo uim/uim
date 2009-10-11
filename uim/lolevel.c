@@ -60,13 +60,25 @@ static uim_lisp
 
 c_memory_fill(uim_lisp pointer_, uim_lisp c_, uim_lisp len_)
 {
-  memset(C_PTR(pointer_), C_INT(c_), C_INT(len_));
+  int c;
+
+  if (CHARP(c_))
+    c = C_CHAR(c_);
+  else if (STRP(c_))
+    c = C_STR(c_)[0];
+  else
+    c = C_INT(c_);
+
+  memset(C_PTR(pointer_), c, C_INT(len_));
   return uim_scm_t();
 }
 static uim_lisp
 c_memory_move(uim_lisp dest_, uim_lisp src_, uim_lisp len_)
 {
-  memmove(C_PTR(dest_), C_PTR(src_), C_INT(len_));
+  if (STRP(src_))
+    strlcpy(C_PTR(dest_), REFER_C_STR(src_), C_INT(len_));
+  else
+    memmove(C_PTR(dest_), C_PTR(src_), C_INT(len_));
   return uim_scm_t();
 }
 
