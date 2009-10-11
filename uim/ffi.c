@@ -108,7 +108,9 @@ c_uim_lisp_dlopen_mode(void)
 static uim_lisp
 c_dlstrerr(void)
 {
-  return MAKE_STR(ffi_strerr_);
+  if (ffi_strerr_)
+    return MAKE_STR(ffi_strerr_);
+  return MAKE_STR("");
 }
 
 static uim_lisp
@@ -393,6 +395,14 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
   return ret_;
 }
 
+static uim_lisp
+c_ffi_function(uim_lisp handler_, uim_lisp result_, uim_lisp funstr_, uim_lisp argv_)
+{
+  uim_lisp fun_ = c_dlsym(handler_, funstr_);
+  if (PTRP(fun_))
+    return c_ffi_call(result_, fun_, argv_);
+  return uim_scm_f();
+}
 
 void
 uim_plugin_instance_init(void)
@@ -408,6 +418,7 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc2("dlsym", c_dlsym);
 
   uim_scm_init_proc3("ffi-call", c_ffi_call);
+  uim_scm_init_proc4("ffi-function", c_ffi_function);
 }
 
 void
