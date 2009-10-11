@@ -156,8 +156,10 @@ typedef enum {
   RET_UNKNOWN,
   RET_VOID,
   RET_UCHAR, RET_SCHAR,
+  RET_USHORT, RET_SSHORT,
   RET_UINT, RET_SINT,
-  RET_DOUBLE,
+  RET_ULONG, RET_SLONG,
+  RET_FLOAT, RET_DOUBLE,
   RET_STR,
   RET_PTR,
   RET_SCM
@@ -184,12 +186,26 @@ select_object_type(uim_lisp type_)
     return RET_SCHAR;
   if (strcmp(REFER_C_STR(type_), "char") == 0)
     return RET_SCHAR;
+  if (strcmp(REFER_C_STR(type_), "unsigned-short") == 0)
+    return RET_USHORT;
+  if (strcmp(REFER_C_STR(type_), "signed-short") == 0)
+    return RET_SSHORT;
+  if (strcmp(REFER_C_STR(type_), "short") == 0)
+    return RET_SSHORT;
   if (strcmp(REFER_C_STR(type_), "unsigned-int") == 0)
     return RET_SINT;
   if (strcmp(REFER_C_STR(type_), "signed-int") == 0)
     return RET_SINT;
   if (strcmp(REFER_C_STR(type_), "int") == 0)
     return RET_SINT;
+  if (strcmp(REFER_C_STR(type_), "unsigned-long") == 0)
+    return RET_ULONG;
+  if (strcmp(REFER_C_STR(type_), "signed-long") == 0)
+    return RET_SLONG;
+  if (strcmp(REFER_C_STR(type_), "long") == 0)
+    return RET_SLONG;
+  if (strcmp(REFER_C_STR(type_), "float") == 0)
+    return RET_FLOAT;
   if (strcmp(REFER_C_STR(type_), "double") == 0)
     return RET_DOUBLE;
   if (strcmp(REFER_C_STR(type_), "string") == 0)
@@ -237,11 +253,26 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
   case RET_SCHAR:
     result_type = &ffi_type_schar;
     break;
+  case RET_USHORT:
+    result_type = &ffi_type_ushort;
+    break;
+  case RET_SSHORT:
+    result_type = &ffi_type_sshort;
+    break;
+  case RET_ULONG:
+    result_type = &ffi_type_ulong;
+    break;
+  case RET_SLONG:
+    result_type = &ffi_type_slong;
+    break;
   case RET_UINT:
     result_type = &ffi_type_uint;
     break;
   case RET_SINT:
     result_type = &ffi_type_sint;
+    break;
+  case RET_FLOAT:
+    result_type = &ffi_type_float;
     break;
   case RET_DOUBLE:
     result_type = &ffi_type_double;
@@ -280,6 +311,18 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
       arg_types[i] = &ffi_type_schar;
       arg_values[i] = p;
       break;
+    case RET_USHORT:
+      p = uim_malloc(sizeof(unsigned short));
+      *((unsigned short *)p) = C_INT(CDR(arg_));
+      arg_types[i] = &ffi_type_ushort;
+      arg_values[i] = p;
+      break;
+    case RET_SSHORT:
+      p = uim_malloc(sizeof(unsigned short));
+      *((signed short *)p) = C_INT(CDR(arg_));
+      arg_types[i] = &ffi_type_sshort;
+      arg_values[i] = p;
+      break;
     case RET_UINT:
       p = uim_malloc(sizeof(unsigned int));
       *((unsigned int *)p) = C_INT(CDR(arg_));
@@ -291,6 +334,27 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
       *((signed int *)p) = C_INT(CDR(arg_));
       arg_types[i] = &ffi_type_sint;
       arg_values[i] = p;
+      break;
+    case RET_ULONG:
+      p = uim_malloc(sizeof(unsigned long));
+      *((unsigned long *)p) = C_INT(CDR(arg_));
+      arg_types[i] = &ffi_type_ulong;
+      arg_values[i] = p;
+      break;
+    case RET_SLONG:
+      p = uim_malloc(sizeof(signed long));
+      *((signed long *)p) = C_INT(CDR(arg_));
+      arg_types[i] = &ffi_type_slong;
+      arg_values[i] = p;
+      break;
+    case RET_FLOAT:
+      {
+	char *endptr;
+	p = uim_malloc(sizeof(float));
+	*((double *)p) = strtof(REFER_C_STR(CDR(arg_)), &endptr);
+	arg_types[i] = &ffi_type_float;
+	arg_values[i] = p;
+      }
       break;
     case RET_DOUBLE:
       {
@@ -364,11 +428,30 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
   case RET_SCHAR:
     ret_ = MAKE_CHAR(*(signed char *)result);
     break;
+  case RET_USHORT:
+    ret_ = MAKE_INT(*(unsigned short *)result);
+    break;
+  case RET_SSHORT:
+    ret_ = MAKE_INT(*(signed short *)result);
+    break;
   case RET_UINT:
     ret_ = MAKE_INT(*(unsigned int *)result);
     break;
   case RET_SINT:
     ret_ = MAKE_INT(*(signed int *)result);
+    break;
+  case RET_ULONG:
+    ret_ = MAKE_INT(*(unsigned long *)result);
+    break;
+  case RET_SLONG:
+    ret_ = MAKE_INT(*(signed long *)result);
+    break;
+  case RET_FLOAT:
+    {
+      char str[1024];
+      snprintf(str, sizeof(str), "%f", *((float *)result));
+      ret_ = MAKE_STR(str);
+    }
     break;
   case RET_DOUBLE:
     {
