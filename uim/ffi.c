@@ -152,6 +152,7 @@ c_dlsym(uim_lisp handle_, uim_lisp symbol_)
 
 typedef enum {
   RET_UNKNOWN,
+  RET_VOID,
   RET_UCHAR, RET_SCHAR,
   RET_UINT, RET_SINT,
   RET_DOUBLE,
@@ -173,6 +174,8 @@ static const char *ffi_strerr_messages[] = {
 static object_type
 select_object_type(uim_lisp type_)
 {
+  if (strcmp(REFER_C_STR(type_), "void") == 0)
+    return RET_VOID;
   if (strcmp(REFER_C_STR(type_), "unsigned-char") == 0)
     return RET_UCHAR;
   if (strcmp(REFER_C_STR(type_), "signed-char") == 0)
@@ -212,6 +215,7 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
   void *p;
   uim_lisp ret_;
   object_type return_object_type;
+  int input_void = 0;
 
   args = uim_scm_length(argv_);
   arg_types = uim_malloc(args * sizeof(void *));
@@ -221,6 +225,9 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
 
   switch (return_object_type) {
   case RET_UNKNOWN:
+    break;
+  case RET_VOID:
+    result_type = &ffi_type_void;
     break;
   case RET_UCHAR:
     result_type = &ffi_type_uchar;
@@ -255,6 +262,9 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
 
     switch (select_object_type(CAR(arg_))) {
     case RET_UNKNOWN:
+      break;
+    case RET_VOID:
+      input_void = 1;
       break;
     case RET_UCHAR:
       p = uim_malloc(sizeof(unsigned char));
@@ -312,6 +322,8 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
     argv_ = CDR(argv_);
   }
 
+  if (input_void)
+    args = 0;
   status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, args, result_type, arg_types);
   switch (status) {
   case FFI_OK:
@@ -342,6 +354,7 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
 
   switch (return_object_type) {
   case RET_UNKNOWN:
+  case RET_VOID:
     break;
   case RET_UCHAR:
     ret_ = MAKE_CHAR(*(unsigned char *)result);
