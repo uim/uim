@@ -379,6 +379,7 @@ c_ffi_call(uim_lisp result_, uim_lisp fun_, uim_lisp argv_)
 	*((void **)p) = C_PTR(CDR(arg_));
       arg_types[i] = &ffi_type_pointer;
       arg_values[i] = p;
+      break;
     case RET_SCM:
       p = uim_malloc(sizeof(void *));
       *((void **)p) = CDR(arg_);
