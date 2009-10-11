@@ -182,6 +182,20 @@ libuim_sqlite3_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_sqlite3_la_CPPFLAGS = -I$(top_srcdir) @SQLITE3_CFLAGS@
 endif
 
+if FFI
+uim_plugin_LTLIBRARIES += libuim-ffi.la
+libuim_ffi_la_SOURCES = ffi.c
+libuim_ffi_la_LIBADD = @FFI_LIBS@ libuim.la
+libuim_ffi_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_ffi_la_CPPFLAGS = -I$(top_srcdir) @FFI_CFLAGS@
+
+uim_plugin_LTLIBRARIES += libuim-lolevel.la
+libuim_lolevel_la_SOURCES = lolevel.c
+libuim_lolevel_la_LIBADD = libuim.la
+libuim_lolevel_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_lolevel_la_CPPFLAGS = -I$(top_srcdir)
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@

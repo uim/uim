@@ -298,6 +298,22 @@ AC_ARG_WITH(sqlite3,
 	use_sqlite3="no"
 ])
 
+# ************************
+# *** Tests for libffi ***
+# ************************
+AC_ARG_WITH(curl,
+	AS_HELP_STRING([--with-ffi], [Build with libffi
+					@<:@default=no@:>@]),
+	[
+	if test "x$with_ffi" = "xyes"; then
+		PKG_CHECK_MODULES(FFI, libffi >= 3.0.0, use_ffi="yes", use_ffi="no")
+	else
+		use_ffi="no"
+	fi
+	],[
+	use_ffi="no"
+])
+
 PKG_CHECK_MODULES(X11, x11, x11_use_new_dir="yes", x11_use_new_dir="no")
 AC_PATH_XTRA
 
@@ -1075,6 +1091,7 @@ AM_CONDITIONAL(CURL, test x$use_curl = xyes)
 AM_CONDITIONAL(EXPAT, test x$expat_found = xyes)
 AM_CONDITIONAL(OPENSSL, test x$use_openssl = xyes)
 AM_CONDITIONAL(SQLITE3, test x$use_sqlite3 = xyes)
+AM_CONDITIONAL(FFI, test x$use_ffi = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
@@ -1697,6 +1714,7 @@ Configure Result :
    expat           : ${expat_found}
    OpenSSL         : ${use_openssl}
    SQLite3         : ${use_sqlite3}
+   ffi             : ${use_ffi}
    Gtk+            : ${use_gtk2}
    Gnome Applet    : ${use_applet_gnome}
    Qt3             : ${use_qt}
