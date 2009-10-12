@@ -177,8 +177,10 @@ c_file_read(uim_lisp d_, uim_lisp nbytes_)
   char *p;
 
   buf = uim_malloc(nbytes);
-  if ((nr = read(C_INT(d_), buf, nbytes)) == -1)
+  if ((nr = read(C_INT(d_), buf, nbytes)) == 0)
     return uim_scm_eof();
+  if (nr < 0)
+    return uim_scm_f();
 
   p = buf;
   ret_ = uim_scm_null();

@@ -97,8 +97,8 @@
         (file-ready? (list (fd? port)) -1)
         (inbuf! port ((read? port) (context? port) (inbufsiz? port)))))
   (let ((buf (inbuf? port)))
-    (if (or (eof-object? buf)
-            (null? buf)) ;; disconnect?
+    (if (or (eof-object? buf) ;; disconnect?
+            (not buf))
         buf
         (let ((c (car buf)))
           (inbuf! port (cdr buf))
@@ -108,8 +108,8 @@
   (if (null? (inbuf? port))
       (inbuf! port ((read? port) (context? port) (inbufsiz? port))))
   (let ((buf (inbuf? port)))
-    (if (or (eof-object? buf)
-            (null? buf)) ;; disconnect?
+    (if (or (eof-object? buf) ;; disconnect?
+            (not buf))
         buf
         (let ((c (car buf)))
           (integer->char c)))))
@@ -125,8 +125,8 @@
              (rest '()))
     (cond ((eq? #\newline c)
            (list->string (reverse rest)))
-          ((or (eof-object? c)
-               (null? c)) ;; disconnect?
+          ((or (eof-object? c) ;; disconnect?
+               (not c))
            c)
           (else
            (loop (file-read-char port) (cons c rest))))))
