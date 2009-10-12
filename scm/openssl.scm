@@ -35,11 +35,6 @@
 (and (not (provided? "openssl"))
      (guard (err (else #f))
             (module-load "openssl"))
-
-     ;; init
-     (SSL-load-error-strings)
-     (SSL-library-init)
-
      (provide "openssl"))
 
 (define-record-type openssl-file-internal

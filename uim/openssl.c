@@ -50,13 +50,6 @@
 #endif
 
 static uim_lisp
-c_SSL_load_error_strings(void)
-{
-  SSL_load_error_strings();
-  return uim_scm_t();
-}
-
-static uim_lisp
 c_ERR_get_error(void)
 {
   return MAKE_INT(ERR_get_error());
@@ -70,26 +63,6 @@ c_ERR_error_string(uim_lisp e_)
   /* XXX: long->int */
   ERR_error_string_n(C_INT(e_), buf, sizeof(buf));
   return MAKE_STR(buf);
-}
-
-static uim_lisp
-c_SSL_library_init(void)
-{
-  int ret;
-
-  /* too old? */
-  ret = SSLeay_add_ssl_algorithms();
-  if (!ret)
-    return MAKE_INT(ret);
-  ret = SSL_library_init();
-  if (!ret)
-    return MAKE_INT(ret);
-#ifdef  USE_OPENSSL_ENGINE
-  ENGINE_load_builtin_engines();
-  ENGINE_register_all_complete();
-#endif
-
-  return MAKE_INT(ret);
 }
 
 static uim_lisp
@@ -312,10 +285,20 @@ c_DTLSv1_client_method(void)
 void
 uim_plugin_instance_init(void)
 {
-  uim_scm_init_proc0("SSL-load-error-strings", c_SSL_load_error_strings);
+  /* too old? */
+  if (!SSLeay_add_ssl_algorithms())
+    return;
+  if (!SSL_library_init())
+    return;
+#ifdef  USE_OPENSSL_ENGINE
+  ENGINE_load_builtin_engines();
+  ENGINE_register_all_complete();
+#endif
+
+  SSL_load_error_strings();
+
   uim_scm_init_proc0("ERR-get-error", c_ERR_get_error);
   uim_scm_init_proc1("ERR-error-string", c_ERR_error_string);
-  uim_scm_init_proc0("SSL-library-init", c_SSL_library_init);
   uim_scm_init_proc1("SSL-CTX-new", c_SSL_CTX_new);
   uim_scm_init_proc1("SSL-CTX-free", c_SSL_CTX_free);
   uim_scm_init_proc1("SSL-new", c_SSL_new);
@@ -347,4 +330,5 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+  ERR_free_strings();
 }
