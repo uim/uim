@@ -301,7 +301,7 @@ AC_ARG_WITH(sqlite3,
 # ************************
 # *** Tests for libffi ***
 # ************************
-AC_ARG_WITH(curl,
+AC_ARG_WITH(ffi,
 	AS_HELP_STRING([--with-ffi], [Build with libffi
 					@<:@default=no@:>@]),
 	[
