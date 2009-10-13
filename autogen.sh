@@ -15,7 +15,7 @@ wq
 EOT
 }
 
-fix_acloacl_m4() {
+fix_aclocal_m4() {
   # need workaround if intltool >= 0.40.4
   if test $INTLTOOL_VERSION_MAJOR -eq 0 \
        -a $INTLTOOL_VERSION_MINOR -eq 40 \
@@ -43,7 +43,7 @@ INTLTOOL_VERSION_MINOR=`echo $INTLTOOL_VERSION | cut -d '.' -f 2`
 INTLTOOL_VERSION_MICRO=`echo $INTLTOOL_VERSION | cut -d '.' -f 3`
 
 aclocal -I m4 \
-  && fix_acloacl_m4 \
+  && fix_aclocal_m4 \
   && libtoolize --force --copy \
   && autoheader \
   && automake --add-missing --foreign --copy \
