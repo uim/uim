@@ -169,12 +169,12 @@ c_file_close(uim_lisp fd_)
 static uim_lisp
 c_file_read(uim_lisp d_, uim_lisp nbytes_)
 {
-  char *buf;
+  unsigned char *buf;
   uim_lisp ret_;
   int nbytes = C_INT(nbytes_);
   int i;
   int nr;
-  char *p;
+  unsigned char *p;
 
   buf = uim_malloc(nbytes);
   if ((nr = read(C_INT(d_), buf, nbytes)) == 0)
@@ -185,7 +185,7 @@ c_file_read(uim_lisp d_, uim_lisp nbytes_)
   p = buf;
   ret_ = uim_scm_null();
   for (i = 0; i < nr; i++) {
-    ret_ = CONS(MAKE_INT(*p & 0xff), ret_);
+    ret_ = CONS(MAKE_CHAR(*p), ret_);
     p++;
   }
   free(buf);
@@ -197,12 +197,12 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
 {
   int nbytes = uim_scm_length(buf_);
   uim_lisp ret_;
-  char *buf;
-  char *p;
+  unsigned char *buf;
+  unsigned char *p;
 
   buf = p = uim_malloc(nbytes);
   while (!NULLP(buf_)) {
-    *p = (char)C_INT(CAR(buf_));
+    *p = C_CHAR(CAR(buf_));
     p++;
     buf_ = CDR(buf_);
   }

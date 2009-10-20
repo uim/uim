@@ -54,9 +54,9 @@
   (file-set-flag l file-poll-flags-alist))
 
 (define (string->file-buf str)
-  (map char->integer (string->list str)))
+  (string->list str))
 (define (file-buf->string buf)
-  (list->string (map integer->char buf)))
+  (list->string buf))
 (define (file-read-string s len)
   (let ((ret (file-read s len)))
     (if (eof-object? ret)
@@ -102,7 +102,7 @@
         buf
         (let ((c (car buf)))
           (inbuf! port (cdr buf))
-          (integer->char c)))))
+          c))))
 
 (define (file-peek-char port)
   (if (null? (inbuf? port))
@@ -112,7 +112,7 @@
             (not buf))
         buf
         (let ((c (car buf)))
-          (integer->char c)))))
+          c))))
 
 (define (file-display str port)
   ((write? port) (context? port) (string->file-buf str)))

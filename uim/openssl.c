@@ -136,26 +136,23 @@ c_SSL_connect(uim_lisp s_)
 static uim_lisp
 c_SSL_read(uim_lisp s_, uim_lisp nbytes_)
 {
-  char *buf;
+  unsigned char *buf;
   uim_lisp ret_;
   int nbytes = C_INT(nbytes_);
   int i;
   int nr;
-  char *p;
+  unsigned char *p;
 
   buf = uim_malloc(nbytes);
-  if ((nr = SSL_read(C_PTR(s_), buf, nbytes)) == -1) {
-    char err[BUFSIZ];
-
-    snprintf(err, sizeof(err), "SSL-read: %s", strerror(errno));
-    uim_notify_fatal(err);
-    ERROR_OBJ(err, s_);
-  }
+  if ((nr = SSL_read(C_PTR(s_), buf, nbytes)) == 0)
+    return uim_scm_eof();
+  if (nr < 0)
+    return uim_scm_f();
 
   p = buf;
   ret_ = uim_scm_null();
   for (i = 0; i < nr; i++) {
-    ret_ = CONS(MAKE_INT(*p & 0xff), ret_);
+    ret_ = CONS(MAKE_CHAR(*p), ret_);
     p++;
   }
   free(buf);
@@ -167,12 +164,12 @@ c_SSL_write(uim_lisp s_, uim_lisp buf_)
 {
   int nbytes = uim_scm_length(buf_);
   uim_lisp ret_;
-  char *buf;
-  char *p;
+  unsigned char *buf;
+  unsigned char *p;
 
   buf = p = uim_malloc(nbytes);
   while (!NULLP(buf_)) {
-    *p = (char)C_INT(CAR(buf_));
+    *p = C_CHAR(CAR(buf_));
     p++;
     buf_ = CDR(buf_);
   }
