@@ -5,6 +5,8 @@ INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
                @abs_top_builddir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
+QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
+QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
 LIBS += -lreplace -luim -luim-scm -luim-x-util
 
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
