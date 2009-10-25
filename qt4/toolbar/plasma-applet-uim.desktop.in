@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=uim
+Comment=Input Method Indicator (uim)
+Comment[ja]=入力メソッドインジケータ (uim)
+Type=Service
+ServiceTypes=Plasma/Applet
+Icon=@uim_pixmapsdir@/uim-icon.png
+ 
+X-KDE-Library=plasma_applet_uim
+X-KDE-PluginInfo-Author=The uim developers
+X-KDE-PluginInfo-Email=uim-en@googlegroups.com
+X-KDE-PluginInfo-Name=plasma_applet_uim
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Website=http://code.google.com/p/uim/
+X-KDE-PluginInfo-Category=Utilities
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=BSD
+X-KDE-PluginInfo-EnabledByDefault=true

@@ -1329,6 +1329,38 @@ AC_SUBST(KDE_LIB_DIR)
 AC_SUBST(KDE_DATA_DIR)
 AC_SUBST(KDE_INCLUDE_DIR)
 
+dnl ****************************
+dnl *** test for KDE4 applet ***
+dnl ****************************
+AC_ARG_ENABLE(kde4-applet,
+  AC_HELP_STRING([--enable-kde4-applet],
+        [build uim applet for KDE4 panel (experimental)
+            @<:@default=yes@:>@]),
+        enable_kde4_applet=$enableval,
+        enable_kde4_applet=yes)
+case "$enable_kde_applet" in
+  no)
+    use_applet_kde4="no"
+    ;;
+  yes|*)
+    if test "x$use_qt4" = "xyes"; then
+        use_applet_kde4="yes"
+    else
+        use_applet_kde4="no"
+    fi
+    ;;
+esac
+AC_PATH_PROG(CMAKE, [cmake], [no])
+if test "x$use_applet_kde4" = "xyes" && test "x$CMAKE" = "xno"; then
+    AC_MSG_WARN([no CMake found])
+    use_applet_kde4="no"
+fi
+AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
+if test "x$use_applet_kde4" = "xyes" && test "x$KDE4_CONFIG" = "xno"; then
+    AC_MSG_WARN([no kde4-config found])
+    use_applet_kde4="no"
+fi
+
 if test x$use_qtimmodule = xyes ; then
     AC_MSG_CHECKING(for qt-immodule patch)
     # Check for immodule for Qt patch
@@ -1346,6 +1378,7 @@ AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
 AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
 AM_CONDITIONAL(QT4, test x$use_qt4 = xyes)
 AM_CONDITIONAL(QT4_IMMODULE, test x$use_qt4_immodule = xyes)
+AM_CONDITIONAL(APPLET_KDE4, test x$use_applet_kde4 = xyes)
 
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--enable-pref],
@@ -1656,6 +1689,7 @@ AC_CONFIG_FILES([Makefile
 		 qt4/pref/Makefile
 		 qt4/switcher/uim-im-switcher-qt4.pro
 		 qt4/switcher/Makefile
+		 qt4/toolbar/plasma-applet-uim.desktop
 		 qt4/toolbar/uim-toolbar-qt4.pro
 		 qt4/toolbar/Makefile
 		 xim/Makefile
@@ -1690,6 +1724,23 @@ if test x$use_qt4 = xyes; then
 		 ${ac_abs_top_srcdir}/qt4/switcher/uim-im-switcher-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
 		 ${ac_abs_top_srcdir}/qt4/toolbar/uim-toolbar-qt4.pro
+
+    # Generate a Makefile for KDE4 applet by cmake
+    if test x$use_applet_kde4 = xyes; then
+        if test "x$enable_debug" = xyes; then
+            cmake_build_type=Debug
+        else
+            cmake_build_type=Release
+        fi
+        mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
+        cd ${ac_abs_top_builddir}/qt4/toolbar/build
+        ${CMAKE} \
+            -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+            -DCMAKE_BUILD_TYPE=${cmake_build_type} \
+            -DCMAKE_INSTALL_PREFIX=`$KDE4_CONFIG --prefix` \
+            ${ac_abs_top_builddir}/qt4/toolbar
+        cd -
+    fi
 fi
 if test x$use_qt4_immodule = xyes; then
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
@@ -1722,6 +1773,7 @@ Configure Result :
    Qt4             : ${use_qt4}
    Qt4 immodule    : ${use_qt4_immodule}
    KDE3 Applet     : ${use_applet_kde}
+   KDE4 Applet     : ${use_applet_kde4}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
