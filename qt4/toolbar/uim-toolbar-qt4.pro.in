@@ -1,8 +1,9 @@
 TEMPLATE = app
 CONFIG += @QT_CONFIG_OPTS@
 
-INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
-               @abs_top_builddir@/replace ..
+INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
+               @top_srcdir@ @top_srcdir@/uim \
+               @top_srcdir@/replace @srcdir@/..
 QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
@@ -15,12 +16,12 @@ QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
 QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 # Input
-HEADERS += common-quimhelpertoolbar.h \
-		   common-uimstateindicator.h \
-		   standalone-qt4.h
-SOURCES += common-quimhelpertoolbar.cpp \
-           common-uimstateindicator.cpp \
-           standalone-qt4.cpp
+HEADERS += @srcdir@/common-quimhelpertoolbar.h \
+           @srcdir@/common-uimstateindicator.h \
+           @srcdir@/standalone-qt4.h
+SOURCES += @srcdir@/common-quimhelpertoolbar.cpp \
+           @srcdir@/common-uimstateindicator.cpp \
+           @srcdir@/standalone-qt4.cpp
 
 TARGET = uim-toolbar-qt4
 

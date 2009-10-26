@@ -1,8 +1,9 @@
 TEMPLATE = app
 CONFIG += @QT_CONFIG_OPTS@
 
-INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
-               @abs_top_builddir@/replace
+INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
+               @top_srcdir@ @top_srcdir@/uim \
+               @top_srcdir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
@@ -15,17 +16,17 @@ QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
 QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 # Input
-HEADERS += bushuviewwidget.h \
-           chargridview.h \
-           kseparator.h \
-           qt4.h \
-           qtgettext.h \
-           unicodeviewwidget.h
-SOURCES += bushuviewwidget.cpp \
-           chargridview.cpp \
-           kseparator.cpp \
-           qt4.cpp \
-           unicodeviewwidget.cpp
+HEADERS += @srcdir@/bushuviewwidget.h \
+           @srcdir@/chargridview.h \
+           @srcdir@/kseparator.h \
+           @srcdir@/qt4.h \
+           @srcdir@/qtgettext.h \
+           @srcdir@/unicodeviewwidget.h
+SOURCES += @srcdir@/bushuviewwidget.cpp \
+           @srcdir@/chargridview.cpp \
+           @srcdir@/kseparator.cpp \
+           @srcdir@/qt4.cpp \
+           @srcdir@/unicodeviewwidget.cpp
 
 TARGET = uim-chardict-qt4
 

@@ -1,8 +1,9 @@
 TEMPLATE = app
 CONFIG += @QT_CONFIG_OPTS@
 
-INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
-               @abs_top_builddir@/replace ..
+INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
+               @top_srcdir@ @top_srcdir@/uim \
+               @top_srcdir@/replace @srcdir@/..
 QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
@@ -15,9 +16,9 @@ QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
 QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 # Input
-HEADERS += customwidgets.h kseparator.h qt4.h
-FORMS += keyeditformbase.ui olisteditformbase.ui
-SOURCES += customwidgets.cpp kseparator.cpp qt4.cpp
+HEADERS += @srcdir@/customwidgets.h @srcdir@/kseparator.h @srcdir@/qt4.h
+FORMS += @srcdir@/keyeditformbase.ui @srcdir@/olisteditformbase.ui
+SOURCES += @srcdir@/customwidgets.cpp @srcdir@/kseparator.cpp @srcdir@/qt4.cpp
 
 TARGET = uim-pref-qt4
 
