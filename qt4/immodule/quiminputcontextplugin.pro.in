@@ -8,7 +8,7 @@ QT += qt3support
 
 INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
                @top_srcdir@ @top_srcdir@/uim \
-               @abs_top_srcdir@/replace
+               @top_srcdir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 # Since the plugin linked with libtool did not work, link the
