@@ -1550,7 +1550,7 @@ AC_OUTPUT
 # Generate Makefiles for Qt4 by qmake
 if test x$use_qt4_immodule = xyes; then
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
-		 ${ac_abs_top_srcdir}/qt4/immodule/quiminputcontextplugin.pro
+		 ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
                  ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
