@@ -6,8 +6,9 @@ TEMPLATE = lib
 CONFIG += qt plugin thread @QT_CONFIG_OPTS@
 QT += qt3support
 
-INCLUDEPATH += @abs_top_builddir@ @abs_top_builddir@/uim \
-               @abs_top_builddir@/replace
+INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
+               @top_srcdir@ @top_srcdir@/uim \
+               @top_srcdir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 # Since the plugin linked with libtool did not work, link the
@@ -23,24 +24,24 @@ QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 
 # Input
-HEADERS += debug.h \
-           qhelpermanager.h \
-           quiminputcontext.h \
-           quiminputcontext_compose.h \
-           plugin.h \
-           candidatewindow.h \
-           subwindow.h \
-           quiminfomanager.h \
-           qtextutil.h
+HEADERS += @srcdir@/debug.h \
+           @srcdir@/qhelpermanager.h \
+           @srcdir@/quiminputcontext.h \
+           @srcdir@/quiminputcontext_compose.h \
+           @srcdir@/plugin.h \
+           @srcdir@/candidatewindow.h \
+           @srcdir@/subwindow.h \
+           @srcdir@/quiminfomanager.h \
+           @srcdir@/qtextutil.h
 
-SOURCES += plugin.cpp \
-           qhelpermanager.cpp \
-           quiminputcontext.cpp \
-           quiminputcontext_compose.cpp \
-           candidatewindow.cpp \
-           subwindow.cpp \
-           quiminfomanager.cpp \
-           qtextutil.cpp
+SOURCES += @srcdir@/plugin.cpp \
+           @srcdir@/qhelpermanager.cpp \
+           @srcdir@/quiminputcontext.cpp \
+           @srcdir@/quiminputcontext_compose.cpp \
+           @srcdir@/candidatewindow.cpp \
+           @srcdir@/subwindow.cpp \
+           @srcdir@/quiminfomanager.cpp \
+           @srcdir@/qtextutil.cpp
 
 TARGET = uiminputcontextplugin
 
