@@ -358,6 +358,12 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(define-custom 'anthy-auto-start-henkan? #f
+  '(anthy-advanced special-op)
+  '(boolean)
+  (N_ "Enable auto conversion with punctuation marks")
+  (N_ "long description will be here."))
+
 (define-custom 'anthy-use-mode-transition-keys-in-off-mode? #f
   '(anthy-advanced mode-transition)
   '(boolean)

@@ -297,6 +297,12 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(define-custom 'mana-auto-start-henkan? #f
+  '(mana-advanced special-op)
+  '(boolean)
+  (N_ "Enable auto conversion with punctuation marks")
+  (N_ "long description will be here."))
+
 (define-custom 'mana-use-mode-transition-keys-in-off-mode? #f
   '(mana-advanced mode-transition)
   '(boolean)

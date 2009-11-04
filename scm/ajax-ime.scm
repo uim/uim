@@ -1069,6 +1069,14 @@
           (ajax-ime-proc-input-state ac key key-state))))))
 
 (define (ajax-ime-proc-input-state-with-preedit ac key key-state)
+  (define (check-auto-conv str)
+    (and
+      str
+      ajax-ime-auto-start-henkan?
+      (string-find japanese-auto-start-henkan-keyword-list str)
+      (begin
+	(ajax-ime-reset-prediction-window ac)
+	(ajax-ime-begin-conv ac))))
   (let ((preconv-str (ajax-ime-context-preconv-ustr ac))
 	(raw-str (ajax-ime-context-raw-ustr ac))
 	(rkc (ajax-ime-context-rkc ac))
@@ -1265,7 +1273,8 @@
 				   (list key-str key-str key-str)
 				   (list (ja-wide key-str) (ja-wide key-str)
 					 (ja-wide key-str))))
-	    (ustr-insert-elem! raw-str key-str))
+	    (ustr-insert-elem! raw-str key-str)
+	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
 			   (if (= rule ajax-ime-input-rule-kana)
 			       key
@@ -1288,7 +1297,8 @@
 			    (ustr-insert-elem! raw-str key-str))
 		          (ustr-insert-elem!
 		           raw-str
-		           (string-append pend key-str))))))))))))
+		           (string-append pend key-str))))))
+	    (check-auto-conv (if res (car res) #f))))))))
 
 (define ajax-ime-context-confirm-kana!
   (lambda (ac)

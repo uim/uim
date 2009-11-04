@@ -935,6 +935,14 @@
           (canna-proc-input-state cc key key-state))))))
 
 (define (canna-proc-input-state-with-preedit cc key key-state)
+  (define (check-auto-conv str)
+    (and
+      str
+      canna-auto-start-henkan?
+      (string-find japanese-auto-start-henkan-keyword-list str)
+      (begin
+	(canna-reset-prediction-window cc)
+	(canna-begin-conv cc))))
   (let ((preconv-str (canna-context-preconv-ustr cc))
 	(raw-str (canna-context-raw-ustr cc))
 	(rkc (canna-context-rkc cc))
@@ -1131,7 +1139,8 @@
 				   (list key-str key-str key-str)
 				   (list (ja-wide key-str) (ja-wide key-str)
 					 (ja-wide key-str))))
-	    (ustr-insert-elem! raw-str key-str))
+	    (ustr-insert-elem! raw-str key-str)
+	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
 			   (if (= rule canna-input-rule-kana)
 			       key
@@ -1154,7 +1163,8 @@
 			    (ustr-insert-elem! raw-str key-str))
 		          (ustr-insert-elem!
 		           raw-str
-		           (string-append pend key-str))))))))))))
+		           (string-append pend key-str))))))
+	    (check-auto-conv (if res (car res) #f))))))))
 
 (define canna-context-confirm-kana!
   (lambda (cc)

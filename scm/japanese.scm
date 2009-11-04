@@ -915,5 +915,8 @@
     (set-symbol-value! 'yen "\\")
     ))
 
+;; TODO: Support new custom type string-list.
+(define japanese-auto-start-henkan-keyword-list '("¡¢" "¡£" "¡¥" "¡¤" "¡©" "¡×" "¡ª" "¡¨" "¡§" ")" ";" ":" "¡Ë" "¡É" "¡Û" "¡Ù" "¡Õ" "¡Ó" "¡Ñ" "¡Ï" "¡Í" "}" "]" "?" "." "," "!"))
+
 ;;
 (require "rk.scm")

@@ -1206,7 +1206,15 @@
           (sj3-context-set-prediction-index! sc #f)
           (sj3-proc-input-state sc key key-state))))))
 
-(define (sj3-proc-input-state-with-preedit sc key key-state)
+(define (sj3-proc-input-state-with-preedit sc key key-state) 
+  (define (check-auto-conv str)
+    (and
+      str
+      sj3-auto-start-henkan?
+      (string-find japanese-auto-start-henkan-keyword-list str)
+      (begin
+	(sj3-reset-prediction-window sc)
+	(sj3-begin-conv sc))))
   (let ((preconv-str (sj3-context-preconv-ustr sc))
 	(raw-str (sj3-context-raw-ustr sc))
 	(rkc (sj3-context-rkc sc))
@@ -1403,7 +1411,8 @@
 				   (list key-str key-str key-str)
 				   (list (ja-wide key-str) (ja-wide key-str)
 					 (ja-wide key-str))))
-	    (ustr-insert-elem! raw-str key-str))
+	    (ustr-insert-elem! raw-str key-str)
+	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
 			   (if (= rule sj3-input-rule-kana)
 			       key
@@ -1426,7 +1435,8 @@
 			    (ustr-insert-elem! raw-str key-str))
 		          (ustr-insert-elem!
 		           raw-str
-		           (string-append pend key-str))))))))))))
+		           (string-append pend key-str))))))
+	    (check-auto-conv (if res (car res) #f))))))))
 
 (define sj3-context-confirm-kana!
   (lambda (sc)

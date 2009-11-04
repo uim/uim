@@ -994,6 +994,12 @@
 
 (define mana-proc-input-state-with-preedit
   (lambda (mc key key-state)
+    (define (check-auto-conv str)
+      (and
+	str
+	mana-auto-start-henkan?
+	(string-find japanese-auto-start-henkan-keyword-list str)
+	(mana-begin-conv mc)))
     (let ((preconv-str (mana-context-preconv-ustr mc))
           (raw-str (mana-context-raw-ustr mc))
           (rkc (mana-context-rkc mc))
@@ -1197,7 +1203,8 @@
 				     (list key-str key-str key-str)
 				     (list (ja-wide key-str) (ja-wide key-str)
 					   (ja-wide key-str))))
-	      (ustr-insert-elem! raw-str key-str))
+	      (ustr-insert-elem! raw-str key-str)
+	      (check-auto-conv key-str))
 	    (let* ((key-str (charcode->string 
 			     (if (= rule mana-input-rule-kana)
 				 key
@@ -1220,7 +1227,8 @@
 			      (ustr-insert-elem! raw-str key-str))
 			    (ustr-insert-elem!
 			     raw-str
-			     (string-append pend key-str)))))))))))))
+			     (string-append pend key-str))))))
+	      (check-auto-conv (if res (car res) #f)))))))))
 
 (define mana-context-confirm-kana!
   (lambda (mc)

@@ -380,6 +380,12 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(define-custom 'canna-auto-start-henkan? #f
+ '(canna-advanced special-op)
+ '(boolean)
+ (N_ "Enable auto conversion with punctuation marks")
+ (N_ "long description will be here."))
+
 (define-custom 'canna-use-mode-transition-keys-in-off-mode? #f
   '(canna-advanced mode-transition)
   '(boolean)

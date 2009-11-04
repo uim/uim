@@ -1039,6 +1039,14 @@
 
 (define anthy-proc-input-state-with-preedit
   (lambda (ac key key-state)
+    (define (check-auto-conv str)
+      (and
+	str
+	anthy-auto-start-henkan?
+	(string-find japanese-auto-start-henkan-keyword-list str)
+	(begin
+	  (anthy-reset-prediction-window ac)
+	  (anthy-begin-conv ac))))
     (let ((preconv-str (anthy-context-preconv-ustr ac))
 	  (raw-str (anthy-context-raw-ustr ac))
 	  (rkc (anthy-context-rkc ac))
@@ -1259,7 +1267,8 @@
 				     (list key-str key-str key-str)
 				     (list (ja-wide key-str) (ja-wide key-str)
 					   (ja-wide key-str))))
-	      (ustr-insert-elem! raw-str key-str))
+	      (ustr-insert-elem! raw-str key-str)
+	      (check-auto-conv key-str))
 	    (let* ((key-str (if (= rule anthy-input-rule-kana)
 	    			(if (symbol? key)
 				    (symbol->string key)
@@ -1297,7 +1306,8 @@
 				   (intern-key-symbol key-str)
 				   (symbol-bound? (string->symbol key-str)))
 				  (symbol-value (string->symbol key-str))
-				  key-str))))))))))))))
+				  key-str))))))))
+	    (check-auto-conv (if res (car res) #f))))))))
 
 (define anthy-context-confirm-kana!
   (lambda (ac)

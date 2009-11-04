@@ -1097,6 +1097,14 @@
 	  (social-ime-proc-input-state sc key key-state))))))
 
 (define (social-ime-proc-input-state-with-preedit sc key key-state)
+  (define (check-auto-conv str)
+    (and
+      str
+      social-ime-auto-start-henkan?
+      (string-find japanese-auto-start-henkan-keyword-list str)
+      (begin
+	(social-ime-reset-prediction-window sc)
+	(social-ime-begin-conv sc))))
   (let ((preconv-str (social-ime-context-preconv-ustr sc))
 	(raw-str (social-ime-context-raw-ustr sc))
 	(rkc (social-ime-context-rkc sc))
@@ -1293,7 +1301,8 @@
 				   (list key-str key-str key-str)
 				   (list (ja-wide key-str) (ja-wide key-str)
 					 (ja-wide key-str))))
-	    (ustr-insert-elem! raw-str key-str))
+	    (ustr-insert-elem! raw-str key-str)
+	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
 			   (if (= rule social-ime-input-rule-kana)
 			       key
@@ -1316,7 +1325,8 @@
 			    (ustr-insert-elem! raw-str key-str))
 		          (ustr-insert-elem!
 		           raw-str
-		           (string-append pend key-str))))))))))))
+		           (string-append pend key-str))))))
+	    (check-auto-conv (if res (car res) #f))))))))
 
 (define social-ime-context-confirm-kana!
   (lambda (sc)

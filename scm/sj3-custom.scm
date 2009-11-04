@@ -335,6 +335,12 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(define-custom 'sj3-auto-start-henkan? #f
+  '(sj3-advanced special-op)
+  '(boolean)
+  (N_ "Enable auto conversion with punctuation marks")
+  (N_ "long description will be here."))
+
 (define-custom 'sj3-use-mode-transition-keys-in-off-mode? #f
   '(sj3-advanced mode-transition)
   '(boolean)

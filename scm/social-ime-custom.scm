@@ -334,6 +334,12 @@
   (N_ "Enable vi-cooperative mode")
   (N_ "long description will be here."))
 
+(define-custom 'social-ime-auto-start-henkan? #f
+  '(social-ime-advanced special-op)
+  '(boolean)
+  (N_ "Enable auto conversion with punctuation marks")
+  (N_ "long description will be here."))
+
 (define-custom 'social-ime-use-mode-transition-keys-in-off-mode? #f
   '(social-ime-advanced mode-transition)
   '(boolean)
