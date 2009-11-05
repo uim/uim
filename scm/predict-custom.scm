@@ -35,7 +35,7 @@
 (require "sqlite3.scm")
 
 (define-custom-group 'predict
-                     (N_ "Prediction")
+                     (N_ "Ancillary Prediction")
                      (N_ "long description will be here."))
 
 
@@ -73,15 +73,15 @@
                      (N_ "long description will be here."))
 
 (define-custom 'predict-custom-look-dict "/usr/share/dict/words"
-               '(predict-look)
+               '(predict predict-look)
                '(pathname regular-file)
-               (N_ "[Look Prediction] UNIX look dictionary file")
+               (N_ "UNIX look dictionary file")
                (N_ "long description will be here"))
 
 (define-custom 'predict-custom-look-candidates-max 10
-               '(predict-look)
+               '(predict predict-look)
                '(integer 1 99)
-               (N_ "[Look Prediction] max words of candidates")
+               (N_ "Max words of candidates")
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-look-dict
@@ -108,15 +108,15 @@
                      (N_ "long description will be here."))
 
 (define-custom 'predict-custom-look-skk-jisyo "/usr/share/skk/SKK-JISYO.L"
-               '(predict-look-skk)
+               '(predict predict-look-skk)
                '(pathname regular-file)
-               (N_ "[Look-SKK Prediction] sorted SKK-JISYO dictionary file")
+               (N_ "Sorted SKK-JISYO dictionary file")
                (N_ "long description will be here"))
 
 (define-custom 'predict-custom-look-skk-candidates-max 10
-               '(predict-look-skk)
+               '(predict predict-look-skk)
                '(integer 1 99)
-               (N_ "[Look-SKK Prediction] max words of candidates")
+               (N_ "Max words of candidates")
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-look-skk-jisyo
@@ -143,9 +143,9 @@
                      (N_ "long description will be here."))
 
 (define-custom 'predict-custom-sqlite3-candidates-max 5
-               '(predict-sqlite3)
+               '(predict predict-sqlite3)
                '(integer 1 99)
-               (N_ "[Sqlite3 Prediction] max words of candidates")
+               (N_ "Max words of candidates")
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-sqlite3-candidates-max
