@@ -1114,6 +1114,14 @@
 	  (yahoo-jp-proc-input-state yc key key-state))))))
 
 (define (yahoo-jp-proc-input-state-with-preedit yc key key-state)
+  (define (check-auto-conv str)
+    (and
+      str
+      yahoo-jp-auto-start-henkan?
+      (string-find japanese-auto-start-henkan-keyword-list str)
+      (begin
+	(ajax-ime-reset-prediction-window ac)
+	(ajax-ime-begin-conv ac))))
   (let ((preconv-str (yahoo-jp-context-preconv-ustr yc))
 	(raw-str (yahoo-jp-context-raw-ustr yc))
 	(rkc (yahoo-jp-context-rkc yc))
@@ -1309,7 +1317,8 @@
 				   (list key-str key-str key-str)
 				   (list (ja-wide key-str) (ja-wide key-str)
 					 (ja-wide key-str))))
-	    (ustr-insert-elem! raw-str key-str))
+	    (ustr-insert-elem! raw-str key-str)
+	    (check-auto-conv key-str))
 	  (let* ((key-str (charcode->string
 			   (if (= rule yahoo-jp-input-rule-kana)
 			       key
@@ -1332,7 +1341,8 @@
 			    (ustr-insert-elem! raw-str key-str))
 		          (ustr-insert-elem!
 		           raw-str
-		           (string-append pend key-str))))))))))))
+		           (string-append pend key-str))))))
+	    (check-auto-conv (if res (car res) #f))))))))
 
 (define yahoo-jp-context-confirm-kana!
   (lambda (yc)
