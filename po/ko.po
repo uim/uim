@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2009-11-05 13:37+0900\n"
+"POT-Creation-Date: 2009-11-05 13:48+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -3926,7 +3926,7 @@ msgid "Ancillary Prediction"
 msgstr ""
 
 #: ../scm/predict-custom.scm:45
-msgid "Enable ancillary prediction"
+msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, Wnn)"
 msgstr ""
 
 #: ../scm/predict-custom.scm:53 ../scm/predict-custom.scm:72

@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2009-11-05 13:37+0900\n"
+"POT-Creation-Date: 2009-11-05 13:48+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -4046,8 +4046,8 @@ msgid "Ancillary Prediction"
 msgstr "補助予測入力"
 
 #: ../scm/predict-custom.scm:45
-msgid "Enable ancillary prediction"
-msgstr "補助的予測入力を有効にする"
+msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, Wnn)"
+msgstr "Ajax-IME, Canna, SJ3, Wnn用予測入力を有効にする"
 
 #: ../scm/predict-custom.scm:53 ../scm/predict-custom.scm:72
 msgid "Look prediction"
