@@ -42,7 +42,7 @@
 (define-custom 'predict-custom-enable? #f
                '(predict)
                '(boolean)
-               (N_ "Enabled prediction")
+               (N_ "Enable ancillary prediction")
                (N_ "long description will be here."))
 
 (define-custom 'predict-custom-methods '()
