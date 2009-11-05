@@ -49,6 +49,7 @@ scm/look.scm
 scm/m17nlib.scm
 scm/mana-custom.scm
 scm/mana-key-custom.scm
+scm/predict-custom.scm
 scm/prime-custom.scm
 scm/prime-key-custom.scm
 scm/prime.scm
