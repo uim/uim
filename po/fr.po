@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2009-11-05 13:48+0900\n"
+"POT-Creation-Date: 2009-11-06 15:42+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -3946,13 +3946,20 @@ msgstr ""
 msgid "UNIX look dictionary file"
 msgstr ""
 
-#: ../scm/predict-custom.scm:84 ../scm/predict-custom.scm:119
-#: ../scm/predict-custom.scm:148
-msgid "Max words of candidates"
+#: ../scm/predict-custom.scm:84
+msgid "Max words of candidates for look"
 msgstr ""
 
 #: ../scm/predict-custom.scm:113
 msgid "Sorted SKK-JISYO dictionary file"
+msgstr ""
+
+#: ../scm/predict-custom.scm:119
+msgid "Max words of candidates for look-skk"
+msgstr ""
+
+#: ../scm/predict-custom.scm:148
+msgid "Max words of candidates for sqlite3"
 msgstr ""
 
 #: ../scm/prime-custom.scm:34

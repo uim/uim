@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2009-11-05 13:48+0900\n"
+"POT-Creation-Date: 2009-11-06 15:42+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -4077,14 +4077,21 @@ msgstr "予測方法"
 msgid "UNIX look dictionary file"
 msgstr "UNIX look辞書ファイル"
 
-#: ../scm/predict-custom.scm:84 ../scm/predict-custom.scm:119
-#: ../scm/predict-custom.scm:148
-msgid "Max words of candidates"
-msgstr "最大候補数"
+#: ../scm/predict-custom.scm:84
+msgid "Max words of candidates for look"
+msgstr "Look予測の最大候補数"
 
 #: ../scm/predict-custom.scm:113
 msgid "Sorted SKK-JISYO dictionary file"
 msgstr "SKK-JISYOファイル"
+
+#: ../scm/predict-custom.scm:119
+msgid "Max words of candidates for look-skk"
+msgstr "Look-SKK予測の最大候補数"
+
+#: ../scm/predict-custom.scm:148
+msgid "Max words of candidates for sqlite3"
+msgstr "Sqlite3予測の最大候補数"
 
 #: ../scm/prime-custom.scm:34
 msgid "PRIME"
