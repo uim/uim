@@ -81,7 +81,7 @@
 (define-custom 'predict-custom-look-candidates-max 10
                '(predict predict-look)
                '(integer 1 99)
-               (N_ "Max words of candidates")
+               (N_ "Max words of candidates for look")
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-look-dict
@@ -116,7 +116,7 @@
 (define-custom 'predict-custom-look-skk-candidates-max 10
                '(predict predict-look-skk)
                '(integer 1 99)
-               (N_ "Max words of candidates")
+               (N_ "Max words of candidates for look-skk")
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-look-skk-jisyo
@@ -145,7 +145,7 @@
 (define-custom 'predict-custom-sqlite3-candidates-max 5
                '(predict predict-sqlite3)
                '(integer 1 99)
-               (N_ "Max words of candidates")
+               (N_ "Max words of candidates for sqlite3")
                (N_ "long description will be here"))
 
 (custom-add-hook 'predict-custom-sqlite3-candidates-max
