@@ -1306,8 +1306,8 @@
 				   (intern-key-symbol key-str)
 				   (symbol-bound? (string->symbol key-str)))
 				  (symbol-value (string->symbol key-str))
-				  key-str))))))))
-	    (check-auto-conv (if res (car res) #f))))))))
+				  key-str)))))))
+	      (check-auto-conv (if res (car res) #f)))))))))
 
 (define anthy-context-confirm-kana!
   (lambda (ac)
