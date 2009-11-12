@@ -89,3 +89,14 @@
   (map integer->char l))
 (define (string-buf->u8list l)
   (map char->integer l))
+
+(define-macro (define-string-list->type-list type)
+  `(define (,(string->symbol (format "string-list->~a-list" type)) l)
+     (apply
+      append
+      (map (lambda (p)
+             (u8list-pack '(,type) p))
+           (append l (list ""))))))
+
+(define-string-list->type-list s8)
+(define-string-list->type-list s16)
