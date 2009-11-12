@@ -49,6 +49,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  fileio.scm socket.scm http-client.scm process.scm \
  openssl.scm \
  sqlite3.scm \
+ lolevel.scm \
  input-parse.scm match.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)

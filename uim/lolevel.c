@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <sys/types.h>
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -191,6 +192,102 @@ c_pointer_to_Xlist(u64, uint64_t)
 c_pointer_to_Xlist(s64, int64_t)
 
 
+static uim_lisp
+c_htons(uim_lisp u16_)
+{
+  return MAKE_INT(htons(C_INT(u16_)));
+}
+static uim_lisp
+c_htonl(uim_lisp u32_)
+{
+  return MAKE_INT(htonl(C_INT(u32_)));
+}
+
+static uim_lisp
+c_ntohs(uim_lisp u16_)
+{
+  return MAKE_INT(ntohs(C_INT(u16_)));
+}
+static uim_lisp
+c_ntohl(uim_lisp u32_)
+{
+  return MAKE_INT(ntohl(C_INT(u32_)));
+}
+
+
+static uim_lisp
+c_u16_to_u8list(uim_lisp u16_)
+{
+  u_int16_t u16 = htons(C_INT(u16_));
+
+  return LIST2(MAKE_INT(u16 & 0xff),
+	       MAKE_INT((u16 >> 8) & 0xff));
+}
+static uim_lisp
+c_u32_to_u8list(uim_lisp u32_)
+{
+  u_int32_t u32 = htonl(C_INT(u32_));
+
+  return LIST4(MAKE_INT(u32 & 0xff),
+	       MAKE_INT((u32 >> 8) & 0xff),
+	       MAKE_INT((u32 >> 16) & 0xff),
+	       MAKE_INT((u32 >> 24) & 0xff));
+}
+
+/* (map char->integer (string->list str)) */
+static uim_lisp
+c_string_to_u8list(uim_lisp str_)
+{
+  const char *str = REFER_C_STR(str_);
+  uim_lisp ret_ = uim_scm_null();
+
+  while (*str) {
+    ret_ = CONS(MAKE_INT(*str & 0xff), ret_);
+    str++;
+  }
+  ret_ = CONS(MAKE_INT(0), ret_);
+  return uim_scm_callf("reverse", "o", ret_);
+}
+
+static uim_lisp
+c_u8list_to_u16(uim_lisp u8list_)
+{
+  u_int8_t u8_1, u8_2;
+
+  u8_1 = C_INT(CAR(u8list_));
+  u8_2 = C_INT(CAR(CDR(u8list_)));
+  return MAKE_INT(ntohs(u8_1 |
+			(u8_2 << 8)));
+}
+static uim_lisp
+c_u8list_to_u32(uim_lisp u8list_)
+{
+  u_int8_t u8_1, u8_2, u8_3, u8_4;
+
+  u8_1 = C_INT(CAR(u8list_));
+  u8_2 = C_INT(CAR(CDR(u8list_)));
+  u8_3 = C_INT(CAR(CDR(CDR(u8list_))));
+  u8_4 = C_INT(CAR(CDR(CDR(CDR(u8list_)))));
+  return MAKE_INT(ntohl(u8_1 |
+			(u8_2 << 8) |
+			(u8_3 << 16) |
+			(u8_4 << 24)));
+}
+static uim_lisp
+c_u8list_to_string(uim_lisp u8list_)
+{
+  int len = uim_scm_length(u8list_);
+  int i;
+  char *str = uim_malloc(len + 1);
+
+  for (i = 0; i < len; i++) {
+    str[i] = (char)C_INT(CAR(u8list_));
+    u8list_ = CDR(u8list_);
+  }
+  str[len] = '\0';
+  return MAKE_STR_DIRECTLY(str);
+}
+
 void
 uim_plugin_instance_init(void)
 {
@@ -242,6 +339,19 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc2("pointer->s32list", c_pointer_to_s32list);
   uim_scm_init_proc2("pointer->u64list", c_pointer_to_u64list);
   uim_scm_init_proc2("pointer->s64list", c_pointer_to_s64list);
+
+  uim_scm_init_proc1("htons", c_htons);
+  uim_scm_init_proc1("htonl", c_htonl);
+  uim_scm_init_proc1("ntohs", c_ntohs);
+  uim_scm_init_proc1("ntohl", c_ntohl);
+
+  uim_scm_init_proc1("u16->u8list",    c_u16_to_u8list);
+  uim_scm_init_proc1("u32->u8list",    c_u32_to_u8list);
+  uim_scm_init_proc1("string->u8list", c_string_to_u8list);
+
+  uim_scm_init_proc1("u8list->u16",    c_u8list_to_u16);
+  uim_scm_init_proc1("u8list->u32",    c_u8list_to_u32);
+  uim_scm_init_proc1("u8list->string", c_u8list_to_string);
 }
 
 void

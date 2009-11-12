@@ -188,12 +188,6 @@ libuim_ffi_la_SOURCES = ffi.c
 libuim_ffi_la_LIBADD = @FFI_LIBS@ libuim.la
 libuim_ffi_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_ffi_la_CPPFLAGS = -I$(top_srcdir) @FFI_CFLAGS@
-
-uim_plugin_LTLIBRARIES += libuim-lolevel.la
-libuim_lolevel_la_SOURCES = lolevel.c
-libuim_lolevel_la_LIBADD = libuim.la
-libuim_lolevel_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-libuim_lolevel_la_CPPFLAGS = -I$(top_srcdir)
 endif
 
 uim_plugin_LTLIBRARIES += libuim-skk.la
@@ -211,6 +205,12 @@ libuim_look_la_CPPFLAGS = -I$(top_srcdir)
 libuim_bsdlook_la_SOURCES = bsdlook.h bsdlook.c
 libuim_bsdlook_la_LIBADD =
 libuim_bsdlook_la_CPPFLAGS = -I$(top_srcdir)
+
+uim_plugin_LTLIBRARIES += libuim-lolevel.la
+libuim_lolevel_la_SOURCES = lolevel.c
+libuim_lolevel_la_LIBADD = libuim.la
+libuim_lolevel_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
+libuim_lolevel_la_CPPFLAGS = -I$(top_srcdir)
 
 libuimincludedir =  $(includedir)/uim
 
