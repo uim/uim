@@ -46,7 +46,7 @@
                       ((eq? (car f) 's16)
                        (append (string->u8list (cadr f)) '(0))) ;; XXX
                       ((eq? (car f) 'u8list)
-                       (append (cadr f)))
+                       (cadr f))
                       (else
                        (uim-notify-fatal (N_ "unknown byte operator")))))
               (zip fmt args))))
