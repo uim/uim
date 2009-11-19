@@ -1,3 +1,26 @@
+Overview of changes from 1.5.6 to 1.5.7
+=======================================
+* Fixes
+  - GTK+ bridge
+    * Fix crash in combination with Firefox and flashplayer plugin
+      (#25139)
+
+  - uim-fep
+    * Fix compilation on NetBSD current ([uim-ja 148])
+
+  - Qt4 bridge
+    * Don't enable knotify3 when qt4-immodule is enabled in configure
+      time (#19877)
+    * Fix compilation when srcdir != builddir
+
+  - uim-notify
+    * Disable uim-notify on build phase to prevent dependency library
+      mismatch
+
+  - uim-chardict-qt
+    * Install translation file properly ([uim-ja 150])
+
+
 Overview of changes from 1.5.5 to 1.5.6
 =======================================
 * Enhancement
@@ -13,7 +36,7 @@ Overview of changes from 1.5.5 to 1.5.6
   - Apply build fix from Fedora
 
 
- Overview of changes from 1.5.4 to 1.5.5
+Overview of changes from 1.5.4 to 1.5.5
 =======================================
 * Enhancements
   - uim-anthy

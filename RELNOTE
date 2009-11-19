@@ -1,10 +1,10 @@
-uim 1.5.6 Release Note
+uim 1.5.7 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.5.6 is latest stable release of uim.
+This distribution of uim 1.5.7 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -15,7 +15,7 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Bug fix for uim-xim.  See NEWS for the detailed changes.
+Bug fix for GTK+ and Qt4 bridge.  See NEWS for the detailed changes.
 
 
 What's New in 1.5.0
