@@ -329,6 +329,12 @@ remove_cur_toplevel()
 }
 
 static void
+cur_toplevel_deleted(GtkWidget *widget, gpointer data)
+{
+  cur_toplevel = NULL;
+}
+
+static void
 update_cur_toplevel(IMUIMContext *uic)
 {
   /* Don't set our candwin's text widget as cur_toplevel */
@@ -358,6 +364,9 @@ update_cur_toplevel(IMUIMContext *uic)
 	cur_key_release_handler_id = g_signal_connect(cur_toplevel,
 			"key-release-event",
 			G_CALLBACK(handle_key_on_toplevel), uic);
+	g_signal_connect(cur_toplevel,
+			"delete_event",
+			G_CALLBACK(cur_toplevel_deleted), NULL);
       }
     } else
       remove_cur_toplevel();
