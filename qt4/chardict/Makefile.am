@@ -22,7 +22,8 @@ endif
 
 FORCE:
 
-EXTRA_DIST =  uim-chardict-qt4.pro.in \
+EXTRA_DIST = uim-chardict-qt4.pro.in \
+	     bushuviewwidget.h \
 	     chargridview.h \
 	     kseparator.h \
 	     qt4.h \
