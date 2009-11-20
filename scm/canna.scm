@@ -34,6 +34,7 @@
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
 (require "generic-predict.scm")
+(require "cannav3-socket.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "canna-custom.scm")
 (require-custom "canna-key-custom.scm")

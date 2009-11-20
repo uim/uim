@@ -93,15 +93,6 @@ if SCIM
   libuim_scim_la_CXXFLAGS = -I$(top_srcdir) @SCIM_CFLAGS@
 endif
 
-if CANNA
-  uim_plugin_LTLIBRARIES += libuim-canna.la
-  libuim_canna_la_SOURCES = canna.c
-  libuim_canna_la_LIBADD = libuim-scm.la libuim.la -lcanna
-  libuim_canna_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
-  libuim_canna_la_CPPFLAGS = -I$(top_srcdir)
-endif
-
-
 if WNN
 uim_plugin_LTLIBRARIES += libuim-wnn.la
 libuim_wnn_la_SOURCES = wnnlib.h wnnlib.c

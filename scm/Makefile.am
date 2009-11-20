@@ -22,7 +22,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
- canna.scm canna-custom.scm canna-key-custom.scm \
+ canna.scm cannav3-socket.scm canna-custom.scm canna-key-custom.scm \
  wnn.scm wnn-custom.scm wnn-key-custom.scm \
  sj3.scm sj3-custom.scm sj3-key-custom.scm \
  prime.scm prime-custom.scm prime-key-custom.scm \
@@ -61,9 +61,6 @@ endif
 if ANTHY_UTF8
   module_names += "anthy-utf8"
 endif
-if CANNA
-  module_names += "canna"
-endif
 if WNN
   module_names += "wnn"
 endif
@@ -79,7 +76,7 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
+module_names += "canna" "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif
