@@ -27,10 +27,10 @@ EXTRA_DIST =  uim-chardict-qt4.pro.in \
 	     kseparator.h \
 	     qt4.h \
 	     qtgettext.h \
-	     unicodeviewwidget.h
+	     unicodeviewwidget.h \
 	     bushuviewwidget.cpp \
 	     chargridview.cpp \
 	     kseparator.cpp \
 	     qt4.cpp \
 	     unicodeviewwidget.cpp \
-		 bushu.t
+	     bushu.t
