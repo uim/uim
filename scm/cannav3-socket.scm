@@ -33,6 +33,20 @@
 (require "socket.scm")
 (require "lolevel.scm")
 
+;; canna protocol operators
+(define canna-lib-initialize-op          #x1)
+(define canna-lib-finalize-op            #x2)
+(define canna-lib-create-context-op      #x3)
+(define canna-lib-close-context-op       #x5)
+(define canna-lib-get-dictionary-list-op #x6)
+(define canna-lib-mount-dictionary-op    #x8)
+(define canna-lib-unmount-dictionary-op  #x9)
+(define canna-lib-begin-convert-op       #xf)
+(define canna-lib-end-convert-op         #x10)
+(define canna-lib-get-candidacy-list-op  #x11)
+(define canna-lib-get-yomi-op            #x12)
+(define canna-lib-resize-pause-op        #x1a)
+
 (define (canna-var&user-fmt user)
   (format "3.3:~a" user))
 
@@ -44,35 +58,32 @@
         (append l (list "")))))
 
 (define (canna-lib-initialize socket user)
-  (define initialize-op #x1)
   (let* ((canna-var&user (canna-var&user-fmt user))
          (canna-var&user-len (+ 1 (string-length canna-var&user))))
     (file-write socket
                 (u8list->string-buf
                  (u8list-pack '(u32 u32 s8)
-                              initialize-op canna-var&user-len canna-var&user)))
+                              canna-lib-initialize-op canna-var&user-len canna-var&user)))
     (call-with-u8list-unpack
      '(u16 u16) (string-buf->u8list (file-read socket 4))
      (lambda (major minor)
        (not (and (= major 65535) (= major 65535)))))))
 
 (define (canna-lib-finalize socket)
-  (define finalize-op #x2)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16)
-                            finalize-op 0 0)))
+                            canna-lib-finalize-op 0 0)))
   (call-with-u8list-unpack
    '(u32 u8) (string-buf->u8list (file-read socket 5))
         (lambda (dummy result)
           (= result 0))))
 
 (define (canna-lib-create-context socket)
-  (define create-context-op #x3)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16)
-                            create-context-op 0 0)))
+                            canna-lib-create-context-op 0 0)))
   (call-with-u8list-unpack
    '(u32 u16) (string-buf->u8list (file-read socket 6))
    (lambda (dummy context-id)
@@ -80,22 +91,20 @@
           context-id))))
 
 (define (canna-lib-close-context socket context-id)
-  (define close-context-op #x5)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u16)
-                            close-context-op 0 2 context-id)))
+                            canna-lib-close-context-op 0 2 context-id)))
   (call-with-u8list-unpack
    '(u32 u8) (string-buf->u8list (file-read socket 5))
    (lambda (dummy result)
      (not (= result 255)))))
 
 (define (canna-lib-get-dictionary-list socket context-id)
-  (define get-dictionary-list-op #x6)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u16 u16)
-                            get-dictionary-list-op 0 4 context-id 1024)))
+                            canna-lib-get-dictionary-list-op 0 4 context-id 1024)))
   (call-with-u8list-unpack
    '(u32 u16) (string-buf->u8list (file-read socket 6))
    (lambda (dummy result)
@@ -106,11 +115,10 @@
              dict-list))))))
 
 (define (canna-lib-mount-dictionary socket context-id dict mode)
-  (define mount-dictionary-op #x8)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u32 u16 s8)
-                            mount-dictionary-op
+                            canna-lib-mount-dictionary-op
                             0
                             (+ (string-length dict) 7)
                             mode context-id dict)))
@@ -120,11 +128,10 @@
      (not (= result 255)))))
 
 (define (canna-lib-unmount-dictionary socket context-id dict mode)
-  (define unmount-dictionary-op #x9)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u32 u16 s8)
-                            unmount-dictionary-op
+                            canna-lib-unmount-dictionary-op
                             0
                             (+ (string-length dict) 7)
                             mode context-id dict)))
@@ -134,11 +141,10 @@
      (not (= result 255)))))
 
 (define (canna-lib-begin-convert socket context-id yomi mode)
-  (define begin-convert-op #xf)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u32 u16 s16)
-                            begin-convert-op
+                            canna-lib-begin-convert-op
                             0
                             (+ (string-length yomi) 8)
                             mode context-id yomi)))
@@ -152,11 +158,10 @@
              conv))))))
 
 (define (canna-lib-end-convert socket context-id cands mode)
-  (define end-convert-op #x10)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u16 u16 u32 u16list)
-                            end-convert-op
+                            canna-lib-end-convert-op
                             0
                             (+ (* 2 (length cands)) 8)
                             context-id (length cands) mode
@@ -167,11 +172,10 @@
      (not (= result 255)))))
 
 (define (canna-lib-get-candidacy-list socket context-id bunsetsu-pos)
-  (define get-candidacy-list-op #x11)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u16 u16 u16)
-                            get-candidacy-list-op
+                            canna-lib-get-candidacy-list-op
                             0
                             6
                             context-id bunsetsu-pos 1024)))
@@ -184,11 +188,10 @@
         cand-list)))))
 
 (define (canna-lib-get-yomi socket context-id bunsetsu-pos)
-  (define get-yomi-op #x12)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u16 u16 u16)
-                            get-yomi-op
+                            canna-lib-get-yomi-op
                             0
                             6
                             context-id bunsetsu-pos 1024)))
@@ -201,11 +204,10 @@
         conv)))))
 
 (define (canna-lib-resize-pause socket context-id yomi-length bunsetsu-pos)
-  (define resize-pause-op #x1a)
   (file-write socket
               (u8list->string-buf
                (u8list-pack '(u8 u8 u16 u16 u16 u16)
-                            resize-pause-op
+                            canna-lib-resize-pause-op
                             0
                             6
                             context-id bunsetsu-pos yomi-length)))
