@@ -323,6 +323,12 @@
   (N_ "Canna server name")
   (N_ "long description will be here."))
 
+(define-custom 'canna-user-name (user-name)
+  '(canna-advanced cannaserver)
+  '(string ".*")
+  (N_ "Canna user name")
+  (N_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'custom-preserved-canna-server-name
 		 'custom-activity-hooks
@@ -335,6 +341,11 @@
     (set! custom-preserved-canna-server-name (or canna-server-name
 						 custom-preserved-canna-server-name
 						 ""))))
+
+(custom-add-hook 'canna-user-name
+		 'custom-activity-hooks
+		 (lambda ()
+		   custom-activate-canna-server-name?))
 
 ;; decode #f from canna-server-name
 (custom-add-hook 'custom-activate-canna-server-name?

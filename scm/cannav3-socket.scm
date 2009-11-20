@@ -239,9 +239,11 @@
 (define canna-lib-cannaserver #f)
 
 (define (canna-lib-open-with-server server)
-  (if canna-server-name
-      (tcp-connect server "canna")
-      (unix-domain-socket-connect "/tmp/.iroha_unix/IROHA")))
+  (let ((server-name (if (equal? server "")
+                         "localhost")))
+    (if canna-server-name
+        (tcp-connect server-name "canna")
+        (unix-domain-socket-connect "/tmp/.iroha_unix/IROHA"))))
 
 (define (canna-lib-init server)
   (set! canna-lib-cannaserver server)
@@ -249,7 +251,7 @@
        (let ((s (canna-lib-open-with-server server)))
          (and s
               (begin
-                (canna-lib-initialize s (user-name))
+                (canna-lib-initialize s canna-user-name)
                 (set! *canna-lib-socket* s)
                 #t)))))
 
