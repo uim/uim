@@ -1,5 +1,9 @@
 Overview of changes from 1.5.6 to 1.5.7
 =======================================
+* Enhancements
+  - uim-toolbar-gtk-systray
+    * Support transparent background
+
 * Fixes
   - GTK+ bridge
     * Fix crash in combination with Firefox and flashplayer plugin
