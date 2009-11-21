@@ -50,13 +50,6 @@
 (define (canna-var&user-fmt user)
   (format "3.3:~a" user))
 
-(define (canna-lib-make-s16-list l)
-  (apply
-   append
-   (map (lambda (p)
-          (u8list-pack '(s16) p))
-        (append l (list "")))))
-
 (define (canna-lib-initialize socket user)
   (let* ((canna-var&user (canna-var&user-fmt user))
          (canna-var&user-len (+ 1 (string-length canna-var&user))))
