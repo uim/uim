@@ -211,18 +211,17 @@
                             0
                             6
                             context-id bunsetsu-pos yomi-length)))
-  (let ((read-vec (file-read socket 6)))
-    (call-with-u8list-unpack
-     '(u16 u16 u16) (string-buf->u8list read-vec)
-     (lambda (dummy len bunsetsu)
-       (and (not (= bunsetsu 65535))
-            (let loop ((s16list (string-buf->u8list (file-read socket len)))
-                       (rest '()))
-              (if (equal? s16list '(0 0))
-                  (reverse rest)
-                  (let ((s16 (u8list-unpack '(s16) s16list)))
-                    (loop (drop s16list (+ 2 (string-length (car s16))))
-                          (cons (car s16) rest))))))))))
+  (call-with-u8list-unpack
+   '(u16 u16 u16) (string-buf->u8list (file-read socket 6))
+   (lambda (dummy len bunsetsu)
+     (and (not (= bunsetsu 65535))
+          (let loop ((s16list (string-buf->u8list (file-read socket len)))
+                     (rest '()))
+            (if (equal? s16list '(0 0))
+                (reverse rest)
+                (let ((s16 (u8list-unpack '(s16) s16list)))
+                  (loop (drop s16list (+ 2 (string-length (car s16))))
+                        (cons (car s16) rest)))))))))
 
 ;;
 ;; RK compatible functions
