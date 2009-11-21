@@ -1,6 +1,15 @@
 Overview of changes from 1.5.6 to 1.5.7
 =======================================
-* Enhancements
+* New features
+  - uim-chardict-qt4
+  - uim-toolbar-qt4
+  - uim-pref-qt4
+  - uim-candwin-qt4
+  - uim-applet-kde4
+    * Support Qt4 tools by Muneyuki Noguchi (experimental, #24123,
+      #24620)
+ 
+* Enhancement
   - uim-toolbar-gtk-systray
     * Support transparent background
 
