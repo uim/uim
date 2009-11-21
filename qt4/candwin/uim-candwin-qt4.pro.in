@@ -1,0 +1,26 @@
+TEMPLATE = app
+CONFIG += @QT_CONFIG_OPTS@
+QT += qt3support
+
+INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
+               @top_srcdir@ @top_srcdir@/uim \
+               @top_srcdir@/replace @srcdir@/..
+QMAKE_LIBDIR += @abs_top_builddir@/uim
+QMAKE_LIBDIR += @abs_top_builddir@/replace
+QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
+QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
+LIBS += -lreplace -luim -luim-scm -luim-x-util
+
+QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
+QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
+QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
+QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
+
+# Input
+HEADERS += @srcdir@/qt4.h
+SOURCES += @srcdir@/qt4.cpp
+
+TARGET = uim-candwin-qt4
+
+target.path += @DESTDIR@@exec_prefix@/libexec
+INSTALLS    += target

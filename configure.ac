@@ -788,6 +788,25 @@ AC_ARG_WITH(qt-immodule,
 dnl *****************************
 dnl *** Check for Qt4 Library ***
 dnl *****************************
+AC_ARG_WITH(qt4,
+  AC_HELP_STRING([--with-qt4],
+                 [build qt4 helper applications (experimental)
+		  @<:@default=no@:>@]),
+  [
+    case $with_qt4 in
+      no)
+        use_qt4="no"
+      ;;
+      yes|*)
+        use_qt4="yes"
+      ;;
+    esac
+  ],
+  [
+    use_qt4="no"
+  ])
+
+
 AC_ARG_WITH(qt4-immodule,
   AC_HELP_STRING([--with-qt4-immodule],
                  [Build qt4-immodule extension (experimental)
@@ -806,7 +825,7 @@ AC_ARG_WITH(qt4-immodule,
   [
     use_qt4_immodule="no"
   ])
-if test x$use_qt4_immodule = xyes; then
+if test x$use_qt4 = xyes || test x$use_qt4_immodule = xyes; then
     if test -z "$QMAKE4"; then
         AC_MSG_ERROR([no qmake for Qt4 found])
     fi
@@ -815,7 +834,7 @@ fi
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-                 [Determine default toolkit (gtk or qt)
+                 [Determine default toolkit (gtk, qt, or qt4)
 		  @<:@default=gtk@:>@]),
   [
   if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
@@ -823,6 +842,9 @@ AC_ARG_ENABLE(default-toolkit,
   fi
   if test x"$enable_default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
      default_toolkit="qt"
+  fi
+  if test x"$enable_default_toolkit" = "xqt4" && test x"$use_qt4" = "xyes"; then
+     default_toolkit="qt4"
   fi
   ],
   [])
@@ -995,6 +1017,7 @@ AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test x$default_toolkit = xqt4)
 AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
@@ -1015,6 +1038,7 @@ AM_CONDITIONAL(GXX, test x$ac_cv_cxx_compiler_gnu = xyes)
 # 0.36.3 or later is required to resolve a 'make check' problem ([uim-ja 87]).
 IT_PROG_INTLTOOL([0.36.3], [no-xml])
 IT_PO_SUBDIR([qt/chardict/po])
+IT_PO_SUBDIR([qt4/chardict/po])
 
 
 GTK_BINARY_VERSION=`$PKG_CONFIG gtk+-2.0 --variable=gtk_binary_version`
@@ -1171,8 +1195,8 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
-AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
-if test "x$use_qt" = "xyes"; then
+AC_PATH_PROGS(KDE_CONFIG, [kde-config kde4-config], [no])
+if test "x$use_qt" = "xyes" || test "x$use_qt4" = "xyes"; then
     if test "x$KDE_CONFIG" != "xno"; then
 	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
     fi
@@ -1226,6 +1250,38 @@ AC_SUBST(KDE_LIB_DIR)
 AC_SUBST(KDE_DATA_DIR)
 AC_SUBST(KDE_INCLUDE_DIR)
 
+dnl ****************************
+dnl *** test for KDE4 applet ***
+dnl ****************************
+AC_ARG_ENABLE(kde4-applet,
+  AC_HELP_STRING([--enable-kde4-applet],
+        [build uim applet for KDE4 panel (experimental)
+            @<:@default=yes@:>@]),
+        enable_kde4_applet=$enableval,
+        enable_kde4_applet=yes)
+case "$enable_kde_applet" in
+  no)
+    use_applet_kde4="no"
+    ;;
+  yes|*)
+    if test "x$use_qt4" = "xyes"; then
+        use_applet_kde4="yes"
+    else
+        use_applet_kde4="no"
+    fi
+    ;;
+esac
+AC_PATH_PROG(CMAKE, [cmake], [no])
+if test "x$use_applet_kde4" = "xyes" && test "x$CMAKE" = "xno"; then
+    AC_MSG_WARN([no CMake found])
+    use_applet_kde4="no"
+fi
+AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
+if test "x$use_applet_kde4" = "xyes" && test "x$KDE4_CONFIG" = "xno"; then
+    AC_MSG_WARN([no kde4-config found])
+    use_applet_kde4="no"
+fi
+
 if test x$use_qtimmodule = xyes ; then
     AC_MSG_CHECKING(for qt-immodule patch)
     # Check for immodule for Qt patch
@@ -1241,7 +1297,9 @@ fi
 AM_CONDITIONAL(QT, test x$use_qt = xyes)
 AM_CONDITIONAL(QT_IMMODULE, test x$use_qtimmodule = xyes)
 AM_CONDITIONAL(APPLET_KDE, test x$use_applet_kde = xyes)
+AM_CONDITIONAL(QT4, test x$use_qt4 = xyes)
 AM_CONDITIONAL(QT4_IMMODULE, test x$use_qt4_immodule = xyes)
+AM_CONDITIONAL(APPLET_KDE4, test x$use_applet_kde4 = xyes)
 
 AC_ARG_ENABLE(pref,
   AC_HELP_STRING([--enable-pref],
@@ -1256,27 +1314,31 @@ AC_ARG_ENABLE(pref,
 	if test x"$default_toolkit" = "xgtk" && \
 	   test x"$use_gtk2_4" = "xyes"; then
 	  use_pref="yes"
+	elif test x"$default_toolkit" = "xqt" && \
+	     test x"$use_qt" = "xyes"; then
+	  use_pref="yes"
+	elif test x"$default_toolkit" = "xqt4" && \
+	     test x"$use_qt4" = "xyes"; then
+	  use_pref="yes"
 	else
-	  if test x"$default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
-	    use_pref="yes"
-	  else
-	    use_pref="no"
-	    AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
-	  fi
+	  use_pref="no"
+	  AC_MSG_WARN([uim-pref needs Gtk+ or Qt toolkit, disabled...])
 	fi
 	;;
     esac ],
   [
-    if test x"$default_toolkit" = "xgtk" && test x"$use_gtk2_4" = "xyes"; then
+    if test x"$default_toolkit" = "xgtk" && \
+       test x"$use_gtk2_4" = "xyes"; then
+      use_pref="yes"
+    elif test x"$default_toolkit" = "xqt" && \
+         test x"$use_qt" = "xyes"; then
+      use_pref="yes"
+    elif test x"$default_toolkit" = "xqt4" && \
+         test x"$use_qt4" = "xyes"; then
       use_pref="yes"
     else
-      if test x"$default_toolkit" = "xqt" && \
-         test x"$use_qt" = "xyes"; then
-	use_pref="yes"
-      else
-	use_pref="no"
-	AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
-      fi
+      use_pref="no"
+      AC_MSG_WARN([uim pref needs Gtk+ or Qt toolkit, disabled...])
     fi
   ])
 AM_CONDITIONAL(PREF, test x"$use_pref" = "xyes")
@@ -1526,9 +1588,21 @@ AC_CONFIG_FILES([Makefile
 		 qt/test/Makefile
 		 qt/uimapplet.desktop
 		 qt4/Makefile
+		 qt4/candwin/Makefile
+		 qt4/candwin/uim-candwin-qt4.pro
+		 qt4/chardict/Makefile
+		 qt4/chardict/uim-chardict-qt4.pro
+		 qt4/chardict/po/Makefile.in
+		 qt4/edittest/Makefile
 		 qt4/immodule/quiminputcontextplugin.pro
 		 qt4/immodule/Makefile
-		 qt4/edittest/Makefile
+		 qt4/pref/uim-pref-qt4.pro
+		 qt4/pref/Makefile
+		 qt4/switcher/uim-im-switcher-qt4.pro
+		 qt4/switcher/Makefile
+		 qt4/toolbar/plasma-applet-uim.desktop
+		 qt4/toolbar/uim-toolbar-qt4.pro
+		 qt4/toolbar/Makefile
 		 xim/Makefile
 		 fep/Makefile
 		 emacs/Makefile
@@ -1548,6 +1622,35 @@ AC_CONFIG_FILES([Makefile
 AC_OUTPUT
 
 # Generate Makefiles for Qt4 by qmake
+if test x$use_qt4 = xyes; then
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
+		 ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
+		 ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
+		 ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/switcher/Makefile.qmake \
+		 ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
+		 ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
+
+    # Generate a Makefile for KDE4 applet by cmake
+    if test x$use_applet_kde4 = xyes; then
+        if test "x$enable_debug" = xyes; then
+            cmake_build_type=Debug
+        else
+            cmake_build_type=Release
+        fi
+        mkdir -p ${ac_abs_top_builddir}/qt4/toolbar/build
+        cd ${ac_abs_top_builddir}/qt4/toolbar/build
+        ${CMAKE} \
+            -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
+            -DCMAKE_BUILD_TYPE=${cmake_build_type} \
+            -DCMAKE_INSTALL_PREFIX=`$KDE4_CONFIG --prefix` \
+            ${ac_abs_top_builddir}/qt4/toolbar
+        cd -
+    fi
+fi
 if test x$use_qt4_immodule = xyes; then
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
 		 ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
@@ -1571,8 +1674,10 @@ Configure Result :
    Gnome Applet    : ${use_applet_gnome}
    Qt3             : ${use_qt}
    Qt3 immodule    : ${use_qtimmodule}
+   Qt4             : ${use_qt4}
    Qt4 immodule    : ${use_qt4_immodule}
    KDE3 Applet     : ${use_applet_kde}
+   KDE4 Applet     : ${use_applet_kde4}
    FEP             : ${use_uim_fep}
    Emacs           : ${use_uim_el}
    XIM             : ${use_xim}
