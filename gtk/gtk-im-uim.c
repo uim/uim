@@ -328,10 +328,12 @@ remove_cur_toplevel()
   }
 }
 
-static void
+static gboolean
 cur_toplevel_deleted(GtkWidget *widget, gpointer data)
 {
   cur_toplevel = NULL;
+
+  return FALSE;
 }
 
 static void
