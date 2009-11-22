@@ -8,16 +8,49 @@ Overview of changes from 1.5.x to 1.6.0-alpha
   - uim-yahoo-jp (new IM)
     A web based Japanese multi-segment input method
 
-  - Ported Qt4 tools from Qt3
-    * uim-toolbar-qt4
-    * uim-pref-qt4
-    * uim-chardict-qt4
-    * uim-candwin-qt4
+* Others
+
+
+Overview of changes from 1.5.6 to 1.5.7
+=======================================
+* New features
+  - uim-chardict-qt4
+  - uim-toolbar-qt4
+  - uim-pref-qt4
+  - uim-candwin-qt4
+  - uim-applet-kde4
+    * Experimental support of Qt4 tools by Muneyuki Noguchi (#24123,
+      #24620)
+ 
+* Enhancement
+  - uim-toolbar-gtk-systray
+    * Support transparent background
 
 * Fixes
-  - Fix pot file installation of uim-chardict-qt
+  - GTK+ bridge
+    * Fix crash in combination with Firefox and flashplayer plugin
+      (#25139)
 
-* Others
+  - uim-fep
+    * Fix compilation on NetBSD current ([uim-ja 148])
+
+  - uim.el
+    * Fix bug: uim.el doesn't work when linum-mode is activated and
+      the inline candidates displaying mode is enabled ([uim-en 245])
+    * Fix bug: Some special keys (such as arrow keys) cannot be used
+      when uim.el is enabled on emacs23 with -nw option.
+
+  - Qt4 bridge
+    * Don't enable knotify3 when qt4-immodule is enabled in configure
+      time (#19877)
+    * Fix compilation when srcdir != builddir
+
+  - uim-notify
+    * Disable uim-notify on build phase to prevent dependency library
+      mismatch
+
+  - uim-chardict-qt
+    * Install translation file properly ([uim-ja 150])
 
 
 Overview of changes from 1.5.5 to 1.5.6
