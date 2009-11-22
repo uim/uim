@@ -612,8 +612,15 @@
 	      ;;(setq translated-vector input-vector)
 	      (setq translated-vector nil)
 	      (throw 'fmap-loop t))
+
+	  (if (boundp 'input-decode-map)
+	      (setq translated (lookup-key input-decode-map
+					   input-vector-main)))
 	  
-	  (setq translated (lookup-key function-key-map input-vector-main))
+	  (if (or (not translated)
+		  (integerp translated))
+	      (setq translated (lookup-key function-key-map
+					   input-vector-main)))
 
 	  (if (and (or (not translated)
 		       (integerp translated))
