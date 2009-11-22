@@ -19,6 +19,10 @@ qt/pref-customwidgets.cpp
 qt/pref-qt.cpp
 qt/switcher-qt.cpp
 qt/toolbar-common-quimhelpertoolbar.cpp
+qt4/pref/customwidgets.cpp
+qt4/pref/qt4.cpp
+qt4/switcher/qt4.cpp
+qt4/toolbar/common-quimhelpertoolbar.cpp
 scm/action.scm
 scm/ajax-ime-custom.scm
 scm/ajax-ime-key-custom.scm
