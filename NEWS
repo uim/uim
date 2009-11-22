@@ -6,7 +6,7 @@ Overview of changes from 1.5.6 to 1.5.7
   - uim-pref-qt4
   - uim-candwin-qt4
   - uim-applet-kde4
-    * Support Qt4 tools by Muneyuki Noguchi (experimental, #24123,
+    * Experimental support of Qt4 tools by Muneyuki Noguchi (#24123,
       #24620)
  
 * Enhancement
@@ -20,6 +20,12 @@ Overview of changes from 1.5.6 to 1.5.7
 
   - uim-fep
     * Fix compilation on NetBSD current ([uim-ja 148])
+
+  - uim.el
+    * Fix bug: uim.el doesn't work when linum-mode is activated and
+      the inline candidates displaying mode is enabled ([uim-en 245])
+    * Fix bug: Some special keys (such as arrow keys) cannot be used
+      when uim.el is enabled on emacs23 with -nw option.
 
   - Qt4 bridge
     * Don't enable knotify3 when qt4-immodule is enabled in configure
