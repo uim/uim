@@ -81,7 +81,6 @@ scm/yahoo-jp-custom.scm
 scm/yahoo-jp-key-custom.scm
 scm/yahoo-jp.scm
 uim.desktop.in.in
-uim/canna.c
 uim/m17nlib.c
 uim/mana.c
 uim/dynlib.c
