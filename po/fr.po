@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.1\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2009-01-21 13:55+0900\n"
+"POT-Creation-Date: 2009-11-23 01:25+0900\n"
 "PO-Revision-Date: 2008-05-17 12:32+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "uim applet factory"
 msgstr ""
 
-#: ../helper/dict-anthy.c:82 ../helper/dict-main-gtk.c:127
+#: ../helper/dict-anthy.c:84 ../helper/dict-main-gtk.c:127
 #: ../helper/dict-word-list-win-gtk.c:348 ../helper/dict-word.c:139
 #: ../helper/dict-word.c:154
 msgid "Anthy private dictionary"
@@ -228,23 +228,23 @@ msgid ""
 "All rights reserved."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:52
+#: ../helper/dict-word-win-gtk.c:53
 msgid "Substantive"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:53
+#: ../helper/dict-word-win-gtk.c:54
 msgid "Verb"
 msgstr "Verbe"
 
-#: ../helper/dict-word-win-gtk.c:54
+#: ../helper/dict-word-win-gtk.c:55
 msgid "Adjective"
 msgstr "Adjectif"
 
-#: ../helper/dict-word-win-gtk.c:55
+#: ../helper/dict-word-win-gtk.c:56
 msgid "Adverb"
 msgstr "Adverbe"
 
-#: ../helper/dict-word-win-gtk.c:56
+#: ../helper/dict-word-win-gtk.c:57
 msgid "Etc"
 msgstr ""
 
@@ -261,33 +261,33 @@ msgstr ""
 msgid "continuance"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:193
+#: ../helper/dict-word-win-gtk.c:194
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../helper/dict-word-win-gtk.c:199
+#: ../helper/dict-word-win-gtk.c:200
 msgid "Clear"
 msgstr "Effacer"
 
-#: ../helper/dict-word-win-gtk.c:206
+#: ../helper/dict-word-win-gtk.c:207
 msgid "Add a word"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:246
+#: ../helper/dict-word-win-gtk.c:248
 #, c-format
 msgid "Edit the word (%s)"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:249
+#: ../helper/dict-word-win-gtk.c:252
 #, c-format
 msgid "Add a word (%s)"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:274
+#: ../helper/dict-word-win-gtk.c:278
 msgid "_Phonetic:"
 msgstr "_Phonétique :"
 
-#: ../helper/dict-word-win-gtk.c:284
+#: ../helper/dict-word-win-gtk.c:286
 msgid "_Literal:"
 msgstr ""
 
@@ -295,78 +295,85 @@ msgstr ""
 msgid "Part of _Speech:"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:324
+#: ../helper/dict-word-win-gtk.c:323
 msgid "_Frequency:"
 msgstr "_Fréquence :"
 
-#: ../helper/dict-word-win-gtk.c:355
+#: ../helper/dict-word-win-gtk.c:354
 msgid "Part of Speech(_narrow):"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:368
+#: ../helper/dict-word-win-gtk.c:365
 msgid "_Browse..."
 msgstr "_Parcourir ..."
 
-#: ../helper/dict-word-win-gtk.c:498
+#: ../helper/dict-word-win-gtk.c:500
 msgid "Word registration failed."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:505
+#: ../helper/dict-word-win-gtk.c:507
 msgid "Word registration succeded."
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:535
+#: ../helper/dict-word-win-gtk.c:537
 msgid "Phonetic is emtpy!"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:550
+#: ../helper/dict-word-win-gtk.c:552
 msgid "Literal is emtpy!"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:568
+#: ../helper/dict-word-win-gtk.c:570
 msgid "Part of speech is emtpy!"
 msgstr ""
 
-#: ../helper/eggtrayicon.c:118
+#: ../helper/eggtrayicon.c:134
 msgid "Orientation"
 msgstr ""
 
-#: ../helper/eggtrayicon.c:119
+#: ../helper/eggtrayicon.c:135
 msgid "The orientation of the tray."
 msgstr ""
 
 #: ../helper/im-switcher-gtk.c:283 ../qt/switcher-qt.cpp:103
+#: ../qt4/switcher/qt4.cpp:108
 msgid "InputMethodName"
 msgstr "Nom de la méthode d'entrée"
 
 #: ../helper/im-switcher-gtk.c:292 ../qt/switcher-qt.cpp:104
+#: ../qt4/switcher/qt4.cpp:108
 msgid "Language"
 msgstr "Langue"
 
 #: ../helper/im-switcher-gtk.c:301 ../qt/switcher-qt.cpp:105
+#: ../qt4/switcher/qt4.cpp:108
 msgid "Description"
 msgstr "Description"
 
 #: ../helper/im-switcher-gtk.c:332 ../qt/switcher-qt.cpp:71
+#: ../qt4/switcher/qt4.cpp:74
 msgid "uim input method switcher"
 msgstr ""
 
 #: ../helper/im-switcher-gtk.c:361 ../qt/switcher-qt.cpp:109
-#: ../scm/im-custom.scm:438
+#: ../qt4/switcher/qt4.cpp:124 ../scm/im-custom.scm:438
 msgid "Effective coverage"
 msgstr ""
 
+#. radio buttons for the switcher coverage
 #: ../helper/im-switcher-gtk.c:369 ../qt/switcher-qt.cpp:110
-#: ../scm/im-custom.scm:430
+#: ../qt4/switcher/qt4.cpp:114 ../scm/im-custom.scm:430
 msgid "whole desktop"
 msgstr ""
 
 #. default is "whole desktop"
 #: ../helper/im-switcher-gtk.c:370 ../qt/switcher-qt.cpp:113
+#: ../qt4/switcher/qt4.cpp:115
 msgid "current application only"
 msgstr ""
 
 #: ../helper/im-switcher-gtk.c:371 ../qt/switcher-qt.cpp:115
+#: ../qt4/switcher/qt4.cpp:116
 msgid "current text area only"
 msgstr ""
 
@@ -424,7 +431,8 @@ msgstr ""
 
 #: ../helper/pref-gtk-custom-widgets.c:497
 #: ../helper/pref-gtk-custom-widgets.c:501 ../qt/pref-customwidgets.cpp:183
-#: ../qt/pref-customwidgets.cpp:187
+#: ../qt/pref-customwidgets.cpp:187 ../qt4/pref/customwidgets.cpp:194
+#: ../qt4/pref/customwidgets.cpp:198
 msgid "Select..."
 msgstr ""
 
@@ -450,6 +458,7 @@ msgid "Edit..."
 msgstr "_Édition ..."
 
 #: ../helper/pref-gtk-custom-widgets.c:1517 ../qt/pref-customwidgets.cpp:878
+#: ../qt4/pref/customwidgets.cpp:889
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr ""
 
@@ -480,13 +489,13 @@ msgid ""
 "Save?"
 msgstr ""
 
-#: ../helper/pref-gtk.c:226 ../qt/pref-qt.cpp:274
+#: ../helper/pref-gtk.c:226 ../qt/pref-qt.cpp:274 ../qt4/pref/qt4.cpp:275
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
 msgstr ""
 
-#: ../helper/pref-gtk.c:278 ../qt/pref-qt.cpp:145
+#: ../helper/pref-gtk.c:278 ../qt/pref-qt.cpp:145 ../qt4/pref/qt4.cpp:143
 msgid "Group"
 msgstr "Groupe"
 
@@ -511,7 +520,7 @@ msgstr ""
 msgid "Quit this application with applying changes"
 msgstr ""
 
-#: ../helper/pref-gtk.c:573 ../qt/pref-qt.cpp:113
+#: ../helper/pref-gtk.c:573 ../qt/pref-qt.cpp:113 ../qt4/pref/qt4.cpp:110
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -535,41 +544,54 @@ msgstr ""
 #: ../helper/toolbar-common-gtk.c:84
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:91
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:163
 msgid "Switch input method"
 msgstr ""
 
 #: ../helper/toolbar-common-gtk.c:93
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:93
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:189
 msgid "Preference"
 msgstr ""
 
 #: ../helper/toolbar-common-gtk.c:102
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:95
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:214
 msgid "Japanese dictionary editor"
 msgstr ""
 
 #: ../helper/toolbar-common-gtk.c:111
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:97
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:239
 msgid "Input pad"
 msgstr ""
 
 #: ../helper/toolbar-common-gtk.c:120
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:99
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:264
 msgid "Handwriting input pad"
 msgstr ""
 
 #: ../helper/toolbar-common-gtk.c:133
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:101
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:288
 msgid "Help"
 msgstr "Aide"
 
 #: ../helper/toolbar-common-gtk.c:816
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:104
 msgid "Quit this toolbar"
 msgstr ""
 
@@ -579,57 +601,60 @@ msgid "Unable to parse the geometry string '%s'"
 msgstr ""
 
 #: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
+#: ../qt4/pref/customwidgets.cpp:357 ../qt4/pref/customwidgets.cpp:636
 msgid "Edit"
 msgstr "Édition"
 
-#: ../qt/pref-customwidgets.cpp:881
+#: ../qt/pref-customwidgets.cpp:881 ../qt4/pref/customwidgets.cpp:894
 msgid "Key Grab Dialog"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:121
+#: ../qt/pref-qt.cpp:121 ../qt4/pref/qt4.cpp:118
 msgid "~/.uim exists!"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:163
+#: ../qt/pref-qt.cpp:163 ../qt4/pref/qt4.cpp:159
 msgid "Defaults"
 msgstr "Options par défaut"
 
 #: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
-#: ../qt/switcher-qt.cpp:120
+#: ../qt/switcher-qt.cpp:120 ../qt4/pref/qt4.cpp:162 ../qt4/pref/qt4.cpp:258
+#: ../qt4/pref/qt4.cpp:366 ../qt4/switcher/qt4.cpp:129
 msgid "OK"
 msgstr "OK"
 
-#: ../qt/pref-qt.cpp:169
+#: ../qt/pref-qt.cpp:169 ../qt4/pref/qt4.cpp:165
 msgid "Apply"
 msgstr ""
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:125
+#: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:259 ../qt4/switcher/qt4.cpp:134
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../qt/pref-qt.cpp:255
+#: ../qt/pref-qt.cpp:255 ../qt4/pref/qt4.cpp:256
 msgid "Save Confirm"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:256
+#: ../qt/pref-qt.cpp:256 ../qt4/pref/qt4.cpp:257
 msgid ""
 "The value was changed.\n"
 "Save?"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:273
+#: ../qt/pref-qt.cpp:273 ../qt4/pref/qt4.cpp:274
 msgid "Quit Confirm"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:276
+#: ../qt/pref-qt.cpp:276 ../qt4/pref/qt4.cpp:277
 msgid "Yes"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:277
+#: ../qt/pref-qt.cpp:277 ../qt4/pref/qt4.cpp:278
 msgid "No"
 msgstr ""
 
-#: ../qt/pref-qt.cpp:360
+#: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:362
 msgid "Show this dialog on startup"
 msgstr ""
 
