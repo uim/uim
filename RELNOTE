@@ -15,7 +15,8 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Bug fix for GTK+ and Qt4 bridge.  See NEWS for the detailed changes.
+Bug fix for GTK+, Qt4, Emacs bridges and experimental Qt4 tools
+addition.  See NEWS for the detailed changes.
 
 
 What's New in 1.5.0
