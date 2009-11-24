@@ -80,7 +80,7 @@
                    (drop arg (+ 2 (length ret))) ;; XXX
                    (cons (list->string (map integer->char ret)) rest))))
           ((eq? 'u8list (car fmt))
-           (loop (cdr fmt) '() (cons ret rest)))
+           (loop (cdr fmt) '() (cons arg rest)))
           (else
            (uim-notify-fatal (N_ "unknown byte operator"))))))
 
