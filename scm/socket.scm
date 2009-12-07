@@ -127,3 +127,52 @@
                  (file-close s)
                  #f)
                s))))))
+
+(define *tcp-listen:backlog-length* 5)
+
+(define (tcp-listen hostname servname)
+  (filter
+   integer?
+   (call-with-getaddrinfo-hints
+    '($AI_PASSIVE) '$PF_UNSPEC '$SOCK_STREAM #f
+    (lambda (hints)
+      (call-with-getaddrinfo
+       hostname servname hints
+       (lambda (res)
+         (map (lambda (res0)
+                (let ((s (socket (addrinfo-ai-family? res0)
+                                 (addrinfo-ai-socktype? res0)
+                                 (addrinfo-ai-protocol? res0))))
+                  (if (< s 0)
+                      #f
+                      (if (< (bind s
+                                   (addrinfo-ai-addr? res0)
+                                   (addrinfo-ai-addrlen? res0))
+                             0)
+                          (begin
+                            (file-close s)
+                            #f)
+                          (begin
+                            (listen s *tcp-listen:backlog-length*)
+                            s)))))
+              res)))))))
+
+(define (tcp-accept sockets)
+  (let ((fds (file-ready? sockets -1)))
+    (map (lambda (pfd)
+           (call-with-sockaddr-storage
+            (lambda (ss)
+              (accept (car pfd) ss))))
+         fds)))
+
+(define (make-tcp-server thunk)
+  (lambda (sockets)
+    (let loop ()
+      (let ((fds (file-ready? sockets -1)))
+        (for-each (lambda (pfd)
+                    (call-with-sockaddr-storage
+                     (lambda (ss)
+                       (let ((socket (accept (car pfd) ss)))
+                         (thunk socket)))))
+                  fds)
+        (loop)))))
