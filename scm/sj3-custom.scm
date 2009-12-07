@@ -329,6 +329,17 @@
   (N_ "SJ3 user name")
   (N_ "long description will be here."))
 
+(define-custom 'sj3-unix-domain-socket-path "/var/sj3/run/sj3serv.socket"
+  '(sj3-advanced sj3server)
+  '(string ".*")
+  (N_ "SJ3 server socket path")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'sj3-unix-domain-socket-path
+                 'custom-activity-hooks
+                 (lambda ()
+                   (not sj3-use-remote-server?)))
+
 (define-custom 'sj3-use-with-vi? #f
   '(sj3-advanced special-op)
   '(boolean)

@@ -64,9 +64,6 @@ endif
 if WNN
   module_names += "wnn"
 endif
-if SJ3
-  module_names += "sj3"
-endif
 if MANA
   module_names += "mana"
 endif
@@ -76,7 +73,7 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "canna" "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
+module_names += "canna" "sj3" "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif

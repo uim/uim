@@ -36,6 +36,7 @@
 (require "japanese-kana.scm")
 (require "japanese-azik.scm")
 (require "generic-predict.scm")
+(require "sj3v2-socket.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "sj3-custom.scm")
 (require-custom "sj3-key-custom.scm")
