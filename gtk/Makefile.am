@@ -35,6 +35,20 @@ IM_UIM_SOURCES = \
 
 if EB
 IM_UIM_SOURCES += uim-eb.c uim-eb.h
+
+uim_plugindir = $(pkglibdir)/plugin
+uim_plugin_LTLIBRARIES = libuim-eb.la
+libuim_eb_la_SOURCES = uim-eb.c uim-eb.h uim-scm-eb.c
+libuim_eb_la_LIBADD = ../uim/libuim-scm.la ../uim/libuim.la @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
+		      @EBCONF_INTLLIBS@
+libuim_eb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module \
+		       @EBCONF_PTHREAD_LDFLAGS@
+libuim_eb_la_CPPFLAGS = -I$(top_srcdir) \
+			@EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
+			@EBCONF_PTHREAD_CPPFLAGS@ \
+			@EBCONF_INTLINCS@ \
+			@GTK2_CFLAGS@
+libuim_eb_la_CFLAGS = @EBCONF_PTHREAD_CFLAGS@ -Wall
 endif
 
 noinst_PROGRAMS = gtk-rc-get-immodule-file
