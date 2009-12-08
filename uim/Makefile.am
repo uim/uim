@@ -173,6 +173,21 @@ libuim_ffi_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module
 libuim_ffi_la_CPPFLAGS = -I$(top_srcdir) @FFI_CFLAGS@
 endif
 
+if EB
+uim_plugin_LTLIBRARIES += libuim-eb.la
+libuim_eb_la_SOURCES = uim-eb.c uim-eb.h eb.c
+libuim_eb_la_LIBADD = @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
+		      @EBCONF_INTLLIBS@
+libuim_eb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module \
+		       @EBCONF_PTHREAD_LDFLAGS@
+libuim_eb_la_CPPFLAGS = -I$(top_srcdir) \
+			@EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
+			@EBCONF_PTHREAD_CPPFLAGS@ \
+			@EBCONF_INTLINCS@ \
+			@GTK2_CFLAGS@
+libuim_eb_la_CFLAGS = @EBCONF_PTHREAD_CFLAGS@ -Wall
+endif
+
 uim_plugin_LTLIBRARIES += libuim-skk.la
 libuim_skk_la_SOURCES = skk.c bsdlook.h
 libuim_skk_la_LIBADD = libuim-scm.la libuim.la libuim-bsdlook.la @NETLIBS@
