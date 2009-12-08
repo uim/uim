@@ -57,7 +57,11 @@ c_uim_eb_new(uim_lisp bookpath_)
 static uim_lisp
 c_uim_eb_search_text(uim_lisp ueb_, uim_lisp text_)
 {
-  return MAKE_STR(uim_eb_search_text(C_PTR(ueb_), REFER_C_STR(text_)));
+  char *str;
+
+  if ((str = uim_eb_search_text(C_PTR(ueb_), REFER_C_STR(text_))) == NULL)
+    return MAKE_STR("");
+  return MAKE_STR_DIRECTLY(str);
 }
 
 static uim_lisp
