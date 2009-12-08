@@ -33,6 +33,11 @@
 (require-custom "generic-key-custom.scm")
 (require-custom "look-custom.scm")
 
+(and (not (provided? "eb"))
+     (guard (err (else #f))
+            (module-load "eb"))
+     (provide "eb"))
+
 ;; widgets
 (define look-widgets '(widget_look_input_mode))
 
@@ -104,7 +109,8 @@
     (list 'left       "")
     (list 'prev       ())    ; simple queue: ([string]prevword1 prevword2 ...)
     (list 'dict       #f)    ; list ((([string]prevword1 prevword2 ...)  . [alist]history) ...)
-    (list 'dictlen    0))))
+    (list 'dictlen    0)
+    (list 'eb-ctx     #f))))
 (define look-context-rec-spec look-context-rec-spec)
 (define-record 'look-context look-context-rec-spec)
 (define look-context-new-internal look-context-new)
@@ -333,6 +339,9 @@
 (define (look-context-new . args)
   (let ((lc (apply look-context-new-internal args)))
     (look-context-set-widgets! lc look-widgets)
+    (if (and look-use-eb?
+             (provided? "eb"))
+        (look-context-set-eb-ctx! lc (eb-new look-eb-dict-path)))
     lc))
 
 (define (look-context-clean lc)
@@ -362,6 +371,11 @@
     lc))
 
 (define (look-release-handler lc)
+  (if (and look-use-eb?
+           (provided? "eb")
+           (look-context-eb-ctx lc))
+      (eb-destroy (look-context-eb-ctx lc)))
+  (look-context-set-eb-ctx! lc #f)
   #f)
 
 (define (look-alphabetic-char? key state)
@@ -421,6 +435,18 @@
                        (number->string candidates)
                        "]"))))
 
+(define (look-format-eb lc)
+  (let ((candidates (look-context-candidates lc)))
+    (if (or (= 0 (string-length (look-context-left lc)))
+            (<= (length candidates) (look-context-nth lc)))
+        ""
+        (string-append "\n"
+                       (eb-search-text (look-context-eb-ctx lc)
+                                       (string-append
+                                        (look-context-left lc)
+                                        (nth (look-context-nth lc) candidates)))))))
+
+
 (define (look-update-preedit lc)
   (im-clear-preedit lc)
   (im-pushback-preedit
@@ -436,6 +462,11 @@
       (im-pushback-preedit
        lc preedit-reverse
        (look-format-candidates-nth lc)))
+  (if (and look-use-eb?
+           (provided? "eb"))
+      (im-pushback-preedit
+       lc preedit-none
+       (look-format-eb lc)))
   (im-update-preedit lc))
 
 (define (look-key-press-state-look lc key state)

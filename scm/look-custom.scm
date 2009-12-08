@@ -53,6 +53,24 @@
   (N_ "[Look] Personal dictionary file")
   (N_ "long description will be here."))
 
+(define-custom 'look-use-eb? #f
+  '(look)
+  '(boolean)
+  (N_ "[Look] Use eb library to search annotations")
+  (N_ "long description will be here."))
+
+(define-custom 'look-eb-dict-path
+  (string-append (sys-datadir) "/dict")
+  '(look)
+  '(pathname regular-file)
+  (N_ "[Look] The directory which contains EB dictionary file")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'look-eb-dict-path
+                 'custom-activity-hooks
+                 (lambda ()
+                   look-use-eb?))
+
 (define-custom 'look-beginning-character-length 1
   '(look)
   '(integer 1 65535)
