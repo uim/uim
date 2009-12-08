@@ -436,15 +436,26 @@
                        "]"))))
 
 (define (look-format-eb lc)
+  (define (eb-format-entry str lines)
+    (let loop ((l (string->list str))
+             (lines lines)
+             (rest '()))
+      (cond ((or (null? l)
+                 (= 0 lines))
+             (list->string (reverse rest)))
+            ((eq? #\newline (car l))
+           (loop (cdr l) (- lines 1) (cons #\space rest)))
+            (else
+             (loop (cdr l) lines (cons (car l) rest))))))
   (let ((candidates (look-context-candidates lc)))
     (if (or (= 0 (string-length (look-context-left lc)))
             (<= (length candidates) (look-context-nth lc)))
         ""
-        (string-append "\n"
-                       (eb-search-text (look-context-eb-ctx lc)
-                                       (string-append
-                                        (look-context-left lc)
-                                        (nth (look-context-nth lc) candidates)))))))
+        (eb-format-entry (eb-search-text (look-context-eb-ctx lc)
+                                         (string-append
+                                          (look-context-left lc)
+                                          (nth (look-context-nth lc) candidates)))
+                         look-eb-show-lines))))
 
 
 (define (look-update-preedit lc)

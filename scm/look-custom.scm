@@ -71,6 +71,17 @@
                  (lambda ()
                    look-use-eb?))
 
+(define-custom 'look-eb-show-lines 2
+  '(look)
+  '(integer 1 65535)
+  (N_ "[Look] Show annotation of lines")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'look-eb-show-lines
+                 'custom-activity-hooks
+                 (lambda ()
+                   look-use-eb?))
+
 (define-custom 'look-beginning-character-length 1
   '(look)
   '(integer 1 65535)
