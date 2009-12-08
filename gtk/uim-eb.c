@@ -40,13 +40,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <iconv.h>
+#include <gettext.h>
 #include <eb/eb.h>
 #include <eb/text.h>
 #include <eb/font.h>
 #include <eb/binary.h>
 #include <eb/error.h>
 
+#include "uim.h"
+#include "uim-util.h"
+#include "uim-notify.h"
+
 #include "uim-eb.h"
+
 
 #define MAX_HITS   10
 #define MAX_TEXT   1000
@@ -60,9 +67,32 @@ struct _uim_eb {
 
 static void go_text_eb (uim_eb *ueb,
 			EB_Position position,
-			GString *str);
+			char **str);
 
 static unsigned int eb_ref_count = 0;
+
+static int
+uim_eb_strappend(char **dest, const char *append, size_t append_len)
+{
+  if (*dest) {
+    char *str;
+    size_t dest_len = strlen(*dest);
+    size_t len = dest_len + append_len;
+
+    str = uim_realloc(*dest, len + 1);
+    memcpy(&str[dest_len], append, append_len);
+    str[len] = '\0';
+    *dest = str;
+  } else {
+    char *str;
+
+    str = uim_malloc(append_len + 1);
+    memcpy(str, append, append_len);
+    str[append_len] = '\0';
+    *dest = str;
+  }
+  return 1;
+}
 
 uim_eb *
 uim_eb_new (const char *bookpath)
@@ -70,26 +100,26 @@ uim_eb_new (const char *bookpath)
   uim_eb *ueb;
   EB_Error_Code err;
 
-  ueb = malloc(sizeof(uim_eb));
+  ueb = uim_malloc(sizeof(uim_eb));
   eb_ref_count++;
 
   err = eb_initialize_library();
   if (err != EB_SUCCESS)
-    fprintf(stderr, "failed to initialize EB library : error = %s\n",
-	    eb_error_message(err));
+    uim_notify_fatal(_("eb: failed to initialize EB library : error = %s\n"),
+	     eb_error_message(err));
 
   eb_initialize_book(&ueb->book);
 
   err = eb_bind(&ueb->book, bookpath);
   if (err != EB_SUCCESS) {
-    fprintf(stderr, "wrong bookpath\n");
+    uim_notify_fatal(N_("eb: wrong bookpath"));
     free(ueb);
     return NULL;
   }
 
   err = eb_subbook_list(&ueb->book, ueb->subCodes, &ueb->subCount);
   if (err != EB_SUCCESS) {
-    g_printerr("eb_subbook_list() failed\n");
+    uim_notify_fatal(N_("eb: eb_subbook_list() failed\n"));
     free(ueb);
     return NULL;
   }
@@ -113,22 +143,21 @@ uim_eb_destroy (uim_eb *ueb)
 }
 
 
-gchar *
-uim_eb_search_text (uim_eb *ueb, const gchar *text_utf8)
+char *
+uim_eb_search_text (uim_eb *ueb, const char *text_utf8)
 {
-  gchar *text;
+  char *text;
   int i;
-  gsize bytes_read, bytes_written;
-  GString *str;
+  char *str = NULL;
+  iconv_t cd;
 
   /* FIXME! check return value */
-  text = g_convert(text_utf8, strlen(text_utf8),
-		   "EUC-JP", "UTF-8",
-		   &bytes_read, &bytes_written,
-		   NULL);
-  g_return_val_if_fail(text, FALSE);
+  cd = (iconv_t)uim_iconv->create("EUC-JP", "UTF-8");
+  text = uim_iconv->convert(cd, text_utf8);
+  uim_iconv->release(cd);
 
-  str = g_string_new("");
+  if (!text)
+	  return NULL;
 
   for (i = 0; i < ueb->subCount; i++) {
     EB_Hit hits[MAX_HITS];
@@ -137,7 +166,7 @@ uim_eb_search_text (uim_eb *ueb, const gchar *text_utf8)
 
     /* specify subbook */
     if (eb_set_subbook(&ueb->book, ueb->subCodes[i]) != EB_SUCCESS) {
-      g_print("eb_set_subbook() failed\n"); continue;
+      uim_notify_fatal(N_("eb: eb_set_subbook() failed")); continue;
     }
 
     eb_search_word(&ueb->book, text);
@@ -146,19 +175,19 @@ uim_eb_search_text (uim_eb *ueb, const gchar *text_utf8)
       /*EB_Position headp = hits[j].heading;*/
       EB_Position textp = hits[j].text;
 
-      go_text_eb(ueb, textp, str);
-      g_string_append(str, "\n");
+      go_text_eb(ueb, textp, &str);
+      uim_eb_strappend(&str, "\n", sizeof("\n"));
     }
   }
 
-  g_free(text);
+  free(text);
 
-  return g_string_free(str, FALSE);
+  return str;
 }
 
 
 static void
-go_text_eb (uim_eb *ueb, EB_Position position, GString *str)
+go_text_eb (uim_eb *ueb, EB_Position position, char **str)
 {
   EB_Hookset hookset;
   char text[MAX_TEXT + 1];
@@ -167,19 +196,19 @@ go_text_eb (uim_eb *ueb, EB_Position position, GString *str)
   int i;
 
   if (eb_seek_text(&ueb->book, &position) != EB_SUCCESS) {
-    g_print("eb_seek_text error occurs");
+    uim_notify_fatal(N_("eb: eb_seek_text error occurs"));
     return;
   }
 
   eb_initialize_hookset(&hookset);
   for (i = 0; i < 1; i++) {
-    gchar *text_utf8;
-    gsize bytes_read, bytes_written;
+    char *text_utf8;
+    iconv_t cd;
 
     if (eb_read_text(&ueb->book, NULL, &hookset,
 		     NULL, MAX_TEXT, text, &text_length) != EB_SUCCESS) {
       bytes = 0;
-      g_print("eb_read_text : an error occurs.\n");
+      uim_notify_fatal(N_("eb_read_text : an error occurs"));
       return;
     }
 
@@ -188,12 +217,13 @@ go_text_eb (uim_eb *ueb, EB_Position position, GString *str)
       break;
 
     /* FIXME! check return value */
-    text_utf8 = g_convert(text, strlen(text),
-			  "UTF-8", "EUC-JP",
-			  &bytes_read, &bytes_written,
-			  NULL);
-    g_string_append(str, text_utf8);
-    g_free(text_utf8);
+    cd = (iconv_t)uim_iconv->create("UTF-8", "EUC-JP");
+    text_utf8 = uim_iconv->convert(cd, text);
+    uim_iconv->release(cd);
+
+    uim_eb_strappend(str, text_utf8, strlen(text_utf8));
+
+    free(text_utf8);
   }
   eb_finalize_hookset(&hookset);
 }

@@ -374,7 +374,7 @@ tree_selection_changed(GtkTreeSelection *selection,
   UIMCandWinGtk *cwin = UIM_CAND_WIN_GTK(data);
 
   if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
-    gchar *annotation = NULL;
+    char *annotation = NULL;
 #if HAVE_EBLIB
     /* FIXME! This is a ad-hoc solution to advance
        annotation related discussion. */
@@ -420,7 +420,7 @@ tree_selection_changed(GtkTreeSelection *selection,
 	cwin->sub_window.active = FALSE;
       }
     }
-    g_free(annotation);
+    free(annotation);
   } else {
     if (cwin->sub_window.window) {
       gtk_widget_hide(cwin->sub_window.window);

@@ -37,17 +37,11 @@
 #ifndef UIM_GTK_UIM_EB_H
 #define UIM_GTK_UIM_EB_H
 
-#include <gtk/gtk.h>
-
-G_BEGIN_DECLS
-
 typedef struct _uim_eb uim_eb;
 
 uim_eb *uim_eb_new         (const char *bookpath);
 char   *uim_eb_search_text (uim_eb *ueb,
-			    const gchar *text);
+			    const char *text);
 void    uim_eb_destroy     (uim_eb *ueb);
-
-G_END_DECLS
 
 #endif /* UIM_GTK_UIM_EB_H */
