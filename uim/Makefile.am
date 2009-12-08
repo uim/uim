@@ -176,7 +176,7 @@ endif
 if EB
 uim_plugin_LTLIBRARIES += libuim-eb.la
 libuim_eb_la_SOURCES = uim-eb.c uim-eb.h eb.c
-libuim_eb_la_LIBADD = @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
+libuim_eb_la_LIBADD = libuim-scm.la libuim.la @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
 		      @EBCONF_INTLLIBS@
 libuim_eb_la_LDFLAGS = -rpath $(uim_plugindir) -avoid-version -module \
 		       @EBCONF_PTHREAD_LDFLAGS@
