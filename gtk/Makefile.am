@@ -34,7 +34,7 @@ IM_UIM_SOURCES = \
 	compose.c compose.h text-util.c text-util.h
 
 if EB
-IM_UIM_SOURCES += ../uim/uim-eb.lo
+im_uim_la_LIBADD += ../uim/libuim_eb_la-uim-eb.lo
 endif
 
 noinst_PROGRAMS = gtk-rc-get-immodule-file
