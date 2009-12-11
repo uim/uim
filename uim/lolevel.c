@@ -38,6 +38,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <sys/types.h>
+#ifdef HAVE_MMAP
+#include <sys/mman.h>
+#endif
 
 #include "uim.h"
 #include "uim-scm.h"
@@ -45,6 +48,32 @@
 #include "uim-posix.h"
 #include "uim-notify.h"
 #include "dynlib.h"
+
+typedef struct {
+  int flag;
+  char *arg;
+} opt_args;
+
+static uim_lisp
+make_arg_cons(const opt_args *arg)
+{
+  return CONS(MAKE_SYM(arg->arg), MAKE_INT(arg->flag));
+}
+
+static uim_lisp
+make_arg_list(const opt_args *list)
+{
+  uim_lisp ret_;
+  int i = 0;
+
+  ret_ = uim_scm_null();
+  while (list[i].arg != 0) {
+    ret_ = CONS((uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)make_arg_cons,
+                                                           (void *)&list[i]), ret_);
+    i++;
+  }
+  return ret_;
+}
 
 static uim_lisp
 c_allocate(uim_lisp len_)
@@ -82,6 +111,67 @@ c_memory_move(uim_lisp dest_, uim_lisp src_, uim_lisp len_)
     memmove(C_PTR(dest_), C_PTR(src_), C_INT(len_));
   return uim_scm_t();
 }
+
+#ifdef HAVE_MMAP
+
+const static opt_args mmap_prot_flags[] = {
+  { PROT_EXEC,  "$PROT_EXEC"  },
+  { PROT_READ,  "$PROT_READ"  },
+  { PROT_WRITE, "$PROT_WRITE" },
+  { PROT_NONE,  "$PROT_NONE"  },
+  { 0, 0 }
+};
+
+static uim_lisp uim_lisp_mmap_prot_flags;
+static uim_lisp
+c_mmap_prot_flags(void)
+{
+  return uim_lisp_mmap_prot_flags;
+}
+
+const static opt_args mmap_flags[] = {
+#ifdef MAP_ANON
+  { MAP_ANON,      "$MAP_ANON"  },
+#endif
+#ifdef MAP_ANONYMOUS
+  { MAP_ANONYMOUS, "$MAP_ANONYMOUS" },
+#endif
+#ifdef MAP_FILE
+  { MAP_FILE,      "$MAP_FILE"  },
+#endif
+#ifdef MAP_FIXED
+  { MAP_FIXED,     "$MAP_FIXED" },
+#endif
+  { MAP_PRIVATE,   "$MAP_PRIVATE"  },
+  { MAP_SHARED,    "$MAP_SHARED"  },
+  { MAP_COPY,      "$MAP_COPY"  },
+  { 0, 0 }
+};
+
+static uim_lisp uim_lisp_mmap_flags;
+static uim_lisp
+c_mmap_flags(void)
+{
+  return uim_lisp_mmap_flags;
+}
+
+static uim_lisp
+c_mmap(uim_lisp addr_, uim_lisp len_, uim_lisp prot_flags_, uim_lisp fd_, uim_lisp offset_)
+{
+  void *p = mmap(C_PTR(addr_), C_INT(len_), C_INT(CAR(prot_flags_)), C_INT(CDR(prot_flags_)), C_INT(fd_), C_INT(offset_));
+
+  if (p == MAP_FAILED)
+    return uim_scm_f();
+  return MAKE_PTR(p);
+}
+
+static uim_lisp
+c_munmap(uim_lisp addr_, uim_lisp len_)
+{
+  return MAKE_INT(munmap(C_PTR(addr_), C_INT(len_)));
+}
+
+#endif
 
 static uim_lisp
 c_null_pointer(void)
@@ -297,6 +387,18 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc3("memory-fill!", c_memory_fill);
   uim_scm_init_proc3("memory-move!", c_memory_move);
 
+#ifdef HAVE_MMAP
+  uim_lisp_mmap_prot_flags = make_arg_list(mmap_prot_flags);
+  uim_scm_gc_protect(&uim_lisp_mmap_prot_flags);
+  uim_scm_init_proc0("mmap-prot-flags?", c_mmap_prot_flags);
+  uim_lisp_mmap_flags = make_arg_list(mmap_flags);
+  uim_scm_gc_protect(&uim_lisp_mmap_flags);
+  uim_scm_init_proc0("mmap-flags?", c_mmap_flags);
+
+  uim_scm_init_proc5("mmap", c_mmap);
+  uim_scm_init_proc2("munmap", c_munmap);
+#endif
+
   uim_scm_init_proc0("null-pointer", c_null_pointer);
 
   uim_scm_init_proc2("pointer-offset", c_pointer_offset);
@@ -357,4 +459,8 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+#ifdef HAVE_MMAP
+  uim_scm_gc_unprotect(&uim_lisp_mmap_prot_flags);
+  uim_scm_gc_unprotect(&uim_lisp_mmap_flags);
+#endif
 }
