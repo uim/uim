@@ -90,3 +90,17 @@
   (map integer->char l))
 (define (string-buf->u8list l)
   (map char->integer l))
+
+(define (call-jit ret l args)
+  (and-let* ((anon-flag (or (assq-cdr '$MAP_ANONYMOUS (mmap-flags?))
+                            (assq-cdr '$MAP_ANON (mmap-flags?))))
+             (function-pointer (u8list->pointer l))
+             (mapped (mmap function-pointer (length l)
+                           (cons (assq-cdr '$PROT_EXEC (mmap-prot-flags?))
+                                 anon-flag)
+                           -1
+                           0))
+             (ret (ffi-call ret function-pointer args)))
+     (munmap mapped (length l))
+     (free function-pointer)
+     ret))
