@@ -1321,7 +1321,7 @@ AC_ARG_ENABLE(kde4-applet,
             @<:@default=yes@:>@]),
         enable_kde4_applet=$enableval,
         enable_kde4_applet=yes)
-case "$enable_kde_applet" in
+case "$enable_kde4_applet" in
   no)
     use_applet_kde4="no"
     ;;
