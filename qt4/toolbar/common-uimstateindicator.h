@@ -70,6 +70,7 @@ protected:
 
 signals:
     void indicatorResized();
+    void menuRequested( QMenu *menu );
 
 public slots:
     void slotStdinActivated( int socket );
@@ -91,14 +92,17 @@ private:
 
 class QHelperToolbarButton : public QToolButton
 {
+    Q_OBJECT
 public:
-    explicit QHelperToolbarButton( QWidget *parent = 0 )
-        : QToolButton( parent ){ setAutoRaise( true ); }
+    explicit QHelperToolbarButton( QWidget *parent = 0 );
 
-    QSize sizeHint() const
-    {
-        return QSize( BUTTON_SIZE, BUTTON_SIZE );
-    }
+    QSize sizeHint() const;
+
+signals:
+    void menuRequested( QMenu *menu );
+
+private:
+    void mousePressEvent( QMouseEvent *event );
 };
 
 class QHelperPopupMenu : public QMenu

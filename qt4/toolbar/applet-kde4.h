@@ -50,6 +50,7 @@ class UimApplet : public Plasma::PopupApplet
 
     private slots:
         void slotToolbarResized();
+        void slotMenuRequested(QMenu *menu);
 
     private:
         void initPopup();

@@ -80,6 +80,7 @@ protected slots:
 signals:
     void quitToolbar();
     void toolbarResized();
+    void menuRequested( QMenu *menu );
 
 protected:
     UimStateIndicator *m_indicator;
