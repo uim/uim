@@ -61,6 +61,8 @@ void UimApplet::init()
     m_toolbar->setAttribute(Qt::WA_NoSystemBackground);
     connect(m_toolbar, SIGNAL(toolbarResized()),
             this, SLOT(slotToolbarResized()));
+    connect(m_toolbar, SIGNAL(menuRequested(QMenu*)),
+            this, SLOT(slotMenuRequested(QMenu*)));
 
     m_proxy = new QGraphicsProxyWidget;
     m_proxy->setWidget(m_toolbar);
@@ -113,6 +115,12 @@ void UimApplet::slotToolbarResized()
     lr += (left + right);
     tb += (top + bottom);
     resize(m_toolbar->width() + lr, m_toolbar->height() + tb);
+}
+
+void UimApplet::slotMenuRequested(QMenu *menu)
+{
+    menu->adjustSize();
+    menu->exec(popupPosition(menu->size()));
 }
 
 QGraphicsWidget *UimApplet::graphicsWidget()

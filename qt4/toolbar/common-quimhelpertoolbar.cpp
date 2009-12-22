@@ -56,7 +56,10 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     m_indicator = new UimStateIndicator( this );
     m_layout->addWidget( m_indicator );
 
-    connect( m_indicator, SIGNAL( indicatorResized() ), this, SLOT( slotIndicatorResized() ) );
+    connect( m_indicator, SIGNAL( indicatorResized() ),
+        this, SLOT( slotIndicatorResized() ) );
+    connect( m_indicator, SIGNAL( menuRequested( QMenu* ) ),
+        this, SIGNAL( menuRequested( QMenu* ) ) );
 
     QPixmap swicon = QPixmap( ICONDIR + "/im_switcher.png" );
     QPixmap preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
@@ -87,7 +90,7 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     exiticon = QPixmap::fromImage( exitimage.scaled( ICON_SIZE, ICON_SIZE,
         Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
 
-    m_contextMenu = new QMenu( this );
+    m_contextMenu = new QMenu( isApplet ? 0 : this );
     m_contextMenu->addAction( m_swicon, _("Switch input method"),
         this, SLOT(slotExecImSwitcher()) );
     m_contextMenu->addAction( m_preficon, _("Preference"),
@@ -129,8 +132,13 @@ void QUimHelperToolbar::contextMenuEvent( QContextMenuEvent * e )
 {
     if( m_contextMenu->isHidden() )
     {
+#ifdef PLASMA_APPLET_UIM
+        Q_UNUSED( e );
+        emit menuRequested( m_contextMenu );
+#else
         m_contextMenu->move( e->globalPos() );
         m_contextMenu->exec();
+#endif
     }
 }
 

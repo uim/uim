@@ -3,7 +3,7 @@ project(plasma-uim)
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} -DPLASMA_APPLET_UIM)
 include_directories(${KDE4_INCLUDES}
         ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../uim
         ${CMAKE_SOURCE_DIR}/../../replace ${CMAKE_SOURCE_DIR}/..)

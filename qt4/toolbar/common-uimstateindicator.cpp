@@ -40,6 +40,7 @@
 #include <QtCore/QTextCodec>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QImage>
+#include <QtGui/QMouseEvent>
 #include <QtGui/QPixmap>
 
 #include <cstring>
@@ -171,11 +172,17 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 button->setToolTip( fields[ 3 ] );
 
                 // create popup
+#ifdef PLASMA_APPLET_UIM
+                popupMenu = new QHelperPopupMenu( 0 );
+#else
                 popupMenu = new QHelperPopupMenu( button );
+#endif
                 connect( popupMenu, SIGNAL( aboutToShow() ),
                     this, SLOT( slotPopupMenuAboutToShow() ) );
                 connect( popupMenu, SIGNAL( aboutToHide() ),
                     this, SLOT( slotPopupMenuAboutToHide() ) );
+                connect( button, SIGNAL( menuRequested( QMenu* ) ),
+                    this, SIGNAL( menuRequested( QMenu* ) ) );
                 button->setMenu( popupMenu );
                 button->setPopupMode( QToolButton::InstantPopup );
 
@@ -261,6 +268,28 @@ void UimStateIndicator::clearButtons()
         m_layout->removeWidget( button );
         delete button;
     }
+}
+
+/**/
+QHelperToolbarButton::QHelperToolbarButton( QWidget *parent )
+    : QToolButton( parent )
+{
+    setAutoRaise( true );
+}
+
+QSize QHelperToolbarButton::sizeHint() const
+{
+    return QSize( BUTTON_SIZE, BUTTON_SIZE );
+}
+
+void QHelperToolbarButton::mousePressEvent( QMouseEvent *event )
+{
+#ifdef PLASMA_APPLET_UIM
+    if ( event->button() == Qt::LeftButton )
+        emit menuRequested( menu() );
+#else
+    QToolButton::mousePressEvent( event );
+#endif
 }
 
 /**/
