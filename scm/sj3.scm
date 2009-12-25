@@ -113,7 +113,8 @@
 (define (sj3-lib-get-nth-candidate-without-muhenkan sc seg nth)
   (let* ((yomi (sj3-get-nth-yomi sc seg))
          (cnt (sj3-lib-funcall sc sj3-lib-douoncnt yomi)))
-    (if (< nth cnt)
+    (if (and (< nth cnt)
+             (<= 0 nth))
         ;; henkan
         (cons (sj3-lib-get-nth-candidate sc seg nth) #t)
         ;; muhenkan
