@@ -35,6 +35,7 @@
 #include <string.h>
 #include <openssl/crypto.h>
 #include <openssl/ssl.h>
+#include <openssl/rand.h>
 #include <openssl/err.h>
 
 #include "uim.h"
@@ -130,6 +131,15 @@ c_SSL_set_fd(uim_lisp s_, uim_lisp fd_)
 static uim_lisp
 c_SSL_connect(uim_lisp s_)
 {
+
+  RAND_poll();
+  srand(time(NULL));
+
+  while (RAND_status() == 0) {
+    unsigned short seed = (unsigned short)rand();
+
+    RAND_seed(&seed, sizeof(seed));
+  }
   return MAKE_INT(SSL_connect(C_PTR(s_)));
 }
 
