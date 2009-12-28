@@ -22,5 +22,5 @@ SOURCES += @srcdir@/qt4.cpp
 
 TARGET = uim-candwin-qt4
 
-target.path += @DESTDIR@@exec_prefix@/libexec
+target.path += @DESTDIR@@libexecdir@
 INSTALLS    += target
