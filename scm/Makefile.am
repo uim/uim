@@ -51,7 +51,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  sqlite3.scm \
  lolevel.scm \
  input-parse.scm match.scm \
- http-client.scm http-server.scm
+ http-client.scm http-server.scm \
+ sxml-tools.scm sxpathlib.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 
