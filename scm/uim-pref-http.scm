@@ -28,6 +28,12 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require "sxml-tools.scm")
+(require "sxpathlib.scm")
+(require "http-server.scm")
+(require "i18n.scm")
+(require "util.scm")
+
 (module-load "custom-enabler")
 
 (define (write-tree tree out)
