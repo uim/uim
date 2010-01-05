@@ -144,7 +144,9 @@ const static opt_args mmap_flags[] = {
 #endif
   { MAP_PRIVATE,   "$MAP_PRIVATE"  },
   { MAP_SHARED,    "$MAP_SHARED"  },
+#ifdef MAP_COPY
   { MAP_COPY,      "$MAP_COPY"  },
+#endif
   { 0, 0 }
 };
 
