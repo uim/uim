@@ -127,7 +127,7 @@ uim_x_kana_input_hack_init(Display *display)
 
   if (keysyms_per_keycode >= SHIFTED_KEYSYM_INDEX + 1) {
     for (i = 0, syms = map;
-	 i <= keycode_count;
+	 i < keycode_count;
 	 i++, syms += keysyms_per_keycode)
     {
       unmodified = syms[UNMODIFIED_KEYSYM_INDEX];
