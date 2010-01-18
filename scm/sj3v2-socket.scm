@@ -55,59 +55,59 @@
 (define $SJ3_CLSTUDY_EUC    117)
 
 (define sj3-lib-error-str-alist
-  '((-1  . (N_ "Internal server error."))    ;; SJ3_InternalError
-    (0   . (N_ "No error."))                 ;; SJ3_NormalEnd
-    (1   . (N_ "Serverdown."))               ;; SJ3_ServerDown
-    (2   . (N_ "Cannot open socket."))       ;; SJ3_OpenSocket
-    (3   . (N_ "Cannot connect socket."))    ;; SJ3_ConnectSocket
-    (4   . (N_ "Unknown hostname."))         ;; SJ3_GetHostByName
-    (5   . (N_ "Not opened."))               ;; SJ3_NotOpened
-    (6   . (N_ "Not enough memory."))        ;; SJ3_NotEnoughMemory
-    (7   . (N_ "Illegal command."))          ;; SJ3_IllegalCommand
-    (11  . (N_ "Different version."))        ;; SJ3_DifferentVersion
-    (12  . (N_ "No host name."))             ;; SJ3_NoHostName
-    (13  . (N_ "No user name."))             ;; SJ3_NoUserName
-    (14  . (N_ "User not allowd."))          ;; SJ3_NotAllowedUser
-    (15  . (N_ "Already connected."))        ;; SJ3_AlreadyConnected
-    (16  . (N_ "Not connected."))            ;; SJ3_NotConnected
-    (21  . (N_ "Too long parameter."))       ;; SJ3_TooLongParameter
-    (22  . (N_ "Illegal parameter."))        ;; SJ3_IllegalParameter
-    (31  . (N_ "Bad dictionary ID."))        ;; SJ3_BadDictID
-    (32  . (N_ "Illegal dictionary file."))  ;; SJ3_IllegalDictFile
-    (33  . (N_ "Illegal study file."))       ;; SJ3_IllegalStdyFile
-    (34  . (N_ "Incorrect password."))       ;; SJ3_IncorrectPasswd
-    (35  . (N_ "File not exist."))           ;; SJ3_FileNotExist
-    (36  . (N_ "Cannot access file."))       ;; SJ3_CannotAccessFile
-    (37  . (N_ "Cannot open file."))         ;; SJ3_CannotOpenFile
-    (38  . (N_ "Cannot create file."))       ;; SJ3_CannotCreateFile
-    (39  . (N_ "File read error."))          ;; SJ3_FileReadError
-    (40  . (N_ "File write error."))         ;; SJ3_FileWriteError
-    (41  . (N_ "File seek error."))          ;; SJ3_FileSeekError
-    (51  . (N_ "Study already opened."))     ;; SJ3_StdyAlreadyOpened
-    (52  . (N_ "Study file not opened."))    ;; SJ3_StdyFileNotOpened
-    (53  . (N_ "Too small study area."))     ;; SJ3_TooSmallStdyArea
-    (61  . (N_ "Locked by other."))          ;; SJ3_LockedByOther
-    (62  . (N_ "Not locked."))               ;; SJ3_NotLocked
-    (71  . (N_ "No such dictionary."))       ;; SJ3_NoSuchDict
-    (72  . (N_ "Dictionary is read only."))  ;; SJ3_ReadOnlyDict
-    (73  . (N_ "Dictionary is locked."))     ;; SJ3_DictLocked
-    (74  . (N_ "Yomi string is bad."))       ;; SJ3_BadYomiString
-    (75  . (N_ "Kanji string is bad."))      ;; SJ3_BadKanjiString
-    (76  . (N_ "Hinshi code is bad."))       ;; SJ3_BadHinsiCode
-    (81  . (N_ "Add dictionary failed."))    ;; SJ3_AddDictFailed
-    (82  . (N_ "Word is already exist."))    ;; SJ3_AlreadyExistWord
-    (83  . (N_ "No more douon word."))       ;; SJ3_NoMoreDouonWord
-    (84  . (N_ "No more user dictionary."))  ;; SJ3_NoMoreUserDict
-    (85  . (N_ "No more index block"))       ;; SJ3_NoMoreIndexBlock
-    (91  . (N_ "Delete dictionary failed.")) ;; SJ3_DelDictFailed
-    (92  . (N_ "No such word."))             ;; SJ3_NoSuchWord
-    (101 . (N_ "Directory already exist."))  ;; SJ3_DirAlreadyExist
-    (102 . (N_ "Cannot create directory."))  ;; SJ3_CannotCreateDir
-    (111 . (N_ "No more dictionary data."))  ;; SJ3_NoMoreDictData
-    (121 . (N_ "User connected."))           ;; SJ3_UserConnected
-    (131 . (N_ "Too long password."))        ;; SJ3_TooLongPasswd
-    (132 . (N_ "Too long comment."))         ;; SJ3_TooLongComment
-    (133 . (N_ "Cannot code convert."))))    ;; SJ3_CannotCodeConvert
+  `((-1  . ,(N_ "Internal server error."))    ;; SJ3_InternalError
+    (0   . ,(N_ "No error."))                 ;; SJ3_NormalEnd
+    (1   . ,(N_ "Serverdown."))               ;; SJ3_ServerDown
+    (2   . ,(N_ "Cannot open socket."))       ;; SJ3_OpenSocket
+    (3   . ,(N_ "Cannot connect socket."))    ;; SJ3_ConnectSocket
+    (4   . ,(N_ "Unknown hostname."))         ;; SJ3_GetHostByName
+    (5   . ,(N_ "Not opened."))               ;; SJ3_NotOpened
+    (6   . ,(N_ "Not enough memory."))        ;; SJ3_NotEnoughMemory
+    (7   . ,(N_ "Illegal command."))          ;; SJ3_IllegalCommand
+    (11  . ,(N_ "Different version."))        ;; SJ3_DifferentVersion
+    (12  . ,(N_ "No host name."))             ;; SJ3_NoHostName
+    (13  . ,(N_ "No user name."))             ;; SJ3_NoUserName
+    (14  . ,(N_ "User not allowd."))          ;; SJ3_NotAllowedUser
+    (15  . ,(N_ "Already connected."))        ;; SJ3_AlreadyConnected
+    (16  . ,(N_ "Not connected."))            ;; SJ3_NotConnected
+    (21  . ,(N_ "Too long parameter."))       ;; SJ3_TooLongParameter
+    (22  . ,(N_ "Illegal parameter."))        ;; SJ3_IllegalParameter
+    (31  . ,(N_ "Bad dictionary ID."))        ;; SJ3_BadDictID
+    (32  . ,(N_ "Illegal dictionary file."))  ;; SJ3_IllegalDictFile
+    (33  . ,(N_ "Illegal study file."))       ;; SJ3_IllegalStdyFile
+    (34  . ,(N_ "Incorrect password."))       ;; SJ3_IncorrectPasswd
+    (35  . ,(N_ "File not exist."))           ;; SJ3_FileNotExist
+    (36  . ,(N_ "Cannot access file."))       ;; SJ3_CannotAccessFile
+    (37  . ,(N_ "Cannot open file."))         ;; SJ3_CannotOpenFile
+    (38  . ,(N_ "Cannot create file."))       ;; SJ3_CannotCreateFile
+    (39  . ,(N_ "File read error."))          ;; SJ3_FileReadError
+    (40  . ,(N_ "File write error."))         ;; SJ3_FileWriteError
+    (41  . ,(N_ "File seek error."))          ;; SJ3_FileSeekError
+    (51  . ,(N_ "Study already opened."))     ;; SJ3_StdyAlreadyOpened
+    (52  . ,(N_ "Study file not opened."))    ;; SJ3_StdyFileNotOpened
+    (53  . ,(N_ "Too small study area."))     ;; SJ3_TooSmallStdyArea
+    (61  . ,(N_ "Locked by other."))          ;; SJ3_LockedByOther
+    (62  . ,(N_ "Not locked."))               ;; SJ3_NotLocked
+    (71  . ,(N_ "No such dictiona2y."))       ;; SJ3_NoSuchDict
+    (72  . ,(N_ "Dictionary is read only."))  ;; SJ3_ReadOnlyDict
+    (73  . ,(N_ "Dictionary is locked."))     ;; SJ3_DictLocked
+    (74  . ,(N_ "Yomi string is bad."))       ;; SJ3_BadYomiString
+    (75  . ,(N_ "Kanji string is bad."))      ;; SJ3_BadKanjiString
+    (76  . ,(N_ "Hinshi code is bad."))       ;; SJ3_BadHinsiCode
+    (81  . ,(N_ "Add dictionary failed."))    ;; SJ3_AddDictFailed
+    (82  . ,(N_ "Word is already exist."))    ;; SJ3_AlreadyExistWord
+    (83  . ,(N_ "No more douon word."))       ;; SJ3_NoMoreDouonWord
+    (84  . ,(N_ "No more user dictionary."))  ;; SJ3_NoMoreUserDict
+    (85  . ,(N_ "No more index block"))       ;; SJ3_NoMoreIndexBlock
+    (91  . ,(N_ "Delete dictionary failed.")) ;; SJ3_DelDictFailed
+    (92  . ,(N_ "No such word."))             ;; SJ3_NoSuchWord
+    (101 . ,(N_ "Directory already exist."))  ;; SJ3_DirAlreadyExist
+    (102 . ,(N_ "Cannot create directory."))  ;; SJ3_CannotCreateDir
+    (111 . ,(N_ "No more dictionary data."))  ;; SJ3_NoMoreDictData
+    (121 . ,(N_ "User connected."))           ;; SJ3_UserConnected
+    (131 . ,(N_ "Too long password."))        ;; SJ3_TooLongPasswd
+    (132 . ,(N_ "Too long comment."))         ;; SJ3_TooLongComment
+    (133 . ,(N_ "Cannot code convert."))))    ;; SJ3_CannotCodeConvert
 
 
 (define sj3-protocol-version 2)
