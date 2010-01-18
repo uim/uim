@@ -49,13 +49,10 @@
 ;;
 (define (sj3-lib-init server)
   (if sj3-use-remote-server?
-      (sj3-lib-open server sj3-user)
-      (sj3-lib-open "" sj3-user)))
+      (sj3-lib-funcall #f sj3-lib-open server sj3-user)
+      (sj3-lib-funcall #f sj3-lib-open "" sj3-user)))
 
 ;; error recovery
-(define (sj3-lib-error? result)
-  (and (pair? result)
-       (eq? (car result) 'error)))
 (define (sj3-connect-wait sc w)
   (let ((stime (time)))
     (let loop ((now (time)))
@@ -74,26 +71,31 @@
   (set! sj3-init-lib-ok? #f)
   (sj3-cancel-conv sc)
   (let loop ((fib1 1) (fib2 1))
-    (if (sj3-lib-error? (sj3-lib-init sj3-server-name))
-        (begin
-          (uim-notify-info (N_ "Reconnecting to sj3 server."))
-          (im-clear-preedit sc)
-          (im-pushback-preedit
-           sc preedit-reverse
-           (N_ "[Reconnecting...]"))
-          (im-update-preedit sc)
-          (sleep 1)
-          (sj3-connect-wait sc fib1)
-          (loop fib2 (+ fib1 fib2)))
-        (set! sj3-init-lib-ok? #t))))
+    (uim-notify-info (N_ "Reconnecting to sj3 server."))
+    (guard (err (else
+                 (uim-notify-info (N_ "Reconnecting to sj3 server."))
+                 (im-clear-preedit sc)
+                 (im-pushback-preedit
+                  sc preedit-reverse
+                  (N_ "[Reconnecting...]"))
+                 (im-update-preedit sc)
+                 (sleep 1)
+                 (sj3-connect-wait sc fib1)
+                 (loop fib2 (+ fib1 fib2))))
+           (sj3-lib-init sj3-server-name))
+    (set! sj3-init-lib-ok? #t)))
 (define (sj3-lib-funcall sc f . args)
-  (let ((ret (apply f args)))
-    (if (sj3-lib-error? ret)
-        (begin (if sj3-init-lib-ok?
-                   (sj3-lib-close))
-               (sj3-connect-retry sc)
-               (apply f args))
-        ret)))
+  (or
+   (guard (err (else #f))
+          (apply f args))
+   (begin
+     (if sj3-init-lib-ok?
+         (guard (close-err
+                 (else
+                  #f))
+                (sj3-lib-close)))
+     (sj3-connect-retry sc)
+     (apply f args))))
 
 (define (sj3-lib-alloc-context)
   #t)
