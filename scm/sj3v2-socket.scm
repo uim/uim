@@ -379,7 +379,8 @@
   (set! *sj3-lib-socket* (sj3-lib-open-with-server server))
   (if *sj3-lib-socket*
       (begin
-        (sj3-lib-connect *sj3-lib-socket* user-name)
+        (if (not (sj3-lib-connect *sj3-lib-socket* user-name))
+            (raise (N_ "Cannot connect SJ3 server")))
         (set! *sj3-lib-main-dict* (sj3-lib-opendict *sj3-lib-socket* "sj3main.dic" ""))
         (if (not (sj3-lib-access? *sj3-lib-socket* (sj3-lib-get-private-path user-name) 0))
             (begin
@@ -391,7 +392,8 @@
         (set! *sj3-lib-user-dict*
               (sj3-lib-opendict *sj3-lib-socket* (sj3-lib-get-private-dicionary-name user-name) ""))
         (sj3-lib-openstdy *sj3-lib-socket* (sj3-lib-get-private-study-name user-name))
-        (set! *sj3-lib-stdy-size* (sj3-lib-stdy-size *sj3-lib-socket*))))
+        (set! *sj3-lib-stdy-size* (sj3-lib-stdy-size *sj3-lib-socket*)))
+      (raise (N_ "Cannot connect SJ3 server")))
   *sj3-lib-socket*)
 
 (define (sj3-lib-close)
