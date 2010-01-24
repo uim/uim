@@ -279,7 +279,8 @@ libuim_counted_init_la_CPPFLAGS = -I$(top_srcdir)
 if LIBUIM_X_UTIL
 libuim_x_util_la_SOURCES = uim-x-util.h uim-x-kana-input-hack.c
 libuim_x_util_la_CPPFLAGS = -I$(top_srcdir)
-libuim_x_util_la_CFLAGS = @X_CFLAGS@
+libuim_x_util_la_CFLAGS = @X11_CFLAGS@
+libuim_x_util_la_LIBADD = @X11_LIBS@
 endif
 
 

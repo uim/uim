@@ -72,6 +72,7 @@ uim_toolbar_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
 uim_toolbar_gtk_systray_SOURCES  = toolbar-systray-gtk.c toolbar-common-gtk.c \
 				   eggtrayicon.c eggtrayicon.h
 uim_toolbar_gtk_systray_LDADD    = @GTK2_LIBS@ \
+				   @X11_LIBS@ \
 				   $(top_builddir)/uim/libuim-scm.la \
 				   $(top_builddir)/uim/libuim.la
 uim_toolbar_gtk_systray_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
