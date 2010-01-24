@@ -219,7 +219,7 @@ uim_notify_fatal_raw(const char *msg)
  * Scheme interfaces
  */
 static uim_lisp
-notify_get_plugins(void)
+notify_get_plugins_internal(void)
 {
   uim_lisp ret_;
   DIR *dirp;
@@ -278,6 +278,13 @@ notify_get_plugins(void)
     (void)closedir(dirp);
   }
   return uim_scm_callf("reverse", "o", ret_);
+}
+
+static uim_lisp
+notify_get_plugins(void)
+{
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)notify_get_plugins_internal,
+						    NULL);
 }
 
 static uim_lisp
