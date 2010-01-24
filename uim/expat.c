@@ -54,18 +54,28 @@ typedef struct {
   uim_xml_userdata *data;
 } uim_xml_ctx;
 
+static uim_lisp
+xml_start_element_handler_internal(const XML_Char *atts[])
+{
+  uim_lisp atts_ = uim_scm_null();
+
+  while (*atts != '\0') {
+    atts_ = CONS(CONS(MAKE_STR(*atts), MAKE_STR(*(atts + 1))), atts_);
+    atts += 2;
+  }
+  return atts_;
+}
+
 static void
 xml_start_element_handler(void *userData, const XML_Char *name, const XML_Char *atts[])
 {
   uim_xml_userdata *data = (uim_xml_userdata *)userData;
 
   if (data && data->start_) {
-    uim_lisp atts_ = uim_scm_null();
+    uim_lisp atts_;
 
-    while (*atts != '\0') {
-      atts_ = CONS(CONS(MAKE_STR(*atts), MAKE_STR(*(atts + 1))), atts_);
-      atts += 2;
-    }
+    atts_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)xml_start_element_handler_internal,
+						       (void *)atts);
 
     atts_ = uim_scm_callf("reverse", "o", atts_);
 
