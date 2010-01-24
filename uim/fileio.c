@@ -274,6 +274,24 @@ c_file_poll_flags(void)
   return uim_lisp_poll_flags;
 }
 
+struct c_file_poll_args {
+  struct pollfd *fds;
+  int nfds;
+};
+
+static uim_lisp
+c_file_poll_internal(struct c_file_poll_args *args)
+{
+  int i;
+  uim_lisp ret_ = uim_scm_null();
+  struct pollfd *fds = args->fds;
+
+  for (i = 0; i < args->nfds; i++)
+    if (fds[i].revents != 0)
+      ret_ = CONS(CONS(MAKE_INT(fds[i].fd), MAKE_INT(fds[i].revents)), ret_);
+  return ret_;
+}
+
 static uim_lisp
 c_file_poll(uim_lisp fds_, uim_lisp timeout_)
 {
@@ -284,6 +302,7 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
   int i;
   int ret;
   uim_lisp ret_;
+  struct c_file_poll_args args;
 
   fds = uim_calloc(nfds, sizeof(struct pollfd));
 
@@ -300,12 +319,10 @@ c_file_poll(uim_lisp fds_, uim_lisp timeout_)
   else if (ret == 0)
     return uim_scm_null();
 
-  ret_ = uim_scm_null();
-
-  for (i = 0; i < nfds; i++)
-    if (fds[i].revents != 0)
-      ret_ = CONS(CONS(MAKE_INT(fds[i].fd), MAKE_INT(fds[i].revents)), ret_);
-
+  args.fds = fds;
+  args.nfds = nfds;
+  ret_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)c_file_poll_internal,
+						    (void *)&args);
   free(fds);
   return uim_scm_callf("reverse", "o", ret_);
 }
