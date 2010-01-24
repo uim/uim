@@ -261,16 +261,31 @@ c_Xlist_to_pointer(s64, int64_t)
 c_Xlist_to_pointer(u64, uint64_t)
 
 #define c_pointer_to_Xlist(X, type)					\
+  struct c__pointer_to_ ## X ## list_args {				\
+    type *pointer;							\
+    int len;								\
+  };									\
+									\
+  static uim_lisp							\
+  c_pointer_to_ ## X ## list_internal(struct c__pointer_to_ ## X ## list_args *args) \
+  {									\
+      uim_lisp ret_ = uim_scm_null();					\
+      int i;								\
+      type *p = args->pointer;						\
+      									\
+      for (i = 0; i < args->len; i++)					\
+	ret_ = CONS(MAKE_INT(*p++), ret_);				\
+      return ret_;							\
+  }									\
   static uim_lisp							\
   c_pointer_to_ ## X ## list(uim_lisp pointer_, uim_lisp len_)		\
   {									\
-    uim_lisp ret_ = uim_scm_null();					\
-    type *p = C_PTR(pointer_);						\
-    int len = C_INT(len_);						\
-    int i;								\
+    uim_lisp ret_;							\
+    struct c__pointer_to_ ## X ## list_args args;			\
 									\
-    for (i = 0; i < len; i++)						\
-      ret_ = CONS(MAKE_INT(*p++), ret_);				\
+    args.pointer = C_PTR(pointer_);					\
+    args.len = C_INT(len_);						\
+    ret_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)c_pointer_to_ ## X ## list_internal, (void *)&args); \
     return uim_scm_callf("reverse", "o", ret_);				\
   }
 
