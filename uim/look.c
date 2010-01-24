@@ -41,15 +41,42 @@
 
 #include "bsdlook.h"
 
+struct uim_look_look_interal_args {
+  uim_look_ctx *ctx;
+  char *dict_str;
+  int words;
+};
+
+static uim_lisp
+uim_look_look_interal(struct uim_look_look_interal_args *args)
+{
+  uim_lisp ret_ = uim_scm_null();
+  int words = args->words;
+  char buf[1024];
+  size_t len = strlen(args->dict_str);
+
+  while (uim_look_get(args->dict_str, buf, sizeof(buf), args->ctx) != 0) {
+    /* don't use the word itself */
+    if (strcasecmp(buf, args->dict_str) == 0)
+      continue;
+    if (len < strlen(buf))
+      ret_ = CONS(MAKE_STR(buf + len), ret_);
+    if (words != -1) {
+      words--;
+      if (words == 0)
+	break;
+    }
+  }
+  return ret_;
+}
+
 static uim_lisp
 uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp words_, uim_lisp dict_, uim_lisp str_)
 {
   const char *dict = REFER_C_STR(dict_);
   const char *str = REFER_C_STR(str_);
   uim_look_ctx *ctx;
-  char buf[1024];
   char *dict_str;
-  size_t len;
   uim_lisp ret_ = uim_scm_f();
   int words = -1;
 
@@ -65,26 +92,21 @@ uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp words_, uim_lisp dict
     return ret_;
 
   dict_str = uim_strdup(str);
-  len = strlen(str);
 
   if (INTP(words_))
     words = C_INT(words_);
 
   ret_ = uim_scm_null();
   if (uim_look(dict_str, ctx) != 0) {
+    struct uim_look_look_interal_args args;
+
     uim_look_set(ctx);
-    while (uim_look_get(dict_str, buf, sizeof(buf), ctx) != 0) {
-      /* don't use the word itself */
-      if (strcasecmp(buf, dict_str) == 0)
-	continue;
-      if (len < strlen(buf))
-	ret_ = CONS(MAKE_STR(buf + len), ret_);
-      if (words != -1) {
-	words--;
-	if (words == 0)
-	  break;
-      }
-    }
+
+    args.ctx = ctx;
+    args.dict_str = dict_str;
+    args.words = words;
+    ret_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_look_look_interal,
+						      (void *)&args);
   }
 
   uim_look_finish(ctx);
