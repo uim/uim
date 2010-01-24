@@ -166,15 +166,34 @@ c_file_close(uim_lisp fd_)
   return MAKE_INT(close(C_INT(fd_)));
 }
 
+struct c_file_read_args {
+  const unsigned char *buf;
+  int nr;
+};
+
+static uim_lisp
+c_file_read_internal(struct c_file_read_args *args)
+{
+  int i;
+  uim_lisp ret_ = uim_scm_null();
+  const unsigned char *p = args->buf;
+
+  ret_ = uim_scm_null();
+  for (i = 0; i < args->nr; i++) {
+    ret_ = CONS(MAKE_CHAR(*p), ret_);
+    p++;
+  }
+  return ret_;
+}
+
 static uim_lisp
 c_file_read(uim_lisp d_, uim_lisp nbytes_)
 {
   unsigned char *buf;
   uim_lisp ret_;
   int nbytes = C_INT(nbytes_);
-  int i;
   int nr;
-  unsigned char *p;
+  struct c_file_read_args args;
 
   buf = uim_malloc(nbytes);
   if ((nr = read(C_INT(d_), buf, nbytes)) == 0)
@@ -182,12 +201,10 @@ c_file_read(uim_lisp d_, uim_lisp nbytes_)
   if (nr < 0)
     return uim_scm_f();
 
-  p = buf;
-  ret_ = uim_scm_null();
-  for (i = 0; i < nr; i++) {
-    ret_ = CONS(MAKE_CHAR(*p), ret_);
-    p++;
-  }
+  args.buf = buf;
+  args.nr = nr;
+  ret_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)c_file_read_internal,
+						    (void *)&args);
   free(buf);
   return uim_scm_callf("reverse", "o", ret_);
 }
