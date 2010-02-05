@@ -353,6 +353,14 @@
   (N_ "Enable input prediction")
   (N_ "long description will be here."))
 
+(define-custom 'social-ime-prediction-type 'www
+  '(social-ime-advanced social-ime-prediction)
+  (list 'choice
+        (list 'www (N_ "Social-IME Server") (N_ "Social-IME Server"))
+        (list 'uim (N_ "uim")  (N_ "uim")))
+  (N_ "Prediction type")
+  (N_ "long description will be here."))
+
 (define-custom 'social-ime-select-prediction-by-numeral-key? #f
   '(social-ime-advanced social-ime-prediction)
   '(boolean)
@@ -393,6 +401,11 @@
                  'custom-activity-hooks
                  (lambda ()
                    social-ime-use-candidate-window?))
+
+(custom-add-hook 'social-ime-prediction-type
+                 'custom-activity-hooks
+                 (lambda ()
+                   social-ime-use-prediction?))
 
 (custom-add-hook 'social-ime-select-prediction-by-numeral-key?
                  'custom-activity-hooks
