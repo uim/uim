@@ -465,8 +465,10 @@
     (if using-kana-table?
         (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-kana)
         (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-roma))
-    (ajax-ime-context-set-prediction-ctx! ac (predict-make-meta-search))
-    (predict-meta-open (ajax-ime-context-prediction-ctx ac) "ajax-ime")
+    (if ajax-ime-use-prediction?
+        (ajax-ime-context-set-prediction-ctx! ac (predict-make-meta-search))
+        (predict-meta-open (ajax-ime-context-prediction-ctx ac) "ajax-ime")
+        (predict-meta-set-external-charset! (ajax-ime-context-prediction-ctx ac) "EUC-JP"))
     ac))
 
 (define (ajax-ime-commit-raw ac)

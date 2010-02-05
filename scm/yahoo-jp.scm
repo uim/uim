@@ -549,7 +549,8 @@
     (if using-kana-table?
         (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-kana)
         (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-roma))
-    (if (eq? yahoo-jp-prediction-type 'uim)
+    (if (and yahoo-jp-use-prediction?
+             (eq? yahoo-jp-prediction-type 'uim))
         (begin
           (yahoo-jp-context-set-prediction-ctx! yc (predict-make-meta-search))
           (predict-meta-open (yahoo-jp-context-prediction-ctx yc) "yahoo-jp")

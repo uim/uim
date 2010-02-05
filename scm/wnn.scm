@@ -405,9 +405,11 @@
     (if using-kana-table?
         (wnn-context-set-input-rule! wc wnn-input-rule-kana)
         (wnn-context-set-input-rule! wc wnn-input-rule-roma))
-    (wnn-context-set-prediction-ctx! wc (predict-make-meta-search))
-    (predict-meta-open (wnn-context-prediction-ctx wc) "wnn")
-    (predict-meta-set-external-charset! (wnn-context-prediction-ctx wc) "EUC-JP")
+    (if wnn-use-prediction?
+        (begin
+          (wnn-context-set-prediction-ctx! wc (predict-make-meta-search))
+          (predict-meta-open (wnn-context-prediction-ctx wc) "wnn")
+          (predict-meta-set-external-charset! (wnn-context-prediction-ctx wc) "EUC-JP")))
     wc))
 
 (define (wnn-commit-raw wc)

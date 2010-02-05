@@ -524,7 +524,8 @@
     (if using-kana-table?
         (social-ime-context-set-input-rule! sc social-ime-input-rule-kana)
         (social-ime-context-set-input-rule! sc social-ime-input-rule-roma))
-    (if (eq? social-ime-prediction-type 'uim)
+    (if (and social-ime-use-prediction?
+             (eq? social-ime-prediction-type 'uim))
         (begin
           (social-ime-context-set-prediction-ctx! sc (predict-make-meta-search))
           (predict-meta-open (social-ime-context-prediction-ctx sc) "social-ime")

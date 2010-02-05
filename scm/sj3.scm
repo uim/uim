@@ -617,9 +617,11 @@
     (if using-kana-table?
         (sj3-context-set-input-rule! sc sj3-input-rule-kana)
         (sj3-context-set-input-rule! sc sj3-input-rule-roma))
-    (sj3-context-set-prediction-ctx! sc (predict-make-meta-search))
-    (predict-meta-open (sj3-context-prediction-ctx sc) "sj3")
-    (predict-meta-set-external-charset! (sj3-context-prediction-ctx sc) "EUC-JP")
+    (if sj3-use-prediction?
+        (begin
+          (sj3-context-set-prediction-ctx! sc (predict-make-meta-search))
+          (predict-meta-open (sj3-context-prediction-ctx sc) "sj3")
+          (predict-meta-set-external-charset! (sj3-context-prediction-ctx sc) "EUC-JP")))
     sc))
 
 (define (sj3-commit-raw sc)

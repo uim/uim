@@ -338,8 +338,11 @@
     (if using-kana-table?
         (canna-context-set-input-rule! cc canna-input-rule-kana)
         (canna-context-set-input-rule! cc canna-input-rule-roma))
-    (canna-context-set-prediction-ctx! cc (predict-make-meta-search))
-    (predict-meta-open (canna-context-prediction-ctx cc) "canna")
+    (if canna-use-prediction?
+        (begin
+          (canna-context-set-prediction-ctx! cc (predict-make-meta-search))
+          (predict-meta-open (canna-context-prediction-ctx cc) "canna")
+          (predict-meta-set-external-charset! (canna-context-prediction-ctx cc) "EUC-JP")))
     cc))
 
 (define (canna-commit-raw cc)
