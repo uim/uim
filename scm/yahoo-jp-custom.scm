@@ -359,6 +359,14 @@
   (N_ "Enable input prediction")
   (N_ "long description will be here."))
 
+(define-custom 'yahoo-jp-prediction-type 'www
+  '(yahoo-jp-advanced yahoo-jp-prediction)
+  (list 'choice
+        (list 'www (N_ "Yahoo! Server") (N_ "Yahoo! Server"))
+        (list 'uim (N_ "uim")  (N_ "uim")))
+  (N_ "Prediction type")
+  (N_ "long description will be here."))
+
 (define-custom 'yahoo-jp-select-prediction-by-numeral-key? #f
   '(yahoo-jp-advanced yahoo-jp-prediction)
   '(boolean)
