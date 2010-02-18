@@ -1257,8 +1257,8 @@ if test x$use_qt = xyes ; then
     AC_SUBST(UIM_QT_LDFLAGS)
 fi
 
-AC_PATH_PROGS(KDE_CONFIG, [kde-config kde4-config], [no])
-if test "x$use_qt" = "xyes" || test "x$use_qt4" = "xyes"; then
+AC_PATH_PROG(KDE_CONFIG, [kde-config], [no])
+if test "x$use_qt" = "xyes"; then
     if test "x$KDE_CONFIG" != "xno"; then
 	KDE_ICONDIR=`$KDE_CONFIG --expandvars --install icon`
     fi
@@ -1339,6 +1339,15 @@ if test "x$use_applet_kde4" = "xyes" && test "x$CMAKE" = "xno"; then
     use_applet_kde4="no"
 fi
 AC_PATH_PROG(KDE4_CONFIG, [kde4-config], [no])
+if test "x$use_qt4" = "xyes"; then
+    if test "x$KDE4_CONFIG" != "xno"; then
+        KDE4_ICONDIR=`$KDE4_CONFIG --expandvars --install icon`
+    fi
+    if test -z "$KDE4_ICONDIR"; then
+        KDE4_ICONDIR="$prefix/share/icons"
+    fi
+    AC_DEFINE_UNQUOTED(KDE4_ICONDIR, "$KDE4_ICONDIR", [kde4 icon directory])
+fi
 if test "x$use_applet_kde4" = "xyes" && test "x$KDE4_CONFIG" = "xno"; then
     AC_MSG_WARN([no kde4-config found])
     use_applet_kde4="no"

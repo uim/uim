@@ -46,7 +46,7 @@
 #include "qtgettext.h"
 
 static const QString ICONDIR = UIM_PIXMAPSDIR;
-static const QString ACTION_ICONDIR = KDE_ICONDIR "/crystalsvg/16x16/actions";
+static const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/16x16/actions";
 
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     : QFrame( parent )
@@ -64,10 +64,10 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     QPixmap swicon = QPixmap( ICONDIR + "/im_switcher.png" );
     QPixmap preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
     QPixmap dicticon = QPixmap( ICONDIR + "/uim-dict.png");
-    QPixmap padicon = QPixmap( ACTION_ICONDIR + "/text_bold.png");
-    QPixmap handicon = QPixmap( ACTION_ICONDIR + "/edit.png");
-    QPixmap helpicon = QPixmap( ACTION_ICONDIR + "/help.png");
-    QPixmap exiticon = QPixmap( ACTION_ICONDIR + "/exit.png");
+    QPixmap padicon = QPixmap( ACTION_ICONDIR + "/format-text-bold.png");
+    QPixmap handicon = QPixmap( ACTION_ICONDIR + "/document-edit.png");
+    QPixmap helpicon = QPixmap( ACTION_ICONDIR + "/help-contents.png");
+    QPixmap exiticon = QPixmap( ACTION_ICONDIR + "/window-close.png");
     QImage swimage = swicon.toImage();
     QImage prefimage = preficon.toImage();
     QImage dictimage = dicticon.toImage();
