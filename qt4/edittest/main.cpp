@@ -36,21 +36,31 @@
 #include <qlineedit.h>
 #include <qtextedit.h>
 #include <qsplitter.h>
-#include <Q3VBox>
 #include <qlabel.h>
+#include <QtGui/QVBoxLayout>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QSplitter page;
 
-    Q3VBox *linev = new Q3VBox(&page);
-    new QLabel("lineedit", linev);
-    new QLineEdit(linev);
+    QWidget *linev = new QWidget(&page);
+    QLabel *lineLabel = new QLabel("lineedit");
+    QLineEdit *lineEdit = new QLineEdit;
 
-    Q3VBox *textv = new Q3VBox(&page);
-    new QLabel("textedit", textv);
-    new QTextEdit(textv);
+    QVBoxLayout *lineLayout = new QVBoxLayout;
+    lineLayout->addWidget(lineLabel);
+    lineLayout->addWidget(lineEdit);
+    linev->setLayout(lineLayout);
+
+    QWidget *textv = new QWidget(&page);
+    QLabel *textLabel = new QLabel("textedit");
+    QTextEdit *textEdit = new QTextEdit;
+
+    QVBoxLayout *textLayout = new QVBoxLayout;
+    textLayout->addWidget(textLabel);
+    textLayout->addWidget(textEdit);
+    textv->setLayout(textLayout);
 
     app.setMainWidget(&page);
     page.show();
