@@ -1,9 +1,7 @@
-[Desktop Entry] 
+[Desktop Entry]
 Type=Plugin
-Encoding=UTF-8
 Icon=@uim_pixmapsdir@/uim-icon.png
 Name = uim
 Comment = Input Method Indicator (uim)
-
 X-KDE-Library = uim_panelapplet
 X-KDE-UniqueApplet = true
