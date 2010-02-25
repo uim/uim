@@ -32,11 +32,11 @@
 
 */
 
-#include <qapplication.h>
-#include <qlineedit.h>
-#include <qtextedit.h>
-#include <qsplitter.h>
-#include <qlabel.h>
+#include <QtGui/QApplication>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QtGui/QSplitter>
+#include <QtGui/QTextEdit>
 #include <QtGui/QVBoxLayout>
 
 int main(int argc, char *argv[])
