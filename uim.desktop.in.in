@@ -1,6 +1,5 @@
 [Desktop Entry]
 Type=Application
-Encoding=UTF-8
 _Name=Input Method
 _Comment=Customize uim input method environment
 Exec=uim-pref-gtk
