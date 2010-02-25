@@ -42,11 +42,11 @@
 #include <qtextcodec.h>
 #include <qrect.h>
 
-#include <locale.h>
-#include <stdio.h>
-#include <string.h>
+#include <clocale>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <unistd.h>
-#include <stdlib.h>
 
 
 #include "qtgettext.h"
