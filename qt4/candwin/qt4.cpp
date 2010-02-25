@@ -188,7 +188,7 @@ void CandidateWindow::selectCand( const QStringList &list )
     qDebug( "uim-candwin-qt4: selectCand()" );
 #endif
     const int index = list[ 1 ].toInt();
-    needHilite = (list[ 2 ].toInt() == 1);
+    needHighlight = (list[ 2 ].toInt() == 1);
     setIndex( index );
 
     updateLabel();
@@ -264,7 +264,7 @@ void CandidateWindow::setNrCandidates( const QStringList &list )
     candidateIndex = -1;
     nrCandidates = list[ 1 ].toInt();
     displayLimit = list[ 2 ].toInt();
-    needHilite = false;
+    needHighlight = false;
     isActive = true;
 
     // setup dummy stores
@@ -541,7 +541,7 @@ void CandidateWindow::setIndex( int index )
         setPage( newpage );
 
     // select item
-    if ( candidateIndex >= 0 && needHilite )
+    if ( candidateIndex >= 0 && needHighlight )
     {
         int pos = index;
         if ( displayLimit )
@@ -561,7 +561,7 @@ void CandidateWindow::setIndex( int index )
 void CandidateWindow::updateLabel()
 {
     QString indexString;
-    if ( candidateIndex >= 0 && needHilite )
+    if ( candidateIndex >= 0 && needHighlight )
         indexString = QString::number( candidateIndex + 1 ) + " / " + QString::number( nrCandidates );
     else
         indexString = "- / " + QString::number( nrCandidates );

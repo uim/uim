@@ -93,7 +93,7 @@ protected:
     int pageIndex;
 
     bool isActive;
-    bool needHilite;
+    bool needHighlight;
 };
 
 class CandidateListView : public Q3ListView
