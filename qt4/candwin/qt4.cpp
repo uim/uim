@@ -188,7 +188,7 @@ void CandidateWindow::selectCand( const QStringList &list )
     qDebug( "uim-candwin-qt4: selectCand()" );
 #endif
     const int index = list[ 1 ].toInt();
-    needHilite = (list[ 2 ].toInt() == 1) ? TRUE : FALSE;
+    needHilite = (list[ 2 ].toInt() == 1);
     setIndex( index );
 
     updateLabel();
