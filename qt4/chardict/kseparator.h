@@ -36,7 +36,6 @@ public:
     /**
      * Constructor.
      * @param parent parent object.
-     * @param name name of the new object.
      * @param f extra QWidget flags.
      **/
     explicit KSeparator( QWidget* parent = 0, Qt::WFlags f = 0 );
@@ -46,7 +45,6 @@ public:
      * @param orientation Set the orientation of the separator.
      * Possible values are HLine or Horizontal and VLine or Vertical.
      * @param parent parent object.
-     * @param name name of the new object.
      * @param f extra QWidget flags.
      **/
     explicit KSeparator( int orientation, QWidget* parent = 0,
