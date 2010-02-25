@@ -430,7 +430,7 @@ void CandidateWindow::adjustCandidateWindowSize()
     // FIXME!:
     //    There may be more proper way. Now width is adjusted by indeterminal 3 spaces.
     //    Using QWidget::adjustSize() seems not to work properly...
-    unsigned int maxCharIndex = 0, maxCharCount = 0;
+    int maxCharIndex = 0, maxCharCount = 0;
     for ( int i = 0; i < cList->childCount(); i++ )
     {
         if ( maxCharCount < cList->itemAtIndex( i ) ->text( 1 ).length() )
