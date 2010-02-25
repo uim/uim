@@ -7,7 +7,6 @@ CONFIG -= moc
 DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG += qt warn_on debug
-QT += qt3support
 
 # Input
 SOURCES += main.cpp

@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
     textLayout->addWidget(textEdit);
     textv->setLayout(textLayout);
 
-    app.setMainWidget(&page);
     page.show();
 
     return app.exec();
