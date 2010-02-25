@@ -5,7 +5,6 @@ Comment[ja]=入力メソッドインジケータ (uim)
 Type=Service
 ServiceTypes=Plasma/Applet
 Icon=@uim_pixmapsdir@/uim-icon.png
- 
 X-KDE-Library=plasma_applet_uim
 X-KDE-PluginInfo-Author=The uim developers
 X-KDE-PluginInfo-Email=uim-en@googlegroups.com
