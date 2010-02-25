@@ -156,11 +156,11 @@ void CandidateWindow::activateCand( const QStringList &list )
 
         d.label = headString;
 
-	// XXX Current prime (0.4.6) may return candidate string
-	// containing "\t", and we can't handle annotation in another
-	// window yet.
-	l.pop_front();
-	QString candString = l.join( "\t" );
+        // XXX Current prime (0.4.6) may return candidate string
+        // containing "\t", and we can't handle annotation in another
+        // window yet.
+        l.pop_front();
+        QString candString = l.join( "\t" );
 
         if ( codec )
             d.str = codec->toUnicode( candString );
@@ -269,8 +269,8 @@ void CandidateWindow::setNrCandidates( const QStringList &list )
 
     // setup dummy stores
     for ( int i = 0; i < nrCandidates; i++ ) {
-	CandData d;
-	stores.append( d );
+        CandData d;
+        stores.append( d );
     }
 }
 void CandidateWindow::setPageCandidates( const QStringList &list )
@@ -319,11 +319,11 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
 
         d.label = headString;
 
-	// XXX Current prime (0.4.6) may return candidate string
-	// containing "\t", and we can't handle annotation in another
-	// window yet.
-	l.pop_front();
-	QString candString = l.join( "\t" );
+        // XXX Current prime (0.4.6) may return candidate string
+        // containing "\t", and we can't handle annotation in another
+        // window yet.
+        l.pop_front();
+        QString candString = l.join( "\t" );
 
         if ( codec )
             d.str = codec->toUnicode( candString );
@@ -358,8 +358,8 @@ void CandidateWindow::slotStdinActivated( int fd )
         if ( n == -1 )
             return ;
         buf[ n ] = '\0';
-	read_buf = (char *)realloc( read_buf, strlen( read_buf ) + n + 1 );
-	strcat( read_buf, buf );
+        read_buf = (char *)realloc( read_buf, strlen( read_buf ) + n + 1 );
+        strcat( read_buf, buf );
     }
 
     QStringList msgList = QStringList::split( "\n\n", QString( read_buf ) );
