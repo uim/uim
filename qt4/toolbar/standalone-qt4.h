@@ -37,6 +37,7 @@
 #include <QtGui/QMouseEvent>
 
 class QUimHelperToolbar;
+class UimToolbarDraggingHandler;
 
 class QPoint;
 class QMouseEvent;
@@ -57,6 +58,7 @@ private slots:
     void moveTo(const QPoint &point);
 
 private:
+    UimToolbarDraggingHandler *handler;
     QUimHelperToolbar *toolbar;
 };
 

@@ -62,11 +62,11 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
     setLayout( layout );
 
     adjustSize();
-    UimToolbarDraggingHandler *h = new UimToolbarDraggingHandler( this );
-    layout->addWidget( h );
-    h->adjustSize();
-    h->show();
-    connect( h, SIGNAL( handleDoubleClicked() ),
+    handler = new UimToolbarDraggingHandler( this );
+    layout->addWidget( handler );
+    handler->adjustSize();
+    handler->show();
+    connect( handler, SIGNAL( handleDoubleClicked() ),
                       this, SLOT( slotToolbarDoubleClicked() ) );
 
     
@@ -81,11 +81,12 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
     int panelHeight = 64; // FIXME!
     int screenwidth = QApplication::desktop()->screenGeometry().width();
     int screenheight = QApplication::desktop()->screenGeometry().height();
-    QPoint p( screenwidth - panelHeight - toolbar->width() - h->width(), screenheight - height() - panelHeight );
+    QPoint p( screenwidth - panelHeight - toolbar->width() - handler->width(),
+            screenheight - height() - panelHeight );
     move( p );
 
     // Enable Dragging Feature
-    connect( h, SIGNAL( moveTo( const QPoint & ) ),
+    connect( handler, SIGNAL( moveTo( const QPoint & ) ),
                       this, SLOT( moveTo( const QPoint & ) ) );
 
     // Quit
@@ -102,16 +103,22 @@ UimStandaloneToolbar::~UimStandaloneToolbar()
 void
 UimStandaloneToolbar::slotToolbarResized()
 {
+    toolbar->show();
     adjustSize();
 }
 
 void
 UimStandaloneToolbar::slotToolbarDoubleClicked()
 {
-    if (toolbar->isVisible())
-      toolbar->hide();
-    else
-      toolbar->show();
+    if (toolbar->isVisible()) {
+        toolbar->hide();
+        // shrink this toolbar
+        int width = maximumWidth();
+        setFixedWidth(handler->width());
+        setMaximumWidth(width);
+    } else {
+        toolbar->show();
+    }
     adjustSize();
 }
 
