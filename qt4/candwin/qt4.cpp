@@ -560,7 +560,7 @@ void CandidateWindow::setIndex( int index )
 
 void CandidateWindow::updateLabel()
 {
-    QString indexString = QString::null;
+    QString indexString;
     if ( candidateIndex >= 0 && needHilite )
         indexString = QString::number( candidateIndex + 1 ) + " / " + QString::number( nrCandidates );
     else
