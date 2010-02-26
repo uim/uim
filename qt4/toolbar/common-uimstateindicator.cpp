@@ -129,7 +129,9 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         return;
 
     QHelperPopupMenu *popupMenu = 0;
+#ifdef PLASMA_APPLET_UIM
     int prevCount = m_layout->count();
+#endif
     foreach ( QHelperToolbarButton *button, buttons )
     {
         if ( m_layout->indexOf( button ) >= 0 )
@@ -206,10 +208,10 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
         }
     }
 
+#ifdef PLASMA_APPLET_UIM
     if ( m_layout->count() != prevCount )
+#endif
         emit indicatorResized();
-
-    parentWidget()->show();
 }
 
 void UimStateIndicator::helper_disconnect_cb()
