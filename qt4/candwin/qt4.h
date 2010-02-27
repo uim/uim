@@ -33,12 +33,13 @@
 #ifndef UIM_QT4_CANDWIN_QT_H
 #define UIM_QT4_CANDWIN_QT_H
 
-#include <Q3ListView>
 #include <QtCore/QList>
+#include <QtGui/QFrame>
 
 class QLabel;
-class CandidateListView;
 class QStringList;
+class QTableWidget;
+class QTableWidgetItem;
 
 struct CandData
 {
@@ -65,7 +66,7 @@ public:
 
 public slots:
     void slotStdinActivated( int );
-    void slotCandidateSelected( Q3ListViewItem* );
+    void slotCandidateSelected( QTableWidgetItem* );
 
 protected:
     void strParse( const QString& str );
@@ -77,7 +78,7 @@ protected:
     void updateLabel();
 
 protected:
-    CandidateListView *cList;
+    QTableWidget *cList;
     QLabel *numLabel;
 
     QList<CandData> stores;
@@ -89,50 +90,6 @@ protected:
 
     bool isActive;
     bool needHighlight;
-};
-
-class CandidateListView : public Q3ListView
-{
-    Q_OBJECT
-
-public:
-    CandidateListView( QWidget *parent, const char *name = 0, Qt::WFlags f = 0 ) : Q3ListView( parent, name, f ) {}
-    ~CandidateListView() {}
-
-
-    int itemIndex( const Q3ListViewItem *item ) const
-    {
-        if ( !item )
-            return -1;
-
-        if ( item == firstChild() )
-            return 0;
-        else
-        {
-            Q3ListViewItemIterator it( firstChild() );
-            uint j = 0;
-            for ( ; it.current() && it.current() != item; ++it, ++j ) ;
-
-            if ( !it.current() )
-                return -1;
-            return j;
-        }
-    }
-
-    Q3ListViewItem* itemAtIndex( int index )
-    {
-        if ( index < 0 )
-            return 0;
-
-        int j = 0;
-        for ( Q3ListViewItemIterator it = firstChild(); it.current(); ++it )
-        {
-            if ( j == index )
-                return it.current();
-            j++;
-        };
-        return 0;
-    }
 };
 
 #endif  /* UIM_QT4_CANDWIN_QT_H */

@@ -36,11 +36,12 @@
 #include <QDesktopWidget>
 #include <qlabel.h>
 #include <qwidget.h>
-#include <Q3Header>
 #include <qsocketnotifier.h>
 #include <qstringlist.h>
 #include <qtextcodec.h>
 #include <qrect.h>
+#include <QtGui/QHeaderView>
+#include <QtGui/QTableWidget>
 #include <QtGui/QVBoxLayout>
 
 #include <clocale>
@@ -75,19 +76,18 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     setFocusPolicy( Qt::NoFocus );
 
     //setup CandidateList
-    cList = new CandidateListView( this, "candidateListView" );
-    cList->setSorting( -1 );
-    cList->setSelectionMode( Q3ListView::Single );
-    cList->addColumn( "1" );
-    cList->setColumnWidthMode( 0, Q3ListView::Maximum );
-    cList->addColumn( "2" );
-    cList->setColumnWidthMode( 1, Q3ListView::Maximum );
-    cList->header() ->hide();
-    cList->setVScrollBarMode( Q3ScrollView::AlwaysOff );
-    cList->setHScrollBarMode( Q3ScrollView::AlwaysOff );
-    cList->setAllColumnsShowFocus( true );
-    connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
-                      this , SLOT( slotCandidateSelected( Q3ListViewItem * ) ) );
+    cList = new QTableWidget;
+    cList->setSelectionMode( QAbstractItemView::SingleSelection );
+    cList->setSelectionBehavior( QAbstractItemView::SelectRows );
+    cList->setColumnCount( 2 );
+    cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
+    cList->horizontalHeader()->hide();
+    cList->verticalHeader()->hide();
+    cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    cList->setShowGrid( false );
+    connect( cList, SIGNAL( itemClicked( QTableWidgetItem * ) ),
+          this , SLOT( slotCandidateSelected( QTableWidgetItem * ) ) );
 
     //setup NumberLabel
     numLabel = new QLabel( this, "candidateLabel" );
@@ -129,7 +129,8 @@ void CandidateWindow::activateCand( const QStringList &list )
      */
 
     // remove old data
-    cList->clear();
+    cList->clearContents();
+    cList->setRowCount( 0 );
     stores.clear();
 
     // get charset and create codec
@@ -267,7 +268,8 @@ void CandidateWindow::setNrCandidates( const QStringList &list )
         return ;
 
     // remove old data
-    cList->clear();
+    cList->clearContents();
+    cList->setRowCount( 0 );
     stores.clear();
 
     // set default value
@@ -413,9 +415,9 @@ void CandidateWindow::strParse( const QString& str )
     }
 }
 
-void CandidateWindow::slotCandidateSelected( Q3ListViewItem * item )
+void CandidateWindow::slotCandidateSelected( QTableWidgetItem * item )
 {
-    candidateIndex = ( pageIndex * displayLimit ) + cList->itemIndex( item );
+    candidateIndex = ( pageIndex * displayLimit ) + cList->row( item );
 
     // write message
     fprintf( stdout, "index\n" );
@@ -430,27 +432,19 @@ void CandidateWindow::adjustCandidateWindowSize()
 #if defined(ENABLE_DEBUG)
     qDebug( "adjustCandidateWindowSize()" );
 #endif
-    int width = 0;
-    int height = 0;
-    Q3ListViewItem *item = cList->firstChild();
-    if ( item )
-        height = item->height() * ( cList->childCount() + 1 );
+    // frame width
+    int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2
+        + cList->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
-    // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
-    // FIXME!:
-    //    There may be more proper way. Now width is adjusted by indeterminal 3 spaces.
-    //    Using QWidget::adjustSize() seems not to work properly...
-    int maxCharIndex = 0, maxCharCount = 0;
-    for ( int i = 0; i < cList->childCount(); i++ )
-    {
-        if ( maxCharCount < cList->itemAtIndex( i ) ->text( 1 ).length() )
-        {
-            maxCharIndex = i;
-            maxCharCount = cList->itemAtIndex( i ) ->text( 1 ).length();
-        }
-    }
-    QFontMetrics fm( cList->font() );
-    width = fm.width( cList->itemAtIndex( maxCharIndex ) ->text( 0 ) + "   " + cList->itemAtIndex( maxCharIndex ) ->text( 1 ) );
+    int rowNum = cList->rowCount();
+    // If cList is empty, the height of cList is 0.
+    int height = ( ( rowNum == 0 ) ? 0 : cList->rowHeight( 0 ) * rowNum )
+        + numLabel->height() + frame;
+
+    int width = frame;
+    for ( int i = 0; i < cList->columnCount(); i++ )
+        width += cList->columnWidth( i );
+
     if ( width < MIN_CAND_WIDTH )
         width = MIN_CAND_WIDTH;
 
@@ -460,7 +454,8 @@ void CandidateWindow::adjustCandidateWindowSize()
 void CandidateWindow::setPage( int page )
 {
     // clear items
-    cList->clear();
+    cList->clearContents();
+    cList->setRowCount( 0 );
 
     // calculate page
     int newpage, lastpage;
@@ -511,13 +506,23 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
-    for ( int i = ncandidates - 1; i >=0 ; i-- )
+    for ( int i = 0; i < ncandidates ; i++ )
     {
         QString headString = stores[ displayLimit * newpage + i ].label;
         QString candString = stores[ displayLimit * newpage + i ].str;
 
         // insert new item to the candidate list
-        new Q3ListViewItem( cList, headString, candString );
+        QTableWidgetItem *headItem = new QTableWidgetItem;
+        headItem->setText( headString );
+        headItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+        QTableWidgetItem *candItem = new QTableWidgetItem;
+        candItem->setText( candString );
+        candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+        int count = cList->rowCount();
+        cList->setRowCount( count + 1 );
+        cList->setItem( count, 0, headItem );
+        cList->setItem( count, 1, candItem );
+        cList->setRowHeight( count, QFontMetrics( cList->font() ).height() );
     }
 
     // set index
@@ -557,8 +562,12 @@ void CandidateWindow::setIndex( int index )
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
 
-        if ( cList->itemAtIndex( pos ) && ! ( cList->itemAtIndex( pos ) ->isSelected() ) )
-            cList->setSelected( cList->itemAtIndex( pos ), true );
+        if ( cList->item( pos, 0 ) && !cList->item( pos, 0 )->isSelected() )
+        {
+            cList->clearSelection();
+            cList->item( pos, 0 )->setSelected( true );
+            cList->item( pos, 1 )->setSelected( true );
+        }
     }
     else
     {
