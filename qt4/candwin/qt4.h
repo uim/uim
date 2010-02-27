@@ -51,7 +51,7 @@ class CandidateWindow : public QFrame
 {
     Q_OBJECT
 public:
-    CandidateWindow( QWidget *parent = 0 );
+    explicit CandidateWindow( QWidget *parent = 0 );
     ~CandidateWindow();
 
     void activateCand( const QStringList &list );
