@@ -35,7 +35,7 @@
 
 #include <Q3VBox>
 #include <Q3ListView>
-#include <Q3ValueList>
+#include <QtCore/QList>
 
 class QLabel;
 class CandidateListView;
@@ -82,7 +82,7 @@ protected:
     CandidateListView *cList;
     QLabel *numLabel;
 
-    Q3ValueList<CandData> stores;
+    QList<CandData> stores;
 
     int nrCandidates;
     int candidateIndex;
