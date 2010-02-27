@@ -33,9 +33,6 @@
 #ifndef UIM_QT4_CANDWIN_QT_H
 #define UIM_QT4_CANDWIN_QT_H
 
-#include <uim/uim.h>
-#include <uim/uim-helper.h>
-
 #include <Q3VBox>
 #include <Q3ListView>
 #include <Q3ValueList>

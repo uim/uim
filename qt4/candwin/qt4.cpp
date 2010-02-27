@@ -48,6 +48,8 @@
 #include <cstring>
 #include <unistd.h>
 
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
 
 #include "qtgettext.h"
 #include "qt4.h"
