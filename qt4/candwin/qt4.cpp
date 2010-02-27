@@ -32,17 +32,7 @@
 */
 #include <config.h>
 
-#include <qapplication.h>
-#include <QDesktopWidget>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qsocketnotifier.h>
-#include <qstringlist.h>
-#include <qtextcodec.h>
-#include <qrect.h>
-#include <QtGui/QHeaderView>
-#include <QtGui/QTableWidget>
-#include <QtGui/QVBoxLayout>
+#include "qt4.h"
 
 #include <clocale>
 #include <cstdio>
@@ -50,11 +40,20 @@
 #include <cstring>
 #include <unistd.h>
 
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QStringList>
+#include <QtCore/QTextCodec>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QHeaderView>
+#include <QtGui/QLabel>
+#include <QtGui/QTableWidget>
+#include <QtGui/QVBoxLayout>
+
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
 
 #include "qtgettext.h"
-#include "qt4.h"
 
 static const int NR_CANDIDATES = 10;
 static const int MIN_CAND_WIDTH = 80;
