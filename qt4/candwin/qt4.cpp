@@ -63,7 +63,7 @@ const Qt::WFlags candidateFlag = ( Qt::Window
                                    | Qt::X11BypassWindowManagerHint
 #endif
                                  );
-static QSocketNotifier *notifier = NULL;
+static QSocketNotifier *notifier = 0;
 
 CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
         : Q3VBox( parent, name, candidateFlag )
@@ -123,7 +123,7 @@ void CandidateWindow::activateCand( const QStringList &list )
     stores.clear();
 
     // get charset and create codec
-    QTextCodec *codec = NULL;
+    QTextCodec *codec = 0;
     if ( !list[ 1 ].isEmpty() && list[ 1 ].startsWith( "charset" ) )
     {
         const QStringList l = QStringList::split( "=", list[ 1 ] );
@@ -285,7 +285,7 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
     int page = 0;
 
     // get charset and create codec
-    QTextCodec *codec = NULL;
+    QTextCodec *codec = 0;
     if ( !list[ 1 ].isEmpty() && list[ 1 ].startsWith( "charset" ) )
     {
         const QStringList l = QStringList::split( "=", list[ 1 ] );
