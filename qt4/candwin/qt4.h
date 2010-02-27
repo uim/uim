@@ -33,7 +33,6 @@
 #ifndef UIM_QT4_CANDWIN_QT_H
 #define UIM_QT4_CANDWIN_QT_H
 
-#include <Q3VBox>
 #include <Q3ListView>
 #include <QtCore/QList>
 
@@ -48,11 +47,11 @@ struct CandData
     QString str;
 };
 
-class CandidateWindow : public Q3VBox
+class CandidateWindow : public QFrame
 {
     Q_OBJECT
 public:
-    CandidateWindow( QWidget *parent = 0, const char * name = 0 );
+    CandidateWindow( QWidget *parent = 0 );
     ~CandidateWindow();
 
     void activateCand( const QStringList &list );

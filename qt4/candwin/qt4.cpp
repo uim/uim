@@ -41,6 +41,7 @@
 #include <qstringlist.h>
 #include <qtextcodec.h>
 #include <qrect.h>
+#include <QtGui/QVBoxLayout>
 
 #include <clocale>
 #include <cstdio>
@@ -67,8 +68,8 @@ const Qt::WFlags candidateFlag = ( Qt::Window
                                  );
 static QSocketNotifier *notifier = 0;
 
-CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
-        : Q3VBox( parent, name, candidateFlag )
+CandidateWindow::CandidateWindow( QWidget *parent )
+        : QFrame( parent, candidateFlag )
 {
     setFrameStyle( Raised | NoFrame );
     setFocusPolicy( Qt::NoFocus );
@@ -103,6 +104,13 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     connect( notifier, SIGNAL( activated( int ) ),
                       this, SLOT( slotStdinActivated( int ) ) );
     hide();
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin( 0 );
+    layout->setSpacing( 0 );
+    layout->addWidget( cList );
+    layout->addWidget( numLabel );
+    setLayout( layout );
 }
 
 CandidateWindow::~CandidateWindow()
