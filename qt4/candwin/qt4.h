@@ -39,7 +39,6 @@
 class QLabel;
 class CandidateListView;
 class QStringList;
-class QPoint;
 
 struct CandData
 {
