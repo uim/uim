@@ -135,14 +135,16 @@ void CandidateWindow::activateCand( const QStringList &list )
 
     // get charset and create codec
     QTextCodec *codec = 0;
-    if ( !list[ 1 ].isEmpty() && list[ 1 ].startsWith( "charset" ) )
+    if ( !list[ 1 ].isEmpty()
+        && list[ 1 ].startsWith( QLatin1String( "charset" ) ) )
     {
         const QStringList l = QStringList::split( "=", list[ 1 ] );
         codec = QTextCodec::codecForName( l[ 1 ] );
     }
 
     // get display_limit
-    if ( !list[ 2 ].isEmpty() && list[ 2 ].startsWith( "display_limit" ) )
+    if ( !list[ 2 ].isEmpty()
+        && list[ 2 ].startsWith( QLatin1String( "display_limit" ) ) )
     {
         const QStringList l = QStringList::split( "=", list[ 2 ] );
         displayLimit = l[ 1 ].toInt();
@@ -298,14 +300,16 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
 
     // get charset and create codec
     QTextCodec *codec = 0;
-    if ( !list[ 1 ].isEmpty() && list[ 1 ].startsWith( "charset" ) )
+    if ( !list[ 1 ].isEmpty()
+        && list[ 1 ].startsWith( QLatin1String( "charset" ) ) )
     {
         const QStringList l = QStringList::split( "=", list[ 1 ] );
         codec = QTextCodec::codecForName( l[ 1 ] );
     }
 
     // get page
-    if ( !list[ 2 ].isEmpty() && list[ 2 ].startsWith( "page" ) )
+    if ( !list[ 2 ].isEmpty()
+        && list[ 2 ].startsWith( QLatin1String( "page" ) ) )
     {
         const QStringList l = QStringList::split( "=", list[ 2 ] );
         page = l[ 1 ].toInt();
