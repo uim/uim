@@ -554,7 +554,7 @@ void CandidateWindow::setIndex( int index )
     // set page
     int newpage = 0;
     if ( displayLimit )
-        newpage = ( int ) candidateIndex / displayLimit;
+        newpage = candidateIndex / displayLimit;
     if ( pageIndex != newpage )
         setPage( newpage );
 
