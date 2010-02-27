@@ -83,7 +83,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     cList->setVScrollBarMode( Q3ScrollView::AlwaysOff );
     cList->setHScrollBarMode( Q3ScrollView::AlwaysOff );
     cList->setAllColumnsShowFocus( true );
-    QObject::connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
+    connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
                       this , SLOT( slotCandidateSelected( Q3ListViewItem * ) ) );
 
     //setup NumberLabel
@@ -98,7 +98,7 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     isActive = false;
 
     notifier = new QSocketNotifier( 0, QSocketNotifier::Read );
-    QObject::connect( notifier, SIGNAL( activated( int ) ),
+    connect( notifier, SIGNAL( activated( int ) ),
                       this, SLOT( slotStdinActivated( int ) ) );
     hide();
 }
