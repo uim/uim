@@ -1,6 +1,5 @@
 TEMPLATE = app
 CONFIG += @QT_CONFIG_OPTS@
-QT += qt3support
 
 INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
                @top_srcdir@ @top_srcdir@/uim \

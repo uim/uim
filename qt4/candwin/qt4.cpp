@@ -89,7 +89,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
           this , SLOT( slotCandidateSelected( QTableWidgetItem * ) ) );
 
     //setup NumberLabel
-    numLabel = new QLabel( this, "candidateLabel" );
+    numLabel = new QLabel;
     numLabel->setFocusPolicy( Qt::NoFocus );
 
     nrCandidates = 0;
@@ -137,15 +137,15 @@ void CandidateWindow::activateCand( const QStringList &list )
     if ( !list[ 1 ].isEmpty()
         && list[ 1 ].startsWith( QLatin1String( "charset" ) ) )
     {
-        const QStringList l = QStringList::split( "=", list[ 1 ] );
-        codec = QTextCodec::codecForName( l[ 1 ] );
+        const QStringList l = list[ 1 ].split( '=', QString::SkipEmptyParts );
+        codec = QTextCodec::codecForName( l[ 1 ].toAscii() );
     }
 
     // get display_limit
     if ( !list[ 2 ].isEmpty()
         && list[ 2 ].startsWith( QLatin1String( "display_limit" ) ) )
     {
-        const QStringList l = QStringList::split( "=", list[ 2 ] );
+        const QStringList l = list[ 2 ].split( '=', QString::SkipEmptyParts );
         displayLimit = l[ 1 ].toInt();
     }
 
@@ -156,13 +156,13 @@ void CandidateWindow::activateCand( const QStringList &list )
             break;
 
         // split heading_label and cand_str
-        QStringList l = QStringList::split( "\t", list [ i ], true );
+        QStringList l = list[ i ].split( '\t' );
 
         // store data
         CandData d;
         QString headString;
         if ( codec )
-            headString = codec->toUnicode( l [ 0 ] );
+            headString = codec->toUnicode( l[ 0 ].toAscii() );
         else
             headString = l [ 0 ];
 
@@ -175,7 +175,7 @@ void CandidateWindow::activateCand( const QStringList &list )
         QString candString = l.join( "\t" );
 
         if ( codec )
-            d.str = codec->toUnicode( candString );
+            d.str = codec->toUnicode( candString.toAscii() );
         else
             d.str = candString;
 
@@ -302,15 +302,15 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
     if ( !list[ 1 ].isEmpty()
         && list[ 1 ].startsWith( QLatin1String( "charset" ) ) )
     {
-        const QStringList l = QStringList::split( "=", list[ 1 ] );
-        codec = QTextCodec::codecForName( l[ 1 ] );
+        const QStringList l = list[ 1 ].split( '=', QString::SkipEmptyParts );
+        codec = QTextCodec::codecForName( l[ 1 ].toAscii() );
     }
 
     // get page
     if ( !list[ 2 ].isEmpty()
         && list[ 2 ].startsWith( QLatin1String( "page" ) ) )
     {
-        const QStringList l = QStringList::split( "=", list[ 2 ] );
+        const QStringList l = list[ 2 ].split( '=', QString::SkipEmptyParts );
         page = l[ 1 ].toInt();
     }
 
@@ -322,13 +322,13 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
             break;
 
         // split heading_label and cand_str
-        QStringList l = QStringList::split( "\t", list [ i ], true );
+        QStringList l = list [ i ].split( '\t' );
 
         // store data
         CandData &d = stores[page * displayLimit + i - 3];
         QString headString;
         if ( codec )
-            headString = codec->toUnicode( l [ 0 ] );
+            headString = codec->toUnicode( l [ 0 ].toAscii() );
         else
             headString = l [ 0 ];
 
@@ -341,7 +341,7 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
         QString candString = l.join( "\t" );
 
         if ( codec )
-            d.str = codec->toUnicode( candString );
+            d.str = codec->toUnicode( candString.toAscii() );
         else
             d.str = candString;
     }
@@ -367,7 +367,7 @@ void CandidateWindow::slotStdinActivated( int fd )
         n = read( fd, buf, 4096 - 1 );
         if ( n == 0 )
         {
-            close( fd );
+            ::close( fd );
             exit( 1 );
         }
         if ( n == -1 )
@@ -377,7 +377,8 @@ void CandidateWindow::slotStdinActivated( int fd )
         strcat( read_buf, buf );
     }
 
-    QStringList msgList = QStringList::split( "\n\n", QString( read_buf ) );
+    QStringList msgList
+        = QString( read_buf ).split( "\n\n", QString::SkipEmptyParts );
 
     QStringList::Iterator it = msgList.begin();
     const QStringList::Iterator end = msgList.end();
@@ -389,9 +390,9 @@ void CandidateWindow::slotStdinActivated( int fd )
 void CandidateWindow::strParse( const QString& str )
 {
 #if defined(ENABLE_DEBUG)
-    qDebug( "str = %s", ( const char* ) str.local8Bit() );
+    qDebug( "str = %s", str.toLocal8Bit().constData() );
 #endif
-    QStringList list = QStringList::split( "\n", str );
+    QStringList list = str.split( '\n', QString::SkipEmptyParts );
 
     QStringList::Iterator it = list.begin();
     const QStringList::Iterator end = list.end();
@@ -601,7 +602,6 @@ int main( int argc, char *argv[] )
     QApplication a( argc, argv );
 
     CandidateWindow b;
-    a.setMainWidget( &b );
 
     return a.exec();
 }
