@@ -33,18 +33,18 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_SUBWINDOW_H
 #define UIM_QT4_IMMODULE_SUBWINDOW_H
 
-#include <Q3VBox>
 #include <QTimer>
+#include <QtGui/QFrame>
 
 class QLabel;
 class QTextBrowser;
 
-class SubWindow : public Q3VBox
+class SubWindow : public QFrame
 {
     Q_OBJECT
 
 public:
-    SubWindow( QWidget *parent = 0, const char *name = 0 );
+    SubWindow( QWidget *parent = 0 );
     ~SubWindow();
 
     void layoutWindow( int x, int y );

@@ -40,6 +40,7 @@ SUCH DAMAGE.
 #include <QDesktopWidget>
 #include <qrect.h>
 #include <qpoint.h>
+#include <QtGui/QVBoxLayout>
 
 #include "subwindow.h"
 
@@ -54,8 +55,8 @@ const Qt::WFlags subwindowFlag = ( Qt::Window
 
 static const int TIMER_INTERVAL = 1000; // 1000ms = 1second
 
-SubWindow::SubWindow( QWidget *parent, const char *name )
-        : Q3VBox( parent, name, subwindowFlag )
+SubWindow::SubWindow( QWidget *parent )
+        : QFrame( parent, subwindowFlag )
 {
     m_titleLabel = new QLabel( this );
     m_titleLabel->setAlignment( Qt::AlignHCenter );
@@ -68,6 +69,11 @@ SubWindow::SubWindow( QWidget *parent, const char *name )
     connect( m_hookTimer, SIGNAL( timeout() ), this, SLOT( timerDone() ) );
 
     hide();
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget( m_titleLabel );
+    layout->addWidget( m_contentsEdit );
+    setLayout( layout );
 }
 
 SubWindow::~SubWindow()
