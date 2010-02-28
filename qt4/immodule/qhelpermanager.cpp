@@ -36,7 +36,6 @@ SUCH DAMAGE.
 #include <qsocketnotifier.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <Q3PtrList>
 #include <qtextcodec.h>
 
 #include "uim/uim.h"
