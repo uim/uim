@@ -97,27 +97,27 @@ void QUimHelperManager::parseHelperStr( const QString &str )
 {
     if ( focusedInputContext && !disableFocusedContext )
     {
-        if ( str.startsWith( "prop_list_get" ) )
+        if ( str.startsWith( QLatin1String( "prop_list_get" ) ) )
             uim_prop_list_update( focusedInputContext->uimContext() );
-        else if ( str.startsWith( "prop_label_get" ) )
+        else if ( str.startsWith( QLatin1String( "prop_label_get" ) ) )
             uim_prop_label_update( focusedInputContext->uimContext() );
-        else if ( str.startsWith( "prop_activate" ) )
+        else if ( str.startsWith( QLatin1String( "prop_activate" ) ) )
         {
             QStringList list = str.split( "\n" );
             uim_prop_activate( focusedInputContext->uimContext(),
                                list[ 1 ].toUtf8() );
         }
-        else if ( str.startsWith( "im_list_get" ) )
+        else if ( str.startsWith( QLatin1String( "im_list_get" ) ) )
         {
             sendImList();
         }
-        else if ( str.startsWith( "commit_string" ) )
+        else if ( str.startsWith( QLatin1String( "commit_string" ) ) )
         {
             QStringList lines = str.split( "\n" );
             if ( !lines.isEmpty() && !lines[ 1 ].isEmpty() ) {
                 QString commit_str;
                 
-                if ( lines[ 1 ].startsWith( "charset" ) ) {
+                if ( lines[ 1 ].startsWith( QLatin1String( "charset" ) ) ) {
                     /* get charset */
                     QString charset = lines[ 1 ].split( "=" ) [ 1 ];
 
@@ -132,7 +132,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
                 focusedInputContext->commitString( commit_str );
             }
         }
-        else if ( str.startsWith( "focus_in" ) )
+        else if ( str.startsWith( QLatin1String( "focus_in" ) ) )
         {
             // We shouldn't do "focusedInputContext = NULL" here, because some
             // window manager has some focus related bugs.
@@ -143,12 +143,12 @@ void QUimHelperManager::parseHelperStr( const QString &str )
     /**
      * This part should be processed even if not focused
      */
-    if ( str.startsWith( "im_change" ) )
+    if ( str.startsWith( QLatin1String( "im_change" ) ) )
     {
         // for IM switcher
         parseHelperStrImChange( str );
     }
-    else if ( str.startsWith( "prop_update_custom" ) )
+    else if ( str.startsWith( QLatin1String( "prop_update_custom" ) ) )
     {
         // for custom api
         QStringList list = str.split( "\n" );
@@ -165,7 +165,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             }
         }
     }
-    else if ( str.startsWith( "custom_reload_notify" ) )
+    else if ( str.startsWith( QLatin1String( "custom_reload_notify" ) ) )
     {
         uim_prop_reload_configs();
 
@@ -181,7 +181,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
     QString im_name = list[ 1 ];
     QString im_name_sym = "'" + im_name;
 
-    if ( str.startsWith( "im_change_this_text_area_only" ) )
+    if ( str.startsWith( QLatin1String( "im_change_this_text_area_only" ) ) )
     {
         if ( focusedInputContext )
         {
@@ -191,7 +191,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             focusedInputContext->readIMConf();
         }
     }
-    else if ( str.startsWith( "im_change_whole_desktop" ) )
+    else if ( str.startsWith( QLatin1String( "im_change_whole_desktop" ) ) )
     {
         QList<QUimInputContext *>::iterator it;
         for ( it = contextList.begin(); it != contextList.end(); ++it )
@@ -203,7 +203,8 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
                                     im_name_sym.toUtf8() );
         }
     }
-    else if ( str.startsWith( "im_change_this_application_only" ) )
+    else if ( str.startsWith( QLatin1String(
+        "im_change_this_application_only" ) ) )
     {
         if ( focusedInputContext )
         {

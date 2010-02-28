@@ -75,7 +75,7 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
     QString imname;
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
-    if ( key.startsWith( "uim-" ) )
+    if ( key.startsWith( QLatin1String( "uim-" ) ) )
         imname = key.mid( 4 );
     else
 #endif
