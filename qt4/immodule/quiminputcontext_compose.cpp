@@ -49,7 +49,7 @@
 #include "quiminputcontext.h"
 #include "quiminputcontext_compose.h"
 
-#include <qtextcodec.h>
+#include <QtCore/QTextCodec>
 
 #include <X11/keysym.h>
 #include <X11/Xlib.h>

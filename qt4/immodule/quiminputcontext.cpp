@@ -32,15 +32,13 @@
 
 */
 
-#include <qnamespace.h>
-#include <qevent.h>
-#include <qglobal.h>
-#include <qapplication.h>
-#include <qwidget.h>
-#include <qpoint.h>
-#include <qlabel.h>
-#include <QInputMethodEvent>
-#include <QTextCharFormat>
+#include <QtCore/QEvent>
+#include <QtCore/QPoint>
+#include <QtGui/QApplication>
+#include <QtGui/QInputMethodEvent>
+#include <QtGui/QLabel>
+#include <QtGui/QTextCharFormat>
+#include <QtGui/QWidget>
 
 #include <ctype.h>
 #include <string.h>

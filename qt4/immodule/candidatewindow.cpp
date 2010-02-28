@@ -33,12 +33,12 @@ SUCH DAMAGE.
 
 //#include <config.h>
 
-#include <qapplication.h>
-#include <QDesktopWidget>
-#include <qlabel.h>
-#include <qfontmetrics.h>
-#include <qevent.h>
+#include <QtCore/QEvent>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QFontMetrics>
 #include <QtGui/QHeaderView>
+#include <QtGui/QLabel>
 #include <QtGui/QTableWidget>
 #include <QtGui/QVBoxLayout>
 

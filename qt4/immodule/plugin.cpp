@@ -34,12 +34,12 @@
 
 #include "plugin.h"
 
-#include <qapplication.h>
-#include <qinputcontextplugin.h>
-#include <qinputcontext.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
+#include <QtGui/QApplication>
+#include <QtGui/QInputContext>
+#include <QtGui/QInputContextPlugin>
 #ifdef Q_WS_X11
-#include <QX11Info>
+#include <QtGui/QX11Info>
 #endif
 
 #include "uim/uim.h"

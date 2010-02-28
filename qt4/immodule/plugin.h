@@ -34,8 +34,8 @@
 #ifndef UIM_QT4_IMMODULE_PLUGIN_H
 #define UIM_QT4_IMMODULE_PLUGIN_H
 
-#include <qinputcontextplugin.h>
-#include <qstringlist.h>
+#include <QtCore/QStringList>
+#include <QtGui/QInputContextPlugin>
 
 class QUimInfoManager;
 

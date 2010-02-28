@@ -33,7 +33,7 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_SUBWINDOW_H
 #define UIM_QT4_IMMODULE_SUBWINDOW_H
 
-#include <QTimer>
+#include <QtCore/QTimer>
 #include <QtGui/QFrame>
 
 class QLabel;

@@ -33,10 +33,10 @@ SUCH DAMAGE.
 
 //#include <config.h>
 
-#include <qsocketnotifier.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qtextcodec.h>
+#include <QtCore/QSocketNotifier>
+#include <QtCore/QString>
+#include <QtCore/QStringList>
+#include <QtCore/QTextCodec>
 
 #include "uim/uim.h"
 #include "uim/uim-util.h"

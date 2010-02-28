@@ -33,13 +33,13 @@ SUCH DAMAGE.
 
 //#include <config.h>
 
-#include <qlabel.h>
-#include <qtextbrowser.h>
-#include <qtimer.h>
-#include <qapplication.h>
-#include <QDesktopWidget>
-#include <qrect.h>
-#include <qpoint.h>
+#include <QtCore/QPoint>
+#include <QtCore/QRect>
+#include <QtCore/QTimer>
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QLabel>
+#include <QtGui/QTextBrowser>
 #include <QtGui/QVBoxLayout>
 
 #include "subwindow.h"

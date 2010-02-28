@@ -34,7 +34,7 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_DEBUG_H
 #define UIM_QT4_IMMODULE_DEBUG_H
 
-#include <QtGlobal>
+#include <QtCore/QtGlobal>
 
 #ifdef QT_NO_DEBUG
 #undef qDebug

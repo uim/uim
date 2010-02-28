@@ -34,7 +34,7 @@
 
 #include "quiminputcontext_with_slave.h"
 
-#include <qinputcontextfactory.h>
+#include <QtGui/QInputContextFactory>
 
 QUimInputContextWithSlave::QUimInputContextWithSlave( const char *imname, const char *lang )
         : QUimInputContext( imname, lang )

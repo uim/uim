@@ -37,10 +37,10 @@ SUCH DAMAGE.
 
 #include <stdlib.h>
 
-#include <qwidget.h>
-#include <qlineedit.h>
-#include <qapplication.h>
-#include <qclipboard.h>
+#include <QtGui/QApplication>
+#include <QtGui/QClipboard>
+#include <QtGui/QLineEdit>
+#include <QtGui/QWidget>
 #ifdef ENABLE_QT4_QT3SUPPORT
 # include <Qt3Support/Q3TextEdit>
 #endif

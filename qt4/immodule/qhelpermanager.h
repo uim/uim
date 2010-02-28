@@ -33,7 +33,7 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_QHELPERMANAGER_H
 #define UIM_QT4_IMMODULE_QHELPERMANAGER_H
 
-#include <qobject.h>
+#include <QtCore/QObject>
 
 class QString;
 class QSocketNotifier;
