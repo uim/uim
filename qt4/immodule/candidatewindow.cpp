@@ -153,8 +153,8 @@ void CandidateWindow::clearCandidates()
     // clear stored candidate datas
     for ( int i = 0; i < stores.size(); i++ )
     {
-	if ( stores[ i ] )
-	    uim_candidate_free( stores[ i ] );
+        if ( stores[ i ] )
+            uim_candidate_free( stores[ i ] );
     }
     stores.clear();
 }
@@ -204,8 +204,8 @@ void CandidateWindow::setNrCandidates( int nrCands, int dLimit )
     // setup dummy candidate
     for ( int i = 0; i < nrCandidates; i++ )
     {
-	uim_candidate d = NULL;
-	stores.append( d );
+        uim_candidate d = NULL;
+        stores.append( d );
     }
 
     if ( !subWin )
@@ -226,12 +226,12 @@ void CandidateWindow::setPageCandidates( int page, const Q3ValueList<uim_candida
     start = page * displayLimit;
 
     if ( displayLimit && ( nrCandidates - start ) > displayLimit )
-	pageNr = displayLimit;
+        pageNr = displayLimit;
     else
-	pageNr = nrCandidates - start;
+        pageNr = nrCandidates - start;
 
     for ( i = 0; i < pageNr; i++ )
-	stores[ start + i ] = candidates[ i ];
+        stores[ start + i ] = candidates[ i ];
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 

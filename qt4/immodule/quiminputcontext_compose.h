@@ -39,14 +39,14 @@
 #undef KeyRelease
 
 typedef struct _DefTree {
-    struct _DefTree *next;		/* another Key definition */
-    struct _DefTree *succession;	/* successive Key Sequence */
-					/* Key definitions */
+    struct _DefTree *next;                /* another Key definition */
+    struct _DefTree *succession;        /* successive Key Sequence */
+                                        /* Key definitions */
     unsigned modifier_mask;
     unsigned modifier;
-    KeySym keysym;			/* leaf only */
+    KeySym keysym;                        /* leaf only */
     char *mb;
-    char *utf8;				/* make from mb */
+    char *utf8;                                /* make from mb */
     KeySym ks;
 } DefTree;
 

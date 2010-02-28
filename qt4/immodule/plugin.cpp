@@ -76,7 +76,7 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
     if ( key.startsWith( "uim-" ) )
-	imname = key.mid( 4 );
+        imname = key.mid( 4 );
     else
 #endif
     if ( key == "uim" )
@@ -84,7 +84,7 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
 
     QStringList langs = createLanguageList( key );
     QUimInputContext *uic = new QUimInputContext( imname.toUtf8(),
-						  langs[ 0 ].toUtf8() );
+                                                  langs[ 0 ].toUtf8() );
 
     return uic;
 }
@@ -116,7 +116,7 @@ void UimInputContextPlugin::uimInit()
         if (!infoManager)
             infoManager = new QUimInfoManager();
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
-	uim_x_kana_input_hack_init( QX11Info::display() );
+        uim_x_kana_input_hack_init( QX11Info::display() );
 #endif
         uimReady = true;
     }
@@ -167,7 +167,7 @@ QStringList UimInputContextPlugin::createImList() const
 QStringList UimInputContextPlugin::createLanguageList( const QString &key ) const
 {
     if ( key == "uim" )
-	return QStringList() << "ja" << "ko" << "zh" << "*";
+        return QStringList() << "ja" << "ko" << "zh" << "*";
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
     uim_context tmp_uc = uim_create_context( NULL, "UTF-8",

@@ -106,7 +106,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         {
             QStringList list = str.split( "\n" );
             uim_prop_activate( focusedInputContext->uimContext(),
-			       list[ 1 ].toUtf8() );
+                               list[ 1 ].toUtf8() );
         }
         else if ( str.startsWith( "im_list_get" ) )
         {
@@ -160,8 +160,8 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
                 uim_prop_update_custom( ( *it )->uimContext(),
-					list[ 1 ].toUtf8(),
-					list[ 2 ].toUtf8() );
+                                        list[ 1 ].toUtf8(),
+                                        list[ 2 ].toUtf8() );
                 break;  /* all custom variables are global */
             }
         }
@@ -172,7 +172,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
 
         QUimInfoManager *infoManager =
             UimInputContextPlugin::getQUimInfoManager();
-	infoManager->initUimInfo();
+        infoManager->initUimInfo();
     }
 }
 
@@ -187,7 +187,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         if ( focusedInputContext )
         {
             uim_switch_im( focusedInputContext->uimContext(),
-			   im_name.toUtf8() );
+                           im_name.toUtf8() );
             uim_prop_list_update( focusedInputContext->uimContext() );
             focusedInputContext->readIMConf();
         }
@@ -200,8 +200,8 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             uim_switch_im( ( *it )->uimContext(), im_name.toUtf8() );
             ( *it )->readIMConf();
             uim_prop_update_custom( ( *it )->uimContext(),
-	                            "custom-preserved-default-im-name",
-				    im_name_sym.toUtf8() );
+                                    "custom-preserved-default-im-name",
+                                    im_name_sym.toUtf8() );
         }
     }
     else if ( str.startsWith( "im_change_this_application_only" ) )

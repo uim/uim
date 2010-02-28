@@ -72,11 +72,11 @@ private:
                               char **former, char **latter );
     int acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
                                          int former_req_len,
-					 int latter_req_len,
+                                         int latter_req_len,
                                          char **former, char **latter );
     int acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                                          int former_req_len,
-					 int latter_req_len,
+                                         int latter_req_len,
                                          char **former, char **latter );
 
     int acquireClipboardText( enum UTextOrigin origin,

@@ -257,7 +257,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             key = qkey - Qt::Key_F1 + UKey_F1;
         }
         else if ( qkey >= Qt::Key_Dead_Grave && qkey <= Qt::Key_Dead_Horn )
-	{
+        {
             key = qkey - Qt::Key_Dead_Grave + UKey_Dead_Grave;
         }
         else if ( qkey >= Qt::Key_Kanji && qkey <= Qt::Key_Eisu_toggle )
@@ -300,8 +300,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
                 break;
             case Qt::Key_Control: key = UKey_Control_key;
                 if ( type == QEvent::KeyPress )
-        	    modifier &= ~UMod_Control;
-		break;
+                    modifier &= ~UMod_Control;
+                break;
             case Qt::Key_Alt: key = UKey_Alt_key;
                 if ( type == QEvent::KeyPress )
                     modifier &= ~UMod_Alt;
@@ -354,9 +354,9 @@ void QUimInputContext::setFocusWidget( QWidget *w )
     QInputContext::setFocusWidget( w );
 
     if ( w )
-	setFocus();
+        setFocus();
     else
-	unsetFocus();
+        unsetFocus();
 }
 
 // Qt4 does not have QInputContext::setFocus()
@@ -473,9 +473,9 @@ void QUimInputContext::update()
     qDebug( "QUimInputContext::update() w = %p", w );
 
     if ( w ) {
-	QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
-	QPoint p = w->mapToGlobal( mf.topLeft() );
-	setMicroFocus( p.x(), p.y(), mf.width(), mf.height() );
+        QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
+        QPoint p = w->mapToGlobal( mf.topLeft() );
+        setMicroFocus( p.x(), p.y(), mf.width(), mf.height() );
     }
 }
 
@@ -606,21 +606,21 @@ void QUimInputContext::updatePreedit()
     QString newString = getPreeditString();
 
     if ( !isComposing() ) {
-	if ( newString.isEmpty() )
-	    return;
+        if ( newString.isEmpty() )
+            return;
 
-	// Start conversion
-	m_isComposing = true;
+        // Start conversion
+        m_isComposing = true;
     }
 
     if ( !newString.isEmpty() ) {
         QInputMethodEvent e( newString, getPreeditAttrs() );
         sendEvent( e );
-	// Qt4.3.1 does not call back update() here
-	update();
+        // Qt4.3.1 does not call back update() here
+        update();
     } else {
-	// Complete conversion implicitly since the preedit is empty
-	commitString( "" );
+        // Complete conversion implicitly since the preedit is empty
+        commitString( "" );
     }
 }
 
@@ -628,7 +628,7 @@ void QUimInputContext::saveContext()
 {
     // just send IMEnd and keep preedit string
     if ( isComposing() )
-	commitString( "" );
+        commitString( "" );
 }
 
 void QUimInputContext::restoreContext()
@@ -731,46 +731,46 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
     const QList<PreeditSegment *>::ConstIterator end = psegs.end();
     int segPos = 0;
     for ( ; seg != end; ++seg ) {
-	int uimAttr = ( *seg )->attr;
-	int segStrLen = ( *seg )->str.length();
-	QTextCharFormat segFmt;
+        int uimAttr = ( *seg )->attr;
+        int segStrLen = ( *seg )->str.length();
+        QTextCharFormat segFmt;
 
         if ( uimAttr & UPreeditAttr_Cursor ) {
-	    // Transparent cursor is required to set microfocus even
-	    // if the caret is invisible to user.
-	    //
-	    // FIXME: Segment string may be outframed if the cursor is
-	    // located near the right frame.
-	    int visibility = ( segStrLen ) ? HIDE_CARET : SHOW_CARET;
-	    QInputMethodEvent::Attribute cursor( QInputMethodEvent::Cursor,
-						 segPos, visibility, DUMMY );
-	    attrs << cursor;
-	} else if ( uimAttr & UPreeditAttr_Separator ) {
-	    if ( !segStrLen )
-		segStrLen = QString( DEFAULT_SEPARATOR_STR ).length();
-	}
+            // Transparent cursor is required to set microfocus even
+            // if the caret is invisible to user.
+            //
+            // FIXME: Segment string may be outframed if the cursor is
+            // located near the right frame.
+            int visibility = ( segStrLen ) ? HIDE_CARET : SHOW_CARET;
+            QInputMethodEvent::Attribute cursor( QInputMethodEvent::Cursor,
+                                                 segPos, visibility, DUMMY );
+            attrs << cursor;
+        } else if ( uimAttr & UPreeditAttr_Separator ) {
+            if ( !segStrLen )
+                segStrLen = QString( DEFAULT_SEPARATOR_STR ).length();
+        }
 
-	if ( segStrLen ) {
-	    if ( uimAttr & UPreeditAttr_Reverse ) {
+        if ( segStrLen ) {
+            if ( uimAttr & UPreeditAttr_Reverse ) {
 #if 0
-		// FIXME: fmt.foreground() is white (expecting black)
-		QTextFormat fmt = standardFormat( PreeditFormat );
-		segFmt.setForeground( fmt.background() );
-		segFmt.setBackground( fmt.foreground() );
+                // FIXME: fmt.foreground() is white (expecting black)
+                QTextFormat fmt = standardFormat( PreeditFormat );
+                segFmt.setForeground( fmt.background() );
+                segFmt.setBackground( fmt.foreground() );
 #else
-		// FIXME: Retrieve customized colors from the text widget
-		segFmt.setForeground( Qt::white );
-		segFmt.setBackground( Qt::black );
+                // FIXME: Retrieve customized colors from the text widget
+                segFmt.setForeground( Qt::white );
+                segFmt.setBackground( Qt::black );
 #endif
-	    }
-	    if ( uimAttr & UPreeditAttr_UnderLine ) {
-		segFmt.setFontUnderline( TRUE );
-	    }
-	    QInputMethodEvent::Attribute segAttr( QInputMethodEvent::TextFormat,
-						  segPos, segStrLen, segFmt );
-	    attrs << segAttr;
-	    segPos += segStrLen;
-	}
+            }
+            if ( uimAttr & UPreeditAttr_UnderLine ) {
+                segFmt.setFontUnderline( TRUE );
+            }
+            QInputMethodEvent::Attribute segAttr( QInputMethodEvent::TextFormat,
+                                                  segPos, segStrLen, segFmt );
+            attrs << segAttr;
+            segPos += segStrLen;
+        }
     }
 
     return attrs;
@@ -783,10 +783,10 @@ void QUimInputContext::prepare_page_candidates( int page )
     list.clear();
 
     if ( page < 0 )
-	return;
+        return;
 
     if ( pageFilled[ page ] )
-	return;
+        return;
 
     // set page candidates
     uim_candidate cand;
@@ -797,14 +797,14 @@ void QUimInputContext::prepare_page_candidates( int page )
     start = page * displayLimit;
 
     if ( displayLimit && ( nrCandidates - start ) > displayLimit )
-	pageNr = displayLimit;
+        pageNr = displayLimit;
     else
-	pageNr = nrCandidates - start;
+        pageNr = nrCandidates - start;
 
     for ( int i = start; i < ( pageNr + start ); i++ )
     {
-	cand = uim_get_candidate( m_uc, i, displayLimit ? i % displayLimit : i );
-	list.append( cand );
+        cand = uim_get_candidate( m_uc, i, displayLimit ? i % displayLimit : i );
+        list.append( cand );
     }
     pageFilled[ page ] = true;
     cwin->setPageCandidates( page, list );
@@ -832,7 +832,7 @@ void QUimInputContext::candidateActivate( int nr, int displayLimit )
     nrPages = displayLimit ? ( nr - 1 ) / displayLimit + 1 : 1;
     pageFilled.clear();
     for ( int i = 0; i < nrPages; i++ )
-	pageFilled.append( false );
+        pageFilled.append( false );
     
     cwin->setNrCandidates( nr, displayLimit );
 
@@ -850,12 +850,12 @@ void QUimInputContext::candidateSelect( int index )
     int new_page;
     
     if ( index >= cwin->nrCandidates )
-	index = 0;
+        index = 0;
 
     if ( index >= 0 && cwin->displayLimit )
-	new_page = index / cwin->displayLimit;
+        new_page = index / cwin->displayLimit;
     else
-	new_page = cwin->pageIndex;
+        new_page = cwin->pageIndex;
 
     prepare_page_candidates( new_page );
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
@@ -869,11 +869,11 @@ void QUimInputContext::candidateShiftPage( bool forward )
 
     index = forward ? cwin->pageIndex + 1 : cwin->pageIndex - 1;
     if ( index < 0 )
-	new_page = nrPages - 1;
+        new_page = nrPages - 1;
     else if ( index >= nrPages )
-	new_page = 0;
+        new_page = 0;
     else
-	new_page = index;
+        new_page = index;
 
     prepare_page_candidates( new_page );
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
