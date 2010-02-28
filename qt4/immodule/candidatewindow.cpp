@@ -39,6 +39,7 @@ SUCH DAMAGE.
 #include <Q3Header>
 #include <qfontmetrics.h>
 #include <qevent.h>
+#include <QtGui/QVBoxLayout>
 
 #include "uim/uim.h"
 
@@ -62,8 +63,8 @@ const Qt::WFlags candidateFlag = ( Qt::Window
 #endif
                                  );
 
-CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
-        : Q3VBox( parent, name, candidateFlag )
+CandidateWindow::CandidateWindow( QWidget *parent )
+        : QFrame( parent, candidateFlag )
 {
     setFrameStyle( Raised | NoFrame );
 
@@ -102,6 +103,13 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     isAlwaysLeft = false;
 
     subWin = NULL;
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin( 0 );
+    layout->setSpacing( 0 );
+    layout->addWidget( cList );
+    layout->addWidget( numLabel );
+    setLayout( layout );
 }
 
 CandidateWindow::~CandidateWindow()

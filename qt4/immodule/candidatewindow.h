@@ -35,7 +35,6 @@ SUCH DAMAGE.
 
 #include <uim/uim.h>
 
-#include <Q3VBox>
 #include <Q3ListView>
 #include <qevent.h>
 #include <qfontmetrics.h>
@@ -47,12 +46,12 @@ class QUimInputContext;
 class CandidateListView;
 class SubWindow;
 
-class CandidateWindow : public Q3VBox
+class CandidateWindow : public QFrame
 {
     Q_OBJECT
 
 public:
-    CandidateWindow( QWidget *parent, const char * name = 0 );
+    CandidateWindow( QWidget *parent );
     ~CandidateWindow();
 
     void activateCandwin( int dLimit );
