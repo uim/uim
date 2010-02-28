@@ -117,10 +117,10 @@ QPoint SubWindow::forceInside( const QRect &enclosure, const QRect &prisoner )
 {
     int new_x, new_y;
 
-    new_x = QMIN( enclosure.right(), prisoner.right() ) - prisoner.width() + 1;
-    new_x = QMAX( enclosure.left(), new_x );
-    new_y = QMIN( enclosure.bottom(), prisoner.bottom() ) - prisoner.height() + 1;
-    new_y = QMAX( enclosure.top(), new_y );
+    new_x = qMin( enclosure.right(), prisoner.right() ) - prisoner.width() + 1;
+    new_x = qMax( enclosure.left(), new_x );
+    new_y = qMin( enclosure.bottom(), prisoner.bottom() ) - prisoner.height() + 1;
+    new_y = qMax( enclosure.top(), new_y );
 
     return QPoint( new_x, new_y );
 }
