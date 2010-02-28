@@ -116,7 +116,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         {
             QStringList lines = str.split( "\n" );
             if ( !lines.isEmpty() && !lines[ 1 ].isEmpty() ) {
-                QString commit_str = QString::null;
+                QString commit_str;
                 
                 if ( lines[ 1 ].startsWith( "charset" ) ) {
                     /* get charset */

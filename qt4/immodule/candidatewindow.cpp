@@ -428,7 +428,7 @@ void CandidateWindow::layoutWindow( int x, int y, int /* w */, int h )
 
 void CandidateWindow::updateLabel()
 {
-    QString indexString = QString::null;
+    QString indexString;
     if ( candidateIndex >= 0 )
         indexString = QString::number( candidateIndex + 1 ) + " / " + QString::number( nrCandidates );
     else

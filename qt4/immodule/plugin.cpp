@@ -72,7 +72,7 @@ QStringList UimInputContextPlugin::keys() const
 
 QInputContext *UimInputContextPlugin::create( const QString & key )
 {
-    QString imname = QString::null;
+    QString imname;
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
     if ( key.startsWith( "uim-" ) )
