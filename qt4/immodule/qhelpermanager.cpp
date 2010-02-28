@@ -229,8 +229,8 @@ void QUimHelperManager::sendImList()
     const char* current_im_name = uim_get_current_im_name( focusedInputContext->uimContext() );
 
     QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
-    Q3ValueList<uimInfo> info = infoManager->getUimInfo();
-    Q3ValueList<uimInfo>::iterator it;
+    QList<uimInfo> info = infoManager->getUimInfo();
+    QList<uimInfo>::iterator it;
 
     for ( it = info.begin(); it != info.end(); ++it )
     {

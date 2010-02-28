@@ -37,9 +37,9 @@ SUCH DAMAGE.
 
 #include <Q3VBox>
 #include <Q3ListView>
-#include <Q3ValueList>
 #include <qevent.h>
 #include <qfontmetrics.h>
+#include <QtCore/QList>
 
 class QLabel;
 
@@ -63,7 +63,7 @@ public:
     void setAlwaysLeftPosition( bool left ) { isAlwaysLeft = left; }
     bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
-    void setCandidates( int displayLimit, const Q3ValueList<uim_candidate> &candidates );
+    void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
     void setPage( int page );
     void shiftPage( bool forward );
     void layoutWindow( int x, int y, int w, int h );
@@ -71,7 +71,7 @@ public:
     void setIndexInPage( int index );
 
     void setNrCandidates( int nrCands, int dLimit );
-    void setPageCandidates( int page, const Q3ValueList<uim_candidate> &candidates );
+    void setPageCandidates( int page, const QList<uim_candidate> &candidates );
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
@@ -97,7 +97,7 @@ protected:
     CandidateListView *cList;
     QLabel *numLabel;
 
-    Q3ValueList<uim_candidate> stores;
+    QList<uim_candidate> stores;
 
 
     bool isAlwaysLeft;

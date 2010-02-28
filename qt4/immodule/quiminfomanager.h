@@ -33,7 +33,8 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_QUIMINFOMANAGER_H
 #define UIM_QT4_IMMODULE_QUIMINFOMANAGER_H
 
-#include <Q3ValueList>
+#include <QtCore/QList>
+#include <QtCore/QString>
 
 struct uimInfo
 {
@@ -49,11 +50,11 @@ public:
     ~QUimInfoManager();
 
     void initUimInfo();
-    Q3ValueList<uimInfo> getUimInfo();
+    QList<uimInfo> getUimInfo();
     QString imLang( const QString &imname );
 
 private:
-    Q3ValueList<uimInfo> info;
+    QList<uimInfo> info;
 };
 
 #endif /* UIM_QT4_IMMODULE_QUIMINFOMANAGER_H */

@@ -160,7 +160,7 @@ void CandidateWindow::clearCandidates()
 }
 
 
-void CandidateWindow::setCandidates( int dl, const Q3ValueList<uim_candidate> &candidates )
+void CandidateWindow::setCandidates( int dl, const QList<uim_candidate> &candidates )
 {
 #ifdef ENABLE_DEBUG
     qDebug( "setCandidates" );
@@ -212,7 +212,7 @@ void CandidateWindow::setNrCandidates( int nrCands, int dLimit )
         subWin = new SubWindow( this );
 }
 
-void CandidateWindow::setPageCandidates( int page, const Q3ValueList<uim_candidate> &candidates )
+void CandidateWindow::setPageCandidates( int page, const QList<uim_candidate> &candidates )
 {
 #ifdef ENABLE_DEBUG
     qDebug( "setPageCandidates" );

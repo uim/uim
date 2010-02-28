@@ -33,7 +33,7 @@ SUCH DAMAGE.
 
 //#include <config.h>
 
-#include <Q3ValueList>
+#include <QtCore/QList>
 
 #include "uim/uim.h"
 
@@ -49,7 +49,7 @@ QUimInfoManager::~QUimInfoManager()
 {
 }
 
-Q3ValueList<uimInfo>
+QList<uimInfo>
 QUimInfoManager::getUimInfo()
 {
     return info;
