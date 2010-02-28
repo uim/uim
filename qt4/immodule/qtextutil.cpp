@@ -39,10 +39,11 @@ SUCH DAMAGE.
 
 #include <qwidget.h>
 #include <qlineedit.h>
-//#include <qtextedit.h>
-#include <Q3TextEdit>
 #include <qapplication.h>
 #include <qclipboard.h>
+#ifdef ENABLE_QT4_QT3SUPPORT
+# include <Qt3Support/Q3TextEdit>
+#endif
 
 #include "uim/uim.h"
 
@@ -133,9 +134,11 @@ QUimTextUtil::acquirePrimaryText( enum UTextOrigin origin,
     if ( mWidget->inherits( "QLineEdit" ) )
         err = acquirePrimaryTextInQLineEdit( origin, former_req_len,
                                              latter_req_len, former, latter );
+#ifdef ENABLE_QT4_QT3SUPPORT
     else if ( mWidget->inherits( "Q3TextEdit" ) )
         err = acquirePrimaryTextInQTextEdit( origin, former_req_len,
                                              latter_req_len, former, latter );
+#endif
     else
         // FIXME other widgets?
         err = -1;
@@ -245,6 +248,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
     return 0;
 }
 
+#ifdef ENABLE_QT4_QT3SUPPORT
 int
 QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                              int former_req_len,
@@ -403,6 +407,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
     edit->setTextFormat( format );
     return 0; 
 }
+#endif
 
 int
 QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
@@ -419,9 +424,11 @@ QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
     if ( mWidget->inherits( "QLineEdit" ) )
         err = acquireSelectionTextInQLineEdit( origin, former_req_len,
                                                latter_req_len, former, latter );
+#ifdef ENABLE_QT4_QT3SUPPORT
     else if ( mWidget->inherits( "Q3TextEdit" ) )
         err = acquireSelectionTextInQTextEdit( origin, former_req_len,
                                                latter_req_len, former, latter );
+#endif
     else
         // FIXME other widgets?
         err = -1;
@@ -483,6 +490,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
     return 0;
 }
 
+#ifdef ENABLE_QT4_QT3SUPPORT
 int
 QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                                                int former_req_len,
@@ -554,6 +562,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
     edit->setTextFormat( format );
     return 0;
 }
+#endif
 
 int
 QUimTextUtil::acquireClipboardText( enum UTextOrigin origin,
@@ -626,9 +635,11 @@ QUimTextUtil::deletePrimaryText( enum UTextOrigin origin, int former_req_len,
     if ( mWidget->inherits( "QLineEdit" ) )
         err = deletePrimaryTextInQLineEdit( origin, former_req_len,
                                             latter_req_len );
+#ifdef ENABLE_QT4_QT3SUPPORT
     else if ( mWidget->inherits( "Q3TextEdit" ) )
         err = deletePrimaryTextInQTextEdit( origin, former_req_len,
                                             latter_req_len );
+#endif
     else
         // FIXME other widgets?
         err = -1;
@@ -717,6 +728,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
     return 0;
 }
 
+#ifdef ENABLE_QT4_QT3SUPPORT
 int
 QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                             int former_req_len,
@@ -824,6 +836,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
     return 0; 
 }
+#endif
 
 int
 QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
@@ -839,9 +852,11 @@ QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
     if ( mWidget->inherits( "QLineEdit" ) )
         err = deleteSelectionTextInQLineEdit( origin, former_req_len,
                                               latter_req_len );
+#ifdef ENABLE_QT4_QT3SUPPORT
     else if ( mWidget->inherits( "Q3TextEdit" ) )
         err = deleteSelectionTextInQTextEdit( origin, former_req_len,
                                               latter_req_len );
+#endif
     else
         // FIXME other widgets?
         err = -1;
@@ -898,6 +913,7 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
     return 0;
 }
 
+#ifdef ENABLE_QT4_QT3SUPPORT
 int
 QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                                               int former_req_len,
@@ -1051,6 +1067,7 @@ QUimTextUtil::QTextEditPositionForward( int *cursor_para, int *cursor_index )
     *cursor_para = current_para;
     *cursor_index = current_index;
 }
+#endif
 
 void QUimTextUtil::savePreedit()
 {
