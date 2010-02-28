@@ -64,7 +64,7 @@
 #include "uim/uim-x-util.h"
 #endif
 
-#define DEFAULT_SEPARATOR_STR "|"
+static const char DEFAULT_SEPARATOR_STR[] = "|";
 
 QUimInputContext *focusedInputContext = 0;
 bool disableFocusedContext = false;

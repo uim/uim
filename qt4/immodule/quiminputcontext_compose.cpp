@@ -55,13 +55,16 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#define COMPOSE_FILE        "Compose"
-#define COMPOSE_DIR_FILE        "X11/locale/compose.dir"
-#define XLOCALE_DIR        "X11/locale"
-#define FALLBACK_XLIB_DIR        "/usr/X11R6/lib"
-
+static const char COMPOSE_FILE[] = "Compose";
+static const char COMPOSE_DIR_FILE[] = "X11/locale/compose.dir";
+static const char XLOCALE_DIR[] = "X11/locale";
+static const char FALLBACK_XLIB_DIR[] = "/usr/X11R6/lib";
 #define XLC_BUFSIZE        256
-#define iscomment(ch)        ((ch) == '#' || (ch) == '\0')
+static inline bool iscomment(char ch)
+{
+    return ch == '#' || ch == '\0';
+}
+
 
 static int parse_line(char *line, char **argv, int argsize);
 static unsigned int KeySymToUcs4(KeySym keysym);
@@ -297,23 +300,25 @@ putbackch(int c, int *lastch)
 }
 
 
-#define ENDOFFILE 0
-#define ENDOFLINE 1
-#define COLON 2
-#define LESS 3
-#define GREATER 4
-#define EXCLAM 5
-#define TILDE 6
-#define STRING 7
-#define KEY 8
-#define ERROR 9
+static const int ENDOFFILE = 0;
+static const int ENDOFLINE = 1;
+static const int COLON = 2;
+static const int LESS = 3;
+static const int GREATER = 4;
+static const int EXCLAM = 5;
+static const int TILDE = 6;
+static const int STRING = 7;
+static const int KEY = 8;
+static const int ERROR = 9;
 
 
 #ifndef isalnum
-#define isalnum(c)      \
-    (('0' <= (c) && (c) <= '9')  || \
-     ('A' <= (c) && (c) <= 'Z')  || \
-     ('a' <= (c) && (c) <= 'z'))
+static inline bool isalnum(char c)
+{
+     return ('0' <= c && c <= '9') ||
+         ('A' <= c && c <= 'Z') ||
+         ('a' <= c && c <= 'z');
+}
 #endif
 
 static int
@@ -623,8 +628,7 @@ QUimInputContext::get_mb_string(char *buf, unsigned int ks)
     return len;
 }
 
-#define AllMask (ShiftMask | LockMask | ControlMask | Mod1Mask)
-#define LOCAL_UTF8_BUFSIZE 256
+static const unsigned AllMask = (ShiftMask | LockMask | ControlMask | Mod1Mask);
 #define SEQUENCE_MAX    10
 
 int
