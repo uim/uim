@@ -32,14 +32,14 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
+#include <cctype>
+#include <cerrno>
+#include <clocale>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sys/param.h>
-#include <locale.h>
-#include <errno.h>
+#include <sys/stat.h>
 #ifdef HAVE_LANGINFO_CODESET
 #include <langinfo.h>
 #endif

@@ -40,8 +40,8 @@
 #include <QtGui/QTextCharFormat>
 #include <QtGui/QWidget>
 
-#include <ctype.h>
-#include <string.h>
+#include <cctype>
+#include <cstring>
 
 #include "debug.h"
 #include "quiminputcontext.h"

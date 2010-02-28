@@ -35,7 +35,7 @@ SUCH DAMAGE.
 
 //#include <config.h>
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
