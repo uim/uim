@@ -31,6 +31,8 @@
   SUCH DAMAGE.
 
 */
+#ifndef UIM_QT4_IMMODULE_PLUGIN_H
+#define UIM_QT4_IMMODULE_PLUGIN_H
 
 #include <qinputcontextplugin.h>
 #include <qstringlist.h>
@@ -63,3 +65,4 @@ protected:
     bool uimReady;
 };
 
+#endif /* Not def: UIM_QT4_IMMODULE_PLUGIN_H */
