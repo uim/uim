@@ -187,7 +187,7 @@ bool QUimInputContext::x11FilterEvent( QWidget *keywidget, XEvent *event )
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
     return uim_x_kana_input_hack_filter_event( m_uc, event );
 #else
-    return FALSE;
+    return false;
 #endif
 }
 #endif // Q_WS_X11
@@ -200,7 +200,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
 
     if ( type != QEvent::KeyPress &&
             type != QEvent::KeyRelease )
-        return FALSE;
+        return false;
 
     QKeyEvent *keyevent = ( QKeyEvent * ) event;
     int qkey = keyevent->key();
@@ -329,7 +329,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             return mCompose->handle_qkey( keyevent );
 #else
         if ( notFiltered )
-            return FALSE;
+            return false;
 #endif
     }
     else if ( type == QEvent::KeyRelease )
@@ -340,11 +340,11 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             return mCompose->handle_qkey( keyevent );
 #else
         if ( notFiltered )
-            return FALSE;
+            return false;
 #endif
     }
 
-    return TRUE;
+    return true;
 }
 
 void QUimInputContext::setFocusWidget( QWidget *w )
@@ -456,7 +456,7 @@ void QUimInputContext::reset()
 {
     qDebug( "QUimInputContext::reset()" );
 
-    candwinIsActive = FALSE;
+    candwinIsActive = false;
     cwin->hide();
     uim_reset_context( m_uc );
 #ifdef Q_WS_X11
@@ -764,7 +764,7 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
 #endif
             }
             if ( uimAttr & UPreeditAttr_UnderLine ) {
-                segFmt.setFontUnderline( TRUE );
+                segFmt.setFontUnderline( true );
             }
             QInputMethodEvent::Attribute segAttr( QInputMethodEvent::TextFormat,
                                                   segPos, segStrLen, segFmt );

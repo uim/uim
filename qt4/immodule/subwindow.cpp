@@ -82,7 +82,7 @@ void SubWindow::hookPopup( const QString &title, const QString contents )
     m_titleLabel->setText( title );
     m_contentsEdit->setText( contents );
 
-    m_hookTimer->start( TIMER_INTERVAL, TRUE );
+    m_hookTimer->start( TIMER_INTERVAL, true );
 }
 
 void SubWindow::popup()
