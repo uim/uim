@@ -43,7 +43,7 @@ class QUimHelperManager : public QObject
     Q_OBJECT
 
 public:
-    QUimHelperManager( QObject * parent = 0 );
+    explicit QUimHelperManager( QObject * parent = 0 );
     ~QUimHelperManager();
 
     void checkHelperConnection();

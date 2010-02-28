@@ -45,7 +45,7 @@ class QUimTextUtil : QObject
     Q_OBJECT
 
 public:
-    QUimTextUtil( QObject *parent = 0 );
+    explicit QUimTextUtil( QObject *parent = 0 );
     ~QUimTextUtil();
 
     static int acquire_text_cb( void *ptr, enum UTextArea text_id,

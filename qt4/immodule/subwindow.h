@@ -44,7 +44,7 @@ class SubWindow : public QFrame
     Q_OBJECT
 
 public:
-    SubWindow( QWidget *parent = 0 );
+    explicit SubWindow( QWidget *parent = 0 );
     ~SubWindow();
 
     void layoutWindow( int x, int y );

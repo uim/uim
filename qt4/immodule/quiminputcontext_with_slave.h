@@ -45,7 +45,8 @@ class QUimInputContextWithSlave : public QUimInputContext
 {
     Q_OBJECT
 public:
-    QUimInputContextWithSlave( const char *imname = 0, const char *lang = 0 );
+    explicit QUimInputContextWithSlave(const char *imname = 0,
+        const char *lang = 0 );
     ~QUimInputContextWithSlave();
 
     virtual void setFocus();

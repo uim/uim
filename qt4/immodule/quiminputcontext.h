@@ -72,7 +72,7 @@ class QUimInputContext : public QInputContext
 {
     Q_OBJECT
 public:
-    QUimInputContext( const char *imname = 0, const char *lang = 0 );
+    explicit QUimInputContext( const char *imname = 0, const char *lang = 0 );
     ~QUimInputContext();
 
     virtual QString identifierName();

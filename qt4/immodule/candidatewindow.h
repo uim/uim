@@ -50,7 +50,7 @@ class CandidateWindow : public QFrame
     Q_OBJECT
 
 public:
-    CandidateWindow( QWidget *parent );
+    explicit CandidateWindow( QWidget *parent );
     ~CandidateWindow();
 
     void activateCandwin( int dLimit );
@@ -109,7 +109,8 @@ class CandidateListView : public QTableWidget
     Q_OBJECT
 
 public:
-    CandidateListView( QWidget *parent = 0 ) : QTableWidget( parent ) {}
+    explicit CandidateListView( QWidget *parent = 0 )
+        : QTableWidget( parent ) {}
     ~CandidateListView() {}
 
     QSize sizeHint() const;
