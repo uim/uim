@@ -36,9 +36,10 @@ SUCH DAMAGE.
 #include <qapplication.h>
 #include <QDesktopWidget>
 #include <qlabel.h>
-#include <Q3Header>
 #include <qfontmetrics.h>
 #include <qevent.h>
+#include <QtGui/QHeaderView>
+#include <QtGui/QTableWidget>
 #include <QtGui/QVBoxLayout>
 
 #include "uim/uim.h"
@@ -71,23 +72,20 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     ic = NULL;
 
     //setup CandidateList
-    cList = new CandidateListView( this, "candidateListView" );
-    cList->setSorting( -1 );
-    cList->setSelectionMode( Q3ListView::Single );
-    cList->addColumn( "0" );
-    cList->setColumnWidthMode( 0, Q3ListView::Maximum );
-    cList->addColumn( "1" );
-    cList->setColumnWidthMode( 1, Q3ListView::Maximum );
-    cList->header() ->hide();
-    cList->setVScrollBarMode( Q3ScrollView::AlwaysOff );
-    cList->setHScrollBarMode( Q3ScrollView::AlwaysOff );
-    cList->setAllColumnsShowFocus( true );
-    QSizePolicy sp( QSizePolicy::Preferred, QSizePolicy::Preferred, false );
-    cList->setSizePolicy( sp );
-    connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
-                      this , SLOT( slotCandidateSelected( Q3ListViewItem * ) ) );
-    connect( cList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
-                      this , SLOT( slotHookSubwindow( Q3ListViewItem * ) ) );
+    cList = new CandidateListView;
+    cList->setSelectionMode( QAbstractItemView::SingleSelection );
+    cList->setSelectionBehavior( QAbstractItemView::SelectRows );
+    cList->setColumnCount( 2 );
+    cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
+    cList->horizontalHeader()->hide();
+    cList->verticalHeader()->hide();
+    cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    cList->setShowGrid( false );
+    connect( cList, SIGNAL( itemClicked( QTableWidgetItem * ) ),
+          this , SLOT( slotCandidateSelected( QTableWidgetItem * ) ) );
+    connect( cList, SIGNAL( itemSelectionChanged() ),
+          this , SLOT( slotHookSubwindow() ) );
 
     //setup NumberLabel
     numLabel = new QLabel( this, "candidateLabel" );
@@ -250,7 +248,8 @@ void CandidateWindow::setPage( int page )
 #endif
 
     // clear items
-    cList->clear();
+    cList->clearContents();
+    cList->setRowCount( 0 );
 
     // calculate page
     int newpage, lastpage;
@@ -301,7 +300,7 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
-    for ( int i = ncandidates - 1; i >= 0; i-- )
+    for ( int i = 0; i < ncandidates ; i++ )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
         QString headString = QString::fromUtf8( ( const char * ) uim_candidate_get_heading_label( cand ) );
@@ -310,10 +309,20 @@ void CandidateWindow::setPage( int page )
         // 2004-12-13 Kazuki Ohta <mover@hct.zaq.ne.jp>
         // Commented out for the next release.
 //        QString annotationString = QString::fromUtf8( ( const char * ) uim_candidate_get_annotation_str( cand ) );
-        QString annotationString = "";
 
         // insert new item to the candidate list
-        new Q3ListViewItem( cList, headString, candString, annotationString );
+        QTableWidgetItem *headItem = new QTableWidgetItem;
+        headItem->setText( headString );
+        headItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+        QTableWidgetItem *candItem = new QTableWidgetItem;
+        candItem->setText( candString );
+        candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+        int count = cList->rowCount();
+        cList->setRowCount( count + 1 );
+        cList->setItem( count, 0, headItem );
+        cList->setItem( count, 1, candItem );
+        cList->setRowHeight(
+            count, QFontMetrics( cList->font() ).height() + 2 );
     }
 
     // set index
@@ -324,7 +333,7 @@ void CandidateWindow::setPage( int page )
 
     // size adjustment
     cList->updateGeometry();
-    adjustSize();
+    resize(sizeHint());
 }
 
 void CandidateWindow::setIndex( int totalindex )
@@ -355,8 +364,12 @@ void CandidateWindow::setIndex( int totalindex )
         if ( displayLimit )
             pos = candidateIndex % displayLimit;
 
-        if ( cList->itemAtIndex( pos ) && ! ( cList->itemAtIndex( pos ) ->isSelected() ) )
-            cList->setSelected( cList->itemAtIndex( pos ), true );
+        if ( cList->item( pos, 0 ) && !cList->item( pos, 0 )->isSelected() )
+        {
+            cList->clearSelection();
+            cList->item( pos, 0 )->setSelected( true );
+            cList->item( pos, 1 )->setSelected( true );
+        }
     }
     else
     {
@@ -368,16 +381,18 @@ void CandidateWindow::setIndex( int totalindex )
 
 void CandidateWindow::setIndexInPage( int index )
 {
-    Q3ListViewItem * selectedItem = cList->itemAtIndex( index );
-    cList->setSelected( selectedItem, true );
+    cList->clearSelection();
+    QTableWidgetItem *selectedItem = cList->item( index, 0 );
+    selectedItem->setSelected( true );
+    cList->item( index, 1 )->setSelected( true );
 
     slotCandidateSelected( selectedItem );
 }
 
 
-void CandidateWindow::slotCandidateSelected( Q3ListViewItem * item )
+void CandidateWindow::slotCandidateSelected( QTableWidgetItem * item )
 {
-    candidateIndex = ( pageIndex * displayLimit ) + cList->itemIndex( item );
+    candidateIndex = ( pageIndex * displayLimit ) + cList->row( item );
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
     updateLabel();
@@ -408,10 +423,10 @@ void CandidateWindow::shiftPage( bool forward )
     }
 
     if ( candidateIndex != -1 ) {
-        if ( displayLimit )
-            cList->setSelected( cList->itemAtIndex( candidateIndex % displayLimit ), true );
-        else
-            cList->setSelected( cList->itemAtIndex( candidateIndex ), true );
+        cList->clearSelection();
+        int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
+        cList->item( idx, 0 )->setSelected( true );
+        cList->item( idx, 1 )->setSelected( true );
     }
     if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
@@ -445,14 +460,16 @@ void CandidateWindow::updateLabel()
     numLabel->setText( indexString );
 }
 
-void CandidateWindow::slotHookSubwindow( Q3ListViewItem * item )
+void CandidateWindow::slotHookSubwindow()
 {
     if ( subWin ) {
         // cancel previous hook
         subWin->cancelHook();
 
         // hook annotation
-        QString annotationString = item->text( 2 );
+        // Commented out for the next release.
+        // QString annotationString = item->text();
+        QString annotationString;
         if ( !annotationString.isEmpty() )
         {
             subWin->hookPopup( "Annotation", annotationString );
@@ -476,41 +493,28 @@ void CandidateWindow::resizeEvent( QResizeEvent *e )
 }
 
 
-QSize CandidateWindow::sizeHint( void ) const
+QSize CandidateWindow::sizeHint() const
 {
     QSize cListSizeHint = cList->sizeHint();
 
-    int width = cListSizeHint.width();
-    int height = cListSizeHint.height() + numLabel->height();
+    int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
+    int width = cListSizeHint.width() + frame;
+    int height = cListSizeHint.height() + numLabel->height() + frame;
 
     return QSize( width, height );
 }
 
-QSize CandidateListView::sizeHint( void ) const
+QSize CandidateListView::sizeHint() const
 {
-    if(childCount() == 0)
-        return QSize( MIN_CAND_WIDTH, 0 );
-    
-    int width = 0;
-    int height = 0;
-    Q3ListViewItem *item = firstChild();
-    if ( item )
-        height = item->height() * childCount() + 3;
-    
-    // 2004-08-02 Kazuki Ohta <mover@hct.zaq.ne.jp>
-    // FIXME!:
-    //    There may be more proper way. Now width is adjusted by indeterminal 5 'J'.
-    int maxCharIndex = 0, maxCharCount = 0;
-    for ( int i = 0; i < childCount(); i++ )
-    {
-        if ( maxCharCount < itemAtIndex( i )->text( 1 ).length() )
-        {
-            maxCharIndex = i;
-            maxCharCount = itemAtIndex( i )->text( 1 ).length();
-        }
-    }
-    QFontMetrics fm( font() );
-    width = fm.width( itemAtIndex( maxCharIndex )->text( 0 ) + "JJJJJ" + itemAtIndex( maxCharIndex )->text( 1 ) ) + itemMargin() * 4 + frameWidth() * 2;
+    int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
+
+    int rowNum = rowCount();
+    // If cList is empty, the height of cList is 0.
+    int height = ( ( rowNum == 0 ) ? 0 : rowHeight( 0 ) * rowNum );
+
+    int width = frame;
+    for ( int i = 0; i < columnCount(); i++ )
+        width += columnWidth( i );
 
     if ( width < MIN_CAND_WIDTH )
         width = MIN_CAND_WIDTH;

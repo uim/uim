@@ -35,12 +35,11 @@ SUCH DAMAGE.
 
 #include <uim/uim.h>
 
-#include <Q3ListView>
-#include <qevent.h>
-#include <qfontmetrics.h>
 #include <QtCore/QList>
+#include <QtGui/QTableWidget>
 
 class QLabel;
+class QTableWidgetItem;
 
 class QUimInputContext;
 class CandidateListView;
@@ -74,15 +73,15 @@ public:
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
-    QSize sizeHint(void) const;
+    QSize sizeHint() const;
 
     int nrCandidates;
     int displayLimit;
     int candidateIndex;
     int pageIndex;
 protected slots:
-    void slotCandidateSelected( Q3ListViewItem* );
-    void slotHookSubwindow( Q3ListViewItem* );
+    void slotCandidateSelected( QTableWidgetItem* );
+    void slotHookSubwindow();
 
 protected:
     void updateLabel();
@@ -105,47 +104,14 @@ protected:
 };
 
 
-class CandidateListView : public Q3ListView
+class CandidateListView : public QTableWidget
 {
     Q_OBJECT
 
 public:
-    CandidateListView( QWidget *parent, const char *name = 0, Qt::WFlags f = 0 ) : Q3ListView( parent, name, f ) {}
+    CandidateListView( QWidget *parent = 0 ) : QTableWidget( parent ) {}
     ~CandidateListView() {}
 
-    int itemIndex( const Q3ListViewItem *item ) const
-    {
-        if ( !item )
-            return -1;
-        if ( item == firstChild() )
-            return 0;
-        else
-        {
-            Q3ListViewItemIterator it( firstChild() );
-            uint j = 0;
-            for ( ; it.current() && it.current() != item; ++it, ++j )
-                ;
-            if ( !it.current() )
-                return -1;
-            return j;
-        }
-    }
-
-    Q3ListViewItem* itemAtIndex( int index ) const
-    {
-        if ( index < 0 )
-            return 0;
-        int j = 0;
-        for ( Q3ListViewItemIterator it = firstChild(); it.current(); ++it )
-        {
-            if ( j == index )
-                return it.current();
-            j++;
-        }
-
-        return 0;
-    }
-
-    QSize sizeHint( void ) const;
+    QSize sizeHint() const;
 };
 #endif /* Not def: UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H */

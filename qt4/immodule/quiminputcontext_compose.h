@@ -35,8 +35,11 @@
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_COMPOSE_H
 
 #include <X11/X.h>
+#undef Above
+#undef Below
 #undef KeyPress
 #undef KeyRelease
+#undef None
 
 typedef struct _DefTree {
     struct _DefTree *next;                /* another Key definition */
