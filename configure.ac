@@ -889,6 +889,33 @@ if test x$use_qt4 = xyes || test x$use_qt4_immodule = xyes; then
     fi
 fi
 
+dnl *****************************************
+dnl *** test for Qt3Support module in Qt4 ***
+dnl *****************************************
+AC_ARG_ENABLE(qt4-qt3support,
+  AC_HELP_STRING([--enable-qt4-qt3support],
+        [enable support for Qt3Support module in Qt4 
+            @<:@default=yes@:>@]),
+        enable_qt4_qt3support=$enableval,
+        enable_qt4_qt3support=yes)
+case "$enable_qt4_qt3support" in
+  no)
+    use_qt4_qt3support="no"
+    ;;
+  yes|*)
+    if test "x$use_qt4_immodule" = "xyes"; then
+        if test -f `${QMAKE4} -query QT_INSTALL_LIBS`/libQt3Support.so; then
+            use_qt4_qt3support="yes"
+        else
+            use_qt4_qt3support="no"
+	        AC_MSG_WARN([No Qt3Support found])
+        fi
+    else
+        use_qt4_qt3support="no"
+    fi
+    ;;
+esac
+
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
@@ -1735,8 +1762,11 @@ if test x$use_qt4 = xyes; then
     fi
 fi
 if test x$use_qt4_immodule = xyes; then
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
-		 ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
+    if test x$use_qt4_qt3support = xyes; then
+        option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
+    fi
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake ${option} \
+                ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
                  ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
 fi
@@ -1763,6 +1793,7 @@ Configure Result :
    Qt3 immodule    : ${use_qtimmodule}
    Qt4             : ${use_qt4}
    Qt4 immodule    : ${use_qt4_immodule}
+   Qt4 Qt3Support  : ${use_qt4_qt3support}
    KDE3 Applet     : ${use_applet_kde}
    KDE4 Applet     : ${use_applet_kde4}
    FEP             : ${use_uim_fep}
