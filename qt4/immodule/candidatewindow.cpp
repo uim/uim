@@ -83,9 +83,9 @@ CandidateWindow::CandidateWindow( QWidget *parent, const char * name )
     cList->setAllColumnsShowFocus( true );
     QSizePolicy sp( QSizePolicy::Preferred, QSizePolicy::Preferred, false );
     cList->setSizePolicy( sp );
-    QObject::connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
+    connect( cList, SIGNAL( clicked( Q3ListViewItem * ) ),
                       this , SLOT( slotCandidateSelected( Q3ListViewItem * ) ) );
-    QObject::connect( cList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
+    connect( cList, SIGNAL( selectionChanged( Q3ListViewItem * ) ),
                       this , SLOT( slotHookSubwindow( Q3ListViewItem * ) ) );
 
     //setup NumberLabel

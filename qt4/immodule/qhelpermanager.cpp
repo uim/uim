@@ -78,7 +78,7 @@ void QUimHelperManager::checkHelperConnection()
         if ( im_uim_fd >= 0 )
         {
             notifier = new QSocketNotifier( im_uim_fd, QSocketNotifier::Read );
-            QObject::connect( notifier, SIGNAL( activated( int ) ),
+            connect( notifier, SIGNAL( activated( int ) ),
                               this, SLOT( slotStdinActivated( int ) ) );
         }
     }

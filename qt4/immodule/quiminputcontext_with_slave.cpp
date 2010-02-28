@@ -45,10 +45,10 @@ QUimInputContextWithSlave::QUimInputContextWithSlave( const char *imname, const 
         slave->setParent( this );
 
         /*
-        QObject::connect( slave, SIGNAL( imEventGenerated( QObject *, QIMEvent * ) ),
+        connect( slave, SIGNAL( imEventGenerated( QObject *, QIMEvent * ) ),
                           this, SIGNAL( imEventGenerated( QObject *, QIMEvent * ) ) );
         */
-        QObject::connect( slave, SIGNAL( deletionRequested() ),
+        connect( slave, SIGNAL( deletionRequested() ),
                           this, SLOT( destroyInputContext() ) );
     }
 }
