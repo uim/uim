@@ -66,14 +66,14 @@
 
 #define DEFAULT_SEPARATOR_STR "|"
 
-QUimInputContext *focusedInputContext = NULL;
+QUimInputContext *focusedInputContext = 0;
 bool disableFocusedContext = false;
 
 QList<QUimInputContext*> contextList;
 
 QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
 #ifdef Q_WS_X11
-DefTree *QUimInputContext::mTreeTop = NULL;
+DefTree *QUimInputContext::mTreeTop = 0;
 #endif
 
 static int unicodeToUKey(ushort c);
@@ -128,7 +128,7 @@ QUimInputContext::~QUimInputContext()
 
     if ( this == focusedInputContext )
     {
-        focusedInputContext = NULL;
+        focusedInputContext = 0;
         disableFocusedContext = true;
     }
 
@@ -142,8 +142,8 @@ uim_context QUimInputContext::createUimContext( const char *imname )
     m_imname = imname;
 
     uim_context uc = uim_create_context( this, "UTF-8",
-                                         NULL, ( char * ) imname,
-                                         NULL,
+                                         0, ( char * ) imname,
+                                         0,
                                          QUimInputContext::commit_cb );
 
     m_HelperManager->checkHelperConnection();

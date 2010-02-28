@@ -49,7 +49,7 @@ SUCH DAMAGE.
 #include "plugin.h"
 
 static int im_uim_fd = 0;
-static QSocketNotifier *notifier = NULL;
+static QSocketNotifier *notifier = 0;
 
 extern QUimInputContext *focusedInputContext;
 extern bool disableFocusedContext;
@@ -59,7 +59,7 @@ extern QList<QUimInputContext *> contextList;
 QUimHelperManager::QUimHelperManager( QObject *parent )
         : QObject( parent )
 {
-    notifier = NULL;
+    notifier = 0;
     im_uim_fd = -1;
 }
 

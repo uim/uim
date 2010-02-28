@@ -69,7 +69,7 @@ static unsigned int KeySymToUcs4(KeySym keysym);
 Compose::Compose(DefTree *top, QUimInputContext *ic)
 {
     m_ic = ic;
-    m_composed = NULL;
+    m_composed = 0;
     m_top = top;
     m_context = top;
 }
@@ -227,7 +227,7 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
 {
     DefTree *p;
 
-    if ((is_push == false)  || m_top == NULL)
+    if ((is_push == false)  || m_top == 0)
         return false;
 
     if (IsModifierKey(xkeysym))
@@ -264,7 +264,7 @@ bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
 void Compose::reset()
 {
     m_context = m_top;
-    m_composed = NULL;
+    m_composed = 0;
 }
 
 static int
@@ -501,10 +501,10 @@ modmask(char *name)
         { "Shift",      ShiftMask       },
         { "Alt",        Mod1Mask        },
         { "Meta",       Mod1Mask        },
-        { NULL,         0               }};
+        { 0,            0               }};
 
     mask = 0;
-    for (struct _modtbl *p = tbl; p->name != NULL; p++) {
+    for (struct _modtbl *p = tbl; p->name != 0; p++) {
         if (strcmp(name, p->name) == 0) {
             mask = p->mask;
             break;
@@ -516,7 +516,7 @@ modmask(char *name)
 int
 QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
 {
-    char *home = NULL;
+    char *home = 0;
     char lcCompose[MAXPATHLEN];
     const char *i = name;
     char *j;
@@ -578,7 +578,7 @@ QUimInputContext::get_encoding()
 #else
     char *p;
 
-    p = setlocale(LC_CTYPE, NULL);
+    p = setlocale(LC_CTYPE, 0);
     if (p)
         p = strchr(p, '.');
 
@@ -593,7 +593,7 @@ QUimInputContext::get_lang_region(char *locale, size_t len)
 {
     char *p;
 
-    strlcpy(locale, setlocale(LC_CTYPE, NULL), len);
+    strlcpy(locale, setlocale(LC_CTYPE, 0), len);
     if (locale[0] == '\0') {
         return 0;
     }
@@ -636,7 +636,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     unsigned tmp;
     KeySym keysym = NoSymbol;
     DefTree **top = &mTreeTop;
-    DefTree *p = NULL;
+    DefTree *p = 0;
     Bool exclam, tilde;
     KeySym rhs_keysym = 0;
     char *rhs_string_mb;
@@ -676,7 +676,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
             if (!TransFileName(filename, *tokenbuf, sizeof(filename)) || filename[0] == '\0')
                 goto error;
             infp = fopen(filename, "r");
-            if (infp == NULL)
+            if (infp == 0)
                 goto error;
             ParseComposeStringFile(infp);
             fclose(infp);
@@ -748,7 +748,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 
     token = nexttoken(fp, tokenbuf, &lastch, buflen);
     if (token == STRING) {
-        if ((rhs_string_mb = (char *)malloc(strlen(*tokenbuf) + 1)) == NULL)
+        if ((rhs_string_mb = (char *)malloc(strlen(*tokenbuf) + 1)) == 0)
             goto error;
         strcpy(rhs_string_mb, *tokenbuf);
         token = nexttoken(fp, tokenbuf, &lastch, buflen);
@@ -780,7 +780,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
         } else {
             rhs_string_mb = (char *)malloc(l + 1);
         }
-        if (rhs_string_mb == NULL) {
+        if (rhs_string_mb == 0) {
             goto error;
         }
         memcpy(rhs_string_mb, local_mb_buf, l);
@@ -803,27 +803,27 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
         if (p) {
             top = &p->succession;
         } else {
-            if ((p = (DefTree*)malloc(sizeof(DefTree))) == NULL) {
+            if ((p = (DefTree*)malloc(sizeof(DefTree))) == 0) {
                 free(rhs_string_mb);
                 goto error;
             }
             p->keysym = buf[i].keysym;
             p->modifier = buf[i].modifier;
             p->modifier_mask = buf[i].modifier_mask;
-            p->succession = NULL;
+            p->succession = 0;
             p->next = *top;
-            p->mb = NULL;
-            p->utf8 = NULL;
+            p->mb = 0;
+            p->utf8 = 0;
             p->ks = NoSymbol;
             *top = p;
             top = &p->succession;
         }
     }
 
-    if (p->mb != NULL)
+    if (p->mb != 0)
         free(p->mb);
     p->mb = rhs_string_mb;
-    if (p->utf8 != NULL)
+    if (p->utf8 != 0)
         free(p->utf8);
     p->utf8 = rhs_string_utf8;
     p->ks = rhs_keysym;
@@ -862,7 +862,7 @@ QUimInputContext::ParseComposeStringFile(FILE *fp)
 
         tbp = (char *)malloc(buflen);
         p[0] = tbp;
-        if (tbp != NULL) {
+        if (tbp != 0) {
             while (parse_compose_line(fp, p, &buflen) >= 0) {
             }
             free(p[0]);
@@ -872,7 +872,7 @@ QUimInputContext::ParseComposeStringFile(FILE *fp)
 
 void QUimInputContext::create_compose_tree()
 {
-    FILE *fp = NULL;
+    FILE *fp = 0;
     char name[MAXPATHLEN];
     char lang_region[BUFSIZ];
     const char *encoding;
@@ -882,14 +882,14 @@ void QUimInputContext::create_compose_tree()
     name[0] = '\0';
     compose_env = getenv("XCOMPOSEFILE");
 
-    if (compose_env != NULL) {
+    if (compose_env != 0) {
         strlcpy(name, compose_env, sizeof(name));
     } else {
         char *home = getenv("HOME");
-        if (home != NULL) {
+        if (home != 0) {
             snprintf(name, sizeof(name), "%s/.XCompose", home);
             fp = fopen(name, "r");
-            if (fp == NULL)
+            if (fp == 0)
                 name[0] = '\0';
         }
     }
@@ -897,12 +897,12 @@ void QUimInputContext::create_compose_tree()
     if (name[0] == '\0' && !get_compose_filename(name, sizeof(name)))
         return;
 
-    if (fp == NULL && ((fp = fopen(name, "r")) == NULL))
+    if (fp == 0 && ((fp = fopen(name, "r")) == 0))
         return;
 
     ret = get_lang_region(lang_region, sizeof(lang_region));
     encoding = get_encoding();
-    if (!ret || encoding == NULL) {
+    if (!ret || encoding == 0) {
         fprintf(stderr, "Warning: locale name is NULL\n");
         fclose(fp);
         return;
@@ -927,20 +927,20 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
     ret = get_lang_region(lang_region, sizeof(lang_region));
     encoding = get_encoding();
 
-    if (!ret || encoding == NULL)
+    if (!ret || encoding == 0)
         return 0;
 
     snprintf(locale, sizeof(locale), "%s.%s", lang_region, encoding);
     snprintf(compose_dir_file, sizeof(compose_dir_file), "%s/%s", XLIB_DIR, COMPOSE_DIR_FILE);
 
     fp = fopen(compose_dir_file, "r");
-    if (fp == NULL) {
+    if (fp == 0) {
         /* retry with fallback file */
         if (strcmp(FALLBACK_XLIB_DIR, XLIB_DIR)) {
             snprintf(compose_dir_file, sizeof(compose_dir_file), "%s/%s",
                             FALLBACK_XLIB_DIR, COMPOSE_DIR_FILE);
             fp = fopen(compose_dir_file, "r");
-            if (fp == NULL)
+            if (fp == 0)
                 return 0;
             xlib_dir = FALLBACK_XLIB_DIR;
         } else
@@ -948,7 +948,7 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
     }
 
     name[0] = '\0';
-    while (fgets(buf, XLC_BUFSIZE, fp) != NULL) {
+    while (fgets(buf, XLC_BUFSIZE, fp) != 0) {
         char *p = buf;
         int n;
         char *args[2], *from, *to;

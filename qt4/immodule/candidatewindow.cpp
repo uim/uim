@@ -69,7 +69,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 {
     setFrameStyle( Raised | NoFrame );
 
-    ic = NULL;
+    ic = 0;
 
     //setup CandidateList
     cList = new CandidateListView;
@@ -100,7 +100,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 
     isAlwaysLeft = false;
 
-    subWin = NULL;
+    subWin = 0;
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin( 0 );
@@ -210,7 +210,7 @@ void CandidateWindow::setNrCandidates( int nrCands, int dLimit )
     // setup dummy candidate
     for ( int i = 0; i < nrCandidates; i++ )
     {
-        uim_candidate d = NULL;
+        uim_candidate d = 0;
         stores.append( d );
     }
 

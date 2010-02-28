@@ -39,7 +39,7 @@
 QUimInputContextWithSlave::QUimInputContextWithSlave( const char *imname, const char *lang )
         : QUimInputContext( imname, lang )
 {
-    slave = QInputContextFactory::create( "simple", NULL );
+    slave = QInputContextFactory::create( "simple", 0 );
     if ( slave )
     {
         slave->setParent( this );

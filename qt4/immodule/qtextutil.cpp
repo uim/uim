@@ -193,7 +193,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
         break;
 
     case UTextOrigin_Beginning:
-        *former = NULL;
+        *former = 0;
         if ( latter_req_len >= 0 ) {
             if ( precedence_len >= latter_req_len )
                 text = text.left( latter_req_len );
@@ -237,7 +237,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
             text = former_text + latter_text;
         }
         *former = strdup( text.utf8() );
-        *latter = NULL;
+        *latter = 0;
         break;
 
     case UTextOrigin_Unspecified:
@@ -321,7 +321,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
         break;
 
     case UTextOrigin_Beginning:
-        *former = NULL;
+        *former = 0;
 
         start_para = 0;
         start_index = 0;
@@ -387,7 +387,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
             text += edit->selectedText();
         }
         *former = strdup( text.utf8() );
-        *latter = NULL;
+        *latter = 0;
         break;
 
     case UTextOrigin_Unspecified:
@@ -461,7 +461,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
 
     if ( origin == UTextOrigin_Beginning ||
          ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
-        *former = NULL;
+        *former = 0;
         offset = 0;
         if ( latter_req_len >= 0 ) {
             if ( len > latter_req_len )
@@ -482,7 +482,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
                 return -1;
         }
         *former = strdup( text.mid( offset, len - offset ).utf8() );
-        *latter = NULL;
+        *latter = 0;
     } else {
         return -1;
     }
@@ -522,7 +522,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
 
     if ( origin == UTextOrigin_Beginning ||
          ( origin == UTextOrigin_Cursor && cursor_at_beginning ) ) {
-        *former = NULL;
+        *former = 0;
         offset = 0;
         if ( latter_req_len >= 0 ) {
             if ( len > latter_req_len )
@@ -553,7 +553,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                 offset = newline + 1;
         }
         *former = strdup( text.mid( offset, len - offset ).utf8() );
-        *latter = NULL;
+        *latter = 0;
     } else {
         edit->setTextFormat( format );
         return -1;
@@ -594,11 +594,11 @@ QUimTextUtil::acquireClipboardText( enum UTextOrigin origin,
                 offset = newline + 1;
         }
         *former = strdup( text.mid( offset, len - offset ).utf8() );
-        *latter = NULL;
+        *latter = 0;
         break;
 
     case UTextOrigin_Beginning:
-        *former = NULL;
+        *former = 0;
         offset = 0;
         if ( latter_req_len >= 0 ) {
             if ( latter_req_len < len )

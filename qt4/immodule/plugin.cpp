@@ -51,7 +51,7 @@
 
 #define UIM_QT_LIST_SUBIM_AS_QTIM 0
 
-QUimInfoManager *UimInputContextPlugin::infoManager = NULL;
+QUimInfoManager *UimInputContextPlugin::infoManager = 0;
 
 
 UimInputContextPlugin::UimInputContextPlugin()
@@ -80,7 +80,7 @@ QInputContext *UimInputContextPlugin::create( const QString & key )
     else
 #endif
     if ( key == "uim" )
-        imname = uim_get_default_im_name( setlocale( LC_ALL, NULL ) );
+        imname = uim_get_default_im_name( setlocale( LC_ALL, 0 ) );
 
     QStringList langs = createLanguageList( key );
     QUimInputContext *uic = new QUimInputContext( imname.toUtf8(),
@@ -143,8 +143,8 @@ QStringList UimInputContextPlugin::createImList() const
     qDebug( "name = uim" );
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
-    uim_context tmp_uc = uim_create_context( NULL, "UTF-8",
-                         NULL, NULL, uim_iconv, NULL );
+    uim_context tmp_uc = uim_create_context( 0, "UTF-8",
+                         0, 0, uim_iconv, 0 );
     int nr = uim_get_nr_im( tmp_uc );
     if ( uimReady )
     {
@@ -170,8 +170,8 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
         return QStringList() << "ja" << "ko" << "zh" << "*";
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
-    uim_context tmp_uc = uim_create_context( NULL, "UTF-8",
-                         NULL, NULL, uim_iconv, NULL );
+    uim_context tmp_uc = uim_create_context( 0, "UTF-8",
+                         0, 0, uim_iconv, 0 );
     int nr = uim_get_nr_im( tmp_uc );
     if ( uimReady )
     {
