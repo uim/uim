@@ -222,7 +222,7 @@ void CandidateWindow::setPageCandidates( int page, const Q3ValueList<uim_candida
         return;
 
     // set candidates
-    int i, start, pageNr;
+    int start, pageNr;
     start = page * displayLimit;
 
     if ( displayLimit && ( nrCandidates - start ) > displayLimit )
@@ -230,7 +230,7 @@ void CandidateWindow::setPageCandidates( int page, const Q3ValueList<uim_candida
     else
         pageNr = nrCandidates - start;
 
-    for ( i = 0; i < pageNr; i++ )
+    for ( int i = 0; i < pageNr; i++ )
         stores[ start + i ] = candidates[ i ];
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */

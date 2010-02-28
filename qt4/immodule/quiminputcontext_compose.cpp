@@ -322,7 +322,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
     int c;
     int token;
     char *p;
-    int i, j;
+    int i;
     size_t len = 0;
 
     while ((c = nextch(fp, lastch)) == ' ' || c == '\t') {
@@ -391,7 +391,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                 case '7':
                     i = c - '0';
                     c = nextch(fp, lastch);
-                    for (j = 0; j < 2 && c >= '0' && c <= '7'; j++) {
+                    for (int j = 0; j < 2 && c >= '0' && c <= '7'; j++) {
                         i <<= 3;
                         i += c - '0';
                         c = nextch(fp, lastch);
@@ -403,6 +403,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                 case 'X':
                 case 'x':
                     i = 0;
+                    int j;
                     for (j = 0; j < 2; j++) {
                         c = nextch(fp, lastch);
                         i <<= 4;
@@ -492,7 +493,6 @@ modmask(char *name)
         const char *name;
         long mask;
     };
-    struct _modtbl *p;
 
     static struct _modtbl tbl[] = {
         { "Ctrl",       ControlMask     },
@@ -503,9 +503,8 @@ modmask(char *name)
         { "Meta",       Mod1Mask        },
         { NULL,         0               }};
 
-    p = tbl;
     mask = 0;
-    for (p = tbl; p->name != NULL; p++) {
+    for (struct _modtbl *p = tbl; p->name != NULL; p++) {
         if (strcmp(name, p->name) == 0) {
             mask = p->mask;
             break;
@@ -653,7 +652,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     };
 
     struct DefBuffer buf[SEQUENCE_MAX];
-    int i, n;
+    int n;
     QTextCodec *codec = QTextCodec::codecForLocale();
     QString qs;
 
@@ -793,7 +792,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     qs = codec->toUnicode(rhs_string_mb);
     rhs_string_utf8 = strdup((const char *)qs.utf8());
 
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         for (p = *top; p; p = p->next) {
             if (buf[i].keysym == p->keysym &&
                 buf[i].modifier == p->modifier &&

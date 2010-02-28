@@ -254,7 +254,6 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
     Q3TextEdit *edit = (Q3TextEdit *)mWidget;
     QString text;
 
-    int i;
     int start_para, start_index, end_para, end_index, para, index;
     int n_para;
     int preedit_len, preedit_cursor_pos;
@@ -282,7 +281,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
         end_para = para;
 
         if ( former_req_len >= 0 ) {
-            for ( i = 0; i < former_req_len; i++ )
+            for ( int i = 0; i < former_req_len; i++ )
                 QTextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line )
@@ -299,7 +298,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
         *former = strdup( edit->selectedText().utf8() );
 
         if ( latter_req_len >= 0 ) {
-            for ( i = 0; i < latter_req_len; i++ )
+            for ( int i = 0; i < latter_req_len; i++ )
                 QTextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line ) {
@@ -326,7 +325,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
         end_index = start_index;
 
         if ( latter_req_len >= 0 ) {
-            for ( i = 0; i < latter_req_len; i++ )
+            for ( int i = 0; i < latter_req_len; i++ )
                 QTextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line )
@@ -359,7 +358,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
         start_index = end_index;
 
         if ( former_req_len >= 0 ) {
-            for ( i = 0; i < former_req_len; i++ )
+            for ( int i = 0; i < former_req_len; i++ )
                 QTextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line )
@@ -724,7 +723,6 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                             int latter_req_len )
 {
     Q3TextEdit *edit = (Q3TextEdit *)mWidget;
-    int i;
     int start_para, start_index, end_para, end_index, para, index;
     int n_para;
 
@@ -741,7 +739,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         end_para = para;
 
         if ( former_req_len >= 0 ) {
-            for ( i = 0; i < former_req_len; i++ )
+            for ( int i = 0; i < former_req_len; i++ )
                 QTextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line ) {
@@ -755,7 +753,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
             }
         }
         if ( latter_req_len >= 0 ) {
-            for ( i = 0; i < latter_req_len; i++ )
+            for ( int i = 0; i < latter_req_len; i++ )
                 QTextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line ) {
@@ -777,7 +775,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         end_index = start_index;
 
         if ( latter_req_len >= 0 ) {
-            for ( i = 0; i < latter_req_len; i++ )
+            for ( int i = 0; i < latter_req_len; i++ )
                 QTextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line ) {
@@ -799,7 +797,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         start_index = end_index;
 
         if ( former_req_len >= 0 ) {
-            for ( i = 0; i < former_req_len; i++ )
+            for ( int i = 0; i < former_req_len; i++ )
                 QTextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line )
@@ -907,7 +905,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
 {
     Q3TextEdit *edit = (Q3TextEdit *)mWidget;
     QString text;
-    int len, newline, i;
+    int len, newline;
     int para, index;
     int sel_para_from, sel_index_from, sel_para_to, sel_index_to;
     int start_para, start_index, end_para, end_index;
@@ -937,7 +935,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( len > latter_req_len ) {
                 end_para = sel_para_from;
                 end_index = sel_index_from;
-                for ( i = 0; i < latter_req_len; i++)
+                for ( int i = 0; i < latter_req_len; i++)
                     QTextEditPositionForward( &end_para, &end_index );
             }
         } else {
@@ -955,7 +953,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( len > former_req_len ) {
                 start_para = sel_para_to;
                 start_index = sel_index_to;
-                for ( i = 0; i < former_req_len; i++)
+                for ( int i = 0; i < former_req_len; i++)
                     QTextEditPositionBackward( &start_para, &start_index );
             }
         } else {
