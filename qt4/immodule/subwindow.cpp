@@ -57,8 +57,10 @@ SubWindow::SubWindow( QWidget *parent )
 {
     m_titleLabel = new QLabel( this );
     m_titleLabel->setAlignment( Qt::AlignHCenter );
-    m_titleLabel->setPaletteBackgroundColor( Qt::darkGray );
-    m_titleLabel->setPaletteForegroundColor( Qt::white );
+    QPalette palette;
+    palette.setColor( m_titleLabel->backgroundRole(), Qt::darkGray );
+    palette.setColor( m_titleLabel->foregroundRole(), Qt::white );
+    m_titleLabel->setPalette( palette );
 
     m_contentsEdit = new QTextBrowser( this );
 
@@ -85,7 +87,8 @@ void SubWindow::hookPopup( const QString &title, const QString contents )
     m_titleLabel->setText( title );
     m_contentsEdit->setText( contents );
 
-    m_hookTimer->start( TIMER_INTERVAL, true );
+    m_hookTimer->setSingleShot( true );
+    m_hookTimer->start( TIMER_INTERVAL );
 }
 
 void SubWindow::popup()

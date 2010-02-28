@@ -119,9 +119,10 @@ void QUimHelperManager::parseHelperStr( const QString &str )
                     QString charset = lines[ 1 ].split( '=' ) [ 1 ];
 
                     /* convert to unicode */
-                    QTextCodec *codec = QTextCodec::codecForName( charset );
+                    QTextCodec *codec
+                        = QTextCodec::codecForName( charset.toAscii() );
                     if ( codec && !lines[ 2 ].isEmpty() )
-                        commit_str = codec->toUnicode( lines[ 2 ] );
+                        commit_str = codec->toUnicode( lines[ 2 ].toAscii() );
                 } else {
                     commit_str = lines[ 1 ];
                 }

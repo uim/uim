@@ -82,7 +82,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
           this , SLOT( slotHookSubwindow() ) );
 
     //setup NumberLabel
-    numLabel = new QLabel( this, "candidateLabel" );
+    numLabel = new QLabel;
     numLabel->adjustSize();
 
     stores.clear();

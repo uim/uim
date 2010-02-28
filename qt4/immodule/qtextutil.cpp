@@ -171,7 +171,8 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
-        *former = strdup( text.mid( offset, precedence_len - offset ).utf8() );
+        *former
+            = strdup( text.mid( offset, precedence_len - offset ).toUtf8() );
 
         offset = 0;
         if ( latter_req_len >= 0 ) {
@@ -183,7 +184,8 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
                 return -1;
             }
         }
-        *latter = strdup( text.mid( precedence_len + preedit_len, following_len - offset ).utf8() );
+        *latter = strdup( text.mid( precedence_len + preedit_len,
+            following_len - offset ).toUtf8() );
         break;
 
     case UTextOrigin_Beginning:
@@ -207,7 +209,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
             latter_text = text.mid( precedence_len + preedit_len, following_len );
             text = former_text + latter_text;
         }
-        *latter = strdup( text.utf8() );
+        *latter = strdup( text.toUtf8() );
         break;
 
     case UTextOrigin_End:
@@ -230,7 +232,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
             latter_text = text.right( following_len );
             text = former_text + latter_text;
         }
-        *former = strdup( text.utf8() );
+        *former = strdup( text.toUtf8() );
         *latter = 0;
         break;
 
@@ -293,7 +295,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
             }
         }
         edit->setSelection( start_para, start_index, para, index - preedit_cursor_pos, 0 );
-        *former = strdup( edit->selectedText().utf8() );
+        *former = strdup( edit->selectedText().toUtf8() );
 
         if ( latter_req_len >= 0 ) {
             for ( int i = 0; i < latter_req_len; i++ )
@@ -311,7 +313,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
         }
         edit->setSelection( para, index - preedit_cursor_pos + preedit_len,
                             end_para, end_index, 0 );
-        *latter = strdup( edit->selectedText().utf8() );
+        *latter = strdup( edit->selectedText().toUtf8() );
         break;
 
     case UTextOrigin_Beginning:
@@ -345,7 +347,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
             edit->setSelection( para, index - preedit_cursor_pos + preedit_len, end_para, end_index, 0 );
             text += edit->selectedText();
         }
-        *latter = strdup( text.utf8() );
+        *latter = strdup( text.toUtf8() );
         break;
 
     case UTextOrigin_End:
@@ -380,7 +382,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
             edit->setSelection( para, index - preedit_cursor_pos + preedit_len, end_para, end_index, 0 );
             text += edit->selectedText();
         }
-        *former = strdup( text.utf8() );
+        *former = strdup( text.toUtf8() );
         *latter = 0;
         break;
 
@@ -464,7 +466,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
             if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
-        *latter = strdup( text.left( len - offset ).utf8() );
+        *latter = strdup( text.left( len - offset ).toUtf8() );
     } else if ( origin == UTextOrigin_End ||
                 ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
         offset = 0;
@@ -475,7 +477,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
         }
-        *former = strdup( text.mid( offset, len - offset ).utf8() );
+        *former = strdup( text.mid( offset, len - offset ).toUtf8() );
         *latter = 0;
     } else {
         return -1;
@@ -530,7 +532,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find( '\n' ) ) != -1 ) )
                 offset = len - newline;
         }
-        *latter = strdup( text.left( len - offset ).utf8() );
+        *latter = strdup( text.left( len - offset ).toUtf8() );
     } else if ( origin == UTextOrigin_End ||
                 ( origin == UTextOrigin_Cursor && !cursor_at_beginning ) ) {
         offset = 0;
@@ -546,7 +548,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
             if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) )
                 offset = newline + 1;
         }
-        *former = strdup( text.mid( offset, len - offset ).utf8() );
+        *former = strdup( text.mid( offset, len - offset ).toUtf8() );
         *latter = 0;
     } else {
         edit->setTextFormat( format );
@@ -584,10 +586,11 @@ QUimTextUtil::acquireClipboardText( enum UTextOrigin origin,
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
-            if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) )
+            if ( former_req_len == UTextExtent_Line
+                && ( ( newline = text.lastIndexOf( '\n' ) ) != -1 ) )
                 offset = newline + 1;
         }
-        *former = strdup( text.mid( offset, len - offset ).utf8() );
+        *former = strdup( text.mid( offset, len - offset ).toUtf8() );
         *latter = 0;
         break;
 
@@ -601,10 +604,11 @@ QUimTextUtil::acquireClipboardText( enum UTextOrigin origin,
             if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
-            if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find( '\n' ) ) != -1 ) )
+            if ( latter_req_len == UTextExtent_Line
+                && ( ( newline = text.indexOf( '\n' ) ) != -1 ) )
                 offset = len - newline;
         }
-        *latter = strdup( text.left( len - offset ).utf8() );
+        *latter = strdup( text.left( len - offset ).toUtf8() );
         break;
 
     case UTextOrigin_Unspecified:

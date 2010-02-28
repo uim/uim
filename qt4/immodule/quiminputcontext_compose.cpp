@@ -86,30 +86,31 @@ bool Compose::handle_qkey(QKeyEvent *event)
 {
     int type = event->type();
     int qkey = event->key();
-    int qstate = event->state();
+    int qstate = event->modifiers();
 
     unsigned int xkeysym, xstate;
     bool press = (type == QEvent::KeyPress) ? true : false;
     
     xstate = 0;
-    if (qstate & Qt::ShiftButton)
+    if (qstate & Qt::ShiftModifier)
         xstate |= ShiftMask;
-    if (qstate & Qt::ControlButton)
+    if (qstate & Qt::ControlModifier)
         xstate |= ControlMask;
-    if (qstate & Qt::AltButton)
+    if (qstate & Qt::AltModifier)
         xstate |= Mod1Mask; // XXX
-    if (qstate & Qt::MetaButton)
+    if (qstate & Qt::MetaModifier)
         xstate |= Mod1Mask; // XXX
 
     if (qkey >= 0x20 && qkey <= 0xff) {
         if (isascii(qkey) && isprint(qkey)) {
-            int ascii = event->ascii();
+            QString str = event->text();
+            int ascii = str.length() ? str.unicode()->toLatin1() : 0;
             if (isalpha(ascii))
                     xkeysym = ascii;
             else
-                if ((qstate & Qt::ControlButton) &&
+                if ((qstate & Qt::ControlModifier) &&
                     (ascii >= 0x01 && ascii <= 0x1a))
-                    if (qstate & Qt::ShiftButton)
+                    if (qstate & Qt::ShiftModifier)
                         xkeysym = ascii + 0x40;
                     else
                         xkeysym = ascii + 0x60;
@@ -124,7 +125,7 @@ bool Compose::handle_qkey(QKeyEvent *event)
         switch (qkey) {
         case Qt::Key_Escape: xkeysym = XK_Escape; break;
         case Qt::Key_Tab: xkeysym = XK_Tab; break;
-        case Qt::Key_BackSpace: xkeysym = XK_BackSpace; break;
+        case Qt::Key_Backspace: xkeysym = XK_BackSpace; break;
         case Qt::Key_Return: xkeysym = XK_Return; break;
         case Qt::Key_Insert: xkeysym = XK_Insert; break;
         case Qt::Key_Delete: xkeysym = XK_Delete; break;
@@ -138,8 +139,8 @@ bool Compose::handle_qkey(QKeyEvent *event)
         case Qt::Key_Up: xkeysym = XK_Up; break;
         case Qt::Key_Right: xkeysym = XK_Right; break;
         case Qt::Key_Down: xkeysym = XK_Down; break;
-        case Qt::Key_Prior: xkeysym = XK_Prior; break;
-        case Qt::Key_Next: xkeysym = XK_Next; break;
+        case Qt::Key_PageUp: xkeysym = XK_Prior; break;
+        case Qt::Key_PageDown: xkeysym = XK_Next; break;
         case Qt::Key_Shift: xkeysym = XK_Shift_L; break;
         case Qt::Key_Control: xkeysym = XK_Control_L; break;
         case Qt::Key_Meta: xkeysym = XK_Meta_L; break;
@@ -620,7 +621,7 @@ QUimInputContext::get_mb_string(char *buf, unsigned int ks)
 
     ucs = KeySymToUcs4(ks);
     QString qs = QString(QChar(ks));
-    mb = (const char *)qs.local8Bit();
+    mb = (const char *)qs.toLocal8Bit();
     if (!mb)
         return 0;
     len = strlen(mb);
@@ -795,7 +796,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     }
 
     qs = codec->toUnicode(rhs_string_mb);
-    rhs_string_utf8 = strdup((const char *)qs.utf8());
+    rhs_string_utf8 = strdup((const char *)qs.toUtf8());
 
     for (int i = 0; i < n; i++) {
         for (p = *top; p; p = p->next) {

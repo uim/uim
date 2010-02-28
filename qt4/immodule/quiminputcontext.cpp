@@ -116,7 +116,7 @@ QUimInputContext::~QUimInputContext()
 {
     qDebug( "~QUimInputContext()" );
 
-    contextList.remove( this );
+    contextList.removeAll( this );
 
     if ( m_uc )
         uim_release_context( m_uc );
@@ -222,9 +222,9 @@ bool QUimInputContext::filterEvent( const QEvent *event )
         }
         else
         {
-            if ( keyevent->state() & Qt::ControlButton &&
+            if ( keyevent->modifiers() & Qt::ControlModifier &&
                  ( ascii >= 0x01 && ascii <= 0x1a ) )
-                if ( keyevent->state() & Qt::ShiftButton )
+                if ( keyevent->modifiers() & Qt::ShiftModifier )
                     key = ascii + 0x40;
                 else
                     key = ascii + 0x60;
@@ -268,7 +268,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             switch ( qkey )
             {
             case Qt::Key_Tab: key = UKey_Tab; break;
-            case Qt::Key_BackSpace: key = UKey_Backspace; break;
+            case Qt::Key_Backspace: key = UKey_Backspace; break;
             case Qt::Key_Escape: key = UKey_Escape; break;
             case Qt::Key_Delete: key = UKey_Delete; break;
             case Qt::Key_Return: key = UKey_Return; break;
@@ -276,8 +276,8 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             case Qt::Key_Up: key = UKey_Up; break;
             case Qt::Key_Right: key = UKey_Right; break;
             case Qt::Key_Down: key = UKey_Down; break;
-            case Qt::Key_Prior: key = UKey_Prior; break;
-            case Qt::Key_Next: key = UKey_Next; break;
+            case Qt::Key_PageUp: key = UKey_Prior; break;
+            case Qt::Key_PageDown: key = UKey_Next; break;
             case Qt::Key_Home: key = UKey_Home; break;
             case Qt::Key_End: key = UKey_End; break;
             case Qt::Key_Multi_key: key = UKey_Multi_key; break;
@@ -418,7 +418,8 @@ void QUimInputContext::reloadUim()
 
     for ( it = contextList.begin(); it != contextList.end(); ++it )
     {
-        ( *it )->m_uc = ( *it )->createUimContext( ( *it )->m_imname );
+        ( *it )->m_uc
+            = ( *it )->createUimContext( ( *it )->m_imname.toAscii() );
     }
 }
 
