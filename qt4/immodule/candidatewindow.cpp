@@ -108,7 +108,7 @@ CandidateWindow::~CandidateWindow()
 {
     if ( !stores.isEmpty() )
     {
-        // clear stored candidate datas
+        // clear stored candidate data
         for ( int i = 0; i < stores.size(); i++ )
             uim_candidate_free( stores[ i ] );
         stores.clear();
@@ -150,7 +150,7 @@ void CandidateWindow::clearCandidates()
     displayLimit = 0;
     nrCandidates = 0;
 
-    // clear stored candidate datas
+    // clear stored candidate data
     for ( int i = 0; i < stores.size(); i++ )
     {
         if ( stores[ i ] )

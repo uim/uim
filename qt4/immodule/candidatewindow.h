@@ -88,7 +88,7 @@ protected slots:
 protected:
     void updateLabel();
 
-    // Moving and Resizing affects the positon of Subwindow
+    // Moving and Resizing affects the position of Subwindow
     virtual void moveEvent( QMoveEvent * );
     virtual void resizeEvent( QResizeEvent * );
 
