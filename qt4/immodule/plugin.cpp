@@ -96,7 +96,7 @@ QStringList UimInputContextPlugin::languages( const QString & key )
 
 QString UimInputContextPlugin::displayName( const QString & key )
 {
-    return QString( key ) + " (" + languages( key ) [ 0 ] + ")";
+    return QString( key ) + " (" + languages( key ) [ 0 ] + ')';
 }
 
 QString UimInputContextPlugin::description( const QString & key )
@@ -183,7 +183,7 @@ QStringList UimInputContextPlugin::createLanguageList( const QString &key ) cons
             if ( key == QString( "uim-" ) + name )
             {
                 // ":" separated languages for future extension
-                QStringList langs = QString( lang ).split( ":" );
+                QStringList langs = QString( lang ).split( ':' );
                 return langs;
             }
         }

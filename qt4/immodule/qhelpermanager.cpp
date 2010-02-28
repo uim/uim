@@ -103,7 +103,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             uim_prop_label_update( focusedInputContext->uimContext() );
         else if ( str.startsWith( QLatin1String( "prop_activate" ) ) )
         {
-            QStringList list = str.split( "\n" );
+            QStringList list = str.split( '\n' );
             uim_prop_activate( focusedInputContext->uimContext(),
                                list[ 1 ].toUtf8() );
         }
@@ -113,13 +113,13 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         }
         else if ( str.startsWith( QLatin1String( "commit_string" ) ) )
         {
-            QStringList lines = str.split( "\n" );
+            QStringList lines = str.split( '\n' );
             if ( !lines.isEmpty() && !lines[ 1 ].isEmpty() ) {
                 QString commit_str;
                 
                 if ( lines[ 1 ].startsWith( QLatin1String( "charset" ) ) ) {
                     /* get charset */
-                    QString charset = lines[ 1 ].split( "=" ) [ 1 ];
+                    QString charset = lines[ 1 ].split( '=' ) [ 1 ];
 
                     /* convert to unicode */
                     QTextCodec *codec = QTextCodec::codecForName( charset );
@@ -151,7 +151,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
     else if ( str.startsWith( QLatin1String( "prop_update_custom" ) ) )
     {
         // for custom api
-        QStringList list = str.split( "\n" );
+        QStringList list = str.split( '\n' );
         if ( !list.isEmpty() && !list[ 0 ].isEmpty() &&
                 !list[ 1 ].isEmpty() && !list[ 2 ].isEmpty() )
         {
@@ -177,9 +177,9 @@ void QUimHelperManager::parseHelperStr( const QString &str )
 
 void QUimHelperManager::parseHelperStrImChange( const QString &str )
 {
-    QStringList list = str.split( "\n" );
+    QStringList list = str.split( '\n' );
     QString im_name = list[ 1 ];
-    QString im_name_sym = "'" + im_name;
+    QString im_name_sym = '\'' + im_name;
 
     if ( str.startsWith( QLatin1String( "im_change_this_text_area_only" ) ) )
     {
