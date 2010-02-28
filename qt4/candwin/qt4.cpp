@@ -526,7 +526,8 @@ void CandidateWindow::setPage( int page )
         cList->setRowCount( count + 1 );
         cList->setItem( count, 0, headItem );
         cList->setItem( count, 1, candItem );
-        cList->setRowHeight( count, QFontMetrics( cList->font() ).height() );
+        cList->setRowHeight(
+            count, QFontMetrics( cList->font() ).height() + 2 );
     }
 
     // set index
