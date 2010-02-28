@@ -37,9 +37,15 @@
 #include <X11/X.h>
 #undef Above
 #undef Below
+#undef CursorShape
+#undef FocusIn
+#undef FocusOut
+#undef FontChange
 #undef KeyPress
 #undef KeyRelease
 #undef None
+
+class QKeyEvent;
 
 typedef struct _DefTree {
     struct _DefTree *next;                /* another Key definition */

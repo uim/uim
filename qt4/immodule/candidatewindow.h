@@ -33,16 +33,15 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 #define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 
-#include <uim/uim.h>
-
 #include <QtCore/QList>
 #include <QtGui/QTableWidget>
 
-class QLabel;
-class QTableWidgetItem;
+#include <uim/uim.h>
 
-class QUimInputContext;
+class QLabel;
+
 class CandidateListView;
+class QUimInputContext;
 class SubWindow;
 
 class CandidateWindow : public QFrame

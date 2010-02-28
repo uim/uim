@@ -30,23 +30,20 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-
-//#include <config.h>
+#include "qhelpermanager.h"
 
 #include <QtCore/QSocketNotifier>
-#include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 
 #include "uim/uim.h"
-#include "uim/uim-util.h"
 #include "uim/uim-helper.h"
 #include "uim/uim-im-switcher.h"
+#include "uim/uim-util.h"
 
-#include "qhelpermanager.h"
-#include "quiminputcontext.h"
-#include "quiminfomanager.h"
 #include "plugin.h"
+#include "quiminfomanager.h"
+#include "quiminputcontext.h"
 
 static int im_uim_fd = 0;
 static QSocketNotifier *notifier = 0;

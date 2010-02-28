@@ -31,30 +31,27 @@
   SUCH DAMAGE.
 
 */
-
-#include <QtCore/QEvent>
-#include <QtCore/QPoint>
-#include <QtGui/QApplication>
-#include <QtGui/QInputMethodEvent>
-#include <QtGui/QLabel>
-#include <QtGui/QTextCharFormat>
-#include <QtGui/QWidget>
+#include "quiminputcontext.h"
 
 #include <cctype>
 #include <cstring>
 
+#include <QtCore/QPoint>
+#include <QtGui/QInputMethodEvent>
+#include <QtGui/QLabel>
+#include <QtGui/QTextCharFormat>
+
+#include <uim/uim-helper.h>
+#include <uim/uim-im-switcher.h>
+#include <uim/uim-scm.h>
+
 #include "debug.h"
-#include "quiminputcontext.h"
 #include "quiminputcontext_compose.h"
 #include "plugin.h"
 #include "candidatewindow.h"
 #include "quiminfomanager.h"
 #include "qhelpermanager.h"
 #include "qtextutil.h"
-
-#include <uim/uim.h>
-#include <uim/uim-scm.h>
-#include <uim/uim-im-switcher.h>
 
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
 #include <X11/Xlib.h>

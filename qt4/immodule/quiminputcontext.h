@@ -35,25 +35,25 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 
-#include <QtCore/QEvent>
-#include <QtGui/QInputContext>
-
 #ifdef Q_WS_X11
 #define UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK 1
 #endif
 #define UIM_QT_USE_NEW_PAGE_HANDLING 1
 
+#include <QtGui/QInputContext>
+
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
-#include <uim/uim-util.h>
+
+class QEvent;
 
 class CandidateWindow;
 class QUimHelperManager;
+class QUimTextUtil;
 #ifdef Q_WS_X11
 typedef struct _DefTree DefTree;
 class Compose;
 #endif
-class QUimTextUtil;
 
 class PreeditSegment
 {

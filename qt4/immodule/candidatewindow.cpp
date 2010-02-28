@@ -30,24 +30,18 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
+#include "candidatewindow.h"
 
-//#include <config.h>
-
-#include <QtCore/QEvent>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QFontMetrics>
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
-#include <QtGui/QTableWidget>
 #include <QtGui/QVBoxLayout>
 
-#include "uim/uim.h"
-
 #include "debug.h"
-#include "candidatewindow.h"
-#include "subwindow.h"
 #include "quiminputcontext.h"
+#include "subwindow.h"
 
 static const int MIN_CAND_WIDTH = 80;
 

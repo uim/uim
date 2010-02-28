@@ -29,8 +29,9 @@
   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 */
-
 #include <config.h>
+
+#include "quiminputcontext_compose.h"
 
 #include <cctype>
 #include <cerrno>
@@ -38,22 +39,22 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <sys/param.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #ifdef HAVE_LANGINFO_CODESET
 #include <langinfo.h>
 #endif
 
+#include <QtCore/QTextCodec>
+#include <QtGui/QKeyEvent>
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/keysym.h>
+
 #include "uim/uim.h"
 
 #include "quiminputcontext.h"
-#include "quiminputcontext_compose.h"
-
-#include <QtCore/QTextCodec>
-
-#include <X11/keysym.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 static const char COMPOSE_FILE[] = "Compose";
 static const char COMPOSE_DIR_FILE[] = "X11/locale/compose.dir";

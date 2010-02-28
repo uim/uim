@@ -32,24 +32,18 @@ SUCH DAMAGE.
 */
 
 // FIXME: Support Qt4 TextEdit
-
-//#include <config.h>
+#include "qtextutil.h"
 
 #include <cstdlib>
 
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
 #include <QtGui/QLineEdit>
-#include <QtGui/QWidget>
 #ifdef ENABLE_QT4_QT3SUPPORT
 # include <Qt3Support/Q3TextEdit>
 #endif
 
-#include "uim/uim.h"
-
-#include "qtextutil.h"
 #include "quiminputcontext.h"
-
 
 QUimTextUtil::QUimTextUtil( QObject *parent )
         : QObject( parent )

@@ -36,7 +36,6 @@ SUCH DAMAGE.
 #include <QtCore/QObject>
 
 class QString;
-class QSocketNotifier;
 
 class QUimHelperManager : public QObject
 {

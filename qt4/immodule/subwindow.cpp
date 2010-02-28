@@ -30,19 +30,16 @@ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 SUCH DAMAGE.
 
 */
-
-//#include <config.h>
+#include "subwindow.h"
 
 #include <QtCore/QPoint>
 #include <QtCore/QRect>
-#include <QtCore/QTimer>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QLabel>
 #include <QtGui/QTextBrowser>
 #include <QtGui/QVBoxLayout>
 
-#include "subwindow.h"
 
 const Qt::WFlags subwindowFlag = ( Qt::Window
                                    | Qt::WindowStaysOnTopHint

@@ -35,9 +35,7 @@
 #include "plugin.h"
 
 #include <QtCore/QStringList>
-#include <QtGui/QApplication>
 #include <QtGui/QInputContext>
-#include <QtGui/QInputContextPlugin>
 #ifdef Q_WS_X11
 #include <QtGui/QX11Info>
 #endif
