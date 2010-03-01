@@ -909,7 +909,7 @@ case "$enable_qt4_qt3support" in
             use_qt4_qt3support="yes"
         else
             use_qt4_qt3support="no"
-	        AC_MSG_WARN([No Qt3Support found])
+            AC_MSG_WARN([No Qt3Support found])
         fi
     else
         use_qt4_qt3support="no"
