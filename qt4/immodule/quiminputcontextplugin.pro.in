@@ -14,7 +14,7 @@ QMAKE_LIBDIR += @abs_top_builddir@/replace
 # static libraries directly
 QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
 QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
-LIBS += -lreplace -luim -luim-scm -luim-x-util
+LIBS += -lreplace -luim -luim-scm -luim-x-util @X11_LIBS@
 
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
 QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
