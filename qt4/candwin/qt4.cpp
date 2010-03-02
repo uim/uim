@@ -440,19 +440,27 @@ void CandidateWindow::adjustCandidateWindowSize()
     int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2
         + cList->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
-    int rowNum = cList->rowCount();
-    // If cList is empty, the height of cList is 0.
-    int height = ( ( rowNum == 0 ) ? 0 : cList->rowHeight( 0 ) * rowNum )
-        + numLabel->height() + frame;
-
+    const int rowNum = cList->rowCount();
+    if ( rowNum == 0 ) {
+        resize( MIN_CAND_WIDTH, numLabel->height() + frame );
+        return;
+    }
+    const int columnNum = cList->columnCount();
+    QHeaderView *header = cList->horizontalHeader();
+    header->setResizeMode( columnNum - 1, QHeaderView::ResizeToContents );
     int width = frame;
-    for ( int i = 0; i < cList->columnCount(); i++ )
+    for ( int i = 0; i < columnNum; i++ )
         width += cList->columnWidth( i );
 
-    if ( width < MIN_CAND_WIDTH )
+    if ( width < MIN_CAND_WIDTH ) {
+        header->setResizeMode( columnNum - 1, QHeaderView::Fixed );
+        header->resizeSection( columnNum - 1,
+            header->sectionSize( columnNum - 1 ) + MIN_CAND_WIDTH - width );
         width = MIN_CAND_WIDTH;
+    }
 
-    resize( width, height );
+    resize( width, cList->rowHeight( 0 ) * rowNum + numLabel->height()
+        + frame );
 }
 
 void CandidateWindow::setPage( int page )
