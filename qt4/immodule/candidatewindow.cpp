@@ -492,7 +492,9 @@ QSize CandidateWindow::sizeHint() const
 {
     QSize cListSizeHint = cList->sizeHint();
 
-    int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
+    // According to the Qt4 documentation on the QFrame class,
+    // the frame width is 1 pixel.
+    int frame = 1 * 2;
     int width = cListSizeHint.width() + frame;
     int height = cListSizeHint.height() + numLabel->height() + frame;
 
@@ -501,18 +503,28 @@ QSize CandidateWindow::sizeHint() const
 
 QSize CandidateListView::sizeHint() const
 {
+    // frame width
     int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
-    int rowNum = rowCount();
-    // If cList is empty, the height of cList is 0.
-    int height = ( ( rowNum == 0 ) ? 0 : rowHeight( 0 ) * rowNum );
-
+    const int rowNum = rowCount();
+    if ( rowNum == 0 ) {
+        return QSize( MIN_CAND_WIDTH, frame );
+    }
+    const int columnNum = columnCount();
+    QHeaderView *header = horizontalHeader();
+    header->setResizeMode( columnNum - 1, QHeaderView::ResizeToContents );
     int width = frame;
-    for ( int i = 0; i < columnCount(); i++ )
+    for ( int i = 0; i < columnNum; i++ )
         width += columnWidth( i );
 
-    if ( width < MIN_CAND_WIDTH )
+    if ( width < MIN_CAND_WIDTH ) {
+        header->setResizeMode( columnNum - 1, QHeaderView::Fixed );
+        // We use "MIN_CAND_WIDTH" as the column size because
+        // "header->sectionSize( columnNum - 1 ) + MIN_CAND_WIDTH - width"
+        // is too narrow in some environments.
+        header->resizeSection( columnNum - 1, MIN_CAND_WIDTH );
         width = MIN_CAND_WIDTH;
-    
-    return QSize( width, height );
+    }
+
+    return QSize( width, rowHeight( 0 ) * rowNum + frame );
 }

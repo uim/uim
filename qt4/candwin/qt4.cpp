@@ -437,7 +437,9 @@ void CandidateWindow::adjustCandidateWindowSize()
     qDebug( "adjustCandidateWindowSize()" );
 #endif
     // frame width
-    int frame = style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2
+    // According to the Qt4 documentation on the QFrame class,
+    // the frame width is 1 pixel.
+    int frame = 1 * 2
         + cList->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
 
     const int rowNum = cList->rowCount();
@@ -454,8 +456,10 @@ void CandidateWindow::adjustCandidateWindowSize()
 
     if ( width < MIN_CAND_WIDTH ) {
         header->setResizeMode( columnNum - 1, QHeaderView::Fixed );
-        header->resizeSection( columnNum - 1,
-            header->sectionSize( columnNum - 1 ) + MIN_CAND_WIDTH - width );
+        // We use "MIN_CAND_WIDTH" as the column size because
+        // "header->sectionSize( columnNum - 1 ) + MIN_CAND_WIDTH - width"
+        // is too narrow in some environments.
+        header->resizeSection( columnNum - 1, MIN_CAND_WIDTH );
         width = MIN_CAND_WIDTH;
     }
 
