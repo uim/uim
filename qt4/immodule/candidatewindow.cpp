@@ -297,12 +297,12 @@ void CandidateWindow::setPage( int page )
     for ( int i = 0; i < ncandidates ; i++ )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
-        QString headString = QString::fromUtf8( ( const char * ) uim_candidate_get_heading_label( cand ) );
-        QString candString = QString::fromUtf8( ( const char * ) uim_candidate_get_cand_str( cand ) );
+        QString headString = QString::fromUtf8( uim_candidate_get_heading_label( cand ) );
+        QString candString = QString::fromUtf8( uim_candidate_get_cand_str( cand ) );
 
         // 2004-12-13 Kazuki Ohta <mover@hct.zaq.ne.jp>
         // Commented out for the next release.
-//        QString annotationString = QString::fromUtf8( ( const char * ) uim_candidate_get_annotation_str( cand ) );
+//        QString annotationString = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
 
         // insert new item to the candidate list
         QTableWidgetItem *headItem = new QTableWidgetItem;
@@ -347,7 +347,7 @@ void CandidateWindow::setIndex( int totalindex )
     // set page
     int newpage = 0;
     if ( displayLimit )
-        newpage = ( int ) candidateIndex / displayLimit;
+        newpage = candidateIndex / displayLimit;
     if ( pageIndex != newpage )
         setPage( newpage );
 
