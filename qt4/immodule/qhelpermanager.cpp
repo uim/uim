@@ -81,8 +81,9 @@ void QUimHelperManager::checkHelperConnection()
     }
 }
 
-void QUimHelperManager::slotStdinActivated( int /*socket*/ )
+void QUimHelperManager::slotStdinActivated( int socket )
 {
+    Q_UNUSED( socket )
     QString tmp;
 
     uim_helper_read_proc( im_uim_fd );

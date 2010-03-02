@@ -901,8 +901,9 @@ void KeyGrabDialog::keyPressEvent( QKeyEvent *e )
     pressed_unichar = e->text().at(0);
 }
 
-void KeyGrabDialog::keyReleaseEvent( QKeyEvent * /* e */ )
+void KeyGrabDialog::keyReleaseEvent( QKeyEvent *e )
 {
+    Q_UNUSED( e )
     // create keystr
     setKeyStr();
 

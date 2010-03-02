@@ -107,8 +107,9 @@ void CharGridView::setFont( const QFont &font )
     }
 }
 
-void CharGridView::resizeEvent( QResizeEvent * /* e */ )
+void CharGridView::resizeEvent( QResizeEvent *e )
 {
+    Q_UNUSED( e )
     updateCharGridView();
 }
 

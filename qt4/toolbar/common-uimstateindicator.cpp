@@ -220,8 +220,9 @@ void UimStateIndicator::helper_disconnect_cb()
     disconnect( notifier, SIGNAL( activated( int ) ), 0, 0 );
 }
 
-void UimStateIndicator::slotStdinActivated( int /*socket*/ )
+void UimStateIndicator::slotStdinActivated( int socket )
 {
+    Q_UNUSED( socket )
     uim_helper_read_proc( uim_fd );
 
     QString tmp;

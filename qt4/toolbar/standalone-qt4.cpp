@@ -163,8 +163,9 @@ QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
     return QSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 
-void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * /* e */ )
+void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent *e )
 {
+    Q_UNUSED( e )
     isDragging = true;
     grabMouse( QCursor( Qt::SizeAllCursor) );
 
@@ -172,14 +173,16 @@ void UimToolbarDraggingHandler::mousePressEvent( QMouseEvent * /* e */ )
     offsetY = QCursor::pos().y() - this->parentWidget()->y();
 }
 
-void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent * /* e */ )
+void UimToolbarDraggingHandler::mouseReleaseEvent( QMouseEvent *e )
 {
+    Q_UNUSED( e )
     isDragging = false;
     releaseMouse();
 }
 
-void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * /* e */ )
+void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent *e )
 {
+    Q_UNUSED( e )
     if ( isDragging ) {
         QPoint pos = QCursor::pos();
         pos -= QPoint(offsetX, offsetY);
@@ -187,8 +190,9 @@ void UimToolbarDraggingHandler::mouseMoveEvent( QMouseEvent * /* e */ )
     }
 }
 
-void UimToolbarDraggingHandler::mouseDoubleClickEvent( QMouseEvent * /* e */ )
+void UimToolbarDraggingHandler::mouseDoubleClickEvent( QMouseEvent *e )
 {
+    Q_UNUSED( e )
     isDragging = false;
     emit handleDoubleClicked();
 }

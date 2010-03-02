@@ -212,8 +212,9 @@ QString UimImSwitcher::selectedImName() const
     return QString();
 }
 
-void UimImSwitcher::slotStdinActivated( int /*socket*/ )
+void UimImSwitcher::slotStdinActivated( int socket )
 {
+    Q_UNUSED( socket )
     uim_helper_read_proc( uim_fd );
 
     QString msg;

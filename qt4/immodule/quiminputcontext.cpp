@@ -175,9 +175,8 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 #ifdef Q_WS_X11
 bool QUimInputContext::x11FilterEvent( QWidget *keywidget, XEvent *event )
 {
-    // to suppress warning
-    keywidget = keywidget;
-    event = event;
+    Q_UNUSED( keywidget )
+    Q_UNUSED( event )
 
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
     return uim_x_kana_input_hack_filter_event( m_uc, event );
@@ -425,9 +424,8 @@ void QUimInputContext::reloadUim()
 
 void QUimInputContext::setMicroFocus( int x, int y, int w, int h, QFont *f )
 {
+    Q_UNUSED( f )
     qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
-
-    f = f;  // to suppress warning
 
     cwin->layoutWindow( x, y, w, h );
 }
