@@ -471,7 +471,6 @@ void CandidateWindow::setPage( int page )
 {
     // clear items
     cList->clearContents();
-    cList->setRowCount( 0 );
 
     // calculate page
     int newpage, lastpage;
@@ -522,6 +521,7 @@ void CandidateWindow::setPage( int page )
     int ncandidates = displayLimit;
     if ( newpage == lastpage )
         ncandidates = nrCandidates - displayLimit * lastpage;
+    cList->setRowCount( ncandidates );
     for ( int i = 0; i < ncandidates ; i++ )
     {
         QString headString = stores[ displayLimit * newpage + i ].label;
@@ -534,12 +534,9 @@ void CandidateWindow::setPage( int page )
         QTableWidgetItem *candItem = new QTableWidgetItem;
         candItem->setText( candString );
         candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-        int count = cList->rowCount();
-        cList->setRowCount( count + 1 );
-        cList->setItem( count, 0, headItem );
-        cList->setItem( count, 1, candItem );
-        cList->setRowHeight(
-            count, QFontMetrics( cList->font() ).height() + 2 );
+        cList->setItem( i, 0, headItem );
+        cList->setItem( i, 1, candItem );
+        cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
     }
 
     // set index
