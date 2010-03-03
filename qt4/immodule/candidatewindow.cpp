@@ -318,9 +318,9 @@ void CandidateWindow::setPage( int page )
         annotationItem->setText( annotationString );
         annotationItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 
-        cList->setItem( i, 0, headItem );
-        cList->setItem( i, 1, candItem );
-        cList->setItem( i, 2, annotationItem );
+        cList->setItem( i, HEADING_COLUMN, headItem );
+        cList->setItem( i, CANDIDATE_COLUMN, candItem );
+        cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
         cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
     }
 
@@ -470,7 +470,8 @@ void CandidateWindow::slotHookSubwindow()
     subWin->cancelHook();
 
     // hook annotation
-    QString annotationString = cList->item( list[0]->row(), 2 )->text();
+    QString annotationString
+        = cList->item( list[0]->row(), ANNOTATION_COLUMN )->text();
     if ( !annotationString.isEmpty() )
     {
         subWin->hookPopup( "Annotation", annotationString );

@@ -58,6 +58,9 @@
 static const int NR_CANDIDATES = 10;
 static const int MIN_CAND_WIDTH = 80;
 
+static const int HEADING_COLUMN = 0;
+static const int CANDIDATE_COLUMN = 1;
+
 const Qt::WFlags candidateFlag = ( Qt::Window
                                    | Qt::WindowStaysOnTopHint
                                    | Qt::FramelessWindowHint
@@ -535,8 +538,8 @@ void CandidateWindow::setPage( int page )
         QTableWidgetItem *candItem = new QTableWidgetItem;
         candItem->setText( candString );
         candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-        cList->setItem( i, 0, headItem );
-        cList->setItem( i, 1, candItem );
+        cList->setItem( i, HEADING_COLUMN, headItem );
+        cList->setItem( i, CANDIDATE_COLUMN, candItem );
         cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
     }
 
