@@ -580,8 +580,7 @@ void CandidateWindow::setIndex( int index )
         if ( cList->item( pos, 0 ) && !cList->item( pos, 0 )->isSelected() )
         {
             cList->clearSelection();
-            cList->item( pos, 0 )->setSelected( true );
-            cList->item( pos, 1 )->setSelected( true );
+            cList->selectRow( pos );
         }
     }
     else

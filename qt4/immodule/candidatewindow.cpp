@@ -358,8 +358,7 @@ void CandidateWindow::setIndex( int totalindex )
         if ( cList->item( pos, 0 ) && !cList->item( pos, 0 )->isSelected() )
         {
             cList->clearSelection();
-            cList->item( pos, 0 )->setSelected( true );
-            cList->item( pos, 1 )->setSelected( true );
+            cList->selectRow( pos );
         }
     }
     else
@@ -373,8 +372,7 @@ void CandidateWindow::setIndex( int totalindex )
 void CandidateWindow::setIndexInPage( int index )
 {
     cList->clearSelection();
-    cList->item( index, 0 )->setSelected( true );
-    cList->item( index, 1 )->setSelected( true );
+    cList->selectRow( index );
 
     slotCandidateSelected( index );
 }
@@ -416,8 +414,7 @@ void CandidateWindow::shiftPage( bool forward )
     if ( candidateIndex != -1 ) {
         cList->clearSelection();
         int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
-        cList->item( idx, 0 )->setSelected( true );
-        cList->item( idx, 1 )->setSelected( true );
+        cList->selectRow( idx );
     }
     if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
