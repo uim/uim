@@ -69,7 +69,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList = new CandidateListView;
     cList->setSelectionMode( QAbstractItemView::SingleSelection );
     cList->setSelectionBehavior( QAbstractItemView::SelectRows );
-    cList->setColumnCount( 2 );
+    cList->setColumnCount( 3 );
     cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
     cList->horizontalHeader()->hide();
     cList->verticalHeader()->hide();
@@ -297,22 +297,30 @@ void CandidateWindow::setPage( int page )
     for ( int i = 0; i < ncandidates ; i++ )
     {
         uim_candidate cand = stores[ displayLimit * newpage + i ];
-        QString headString = QString::fromUtf8( uim_candidate_get_heading_label( cand ) );
-        QString candString = QString::fromUtf8( uim_candidate_get_cand_str( cand ) );
-
-        // 2004-12-13 Kazuki Ohta <mover@hct.zaq.ne.jp>
-        // Commented out for the next release.
-//        QString annotationString = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
+        QString headString
+            = QString::fromUtf8( uim_candidate_get_heading_label( cand ) );
+        QString candString
+            = QString::fromUtf8( uim_candidate_get_cand_str( cand ) );
+        QString annotationString;
+        // QString annotationString
+        //    = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
 
         // insert new item to the candidate list
         QTableWidgetItem *headItem = new QTableWidgetItem;
         headItem->setText( headString );
         headItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
         QTableWidgetItem *candItem = new QTableWidgetItem;
         candItem->setText( candString );
         candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
+        QTableWidgetItem *annotationItem = new QTableWidgetItem;
+        annotationItem->setText( annotationString );
+        annotationItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
         cList->setItem( i, 0, headItem );
         cList->setItem( i, 1, candItem );
+        cList->setItem( i, 2, annotationItem );
         cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
     }
 
@@ -451,18 +459,21 @@ void CandidateWindow::updateLabel()
 
 void CandidateWindow::slotHookSubwindow()
 {
-    if ( subWin ) {
-        // cancel previous hook
-        subWin->cancelHook();
+    if ( !subWin )
+        return;
 
-        // hook annotation
-        // Commented out for the next release.
-        // QString annotationString = item->text();
-        QString annotationString;
-        if ( !annotationString.isEmpty() )
-        {
-            subWin->hookPopup( "Annotation", annotationString );
-        }
+    QList<QTableWidgetItem *> list = cList->selectedItems();
+    if ( list.isEmpty() )
+        return;
+
+    // cancel previous hook
+    subWin->cancelHook();
+
+    // hook annotation
+    QString annotationString = cList->item( list[0]->row(), 2 )->text();
+    if ( !annotationString.isEmpty() )
+    {
+        subWin->hookPopup( "Annotation", annotationString );
     }
 }
 
