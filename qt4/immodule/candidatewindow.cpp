@@ -382,6 +382,7 @@ void CandidateWindow::setIndexInPage( int index )
 
 void CandidateWindow::slotCandidateSelected( int row )
 {
+    cList->scrollToItem( cList->item( row, 0 ) );
     candidateIndex = ( pageIndex * displayLimit ) + row;
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );

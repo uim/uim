@@ -421,6 +421,7 @@ void CandidateWindow::strParse( const QString& str )
 
 void CandidateWindow::slotCandidateSelected( int row )
 {
+    cList->scrollToItem( cList->item( row, 0 ) );
     candidateIndex = ( pageIndex * displayLimit ) + row;
 
     // write message
