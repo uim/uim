@@ -76,8 +76,8 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setShowGrid( false );
-    connect( cList, SIGNAL( itemClicked( QTableWidgetItem * ) ),
-          this , SLOT( slotCandidateSelected( QTableWidgetItem * ) ) );
+    connect( cList, SIGNAL( cellClicked( int, int ) ),
+          this , SLOT( slotCandidateSelected( int ) ) );
     connect( cList, SIGNAL( itemSelectionChanged() ),
           this , SLOT( slotHookSubwindow() ) );
 
@@ -373,17 +373,16 @@ void CandidateWindow::setIndex( int totalindex )
 void CandidateWindow::setIndexInPage( int index )
 {
     cList->clearSelection();
-    QTableWidgetItem *selectedItem = cList->item( index, 0 );
-    selectedItem->setSelected( true );
+    cList->item( index, 0 )->setSelected( true );
     cList->item( index, 1 )->setSelected( true );
 
-    slotCandidateSelected( selectedItem );
+    slotCandidateSelected( index );
 }
 
 
-void CandidateWindow::slotCandidateSelected( QTableWidgetItem * item )
+void CandidateWindow::slotCandidateSelected( int row )
 {
-    candidateIndex = ( pageIndex * displayLimit ) + cList->row( item );
+    candidateIndex = ( pageIndex * displayLimit ) + row;
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
     updateLabel();

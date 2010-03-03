@@ -79,7 +79,7 @@ public:
     int candidateIndex;
     int pageIndex;
 protected slots:
-    void slotCandidateSelected( QTableWidgetItem* );
+    void slotCandidateSelected( int row );
     void slotHookSubwindow();
 
 protected:

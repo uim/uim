@@ -39,7 +39,6 @@
 class QLabel;
 class QStringList;
 class QTableWidget;
-class QTableWidgetItem;
 
 struct CandData
 {
@@ -66,7 +65,7 @@ public:
 
 public slots:
     void slotStdinActivated( int );
-    void slotCandidateSelected( QTableWidgetItem* );
+    void slotCandidateSelected( int row );
 
 protected:
     void strParse( const QString& str );

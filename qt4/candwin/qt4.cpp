@@ -85,8 +85,8 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setShowGrid( false );
-    connect( cList, SIGNAL( itemClicked( QTableWidgetItem * ) ),
-          this , SLOT( slotCandidateSelected( QTableWidgetItem * ) ) );
+    connect( cList, SIGNAL( cellClicked( int, int ) ),
+          this , SLOT( slotCandidateSelected( int ) ) );
 
     //setup NumberLabel
     numLabel = new QLabel;
@@ -419,9 +419,9 @@ void CandidateWindow::strParse( const QString& str )
     }
 }
 
-void CandidateWindow::slotCandidateSelected( QTableWidgetItem * item )
+void CandidateWindow::slotCandidateSelected( int row )
 {
-    candidateIndex = ( pageIndex * displayLimit ) + cList->row( item );
+    candidateIndex = ( pageIndex * displayLimit ) + row;
 
     // write message
     fprintf( stdout, "index\n" );
