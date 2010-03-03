@@ -70,6 +70,7 @@ SubWindow::SubWindow( QWidget *parent )
     hide();
 
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin( 0 );
     layout->addWidget( m_titleLabel );
     layout->addWidget( m_contentsEdit );
     setLayout( layout );
