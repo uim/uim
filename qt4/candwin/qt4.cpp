@@ -88,6 +88,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setShowGrid( false );
+    cList->setMinimumWidth( MIN_CAND_WIDTH );
     connect( cList, SIGNAL( cellClicked( int, int ) ),
           this , SLOT( slotCandidateSelected( int ) ) );
 
@@ -457,15 +458,6 @@ void CandidateWindow::adjustCandidateWindowSize()
     int width = frame;
     for ( int i = 0; i < columnNum; i++ )
         width += cList->columnWidth( i );
-
-    if ( width < MIN_CAND_WIDTH ) {
-        header->setResizeMode( columnNum - 1, QHeaderView::Fixed );
-        // We use "MIN_CAND_WIDTH" as the column size because
-        // "header->sectionSize( columnNum - 1 ) + MIN_CAND_WIDTH - width"
-        // is too narrow in some environments.
-        header->resizeSection( columnNum - 1, MIN_CAND_WIDTH );
-        width = MIN_CAND_WIDTH;
-    }
 
     resize( width, cList->rowHeight( 0 ) * rowNum + numLabel->height()
         + frame );
