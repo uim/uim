@@ -69,8 +69,10 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList = new CandidateListView;
     cList->setSelectionMode( QAbstractItemView::SingleSelection );
     cList->setSelectionBehavior( QAbstractItemView::SelectRows );
-    cList->setColumnCount( 3 );
+    // the last column is dummy for adjusting size.
+    cList->setColumnCount( 4 );
     cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
+    cList->horizontalHeader()->setStretchLastSection( true );
     cList->horizontalHeader()->hide();
     cList->verticalHeader()->hide();
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
@@ -517,11 +519,8 @@ QSize CandidateListView::sizeHint() const
     if ( rowNum == 0 ) {
         return QSize( MIN_CAND_WIDTH, frame );
     }
-    const int columnNum = columnCount();
-    QHeaderView *header = horizontalHeader();
-    header->setResizeMode( columnNum - 1, QHeaderView::ResizeToContents );
     int width = frame;
-    for ( int i = 0; i < columnNum; i++ )
+    for ( int i = 0; i < columnCount() - 1; i++ )
         width += columnWidth( i );
 
     return QSize( width, rowHeight( 0 ) * rowNum + frame );
