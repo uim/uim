@@ -1396,8 +1396,9 @@ void init_modifier_keys() {
     gXNumLockMask = 0;
     XModifierKeymap *map = XGetModifierMapping(XimServer::gDpy);
     XDisplayKeycodes(XimServer::gDpy, &min_keycode, &max_keycode);
-    KeySym *sym = XGetKeyboardMapping(XimServer::gDpy, min_keycode,
-		    (max_keycode - min_keycode + 1), &keysyms_per_keycode);
+    KeySym *sym = XGetKeyboardMapping(XimServer::gDpy,
+                    static_cast<KeyCode>(min_keycode),
+                    (max_keycode - min_keycode + 1), &keysyms_per_keycode);
     for (i = 0; i < 8; i++) {
 	int j;
 	for (j = 0; j < map->max_keypermod; j++) {
