@@ -42,8 +42,8 @@
 #if HAVE_XFT_UTF8_STRING
 #include <X11/Xft/Xft.h>
 #endif
-#include <stdlib.h>
-#include <locale.h>
+#include <clocale>
+#include <cstdlib>
 #include "xim.h"
 #include "ximserver.h"
 #include "convdisp.h"

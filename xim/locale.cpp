@@ -36,11 +36,11 @@
 # include <config.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <locale.h>
+#include <cerrno>
+#include <clocale>
+#include <cstdio>
+#include <cstring>
 #include <iconv.h>
-#include <errno.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "ximserver.h"

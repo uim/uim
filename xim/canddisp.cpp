@@ -34,12 +34,12 @@
 # include <config.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <errno.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
 #include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 #include "uim/uim.h"
 #include "uim/uim-util.h"

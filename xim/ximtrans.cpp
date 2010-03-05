@@ -36,8 +36,8 @@
 # include <config.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 #include <X11/Xos.h>
 #include "xim.h"
 #include "util.h"

@@ -36,9 +36,9 @@
 # include <config.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
 

@@ -36,13 +36,14 @@
 # include <config.h>
 #endif
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
 #include "connection.h"
+
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <list>
 #include <map>
+#include <unistd.h>
 #include <X11/Xatom.h>
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>

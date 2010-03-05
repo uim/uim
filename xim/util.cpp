@@ -36,12 +36,12 @@
 # include <config.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cctype>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <unistd.h>
-#include <ctype.h>
-#include <stdarg.h>
-#include <string.h>
 
 #include "util.h"
 

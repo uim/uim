@@ -37,11 +37,11 @@
 # include <config.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <locale.h>
-#include <stdlib.h>
-#include <signal.h>
+#include <clocale>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <sys/select.h>
 
 #include "xim.h"

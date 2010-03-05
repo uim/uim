@@ -36,9 +36,9 @@
 # include <config.h>
 #endif
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <map>
 
 #include "xim.h"

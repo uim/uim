@@ -32,15 +32,15 @@
 
 #include <config.h>
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cctype>
+#include <cerrno>
+#include <clocale>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iconv.h>
 #include <sys/stat.h>
 #include <sys/param.h>
-#include <locale.h>
-#include <iconv.h>
-#include <errno.h>
 
 #include <X11/keysym.h>
 #include <X11/Xlib.h>

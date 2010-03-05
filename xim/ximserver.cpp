@@ -36,9 +36,9 @@
 
 #define UIM_XIM_USE_JAPANESE_KANA_KEYBOARD_HACK 1
 
-#include <stdio.h>
-#include <ctype.h>
-#include <locale.h>
+#include <cctype>
+#include <clocale>
+#include <cstdio>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
