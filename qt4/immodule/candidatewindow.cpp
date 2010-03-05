@@ -520,6 +520,7 @@ QSize CandidateListView::sizeHint() const
         return QSize( MIN_CAND_WIDTH, frame );
     }
     int width = frame;
+    // the size of the dummy column should be 0.
     for ( int i = 0; i < columnCount() - 1; i++ )
         width += columnWidth( i );
 

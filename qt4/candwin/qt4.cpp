@@ -455,6 +455,7 @@ void CandidateWindow::adjustCandidateWindowSize()
         return;
     }
     int width = frame;
+    // the size of the dummy column should be 0.
     for ( int i = 0; i < cList->columnCount() - 1; i++ )
         width += cList->columnWidth( i );
 
