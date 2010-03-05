@@ -370,6 +370,7 @@ void CandidateWindow::setIndex( int totalindex )
         {
             cList->clearSelection();
             cList->selectRow( pos );
+            cList->scrollToItem( cList->item( pos, 0 ) );
         }
     }
     else
@@ -426,6 +427,7 @@ void CandidateWindow::shiftPage( bool forward )
         cList->clearSelection();
         int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
         cList->selectRow( idx );
+        cList->scrollToItem( cList->item( idx, 0 ) );
     }
     if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );

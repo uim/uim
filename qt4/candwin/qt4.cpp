@@ -576,6 +576,7 @@ void CandidateWindow::setIndex( int index )
         {
             cList->clearSelection();
             cList->selectRow( pos );
+            cList->scrollToItem( cList->item( pos, 0 ) );
         }
     }
     else
