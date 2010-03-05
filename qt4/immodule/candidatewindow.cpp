@@ -88,8 +88,6 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     numLabel = new QLabel;
     numLabel->adjustSize();
 
-    stores.clear();
-
     nrCandidates = 0;
     candidateIndex = -1;
     displayLimit = 0;
