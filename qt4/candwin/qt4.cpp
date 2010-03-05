@@ -72,7 +72,8 @@ const Qt::WFlags candidateFlag = ( Qt::Window
 static QSocketNotifier *notifier = 0;
 
 CandidateWindow::CandidateWindow( QWidget *parent )
-        : QFrame( parent, candidateFlag )
+: QFrame( parent, candidateFlag ), nrCandidates( 0 ), candidateIndex( 0 ),
+    displayLimit( NR_CANDIDATES ), pageIndex( -1 ), isActive( false )
 {
     setFrameStyle( Raised | NoFrame );
     setFocusPolicy( Qt::NoFocus );
@@ -97,13 +98,6 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     //setup NumberLabel
     numLabel = new QLabel;
     numLabel->setFocusPolicy( Qt::NoFocus );
-
-    nrCandidates = 0;
-    candidateIndex = 0;
-    displayLimit = NR_CANDIDATES;
-    pageIndex = -1;
-
-    isActive = false;
 
     notifier = new QSocketNotifier( 0, QSocketNotifier::Read );
     connect( notifier, SIGNAL( activated( int ) ),

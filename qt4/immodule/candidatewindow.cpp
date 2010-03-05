@@ -59,11 +59,11 @@ const Qt::WFlags candidateFlag = ( Qt::Window
                                  );
 
 CandidateWindow::CandidateWindow( QWidget *parent )
-        : QFrame( parent, candidateFlag )
+: QFrame( parent, candidateFlag ), nrCandidates( 0 ), displayLimit( 0 ),
+    candidateIndex( -1 ), pageIndex( -1 ), ic( 0 ), isAlwaysLeft( false ),
+    subWin( 0 )
 {
     setFrameStyle( Raised | NoFrame );
-
-    ic = 0;
 
     //setup CandidateList
     cList = new CandidateListView;
@@ -87,15 +87,6 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     //setup NumberLabel
     numLabel = new QLabel;
     numLabel->adjustSize();
-
-    nrCandidates = 0;
-    candidateIndex = -1;
-    displayLimit = 0;
-    pageIndex = -1;
-
-    isAlwaysLeft = false;
-
-    subWin = 0;
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin( 0 );
