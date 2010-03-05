@@ -67,13 +67,13 @@ SubWindow::SubWindow( QWidget *parent )
     m_hookTimer = new QTimer( this );
     connect( m_hookTimer, SIGNAL( timeout() ), this, SLOT( timerDone() ) );
 
-    hide();
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin( 0 );
     layout->addWidget( m_titleLabel );
     layout->addWidget( m_contentsEdit );
     setLayout( layout );
+
+    hide();
 }
 
 SubWindow::~SubWindow()

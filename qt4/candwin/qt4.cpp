@@ -102,14 +102,14 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     notifier = new QSocketNotifier( 0, QSocketNotifier::Read );
     connect( notifier, SIGNAL( activated( int ) ),
                       this, SLOT( slotStdinActivated( int ) ) );
-    hide();
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin( 0 );
     layout->setSpacing( 0 );
     layout->addWidget( cList );
     layout->addWidget( numLabel );
     setLayout( layout );
+
+    hide();
 }
 
 CandidateWindow::~CandidateWindow()
