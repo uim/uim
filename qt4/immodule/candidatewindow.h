@@ -100,6 +100,8 @@ protected:
     bool isAlwaysLeft;
 
     SubWindow *subWin;
+
+    const bool hasAnnotation;
 };
 
 

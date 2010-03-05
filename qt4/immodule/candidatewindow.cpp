@@ -39,6 +39,8 @@ SUCH DAMAGE.
 #include <QtGui/QLabel>
 #include <QtGui/QVBoxLayout>
 
+#include <uim/uim-scm.h>
+
 #include "debug.h"
 #include "quiminputcontext.h"
 #include "subwindow.h"
@@ -61,7 +63,8 @@ const Qt::WFlags candidateFlag = ( Qt::Window
 CandidateWindow::CandidateWindow( QWidget *parent )
 : QFrame( parent, candidateFlag ), nrCandidates( 0 ), displayLimit( 0 ),
     candidateIndex( -1 ), pageIndex( -1 ), ic( 0 ), isAlwaysLeft( false ),
-    subWin( 0 )
+    subWin( 0 ), hasAnnotation( uim_scm_symbol_value_bool(
+        "eb-enable-for-annotation?" ) == UIM_TRUE )
 {
     setFrameStyle( Raised | NoFrame );
 
@@ -70,7 +73,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList->setSelectionMode( QAbstractItemView::SingleSelection );
     cList->setSelectionBehavior( QAbstractItemView::SelectRows );
     // the last column is dummy for adjusting size.
-    cList->setColumnCount( 4 );
+    cList->setColumnCount( hasAnnotation ? 4 : 3 );
     cList->horizontalHeader()->setResizeMode( QHeaderView::ResizeToContents );
     cList->horizontalHeader()->setStretchLastSection( true );
     cList->horizontalHeader()->hide();
@@ -294,8 +297,10 @@ void CandidateWindow::setPage( int page )
         QString candString
             = QString::fromUtf8( uim_candidate_get_cand_str( cand ) );
         QString annotationString;
-        // QString annotationString
-        //    = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
+        // if ( hasAnnotation ) {
+        //     annotationString
+        //     = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
+        // }
 
         // insert new item to the candidate list
         QTableWidgetItem *headItem = new QTableWidgetItem;
@@ -306,13 +311,18 @@ void CandidateWindow::setPage( int page )
         candItem->setText( candString );
         candItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 
-        QTableWidgetItem *annotationItem = new QTableWidgetItem;
-        annotationItem->setText( annotationString );
-        annotationItem->setFlags( Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-
         cList->setItem( i, HEADING_COLUMN, headItem );
         cList->setItem( i, CANDIDATE_COLUMN, candItem );
-        cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
+
+        if ( hasAnnotation ) {
+            QTableWidgetItem *annotationItem = new QTableWidgetItem;
+            annotationItem->setText( annotationString );
+            annotationItem->setFlags(
+                Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+
+            cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
+        }
+
         cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
     }
 
@@ -453,7 +463,7 @@ void CandidateWindow::updateLabel()
 
 void CandidateWindow::slotHookSubwindow()
 {
-    if ( !subWin )
+    if ( !hasAnnotation || !subWin )
         return;
 
     QList<QTableWidgetItem *> list = cList->selectedItems();
