@@ -80,6 +80,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     cList->verticalHeader()->hide();
     cList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     cList->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    cList->setAutoScroll( false );
     cList->setShowGrid( false );
     cList->setMinimumWidth( MIN_CAND_WIDTH );
     connect( cList, SIGNAL( cellClicked( int, int ) ),
@@ -369,7 +370,6 @@ void CandidateWindow::setIndex( int totalindex )
         {
             cList->clearSelection();
             cList->selectRow( pos );
-            cList->scrollToItem( cList->item( pos, 0 ) );
         }
     }
     else
@@ -391,7 +391,6 @@ void CandidateWindow::setIndexInPage( int index )
 
 void CandidateWindow::slotCandidateSelected( int row )
 {
-    cList->scrollToItem( cList->item( row, 0 ) );
     candidateIndex = ( pageIndex * displayLimit ) + row;
     if ( ic && ic->uimContext() )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
@@ -426,7 +425,6 @@ void CandidateWindow::shiftPage( bool forward )
         cList->clearSelection();
         int idx = displayLimit ? candidateIndex % displayLimit : candidateIndex;
         cList->selectRow( idx );
-        cList->scrollToItem( cList->item( idx, 0 ) );
     }
     if ( ic && ic->uimContext() && candidateIndex != -1 )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
