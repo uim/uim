@@ -51,6 +51,7 @@ UimApplet::UimApplet(QObject *parent, const QVariantList &args)
 {
     bindtextdomain(PACKAGE, LOCALEDIR);
     bind_textdomain_codeset(PACKAGE, "UTF-8");
+    setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred));
 }
 
 void UimApplet::init()
