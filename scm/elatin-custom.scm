@@ -43,7 +43,9 @@
   (N_ "Properties")
   (N_ "long description will be here."))
 
-(define-custom 'elatin-rules 'elatin-rules-latin-prefix
+(define elatin-default-rules 'elatin-rules-latin-prefix)
+
+(define-custom 'elatin-rules elatin-default-rules
   '(elatin elatin-properties)
   (list 'choice
 	(list 'elatin-rules-british
@@ -54,9 +56,6 @@
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-danish-postfix
 	      (N_ "Danish postfix")
-	      (N_ "long description will be here."))
-	(list 'elatin-rules-danish-alt-postfix
-	      (N_ "Danish alternative postfix")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-danish-keyboard
 	      (N_ "Danish keyboard")
@@ -73,14 +72,8 @@
 	(list 'elatin-rules-esperanto-postfix
 	      (N_ "Esperanto postfix")
 	      (N_ "long description will be here."))
-	(list 'elatin-rules-esperanto-alt-postfix
-	      (N_ "Esperanto alternative postfix")
-	      (N_ "long description will be here."))
 	(list 'elatin-rules-finnish-postfix
 	      (N_ "Finnish postfix")
-	      (N_ "long description will be here."))
-	(list 'elatin-rules-finnish-alt-postfix
-	      (N_ "Finnish alternative postfix")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-finnish-keyboard
 	      (N_ "Finnish keyboard")
@@ -106,17 +99,11 @@
 	(list 'elatin-rules-german-postfix
 	      (N_ "German postfix")
 	      (N_ "long description will be here."))
-	(list 'elatin-rules-german-alt-postfix
-	      (N_ "German alternative postfix")
-	      (N_ "long description will be here."))
 	(list 'elatin-rules-german
 	      (N_ "German")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-icelandic-postfix
 	      (N_ "Icelandic postfix")
-	      (N_ "long description will be here."))
-	(list 'elatin-rules-icelandic-alt-postfix
-	      (N_ "Icelandic alternative postfix")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-icelandic-keyboard
 	      (N_ "Icelandic keyboard")
@@ -199,9 +186,6 @@
 	(list 'elatin-rules-norwegian-postfix
 	      (N_ "Norwegian postfix")
 	      (N_ "long description will be here."))
-	(list 'elatin-rules-norwegian-alt-postfix
-	      (N_ "Norwegian alternative postfix")
-	      (N_ "long description will be here."))
 	(list 'elatin-rules-norwegian-keyboard
 	      (N_ "Norwegian keyboard")
 	      (N_ "long description will be here."))
@@ -220,9 +204,6 @@
 	(list 'elatin-rules-scandinavian-postfix
 	      (N_ "Scandinavian postfix")
 	      (N_ "long description will be here."))
-	(list 'elatin-rules-scandinavian-alt-postfix
-	      (N_ "Scandinavian alternative postfix")
-	      (N_ "long description will be here."))
 	(list 'elatin-rules-slovenian
 	      (N_ "Slovenian")
 	      (N_ "long description will be here."))
@@ -232,32 +213,23 @@
 	(list 'elatin-rules-spanish-postfix
 	      (N_ "Spanish postfix")
 	      (N_ "long description will be here."))
-	(list 'elatin-rules-spanish-alt-postfix
-	      (N_ "Spanish alternative postfix")
-	      (N_ "long description will be here."))
 	(list 'elatin-rules-spanish-keyboard
 	      (N_ "Spanish keyboard")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-swedish-postfix
 	      (N_ "Swedish postfix")
 	      (N_ "long description will be here."))
-	(list 'elatin-rules-swedish-alt-postfix
-	      (N_ "Swedish alternative postfix")
-	      (N_ "long description will be here."))
 	(list 'elatin-rules-swedish-keyboard
 	      (N_ "Swedish keyboard")
+	      (N_ "long description will be here."))
+	(list 'elatin-rules-TeX
+	      (N_ "TeX")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-turkish-postfix
 	      (N_ "Turkish postfix")
 	      (N_ "long description will be here."))
 	(list 'elatin-rules-turkish-alt-postfix
 	      (N_ "Turkish alternative postfix")
-	      (N_ "long description will be here."))
-	(list 'elatin-rules-turkish-latin-3-postfix
-	      (N_ "Turkish Latin-3 postfix")
-	      (N_ "long description will be here."))
-	(list 'elatin-rules-turkish-latin-3-alt-postfix
-	      (N_ "Turkish Latin-3 alternative postfix")
 	      (N_ "long description will be here.")))
   (N_ "Latin characters keyboard layout")
   (N_ "long description will be here."))
@@ -278,6 +250,34 @@
   '(elatin elatin-properties)
   '(boolean)
   (N_ "ESC turns off composition mode (for vi users)")
+  (N_ "long description will be here."))
+
+(define-custom 'elatin-nr-candidates-max 10
+  '(elatin elatin-properties)
+  '(integer 1 20)
+  (N_ "Candidate window size")
+  (N_ "long description will be here."))
+
+(define-custom 'elatin-numeral-key-selects-candidate? #t
+  '(elatin elatin-properties)
+  '(boolean)
+  (N_ "Select candidate by numeral keys")
+  (N_ "long description will be here."))
+
+(define-custom-group 'elatin-completion
+  (N_ "Completion")
+  (N_ "long description will be here."))
+
+(define-custom 'elatin-use-completion? #f
+  '(elatin elatin-completion)
+  '(boolean)
+  (N_ "Use preedit completion (mainly for TeX input)")
+  (N_ "long description will be here."))
+
+(define-custom 'elatin-show-all-if-ambiguous? #f
+  '(elatin elatin-completion)
+  '(boolean)
+  (N_ "Show all if ambiguous")
   (N_ "long description will be here."))
 
 
@@ -302,6 +302,55 @@
   '(key)
   (N_ "[ELatin] backspace")
   (N_ "long description will be here"))
+
+(define-custom 'elatin-commit-key '(generic-commit-key)
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] choose candidate")
+  (N_ "long description will be here"))
+
+(define-custom 'elatin-cancel-key '(generic-cancel-key)
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] close candidate window")
+  (N_ "long description will be here"))
+
+(define-custom 'elatin-next-candidate-key '("down" "<IgnoreCase><Control>n")
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] next candidate")
+  (N_ "long description will be here"))
+
+(define-custom 'elatin-prev-candidate-key '("up" "<IgnoreCase><Control>p")
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] previous candidate")
+  (N_ "long description will be here"))
+
+(define-custom 'elatin-next-page-key '(generic-next-page-key)
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] next page of candidate window")
+  (N_ "long description will be here"))
+
+(define-custom 'elatin-prev-page-key '(generic-prev-page-key)
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] previous page of candidate window")
+  (N_ "long description will be here"))
+
+(define-custom 'elatin-completion-key '("tab")
+  '(elatin elatin-keys)
+  '(key)
+  (N_ "[ELatin] start completion")
+  (N_ "long description will be here"))
+
+(for-each (lambda (hook-sym)
+	    (custom-add-hook hook-sym
+			     'custom-activity-hooks
+			     (lambda () elatin-use-completion?)))
+	  '(elatin-show-all-if-ambiguous?
+	    elatin-completion-key))
 
 ;; Local Variables:
 ;; mode: scheme
