@@ -64,7 +64,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 : QFrame( parent, candidateFlag ), nrCandidates( 0 ), displayLimit( 0 ),
     candidateIndex( -1 ), pageIndex( -1 ), ic( 0 ), isAlwaysLeft( false ),
     subWin( 0 ), hasAnnotation( uim_scm_symbol_value_bool(
-        "eb-enable-for-annotation?" ) == UIM_TRUE )
+        "eb-enable-for-annotation?" ) == UIM_TRUE ), window( 0 )
 {
     setFrameStyle( Raised | NoFrame );
 
@@ -113,6 +113,8 @@ CandidateWindow::~CandidateWindow()
 
 void CandidateWindow::popup()
 {
+    window = QApplication::focusWidget()->window();
+    window->installEventFilter( this );
     raise();
     show();
 }
@@ -507,6 +509,18 @@ QSize CandidateWindow::sizeHint() const
     int height = cListSizeHint.height() + numLabel->height() + frame;
 
     return QSize( width, height );
+}
+
+bool CandidateWindow::eventFilter( QObject *obj, QEvent *event )
+{
+    if ( obj == window ) {
+        if ( event->type() == QEvent::Move ) {
+            QMoveEvent *moveEvent = static_cast<QMoveEvent *>( event );
+            move( pos() + moveEvent->pos() - moveEvent->oldPos() );
+        }
+        return false;
+    }
+    return QFrame::eventFilter( obj, event );
 }
 
 QSize CandidateListView::sizeHint() const

@@ -89,6 +89,8 @@ protected:
     virtual void moveEvent( QMoveEvent * );
     virtual void resizeEvent( QResizeEvent * );
 
+    bool eventFilter( QObject *obj, QEvent *event );
+
     QUimInputContext *ic;
 
     CandidateListView *cList;
@@ -102,6 +104,8 @@ protected:
     SubWindow *subWin;
 
     const bool hasAnnotation;
+
+    QWidget *window;
 };
 
 
