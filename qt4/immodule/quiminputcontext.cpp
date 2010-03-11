@@ -715,6 +715,14 @@ int QUimInputContext::getPreeditSelectionLength()
     return 0;
 }
 
+static QColor getUserDefinedColor( const char *symbol )
+{
+    char *literal = uim_scm_symbol_value_str( symbol );
+    QColor color( QString::fromAscii( literal ) );
+    free( literal );
+    return color;
+}
+
 QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
 {
     const int HIDE_CARET = 0;
@@ -754,8 +762,12 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
                 segFmt.setBackground( fmt.foreground() );
 #else
                 // FIXME: Retrieve customized colors from the text widget
-                segFmt.setForeground( Qt::white );
-                segFmt.setBackground( Qt::black );
+                QColor color = getUserDefinedColor(
+                    "reversed-preedit-foreground" );
+                segFmt.setForeground( color.isValid() ? color : Qt::white );
+                color = getUserDefinedColor(
+                    "reversed-preedit-background" );
+                segFmt.setBackground( color.isValid() ? color : Qt::black );
 #endif
             }
             if ( uimAttr & UPreeditAttr_UnderLine ) {
