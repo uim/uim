@@ -89,7 +89,7 @@ bool Compose::handle_qkey(QKeyEvent *event)
     int qstate = event->modifiers();
 
     unsigned int xkeysym, xstate;
-    bool press = (type == QEvent::KeyPress) ? true : false;
+    bool press = (type == QEvent::KeyPress);
     
     xstate = 0;
     if (qstate & Qt::ShiftModifier)
