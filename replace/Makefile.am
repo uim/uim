@@ -19,3 +19,5 @@ libreplace_la_SOURCES = \
 	strsep.c \
 	strtoll.c \
 	strtonum.c
+
+strtonum.lo: CFLAGS+=-std=c99
