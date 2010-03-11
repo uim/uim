@@ -775,7 +775,6 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
 void QUimInputContext::prepare_page_candidates( int page )
 {
     QList<uim_candidate> list;
-    list.clear();
 
     if ( page < 0 )
         return;
@@ -809,7 +808,6 @@ void QUimInputContext::prepare_page_candidates( int page )
 void QUimInputContext::candidateActivate( int nr, int displayLimit )
 {
     QList<uim_candidate> list;
-    list.clear();
 
 #if !UIM_QT_USE_NEW_PAGE_HANDLING
     cwin->activateCandwin( displayLimit );
