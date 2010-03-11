@@ -37,6 +37,7 @@
 #include <cstring>
 
 #include <QtCore/QPoint>
+#include <QtGui/QApplication>
 #include <QtGui/QInputMethodEvent>
 #include <QtGui/QLabel>
 #include <QtGui/QTextCharFormat>
@@ -357,7 +358,7 @@ void QUimInputContext::setFocusWidget( QWidget *w )
 void QUimInputContext::setFocus()
 {
     qDebug( "QUimInputContext: %p->setFocus(), focusWidget()=%p",
-            this, focusWidget() );
+            this, QApplication::focusWidget() );
 
     focusedInputContext = this;
     disableFocusedContext = false;
@@ -377,7 +378,7 @@ void QUimInputContext::setFocus()
 void QUimInputContext::unsetFocus()
 {
     qDebug( "QUimInputContext: %p->unsetFocus(), focusWidget()=%p",
-            this, focusWidget() );
+            this, QApplication::focusWidget() );
 
     uim_focus_out_context( m_uc );
 
@@ -462,7 +463,7 @@ void QUimInputContext::reset()
 
 void QUimInputContext::update()
 {
-    QWidget *w = focusWidget();
+    QWidget *w = QApplication::focusWidget();
 
     qDebug( "QUimInputContext::update() w = %p", w );
 

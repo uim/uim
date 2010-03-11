@@ -63,7 +63,7 @@ void QUimInputContextWithSlave::setFocus()
     if ( slave )
     {
         slave->setFocus();
-        slave->setFocusWidget( focusWidget() );
+        slave->setFocusWidget( QApplication::focusWidget() );
     }
 }
 
@@ -109,9 +109,9 @@ void QUimInputContextWithSlave::destroyInputContext()
     {
         // slave->reset() may not properly work in the case, so we
         // manually resets the composing state of text widget
-        if ( slave->focusWidget() )
+        if ( QApplication::focusWidget() )
         {
-            //            emit imEventGenerated( slave->focusWidget(), new QIMEvent( QEvent::IMEnd, QString::null, -1 ) );
+            //            emit imEventGenerated( QApplication::focusWidget(), new QIMEvent( QEvent::IMEnd, QString::null, -1 ) );
         }
         slave->deleteLater();
         slave = 0;
