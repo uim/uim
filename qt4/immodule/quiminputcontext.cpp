@@ -751,6 +751,15 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
         } else if ( uimAttr & UPreeditAttr_Separator ) {
             if ( !segStrLen )
                 segStrLen = QString( DEFAULT_SEPARATOR_STR ).length();
+            if ( !( uimAttr & UPreeditAttr_Reverse ) ) {
+                QColor color = getUserDefinedColor( "separator-foreground" );
+                if ( color.isValid() )
+                    segFmt.setForeground( color );
+                color = getUserDefinedColor( "separator-background" );
+                if ( color.isValid() )
+                    segFmt.setBackground( color );
+    
+            }
         }
 
         if ( segStrLen ) {
@@ -762,11 +771,20 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
                 segFmt.setBackground( fmt.foreground() );
 #else
                 // FIXME: Retrieve customized colors from the text widget
-                QColor color = getUserDefinedColor(
-                    "reversed-preedit-foreground" );
+                // foreground symbol
+                const char *fgSymbol;
+                // background symbol
+                const char *bgSymbol;
+                if ( uimAttr & UPreeditAttr_Separator ) {
+                    fgSymbol = "reversed-separator-foreground";
+                    bgSymbol = "reversed-separator-background";
+                } else {
+                    fgSymbol = "reversed-preedit-foreground";
+                    bgSymbol = "reversed-preedit-background";
+                }
+                QColor color = getUserDefinedColor( fgSymbol );
                 segFmt.setForeground( color.isValid() ? color : Qt::white );
-                color = getUserDefinedColor(
-                    "reversed-preedit-background" );
+                color = getUserDefinedColor( bgSymbol );
                 segFmt.setBackground( color.isValid() ? color : Qt::black );
 #endif
             }
