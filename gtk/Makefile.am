@@ -8,7 +8,7 @@ moduledir = $(uim_gtk_im_module_path)/@GTK_BINARY_VERSION@/immodules
 if GTK2
 im_uim_la = im-uim.la
 im_uim_la_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
-im_uim_la_CFLAGS = @GTK2_CFLAGS@ -Wall
+im_uim_la_CFLAGS = @GTK2_CFLAGS@
 module_LTLIBRARIES = $(im_uim_la)
 
 

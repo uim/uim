@@ -61,13 +61,13 @@ uim_candwin_gtk_SOURCES  = candwin-gtk.c \
 uim_candwin_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la
 uim_candwin_gtk_CPPFLAGS = -I$(top_srcdir)
-uim_candwin_gtk_CFLAGS   = @GTK2_CFLAGS@  -Wall
+uim_candwin_gtk_CFLAGS   = @GTK2_CFLAGS@
 
 uim_toolbar_gtk_SOURCES  = toolbar-standalone-gtk.c toolbar-common-gtk.c
 uim_toolbar_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la
 uim_toolbar_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
-uim_toolbar_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
+uim_toolbar_gtk_CFLAGS   = @GTK2_CFLAGS@
 
 uim_toolbar_gtk_systray_SOURCES  = toolbar-systray-gtk.c toolbar-common-gtk.c \
 				   eggtrayicon.c eggtrayicon.h
@@ -76,19 +76,19 @@ uim_toolbar_gtk_systray_LDADD    = @GTK2_LIBS@ \
 				   $(top_builddir)/uim/libuim-scm.la \
 				   $(top_builddir)/uim/libuim.la
 uim_toolbar_gtk_systray_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
-uim_toolbar_gtk_systray_CFLAGS   = @GTK2_CFLAGS@  -Wall
+uim_toolbar_gtk_systray_CFLAGS   = @GTK2_CFLAGS@
 
 uim_im_switcher_gtk_SOURCES  = im-switcher-gtk.c
 uim_im_switcher_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			       $(top_builddir)/uim/libuim.la	
 uim_im_switcher_gtk_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
-uim_im_switcher_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
+uim_im_switcher_gtk_CFLAGS   = @GTK2_CFLAGS@
 
 uim_input_pad_ja_SOURCES  = input-pad-ja.c
 uim_input_pad_ja_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			    $(top_builddir)/uim/libuim.la
 uim_input_pad_ja_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
-uim_input_pad_ja_CFLAGS   = @GTK2_CFLAGS@ -Wall
+uim_input_pad_ja_CFLAGS   = @GTK2_CFLAGS@
 
 if PREF
 if GTK2_4
@@ -103,7 +103,7 @@ if LIBUIM_X_UTIL
 uim_pref_gtk_LDADD += $(top_builddir)/uim/libuim-x-util.la
 endif
 uim_pref_gtk_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
-uim_pref_gtk_CFLAGS   = @GTK2_CFLAGS@ -Wall
+uim_pref_gtk_CFLAGS   = @GTK2_CFLAGS@
 endif
 endif
 
