@@ -67,7 +67,7 @@ bool disableFocusedContext = false;
 
 QList<QUimInputContext*> contextList;
 
-QUimHelperManager * QUimInputContext::m_HelperManager = 0L;
+QUimHelperManager * QUimInputContext::m_HelperManager = 0;
 #ifdef Q_WS_X11
 DefTree *QUimInputContext::mTreeTop = 0;
 #endif
