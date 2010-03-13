@@ -138,7 +138,7 @@ uim_context QUimInputContext::createUimContext( const char *imname )
     m_imname = imname;
 
     uim_context uc = uim_create_context( this, "UTF-8",
-                                         0, ( char * ) imname,
+                                         0, imname,
                                          0,
                                          QUimInputContext::commit_cb );
 
@@ -197,7 +197,7 @@ bool QUimInputContext::filterEvent( const QEvent *event )
             type != QEvent::KeyRelease )
         return false;
 
-    QKeyEvent *keyevent = ( QKeyEvent * ) event;
+    const QKeyEvent *keyevent = static_cast<const QKeyEvent *>( event );
     int qkey = keyevent->key();
 
     int modifier = 0;
@@ -490,7 +490,7 @@ void QUimInputContext::commit_cb( void *ptr, const char *str )
     QString qs = QString::fromUtf8( str );
     qDebug( "commit_cb : str = |%s|", qs.toLocal8Bit().data() );
 
-    QUimInputContext *ic = ( QUimInputContext * ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext *>( ptr );
     ic->commitString( qs );
 }
 
@@ -498,7 +498,7 @@ void QUimInputContext::clear_cb( void *ptr )
 {
     qDebug( "clear_cb" );
 
-    QUimInputContext* ic = ( QUimInputContext* ) ptr;
+    QUimInputContext* ic = static_cast<QUimInputContext*>( ptr );
     ic->clearPreedit();
 }
 
@@ -515,7 +515,7 @@ void QUimInputContext::pushback_cb( void *ptr, int attr, const char *str )
     if ( !strcmp( str, "" ) && !( attr & ( UPreeditAttr_Cursor | UPreeditAttr_Separator ) ) )
         return ;
 
-    QUimInputContext* ic = ( QUimInputContext* ) ptr;
+    QUimInputContext* ic = static_cast<QUimInputContext*>( ptr );
     ic->pushbackPreeditString( attr, qs );
 }
 
@@ -523,7 +523,7 @@ void QUimInputContext::update_cb( void *ptr )
 {
     qDebug( "update_cb" );
 
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->updatePreedit();
 }
 
@@ -531,7 +531,7 @@ void QUimInputContext::cand_activate_cb( void *ptr, int nr, int displayLimit )
 {
     qDebug( "cand_activate_cb" );
 
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateActivate( nr, displayLimit );
 }
 
@@ -539,7 +539,7 @@ void QUimInputContext::cand_select_cb( void *ptr, int index )
 {
     qDebug( "cand_select_cb" );
 
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateSelect( index );
 }
 
@@ -547,7 +547,7 @@ void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
 {
     qDebug( "cand_shift_page_cb" );
 
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateShiftPage( (bool)forward );
 }
 
@@ -555,19 +555,19 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
 {
     qDebug( "cand_deactivate_cb" );
 
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateDeactivate();
 }
 
 void QUimInputContext::switch_app_global_im_cb( void *ptr, const char *name )
 {
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->switch_app_global_im( name );
 }
 
 void QUimInputContext::switch_system_global_im_cb( void *ptr, const char *name )
 {
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->switch_system_global_im( name );
 }
 

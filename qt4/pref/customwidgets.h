@@ -69,7 +69,7 @@ public:
     /* Custom Update Callback */
     static void update_cb( void *ptr, const char *custom_sym )
     {
-        UimCustomItemIface *iface = (UimCustomItemIface*)ptr;
+        UimCustomItemIface *iface = static_cast<UimCustomItemIface*>( ptr );
         iface->updateItem( custom_sym );        
         iface->update();
     }

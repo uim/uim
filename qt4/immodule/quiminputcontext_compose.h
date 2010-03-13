@@ -64,7 +64,7 @@ class Compose {
 public:
     Compose(DefTree *, QUimInputContext *);
     ~Compose();
-    bool handle_qkey(QKeyEvent *event);
+    bool handle_qkey(const QKeyEvent *event);
     void reset();
 private:
     bool handleKey(KeySym xkeysym, int xstate, bool is_push);

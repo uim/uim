@@ -272,7 +272,7 @@ void QUimHelperManager::helper_disconnect_cb()
 
 void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 {
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
 
     if ( ic != focusedInputContext || disableFocusedContext )
         return;
@@ -285,7 +285,7 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
 {
-    QUimInputContext *ic = ( QUimInputContext* ) ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     if ( ic != focusedInputContext || disableFocusedContext )
         return;
 

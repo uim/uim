@@ -294,7 +294,7 @@ void UimPrefDialog::slotSetDefault()
     QWidget *w = m_groupWidgetStack->currentWidget();
     if( w )
     {
-        ((GroupPageWidget*)w)->setDefault();
+        (static_cast<GroupPageWidget*>(w))->setDefault();
     }
 }
 

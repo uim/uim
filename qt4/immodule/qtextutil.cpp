@@ -48,7 +48,7 @@ SUCH DAMAGE.
 QUimTextUtil::QUimTextUtil( QObject *parent )
         : QObject( parent )
 {
-    mIc = (QUimInputContext *)parent;
+    mIc = static_cast<QUimInputContext *>( parent );
     mPreeditSaved = false;
 }
 
@@ -63,7 +63,7 @@ QUimTextUtil::acquire_text_cb( void *ptr, enum UTextArea text_id,
                                char **former, char **latter )
 {
     int err;
-    QUimInputContext *ic = (QUimInputContext *)ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext *>( ptr );
     QUimTextUtil *tu = ic->textUtil();
 
     switch ( text_id ) {
@@ -93,7 +93,7 @@ QUimTextUtil::delete_text_cb( void *ptr, enum UTextArea text_id,
                               int former_req_len, int latter_req_len )
 {
     int err;
-    QUimInputContext *ic = (QUimInputContext *)ptr;
+    QUimInputContext *ic = static_cast<QUimInputContext *>( ptr );
     QUimTextUtil *tu = ic->textUtil();
 
     switch ( text_id ) {
@@ -146,7 +146,7 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
                                              int latter_req_len,
                                              char **former, char **latter )
 {
-    QLineEdit *edit = (QLineEdit *)mWidget;
+    QLineEdit *edit = static_cast<QLineEdit *>( mWidget );
     QString text, former_text, latter_text;
     int cursor_index, len, precedence_len, following_len, offset;
     int preedit_len, preedit_cursor_pos;
@@ -251,7 +251,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                              int latter_req_len,
                                              char **former, char **latter )
 {
-    Q3TextEdit *edit = (Q3TextEdit *)mWidget;
+    Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     QString text;
 
     int start_para, start_index, end_para, end_index, para, index;
@@ -438,7 +438,7 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
                                                int latter_req_len,
                                                char **former, char **latter )
 {
-    QLineEdit *edit = (QLineEdit *)mWidget;
+    QLineEdit *edit = static_cast<QLineEdit *>( mWidget );
     QString text;
     int len, offset, start, current;
     bool cursor_at_beginning = false;
@@ -493,7 +493,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                                                int latter_req_len,
                                                char **former, char **latter )
 {
-    Q3TextEdit *edit = (Q3TextEdit *)mWidget;
+    Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     QString text;
     int len, offset, newline;
     int start_para, start_index, end_para, end_index;
@@ -650,7 +650,7 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
                                             int former_req_len,
                                             int latter_req_len )
 {
-    QLineEdit *edit = (QLineEdit *)mWidget;
+    QLineEdit *edit = static_cast<QLineEdit *>( mWidget );
     QString text;
     int cursor_index, len, precedence_len, following_len;
     int preedit_len, preedit_cursor_pos;
@@ -732,7 +732,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
                                             int former_req_len,
                                             int latter_req_len )
 {
-    Q3TextEdit *edit = (Q3TextEdit *)mWidget;
+    Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     int start_para, start_index, end_para, end_index, para, index;
     int n_para;
 
@@ -867,7 +867,7 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
                                               int former_req_len,
                                               int latter_req_len )
 {
-    QLineEdit *edit = (QLineEdit *)mWidget;
+    QLineEdit *edit = static_cast<QLineEdit *>( mWidget );
     QString text;
     int len, start, end, current;
     bool cursor_at_beginning = false;
@@ -917,7 +917,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                                               int former_req_len,
                                               int latter_req_len )
 {
-    Q3TextEdit *edit = (Q3TextEdit *)mWidget;
+    Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     QString text;
     int len, newline;
     int para, index;
@@ -991,7 +991,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
 void
 QUimTextUtil::QTextEditPositionBackward( int *cursor_para, int *cursor_index )
 {
-    Q3TextEdit *edit = (Q3TextEdit *)mWidget;
+    Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     int preedit_len, preedit_cursor_pos;
     int para, index;
     int current_para, current_index;
@@ -1027,7 +1027,7 @@ QUimTextUtil::QTextEditPositionBackward( int *cursor_para, int *cursor_index )
 void
 QUimTextUtil::QTextEditPositionForward( int *cursor_para, int *cursor_index )
 {
-    Q3TextEdit *edit = (Q3TextEdit *)mWidget;
+    Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     int n_para = edit->paragraphs();
     int preedit_len, preedit_cursor_pos;
     int current_para_len;

@@ -82,7 +82,7 @@ Compose::~Compose()
 {
 }
 
-bool Compose::handle_qkey(QKeyEvent *event)
+bool Compose::handle_qkey(const QKeyEvent *event)
 {
     int type = event->type();
     int qkey = event->key();
@@ -373,7 +373,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                 switch (c) {
                 case '\\':
                 case '"':
-                    *p++ = (char)c;
+                    *p++ = static_cast<char>(c);
                     len++;
                     break;
                 case 'n':
@@ -404,7 +404,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                         c = nextch(fp, lastch);
                     }
                     putbackch(c, lastch);
-                    *p++ = (char)i;
+                    *p++ = static_cast<char>(i);
                     len++;
                     break;
                 case 'X':
@@ -430,7 +430,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                         token = ERROR;
                         goto string_error;
                     }
-                    *p++ = (char)i;
+                    *p++ = static_cast<char>(i);
                     len++;
                     break;
                 case EOF:
@@ -438,12 +438,12 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                     token = ERROR;
                     goto string_error;
                 default:
-                    *p++ = (char)c;
+                    *p++ = static_cast<char>(c);
                     len++;
                     break;
                 }
             } else {
-                *p++ = (char)c;
+                *p++ = static_cast<char>(c);
                 len++;
             }
         }
@@ -466,7 +466,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                 *tokenbuf = (char *)realloc(*tokenbuf,  *buflen);
             }
             p = *tokenbuf;
-            *p++ = (char)c;
+            *p++ = static_cast<char>(c);
             len++;
             c = nextch(fp, lastch);
             while (isalnum(c) || c == '_' || c == '-') {
@@ -475,7 +475,7 @@ nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
                         *tokenbuf = (char *)realloc(*tokenbuf,  *buflen);
                         p = *tokenbuf + len;
                 }
-                *p++ = (char)c;
+                *p++ = static_cast<char>(c);
                 len++;
                 c = nextch(fp, lastch);
             }
@@ -959,7 +959,7 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
         int n;
         char *args[2], *from, *to;
         // isspace for tab doesn't seem to work with Qt4...
-        while ((unsigned char)isspace(*p) || *p == '\t') {
+        while (static_cast<unsigned char>(isspace(*p)) || *p == '\t') {
             ++p;
         }
         if (iscomment(*p)) {
@@ -993,7 +993,7 @@ parse_line(char *line, char **argv, int argsize)
 
     while (argc < argsize) {
         // isspace for tab doesn't seem to work with Qt4...
-        while ((unsigned char)isspace(*p) || *p == '\t') {
+        while (static_cast<unsigned char>(isspace(*p)) || *p == '\t') {
             ++p;
         }
         if (*p == '\0') {
