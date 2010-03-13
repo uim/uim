@@ -167,7 +167,7 @@ void CustomLineEdit::slotCustomTextChanged( const QString &text )
     Q_ASSERT( m_custom->type == UCustom_Str );
 
     free( m_custom->value->as_str );
-    m_custom->value->as_str = strdup( (const char*)text.toUtf8() );
+    m_custom->value->as_str = strdup( text.toUtf8().data() );
 
     setCustom( m_custom );
 }
@@ -259,7 +259,7 @@ void CustomPathnameEdit::slotCustomTextChanged( const QString & text )
     Q_ASSERT( m_custom->type == UCustom_Pathname );
 
     free( m_custom->value->as_pathname->str );
-    m_custom->value->as_pathname->str = strdup( (const char*)text.toUtf8() );
+    m_custom->value->as_pathname->str = strdup( text.toUtf8().data() );
 
     setCustom( m_custom );
 }
@@ -763,7 +763,7 @@ void CustomKeyEdit::slotKeyButtonClicked()
 
         for( int i = 0; i < num; i++ )
         {
-            const char *keystr = (const char *)keyStrList[i].toAscii();
+            const char *keystr = keyStrList[i].toAscii().data();
 
             struct uim_custom_key *item = (struct uim_custom_key *)malloc(sizeof(struct uim_custom_key));
             item->type        = UCustomKey_Regular;

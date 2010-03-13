@@ -103,7 +103,7 @@ void QUimHelperManager::parseHelperStr( const QString &str )
         {
             QStringList list = str.split( '\n' );
             uim_prop_activate( focusedInputContext->uimContext(),
-                               list[ 1 ].toUtf8() );
+                               list[ 1 ].toUtf8().data() );
         }
         else if ( str.startsWith( QLatin1String( "im_list_get" ) ) )
         {
@@ -158,8 +158,8 @@ void QUimHelperManager::parseHelperStr( const QString &str )
             for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
                 uim_prop_update_custom( ( *it )->uimContext(),
-                                        list[ 1 ].toUtf8(),
-                                        list[ 2 ].toUtf8() );
+                                        list[ 1 ].toUtf8().data(),
+                                        list[ 2 ].toUtf8().data() );
                 break;  /* all custom variables are global */
             }
         }
@@ -185,7 +185,7 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         if ( focusedInputContext )
         {
             uim_switch_im( focusedInputContext->uimContext(),
-                           im_name.toUtf8() );
+                           im_name.toUtf8().data() );
             uim_prop_list_update( focusedInputContext->uimContext() );
             focusedInputContext->readIMConf();
         }
@@ -195,11 +195,11 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
         QList<QUimInputContext *>::iterator it;
         for ( it = contextList.begin(); it != contextList.end(); ++it )
         {
-            uim_switch_im( ( *it )->uimContext(), im_name.toUtf8() );
+            uim_switch_im( ( *it )->uimContext(), im_name.toUtf8().data() );
             ( *it )->readIMConf();
             uim_prop_update_custom( ( *it )->uimContext(),
                                     "custom-preserved-default-im-name",
-                                    im_name_sym.toUtf8() );
+                                    im_name_sym.toUtf8().data() );
         }
     }
     else if ( str.startsWith( QLatin1String(
@@ -210,11 +210,11 @@ void QUimHelperManager::parseHelperStrImChange( const QString &str )
             QList<QUimInputContext *>::iterator it;
             for ( it = contextList.begin(); it != contextList.end(); ++it )
             {
-                uim_switch_im( ( *it )->uimContext(), im_name.toUtf8() );
+                uim_switch_im( ( *it )->uimContext(), im_name.toUtf8().data() );
                 ( *it )->readIMConf();
                 uim_prop_update_custom( ( *it )->uimContext(),
                                         "custom-preserved-default-im-name",
-                                        im_name_sym.toUtf8() );
+                                        im_name_sym.toUtf8().data() );
             }
         }
     }
@@ -236,9 +236,9 @@ void QUimHelperManager::sendImList()
     {
         QString leafstr;
         leafstr.sprintf( "%s\t%s\t%s\t",
-                         ( const char * )( *it ).name.toUtf8(),
-                         uim_get_language_name_from_locale( ( *it ).lang.toUtf8() ),
-                         ( const char * )( *it).short_desc.toUtf8() );
+                         ( *it ).name.toUtf8().data(),
+                         uim_get_language_name_from_locale( ( *it ).lang.toUtf8().data() ),
+                         ( *it).short_desc.toUtf8().data() );
 
         if ( QString::compare( ( *it ).name, current_im_name ) == 0 )
             leafstr.append( "selected" );
@@ -248,7 +248,7 @@ void QUimHelperManager::sendImList()
         msg += leafstr;
     }
 
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
+    uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 }
 
 void QUimHelperManager::send_im_change_whole_desktop( const char *name )
@@ -256,7 +256,7 @@ void QUimHelperManager::send_im_change_whole_desktop( const char *name )
     QString msg;
 
     msg.sprintf("im_change_whole_desktop\n%s\n", name);
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
+    uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 }
 
 void QUimHelperManager::helper_disconnect_cb()
@@ -280,7 +280,7 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
     QString msg = "prop_list_update\ncharset=UTF-8\n";
     msg += QString::fromUtf8( str );
 
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
+    uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 }
 
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
@@ -292,5 +292,5 @@ void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )
     QString msg = "prop_label_update\ncharset=UTF-8\n";
     msg += QString::fromUtf8( str );
 
-    uim_helper_send_message( im_uim_fd, ( const char* ) msg.toUtf8() );
+    uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 }

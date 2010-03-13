@@ -419,7 +419,7 @@ void QUimInputContext::reloadUim()
     for ( it = contextList.begin(); it != contextList.end(); ++it )
     {
         ( *it )->m_uc
-            = ( *it )->createUimContext( ( *it )->m_imname.toAscii() );
+            = ( *it )->createUimContext( ( *it )->m_imname.toAscii().data() );
     }
 }
 
@@ -488,7 +488,7 @@ QString QUimInputContext::language()
 void QUimInputContext::commit_cb( void *ptr, const char *str )
 {
     QString qs = QString::fromUtf8( str );
-    qDebug( "commit_cb : str = |%s|", ( const char* ) qs.toLocal8Bit() );
+    qDebug( "commit_cb : str = |%s|", qs.toLocal8Bit().data() );
 
     QUimInputContext *ic = ( QUimInputContext * ) ptr;
     ic->commitString( qs );
@@ -505,7 +505,7 @@ void QUimInputContext::clear_cb( void *ptr )
 void QUimInputContext::pushback_cb( void *ptr, int attr, const char *str )
 {
     QString qs = QString::fromUtf8( str );
-    qDebug( "pushback_cb :  str = |%s|", ( const char* ) qs.toLocal8Bit() );
+    qDebug( "pushback_cb :  str = |%s|", qs.toLocal8Bit().data() );
 
     if ( !str )
         return ;
@@ -924,7 +924,7 @@ void QUimInputContext::switch_app_global_im( const char *name )
             ( *it )->readIMConf();
         }
     }
-    uim_prop_update_custom(this->uimContext(), "custom-preserved-default-im-name", ( const char* ) im_name_sym.toUtf8() );
+    uim_prop_update_custom(this->uimContext(), "custom-preserved-default-im-name", im_name_sym.toUtf8().data() );
 }
 
 void QUimInputContext::switch_system_global_im( const char *name )

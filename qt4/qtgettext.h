@@ -59,7 +59,7 @@
 
 #else /* ENABLE_NLS */
 
-#define mygettext(String) QString::fromLocal8Bit( (const char *)(String) )
+#define mygettext(String) QString::fromLocal8Bit( (String) )
 #endif /* ENABLE_NLS */
 
 #endif /* Not def: UIM_QT4_QTGETTEXT_H */

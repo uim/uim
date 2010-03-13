@@ -621,7 +621,7 @@ QUimInputContext::get_mb_string(char *buf, unsigned int ks)
 
     ucs = KeySymToUcs4(ks);
     QString qs = QString(QChar(ks));
-    mb = (const char *)qs.toLocal8Bit();
+    mb = qs.toLocal8Bit().data();
     if (!mb)
         return 0;
     len = strlen(mb);
@@ -796,7 +796,7 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     }
 
     qs = codec->toUnicode(rhs_string_mb);
-    rhs_string_utf8 = strdup((const char *)qs.toUtf8());
+    rhs_string_utf8 = strdup(qs.toUtf8().data());
 
     for (int i = 0; i < n; i++) {
         for (p = *top; p; p = p->next) {
