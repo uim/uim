@@ -271,7 +271,7 @@
 (define-custom 'elatin-use-completion? #f
   '(elatin elatin-completion)
   '(boolean)
-  (N_ "Use preedit completion (mainly for TeX input)")
+  (N_ "Use preedit completion (mainly for TeX-style input)")
   (N_ "long description will be here."))
 
 (define-custom 'elatin-show-all-if-ambiguous? #f
