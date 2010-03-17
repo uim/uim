@@ -22,21 +22,21 @@ EXTRA_DIST = README.en README.ja INDENT \
 	     quiminputcontext_with_slave.h \
 	     quiminputcontext_with_slave.cpp
 
-EXTRA_DIST += debug.h \
+EXTRA_DIST += candidatewindow.h \
+              debug.h \
+              plugin.h \
               qhelpermanager.h \
+              qtextutil.h \
+              quiminfomanager.h \
               quiminputcontext.h \
               quiminputcontext_compose.h \
-              plugin.h \
-              candidatewindow.h \
-              subwindow.h \
-              quiminfomanager.h \
-              qtextutil.h
+              subwindow.h
 
-EXTRA_DIST += plugin.cpp \
+EXTRA_DIST += candidatewindow.cpp \
+              plugin.cpp \
               qhelpermanager.cpp \
+              qtextutil.cpp \
+              quiminfomanager.cpp \
               quiminputcontext.cpp \
               quiminputcontext_compose.cpp \
-              candidatewindow.cpp \
-              subwindow.cpp \
-              quiminfomanager.cpp \
-              qtextutil.cpp
+              subwindow.cpp

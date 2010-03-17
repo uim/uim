@@ -23,24 +23,24 @@ QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 
 # Input
-HEADERS += @srcdir@/debug.h \
+HEADERS += @srcdir@/candidatewindow.h \
+           @srcdir@/debug.h \
+           @srcdir@/plugin.h \
            @srcdir@/qhelpermanager.h \
+           @srcdir@/qtextutil.h \
+           @srcdir@/quiminfomanager.h \
            @srcdir@/quiminputcontext.h \
            @srcdir@/quiminputcontext_compose.h \
-           @srcdir@/plugin.h \
-           @srcdir@/candidatewindow.h \
-           @srcdir@/subwindow.h \
-           @srcdir@/quiminfomanager.h \
-           @srcdir@/qtextutil.h
+           @srcdir@/subwindow.h
 
-SOURCES += @srcdir@/plugin.cpp \
+SOURCES += @srcdir@/candidatewindow.cpp \
+           @srcdir@/plugin.cpp \
            @srcdir@/qhelpermanager.cpp \
+           @srcdir@/qtextutil.cpp \
+           @srcdir@/quiminfomanager.cpp \
            @srcdir@/quiminputcontext.cpp \
            @srcdir@/quiminputcontext_compose.cpp \
-           @srcdir@/candidatewindow.cpp \
-           @srcdir@/subwindow.cpp \
-           @srcdir@/quiminfomanager.cpp \
-           @srcdir@/qtextutil.cpp
+           @srcdir@/subwindow.cpp
 
 TARGET = uiminputcontextplugin
 
