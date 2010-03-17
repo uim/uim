@@ -548,7 +548,7 @@ void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
     qDebug( "cand_shift_page_cb" );
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->candidateShiftPage( (bool)forward );
+    ic->candidateShiftPage( forward != 0 );
 }
 
 void QUimInputContext::cand_deactivate_cb( void *ptr )
