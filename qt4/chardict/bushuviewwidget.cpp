@@ -84,6 +84,7 @@ void BushuViewWidget::setupWidgets()
                       this, SIGNAL( charSelected( const QString & ) ) );
 
     QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->setMargin( 0 );
     vLayout->addWidget( bushuLabel );
     vLayout->addWidget( m_bushuListView );
 

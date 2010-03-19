@@ -175,6 +175,7 @@ void UimPrefDialog::createMainWidgets()
     buttonHLayout->addWidget( m_applyButton );
     buttonHLayout->addWidget( cancelButton );
 
+    mainVLayout->setMargin( 0 );
     mainVLayout->addWidget( mainSplitter );
     mainVLayout->addWidget( new KSeparator( this ) );
     mainVLayout->addWidget( buttonHWidget );
@@ -568,6 +569,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeInteger( QGroupBox *vbox, stru
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addStretch();
@@ -589,6 +591,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeString( QGroupBox *vbox, struc
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( lineEdit );
@@ -609,6 +612,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypePathname( QGroupBox *vbox, str
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( pathnameEdit );
@@ -630,6 +634,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeChoice( QGroupBox *vbox, struc
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( choiceCombo );
@@ -650,6 +655,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeOrderedList( QGroupBox *vbox, 
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( olistEditBox );
@@ -670,6 +676,7 @@ UimCustomItemIface *GroupPageWidget::addCustomTypeKey( QGroupBox *vbox, struct u
                       this, SLOT(slotCustomValueChanged()) );
 
     QHBoxLayout *layout = new QHBoxLayout;
+    layout->setMargin( 0 );
     layout->setSpacing( 6 );
     layout->addWidget( label );
     layout->addWidget( keyEditBox );

@@ -152,6 +152,7 @@ void KUimCharDict::setupWidgets()
     connect( m_modeCombo, SIGNAL( activated( int ) ),
                       m_widgetStack, SLOT( setCurrentIndex( int ) ) );
 
+    layout->setMargin( 0 );
     layout->addWidget( upperHWidget );
     layout->addWidget( new KSeparator( this ) );
     layout->addWidget( m_widgetStack );

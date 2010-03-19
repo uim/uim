@@ -236,6 +236,7 @@ void UnicodeViewWidget::setupWidgets()
                       this, SIGNAL( charSelected( const QString & ) ) );
 
     QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->setMargin( 0 );
     vLayout->addWidget( unicodeBlockLabel );
     vLayout->addWidget( m_unicodeBlockListView );
 
