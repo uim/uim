@@ -189,3 +189,16 @@ is covered by:
  LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-----------------------------------------------------------------------------
+
+scm/pregexp.scm is covered by:
+-----------------------------------------------------------------------------
+Copyright (c) 1999-2005, Dorai Sitaram.
+All rights reserved.
+
+Permission to copy, modify, distribute, and use this work or
+a modified copy of this work, for any purpose, is hereby
+granted, provided that the copy includes this copyright
+notice, and in the case of a modified copy, also includes a
+notice of modification.  This work is provided as is, with
+no warranty of any kind.

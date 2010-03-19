@@ -50,7 +50,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  openssl.scm \
  sqlite3.scm \
  lolevel.scm \
- input-parse.scm match.scm \
+ input-parse.scm match.scm pregexp.scm \
  http-client.scm http-server.scm \
  sxml-tools.scm sxpathlib.scm
 
