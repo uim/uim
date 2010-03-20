@@ -1076,7 +1076,7 @@
 (define (byeoru-johab-to-ucs johab)
   (let ((cho (car johab))
 	(jung (cadr johab))
-	(jong (nth 2 johab)))
+	(jong (list-ref johab 2)))
     (+ byeoru-ucs-code-ga (* (- cho 1) 21 28) (* (- jung 1) 28) jong)))
 
 ;; This is the way an isolated jamo is encoded in the Unicode standard.
@@ -1120,7 +1120,7 @@
 (define (byeoru-johab-to-utf8-string johab)
   (let ((cho (car johab))
 	(jung (cadr johab))
-	(jong (nth 2 johab)))
+	(jong (list-ref johab 2)))
     (cond
      ((and (= cho 0) (= jung 0) (= jong 0))
       "")
@@ -1138,7 +1138,9 @@
 			byeoru-jongseong-compatibility-jamo-utf8-list
 			byeoru-jongseong-jamo-utf8-list)))
 	(string-append
-	 (nth cho cho-l) (nth jung jung-l) (nth jong jong-l)))))))
+	 (list-ref cho-l cho)
+	 (list-ref jung-l jung)
+	 (list-ref jong-l jong)))))))
 
 
 ;;; ------------------------
@@ -1227,10 +1229,10 @@
   (append
    context-rec-spec
    (list
-    (list 'on              #f)
+    (list 'on?		   #f)
     (list 'automata	   #f)
-    (list 'rkc             #f)		; for romaja input.
-    (list 'key-hist        '())
+    (list 'rkc		   #f)		; for romaja input.
+    (list 'key-hist	   '())
     (list 'commit-by-word? byeoru-commit-by-word?)
     (list 'word-ustr	   #f)
     (list 'convl-ustr	   #f)
@@ -1295,10 +1297,10 @@
 		     "영문"
 		     "영문 입력모드"))
 		 (lambda (bc)
-		   (not (byeoru-context-on bc)))
+		   (not (byeoru-context-on? bc)))
 		 (lambda (bc)
 		   (byeoru-prepare-activation bc)
-		   (byeoru-context-set-on! bc #f)))
+		   (byeoru-context-set-on?! bc #f)))
 
 (register-action 'action_byeoru_hangulchar
 		 (lambda (bc)
@@ -1307,11 +1309,11 @@
 		     "한글 글자"
 		     "한글 글자단위 입력모드"))
 		 (lambda (bc)
-		   (and (byeoru-context-on bc)
+		   (and (byeoru-context-on? bc)
 			(not (byeoru-context-commit-by-word? bc))))
 		 (lambda (bc)
 		   (byeoru-prepare-activation bc)
-		   (byeoru-context-set-on! bc #t)
+		   (byeoru-context-set-on?! bc #t)
 		   (byeoru-context-set-commit-by-word?! bc #f)))
 
 (register-action 'action_byeoru_hangulword
@@ -1321,11 +1323,11 @@
 		     "한글 단어"
 		     "한글 단어단위 입력모드"))
 		 (lambda (bc)
-		   (and (byeoru-context-on bc)
+		   (and (byeoru-context-on? bc)
 			(byeoru-context-commit-by-word? bc)))
 		 (lambda (bc)
 		   (byeoru-prepare-activation bc)
-		   (byeoru-context-set-on! bc #t)
+		   (byeoru-context-set-on?! bc #t)
 		   (byeoru-context-set-commit-by-word?! bc #t)))
 
 (define byeoru-input-mode-actions
@@ -1571,7 +1573,7 @@
       (byeoru-flush bc)
       (if (eq? key 'escape)
 	  (im-commit-raw bc))
-      (byeoru-context-set-on! bc #f))
+      (byeoru-context-set-on?! bc #f))
 
      ((byeoru-backspace-key? key key-state)
       (if (not (if (eq? byeoru-layout 'byeoru-layout-romaja)
@@ -1651,7 +1653,7 @@
 
    ;; Hangul mode off.
    ((byeoru-latin-key? key key-state)
-    (byeoru-context-set-on! bc #f))
+    (byeoru-context-set-on?! bc #f))
 
    ((byeoru-conversion-key? key key-state)
     (byeoru-show-menu bc))
@@ -1669,7 +1671,7 @@
 	  (byeoru-commit bc choices)
 	  (im-commit-raw bc))
       (if (and byeoru-esc-turns-off? (eq? key 'escape))
-	  (byeoru-context-set-on! bc #f))))))
+	  (byeoru-context-set-on?! bc #f))))))
 
 (define (byeoru-has-preedit? bc)
   (let ((ba (byeoru-context-automata bc)))
@@ -1696,11 +1698,7 @@
 			  (- max 1))
 			 (else
 			  n))))
-    (case mode
-      ((conv symbol)
-       (byeoru-context-set-cand-no! bc compensated-n))
-      ((menu)
-       (byeoru-context-set-menu-no! bc compensated-n)))
+    (byeoru-set-candidate-index-handler bc compensated-n)
     (im-select-candidate bc compensated-n)))
 
 (define (byeoru-cancel-conv bc)
@@ -1719,7 +1717,7 @@
 
 (define (byeoru-commit-converted-part bc)
   (let* ((cands (byeoru-context-cands bc))
-	 (cand (nth (byeoru-context-cand-no bc) cands))
+	 (cand (list-ref cands (byeoru-context-cand-no bc)))
 	 (entry (byeoru-context-dic-entry bc))
 	 (convl (byeoru-context-convl-ustr bc))
 	 (convr (byeoru-context-convr-ustr bc))
@@ -1744,14 +1742,13 @@
 		(cons cached (delete cached cache eq?))
 		(let ((new-cache (cons str cache)))
 		  (if (> (length new-cache) byeoru-symbol-cache-size)
-		      (truncate-list new-cache
-				     byeoru-symbol-cache-size)
+		      (take new-cache byeoru-symbol-cache-size)
 		      new-cache))))))
 
     (im-deactivate-candidate-selector bc)
     (case (byeoru-context-mode bc)
       ((menu)
-       (let ((cand (nth (byeoru-context-menu-no bc) cands)))
+       (let ((cand (list-ref cands (byeoru-context-menu-no bc))))
 	 (cond
 	  ((string? cand)
 	   (byeoru-commit bc cand)
@@ -1772,12 +1769,13 @@
 	   (byeoru-context-set-mode! bc 'hangul)
 	   (byeoru-context-set-menu-no! bc 0)))))
       ((symbol)
-       (let* ((cand (nth (byeoru-context-cand-no bc) cands))
+       (let* ((cand (list-ref cands (byeoru-context-cand-no bc)))
 	      (str (if (number? cand)
 		       (ucs-to-utf8-string cand)
 		       cand))
-	      (menu-item (nth (- (byeoru-context-menu-no bc) (length cache))
-			      byeoru-menu-symbols)))
+	      (menu-item
+	       (list-ref byeoru-menu-symbols
+			 (- (byeoru-context-menu-no bc) (length cache)))))
 	 (byeoru-commit bc str)
 	 (set-cdr! menu-item (cons cand (delete cand cands eq?)))
 	 (set! byeoru-menu-symbols
@@ -1787,24 +1785,51 @@
 	 (update-cache str))))))
 
 (define (byeoru-proc-other-states bc key key-state)
-  (cond
-   ((byeoru-prev-page-key? key key-state)
-    (im-shift-page-candidate bc #f))
-   ((byeoru-next-page-key? key key-state)
-    (im-shift-page-candidate bc #t))
-   ((byeoru-next-candidate-key? key key-state)
-    (byeoru-move-candidate bc 1))
-   ((byeoru-prev-candidate-key? key key-state)
-    (byeoru-move-candidate bc -1))
-   ((byeoru-cancel-key? key key-state)
-    (byeoru-cancel-conv bc))
-   ((byeoru-commit-key? key key-state)
-    (if (eq? (byeoru-context-mode bc) 'conv)
-	(byeoru-commit-converted-part bc)
-	(byeoru-select-menu-or-symbol bc)))))
+  (let ((mode (byeoru-context-mode bc)))
+
+    (define (select)
+      (if (eq? mode 'conv)
+	  (byeoru-commit-converted-part bc)
+	  (byeoru-select-menu-or-symbol bc)))
+
+    (cond
+     ((byeoru-prev-page-key? key key-state)
+      (im-shift-page-candidate bc #f))
+     ((byeoru-next-page-key? key key-state)
+      (im-shift-page-candidate bc #t))
+     ((byeoru-next-candidate-key? key key-state)
+      (byeoru-move-candidate bc 1))
+     ((byeoru-prev-candidate-key? key key-state)
+      (byeoru-move-candidate bc -1))
+     ((byeoru-cancel-key? key key-state)
+      (byeoru-cancel-conv bc))
+     ((byeoru-commit-key? key key-state)
+      (select))
+     ((ichar-numeric? key)
+      (let* ((keyidx (- (numeric-ichar->integer key) 1))
+	     (max (length (byeoru-context-cands bc)))
+	     (n
+	      (case mode
+		((conv symbol) (byeoru-context-cand-no bc))
+		((menu) (byeoru-context-menu-no bc))))
+	     (page-size
+	      (case mode
+		((conv symbol) byeoru-nr-candidate-max)
+		((menu) max)))
+	     (page (if (= page-size 0)
+		       0
+		       (quotient n page-size)))
+	     (idx (* page page-size)))
+	(if (= keyidx -1) (set! keyidx 9))
+	(set! idx (+ idx keyidx))
+	(if (< idx max)
+	    (begin (byeoru-set-candidate-index-handler bc idx)
+		   (select))
+	    (begin (byeoru-set-candidate-index-handler bc (- max 1))
+		   (im-select-candidate bc (- max 1)))))))))
 
 (define (byeoru-begin-input bc)
-  (byeoru-context-set-on! bc #t))
+  (byeoru-context-set-on?! bc #t))
 
 (define (byeoru-proc-raw-state bc key key-state)
   (if (byeoru-on-key? key key-state)
@@ -1854,7 +1879,7 @@
 		(apply string-append (ustr-latter-seq word)))))))
 
 (define (byeoru-update-preedit bc)
-  (let ((segments (if (byeoru-context-on bc)
+  (let ((segments (if (byeoru-context-on? bc)
 		      (if (eq? (byeoru-context-mode bc) 'conv)
 			  (byeoru-converting-state-preedit bc)
 			  (byeoru-input-state-preedit bc))
@@ -1865,7 +1890,7 @@
 	  (context-update-preedit bc segments)))))
 
 (define (byeoru-key-press-handler bc key key-state)
-  (if (byeoru-context-on bc)
+  (if (byeoru-context-on? bc)
       (if (eq? (byeoru-context-mode bc) 'hangul)
 	  (byeoru-proc-input-state bc key key-state)
 	  (byeoru-proc-other-states bc key key-state))
@@ -1874,7 +1899,7 @@
 
 (define (byeoru-key-release-handler bc key key-state)
   (if (or (ichar-control? key)
-	  (not (byeoru-context-on bc)))
+	  (not (byeoru-context-on? bc)))
       ;; don't discard key release event for apps
       (im-commit-raw bc)))
 
@@ -1883,7 +1908,7 @@
       (im-deactivate-candidate-selector bc)))
 
 (define (byeoru-reset-handler bc)
-  (if (byeoru-context-on bc)
+  (if (byeoru-context-on? bc)
       (begin
 	(byeoru-deactivate-candidate-selector bc)
 	(byeoru-flush-automata bc)
@@ -1892,14 +1917,14 @@
 	(byeoru-update-preedit bc))))
 
 (define (byeoru-focus-out-handler bc)
-  (if (byeoru-context-on bc)
+  (if (byeoru-context-on? bc)
       (begin
 	(byeoru-deactivate-candidate-selector bc)
 	(byeoru-flush bc)
 	(byeoru-update-preedit bc))))
 
 (define (byeoru-displace-handler bc)
-  (if (byeoru-context-on bc)
+  (if (byeoru-context-on? bc)
       (begin
 	(byeoru-deactivate-candidate-selector bc)
 	(byeoru-flush bc)
@@ -1907,22 +1932,22 @@
 
 (define (byeoru-get-candidate-handler bc idx accel-enum-hint)
   (let* ((cands (byeoru-context-cands bc))
-	 (cand (nth idx cands)))
+	 (cand (list-ref cands idx)))
     (cond
      ((symbol? cand)
       (list (if (byeoru-context-commit-by-word? bc) "글자단위" "단어단위")
-	    (digit->string (+ idx 1)) ""))
+	    (number->string (+ idx 1)) ""))
      ((number? cand)
       (list (ucs-to-utf8-string cand)
-	    (digit->string (+ idx 1)) ""))
+	    (number->string (+ idx 1)) ""))
      ((string? cand)
       ;; What's the use of the last ""?
-      (list cand (digit->string (+ idx 1)) ""))
+      (list cand (number->string (+ idx 1)) ""))
      ((list? cand)
-      (list (car cand) (digit->string (+ idx 1)) ""))
+      (list (car cand) (number->string (+ idx 1)) ""))
      ((pair? cand)
       (list (string-append (car cand) "  " (cdr cand))
-	    (digit->string (+ idx 1)) "")))))
+	    (number->string (+ idx 1)) "")))))
 
 (define (byeoru-set-candidate-index-handler bc idx)
   (case (byeoru-context-mode bc)

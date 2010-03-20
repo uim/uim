@@ -96,8 +96,8 @@
   (cons 'choice
 	(map (lambda (entry)
 	       (let ((id (car entry))
-		     (label (nth 2 entry))
-		     (short-desc (nth 3 entry)))
+		     (label (list-ref entry 2))
+		     (short-desc (list-ref entry 3)))
 		 (list id
 		       label
 		       short-desc)))
