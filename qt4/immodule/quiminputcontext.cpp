@@ -46,13 +46,13 @@
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
 
-#include "debug.h"
-#include "quiminputcontext_compose.h"
-#include "plugin.h"
 #include "candidatewindow.h"
-#include "quiminfomanager.h"
+#include "debug.h"
+#include "plugin.h"
 #include "qhelpermanager.h"
 #include "qtextutil.h"
+#include "quiminfomanager.h"
+#include "quiminputcontext_compose.h"
 
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
 #include <X11/Xlib.h>
