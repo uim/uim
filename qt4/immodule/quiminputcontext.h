@@ -48,6 +48,7 @@
 class QEvent;
 
 class CandidateWindow;
+class CaretStateIndicator;
 class QUimHelperManager;
 class QUimTextUtil;
 #ifdef Q_WS_X11
@@ -107,6 +108,8 @@ public:
     void saveContext();
     void restoreContext();
 
+    void setupIndicator( const QString &str );
+
 protected:
     uim_context createUimContext( const char *imname );
     virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
@@ -165,6 +168,8 @@ private:
     Compose *mCompose;
 #endif
     QUimTextUtil *mTextUtil;
+
+    CaretStateIndicator *m_indicator;
 
 protected:
     QString m_imname;

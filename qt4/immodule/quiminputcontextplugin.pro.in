@@ -24,6 +24,7 @@ QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 # Input
 HEADERS += @srcdir@/candidatewindow.h \
+           @srcdir@/caretstateindicator.h \
            @srcdir@/debug.h \
            @srcdir@/plugin.h \
            @srcdir@/qhelpermanager.h \
@@ -34,6 +35,7 @@ HEADERS += @srcdir@/candidatewindow.h \
            @srcdir@/subwindow.h
 
 SOURCES += @srcdir@/candidatewindow.cpp \
+           @srcdir@/caretstateindicator.cpp \
            @srcdir@/plugin.cpp \
            @srcdir@/qhelpermanager.cpp \
            @srcdir@/qtextutil.cpp \
