@@ -393,6 +393,7 @@ void QUimInputContext::unsetFocus()
         reset();
 
     cwin->hide();
+    m_indicator->hide();
 
     m_HelperManager->checkHelperConnection();
 
