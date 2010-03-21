@@ -64,7 +64,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 : QFrame( parent, candidateFlag ), nrCandidates( 0 ), displayLimit( 0 ),
     candidateIndex( -1 ), pageIndex( -1 ), ic( 0 ), isAlwaysLeft( false ),
     subWin( 0 ), hasAnnotation( uim_scm_symbol_value_bool(
-        "eb-enable-for-annotation?" ) == UIM_TRUE ), window( 0 )
+        "eb-enable-for-annotation?" ) ), window( 0 )
 {
     setFrameStyle( Raised | NoFrame );
 
