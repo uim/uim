@@ -32,7 +32,7 @@
 #ifndef UIM_QT4_CARET_STATE_INDICATOR_H
 #define UIM_QT4_CARET_STATE_INDICATOR_H
 
-#include <QtGui/QLabel>
+#include <QtGui/QWidget>
 
 class QLabel;
 class QTimer;
