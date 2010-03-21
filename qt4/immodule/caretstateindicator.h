@@ -51,7 +51,7 @@ class CaretStateIndicator : public QWidget {
         bool eventFilter(QObject *obj, QEvent *event);
         QList<QLabel *> m_labelList;
         QTimer *m_timer;
-        QWidget *window;
+        QWidget *m_window;
 };
 
 #endif

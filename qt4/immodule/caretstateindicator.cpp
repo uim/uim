@@ -42,7 +42,7 @@
 
 // caret state indicator is a state indicator nearby the caret.
 CaretStateIndicator::CaretStateIndicator(QWidget *parent):
-    QWidget(parent, Qt::ToolTip), window(0)
+    QWidget(parent, Qt::ToolTip), m_window(0)
 {
     QHBoxLayout *layout = new QHBoxLayout;
     layout->setMargin(0);
@@ -91,8 +91,8 @@ void CaretStateIndicator::update(const QString &str)
     if (widget) {
         QRect rect = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
         move(widget->mapToGlobal(rect.bottomLeft()));
-        window = widget->window();
-        window->installEventFilter(this);
+        m_window = widget->window();
+        m_window->installEventFilter(this);
     }
     setVisible(true);
 }
@@ -106,7 +106,7 @@ void CaretStateIndicator::setTimeout(int second)
 
 bool CaretStateIndicator::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == window) {
+    if (obj == m_window) {
         if (event->type() == QEvent::Move) {
             QMoveEvent *moveEvent = static_cast<QMoveEvent *>(event);
             move(pos() + moveEvent->pos() - moveEvent->oldPos());
