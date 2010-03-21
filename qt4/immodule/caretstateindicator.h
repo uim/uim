@@ -47,6 +47,9 @@ class CaretStateIndicator : public QWidget {
         void update(const QString &str);
         void setTimeout(int second);
 
+        // space between this indicator and a caret
+        static const int SPACING;
+
     private:
         bool eventFilter(QObject *obj, QEvent *event);
         QList<QLabel *> m_labelList;

@@ -40,6 +40,8 @@
 #include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
 
+const int CaretStateIndicator::SPACING = 3;
+
 // caret state indicator is a state indicator nearby the caret.
 CaretStateIndicator::CaretStateIndicator(QWidget *parent):
     QWidget(parent, Qt::ToolTip), m_window(0)
@@ -90,7 +92,8 @@ void CaretStateIndicator::update(const QString &str)
     QWidget *widget = QApplication::focusWidget();
     if (widget) {
         QRect rect = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
-        move(widget->mapToGlobal(rect.bottomLeft()) + QPoint(0, 3));
+        move(widget->mapToGlobal(rect.bottomLeft())
+            + QPoint(0, CaretStateIndicator::SPACING));
         m_window = widget->window();
         m_window->installEventFilter(this);
     }
