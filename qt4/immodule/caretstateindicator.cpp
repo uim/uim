@@ -90,7 +90,7 @@ void CaretStateIndicator::update(const QString &str)
     QWidget *widget = QApplication::focusWidget();
     if (widget) {
         QRect rect = widget->inputMethodQuery(Qt::ImMicroFocus).toRect();
-        move(widget->mapToGlobal(rect.bottomLeft()));
+        move(widget->mapToGlobal(rect.bottomLeft()) + QPoint(0, 3));
         m_window = widget->window();
         m_window->installEventFilter(this);
     }

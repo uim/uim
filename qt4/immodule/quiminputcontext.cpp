@@ -475,7 +475,7 @@ void QUimInputContext::update()
         QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
         QPoint p = w->mapToGlobal( mf.topLeft() );
         setMicroFocus( p.x(), p.y(), mf.width(), mf.height() );
-        m_indicator->move( w->mapToGlobal( mf.bottomLeft() ) );
+        m_indicator->move( w->mapToGlobal( mf.bottomLeft() ) + QPoint( 0, 3 ) );
     }
 }
 
