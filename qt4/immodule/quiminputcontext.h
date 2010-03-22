@@ -89,7 +89,7 @@ public:
     virtual bool isComposing() const { return m_isComposing; }
     virtual void setFocusWidget( QWidget *w );
 
-    virtual bool isPreeditRelocationEnabled();
+    bool isPreeditRelocationEnabled();
 
     uim_context uimContext() { return m_uc; }
 
@@ -112,7 +112,7 @@ public:
 
 protected:
     uim_context createUimContext( const char *imname );
-    virtual bool isPreeditPreservationEnabled();  // not a QInputContext func
+    bool isPreeditPreservationEnabled();  // not a QInputContext func
     virtual void setFocus();    // not a QInputContext func
     virtual void unsetFocus();  // not a QInputContext func
 
