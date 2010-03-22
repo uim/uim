@@ -942,10 +942,7 @@ void QUimInputContext::switch_system_global_im( const char *name )
 void QUimInputContext::readIMConf()
 {
     char * leftp = uim_scm_symbol_value_str( "candidate-window-position" );
-    if ( leftp && !strcmp( leftp, "left" ) )
-        cwin->setAlwaysLeftPosition( true );
-    else
-        cwin->setAlwaysLeftPosition( false );
+    cwin->setAlwaysLeftPosition( leftp && !strcmp( leftp, "left" ) );
     free( leftp );
 }
 
