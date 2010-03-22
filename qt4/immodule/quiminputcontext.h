@@ -117,7 +117,7 @@ protected:
     virtual void unsetFocus();  // not a QInputContext func
 
 private:
-    void setMicroFocus( int x, int y, int w, int h, QFont *f = 0 );
+    void setMicroFocus( int x, int y, int w, int h );
     int getPreeditSelectionLength();
     QList<QInputMethodEvent::Attribute> getPreeditAttrs();
 
