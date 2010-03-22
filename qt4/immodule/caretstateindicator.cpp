@@ -40,6 +40,8 @@
 #include <QtGui/QLabel>
 #include <QtGui/QMoveEvent>
 
+#include <uim/uim-scm.h>
+
 const int CaretStateIndicator::SPACING = 3;
 
 // caret state indicator is a state indicator nearby the caret.
@@ -59,6 +61,28 @@ CaretStateIndicator::~CaretStateIndicator()
 {
     while (!m_labelList.isEmpty())
         delete m_labelList.takeFirst();
+}
+
+void CaretStateIndicator::setup(const QString &str)
+{
+    bool isEnabled = uim_scm_symbol_value_bool("bridge-show-input-state?");
+    char *type = uim_scm_c_symbol(uim_scm_symbol_value("bridge-show-with?"));
+    bool isMode = (qstrcmp(type, "mode") == 0);
+    free(type);
+    bool isModeOn
+        = uim_scm_symbol_value_bool("bridge-show-input-state-mode-on?");
+    if (isEnabled && !(isMode && !isModeOn)) {
+        update(str);
+        if (!isMode) {
+            int time = uim_scm_symbol_value_int(
+                "bridge-show-input-state-time-length");
+            if (time != 0)
+                setTimeout(time);
+        }
+        setVisible(true);
+    } else if (isMode && !isModeOn) {
+        setVisible(false);
+    }
 }
 
 void CaretStateIndicator::update(const QString &str)
@@ -97,7 +121,6 @@ void CaretStateIndicator::update(const QString &str)
         m_window = widget->window();
         m_window->installEventFilter(this);
     }
-    setVisible(true);
 }
 
 void CaretStateIndicator::setTimeout(int second)

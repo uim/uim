@@ -942,24 +942,7 @@ void QUimInputContext::readIMConf()
 
 void QUimInputContext::setupIndicator( const QString &str )
 {
-    bool isEnabled = uim_scm_symbol_value_bool( "bridge-show-input-state?" );
-    char *type
-        = uim_scm_c_symbol( uim_scm_symbol_value( "bridge-show-with?" ) );
-    bool isMode = ( strcmp( type, "mode" ) == 0 );
-    free( type );
-    bool isModeOn
-        = uim_scm_symbol_value_bool( "bridge-show-input-state-mode-on?" );
-    if ( isEnabled && !( isMode && !isModeOn ) ) {
-        m_indicator->update( str );
-        if ( !isMode ) {
-            int time = uim_scm_symbol_value_int(
-                "bridge-show-input-state-time-length" );
-            if ( time != 0 )
-                m_indicator->setTimeout( time );
-        }
-    } else if ( isMode && !isModeOn ) {
-        m_indicator->setVisible( false );
-    }
+    m_indicator->setup( str );
 }
 
 static int unicodeToUKey (ushort c) {

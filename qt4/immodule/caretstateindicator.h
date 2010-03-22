@@ -44,13 +44,14 @@ class CaretStateIndicator : public QWidget {
         explicit CaretStateIndicator(QWidget *parent = 0);
         ~CaretStateIndicator();
 
-        void update(const QString &str);
-        void setTimeout(int second);
+        void setup(const QString &str);
 
         // space between this indicator and a caret
         static const int SPACING;
 
     private:
+        void update(const QString &str);
+        void setTimeout(int second);
         bool eventFilter(QObject *obj, QEvent *event);
         QList<QLabel *> m_labelList;
         QTimer *m_timer;
