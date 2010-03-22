@@ -636,11 +636,6 @@ void QUimInputContext::restoreContext()
     updatePreedit();
 }
 
-bool QUimInputContext::isPreeditRelocationEnabled()
-{
-    return ( language() == "ja" );
-}
-
 bool QUimInputContext::isPreeditPreservationEnabled()
 {
     return ( language() == "ja" );

@@ -89,8 +89,6 @@ public:
     virtual bool isComposing() const { return m_isComposing; }
     virtual void setFocusWidget( QWidget *w );
 
-    bool isPreeditRelocationEnabled();
-
     uim_context uimContext() { return m_uc; }
 
     static QUimInputContext *focusedIC();
