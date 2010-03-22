@@ -161,7 +161,7 @@ void UimImSwitcher::checkHelperConnection()
                 delete notifier;
             notifier = new QSocketNotifier( uim_fd, QSocketNotifier::Read );
             connect( notifier, SIGNAL( activated( int ) ),
-                              this, SLOT( slotStdinActivated( int ) ) );
+                              this, SLOT( slotStdinActivated() ) );
         }
     }
 }
@@ -212,9 +212,8 @@ QString UimImSwitcher::selectedImName() const
     return QString();
 }
 
-void UimImSwitcher::slotStdinActivated( int socket )
+void UimImSwitcher::slotStdinActivated()
 {
-    Q_UNUSED( socket )
     uim_helper_read_proc( uim_fd );
 
     QString msg;

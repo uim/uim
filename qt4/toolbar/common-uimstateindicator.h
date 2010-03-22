@@ -73,7 +73,7 @@ signals:
     void menuRequested( QMenu *menu );
 
 public slots:
-    void slotStdinActivated( int socket );
+    void slotStdinActivated();
 
 private slots:
     void slotPopupMenuAboutToShow();

@@ -57,7 +57,7 @@ public:
     static void send_im_change_whole_desktop( const char *str );
 
 public slots:
-    void slotStdinActivated( int );
+    void slotStdinActivated();
 };
 
 #endif /* Not def: UIM_QT4_IMMODULE_QHELPERMANAGER_H */

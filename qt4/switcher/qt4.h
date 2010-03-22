@@ -66,7 +66,7 @@ protected:
     void reloadImList();
 
 protected slots:
-    void slotStdinActivated( int socket );
+    void slotStdinActivated();
     void slotChangeInputMethod();
 
 protected:

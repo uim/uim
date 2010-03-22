@@ -76,14 +76,13 @@ void QUimHelperManager::checkHelperConnection()
         {
             notifier = new QSocketNotifier( im_uim_fd, QSocketNotifier::Read );
             connect( notifier, SIGNAL( activated( int ) ),
-                              this, SLOT( slotStdinActivated( int ) ) );
+                              this, SLOT( slotStdinActivated() ) );
         }
     }
 }
 
-void QUimHelperManager::slotStdinActivated( int socket )
+void QUimHelperManager::slotStdinActivated()
 {
-    Q_UNUSED( socket )
     QString tmp;
 
     uim_helper_read_proc( im_uim_fd );
