@@ -95,10 +95,6 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
     if ( imname )
         m_uc = createUimContext( imname );
 
-    while ( !psegs.isEmpty() )
-        delete psegs.takeFirst();
-    psegs.clear();
-
     cwin = new CandidateWindow( 0 );
     cwin->setQUimInputContext( this );
     cwin->hide();
@@ -587,12 +583,8 @@ void QUimInputContext::commitString( const QString& str )
 
 void QUimInputContext::clearPreedit()
 {
-    // delete first
     while ( !psegs.isEmpty() )
         delete psegs.takeFirst();
-
-    // and clear
-    psegs.clear();
 }
 
 void QUimInputContext::pushbackPreeditString( int attr, const QString& str )
