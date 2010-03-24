@@ -24,7 +24,6 @@ EXTRA_DIST = README.en README.ja INDENT \
 
 EXTRA_DIST += candidatewindow.h \
               caretstateindicator.h \
-              debug.h \
               plugin.h \
               qhelpermanager.h \
               qtextutil.h \

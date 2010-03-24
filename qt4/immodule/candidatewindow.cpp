@@ -41,7 +41,6 @@ SUCH DAMAGE.
 
 #include <uim/uim-scm.h>
 
-#include "debug.h"
 #include "quiminputcontext.h"
 #include "subwindow.h"
 

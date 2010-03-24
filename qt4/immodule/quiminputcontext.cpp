@@ -48,7 +48,6 @@
 
 #include "candidatewindow.h"
 #include "caretstateindicator.h"
-#include "debug.h"
 #include "plugin.h"
 #include "qhelpermanager.h"
 #include "qtextutil.h"
@@ -84,7 +83,9 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
         candwinIsActive( false ),
         m_isComposing( false )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext()" );
+#endif
 
     contextList.append( this );
 
@@ -114,7 +115,9 @@ QUimInputContext::QUimInputContext( const char *imname, const char *lang )
 
 QUimInputContext::~QUimInputContext()
 {
+#ifdef ENABLE_DEBUG
     qDebug( "~QUimInputContext()" );
+#endif
 
     contextList.removeAll( this );
 
@@ -188,7 +191,9 @@ bool QUimInputContext::x11FilterEvent( QWidget *keywidget, XEvent *event )
 
 bool QUimInputContext::filterEvent( const QEvent *event )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "filterEvent" );
+#endif
 
     int type = event->type();
 
@@ -343,7 +348,9 @@ bool QUimInputContext::filterEvent( const QEvent *event )
 
 void QUimInputContext::setFocusWidget( QWidget *w )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext::setFocusWidget() w = %p", w );
+#endif
 
     QInputContext::setFocusWidget( w );
 
@@ -356,8 +363,10 @@ void QUimInputContext::setFocusWidget( QWidget *w )
 // Qt4 does not have QInputContext::setFocus()
 void QUimInputContext::setFocus()
 {
+#ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext: %p->setFocus(), focusWidget()=%p",
             this, QApplication::focusWidget() );
+#endif
 
     focusedInputContext = this;
     disableFocusedContext = false;
@@ -376,8 +385,10 @@ void QUimInputContext::setFocus()
 // Qt4 does not have QInputContext::unsetFocus()
 void QUimInputContext::unsetFocus()
 {
+#ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext: %p->unsetFocus(), focusWidget()=%p",
             this, QApplication::focusWidget() );
+#endif
 
     uim_focus_out_context( m_uc );
 
@@ -425,7 +436,9 @@ void QUimInputContext::reloadUim()
 
 void QUimInputContext::setMicroFocus( int x, int y, int w, int h )
 {
+#ifdef ENABLE_DEBUG
     qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
+#endif
 
     cwin->layoutWindow( x, y, w, h );
 }
@@ -438,8 +451,12 @@ void QUimInputContext::mouseHandler( int x, QMouseEvent *e )
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
     case QEvent::MouseMove:
+#ifdef ENABLE_DEBUG
         qDebug( "QUimInputContext::mouseHandler: "
                 "x=%d, type=%d, button=%d ", x, e->type(), e->button() );
+#else
+        Q_UNUSED( x )
+#endif
         break;
     default:
         break;
@@ -448,7 +465,9 @@ void QUimInputContext::mouseHandler( int x, QMouseEvent *e )
 
 void QUimInputContext::reset()
 {
+#ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext::reset()" );
+#endif
 
     candwinIsActive = false;
     cwin->hide();
@@ -464,7 +483,9 @@ void QUimInputContext::update()
 {
     QWidget *w = QApplication::focusWidget();
 
+#ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext::update() w = %p", w );
+#endif
 
     if ( w ) {
         QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
@@ -489,7 +510,9 @@ QString QUimInputContext::language()
 void QUimInputContext::commit_cb( void *ptr, const char *str )
 {
     QString qs = QString::fromUtf8( str );
+#ifdef ENABLE_DEBUG
     qDebug( "commit_cb : str = |%s|", qs.toLocal8Bit().data() );
+#endif
 
     QUimInputContext *ic = static_cast<QUimInputContext *>( ptr );
     ic->commitString( qs );
@@ -497,7 +520,9 @@ void QUimInputContext::commit_cb( void *ptr, const char *str )
 
 void QUimInputContext::clear_cb( void *ptr )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "clear_cb" );
+#endif
 
     QUimInputContext* ic = static_cast<QUimInputContext*>( ptr );
     ic->clearPreedit();
@@ -506,7 +531,9 @@ void QUimInputContext::clear_cb( void *ptr )
 void QUimInputContext::pushback_cb( void *ptr, int attr, const char *str )
 {
     QString qs = QString::fromUtf8( str );
+#ifdef ENABLE_DEBUG
     qDebug( "pushback_cb :  str = |%s|", qs.toLocal8Bit().data() );
+#endif
 
     if ( !str )
         return ;
@@ -522,7 +549,9 @@ void QUimInputContext::pushback_cb( void *ptr, int attr, const char *str )
 
 void QUimInputContext::update_cb( void *ptr )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "update_cb" );
+#endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->updatePreedit();
@@ -530,7 +559,9 @@ void QUimInputContext::update_cb( void *ptr )
 
 void QUimInputContext::cand_activate_cb( void *ptr, int nr, int displayLimit )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "cand_activate_cb" );
+#endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateActivate( nr, displayLimit );
@@ -538,7 +569,9 @@ void QUimInputContext::cand_activate_cb( void *ptr, int nr, int displayLimit )
 
 void QUimInputContext::cand_select_cb( void *ptr, int index )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "cand_select_cb" );
+#endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateSelect( index );
@@ -546,7 +579,9 @@ void QUimInputContext::cand_select_cb( void *ptr, int index )
 
 void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "cand_shift_page_cb" );
+#endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateShiftPage( forward != 0 );
@@ -554,7 +589,9 @@ void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
 
 void QUimInputContext::cand_deactivate_cb( void *ptr )
 {
+#ifdef ENABLE_DEBUG
     qDebug( "cand_deactivate_cb" );
+#endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
     ic->candidateDeactivate();

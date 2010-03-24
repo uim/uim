@@ -43,7 +43,6 @@
 #include "uim/uim.h"
 #include "uim/uim-x-util.h"
 
-#include "debug.h"
 #include "quiminfomanager.h"
 #include "quiminputcontext_with_slave.h"
 
@@ -138,7 +137,9 @@ QStringList UimInputContextPlugin::createImList() const
 
     // default
     lst.append( "uim" );
+#ifdef ENABLE_DEBUG
     qDebug( "name = uim" );
+#endif
 
 #if UIM_QT_LIST_SUBIM_AS_QTIM
     uim_context tmp_uc = uim_create_context( 0, "UTF-8",
@@ -153,7 +154,9 @@ QStringList UimInputContextPlugin::createImList() const
             qs = "uim-" + qs;
             lst << qs;
 
+#ifdef ENABLE_DEBUG
             qDebug( "name = %s", qs.toUtf8().data() );
+#endif
         }
     }
     uim_release_context( tmp_uc );
