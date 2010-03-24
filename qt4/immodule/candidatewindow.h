@@ -54,7 +54,6 @@ public:
     explicit CandidateWindow( QWidget *parent );
     ~CandidateWindow();
 
-    void activateCandwin( int dLimit );
     void deactivateCandwin();
     void clearCandidates();
     void popup();
@@ -62,15 +61,7 @@ public:
     void setAlwaysLeftPosition( bool left ) { isAlwaysLeft = left; }
     bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
-    void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
-    void setPage( int page );
-    void shiftPage( bool forward );
     void layoutWindow( int x, int y, int w, int h );
-    void setIndex( int totalindex );
-    void setIndexInPage( int index );
-
-    void setNrCandidates( int nrCands, int dLimit );
-    void setPageCandidates( int page, const QList<uim_candidate> &candidates );
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
@@ -85,6 +76,17 @@ protected slots:
     void slotHookSubwindow();
 
 protected:
+    void activateCandwin( int dLimit );
+
+    void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
+    void setPage( int page );
+    void shiftPage( bool forward );
+    void setIndex( int totalindex );
+    void setIndexInPage( int index );
+
+    void setNrCandidates( int nrCands, int dLimit );
+    void setPageCandidates( int page, const QList<uim_candidate> &candidates );
+
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
     void preparePageCandidates( int page );
 #endif
