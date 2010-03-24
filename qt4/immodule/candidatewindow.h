@@ -38,6 +38,8 @@ SUCH DAMAGE.
 
 #include <uim/uim.h>
 
+#define UIM_QT_USE_NEW_PAGE_HANDLING 1
+
 class QLabel;
 
 class CandidateListView;
@@ -72,17 +74,20 @@ public:
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 
+    void candidateActivate( int nr, int displayLimit );
+    void candidateSelect( int index );
+    void candidateShiftPage( bool forward );
+
     QSize sizeHint() const;
 
-    int nrCandidates;
-    int displayLimit;
-    int candidateIndex;
-    int pageIndex;
 protected slots:
     void slotCandidateSelected( int row );
     void slotHookSubwindow();
 
 protected:
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+    void preparePageCandidates( int page );
+#endif
     void updateLabel();
 
     // Moving and Resizing affects the position of Subwindow
@@ -90,6 +95,11 @@ protected:
     virtual void resizeEvent( QResizeEvent * );
 
     bool eventFilter( QObject *obj, QEvent *event );
+
+    int nrCandidates;
+    int displayLimit;
+    int candidateIndex;
+    int pageIndex;
 
     QUimInputContext *ic;
 
@@ -106,6 +116,11 @@ protected:
     const bool hasAnnotation;
 
     QWidget *window;
+
+#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
+    QList<bool> pageFilled;
+    int nrPages;
+#endif
 };
 
 

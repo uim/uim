@@ -449,6 +449,105 @@ void CandidateWindow::layoutWindow( int x, int y, int w, int h )
     move( destX, destY );
 }
 
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+void CandidateWindow::preparePageCandidates( int page )
+{
+    QList<uim_candidate> list;
+
+    if ( page < 0 )
+        return;
+
+    if ( pageFilled[ page ] )
+        return;
+
+    // set page candidates
+    uim_candidate cand;
+
+    int start = page * displayLimit;
+
+    int pageNr;
+    if ( displayLimit && ( nrCandidates - start ) > displayLimit )
+        pageNr = displayLimit;
+    else
+        pageNr = nrCandidates - start;
+
+    for ( int i = start; i < ( pageNr + start ); i++ )
+    {
+        cand = uim_get_candidate( ic->uimContext(), i, displayLimit ? i % displayLimit : i );
+        list.append( cand );
+    }
+    pageFilled[ page ] = true;
+    setPageCandidates( page, list );
+}
+#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
+
+void CandidateWindow::candidateActivate( int nr, int displayLimit )
+{
+    QList<uim_candidate> list;
+
+#if !UIM_QT_USE_NEW_PAGE_HANDLING
+    activateCandwin( displayLimit );
+
+    // set candidates
+    uim_candidate cand;
+    for ( int i = 0; i < nr; i++ )
+    {
+        cand = uim_get_candidate( ic->uimContext(), i, displayLimit ? i % displayLimit : i );
+        list.append( cand );
+    }
+    setCandidates( displayLimit, list );
+
+#else /* !UIM_QT_USE_NEW_PAGE_HANDLING */
+    nrPages = displayLimit ? ( nr - 1 ) / displayLimit + 1 : 1;
+    pageFilled.clear();
+    for ( int i = 0; i < nrPages; i++ )
+        pageFilled.append( false );
+    
+    setNrCandidates( nr, displayLimit );
+
+    // set page candidates
+    preparePageCandidates( 0 );
+    setPage( 0 );
+#endif /* !UIM_QT_USE_NEW_PAGE_HANDLING */
+    popup();
+}
+
+void CandidateWindow::candidateSelect( int index )
+{
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    int new_page;
+    
+    if ( index >= nrCandidates )
+        index = 0;
+
+    if ( index >= 0 && displayLimit )
+        new_page = index / displayLimit;
+    else
+        new_page = pageIndex;
+
+    preparePageCandidates( new_page );
+#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
+    setIndex( index );
+}
+
+void CandidateWindow::candidateShiftPage( bool forward )
+{
+#if UIM_QT_USE_NEW_PAGE_HANDLING
+    int new_page, index;
+
+    index = forward ? pageIndex + 1 : pageIndex - 1;
+    if ( index < 0 )
+        new_page = nrPages - 1;
+    else if ( index >= nrPages )
+        new_page = 0;
+    else
+        new_page = index;
+
+    preparePageCandidates( new_page );
+#endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
+    shiftPage( forward );
+}
+
 void CandidateWindow::updateLabel()
 {
     QString indexString;
