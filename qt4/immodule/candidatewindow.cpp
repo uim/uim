@@ -101,13 +101,9 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 
 CandidateWindow::~CandidateWindow()
 {
-    if ( !stores.isEmpty() )
-    {
-        // clear stored candidate data
-        for ( int i = 0; i < stores.size(); i++ )
-            uim_candidate_free( stores[ i ] );
-        stores.clear();
-    }
+    // clear stored candidate data
+    while ( !stores.isEmpty() )
+        uim_candidate_free( stores.takeFirst() );
 }
 
 void CandidateWindow::popup()
@@ -148,12 +144,11 @@ void CandidateWindow::clearCandidates()
     nrCandidates = 0;
 
     // clear stored candidate data
-    for ( int i = 0; i < stores.size(); i++ )
-    {
-        if ( stores[ i ] )
-            uim_candidate_free( stores[ i ] );
+    while ( !stores.isEmpty() ) {
+        uim_candidate cand = stores.takeFirst();
+        if ( cand )
+            uim_candidate_free( cand );
     }
-    stores.clear();
 }
 
 
