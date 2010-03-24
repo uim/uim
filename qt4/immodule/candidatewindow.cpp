@@ -376,15 +376,6 @@ void CandidateWindow::setIndex( int totalindex )
     updateLabel();
 }
 
-void CandidateWindow::setIndexInPage( int index )
-{
-    cList->clearSelection();
-    cList->selectRow( index );
-
-    slotCandidateSelected( index );
-}
-
-
 void CandidateWindow::slotCandidateSelected( int row )
 {
     candidateIndex = ( pageIndex * displayLimit ) + row;

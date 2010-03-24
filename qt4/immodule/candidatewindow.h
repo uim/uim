@@ -82,7 +82,6 @@ protected:
     void setPage( int page );
     void shiftPage( bool forward );
     void setIndex( int totalindex );
-    void setIndexInPage( int index );
 
     void setNrCandidates( int nrCands, int dLimit );
     void setPageCandidates( int page, const QList<uim_candidate> &candidates );
