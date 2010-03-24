@@ -60,10 +60,10 @@ const Qt::WFlags candidateFlag = ( Qt::Window
                                  );
 
 CandidateWindow::CandidateWindow( QWidget *parent )
-: QFrame( parent, candidateFlag ), nrCandidates( 0 ), displayLimit( 0 ),
-    candidateIndex( -1 ), pageIndex( -1 ), ic( 0 ), isAlwaysLeft( false ),
-    subWin( 0 ), hasAnnotation( uim_scm_symbol_value_bool(
-        "eb-enable-for-annotation?" ) ), window( 0 )
+: QFrame( parent, candidateFlag ), ic( 0 ), subWin( 0 ), window( 0 ),
+    nrCandidates( 0 ), displayLimit( 0 ), candidateIndex( -1 ), pageIndex( -1 ),
+    isAlwaysLeft( false ), hasAnnotation( uim_scm_symbol_value_bool(
+        "eb-enable-for-annotation?" ) )
 {
     setFrameStyle( Raised | NoFrame );
 

@@ -97,31 +97,28 @@ protected:
 
     bool eventFilter( QObject *obj, QEvent *event );
 
+    QUimInputContext *ic;
+
+    // widgets
+    CandidateListView *cList;
+    QLabel *numLabel;
+    SubWindow *subWin;
+    QWidget *window;
+
+    // candidate data
+    QList<uim_candidate> stores;
     int nrCandidates;
     int displayLimit;
     int candidateIndex;
     int pageIndex;
-
-    QUimInputContext *ic;
-
-    CandidateListView *cList;
-    QLabel *numLabel;
-
-    QList<uim_candidate> stores;
-
-
-    bool isAlwaysLeft;
-
-    SubWindow *subWin;
-
-    const bool hasAnnotation;
-
-    QWidget *window;
-
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
     QList<bool> pageFilled;
     int nrPages;
 #endif
+
+    // config
+    bool isAlwaysLeft;
+    const bool hasAnnotation;
 };
 
 
