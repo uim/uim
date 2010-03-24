@@ -176,7 +176,7 @@ protected:
     bool candwinIsActive;
     bool m_isComposing;
 
-    QList<PreeditSegment*> psegs;
+    QList<PreeditSegment> psegs;
 
     CandidateWindow *cwin;
     static QUimHelperManager *m_HelperManager;

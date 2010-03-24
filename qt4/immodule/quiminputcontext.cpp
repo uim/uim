@@ -584,12 +584,12 @@ void QUimInputContext::commitString( const QString& str )
 void QUimInputContext::clearPreedit()
 {
     while ( !psegs.isEmpty() )
-        delete psegs.takeFirst();
+        psegs.takeFirst();
 }
 
 void QUimInputContext::pushbackPreeditString( int attr, const QString& str )
 {
-    PreeditSegment * ps = new PreeditSegment( attr, str );
+    PreeditSegment ps( attr, str );
     psegs.append( ps );
 }
 
@@ -637,17 +637,17 @@ QString QUimInputContext::getPreeditString()
 {
     QString pstr;
 
-    QList<PreeditSegment*>::ConstIterator seg = psegs.begin();
-    const QList<PreeditSegment*>::ConstIterator end = psegs.end();
+    QList<PreeditSegment>::ConstIterator seg = psegs.begin();
+    const QList<PreeditSegment>::ConstIterator end = psegs.end();
     for ( ; seg != end; ++seg )
     {
-        if ( ( *seg ) ->attr & UPreeditAttr_Separator && ( *seg ) ->str.isEmpty() )
+        if ( ( *seg ).attr & UPreeditAttr_Separator && ( *seg ).str.isEmpty() )
         {
             pstr += DEFAULT_SEPARATOR_STR;
         }
         else
         {
-            pstr += ( *seg ) ->str;
+            pstr += ( *seg ).str;
         }
     }
 
@@ -660,22 +660,22 @@ int QUimInputContext::getPreeditCursorPosition()
         return 0;
 
     int cursorPos = 0;
-    QList<PreeditSegment*>::ConstIterator seg = psegs.begin();
-    const QList<PreeditSegment*>::ConstIterator end = psegs.end();
+    QList<PreeditSegment>::ConstIterator seg = psegs.begin();
+    const QList<PreeditSegment>::ConstIterator end = psegs.end();
     for ( ; seg != end; ++seg )
     {
-        if ( ( *seg ) ->attr & UPreeditAttr_Cursor )
+        if ( ( *seg ).attr & UPreeditAttr_Cursor )
         {
             return cursorPos;
         }
-        else if ( ( *seg ) ->attr & UPreeditAttr_Separator
-                  && ( *seg ) ->str.isEmpty() )
+        else if ( ( *seg ).attr & UPreeditAttr_Separator
+                  && ( *seg ).str.isEmpty() )
         {
             cursorPos += QString( DEFAULT_SEPARATOR_STR ).length();
         }
         else
         {
-            cursorPos += ( *seg ) ->str.length();
+            cursorPos += ( *seg ).str.length();
         }
     }
 
@@ -686,8 +686,8 @@ int QUimInputContext::getPreeditSelectionLength()
 {
     int selectionLength = 0;
 
-    QList<PreeditSegment*>::ConstIterator seg = psegs.begin();
-    const QList<PreeditSegment*>::ConstIterator end = psegs.end();
+    QList<PreeditSegment>::ConstIterator seg = psegs.begin();
+    const QList<PreeditSegment>::ConstIterator end = psegs.end();
     for ( ; seg != end; ++seg )
     {
         // In converting state, uim encodes UPreeditAttr_Cursor into
@@ -697,9 +697,9 @@ int QUimInputContext::getPreeditSelectionLength()
         // UPreeditAttr_Underline or UPreeditAttr_Reverse to detect
         // logical selection length. They are sometimes disabled by
         // user preference.
-        if ( ( *seg ) ->attr & UPreeditAttr_Cursor )
+        if ( ( *seg ).attr & UPreeditAttr_Cursor )
         {
-            selectionLength = ( *seg ) ->str.length();
+            selectionLength = ( *seg ).str.length();
             return selectionLength;
         }
     }
@@ -722,12 +722,12 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
     const int DUMMY = 0;
     QList<QInputMethodEvent::Attribute> attrs;
 
-    QList<PreeditSegment *>::ConstIterator seg = psegs.begin();
-    const QList<PreeditSegment *>::ConstIterator end = psegs.end();
+    QList<PreeditSegment>::ConstIterator seg = psegs.begin();
+    const QList<PreeditSegment>::ConstIterator end = psegs.end();
     int segPos = 0;
     for ( ; seg != end; ++seg ) {
-        int uimAttr = ( *seg )->attr;
-        int segStrLen = ( *seg )->str.length();
+        int uimAttr = ( *seg ).attr;
+        int segStrLen = ( *seg ).str.length();
         QTextCharFormat segFmt;
 
         if ( uimAttr & UPreeditAttr_Cursor ) {
