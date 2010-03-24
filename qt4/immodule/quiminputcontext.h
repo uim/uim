@@ -137,11 +137,6 @@ private:
     void clearPreedit();
     void pushbackPreeditString( int attr, const QString& str );
     void updatePreedit();
-    //candidate
-    void candidateActivate( int nr, int displayLimit );
-    void candidateSelect( int index );
-    void candidateShiftPage( bool forward );
-    void candidateDeactivate();
     //imsw
     void switch_app_global_im( const char *str );
     void switch_system_global_im( const char *str );

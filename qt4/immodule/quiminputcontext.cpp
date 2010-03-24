@@ -564,7 +564,8 @@ void QUimInputContext::cand_activate_cb( void *ptr, int nr, int displayLimit )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->candidateActivate( nr, displayLimit );
+    ic->cwin->candidateActivate( nr, displayLimit );
+    ic->candwinIsActive = true;
 }
 
 void QUimInputContext::cand_select_cb( void *ptr, int index )
@@ -574,7 +575,7 @@ void QUimInputContext::cand_select_cb( void *ptr, int index )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->candidateSelect( index );
+    ic->cwin->candidateSelect( index );
 }
 
 void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
@@ -584,7 +585,7 @@ void QUimInputContext::cand_shift_page_cb( void *ptr, int forward )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->candidateShiftPage( forward != 0 );
+    ic->cwin->candidateShiftPage( forward );
 }
 
 void QUimInputContext::cand_deactivate_cb( void *ptr )
@@ -594,7 +595,8 @@ void QUimInputContext::cand_deactivate_cb( void *ptr )
 #endif
 
     QUimInputContext *ic = static_cast<QUimInputContext*>( ptr );
-    ic->candidateDeactivate();
+    ic->cwin->deactivateCandwin();
+    ic->candwinIsActive = false;
 }
 
 void QUimInputContext::switch_app_global_im_cb( void *ptr, const char *name )
@@ -828,29 +830,6 @@ QList<QInputMethodEvent::Attribute> QUimInputContext::getPreeditAttrs()
     }
 
     return attrs;
-}
-
-void QUimInputContext::candidateActivate( int nr, int displayLimit )
-{
-    cwin->candidateActivate( nr, displayLimit );
-    candwinIsActive = true;
-}
-
-void QUimInputContext::candidateSelect( int index )
-{
-    cwin->candidateSelect( index );
-}
-
-void QUimInputContext::candidateShiftPage( bool forward )
-{
-    cwin->candidateShiftPage( forward );
-}
-
-
-void QUimInputContext::candidateDeactivate()
-{
-    cwin->deactivateCandwin();
-    candwinIsActive = false;
 }
 
 void QUimInputContext::switch_app_global_im( const char *name )
