@@ -86,6 +86,8 @@
                                  (block (read-block 4096 in))
                                  ((not (eof-object? block))))
                                 (display block out)
+				(if (not (char-ready? in))
+				  (sys-nanosleep 1000000)) ;; 0.001 sec
                                 (loop (uim-sh-select in 1))))))))
     (if (string-prefix? "Error:" result)
       (error (string-trim-both result))
