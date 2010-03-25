@@ -224,7 +224,7 @@ warn_dict_open()
 		  		  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_WARNING,
 				  GTK_BUTTONS_OK,
-				  _(message));
+				  "%s", _(message));
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(GTK_WIDGET(dialog));
 }
@@ -474,7 +474,7 @@ edit_remove_word_action_cb(GtkAction *action, WordListWindow *window)
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_QUESTION,
 				  GTK_BUTTONS_OK_CANCEL,
-				  message);
+				  "%s", message);
   gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
   gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
   g_signal_connect(G_OBJECT(dialog), "response",
@@ -497,13 +497,13 @@ edit_remove_word_action_cb(GtkAction *action, WordListWindow *window)
 				      GTK_DIALOG_MODAL,
 				      GTK_MESSAGE_INFO,
 				      GTK_BUTTONS_CLOSE,
-				      _("Word deletion succeded."));
+				      "%s", _("Word deletion succeded."));
     } else {
       dialog = gtk_message_dialog_new(NULL,
 				      GTK_DIALOG_MODAL,
 				      GTK_MESSAGE_ERROR,
 				      GTK_BUTTONS_CLOSE,
-				      _("Word deletion failed."));
+				      "%s", _("Word deletion failed."));
     }
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(window));
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
