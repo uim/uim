@@ -686,6 +686,7 @@ DATADIR=`eval eval echo ${datadir}`
 AC_DEFINE_UNQUOTED(DATADIR, "$DATADIR", [read-only architecture-independent data dir])
 UIM_LIBEXECDIR=`eval echo "${libexecdir}"`
 AC_DEFINE_UNQUOTED(UIM_LIBEXECDIR, "$UIM_LIBEXECDIR", [libexec dir])
+AC_SUBST(UIM_LIBEXECDIR)
 # we should use more safe macro such as AC_EXPAND_DIR
 LOCALEDIR=`eval eval echo ${datadir}/locale`
 # backward compatibility

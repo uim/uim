@@ -9,7 +9,7 @@ QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
 QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
-LIBS += -lreplace -luim -luim-scm -luim-x-util
+LIBS += -lreplace -luim -luim-scm -luim-x-util @LIBINTL@
 
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
 QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
@@ -22,5 +22,5 @@ SOURCES += @srcdir@/qt4.cpp
 
 TARGET = uim-candwin-qt4
 
-target.path += @DESTDIR@@libexecdir@
+target.path += @DESTDIR@@UIM_LIBEXECDIR@
 INSTALLS    += target
