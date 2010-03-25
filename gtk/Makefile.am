@@ -7,21 +7,15 @@ moduledir = $(uim_gtk_im_module_path)/@GTK_BINARY_VERSION@/immodules
 
 if GTK2
 im_uim_la = im-uim.la
-im_uim_la_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir) \
-		   @EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
-		   @EBCONF_PTHREAD_CPPFLAGS@ \
-		   @EBCONF_INTLINCS@
-im_uim_la_CFLAGS = @GTK2_CFLAGS@ @EBCONF_PTHREAD_CFLAGS@ -Wall
+im_uim_la_CPPFLAGS = -I$(top_srcdir) -I$(top_builddir)
+im_uim_la_CFLAGS = @GTK2_CFLAGS@
 module_LTLIBRARIES = $(im_uim_la)
 
 
 im_uim_la_SOURCES = $(IM_UIM_SOURCES)
-im_uim_la_LDFLAGS = -module -avoid-version @GTK2_LIBS@ \
-		   @EBCONF_PTHREAD_LDFLAGS@
+im_uim_la_LDFLAGS = -module -avoid-version @GTK2_LIBS@
 im_uim_la_LIBADD = $(top_builddir)/uim/libuim-scm.la \
-		   $(top_builddir)/uim/libuim.la \
-		   @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
-		   @EBCONF_INTLLIBS@
+		   $(top_builddir)/uim/libuim.la
 if LIBUIM_X_UTIL
 im_uim_la_LIBADD += $(top_builddir)/uim/libuim-x-util.la
 endif
@@ -35,6 +29,13 @@ IM_UIM_SOURCES = \
 
 if EB
 IM_UIM_SOURCES += uim-eb.c uim-eb.h
+im_uim_la_CPPFLAGS += @EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
+		      @EBCONF_PTHREAD_CPPFLAGS@ \
+		      @EBCONF_INTLINCS@
+im_uim_la_CFLAGS += @EBCONF_PTHREAD_CFLAGS@
+im_uim_la_LDFLAGS += @EBCONF_PTHREAD_LDFLAGS@
+im_uim_la_LIBADD += @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
+		    @EBCONF_INTLLIBS@
 endif
 
 noinst_PROGRAMS = gtk-rc-get-immodule-file
