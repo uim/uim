@@ -581,7 +581,7 @@
 
 (register-im
  'look
- "*"  ;; wildcard language. see i18n.scm
+ ""
  "UTF-8"
  (N_ "Look")
  (N_ "Tiny predictive input method")
