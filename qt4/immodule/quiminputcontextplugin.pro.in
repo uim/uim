@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = lib
-CONFIG += qt plugin thread @QT_CONFIG_OPTS@
+CONFIG += plugin @QT_CONFIG_OPTS@
 
 INCLUDEPATH += @top_builddir@ @top_builddir@/uim \
                @top_srcdir@ @top_srcdir@/uim \
