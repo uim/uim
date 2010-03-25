@@ -673,6 +673,9 @@
 	     (set! im-list (list test-im-anthy
 				 test-im-skk
 				 test-im-tcode))
+	     #t))
+     (uim '(begin
+	     (set! enabled-im-list '(anthy skk tcode))
 	     #t))))
 
   ("test next-im"
