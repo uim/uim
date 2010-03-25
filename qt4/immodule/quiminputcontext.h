@@ -35,11 +35,11 @@
 #ifndef UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 #define UIM_QT4_IMMODULE_QUIMINPUTCONTEXT_H
 
+#include <QtGui/QInputContext>
+
 #ifdef Q_WS_X11
 #define UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK 1
 #endif
-
-#include <QtGui/QInputContext>
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>

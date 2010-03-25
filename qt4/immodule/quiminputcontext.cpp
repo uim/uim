@@ -179,11 +179,11 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 bool QUimInputContext::x11FilterEvent( QWidget *keywidget, XEvent *event )
 {
     Q_UNUSED( keywidget )
-    Q_UNUSED( event )
 
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
     return uim_x_kana_input_hack_filter_event( m_uc, event );
 #else
+    Q_UNUSED( event )
     return false;
 #endif
 }
