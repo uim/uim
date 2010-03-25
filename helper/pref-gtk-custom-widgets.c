@@ -1514,7 +1514,7 @@ choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_CANCEL,
-				  _("Press keys to grab (e.g. <Control>a)"));
+				  "%s", _("Press keys to grab (e.g. <Control>a)"));
   gtk_window_set_title(GTK_WINDOW(dialog), _("Grabbing keys"));
   g_signal_connect(G_OBJECT(dialog), "key-press-event",
 		   G_CALLBACK(grab_win_key_press_cb), key_entry);

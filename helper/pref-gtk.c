@@ -223,7 +223,7 @@ quit_confirm(void)
 				    GTK_DIALOG_MODAL,
 				    GTK_MESSAGE_QUESTION,
 				    GTK_BUTTONS_YES_NO,
-				    _("Some value(s) have been changed.\n"
+				    "%s", _("Some value(s) have been changed.\n"
 				      "Do you really quit this program?"));
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
@@ -587,7 +587,7 @@ check_dot_uim_file(void)
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_WARNING,
 				  GTK_BUTTONS_OK,
-				  _(message));
+				  "%s", _(message));
   if (pref_window) {
     gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(pref_window));
     gtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
