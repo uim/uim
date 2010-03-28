@@ -488,10 +488,8 @@
   (elatin-update-preedit lc))
 
 (define (elatin-key-release-handler lc key key-state)
-  (if (or (ichar-control? key)
-	  (not (elatin-context-on? lc)))
-      ;; don't discard key release event for apps
-      (im-commit-raw lc)))
+  ;; don't discard any key release event for apps
+  (im-commit-raw lc))
 
 (define (elatin-reset-handler lc)
   (elatin-context-reset lc))
