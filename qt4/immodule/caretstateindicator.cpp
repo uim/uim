@@ -43,6 +43,8 @@
 #include <uim/uim-scm.h>
 
 const int CaretStateIndicator::SPACING = 3;
+static const int DEFAULT_WINDOW_WIDTH = 20;
+static const int DEFAULT_WINDOW_HEIGHT = 20;
 
 // caret state indicator is a state indicator nearby the caret.
 CaretStateIndicator::CaretStateIndicator(QWidget *parent):
@@ -102,6 +104,8 @@ void CaretStateIndicator::update(const QString &str)
         for (int i = labelCount; i < colsCount; i++) {
             QLabel *label = new QLabel;
             label->setFrameStyle(QFrame::Box | QFrame::Plain);
+            label->setMinimumSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
+            label->setAlignment(Qt::AlignCenter);
             m_labelList.append(label);
             layout()->addWidget(label);
         }
