@@ -622,8 +622,7 @@ void QUimInputContext::commitString( const QString& str )
 
 void QUimInputContext::clearPreedit()
 {
-    while ( !psegs.isEmpty() )
-        psegs.takeFirst();
+    psegs.clear();
 }
 
 void QUimInputContext::pushbackPreeditString( int attr, const QString& str )
