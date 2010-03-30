@@ -34,9 +34,9 @@ AC_DEFUN([AX_PATH_QMAKE4], [
       if ($qmake4 --version 2>&1 | $EGREP -q 'Qt.*[[Vv]]ersion 4'); then
         QMAKE4="$qmake4"
         ax_cv_path_QMAKE4="$qmake4"
-	AC_SUBST([QMAKE4])
 	break
       fi
     done
   ])
+  AC_SUBST([QMAKE4])
 ])
