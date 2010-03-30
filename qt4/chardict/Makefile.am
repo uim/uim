@@ -9,16 +9,15 @@ all clean mocclean install uninstall:
 
 helperdatadir = $(datadir)/uim/helperdata
 helperdata_DATA = bushu.t
+endif
 
 # *.pro is required to run Makefile.qmake. So distclean-am is deferred.
 distclean:
+if QT4
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
-	-rm -f Makefile uim-chardict-qt4.pro
-else
-distclean:
-	-rm -f Makefile uim-chardict-qt4.pro
 endif
+	-rm -f Makefile uim-chardict-qt4.pro
 
 FORCE:
 

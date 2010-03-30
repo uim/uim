@@ -4,16 +4,15 @@
 if QT4_IMMODULE
 all clean mocclean install uninstall:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake INSTALL_ROOT=$(DESTDIR) $@
+endif
 
 # *.pro is required to run Makefile.qmake. So distclean-am is deferred.
 distclean:
+if QT4_IMMODULE
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
-	-rm -f Makefile quiminputcontextplugin.pro
-else
-distclean:
-	-rm -f Makefile quiminputcontextplugin.pro
 endif
+	-rm -f Makefile quiminputcontextplugin.pro
 
 FORCE:
 

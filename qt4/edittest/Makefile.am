@@ -4,16 +4,15 @@
 if QT4_IMMODULE
 all clean mocclean install uninstall:
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
+endif
 
 # *.pro is required to run Makefile.qmake. So distclean-am is deferred.
 distclean:
+if QT4_IMMODULE
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
-	-rm -f Makefile
-else
-distclean:
-	-rm -f Makefile
 endif
+	-rm -f Makefile
 
 FORCE:
 

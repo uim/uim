@@ -7,18 +7,16 @@ all clean mocclean install uninstall:
 if APPLET_KDE4
 	( cd build; $(MAKE) $(AM_MAKEFLAGS) $@ )
 endif
+endif
 
 # *.pro is required to run Makefile.qmake. So distclean-am is deferred.
 distclean:
+if QT4
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
-	-rm -f Makefile uim-toolbar-qt4.pro
-	-rm -rf build/*
-else
-distclean:
-	-rm -f Makefile uim-toolbar-qt4.pro
-	-rm -rf build/*
 endif
+	-rm -f Makefile uim-toolbar-qt4.pro
+	-rm -rf build/*
 
 FORCE:
 
