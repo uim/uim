@@ -308,7 +308,7 @@ const char *find_desc_from_code(const char *code)
 const char *find_desc_from_code_with_type(const char *code, int type) {
   /* need to be more smart */
   int i = 0, j = 0;
-  char *pos = NULL;
+  const char *pos = NULL;
   category_code *category[] = {
     substantive_code,
     verb_code,
@@ -329,7 +329,7 @@ const char *find_desc_from_code_with_type(const char *code, int type) {
   do {
     for (j = 0; j < num[i]; j++) {
       if ((i == type ) && !strcmp(code, (category[i])[j].code))
-	pos = strdup((category[i])[j].desc);
+	pos = (category[i])[j].desc;
     }
     i++;
   } while (category[i] != NULL);
@@ -340,7 +340,7 @@ const char *find_desc_from_code_with_type(const char *code, int type) {
 const char *find_code_from_desc(const char *desc, int type) {
     /* need to be more smart */
     int i = 0, j = 0;
-    char *code = NULL;
+    const char *code = NULL;
     category_code *category[] = {
       substantive_code,
       verb_code,
@@ -361,7 +361,7 @@ const char *find_code_from_desc(const char *desc, int type) {
     do {
       for (j = 0; j < num[i]; j++) {
 	if ((i == type) && !strcmp(desc, (category[i])[j].desc))
-	  code = strdup((category[i])[j].code);
+	  code = (category[i])[j].code;
       }
       i++;
     } while (category[i] != NULL);
