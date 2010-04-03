@@ -7,6 +7,14 @@ Overview of changes from 1.5.x to 1.6.0-alpha
     A web based Japanese single-segment input method
   - uim-yahoo-jp (new IM)
     A web based Japanese multi-segment input method
+  - Qt4 bridge
+    * Add --enable-qt4-qt3support option
+    * Make preedit color configurable
+    * Add caret state indicator
+
+* Fixes
+  - Qt4 bridge
+    * Fix bug: Candidate window does not follow main window move (#13911)
 
 * Others
 
