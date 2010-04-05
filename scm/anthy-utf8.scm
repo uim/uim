@@ -1,7 +1,7 @@
 ;;; anthy.scm: Anthy (UTF-8) for uim.
 ;;; charset: UTF-8
 ;;;
-;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

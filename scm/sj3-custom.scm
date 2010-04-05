@@ -1,6 +1,6 @@
 ;;; sj3-custom.scm: Customization variables for sj3.scm
 ;;;
-;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
