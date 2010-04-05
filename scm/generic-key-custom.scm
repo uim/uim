@@ -1,6 +1,6 @@
 ;;; generic-key-custom.scm: Customization variables for generic key bindings
 ;;;
-;;; Copyright (c) 2003-2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

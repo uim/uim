@@ -1,5 +1,5 @@
 # Japanese translations for uim-chardict-qt4.
-# Copyright (C) 2003-2009 uim Developers
+# Copyright (C) 2003-2010 uim Developers
 # This file is distributed under the same license as the uim package.
 # Etsushi Kato <ekato@freedesktop.org>, 2005
 #

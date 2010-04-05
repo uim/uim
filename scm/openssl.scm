@@ -1,6 +1,6 @@
 ;;; openssl.scm: low-level OpenSSL functions for uim.
 ;;;
-;;; Copyright (c) 2009 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2010 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

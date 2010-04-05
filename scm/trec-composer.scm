@@ -1,6 +1,6 @@
 ;;; trec-composer.scm: trec-based character composer
 ;;;
-;;; Copyright (c) 2005-2009 uim Project http://uim.freedesktop.org/
+;;; Copyright (c) 2005-2010 uim Project http://uim.freedesktop.org/
 ;;;
 ;;; All rights reserved.
 ;;;
