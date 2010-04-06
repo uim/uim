@@ -36,6 +36,15 @@
 
 (define (uim-test-build-path . components)
   (let* ((test-dir (sys-dirname *program-name*))
+         (cur-dir (current-directory))
+         (top-dir (sys-normalize-pathname (build-path cur-dir "..")
+                                          :absolute #t
+                                          :expand #t
+                                          :canonicalize #t)))
+    (apply build-path top-dir components)))
+
+(define (uim-test-source-path . components)
+  (let* ((test-dir (sys-dirname *program-name*))
          (top-dir (sys-normalize-pathname (build-path test-dir "..")
                                           :absolute #t
                                           :expand #t
@@ -43,7 +52,7 @@
     (apply build-path top-dir components)))
 
 (define-macro (%add-top-path-to-load-path)
-  `(add-load-path ,(uim-test-build-path)))
+  `(add-load-path ,(uim-test-source-path)))
 (%add-top-path-to-load-path)
 
 (define gaunit-main main)
@@ -53,8 +62,8 @@
            (append args
                    (if (version<? (gauche-version) "0.8.13")
                      (append
-                      (sys-glob (uim-test-build-path "test" "test-*.scm"))
-                      (sys-glob (uim-test-build-path "test" "*" "test-*.scm")))
-                     (glob (uim-test-build-path "test" "**" "test-*.scm"))))
+                      (sys-glob (uim-test-source-path "test" "test-*.scm"))
+                      (sys-glob (uim-test-source-path "test" "*" "test-*.scm")))
+                     (glob (uim-test-source-path "test" "**" "test-*.scm"))))
            args)))
     (gaunit-main args)))

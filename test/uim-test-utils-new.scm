@@ -39,6 +39,7 @@
 (select-module test.uim-test-utils-new)
 
 (define uim-test-build-path (with-module user uim-test-build-path))
+(define uim-test-source-path (with-module user uim-test-source-path))
 
 ;; Must be #t when LIBUIM_VERBOSE is set to 2. This enables receiving
 ;; backtrace following an error.
@@ -47,8 +48,8 @@
 (if (version<? *gaunit-version* "0.1.6")
     (error "GaUnit 0.1.6 is required"))
 
-(sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (uim-test-build-path "sigscheme" "lib"))
-(sys-putenv "LIBUIM_SCM_FILES" (uim-test-build-path "scm"))
+(sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (uim-test-source-path "sigscheme" "lib"))
+(sys-putenv "LIBUIM_SCM_FILES" (uim-test-source-path "scm"))
 ;; FIXME: '.libs' is hardcoded
 (sys-putenv "LIBUIM_PLUGIN_LIB_DIR" (uim-test-build-path "uim" ".libs"))
 (sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)
