@@ -42,19 +42,21 @@ for developers.
 
   2) Build uim
 
-  3) Run test as follows
+  3) cd test/
+
+  4) Run test as follows
 
      All tests:
 
-       $ gosh -I. test/run-test.scm
+       $ ./run-test.scm
 
      Selective:
 
-       $ gosh -I. test/run-test.scm test/test-foo.scm
+       $ ./run-test.scm test-foo.scm
 
      With options:
 
-       $ gosh -I. test/run-test.scm test/test-util.scm -vv -c "list procedures"
+       $ ./run-test.scm test-util.scm -vv -c "list procedures"
 
      Refer the document of GaUnit or specify -h to see all options.
 

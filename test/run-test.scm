@@ -51,9 +51,22 @@
                                           :canonicalize #t)))
     (apply build-path top-dir components)))
 
+(define (uim-test-test-source-path . components)
+  (let* ((test-dir (sys-dirname *program-name*))
+         (abs-test-dir (sys-normalize-pathname test-dir
+                                          :absolute #t
+                                          :expand #t
+                                          :canonicalize #t)))
+    (apply build-path abs-test-dir components)))
+
+
 (define-macro (%add-top-path-to-load-path)
   `(add-load-path ,(uim-test-source-path)))
+(define-macro (%add-test-source-path-to-load-path)
+  `(add-load-path ,(uim-test-test-source-path)))
+
 (%add-top-path-to-load-path)
+(%add-test-source-path-to-load-path)
 
 (define gaunit-main main)
 (define (main args)
