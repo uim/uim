@@ -64,7 +64,11 @@ intl_textdomain(uim_lisp domainname)
   const char *new_domain;
 
   if (FALSEP(domainname)) {
+#if ENABLE_NLS
     new_domain = textdomain(NULL);
+#else
+    new_domain = "";
+#endif
   } else {
     new_domain = textdomain(REFER_C_STR(domainname));
   }
@@ -80,7 +84,11 @@ intl_bindtextdomain(uim_lisp domainname, uim_lisp dirname)
   domain = REFER_C_STR(domainname);
 
   if (FALSEP(dirname)) {
+#if ENABLE_NLS
     new_dir = bindtextdomain(domain, NULL);
+#else
+    new_dir = "";
+#endif
   } else {
     new_dir = bindtextdomain(domain, REFER_C_STR(dirname));
   }

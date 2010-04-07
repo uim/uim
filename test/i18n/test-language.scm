@@ -53,11 +53,11 @@
   (uim-test-with-environment-variables
    '(("LC_ALL" . "ja_JP.UTF-8"))
    uim-test-setup)
-  (assert-uim-equal "日本語"
+  (assert-uim-equal (if (provided? "nls") "日本語" "Japanese")
                     '(_ (lang-code->lang-name "ja")))
-  (assert-uim-equal "英語"
+  (assert-uim-equal (if (provided? "nls") "英語" "English")
                     '(_ (lang-code->lang-name "en")))
-  (assert-uim-equal "中国語"
+  (assert-uim-equal (if (provided? "nls") "中国語" "Chinese")
                     '(_ (lang-code->lang-name "zh")))
   #f)
 
