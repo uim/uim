@@ -59,6 +59,7 @@
 						m17n-unicode
 						m17n-rfc1345
 						m17n-en-ispell
+						m17n-fr-azerty
 						m17n-latn-pre
 						m17n-latn-post
 						m17n-bopo-kbd
