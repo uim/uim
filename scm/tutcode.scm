@@ -1074,8 +1074,8 @@
  'tutcode
  "ja"
  "EUC-JP"
- (N_ "TUT-Code")
- (N_ "A kanji direct input method")
+ tutcode-im-name-label
+ tutcode-im-short-desc
  #f
  tutcode-init-handler
  tutcode-release-handler
