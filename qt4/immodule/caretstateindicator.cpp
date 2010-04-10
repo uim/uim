@@ -74,7 +74,7 @@ void CaretStateIndicator::setup(const QString &str)
     bool isModeOn
         = uim_scm_symbol_value_bool("bridge-show-input-state-mode-on?");
     if (isEnabled && !(isMode && !isModeOn)) {
-        update(str);
+        updateLabels(str);
         if (!isMode) {
             int time = uim_scm_symbol_value_int(
                 "bridge-show-input-state-time-length");
@@ -87,7 +87,7 @@ void CaretStateIndicator::setup(const QString &str)
     }
 }
 
-void CaretStateIndicator::update(const QString &str)
+void CaretStateIndicator::updateLabels(const QString &str)
 {
     if (!str.isEmpty()) {
         QStringList lines = str.split('\n', QString::SkipEmptyParts);

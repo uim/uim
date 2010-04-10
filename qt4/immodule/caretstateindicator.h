@@ -50,7 +50,7 @@ class CaretStateIndicator : public QWidget {
         static const int SPACING;
 
     private:
-        void update(const QString &str);
+        void updateLabels(const QString &str);
         void setTimeout(int second);
         bool eventFilter(QObject *obj, QEvent *event);
         QList<QLabel *> m_labelList;
