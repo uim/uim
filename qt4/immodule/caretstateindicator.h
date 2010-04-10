@@ -44,7 +44,7 @@ class CaretStateIndicator : public QWidget {
         explicit CaretStateIndicator(QWidget *parent = 0);
         ~CaretStateIndicator();
 
-        void setup(const QString &str);
+        void update(const QString &str);
 
         // space between this indicator and a caret
         static const int SPACING;

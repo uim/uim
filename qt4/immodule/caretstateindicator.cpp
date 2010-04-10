@@ -65,7 +65,7 @@ CaretStateIndicator::~CaretStateIndicator()
         delete m_labelList.takeFirst();
 }
 
-void CaretStateIndicator::setup(const QString &str)
+void CaretStateIndicator::update(const QString &str)
 {
     bool isEnabled = uim_scm_symbol_value_bool("bridge-show-input-state?");
     char *type = uim_scm_c_symbol(uim_scm_symbol_value("bridge-show-with?"));

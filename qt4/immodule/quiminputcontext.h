@@ -105,7 +105,7 @@ public:
     void saveContext();
     void restoreContext();
 
-    void setupIndicator( const QString &str );
+    void updateIndicator( const QString &str );
 
 protected:
     uim_context createUimContext( const char *imname );

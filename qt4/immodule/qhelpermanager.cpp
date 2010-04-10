@@ -281,7 +281,7 @@ void QUimHelperManager::update_prop_list_cb( void *ptr, const char *str )
 
     uim_helper_send_message( im_uim_fd, msg.toUtf8().data() );
 
-    ic->setupIndicator( msg );
+    ic->updateIndicator( msg );
 }
 
 void QUimHelperManager::update_prop_label_cb( void *ptr, const char *str )

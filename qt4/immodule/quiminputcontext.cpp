@@ -861,9 +861,9 @@ void QUimInputContext::readIMConf()
     free( leftp );
 }
 
-void QUimInputContext::setupIndicator( const QString &str )
+void QUimInputContext::updateIndicator( const QString &str )
 {
-    m_indicator->setup( str );
+    m_indicator->update( str );
 }
 
 static int unicodeToUKey (ushort c) {
