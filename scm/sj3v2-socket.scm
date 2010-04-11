@@ -137,7 +137,9 @@
   (call-with-u8list-unpack
    '(u32) (string-buf->u8list (file-read socket 4))
    (lambda (result)
-     (= -2 result))))
+     (or
+       (= -2 result)
+       (= 4294967294 result)))))
 
 (define (sj3-lib-disconnect socket)
   (file-write socket
@@ -393,7 +395,10 @@
               (sj3-lib-opendict *sj3-lib-socket* (sj3-lib-get-private-dicionary-name user-name) ""))
         (sj3-lib-openstdy *sj3-lib-socket* (sj3-lib-get-private-study-name user-name))
         (set! *sj3-lib-stdy-size* (sj3-lib-stdy-size *sj3-lib-socket*)))
-      (raise (N_ "Cannot connect SJ3 server")))
+      (uim-notify-info (N_ "Cannot connect SJ3 server")))
+  *sj3-lib-socket*)
+
+(define (sj3-lib-opened?)
   *sj3-lib-socket*)
 
 (define (sj3-lib-close)
@@ -406,17 +411,21 @@
         (file-close *sj3-lib-socket*))))
 
 (define (sj3-lib-getkan yomi)
-  (receive (yomi-len stdy cands)
-      (sj3-lib-ph2knj-euc *sj3-lib-socket* *sj3-lib-stdy-size* yomi)
-    (cons (apply string-append cands)
-          (zip (sj3-lib-split-yomi yomi yomi-len)
-               cands
-               stdy))))
+  (if *sj3-lib-socket*
+      (receive (yomi-len stdy cands)
+        (sj3-lib-ph2knj-euc *sj3-lib-socket* *sj3-lib-stdy-size* yomi)
+        (cons (apply string-append cands)
+             (zip (sj3-lib-split-yomi yomi yomi-len)
+                   cands
+                   stdy)))
+      #f))
 
 (define (sj3-lib-douoncnt yomi)
-  (sj3-lib-cl2knj-cnt-euc *sj3-lib-socket* *sj3-lib-stdy-size*
-                          (length (string->list yomi)) ;; byte length
-                          yomi))
+  (if *sj3-lib-socket*
+      (sj3-lib-cl2knj-cnt-euc *sj3-lib-socket* *sj3-lib-stdy-size*
+			      (length (string->list yomi)) ;; byte length
+			      yomi)
+      0))
 
 (define (sj3-lib-getdouon yomi)
   (receive (yomi-len stdy cand)

@@ -49,8 +49,8 @@
 ;;
 (define (sj3-lib-init server)
   (if sj3-use-remote-server?
-      (sj3-lib-funcall #f sj3-lib-open server sj3-user)
-      (sj3-lib-funcall #f sj3-lib-open "" sj3-user)))
+      (sj3-lib-open server sj3-user)
+      (sj3-lib-open "" sj3-user)))
 
 ;; error recovery
 (define (sj3-connect-wait sc w)
@@ -193,17 +193,20 @@
            (sj3-context-set-sc-ctx! sc (cdr ret))
            (- (length ret) 1))
           (else
-           (length (sj3-make-map-from-kana-string str))))))
+           (sj3-context-set-sc-ctx! sc (list (sj3-make-map-from-kana-string str))) ; XXX hack
+           1))))
 (define (sj3-lib-commit-segment sc seg delta)
   ;; segment learnining
-  (let* ((yomi (sj3-get-nth-yomi sc seg))
-         (douon (sj3-getdouon sc yomi)))
-    (if (< delta (length douon))
-        (let ((entry (list-ref douon delta)))
-          (if (= 2 (length entry))
-              (begin
-                (predict-meta-commit (sj3-context-prediction-ctx sc) yomi (list-ref entry 0) "")
-                (sj3-lib-funcall sc sj3-lib-gakusyuu (list-ref entry 1))))))))
+  (if (sj3-lib-opened?)
+      (let* ((yomi (sj3-get-nth-yomi sc seg))
+             (douon (sj3-getdouon sc yomi)))
+        (if (< delta (length douon))
+            (let ((entry (list-ref douon delta)))
+              (if (= 2 (length entry))
+                  (begin
+                    (predict-meta-commit (sj3-context-prediction-ctx sc) yomi (list-ref entry 0) "")
+                    (sj3-lib-funcall sc sj3-lib-gakusyuu (list-ref entry 1)))))))
+      #f))
 
 ;; return alist of cons'ed offset and length
 ;; ("abc" "d" "efgh") => ((3 . 3) (4 . 1) (8 . 4))
@@ -279,41 +282,42 @@
          (iota (length segs))
          segs))
   ;; segment-length learnining
-  (let* ((sc-ctx (sj3-context-sc-ctx sc))
-         ;; revert from hell
-         (new-segments (restore-segments))
-         (orig (apply string-append (map car sc-ctx)))
-         ;; revert too
-         (old-string-list (map car (cdr (sj3-lib-funcall sc sj3-lib-getkan orig)))))
-    (receive (new-string-list new-dcid-list)
-             (unzip2 new-segments)
-      (let ((old-offset (sj3-get-seg-offset old-string-list))
-            (new-offset (sj3-get-seg-offset new-string-list)))
-        ;; split case
-        (for-each (lambda (l)
-                    (let ((yomi1 (list-ref new-string-list l))
-                          (yomi2 (list-ref new-string-list (+ 1 l)))
-                          (dcid  (list-ref new-dcid-list   (+ 1 l))))
-                      (if dcid
-                          (sj3-lib-gakusyuu2 yomi1 yomi2 dcid))))
-                  (sj3-filter-split-segment old-offset new-offset))
-        ;; merge case
-        (for-each (lambda (l)
-                    (let ((yomi1 (list-ref new-string-list l))
-                          (yomi2 #f)
-                          (dcid  #f))
-                      (if dcid
-                          (sj3-lib-gakusyuu2 yomi1 yomi2 dcid))))
-                  (sj3-filter-merge-segment old-offset new-offset))
-        ;; move case
-        (for-each (lambda (l)
-                    (let ((yomi1 (list-ref new-string-list l))
-                          (yomi2 (list-ref new-string-list (+ 1 l)))
-                          (dcid  (list-ref new-dcid-list   (+ 1 l))))
-                      (if dcid
-                          (sj3-lib-gakusyuu2 yomi1 yomi2 dcid))))
-                  (sj3-filter-move-segment old-offset new-offset))
-        )))
+  (if (sj3-lib-opened?)
+      (let* ((sc-ctx (sj3-context-sc-ctx sc))
+             ;; revert from hell
+             (new-segments (restore-segments))
+             (orig (apply string-append (map car sc-ctx)))
+             ;; revert too
+             (old-string-list (map car (cdr (sj3-lib-funcall sc sj3-lib-getkan orig)))))
+        (receive (new-string-list new-dcid-list)
+                 (unzip2 new-segments)
+          (let ((old-offset (sj3-get-seg-offset old-string-list))
+                (new-offset (sj3-get-seg-offset new-string-list)))
+            ;; split case
+            (for-each (lambda (l)
+                        (let ((yomi1 (list-ref new-string-list l))
+                              (yomi2 (list-ref new-string-list (+ 1 l)))
+                              (dcid  (list-ref new-dcid-list   (+ 1 l))))
+                          (if dcid
+                              (sj3-lib-gakusyuu2 yomi1 yomi2 dcid))))
+                      (sj3-filter-split-segment old-offset new-offset))
+            ;; merge case
+            (for-each (lambda (l)
+                        (let ((yomi1 (list-ref new-string-list l))
+                              (yomi2 #f)
+                              (dcid  #f))
+                          (if dcid
+                              (sj3-lib-gakusyuu2 yomi1 yomi2 dcid))))
+                      (sj3-filter-merge-segment old-offset new-offset))
+            ;; move case
+            (for-each (lambda (l)
+                        (let ((yomi1 (list-ref new-string-list l))
+                              (yomi2 (list-ref new-string-list (+ 1 l)))
+                              (dcid  (list-ref new-dcid-list   (+ 1 l))))
+                          (if dcid
+                              (sj3-lib-gakusyuu2 yomi1 yomi2 dcid))))
+                      (sj3-filter-move-segment old-offset new-offset))
+            ))))
   #t)
 
 (define (sj3-lib-reset-conversion sc)
@@ -560,7 +564,7 @@
     (list 'commit-raw         #t)
     (list 'input-rule         sj3-input-rule-roma)
     (list 'raw-ustr	      #f)
-    (list 'prediction-ctx     #f)
+    (list 'prediction-ctx     '())
     (list 'prediction-word '())
     (list 'prediction-candidates '())
     (list 'prediction-appendix '())
