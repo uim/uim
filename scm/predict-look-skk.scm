@@ -42,12 +42,15 @@
 
 (class-set-method! predict-look-skk search
   (lambda (self str)
-    (let* ((ret (map (lambda (x)
+    (let* ((looked (look-lib-look #f #f
+                                  (predict-look-skk-limit self)
+                                  (predict-look-skk-jisyo self)
+                                  str))
+           (ret (map (lambda (x)
                        (string-split x " "))
-                     (look-lib-look #f #f
-                                    (predict-look-skk-limit self)
-                                    (predict-look-skk-jisyo self)
-                                    str)))
+                     (if looked
+                         looked
+                         '())))
            (yomi/kanji/appendix
             (apply append
                    (map (lambda (x)
