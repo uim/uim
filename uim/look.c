@@ -41,14 +41,14 @@
 
 #include "bsdlook.h"
 
-struct uim_look_look_interal_args {
+struct uim_look_look_internal_args {
   uim_look_ctx *ctx;
   char *dict_str;
   int words;
 };
 
 static uim_lisp
-uim_look_look_interal(struct uim_look_look_interal_args *args)
+uim_look_look_internal(struct uim_look_look_internal_args *args)
 {
   uim_lisp ret_ = uim_scm_null();
   int words = args->words;
@@ -98,14 +98,14 @@ uim_look_look(uim_lisp isdict_, uim_lisp iscase_, uim_lisp words_, uim_lisp dict
 
   ret_ = uim_scm_null();
   if (uim_look(dict_str, ctx) != 0) {
-    struct uim_look_look_interal_args args;
+    struct uim_look_look_internal_args args;
 
     uim_look_set(ctx);
 
     args.ctx = ctx;
     args.dict_str = dict_str;
     args.words = words;
-    ret_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_look_look_interal,
+    ret_ = (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_look_look_internal,
 						      (void *)&args);
   }
 
