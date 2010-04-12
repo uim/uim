@@ -395,6 +395,14 @@ c_u8list_to_string(uim_lisp u8list_)
   return MAKE_STR_DIRECTLY(str);
 }
 
+static uim_lisp
+c_u32_to_s32(uim_lisp u32_)
+{
+  u_int32_t u32 = C_INT(u32_);
+
+  return MAKE_INT((int32_t)u32);
+}
+
 void
 uim_plugin_instance_init(void)
 {
@@ -471,6 +479,8 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc1("u8list->u16",    c_u8list_to_u16);
   uim_scm_init_proc1("u8list->u32",    c_u8list_to_u32);
   uim_scm_init_proc1("u8list->string", c_u8list_to_string);
+
+  uim_scm_init_proc1("u32->s32", c_u32_to_s32);
 }
 
 void
