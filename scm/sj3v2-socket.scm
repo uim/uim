@@ -137,9 +137,8 @@
   (call-with-u8list-unpack
    '(u32) (string-buf->u8list (file-read socket 4))
    (lambda (result)
-     (or
-       (= -2 result)
-       (= 4294967294 result)))))
+     (= -2 result))))
+    ;(= 4294967294 result) ; FIXME
 
 (define (sj3-lib-disconnect socket)
   (file-write socket
