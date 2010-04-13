@@ -522,7 +522,7 @@
     (list 'segments	      #f) ;; ustr of candidate indices
     (list 'candidate-window   #f)
     (list 'candidate-op-count 0)
-    (list 'prediction-ctx     #f)
+    (list 'prediction-ctx     '())
     (list 'prediction-window  #f)
     (list 'prediction-index   #f)
     (list 'prediction-cache   '())

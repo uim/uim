@@ -407,7 +407,7 @@
     (list 'commit-raw         #t)
     (list 'input-rule         ajax-ime-input-rule-roma)
     (list 'raw-ustr           #f)
-    (list 'prediction-ctx     #f)
+    (list 'prediction-ctx     '())
     (list 'prediction-word    '())
     (list 'prediction-candidates '())
     (list 'prediction-appendix '())
