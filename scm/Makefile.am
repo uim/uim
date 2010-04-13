@@ -63,6 +63,9 @@ endif
 if ANTHY_UTF8
   module_names += "anthy-utf8"
 endif
+if CANNA
+  module_names += "canna"
+endif
 if WNN
   module_names += "wnn"
 endif
@@ -72,10 +75,13 @@ endif
 if PRIME
   module_names += "prime"
 endif
+if SJ3
+  module_names += "sj3"
+endif
 if SKK
   module_names += "skk"
 endif
-module_names += "canna" "sj3" "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
+module_names += "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif

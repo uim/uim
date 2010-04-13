@@ -126,7 +126,7 @@ uim_dict_gtk_LDADD    += @ANTHY_UTF8_LIBS@
 uim_dict_gtk_CPPFLAGS += -DUSE_ANTHY @ANTHY_UTF8_CFLAGS@
 endif
 endif
-if CANNA
+if DICT_CANNA
 uim_dict_gtk_SOURCES  += dict-canna.c dict-canna.h
 uim_dict_gtk_LDADD    += -lcanna
 uim_dict_gtk_CPPFLAGS += -DUSE_CANNA

@@ -159,13 +159,11 @@ AC_ARG_WITH(anthy-utf8,
 # *** Tests for Canna ***
 # ***********************
 AC_ARG_WITH(canna,
-	AS_HELP_STRING([--with-canna], [Build with libcanna
+	AS_HELP_STRING([--with-canna], [Use Canna
 					@<:@default=no@:>@]),
 	[
 	if test "x$with_canna" = "xyes"; then
-		AC_CHECK_HEADERS([canna/RK.h],
-    		 [AC_CHECK_LIB(canna, RkInitialize, use_canna=yes, use_canna=no)
-		 ], [use_canna="no"], [ #undef _WCHAR_T ])
+    		 use_canna="yes"
 	else
 		use_canna="no"
 	fi
@@ -228,6 +226,39 @@ AC_ARG_WITH(prime,
 	],[
 	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
 ])
+
+# ***********************
+# *** Tests for SJ3 ***
+# ***********************
+AC_ARG_WITH(sj3,
+	AS_HELP_STRING([--with-sj3], [Use SJ3
+					@<:@default=no@:>@]),
+	[
+	if test "x$with_sj3" = "xyes"; then
+		use_sj3="yes"
+	else
+		use_sj3="no"
+	fi
+	],[
+	        use_sj3="no"
+])
+
+# ***********************
+# *** Tests for SKK ***
+# ***********************
+AC_ARG_WITH(skk,
+	AS_HELP_STRING([--with-skk], [Build a plugin for SKK
+					@<:@default=yes@:>@]),
+	[
+	if test "x$with_skk" = "xyes"; then
+		use_skk="yes"
+	else
+		use_skk="no"
+	fi
+	],[
+	        use_skk="yes"
+])
+
 
 # ***********************
 # *** Tests for cURL ***
@@ -1008,10 +1039,28 @@ AC_ARG_ENABLE(dict,
         PKG_CHECK_MODULES(DICT, gtk+-2.0 >= 2.4.0,
                            use_dict="yes",
                           AC_MSG_WARN([dict needs Gtk+ 2.4 or higher. dict disabled...]);use_dict="no")
+
+      dnl Tests for -lcanna for dict
+      if test "x$use_dict" = "xyes"; then
+	      AC_CHECK_HEADERS([canna/RK.h],
+			       [AC_CHECK_LIB(canna, RkInitialize, use_dict_canna="yes", use_dict_canna="no")],
+			       [use_dict_canna="no"],
+			       [ #undef _WCHAR_T ])
+      else
+	      use_dict_canna="no"
+      fi
+
+      if test "x$use_dict_canna" = "xno" && \
+	 test "x$use_anthy" = "xno" && \
+	 test "x$use_anthy_utf8" = "xno"; then
+	 AC_MSG_WARN([no dictionary backend is usable.  disabled...])
+	 use_dict="no"
+      fi
       ;;
     esac
   ],
   [ use_dict="no" ])
+AM_CONDITIONAL(DICT_CANNA, test "x$use_dict_canna" = "xyes")
 
 dnl ****************************
 dnl *** Tests for EB Library ***
@@ -1076,7 +1125,7 @@ else
   UI_XML_ANTHY_START="<!--"
   UI_XML_ANTHY_END="-->"
 fi
-if test "x$use_canna" = "xyes"; then
+if test "x$use_dict_canna" = "xyes"; then
   UI_XML_CANNA_START=""
   UI_XML_CANNA_END=""
 else
@@ -1097,7 +1146,8 @@ AM_CONDITIONAL(CANNA, test x$use_canna = xyes)
 AM_CONDITIONAL(WNN, test x$use_wnn = xyes)
 AM_CONDITIONAL(MANA, test x$use_mana = xyes)
 AM_CONDITIONAL(PRIME, test x$use_prime = xyes)
-AM_CONDITIONAL(SKK, true)
+AM_CONDITIONAL(SJ3, test x$use_sj3 = xyes)
+AM_CONDITIONAL(SKK, test x$use_skk = xyes)
 AM_CONDITIONAL(CURL, test x$use_curl = xyes)
 AM_CONDITIONAL(EXPAT, test x$expat_found = xyes)
 AM_CONDITIONAL(OPENSSL, test x$use_openssl = xyes)
@@ -1778,9 +1828,11 @@ Configure Result :
    Anthy           : ${use_anthy}
    Anthy (UTF-8)   : ${use_anthy_utf8}
    Canna           : ${use_canna}
-   Wnn             : ${use_wnn}
    Mana            : ${use_mana}
    PRIME           : ${use_prime}
+   SJ3             : ${use_sj3}
+   SKK             : ${use_skk}
+   Wnn             : ${use_wnn}
    m17n-lib        : ${use_m17nlib}
    SCIM            : ${use_scim}
    cURL            : ${use_curl}
