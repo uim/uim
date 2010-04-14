@@ -230,6 +230,5 @@
 
 (define module-unload-all
   (lambda ()
-    (for-each (lambda (module-entry)
-                      (module-unload (car module-entry)))
-     plugin-alist) #t))
+     (%%dynlib-unbind-all plugin-alist)
+     #t))

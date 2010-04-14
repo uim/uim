@@ -75,6 +75,7 @@ static uim_lisp dynlib_unbind(uim_lisp, uim_lisp, uim_lisp);
 static void *dynlib_unbind_internal(struct dynlib_unbind_args *);
 static uim_lisp dynlib_bind(uim_lisp);
 static void *dynlib_bind_internal(uim_lisp);
+static uim_lisp dynlib_unbind_all(uim_lisp);
 
 static long 
 verbose_level(void)
@@ -91,6 +92,7 @@ uim_init_dynlib(void)
 {
   uim_scm_init_proc1("%%dynlib-bind", dynlib_bind);
   uim_scm_init_proc3("%%dynlib-unbind", dynlib_unbind);
+  uim_scm_init_proc1("%%dynlib-unbind-all", dynlib_unbind_all);
 }
 
 /* Called from uim_quit */
@@ -163,4 +165,47 @@ dynlib_bind_internal(uim_lisp name)
   return LIST3(MAKE_PTR(library),
 	       MAKE_FPTR(dynlib_instance_init),
 	       MAKE_FPTR(dynlib_instance_quit));
+}
+
+
+static void *
+dynlib_unbind_all_internal(uim_lisp plugin_alist_)
+{
+  /* call dlclose(3) collectively at the end in order to avoid GC problem */
+  uim_lisp alist_ = plugin_alist_;
+
+  while (!NULLP(alist_)) {
+    uim_lisp plugin_, quit_proc_;
+    void (*dynlib_instance_quit)(void);
+    
+    plugin_ = CAR(alist_);
+    quit_proc_ = CAR(CDR(CDR(CDR(plugin_))));
+    if (!FALSEP(quit_proc_)) {
+      dynlib_instance_quit = C_FPTR(quit_proc_);
+      (*dynlib_instance_quit)();
+    }
+    alist_ = CDR(alist_);
+  }
+
+  alist_ = plugin_alist_;
+  while (!NULLP(alist_)) {
+    uim_lisp plugin_, lib_;
+    void *library;
+
+    plugin_ = CAR(alist_);
+    lib_ = CAR(CDR(plugin_));
+    if (!FALSEP(lib_)) {
+      library = C_PTR(lib_);
+      dlclose(library);
+    }
+    alist_ = CDR(alist_);
+  }
+
+  return uim_scm_t();
+}
+
+static uim_lisp
+dynlib_unbind_all(uim_lisp plugin_alist_)
+{
+  return uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)dynlib_unbind_all_internal, plugin_alist_);
 }
