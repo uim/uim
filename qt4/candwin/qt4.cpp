@@ -99,6 +99,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
     //setup NumberLabel
     numLabel = new QLabel;
     numLabel->setFocusPolicy( Qt::NoFocus );
+    numLabel->adjustSize();
 
     notifier = new QSocketNotifier( 0, QSocketNotifier::Read );
     connect( notifier, SIGNAL( activated( int ) ),
