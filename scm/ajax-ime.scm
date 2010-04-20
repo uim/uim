@@ -96,14 +96,14 @@
            #f)))))
 
 (define (ajax-ime-conversion str opts)
-  (define (icovn-convert to-code from-code from-str)
+  (define (iconv-convert to-code from-code from-str)
     (and-let* ((ic (iconv-open to-code from-code))
                (to-str (iconv-code-conv ic from-str)))
               (if ic
                   (iconv-release ic))
               to-str))
   (define (make-query)
-    (let ((utf8-str (icovn-convert "UTF-8" "EUC-JP" str)))
+    (let ((utf8-str (iconv-convert "UTF-8" "EUC-JP" str)))
       (if utf8-str
           (format "~a?action=conv&to=ime&query=~a~a"
                   (cdr (assq-cdr ajax-ime-url ajax-ime-url-alist))
@@ -117,7 +117,7 @@
                                    (make-query)
                                    80
                                    proxy))
-               (euc-str (icovn-convert "EUC-JP" "UTF-8" utf8-str)))
+               (euc-str (iconv-convert "EUC-JP" "UTF-8" utf8-str)))
               euc-str))
 
   (let ((ret (fetch (make-query))))
