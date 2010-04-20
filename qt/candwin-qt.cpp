@@ -115,7 +115,7 @@ void CandidateWindow::activateCand( const QStringList &list )
     qDebug( "uim-candwin-qt: activateCand()" );
 #endif
     /**
-     * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
+     * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\acand1\aannot1\nhead2\acand2\aannot2\nhead3\acand3\aannot3\n
      */
 
     // remove old data
@@ -144,7 +144,7 @@ void CandidateWindow::activateCand( const QStringList &list )
             break;
 
         // split heading_label and cand_str
-        QStringList l = QStringList::split( "\t", list [ i ], true );
+        QStringList l = QStringList::split( "\a", list [ i ], true );
 
         // store data
         CandData d;
@@ -156,16 +156,16 @@ void CandidateWindow::activateCand( const QStringList &list )
 
         d.label = headString;
 
-	// XXX Current prime (0.4.6) may return candidate string
-	// containing "\t", and we can't handle annotation in another
-	// window yet.
 	l.pop_front();
-	QString candString = l.join( "\t" );
+	QString candString = l [ 0 ];
 
         if ( codec )
             d.str = codec->toUnicode( candString );
         else
             d.str = candString;
+
+	l.pop_front();
+	QString annotString = l [ 0 ];
 
         stores.append( d );
     }
@@ -279,7 +279,7 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
     qDebug( "uim-candwin-qt: setPageCandidates()" );
 #endif
     /**
-     * format: set_page_candidates\ncharset=$charset\npage=$value\nhead1\tcand1\nhead2\tcand2\nhead3\tcand3\n
+     * format: set_page_candidates\ncharset=$charset\npage=$value\nhead1\acand1\aannot1\nhead2\acand2\aannot2\nhead3\acand3\aannot3\n
      */
 
     int page = 0;
@@ -306,7 +306,7 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
             break;
 
         // split heading_label and cand_str
-        QStringList l = QStringList::split( "\t", list [ i ], true );
+        QStringList l = QStringList::split( "\a", list [ i ], true );
 
         // store data
         CandData &d = stores[page * displayLimit + i - 3];
@@ -318,16 +318,16 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
 
         d.label = headString;
 
-	// XXX Current prime (0.4.6) may return candidate string
-	// containing "\t", and we can't handle annotation in another
-	// window yet.
 	l.pop_front();
-	QString candString = l.join( "\t" );
+	QString candString = l [ 0 ];
 
         if ( codec )
             d.str = codec->toUnicode( candString );
         else
             d.str = candString;
+
+	l.pop_front();
+	QString annotString = l [ 0 ];
     }
 }
 void CandidateWindow::showPage( const QStringList &list )

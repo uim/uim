@@ -808,6 +808,7 @@ void InputContext::candidate_activate(int nr, int display_limit)
 #if !UIM_XIM_USE_NEW_PAGE_HANDLING
     const char *cand_str;
     const char *heading_label;
+    const char *annotation_str;
     char *str;
 #else
     std::vector<CandList>::iterator slot_it;
@@ -835,15 +836,15 @@ void InputContext::candidate_activate(int nr, int display_limit)
 			display_limit ? i % display_limit : i);
 	cand_str = uim_candidate_get_cand_str(cand);
 	heading_label = uim_candidate_get_heading_label(cand);
-	//annotation_str = uim_candidate_get_annotation(cand);
-	if (cand_str && heading_label) {
-	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + 2);
-	    sprintf(str, "%s\t%s", heading_label, cand_str);
+	annotation_str = uim_candidate_get_annotation(cand);
+	if (cand_str && heading_label && annotation_str) {
+	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + strlen(annotation_str) + 3);
+	    sprintf(str, "%s\a%s\a%s", heading_label, cand_str, annotation_str);
 	    candidates.push_back((const char *)str);
 	}
 	else {
 	    fprintf(stderr, "Warning: cand_str at %d is NULL\n", i);
-	    candidates.push_back((const char *)strdup("\t"));
+	    candidates.push_back((const char *)strdup("\a\a"));
 	}
 	uim_candidate_free(cand);
     }
@@ -901,6 +902,7 @@ void InputContext::prepare_page_candidates(int page)
     int page_nr, start;
     const char *cand_str;
     const char *heading_label;
+    const char *annotation_str;
     char *str;
     CandList candidates;
 
@@ -923,15 +925,15 @@ void InputContext::prepare_page_candidates(int page)
 					(i + start));
 	cand_str = uim_candidate_get_cand_str(cand);
 	heading_label = uim_candidate_get_heading_label(cand);
-	//annotation_str = uim_candidate_get_annotation(cand);
-	if (cand_str && heading_label) {
-	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + 2);
-	    sprintf(str, "%s\t%s", heading_label, cand_str);
+	annotation_str = uim_candidate_get_annotation_str(cand);
+	if (cand_str && heading_label && annotation_str) {
+	    str = (char *)malloc(strlen(cand_str) + strlen(heading_label) + strlen(annotation_str) + 3);
+	    sprintf(str, "%s\a%s\a%s", heading_label, cand_str, annotation_str);
 	    candidates.push_back((const char *)str);
 	}
 	else {
 	    fprintf(stderr, "Warning: cand_str at %d is NULL\n", i);
-	    candidates.push_back((const char *)strdup("\t"));
+	    candidates.push_back((const char *)strdup("\a\a"));
 	}
 	uim_candidate_free(cand);
     }

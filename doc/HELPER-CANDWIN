@@ -30,7 +30,7 @@ Recieving Message format BNF
   charset_specifier = "charset=" charset "\n"
   charset = "UTF-8" | "EUC-JP" | "GB18030" |
             <or any name that can be specified as iconv_open(3) argument>
-  str = str <any characters except for '\0', '\t', or '\n'> | ""
+  str = str <any characters except for '\0', '\a', or '\n'> | ""
   num = /[0-9]+/
 
   1. activate
@@ -43,9 +43,10 @@ Recieving Message format BNF
    display_limit_str = display_limit_label num
    display_limit_label = "display_limit="
    candidate_strs = candidate_str candidate_str candidate_str ....
-   candidate_str = cand_head "\t" cand_candidate "\n"
+   candidate_str = cand_head "\a" cand_candidate "\a" cand_annotation "\n"
    cand_head = str
    cand_candidate = str
+   cand_annotation = str
 
   2. select
     Selecting the specified candidate in helper-candwin window.
@@ -93,9 +94,10 @@ Recieving Message format BNF
     page_str = page_label num
     page_label = "page="
     candidate_strs = candidate_str candidate_str candidate_str ....
-    candidate_str = cand_head "\t" cand_candidate "\n"
+    candidate_str = cand_head "\a" cand_candidate "\a" cand_annotation "\n"
     cand_head = str
     cand_candidate = str
+    cand_annotation = str
 
   9. show_page
     Selecting the specified page of the candidate window.
