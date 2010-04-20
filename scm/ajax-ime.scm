@@ -93,7 +93,7 @@
            (w2 (ajax-ime:parse-quoted-word2* port)))
        (if (and (string? w1) (list? w2))
            (list (append (list w1) w2))
-           '(""))))))
+           #f)))))
 
 (define (ajax-ime-conversion str opts)
   (define (icovn-convert to-code from-code from-str)
@@ -121,9 +121,10 @@
               euc-str))
 
   (let ((ret (fetch (make-query))))
-    (if ret
-        (ajax-ime-parse (fetch (make-query)))
-        '(""))))
+    (or
+      (and ret
+           (ajax-ime-parse ret))
+      (list (list str)))))
 
 (define (ajax-ime-lib-init)
   #t)
