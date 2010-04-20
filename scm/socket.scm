@@ -65,8 +65,8 @@
 
 (define (call-with-getaddrinfo hostname servname hints thunk)
   (let* ((res (getaddrinfo hostname servname hints))
-         (ret (thunk res)))
-    (if (not (null? res))
+         (ret (if res (thunk res) '())))
+    (if res
         (freeaddrinfo (car res)))
     ret))
 

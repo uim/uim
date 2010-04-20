@@ -252,6 +252,8 @@ c_getaddrinfo(uim_lisp hostname_, uim_lisp servname_, uim_lisp hint_)
   if (error) {
     const char *errstr = gai_strerror(error);
     uim_notify_fatal("getaddrinfo: %s", errstr);
+    free(servname);
+    return uim_scm_f();
   }
 
   free(servname);
