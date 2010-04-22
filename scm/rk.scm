@@ -248,12 +248,25 @@
 	  (rk-context-set-seq! context s)
 	  #f))))
 ;; API
+;; return list of all expected next characters for the current partial sequence
+;; return '() if current rkc is not partial
 (define rk-expect
   (lambda (rkc)
     (let
 	((s (reverse (rk-context-seq rkc)))
 	 (rule (rk-context-rule rkc)))
       (rk-lib-expect-seq s rule))))
+
+;; API
+;; return #t if the key is expected as a next character in the partial sequence
+;; this should be faster than rk-expect
+(define rk-expect-key
+  (lambda (rkc key)
+    (let
+	((s (reverse (rk-context-seq rkc)))
+	 (rule (rk-context-rule rkc)))
+      (rk-lib-expect-key-for-seq s rule key))))
+
 
 ;; back match
 (define rk-push-key-back-match

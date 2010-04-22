@@ -1653,7 +1653,7 @@
 		      (eq? 'Multi_key key))))
 	    (and
 	     (eqv? 32 key) ; space
-	     (not (string-find (rk-expect rkc) " "))))
+	     (not (rk-expect-key rkc " "))))
 	(latin-commit lc)
 	(im-commit-raw lc)
 	(latin-context-flush lc))

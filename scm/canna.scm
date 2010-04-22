@@ -1115,8 +1115,7 @@
       ;; handle "n1" sequence as "¤ó1"
       (if (and (not (canna-context-alnum cc))
 	       (not (ichar-alphabetic? key))
-	       (not (string-find
-		     (rk-expect rkc)
+	       (not (rk-expect-key rkc
 		     (charcode->string
 		      (if (= rule canna-input-rule-kana)
 			  key

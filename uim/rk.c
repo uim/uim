@@ -141,6 +141,27 @@ rk_expect_seq(uim_lisp seq, uim_lisp rules)
   return res;  /* don't return uim_scm_f() */
 }
 
+/*
+ * returns #t if key is expected
+ * (rk-lib-expect-seq-for-key '("k" "y") ja-rk-rule "o") -> #t
+ * (rk-lib-expect-seq-for-key '("k" "y") ja-rk-rule "y") -> #f
+ */
+static uim_lisp
+rk_expect_key_for_seq(uim_lisp seq, uim_lisp rules, uim_lisp key)
+{
+  uim_lisp cur;
+  for (cur = rules; !uim_scm_nullp(cur); cur = uim_scm_cdr(cur)) {
+    uim_lisp rule = uim_scm_car(cur);
+    uim_lisp seq_in_rule = CAR(CAR(rule));
+    uim_lisp e = str_seq_partial(seq, seq_in_rule);
+    if (TRUEP(e) && string_equalp(e, key)) {
+      return uim_scm_t();
+    }
+  }
+  return uim_scm_f();
+}
+
+
 void
 uim_init_rk_subrs(void)
 {
@@ -149,4 +170,5 @@ uim_init_rk_subrs(void)
   uim_scm_init_proc2("rk-lib-find-seq", rk_find_seq);
   uim_scm_init_proc2("rk-lib-find-partial-seq", rk_find_partial_seq);
   uim_scm_init_proc2("rk-lib-expect-seq", rk_expect_seq);
+  uim_scm_init_proc3("rk-lib-expect-key-for-seq", rk_expect_key_for_seq);
 }

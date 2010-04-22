@@ -1327,8 +1327,7 @@
       ;; handle "n1" sequence as "¤ó1"
       (if (and (not (yahoo-jp-context-alnum yc))
 	       (not (ichar-alphabetic? key))
-	       (not (string-find
-		     (rk-expect rkc)
+	       (not (rk-expect-key rkc
 		     (charcode->string
 		      (if (= rule yahoo-jp-input-rule-kana)
 			  key

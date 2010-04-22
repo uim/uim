@@ -1175,8 +1175,7 @@
 	;; handle "n1" sequence as "¤ó1"
 	(if (and (not (mana-context-alnum mc))
 		 (not (ichar-alphabetic? key))
-		 (not (string-find
-		       (rk-expect rkc)
+		 (not (rk-expect-key rkc
 		       (charcode->string
 			(if (= rule mana-input-rule-kana)
 			    key

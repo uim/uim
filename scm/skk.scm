@@ -1031,21 +1031,21 @@
        ;; 1. commits "n" as kana according to kana-mode
        ;; 2. switch mode by "{L,l,/,Q,C-q,C-Q,q}"
        (if (and (skk-wide-latin-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (begin
 	     (set! res (rk-push-key-last! rkc))
 	     (skk-context-set-state! sc 'skk-state-wide-latin)
 	     #f)
 	   #t)
        (if (and (skk-latin-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (begin
 	     (set! res (rk-push-key-last! rkc))
 	     (skk-context-set-state! sc 'skk-state-latin)
 	     #f)
 	   #t)
        (if (and (skk-latin-conv-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
 		 (skk-commit sc (skk-get-string sc residual-kana kana)))
@@ -1054,7 +1054,7 @@
 	     #f)
 	   #t)
        (if (and (skk-kanji-mode-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
 		 (skk-commit sc (skk-get-string sc residual-kana kana)))
@@ -1063,7 +1063,7 @@
 	     #f)
 	   #t)
        (if (and (skk-hankaku-kana-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (let* ((kana (skk-context-kana-mode sc))
 		  (new-kana (if (= kana skk-type-hankana)
 		    		  skk-type-hiragana
@@ -1073,7 +1073,7 @@
 	     #f)
 	   #t)
        (if (and (skk-kana-toggle-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (begin
 	     (set! res (rk-push-key-last! rkc))
 	     (skk-context-kana-toggle sc)
@@ -1085,7 +1085,7 @@
        ;; 2. commits " " as native space (such as Qt::Key_Space)
        ;;    unless expected rkc list includes " "
        (if (and (skk-plain-space-key? key key-state)
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (begin
 	     (set! res (rk-push-key-last! rkc))
 	     (skk-commit-raw-with-preedit-update sc key key-state)
@@ -1129,7 +1129,7 @@
        ;; Hack to handle "n1" sequence as "¤ó1".
        ;; This should be handled in rk.scm. -- ekato
        (if (and (not (ichar-alphabetic? key))
-		(not (string-find (rk-expect rkc) key-str)))
+		(not (rk-expect-key rkc key-str)))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
 		 (skk-commit sc (skk-get-string sc residual-kana kana)))
@@ -1483,8 +1483,7 @@
        ;; Hack to handle "n1" sequence as "¤ó1".
        ;; This should be handled in rk.scm. -- ekato
        (if (and (not (ichar-alphabetic? key))
-		(not (string-find
-		      (rk-expect rkc)
+		(not (rk-expect-key rkc
 		      (charcode->string (ichar-downcase key)))))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana

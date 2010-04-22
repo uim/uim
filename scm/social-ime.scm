@@ -1311,8 +1311,7 @@
       ;; handle "n1" sequence as "¤ó1"
       (if (and (not (social-ime-context-alnum sc))
 	       (not (ichar-alphabetic? key))
-	       (not (string-find
-		     (rk-expect rkc)
+	       (not (rk-expect-key rkc
 		     (charcode->string
 		      (if (= rule social-ime-input-rule-kana)
 			  key
