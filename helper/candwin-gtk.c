@@ -39,8 +39,6 @@
 #if HAVE_EBLIB
 #include <uim/uim-scm.h>
 #include "uim/uim-eb.h"
-#define UIM_ANNOTATION_WIN_WIDTH 200
-#define UIM_ANNOTATION_WIN_HEIGHT 230
 #endif /* HAVE_EBLIB */
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
@@ -58,6 +56,9 @@
 #define UIM_IS_CANDIDATE_WINDOW(obj)	(G_TYPE_CHECK_INSTANCE_TYPE ((obj), UIM_TYPE_CANDIDATE_WINDOW))
 #define UIM_IS_CANDIDATE_WINDOW_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), UIM_TYPE_CANDIDATE_WINDOW))
 #define UIM_CANDIDATE_WINDOW_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), UIM_TYPE_CANDIDATE_WINDOW, UIMCandidateWindowClass))
+
+#define UIM_ANNOTATION_WIN_WIDTH 200
+#define UIM_ANNOTATION_WIN_HEIGHT 230
 
 typedef struct _UIMCandidateWindow	UIMCandidateWindow;
 typedef struct _UIMCandidateWindowClass	UIMCandidateWindowClass;
