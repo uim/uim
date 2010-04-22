@@ -57,6 +57,37 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: rk-expect-key is added in rk.scm
+Affects: IM developers
+Updates: Scheme API
+Version: 1.6.0
+Revision: ac6332
+Date: 2010-04-22
+Modifier: Etsushi Kato
+Related: uim-tutcode
+URL:
+Changes:
+  (new) rk-expect-key
+Description:
+  Since rk-expect used in tutcode.scm is relatively slow,
+  rk-expect-key is added.
+------------------------------------------------------------------------------
+Summary: Update helper-candwin protocol about candidate string
+Affects: Helper program developers
+Updates: Helper-candwin protocol
+Version: 1.6.0
+Revision: ac6331
+Date: 2010-04-21
+Modifier: Etsushi Kato
+Related: uim-prime
+URL:
+Changes:
+  (update) "activate"
+  (update) "set_page_candidates"
+Description:
+  Modify helper-candwin message from uim-xim to uim-candwin-{gtk,qt} to
+  cope with uim-prime's candidate string that may contain '\t'.
+------------------------------------------------------------------------------
 Summary: New helper-candwin protocol about setting the candidates
 Affects: Helper program developers
 Updates: Helper-candwin protocol
