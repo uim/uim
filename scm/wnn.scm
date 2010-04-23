@@ -1169,7 +1169,7 @@
       ;; handle "n1" sequence as "¤ó1"
       (if (and (not (wnn-context-alnum wc))
 	       (not (ichar-alphabetic? key))
-	       (not (rk-expect-key rkc
+	       (not (rk-expect-key? rkc
 		     (charcode->string
 		      (if (= rule wnn-input-rule-kana)
 			  key

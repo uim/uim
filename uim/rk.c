@@ -170,5 +170,5 @@ uim_init_rk_subrs(void)
   uim_scm_init_proc2("rk-lib-find-seq", rk_find_seq);
   uim_scm_init_proc2("rk-lib-find-partial-seq", rk_find_partial_seq);
   uim_scm_init_proc2("rk-lib-expect-seq", rk_expect_seq);
-  uim_scm_init_proc3("rk-lib-expect-key-for-seq", rk_expect_key_for_seq);
+  uim_scm_init_proc3("rk-lib-expect-key-for-seq?", rk_expect_key_for_seq);
 }

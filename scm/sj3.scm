@@ -1396,7 +1396,7 @@
       ;; handle "n1" sequence as "¤ó1"
       (if (and (not (sj3-context-alnum sc))
 	       (not (ichar-alphabetic? key))
-	       (not (rk-expect-key rkc
+	       (not (rk-expect-key? rkc
 		     (charcode->string
 		      (if (= rule sj3-input-rule-kana)
 			  key

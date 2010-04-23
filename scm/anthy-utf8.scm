@@ -1237,7 +1237,7 @@
 	;; handle "n1" sequence as "ん1"
 	(if (and (not (anthy-utf8-context-alnum ac))
 		 (not (ichar-alphabetic? key))
-		 (not (rk-expect-key rkc
+		 (not (rk-expect-key? rkc
 		       (if (= rule anthy-input-rule-kana)
 			   (if (symbol? key)
 			       (symbol->string key)

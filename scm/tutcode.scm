@@ -566,7 +566,7 @@
       ;; 正しくないキーシーケンスは全て捨てる(tc2に合わせた動作)。
       ;; (rk-push-key!すると、途中までのシーケンスは捨てられるが、
       ;; 間違ったキーは残ってしまうので、rk-push-key!は使えない)
-      ((not (rk-expect-key rkc (charcode->string key)))
+      ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc) ; 正しくないシーケンスは捨てる
          (im-commit-raw pc))) ; 単独のキー入力(TUT-Code入力でなくて)
@@ -683,7 +683,7 @@
          (begin
            (tutcode-flush pc)
            (tutcode-proc-state-on pc key key-state))))
-      ((not (rk-expect-key rkc (charcode->string key)))
+      ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
          ;; spaceキーでの変換開始?
@@ -756,7 +756,7 @@
           (not (shift-key-mask key-state))))
        (tutcode-flush pc)
        (tutcode-proc-state-on pc key key-state))
-      ((not (rk-expect-key rkc (charcode->string key)))
+      ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
          (set! res (charcode->string key))))
