@@ -1,7 +1,0 @@
-this is the way to build this plugin.
-
- $ qmake
- $ make
- $ ./install
-
-./edittest is the sample program for test inputting.
