@@ -754,7 +754,7 @@ static void str_parse(gchar *str)
   gchar **tmp;
   gchar *command;
 
-  tmp = g_strsplit(str, "\n", 0);
+  tmp = g_strsplit(str, "\f", 0);
   command = tmp[0];
 
   if (command) {
@@ -813,7 +813,7 @@ read_cb(GIOChannel *channel, GIOCondition c, gpointer p)
     strcat(read_buf, buf);
   }
 
-  tmp = g_strsplit(read_buf, "\n\n", 0);
+  tmp = g_strsplit(read_buf, "\f\f", 0);
 
   while (tmp[i]) {
     str_parse(tmp[i]);

@@ -126,7 +126,7 @@ void CandidateWindow::activateCand( const QStringList &list )
     qDebug( "uim-candwin-qt4: activateCand()" );
 #endif
     /**
-     * format: activate\ncharset=$charset\ndisplay_limit=$value\nhead1\acand1\aannot1\nhead2\acand2\aannot2\nhead3\acand3\aannot3\n
+     * format: activate\fcharset=$charset\fdisplay_limit=$value\fhead1\acand1\aannot1\fhead2\acand2\aannot2\fhead3\acand3\aannot3\f
      */
 
     // remove old data
@@ -294,7 +294,7 @@ void CandidateWindow::setPageCandidates( const QStringList &list )
     qDebug( "uim-candwin-qt: setPageCandidates()" );
 #endif
     /**
-     * format: set_page_candidates\ncharset=$charset\npage=$value\nhead1\acand1\aannot1\nhead2\acand2\aannot2\nhead3\acand3\aannot3\n
+     * format: set_page_candidates\fcharset=$charset\fpage=$value\fhead1\acand1\aannot1\fhead2\acand2\aannot2\fhead3\acand3\aannot3\f
      */
 
     int page = 0;
@@ -380,7 +380,7 @@ void CandidateWindow::slotStdinActivated( int fd )
     }
 
     QStringList msgList
-        = QString( read_buf ).split( "\n\n", QString::SkipEmptyParts );
+        = QString( read_buf ).split( "\f\f", QString::SkipEmptyParts );
 
     QStringList::Iterator it = msgList.begin();
     const QStringList::Iterator end = msgList.end();
@@ -394,7 +394,7 @@ void CandidateWindow::strParse( const QString& str )
 #if defined(ENABLE_DEBUG)
     qDebug( "str = %s", str.toLocal8Bit().constData() );
 #endif
-    QStringList list = str.split( '\n', QString::SkipEmptyParts );
+    QStringList list = str.split( '\f', QString::SkipEmptyParts );
 
     QStringList::Iterator it = list.begin();
     const QStringList::Iterator end = list.end();

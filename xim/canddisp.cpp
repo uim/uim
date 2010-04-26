@@ -131,11 +131,11 @@ void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
     if (!candwin_w)
 	return;
 
-    fprintf(candwin_w, "activate\ncharset=UTF-8\ndisplay_limit=%d\n",
+    fprintf(candwin_w, "activate\fcharset=UTF-8\fdisplay_limit=%d\f",
 		    display_limit);
     for (i = candidates.begin(); i != candidates.end(); ++i)
-	fprintf(candwin_w, "%s\n", *i);
-    fprintf(candwin_w, "\n");
+	fprintf(candwin_w, "%s\f", *i);
+    fprintf(candwin_w, "\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -146,10 +146,10 @@ void Canddisp::set_nr_candidates(int nr, int display_limit)
     if (!candwin_w)
 	return;
 
-    fprintf(candwin_w, "set_nr_candidates\n");
-    fprintf(candwin_w, "%d\n", nr);
-    fprintf(candwin_w, "%d\n", display_limit);
-    fprintf(candwin_w, "\n");
+    fprintf(candwin_w, "set_nr_candidates\f");
+    fprintf(candwin_w, "%d\f", nr);
+    fprintf(candwin_w, "%d\f", display_limit);
+    fprintf(candwin_w, "\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -161,10 +161,10 @@ void Canddisp::set_page_candidates(int page, CandList candidates)
     if (!candwin_w)
 	return;
 
-    fprintf(candwin_w, "set_page_candidates\ncharset=UTF-8\npage=%d\n", page);
+    fprintf(candwin_w, "set_page_candidates\fcharset=UTF-8\fpage=%d\f", page);
     for (i = candidates.begin(); i != candidates.end(); ++i)
-	fprintf(candwin_w, "%s\n", *i);
-    fprintf(candwin_w, "\n");
+	fprintf(candwin_w, "%s\f", *i);
+    fprintf(candwin_w, "\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -174,9 +174,9 @@ void Canddisp::show_page(int page)
     if (!candwin_w)
 	return;
 
-    fprintf(candwin_w, "show_page\n");
-    fprintf(candwin_w, "%d\n", page);
-    fprintf(candwin_w, "\n");
+    fprintf(candwin_w, "show_page\f");
+    fprintf(candwin_w, "%d\f", page);
+    fprintf(candwin_w, "\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -186,9 +186,9 @@ void Canddisp::select(int index, bool need_hilite)
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "select\n");
-    fprintf(candwin_w, "%d\n", index);
-    fprintf(candwin_w, "%d\n\n", need_hilite? 1 : 0);
+    fprintf(candwin_w, "select\f");
+    fprintf(candwin_w, "%d\f", index);
+    fprintf(candwin_w, "%d\f\f", need_hilite? 1 : 0);
     fflush(candwin_w);
     check_connection();
 }
@@ -197,7 +197,7 @@ void Canddisp::deactivate()
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "deactivate\n\n");
+    fprintf(candwin_w, "deactivate\f\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -206,7 +206,7 @@ void Canddisp::show()
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "show\n\n");
+    fprintf(candwin_w, "show\f\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -215,7 +215,7 @@ void Canddisp::hide()
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "hide\n\n");
+    fprintf(candwin_w, "hide\f\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -224,10 +224,10 @@ void Canddisp::move(int x, int y)
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "move\n");
-    fprintf(candwin_w, "%d\n", x);
-    fprintf(candwin_w, "%d\n", y);
-    fprintf(candwin_w, "\n");
+    fprintf(candwin_w, "move\f");
+    fprintf(candwin_w, "%d\f", x);
+    fprintf(candwin_w, "%d\f", y);
+    fprintf(candwin_w, "\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -236,10 +236,10 @@ void Canddisp::show_caret_state(const char *str, int timeout)
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "show_caret_state\n");
-    fprintf(candwin_w, "%d\n", timeout);
-    fprintf(candwin_w, "%s\n", str);
-    fprintf(candwin_w, "\n");
+    fprintf(candwin_w, "show_caret_state\f");
+    fprintf(candwin_w, "%d\f", timeout);
+    fprintf(candwin_w, "%s\f", str);
+    fprintf(candwin_w, "\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -248,7 +248,7 @@ void Canddisp::update_caret_state()
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "update_caret_state\n\n");
+    fprintf(candwin_w, "update_caret_state\f\f");
     fflush(candwin_w);
     check_connection();
 }
@@ -257,7 +257,7 @@ void Canddisp::hide_caret_state()
 {
     if (!candwin_w)
 	return;
-    fprintf(candwin_w, "hide_caret_state\n\n");
+    fprintf(candwin_w, "hide_caret_state\f\f");
     fflush(candwin_w);
     check_connection();
 }
