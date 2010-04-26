@@ -63,7 +63,7 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 : QFrame( parent, candidateFlag ), ic( 0 ), subWin( 0 ), window( 0 ),
     nrCandidates( 0 ), displayLimit( 0 ), candidateIndex( -1 ), pageIndex( -1 ),
     isAlwaysLeft( false ), hasAnnotation( uim_scm_symbol_value_bool(
-        "eb-enable-for-annotation?" ) )
+        "enable-annotation?" ) )
 {
     setFrameStyle( Raised | NoFrame );
 
@@ -294,10 +294,10 @@ void CandidateWindow::setPage( int page )
         QString candString
             = QString::fromUtf8( uim_candidate_get_cand_str( cand ) );
         QString annotationString;
-        // if ( hasAnnotation ) {
-        //     annotationString
-        //     = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
-        // }
+        if ( hasAnnotation ) {
+            annotationString
+                = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
+        }
 
         // insert new item to the candidate list
         QTableWidgetItem *headItem = new QTableWidgetItem;
@@ -619,7 +619,8 @@ QSize CandidateListView::sizeHint() const
     int width = frame;
     // the size of the dummy column should be 0.
     for ( int i = 0; i < columnCount() - 1; i++ )
-        width += columnWidth( i );
+        width += ( i != ANNOTATION_COLUMN ) ?
+            columnWidth( i ) : qMin( columnWidth( i ), MIN_CAND_WIDTH );
 
     return QSize( width, rowHeight( 0 ) * rowNum + frame );
 }

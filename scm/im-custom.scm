@@ -543,22 +543,48 @@
                         (eq? bridge-show-with?
                              'time))))
 
+(define-custom 'enable-annotation? #t
+  '(annotation candwin)
+  '(boolean)
+  (N_ "Enable annotation")
+  (N_ "long description will be here."))
+
+(define-custom 'annotation-agent 'eb
+  '(annotation candwin)
+  (list 'choice
+    (list 'eb
+      (N_ "EB library")
+      (N_ "EB library")))
+  (N_ "Annotation agent name")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'annotation-agent
+  'custom-activity-hooks
+  (lambda ()
+    enable-annotation?))
+
 ;; EB Library support
-;; 2005-02-08 Takuro Ashie <ashie@homa.ne.jp>
-;; FIXME! Here isn't suitable position for EB support preference
 (define-custom-group 'eb
 		     (N_ "EB library")
 		     (N_ "long description will be here."))
 
+;; eb-enable-for-annotation? exists only for compatibility.
+;; You shouldn't add similar variables to other annotation agents.
 (define-custom 'eb-enable-for-annotation? #f
-  '(eb candwin)
+  '(annotation eb)
   '(boolean)
   (N_ "Use EB library to search annotations")
   (N_ "long description will be here."))
 
+(custom-add-hook 'eb-enable-for-annotation?
+  'custom-activity-hooks
+  (lambda ()
+    (and enable-annotation?
+      (eq? annotation-agent 'eb))))
+
 (define-custom 'eb-dic-path
   (string-append (sys-datadir) "/dict")
-  '(eb candwin)
+  '(annotation eb)
   '(pathname directory)
   (N_ "The directory which contains EB dictionary file")
   (N_ "long description will be here."))
@@ -567,6 +593,12 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   eb-enable-for-annotation?))
+
+(custom-add-hook 'eb-dic-path
+  'custom-activity-hooks
+  (lambda ()
+    (and enable-annotation?
+      (eq? annotation-agent 'eb))))
 
 ;; uim-xim specific custom
 (define-custom-group 'xim

@@ -36,6 +36,7 @@
 (require "util.scm")
 (require "i18n.scm")
 (require "load-action.scm")
+(require "annotation.scm")
 
 ;; config
 (define default-im-name #f)
@@ -353,11 +354,12 @@
 (define create-context
   (lambda (uc lang name)
     (let* ((im (find-im name lang))
-	   (arg (and im (im-init-arg im))))
+           (arg (and im (im-init-arg im))))
       (im-set-encoding uc (im-encoding im))
       (let* ((handler (im-init-handler im))
-	     (c (handler uc im arg)))
-	(register-context c)
+             (c (handler uc im arg)))
+        (annotation-init)
+        (register-context c)
         ;; im-* procedures that require uc->sc must not called here since it
         ;; is not filled yet. Place such procedures to setup-context.
         c))))
@@ -371,6 +373,7 @@
 
 (define release-context
   (lambda (uc)
+    (annotation-release)
     (invoke-handler im-release-handler uc)
     (remove-context (im-retrieve-context uc))
     #f))
@@ -514,7 +517,10 @@
 
 (define get-candidate
   (lambda (uc idx accel-enum-hint)
-    (invoke-handler im-get-candidate-handler uc idx accel-enum-hint)))
+    (let ((c (invoke-handler im-get-candidate-handler uc idx accel-enum-hint)))
+      (and (string=? (last c) "")
+        (set-cdr! (cdr c) (list (annotation-get-text (car c)))))
+      c)))
 
 (define set-candidate-index
   (lambda (uc idx)

@@ -131,6 +131,10 @@
 (if (symbol-bound? 'uim-notify-load)
     (uim-notify-load (symbol->string notify-agent)))
 
+;; redefine annotation-related procedures to use an annotation agent
+(and enable-annotation?
+  (annotation-load (symbol->string annotation-agent)))
+
 (or (getenv "LIBUIM_VANILLA")
     (load-user-conf)
     (load "default.scm"))
