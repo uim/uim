@@ -72,21 +72,31 @@ Description:
   Since rk-expect used in tutcode.scm is relatively slow,
   rk-expect-key? is added.
 ------------------------------------------------------------------------------
-Summary: Update helper-candwin protocol about candidate string
+Summary: Update helper-candwin protocol for sending message
 Affects: Helper program developers
 Updates: Helper-candwin protocol
 Version: 1.6.0
-Revision: ac6331
+Revision: ac6331, ac6339
 Date: 2010-04-21
 Modifier: Etsushi Kato
-Related: uim-prime
+Related: uim-prime, annotation
 URL:
 Changes:
   (update) "activate"
+  (update) "select"
+  (update) "move"
+  (update) "show"
+  (update) "hide"
+  (update) "deactivate"
+  (update) "set_nr_candidates"
   (update) "set_page_candidates"
+  (update) "show_caret_state"
+  (update) "update_caret_state"
+  (update) "hide_caret_state"
 Description:
   Modify helper-candwin message from uim-xim to uim-candwin-{gtk,qt} to
-  cope with uim-prime's candidate string that may contain '\t'.
+  cope with uim-prime's candidate string that may contain '\t'. Also
+  sepeartor of messages has been modified to use '\f' instead of '\n'.
 ------------------------------------------------------------------------------
 Summary: New helper-candwin protocol about setting the candidates
 Affects: Helper program developers
