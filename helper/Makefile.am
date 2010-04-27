@@ -62,16 +62,6 @@ uim_candwin_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la
 uim_candwin_gtk_CPPFLAGS = -I$(top_srcdir)
 uim_candwin_gtk_CFLAGS   = @GTK2_CFLAGS@
-if EB
-uim_candwin_gtk_CPPFLAGS += @EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
-			    @EBCONF_PTHREAD_CPPFLAGS@ \
-			    @EBCONF_INTLINCS@
-uim_candwin_gtk_CFLAGS += @EBCONF_PTHREAD_CFLAGS@
-uim_candwin_gtk_LDFLAGS = @EBCONF_PTHREAD_LDFLAGS@
-uim_candwin_gtk_LDADD += ../uim/lib-eb-static.la \
-			 @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
-			 @EBCONF_INTLLIBS@
-endif
 
 uim_toolbar_gtk_SOURCES  = toolbar-standalone-gtk.c toolbar-common-gtk.c
 uim_toolbar_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \

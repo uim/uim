@@ -27,17 +27,6 @@ IM_UIM_SOURCES = \
 	caret-state-indicator.c caret-state-indicator.h \
 	compose.c compose.h text-util.c text-util.h
 
-if EB
-im_uim_la_CPPFLAGS += @EBCONF_EBINCS@ @EBCONF_ZLIBINCS@ \
-		      @EBCONF_PTHREAD_CPPFLAGS@ \
-		      @EBCONF_INTLINCS@
-im_uim_la_CFLAGS += @EBCONF_PTHREAD_CFLAGS@
-im_uim_la_LDFLAGS += @EBCONF_PTHREAD_LDFLAGS@
-im_uim_la_LIBADD += ../uim/lib-eb-static.la \
-                    @EBCONF_EBLIBS@ @EBCONF_ZLIBLIBS@ \
-		    @EBCONF_INTLLIBS@
-endif
-
 noinst_PROGRAMS = gtk-rc-get-immodule-file
 gtk_rc_get_immodule_file_SOURCES = gtk-rc-get-immodule-file.c
 gtk_rc_get_immodule_file_CFLAGS = @GTK2_CFLAGS@

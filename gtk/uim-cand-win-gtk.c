@@ -38,9 +38,6 @@
 #include <stdlib.h>
 #include <uim/uim.h>
 #include <uim/uim-scm.h>
-#if HAVE_EBLIB
-#include "uim-eb.h"
-#endif /* HAVE_EBLIB */
 
 #define NR_CANDIDATES 20 /* FIXME! not used yet */
 #define DEFAULT_MIN_WINDOW_WIDTH 80
@@ -375,35 +372,10 @@ tree_selection_changed(GtkTreeSelection *selection,
 
   if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
     char *annotation = NULL;
-#if HAVE_EBLIB
-    /* FIXME! This is a ad-hoc solution to advance
-       annotation related discussion. */
-    if (uim_scm_symbol_value_bool("eb-enable-for-annotation?")) {
-      gchar *cand = NULL;
 
-      gtk_tree_model_get(model, &iter,
-			 COLUMN_CANDIDATE, &cand,
-			 -1);
-      if (cand && *cand) {
-	char *book;
-	uim_eb *ueb = NULL;
-
-	book = uim_scm_symbol_value_str("eb-dic-path");
-	if (book && *book)
-	  ueb = uim_eb_new(book);
-	if (ueb) {
-	  annotation = uim_eb_search_text(ueb, cand);
-	  uim_eb_destroy(ueb);
-	}
-	free(book);
-      }
-      g_free(cand);
-    }
-#else /* HAVE_EB_LIB */
     gtk_tree_model_get(model, &iter,
 		       COLUMN_ANNOTATION, &annotation,
 		       -1);
-#endif /* HAVE_EB_LIB */
 
     if (annotation && *annotation) {
       if (!cwin->sub_window.window)
@@ -563,7 +535,7 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
         gtk_list_store_set(store, &ti,
 			   COLUMN_HEADING,    uim_candidate_get_heading_label(cand),
 			   COLUMN_CANDIDATE,  uim_candidate_get_cand_str(cand),
-			   COLUMN_ANNOTATION, NULL, /*uim_candidate_get_annotation(cand),*/
+			   COLUMN_ANNOTATION, uim_candidate_get_annotation_str(cand),
 			   TERMINATOR);
       } else {
 #if 0
@@ -628,7 +600,7 @@ uim_cand_win_gtk_set_page_candidates(UIMCandWinGtk *cwin,
       gtk_list_store_set(store, &ti,
 			 COLUMN_HEADING,    uim_candidate_get_heading_label(cand),
 			 COLUMN_CANDIDATE,  uim_candidate_get_cand_str(cand),
-			 COLUMN_ANNOTATION, NULL, /*uim_candidate_get_annotation(cand),*/
+			 COLUMN_ANNOTATION, uim_candidate_get_annotation_str(cand),
 			 TERMINATOR);
     }
   }
