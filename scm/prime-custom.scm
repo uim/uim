@@ -174,6 +174,19 @@
   (N_ "Show candidate forms")
   (N_ "long description will be here."))
 
+(custom-add-hook 'prime-custom-display-usage?
+  'custom-activity-hooks
+  (lambda ()
+    enable-annotation?))
+(custom-add-hook 'prime-custom-display-comment?
+  'custom-activity-hooks
+  (lambda ()
+    enable-annotation?))
+(custom-add-hook 'prime-custom-display-form?
+  'custom-activity-hooks
+  (lambda ()
+    enable-annotation?))
+
 ;; ------------------------------------------------------------
 
 (define-custom 'prime-custom-number-selection? #f

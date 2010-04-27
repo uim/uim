@@ -2255,28 +2255,31 @@
 	       (nth index-no (prime-context-segment-candidates context))
 	       (nth index-no (prime-context-candidates context)))))
       ;; The return value is a list with a candidate string and the next index.
-      (list (prime-candidate-combine-string context candidate)
+      (list (prime-candidate-get-literal candidate)
 	    (digit->string (+ index-no 1))
-	    ""))))
+	    (prime-candidate-combine-annotation context candidate)))))
 
-(define prime-candidate-combine-string
+(define prime-candidate-combine-annotation
   (lambda (context candidate)
-    (let ((string     (prime-candidate-get-literal candidate))
+    (let ((string     "")
 	  (usage      (prime-candidate-get-data    candidate "usage"))
 	  (comment    (prime-candidate-get-data    candidate "comment"))
 	  (form       (prime-candidate-get-data    candidate "form"))
 	  (state      (prime-context-state context)))
-      (if (and prime-custom-display-form?
+      (if (and enable-annotation?
+	       prime-custom-display-form?
 	       form
 	       (or (eq? state 'prime-state-converting)
 		   (eq? state 'prime-state-segment)))
-	  (set! string (string-append string "  (" form ")")))
-      (if (and prime-custom-display-usage?
+	  (set! string (string-append string "(" form ")")))
+      (if (and enable-annotation?
+	       prime-custom-display-usage?
 	       usage
 	       (or (eq? state 'prime-state-converting)
 		   (eq? state 'prime-state-segment)))
 	  (set! string (string-append string "\t¢¦" usage)))
-      (if (and prime-custom-display-comment?
+      (if (and enable-annotation?
+	       prime-custom-display-comment?
 	       comment
 	       (or (eq? state 'prime-state-converting)
 		   (eq? state 'prime-state-segment)))
