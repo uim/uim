@@ -109,25 +109,21 @@ void SubWindow::timerDone()
     popup();
 }
 
-void SubWindow::layoutWindow( int x, int y )
+void SubWindow::layoutWindow( const QRect &rect )
 {
-    QRect focusRect = QRect( QPoint( x, y ), frameSize() );
-    QRect screenRect = QRect( 0, 0,
-                              QApplication::desktop() ->screenGeometry().width(),
-                              QApplication::desktop() ->screenGeometry().height() );
+    const QRect screenRect = QApplication::desktop()->screenGeometry();
 
-    QPoint p = forceInside( screenRect, focusRect );
-    move( p );
-}
+    const int w = width();
+    const int candX = rect.x();
+    int destX = candX + rect.width();
+    if ( destX + w > screenRect.width() )
+        destX = candX - w;
 
-QPoint SubWindow::forceInside( const QRect &enclosure, const QRect &prisoner )
-{
-    int new_x, new_y;
+    const int h = height();
+    const int screenH = screenRect.height();
+    int destY = rect.y();
+    if ( destY + h > screenH )
+        destY = screenH - h;
 
-    new_x = qMin( enclosure.right(), prisoner.right() ) - prisoner.width() + 1;
-    new_x = qMax( enclosure.left(), new_x );
-    new_y = qMin( enclosure.bottom(), prisoner.bottom() ) - prisoner.height() + 1;
-    new_y = qMax( enclosure.top(), new_y );
-
-    return QPoint( new_x, new_y );
+    move( destX, destY );
 }

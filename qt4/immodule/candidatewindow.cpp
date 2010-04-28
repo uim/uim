@@ -562,6 +562,7 @@ void CandidateWindow::slotHookSubwindow()
         = cList->item( list[0]->row(), ANNOTATION_COLUMN )->text();
     if ( !annotationString.isEmpty() )
     {
+        subWin->layoutWindow( frameGeometry() );
         subWin->hookPopup( "Annotation", annotationString );
     }
 }
@@ -571,14 +572,14 @@ void CandidateWindow::moveEvent( QMoveEvent *e )
 {
     // move subwindow
     if ( subWin )
-        subWin->layoutWindow( e->pos().x() + width(), e->pos().y() );
+        subWin->layoutWindow( QRect( e->pos(), size() ) );
 }
 
 void CandidateWindow::resizeEvent( QResizeEvent *e )
 {
     // move subwindow
     if ( subWin )
-        subWin->layoutWindow( pos().x() + e->size().width(), pos().y() );
+        subWin->layoutWindow( QRect( pos(), e->size() ) );
 }
 
 

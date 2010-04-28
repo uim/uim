@@ -47,7 +47,7 @@ public:
     explicit SubWindow( QWidget *parent = 0 );
     ~SubWindow();
 
-    void layoutWindow( int x, int y );
+    void layoutWindow( const QRect &rect );
 
     bool isHooked()
     {
@@ -60,8 +60,6 @@ public slots:
 
 protected:
     void popup();
-
-    QPoint forceInside( const QRect &enclosure, const QRect &prisoner );
 
 protected slots:
     void timerDone();
