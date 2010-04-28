@@ -563,7 +563,7 @@ void CandidateWindow::slotHookSubwindow()
     if ( !annotationString.isEmpty() )
     {
         subWin->layoutWindow( frameGeometry() );
-        subWin->hookPopup( "Annotation", annotationString );
+        subWin->hookPopup( annotationString );
     }
 }
 

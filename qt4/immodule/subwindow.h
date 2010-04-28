@@ -36,7 +36,6 @@ SUCH DAMAGE.
 #include <QtCore/QTimer>
 #include <QtGui/QFrame>
 
-class QLabel;
 class QTextBrowser;
 
 class SubWindow : public QFrame
@@ -55,7 +54,7 @@ public:
     }
 
 public slots:
-    void hookPopup( const QString &title, const QString contents );
+    void hookPopup( const QString contents );
     void cancelHook();
 
 protected:
@@ -65,7 +64,6 @@ protected slots:
     void timerDone();
 
 protected:
-    QLabel *m_titleLabel;
     QTextBrowser *m_contentsEdit;
 
     QTimer *m_hookTimer;

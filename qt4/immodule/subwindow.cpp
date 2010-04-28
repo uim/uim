@@ -36,7 +36,6 @@ SUCH DAMAGE.
 #include <QtCore/QRect>
 #include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
-#include <QtGui/QLabel>
 #include <QtGui/QTextBrowser>
 #include <QtGui/QVBoxLayout>
 
@@ -55,13 +54,6 @@ static const int TIMER_INTERVAL = 1000; // 1000ms = 1second
 SubWindow::SubWindow( QWidget *parent )
         : QFrame( parent, subwindowFlag )
 {
-    m_titleLabel = new QLabel( this );
-    m_titleLabel->setAlignment( Qt::AlignHCenter );
-    QPalette palette;
-    palette.setColor( m_titleLabel->backgroundRole(), Qt::darkGray );
-    palette.setColor( m_titleLabel->foregroundRole(), Qt::white );
-    m_titleLabel->setPalette( palette );
-
     m_contentsEdit = new QTextBrowser( this );
 
     m_hookTimer = new QTimer( this );
@@ -69,7 +61,6 @@ SubWindow::SubWindow( QWidget *parent )
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setMargin( 0 );
-    layout->addWidget( m_titleLabel );
     layout->addWidget( m_contentsEdit );
     setLayout( layout );
 
@@ -79,13 +70,12 @@ SubWindow::SubWindow( QWidget *parent )
 SubWindow::~SubWindow()
 {}
 
-void SubWindow::hookPopup( const QString &title, const QString contents )
+void SubWindow::hookPopup( const QString contents )
 {
     // stop now running timer
     if ( m_hookTimer->isActive() )
         m_hookTimer->stop();
 
-    m_titleLabel->setText( title );
     m_contentsEdit->setText( contents );
 
     m_hookTimer->setSingleShot( true );
