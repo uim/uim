@@ -1911,7 +1911,8 @@
 (define prime-convert-cancel
   (lambda (context)
     (prime-context-set-state! context 'prime-state-preedit)
-    (prime-context-set-nth! context 0)))
+    (prime-context-set-nth! context 0)
+    (im-deactivate-candidate-selector context)))
 
 ;; This executes 'conv_predict' to predict candidate words and stores them.
 (define prime-convert-get-prediction
