@@ -107,6 +107,7 @@ protected:
 
     // candidate data
     QList<uim_candidate> stores;
+    QList<QString> annotations;
     int nrCandidates;
     int displayLimit;
     int candidateIndex;

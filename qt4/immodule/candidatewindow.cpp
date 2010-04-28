@@ -235,6 +235,7 @@ void CandidateWindow::setPage( int page )
 
     // clear items
     cList->clearContents();
+    annotations.clear();
 
     // calculate page
     int newpage, lastpage;
@@ -297,6 +298,7 @@ void CandidateWindow::setPage( int page )
         if ( hasAnnotation ) {
             annotationString
                 = QString::fromUtf8( uim_candidate_get_annotation_str( cand ) );
+            annotations.append( annotationString );
         }
 
         // insert new item to the candidate list
@@ -311,9 +313,9 @@ void CandidateWindow::setPage( int page )
         cList->setItem( i, HEADING_COLUMN, headItem );
         cList->setItem( i, CANDIDATE_COLUMN, candItem );
 
-        if ( hasAnnotation ) {
+        if ( hasAnnotation && !annotationString.isEmpty() ) {
             QTableWidgetItem *annotationItem = new QTableWidgetItem;
-            annotationItem->setText( annotationString );
+            annotationItem->setText( "..." );
             annotationItem->setFlags(
                 Qt::ItemIsSelectable | Qt::ItemIsEnabled );
 
@@ -558,8 +560,7 @@ void CandidateWindow::slotHookSubwindow()
     subWin->cancelHook();
 
     // hook annotation
-    QString annotationString
-        = cList->item( list[0]->row(), ANNOTATION_COLUMN )->text();
+    QString annotationString = annotations.at( list[0]->row() );
     if ( !annotationString.isEmpty() )
     {
         subWin->layoutWindow( frameGeometry() );
@@ -620,8 +621,7 @@ QSize CandidateListView::sizeHint() const
     int width = frame;
     // the size of the dummy column should be 0.
     for ( int i = 0; i < columnCount() - 1; i++ )
-        width += ( i != ANNOTATION_COLUMN ) ?
-            columnWidth( i ) : qMin( columnWidth( i ), MIN_CAND_WIDTH );
+        width += columnWidth( i );
 
     return QSize( width, rowHeight( 0 ) * rowNum + frame );
 }
