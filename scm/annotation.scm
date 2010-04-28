@@ -51,12 +51,33 @@
 
 (define annotation-load
   (lambda (name)
-    (or (and (try-require (string-append "annotation-" name ".scm"))
-          (let ((env (interaction-environment)))
-            (set! annotation-init
-              (eval (string->symbol (string-append name "-init")) env))
-            (set! annotation-get-text
-              (eval (string->symbol (string-append name "-get-text")) env))
-            (set! annotation-release
-              (eval (string->symbol (string-append name "-release")) env))))
-      (uim-notify-info (N_ "invalid annotation agent name")))))
+    (or (and name
+             (try-require (string-append "annotation-" name ".scm"))
+             (let ((env (interaction-environment)))
+               (set! annotation-init
+                 (eval (string->symbol (string-append name "-init")) env))
+               (set! annotation-get-text
+                 (eval (string->symbol (string-append name "-get-text")) env))
+               (set! annotation-release
+                 (eval (string->symbol (string-append name "-release")) env))
+               #t)
+             (begin
+               (annotation-init)
+               #t))
+        (and
+          (begin
+            (annotation-agent-reset)
+            (if (and name
+                     (not (string=? name "im")))
+              (uim-notify-info (N_ "invalid annotation agent name"))))))))
+
+(define annotation-unload
+  (lambda ()
+    (annotation-release)
+    (annotation-agent-reset)))
+
+(define annotation-agent-reset
+  (lambda ()
+    (set! annotation-init (lambda () #f))
+    (set! annotation-get-text (lambda (text) ""))
+    (set! annotation-release (lambda () #f))))

@@ -42,6 +42,7 @@
   (lambda ()
     (and (provided? "eb")
       eb-enable-for-annotation?
+      (not eb-ctx)
       (set! eb-ctx (eb-new eb-dic-path)))))
 
 (define eb-get-text
@@ -53,5 +54,7 @@
 
 (define eb-release
   (lambda ()
-    (and eb-ctx
-      (eb-destroy eb-ctx))))
+    (if eb-ctx
+      (begin
+        (eb-destroy eb-ctx)
+        (set! eb-ctx #f)))))

@@ -554,7 +554,10 @@
   (list 'choice
     (list 'eb
       (N_ "EB library")
-      (N_ "EB library")))
+      (N_ "EB library"))
+    (list 'im
+      (N_ "Annotation from IM only")
+      (N_ "long description will be here.")))
   (N_ "Annotation agent name")
   (N_ "long description will be here."))
 
@@ -562,6 +565,15 @@
   'custom-activity-hooks
   (lambda ()
     enable-annotation?))
+
+(custom-add-hook 'annotation-agent
+                 'custom-set-hooks
+                 (lambda ()
+                   (annotation-unload)
+                   (annotation-load
+                     (if enable-annotation?
+                       (symbol->string annotation-agent)
+                       #f))))
 
 ;; EB Library support
 (define-custom-group 'eb
