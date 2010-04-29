@@ -602,7 +602,15 @@ bool CandidateWindow::eventFilter( QObject *obj, QEvent *event )
     if ( obj == window ) {
         if ( event->type() == QEvent::Move ) {
             QMoveEvent *moveEvent = static_cast<QMoveEvent *>( event );
-            move( pos() + moveEvent->pos() - moveEvent->oldPos() );
+            QWidget *widget = QApplication::focusWidget();
+            if ( widget ) {
+                QRect rect
+                    = widget->inputMethodQuery( Qt::ImMicroFocus ).toRect();
+                QPoint p = widget->mapToGlobal( rect.topLeft() );
+                layoutWindow( p.x(), p.y(), rect.width(), rect.height() );
+            } else {
+                move( pos() + moveEvent->pos() - moveEvent->oldPos() );
+            }
         }
         return false;
     }
