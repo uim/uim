@@ -419,9 +419,11 @@ void CandidateWindow::shiftPage( bool forward )
         uim_set_candidate_index( ic->uimContext(), candidateIndex );
 }
 
-void CandidateWindow::layoutWindow( int x, int y, int w, int h )
+void CandidateWindow::layoutWindow( const QPoint &point, const QRect &rect )
 {
-    Q_UNUSED( w )
+    const int x = point.x();
+    const int y = point.y();
+    const int h = rect.height();
     int destX = x;
     int destY = y + h;
 
@@ -607,7 +609,7 @@ bool CandidateWindow::eventFilter( QObject *obj, QEvent *event )
                 QRect rect
                     = widget->inputMethodQuery( Qt::ImMicroFocus ).toRect();
                 QPoint p = widget->mapToGlobal( rect.topLeft() );
-                layoutWindow( p.x(), p.y(), rect.width(), rect.height() );
+                layoutWindow( p, rect );
             } else {
                 move( pos() + moveEvent->pos() - moveEvent->oldPos() );
             }

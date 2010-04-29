@@ -61,7 +61,7 @@ public:
     void setAlwaysLeftPosition( bool left ) { isAlwaysLeft = left; }
     bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
 
-    void layoutWindow( int x, int y, int w, int h );
+    void layoutWindow( const QPoint &point, const QRect &rect );
 
     void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
 

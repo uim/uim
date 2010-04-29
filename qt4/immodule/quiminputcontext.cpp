@@ -434,15 +434,6 @@ void QUimInputContext::reloadUim()
     }
 }
 
-void QUimInputContext::setMicroFocus( int x, int y, int w, int h )
-{
-#ifdef ENABLE_DEBUG
-    qDebug("IC setMicroFocus (%d, %d), (%d, %d)", x, y, w, h);
-#endif
-
-    cwin->layoutWindow( x, y, w, h );
-}
-
 void QUimInputContext::mouseHandler( int x, QMouseEvent *e )
 {
     switch ( e->type() )
@@ -490,7 +481,7 @@ void QUimInputContext::update()
     if ( w ) {
         QRect mf = w->inputMethodQuery( Qt::ImMicroFocus ).toRect();
         QPoint p = w->mapToGlobal( mf.topLeft() );
-        setMicroFocus( p.x(), p.y(), mf.width(), mf.height() );
+        cwin->layoutWindow( p, mf );
         m_indicator->move( w->mapToGlobal( mf.bottomLeft() )
             + QPoint( 0, CaretStateIndicator::SPACING ) );
     }
