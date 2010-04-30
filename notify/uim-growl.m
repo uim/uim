@@ -60,6 +60,7 @@ uim_growl_notify(int prio, BOOL is_sticky, const char *body)
 
   fprintf(stderr, "libuim: %s\n", UGETTEXT(body));
 
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   [GrowlApplicationBridge
 	  notifyWithTitle:[NSString stringWithCString:title[prio]]
 	      description:[NSString stringWithUTF8String:body_short]
@@ -68,6 +69,7 @@ uim_growl_notify(int prio, BOOL is_sticky, const char *body)
 		 priority:prio
 		 isSticky:is_sticky
 	     clickContext:nil];
+  [pool release];
 
   return UIM_TRUE;
 }
