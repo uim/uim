@@ -70,7 +70,7 @@ SubWindow::SubWindow( QWidget *parent )
 SubWindow::~SubWindow()
 {}
 
-void SubWindow::hookPopup( const QString contents )
+void SubWindow::hookPopup( const QString &contents )
 {
     // stop now running timer
     if ( m_hookTimer->isActive() )

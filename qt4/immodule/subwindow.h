@@ -54,7 +54,7 @@ public:
     }
 
 public slots:
-    void hookPopup( const QString contents );
+    void hookPopup( const QString &contents );
     void cancelHook();
 
 protected:
