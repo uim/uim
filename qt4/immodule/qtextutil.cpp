@@ -125,11 +125,11 @@ QUimTextUtil::acquirePrimaryText( enum UTextOrigin origin,
     return -1;
 #endif
 
-    if ( mWidget->inherits( "QLineEdit" ) )
+    if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = acquirePrimaryTextInQLineEdit( origin, former_req_len,
                                              latter_req_len, former, latter );
 #ifdef ENABLE_QT4_QT3SUPPORT
-    else if ( mWidget->inherits( "Q3TextEdit" ) )
+    else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = acquirePrimaryTextInQTextEdit( origin, former_req_len,
                                              latter_req_len, former, latter );
 #endif
@@ -417,11 +417,11 @@ QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
     return -1;
 #endif
 
-    if ( mWidget->inherits( "QLineEdit" ) )
+    if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = acquireSelectionTextInQLineEdit( origin, former_req_len,
                                                latter_req_len, former, latter );
 #ifdef ENABLE_QT4_QT3SUPPORT
-    else if ( mWidget->inherits( "Q3TextEdit" ) )
+    else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = acquireSelectionTextInQTextEdit( origin, former_req_len,
                                                latter_req_len, former, latter );
 #endif
@@ -630,11 +630,11 @@ QUimTextUtil::deletePrimaryText( enum UTextOrigin origin, int former_req_len,
     return -1;
 #endif
 
-    if ( mWidget->inherits( "QLineEdit" ) )
+    if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = deletePrimaryTextInQLineEdit( origin, former_req_len,
                                             latter_req_len );
 #ifdef ENABLE_QT4_QT3SUPPORT
-    else if ( mWidget->inherits( "Q3TextEdit" ) )
+    else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = deletePrimaryTextInQTextEdit( origin, former_req_len,
                                             latter_req_len );
 #endif
@@ -847,11 +847,11 @@ QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
     return -1;
 #endif
 
-    if ( mWidget->inherits( "QLineEdit" ) )
+    if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = deleteSelectionTextInQLineEdit( origin, former_req_len,
                                               latter_req_len );
 #ifdef ENABLE_QT4_QT3SUPPORT
-    else if ( mWidget->inherits( "Q3TextEdit" ) )
+    else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = deleteSelectionTextInQTextEdit( origin, former_req_len,
                                               latter_req_len );
 #endif
