@@ -529,7 +529,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                 return -1;
             }
 
-            if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find( '\n' ) ) != -1 ) )
+            if ( latter_req_len == UTextExtent_Line && ( ( newline = text.indexOf( '\n' ) ) != -1 ) )
                 offset = len - newline;
         }
         *latter = strdup( text.left( len - offset ).toUtf8().data() );
@@ -545,7 +545,7 @@ QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
                 return -1;
             }
 
-            if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) )
+            if ( former_req_len == UTextExtent_Line && ( ( newline = text.lastIndexOf( '\n' ) ) != -1 ) )
                 offset = newline + 1;
         }
         *former = strdup( text.mid( offset, len - offset ).toUtf8().data() );
@@ -956,7 +956,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
             if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
-            if ( latter_req_len == UTextExtent_Line && ( ( newline = text.find('\n') ) != -1 ) ) {
+            if ( latter_req_len == UTextExtent_Line && ( ( newline = text.indexOf('\n') ) != -1 ) ) {
                 end_para = sel_para_from;
                 end_index = sel_index_from + newline;
             }
@@ -974,7 +974,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
                 return -1;
 
-            if ( former_req_len == UTextExtent_Line && ( ( newline = text.findRev( '\n' ) ) != -1 ) ) {
+            if ( former_req_len == UTextExtent_Line && ( ( newline = text.lastIndexOf( '\n' ) ) != -1 ) ) {
                 start_para = sel_para_to;
                 start_index = 0;
             }
