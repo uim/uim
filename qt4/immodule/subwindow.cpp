@@ -40,12 +40,12 @@ SUCH DAMAGE.
 #include <QtGui/QVBoxLayout>
 
 
-const Qt::WFlags subwindowFlag = ( Qt::Window
-                                   | Qt::WindowStaysOnTopHint
-                                   | Qt::FramelessWindowHint
-                                   | Qt::Tool
+const Qt::WindowFlags subwindowFlag = ( Qt::Window
+                                        | Qt::WindowStaysOnTopHint
+                                        | Qt::FramelessWindowHint
+                                        | Qt::Tool
 #if defined(Q_WS_X11)
-                                   | Qt::X11BypassWindowManagerHint
+                                        | Qt::X11BypassWindowManagerHint
 #endif
                                  );
 

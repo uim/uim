@@ -50,12 +50,12 @@ static const int HEADING_COLUMN = 0;
 static const int CANDIDATE_COLUMN = 1;
 static const int ANNOTATION_COLUMN = 2;
 
-const Qt::WFlags candidateFlag = ( Qt::Window
-                                   | Qt::WindowStaysOnTopHint
-                                   | Qt::FramelessWindowHint
-                                   | Qt::Tool
+const Qt::WindowFlags candidateFlag = ( Qt::Window
+                                        | Qt::WindowStaysOnTopHint
+                                        | Qt::FramelessWindowHint
+                                        | Qt::Tool
 #if defined(Q_WS_X11)
-                                   | Qt::X11BypassWindowManagerHint
+                                        | Qt::X11BypassWindowManagerHint
 #endif
                                  );
 

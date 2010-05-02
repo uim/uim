@@ -61,12 +61,12 @@ static const int MIN_CAND_WIDTH = 80;
 static const int HEADING_COLUMN = 0;
 static const int CANDIDATE_COLUMN = 1;
 
-const Qt::WFlags candidateFlag = ( Qt::Window
-                                   | Qt::WindowStaysOnTopHint
-                                   | Qt::FramelessWindowHint
-                                   | Qt::Tool
+const Qt::WindowFlags candidateFlag = ( Qt::Window
+                                        | Qt::WindowStaysOnTopHint
+                                        | Qt::FramelessWindowHint
+                                        | Qt::Tool
 #if defined(Q_WS_X11)
-                                   | Qt::X11BypassWindowManagerHint
+                                        | Qt::X11BypassWindowManagerHint
 #endif
                                  );
 static QSocketNotifier *notifier = 0;

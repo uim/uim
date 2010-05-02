@@ -21,7 +21,7 @@
 #include <QtGui/QStyle>
 #include <QtGui/QStyleOption>
 
-KSeparator::KSeparator( QWidget* parent, Qt::WFlags f )
+KSeparator::KSeparator( QWidget* parent, Qt::WindowFlags f )
         : QFrame( parent, f )
 {
     setLineWidth( 1 );
@@ -31,7 +31,7 @@ KSeparator::KSeparator( QWidget* parent, Qt::WFlags f )
 
 
 
-KSeparator::KSeparator( int orientation, QWidget* parent, Qt::WFlags f )
+KSeparator::KSeparator( int orientation, QWidget* parent, Qt::WindowFlags f )
         : QFrame( parent, f )
 {
     setLineWidth( 1 );
