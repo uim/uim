@@ -37,6 +37,7 @@
 
 #include "qtgettext.h"
 
+#include <QtCore/QPointer>
 #include <QtGui/QFileDialog>
 #include <QtGui/QLabel>
 #include <QtGui/QTreeWidget>
@@ -828,7 +829,7 @@ const QStringList KeyEditForm::getKeyStrList()
 
 void KeyEditForm::slotAddClicked()
 {
-    KeyGrabDialog *d = new KeyGrabDialog( this );
+    QPointer<KeyGrabDialog> d = new KeyGrabDialog( this );
     if( d->exec() == KeyGrabDialog::Accepted )
     {
         QString keystr = d->getKeyStr();
@@ -855,7 +856,7 @@ void KeyEditForm::slotEditClicked()
     QList<QTreeWidgetItem *> selectedItems = m_listView->selectedItems();
     if( selectedItems.isEmpty() )
         return;
-    KeyGrabDialog *d = new KeyGrabDialog( this );
+    QPointer<KeyGrabDialog> d = new KeyGrabDialog( this );
     if( d->exec() == KeyGrabDialog::Accepted )
     {
         QString keystr = d->getKeyStr();
