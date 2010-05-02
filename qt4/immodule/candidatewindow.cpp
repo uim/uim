@@ -313,11 +313,12 @@ void CandidateWindow::setPage( int page )
         cList->setItem( i, HEADING_COLUMN, headItem );
         cList->setItem( i, CANDIDATE_COLUMN, candItem );
 
-        if ( hasAnnotation && !annotationString.isEmpty() ) {
+        if ( hasAnnotation ) {
             QTableWidgetItem *annotationItem = new QTableWidgetItem;
-            annotationItem->setText( "..." );
             annotationItem->setFlags(
                 Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+            if ( !annotationString.isEmpty() )
+                annotationItem->setText( "..." );
 
             cList->setItem( i, ANNOTATION_COLUMN, annotationItem );
         }
