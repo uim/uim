@@ -604,7 +604,6 @@ bool CandidateWindow::eventFilter( QObject *obj, QEvent *event )
 {
     if ( obj == window ) {
         if ( event->type() == QEvent::Move ) {
-            QMoveEvent *moveEvent = static_cast<QMoveEvent *>( event );
             QWidget *widget = QApplication::focusWidget();
             if ( widget ) {
                 QRect rect
@@ -612,6 +611,7 @@ bool CandidateWindow::eventFilter( QObject *obj, QEvent *event )
                 QPoint p = widget->mapToGlobal( rect.topLeft() );
                 layoutWindow( p, rect );
             } else {
+                QMoveEvent *moveEvent = static_cast<QMoveEvent *>( event );
                 move( pos() + moveEvent->pos() - moveEvent->oldPos() );
             }
         }
