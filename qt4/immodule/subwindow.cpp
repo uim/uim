@@ -64,6 +64,8 @@ SubWindow::SubWindow( QWidget *parent )
     layout->addWidget( m_contentsEdit );
     setLayout( layout );
 
+    adjustSize();
+
     hide();
 }
 
