@@ -489,6 +489,7 @@ input_pad_create(void)
   input_pad_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(input_pad_win),
 		       _("ja-pad"));
+  gtk_window_set_accept_focus(GTK_WINDOW(input_pad_win), FALSE);
   g_signal_connect(G_OBJECT(input_pad_win), "destroy",
 		   G_CALLBACK(gtk_main_quit), NULL);
 
