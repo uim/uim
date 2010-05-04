@@ -48,9 +48,20 @@ SUCH DAMAGE.
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QStackedWidget>
 
+#ifdef Q_WS_X11
+#include <QtGui/QX11Info>
+
+#include <X11/Xutil.h>
+#endif
+
 #include <clocale>
 
+#include <uim/uim.h>
+#include <uim/uim-helper.h>
+
 #include "qtgettext.h"
+
+static int uim_fd = -1;
 
 int main( int argc, char *argv[] )
 {
@@ -91,14 +102,29 @@ int main( int argc, char *argv[] )
 KUimCharDict::KUimCharDict( QWidget *parent )
         : QWidget( parent )
 {
+#ifdef Q_WS_X11
+    // Don't give input focus to this window.
+    XWMHints *wmhints = XGetWMHints( QX11Info::display(), winId() );
+    if ( !wmhints )
+        wmhints = XAllocWMHints();
+    wmhints->flags = InputHint;
+    wmhints->input = False;
+    XSetWMHints( QX11Info::display(), winId(), wmhints );
+    XFree( wmhints );
+#endif
+
     setupWidgets();
 
     readConfig();
+
+    uim_fd = uim_helper_init_client_fd( 0 );
 }
 
 KUimCharDict::~KUimCharDict()
 {
     writeConfig();
+
+    uim_helper_close_client_fd( uim_fd );
 }
 
 void KUimCharDict::setupWidgets()
@@ -219,4 +245,6 @@ void KUimCharDict::slotSelectFont()
 void KUimCharDict::slotCharSelected( const QString &c )
 {
     m_charLineEdit->setText( m_charLineEdit->text() + c );
+    uim_helper_send_message( uim_fd,
+        ( "commit_string\n" + c + "\n" ).toUtf8().data() );
 }
