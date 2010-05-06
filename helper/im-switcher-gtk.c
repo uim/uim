@@ -430,6 +430,10 @@ parse_helper_str(const char *sent_str)
 {
   if (g_str_has_prefix(sent_str, "im_list") == TRUE) {
     parse_helper_str_im_list(sent_str);
+  } else if (g_str_has_prefix(sent_str, "im_switcher_start") == TRUE) {
+    uim_helper_send_message(uim_fd, "im_switcher_quit\n"); 
+  } else if (g_str_has_prefix(sent_str, "im_switcher_quit") == TRUE) {
+    gtk_main_quit();
   }
 }
 
@@ -555,6 +559,9 @@ main(int argc, char *argv[])
   /* connect to uim helper message bus */
   uim_fd = -1;
   check_helper_connection();
+
+  /* To check if another uim-im-switcher exists */
+  uim_helper_send_message(uim_fd, "im_switcher_start\n"); 
 
   /* To load input method list */
   uim_helper_send_message(uim_fd, "im_list_get\n");

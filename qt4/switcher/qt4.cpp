@@ -85,6 +85,9 @@ UimImSwitcher::UimImSwitcher( QWidget *parent )
     uim_fd = -1;
     checkHelperConnection();
 
+    /* to check if another uim-im-switcher exists */
+    uim_helper_send_message( uim_fd, "im_switcher_start\n" );
+
     /* to load input method list */
     uim_helper_send_message( uim_fd, "im_list_get\n" );
 
@@ -244,6 +247,10 @@ void UimImSwitcher::slotStdinActivated()
             reloadImList();
         else if ( msg.startsWith( QLatin1String( "im_list" ) ) )
             parseHelperStrImList( msg );
+        else if ( msg.startsWith( QLatin1String( "im_switcher_start" ) ) )
+            uim_helper_send_message( uim_fd,  "im_switcher_quit\n" );
+        else if ( msg.startsWith( QLatin1String( "im_switcher_quit" ) ) )
+            QApplication::instance()->quit();
     }
 }
 
