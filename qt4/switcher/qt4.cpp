@@ -301,6 +301,9 @@ void UimImSwitcher::parseHelperStrImList( const QString &message )
                     && iminfoList[ 3 ] == QLatin1String( "selected" ) )
                 for ( int j = 0; j < listview->columnCount(); j++ )
                     listview->item( row, j )->setSelected( true );
+
+            listview->setRowHeight(
+                row, QFontMetrics( listview->font() ).height() + 2 );
         }
     }
     listview->sortItems( 0 );
