@@ -57,6 +57,22 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: New helper protocol messages for uim-im-switcher
+Affects: Helper program developers
+Updates: Helper protocol
+Version: 1.6.0
+Revision: ac6364, ac6365
+Date: 2010-05-06
+Modifier: Muneyuki Noguchi
+Related: bug #2112
+URL:
+Changes:
+  (new) im_switcher_start
+  (new) im_switcher_quit
+Description:
+  Add messages to make uim-im-switcher single instance by quitting
+  a newly started uim-im-switcher when another uim-im-switcher exists.
+------------------------------------------------------------------------------
 Summary: rk-expect-key? is added in rk.scm
 Affects: IM developers
 Updates: Scheme API
