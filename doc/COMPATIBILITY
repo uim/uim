@@ -135,24 +135,32 @@ Summary: Plugin loding and unloading schemes are changed
 Affects: uim developers, IM developers
 Updates: libuim ABI, Scheme API
 Version: 1.6.0
-Revision: ac5424, ac5456, ac5457
-Date: 2008-04-17 -
-Modifier: Masahito Omote, YamaKen
+Revision: ac5424, ac5456, ac5457, ac6371
+Date: 2008-04-17 - 2010-05-07
+Modifier: Masahito Omote, YamaKen, Etsushi
 Related:
 URL:
 Changes:
      (added) module-load
      (added) module-unload
+     (added) require-dynlib
+     (added) dynlib-unload
      (added) %%dynlib-bind
      (added) %%dynlib-unbind
 Description:
-  New API for loding/unloading modules rewritten in C and Scheme. module-load
-  and module-unload are the same ones as load-plugin/unload-plugin written in
-  Scheme. module-bind/module-unbind are written in C for the purpose of
-  binding/unbinding library pointer bounded by dlopen and C function pointers.
-  Using module-load/module-unbind are encouraged when you want to load/unload
-  modules from Scheme code.
+  New API for loding/unloading modules (see below) and dynlib
+  rewritten in C and Scheme. module-load and module-unload are the
+  same ones as obsoleted load-plugin/unload-plugin, which is now
+  written in Scheme.  require-dynlib and dynlib-unload are written in
+  Scheme for the purpose of loading dynlib from Scheme code.
+  %%dynlibe-bind and %%dynlib-unbind are written in C for the purpose
+  of binding/unbinding library pointer bounded by dlopen and C
+  function pointers.
 
+  Using module-load/module-unbind are encouraged when you want to
+  load/unload modules (Scheme and dynlib pair module, or Scheme only
+  module) from Scheme code, and require-dynlib and dynlib-unload are
+  encouraged when you want to load/unload dynlib from Scheme code.
 ------------------------------------------------------------------------------
 Summary: Feature provision of 'uim'
 Affects: uim developers, IM developers
