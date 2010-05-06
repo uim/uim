@@ -547,15 +547,6 @@ main(int argc, char *argv[])
   bind_textdomain_codeset( PACKAGE, "UTF-8");
   parse_arg(argc, argv);
 
-  gtk_init(&argc, &argv);
-
-  result = create_switcher();
-
-  if (result == -1) {
-    fprintf(stderr, "Error:%s\n", get_error_msg());
-    exit(EXIT_FAILURE);
-  }
-
   /* connect to uim helper message bus */
   uim_fd = -1;
   check_helper_connection();
@@ -565,6 +556,15 @@ main(int argc, char *argv[])
 
   /* To load input method list */
   uim_helper_send_message(uim_fd, "im_list_get\n");
+
+  gtk_init(&argc, &argv);
+
+  result = create_switcher();
+
+  if (result == -1) {
+    fprintf(stderr, "Error:%s\n", get_error_msg());
+    exit(EXIT_FAILURE);
+  }
 
   load_configration(NULL);
   gtk_main ();
