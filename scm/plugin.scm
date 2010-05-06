@@ -231,4 +231,5 @@
 (define module-unload-all
   (lambda ()
      (%%dynlib-unbind-all plugin-alist)
+     (set! plugin-alist '())
      #t))
