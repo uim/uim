@@ -185,7 +185,7 @@ uim_quit(void)
   uim_notify_quit();
 #endif
   uim_scm_callf("annotation-unload", "");
-  uim_scm_callf("module-unload-all", "");
+  uim_scm_callf("dynlib-unload-all", "");
   uim_quit_dynlib();
   uim_scm_quit();
   uim_initialized = UIM_FALSE;

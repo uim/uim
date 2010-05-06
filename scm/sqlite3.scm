@@ -29,10 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(and (not (provided? "sqlite3"))
-     (guard (err (else #f))
-            (module-load "sqlite3"))
-     (provide "sqlite3"))
+(guard (err (else #f))
+       (require-dynlib "sqlite3"))
 
 (require-extension (srfi 1))
 

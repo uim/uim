@@ -31,9 +31,7 @@
 
 (require-extension (srfi 9 48))
 
-(and (not (provided? "fileio"))
-     (module-load "fileio")
-     (provide "fileio"))
+(require-dynlib "fileio")
 
 (define file-bufsiz 16384)
 

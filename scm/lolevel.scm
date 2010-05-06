@@ -30,7 +30,7 @@
 ;;;;
 
 (use srfi-1)
-(module-load "lolevel")
+(require-dynlib "lolevel")
 
 (define (u8list-pack fmt . args)
   (apply append

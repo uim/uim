@@ -32,10 +32,8 @@
 (require-extension (srfi 9))
 (require "fileio.scm")
 
-(and (not (provided? "openssl"))
-     (guard (err (else #f))
-            (module-load "openssl"))
-     (provide "openssl"))
+(guard (err (else #f))
+       (require-dynlib "openssl"))
 
 (define-record-type openssl-file-internal
   (make-openssl-file-internal-port ssl-ctx ssl) openssl-file-internal?

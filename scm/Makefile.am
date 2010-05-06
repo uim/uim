@@ -53,7 +53,8 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  input-parse.scm match.scm pregexp.scm \
  http-client.scm http-server.scm \
  sxml-tools.scm sxpathlib.scm \
- annotation.scm annotation-eb.scm
+ annotation.scm annotation-eb.scm \
+ dynlib.scm
 
 ETAGS_ARGS=$(SCM_FILES) $(GENERATED_SCM_FILES)
 

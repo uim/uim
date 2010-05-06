@@ -31,9 +31,7 @@
 
 (require "i18n.scm")
 (require "fileio.scm")
-(and (not (provided? "process"))
-     (module-load "process")
-     (provide "process"))
+(require-dynlib "process")
 
 (define process-waitpid-options-alist (process-waitpid-options?))
 

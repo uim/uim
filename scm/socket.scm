@@ -32,9 +32,7 @@
 (require-extension (srfi 1 2 9))
 (use util)
 (require "fileio.scm")
-(and (not (provided? "socket"))
-     (module-load "socket")
-     (provide "socket"))
+(require-dynlib "socket")
 
 (define addrinfo-ai-flags-alist (addrinfo-ai-flags-alist?))
 (define addrinfo-ai-family-alist (addrinfo-ai-family-alist?))
