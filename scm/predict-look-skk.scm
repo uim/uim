@@ -31,7 +31,7 @@
 
 (require-extension (srfi 1))
 
-(module-load "look")
+(require-dynlib "look")
 
 (require "wlos.scm")
 

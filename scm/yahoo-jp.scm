@@ -41,7 +41,7 @@
 (require-custom "yahoo-jp-custom.scm")
 (require-custom "yahoo-jp-key-custom.scm")
 
-(module-load "expat")
+(require-dynlib "expat")
 
 ;;; implementations
 

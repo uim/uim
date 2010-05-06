@@ -34,7 +34,7 @@
 (require "i18n.scm")
 (require "util.scm")
 
-(module-load "custom-enabler")
+(require-dynlib "custom-enabler")
 
 (define (write-tree tree out)
   (let loop ((tree tree))
