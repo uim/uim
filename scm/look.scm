@@ -33,8 +33,7 @@
 (require-custom "generic-key-custom.scm")
 (require-custom "look-custom.scm")
 
-(and (require-dynlib "eb")
-     (provided "eb"))
+(require-dynlib "eb")
 
 ;; widgets
 (define look-widgets '(widget_look_input_mode))
