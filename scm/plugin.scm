@@ -60,7 +60,9 @@
   (lambda (module-name)
     (set! currently-loading-module-name module-name)
     (let ((succeeded (or (module-load module-name)
-			 (try-require (string-append module-name ".scm")))))
+                         (try-require (find-module-scm-path
+                                        uim-plugin-scm-load-path
+                                        module-name)))))
       (set! currently-loading-module-name #f)
       succeeded)))
 
@@ -140,6 +142,6 @@
       (let ((scm-path (find-module-scm-path
 				    uim-plugin-scm-load-path module-name)))
         (if (string? scm-path)
-          (try-require scm-path))
-        #t)
+          (try-require scm-path)
+          #t))
       #f)))
