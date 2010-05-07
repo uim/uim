@@ -124,6 +124,7 @@
                                           library-ptr
                                           init-proc
                                           quit-proc)
+                      (provide dynlib-name)
                       #t)
                     #f))))))
 
@@ -134,7 +135,9 @@
 	       (init-proc (dynlib-list-query-instance-init dynlib-name))
 	       (quit-proc (dynlib-list-query-instance-quit dynlib-name)))
 	      (%%dynlib-unbind library-ptr init-proc quit-proc)
-	      (dynlib-list-delete dynlib-name) #t)))
+	      (dynlib-list-delete dynlib-name)
+              ;; (unprovide dynlib-name) ;; FIXME
+              #t)))
 
 (define dynlib-unload-all
   (lambda ()

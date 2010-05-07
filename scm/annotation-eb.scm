@@ -28,8 +28,7 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
-(and (require-dynlib "eb")
-     (provide "eb"))
+(require-dynlib "eb")
 
 (define eb-ctx #f)
 
