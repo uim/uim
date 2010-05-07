@@ -992,6 +992,7 @@ static void
 uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
 {
   GtkWidget *window, *scrwin, *text_view, *frame;
+  GdkGeometry hints;
 
   if (cwin->sub_window.window)
     return;
@@ -1001,6 +1002,10 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
 
   frame = gtk_frame_new(NULL);
   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
+
+  hints.max_width = UIM_ANNOTATION_WIN_WIDTH;
+  hints.max_height = UIM_ANNOTATION_WIN_WIDTH;
+  gtk_window_set_geometry_hints(GTK_WINDOW(window), frame, &hints, GDK_HINT_MAX_SIZE);
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),

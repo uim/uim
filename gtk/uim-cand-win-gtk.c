@@ -852,20 +852,27 @@ uim_cand_win_gtk_set_cursor_location(UIMCandWinGtk *cwin, GdkRectangle *area)
   cwin->cursor = *area;
 }
 
+#define UIM_ANNOTATION_WIN_WIDTH 200
+#define UIM_ANNOTATION_WIN_HEIGHT 230
 
 static void
 uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
 {
   GtkWidget *window, *scrwin, *text_view, *frame;
+  GdkGeometry hints;
 
   if (cwin->sub_window.window)
     return;
 
   cwin->sub_window.window = window = gtk_window_new(GTK_WINDOW_POPUP);
-  gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
+  gtk_window_set_default_size(GTK_WINDOW(window), UIM_ANNOTATION_WIN_WIDTH, UIM_ANNOTATION_WIN_HEIGHT);
 
   frame = gtk_frame_new(NULL);
   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
+
+  hints.max_width = UIM_ANNOTATION_WIN_WIDTH;
+  hints.max_height = UIM_ANNOTATION_WIN_HEIGHT;
+  gtk_window_set_geometry_hints(GTK_WINDOW(window), frame, &hints, GDK_HINT_MAX_SIZE);
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
