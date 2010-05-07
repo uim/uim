@@ -991,13 +991,16 @@ uim_cand_win_gtk_layout()
 static void
 uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
 {
-  GtkWidget *window, *scrwin, *text_view;
+  GtkWidget *window, *scrwin, *text_view, *frame;
 
   if (cwin->sub_window.window)
     return;
 
   cwin->sub_window.window = window = gtk_window_new(GTK_WINDOW_POPUP);
   gtk_window_set_default_size(GTK_WINDOW(window), UIM_ANNOTATION_WIN_WIDTH, UIM_ANNOTATION_WIN_HEIGHT);
+
+  frame = gtk_frame_new(NULL);
+  gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
@@ -1009,7 +1012,9 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
   gtk_widget_show(text_view);
 
   gtk_container_add(GTK_CONTAINER(scrwin), text_view);
-  gtk_container_add(GTK_CONTAINER(window), scrwin);
+  gtk_container_add(GTK_CONTAINER(frame), scrwin);
+  gtk_container_add(GTK_CONTAINER(window), frame);
+  gtk_widget_show(frame);
   gtk_widget_show(scrwin);
   gtk_widget_show(text_view);
 }
