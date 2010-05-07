@@ -139,7 +139,7 @@ Revision: ac5424, ac5456, ac5457, ac6371
 Date: 2008-04-17 - 2010-05-07
 Modifier: Masahito Omote, YamaKen, Etsushi
 Related:
-URL: http://www.mail-archive.com/uim-en@googlegroups.com/msg00104.html
+URL: http://www.mail-archive.com/uim-en@googlegroups.com/msg00104.html, http://www.mail-archive.com/uim-en@googlegroups.com/msg00110.html
 Changes:
      (added) module-load
      (added) require-dynlib
