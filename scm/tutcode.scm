@@ -92,7 +92,6 @@
 (require-custom "generic-key-custom.scm")
 (require-custom "tutcode-key-custom.scm")
 ;;(load-plugin "skk") ;SKK形式の交ぜ書き辞書の検索のため、libuim-skk.soをロード
-;; FIXME: Temporary workaround for the module system reorganization
 (require-dynlib "skk")
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
