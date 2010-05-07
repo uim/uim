@@ -962,7 +962,7 @@ helper_disconnect_cb(void)
 uim_bool
 uim_custom_enable(void)
 {
-  UIM_EVAL_STRING(NULL, "(module-load \"custom-enabler\")");
+  UIM_EVAL_STRING(NULL, "(require-dynlib \"custom-enabler\")");
   return uim_scm_c_bool(uim_scm_return_value());
 }
 

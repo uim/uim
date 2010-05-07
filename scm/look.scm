@@ -33,10 +33,8 @@
 (require-custom "generic-key-custom.scm")
 (require-custom "look-custom.scm")
 
-(and (not (provided? "eb"))
-     (guard (err (else #f))
-            (module-load "eb"))
-     (provide "eb"))
+(and (require-dynlib "eb")
+     (provided "eb"))
 
 ;; widgets
 (define look-widgets '(widget_look_input_mode))

@@ -28,10 +28,8 @@
 ;;; OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ;;; SUCH DAMAGE.
 ;;;;
-(and (not (provided? "eb"))
-  (guard (err (else #f))
-    (module-load "eb"))
-  (provide "eb"))
+(and (require-dynlib "eb")
+     (provide "eb"))
 
 (define eb-ctx #f)
 
