@@ -91,7 +91,7 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
 
     // Quit
     connect( toolbar, SIGNAL( quitToolbar() ),
-                      qApp, SLOT( quit() ) );
+                      QApplication::instance(), SLOT( quit() ) );
 
     show();
 }

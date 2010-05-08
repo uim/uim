@@ -137,7 +137,7 @@ void UimImSwitcher::createGUI()
     cancelButton->setText( _( "Cancel" ) );
     cancelButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     connect( cancelButton, SIGNAL( clicked() ),
-                      qApp, SLOT( quit() ) );
+                      QApplication::instance(), SLOT( quit() ) );
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch( 0 );
     buttonLayout->addWidget( okButton );
@@ -184,7 +184,7 @@ void UimImSwitcher::slotChangeInputMethod()
     else if ( textButton->isChecked() )
         sendMessageImChange( "im_change_this_text_area_only\n" );
 
-    qApp->quit();
+    QApplication::instance()->quit();
 }
 
 void UimImSwitcher::sendMessageImChange( const QString &change_type )
