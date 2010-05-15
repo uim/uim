@@ -1624,16 +1624,20 @@ AC_OUTPUT
 
 # Generate Makefiles for Qt4 by qmake
 if test x$use_qt4 = xyes; then
+    if test x$use_qt4_immodule = xyes; then
+        qt4_immodule_option="DEFINES+=QT4_IMMODULE"
+    fi
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/candwin/Makefile.qmake \
-		 ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
+        ${ac_abs_top_builddir}/qt4/candwin/uim-candwin-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/chardict/Makefile.qmake \
-		 ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
+        ${ac_abs_top_builddir}/qt4/chardict/uim-chardict-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/pref/Makefile.qmake \
-		 ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
+        ${qt4_immodule_option} \
+        ${ac_abs_top_builddir}/qt4/pref/uim-pref-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/switcher/Makefile.qmake \
-		 ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
+        ${ac_abs_top_builddir}/qt4/switcher/uim-im-switcher-qt4.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/toolbar/Makefile.qmake \
-		 ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
+        ${ac_abs_top_builddir}/qt4/toolbar/uim-toolbar-qt4.pro
 
     # Generate a Makefile for KDE4 applet by cmake
     if test x$use_applet_kde4 = xyes; then

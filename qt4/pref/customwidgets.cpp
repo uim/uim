@@ -980,7 +980,7 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_End:
         keystr += "end";
         break;
-#ifdef QT_IMMODULE
+#ifdef QT4_IMMODULE
     case Qt::Key_Multi_key:
         keystr += "Multi_key";
         break;
@@ -1137,7 +1137,7 @@ void KeyGrabDialog::setKeyStr()
     case Qt::Key_Dead_Horn:
         keystr += "dead-horn";
         break;
-#endif /* Def: QT_IMMODULE */
+#endif /* Def: QT4_IMMODULE */
     case Qt::Key_Shift:
         keystr += "Shift_key";
         break;
