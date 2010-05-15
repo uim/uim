@@ -1814,9 +1814,10 @@ if test x$use_qt4 = xyes; then
 fi
 if test x$use_qt4_immodule = xyes; then
     if test x$use_qt4_qt3support = xyes; then
-        option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
+        qt4_qt3support_option="QT+=qt3support DEFINES+=ENABLE_QT4_QT3SUPPORT"
     fi
-    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake ${option} \
+    ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/immodule/Makefile.qmake \
+                ${qt4_qt3support_option} \
                 ${ac_abs_top_builddir}/qt4/immodule/quiminputcontextplugin.pro
     ${QMAKE4} -o ${ac_abs_top_builddir}/qt4/edittest/Makefile.qmake \
                  ${ac_abs_top_srcdir}/qt4/edittest/edittest.pro
