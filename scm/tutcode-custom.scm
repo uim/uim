@@ -114,6 +114,12 @@
   (N_ "Number of candidates in candidate window at a time")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-nr-candidate-max-for-kigou-mode 10
+  '(tutcode candwin)
+  '(integer 1 99)
+  (N_ "Number of candidates in candidate window at a time for kigou mode")
+  (N_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'tutcode-candidate-op-count
 		 'custom-activity-hooks

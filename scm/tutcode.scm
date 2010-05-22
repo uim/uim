@@ -499,7 +499,9 @@
       (im-activate-candidate-selector
         pc
         (tutcode-context-nr-candidates pc)
-        tutcode-nr-candidate-max))))
+        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
+          tutcode-nr-candidate-max-for-kigou-mode
+          tutcode-nr-candidate-max)))))
 
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
@@ -625,9 +627,11 @@
       (tutcode-reset-candidate-window pc)
       (tutcode-begin-kigou-mode pc))
     ((tutcode-next-page-key? key key-state)
-      (tutcode-change-candidate-index pc tutcode-nr-candidate-max))
+      (tutcode-change-candidate-index pc
+        tutcode-nr-candidate-max-for-kigou-mode))
     ((tutcode-prev-page-key? key key-state)
-      (tutcode-change-candidate-index pc (- tutcode-nr-candidate-max)))
+      (tutcode-change-candidate-index pc
+        (- tutcode-nr-candidate-max-for-kigou-mode)))
     ((or
       (tutcode-commit-key? key key-state)
       (tutcode-return-key? key key-state))
