@@ -94,6 +94,7 @@ protected:
     // Moving and Resizing affects the position of Subwindow
     virtual void moveEvent( QMoveEvent * );
     virtual void resizeEvent( QResizeEvent * );
+    virtual void hideEvent( QHideEvent *event );
 
     bool eventFilter( QObject *obj, QEvent *event );
 

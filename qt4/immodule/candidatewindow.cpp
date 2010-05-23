@@ -129,9 +129,6 @@ void CandidateWindow::activateCandwin( int dLimit )
 
 void CandidateWindow::deactivateCandwin()
 {
-    if ( subWin )
-        subWin->cancelHook();
-
     hide();
     clearCandidates();
 }
@@ -589,6 +586,12 @@ void CandidateWindow::resizeEvent( QResizeEvent *e )
         subWin->layoutWindow( QRect( pos(), e->size() ) );
 }
 
+void CandidateWindow::hideEvent( QHideEvent *event )
+{
+    QFrame::hideEvent( event );
+    if ( subWin )
+        subWin->cancelHook();
+}
 
 QSize CandidateWindow::sizeHint() const
 {
