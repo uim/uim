@@ -102,8 +102,11 @@ CandidateWindow::CandidateWindow( QWidget *parent )
 CandidateWindow::~CandidateWindow()
 {
     // clear stored candidate data
-    while ( !stores.isEmpty() )
-        uim_candidate_free( stores.takeFirst() );
+    while ( !stores.isEmpty() ) {
+        uim_candidate cand = stores.takeFirst();
+        if ( cand )
+            uim_candidate_free( cand );
+    }
 }
 
 void CandidateWindow::popup()
