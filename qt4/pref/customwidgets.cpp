@@ -886,8 +886,7 @@ KeyGrabDialog::KeyGrabDialog( QWidget *parent )
     : QDialog( parent ),
       pressed_keyval( 0 ),
       pressed_keystate( Qt::NoModifier ),
-      pressed_unichar ( 0 ),
-      m_keystr( 0 )
+      pressed_unichar ( 0 )
 {
     QLabel *l = new QLabel( _("Press keys to grab (e.g. <Control>a)"), this );
 
