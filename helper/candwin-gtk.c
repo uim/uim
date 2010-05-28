@@ -998,14 +998,15 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
     return;
 
   cwin->sub_window.window = window = gtk_window_new(GTK_WINDOW_POPUP);
-  gtk_window_set_default_size(GTK_WINDOW(window), UIM_ANNOTATION_WIN_WIDTH, UIM_ANNOTATION_WIN_HEIGHT);
 
   frame = gtk_frame_new(NULL);
   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
 
+  hints.min_width = UIM_ANNOTATION_WIN_WIDTH;
+  hints.min_height = UIM_ANNOTATION_WIN_WIDTH;
   hints.max_width = UIM_ANNOTATION_WIN_WIDTH;
   hints.max_height = UIM_ANNOTATION_WIN_WIDTH;
-  gtk_window_set_geometry_hints(GTK_WINDOW(window), frame, &hints, GDK_HINT_MAX_SIZE);
+  gtk_window_set_geometry_hints(GTK_WINDOW(window), frame, &hints, GDK_HINT_MAX_SIZE | GDK_HINT_MIN_SIZE);
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrwin),
