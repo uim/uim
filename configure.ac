@@ -613,6 +613,23 @@ if test "x$ac_cv_have_struct_sockaddr_storage" = "xyes" ; then
 		[define if you have struct sockaddr_storage data type])
 fi
 
+dnl cred related
+AC_CACHE_CHECK([for struct cmsgcred], ac_cv_have_struct_cmsgcred, [
+	AC_TRY_COMPILE(
+		[
+#include <sys/types.h>
+#include <sys/socket.h>
+		],
+		[ struct cmsgcred s; ],
+		[ ac_cv_have_struct_cmsgcred="yes" ],
+		[ ac_cv_have_struct_cmsgcred="no" ]
+	)
+])
+if test "x$ac_cv_have_struct_cmsgcred" = "xyes" ; then
+	AC_DEFINE(HAVE_STRUCT_CMSGCRED, 1,
+		[define if you have struct cmsgcred data type])
+fi
+
 AC_CACHE_CHECK([for struct sockaddr_in6], ac_cv_have_struct_sockaddr_in6, [
 	AC_TRY_COMPILE(
 		[

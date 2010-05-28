@@ -165,13 +165,16 @@ libuim_scm_la_CPPFLAGS = -I$(top_srcdir) \
 			 -I$(top_srcdir)/sigscheme/src \
 			 -I$(top_builddir)/sigscheme/src \
 			 $(GCROOTS_CFLAGS)
+# GCC 4.4's optimization may causes problem with combination of
+# alloc.c and read.c imported from sigscheme
+libuim_scm_la_CFLAGS = -fno-strict-aliasing
 if DEBUG
   libuim_scm_la_CPPFLAGS += -DDEBUG=1 -DDEBUG_SCM=1
 endif
 # Since the generated Makefile will have the order
 # '$(libuim_scm_la_CFLAGS) $(CFLAGS)', overriding -Werror in $CFLAGS
 # by -Wno-error in $UIM_SCM_CFLAGS does not work.
-#libuim_scm_la_CFLAGS = $(UIM_SCM_CFLAGS)
+#libuim_scm_la_CFLAGS += $(UIM_SCM_CFLAGS)
 
 # NOTE: Don't depend on -export-symbols-regex to avoid symbol
 # conflict. The libtool option is not and will not be supported on
