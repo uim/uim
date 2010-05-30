@@ -130,3 +130,8 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   tutcode-use-candidate-window?))
+
+(custom-add-hook 'tutcode-nr-candidate-max-for-kigou-mode
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-candidate-window?))
