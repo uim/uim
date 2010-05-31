@@ -106,7 +106,11 @@ candidate_select_cb(void *ptr, int index)
 
   debug_printf(DEBUG_NOTE, "candidate_select_cb (index: %d)\n", index);
 
+#if !UIM_EL_USE_NEW_PAGE_HANDLING
   ua->cand->index = index;
+#else
+  select_candidate(ua->context, ua->cand, index);
+#endif
 }
 
 
