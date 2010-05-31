@@ -38,6 +38,7 @@
 #define UIM_EMACS_UIM_EL_TYPES_H
 
 #include <config.h>
+#define UIM_EL_USE_NEW_PAGE_HANDLING	1
 
 typedef struct candidate {
   char *str;
@@ -50,6 +51,9 @@ typedef struct candidate_info {
   int num;
   int disp_limit;
   int index;
+#if UIM_EL_USE_NEW_PAGE_HANDLING
+  int page_index;
+#endif
   candidate *cand_array;
 } candidate_info;
 

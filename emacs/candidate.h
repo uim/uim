@@ -56,6 +56,9 @@ int new_candidate(uim_context context, candidate_info *cand,
 void clear_candidate(candidate_info *cand);
 
 int show_candidate(candidate_info *cand);
+#if UIM_EL_USE_NEW_PAGE_HANDLING
+void select_candidate(uim_context context, candidate_info *cand, int index);
+#endif
 
 void shift_candidate_page(uim_context context, candidate_info *cand, 
 						  int direction);
