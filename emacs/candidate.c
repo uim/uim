@@ -48,7 +48,8 @@ create_candidate()
 }
 
 #if UIM_EL_USE_NEW_PAGE_HANDLING
-int set_page_candidates(uim_context context, candidate_info *cand)
+static int
+set_page_candidates(uim_context context, candidate_info *cand)
 {
   int i, nr_in_page, start;
 
