@@ -19,6 +19,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  generic-predict.scm predict-custom.scm \
  predict-look.scm predict-look-skk.scm predict-sqlite3.scm \
  pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
+ xmload.scm wb86.scm zm.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
@@ -87,6 +88,7 @@ module_names += "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif
+module_names += "xmload"
 # less preferable IMs
 module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"  "look"
 if SCIM
