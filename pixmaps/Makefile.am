@@ -15,7 +15,8 @@ SVGS += direct_input.svg on.svg off.svg \
         ja_halfkana.svg \
         ja_halfwidth_alnum.svg ja_fullwidth_alnum.svg \
         prime_mode_application.svg \
-	ko_direct.svg ko_hangulchar.svg ko_hangulword.svg
+	ko_direct.svg ko_hangulchar.svg ko_hangulword.svg \
+	wb86.svg zm.svg
 
 # Japanese kana input methods
 SVGS += ja_romaji.svg ja_kana.svg ja_azik.svg ja_nicola.svg ja_pocketbell.svg
@@ -50,6 +51,7 @@ SVG_PNGS = unknown.png \
 	   ko_direct.png ko_hangulchar.png ko_hangulword.png \
            ja_romaji.png ja_kana.png ja_azik.png ja_nicola.png \
            ja_pocketbell.png \
+           wb86.png zm.png \
 	   im_switcher.png uim-dict.png $(IM_SUBST_PNGS)
 
 NATIVE_PNGS = null.png uim-icon64.png uim-icon48.png uim-gray.png

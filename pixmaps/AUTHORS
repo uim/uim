@@ -29,6 +29,8 @@ uim-gray.png im_subst.svg, im_switcher.svg:
 # uim-dict.svg is based on public domain image.
 # http://commons.wikimedia.org/wiki/Image:Books-aj.svg_aj_ashton_01.svg
 uim-dict.svg
+# tentative WuBi86 and Zhengma input method icons
+wb86.svg, zm.svg
   Etsushi Kato <ek.kato@gmail.com>
 
 # ko_direct.svg is based on ja_fullwidth_alnum.svg.
@@ -36,3 +38,4 @@ uim-dict.svg
 # the UnYetgul font by Koaunghi Un, http://kldp.net/projects/unfonts.
 byeoru.svg, ko_direct.svg, ko_hangulchar.svg, ko_hangulword.svg:
   Jae-hyeon Park <jhyeon@gmail.com>
+
