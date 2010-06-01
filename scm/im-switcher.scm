@@ -63,10 +63,10 @@
     (tutcode     . "Tu")
     (trycode     . "Tr")
     (viqr        . "V")
-    (wb86        . "五")
-    (wnn         . "W")
+    (wb86        . "Wb")
+    (wnn         . "Wn")
     (yahoo-jp    . "Yj")
-    (zm          . "郑")))
+    (zm          . "Zm")))
 
 (define imsw-default-iconic-label "IM")
 
