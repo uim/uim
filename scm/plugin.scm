@@ -110,19 +110,6 @@
 		    (try-load user-file))
 	       #t)))))
 
-(define find-module-lib-path
-  (lambda (paths module-name)
-    (let ((path ()))
-      (cond ((null? paths) #f)
-	    ((not (string? (car paths))) #f)
-	    ((file-readable? (string-append (car paths)
-					     "/libuim-"
-					     module-name
-					     ".so"))
-	     (string-append (car paths) "/libuim-" module-name ".so"))
-	    (else
-	     (find-module-lib-path (cdr paths) module-name))))))
-
 (define find-module-scm-path
   (lambda (paths module-name)
     (let ((path ()))
