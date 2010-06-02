@@ -33,54 +33,71 @@
 ;  rk-lib-find-seq
 ;  rk-lib-find-partial-seq
 ;  rk-lib-expect-seq
+;  rk-lib-expect-key?
 ;
 ; back match is mainly used for Hangul
+;
+; if "table" is provided as a rule, ct-lib-find-seq and ;
+; ct-lib-find-partial-seq are used to search words from sorted text
+; file.
 
 (define-record 'rk-context
   '((rule             ())
     (seq              ())
     (immediate-commit #f)
-    (back-match       #f)))
+    (back-match       #f)
+    (find-seq         #f)
+    (find-partial-seq #f)))
 (define rk-context-new-internal rk-context-new)
 
 (define rk-context-new
   (lambda (rule immediate-commit back)
-    (rk-context-new-internal rule () immediate-commit back)))
+    (if (string? rule)
+      (require "ct.scm"))
+    (let ((find-seq (if (string? rule)
+                      ct-lib-find-seq
+                      rk-lib-find-seq))
+          (find-partial-seq (if (string? rule)
+                              ct-lib-find-partial-seq
+                              rk-lib-find-partial-seq)))
+    (rk-context-new-internal rule () immediate-commit back find-seq find-partial-seq))))
 
 ;; back match
 (define rk-find-longest-back-match
-  (lambda (rule seq)
+  (lambda (rule seq find-seq)
     (if (not (null? seq))
-	(if (rk-lib-find-seq seq rule)
+	(if (find-seq seq rule)
 	    seq
-	    (rk-find-longest-back-match rule (cdr seq)))
+	    (rk-find-longest-back-match rule (cdr seq) find-seq))
 	'())))
 ;; back match
 (define rk-find-longest-head
-  (lambda (rseq rule)
+  (lambda (rseq rule find-seq)
     (let ((seq (reverse rseq)))
-      (if (rk-lib-find-seq seq rule)
+      (if (find-seq seq rule)
 	  seq
 	  (if (not (null? rseq))
-	      (rk-find-longest-head (cdr rseq) rule)
+	      (rk-find-longest-head (cdr rseq) rule find-seq)
 	      '())))))
 ;; back match
 (define rk-check-back-commit
   (lambda (rkc rule rseq)
     (let* ((seq (reverse rseq))
 	   (len (length seq))
-	   (longest-tail (rk-find-longest-back-match rule seq))
-	   (longest-head (reverse (rk-find-longest-head rseq rule)))
+           (find-seq (rk-context-find-seq rkc))
+           (find-partial-seq (rk-context-find-partial-seq rkc))
+	   (longest-tail (rk-find-longest-back-match rule seq find-seq))
+	   (longest-head (reverse (rk-find-longest-head rseq rule find-seq)))
 	   (head
 	    (truncate-list seq
 			   (- len (length longest-tail))))
-	   (partial (rk-lib-find-partial-seq seq rule))
+	   (partial (find-partial-seq seq rule))
 	   (tail-partial
 	    (if (not (null? longest-tail))
-		(rk-lib-find-partial-seq longest-tail rule)
+		(find-partial-seq longest-tail rule)
 		#f))
-	   (c (rk-lib-find-seq longest-tail rule))
-	   (t (rk-lib-find-seq seq rule))
+	   (c (find-seq longest-tail rule))
+	   (t (find-seq seq rule))
 	   (res #f))
       (and
        (if (> len 0)
@@ -93,7 +110,7 @@
 	   #f
 	   #t)
        (if (not tail-partial)
-	   (let ((matched (rk-lib-find-seq (reverse longest-head) rule))
+	   (let ((matched (find-seq (reverse longest-head) rule))
 		 (tail (reverse (truncate-list (reverse seq)
 					       (- len
 						  (length longest-head))))))
@@ -103,12 +120,12 @@
 		  res
 		  (or
 		   (not (null? longest-tail))
-		   (rk-lib-find-partial-seq tail rule)))
+		   (find-partial-seq tail rule)))
 		 (rk-context-set-seq! rkc tail)
 		 (rk-context-set-seq! rkc '())) ;; no match in rule
 	     #f)
 	   #t)
-       (let ((matched (rk-lib-find-seq head rule)))
+       (let ((matched (find-seq head rule)))
 	 (if matched
 	     (set! res (cadr matched)))
 	 (rk-context-set-seq! rkc (reverse longest-tail))))
@@ -118,7 +135,7 @@
   (lambda (rkc s)
     (if (null? s)
         #f
-        (rk-lib-find-partial-seq (reverse s) (rk-context-rule rkc)))))
+        ((rk-context-find-partial-seq rkc) (reverse s) (rk-context-rule rkc)))))
 
 ;; API
 (define rk-partial?
@@ -135,8 +152,9 @@
 (define rk-current-seq
   (lambda (rkc)
     (let* ((s (rk-context-seq rkc))
-	   (rule (rk-context-rule rkc)))
-      (rk-lib-find-seq (reverse s) rule))))
+	   (rule (rk-context-rule rkc))
+           (find-seq (rk-context-find-seq rkc)))
+      (find-seq (reverse s) rule))))
 
 ;; API
 (define rk-flush
@@ -207,8 +225,9 @@
 (define rk-proc-tail
   (lambda (context seq)
     (let* ((rule (rk-context-rule context))
+           (find-seq (rk-context-find-seq context))
 	   (old-seq
-	    (rk-lib-find-seq
+	    (find-seq
 	     (reverse (rk-context-seq context)) rule))
 	   (res #f))
       (if old-seq
@@ -285,7 +304,8 @@
 	((s (rk-context-seq rkc))
 	 (s (cons key s))
 	 (rule (rk-context-rule rkc))
-	 (seq (rk-lib-find-seq (reverse s) rule))
+         (find-seq (rk-context-find-seq rkc))
+	 (seq (find-seq (reverse s) rule))
 	 (res #f))
       (set!
        res
@@ -317,7 +337,8 @@
     (let*
 	((s (rk-context-seq rkc))
 	 (rule (rk-context-rule rkc))
-	 (seq (rk-lib-find-seq (reverse s) rule)))
+         (find-seq (rk-context-find-seq rkc))
+	 (seq (find-seq (reverse s) rule)))
       (rk-proc-end-seq rkc seq s)
       )))
 

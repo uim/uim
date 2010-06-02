@@ -32,8 +32,7 @@
 ;;
 (define zm-init-handler
   (lambda (id im arg)
-    (require "zm.scm")
-    (generic-context-new id im zm-rule #f)))
+    (generic-context-new id im "zm.table" #f)))
 
 (generic-register-im
  'zm
@@ -45,8 +44,7 @@
 
 (define wb86-init-handler
   (lambda (id im arg)
-    (require "wb86.scm")
-    (generic-context-new id im wb86-rule #f)))
+    (generic-context-new id im "wb86.table" #f)))
 
 (generic-register-im
  'wb86

@@ -1783,6 +1783,7 @@ AC_CONFIG_FILES([Makefile
 		 fep/Makefile
 		 emacs/Makefile
 		 emacs/uim-version.el
+		 tables/Makefile
 		 test/Makefile
 		 test2/Makefile
 		 test2/run-singletest.sh
