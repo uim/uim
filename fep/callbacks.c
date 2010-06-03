@@ -85,6 +85,7 @@ static void update_cb(void *ptr);
 static void mode_update_cb(void *ptr, int mode);
 static void prop_list_update_cb(void *ptr, const char *str);
 static struct preedit_tag *dup_preedit(struct preedit_tag *p);
+static void init_candidate(int nr, int display_limit);
 static void make_page_strs(void);
 static int numwidth(int n);
 static int index2page(int index);
@@ -219,7 +220,10 @@ int end_callbacks(void)
   free(s_index_str);
 
   if (s_candidate.nr != UNDEFINED) {
-    s_statusline_str = uim_strdup(s_candidate.page_strs[s_candidate.page]);
+    if (s_candidate.page_strs[s_candidate.page])
+      s_statusline_str = uim_strdup(s_candidate.page_strs[s_candidate.page]);
+    else
+      s_statusline_str = uim_strdup("");
     if (s_candidate.index != UNDEFINED) {
       set_candidate();
     } else {
@@ -370,18 +374,15 @@ static void switch_system_global_im_cb(void *ptr, const char *name)
  * s_candidate.nr = nr(候補総数)
  * s_candidate.limit = display_limit(表示する候補数)
  * s_candidate.cand_colの領域を確保する。
- * make_page_strsを呼ぶ。
+ * s_candidate.page = 0 (initial page)
  */
 static void activate_cb(void *ptr, int nr, int display_limit)
 {
   debug2(("activate_cb(nr = %d display_limit = %d)\n", nr, display_limit));
   start_callbacks();
   reset_candidate();
-  s_candidate.nr = nr;
-  s_candidate.limit = display_limit;
-  s_candidate.page = 0;
-  s_candidate.cand_col = uim_malloc(nr * sizeof(int));
-  make_page_strs();
+  init_candidate(nr, display_limit);
+  make_page_strs(); /* setup first page */
 }
 
 /*
@@ -390,15 +391,25 @@ static void activate_cb(void *ptr, int nr, int display_limit)
  */
 static void select_cb(void *ptr, int index)
 {
+  int current_index;
+  int current_page;
+
   debug2(("select_cb(index = %d)\n", index));
   return_if_fail(s_candidate.nr != UNDEFINED);
   return_if_fail(0 <= index && index < s_candidate.nr);
-  if (s_candidate.index == index) {
+
+  current_index = s_candidate.index;
+  current_page = s_candidate.page;
+  if (current_index == index) {
     return;
   }
   start_callbacks();
   s_candidate.index = index;
   s_candidate.page = index2page(index);
+  if (s_candidate.page != current_page &&
+      s_candidate.page_strs[s_candidate.page] == NULL) {
+    make_page_strs();
+  }
 }
 
 /*
@@ -421,6 +432,8 @@ static void shift_page_cb(void *ptr, int direction)
   return_if_fail(0 <= index && index < s_candidate.nr);
   s_candidate.page = page;
   s_candidate.index = index;
+  if (s_candidate.page_strs[page] == NULL)
+    make_page_strs();
   uim_set_candidate_index(g_context, s_candidate.index);
 }
 
@@ -720,6 +733,46 @@ static struct preedit_tag *dup_preedit(struct preedit_tag *p)
 }
 
 /*
+ * initialize contents of s_candidate
+ *
+ * s_candidate.page_strs = array of page string
+ * s_candidate.page2index = head index of candidates at the page
+ * s_candidate.cand_col = place of a candidate
+ * s_candidate.nr_pages = total page number
+ * s_candidate.index_col = column of the currently selected candidate
+ */
+static void init_candidate(int nr, int display_limit)
+{
+  int nr_virtual_pages = 0;
+  int i;
+
+  s_candidate.nr = nr;
+  s_candidate.limit = display_limit;
+  s_candidate.page = 0;
+  s_candidate.cand_col = uim_malloc(nr * sizeof(int));
+
+  assert(s_candidate.nr != UNDEFINED);
+  assert(s_candidate.limit != UNDEFINED);
+  assert(s_candidate.cand_col != NULL);
+
+  if (s_candidate.limit)
+    nr_virtual_pages = (s_candidate.nr - 1) / s_candidate.limit + 1;
+  else
+    nr_virtual_pages = 1;
+
+  s_candidate.nr_pages = nr_virtual_pages;
+  s_candidate.page2index = uim_realloc(s_candidate.page2index, nr_virtual_pages * sizeof(int));
+  s_candidate.index_col = uim_realloc(s_candidate.index_col, nr_virtual_pages * sizeof(int));
+  s_candidate.page_strs = uim_realloc(s_candidate.page_strs, nr_virtual_pages * sizeof(char *));
+
+  for (i = 0; i < nr_virtual_pages; i++) {
+    s_candidate.page2index[i] = i * s_candidate.limit;
+    s_candidate.index_col[i] = UNDEFINED;
+    s_candidate.page_strs[i] = NULL;
+  }
+}
+
+/*
  * s_candidate.page_strs = ページ文字列の配列
  * 文字列の幅がs_max_widthを越えたときは、はみ出た候補を次のページに移す。
  * 1つしか候補がなくてはみ出たときは、移さない。
@@ -738,17 +791,23 @@ static void make_page_strs(void)
   int index_in_page = 0;
   char *old_str;
 
-  int index;
+  int index, page, start, nr_in_virtual_page;
 
   assert(s_candidate.nr != UNDEFINED);
   assert(s_candidate.limit != UNDEFINED);
   assert(s_candidate.cand_col != NULL);
 
-  s_candidate.nr_pages = 0;
+  page = s_candidate.page;
+  start = s_candidate.page2index[page];
+  if (s_candidate.limit && (s_candidate.nr - start) > s_candidate.limit)
+    nr_in_virtual_page = s_candidate.limit;
+  else
+    nr_in_virtual_page = s_candidate.nr - start;
 
-  for (index = 0; index < s_candidate.nr; index++) {
+  for (index = start; index < (start + nr_in_virtual_page); index++) {
     /* A:工  S:広  D:向  F:考  J:構  K:敲  L:後  [残り 227] */
-    int next = FALSE;
+    int next = FALSE; /* flag whether to finish page */
+    int add_extra_page = FALSE;
     /* "[10/20]" の幅 */
     int index_width;
     uim_candidate cand = uim_get_candidate(g_context, index, index_in_page);
@@ -769,12 +828,6 @@ static void make_page_strs(void)
     uim_candidate_free(cand);
     free(cand_str_cand);
 
-    if (index_in_page == 0) {
-      s_candidate.page2index = uim_realloc(s_candidate.page2index, (s_candidate.nr_pages + 1) * sizeof(int));
-      s_candidate.page2index[s_candidate.nr_pages] = index;
-      s_candidate.index_col = uim_realloc(s_candidate.index_col, (s_candidate.nr_pages + 1) * sizeof(int));
-    }
-
     if (page_width + cand_width + index_width > s_max_width && index_in_page != 0) {
       /* はみ出たので次のページに移す */
       index--;
@@ -784,6 +837,7 @@ static void make_page_strs(void)
         index_width = strlen("[/]") + numwidth(index + 1) + numwidth(s_candidate.nr);
       }
       next = TRUE;
+      add_extra_page = TRUE;
     } else {
 
       s_candidate.cand_col[index] = page_width + cand_label_width + strlen(":");
@@ -831,14 +885,14 @@ static void make_page_strs(void)
       free(old_str);
 
       index_in_page++;
-      if (index_in_page == s_candidate.limit || index + 1 == s_candidate.nr) {
+      if (index_in_page == s_candidate.limit || (index + 1 - start) == nr_in_virtual_page) {
         next = TRUE;
       }
     }
 
-    if (next) {
+    if (next) { /* do fix the page */
       if (index_width == UNDEFINED) {
-        s_candidate.index_col[s_candidate.nr_pages] = UNDEFINED;
+        s_candidate.index_col[page] = UNDEFINED;
       } else {
         int index_byte = index_width + 2/* utf-8 */;
         char *index_str;
@@ -853,22 +907,39 @@ static void make_page_strs(void)
           index_str[i] = '-';
         }
         assert(page_width + index_width <= s_max_width);
-        s_candidate.index_col[s_candidate.nr_pages] = page_width + strlen("[");
+        s_candidate.index_col[page] = page_width + strlen("[");
         page_byte += index_byte;
         old_str = page_str;
         uim_asprintf(&page_str, "%s%s", old_str, index_str);
         free(old_str);
         free(index_str);
       }
-      s_candidate.page_strs = uim_realloc(s_candidate.page_strs, (s_candidate.nr_pages + 1) * sizeof(char *));
-      s_candidate.page_strs[s_candidate.nr_pages] = uim_strdup(page_str);
-      s_candidate.nr_pages++; 
+      free(s_candidate.page_strs[page]);
+      s_candidate.page_strs[page] = uim_strdup(page_str);
+      page++; 
 
       page_byte = 0;
       page_width = 0;
       index_in_page = 0;
       free(page_str);
       page_str = uim_strdup("");
+    }
+    if (add_extra_page) {
+      int i;
+
+      s_candidate.nr_pages++;
+      s_candidate.page2index = uim_realloc(s_candidate.page2index, s_candidate.nr_pages * sizeof(int));
+      s_candidate.index_col = uim_realloc(s_candidate.index_col, s_candidate.nr_pages * sizeof(int));
+      s_candidate.page_strs = uim_realloc(s_candidate.page_strs, s_candidate.nr_pages * sizeof(char *));
+
+      for (i = s_candidate.nr_pages - 1; i >= page; i--) {
+        s_candidate.page2index[i] = s_candidate.page2index[i - 1];
+        s_candidate.index_col[i] = s_candidate.index_col[i - 1];
+        s_candidate.page_strs[i] = s_candidate.page_strs[i - 1];
+      }
+      s_candidate.page2index[page] = index + 1;
+      s_candidate.index_col[page] = UNDEFINED;
+      s_candidate.page_strs[page] = NULL;
     }
     free(cand_str);
   }
