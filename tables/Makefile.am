@@ -22,10 +22,10 @@ UIM_SH_ENV = \
 
 #if MAINTAINER_MODE
 wb86.scm: $(top_srcdir)/scm/wb86.scm
-	cp $< $@
+	$(LN_S) $< $@
 
 zm.scm: $(top_srcdir)/scm/zm.scm
-	cp $< $@
+	$(LN_S) $< $@
 
 .scm.table:
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-sh && \
