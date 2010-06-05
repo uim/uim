@@ -91,7 +91,7 @@ QStringList UimInputContextPlugin::languages( const QString & key )
 
 QString UimInputContextPlugin::displayName( const QString & key )
 {
-    return QString( key ) + " (" + languages( key ) [ 0 ] + ')';
+    return key;
 }
 
 QString UimInputContextPlugin::description( const QString & key )
