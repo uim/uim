@@ -93,7 +93,6 @@ public:
     uim_context uimContext() { return m_uc; }
 
     static QUimInputContext *focusedIC();
-    static void reloadUim();
 
     void commitString( const QString& str );
 

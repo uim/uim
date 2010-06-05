@@ -422,28 +422,6 @@ QUimInputContext * QUimInputContext::focusedIC()
     return focusedInputContext;
 }
 
-void QUimInputContext::reloadUim()
-{
-    QList<QUimInputContext*>::iterator it;
-    QUimInfoManager *infoManager = UimInputContextPlugin::getQUimInfoManager();
-
-    for ( it = contextList.begin(); it != contextList.end(); ++it )
-    {
-        ( *it )->reset();
-        uim_release_context( ( *it )->m_uc );
-    }
-
-    uim_quit();
-    uim_init();
-    infoManager->initUimInfo();
-
-    for ( it = contextList.begin(); it != contextList.end(); ++it )
-    {
-        ( *it )->m_uc
-            = ( *it )->createUimContext( ( *it )->m_imname.toAscii().data() );
-    }
-}
-
 void QUimInputContext::mouseHandler( int x, QMouseEvent *e )
 {
     switch ( e->type() )
