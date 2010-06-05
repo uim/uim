@@ -78,10 +78,12 @@ static int unicodeToUKey(ushort c);
 // input method name is useless and should be redesigned. I will
 // suggest the change in future. -- YamaKen 2004-07-28
 
-QUimInputContext::QUimInputContext( const char *imname, const char *lang )
-        : QInputContext(), m_imname( imname ), m_lang( lang ), m_uc( 0 ),
-        candwinIsActive( false ),
-        m_isComposing( false )
+QUimInputContext::QUimInputContext( const char *imname )
+        : QInputContext(), m_imname( imname ),
+        candwinIsActive( false ), m_isComposing( false ), m_uc( 0 )
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+        , focusedWidget( 0 )
+#endif
 {
 #ifdef ENABLE_DEBUG
     qDebug( "QUimInputContext()" );
@@ -123,6 +125,14 @@ QUimInputContext::~QUimInputContext()
 
     if ( m_uc )
         uim_release_context( m_uc );
+    delete cwin;
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+    foreach ( const uim_context uc, m_ucHash )
+        if ( uc )
+            uim_release_context( uc );
+    foreach ( const CandidateWindow* window, cwinHash )
+        delete window;
+#endif
 
     if ( this == focusedInputContext )
     {
@@ -371,6 +381,13 @@ void QUimInputContext::setFocus()
     focusedInputContext = this;
     disableFocusedContext = false;
 
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+    focusedWidget = QApplication::focusWidget();
+    if ( isPreeditPreservationEnabled()
+            && m_ucHash.contains( focusedWidget ) )
+        restorePreedit();
+    else
+#endif
     if ( candwinIsActive )
         cwin->popup();
 
@@ -391,13 +408,6 @@ void QUimInputContext::unsetFocus()
 #endif
 
     uim_focus_out_context( m_uc );
-
-    // Don't reset Japanese input context here. Japanese input context
-    // sometimes contains a whole paragraph and has minutes of
-    // lifetime different to ephemeral one in other languages. The
-    // input context should be survived until focused again.
-    if ( ! isPreeditPreservationEnabled() )
-        reset();
 
     cwin->hide();
     m_indicator->hide();
@@ -461,6 +471,18 @@ void QUimInputContext::reset()
 #endif
 
     candwinIsActive = false;
+
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+    // Japanese input context sometimes contains a whole paragraph
+    // and has minutes of lifetime different to ephemeral one
+    // in other languages. The input context should be survived
+    // until focused again.
+    if ( isPreeditPreservationEnabled()
+            && !m_ucHash.contains( focusedWidget ) ) {
+        psegs.isEmpty() ? cwin->hide() : savePreedit();
+        return;
+    }
+#endif
     cwin->hide();
     uim_reset_context( m_uc );
 #ifdef Q_WS_X11
@@ -494,7 +516,10 @@ QString QUimInputContext::identifierName()
 
 QString QUimInputContext::language()
 {
-    return m_lang;
+    const QUimInfoManager *manager
+        = UimInputContextPlugin::getQUimInfoManager();
+    const QString name = QString::fromUtf8( uim_get_current_im_name( m_uc ) );
+    return manager->imLang( name );
 }
 
 // callbacks for uim
@@ -644,6 +669,36 @@ void QUimInputContext::updatePreedit()
         commitString( "" );
     }
 }
+
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+void QUimInputContext::savePreedit()
+{
+    m_ucHash.insert( focusedWidget, m_uc );
+    psegsHash.insert( focusedWidget, psegs );
+    cwinHash.insert( focusedWidget, cwin );
+    visibleHash.insert( focusedWidget, cwin->isVisible() );
+    cwin->hide();
+
+    if ( !m_imname.isEmpty() )
+        m_uc = createUimContext( m_imname.toAscii().data() );
+    psegs.clear();
+    cwin = new CandidateWindow( 0 );
+    cwin->setQUimInputContext( this );
+    cwin->hide();
+}
+
+void QUimInputContext::restorePreedit()
+{
+    if ( m_uc )
+        uim_release_context( m_uc );
+    delete cwin;
+    m_uc = m_ucHash.take( focusedWidget );
+    psegs = psegsHash.take( focusedWidget );
+    cwin = cwinHash.take( focusedWidget );
+    if ( visibleHash.take( focusedWidget ) )
+        cwin->popup();
+}
+#endif
 
 void QUimInputContext::saveContext()
 {

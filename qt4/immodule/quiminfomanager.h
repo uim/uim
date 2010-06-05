@@ -50,8 +50,8 @@ public:
     ~QUimInfoManager();
 
     void initUimInfo();
-    QList<uimInfo> getUimInfo();
-    QString imLang( const QString &imname );
+    QList<uimInfo> getUimInfo() const;
+    QString imLang( const QString &imname ) const;
 
 private:
     QList<uimInfo> info;

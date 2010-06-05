@@ -68,11 +68,13 @@ public:
     QString str;
 };
 
+#define WORKAROUND_BROKEN_RESET_IN_QT4
+
 class QUimInputContext : public QInputContext
 {
     Q_OBJECT
 public:
-    explicit QUimInputContext( const char *imname = 0, const char *lang = 0 );
+    explicit QUimInputContext( const char *imname = 0 );
     ~QUimInputContext();
 
     virtual QString identifierName();
@@ -116,6 +118,10 @@ protected:
 private:
     int getPreeditSelectionLength();
     QList<QInputMethodEvent::Attribute> getPreeditAttrs();
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+    void savePreedit();
+    void restorePreedit();
+#endif
 
     /* callbacks for uim */
     static void commit_cb( void *ptr, const char *str );
@@ -161,14 +167,22 @@ private:
 
 protected:
     QString m_imname;
-    QString m_lang;
-    uim_context m_uc;
     bool candwinIsActive;
     bool m_isComposing;
 
+    uim_context m_uc;
     QList<PreeditSegment> psegs;
-
     CandidateWindow *cwin;
+
+#ifdef WORKAROUND_BROKEN_RESET_IN_QT4
+    QHash<QWidget*, uim_context> m_ucHash;
+    QHash<QWidget*, QList<PreeditSegment> > psegsHash;
+    QHash<QWidget*, CandidateWindow*> cwinHash;
+    QHash<QWidget*, bool> visibleHash;
+
+    QWidget *focusedWidget;
+#endif
+
     static QUimHelperManager *m_HelperManager;
 };
 

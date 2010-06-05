@@ -44,7 +44,7 @@ QUimInfoManager::~QUimInfoManager()
 }
 
 QList<uimInfo>
-QUimInfoManager::getUimInfo()
+QUimInfoManager::getUimInfo() const
 {
     return info;
 }
@@ -69,12 +69,9 @@ QUimInfoManager::initUimInfo()
 }
 
 QString
-QUimInfoManager::imLang( const QString &imname )
+QUimInfoManager::imLang( const QString &imname ) const
 {
-    int i, n;
-
-    n = info.count();
-    for (i = 0; i < n; i++) {
+    for (int i = 0, n = info.count(); i < n; i++) {
         if ( info[i].name == imname )
             return info[i].lang;
     }
