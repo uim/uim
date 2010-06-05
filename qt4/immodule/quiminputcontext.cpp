@@ -79,8 +79,7 @@ static int unicodeToUKey(ushort c);
 // suggest the change in future. -- YamaKen 2004-07-28
 
 QUimInputContext::QUimInputContext( const char *imname )
-        : QInputContext(), m_imname( imname ),
-        candwinIsActive( false ), m_isComposing( false ), m_uc( 0 )
+        : candwinIsActive( false ), m_isComposing( false ), m_uc( 0 )
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
         , focusedWidget( 0 )
 #endif
@@ -147,8 +146,6 @@ QUimInputContext::~QUimInputContext()
 
 uim_context QUimInputContext::createUimContext( const char *imname )
 {
-    m_imname = imname;
-
     uim_context uc = uim_create_context( this, "UTF-8",
                                          0, imname,
                                          0,
@@ -657,8 +654,9 @@ void QUimInputContext::savePreedit()
     visibleHash.insert( focusedWidget, cwin->isVisible() );
     cwin->hide();
 
-    if ( !m_imname.isEmpty() )
-        m_uc = createUimContext( m_imname.toAscii().data() );
+    const char *imname = uim_get_current_im_name( m_uc );
+    if ( imname )
+        m_uc = createUimContext( imname );
     psegs.clear();
     cwin = new CandidateWindow( 0 );
     cwin->setQUimInputContext( this );

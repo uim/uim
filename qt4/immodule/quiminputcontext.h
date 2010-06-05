@@ -165,7 +165,6 @@ private:
     CaretStateIndicator *m_indicator;
 
 protected:
-    QString m_imname;
     bool candwinIsActive;
     bool m_isComposing;
 
