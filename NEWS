@@ -16,6 +16,7 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 
 * Fixes
   - Qt4 bridge
+    * Fix bug: Unwanted IM reset on focus-out of Qt4 immodule (#13910)
     * Fix bug: Candidate window does not follow main window move (#13911)
 
 * Others

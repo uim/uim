@@ -916,7 +916,7 @@ AC_ARG_WITH(qt4,
 
 AC_ARG_WITH(qt4-immodule,
   AC_HELP_STRING([--with-qt4-immodule],
-                 [Build qt4-immodule extension (experimental)
+                 [Build qt4-immodule extension
 		  @<:@default=no@:>@]),
   [
     case $with_qt4_immodule in
