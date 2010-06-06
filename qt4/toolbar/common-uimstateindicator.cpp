@@ -287,11 +287,13 @@ QSize QHelperToolbarButton::sizeHint() const
 void QHelperToolbarButton::mousePressEvent( QMouseEvent *event )
 {
 #ifdef PLASMA_APPLET_UIM
-    if ( event->button() == Qt::LeftButton )
-        emit menuRequested( menu() );
-#else
-    QToolButton::mousePressEvent( event );
+    QMenu *popupMenu = menu();
+    if ( event->button() == Qt::LeftButton && popupMenu ) {
+        emit menuRequested( popupMenu );
+        return;
+    }
 #endif
+    QToolButton::mousePressEvent( event );
 }
 
 /**/
