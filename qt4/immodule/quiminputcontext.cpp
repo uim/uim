@@ -92,7 +92,7 @@ QUimInputContext::QUimInputContext( const char *imname )
 
     // must be initialized before createUimContext() call
     if ( !m_HelperManager )
-        m_HelperManager = new QUimHelperManager();
+        m_HelperManager = new QUimHelperManager;
 
     if ( imname )
         m_uc = createUimContext( imname );
