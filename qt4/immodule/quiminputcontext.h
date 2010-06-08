@@ -55,13 +55,12 @@ typedef struct _DefTree DefTree;
 class Compose;
 #endif
 
-class PreeditSegment
+struct PreeditSegment
 {
-public:
-    PreeditSegment( int p_attr, const QString &p_str )
+    PreeditSegment( int attr, const QString &str )
     {
-        attr = p_attr;
-        str = p_str;
+        this->attr = attr;
+        this->str = str;
     }
 
     int attr;
