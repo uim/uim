@@ -300,22 +300,17 @@
 ;; front match
 (define rk-push-key-front-match
   (lambda (rkc key)
-    (let*
-	((s (rk-context-seq rkc))
-	 (s (cons key s))
-	 (rule (rk-context-rule rkc))
-         (find-seq (rk-context-find-seq rkc))
-	 (seq (find-seq (reverse s) rule))
-	 (res #f))
-      (set!
-       res
-       (if (rk-partial-seq? rkc s)
-	   (begin
-	     (rk-context-set-seq! rkc s)
-	     #f)
-	   (if seq
-	       (rk-proc-end-seq rkc seq s)
-	       (rk-proc-tail rkc s))))
+    (let* ((s (cons key (rk-context-seq rkc)))
+           (rule (rk-context-rule rkc))
+           (find-seq (rk-context-find-seq rkc))
+           (res (if (rk-partial-seq? rkc s)
+                  (begin
+                    (rk-context-set-seq! rkc s)
+                    #f)
+                  (let ((seq (find-seq (reverse s) rule)))
+                    (if seq
+                      (rk-proc-end-seq rkc seq s)
+                      (rk-proc-tail rkc s))))))
       res)))
 
 ;; API
