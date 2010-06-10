@@ -91,3 +91,23 @@
             (else
               #f)))
         #f))))
+
+(define ct-lib-expect-key-for-seq?
+  (lambda (seq table str)
+    (let* ((lst (ct-find-cands-with-minimal-partial seq table))
+           (residuals
+             (filter-map (lambda (x) (if (string=? (cdr x) "")
+                                       #f
+                                       (substring (cdr x) 0 1))) lst)))
+      (if (member str residuals)
+        #t
+        #f))))
+
+(define ct-lib-expect-seq
+  (lambda (seq table keystr)
+    (let* ((lst (ct-find-cands-with-minimal-partial seq table))
+           (residuals
+             (filter-map (lambda (x) (if (string=? (cdr x) "")
+                                       #f
+                                       (substring (cdr x) 0 1))) lst)))
+    residuals)))
