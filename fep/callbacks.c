@@ -1032,6 +1032,8 @@ static void set_candidate(void)
     int padlen = right_edge_cand_index_width - cand_index_width;
     char *pad;
 
+    if (padlen < 0)
+      padlen = 0;
     pad = uim_malloc(padlen + 1);
     memset(pad, ' ', padlen);
     pad[padlen] = '\0';
