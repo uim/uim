@@ -30,8 +30,13 @@
 
 ;; ct.scm: provides rk-lib equivalent functions using composing table
 ;;
-;; table must be sorted
-;; rk-expect and rk-expect-key? are not ported from rk.scm yet
+;; following functions are used by rk.scm if table is used as a rule
+;;   ct-lib-expect-seq
+;;   ct-lib-expect-key-for-seq?
+;;   ct-lib-find-seq
+;;   ct-lib-find-partial-seq
+;;
+;; NB: composing table needs to be sorted
 
 (require-dynlib "look")
 
@@ -46,7 +51,6 @@
       (if (and
             (not (null? looked))
             (= (string-contains (car looked) " " 0) 0))
-        ;; found
         (list (list seq) (read-from-string (car looked)))
         #f))))
 
@@ -70,13 +74,19 @@
             ((and
                 (not (null? second))
                 (string=? (substring first 0 1) " "))
-             (let ((partial (string-to-list (car (string-split second " "))))
-                   (cands (apply string-append (cdr (string-split second " ")))))
+             (let ((partial
+                     (reverse
+                       (string-to-list (car (string-split second " ")))))
+                   (cands
+                     (apply string-append (cdr (string-split second " ")))))
                (list (list (append seq partial)) (read-from-string cands))))
             ;; first one is partial
             ((not (string=? (substring first 0 1) " "))
-             (let ((partial (string-to-list (car (string-split first " "))))
-                   (cands (apply string-append (cdr (string-split first " ")))))
+             (let ((partial
+                     (reverse
+                       (string-to-list (car (string-split first " ")))))
+                   (cands
+                     (apply string-append (cdr (string-split first " ")))))
                (list (list (append seq partial)) (read-from-string cands))))
             (else
               #f)))
