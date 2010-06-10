@@ -218,7 +218,7 @@
 
 (define ipa-x-sampa-init-handler
   (lambda (id im arg)
-    (generic-context-new id im ipa-x-sampa-rule #t)))
+    (generic-context-new id im ipa-x-sampa-rule #f)))
 
 (generic-register-im
  'ipa-x-sampa
