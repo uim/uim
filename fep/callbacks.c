@@ -1065,6 +1065,8 @@ static void set_candidate(void)
 
 void callbacks_winch(void)
 {
+  int current_index;
+
   start_callbacks();
 
   s_max_width = g_win->ws_col;
@@ -1093,7 +1095,14 @@ void callbacks_winch(void)
     free(s_candidate.index_col);
     s_candidate.index_col = NULL;
   }
+  if (s_candidate.cand_col != NULL) {
+    free(s_candidate.cand_col);
+    s_candidate.cand_col = NULL;
+  }
 
+  current_index = s_candidate.index;
+  init_candidate(s_candidate.nr, s_candidate.limit);
+  s_candidate.index = current_index;
   make_page_strs();
 }
 
