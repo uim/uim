@@ -122,6 +122,21 @@ rk_find_partial_seq(uim_lisp seq, uim_lisp rules)
   return uim_scm_f();
 }
 
+static uim_lisp
+rk_find_partial_seqs(uim_lisp seq, uim_lisp rules)
+{
+  uim_lisp ret = uim_scm_null();
+
+  for (; !uim_scm_nullp(rules); rules = uim_scm_cdr(rules)) {
+    uim_lisp rule = uim_scm_car(rules);
+    uim_lisp key = uim_scm_car(uim_scm_car(rule));
+    if (TRUEP(str_seq_partial(seq, key))) {
+      ret = uim_scm_cons(rule, ret);
+    }
+  }
+  return uim_scm_callf("reverse", "o", ret);
+}
+
 /*
  * returns possible next characters
  * (rk-lib-expect-seq '("k" "y") ja-rk-rule) -> ("o" "e" "u" "i" "a")
@@ -169,6 +184,7 @@ uim_init_rk_subrs(void)
   uim_scm_init_proc2("str-seq-partial?", str_seq_partial);
   uim_scm_init_proc2("rk-lib-find-seq", rk_find_seq);
   uim_scm_init_proc2("rk-lib-find-partial-seq", rk_find_partial_seq);
+  uim_scm_init_proc2("rk-lib-find-partial-seqs", rk_find_partial_seqs);
   uim_scm_init_proc2("rk-lib-expect-seq", rk_expect_seq);
   uim_scm_init_proc3("rk-lib-expect-key-for-seq?", rk_expect_key_for_seq);
 }

@@ -66,6 +66,11 @@
   (N_ "Show candidate window without explicit conversion action")
   (N_ "long description will be here."))
 
+(define-custom 'generic-show-prediction-candidates? #t
+  '(other-ims candwin)
+  '(boolean)
+  (N_ "Show candidates matching with expected keys")
+  (N_ "long description will be here."))
 
 ;; activity dependency
 (custom-add-hook 'generic-candidate-op-count

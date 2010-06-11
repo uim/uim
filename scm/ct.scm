@@ -94,7 +94,7 @@
 
 (define ct-lib-expect-key-for-seq?
   (lambda (seq table str)
-    (let* ((lst (ct-find-cands-with-minimal-partial seq table))
+    (let* ((lst (ct-find-cands-incl-minimal-partial seq table))
            (residuals
              (filter-map (lambda (x) (if (string=? (cdr x) "")
                                        #f
@@ -105,9 +105,49 @@
 
 (define ct-lib-expect-seq
   (lambda (seq table keystr)
-    (let* ((lst (ct-find-cands-with-minimal-partial seq table))
+    (let* ((lst (ct-find-cands-incl-minimal-partial seq table))
            (residuals
              (filter-map (lambda (x) (if (string=? (cdr x) "")
                                        #f
                                        (substring (cdr x) 0 1))) lst)))
     residuals)))
+
+(define ct-find-cands-incl-minimal-partial
+  (lambda (seq table)
+    (let ((looked (look-lib-look
+                    #f
+                    #f
+                    5000 ;; is it sufficient enought?
+                    (string-append (sys-pkgdatadir) "/tables/" table)
+                    (apply string-append seq))))
+      (if (not (null? looked))
+        (let* ((min-partial-pos
+                 (lambda (lst)
+                   (let ((maxlen (apply max (map string-length lst))))
+                     (let loop ((n 1))
+                       (if (= maxlen n)
+                         0 ;; not found
+                         (if (not
+                               (null?
+                                 (filter
+                                   (lambda (x)
+                                     (string=? (substring x n (+ n 1)) " "))
+                                   lst)))
+                           n
+                           (loop (+ n 1))))))))
+               (pos (min-partial-pos looked))
+               (match
+                 (filter
+                   (lambda (x)
+                     (or (string=? (substring x pos (+ pos 1)) " ")
+                         (string=? (substring x 0 1) " ")))
+                   looked))
+               (str (map (lambda (x) (string-split x " ")) match))
+               (residual (map (lambda (x) (car  x)) str))
+               (cands
+                 (map
+                   (lambda (x)
+                     (read-from-string (apply string-append (cdr x)))) str))
+               (lst (map (lambda (x y) (cons x y)) cands residual)))
+          lst)
+        '()))))
