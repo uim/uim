@@ -420,6 +420,7 @@
       (let* ((cs (rk-current-seq rkc))
              (cands (if cs (cadr cs) '())))
         (generic-context-set-cands! pc cands)
+        (generic-context-set-rk-nth! pc 0)
         (if cs
           (if (null? (cdr cands))
             (begin
