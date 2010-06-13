@@ -86,6 +86,16 @@ struct _UIMCandWinGtkClass {
 
   /* signals */
   void (*index_changed) (UIMCandWinGtkClass *cwin);
+
+  /* member functions */
+  void (*set_candidates)	(UIMCandWinGtk *cwin,
+				 guint disp_limit,
+				 GSList *candidates);
+  void (*set_page_candidates)	(UIMCandWinGtk *cwin,
+				 guint page,
+				 GSList *candidates);
+  void (*set_index)		(UIMCandWinGtk *cwin, gint index);
+  void (*set_page)		(UIMCandWinGtk *cwin, gint page);
 };
 
 
@@ -132,6 +142,8 @@ void		uim_cand_win_gtk_layout			(UIMCandWinGtk *cwin,
 void		uim_cand_win_gtk_set_cursor_location	(UIMCandWinGtk *cwin,
 							 GdkRectangle *area);
 void		uim_cand_win_gtk_get_window_pos_type	(UIMCandWinGtk *cwin);
+
+void		uim_cand_win_gtk_update_label		(UIMCandWinGtk *cwin);
 
 G_END_DECLS
 

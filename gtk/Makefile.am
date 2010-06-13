@@ -24,6 +24,7 @@ endif
 IM_UIM_SOURCES = \
 	gtk-im-uim.c gtk-im-uim.h key-util-gtk.c key-util-gtk.h \
 	uim-cand-win-gtk.c uim-cand-win-gtk.h \
+	uim-cand-win-tbl-gtk.c uim-cand-win-tbl-gtk.h \
 	caret-state-indicator.c caret-state-indicator.h \
 	compose.c compose.h text-util.c text-util.h
 

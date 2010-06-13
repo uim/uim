@@ -59,6 +59,7 @@
 
 #include "gtk-im-uim.h"
 #include "uim-cand-win-gtk.h"
+#include "uim-cand-win-tbl-gtk.h"
 #include "caret-state-indicator.h"
 #include "key-util-gtk.h"
 #ifdef GDK_WINDOWING_X11
@@ -1380,6 +1381,22 @@ im_uim_set_client_window(GtkIMContext *ic, GdkWindow *w)
   update_client_widget(uic);
 }
 
+static UIMCandWinGtk *
+im_uim_create_cand_win_gtk()
+{
+  UIMCandWinGtk *cwin;
+  char *candwinprog = uim_scm_symbol_value_str("uim-candwin-prog");
+  if (candwinprog && !strncmp(candwinprog, "uim-candwin-tbl", 15)) {
+    cwin = UIM_CAND_WIN_GTK(uim_cand_win_tbl_gtk_new());
+  } else {
+    cwin = uim_cand_win_gtk_new();
+  }
+  if (candwinprog) {
+    free(candwinprog);
+  }
+  return cwin;
+}
+
 static void
 im_uim_init(IMUIMContext *uic)
 {
@@ -1393,7 +1410,7 @@ im_uim_init(IMUIMContext *uic)
   uic->nr_psegs = 0;
   uic->prev_preedit_len = 0;
 
-  uic->cwin = uim_cand_win_gtk_new();
+  uic->cwin = im_uim_create_cand_win_gtk();
 #if IM_UIM_USE_TOPLEVEL
   cwin_list = g_list_append(cwin_list, uic->cwin);
 #endif

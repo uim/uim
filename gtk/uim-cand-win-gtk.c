@@ -62,6 +62,16 @@ static void	uim_cand_win_gtk_map		(GtkWidget *widget);
 static void	uim_cand_win_gtk_unmap		(GtkWidget *widget);
 static void	uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin);
 static void	uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin);
+static void	uim_cand_win_gtk_real_set_candidates	(UIMCandWinGtk *cwin,
+							 guint disp_limit,
+							 GSList *candidates);
+static void	uim_cand_win_gtk_real_set_page_candidates(UIMCandWinGtk *cwin,
+							  guint page,
+							  GSList *candidates);
+static void	uim_cand_win_gtk_real_set_index		(UIMCandWinGtk *cwin,
+							 gint index);
+static void	uim_cand_win_gtk_real_set_page		(UIMCandWinGtk *cwin,
+							 gint page);
 
 static gboolean	tree_selection_change		(GtkTreeSelection *selection,
 						 GtkTreeModel *model,
@@ -131,6 +141,11 @@ uim_cand_win_gtk_class_init (UIMCandWinGtkClass *klass)
 
   widget_class->map   = uim_cand_win_gtk_map;
   widget_class->unmap = uim_cand_win_gtk_unmap;
+
+  klass->set_candidates = uim_cand_win_gtk_real_set_candidates;
+  klass->set_page_candidates = uim_cand_win_gtk_real_set_page_candidates;
+  klass->set_index = uim_cand_win_gtk_real_set_index;
+  klass->set_page = uim_cand_win_gtk_real_set_page;
 }
 
 void
@@ -309,8 +324,8 @@ uim_cand_win_gtk_new (void)
   return UIM_CAND_WIN_GTK(obj);
 }
 
-static void
-update_label(UIMCandWinGtk *cwin)
+void
+uim_cand_win_gtk_update_label(UIMCandWinGtk *cwin)
 {
   char label_str[20];
 
@@ -349,14 +364,14 @@ tree_selection_change(GtkTreeSelection *selection,
 		    cand_win_gtk_signals[INDEX_CHANGED_SIGNAL], 0);
     }
 
-    update_label(cwin);
+    uim_cand_win_gtk_update_label(cwin);
 
     if (cwin->candidate_index < 0)
       return FALSE;
     else
       return TRUE;
   } else {
-    update_label(cwin);
+    uim_cand_win_gtk_update_label(cwin);
 
     return TRUE;
   }
@@ -476,6 +491,14 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 				guint display_limit,
 				GSList *candidates)
 {
+  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->set_candidates(cwin, display_limit, candidates);
+}
+
+static void
+uim_cand_win_gtk_real_set_candidates(UIMCandWinGtk *cwin,
+				     guint display_limit,
+				     GSList *candidates)
+{
   gint i, nr_stores = 1;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
@@ -559,13 +582,21 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 
   uim_cand_win_gtk_set_page(cwin, 0);
 
-  update_label(cwin);
+  uim_cand_win_gtk_update_label(cwin);
 }
 
 void
 uim_cand_win_gtk_set_page_candidates(UIMCandWinGtk *cwin,
 				     guint page,
 				     GSList *candidates)
+{
+  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->set_page_candidates(cwin, page, candidates);
+}
+
+static void
+uim_cand_win_gtk_real_set_page_candidates(UIMCandWinGtk *cwin,
+					  guint page,
+					  GSList *candidates)
 {
   GtkListStore *store;
   GSList *node;
@@ -631,6 +662,12 @@ uim_cand_win_gtk_get_index(UIMCandWinGtk *cwin)
 void
 uim_cand_win_gtk_set_index(UIMCandWinGtk *cwin, gint index)
 {
+  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->set_index(cwin, index);
+}
+
+static void
+uim_cand_win_gtk_real_set_index(UIMCandWinGtk *cwin, gint index)
+{
   gint new_page;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
@@ -664,7 +701,7 @@ uim_cand_win_gtk_set_index(UIMCandWinGtk *cwin, gint index)
     GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(cwin->view));
 
     gtk_tree_selection_unselect_all(selection);
-    update_label(cwin);
+    uim_cand_win_gtk_update_label(cwin);
   }
 }
 
@@ -687,6 +724,12 @@ uim_cand_win_gtk_get_page(UIMCandWinGtk *cwin)
 
 void
 uim_cand_win_gtk_set_page(UIMCandWinGtk *cwin, gint page)
+{
+  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->set_page(cwin, page);
+}
+
+static void
+uim_cand_win_gtk_real_set_page(UIMCandWinGtk *cwin, gint page)
 {
   guint len, new_page;
   gint new_index;
