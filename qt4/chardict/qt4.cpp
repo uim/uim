@@ -246,5 +246,5 @@ void KUimCharDict::slotCharSelected( const QString &c )
 {
     m_charLineEdit->setText( m_charLineEdit->text() + c );
     uim_helper_send_message( uim_fd,
-        ( "commit_string\n" + c + "\n" ).toUtf8().data() );
+        ( "commit_string\n" + c + '\n' ).toUtf8().data() );
 }
