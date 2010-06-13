@@ -1072,12 +1072,20 @@
              (label (nth n tutcode-heading-label-char-list)))
         (list cand label "")))))
 
-;;; 候補ウィンドウが候補を選択したときに呼ぶ関数
-(define (tutcode-set-candidate-index-handler tc idx)
-  (if (tutcode-context-candidate-window tc)
+;;; 候補ウィンドウが候補を選択したときに呼ぶ関数。
+;;; 選択された候補を確定する。
+(define (tutcode-set-candidate-index-handler pc idx)
+  (if (and
+        (tutcode-context-candidate-window pc)
+        (>= idx 0)
+        (< idx (tutcode-context-nr-candidates pc)))
     (begin
-      (tutcode-context-set-nth! tc idx)
-      (tutcode-update-preedit tc))))
+      (tutcode-context-set-nth! pc idx)
+      (im-commit pc 
+        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
+          (tutcode-prepare-commit-string-for-kigou-mode pc)
+          (tutcode-prepare-commit-string pc)))
+      (tutcode-update-preedit pc))))
 
 (tutcode-configure-widgets)
 

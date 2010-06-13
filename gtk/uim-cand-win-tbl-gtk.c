@@ -102,11 +102,18 @@ static gchar default_labelchar_table[LABELCHAR_NR_CELLS] = {
 #define SPACING_UPPER_FAR_ROW 0
 #define SPACING_SHIFT_UPPER_FAR_ROW 4
 
+struct index_button {
+  gint cand_index_in_page;
+  GtkButton *button;
+};
+
 static void	uim_cand_win_tbl_gtk_init		(UIMCandWinTblGtk *cwin);
 static void	uim_cand_win_tbl_gtk_class_init	(UIMCandWinGtkClass *klass);
 static void	uim_cand_win_tbl_gtk_dispose	(GObject *obj);
 static gchar	*init_labelchar_table(void);
+static void	button_clicked(GtkButton *button, gpointer data);
 static void	show_table(GtkTable *view, GPtrArray *buttons);
+static GtkButton *get_button(GPtrArray *buttons, gint idx);
 
 
 static GType cand_win_tbl_type = 0;
@@ -178,10 +185,17 @@ uim_cand_win_tbl_gtk_init (UIMCandWinTblGtk *ctblwin)
   for (row = 0; row < LABELCHAR_NR_ROWS; row++) {
     for (col = 0; col < LABELCHAR_NR_COLUMNS; col++) {
       GtkWidget *button;
+      struct index_button *idxbutton;
       button = gtk_button_new_with_label("  ");
+      g_signal_connect(button, "clicked", G_CALLBACK(button_clicked), ctblwin);
       gtk_table_attach_defaults(GTK_TABLE(cwin->view), button,
                                 col, col + 1, row, row + 1);
-      g_ptr_array_add(ctblwin->buttons, button);
+      idxbutton = g_malloc(sizeof(struct index_button));
+      if (idxbutton) {
+        idxbutton->button = GTK_BUTTON(button);
+        idxbutton->cand_index_in_page = -1;
+      }
+      g_ptr_array_add(ctblwin->buttons, idxbutton);
     }
   }
   gtk_table_set_col_spacing(GTK_TABLE(cwin->view), SPACING_LEFT_BLOCK_COLUMN,
@@ -247,6 +261,46 @@ init_labelchar_table(void)
 }
 
 static void
+button_clicked(GtkButton *button, gpointer data)
+{
+  UIMCandWinTblGtk *ctblwin = data;
+  UIMCandWinGtk *cwin = UIM_CAND_WIN_GTK(ctblwin);
+  gint i;
+  gint idx = -1;
+
+  for (i = 0; i < LABELCHAR_NR_CELLS; i++) {
+    GtkButton *p;
+    struct index_button *idxbutton;
+    idxbutton = g_ptr_array_index(ctblwin->buttons, i);
+    if (!idxbutton) {
+      continue;
+    }
+    p = idxbutton->button;
+    if (p == button) {
+      GtkReliefStyle relief;
+      relief = gtk_button_get_relief(button);
+      if (relief != GTK_RELIEF_NORMAL) {
+        return;
+      }
+      idx = idxbutton->cand_index_in_page;
+      break;
+    }
+  }
+  if (idx >= 0 && cwin->display_limit) {
+    if (idx >= (gint)cwin->display_limit) {
+      idx %= cwin->display_limit;
+    }
+    cwin->candidate_index = cwin->page_index * cwin->display_limit + idx;
+  } else {
+    cwin->candidate_index = idx;
+  }
+  if (cwin->candidate_index >= (gint)cwin->nr_candidates) {
+    cwin->candidate_index = -1;
+  }
+  g_signal_emit_by_name(G_OBJECT(cwin), "index-changed");
+}
+
+static void
 uim_cand_win_tbl_gtk_dispose (GObject *obj)
 {
   UIMCandWinTblGtk *ctblwin;
@@ -260,6 +314,13 @@ uim_cand_win_tbl_gtk_dispose (GObject *obj)
     ctblwin->labelchar_table = NULL;
   }
   if (ctblwin->buttons) {
+    guint i;
+    for (i = 0; i < ctblwin->buttons->len; i++) {
+      if (ctblwin->buttons->pdata[i]) {
+        g_free(ctblwin->buttons->pdata[i]);
+        /* GtkButton is destroyed by container */
+      }
+    }
     g_ptr_array_free(ctblwin->buttons, TRUE);
     ctblwin->buttons = NULL;
   }
@@ -293,7 +354,7 @@ get_row_column(gchar *labelchar_table, const gchar labelchar, gint *row, gint *c
 }
 
 static void
-set_candidate(UIMCandWinTblGtk *ctblwin, GSList *node, GtkListStore *store)
+set_candidate(UIMCandWinTblGtk *ctblwin, GSList *node, GtkListStore *store, gint idx)
 {
   if (node) {
     GtkTreeIter ti;
@@ -303,6 +364,7 @@ set_candidate(UIMCandWinTblGtk *ctblwin, GSList *node, GtkListStore *store)
     const char *heading_label = NULL;
     const char *cand_str = NULL;
     uim_candidate cand = node->data;
+    struct index_button *idxbutton;
 
     heading_label = uim_candidate_get_heading_label(cand);
     cand_str = uim_candidate_get_cand_str(cand);
@@ -313,6 +375,11 @@ set_candidate(UIMCandWinTblGtk *ctblwin, GSList *node, GtkListStore *store)
       gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &ti);
     }
     gtk_list_store_set(store, &ti, col, cand_str, TERMINATOR);
+
+    idxbutton = g_ptr_array_index(ctblwin->buttons, INDEX(row, col));
+    if (idxbutton) {
+      idxbutton->cand_index_in_page = idx;
+    }
   } else {
     /* No need to set any data for empty row. */
   }
@@ -382,7 +449,7 @@ uim_cand_win_tbl_gtk_set_candidates(UIMCandWinTblGtk *ctblwin,
 	 display_limit ? j < display_limit * (i + 1) : j < cwin->nr_candidates;
 	 j++, node = g_slist_next(node))
     {
-      set_candidate(ctblwin, node, store);
+      set_candidate(ctblwin, node, store, j);
     }
   }
 
@@ -428,7 +495,7 @@ uim_cand_win_tbl_gtk_set_page_candidates(UIMCandWinTblGtk *ctblwin,
        j < len;
        j++, node = g_slist_next(node))
   {
-    set_candidate(ctblwin, node, store);
+    set_candidate(ctblwin, node, store, j);
   }
 }
 
@@ -468,8 +535,8 @@ update_table_button(GtkTreeModel *model, GPtrArray *buttons, gchar *labelchar_ta
     for (col = 0; col < LABELCHAR_NR_COLUMNS; col++) {
       GValue value = {0};
       const gchar *str = NULL;
-      GtkButton *button;
-      button = g_ptr_array_index(buttons, INDEX(row, col));
+      GtkButton *button = NULL;
+      button = get_button(buttons, INDEX(row, col));
       if (hasValue) {
         gtk_tree_model_get_value(model, &ti, col, &value);
         str = g_value_get_string(&value);
@@ -546,9 +613,9 @@ is_empty_block(GPtrArray *buttons, gint rowstart, gint rowend, gint colstart, gi
   gint row, col;
   for (row = rowstart; row < rowend; row++) {
     for (col = colstart; col < colend; col++) {
-      GtkButton *button;
+      GtkButton *button = NULL;
       GtkReliefStyle relief;
-      button = g_ptr_array_index(buttons, INDEX(row, col));
+      button = get_button(buttons, INDEX(row, col));
       relief = gtk_button_get_relief(button);
       if (relief == GTK_RELIEF_NORMAL) {
         return FALSE;
@@ -607,8 +674,8 @@ show_table(GtkTable *view, GPtrArray *buttons)
 
   for (row = 0; row < LABELCHAR_NR_ROWS; row++) {
     for (col = 0; col < LABELCHAR_NR_COLUMNS; col++) {
-      GtkButton *button;
-      button = g_ptr_array_index(buttons, INDEX(row, col));
+      GtkButton *button = NULL;
+      button = get_button(buttons, INDEX(row, col));
       if (row >= hide_row || col >= hide_col) {
         gtk_widget_hide(GTK_WIDGET(button));
       } else {
@@ -636,4 +703,17 @@ show_table(GtkTable *view, GPtrArray *buttons)
   }
   /* gtk_table_resize(view, hide_row, hide_col); */
   gtk_widget_show(GTK_WIDGET(view));
+}
+
+static GtkButton *
+get_button(GPtrArray *buttons, gint idx)
+{
+  GtkButton *button = NULL;
+  struct index_button *idxbutton;
+
+  idxbutton = g_ptr_array_index(buttons, idx);
+  if (idxbutton) {
+    button = idxbutton->button;
+  }
+  return button;
 }
