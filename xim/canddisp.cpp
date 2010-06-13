@@ -124,6 +124,26 @@ Canddisp::Canddisp()
 Canddisp::~Canddisp() {
 }
 
+/* XXX: adjust display_limit for uim-candwin-tbl-gtk */
+int Canddisp::adjust_display_limit(uim_context uc, int display_limit)
+{
+    uim_candidate cand;
+    const char *s;
+    int ret = display_limit;
+
+    if (strstr(command, "/uim-candwin-tbl-") == NULL)
+        return display_limit;
+
+    cand = uim_get_candidate(uc, 0, -1);
+    s = uim_candidate_get_annotation_str(cand);
+#define LEN_DISPLAY_LIMIT 14
+    if (strncmp(s, "display_limit=", LEN_DISPLAY_LIMIT) == 0) {
+      ret = atoi(s + LEN_DISPLAY_LIMIT);
+    }
+    uim_candidate_free(cand);
+    return ret;
+}
+
 void Canddisp::activate(std::vector<const char *> candidates, int display_limit)
 {
     std::vector<const char *>::iterator i;

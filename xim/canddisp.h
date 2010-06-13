@@ -55,6 +55,7 @@ public:
     void set_page_candidates(int page, CandList candidates);
     void show_page(int page);
 #endif
+    int adjust_display_limit(uim_context uc, int display_limit);
 private:
     void check_connection();
 };

@@ -818,6 +818,8 @@ void InputContext::candidate_activate(int nr, int display_limit)
 
     Canddisp *disp = canddisp_singleton();
 
+    if (nr > display_limit)
+        display_limit = disp->adjust_display_limit(mUc, display_limit);
     mDisplayLimit = display_limit;
     if (display_limit)
 	mNumPage = (nr - 1) / display_limit + 1;

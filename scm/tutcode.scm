@@ -1049,6 +1049,16 @@
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
 (define (tutcode-get-candidate-handler tc idx accel-enum-hint)
   (cond
+    ((= accel-enum-hint -1) ;XXX 表形式候補ウィンドウからのdisplay_limit調整時
+      (set! tutcode-nr-candidate-max (length tutcode-heading-label-char-list))
+      (set! tutcode-nr-candidate-max-for-kigou-mode
+        (length tutcode-heading-label-char-list-for-kigou-mode))
+      (list "" ""
+        (string-append "display_limit="
+          (number->string
+            (if (eq? (tutcode-context-state tc) 'tutcode-state-kigou)
+              tutcode-nr-candidate-max-for-kigou-mode
+              tutcode-nr-candidate-max)))))
     ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
       (let* ((cand (tutcode-get-nth-candidate-for-kigou-mode tc idx))
              (n (remainder
