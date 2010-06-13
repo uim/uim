@@ -68,7 +68,6 @@ static inline bool iscomment(char ch)
 
 
 static int parse_line(char *line, char **argv, int argsize);
-static unsigned int KeySymToUcs4(KeySym keysym);
 
 Compose::Compose(DefTree *top, QUimInputContext *ic)
 {
@@ -84,14 +83,8 @@ Compose::~Compose()
 
 bool Compose::handle_qkey(const QKeyEvent *event)
 {
-    int type = event->type();
-    int qkey = event->key();
     int qstate = event->modifiers();
-
-    unsigned int xkeysym, xstate;
-    bool press = (type == QEvent::KeyPress);
-    
-    xstate = 0;
+    unsigned int xstate = 0;
     if (qstate & Qt::ShiftModifier)
         xstate |= ShiftMask;
     if (qstate & Qt::ControlModifier)
@@ -101,6 +94,8 @@ bool Compose::handle_qkey(const QKeyEvent *event)
     if (qstate & Qt::MetaModifier)
         xstate |= Mod1Mask; // XXX
 
+    int qkey = event->key();
+    unsigned int xkeysym;
     if (qkey >= 0x20 && qkey <= 0xff) {
         if (isascii(qkey) && isprint(qkey)) {
             QString str = event->text();
@@ -225,19 +220,20 @@ bool Compose::handle_qkey(const QKeyEvent *event)
         }
     }
 
+    int type = event->type();
+    bool press = (type == QEvent::KeyPress);
     return handleKey(xkeysym, xstate, press);
 }
 
 bool Compose::handleKey(KeySym xkeysym, int xkeystate, bool is_push)
 {
-    DefTree *p;
-
     if ((is_push == false)  || m_top == 0)
         return false;
 
     if (IsModifierKey(xkeysym))
         return false;
 
+    DefTree *p;
     for (p = m_context; p ; p = p->next) {
         if (((xkeystate & p->modifier_mask) == p->modifier) &&
                 (xkeysym == p->keysym)) {
@@ -327,13 +323,13 @@ static int
 nexttoken(FILE *fp, char **tokenbuf, int *lastch, size_t *buflen)
 {
     int c;
+    while ((c = nextch(fp, lastch)) == ' ' || c == '\t') {
+    }
+
     int token;
     char *p;
     int i;
     size_t len = 0;
-
-    while ((c = nextch(fp, lastch)) == ' ' || c == '\t') {
-    }
     switch (c) {
     case EOF:
         token = ENDOFFILE;
@@ -494,8 +490,6 @@ string_error:
 static long
 modmask(char *name)
 {
-    long mask;
-
     struct _modtbl {
         const char *name;
         long mask;
@@ -510,7 +504,7 @@ modmask(char *name)
         { "Meta",       Mod1Mask        },
         { 0,            0               }};
 
-    mask = 0;
+    long mask = 0;
     for (struct _modtbl *p = tbl; p->name != 0; p++) {
         if (strcmp(name, p->name) == 0) {
             mask = p->mask;
@@ -526,11 +520,8 @@ QUimInputContext::TransFileName(char *transname, const char *name, size_t len)
     char *home = 0;
     char lcCompose[MAXPATHLEN];
     const char *i = name;
-    char *j;
     char ret[MAXPATHLEN];
-
-    j = ret;
-    i = name;
+    char *j = ret;
     lcCompose[0] = ret[0] = '\0';
     while (*i && j - ret < MAXPATHLEN - 1) {
         if (*i == '%') {
@@ -583,9 +574,7 @@ QUimInputContext::get_encoding()
 #ifdef HAVE_LANGINFO_CODESET
     return nl_langinfo(CODESET);
 #else
-    char *p;
-
-    p = setlocale(LC_CTYPE, 0);
+    char *p = setlocale(LC_CTYPE, 0);
     if (p)
         p = strchr(p, '.');
 
@@ -598,14 +587,12 @@ QUimInputContext::get_encoding()
 int
 QUimInputContext::get_lang_region(char *locale, size_t len)
 {
-    char *p;
-
     strlcpy(locale, setlocale(LC_CTYPE, 0), len);
     if (locale[0] == '\0') {
         return 0;
     }
 
-    p = strrchr(locale, '.');
+    char *p = strrchr(locale, '.');
     if (p)
         *p = '\0';
 
@@ -615,16 +602,11 @@ QUimInputContext::get_lang_region(char *locale, size_t len)
 int
 QUimInputContext::get_mb_string(char *buf, unsigned int ks)
 {
-    int len;
-    const char *mb;
-    unsigned int ucs;
-
-    ucs = KeySymToUcs4(ks);
     QString qs = QString(QChar(ks));
-    mb = qs.toLocal8Bit().data();
+    const char *mb = qs.toLocal8Bit().data();
     if (!mb)
         return 0;
-    len = strlen(mb);
+    int len = strlen(mb);
     strlcpy(buf, mb, MB_LEN_MAX + 1);
 
     return len;
@@ -636,32 +618,14 @@ static const unsigned AllMask = (ShiftMask | LockMask | ControlMask | Mod1Mask);
 int
 QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 {
-    int token;
-    unsigned modifier_mask;
-    unsigned modifier;
-    unsigned tmp;
-    KeySym keysym = NoSymbol;
-    DefTree **top = &mTreeTop;
-    DefTree *p = 0;
-    Bool exclam, tilde;
-    KeySym rhs_keysym = 0;
-    char *rhs_string_mb;
-    int l;
-    int lastch = 0;
-    char local_mb_buf[MB_LEN_MAX + 1];
-    char *rhs_string_utf8;
-
     struct DefBuffer {
         unsigned modifier_mask;
         unsigned modifier;
         KeySym keysym;
     };
 
-    struct DefBuffer buf[SEQUENCE_MAX];
-    int n;
-    QTextCodec *codec = QTextCodec::codecForLocale();
-    QString qs;
-
+    int token;
+    int lastch = 0;
     do {
         token = nexttoken(fp, tokenbuf, &lastch, buflen);
     } while (token == ENDOFLINE);
@@ -670,7 +634,21 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
         return(-1);
     }
 
-    n = 0;
+    unsigned modifier_mask;
+    unsigned modifier;
+    unsigned tmp;
+    KeySym keysym = NoSymbol;
+    Bool exclam;
+    Bool tilde;
+    KeySym rhs_keysym = 0;
+    char *rhs_string_mb;
+    int l;
+    char local_mb_buf[MB_LEN_MAX + 1];
+    struct DefBuffer buf[SEQUENCE_MAX];
+    int n = 0;
+
+    DefTree **top = &mTreeTop;
+    DefTree *p = 0;
     do {
         if ((token == KEY) && (strcmp("include", *tokenbuf) == 0)) {
             char filename[MAXPATHLEN];
@@ -795,9 +773,6 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
         goto error;
     }
 
-    qs = codec->toUnicode(rhs_string_mb);
-    rhs_string_utf8 = strdup(qs.toUtf8().data());
-
     for (int i = 0; i < n; i++) {
         for (p = *top; p; p = p->next) {
             if (buf[i].keysym == p->keysym &&
@@ -831,7 +806,12 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     p->mb = rhs_string_mb;
     if (p->utf8 != 0)
         free(p->utf8);
-    p->utf8 = rhs_string_utf8;
+    {
+        QTextCodec *codec = QTextCodec::codecForLocale();
+        QString qs = codec->toUnicode(rhs_string_mb);
+        char *rhs_string_utf8 = strdup(qs.toUtf8().data());
+        p->utf8 = rhs_string_utf8;
+    }
     p->ks = rhs_keysym;
     return n;
 error:
@@ -878,16 +858,10 @@ QUimInputContext::ParseComposeStringFile(FILE *fp)
 
 void QUimInputContext::create_compose_tree()
 {
-    FILE *fp = 0;
+    char *compose_env = getenv("XCOMPOSEFILE");
     char name[MAXPATHLEN];
-    char lang_region[BUFSIZ];
-    const char *encoding;
-    char *compose_env;
-    int ret;
-
     name[0] = '\0';
-    compose_env = getenv("XCOMPOSEFILE");
-
+    FILE *fp = 0;
     if (compose_env != 0) {
         strlcpy(name, compose_env, sizeof(name));
     } else {
@@ -906,8 +880,9 @@ void QUimInputContext::create_compose_tree()
     if (fp == 0 && ((fp = fopen(name, "r")) == 0))
         return;
 
-    ret = get_lang_region(lang_region, sizeof(lang_region));
-    encoding = get_encoding();
+    char lang_region[BUFSIZ];
+    int ret = get_lang_region(lang_region, sizeof(lang_region));
+    const char *encoding = get_encoding();
     if (!ret || encoding == 0) {
         fprintf(stderr, "Warning: locale name is NULL\n");
         fclose(fp);
@@ -920,26 +895,20 @@ void QUimInputContext::create_compose_tree()
 
 int QUimInputContext::get_compose_filename(char *filename, size_t len)
 {
-    char compose_dir_file[MAXPATHLEN], name[MAXPATHLEN];
-    char locale[BUFSIZ];
-    const char *encoding;
     char lang_region[BUFSIZ];
-    int ret;
-
-    FILE *fp;
-    char buf[XLC_BUFSIZE];
-    const char *xlib_dir = XLIB_DIR ;
-
-    ret = get_lang_region(lang_region, sizeof(lang_region));
-    encoding = get_encoding();
+    int ret = get_lang_region(lang_region, sizeof(lang_region));
+    const char *encoding = get_encoding();
 
     if (!ret || encoding == 0)
         return 0;
 
+    char locale[BUFSIZ];
     snprintf(locale, sizeof(locale), "%s.%s", lang_region, encoding);
+    char compose_dir_file[MAXPATHLEN];
+    const char *xlib_dir = XLIB_DIR ;
     snprintf(compose_dir_file, sizeof(compose_dir_file), "%s/%s", XLIB_DIR, COMPOSE_DIR_FILE);
 
-    fp = fopen(compose_dir_file, "r");
+    FILE *fp = fopen(compose_dir_file, "r");
     if (fp == 0) {
         /* retry with fallback file */
         if (strcmp(FALLBACK_XLIB_DIR, XLIB_DIR)) {
@@ -953,7 +922,9 @@ int QUimInputContext::get_compose_filename(char *filename, size_t len)
             return 0;
     }
 
+    char name[MAXPATHLEN];
     name[0] = '\0';
+    char buf[XLC_BUFSIZE];
     while (fgets(buf, XLC_BUFSIZE, fp) != 0) {
         char *p = buf;
         int n;
@@ -1086,25 +1057,6 @@ static unsigned short const keysym_to_unicode_590_5fe[] = {
     0x06a9, 0x06af, 0x06ba, 0x06be, 0x06cc, 0x06d2, 0x06c1          /* 0x05f8-0x05fe */
 };
 
-static unsigned short keysym_to_unicode_680_6ff[] = {
-    0x0492, 0x0496, 0x049a, 0x049c, 0x04a2, 0x04ae, 0x04b0, 0x04b2, /* 0x0680-0x0687 */
-    0x04b6, 0x04b8, 0x04ba, 0x0000, 0x04d8, 0x04e2, 0x04e8, 0x04ee, /* 0x0688-0x068f */
-    0x0493, 0x0497, 0x049b, 0x049d, 0x04a3, 0x04af, 0x04b1, 0x04b3, /* 0x0690-0x0697 */
-    0x04b7, 0x04b9, 0x04bb, 0x0000, 0x04d9, 0x04e3, 0x04e9, 0x04ef, /* 0x0698-0x069f */
-    0x0000, 0x0452, 0x0453, 0x0451, 0x0454, 0x0455, 0x0456, 0x0457, /* 0x06a0-0x06a7 */
-    0x0458, 0x0459, 0x045a, 0x045b, 0x045c, 0x0491, 0x045e, 0x045f, /* 0x06a8-0x06af */
-    0x2116, 0x0402, 0x0403, 0x0401, 0x0404, 0x0405, 0x0406, 0x0407, /* 0x06b0-0x06b7 */
-    0x0408, 0x0409, 0x040a, 0x040b, 0x040c, 0x0490, 0x040e, 0x040f, /* 0x06b8-0x06bf */
-    0x044e, 0x0430, 0x0431, 0x0446, 0x0434, 0x0435, 0x0444, 0x0433, /* 0x06c0-0x06c7 */
-    0x0445, 0x0438, 0x0439, 0x043a, 0x043b, 0x043c, 0x043d, 0x043e, /* 0x06c8-0x06cf */
-    0x043f, 0x044f, 0x0440, 0x0441, 0x0442, 0x0443, 0x0436, 0x0432, /* 0x06d0-0x06d7 */
-    0x044c, 0x044b, 0x0437, 0x0448, 0x044d, 0x0449, 0x0447, 0x044a, /* 0x06d8-0x06df */
-    0x042e, 0x0410, 0x0411, 0x0426, 0x0414, 0x0415, 0x0424, 0x0413, /* 0x06e0-0x06e7 */
-    0x0425, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c, 0x041d, 0x041e, /* 0x06e8-0x06ef */
-    0x041f, 0x042f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412, /* 0x06f0-0x06f7 */
-    0x042c, 0x042b, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042a  /* 0x06f8-0x06ff */
-};
-
 static unsigned short const keysym_to_unicode_7a1_7f9[] = {
             0x0386, 0x0388, 0x0389, 0x038a, 0x03aa, 0x0000, 0x038c, /* 0x07a0-0x07a7 */
     0x038e, 0x03ab, 0x0000, 0x038f, 0x0000, 0x0000, 0x0385, 0x2015, /* 0x07a8-0x07af */
@@ -1198,60 +1150,8 @@ static unsigned short const keysym_to_unicode_ea0_eff[] = {
     0x11eb, 0x0000, 0x11f9, 0x0000, 0x0000, 0x0000, 0x0000, 0x20a9, /* 0x0ef8-0x0eff */
 };
 
-static unsigned short keysym_to_unicode_12a1_12fe[] = {
-            0x1e02, 0x1e03, 0x0000, 0x0000, 0x0000, 0x1e0a, 0x0000, /* 0x12a0-0x12a7 */
-    0x1e80, 0x0000, 0x1e82, 0x1e0b, 0x1ef2, 0x0000, 0x0000, 0x0000, /* 0x12a8-0x12af */
-    0x1e1e, 0x1e1f, 0x0000, 0x0000, 0x1e40, 0x1e41, 0x0000, 0x1e56, /* 0x12b0-0x12b7 */
-    0x1e81, 0x1e57, 0x1e83, 0x1e60, 0x1ef3, 0x1e84, 0x1e85, 0x1e61, /* 0x12b8-0x12bf */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x12c0-0x12c7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x12c8-0x12cf */
-    0x0174, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1e6a, /* 0x12d0-0x12d7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0176, 0x0000, /* 0x12d8-0x12df */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x12e0-0x12e7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x12e8-0x12ef */
-    0x0175, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x1e6b, /* 0x12f0-0x12f7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0177          /* 0x12f0-0x12ff */
-};
-                
 static unsigned short const keysym_to_unicode_13bc_13be[] = {
                                     0x0152, 0x0153, 0x0178          /* 0x13b8-0x13bf */
-};
-
-static unsigned short keysym_to_unicode_14a1_14ff[] = {
-            0x2741, 0x00a7, 0x0589, 0x0029, 0x0028, 0x00bb, 0x00ab, /* 0x14a0-0x14a7 */
-    0x2014, 0x002e, 0x055d, 0x002c, 0x2013, 0x058a, 0x2026, 0x055c, /* 0x14a8-0x14af */
-    0x055b, 0x055e, 0x0531, 0x0561, 0x0532, 0x0562, 0x0533, 0x0563, /* 0x14b0-0x14b7 */
-    0x0534, 0x0564, 0x0535, 0x0565, 0x0536, 0x0566, 0x0537, 0x0567, /* 0x14b8-0x14bf */
-    0x0538, 0x0568, 0x0539, 0x0569, 0x053a, 0x056a, 0x053b, 0x056b, /* 0x14c0-0x14c7 */
-    0x053c, 0x056c, 0x053d, 0x056d, 0x053e, 0x056e, 0x053f, 0x056f, /* 0x14c8-0x14cf */
-    0x0540, 0x0570, 0x0541, 0x0571, 0x0542, 0x0572, 0x0543, 0x0573, /* 0x14d0-0x14d7 */
-    0x0544, 0x0574, 0x0545, 0x0575, 0x0546, 0x0576, 0x0547, 0x0577, /* 0x14d8-0x14df */
-    0x0548, 0x0578, 0x0549, 0x0579, 0x054a, 0x057a, 0x054b, 0x057b, /* 0x14e0-0x14e7 */
-    0x054c, 0x057c, 0x054d, 0x057d, 0x054e, 0x057e, 0x054f, 0x057f, /* 0x14e8-0x14ef */
-    0x0550, 0x0580, 0x0551, 0x0581, 0x0552, 0x0582, 0x0553, 0x0583, /* 0x14f0-0x14f7 */
-    0x0554, 0x0584, 0x0555, 0x0585, 0x0556, 0x0586, 0x2019, 0x0027, /* 0x14f8-0x14ff */
-};
-
-static unsigned short keysym_to_unicode_15d0_15f6[] = {
-    0x10d0, 0x10d1, 0x10d2, 0x10d3, 0x10d4, 0x10d5, 0x10d6, 0x10d7, /* 0x15d0-0x15d7 */
-    0x10d8, 0x10d9, 0x10da, 0x10db, 0x10dc, 0x10dd, 0x10de, 0x10df, /* 0x15d8-0x15df */
-    0x10e0, 0x10e1, 0x10e2, 0x10e3, 0x10e4, 0x10e5, 0x10e6, 0x10e7, /* 0x15e0-0x15e7 */
-    0x10e8, 0x10e9, 0x10ea, 0x10eb, 0x10ec, 0x10ed, 0x10ee, 0x10ef, /* 0x15e8-0x15ef */
-    0x10f0, 0x10f1, 0x10f2, 0x10f3, 0x10f4, 0x10f5, 0x10f6          /* 0x15f0-0x15f7 */
-};
-
-static unsigned short keysym_to_unicode_16a0_16f6[] = {
-    0x0000, 0x0000, 0xf0a2, 0x1e8a, 0x0000, 0xf0a5, 0x012c, 0xf0a7, /* 0x16a0-0x16a7 */
-    0xf0a8, 0x01b5, 0x01e6, 0x0000, 0x0000, 0x0000, 0x0000, 0x019f, /* 0x16a8-0x16af */
-    0x0000, 0x0000, 0xf0b2, 0x1e8b, 0x01d1, 0xf0b5, 0x012d, 0xf0b7, /* 0x16b0-0x16b7 */
-    0xf0b8, 0x01b6, 0x01e7, 0x0000, 0x0000, 0x01d2, 0x0000, 0x0275, /* 0x16b8-0x16bf */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x018f, 0x0000, /* 0x16c0-0x16c7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x16c8-0x16cf */
-    0x0000, 0x1e36, 0xf0d2, 0xf0d3, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x16d0-0x16d7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x16d8-0x16df */
-    0x0000, 0x1e37, 0xf0e2, 0xf0e3, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x16e0-0x16e7 */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, /* 0x16e8-0x16ef */
-    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0259          /* 0x16f0-0x16f6 */
 };
 
 static unsigned short const keysym_to_unicode_1e9f_1eff[] = {
@@ -1274,60 +1174,6 @@ static unsigned short const keysym_to_unicode_20a0_20ac[] = {
     0x20a0, 0x20a1, 0x20a2, 0x20a3, 0x20a4, 0x20a5, 0x20a6, 0x20a7, /* 0x20a0-0x20a7 */
     0x20a8, 0x20a9, 0x20aa, 0x20ab, 0x20ac                          /* 0x20a8-0x20af */
 };
-
-static unsigned int
-KeySymToUcs4(KeySym keysym)
-{
-    /* 'Unicode keysym' */
-    if ((keysym & 0xff000000) == 0x01000000)
-        return (keysym & 0x00ffffff);
-
-    if (keysym > 0 && keysym < 0x100)
-        return keysym;
-    else if (keysym > 0x1a0 && keysym < 0x200)
-        return keysym_to_unicode_1a1_1ff[keysym - 0x1a1];
-    else if (keysym > 0x2a0 && keysym < 0x2ff)
-        return keysym_to_unicode_2a1_2fe[keysym - 0x2a1];
-    else if (keysym > 0x3a1 && keysym < 0x3ff)
-        return keysym_to_unicode_3a2_3fe[keysym - 0x3a2];
-    else if (keysym > 0x4a0 && keysym < 0x4e0)
-        return keysym_to_unicode_4a1_4df[keysym - 0x4a1];
-    else if (keysym > 0x589 && keysym < 0x5ff)
-        return keysym_to_unicode_590_5fe[keysym - 0x590];
-    else if (keysym > 0x67f && keysym < 0x700)
-        return keysym_to_unicode_680_6ff[keysym - 0x680];
-    else if (keysym > 0x7a0 && keysym < 0x7fa)
-        return keysym_to_unicode_7a1_7f9[keysym - 0x7a1];
-    else if (keysym > 0x8a3 && keysym < 0x8ff)
-        return keysym_to_unicode_8a4_8fe[keysym - 0x8a4];
-    else if (keysym > 0x9de && keysym < 0x9f9)
-        return keysym_to_unicode_9df_9f8[keysym - 0x9df];
-    else if (keysym > 0xaa0 && keysym < 0xaff)
-        return keysym_to_unicode_aa1_afe[keysym - 0xaa1];
-    else if (keysym > 0xcde && keysym < 0xcfb)
-        return keysym_to_unicode_cdf_cfa[keysym - 0xcdf];
-    else if (keysym > 0xda0 && keysym < 0xdfa)
-        return keysym_to_unicode_da1_df9[keysym - 0xda1];
-    else if (keysym > 0xe9f && keysym < 0xf00)
-        return keysym_to_unicode_ea0_eff[keysym - 0xea0];
-    else if (keysym > 0x12a0 && keysym < 0x12ff)
-        return keysym_to_unicode_12a1_12fe[keysym - 0x12a1];
-    else if (keysym > 0x13bb && keysym < 0x13bf)
-        return keysym_to_unicode_13bc_13be[keysym - 0x13bc];
-    else if (keysym > 0x14a0 && keysym < 0x1500)
-        return keysym_to_unicode_14a1_14ff[keysym - 0x14a1];
-    else if (keysym > 0x15cf && keysym < 0x15f7)
-        return keysym_to_unicode_15d0_15f6[keysym - 0x15d0];
-    else if (keysym > 0x169f && keysym < 0x16f7)
-        return keysym_to_unicode_16a0_16f6[keysym - 0x16a0];
-    else if (keysym > 0x1e9e && keysym < 0x1f00)
-        return keysym_to_unicode_1e9f_1eff[keysym - 0x1e9f];
-    else if (keysym > 0x209f && keysym < 0x20ad)
-        return keysym_to_unicode_20a0_20ac[keysym - 0x20a0];
-    else 
-        return 0;
-}
-
 /*
  * Local variables:
  *  c-indent-level: 4
