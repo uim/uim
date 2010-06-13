@@ -40,9 +40,9 @@ if GTK2
 bin_PROGRAMS = uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk \
 	       uim-input-pad-ja
 if APPLET_GNOME
-libexec_PROGRAMS += uim-candwin-gtk
+libexec_PROGRAMS += uim-candwin-gtk uim-candwin-tbl-gtk
 else
-libexec_PROGRAMS = uim-candwin-gtk
+libexec_PROGRAMS = uim-candwin-gtk uim-candwin-tbl-gtk
 endif
 
 if DICT
@@ -62,6 +62,14 @@ uim_candwin_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la
 uim_candwin_gtk_CPPFLAGS = -I$(top_srcdir)
 uim_candwin_gtk_CFLAGS   = @GTK2_CFLAGS@
+
+uim_candwin_tbl_gtk_SOURCES  = candwin-tbl-gtk.c \
+			   ../gtk/caret-state-indicator.c \
+			   ../gtk/caret-state-indicator.h
+uim_candwin_tbl_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
+			   $(top_builddir)/uim/libuim.la
+uim_candwin_tbl_gtk_CPPFLAGS = -I$(top_srcdir)
+uim_candwin_tbl_gtk_CFLAGS   = @GTK2_CFLAGS@
 
 uim_toolbar_gtk_SOURCES  = toolbar-standalone-gtk.c toolbar-common-gtk.c
 uim_toolbar_gtk_LDADD    = @GTK2_LIBS@ $(top_builddir)/uim/libuim-scm.la \
