@@ -117,7 +117,7 @@
     (let ((looked (look-lib-look
                     #f
                     #f
-                    5000 ;; is it sufficient enought?
+                    5000 ;; is it sufficient enough?
                     (string-append (sys-pkgdatadir) "/tables/" table)
                     (apply string-append seq))))
       (if (not (null? looked))
