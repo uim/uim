@@ -33,93 +33,49 @@ SUCH DAMAGE.
 #ifndef UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 #define UIM_QT4_IMMODULE_CANDIDATE_WINDOW_H
 
-#include <QtCore/QList>
 #include <QtGui/QTableWidget>
 
-#include <uim/uim.h>
-
-#define UIM_QT_USE_NEW_PAGE_HANDLING 1
-
-class QLabel;
+#include "abstractcandidatewindow.h"
 
 class CandidateListView;
-class QUimInputContext;
 class SubWindow;
 
-class CandidateWindow : public QFrame
+class CandidateWindow : public AbstractCandidateWindow
 {
     Q_OBJECT
 
 public:
     explicit CandidateWindow( QWidget *parent );
-    ~CandidateWindow();
-
-    void deactivateCandwin();
-    void clearCandidates();
-    void popup();
-
-    void setAlwaysLeftPosition( bool left ) { isAlwaysLeft = left; }
-    bool isAlwaysLeftPosition() const { return isAlwaysLeft; }
-
-    void layoutWindow( const QPoint &point, const QRect &rect );
-
-    void setQUimInputContext( QUimInputContext* m_ic ) { ic = m_ic; }
-
-    void candidateActivate( int nr, int displayLimit );
-    void candidateSelect( int index );
-    void candidateShiftPage( bool forward );
 
     QSize sizeHint() const;
 
-protected slots:
+private slots:
     void slotCandidateSelected( int row );
     void slotHookSubwindow();
 
-protected:
+private:
     void activateCandwin( int dLimit );
 
-    void setCandidates( int displayLimit, const QList<uim_candidate> &candidates );
     void setPage( int page );
     void shiftPage( bool forward );
     void setIndex( int totalindex );
 
     void setNrCandidates( int nrCands, int dLimit );
-    void setPageCandidates( int page, const QList<uim_candidate> &candidates );
-
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-    void preparePageCandidates( int page );
-#endif
-    void updateLabel();
 
     // Moving and Resizing affects the position of Subwindow
     virtual void moveEvent( QMoveEvent * );
     virtual void resizeEvent( QResizeEvent * );
     virtual void hideEvent( QHideEvent *event );
 
-    bool eventFilter( QObject *obj, QEvent *event );
-
-    QUimInputContext *ic;
-
     // widgets
     CandidateListView *cList;
-    QLabel *numLabel;
     SubWindow *subWin;
-    QWidget *window;
+
 
     // candidate data
-    QList<uim_candidate> stores;
     QList<QString> annotations;
-    int nrCandidates;
-    int displayLimit;
-    int candidateIndex;
-    int pageIndex;
-#ifdef UIM_QT_USE_NEW_PAGE_HANDLING
-    QList<bool> pageFilled;
-    int nrPages;
-#endif
 
     // config
-    bool isAlwaysLeft;
     const bool hasAnnotation;
 };
 

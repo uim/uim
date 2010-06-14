@@ -97,9 +97,7 @@ QUimInputContext::QUimInputContext( const char *imname )
     if ( imname )
         m_uc = createUimContext( imname );
 
-    cwin = new CandidateWindow( 0 );
-    cwin->setQUimInputContext( this );
-    cwin->hide();
+    createCandidateWindow();
 
 #ifdef Q_WS_X11
     if ( !mTreeTop )
@@ -129,7 +127,7 @@ QUimInputContext::~QUimInputContext()
     foreach ( const uim_context uc, m_ucHash )
         if ( uc )
             uim_release_context( uc );
-    foreach ( const CandidateWindow* window, cwinHash )
+    foreach ( const AbstractCandidateWindow* window, cwinHash )
         delete window;
 #endif
 
@@ -180,6 +178,13 @@ uim_context QUimInputContext::createUimContext( const char *imname )
     uim_prop_list_update( uc );
 
     return uc;
+}
+
+void QUimInputContext::createCandidateWindow()
+{
+    cwin = new CandidateWindow( 0 );
+    cwin->setQUimInputContext( this );
+    cwin->hide();
 }
 
 #ifdef Q_WS_X11
@@ -658,9 +663,7 @@ void QUimInputContext::savePreedit()
     if ( imname )
         m_uc = createUimContext( imname );
     psegs.clear();
-    cwin = new CandidateWindow( 0 );
-    cwin->setQUimInputContext( this );
-    cwin->hide();
+    createCandidateWindow();
 }
 
 void QUimInputContext::restorePreedit()

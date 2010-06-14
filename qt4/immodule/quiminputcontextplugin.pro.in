@@ -23,7 +23,8 @@ QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
 
 # Input
-HEADERS += @srcdir@/candidatewindow.h \
+HEADERS += @srcdir@/abstractcandidatewindow.h \
+           @srcdir@/candidatewindow.h \
            @srcdir@/caretstateindicator.h \
            @srcdir@/plugin.h \
            @srcdir@/qhelpermanager.h \
@@ -33,7 +34,8 @@ HEADERS += @srcdir@/candidatewindow.h \
            @srcdir@/quiminputcontext_compose.h \
            @srcdir@/subwindow.h
 
-SOURCES += @srcdir@/candidatewindow.cpp \
+SOURCES += @srcdir@/abstractcandidatewindow.cpp \
+           @srcdir@/candidatewindow.cpp \
            @srcdir@/caretstateindicator.cpp \
            @srcdir@/plugin.cpp \
            @srcdir@/qhelpermanager.cpp \

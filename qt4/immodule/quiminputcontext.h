@@ -46,7 +46,7 @@
 
 class QEvent;
 
-class CandidateWindow;
+class AbstractCandidateWindow;
 class CaretStateIndicator;
 class QUimHelperManager;
 class QUimTextUtil;
@@ -109,6 +109,7 @@ public:
 
 protected:
     uim_context createUimContext( const char *imname );
+    void createCandidateWindow();
     bool isPreeditPreservationEnabled();  // not a QInputContext func
     virtual void setFocus();    // not a QInputContext func
     virtual void unsetFocus();  // not a QInputContext func
@@ -169,12 +170,12 @@ protected:
 
     uim_context m_uc;
     QList<PreeditSegment> psegs;
-    CandidateWindow *cwin;
+    AbstractCandidateWindow *cwin;
 
 #ifdef WORKAROUND_BROKEN_RESET_IN_QT4
     QHash<QWidget*, uim_context> m_ucHash;
     QHash<QWidget*, QList<PreeditSegment> > psegsHash;
-    QHash<QWidget*, CandidateWindow*> cwinHash;
+    QHash<QWidget*, AbstractCandidateWindow*> cwinHash;
     QHash<QWidget*, bool> visibleHash;
 
     QWidget *focusedWidget;
