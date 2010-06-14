@@ -593,7 +593,7 @@ QUimInputContext::get_mb_string(char *buf, unsigned int ks)
     unsigned int ucs;
 
     ucs = KeySymToUcs4(ks);
-    QString qs = QString(QChar(ks));
+    QString qs = QString(QChar(ucs));
     mb = (const char *)qs.local8Bit();
     if (!mb)
 	return 0;
