@@ -139,7 +139,9 @@
 	  (im-clear-preedit pc)
 	  (im-pushback-preedit
 	   pc preedit-reverse
-	   (if (not (null? cands))
+	   (if (and
+                 (not (null? cands))
+                 (> n -1))
              (if (pair? (car cands))
                (car (nth n cands))
                (nth n cands))
@@ -153,13 +155,17 @@
 
 (define generic-commit
   (lambda (pc)
-    (let* ((rkc (generic-context-rk-context pc))
-	   (cands (generic-context-cands pc)))
+    (let ((rkc (generic-context-rk-context pc))
+          (cands (generic-context-cands pc))
+          (n (generic-context-rk-nth pc)))
       (if (not (null? cands))
 	  (begin
-            (if (pair? (car cands))
-              (im-commit pc (car (nth (generic-context-rk-nth pc) cands)))
-              (im-commit pc (nth (generic-context-rk-nth pc) cands)))
+            (if (> n -1)
+              (if (pair? (car cands))
+                (im-commit pc (car (nth (generic-context-rk-nth pc) cands)))
+                (im-commit pc (nth (generic-context-rk-nth pc) cands)))
+              ;(im-commit pc (rk-pending rkc))
+              )
 	    (im-deactivate-candidate-selector pc)
 	    (generic-context-flush pc))
 	  (begin
@@ -215,12 +221,15 @@
   (lambda (pc key state rkc)
     (cond
      ((generic-off-key? key state)
-      (let ((cands (generic-context-cands pc)))
-	(if (not (null? cands))
+      (let ((cands (generic-context-cands pc))
+            (n (generic-context-rk-nth pc)))
+	(if (and
+              (not (null? cands))
+              (> n -1))
 	    (begin
               (if (pair? (car cands))
-                (im-commit pc (car (nth (generic-context-rk-nth pc) cands)))
-                (im-commit pc (nth (generic-context-rk-nth pc) cands)))
+                (im-commit pc (car (nth n cands)))
+                (im-commit pc (nth n cands)))
 	      (generic-context-flush pc))
 	    (if (not (string=? (rk-pending rkc) "")) ;; flush pending rk
 		(generic-context-flush pc)))
@@ -276,8 +285,7 @@
           (if (null? (cdr cands)) 
             ;; single candidate
             (begin
-              (im-commit pc
-                         (nth (generic-context-rk-nth pc) cands))
+              (im-commit pc (nth 0 cands))
               (generic-context-flush pc)
               (im-deactivate-candidate-selector pc))
             ;; show candidates for the Pinyin like input method
@@ -324,9 +332,12 @@
               (begin
                 (im-activate-candidate-selector
                   pc (length cands/keys) generic-nr-candidate-max)
-                (im-select-candidate pc 0)
-                (generic-context-set-candidate-op-count!
-                  pc (+ 1 (generic-context-candidate-op-count pc)))
+                (if (not (string=? (cdr (car cands/keys)) ""))
+                  (generic-context-set-rk-nth! pc -1)
+                  (begin
+                    (generic-context-set-rk-nth! pc 0)
+                    (im-select-candidate pc 0)
+                    (generic-context-set-candidate-op-count! pc (+ 1 (generic-context-candidate-op-count pc)))))
                 (generic-context-set-multi-cand-input! pc #t)))))))))
 
 (define generic-proc-input-state
@@ -356,12 +367,15 @@
   (lambda (pc key state rkc)
     (cond
      ((generic-off-key? key state)
-      (let ((cands (generic-context-cands pc)))
-	(if (not (null? cands))
+      (let ((cands (generic-context-cands pc))
+            (n (generic-context-rk-nth pc)))
+	(if (and
+              (not (null? cands))
+              (> n -1))
 	    (begin
               (if (pair? (car cands))
-                (im-commit pc (car (nth (generic-context-rk-nth pc) cands)))
-                (im-commit pc (nth (generic-context-rk-nth pc) cands)))
+                (im-commit pc (car (nth n cands)))
+                (im-commit pc (nth n cands)))
 	      (generic-context-flush pc))
 	    (if (not (string=? (rk-pending rkc) "")) ;; flush pending rk
 		(generic-context-flush pc)))
@@ -425,7 +439,7 @@
           (if (null? (cdr cands))
             (begin
               (im-commit pc
-                         (nth (generic-context-rk-nth pc) cands))
+                         (nth 0 cands))
               (generic-context-flush pc)
               (im-deactivate-candidate-selector pc))
             ;; show candidates for the Pinyin like input method
@@ -438,7 +452,7 @@
           (begin
             (im-deactivate-candidate-selector pc)
             (generic-context-flush pc))))
-      ;; partial match
+      ;; partial match, including exact match
       (let* ((ret (if generic-show-prediction-candidates?
                     (rk-cands-with-minimal-partial rkc)
                     '()))
@@ -455,16 +469,20 @@
                  (cands (if cs (cadr cs) '())))
             (set! cands/nexts cands)))
         (generic-context-set-cands! pc cands/nexts)
-        (generic-context-set-rk-nth! pc 0)
         (if (not (null? cands/nexts))
           (if (not (null? (cdr cands/nexts)))
             (begin
               (im-activate-candidate-selector
                 pc (length cands/nexts) generic-nr-candidate-max)
-              (im-select-candidate pc 0))
+              (if (not (string=? (cdr (car cands/nexts)) ""))
+                (generic-context-set-rk-nth! pc -1)
+                (begin
+                  (generic-context-set-rk-nth! pc 0)
+                  (im-select-candidate pc 0))))
             ;; single candidate
             (begin
               (im-deactivate-candidate-selector pc)
+              (generic-context-set-rk-nth! pc 0)
               (generic-context-set-candidate-op-count! pc 0)
               (generic-context-set-multi-cand-input! pc #f)))
           ;; no-candidate
@@ -492,7 +510,8 @@
                (if (< (generic-context-rk-nth pc) (length res))
                  (im-commit pc (nth (generic-context-rk-nth pc) res))
 	         ;(im-commit pc (car (nth (generic-context-rk-nth pc) cands)))
-	         (im-commit pc (nth 0 res))) ;; what is the expected behavior?
+	         ;(im-commit pc (nth 0 res))
+                 ) ;; XXX: what is the expected behavior here?
 	       (generic-context-set-rk-nth! pc 0)
 	       (generic-context-set-candidate-op-count! pc 0)
 	       (im-deactivate-candidate-selector pc)
@@ -641,19 +660,8 @@
 
 (define generic-focus-out-handler
   (lambda (pc)
-    (let ((rkc (generic-context-rk-context pc))
-	  (cands (generic-context-cands pc)))
-      (cond
-       ((not (null? cands)) ;; commit
-        (if (pair? (car cands))
-          (im-commit pc (car (nth (generic-context-rk-nth pc) cands)))
-          (im-commit pc (nth (generic-context-rk-nth pc) cands)))
-	(im-deactivate-candidate-selector pc)
-	(generic-context-flush pc)
-	(generic-update-preedit pc))
-       ((not (string=? (rk-pending rkc) "")) ;; flush pending rk
-	(generic-context-flush pc)
-	(generic-update-preedit pc))))))
+    (generic-commit pc)
+    (generic-update-preedit pc)))
 
 (define generic-place-handler generic-focus-in-handler)
 (define generic-displace-handler generic-focus-out-handler)
