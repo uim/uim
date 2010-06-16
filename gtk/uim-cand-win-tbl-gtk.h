@@ -63,10 +63,6 @@ GType uim_cand_win_tbl_gtk_register_type(GTypeModule *module);
 GType uim_cand_win_tbl_gtk_get_type(void);
 UIMCandWinTblGtk *uim_cand_win_tbl_gtk_new(void);
 
-void uim_cand_win_tbl_gtk_set_candidates(UIMCandWinTblGtk *cwin,
-    guint disp_limit, GSList *candidates);
-void uim_cand_win_tbl_gtk_set_page_candidates(UIMCandWinTblGtk *cwin,
-    guint page, GSList *candidates);
 void uim_cand_win_tbl_gtk_set_index(UIMCandWinTblGtk *cwin, gint index);
 void uim_cand_win_tbl_gtk_set_page(UIMCandWinTblGtk *cwin, gint page);
 

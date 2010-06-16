@@ -88,12 +88,6 @@ struct _UIMCandWinGtkClass {
   void (*index_changed) (UIMCandWinGtkClass *cwin);
 
   /* member functions */
-  void (*set_candidates)	(UIMCandWinGtk *cwin,
-				 guint disp_limit,
-				 GSList *candidates);
-  void (*set_page_candidates)	(UIMCandWinGtk *cwin,
-				 guint page,
-				 GSList *candidates);
   void (*set_index)		(UIMCandWinGtk *cwin, gint index);
   void (*set_page)		(UIMCandWinGtk *cwin, gint page);
 };

@@ -117,19 +117,10 @@ enum {
 
 enum {
   TERMINATOR = -1,
-  COLUMN_CANDIDATE1,
-  COLUMN_CANDIDATE2,
-  COLUMN_CANDIDATE3,
-  COLUMN_CANDIDATE4,
-  COLUMN_CANDIDATE5,
-  COLUMN_CANDIDATE6,
-  COLUMN_CANDIDATE7,
-  COLUMN_CANDIDATE8,
-  COLUMN_CANDIDATE9,
-  COLUMN_CANDIDATE10,
-  COLUMN_CANDIDATE11,
-  COLUMN_CANDIDATE12,
-  COLUMN_CANDIDATE13
+  COLUMN_HEADING,
+  COLUMN_CANDIDATE,
+  COLUMN_ANNOTATION,
+  NR_COLUMNS
 };
 
 #define LABELCHAR_NR_COLUMNS 13
@@ -164,8 +155,6 @@ static gchar default_labelchar_table[LABELCHAR_NR_CELLS] = {
 #define BLOCK_AS_COLUMN_START BLOCK_LRS_COLUMN_END
 #define BLOCK_AS_COLUMN_END LABELCHAR_NR_COLUMNS
 
-#define BLOCK_SPACING 20
-#define HOMEPOSITION_SPACING 2
 #define BLOCK_SPACING 20
 #define HOMEPOSITION_SPACING 2
 #define SPACING_LEFT_BLOCK_COLUMN 4
@@ -481,38 +470,6 @@ get_row_column(gchar *labelchar_table, const gchar labelchar, gint *row, gint *c
 }
 
 static void
-set_candidate(UIMCandidateWindow *cwin, GSList *node, GtkListStore *store, gint idx)
-{
-  if (node) {
-    GtkTreeIter ti;
-    gint row = 0;
-    gint col = 0;
-    gint i;
-    struct index_button *idxbutton;
-    gchar *str = node->data;
-    /* "heading label char\acandidate\aannotation" */
-    gchar **column = g_strsplit(str, "\a", 3);
-
-    get_row_column(cwin->labelchar_table, column[0][0], &row, &col);
-    gtk_tree_model_get_iter_first(GTK_TREE_MODEL(store), &ti);
-    for (i = 0; i < row; i++) {
-      gtk_tree_model_iter_next(GTK_TREE_MODEL(store), &ti);
-    }
-    gtk_list_store_set(store, &ti, col, column[1], TERMINATOR);
-
-    idxbutton = g_ptr_array_index(cwin->buttons, INDEX(row, col));
-    if (idxbutton) {
-      idxbutton->cand_index_in_page = idx;
-    }
-
-    g_strfreev(column);
-    g_free(str);
-  } else {
-    /* No need to set any data for empty row. */
-  }
-}
-
-static void
 candwin_activate(gchar **str)
 {
   gsize rbytes, wbytes;
@@ -580,26 +537,31 @@ candwin_activate(gchar **str)
 
   /* create GtkListStores, and set candidates */
   for (i = 0; i < nr_stores; i++) {
-    GtkListStore *store = gtk_list_store_new(LABELCHAR_NR_COLUMNS,
-        G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-        G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-        G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-	G_TYPE_STRING);
+    GtkListStore *store = gtk_list_store_new(NR_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
     GSList *node;
 
     g_ptr_array_add(cwin->stores, store);
-
-    for (j = 0; j < LABELCHAR_NR_ROWS; j++) {
-      GtkTreeIter ti;
-      gtk_list_store_append(store, &ti);
-    }
 
     /* set candidates */
     for (j = i * display_limit, node = g_slist_nth(candidates, j);
 	 display_limit ? j < display_limit * (i + 1) : j < cwin->nr_candidates;
 	 j++, node = g_slist_next(node))
     {
-      set_candidate(cwin, node, store, j);
+      GtkTreeIter ti;
+      if (node) {
+	gchar *str = node->data;
+	gchar **column = g_strsplit(str, "\a", 3);
+	gtk_list_store_append(store, &ti);
+	gtk_list_store_set(store, &ti,
+			   COLUMN_HEADING, column[0],
+			   COLUMN_CANDIDATE, column[1],
+			   COLUMN_ANNOTATION, column[2],
+			   TERMINATOR);
+	g_strfreev(column);
+	g_free(str);
+      } else {
+	/* No need to set any data for empty row. */
+      }
     }
   }
   g_slist_free(candidates);
@@ -896,42 +858,72 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
 }
 
 static void
+clear_buttons(GPtrArray *buttons, gchar *labelchar_table)
+{
+  gint i;
+
+  for (i = 0; i < LABELCHAR_NR_CELLS; i++) {
+    GtkButton *button = NULL;
+    struct index_button *idxbutton;
+
+    idxbutton = g_ptr_array_index(buttons, i);
+    if (idxbutton) {
+      button = idxbutton->button;
+      idxbutton->cand_index_in_page = -1;
+
+      if (labelchar_table[i] == '\0') {
+        gtk_button_set_relief(button, GTK_RELIEF_NONE);
+      } else {
+        gtk_button_set_relief(button, GTK_RELIEF_HALF);
+      }
+      gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
+      gtk_button_set_label(button, "  ");
+    }
+  }
+}
+
+static void
 update_table_button(GtkTreeModel *model, GPtrArray *buttons, gchar *labelchar_table)
 {
   GtkTreeIter ti;
-  gint row, col;
-  gboolean hasValue = TRUE;
-  gtk_tree_model_get_iter_first(model, &ti);
-  for (row = 0; row < LABELCHAR_NR_ROWS; row++) {
-    for (col = 0; col < LABELCHAR_NR_COLUMNS; col++) {
-      GValue value = {0};
-      const gchar *str = NULL;
-      GtkButton *button = NULL;
-      button = get_button(buttons, INDEX(row, col));
-      if (hasValue) {
-        gtk_tree_model_get_value(model, &ti, col, &value);
-        str = g_value_get_string(&value);
-      }
-      if (str == NULL) {
-        str = "  ";
-	if (labelchar_table[INDEX(row, col)] == '\0') {
-          gtk_button_set_relief(button, GTK_RELIEF_NONE);
-	} else {
-          gtk_button_set_relief(button, GTK_RELIEF_HALF);
-	}
-        gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
+  gboolean hasNext;
+  gint cand_index = 0;
+
+  clear_buttons(buttons, labelchar_table);
+  hasNext = gtk_tree_model_get_iter_first(model, &ti);
+  while (hasNext) {
+    gchar *heading = NULL;
+    gchar *cand_str = NULL;
+    GtkButton *button = NULL;
+    struct index_button *idxbutton;
+    gint row = 0, col = 0;
+
+    gtk_tree_model_get(model, &ti, COLUMN_HEADING, &heading,
+        COLUMN_CANDIDATE, &cand_str, TERMINATOR);
+    get_row_column(labelchar_table, heading[0], &row, &col);
+
+    idxbutton = g_ptr_array_index(buttons, INDEX(row, col));
+    if (idxbutton) {
+      button = idxbutton->button;
+      idxbutton->cand_index_in_page = cand_index;
+    }
+    if (cand_str == NULL) {
+      if (labelchar_table[INDEX(row, col)] == '\0') {
+        gtk_button_set_relief(button, GTK_RELIEF_NONE);
       } else {
-        gtk_button_set_relief(button, GTK_RELIEF_NORMAL);
-        gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE);
+        gtk_button_set_relief(button, GTK_RELIEF_HALF);
       }
-      gtk_button_set_label(button, str);
-      if (hasValue) {
-        g_value_unset(&value);
-      }
+      gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
+    } else {
+      gtk_button_set_relief(button, GTK_RELIEF_NORMAL);
+      gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE);
     }
-    if (hasValue) {
-      hasValue = gtk_tree_model_iter_next(model, &ti);
-    }
+    gtk_button_set_label(button, (cand_str == NULL) ? "  " : cand_str);
+
+    g_free(cand_str);
+    g_free(heading);
+    cand_index++;
+    hasNext = gtk_tree_model_iter_next(model, &ti);
   }
 }
 
@@ -997,22 +989,29 @@ uim_cand_win_gtk_set_page_candidates(UIMCandidateWindow *cwin,
   len = g_slist_length(candidates);
 
   /* create GtkListStores, and set candidates */
-  store = gtk_list_store_new(LABELCHAR_NR_COLUMNS, G_TYPE_STRING,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING,
-      G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+  store = gtk_list_store_new(NR_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
   cwin->stores->pdata[page] = store;
-  for (j = 0; j < LABELCHAR_NR_ROWS; j++) {
-    GtkTreeIter ti;
-    gtk_list_store_append(store, &ti);
-  }
   /* set candidates */
   for (j = 0, node = g_slist_nth(candidates, j);
        j < len;
        j++, node = g_slist_next(node))
   {
-    set_candidate(cwin, node, store, j);
+    GtkTreeIter ti;
+
+    if (node) {
+      gchar *str = node->data;
+      gchar **column = g_strsplit(str, "\a", 3);
+      gtk_list_store_append(store, &ti);
+      gtk_list_store_set(store, &ti,
+			 COLUMN_HEADING, column[0],
+			 COLUMN_CANDIDATE, column[1],
+			 COLUMN_ANNOTATION, column[2],
+			 TERMINATOR);
+
+      g_strfreev(column);
+      g_free(str);
+    }
   }
 }
 

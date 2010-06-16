@@ -62,12 +62,6 @@ static void	uim_cand_win_gtk_map		(GtkWidget *widget);
 static void	uim_cand_win_gtk_unmap		(GtkWidget *widget);
 static void	uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin);
 static void	uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin);
-static void	uim_cand_win_gtk_real_set_candidates	(UIMCandWinGtk *cwin,
-							 guint disp_limit,
-							 GSList *candidates);
-static void	uim_cand_win_gtk_real_set_page_candidates(UIMCandWinGtk *cwin,
-							  guint page,
-							  GSList *candidates);
 static void	uim_cand_win_gtk_real_set_index		(UIMCandWinGtk *cwin,
 							 gint index);
 static void	uim_cand_win_gtk_real_set_page		(UIMCandWinGtk *cwin,
@@ -142,8 +136,6 @@ uim_cand_win_gtk_class_init (UIMCandWinGtkClass *klass)
   widget_class->map   = uim_cand_win_gtk_map;
   widget_class->unmap = uim_cand_win_gtk_unmap;
 
-  klass->set_candidates = uim_cand_win_gtk_real_set_candidates;
-  klass->set_page_candidates = uim_cand_win_gtk_real_set_page_candidates;
   klass->set_index = uim_cand_win_gtk_real_set_index;
   klass->set_page = uim_cand_win_gtk_real_set_page;
 }
@@ -491,14 +483,6 @@ uim_cand_win_gtk_set_candidates(UIMCandWinGtk *cwin,
 				guint display_limit,
 				GSList *candidates)
 {
-  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->set_candidates(cwin, display_limit, candidates);
-}
-
-static void
-uim_cand_win_gtk_real_set_candidates(UIMCandWinGtk *cwin,
-				     guint display_limit,
-				     GSList *candidates)
-{
   gint i, nr_stores = 1;
 
   g_return_if_fail(UIM_IS_CAND_WIN_GTK(cwin));
@@ -589,14 +573,6 @@ void
 uim_cand_win_gtk_set_page_candidates(UIMCandWinGtk *cwin,
 				     guint page,
 				     GSList *candidates)
-{
-  UIM_CAND_WIN_GTK_GET_CLASS (cwin)->set_page_candidates(cwin, page, candidates);
-}
-
-static void
-uim_cand_win_gtk_real_set_page_candidates(UIMCandWinGtk *cwin,
-					  guint page,
-					  GSList *candidates)
 {
   GtkListStore *store;
   GSList *node;
