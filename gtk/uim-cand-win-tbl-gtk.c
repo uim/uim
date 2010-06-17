@@ -80,6 +80,8 @@ static gchar default_labelchar_table[LABELCHAR_NR_CELLS] = {
 #define BLOCK_AS_ROW_END BLOCK_LRS_ROW_END
 #define BLOCK_AS_COLUMN_START BLOCK_LRS_COLUMN_END
 #define BLOCK_AS_COLUMN_END LABELCHAR_NR_COLUMNS
+#define BLOCK_LR_NR_CELLS (BLOCK_A_ROW_END * BLOCK_A_COLUMN_START)
+#define BLOCK_LRS_NR_CELLS ((BLOCK_LRS_ROW_END - BLOCK_LRS_ROW_START) * (BLOCK_LRS_COLUMN_END - BLOCK_LRS_COLUMN_START))
 
 #define BLOCK_SPACING 20
 #define HOMEPOSITION_SPACING 2
@@ -325,19 +327,54 @@ uim_cand_win_tbl_gtk_new (void)
   return UIM_CAND_WIN_TBL_GTK(obj);
 }
 
-static void
-get_row_column(gchar *labelchar_table, const gchar labelchar, gint *row, gint *col)
+static GtkButton*
+assign_cellbutton(gchar *labelchar_table, const gchar labelchar,
+    gint cand_index, gint display_limit, GPtrArray *buttons, gboolean *has_label)
 {
   gint i;
-  for (i = 0; i < LABELCHAR_NR_CELLS; i++) {
-    if (labelchar_table[i] == labelchar) {
-      *row = i / LABELCHAR_NR_COLUMNS;
-      *col = i % LABELCHAR_NR_COLUMNS;
-      return;
+  struct index_button *idxbutton;
+
+  if (labelchar != '\0') {
+    /* find button by labelchar */
+    for (i = 0; i < LABELCHAR_NR_CELLS; i++) {
+      if (labelchar_table[i] == labelchar) {
+        idxbutton = g_ptr_array_index(buttons, i);
+        if (!idxbutton) {
+          continue;
+        }
+        if (idxbutton->cand_index_in_page != -1) {
+          break; /* already used */
+        }
+        idxbutton->cand_index_in_page = cand_index;
+        *has_label = TRUE;
+        return idxbutton->button;
+      }
     }
   }
-  *row = 0;
-  *col = 0;
+  /* labelchar not found || already used */
+
+  /* find free cell */
+  for (i = 0; i < LABELCHAR_NR_CELLS; i++) {
+    if (display_limit && display_limit <= BLOCK_LR_NR_CELLS + BLOCK_LRS_NR_CELLS
+        && i % LABELCHAR_NR_COLUMNS >= BLOCK_A_COLUMN_START) {
+      /* skip blockA which is far from home position */
+      i += LABELCHAR_NR_COLUMNS - BLOCK_A_COLUMN_START - 1;
+      continue;
+    }
+    idxbutton = g_ptr_array_index(buttons, i);
+    if (!idxbutton) {
+      continue;
+    }
+    if (idxbutton->cand_index_in_page == -1) {
+      idxbutton->cand_index_in_page = cand_index;
+      *has_label = FALSE;
+      return idxbutton->button;
+    }
+  }
+
+  /* failed to assign button */
+  *has_label = FALSE;
+  return NULL;
 }
 
 void
@@ -391,47 +428,39 @@ clear_buttons(GPtrArray *buttons, gchar *labelchar_table)
 }
 
 static void
-update_table_button(GtkTreeModel *model, GPtrArray *buttons, gchar *labelchar_table)
+update_table_button(GtkTreeModel *model, GPtrArray *buttons,
+    gchar *labelchar_table, gint display_limit)
 {
   GtkTreeIter ti;
-  gboolean hasNext;
+  gboolean has_next;
   gint cand_index = 0;
 
   clear_buttons(buttons, labelchar_table);
-  hasNext = gtk_tree_model_get_iter_first(model, &ti);
-  while (hasNext) {
+  has_next = gtk_tree_model_get_iter_first(model, &ti);
+  while (has_next) {
     gchar *heading = NULL;
     gchar *cand_str = NULL;
     GtkButton *button = NULL;
-    struct index_button *idxbutton;
-    gint row = 0, col = 0;
 
     gtk_tree_model_get(model, &ti, COLUMN_HEADING, &heading,
         COLUMN_CANDIDATE, &cand_str, TERMINATOR);
-    get_row_column(labelchar_table, heading[0], &row, &col);
-
-    idxbutton = g_ptr_array_index(buttons, INDEX(row, col));
-    if (idxbutton) {
-      button = idxbutton->button;
-      idxbutton->cand_index_in_page = cand_index;
-    }
-    if (cand_str == NULL) {
-      if (labelchar_table[INDEX(row, col)] == '\0') {
-        gtk_button_set_relief(button, GTK_RELIEF_NONE);
-      } else {
-        gtk_button_set_relief(button, GTK_RELIEF_HALF);
+    if (cand_str != NULL) {
+      gboolean has_label = FALSE;
+      gchar ch = (heading == NULL) ? '\0' : heading[0];
+      button = assign_cellbutton(labelchar_table, ch, cand_index,
+          display_limit, buttons, &has_label);
+      if (button != NULL) {
+        gtk_button_set_relief(button,
+            has_label ? GTK_RELIEF_NORMAL : GTK_RELIEF_HALF);
+        gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE);
+        gtk_button_set_label(button, cand_str);
       }
-      gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
-    } else {
-      gtk_button_set_relief(button, GTK_RELIEF_NORMAL);
-      gtk_widget_set_sensitive(GTK_WIDGET(button), TRUE);
     }
-    gtk_button_set_label(button, (cand_str == NULL) ? "  " : cand_str);
 
     g_free(cand_str);
     g_free(heading);
     cand_index++;
-    hasNext = gtk_tree_model_iter_next(model, &ti);
+    has_next = gtk_tree_model_iter_next(model, &ti);
   }
 }
 
@@ -457,7 +486,8 @@ uim_cand_win_tbl_gtk_set_page(UIMCandWinTblGtk *ctblwin, gint page)
     new_page = page;
 
   update_table_button(GTK_TREE_MODEL(cwin->stores->pdata[new_page]),
-                      ctblwin->buttons, ctblwin->labelchar_table);
+                      ctblwin->buttons, ctblwin->labelchar_table,
+                      cwin->display_limit);
   show_table(GTK_TABLE(cwin->view), ctblwin->buttons);
 
   cwin->page_index = new_page;
