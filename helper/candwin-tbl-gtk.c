@@ -205,6 +205,8 @@ static void candwin_set_page_candidates(gchar **str);
 static void candwin_show_page(gchar **str);
 static void str_parse(char *str);
 static gchar *init_labelchar_table(void);
+static void clear_button(struct index_button *idxbutton,
+    const gchar *labelchar_table, gint cell_index);
 static GtkButton *get_button(GPtrArray *buttons, gint idx);
 
 static void index_changed_cb(UIMCandidateWindow *cwin)
@@ -377,7 +379,7 @@ candidate_window_init(UIMCandidateWindow *cwin)
       idxbutton = g_malloc(sizeof(struct index_button));
       if (idxbutton) {
         idxbutton->button = GTK_BUTTON(button);
-        idxbutton->cand_index_in_page = -1;
+        clear_button(idxbutton, cwin->labelchar_table, INDEX(row, col));
       }
       g_ptr_array_add(cwin->buttons, idxbutton);
     }
@@ -457,8 +459,9 @@ init_labelchar_table(void)
 }
 
 static GtkButton*
-assign_cellbutton(gchar *labelchar_table, const gchar labelchar,
-    gint cand_index, gint display_limit, GPtrArray *buttons, gboolean *has_label)
+assign_cellbutton(GPtrArray *buttons, const gchar *labelchar_table,
+    const gchar labelchar, gint cand_index, gint display_limit,
+    gboolean *has_label)
 {
   gint i;
   struct index_button *idxbutton;
@@ -895,39 +898,44 @@ uim_cand_win_gtk_set_index(UIMCandidateWindow *cwin, gint index)
 }
 
 static void
-clear_buttons(GPtrArray *buttons, gchar *labelchar_table)
+clear_button(struct index_button *idxbutton, const gchar *labelchar_table,
+    gint cell_index)
+{
+  GtkButton *button = NULL;
+  gboolean is_blank_cell = (labelchar_table[cell_index] == '\0') ? TRUE : FALSE;
+
+  idxbutton->cand_index_in_page = -1;
+  button = idxbutton->button;
+  gtk_button_set_relief(button,
+      is_blank_cell ? GTK_RELIEF_NONE : GTK_RELIEF_HALF);
+  gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
+  gtk_button_set_label(button, "  ");
+}
+
+static void
+clear_all_buttons(GPtrArray *buttons, const gchar *labelchar_table)
 {
   gint i;
 
   for (i = 0; i < LABELCHAR_NR_CELLS; i++) {
-    GtkButton *button = NULL;
     struct index_button *idxbutton;
 
     idxbutton = g_ptr_array_index(buttons, i);
-    if (idxbutton) {
-      button = idxbutton->button;
-      idxbutton->cand_index_in_page = -1;
-
-      if (labelchar_table[i] == '\0') {
-        gtk_button_set_relief(button, GTK_RELIEF_NONE);
-      } else {
-        gtk_button_set_relief(button, GTK_RELIEF_HALF);
-      }
-      gtk_widget_set_sensitive(GTK_WIDGET(button), FALSE);
-      gtk_button_set_label(button, "  ");
+    if (idxbutton && idxbutton->cand_index_in_page != -1) {
+      clear_button(idxbutton, labelchar_table, i);
     }
   }
 }
 
 static void
 update_table_button(GtkTreeModel *model, GPtrArray *buttons,
-    gchar *labelchar_table, gint display_limit)
+    const gchar *labelchar_table, gint display_limit)
 {
   GtkTreeIter ti;
   gboolean has_next;
   gint cand_index = 0;
 
-  clear_buttons(buttons, labelchar_table);
+  clear_all_buttons(buttons, labelchar_table);
   has_next = gtk_tree_model_get_iter_first(model, &ti);
   while (has_next) {
     gchar *heading = NULL;
@@ -939,8 +947,8 @@ update_table_button(GtkTreeModel *model, GPtrArray *buttons,
     if (cand_str != NULL) {
       gboolean has_label = FALSE;
       gchar ch = (heading == NULL) ? '\0' : heading[0];
-      button = assign_cellbutton(labelchar_table, ch, cand_index,
-          display_limit, buttons, &has_label);
+      button = assign_cellbutton(buttons, labelchar_table, ch, cand_index,
+          display_limit, &has_label);
       if (button != NULL) {
         gtk_button_set_relief(button,
             has_label ? GTK_RELIEF_NORMAL : GTK_RELIEF_HALF);
