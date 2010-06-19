@@ -277,11 +277,6 @@ button_clicked(GtkButton *button, gpointer data)
     }
     p = idxbutton->button;
     if (p == button) {
-      GtkReliefStyle relief;
-      relief = gtk_button_get_relief(button);
-      if (relief != GTK_RELIEF_NORMAL) {
-        return;
-      }
       idx = idxbutton->cand_index_in_page;
       break;
     }
@@ -1091,11 +1086,9 @@ is_empty_block(GPtrArray *buttons, gint rowstart, gint rowend, gint colstart, gi
   gint row, col;
   for (row = rowstart; row < rowend; row++) {
     for (col = colstart; col < colend; col++) {
-      GtkButton *button = NULL;
-      GtkReliefStyle relief;
-      button = get_button(buttons, INDEX(row, col));
-      relief = gtk_button_get_relief(button);
-      if (relief == GTK_RELIEF_NORMAL) {
+      struct index_button *idxbutton;
+      idxbutton = g_ptr_array_index(buttons, INDEX(row, col));
+      if (idxbutton && idxbutton->cand_index_in_page != -1) {
         return FALSE;
       }
     }
