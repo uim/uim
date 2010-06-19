@@ -925,9 +925,9 @@ clear_all_buttons(GPtrArray *buttons, const gchar *labelchar_table)
     struct index_button *idxbutton;
 
     idxbutton = g_ptr_array_index(buttons, i);
-    if (idxbutton && idxbutton->cand_index_in_page != -1) {
-      clear_button(idxbutton, labelchar_table, i);
-    }
+    /* if skip clearing, button becomes too thin */
+    /* if (idxbutton && idxbutton->cand_index_in_page != -1) */
+    clear_button(idxbutton, labelchar_table, i);
   }
 }
 
