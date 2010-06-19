@@ -51,7 +51,7 @@ typedef struct _UIMCandWinTblGtkClass UIMCandWinTblGtkClass;
 struct _UIMCandWinTblGtk {
   UIMCandWinGtk parent;
   GPtrArray *buttons;
-  gchar *labelchar_table;
+  gchar *tbl_cell2label;
 };
 
 struct _UIMCandWinTblGtkClass {
