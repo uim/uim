@@ -120,6 +120,12 @@
   (N_ "Number of candidates in candidate window at a time for kigou mode")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-use-stroke-help-window? #f
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Use stroke help window")
+  (N_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'tutcode-candidate-op-count
 		 'custom-activity-hooks

@@ -87,6 +87,7 @@
 ;;;  * 部首合成変換機能を追加。
 ;;;  * 記号入力モードを追加。
 
+(require-extension (srfi 1))
 (require "generic.scm")
 (require-custom "tutcode-custom.scm")
 (require-custom "generic-key-custom.scm")
@@ -146,6 +147,13 @@
     "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
     "U" "V" "W" "X" "Y" "Z"
     "=" "~" "|" "`" "{" "+" "*" "}" "<" ">" "?" "_"))
+
+;;; ストローク表のキーリスト
+(define tutcode-heading-label-char-list-for-stroke-help
+  '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
+    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p"
+    "a" "s" "d" "f" "g" "h" "j" "k" "l" ";"
+    "z" "x" "c" "v" "b" "n" "m" "," "." "/"))
 
 ;;; implementations
 
@@ -265,7 +273,10 @@
      ;;; 交ぜ書き変換の候補数
      (nr-candidates 0)
      ;;; 候補ウィンドウを表示中かどうか
-     (candidate-window #f))))
+     (candidate-window #f)
+     ;;; ストローク表
+     ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
+     (stroke-help ()))))
 (define-record 'tutcode-context tutcode-context-rec-spec)
 (define tutcode-context-new-internal tutcode-context-new)
 (define tutcode-context-katakana-mode? tutcode-context-katakana-mode)
@@ -503,6 +514,47 @@
           tutcode-nr-candidate-max-for-kigou-mode
           tutcode-nr-candidate-max)))))
 
+;;; 仮想鍵盤の表示を開始する
+(define (tutcode-check-stroke-help-window-begin pc)
+  (if (and (not (tutcode-context-candidate-window pc))
+           tutcode-use-stroke-help-window?)
+    (let* ((rkc (tutcode-context-rk-context pc))
+           (seq (rk-context-seq rkc)))
+      (tutcode-context-set-stroke-help! pc
+        ; rk-expectの各メンバについて、
+        ; rk-lib-find-seqして、label文字と候補のリストを作成。
+        ; #fの場合はストローク途中なので候補として□を使用。
+        (map
+          (lambda (elem)
+            (let* ((res
+                    (rk-lib-find-seq (reverse (cons elem seq)) tutcode-rule))
+                   (candlist (and res (cadr res)))
+                   (cand
+                    (if res
+                      (or
+                        (and (tutcode-context-katakana-mode? pc)
+                             (not (null? (cdr candlist)))
+                             (cadr candlist))
+                        (car candlist))
+                      "□"))
+                   (candstr
+                     (case cand
+                      ((tutcode-mazegaki-start) "◇")
+                      ((tutcode-bushu-start) "◆")
+                      (else cand)))
+                   (labeledcand
+                    (list candstr elem "")))
+              labeledcand))
+          (filter
+            (lambda (elem)
+              (member elem tutcode-heading-label-char-list-for-stroke-help))
+            (delete-duplicates (rk-expect rkc)))))
+      (tutcode-context-set-candidate-window! pc #t)
+      (im-activate-candidate-selector
+        pc
+	(length (tutcode-context-stroke-help pc))
+	(length tutcode-heading-label-char-list-for-stroke-help)))))
+
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
 (define (tutcode-update-preedit pc)
@@ -536,6 +588,7 @@
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-proc-state-on pc key key-state)
   (let ((rkc (tutcode-context-rk-context pc)))
+    (tutcode-reset-candidate-window pc)
     (cond
       ((and
         (tutcode-vi-escape-key? key key-state)
@@ -580,7 +633,8 @@
               (tutcode-context-set-state! pc 'tutcode-state-bushu)
               (tutcode-append-string pc "▲"))
             (else
-              (im-commit pc res)))))))))
+              (im-commit pc res)))
+	   (tutcode-check-stroke-help-window-begin pc)))))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param pc コンテキストリスト
@@ -652,6 +706,7 @@
 (define (tutcode-proc-state-yomi pc key key-state)
   (let* ((rkc (tutcode-context-rk-context pc))
          (res #f))
+    (tutcode-reset-candidate-window pc)
     (cond
       ((tutcode-off-key? key key-state)
        (tutcode-flush pc)
@@ -699,7 +754,9 @@
              (tutcode-flush pc))
            (set! res (charcode->string key)))))
       (else
-       (set! res (tutcode-push-key! pc (charcode->string key)))))
+       (set! res (tutcode-push-key! pc (charcode->string key)))
+       (if (not res)
+        (tutcode-check-stroke-help-window-begin pc))))
     (if res
       (tutcode-append-string pc res))))
 
@@ -710,6 +767,7 @@
 (define (tutcode-proc-state-bushu pc key key-state)
   (let* ((rkc (tutcode-context-rk-context pc))
          (res #f))
+    (tutcode-reset-candidate-window pc)
     (cond
       ((tutcode-off-key? key key-state)
        (tutcode-flush pc)
@@ -769,7 +827,9 @@
           (set! res #f))
         ((tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
-          (set! res #f)))))
+          (set! res #f))
+        ((#f)
+	  (tutcode-check-stroke-help-window-begin pc)))))
     (if res
       (let loop ((prevchar (car (tutcode-context-head pc)))
                   (char res))
@@ -1066,6 +1126,9 @@
              (label (nth n tutcode-heading-label-char-list-for-kigou-mode)))
         ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
         (list cand label "")))
+    ((and (not (eq? (tutcode-context-state tc) 'tutcode-state-converting))
+          tutcode-use-stroke-help-window?)
+      (nth idx (tutcode-context-stroke-help tc)))
     (else
       (let* ((cand (tutcode-get-nth-candidate tc idx))
              (n (remainder idx (length tutcode-heading-label-char-list)))
