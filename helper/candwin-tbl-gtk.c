@@ -439,19 +439,28 @@ init_labelchar_table(void)
     }
     return default_labelchar_table;
   }
-  table = (gchar *)g_malloc(LABELCHAR_NR_CELLS);
+  table = (gchar *)g_malloc0(LABELCHAR_NR_CELLS);
   if (table == NULL) {
     free(ary0);
     return default_labelchar_table;
   }
-  for (i = 0; i < LABELCHAR_NR_CELLS; i++, ary++) {
-    table[i] = '\0';
-    if (i < len) {
-      char *str = uim_scm_c_str(*ary);
-      if (str) {
-        table[i] = *str;
-        free(str);
-      }
+  for (i = 0; i < len && i < LABELCHAR_NR_CELLS; i++, ary++) {
+    char *str;
+#if 0 /* 0 for investigation (Because uim-candwin-tbl-gtk is standalone,
+         bad effects to other programs are smaller than gtk-immodule)
+       */
+    if (!uim_scm_strp(*ary)) {
+      /* XXX: output notify message? */
+      g_free(table);
+      free(ary0);
+      return default_labelchar_table;
+    }
+#endif
+    str = uim_scm_c_str(*ary);
+    if (str) {
+      /* XXX: only use first char */
+      table[i] = *str;
+      free(str);
     }
   }
   free(ary0);
