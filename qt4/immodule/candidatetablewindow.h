@@ -50,6 +50,7 @@ class CandidateTableWindow : public AbstractCandidateWindow
 
     public:
         explicit CandidateTableWindow(QWidget *parent);
+        ~CandidateTableWindow();
 
     private slots:
         void slotCandidateClicked(int index);

@@ -42,6 +42,8 @@
 
 #include "quiminputcontext.h"
 
+static const int TABLE_NR_CELLS = TABLE_NR_COLUMNS * TABLE_NR_ROWS;
+
 static const int BLOCK_SPACING = 20;
 static const int HOMEPOSITION_SPACING = 2;
 
@@ -56,7 +58,7 @@ static const int A_HEIGHT = 4;
 static const int AS_HEIGHT = 4;
 
 // 106 keyboard
-static char DEFAULT_TABLE[TABLE_NR_COLUMNS * TABLE_NR_ROWS] = {
+static char DEFAULT_TABLE[TABLE_NR_CELLS] = {
   '1','2','3','4','5', '6','7','8','9','0',   '-','^','\\',
   'q','w','e','r','t', 'y','u','i','o','p',   '@','[','\0',
   'a','s','d','f','g', 'h','j','k','l',';',   ':',']','\0',
@@ -98,6 +100,12 @@ CandidateTableWindow::CandidateTableWindow(QWidget *parent)
     initTable();
 }
 
+CandidateTableWindow::~CandidateTableWindow()
+{
+    if (table != DEFAULT_TABLE)
+        free(table);
+}
+
 QGridLayout *CandidateTableWindow::createLayout(int row, int column,
         int rowOffset, int columnOffset)
 {
@@ -116,9 +124,41 @@ QGridLayout *CandidateTableWindow::createLayout(int row, int column,
     return layout;
 }
 
+static char *initTableInternal()
+{
+    uim_lisp list = uim_scm_symbol_value("uim-candwin-prog-layout");
+    if (!list || !uim_scm_listp(list))
+        return DEFAULT_TABLE;
+    size_t len = 0;
+    void **array = uim_scm_list2array(list, &len, 0);
+    if (!array|| len <= 0) {
+        free(array);
+        return DEFAULT_TABLE;
+    }
+    char *table = static_cast<char *>(malloc(TABLE_NR_CELLS * sizeof(char)));
+    if (!table) {
+        free(array);
+        return DEFAULT_TABLE;
+    }
+    for (int i = 0; i < TABLE_NR_CELLS; i++) {
+        if (i >= static_cast<int>(len)) {
+            table[i] = '\0';
+            continue;
+        }
+        char *str = static_cast<char *>(array[i]);
+        // XXX: only use first char
+        table[i] = str[0];
+    }
+    free(array);
+    return table;
+}
+
 void CandidateTableWindow::initTable()
 {
-    table = DEFAULT_TABLE;
+    uim_gc_gate_func_ptr func_body
+        = reinterpret_cast<uim_gc_gate_func_ptr>(initTableInternal);
+    void *ret = uim_scm_call_with_gc_ready_stack(func_body, 0);
+    table = static_cast<char *>(ret);
 }
 
 void CandidateTableWindow::slotCandidateClicked(int index)
