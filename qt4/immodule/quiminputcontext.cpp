@@ -46,6 +46,7 @@
 #include <uim/uim-im-switcher.h>
 #include <uim/uim-scm.h>
 
+#include "candidatetablewindow.h"
 #include "candidatewindow.h"
 #include "caretstateindicator.h"
 #include "plugin.h"
@@ -182,7 +183,12 @@ uim_context QUimInputContext::createUimContext( const char *imname )
 
 void QUimInputContext::createCandidateWindow()
 {
-    cwin = new CandidateWindow( 0 );
+    char *candwinprog = uim_scm_symbol_value_str( "uim-candwin-prog" );
+    if ( candwinprog && !strncmp( candwinprog, "uim-candwin-tbl", 15 ) )
+        cwin = new CandidateTableWindow( 0 );
+    else
+        cwin = new CandidateWindow( 0 );
+    free( candwinprog );
     cwin->setQUimInputContext( this );
     cwin->hide();
 }

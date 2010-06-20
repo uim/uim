@@ -22,6 +22,7 @@ EXTRA_DIST = README.en README.ja INDENT \
 	     quiminputcontext_with_slave.cpp
 
 EXTRA_DIST += abstractcandidatewindow.h \
+              candidatetablewindow.h \
               candidatewindow.h \
               caretstateindicator.h \
               plugin.h \
@@ -33,6 +34,7 @@ EXTRA_DIST += abstractcandidatewindow.h \
               subwindow.h
 
 EXTRA_DIST += abstractcandidatewindow.cpp \
+              candidatetablewindow.cpp \
               candidatewindow.cpp \
               caretstateindicator.cpp \
               plugin.cpp \
