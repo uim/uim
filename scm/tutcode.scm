@@ -549,11 +549,12 @@
             (lambda (elem)
               (member elem tutcode-heading-label-char-list-for-stroke-help))
             (delete-duplicates (rk-expect rkc)))))
-      (tutcode-context-set-candidate-window! pc #t)
-      (im-activate-candidate-selector
-        pc
-	(length (tutcode-context-stroke-help pc))
-	(length tutcode-heading-label-char-list-for-stroke-help)))))
+      (if (not (null? (tutcode-context-stroke-help pc)))
+        (begin
+          (tutcode-context-set-candidate-window! pc #t)
+          (im-activate-candidate-selector pc
+            (length (tutcode-context-stroke-help pc))
+            (length tutcode-heading-label-char-list-for-stroke-help)))))))
 
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
