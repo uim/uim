@@ -468,9 +468,7 @@ void commit_cb(void *ptr, const char *commit_str)
 static void clear_cb(void *ptr)
 {
   start_callbacks();
-  if (s_preedit != NULL) {
-    free_preedit(s_preedit);
-  }
+  free_preedit(s_preedit);
   s_preedit = create_preedit();
   s_preedit->cursor = UNDEFINED;
   debug2(("clear_cb()\n"));
@@ -710,9 +708,7 @@ void free_preedit(struct preedit_tag *p)
   for (i = 0; i < p->nr_psegs; i++) {
     free(p->pseg[i].str);
   }
-  if (p->pseg != NULL) {
-    free(p->pseg);
-  }
+  free(p->pseg);
   free(p);
 }
 

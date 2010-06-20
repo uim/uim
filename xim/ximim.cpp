@@ -157,8 +157,7 @@ void XimIM_impl::changeContext(const char *engine)
     for (i = m_ics.begin(); i != m_ics.end(); ++i) {
 	(*i).second->changeContext(engine);
     }
-    if (mEngineName)
-	free(mEngineName);
+    free(mEngineName);
     mEngineName = strdup(engine);
 }
 
@@ -422,8 +421,7 @@ void XimIM::FreeComposeTree(DefTree *top)
 
 void XimIM::set_encoding(const char *encoding)
 {
-    if (mEncoding)
-	free(mEncoding);
+    free(mEncoding);
     mEncoding = strdup(encoding);
 
     // set iconv environment
@@ -453,8 +451,7 @@ const char *XimIM::get_encoding()
 
 void XimIM::set_lang_region(const char *lang_and_region)
 {
-    if (mLangRegion)
-	free(mLangRegion);
+    free(mLangRegion);
     mLangRegion = strdup(lang_and_region);
 }
 

@@ -103,18 +103,12 @@ void word_append(uim_word **head, uim_word_type type,
 void word_free_list(uim_word *head) {
     uim_word *pos, *pos_prev;
     for (pos = head; pos != NULL; ) {
-	if (pos->charset != NULL)
-	    free(pos->charset);
-	if (pos->phon != NULL)
-	    free(pos->phon);
-	if (pos->desc != NULL)
-	    free(pos->desc);
-	if (pos->cclass_code != NULL)
-	    free(pos->cclass_code);
-	if (pos->cclass_native != NULL)
-	    free(pos->cclass_native);
-	if (pos->annotation != NULL)
-	    free(pos->annotation);
+        free(pos->charset);
+        free(pos->phon);
+        free(pos->desc);
+        free(pos->cclass_code);
+        free(pos->cclass_native);
+        free(pos->annotation);
 
 	pos_prev = pos;
 	pos = pos->next;

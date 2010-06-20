@@ -973,9 +973,7 @@ static void erase_preedit(void)
 {
   s_prev_preedit_lines = s_preedit_lines;
   s_preedit_lines = 1;
-  if (s_prev_line2width != NULL) {
-    free(s_prev_line2width);
-  }
+  free(s_prev_line2width);
   s_prev_line2width = s_line2width;
   s_line2width = uim_malloc(sizeof(int));
   s_line2width[0] = s_head.col;
@@ -988,9 +986,7 @@ static void set_line2width(struct preedit_tag *preedit)
   int line_width = s_head.col;
   int lineno = 0;
 
-  if (s_prev_line2width != NULL) {
-    free(s_prev_line2width);
-  }
+  free(s_prev_line2width);
   s_prev_line2width = s_line2width;
   s_prev_preedit_lines = s_preedit_lines;
   s_line2width = uim_malloc(sizeof(int));

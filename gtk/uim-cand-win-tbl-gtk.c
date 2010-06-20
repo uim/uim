@@ -227,9 +227,7 @@ init_tbl_cell2label(void)
   }
   ary0 = ary = (uim_lisp *)uim_scm_list2array(list, &len, NULL);
   if (ary == NULL || len <= 0) {
-    if (ary0) {
-      free(ary0);
-    }
+    free(ary0);
     return default_tbl_cell2label;
   }
   table = (gchar *)g_malloc0(TABLE_NR_CELLS);
@@ -307,10 +305,8 @@ uim_cand_win_tbl_gtk_dispose (GObject *obj)
   if (ctblwin->buttons) {
     guint i;
     for (i = 0; i < ctblwin->buttons->len; i++) {
-      if (ctblwin->buttons->pdata[i]) {
-        g_free(ctblwin->buttons->pdata[i]);
-        /* GtkButton is destroyed by container */
-      }
+      g_free(ctblwin->buttons->pdata[i]);
+      /* GtkButton is destroyed by container */
     }
     g_ptr_array_free(ctblwin->buttons, TRUE);
     ctblwin->buttons = NULL;

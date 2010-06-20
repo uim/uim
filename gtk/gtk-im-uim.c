@@ -1403,9 +1403,7 @@ im_uim_create_cand_win_gtk()
   } else {
     cwin = uim_cand_win_gtk_new();
   }
-  if (candwinprog) {
-    free(candwinprog);
-  }
+  free(candwinprog);
   return cwin;
 }
 

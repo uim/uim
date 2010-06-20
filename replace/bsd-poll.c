@@ -105,12 +105,9 @@ poll(struct pollfd *fds, nfds_t nfds, int timeout)
 	}
 
 out:
-	if (readfds != NULL)
-		free(readfds);
-	if (writefds != NULL)
-		free(writefds);
-	if (exceptfds != NULL)
-		free(exceptfds);
+	free(readfds);
+	free(writefds);
+	free(exceptfds);
 	if (ret == -1)
 		errno = saved_errno;
 	return ret;

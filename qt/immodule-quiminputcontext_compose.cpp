@@ -800,11 +800,9 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 	}
     }
 
-    if (p->mb != NULL)
-	free(p->mb);
+    free(p->mb);
     p->mb = rhs_string_mb;
-    if (p->utf8 != NULL)
-	free(p->utf8);
+    free(p->utf8);
     p->utf8 = rhs_string_utf8;
     p->ks = rhs_keysym;
     return n;

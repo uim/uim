@@ -329,8 +329,7 @@ C16 icxatr::getSize(C16 id)
 
 void icxatr::set_locale_name(const char *locale)
 {
-    if (m_locale)
-	free(m_locale);
+    free(m_locale);
     m_locale = strdup(locale);
 }
 

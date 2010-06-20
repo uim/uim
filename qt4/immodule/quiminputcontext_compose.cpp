@@ -803,11 +803,9 @@ QUimInputContext::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
         }
     }
 
-    if (p->mb != 0)
-        free(p->mb);
+    free(p->mb);
     p->mb = rhs_string_mb;
-    if (p->utf8 != 0)
-        free(p->utf8);
+    free(p->utf8);
     {
         QTextCodec *codec = QTextCodec::codecForLocale();
         QString qs = codec->toUnicode(rhs_string_mb);

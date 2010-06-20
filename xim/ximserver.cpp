@@ -303,8 +303,7 @@ const char *XimServer::getIMLang()
 
 void XimServer::set_im(const char *engine)
 {
-    if (mIMName)
-	free(mIMName);
+    free(mIMName);
 
     mIMName = strdup(engine);
     mIMLang = get_im_lang_from_engine(engine);

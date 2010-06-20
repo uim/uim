@@ -1664,8 +1664,7 @@ void ConvdispOs::compose_preedit_array(TxPacket *t)
     for (i = 0; i < len; i++) {
 	t->pushC8(0); // PADDING
     }
-    if (c)
-	free(c);
+    free(c);
 }
 
 void ConvdispOs::compose_feedback_array(TxPacket *t)
