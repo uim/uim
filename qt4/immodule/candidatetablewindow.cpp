@@ -77,7 +77,7 @@ CandidateTableWindow::CandidateTableWindow(QWidget *parent)
     aLayout = createLayout(A_HEIGHT, A_WIDTH, 0, L_WIDTH + R_WIDTH);
     lsLayout = createLayout(AS_HEIGHT, L_WIDTH, A_HEIGHT, 0);
     rsLayout = createLayout(AS_HEIGHT, R_WIDTH, A_HEIGHT, L_WIDTH);
-    asLayout = createLayout(AS_HEIGHT, A_WIDTH, A_HEIGHT,L_WIDTH + R_WIDTH);
+    asLayout = createLayout(AS_HEIGHT, A_WIDTH, A_HEIGHT, L_WIDTH + R_WIDTH);
 
     QGridLayout *buttonLayout = new QGridLayout;
     buttonLayout->setSpacing(BLOCK_SPACING - 2 * HOMEPOSITION_SPACING);
@@ -130,8 +130,9 @@ static char *initTableInternal()
     if (!list || !uim_scm_listp(list))
         return DEFAULT_TABLE;
     size_t len = 0;
-    void **array = uim_scm_list2array(list, &len, 0);
-    if (!array|| len <= 0) {
+    void **array = uim_scm_list2array(list, &len,
+        reinterpret_cast<void *(*)(uim_lisp)>(uim_scm_c_str));
+    if (!array || len <= 0) {
         free(array);
         return DEFAULT_TABLE;
     }
