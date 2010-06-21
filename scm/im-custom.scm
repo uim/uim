@@ -555,6 +555,9 @@
     (list 'eb
       (N_ "EB library")
       (N_ "EB library"))
+    (list 'dict
+      (N_ "dict server")
+      (N_ "dict server"))
     (list 'im
       (N_ "Annotation from IM only")
       (N_ "long description will be here.")))
@@ -611,6 +614,63 @@
   (lambda ()
     (and enable-annotation?
       (eq? annotation-agent 'eb))))
+
+;; dict server support
+(define-custom-group 'dict
+		     (N_ "dict server")
+		     (N_ "long description will be here."))
+
+(define-custom 'dict-server
+  "dict.org"
+  '(annotation dict)
+  '(string ".*")
+  (N_ "Server address of dict")
+  (N_ "long description will be here."))
+
+(define-custom 'dict-servname
+  2628
+  '(annotation dict)
+  '(integer 0 65535)
+  (N_ "Server port of dict")
+  (N_ "long description will be here."))
+
+(define-custom 'dict-database
+  "web1913"
+  '(annotation dict)
+  '(string ".*")
+  (N_ "Database name of dict")
+  (N_ "long description will be here."))
+
+(define-custom 'dict-cache-words
+  256
+  '(annotation dict)
+  '(integer 0 65535)
+  (N_ "Number of cache of annotation")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'dict-server
+		 'custom-activity-hooks
+                 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'dict))))
+
+(custom-add-hook 'dict-servname
+		 'custom-activity-hooks
+                 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'dict))))
+
+(custom-add-hook 'dict-database
+		 'custom-activity-hooks
+                 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'dict))))
+
+(custom-add-hook 'dict-cache-words
+		 'custom-activity-hooks
+                 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'dict))))
 
 ;; uim-xim specific custom
 (define-custom-group 'xim
