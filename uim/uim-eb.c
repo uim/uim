@@ -106,7 +106,7 @@ uim_eb_open ()
 void
 uim_eb_close (void)
 {
-  uim_eb_finalize();
+  eb_finalize_library();
 }
 
 uim_eb *
