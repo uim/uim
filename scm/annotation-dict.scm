@@ -34,35 +34,35 @@
 (require "dict-socket.scm")
 
 
-(define dict-port #f)
-(define dict-cache-alist '())
+(define annotation-dict-port #f)
+(define annotation-dict-cache-alist '())
 
-(define (dict-init)
+(define (annotation-dict-init)
   (and (provided? "socket")
-       (set! dict-port (dict-server-open dict-server dict-servname))))
+       (set! annotation-dict-port (dict-server-open annotation-dict-server annotation-dict-servname))))
 
-(define (dict-get-text-from-server text enc)
-  (apply string-append (dict-server-get-define dict-port dict-database text)))
+(define (annotation-dict-get-text-from-server text enc)
+  (apply string-append (dict-server-get-define annotation-dict-port annotation-dict-database text)))
 
-(define (dict-get-text-with-cache text enc)
-  (let ((ret (assoc text dict-cache-alist)))
+(define (annotation-dict-get-text-with-cache text enc)
+  (let ((ret (assoc text annotation-dict-cache-alist)))
     (if ret
         (cdr ret)
-        (let ((new (dict-get-text-from-server text enc)))
+        (let ((new (annotation-dict-get-text-from-server text enc)))
           (if (not (string=? new ""))
-              (set! dict-cache-alist (append dict-cache-alist (list (cons text new)))))
-          (if (< dict-cache-words (length dict-cache-alist))
-              (set! dict-cache-alist (cdr dict-cache-alist)))
+              (set! annotation-dict-cache-alist (append annotation-dict-cache-alist (list (cons text new)))))
+          (if (< annotation-dict-cache-words (length annotation-dict-cache-alist))
+              (set! annotation-dict-cache-alist (cdr annotation-dict-cache-alist)))
           new))))
 
 
-(define (dict-get-text text enc)
-  (or (and dict-port
-           (dict-get-text-with-cache text enc))
+(define (annotation-dict-get-text text enc)
+  (or (and annotation-dict-port
+           (annotation-dict-get-text-with-cache text enc))
       ""))
 
-(define (dict-release)
-  (if dict-port
+(define (annotation-dict-release)
+  (if annotation-dict-port
       (begin
-        (dict-server-close dict-port)
-        (set! dict-port #f))))
+        (dict-server-close annotation-dict-port)
+        (set! annotation-dict-port #f))))

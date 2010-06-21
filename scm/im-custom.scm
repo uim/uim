@@ -597,19 +597,19 @@
     (and enable-annotation?
       (eq? annotation-agent 'eb))))
 
-(define-custom 'eb-dic-path
+(define-custom 'annotation-eb-dic-path
   (string-append (sys-datadir) "/dict")
   '(annotation eb)
   '(pathname directory)
   (N_ "The directory which contains EB dictionary file")
   (N_ "long description will be here."))
 
-(custom-add-hook 'eb-dic-path
+(custom-add-hook 'annotation-eb-dic-path
 		 'custom-activity-hooks
 		 (lambda ()
 		   eb-enable-for-annotation?))
 
-(custom-add-hook 'eb-dic-path
+(custom-add-hook 'annotation-eb-dic-path
   'custom-activity-hooks
   (lambda ()
     (and enable-annotation?
@@ -620,53 +620,53 @@
 		     (N_ "dict server")
 		     (N_ "long description will be here."))
 
-(define-custom 'dict-server
+(define-custom 'annotation-dict-server
   "dict.org"
   '(annotation dict)
   '(string ".*")
   (N_ "Server address of dict")
   (N_ "long description will be here."))
 
-(define-custom 'dict-servname
+(define-custom 'annotation-dict-servname
   2628
   '(annotation dict)
   '(integer 0 65535)
   (N_ "Server port of dict")
   (N_ "long description will be here."))
 
-(define-custom 'dict-database
+(define-custom 'annotation-dict-database
   "web1913"
   '(annotation dict)
   '(string ".*")
   (N_ "Database name of dict")
   (N_ "long description will be here."))
 
-(define-custom 'dict-cache-words
+(define-custom 'annotation-dict-cache-words
   256
   '(annotation dict)
   '(integer 0 65535)
   (N_ "Number of cache of annotation")
   (N_ "long description will be here."))
 
-(custom-add-hook 'dict-server
+(custom-add-hook 'annotation-dict-server
 		 'custom-activity-hooks
                  (lambda ()
                    (and enable-annotation?
                         (eq? annotation-agent 'dict))))
 
-(custom-add-hook 'dict-servname
+(custom-add-hook 'annotation-dict-servname
 		 'custom-activity-hooks
                  (lambda ()
                    (and enable-annotation?
                         (eq? annotation-agent 'dict))))
 
-(custom-add-hook 'dict-database
+(custom-add-hook 'annotation-dict-database
 		 'custom-activity-hooks
                  (lambda ()
                    (and enable-annotation?
                         (eq? annotation-agent 'dict))))
 
-(custom-add-hook 'dict-cache-words
+(custom-add-hook 'annotation-dict-cache-words
 		 'custom-activity-hooks
                  (lambda ()
                    (and enable-annotation?

@@ -55,11 +55,11 @@
              (try-require (string-append "annotation-" name ".scm"))
              (let ((env (interaction-environment)))
                (set! annotation-init
-                 (eval (string->symbol (string-append name "-init")) env))
+                 (eval (string->symbol (string-append "annotation-" name "-init")) env))
                (set! annotation-get-text
-                 (eval (string->symbol (string-append name "-get-text")) env))
+                 (eval (string->symbol (string-append "annotation-" name "-get-text")) env))
                (set! annotation-release
-                 (eval (string->symbol (string-append name "-release")) env))
+                 (eval (string->symbol (string-append "annotation-" name "-release")) env))
                #t)
              (begin
                (annotation-init)

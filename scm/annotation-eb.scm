@@ -35,21 +35,21 @@
 ;; eb-enable-for-annotation? exists only for compatibility.
 ;; You shouldn't add similar variables to other annotation agents.
 
-(define eb-init
+(define annotation-eb-init
   (lambda ()
     (and (provided? "eb")
       eb-enable-for-annotation?
       (not eb-ctx)
-      (set! eb-ctx (eb-new eb-dic-path)))))
+      (set! eb-ctx (eb-new annotation-eb-dic-path)))))
 
-(define eb-get-text
+(define annotation-eb-get-text
   (lambda (text enc)
     (or (and eb-ctx
           eb-enable-for-annotation?
           (eb-search-text eb-ctx text enc))
       "")))
 
-(define eb-release
+(define annotation-eb-release
   (lambda ()
     (if eb-ctx
       (begin
