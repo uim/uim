@@ -33,7 +33,7 @@
 (require-custom "generic-key-custom.scm")
 (require-custom "look-custom.scm")
 
-(require-dynlib "eb")
+(require "annotation.scm")
 
 ;; widgets
 (define look-widgets '(widget_look_input_mode))
@@ -106,8 +106,7 @@
     (list 'left       "")
     (list 'prev       ())    ; simple queue: ([string]prevword1 prevword2 ...)
     (list 'dict       #f)    ; list ((([string]prevword1 prevword2 ...)  . [alist]history) ...)
-    (list 'dictlen    0)
-    (list 'eb-ctx     #f))))
+    (list 'dictlen    0))))
 (define look-context-rec-spec look-context-rec-spec)
 (define-record 'look-context look-context-rec-spec)
 (define look-context-new-internal look-context-new)
@@ -336,9 +335,8 @@
 (define (look-context-new . args)
   (let ((lc (apply look-context-new-internal args)))
     (look-context-set-widgets! lc look-widgets)
-    (if (and look-use-eb?
-             (provided? "eb"))
-        (look-context-set-eb-ctx! lc (eb-new look-eb-dict-path)))
+    (if look-use-annotation?
+        (annotation-init))
     lc))
 
 (define (look-context-clean lc)
@@ -368,11 +366,8 @@
     lc))
 
 (define (look-release-handler lc)
-  (if (and look-use-eb?
-           (provided? "eb")
-           (look-context-eb-ctx lc))
-      (eb-destroy (look-context-eb-ctx lc)))
-  (look-context-set-eb-ctx! lc #f)
+  (if look-use-annotation?
+      (annotation-release))
   #f)
 
 (define (look-alphabetic-char? key state)
@@ -432,8 +427,8 @@
                        (number->string candidates)
                        "]"))))
 
-(define (look-format-eb lc)
-  (define (eb-format-entry str lines)
+(define (look-format-annotation lc)
+  (define (annotation-format-entry str lines)
     (let loop ((l (string->list str))
              (lines lines)
              (rest '()))
@@ -448,12 +443,11 @@
     (if (or (= 0 (string-length (look-context-left lc)))
             (<= (length candidates) (look-context-nth lc)))
         ""
-        (eb-format-entry (eb-search-text (look-context-eb-ctx lc)
-                                         (string-append
-                                          (look-context-left lc)
-                                          (nth (look-context-nth lc) candidates))
-                                         "UTF-8")
-                         look-eb-show-lines))))
+        (annotation-format-entry (annotation-get-text (string-append
+                                                       (look-context-left lc)
+                                                       (nth (look-context-nth lc) candidates))
+                                                      "UTF-8")
+                                 look-annotation-show-lines))))
 
 
 (define (look-update-preedit lc)
@@ -471,11 +465,10 @@
       (im-pushback-preedit
        lc preedit-reverse
        (look-format-candidates-nth lc)))
-  (if (and look-use-eb?
-           (provided? "eb"))
+  (if look-use-annotation?
       (im-pushback-preedit
        lc preedit-none
-       (look-format-eb lc)))
+       (look-format-annotation lc)))
   (im-update-preedit lc))
 
 (define (look-key-press-state-look lc key state)
