@@ -140,6 +140,9 @@ uim_eb_new (const char *bookpath)
 void
 uim_eb_destroy (uim_eb *ueb)
 {
+  if (ueb)
+    eb_finalize_book(&ueb->book);
+
   free(ueb);
   ueb = NULL;
 }
