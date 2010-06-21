@@ -55,11 +55,14 @@ c_uim_eb_new(uim_lisp bookpath_)
 }
 
 static uim_lisp
-c_uim_eb_search_text(uim_lisp ueb_, uim_lisp text_)
+c_uim_eb_search_text(uim_lisp ueb_, uim_lisp text_, uim_lisp encoding_)
 {
   char *str;
+  const char *enc;
 
-  if ((str = uim_eb_search_text(C_PTR(ueb_), REFER_C_STR(text_))) == NULL)
+  enc = NULLP(encoding_) ? "UTF-8" : REFER_C_STR(encoding_);
+
+  if ((str = uim_eb_search_text(C_PTR(ueb_), REFER_C_STR(text_), enc)) == NULL)
     return MAKE_STR("");
   return MAKE_STR_DIRECTLY(str);
 }
@@ -77,7 +80,7 @@ uim_plugin_instance_init(void)
   uim_eb_open();
 
   uim_scm_init_proc1("eb-new", c_uim_eb_new);
-  uim_scm_init_proc2("eb-search-text", c_uim_eb_search_text);
+  uim_scm_init_proc3("eb-search-text", c_uim_eb_search_text);
   uim_scm_init_proc1("eb-destroy", c_uim_eb_destroy);
 }
 

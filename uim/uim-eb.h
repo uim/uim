@@ -43,7 +43,8 @@ void   uim_eb_open         (void);
 void   uim_eb_close        (void);
 uim_eb *uim_eb_new         (const char *bookpath);
 char   *uim_eb_search_text (uim_eb *ueb,
-			    const char *text);
+			    const char *text,
+			    const char *encoding);
 void    uim_eb_destroy     (uim_eb *ueb);
 
 #endif /* UIM_GTK_UIM_EB_H */

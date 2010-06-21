@@ -43,10 +43,10 @@
       (set! eb-ctx (eb-new eb-dic-path)))))
 
 (define eb-get-text
-  (lambda (text)
+  (lambda (text enc)
     (or (and eb-ctx
           eb-enable-for-annotation?
-          (eb-search-text eb-ctx text))
+          (eb-search-text eb-ctx text enc))
       "")))
 
 (define eb-release

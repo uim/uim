@@ -67,7 +67,8 @@ struct _uim_eb {
 
 static void go_text_eb (uim_eb *ueb,
 			EB_Position position,
-			char **str);
+			char **str,
+			const char *enc);
 
 static int
 uim_eb_strappend(char **dest, const char *append, size_t append_len)
@@ -145,7 +146,7 @@ uim_eb_destroy (uim_eb *ueb)
 
 
 char *
-uim_eb_search_text (uim_eb *ueb, const char *text_utf8)
+uim_eb_search_text (uim_eb *ueb, const char *key, const char *enc)
 {
   char *text;
   int i;
@@ -153,8 +154,9 @@ uim_eb_search_text (uim_eb *ueb, const char *text_utf8)
   iconv_t cd;
 
   /* FIXME! check return value */
-  cd = (iconv_t)uim_iconv->create("EUC-JP", "UTF-8");
-  text = uim_iconv->convert(cd, text_utf8);
+
+  cd = (iconv_t)uim_iconv->create("EUC-JP", enc);
+  text = uim_iconv->convert(cd, key);
   uim_iconv->release(cd);
 
   if (!text)
@@ -176,7 +178,7 @@ uim_eb_search_text (uim_eb *ueb, const char *text_utf8)
       /*EB_Position headp = hits[j].heading;*/
       EB_Position textp = hits[j].text;
 
-      go_text_eb(ueb, textp, &str);
+      go_text_eb(ueb, textp, &str, enc);
       uim_eb_strappend(&str, "\n", sizeof("\n"));
     }
   }
@@ -188,7 +190,7 @@ uim_eb_search_text (uim_eb *ueb, const char *text_utf8)
 
 
 static void
-go_text_eb (uim_eb *ueb, EB_Position position, char **str)
+go_text_eb (uim_eb *ueb, EB_Position position, char **str, const char *enc)
 {
   EB_Hookset hookset;
   char text[MAX_TEXT + 1];
@@ -203,7 +205,7 @@ go_text_eb (uim_eb *ueb, EB_Position position, char **str)
 
   eb_initialize_hookset(&hookset);
   for (i = 0; i < 1; i++) {
-    char *text_utf8;
+    char *local;
     iconv_t cd;
 
     if (eb_read_text(&ueb->book, NULL, &hookset,
@@ -218,13 +220,13 @@ go_text_eb (uim_eb *ueb, EB_Position position, char **str)
       break;
 
     /* FIXME! check return value */
-    cd = (iconv_t)uim_iconv->create("UTF-8", "EUC-JP");
-    text_utf8 = uim_iconv->convert(cd, text);
+    cd = (iconv_t)uim_iconv->create(enc, "EUC-JP");
+    local = uim_iconv->convert(cd, text);
     uim_iconv->release(cd);
 
-    uim_eb_strappend(str, text_utf8, strlen(text_utf8));
+    uim_eb_strappend(str, local, strlen(local));
 
-    free(text_utf8);
+    free(local);
   }
   eb_finalize_hookset(&hookset);
 }

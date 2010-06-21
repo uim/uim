@@ -451,7 +451,8 @@
         (eb-format-entry (eb-search-text (look-context-eb-ctx lc)
                                          (string-append
                                           (look-context-left lc)
-                                          (nth (look-context-nth lc) candidates)))
+                                          (nth (look-context-nth lc) candidates))
+                                         "UTF-8")
                          look-eb-show-lines))))
 
 

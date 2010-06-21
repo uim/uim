@@ -41,7 +41,7 @@
 
 ;; Returns an annotation string from the given candidate.
 (define annotation-get-text
-  (lambda (text)
+  (lambda (text encoding)
     ""))
 
 ;; Releases the annotation agent.
@@ -79,5 +79,5 @@
 (define annotation-agent-reset
   (lambda ()
     (set! annotation-init (lambda () #f))
-    (set! annotation-get-text (lambda (text) ""))
+    (set! annotation-get-text (lambda (text encoding) ""))
     (set! annotation-release (lambda () #f))))

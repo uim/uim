@@ -520,7 +520,7 @@
                (not (string=? (last c) "")))
           (set-cdr! (cdr c) (list ""))
           (and (string=? (last c) "")
-               (set-cdr! (cdr c) (list (annotation-get-text (car c))))))
+               (set-cdr! (cdr c) (list (annotation-get-text (car c) (uim-context-encoding uc))))))
       c)))
 
 (define set-candidate-index
