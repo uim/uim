@@ -39,6 +39,8 @@
 
 typedef struct _uim_eb uim_eb;
 
+void   uim_eb_open         (void);
+void   uim_eb_close        (void);
 uim_eb *uim_eb_new         (const char *bookpath);
 char   *uim_eb_search_text (uim_eb *ueb,
 			    const char *text);

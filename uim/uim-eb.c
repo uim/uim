@@ -69,8 +69,6 @@ static void go_text_eb (uim_eb *ueb,
 			EB_Position position,
 			char **str);
 
-static unsigned int eb_ref_count = 0;
-
 static int
 uim_eb_strappend(char **dest, const char *append, size_t append_len)
 {
@@ -94,6 +92,23 @@ uim_eb_strappend(char **dest, const char *append, size_t append_len)
   return 1;
 }
 
+void
+uim_eb_open ()
+{
+  EB_Error_Code err;
+
+  err = eb_initialize_library();
+  if (err != EB_SUCCESS)
+    uim_notify_fatal(_("eb: failed to initialize EB library : error = %s\n"),
+	     eb_error_message(err));
+}
+
+void
+uim_eb_close (void)
+{
+  uim_eb_finalize();
+}
+
 uim_eb *
 uim_eb_new (const char *bookpath)
 {
@@ -101,12 +116,6 @@ uim_eb_new (const char *bookpath)
   EB_Error_Code err;
 
   ueb = uim_malloc(sizeof(uim_eb));
-  eb_ref_count++;
-
-  err = eb_initialize_library();
-  if (err != EB_SUCCESS)
-    uim_notify_fatal(_("eb: failed to initialize EB library : error = %s\n"),
-	     eb_error_message(err));
 
   eb_initialize_book(&ueb->book);
 
@@ -127,19 +136,11 @@ uim_eb_new (const char *bookpath)
   return ueb;
 }
 
-
 void
 uim_eb_destroy (uim_eb *ueb)
 {
-  if (!ueb)
-    return;
-
-  eb_finalize_book(&ueb->book);
-
-  eb_ref_count--;
-  if (eb_ref_count == 0)
-    eb_finalize_library();
   free(ueb);
+  ueb = NULL;
 }
 
 

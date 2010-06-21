@@ -74,6 +74,8 @@ c_uim_eb_destroy(uim_lisp ueb_)
 void
 uim_plugin_instance_init(void)
 {
+  uim_eb_open();
+
   uim_scm_init_proc1("eb-new", c_uim_eb_new);
   uim_scm_init_proc2("eb-search-text", c_uim_eb_search_text);
   uim_scm_init_proc1("eb-destroy", c_uim_eb_destroy);
@@ -82,5 +84,6 @@ uim_plugin_instance_init(void)
 void
 uim_plugin_instance_quit(void)
 {
+  uim_eb_close();
 }
 
