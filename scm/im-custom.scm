@@ -558,6 +558,9 @@
     (list 'dict
       (N_ "dict server")
       (N_ "dict server"))
+    (list 'filter
+      (N_ "Custom filter")
+      (N_ "Custom filter"))
     (list 'im
       (N_ "Annotation from IM only")
       (N_ "long description will be here.")))
@@ -671,6 +674,23 @@
                  (lambda ()
                    (and enable-annotation?
                         (eq? annotation-agent 'dict))))
+
+(define-custom-group 'filter
+		     (N_ "Custom filter for annotation")
+		     (N_ "long description will be here."))
+
+(define-custom 'annotation-filter-command
+  ""
+  '(annotation filter)
+  '(pathname regular-file)
+  (N_ "Path of custom filter")
+  (N_ "long description will be here."))
+
+(custom-add-hook 'annotation-filter-command
+		 'custom-activity-hooks
+                 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'filter))))
 
 ;; uim-xim specific custom
 (define-custom-group 'xim
