@@ -676,21 +676,79 @@
                         (eq? annotation-agent 'dict))))
 
 (define-custom-group 'filter
-		     (N_ "Custom filter for annotation")
+		     (N_ "Custom filter")
 		     (N_ "long description will be here."))
 
-(define-custom 'annotation-filter-command
-  ""
+(define-custom 'annotation-filter-server-setting? 'pipe
+  '(annotation filter)
+  (list 'choice
+        (list 'unixdomain
+              (N_ "Unix domain")
+              (N_ "Use UNIX domain socket to communicate with custom filter."))
+        (list 'tcpserver
+              (N_ "TCP server")
+              (N_ "Use tcp server to communicate with custom filter"))
+        (list 'pipe
+              (N_ "Pipe")
+              (N_ "Use pipe. spawn new annotation-filter process to communicate with custom filter")))
+  (N_ "Custom filter connection setting")
+  (N_ "long description will be here."))
+
+(define-custom 'annotation-filter-unix-domain-socket-path "/path/of/socket"
+  '(annotation filter)
+  '(pathname regular-file)
+  (N_ "Path of custom filter socket")
+  (N_ "long description will be here."))
+
+(define-custom 'annotation-filter-tcpserver-name "localhost"
+  '(annotation filter)
+  '(string ".*")
+  (N_ "Custom filter server address")
+  (N_ "long description will be here."))
+
+(define-custom 'annotation-filter-tcpserver-port 6789
+  '(annotation filter)
+  '(integer 0 65535)
+  (N_ "Custom filter server port")
+  (N_ "long description will be here."))
+
+(define-custom 'annotation-filter-command "/path/of/filter-program"
   '(annotation filter)
   '(pathname regular-file)
   (N_ "Path of custom filter")
   (N_ "long description will be here."))
 
+(custom-add-hook 'annotation-filter-unix-domain-socket-path
+		 'custom-activity-hooks
+		 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'filter)
+                        (eq? annotation-filter-server-setting?
+                             'unixdomain))))
+
+(custom-add-hook 'annotation-filter-tcpserver-name
+		 'custom-activity-hooks
+		 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'filter)
+                        (eq? annotation-filter-server-setting?
+                             'tcpserver))))
+
+(custom-add-hook 'annotation-filter-tcpserver-port
+		 'custom-activity-hooks
+		 (lambda ()
+                   (and enable-annotation?
+                        (eq? annotation-agent 'filter)
+                        (eq? annotation-filter-server-setting?
+                             'tcpserver))))
+
 (custom-add-hook 'annotation-filter-command
 		 'custom-activity-hooks
                  (lambda ()
                    (and enable-annotation?
-                        (eq? annotation-agent 'filter))))
+                        (eq? annotation-agent 'filter)
+                        (eq? annotation-filter-server-setting?
+                             'pipe))))
 
 ;; uim-xim specific custom
 (define-custom-group 'xim

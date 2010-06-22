@@ -29,7 +29,9 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-(require-extension (srfi 1))
+(require-extension (srfi 1 2))
+(require "socket.scm")
+(require "fileio.scm")
 (require "process.scm")
 
 ;;
@@ -41,13 +43,32 @@
 ;; quit_message = "QUIT\n"
 ;;
 
-(define annotation-filter-pipe-pair #f)
+(define annotation-filter-socket-pair #f)
+
+(define (annotation-filter-open-unix-domain-socket)
+  (and-let* ((fd (unix-domain-socket-connect annotation-filter-unix-domain-socket-path)))
+    (cons fd fd)))
+
+(define (annotation-filter-open-with-tcp-socket)
+  (and-let* ((fd (tcp-connect annotation-filter-tcpserver-name
+                              annotation-filter-tcpserver-port)))
+     (cons fd fd)))
+
+(define (annotation-filter-open-with-pipe)
+  (process-io annotation-filter-command))
 
 (define (annotation-filter-init)
   (and (not (string=? "" annotation-filter-command))
-       (let ((fds (process-io annotation-filter-command)))
-         (set! annotation-filter-pipe-pair (cons (open-file-port (car fds))
-                                                 (open-file-port (cdr fds))))
+       (let ((fds (cond ((eq? annotation-filter-server-setting? 'unixdomain)
+                         (annotation-filter-open-with-unix-domain-socket))
+                        ((eq? annotation-filter-server-setting? 'tcpserver)
+                         (annotation-filter-open-with-tcp-socket))
+                        ((eq? annotation-filter-server-setting? 'pipe)
+                         (annotation-filter-open-with-pipe))
+                        (else
+                         (uim-notify-fatal (N_ "Custom filter connection is not defined"))))))
+         (set! annotation-filter-socket-pair (cons (open-file-port (car fds))
+                                                   (open-file-port (cdr fds))))
          #t)))
 
 (define (annotation-filter-read-message iport)
@@ -58,14 +79,19 @@
         (loop (file-read-line iport) (string-append rest line)))))
 
 (define (annotation-filter-get-text text enc)
-  (or (and annotation-filter-pipe-pair
-           (let ((iport (car annotation-filter-pipe-pair))
-                 (oport (cdr annotation-filter-pipe-pair)))
+  (or (and annotation-filter-socket-pair
+           (and-let* ((iport (car annotation-filter-socket-pair))
+                      (oport (cdr annotation-filter-socket-pair)))
              (file-display (format "GET\t~a\t~a\n" text enc) oport)
              (annotation-filter-read-message iport)))
       ""))
 
 (define (annotation-filter-release)
-  (if annotation-filter-pipe-pair
-      (file-display "QUIT\n" (cdr annotation-filter-pipe-pair)))
+  (and annotation-filter-socket-pair
+       (and-let* ((iport (car annotation-filter-socket-pair))
+                  (oport (cdr annotation-filter-socket-pair)))
+         (file-display "QUIT\n" oport)
+         (if (not (equal? iport oport))
+             (close-file-port oport))
+         (close-file-port iport)))
   #t)
