@@ -93,21 +93,21 @@
       (lambda (res)
         (call/cc
          (lambda (fd)
-           (map (lambda (res0)
-                  (let ((s (socket (addrinfo-ai-family? res0)
-                                   (addrinfo-ai-socktype? res0)
-                                   (addrinfo-ai-protocol? res0))))
-                    (if (< s 0)
-                        #f
-                        (if (< (connect s
-                                        (addrinfo-ai-addr? res0)
-                                        (addrinfo-ai-addrlen? res0))
-                               0)
-                            (begin
-                              (file-close s)
-                              #f)
-                            (fd s)))))
-                res))))))))
+           (not (map (lambda (res0)
+                       (let ((s (socket (addrinfo-ai-family? res0)
+                                        (addrinfo-ai-socktype? res0)
+                                        (addrinfo-ai-protocol? res0))))
+                         (if (< s 0)
+                             #f
+                             (if (< (connect s
+                                             (addrinfo-ai-addr? res0)
+                                             (addrinfo-ai-addrlen? res0))
+                                    0)
+                                 (begin
+                                   (file-close s)
+                                   #f)
+                                 (fd s)))))
+                     res)))))))))
 
 (define (unix-domain-socket-connect socket-path)
   (let ((s (socket (addrinfo-ai-family-number '$PF_LOCAL)
