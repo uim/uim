@@ -298,6 +298,12 @@ void CandidateTableWindow::setPage(int page)
         updateLabel();
 }
 
+void CandidateTableWindow::setIndex(int totalIndex)
+{
+    AbstractCandidateWindow::setIndex(totalIndex);
+    updateLabel();
+}
+
 KeyButton::KeyButton() : m_index(-1)
 {
     connect(this, SIGNAL(clicked()), this, SLOT(slotClicked()));
