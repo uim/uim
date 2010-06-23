@@ -106,22 +106,11 @@ CandidateTableWindow::~CandidateTableWindow()
         free(table);
 }
 
-QGridLayout *CandidateTableWindow::createLayout(int row, int column,
-        int rowOffset, int columnOffset)
+void CandidateTableWindow::slotCandidateClicked(int index)
 {
-    QGridLayout *layout = new QGridLayout;
-    layout->setSpacing(HOMEPOSITION_SPACING);
-    layout->setMargin(0);
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < column; j++) {
-            KeyButton *button = new KeyButton;
-            connect(button, SIGNAL(candidateClicked(int)),
-                this, SLOT(slotCandidateClicked(int)));
-            buttonArray[i + rowOffset][j + columnOffset] = button;
-            layout->addWidget(button, i, j);
-        }
-    }
-    return layout;
+    if (ic && ic->uimContext())
+        uim_set_candidate_index(ic->uimContext(), index);
+    updateLabel();
 }
 
 static char *initTableInternal()
@@ -162,11 +151,67 @@ void CandidateTableWindow::initTable()
     table = static_cast<char *>(ret);
 }
 
-void CandidateTableWindow::slotCandidateClicked(int index)
+QGridLayout *CandidateTableWindow::createLayout(int row, int column,
+        int rowOffset, int columnOffset)
 {
-    if (ic && ic->uimContext())
-        uim_set_candidate_index(ic->uimContext(), index);
-    updateLabel();
+    QGridLayout *layout = new QGridLayout;
+    layout->setSpacing(HOMEPOSITION_SPACING);
+    layout->setMargin(0);
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < column; j++) {
+            KeyButton *button = new KeyButton;
+            connect(button, SIGNAL(candidateClicked(int)),
+                this, SLOT(slotCandidateClicked(int)));
+            buttonArray[i + rowOffset][j + columnOffset] = button;
+            layout->addWidget(button, i, j);
+        }
+    }
+    return layout;
+}
+
+static bool isEmptyBlock(QGridLayout *layout)
+{
+    for (int i = 0; i < layout->count(); i++) {
+        QWidget *widget = layout->itemAt(i)->widget();
+        if (widget && widget->isEnabled())
+            return false;
+    }
+    return true;
+}
+
+void CandidateTableWindow::setBlockVisible(QLayout *layout, bool visible)
+{
+    if (visible == layout->isEnabled())
+        return;
+    layout->setEnabled(visible);
+    for (int i = 0; i < layout->count(); i++) {
+        QWidget *widget = layout->itemAt(i)->widget();
+        if (widget)
+            widget->setVisible(visible);
+    }
+}
+
+void CandidateTableWindow::setTable()
+{
+    // hide empty blocks.
+    // pattern0 (full table)
+    //   blockLR  blockA
+    //   blockLRS blockAS (for shift key)
+    // pattern1 (minimal blocks)
+    //   blockLR
+    // pattern2 (without shift blocks)
+    //   blockLR  blockA
+    // pattern3 (without symbol blocks)
+    //   blockLR
+    //   blockLRS
+    bool hasBlockA = !isEmptyBlock(aLayout);
+    bool hasBlockAs = !isEmptyBlock(asLayout);
+    bool hasBlockLrs = !(isEmptyBlock(lsLayout) && isEmptyBlock(rsLayout));
+
+    setBlockVisible(aLayout, hasBlockA || hasBlockAs);
+    setBlockVisible(asLayout, hasBlockAs);
+    setBlockVisible(lsLayout, hasBlockLrs || hasBlockAs);
+    setBlockVisible(rsLayout, hasBlockLrs || hasBlockAs);
 }
 
 void CandidateTableWindow::setPage(int page)
@@ -181,7 +226,7 @@ void CandidateTableWindow::setPage(int page)
     int newpage;
     if (page < 0)
         newpage = lastpage;
-    else if ( page > lastpage)
+    else if (page > lastpage)
         newpage = 0;
     else
         newpage = page;
@@ -251,51 +296,6 @@ void CandidateTableWindow::setPage(int page)
         setIndex(newindex);
     else
         updateLabel();
-}
-
-static bool isEmptyBlock(QGridLayout *layout)
-{
-    for (int i = 0; i < layout->count(); i++) {
-        QWidget *widget = layout->itemAt(i)->widget();
-        if (widget && widget->isEnabled())
-            return false;
-    }
-    return true;
-}
-
-void CandidateTableWindow::setBlockVisible(QLayout *layout, bool visible)
-{
-    if (visible == layout->isEnabled())
-        return;
-    layout->setEnabled(visible);
-    for (int i = 0; i < layout->count(); i++) {
-        QWidget *widget = layout->itemAt(i)->widget();
-        if (widget)
-            widget->setVisible(visible);
-    }
-}
-
-void CandidateTableWindow::setTable()
-{
-    // hide empty blocks.
-    // pattern0 (full table)
-    //   blockLR  blockA
-    //   blockLRS blockAS (for shift key)
-    // pattern1 (minimal blocks)
-    //   blockLR
-    // pattern2 (without shift blocks)
-    //   blockLR  blockA
-    // pattern3 (without symbol blocks)
-    //   blockLR
-    //   blockLRS
-    bool hasBlockA = !isEmptyBlock(aLayout);
-    bool hasBlockAs = !isEmptyBlock(asLayout);
-    bool hasBlockLrs = !(isEmptyBlock(lsLayout) && isEmptyBlock(rsLayout));
-
-    setBlockVisible(aLayout, hasBlockA || hasBlockAs);
-    setBlockVisible(asLayout, hasBlockAs);
-    setBlockVisible(lsLayout, hasBlockLrs || hasBlockAs);
-    setBlockVisible(rsLayout, hasBlockLrs || hasBlockAs);
 }
 
 KeyButton::KeyButton() : m_index(-1)

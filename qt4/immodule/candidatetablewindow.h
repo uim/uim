@@ -56,12 +56,12 @@ class CandidateTableWindow : public AbstractCandidateWindow
         void slotCandidateClicked(int index);
 
     private:
-        void setPage(int page);
+        void initTable();
         QGridLayout *createLayout(int row, int column,
             int rowOffset, int columnOffset);
-        void initTable();
-        void setTable();
         void setBlockVisible(QLayout *layout, bool visible);
+        void setTable();
+        void setPage(int page);
 
         QGridLayout *lsLayout;
         QGridLayout *rsLayout;
