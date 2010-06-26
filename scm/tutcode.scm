@@ -155,6 +155,17 @@
     "a" "s" "d" "f" "g" "h" "j" "k" "l" ";"
     "z" "x" "c" "v" "b" "n" "m" "," "." "/"))
 
+;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
+(define tutcode-auto-help-cand-str-list
+  ; 第1,2,3,4打鍵を示す文字
+  '(("1" "2" "3" "4") ; 1文字目用
+    ("a" "b" "c" "d") ; 2文字目用
+    ("A" "B" "C" "D")
+    ("一" "二" "三" "四")
+    ("あ" "い" "う" "え")
+    ("ア" "イ" "ウ" "エ")
+    ("α" "β" "γ" "δ")))
+
 ;;; implementations
 
 ;;; 交ぜ書き変換辞書の初期化が終わっているかどうか
@@ -272,8 +283,13 @@
      (nth 0)
      ;;; 交ぜ書き変換の候補数
      (nr-candidates 0)
-     ;;; 候補ウィンドウを表示中かどうか
-     (candidate-window #f)
+     ;;; 候補ウィンドウの状態
+     ;;; 'tutcode-candidate-window-off 非表示
+     ;;; 'tutcode-candidate-window-converting 交ぜ書き変換候補表示中
+     ;;; 'tutcode-candidate-window-kigou 記号表示中
+     ;;; 'tutcode-candidate-window-stroke-help 仮想鍵盤表示中
+     ;;; 'tutcode-candidate-window-auto-help 自動ヘルプ表示中
+     (candidate-window 'tutcode-candidate-window-off)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
      (stroke-help ()))))
@@ -402,6 +418,13 @@
 (define (tutcode-prepare-commit-string-for-kigou-mode pc)
   (tutcode-get-current-candidate-for-kigou-mode pc))
 
+;;; im-commitを呼び出すとともに、自動ヘルプ表示のチェックを行う
+(define (tutcode-commit-with-auto-help pc)
+  (let* ((head (tutcode-context-head pc))
+         (res (tutcode-prepare-commit-string pc)))
+    (im-commit pc res)
+    (tutcode-check-auto-help-window-begin pc (string-to-list res) head)))
+
 ;;; 交ぜ書き変換の候補選択時に、指定されたラベル文字に対応する候補を確定する
 (define (tutcode-commit-by-label-key pc ch)
   ;; 現在候補ウィンドウに表示されていないラベル文字を入力した場合、
@@ -433,7 +456,7 @@
              (< idx nr))
       (begin
         (tutcode-context-set-nth! pc idx)
-        (im-commit pc (tutcode-prepare-commit-string pc))))))
+        (tutcode-commit-with-auto-help pc)))))
 
 ;;; 記号入力モード時に、指定されたラベル文字に対応する候補を確定する
 (define (tutcode-commit-by-label-key-for-kigou-mode pc ch)
@@ -482,10 +505,11 @@
         (tutcode-context-set-state! pc 'tutcode-state-converting)
         (if (= (tutcode-context-nr-candidates pc) 1)
           ;; 候補が1個しかない場合は自動的に確定する
-          (im-commit pc (tutcode-prepare-commit-string pc))
+          (tutcode-commit-with-auto-help pc)
           (begin
             (tutcode-check-candidate-window-begin pc)
-            (if (tutcode-context-candidate-window pc)
+            (if (eq? (tutcode-context-candidate-window pc)
+                     'tutcode-candidate-window-converting)
               (im-select-candidate pc 0)))))
       ;(tutcode-flush pc) ; 候補無し時flushすると入力した文字列が消えてがっかり
       )))
@@ -497,16 +521,21 @@
   (tutcode-context-set-nr-candidates! pc (length tutcode-kigoudic))
   (tutcode-context-set-state! pc 'tutcode-state-kigou)
   (tutcode-check-candidate-window-begin pc)
-  (if (tutcode-context-candidate-window pc)
+  (if (eq? (tutcode-context-candidate-window pc)
+           'tutcode-candidate-window-kigou)
     (im-select-candidate pc 0)))
 
 ;;; 候補ウィンドウの表示を開始する
 (define (tutcode-check-candidate-window-begin pc)
-  (if (and (not (tutcode-context-candidate-window pc))
+  (if (and (eq? (tutcode-context-candidate-window pc)
+                'tutcode-candidate-window-off)
            tutcode-use-candidate-window?
            (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
     (begin
-      (tutcode-context-set-candidate-window! pc #t)
+      (tutcode-context-set-candidate-window! pc
+        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
+          'tutcode-candidate-window-kigou
+          'tutcode-candidate-window-converting))
       (im-activate-candidate-selector
         pc
         (tutcode-context-nr-candidates pc)
@@ -516,7 +545,8 @@
 
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
-  (if (and (not (tutcode-context-candidate-window pc))
+  (if (and (eq? (tutcode-context-candidate-window pc)
+                'tutcode-candidate-window-off)
            tutcode-use-stroke-help-window?)
     (let* ((rkc (tutcode-context-rk-context pc))
            (seq (rk-context-seq rkc)))
@@ -551,7 +581,62 @@
             (delete-duplicates (rk-expect rkc)))))
       (if (not (null? (tutcode-context-stroke-help pc)))
         (begin
-          (tutcode-context-set-candidate-window! pc #t)
+          (tutcode-context-set-candidate-window! pc
+            'tutcode-candidate-window-stroke-help)
+          (im-activate-candidate-selector pc
+            (length (tutcode-context-stroke-help pc))
+            (length tutcode-heading-label-char-list-for-stroke-help)))))))
+
+;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
+;;; 表形式の候補ウィンドウを想定して、以下のように表示する。
+;;; 1が第1打鍵、2が第2打鍵。「携」
+;;;  ・・・・    ・・・・
+;;;  ・・・・    ・・3 ・
+;;;  ・・・・1   ・・・・
+;;;  ・・・2     ・・・・
+;;; 交ぜ書き変換で複数の文字「携帯」を変換した場合は、以下のように表示する。
+;;;  ・・・・    ・・・・
+;;;  ・・a ・    ・・3 ・
+;;;  ・・・・1b  ・・c ・
+;;;  ・・・2     ・・・・
+;;; @param strlist 確定した文字列のリスト(逆順)
+;;; @param yomilist 変換前の読みの文字列のリスト(逆順)
+(define (tutcode-check-auto-help-window-begin pc strlist yomilist)
+  (if (and (eq? (tutcode-context-candidate-window pc)
+                'tutcode-candidate-window-off)
+           tutcode-use-auto-help-window?)
+    (let* ((label-cands-alist ()) ; 例:(("y" "2" "1") ("t" "3"))
+           (cand-str-list tutcode-auto-help-cand-str-list)
+           (help-one
+            (lambda (str cand-list)
+              (let ((stroke (tutcode-reverse-find-seq tutcode-rule str)))
+                (if stroke
+                  (for-each
+                    (lambda (label)
+                      (let ((label-cand (assoc label label-cands-alist))
+                            (cand (if (pair? cand-list) (car cand-list) "")))
+                        (if label-cand
+                          (set-cdr! label-cand (cons cand (cdr label-cand)))
+                          (set! label-cands-alist
+                            (cons (list label cand) label-cands-alist)))
+                        (set! cand-list (cdr cand-list))))
+                    stroke))))))
+      (for-each
+        (lambda (kanji)
+          (if (pair? cand-str-list)
+            (begin
+              (help-one kanji (car cand-str-list))
+              (set! cand-str-list (cdr cand-str-list)))))
+        (lset-difference string=? (reverse strlist) yomilist))
+      (tutcode-context-set-stroke-help! pc
+        (map
+          (lambda (elem)
+            (list (tutcode-make-string (cdr elem)) (car elem) ""))
+          label-cands-alist))
+      (if (not (null? (tutcode-context-stroke-help pc)))
+        (begin
+          (tutcode-context-set-candidate-window! pc
+            'tutcode-candidate-window-auto-help)
           (im-activate-candidate-selector pc
             (length (tutcode-context-stroke-help pc))
             (length tutcode-heading-label-char-list-for-stroke-help)))))))
@@ -672,7 +757,8 @@
                     (not (shift-key-mask key-state))))
           (tutcode-heading-label-char-for-kigou-mode? key))
       (tutcode-commit-by-label-key-for-kigou-mode pc (charcode->string key))
-      (if (tutcode-context-candidate-window pc)
+      (if (eq? (tutcode-context-candidate-window pc)
+               'tutcode-candidate-window-kigou)
         (im-select-candidate pc (tutcode-context-nth pc))))
     ((tutcode-next-candidate-key? key key-state)
       (tutcode-change-candidate-index pc 1))
@@ -799,6 +885,7 @@
             (if res
               (im-commit pc res))
             (tutcode-flush pc)
+            (if res (tutcode-check-auto-help-window-begin pc (list res) ()))
             (set! res #f))))
       ((tutcode-cancel-key? key key-state)
         ;; 再帰的部首合成変換を(キャンセルして)一段戻す
@@ -849,7 +936,8 @@
                   ;; 変換待ちの部首が残ってなければ、確定して終了
                   (begin
                     (im-commit pc char)
-                    (tutcode-flush pc))
+                    (tutcode-flush pc)
+                    (tutcode-check-auto-help-window-begin pc (list char) ()))
                   ;; 部首がまだ残ってれば、再確認。
                   ;; (合成した文字が2文字目ならば、連続して部首合成変換)
                   (loop
@@ -872,15 +960,18 @@
        (set! new-nth (- nr 1))))
     (tutcode-context-set-nth! pc new-nth))
   (tutcode-check-candidate-window-begin pc)
-  (if (tutcode-context-candidate-window pc)
+  (if (not (eq? (tutcode-context-candidate-window pc)
+                'tutcode-candidate-window-off))
     (im-select-candidate pc (tutcode-context-nth pc))))
 
 ;;; 候補ウィンドウを閉じる
 (define (tutcode-reset-candidate-window pc)
-  (if (tutcode-context-candidate-window pc)
+  (if (not (eq? (tutcode-context-candidate-window pc)
+                'tutcode-candidate-window-off))
     (begin
       (im-deactivate-candidate-selector pc)
-      (tutcode-context-set-candidate-window! pc #f))))
+      (tutcode-context-set-candidate-window! pc
+        'tutcode-candidate-window-off))))
 
 ;;; 交ぜ書き変換の候補選択状態から、読み入力状態に戻す。
 ;;; @param pc コンテキストリスト
@@ -918,7 +1009,7 @@
     ((or
       (tutcode-commit-key? key key-state)
       (tutcode-return-key? key key-state))
-      (im-commit pc (tutcode-prepare-commit-string pc)))
+      (tutcode-commit-with-auto-help pc))
     ((and tutcode-commit-candidate-by-label-key?
           (tutcode-heading-label-char? key))
       (tutcode-commit-by-label-key pc (charcode->string key)))
@@ -1033,11 +1124,20 @@
 ;;; @param c 分解対象の文字
 ;;; @return 分解してできた2つの部首のリスト。分解できなかったときは#f
 (define (tutcode-bushu-decompose c)
+  (tutcode-reverse-find-seq tutcode-bushudic c))
+
+;;; ruleを逆引きして、変換後の文字から、入力キー列を取得する。
+;;; 例: (tutcode-reverse-find-seq tutcode-rule "あ") => ("r" "k")
+;;; @param rule rkで使う形式のrule
+;;; @param c 変換後の文字
+;;; @return 入力キーのリスト。rule中にcが見つからなかった場合は#f
+(define (tutcode-reverse-find-seq rule c)
   (let ((lst
           (filter
             (lambda (elem)
-              (string=? c (car (cadr elem))))
-            tutcode-bushudic)))
+	      ;; string=?だと'tutcode-mazegaki-startでエラー
+              (equal? c (car (cadr elem))))
+            rule)))
     (and
       (not (null? lst))
       (car (caar lst)))))
@@ -1128,7 +1228,7 @@
         ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
         (list cand label "")))
     ((and (not (eq? (tutcode-context-state tc) 'tutcode-state-converting))
-          tutcode-use-stroke-help-window?)
+          (or tutcode-use-stroke-help-window? tutcode-use-auto-help-window?))
       (nth idx (tutcode-context-stroke-help tc)))
     (else
       (let* ((cand (tutcode-get-nth-candidate tc idx))
@@ -1140,15 +1240,17 @@
 ;;; 選択された候補を確定する。
 (define (tutcode-set-candidate-index-handler pc idx)
   (if (and
-        (tutcode-context-candidate-window pc)
+        (or (eq? (tutcode-context-candidate-window pc)
+                 'tutcode-candidate-window-converting)
+            (eq? (tutcode-context-candidate-window pc)
+                 'tutcode-candidate-window-kigou))
         (>= idx 0)
         (< idx (tutcode-context-nr-candidates pc)))
     (begin
       (tutcode-context-set-nth! pc idx)
-      (im-commit pc 
-        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-          (tutcode-prepare-commit-string-for-kigou-mode pc)
-          (tutcode-prepare-commit-string pc)))
+      (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
+        (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
+        (tutcode-commit-with-auto-help pc))
       (tutcode-update-preedit pc))))
 
 (tutcode-configure-widgets)
