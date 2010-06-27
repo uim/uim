@@ -219,7 +219,7 @@ AC_ARG_WITH(prime,
 					@<:@default=yes@:>@]),
 	[
 	if test "x$with_prime" = "xyes"; then
-	        PKG_CHECK_MODULES(PRIME, prime >= 0.8.5.2, use_prime="yes",use_prime="no")
+	        use_prime="yes"
 	else
 		use_prime="no"
 	fi
