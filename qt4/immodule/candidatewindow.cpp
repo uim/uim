@@ -98,65 +98,8 @@ void CandidateWindow::setNrCandidates( int nrCands, int dLimit )
 }
 #endif /* UIM_QT_USE_NEW_PAGE_HANDLING */
 
-void CandidateWindow::setPage( int page )
+void CandidateWindow::updateView( int newpage, int ncandidates )
 {
-#ifdef ENABLE_DEBUG
-    qDebug( "setPage : page = %d", page );
-#endif
-
-    // clear items
-    cList->clearContents();
-    annotations.clear();
-
-    // calculate page
-    int newpage, lastpage;
-    if ( displayLimit )
-        lastpage = nrCandidates / displayLimit;
-    else
-        lastpage = 0;
-
-    if ( page < 0 )
-    {
-        newpage = lastpage;
-    }
-    else if ( page > lastpage )
-    {
-        newpage = 0;
-    }
-    else
-    {
-        newpage = page;
-    }
-
-    pageIndex = newpage;
-
-    // calculate index
-    int newindex;
-    if ( displayLimit )
-    {
-        if ( candidateIndex >= 0 )
-            newindex = ( newpage * displayLimit ) + ( candidateIndex % displayLimit );
-        else
-            newindex = -1;
-    }
-    else
-    {
-        newindex = candidateIndex;
-    }
-
-    if ( newindex >= nrCandidates )
-        newindex = nrCandidates - 1;
-
-    // set cand items
-    //
-    // If we switch to last page, the number of items to be added
-    // is lower than displayLimit.
-    //
-    // ex. if nrCandidate==14 and displayLimit==10, the number of
-    //     last page's item==4
-    int ncandidates = displayLimit;
-    if ( newpage == lastpage )
-        ncandidates = nrCandidates - displayLimit * lastpage;
     cList->setRowCount( ncandidates );
     for ( int i = 0; i < ncandidates ; i++ )
     {
@@ -196,13 +139,10 @@ void CandidateWindow::setPage( int page )
 
         cList->setRowHeight( i, QFontMetrics( cList->font() ).height() + 2 );
     }
+}
 
-    // set index
-    if ( newindex != candidateIndex )
-        setIndex( newindex );
-    else
-        updateLabel();
-
+void CandidateWindow::updateSize()
+{
     // size adjustment
     cList->updateGeometry();
     resize(sizeHint());

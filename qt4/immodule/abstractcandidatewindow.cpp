@@ -288,13 +288,66 @@ void AbstractCandidateWindow::setCandidates(int dl,
     displayLimit = dl;
 
     if (candidates.isEmpty())
-        return ;
+        return;
 
     // set candidates
     stores = candidates;
 
     // shift to default page
     setPage(0);
+}
+
+void AbstractCandidateWindow::setPage(int page)
+{
+#ifdef ENABLE_DEBUG
+    qDebug("setPage : page = %d", page);
+#endif
+
+    // calculate page
+    int lastpage = displayLimit ? nrCandidates / displayLimit : 0;
+
+    int newpage;
+    if (page < 0)
+        newpage = lastpage;
+    else if (page > lastpage)
+        newpage = 0;
+    else
+        newpage = page;
+
+    pageIndex = newpage;
+
+    // calculate index
+    int newindex;
+    if (displayLimit) {
+        newindex = (candidateIndex >= 0)
+            ? (newpage * displayLimit) + (candidateIndex % displayLimit) : -1;
+    } else {
+        newindex = candidateIndex;
+    }
+
+    if (newindex >= nrCandidates)
+        newindex = nrCandidates - 1;
+
+    // set cand items
+    //
+    // If we switch to last page, the number of items to be added
+    // is lower than displayLimit.
+    //
+    // ex. if nrCandidate == 14 and displayLimit == 10, the number of
+    //     last page's item == 4
+    int ncandidates = displayLimit;
+    if (newpage == lastpage)
+        ncandidates = nrCandidates - displayLimit * lastpage;
+
+    updateView(newpage, ncandidates);
+
+    // set index
+    if (newindex != candidateIndex)
+        setIndex(newindex);
+    else
+        updateLabel();
+
+    updateSize();
 }
 
 #if UIM_QT_USE_NEW_PAGE_HANDLING

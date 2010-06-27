@@ -191,71 +191,8 @@ void CandidateTableWindow::setBlockVisible(QLayout *layout, bool visible)
     }
 }
 
-void CandidateTableWindow::setTable()
+void CandidateTableWindow::updateView(int newpage, int ncandidates)
 {
-    // hide empty blocks.
-    // pattern0 (full table)
-    //   blockLR  blockA
-    //   blockLRS blockAS (for shift key)
-    // pattern1 (minimal blocks)
-    //   blockLR
-    // pattern2 (without shift blocks)
-    //   blockLR  blockA
-    // pattern3 (without symbol blocks)
-    //   blockLR
-    //   blockLRS
-    bool hasBlockA = !isEmptyBlock(aLayout);
-    bool hasBlockAs = !isEmptyBlock(asLayout);
-    bool hasBlockLrs = !(isEmptyBlock(lsLayout) && isEmptyBlock(rsLayout));
-
-    setBlockVisible(aLayout, hasBlockA || hasBlockAs);
-    setBlockVisible(asLayout, hasBlockAs);
-    setBlockVisible(lsLayout, hasBlockLrs || hasBlockAs);
-    setBlockVisible(rsLayout, hasBlockLrs || hasBlockAs);
-}
-
-void CandidateTableWindow::setPage(int page)
-{
-#ifdef ENABLE_DEBUG
-    qDebug("setPage : page = %d", page);
-#endif
-
-    // calculate page
-    int lastpage = displayLimit ? nrCandidates / displayLimit : 0;
-
-    int newpage;
-    if (page < 0)
-        newpage = lastpage;
-    else if (page > lastpage)
-        newpage = 0;
-    else
-        newpage = page;
-
-    pageIndex = newpage;
-
-    // calculate index
-    int newindex;
-    if (displayLimit) {
-        newindex = (candidateIndex >= 0)
-            ? (newpage * displayLimit) + (candidateIndex % displayLimit) : -1;
-    } else {
-        newindex = candidateIndex;
-    }
-
-    if (newindex >= nrCandidates)
-        newindex = nrCandidates - 1;
-
-    // set cand items
-    //
-    // If we switch to last page, the number of items to be added
-    // is lower than displayLimit.
-    //
-    // ex. if nrCandidate==14 and displayLimit==10, the number of
-    //     last page's item==4
-    int ncandidates = displayLimit;
-    if (newpage == lastpage)
-        ncandidates = nrCandidates - displayLimit * lastpage;
-
     int index = 0;
     int delta = 0;
     for (int i = 0; i < TABLE_NR_ROWS; i++) {
@@ -289,13 +226,29 @@ void CandidateTableWindow::setPage(int page)
             index++;
         }
     }
-    setTable();
+}
 
-    // set index
-    if (newindex != candidateIndex)
-        setIndex(newindex);
-    else
-        updateLabel();
+void CandidateTableWindow::updateSize()
+{
+    // hide empty blocks.
+    // pattern0 (full table)
+    //   blockLR  blockA
+    //   blockLRS blockAS (for shift key)
+    // pattern1 (minimal blocks)
+    //   blockLR
+    // pattern2 (without shift blocks)
+    //   blockLR  blockA
+    // pattern3 (without symbol blocks)
+    //   blockLR
+    //   blockLRS
+    bool hasBlockA = !isEmptyBlock(aLayout);
+    bool hasBlockAs = !isEmptyBlock(asLayout);
+    bool hasBlockLrs = !(isEmptyBlock(lsLayout) && isEmptyBlock(rsLayout));
+
+    setBlockVisible(aLayout, hasBlockA || hasBlockAs);
+    setBlockVisible(asLayout, hasBlockAs);
+    setBlockVisible(lsLayout, hasBlockLrs || hasBlockAs);
+    setBlockVisible(rsLayout, hasBlockLrs || hasBlockAs);
 }
 
 void CandidateTableWindow::setIndex(int totalIndex)

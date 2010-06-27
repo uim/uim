@@ -56,7 +56,8 @@ private slots:
 private:
     void activateCandwin( int dLimit );
 
-    void setPage( int page );
+    void updateView( int newpage, int ncandidates );
+    void updateSize();
     void shiftPage( bool forward );
     void setIndex( int totalindex );
 

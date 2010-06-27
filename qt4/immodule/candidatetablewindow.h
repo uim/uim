@@ -60,8 +60,8 @@ class CandidateTableWindow : public AbstractCandidateWindow
         QGridLayout *createLayout(int row, int column,
             int rowOffset, int columnOffset);
         void setBlockVisible(QLayout *layout, bool visible);
-        void setTable();
-        void setPage(int page);
+        void updateView(int newpage, int ncandidates);
+        void updateSize();
         void setIndex(int totalIndex);
 
         QGridLayout *lsLayout;

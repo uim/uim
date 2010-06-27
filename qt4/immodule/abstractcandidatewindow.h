@@ -70,12 +70,13 @@ class AbstractCandidateWindow : public QFrame
     protected:
         virtual void activateCandwin(int dLimit);
 
-        virtual void setPage(int page) = 0;
         virtual void shiftPage(bool forward);
         virtual void setIndex(int totalindex);
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
         virtual void setNrCandidates(int nrCands, int dLimit);
 #endif
+        virtual void updateView(int newpage, int ncandidates) = 0;
+        virtual void updateSize() = 0;
         void updateLabel();
 
         QUimInputContext *ic;
@@ -96,6 +97,7 @@ class AbstractCandidateWindow : public QFrame
     private:
         void setCandidates(int displayLimit,
                 const QList<uim_candidate> &candidates);
+        void setPage(int page);
 #ifdef UIM_QT_USE_NEW_PAGE_HANDLING
         void setPageCandidates(int page,
                 const QList<uim_candidate> &candidates);
