@@ -86,6 +86,8 @@
 ;;;    skk.scmのかな漢字変換処理から必要な部分を取り込み。
 ;;;  * 部首合成変換機能を追加。
 ;;;  * 記号入力モードを追加。
+;;;  * 仮想鍵盤表示機能を追加。
+;;;  * 自動ヘルプ表示機能を追加。
 
 (require-extension (srfi 1))
 (require "generic.scm")
@@ -150,7 +152,7 @@
 
 ;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
 (define tutcode-auto-help-cand-str-list
-  ; 第1,2,3,4打鍵を示す文字
+  ;; 第1,2,3,4打鍵を示す文字
   '(("1" "2" "3" "4") ; 1文字目用
     ("a" "b" "c" "d") ; 2文字目用
     ("A" "B" "C" "D")
@@ -549,10 +551,16 @@
       (for-each
         (lambda (elem) ; 例: ((("r" "v" "y")) ("猿"))
           (let* ((label (nth seqlen (caar elem)))
-                 (candlist (cadr elem))
+                 (label-cand (assoc label label-cand-alist)))
+            ;; 最初の候補のみ表示。
+            ;; (tutcode-rule-commit-sequences!により、同一シーケンスの候補が
+            ;;  複数ある場合があるが、コード表の検索では最初のみ使用されるので)
+            (if (not label-cand)
+              (let*
+                ((candlist (cadr elem))
                  (cand
                   (or
-                    ; シーケンス途中の場合は□
+                    ;; シーケンス途中の場合は□
                     (and (> (length (caar elem)) (+ seqlen 1)) "□")
                     (or
                       (and (not (null? (cdr candlist)))
@@ -563,14 +571,9 @@
                    (case cand
                     ((tutcode-mazegaki-start) "◇")
                     ((tutcode-bushu-start) "◆")
-                    (else cand)))
-                 (label-cand (assoc label label-cand-alist)))
-            ; 最初に見つかった候補のみ使用。
-            ; (tutcode-rule-commit-sequences!により、
-            ;  同一シーケンスの候補が複数ある場合があるので)
-            (if (not label-cand)
-              (set! label-cand-alist
-                (cons (list label candstr) label-cand-alist)))))
+                    (else cand))))
+                (set! label-cand-alist
+                  (cons (list label candstr) label-cand-alist))))))
         ret)
       (if (not (null? label-cand-alist))
         (let
