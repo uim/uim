@@ -578,7 +578,7 @@
           (tutcode-context-set-candidate-window! pc
             'tutcode-candidate-window-stroke-help)
           (im-activate-candidate-selector pc
-            (length stroke-help) (length stroke-help)))))))
+            (length stroke-help) tutcode-nr-candidate-max-for-kigou-mode))))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; 表形式の候補ウィンドウを想定して、以下のように表示する。
@@ -632,7 +632,7 @@
           (tutcode-context-set-candidate-window! pc
             'tutcode-candidate-window-auto-help)
           (im-activate-candidate-selector pc
-            (length stroke-help) (length stroke-help)))))))
+            (length stroke-help) tutcode-nr-candidate-max-for-kigou-mode))))))
 
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
