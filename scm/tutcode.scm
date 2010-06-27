@@ -552,18 +552,23 @@
                  (candlist (cadr elem))
                  (cand
                   (or
-                    (and (not (null? (cdr candlist)))
-                         (tutcode-context-katakana-mode? pc)
-                         (cadr candlist))
-                    (car candlist)))
+                    ; シーケンス途中の場合は□
+                    (and (> (length (caar elem)) (+ seqlen 1)) "□")
+                    (or
+                      (and (not (null? (cdr candlist)))
+                           (tutcode-context-katakana-mode? pc)
+                           (cadr candlist))
+                      (car candlist))))
                  (candstr
                    (case cand
                     ((tutcode-mazegaki-start) "◇")
                     ((tutcode-bushu-start) "◆")
                     (else cand)))
                  (label-cand (assoc label label-cand-alist)))
-            (if label-cand
-              (set-cdr! label-cand (list "□")) ;同一打鍵の他の候補有→打鍵途中
+            ; 最初に見つかった候補のみ使用。
+            ; (tutcode-rule-commit-sequences!により、
+            ;  同一シーケンスの候補が複数ある場合があるので)
+            (if (not label-cand)
               (set! label-cand-alist
                 (cons (list label candstr) label-cand-alist)))))
         ret)
@@ -573,7 +578,7 @@
             (map
               (lambda (elem)
                 (list (cadr elem) (car elem) ""))
-              label-cand-alist)))
+              (reverse label-cand-alist))))
           (tutcode-context-set-stroke-help! pc stroke-help)
           (tutcode-context-set-candidate-window! pc
             'tutcode-candidate-window-stroke-help)
