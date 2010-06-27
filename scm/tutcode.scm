@@ -148,13 +148,6 @@
     "U" "V" "W" "X" "Y" "Z"
     "=" "~" "|" "`" "{" "+" "*" "}" "<" ">" "?" "_"))
 
-;;; ストローク表のキーリスト
-(define tutcode-heading-label-char-list-for-stroke-help
-  '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
-    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p"
-    "a" "s" "d" "f" "g" "h" "j" "k" "l" ";"
-    "z" "x" "c" "v" "b" "n" "m" "," "." "/"))
-
 ;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
 (define tutcode-auto-help-cand-str-list
   ; 第1,2,3,4打鍵を示す文字
@@ -549,43 +542,43 @@
                 'tutcode-candidate-window-off)
            tutcode-use-stroke-help-window?)
     (let* ((rkc (tutcode-context-rk-context pc))
-           (seq (rk-context-seq rkc)))
-      (tutcode-context-set-stroke-help! pc
-        ; rk-expectの各メンバについて、
-        ; rk-lib-find-seqして、label文字と候補のリストを作成。
-        ; #fの場合はストローク途中なので候補として□を使用。
-        (map
-          (lambda (elem)
-            (let* ((res
-                    (rk-lib-find-seq (reverse (cons elem seq)) tutcode-rule))
-                   (candlist (and res (cadr res)))
-                   (cand
-                    (if res
-                      (or
-                        (and (tutcode-context-katakana-mode? pc)
-                             (not (null? (cdr candlist)))
-                             (cadr candlist))
-                        (car candlist))
-                      "□"))
-                   (candstr
-                     (case cand
-                      ((tutcode-mazegaki-start) "◇")
-                      ((tutcode-bushu-start) "◆")
-                      (else cand)))
-                   (labeledcand
-                    (list candstr elem "")))
-              labeledcand))
-          (filter
-            (lambda (elem)
-              (member elem tutcode-heading-label-char-list-for-stroke-help))
-            (delete-duplicates (rk-expect rkc)))))
-      (if (not (null? (tutcode-context-stroke-help pc)))
-        (begin
+           (seq (rk-context-seq rkc))
+           (seqlen (length seq))
+           (ret (rk-lib-find-partial-seqs (reverse seq) tutcode-rule))
+           (label-cand-alist ())) ; 例:(("k" "あ") ("i" "い") ("v" "□"))
+      (for-each
+        (lambda (elem) ; 例: ((("r" "v" "y")) ("猿"))
+          (let* ((label (nth seqlen (caar elem)))
+                 (candlist (cadr elem))
+                 (cand
+                  (or
+                    (and (not (null? (cdr candlist)))
+                         (tutcode-context-katakana-mode? pc)
+                         (cadr candlist))
+                    (car candlist)))
+                 (candstr
+                   (case cand
+                    ((tutcode-mazegaki-start) "◇")
+                    ((tutcode-bushu-start) "◆")
+                    (else cand)))
+                 (label-cand (assoc label label-cand-alist)))
+            (if label-cand
+              (set-cdr! label-cand (list "□")) ;同一打鍵の他の候補有→打鍵途中
+              (set! label-cand-alist
+                (cons (list label candstr) label-cand-alist)))))
+        ret)
+      (if (not (null? label-cand-alist))
+        (let
+          ((stroke-help
+            (map
+              (lambda (elem)
+                (list (cadr elem) (car elem) ""))
+              label-cand-alist)))
+          (tutcode-context-set-stroke-help! pc stroke-help)
           (tutcode-context-set-candidate-window! pc
             'tutcode-candidate-window-stroke-help)
           (im-activate-candidate-selector pc
-            (length (tutcode-context-stroke-help pc))
-            (length tutcode-heading-label-char-list-for-stroke-help)))))))
+            (length stroke-help) (length stroke-help)))))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; 表形式の候補ウィンドウを想定して、以下のように表示する。
@@ -628,18 +621,18 @@
               (help-one kanji (car cand-str-list))
               (set! cand-str-list (cdr cand-str-list)))))
         (lset-difference string=? (reverse strlist) yomilist))
-      (tutcode-context-set-stroke-help! pc
-        (map
-          (lambda (elem)
-            (list (tutcode-make-string (cdr elem)) (car elem) ""))
-          label-cands-alist))
-      (if (not (null? (tutcode-context-stroke-help pc)))
-        (begin
+      (if (not (null? label-cands-alist))
+        (let
+          ((stroke-help
+            (map
+              (lambda (elem)
+                (list (tutcode-make-string (cdr elem)) (car elem) ""))
+              label-cands-alist)))
+          (tutcode-context-set-stroke-help! pc stroke-help)
           (tutcode-context-set-candidate-window! pc
             'tutcode-candidate-window-auto-help)
           (im-activate-candidate-selector pc
-            (length (tutcode-context-stroke-help pc))
-            (length tutcode-heading-label-char-list-for-stroke-help)))))))
+            (length stroke-help) (length stroke-help)))))))
 
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
