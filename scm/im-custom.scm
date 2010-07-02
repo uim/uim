@@ -562,7 +562,7 @@
       (N_ "Custom filter")
       (N_ "Custom filter"))
     (list 'im
-      (N_ "Annotation from IM only")
+      (N_ "Input method itself")
       (N_ "long description will be here.")))
   (N_ "Annotation agent name")
   (N_ "long description will be here."))
