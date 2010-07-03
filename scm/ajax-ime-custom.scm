@@ -308,8 +308,7 @@
 (define-custom 'ajax-ime-url 'ajax-ime
   '(ajax-ime-advanced ajax-ime-server)
   (list 'choice
-        (list 'ajax-ime (N_ "Ajax IME") (N_ "Ajax IME"))
-        (list 'cha-ime  (N_ "ChaIME")   (N_ "ChaIME")))
+        (list 'ajax-ime (N_ "Ajax IME") (N_ "Ajax IME")))
   (N_ "Server url of Ajax IME.")
   (N_ "long description will be here."))
 

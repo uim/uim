@@ -61,8 +61,7 @@
 (define ajax-ime-internal-context-new-internal ajax-ime-internal-context-new)
 
 (define ajax-ime-url-alist
-  '((ajax-ime . ("api.chasen.org" . "/ajaxime/"))
-    (cha-ime  . ("cl.naist.jp" . "/~mamoru-k/chaime/api.cgi"))))
+  '((ajax-ime . ("api.chasen.org" . "/ajaxime/"))))
 
 (define (ajax-ime-parse str)
   (define (ajax-ime:parse-quoted-word1 port)
@@ -568,7 +567,7 @@
       (if (or (not diff)
 	      (> diff 5))
 	(begin
-	  (uim-notify-info (N_ "Caveat: All the request to Ajax-IME/ChaIME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting."))
+	  (uim-notify-info (N_ "Caveat: All the request to Ajax-IME server is not encrypted through the internet.\nIf you want to disable this message, turn off the option in Ajax-IME (advanced) setting."))
 	  (set! ajax-ime-prev-warn-connection-time (time))))))
   (if (not ajax-ime-init-lib-ok?)
       (begin
