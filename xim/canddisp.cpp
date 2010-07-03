@@ -134,7 +134,7 @@ int Canddisp::adjust_display_limit(uim_context uc, int display_limit)
     if (strstr(command, "/uim-candwin-tbl-") == NULL)
         return display_limit;
 
-    cand = uim_get_candidate(uc, 0, -1);
+    cand = uim_get_candidate(uc, 0, 9999);
     s = uim_candidate_get_annotation_str(cand);
 #define LEN_DISPLAY_LIMIT 14
     if (strncmp(s, "display_limit=", LEN_DISPLAY_LIMIT) == 0) {

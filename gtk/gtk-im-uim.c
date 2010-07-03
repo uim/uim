@@ -724,7 +724,7 @@ cand_activate_cb(void *ptr, int nr, int display_limit)
   if (UIM_IS_CAND_WIN_TBL_GTK(uic->cwin) && nr > display_limit) {
     uim_candidate c;
     const char *s;
-    c = uim_get_candidate(uic->uc, 0, -1);
+    c = uim_get_candidate(uic->uc, 0, 9999);
     s = uim_candidate_get_annotation_str(c);
 #define LEN_DISPLAY_LIMIT 14
     if (strncmp(s, "display_limit=", LEN_DISPLAY_LIMIT) == 0) {

@@ -1211,7 +1211,7 @@
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
 (define (tutcode-get-candidate-handler tc idx accel-enum-hint)
   (cond
-    ((= accel-enum-hint -1) ;XXX 表形式候補ウィンドウからのdisplay_limit調整時
+    ((= accel-enum-hint 9999) ;XXX 表形式候補ウィンドウからのdisplay_limit調整時
       (set! tutcode-nr-candidate-max (length tutcode-heading-label-char-list))
       (set! tutcode-nr-candidate-max-for-kigou-mode
         (length tutcode-heading-label-char-list-for-kigou-mode))
