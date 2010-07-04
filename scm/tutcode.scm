@@ -89,7 +89,7 @@
 ;;;  * 仮想鍵盤表示機能を追加。
 ;;;  * 自動ヘルプ表示機能を追加。
 
-(require-extension (srfi 1))
+(require-extension (srfi 1 2))
 (require "generic.scm")
 (require-custom "tutcode-custom.scm")
 (require-custom "generic-key-custom.scm")
@@ -152,14 +152,13 @@
 
 ;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
 (define tutcode-auto-help-cand-str-list
-  ;; 第1,2,3,4打鍵を示す文字
-  '(("1" "2" "3" "4") ; 1文字目用
-    ("a" "b" "c" "d") ; 2文字目用
-    ("A" "B" "C" "D")
-    ("一" "二" "三" "四")
-    ("あ" "い" "う" "え")
-    ("ア" "イ" "ウ" "エ")
-    ("α" "β" "γ" "δ")))
+  ;; 第1,2,3,4打鍵を示す文字(部首1用, 部首2用)
+  '((("1" "2" "3" "4") ("5" "6" "7" "8")) ; 1文字目用
+    (("a" "b" "c" "d") ("e" "f" "g" "h")) ; 2文字目用
+    (("A" "B" "C" "D") ("E" "F" "G" "H"))
+    (("一" "二" "三" "四") ("五" "六" "七" "八"))
+    (("あ" "い" "う" "え") ("か" "き" "く" "け"))
+    (("ア" "イ" "ウ" "エ") ("カ" "キ" "ク" "ケ"))))
 
 ;;; implementations
 
@@ -600,33 +599,32 @@
 ;;;  ・・a ・    ・・3 ・
 ;;;  ・・・・1b  ・・c ・
 ;;;  ・・・2     ・・・・
+;;; 確定した文字が直接入力できない場合、単純な部首合成変換で入力できれば、
+;;; 以下のように部首合成変換方法を表示する。「憂鬱」
+;;; ┌─┬─┬─┬─┬─┬─┬─────┬─┬─┬─┬─┐
+;;; │  │  │  │  │  │  │          │  │  │  │  │
+;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
+;;; │  │  │  │  │b │  │          │  │  │g │  │
+;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
+;;; │  │3 │  │  │  │  │          │  │  │1 │  │
+;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
+;;; │  │  │e │  │f │  │2a(▲林缶)│  │  │  │  │
+;;; └─┴─┴─┴─┴─┴─┴─────┴─┴─┴─┴─┘
 ;;; @param strlist 確定した文字列のリスト(逆順)
 ;;; @param yomilist 変換前の読みの文字列のリスト(逆順)
 (define (tutcode-check-auto-help-window-begin pc strlist yomilist)
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-auto-help-window?)
-    (let* ((label-cands-alist ()) ; 例:(("y" "2" "1") ("t" "3"))
-           (cand-str-list tutcode-auto-help-cand-str-list)
-           (help-one
-            (lambda (str cand-list)
-              (let ((stroke (tutcode-reverse-find-seq tutcode-rule str)))
-                (if stroke
-                  (for-each
-                    (lambda (label)
-                      (let ((label-cand (assoc label label-cands-alist))
-                            (cand (if (pair? cand-list) (car cand-list) "")))
-                        (if label-cand
-                          (set-cdr! label-cand (cons cand (cdr label-cand)))
-                          (set! label-cands-alist
-                            (cons (list label cand) label-cands-alist)))
-                        (set! cand-list (cdr cand-list))))
-                    stroke))))))
+    (let ((label-cands-alist ()) ; 例:(("y" "2" "1") ("t" "3"))
+          (cand-str-list tutcode-auto-help-cand-str-list))
       (for-each
         (lambda (kanji)
           (if (pair? cand-str-list)
             (begin
-              (help-one kanji (car cand-str-list))
+              (set! label-cands-alist
+                (tutcode-auto-help-update-stroke-alist label-cands-alist kanji
+                  (car cand-str-list)))
               (set! cand-str-list (cdr cand-str-list)))))
         (lset-difference string=? (reverse strlist) yomilist))
       (if (not (null? label-cands-alist))
@@ -641,6 +639,46 @@
             'tutcode-candidate-window-auto-help)
           (im-activate-candidate-selector pc
             (length stroke-help) tutcode-nr-candidate-max-for-kigou-mode))))))
+
+;;; 自動ヘルプ用alistを更新する
+;;; @param str ヘルプ表示対象である、確定された漢字
+;;; @param cand-list ヘルプ表示に使う、各打鍵を示す文字のリスト
+;;; @return 更新時の自動ヘルプ用alist
+(define (tutcode-auto-help-update-stroke-alist label-cands-alist str cand-list)
+  (let ((stroke (tutcode-reverse-find-seq tutcode-rule str))
+        (update-alist
+          (lambda (cand-list stroke)
+            (for-each
+              (lambda (label)
+                (let ((label-cand (assoc label label-cands-alist))
+                      (cand (if (pair? cand-list) (car cand-list) "")))
+                  (if label-cand
+                    (set-cdr! label-cand (cons cand (cdr label-cand)))
+                    (set! label-cands-alist
+                      (cons (list label cand) label-cands-alist)))
+                  (set! cand-list (cdr cand-list))))
+              stroke)
+            cand-list)))
+    (if stroke
+      (update-alist (car cand-list) stroke)
+      (let ((decomposed
+              (or
+                (tutcode-auto-help-bushu-decompose str)
+                ;; 単純な引き算による合成まで対応。
+                ;; XXX:3文字以上での合成や、部品による合成は未対応
+                (tutcode-auto-help-bushu-decompose-by-subtraction
+                  str tutcode-bushudic))))
+        ;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
+        (if decomposed
+          (begin
+            (update-alist
+              (cons
+                (string-append (caar cand-list) "(▲"
+                  (caar (cdar decomposed)) (caar (cdadr decomposed)) ")")
+                (cdar cand-list))
+              (caaar decomposed)) ; 部首1
+            (update-alist (cadr cand-list) (caaadr decomposed)))))) ; 部首2
+    label-cands-alist))
 
 ;;; preedit表示を更新する。
 ;;; @param pc コンテキストリスト
@@ -1126,6 +1164,69 @@
 ;;; @return 分解してできた2つの部首のリスト。分解できなかったときは#f
 (define (tutcode-bushu-decompose c)
   (tutcode-reverse-find-seq tutcode-bushudic c))
+
+;;; 自動ヘルプ:対象文字を部首合成するのに必要となる、
+;;; 外字でない2つの部首に分解する。
+;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
+;;; @param c 分解対象の文字
+;;; @return 分解してできた2つの部首とストロークのリスト。
+;;;  分解できなかったときは#f
+(define (tutcode-auto-help-bushu-decompose c)
+  (and-let*
+    ((bushu (tutcode-reverse-find-seq tutcode-bushudic c))
+     (b1 (car bushu))
+     (b2 (cadr bushu))
+     (seq1 (tutcode-auto-help-get-stroke b1))
+     (seq2 (tutcode-auto-help-get-stroke b2)))
+    (list (list (list seq1) (list b1)) (list (list seq2) (list b2)))))
+
+;;; 自動ヘルプ:対象文字を入力する際の打鍵のリストを取得する。
+;;; 例: "撃" => ("," "o")
+;;; @param b 対象文字
+;;; @return 打鍵リスト。入力不可能な場合は#f
+(define (tutcode-auto-help-get-stroke b)
+  (or (tutcode-reverse-find-seq tutcode-rule b)
+      ;; 部首合成で使われる"5"や"3"のような直接入力可能な部首に対応するため、
+      ;; ラベル文字に含まれていれば、直接入力可能とみなす
+      (and
+        (member b tutcode-heading-label-char-list-for-kigou-mode)
+        (list b))))
+
+;;; 自動ヘルプ:対象文字を引き算により部首合成するのに必要となる、
+;;; 外字でない文字のリストを返す。
+;;; 例: "歹" => (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
+;;;    (tutcode-bushudic内の要素は((("歹" "リ")) ("列")))
+;;; @param c 対象文字
+;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
+;;;  見つからなかった場合は#f
+(define (tutcode-auto-help-bushu-decompose-by-subtraction c bushudic)
+  ;; bushudicの要素を順に見て最初に見つかったものを返す。
+  ;; filterやmapを使って、最小のストロークのものを探すと時間がかかるので。
+  (and
+    (not (null? bushudic))
+    (or
+      (tutcode-auto-help-get-stroke-list-by-subtraction c (car bushudic))
+      (tutcode-auto-help-bushu-decompose-by-subtraction c (cdr bushudic)))))
+
+;;; 自動ヘルプ:対象文字を引き算により部首合成できる場合は、
+;;; 合成に使う各文字と、そのストロークのリストを返す。
+;;; @param c 対象文字
+;;; @param bushu-list bushudic内の要素。例: ((("歹" "リ")) ("列"))
+;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
+;;;  bushu-listを使って合成できない場合は#f。
+;;;  例: (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
+(define (tutcode-auto-help-get-stroke-list-by-subtraction c bushu-list)
+  (and-let*
+    ((mem (member c (caar bushu-list)))
+     (b1 (caadr bushu-list))
+     ;; 2つの部首のうち、c以外の部首を取得
+     (b2 (if (= 2 (length mem)) (cadr mem) (car (caar bushu-list))))
+     ;; 実際に部首合成して、対象文字が合成されないものは駄目
+     (composed (tutcode-bushu-convert b1 b2))
+     (c-composed? (string=? composed c))
+     (seq1 (tutcode-auto-help-get-stroke b1))
+     (seq2 (tutcode-auto-help-get-stroke b2)))
+    (list (list (list seq1) (list b1)) (list (list seq2) (list b2)))))
 
 ;;; ruleを逆引きして、変換後の文字から、入力キー列を取得する。
 ;;; 例: (tutcode-reverse-find-seq tutcode-rule "あ") => ("r" "k")
