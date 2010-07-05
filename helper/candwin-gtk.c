@@ -1054,7 +1054,12 @@ uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
   else
     x = x + w;
 
-  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y + rect.y);
+  if ((y + rect.y + h2) > sh)
+    y = sh - h2;
+  else
+    y = y + rect.y;
+
+  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y);
 }
 
 static gboolean

@@ -932,12 +932,17 @@ uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
 
   sw = gdk_screen_get_width  (gdk_screen_get_default ());
   sh = gdk_screen_get_height (gdk_screen_get_default ()); 
- gdk_window_get_geometry(cwin->sub_window.window->window,
+  gdk_window_get_geometry(cwin->sub_window.window->window,
 			  &x2, &y2, &w2, &h2, &d2);
   if (x + w + w2 > sw)
     x = x - w2;
   else
     x = x + w;
 
-  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y + rect.y);
+  if ((y + rect.y + h2) > sh)
+    y = sh - h2;
+  else
+    y = y + rect.y;
+
+  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y);
 }
