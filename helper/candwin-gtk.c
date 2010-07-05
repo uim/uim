@@ -54,7 +54,7 @@
 #define UIM_CANDIDATE_WINDOW_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), UIM_TYPE_CANDIDATE_WINDOW, UIMCandidateWindowClass))
 
 #define UIM_ANNOTATION_WIN_WIDTH 200
-#define UIM_ANNOTATION_WIN_HEIGHT 230
+#define UIM_ANNOTATION_WIN_HEIGHT 200
 
 typedef struct _UIMCandidateWindow	UIMCandidateWindow;
 typedef struct _UIMCandidateWindowClass	UIMCandidateWindowClass;
@@ -1003,9 +1003,9 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
   gtk_container_set_border_width(GTK_CONTAINER(frame), 0);
 
   hints.min_width = UIM_ANNOTATION_WIN_WIDTH;
-  hints.min_height = UIM_ANNOTATION_WIN_WIDTH;
+  hints.min_height = UIM_ANNOTATION_WIN_HEIGHT;
   hints.max_width = UIM_ANNOTATION_WIN_WIDTH;
-  hints.max_height = UIM_ANNOTATION_WIN_WIDTH;
+  hints.max_height = UIM_ANNOTATION_WIN_HEIGHT;
   gtk_window_set_geometry_hints(GTK_WINDOW(window), frame, &hints, GDK_HINT_MAX_SIZE | GDK_HINT_MIN_SIZE);
 
   cwin->sub_window.scrolled_window = scrwin = gtk_scrolled_window_new(NULL, NULL);
@@ -1030,9 +1030,16 @@ static void
 uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
 {
   gint x, y, w, h, d, sw, sh, x2, y2, w2, h2, d2;
+  GdkRectangle rect;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
 
   if (!cwin->sub_window.window)
     return;
+
+  gtk_tree_view_get_cursor(GTK_TREE_VIEW(cwin->view), &path, &focus_column);
+  gtk_tree_view_get_cell_area(GTK_TREE_VIEW(cwin->view), path, NULL, &rect);
+  gtk_tree_path_free(path);
 
   gdk_window_get_geometry(GTK_WIDGET(cwin)->window,
                           &x, &y, &w, &h, &d);
@@ -1047,7 +1054,7 @@ uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
   else
     x = x + w;
 
-  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y);
+  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y + rect.y);
 }
 
 static gboolean

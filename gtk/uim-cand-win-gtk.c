@@ -872,7 +872,7 @@ uim_cand_win_gtk_set_cursor_location(UIMCandWinGtk *cwin, GdkRectangle *area)
 }
 
 #define UIM_ANNOTATION_WIN_WIDTH 200
-#define UIM_ANNOTATION_WIN_HEIGHT 230
+#define UIM_ANNOTATION_WIN_HEIGHT 200
 
 static void
 uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
@@ -915,9 +915,16 @@ static void
 uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
 {
   gint x, y, w, h, d, sw, sh, x2, y2, w2, h2, d2;
+  GdkRectangle rect;
+  GtkTreePath *path;
+  GtkTreeViewColumn *focus_column;
 
   if (!cwin->sub_window.window)
     return;
+
+  gtk_tree_view_get_cursor(GTK_TREE_VIEW(cwin->view), &path, &focus_column);
+  gtk_tree_view_get_cell_area(GTK_TREE_VIEW(cwin->view), path, NULL, &rect);
+  gtk_tree_path_free(path);
 
   gdk_window_get_geometry(GTK_WIDGET(cwin)->window,
 			  &x, &y, &w, &h, &d);
@@ -932,5 +939,5 @@ uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
   else
     x = x + w;
 
-  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y);
+  gtk_window_move(GTK_WINDOW(cwin->sub_window.window), x, y + rect.y);
 }
