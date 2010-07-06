@@ -34,7 +34,10 @@ scm/byeoru-custom.scm
 scm/byeoru-key-custom.scm
 scm/canna-custom.scm
 scm/canna-key-custom.scm
+scm/cannav3-socket.scm
+scm/composer.scm
 scm/custom.scm
+scm/dict-socket.scm
 scm/direct.scm
 scm/elatin-custom.scm
 scm/elatin.scm
@@ -43,17 +46,21 @@ scm/generic-key-custom.scm
 scm/generic.scm
 scm/hangul.scm
 scm/http-client.scm
+scm/http-server.scm
 scm/im.scm
 scm/im-custom.scm
 scm/ipa-x-sampa.scm
 scm/iso-639-1.scm
 scm/latin.scm
+scm/lolevel.scm
 scm/look-custom.scm
 scm/look.scm
 scm/m17nlib.scm
 scm/mana-custom.scm
 scm/mana-key-custom.scm
 scm/predict-custom.scm
+scm/predict-sqlite3.scm
+scm/prime-custom.scm
 scm/prime-custom.scm
 scm/prime-key-custom.scm
 scm/prime.scm
@@ -63,6 +70,7 @@ scm/scim.scm
 scm/sj3-custom.scm
 scm/sj3-key-custom.scm
 scm/sj3.scm
+scm/sj3v2-socket.scm
 scm/skk-custom.scm
 scm/skk-key-custom.scm
 scm/social-ime-custom.scm
@@ -77,6 +85,7 @@ scm/viqr.scm
 scm/wnn-custom.scm
 scm/wnn-key-custom.scm
 scm/wnn.scm
+scm/xmload.scm
 scm/yahoo-jp-custom.scm
 scm/yahoo-jp-key-custom.scm
 scm/yahoo-jp.scm
@@ -85,7 +94,7 @@ uim/m17nlib.c
 uim/mana.c
 uim/dynlib.c
 uim/openssl.c
-uim/sj3.c
 uim/skk.c
+uim/uim-eb.c
 uim/uim-error.c
 uim/wnnlib.c
