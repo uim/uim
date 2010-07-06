@@ -2596,34 +2596,28 @@ msgid "[ELatin] backspace"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:309
-#, fuzzy
 msgid "[ELatin] choose candidate"
-msgstr "[전체] 아래 후보"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:315
-#, fuzzy
 msgid "[ELatin] close candidate window"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:321
-#, fuzzy
 msgid "[ELatin] next candidate"
-msgstr "[전체] 아래 후보"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:327
-#, fuzzy
 msgid "[ELatin] previous candidate"
-msgstr "[전체] 위 후보"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:333
-#, fuzzy
 msgid "[ELatin] next page of candidate window"
-msgstr "[전체] 후보창에서 아래 페이지로"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:339
-#, fuzzy
 msgid "[ELatin] previous page of candidate window"
-msgstr "[전체] 후보창에서 위 페이지로"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:345
 msgid "[ELatin] start completion"
@@ -3034,9 +3028,8 @@ msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
 #: ../scm/im-custom.scm:549
-#, fuzzy
 msgid "Enable annotation"
-msgstr "주석"
+msgstr ""
 
 #: ../scm/im-custom.scm:556 ../scm/im-custom.scm:557 ../scm/im-custom.scm:586
 msgid "EB library"
@@ -3051,14 +3044,12 @@ msgid "Custom filter"
 msgstr ""
 
 #: ../scm/im-custom.scm:565
-#, fuzzy
 msgid "Input method itself"
-msgstr "입력기 토글"
+msgstr ""
 
 #: ../scm/im-custom.scm:567
-#, fuzzy
 msgid "Annotation agent name"
-msgstr "주석"
+msgstr ""
 
 #: ../scm/im-custom.scm:594
 msgid "Use EB library to search annotations"
@@ -4147,9 +4138,8 @@ msgid "Max words of candidates for sqlite3"
 msgstr ""
 
 #: ../scm/predict-sqlite3.scm:86
-#, fuzzy
 msgid "cannot create dictionary directory"
-msgstr "일본어 사전 도구"
+msgstr ""
 
 #: ../scm/prime-custom.scm:34
 msgid "PRIME"
@@ -4731,9 +4721,8 @@ msgstr ""
 
 #. SJ3_IllegalParameter
 #: ../scm/sj3v2-socket.scm:75
-#, fuzzy
 msgid "Bad dictionary ID."
-msgstr "사전"
+msgstr ""
 
 #. SJ3_BadDictID
 #: ../scm/sj3v2-socket.scm:76
@@ -4822,9 +4811,8 @@ msgstr ""
 
 #. SJ3_ReadOnlyDict
 #: ../scm/sj3v2-socket.scm:93
-#, fuzzy
 msgid "Dictionary is locked."
-msgstr "사전"
+msgstr ""
 
 #. SJ3_DictLocked
 #: ../scm/sj3v2-socket.scm:94
@@ -4868,9 +4856,8 @@ msgstr ""
 
 #. SJ3_NoMoreIndexBlock
 #: ../scm/sj3v2-socket.scm:102
-#, fuzzy
 msgid "Delete dictionary failed."
-msgstr "일본어 사전 도구"
+msgstr ""
 
 #. SJ3_DelDictFailed
 #: ../scm/sj3v2-socket.scm:103
@@ -5479,19 +5466,16 @@ msgid "Use Dvorak keyboard"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:120
-#, fuzzy
 msgid "Number of candidates in candidate window at a time for kigou mode"
-msgstr "후보창에 한번에 표시하는 후보의 수"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:126
-#, fuzzy
 msgid "Use stroke help window"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:132
-#, fuzzy
 msgid "Use auto help window"
-msgstr "후보창을 사용"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
@@ -5766,18 +5750,16 @@ msgid "ZhengMa"
 msgstr ""
 
 #: ../scm/xmload.scm:42
-#, fuzzy
 msgid "ZhengMa input method (Chinese)"
-msgstr "기타 입력기"
+msgstr ""
 
 #: ../scm/xmload.scm:53
 msgid "WuBi 86"
 msgstr ""
 
 #: ../scm/xmload.scm:54
-#, fuzzy
 msgid "WuBi 86 input method (Chinese)"
-msgstr "uim 입력기 전환"
+msgstr ""
 
 #: ../scm/yahoo-jp-custom.scm:35
 msgid "Yahoo-Jp"

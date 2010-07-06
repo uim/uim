@@ -2589,9 +2589,8 @@ msgid "[ELatin] choose candidate"
 msgstr ""
 
 #: ../scm/elatin-custom.scm:315
-#, fuzzy
 msgid "[ELatin] close candidate window"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/elatin-custom.scm:321
 msgid "[ELatin] next candidate"
@@ -3018,9 +3017,8 @@ msgid "Set 0 to show indicator always."
 msgstr ""
 
 #: ../scm/im-custom.scm:549
-#, fuzzy
 msgid "Enable annotation"
-msgstr "Annotation"
+msgstr ""
 
 #: ../scm/im-custom.scm:556 ../scm/im-custom.scm:557 ../scm/im-custom.scm:586
 msgid "EB library"
@@ -3035,14 +3033,12 @@ msgid "Custom filter"
 msgstr ""
 
 #: ../scm/im-custom.scm:565
-#, fuzzy
 msgid "Input method itself"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../scm/im-custom.scm:567
-#, fuzzy
 msgid "Annotation agent name"
-msgstr "Annotation"
+msgstr ""
 
 #: ../scm/im-custom.scm:594
 msgid "Use EB library to search annotations"
@@ -4714,15 +4710,13 @@ msgstr ""
 
 #. SJ3_IllegalParameter
 #: ../scm/sj3v2-socket.scm:75
-#, fuzzy
 msgid "Bad dictionary ID."
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #. SJ3_BadDictID
 #: ../scm/sj3v2-socket.scm:76
-#, fuzzy
 msgid "Illegal dictionary file."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #. SJ3_IllegalDictFile
 #: ../scm/sj3v2-socket.scm:77
@@ -4796,9 +4790,8 @@ msgstr ""
 
 #. SJ3_NotLocked
 #: ../scm/sj3v2-socket.scm:91
-#, fuzzy
 msgid "No such dictiona2y."
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #. SJ3_NoSuchDict
 #: ../scm/sj3v2-socket.scm:92
@@ -4807,9 +4800,8 @@ msgstr ""
 
 #. SJ3_ReadOnlyDict
 #: ../scm/sj3v2-socket.scm:93
-#, fuzzy
 msgid "Dictionary is locked."
-msgstr "Dictionnaire"
+msgstr ""
 
 #. SJ3_DictLocked
 #: ../scm/sj3v2-socket.scm:94
@@ -4828,9 +4820,8 @@ msgstr ""
 
 #. SJ3_BadHinsiCode
 #: ../scm/sj3v2-socket.scm:97
-#, fuzzy
 msgid "Add dictionary failed."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #. SJ3_AddDictFailed
 #: ../scm/sj3v2-socket.scm:98
@@ -4844,9 +4835,8 @@ msgstr ""
 
 #. SJ3_NoMoreDouonWord
 #: ../scm/sj3v2-socket.scm:100
-#, fuzzy
 msgid "No more user dictionary."
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #. SJ3_NoMoreUserDict
 #: ../scm/sj3v2-socket.scm:101
@@ -4855,9 +4845,8 @@ msgstr ""
 
 #. SJ3_NoMoreIndexBlock
 #: ../scm/sj3v2-socket.scm:102
-#, fuzzy
 msgid "Delete dictionary failed."
-msgstr "Fichier du dictionnaire personnel"
+msgstr ""
 
 #. SJ3_DelDictFailed
 #: ../scm/sj3v2-socket.scm:103
@@ -4876,9 +4865,8 @@ msgstr ""
 
 #. SJ3_CannotCreateDir
 #: ../scm/sj3v2-socket.scm:106
-#, fuzzy
 msgid "No more dictionary data."
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #. SJ3_NoMoreDictData
 #: ../scm/sj3v2-socket.scm:107
@@ -4909,9 +4897,8 @@ msgid "Cannot connect SJ3 server"
 msgstr ""
 
 #: ../scm/sj3v2-socket.scm:389
-#, fuzzy
 msgid "SJ3: create new dictionary"
-msgstr "Éditer le dictionnaire"
+msgstr ""
 
 #: ../scm/skk-custom.scm:35
 msgid "SKK"
@@ -5752,18 +5739,16 @@ msgid "ZhengMa"
 msgstr ""
 
 #: ../scm/xmload.scm:42
-#, fuzzy
 msgid "ZhengMa input method (Chinese)"
-msgstr "Entrées de menu de la méthode d'entrée Kana"
+msgstr ""
 
 #: ../scm/xmload.scm:53
 msgid "WuBi 86"
 msgstr ""
 
 #: ../scm/xmload.scm:54
-#, fuzzy
 msgid "WuBi 86 input method (Chinese)"
-msgstr "Nom de la méthode d'entrée"
+msgstr ""
 
 #: ../scm/yahoo-jp-custom.scm:35
 msgid "Yahoo-Jp"
