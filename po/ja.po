@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-06 17:54+0900\n"
+"POT-Creation-Date: 2010-07-06 18:41+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -2350,6 +2350,16 @@ msgstr "[Canna] 次予測候補"
 msgid "[Canna] Previous prediction candidate"
 msgstr "[Canna] 前予測候補"
 
+#: ../scm/cannav3-socket.scm:258
+#, fuzzy
+msgid "Initialize failed."
+msgstr "%s動的ライブラリ:初期化失敗"
+
+#: ../scm/composer.scm:399
+#, fuzzy
+msgid "An internal composer"
+msgstr "ラテン入力"
+
 #: ../scm/custom.scm:748
 msgid "-"
 msgstr "-"
@@ -2369,6 +2379,24 @@ msgid ""
 msgstr ""
 "このグループの隠し設定です。uim_customクライアントからは見えません。\n"
 "内部変数の管理を行うために存在します。"
+
+#: ../scm/dict-socket.scm:61
+#, fuzzy
+msgid "dict: Invalid message"
+msgstr "ヘッダが不正です。"
+
+#: ../scm/dict-socket.scm:77 ../scm/dict-socket.scm:86
+msgid "Error Responce"
+msgstr ""
+
+#: ../scm/dict-socket.scm:94
+msgid "dict: Protocol error"
+msgstr ""
+
+#: ../scm/dict-socket.scm:104
+#, fuzzy
+msgid "dict: cannot connect server"
+msgstr "サーバに接続できません。"
 
 #: ../scm/direct.scm:53
 msgid "direct"
@@ -2872,6 +2900,13 @@ msgstr "ヘッダが不正です。"
 #: ../scm/http-client.scm:204
 msgid "cannot connect server"
 msgstr "サーバに接続できません。"
+
+#: ../scm/http-server.scm:151 ../scm/http-server.scm:155
+#: ../scm/http-server.scm:163 ../scm/http-server.scm:174
+#: ../scm/http-server.scm:178
+#, fuzzy, scheme-format
+msgid "Invalid header: ~a"
+msgstr "ヘッダが不正です。"
 
 #: ../scm/im.scm:139
 msgid "invalid IM name"
@@ -3892,6 +3927,10 @@ msgstr "ラテン文字"
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力方式"
 
+#: ../scm/lolevel.scm:53 ../scm/lolevel.scm:84
+msgid "unknown byte operator"
+msgstr ""
+
 #.
 #. Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
 #.
@@ -4244,6 +4283,11 @@ msgstr "Look-SKK予測の最大候補数"
 #: ../scm/predict-custom.scm:148
 msgid "Max words of candidates for sqlite3"
 msgstr "Sqlite3予測の最大候補数"
+
+#: ../scm/predict-sqlite3.scm:86
+#, fuzzy
+msgid "cannot create dictionary directory"
+msgstr "ソケットディレクトリを作成できません。"
 
 #: ../scm/prime-custom.scm:34
 msgid "PRIME"
@@ -4739,6 +4783,315 @@ msgstr "sj3サーバに再接続しています。"
 #: ../scm/sj3.scm:80
 msgid "[Reconnecting...]"
 msgstr "[再接続中...]"
+
+#: ../scm/sj3v2-socket.scm:58
+#, fuzzy
+msgid "Internal server error."
+msgstr "内部エラーです。"
+
+#. SJ3_InternalError
+#: ../scm/sj3v2-socket.scm:59
+#, fuzzy
+msgid "No error."
+msgstr "ソケットエラー"
+
+#. SJ3_NormalEnd
+#: ../scm/sj3v2-socket.scm:60
+msgid "Serverdown."
+msgstr "サーバがダウンしています。"
+
+#. SJ3_ServerDown
+#: ../scm/sj3v2-socket.scm:61
+#, fuzzy
+msgid "Cannot open socket."
+msgstr "学習ファイルを開くことができません。"
+
+#. SJ3_OpenSocket
+#: ../scm/sj3v2-socket.scm:62
+#, fuzzy
+msgid "Cannot connect socket."
+msgstr "サーバに接続できません。"
+
+#. SJ3_ConnectSocket
+#: ../scm/sj3v2-socket.scm:63
+msgid "Unknown hostname."
+msgstr ""
+
+#. SJ3_GetHostByName
+#: ../scm/sj3v2-socket.scm:64
+#, fuzzy
+msgid "Not opened."
+msgstr "正常終了しました。"
+
+#. SJ3_NotOpened
+#: ../scm/sj3v2-socket.scm:65
+msgid "Not enough memory."
+msgstr ""
+
+#. SJ3_NotEnoughMemory
+#: ../scm/sj3v2-socket.scm:66
+msgid "Illegal command."
+msgstr ""
+
+#. SJ3_IllegalCommand
+#: ../scm/sj3v2-socket.scm:67
+msgid "Different version."
+msgstr ""
+
+#. SJ3_DifferentVersion
+#: ../scm/sj3v2-socket.scm:68
+#, fuzzy
+msgid "No host name."
+msgstr "Httpプロキシホスト名"
+
+#. SJ3_NoHostName
+#: ../scm/sj3v2-socket.scm:69
+#, fuzzy
+msgid "No user name."
+msgstr "SJ3ユーザ名"
+
+#. SJ3_NoUserName
+#: ../scm/sj3v2-socket.scm:70
+msgid "User not allowd."
+msgstr ""
+
+#. SJ3_NotAllowedUser
+#: ../scm/sj3v2-socket.scm:71
+msgid "Already connected."
+msgstr "すでに接続しています。"
+
+#. SJ3_AlreadyConnected
+#: ../scm/sj3v2-socket.scm:72
+#, fuzzy
+msgid "Not connected."
+msgstr "すでに接続しています。"
+
+#. SJ3_NotConnected
+#: ../scm/sj3v2-socket.scm:73
+msgid "Too long parameter."
+msgstr ""
+
+#. SJ3_TooLongParameter
+#: ../scm/sj3v2-socket.scm:74
+msgid "Illegal parameter."
+msgstr ""
+
+#. SJ3_IllegalParameter
+#: ../scm/sj3v2-socket.scm:75
+#, fuzzy
+msgid "Bad dictionary ID."
+msgstr "辞書の種類"
+
+#. SJ3_BadDictID
+#: ../scm/sj3v2-socket.scm:76
+#, fuzzy
+msgid "Illegal dictionary file."
+msgstr "個人辞書ファイル"
+
+#. SJ3_IllegalDictFile
+#: ../scm/sj3v2-socket.scm:77
+#, fuzzy
+msgid "Illegal study file."
+msgstr "学習ファイルを開くことができません。"
+
+#. SJ3_IllegalStdyFile
+#: ../scm/sj3v2-socket.scm:78
+msgid "Incorrect password."
+msgstr ""
+
+#. SJ3_IncorrectPasswd
+#: ../scm/sj3v2-socket.scm:79
+#, fuzzy
+msgid "File not exist."
+msgstr "単語が存在しません。"
+
+#. SJ3_FileNotExist
+#: ../scm/sj3v2-socket.scm:80
+#, fuzzy
+msgid "Cannot access file."
+msgstr "学習ファイルを作成できません。"
+
+#. SJ3_CannotAccessFile
+#: ../scm/sj3v2-socket.scm:81
+#, fuzzy
+msgid "Cannot open file."
+msgstr "学習ファイルを開くことができません。"
+
+#. SJ3_CannotOpenFile
+#: ../scm/sj3v2-socket.scm:82
+#, fuzzy
+msgid "Cannot create file."
+msgstr "学習ファイルを開くことができません。"
+
+#. SJ3_CannotCreateFile
+#: ../scm/sj3v2-socket.scm:83
+#, fuzzy
+msgid "File read error."
+msgstr "内部エラーです。"
+
+#. SJ3_FileReadError
+#: ../scm/sj3v2-socket.scm:84
+#, fuzzy
+msgid "File write error."
+msgstr "未定義のエラーです。"
+
+#. SJ3_FileWriteError
+#: ../scm/sj3v2-socket.scm:85
+msgid "File seek error."
+msgstr ""
+
+#. SJ3_FileSeekError
+#: ../scm/sj3v2-socket.scm:86
+#, fuzzy
+msgid "Study already opened."
+msgstr "学習ファイルを開いていません。"
+
+#. SJ3_StdyAlreadyOpened
+#: ../scm/sj3v2-socket.scm:87
+#, fuzzy
+msgid "Study file not opened."
+msgstr "学習ファイルを開いていません。"
+
+#. SJ3_StdyFileNotOpened
+#: ../scm/sj3v2-socket.scm:88
+msgid "Too small study area."
+msgstr ""
+
+#. SJ3_TooSmallStdyArea
+#: ../scm/sj3v2-socket.scm:89
+msgid "Locked by other."
+msgstr ""
+
+#. SJ3_LockedByOther
+#: ../scm/sj3v2-socket.scm:90
+msgid "Not locked."
+msgstr ""
+
+#. SJ3_NotLocked
+#: ../scm/sj3v2-socket.scm:91
+#, fuzzy
+msgid "No such dictiona2y."
+msgstr "[Look] 辞書の保存"
+
+#. SJ3_NoSuchDict
+#: ../scm/sj3v2-socket.scm:92
+#, fuzzy
+msgid "Dictionary is read only."
+msgstr "辞書がロックされています。"
+
+#. SJ3_ReadOnlyDict
+#: ../scm/sj3v2-socket.scm:93
+msgid "Dictionary is locked."
+msgstr "辞書がロックされています。"
+
+#. SJ3_DictLocked
+#: ../scm/sj3v2-socket.scm:94
+#, fuzzy
+msgid "Yomi string is bad."
+msgstr "読みが長過ぎます。"
+
+#. SJ3_BadYomiString
+#: ../scm/sj3v2-socket.scm:95
+#, fuzzy
+msgid "Kanji string is bad."
+msgstr "漢字が長過ぎます。"
+
+#. SJ3_BadKanjiString
+#: ../scm/sj3v2-socket.scm:96
+msgid "Hinshi code is bad."
+msgstr ""
+
+#. SJ3_BadHinsiCode
+#: ../scm/sj3v2-socket.scm:97
+#, fuzzy
+msgid "Add dictionary failed."
+msgstr "辞書ファイル"
+
+#. SJ3_AddDictFailed
+#: ../scm/sj3v2-socket.scm:98
+#, fuzzy
+msgid "Word is already exist."
+msgstr "単語はすでに登録されています。"
+
+#. SJ3_AlreadyExistWord
+#: ../scm/sj3v2-socket.scm:99
+msgid "No more douon word."
+msgstr ""
+
+#. SJ3_NoMoreDouonWord
+#: ../scm/sj3v2-socket.scm:100
+#, fuzzy
+msgid "No more user dictionary."
+msgstr "個人辞書を開くことができません。"
+
+#. SJ3_NoMoreUserDict
+#: ../scm/sj3v2-socket.scm:101
+msgid "No more index block"
+msgstr ""
+
+#. SJ3_NoMoreIndexBlock
+#: ../scm/sj3v2-socket.scm:102
+#, fuzzy
+msgid "Delete dictionary failed."
+msgstr "システム辞書ファイル"
+
+#. SJ3_DelDictFailed
+#: ../scm/sj3v2-socket.scm:103
+msgid "No such word."
+msgstr ""
+
+#. SJ3_NoSuchWord
+#: ../scm/sj3v2-socket.scm:104
+msgid "Directory already exist."
+msgstr ""
+
+#. SJ3_DirAlreadyExist
+#: ../scm/sj3v2-socket.scm:105
+#, fuzzy
+msgid "Cannot create directory."
+msgstr "ソケットディレクトリを作成できません。"
+
+#. SJ3_CannotCreateDir
+#: ../scm/sj3v2-socket.scm:106
+#, fuzzy
+msgid "No more dictionary data."
+msgstr "辞書の種類"
+
+#. SJ3_NoMoreDictData
+#: ../scm/sj3v2-socket.scm:107
+#, fuzzy
+msgid "User connected."
+msgstr "すでに接続しています。"
+
+#. SJ3_UserConnected
+#: ../scm/sj3v2-socket.scm:108
+msgid "Too long password."
+msgstr ""
+
+#. SJ3_TooLongPasswd
+#: ../scm/sj3v2-socket.scm:109
+msgid "Too long comment."
+msgstr ""
+
+#. SJ3_TooLongComment
+#: ../scm/sj3v2-socket.scm:110
+#, fuzzy
+msgid "Cannot code convert."
+msgstr "サーバに接続できません。"
+
+#: ../scm/sj3v2-socket.scm:120
+msgid "unexpected terminate string."
+msgstr ""
+
+#: ../scm/sj3v2-socket.scm:383 ../scm/sj3v2-socket.scm:396
+#, fuzzy
+msgid "Cannot connect SJ3 server"
+msgstr "サーバに接続できません。"
+
+#: ../scm/sj3v2-socket.scm:389
+#, fuzzy
+msgid "SJ3: create new dictionary"
+msgstr "Anthy個人辞書"
 
 #: ../scm/skk-custom.scm:35
 msgid "SKK"
@@ -5585,6 +5938,24 @@ msgstr "[Wnn] 次予測候補"
 msgid "[Wnn] Previous prediction candidate"
 msgstr "[Wnn] 前予測候補"
 
+#: ../scm/xmload.scm:41
+msgid "ZhengMa"
+msgstr ""
+
+#: ../scm/xmload.scm:42
+#, fuzzy
+msgid "ZhengMa input method (Chinese)"
+msgstr "かな入力方式のメニュー項目"
+
+#: ../scm/xmload.scm:53
+msgid "WuBi 86"
+msgstr ""
+
+#: ../scm/xmload.scm:54
+#, fuzzy
+msgid "WuBi 86 input method (Chinese)"
+msgstr "uim 入力方式切り換え"
+
 #: ../scm/yahoo-jp-custom.scm:35
 msgid "Yahoo-Jp"
 msgstr ""
@@ -5850,6 +6221,31 @@ msgstr "uim-skk: 語が長すぎます。"
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: ポート%sへ接続できませんでした。"
 
+#: ../uim/uim-eb.c:103
+#, c-format
+msgid "eb: failed to initialize EB library : error = %s\n"
+msgstr ""
+
+#: ../uim/uim-eb.c:125
+msgid "eb: wrong bookpath"
+msgstr ""
+
+#: ../uim/uim-eb.c:132
+msgid "eb: eb_subbook_list() failed\n"
+msgstr ""
+
+#: ../uim/uim-eb.c:175
+msgid "eb: eb_set_subbook() failed"
+msgstr ""
+
+#: ../uim/uim-eb.c:205
+msgid "eb: eb_seek_text error occurs"
+msgstr ""
+
+#: ../uim/uim-eb.c:217
+msgid "eb_read_text : an error occurs"
+msgstr ""
+
 #: ../uim/uim-error.c:58
 msgid "All functionality has been disabled to save user application data."
 msgstr "ユーザアプリケーションデータを保護するため、全機能を停止しました。"
@@ -5899,44 +6295,20 @@ msgstr ""
 #~ msgid "In uim-sj3, "
 #~ msgstr "uim-sj3でエラーが発生しました。"
 
-#~ msgid "Serverdown."
-#~ msgstr "サーバがダウンしています。"
-
-#~ msgid "Undefined error."
-#~ msgstr "未定義のエラーです。"
-
-#~ msgid "Internal error."
-#~ msgstr "内部エラーです。"
-
-#~ msgid "Normal end."
-#~ msgstr "正常終了しました。"
-
 #~ msgid "Server is dead."
 #~ msgstr "サーバがダウンしました。"
 
 #~ msgid "Connect failed."
 #~ msgstr "接続に失敗しました。"
 
-#~ msgid "Already connected."
-#~ msgstr "すでに接続しています。"
-
 #~ msgid "Cannot open main dictionary file."
 #~ msgstr "メイン辞書のファイルを開くことができません。"
-
-#~ msgid "Cannot open user dictionary file."
-#~ msgstr "個人辞書を開くことができません。"
-
-#~ msgid "Cannot open study file."
-#~ msgstr "学習ファイルを開くことができません。"
 
 #~ msgid "Cannot make user dictionary directory."
 #~ msgstr "個人辞書のディレクトリを作成できません。"
 
 #~ msgid "Cannot make user dictionary file."
 #~ msgstr "個人辞書のファイルを作成できません。"
-
-#~ msgid "Cannot make study file."
-#~ msgstr "学習ファイルを作成できません。"
 
 #~ msgid "Server name is too long."
 #~ msgstr "サーバ名が長過ぎます。"
@@ -5953,9 +6325,6 @@ msgstr ""
 #~ msgid "User dictionary file is not opened."
 #~ msgstr "個人辞書ファイルを開いていません。"
 
-#~ msgid "Study file is not opened."
-#~ msgstr "学習ファイルを開いていません。"
-
 #~ msgid "Main dictionary file cannot close."
 #~ msgstr "メイン辞書ファイルを閉じることができません。"
 
@@ -5965,17 +6334,11 @@ msgstr ""
 #~ msgid "Study file cannot close."
 #~ msgstr "学習ファイルを閉じることができません。"
 
-#~ msgid "Yomi string is too long."
-#~ msgstr "読みが長過ぎます。"
-
 #~ msgid "Buffer size is too short."
 #~ msgstr "バッファに入りきりません。"
 
 #~ msgid "Dictionary error."
 #~ msgstr "辞書にエラーがあります。"
-
-#~ msgid "Dictionary is locked."
-#~ msgstr "辞書がロックされています。"
 
 #~ msgid "Invalid yomi string."
 #~ msgstr "読みの文字列が不正です。"
@@ -5985,9 +6348,6 @@ msgstr ""
 
 #~ msgid "Invalid hinsi code."
 #~ msgstr "品詞の種別が不正です。"
-
-#~ msgid "Word exist."
-#~ msgstr "単語はすでに登録されています。"
 
 #~ msgid "Douon is full."
 #~ msgstr "同音漢字はこれ以上登録できません。"
@@ -6001,20 +6361,11 @@ msgstr ""
 #~ msgid "Touroku failed."
 #~ msgstr "単語の登録に失敗しました。"
 
-#~ msgid "Word does not exist."
-#~ msgstr "単語が存在しません。"
-
 #~ msgid "Syoukyo failed."
 #~ msgstr "単語の消去に失敗しました。"
 
-#~ msgid "Kanji string is too long."
-#~ msgstr "漢字が長過ぎます。"
-
 #~ msgid "uim-canna: Failed to mount dictionary %s."
 #~ msgstr "uim-canna: 辞書ファイル %s のマウントに失敗しました。"
-
-#~ msgid "socket error"
-#~ msgstr "ソケットエラー"
 
 #~ msgid "socket timeout"
 #~ msgstr "ソケットタイムアウト"

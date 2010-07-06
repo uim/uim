@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-06 17:54+0900\n"
+"POT-Creation-Date: 2010-07-06 18:41+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -2231,6 +2231,14 @@ msgstr ""
 msgid "[Canna] Previous prediction candidate"
 msgstr ""
 
+#: ../scm/cannav3-socket.scm:258
+msgid "Initialize failed."
+msgstr ""
+
+#: ../scm/composer.scm:399
+msgid "An internal composer"
+msgstr ""
+
 #: ../scm/custom.scm:748
 msgid "-"
 msgstr ""
@@ -2247,6 +2255,22 @@ msgstr ""
 msgid ""
 "Hidden settings of this group. This group is invisible from uim_custom "
 "clients. Exists for internal variable management."
+msgstr ""
+
+#: ../scm/dict-socket.scm:61
+msgid "dict: Invalid message"
+msgstr ""
+
+#: ../scm/dict-socket.scm:77 ../scm/dict-socket.scm:86
+msgid "Error Responce"
+msgstr ""
+
+#: ../scm/dict-socket.scm:94
+msgid "dict: Protocol error"
+msgstr ""
+
+#: ../scm/dict-socket.scm:104
+msgid "dict: cannot connect server"
 msgstr ""
 
 #: ../scm/direct.scm:53
@@ -2741,6 +2765,13 @@ msgstr ""
 
 #: ../scm/http-client.scm:204
 msgid "cannot connect server"
+msgstr ""
+
+#: ../scm/http-server.scm:151 ../scm/http-server.scm:155
+#: ../scm/http-server.scm:163 ../scm/http-server.scm:174
+#: ../scm/http-server.scm:178
+#, scheme-format
+msgid "Invalid header: ~a"
 msgstr ""
 
 #: ../scm/im.scm:139
@@ -3744,6 +3775,10 @@ msgstr "Caractères latins"
 msgid "Latin characters mainly used for Latin and Germanic languages"
 msgstr ""
 
+#: ../scm/lolevel.scm:53 ../scm/lolevel.scm:84
+msgid "unknown byte operator"
+msgstr ""
+
 #.
 #. Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
 #.
@@ -4093,6 +4128,10 @@ msgstr ""
 
 #: ../scm/predict-custom.scm:148
 msgid "Max words of candidates for sqlite3"
+msgstr ""
+
+#: ../scm/predict-sqlite3.scm:86
+msgid "cannot create dictionary directory"
 msgstr ""
 
 #: ../scm/prime-custom.scm:34
@@ -4588,6 +4627,291 @@ msgstr ""
 #: ../scm/sj3.scm:80
 msgid "[Reconnecting...]"
 msgstr ""
+
+#: ../scm/sj3v2-socket.scm:58
+msgid "Internal server error."
+msgstr ""
+
+#. SJ3_InternalError
+#: ../scm/sj3v2-socket.scm:59
+msgid "No error."
+msgstr ""
+
+#. SJ3_NormalEnd
+#: ../scm/sj3v2-socket.scm:60
+msgid "Serverdown."
+msgstr ""
+
+#. SJ3_ServerDown
+#: ../scm/sj3v2-socket.scm:61
+msgid "Cannot open socket."
+msgstr ""
+
+#. SJ3_OpenSocket
+#: ../scm/sj3v2-socket.scm:62
+msgid "Cannot connect socket."
+msgstr ""
+
+#. SJ3_ConnectSocket
+#: ../scm/sj3v2-socket.scm:63
+msgid "Unknown hostname."
+msgstr ""
+
+#. SJ3_GetHostByName
+#: ../scm/sj3v2-socket.scm:64
+msgid "Not opened."
+msgstr ""
+
+#. SJ3_NotOpened
+#: ../scm/sj3v2-socket.scm:65
+msgid "Not enough memory."
+msgstr ""
+
+#. SJ3_NotEnoughMemory
+#: ../scm/sj3v2-socket.scm:66
+msgid "Illegal command."
+msgstr ""
+
+#. SJ3_IllegalCommand
+#: ../scm/sj3v2-socket.scm:67
+msgid "Different version."
+msgstr ""
+
+#. SJ3_DifferentVersion
+#: ../scm/sj3v2-socket.scm:68
+msgid "No host name."
+msgstr ""
+
+#. SJ3_NoHostName
+#: ../scm/sj3v2-socket.scm:69
+msgid "No user name."
+msgstr ""
+
+#. SJ3_NoUserName
+#: ../scm/sj3v2-socket.scm:70
+msgid "User not allowd."
+msgstr ""
+
+#. SJ3_NotAllowedUser
+#: ../scm/sj3v2-socket.scm:71
+msgid "Already connected."
+msgstr ""
+
+#. SJ3_AlreadyConnected
+#: ../scm/sj3v2-socket.scm:72
+msgid "Not connected."
+msgstr ""
+
+#. SJ3_NotConnected
+#: ../scm/sj3v2-socket.scm:73
+msgid "Too long parameter."
+msgstr ""
+
+#. SJ3_TooLongParameter
+#: ../scm/sj3v2-socket.scm:74
+msgid "Illegal parameter."
+msgstr ""
+
+#. SJ3_IllegalParameter
+#: ../scm/sj3v2-socket.scm:75
+#, fuzzy
+msgid "Bad dictionary ID."
+msgstr "Éditer le dictionnaire"
+
+#. SJ3_BadDictID
+#: ../scm/sj3v2-socket.scm:76
+#, fuzzy
+msgid "Illegal dictionary file."
+msgstr "Fichier du dictionnaire personnel"
+
+#. SJ3_IllegalDictFile
+#: ../scm/sj3v2-socket.scm:77
+msgid "Illegal study file."
+msgstr ""
+
+#. SJ3_IllegalStdyFile
+#: ../scm/sj3v2-socket.scm:78
+msgid "Incorrect password."
+msgstr ""
+
+#. SJ3_IncorrectPasswd
+#: ../scm/sj3v2-socket.scm:79
+msgid "File not exist."
+msgstr ""
+
+#. SJ3_FileNotExist
+#: ../scm/sj3v2-socket.scm:80
+msgid "Cannot access file."
+msgstr ""
+
+#. SJ3_CannotAccessFile
+#: ../scm/sj3v2-socket.scm:81
+msgid "Cannot open file."
+msgstr ""
+
+#. SJ3_CannotOpenFile
+#: ../scm/sj3v2-socket.scm:82
+msgid "Cannot create file."
+msgstr ""
+
+#. SJ3_CannotCreateFile
+#: ../scm/sj3v2-socket.scm:83
+msgid "File read error."
+msgstr ""
+
+#. SJ3_FileReadError
+#: ../scm/sj3v2-socket.scm:84
+msgid "File write error."
+msgstr ""
+
+#. SJ3_FileWriteError
+#: ../scm/sj3v2-socket.scm:85
+msgid "File seek error."
+msgstr ""
+
+#. SJ3_FileSeekError
+#: ../scm/sj3v2-socket.scm:86
+msgid "Study already opened."
+msgstr ""
+
+#. SJ3_StdyAlreadyOpened
+#: ../scm/sj3v2-socket.scm:87
+msgid "Study file not opened."
+msgstr ""
+
+#. SJ3_StdyFileNotOpened
+#: ../scm/sj3v2-socket.scm:88
+msgid "Too small study area."
+msgstr ""
+
+#. SJ3_TooSmallStdyArea
+#: ../scm/sj3v2-socket.scm:89
+msgid "Locked by other."
+msgstr ""
+
+#. SJ3_LockedByOther
+#: ../scm/sj3v2-socket.scm:90
+msgid "Not locked."
+msgstr ""
+
+#. SJ3_NotLocked
+#: ../scm/sj3v2-socket.scm:91
+#, fuzzy
+msgid "No such dictiona2y."
+msgstr "Éditer le dictionnaire"
+
+#. SJ3_NoSuchDict
+#: ../scm/sj3v2-socket.scm:92
+msgid "Dictionary is read only."
+msgstr ""
+
+#. SJ3_ReadOnlyDict
+#: ../scm/sj3v2-socket.scm:93
+#, fuzzy
+msgid "Dictionary is locked."
+msgstr "Dictionnaire"
+
+#. SJ3_DictLocked
+#: ../scm/sj3v2-socket.scm:94
+msgid "Yomi string is bad."
+msgstr ""
+
+#. SJ3_BadYomiString
+#: ../scm/sj3v2-socket.scm:95
+msgid "Kanji string is bad."
+msgstr ""
+
+#. SJ3_BadKanjiString
+#: ../scm/sj3v2-socket.scm:96
+msgid "Hinshi code is bad."
+msgstr ""
+
+#. SJ3_BadHinsiCode
+#: ../scm/sj3v2-socket.scm:97
+#, fuzzy
+msgid "Add dictionary failed."
+msgstr "Fichier du dictionnaire personnel"
+
+#. SJ3_AddDictFailed
+#: ../scm/sj3v2-socket.scm:98
+msgid "Word is already exist."
+msgstr ""
+
+#. SJ3_AlreadyExistWord
+#: ../scm/sj3v2-socket.scm:99
+msgid "No more douon word."
+msgstr ""
+
+#. SJ3_NoMoreDouonWord
+#: ../scm/sj3v2-socket.scm:100
+#, fuzzy
+msgid "No more user dictionary."
+msgstr "Éditer le dictionnaire"
+
+#. SJ3_NoMoreUserDict
+#: ../scm/sj3v2-socket.scm:101
+msgid "No more index block"
+msgstr ""
+
+#. SJ3_NoMoreIndexBlock
+#: ../scm/sj3v2-socket.scm:102
+#, fuzzy
+msgid "Delete dictionary failed."
+msgstr "Fichier du dictionnaire personnel"
+
+#. SJ3_DelDictFailed
+#: ../scm/sj3v2-socket.scm:103
+msgid "No such word."
+msgstr ""
+
+#. SJ3_NoSuchWord
+#: ../scm/sj3v2-socket.scm:104
+msgid "Directory already exist."
+msgstr ""
+
+#. SJ3_DirAlreadyExist
+#: ../scm/sj3v2-socket.scm:105
+msgid "Cannot create directory."
+msgstr ""
+
+#. SJ3_CannotCreateDir
+#: ../scm/sj3v2-socket.scm:106
+#, fuzzy
+msgid "No more dictionary data."
+msgstr "Éditer le dictionnaire"
+
+#. SJ3_NoMoreDictData
+#: ../scm/sj3v2-socket.scm:107
+msgid "User connected."
+msgstr ""
+
+#. SJ3_UserConnected
+#: ../scm/sj3v2-socket.scm:108
+msgid "Too long password."
+msgstr ""
+
+#. SJ3_TooLongPasswd
+#: ../scm/sj3v2-socket.scm:109
+msgid "Too long comment."
+msgstr ""
+
+#. SJ3_TooLongComment
+#: ../scm/sj3v2-socket.scm:110
+msgid "Cannot code convert."
+msgstr ""
+
+#: ../scm/sj3v2-socket.scm:120
+msgid "unexpected terminate string."
+msgstr ""
+
+#: ../scm/sj3v2-socket.scm:383 ../scm/sj3v2-socket.scm:396
+msgid "Cannot connect SJ3 server"
+msgstr ""
+
+#: ../scm/sj3v2-socket.scm:389
+#, fuzzy
+msgid "SJ3: create new dictionary"
+msgstr "Éditer le dictionnaire"
 
 #: ../scm/skk-custom.scm:35
 msgid "SKK"
@@ -5423,6 +5747,24 @@ msgstr ""
 msgid "[Wnn] Previous prediction candidate"
 msgstr ""
 
+#: ../scm/xmload.scm:41
+msgid "ZhengMa"
+msgstr ""
+
+#: ../scm/xmload.scm:42
+#, fuzzy
+msgid "ZhengMa input method (Chinese)"
+msgstr "Entrées de menu de la méthode d'entrée Kana"
+
+#: ../scm/xmload.scm:53
+msgid "WuBi 86"
+msgstr ""
+
+#: ../scm/xmload.scm:54
+#, fuzzy
+msgid "WuBi 86 input method (Chinese)"
+msgstr "Nom de la méthode d'entrée"
+
 #: ../scm/yahoo-jp-custom.scm:35
 msgid "Yahoo-Jp"
 msgstr ""
@@ -5681,6 +6023,31 @@ msgstr ""
 #: ../uim/skk.c:3586
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
+msgstr ""
+
+#: ../uim/uim-eb.c:103
+#, c-format
+msgid "eb: failed to initialize EB library : error = %s\n"
+msgstr ""
+
+#: ../uim/uim-eb.c:125
+msgid "eb: wrong bookpath"
+msgstr ""
+
+#: ../uim/uim-eb.c:132
+msgid "eb: eb_subbook_list() failed\n"
+msgstr ""
+
+#: ../uim/uim-eb.c:175
+msgid "eb: eb_set_subbook() failed"
+msgstr ""
+
+#: ../uim/uim-eb.c:205
+msgid "eb: eb_seek_text error occurs"
+msgstr ""
+
+#: ../uim/uim-eb.c:217
+msgid "eb_read_text : an error occurs"
 msgstr ""
 
 #: ../uim/uim-error.c:58
