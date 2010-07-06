@@ -1755,14 +1755,13 @@ msgid "[Ajax-IME] Previous prediction candidate"
 msgstr "[Ajax-IME] 前予測候補"
 
 #: ../scm/ajax-ime.scm:570
-#, fuzzy
 msgid ""
 "Caveat: All the request to Ajax-IME server is not encrypted through the "
 "internet.\n"
 "If you want to disable this message, turn off the option in Ajax-IME "
 "(advanced) setting."
 msgstr ""
-"警告: Ajax-IME/ChaIMEサーバへのリクエストはインターネット上そのまま流れま"
+"警告: Ajax-IMEサーバへのリクエストはインターネット上そのまま流れま"
 "す。\n"
 "このメッセージを今後表示したくない場合は、Ajax-IME (高度) 設定にあるオプショ"
 "ンをオフにしてください。"
@@ -2351,14 +2350,12 @@ msgid "[Canna] Previous prediction candidate"
 msgstr "[Canna] 前予測候補"
 
 #: ../scm/cannav3-socket.scm:258
-#, fuzzy
 msgid "Initialize failed."
-msgstr "%s動的ライブラリ:初期化失敗"
+msgstr "初期化失敗"
 
 #: ../scm/composer.scm:399
-#, fuzzy
 msgid "An internal composer"
-msgstr "ラテン入力"
+msgstr "内部コンポーザ"
 
 #: ../scm/custom.scm:748
 msgid "-"
@@ -2381,9 +2378,8 @@ msgstr ""
 "内部変数の管理を行うために存在します。"
 
 #: ../scm/dict-socket.scm:61
-#, fuzzy
 msgid "dict: Invalid message"
-msgstr "ヘッダが不正です。"
+msgstr "dict: メッセージが不正です。"
 
 #: ../scm/dict-socket.scm:77 ../scm/dict-socket.scm:86
 msgid "Error Responce"
@@ -2394,9 +2390,8 @@ msgid "dict: Protocol error"
 msgstr ""
 
 #: ../scm/dict-socket.scm:104
-#, fuzzy
 msgid "dict: cannot connect server"
-msgstr "サーバに接続できません。"
+msgstr "dict: サーバに接続できません。"
 
 #: ../scm/direct.scm:53
 msgid "direct"
@@ -2712,39 +2707,32 @@ msgid "[ELatin] backspace"
 msgstr "[ELatin] バックスペース"
 
 #: ../scm/elatin-custom.scm:309
-#, fuzzy
 msgid "[ELatin] choose candidate"
-msgstr "[Mana] 次候補"
+msgstr "[ELatin] 候補を選択"
 
 #: ../scm/elatin-custom.scm:315
-#, fuzzy
 msgid "[ELatin] close candidate window"
-msgstr "候補ウィンドウを使用する"
+msgstr "[ELatin] 候補ウィンドウを閉じる"
 
 #: ../scm/elatin-custom.scm:321
-#, fuzzy
 msgid "[ELatin] next candidate"
-msgstr "[Mana] 次候補"
+msgstr "[ELatin] 次候補"
 
 #: ../scm/elatin-custom.scm:327
-#, fuzzy
 msgid "[ELatin] previous candidate"
-msgstr "[Mana] 前候補"
+msgstr "[ELatin] 前候補"
 
 #: ../scm/elatin-custom.scm:333
-#, fuzzy
 msgid "[ELatin] next page of candidate window"
-msgstr "[Mana] 候補ウィンドウの次ページ"
+msgstr "[ELatin] 候補ウィンドウの次ページ"
 
 #: ../scm/elatin-custom.scm:339
-#, fuzzy
 msgid "[ELatin] previous page of candidate window"
-msgstr "[Mana] 候補ウィンドウの前ページ"
+msgstr "[ELatin] 候補ウィンドウの前ページ"
 
 #: ../scm/elatin-custom.scm:345
-#, fuzzy
 msgid "[ELatin] start completion"
-msgstr "ELatin変換 オン"
+msgstr "[ELatin] 補完開始"
 
 #: ../scm/elatin.scm:127
 msgid "ELatin mode off"
@@ -2771,9 +2759,8 @@ msgid "Show candidate window without explicit conversion action"
 msgstr "候補ウィンドウを自動的に表示"
 
 #: ../scm/generic-custom.scm:72
-#, fuzzy
 msgid "Show candidates matching with expected keys"
-msgstr "候補ウィンドウを自動的に表示"
+msgstr "予測候補を表示"
 
 #: ../scm/generic-key-custom.scm:36
 msgid "Global key bindings 1"
@@ -2904,9 +2891,8 @@ msgstr "サーバに接続できません。"
 #: ../scm/http-server.scm:151 ../scm/http-server.scm:155
 #: ../scm/http-server.scm:163 ../scm/http-server.scm:174
 #: ../scm/http-server.scm:178
-#, fuzzy, scheme-format
 msgid "Invalid header: ~a"
-msgstr "ヘッダが不正です。"
+msgstr "ヘッダが不正です。~a"
 
 #: ../scm/im.scm:139
 msgid "invalid IM name"
@@ -3158,32 +3144,28 @@ msgid "Set 0 to show indicator always."
 msgstr "常にインジケーターを表示するなら 0 にして下さい。"
 
 #: ../scm/im-custom.scm:549
-#, fuzzy
 msgid "Enable annotation"
-msgstr "註釈"
+msgstr "註釈を有効にする"
 
 #: ../scm/im-custom.scm:556 ../scm/im-custom.scm:557 ../scm/im-custom.scm:586
 msgid "EB library"
 msgstr "EBライブラリ"
 
 #: ../scm/im-custom.scm:559 ../scm/im-custom.scm:560 ../scm/im-custom.scm:623
-#, fuzzy
 msgid "dict server"
-msgstr "TCPサーバ"
+msgstr "dictサーバ"
 
 #: ../scm/im-custom.scm:562 ../scm/im-custom.scm:563 ../scm/im-custom.scm:679
 msgid "Custom filter"
 msgstr ""
 
 #: ../scm/im-custom.scm:565
-#, fuzzy
 msgid "Input method itself"
-msgstr "入力方式の正副一時切り換え"
+msgstr "入力方式自身"
 
 #: ../scm/im-custom.scm:567
-#, fuzzy
 msgid "Annotation agent name"
-msgstr "状態通知に使用するエージェント"
+msgstr "注釈に使用するエージェント"
 
 #: ../scm/im-custom.scm:594
 msgid "Use EB library to search annotations"
@@ -3194,66 +3176,58 @@ msgid "The directory which contains EB dictionary file"
 msgstr "EB辞書ファイルを格納しているディレクトリ"
 
 #: ../scm/im-custom.scm:630
-#, fuzzy
 msgid "Server address of dict"
-msgstr "PRIMEサーバアドレス"
+msgstr "dictサーバアドレス"
 
 #: ../scm/im-custom.scm:637
-#, fuzzy
 msgid "Server port of dict"
-msgstr "サーバに接続していません。"
+msgstr "dictサーバポート"
 
 #: ../scm/im-custom.scm:644
 msgid "Database name of dict"
 msgstr ""
 
 #: ../scm/im-custom.scm:651
-#, fuzzy
 msgid "Number of cache of annotation"
-msgstr "予測候補キャッシュ数"
+msgstr "註釈キャッシュ数"
 
 #: ../scm/im-custom.scm:686 ../scm/prime-custom.scm:96
 msgid "Unix domain"
 msgstr "Unixドメイン"
 
 #: ../scm/im-custom.scm:687
-#, fuzzy
 msgid "Use UNIX domain socket to communicate with custom filter."
-msgstr "PRIMEとの通信にUNIXドメインソケットを使用する"
+msgstr "カスタムフィルタとの通信にUNIXドメインソケットを使用する"
 
 #: ../scm/im-custom.scm:689 ../scm/prime-custom.scm:99
 msgid "TCP server"
 msgstr "TCPサーバ"
 
 #: ../scm/im-custom.scm:690
-#, fuzzy
 msgid "Use tcp server to communicate with custom filter"
-msgstr "PRIMEとの通信にTCPサーバを使用する"
+msgstr "カスタムフィルタとの通信にTCPサーバを使用する"
 
 #: ../scm/im-custom.scm:692 ../scm/prime-custom.scm:102
 msgid "Pipe"
 msgstr "パイプ"
 
 #: ../scm/im-custom.scm:693
-#, fuzzy
 msgid ""
 "Use pipe. spawn new annotation-filter process to communicate with custom "
 "filter"
-msgstr "PRIMEとの通信に新規PRIMEプロセスを立ち上げパイプを使用する"
+msgstr "カスタムフィルタとの通信に新規註釈フィルタプロセスを立ち上げパイプを使用する"
 
 #: ../scm/im-custom.scm:694
-#, fuzzy
 msgid "Custom filter connection setting"
-msgstr "PRIME通信設定"
+msgstr "カスタムフィルタ通信設定"
 
 #: ../scm/im-custom.scm:700
 msgid "Path of custom filter socket"
 msgstr ""
 
 #: ../scm/im-custom.scm:706
-#, fuzzy
 msgid "Custom filter server address"
-msgstr "Social-IMEサーバアドレス"
+msgstr "カスタムフィルタサーバアドレス"
 
 #: ../scm/im-custom.scm:712
 msgid "Custom filter server port"
@@ -3983,14 +3957,12 @@ msgid "[Look] Personal dictionary file"
 msgstr "[Look] 個人辞書ファイル"
 
 #: ../scm/look-custom.scm:59
-#, fuzzy
 msgid "[Look] Use annotations"
-msgstr "[Look] 辞書の保存"
+msgstr "[Look] 註釈を使用する"
 
 #: ../scm/look-custom.scm:65
-#, fuzzy
 msgid "[Look] Show annotation of lines"
-msgstr "候補の註釈を表示する"
+msgstr "[Look] 註釈の表示行数"
 
 #: ../scm/look-custom.scm:76
 msgid "[Look] beginning character length of predicting"
@@ -4285,9 +4257,8 @@ msgid "Max words of candidates for sqlite3"
 msgstr "Sqlite3予測の最大候補数"
 
 #: ../scm/predict-sqlite3.scm:86
-#, fuzzy
 msgid "cannot create dictionary directory"
-msgstr "ソケットディレクトリを作成できません。"
+msgstr "辞書ディレクトリを作成できません。"
 
 #: ../scm/prime-custom.scm:34
 msgid "PRIME"
@@ -4603,9 +4574,8 @@ msgid "SJ3 user name"
 msgstr "SJ3ユーザ名"
 
 #: ../scm/sj3-custom.scm:335
-#, fuzzy
 msgid "SJ3 server socket path"
-msgstr "SJ3サーバ名"
+msgstr "SJ3サーバソケットパス"
 
 #: ../scm/sj3-key-custom.scm:35
 msgid "SJ3 key bindings 1"
@@ -4785,15 +4755,13 @@ msgid "[Reconnecting...]"
 msgstr "[再接続中...]"
 
 #: ../scm/sj3v2-socket.scm:58
-#, fuzzy
 msgid "Internal server error."
-msgstr "内部エラーです。"
+msgstr "内部サーバエラーです。"
 
 #. SJ3_InternalError
 #: ../scm/sj3v2-socket.scm:59
-#, fuzzy
 msgid "No error."
-msgstr "ソケットエラー"
+msgstr "エラーなし。"
 
 #. SJ3_NormalEnd
 #: ../scm/sj3v2-socket.scm:60
@@ -4802,15 +4770,13 @@ msgstr "サーバがダウンしています。"
 
 #. SJ3_ServerDown
 #: ../scm/sj3v2-socket.scm:61
-#, fuzzy
 msgid "Cannot open socket."
-msgstr "学習ファイルを開くことができません。"
+msgstr "ソケットを開くことができません。"
 
 #. SJ3_OpenSocket
 #: ../scm/sj3v2-socket.scm:62
-#, fuzzy
 msgid "Cannot connect socket."
-msgstr "サーバに接続できません。"
+msgstr "ソケットに接続できません。"
 
 #. SJ3_ConnectSocket
 #: ../scm/sj3v2-socket.scm:63
@@ -4819,41 +4785,38 @@ msgstr ""
 
 #. SJ3_GetHostByName
 #: ../scm/sj3v2-socket.scm:64
-#, fuzzy
 msgid "Not opened."
-msgstr "正常終了しました。"
+msgstr "開いていません。"
 
 #. SJ3_NotOpened
 #: ../scm/sj3v2-socket.scm:65
 msgid "Not enough memory."
-msgstr ""
+msgstr "メモリが足りません。"
 
 #. SJ3_NotEnoughMemory
 #: ../scm/sj3v2-socket.scm:66
 msgid "Illegal command."
-msgstr ""
+msgstr "不正なコマンドです。"
 
 #. SJ3_IllegalCommand
 #: ../scm/sj3v2-socket.scm:67
 msgid "Different version."
-msgstr ""
+msgstr "バージョンが違います。"
 
 #. SJ3_DifferentVersion
 #: ../scm/sj3v2-socket.scm:68
-#, fuzzy
 msgid "No host name."
-msgstr "Httpプロキシホスト名"
+msgstr "ホスト名がありません。"
 
 #. SJ3_NoHostName
 #: ../scm/sj3v2-socket.scm:69
-#, fuzzy
 msgid "No user name."
-msgstr "SJ3ユーザ名"
+msgstr "ユーザ名がありません。"
 
 #. SJ3_NoUserName
 #: ../scm/sj3v2-socket.scm:70
 msgid "User not allowd."
-msgstr ""
+msgstr "このユーザは許可されていません。"
 
 #. SJ3_NotAllowedUser
 #: ../scm/sj3v2-socket.scm:71
@@ -4862,93 +4825,81 @@ msgstr "すでに接続しています。"
 
 #. SJ3_AlreadyConnected
 #: ../scm/sj3v2-socket.scm:72
-#, fuzzy
 msgid "Not connected."
-msgstr "すでに接続しています。"
+msgstr "接続していません。"
 
 #. SJ3_NotConnected
 #: ../scm/sj3v2-socket.scm:73
 msgid "Too long parameter."
-msgstr ""
+msgstr "パラメータが長すぎます。"
 
 #. SJ3_TooLongParameter
 #: ../scm/sj3v2-socket.scm:74
 msgid "Illegal parameter."
-msgstr ""
+msgstr "不正なパラメータです。"
 
 #. SJ3_IllegalParameter
 #: ../scm/sj3v2-socket.scm:75
-#, fuzzy
 msgid "Bad dictionary ID."
-msgstr "辞書の種類"
+msgstr "不正な辞書IDです。"
 
 #. SJ3_BadDictID
 #: ../scm/sj3v2-socket.scm:76
-#, fuzzy
 msgid "Illegal dictionary file."
-msgstr "個人辞書ファイル"
+msgstr "不正な辞書ファイルです。"
 
 #. SJ3_IllegalDictFile
 #: ../scm/sj3v2-socket.scm:77
-#, fuzzy
 msgid "Illegal study file."
-msgstr "学習ファイルを開くことができません。"
+msgstr "不正な学習ファイルです。"
 
 #. SJ3_IllegalStdyFile
 #: ../scm/sj3v2-socket.scm:78
 msgid "Incorrect password."
-msgstr ""
+msgstr "パスワードが間違っています。"
 
 #. SJ3_IncorrectPasswd
 #: ../scm/sj3v2-socket.scm:79
-#, fuzzy
 msgid "File not exist."
-msgstr "単語が存在しません。"
+msgstr "ファイルが存在しません。"
 
 #. SJ3_FileNotExist
 #: ../scm/sj3v2-socket.scm:80
-#, fuzzy
 msgid "Cannot access file."
-msgstr "学習ファイルを作成できません。"
+msgstr "ファイルにアクセスできません。"
 
 #. SJ3_CannotAccessFile
 #: ../scm/sj3v2-socket.scm:81
-#, fuzzy
 msgid "Cannot open file."
-msgstr "学習ファイルを開くことができません。"
+msgstr "ファイルを開くことができません。"
 
 #. SJ3_CannotOpenFile
 #: ../scm/sj3v2-socket.scm:82
-#, fuzzy
 msgid "Cannot create file."
-msgstr "学習ファイルを開くことができません。"
+msgstr "ファイルを作成することができません。"
 
 #. SJ3_CannotCreateFile
 #: ../scm/sj3v2-socket.scm:83
-#, fuzzy
 msgid "File read error."
-msgstr "内部エラーです。"
+msgstr "ファイルの読み込みエラーです。"
 
 #. SJ3_FileReadError
 #: ../scm/sj3v2-socket.scm:84
-#, fuzzy
 msgid "File write error."
-msgstr "未定義のエラーです。"
+msgstr "ファイルの書き込みエラーです。"
 
 #. SJ3_FileWriteError
 #: ../scm/sj3v2-socket.scm:85
 msgid "File seek error."
-msgstr ""
+msgstr "ファイルのシークエラーです。"
 
 #. SJ3_FileSeekError
 #: ../scm/sj3v2-socket.scm:86
-#, fuzzy
 msgid "Study already opened."
-msgstr "学習ファイルを開いていません。"
+msgstr "学習ファイルをすでに開いています。"
 
 #. SJ3_StdyAlreadyOpened
 #: ../scm/sj3v2-socket.scm:87
-#, fuzzy
 msgid "Study file not opened."
 msgstr "学習ファイルを開いていません。"
 
@@ -4969,15 +4920,13 @@ msgstr ""
 
 #. SJ3_NotLocked
 #: ../scm/sj3v2-socket.scm:91
-#, fuzzy
 msgid "No such dictiona2y."
-msgstr "[Look] 辞書の保存"
+msgstr "そのような辞書はありません。"
 
 #. SJ3_NoSuchDict
 #: ../scm/sj3v2-socket.scm:92
-#, fuzzy
 msgid "Dictionary is read only."
-msgstr "辞書がロックされています。"
+msgstr "辞書が読み込み専用です。"
 
 #. SJ3_ReadOnlyDict
 #: ../scm/sj3v2-socket.scm:93
@@ -4986,30 +4935,26 @@ msgstr "辞書がロックされています。"
 
 #. SJ3_DictLocked
 #: ../scm/sj3v2-socket.scm:94
-#, fuzzy
 msgid "Yomi string is bad."
-msgstr "読みが長過ぎます。"
+msgstr "読みが不正です。"
 
 #. SJ3_BadYomiString
 #: ../scm/sj3v2-socket.scm:95
-#, fuzzy
 msgid "Kanji string is bad."
-msgstr "漢字が長過ぎます。"
+msgstr "漢字が不正です。"
 
 #. SJ3_BadKanjiString
 #: ../scm/sj3v2-socket.scm:96
 msgid "Hinshi code is bad."
-msgstr ""
+msgstr "品詞コードが不正です。"
 
 #. SJ3_BadHinsiCode
 #: ../scm/sj3v2-socket.scm:97
-#, fuzzy
 msgid "Add dictionary failed."
-msgstr "辞書ファイル"
+msgstr "辞書の追加に失敗しました。"
 
 #. SJ3_AddDictFailed
 #: ../scm/sj3v2-socket.scm:98
-#, fuzzy
 msgid "Word is already exist."
 msgstr "単語はすでに登録されています。"
 
@@ -5020,9 +4965,8 @@ msgstr ""
 
 #. SJ3_NoMoreDouonWord
 #: ../scm/sj3v2-socket.scm:100
-#, fuzzy
 msgid "No more user dictionary."
-msgstr "個人辞書を開くことができません。"
+msgstr ""
 
 #. SJ3_NoMoreUserDict
 #: ../scm/sj3v2-socket.scm:101
@@ -5031,9 +4975,8 @@ msgstr ""
 
 #. SJ3_NoMoreIndexBlock
 #: ../scm/sj3v2-socket.scm:102
-#, fuzzy
 msgid "Delete dictionary failed."
-msgstr "システム辞書ファイル"
+msgstr "辞書の削除に失敗しました。"
 
 #. SJ3_DelDictFailed
 #: ../scm/sj3v2-socket.scm:103
@@ -5047,21 +4990,18 @@ msgstr ""
 
 #. SJ3_DirAlreadyExist
 #: ../scm/sj3v2-socket.scm:105
-#, fuzzy
 msgid "Cannot create directory."
-msgstr "ソケットディレクトリを作成できません。"
+msgstr "辞書を作成できません。"
 
 #. SJ3_CannotCreateDir
 #: ../scm/sj3v2-socket.scm:106
-#, fuzzy
 msgid "No more dictionary data."
-msgstr "辞書の種類"
+msgstr ""
 
 #. SJ3_NoMoreDictData
 #: ../scm/sj3v2-socket.scm:107
-#, fuzzy
 msgid "User connected."
-msgstr "すでに接続しています。"
+msgstr ""
 
 #. SJ3_UserConnected
 #: ../scm/sj3v2-socket.scm:108
@@ -5075,23 +5015,20 @@ msgstr ""
 
 #. SJ3_TooLongComment
 #: ../scm/sj3v2-socket.scm:110
-#, fuzzy
 msgid "Cannot code convert."
-msgstr "サーバに接続できません。"
+msgstr ""
 
 #: ../scm/sj3v2-socket.scm:120
 msgid "unexpected terminate string."
 msgstr ""
 
 #: ../scm/sj3v2-socket.scm:383 ../scm/sj3v2-socket.scm:396
-#, fuzzy
 msgid "Cannot connect SJ3 server"
-msgstr "サーバに接続できません。"
+msgstr "SJ3サーバに接続できません。"
 
 #: ../scm/sj3v2-socket.scm:389
-#, fuzzy
 msgid "SJ3: create new dictionary"
-msgstr "Anthy個人辞書"
+msgstr "SJ3: 新規辞書を作成"
 
 #: ../scm/skk-custom.scm:35
 msgid "SKK"
@@ -5414,14 +5351,12 @@ msgid "Social-IME user name"
 msgstr "Social-IMEユーザ名"
 
 #: ../scm/social-ime-custom.scm:359
-#, fuzzy
 msgid "Social-IME Server"
-msgstr "Social-IME サーバ"
+msgstr "Social-IMEサーバ"
 
 #: ../scm/social-ime-custom.scm:361 ../scm/yahoo-jp-custom.scm:367
-#, fuzzy
 msgid "Prediction type"
-msgstr "辞書の種類"
+msgstr "予測の種類"
 
 #: ../scm/social-ime-key-custom.scm:35
 msgid "Social-IME key bindings 1"
@@ -5655,19 +5590,16 @@ msgid "Use Dvorak keyboard"
 msgstr "Dvorakキーボードを使用する"
 
 #: ../scm/tutcode-custom.scm:120
-#, fuzzy
 msgid "Number of candidates in candidate window at a time for kigou mode"
-msgstr "候補ウィンドウに一度に表示する候補数"
+msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
 
 #: ../scm/tutcode-custom.scm:126
-#, fuzzy
 msgid "Use stroke help window"
-msgstr "候補ウィンドウを使用する"
+msgstr "打鍵のヘルプウィンドウを使用する"
 
 #: ../scm/tutcode-custom.scm:132
-#, fuzzy
 msgid "Use auto help window"
-msgstr "候補ウィンドウを使用する"
+msgstr "自動ヘルプウィンドウを使用する"
 
 #: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
@@ -5943,18 +5875,16 @@ msgid "ZhengMa"
 msgstr ""
 
 #: ../scm/xmload.scm:42
-#, fuzzy
 msgid "ZhengMa input method (Chinese)"
-msgstr "かな入力方式のメニュー項目"
+msgstr "ZhengMa入力方式(中国語)"
 
 #: ../scm/xmload.scm:53
 msgid "WuBi 86"
 msgstr ""
 
 #: ../scm/xmload.scm:54
-#, fuzzy
 msgid "WuBi 86 input method (Chinese)"
-msgstr "uim 入力方式切り換え"
+msgstr "WuBi 86入力方式(中国語)"
 
 #: ../scm/yahoo-jp-custom.scm:35
 msgid "Yahoo-Jp"
@@ -5985,9 +5915,8 @@ msgid "Use SSL"
 msgstr "SSLを使用"
 
 #: ../scm/yahoo-jp-custom.scm:365
-#, fuzzy
 msgid "Yahoo! Server"
-msgstr "Yahoo-Jp サーバ"
+msgstr "Yahoo!サーバ"
 
 #: ../scm/yahoo-jp-key-custom.scm:35
 msgid "Yahoo-Jp key bindings 1"
