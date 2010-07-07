@@ -153,7 +153,7 @@ word_list_view_class_init(WordListViewClass *klass)
 	 PROP_EDITABLE,
 	 g_param_spec_boolean("editable",
 			      _("to be written"),
-			      _("to be written "),
+			      _("to be written"),
 			      FALSE,
 			      G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
     g_object_class_install_property
