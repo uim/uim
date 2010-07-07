@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-06 18:41+0900\n"
+"POT-Creation-Date: 2010-07-07 10:15+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -164,6 +164,7 @@ msgstr "品詞欄を表示"
 #: ../helper/dict-word-list-view-gtk.c:140
 #: ../helper/dict-word-list-view-gtk.c:148
 #: ../helper/dict-word-list-view-gtk.c:155
+#: ../helper/dict-word-list-view-gtk.c:156
 #: ../helper/dict-word-list-view-gtk.c:163
 #: ../helper/dict-word-list-view-gtk.c:164
 msgid "to be written"
@@ -176,10 +177,6 @@ msgstr "使用頻度欄を表示"
 #: ../helper/dict-word-list-view-gtk.c:147
 msgid "Show okuri column"
 msgstr "送り仮名欄を表示"
-
-#: ../helper/dict-word-list-view-gtk.c:156
-msgid "to be written "
-msgstr ""
 
 #: ../helper/dict-word-list-view-gtk.c:201
 msgid "Word Type"
@@ -1761,8 +1758,7 @@ msgid ""
 "If you want to disable this message, turn off the option in Ajax-IME "
 "(advanced) setting."
 msgstr ""
-"警告: Ajax-IMEサーバへのリクエストはインターネット上そのまま流れま"
-"す。\n"
+"警告: Ajax-IMEサーバへのリクエストはインターネット上そのまま流れます。\n"
 "このメッセージを今後表示したくない場合は、Ajax-IME (高度) 設定にあるオプショ"
 "ンをオフにしてください。"
 
@@ -2382,12 +2378,12 @@ msgid "dict: Invalid message"
 msgstr "dict: メッセージが不正です。"
 
 #: ../scm/dict-socket.scm:77 ../scm/dict-socket.scm:86
-msgid "Error Responce"
-msgstr ""
+msgid "Error Response"
+msgstr "エラー応答"
 
 #: ../scm/dict-socket.scm:94
 msgid "dict: Protocol error"
-msgstr ""
+msgstr "dict: プロトコルエラーです。"
 
 #: ../scm/dict-socket.scm:104
 msgid "dict: cannot connect server"
@@ -2684,11 +2680,11 @@ msgstr "補完"
 
 #: ../scm/elatin-custom.scm:274
 msgid "Use preedit completion (mainly for TeX-style input)"
-msgstr ""
+msgstr "編集領域での補完を利用する (主にTex-style入力向け)"
 
 #: ../scm/elatin-custom.scm:280
 msgid "Show all if ambiguous"
-msgstr ""
+msgstr "曖昧な補完候補をすべて表示する"
 
 #: ../scm/elatin-custom.scm:285
 msgid "ELatin key bindings"
@@ -2891,6 +2887,7 @@ msgstr "サーバに接続できません。"
 #: ../scm/http-server.scm:151 ../scm/http-server.scm:155
 #: ../scm/http-server.scm:163 ../scm/http-server.scm:174
 #: ../scm/http-server.scm:178
+#, scheme-format
 msgid "Invalid header: ~a"
 msgstr "ヘッダが不正です。~a"
 
@@ -3157,7 +3154,7 @@ msgstr "dictサーバ"
 
 #: ../scm/im-custom.scm:562 ../scm/im-custom.scm:563 ../scm/im-custom.scm:679
 msgid "Custom filter"
-msgstr ""
+msgstr "カスタムフィルタ"
 
 #: ../scm/im-custom.scm:565
 msgid "Input method itself"
@@ -3185,7 +3182,7 @@ msgstr "dictサーバポート"
 
 #: ../scm/im-custom.scm:644
 msgid "Database name of dict"
-msgstr ""
+msgstr "dictデータベース名"
 
 #: ../scm/im-custom.scm:651
 msgid "Number of cache of annotation"
@@ -3215,7 +3212,8 @@ msgstr "パイプ"
 msgid ""
 "Use pipe. spawn new annotation-filter process to communicate with custom "
 "filter"
-msgstr "カスタムフィルタとの通信に新規註釈フィルタプロセスを立ち上げパイプを使用する"
+msgstr ""
+"カスタムフィルタとの通信に新規註釈フィルタプロセスを立ち上げパイプを使用する"
 
 #: ../scm/im-custom.scm:694
 msgid "Custom filter connection setting"
@@ -3223,7 +3221,7 @@ msgstr "カスタムフィルタ通信設定"
 
 #: ../scm/im-custom.scm:700
 msgid "Path of custom filter socket"
-msgstr ""
+msgstr "カスタムフィルタソケットパス"
 
 #: ../scm/im-custom.scm:706
 msgid "Custom filter server address"
@@ -3231,11 +3229,11 @@ msgstr "カスタムフィルタサーバアドレス"
 
 #: ../scm/im-custom.scm:712
 msgid "Custom filter server port"
-msgstr ""
+msgstr "カスタムフィルタサーバポート"
 
 #: ../scm/im-custom.scm:718
 msgid "Path of custom filter"
-msgstr ""
+msgstr "カスタムフィルタのパス"
 
 #: ../scm/im-custom.scm:755
 msgid "XIM"
@@ -3903,7 +3901,7 @@ msgstr "主にラテン・ゲルマン諸語で使われるラテン文字入力
 
 #: ../scm/lolevel.scm:53 ../scm/lolevel.scm:84
 msgid "unknown byte operator"
-msgstr ""
+msgstr "不明なバイト演算子"
 
 #.
 #. Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
@@ -4781,7 +4779,7 @@ msgstr "ソケットに接続できません。"
 #. SJ3_ConnectSocket
 #: ../scm/sj3v2-socket.scm:63
 msgid "Unknown hostname."
-msgstr ""
+msgstr "ホスト名が不明です。"
 
 #. SJ3_GetHostByName
 #: ../scm/sj3v2-socket.scm:64
@@ -4906,17 +4904,17 @@ msgstr "学習ファイルを開いていません。"
 #. SJ3_StdyFileNotOpened
 #: ../scm/sj3v2-socket.scm:88
 msgid "Too small study area."
-msgstr ""
+msgstr "学習領域が足りません。"
 
 #. SJ3_TooSmallStdyArea
 #: ../scm/sj3v2-socket.scm:89
 msgid "Locked by other."
-msgstr ""
+msgstr "他のものにロックされています。"
 
 #. SJ3_LockedByOther
 #: ../scm/sj3v2-socket.scm:90
 msgid "Not locked."
-msgstr ""
+msgstr "ロックされていません。"
 
 #. SJ3_NotLocked
 #: ../scm/sj3v2-socket.scm:91
@@ -4981,12 +4979,12 @@ msgstr "辞書の削除に失敗しました。"
 #. SJ3_DelDictFailed
 #: ../scm/sj3v2-socket.scm:103
 msgid "No such word."
-msgstr ""
+msgstr "そのような単語は存在しません。"
 
 #. SJ3_NoSuchWord
 #: ../scm/sj3v2-socket.scm:104
 msgid "Directory already exist."
-msgstr ""
+msgstr "辞書がすでに存在しています。"
 
 #. SJ3_DirAlreadyExist
 #: ../scm/sj3v2-socket.scm:105
@@ -5001,17 +4999,17 @@ msgstr ""
 #. SJ3_NoMoreDictData
 #: ../scm/sj3v2-socket.scm:107
 msgid "User connected."
-msgstr ""
+msgstr "ユーザが接続しました。"
 
 #. SJ3_UserConnected
 #: ../scm/sj3v2-socket.scm:108
 msgid "Too long password."
-msgstr ""
+msgstr "パスワードが長すぎます。"
 
 #. SJ3_TooLongPasswd
 #: ../scm/sj3v2-socket.scm:109
 msgid "Too long comment."
-msgstr ""
+msgstr "コメントが長すぎます。"
 
 #. SJ3_TooLongComment
 #: ../scm/sj3v2-socket.scm:110
