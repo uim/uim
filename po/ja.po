@@ -5593,7 +5593,7 @@ msgstr "記号モードにおいて候補ウィンドウに一度に表示する
 
 #: ../scm/tutcode-custom.scm:126
 msgid "Use stroke help window"
-msgstr "打鍵のヘルプウィンドウを使用する"
+msgstr "仮想鍵盤ウィンドウを使用する"
 
 #: ../scm/tutcode-custom.scm:132
 msgid "Use auto help window"
