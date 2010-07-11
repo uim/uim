@@ -77,6 +77,12 @@
 	       (N_ "[TUT-Code] bushu conversion mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-stroke-help-toggle-key '("<Control>/")
+               '(tutcode-keys1)
+               '(key)
+               (N_ "[TUT-Code] toggle use of stroke help window")
+               (N_ "long description will be here"))
+
 (define-custom 'tutcode-begin-conv-key '(generic-begin-conv-key)
                '(tutcode-keys1)
 	       '(key)

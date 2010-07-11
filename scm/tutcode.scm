@@ -587,6 +587,19 @@
           (im-activate-candidate-selector pc
             (length stroke-help) tutcode-nr-candidate-max-for-kigou-mode))))))
 
+;;; 仮想鍵盤の表示を行うかどうかの設定を一時的に切り替える(トグル)。
+;;; (常に表示すると目ざわりなので。打ち方に迷ったときだけ表示したい。
+;;;  XXX: tc2だと、一定時間以内に次の打鍵が無かったら仮想鍵盤を
+;;;  表示するようになっているが、現状のuimで同じことをするのは難しそう。)
+(define (tutcode-toggle-stroke-help pc)
+  (if tutcode-use-stroke-help-window?
+    (begin
+      (set! tutcode-use-stroke-help-window? #f)
+      (tutcode-reset-candidate-window pc))
+    (begin
+      (set! tutcode-use-stroke-help-window? #t)
+      (tutcode-check-stroke-help-window-begin pc))))
+
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; 表形式の候補ウィンドウを想定して、以下のように表示する。
 ;;; 1が第1打鍵、2が第2打鍵。「携」
@@ -771,6 +784,8 @@
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
          (im-commit-raw pc)))
+      ((tutcode-stroke-help-toggle-key? key key-state)
+       (tutcode-toggle-stroke-help pc))
       ((or
         (symbol? key)
         (and
@@ -889,6 +904,8 @@
        (tutcode-flush pc))
       ((tutcode-cancel-key? key key-state)
        (tutcode-flush pc))
+      ((tutcode-stroke-help-toggle-key? key key-state)
+       (tutcode-toggle-stroke-help pc))
       ((symbol? key)
        (tutcode-flush pc)
        (tutcode-proc-state-on pc key key-state))
@@ -973,6 +990,8 @@
         (set! res #f)
         (if (= (length (tutcode-context-head pc)) 0)
           (tutcode-flush pc)))
+      ((tutcode-stroke-help-toggle-key? key key-state)
+       (tutcode-toggle-stroke-help pc))
       ((or
         (symbol? key)
         (and
