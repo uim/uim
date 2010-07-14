@@ -49,7 +49,11 @@ struct _EggTrayIcon
   Atom manager_atom;
   Atom system_tray_opcode_atom;
   Atom orientation_atom;
+  Atom visual_atom;
   Window manager_window;
+  GdkVisual *manager_visual;
+  gboolean manager_visual_rgba;
+
 #endif
   GtkOrientation orientation;
 };
