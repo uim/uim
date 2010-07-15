@@ -3,4 +3,4 @@
 
 libuim_version = 7:0:0
 libuim_scm_version = 1:0:1
-libuim_custom_version = 2:0:0
+libuim_custom_version = 3:0:1
