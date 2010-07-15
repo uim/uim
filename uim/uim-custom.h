@@ -136,6 +136,7 @@ uim_bool uim_custom_enable(void);
 /* load & save */
 uim_bool uim_custom_load(void);
 uim_bool uim_custom_save(void);
+uim_bool uim_custom_save_custom(const char *custom_sym);
 uim_bool uim_custom_broadcast(void);
 uim_bool uim_custom_broadcast_reload_request(void);
 

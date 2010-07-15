@@ -41,6 +41,7 @@
 #include <uim/uim.h>
 #include "uim/uim-helper.h"
 #include "uim/uim-scm.h"
+#include "uim/uim-custom.h"
 #include "uim/gettext.h"
 
 #define OBJECT_DATA_PROP_BUTTONS "PROP_BUTTONS"
@@ -149,6 +150,7 @@ static int uim_fd;
 static GtkIconFactory *uim_factory;
 static GList *uim_icon_list;
 static gboolean prop_menu_showing = FALSE;
+static gboolean custom_enabled;
 
 static const char *safe_gettext(const char *msgid);
 static gboolean has_n_strs(gchar **str_list, guint n);
@@ -254,15 +256,60 @@ right_button_pressed(GtkButton *button, GdkEventButton *event, gpointer data)
 }
 
 static void
+save_default_im(const char *im)
+{
+  if (custom_enabled) {
+    uim_scm_callf("custom-set-value!",
+		  "yy",
+		  "custom-preserved-default-im-name",
+		  im);
+    uim_custom_save_custom("custom-preserved-default-im-name");
+  }
+}
+
+static gboolean
+is_msg_imsw(const gchar *str)
+{
+  return g_str_has_prefix(str, "action_imsw_");
+}
+
+static gboolean
+is_imsw_coverage_system_global()
+{
+  char *coverage;
+  gboolean ret;
+
+  coverage = uim_scm_symbol_value_str("imsw-coverage");
+
+  ret =  (gboolean)!strcmp(coverage, "system-global");
+  free(coverage);
+
+  return ret;
+}
+
+static const char*
+get_imsw_im(const gchar *str)
+{
+  /* skip "action_imsw_" */
+  return str + strlen("action_imsw_");
+}
+
+static void
 prop_menu_activate(GtkMenu *menu_item, gpointer data)
 {
   GString *msg;
+  const gchar *str;
 
-  msg = g_string_new((gchar *)g_object_get_data(G_OBJECT(menu_item),
-		     "prop_action"));
+  str = g_object_get_data(G_OBJECT(menu_item), "prop_action");
+  msg = g_string_new(str);
   g_string_prepend(msg, "prop_activate\n");
   g_string_append(msg, "\n");
   uim_helper_send_message(uim_fd, msg->str);
+  if (is_msg_imsw(str) && is_imsw_coverage_system_global()) {
+    const char *im = get_imsw_im(str);
+    save_default_im(im);
+  }
+
   g_string_free(msg, TRUE);
 }
 
@@ -895,6 +942,8 @@ toolbar_new(gint type)
   GtkWidget *hbox;
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
+
+  custom_enabled = (gboolean)uim_custom_enable();
 
   init_icon();
 

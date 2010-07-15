@@ -237,6 +237,7 @@ static uim_bool uim_conf_prepare_dir(const char *subdir);
 static uim_bool for_each_primary_groups(uim_bool (*func)(const char *));
 static uim_bool uim_custom_load_group(const char *group);
 static uim_bool uim_custom_save_group(const char *group);
+static const char *uim_custom_get_primary_group_by_custom(const char *custom_sym);
 
 static const char str_list_arg[] = "uim-custom-c-str-list-arg";
 static const char custom_subdir[] = "customs";
@@ -1264,8 +1265,31 @@ uim_custom_save_group(const char *group)
 uim_bool
 uim_custom_save(void)
 {
-  if(uim_helper_is_setugid() ==UIM_FALSE) {
+  if(uim_helper_is_setugid() == UIM_FALSE) {
     return for_each_primary_groups(uim_custom_save_group);
+  } else {
+    return UIM_FALSE;
+  }
+}
+
+/**
+ * Saves a per-user custom variable configuration. This function saves a
+ * primary custom group values which contains the specified custom variable as
+ * ~/.uim.d/customs/custom-primary-group-file-containing-the-variable.scm. The
+ * directory will be made if not exist. The saved values will be implicitly
+ * loaded at uim_init() or can explicitly be loaded by uim_custom_load().
+ *
+ * @see uim_init()
+ * @see uim_custom_load()
+ * @retval UIM_TRUE succeeded
+ * @retval UIM_FALSE failed
+ */
+uim_bool
+uim_custom_save_custom(const char *custom_sym)
+{
+  if(uim_helper_is_setugid() == UIM_FALSE) {
+    const char *group_sym = uim_custom_get_primary_group_by_custom(custom_sym);
+    return uim_custom_save_group(group_sym);
   } else {
     return UIM_FALSE;
   }
@@ -1638,6 +1662,15 @@ void
 uim_custom_symbol_list_free(char **symbol_list)
 {
   uim_scm_c_list_free((void **)symbol_list, (uim_scm_c_list_free_func)free);
+}
+
+static const char *
+uim_custom_get_primary_group_by_custom(const char *custom_sym)
+{
+  uim_lisp groups;
+  groups = uim_scm_callf("custom-groups", "y", custom_sym);
+
+  return uim_scm_refer_c_str(uim_scm_car(groups));
 }
 
 static uim_lisp

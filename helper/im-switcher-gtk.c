@@ -43,6 +43,8 @@
 
 #include <uim/uim.h>
 #include <uim/uim-helper.h>
+#include <uim/uim-custom.h>
+#include <uim/uim-scm.h>
 #include "uim/gettext.h"
 
 
@@ -50,6 +52,7 @@ static unsigned int read_tag;
 static int uim_fd; /* file descriptor to connect helper message bus */
 static gchar *im_list_str_old; /* To compare new im_list_str */
 static GtkWidget *switcher_tree_view;
+static int custom_enabled;
 
 static gboolean
 reload_im_list(GtkWindow *window, gpointer user_data);
@@ -236,11 +239,27 @@ toggle_coverage(GtkToggleButton *togglebutton, gpointer user_data)
 }
 
 static void
+save_default_im()
+{
+  if (custom_enabled) {
+    gchar *im_name = get_selected_im_name();
+
+    uim_scm_callf("custom-set-value!",
+		  "yy",
+		  "custom-preserved-default-im-name",
+		  im_name);
+    uim_custom_save_custom("custom-preserved-default-im-name");
+    g_free(im_name);
+  }
+}
+
+static void
 change_input_method(GtkButton *button, gpointer user_data)
 {
   switch (coverage) {
   case IMSW_COVERAGE_WHOLE_DESKTOP:
     send_message_im_change("im_change_whole_desktop\n");
+    save_default_im();
     break;
   case IMSW_COVERAGE_THIS_APPLICATION_ONLY:
     send_message_im_change("im_change_this_application_only\n");
@@ -249,6 +268,12 @@ change_input_method(GtkButton *button, gpointer user_data)
     send_message_im_change("im_change_this_text_area_only\n");
     break;
   }
+}
+
+static void
+change_input_method_and_quit(GtkButton *button, gpointer user_data)
+{
+  change_input_method(button, user_data);
   gtk_main_quit();
 }
 
@@ -385,8 +410,14 @@ create_switcher(void)
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
   gtk_box_set_spacing(GTK_BOX(setting_button_box), 8);
 
+  /* Apply button */
+  button = gtk_button_new_from_stock(GTK_STOCK_APPLY);
+  g_signal_connect(G_OBJECT(button), "clicked",
+		   G_CALLBACK(change_input_method), NULL);
+  gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
+
   /* Cancel button */
-  button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+  button = gtk_button_new_from_stock(GTK_STOCK_CLOSE);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(gtk_main_quit), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
@@ -394,7 +425,7 @@ create_switcher(void)
   /* OK button */
   button = gtk_button_new_from_stock(GTK_STOCK_OK);
   g_signal_connect(G_OBJECT(button), "clicked",
-		   G_CALLBACK(change_input_method), NULL);
+		   G_CALLBACK(change_input_method_and_quit), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 2);
 
   gtk_box_pack_start(GTK_BOX(vbox3), setting_button_box, FALSE, FALSE, 8);
@@ -558,6 +589,12 @@ main(int argc, char *argv[])
   uim_helper_send_message(uim_fd, "im_list_get\n");
 
   gtk_init(&argc, &argv);
+
+  if (uim_init() < 0) {
+    fprintf(stderr, "uim_init() failed.\n");
+    exit(EXIT_FAILURE);
+  }
+  custom_enabled = uim_custom_enable();
 
   result = create_switcher();
 
