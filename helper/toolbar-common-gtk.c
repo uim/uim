@@ -943,7 +943,9 @@ toolbar_new(gint type)
   GList *prop_buttons = NULL;
   GtkSizeGroup *sg;
 
+#if 0
   custom_enabled = (gboolean)uim_custom_enable();
+#endif
 
   init_icon();
 
