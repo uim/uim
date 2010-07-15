@@ -34,7 +34,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -658,7 +658,14 @@ main(int argc, char *argv[])
 
 	fflush(stdout);
 
-	fgets(buf, sizeof(buf), stdin);
+	if (fgets(buf, sizeof (buf), stdin) == NULL) {
+	  if (feof(stdin))
+	    debug_printf(DEBUG_NOTE, "unexpected EOF\n");
+	  else
+	    debug_printf(DEBUG_ERROR, "failed to read command: %s\n",
+			 strerror (errno));
+	  goto QUIT;
+	}
 
 	p1 = buf;
 	serial = -1;

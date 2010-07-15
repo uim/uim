@@ -49,7 +49,7 @@
 static int command_exists_in_cmdbuf();
 static int process_command();
 static void process_message(char *msg);
-static void read_command();
+static int read_command();
 static void wait_data_arrival(fd_set *rfds);
 
 void cleanup(void);

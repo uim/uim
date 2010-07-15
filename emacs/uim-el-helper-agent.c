@@ -35,6 +35,7 @@
 */
 
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -197,7 +198,10 @@ process_message(char *msg)
 }
 
 
-static void
+/**
+ * @return 1 if success, 0 if error.
+ */
+static int
 read_command()
 {
   ssize_t len;
@@ -206,8 +210,15 @@ read_command()
   debug_printf(DEBUG_NOTE, "read command\n");
 
   do {
-	if ((len = read(STDIN_FILENO, rbuf, sizeof(rbuf) - 1)) == -1)
-	  debug_printf(DEBUG_NOTE, "stdin has corrupted\n");
+	len = read(STDIN_FILENO, rbuf, sizeof(rbuf) - 1);
+	if (len == -1) {
+	  debug_printf(DEBUG_NOTE, "stdin is corrupt: %s\n", strerror (errno));
+	  return 0;
+	}
+	if (len == 0) {
+	  debug_printf(DEBUG_NOTE, "unexpected EOF\n");
+	  return 0;
+	}
 
 	rbuf[len] = '\0';
 
@@ -221,6 +232,7 @@ read_command()
 
   } while (!command_exists_in_cmdbuf());
 
+  return 1;
 }
 
 
@@ -290,7 +302,8 @@ main(int argc, char *argv[])
 	debug_printf(DEBUG_NOTE, "data arrive\n");
 
 	if (FD_ISSET(STDIN_FILENO, &rfds)) {
-	  read_command();
+	  if (!read_command())
+	    goto QUIT;
 	}
 
 	if (FD_ISSET(helper_fd, &rfds)) {
@@ -307,6 +320,7 @@ main(int argc, char *argv[])
 	fflush(NULL);
   }
 
+ QUIT:
   uim_quit();
   return 0;
 }
