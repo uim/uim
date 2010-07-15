@@ -606,7 +606,7 @@ check_dot_uim_file(void)
 }
 
 int
-main (int argc, char *argv[])
+main(int argc, char *argv[])
 {
   setlocale(LC_ALL, "");
   bindtextdomain(PACKAGE, LOCALEDIR);
@@ -614,7 +614,6 @@ main (int argc, char *argv[])
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   gtk_set_locale();
-
   gtk_init(&argc, &argv);
 
   if (uim_init() < 0) {
@@ -626,11 +625,8 @@ main (int argc, char *argv[])
     GtkWidget *pref;
 
     im_uim_init_modifier_keys();
-
     gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
-
     pref = create_pref_window();
-
     gtk_widget_show_all(pref);
 
     gtk_main();
