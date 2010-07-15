@@ -451,7 +451,7 @@ custom_pathname_button_clicked_cb(GtkWidget *button, GtkWidget *entry)
 					action,
 					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 					GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-					NULL);
+					(const gchar *)NULL);
 
   if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
     char *filename;
@@ -1222,7 +1222,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   column = gtk_tree_view_column_new_with_attributes(_("Enabled items"),
 						    renderer,
 						    "text", 0,
-						    NULL);
+						    (GtkCellRenderer *)NULL);
   gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
 
   g_object_unref(store);
@@ -1326,7 +1326,7 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
   column = gtk_tree_view_column_new_with_attributes(_("Disabled items"),
 						    renderer,
 						    "text", 0,
-						    NULL);
+						    (GtkCellRenderer *)NULL);
   gtk_tree_view_append_column(GTK_TREE_VIEW(tree_view), column);
 
   g_object_unref(store);
@@ -1778,7 +1778,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   column = gtk_tree_view_column_new_with_attributes(_("Key preference"),
 						    renderer,
 						    "text", 0,
-						    NULL);
+						    (GtkCellRenderer *)NULL);
   gtk_tree_view_append_column(GTK_TREE_VIEW(view), column);
 
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));

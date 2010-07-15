@@ -52,6 +52,7 @@ static uim_dict_class *classes[] = {
 #ifdef USE_CANNA
   &uim_dict_class_canna,
 #endif
+  NULL
 };
 static unsigned int nr_classes = sizeof(classes) / sizeof(uim_dict_class *);
 

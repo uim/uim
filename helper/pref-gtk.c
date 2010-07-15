@@ -278,7 +278,7 @@ create_pref_treeview(void)
   column = gtk_tree_view_column_new_with_attributes(_("Group"),
 						    renderer,
 						    "text", GROUP_COLUMN,
-						    NULL);
+						    (GtkCellRenderer *)NULL);
   gtk_tree_view_column_set_sort_column_id(column, 0);
   gtk_tree_view_append_column(GTK_TREE_VIEW(pref_tree_view), column);
 
