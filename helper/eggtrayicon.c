@@ -57,7 +57,9 @@ static GtkPlugClass *parent_class = NULL;
 static void egg_tray_icon_init (EggTrayIcon *icon);
 static void egg_tray_icon_class_init (EggTrayIconClass *klass);
 
+#if GLIB_CHECK_VERSION(2, 13, 1)
 static void egg_tray_icon_constructed  (GObject    *object);
+#endif
 static void egg_tray_icon_dispose      (GObject    *object);
 
 static void egg_tray_icon_get_property (GObject    *object,
@@ -125,7 +127,9 @@ egg_tray_icon_class_init (EggTrayIconClass *klass)
   parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->get_property = egg_tray_icon_get_property;
+#if GLIB_CHECK_VERSION(2, 13, 1)
   gobject_class->constructed = egg_tray_icon_constructed;
+#endif
   gobject_class->dispose = egg_tray_icon_dispose;
 
   widget_class->realize = egg_tray_icon_realize;
@@ -145,7 +149,11 @@ egg_tray_icon_class_init (EggTrayIconClass *klass)
 }
 
 static void
+#if GLIB_CHECK_VERSION(2, 13, 1)
 egg_tray_icon_constructed (GObject *object)
+#else
+egg_tray_icon_realize_internal (GtkWidget *object)
+#endif
 {
   /* Do setup that depends on the screen; screen has been set at this point */
 
@@ -577,6 +585,10 @@ static void
 egg_tray_icon_realize (GtkWidget *widget)
 {
   EggTrayIcon *icon = EGG_TRAY_ICON (widget);
+
+#if !GLIB_CHECK_VERSION(2, 13, 1)
+  egg_tray_icon_realize_internal (widget);
+#endif
 
   egg_tray_icon_set_colormap (icon);
 
