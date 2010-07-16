@@ -308,7 +308,7 @@ create_switcher_treeview(void)
   column = gtk_tree_view_column_new_with_attributes(_("InputMethodName"),
 						    renderer,
 						    "text", NAME_COLUMN,
-						    (GtkCellRenderer *)NULL);
+						    (const gchar *)NULL);
   gtk_tree_view_column_set_sort_column_id(column, 0);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
 
@@ -317,7 +317,7 @@ create_switcher_treeview(void)
   column = gtk_tree_view_column_new_with_attributes(_("Language"),
 						    renderer,
 						    "text", LANG_COLUMN,
-						    (GtkCellRenderer *)NULL);
+						    (const gchar *)NULL);
   gtk_tree_view_column_set_sort_column_id(column, 1);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
 
@@ -326,7 +326,7 @@ create_switcher_treeview(void)
   column = gtk_tree_view_column_new_with_attributes(_("Description"),
 						    renderer,
 						    "text", DESC_COLUMN,
-						    (GtkCellRenderer *)NULL);
+						    (const gchar *)NULL);
   gtk_tree_view_column_set_sort_column_id(column, 2);
   gtk_tree_view_append_column(GTK_TREE_VIEW(switcher_tree_view), column);
 
