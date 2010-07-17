@@ -185,8 +185,10 @@ void CandidateTableWindow::setBlockVisible(QLayout *layout, bool visible)
         return;
     layout->setEnabled(visible);
     for (int i = 0; i < layout->count(); i++) {
-        QWidget *widget = layout->itemAt(i)->widget();
-        if (widget)
+        QPushButton *widget
+            = qobject_cast<QPushButton*>(layout->itemAt(i)->widget());
+        // Flat buttons shouldn't be shown.
+        if (widget && !(visible && widget->isFlat()))
             widget->setVisible(visible);
     }
 }
@@ -198,7 +200,10 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
     for (int i = 0; i < TABLE_NR_ROWS; i++) {
         for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
             if (table[index] == '\0') {
+                // Hide this button because some styles such as Oxygen
+                // ignore the flat property.
                 buttonArray[i][j]->hide();
+                buttonArray[i][j]->setFlat(true);
                 delta++;
                 index++;
                 continue;
