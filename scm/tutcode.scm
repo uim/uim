@@ -159,13 +159,13 @@
 
 ;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
 (define tutcode-auto-help-cand-str-list
-  ;; 第1,2,3,4打鍵を示す文字(部首1用, 部首2用)
-  '((("1" "2" "3" "4") ("5" "6" "7" "8")) ; 1文字目用
-    (("a" "b" "c" "d") ("e" "f" "g" "h")) ; 2文字目用
-    (("A" "B" "C" "D") ("E" "F" "G" "H"))
-    (("一" "二" "三" "四") ("五" "六" "七" "八"))
-    (("あ" "い" "う" "え") ("か" "き" "く" "け"))
-    (("ア" "イ" "ウ" "エ") ("カ" "キ" "ク" "ケ"))))
+  ;; 第1,2,3打鍵を示す文字(部首1用, 部首2用)
+  '((("1" "2" "3") ("4" "5" "6")) ; 1文字目用
+    (("a" "b" "c") ("d" "e" "f")) ; 2文字目用
+    (("A" "B" "C") ("D" "E" "F"))
+    (("一" "二" "三") ("四" "五" "六"))
+    (("あ" "い" "う") ("か" "き" "く"))
+    (("ア" "イ" "ウ") ("カ" "キ" "ク"))))
 
 ;;; implementations
 
@@ -707,7 +707,7 @@
 ;;; @return 更新後の自動ヘルプ用alist
 (define (tutcode-auto-help-update-stroke-alist-with-stroke label-cands-alist
          cand-list stroke)
-  (if (null? stroke)
+  (if (or (null? cand-list) (null? stroke))
     label-cands-alist
     (tutcode-auto-help-update-stroke-alist-with-stroke
       (tutcode-auto-help-update-stroke-alist-with-key
