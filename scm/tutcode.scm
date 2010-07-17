@@ -119,6 +119,13 @@
 ;;; 使用するコード表。
 ;;; tutcode-context-new時に(tutcode-custom-load-rule!)で設定
 (define tutcode-rule ())
+;;; tutcode-ruleから作成する、逆引き検索(漢字から打鍵リストを取得)用alist。
+;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
+(define tutcode-reverse-rule-alist ())
+;;; tutcode-bushudicから作成する、
+;;; 逆引き検索(合成後の文字から合成用の2文字を取得)用alist。
+;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
+(define tutcode-reverse-bushudic-alist ())
 
 ;;; コード表を上書き変更/追加するためのコード表。
 ;;; ~/.uimでtutcode-rule-set-sequences!で登録して、
@@ -675,7 +682,7 @@
 ;;; @return 更新後の自動ヘルプ用alist
 (define (tutcode-auto-help-update-stroke-alist-with-kanji label-cands-alist
          cand-list kanji)
-  (let ((stroke (tutcode-reverse-find-seq tutcode-rule kanji)))
+  (let ((stroke (tutcode-reverse-find-seq kanji)))
     (if stroke
       (tutcode-auto-help-update-stroke-alist-with-stroke
         label-cands-alist (car cand-list) stroke)
@@ -1213,7 +1220,15 @@
 ;;; @param c 分解対象の文字
 ;;; @return 分解してできた2つの部首のリスト。分解できなかったときは#f
 (define (tutcode-bushu-decompose c)
-  (tutcode-reverse-find-seq tutcode-bushudic c))
+  (if (null? tutcode-reverse-bushudic-alist)
+    (set! tutcode-reverse-bushudic-alist
+      (map
+        (lambda (elem)
+          (cons (caadr elem) (caar elem)))
+        tutcode-bushudic)))
+  (let ((res (assoc c tutcode-reverse-bushudic-alist)))
+    (and res
+      (cdr res))))
 
 ;;; 自動ヘルプ:対象文字を部首合成するのに必要となる、
 ;;; 外字でない2つの文字のリストを返す
@@ -1223,28 +1238,35 @@
 ;;;  見つからなかった場合は#f
 (define (tutcode-auto-help-bushu-decompose c)
   (let*
-    ((bushu (tutcode-reverse-find-seq tutcode-bushudic c))
+    ((bushu (tutcode-bushu-decompose c))
      (b1 (and bushu (car bushu)))
      (b2 (and bushu (cadr bushu)))
      (seq1 (and b1 (tutcode-auto-help-get-stroke b1)))
      (seq2 (and b2 (tutcode-auto-help-get-stroke b2))))
     (or
+      ;; 足し算による合成
       (and seq1 seq2
         (list seq1 seq2))
       ;; 単純な引き算による合成
-      (tutcode-auto-help-bushu-decompose-by-subtraction c tutcode-bushudic)
+      (tutcode-auto-help-bushu-decompose-by-subtraction c)
       ;; 部品による合成
       (or
         ;; 部首1が直接入力可能
         ;; →(部首1)と(部首2を部品として持つ漢字)による合成が可能か?
         (and seq1 b2
-          (tutcode-auto-help-bushu-decompose-with-part
-            c seq1 b1 b2 tutcode-bushudic))
+          (tutcode-auto-help-bushu-decompose-looking-bushudic tutcode-bushudic
+            () 99
+            (lambda (elem)
+              (tutcode-auto-help-get-stroke-list-with-right-part
+                c b1 b2 seq1 elem))))
         ;; 部首2が直接入力可能
         ;; →(部首2)と(部首1を部品として持つ漢字)による合成が可能か?
         (and seq2 b1
-          (tutcode-auto-help-bushu-decompose-with-part
-            c seq2 b1 b2 tutcode-bushudic))
+          (tutcode-auto-help-bushu-decompose-looking-bushudic tutcode-bushudic
+            () 99
+            (lambda (elem)
+              (tutcode-auto-help-get-stroke-list-with-left-part
+                c b1 b2 seq2 elem))))
         ;; XXX: 部品どうしの合成や、3文字以上での合成は未対応
         ))))
 
@@ -1255,7 +1277,7 @@
 (define (tutcode-auto-help-get-stroke b)
   (let
     ((seq
-      (or (tutcode-reverse-find-seq tutcode-rule b)
+      (or (tutcode-reverse-find-seq b)
           ;; 部首合成で使われる"3"のような直接入力可能な部首に対応するため、
           ;; ラベル文字に含まれていれば、直接入力可能とみなす
           (and
@@ -1264,6 +1286,33 @@
     (and seq
       (list (list seq) (list b)))))
 
+;;; 自動ヘルプ:部首合成辞書の要素を順に見て
+;;; 最初に見つかった2打鍵の部首の組み合わせを返す。
+;;; (filterやmapを使って、最小のストロークのものを探すと時間がかかるので。)
+;;; 両方とも2打鍵の部首の組み合わせが見つからなかったら、
+;;; 3打鍵の部首との組み合わせがあれば返す。
+;;; @param long-stroke-result 3打鍵以上の文字を含む結果
+;;; @param min-stroke long-stroke-result内の現在の最少打鍵数
+;;; @param get-stroke-list 部首合成用の2つの文字とストロークのリストを返す関数
+;;; @return 部首合成用の2つの文字とストロークのリスト。
+;;;  見つからなかった場合は#f
+(define (tutcode-auto-help-bushu-decompose-looking-bushudic bushudic
+          long-stroke-result min-stroke get-stroke-list)
+  (if (null? bushudic)
+    (and
+      (not (null? long-stroke-result))
+      long-stroke-result)
+    (let*
+      ((res
+        (get-stroke-list (list min-stroke (car bushudic))))
+       (len (if (not res) 99 (tutcode-auto-help-count-stroke-length res)))
+       (min (if (< len min-stroke) len min-stroke)))
+      (if (<= len 4) ; "5"等を使う部首合成で4打鍵未満もあるが、そこまでは見ない
+        res
+        (tutcode-auto-help-bushu-decompose-looking-bushudic (cdr bushudic)
+          (if (< len min-stroke) res long-stroke-result)
+          min get-stroke-list)))))
+
 ;;; 自動ヘルプ:対象文字を引き算により部首合成するのに必要となる、
 ;;; 外字でない文字のリストを返す。
 ;;; 例: "歹" => (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
@@ -1271,107 +1320,116 @@
 ;;; @param c 対象文字
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  見つからなかった場合は#f
-(define (tutcode-auto-help-bushu-decompose-by-subtraction c bushudic)
-  ;; bushudicの要素を順に見て最初に見つかったものを返す。
-  ;; filterやmapを使って、最小のストロークのものを探すと時間がかかるので。
-  (and
-    (not (null? bushudic))
-    (or
-      (tutcode-auto-help-get-stroke-list-by-subtraction c (car bushudic))
-      (tutcode-auto-help-bushu-decompose-by-subtraction c (cdr bushudic)))))
+(define (tutcode-auto-help-bushu-decompose-by-subtraction c)
+  (tutcode-auto-help-bushu-decompose-looking-bushudic tutcode-bushudic
+    () 99
+    (lambda (elem)
+      (tutcode-auto-help-get-stroke-list-by-subtraction c elem))))
+
+;;; 自動ヘルプ:部首合成に必要な打鍵数を数える
+;;; @param bushu-compose-list 部首合成に使う2文字とストロークのリスト。
+;;;  例: (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
+;;; @return bushu-compose-listに含まれる打鍵数。(上の例の場合は5)
+(define (tutcode-auto-help-count-stroke-length bushu-compose-list)
+  (+ (length (caaar bushu-compose-list))
+     (length (caaadr bushu-compose-list))))
 
 ;;; 自動ヘルプ:対象文字を引き算により部首合成できる場合は、
 ;;; 合成に使う各文字と、そのストロークのリストを返す。
 ;;; @param c 対象文字
-;;; @param bushu-list bushudic内の要素。例: ((("歹" "リ")) ("列"))
+;;; @param min-stroke-bushu-list min-strokeとbushudic内の要素のリスト。
+;;;  例: (6 ((("歹" "リ")) ("列")))
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  bushu-listを使って合成できない場合は#f。
 ;;;  例: (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
-(define (tutcode-auto-help-get-stroke-list-by-subtraction c bushu-list)
+(define (tutcode-auto-help-get-stroke-list-by-subtraction
+          c min-stroke-bushu-list)
   (and-let*
-    ((mem (member c (caar bushu-list)))
+    ((min-stroke (car min-stroke-bushu-list))
+     (bushu-list (cadr min-stroke-bushu-list))
+     (mem (member c (caar bushu-list)))
      (b1 (caadr bushu-list))
      ;; 2つの部首のうち、c以外の部首を取得
      (b2 (if (= 2 (length mem)) (cadr mem) (car (caar bushu-list))))
+     (seq1 (tutcode-auto-help-get-stroke b1))
+     (seq2 (tutcode-auto-help-get-stroke b2))
+     (ret (list seq1 seq2))
+     ;; 部首合成は遅いので、先に打鍵数をチェック
+     (small-stroke? (< (tutcode-auto-help-count-stroke-length ret) min-stroke))
      ;; 実際に部首合成して、対象文字が合成されないものは駄目
      (composed (tutcode-bushu-convert b1 b2))
-     (c-composed? (string=? composed c))
-     (seq1 (tutcode-auto-help-get-stroke b1))
-     (seq2 (tutcode-auto-help-get-stroke b2)))
-    (list seq1 seq2)))
-
-;;; 自動ヘルプ:対象文字を合成可能な、共に外字でない「部首1」と
-;;; 「部首2を部品として持つ漢字」のリストを返す。
-;;; @param c 対象文字 (例: "讐")
-;;; @param seq 外字でない部首(b1 or b2)の入力キーシーケンスと部首のリスト。
-;;;  例: ((("b" ",")) ("言"))
-;;; @param b1 部首1 (例: "隹")
-;;; @param b2 部首2 (例: "言")
-;;; @param bushudic 部首合成変換辞書
-;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
-;;;  見つからなかった場合は#f。
-;;;  例: (((("e" "v" ".")) ("惟")) ((("b" ",")) ("言")))
-(define (tutcode-auto-help-bushu-decompose-with-part c seq b1 b2 bushudic)
-  ;; bushudicの要素を順に見て最初に見つかったものを返す。
-  ;; filterやmapを使って、最小のストロークのものを探すと時間がかかるので。
-  ;; XXX: 逆引き用bushudicを作って使う?
-  (and
-    (not (null? bushudic))
-    (or
-      (tutcode-auto-help-get-stroke-list-with-part c seq b1 b2 (car bushudic))
-      (tutcode-auto-help-bushu-decompose-with-part
-        c seq b1 b2 (cdr bushudic)))))
+     (c-composed? (string=? composed c)))
+    ret))
 
 ;;; 自動ヘルプ:対象文字を「部首1」と「部首2を部品として持つ漢字」により
 ;;; 部首合成できる場合は、
 ;;; 合成に使う各文字と、そのストロークのリストを返す。
+;;; @param c 対象文字
+;;; @param b1 部首1(直接入力可能)
+;;; @param b2 部首2(直接入力不可能)
+;;; @param seq1 b1の入力キーシーケンスと部首のリスト
+;;; @param min-stroke-bushu-list min-strokeとbushudic内の要素のリスト。
+;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
+;;;  bushu-listを使って合成できない場合は#f。
+(define (tutcode-auto-help-get-stroke-list-with-right-part
+         c b1 b2 seq1 min-stroke-bushu-list)
+  (and-let*
+    ((min-stroke (car min-stroke-bushu-list))
+     (bushu-list (cadr min-stroke-bushu-list))
+     (mem (member b2 (caar bushu-list)))
+     (kanji (caadr bushu-list)) ; 部首2を部品として持つ漢字
+     (seq (tutcode-auto-help-get-stroke kanji))
+     (ret (list seq1 seq))
+     ;; 部首合成は遅いので、先に打鍵数をチェック
+     (small-stroke? (< (tutcode-auto-help-count-stroke-length ret) min-stroke))
+     ;; 実際に部首合成して、対象文字が合成されないものは駄目
+     (composed (tutcode-bushu-convert b1 kanji))
+     (c-composed? (string=? composed c)))
+    ret))
+
+;;; 自動ヘルプ:対象文字を「部首1を部品として持つ漢字」と「部首2」により
+;;; 部首合成できる場合は、
+;;; 合成に使う各文字と、そのストロークのリストを返す。
 ;;; @param c 対象文字 (例: "讐")
-;;; @param seq 外字でない部首(b1 or b2)の入力キーシーケンスと部首のリスト。
+;;; @param b1 部首1(直接入力不可能) (例: "隹")
+;;; @param b2 部首2(直接入力可能) (例: "言")
+;;; @param seq2 b2の入力キーシーケンスと部首のリスト。
 ;;;  例: ((("b" ",")) ("言"))
-;;; @param b1 部首1 (例: "隹")
-;;; @param b2 部首2 (例: "言")
-;;; @param bushu-list bushudic内の要素。例: ((("性" "隹"))("惟"))
+;;; @param min-stroke-bushu-list min-strokeとbushudic内の要素のリスト。
+;;;  例: (6 ((("性" "隹")) ("惟")))
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  bushu-listを使って合成できない場合は#f。
 ;;;  例: (((("e" "v" ".")) ("惟")) ((("b" ",")) ("言")))
-(define (tutcode-auto-help-get-stroke-list-with-part
-         c seq b1 b2 bushu-list)
-  (if (string=? b1 (caadr seq))
-    ;; 部首1は外字でない(直接入力可能)
-    (and-let*
-      ((mem (member b2 (caar bushu-list)))
-       (kanji (caadr bushu-list)) ; 部首2を部品として持つ漢字
-       ;; 実際に部首合成して、対象文字が合成されないものは駄目
-       (composed (tutcode-bushu-convert b1 kanji))
-       (c-composed? (string=? composed c))
-       (seq2 (tutcode-auto-help-get-stroke kanji)))
-      (list seq seq2))
-    ;; 部首2は外字でない(直接入力可能)
-    (and-let*
-      ((mem (member b1 (caar bushu-list)))
-       (kanji (caadr bushu-list)) ; 部首1を部品として持つ漢字
-       ;; 実際に部首合成して、対象文字が合成されないものは駄目
-       (composed (tutcode-bushu-convert kanji b2))
-       (c-composed? (string=? composed c))
-       (seq1 (tutcode-auto-help-get-stroke kanji)))
-      (list seq1 seq))))
+(define (tutcode-auto-help-get-stroke-list-with-left-part
+         c b1 b2 seq2 min-stroke-bushu-list)
+  (and-let*
+    ((min-stroke (car min-stroke-bushu-list))
+     (bushu-list (cadr min-stroke-bushu-list))
+     (mem (member b1 (caar bushu-list)))
+     (kanji (caadr bushu-list)) ; 部首1を部品として持つ漢字
+     (seq (tutcode-auto-help-get-stroke kanji))
+     (ret (list seq seq2))
+     ;; 部首合成は遅いので、先に打鍵数をチェック
+     (small-stroke? (< (tutcode-auto-help-count-stroke-length ret) min-stroke))
+     ;; 実際に部首合成して、対象文字が合成されないものは駄目
+     (composed (tutcode-bushu-convert kanji b2))
+     (c-composed? (string=? composed c)))
+    ret))
 
-;;; ruleを逆引きして、変換後の文字から、入力キー列を取得する。
-;;; 例: (tutcode-reverse-find-seq tutcode-rule "あ") => ("r" "k")
-;;; @param rule rkで使う形式のrule
+;;; tutcode-ruleを逆引きして、変換後の文字から、入力キー列を取得する。
+;;; 例: (tutcode-reverse-find-seq "あ") => ("r" "k")
 ;;; @param c 変換後の文字
-;;; @return 入力キーのリスト。rule中にcが見つからなかった場合は#f
-(define (tutcode-reverse-find-seq rule c)
-  ;; XXX: 逆引き用alistを作って使う?
-  (let ((lst
-          (filter
-            (lambda (elem)
-	      ;; string=?だと'tutcode-mazegaki-startでエラー
-              (equal? c (car (cadr elem))))
-            rule)))
-    (and
-      (not (null? lst))
-      (car (caar lst)))))
+;;; @return 入力キーのリスト。tutcode-rule中にcが見つからなかった場合は#f
+(define (tutcode-reverse-find-seq c)
+  (if (null? tutcode-reverse-rule-alist)
+    (set! tutcode-reverse-rule-alist
+      (map
+        (lambda (elem)
+          (cons (caadr elem) (caar elem)))
+        tutcode-rule)))
+  (let ((res (assoc c tutcode-reverse-rule-alist)))
+    (and res
+      (cdr res))))
 
 ;;; 現在のstateがpreeditを持つかどうかを返す。
 ;;; @param pc コンテキストリスト
