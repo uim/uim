@@ -297,7 +297,8 @@
 
 
 (defun uim-goto-char (pt)
-  (set-window-point (get-buffer-window (current-buffer)) pt))
+  (set-window-point (selected-window) pt)
+  )
 
 
 (defun uim-get-vector-from-head (vec n)
