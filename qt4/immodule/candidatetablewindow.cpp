@@ -209,7 +209,7 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
         for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
             KeyButton *button = buttonArray[i][j];
             button->setIndex(-1);
-            button->setEnabled(true);
+            button->setEnabled(false);
             button->setText("");
         }
     }
@@ -224,8 +224,8 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
             }
             KeyButton *button = buttonArray[i][j];
             if (index - delta >= ncandidates) {
-                if (button->text().isEmpty())
-                    button->setEnabled(false);
+                if (!button->text().isEmpty())
+                    button->setEnabled(true);
                 continue;
             }
             int candidateIndex = displayLimit * newpage + index - delta;
@@ -242,8 +242,7 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
                 // '&' shouldn't be used as the shortcut key
                 b->setText(candString.replace('&', "&&"));
                 b->setIndex(candidateIndex);
-            } else {
-                button->setEnabled(false);
+                b->setEnabled(true);
             }
             index++;
         }
