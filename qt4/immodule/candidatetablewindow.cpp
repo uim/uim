@@ -218,7 +218,8 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
                 continue;
             }
             if (index - delta >= ncandidates) {
-                button->setEnabled(false);
+                if (button->text().isEmpty())
+                    button->setEnabled(false);
                 continue;
             }
             int candidateIndex = displayLimit * newpage + index - delta;
