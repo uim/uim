@@ -74,6 +74,12 @@
   (N_ "Enable learning in mazegaki conversion")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-use-recursive-learning? #t
+  '(tutcode)
+  '(boolean)
+  (N_ "Use recursive learning")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-with-vi? #f
   '(tutcode)
   '(boolean)

@@ -142,3 +142,15 @@
                '(key)
                (N_ "[TUT-Code] ESC keys on vi-cooperative mode")
                (N_ "long description will be here"))
+
+(define-custom 'tutcode-register-candidate-key '("<IgnoreShift>|")
+	       '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] register new entry to dictionary")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-purge-candidate-key '("<IgnoreCase><Shift>x")  ;; "X"
+	       '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] purge the entry from dictionary")
+	       (N_ "long description will be here"))

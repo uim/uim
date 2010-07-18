@@ -58,7 +58,6 @@
 ;;; 
 ;;; * 交ぜ書き変換関係で未実装の機能
 ;;;  - 後置型交ぜ書き変換
-;;;  - 交ぜ書き変換辞書への登録・削除、
 ;;;  - 読みを伸ばしたり縮めたりする機能、読みの補完機能
 ;;;
 ;;; 【設定例】
@@ -183,13 +182,15 @@
 		     "a"
 		     "直接入力"
 		     "直接入力モード"))
-		 (lambda (tc)
-		   (not (tutcode-context-on? tc)))
-		 (lambda (tc)
-		   (tutcode-prepare-activation tc)
-                   (tutcode-flush tc)
-                   (tutcode-context-set-state! tc 'tutcode-state-off)
-                   (tutcode-update-preedit tc))) ; flushでクリアした表示を反映
+		 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (not (tutcode-context-on? tc))))
+		 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (tutcode-prepare-activation tc)
+                     (tutcode-flush tc)
+                     (tutcode-context-set-state! tc 'tutcode-state-off)
+                     (tutcode-update-preedit tc))));flushでクリアした表示を反映
 
 (register-action 'action_tutcode_hiragana
 		 (lambda (tc)
@@ -197,22 +198,24 @@
 		     "あ"
 		     "ひらがな"
 		     "ひらがなモード"))
-		 (lambda (tc)
-		   (and (tutcode-context-on? tc)
-                        (not (eq? (tutcode-context-state tc)
-                                  'tutcode-state-kigou))
-			(not (tutcode-context-katakana-mode? tc))))
-		 (lambda (tc)
-		   (tutcode-prepare-activation tc)
-                   (if
-                     (or
-                       (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
-                       (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
-                     (begin
-                       (tutcode-reset-candidate-window tc)
-                       (tutcode-context-set-state! tc 'tutcode-state-on)))
-                   (tutcode-context-set-katakana-mode! tc #f)
-                   (tutcode-update-preedit tc)))
+		 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (and (tutcode-context-on? tc)
+                          (not (eq? (tutcode-context-state tc)
+                                    'tutcode-state-kigou))
+                          (not (tutcode-context-katakana-mode? tc)))))
+		 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (tutcode-prepare-activation tc)
+                     (if
+                       (or
+                         (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
+                         (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
+                       (begin
+                         (tutcode-reset-candidate-window tc)
+                         (tutcode-context-set-state! tc 'tutcode-state-on)))
+                     (tutcode-context-set-katakana-mode! tc #f)
+                     (tutcode-update-preedit tc))))
 
 (register-action 'action_tutcode_katakana
 		 (lambda (tc)
@@ -220,22 +223,24 @@
 		     "ア"
 		     "カタカナ"
 		     "カタカナモード"))
-		 (lambda (tc)
-		   (and (tutcode-context-on? tc)
-                        (not (eq? (tutcode-context-state tc)
-                                  'tutcode-state-kigou))
-			(tutcode-context-katakana-mode? tc)))
-		 (lambda (tc)
-		   (tutcode-prepare-activation tc)
-                   (if
-                     (or
-                       (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
-                       (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
-                     (begin
-                       (tutcode-reset-candidate-window tc)
-                       (tutcode-context-set-state! tc 'tutcode-state-on)))
-                   (tutcode-context-set-katakana-mode! tc #t)
-                   (tutcode-update-preedit tc)))
+		 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (and (tutcode-context-on? tc)
+                          (not (eq? (tutcode-context-state tc)
+                                    'tutcode-state-kigou))
+                          (tutcode-context-katakana-mode? tc))))
+		 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (tutcode-prepare-activation tc)
+                     (if
+                       (or
+                         (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
+                         (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
+                       (begin
+                         (tutcode-reset-candidate-window tc)
+                         (tutcode-context-set-state! tc 'tutcode-state-on)))
+                     (tutcode-context-set-katakana-mode! tc #t)
+                     (tutcode-update-preedit tc))))
 
 (register-action 'action_tutcode_kigou
                  (lambda (tc)
@@ -243,15 +248,18 @@
                      "Ａ"
                      "記号入力"
                      "記号入力モード"))
-                 (lambda (tc)
-                   (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
-                 (lambda (tc)
-                   (tutcode-prepare-activation tc)
-                   (if
-                     (not (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
-                     (tutcode-flush tc))
-                   (tutcode-begin-kigou-mode tc)
-                   (tutcode-update-preedit tc)))
+                 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (eq? (tutcode-context-state tc) 'tutcode-state-kigou)))
+                 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (tutcode-prepare-activation tc)
+                     (if
+                       (not
+                         (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
+                       (tutcode-flush tc))
+                     (tutcode-begin-kigou-mode tc)
+                     (tutcode-update-preedit tc))))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -293,7 +301,20 @@
      (candidate-window 'tutcode-candidate-window-off)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
-     (stroke-help ()))))
+     (stroke-help ())
+     ;;; 交ぜ書き変換辞書への再帰的登録のための子コンテキスト
+     (child-context ())
+     ;;; 子コンテキストの種類
+     ;;; 'tutcode-child-type-editor 登録用の変換後文字列編集エディタ
+     ;;; 'tutcode-child-type-dialog 辞書からの削除確認ダイアログ
+     (child-type ())
+     ;;; 親コンテキスト
+     (parent-context ())
+     ;;; 登録用文字列編集エディタ
+     (editor ())
+     ;;; 削除確認ダイアログ
+     (dialog ())
+     )))
 (define-record 'tutcode-context tutcode-context-rec-spec)
 (define tutcode-context-new-internal tutcode-context-new)
 (define tutcode-context-katakana-mode? tutcode-context-katakana-mode)
@@ -306,6 +327,9 @@
   (if (not tutcode-dic-init)
     (begin
       (set! tutcode-dic-init #t)
+      (if tutcode-use-recursive-learning?
+        (require "tutcode-editor.scm"))
+      (require "tutcode-dialog.scm")
       (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified)
       (tutcode-read-personal-dictionary)))
   (let ((tc (tutcode-context-new-internal id im)))
@@ -319,6 +343,9 @@
     (tutcode-custom-set-mazegaki/bushu-start-sequence!)
     (tutcode-rule-commit-sequences! tutcode-rule-userconfig)
     (tutcode-context-set-rk-context! tc (rk-context-new tutcode-rule #t #f))
+    (if tutcode-use-recursive-learning?
+      (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
+    (tutcode-context-set-dialog! tc (tutcode-dialog-new tc))
     tc))
 
 ;;; ひらがな/カタカナモードの切り替えを行う。
@@ -329,15 +356,31 @@
   (let ((s (tutcode-context-katakana-mode? pc)))
     (tutcode-context-set-katakana-mode! pc (not s))))
 
+;;; 根っこのコンテキストを取得する。
+(define (tutcode-find-root-context pc)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (if (null? ppc)
+      pc
+      (tutcode-find-root-context ppc))))
+
+;;; 枝先のコンテキスト(交ぜ書き変換の再帰的登録の一番深いところ
+;;; =現在編集中のコンテキスト)を取得する。
+(define (tutcode-find-descendant-context pc)
+  (let ((cpc (tutcode-context-child-context pc)))
+    (if (null? cpc)
+      pc
+      (tutcode-find-descendant-context cpc))))
+
 ;;; 交ぜ書き変換用個人辞書を読み込む。
 (define (tutcode-read-personal-dictionary)
   (if (not (setugid?))
       (skk-lib-read-personal-dictionary tutcode-personal-dic-filename)))
 
 ;;; 交ぜ書き変換用個人辞書を書き込む。
-(define (tutcode-save-personal-dictionary)
+;;; @param force? tutcode-enable-mazegaki-learning?が#fでも書き込むかどうか
+(define (tutcode-save-personal-dictionary force?)
   (if (and
-        tutcode-enable-mazegaki-learning?
+        (or force? tutcode-enable-mazegaki-learning?)
         (not (setugid?)))
       (skk-lib-save-personal-dictionary tutcode-personal-dic-filename)))
 
@@ -360,12 +403,20 @@
 ;;; 変換中状態をクリアする。
 ;;; @param pc コンテキストリスト
 (define (tutcode-flush pc)
-  (rk-flush (tutcode-context-rk-context pc))
-  (if (tutcode-context-on? pc) ; オフ時に呼ばれた場合はオンにしたら駄目
-    (tutcode-context-set-state! pc 'tutcode-state-on)) ; 変換状態をクリアする
-  (tutcode-context-set-head! pc ())
-  (tutcode-context-set-nr-candidates! pc 0)
-  (tutcode-reset-candidate-window pc))
+  (let ((cpc (tutcode-context-child-context pc)))
+    (rk-flush (tutcode-context-rk-context pc))
+    (if tutcode-use-recursive-learning?
+      (tutcode-editor-flush (tutcode-context-editor pc)))
+    (tutcode-dialog-flush (tutcode-context-dialog pc))
+    (if (tutcode-context-on? pc) ; オフ時に呼ばれた場合はオンにしたら駄目
+      (tutcode-context-set-state! pc 'tutcode-state-on)) ; 変換状態をクリアする
+    (tutcode-context-set-head! pc ())
+    (tutcode-context-set-nr-candidates! pc 0)
+    (tutcode-reset-candidate-window pc)
+    (tutcode-context-set-child-context! pc ())
+    (tutcode-context-set-child-type! pc ())
+    (if (not (null? cpc))
+      (tutcode-flush cpc))))
 
 ;;; 変換対象の文字列リストから文字列を作る。
 ;;; @param sl 文字列リスト
@@ -411,7 +462,7 @@
           (tutcode-make-string (tutcode-context-head pc)) "" ""
           (tutcode-context-nth pc) #f)
         (if (> (tutcode-context-nth pc) 0)
-          (tutcode-save-personal-dictionary))))
+          (tutcode-save-personal-dictionary #f))))
     (tutcode-flush pc)
     res))
 
@@ -419,11 +470,32 @@
 (define (tutcode-prepare-commit-string-for-kigou-mode pc)
   (tutcode-get-current-candidate-for-kigou-mode pc))
 
+;;; im-commit-rawを呼び出す。
+;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
+(define (tutcode-commit-raw pc key key-state)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (if (not (null? ppc))
+      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
+        (tutcode-editor-commit-raw (tutcode-context-editor ppc) key key-state)
+        (tutcode-dialog-commit-raw (tutcode-context-dialog ppc) key key-state))
+      (im-commit-raw pc))))
+
+;;; im-commitを呼び出す。
+;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
+;;; @param str コミットする文字列
+(define (tutcode-commit pc str)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (if (not (null? ppc))
+      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
+        (tutcode-editor-commit (tutcode-context-editor ppc) str)
+        (tutcode-dialog-commit (tutcode-context-dialog ppc) str))
+      (im-commit pc str))))
+
 ;;; im-commitを呼び出すとともに、自動ヘルプ表示のチェックを行う
 (define (tutcode-commit-with-auto-help pc)
   (let* ((head (tutcode-context-head pc))
          (res (tutcode-prepare-commit-string pc)))
-    (im-commit pc res)
+    (tutcode-commit pc res)
     (tutcode-check-auto-help-window-begin pc (string-to-list res) head)))
 
 ;;; 交ぜ書き変換の候補選択時に、指定されたラベル文字に対応する候補を確定する
@@ -482,7 +554,22 @@
              (< idx nr))
       (begin
         (tutcode-context-set-nth! pc idx)
-        (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))))))
+        (tutcode-commit pc
+          (tutcode-prepare-commit-string-for-kigou-mode pc))))))
+
+;;; 交ぜ書き変換辞書から、現在選択されている候補を削除する。
+(define (tutcode-purge-candidate pc)
+  (let ((res (skk-lib-purge-candidate
+               (tutcode-make-string (tutcode-context-head pc))
+               ""
+               ""
+               (tutcode-context-nth pc)
+               #f)))
+    (if res
+      (tutcode-save-personal-dictionary #t))
+    (tutcode-reset-candidate-window pc)
+    (tutcode-flush pc)
+    res))
 
 ;;; 交ぜ書き変換の読み/部首合成変換の部首(文字列リストhead)に文字列を追加する。
 ;;; @param pc コンテキストリスト
@@ -505,15 +592,33 @@
          (skk-lib-get-nr-candidates yomi "" "" #f))
         (tutcode-context-set-state! pc 'tutcode-state-converting)
         (if (= (tutcode-context-nr-candidates pc) 1)
-          ;; 候補が1個しかない場合は自動的に確定する
+          ;; 候補が1個しかない場合は自動的に確定する。
+          ;; (辞書登録はtutcode-register-candidate-keyを押して明示的に開始する)
           (tutcode-commit-with-auto-help pc)
           (begin
             (tutcode-check-candidate-window-begin pc)
             (if (eq? (tutcode-context-candidate-window pc)
                      'tutcode-candidate-window-converting)
               (im-select-candidate pc 0)))))
-      ;(tutcode-flush pc) ; 候補無し時flushすると入力した文字列が消えてがっかり
-      )))
+      ;; 候補無し
+      (if tutcode-use-recursive-learning?
+        (begin
+          (tutcode-context-set-state! pc 'tutcode-state-converting)
+          (tutcode-setup-child-context pc 'tutcode-child-type-editor)
+          ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
+        )))))
+
+;;; 子コンテキストを作成する。
+;;; @param type 'tutcode-child-type-editorか'tutcode-child-type-dialog
+(define (tutcode-setup-child-context pc type)
+  (let ((cpc (tutcode-context-new (tutcode-context-uc pc)
+              (tutcode-context-im pc))))
+    (tutcode-context-set-child-context! pc cpc)
+    (tutcode-context-set-child-type! pc type)
+    (tutcode-context-set-parent-context! cpc pc)
+    (if (eq? type 'tutcode-child-type-editor)
+      (tutcode-context-set-state! cpc 'tutcode-state-on)
+      (tutcode-context-set-state! cpc 'tutcode-state-off))))
 
 ;;; 記号入力モードを開始する。
 ;;; @param pc コンテキストリスト
@@ -531,7 +636,7 @@
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-candidate-window?
-           (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
+           (> (tutcode-context-nth pc) tutcode-candidate-op-count))
     (begin
       (tutcode-context-set-candidate-window! pc
         (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
@@ -732,10 +837,9 @@
       (cons (list label cand) label-cands-alist))))
 
 ;;; preedit表示を更新する。
-;;; @param pc コンテキストリスト
-(define (tutcode-update-preedit pc)
-  (let ((stat (tutcode-context-state pc)))
-    (im-clear-preedit pc)
+(define (tutcode-do-update-preedit pc)
+  (let ((stat (tutcode-context-state pc))
+        (cpc (tutcode-context-child-context pc)))
     (case stat
       ((tutcode-state-yomi)
         (im-pushback-preedit pc preedit-none "△")
@@ -744,8 +848,28 @@
             (im-pushback-preedit pc preedit-none h))))
       ((tutcode-state-converting)
         (im-pushback-preedit pc preedit-none "△")
-        (im-pushback-preedit pc preedit-none
-          (tutcode-get-current-candidate pc)))
+        (if (null? cpc)
+          (im-pushback-preedit pc preedit-none
+            (tutcode-get-current-candidate pc))
+          ;; child context's preedit
+          (let ((h (tutcode-make-string (tutcode-context-head pc)))
+                (editor (tutcode-context-editor pc))
+                (dialog (tutcode-context-dialog pc)))
+            (if (string? h)
+              (im-pushback-preedit pc preedit-none h))
+            (im-pushback-preedit pc preedit-none "【")
+            (im-pushback-preedit pc preedit-none
+              (if (eq? (tutcode-context-child-type pc)
+                    'tutcode-child-type-editor)
+                (tutcode-editor-get-left-string editor)
+                (tutcode-dialog-get-left-string dialog)))
+	    (tutcode-do-update-preedit cpc)
+            (im-pushback-preedit pc preedit-none
+              (if (eq? (tutcode-context-child-type pc)
+                    'tutcode-child-type-editor)
+                (tutcode-editor-get-right-string editor)
+                (tutcode-dialog-get-right-string dialog)))
+            (im-pushback-preedit pc preedit-none "】"))))
       ;; 部首合成変換のマーカ▲は文字列としてhead内で管理(再帰的部首合成のため)
       ((tutcode-state-bushu)
         (let ((h (tutcode-make-string (tutcode-context-head pc))))
@@ -755,15 +879,34 @@
         ;; 候補ウィンドウ非表示時でも候補選択できるようにpreedit表示
         (im-pushback-preedit pc preedit-reverse
           (tutcode-get-current-candidate-for-kigou-mode pc))))
-    (im-pushback-preedit pc preedit-cursor "")
-    (im-update-preedit pc)))
+    (if (null? cpc)
+      (im-pushback-preedit pc preedit-cursor ""))))
+
+;;; preedit表示を更新する。
+(define (tutcode-update-preedit pc)
+  (im-clear-preedit pc)
+  (tutcode-do-update-preedit (tutcode-find-root-context pc))
+  (im-update-preedit pc))
+
+;; called from tutcode-editor
+;;; tutcode-editor側での編集完了時に呼ばれる。
+;;; @param str エディタ側で確定された文字列
+(define (tutcode-commit-editor-context pc str)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (tutcode-flush pc)
+    (tutcode-context-set-child-context! pc ())
+    (tutcode-context-set-child-type! pc ())
+    (tutcode-commit pc str)
+    (tutcode-update-preedit pc)))
 
 ;;; TUT-Code入力状態のときのキー入力を処理する。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-proc-state-on pc key key-state)
-  (let ((rkc (tutcode-context-rk-context pc)))
+(define (tutcode-proc-state-on c key key-state)
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (rkc (tutcode-context-rk-context pc)))
     (tutcode-reset-candidate-window pc)
     (cond
       ((and
@@ -771,7 +914,7 @@
         tutcode-use-with-vi?)
        (rk-flush rkc)
        (tutcode-context-set-state! pc 'tutcode-state-off)
-       (im-commit-raw pc)) ; ESCキーをアプリにも渡す
+       (tutcode-commit-raw pc key key-state)) ; ESCキーをアプリにも渡す
       ((tutcode-off-key? key key-state)
        (rk-flush rkc)
        (tutcode-context-set-state! pc 'tutcode-state-off))
@@ -784,7 +927,7 @@
       ((tutcode-backspace-key? key key-state)
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
-         (im-commit-raw pc)))
+         (tutcode-commit-raw pc key key-state)))
       ((tutcode-stroke-help-toggle-key? key key-state)
        (tutcode-toggle-stroke-help pc))
       ((or
@@ -793,14 +936,15 @@
           (modifier-key-mask key-state)
           (not (shift-key-mask key-state))))
        (rk-flush rkc)
-       (im-commit-raw pc))
+       (tutcode-commit-raw pc key key-state))
       ;; 正しくないキーシーケンスは全て捨てる(tc2に合わせた動作)。
       ;; (rk-push-key!すると、途中までのシーケンスは捨てられるが、
       ;; 間違ったキーは残ってしまうので、rk-push-key!は使えない)
       ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc) ; 正しくないシーケンスは捨てる
-         (im-commit-raw pc))) ; 単独のキー入力(TUT-Code入力でなくて)
+         ;; 単独のキー入力(TUT-Code入力でなくて)
+         (tutcode-commit-raw pc key key-state)))
       (else
        (let ((res (tutcode-push-key! pc (charcode->string key))))
          (if res
@@ -811,79 +955,81 @@
               (tutcode-context-set-state! pc 'tutcode-state-bushu)
               (tutcode-append-string pc "▲"))
             (else
-              (im-commit pc res)))
+              (tutcode-commit pc res)))
 	   (tutcode-check-stroke-help-window-begin pc)))))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-proc-state-off pc key key-state)
-  (if
-   (tutcode-on-key? key key-state)
-   (tutcode-context-set-state! pc 'tutcode-state-on)
-   (im-commit-raw pc)))
+(define (tutcode-proc-state-off c key key-state)
+  (let ((pc (tutcode-find-descendant-context c)))
+    (if (tutcode-on-key? key key-state)
+      (tutcode-context-set-state! pc 'tutcode-state-on)
+      (tutcode-commit-raw pc key key-state))))
 
 ;;; 記号入力モード時のキー入力を処理する。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-proc-state-kigou pc key key-state)
-  (cond
-    ((and
-      (tutcode-vi-escape-key? key key-state)
-      tutcode-use-with-vi?)
-     (tutcode-reset-candidate-window pc)
-     (tutcode-context-set-state! pc 'tutcode-state-off)
-     (im-commit-raw pc)) ; ESCキーをアプリにも渡す
-    ((tutcode-off-key? key key-state)
-     (tutcode-reset-candidate-window pc)
-     (tutcode-context-set-state! pc 'tutcode-state-off))
-    ((tutcode-kigou-toggle-key? key key-state)
-     (tutcode-reset-candidate-window pc)
-     (tutcode-context-set-state! pc 'tutcode-state-on))
-    ;; スペースキーで全角スペース入力可能とするため、
-    ;; next-candidate-key?のチェックより前にheading-label-char?をチェック
-    ((and tutcode-commit-candidate-by-label-key?
-          (not (and (modifier-key-mask key-state)
-                    (not (shift-key-mask key-state))))
-          (tutcode-heading-label-char-for-kigou-mode? key))
-      (tutcode-commit-by-label-key-for-kigou-mode pc (charcode->string key))
-      (if (eq? (tutcode-context-candidate-window pc)
-               'tutcode-candidate-window-kigou)
-        (im-select-candidate pc (tutcode-context-nth pc))))
-    ((tutcode-next-candidate-key? key key-state)
-      (tutcode-change-candidate-index pc 1))
-    ((tutcode-prev-candidate-key? key key-state)
-      (tutcode-change-candidate-index pc -1))
-    ((tutcode-cancel-key? key key-state)
-      (tutcode-reset-candidate-window pc)
-      (tutcode-begin-kigou-mode pc))
-    ((tutcode-next-page-key? key key-state)
-      (tutcode-change-candidate-index pc
-        tutcode-nr-candidate-max-for-kigou-mode))
-    ((tutcode-prev-page-key? key key-state)
-      (tutcode-change-candidate-index pc
-        (- tutcode-nr-candidate-max-for-kigou-mode)))
-    ((or
-      (tutcode-commit-key? key key-state)
-      (tutcode-return-key? key key-state))
-      (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc)))
-    ((or
-      (symbol? key)
-      (and
-        (modifier-key-mask key-state)
-        (not (shift-key-mask key-state))))
-      (im-commit-raw pc))
-    (else
-      (im-commit-raw pc))))
+(define (tutcode-proc-state-kigou c key key-state)
+  (let ((pc (tutcode-find-descendant-context c)))
+    (cond
+      ((and
+        (tutcode-vi-escape-key? key key-state)
+        tutcode-use-with-vi?)
+       (tutcode-reset-candidate-window pc)
+       (tutcode-context-set-state! pc 'tutcode-state-off)
+       (tutcode-commit-raw pc key key-state)) ; ESCキーをアプリにも渡す
+      ((tutcode-off-key? key key-state)
+       (tutcode-reset-candidate-window pc)
+       (tutcode-context-set-state! pc 'tutcode-state-off))
+      ((tutcode-kigou-toggle-key? key key-state)
+       (tutcode-reset-candidate-window pc)
+       (tutcode-context-set-state! pc 'tutcode-state-on))
+      ;; スペースキーで全角スペース入力可能とするため、
+      ;; next-candidate-key?のチェックより前にheading-label-char?をチェック
+      ((and tutcode-commit-candidate-by-label-key?
+            (not (and (modifier-key-mask key-state)
+                      (not (shift-key-mask key-state))))
+            (tutcode-heading-label-char-for-kigou-mode? key))
+        (tutcode-commit-by-label-key-for-kigou-mode pc (charcode->string key))
+        (if (eq? (tutcode-context-candidate-window pc)
+                 'tutcode-candidate-window-kigou)
+          (im-select-candidate pc (tutcode-context-nth pc))))
+      ((tutcode-next-candidate-key? key key-state)
+        (tutcode-change-candidate-index pc 1))
+      ((tutcode-prev-candidate-key? key key-state)
+        (tutcode-change-candidate-index pc -1))
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-reset-candidate-window pc)
+        (tutcode-begin-kigou-mode pc))
+      ((tutcode-next-page-key? key key-state)
+        (tutcode-change-candidate-index pc
+          tutcode-nr-candidate-max-for-kigou-mode))
+      ((tutcode-prev-page-key? key key-state)
+        (tutcode-change-candidate-index pc
+          (- tutcode-nr-candidate-max-for-kigou-mode)))
+      ((or
+        (tutcode-commit-key? key key-state)
+        (tutcode-return-key? key key-state))
+        (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc)))
+      ((or
+        (symbol? key)
+        (and
+          (modifier-key-mask key-state)
+          (not (shift-key-mask key-state))))
+        (tutcode-commit-raw pc key key-state))
+      (else
+        (tutcode-commit-raw pc key key-state)))))
 
 ;;; 交ぜ書き変換の読み入力状態のときのキー入力を処理する。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-proc-state-yomi pc key key-state)
-  (let* ((rkc (tutcode-context-rk-context pc))
+(define (tutcode-proc-state-yomi c key key-state)
+  (let* ((pc (tutcode-find-descendant-context c))
+         (rkc (tutcode-context-rk-context pc))
          (res #f))
     (tutcode-reset-candidate-window pc)
     (cond
@@ -901,12 +1047,16 @@
       ((or
         (tutcode-commit-key? key key-state)
         (tutcode-return-key? key key-state))
-       (im-commit pc (tutcode-make-string (tutcode-context-head pc)))
+       (tutcode-commit pc (tutcode-make-string (tutcode-context-head pc)))
        (tutcode-flush pc))
       ((tutcode-cancel-key? key key-state)
        (tutcode-flush pc))
       ((tutcode-stroke-help-toggle-key? key key-state)
        (tutcode-toggle-stroke-help pc))
+      ((and (tutcode-register-candidate-key? key key-state)
+            tutcode-use-recursive-learning?)
+       (tutcode-context-set-state! pc 'tutcode-state-converting)
+       (tutcode-setup-child-context pc 'tutcode-child-type-editor))
       ((symbol? key)
        (tutcode-flush pc)
        (tutcode-proc-state-on pc key key-state))
@@ -942,11 +1092,12 @@
       (tutcode-append-string pc res))))
 
 ;;; 部首合成変換の部首入力状態のときのキー入力を処理する。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-proc-state-bushu pc key key-state)
-  (let* ((rkc (tutcode-context-rk-context pc))
+(define (tutcode-proc-state-bushu c key key-state)
+  (let* ((pc (tutcode-find-descendant-context c))
+         (rkc (tutcode-context-rk-context pc))
          (res #f))
     (tutcode-reset-candidate-window pc)
     (cond
@@ -977,7 +1128,7 @@
           (begin
             ;; 最上位の部首合成変換の場合、変換途中の部首があればcommit
             (if res
-              (im-commit pc res))
+              (tutcode-commit pc res))
             (tutcode-flush pc)
             (if res (tutcode-check-auto-help-window-begin pc (list res) ()))
             (set! res #f))))
@@ -1007,7 +1158,7 @@
       (else
        (set! res (tutcode-push-key! pc (charcode->string key)))
        (case res
-        ((tutcode-mazegaki-start) ; 部首合成変換中は交ぜ書き変換は無効にする
+        ((tutcode-mazegaki-start) ;XXX 部首合成変換中は交ぜ書き変換は無効にする
           (set! res #f))
         ((tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
@@ -1028,10 +1179,10 @@
               (begin
                 ;; 1番目の部首と▲を消す
                 (tutcode-context-set-head! pc (cddr (tutcode-context-head pc)))
-                (if (= (length (tutcode-context-head pc)) 0)
+                (if (null? (tutcode-context-head pc))
                   ;; 変換待ちの部首が残ってなければ、確定して終了
                   (begin
-                    (im-commit pc char)
+                    (tutcode-commit pc char)
                     (tutcode-flush pc)
                     (tutcode-check-auto-help-window-begin pc (list char) ()))
                   ;; 部首がまだ残ってれば、再確認。
@@ -1052,13 +1203,18 @@
     (cond
       ((< new-nth 0)
        (set! new-nth 0))
+      ((and tutcode-use-recursive-learning? (= nth (- nr 1)) (>= new-nth nr))
+       (tutcode-reset-candidate-window pc)
+       (tutcode-setup-child-context pc 'tutcode-child-type-editor))
       ((>= new-nth nr)
        (set! new-nth (- nr 1))))
     (tutcode-context-set-nth! pc new-nth))
-  (tutcode-check-candidate-window-begin pc)
-  (if (not (eq? (tutcode-context-candidate-window pc)
-                'tutcode-candidate-window-off))
-    (im-select-candidate pc (tutcode-context-nth pc))))
+  (if (null? (tutcode-context-child-context pc))
+    (begin
+      (tutcode-check-candidate-window-begin pc)
+      (if (not (eq? (tutcode-context-candidate-window pc)
+                    'tutcode-candidate-window-off))
+        (im-select-candidate pc (tutcode-context-nth pc))))))
 
 ;;; 候補ウィンドウを閉じる
 (define (tutcode-reset-candidate-window pc)
@@ -1076,6 +1232,16 @@
   (tutcode-context-set-state! pc 'tutcode-state-yomi)
   (tutcode-context-set-nr-candidates! pc 0))
 
+;;; 交ぜ書き変換の辞書登録状態から、候補選択状態に戻す。
+;;; @param pc コンテキストリスト
+(define (tutcode-back-to-converting-state pc)
+  (tutcode-context-set-nth! pc (- (tutcode-context-nr-candidates pc) 1))
+  (tutcode-check-candidate-window-begin pc)
+  (if (eq? (tutcode-context-candidate-window pc)
+           'tutcode-candidate-window-converting)
+    (im-select-candidate pc (tutcode-context-nth pc)))
+  (tutcode-context-set-state! pc 'tutcode-state-converting))
+
 ;;; 入力されたキーが候補ラベル文字かどうかを調べる
 ;;; @param key 入力されたキー
 (define (tutcode-heading-label-char? key)
@@ -1087,31 +1253,39 @@
   (member (charcode->string key) tutcode-heading-label-char-list-for-kigou-mode))
 
 ;;; 交ぜ書き変換の候補選択状態のときのキー入力を処理する。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-proc-state-converting pc key key-state)
-  (cond
-    ((tutcode-next-candidate-key? key key-state)
-      (tutcode-change-candidate-index pc 1))
-    ((tutcode-prev-candidate-key? key key-state)
-      (tutcode-change-candidate-index pc -1))
-    ((tutcode-cancel-key? key key-state)
-      (tutcode-back-to-yomi-state pc))
-    ((tutcode-next-page-key? key key-state)
-      (tutcode-change-candidate-index pc tutcode-nr-candidate-max))
-    ((tutcode-prev-page-key? key key-state)
-      (tutcode-change-candidate-index pc (- tutcode-nr-candidate-max)))
-    ((or
-      (tutcode-commit-key? key key-state)
-      (tutcode-return-key? key key-state))
-      (tutcode-commit-with-auto-help pc))
-    ((and tutcode-commit-candidate-by-label-key?
-          (tutcode-heading-label-char? key))
-      (tutcode-commit-by-label-key pc (charcode->string key)))
-    (else
-      (im-commit pc (tutcode-prepare-commit-string pc))
-      (tutcode-proc-state-on pc key key-state))))
+(define (tutcode-proc-state-converting c key key-state)
+  (let ((pc (tutcode-find-descendant-context c)))
+    (cond
+      ((tutcode-next-candidate-key? key key-state)
+        (tutcode-change-candidate-index pc 1))
+      ((tutcode-prev-candidate-key? key key-state)
+        (tutcode-change-candidate-index pc -1))
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-back-to-yomi-state pc))
+      ((tutcode-next-page-key? key key-state)
+        (tutcode-change-candidate-index pc tutcode-nr-candidate-max))
+      ((tutcode-prev-page-key? key key-state)
+        (tutcode-change-candidate-index pc (- tutcode-nr-candidate-max)))
+      ((or
+        (tutcode-commit-key? key key-state)
+        (tutcode-return-key? key key-state))
+        (tutcode-commit-with-auto-help pc))
+      ((tutcode-purge-candidate-key? key key-state)
+        (tutcode-reset-candidate-window pc)
+        (tutcode-setup-child-context pc 'tutcode-child-type-dialog))
+      ((and (tutcode-register-candidate-key? key key-state)
+            tutcode-use-recursive-learning?)
+        (tutcode-reset-candidate-window pc)
+        (tutcode-setup-child-context pc 'tutcode-child-type-editor))
+      ((and tutcode-commit-candidate-by-label-key?
+            (tutcode-heading-label-char? key))
+        (tutcode-commit-by-label-key pc (charcode->string key)))
+      (else
+        (tutcode-commit pc (tutcode-prepare-commit-string pc))
+        (tutcode-proc-state-on pc key key-state)))))
 
 ;;; 部首合成変換を行う。
 ;;; @param c1 1番目の部首
@@ -1434,22 +1608,24 @@
 ;;; 現在のstateがpreeditを持つかどうかを返す。
 ;;; @param pc コンテキストリスト
 (define (tutcode-state-has-preedit? pc)
-  (memq (tutcode-context-state pc)
-    '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
-                         tutcode-state-kigou)))
+  (or
+    (not (null? (tutcode-context-child-context pc)))
+    (memq (tutcode-context-state pc)
+      '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
+                           tutcode-state-kigou))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
-;;; @param pc コンテキストリスト
+;;; @param c コンテキストリスト
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
-(define (tutcode-key-press-handler pc key key-state)
+(define (tutcode-key-press-handler c key key-state)
   (if (ichar-control? key)
-      (im-commit-raw pc)
-      (begin
+      (im-commit-raw c)
+      (let ((pc (tutcode-find-descendant-context c)))
         (case (tutcode-context-state pc)
           ((tutcode-state-on)
            (tutcode-proc-state-on pc key key-state)
-           (if (tutcode-state-has-preedit? pc)
+           (if (tutcode-state-has-preedit? c)
              ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
              (tutcode-update-preedit pc)))
           ((tutcode-state-kigou)
@@ -1465,7 +1641,9 @@
            (tutcode-proc-state-bushu pc key key-state)
            (tutcode-update-preedit pc))
           (else
-           (tutcode-proc-state-off pc key key-state))))))
+           (tutcode-proc-state-off pc key key-state)
+           (if (not (null? (tutcode-context-child-context c)))
+             (tutcode-update-preedit pc)))))))
 
 ;;; キーが離されたときの処理を行う。
 ;;; @param pc コンテキストリスト
@@ -1482,65 +1660,68 @@
   (tutcode-context-new id im))
 
 (define (tutcode-release-handler pc)
-  (tutcode-save-personal-dictionary))
+  (tutcode-save-personal-dictionary #f))
 
 (define (tutcode-reset-handler tc)
   (tutcode-flush tc))
 
 (define (tutcode-focus-in-handler tc) #f)
 
-(define (tutcode-focus-out-handler tc)
-  (let ((rkc (tutcode-context-rk-context tc)))
+(define (tutcode-focus-out-handler c)
+  (let* ((tc (tutcode-find-descendant-context c))
+         (rkc (tutcode-context-rk-context tc)))
     (rk-flush rkc)))
 
 (define tutcode-place-handler tutcode-focus-in-handler)
 (define tutcode-displace-handler tutcode-focus-out-handler)
 
 ;;; 候補ウィンドウが候補文字列を取得するために呼ぶ関数
-(define (tutcode-get-candidate-handler tc idx accel-enum-hint)
-  (cond
-    ((= accel-enum-hint 9999) ;XXX 表形式候補ウィンドウからのdisplay_limit調整時
-      (set! tutcode-nr-candidate-max (length tutcode-heading-label-char-list))
-      (set! tutcode-nr-candidate-max-for-kigou-mode
-        (length tutcode-heading-label-char-list-for-kigou-mode))
-      (list "" ""
-        (string-append "display_limit="
-          (number->string
-            (if (eq? (tutcode-context-state tc) 'tutcode-state-kigou)
-              tutcode-nr-candidate-max-for-kigou-mode
-              tutcode-nr-candidate-max)))))
-    ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
-      (let* ((cand (tutcode-get-nth-candidate-for-kigou-mode tc idx))
-             (n (remainder
-                  idx (length tutcode-heading-label-char-list-for-kigou-mode)))
-             (label (nth n tutcode-heading-label-char-list-for-kigou-mode)))
-        ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
-        (list cand label "")))
-    ((and (not (eq? (tutcode-context-state tc) 'tutcode-state-converting))
-          (or tutcode-use-stroke-help-window? tutcode-use-auto-help-window?))
-      (nth idx (tutcode-context-stroke-help tc)))
-    (else
-      (let* ((cand (tutcode-get-nth-candidate tc idx))
-             (n (remainder idx (length tutcode-heading-label-char-list)))
-             (label (nth n tutcode-heading-label-char-list)))
-        (list cand label "")))))
+(define (tutcode-get-candidate-handler c idx accel-enum-hint)
+  (let ((tc (tutcode-find-descendant-context c)))
+    (cond
+      ((= accel-enum-hint 9999) ;XXX 表形式候補ウィンドウからのdisplay_limit調整時
+        (set! tutcode-nr-candidate-max (length tutcode-heading-label-char-list))
+        (set! tutcode-nr-candidate-max-for-kigou-mode
+          (length tutcode-heading-label-char-list-for-kigou-mode))
+        (list "" ""
+          (string-append "display_limit="
+            (number->string
+              (if (eq? (tutcode-context-state tc) 'tutcode-state-kigou)
+                tutcode-nr-candidate-max-for-kigou-mode
+                tutcode-nr-candidate-max)))))
+      ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
+        (let* ((cand (tutcode-get-nth-candidate-for-kigou-mode tc idx))
+               (n (remainder idx
+                    (length tutcode-heading-label-char-list-for-kigou-mode)))
+               (label (nth n tutcode-heading-label-char-list-for-kigou-mode)))
+          ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
+          (list cand label "")))
+      ((and (not (eq? (tutcode-context-state tc) 'tutcode-state-converting))
+            (or tutcode-use-stroke-help-window? tutcode-use-auto-help-window?))
+        (nth idx (tutcode-context-stroke-help tc)))
+      (else
+        (let* ((cand (tutcode-get-nth-candidate tc idx))
+               (n (remainder idx (length tutcode-heading-label-char-list)))
+               (label (nth n tutcode-heading-label-char-list)))
+          (list cand label ""))))))
 
 ;;; 候補ウィンドウが候補を選択したときに呼ぶ関数。
 ;;; 選択された候補を確定する。
-(define (tutcode-set-candidate-index-handler pc idx)
-  (if (and
-        (or (eq? (tutcode-context-candidate-window pc)
-                 'tutcode-candidate-window-converting)
-            (eq? (tutcode-context-candidate-window pc)
-                 'tutcode-candidate-window-kigou))
-        (>= idx 0)
-        (< idx (tutcode-context-nr-candidates pc)))
-    (begin
-      (tutcode-context-set-nth! pc idx)
-      (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-        (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
-        (tutcode-commit-with-auto-help pc))
-      (tutcode-update-preedit pc))))
+(define (tutcode-set-candidate-index-handler c idx)
+  (let ((pc (tutcode-find-descendant-context c)))
+    (if (and
+          (or (eq? (tutcode-context-candidate-window pc)
+                   'tutcode-candidate-window-converting)
+              (eq? (tutcode-context-candidate-window pc)
+                   'tutcode-candidate-window-kigou))
+          (>= idx 0)
+          (< idx (tutcode-context-nr-candidates pc)))
+      (begin
+        (tutcode-context-set-nth! pc idx)
+        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
+          (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
+          (tutcode-commit-with-auto-help pc))
+        (tutcode-update-preedit pc)))))
 
 (tutcode-configure-widgets)
 
