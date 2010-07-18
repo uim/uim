@@ -195,38 +195,48 @@ void CandidateTableWindow::setBlockVisible(QLayout *layout, bool visible)
 
 void CandidateTableWindow::updateView(int newpage, int ncandidates)
 {
+    for (int i = 0; i < TABLE_NR_ROWS; i++) {
+        for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
+            KeyButton *button = buttonArray[i][j];
+            button->setIndex(-1);
+            button->setEnabled(true);
+            button->setText("");
+        }
+    }
     int index = 0;
     int delta = 0;
     for (int i = 0; i < TABLE_NR_ROWS; i++) {
         for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
+            KeyButton *button = buttonArray[i][j];
             if (table[index] == '\0') {
                 // Hide this button because some styles such as Oxygen
                 // ignore the flat property.
-                buttonArray[i][j]->hide();
-                buttonArray[i][j]->setFlat(true);
+                button->hide();
+                button->setFlat(true);
                 delta++;
                 index++;
                 continue;
             }
             if (index - delta >= ncandidates) {
-                buttonArray[i][j]->setEnabled(false);
-                buttonArray[i][j]->setText("");
-                buttonArray[i][j]->setIndex(-1);
+                button->setEnabled(false);
                 continue;
             }
             int candidateIndex = displayLimit * newpage + index - delta;
             uim_candidate cand = stores[candidateIndex];
+            QString headString
+                = QString::fromUtf8(uim_candidate_get_heading_label(cand));
             QString candString
                 = QString::fromUtf8(uim_candidate_get_cand_str(cand));
             if (!candString.isEmpty()) {
-                buttonArray[i][j]->setEnabled(true);
+                int row = i;
+                int column = j;
+                getPosition(row, column, headString);
+                KeyButton *b = buttonArray[row][column];
                 // '&' shouldn't be used as the shortcut key
-                buttonArray[i][j]->setText(candString.replace('&', "&&"));
-                buttonArray[i][j]->setIndex(candidateIndex);
+                b->setText(candString.replace('&', "&&"));
+                b->setIndex(candidateIndex);
             } else {
-                buttonArray[i][j]->setEnabled(false);
-                buttonArray[i][j]->setText("");
-                buttonArray[i][j]->setIndex(-1);
+                button->setEnabled(false);
             }
             index++;
         }
@@ -260,6 +270,27 @@ void CandidateTableWindow::setIndex(int totalIndex)
 {
     AbstractCandidateWindow::setIndex(totalIndex);
     updateLabel();
+}
+
+void CandidateTableWindow::getPosition(int &row, int &column,
+    const QString &headString)
+{
+    int index = 0;
+    for (int i = 0; i < TABLE_NR_ROWS; i++) {
+        for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
+            if (table[index] == '\0') {
+                index++;
+                continue;
+            }
+            const char str[] = {table[index], '\0'};
+            if (headString == QLatin1String(str)) {
+                row = i;
+                column = j;
+                return;
+            }
+            index++;
+        }
+    }
 }
 
 KeyButton::KeyButton() : m_index(-1)
