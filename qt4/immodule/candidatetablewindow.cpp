@@ -166,6 +166,8 @@ QGridLayout *CandidateTableWindow::createLayout(int row, int column,
             layout->addWidget(button, i, j);
         }
     }
+    layout->addItem(new QSpacerItem(0, 0,
+        QSizePolicy::Expanding, QSizePolicy::Expanding), row, column);
     return layout;
 }
 
