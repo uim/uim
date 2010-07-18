@@ -194,6 +194,11 @@
     (elatin-context-set-completion-no! lc n)
     (elatin-context-set-jump-to-top-on-tab?! lc #t)))
 
+(define (elatin-find-partial-matches seq rule)
+  (let ((partials (rk-lib-find-partial-seqs seq rule))
+	(full (rk-lib-find-seq seq rule)))
+    (if full (cons full partials) partials)))
+
 (define (elatin-update-completions lc)
   (if (elatin-context-completions lc)
       (let* ((rkc (elatin-context-rkc lc))
@@ -223,13 +228,6 @@
 	    (begin (elatin-context-reset lc)
 		   (elatin-open-translations-window lc trans))
 	    (elatin-reset-and-commit lc (car trans))))))
-
-(define (elatin-find-partial-matches seq rule)
-  (let ((lseq (length seq)))
-    (filter (lambda (elt)
-	      (let ((keys (caar elt)))
-		(and (>= (length keys) lseq) (equal? seq (take keys lseq)))))
-	    rule)))
 
 (define (elatin-take-common-head matches)
   (let ((common '())
