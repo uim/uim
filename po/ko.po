@@ -18,11 +18,11 @@ msgstr ""
 
 #: ../helper/GNOME_UimApplet.server.in.in.h:1
 msgid "Indicates and controls the state of input method (for uim)"
-msgstr ""
+msgstr "입력기(uim)의 상태를 표시 및 제어"
 
 #: ../helper/GNOME_UimApplet.server.in.in.h:2
 msgid "Input Method Indicator"
-msgstr ""
+msgstr "입력기 표시부"
 
 #: ../helper/GNOME_UimApplet.server.in.in.h:3
 msgid "Utilities"
@@ -631,7 +631,7 @@ msgstr "확인"
 
 #: ../qt/pref-qt.cpp:169 ../qt4/pref/qt4.cpp:165
 msgid "Apply"
-msgstr ""
+msgstr "적용"
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:128
 #: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:260 ../qt4/switcher/qt4.cpp:137
@@ -652,15 +652,15 @@ msgstr ""
 
 #: ../qt/pref-qt.cpp:273 ../qt4/pref/qt4.cpp:275
 msgid "Quit Confirm"
-msgstr ""
+msgstr "종료 확인"
 
 #: ../qt/pref-qt.cpp:276 ../qt4/pref/qt4.cpp:278
 msgid "Yes"
-msgstr ""
+msgstr "예"
 
 #: ../qt/pref-qt.cpp:277 ../qt4/pref/qt4.cpp:279
 msgid "No"
-msgstr ""
+msgstr "아니오"
 
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:363
 msgid "Show this dialog on startup"
@@ -668,7 +668,7 @@ msgstr "시작할 때 이 대화창을 표시"
 
 #: ../scm/action.scm:498 ../scm/action.scm:499
 msgid "unknown"
-msgstr ""
+msgstr "모름"
 
 #: ../scm/action.scm:538
 msgid "Japanese Kana Kanji Conversion Engine, Example"
@@ -997,7 +997,7 @@ msgstr "숫자키로 후보를 선택"
 #: ../scm/social-ime-custom.scm:129 ../scm/wnn-custom.scm:130
 #: ../scm/yahoo-jp-custom.scm:130
 msgid "Direct input"
-msgstr ""
+msgstr "직접 입력"
 
 #: ../scm/ajax-ime-custom.scm:131 ../scm/anthy-custom.scm:127
 #: ../scm/anthy-utf8-custom.scm:134 ../scm/canna-custom.scm:131
@@ -1005,7 +1005,7 @@ msgstr ""
 #: ../scm/skk-custom.scm:179 ../scm/social-ime-custom.scm:130
 #: ../scm/wnn-custom.scm:131 ../scm/yahoo-jp-custom.scm:131
 msgid "Direct input mode"
-msgstr ""
+msgstr "직접 입력 모드"
 
 #: ../scm/ajax-ime-custom.scm:135 ../scm/anthy-custom.scm:131
 #: ../scm/anthy-utf8-custom.scm:138 ../scm/canna-custom.scm:135
@@ -1148,7 +1148,7 @@ msgstr ""
 #: ../scm/wnn-custom.scm:184 ../scm/wnn-custom.scm:185
 #: ../scm/yahoo-jp-custom.scm:184 ../scm/yahoo-jp-custom.scm:185
 msgid "Input mode"
-msgstr ""
+msgstr "입력 모드"
 
 #: ../scm/ajax-ime-custom.scm:187 ../scm/ajax-ime-custom.scm:188
 #: ../scm/anthy-custom.scm:182 ../scm/anthy-custom.scm:183
@@ -1169,7 +1169,7 @@ msgstr ""
 #: ../scm/skk-custom.scm:226 ../scm/social-ime-custom.scm:188
 #: ../scm/wnn-custom.scm:189 ../scm/yahoo-jp-custom.scm:189
 msgid "Enabled toolbar buttons"
-msgstr ""
+msgstr "사용되는 툴바 버튼"
 
 #: ../scm/ajax-ime-custom.scm:208 ../scm/anthy-custom.scm:203
 #: ../scm/anthy-utf8-custom.scm:210 ../scm/canna-custom.scm:208
@@ -1177,7 +1177,7 @@ msgstr ""
 #: ../scm/skk-custom.scm:245 ../scm/social-ime-custom.scm:207
 #: ../scm/wnn-custom.scm:208 ../scm/yahoo-jp-custom.scm:208
 msgid "Default input mode"
-msgstr ""
+msgstr "디폴트 입력 모드"
 
 #: ../scm/ajax-ime-custom.scm:217 ../scm/anthy-custom.scm:212
 #: ../scm/anthy-utf8-custom.scm:219 ../scm/canna-custom.scm:217
@@ -1185,7 +1185,7 @@ msgstr ""
 #: ../scm/skk-custom.scm:254 ../scm/social-ime-custom.scm:216
 #: ../scm/wnn-custom.scm:217 ../scm/yahoo-jp-custom.scm:217
 msgid "Input mode menu items"
-msgstr ""
+msgstr "입력 모드 메뉴 항목"
 
 #: ../scm/ajax-ime-custom.scm:259 ../scm/anthy-custom.scm:254
 #: ../scm/anthy-utf8-custom.scm:261 ../scm/canna-custom.scm:259
@@ -2253,11 +2253,11 @@ msgstr ""
 
 #: ../scm/custom.scm:749
 msgid "Main settings of this group"
-msgstr ""
+msgstr "이 그룹의 주 설정"
 
 #: ../scm/custom.scm:752
 msgid "Hidden settings"
-msgstr ""
+msgstr "숨겨진 설정"
 
 #: ../scm/custom.scm:753
 msgid ""
@@ -2283,20 +2283,20 @@ msgstr ""
 
 #: ../scm/direct.scm:53
 msgid "direct"
-msgstr ""
+msgstr "직접"
 
 #: ../scm/direct.scm:54 ../scm/generic.scm:72 ../scm/m17nlib.scm:63
 #: ../scm/scim.scm:63
 msgid "Direct Input Mode"
-msgstr ""
+msgstr "직접 입력 모드"
 
 #: ../scm/direct.scm:131 ../scm/look.scm:67
 msgid "Direct"
-msgstr ""
+msgstr "직접"
 
 #: ../scm/direct.scm:132
 msgid "Pass through all user input without any modification"
-msgstr ""
+msgstr "사용자 입력을 수정없이 통과"
 
 #: ../scm/elatin-custom.scm:34
 msgid "ELatin"
@@ -2642,7 +2642,7 @@ msgstr "기타 입력기"
 
 #: ../scm/generic-custom.scm:66
 msgid "Show candidate window without explicit conversion action"
-msgstr ""
+msgstr "후보창을 자동으로 표시"
 
 #: ../scm/generic-custom.scm:72
 msgid "Show candidates matching with expected keys"
@@ -2783,7 +2783,7 @@ msgstr ""
 
 #: ../scm/im.scm:139
 msgid "invalid IM name"
-msgstr ""
+msgstr "틀린 IM 이름"
 
 #: ../scm/im-custom.scm:45
 msgid "Global settings"
@@ -2843,23 +2843,23 @@ msgstr "디폴트 입력기 지정"
 
 #: ../scm/im-custom.scm:208
 msgid "Enabled input methods"
-msgstr "사용가능한 입력기"
+msgstr "사용되는 입력기"
 
 #: ../scm/im-custom.scm:282
 msgid "Input method switching"
-msgstr ""
+msgstr "입력기 전환"
 
 #: ../scm/im-custom.scm:288
 msgid "Enable IM switching by hotkey"
-msgstr ""
+msgstr "단축키로 입력기를 전환"
 
 #: ../scm/im-custom.scm:294
 msgid "IM switching key"
-msgstr ""
+msgstr "입력기 전환 키"
 
 #: ../scm/im-custom.scm:300
 msgid "Skip direct method for IM switching by hotkey"
-msgstr ""
+msgstr "단축키로 입력기 전환시 직접 입력을 건너뜀"
 
 #: ../scm/im-custom.scm:316
 msgid "Input method toggle"
@@ -2928,7 +2928,7 @@ msgstr "툴바에 입력기 전환 메뉴를 표시"
 
 #: ../scm/im-custom.scm:435
 msgid "All input method of text areas on the system are changed."
-msgstr ""
+msgstr "모든 텍스트 영역의 입력기가 변경됨"
 
 #: ../scm/im-custom.scm:437
 msgid "focused application only"
@@ -2938,7 +2938,7 @@ msgstr "포커스된 응용프로그램만"
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
-msgstr ""
+msgstr "포커스된 애플리케이션의 입력기만 변경됨"
 
 #: ../scm/im-custom.scm:440
 msgid "focused text area only"
@@ -2948,11 +2948,11 @@ msgstr "포커스된 텍스트영역만"
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
-msgstr ""
+msgstr "포커스된 텍스트 영역의 입력기만 변경됨"
 
 #: ../scm/im-custom.scm:443
 msgid "Specify where the IM switching takes effect."
-msgstr ""
+msgstr "입력기 전환이 유효한 범위를 지정"
 
 #: ../scm/im-custom.scm:454
 msgid "full-featured input method switcher"
@@ -2962,7 +2962,7 @@ msgstr "기능이 완비된 uim 입력기 전환 프로그램"
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
-msgstr ""
+msgstr "툴바에 uim 입력기 전환 프로그램의 시작 버튼을 표시"
 
 #: ../scm/im-custom.scm:460
 msgid "preference tool"
@@ -2986,19 +2986,19 @@ msgstr "도움말"
 
 #: ../scm/im-custom.scm:491
 msgid "System"
-msgstr ""
+msgstr "시스템"
 
 #: ../scm/im-custom.scm:494
 msgid "Manual"
-msgstr ""
+msgstr "수동"
 
 #: ../scm/im-custom.scm:496
 msgid "Document browser"
-msgstr ""
+msgstr "문서 브라우저"
 
 #: ../scm/im-custom.scm:502
 msgid "Browser name"
-msgstr ""
+msgstr "브라우저 이름"
 
 #: ../scm/im-custom.scm:513
 msgid "Show input mode nearby cursor"
@@ -3006,15 +3006,15 @@ msgstr "입력 모드를 커서 근처에 표시"
 
 #: ../scm/im-custom.scm:520
 msgid "With mode"
-msgstr ""
+msgstr "모드에 따라"
 
 #: ../scm/im-custom.scm:523
 msgid "With time"
-msgstr ""
+msgstr "시간에 따라"
 
 #: ../scm/im-custom.scm:525
 msgid "Show input mode"
-msgstr ""
+msgstr "입력 모드 표시"
 
 #: ../scm/im-custom.scm:536
 msgid "Time length for showing input mode nearby the cursor"
@@ -3026,7 +3026,7 @@ msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
 #: ../scm/im-custom.scm:549
 msgid "Enable annotation"
-msgstr ""
+msgstr "주석을 사용"
 
 #: ../scm/im-custom.scm:556 ../scm/im-custom.scm:557 ../scm/im-custom.scm:586
 msgid "EB library"
