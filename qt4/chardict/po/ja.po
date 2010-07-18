@@ -242,7 +242,7 @@ msgstr "一般句読点"
 
 #: qt4/chardict/unicodeviewwidget.cpp:118
 msgid "Superscripts and Subscripts"
-msgstr "上qt4/chardict下付き文字"
+msgstr "上付き/下付き文字"
 
 #: qt4/chardict/unicodeviewwidget.cpp:119
 msgid "Currency Symbols"
