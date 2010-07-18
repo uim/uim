@@ -72,6 +72,8 @@ static char DEFAULT_TABLE[TABLE_NR_CELLS] = {
 CandidateTableWindow::CandidateTableWindow(QWidget *parent)
 : AbstractCandidateWindow(parent)
 {
+    initTable();
+
     QGridLayout *lLayout = createLayout(A_HEIGHT, L_WIDTH, 0, 0);
     QGridLayout *rLayout = createLayout(A_HEIGHT, R_WIDTH, 0, L_WIDTH);
     aLayout = createLayout(A_HEIGHT, A_WIDTH, 0, L_WIDTH + R_WIDTH);
@@ -96,8 +98,6 @@ CandidateTableWindow::CandidateTableWindow(QWidget *parent)
     layout->addWidget(numLabel);
 
     setLayout(layout);
-
-    initTable();
 }
 
 CandidateTableWindow::~CandidateTableWindow()
@@ -162,7 +162,15 @@ QGridLayout *CandidateTableWindow::createLayout(int row, int column,
             KeyButton *button = new KeyButton;
             connect(button, SIGNAL(candidateClicked(int)),
                 this, SLOT(slotCandidateClicked(int)));
-            buttonArray[i + rowOffset][j + columnOffset] = button;
+            int r = i + rowOffset;
+            int c = j + columnOffset;
+            buttonArray[r][c] = button;
+            if (table[r * TABLE_NR_COLUMNS + c] == '\0') {
+                // Hide this button because some styles such as Oxygen
+                // ignore the flat property.
+                button->hide();
+                button->setFlat(true);
+            }
             layout->addWidget(button, i, j);
         }
     }
@@ -209,16 +217,12 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
     int delta = 0;
     for (int i = 0; i < TABLE_NR_ROWS; i++) {
         for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
-            KeyButton *button = buttonArray[i][j];
             if (table[index] == '\0') {
-                // Hide this button because some styles such as Oxygen
-                // ignore the flat property.
-                button->hide();
-                button->setFlat(true);
                 delta++;
                 index++;
                 continue;
             }
+            KeyButton *button = buttonArray[i][j];
             if (index - delta >= ncandidates) {
                 if (button->text().isEmpty())
                     button->setEnabled(false);
