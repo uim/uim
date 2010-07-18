@@ -222,12 +222,8 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
                 index++;
                 continue;
             }
-            KeyButton *button = buttonArray[i][j];
-            if (index - delta >= ncandidates) {
-                if (!button->text().isEmpty())
-                    button->setEnabled(true);
+            if (index - delta >= ncandidates)
                 continue;
-            }
             int candidateIndex = displayLimit * newpage + index - delta;
             uim_candidate cand = stores[candidateIndex];
             QString headString
