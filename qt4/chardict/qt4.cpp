@@ -151,6 +151,10 @@ void KUimCharDict::setupWidgets()
     m_charLineEdit = new QLineEdit( upperHWidget );
     charLabel->setBuddy( m_charLineEdit );
 
+    QPushButton *clearButton = new QPushButton( _( "Clear" ), upperHWidget );
+    connect( clearButton, SIGNAL( clicked() ),
+        m_charLineEdit, SLOT( clear() ) );
+
     QHBoxLayout *upperHLayout = new QHBoxLayout( upperHWidget );
     upperHLayout->setSpacing( 4 );
     upperHLayout->addWidget( modeLabel );
@@ -159,6 +163,7 @@ void KUimCharDict::setupWidgets()
     upperHLayout->addSpacing( 11 );
     upperHLayout->addWidget( charLabel );
     upperHLayout->addWidget( m_charLineEdit );
+    upperHLayout->addWidget( clearButton );
 
     m_widgetStack = new QStackedWidget( this );
     m_widgetStack->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
