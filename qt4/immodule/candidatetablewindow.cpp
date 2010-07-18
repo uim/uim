@@ -275,20 +275,20 @@ void CandidateTableWindow::setIndex(int totalIndex)
 void CandidateTableWindow::getPosition(int &row, int &column,
     const QString &headString)
 {
-    int index = 0;
+    char *ch = table;
     for (int i = 0; i < TABLE_NR_ROWS; i++) {
         for (int j = 0; j < TABLE_NR_COLUMNS; j++) {
-            if (table[index] == '\0') {
-                index++;
+            if (*ch == '\0') {
+                ch++;
                 continue;
             }
-            const char str[] = {table[index], '\0'};
+            const char str[] = {*ch, '\0'};
             if (headString == QLatin1String(str)) {
                 row = i;
                 column = j;
                 return;
             }
-            index++;
+            ch++;
         }
     }
 }
