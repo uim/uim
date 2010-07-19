@@ -263,7 +263,7 @@ void CandidateTableWindow::updateSize()
     bool hasBlockLrs = !(isEmptyBlock(lsLayout) && isEmptyBlock(rsLayout));
 
     setBlockVisible(aLayout, hasBlockA || hasBlockAs);
-    setBlockVisible(asLayout, hasBlockAs);
+    setBlockVisible(asLayout, hasBlockAs || (hasBlockA && hasBlockLrs));
     setBlockVisible(lsLayout, hasBlockLrs || hasBlockAs);
     setBlockVisible(rsLayout, hasBlockLrs || hasBlockAs);
 }
