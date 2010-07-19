@@ -314,6 +314,8 @@
      (editor ())
      ;;; 削除確認ダイアログ
      (dialog ())
+     ;;; 英字変換(SKK abbrev)モードかどうか
+     (latin-conv #f)
      )))
 (define-record 'tutcode-context tutcode-context-rec-spec)
 (define tutcode-context-new-internal tutcode-context-new)
@@ -413,6 +415,7 @@
     (tutcode-context-set-head! pc ())
     (tutcode-context-set-nr-candidates! pc 0)
     (tutcode-reset-candidate-window pc)
+    (tutcode-context-set-latin-conv! pc #f)
     (tutcode-context-set-child-context! pc ())
     (tutcode-context-set-child-type! pc ())
     (if (not (null? cpc))
@@ -681,6 +684,7 @@
                  (candstr
                    (case cand
                     ((tutcode-mazegaki-start) "◇")
+                    ((tutcode-latin-conv-start) "/")
                     ((tutcode-bushu-start) "◆")
                     (else cand))))
                 (set! label-cand-alist
@@ -950,6 +954,10 @@
          (if res
            (case res
             ((tutcode-mazegaki-start)
+              (tutcode-context-set-latin-conv! pc #f)
+              (tutcode-context-set-state! pc 'tutcode-state-yomi))
+            ((tutcode-latin-conv-start)
+              (tutcode-context-set-latin-conv! pc #t)
               (tutcode-context-set-state! pc 'tutcode-state-yomi))
             ((tutcode-bushu-start)
               (tutcode-context-set-state! pc 'tutcode-state-bushu)
@@ -1084,6 +1092,8 @@
              (tutcode-begin-conversion pc)
              (tutcode-flush pc))
            (set! res (charcode->string key)))))
+      ((tutcode-context-latin-conv pc)
+       (set! res (charcode->string key)))
       (else
        (set! res (tutcode-push-key! pc (charcode->string key)))
        (if (not res)
@@ -1159,6 +1169,8 @@
        (set! res (tutcode-push-key! pc (charcode->string key)))
        (case res
         ((tutcode-mazegaki-start) ;XXX 部首合成変換中は交ぜ書き変換は無効にする
+          (set! res #f))
+        ((tutcode-latin-conv-start)
           (set! res #f))
         ((tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
@@ -1893,7 +1905,7 @@
 ;;; tutcode-key-customで設定された交ぜ書き/部首合成変換開始のキーシーケンスを
 ;;; コード表に反映する
 (define (tutcode-custom-set-mazegaki/bushu-start-sequence!)
-  (let*
+  (let
     ((make-subrule
       (lambda (keyseq cmd)
         (if
@@ -1901,15 +1913,16 @@
             keyseq
             (> (string-length keyseq) 0))
           (let ((keys (reverse (string-to-list keyseq))))
-            (list (list (list keys) cmd)))
-          #f)))
-     (subrule ()))
-    (set! subrule
-      (make-subrule tutcode-mazegaki-start-sequence '(tutcode-mazegaki-start)))
-    (set! subrule
-      (append subrule
-        (make-subrule tutcode-bushu-start-sequence '(tutcode-bushu-start))))
-    (tutcode-rule-set-sequences! subrule)))
+            (list (list keys) cmd))
+          #f))))
+    (tutcode-rule-set-sequences!
+      (list
+        (make-subrule tutcode-mazegaki-start-sequence
+          '(tutcode-mazegaki-start))
+        (make-subrule tutcode-latin-conv-start-sequence
+          '(tutcode-latin-conv-start))
+        (make-subrule tutcode-bushu-start-sequence
+          '(tutcode-bushu-start))))))
 
 ;;; コード表の一部の定義を上書き変更/追加する。~/.uimからの使用を想定。
 ;;; 呼び出し時にはtutcode-rule-userconfigに登録しておくだけで、
