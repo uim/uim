@@ -763,9 +763,8 @@ msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
 #: ../qt4/switcher/qt4.cpp:142
-#, fuzzy
 msgid "Close"
-msgstr "消去"
+msgstr ""
 
 #: ../scm/action.scm:498 ../scm/action.scm:499
 msgid "unknown"
@@ -5609,9 +5608,8 @@ msgid "Use auto help window"
 msgstr "自動ヘルプウィンドウを使用する"
 
 #: ../scm/tutcode-custom.scm:144
-#, fuzzy
 msgid "Show real keys on auto help window"
-msgstr "自動ヘルプウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
@@ -5646,14 +5644,12 @@ msgid "[TUT-Code] bushu conversion mode"
 msgstr "[TUT-Code] 部首合成変換モード"
 
 #: ../scm/tutcode-key-custom.scm:83
-#, fuzzy
 msgid "[TUT-Code] latin conversion mode"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:89
-#, fuzzy
 msgid "[TUT-Code] toggle use of stroke help window"
-msgstr "仮想鍵盤ウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:95
 msgid "[TUT-Code] begin conversion"
@@ -5696,14 +5692,12 @@ msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr "[TUT-Code] vi協調モードでESCとして扱うキー"
 
 #: ../scm/tutcode-key-custom.scm:155
-#, fuzzy
 msgid "[TUT-Code] register new entry to dictionary"
-msgstr "[SKK] 個人辞書中の単語を削除"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:161
-#, fuzzy
 msgid "[TUT-Code] purge the entry from dictionary"
-msgstr "[SKK] 個人辞書中の単語を削除"
+msgstr ""
 
 #: ../scm/viqr.scm:206
 msgid "VIQR"
