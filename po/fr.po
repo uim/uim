@@ -657,9 +657,8 @@ msgid "Show this dialog on startup"
 msgstr ""
 
 #: ../qt4/switcher/qt4.cpp:142
-#, fuzzy
 msgid "Close"
-msgstr "Effacer"
+msgstr ""
 
 #: ../scm/action.scm:498 ../scm/action.scm:499
 msgid "unknown"
