@@ -14,6 +14,11 @@ Overview of changes from 1.5.x to 1.6.0-alpha
     * Support for preedit color configuration
     * A caret state indicator
 
+* Enhancements
+  - uim-elatin
+    * LaTeX-like rules
+    * preedit completion
+
 * Fixes
   - Qt4 bridge
     * Fix bug: Unwanted IM reset on focus-out of Qt4 immodule (#13910)
