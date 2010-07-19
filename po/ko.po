@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-07 10:15+0900\n"
+"POT-Creation-Date: 2010-07-19 20:38+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -325,52 +325,52 @@ msgstr ""
 msgid "Part of speech is emtpy!"
 msgstr ""
 
-#: ../helper/eggtrayicon.c:134
+#: ../helper/eggtrayicon.c:143
 msgid "Orientation"
 msgstr "방향"
 
-#: ../helper/eggtrayicon.c:135
+#: ../helper/eggtrayicon.c:144
 msgid "The orientation of the tray."
 msgstr "트레이의 방향"
 
-#: ../helper/im-switcher-gtk.c:283 ../qt/switcher-qt.cpp:106
+#: ../helper/im-switcher-gtk.c:308 ../qt/switcher-qt.cpp:106
 #: ../qt4/switcher/qt4.cpp:111
 msgid "InputMethodName"
 msgstr "입력기 이름"
 
-#: ../helper/im-switcher-gtk.c:292 ../qt/switcher-qt.cpp:107
+#: ../helper/im-switcher-gtk.c:317 ../qt/switcher-qt.cpp:107
 #: ../qt4/switcher/qt4.cpp:111
 msgid "Language"
 msgstr "언어"
 
-#: ../helper/im-switcher-gtk.c:301 ../qt/switcher-qt.cpp:108
+#: ../helper/im-switcher-gtk.c:326 ../qt/switcher-qt.cpp:108
 #: ../qt4/switcher/qt4.cpp:111
 msgid "Description"
 msgstr "설명"
 
-#: ../helper/im-switcher-gtk.c:332 ../qt/switcher-qt.cpp:71
+#: ../helper/im-switcher-gtk.c:357 ../qt/switcher-qt.cpp:71
 #: ../qt4/switcher/qt4.cpp:74
 msgid "uim input method switcher"
 msgstr "uim 입력기 전환"
 
-#: ../helper/im-switcher-gtk.c:361 ../qt/switcher-qt.cpp:112
+#: ../helper/im-switcher-gtk.c:386 ../qt/switcher-qt.cpp:112
 #: ../qt4/switcher/qt4.cpp:127 ../scm/im-custom.scm:442
 msgid "Effective coverage"
 msgstr "적용범위"
 
 #. radio buttons for the switcher coverage
-#: ../helper/im-switcher-gtk.c:369 ../qt/switcher-qt.cpp:113
+#: ../helper/im-switcher-gtk.c:394 ../qt/switcher-qt.cpp:113
 #: ../qt4/switcher/qt4.cpp:117 ../scm/im-custom.scm:434
 msgid "whole desktop"
 msgstr "데스크탑 전체"
 
 #. default is "whole desktop"
-#: ../helper/im-switcher-gtk.c:370 ../qt/switcher-qt.cpp:116
+#: ../helper/im-switcher-gtk.c:395 ../qt/switcher-qt.cpp:116
 #: ../qt4/switcher/qt4.cpp:118
 msgid "current application only"
 msgstr "현재 응용프로그램만"
 
-#: ../helper/im-switcher-gtk.c:371 ../qt/switcher-qt.cpp:118
+#: ../helper/im-switcher-gtk.c:396 ../qt/switcher-qt.cpp:118
 #: ../qt4/switcher/qt4.cpp:119
 msgid "current text area only"
 msgstr "현재 텍스트영역만"
@@ -547,7 +547,7 @@ msgstr "uim 애플릿"
 msgid "Applet for indicating uim's status"
 msgstr "uim 상태 표시 애플릿"
 
-#: ../helper/toolbar-common-gtk.c:84
+#: ../helper/toolbar-common-gtk.c:85
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:94
@@ -555,7 +555,7 @@ msgstr "uim 상태 표시 애플릿"
 msgid "Switch input method"
 msgstr "입력기 전환"
 
-#: ../helper/toolbar-common-gtk.c:93
+#: ../helper/toolbar-common-gtk.c:94
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:96
@@ -563,7 +563,7 @@ msgstr "입력기 전환"
 msgid "Preference"
 msgstr "설정"
 
-#: ../helper/toolbar-common-gtk.c:102
+#: ../helper/toolbar-common-gtk.c:103
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:98
@@ -571,7 +571,7 @@ msgstr "설정"
 msgid "Japanese dictionary editor"
 msgstr "일본어 사전 도구"
 
-#: ../helper/toolbar-common-gtk.c:111
+#: ../helper/toolbar-common-gtk.c:112
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:100
@@ -579,7 +579,7 @@ msgstr "일본어 사전 도구"
 msgid "Input pad"
 msgstr "입력 패드"
 
-#: ../helper/toolbar-common-gtk.c:120
+#: ../helper/toolbar-common-gtk.c:121
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:102
@@ -587,7 +587,7 @@ msgstr "입력 패드"
 msgid "Handwriting input pad"
 msgstr "손글씨 입력 패드"
 
-#: ../helper/toolbar-common-gtk.c:133
+#: ../helper/toolbar-common-gtk.c:134
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:104
@@ -595,7 +595,7 @@ msgstr "손글씨 입력 패드"
 msgid "Help"
 msgstr "도움말"
 
-#: ../helper/toolbar-common-gtk.c:816
+#: ../helper/toolbar-common-gtk.c:863
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:107
 msgid "Quit this toolbar"
@@ -629,12 +629,13 @@ msgstr "디폴트"
 msgid "OK"
 msgstr "확인"
 
-#: ../qt/pref-qt.cpp:169 ../qt4/pref/qt4.cpp:165
+#: ../qt/pref-qt.cpp:169 ../qt/switcher-qt.cpp:128 ../qt4/pref/qt4.cpp:165
+#: ../qt4/switcher/qt4.cpp:137
 msgid "Apply"
 msgstr "적용"
 
-#: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:128
-#: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:260 ../qt4/switcher/qt4.cpp:137
+#: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:133
+#: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:260
 msgid "Cancel"
 msgstr "취소"
 
@@ -665,6 +666,10 @@ msgstr "아니오"
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:363
 msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
+
+#: ../qt4/switcher/qt4.cpp:142
+msgid "Close"
+msgstr ""
 
 #: ../scm/action.scm:498 ../scm/action.scm:499
 msgid "unknown"
@@ -890,10 +895,11 @@ msgstr ""
 #: ../scm/social-ime-key-custom.scm:44 ../scm/social-ime-key-custom.scm:48
 #: ../scm/tutcode-custom.scm:55 ../scm/tutcode-custom.scm:62
 #: ../scm/tutcode-custom.scm:75 ../scm/tutcode-custom.scm:81
-#: ../scm/tutcode-custom.scm:87 ../scm/tutcode-custom.scm:97
+#: ../scm/tutcode-custom.scm:87 ../scm/tutcode-custom.scm:93
 #: ../scm/tutcode-custom.scm:103 ../scm/tutcode-custom.scm:109
 #: ../scm/tutcode-custom.scm:115 ../scm/tutcode-custom.scm:121
 #: ../scm/tutcode-custom.scm:127 ../scm/tutcode-custom.scm:133
+#: ../scm/tutcode-custom.scm:139 ../scm/tutcode-custom.scm:145
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
 #: ../scm/wnn-custom.scm:44 ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52
 #: ../scm/wnn-custom.scm:62 ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83
@@ -957,7 +963,7 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:85 ../scm/canna-custom.scm:82
 #: ../scm/generic-custom.scm:42 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:96
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:102
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr "후보창을 사용"
@@ -966,7 +972,7 @@ msgstr "후보창을 사용"
 #: ../scm/anthy-utf8-custom.scm:91 ../scm/canna-custom.scm:88
 #: ../scm/generic-custom.scm:48 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:108
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:114
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "후보창을 표시하기까지 변환키를 누르는 횟수"
@@ -976,7 +982,7 @@ msgstr "후보창을 표시하기까지 변환키를 누르는 횟수"
 #: ../scm/generic-custom.scm:54 ../scm/mana-custom.scm:86
 #: ../scm/prime-custom.scm:146 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
-#: ../scm/tutcode-custom.scm:114 ../scm/wnn-custom.scm:94
+#: ../scm/tutcode-custom.scm:120 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "후보창에 한번에 표시하는 후보의 수"
@@ -1219,7 +1225,7 @@ msgstr ""
 #: ../scm/anthy-utf8-custom.scm:358 ../scm/canna-custom.scm:391
 #: ../scm/mana-custom.scm:297 ../scm/prime-custom.scm:201
 #: ../scm/sj3-custom.scm:346 ../scm/skk-custom.scm:502
-#: ../scm/social-ime-custom.scm:334 ../scm/tutcode-custom.scm:80
+#: ../scm/social-ime-custom.scm:334 ../scm/tutcode-custom.scm:86
 #: ../scm/wnn-custom.scm:335 ../scm/yahoo-jp-custom.scm:340
 msgid "Enable vi-cooperative mode"
 msgstr ""
@@ -1469,6 +1475,8 @@ msgstr ""
 #: ../scm/tutcode-key-custom.scm:108 ../scm/tutcode-key-custom.scm:114
 #: ../scm/tutcode-key-custom.scm:120 ../scm/tutcode-key-custom.scm:126
 #: ../scm/tutcode-key-custom.scm:132 ../scm/tutcode-key-custom.scm:138
+#: ../scm/tutcode-key-custom.scm:144 ../scm/tutcode-key-custom.scm:150
+#: ../scm/tutcode-key-custom.scm:156 ../scm/tutcode-key-custom.scm:162
 #: ../scm/wnn-key-custom.scm:54 ../scm/wnn-key-custom.scm:60
 #: ../scm/wnn-key-custom.scm:66 ../scm/wnn-key-custom.scm:72
 #: ../scm/wnn-key-custom.scm:78 ../scm/wnn-key-custom.scm:84
@@ -4940,7 +4948,7 @@ msgstr ""
 msgid "Dictionary files"
 msgstr ""
 
-#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:102
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:108
 msgid "Commit candidate by heading label keys"
 msgstr ""
 
@@ -5020,7 +5028,7 @@ msgstr ""
 msgid "Visual style"
 msgstr ""
 
-#: ../scm/skk-custom.scm:430
+#: ../scm/skk-custom.scm:430 ../scm/tutcode-custom.scm:80
 msgid "Use recursive learning"
 msgstr ""
 
@@ -5458,20 +5466,24 @@ msgstr ""
 msgid "Enable learning in mazegaki conversion"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:86
+#: ../scm/tutcode-custom.scm:92
 msgid "Use Dvorak keyboard"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:120
+#: ../scm/tutcode-custom.scm:126
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:126
+#: ../scm/tutcode-custom.scm:132
 msgid "Use stroke help window"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:132
+#: ../scm/tutcode-custom.scm:138
 msgid "Use auto help window"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:144
+msgid "Show real keys on auto help window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:37
@@ -5507,43 +5519,59 @@ msgid "[TUT-Code] bushu conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:83
-msgid "[TUT-Code] begin conversion"
+msgid "[TUT-Code] latin conversion mode"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:89
-msgid "[TUT-Code] commit"
+msgid "[TUT-Code] toggle use of stroke help window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:95
-msgid "[TUT-Code] cancel"
+msgid "[TUT-Code] begin conversion"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:101
-msgid "[TUT-Code] next candidate"
+msgid "[TUT-Code] commit"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:107
-msgid "[TUT-Code] previous candidate"
+msgid "[TUT-Code] cancel"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:113
-msgid "[TUT-Code] next page of candidate window"
+msgid "[TUT-Code] next candidate"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:119
-msgid "[TUT-Code] previous page of candidate window"
+msgid "[TUT-Code] previous candidate"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:125
-msgid "[TUT-Code] backspace"
+msgid "[TUT-Code] next page of candidate window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:131
-msgid "[TUT-Code] return"
+msgid "[TUT-Code] previous page of candidate window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:137
+msgid "[TUT-Code] backspace"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:143
+msgid "[TUT-Code] return"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:149
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:155
+msgid "[TUT-Code] register new entry to dictionary"
+msgstr ""
+
+#: ../scm/tutcode-key-custom.scm:161
+msgid "[TUT-Code] purge the entry from dictionary"
 msgstr ""
 
 #: ../scm/viqr.scm:206
