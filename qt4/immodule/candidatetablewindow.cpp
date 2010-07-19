@@ -109,28 +109,23 @@ CandidateTableWindow::~CandidateTableWindow()
 QSize CandidateTableWindow::sizeHint() const
 {
     QRect lRect = lLayout->geometry();
-    QRect lSpacerRect = lLayout->cellRect(A_HEIGHT, L_WIDTH);
 
     // height
     // numLabel + lLayout
-    int height = numLabel->height()
-        + lRect.height() - lSpacerRect.height();
+    int height = numLabel->height() + lRect.height();
     if (lsLayout->isEnabled()) {
         // lsLayout
         height += lsLayout->geometry().height()
-            - lsLayout->cellRect(AS_HEIGHT, 0).height()
             + BLOCK_SPACING - 2 * HOMEPOSITION_SPACING;
     }
 
     // width
     // lLayout + rLayout
-    int width = lRect.width() - lSpacerRect.width()
-        + rLayout->geometry().width() - rLayout->cellRect(0, R_WIDTH).width()
+    int width = lRect.width() + rLayout->geometry().width()
         + BLOCK_SPACING - 2 * HOMEPOSITION_SPACING;
     if (aLayout->isEnabled()) {
         // aLayout
         width += aLayout->geometry().width()
-            - aLayout->cellRect(0, A_WIDTH).width()
             + BLOCK_SPACING - 2 * HOMEPOSITION_SPACING;
     }
 
