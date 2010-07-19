@@ -336,14 +336,16 @@
       (tutcode-read-personal-dictionary)))
   (let ((tc (tutcode-context-new-internal id im)))
     (tutcode-context-set-widgets! tc tutcode-widgets)
-    (tutcode-custom-load-rule! tutcode-rule-filename)
-    (if tutcode-use-dvorak?
-      (set! tutcode-rule (tutcode-rule-qwerty-to-dvorak tutcode-rule)))
-    ;; tutcode-mazegaki/bushu-start-sequenceは、
-    ;; tutcode-use-dvorak?がオンのときはDvorakのシーケンスとみなして反映する。
-    ;; つまり、ruleのqwerty-to-dvorak変換後に反映する。
-    (tutcode-custom-set-mazegaki/bushu-start-sequence!)
-    (tutcode-rule-commit-sequences! tutcode-rule-userconfig)
+    (if (null? tutcode-rule)
+      (begin
+        (tutcode-custom-load-rule! tutcode-rule-filename)
+        (if tutcode-use-dvorak?
+          (set! tutcode-rule (tutcode-rule-qwerty-to-dvorak tutcode-rule)))
+        ;; tutcode-mazegaki/bushu-start-sequenceは、
+        ;; tutcode-use-dvorak?がオンのときはDvorakのシーケンスとみなして反映。
+        ;; つまり、ruleのqwerty-to-dvorak変換後に反映する。
+        (tutcode-custom-set-mazegaki/bushu-start-sequence!)
+        (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
     (tutcode-context-set-rk-context! tc (rk-context-new tutcode-rule #t #f))
     (if tutcode-use-recursive-learning?
       (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
