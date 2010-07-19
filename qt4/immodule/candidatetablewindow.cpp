@@ -226,13 +226,13 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
                 continue;
             int candidateIndex = displayLimit * newpage + index - delta;
             uim_candidate cand = stores[candidateIndex];
-            QString headString
-                = QString::fromUtf8(uim_candidate_get_heading_label(cand));
             QString candString
                 = QString::fromUtf8(uim_candidate_get_cand_str(cand));
             if (!candString.isEmpty()) {
                 int row = i;
                 int column = j;
+                QString headString
+                    = QString::fromUtf8(uim_candidate_get_heading_label(cand));
                 getPosition(row, column, headString);
                 KeyButton *b = buttonArray[row][column];
                 // '&' shouldn't be used as the shortcut key
