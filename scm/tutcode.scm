@@ -717,7 +717,7 @@
       (tutcode-check-stroke-help-window-begin pc))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
-;;; 表形式の候補ウィンドウを想定して、以下のように表示する。
+;;; 表形式の候補ウィンドウの場合は、以下のように表示する。
 ;;; 1が第1打鍵、2が第2打鍵。「携」
 ;;;  ・・・・    ・・・・
 ;;;  ・・・・    ・・3 ・
@@ -739,18 +739,27 @@
 ;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
 ;;; │  │  │e │  │f │  │2a(▲林缶)│  │  │  │  │
 ;;; └─┴─┴─┴─┴─┴─┴─────┴─┴─┴─┴─┘
+;;;
+;;; 通常の候補ウィンドウの場合は、以下のように表示する。
+;;;   憂 lns
+;;;   鬱 ▲林缶 nt cbo
+;;;
 ;;; @param strlist 確定した文字列のリスト(逆順)
 ;;; @param yomilist 変換前の読みの文字列のリスト(逆順)
 (define (tutcode-check-auto-help-window-begin pc strlist yomilist)
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-auto-help-window?)
-    (let
-      ;; 例:(("y" "2" "1") ("t" "3"))
-      ((label-cands-alist
-        (tutcode-auto-help-update-stroke-alist
-          () tutcode-auto-help-cand-str-list
-          (lset-difference string=? (reverse strlist) yomilist))))
+    (let*
+      ((helpstrlist (lset-difference string=? (reverse strlist) yomilist))
+       (label-cands-alist
+        (if (not tutcode-auto-help-with-real-keys?)
+          ;; 表形式の場合の例:(("y" "2" "1") ("t" "3"))
+          (tutcode-auto-help-update-stroke-alist
+            () tutcode-auto-help-cand-str-list helpstrlist)
+          ;; 通常の場合の例:(("暗" "t" "y" "y"))
+          (reverse
+            (tutcode-auto-help-update-stroke-alist-normal () helpstrlist)))))
       (if (not (null? label-cands-alist))
         (let
           ((stroke-help
@@ -784,6 +793,21 @@
         label-cands-alist (car cand-list) (car kanji-list))
       (cdr cand-list) (cdr kanji-list))))
 
+;;; 自動ヘルプの通常形式表示に使うalistを更新する。
+;;; alistは以下のように文字と、文字を入力するためのキーのリスト(逆順)
+;;;  例:(("暗" "t" "y" "y"))
+;;; @param label-cands-alist 元のalist
+;;; @param kanji-list ヘルプ表示対象である、確定された漢字
+;;; @return 更新後の自動ヘルプ用alist
+(define (tutcode-auto-help-update-stroke-alist-normal label-cands-alist
+         kanji-list)
+  (if (null? kanji-list)
+    label-cands-alist
+    (tutcode-auto-help-update-stroke-alist-normal
+      (tutcode-auto-help-update-stroke-alist-normal-with-kanji
+        label-cands-alist (car kanji-list))
+      (cdr kanji-list))))
+
 ;;; 自動ヘルプ:対象の1文字を入力するストロークをヘルプ用alistに追加する。
 ;;; @param label-cands-alist 元のalist
 ;;; @param cand-list ヘルプ表示に使う、各打鍵を示す文字のリスト
@@ -809,6 +833,31 @@
               (caaar decomposed)) ; 部首1
             (cadr cand-list) (caaadr decomposed))))))) ; 部首2
 
+;;; 自動ヘルプ:対象の1文字を入力するストロークをヘルプ用alistに追加する。
+;;; @param label-cands-alist 元のalist
+;;; @param kanji ヘルプ表示対象文字
+;;; @return 更新後の自動ヘルプ用alist
+(define (tutcode-auto-help-update-stroke-alist-normal-with-kanji
+          label-cands-alist kanji)
+  (let ((stroke (tutcode-reverse-find-seq kanji)))
+    (if stroke
+      (tutcode-auto-help-update-stroke-alist-normal-with-stroke
+        label-cands-alist stroke kanji)
+      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji)))
+        ;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
+        (if (not decomposed)
+          label-cands-alist
+          (tutcode-auto-help-update-stroke-alist-normal-with-stroke
+            label-cands-alist
+            (cons
+              (string-append "▲"
+                (caar (cdar decomposed)) (caar (cdadr decomposed)) " ")
+              (append
+                (caaar decomposed)    ; 部首1
+                (list " ")
+                (caaadr decomposed))) ; 部首2
+            kanji))))))
+
 ;;; 自動ヘルプ:対象のストローク(キーのリスト)をヘルプ用alistに追加する。
 ;;; @param label-cands-alist 元のalist
 ;;; @param cand-list ヘルプ表示に使う、各打鍵を示す文字のリスト
@@ -822,6 +871,17 @@
       (tutcode-auto-help-update-stroke-alist-with-key
         label-cands-alist cand-list (car stroke))
       (cdr cand-list) (cdr stroke))))
+
+;;; 自動ヘルプ:対象のストローク(キーのリスト)をヘルプ用alistに追加する。
+;;; @param label-cands-alist 元のalist
+;;; @param stroke 対象ストローク
+;;; @param label 確定された漢字
+;;; @return 更新後の自動ヘルプ用alist
+(define (tutcode-auto-help-update-stroke-alist-normal-with-stroke
+          label-cands-alist stroke label)
+  (let ((label-cand (assoc label label-cands-alist)))
+    (if (not label-cand)
+      (cons (cons label (reverse stroke)) label-cands-alist))))
 
 ;;; 自動ヘルプ:対象のキーをヘルプ用alistに追加する。
 ;;; @param label-cands-alist 元のalist

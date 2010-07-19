@@ -138,6 +138,12 @@
   (N_ "Use auto help window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-auto-help-with-real-keys? #f
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Show real keys on auto help window")
+  (N_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'tutcode-candidate-op-count
 		 'custom-activity-hooks
@@ -153,3 +159,8 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   tutcode-use-candidate-window?))
+
+(custom-add-hook 'tutcode-auto-help-with-real-keys?
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-auto-help-window?))
