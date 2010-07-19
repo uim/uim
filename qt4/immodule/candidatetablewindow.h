@@ -52,6 +52,8 @@ class CandidateTableWindow : public AbstractCandidateWindow
         explicit CandidateTableWindow(QWidget *parent);
         ~CandidateTableWindow();
 
+        QSize sizeHint() const;
+
     private slots:
         void slotCandidateClicked(int index);
 
@@ -66,6 +68,8 @@ class CandidateTableWindow : public AbstractCandidateWindow
         void getPosition(int &row, int &column,
             const QString &headString);
 
+        QGridLayout *lLayout;
+        QGridLayout *rLayout;
         QGridLayout *lsLayout;
         QGridLayout *rsLayout;
         QGridLayout *aLayout;

@@ -74,8 +74,8 @@ CandidateTableWindow::CandidateTableWindow(QWidget *parent)
 {
     initTable();
 
-    QGridLayout *lLayout = createLayout(A_HEIGHT, L_WIDTH, 0, 0);
-    QGridLayout *rLayout = createLayout(A_HEIGHT, R_WIDTH, 0, L_WIDTH);
+    lLayout = createLayout(A_HEIGHT, L_WIDTH, 0, 0);
+    rLayout = createLayout(A_HEIGHT, R_WIDTH, 0, L_WIDTH);
     aLayout = createLayout(A_HEIGHT, A_WIDTH, 0, L_WIDTH + R_WIDTH);
     lsLayout = createLayout(AS_HEIGHT, L_WIDTH, A_HEIGHT, 0);
     rsLayout = createLayout(AS_HEIGHT, R_WIDTH, A_HEIGHT, L_WIDTH);
@@ -104,6 +104,37 @@ CandidateTableWindow::~CandidateTableWindow()
 {
     if (table != DEFAULT_TABLE)
         free(table);
+}
+
+QSize CandidateTableWindow::sizeHint() const
+{
+    QRect lRect = lLayout->geometry();
+    QRect lSpacerRect = lLayout->cellRect(A_HEIGHT, L_WIDTH);
+
+    // height
+    // numLabel + lLayout
+    int height = numLabel->height()
+        + lRect.height() - lSpacerRect.height();
+    if (lsLayout->isEnabled()) {
+        // lsLayout
+        height += lsLayout->geometry().height()
+            - lsLayout->cellRect(AS_HEIGHT, 0).height()
+            + BLOCK_SPACING - 2 * HOMEPOSITION_SPACING;
+    }
+
+    // width
+    // lLayout + rLayout
+    int width = lRect.width() - lSpacerRect.width()
+        + rLayout->geometry().width() - rLayout->cellRect(0, R_WIDTH).width()
+        + BLOCK_SPACING - 2 * HOMEPOSITION_SPACING;
+    if (aLayout->isEnabled()) {
+        // aLayout
+        width += aLayout->geometry().width()
+            - aLayout->cellRect(0, A_WIDTH).width()
+            + BLOCK_SPACING - 2 * HOMEPOSITION_SPACING;
+    }
+
+    return QSize(width, height);
 }
 
 void CandidateTableWindow::slotCandidateClicked(int index)
@@ -266,6 +297,9 @@ void CandidateTableWindow::updateSize()
     setBlockVisible(asLayout, hasBlockAs || (hasBlockA && hasBlockLrs));
     setBlockVisible(lsLayout, hasBlockLrs || hasBlockAs);
     setBlockVisible(rsLayout, hasBlockLrs || hasBlockAs);
+
+    setMaximumSize(sizeHint());
+    setMinimumSize(QSize(0, 0));
 }
 
 void CandidateTableWindow::setIndex(int totalIndex)
