@@ -19,7 +19,8 @@ SVGS += direct_input.svg on.svg off.svg \
 	wb86.svg zm.svg
 
 # Japanese kana input methods
-SVGS += ja_romaji.svg ja_kana.svg ja_azik.svg ja_nicola.svg ja_pocketbell.svg
+SVGS += ja_romaji.svg ja_kana.svg ja_azik.svg ja_act.svg ja_kzik.svg \
+        ja_nicola.svg ja_pocketbell.svg
 
 # Tools
 SVGS += im_switcher.svg uim-dict.svg
@@ -49,7 +50,8 @@ SVG_PNGS = unknown.png \
            ja_halfwidth_alnum.png ja_fullwidth_alnum.png \
            prime_mode_application.png \
 	   ko_direct.png ko_hangulchar.png ko_hangulword.png \
-           ja_romaji.png ja_kana.png ja_azik.png ja_nicola.png \
+           ja_romaji.png ja_kana.png ja_azik.png ja_act.png ja_kzik.png \
+           ja_nicola.png \
            ja_pocketbell.png \
            wb86.png zm.png \
 	   im_switcher.png uim-dict.png $(IM_SUBST_PNGS)

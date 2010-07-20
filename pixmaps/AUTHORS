@@ -31,6 +31,8 @@ uim-gray.png im_subst.svg, im_switcher.svg:
 uim-dict.svg
 # tentative WuBi86 and Zhengma input method icons
 wb86.svg, zm.svg
+# ja_kzik.svg is derived from ja_azik.svg
+ja_kzik.svg
   Etsushi Kato <ek.kato@gmail.com>
 
 # ko_direct.svg is based on ja_fullwidth_alnum.svg.
@@ -39,3 +41,6 @@ wb86.svg, zm.svg
 byeoru.svg, ko_direct.svg, ko_hangulchar.svg, ko_hangulword.svg:
   Jae-hyeon Park <jhyeon@gmail.com>
 
+# ja_act.svg
+ja_act.svg
+  Haruhiro Yoshimoto <hpnpwd@gmail.com>

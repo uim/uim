@@ -31,8 +31,6 @@
 
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "wnn-custom.scm")
@@ -116,6 +114,8 @@
 (define wnn-input-rule-roma 0)
 (define wnn-input-rule-kana 1)
 (define wnn-input-rule-azik 2)
+(define wnn-input-rule-act 3)
+(define wnn-input-rule-kzik 4)
 
 (define wnn-candidate-type-katakana -2)
 (define wnn-candidate-type-hiragana -3)
@@ -290,6 +290,7 @@
 		      wnn-input-rule-kana))
 		 (lambda (wc)
 		   (wnn-prepare-input-rule-activation wc)
+                   (require "japanese-kana.scm")
 		   (wnn-context-set-input-rule! wc wnn-input-rule-kana)
                    (wnn-context-change-kana-mode!
                      wc (wnn-context-kana-mode wc))
@@ -306,9 +307,42 @@
 		      wnn-input-rule-azik))
 		 (lambda (wc)
 		   (wnn-prepare-input-rule-activation wc)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (wnn-context-rkc wc)
 					 ja-azik-rule)
 		   (wnn-context-set-input-rule! wc wnn-input-rule-azik)))
+
+(register-action 'action_wnn_kzik
+		 (lambda (wc)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (wc)
+		   (= (wnn-context-input-rule wc)
+		      wnn-input-rule-kzik))
+		 (lambda (wc)
+		   (wnn-prepare-input-rule-activation wc)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (wnn-context-rkc wc)
+					 ja-kzik-rule)
+		   (wnn-context-set-input-rule! wc wnn-input-rule-kzik)))
+
+(register-action 'action_wnn_act
+		 (lambda (wc)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (wc)
+		   (= (wnn-context-input-rule wc)
+		      wnn-input-rule-act))
+		 (lambda (wc)
+		   (wnn-prepare-input-rule-activation wc)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (wnn-context-rkc wc)
+					 ja-act-rule)
+		   (wnn-context-set-input-rule! wc wnn-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -402,9 +436,6 @@
     (wnn-context-set-preconv-ustr! wc (ustr-new '()))
     (wnn-context-set-raw-ustr! wc (ustr-new '()))
     (wnn-context-set-segments! wc (ustr-new '()))
-    (if using-kana-table?
-        (wnn-context-set-input-rule! wc wnn-input-rule-kana)
-        (wnn-context-set-input-rule! wc wnn-input-rule-roma))
     (if wnn-use-prediction?
         (begin
           (wnn-context-set-prediction-ctx! wc (predict-make-meta-search))
@@ -717,7 +748,9 @@
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
-	          (ustr-insert-elem! (wnn-context-preconv-ustr wc) res)
+                  (if (list? (car res))
+                    (ustr-insert-seq! (wnn-context-preconv-ustr wc) res)
+                    (ustr-insert-elem! (wnn-context-preconv-ustr wc) res))
 	          (ustr-insert-elem! (wnn-context-raw-ustr wc) key-str))
 	        (if (null? (rk-context-seq rkc))
 		    (wnn-commit-raw wc)))))))))

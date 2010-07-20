@@ -879,32 +879,6 @@
 			 (get-str-by-type sl))
 	  ""))))
     
-;;
-;; 2004-08-30 Takuro Ashie <ashie@homa.ne.jp>
-;;
-;;   In the future, these APIs should be marked as "deprecated" because these
-;;   APIs breaks original "ja-rk-rule" table, and no longer can use it after
-;;   breaks it.
-;;
-(define using-kana-table? #f)
-
-(define load-kana-table
-  (lambda ()
-    (require "japanese-kana.scm")
-    (set! ja-rk-rule ja-kana-hiragana-rule)
-    (set! using-kana-table? #t)
-    ;(define-key anthy-kana-toggle-key? "")
-    ))
-
-(define load-azik-table
-  (lambda ()
-    (require "japanese-azik.scm")
-    (set! ja-rk-rule ja-azik-rule)
-    (define-key skk-prev-candidate-key? 'generic-prev-candidate-key?)
-    (define-key skk-kana-toggle-key? "@")
-    (define-key skk-kanji-mode-key? "`")
-    ))
-
 (define japanese-roma-set-yen-representation
   (lambda ()
     ;; Since ordinary Japanese users press the "yen sign" key on

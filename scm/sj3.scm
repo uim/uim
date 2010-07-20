@@ -33,8 +33,6 @@
 
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require "generic-predict.scm")
 (require "sj3v2-socket.scm")
 (require-custom "generic-key-custom.scm")
@@ -335,6 +333,8 @@
 (define sj3-input-rule-roma 0)
 (define sj3-input-rule-kana 1)
 (define sj3-input-rule-azik 2)
+(define sj3-input-rule-act 3)
+(define sj3-input-rule-kzik 4)
 
 (define sj3-candidate-type-katakana -2)
 (define sj3-candidate-type-hiragana -3)
@@ -509,6 +509,7 @@
 		      sj3-input-rule-kana))
 		 (lambda (sc)
 		   (sj3-prepare-input-rule-activation sc)
+                   (require "japanese-kana.scm")
 		   (sj3-context-set-input-rule! sc sj3-input-rule-kana)
                    (sj3-context-change-kana-mode!
                      sc (sj3-context-kana-mode sc))
@@ -525,9 +526,42 @@
 		      sj3-input-rule-azik))
 		 (lambda (sc)
 		   (sj3-prepare-input-rule-activation sc)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (sj3-context-rkc sc)
 					 ja-azik-rule)
 		   (sj3-context-set-input-rule! sc sj3-input-rule-azik)))
+
+(register-action 'action_sj3_kzik
+		 (lambda (sc)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (= (sj3-context-input-rule sc)
+		      sj3-input-rule-kzik))
+		 (lambda (sc)
+		   (sj3-prepare-input-rule-activation sc)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (sj3-context-rkc sc)
+					 ja-kzik-rule)
+		   (sj3-context-set-input-rule! sc sj3-input-rule-kzik)))
+
+(register-action 'action_sj3_act
+		 (lambda (sc)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (= (sj3-context-input-rule sc)
+		      sj3-input-rule-act))
+		 (lambda (sc)
+		   (sj3-prepare-input-rule-activation sc)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (sj3-context-rkc sc)
+					 ja-act-rule)
+		   (sj3-context-set-input-rule! sc sj3-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -618,9 +652,6 @@
     (sj3-context-set-preconv-ustr! sc (ustr-new '()))
     (sj3-context-set-raw-ustr! sc (ustr-new '()))
     (sj3-context-set-segments! sc (ustr-new '()))
-    (if using-kana-table?
-        (sj3-context-set-input-rule! sc sj3-input-rule-kana)
-        (sj3-context-set-input-rule! sc sj3-input-rule-roma))
     (if sj3-use-prediction?
         (begin
           (sj3-context-set-prediction-ctx! sc (predict-make-meta-search))
@@ -936,7 +967,9 @@
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
-	          (ustr-insert-elem! (sj3-context-preconv-ustr sc) res)
+                  (if (list? (car res))
+                    (ustr-insert-seq! (sj3-context-preconv-ustr sc) res)
+                    (ustr-insert-elem! (sj3-context-preconv-ustr sc) res))
 	          (ustr-insert-elem! (sj3-context-raw-ustr sc) key-str))
 	        (if (null? (rk-context-seq rkc))
 		    (sj3-commit-raw sc)))))))))

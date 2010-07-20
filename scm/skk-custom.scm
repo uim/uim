@@ -205,12 +205,25 @@
 	 "£Ò"
 	 (N_ "Romaji")
 	 (N_ "Romaji input mode"))
+
    (list 'action_skk_azik
 	 'ja_azik
 	 "£Ú"
 	 (N_ "AZIK")
-	 (N_ "AZIK extended romaji input mode"))))
+	 (N_ "AZIK extended romaji input mode"))
 
+   (list 'action_skk_act
+	 'ja_act
+	 "£Ã"
+	 (N_ "ACT")
+	 (N_ "ACT extended romaji input mode"))
+
+   (list 'action_skk_kzik
+	 'ja_kzik
+	 "£Ë"
+	 (N_ "KZIK")
+	 (N_ "KZIK extended romaji input mode"))))
+    
 ;;; Buttons
 
 (define-custom 'skk-widgets '(widget_skk_input_mode

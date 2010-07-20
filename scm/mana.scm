@@ -33,8 +33,6 @@
 (require "util.scm")
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "mana-custom.scm")
 (require-custom "mana-key-custom.scm")
@@ -277,6 +275,8 @@
 (define mana-input-rule-roma 0)
 (define mana-input-rule-kana 1)
 (define mana-input-rule-azik 2)
+(define mana-input-rule-act 3)
+(define mana-input-rule-kzik 4)
 
 (define mana-candidate-type-katakana -2)
 (define mana-candidate-type-hiragana -3)
@@ -465,6 +465,7 @@
                       mana-input-rule-kana))
                  (lambda (mc)
                    (mana-prepare-input-rule-activation mc)
+                   (require "japanese-kana.scm")
                    (mana-context-set-input-rule! mc mana-input-rule-kana)
                    (mana-context-change-kana-mode!
 		    mc (mana-context-kana-mode mc))
@@ -487,9 +488,46 @@
                       mana-input-rule-azik))
                  (lambda (mc)
                    (mana-prepare-input-rule-activation mc)
+                   (require "japanese-azik.scm")
                    (rk-context-set-rule! (mana-context-rkc mc)
                                          ja-azik-rule)
                    (mana-context-set-input-rule! mc mana-input-rule-azik)))
+
+(register-action 'action_mana_kzik
+                 ;;              (indication-alist-indicator 'action_mana_kzik
+                 ;;                                          mana-kana-input-method-indication-alist)
+                 (lambda (mc)
+                   '(ja_kzik
+                      "Ｋ"
+                      "KZIK"
+                      "KZIK拡張ローマ字入力モード"))
+                 (lambda (mc)
+                   (= (mana-context-input-rule mc)
+                      mana-input-rule-kzik))
+                 (lambda (mc)
+                   (mana-prepare-input-rule-activation mc)
+                   (require "japanese-kzik.scm")
+                   (rk-context-set-rule! (mana-context-rkc mc)
+                                         ja-kzik-rule)
+                   (mana-context-set-input-rule! mc mana-input-rule-kzik)))
+
+(register-action 'action_mana_act
+                 (lambda (mc)
+                   '(ja_act
+                      "Ｃ"
+                      "ACT"
+                      "ACT拡張ローマ字入力モード"))
+                 (lambda (mc)
+                   (= (mana-context-input-rule mc)
+                      mana-input-rule-act))
+                 (lambda (mc)
+                   (mana-prepare-input-rule-activation mc)
+                   (require "japanese-act.scm")
+                   (rk-context-set-rule! (mana-context-rkc mc)
+                                         ja-act-rule)
+                   (mana-context-set-input-rule! mc mana-input-rule-act)))
+
+
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -542,15 +580,6 @@
       (mana-context-set-preconv-ustr! mc (ustr-new '()))
       (mana-context-set-raw-ustr! mc (ustr-new '()))
       (mana-context-set-segments! mc (ustr-new '()))
-
-      ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
-      ;;   * I think load-kana-table should be marked as depracated.
-      ;;     Because it is a little violent (it overwrites ja-rk-rule table).
-      ;;     We should prepare a custom entry like "uim-default-input-rule"
-      ;;     instead of using-kana-table.
-      (if using-kana-table?
-          (mana-context-set-input-rule! mc mana-input-rule-kana)
-          (mana-context-set-input-rule! mc mana-input-rule-roma))
       mc)))
 
 (define mana-commit-raw
@@ -875,8 +904,9 @@
 		    (res (rk-push-key! rkc key-str)))
 	       (if res
 		   (begin
-		     (ustr-insert-elem! (mana-context-preconv-ustr mc)
-					res)
+                     (if (list? (car res))
+                       (ustr-insert-seq! (mana-context-preconv-ustr mc) res)
+                       (ustr-insert-elem! (mana-context-preconv-ustr mc) res))
 		     (ustr-insert-elem! (mana-context-raw-ustr mc)
 					key-str))
 		   (if (null? (rk-context-seq rkc))

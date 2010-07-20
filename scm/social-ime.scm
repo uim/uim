@@ -33,8 +33,6 @@
 
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require "http-client.scm")
 (require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
@@ -274,6 +272,8 @@
 (define social-ime-input-rule-roma 0)
 (define social-ime-input-rule-kana 1)
 (define social-ime-input-rule-azik 2)
+(define social-ime-input-rule-act 3)
+(define social-ime-input-rule-kzik 4)
 
 (define social-ime-candidate-type-katakana -2)
 (define social-ime-candidate-type-hiragana -3)
@@ -448,6 +448,7 @@
 		      social-ime-input-rule-kana))
 		 (lambda (sc)
 		   (social-ime-prepare-input-rule-activation sc)
+                   (require "japanese-kana.scm")
 		   (social-ime-context-set-input-rule! sc social-ime-input-rule-kana)
                    (social-ime-context-change-kana-mode!
                      sc (social-ime-context-kana-mode sc))
@@ -464,9 +465,42 @@
 		      social-ime-input-rule-azik))
 		 (lambda (sc)
 		   (social-ime-prepare-input-rule-activation sc)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (social-ime-context-rkc sc)
 					 ja-azik-rule)
 		   (social-ime-context-set-input-rule! sc social-ime-input-rule-azik)))
+
+(register-action 'action_social-ime_kzik
+		 (lambda (sc)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (= (social-ime-context-input-rule sc)
+		      social-ime-input-rule-kzik))
+		 (lambda (sc)
+		   (social-ime-prepare-input-rule-activation sc)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (social-ime-context-rkc sc)
+					 ja-kzik-rule)
+		   (social-ime-context-set-input-rule! sc social-ime-input-rule-kzik)))
+
+(register-action 'action_social-ime_act
+		 (lambda (sc)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (= (social-ime-context-input-rule sc)
+		      social-ime-input-rule-act))
+		 (lambda (sc)
+		   (social-ime-prepare-input-rule-activation sc)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (social-ime-context-rkc sc)
+					 ja-act-rule)
+		   (social-ime-context-set-input-rule! sc social-ime-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -521,9 +555,6 @@
     (social-ime-context-set-preconv-ustr! sc (ustr-new '()))
     (social-ime-context-set-raw-ustr! sc (ustr-new '()))
     (social-ime-context-set-segments! sc (ustr-new '()))
-    (if using-kana-table?
-        (social-ime-context-set-input-rule! sc social-ime-input-rule-kana)
-        (social-ime-context-set-input-rule! sc social-ime-input-rule-roma))
     (if (and social-ime-use-prediction?
              (eq? social-ime-prediction-type 'uim))
         (begin
@@ -849,7 +880,9 @@
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
-	          (ustr-insert-elem! (social-ime-context-preconv-ustr sc) res)
+                  (if (list? (car res))
+                    (ustr-insert-seq! (social-ime-context-preconv-ustr sc) res)
+                    (ustr-insert-elem! (social-ime-context-preconv-ustr sc) res))
 	          (ustr-insert-elem! (social-ime-context-raw-ustr sc) key-str))
 	        (if (null? (rk-context-seq rkc))
 		    (social-ime-commit-raw sc)))))))))

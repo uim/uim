@@ -33,8 +33,6 @@
 
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require "generic-predict.scm")
 (require "input-parse.scm")
 (require "http-client.scm")
@@ -178,6 +176,8 @@
 (define ajax-ime-input-rule-roma 0)
 (define ajax-ime-input-rule-kana 1)
 (define ajax-ime-input-rule-azik 2)
+(define ajax-ime-input-rule-act 3)
+(define ajax-ime-input-rule-kzik 4)
 
 (define ajax-ime-candidate-type-katakana -2)
 (define ajax-ime-candidate-type-hiragana -3)
@@ -352,6 +352,7 @@
 		      ajax-ime-input-rule-kana))
 		 (lambda (ac)
 		   (ajax-ime-prepare-input-rule-activation ac)
+                   (require "japanese-kana.scm")
 		   (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-kana)
                    (ajax-ime-context-change-kana-mode!
                      ac (ajax-ime-context-kana-mode ac))
@@ -368,9 +369,42 @@
 		      ajax-ime-input-rule-azik))
 		 (lambda (ac)
 		   (ajax-ime-prepare-input-rule-activation ac)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (ajax-ime-context-rkc ac)
 					 ja-azik-rule)
 		   (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-azik)))
+
+(register-action 'action_ajax-ime_kzik
+		 (lambda (ac)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (ac)
+		   (= (ajax-ime-context-input-rule ac)
+		      ajax-ime-input-rule-kzik))
+		 (lambda (ac)
+		   (ajax-ime-prepare-input-rule-activation ac)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (ajax-ime-context-rkc ac)
+					 ja-kzik-rule)
+		   (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-kzik)))
+
+(register-action 'action_ajax-ime_act
+		 (lambda (ac)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (ac)
+		   (= (ajax-ime-context-input-rule ac)
+		      ajax-ime-input-rule-act))
+		 (lambda (ac)
+		   (ajax-ime-prepare-input-rule-activation ac)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (ajax-ime-context-rkc ac)
+					 ja-act-rule)
+		   (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -462,9 +496,6 @@
     (ajax-ime-context-set-preconv-ustr! ac (ustr-new '()))
     (ajax-ime-context-set-raw-ustr! ac (ustr-new '()))
     (ajax-ime-context-set-segments! ac (ustr-new '()))
-    (if using-kana-table?
-        (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-kana)
-        (ajax-ime-context-set-input-rule! ac ajax-ime-input-rule-roma))
     (if ajax-ime-use-prediction?
       (begin
         (ajax-ime-context-set-prediction-ctx! ac (predict-make-meta-search))
@@ -788,7 +819,9 @@
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
-	          (ustr-insert-elem! (ajax-ime-context-preconv-ustr ac) res)
+                  (if (list? (car res))
+                    (ustr-insert-seq! (ajax-ime-context-preconv-ustr ac) res)
+                    (ustr-insert-elem! (ajax-ime-context-preconv-ustr ac) res))
 	          (ustr-insert-elem! (ajax-ime-context-raw-ustr ac) key-str))
 	        (if (null? (rk-context-seq rkc))
 		    (ajax-ime-commit-raw ac)))))))))

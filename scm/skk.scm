@@ -58,6 +58,28 @@
 (define skk-ddskk-like-heading-label-char-list '("a" "s" "d" "f" "j" "k" "l"))
 (define skk-uim-heading-label-char-list '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
 
+(define skk-okuri-char-alist '())
+(define skk-downcase-alist '())
+(define skk-set-henkan-point-key '())
+
+(define skk-ichar-downcase
+  (lambda (x)
+    (or (cdr (or (assoc x skk-downcase-alist)
+                 '(#f . #f)))
+        (ichar-downcase x))))
+
+(define skk-ichar-upper-case?
+  (lambda (x)
+    (or (if (assoc x skk-downcase-alist) #t #f) (ichar-upper-case? x))))
+
+(define skk-context-set-okuri-head-using-alist!
+  (lambda (sc s)
+    (skk-context-set-okuri-head!
+      sc
+      (or (cdr (or (assoc s skk-okuri-char-alist)
+                   '(#f . #f)))
+          s))))
+
 ;; style specification
 (define skk-style-spec
   '(;; (style-element-name . validator)
@@ -124,6 +146,8 @@
 
 (define skk-input-rule-roma 0)
 (define skk-input-rule-azik 1)
+(define skk-input-rule-act 2)
+(define skk-input-rule-kzik 3)
 
 (define skk-child-type-editor 0)
 (define skk-child-type-dialog 1)
@@ -265,6 +289,37 @@
 		     (skk-prepare-activation dsc)
 		     (skk-set-rule! dsc skk-input-rule-azik))))
 
+(register-action 'action_skk_act
+		 (lambda (sc)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (= (skk-context-input-rule dsc)
+			skk-input-rule-act)))
+		 (lambda (sc)
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-set-rule! dsc skk-input-rule-act))))
+
+
+(register-action 'action_skk_kzik
+		 (lambda (sc)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (sc)
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (= (skk-context-input-rule dsc)
+			skk-input-rule-kzik)))
+		 (lambda (sc)
+		   (let ((dsc (skk-find-descendant-context sc)))
+		     (skk-prepare-activation dsc)
+		     (skk-set-rule! dsc skk-input-rule-kzik))))
+
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
 ;; custom API
@@ -313,10 +368,28 @@
     (let ((rkc (skk-context-rk-context sc))
 	  (rule (cond
 		 ((= input-rule skk-input-rule-roma)
+                  (set! skk-okuri-char-alist '())
+                  (set! skk-downcase-alist '()) 
+                  (set! skk-set-henkan-point-key '())
 		  ja-rk-rule)
 		 ((= input-rule skk-input-rule-azik)
 		  (require "japanese-azik.scm")
-		  ja-azik-rule))))
+                  (set! skk-okuri-char-alist ja-azik-skk-okuri-char-alist)
+                  (set! skk-downcase-alist ja-azik-skk-downcase-alist) 
+                  (set! skk-set-henkan-point-key ja-azik-skk-set-henkan-point-key)
+		  ja-azik-rule)
+		 ((= input-rule skk-input-rule-act)
+		  (require "japanese-act.scm")
+                  (set! skk-okuri-char-alist ja-act-skk-okuri-char-alist)
+                  (set! skk-downcase-alist ja-act-skk-downcase-alist)
+                  (set! skk-set-henkan-point-key ja-act-skk-set-henkan-point-key)
+		  ja-act-rule)
+		 ((= input-rule skk-input-rule-kzik)
+		  (require "japanese-kzik.scm")
+                  (set! skk-okuri-char-alist '())
+                  (set! skk-downcase-alist '())
+                  (set! skk-set-henkan-point-key '())
+		  ja-kzik-rule))))
       (skk-context-set-input-rule! sc input-rule)
       (rk-context-set-rule! rkc rule))))
 
@@ -992,7 +1065,7 @@
 (define skk-proc-state-direct
   (lambda (c key key-state)
     (let* ((sc (skk-find-descendant-context c))
-	   (key-str (charcode->string (ichar-downcase key)))
+	   (key-str (charcode->string (skk-ichar-downcase key)))
 	   (rkc (skk-context-rk-context sc))
 	   (res #f)
 	   (kana (skk-context-kana-mode sc)))
@@ -1107,13 +1180,13 @@
 	     (skk-commit-raw-with-preedit-update sc key key-state)
 	     #f)
 	   #t)
-       (if (ichar-upper-case? key)
+       (if (skk-ichar-upper-case? key)
 	   (if (and 
 		(skk-rk-pending? sc)
 		(not (rk-current-seq rkc)))
 	       ;; ddskk compatible behavior but not in SKK speciation
 	       (let ((str (rk-push-key! rkc (charcode->string
-					      (ichar-downcase key)))))
+					      (skk-ichar-downcase key)))))
 		 (skk-context-set-state! sc 'skk-state-kanji)
 		 (if str
 		   (skk-append-string sc str))
@@ -1123,7 +1196,7 @@
 		 (if residual-kana
 		     (skk-commit sc (skk-get-string sc residual-kana kana)))
 		 (skk-context-set-state! sc 'skk-state-kanji)
-		 (set! key (ichar-downcase key))
+		 (set! key (skk-ichar-downcase key))
 		 #t))
 	   #t)
        ;; Hack to handle "n1" sequence as "ん1".
@@ -1425,18 +1498,18 @@
 	     (skk-begin-conversion sc)
 	     #f)
 	   #t)
-       (if (and (ichar-upper-case? key)
+       (if (and (skk-ichar-upper-case? key)
 		(not (null? (skk-context-head sc))))
-	   (let ((key-str (charcode->string (ichar-downcase key))))
+	   (let ((key-str (charcode->string (skk-ichar-downcase key))))
 	     (set! res (skk-rk-push-key-match-without-new-seq rkc key-str))
 	     (if (and
 		  (skk-rk-pending? sc)
 		  (not (rk-current-seq rkc))
 		  res)
 		 ;; ddskk compatible behavior but not in SKK speciation
-		 (begin	
+		 (begin
 		   (skk-context-set-state! sc 'skk-state-okuri)
-		   (skk-context-set-okuri-head!
+		   (skk-context-set-okuri-head-using-alist!
 		    sc
 		    (car (reverse (rk-context-seq rkc))))
 		   (rk-context-set-seq! rkc '())
@@ -1445,9 +1518,9 @@
 		   #f)
 		 (begin
 		   (skk-context-set-state! sc 'skk-state-okuri)
-		   (set! key (ichar-downcase key))
-		   (skk-context-set-okuri-head! sc key-str)
-		   (if (skk-sokuon-shiin-char? key)
+		   (set! key (skk-ichar-downcase key))
+		   (skk-context-set-okuri-head-using-alist! sc key-str)
+		   (if (and (not (member key skk-set-henkan-point-key)) (skk-sokuon-shiin-char? key))
 		       (begin
 			 (set! res (rk-push-key! rkc key-str))
 			 (if res
@@ -1484,7 +1557,7 @@
        ;; This should be handled in rk.scm. -- ekato
        (if (and (not (ichar-alphabetic? key))
 		(not (rk-expect-key? rkc
-		      (charcode->string (ichar-downcase key)))))
+		      (charcode->string (skk-ichar-downcase key)))))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
 		 (skk-context-set-head! sc
@@ -1494,7 +1567,7 @@
 	     #t)
 	   #t)
        (begin
-	 (set! key (ichar-downcase key))  
+	 (set! key (skk-ichar-downcase key))  
 	 (set! stat (skk-context-state sc))
 	 (set! res
 	       (rk-push-key!
@@ -1980,7 +2053,7 @@
 	 (set! res
 	       (rk-push-key!
 		rkc
-		(charcode->string (ichar-downcase key))))
+		(charcode->string (skk-ichar-downcase key))))
 	 (if (and res
 	 	  (or
 		   (list? (car res))
@@ -1991,7 +2064,7 @@
 		   (skk-begin-conversion sc)))
 	     (begin
 	       (if (= (length (rk-context-seq rkc)) 1)
-		   (skk-context-set-okuri-head! sc (charcode->string key)))))))
+		   (skk-context-set-okuri-head-using-alist! sc (charcode->string key)))))))
       #f)))
 
 (define skk-proc-state-latin

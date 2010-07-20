@@ -174,7 +174,17 @@
 	 'ja_azik
 	 "Ｚ"
 	 (N_ "AZIK")
-	 (N_ "AZIK extended romaji input mode"))))
+	 (N_ "AZIK extended romaji input mode"))
+   (list 'action_anthy_utf8_act
+	 'ja_act
+	 "Ｃ"
+	 (N_ "ACT")
+	 (N_ "ACT extended romaji input mode"))
+   (list 'action_anthy_utf8_kzik
+	 'ja_kzik
+	 "Ｋ"
+	 (N_ "KZIK")
+	 (N_ "KZIK extended romaji input mode"))))
 
 ;;; Buttons
 

@@ -35,8 +35,6 @@
 (require "util.scm")
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "anthy-custom.scm")
 (require-custom "anthy-key-custom.scm")
@@ -57,6 +55,8 @@
 (define anthy-input-rule-roma 0)
 (define anthy-input-rule-kana 1)
 (define anthy-input-rule-azik 2)
+(define anthy-input-rule-act 3)
+(define anthy-input-rule-kzik 4)
 
 (define anthy-candidate-type-katakana -2)
 (define anthy-candidate-type-hiragana -3)
@@ -256,6 +256,7 @@
 		      anthy-input-rule-kana))
 		 (lambda (ac)
 		   (anthy-prepare-input-rule-activation ac)
+                   (require "japanese-kana.scm")
 		   (anthy-context-set-input-rule! ac anthy-input-rule-kana)
 		   (anthy-context-change-kana-mode! ac (anthy-context-kana-mode ac))
 		   (anthy-context-set-alnum! ac #f)
@@ -278,10 +279,48 @@
 		      anthy-input-rule-azik))
 		 (lambda (ac)
 		   (anthy-prepare-input-rule-activation ac)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (anthy-context-rkc ac)
 					 ja-azik-rule)
 		   (japanese-roma-set-yen-representation)
 		   (anthy-context-set-input-rule! ac anthy-input-rule-azik)))
+
+(register-action 'action_anthy_kzik
+;;		 (indication-alist-indicator 'action_anthy_kzik
+;;					     anthy-kana-input-method-indication-alist)
+		 (lambda (ac)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (ac)
+		   (= (anthy-context-input-rule ac)
+		      anthy-input-rule-kzik))
+		 (lambda (ac)
+		   (anthy-prepare-input-rule-activation ac)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (anthy-context-rkc ac)
+					 ja-kzik-rule)
+		   (japanese-roma-set-yen-representation)
+		   (anthy-context-set-input-rule! ac anthy-input-rule-kzik)))
+
+(register-action 'action_anthy_act
+		 (lambda (ac)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (ac)
+		   (= (anthy-context-input-rule ac)
+		      anthy-input-rule-act))
+		 (lambda (ac)
+		   (anthy-prepare-input-rule-activation ac)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (anthy-context-rkc ac)
+					 ja-act-rule)
+		   (japanese-roma-set-yen-representation)
+		   (anthy-context-set-input-rule! ac anthy-input-rule-act)))
+
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -339,15 +378,6 @@
      (anthy-context-set-preconv-ustr! ac (ustr-new '()))
      (anthy-context-set-raw-ustr! ac (ustr-new '()))
      (anthy-context-set-segments! ac (ustr-new '()))
-
-     ;; 2004-08-26 Takuro Ashie <ashie@homa.ne.jp>
-     ;;   * I think load-kana-table should be marked as depracated.
-     ;;     Because it is a little violent (it overwrites ja-rk-rule table).
-     ;;     We should prepare a custom entry like "uim-default-input-rule"
-     ;;     instead of using-kana-table.
-     (if using-kana-table?
-	 (anthy-context-set-input-rule! ac anthy-input-rule-kana)
-	 (anthy-context-set-input-rule! ac anthy-input-rule-roma))
      ac)))
 
 (define anthy-commit-raw
@@ -712,7 +742,9 @@
 		   (res (rk-push-key! rkc key-str)))
 	      (if res
 		  (begin
-		    (ustr-insert-elem! (anthy-context-preconv-ustr ac) res)
+		    (if (list? (car res))
+		      (ustr-insert-seq! (anthy-context-preconv-ustr ac) res)
+		      (ustr-insert-elem! (anthy-context-preconv-ustr ac) res))
 		    (ustr-insert-elem! (anthy-context-raw-ustr ac)
 				       (if (and (intern-key-symbol key-str)
 						(symbol-bound?

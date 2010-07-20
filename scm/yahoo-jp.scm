@@ -33,8 +33,6 @@
 
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require "http-client.scm")
 (require "generic-predict.scm")
 (require-custom "generic-key-custom.scm")
@@ -299,6 +297,8 @@
 (define yahoo-jp-input-rule-roma 0)
 (define yahoo-jp-input-rule-kana 1)
 (define yahoo-jp-input-rule-azik 2)
+(define yahoo-jp-input-rule-act 3)
+(define yahoo-jp-input-rule-kzik 4)
 
 (define yahoo-jp-candidate-type-katakana -2)
 (define yahoo-jp-candidate-type-hiragana -3)
@@ -473,6 +473,7 @@
 		      yahoo-jp-input-rule-kana))
 		 (lambda (yc)
 		   (yahoo-jp-prepare-input-rule-activation yc)
+                   (require "japanese-kana.scm")
 		   (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-kana)
                    (yahoo-jp-context-change-kana-mode!
                      yc (yahoo-jp-context-kana-mode yc))
@@ -489,9 +490,42 @@
 		      yahoo-jp-input-rule-azik))
 		 (lambda (yc)
 		   (yahoo-jp-prepare-input-rule-activation yc)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (yahoo-jp-context-rkc yc)
 					 ja-azik-rule)
 		   (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-azik)))
+
+(register-action 'action_yahoo-jp_kzik
+		 (lambda (yc)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (yc)
+		   (= (yahoo-jp-context-input-rule yc)
+		      yahoo-jp-input-rule-kzik))
+		 (lambda (yc)
+		   (yahoo-jp-prepare-input-rule-activation yc)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (yahoo-jp-context-rkc yc)
+					 ja-kzik-rule)
+		   (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-kzik)))
+
+(register-action 'action_yahoo-jp_act
+		 (lambda (yc)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (yc)
+		   (= (yahoo-jp-context-input-rule yc)
+		      yahoo-jp-input-rule-act))
+		 (lambda (yc)
+		   (yahoo-jp-prepare-input-rule-activation yc)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (yahoo-jp-context-rkc yc)
+					 ja-act-rule)
+		   (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -546,9 +580,6 @@
     (yahoo-jp-context-set-preconv-ustr! yc (ustr-new '()))
     (yahoo-jp-context-set-raw-ustr! yc (ustr-new '()))
     (yahoo-jp-context-set-segments! yc (ustr-new '()))
-    (if using-kana-table?
-        (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-kana)
-        (yahoo-jp-context-set-input-rule! yc yahoo-jp-input-rule-roma))
     (if (and yahoo-jp-use-prediction?
              (eq? yahoo-jp-prediction-type 'uim))
         (begin
@@ -866,7 +897,9 @@
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
-	          (ustr-insert-elem! (yahoo-jp-context-preconv-ustr yc) res)
+                  (if (list? (car res))
+                    (ustr-insert-seq! (yahoo-jp-context-preconv-ustr yc) res)
+                    (ustr-insert-elem! (yahoo-jp-context-preconv-ustr yc) res))
 	          (ustr-insert-elem! (yahoo-jp-context-raw-ustr yc) key-str))
 	        (if (null? (rk-context-seq rkc))
 		    (yahoo-jp-commit-raw yc)))))))))

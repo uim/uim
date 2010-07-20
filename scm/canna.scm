@@ -31,8 +31,6 @@
 
 (require "ustr.scm")
 (require "japanese.scm")
-(require "japanese-kana.scm")
-(require "japanese-azik.scm")
 (require "generic-predict.scm")
 (require "cannav3-socket.scm")
 (require-custom "generic-key-custom.scm")
@@ -53,6 +51,8 @@
 (define canna-input-rule-roma 0)
 (define canna-input-rule-kana 1)
 (define canna-input-rule-azik 2)
+(define canna-input-rule-act 3)
+(define canna-input-rule-kzik 4)
 
 (define canna-candidate-type-katakana -2)
 (define canna-candidate-type-hiragana -3)
@@ -226,6 +226,7 @@
 		      canna-input-rule-kana))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
+                   (require "japanese-kana.scm")
 		   (canna-context-set-input-rule! cc canna-input-rule-kana)
                    (canna-context-change-kana-mode!
                      cc (canna-context-kana-mode cc))
@@ -242,9 +243,42 @@
 		      canna-input-rule-azik))
 		 (lambda (cc)
 		   (canna-prepare-input-rule-activation cc)
+                   (require "japanese-azik.scm")
 		   (rk-context-set-rule! (canna-context-rkc cc)
 					 ja-azik-rule)
 		   (canna-context-set-input-rule! cc canna-input-rule-azik)))
+
+(register-action 'action_canna_kzik
+		 (lambda (cc)
+		   '(ja_kzik
+		     "Ｋ"
+		     "KZIK"
+		     "KZIK拡張ローマ字入力モード"))
+		 (lambda (cc)
+		   (= (canna-context-input-rule cc)
+		      canna-input-rule-kzik))
+		 (lambda (cc)
+		   (canna-prepare-input-rule-activation cc)
+                   (require "japanese-kzik.scm")
+		   (rk-context-set-rule! (canna-context-rkc cc)
+					 ja-kzik-rule)
+		   (canna-context-set-input-rule! cc canna-input-rule-kzik)))
+
+(register-action 'action_canna_act
+		 (lambda (cc)
+		   '(ja_act
+		     "Ｃ"
+		     "ACT"
+		     "ACT拡張ローマ字入力モード"))
+		 (lambda (cc)
+		   (= (canna-context-input-rule cc)
+		      canna-input-rule-act))
+		 (lambda (cc)
+		   (canna-prepare-input-rule-activation cc)
+                   (require "japanese-act.scm")
+		   (rk-context-set-rule! (canna-context-rkc cc)
+					 ja-act-rule)
+		   (canna-context-set-input-rule! cc canna-input-rule-act)))
 
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
@@ -335,9 +369,6 @@
     (canna-context-set-preconv-ustr! cc (ustr-new '()))
     (canna-context-set-raw-ustr! cc (ustr-new '()))
     (canna-context-set-segments! cc (ustr-new '()))
-    (if using-kana-table?
-        (canna-context-set-input-rule! cc canna-input-rule-kana)
-        (canna-context-set-input-rule! cc canna-input-rule-roma))
     (if canna-use-prediction?
         (begin
           (canna-context-set-prediction-ctx! cc (predict-make-meta-search))
@@ -655,7 +686,9 @@
 	         (res (rk-push-key! rkc key-str)))
 	    (if res
 	        (begin
-	          (ustr-insert-elem! (canna-context-preconv-ustr cc) res)
+                  (if (list? (car res))
+                    (ustr-insert-seq! (canna-context-preconv-ustr cc) res)
+                    (ustr-insert-elem! (canna-context-preconv-ustr cc) res))
 	          (ustr-insert-elem! (canna-context-raw-ustr cc) key-str))
 	        (if (null? (rk-context-seq rkc))
 		    (canna-commit-raw cc)))))))))

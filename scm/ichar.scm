@@ -163,3 +163,10 @@
 
 ;; FIXME: write test.
 (define ucs-to-utf8-string ucs->utf8-string)
+
+(define alist->icharlist
+  (lambda (xs)
+    (map
+      (lambda (x)
+        (cons (string->charcode (car x)) (string->charcode (cdr x))))
+      xs)))
