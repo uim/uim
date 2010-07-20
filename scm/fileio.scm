@@ -37,6 +37,7 @@
 
 (define file-open-flags-alist (file-open-flags?))
 (define file-open-mode-alist (file-open-mode?))
+(define file-position-whence-alist (file-position-whence?))
 (define file-poll-flags-alist (file-poll-flags?))
 
 (define (file-set-flag l alist)
@@ -51,6 +52,9 @@
 (define (file-poll-flags-number l)
   (file-set-flag l file-poll-flags-alist))
 
+(define (file-position field)
+  (file-position-set! field 0 (assq-cdr '$SEEK_CUR file-position-whence-alist)))
+
 (define (string->file-buf str)
   (string->list str))
 (define (file-buf->string buf)
@@ -62,6 +66,42 @@
         (file-buf->string ret))))
 (define (file-write-string s str)
   (file-write s (string->file-buf str)))
+
+(define (file-read-string-with-terminate-char socket term-char)
+  (let loop ((c (file-read socket 1))
+             (rest '()))
+    (cond ((eof-object? c)
+           (uim-notify-fatal (N_ "unexpected terminate string."))
+           "")
+          ((eq? (car c) term-char)
+           (file-buf->string (reverse rest)))
+          (else
+           (loop (file-read socket 1) (cons (car c) rest))))))
+
+(define (file-read-string-with-terminate-chars socket term-chars)
+  (let ((buf (file-read socket (length term-chars))))
+    (cond ((eof-object? buf)
+           (raise (N_ "unexpected terminate string.")))
+          ((equal? term-chars buf)
+           "")
+          (else
+           (let loop ((c (file-read socket 1))
+                      (buf buf)
+                      (rest '()))
+             (cond ((eof-object? c)
+                    (raise (N_ "unexpected terminate string.")))
+                   ((equal? term-chars (append (cdr buf) c))
+                    (file-buf->string (append rest (list (car buf)))))
+                   (else
+                    ;; enqueue
+                    (loop (file-read socket 1)
+                          (append (cdr buf) c)
+                          (append rest (list (car buf)))))))))))
+
+(define (file-read-string-with-terminate socket term-char)
+  (if (char? term-char)
+      (file-read-string-with-terminate-char socket term-char)
+      (file-read-string-with-terminate-chars socket term-char)))
 
 (define-record-type file-port
   (make-file-port context fd inbufsiz inbuf read write) file-port?

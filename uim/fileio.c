@@ -228,6 +228,33 @@ c_file_write(uim_lisp d_, uim_lisp buf_)
   return ret_;
 }
 
+const static opt_args position_whence[] = {
+  { SEEK_SET, "$SEEK_SET" },
+  { SEEK_CUR, "$SEEK_CUR" },
+  { SEEK_END, "$SEEK_END" },
+  { 0, 0 }
+};
+
+static uim_lisp uim_lisp_position_whence;
+static uim_lisp
+c_file_position_whence(void)
+{
+  return uim_lisp_position_whence;
+}
+
+static uim_lisp
+c_file_position_set(uim_lisp fildes_, uim_lisp offset_, uim_lisp whence_)
+{
+  int ret = 0;
+
+  ret = lseek(C_INT(fildes_), C_INT(offset_), C_INT(whence_));
+  if (ret == -1) {
+    uim_lisp err_ = LIST3(fildes_, offset_, whence_);
+    ERROR_OBJ(strerror(errno), err_);
+  }
+  return MAKE_INT(ret);
+}
+
 static uim_lisp
 c_duplicate2_fileno(uim_lisp oldd_, uim_lisp newd_)
 {
@@ -351,6 +378,11 @@ uim_plugin_instance_init(void)
   uim_scm_init_proc1("file-close", c_file_close);
   uim_scm_init_proc2("file-read", c_file_read);
   uim_scm_init_proc2("file-write", c_file_write);
+  uim_scm_init_proc3("file-position-set!", c_file_position_set);
+  uim_scm_init_proc0("file-position-whence?", c_file_position_whence);
+  uim_lisp_position_whence = make_arg_list(position_whence);
+  uim_scm_gc_protect(&uim_lisp_position_whence);
+
   uim_scm_init_proc2("duplicate2-fileno", c_duplicate2_fileno);
 
   uim_scm_init_proc2("file-poll", c_file_poll);
@@ -366,5 +398,6 @@ uim_plugin_instance_quit(void)
 {
   uim_scm_gc_unprotect(&uim_lisp_open_flags);
   uim_scm_gc_unprotect(&uim_lisp_open_mode);
+  uim_scm_gc_unprotect(&uim_lisp_position_whence);
   uim_scm_gc_unprotect(&uim_lisp_poll_flags);
 }
