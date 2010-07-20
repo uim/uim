@@ -65,7 +65,7 @@ class CandidateTableWindow : public AbstractCandidateWindow
         void updateView(int newpage, int ncandidates);
         void updateSize();
         void setIndex(int totalIndex);
-        void getPosition(int &row, int &column,
+        void getButtonPosition(int &row, int &column,
             const QString &headString);
 
         QGridLayout *lLayout;

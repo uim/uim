@@ -259,7 +259,7 @@ void CandidateTableWindow::updateView(int newpage, int ncandidates)
                 int column = j;
                 QString headString
                     = QString::fromUtf8(uim_candidate_get_heading_label(cand));
-                getPosition(row, column, headString);
+                getButtonPosition(row, column, headString);
                 KeyButton *b = buttonArray[row][column];
                 // '&' shouldn't be used as the shortcut key
                 b->setText(candString.replace('&', "&&"));
@@ -303,7 +303,7 @@ void CandidateTableWindow::setIndex(int totalIndex)
     updateLabel();
 }
 
-void CandidateTableWindow::getPosition(int &row, int &column,
+void CandidateTableWindow::getButtonPosition(int &row, int &column,
     const QString &headString)
 {
     char *ch = table;
