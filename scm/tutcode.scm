@@ -641,7 +641,7 @@
   (if (and (eq? (tutcode-context-candidate-window pc)
                 'tutcode-candidate-window-off)
            tutcode-use-candidate-window?
-           (> (tutcode-context-nth pc) tutcode-candidate-op-count))
+           (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
     (begin
       (tutcode-context-set-candidate-window! pc
         (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
