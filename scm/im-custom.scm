@@ -608,11 +608,6 @@
   (N_ "long description will be here."))
 
 (custom-add-hook 'annotation-eb-dic-path
-		 'custom-activity-hooks
-		 (lambda ()
-		   eb-enable-for-annotation?))
-
-(custom-add-hook 'annotation-eb-dic-path
   'custom-activity-hooks
   (lambda ()
     (and enable-annotation?
