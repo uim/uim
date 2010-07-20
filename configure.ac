@@ -897,7 +897,7 @@ dnl *** Check for Qt4 Library ***
 dnl *****************************
 AC_ARG_WITH(qt4,
   AC_HELP_STRING([--with-qt4],
-                 [build qt4 helper applications (experimental)
+                 [build qt4 helper applications
 		  @<:@default=no@:>@]),
   [
     case $with_qt4 in
