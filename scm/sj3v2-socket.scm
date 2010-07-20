@@ -112,19 +112,6 @@
 
 (define sj3-protocol-version 2)
 
-;; helper functions
-(define (sj3-lib-get-string-with-terminate socket)
-  (let loop ((c (file-read socket 1))
-             (rest '()))
-    (cond ((eof-object? c)
-           (uim-notify-fatal (N_ "unexpected terminate string."))
-           "")
-          ((eq? (car c) #\nul)
-           (file-buf->string (reverse rest)))
-          (else
-           (loop (file-read socket 1) (cons (car c) rest))))))
-
-
 ;;
 ;; sj3 protocol api
 ;;
@@ -274,7 +261,7 @@
             (if (<= (car yomi-len) 0)
                 (values (reverse yomi-len) (reverse rest-stdy) (reverse rest-kouho))
                 (let* ((new-stdy (string-buf->u8list (file-read socket stdy-size)))
-                       (new-kouho (sj3-lib-get-string-with-terminate socket)))
+                       (new-kouho (file-read-string-with-terminate socket #\nul)))
                   (loop (cons (car (string-buf->u8list (file-read socket 1)))
                               yomi-len)
                         (cons new-stdy rest-stdy)
@@ -296,7 +283,7 @@
             (if (<= (car yomi-len) 0)
                 (values (reverse yomi-len) (reverse rest-stdy) (reverse rest-kouho))
                 (let* ((new-stdy (string-buf->u8list (file-read socket stdy-size)))
-                       (new-kouho (sj3-lib-get-string-with-terminate socket)))
+                       (new-kouho (file-read-string-with-terminate socket #\nul)))
                   (loop (cons (u8list->u32 (string-buf->u8list (file-read socket 4)))
                               yomi-len)
                         (cons new-stdy rest-stdy)
