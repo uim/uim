@@ -131,8 +131,15 @@
 ;;; tutcode-context-new時に反映する。
 (define tutcode-rule-userconfig ())
 
-;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト
-(define tutcode-heading-label-char-list
+;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
+;;; (打ちやすい場所から先に候補を埋める)
+(define tutcode-table-heading-label-char-list
+  '("a" "s" "d" "f" "g" "h" "j" "k" "l" ";"
+    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p"
+    "z" "x" "c" "v" "b" "n" "m" "," "." "/"
+    "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(uimスタイル用)
+(define tutcode-uim-heading-label-char-list
   '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
     "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
     "k" "l" "m" "n" "o" "p" "q" "r" "s" "t"
@@ -140,10 +147,22 @@
     "A" "B" "C" "D" "E" "F" "G" "H" "I" "J"
     "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
     "U" "V" "W" "X" "Y" "Z"))
+;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト
+(define tutcode-heading-label-char-list ())
 
-;;; 記号入力モード時の候補選択用ラベル文字のリスト
-;;; (全角英数モードとして使うには、tutcode-kigoudicと合わせる必要あり)
-(define tutcode-heading-label-char-list-for-kigou-mode
+;;; 記号入力モード時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
+;;; (キーボードレイアウトに従って、左上から右下へ順に候補を埋める)
+(define tutcode-table-heading-label-char-list-for-kigou-mode
+  '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0" "-" "^" "\\"
+    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p" "@" "["
+    "a" "s" "d" "f" "g" "h" "j" "k" "l" ";" ":" "]"
+    "z" "x" "c" "v" "b" "n" "m" "," "." "/"         " "
+    "!" "\"" "#" "$" "%" "&" "'" "(" ")"    "=" "~" "|"
+    "Q" "W" "E" "R" "T" "Y" "U" "I" "O" "P" "`" "{"
+    "A" "S" "D" "F" "G" "H" "J" "K" "L" "+" "*" "}"
+    "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?" "_"))
+;;; 記号入力モード時の候補選択用ラベル文字のリスト(uimスタイル用)
+(define tutcode-uim-heading-label-char-list-for-kigou-mode
   '(" "
     "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
     "a" "b" "c" "d" "e" "f" "g" "h" "i" "j"
@@ -155,6 +174,9 @@
     "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T"
     "U" "V" "W" "X" "Y" "Z"
     "=" "~" "|" "`" "{" "+" "*" "}" "<" ">" "?" "_"))
+;;; 記号入力モード時の候補選択用ラベル文字のリスト
+;;; (全角英数モードとして使うには、tutcode-kigoudicと合わせる必要あり)
+(define tutcode-heading-label-char-list-for-kigou-mode ())
 
 ;;; 自動ヘルプでの文字の打ち方表示の際に候補文字列として使う文字のリスト
 (define tutcode-auto-help-cand-str-list
@@ -334,7 +356,13 @@
       (require "tutcode-dialog.scm")
       (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified)
       (tutcode-read-personal-dictionary)))
-  (let ((tc (tutcode-context-new-internal id im)))
+  (let ((tc (tutcode-context-new-internal id im))
+        (candwintbl?
+          (and
+            (symbol-bound? 'uim-candwin-prog)
+            (string? uim-candwin-prog)
+            (>= (string-length uim-candwin-prog) 15)
+            (string=? (substring uim-candwin-prog 0 15) "uim-candwin-tbl"))))
     (tutcode-context-set-widgets! tc tutcode-widgets)
     (if (null? tutcode-rule)
       (begin
@@ -346,6 +374,30 @@
         ;; つまり、ruleのqwerty-to-dvorak変換後に反映する。
         (tutcode-custom-set-mazegaki/bushu-start-sequence!)
         (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
+    ;; 表形式候補ウィンドウ用設定
+    (if (null? tutcode-heading-label-char-list)
+      (if candwintbl?
+        (set! tutcode-heading-label-char-list
+          tutcode-table-heading-label-char-list)
+        (set! tutcode-heading-label-char-list
+          tutcode-uim-heading-label-char-list)))
+    (if (null? tutcode-heading-label-char-list-for-kigou-mode)
+      (if candwintbl?
+        (begin
+          (set! tutcode-heading-label-char-list-for-kigou-mode
+            tutcode-table-heading-label-char-list-for-kigou-mode)
+          ;; 記号入力モードを全角英数モードとして使うため、
+          ;; tutcode-heading-label-char-list-for-kigou-modeを全角にして
+          ;; tutcode-kigoudicの先頭に入れる
+          (require "japanese.scm") ; for ja-wide
+          (set! tutcode-kigoudic
+            (append
+              (map (lambda (lst) (list (ja-wide lst)))
+                tutcode-heading-label-char-list-for-kigou-mode)
+              (list-tail tutcode-kigoudic
+                (length tutcode-heading-label-char-list-for-kigou-mode)))))
+        (set! tutcode-heading-label-char-list-for-kigou-mode
+          tutcode-uim-heading-label-char-list-for-kigou-mode)))
     (tutcode-context-set-rk-context! tc (rk-context-new tutcode-rule #t #f))
     (if tutcode-use-recursive-learning?
       (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
