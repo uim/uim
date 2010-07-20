@@ -611,7 +611,8 @@
   'custom-activity-hooks
   (lambda ()
     (and enable-annotation?
-      (eq? annotation-agent 'eb))))
+         eb-enable-for-annotation?
+         (eq? annotation-agent 'eb))))
 
 ;; dict server support
 (define-custom-group 'dict
