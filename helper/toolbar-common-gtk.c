@@ -944,6 +944,12 @@ toolbar_new(gint type)
   GtkSizeGroup *sg;
 
 #if 0
+  /*
+   * Please enable this if you'd like to save default IM into
+   * ~/.uim.d/custom/custom-global.scm upon system global IM switch.  However,
+   * using uim-custom consumes quite amount of memory, and requires additional
+   * startup time.
+   */
   custom_enabled = (gboolean)uim_custom_enable();
 #endif
 
