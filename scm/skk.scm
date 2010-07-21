@@ -1560,10 +1560,15 @@
 		      (charcode->string (skk-ichar-downcase key)))))
 	   (let* ((residual-kana (rk-push-key-last! rkc)))
 	     (if residual-kana
+               (if (list? (car residual-kana))
+                 (skk-context-set-head! sc (append (reverse
+                                                     residual-kana)
+                                                   (skk-context-head
+                                                     sc)))
 		 (skk-context-set-head! sc
 					(cons
 					 residual-kana
-					 (skk-context-head sc))))
+					 (skk-context-head sc)))))
 	     #t)
 	   #t)
        (begin

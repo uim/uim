@@ -549,8 +549,10 @@
 	      (string-append-map-ustr-former extract-kana preconv-str)
 	      (if convert-pending-into-kana?
 		  (if residual-kana
-		      (extract-kana residual-kana)
-                      pending)
+                    (if (list? (car residual-kana))
+                      (string-append-map extract-kana residual-kana)
+		      (extract-kana residual-kana))
+                    pending)
 		  pending)
               (string-append-map-ustr-latter extract-kana preconv-str))))
 	   kana)
@@ -558,8 +560,10 @@
 	   (string-append-map-ustr-former extract-kana preconv-str)
            (if convert-pending-into-kana?
                (if residual-kana
-                   (extract-kana residual-kana)
-                   "")
+                 (if (list? (car residual-kana))
+                   (string-append-map extract-kana residual-kana)
+                   (extract-kana residual-kana))
+                 "")
                pending)
            (string-append-map-ustr-latter extract-kana preconv-str))))))
 
@@ -1290,7 +1294,9 @@
 		(residual-kana (rk-push-key-last! rkc)))
 	    (if residual-kana
 		(begin
-		  (ustr-insert-elem! preconv-str residual-kana)
+                  (if (list? (car residual-kana))
+                    (ustr-insert-seq! preconv-str residual-kana)
+                    (ustr-insert-elem! preconv-str residual-kana))
 		  (ustr-insert-elem! raw-str pend)))))
 
       (if (ajax-ime-context-alnum ac)
@@ -1300,7 +1306,9 @@
 	    (rk-flush rkc) ;; OK to reset rkc here.
 	    (if residual-kana
 	        (begin
-		  (ustr-insert-elem! preconv-str residual-kana)
+                  (if (list? (car residual-kana))
+                    (ustr-insert-seq! preconv-str residual-kana)
+                    (ustr-insert-elem! preconv-str residual-kana))
 		  (ustr-insert-elem! raw-str pend)))
 	    (ustr-insert-elem! preconv-str
 			       (if (= (ajax-ime-context-alnum-type ac)
@@ -1344,7 +1352,9 @@
 	       (residual-kana (rk-peek-terminal-match rkc)))
 	  (if residual-kana
 	      (begin
-		(ustr-insert-elem! preconv-str residual-kana)
+                (if (list? (car residual-kana))
+                  (ustr-insert-seq! preconv-str residual-kana)
+                  (ustr-insert-elem! preconv-str residual-kana))
 		(rk-flush rkc)))))))
 
 (define (ajax-ime-reset-prediction-window ac)
