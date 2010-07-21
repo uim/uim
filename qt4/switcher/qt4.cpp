@@ -51,11 +51,14 @@
 #include <cstdlib>
 #include <clocale>
 
+#include <uim/uim-scm.h>
+#include <uim/uim-custom.h>
 #include "qtgettext.h"
 
 static const int NAME_COLUMN = 0;
 
 static int uim_fd;
+static bool customEnabled;
 static QSocketNotifier *notifier = 0;
 
 int main( int argc, char **argv )
@@ -90,6 +93,9 @@ UimImSwitcher::UimImSwitcher( QWidget *parent )
 
     /* to load input method list */
     uim_helper_send_message( uim_fd, "im_list_get\n" );
+
+    uim_init();
+    customEnabled = uim_custom_enable();
 
     /* create GUI */
     createGUI();
@@ -178,7 +184,10 @@ void UimImSwitcher::helper_disconnect_cb()
 void UimImSwitcher::slotChangeInputMethod()
 {
     if ( wholeButton->isChecked() )
+    {
         sendMessageImChange( "im_change_whole_desktop\n" );
+        saveDefaultIm();
+    }
     else if ( applicationButton->isChecked() )
         sendMessageImChange( "im_change_this_application_only\n" );
     else if ( textButton->isChecked() )
@@ -204,6 +213,22 @@ void UimImSwitcher::sendMessageImChange( const QString &change_type )
     uim_helper_send_message( uim_fd, msg.toUtf8().data() );
 }
 
+void UimImSwitcher::saveDefaultIm()
+{
+    if ( customEnabled )
+    {
+        QString imName = selectedImName();
+        if ( imName.isEmpty() )
+            return ;
+
+        uim_scm_callf( "custom-set-value!",
+                       "yy",
+                       "custom-preserved-default-im-name",
+                       imName.toUtf8().data() );
+        uim_custom_save_custom( "custom-preserved-default-im-name" );
+    }
+}
+ 
 QString UimImSwitcher::selectedImName() const
 {
     QList<QTableWidgetItem *> selectedItems = listview->selectedItems();

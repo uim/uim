@@ -56,6 +56,7 @@ protected:
     void createGUI();
 
     void sendMessageImChange( const QString &change_type );
+    void saveDefaultIm();
     QString selectedImName() const;
 
     void checkHelperConnection();

@@ -48,11 +48,14 @@
 #include <stdlib.h>
 #include <locale.h>
 
+#include <uim/uim-scm.h>
+#include <uim/uim-custom.h>
 #include "qtgettext.h"
 
 #define NAME_COLUMN 0
 
 static int uim_fd;
+static bool customEnabled;
 static QSocketNotifier *notifier = NULL;
 
 int main( int argc, char **argv )
@@ -88,6 +91,9 @@ UimImSwitcher::UimImSwitcher( QWidget *parent, const char *name )
 
     /* to load input method list */
     uim_helper_send_message( uim_fd, "im_list_get\n" );
+
+    uim_init();
+    customEnabled = uim_custom_enable();
 
     /* create GUI */
     createGUI();
@@ -173,6 +179,7 @@ void UimImSwitcher::slotChangeInputMethod()
     {
     case ID_CHANGE_WHOLE_DESKTOP:
         sendMessageImChange( "im_change_whole_desktop\n" );
+        saveDefaultIm();
         break;
     case ID_CHANGE_THIS_APPLICATION_ONLY:
         sendMessageImChange( "im_change_this_application_only\n" );
@@ -202,6 +209,22 @@ void UimImSwitcher::sendMessageImChange( const QString &change_type )
     msg.append( "\n" );
 
     uim_helper_send_message( uim_fd, ( const char* ) msg.utf8() );
+}
+
+void UimImSwitcher::saveDefaultIm()
+{
+    if ( customEnabled )
+    {
+        QString imName = selectedImName();
+        if ( imName.isEmpty() )
+            return ;
+
+        uim_scm_callf( "custom-set-value!",
+                       "yy",
+                       "custom-preserved-default-im-name",
+                       ( const char* ) imName.utf8() );
+        uim_custom_save_custom( "custom-preserved-default-im-name" );
+    }
 }
 
 QString UimImSwitcher::selectedImName() const

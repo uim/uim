@@ -165,7 +165,8 @@ uim_im_switcher_qt_SOURCES  = switcher-qt.cpp switcher-qt.h qtgettext.h
 uim_im_switcher_qt_CXXFLAGS = $(QT_CXXFLAGS)
 uim_im_switcher_qt_LDFLAGS  = $(QT_LDFLAGS)
 uim_im_switcher_qt_LDADD    = $(top_builddir)/uim/libuim-scm.la \
-			      $(top_builddir)/uim/libuim.la
+			      $(top_builddir)/uim/libuim.la \
+			      $(top_builddir)/uim/libuim-custom.la
 switcher-qt.cpp: switcher-qt.moc
 
 

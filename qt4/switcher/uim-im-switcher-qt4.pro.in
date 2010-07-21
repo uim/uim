@@ -8,7 +8,7 @@ QMAKE_LIBDIR += @abs_top_builddir@/uim
 QMAKE_LIBDIR += @abs_top_builddir@/replace
 QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
 QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
-LIBS += -lreplace -luim -luim-scm -luim-x-util @LIBINTL@
+LIBS += -lreplace -luim -luim-scm -luim-custom @LIBINTL@
 
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
 QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
