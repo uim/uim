@@ -1289,9 +1289,13 @@
 	      (if residual-kana
 		  (begin
                     (if (list? (car residual-kana))
-                      (ustr-insert-seq! preconv-str residual-kana)
-                      (ustr-insert-elem! preconv-str residual-kana))
-		    (ustr-insert-elem! raw-str pend)))))
+                      (begin
+                        (ustr-insert-seq! preconv-str residual-kana)
+                        (ustr-insert-seq! raw-str (reverse
+                                                    (string-to-list pend))))
+                      (begin
+                        (ustr-insert-elem! preconv-str residual-kana)
+                        (ustr-insert-elem! raw-str pend)))))))
 
 	(if (anthy-utf8-context-alnum ac)
 	    (let ((key-str (if (symbol? key)
@@ -1305,9 +1309,13 @@
 	      (if residual-kana
 		  (begin
                     (if (list? (car residual-kana))
-                      (ustr-insert-seq! preconv-str residual-kana)
-                      (ustr-insert-elem! preconv-str residual-kana))
-		    (ustr-insert-elem! raw-str pend)))
+                      (begin
+                        (ustr-insert-seq! preconv-str residual-kana)
+                        (ustr-insert-seq! raw-str (reverse
+                                                    (string-to-list pend))))
+                      (begin
+                        (ustr-insert-elem! preconv-str residual-kana)
+                        (ustr-insert-elem! raw-str pend)))))
 	      (ustr-insert-elem! preconv-str 
 				 (if (= (anthy-utf8-context-alnum-type ac)
 					anthy-type-halfwidth-alnum)
@@ -1334,10 +1342,20 @@
 			(ustr-insert-elem! preconv-str res))
 		    (if (and next-pend
 			     (not (string=? next-pend "")))
-			(ustr-insert-elem! raw-str pend)
+                        (ustr-insert-seq! raw-str
+                                          (reverse (string-to-list pend)))
 			(if (list? (car res))
 			    (begin
-			      (ustr-insert-elem! raw-str pend)
+                              (if (member pend
+                                          (map car
+                                               ja-consonant-syllable-table))
+                                ;; treat consonant having more than one
+                                ;; charactear as one raw-str in this case
+                                (ustr-insert-elem! raw-str pend)
+                                (ustr-insert-seq! raw-str (reverse
+                                                            (string-to-list
+                                                              pend))))
+                              ;; assume key-str as a vowel
 			      (ustr-insert-elem!
 			       raw-str (if (and (intern-key-symbol key-str)
 						(symbol-bound?
@@ -1468,7 +1486,9 @@
 	   (left-str (ustr-former-seq raw-str)))
       (append left-str
 	      (if residual-kana
-		  (list pending)
+                (if (list? (car residual-kana))
+		  (reverse (string-to-list pending))
+		  (list pending))
 		  '())
 	      right-str))))
 
@@ -1486,7 +1506,9 @@
 	  (if (member (car unconv) preconv)
 	      (let ((start (list-seq-contained? preconv unconv))
 		    (len (length unconv)))
-		(if start
+		(if (and
+                      start
+                      (= (length raw-str) (length preconv))) ;; sanity check
 		    (anthy-make-raw-string
 		     (reverse (sublist-rel raw-str start len))
 		     (if (or
