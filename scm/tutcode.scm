@@ -2019,7 +2019,7 @@
 ;;; tutcode-key-customで設定された交ぜ書き/部首合成変換開始のキーシーケンスを
 ;;; コード表に反映する
 (define (tutcode-custom-set-mazegaki/bushu-start-sequence!)
-  (let
+  (let*
     ((make-subrule
       (lambda (keyseq cmd)
         (if
@@ -2027,16 +2027,23 @@
             keyseq
             (> (string-length keyseq) 0))
           (let ((keys (reverse (string-to-list keyseq))))
-            (list (list keys) cmd))
-          #f))))
-    (tutcode-rule-set-sequences!
-      (list
-        (make-subrule tutcode-mazegaki-start-sequence
-          '(tutcode-mazegaki-start))
-        (make-subrule tutcode-latin-conv-start-sequence
-          '(tutcode-latin-conv-start))
-        (make-subrule tutcode-bushu-start-sequence
-          '(tutcode-bushu-start))))))
+            (list (list (list keys) cmd)))
+          #f)))
+     (mazegaki-rule
+      (make-subrule tutcode-mazegaki-start-sequence
+        '(tutcode-mazegaki-start)))
+     (latin-conv-rule
+      (make-subrule tutcode-latin-conv-start-sequence
+        '(tutcode-latin-conv-start)))
+     (bushu-rule
+      (make-subrule tutcode-bushu-start-sequence
+        '(tutcode-bushu-start))))
+    (if mazegaki-rule
+      (tutcode-rule-set-sequences! mazegaki-rule))
+    (if latin-conv-rule
+      (tutcode-rule-set-sequences! latin-conv-rule))
+    (if bushu-rule
+      (tutcode-rule-set-sequences! bushu-rule))))
 
 ;;; コード表の一部の定義を上書き変更/追加する。~/.uimからの使用を想定。
 ;;; 呼び出し時にはtutcode-rule-userconfigに登録しておくだけで、
