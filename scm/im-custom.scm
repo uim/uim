@@ -125,7 +125,7 @@
 		     (N_ "long description will be here."))
 
 ;; subgroup
-(define-custom-group 'xim-preedit
+(define-custom-group 'preedit
 		     (N_ "Preedit settings of XIM")
 		     (N_ "long description will be here."))
 
@@ -771,7 +771,7 @@
 ;;
 
 (define-custom 'uim-xim-use-xft-font? #f
-  '(xim xim-preedit)
+  '(xim preedit)
   '(boolean)
   (N_ "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit")
   (N_ "long description will be here."))
