@@ -29,6 +29,9 @@
 ;;;;
 
 ;; Japanese EUC
+
+(require-custom "japanese-custom.scm")
+
 (define ja-rk-rule-basic
   '(
     ((("-"). ())("ー" "ー" "ｰ"))
@@ -129,6 +132,12 @@
     ((("g" "y" "u"). ())(("ぎ" "ギ" "ｷﾞ") ("ゅ" "ュ" "ｭ")))
     ((("g" "y" "e"). ())(("ぎ" "ギ" "ｷﾞ") ("ぇ" "ェ" "ｪ")))
     ((("g" "y" "o"). ())(("ぎ" "ギ" "ｷﾞ") ("ょ" "ョ" "ｮ")))
+
+    ((("q" "a"). ())(("く" "ク" "ｸ") ("ぁ" "ァ" "ｧ")))
+    ((("q" "i"). ())(("く" "ク" "ｸ") ("ぃ" "ィ" "ｨ")))
+    ((("q" "u"). ())("く" "ク" "ｸ"))
+    ((("q" "e"). ())(("く" "ク" "ｸ") ("ぇ" "ェ" "ｪ")))
+    ((("q" "o"). ())(("く" "ク" "ｸ") ("ぉ" "ォ" "ｫ")))
 
     ((("s" "s"). ("s"))("っ" "ッ" "ｯ"))
 
@@ -691,6 +700,7 @@
    ("qw" "ku")
    ("qy" "ku")
    ("gw" "gu")
+   ("ry" "ri")
    ))
 
 (define ja-default-small-tsu-roma "ltu")
@@ -892,5 +902,26 @@
 ;; TODO: Support new custom type string-list.
 (define japanese-auto-start-henkan-keyword-list '("、" "。" "．" "，" "？" "」" "！" "；" "：" ")" ";" ":" "）" "”" "】" "』" "》" "〉" "｝" "］" "〕" "}" "]" "?" "." "," "!"))
 
+(define ja-rk-rule-consonant-to-keep
+  (map (lambda (c)
+         (if (= (string-length c) 1)
+           (list (cons (list c) '()) (list c c c))
+           (let ((lst (reverse (string-to-list c))))
+             (list (cons lst '()) (list (list (car lst) (car lst) (car lst))
+                                        (list (cadr lst) (cadr lst) (cadr lst)))))))
+       (filter (lambda (x) (not (string=? "n" x)))
+               (map car ja-consonant-syllable-table))))
+
+(define ja-rk-rule-update
+  (lambda ()
+    (if ja-rk-rule-keep-consonant?
+      (set! ja-rk-rule (append ja-rk-rule-consonant-to-keep
+                               ja-rk-rule-basic
+                               ja-rk-rule-additional))
+      (set! ja-rk-rule (append ja-rk-rule-basic
+                               ja-rk-rule-additional)))))
+
 ;;
 (require "rk.scm")
+
+(ja-rk-rule-update)
