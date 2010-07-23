@@ -53,6 +53,22 @@
                      (N_ "Help")
                      (N_ "long description will be here."))
 
+(define-custom-group 'annotation
+                     (N_ "Annotation")
+                     (N_ "long description will be here."))
+
+(define-custom-group 'xim
+		     (N_ "XIM")
+		     (N_ "long description will be here."))
+
+(define-custom-group 'notify
+		     (N_ "Notify")
+		     (N_ "long description will be here."))
+
+(define-custom-group 'http
+		     (N_ "Http")
+		     (N_ "long description will be here."))
+
 ;; subgroup
 (define-custom-group 'advanced
 		     (N_ "Advanced settings")
@@ -72,11 +88,6 @@
 (define-custom-group 'candwin
 		     (N_ "Candidate window")
 		     (N_ "long description will be here."))
-
-;; subgroup
-(define-custom-group 'annotation
-                     (N_ "Annotation")
-                     (N_ "long description will be here."))
 
 ;; subgroup
 (define-custom-group 'dictionary
@@ -111,6 +122,11 @@
 ;; subgroup
 (define-custom-group 'visual-preference
 		     (N_ "Visual preference")
+		     (N_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'preedit
+		     (N_ "Preedit settings of XIM")
 		     (N_ "long description will be here."))
 
 ;; 
@@ -543,6 +559,10 @@
                         (eq? bridge-show-with?
                              'time))))
 
+;;
+;; Annotation
+;;
+
 (define-custom 'enable-annotation? #t
   '(annotation candwin)
   '(boolean)
@@ -746,14 +766,9 @@
                         (eq? annotation-filter-server-setting?
                              'pipe))))
 
+;;
 ;; uim-xim specific custom
-(define-custom-group 'xim
-		     (N_ "XIM")
-		     (N_ "long description will be here."))
-
-(define-custom-group 'preedit
-		     (N_ "Preedit settings of XIM")
-		     (N_ "long description will be here."))
+;;
 
 (define-custom 'uim-xim-use-xft-font? #f
   '(xim preedit)
@@ -771,11 +786,9 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   uim-xim-use-xft-font?))
-
-
-(define-custom-group 'notify
-		     (N_ "Notify")
-		     (N_ "long description will be here."))
+;;
+;; Notify
+;;
 
 (define-custom 'notify-agent 'stderr
   '(notify)
@@ -784,9 +797,9 @@
   (N_ "Notify agent name")
   (N_ "long description will be here."))
 
-(define-custom-group 'http
-		     (N_ "Http")
-		     (N_ "long description will be here."))
+;;
+;; Http
+;;
 
 (define-custom 'http-proxy-setting 'direct
   '(http)
@@ -835,6 +848,7 @@
   (N_ "Timeout of http connection (msec)."))
 
 (load "predict-custom.scm")
+
 
 (if custom-full-featured?
     (for-each require-module installed-im-module-list))
