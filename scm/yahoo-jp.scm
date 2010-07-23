@@ -1426,7 +1426,7 @@
 		          (begin
                             (if (member pend
                                         (map car
-                                             ja-consonant-sylable-table))
+                                             ja-consonant-syllable-table))
                               ;; treat consonant having more than one
                               ;; charactear as one raw-str in this case
                               (ustr-insert-elem! raw-str pend)
