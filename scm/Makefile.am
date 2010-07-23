@@ -21,7 +21,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
  xmload.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
- japanese-act.scm japanese-kzik.scm \
+ japanese-act.scm japanese-kzik.scm japanese-custom.scm \
  anthy.scm anthy-custom.scm anthy-key-custom.scm \
  anthy-utf8.scm anthy-utf8-custom.scm \
  canna.scm cannav3-socket.scm canna-custom.scm canna-key-custom.scm \
