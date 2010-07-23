@@ -1282,27 +1282,6 @@
       #f)
 
      (else
-      ;; handle "n1" sequence as "¤ó1"
-      (if (and (not (ajax-ime-context-alnum ac))
-	       (not (ichar-alphabetic? key))
-	       (not (rk-expect-key? rkc
-		     (charcode->string
-		      (if (= rule ajax-ime-input-rule-kana)
-			  key
-			  (ichar-downcase key))))))
-	  (let ((pend (rk-pending rkc))
-		(residual-kana (rk-push-key-last! rkc)))
-	    (if residual-kana
-		(begin
-                  (if (list? (car residual-kana))
-                    (begin
-                      (ustr-insert-seq! preconv-str residual-kana)
-                      (ustr-insert-elem! raw-str (reverse
-                                                   (string-to-list pend))))
-                    (begin
-                      (ustr-insert-elem! preconv-str residual-kana)
-                      (ustr-insert-elem! raw-str pend)))))))
-
       (if (ajax-ime-context-alnum ac)
           (let ((key-str (charcode->string key))
 	        (pend (rk-pending rkc))

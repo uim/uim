@@ -1430,27 +1430,6 @@
       #f)
 
      (else
-      ;; handle "n1" sequence as "¤ó1"
-      (if (and (not (sj3-context-alnum sc))
-	       (not (ichar-alphabetic? key))
-	       (not (rk-expect-key? rkc
-		     (charcode->string
-		      (if (= rule sj3-input-rule-kana)
-			  key
-			  (ichar-downcase key))))))
-	  (let ((pend (rk-pending rkc))
-		(residual-kana (rk-push-key-last! rkc)))
-	    (if residual-kana
-		(begin
-                  (if (list? (car residual-kana))
-                    (begin
-                      (ustr-insert-seq! preconv-str residual-kana)
-                      (ustr-insert-elem! raw-str (reverse
-                                                   (string-to-list pend))))
-                    (begin
-                      (ustr-insert-elem! preconv-str residual-kana)
-                      (ustr-insert-elem! raw-str pend)))))))
-
       (if (sj3-context-alnum sc)
           (let ((key-str (charcode->string key))
 	        (pend (rk-pending rkc))

@@ -1273,30 +1273,6 @@
 	#f)
 
        (else	
-	;; handle "n1" sequence as "ん1"
-	(if (and (not (anthy-utf8-context-alnum ac))
-		 (not (ichar-alphabetic? key))
-		 (not (rk-expect-key? rkc
-		       (if (= rule anthy-input-rule-kana)
-			   (if (symbol? key)
-			       (symbol->string key)
-			       (charcode->string key))
-			   (if (symbol? key)
-			       (symbol->string key)
-			       (charcode->string (ichar-downcase key)))))))
-	    (let ((pend (rk-pending rkc))
-		  (residual-kana (rk-push-key-last! rkc)))
-	      (if residual-kana
-		  (begin
-                    (if (list? (car residual-kana))
-                      (begin
-                        (ustr-insert-seq! preconv-str residual-kana)
-                        (ustr-insert-seq! raw-str (reverse
-                                                    (string-to-list pend))))
-                      (begin
-                        (ustr-insert-elem! preconv-str residual-kana)
-                        (ustr-insert-elem! raw-str pend)))))))
-
 	(if (anthy-utf8-context-alnum ac)
 	    (let ((key-str (if (symbol? key)
 			       (if (symbol-bound? key)

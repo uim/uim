@@ -1199,15 +1199,6 @@
 		 (set! key (skk-ichar-downcase key))
 		 #t))
 	   #t)
-       ;; Hack to handle "n1" sequence as "¤ó1".
-       ;; This should be handled in rk.scm. -- ekato
-       (if (and (not (ichar-alphabetic? key))
-		(not (rk-expect-key? rkc key-str)))
-	   (let* ((residual-kana (rk-push-key-last! rkc)))
-	     (if residual-kana
-		 (skk-commit sc (skk-get-string sc residual-kana kana)))
-	     #t)
-	   #t)
        ;; bad strategy. see bug #528
        (if (symbol? key)
 	   (begin
@@ -1552,24 +1543,6 @@
 						   skk-type-hankana))
 		   (skk-flush sc)))
 	     #f)
-	   #t)
-       ;; Hack to handle "n1" sequence as "¤ó1".
-       ;; This should be handled in rk.scm. -- ekato
-       (if (and (not (ichar-alphabetic? key))
-		(not (rk-expect-key? rkc
-		      (charcode->string (skk-ichar-downcase key)))))
-	   (let* ((residual-kana (rk-push-key-last! rkc)))
-	     (if residual-kana
-               (if (list? (car residual-kana))
-                 (skk-context-set-head! sc (append (reverse
-                                                     residual-kana)
-                                                   (skk-context-head
-                                                     sc)))
-		 (skk-context-set-head! sc
-					(cons
-					 residual-kana
-					 (skk-context-head sc)))))
-	     #t)
 	   #t)
        (begin
 	 (set! key (skk-ichar-downcase key))  
