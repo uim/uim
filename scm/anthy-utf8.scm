@@ -1569,8 +1569,9 @@
 				  anthy-candidate-type-halfwidth-alnum)
 			       (anthy-utf8-lib-get-nth-candidate
 				ac-id seg-idx cand-idx)
-			       (anthy-utf8-get-raw-candidate
-				ac ac-id seg-idx cand-idx)))
+			       (anthy-utf8-lib-eucjp-to-utf8
+                                 (anthy-utf8-get-raw-candidate
+                                   ac ac-id seg-idx cand-idx))))
 			 (iota (ustr-length segments))
 			 (ustr-whole-seq segments)))))
 
