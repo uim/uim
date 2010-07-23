@@ -253,15 +253,17 @@
       (if old-seq
         (begin
           (rk-flush context)
-          ;; Comment out the code using rk-merge-seqs for the
-          ;; moment because of rk-backspace problem -- ekato
-          ;;(set! res
-          ;;    (rk-merge-seqs
-          ;;     (cadr old-seq)
-          ;;     (rk-push-key! context (car seq)))))
-          ;;
-          (rk-push-key! context (car seq))
-          (set! res (cadr old-seq)))
+          (let ((new-res (rk-push-key! context (car seq)))
+                (old (cadr old-seq)))
+            (if new-res
+              (let ((newlst (if (list? (car new-res))
+                              new-res
+                              (list new-res)))
+                    (oldlst (if (list? (car old))
+                              old
+                              (list old))))
+                (set! res (append oldlst newlst)))
+              (set! res old))))
         ;;
         (if (not (null? (rk-context-seq context)))
           (begin
