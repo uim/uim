@@ -111,11 +111,12 @@ UimStandaloneToolbar::slotToolbarDoubleClicked()
 {
     if (toolbar->isVisible()) {
         toolbar->hide();
+        // shrink this toolbar
+        int width = maximumWidth();
         setFixedWidth(handler->width());
+        setMaximumWidth(width);
     } else {
-        toolbar->show();
-        toolbar->adjustSize();
-        setFixedWidth(handler->width() + toolbar->width());
+        slotToolbarResized();
     }
 }
 
