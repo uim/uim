@@ -67,6 +67,7 @@ UimStateIndicator::UimStateIndicator( QWidget *parent )
 {
     m_layout = new QHBoxLayout;
     m_layout->setMargin( 0 );
+    m_layout->setSpacing( 0 );
 
     if ( !fallbackButton )
     {

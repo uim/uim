@@ -52,6 +52,8 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     : QFrame( parent )
 {
     m_layout = new QHBoxLayout;
+    m_layout->setMargin( 0 );
+    m_layout->setSpacing( 0 );
 
     m_indicator = new UimStateIndicator( this );
     m_layout->addWidget( m_indicator );
