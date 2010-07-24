@@ -4,6 +4,9 @@
   <comment></comment>
   <exportmacro></exportmacro>
   <class>KeyEditFormBase</class>
+  <includes>
+    <include location="local">qtgettext.h</include>
+  </includes>
   <widget class="QDialog" name="KeyEditFormBase">
     <property name="geometry">
       <rect>

@@ -3,6 +3,9 @@
   <author></author>
   <comment></comment>
   <exportmacro></exportmacro>
+  <includes>
+    <include location="local">qtgettext.h</include>
+  </includes>
   <class>OListEditFormBase</class>
   <widget class="QDialog" name="OListEditFormBase">
     <property name="geometry">

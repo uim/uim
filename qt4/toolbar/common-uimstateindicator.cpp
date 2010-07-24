@@ -46,10 +46,21 @@
 #include <cstring>
 #include <cstdlib>
 
+#include "qtgettext.h"
+
 static const QString ICONDIR = UIM_PIXMAPSDIR;
 static int uim_fd;
 static QHelperToolbarButton *fallbackButton = 0;
 static QSocketNotifier *notifier = 0;
+
+static inline QString qstring_(const QString &string)
+{
+#if ENABLE_NLS
+    return mygettext(string.toUtf8().data());
+#else
+    return string;
+#endif
+}
 
 UimStateIndicator::UimStateIndicator( QWidget *parent )
         : QFrame( parent )
@@ -199,7 +210,8 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                         && !fields[ 5 ].isEmpty() )
                 {
                     QAction *action = popupMenu->insertHelperItem(
-                        fields[1], fields[ 3 ], fields[ 4 ], fields[ 5 ] );
+                        fields[1], qstring_( fields[ 3 ] ),
+                        fields[ 4 ], fields[ 5 ] );
                     // check the item which is now used
                     if ( fields.count() > 6 && fields[ 6 ] == "*" )
                         action->setChecked( true );

@@ -15,6 +15,8 @@ QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
 QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
 QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
+QMAKE_UIC = $$[QT_INSTALL_BINS]/uic -tr UIC_
+
 # Input
 HEADERS += @srcdir@/customwidgets.h @srcdir@/kseparator.h @srcdir@/qt4.h
 FORMS += @srcdir@/keyeditformbase.ui @srcdir@/olisteditformbase.ui
