@@ -85,7 +85,7 @@ static const char *candwin_command(void)
     if (!user_config)
 	user_config = uim_scm_symbol_value_str("uim-candwin-prog");
 
-    if (user_config) {
+    if (user_config && *user_config) {
 	asprintf(&candwin_prog, UIM_LIBEXECDIR "/%s", user_config);
 	return candwin_prog;
     }

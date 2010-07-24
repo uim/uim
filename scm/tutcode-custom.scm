@@ -102,6 +102,21 @@
   (N_ "Use candidate window")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-use-table-style-candidate-window? #f
+  '(tutcode candwin)
+  '(boolean)
+  (N_ "Use table style candidate window")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-candidate-window-table-layout 'qwerty-jis
+  '(tutcode candwin)
+  (list 'choice
+	(list 'qwerty-jis (N_ "qwerty-jis") (N_ "Qwerty JIS"))
+	(list 'qwerty-us (N_ "qwerty-us") (N_ "Qwerty US"))
+	(list 'dvorak (N_ "dvorak") (N_ "Dvorak")))
+  (N_ "Key layout of table style candidate window")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-commit-candidate-by-label-key? #t
   '(tutcode candwin)
   '(boolean)
@@ -164,3 +179,22 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   tutcode-use-auto-help-window?))
+
+(custom-add-hook 'tutcode-use-table-style-candidate-window?
+  'custom-set-hooks
+  (lambda ()
+    (if tutcode-use-table-style-candidate-window?
+      (begin
+        (custom-set-value! 'tutcode-nr-candidate-max
+          (length tutcode-table-heading-label-char-list))
+        (custom-set-value!
+          'tutcode-nr-candidate-max-for-kigou-mode
+          (length tutcode-table-heading-label-char-list-for-kigou-mode)))
+      (begin
+        (custom-set-value! 'tutcode-nr-candidate-max 10)
+        (custom-set-value! 'tutcode-nr-candidate-max-for-kigou-mode 10)))))
+
+(custom-add-hook 'tutcode-candidate-window-table-layout
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-table-style-candidate-window?))

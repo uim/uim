@@ -131,13 +131,83 @@
 ;;; tutcode-context-new時に反映する。
 (define tutcode-rule-userconfig ())
 
+;;; 候補ウィンドウのプログラム名。
+;;; uim-ximが、UIM_LIBEXECDIR/uim-candwin-progを候補ウィンドウとして使用。
+;;; gtk-immodule等が、表形式候補ウィンドウを使用するか判断するため、
+;;; "uim-candwin-tbl"で始まっているかどうかをチェックしている。
+;;; 表形式候補ウィンドウをcustomで設定できるようにするため、
+;;; あらかじめdefine。
+;;; XXX:tutcode以外にも影響するので、他の場所の方がいいかも。
+(define uim-candwin-prog "")
+(if tutcode-use-table-style-candidate-window?
+  (set! uim-candwin-prog "uim-candwin-tbl-gtk"))
+
+;;; 表形式の候補ウィンドウ上の各ボタンとキーの対応表(13列8行)。
+;;; 表形式候補ウィンドウが参照して使用する。
+(define uim-candwin-prog-layout ())
+;;; 表形式候補ウィンドウ上のキーレイアウト:QWERTY(JIS)配列。
+(define uim-candwin-prog-layout-qwerty-jis
+  '("1" "2" "3" "4" "5"  "6" "7" "8" "9" "0"  "-" "^" "\\"
+    "q" "w" "e" "r" "t"  "y" "u" "i" "o" "p"  "@" "[" ""
+    "a" "s" "d" "f" "g"  "h" "j" "k" "l" ";"  ":" "]" ""
+    "z" "x" "c" "v" "b"  "n" "m" "," "." "/"  ""  ""  " "
+    "!" "\"" "#" "$" "%" "&" "'" "(" ")" ""   "=" "~" "|"
+    "Q" "W" "E" "R" "T"  "Y" "U" "I" "O" "P"  "`" "{" ""
+    "A" "S" "D" "F" "G"  "H" "J" "K" "L" "+"  "*" "}" ""
+    "Z" "X" "C" "V" "B"  "N" "M" "<" ">" "?"  "_" ""  ""))
+;;; 表形式候補ウィンドウ上のキーレイアウト:QWERTY(US/ASCII)配列。
+(define uim-candwin-prog-layout-qwerty-us
+  '("1" "2" "3" "4" "5"  "6" "7" "8" "9" "0"  "-" "=" "\\"
+    "q" "w" "e" "r" "t"  "y" "u" "i" "o" "p"  "[" "]" ""
+    "a" "s" "d" "f" "g"  "h" "j" "k" "l" ";"  "'" "`" ""
+    "z" "x" "c" "v" "b"  "n" "m" "," "." "/"  ""  ""  " "
+    "!" "@" "#" "$" "%"  "^" "&" "*" "(" ")"  "_" "+" "|"
+    "Q" "W" "E" "R" "T"  "Y" "U" "I" "O" "P"  "{" "}" ""
+    "A" "S" "D" "F" "G"  "H" "J" "K" "L" ":"  "\"" "~" ""
+    "Z" "X" "C" "V" "B"  "N" "M" "<" ">" "?"  ""  ""  ""))
+;;; 表形式候補ウィンドウ上のキーレイアウト:DVORAK配列。
+;;; (記号の配置は統一されたものは無いようなので一例)
+(define uim-candwin-prog-layout-dvorak
+  '("1" "2" "3" "4" "5"  "6" "7" "8" "9" "0"  "[" "]" "\\"
+    "'" "," "." "p" "y"  "f" "g" "c" "r" "l"  "/" "=" ""
+    "a" "o" "e" "u" "i"  "d" "h" "t" "n" "s"  "-" "`" ""
+    ";" "q" "j" "k" "x"  "b" "m" "w" "v" "z"  ""  ""  " "
+    "!" "@" "#" "$" "%"  "^" "&" "*" "(" ")"  "{" "}" "|"
+    "\"" "<" ">" "P" "Y" "F" "G" "C" "R" "L"  "?" "+" ""
+    "A" "O" "E" "U" "I"  "D" "H" "T" "N" "S"  "_" "~" ""
+    ":" "Q" "J" "K" "X"  "B" "M" "W" "V" "Z"  ""  ""  ""))
+;;; 表形式の候補ウィンドウ上の各ボタンとキーの対応表を設定。
+;;; (~/.uimはこの後で実行されるので、
+;;;  ~/.uimで変更するにはuim-candwin-prog-layoutを上書きする必要あり)
+(set! uim-candwin-prog-layout
+  (case tutcode-candidate-window-table-layout
+    ((qwerty-jis) uim-candwin-prog-layout-qwerty-jis)
+    ((qwerty-us) uim-candwin-prog-layout-qwerty-us)
+    ((dvorak) uim-candwin-prog-layout-dvorak)
+    (else ()))) ; default
+
 ;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
-;;; (打ちやすい場所から先に候補を埋める)
-(define tutcode-table-heading-label-char-list
+;;; QWERTY(JIS)配列用。
+(define tutcode-table-heading-label-char-list-qwerty-jis
   '("a" "s" "d" "f" "g" "h" "j" "k" "l" ";"
     "q" "w" "e" "r" "t" "y" "u" "i" "o" "p"
     "z" "x" "c" "v" "b" "n" "m" "," "." "/"
     "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"))
+;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
+;;; QWERTY(US)配列用。
+(define tutcode-table-heading-label-char-list-qwerty-us
+  tutcode-table-heading-label-char-list-qwerty-jis)
+;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
+;;; DVORAK配列用。
+(define tutcode-table-heading-label-char-list-dvorak
+  '("a" "o" "e" "u" "i"  "d" "h" "t" "n" "s"
+    "'" "," "." "p" "y"  "f" "g" "c" "r" "l"
+    ";" "q" "j" "k" "x"  "b" "m" "w" "v" "z"
+    "1" "2" "3" "4" "5"  "6" "7" "8" "9" "0"))
+;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
+;;; (打ちやすい場所から先に候補を埋める)
+(define tutcode-table-heading-label-char-list
+  tutcode-table-heading-label-char-list-qwerty-jis)
 ;;; 交ぜ書き変換時の候補選択用ラベル文字のリスト(uimスタイル用)
 (define tutcode-uim-heading-label-char-list
   '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
@@ -153,14 +223,9 @@
 ;;; 記号入力モード時の候補選択用ラベル文字のリスト(表形式候補ウィンドウ用)。
 ;;; (キーボードレイアウトに従って、左上から右下へ順に候補を埋める)
 (define tutcode-table-heading-label-char-list-for-kigou-mode
-  '("1" "2" "3" "4" "5" "6" "7" "8" "9" "0" "-" "^" "\\"
-    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p" "@" "["
-    "a" "s" "d" "f" "g" "h" "j" "k" "l" ";" ":" "]"
-    "z" "x" "c" "v" "b" "n" "m" "," "." "/"         " "
-    "!" "\"" "#" "$" "%" "&" "'" "(" ")"    "=" "~" "|"
-    "Q" "W" "E" "R" "T" "Y" "U" "I" "O" "P" "`" "{"
-    "A" "S" "D" "F" "G" "H" "J" "K" "L" "+" "*" "}"
-    "Z" "X" "C" "V" "B" "N" "M" "<" ">" "?" "_"))
+  (if (null? uim-candwin-prog-layout)
+    (delete "" uim-candwin-prog-layout-qwerty-jis)
+    (delete "" uim-candwin-prog-layout)))
 ;;; 記号入力モード時の候補選択用ラベル文字のリスト(uimスタイル用)
 (define tutcode-uim-heading-label-char-list-for-kigou-mode
   '(" "
@@ -356,13 +421,7 @@
       (require "tutcode-dialog.scm")
       (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified)
       (tutcode-read-personal-dictionary)))
-  (let ((tc (tutcode-context-new-internal id im))
-        (candwintbl?
-          (and
-            (symbol-bound? 'uim-candwin-prog)
-            (string? uim-candwin-prog)
-            (>= (string-length uim-candwin-prog) 15)
-            (string=? (substring uim-candwin-prog 0 15) "uim-candwin-tbl"))))
+  (let ((tc (tutcode-context-new-internal id im)))
     (tutcode-context-set-widgets! tc tutcode-widgets)
     (if (null? tutcode-rule)
       (begin
@@ -376,13 +435,17 @@
         (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
     ;; 表形式候補ウィンドウ用設定
     (if (null? tutcode-heading-label-char-list)
-      (if candwintbl?
+      (if tutcode-use-table-style-candidate-window?
         (set! tutcode-heading-label-char-list
-          tutcode-table-heading-label-char-list)
+          (case tutcode-candidate-window-table-layout
+            ((qwerty-jis) tutcode-table-heading-label-char-list-qwerty-jis)
+            ((qwerty-us) tutcode-table-heading-label-char-list-qwerty-us)
+            ((dvorak) tutcode-table-heading-label-char-list-dvorak)
+            (else tutcode-table-heading-label-char-list)))
         (set! tutcode-heading-label-char-list
           tutcode-uim-heading-label-char-list)))
     (if (null? tutcode-heading-label-char-list-for-kigou-mode)
-      (if candwintbl?
+      (if tutcode-use-table-style-candidate-window?
         (begin
           (set! tutcode-heading-label-char-list-for-kigou-mode
             tutcode-table-heading-label-char-list-for-kigou-mode)
