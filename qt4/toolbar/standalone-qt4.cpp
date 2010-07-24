@@ -42,8 +42,7 @@
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QMouseEvent>
-#include <QtGui/QStyle>
-#include <QtGui/QStyleOption>
+#include <QtGui/QPainter>
 
 #include <clocale>
 
@@ -112,14 +111,12 @@ UimStandaloneToolbar::slotToolbarDoubleClicked()
 {
     if (toolbar->isVisible()) {
         toolbar->hide();
-        // shrink this toolbar
-        int width = maximumWidth();
         setFixedWidth(handler->width());
-        setMaximumWidth(width);
     } else {
         toolbar->show();
+        toolbar->adjustSize();
+        setFixedWidth(handler->width() + toolbar->width());
     }
-    adjustSize();
 }
 
 void
@@ -136,26 +133,6 @@ UimToolbarDraggingHandler::UimToolbarDraggingHandler( QWidget *parent )
     setBackgroundRole( parent->backgroundRole() );
 
     setFixedWidth( 10 );
-}
-
-void UimToolbarDraggingHandler::drawContents( QPainter* p )
-{
-    const QStyle::State flags = QStyle::State_None | QStyle::State_Horizontal;
-    QStyleOption opt;
-    opt.state = flags;
-    style()->drawPrimitive( QStyle::PE_IndicatorToolBarSeparator,
-        &opt, p, this );
-}
-
-QSize UimToolbarDraggingHandler::sizeHint() const
-{
-    int width, height;
-    
-    width = style()->pixelMetric( QStyle::PM_DockWidgetSeparatorExtent,
-        0, this );
-    height = BUTTON_SIZE + TOOLBAR_MARGIN_SIZE * 2;
-
-    return QSize( width, height );
 }
 
 QSizePolicy UimToolbarDraggingHandler::sizePolicy() const
@@ -195,6 +172,17 @@ void UimToolbarDraggingHandler::mouseDoubleClickEvent( QMouseEvent *e )
     Q_UNUSED( e )
     isDragging = false;
     emit handleDoubleClicked();
+}
+
+void UimToolbarDraggingHandler::paintEvent( QPaintEvent *e )
+{
+    QFrame::paintEvent( e );
+
+    QPainter painter( this );
+    int w = width();
+    int h = height();
+    qDrawShadeLine( &painter, w / 2, TOOLBAR_MARGIN_SIZE,
+        w / 2, h - TOOLBAR_MARGIN_SIZE, palette() );
 }
 
 int main( int argc, char *argv[] )

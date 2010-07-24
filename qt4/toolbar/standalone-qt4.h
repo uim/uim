@@ -69,7 +69,6 @@ class UimToolbarDraggingHandler : public QFrame
 public:
     explicit UimToolbarDraggingHandler( QWidget *parent );
 
-    QSize sizeHint() const;
     QSizePolicy sizePolicy() const;
 
 signals:
@@ -77,12 +76,11 @@ signals:
     void handleDoubleClicked();
 
 protected:
-    void drawContents( QPainter* );
-
     void mousePressEvent ( QMouseEvent * e );
     void mouseReleaseEvent ( QMouseEvent * e );
     void mouseMoveEvent ( QMouseEvent * e );
     void mouseDoubleClickEvent ( QMouseEvent * e );
+    void paintEvent ( QPaintEvent * e );
 
 private:
     bool isDragging;
