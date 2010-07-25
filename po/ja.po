@@ -3922,15 +3922,15 @@ msgstr "ズール語"
 
 #: ../scm/japanese-custom.scm:32
 msgid "Japanese Romaji-Kana"
-msgstr "ローマ字―かな変換"
+msgstr "ローマ字‐かな変換"
 
 #: ../scm/japanese-custom.scm:36
 msgid "Composing rule"
-msgstr "変換規則"
+msgstr "対応規則"
 
 #: ../scm/japanese-custom.scm:42
 msgid "Keep consonant Romaji not convertible to Kana"
-msgstr "かなに変換できない子音をローマ字として残す"
+msgstr "かなに対応しない子音をローマ字として残す"
 
 #: ../scm/latin.scm:1562
 msgid "Latin compose"
