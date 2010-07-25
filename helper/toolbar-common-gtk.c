@@ -85,7 +85,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Switch input method"),
     NULL,
     "im_switcher",
-    "uim-im-switcher-gtk &",
+    "uim-im-switcher-gtk",
     "toolbar-show-switcher-button?",
     UIM_FALSE
   },
@@ -94,7 +94,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Preference"),
     NULL,
     GTK_STOCK_PREFERENCES,
-    "uim-pref-gtk &",
+    "uim-pref-gtk",
     "toolbar-show-pref-button?",
     UIM_FALSE
   },
@@ -103,7 +103,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Japanese dictionary editor"),
     NULL,
     "uim-dict",
-    "uim-dict-gtk &",
+    "uim-dict-gtk",
     "toolbar-show-dict-button?",
     UIM_FALSE
   },
@@ -112,7 +112,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Input pad"),
     NULL,
     GTK_STOCK_BOLD,
-    "uim-input-pad-ja &",
+    "uim-input-pad-ja",
     "toolbar-show-input-pad-button?",
     UIM_FALSE
   },
@@ -125,7 +125,7 @@ static struct _CommandEntry command_entry[] = {
 #else
     NULL,
 #endif
-    "uim-tomoe-gtk &",
+    "uim-tomoe-gtk",
     "toolbar-show-handwriting-input-pad-button?",
     UIM_FALSE
   },
@@ -134,7 +134,7 @@ static struct _CommandEntry command_entry[] = {
     N_("Help"),
     NULL,
     GTK_STOCK_HELP,
-    "uim-help &",
+    "uim-help",
     "toolbar-show-help-button?",
     UIM_FALSE
   }
@@ -240,8 +240,15 @@ right_click_menu_activated(GtkMenu *menu_item, gpointer data)
 {
   const char *command = data;
 
-  if (command)
-    system(command);
+  if (command) {
+    if (!g_spawn_command_line_async(command, NULL)) {
+      GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
+          GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
+          _("Cannot launch '%s'."), command);
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(GTK_WIDGET(dialog));
+    }
+  }
 }
 
 static gboolean

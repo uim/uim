@@ -40,6 +40,7 @@
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QImage>
 #include <QtGui/QMenu>
+#include <QtGui/QMessageBox>
 #include <QtGui/QToolButton>
 
 #include "uim/uim-scm.h"
@@ -47,6 +48,14 @@
 
 static const QString ICONDIR = UIM_PIXMAPSDIR;
 static const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/16x16/actions";
+
+static void launchHelperApplication( const QString &command )
+{
+    if ( !command.isEmpty() && !QProcess::startDetached( command ) ) {
+        QMessageBox::warning( 0, "uim",
+            _( "Cannot launch '%1'." ).arg( command ) );
+    }
+}
 
 QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     : QFrame( parent )
@@ -178,7 +187,7 @@ void QUimHelperToolbar::addExecImSwitcherButton()
 void QUimHelperToolbar::slotExecImSwitcher()
 {
     /* exec uim-im-switcher */
-    QProcess::startDetached( "uim-im-switcher-qt4" );
+    launchHelperApplication( "uim-im-switcher-qt4" );
 }
 
 void QUimHelperToolbar::addExecPrefButton()
@@ -202,8 +211,8 @@ void QUimHelperToolbar::addExecPrefButton()
 
 void QUimHelperToolbar::slotExecPref()
 {
-    /* exec uim-pref-qt */
-    QProcess::startDetached( "uim-pref-qt4" );
+    /* exec uim-pref-qt4 */
+    launchHelperApplication( "uim-pref-qt4" );
 }
 
 void QUimHelperToolbar::addExecDictButton()
@@ -228,7 +237,7 @@ void QUimHelperToolbar::addExecDictButton()
 void QUimHelperToolbar::slotExecDict()
 {
     /* exec uim-dict */
-    QProcess::startDetached( "uim-dict-gtk" );
+    launchHelperApplication( "uim-dict-gtk" );
 }
 
 void QUimHelperToolbar::addExecInputPadButton()
@@ -253,7 +262,7 @@ void QUimHelperToolbar::addExecInputPadButton()
 void QUimHelperToolbar::slotExecInputPad()
 {
     /* exec input pad */
-    QProcess::startDetached( "uim-chardict-qt4" );
+    launchHelperApplication( "uim-chardict-qt4" );
 }
 
 void QUimHelperToolbar::addExecHandwritingInputPadButton()
@@ -277,7 +286,7 @@ void QUimHelperToolbar::addExecHandwritingInputPadButton()
 
 void QUimHelperToolbar::slotExecHandwritingInputPad()
 {
-    QProcess::startDetached( "uim-tomoe-gtk" );
+    launchHelperApplication( "uim-tomoe-gtk" );
 }
 
 void QUimHelperToolbar::addExecHelpButton()
@@ -301,7 +310,7 @@ void QUimHelperToolbar::addExecHelpButton()
 
 void QUimHelperToolbar::slotExecHelp()
 {
-    QProcess::startDetached( "uim-help" );
+    launchHelperApplication( "uim-help" );
 }
 
 void QUimHelperToolbar::setMargin( int margin )
