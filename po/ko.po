@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-25 22:25+0900\n"
+"POT-Creation-Date: 2010-07-25 22:48+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -814,36 +814,36 @@ msgstr ""
 #: ../scm/im-custom.scm:723 ../scm/im-custom.scm:729 ../scm/im-custom.scm:735
 #: ../scm/im-custom.scm:777 ../scm/im-custom.scm:783 ../scm/im-custom.scm:798
 #: ../scm/im-custom.scm:818 ../scm/im-custom.scm:824 ../scm/im-custom.scm:836
-#: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:39
-#: ../scm/look-custom.scm:40 ../scm/look-custom.scm:47
-#: ../scm/look-custom.scm:54 ../scm/look-custom.scm:60
-#: ../scm/look-custom.scm:66 ../scm/look-custom.scm:77
-#: ../scm/look-custom.scm:83 ../scm/look-custom.scm:89
-#: ../scm/mana-custom.scm:54 ../scm/mana-custom.scm:60
-#: ../scm/mana-custom.scm:75 ../scm/mana-custom.scm:81
-#: ../scm/mana-custom.scm:87 ../scm/mana-custom.scm:93
-#: ../scm/mana-custom.scm:191 ../scm/mana-custom.scm:210
-#: ../scm/mana-custom.scm:219 ../scm/mana-custom.scm:261
-#: ../scm/mana-custom.scm:270 ../scm/mana-custom.scm:308
-#: ../scm/mana-custom.scm:314 ../scm/mana-custom.scm:320
-#: ../scm/mana-key-custom.scm:37 ../scm/mana-key-custom.scm:41
-#: ../scm/mana-key-custom.scm:45 ../scm/mana-key-custom.scm:49
-#: ../scm/predict-custom.scm:39 ../scm/predict-custom.scm:46
-#: ../scm/predict-custom.scm:61 ../scm/predict-custom.scm:73
-#: ../scm/predict-custom.scm:108 ../scm/predict-custom.scm:143
-#: ../scm/prime-custom.scm:64 ../scm/prime-custom.scm:70
-#: ../scm/prime-custom.scm:76 ../scm/prime-custom.scm:84
-#: ../scm/prime-custom.scm:90 ../scm/prime-custom.scm:105
-#: ../scm/prime-custom.scm:111 ../scm/prime-custom.scm:123
-#: ../scm/prime-custom.scm:147 ../scm/prime-custom.scm:153
-#: ../scm/prime-custom.scm:160 ../scm/prime-custom.scm:167
-#: ../scm/prime-custom.scm:175 ../scm/prime-custom.scm:196
-#: ../scm/prime-custom.scm:202 ../scm/prime-custom.scm:213
-#: ../scm/prime-key-custom.scm:65 ../scm/prime-key-custom.scm:69
-#: ../scm/prime-key-custom.scm:73 ../scm/sj3-custom.scm:44
-#: ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52 ../scm/sj3-custom.scm:62
-#: ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83 ../scm/sj3-custom.scm:89
-#: ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
+#: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
+#: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
+#: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
+#: ../scm/look-custom.scm:60 ../scm/look-custom.scm:66
+#: ../scm/look-custom.scm:77 ../scm/look-custom.scm:83
+#: ../scm/look-custom.scm:89 ../scm/mana-custom.scm:54
+#: ../scm/mana-custom.scm:60 ../scm/mana-custom.scm:75
+#: ../scm/mana-custom.scm:81 ../scm/mana-custom.scm:87
+#: ../scm/mana-custom.scm:93 ../scm/mana-custom.scm:191
+#: ../scm/mana-custom.scm:210 ../scm/mana-custom.scm:219
+#: ../scm/mana-custom.scm:261 ../scm/mana-custom.scm:270
+#: ../scm/mana-custom.scm:308 ../scm/mana-custom.scm:314
+#: ../scm/mana-custom.scm:320 ../scm/mana-key-custom.scm:37
+#: ../scm/mana-key-custom.scm:41 ../scm/mana-key-custom.scm:45
+#: ../scm/mana-key-custom.scm:49 ../scm/predict-custom.scm:39
+#: ../scm/predict-custom.scm:46 ../scm/predict-custom.scm:61
+#: ../scm/predict-custom.scm:73 ../scm/predict-custom.scm:108
+#: ../scm/predict-custom.scm:143 ../scm/prime-custom.scm:64
+#: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
+#: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
+#: ../scm/prime-custom.scm:105 ../scm/prime-custom.scm:111
+#: ../scm/prime-custom.scm:123 ../scm/prime-custom.scm:147
+#: ../scm/prime-custom.scm:153 ../scm/prime-custom.scm:160
+#: ../scm/prime-custom.scm:167 ../scm/prime-custom.scm:175
+#: ../scm/prime-custom.scm:196 ../scm/prime-custom.scm:202
+#: ../scm/prime-custom.scm:213 ../scm/prime-key-custom.scm:65
+#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
+#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52
+#: ../scm/sj3-custom.scm:62 ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83
+#: ../scm/sj3-custom.scm:89 ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
 #: ../scm/sj3-custom.scm:200 ../scm/sj3-custom.scm:219
 #: ../scm/sj3-custom.scm:228 ../scm/sj3-custom.scm:270
 #: ../scm/sj3-custom.scm:279 ../scm/sj3-custom.scm:322
@@ -3804,7 +3804,11 @@ msgstr ""
 msgid "Japanese Romaji-Kana"
 msgstr ""
 
-#: ../scm/japanese-custom.scm:38
+#: ../scm/japanese-custom.scm:36
+msgid "Composing rule"
+msgstr ""
+
+#: ../scm/japanese-custom.scm:42
 msgid "Keep consonant Romaji not convertible to Kana"
 msgstr ""
 
