@@ -97,6 +97,7 @@
 (require-dynlib "skk")
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
+(require "tutcode-dialog.scm"); 交ぜ書き変換辞書からの削除確認ダイアログ
 
 ;;; user configs
 
@@ -414,13 +415,19 @@
 ;;; @return 生成したコンテキスト
 (define (tutcode-context-new id im)
   (if (not tutcode-dic-init)
-    (begin
-      (set! tutcode-dic-init #t)
-      (if tutcode-use-recursive-learning?
-        (require "tutcode-editor.scm"))
-      (require "tutcode-dialog.scm")
-      (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified)
-      (tutcode-read-personal-dictionary)))
+    (if (not (symbol-bound? 'skk-lib-dic-open))
+      (begin
+        (if (symbol-bound? 'uim-notify-info)
+          (uim-notify-info
+            (N_ "libuim-skk.so is not available. Mazegaki conversion is disabled")))
+        (set! tutcode-use-recursive-learning? #f)
+        (set! tutcode-enable-mazegaki-learning? #f))
+      (begin
+        (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified)
+        (if tutcode-use-recursive-learning?
+          (require "tutcode-editor.scm"))
+        (set! tutcode-dic-init #t)
+        (tutcode-read-personal-dictionary))))
   (let ((tc (tutcode-context-new-internal id im)))
     (tutcode-context-set-widgets! tc tutcode-widgets)
     (if (null? tutcode-rule)
@@ -704,7 +711,8 @@
 ;;; @param pc コンテキストリスト
 (define (tutcode-begin-conversion pc)
   (let* ((yomi (tutcode-make-string (tutcode-context-head pc)))
-         (res (skk-lib-get-entry yomi "" "" #f)))
+         (res (and (symbol-bound? 'skk-lib-get-entry)
+                   (skk-lib-get-entry yomi "" "" #f))))
     (if res
       (begin
         (tutcode-context-set-nth! pc 0)
