@@ -32,8 +32,12 @@
                      (N_ "Japanese Romaji-Kana")
                      (N_ "long description will be here."))
 
+(define-custom-group 'composing-rule
+                     (N_ "Composing rule")
+                     (N_ "long description will be here."))
+
 (define-custom 'ja-rk-rule-keep-consonant? #f
-               '(ja-rk-rule)
+               '(ja-rk-rule composing-rule)
                '(boolean)
                (N_ "Keep consonant Romaji not convertible to Kana")
                (N_ "long description will be here."))
