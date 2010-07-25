@@ -5484,9 +5484,8 @@ msgid "Use Dvorak keyboard"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:108
-#, fuzzy
 msgid "Use table style candidate window"
-msgstr "Fenêtre des candidats"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:114
 msgid "qwerty-jis"

@@ -1248,27 +1248,24 @@ msgstr ""
 #: ../scm/mana-custom.scm:171 ../scm/sj3-custom.scm:180
 #: ../scm/skk-custom.scm:219 ../scm/social-ime-custom.scm:179
 #: ../scm/wnn-custom.scm:180 ../scm/yahoo-jp-custom.scm:180
-#, fuzzy
 msgid "ACT extended romaji input mode"
-msgstr "AZIK拡張ローマ字入力モード"
+msgstr "ACT拡張ローマ字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:184 ../scm/anthy-custom.scm:179
 #: ../scm/anthy-utf8-custom.scm:186 ../scm/canna-custom.scm:184
 #: ../scm/mana-custom.scm:175 ../scm/sj3-custom.scm:184
 #: ../scm/skk-custom.scm:224 ../scm/social-ime-custom.scm:183
 #: ../scm/wnn-custom.scm:184 ../scm/yahoo-jp-custom.scm:184
-#, fuzzy
 msgid "KZIK"
-msgstr "AZIK"
+msgstr "KZIK"
 
 #: ../scm/ajax-ime-custom.scm:185 ../scm/anthy-custom.scm:180
 #: ../scm/anthy-utf8-custom.scm:187 ../scm/canna-custom.scm:185
 #: ../scm/mana-custom.scm:176 ../scm/sj3-custom.scm:185
 #: ../scm/skk-custom.scm:225 ../scm/social-ime-custom.scm:184
 #: ../scm/wnn-custom.scm:185 ../scm/yahoo-jp-custom.scm:185
-#, fuzzy
 msgid "KZIK extended romaji input mode"
-msgstr "AZIK拡張ローマ字入力モード"
+msgstr "KZIK拡張ローマ字入力モード"
 
 #: ../scm/ajax-ime-custom.scm:194 ../scm/ajax-ime-custom.scm:195
 #: ../scm/anthy-custom.scm:189 ../scm/anthy-custom.scm:190
@@ -5623,9 +5620,8 @@ msgid "Use Dvorak keyboard"
 msgstr "Dvorakキーボードを使用する"
 
 #: ../scm/tutcode-custom.scm:108
-#, fuzzy
 msgid "Use table style candidate window"
-msgstr "候補ウィンドウを使用する"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:114
 msgid "qwerty-jis"
@@ -5652,9 +5648,8 @@ msgid "Dvorak"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:117
-#, fuzzy
 msgid "Key layout of table style candidate window"
-msgstr "[ELatin] 候補ウィンドウを閉じる"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:141
 msgid "Number of candidates in candidate window at a time for kigou mode"
