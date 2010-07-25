@@ -5630,7 +5630,7 @@ msgstr "Dvorakキーボードを使用する"
 
 #: ../scm/tutcode-custom.scm:108
 msgid "Use table style candidate window"
-msgstr ""
+msgstr "表形式の候補ウィンドウを使用する"
 
 #: ../scm/tutcode-custom.scm:114
 msgid "qwerty-jis"
@@ -5658,7 +5658,7 @@ msgstr ""
 
 #: ../scm/tutcode-custom.scm:117
 msgid "Key layout of table style candidate window"
-msgstr ""
+msgstr "表形式の候補ウィンドウのキー配列"
 
 #: ../scm/tutcode-custom.scm:141
 msgid "Number of candidates in candidate window at a time for kigou mode"
