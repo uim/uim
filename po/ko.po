@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-25 22:14+0900\n"
+"POT-Creation-Date: 2010-07-25 22:25+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -814,6 +814,7 @@ msgstr ""
 #: ../scm/im-custom.scm:723 ../scm/im-custom.scm:729 ../scm/im-custom.scm:735
 #: ../scm/im-custom.scm:777 ../scm/im-custom.scm:783 ../scm/im-custom.scm:798
 #: ../scm/im-custom.scm:818 ../scm/im-custom.scm:824 ../scm/im-custom.scm:836
+#: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:39
 #: ../scm/look-custom.scm:40 ../scm/look-custom.scm:47
 #: ../scm/look-custom.scm:54 ../scm/look-custom.scm:60
 #: ../scm/look-custom.scm:66 ../scm/look-custom.scm:77
@@ -3797,6 +3798,14 @@ msgstr ""
 
 #: ../scm/iso-639-1.scm:183
 msgid "Zulu"
+msgstr ""
+
+#: ../scm/japanese-custom.scm:32
+msgid "Japanese Romaji-Kana"
+msgstr ""
+
+#: ../scm/japanese-custom.scm:38
+msgid "Keep consonant Romaji not convertible to Kana"
 msgstr ""
 
 #: ../scm/latin.scm:1562
