@@ -28,6 +28,8 @@ zm.scm: $(top_srcdir)/scm/zm.scm
 	$(LN_S) $< $@
 
 .scm.table:
+	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/sigscheme && \
+	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim sigscheme-combined && \
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-sh && \
 	echo "(begin (load \"$<\") (for-each (lambda (key) (display (format \"~a ~W\n\" (apply string-append (caar key)) (cadr key)))) `basename $< .scm`-rule))" | $(UIM_SH_ENV) $(UIM_SH) -b | grep -v "^#<undef>" | sort > $@
 #endif
