@@ -1110,7 +1110,11 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
   [
    if test "x$with_libedit" != "xno"; then
         use_libedit="yes"
-	libedit_path="$withval"
+	if test "x$withval" = "xyes"; then
+		libedit_path=/usr
+	else
+		libedit_path="$withval"
+	fi
    else
         use_libedit="no"
    fi
