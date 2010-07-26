@@ -15,12 +15,17 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 
   - generic-predict
     Generic completion input support in Japanese multi-segment IMs
-    (used in AjaxIME, Canan, SJ3, Social-IME, Wnn, Yahoo-JP).
+    (used in AjaxIME, Canna, SJ3, Social-IME, Wnn, Yahoo-JP).
 
   - Qt4 bridge
     * --enable-qt4-qt3support option
     * Support for preedit color configuration
     * A caret state indicator
+
+  - Qt4 bridge
+  - Gtk+ bridge
+  - uim-candwin-tbl-gtk
+    * Table style candidate window
 
 * Enhancements
   - uim-elatin
@@ -34,6 +39,16 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 
   - uim-im-switcher
     * Don't run multiple switcher instances in a desktop (#2112)
+
+  - uim-tutcode
+    * Register/purge entry in Mazegaki dictionary
+    * Alphabet conversion (SKK abbrev) mode
+    * Virtual keyboard help
+    * Auto help
+    * Add kanji to kigoudic
+
+  - uim-trycode
+    * Updated the composition table to 2010-04-27 version
 
 * Fixes
   - Qt4 bridge
@@ -721,7 +736,7 @@ Overview of changes from 1.1.x to 1.2.0-alpha
     - Support locale dependent Compose file and ~/.XCompose
 
 * Fixes
-  - Anthy, Canan, Mana
+  - Anthy, Canna, Mana
     - Don't insert full-width space on half-width katakana mode (bug #502).
 
   - uim-xim
