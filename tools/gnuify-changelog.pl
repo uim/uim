@@ -45,6 +45,8 @@
 	     "iratqq"   => 'IWATA Ray <iwata@quasiquote.org>',
 
 	     "koutou"   => 'Kouhei Sutou <kou@cozmixng.org>',
+
+	     "nogu.dev"   => 'Muneyuki Noguchi <nogu.dev@gmail.com>',
 );
 
 $parse_next_line = 0;
