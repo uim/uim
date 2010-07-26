@@ -16,7 +16,7 @@ endif
 
 FORCE:
 
-EXTRA_DIST = README.en README.ja INDENT \
+EXTRA_DIST = INDENT \
 	     quiminputcontextplugin.pro.in \
 	     quiminputcontext_with_slave.h \
 	     quiminputcontext_with_slave.cpp
