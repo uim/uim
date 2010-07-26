@@ -73,6 +73,8 @@
 						m17n-zh-py-gb
 						m17n-syrc-phonetic
 						m17n-vi-nomtelex
+                                                zm
+                                                wb86
 						))
 	     (set! enabled-im-list
 		   (append (lset-difference eq? enabled-im-list
