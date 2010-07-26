@@ -5770,7 +5770,7 @@ msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
 
 #: ../scm/tutcode.scm:422
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
-msgstr ""
+msgstr "libuim-skk.soが利用不可能なため、交ぜ書き変換は無効"
 
 #: ../scm/viqr.scm:206
 msgid "VIQR"
