@@ -43,7 +43,7 @@
 	     "deton.kih" => 'KIHARA Hideto <deton@m1.interq.or.jp>',
 
 	     "iratqq"   => 'IWATA Ray <iwata@quasiquote.org>',
-	     "iratqq@gmail.com"   => 'IWATA Ray <iwata@quasiquote.org>',
+	     "iratqq\@gmail.com"   => 'IWATA Ray <iwata@quasiquote.org>',
 
 	     "koutou"   => 'Kouhei Sutou <kou@cozmixng.org>',
 
