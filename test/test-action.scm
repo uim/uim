@@ -182,6 +182,7 @@
                          (= (test-context-input-rule tc)
                             test-input-rule-kana))
                        (lambda (tc)
+                         (require "japanese-kana.scm")
                          (rk-context-set-rule! (test-context-rkc tc)
                                                ja-kana-hiragana-rule)
                          (test-context-set-input-rule! tc test-input-rule-kana)
