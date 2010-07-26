@@ -3,12 +3,20 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 * New features
   - uim-social-ime (new IM)
     A web based Japanese multi-segment input method
+
   - uim-ajax-ime (new IM)
     A web based Japanese single-segment input method
+
   - uim-yahoo-jp (new IM)
     A web based Japanese multi-segment input method
+
   - uim-annotation
     Annotation system
+
+  - generic-predict
+    Generic completion input support in Japanese multi-segment IMs
+    (used in AjaxIME, Canan, SJ3, Social-IME, Wnn, Yahoo-JP).
+
   - Qt4 bridge
     * --enable-qt4-qt3support option
     * Support for preedit color configuration
@@ -21,6 +29,11 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 
   - Japanese multi-segment IMs
     * Support ACT and KZIK input rules
+    * Support user configuration to keep unmatched consonant characters
+      in Romaji-Kana input
+
+  - uim-im-switcher
+    * Don't run multiple switcher instances in a desktop (#2112)
 
 * Fixes
   - Qt4 bridge
@@ -31,6 +44,7 @@ Overview of changes from 1.5.x to 1.6.0-alpha
     * Fix transparent and pixmap background with latest gnome-panel (#28999)
 
 * Others
+  - testing framework update (requires GaUnit 0.1.6)
 
 
 Overview of changes from 1.5.6 to 1.5.7
