@@ -35,6 +35,7 @@
 (define (setup)
   (uim-test-setup)
   ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
+  (uim-eval '(set! enable-lazy-loading? #t))
   (uim-eval '(load-enabled-modules))
   (uim-define-siod-compatible-require)
   (uim-eval '(require "lazy-load.scm")))
@@ -153,7 +154,8 @@
    '(begin
       (set! im-list ())
       (undefine *tcode.scm-loaded*)
-      (undefine *hangul.scm-loaded*)))
+      (undefine *hangul.scm-loaded*)
+      (set! installed-im-module-list '("tcode" "hangul"))))
   (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
   (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
 
