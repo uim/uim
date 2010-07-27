@@ -34,9 +34,6 @@
 
 (define (setup)
   (uim-test-setup)
-  ;; Cancels LIBUIM_VANILLA=1. See init.scm for further details.
-  (uim-eval '(load-enabled-modules))
-
   (uim-define-siod-compatible-require))
 
 (define (teardown)
