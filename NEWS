@@ -35,7 +35,7 @@ Overview of changes from 1.5.x to 1.6.0-alpha
   - Japanese multi-segment IMs
     * Support ACT and KZIK input rules
     * Support user configuration to keep unmatched consonant characters
-      in Romaji-Kana input
+      in Romaji input
 
   - uim-im-switcher
     * Don't run multiple switcher instances in a desktop (#2112)
@@ -60,6 +60,7 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 
 * Others
   - testing framework update (requires GaUnit 0.1.6)
+  - Update SigScheme to 0.8.5 to support multiple load paths.
 
 
 Overview of changes from 1.5.6 to 1.5.7
