@@ -49,16 +49,17 @@
                     '(_ (lang-code->lang-name "zh")))
   #f)
 
-(define (test-lang-code->lang-name-in-ja_JP-locale)
-  (uim-test-with-environment-variables
-   '(("LC_ALL" . "ja_JP.UTF-8"))
-   uim-test-setup)
-  (assert-uim-equal "日本語"
-                    '(_ (lang-code->lang-name "ja")))
-  (assert-uim-equal "英語"
-                    '(_ (lang-code->lang-name "en")))
-  (assert-uim-equal "中国語"
-                    '(_ (lang-code->lang-name "zh")))
-  #f)
+;; Temporally disabled as these tests require mo file installed
+;;(define (test-lang-code->lang-name-in-ja_JP-locale)
+;;  (uim-test-with-environment-variables
+;;   '(("LC_ALL" . "ja_JP.UTF-8"))
+;;   uim-test-setup)
+;;  (assert-uim-equal "日本語"
+;;                    '(_ (lang-code->lang-name "ja")))
+;;  (assert-uim-equal "英語"
+;;                    '(_ (lang-code->lang-name "en")))
+;;  (assert-uim-equal "中国語"
+;;                    '(_ (lang-code->lang-name "zh")))
+;;  #f)
 
 (provide "test/i18n/test-language")
