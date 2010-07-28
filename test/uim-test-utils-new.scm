@@ -87,7 +87,7 @@
                                  (block (read-block 4096 in))
                                  ((not (eof-object? block))))
                                 (display block out)
-                                (loop (uim-sh-select in 1000))))))))
+                                (loop (uim-sh-select in 5000))))))))
     (if (string-prefix? "Error:" result)
       (error (string-trim-both result))
       result)))
