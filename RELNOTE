@@ -1,10 +1,16 @@
-uim 1.5.7 Release Note
+uim 1.6.0-alpha Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.5.7 is latest stable release of uim.
+This distribution of uim 1.6.0-alpha is a preview release for testing
+purpose. Since it may contain serious unknown problems, it should not be
+used for important work. For such situations, use our latest stable
+release uim 1.5.7.
+
+This release achieved both considerable internal improvement and many
+user-visible new feature additions.
 
 Please report us if you find a problem.
 
@@ -15,33 +21,19 @@ Bug tracking system: http://bugs.freedesktop.org/
 
 What's New
 ----------
-Bug fix for GTK+, Qt4, Emacs bridges and experimental Qt4 tools
-addition.  See NEWS for the detailed changes.
-
-
-What's New in 1.5.0
--------------------
-
-This release achieved both considerable internal improvement and many
-user-visible new feature additions.
-
-The complicated legacy C part of uim which prevented extensions, design
-improvements and automated input method tests have been turned into Scheme
-codes or optimized out.
 
 See NEWS for the fully detailed changes.
 
-  - New IM uim-wnn
-  - New IM uim-sj3
-  - New IM uim-elatin
-  - New IM uim-look
-  - New IM uim-anthy-utf8
-  - Improved uim-tutcode with many long-awaited features
-  - Experimental Qt4 bridge
-  - Experimental uim to user message notification system
-  - Emergency disablement of all uim functionality on fatal errors to
-    protect user application data
-  - Many R5RS/SRFI features of the embedded Scheme interpreter
+  - New IM uim-social-ime
+  - New IM uim-ajax-ime
+  - New IM uim-yahoo-jp
+  - Improved uim-tutcode with many nice features with table style
+    candidate window
+  - Stable Qt4 bridge
+  - Annotation system
+  - Internal plugin system reorganization
+  - uim-elatin enhancement
+  - Japanese multiple-segment IM enhancement
 
 
 Notes for Packagers and System Integrators
@@ -71,12 +63,6 @@ Notes for Packagers and System Integrators
 
 Roadmap
 -------
-
-  - uim 1.6.0
-
-    Additional input methods, notification support, internal
-    improvement will be featured.
-
 
   - uim 1.7.0 and later
 

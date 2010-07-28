@@ -60,7 +60,8 @@ Overview of changes from 1.5.x to 1.6.0-alpha
 
 * Others
   - testing framework update (requires GaUnit 0.1.6)
-  - Update SigScheme to 0.8.5 to support multiple load paths.
+  - Update SigScheme to 0.8.5 to support multiple load paths with
+    LIBUIM_SCM_FILES.
 
 
 Overview of changes from 1.5.6 to 1.5.7
