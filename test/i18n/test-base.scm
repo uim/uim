@@ -27,6 +27,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; These tests are passed at revision 6605 (new repository)
+
 (define-module test.i18n.test-base
   (use test.unit.test-case)
   (use test.uim-test))

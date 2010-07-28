@@ -33,7 +33,7 @@
 ;;
 ;; custom-reload-customs
 
-;; These tests are passed at revision 5329 (new repository)
+;; These tests are passed at revision 6605 (new repository)
 
 (use test.unit)
 

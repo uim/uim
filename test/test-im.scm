@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+;; These tests are passed at revision 6605 (new repository)
+
 (use test.unit)
 
 (require "test/uim-test-utils")

@@ -27,6 +27,8 @@
 ;;; SUCH DAMAGE.
 ;;;
 
+;; These tests are passed at revision 6605 (new repository)
+
 (define-module test.util.test-srfi
   (use srfi-1)
   (use gauche.sequence)

@@ -29,6 +29,8 @@
 ;;; SUCH DAMAGE.
 ;;;
 
+;; These tests are passed at revision 6605 (new repository)
+
 (define-module test.iconv
   (use gauche.charconv)
   (use test.unit.test-case)

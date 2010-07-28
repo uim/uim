@@ -27,7 +27,7 @@
 ;;; SUCH DAMAGE.
 ;;;
 
-;; These tests are passed at revision 5461 (new repository)
+;; These tests are passed at revision 6605 (new repository)
 
 (define-module test.util.test-record
   (use test.unit.test-case)
