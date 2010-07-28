@@ -49,7 +49,7 @@
     (error "GaUnit 0.1.6 is required"))
 
 (sys-putenv "LIBUIM_SYSTEM_SCM_FILES" (uim-test-source-path "sigscheme" "lib"))
-(sys-putenv "LIBUIM_SCM_FILES" (uim-test-source-path "scm"))
+(sys-putenv "LIBUIM_SCM_FILES" (string-append (uim-test-source-path "scm") ":" (uim-test-build-path "scm")))
 ;; FIXME: '.libs' is hardcoded
 (sys-putenv "LIBUIM_PLUGIN_LIB_DIR" (uim-test-build-path "uim" ".libs"))
 (sys-putenv "LIBUIM_VERBOSE" "2")  ;; must be 1 or 2 (2 enables backtrace)

@@ -38,13 +38,14 @@
 (define uim-plugin-scm-load-path
   (if (setugid?)
       (list (sys-pkgdatadir))
-      (let ((home-dir (or (home-directory (user-name)) "")))
+      (let ((home-dir (or (home-directory (user-name)) ""))
+            (scm-paths (string-split (load-path) ":")))
 	(filter string?
-		(list (getenv "LIBUIM_SCM_FILES")
+		(append scm-paths
 		      (if home-dir
-			  (string-append (get-config-path! #f) "/plugin")
+			  (list (string-append (get-config-path! #f) "/plugin"))
 			  '())
-		      (sys-pkgdatadir))))))
+		      (list (sys-pkgdatadir)))))))
 
 ;; The name 'module' is adopted from a post from Hiroyuki. If you
 ;; feel bad about the meaning of 'module', post your opinion to

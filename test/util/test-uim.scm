@@ -39,13 +39,15 @@
   (uim-test-teardown))
 
 (define (test-make-scm-pathname)
-  (assert-uim-equal (uim '(string-append (load-path) "/"))
+  (assert-uim-equal (uim '(map (lambda (x) (string-append x "/"))
+                               (string-split (load-path) ":")))
                     '(make-scm-pathname ""))
-  (assert-uim-equal (uim '(string-append (load-path) "/file"))
+  (assert-uim-equal (uim '(map (lambda (x) (string-append x "/file"))
+                               (string-split (load-path) ":")))
                     '(make-scm-pathname "file"))
-  (assert-uim-equal "/absolute/path/file"
+  (assert-uim-equal '("/absolute/path/file")
                     '(make-scm-pathname "/absolute/path/file"))
-  (assert-uim-equal "/"
+  (assert-uim-equal '("/")
                     '(make-scm-pathname "/"))
   #f)
 

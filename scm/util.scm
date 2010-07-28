@@ -251,28 +251,39 @@
 (define make-scm-pathname
   (lambda (file)
     (if (string-prefix? "/" file)
-	file
-	(string-append (load-path) "/" file))))
+	(list file)
+        (let ((paths (string-split (load-path) ":")))
+          (map (lambda (x) (string-append x "/" file)) paths)))))
 
 ;; TODO: write test
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
     (guard (err
-	    (else #f))
-      ;; to suppress error message, check file existence first
-      (and (file-readable? (make-scm-pathname file))
-	   (load file)))))
+             (else #f))
+           (let ((paths (make-scm-pathname file)))
+             (let loop ((path (car paths))
+                        (rest (cdr paths)))
+               ;; to suppress error message, check file existence first
+               (if (file-readable? path)
+                 (load path)
+                 (if (not (null? rest))
+                   (loop (car rest) (cdr rest)))))))))
 
 ;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)
     (guard (err
-	    (else #f))
-      ;; to suppress error message, check file existence first
-      (and (file-readable? (make-scm-pathname file))
-	   (require file)))))
+             (else #f))
+           (let ((paths (make-scm-pathname file)))
+             (let loop ((path (car paths))
+                        (rest (cdr paths)))
+               ;; to suppress error message, check file existence first
+               (if (file-readable? path)
+                 (require path)
+                 (if (not (null? rest))
+                   (loop (car rest) (cdr rest)))))))))
 
 ;; used for dynamic environment substitution of closure
 (define %%enclose-another-env
