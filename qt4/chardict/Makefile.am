@@ -17,7 +17,7 @@ if QT4
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 endif
-	$(MAKE) $@ -C $(SUBDIRS)
+	$(MAKE) $@ -C po
 	-rm -f Makefile uim-chardict-qt4.pro
 
 FORCE:
