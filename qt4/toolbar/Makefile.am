@@ -15,7 +15,7 @@ if QT4
 	$(MAKE) $(AM_MAKEFLAGS) -f Makefile.qmake $@
 	$(MAKE) $(AM_MAKEFLAGS) distclean-am
 endif
-	-rm -f Makefile uim-toolbar-qt4.pro
+	-rm -f Makefile uim-toolbar-qt4.pro plasma-applet-uim.desktop
 	-rm -rf build/*
 
 FORCE:
