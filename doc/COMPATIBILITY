@@ -57,6 +57,20 @@ Each change consist of following fields. All fields are required.
 
 The changes are described below in most recently updated order.
 ------------------------------------------------------------------------------
+Summary: Support multiple paths by LIBUIM_SCM_FILES
+Affects: uim developers
+Updates: Scheme API
+Version: 1.6.0
+Revision: ac6603
+Date: 2010-07-28
+Modifier: Etsushi
+Related:
+URL:
+Changes:
+  (changed) make-scm-pathname
+Description:
+  Change the return type as list for supporting multiple paths.
+------------------------------------------------------------------------------
 Summary: New custom API to save custom variable.
 Affects: Helper program developers
 Updates: C API
