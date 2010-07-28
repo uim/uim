@@ -29,8 +29,6 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;; These tests are passed at revision 5329 (new repository)
-
 (use test.unit)
 
 (require "test/uim-test-utils")
@@ -45,6 +43,7 @@
    (assert-false (uim-bool '(preedit-attr? #f)))
    (assert-false (uim-bool '(preedit-attr? 2398)))))  ;; arbitrary integer
 
+;; N.B. This test requires m17nlib enabled
 (define-uim-test-case "testcase im im-management"
   (setup
    (lambda ()
