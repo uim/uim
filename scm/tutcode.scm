@@ -2136,6 +2136,27 @@
 ;;; コード表の上書き変更/追加のためのtutcode-rule-userconfigを
 ;;; コード表に反映する。
 (define (tutcode-rule-commit-sequences! rules)
-  ;; コード表の検索はリニアに行われるので、リストの先頭に入れるだけで上書きもOK
-  (if (not (null? rules))
-    (set! tutcode-rule (append rules tutcode-rule))))
+  (let* ((newseqs ()) ;新規追加するキーシーケンス
+         ;; コード表内の指定シーケンスで入力される文字を変更する。
+         ;; seq キーシーケンス
+         ;; kanji 入力される文字。carがひらがなモード用、cadrがカタカナモード用
+         (setseq1!
+          (lambda (elem)
+            (let* ((seq (caar elem))
+                   (kanji (cadr elem))
+                   (curseq (rk-lib-find-seq seq tutcode-rule))
+                   (pair (and curseq (cadr curseq))))
+              (if (and pair (pair? pair))
+                (begin
+                  (set-car! pair (car kanji))
+                  (if (not (null? (cdr kanji)))
+                    (if (< (length pair) 2)
+                      (set-cdr! pair (list (cadr kanji)))
+                      (set-car! (cdr pair) (cadr kanji)))))
+                (begin
+                  ;; コード表内に指定されたキーシーケンスの定義が無い
+                  (set! newseqs (append newseqs (list elem)))))))))
+    (for-each setseq1! rules)
+    ;; 新規追加シーケンス
+    (if (not (null? newseqs))
+      (set! tutcode-rule (append newseqs tutcode-rule)))))
