@@ -1,3 +1,10 @@
+Overview of changes from 1.6.0-alpha to 1.6.0-beta
+=============================================
+* Fixes
+  - Fix crash in some cases when generic-show-prediction-candidates?
+    is #f.
+
+
 Overview of changes from 1.5.x to 1.6.0-alpha
 =============================================
 * New features
@@ -10,6 +17,9 @@ Overview of changes from 1.5.x to 1.6.0-alpha
   - uim-yahoo-jp (new IM)
     A web based Japanese multi-segment input method
 
+  - Generic IM
+    - Add Wubi86 and Zhengma tables
+    
   - uim-annotation
     Annotation system
 
@@ -36,6 +46,9 @@ Overview of changes from 1.5.x to 1.6.0-alpha
     * Support ACT and KZIK input rules
     * Support user configuration to keep unmatched consonant characters
       in Romaji input
+
+  - Generic IM
+    * Add an option to show input prediction with expected key sequences
 
   - uim-im-switcher
     * Don't run multiple switcher instances in a desktop (#2112)
