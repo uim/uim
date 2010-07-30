@@ -1839,7 +1839,7 @@
            (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
-           (if (not (null? (tutcode-context-child-context c)))
+           (if (tutcode-state-has-preedit? c) ; 再帰学習時
              (tutcode-update-preedit pc)))))))
 
 ;;; キーが離されたときの処理を行う。
