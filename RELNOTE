@@ -58,8 +58,8 @@ Notes for Packagers and System Integrators
     '--with-libgcroots=installed' to configure options for uim to disable
     build and install of the bundled version of libgcroots
 
-  - libuim ABI and so libtool-version has been updated due to the
-    libuim-scm separation and some API changes
+  - libuim, and libuim-custom ABI are updated, and some libuim-scm API
+    is added.
 
 
 Roadmap

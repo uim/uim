@@ -1,8 +1,15 @@
 Overview of changes from 1.6.0-alpha to 1.6.0-beta
 =============================================
 * Fixes
-  - Fix crash in some cases when generic-show-prediction-candidates?
-    is #f.
+  - Generic IM
+    - Fix crash in some cases when generic-show-prediction-candidates?
+      is #f
+  - uim-toolbar-{gtk,gtk-systray,applet}
+    - Fix freezing toolbar when tool buttons are clicked
+
+* Others
+  - Run unittest in test directory only when --enable-debug=yes and
+    required tools (Gauche and GaUnit) are installed
 
 
 Overview of changes from 1.5.x to 1.6.0-alpha
