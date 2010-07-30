@@ -1,10 +1,10 @@
-uim 1.6.0-alpha Release Note
+uim 1.6.0-beta Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.6.0-alpha is a preview release for testing
+This distribution of uim 1.6.0-beta is a preview release for testing
 purpose. Since it may contain serious unknown problems, it should not be
 used for important work. For such situations, use our latest stable
 release uim 1.5.7.
@@ -27,6 +27,7 @@ See NEWS for the fully detailed changes.
   - New IM uim-social-ime
   - New IM uim-ajax-ime
   - New IM uim-yahoo-jp
+  - Support Wubi86 and ZhengMa tables with Generic IM
   - Improved uim-tutcode with many nice features with table style
     candidate window
   - Stable Qt4 bridge
