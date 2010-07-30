@@ -1724,6 +1724,57 @@ AC_SUBST(UIM_SCM_CFLAGS)
 AC_SUBST(SCIM_CFLAGS)
 AC_SUBST(QT_CONFIG_OPTS)
 
+dnl *************************
+dnl *** Tests for gosh and GaUnit ***
+dnl *************************
+AC_PATH_PROG([GOSH], gosh)
+AC_PATH_PROG([GAUCHE_CONFIG], gauche-config)
+AC_MSG_CHECKING([whether to have gosh and GaUnit])
+if test -n "$GOSH" && test -n "$GAUCHE_CONFIG"; then
+  gauche_version=`$GAUCHE_CONFIG -V`
+  gauche_major_version=`echo $gauche_version | \
+          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+  gauche_minor_version=`echo $gauche_version | \
+          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+  gauche_micro_version=`echo $gauche_version | \
+          sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+  dnl require 0.8.13
+  if test "$gauche_major_version" -gt 0 || \
+     test "$gauche_major_version" -eq 0 -a "$gauche_minor_version" -gt 8 || \
+     test "$gauche_major_version" -eq 0 -a "$gauche_minor_version" -eq 8 -a \
+          "$gauche_micro_version" -gt 13; then
+    echo '(use test.unit)' | $GOSH -b
+    gosh_result=$?
+    if test "$gosh_result" = 0; then
+      gaunit_version=`echo '(use test.unit) (print *gaunit-version*)' | $GOSH -b`
+      gosh_result=$?
+      if test "$gosh_result" = 0; then
+        gaunit_major_version=`echo $gaunit_version | \
+            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\1/'`
+        gaunit_minor_version=`echo $gaunit_version | \
+            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\2/'`
+        gaunit_micro_version=`echo $gaunit_version | \
+            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
+        dnl require 0.1.6
+        if test "$gaunit_major_version" -gt 0 || \
+           test "$gaunit_major_version" -eq 0 -a \
+                "$gaunit_minor_version" -gt 6 || \
+           test "$gaunit_major_version" -eq 0 -a \
+                "$gaunit_minor_version" -eq 1 -a \
+                "$gaunit_micro_version" -ge 6; then
+          have_gosh_and_gaunit="yes"
+        fi
+      fi
+    fi
+  fi
+fi
+if test x$have_gosh_and_gaunit = xyes; then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+fi
+AM_CONDITIONAL(DO_CHECK_IN_TEST, test x$have_gosh_and_gaunit = xyes)
+
 
 # Checks for system services
 
