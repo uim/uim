@@ -485,7 +485,13 @@ tool_button_clicked_cb(GtkButton *tool_button, GtkWidget *widget)
 
   command = g_object_get_data(G_OBJECT(tool_button), OBJECT_DATA_COMMAND);
   if (command)
-    system(command);
+    if (!g_spawn_command_line_async(command, NULL)) {
+      GtkWidget *dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
+          GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
+          _("Cannot launch '%s'."), command);
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(GTK_WIDGET(dialog));
+    }
 }
 
 
