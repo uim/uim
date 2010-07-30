@@ -332,7 +332,9 @@
               (begin
                 (im-activate-candidate-selector
                   pc (length cands/keys) generic-nr-candidate-max)
-                (if (not (string=? (cdr (car cands/keys)) ""))
+                (if (and
+                      generic-show-prediction-candidates?
+                      (not (string=? (cdr (car cands/keys)) "")))
                   (generic-context-set-rk-nth! pc -1)
                   (begin
                     (generic-context-set-rk-nth! pc 0)
@@ -474,7 +476,9 @@
             (begin
               (im-activate-candidate-selector
                 pc (length cands/nexts) generic-nr-candidate-max)
-              (if (not (string=? (cdr (car cands/nexts)) ""))
+              (if (and
+                    generic-show-prediction-candidates?
+                    (not (string=? (cdr (car cands/nexts)) "")))
                 (generic-context-set-rk-nth! pc -1)
                 (begin
                   (generic-context-set-rk-nth! pc 0)
