@@ -59,7 +59,7 @@ Notes for Packagers and System Integrators
     build and install of the bundled version of libgcroots
 
   - libuim, and libuim-custom ABI are updated, and some libuim-scm API
-    is added.
+    are added.
 
 
 Roadmap
