@@ -1773,7 +1773,8 @@ if test x$have_gosh_and_gaunit = xyes; then
 else
   AC_MSG_RESULT(no)
 fi
-AM_CONDITIONAL(DO_CHECK_IN_TEST, test x$have_gosh_and_gaunit = xyes)
+AM_CONDITIONAL(DO_CHECK_IN_TEST,
+	       test x$have_gosh_and_gaunit = xyes -a x$enable_debug = xyes)
 
 
 # Checks for system services

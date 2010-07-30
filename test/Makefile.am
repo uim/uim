@@ -23,8 +23,6 @@ EXTRA_DIST = uim-test-utils.scm run-test.scm template.scm \
         util/test-string.scm \
         util/test-uim.scm
 
-if DEBUG
 if DO_CHECK_IN_TEST
 TESTS = run-test.scm
-endif
 endif
