@@ -827,7 +827,7 @@
             (unlink socket-path)
             (process-with-daemon "prime" (list "prime" "-u" socket-path))
             (let loop ((fds (prime-open-unix-domain-socket socket-path))
-                       (giveup 100))
+                       (giveup 10))
               (cond ((= giveup 0)
                      (uim-notify-fatal
                       (format (N_ "cannot create socket file \"~a\"") socket-path))
@@ -868,8 +868,10 @@
                       (prime-open-with-pipe "prime"))
                      (else
                       (uim-notify-fatal (N_ "Prime connection is not defined"))))))
-      (cons (open-file-port (car fds))
-            (open-file-port (cdr fds))))))
+      (if fds
+        (cons (open-file-port (car fds))
+              (open-file-port (cdr fds)))
+        #f))))
 
 (define prime-send-command
   (lambda (connection msg)
@@ -879,7 +881,8 @@
           (file-display msg oport)
           (let loop ((line (file-read-line iport))
                      (rest '()))
-            (if (or (not line) ;; XXX: eof?
+            (if (or (not line)
+                    (eof-object? line)
                     (= 0 (string-length line))
                     (string=? line ""))
                 (reverse rest) ;; drop last "\n"
@@ -891,11 +894,15 @@
 (define prime-engine-send-command
   (lambda (connection arg-list)
     ;; result       ==> ("ok" "1")
-    (let* ((result (prime-send-command
-                    connection
-		    (string-append (prime-util-string-concat arg-list "\t")
-                                   "\n"))))
-      (cdr result)))) ;; drop status line
+    (let* ((result (if connection
+                     (prime-send-command
+                       connection
+                       (string-append (prime-util-string-concat arg-list "\t")
+                                      "\n"))
+                     '())))
+      (if (not (null? result))
+        (cdr result) ;; drop status line
+        (list "\t\t")))))
 
 (define prime-engine-close
   (lambda (prime-connection)
