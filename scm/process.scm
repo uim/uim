@@ -71,7 +71,8 @@
                    (uim-notify-fatal (N_ "cannot duplicate stdout")))
                (file-close pout-out)
 
-               (process-execute file argv)
+               (if (= (process-execute file argv) -1)
+                 (uim-notify-fatal (format (N_ "cannot execute ~a") file)))
                (_exit 1)
                )
               (else ;; parent
@@ -88,7 +89,8 @@
                #f))
             ((= 0 pid) ;; child
              (daemon 0 1)
-             (process-execute file argv)
+             (if (= (process-execute file argv) -1)
+               (uim-notify-fatal (format (N_ "cannot execute ~a") file)))
              (_exit 1))
             (else
              pid)))))
