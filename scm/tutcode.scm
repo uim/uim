@@ -1926,7 +1926,7 @@
       (begin
         (tutcode-context-set-nth! pc idx)
         (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-          (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
+          (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
           (tutcode-commit-with-auto-help pc))
         (tutcode-update-preedit pc)))))
 
