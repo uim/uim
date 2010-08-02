@@ -709,7 +709,9 @@
 
 ;;; 交ぜ書き辞書の検索を行う。
 ;;; @param pc コンテキストリスト
-(define (tutcode-begin-conversion pc)
+;;; @param autocommit? 候補が1個の場合に自動的に確定するかどうか
+;;; @param recursive-learning? 候補が無い場合に再帰登録モードに入るかどうか
+(define (tutcode-begin-conversion pc autocommit? recursive-learning?)
   (let* ((yomi (tutcode-make-string (tutcode-context-head pc)))
          (res (and (symbol-bound? 'skk-lib-get-entry)
                    (skk-lib-get-entry yomi "" "" #f))))
@@ -719,7 +721,7 @@
         (tutcode-context-set-nr-candidates! pc
          (skk-lib-get-nr-candidates yomi "" "" #f))
         (tutcode-context-set-state! pc 'tutcode-state-converting)
-        (if (= (tutcode-context-nr-candidates pc) 1)
+        (if (and autocommit? (= (tutcode-context-nr-candidates pc) 1))
           ;; 候補が1個しかない場合は自動的に確定する。
           ;; (辞書登録はtutcode-register-candidate-keyを押して明示的に開始する)
           (tutcode-commit-with-auto-help pc)
@@ -729,12 +731,12 @@
                      'tutcode-candidate-window-converting)
               (im-select-candidate pc 0)))))
       ;; 候補無し
-      (if tutcode-use-recursive-learning?
+      (if recursive-learning?
         (begin
           (tutcode-context-set-state! pc 'tutcode-state-converting)
-          (tutcode-setup-child-context pc 'tutcode-child-type-editor)
-          ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
-        )))))
+          (tutcode-setup-child-context pc 'tutcode-child-type-editor)))
+        ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
+        )))
 
 ;;; 子コンテキストを作成する。
 ;;; @param type 'tutcode-child-type-editorか'tutcode-child-type-dialog
@@ -1246,6 +1248,14 @@
        (tutcode-flush pc))
       ((tutcode-stroke-help-toggle-key? key key-state)
        (tutcode-toggle-stroke-help pc))
+      ;; 候補数が1個の場合、変換後自動確定されてconvertingモードに入らないので
+      ;; その場合でもpurgeできるように、ここでチェック
+      ((and (tutcode-purge-candidate-key? key key-state)
+            (not (null? (tutcode-context-head pc))))
+       ;; convertingモードに移行してからpurge
+       (tutcode-begin-conversion pc #f #f)
+       (if (eq? (tutcode-context-state pc) 'tutcode-state-converting)
+         (tutcode-proc-state-converting pc key key-state)))
       ((and (tutcode-register-candidate-key? key key-state)
             tutcode-use-recursive-learning?)
        (tutcode-context-set-state! pc 'tutcode-state-converting)
@@ -1259,7 +1269,7 @@
        ;; <Control>n等での変換開始?
        (if (tutcode-begin-conv-key? key key-state)
          (if (not (null? (tutcode-context-head pc)))
-           (tutcode-begin-conversion pc)
+           (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
            (tutcode-flush pc))
          (begin
            (tutcode-flush pc)
@@ -1274,7 +1284,7 @@
          ;;  spaceで変換開始はできないので、<Control>n等を使う必要あり)
          (if (tutcode-begin-conv-key? key key-state)
            (if (not (null? (tutcode-context-head pc)))
-             (tutcode-begin-conversion pc)
+             (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
              (tutcode-flush pc))
            (set! res (charcode->string key)))))
       ((tutcode-context-latin-conv pc)
@@ -1839,7 +1849,7 @@
            (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
-           (if (not (null? (tutcode-context-child-context c)))
+           (if (tutcode-state-has-preedit? c) ; 再帰学習時
              (tutcode-update-preedit pc)))))))
 
 ;;; キーが離されたときの処理を行う。
@@ -1916,7 +1926,7 @@
       (begin
         (tutcode-context-set-nth! pc idx)
         (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-          (im-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
+          (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
           (tutcode-commit-with-auto-help pc))
         (tutcode-update-preedit pc)))))
 
@@ -2136,6 +2146,27 @@
 ;;; コード表の上書き変更/追加のためのtutcode-rule-userconfigを
 ;;; コード表に反映する。
 (define (tutcode-rule-commit-sequences! rules)
-  ;; コード表の検索はリニアに行われるので、リストの先頭に入れるだけで上書きもOK
-  (if (not (null? rules))
-    (set! tutcode-rule (append rules tutcode-rule))))
+  (let* ((newseqs ()) ;新規追加するキーシーケンス
+         ;; コード表内の指定シーケンスで入力される文字を変更する。
+         ;; seq キーシーケンス
+         ;; kanji 入力される文字。carがひらがなモード用、cadrがカタカナモード用
+         (setseq1!
+          (lambda (elem)
+            (let* ((seq (caar elem))
+                   (kanji (cadr elem))
+                   (curseq (rk-lib-find-seq seq tutcode-rule))
+                   (pair (and curseq (cadr curseq))))
+              (if (and pair (pair? pair))
+                (begin
+                  (set-car! pair (car kanji))
+                  (if (not (null? (cdr kanji)))
+                    (if (< (length pair) 2)
+                      (set-cdr! pair (list (cadr kanji)))
+                      (set-car! (cdr pair) (cadr kanji)))))
+                (begin
+                  ;; コード表内に指定されたキーシーケンスの定義が無い
+                  (set! newseqs (append newseqs (list elem)))))))))
+    (for-each setseq1! rules)
+    ;; 新規追加シーケンス
+    (if (not (null? newseqs))
+      (set! tutcode-rule (append newseqs tutcode-rule)))))

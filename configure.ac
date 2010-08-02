@@ -1417,9 +1417,9 @@ dnl ****************************
 AC_ARG_ENABLE(kde4-applet,
   AC_HELP_STRING([--enable-kde4-applet],
         [build uim applet for KDE4 panel (experimental)
-            @<:@default=yes@:>@]),
+            @<:@default=no@:>@]),
         enable_kde4_applet=$enableval,
-        enable_kde4_applet=yes)
+        enable_kde4_applet=no)
 case "$enable_kde4_applet" in
   no)
     use_applet_kde4="no"
