@@ -3371,6 +3371,7 @@ skk_look_open(uim_lisp fn_)
   if ((skk_look_ctx = uim_look_init()) == NULL) {
     use_look = 0;
     uim_fatal_error("uim_look_init() failed");
+    return uim_scm_f();
   }
 
   if (!uim_look_open_dict(fn, skk_look_ctx)) {

@@ -467,6 +467,12 @@
   (N_ "Use UNIX look command for completion")
   (N_ "long description will be here."))
 
+(custom-add-hook 'skk-use-look?
+                 'custom-set-hooks
+                 (lambda ()
+                   (if skk-use-look?
+                     (skk-lib-look-open skk-look-dict))))
+
 (define-custom 'skk-look-dict "/usr/share/dict/words"
   '(skk-advanced)
   '(pathname regular-file)
