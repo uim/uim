@@ -29,6 +29,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 2))
 (require "i18n.scm")
 (require "fileio.scm")
 (require-dynlib "process")
@@ -42,6 +43,10 @@
         (execve file argv envp)
         (execvp file argv))))
 
+(define process-exec-failed 1)
+(define process-dup2-failed 2)
+(define process-fork-failed 4)
+
 (define (process-io file . args)
   (let-optionals* args ((argv (list file)))
     (and-let* ((pin (create-pipe))
@@ -50,7 +55,8 @@
                (pin-out (cdr pin))
                (pout-in  (car pout))
                (pout-out (cdr pout)))
-      (let ((pid (process-fork)))
+      (let ((pid (process-fork))
+            (ret 0))
         (cond ((< pid 0)
                (begin
                  (uim-notify-fatal (N_ "cannot fork"))
@@ -63,22 +69,37 @@
                (setsid)
                (file-close pin-out)
                (if (< (duplicate-fileno pin-in 0) 0)
-                   (uim-notify-fatal (N_ "cannot duplicate stdin")))
+                 (begin
+                   (uim-notify-fatal (N_ "cannot duplicate stdin"))
+                   (set! ret (bitwise-ior ret process-dup2-failed))))
                (file-close pin-in)
 
                (file-close pout-in)
                (if (< (duplicate-fileno pout-out 1) 0)
-                   (uim-notify-fatal (N_ "cannot duplicate stdout")))
+                 (begin
+                   (uim-notify-fatal (N_ "cannot duplicate stdout"))
+                   (set! ret (bitwise-ior ret process-dup2-failed))))
                (file-close pout-out)
 
                (if (= (process-execute file argv) -1)
                  (uim-notify-fatal (format (N_ "cannot execute ~a") file)))
+               (set! ret (bitwise-ior ret process-exec-failed))
+               (file-write-string 1 (number->string ret))
                (_exit 1)
                )
               (else ;; parent
                (file-close pin-in)
                (file-close pout-out)
-               (cons pout-in pin-out)))))))
+               (if (and-let*
+                     (((file-ready? (list pout-in) 100))
+                      (lst (file-read pout-in 1))
+                      ((not (eof-object? lst)))
+                      ((> (string->number (list->string lst)) 0))))
+                 (begin
+                   (file-close pout-in)
+                   (file-close pin-out)
+                   #f)
+                 (cons pout-in pin-out))))))))
 
 (define (process-with-daemon file . args)
   (let-optionals* args ((argv (list file)))

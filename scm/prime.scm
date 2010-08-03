@@ -867,7 +867,8 @@
                      ((eq? prime-server-setting? 'pipe)
                       (prime-open-with-pipe "prime"))
                      (else
-                      (uim-notify-fatal (N_ "Prime connection is not defined"))))))
+                      (uim-notify-fatal (N_ "Prime connection is not defined"))
+                      #f))))
       (if fds
         (cons (open-file-port (car fds))
               (open-file-port (cdr fds)))

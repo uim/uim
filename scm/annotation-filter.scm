@@ -45,7 +45,7 @@
 
 (define annotation-filter-socket-pair #f)
 
-(define (annotation-filter-open-unix-domain-socket)
+(define (annotation-filter-open-with-unix-domain-socket)
   (and-let* ((fd (unix-domain-socket-connect annotation-filter-unix-domain-socket-path)))
     (cons fd fd)))
 
@@ -66,15 +66,20 @@
                         ((eq? annotation-filter-server-setting? 'pipe)
                          (annotation-filter-open-with-pipe))
                         (else
-                         (uim-notify-fatal (N_ "Custom filter connection is not defined"))))))
-         (set! annotation-filter-socket-pair (cons (open-file-port (car fds))
-                                                   (open-file-port (cdr fds))))
-         #t)))
+                         (uim-notify-fatal (N_ "Custom filter connection is not defined"))
+                         #f))))
+         (if fds
+           (set! annotation-filter-socket-pair (cons
+                                                 (open-file-port (car fds))
+                                                 (open-file-port (cdr fds))))
+           (set! annotation-filter-socket-pair #f)))))
 
 (define (annotation-filter-read-message iport)
   (let loop ((line (file-read-line iport))
              (rest ""))
-    (if (string=? "." line)
+    (if (or (not line)
+            (eof-object? line)
+            (string=? "." line))
         rest
         (loop (file-read-line iport) (string-append rest line)))))
 
