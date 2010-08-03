@@ -104,6 +104,12 @@
   (N_ "Prime connection setting")
   (N_ "long description will be here."))
 
+(define-custom 'prime-command-path "prime"
+  '(prime advanced)
+  '(pathname regular-file)
+  (N_ "Prime command path")
+  (N_ "long description will be here."))
+
 (define-custom 'prime-tcpserver-name "localhost"
   '(prime advanced)
   '(string ".*")
