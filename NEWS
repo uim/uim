@@ -1,5 +1,5 @@
 Overview of changes from 1.6.0-alpha to 1.6.0-beta
-=============================================
+==================================================
 * Fixes
   - Generic IM
     * Fix crash in some cases when generic-show-prediction-candidates?
