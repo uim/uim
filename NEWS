@@ -2,14 +2,38 @@ Overview of changes from 1.6.0-alpha to 1.6.0-beta
 =============================================
 * Fixes
   - Generic IM
-    - Fix crash in some cases when generic-show-prediction-candidates?
+    * Fix crash in some cases when generic-show-prediction-candidates?
       is #f
+
   - uim-toolbar-{gtk,gtk-systray,applet}
-    - Fix freezing toolbar when tool buttons are clicked
+    * Fix freezing toolbar when tool buttons are clicked
+
+  - uim-prime
+  - uim-annotation-filter
+    * Fix crash when command is not found
+
+  - uim-tutcode
+    * Fix some recursive learning mode behavior
+    * Show correct auto help sequences when tutcode-rule-userconfig is
+      used
+
+  - uim-pref-qt4
+    * Fix compilation error due to the wrong version of uic is used in
+      some environments
+
+* Enhancements
+  - uim-tutcode
+    * Change to be able to purge mazegaki entry which is only one
+      candidate
+
+  - uim-prime
+    * Enable customization of prime command path
 
 * Others
   - Run unittest in test directory only when --enable-debug=yes and
     required tools (Gauche and GaUnit) are installed
+
+  - disable-kde4-applet in the configure script by default
 
 
 Overview of changes from 1.5.x to 1.6.0-alpha
