@@ -825,7 +825,7 @@
       (or fds
           (begin
             (unlink socket-path)
-            (process-with-daemon "prime" (list "prime" "-u" socket-path))
+            (process-with-daemon prime-command-path (list prime-command-path "-u" socket-path))
             (let loop ((fds (prime-open-unix-domain-socket socket-path))
                        (giveup 10))
               (cond ((= giveup 0)
@@ -865,7 +865,7 @@
                      ((eq? prime-server-setting? 'tcpserver)
                       (prime-open-with-tcp-socket prime-tcpserver-name prime-tcpserver-port))
                      ((eq? prime-server-setting? 'pipe)
-                      (prime-open-with-pipe "prime"))
+                      (prime-open-with-pipe prime-command-path))
                      (else
                       (uim-notify-fatal (N_ "Prime connection is not defined"))
                       #f))))
