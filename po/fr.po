@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-08-03 14:29+0900\n"
+"POT-Creation-Date: 2010-08-03 15:08+0900\n"
 "PO-Revision-Date: 2009-01-05 20:52+0900\n"
 "Last-Translator: Thierry Vignaud <tvignaud@mandrakesoft.com>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -833,15 +833,16 @@ msgstr ""
 #: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
 #: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
 #: ../scm/prime-custom.scm:105 ../scm/prime-custom.scm:111
-#: ../scm/prime-custom.scm:123 ../scm/prime-custom.scm:147
-#: ../scm/prime-custom.scm:153 ../scm/prime-custom.scm:160
-#: ../scm/prime-custom.scm:167 ../scm/prime-custom.scm:175
-#: ../scm/prime-custom.scm:196 ../scm/prime-custom.scm:202
-#: ../scm/prime-custom.scm:213 ../scm/prime-key-custom.scm:65
-#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
-#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52
-#: ../scm/sj3-custom.scm:62 ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83
-#: ../scm/sj3-custom.scm:89 ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
+#: ../scm/prime-custom.scm:117 ../scm/prime-custom.scm:129
+#: ../scm/prime-custom.scm:153 ../scm/prime-custom.scm:159
+#: ../scm/prime-custom.scm:166 ../scm/prime-custom.scm:173
+#: ../scm/prime-custom.scm:181 ../scm/prime-custom.scm:202
+#: ../scm/prime-custom.scm:208 ../scm/prime-custom.scm:219
+#: ../scm/prime-key-custom.scm:65 ../scm/prime-key-custom.scm:69
+#: ../scm/prime-key-custom.scm:73 ../scm/sj3-custom.scm:44
+#: ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52 ../scm/sj3-custom.scm:62
+#: ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83 ../scm/sj3-custom.scm:89
+#: ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
 #: ../scm/sj3-custom.scm:200 ../scm/sj3-custom.scm:219
 #: ../scm/sj3-custom.scm:228 ../scm/sj3-custom.scm:270
 #: ../scm/sj3-custom.scm:279 ../scm/sj3-custom.scm:322
@@ -975,7 +976,7 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:94 ../scm/anthy-custom.scm:90
 #: ../scm/anthy-utf8-custom.scm:97 ../scm/canna-custom.scm:94
 #: ../scm/generic-custom.scm:54 ../scm/mana-custom.scm:86
-#: ../scm/prime-custom.scm:146 ../scm/sj3-custom.scm:94
+#: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
 #: ../scm/tutcode-custom.scm:135 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
@@ -985,7 +986,7 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:100 ../scm/anthy-custom.scm:96
 #: ../scm/anthy-utf8-custom.scm:103 ../scm/canna-custom.scm:100
 #: ../scm/elatin-custom.scm:264 ../scm/generic-custom.scm:60
-#: ../scm/mana-custom.scm:92 ../scm/prime-custom.scm:195
+#: ../scm/mana-custom.scm:92 ../scm/prime-custom.scm:201
 #: ../scm/sj3-custom.scm:100 ../scm/social-ime-custom.scm:99
 #: ../scm/wnn-custom.scm:100 ../scm/yahoo-jp-custom.scm:100
 msgid "Select candidate by numeral keys"
@@ -993,7 +994,7 @@ msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:130 ../scm/anthy-custom.scm:126
 #: ../scm/anthy-utf8-custom.scm:133 ../scm/canna-custom.scm:130
-#: ../scm/mana-custom.scm:122 ../scm/prime-custom.scm:232
+#: ../scm/mana-custom.scm:122 ../scm/prime-custom.scm:238
 #: ../scm/sj3-custom.scm:130 ../scm/skk-custom.scm:178
 #: ../scm/social-ime-custom.scm:129 ../scm/wnn-custom.scm:130
 #: ../scm/yahoo-jp-custom.scm:130
@@ -1074,7 +1075,7 @@ msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:156 ../scm/anthy-custom.scm:151
 #: ../scm/anthy-utf8-custom.scm:158 ../scm/canna-custom.scm:156
-#: ../scm/mana-custom.scm:147 ../scm/prime-custom.scm:247
+#: ../scm/mana-custom.scm:147 ../scm/prime-custom.scm:253
 #: ../scm/sj3-custom.scm:156 ../scm/skk-custom.scm:198
 #: ../scm/social-ime-custom.scm:155 ../scm/wnn-custom.scm:156
 #: ../scm/yahoo-jp-custom.scm:156
@@ -1083,7 +1084,7 @@ msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:157 ../scm/anthy-custom.scm:152
 #: ../scm/anthy-utf8-custom.scm:159 ../scm/canna-custom.scm:157
-#: ../scm/mana-custom.scm:148 ../scm/prime-custom.scm:248
+#: ../scm/mana-custom.scm:148 ../scm/prime-custom.scm:254
 #: ../scm/sj3-custom.scm:157 ../scm/skk-custom.scm:199
 #: ../scm/social-ime-custom.scm:156 ../scm/wnn-custom.scm:157
 #: ../scm/yahoo-jp-custom.scm:157
@@ -1250,7 +1251,7 @@ msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:334 ../scm/anthy-custom.scm:361
 #: ../scm/anthy-utf8-custom.scm:368 ../scm/canna-custom.scm:401
-#: ../scm/mana-custom.scm:307 ../scm/prime-custom.scm:201
+#: ../scm/mana-custom.scm:307 ../scm/prime-custom.scm:207
 #: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:515
 #: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:86
 #: ../scm/wnn-custom.scm:345 ../scm/yahoo-jp-custom.scm:350
@@ -3354,7 +3355,7 @@ msgid "Dhivehi"
 msgstr ""
 
 #: ../scm/iso-639-1.scm:72 ../scm/prime-custom.scm:54
-#: ../scm/prime-custom.scm:62 ../scm/prime-custom.scm:242
+#: ../scm/prime-custom.scm:62 ../scm/prime-custom.scm:248
 msgid "English"
 msgstr "Anglais"
 
@@ -3476,7 +3477,7 @@ msgid "Italian"
 msgstr "Italien"
 
 #: ../scm/iso-639-1.scm:103 ../scm/prime-custom.scm:50
-#: ../scm/prime-custom.scm:61 ../scm/prime-custom.scm:237
+#: ../scm/prime-custom.scm:61 ../scm/prime-custom.scm:243
 msgid "Japanese"
 msgstr "Japonais"
 
@@ -4262,46 +4263,50 @@ msgid "Prime connection setting"
 msgstr ""
 
 #: ../scm/prime-custom.scm:110
+msgid "Prime command path"
+msgstr ""
+
+#: ../scm/prime-custom.scm:116
 msgid "PRIME server address"
 msgstr ""
 
-#: ../scm/prime-custom.scm:122
+#: ../scm/prime-custom.scm:128
 msgid "PRIME server port"
 msgstr ""
 
-#: ../scm/prime-custom.scm:152
+#: ../scm/prime-custom.scm:158
 msgid "Always showing candidate window"
 msgstr ""
 
-#: ../scm/prime-custom.scm:159
+#: ../scm/prime-custom.scm:165
 msgid "Show usage examples of candidate words"
 msgstr ""
 
-#: ../scm/prime-custom.scm:166
+#: ../scm/prime-custom.scm:172
 msgid "Show candidate annotations"
 msgstr ""
 
-#: ../scm/prime-custom.scm:174
+#: ../scm/prime-custom.scm:180
 msgid "Show candidate forms"
 msgstr ""
 
-#: ../scm/prime-custom.scm:212
+#: ../scm/prime-custom.scm:218
 msgid "Enable pseudo mode cursor"
 msgstr ""
 
-#: ../scm/prime-custom.scm:233
+#: ../scm/prime-custom.scm:239
 msgid "PRIME off"
 msgstr "PRIME désactivé"
 
-#: ../scm/prime-custom.scm:238 ../scm/prime-custom.scm:243
+#: ../scm/prime-custom.scm:244 ../scm/prime-custom.scm:249
 msgid "PRIME on"
 msgstr "PRIME sactivé"
 
-#: ../scm/prime-custom.scm:252
+#: ../scm/prime-custom.scm:258
 msgid "Peculiar"
 msgstr ""
 
-#: ../scm/prime-custom.scm:253
+#: ../scm/prime-custom.scm:259
 msgid "Application specific input mode"
 msgstr ""
 
