@@ -238,7 +238,7 @@
            (uim-notify-fatal (format "~a: '~a'" (N_ "poll error") (posix-error-string)))
            #f)
           ((null? ret)
-           (uim-notify-info (N_ "timeout"))
+           ;;(uim-notify-info (N_ "timeout"))
            #f)
           (else
            ret))))
