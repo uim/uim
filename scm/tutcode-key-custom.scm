@@ -155,7 +155,7 @@
 	       (N_ "[TUT-Code] register new entry to dictionary")
 	       (N_ "long description will be here"))
 
-(define-custom 'tutcode-purge-candidate-key '("<IgnoreCase><Shift>x")  ;; "X"
+(define-custom 'tutcode-purge-candidate-key '("<IgnoreShift>!")
 	       '(tutcode-keys2)
 	       '(key)
 	       (N_ "[TUT-Code] purge the entry from dictionary")

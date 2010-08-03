@@ -844,7 +844,7 @@
 (define-custom 'http-timeout 3000
   '(http)
   '(integer 0 65535)
-  (N_ "Timeout")
+  (N_ "Timeout (msec)")
   (N_ "Timeout of http connection (msec)."))
 
 (load "predict-custom.scm")

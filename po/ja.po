@@ -99,7 +99,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-07-25 22:48+0900\n"
+"POT-Creation-Date: 2010-08-03 14:29+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
@@ -645,54 +645,59 @@ msgstr "uimの状態を示すアプレット"
 #: ../helper/toolbar-common-gtk.c:85
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:96
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:173
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:105
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:182
 msgid "Switch input method"
 msgstr "入力方式の切り換え"
 
 #: ../helper/toolbar-common-gtk.c:94
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:98
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:199
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:107
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:208
 msgid "Preference"
 msgstr "設定"
 
 #: ../helper/toolbar-common-gtk.c:103
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:100
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:224
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:109
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:233
 msgid "Japanese dictionary editor"
 msgstr "日本語辞書ツール"
 
 #: ../helper/toolbar-common-gtk.c:112
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:102
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:249
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:111
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:258
 msgid "Input pad"
 msgstr "入力パッド"
 
 #: ../helper/toolbar-common-gtk.c:121
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:104
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:274
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:113
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:283
 msgid "Handwriting input pad"
 msgstr "手書き入力パッド"
 
 #: ../helper/toolbar-common-gtk.c:134
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:106
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:298 ../scm/im-custom.scm:53
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:115
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:307 ../scm/im-custom.scm:53
 msgid "Help"
 msgstr "ヘルプ"
 
-#: ../helper/toolbar-common-gtk.c:863
+#: ../helper/toolbar-common-gtk.c:247 ../helper/toolbar-common-gtk.c:491
+#, c-format
+msgid "Cannot launch '%s'."
+msgstr "'%s' を起動できません。"
+
+#: ../helper/toolbar-common-gtk.c:876
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:109
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:118
 msgid "Quit this toolbar"
 msgstr "終了"
 
@@ -760,6 +765,10 @@ msgstr "いいえ"
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:363
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
+
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:56
+msgid "Cannot launch '%1'."
+msgstr "'%1' を起動できません。"
 
 #: ../scm/action.scm:498 ../scm/action.scm:499
 msgid "unknown"
@@ -3329,8 +3338,8 @@ msgid "Http proxy port"
 msgstr "Httpプロキシポート番号"
 
 #: ../scm/im-custom.scm:847
-msgid "Timeout"
-msgstr "タイムアウト"
+msgid "Timeout (msec)"
+msgstr "タイムアウト (msec)"
 
 #: ../scm/im-custom.scm:848
 msgid "Timeout of http connection (msec)."
@@ -4556,17 +4565,22 @@ msgstr "ソケットディレクトリを作成できません。"
 msgid "Prime connection is not defined"
 msgstr "PRIMEの通信が定義されていません。"
 
-#: ../scm/process.scm:56 ../scm/process.scm:87
+#: ../scm/process.scm:62 ../scm/process.scm:109
 msgid "cannot fork"
 msgstr "フォークできませんでした。"
 
-#: ../scm/process.scm:66
+#: ../scm/process.scm:73
 msgid "cannot duplicate stdin"
 msgstr "標準入力を複製できませんでした。"
 
-#: ../scm/process.scm:71
+#: ../scm/process.scm:80
 msgid "cannot duplicate stdout"
 msgstr "標準出力を複製できませんでした。"
+
+#: ../scm/process.scm:85 ../scm/process.scm:114
+#, scheme-format
+msgid "cannot execute ~a"
+msgstr "~a を実行できませんでした。"
 
 #: ../scm/pyload.scm:42
 msgid "New Pinyin (Simplified)"
