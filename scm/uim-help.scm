@@ -37,7 +37,7 @@
 (define toolbar-help-url "http://code.google.com/p/uim/wiki/")
 
 (define toolbar-help-url-locale-alist
-  '(("ja" . "http://anthy.sourceforge.jp/cgi-bin/hikija/hiki.cgi?")))
+  '(("ja" . "http://code.google.com/p/uim-doc-ja/wiki/")))
 
 (define (uim-help-set-branch! fd)
   (let ((port (open-file-port fd)))
