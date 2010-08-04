@@ -49,6 +49,7 @@
                     (string-append (sys-pkgdatadir) "/tables/" table)
                     (apply string-append seq))))
       (if (and
+            looked
             (not (null? looked))
             (= (string-contains (car looked) " " 0) 0))
         (list (list seq) (read-from-string (car looked)))
@@ -64,7 +65,9 @@
                     2
                     (string-append (sys-pkgdatadir) "/tables/" table)
                     (apply string-append seq))))
-      (if (not (null? looked))
+      (if (and
+            looked
+            (not (null? looked)))
         (let ((first (car looked))
               (second (if (null? (cdr looked))
                         '()
@@ -120,7 +123,9 @@
                     5000 ;; is it sufficient enough?
                     (string-append (sys-pkgdatadir) "/tables/" table)
                     (apply string-append seq))))
-      (if (not (null? looked))
+      (if (and
+            looked
+            (not (null? looked)))
         (let* ((min-partial-pos
                  (lambda (lst)
                    (let ((maxlen (apply max (map string-length lst))))
