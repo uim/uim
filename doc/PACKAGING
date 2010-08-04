@@ -19,9 +19,6 @@ Notes for Packagers and System Integrators
   '--with-libgcroots=installed' to configure options for uim to
   disable build and install of the bundled version of libgcroots
 
-- libuim ABI and so libtool-version has been updated due to the GC
-  protection API change which required to fix the GC problem
-
 - For uim-m17nlib, the command 'uim-m17nlib-relink-icons' to import
   icons from m17n-db is provided. Run it when m17n-db has been
   updated. Whether making the command itself available for users or

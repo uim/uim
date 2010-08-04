@@ -40,6 +40,7 @@ This file describes the latter way.
 
   (set! ja-rk-rule-basic (cons '(((" ") . ()) (" " " " " "))
                                ja-rk-rule-basic))
+  (ja-rk-rule-update)
 
   To resolve it, require the file explicitly.
 
@@ -47,6 +48,7 @@ This file describes the latter way.
 
   (set! ja-rk-rule-basic (cons '(((" ") . ()) (" " " " " "))
                                ja-rk-rule-basic))
+  (ja-rk-rule-update)
 
 
   If you need whole part of an input method, use 'require-module'
