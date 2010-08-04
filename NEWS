@@ -5,9 +5,6 @@ Overview of changes from 1.6.0-alpha to 1.6.0-beta
     * Fix crash in some cases when generic-show-prediction-candidates?
       is #f
 
-  - uim-toolbar-{gtk,gtk-systray,applet}
-    * Fix freezing toolbar when tool buttons are clicked
-
   - uim-prime
   - uim-annotation-filter
     * Fix crash when command is not found
@@ -16,6 +13,12 @@ Overview of changes from 1.6.0-alpha to 1.6.0-beta
     * Fix some recursive learning mode behavior
     * Show correct auto help sequences when tutcode-rule-userconfig is
       used
+
+  - uim-look
+    * Fix crash when dictionary file is not found
+
+  - uim-toolbar-{gtk,gtk-systray,applet}
+    * Fix freezing toolbar when tool buttons are clicked
 
   - uim-pref-qt4
     * Fix compilation error due to the wrong version of uic is used in
