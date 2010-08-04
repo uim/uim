@@ -48,6 +48,10 @@
 # include <unistd.h>
 #endif
 
+#ifndef _PATH_DEVNULL
+#define _PATH_DEVNULL "/dev/null"
+#endif
+
 /* XXX */
 #undef HAVE_CYGWIN
 

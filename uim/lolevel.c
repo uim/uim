@@ -325,7 +325,7 @@ c_ntohl(uim_lisp u32_)
 static uim_lisp
 c_u16_to_u8list(uim_lisp u16_)
 {
-  u_int16_t u16 = htons(C_INT(u16_));
+  uint16_t u16 = htons(C_INT(u16_));
 
   return LIST2(MAKE_INT(u16 & 0xff),
 	       MAKE_INT((u16 >> 8) & 0xff));
@@ -333,7 +333,7 @@ c_u16_to_u8list(uim_lisp u16_)
 static uim_lisp
 c_u32_to_u8list(uim_lisp u32_)
 {
-  u_int32_t u32 = htonl(C_INT(u32_));
+  uint32_t u32 = htonl(C_INT(u32_));
 
   return LIST4(MAKE_INT(u32 & 0xff),
 	       MAKE_INT((u32 >> 8) & 0xff),
@@ -359,7 +359,7 @@ c_string_to_u8list(uim_lisp str_)
 static uim_lisp
 c_u8list_to_u16(uim_lisp u8list_)
 {
-  u_int8_t u8_1, u8_2;
+  uint8_t u8_1, u8_2;
 
   u8_1 = C_INT(CAR(u8list_));
   u8_2 = C_INT(CAR(CDR(u8list_)));
@@ -369,7 +369,7 @@ c_u8list_to_u16(uim_lisp u8list_)
 static uim_lisp
 c_u8list_to_u32(uim_lisp u8list_)
 {
-  u_int8_t u8_1, u8_2, u8_3, u8_4;
+  uint8_t u8_1, u8_2, u8_3, u8_4;
 
   u8_1 = C_INT(CAR(u8list_));
   u8_2 = C_INT(CAR(CDR(u8list_)));
@@ -398,7 +398,7 @@ c_u8list_to_string(uim_lisp u8list_)
 static uim_lisp
 c_u32_to_s32(uim_lisp u32_)
 {
-  u_int32_t u32 = C_INT(u32_);
+  uint32_t u32 = C_INT(u32_);
 
   return MAKE_INT((int32_t)u32);
 }

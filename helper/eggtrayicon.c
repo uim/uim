@@ -567,8 +567,10 @@ egg_tray_icon_set_colormap (EggTrayIcon *icon)
     colormap = gdk_screen_get_system_colormap (screen);
   else if (visual == gdk_screen_get_rgb_visual (screen))
     colormap = gdk_screen_get_rgb_colormap (screen);
+#if GTK_CHECK_VERSION(2, 8, 0)
   else if (visual == gdk_screen_get_rgba_visual (screen))
     colormap = gdk_screen_get_rgba_colormap (screen);
+#endif
   else
     {
       colormap = gdk_colormap_new (visual, FALSE);
