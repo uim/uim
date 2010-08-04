@@ -12,8 +12,9 @@ libuim accepts some enviroment variables mainly for debugging purpose.
 
 - LIBUIM_SCM_FILES
 
-  This variable takes a directory path as a value. If this variable is
-  defined, uim add the value to the search path of .scm files.
+  This variable takes a colon-separated list of directories. If this
+  variable is defined, uim add the values to the search path of .scm
+  files.
 
 - LIBUIM_SYSTEM_SCM_FILES
 
@@ -30,7 +31,7 @@ libuim accepts some enviroment variables mainly for debugging purpose.
 
   This variable takes a number as a value. 0-10 can be specified. If
   LIBUIM_VERBOSE is greater than or equal to 5, uim shows backtrace
-  when error occured.
+  when error occured if --enable-backtrace is set by configure.
 
 - LIBUIM_VANILLA
 
