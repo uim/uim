@@ -33,7 +33,9 @@ Overview of changes from 1.6.0-alpha to 1.6.0-beta
   - Run unittest in test directory only when --enable-debug=yes and
     required tools (Gauche and GaUnit) are installed
 
-  - disable-kde4-applet in the configure script by default
+  - Use --disable-kde4-applet by default in the configure script
+
+  - Fix compilation on Solaris 10
 
 
 Overview of changes from 1.5.x to 1.6.0-alpha
