@@ -127,7 +127,11 @@ c_addrinfo_ref_ai_flags(uim_lisp addrinfo_)
 
 const static opt_args ai_family[] = {
   { PF_UNSPEC, "$PF_UNSPEC" },
+#ifndef PF_LOCAL
+  { PF_UNIX,   "$PF_LOCAL" },
+#else
   { PF_LOCAL,  "$PF_LOCAL" },
+#endif
   { PF_INET,   "$PF_INET" },
   { PF_INET6,  "$PF_INET6" },
   { 0, 0 }
@@ -339,52 +343,52 @@ c_accept(uim_lisp s_, uim_lisp storage_)
 static uim_lisp
 c_make_sockaddr_un(void)
 {
-  struct sockaddr_un *sun;
+  struct sockaddr_un *s_un;
 
-  sun = uim_malloc(sizeof(struct sockaddr_un));
-  memset(sun, 0, sizeof(struct sockaddr_un));
-  return MAKE_PTR(sun);
+  s_un = uim_malloc(sizeof(struct sockaddr_un));
+  memset(s_un, 0, sizeof(struct sockaddr_un));
+  return MAKE_PTR(s_un);
 }
 
 static uim_lisp
 c_delete_sockaddr_un(uim_lisp sun_)
 {
-  struct sockaddr_un *sun = C_PTR(sun_);
+  struct sockaddr_un *s_un = C_PTR(sun_);
 
-  free(sun);
+  free(s_un);
   return uim_scm_t();
 }
 
 static uim_lisp
 c_set_sockaddr_un_sun_family(uim_lisp sun_, uim_lisp family_)
 {
-  struct sockaddr_un *sun = C_PTR(sun_);
+  struct sockaddr_un *s_un = C_PTR(sun_);
 
-  sun->sun_family = C_INT(family_);
+  s_un->sun_family = C_INT(family_);
   return uim_scm_t();
 }
 static uim_lisp
 c_ref_sockaddr_un_sun_family(uim_lisp sun_)
 {
-  struct sockaddr_un *sun = C_PTR(sun_);
+  struct sockaddr_un *s_un = C_PTR(sun_);
 
-  return MAKE_INT(sun->sun_family);
+  return MAKE_INT(s_un->sun_family);
 }
 
 static uim_lisp
 c_set_sockaddr_un_sun_path(uim_lisp sun_, uim_lisp path_)
 {
-  struct sockaddr_un *sun = C_PTR(sun_);
+  struct sockaddr_un *s_un = C_PTR(sun_);
 
-  strlcpy(sun->sun_path, REFER_C_STR(path_), sizeof(sun->sun_path));
+  strlcpy(s_un->sun_path, REFER_C_STR(path_), sizeof(s_un->sun_path));
   return uim_scm_t();
 }
 static uim_lisp
 c_ref_sockaddr_un_sun_path(uim_lisp sun_)
 {
-  struct sockaddr_un *sun = C_PTR(sun_);
+  struct sockaddr_un *s_un = C_PTR(sun_);
 
-  return MAKE_STR(sun->sun_path);
+  return MAKE_STR(s_un->sun_path);
 }
 
 #ifndef SUN_LEN
@@ -395,9 +399,9 @@ c_ref_sockaddr_un_sun_path(uim_lisp sun_)
 static uim_lisp
 c_sun_len(uim_lisp sun_)
 {
-  struct sockaddr_un *sun = C_PTR(sun_);
+  struct sockaddr_un *s_un = C_PTR(sun_);
 
-  return MAKE_INT(SUN_LEN(sun));
+  return MAKE_INT(SUN_LEN(s_un));
 }
 
 static uim_lisp
