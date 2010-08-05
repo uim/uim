@@ -4628,7 +4628,7 @@ msgid "SJ3 (advanced)"
 msgstr "SJ3 (高度)"
 
 #: ../scm/sj3-custom.scm:321
-msgid "Use value of use remote SJ3 server"
+msgid "Use remote SJ3 server"
 msgstr "ローカルマシン以外のSJ3サーバに接続する"
 
 #: ../scm/sj3-custom.scm:328
@@ -5812,7 +5812,7 @@ msgid "Wnn (advanced)"
 msgstr "Wnn (高度)"
 
 #: ../scm/wnn-custom.scm:321
-msgid "Use value of use remote Wnn server"
+msgid "Use remote Wnn server"
 msgstr "ローカルマシン以外のWnnサーバに接続する"
 
 #: ../scm/wnn-custom.scm:328

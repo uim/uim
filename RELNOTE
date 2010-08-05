@@ -1,5 +1,5 @@
 uim 1.6.0-beta Release Note
-======================
+===========================
 
 About This Release
 ------------------
@@ -58,8 +58,8 @@ Notes for Packagers and System Integrators
     '--with-libgcroots=installed' to configure options for uim to disable
     build and install of the bundled version of libgcroots
 
-  - libuim, and libuim-custom ABI are updated, and some libuim-scm API
-    are added.
+  - libuim, and libuim-custom ABI are updated, and some of libuim-scm
+    API are added.
 
 
 Roadmap

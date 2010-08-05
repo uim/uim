@@ -318,7 +318,7 @@
 (define-custom 'sj3-use-remote-server? #f
   '(sj3-advanced sj3server)
   '(boolean)
-  (N_ "Use value of use remote SJ3 server")
+  (N_ "Use remote SJ3 server")
   (N_ "long description will be here."))
 
 
