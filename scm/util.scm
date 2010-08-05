@@ -255,7 +255,6 @@
         (let ((paths (string-split (load-path) ":")))
           (map (lambda (x) (string-append x "/" file)) paths)))))
 
-;; TODO: write test
 ;; returns succeeded or not
 (define try-load
   (lambda (file)
@@ -266,12 +265,13 @@
                         (rest (cdr paths)))
                ;; to suppress error message, check file existence first
                (if (file-readable? path)
-                 (load path)
+                 (begin
+                   (load path)
+                   #t)
                  (if (not (null? rest))
                    (loop (car rest) (cdr rest))
                    #f)))))))
 
-;; TODO: write test
 ;; returns succeeded or not
 (define try-require
   (lambda (file)

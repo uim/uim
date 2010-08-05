@@ -262,4 +262,16 @@
   (assert-uim-equal 5  '(clamp 10 -5 5))
   #f)
 
+(define (test-try-load)
+  (assert-uim-true-value '(try-load "anthy.scm"))
+  (assert-uim-false '(try-load "nonexistent.scm"))
+  (assert-uim-false '(try-load "scim.scm")) ;; try broken scim.scm
+  #f)
+
+(define (test-try-require)
+  (assert-uim-true-value '(try-require "anthy.scm"))
+  (assert-uim-false '(try-require "nonexistent.scm"))
+  (assert-uim-false '(try-require "scim.scm")) ;; try broken scim.scm
+  #f)
+
 (provide "test/util/test-misc")
