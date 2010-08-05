@@ -268,7 +268,8 @@
                (if (file-readable? path)
                  (load path)
                  (if (not (null? rest))
-                   (loop (car rest) (cdr rest)))))))))
+                   (loop (car rest) (cdr rest))
+                   #f)))))))
 
 ;; TODO: write test
 ;; returns succeeded or not
@@ -283,7 +284,8 @@
                (if (file-readable? path)
                  (require path)
                  (if (not (null? rest))
-                   (loop (car rest) (cdr rest)))))))))
+                   (loop (car rest) (cdr rest))
+                   #f)))))))
 
 ;; used for dynamic environment substitution of closure
 (define %%enclose-another-env
