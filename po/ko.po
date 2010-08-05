@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-08-03 15:08+0900\n"
+"POT-Creation-Date: 2010-08-05 22:25+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -259,7 +259,7 @@ msgstr ""
 msgid "continuance"
 msgstr ""
 
-#: ../helper/dict-word-win-gtk.c:194
+#: ../helper/dict-word-win-gtk.c:194 ../qt4/pref/ui_keyeditformbase.h:116
 msgid "Add"
 msgstr ""
 
@@ -613,6 +613,7 @@ msgstr ""
 
 #: ../qt/pref-customwidgets.cpp:349 ../qt/pref-customwidgets.cpp:632
 #: ../qt4/pref/customwidgets.cpp:359 ../qt4/pref/customwidgets.cpp:639
+#: ../qt4/pref/ui_keyeditformbase.h:118
 msgid "Edit"
 msgstr "편집"
 
@@ -630,7 +631,8 @@ msgstr "디폴트"
 
 #: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
 #: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:162 ../qt4/pref/qt4.cpp:259
-#: ../qt4/pref/qt4.cpp:367 ../qt4/switcher/qt4.cpp:138
+#: ../qt4/pref/qt4.cpp:367 ../qt4/pref/ui_keyeditformbase.h:119
+#: ../qt4/pref/ui_olisteditformbase.h:113 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "확인"
 
@@ -639,7 +641,9 @@ msgid "Apply"
 msgstr "적용"
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:134
-#: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:260 ../qt4/switcher/qt4.cpp:143
+#: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:260
+#: ../qt4/pref/ui_keyeditformbase.h:120 ../qt4/pref/ui_olisteditformbase.h:114
+#: ../qt4/switcher/qt4.cpp:143
 msgid "Cancel"
 msgstr "취소"
 
@@ -670,6 +674,34 @@ msgstr "아니오"
 #: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:363
 msgid "Show this dialog on startup"
 msgstr "시작할 때 이 대화창을 표시"
+
+#: ../qt4/pref/ui_keyeditformbase.h:113
+msgid "KeyEditDialog"
+msgstr ""
+
+#: ../qt4/pref/ui_keyeditformbase.h:115
+msgid "Key Combination"
+msgstr ""
+
+#: ../qt4/pref/ui_keyeditformbase.h:117
+msgid "Remove"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:108
+msgid "OListEditBase"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:110
+msgid "Available Items"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:111
+msgid "Up"
+msgstr ""
+
+#: ../qt4/pref/ui_olisteditformbase.h:112
+msgid "Down"
+msgstr ""
 
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:56
 msgid "Cannot launch '%1'."
@@ -877,9 +909,9 @@ msgstr ""
 #: ../scm/skk-custom.scm:438 ../scm/skk-custom.scm:444
 #: ../scm/skk-custom.scm:450 ../scm/skk-custom.scm:456
 #: ../scm/skk-custom.scm:462 ../scm/skk-custom.scm:468
-#: ../scm/skk-custom.scm:474 ../scm/skk-custom.scm:489
-#: ../scm/skk-custom.scm:495 ../scm/skk-custom.scm:516
-#: ../scm/skk-custom.scm:522 ../scm/skk-custom.scm:529
+#: ../scm/skk-custom.scm:480 ../scm/skk-custom.scm:495
+#: ../scm/skk-custom.scm:501 ../scm/skk-custom.scm:522
+#: ../scm/skk-custom.scm:528 ../scm/skk-custom.scm:535
 #: ../scm/skk-key-custom.scm:65 ../scm/skk-key-custom.scm:69
 #: ../scm/skk-key-custom.scm:73 ../scm/skk-key-custom.scm:78
 #: ../scm/skk-key-custom.scm:82 ../scm/skk-key-custom.scm:86
@@ -1263,7 +1295,7 @@ msgstr ""
 #: ../scm/ajax-ime-custom.scm:334 ../scm/anthy-custom.scm:361
 #: ../scm/anthy-utf8-custom.scm:368 ../scm/canna-custom.scm:401
 #: ../scm/mana-custom.scm:307 ../scm/prime-custom.scm:207
-#: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:515
+#: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:521
 #: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:86
 #: ../scm/wnn-custom.scm:345 ../scm/yahoo-jp-custom.scm:350
 msgid "Enable vi-cooperative mode"
@@ -5100,23 +5132,23 @@ msgstr ""
 msgid "Use UNIX look command for completion"
 msgstr ""
 
-#: ../scm/skk-custom.scm:473
+#: ../scm/skk-custom.scm:479
 msgid "Use UNIX look dictionary file"
 msgstr ""
 
-#: ../scm/skk-custom.scm:488
+#: ../scm/skk-custom.scm:494
 msgid "Show annotation of candidate word"
 msgstr ""
 
-#: ../scm/skk-custom.scm:494
+#: ../scm/skk-custom.scm:500
 msgid "Show annotation also in preedit area"
 msgstr ""
 
-#: ../scm/skk-custom.scm:521
+#: ../scm/skk-custom.scm:527
 msgid "Use Enter key as just committing (egg-like operation)"
 msgstr ""
 
-#: ../scm/skk-custom.scm:528
+#: ../scm/skk-custom.scm:534
 msgid "Commit newline as ASCII string instead of native key-event"
 msgstr ""
 
@@ -6133,7 +6165,7 @@ msgstr ""
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/skk.c:3586
+#: ../uim/skk.c:3587
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr ""
