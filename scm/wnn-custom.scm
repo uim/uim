@@ -318,7 +318,7 @@
 (define-custom 'wnn-use-remote-server? #f
   '(wnn-advanced wnnserver)
   '(boolean)
-  (N_ "Use value of use remote Wnn server")
+  (N_ "Use remote Wnn server")
   (N_ "long description will be here."))
 
 

@@ -4497,7 +4497,7 @@ msgid "SJ3 (advanced)"
 msgstr ""
 
 #: ../scm/sj3-custom.scm:321
-msgid "Use value of use remote SJ3 server"
+msgid "Use remote SJ3 server"
 msgstr ""
 
 #: ../scm/sj3-custom.scm:328
@@ -5676,7 +5676,7 @@ msgid "Wnn (advanced)"
 msgstr ""
 
 #: ../scm/wnn-custom.scm:321
-msgid "Use value of use remote Wnn server"
+msgid "Use remote Wnn server"
 msgstr ""
 
 #: ../scm/wnn-custom.scm:328
