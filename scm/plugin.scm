@@ -32,6 +32,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
+(require-extension (srfi 1))
 (require "util.scm")
 (require "dynlib.scm")
 
@@ -89,9 +90,11 @@
 		(if (try-load user-conf-file)
 		    (begin
 		      (set! installed-im-module-list
-			    (append orig-module-list installed-im-module-list))
+                        (delete-duplicates
+                          (append orig-module-list installed-im-module-list)))
 		      (set! enabled-im-list
-			    (append orig-enabled-list enabled-im-list))))))))))
+                        (delete-duplicates
+                          (append orig-enabled-list enabled-im-list)))))))))))
 
 
 ;; TODO: write test

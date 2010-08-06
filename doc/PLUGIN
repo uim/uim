@@ -14,8 +14,8 @@ uim's plugin may consist of scheme file and/or dynamic library.
    |___________|                   +--->  foo.scm
 
  When called (require-module "foo") from libuim scheme engine, libuim-foo.so
- is loaded if existed and call 'plugin_instance_init' in libuim-foo.so first.
- After that 'foo.scm' is loaded if existed.
+ is loaded if existed and call 'uim_dynlib_instance_init' in libuim-foo.so
+ first. After that 'foo.scm' is loaded if existed.
 
 * For end users
  If you want to install 3rd party plugin, you have to place both the dynamic
@@ -38,17 +38,17 @@ uim's plugin may consist of scheme file and/or dynamic library.
    $ sudo uim-module-manager --register foo
 
 * For plugin developers
- plugin_instance_init(void): Called when plugin is being loaded. In most case,
-                             initialize variables and bind scheme symbol and C
-                             functions.
- plugin_instance_quit(void): Called when plugin is being unloaded.
+ uim_dynlib_instance_init(void): Called when plugin is being loaded. In most
+                                 case, initialize variables and bind scheme
+                                 symbol and C functions.
+ uim_dynlib_instance_quit(void): Called when plugin is being unloaded.
 
  - Plugin's loading scheme:
   1. Plugin loading
-   dlopen(libuim-foo.so) -> call plugin_instance_init -> call "foo.scm"
+   dlopen(libuim-foo.so) -> call uim_dynlib_instance_init -> call "foo.scm"
 
   2. Plugin unloading
-   call plugin_instance_quit -> dlclose(libuim-foo.so)
+   call uim_dynlib_instance_quit -> dlclose(libuim-foo.so)
 
 ------------------------------------------------------------------------------
 - Dynamic library loading
@@ -63,17 +63,17 @@ library from scheme side.
    |___________|
 
  When called (require-dynlib "bar") from the top of foo.scm, libuim-bar.so is
- loaded and 'plugin_instance_init' in libuim-bar.so is called.
+ loaded and 'uim_dynlib_instance_init' in libuim-bar.so is called.
 
 * For developers
- plugin_instance_init(void): Called when plugin is being loaded. In most case,
-                             initialize variables and bind scheme symbol and C
-                             functions.
- plugin_instance_quit(void): Called when plugin is being unloaded.
+ uim_dynlib_instance_init(void): Called when plugin is being loaded. In most
+                                 case, initialize variables and bind scheme
+                                 symbol and C functions.
+ uim_dynlib_instance_quit(void): Called when plugin is being unloaded.
 
  - Plugin's loading scheme:
   1. Plugin loading
-   (require-dynlib "foo") -> dlopen(libuim-foo.so) -> call plugin_instance_init -> (provide "foo")
+   (require-dynlib "foo") -> dlopen(libuim-foo.so) -> call uim_dynlib_instance_init -> (provide "foo")
 
   2. Plugin unloading
-   (dynlib-unload "foo") -> call plugin_instance_quit -> dlclose(libuim-foo.so)
+   (dynlib-unload "foo") -> call uim_dynlib_instance_quit -> dlclose(libuim-foo.so)
