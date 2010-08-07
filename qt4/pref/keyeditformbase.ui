@@ -25,7 +25,7 @@
       </sizepolicy>
     </property>
     <property name="windowTitle">
-      <string>KeyEditDialog</string>
+      <string>Edit Keys</string>
     </property>
     <layout class="QGridLayout">
       <item row="0" column="0">

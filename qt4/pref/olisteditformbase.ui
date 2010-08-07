@@ -25,7 +25,7 @@
       </sizepolicy>
     </property>
     <property name="windowTitle">
-      <string>OListEditBase</string>
+      <string>Edit Ordered List</string>
     </property>
     <layout class="QGridLayout">
       <item row="0" column="0">
