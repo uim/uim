@@ -8,5 +8,7 @@ DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG += qt warn_on debug
 
+QMAKE_STRIP =
+
 # Input
 SOURCES += main.cpp
