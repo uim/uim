@@ -222,9 +222,9 @@ void KUimCharDict::setCharDictFont( const QFont &font )
     // button
     m_fontselButton->setFont( font );
     // bushu
-    m_bushuView->setFont( font );
+    m_bushuView->setCharFont( font );
     // unicode
-    m_unicodeView->setFont( font );
+    m_unicodeView->setCharFont( font );
 }
 
 

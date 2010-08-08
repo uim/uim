@@ -51,7 +51,7 @@ public:
     void setCharacters( const QStringList &charList );
     virtual QSize sizeHint() const;
 
-    void setFont( const QFont &font );
+    void setCharFont( const QFont &font );
 
 protected:
     virtual void resizeEvent( QResizeEvent * e );

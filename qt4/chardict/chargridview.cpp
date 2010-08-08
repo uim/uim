@@ -94,8 +94,9 @@ QSize CharGridView::sizeHint() const
         rowCount() * verticalHeader()->sectionSize( 0 ) );
 }
 
-void CharGridView::setFont( const QFont &font )
+void CharGridView::setCharFont( const QFont &font )
 {
+    setFont( font );
     for ( int i = 0; i < rowCount(); i++)
     {
         for ( int j = 0; j < columnCount(); j++)

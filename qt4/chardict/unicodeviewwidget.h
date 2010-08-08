@@ -53,7 +53,7 @@ public:
     explicit UnicodeViewWidget( QWidget *parent = 0 );
     ~UnicodeViewWidget();
 
-    void setFont( const QFont &font );
+    void setCharFont( const QFont &font );
 
 protected:
     void setupWidgets();

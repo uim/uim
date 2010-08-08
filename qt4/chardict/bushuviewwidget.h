@@ -51,7 +51,7 @@ public:
     explicit BushuViewWidget( QWidget *parent = 0 );
     ~BushuViewWidget();
 
-    void setFont( const QFont &font );
+    void setCharFont( const QFont &font );
 
 protected:
     void setupWidgets();

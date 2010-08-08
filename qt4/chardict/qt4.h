@@ -92,7 +92,7 @@ public:
     explicit CharDictViewBase( QWidget *parent = 0 )
             : QWidget( parent ) {}
 
-    virtual void setFont( const QFont &font ) = 0;
+    virtual void setCharFont( const QFont &font ) = 0;
 
 signals:
     void charSelected( const QString & );
