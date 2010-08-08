@@ -703,6 +703,9 @@ int main( int argc, char **argv )
     
     QApplication a( argc, argv );
 
+    QCoreApplication::setOrganizationName( "uim" );
+    QCoreApplication::setApplicationName( "uim" );
+
     UimPrefDialog *dlg = new UimPrefDialog();
     dlg->resize( DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT );
     dlg->show();

@@ -73,6 +73,9 @@ int main( int argc, char *argv[] )
 
     QApplication a( argc, argv );
 
+    QCoreApplication::setOrganizationName( "uim" );
+    QCoreApplication::setApplicationName( "uim" );
+
     KUimCharDict::Mode m = KUimCharDict::UNKNOWN;
     for ( int i = 0; i < argc; i++ )
     {
