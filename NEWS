@@ -3,6 +3,13 @@ Overview of changes from 1.6.0-beta to 1.6.0
 * Fixes
   - Fix potential duplication of items in enabled-im-list
 
+  - uim-chardict-qt4
+    * Fix font settings
+
+* Others
+  - Qt4 bridge and tools
+    * Don't strip binaries
+
 
 Overview of changes from 1.6.0-alpha to 1.6.0-beta
 ==================================================
