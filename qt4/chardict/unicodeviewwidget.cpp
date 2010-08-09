@@ -288,7 +288,7 @@ void UnicodeViewWidget::readConfig()
     }
 }
 
-void UnicodeViewWidget::setFont( const QFont &font )
+void UnicodeViewWidget::setCharFont( const QFont &font )
 {
-    m_charGridView->setFont( font );
+    m_charGridView->setCharFont( font );
 }

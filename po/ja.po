@@ -771,8 +771,8 @@ msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
 #: ../qt4/pref/ui_keyeditformbase.h:113
-msgid "KeyEditDialog"
-msgstr "キー編集ダイアログ"
+msgid "Edit Keys"
+msgstr "キーを編集"
 
 #: ../qt4/pref/ui_keyeditformbase.h:115
 msgid "Key Combination"
@@ -783,8 +783,8 @@ msgid "Remove"
 msgstr "削除"
 
 #: ../qt4/pref/ui_olisteditformbase.h:108
-msgid "OListEditBase"
-msgstr "順序付きリスト編集"
+msgid "Edit Ordered List"
+msgstr "順序付きリストを編集"
 
 #: ../qt4/pref/ui_olisteditformbase.h:110
 msgid "Available Items"

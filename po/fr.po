@@ -665,7 +665,7 @@ msgid "Show this dialog on startup"
 msgstr ""
 
 #: ../qt4/pref/ui_keyeditformbase.h:113
-msgid "KeyEditDialog"
+msgid "Edit Keys"
 msgstr ""
 
 #: ../qt4/pref/ui_keyeditformbase.h:115
@@ -677,7 +677,7 @@ msgid "Remove"
 msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:108
-msgid "OListEditBase"
+msgid "Edit Ordered List"
 msgstr ""
 
 #: ../qt4/pref/ui_olisteditformbase.h:110

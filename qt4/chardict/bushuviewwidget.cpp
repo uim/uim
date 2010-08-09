@@ -175,7 +175,7 @@ void BushuViewWidget::readConfig()
     }
 }
 
-void BushuViewWidget::setFont( const QFont &font )
+void BushuViewWidget::setCharFont( const QFont &font )
 {
-    m_charGridView->setFont( font );
+    m_charGridView->setCharFont( font );
 }

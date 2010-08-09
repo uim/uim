@@ -73,6 +73,9 @@ int main( int argc, char *argv[] )
 
     QApplication a( argc, argv );
 
+    QCoreApplication::setOrganizationName( "uim" );
+    QCoreApplication::setApplicationName( "uim" );
+
     KUimCharDict::Mode m = KUimCharDict::UNKNOWN;
     for ( int i = 0; i < argc; i++ )
     {
@@ -219,9 +222,9 @@ void KUimCharDict::setCharDictFont( const QFont &font )
     // button
     m_fontselButton->setFont( font );
     // bushu
-    m_bushuView->setFont( font );
+    m_bushuView->setCharFont( font );
     // unicode
-    m_unicodeView->setFont( font );
+    m_unicodeView->setCharFont( font );
 }
 
 

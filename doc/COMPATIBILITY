@@ -69,7 +69,7 @@ URL:
 Changes:
   (changed) make-scm-pathname
 Description:
-  Change the return type as list for supporting multiple paths.
+  Change the return type as a list to support multiple paths.
 ------------------------------------------------------------------------------
 Summary: New custom API to save custom variable.
 Affects: Helper program developers

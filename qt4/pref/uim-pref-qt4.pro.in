@@ -10,11 +10,14 @@ QMAKE_LIBDIR += @abs_top_builddir@/uim/.libs
 QMAKE_LIBDIR += @abs_top_builddir@/replace/.libs
 LIBS += -lreplace -luim -luim-scm -luim-x-util -luim-custom -luim-counted-init @LIBINTL@
 
+QMAKE_CC                = @CC@
 QMAKE_CFLAGS_DEBUG     += @CFLAGS@   @X_CFLAGS@
 QMAKE_CFLAGS_RELEASE   += @CFLAGS@   @X_CFLAGS@
+QMAKE_CXX               = @CXX@
 QMAKE_CXXFLAGS_DEBUG   += @CXXFLAGS@ @X_CFLAGS@
 QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 
+QMAKE_STRIP =
 QMAKE_UIC = $$QMAKE_UIC -tr UIC_
 
 # Input
