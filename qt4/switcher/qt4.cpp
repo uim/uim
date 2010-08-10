@@ -136,12 +136,10 @@ void UimImSwitcher::createGUI()
     /* cancel & ok button */
     okButton = new QPushButton( this );
     okButton->setText( _( "OK" ) );
-    okButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     connect( okButton, SIGNAL( clicked() ),
                       this, SLOT( slotChangeInputMethod() ) );
     cancelButton = new QPushButton( this );
     cancelButton->setText( _( "Cancel" ) );
-    cancelButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
     connect( cancelButton, SIGNAL( clicked() ),
                       QApplication::instance(), SLOT( quit() ) );
     QHBoxLayout *buttonLayout = new QHBoxLayout;
