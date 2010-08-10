@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
+   sodipodi:docname="ja_kana_dark_background.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective10" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="16.416667"
+     inkscape:cx="3.2284264"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-points="false"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="914"
+     inkscape:window-height="959"
+     inkscape:window-x="1024"
+     inkscape:window-y="0">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.5px"
+       spacingy="1.5px"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>ja_kana.svg</dc:title>
+        <dc:date>2006-05-23</dc:date>
+        <dc:description>Japanese kana input method icon for kana-input.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ja</dc:language>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:0.59999999999999998;fill:#2d4461;fill-opacity:1;fill-rule:evenodd;stroke:#c5d5e9;stroke-width:6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2989"
+       width="42"
+       height="42"
+       x="3"
+       y="3"
+       ry="8.999896"
+       rx="8.999896" />
+    <g
+       id="g6154"
+       transform="matrix(3.3e-2,0,0,-3.3e-2,7.559245,35.39612)"
+       style="fill:#eae3d1;fill-opacity:1">
+      <path
+         id="path6156"
+         d="M 290,819 L 407,811 C 398.33333,747 387.33333,682.66667 374,618 L 427,618 C 518.33333,618 578.66667,610.66667 608,596 C 641.33333,579.33333 662.33333,544.33333 671,491 C 677,455.66667 680,398 680,318 C 680,134 643,18.333333 569,-29 C 547,-42.333333 523,-49 497,-49 C 444.33333,-49 382,-36.333333 310,-11 C 301.33333,-8.3333333 293,-5.3333333 285,-2 L 320,110 C 391.33333,85.333333 440.33333,73 467,73 C 504.33333,73 528.66667,115.66667 540,201 C 544.66667,233.66667 547,272.66667 547,318 C 547,402.66667 542.33333,454.33333 533,473 C 524.33333,491 505.33333,501.33333 476,504 C 466,504.66667 449.66667,505 427,505 L 349,505 C 305.66667,317.66667 246,130.33333 170,-57 L 60,-20 C 129.33333,152.66667 185,327.66667 227,505 L 80,505 L 80,618 L 253,618 C 265.66667,677.33333 278,744.33333 290,819 z M 816,693 C 882.66667,526.33333 937.33333,358.33333 980,189 L 857,159 C 818.33333,315 767,475 703,639 C 699.66667,646.33333 696.66667,653.66667 694,661 L 816,693 z "
+         style="fill:#eae3d1;fill-opacity:1" />
+    </g>
+  </g>
+</svg>

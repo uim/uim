@@ -26,7 +26,9 @@ Japanese kana input methods
 
 - ja_romaji.svg
 - ja_kana.svg
+- ja_act.svg
 - ja_azik.svg
+- ja_kzik.svg
 - ja_nicola.svg
 - ja_pocketbell.svg
 
@@ -80,6 +82,9 @@ Input method icons are designed based on these rules.
   users, especially on a situation selecting an item from tens of
   icons. Appropriately detailed icons make such selection quicker
   (input method switcher menu is supposed)
+
+- Prepare ${id}_dark_background.png in addition to normal one if
+  the ${id}.png doens't fit with dark background toolkit themes
 
 
 scim-anthy.png

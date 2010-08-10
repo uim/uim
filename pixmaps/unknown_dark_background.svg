@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
+   sodipodi:docname="unknown_darkbg.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective9" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="16.416667"
+     inkscape:cx="13.614213"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-points="false"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="914"
+     inkscape:window-height="959"
+     inkscape:window-x="1024"
+     inkscape:window-y="0"
+     inkscape:guide-bbox="false">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.5px"
+       spacingy="1.5px"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>unknown.svg</dc:title>
+        <dc:date>2006-05-23</dc:date>
+        <dc:description>Unknown status icon for uim.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g1346"
+       transform="matrix(4.44e-2,0,0,-4.44e-2,10.8804,39.6552)"
+       style="fill:#eae3d1;fill-opacity:1">
+      <path
+         id="path1348"
+         d="M 232,18 L 232,148 L 352,148 L 352,18 L 232,18 z M 59,697 C 141.66667,737.66667 227.66667,758 317,758 C 437,758 515.66667,728.33333 553,669 C 565.66667,648.33333 572,624.66667 572,598 C 572,542.66667 555.66667,496.66667 523,460 C 507,442 485,422.33333 457,401 C 416.33333,371.66667 389.33333,347 376,327 C 358,301 348.33333,269.66667 347,233 L 237,233 C 237,305 265,365 321,413 C 331.66667,421.66667 346.33333,433 365,447 C 414.33333,483.66667 443.33333,513.66667 452,537 C 456.66667,547.66667 459,560.66667 459,576 C 459,636 406.66667,666 302,666 C 232.66667,666 160,646 84,606 L 59,697 z "
+         style="fill:#eae3d1;fill-opacity:1" />
+    </g>
+  </g>
+</svg>

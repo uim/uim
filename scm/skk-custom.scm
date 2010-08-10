@@ -228,7 +228,7 @@
 
 (define-custom 'skk-widgets '(widget_skk_input_mode
 			      widget_skk_kana_input_method)
-  '(skk toolbar)
+  '(skk toolbar-widget)
   (list 'ordered-list
 	(list 'widget_skk_input_mode
 	      (N_ "Input mode")
@@ -251,7 +251,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_skk_input_mode 'action_skk_latin
-  '(skk toolbar)
+  '(skk toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     skk-input-mode-indication-alist))
@@ -260,7 +260,7 @@
 
 (define-custom 'skk-input-mode-actions
                (map car skk-input-mode-indication-alist)
-  '(skk toolbar)
+  '(skk toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     skk-input-mode-indication-alist))
@@ -291,7 +291,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_skk_kana_input_method 'action_skk_roma
-  '(skk toolbar)
+  '(skk toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     skk-kana-input-method-indication-alist))
@@ -300,7 +300,7 @@
 
 (define-custom 'skk-kana-input-method-actions
                (map car skk-kana-input-method-indication-alist)
-  '(skk toolbar)
+  '(skk toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     skk-kana-input-method-indication-alist))

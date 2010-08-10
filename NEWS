@@ -6,6 +6,9 @@ Overview of changes from 1.6.0-beta to 1.6.0
   - uim-chardict-qt4
     * Fix font settings
 
+* Enhancements
+  - Add indicator icons for toolbar with dark background
+
 * Others
   - Qt4 bridge and tools
     * Don't strip binaries

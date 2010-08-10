@@ -49,10 +49,6 @@
 		     (N_ "Toolbar")
 		     (N_ "long description will be here."))
 
-(define-custom-group 'toolbar-help
-                     (N_ "Help")
-                     (N_ "long description will be here."))
-
 (define-custom-group 'annotation
                      (N_ "Annotation")
                      (N_ "long description will be here."))
@@ -128,6 +124,22 @@
 (define-custom-group 'xim-preedit
 		     (N_ "Preedit settings of XIM")
 		     (N_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'toolbar-help
+                     (N_ "Help")
+                     (N_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'toolbar-icon
+                     (N_ "Icon")
+                     (N_ "long description will be here."))
+
+;; subgroup
+(define-custom-group 'toolbar-widget
+                     (N_ "Toolbar")
+                     (N_ "long description will be here."))
+
 
 ;; 
 ;; default-im-name
@@ -522,6 +534,12 @@
 		 'custom-activity-hooks
 		 (lambda ()
                    (eq? toolbar-help-browser 'manual)))
+
+(define-custom 'toolbar-icon-for-dark-background? #f
+  '(toolbar toolbar-icon)
+  '(boolean)
+  (N_ "Use icon for dark background")
+  (N_ "long description will be here."))
 
 (define-custom 'bridge-show-input-state? #f
   '(global visual-preference)

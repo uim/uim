@@ -188,7 +188,7 @@
 
 (define-custom 'canna-widgets '(widget_canna_input_mode
 				widget_canna_kana_input_method)
-  '(canna toolbar)
+  '(canna toolbar-widget)
   (list 'ordered-list
 	(list 'widget_canna_input_mode
 	      (N_ "Input mode")
@@ -211,7 +211,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_canna_input_mode 'action_canna_direct
-  '(canna toolbar)
+  '(canna toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     canna-input-mode-indication-alist))
@@ -220,7 +220,7 @@
 
 (define-custom 'canna-input-mode-actions
                (map car canna-input-mode-indication-alist)
-  '(canna toolbar)
+  '(canna toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     canna-input-mode-indication-alist))
@@ -262,7 +262,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_canna_kana_input_method 'action_canna_roma
-  '(canna toolbar)
+  '(canna toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     canna-kana-input-method-indication-alist))
@@ -271,7 +271,7 @@
 
 (define-custom 'canna-kana-input-method-actions
                (map car canna-kana-input-method-indication-alist)
-  '(canna toolbar)
+  '(canna toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     canna-kana-input-method-indication-alist))

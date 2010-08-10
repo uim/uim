@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docbase="/home/x41t/jhpark/pro/uim/svn/trunk/pixmaps"
+   sodipodi:docname="ko_hangulword_darkbg.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective9" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="10"
+     inkscape:cx="12.760422"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2241"
+     showgrid="true"
+     inkscape:grid-points="false"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="811"
+     inkscape:window-height="692"
+     inkscape:window-x="1024"
+     inkscape:window-y="0">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.5px"
+       spacingy="1.5px"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jae-hyeon Park &lt;jhyeonATgmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>ko_hangulword.svg</dc:title>
+        <dc:date>2006-05-17</dc:date>
+        <dc:description>Input mode icon for Korean hangul words.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>Jae-hyeon Park &lt;jhyeonATgmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ko</dc:language>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2241">
+      <path
+         style="font-size:44px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:100%;writing-mode:lr-tb;text-anchor:start;fill:#eae3d1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:UnYetgul"
+         d="M 30.448,21.139999 C 30.44797,22.665344 29.949304,23.501343 28.952,23.647999 L 28.468,23.691999 L 23.188,23.383999 C 21.398646,23.29601 19.609315,23.25201 17.82,23.251999 C 16.001318,23.25201 13.243988,23.398676 9.548,23.691999 L 8.976,23.735999 L 8.932,23.735999 C 6.8199941,23.736009 5.7493285,22.72401 5.72,20.699999 C 5.7199952,20.465346 5.851995,19.248014 6.116,17.047999 C 6.1746614,16.46135 6.2039947,15.948017 6.204,15.507999 C 6.2039947,15.302685 6.0719948,14.129352 5.808,11.987999 C 5.7493285,11.460022 5.7199952,10.990689 5.72,10.579999 C 5.7199952,9.2893572 6.3213279,8.3213582 7.524,7.6759989 C 8.0813261,7.3826924 8.6679922,7.2360259 9.284,7.2359989 C 9.6066579,7.2360259 9.8413244,7.2506926 9.988,7.2799989 C 12.334655,7.5146923 15.003986,7.6320255 17.996,7.6319989 L 28.512,7.1919989 L 28.556,7.1919989 C 29.817304,7.192026 30.44797,8.0720251 30.448,9.8319989 C 30.44797,11.298689 29.963971,12.120021 28.996,12.295999 C 28.849305,12.325354 28.673306,12.340021 28.468,12.339999 L 22.968,12.031999 C 21.29598,11.944021 19.638648,11.900021 17.996,11.899999 C 14.270653,11.900021 12.202655,12.046688 11.792,12.339999 C 11.557323,13.190687 11.439989,14.217352 11.44,15.419999 C 11.439989,16.41735 11.557323,17.458682 11.792,18.543999 C 12.173322,18.808014 14.182653,18.940014 17.82,18.939999 L 28.644,18.543999 L 28.732,18.543999 C 29.875971,18.544015 30.44797,19.409347 30.448,21.139999 M 41.624,37.991999 C 41.623959,39.341327 41.169293,40.11866 40.26,40.323999 C 40.083961,40.353326 39.878628,40.367993 39.644,40.367999 L 32.912,40.103999 C 28.746639,40.045326 25.637309,40.015993 23.584,40.015999 C 17.599983,40.015993 12.862655,40.16266 9.372,40.455999 L 8.8,40.499999 L 8.756,40.499999 C 6.9666606,40.499993 5.9106616,39.795993 5.588,38.387999 C 5.5293287,38.153328 5.4999954,37.889329 5.5,37.595999 L 5.94,33.503999 L 5.94,33.459999 L 5.544,29.763999 L 5.544,29.719999 C 5.5439953,28.634671 6.7026608,28.092005 9.02,28.091999 C 10.95599,28.092005 11.923989,28.590671 11.924,29.587999 L 11.616,32.843999 L 11.616,32.887999 C 11.615989,33.885333 11.674656,34.794665 11.792,35.615999 C 13.639987,35.938664 17.013317,36.055997 21.912,35.967999 C 22.557312,35.967997 23.114644,35.967997 23.584,35.967999 C 25.549309,35.967997 28.526639,35.938664 32.516,35.879999 L 39.908,35.615999 C 41.05196,35.615998 41.623959,36.407997 41.624,37.991999 M 45.76,15.111999 C 45.759955,16.90135 45.290622,17.796015 44.352,17.795999 C 44.175957,17.796015 43.413291,17.664015 42.064,17.399999 C 41.682626,17.312016 41.345293,17.268016 41.052,17.267999 C 40.553294,17.268016 40.303961,17.429349 40.304,17.751999 C 40.303961,18.808014 40.333294,20.392013 40.392,22.503999 L 40.656,27.695999 C 40.65596,28.810671 39.687961,29.368004 37.752,29.367999 C 35.962632,29.368004 34.979966,28.854671 34.804,27.827999 C 34.774633,27.681339 34.759966,27.534672 34.76,27.387999 L 35.156,16.783999 L 35.156,16.739999 L 34.76,7.0159989 L 34.76,6.9719989 C 34.759966,5.8573606 35.757298,5.3000279 37.752,5.2999989 C 39.306628,5.3000279 40.230627,5.6666942 40.524,6.3999989 L 40.656,7.1919989 L 40.304,12.119999 L 40.304,12.163999 C 40.303961,12.633354 40.87596,12.86802 42.02,12.867999 L 44.396,12.515999 L 44.44,12.515999 C 45.319956,12.516021 45.759955,13.381353 45.76,15.111999"
+         id="text3096" />
+    </g>
+  </g>
+</svg>

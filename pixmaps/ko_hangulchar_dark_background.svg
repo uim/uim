@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docbase="/home/x41t/jhpark/pro/uim/svn/trunk/pixmaps"
+   sodipodi:docname="ko_hangulchar_darkbg.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective9" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="10"
+     inkscape:cx="53.660422"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2241"
+     showgrid="true"
+     inkscape:grid-points="false"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="811"
+     inkscape:window-height="692"
+     inkscape:window-x="1135"
+     inkscape:window-y="116">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.5px"
+       spacingy="1.5px"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Jae-hyeon Park &lt;jhyeonATgmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>ko_hangulchar.svg</dc:title>
+        <dc:date>2006-05-17</dc:date>
+        <dc:description>Input mode icon for Korean hangul characters.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>Jae-hyeon Park &lt;jhyeonATgmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ko</dc:language>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2241">
+      <path
+         style="font-size:44px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#eae3d1;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:UnYetgul"
+         d="M 25.664,30.368 C 25.663975,31.600003 24.622643,32.216002 22.54,32.216 C 20.721314,32.216002 19.709315,31.717336 19.504,30.72 C 19.474648,30.573337 19.459982,30.412004 19.46,30.236 L 19.68,27.376 C 19.767981,25.440009 19.811981,23.518677 19.812,21.612 L 19.812,18.796 C 19.811981,16.009352 19.738648,14.410687 19.592,14 C 19.386648,13.354688 18.799982,12.988021 17.832,12.9 L 13.608,12.9 L 6.128,13.208 L 6.084,13.208 C 5.027996,13.208021 4.4999965,12.298689 4.5,10.48 C 4.4999965,8.8080255 5.0133293,7.8986931 6.04,7.7520001 C 6.1573282,7.7226933 6.2746614,7.7080266 6.392,7.7080001 L 8.724,7.8840001 C 10.337324,8.0013597 12.141322,8.0600263 14.136,8.0600001 C 16.863984,8.0600263 19.327982,7.9426931 21.528,7.7080001 C 21.703979,7.6786933 21.953312,7.6640267 22.276,7.6640001 C 24.534643,7.6640267 25.663975,8.7786922 25.664,11.008 L 25.312,20.16 L 25.312,20.204 L 25.664,30.324 L 25.664,30.368 M 45.86,17.256 C 45.859955,18.898682 45.390622,19.720015 44.452,19.72 L 41.46,19.324 L 41.416,19.324 C 40.741294,19.324015 40.403961,19.500015 40.404,19.852 L 40.756,39.564 L 40.756,39.608 C 40.75596,40.869327 39.787961,41.499993 37.852,41.5 C 35.886632,41.499993 34.903966,40.839994 34.904,39.52 L 35.256,23.24 L 35.256,23.196 L 34.904,7.0920001 L 34.904,7.0480001 C 34.903966,5.8453618 35.901298,5.2440291 37.896,5.2440001 C 39.567961,5.2440291 40.506627,5.713362 40.712,6.6520001 L 40.756,7.1360001 L 40.404,14.572 L 40.404,14.616 C 40.403961,14.968019 40.829294,15.144019 41.68,15.144 L 44.452,14.792 L 44.496,14.792 C 45.405289,14.79202 45.859955,15.613352 45.86,17.256"
+         id="text3153" />
+    </g>
+  </g>
+</svg>

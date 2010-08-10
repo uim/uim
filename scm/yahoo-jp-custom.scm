@@ -188,7 +188,7 @@
 
 (define-custom 'yahoo-jp-widgets '(widget_yahoo-jp_input_mode
 				widget_yahoo-jp_kana_input_method)
-  '(yahoo-jp toolbar)
+  '(yahoo-jp toolbar-widget)
   (list 'ordered-list
 	(list 'widget_yahoo-jp_input_mode
 	      (N_ "Input mode")
@@ -211,7 +211,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_yahoo-jp_input_mode 'action_yahoo-jp_direct
-  '(yahoo-jp toolbar)
+  '(yahoo-jp toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     yahoo-jp-input-mode-indication-alist))
@@ -220,7 +220,7 @@
 
 (define-custom 'yahoo-jp-input-mode-actions
                (map car yahoo-jp-input-mode-indication-alist)
-  '(yahoo-jp toolbar)
+  '(yahoo-jp toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     yahoo-jp-input-mode-indication-alist))
@@ -262,7 +262,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_yahoo-jp_kana_input_method 'action_yahoo-jp_roma
-  '(yahoo-jp toolbar)
+  '(yahoo-jp toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     yahoo-jp-kana-input-method-indication-alist))
@@ -271,7 +271,7 @@
 
 (define-custom 'yahoo-jp-kana-input-method-actions
                (map car yahoo-jp-kana-input-method-indication-alist)
-  '(yahoo-jp toolbar)
+  '(yahoo-jp toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     yahoo-jp-kana-input-method-indication-alist))

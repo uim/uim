@@ -188,7 +188,7 @@
 
 (define-custom 'wnn-widgets '(widget_wnn_input_mode
 				widget_wnn_kana_input_method)
-  '(wnn toolbar)
+  '(wnn toolbar-widget)
   (list 'ordered-list
 	(list 'widget_wnn_input_mode
 	      (N_ "Input mode")
@@ -211,7 +211,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_wnn_input_mode 'action_wnn_direct
-  '(wnn toolbar)
+  '(wnn toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     wnn-input-mode-indication-alist))
@@ -220,7 +220,7 @@
 
 (define-custom 'wnn-input-mode-actions
                (map car wnn-input-mode-indication-alist)
-  '(wnn toolbar)
+  '(wnn toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     wnn-input-mode-indication-alist))
@@ -262,7 +262,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_wnn_kana_input_method 'action_wnn_roma
-  '(wnn toolbar)
+  '(wnn toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     wnn-kana-input-method-indication-alist))
@@ -271,7 +271,7 @@
 
 (define-custom 'wnn-kana-input-method-actions
                (map car wnn-kana-input-method-indication-alist)
-  '(wnn toolbar)
+  '(wnn toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     wnn-kana-input-method-indication-alist))
