@@ -13,6 +13,8 @@ SVGS += direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg wb86.svg zm.svg
 # dark background
 SVGS += direct_dark_background.svg \
         skk_dark_background.svg \
+        tcode_dark_background.svg \
+        tutcode_dark_background.svg \
         wb86_dark_background.svg zm_dark_background.svg
 
 # input modes
@@ -57,7 +59,7 @@ IM_SUBST_SVGS = py.svg pyunihan.svg pinyin-big5.svg \
                 viqr.svg ipa-x-sampa.svg latin.svg elatin.svg \
                 look.svg scim.svg sj3.svg wnn.svg \
                 social-ime.svg ajax-ime.svg yahoo-jp.svg
-GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg
+GENERATED_SVGS = $(IM_SUBST_SVGS) trycode.svg trycode_dark_background.svg
 SVGS += im_subst.svg $(GENERATED_SVGS)
 
 IM_SUBST_PNGS = py.png pyunihan.png pinyin-big5.png \
@@ -83,6 +85,9 @@ SVG_PNGS = unknown.png \
            unknown_dark_background.png \
            direct_dark_background.png \
            skk_dark_background.png \
+           tcode_dark_background.png \
+           tutcode_dark_background.png \
+           trycode_dark_background.png \
            wb86_dark_background.png \
            zm_dark_background.png \
            direct_input_dark_background.png \
@@ -140,6 +145,9 @@ $(IM_SUBST_SVGS): im_subst.svg
 	cp $< $@
 
 trycode.svg: tcode.svg
+	cp $< $@
+
+trycode_dark_background.svg: tcode_dark_background.svg
 	cp $< $@
 
 .svg.png:
