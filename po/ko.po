@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.4.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-08-05 22:25+0900\n"
+"POT-Creation-Date: 2010-08-10 21:43+0900\n"
 "PO-Revision-Date: 2009-01-05 20:54+0900\n"
 "Last-Translator: Jae-hyeon Park <jhyeon@gmail.com>\n"
 "Language-Team: Korean <LL@li.org>\n"
@@ -354,13 +354,13 @@ msgid "uim input method switcher"
 msgstr "uim 입력기 전환"
 
 #: ../helper/im-switcher-gtk.c:386 ../qt/switcher-qt.cpp:118
-#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:458
+#: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:470
 msgid "Effective coverage"
 msgstr "적용범위"
 
 #. radio buttons for the switcher coverage
 #: ../helper/im-switcher-gtk.c:394 ../qt/switcher-qt.cpp:119
-#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:450
+#: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:462
 msgid "whole desktop"
 msgstr "데스크탑 전체"
 
@@ -547,7 +547,7 @@ msgstr "uim 애플릿"
 msgid "Applet for indicating uim's status"
 msgstr "uim 상태 표시 애플릿"
 
-#: ../helper/toolbar-common-gtk.c:85
+#: ../helper/toolbar-common-gtk.c:86
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:105
@@ -555,7 +555,7 @@ msgstr "uim 상태 표시 애플릿"
 msgid "Switch input method"
 msgstr "입력기 전환"
 
-#: ../helper/toolbar-common-gtk.c:94
+#: ../helper/toolbar-common-gtk.c:95
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:107
@@ -563,7 +563,7 @@ msgstr "입력기 전환"
 msgid "Preference"
 msgstr "설정"
 
-#: ../helper/toolbar-common-gtk.c:103
+#: ../helper/toolbar-common-gtk.c:104
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:109
@@ -571,7 +571,7 @@ msgstr "설정"
 msgid "Japanese dictionary editor"
 msgstr "일본어 사전 도구"
 
-#: ../helper/toolbar-common-gtk.c:112
+#: ../helper/toolbar-common-gtk.c:113
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:111
@@ -579,7 +579,7 @@ msgstr "일본어 사전 도구"
 msgid "Input pad"
 msgstr "입력 패드"
 
-#: ../helper/toolbar-common-gtk.c:121
+#: ../helper/toolbar-common-gtk.c:122
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:113
@@ -587,20 +587,20 @@ msgstr "입력 패드"
 msgid "Handwriting input pad"
 msgstr "손글씨 입력 패드"
 
-#: ../helper/toolbar-common-gtk.c:134
+#: ../helper/toolbar-common-gtk.c:135
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:115
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:307 ../scm/im-custom.scm:53
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:307 ../scm/im-custom.scm:130
 msgid "Help"
 msgstr "도움말"
 
-#: ../helper/toolbar-common-gtk.c:247 ../helper/toolbar-common-gtk.c:491
+#: ../helper/toolbar-common-gtk.c:250 ../helper/toolbar-common-gtk.c:494
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr ""
 
-#: ../helper/toolbar-common-gtk.c:876
+#: ../helper/toolbar-common-gtk.c:883
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
 #: ../qt4/toolbar/common-quimhelpertoolbar.cpp:118
 msgid "Quit this toolbar"
@@ -834,27 +834,28 @@ msgstr ""
 #: ../scm/generic-key-custom.scm:37 ../scm/generic-key-custom.scm:41
 #: ../scm/im-custom.scm:46 ../scm/im-custom.scm:50 ../scm/im-custom.scm:54
 #: ../scm/im-custom.scm:58 ../scm/im-custom.scm:62 ../scm/im-custom.scm:66
-#: ../scm/im-custom.scm:70 ../scm/im-custom.scm:75 ../scm/im-custom.scm:80
-#: ../scm/im-custom.scm:85 ../scm/im-custom.scm:90 ../scm/im-custom.scm:95
-#: ../scm/im-custom.scm:100 ../scm/im-custom.scm:105 ../scm/im-custom.scm:110
-#: ../scm/im-custom.scm:115 ../scm/im-custom.scm:120 ../scm/im-custom.scm:125
-#: ../scm/im-custom.scm:130 ../scm/im-custom.scm:141 ../scm/im-custom.scm:151
-#: ../scm/im-custom.scm:225 ../scm/im-custom.scm:299 ../scm/im-custom.scm:305
-#: ../scm/im-custom.scm:311 ../scm/im-custom.scm:317 ../scm/im-custom.scm:333
-#: ../scm/im-custom.scm:339 ../scm/im-custom.scm:345 ../scm/im-custom.scm:355
-#: ../scm/im-custom.scm:383 ../scm/im-custom.scm:404 ../scm/im-custom.scm:410
-#: ../scm/im-custom.scm:477 ../scm/im-custom.scm:483 ../scm/im-custom.scm:489
-#: ../scm/im-custom.scm:495 ../scm/im-custom.scm:501 ../scm/im-custom.scm:508
-#: ../scm/im-custom.scm:511 ../scm/im-custom.scm:513 ../scm/im-custom.scm:519
-#: ../scm/im-custom.scm:530 ../scm/im-custom.scm:537 ../scm/im-custom.scm:540
-#: ../scm/im-custom.scm:542 ../scm/im-custom.scm:570 ../scm/im-custom.scm:586
-#: ../scm/im-custom.scm:588 ../scm/im-custom.scm:607 ../scm/im-custom.scm:615
-#: ../scm/im-custom.scm:628 ../scm/im-custom.scm:640 ../scm/im-custom.scm:647
-#: ../scm/im-custom.scm:654 ../scm/im-custom.scm:661 ../scm/im-custom.scm:668
-#: ../scm/im-custom.scm:696 ../scm/im-custom.scm:711 ../scm/im-custom.scm:717
-#: ../scm/im-custom.scm:723 ../scm/im-custom.scm:729 ../scm/im-custom.scm:735
-#: ../scm/im-custom.scm:777 ../scm/im-custom.scm:783 ../scm/im-custom.scm:798
-#: ../scm/im-custom.scm:818 ../scm/im-custom.scm:824 ../scm/im-custom.scm:836
+#: ../scm/im-custom.scm:71 ../scm/im-custom.scm:76 ../scm/im-custom.scm:81
+#: ../scm/im-custom.scm:86 ../scm/im-custom.scm:91 ../scm/im-custom.scm:96
+#: ../scm/im-custom.scm:101 ../scm/im-custom.scm:106 ../scm/im-custom.scm:111
+#: ../scm/im-custom.scm:116 ../scm/im-custom.scm:121 ../scm/im-custom.scm:126
+#: ../scm/im-custom.scm:131 ../scm/im-custom.scm:136 ../scm/im-custom.scm:141
+#: ../scm/im-custom.scm:153 ../scm/im-custom.scm:163 ../scm/im-custom.scm:237
+#: ../scm/im-custom.scm:311 ../scm/im-custom.scm:317 ../scm/im-custom.scm:323
+#: ../scm/im-custom.scm:329 ../scm/im-custom.scm:345 ../scm/im-custom.scm:351
+#: ../scm/im-custom.scm:357 ../scm/im-custom.scm:367 ../scm/im-custom.scm:395
+#: ../scm/im-custom.scm:416 ../scm/im-custom.scm:422 ../scm/im-custom.scm:489
+#: ../scm/im-custom.scm:495 ../scm/im-custom.scm:501 ../scm/im-custom.scm:507
+#: ../scm/im-custom.scm:513 ../scm/im-custom.scm:520 ../scm/im-custom.scm:523
+#: ../scm/im-custom.scm:525 ../scm/im-custom.scm:531 ../scm/im-custom.scm:542
+#: ../scm/im-custom.scm:548 ../scm/im-custom.scm:555 ../scm/im-custom.scm:558
+#: ../scm/im-custom.scm:560 ../scm/im-custom.scm:588 ../scm/im-custom.scm:604
+#: ../scm/im-custom.scm:606 ../scm/im-custom.scm:625 ../scm/im-custom.scm:633
+#: ../scm/im-custom.scm:646 ../scm/im-custom.scm:658 ../scm/im-custom.scm:665
+#: ../scm/im-custom.scm:672 ../scm/im-custom.scm:679 ../scm/im-custom.scm:686
+#: ../scm/im-custom.scm:714 ../scm/im-custom.scm:729 ../scm/im-custom.scm:735
+#: ../scm/im-custom.scm:741 ../scm/im-custom.scm:747 ../scm/im-custom.scm:753
+#: ../scm/im-custom.scm:795 ../scm/im-custom.scm:801 ../scm/im-custom.scm:816
+#: ../scm/im-custom.scm:836 ../scm/im-custom.scm:842 ../scm/im-custom.scm:854
 #: ../scm/japanese-custom.scm:33 ../scm/japanese-custom.scm:37
 #: ../scm/japanese-custom.scm:43 ../scm/look-custom.scm:40
 #: ../scm/look-custom.scm:47 ../scm/look-custom.scm:54
@@ -992,7 +993,7 @@ msgstr ""
 
 #: ../scm/ajax-ime-custom.scm:67 ../scm/anthy-custom.scm:63
 #: ../scm/anthy-utf8-custom.scm:70 ../scm/canna-custom.scm:67
-#: ../scm/im-custom.scm:99 ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:67
+#: ../scm/im-custom.scm:95 ../scm/mana-custom.scm:59 ../scm/sj3-custom.scm:67
 #: ../scm/social-ime-custom.scm:66 ../scm/wnn-custom.scm:67
 #: ../scm/yahoo-jp-custom.scm:67
 msgid "Segment separator"
@@ -2868,396 +2869,404 @@ msgstr "틀린 IM 이름"
 msgid "Global settings"
 msgstr "전체적인 설정"
 
-#: ../scm/im-custom.scm:49
+#: ../scm/im-custom.scm:49 ../scm/im-custom.scm:140
 msgid "Toolbar"
 msgstr "툴바"
 
-#: ../scm/im-custom.scm:57
+#: ../scm/im-custom.scm:53
 msgid "Annotation"
 msgstr "주석"
 
-#: ../scm/im-custom.scm:61
+#: ../scm/im-custom.scm:57
 msgid "XIM"
 msgstr ""
 
-#: ../scm/im-custom.scm:65
+#: ../scm/im-custom.scm:61
 msgid "Notify"
 msgstr ""
 
-#: ../scm/im-custom.scm:69
+#: ../scm/im-custom.scm:65
 msgid "Http"
 msgstr ""
 
-#: ../scm/im-custom.scm:74
+#: ../scm/im-custom.scm:70
 msgid "Advanced settings"
 msgstr "고급 설정"
 
-#: ../scm/im-custom.scm:79
+#: ../scm/im-custom.scm:75
 msgid "Buttons"
 msgstr "버튼"
 
-#: ../scm/im-custom.scm:84
+#: ../scm/im-custom.scm:80
 msgid "Menu-based IM switcher"
 msgstr "입력기 전환 메뉴"
 
-#: ../scm/im-custom.scm:89
+#: ../scm/im-custom.scm:85
 msgid "Candidate window"
 msgstr "후보창"
 
-#: ../scm/im-custom.scm:94
+#: ../scm/im-custom.scm:90
 msgid "Dictionary"
 msgstr "사전"
 
-#: ../scm/im-custom.scm:104
+#: ../scm/im-custom.scm:100
 msgid "Mode transition"
 msgstr "모드 전이"
 
-#: ../scm/im-custom.scm:109
+#: ../scm/im-custom.scm:105
 msgid "Special operation"
 msgstr "특수 조작"
 
-#: ../scm/im-custom.scm:114 ../scm/im-custom.scm:150
+#: ../scm/im-custom.scm:110 ../scm/im-custom.scm:162
 msgid "Default input method"
 msgstr "디폴트 입력기"
 
-#: ../scm/im-custom.scm:119
+#: ../scm/im-custom.scm:115
 msgid "Input method deployment"
 msgstr "입력기 이용 준비"
 
-#: ../scm/im-custom.scm:124
+#: ../scm/im-custom.scm:120
 msgid "Visual preference"
 msgstr "겉모양 설정"
 
-#: ../scm/im-custom.scm:129
+#: ../scm/im-custom.scm:125
 msgid "Preedit settings of XIM"
 msgstr "XIM 편집영역"
 
-#: ../scm/im-custom.scm:140
+#: ../scm/im-custom.scm:135
+msgid "Icon"
+msgstr ""
+
+#: ../scm/im-custom.scm:152
 msgid "Specify default IM"
 msgstr "디폴트 입력기 지정"
 
-#: ../scm/im-custom.scm:224
+#: ../scm/im-custom.scm:236
 msgid "Enabled input methods"
 msgstr "사용되는 입력기"
 
-#: ../scm/im-custom.scm:298
+#: ../scm/im-custom.scm:310
 msgid "Input method switching"
 msgstr "입력기 전환"
 
-#: ../scm/im-custom.scm:304
+#: ../scm/im-custom.scm:316
 msgid "Enable IM switching by hotkey"
 msgstr "단축키로 입력기를 전환"
 
-#: ../scm/im-custom.scm:310
+#: ../scm/im-custom.scm:322
 msgid "IM switching key"
 msgstr "입력기 전환 키"
 
-#: ../scm/im-custom.scm:316
+#: ../scm/im-custom.scm:328
 msgid "Skip direct method for IM switching by hotkey"
 msgstr "단축키로 입력기 전환시 직접 입력을 건너뜀"
 
-#: ../scm/im-custom.scm:332
+#: ../scm/im-custom.scm:344
 msgid "Input method toggle"
 msgstr "입력기 토글"
 
-#: ../scm/im-custom.scm:338
+#: ../scm/im-custom.scm:350
 msgid "Enable input method toggle by hot keys"
 msgstr "단축키로 입력기 토글"
 
-#: ../scm/im-custom.scm:344
+#: ../scm/im-custom.scm:356
 msgid "Input method toggle key"
 msgstr "입력기 토글키"
 
-#: ../scm/im-custom.scm:354
+#: ../scm/im-custom.scm:366
 msgid "Alternative input method"
 msgstr "두번째 입력기"
 
-#: ../scm/im-custom.scm:380 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:436
+#: ../scm/im-custom.scm:392 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:436
 #: ../scm/social-ime-custom.scm:370 ../scm/yahoo-jp-custom.scm:376
 msgid "uim"
 msgstr "uim"
 
-#: ../scm/im-custom.scm:380 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:436
+#: ../scm/im-custom.scm:392 ../scm/skk-custom.scm:80 ../scm/skk-custom.scm:436
 msgid "uim native"
 msgstr "uim 본모습"
 
-#: ../scm/im-custom.scm:381
+#: ../scm/im-custom.scm:393
 msgid "ATOK like"
 msgstr "ATOK와 비슷하게"
 
-#: ../scm/im-custom.scm:381
+#: ../scm/im-custom.scm:393
 msgid "Similar to ATOK"
 msgstr "ATOK와 비슷하게"
 
-#: ../scm/im-custom.scm:382
+#: ../scm/im-custom.scm:394
 msgid "Preedit color"
 msgstr "편집영역 색상"
 
-#: ../scm/im-custom.scm:395 ../scm/im-custom.scm:396
+#: ../scm/im-custom.scm:407 ../scm/im-custom.scm:408
 msgid "Adjacent to cursor"
 msgstr "커서 옆"
 
-#: ../scm/im-custom.scm:398 ../scm/im-custom.scm:399
+#: ../scm/im-custom.scm:410 ../scm/im-custom.scm:411
 msgid "Left end of preedit area"
 msgstr "편집영역의 왼쪽 끝"
 
-#: ../scm/im-custom.scm:401 ../scm/im-custom.scm:402
+#: ../scm/im-custom.scm:413 ../scm/im-custom.scm:414
 msgid "Right end of preedit area"
 msgstr "편집영역의 오른쪽 끝"
 
-#: ../scm/im-custom.scm:403
+#: ../scm/im-custom.scm:415
 msgid "Candidate window position"
 msgstr "후보창의 위치"
 
-#: ../scm/im-custom.scm:409
+#: ../scm/im-custom.scm:421
 msgid "Enable lazy input method loading for fast startup"
 msgstr "빨리 시작하기 위해서 입력기 로드를 늦춤"
 
-#: ../scm/im-custom.scm:443
+#: ../scm/im-custom.scm:455
 msgid "Enable menu-based input method switcher"
 msgstr "uim 입력기 전환 메뉴를 사용"
 
-#: ../scm/im-custom.scm:444
+#: ../scm/im-custom.scm:456
 msgid "Show menu-based IM switcher on toolbar."
 msgstr "툴바에 입력기 전환 메뉴를 표시"
 
-#: ../scm/im-custom.scm:451
+#: ../scm/im-custom.scm:463
 msgid "All input method of text areas on the system are changed."
 msgstr "모든 텍스트 영역의 입력기가 변경됨"
 
-#: ../scm/im-custom.scm:453
+#: ../scm/im-custom.scm:465
 msgid "focused application only"
 msgstr "포커스된 응용프로그램만"
 
-#: ../scm/im-custom.scm:454
+#: ../scm/im-custom.scm:466
 msgid ""
 "Only the input method of the focused application is changed. Other text "
 "areas remain untouched."
 msgstr "포커스된 애플리케이션의 입력기만 변경됨"
 
-#: ../scm/im-custom.scm:456
+#: ../scm/im-custom.scm:468
 msgid "focused text area only"
 msgstr "포커스된 텍스트영역만"
 
-#: ../scm/im-custom.scm:457
+#: ../scm/im-custom.scm:469
 msgid ""
 "Only the input method of the focused text area is changed. Other text areas "
 "remain untouched."
 msgstr "포커스된 텍스트 영역의 입력기만 변경됨"
 
-#: ../scm/im-custom.scm:459
+#: ../scm/im-custom.scm:471
 msgid "Specify where the IM switching takes effect."
 msgstr "입력기 전환이 유효한 범위를 지정"
 
-#: ../scm/im-custom.scm:470
+#: ../scm/im-custom.scm:482
 msgid "full-featured input method switcher"
 msgstr "기능이 완비된 uim 입력기 전환 프로그램"
 
-#: ../scm/im-custom.scm:471
+#: ../scm/im-custom.scm:483
 msgid ""
 "Show the button on toolbar that invokes uim-im-switcher application for IM "
 "switching."
 msgstr "툴바에 uim 입력기 전환 프로그램의 시작 버튼을 표시"
 
-#: ../scm/im-custom.scm:476
+#: ../scm/im-custom.scm:488
 msgid "preference tool"
 msgstr "설정"
 
-#: ../scm/im-custom.scm:482
+#: ../scm/im-custom.scm:494
 msgid "Japanese dictionary tool"
 msgstr "일본어 사전 도구"
 
-#: ../scm/im-custom.scm:488
+#: ../scm/im-custom.scm:500
 msgid "input pad"
 msgstr "입력 패드"
 
-#: ../scm/im-custom.scm:494
+#: ../scm/im-custom.scm:506
 msgid "handwriting-input pad"
 msgstr "손글씨 입력 패드"
 
-#: ../scm/im-custom.scm:500
+#: ../scm/im-custom.scm:512
 msgid "help"
 msgstr "도움말"
 
-#: ../scm/im-custom.scm:507
+#: ../scm/im-custom.scm:519
 msgid "System"
 msgstr "시스템"
 
-#: ../scm/im-custom.scm:510
+#: ../scm/im-custom.scm:522
 msgid "Manual"
 msgstr "수동"
 
-#: ../scm/im-custom.scm:512
+#: ../scm/im-custom.scm:524
 msgid "Document browser"
 msgstr "문서 브라우저"
 
-#: ../scm/im-custom.scm:518
+#: ../scm/im-custom.scm:530
 msgid "Browser name"
 msgstr "브라우저 이름"
 
-#: ../scm/im-custom.scm:529
+#: ../scm/im-custom.scm:541
+msgid "Use icon for dark background"
+msgstr ""
+
+#: ../scm/im-custom.scm:547
 msgid "Show input mode nearby cursor"
 msgstr "입력 모드를 커서 근처에 표시"
 
-#: ../scm/im-custom.scm:536
+#: ../scm/im-custom.scm:554
 msgid "With mode"
 msgstr "모드에 따라"
 
-#: ../scm/im-custom.scm:539
+#: ../scm/im-custom.scm:557
 msgid "With time"
 msgstr "시간에 따라"
 
-#: ../scm/im-custom.scm:541
+#: ../scm/im-custom.scm:559
 msgid "Show input mode"
 msgstr "입력 모드 표시"
 
-#: ../scm/im-custom.scm:552
+#: ../scm/im-custom.scm:570
 msgid "Time length for showing input mode nearby the cursor"
 msgstr "커서 근처에 입력 모드를 표시하는 시간"
 
-#: ../scm/im-custom.scm:553
+#: ../scm/im-custom.scm:571
 msgid "Set 0 to show indicator always."
 msgstr "입력 모드를 항상 표시하려면 0으로 두십시오."
 
-#: ../scm/im-custom.scm:569
+#: ../scm/im-custom.scm:587
 msgid "Enable annotation"
 msgstr "주석을 사용"
 
-#: ../scm/im-custom.scm:576 ../scm/im-custom.scm:577 ../scm/im-custom.scm:606
+#: ../scm/im-custom.scm:594 ../scm/im-custom.scm:595 ../scm/im-custom.scm:624
 msgid "EB library"
 msgstr ""
 
-#: ../scm/im-custom.scm:579 ../scm/im-custom.scm:580 ../scm/im-custom.scm:639
+#: ../scm/im-custom.scm:597 ../scm/im-custom.scm:598 ../scm/im-custom.scm:657
 msgid "dict server"
 msgstr ""
 
-#: ../scm/im-custom.scm:582 ../scm/im-custom.scm:583 ../scm/im-custom.scm:695
+#: ../scm/im-custom.scm:600 ../scm/im-custom.scm:601 ../scm/im-custom.scm:713
 msgid "Custom filter"
 msgstr ""
 
-#: ../scm/im-custom.scm:585
+#: ../scm/im-custom.scm:603
 msgid "Input method itself"
 msgstr ""
 
-#: ../scm/im-custom.scm:587
+#: ../scm/im-custom.scm:605
 msgid "Annotation agent name"
 msgstr ""
 
-#: ../scm/im-custom.scm:614
+#: ../scm/im-custom.scm:632
 msgid "Use EB library to search annotations"
 msgstr ""
 
-#: ../scm/im-custom.scm:627
+#: ../scm/im-custom.scm:645
 msgid "The directory which contains EB dictionary file"
 msgstr ""
 
-#: ../scm/im-custom.scm:646
+#: ../scm/im-custom.scm:664
 msgid "Server address of dict"
 msgstr ""
 
-#: ../scm/im-custom.scm:653
+#: ../scm/im-custom.scm:671
 msgid "Server port of dict"
 msgstr ""
 
-#: ../scm/im-custom.scm:660
+#: ../scm/im-custom.scm:678
 msgid "Database name of dict"
 msgstr ""
 
-#: ../scm/im-custom.scm:667
+#: ../scm/im-custom.scm:685
 msgid "Number of cache of annotation"
 msgstr ""
 
-#: ../scm/im-custom.scm:702 ../scm/prime-custom.scm:96
+#: ../scm/im-custom.scm:720 ../scm/prime-custom.scm:96
 msgid "Unix domain"
 msgstr ""
 
-#: ../scm/im-custom.scm:703
+#: ../scm/im-custom.scm:721
 msgid "Use UNIX domain socket to communicate with custom filter."
 msgstr ""
 
-#: ../scm/im-custom.scm:705 ../scm/prime-custom.scm:99
+#: ../scm/im-custom.scm:723 ../scm/prime-custom.scm:99
 msgid "TCP server"
 msgstr ""
 
-#: ../scm/im-custom.scm:706
+#: ../scm/im-custom.scm:724
 msgid "Use tcp server to communicate with custom filter"
 msgstr ""
 
-#: ../scm/im-custom.scm:708 ../scm/prime-custom.scm:102
+#: ../scm/im-custom.scm:726 ../scm/prime-custom.scm:102
 msgid "Pipe"
 msgstr ""
 
-#: ../scm/im-custom.scm:709
+#: ../scm/im-custom.scm:727
 msgid ""
 "Use pipe. spawn new annotation-filter process to communicate with custom "
 "filter"
 msgstr ""
 
-#: ../scm/im-custom.scm:710
+#: ../scm/im-custom.scm:728
 msgid "Custom filter connection setting"
 msgstr ""
 
-#: ../scm/im-custom.scm:716
+#: ../scm/im-custom.scm:734
 msgid "Path of custom filter socket"
 msgstr ""
 
-#: ../scm/im-custom.scm:722
+#: ../scm/im-custom.scm:740
 msgid "Custom filter server address"
 msgstr ""
 
-#: ../scm/im-custom.scm:728
+#: ../scm/im-custom.scm:746
 msgid "Custom filter server port"
 msgstr ""
 
-#: ../scm/im-custom.scm:734
+#: ../scm/im-custom.scm:752
 msgid "Path of custom filter"
 msgstr ""
 
-#: ../scm/im-custom.scm:776
+#: ../scm/im-custom.scm:794
 msgid "Use anti-aliased fonts for Over-the-Spot/Root-Window preedit"
 msgstr ""
 
-#: ../scm/im-custom.scm:782
+#: ../scm/im-custom.scm:800
 msgid "Font name for preedit area (anti-aliased)"
 msgstr ""
 
-#: ../scm/im-custom.scm:797
+#: ../scm/im-custom.scm:815
 msgid "Notify agent name"
 msgstr ""
 
-#: ../scm/im-custom.scm:808
+#: ../scm/im-custom.scm:826
 msgid "Direct connection"
 msgstr ""
 
-#: ../scm/im-custom.scm:809
+#: ../scm/im-custom.scm:827
 msgid "Direct connection, no proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:811
+#: ../scm/im-custom.scm:829
 msgid "User"
 msgstr ""
 
-#: ../scm/im-custom.scm:812
+#: ../scm/im-custom.scm:830
 msgid "Use proxy."
 msgstr ""
 
-#: ../scm/im-custom.scm:817
+#: ../scm/im-custom.scm:835
 msgid "Proxy setting"
 msgstr ""
 
-#: ../scm/im-custom.scm:823
+#: ../scm/im-custom.scm:841
 msgid "Http proxy hostname"
 msgstr ""
 
-#: ../scm/im-custom.scm:835
+#: ../scm/im-custom.scm:853
 msgid "Http proxy port"
 msgstr ""
 
-#: ../scm/im-custom.scm:847
+#: ../scm/im-custom.scm:865
 msgid "Timeout (msec)"
 msgstr ""
 
-#: ../scm/im-custom.scm:848
+#: ../scm/im-custom.scm:866
 msgid "Timeout of http connection (msec)."
 msgstr ""
 
