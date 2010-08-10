@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docname="ja_act_dark_background.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective10" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="8"
+     inkscape:cx="-7.7592"
+     inkscape:cy="21.285413"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-points="true"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="1280"
+     inkscape:window-height="785"
+     inkscape:window-x="1120"
+     inkscape:window-y="145"
+     inkscape:window-maximized="0">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.5px"
+       spacingy="1.5px"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Haruhiro Yoshimoto &lt;hpnpwdATgmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>ja_act.svg</dc:title>
+        <dc:date>2009-12-06</dc:date>
+        <dc:description>Japanese kana input method icon for ACT.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>Haruhiro Yoshimoto &lt;hpnpwdATgmail.com&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ja</dc:language>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:0.59999999999999998;fill:#2d4461;fill-opacity:1;fill-rule:evenodd;stroke:#c5d5e9;stroke-width:6;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2989"
+       width="42"
+       height="42"
+       x="3"
+       y="3"
+       ry="8.999896"
+       rx="8.999896" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#eae3d1;stroke-width:2.54859471000000015;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2834"
+       sodipodi:cx="22.5"
+       sodipodi:cy="21.75"
+       sodipodi:rx="6"
+       sodipodi:ry="9.75"
+       d="m 25.975687,29.697496 a 6,9.75 0 1 1 -0.0085,-15.904838"
+       sodipodi:start="0.95294977"
+       sodipodi:end="5.3284902"
+       sodipodi:open="true"
+       transform="matrix(1.9842602,0,0,1.2307692,-18.542521,-2.7692308)"
+       inkscape:transform-center-y="0.70635959"
+       inkscape:transform-center-x="1.5012264" />
+  </g>
+</svg>

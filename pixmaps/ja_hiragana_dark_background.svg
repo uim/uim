@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48"
+   height="48"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   version="1.0"
+   sodipodi:docbase="/var/home/yamaken/devel/uim/recovered-fdo/trunk/pixmaps"
+   sodipodi:docname="ja_hiragana_dark.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 24 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="48 : 24 : 1"
+       inkscape:persp3d-origin="24 : 16 : 1"
+       id="perspective2395" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="16.958333"
+     inkscape:cx="13.945946"
+     inkscape:cy="24"
+     inkscape:document-units="px"
+     inkscape:current-layer="g2241"
+     showgrid="true"
+     inkscape:grid-points="false"
+     inkscape:grid-bbox="false"
+     inkscape:window-width="989"
+     inkscape:window-height="985"
+     inkscape:window-x="1044"
+     inkscape:window-y="20">
+    <inkscape:grid
+       id="GridFromPre046Settings"
+       type="xygrid"
+       originx="0px"
+       originy="0px"
+       spacingx="1.5px"
+       spacingy="1.5px"
+       color="#0000ff"
+       empcolor="#0000ff"
+       opacity="0.2"
+       empopacity="0.4"
+       empspacing="2" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:title>ja_hiragana.svg</dc:title>
+        <dc:date>2006-05-23</dc:date>
+        <dc:description>Input mode icon for Japanese hiragana.</dc:description>
+        <dc:rights>
+          <cc:Agent>
+            <dc:title>YAMAMOTO Kengo / YamaKen &lt;yamakenATbp.iij4u.or.jp&gt;</dc:title>
+          </cc:Agent>
+        </dc:rights>
+        <dc:publisher>
+          <cc:Agent>
+            <dc:title>uim Project</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:language>ja</dc:language>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g2241">
+      <path
+         id="path1307"
+         d="M 7.5,43.5 L 7.5,46.5 L 43.5,46.5 L 43.5,43.5"
+         style="opacity:0.69999999999999996;fill:none;fill-opacity:0.75000000000000000;fill-rule:evenodd;stroke:#c5d5e9;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path1308"
+         d="M 25.5,43.5 L 25.5,43.50001"
+         style="opacity:0.69999999999999996;fill:none;fill-opacity:0.75000000000000000;fill-rule:evenodd;stroke:#c5d5e9;stroke-width:3;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <g
+         id="g1624"
+         transform="matrix(4.3e-2,0,0,-4.4e-2,3.382064,36.49365)"
+         style="fill:#eae3d1;fill-opacity:1">
+        <path
+           id="path1626"
+           d="M 140,693 L 340,693 L 340,813 L 435,813 L 435,693 L 860,693 L 860,608 L 435,608 L 435,499 C 473,505 513,508 555,508 C 699,508 801,468.66667 861,390 C 893.66667,346.66667 910,294.33333 910,233 C 910,137 869.33333,60.666667 788,4 C 742,-27.333333 686.33333,-49.333333 621,-62 L 594,28 C 684.66667,46 748,84.333333 784,143 C 801.33333,171 810,201 810,233 C 810,306.33333 777,358.66667 711,390 C 659,245.33333 582.66667,134.33333 482,57 C 409.33333,1 337,-27 265,-27 C 211.66667,-27 167.33333,-3.6666667 132,43 C 104,80.333333 90,123.66667 90,173 C 90,269 131.33333,348.33333 214,411 C 250,437.66667 292,459.33333 340,476 L 340,608 L 140,608 L 140,693 z M 340,76 L 340,376 C 266,342.66667 219,296.33333 199,237 C 193,219.66667 190,201.66667 190,183 C 190,130.33333 205.66667,94 237,74 C 248.33333,66.666667 261,63 275,63 C 293.66667,63 315.33333,67.333333 340,76 z M 435,135 C 514.33333,201.66667 576,294.66667 620,414 C 602,416.66667 580.33333,418 555,418 C 511.66667,418 471.66667,414 435,406 L 435,135 z "
+           style="fill:#eae3d1;fill-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>
