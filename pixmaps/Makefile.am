@@ -12,6 +12,7 @@ SVGS += unknown_dark_background.svg
 SVGS += direct.svg skk.svg tcode.svg tutcode.svg byeoru.svg wb86.svg zm.svg
 # dark background
 SVGS += direct_dark_background.svg \
+        skk_dark_background.svg \
         wb86_dark_background.svg zm_dark_background.svg
 
 # input modes
@@ -81,6 +82,7 @@ SVG_PNGS = unknown.png \
            im_switcher.png uim-dict.png $(IM_SUBST_PNGS) \
            unknown_dark_background.png \
            direct_dark_background.png \
+           skk_dark_background.png \
            wb86_dark_background.png \
            zm_dark_background.png \
            direct_input_dark_background.png \
