@@ -266,7 +266,7 @@
 ;; Users don't care this option.
 ;; (2005-03-03) <Hiroyuki Komatsu>
 ;(define-custom 'default-widget_prime_input_mode 'action_prime_mode_latin
-;  '(prime-advanced toolbar)
+;  '(prime-advanced toolbar-widget)
 ;  (cons 'choice
 ;	(map indication-alist-entry-extract-choice
 ;	     prime-input-mode-indication-alist))
@@ -278,7 +278,7 @@
 ;; (2005-03-03) <Hiroyuki Komatsu>
 ;(define-custom 'prime-input-mode-actions
 ;               (map car prime-input-mode-indication-alist)
-;   '(prime-advanced toolbar)
+;   '(prime-advanced toolbar-widget)
 ;  (cons 'ordered-list
 ;	(map indication-alist-entry-extract-choice
 ;	     prime-input-mode-indication-alist))

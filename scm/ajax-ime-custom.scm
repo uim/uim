@@ -188,7 +188,7 @@
 
 (define-custom 'ajax-ime-widgets '(widget_ajax-ime_input_mode
 				widget_ajax-ime_kana_input_method)
-  '(ajax-ime toolbar)
+  '(ajax-ime toolbar-widget)
   (list 'ordered-list
 	(list 'widget_ajax-ime_input_mode
 	      (N_ "Input mode")
@@ -211,7 +211,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_ajax-ime_input_mode 'action_ajax-ime_direct
-  '(ajax-ime toolbar)
+  '(ajax-ime toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     ajax-ime-input-mode-indication-alist))
@@ -220,7 +220,7 @@
 
 (define-custom 'ajax-ime-input-mode-actions
                (map car ajax-ime-input-mode-indication-alist)
-  '(ajax-ime toolbar)
+  '(ajax-ime toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     ajax-ime-input-mode-indication-alist))
@@ -262,7 +262,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_ajax-ime_kana_input_method 'action_ajax-ime_roma
-  '(ajax-ime toolbar)
+  '(ajax-ime toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     ajax-ime-kana-input-method-indication-alist))
@@ -271,7 +271,7 @@
 
 (define-custom 'ajax-ime-kana-input-method-actions
                (map car ajax-ime-kana-input-method-indication-alist)
-  '(ajax-ime toolbar)
+  '(ajax-ime toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     ajax-ime-kana-input-method-indication-alist))

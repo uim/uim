@@ -179,7 +179,7 @@
 
 (define-custom 'mana-widgets '(widget_mana_input_mode
 				widget_mana_kana_input_method)
-  '(mana toolbar)
+  '(mana toolbar-widget)
   (list 'ordered-list
 	(list 'widget_mana_input_mode
 	      (N_ "Input mode")
@@ -202,7 +202,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_mana_input_mode 'action_mana_direct
-  '(mana toolbar)
+  '(mana toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     mana-input-mode-indication-alist))
@@ -211,7 +211,7 @@
 
 (define-custom 'mana-input-mode-actions
                (map car mana-input-mode-indication-alist)
-  '(mana toolbar)
+  '(mana toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     mana-input-mode-indication-alist))
@@ -253,7 +253,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_mana_kana_input_method 'action_mana_roma
-  '(mana toolbar)
+  '(mana toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     mana-kana-input-method-indication-alist))
@@ -262,7 +262,7 @@
 
 (define-custom 'mana-kana-input-method-actions
                (map car mana-kana-input-method-indication-alist)
-  '(mana toolbar)
+  '(mana toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     mana-kana-input-method-indication-alist))

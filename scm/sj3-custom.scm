@@ -188,7 +188,7 @@
 
 (define-custom 'sj3-widgets '(widget_sj3_input_mode
 				widget_sj3_kana_input_method)
-  '(sj3 toolbar)
+  '(sj3 toolbar-widget)
   (list 'ordered-list
 	(list 'widget_sj3_input_mode
 	      (N_ "Input mode")
@@ -211,7 +211,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_sj3_input_mode 'action_sj3_direct
-  '(sj3 toolbar)
+  '(sj3 toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     sj3-input-mode-indication-alist))
@@ -220,7 +220,7 @@
 
 (define-custom 'sj3-input-mode-actions
                (map car sj3-input-mode-indication-alist)
-  '(sj3 toolbar)
+  '(sj3 toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     sj3-input-mode-indication-alist))
@@ -262,7 +262,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_sj3_kana_input_method 'action_sj3_roma
-  '(sj3 toolbar)
+  '(sj3 toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     sj3-kana-input-method-indication-alist))
@@ -271,7 +271,7 @@
 
 (define-custom 'sj3-kana-input-method-actions
                (map car sj3-kana-input-method-indication-alist)
-  '(sj3 toolbar)
+  '(sj3 toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     sj3-kana-input-method-indication-alist))

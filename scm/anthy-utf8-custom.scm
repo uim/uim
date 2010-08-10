@@ -190,7 +190,7 @@
 
 (define-custom 'anthy-utf8-widgets '(widget_anthy_utf8_input_mode
 				widget_anthy_utf8_kana_input_method)
-  '(anthy-utf8 toolbar)
+  '(anthy-utf8 toolbar-widget)
   (list 'ordered-list
 	(list 'widget_anthy_utf8_input_mode
 	      (N_ "Input mode")
@@ -213,7 +213,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_anthy_utf8_input_mode 'action_anthy_utf8_direct
-  '(anthy-utf8 toolbar)
+  '(anthy-utf8 toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     anthy-utf8-input-mode-indication-alist))
@@ -222,7 +222,7 @@
 
 (define-custom 'anthy-utf8-input-mode-actions
                (map car anthy-utf8-input-mode-indication-alist)
-  '(anthy-utf8 toolbar)
+  '(anthy-utf8 toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     anthy-utf8-input-mode-indication-alist))
@@ -264,7 +264,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_anthy_utf8_kana_input_method 'action_anthy_utf8_roma
-  '(anthy-utf8 toolbar)
+  '(anthy-utf8 toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     anthy-utf8-kana-input-method-indication-alist))
@@ -273,7 +273,7 @@
 
 (define-custom 'anthy-utf8-kana-input-method-actions
                (map car anthy-utf8-kana-input-method-indication-alist)
-  '(anthy-utf8 toolbar)
+  '(anthy-utf8 toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     anthy-utf8-kana-input-method-indication-alist))

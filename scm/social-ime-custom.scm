@@ -187,7 +187,7 @@
 
 (define-custom 'social-ime-widgets '(widget_social-ime_input_mode
 				widget_social-ime_kana_input_method)
-  '(social-ime toolbar)
+  '(social-ime toolbar-widget)
   (list 'ordered-list
 	(list 'widget_social-ime_input_mode
 	      (N_ "Input mode")
@@ -210,7 +210,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_social-ime_input_mode 'action_social-ime_direct
-  '(social-ime toolbar)
+  '(social-ime toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     social-ime-input-mode-indication-alist))
@@ -219,7 +219,7 @@
 
 (define-custom 'social-ime-input-mode-actions
                (map car social-ime-input-mode-indication-alist)
-  '(social-ime toolbar)
+  '(social-ime toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     social-ime-input-mode-indication-alist))
@@ -261,7 +261,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_social-ime_kana_input_method 'action_social-ime_roma
-  '(social-ime toolbar)
+  '(social-ime toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     social-ime-kana-input-method-indication-alist))
@@ -270,7 +270,7 @@
 
 (define-custom 'social-ime-kana-input-method-actions
                (map car social-ime-kana-input-method-indication-alist)
-  '(social-ime toolbar)
+  '(social-ime toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     social-ime-kana-input-method-indication-alist))

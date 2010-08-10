@@ -183,7 +183,7 @@
 
 (define-custom 'anthy-widgets '(widget_anthy_input_mode
 				widget_anthy_kana_input_method)
-  '(anthy toolbar)
+  '(anthy toolbar-widget)
   (list 'ordered-list
 	(list 'widget_anthy_input_mode
 	      (N_ "Input mode")
@@ -206,7 +206,7 @@
 ;;; Input mode
 
 (define-custom 'default-widget_anthy_input_mode 'action_anthy_direct
-  '(anthy toolbar)
+  '(anthy toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     anthy-input-mode-indication-alist))
@@ -215,7 +215,7 @@
 
 (define-custom 'anthy-input-mode-actions
                (map car anthy-input-mode-indication-alist)
-  '(anthy toolbar)
+  '(anthy toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     anthy-input-mode-indication-alist))
@@ -257,7 +257,7 @@
 ;;; Kana input method
 
 (define-custom 'default-widget_anthy_kana_input_method 'action_anthy_roma
-  '(anthy toolbar)
+  '(anthy toolbar-widget)
   (cons 'choice
 	(map indication-alist-entry-extract-choice
 	     anthy-kana-input-method-indication-alist))
@@ -266,7 +266,7 @@
 
 (define-custom 'anthy-kana-input-method-actions
                (map car anthy-kana-input-method-indication-alist)
-  '(anthy toolbar)
+  '(anthy toolbar-widget)
   (cons 'ordered-list
 	(map indication-alist-entry-extract-choice
 	     anthy-kana-input-method-indication-alist))
