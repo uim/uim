@@ -133,18 +133,25 @@ void UimImSwitcher::createGUI()
     QGroupBox *groupBox = new QGroupBox(  _( "Effective coverage" ) );
     groupBox->setLayout( vbox );
 
-    /* cancel & ok button */
-    okButton = new QPushButton( this );
+    /* cancel, apply & ok button */
+    QPushButton *okButton = new QPushButton( this );
     okButton->setText( _( "OK" ) );
     connect( okButton, SIGNAL( clicked() ),
+                      this, SLOT( slotChangeInputMethodAndQuit() ) );
+
+    QPushButton *applyButton = new QPushButton( this );
+    applyButton->setText( _( "Apply" ) );
+    connect( applyButton, SIGNAL( clicked() ),
                       this, SLOT( slotChangeInputMethod() ) );
-    cancelButton = new QPushButton( this );
+
+    QPushButton *cancelButton = new QPushButton( this );
     cancelButton->setText( _( "Cancel" ) );
     connect( cancelButton, SIGNAL( clicked() ),
                       QApplication::instance(), SLOT( quit() ) );
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch( 0 );
     buttonLayout->addWidget( okButton );
+    buttonLayout->addWidget( applyButton );
     buttonLayout->addWidget( cancelButton );
 
     // main layout
@@ -179,6 +186,12 @@ void UimImSwitcher::helper_disconnect_cb()
     disconnect( notifier, SIGNAL( activated( int ) ), 0, 0 );
 }
 
+void UimImSwitcher::slotChangeInputMethodAndQuit()
+{
+    slotChangeInputMethod();
+    QApplication::instance()->quit();
+}
+
 void UimImSwitcher::slotChangeInputMethod()
 {
     if ( wholeButton->isChecked() )
@@ -190,8 +203,6 @@ void UimImSwitcher::slotChangeInputMethod()
         sendMessageImChange( "im_change_this_application_only\n" );
     else if ( textButton->isChecked() )
         sendMessageImChange( "im_change_this_text_area_only\n" );
-
-    QApplication::instance()->quit();
 }
 
 void UimImSwitcher::sendMessageImChange( const QString &change_type )
