@@ -33,6 +33,7 @@
 #include <config.h>
 
 #include "common-uimstateindicator.h"
+#include <uim/uim-scm.h>
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QString>
@@ -45,6 +46,7 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <sys/stat.h>
 
 #include "qtgettext.h"
 
@@ -132,6 +134,8 @@ void UimStateIndicator::parseHelperStr( const QString& str )
     {
         if ( lines[ 0 ] == "prop_list_update" )
             propListUpdate( lines );
+        else if (lines[0] == "custom_reload_notify" )
+            uim_prop_reload_configs();
     }
 }
 
@@ -173,7 +177,17 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 QHelperToolbarButton *button = new QHelperToolbarButton;
                 m_layout->addWidget( button );
                 buttons.append( button );
-                QPixmap icon = QPixmap( ICONDIR + '/' + fields[1] + ".png" );
+
+                uim_bool isDarkBg =
+                    uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
+                const QString append = isDarkBg ? "_dark_background" : "";
+                QString fileName = ICONDIR + '/' + fields[1] + append + ".png";
+                struct stat st;
+                if ( isDarkBg && stat( fileName.toUtf8().data(), &st ) == -1 )
+		{
+                  fileName = ICONDIR + '/' + fields[1] + ".png";
+                }
+                QPixmap icon = QPixmap( fileName );
                 if (!icon.isNull()) {
                     QImage image = icon.toImage();
                     QPixmap scaledIcon = QPixmap::fromImage(
@@ -330,7 +344,16 @@ QAction *QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
                                         const QString &menucommandStr )
 {
     QAction *action;
-    QPixmap icon = QPixmap( ICONDIR + '/' + indicationIdStr + ".png" );
+    uim_bool isDarkBg =
+	    uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
+    const QString append = isDarkBg ? "_dark_background" : "";
+    QString fileName = ICONDIR + '/' + indicationIdStr + append + ".png";
+    struct stat st;
+    if ( isDarkBg && stat( fileName.toUtf8().data(), &st ) == -1 )
+    {
+        fileName = ICONDIR + '/' + indicationIdStr + ".png";
+    }
+    QPixmap icon = QPixmap ( fileName );
 
     if (!icon.isNull()) {
         QImage image = icon.toImage();

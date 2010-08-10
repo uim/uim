@@ -37,6 +37,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include <uim/uim.h>
 #include "uim/uim-helper.h"
@@ -151,10 +152,12 @@ static GtkIconFactory *uim_factory;
 static GList *uim_icon_list;
 static gboolean prop_menu_showing = FALSE;
 static gboolean custom_enabled;
+static gboolean with_dark_bg;
 
 static const char *safe_gettext(const char *msgid);
 static gboolean has_n_strs(gchar **str_list, guint n);
 static gboolean register_icon(const gchar *name);
+static void reset_icon(void);
 
 static const char *
 safe_gettext(const char *msgid)
@@ -780,6 +783,9 @@ helper_toolbar_check_custom()
   for (i = 0; i < command_entry_len; i++)
     command_entry[i].show_button =
       uim_scm_symbol_value_bool(command_entry[i].custom_button_show_symbol);
+
+  with_dark_bg =
+    uim_scm_symbol_value_bool("toolbar-icon-for-dark-background?");
 }
 
 static void
@@ -794,6 +800,7 @@ helper_toolbar_parse_helper_str(GtkWidget *widget, gchar *str)
     else if (!strcmp("custom_reload_notify", lines[0])) {
       uim_prop_reload_configs();
       helper_toolbar_check_custom();
+      reset_icon();
     }
     g_strfreev(lines);
   }
@@ -905,6 +912,7 @@ register_icon(const gchar *name)
   GtkIconSet *icon_set;
   GdkPixbuf *pixbuf;
   GString *filename;
+  struct stat st;
 
   g_return_val_if_fail(uim_factory, FALSE);
 
@@ -913,7 +921,17 @@ register_icon(const gchar *name)
 
   filename = g_string_new(UIM_PIXMAPSDIR "/");
   g_string_append(filename, name);
+  if (with_dark_bg) {
+    g_string_append(filename, "_dark_background");
+  }
   g_string_append(filename, ".png");
+
+  if (with_dark_bg && stat(filename->str, &st) == -1) {
+    g_string_free(filename, TRUE);
+    filename = g_string_new(UIM_PIXMAPSDIR "/");
+    g_string_append(filename, name);
+    g_string_append(filename, ".png");
+  }
 
   pixbuf = gdk_pixbuf_new_from_file(filename->str, NULL);
   if (!pixbuf) {
@@ -948,6 +966,22 @@ init_icon(void)
   register_icon("null");
 }
 
+static void
+reset_icon(void)
+{
+  g_list_foreach(uim_icon_list, (GFunc)g_free, NULL);
+  g_list_free(uim_icon_list);
+  uim_icon_list = NULL;
+
+  if (GTK_IS_ICON_FACTORY(uim_factory)) {
+    gtk_icon_factory_remove_default(uim_factory);
+    g_object_unref(uim_factory);
+    uim_factory = NULL;
+    init_icon();
+  }
+}
+
+
 static GtkWidget *
 toolbar_new(gint type)
 {
@@ -966,6 +1000,7 @@ toolbar_new(gint type)
   custom_enabled = (gboolean)uim_custom_enable();
 #endif
 
+  helper_toolbar_check_custom();
   init_icon();
 
   /* create widgets */
@@ -1002,8 +1037,6 @@ toolbar_new(gint type)
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_SIZE_GROUP, sg);
   g_object_set_data(G_OBJECT(hbox), OBJECT_DATA_TOOLBAR_TYPE,
 		    GINT_TO_POINTER(type));
-
-  helper_toolbar_check_custom();
 
   uim_fd = -1;
 
