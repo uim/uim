@@ -1,13 +1,10 @@
-uim 1.6.0-beta Release Note
-===========================
+uim 1.6.0 Release Note
+======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.6.0-beta is a preview release for testing
-purpose. Since it may contain serious unknown problems, it should not be
-used for important work. For such situations, use our latest stable
-release uim 1.5.7.
+This distribution of uim 1.6.0 is latest stable release of uim.
 
 This release achieved both considerable internal improvement and many
 user-visible new feature additions.
