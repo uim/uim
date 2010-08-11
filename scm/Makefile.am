@@ -115,7 +115,9 @@ UIM_MODULE_MANAGER_ENV = \
         LIBUIM_PLUGIN_LIB_DIR=$(abs_top_builddir)/uim/.libs \
         UIM_DISABLE_NOTIFY=1
 
-installed-modules.scm loader.scm: $(SCM_FILES)
+loader.scm: installed-modules.scm
+
+installed-modules.scm: $(SCM_FILES)
 	$(MAKE) $(AM_MAKEFLAGS) -C $(top_builddir)/uim uim-module-manager && \
 	$(UIM_MODULE_MANAGER_ENV) $(UIM_MODULE_MANAGER) \
 	    --path $(top_builddir)/scm --register $(module_names)
