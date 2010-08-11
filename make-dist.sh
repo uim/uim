@@ -20,7 +20,7 @@ CONF_DEFAULT="$CONF_COMMON"
 # --without-scim since it is broken
 # --without-qt
 # FIXME: hardcoded --with-eb-conf
-CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-kde-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gnome2 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=/etc/eb.conf --with-libedit"
+CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-kde-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gnome2 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=/etc/eb.conf --with-libedit --with-qt4 --with-qt4-immodule"
 CONF_FULL="$CONF_MAINT $CONF_FULL_WO_MAINT"
 
 
@@ -50,8 +50,7 @@ for conf_args in "$CONF_NONE" "$CONF_DEFAULT"; do
       || { echo 'make dist failed'; exit 1; }
 done
 
-# N.B. make check in test/ requires debug, nls and most of IMs enabled
-# Also do make check without --enable-maintainer-mode
+# do make check without --enable-maintainer-mode
 export DISTCHECK_CONFIGURE_FLAGS="$CONF_FULL_WO_MAINT"
 for conf_args in "$CONF_FULL"; do
     echo "configure $conf_args"
