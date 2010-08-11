@@ -68,6 +68,7 @@ protected:
 
 protected slots:
     void slotStdinActivated();
+    void slotChangeInputMethodAndQuit();
     void slotChangeInputMethod();
 
 protected:
@@ -75,8 +76,6 @@ protected:
     QRadioButton *wholeButton;
     QRadioButton *applicationButton;
     QRadioButton *textButton;
-    QPushButton *okButton;
-    QPushButton *cancelButton;
 };
 
 #endif /* Not def: UIM_QT_IM_SWITCHER_QT_H */
