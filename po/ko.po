@@ -2053,7 +2053,7 @@ msgstr "쉬프트를 누른 채 로마자 모음 키를 누르면 한글 모음�
 
 #: ../scm/byeoru-custom.scm:155 ../scm/elatin-custom.scm:258
 msgid "Candidate window size"
-msgstr "한자메뉴창의 크기"
+msgstr "후보창의 크기"
 
 #: ../scm/byeoru-custom.scm:161
 msgid "Symbol cache size"
