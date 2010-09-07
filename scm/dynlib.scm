@@ -34,14 +34,15 @@
 (define uim-dynlib-load-path
   (if (setugid?)
       (list (string-append (sys-pkglibdir) "/plugin"))
-      (let ((home-dir (or (home-directory (user-name)) ""))
-	    (ld-library-path (getenv "LD_LIBRARY_PATH")))
+      (let* ((ld-library-path (getenv "LD_LIBRARY_PATH"))
+             (config-path (get-config-path! #f))
+             (user-plugin-path (if config-path
+                                 (string-append config-path "/plugin")
+                                 '())))
 	(filter string?
 		(append (list (getenv "LIBUIM_PLUGIN_LIB_DIR")
-			      (if home-dir
-				  (string-append (get-config-path! #f) "/plugin")
-				  '())
-			      (string-append (sys-pkglibdir) "/plugin"))
+                              user-plugin-path
+                              (string-append (sys-pkglibdir) "/plugin"))
 			;; XXX
 			(if ld-library-path
 			    (string-split ld-library-path ":")
