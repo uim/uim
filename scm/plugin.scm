@@ -39,12 +39,12 @@
 (define uim-plugin-scm-load-path
   (if (setugid?)
       (list (sys-pkgdatadir))
-      (let ((home-dir (or (home-directory (user-name)) ""))
+      (let ((config-path (get-config-path! #f))
             (scm-paths (string-split (load-path) ":")))
 	(filter string?
 		(append scm-paths
-		      (if home-dir
-			  (list (string-append (get-config-path! #f) "/plugin"))
+		      (if config-path
+			  (list (string-append config-path "/plugin"))
 			  '())
 		      (list (sys-pkgdatadir)))))))
 
@@ -71,9 +71,9 @@
 ;; TODO: write test
 (define load-module-conf
   (lambda ()
-    (let* ((home-dir (or (home-directory (user-name)) ""))
-	   (user-module-dir (if home-dir
-				(string-append (get-config-path! #f) "/plugin/")
+    (let* ((config-path (get-config-path! #f))
+	   (user-module-dir (if config-path
+				(string-append config-path "/plugin/")
 				#f))
 	   (conf-file "installed-modules.scm")
 	   (user-conf-file (if user-module-dir
@@ -100,9 +100,9 @@
 ;; TODO: write test
 (define load-enabled-modules
   (lambda ()
-    (let* ((home-dir (or (home-directory (user-name)) ""))
-	   (user-module-dir (if home-dir
-				(string-append (get-config-path! #f) "/plugin/")
+    (let* ((config-path (get-config-path! #f))
+	   (user-module-dir (if config-path
+				(string-append config-path "/plugin/")
 				#f))
 	   (file "loader.scm")
 	   (user-file (if user-module-dir
