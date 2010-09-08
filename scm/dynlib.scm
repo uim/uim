@@ -35,7 +35,7 @@
   (if (setugid?)
       (list (string-append (sys-pkglibdir) "/plugin"))
       (let* ((ld-library-path (getenv "LD_LIBRARY_PATH"))
-             (config-path (get-config-path! #f))
+             (config-path (get-config-path #f))
              (user-plugin-path (if config-path
                                  (string-append config-path "/plugin")
                                  '())))

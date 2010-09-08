@@ -39,7 +39,7 @@
 (define uim-plugin-scm-load-path
   (if (setugid?)
       (list (sys-pkgdatadir))
-      (let ((config-path (get-config-path! #f))
+      (let ((config-path (get-config-path #f))
             (scm-paths (string-split (load-path) ":")))
 	(filter string?
 		(append scm-paths
@@ -71,7 +71,7 @@
 ;; TODO: write test
 (define load-module-conf
   (lambda ()
-    (let* ((config-path (get-config-path! #f))
+    (let* ((config-path (get-config-path #f))
 	   (user-module-dir (if config-path
 				(string-append config-path "/plugin/")
 				#f))
@@ -100,7 +100,7 @@
 ;; TODO: write test
 (define load-enabled-modules
   (lambda ()
-    (let* ((config-path (get-config-path! #f))
+    (let* ((config-path (get-config-path #f))
 	   (user-module-dir (if config-path
 				(string-append config-path "/plugin/")
 				#f))

@@ -207,7 +207,11 @@ uim_helper_get_pathname(char *helper_path, int len)
   return UIM_TRUE;
 
  path_error:
-  uim_fatal_error("uim_helper_get_pathname()");
+#if USE_UIM_NOTIFY && !UIM_NON_LIBUIM_PROG
+  uim_notify_fatal("uim_helper_get_pathname() failed");
+#else
+  fprintf(stderr, "uim_helper_get_pathname() failed\n");
+#endif
   helper_path[0] = '\0';
 
   UIM_CATCH_ERROR_END();

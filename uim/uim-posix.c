@@ -141,21 +141,33 @@ home_directory(uim_lisp user_)
   return MAKE_STR(home);
 }
 
-uim_bool
-uim_check_dir(const char *dir)
+static uim_bool
+uim_check_dir_internal(const char *dir, int need_prepare)
 {
   struct stat st;
 
   if (stat(dir, &st) < 0)
-    return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+    if (need_prepare)	  
+      return (mkdir(dir, 0700) < 0) ? UIM_FALSE : UIM_TRUE;
+    else
+      return UIM_FALSE;
   else {
     mode_t mode = S_IFDIR | S_IRUSR | S_IWUSR | S_IXUSR;
     return ((st.st_mode & mode) == mode) ? UIM_TRUE : UIM_FALSE;
   }
 }
 
+/* FIXME: use appropriate name for this API */
+uim_bool
+uim_check_dir(const char *dir)
+{
+  int need_prepare = UIM_TRUE;
+
+  return uim_check_dir_internal(dir, need_prepare);
+}
+
 static uim_lisp
-c_check_dir(uim_lisp dir_)
+c_prepare_dir(uim_lisp dir_)
 {
   if (!uim_check_dir(REFER_C_STR(dir_))) {
     return uim_scm_f();
@@ -163,8 +175,8 @@ c_check_dir(uim_lisp dir_)
   return uim_scm_t();
 }
 
-uim_bool
-uim_get_config_path(char *path, int len, int is_getenv)
+static uim_bool
+uim_get_config_path_internal(char *path, int len, int is_getenv, int need_prepare)
 {
   char home[MAXPATHLEN];
 
@@ -174,30 +186,59 @@ uim_get_config_path(char *path, int len, int is_getenv)
   if (!uim_get_home_directory(home, sizeof(home), getuid()) && is_getenv) {
     char *home_env = getenv("HOME");
 
-    if (!home_env)
+    if (!home_env) {
+      path[0] = '\0';
       return UIM_FALSE;
+    }
 
-    if (strlcpy(home, home_env, sizeof(home)) >= sizeof(home))
+    if (strlcpy(home, home_env, sizeof(home)) >= sizeof(home)) {
+      path[0] = '\0';
       return UIM_FALSE;
+    }
   }
 
-  if (snprintf(path, len, "%s/.uim.d", home) == -1)
+  if (snprintf(path, len, "%s/.uim.d", home) < 0) {
+    path[0] = '\0';
     return UIM_FALSE;
+  }
 
-  if (!uim_check_dir(path)) {
+  if (!uim_check_dir_internal(path, need_prepare)) {
     return UIM_FALSE;
   }
 
   return UIM_TRUE;
 }
 
+/* FIXME: use appropriate name for this API */
+uim_bool
+uim_get_config_path(char *path, int len, int is_getenv)
+{
+  int need_prepare = UIM_TRUE;
+
+  return uim_get_config_path_internal(path, len, is_getenv, need_prepare);
+}
+
+static uim_lisp
+c_prepare_config_path(uim_lisp is_getenv_)
+{
+  char path[MAXPATHLEN];
+  int need_prepare = UIM_TRUE;
+
+  if (!uim_get_config_path_internal(path, sizeof(path), C_BOOL(is_getenv_), need_prepare))
+    return uim_scm_f();
+  return MAKE_STR(path);
+}
+
 static uim_lisp
 c_get_config_path(uim_lisp is_getenv_)
 {
   char path[MAXPATHLEN];
+  int need_prepare = UIM_FALSE;
+  int exist;
 
-  if (!uim_get_config_path(path, sizeof(path), C_BOOL(is_getenv_)))
-    return uim_scm_f();
+  /* No need to check the existence of path in this function */
+  exist = uim_get_config_path_internal(path, sizeof(path), C_BOOL(is_getenv_), need_prepare);
+
   return MAKE_STR(path);
 }
 
@@ -391,8 +432,9 @@ uim_init_posix_subrs(void)
   uim_scm_init_proc0("user-name", user_name);
   uim_scm_init_proc1("home-directory", home_directory);
 
-  uim_scm_init_proc1("create/check-directory!", c_check_dir);
-  uim_scm_init_proc1("get-config-path!", c_get_config_path);
+  uim_scm_init_proc1("create/check-directory!", c_prepare_dir);
+  uim_scm_init_proc1("get-config-path!", c_prepare_config_path);
+  uim_scm_init_proc1("get-config-path", c_get_config_path);
 
   uim_scm_init_proc1("file-readable?", file_readablep);
   uim_scm_init_proc1("file-writable?", file_writablep);
