@@ -186,15 +186,21 @@ uim_get_config_path_internal(char *path, int len, int is_getenv, int need_prepar
   if (!uim_get_home_directory(home, sizeof(home), getuid()) && is_getenv) {
     char *home_env = getenv("HOME");
 
-    if (!home_env)
+    if (!home_env) {
+      path[0] = '\0';
       return UIM_FALSE;
+    }
 
-    if (strlcpy(home, home_env, sizeof(home)) >= sizeof(home))
+    if (strlcpy(home, home_env, sizeof(home)) >= sizeof(home)) {
+      path[0] = '\0';
       return UIM_FALSE;
+    }
   }
 
-  if (snprintf(path, len, "%s/.uim.d", home) == -1)
+  if (snprintf(path, len, "%s/.uim.d", home) < 0) {
+    path[0] = '\0';
     return UIM_FALSE;
+  }
 
   if (!uim_check_dir_internal(path, need_prepare)) {
     return UIM_FALSE;
@@ -228,9 +234,11 @@ c_get_config_path(uim_lisp is_getenv_)
 {
   char path[MAXPATHLEN];
   int need_prepare = UIM_FALSE;
+  int exist;
 
-  if (!uim_get_config_path_internal(path, sizeof(path), C_BOOL(is_getenv_), need_prepare))
-    return uim_scm_f();
+  /* No need to check the existence of path in this function */
+  exist = uim_get_config_path_internal(path, sizeof(path), C_BOOL(is_getenv_), need_prepare);
+
   return MAKE_STR(path);
 }
 
