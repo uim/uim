@@ -1121,21 +1121,24 @@ AC_HELP_STRING([--with-libedit[=DIR], Enable libedit support
   ],
   [use_libedit="yes"])
 
- if test "x$use_libedit" != "xno"; then
-     saved_CPPFLAGS=$CPPFLAGS
-     saved_LDFLAGS=$LDFLAGS
-     CPPFLAGS="${CPPFLAGS} -I$libedit_path/include"
-     LDFLAGS="${LDFLAGS} -L$libedit_path/lib"
-     AC_CHECK_LIB(edit, el_init,	
-     		[
-		   LIBEDIT_LIBS="-ledit -lcurses -L$libedit_path/lib"
-		   AC_SUBST(LIBEDIT_LIBS)
-		], [ 
-                   AC_MSG_WARN("libedit not found. Disabled...")
-                   use_libedit="no"
-                ])
-     CPPFLAGS=$saved_CPPFLAGS
-     LDFLAGS=$saved_LDFLAGS
+if test "x$use_libedit" != "xno"; then
+    saved_CPPFLAGS=$CPPFLAGS
+    saved_LDFLAGS=$LDFLAGS
+    CPPFLAGS="${CPPFLAGS} -I$libedit_path/include"
+    LDFLAGS="${LDFLAGS} -L$libedit_path/lib"
+    AC_CHECK_LIB(curses, tgetent, LIBEDIT_LIBS="-lcurses",
+        [AC_CHECK_LIB(ncurses, tgetent, LIBEDIT_LIBS="-lncurses",
+            AC_MSG_WARN("libedit needs libcurses or libncurses. disabled...")
+            use_libedit="no")])
+    if test "x$use_libedit" != "xno"; then
+        AC_CHECK_LIB(edit, el_init,
+            [LIBEDIT_LIBS="-ledit $LIBEDIT_LIBS -L$libedit_path/lib"
+                AC_SUBST(LIBEDIT_LIBS)],
+            [AC_MSG_WARN("libedit not found. Disabled...")
+                use_libedit="no"])
+    fi
+    CPPFLAGS=$saved_CPPFLAGS
+    LDFLAGS=$saved_LDFLAGS
 fi
 
 dnl for uim-dict.xml.in
