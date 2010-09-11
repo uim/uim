@@ -371,7 +371,6 @@ create_setting_button_box(const char *group_name)
 {
   GtkWidget *setting_button_box;
   GtkWidget *button;
-  GtkTooltips *tooltip;
 
   setting_button_box = gtk_hbutton_box_new();
   gtk_button_box_set_layout(GTK_BUTTON_BOX(setting_button_box), GTK_BUTTONBOX_END);
@@ -382,8 +381,7 @@ create_setting_button_box(const char *group_name)
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(defaults_button_clicked), (gpointer) group_name);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Revert all changes to default"), NULL);
+  gtk_widget_set_tooltip_text(button, _("Revert all changes to default"));
 
 
   /* Apply button */
@@ -392,16 +390,14 @@ create_setting_button_box(const char *group_name)
 		   G_CALLBACK(apply_button_clicked), (gpointer) group_name);
   gtk_widget_set_sensitive(pref_apply_button, FALSE);
   gtk_box_pack_start(GTK_BOX(setting_button_box), pref_apply_button, TRUE, TRUE, 8);
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, pref_apply_button, _("Apply all changes"), NULL);
+  gtk_widget_set_tooltip_text(pref_apply_button, _("Apply all changes"));
 
   /* Cancel button */
   button = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
   g_signal_connect(G_OBJECT(button), "clicked",
 		   G_CALLBACK(quit_confirm), NULL);
   gtk_box_pack_start(GTK_BOX(setting_button_box), button, TRUE, TRUE, 8);
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, _("Quit this application without applying changes"), NULL);
+  gtk_widget_set_tooltip_text(button, _("Quit this application without applying changes"));
 
   /* OK button */
   pref_ok_button = gtk_button_new_from_stock(GTK_STOCK_OK);
@@ -411,8 +407,7 @@ create_setting_button_box(const char *group_name)
 #if USE_CHANGES_SENSITIVE_OK_BUTTON
   gtk_widget_set_sensitive(pref_ok_button, FALSE);
 #endif
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, pref_ok_button, _("Quit this application with applying changes"), NULL);
+  gtk_widget_set_tooltip_text(pref_ok_button, _("Quit this application with applying changes"));
 
   return setting_button_box;
 }

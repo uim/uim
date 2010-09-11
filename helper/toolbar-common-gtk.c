@@ -187,15 +187,6 @@ has_n_strs(gchar **str_list, guint n)
 }
 
 static void
-destroy_tooltips(GtkWidget *widget)
-{
-  GtkTooltipsData *ttd = gtk_tooltips_data_get(widget);
-
-  if (ttd)
-   g_signal_emit_by_name(ttd->tooltips, "destroy");
-}
-
-static void
 calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
 		   GtkWidget *button)
 {
@@ -336,7 +327,6 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 		GtkWidget *widget)
 {
   GtkWidget *menu_item, *hbox, *label, *img;
-  GtkTooltips *tooltip;
   GList *menu_item_list, *icon_list, *label_list, *tooltip_list, *action_list,
 	*state_list, *list;
   int i, selected = -1;
@@ -352,7 +342,6 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
 
   list = menu_item_list;
   while (list) {
-    destroy_tooltips(list->data);
     gtk_widget_destroy(list->data);
     list = list->next;
   }
@@ -401,9 +390,8 @@ popup_prop_menu(GtkButton *prop_button, GdkEventButton *event,
     }
 
     /* tooltips */
-    tooltip = gtk_tooltips_new();
-    gtk_tooltips_set_tip(tooltip, menu_item,
-			 tooltip_list ? tooltip_list->data : NULL, NULL);
+    gtk_widget_set_tooltip_text(menu_item,
+			 tooltip_list ? tooltip_list->data : NULL);
 
     /* add to the menu */
     gtk_menu_shell_append(GTK_MENU_SHELL(prop_menu), menu_item);
@@ -530,7 +518,6 @@ prop_data_flush(gpointer data)
 static void
 prop_button_destroy(gpointer data, gpointer user_data)
 {
-  destroy_tooltips(data);
   prop_data_flush(data);
   gtk_widget_destroy(GTK_WIDGET(data));
 }
@@ -538,7 +525,6 @@ prop_button_destroy(gpointer data, gpointer user_data)
 static void
 tool_button_destroy(gpointer data, gpointer user_data)
 {
-  destroy_tooltips(data);
   gtk_widget_destroy(GTK_WIDGET(data));
 }
 
@@ -547,7 +533,6 @@ prop_button_create(GtkWidget *widget, const gchar *icon_name,
 		   const gchar *label, const gchar *tip_text)
 {
   GtkWidget *button;
-  GtkTooltips *tooltip;
   GtkSizeGroup *sg;
 
   sg = g_object_get_data(G_OBJECT(widget), OBJECT_DATA_SIZE_GROUP);
@@ -568,8 +553,7 @@ prop_button_create(GtkWidget *widget, const gchar *icon_name,
   gtk_size_group_add_widget(sg, button);
   g_object_set_data(G_OBJECT(button), OBJECT_DATA_BUTTON_TYPE,
 		    GINT_TO_POINTER(BUTTON_PROP));
-  tooltip = gtk_tooltips_new();
-  gtk_tooltips_set_tip(tooltip, button, tip_text, NULL);
+  gtk_widget_set_tooltip_text(button, tip_text);
 
   g_signal_connect(G_OBJECT(button), "button-press-event",
 		   G_CALLBACK(button_pressed), widget);
@@ -732,7 +716,6 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
   /* FIXME! command menu and buttons should be customizable. */
   for (i = 0; i < command_entry_len; i++) {
     GtkWidget *tool_button;
-    GtkTooltips *tooltip;
     GtkWidget *img;
 
     if (!command_entry[i].show_button)
@@ -765,8 +748,7 @@ helper_toolbar_prop_list_update(GtkWidget *widget, gchar **lines)
 		     G_CALLBACK(tool_button_clicked_cb), widget);
 
     /* tooltip */
-    tooltip = gtk_tooltips_new();
-    gtk_tooltips_set_tip(tooltip, tool_button, _(command_entry[i].desc), NULL);
+    gtk_widget_set_tooltip_text(tool_button, _(command_entry[i].desc));
 
     append_tool_button(widget, tool_button);
   }
