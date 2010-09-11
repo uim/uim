@@ -28,7 +28,7 @@
 #include <gdkconfig.h>
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
-#include <gtk/gtkversion.h>
+#include <gtk/gtk.h>
 
 #ifndef EGG_COMPILATION
 #ifndef _

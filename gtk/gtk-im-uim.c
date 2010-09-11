@@ -37,7 +37,6 @@
 #include <config.h>
 
 #include <gtk/gtk.h>
-#include <gtk/gtkimcontext.h>
 #include <gtk/gtkimmodule.h>
 #include <gdk/gdkkeysyms.h>
 #ifdef GDK_WINDOWING_X11
