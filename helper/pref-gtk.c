@@ -624,7 +624,7 @@ main(int argc, char *argv[])
     GtkWidget *pref;
 
     im_uim_init_modifier_keys();
-    gtk_idle_add((GtkFunction) check_dot_uim_file, NULL);
+    g_idle_add((GtkFunction) check_dot_uim_file, NULL);
     pref = create_pref_window();
     gtk_widget_show_all(pref);
 
