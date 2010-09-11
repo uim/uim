@@ -357,7 +357,7 @@ word_window_additional_create(WordWindow *window)
   gtk_table_attach(GTK_TABLE(table), label, 0, 1, 0, 1, GTK_FILL, 0, 5, 5);
 
   entry = gtk_entry_new();
-  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
+  gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
   gtk_label_set_mnemonic_widget(GTK_LABEL(label), entry);
   gtk_widget_show(entry);
   gtk_table_attach(GTK_TABLE(table), entry, 1, 2, 0, 1, GTK_FILL, 0, 5, 5);

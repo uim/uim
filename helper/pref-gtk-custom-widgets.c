@@ -1358,7 +1358,7 @@ add_custom_type_orderedlist(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   entry = gtk_entry_new();
-  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
+  gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
   gtk_box_pack_start (GTK_BOX (hbox), entry, TRUE, TRUE, 0);
 
   button = gtk_button_new_with_label(_("Edit..."));
@@ -1832,7 +1832,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   g_object_unref(GTK_ENTRY(entry)->im_context);
   GTK_ENTRY(entry)->im_context = im_context;
 
-  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
+  gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
   key_pref_win.keycode_entry = entry;
   gtk_widget_set_size_request(GTK_WIDGET(entry), 100, -1);
   gtk_box_pack_start(GTK_BOX(hbox), entry, TRUE, TRUE, 4);
@@ -1891,7 +1891,7 @@ add_custom_type_key(GtkWidget *vbox, struct uim_custom *custom)
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
   entry = gtk_entry_new();
-  gtk_entry_set_editable(GTK_ENTRY(entry), FALSE);
+  gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
   g_object_set_data_full(G_OBJECT(entry),
 			 OBJECT_DATA_UIM_CUSTOM_SYM, g_strdup(custom->symbol),
 			 (GDestroyNotify) g_free);
