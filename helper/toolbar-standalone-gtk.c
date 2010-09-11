@@ -90,7 +90,7 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
     break;
   case GDK_2BUTTON_PRESS:
     toolbar = GTK_WIDGET(data);
-    if (GTK_WIDGET_VISIBLE(toolbar)) {
+    if (gtk_widget_get_visible(toolbar)) {
       gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
       gtk_widget_hide(toolbar);
     } else {
