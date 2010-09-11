@@ -115,7 +115,7 @@ helper_win_set_position(GtkWidget *window, gint x, gint y)
   sc_w = gdk_screen_width();
   sc_h = gdk_screen_height();
 
-  gdk_window_get_size(window->window, &w, &h);
+  gdk_drawable_get_size(window->window, &w, &h);
 
   if (wx < 0)
     wx = 0;
@@ -139,7 +139,7 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
     sc_w = gdk_screen_width();
     sc_h = gdk_screen_height();
 
-    gdk_window_get_size(widget->window, &w, &h);
+    gdk_drawable_get_size(widget->window, &w, &h);
 
     wx = window_drag_start_x + ((gint)event->x_root - pointer_drag_start_x);
     wy = window_drag_start_y + ((gint)event->y_root - pointer_drag_start_y);
