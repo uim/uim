@@ -79,7 +79,7 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 		     GDK_POINTER_MOTION_MASK,
 		     NULL,
 		     cursor, event->time);
-    gdk_cursor_destroy(cursor);
+    gdk_cursor_unref(cursor);
 
     gtk_window_get_position(GTK_WINDOW(widget),
 		    	    &window_drag_start_x,
