@@ -501,7 +501,7 @@ egg_tray_icon_update_manager_window (EggTrayIcon *icon)
       egg_tray_icon_get_orientation_property (icon);
       egg_tray_icon_get_visual_property (icon);
 
-      if (GTK_WIDGET_REALIZED (icon))
+      if (gtk_widget_get_realized (GTK_WIDGET (icon)))
         {
           if ((icon->manager_visual == NULL &&
                gtk_widget_get_visual (widget) == gdk_screen_get_system_visual (screen)) ||
