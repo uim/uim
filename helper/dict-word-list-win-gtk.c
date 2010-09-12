@@ -621,8 +621,9 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
   gtk_widget_show(label1);
   gtk_label_set_markup(GTK_LABEL(label1), about_name);
   g_free(about_name);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(about_dialog)->vbox),
-		     label1, FALSE, FALSE, 0);
+  gtk_box_pack_start(
+      GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(about_dialog))),
+      label1, FALSE, FALSE, 0);
 
   gtk_window_set_transient_for(GTK_WINDOW(about_dialog),
 			       GTK_WINDOW(window));

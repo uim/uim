@@ -82,7 +82,7 @@ gchar *cclass_dialog(gint pos_type, gint system) {
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrollwin_pos),
 					GTK_SHADOW_IN);
 
-    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox),
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
 		       scrollwin_pos,
 		       TRUE, TRUE, 10);
     gtk_widget_show(scrollwin_pos);

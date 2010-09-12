@@ -211,8 +211,8 @@ word_window_init(WordWindow *window)
 			 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 			 GTK_STOCK_ADD,WORD_WINDOW_RESPONSE_ADD,
 			 NULL);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(window)->vbox), vbox1,
-		     TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(window))),
+      vbox1, TRUE, TRUE, 0);
   gtk_widget_show_all(vbox1);
 
   window->pane = GTK_WIDGET(vbox1);

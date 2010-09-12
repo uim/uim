@@ -1187,8 +1187,8 @@ choose_olist_clicked_cb(GtkWidget *widget, GtkEntry *olist_entry)
 
   hbox = gtk_hbox_new(FALSE, 0);
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox,
-		     TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
+      hbox, TRUE, TRUE, 0);
   gtk_widget_show(hbox);
 
   /* left tree view */
@@ -1759,8 +1759,8 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 
   hbox = gtk_hbox_new(FALSE, 0);
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox,
-		     TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
+      hbox, TRUE, TRUE, 0);
   gtk_widget_show(hbox);
 
   scrwin = gtk_scrolled_window_new(NULL, NULL);
@@ -1822,7 +1822,8 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   gtk_widget_show(button);
 
   hbox = gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))),
+      hbox, FALSE, FALSE, 0);
   gtk_container_set_border_width(GTK_CONTAINER(hbox), 4);
   gtk_widget_show(hbox);
 
