@@ -547,8 +547,8 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     return -1;
   }
 
-  gtk_text_buffer_delete_interactive(text_view->buffer, &start, &end,
-      get_text_view_editable(text_view));
+  gtk_text_buffer_delete_interactive(gtk_text_view_get_buffer(text_view),
+      &start, &end, gtk_text_view_get_editable(text_view));
 
   return 0;
 }
@@ -706,8 +706,8 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
     return -1;
   }
 
-  gtk_text_buffer_delete_interactive(text_view->buffer, &start, &end,
-      get_text_view_editable(text_view));
+  gtk_text_buffer_delete_interactive(gtk_text_view_get_buffer(text_view),
+      &start, &end, gtk_text_view_get_editable(text_view));
 
   return 0;
 }
