@@ -97,7 +97,7 @@ int main( int   argc,
     gtk_entry_set_text (GTK_ENTRY (entry), "hello");
     gtk_entry_append_text (GTK_ENTRY (entry), " world");
     gtk_entry_select_region (GTK_ENTRY (entry),
-			     0, GTK_ENTRY(entry)->text_length);
+			     0, gtk_entry_get_text_length(GTK_ENTRY(entry)));
     gtk_box_pack_start (GTK_BOX (vbox), entry, TRUE, TRUE, 0);
     gtk_widget_show (entry);
 

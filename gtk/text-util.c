@@ -432,7 +432,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
     else {
       if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
-      end_pos = entry->text_length;
+      end_pos = gtk_entry_get_text_length(entry);
     }
     break;
 
@@ -444,20 +444,20 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
     else {
       if (!(~latter_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
-      end_pos = entry->text_length;
+      end_pos = gtk_entry_get_text_length(entry);
     }
     break;
 
   case UTextOrigin_End:
     if (former_req_len >= 0)
-      start_pos = entry->text_length - former_req_len;
+      start_pos = gtk_entry_get_text_length(entry) - former_req_len;
     else {
       if (!(~former_req_len & (~UTextExtent_Line | ~UTextExtent_Full)))
 	return -1;
       start_pos = 0;
     }
 
-    end_pos = entry->text_length;
+    end_pos = gtk_entry_get_text_length(entry);
     break;
 
   case UTextOrigin_Unspecified:
