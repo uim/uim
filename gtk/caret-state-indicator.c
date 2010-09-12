@@ -82,7 +82,8 @@ caret_state_indicator_timeout(gpointer data)
 static gint
 caret_state_indicator_paint_window(GtkWidget *window)
 {
-  gtk_paint_flat_box(window->style, gtk_widget_get_window(window),
+  gtk_paint_flat_box(gtk_widget_get_style(window),
+             gtk_widget_get_window(window),
              GTK_STATE_NORMAL, GTK_SHADOW_OUT, NULL, GTK_WIDGET(window),
              "tooltip", 0, 0, -1, -1);
 

@@ -172,7 +172,7 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 {
   GdkRectangle *rect = &event->area;
 
-  gtk_paint_handle(widget->style, gtk_widget_get_window(widget),
+  gtk_paint_handle(gtk_widget_get_style(widget), gtk_widget_get_window(widget),
 		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
 		   rect, widget, "handlebox",
 		   widget->allocation.x, widget->allocation.y,
