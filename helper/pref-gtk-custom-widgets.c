@@ -1730,7 +1730,6 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   struct uim_custom *custom;
   struct uim_custom_key *key;
   gint i;
-  GtkIMContext *im_context;
   gchar title[256];
 
   g_return_if_fail(GTK_IS_ENTRY(key_entry));
@@ -1832,13 +1831,6 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   gtk_widget_show(label);
 
   entry = gtk_entry_new();
-
-  /* XXX hack alert!  This modifies private part of gtk_entry */
-  /* FIXME: Can't compile with GSEAL_ENABLE */
-  im_context = gtk_im_context_simple_new();
-  g_object_unref(GTK_ENTRY(entry)->im_context);
-  GTK_ENTRY(entry)->im_context = im_context;
-
   gtk_editable_set_editable(GTK_EDITABLE(entry), FALSE);
   key_pref_win.keycode_entry = entry;
   gtk_widget_set_size_request(GTK_WIDGET(entry), 100, -1);
