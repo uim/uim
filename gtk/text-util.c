@@ -266,7 +266,7 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
     if (gtk_editable_get_selection_bounds(GTK_EDITABLE(uic->widget),
 					  &start, &end)) {
       text = gtk_editable_get_chars(GTK_EDITABLE(uic->widget), start, end);
-      current = GTK_ENTRY(uic->widget)->current_pos;
+      current = gtk_editable_get_position(GTK_EDITABLE(uic->widget));
       if (current == start)
 	cursor_at_beginning = TRUE;
     }
@@ -415,7 +415,7 @@ delete_text_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
 {
   gint start_pos, end_pos, current_pos;
 
-  current_pos = entry->current_pos;
+  current_pos = gtk_editable_get_position(GTK_EDITABLE(entry));
 
   switch (origin) {
   case UTextOrigin_Cursor:
@@ -611,7 +611,7 @@ delete_selection_in_gtk_entry(GtkEntry *entry, enum UTextOrigin origin,
   if (!gtk_editable_get_selection_bounds(GTK_EDITABLE(entry), &start, &end))
     return -1;
 
-  current_pos = entry->current_pos;
+  current_pos = gtk_editable_get_position(GTK_EDITABLE(entry));
   if (current_pos == start)
     cursor_at_beginning = TRUE;
 
