@@ -276,13 +276,16 @@ egg_tray_icon_expose (GtkWidget *widget,
   focus_child = GTK_CONTAINER (widget)->focus_child;
   if (focus_child && gtk_widget_has_focus (focus_child))
     {
+      GtkAllocation allocation;
       border_width = GTK_CONTAINER (widget)->border_width;
 
-      x = widget->allocation.x + border_width;
-      y = widget->allocation.y + border_width;
+      gtk_widget_get_allocation(widget, &allocation);
 
-      width  = widget->allocation.width  - 2 * border_width;
-      height = widget->allocation.height - 2 * border_width;
+      x = allocation.x + border_width;
+      y = allocation.y + border_width;
+
+      width  = allocation.width  - 2 * border_width;
+      height = allocation.height - 2 * border_width;
 
       gtk_paint_focus (gtk_widget_get_style(widget),
                        gtk_widget_get_window(widget),

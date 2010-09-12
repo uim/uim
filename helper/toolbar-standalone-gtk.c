@@ -172,11 +172,13 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 {
   GdkRectangle *rect = &event->area;
 
+  GtkAllocation allocation;
+  gtk_widget_get_allocation(widget, &allocation);
   gtk_paint_handle(gtk_widget_get_style(widget), gtk_widget_get_window(widget),
 		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
 		   rect, widget, "handlebox",
-		   widget->allocation.x, widget->allocation.y,
-		   widget->allocation.width, widget->allocation.height,
+		   allocation.x, allocation.y,
+		   allocation.width, allocation.height,
 		   GTK_ORIENTATION_VERTICAL);
 
   return FALSE;
