@@ -1619,7 +1619,7 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
     else if (GTK_IS_ENTRY(uic->widget)) {
-      if (GTK_ENTRY(uic->widget)->editable)
+      if (gtk_editable_get_editable(GTK_EDITABLE(uic->widget)))
 	GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
     }
     return TRUE;
