@@ -391,14 +391,17 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
     grab_widget = gtk_grab_get_current();
     if (!grab_widget) {
       if (cur_toplevel && GTK_IS_WINDOW(cur_toplevel)) {
-	GtkWindowGroup *group;
-	GtkWindow *window;
+        GtkWindowGroup *group;
+        GtkWindow *window;
 	
-	window = GTK_WINDOW(cur_toplevel);
-	group = gtk_window_get_group(window);
-    /* FIXME: Can't compile with GSEAL_ENABLE */
-	if (group && group->grabs)
-	  grab_widget = GTK_WIDGET(group->grabs->data);
+        window = GTK_WINDOW(cur_toplevel);
+        group = gtk_window_get_group(window);
+#if GTK_CHECK_VERSION(2, 22, 0)
+        grab_widget = gtk_window_group_get_current_grab(group);
+#else
+        if (group && group->grabs)
+          grab_widget = GTK_WIDGET(group->grabs->data);
+#endif
       }
     }
   }
