@@ -52,12 +52,12 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 {
   GtkTextIter current, start, end;
 
-  if (!text_view->buffer)
+  if (!gtk_text_view_get_buffer(text_view))
     return -1;
 
-  gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
-				   gtk_text_buffer_get_mark(text_view->buffer,
-							    "insert"));
+  gtk_text_buffer_get_iter_at_mark(gtk_text_view_get_buffer(text_view),
+      &current,
+      gtk_text_buffer_get_mark(gtk_text_view_get_buffer(text_view), "insert"));
   switch (origin) {
   case UTextOrigin_Cursor:
     start = current;
@@ -67,7 +67,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
       if (former_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+	gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(text_view), &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
       else
@@ -79,7 +79,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
       if (latter_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+	gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(text_view), &end);
       else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
       else {
@@ -91,7 +91,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     break;
 
   case UTextOrigin_Beginning:
-    gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+    gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(text_view), &start);
     end = start;
 
     *former = NULL;
@@ -100,7 +100,7 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
       if (latter_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+	gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(text_view), &end);
       else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
       else
@@ -110,14 +110,14 @@ acquire_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     break;
 
   case UTextOrigin_End:
-    gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+    gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(text_view), &end);
     start = end;
 
     if (former_req_len >= 0) {
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
       if (former_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+	gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(text_view), &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
       else
@@ -273,12 +273,12 @@ im_uim_acquire_selection_text(IMUIMContext *uic, enum UTextOrigin origin,
   } else if (GTK_IS_TEXT_VIEW(uic->widget)) {
     GtkTextIter start, end, current;
 
-    if (GTK_TEXT_VIEW(uic->widget)->buffer &&
-	gtk_text_buffer_get_selection_bounds(GTK_TEXT_VIEW(uic->widget)->buffer, &start, &end)) {
+    if (gtk_text_view_get_buffer(GTK_TEXT_VIEW(uic->widget)) &&
+	gtk_text_buffer_get_selection_bounds(gtk_text_view_get_buffer(GTK_TEXT_VIEW(uic->widget)), &start, &end)) {
       text = gtk_text_iter_get_visible_text(&start, &end);
-      gtk_text_buffer_get_iter_at_mark(GTK_TEXT_VIEW(uic->widget)->buffer,
+      gtk_text_buffer_get_iter_at_mark(gtk_text_view_get_buffer(GTK_TEXT_VIEW(uic->widget)),
 				       &current,
-				       gtk_text_buffer_get_mark(GTK_TEXT_VIEW(uic->widget)->buffer, "insert"));
+				       gtk_text_buffer_get_mark(gtk_text_view_get_buffer(GTK_TEXT_VIEW(uic->widget)), "insert"));
       if (gtk_text_iter_compare(&start, &current) == 0)
 	cursor_at_beginning = TRUE;
     }
@@ -476,12 +476,12 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
 {
   GtkTextIter current, start, end;
 
-  if (!text_view->buffer)
+  if (!gtk_text_view_get_buffer(text_view))
     return -1;
 
-  gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
-				   gtk_text_buffer_get_mark(text_view->buffer,
-							    "insert"));
+  gtk_text_buffer_get_iter_at_mark(gtk_text_view_get_buffer(text_view),
+      &current,
+      gtk_text_buffer_get_mark(gtk_text_view_get_buffer(text_view), "insert"));
   start = current;
   end = current;
 
@@ -491,7 +491,7 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
       if (former_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+	gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(text_view), &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
       else
@@ -502,7 +502,7 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
       if (latter_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+	gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(text_view), &end);
       else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
       else
@@ -511,14 +511,14 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     break;
 
   case UTextOrigin_Beginning:
-    gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+    gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(text_view), &start);
     end = start;
 
     if (latter_req_len >= 0)
       gtk_text_iter_forward_chars(&end, latter_req_len);
     else {
       if (latter_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+	gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(text_view), &end);
       else if (latter_req_len == UTextExtent_Line)
 	gtk_text_view_forward_display_line_end(text_view, &end);
       else
@@ -527,14 +527,14 @@ delete_text_in_gtk_text_view(GtkTextView *text_view, enum UTextOrigin origin,
     break;
 
   case UTextOrigin_End:
-    gtk_text_buffer_get_end_iter(text_view->buffer, &end);
+    gtk_text_buffer_get_end_iter(gtk_text_view_get_buffer(text_view), &end);
     start = end;
 
     if (former_req_len >= 0) {
       gtk_text_iter_backward_chars(&start, former_req_len);
     } else {
       if (former_req_len == UTextExtent_Full)
-	gtk_text_buffer_get_start_iter(text_view->buffer, &start);
+	gtk_text_buffer_get_start_iter(gtk_text_view_get_buffer(text_view), &start);
       else if (former_req_len == UTextExtent_Line)
 	gtk_text_view_backward_display_line_start(text_view, &start);
       else
@@ -650,12 +650,15 @@ delete_selection_in_gtk_text_view(GtkTextView *text_view,
   GtkTextIter current, start, end, tmp_start, tmp_end;
   gboolean cursor_at_beginning = FALSE;
 
-  if (!text_view->buffer)
+  if (!gtk_text_view_get_buffer(text_view))
     return -1;
 
-  if (gtk_text_buffer_get_selection_bounds(text_view->buffer, &start, &end)) {
-    gtk_text_buffer_get_iter_at_mark(text_view->buffer, &current,
-				     gtk_text_buffer_get_mark(text_view->buffer, "insert"));
+  if (gtk_text_buffer_get_selection_bounds(gtk_text_view_get_buffer(text_view),
+      &start, &end)) {
+    gtk_text_buffer_get_iter_at_mark(gtk_text_view_get_buffer(text_view),
+        &current,
+        gtk_text_buffer_get_mark(gtk_text_view_get_buffer(text_view),
+        "insert"));
     if (gtk_text_iter_compare(&start, &current) == 0)
       cursor_at_beginning = TRUE;
   } else {
