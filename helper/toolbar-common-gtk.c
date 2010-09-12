@@ -196,8 +196,8 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
   g_return_if_fail(x && y);
   g_return_if_fail(GTK_IS_BUTTON(button));
 
-  gdk_window_get_origin(button->window, x, y);
-  gdk_drawable_get_size(button->window, NULL, &button_height);
+  gdk_window_get_origin(gtk_widget_get_window(button), x, y);
+  gdk_drawable_get_size(gtk_widget_get_window(button), NULL, &button_height);
 
   if (!gtk_widget_get_has_window(button))
     *x += button->allocation.x;

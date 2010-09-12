@@ -254,7 +254,7 @@ egg_tray_icon_expose (GtkWidget *widget,
   if (icon->manager_visual_rgba)
     {
       /* Clear to transparent */
-      cairo_t *cr = gdk_cairo_create (widget->window);
+      cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
       cairo_set_source_rgba (cr, 0, 0, 0, 0);
       cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
       gdk_cairo_region (cr, event->region);
@@ -265,7 +265,8 @@ egg_tray_icon_expose (GtkWidget *widget,
 #endif
     {
       /* Clear to parent-relative pixmap */
-      gdk_window_clear_area (widget->window, event->area.x, event->area.y,
+      gdk_window_clear_area (gtk_widget_get_window(widget),
+          event->area.x, event->area.y,
                              event->area.width, event->area.height);
     }
 
@@ -283,7 +284,7 @@ egg_tray_icon_expose (GtkWidget *widget,
       width  = widget->allocation.width  - 2 * border_width;
       height = widget->allocation.height - 2 * border_width;
 
-      gtk_paint_focus (widget->style, widget->window,
+      gtk_paint_focus (widget->style, gtk_widget_get_window(widget),
                        gtk_widget_get_state (widget),
                        &event->area, widget, "tray_icon",
                        x, y, width, height);
@@ -440,7 +441,8 @@ egg_tray_icon_send_manager_message (EggTrayIcon *icon,
   ev.window = window;
   ev.message_type = icon->system_tray_opcode_atom;
   ev.format = 32;
-  ev.data.l[0] = gdk_x11_get_server_time (GTK_WIDGET (icon)->window);
+  ev.data.l[0]
+      = gdk_x11_get_server_time (gtk_widget_get_window(GTK_WIDGET (icon)));
   ev.data.l[1] = message;
   ev.data.l[2] = data1;
   ev.data.l[3] = data2;
@@ -599,12 +601,12 @@ egg_tray_icon_realize (GtkWidget *widget)
     {
       /* Set a transparent background */
       GdkColor transparent = { 0, 0, 0, 0 }; /* Only pixel=0 matters */
-      gdk_window_set_background (widget->window, &transparent);
+      gdk_window_set_background (gtk_widget_get_window(widget), &transparent);
     }
   else
     {
       /* Set a parent-relative background pixmap */
-      gdk_window_set_back_pixmap (widget->window, NULL, TRUE);
+      gdk_window_set_back_pixmap (gtk_widget_get_window(widget), NULL, TRUE);
     }
 
   if (icon->manager_window != None)

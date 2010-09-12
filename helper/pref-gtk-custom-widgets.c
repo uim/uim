@@ -1522,7 +1522,7 @@ choose_key_button_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
 		   G_CALLBACK(grab_win_key_release_cb), key_entry);
 
   gtk_widget_realize(dialog);
-  gdk_keyboard_grab(GTK_WIDGET(dialog)->window,
+  gdk_keyboard_grab(gtk_widget_get_window(GTK_WIDGET(dialog)),
 		    TRUE, GDK_CURRENT_TIME);
 
 

@@ -74,7 +74,7 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   switch (event->type) {
   case GDK_BUTTON_PRESS:
     cursor = gdk_cursor_new(GDK_FLEUR);
-    gdk_pointer_grab(widget->window, FALSE,
+    gdk_pointer_grab(gtk_widget_get_window(widget), FALSE,
 		     GDK_BUTTON_RELEASE_MASK |
 		     GDK_POINTER_MOTION_MASK,
 		     NULL,
@@ -115,7 +115,7 @@ helper_win_set_position(GtkWidget *window, gint x, gint y)
   sc_w = gdk_screen_width();
   sc_h = gdk_screen_height();
 
-  gdk_drawable_get_size(window->window, &w, &h);
+  gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
 
   if (wx < 0)
     wx = 0;
@@ -139,7 +139,7 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
     sc_w = gdk_screen_width();
     sc_h = gdk_screen_height();
 
-    gdk_drawable_get_size(widget->window, &w, &h);
+    gdk_drawable_get_size(gtk_widget_get_window(widget), &w, &h);
 
     wx = window_drag_start_x + ((gint)event->x_root - pointer_drag_start_x);
     wy = window_drag_start_y + ((gint)event->y_root - pointer_drag_start_y);
@@ -172,7 +172,7 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 {
   GdkRectangle *rect = &event->area;
 
-  gtk_paint_handle(widget->style, widget->window,
+  gtk_paint_handle(widget->style, gtk_widget_get_window(widget),
 		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
 		   rect, widget, "handlebox",
 		   widget->allocation.x, widget->allocation.y,
