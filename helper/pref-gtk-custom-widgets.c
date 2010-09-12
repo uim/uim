@@ -259,7 +259,8 @@ sync_value_int(GtkSpinButton *spin)
   custom = uim_custom_get(custom_sym);
   g_return_if_fail(custom && custom->type == UCustom_Int);
 
-  gtk_widget_set_sensitive(GTK_WIDGET(spin)->parent, custom->is_active);
+  gtk_widget_set_sensitive(gtk_widget_get_parent(GTK_WIDGET(spin)),
+      custom->is_active);
   if (custom->range->as_int.min != (int) adj->lower ||
       custom->range->as_int.max != (int) adj->upper)
     gtk_spin_button_set_range(spin, custom->range->as_int.min, custom->range->as_int.max);
@@ -382,7 +383,8 @@ sync_value_string(GtkEntry *entry)
 		   (custom->type == UCustom_Str ||
 		    custom->type == UCustom_Pathname));
 
-  gtk_widget_set_sensitive(GTK_WIDGET(entry)->parent, custom->is_active);
+  gtk_widget_set_sensitive(gtk_widget_get_parent(GTK_WIDGET(entry)),
+      custom->is_active);
   if (custom->type == UCustom_Str) {
     gtk_entry_set_text(GTK_ENTRY(entry), custom->value->as_str);
   } else if (custom->type == UCustom_Pathname) {
@@ -608,7 +610,8 @@ sync_value_choice(GtkComboBox *combobox)
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combobox), default_index);
 
-  gtk_widget_set_sensitive(GTK_WIDGET(combobox)->parent, custom->is_active);
+  gtk_widget_set_sensitive(gtk_widget_get_parent(GTK_WIDGET(combobox)),
+      custom->is_active);
 
   g_signal_handlers_unblock_by_func(G_OBJECT(combobox),
 				    (gpointer)(uintptr_t) custom_combo_box_changed, NULL);
@@ -688,7 +691,8 @@ sync_value_olist(GtkEntry *entry)
   }
 
   gtk_entry_set_text(GTK_ENTRY(entry), str->str);
-  gtk_widget_set_sensitive(GTK_WIDGET(entry)->parent, custom->is_active);
+  gtk_widget_set_sensitive(gtk_widget_get_parent(GTK_WIDGET(entry)),
+      custom->is_active);
 
   g_string_free(str, TRUE);
   uim_custom_free(custom);
@@ -1562,7 +1566,8 @@ sync_value_key(GtkEntry *entry)
   }
 
   gtk_entry_set_text(GTK_ENTRY(entry), str->str);
-  gtk_widget_set_sensitive(GTK_WIDGET(entry)->parent, custom->is_active);
+  gtk_widget_set_sensitive(gtk_widget_get_parent(GTK_WIDGET(entry)),
+      custom->is_active);
 
   g_string_free(str, TRUE);
   uim_custom_free(custom);
