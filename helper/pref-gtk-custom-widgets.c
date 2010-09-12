@@ -1834,6 +1834,7 @@ choose_key_clicked_cb(GtkWidget *widget, GtkEntry *key_entry)
   entry = gtk_entry_new();
 
   /* XXX hack alert!  This modifies private part of gtk_entry */
+  /* FIXME: Can't compile with GSEAL_ENABLE */
   im_context = gtk_im_context_simple_new();
   g_object_unref(GTK_ENTRY(entry)->im_context);
   GTK_ENTRY(entry)->im_context = im_context;

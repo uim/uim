@@ -396,6 +396,7 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
 	
 	window = GTK_WINDOW(cur_toplevel);
 	group = gtk_window_get_group(window);
+    /* FIXME: Can't compile with GSEAL_ENABLE */
 	if (group && group->grabs)
 	  grab_widget = GTK_WIDGET(group->grabs->data);
       }
@@ -1616,9 +1617,11 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
     if (rv)
       return FALSE;
 
+    /* FIXME: Can't compile with GSEAL_ENABLE */
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
     else if (GTK_IS_ENTRY(uic->widget)) {
+    /* FIXME: Can't compile with GSEAL_ENABLE */
       if (gtk_editable_get_editable(GTK_EDITABLE(uic->widget)))
 	GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
     }
