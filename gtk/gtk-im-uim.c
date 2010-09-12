@@ -395,7 +395,7 @@ on_client_widget_grab_notify(GtkWidget *widget, gboolean was_grabbed, IMUIMConte
 	GtkWindow *window;
 	
 	window = GTK_WINDOW(cur_toplevel);
-	group = window->group;
+	group = gtk_window_get_group(window);
 	if (group && group->grabs)
 	  grab_widget = GTK_WIDGET(group->grabs->data);
       }
