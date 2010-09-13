@@ -189,7 +189,11 @@ size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer user_dat
 {
   gint x, y;
 
+#if GTK_CHECK_VERSION(2, 20, 0)
   if (gtk_widget_get_mapped(widget)) {
+#else
+  if (GTK_WIDGET_MAPPED(widget)) {
+#endif
     gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
     helper_win_set_position(widget, x, y);
   }
@@ -198,7 +202,12 @@ size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer user_dat
 static void
 size_request_cb(GtkWidget *widget, GtkRequisition *req, gpointer data)
 {
+
+#if GTK_CHECK_VERSION(2, 20, 0)
   if (gtk_widget_get_mapped(widget)) {
+#else
+  if (GTK_WIDGET_MAPPED(widget)) {
+#endif
     gint width, height;
     gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
 
