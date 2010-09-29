@@ -40,7 +40,7 @@ AC_ARG_WITH(openssl-dir,
 			fi
 		fi
 	],
-	[use_openssl="no"]
+	[]
 )
 
 LIBS="-lcrypto $LIBS"
