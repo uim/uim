@@ -212,7 +212,7 @@ is_okuri(const char *line_str)
     return 0;
   /* check previous character */
   b--;
-  if (skk_isalpha(*b))
+  if (skk_isalpha(*b) && (!skk_isascii(line_str[0]) || line_str[0] == '>'))
     return 1;
   return 0;
 }
