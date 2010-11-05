@@ -319,7 +319,11 @@ show_preedit(GtkIMContext *ic, GtkWidget *preedit_label)
 static void
 remove_cur_toplevel()
 {
+#if GTK_CHECK_VERSION(2, 18, 0)
   if (cur_toplevel && gtk_widget_is_toplevel(cur_toplevel)) {
+#else
+  if (cur_toplevel && GTK_WIDGET_TOPLEVEL(cur_toplevel)) {
+#endif
     if (cur_key_press_handler_id)
       g_signal_handler_disconnect(cur_toplevel, cur_key_press_handler_id);
     if (cur_key_release_handler_id)
@@ -356,7 +360,11 @@ update_cur_toplevel(IMUIMContext *uic)
 
   if (uic->widget) {
     GtkWidget *toplevel = gtk_widget_get_toplevel(uic->widget);
+#if GTK_CHECK_VERSION(2, 18, 0)
     if (toplevel && gtk_widget_is_toplevel(toplevel)) {
+#else
+    if (toplevel && GTK_WIDGET_TOPLEVEL(toplevel)) {
+#endif
       if (cur_toplevel != toplevel) {
 	remove_cur_toplevel();
 	cur_toplevel = toplevel;
