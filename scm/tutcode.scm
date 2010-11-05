@@ -99,6 +99,7 @@
 ;;;    (define tutcode-rule-filename "/usr/local/share/uim/tcode.scm")
 ;;;    (define tutcode-mazegaki-start-sequence "fj")
 ;;;    (define tutcode-bushu-start-sequence "jf")
+;;;    (define tutcode-latin-conv-start-sequence "_/")
 ;;;
 ;;; 【ソースについて】
 ;;; generic.scmをベースにして以下の変更をしている。
