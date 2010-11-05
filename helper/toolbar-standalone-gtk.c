@@ -90,7 +90,11 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
     break;
   case GDK_2BUTTON_PRESS:
     toolbar = GTK_WIDGET(data);
+#if GTK_CHECK_VERSION(2, 18, 0)
     if (gtk_widget_get_visible(toolbar)) {
+#else
+    if (GTK_WIDGET_VISIBLE(toolbar)) {
+#endif
       gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
       gtk_widget_hide(toolbar);
     } else {
@@ -172,6 +176,7 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 {
   GdkRectangle *rect = &event->area;
 
+#if GTK_CHECK_VERSION(2, 18, 0)
   GtkAllocation allocation;
   gtk_widget_get_allocation(widget, &allocation);
   gtk_paint_handle(gtk_widget_get_style(widget), gtk_widget_get_window(widget),
@@ -180,6 +185,14 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 		   allocation.x, allocation.y,
 		   allocation.width, allocation.height,
 		   GTK_ORIENTATION_VERTICAL);
+#else
+  gtk_paint_handle(widget->style, widget->window,
+                   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
+                   rect, widget, "handlebox",
+                   widget->allocation.x, widget->allocation.y,
+                   widget->allocation.width, widget->allocation.height,
+                   GTK_ORIENTATION_VERTICAL);
+#endif
 
   return FALSE;
 }

@@ -199,11 +199,16 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
   gdk_window_get_origin(gtk_widget_get_window(button), x, y);
   gdk_drawable_get_size(gtk_widget_get_window(button), NULL, &button_height);
 
+#if GTK_CHECK_VERSION(2, 18, 0)
   if (!gtk_widget_get_has_window(button)) {
     GtkAllocation allocation;
     gtk_widget_get_allocation(button, &allocation);
     *x += allocation.x;
   }
+#else
+  if (GTK_WIDGET_NO_WINDOW(button))
+    *x += button->allocation.x;
+#endif
 
   sc_height = gdk_screen_get_height(gdk_screen_get_default());
   sc_width = gdk_screen_get_width(gdk_screen_get_default());

@@ -274,6 +274,7 @@ egg_tray_icon_expose (GtkWidget *widget,
     retval = GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
 
   focus_child = gtk_container_get_focus_child(GTK_CONTAINER (widget));
+#if GTK_CHECK_VERSION(2, 18, 0)
   if (focus_child && gtk_widget_has_focus (focus_child))
     {
       GtkAllocation allocation;
@@ -293,6 +294,23 @@ egg_tray_icon_expose (GtkWidget *widget,
                        &event->area, widget, "tray_icon",
                        x, y, width, height);
     }
+#else
+  if (focus_child && GTK_WIDGET_HAS_FOCUS (focus_child))
+    {
+      border_width = GTK_CONTAINER (widget)->border_width;
+
+      x = widget->allocation.x + border_width;
+      y = widget->allocation.y + border_width;
+
+      width  = widget->allocation.width  - 2 * border_width;
+      height = widget->allocation.height - 2 * border_width;
+ 
+      gtk_paint_focus (widget->style, widget->window,
+                       GTK_WIDGET_STATE (widget),
+                       &event->area, widget, "tray_icon",
+                       x, y, width, height);
+    }
+#endif
   return retval;
 }
 
