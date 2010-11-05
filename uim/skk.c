@@ -121,7 +121,7 @@ struct skk_line {
 };
 
 /* skk dictionary file */
-static struct dic_info {
+typedef struct dic_info_ {
   /* address of mmap'ed dictionary file */
   void *addr;
   /* byte offset of first valid entry in mmap'ed region */
@@ -146,7 +146,9 @@ static struct dic_info {
   int skkserv_portnum;
   /* skkserv address family. AF_UNSPEC or AF_INET or AF_INET6 */
   int skkserv_family;
-} *skk_dic;
+} dic_info;
+
+static dic_info *skk_dic;
 
 /* completion */
 struct skk_comp_array {
@@ -187,7 +189,7 @@ static FILE *rserv, *wserv;
 /* prototype */
 static int open_skkserv(const char *hostname, int portnum, int family);
 static void close_skkserv(void);
-static void skkserv_disconnected(struct dic_info *di);
+static void skkserv_disconnected(dic_info *di);
 
 static int use_look = 0;
 static uim_look_ctx *skk_look_ctx = NULL;
@@ -218,7 +220,7 @@ is_okuri(const char *line_str)
 }
 
 static int
-find_first_line(struct dic_info *di)
+find_first_line(dic_info *di)
 {
   char *s = di->addr;
   int off = 0;
@@ -231,7 +233,7 @@ find_first_line(struct dic_info *di)
 }
 
 static int
-find_border(struct dic_info *di)
+find_border(dic_info *di)
 {
   char *s = di->addr;
   int off = 0;
@@ -249,17 +251,17 @@ find_border(struct dic_info *di)
   return di->size - 1;
 }
 
-static struct dic_info *
+static dic_info *
 open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
 	 int skkserv_portnum, int skkserv_family)
 {
-  struct dic_info *di;
+  dic_info *di;
   struct stat st;
   int fd;
   void *addr = NULL;
   int mmap_done = 0;
 
-  di = (struct dic_info *)uim_malloc(sizeof(struct dic_info));
+  di = (dic_info *)uim_malloc(sizeof(dic_info));
 
   di->skkserv_hostname = NULL;
   if (use_skkserv) {
@@ -297,7 +299,7 @@ open_dic(const char *fn, uim_bool use_skkserv, const char *skkserv_hostname,
 }
 
 static const char *
-find_line(struct dic_info *di, int off)
+find_line(dic_info *di, int off)
 {
   char *ptr = di->addr;
   while (off > 0 && (ptr[off] != '\n' || ptr[off + 1] == ';'))
@@ -310,7 +312,7 @@ find_line(struct dic_info *di, int off)
 }
 
 static char *
-extract_line_index(struct dic_info *di, int off, char *buf, int len)
+extract_line_index(dic_info *di, int off, char *buf, int len)
 {
   const char *p = find_line(di, off);
   int i;
@@ -325,7 +327,7 @@ extract_line_index(struct dic_info *di, int off, char *buf, int len)
 }
 
 static int
-do_search_line(struct dic_info *di, const char *s, int min,
+do_search_line(dic_info *di, const char *s, int min,
 	       int max, int d)
 {
   char buf[256];
@@ -575,7 +577,7 @@ merge_base_candidates_to_array(struct skk_line *sl,
 }
 
 static void
-compose_line_parts(struct dic_info *di, struct skk_line *sl,
+compose_line_parts(dic_info *di, struct skk_line *sl,
 		   char *okuri, char *line)
 {
   int nth;
@@ -657,7 +659,7 @@ copy_skk_line(struct skk_line *p)
  * Compose skk line
  */
 static struct skk_line *
-compose_line(struct dic_info *di, const char *word, char okuri_head, char *entry)
+compose_line(dic_info *di, const char *word, char okuri_head, char *entry)
 {
   struct skk_line *sl;
 
@@ -669,7 +671,7 @@ compose_line(struct dic_info *di, const char *word, char okuri_head, char *entry
 }
 
 static void
-add_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
+add_line_to_cache_head(dic_info *di, struct skk_line *sl)
 {
   sl->next = di->head.next;
   di->head.next = sl;
@@ -679,7 +681,7 @@ add_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
 }
 
 static void
-move_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
+move_line_to_cache_head(dic_info *di, struct skk_line *sl)
 {
   struct skk_line *prev;
 
@@ -699,7 +701,7 @@ move_line_to_cache_head(struct dic_info *di, struct skk_line *sl)
 
 #if 0
 static void
-add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
+add_line_to_cache_last(dic_info *di, struct skk_line *sl)
 {
   struct skk_line *prev;
 
@@ -720,7 +722,7 @@ add_line_to_cache_last(struct dic_info *di, struct skk_line *sl)
 #endif
 
 static struct skk_line *
-search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
+search_line_from_server(dic_info *di, const char *s, char okuri_head)
 {
   char r;
   struct skk_line *sl;
@@ -794,7 +796,7 @@ search_line_from_server(struct dic_info *di, const char *s, char okuri_head)
 }
 
 static struct skk_line *
-search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
+search_line_from_file(dic_info *di, const char *s, char okuri_head)
 {
   int n;
   const char *p;
@@ -829,7 +831,7 @@ search_line_from_file(struct dic_info *di, const char *s, char okuri_head)
 }
 
 static struct skk_line *
-search_line_from_cache(struct dic_info *di, const char *s, char okuri_head)
+search_line_from_cache(dic_info *di, const char *s, char okuri_head)
 {
   struct skk_line *sl;
 
@@ -846,7 +848,7 @@ search_line_from_cache(struct dic_info *di, const char *s, char okuri_head)
 
 
 static struct skk_cand_array *
-find_cand_array(struct dic_info *di, const char *s,
+find_cand_array(dic_info *di, const char *s,
 		char okuri_head, const char *okuri,
 		int create_if_not_found)
 {
@@ -1796,7 +1798,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
 }
 
 static struct skk_comp_array *
-make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look_)
+make_comp_array_from_cache(dic_info *di, const char *s, uim_lisp use_look_)
 {
   struct skk_line *sl;
   struct skk_comp_array *ca;
@@ -1840,7 +1842,7 @@ make_comp_array_from_cache(struct dic_info *di, const char *s, uim_lisp use_look
 }
 
 static struct skk_comp_array *
-find_comp_array(struct dic_info *di, const char *s, uim_lisp use_look_)
+find_comp_array(dic_info *di, const char *s, uim_lisp use_look_)
 {
   struct skk_comp_array *ca;
 
@@ -2741,7 +2743,7 @@ skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
 }
 
 static void
-reverse_cache(struct dic_info *di)
+reverse_cache(dic_info *di)
 {
   struct skk_line *sl, *prev, *next;
 
@@ -2757,7 +2759,7 @@ reverse_cache(struct dic_info *di)
 }
 
 static void
-parse_dic_line(struct dic_info *di, char *line, int is_personal)
+parse_dic_line(dic_info *di, char *line, int is_personal)
 {
   char *buf, *sep;
   struct skk_line *sl;
@@ -2869,7 +2871,7 @@ close_lock(int fd)
 }
 
 static int
-read_dictionary_file(struct dic_info *di, const char *fn, int is_personal)
+read_dictionary_file(dic_info *di, const char *fn, int is_personal)
 {
   struct stat st;
   FILE *fp;
@@ -3085,11 +3087,11 @@ lsort(struct skk_line *p)
 static void
 update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
 {
-  struct dic_info *di;
+  dic_info *di;
   struct skk_line *sl, *tmp, *diff, **cache_array;
   int i, diff_len = 0;
 
-  di = (struct dic_info *)uim_malloc(sizeof(struct dic_info));
+  di = (dic_info *)uim_malloc(sizeof(dic_info));
   di->cache_len = 0;
   di->head.next = NULL;
 
@@ -3607,7 +3609,7 @@ close_skkserv()
 }
 
 static void
-reset_is_used_flag_of_cache(struct dic_info *di)
+reset_is_used_flag_of_cache(dic_info *di)
 {
   struct skk_line *sl;
   int i;
@@ -3623,7 +3625,7 @@ reset_is_used_flag_of_cache(struct dic_info *di)
 }
 
 static void
-skkserv_disconnected(struct dic_info *di)
+skkserv_disconnected(dic_info *di)
 {
   di->skkserv_state &= ~SKK_SERV_CONNECTED;
   reset_is_used_flag_of_cache(di);
