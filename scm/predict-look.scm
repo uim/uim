@@ -42,7 +42,7 @@
 
 (class-set-method! predict-look search
   (lambda (self str)
-    (let* ((looked (look-lib-look #t #t
+    (let* ((looked (look-lib-look #f #t
                                  (predict-look-limit self)
                                  (predict-look-dictionary-filename self) str))
            (ret (map-in-order
