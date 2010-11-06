@@ -111,12 +111,14 @@
 ;;;       ((("d" "l" "u"))("づ" "ヅ"))       ; カタカナを含む場合
 ;;;       ((("d" "l" "d" "u"))("っ" "ッ"))))
 ;;;
-;;; * T-Codeを使いたい場合
+;;; * T-Code/Try-Codeを使いたい場合
 ;;;   uim-pref-gtk等で設定するか、~/.uimで以下のように設定してください。
 ;;;    (define tutcode-rule-filename "/usr/local/share/uim/tcode.scm")
+;;;    ;(define tutcode-rule-filename "/usr/local/share/uim/trycode.scm")
 ;;;    (define tutcode-mazegaki-start-sequence "fj")
 ;;;    (define tutcode-bushu-start-sequence "jf")
-;;;    (define tutcode-latin-conv-start-sequence "_/")
+;;;    (define tutcode-latin-conv-start-sequence "47")
+;;;    (define tutcode-kana-toggle-key? (make-key-predicate '()))
 ;;;
 ;;; 【ソースについて】
 ;;; generic.scmをベースにして以下の変更をしている。
