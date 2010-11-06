@@ -203,17 +203,17 @@ int
 uim_look(char *string, uim_look_ctx *ctx)
 {
 	int ch;
-	char *readp, *writep;
+	unsigned char *readp, *writep;
 	int fflag = ctx->fflag, dflag = ctx->dflag;
 
 	/* Reformat string to avoid doing it multiple times later. */
-	for (readp = writep = string; (ch = *readp++) != '\0';) {
+	for (readp = writep = (unsigned char *)string; (ch = *readp++) != '\0';) {
 		if (fflag)
 			ch = FOLD(ch);
 		if (dflag)
 			ch = DICT(ch);
 		if (ch != NO_COMPARE)
-			*(writep++) = (char)ch;
+			*(writep++) = (unsigned char)ch;
 	}
 	*writep = '\0';
 
