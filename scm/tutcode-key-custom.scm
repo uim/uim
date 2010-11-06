@@ -89,6 +89,12 @@
                (N_ "[TUT-Code] toggle use of stroke help window")
                (N_ "long description will be here"))
 
+(define-custom 'tutcode-begin-completion-key '("<Control>.")
+               '(tutcode-keys1)
+               '(key)
+               (N_ "[TUT-Code] begin completion")
+               (N_ "long description will be here"))
+
 (define-custom 'tutcode-begin-conv-key '(generic-begin-conv-key)
                '(tutcode-keys1)
 	       '(key)
