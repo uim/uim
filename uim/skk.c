@@ -148,8 +148,6 @@ typedef struct dic_info_ {
   int skkserv_family;
 } dic_info;
 
-static dic_info *skk_dic;
-
 /* completion */
 struct skk_comp_array {
   /* index of completion */
@@ -170,12 +168,14 @@ static uim_lisp restore_numeric(const char *s, uim_lisp numlst_);
 static char *replace_numeric(const char *str);
 static char *sanitize_word(const char *str, const char *prefix);
 static int is_purged_cand(const char *str);
-static void merge_purged_cands(struct skk_cand_array *src_ca,
+static void merge_purged_cands(dic_info *skk_dic,
+		struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, int src_nth, int dst_nth);
-static void merge_purged_cand_to_dst_array(struct skk_cand_array *src_ca,
+static void merge_purged_cand_to_dst_array(dic_info *skk_dic,
+		struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, char *purged_cand);
-static void update_personal_dictionary_cache_with_file(const char *fn,
-		int is_personal);
+static void update_personal_dictionary_cache_with_file(dic_info *skk_dic,
+		const char *fn, int is_personal);
 static void look_get_comp(struct skk_comp_array *ca, const char *str);
 static uim_lisp look_get_top_word(const char *str);
 
@@ -429,39 +429,6 @@ nth_candidate(char *str, int nth)
   return p;
 }
 
-/* init */
-static uim_lisp
-skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
-	     uim_lisp skkserv_portnum_, uim_lisp skkserv_family_)
-{
-  const char *fn, *skkserv_hostname, *skkserv_family_str;
-  uim_bool use_skkserv;
-  int skkserv_portnum, skkserv_family;
-
-  fn = REFER_C_STR(fn_);
-  use_skkserv = C_BOOL(use_skkserv_);
-  skkserv_hostname = REFER_C_STR(skkserv_hostname_);
-  skkserv_portnum = C_INT(skkserv_portnum_);
-  skkserv_family_str = REFER_C_STR(skkserv_family_);
-
-  is_setugid = uim_helper_is_setugid();
-  signal(SIGPIPE, SIG_IGN);
-
-  skkserv_family = AF_UNSPEC;
-  if (skkserv_family_str) {
-    if (!strcmp(skkserv_family_str, "inet"))
-      skkserv_family = AF_INET;
-    else if (!strcmp(skkserv_family_str, "inet6"))
-      skkserv_family = AF_INET6;
-  }
-
-  if (!skk_dic)
-    skk_dic = open_dic(fn, use_skkserv, skkserv_hostname, skkserv_portnum,
-		       skkserv_family);
-
-  return uim_scm_f();
-}
-
 static void
 free_skk_line(struct skk_line *sl)
 {
@@ -480,6 +447,76 @@ free_skk_line(struct skk_line *sl)
   free(sl->head);
   free(sl->cands);
   free(sl);
+}
+
+static void
+free_skk_dic(dic_info *skk_dic)
+{
+  if (skk_dic) {
+    struct skk_line *sl, *tmp;
+
+    if (skk_dic->addr)
+      munmap(skk_dic->addr, skk_dic->size);
+
+    sl = skk_dic->head.next;
+    while (sl) {
+      tmp = sl;
+      sl = sl->next;
+      free_skk_line(tmp);
+    }
+
+    if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
+      close_skkserv();
+    free(skk_dic->skkserv_hostname);
+
+    free(skk_dic);
+  }
+}
+
+/* init */
+static uim_lisp
+skk_dic_open(uim_lisp fn_, uim_lisp use_skkserv_, uim_lisp skkserv_hostname_,
+	     uim_lisp skkserv_portnum_, uim_lisp skkserv_family_)
+{
+  const char *fn, *skkserv_hostname, *skkserv_family_str;
+  uim_bool use_skkserv;
+  int skkserv_portnum, skkserv_family;
+  dic_info *skk_dic;
+
+  fn = REFER_C_STR(fn_);
+  use_skkserv = C_BOOL(use_skkserv_);
+  skkserv_hostname = REFER_C_STR(skkserv_hostname_);
+  skkserv_portnum = C_INT(skkserv_portnum_);
+  skkserv_family_str = REFER_C_STR(skkserv_family_);
+
+  is_setugid = uim_helper_is_setugid();
+  signal(SIGPIPE, SIG_IGN);
+
+  skkserv_family = AF_UNSPEC;
+  if (skkserv_family_str) {
+    if (!strcmp(skkserv_family_str, "inet"))
+      skkserv_family = AF_INET;
+    else if (!strcmp(skkserv_family_str, "inet6"))
+      skkserv_family = AF_INET6;
+  }
+
+  skk_dic = open_dic(fn, use_skkserv, skkserv_hostname, skkserv_portnum,
+		     skkserv_family);
+
+  return MAKE_PTR(skk_dic);
+}
+
+static uim_lisp
+skk_free_dic(uim_lisp skk_dic_)
+{
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
+
+  free_skk_dic(skk_dic);
+
+  return uim_scm_f();
 }
 
 static struct skk_cand_array *
@@ -526,7 +563,8 @@ push_back_candidate_to_array(struct skk_cand_array *ca, const char *cand)
 }
 
 static void
-merge_base_candidates_to_array(struct skk_line *sl,
+merge_base_candidates_to_array(dic_info *skk_dic,
+		               struct skk_line *sl,
 			       struct skk_cand_array *dst_ca)
 {
   int i, j;
@@ -556,10 +594,10 @@ merge_base_candidates_to_array(struct skk_line *sl,
     }
     if (!dup) {
       if (src_purged_cand_index != -1 && dst_purged_cand_index != -1)
-	merge_purged_cands(src_ca, dst_ca, src_purged_cand_index,
+	merge_purged_cands(skk_dic, src_ca, dst_ca, src_purged_cand_index,
 			dst_purged_cand_index);
       else if (src_purged_cand_index != -1 && dst_purged_cand_index == -1)
-	merge_purged_cand_to_dst_array(src_ca, dst_ca,
+	merge_purged_cand_to_dst_array(skk_dic, src_ca, dst_ca,
 			src_ca->cands[src_purged_cand_index]);
 #if 0
       /*
@@ -877,7 +915,7 @@ find_cand_array(dic_info *di, const char *s,
   ca = find_candidate_array_from_line(sl, okuri, create_if_not_found);
 
   if (!ca->is_used) {
-    merge_base_candidates_to_array(sl, ca);
+    merge_base_candidates_to_array(di, sl, ca);
     ca->is_used = 1;
     if (!from_file) {
       if (di->skkserv_state & SKK_SERV_USE) {
@@ -886,7 +924,7 @@ find_cand_array(dic_info *di, const char *s,
 	  ca->is_used = 0;
       } else
 	sl_file = search_line_from_file(di, s, okuri_head);
-      merge_base_candidates_to_array(sl_file, ca);
+      merge_base_candidates_to_array(di, sl_file, ca);
       free_skk_line(sl_file);
     }
   }
@@ -895,8 +933,9 @@ find_cand_array(dic_info *di, const char *s,
 }
 
 static struct skk_cand_array *
-find_cand_array_lisp(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
-		     int create_if_not_found, uim_lisp numeric_conv_)
+find_cand_array_lisp(dic_info *skk_dic, uim_lisp head_, uim_lisp okuri_head_,
+		     uim_lisp okuri_, int create_if_not_found,
+		     uim_lisp numeric_conv_)
 {
   char o;
   const char *hs;
@@ -1129,18 +1168,22 @@ match_to_discarding_index(int indices[], int n)
 }
 
 static uim_lisp
-skk_get_entry(uim_lisp head_, uim_lisp okuri_head_,
+skk_get_entry(uim_lisp skk_dic_, uim_lisp head_, uim_lisp okuri_head_,
 	      uim_lisp okuri_, uim_lisp numeric_conv_)
 {
   struct skk_cand_array *ca;
+  dic_info *skk_dic = NULL;
 
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
+
+  ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, numeric_conv_);
 
   if (ca && ca->nr_cands > 0 && !is_purged_only(ca))
       return uim_scm_t();
 
   if (TRUEP(numeric_conv_))
-    return skk_get_entry(head_, okuri_head_, okuri_, uim_scm_f());
+    return skk_get_entry(skk_dic_, head_, okuri_head_, okuri_, uim_scm_f());
 
   return uim_scm_f();
 }
@@ -1654,7 +1697,10 @@ get_ignoring_indices(struct skk_cand_array *ca, int indices[])
 }
 
 static uim_lisp
-skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numeric_conv_)
+skk_get_nth_candidate(uim_lisp skk_dic_, uim_lisp nth_,
+		      uim_lisp head_and_okuri_head_,
+		      uim_lisp okuri_,
+		      uim_lisp numeric_conv_)
 {
   int n;
   struct skk_cand_array *ca, *subca;
@@ -1668,6 +1714,12 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   uim_lisp str_ = uim_scm_null();
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
+  dic_info *skk_dic = NULL;
+  uim_lisp head_ = CAR(head_and_okuri_head_);
+  uim_lisp okuri_head_ = CDR(head_and_okuri_head_);
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
@@ -1675,9 +1727,9 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
   n = C_INT(nth_);
 
   if (!NULLP(numlst_))
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, numeric_conv_);
   else
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, uim_scm_f());
 
   get_ignoring_indices(ca, ignoring_indices);
 
@@ -1735,8 +1787,8 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 
   /* check non-numeric conversion */
   if (!cands && n >= k && !NULLP(numlst_))
-    return skk_get_nth_candidate(MAKE_INT(n - k), head_, okuri_head_,
-		    okuri_, uim_scm_f());
+    return skk_get_nth_candidate(skk_dic_, MAKE_INT(n - k),
+		    head_and_okuri_head_, okuri_, uim_scm_f());
 
   if (cands)
     str_ = MAKE_STR(cands);
@@ -1748,7 +1800,7 @@ skk_get_nth_candidate(uim_lisp nth_, uim_lisp head_, uim_lisp okuri_head_, uim_l
 }
 
 static uim_lisp
-skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numeric_conv_)
+skk_get_nr_candidates(uim_lisp skk_dic_, uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim_lisp numeric_conv_)
 {
   struct skk_cand_array *ca, *subca;
   int n = 0;
@@ -1757,14 +1809,18 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   int method_place = 0;
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_))
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, numeric_conv_);
   else
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, uim_scm_f());
 
   if (ca)
     n = ca->nr_cands;
@@ -1791,7 +1847,7 @@ skk_get_nr_candidates(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_, uim
   /* add non-numeric conversion */
   if (!NULLP(numlst_))
     return MAKE_INT(nr_cands +
-		    C_INT(skk_get_nr_candidates(head_, okuri_head_,
+		    C_INT(skk_get_nr_candidates(skk_dic_, head_, okuri_head_,
 				    okuri_, uim_scm_f())));
 
   return MAKE_INT(nr_cands);
@@ -1861,7 +1917,7 @@ find_comp_array(dic_info *di, const char *s, uim_lisp use_look_)
 }
 
 static struct skk_comp_array *
-find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
+find_comp_array_lisp(dic_info *skk_dic, uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   const char *hs;
   struct skk_comp_array *ca;
@@ -1882,41 +1938,50 @@ find_comp_array_lisp(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 }
 
 static uim_lisp
-skk_get_completion(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
+skk_get_completion(uim_lisp skk_dic_, uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   struct skk_comp_array *ca;
-  ca = find_comp_array_lisp(head_, numeric_conv_, use_look_);
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
+
+  ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_);
   if (ca) {
     ca->refcount++;
     return uim_scm_t();
   }
 
   if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
-    return skk_get_completion(head_, uim_scm_f(), use_look_);
+    return skk_get_completion(skk_dic_, head_, uim_scm_f(), use_look_);
 
   return uim_scm_f();
 }
 
 static uim_lisp
-skk_get_nth_completion(uim_lisp nth_, uim_lisp head_,
+skk_get_nth_completion(uim_lisp skk_dic_, uim_lisp nth_, uim_lisp head_,
 		uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   int n;
   struct skk_comp_array *ca;
   char *str;
   uim_lisp numlst_ = uim_scm_null();
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_))
-    ca = find_comp_array_lisp(head_, numeric_conv_, use_look_);
+    ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_);
   else
-    ca = find_comp_array_lisp(head_, uim_scm_f(), use_look_);
+    ca = find_comp_array_lisp(skk_dic, head_, uim_scm_f(), use_look_);
 
   if (!ca) {
     if (!NULLP(numlst_))
-      return skk_get_nth_completion(nth_, head_, uim_scm_f(), use_look_);
+      return skk_get_nth_completion(skk_dic_, nth_, head_, uim_scm_f(), use_look_);
     else
       return MAKE_STR("");
   }
@@ -1931,25 +1996,29 @@ skk_get_nth_completion(uim_lisp nth_, uim_lisp head_,
   }
 
   if (!NULLP(numlst_) && n >= ca->nr_comps)
-    return skk_get_nth_completion(MAKE_INT(n - ca->nr_comps),
+    return skk_get_nth_completion(skk_dic_, MAKE_INT(n - ca->nr_comps),
 		    head_, uim_scm_f(), use_look_);
 
   return MAKE_STR("");
 }
 
 static uim_lisp
-skk_get_nr_completions(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
+skk_get_nr_completions(uim_lisp skk_dic_, uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   int n = 0;
   struct skk_comp_array *ca;
+  dic_info *skk_dic = NULL;
 
-  ca = find_comp_array_lisp(head_, numeric_conv_, use_look_);
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
+
+  ca = find_comp_array_lisp(skk_dic, head_, numeric_conv_, use_look_);
   if (ca)
     n = ca->nr_comps;
 
   if (TRUEP(numeric_conv_) && has_numeric_in_head(head_))
     return MAKE_INT(n +
-		    C_INT(skk_get_nr_completions(head_, uim_scm_f(), use_look_))); 
+		    C_INT(skk_get_nr_completions(skk_dic_, head_, uim_scm_f(), use_look_))); 
 
   return MAKE_INT(n);
 }
@@ -2040,13 +2109,17 @@ restore_numeric(const char *s, uim_lisp numlst_)
 }
 
 static uim_lisp
-skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
+skk_get_dcomp_word(uim_lisp skk_dic_, uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
 {
   const char *hs;
   struct skk_line *sl;
   int len;
   uim_lisp numlst_, look_;
   char *rs = NULL;
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   numlst_ = uim_scm_null();
   hs = REFER_C_STR(head_);
@@ -2091,14 +2164,14 @@ skk_get_dcomp_word(uim_lisp head_, uim_lisp numeric_conv_, uim_lisp use_look_)
       } else {
 	free(rs);
       }
-      return skk_get_dcomp_word(head_, uim_scm_f(), use_look_);
+      return skk_get_dcomp_word(skk_dic_, head_, uim_scm_f(), use_look_);
     }
   }
   return MAKE_STR("");
 }
 
 static void
-reorder_candidate(struct skk_cand_array *ca, const char *str)
+reorder_candidate(dic_info *skk_dic, struct skk_cand_array *ca, const char *str)
 {
   int i;
   int nth = 0;
@@ -2124,7 +2197,7 @@ reorder_candidate(struct skk_cand_array *ca, const char *str)
     ca->nr_real_cands++;
 }
 
-static void push_purged_word(struct skk_cand_array *ca, int nth, int append, char *word)
+static void push_purged_word(dic_info *skk_dic, struct skk_cand_array *ca, int nth, int append, char *word)
 {
   char *cand = ca->cands[nth];
   int len, oldlen = strlen(cand);
@@ -2167,7 +2240,7 @@ static void push_purged_word(struct skk_cand_array *ca, int nth, int append, cha
   }
 }
 
-static void remove_candidate_from_array(struct skk_cand_array *ca, int nth)
+static void remove_candidate_from_array(dic_info *skk_dic, struct skk_cand_array *ca, int nth)
 {
   int i;
 
@@ -2234,7 +2307,8 @@ static int index_in_real_cands(struct skk_cand_array *ca, const char *str)
 }
 
 static void
-remove_purged_words_from_dst_cand_array(struct skk_cand_array *src_ca,
+remove_purged_words_from_dst_cand_array(dic_info *skk_dic,
+		struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, const char *purged_cand)
 {
   char **purged_words;
@@ -2257,14 +2331,14 @@ remove_purged_words_from_dst_cand_array(struct skk_cand_array *src_ca,
        }
     }
     if (dup)
-      remove_candidate_from_array(dst_ca, j);
+      remove_candidate_from_array(skk_dic, dst_ca, j);
   }
   free_allocated_purged_words(purged_words);
 }
 
 static void
-merge_purged_cands(struct skk_cand_array *src_ca, struct skk_cand_array *dst_ca,
-		int src_nth, int dst_nth)
+merge_purged_cands(dic_info *skk_dic, struct skk_cand_array *src_ca,
+		   struct skk_cand_array *dst_ca, int src_nth, int dst_nth)
 {
   char *src_cand = src_ca->cands[src_nth];
   char *dst_cand = dst_ca->cands[dst_nth];
@@ -2286,8 +2360,8 @@ merge_purged_cands(struct skk_cand_array *src_ca, struct skk_cand_array *dst_ca,
       }
     }
     if (!dup) {
-      push_purged_word(dst_ca, dst_nth, 1, src_purged_words[i]);
-      remove_purged_words_from_dst_cand_array(src_ca, dst_ca, src_ca->cands[src_nth]);
+      push_purged_word(skk_dic, dst_ca, dst_nth, 1, src_purged_words[i]);
+      remove_purged_words_from_dst_cand_array(skk_dic, src_ca, dst_ca, src_ca->cands[src_nth]);
     }
   }
   free_allocated_purged_words(dst_purged_words);
@@ -2295,10 +2369,11 @@ merge_purged_cands(struct skk_cand_array *src_ca, struct skk_cand_array *dst_ca,
 }
 
 static void
-merge_purged_cand_to_dst_array(struct skk_cand_array *src_ca,
+merge_purged_cand_to_dst_array(dic_info *skk_dic,
+		struct skk_cand_array *src_ca,
 		struct skk_cand_array *dst_ca, char *purged_cand)
 {
-  remove_purged_words_from_dst_cand_array(src_ca, dst_ca, purged_cand);
+  remove_purged_words_from_dst_cand_array(skk_dic, src_ca, dst_ca, purged_cand);
   merge_word_to_real_cand_array(dst_ca, purged_cand);
 }
 
@@ -2326,7 +2401,8 @@ merge_word_to_dst_cand_array_with_purged_words(struct skk_cand_array *dst_ca,
 }
 
 static void
-merge_real_candidate_array(struct skk_cand_array *src_ca,
+merge_real_candidate_array(dic_info *skk_dic,
+		           struct skk_cand_array *src_ca,
 			   struct skk_cand_array *dst_ca)
 {
   int i, j;
@@ -2354,10 +2430,10 @@ merge_real_candidate_array(struct skk_cand_array *src_ca,
     if (!dup) {
       /* be careful! */
       if (src_purged_cand_index != -1 && dst_purged_cand_index != -1)
-	merge_purged_cands(src_ca, dst_ca, src_purged_cand_index,
+	merge_purged_cands(skk_dic, src_ca, dst_ca, src_purged_cand_index,
 			dst_purged_cand_index);
       else if (src_purged_cand_index != -1 && dst_purged_cand_index == -1)
-	merge_purged_cand_to_dst_array(src_ca, dst_ca,
+	merge_purged_cand_to_dst_array(skk_dic, src_ca, dst_ca,
 			src_ca->cands[src_purged_cand_index]);
       else if (src_purged_cand_index == -1 && dst_purged_cand_index != -1)
 	merge_word_to_dst_cand_array_with_purged_words(dst_ca, src_ca,
@@ -2369,7 +2445,7 @@ merge_real_candidate_array(struct skk_cand_array *src_ca,
 }
 
 static uim_lisp
-skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
+skk_commit_candidate(uim_lisp skk_dic_, uim_lisp head_and_okuri_head_,
 		     uim_lisp okuri_, uim_lisp nth_, uim_lisp numeric_conv_)
 {
   int nth;
@@ -2381,6 +2457,12 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   int method_place = 0;
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
+  dic_info *skk_dic = NULL;
+  uim_lisp head_ = CAR(head_and_okuri_head_);
+  uim_lisp okuri_head_ = CDR(head_and_okuri_head_);
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
@@ -2388,13 +2470,13 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   nth = C_INT(nth_);
 
   if (!NULLP(numlst_))
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, numeric_conv_);
   else
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, uim_scm_f());
 
   if (!ca) {
     if (!NULLP(numlst_))
-      return skk_commit_candidate(head_, okuri_head_, okuri_, nth_,
+      return skk_commit_candidate(skk_dic_, head_and_okuri_head_, okuri_, nth_,
 		      uim_scm_f());
     return uim_scm_f();
   }
@@ -2416,8 +2498,8 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	    if (k == nth) {
 	      str = ca->cands[i];
 	      /* reorder sub candidate */
-	      skk_commit_candidate(numstr_, uim_scm_null(), uim_scm_null(),
-				   MAKE_INT(j), uim_scm_f());
+	      skk_commit_candidate(skk_dic_, CONS(numstr_, uim_scm_null()),
+			           uim_scm_null(), MAKE_INT(j), uim_scm_f());
 	      break;
 	    }
 	    k++;
@@ -2435,7 +2517,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
     if (!str) {
       if (nth >= k)
-	return skk_commit_candidate(head_, okuri_head_, okuri_,
+	return skk_commit_candidate(skk_dic_, head_and_okuri_head_, okuri_,
 			MAKE_INT(nth - k), uim_scm_f());
       return uim_scm_f();
     }
@@ -2452,7 +2534,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     if (!str)
       return uim_scm_f();
   }
-  reorder_candidate(ca, str);
+  reorder_candidate(skk_dic, ca, str);
 
   if (okuri_ != uim_scm_null()) {
     struct skk_line *sl;
@@ -2469,13 +2551,13 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
     if (!found) {
       if (!NULLP(numlst_))
-	ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, numeric_conv_);
+	ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 1, numeric_conv_);
       else
-	ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, uim_scm_f());
-      reorder_candidate(ca, str);
+	ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 1, uim_scm_f());
+      reorder_candidate(skk_dic, ca, str);
     } else {
       /* also reorder base candidate array */
-      reorder_candidate(&sl->cands[0], str);
+      reorder_candidate(skk_dic, &sl->cands[0], str);
     }
   }
 
@@ -2485,7 +2567,7 @@ skk_commit_candidate(uim_lisp head_, uim_lisp okuri_head_,
   return uim_scm_f();
 }
 
-static void purge_candidate(struct skk_cand_array *ca, int nth)
+static void purge_candidate(dic_info *skk_dic, struct skk_cand_array *ca, int nth)
 {
     char *str;
     int i;
@@ -2497,11 +2579,11 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
 
     if ((i = get_purged_cand_index(ca)) == -1) {
       /* new purged cand in the array */
-      push_purged_word(ca, nth, 0, str);
+      push_purged_word(skk_dic, ca, nth, 0, str);
     } else {
       /* append the word to already existing purged cand and remove it own */
-      push_purged_word(ca, i, 1, str);
-      remove_candidate_from_array(ca, nth);
+      push_purged_word(skk_dic, ca, i, 1, str);
+      remove_candidate_from_array(skk_dic, ca, nth);
     }
 
 #if 0
@@ -2510,14 +2592,14 @@ static void purge_candidate(struct skk_cand_array *ca, int nth)
       /* also purge the word in the base cand array */
       int index = index_in_real_cands(&ca->line->cands[0], str);
       if (index != -1)
-	purge_candidate(&ca->line->cands[0], index);
+	purge_candidate(skk_dic, &ca->line->cands[0], index);
     }
 #endif
     free(str);
 }
 
 static uim_lisp
-skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
+skk_purge_candidate(uim_lisp skk_dic_, uim_lisp head_and_okuri_head_,
 		    uim_lisp okuri_, uim_lisp nth_, uim_lisp numeric_conv_)
 {
   int nth = C_INT(nth_);
@@ -2529,18 +2611,24 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
   int method_place = 0;
   uim_lisp numlst_ = uim_scm_null();
   int ignoring_indices[IGNORING_WORD_MAX + 1];
+  dic_info *skk_dic = NULL;
+  uim_lisp head_ = CAR(head_and_okuri_head_);
+  uim_lisp okuri_head_ = CDR(head_and_okuri_head_);
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   if (TRUEP(numeric_conv_))
     numlst_ = skk_store_replaced_numeric_str(head_);
 
   if (!NULLP(numlst_))
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, numeric_conv_);
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, numeric_conv_);
   else
-    ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 0, uim_scm_f());
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 0, uim_scm_f());
 
   if (!ca) {
     if (!NULLP(numlst_))
-      return skk_purge_candidate(head_, okuri_head_, okuri_, nth_,
+      return skk_purge_candidate(skk_dic_, head_and_okuri_head_, okuri_, nth_,
 		      uim_scm_f());
     return uim_scm_f(); /* shouldn't happen */
   }
@@ -2563,7 +2651,7 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
 	      str = ca->cands[i];
 	      /*
 	       * don't purge word in sub candidate array
-	       * skk_purge_candidate(numstr_, uim_scm_null(), uim_scm_null(), MAKE_INT(j), uim_scm_null());
+	       * skk_purge_candidate(skk_dic_, numstr_, uim_scm_null(), uim_scm_null(), MAKE_INT(j), uim_scm_null());
 	       */
 	      break;
 	    }
@@ -2582,7 +2670,7 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
     if (!str) {
       if (nth >= k)
-	skk_purge_candidate(head_, okuri_head_, okuri_,
+	skk_purge_candidate(skk_dic_, head_and_okuri_head_, okuri_,
 			MAKE_INT(nth - k), uim_scm_f());
       return uim_scm_f();
     }
@@ -2596,13 +2684,13 @@ skk_purge_candidate(uim_lisp head_, uim_lisp okuri_head_,
     }
   }
   if (i < ca->nr_real_cands)
-    purge_candidate(ca, i);
+    purge_candidate(skk_dic, ca, i);
 
   return uim_scm_t();
 }
 
 static void
-learn_word_to_cand_array(struct skk_cand_array *ca, const char *word)
+learn_word_to_cand_array(dic_info *skk_dic, struct skk_cand_array *ca, const char *word)
 {
   int i, nth = -1;
   for (i = 0; i < ca->nr_cands; i++) {
@@ -2614,7 +2702,7 @@ learn_word_to_cand_array(struct skk_cand_array *ca, const char *word)
   if (nth == -1)
     push_back_candidate_to_array(ca, word);
 
-  reorder_candidate(ca, word);
+  reorder_candidate(skk_dic, ca, word);
   ca->line->state = SKK_LINE_NEED_SAVE | SKK_LINE_USE_FOR_COMPLETION;
 }
 
@@ -2716,27 +2804,33 @@ sanitize_word(const char *str, const char *prefix)
 }
 
 static uim_lisp
-skk_learn_word(uim_lisp head_, uim_lisp okuri_head_, uim_lisp okuri_,
-	       uim_lisp word_, uim_lisp numeric_conv_)
+skk_learn_word(uim_lisp skk_dic_, uim_lisp head_and_okuri_head_,
+	       uim_lisp okuri_, uim_lisp word_, uim_lisp numeric_conv_)
 {
   struct skk_cand_array *ca;
   char *word;
   const char *tmp;
+  dic_info *skk_dic = NULL;
+  uim_lisp head_ = CAR(head_and_okuri_head_);
+  uim_lisp okuri_head_ = CDR(head_and_okuri_head_);
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   tmp = REFER_C_STR(word_);
   word = sanitize_word(tmp, "(concat \"");
   if (!word)
     return uim_scm_f();
 
-  ca = find_cand_array_lisp(head_, okuri_head_, okuri_, 1, numeric_conv_);
+  ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, okuri_, 1, numeric_conv_);
   if (ca)
-    learn_word_to_cand_array(ca, word);
+    learn_word_to_cand_array(skk_dic, ca, word);
 
   tmp = REFER_C_STR(okuri_);
   if (strlen(tmp)) {
-    ca = find_cand_array_lisp(head_, okuri_head_, uim_scm_null(), 1, numeric_conv_);
+    ca = find_cand_array_lisp(skk_dic, head_, okuri_head_, uim_scm_null(), 1, numeric_conv_);
     if (ca)
-      learn_word_to_cand_array(ca, word);
+      learn_word_to_cand_array(skk_dic, ca, word);
   }
   free(word);
   return uim_scm_f();
@@ -2920,18 +3014,22 @@ read_dictionary_file(dic_info *di, const char *fn, int is_personal)
 }
 
 static uim_lisp
-skk_read_personal_dictionary(uim_lisp fn_)
+skk_read_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
 {
   const char *fn;
   struct stat st;
   uim_lisp ret;
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   fn = REFER_C_STR(fn_);
   ret = (stat(fn, &st) != -1) ? uim_scm_t() : uim_scm_f();
 
-  update_personal_dictionary_cache_with_file(fn, 1);
+  update_personal_dictionary_cache_with_file(skk_dic, fn, 1);
 #if USE_SKK_JISYO_S_BUF
-  update_personal_dictionary_cache_with_file(SKK_JISYO_S, 0);
+  update_personal_dictionary_cache_with_file(skk_dic, SKK_JISYO_S, 0);
 #endif
 
   return ret;
@@ -2958,7 +3056,8 @@ static void push_back_candidate_array_to_sl(struct skk_line *sl,
   ca->line = sl;
 }
 
-static void compare_and_merge_skk_line(struct skk_line *dst_sl,
+static void compare_and_merge_skk_line(dic_info *skk_dic,
+		                       struct skk_line *dst_sl,
 				       struct skk_line *src_sl)
 {
   int i, j;
@@ -2973,7 +3072,7 @@ static void compare_and_merge_skk_line(struct skk_line *dst_sl,
    * check all candidate array since purged words may exist.
    */
   /* if (src_ca->nr_real_cands >= dst_ca->nr_real_cands) */
-    merge_real_candidate_array(src_ca, dst_ca);
+    merge_real_candidate_array(skk_dic, src_ca, dst_ca);
 
   for (i = 1; i < src_sl->nr_cand_array; i++) {
     int dup = 0;
@@ -2984,7 +3083,7 @@ static void compare_and_merge_skk_line(struct skk_line *dst_sl,
       if (!strcmp(src_ca->okuri, dst_ca->okuri)) {
 	dup = 1;
       /* if (src_ca->nr_real_cands >= dst_ca->nr_real_cands) */
-	  merge_real_candidate_array(src_ca, dst_ca);
+	  merge_real_candidate_array(skk_dic, src_ca, dst_ca);
       }
     }
     if (!dup)
@@ -3013,7 +3112,7 @@ compare_entry(struct skk_line *p, struct skk_line *q)
  * "midashi-go".  p and q are needed to be sorted.
  */
 static struct skk_line *
-cache_line_diffs(struct skk_line *p, struct skk_line *q, int *len)
+cache_line_diffs(dic_info *skk_dic, struct skk_line *p, struct skk_line *q, int *len)
 {
   struct skk_line *r, *s, head;
   int cmp;
@@ -3029,7 +3128,7 @@ cache_line_diffs(struct skk_line *p, struct skk_line *q, int *len)
       q = q->next;
       (*len)++;
     } else {
-      compare_and_merge_skk_line(p, q);
+      compare_and_merge_skk_line(skk_dic, p, q);
       p = p->next;
       q = q->next;
     }
@@ -3085,7 +3184,8 @@ lsort(struct skk_line *p)
 }
 
 static void
-update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
+update_personal_dictionary_cache_with_file(dic_info *skk_dic, const char *fn,
+		                           int is_personal)
 {
   dic_info *di;
   struct skk_line *sl, *tmp, *diff, **cache_array;
@@ -3125,7 +3225,7 @@ update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
   /* get differential lines and merge candidate */
   di->head.next = lsort(di->head.next);
   skk_dic->head.next = lsort(skk_dic->head.next);
-  diff = cache_line_diffs(skk_dic->head.next, di->head.next, &diff_len);
+  diff = cache_line_diffs(skk_dic, skk_dic->head.next, di->head.next, &diff_len);
 
   /* revert sequence of the cache */
   if (skk_dic->cache_len) {
@@ -3170,7 +3270,7 @@ update_personal_dictionary_cache_with_file(const char *fn, int is_personal)
 }
 
 static uim_lisp
-skk_save_personal_dictionary(uim_lisp fn_)
+skk_save_personal_dictionary(uim_lisp skk_dic_, uim_lisp fn_)
 {
   FILE *fp;
   const char *fn = REFER_C_STR(fn_);
@@ -3179,6 +3279,10 @@ skk_save_personal_dictionary(uim_lisp fn_)
   struct stat st;
   int lock_fd = -1;
   mode_t umask_val;
+  dic_info *skk_dic = NULL;
+
+  if (PTRP(skk_dic_))
+    skk_dic = C_PTR(skk_dic_);
 
   if (!skk_dic || skk_dic->cache_modified == 0)
     return uim_scm_f();
@@ -3186,7 +3290,7 @@ skk_save_personal_dictionary(uim_lisp fn_)
   if (fn) {
     if (stat(fn, &st) != -1) {
       if (st.st_mtime != skk_dic->personal_dic_timestamp)
-	update_personal_dictionary_cache_with_file(fn, 1);
+	update_personal_dictionary_cache_with_file(skk_dic, fn, 1);
     }
 
     lock_fd = open_lock(fn, F_WRLCK);
@@ -3388,6 +3492,18 @@ skk_look_open(uim_lisp fn_)
 }
 
 static uim_lisp
+skk_look_close()
+{
+  if (use_look && skk_look_ctx) {
+    uim_look_finish(skk_look_ctx);
+    skk_look_ctx = NULL;
+    use_look = 0;
+  }
+
+  return uim_scm_f();
+}
+
+static uim_lisp
 look_get_top_word(const char *str)
 {
   char buf[512], *dict_str;
@@ -3491,58 +3607,34 @@ void
 uim_plugin_instance_init(void)
 {
   uim_scm_init_proc5("skk-lib-dic-open", skk_dic_open);
-  uim_scm_init_proc1("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
-  uim_scm_init_proc1("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
-  uim_scm_init_proc4("skk-lib-get-entry", skk_get_entry);
+  uim_scm_init_proc1("skk-lib-free-dic", skk_free_dic);
+  uim_scm_init_proc2("skk-lib-read-personal-dictionary", skk_read_personal_dictionary);
+  uim_scm_init_proc2("skk-lib-save-personal-dictionary", skk_save_personal_dictionary);
+  uim_scm_init_proc5("skk-lib-get-entry", skk_get_entry);
   uim_scm_init_proc1("skk-lib-store-replaced-numstr", skk_store_replaced_numeric_str);
   uim_scm_init_proc2("skk-lib-merge-replaced-numstr", skk_merge_replaced_numeric_str);
   uim_scm_init_proc1("skk-lib-replace-numeric", skk_replace_numeric);
   uim_scm_init_proc5("skk-lib-get-nth-candidate", skk_get_nth_candidate);
-  uim_scm_init_proc4("skk-lib-get-nr-candidates", skk_get_nr_candidates);
+  uim_scm_init_proc5("skk-lib-get-nr-candidates", skk_get_nr_candidates);
   uim_scm_init_proc5("skk-lib-commit-candidate", skk_commit_candidate);
   uim_scm_init_proc5("skk-lib-purge-candidate", skk_purge_candidate);
   uim_scm_init_proc5("skk-lib-learn-word", skk_learn_word);
   uim_scm_init_proc1("skk-lib-get-annotation", skk_get_annotation);
   uim_scm_init_proc1("skk-lib-remove-annotation", skk_remove_annotation);
-  uim_scm_init_proc3("skk-lib-get-completion", skk_get_completion);
-  uim_scm_init_proc4("skk-lib-get-nth-completion", skk_get_nth_completion);
-  uim_scm_init_proc3("skk-lib-get-nr-completions", skk_get_nr_completions);
+  uim_scm_init_proc4("skk-lib-get-completion", skk_get_completion);
+  uim_scm_init_proc5("skk-lib-get-nth-completion", skk_get_nth_completion);
+  uim_scm_init_proc4("skk-lib-get-nr-completions", skk_get_nr_completions);
   uim_scm_init_proc2("skk-lib-clear-completions", skk_clear_completions);
-  uim_scm_init_proc3("skk-lib-get-dcomp-word", skk_get_dcomp_word);
+  uim_scm_init_proc4("skk-lib-get-dcomp-word", skk_get_dcomp_word);
   uim_scm_init_proc1("skk-lib-eval-candidate", skk_eval_candidate);
   uim_scm_init_proc3("skk-lib-substring", skk_substring);
   uim_scm_init_proc1("skk-lib-look-open", skk_look_open);
+  uim_scm_init_proc0("skk-lib-look-close", skk_look_close);
 }
 
 void
 uim_plugin_instance_quit(void)
 {
-  struct skk_line *sl, *tmp;
-
-  if (skk_dic) {
-    if (skk_dic->addr)
-      munmap(skk_dic->addr, skk_dic->size);
-
-    sl = skk_dic->head.next;
-    while (sl) {
-      tmp = sl;
-      sl = sl->next;
-      free_skk_line(tmp);
-    }
-
-    if (skk_dic->skkserv_state & SKK_SERV_CONNECTED)
-      close_skkserv();
-    free(skk_dic->skkserv_hostname);
-
-    free(skk_dic);
-    skk_dic = NULL;
-  }
-
-  if (use_look && skk_look_ctx) {
-    uim_look_finish(skk_look_ctx);
-    skk_look_ctx = NULL;
-    use_look = 0;
-  };
 }
 
 /* skkserv related */

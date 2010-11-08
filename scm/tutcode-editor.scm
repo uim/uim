@@ -118,8 +118,8 @@
               (if (< 0 (string-length str))
                   (begin
                     (skk-lib-learn-word
-                     (tutcode-make-string (tutcode-context-head sc))
-                      ""
+                      tutcode-dic
+                      (cons (tutcode-make-string (tutcode-context-head sc)) "")
                       ""
                       str
                       #f)

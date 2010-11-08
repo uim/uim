@@ -327,7 +327,10 @@
 ;;; implementations
 
 ;;; 交ぜ書き変換辞書の初期化が終わっているかどうか
-(define tutcode-dic-init #f)
+(define tutcode-dic #f)
+
+;;; list of context
+(define tutcode-context-list '())
 
 (define tutcode-prepare-activation
   (lambda (tc)
@@ -673,7 +676,7 @@
 ;;; TUT-Codeのコンテキストを新しく生成する。
 ;;; @return 生成したコンテキスト
 (define (tutcode-context-new id im)
-  (if (not tutcode-dic-init)
+  (if (not tutcode-dic)
     (if (not (symbol-bound? 'skk-lib-dic-open))
       (begin
         (if (symbol-bound? 'uim-notify-info)
@@ -682,10 +685,9 @@
         (set! tutcode-use-recursive-learning? #f)
         (set! tutcode-enable-mazegaki-learning? #f))
       (begin
-        (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified)
+        (set! tutcode-dic (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified))
         (if tutcode-use-recursive-learning?
           (require "tutcode-editor.scm"))
-        (set! tutcode-dic-init #t)
         (tutcode-read-personal-dictionary))))
   (let ((tc (tutcode-context-new-internal id im)))
     (tutcode-context-set-widgets! tc tutcode-widgets)
@@ -767,7 +769,7 @@
 ;;; 交ぜ書き変換用個人辞書を読み込む。
 (define (tutcode-read-personal-dictionary)
   (if (not (setugid?))
-      (skk-lib-read-personal-dictionary tutcode-personal-dic-filename)))
+      (skk-lib-read-personal-dictionary tutcode-dic tutcode-personal-dic-filename)))
 
 ;;; 交ぜ書き変換用個人辞書を書き込む。
 ;;; @param force? tutcode-enable-mazegaki-learning?が#fでも書き込むかどうか
@@ -775,7 +777,7 @@
   (if (and
         (or force? tutcode-enable-mazegaki-learning?)
         (not (setugid?)))
-      (skk-lib-save-personal-dictionary tutcode-personal-dic-filename)))
+      (skk-lib-save-personal-dictionary tutcode-dic tutcode-personal-dic-filename)))
 
 ;;; キーストロークから文字への変換のためのrk-push-key!を呼び出す。
 ;;; 戻り値が#fでなければ、戻り値(リスト)のcarを返す。
@@ -825,7 +827,11 @@
 (define (tutcode-get-nth-candidate pc n)
   (let* ((head (tutcode-context-head pc))
          (cand (skk-lib-get-nth-candidate
-                n (tutcode-make-string head) "" "" #f)))
+                tutcode-dic
+                n
+                (cons (tutcode-make-string head) "")
+                ""
+                #f)))
     cand))
 
 ;;; 記号入力モード時のn番目の候補を返す。
@@ -853,8 +859,11 @@
       (begin
         ;; skk-lib-commit-candidateを呼ぶと学習が行われ、候補順が変更される
         (skk-lib-commit-candidate
-          (tutcode-make-string (tutcode-context-head pc)) "" ""
-          (tutcode-context-nth pc) #f)
+          tutcode-dic
+          (cons (tutcode-make-string (tutcode-context-head pc)) "")
+          ""
+          (tutcode-context-nth pc)
+          #f)
         (if (> (tutcode-context-nth pc) 0)
           (tutcode-save-personal-dictionary #f))))
     (tutcode-flush pc)
@@ -1006,8 +1015,8 @@
 ;;; 交ぜ書き変換辞書から、現在選択されている候補を削除する。
 (define (tutcode-purge-candidate pc)
   (let ((res (skk-lib-purge-candidate
-               (tutcode-make-string (tutcode-context-head pc))
-               ""
+               tutcode-dic
+               (cons (tutcode-make-string (tutcode-context-head pc)) "")
                ""
                (tutcode-context-nth pc)
                #f)))
@@ -1045,12 +1054,12 @@
 (define (tutcode-begin-conversion pc autocommit? recursive-learning?)
   (let* ((yomi (tutcode-make-string (tutcode-context-head pc)))
          (res (and (symbol-bound? 'skk-lib-get-entry)
-                   (skk-lib-get-entry yomi "" "" #f))))
+                   (skk-lib-get-entry tutcode-dic yomi "" "" #f))))
     (if res
       (begin
         (tutcode-context-set-nth! pc 0)
         (tutcode-context-set-nr-candidates! pc
-         (skk-lib-get-nr-candidates yomi "" "" #f))
+         (skk-lib-get-nr-candidates tutcode-dic yomi "" "" #f))
         (tutcode-context-set-state! pc 'tutcode-state-converting)
         (if (and autocommit? (= (tutcode-context-nr-candidates pc) 1))
           ;; 候補が1個しかない場合は自動的に確定する。
@@ -2508,10 +2517,17 @@
 
 ;;; TUT-Code IMの初期化を行う。
 (define (tutcode-init-handler id im arg)
-  (tutcode-context-new id im))
+  (let ((tc (tutcode-context-new id im)))
+    (set! tutcode-context-list (cons tc tutcode-context-list))
+    tc))
 
-(define (tutcode-release-handler pc)
-  (tutcode-save-personal-dictionary #f))
+(define (tutcode-release-handler tc)
+  (tutcode-save-personal-dictionary #f)
+  (set! tutcode-context-list (delete! tc tutcode-context-list))
+  (if (null? tutcode-context-list)
+    (begin
+      (skk-lib-free-dic tutcode-dic)
+      (set! tutcode-dic #f))))
 
 (define (tutcode-reset-handler tc)
   (tutcode-flush tc))
