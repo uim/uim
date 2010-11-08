@@ -417,7 +417,7 @@ opt_end:
 
   if (!get_ud_path(uim_dir, sizeof(uim_dir))) {
     sendline("uim-fep cannot make directory");
-    return EXIT_FAILURE;
+    /* return EXIT_FAILURE; */
   }
 
   sty_str = getenv("STY");

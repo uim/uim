@@ -112,7 +112,7 @@ const char *usersockname(const char *file)
 
   if (!get_ud_path(sock_dir, sizeof(sock_dir))) {
     sendline("uim-fep cannot create directory");
-    exit(EXIT_FAILURE);
+    /* exit(EXIT_FAILURE); */
   }
   snprintf(buf, sizeof(buf), "%s/%s", sock_dir, filebuf);
 
