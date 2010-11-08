@@ -166,7 +166,7 @@ uim_look_finish(uim_look_ctx *ctx)
 	if (!ctx)
 		return;
 
-	if (ctx->front0 > 0 && munmap(ctx->front0, ctx->len) == -1)
+	if ((intptr_t)ctx->front0 > 0 && munmap(ctx->front0, ctx->len) == -1)
 		perror("uim_look_finish");
 
 	if (ctx->fd > 0)
