@@ -1326,7 +1326,9 @@
   (let ((stroke (tutcode-reverse-find-seq kanji)))
     (if stroke
       (tutcode-auto-help-update-stroke-alist-with-stroke
-        label-cands-alist (car cand-list) stroke)
+        label-cands-alist
+        (cons (string-append (caar cand-list) "(" kanji ")") (cdar cand-list))
+        stroke)
       (let ((decomposed (tutcode-auto-help-bushu-decompose kanji)))
         ;; Œ„: "∑“" => (((("," "o"))("∑‚")) ((("f" "q"))("ªÂ")))
         (if (not decomposed)
@@ -1335,7 +1337,7 @@
             (tutcode-auto-help-update-stroke-alist-with-stroke
               label-cands-alist
               (cons
-                (string-append (caar cand-list) "(¢•"
+                (string-append (caar cand-list) "(" kanji "¢•"
                   (caar (cdar decomposed)) (caar (cdadr decomposed)) ")")
                 (cdar cand-list))
               (caaar decomposed)) ; …ÙºÛ1
