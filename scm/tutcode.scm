@@ -1352,7 +1352,9 @@
   (let ((stroke (tutcode-reverse-find-seq kanji)))
     (if stroke
       (tutcode-auto-help-update-stroke-alist-normal-with-stroke
-        label-cands-alist stroke kanji)
+        label-cands-alist
+        (cons (string-append kanji " ") stroke)
+        kanji)
       (let ((decomposed (tutcode-auto-help-bushu-decompose kanji)))
         ;; Œ„: "∑“" => (((("," "o"))("∑‚")) ((("f" "q"))("ªÂ")))
         (if (not decomposed)
@@ -1360,7 +1362,7 @@
           (tutcode-auto-help-update-stroke-alist-normal-with-stroke
             label-cands-alist
             (cons
-              (string-append "¢•"
+              (string-append kanji "¢•"
                 (caar (cdar decomposed)) (caar (cdadr decomposed)) " ")
               (append
                 (caaar decomposed)    ; …ÙºÛ1
