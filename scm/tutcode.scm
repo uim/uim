@@ -71,22 +71,32 @@
 ;;;   交ぜ書き変換や部首合成変換で入力した文字の打ち方を表示します。
 ;;;   部首合成方法も、簡単な合成に関しては表示可能です。
 ;;;   例:交ぜ書き変換で「憂鬱」を確定した場合
-;;;    ┌─┬─┬─┬─┬─┬─┬─────┬─┬─┬─┬─┐
-;;;    │  │  │  │  │  │  │          │  │  │  │  │
-;;;    ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
-;;;    │  │  │  │  │b │  │          │  │  │f │  │
-;;;    ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
-;;;    │  │3 │  │  │  │  │          │  │  │1 │  │
-;;;    ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
-;;;    │  │  │d │  │e │  │2a(▲林缶)│  │  │  │  │
-;;;    └─┴─┴─┴─┴─┴─┴─────┴─┴─┴─┴─┘
+;;;    ┌─┬─┬─┬─┬─┬─┬──────┬─┬─┬───┬─┐
+;;;    │  │  │  │  │  │  │            │  │  │      │  │
+;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
+;;;    │  │  │  │  │b │  │            │  │  │f     │  │
+;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
+;;;    │  │3 │  │  │  │  │            │  │  │1(憂) │  │
+;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
+;;;    │  │  │d │  │e │  │2a(鬱▲林缶)│  │  │      │  │
+;;;    └─┴─┴─┴─┴─┴─┴──────┴─┴─┴───┴─┘
+;;; ** 直近に表示した自動ヘルプの再表示
+;;;    tutcode-auto-help-redisplay-sequenceに以下のようにキーシーケンスを
+;;;    設定すると使用可能になります。
+;;;      (define tutcode-auto-help-redisplay-sequence "al-")
 ;;;
 ;;; 【補完/予測入力・熟語ガイド】
 ;;; * 補完/予測入力・熟語ガイドとも候補ウィンドウに表示します。
 ;;; * 補完/予測入力機能を使うには、
-;;;   uim-pref-gtk等の「補助予測入力」グループの設定で、
-;;;   Look-SKKを有効にしてmazegaki.dic相当の辞書を指定するか、
-;;;   Lookを有効にして単語ファイルを指定してください。
+;;;   uim-pref-gtk等の「補助予測入力」グループの設定が必要です。
+;;;     (a)Look-SKKを有効にしてmazegaki.dic相当の辞書ファイルを指定する。
+;;;        (主に予測入力用)
+;;;     (b)Lookを有効にして単語ファイルを指定する。(補完用)
+;;;        mazegaki.dicの読みに、漢字としては入っていない単語を補完したい場合。
+;;;        (例:「狂奔」「灼熱」)
+;;;     (c)Sqlite3を有効にする。
+;;;        補完/予測入力で選択した候補を学習したい場合、一番上に配置。
+;;;   二分探索するので、(a)(b)のファイルはソートしておく必要があります。
 ;;; * 補完/予測入力の開始は以下のいずれかのタイミング:
 ;;; ** 補完: tutcodeオンの状態でtutcode-completion-chars-minの文字数入力時
 ;;; ** 補完: tutcodeオンの状態で<Control>.打鍵時
@@ -464,6 +474,8 @@
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
      (stroke-help ())
+     ;;; 自動ヘルプ
+     (auto-help ())
      ;;; 交ぜ書き変換辞書への再帰的登録のための子コンテキスト
      (child-context ())
      ;;; 子コンテキストの種類
@@ -1158,6 +1170,7 @@
                     ((tutcode-mazegaki-start) "◇")
                     ((tutcode-latin-conv-start) "/")
                     ((tutcode-bushu-start) "◆")
+                    ((tutcode-auto-help-redisplay) "≪")
                     (else cand))))
                 (set! label-cand-alist
                   (cons (list label candstr) label-cand-alist))))))
@@ -1179,7 +1192,7 @@
                     (list (car elem) (cdr (cadr elem))))
                   (cdr guide)))))
            (nextguide-candcombined
-            ;; 例:(("u" ("屋" ("u" "c")) ("池" ("u" "v")))) -> (("u" ">池屋"))
+            ;; 例:(("u" ("屋" ("u" "c")) ("池" ("u" "v")))) -> (("u" "+池屋"))
             (map
               (lambda (elem)
                 (let*
@@ -1197,7 +1210,7 @@
                   (list (car elem) combined)))
               nextguide)))
           (tutcode-context-set-guide! pc nextguide)
-          ;; 表示する候補文字列を、熟語ガイド(>)付き文字列に置き換える
+          ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
           (for-each
             (lambda (elem)
               (let*
@@ -1235,26 +1248,26 @@
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; 表形式の候補ウィンドウの場合は、以下のように表示する。
 ;;; 1が第1打鍵、2が第2打鍵。「携」
-;;;  ・・・・    ・・・・
-;;;  ・・・・    ・・3 ・
-;;;  ・・・・1   ・・・・
-;;;  ・・・2     ・・・・
+;;;  ・・・・        ・・・・
+;;;  ・・・・        ・・3 ・
+;;;  ・・・・1(携)   ・・・・
+;;;  ・・・2         ・・・・
 ;;; 交ぜ書き変換で複数の文字「携帯」を変換した場合は、以下のように表示する。
-;;;  ・・・・    ・・・・
-;;;  ・・a ・    ・・3 ・
-;;;  ・・・・1b  ・・c ・
-;;;  ・・・2     ・・・・
+;;;  ・・・    ・        ・・・・
+;;;  ・・a(帯) ・        ・・3 ・
+;;;  ・・・    ・1(携)b  ・・c ・
+;;;  ・・・    2         ・・・・
 ;;; 確定した文字が直接入力できない場合、単純な部首合成変換で入力できれば、
 ;;; 以下のように部首合成変換方法を表示する。「憂鬱」
-;;; ┌─┬─┬─┬─┬─┬─┬─────┬─┬─┬─┬─┐
-;;; │  │  │  │  │  │  │          │  │  │  │  │
-;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
-;;; │  │  │  │  │b │  │          │  │  │f │  │
-;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
-;;; │  │3 │  │  │  │  │          │  │  │1 │  │
-;;; ├─┼─┼─┼─┼─┤  ├─────┼─┼─┼─┼─┤
-;;; │  │  │d │  │e │  │2a(▲林缶)│  │  │  │  │
-;;; └─┴─┴─┴─┴─┴─┴─────┴─┴─┴─┴─┘
+;;;    ┌─┬─┬─┬─┬─┬─┬──────┬─┬─┬───┬─┐
+;;;    │  │  │  │  │  │  │            │  │  │      │  │
+;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
+;;;    │  │  │  │  │b │  │            │  │  │f     │  │
+;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
+;;;    │  │3 │  │  │  │  │            │  │  │1(憂) │  │
+;;;    ├─┼─┼─┼─┼─┤  ├──────┼─┼─┼───┼─┤
+;;;    │  │  │d │  │e │  │2a(鬱▲林缶)│  │  │      │  │
+;;;    └─┴─┴─┴─┴─┴─┴──────┴─┴─┴───┴─┘
 ;;;
 ;;; 通常の候補ウィンドウの場合は、以下のように表示する。
 ;;;   憂 lns
@@ -1280,16 +1293,16 @@
               (tutcode-auto-help-update-stroke-alist-normal pc () helpstrlist)))))
         (if (not (null? label-cands-alist))
           (let
-            ((stroke-help
+            ((auto-help
               (map
                 (lambda (elem)
                   (list (tutcode-make-string (cdr elem)) (car elem) ""))
                 label-cands-alist)))
-            (tutcode-context-set-stroke-help! pc stroke-help)
+            (tutcode-context-set-auto-help! pc auto-help)
             (tutcode-context-set-candidate-window! pc
               'tutcode-candidate-window-auto-help)
             (im-activate-candidate-selector pc
-              (length stroke-help) tutcode-nr-candidate-max-for-kigou-mode)))))))
+              (length auto-help) tutcode-nr-candidate-max-for-kigou-mode)))))))
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
@@ -1444,6 +1457,17 @@
         (set-cdr! label-cand (cons cand (cdr label-cand)))
         label-cands-alist)
       (cons (list label cand) label-cands-alist))))
+
+;;; 自動ヘルプ:直近の自動ヘルプを再表示する
+(define (tutcode-auto-help-redisplay pc)
+  (let ((help (tutcode-context-auto-help pc)))
+    (if (and help (> (length help) 0))
+      (begin
+        (tutcode-context-set-candidate-window! pc
+          'tutcode-candidate-window-auto-help)
+        (im-activate-candidate-selector pc
+          (length help)
+          tutcode-nr-candidate-max-for-kigou-mode)))))
 
 ;;; preedit表示を更新する。
 (define (tutcode-do-update-preedit pc)
@@ -1775,6 +1799,8 @@
                 ((tutcode-bushu-start)
                   (tutcode-context-set-state! pc 'tutcode-state-bushu)
                   (tutcode-append-string pc "▲"))
+                ((tutcode-auto-help-redisplay)
+                  (tutcode-auto-help-redisplay pc))
                 (else
                   (tutcode-commit pc res)
                   (if tutcode-use-completion?
@@ -1954,8 +1980,18 @@
            (set! res (charcode->string key)))
           (else
            (set! res (tutcode-push-key! pc (charcode->string key)))
-           (if (not res)
-            (tutcode-check-stroke-help-window-begin pc))))
+           (case res
+            ((tutcode-mazegaki-start)
+              (set! res #f))
+            ((tutcode-latin-conv-start)
+              (set! res #f))
+            ((tutcode-auto-help-redisplay)
+              (tutcode-auto-help-redisplay pc)
+              (set! res #f))
+            ((tutcode-bushu-start)
+              (set! res #f))
+            ((#f)
+              (tutcode-check-stroke-help-window-begin pc)))))
         (if res
           (begin
             (tutcode-append-string pc res)
@@ -2032,6 +2068,9 @@
         ((tutcode-mazegaki-start) ;XXX 部首合成変換中は交ぜ書き変換は無効にする
           (set! res #f))
         ((tutcode-latin-conv-start)
+          (set! res #f))
+        ((tutcode-auto-help-redisplay)
+          (tutcode-auto-help-redisplay pc)
           (set! res #f))
         ((tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
@@ -2651,10 +2690,14 @@
                     (tutcode-make-string
                       (append cands (list tutcode-guide-mark)))))
                   (list cand label "")))))))
-      ;; 仮想鍵盤/自動ヘルプ
-      ((and (not (eq? (tutcode-context-state tc) 'tutcode-state-converting))
-            (or tutcode-use-stroke-help-window? tutcode-use-auto-help-window?))
+      ;; 仮想鍵盤
+      ((eq? (tutcode-context-candidate-window tc)
+            'tutcode-candidate-window-stroke-help)
         (nth idx (tutcode-context-stroke-help tc)))
+      ;; 自動ヘルプ
+      ((eq? (tutcode-context-candidate-window tc)
+            'tutcode-candidate-window-auto-help)
+        (nth idx (tutcode-context-auto-help tc)))
       ;; 交ぜ書き変換
       (else
         (let* ((cand (tutcode-get-nth-candidate tc idx))
@@ -2883,13 +2926,18 @@
         '(tutcode-latin-conv-start)))
      (bushu-rule
       (make-subrule tutcode-bushu-start-sequence
-        '(tutcode-bushu-start))))
+        '(tutcode-bushu-start)))
+     (auto-help-rule
+      (make-subrule tutcode-auto-help-redisplay-sequence
+        '(tutcode-auto-help-redisplay))))
     (if mazegaki-rule
       (tutcode-rule-set-sequences! mazegaki-rule))
     (if latin-conv-rule
       (tutcode-rule-set-sequences! latin-conv-rule))
     (if bushu-rule
-      (tutcode-rule-set-sequences! bushu-rule))))
+      (tutcode-rule-set-sequences! bushu-rule))
+    (if auto-help-rule
+      (tutcode-rule-set-sequences! auto-help-rule))))
 
 ;;; コード表の一部の定義を上書き変更/追加する。~/.uimからの使用を想定。
 ;;; 呼び出し時にはtutcode-rule-userconfigに登録しておくだけで、
