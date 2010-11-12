@@ -333,6 +333,9 @@
 (define tutcode-guide-mark "+")
 ;;; 熟語ガイド用終了マーク
 (define tutcode-guide-end-mark "+")
+;;; 仮想鍵盤のストローク途中で、
+;;; 続きに来る漢字のヒントとして表示する漢字に付けるマーク
+(define tutcode-hint-mark "*")
 
 ;;; implementations
 
@@ -1148,7 +1151,7 @@
            (seq (rk-context-seq rkc))
            (seqlen (length seq))
            (ret (rk-lib-find-partial-seqs (reverse seq) tutcode-rule))
-           (label-cand-alist ())) ; 例:(("k" "あ") ("i" "い") ("v" "□"))
+           (label-cand-alist ())) ; 例:(("k" "あ") ("i" "い") ("g" "*贈"))
       (for-each
         (lambda (elem) ; 例: ((("r" "v" "y")) ("猿"))
           (let* ((label (nth seqlen (caar elem)))
@@ -1156,24 +1159,28 @@
             (if (not label-cand)
               (let*
                 ((candlist (cadr elem))
+                 ;; シーケンス途中?
+                 (has-next? (> (length (caar elem)) (+ seqlen 1)))
                  (cand
                   (or
-                    ;; シーケンス途中の場合は□
-                    (and (> (length (caar elem)) (+ seqlen 1)) "□")
-                    (or
-                      (and (not (null? (cdr candlist)))
-                           (tutcode-context-katakana-mode? pc)
-                           (cadr candlist))
-                      (car candlist))))
+                    (and (not (null? (cdr candlist)))
+                         (tutcode-context-katakana-mode? pc)
+                         (cadr candlist))
+                    (car candlist)))
                  (candstr
-                   (case cand
+                  (case cand
                     ((tutcode-mazegaki-start) "◇")
                     ((tutcode-latin-conv-start) "/")
                     ((tutcode-bushu-start) "◆")
                     ((tutcode-auto-help-redisplay) "≪")
-                    (else cand))))
+                    (else cand)))
+                 (cand-hint
+                  (or
+                    ;; シーケンス途中の場合はhint-mark(*)付き
+                    (and has-next? (string-append tutcode-hint-mark candstr))
+                    candstr)))
                 (set! label-cand-alist
-                  (cons (list label candstr) label-cand-alist))))))
+                  (cons (list label cand-hint) label-cand-alist))))))
         ret)
       ;; 熟語ガイドや自動ヘルプからの続きで、入力候補文字にマークを付ける
       (if (and (pair? seq)
@@ -2982,4 +2989,4 @@
     (for-each setseq1! rules)
     ;; 新規追加シーケンス
     (if (not (null? newseqs))
-      (set! tutcode-rule (append newseqs tutcode-rule)))))
+      (set! tutcode-rule (append tutcode-rule newseqs)))))
