@@ -183,6 +183,13 @@
 ;;; 逆引き検索(合成後の文字から合成用の2文字を取得)用alist。
 ;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
 (define tutcode-reverse-bushudic-alist ())
+;;; stroke-helpで、何もキー入力が無い場合に表示する内容のalist。
+;;; (毎回tutcode-ruleを全てなめて作成すると遅いし、
+;;; 最初のページは固定内容なので、一度作成したものを使い回す)
+(define tutcode-stroke-help-top-page-alist ())
+;;; stroke-helpで、何もキー入力が無い場合に表示する内容のalist。
+;;; カタカナモード用。
+(define tutcode-stroke-help-top-page-katakana-alist ())
 
 ;;; コード表を上書き変更/追加するためのコード表。
 ;;; ~/.uimでtutcode-rule-set-sequences!で登録して、
@@ -1144,44 +1151,29 @@
 
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
-  (if (and (eq? (tutcode-context-candidate-window pc)
-                'tutcode-candidate-window-off)
-           tutcode-use-stroke-help-window?)
+  (if (eq? (tutcode-context-candidate-window pc) 'tutcode-candidate-window-off)
     (let* ((rkc (tutcode-context-rk-context pc))
            (seq (rk-context-seq rkc))
            (seqlen (length seq))
            (ret (rk-lib-find-partial-seqs (reverse seq) tutcode-rule))
-           (label-cand-alist ())) ; 例:(("k" "あ") ("i" "い") ("g" "*贈"))
-      (for-each
-        (lambda (elem) ; 例: ((("r" "v" "y")) ("猿"))
-          (let* ((label (nth seqlen (caar elem)))
-                 (label-cand (assoc label label-cand-alist)))
-            (if (not label-cand)
-              (let*
-                ((candlist (cadr elem))
-                 ;; シーケンス途中?
-                 (has-next? (> (length (caar elem)) (+ seqlen 1)))
-                 (cand
-                  (or
-                    (and (not (null? (cdr candlist)))
-                         (tutcode-context-katakana-mode? pc)
-                         (cadr candlist))
-                    (car candlist)))
-                 (candstr
-                  (case cand
-                    ((tutcode-mazegaki-start) "◇")
-                    ((tutcode-latin-conv-start) "/")
-                    ((tutcode-bushu-start) "◆")
-                    ((tutcode-auto-help-redisplay) "≪")
-                    (else cand)))
-                 (cand-hint
-                  (or
-                    ;; シーケンス途中の場合はhint-mark(*)付き
-                    (and has-next? (string-append tutcode-hint-mark candstr))
-                    candstr)))
-                (set! label-cand-alist
-                  (cons (list label cand-hint) label-cand-alist))))))
-        ret)
+           (katakana? (tutcode-context-katakana-mode? pc))
+           ;; 例:(("k" "あ") ("i" "い") ("g" "*贈"))
+           (label-cand-alist
+            (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
+              (if katakana?
+                (begin
+                  (if (null? tutcode-stroke-help-top-page-katakana-alist)
+                    (set! tutcode-stroke-help-top-page-katakana-alist
+                      (tutcode-stroke-help-update-alist
+                        () seqlen katakana? ret)))
+                  tutcode-stroke-help-top-page-katakana-alist)
+                (begin
+                  (if (null? tutcode-stroke-help-top-page-alist)
+                    (set! tutcode-stroke-help-top-page-alist
+                      (tutcode-stroke-help-update-alist
+                        () seqlen katakana? ret)))
+                  tutcode-stroke-help-top-page-alist))
+              (tutcode-stroke-help-update-alist () seqlen katakana? ret))))
       ;; 熟語ガイドや自動ヘルプからの続きで、入力候補文字にマークを付ける
       (if (and (pair? seq)
                (pair? (tutcode-context-guide pc)))
@@ -1249,8 +1241,60 @@
       (set! tutcode-use-stroke-help-window? #f)
       (tutcode-reset-candidate-window pc))
     (begin
-      (set! tutcode-use-stroke-help-window? #t)
-      (tutcode-check-stroke-help-window-begin pc))))
+      (set! tutcode-use-stroke-help-window? #t))))
+
+;;; 仮想鍵盤表示用データ作成
+;;; @param label-cand-alist 表示用データ。
+;;;  例:(("k" "あ") ("i" "い") ("g" "*贈"))
+;;; @param seqlen 何番目のストロークを対象とするか。
+;;; @param katakana? カタカナモードかどうか。
+;;; @param rule-list rk-rule。
+;;; @return 更新したlabel-cand-alist
+(define (tutcode-stroke-help-update-alist
+         label-cand-alist seqlen katakana? rule-list)
+  (if (null? rule-list)
+    label-cand-alist
+    (tutcode-stroke-help-update-alist
+      (tutcode-stroke-help-update-alist-with-rule
+        label-cand-alist seqlen katakana? (car rule-list))
+      seqlen katakana? (cdr rule-list))))
+
+;;; 仮想鍵盤表示用データ作成:一つのruleを反映。
+;;; @param label-cand-alist 表示用データ。
+;;; @param seqlen 何番目のストロークを対象とするか。
+;;; @param katakana? カタカナモードかどうか。
+;;; @param rule rk-rule内の一つのrule。
+;;; @return 更新したlabel-cand-alist
+(define (tutcode-stroke-help-update-alist-with-rule
+         label-cand-alist seqlen katakana? rule)
+  (let* ((label (list-ref (caar rule) seqlen))
+         (label-cand (assoc label label-cand-alist)))
+    ;; 既に割当てられてたら何もしない→rule中で最初に出現する文字を使用
+    (if label-cand
+      label-cand-alist
+      (let*
+        ((candlist (cadr rule))
+         ;; シーケンス途中?
+         (has-next? (> (length (caar rule)) (+ seqlen 1)))
+         (cand
+          (or
+            (and (not (null? (cdr candlist)))
+                 katakana?
+                 (cadr candlist))
+            (car candlist)))
+         (candstr
+          (case cand
+            ((tutcode-mazegaki-start) "◇")
+            ((tutcode-latin-conv-start) "/")
+            ((tutcode-bushu-start) "◆")
+            ((tutcode-auto-help-redisplay) "≪")
+            (else cand)))
+         (cand-hint
+          (or
+            ;; シーケンス途中の場合はhint-mark(*)付き
+            (and has-next? (string-append tutcode-hint-mark candstr))
+            candstr)))
+        (cons (list label cand-hint) label-cand-alist)))))
 
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; 表形式の候補ウィンドウの場合は、以下のように表示する。
@@ -1811,8 +1855,7 @@
                 (else
                   (tutcode-commit pc res)
                   (if tutcode-use-completion?
-                    (tutcode-check-completion pc #f 0))))
-               (tutcode-check-stroke-help-window-begin pc)))))))))
+                    (tutcode-check-completion pc #f 0))))))))))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
@@ -1996,9 +2039,7 @@
               (tutcode-auto-help-redisplay pc)
               (set! res #f))
             ((tutcode-bushu-start)
-              (set! res #f))
-            ((#f)
-              (tutcode-check-stroke-help-window-begin pc)))))
+              (set! res #f)))))
         (if res
           (begin
             (tutcode-append-string pc res)
@@ -2081,9 +2122,7 @@
           (set! res #f))
         ((tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
-          (set! res #f))
-        ((#f)
-	  (tutcode-check-stroke-help-window-begin pc)))))
+          (set! res #f)))))
     (if res
       (let loop ((prevchar (car (tutcode-context-head pc)))
                   (char res))
@@ -2585,7 +2624,16 @@
           (else
            (tutcode-proc-state-off pc key key-state)
            (if (tutcode-state-has-preedit? c) ; 再帰学習時
-             (tutcode-update-preedit pc)))))))
+             (tutcode-update-preedit pc))))
+        (if tutcode-use-stroke-help-window?
+          ;; editorの作成・削除の可能性があるのでdescendant-context取得し直し
+          (let ((newpc (tutcode-find-descendant-context c)))
+            (if
+              (and
+                (memq (tutcode-context-state newpc)
+                  '(tutcode-state-on tutcode-state-yomi tutcode-state-bushu))
+                (not (tutcode-context-latin-conv newpc)))
+              (tutcode-check-stroke-help-window-begin newpc)))))))
 
 ;;; キーが離されたときの処理を行う。
 ;;; @param pc コンテキストリスト
