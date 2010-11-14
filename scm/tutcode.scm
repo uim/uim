@@ -189,6 +189,8 @@
 (define tutcode-stroke-help-top-page-alist ())
 ;;; stroke-helpで、何もキー入力が無い場合に表示する内容のalist。
 ;;; カタカナモード用。
+;;; (XXX:キー入力有の場合もキャッシュを使うようにする?
+;;;  もしそうすれば、~/.uimで仮想鍵盤表示内容のカスタマイズも容易になる)
 (define tutcode-stroke-help-top-page-katakana-alist ())
 
 ;;; コード表を上書き変更/追加するためのコード表。
@@ -543,6 +545,7 @@
 ;;; 補完/予測入力候補を検索
 ;;; @param str 検索文字列
 ;;; @param completion? 補完の場合は#t
+;;; @return 重複除去前の全ての読みのリスト(熟語ガイド用)
 (define (tutcode-lib-set-prediction-src-string pc str completion?)
   (let* ((ret      (tutcode-predict pc str))
          (word     (predict-meta-word? ret))
@@ -587,8 +590,8 @@
           filtered-cands)
         filtered-cands))
     (tutcode-context-set-prediction-appendix! pc filtered-appendix)
-    (tutcode-context-set-prediction-nr! pc (length filtered-cands)))
-  #f)
+    (tutcode-context-set-prediction-nr! pc (length filtered-cands))
+    word))
 (define (tutcode-lib-get-nr-predictions pc)
   (tutcode-context-prediction-nr pc))
 (define (tutcode-lib-get-nth-word pc nth)
@@ -619,8 +622,10 @@
 ;;; 熟語ガイド表示用候補リストを補完/予測入力候補から作成する
 ;;; @param str 補完/予測入力候補の検索時に使用した文字列=入力済文字列
 ;;; @param completion? 補完時は#t
-(define (tutcode-guide-set-candidates pc str completion?)
+;;; @param all-yomi 予測入力候補検索結果に含まれる全ての読み
+(define (tutcode-guide-set-candidates pc str completion? all-yomi)
   (let* ((cands (tutcode-context-prediction-candidates pc))
+         (word all-yomi)
          (strlen (string-length str))
          (filtered-cands
           (if (not completion?)
@@ -632,20 +637,36 @@
                   (string=? str (substring cand 0 strlen))))
               cands)
             cands))
-         (trim-cands
-          (if (not completion?)
-            (map
+         ;; 読み入力中は、読み(word)も見て次に来る可能性のある漢字をガイド
+         ;; 例:"あお"を入力した時点で、look結果内の"あお虫"という読みをもとに、
+         ;;    "虫"をガイド
+         (filtered-words
+          (if completion?
+            ()
+            (filter
               (lambda (cand)
-                ;; 予測入力時は入力済のstrも含まれているので、
-                ;; それより後の文字をガイド表示
-                (if (string=? str (substring cand 0 strlen))
-                  (substring cand strlen (string-length cand))
-                  cand))
-              filtered-cands)
-            filtered-cands))
+                (let ((candlen (string-length cand)))
+                  (and
+                    (> candlen strlen)
+                    ;; strの後に、活用する語を示す"―"しか残らない候補は除く
+                    (not (string=?  "―" (substring cand strlen candlen))))))
+              word)))
+         (trim-str
+          (lambda (lst)
+            (if (not completion?)
+              (map
+                (lambda (cand)
+                  ;; 予測入力時は入力済のstrも含まれているので、
+                  ;; それより後の文字をガイド表示
+                  (substring cand strlen (string-length cand)))
+                lst)
+              lst)))
+         (trim-cands (trim-str filtered-cands))
+         (trim-words (trim-str filtered-words))
          (candchars ; 予測した熟語の1文字目の漢字のリスト
           (delete-duplicates
-            (map (lambda (cand) (last (string-to-list cand))) trim-cands)))
+            (map (lambda (cand) (last (string-to-list cand)))
+              (append trim-cands trim-words))))
          (cand-stroke
           (map
             (lambda (elem)
@@ -1609,7 +1630,7 @@
                 ((nr-guide
                   (if tutcode-use-kanji-combination-guide?
                     (begin
-                      (tutcode-guide-set-candidates pc str #t)
+                      (tutcode-guide-set-candidates pc str #t ())
                       (length (tutcode-context-guide pc)))
                     0))
                  (res (tutcode-prediction-calc-window-param nr nr-guide))
@@ -1647,32 +1668,32 @@
       (if
         (or (>= preedit-len tutcode-prediction-start-char-count)
             force-check?)
-        (begin
-          (tutcode-lib-set-prediction-src-string pc preconv-str #f)
-          (let ((nr (tutcode-lib-get-nr-predictions pc)))
-            (if (and nr (> nr 0))
-              (let*
-                ((nr-guide
-                  (if tutcode-use-kanji-combination-guide?
-                    (begin
-                      (tutcode-guide-set-candidates pc preconv-str #f)
-                      (length (tutcode-context-guide pc)))
-                    0))
-                 (res (tutcode-prediction-calc-window-param nr nr-guide))
-                 (nr-all (list-ref res 0)) ; 全候補数(予測候補+熟語ガイド)
-                 (page-limit (list-ref res 1)) ; ページ内候補数(予測+熟語)
-                 (nr-in-page (list-ref res 2))) ; ページ内候補数(予測候補のみ)
-                (if (> page-limit 0)
+        (let*
+          ((all-yomi (tutcode-lib-set-prediction-src-string pc preconv-str #f))
+           (nr (tutcode-lib-get-nr-predictions pc)))
+          (if (and nr (> nr 0))
+            (let*
+              ((nr-guide
+                (if tutcode-use-kanji-combination-guide?
                   (begin
-                    (tutcode-context-set-prediction-nr-in-page! pc nr-in-page)
-                    (tutcode-context-set-prediction-page-limit! pc page-limit)
-                    (tutcode-context-set-prediction-nr-all! pc nr-all)
-                    (tutcode-context-set-prediction-index! pc 0)
-                    (tutcode-context-set-candidate-window! pc
-                      'tutcode-candidate-window-predicting)
-                    (tutcode-context-set-predicting! pc
-                      'tutcode-predicting-prediction)
-                    (im-activate-candidate-selector pc nr-all page-limit)))))))
+                    (tutcode-guide-set-candidates pc preconv-str #f all-yomi)
+                    (length (tutcode-context-guide pc)))
+                  0))
+               (res (tutcode-prediction-calc-window-param nr nr-guide))
+               (nr-all (list-ref res 0)) ; 全候補数(予測候補+熟語ガイド)
+               (page-limit (list-ref res 1)) ; ページ内候補数(予測+熟語)
+               (nr-in-page (list-ref res 2))) ; ページ内候補数(予測候補のみ)
+              (if (> page-limit 0)
+                (begin
+                  (tutcode-context-set-prediction-nr-in-page! pc nr-in-page)
+                  (tutcode-context-set-prediction-page-limit! pc page-limit)
+                  (tutcode-context-set-prediction-nr-all! pc nr-all)
+                  (tutcode-context-set-prediction-index! pc 0)
+                  (tutcode-context-set-candidate-window! pc
+                    'tutcode-candidate-window-predicting)
+                  (tutcode-context-set-predicting! pc
+                    'tutcode-predicting-prediction)
+                  (im-activate-candidate-selector pc nr-all page-limit))))))
         (tutcode-reset-candidate-window pc)))))
 
 ;;; 補完候補と熟語ガイド表示のためのcandwin用パラメータを計算する
