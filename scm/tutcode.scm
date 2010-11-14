@@ -531,11 +531,14 @@
      (prediction-page-limit
       (+ tutcode-nr-candidate-max-for-prediction
          tutcode-nr-candidate-max-for-guide))
-     ;;; 熟語ガイド。
-     ;;; 予測される次の入力漢字の第1打鍵と入力漢字の対応のリスト
-     ;;; ((<第1打鍵1> (<入力漢字11> (<入力漢字1のストロークリスト>)) ...) ...)
-     ;;; 例: (("," ("石" ("," "r"))) ("u" ("屋" ("u" "c")) ("池" ("u" "v"))))
+     ;;; 熟語ガイド。補完/予測入力時の表示用。
+     ;;; 予測される次の入力漢字の第1打鍵と入力漢字の対応のリスト。
+     ;;; 例: (("," "石") ("u" "屋" "池"))
      (guide ())
+     ;;; 熟語ガイド作成元データ。仮想鍵盤(stroke-help)へのガイド表示用。
+     ;;; 文字とストロークのリスト(rk-lib-find-partial-seqs用形式)。
+     ;;; 例: (((("," "r"))("石")) ((("u" "c"))("屋")) ((("u" "v"))("池")))
+     (guide-chars ())
      )))
 
 (define (tutcode-predict pc str)
@@ -670,53 +673,36 @@
          (cand-stroke
           (map
             (lambda (elem)
-              (list elem (tutcode-reverse-find-seq elem)))
+              (list (list (tutcode-reverse-find-seq elem)) (list elem)))
             candchars))
+         (filtered-cand-stroke
+          (filter
+            (lambda (elem)
+              (pair? (caar elem))) ; コード表に無い外字は除く
+            cand-stroke))
          (label-cands-alist
-          (tutcode-guide-update-alist () cand-stroke)))
-    (tutcode-context-set-guide! pc label-cands-alist)))
-
-;;; 熟語ガイドの表示に使うalistに漢字を追加する。
-;;; @param kanji-stroke 追加する漢字とストロークのリスト。
-;;; 例: ("石" ("," "r"))
-(define (tutcode-guide-add-kanji pc kanji-stroke)
-  (let ((alist (tutcode-context-guide pc)))
-    (tutcode-context-set-guide! pc
-      (tutcode-guide-update-alist alist (list kanji-stroke)))))
+          (tutcode-guide-update-alist () filtered-cand-stroke)))
+    (tutcode-context-set-guide! pc label-cands-alist)
+    (tutcode-context-set-guide-chars! pc filtered-cand-stroke)))
 
 ;;; 熟語ガイドの表示に使うalistを更新する。
-;;; alistは以下のようにラベル文字と、漢字とストロークのリスト。
-;;; 例: (("," ("石" ("," "r"))) ("u" ("屋" ("u" "c")) ("池" ("u" "v"))))
+;;; alistは以下のようにラベル文字と漢字のリスト。
+;;; 例: (("," "石") ("u" "屋" "池"))
 ;;; @param label-cands-alist 元のalist
 ;;; @param kanji-list 漢字とストロークのリスト
-;;; 例: (("石" ("," "r")) ("屋" ("u" "c")) ("池" ("u" "v")))
+;;; 例: (((("," "r"))("石")) ((("u" "c"))("屋")) ((("u" "v"))("池")))
 ;;; @return 更新後の熟語ガイド用alist
 (define (tutcode-guide-update-alist label-cands-alist kanji-list)
   (if (null? kanji-list)
     label-cands-alist
     (let*
       ((kanji-stroke (car kanji-list))
-       (stroke (cadr kanji-stroke)))
+       (kanji (caadr kanji-stroke))
+       (stroke (caar kanji-stroke)))
       (tutcode-guide-update-alist
-        (if (or (not stroke) (null? stroke))
-          label-cands-alist
-          (tutcode-guide-update-alist-with-stroke
-            label-cands-alist kanji-stroke))
+        (tutcode-auto-help-update-stroke-alist-with-key label-cands-alist
+          kanji (car stroke))
         (cdr kanji-list)))))
-
-;;; 熟語ガイド:対象の1文字を、熟語ガイド用alistに追加する。
-;;; @param label-cands-alist 元のalist
-;;; @param cand-stroke 対象文字とストローク
-;;; @return 更新後の熟語ガイドalist
-(define (tutcode-guide-update-alist-with-stroke label-cands-alist cand-stroke)
-  (let*
-    ((label (car (cadr cand-stroke)))
-     (label-cand (assoc label label-cands-alist)))
-    (if label-cand
-      (begin
-        (set-cdr! label-cand (cons cand-stroke (cdr label-cand)))
-        label-cands-alist)
-      (cons (list label cand-stroke) label-cands-alist))))
 
 (define-record 'tutcode-context tutcode-context-rec-spec)
 (define tutcode-context-new-internal tutcode-context-new)
@@ -1197,39 +1183,17 @@
               (tutcode-stroke-help-update-alist () seqlen katakana? ret))))
       ;; 熟語ガイドや自動ヘルプからの続きで、入力候補文字にマークを付ける
       (if (and (pair? seq)
-               (pair? (tutcode-context-guide pc)))
+               (pair? (tutcode-context-guide-chars pc)))
         (let*
-          ((prevkey (car seq))
-           (guide (assoc prevkey (tutcode-context-guide pc)))
-           (nextguide
-            (if (not guide)
-              ()
-              (tutcode-guide-update-alist ()
-                (map
-                  (lambda (elem)
-                    ;; elemのstrokeから最初のキーを削除
-                    ;; 例: ("屋" ("u" "c")) -> ("屋" ("c"))
-                    (list (car elem) (cdr (cadr elem))))
-                  (cdr guide)))))
-           (nextguide-candcombined
-            ;; 例:(("u" ("屋" ("u" "c")) ("池" ("u" "v")))) -> (("u" "+池屋"))
+          ((guide-rule (tutcode-context-guide-chars pc))
+           (ret (rk-lib-find-partial-seqs (reverse seq) guide-rule))
+           (guide-alist (tutcode-stroke-help-guide-update-alist () seqlen ret))
+           ;; 例:(("," "石") ("u" "+池屋"))
+           (guide-candcombined
             (map
               (lambda (elem)
-                (let*
-                  ((cands
-                    (map
-                      (lambda (e)
-                        (car e))
-                      (cdr elem)))
-                   (last? (= 1 (length (cadr (cadr elem)))))
-                   (candlist
-                    (if last?
-                      (cons tutcode-guide-end-mark cands)
-                      (append cands (list tutcode-guide-mark))))
-                   (combined (tutcode-make-string candlist)))
-                  (list (car elem) combined)))
-              nextguide)))
-          (tutcode-context-set-guide! pc nextguide)
+                (list (car elem) (tutcode-make-string (cdr elem))))
+              guide-alist)))
           ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
           (for-each
             (lambda (elem)
@@ -1238,7 +1202,7 @@
                  (label-cand (assoc label label-cand-alist)))
                 (if label-cand
                   (set-cdr! label-cand (cdr elem)))))
-            nextguide-candcombined)))
+            guide-candcombined)))
       (if (not (null? label-cand-alist))
         (let
           ((stroke-help
@@ -1317,6 +1281,52 @@
             candstr)))
         (cons (list label cand-hint) label-cand-alist)))))
 
+;;; 仮想鍵盤上の熟語ガイドの表示に使うalistに漢字を追加する。
+;;; @param kanji-stroke 追加する漢字とストロークのリスト。
+;;; 例: ((("," "r"))("石"))
+(define (tutcode-stroke-help-guide-add-kanji pc kanji-stroke)
+  (let ((chars (tutcode-context-guide-chars pc)))
+    (if (not (member kanji-stroke chars))
+      (tutcode-context-set-guide-chars! pc (cons kanji-stroke chars)))))
+
+;;; 仮想鍵盤上の熟語ガイドの表示に使うalistを更新する。
+;;; alistは以下のようにラベル文字と表示用文字列のリスト。
+;;; 例: (("," "石") ("u" "+池屋"))
+;;; @param label-cands-alist 元のalist
+;;; @param seqlen 何番目のストロークを対象とするか。
+;;; @param rule-list rk-rule。
+;;; @return 更新後の熟語ガイド用alist
+(define (tutcode-stroke-help-guide-update-alist
+         label-cands-alist seqlen rule-list)
+  (if (null? rule-list)
+    label-cands-alist
+    (tutcode-stroke-help-guide-update-alist
+      (tutcode-stroke-help-guide-update-alist-with-rule
+        label-cands-alist seqlen (car rule-list))
+      seqlen (cdr rule-list))))
+
+;;; 仮想鍵盤上の熟語ガイド:対象の1文字を、熟語ガイド用alistに追加する。
+;;; @param label-cands-alist 元のalist
+;;; @param seqlen 何番目のストロークを対象とするか。
+;;; @param rule rk-rule内の一つのrule。
+;;; @return 更新後の熟語ガイドalist
+(define (tutcode-stroke-help-guide-update-alist-with-rule
+         label-cands-alist seqlen rule)
+  (let* ((label (list-ref (caar rule) seqlen))
+         (label-cand (assoc label label-cands-alist))
+         (has-next? (> (length (caar rule)) (+ seqlen 1))) ; シーケンス途中?
+         (cand (car (cadr rule))))
+    (if label-cand
+      (begin
+        ;; 既に割当てられてたら結合
+        (set-cdr! label-cand (cons cand (cdr label-cand)))
+        label-cands-alist)
+      (cons
+        (if has-next?
+          (list label cand tutcode-guide-mark)
+          (list label tutcode-guide-end-mark cand))
+        label-cands-alist))))
+
 ;;; 部首合成変換・交ぜ書き変換で確定した文字の打ち方を表示する。
 ;;; 表形式の候補ウィンドウの場合は、以下のように表示する。
 ;;; 1が第1打鍵、2が第2打鍵。「携」
@@ -1352,7 +1362,7 @@
                 'tutcode-candidate-window-off)
            tutcode-use-auto-help-window?)
     (begin
-      (tutcode-context-set-guide! pc ())
+      (tutcode-context-set-guide-chars! pc ())
       (let*
         ((helpstrlist (lset-difference string=? (reverse strlist) yomilist))
          (label-cands-alist
@@ -1378,7 +1388,7 @@
 
 ;;; 自動ヘルプの表形式表示に使うalistを更新する。
 ;;; alistは以下のように打鍵を示すラベル文字と、該当セルに表示する文字列のリスト
-;;;  例:(("y" "2" "1") ("t" "3")) ; ("y" "y" "t")というストロークを現す。
+;;;  例:(("y" "2" "1") ("t" "3")) ; ("y" "y" "t")というストロークを表す。
 ;;;  ・・・・    ・・・・
 ;;;  ・・・・3 12・・・・
 ;;;  ・・・・    ・・・・
@@ -1423,8 +1433,8 @@
   (let ((stroke (tutcode-reverse-find-seq kanji)))
     (if stroke
       (begin
-        (if tutcode-use-stroke-help-window?
-          (tutcode-guide-add-kanji pc (list kanji stroke)))
+        (tutcode-stroke-help-guide-add-kanji
+          pc (list (list stroke) (list kanji)))
         (tutcode-auto-help-update-stroke-alist-with-stroke
           label-cands-alist
           (cons (string-append (caar cand-list) "(" kanji ")") (cdar cand-list))
@@ -1434,12 +1444,8 @@
         (if (not decomposed)
           label-cands-alist
           (begin
-            (if tutcode-use-stroke-help-window?
-              (begin
-                (tutcode-guide-add-kanji pc
-                  (list (caar (cdar decomposed)) (caaar decomposed)))
-                (tutcode-guide-add-kanji pc
-                  (list (caar (cdadr decomposed)) (caaadr decomposed)))))
+            (tutcode-stroke-help-guide-add-kanji pc (car decomposed))
+            (tutcode-stroke-help-guide-add-kanji pc (cadr decomposed))
             (tutcode-auto-help-update-stroke-alist-with-stroke
               (tutcode-auto-help-update-stroke-alist-with-stroke
                 label-cands-alist
@@ -1459,8 +1465,8 @@
   (let ((stroke (tutcode-reverse-find-seq kanji)))
     (if stroke
       (begin
-        (if tutcode-use-stroke-help-window?
-          (tutcode-guide-add-kanji pc (list kanji stroke)))
+        (tutcode-stroke-help-guide-add-kanji
+          pc (list (list stroke) (list kanji)))
         (tutcode-auto-help-update-stroke-alist-normal-with-stroke
           label-cands-alist
           (cons (string-append kanji " ") stroke)
@@ -1470,12 +1476,8 @@
         (if (not decomposed)
           label-cands-alist
           (begin
-            (if tutcode-use-stroke-help-window?
-              (begin
-                (tutcode-guide-add-kanji pc
-                  (list (caar (cdar decomposed)) (caaar decomposed)))
-                (tutcode-guide-add-kanji pc
-                  (list (caar (cdadr decomposed)) (caaadr decomposed)))))
+            (tutcode-stroke-help-guide-add-kanji pc (car decomposed))
+            (tutcode-stroke-help-guide-add-kanji pc (cadr decomposed))
             (tutcode-auto-help-update-stroke-alist-normal-with-stroke
               label-cands-alist
               (cons
@@ -2757,11 +2759,7 @@
                    (n (remainder guide-idx guide-len))
                    (label-cands-alist (nth n guide))
                    (label (car label-cands-alist))
-                   (cands
-                    (map
-                      (lambda (elem)
-                        (car elem))
-                      (cdr label-cands-alist)))
+                   (cands (cdr label-cands-alist))
                    (cand
                     (tutcode-make-string
                       (append cands (list tutcode-guide-mark)))))
