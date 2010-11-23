@@ -212,6 +212,12 @@
   (N_ "Enable Kanji combination guide")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-use-bushu-prediction? #f
+  '(tutcode tutcode-prediction)
+  '(boolean)
+  (N_ "Enable input prediction for bushu conversion")
+  (N_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'tutcode-candidate-op-count
 		 'custom-activity-hooks

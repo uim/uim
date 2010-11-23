@@ -510,6 +510,7 @@
      ;;; 'tutcode-predicting-off 補完/予測入力の候補選択中でない
      ;;; 'tutcode-predicting-completion 補完候補選択中
      ;;; 'tutcode-predicting-prediction 交ぜ書き変換時の予測入力候補選択中
+     ;;; 'tutcode-predicting-bushu 部首合成変換時の予測入力候補選択中
      (predicting 'tutcode-predicting-off)
      ;;; 補完/予測入力用コンテキスト
      (prediction-ctx ())
@@ -531,6 +532,10 @@
      (prediction-page-limit
       (+ tutcode-nr-candidate-max-for-prediction
          tutcode-nr-candidate-max-for-guide))
+     ;;; 部首合成変換の予測候補
+     (prediction-bushu ())
+     ;;; 部首合成変換の予測候補の現在の表示ページの最初のインデックス番号
+     (prediction-bushu-page-start 0)
      ;;; 熟語ガイド。補完/予測入力時の表示用。
      ;;; 予測される次の入力漢字の第1打鍵と入力漢字の対応のリスト。
      ;;; 例: (("," "石") ("u" "屋" "池"))
@@ -595,6 +600,43 @@
     (tutcode-context-set-prediction-appendix! pc filtered-appendix)
     (tutcode-context-set-prediction-nr! pc (length filtered-cands))
     word))
+
+;;; 部首合成変換時の予測入力候補を設定
+;;; @param start-index 開始番号
+(define (tutcode-lib-set-bushu-prediction pc start-index)
+  ;; 開始番号から始まる1ページぶんの候補だけを取り出して使用。
+  ;; 全て使用すると、熟語ガイドのラベル文字列が長くなって横幅が広がりすぎ、
+  ;; ウィンドウに収まらなくなる場合があるので(候補数200以上の場合など)。
+  ;; (熟語ガイドを、表示中の候補だけから作る方法もあるが、
+  ;; その場合、熟語ガイドの数が、ページごとに変わってしまうため、
+  ;; 現状の候補ウィンドウ(ページごとの表示候補数が変わらないことを想定)
+  ;; での表示に問題が発生)
+  (let* ((ret (tutcode-context-prediction-bushu pc))
+         (all-len (length ret))
+         (start
+          (cond
+            ((>= start-index all-len)
+              (tutcode-context-prediction-bushu-page-start pc))
+            ((< start-index 0)
+              0)
+            (else
+              start-index)))
+         (end (+ start tutcode-nr-candidate-max-for-prediction))
+         (cnt
+          (if (< end all-len)
+            tutcode-nr-candidate-max-for-prediction
+            (- all-len start)))
+         (page-word/cand (take (drop ret start) cnt))
+         (page-word (map (lambda (elem) (car elem)) page-word/cand))
+         (page-cands (map (lambda (elem) (cadr elem)) page-word/cand))
+         (len (length page-cands))
+         (appendix (make-list len "")))
+    (tutcode-context-set-prediction-bushu-page-start! pc start)
+    (tutcode-context-set-prediction-word! pc page-word)
+    (tutcode-context-set-prediction-candidates! pc page-cands)
+    (tutcode-context-set-prediction-appendix! pc appendix)
+    (tutcode-context-set-prediction-nr! pc len)))
+
 (define (tutcode-lib-get-nr-predictions pc)
   (tutcode-context-prediction-nr pc))
 (define (tutcode-lib-get-nth-word pc nth)
@@ -675,6 +717,25 @@
             (lambda (elem)
               (list (list (tutcode-reverse-find-seq elem)) (list elem)))
             candchars))
+         (filtered-cand-stroke
+          (filter
+            (lambda (elem)
+              (pair? (caar elem))) ; コード表に無い外字は除く
+            cand-stroke))
+         (label-cands-alist
+          (tutcode-guide-update-alist () filtered-cand-stroke)))
+    (tutcode-context-set-guide! pc label-cands-alist)
+    (tutcode-context-set-guide-chars! pc filtered-cand-stroke)))
+
+;;; 熟語ガイド表示用候補リストを部首合成予測入力候補から作成する
+;;; @param str 部首合成予測入力候補の検索時に使用した漢字=入力済漢字
+(define (tutcode-guide-set-candidates-for-bushu pc)
+  (let* ((word (tutcode-context-prediction-word pc))
+         (cand-stroke
+          (map
+            (lambda (elem)
+              (list (list (tutcode-reverse-find-seq elem)) (list elem)))
+            word))
          (filtered-cand-stroke
           (filter
             (lambda (elem)
@@ -1002,7 +1063,9 @@
           (tutcode-prepare-commit-string-for-kigou-mode pc))))))
 
 ;;; 補完/予測入力候補表示時に、指定されたラベル文字に対応する候補を確定する
-(define (tutcode-commit-by-label-key-for-prediction pc ch completion?)
+;;; @param ch 入力されたラベル文字
+;;; @param mode tutcode-context-predictingの値
+(define (tutcode-commit-by-label-key-for-prediction pc ch mode)
   (let*
     ((nth (tutcode-context-prediction-index pc))
      (page-limit (tutcode-context-prediction-page-limit pc))
@@ -1028,7 +1091,10 @@
     (if (>= i 0)
       (begin
         (tutcode-context-set-prediction-index! pc i)
-        (tutcode-do-commit-prediction pc completion?)))))
+        (if (eq? mode 'tutcode-predicting-bushu)
+          (tutcode-do-commit-prediction-for-bushu pc)
+          (tutcode-do-commit-prediction pc
+            (eq? mode 'tutcode-predicting-completion)))))))
 
 (define (tutcode-get-prediction-string pc)
   (tutcode-lib-get-nth-prediction
@@ -1041,6 +1107,8 @@
    (tutcode-context-prediction-index pc)
    completion?))
 
+;;; 補完/予測入力候補を確定する
+;;; @param completion? 補完かどうか
 (define (tutcode-do-commit-prediction pc completion?)
   (let ((str (tutcode-get-prediction-string pc)))
     (tutcode-learn-prediction-string pc completion?)
@@ -1048,6 +1116,12 @@
     (tutcode-commit pc str)
     (tutcode-flush pc)
     (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
+
+;;; 部首合成変換時の予測入力候補を確定する
+(define (tutcode-do-commit-prediction-for-bushu pc)
+  (let ((str (tutcode-get-prediction-string pc)))
+    (tutcode-reset-candidate-window pc)
+    (tutcode-bushu-commit pc str)))
 
 ;;; 交ぜ書き変換辞書から、現在選択されている候補を削除する。
 (define (tutcode-purge-candidate pc)
@@ -1698,6 +1772,48 @@
                   (im-activate-candidate-selector pc nr-all page-limit))))))
         (tutcode-reset-candidate-window pc)))))
 
+;;; 部首合成変換中に予測入力候補を検索して候補ウィンドウに表示する
+;;; @param char 入力された部首1
+(define (tutcode-check-bushu-prediction pc char)
+  (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
+    (let* ((res (tutcode-bushu-predict char tutcode-bushudic))
+           (alt (assoc char tutcode-bushudic-altchar))
+           (altres
+            (if alt
+              (tutcode-bushu-predict (cadr alt) tutcode-bushudic)
+              ()))
+           (resall (append res altres)))
+      (tutcode-context-set-prediction-bushu! pc resall)
+      (tutcode-bushu-prediction-show-page pc 0))))
+
+;;; 部首合成変換の予測入力候補のうち、指定された番号から始まる候補を表示する。
+;;; @param start-index 開始番号
+(define (tutcode-bushu-prediction-show-page pc start-index)
+  (tutcode-lib-set-bushu-prediction pc start-index)
+  (let ((nr (tutcode-lib-get-nr-predictions pc)))
+    (if (and nr (> nr 0))
+      (let*
+        ((nr-guide
+          (if tutcode-use-kanji-combination-guide?
+            (begin
+              (tutcode-guide-set-candidates-for-bushu pc)
+              (length (tutcode-context-guide pc)))
+            0))
+         (res (tutcode-prediction-calc-window-param nr nr-guide))
+         (nr-all (list-ref res 0)) ; 全候補数(予測候補+熟語ガイド)
+         (page-limit (list-ref res 1)) ; ページ内候補数(予測+熟語)
+         (nr-in-page (list-ref res 2))) ; ページ内候補数(予測候補のみ)
+        (if (> page-limit 0)
+          (begin
+            (tutcode-context-set-prediction-nr-in-page! pc nr-in-page)
+            (tutcode-context-set-prediction-page-limit! pc page-limit)
+            (tutcode-context-set-prediction-nr-all! pc nr-all)
+            (tutcode-context-set-prediction-index! pc 0)
+            (tutcode-context-set-candidate-window! pc
+              'tutcode-candidate-window-predicting)
+            (tutcode-context-set-predicting! pc 'tutcode-predicting-bushu)
+            (im-activate-candidate-selector pc nr-all page-limit)))))))
+
 ;;; 補完候補と熟語ガイド表示のためのcandwin用パラメータを計算する
 ;;; @param nr 補完候補数
 ;;; @param nr-guide 熟語ガイド候補数
@@ -1851,7 +1967,7 @@
           ;; 補完候補用ラベルキー?
           ((and completing? (tutcode-heading-label-char-for-prediction? key))
             (tutcode-commit-by-label-key-for-prediction pc
-              (charcode->string key) #t))
+              (charcode->string key) 'tutcode-predicting-completion))
           ;; 正しくないキーシーケンスは全て捨てる(tc2に合わせた動作)。
           ;; (rk-push-key!すると、途中までのシーケンスは捨てられるが、
           ;; 間違ったキーは残ってしまうので、rk-push-key!は使えない)
@@ -2031,7 +2147,7 @@
           ;; 予測入力候補用ラベルキー?
           ((and predicting? (tutcode-heading-label-char-for-prediction? key))
             (tutcode-commit-by-label-key-for-prediction pc
-              (charcode->string key) #f))
+              (charcode->string key) 'tutcode-predicting-prediction))
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
              (rk-flush rkc)
@@ -2070,9 +2186,12 @@
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-proc-state-bushu c key key-state)
-  (let* ((pc (tutcode-find-descendant-context c))
-         (rkc (tutcode-context-rk-context pc))
-         (res #f))
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (rkc (tutcode-context-rk-context pc))
+     (res #f)
+     (predicting?
+      (eq? (tutcode-context-predicting pc) 'tutcode-predicting-bushu)))
     (tutcode-reset-candidate-window pc)
     (cond
       ((tutcode-off-key? key key-state)
@@ -2118,6 +2237,10 @@
           (tutcode-flush pc)))
       ((tutcode-stroke-help-toggle-key? key key-state)
        (tutcode-toggle-stroke-help pc))
+      ((and predicting? (tutcode-next-page-key? key key-state))
+       (tutcode-change-bushu-prediction-page pc #t))
+      ((and predicting? (tutcode-prev-page-key? key key-state))
+       (tutcode-change-bushu-prediction-page pc #f))
       ((or
         (symbol? key)
         (and
@@ -2125,6 +2248,10 @@
           (not (shift-key-mask key-state))))
        (tutcode-flush pc)
        (tutcode-proc-state-on pc key key-state))
+      ;; 予測入力候補用ラベルキー?
+      ((and predicting? (tutcode-heading-label-char-for-prediction? key))
+        (tutcode-commit-by-label-key-for-prediction pc
+          (charcode->string key) 'tutcode-predicting-bushu))
       ((not (rk-expect-key? rkc (charcode->string key)))
        (if (> (length (rk-context-seq rkc)) 0)
          (rk-flush rkc)
@@ -2143,32 +2270,39 @@
           (tutcode-append-string pc "▲")
           (set! res #f)))))
     (if res
-      (let loop ((prevchar (car (tutcode-context-head pc)))
-                  (char res))
-        (if (string=? prevchar "▲")
-          (tutcode-append-string pc char)
-          ;; 直前の文字が部首合成マーカでない→2文字目が入力された→変換開始
-          (begin
-            (set! char
-              (tutcode-bushu-convert prevchar char))
-            (if (string? char)
-              ;; 合成成功
-              (begin
-                ;; 1番目の部首と▲を消す
-                (tutcode-context-set-head! pc (cddr (tutcode-context-head pc)))
-                (if (null? (tutcode-context-head pc))
-                  ;; 変換待ちの部首が残ってなければ、確定して終了
-                  (begin
-                    (tutcode-commit pc char)
-                    (tutcode-flush pc)
-                    (tutcode-check-auto-help-window-begin pc (list char) ()))
-                  ;; 部首がまだ残ってれば、再確認。
-                  ;; (合成した文字が2文字目ならば、連続して部首合成変換)
-                  (loop
-                    (car (tutcode-context-head pc))
-                    char)))
-              ;; 合成失敗時は入力し直しを待つ
-              )))))))
+      (tutcode-begin-bushu-conversion pc res))))
+
+;;; 部首合成変換開始
+;;; @param char 新たに入力された文字(2番目の部首)
+(define (tutcode-begin-bushu-conversion pc char)
+  (let ((prevchar (car (tutcode-context-head pc))))
+    (if (string=? prevchar "▲")
+      (begin
+        (tutcode-append-string pc char)
+        (if tutcode-use-bushu-prediction?
+          (tutcode-check-bushu-prediction pc char)))
+      ;; 直前の文字が部首合成マーカでない→2文字目が入力された→変換開始
+      (let ((convchar (tutcode-bushu-convert prevchar char)))
+        (if (string? convchar)
+          ;; 合成成功
+          (tutcode-bushu-commit pc convchar)
+          ;; 合成失敗時は入力し直しを待つ
+          )))))
+
+;;; 部首合成変換で変換した文字を確定する
+;;; @param convchar 変換後の文字
+(define (tutcode-bushu-commit pc convchar)
+  ;; 1番目の部首と▲を消す
+  (tutcode-context-set-head! pc (cddr (tutcode-context-head pc)))
+  (if (null? (tutcode-context-head pc))
+    ;; 変換待ちの部首が残ってなければ、確定して終了
+    (begin
+      (tutcode-commit pc convchar)
+      (tutcode-flush pc)
+      (tutcode-check-auto-help-window-begin pc (list convchar) ()))
+    ;; 部首がまだ残ってれば、再確認。
+    ;; (合成した文字が2文字目ならば、連続して部首合成変換)
+    (tutcode-begin-bushu-conversion pc convchar)))
 
 ;;; 新しい候補を選択する
 ;;; @param pc コンテキストリスト
@@ -2210,6 +2344,16 @@
            (else n))))
     (tutcode-context-set-prediction-index! pc compensated-n)
     (im-select-candidate pc compensated-n)))
+
+;;; 次/前ページの部首合成変換の予測入力候補を表示する
+;;; @param next? #t:次ページ, #f:前ページ
+(define (tutcode-change-bushu-prediction-page pc next?)
+  (let* ((idx (tutcode-context-prediction-bushu-page-start pc))
+         (n (+ idx
+              (if next?
+                tutcode-nr-candidate-max-for-prediction
+                (- tutcode-nr-candidate-max-for-prediction)))))
+    (tutcode-bushu-prediction-show-page pc n)))
 
 ;;; 候補ウィンドウを閉じる
 (define (tutcode-reset-candidate-window pc)
@@ -2590,6 +2734,52 @@
      (c-composed? (string=? composed c)))
     ret))
 
+;;; 部首合成変換時の予測入力候補を検索
+;;; @param str 部首1
+;;; @param bushudic 部首合成リスト
+;;; @return (<部首2> <合成文字>)のリスト
+(define (tutcode-bushu-predict str bushudic)
+  (let*
+    ((rules (rk-lib-find-partial-seqs (list str) bushudic))
+     (words1 (map (lambda (elem) (cadaar elem)) rules))
+     (more-cands
+      (filter
+        (lambda (elem)
+          (let
+            ;; (((部首1 部首2))(合成文字))
+            ((bushu1 (caaar elem))
+             (bushu2 (cadaar elem))
+             (gosei (caadr elem)))
+            (or
+              ;; strが1文字目の場合はrk-lib-find-partial-seqsで検索済
+              ;(string=? str bushu1) ; (((str 部首2))(合成文字))
+              (and (string=? str bushu2) ; (((部首1 str))(合成文字))
+                    ;; 既に上で出現済の場合は除外。
+                    ;; 例: ((("門" "才"))("閉"))で"才"が出現済の場合、
+                    ;;     ((("才" "門"))("捫"))の"才"は除外。
+                   (not (member bushu1 words1)))
+              (string=? str gosei)))) ; (((部首1 部首2))(str))
+              ;; XXX:この場合、strとbushu1でbushu2が合成できることを
+              ;;     確認すべきだが、tutcode-bushu-convertは遅いので省略。
+          bushudic))
+     (res (append rules more-cands))
+     (word/cand
+      (map
+       (lambda (elem)
+        (let
+         ((bushu1 (caaar elem))
+          (bushu2 (cadaar elem))
+          (gosei (caadr elem)))
+         (cond
+          ((string=? str bushu1) ; (((str 部首2))(合成文字))
+           (list bushu2 gosei))
+          ((string=? str bushu2) ; (((部首1 str))(合成文字))
+           (list bushu1 gosei))
+          ((string=? str gosei) ; (((部首1 部首2))(str))
+           (list bushu1 bushu2)))))
+       res)))
+    word/cand))
+
 ;;; tutcode-ruleを逆引きして、変換後の文字から、入力キー列を取得する。
 ;;; 例: (tutcode-reverse-find-seq "あ") => ("r" "k")
 ;;; @param c 変換後の文字
@@ -2738,10 +2928,16 @@
                (p-idx (+ idx-in-page (* pages nr-in-page)))
                (i (remainder p-idx nr-predictions))
                (cand (tutcode-lib-get-nth-prediction tc i))
+               (cand-guide
+                (if (eq? (tutcode-context-predicting tc)
+                          'tutcode-predicting-bushu)
+                  (string-append
+                    cand "(" (tutcode-lib-get-nth-word tc i) ")")
+                  cand))
                (n (remainder p-idx
                     (length tutcode-heading-label-char-list-for-prediction)))
                (label (nth n tutcode-heading-label-char-list-for-prediction)))
-              (list cand label ""))
+              (list cand-guide label ""))
             ;; 熟語ガイド
             (let*
               ((guide (tutcode-context-guide tc))
@@ -2801,11 +2997,13 @@
               ((nr-predictions (tutcode-lib-get-nr-predictions pc))
                (pages (quotient idx page-limit))
                (p-idx (+ idx-in-page (* pages nr-in-page)))
-               (i (remainder p-idx nr-predictions)))
+               (i (remainder p-idx nr-predictions))
+               (mode (tutcode-context-predicting pc)))
               (tutcode-context-set-prediction-index! pc i)
-              (tutcode-do-commit-prediction pc
-                (eq? (tutcode-context-predicting pc)
-                     'tutcode-predicting-completion))
+              (if (eq? mode 'tutcode-predicting-bushu)
+                (tutcode-do-commit-prediction-for-bushu pc)
+                (tutcode-do-commit-prediction pc
+                  (eq? mode 'tutcode-predicting-completion)))
               (tutcode-update-preedit pc))))))))
 
 (tutcode-configure-widgets)

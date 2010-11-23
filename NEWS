@@ -4,6 +4,7 @@ Overview of changes from 1.6.0 to 1.6.1
   - uim-tutcode
     * Completion
     * Input prediction in mazegaki conversion
+    * Input prediction in bushu conversion
     * Kanji combination guide on completion and input prediction
     * Add function to redisplay last auto help
     * Show kanji on auto help
