@@ -83,10 +83,22 @@
 	       (N_ "[TUT-Code] latin conversion mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-auto-help-redisplay-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] display last auto help")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-stroke-help-toggle-key '("<Control>/")
                '(tutcode-keys1)
                '(key)
                (N_ "[TUT-Code] toggle use of stroke help window")
+               (N_ "long description will be here"))
+
+(define-custom 'tutcode-begin-completion-key '("<Control>.")
+               '(tutcode-keys1)
+               '(key)
+               (N_ "[TUT-Code] begin completion")
                (N_ "long description will be here"))
 
 (define-custom 'tutcode-begin-conv-key '(generic-begin-conv-key)

@@ -166,7 +166,7 @@ uim_look_finish(uim_look_ctx *ctx)
 	if (!ctx)
 		return;
 
-	if (ctx->front0 > 0 && munmap(ctx->front0, ctx->len) == -1)
+	if ((uintptr_t)ctx->front0 > 0 && munmap(ctx->front0, ctx->len) == -1)
 		perror("uim_look_finish");
 
 	if (ctx->fd > 0)
@@ -192,6 +192,7 @@ uim_look_open_dict(const char *dict, uim_look_ctx *ctx)
 	if ((ctx->front0 = ctx->front = mmap(NULL,
 		    (size_t)sb.st_size, PROT_READ, MAP_PRIVATE, ctx->fd, (off_t)0)) == MAP_FAILED) {
 		perror("uim_look_open_dict");
+		ctx->front0 = ctx->front = 0;
 	}
 	ctx->len = (size_t)sb.st_size;
 	ctx->back0 = ctx->back = ctx->front + sb.st_size;
@@ -203,17 +204,17 @@ int
 uim_look(char *string, uim_look_ctx *ctx)
 {
 	int ch;
-	char *readp, *writep;
+	unsigned char *readp, *writep;
 	int fflag = ctx->fflag, dflag = ctx->dflag;
 
 	/* Reformat string to avoid doing it multiple times later. */
-	for (readp = writep = string; (ch = *readp++) != '\0';) {
+	for (readp = writep = (unsigned char *)string; (ch = *readp++) != '\0';) {
 		if (fflag)
 			ch = FOLD(ch);
 		if (dflag)
 			ch = DICT(ch);
 		if (ch != NO_COMPARE)
-			*(writep++) = (char)ch;
+			*(writep++) = (unsigned char)ch;
 	}
 	*writep = '\0';
 

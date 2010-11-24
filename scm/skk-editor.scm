@@ -128,13 +128,14 @@
 		 (if (< 0 (string-length str))
 		     (begin
 		       (skk-lib-learn-word
-			(skk-make-string (skk-context-head sc)
-					 skk-type-hiragana)
-			(skk-context-okuri-head sc)
-			(skk-make-string (skk-context-okuri sc)
-					  skk-type-hiragana)
-			 str
-			 skk-use-numeric-conversion?)
+                        skk-dic
+                        (cons (skk-make-string (skk-context-head sc)
+                                               skk-type-hiragana)
+                              (skk-context-okuri-head sc))
+                        (skk-make-string (skk-context-okuri sc)
+                                         skk-type-hiragana)
+                        str
+                        skk-use-numeric-conversion?)
 		       (skk-save-personal-dictionary)
 		       (if skk-use-numeric-conversion?
 			  (let ((numlst

@@ -85,7 +85,7 @@
 
 
 (defun uim-helper-process-sentinel (proc stat)
-  (message "uim.el: %s" stat)
+  (message "uim-helper.el: %s" stat)
   (setq uim-el-helper-agent-process nil)
   )
 

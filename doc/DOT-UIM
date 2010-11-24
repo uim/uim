@@ -60,7 +60,7 @@ This file describes the latter way.
     (require "pyload.scm")
     (require "viqr.scm")
     (require "anthy.scm")
-    (load-plugin "anthy")
+    (require-dynlib "anthy")
 
   correct:
 

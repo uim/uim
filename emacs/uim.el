@@ -335,11 +335,13 @@
   (setq uim-context-id (uim-context-create))
 
   ;; redraw Uim related objects when window has been resized
-  (make-local-hook 'window-configuration-change-hook)
-  (add-hook 'window-configuration-change-hook 'uim-window-changed nil t)
+  (when uim-xemacs
+    (make-local-hook 'window-configuration-change-hook))
+  (add-hook 'window-configuration-change-hook 'uim-window-changed nil 'local)
 
-  (make-local-hook 'kill-buffer-hook)
-  (add-hook 'kill-buffer-hook 'uim-kill-buffer nil t)
+  (when uim-xemacs
+    (make-local-hook 'kill-buffer-hook))
+  (add-hook 'kill-buffer-hook 'uim-kill-buffer nil 'local)
 
   ;; hide candidate/preedit when buffer-save has been called
   (add-hook 'local-write-file-hooks 

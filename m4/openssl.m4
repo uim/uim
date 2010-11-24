@@ -39,8 +39,7 @@ AC_ARG_WITH(openssl-dir,
 				CPPFLAGS="-I${withval} ${CPPFLAGS}"
 			fi
 		fi
-	],
-	[]
+	]
 )
 
 LIBS="-lcrypto $LIBS"

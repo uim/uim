@@ -37,10 +37,16 @@ Supplementary explanation (only for help and not legal):
   must be distributed under the terms of the license specified therein.
   Each file indicates its copyright holder in its header.
 
-  * scm/py.scm is come from m17n-lib,you can use, modify, distribute
+  * scm/py.scm is come from m17n-lib, you can use, modify, distribute
     and sell this under the terms of LGPL *only*.
 
-  * scm/input-stream.scm is public domain. 'Unless specified otherwise,
+  * scm/pinyin-big5.scm is come from XCIN, you can use, modify, distribute
+    and sell this under the terms of GPL *only*.
+
+  * scm/elatin-rules.scm is derived from GNU Emacs, you can use,
+    modify, distribute and sell this under the terms of GPL *only*.
+
+  * scm/input-parse.scm is public domain. 'Unless specified otherwise,
     all the code and the documentation on this site is in public domain.'
     http://okmij.org/ftp/
 
@@ -48,16 +54,17 @@ Supplementary explanation (only for help and not legal):
     modify this software as desired.  No warranties nor guarantees of
     any kind apply.'
 
-  * helper/eggtrayicon.[ch] is come from libegg, so you can use,
+  * helper/eggtrayicon.[ch] are come from libegg, so you can use,
     modify, distribute and sell uim-toolbar-gtk-systray under the
     terms of LGPL *only*.
 
-  * qt/pref-kseparator.{cpp,h} is come from kdeui, so you can use,
-    modify, distribute and sell uim-pref-qt under the terms of LGPL
-    *only*.
+  * qt/pref-kseparator.{cpp,h} and qt4/pref/kseparator.{cpp.h} are
+    come from kdeui, so you can use, modify, distribute and sell
+    uim-pref-qt{4} under the terms of LGPL *only*.
 
-  * qt/chardict/chardict-kseparator.{cpp,h} is come from kdeui, so you
-    can use, modify, distribute and sell uim-chardict-qt under the
+  * qt/chardict/chardict-kseparator.{cpp,h} and
+    qt4/chardict/kseparator.cpp are come from kdeui, so you
+    can use, modify, distribute and sell uim-chardict-qt{4} under the
     terms of LGPL *only*.
 
   * pixmaps/*.{svg,png} are also licensed under the 3-clause BSD

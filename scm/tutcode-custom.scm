@@ -43,6 +43,10 @@
                      (N_ "TUT-Code dictionaries")
                      (N_ "Dictionary settings for TUT-Code"))
 
+(define-custom-group 'tutcode-prediction
+                    (N_ "Prediction")
+                    (N_ "long description will be here."))
+
 ;;
 ;; dictionary
 ;;
@@ -141,6 +145,18 @@
   (N_ "Number of candidates in candidate window at a time for kigou mode")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-nr-candidate-max-for-prediction 10
+  '(tutcode candwin)
+  '(integer 1 99)
+  (N_ "Number of candidates in candidate window at a time for prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-nr-candidate-max-for-guide 10
+  '(tutcode candwin)
+  '(integer 1 99)
+  (N_ "Number of candidates in candidate window at a time for kanji combination guide")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-stroke-help-window? #f
   '(tutcode candwin)
   '(boolean)
@@ -159,6 +175,49 @@
   (N_ "Show real keys on auto help window")
   (N_ "long description will be here."))
 
+;; prediction/completion
+(define-custom 'tutcode-use-completion? #f
+  '(tutcode tutcode-prediction)
+  '(boolean)
+  (N_ "Enable completion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-completion-chars-min 2
+  '(tutcode tutcode-prediction)
+  '(integer 1 65535)
+  (N_ "Minimum character length for completion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-completion-chars-max 5
+  '(tutcode tutcode-prediction)
+  '(integer 1 65535)
+  (N_ "Maximum character length for completion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-use-prediction? #f
+  '(tutcode tutcode-prediction)
+  '(boolean)
+  (N_ "Enable input prediction for mazegaki conversion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-prediction-start-char-count 2
+  '(tutcode tutcode-prediction)
+  '(integer 1 65535)
+  (N_ "Character count to start input prediction")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-use-kanji-combination-guide? #f
+  '(tutcode tutcode-prediction)
+  '(boolean)
+  (N_ "Enable Kanji combination guide")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-use-bushu-prediction? #f
+  '(tutcode tutcode-prediction)
+  '(boolean)
+  (N_ "Enable input prediction for bushu conversion")
+  (N_ "long description will be here."))
+
 ;; activity dependency
 (custom-add-hook 'tutcode-candidate-op-count
 		 'custom-activity-hooks
@@ -171,6 +230,16 @@
 		   tutcode-use-candidate-window?))
 
 (custom-add-hook 'tutcode-nr-candidate-max-for-kigou-mode
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-candidate-window?))
+
+(custom-add-hook 'tutcode-nr-candidate-max-for-prediction
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-candidate-window?))
+
+(custom-add-hook 'tutcode-nr-candidate-max-for-guide
 		 'custom-activity-hooks
 		 (lambda ()
 		   tutcode-use-candidate-window?))
@@ -189,10 +258,19 @@
           (length tutcode-table-heading-label-char-list))
         (custom-set-value!
           'tutcode-nr-candidate-max-for-kigou-mode
-          (length tutcode-table-heading-label-char-list-for-kigou-mode)))
+          (length tutcode-table-heading-label-char-list-for-kigou-mode))
+        (custom-set-value!
+          'tutcode-nr-candidate-max-for-prediction
+          (length tutcode-heading-label-char-list-for-prediction))
+        (custom-set-value!
+          'tutcode-nr-candidate-max-for-guide
+          (- (length tutcode-table-heading-label-char-list-for-kigou-mode)
+             (length tutcode-heading-label-char-list-for-prediction))))
       (begin
         (custom-set-value! 'tutcode-nr-candidate-max 10)
-        (custom-set-value! 'tutcode-nr-candidate-max-for-kigou-mode 10)))))
+        (custom-set-value! 'tutcode-nr-candidate-max-for-kigou-mode 10)
+        (custom-set-value! 'tutcode-nr-candidate-max-for-prediction 10)
+        (custom-set-value! 'tutcode-nr-candidate-max-for-guide 10)))))
 
 (custom-add-hook 'tutcode-candidate-window-table-layout
 		 'custom-activity-hooks
