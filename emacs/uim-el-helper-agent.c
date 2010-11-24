@@ -217,8 +217,7 @@ read_command()
 	}
 	if (len == 0) {
 	  debug_printf(DEBUG_NOTE, "unexpected EOF\n");
-	  /* return 0; */
-	  break;
+	  return 0;
 	}
 
 	rbuf[len] = '\0';
