@@ -93,7 +93,6 @@ if SKK
   module_names += "skk"
 endif
 module_names += "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
-module_names += "mozc"
 if M17NLIB
   module_names += "m17nlib"
 endif
