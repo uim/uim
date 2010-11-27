@@ -92,13 +92,15 @@ endif
 if SKK
   module_names += "skk"
 endif
-module_names += "tcode" "trycode" "tutcode" "byeoru" "latin" "elatin"
+#module_names += "tcode" "trycode"
+module_names += "tutcode" "byeoru" "latin" "elatin"
 if M17NLIB
   module_names += "m17nlib"
 endif
 module_names += "xmload"
 # less preferable IMs
-module_names += "pyload" "hangul" "viqr" "ipa-x-sampa"  "look"
+module_names += "pyload" "viqr" "ipa-x-sampa"  "look"
+#"hangul"
 if SCIM
   module_names += "scim"
 endif
