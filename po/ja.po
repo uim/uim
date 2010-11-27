@@ -630,7 +630,7 @@ msgstr ""
 "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
 "設定が反映されない場合は、このファイルの内容を確認して下さい。"
 "\n"
-"(To suppress this dialog, add following line to ~/.uim)\n"
+"(このダイアログ表示を止めるには、~/.uimに次行を追加して下さい)\n"
 "(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 
 #. Feel free to put your names here translators
@@ -5756,13 +5756,13 @@ msgstr "記号モードにおいて候補ウィンドウに一度に表示する
 
 #: ../scm/tutcode-custom.scm:151
 msgid "Number of candidates in candidate window at a time for prediction"
-msgstr ""
+msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
 
 #: ../scm/tutcode-custom.scm:157
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
-msgstr ""
+msgstr "熟語ガイドにおいて候補ウィンドウに一度に表示する候補数"
 
 #: ../scm/tutcode-custom.scm:163
 msgid "Use stroke help window"
@@ -5778,27 +5778,27 @@ msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
 #: ../scm/tutcode-custom.scm:182
 msgid "Enable completion"
-msgstr ""
+msgstr "補完を有効にする"
 
 #: ../scm/tutcode-custom.scm:188
 msgid "Minimum character length for completion"
-msgstr ""
+msgstr "補完の際に考慮する文字数の最小値"
 
 #: ../scm/tutcode-custom.scm:194
 msgid "Maximum character length for completion"
-msgstr ""
+msgstr "補完の際に考慮する文字数の最大値"
 
 #: ../scm/tutcode-custom.scm:200
 msgid "Enable input prediction for mazegaki conversion"
-msgstr ""
+msgstr "交ぜ書き変換中の予測入力を有効にする"
 
 #: ../scm/tutcode-custom.scm:212
 msgid "Enable Kanji combination guide"
-msgstr ""
+msgstr "熟語ガイドを有効にする"
 
 #: ../scm/tutcode-custom.scm:218
 msgid "Enable input prediction for bushu conversion"
-msgstr ""
+msgstr "部首合成変換中の予測入力を有効にする"
 
 #: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
@@ -5838,7 +5838,7 @@ msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
 
 #: ../scm/tutcode-key-custom.scm:89
 msgid "[TUT-Code] display last auto help"
-msgstr ""
+msgstr "[TUT-Code] 直近の自動ヘルプを表示"
 
 #: ../scm/tutcode-key-custom.scm:95
 msgid "[TUT-Code] toggle use of stroke help window"
@@ -5846,7 +5846,7 @@ msgstr "[TUT-Code] 仮想鍵盤ウィンドウの表示を反転"
 
 #: ../scm/tutcode-key-custom.scm:101
 msgid "[TUT-Code] begin completion"
-msgstr ""
+msgstr "[TUT-Code] 補完開始"
 
 #: ../scm/tutcode-key-custom.scm:107
 msgid "[TUT-Code] begin conversion"
