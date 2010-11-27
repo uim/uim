@@ -523,7 +523,6 @@ msgid "Quit this application with applying changes"
 msgstr "바뀐 설정을 저장하고 종료"
 
 #: ../helper/pref-gtk.c:569
-#, fuzzy
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -537,6 +536,9 @@ msgstr ""
 "\"~/.uim\"에 의한 설정이 이 도구가 저장하는 설정\n"
 "(\"~/.uim.d/customs/*.scm\")보다 우선합니다.\n"
 "설정이 반영되지 않을 경우에는 \"~/.uim\"의 내용을 확인하십시오."
+"\n"
+"(To suppress this dialog, add following line to ~/.uim)\n"
+"(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 
 #. Feel free to put your names here translators
 #: ../helper/toolbar-applet-gnome.c:161
@@ -5628,16 +5630,14 @@ msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:151
-#, fuzzy
 msgid "Number of candidates in candidate window at a time for prediction"
-msgstr "후보창에 한번에 표시하는 후보의 수"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:157
-#, fuzzy
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
-msgstr "후보창에 한번에 표시하는 후보의 수"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:163
 msgid "Use stroke help window"
@@ -5652,9 +5652,8 @@ msgid "Show real keys on auto help window"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:182
-#, fuzzy
 msgid "Enable completion"
-msgstr "주석을 사용"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:188
 msgid "Minimum character length for completion"
@@ -5669,9 +5668,8 @@ msgid "Enable input prediction for mazegaki conversion"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:212
-#, fuzzy
 msgid "Enable Kanji combination guide"
-msgstr "주석을 사용"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:218
 msgid "Enable input prediction for bushu conversion"
@@ -5722,9 +5720,8 @@ msgid "[TUT-Code] toggle use of stroke help window"
 msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:101
-#, fuzzy
 msgid "[TUT-Code] begin completion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:107
 msgid "[TUT-Code] begin conversion"

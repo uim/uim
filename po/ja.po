@@ -616,7 +616,6 @@ msgid "Quit this application with applying changes"
 msgstr "設定を保存して終了"
 
 #: ../helper/pref-gtk.c:569
-#, fuzzy
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -630,6 +629,9 @@ msgstr ""
 "このファイルによる設定は、このツールが保存する設定\n"
 "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
 "設定が反映されない場合は、このファイルの内容を確認して下さい。"
+"\n"
+"(To suppress this dialog, add following line to ~/.uim)\n"
+"(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 
 #. Feel free to put your names here translators
 #: ../helper/toolbar-applet-gnome.c:161
@@ -5753,16 +5755,14 @@ msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
 
 #: ../scm/tutcode-custom.scm:151
-#, fuzzy
 msgid "Number of candidates in candidate window at a time for prediction"
-msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:157
-#, fuzzy
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
-msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:163
 msgid "Use stroke help window"
@@ -5777,34 +5777,28 @@ msgid "Show real keys on auto help window"
 msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
 #: ../scm/tutcode-custom.scm:182
-#, fuzzy
 msgid "Enable completion"
-msgstr "動的補完を有効にする"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:188
-#, fuzzy
 msgid "Minimum character length for completion"
-msgstr "[Look] 予測入力が有効になる文字数"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:194
-#, fuzzy
 msgid "Maximum character length for completion"
-msgstr "[Look] 予測入力が有効になる文字数"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:200
-#, fuzzy
 msgid "Enable input prediction for mazegaki conversion"
-msgstr "交ぜ書き変換の学習を有効にする"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:212
-#, fuzzy
 msgid "Enable Kanji combination guide"
-msgstr "註釈を有効にする"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:218
-#, fuzzy
 msgid "Enable input prediction for bushu conversion"
-msgstr "予測入力を有効にする"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:37
 msgid "TUT-Code key bindings 1"
@@ -5851,9 +5845,8 @@ msgid "[TUT-Code] toggle use of stroke help window"
 msgstr "[TUT-Code] 仮想鍵盤ウィンドウの表示を反転"
 
 #: ../scm/tutcode-key-custom.scm:101
-#, fuzzy
 msgid "[TUT-Code] begin completion"
-msgstr "[TUT-Code] 変換開始"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:107
 msgid "[TUT-Code] begin conversion"

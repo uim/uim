@@ -5634,9 +5634,8 @@ msgid "Show real keys on auto help window"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:182
-#, fuzzy
 msgid "Enable completion"
-msgstr "Complètement"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:188
 msgid "Minimum character length for completion"
