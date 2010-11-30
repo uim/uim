@@ -108,6 +108,9 @@
 ;;; * 補完候補表示にさらに<Control>.を打鍵すると対象文字を1つ減らして再補完。
 ;;;   長すぎる文字列を対象に補完された場合に、補完し直しができるように。
 ;;;
+;;; 【部首合成変換時の予測入力】
+;;;   部首合成変換辞書を検索して、入力された部首が含まれる項目を表示。
+;;;
 ;;; 【記号入力モード】
 ;;;   <Control>_で記号入力モードのトグル。
 ;;;   全角英数入力モードとしても使えるようにしています。
@@ -150,8 +153,7 @@
 (require-custom "tutcode-custom.scm")
 (require-custom "generic-key-custom.scm")
 (require-custom "tutcode-key-custom.scm")
-;;(load-plugin "skk") ;SKK形式の交ぜ書き辞書の検索のため、libuim-skk.soをロード
-(require-dynlib "skk")
+(require-dynlib "skk") ;SKK形式の交ぜ書き辞書の検索のためlibuim-skk.soをロード
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
 (require "tutcode-dialog.scm"); 交ぜ書き変換辞書からの削除確認ダイアログ
@@ -2118,8 +2120,8 @@
            (rk-flush rkc)
            (if (not predicting?)
              (tutcode-check-prediction pc #t)))
-          ;; 候補数が1個の場合、変換後自動確定されてconvertingモードに入らないので
-          ;; その場合でもpurgeできるように、ここでチェック
+          ;; 候補数が1個の場合、変換後自動確定されてconvertingモードに入らない
+          ;; ので、その場合でもpurgeできるように、ここでチェック
           ((and (tutcode-purge-candidate-key? key key-state)
                 (not (null? (tutcode-context-head pc))))
            ;; convertingモードに移行してからpurge
