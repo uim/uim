@@ -2095,7 +2095,8 @@
           ((tutcode-off-key? key key-state)
            (tutcode-flush pc)
            (tutcode-context-set-state! pc 'tutcode-state-off))
-          ((tutcode-kana-toggle-key? key key-state)
+          ((and (tutcode-kana-toggle-key? key key-state)
+                (not (tutcode-context-latin-conv pc)))
            (rk-flush rkc)
            (tutcode-context-kana-toggle pc))
           ((tutcode-backspace-key? key key-state)
@@ -2150,6 +2151,12 @@
           ((and predicting? (tutcode-heading-label-char-for-prediction? key))
             (tutcode-commit-by-label-key-for-prediction pc
               (charcode->string key) 'tutcode-predicting-prediction))
+          ((tutcode-context-latin-conv pc)
+           (if (tutcode-begin-conv-key? key key-state) ; spaceキーでの変換開始?
+             (if (not (null? (tutcode-context-head pc)))
+               (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
+               (tutcode-flush pc))
+             (set! res (charcode->string key))))
           ((not (rk-expect-key? rkc (charcode->string key)))
            (if (> (length (rk-context-seq rkc)) 0)
              (rk-flush rkc)
@@ -2163,8 +2170,6 @@
                  (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
                  (tutcode-flush pc))
                (set! res (charcode->string key)))))
-          ((tutcode-context-latin-conv pc)
-           (set! res (charcode->string key)))
           (else
            (set! res (tutcode-push-key! pc (charcode->string key)))
            (case res
