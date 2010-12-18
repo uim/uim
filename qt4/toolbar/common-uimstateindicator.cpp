@@ -40,7 +40,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 #include <QtGui/QHBoxLayout>
-#include <QtGui/QImage>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QPixmap>
 
@@ -77,10 +76,8 @@ UimStateIndicator::UimStateIndicator( QWidget *parent )
         m_layout->addWidget( fallbackButton );
         QPixmap icon = QPixmap( ICONDIR + '/' + "uim-icon.png" );
         if ( !icon.isNull() ) {
-            QImage image = icon.toImage();
-            QPixmap scaledIcon = QPixmap::fromImage(
-                image.scaled( ICON_SIZE, ICON_SIZE,
-                    Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+            QPixmap scaledIcon = icon.scaled( ICON_SIZE, ICON_SIZE,
+                    Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
             fallbackButton->setIcon( QIcon( scaledIcon ) );
         } else {
             fallbackButton->setText( "?" );
@@ -189,10 +186,8 @@ void UimStateIndicator::propListUpdate( const QStringList& lines )
                 }
                 QPixmap icon = QPixmap( fileName );
                 if (!icon.isNull()) {
-                    QImage image = icon.toImage();
-                    QPixmap scaledIcon = QPixmap::fromImage(
-                        image.scaled( ICON_SIZE, ICON_SIZE,
-                            Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+                    QPixmap scaledIcon = icon.scaled( ICON_SIZE, ICON_SIZE,
+                            Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
                     button->setIcon( QIcon( scaledIcon ) );
                 } else {
                     button->setText( fields[ 2 ] );
@@ -356,10 +351,8 @@ QAction *QHelperPopupMenu::insertHelperItem( const QString &indicationIdStr,
     QPixmap icon = QPixmap ( fileName );
 
     if (!icon.isNull()) {
-        QImage image = icon.toImage();
-        QPixmap scaledIcon = QPixmap::fromImage(
-            image.scaled( ICON_SIZE, ICON_SIZE,
-                Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+        QPixmap scaledIcon = icon.scaled( ICON_SIZE, ICON_SIZE,
+                Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
         action = addAction( scaledIcon, menulabelStr );
     } else {
         action = addAction( menulabelStr );

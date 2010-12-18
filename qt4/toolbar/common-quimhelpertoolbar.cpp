@@ -38,7 +38,6 @@
 #include <QtCore/QProcess>
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QHBoxLayout>
-#include <QtGui/QImage>
 #include <QtGui/QMenu>
 #include <QtGui/QMessageBox>
 #include <QtGui/QToolButton>
@@ -72,34 +71,21 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     connect( m_indicator, SIGNAL( menuRequested( QMenu* ) ),
         this, SIGNAL( menuRequested( QMenu* ) ) );
 
-    QPixmap swicon = QPixmap( ICONDIR + "/im_switcher.png" );
-    QPixmap preficon = QPixmap( ACTION_ICONDIR + "/configure.png");
-    QPixmap dicticon = QPixmap( ICONDIR + "/uim-dict.png");
-    QPixmap padicon = QPixmap( ACTION_ICONDIR + "/format-text-bold.png");
-    QPixmap handicon = QPixmap( ACTION_ICONDIR + "/document-edit.png");
-    QPixmap helpicon = QPixmap( ACTION_ICONDIR + "/help-contents.png");
-    QPixmap exiticon = QPixmap( ACTION_ICONDIR + "/window-close.png");
-    QImage swimage = swicon.toImage();
-    QImage prefimage = preficon.toImage();
-    QImage dictimage = dicticon.toImage();
-    QImage padimage = padicon.toImage();
-    QImage handimage = handicon.toImage();
-    QImage helpimage = helpicon.toImage();
-    QImage exitimage = exiticon.toImage();
-    m_swicon = QPixmap::fromImage( swimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-    m_preficon = QPixmap::fromImage( prefimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-    m_dicticon = QPixmap::fromImage( dictimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-    m_padicon = QPixmap::fromImage( padimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-    m_handicon = QPixmap::fromImage( handimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-    m_helpicon = QPixmap::fromImage( helpimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
-    exiticon = QPixmap::fromImage( exitimage.scaled( ICON_SIZE, ICON_SIZE,
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) );
+    const QSize size( ICON_SIZE, ICON_SIZE );
+    m_swicon = QPixmap( ICONDIR + "/im_switcher.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+    m_preficon = QPixmap( ACTION_ICONDIR + "/configure.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+    m_dicticon = QPixmap( ICONDIR + "/uim-dict.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+    m_padicon = QPixmap( ACTION_ICONDIR + "/format-text-bold.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+    m_handicon = QPixmap( ACTION_ICONDIR + "/document-edit.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+    m_helpicon = QPixmap( ACTION_ICONDIR + "/help-contents.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+    QPixmap exiticon = QPixmap( ACTION_ICONDIR + "/window-close.png" ).scaled(
+        size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
 
     m_contextMenu = new QMenu( isApplet ? 0 : this );
     m_contextMenu->addAction( m_swicon, _("Switch input method"),
