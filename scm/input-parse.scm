@@ -47,6 +47,24 @@
                          (write-to-string s display))
                        specialising-msg)))))
 
+(define (string-concatenate-reverse strs final end)
+  (define (string-xcopy! target tstart s sfrom sto)
+    (do ((i sfrom (inc i)) (j tstart (inc j)))
+        ((>= i sto))
+      (string-set! target j (string-ref s i))))
+  (if (null? strs) (substring final 0 end)
+    (let*
+      ((total-len
+	 (let loop ((len end) (lst strs))
+	   (if (null? lst) len
+	     (loop (+ len (string-length (car lst))) (cdr lst)))))
+	(result (make-string total-len)))
+      (let loop ((len end) (j total-len) (str final) (lst strs))
+	(string-xcopy! result (- j len) str 0 len)
+	(if (null? lst) result
+	  (loop (string-length (car lst)) (- j len)
+	    (car lst) (cdr lst)))))))
+
 (define char-return #\return)
 (define char-newline #\newline)
 
