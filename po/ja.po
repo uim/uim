@@ -5694,14 +5694,12 @@ msgid "Dictionary settings for TUT-Code"
 msgstr "TUT-Codeの辞書設定"
 
 #: ../scm/tutcode-custom.scm:47
-#, fuzzy
 msgid "Bushu conversion"
-msgstr "アルファベット変換"
+msgstr "部首合成変換"
 
 #: ../scm/tutcode-custom.scm:48
-#, fuzzy
 msgid "Bushu conversion settings for TUT-Code"
-msgstr "TUT-Codeの辞書設定"
+msgstr "TUT-Codeの部首合成変換設定"
 
 #: ../scm/tutcode-custom.scm:62
 msgid "Mazegaki dictionary file"
@@ -5732,14 +5730,12 @@ msgid "Use Dvorak keyboard"
 msgstr "Dvorakキーボードを使用する"
 
 #: ../scm/tutcode-custom.scm:106
-#, fuzzy
 msgid "Enable two stroke kigou mode"
-msgstr "自動登録モードを有効にする"
+msgstr "2ストローク記号入力モードを有効にする"
 
 #: ../scm/tutcode-custom.scm:112
-#, fuzzy
 msgid "Enable interactive bushu conversion"
-msgstr "部首合成変換中の予測入力を有効にする"
+msgstr "対話的な部首合成変換を有効にする"
 
 #: ../scm/tutcode-custom.scm:119
 msgid "bushu.index2 file"
@@ -5856,9 +5852,8 @@ msgid "[TUT-Code] toggle kigou mode"
 msgstr "[TUT-Code] 記号入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:71
-#, fuzzy
 msgid "[TUT-Code] toggle two stroke kigou mode"
-msgstr "[TUT-Code] 記号入力モードを反転"
+msgstr "[TUT-Code] 2ストローク記号入力モードを反転"
 
 #: ../scm/tutcode-key-custom.scm:77
 msgid "[TUT-Code] mazegaki conversion mode"
@@ -5869,14 +5864,12 @@ msgid "[TUT-Code] bushu conversion mode"
 msgstr "[TUT-Code] 部首合成変換モード"
 
 #: ../scm/tutcode-key-custom.scm:89
-#, fuzzy
 msgid "[TUT-Code] interactive bushu conversion mode"
-msgstr "[TUT-Code] 部首合成変換モード"
+msgstr "[TUT-Code] 対話的な部首合成変換モード"
 
 #: ../scm/tutcode-key-custom.scm:95
-#, fuzzy
 msgid "[TUT-Code] postfix bushu conversion"
-msgstr "[TUT-Code] 部首合成変換モード"
+msgstr "[TUT-Code] 後置型部首合成変換"
 
 #: ../scm/tutcode-key-custom.scm:101
 msgid "[TUT-Code] latin conversion mode"
@@ -5888,7 +5881,7 @@ msgstr "[TUT-Code] 直近の自動ヘルプを表示"
 
 #: ../scm/tutcode-key-custom.scm:113
 msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
-msgstr ""
+msgstr "交ぜ書き変換の読みをカタカナとして確定する"
 
 #: ../scm/tutcode-key-custom.scm:119
 msgid "[TUT-Code] toggle use of stroke help window"

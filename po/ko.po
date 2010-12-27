@@ -5571,9 +5571,8 @@ msgid "Dictionary settings for TUT-Code"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:47
-#, fuzzy
 msgid "Bushu conversion"
-msgstr "[벼루] 메뉴에서 빠져나오기"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:48
 msgid "Bushu conversion settings for TUT-Code"
