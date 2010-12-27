@@ -28,7 +28,7 @@
 ;;; SUCH DAMAGE.
 ;;;;
 
-;;; tutcode-bushu.scm: 対話的部首合変換
+;;; tutcode-bushu.scm: 対話的な部首合成変換
 ;;;
 ;;; tc-2.3.1のtc-bushu.elを移植(sortは省略)。
 
@@ -426,6 +426,10 @@
         (append! true-diff-set rest-diff-set))))
     (delete-duplicates! res)))
 
+;;; 対話的な部首合成変換用に、指定された部首のリストから部首合成可能な
+;;; 漢字のリストを返す。
+;;; @param char-list 入力された部首のリスト
+;;; @return 合成可能な漢字のリスト
 (define (tutcode-bushu-compose-interactively char-list)
   (let*
     ((complete-compose-set (tutcode-bushu-complete-compose-set char-list))
