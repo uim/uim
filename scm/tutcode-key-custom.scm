@@ -89,6 +89,12 @@
 	       (N_ "[TUT-Code] interactive bushu conversion mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-postfix-bushu-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix bushu conversion")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-latin-conv-start-sequence "al/"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")

@@ -39,6 +39,10 @@
 ;;;   再帰的な部首合成変換も可能です。
 ;;;   部首合成のアルゴリズムはtc-2.1のものです。
 ;;;
+;;; * 後置型部首合成変換は、交ぜ書き変換の読み入力中のみ対応しています。
+;;;   開始キーを以下のように設定すると使用可能になります。
+;;;   (define tutcode-postfix-bushu-start-sequence "ald")
+;;;
 ;;; * 対話的な部首合成変換
 ;;;   以下のような設定をすると使用可能になります。
 ;;;   (define tutcode-use-interactive-bushu-conversion? #t)
@@ -1462,6 +1466,7 @@
             ((tutcode-latin-conv-start) "/")
             ((tutcode-bushu-start) "◆")
             ((tutcode-interactive-bushu-start) "▼")
+            ((tutcode-postfix-bushu-start) "▲")
             ((tutcode-auto-help-redisplay) "≪")
             (else cand)))
          (cand-hint
@@ -2113,27 +2118,26 @@
              (tutcode-commit-raw pc key key-state)))
           (else
            (let ((res (tutcode-push-key! pc (charcode->string key))))
-             (if res
-               (case res
-                ((tutcode-mazegaki-start)
-                  (tutcode-context-set-latin-conv! pc #f)
-                  (tutcode-context-set-state! pc 'tutcode-state-yomi))
-                ((tutcode-latin-conv-start)
-                  (tutcode-context-set-latin-conv! pc #t)
-                  (tutcode-context-set-state! pc 'tutcode-state-yomi))
-                ((tutcode-bushu-start)
-                  (tutcode-context-set-state! pc 'tutcode-state-bushu)
-                  (tutcode-append-string pc "▲"))
-                ((tutcode-interactive-bushu-start)
-                  (tutcode-context-set-prediction-nr! pc 0)
-                  (tutcode-context-set-state! pc
-                    'tutcode-state-interactive-bushu))
-                ((tutcode-auto-help-redisplay)
-                  (tutcode-auto-help-redisplay pc))
-                (else
-                  (tutcode-commit pc res)
-                  (if tutcode-use-completion?
-                    (tutcode-check-completion pc #f 0))))))))))))
+            (cond
+              ((string? res)
+                (tutcode-commit pc res)
+                (if tutcode-use-completion?
+                  (tutcode-check-completion pc #f 0)))
+              ((eq? res 'tutcode-mazegaki-start)
+                (tutcode-context-set-latin-conv! pc #f)
+                (tutcode-context-set-state! pc 'tutcode-state-yomi))
+              ((eq? res 'tutcode-latin-conv-start)
+                (tutcode-context-set-latin-conv! pc #t)
+                (tutcode-context-set-state! pc 'tutcode-state-yomi))
+              ((eq? res 'tutcode-bushu-start)
+                (tutcode-context-set-state! pc 'tutcode-state-bushu)
+                (tutcode-append-string pc "▲"))
+              ((eq? res 'tutcode-interactive-bushu-start)
+                (tutcode-context-set-prediction-nr! pc 0)
+                (tutcode-context-set-state! pc
+                  'tutcode-state-interactive-bushu))
+              ((eq? res 'tutcode-auto-help-redisplay)
+                (tutcode-auto-help-redisplay pc))))))))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
@@ -2213,6 +2217,7 @@
   (let*
     ((pc (tutcode-find-descendant-context c))
      (rkc (tutcode-context-rk-context pc))
+     (head (tutcode-context-head pc))
      (kigou2-mode? (tutcode-kigou2-mode? pc))
      (res #f)
      ;; reset-candidate-windowでリセットされるので保存しておく
@@ -2249,15 +2254,15 @@
           ((tutcode-backspace-key? key key-state)
            (if (> (length (rk-context-seq rkc)) 0)
             (rk-flush rkc)
-            (if (> (length (tutcode-context-head pc)) 0)
+            (if (> (length head) 0)
               (begin
-                (tutcode-context-set-head! pc (cdr (tutcode-context-head pc)))
+                (tutcode-context-set-head! pc (cdr head))
                 (if predicting?
                   (tutcode-check-prediction pc #f))))))
           ((or
             (tutcode-commit-key? key key-state)
             (tutcode-return-key? key key-state))
-           (tutcode-commit pc (tutcode-make-string (tutcode-context-head pc)))
+           (tutcode-commit pc (tutcode-make-string head))
            (tutcode-flush pc))
           ((tutcode-cancel-key? key key-state)
            (tutcode-flush pc))
@@ -2271,7 +2276,7 @@
           ;; 候補数が1個の場合、変換後自動確定されてconvertingモードに入らない
           ;; ので、その場合でもpurgeできるように、ここでチェック
           ((and (tutcode-purge-candidate-key? key key-state)
-                (not (null? (tutcode-context-head pc)))
+                (not (null? head))
                 (not kigou2-mode?))
            ;; convertingモードに移行してからpurge
            (tutcode-begin-conversion pc #f #f)
@@ -2290,7 +2295,7 @@
             (not (shift-key-mask key-state)))
            ;; <Control>n等での変換開始?
            (if (tutcode-begin-conv-key? key key-state)
-             (if (not (null? (tutcode-context-head pc)))
+             (if (not (null? head))
                (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
                (tutcode-flush pc))
              (begin
@@ -2302,7 +2307,7 @@
               (charcode->string key) 'tutcode-predicting-prediction))
           ((tutcode-context-latin-conv pc)
            (if (tutcode-begin-conv-key? key key-state) ; spaceキーでの変換開始?
-             (if (not (null? (tutcode-context-head pc)))
+             (if (not (null? head))
                (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
                (tutcode-flush pc))
              (set! res (charcode->string key))))
@@ -2315,28 +2320,33 @@
              ;; (trycodeでspaceで始まるキーシーケンスを使っている場合、
              ;;  spaceで変換開始はできないので、<Control>n等を使う必要あり)
              (if (tutcode-begin-conv-key? key key-state)
-               (if (not (null? (tutcode-context-head pc)))
+               (if (not (null? head))
                  (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
                  (tutcode-flush pc))
                (set! res (charcode->string key)))))
           (else
            (set! res (tutcode-push-key! pc (charcode->string key)))
-           (case res
-            ((tutcode-mazegaki-start)
-              (set! res #f))
-            ((tutcode-latin-conv-start)
-              (set! res #f))
-            ((tutcode-auto-help-redisplay)
+           (cond
+            ((eq? res 'tutcode-auto-help-redisplay)
               (tutcode-auto-help-redisplay pc)
               (set! res #f))
-            ((tutcode-bushu-start)
-              (set! res #f))
-            ((tutcode-interactive-bushu-start)
+            ((eq? res 'tutcode-postfix-bushu-start)
+              (set! res
+                (and (>= (length head) 2)
+                     (tutcode-bushu-convert (cadr head) (car head))))
+              (if res
+                (begin
+                  (tutcode-context-set-head! pc (cddr head))
+                  (tutcode-check-auto-help-window-begin pc (list res) ()))))
+            ((symbol? res)
               (set! res #f)))))
         (if res
           (begin
             (tutcode-append-string pc res)
-            (if tutcode-use-prediction?
+            (if (and tutcode-use-prediction?
+                     ;; 後置型部首合成変換によるauto-help表示済時は何もしない
+                     (eq? (tutcode-context-candidate-window pc)
+                          'tutcode-candidate-window-off))
               (tutcode-check-prediction pc #f))))))))
 
 ;;; 部首合成変換の部首入力状態のときのキー入力を処理する。
@@ -2420,18 +2430,14 @@
          (set! res (charcode->string key))))
       (else
        (set! res (tutcode-push-key! pc (charcode->string key)))
-       (case res
-        ((tutcode-mazegaki-start) ;XXX 部首合成変換中は交ぜ書き変換は無効にする
-          (set! res #f))
-        ((tutcode-latin-conv-start)
-          (set! res #f))
-        ((tutcode-auto-help-redisplay)
-          (tutcode-auto-help-redisplay pc)
-          (set! res #f))
-        ((tutcode-bushu-start) ; 再帰的な部首合成変換
+       (cond
+        ((eq? res 'tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
           (set! res #f))
-        ((tutcode-interactive-bushu-start)
+        ((eq? res 'tutcode-auto-help-redisplay)
+          (tutcode-auto-help-redisplay pc)
+          (set! res #f))
+        ((symbol? res) ;XXX 部首合成変換中は交ぜ書き変換等は無効にする
           (set! res #f)))))
     (if res
       (tutcode-begin-bushu-conversion pc res))))
@@ -2557,17 +2563,11 @@
              (set! res (charcode->string key))))
           (else
            (set! res (tutcode-push-key! pc (charcode->string key)))
-           (case res
-            ((tutcode-mazegaki-start) ;XXX 部首合成変換中は交ぜ書き変換は無効化
-              (set! res #f))
-            ((tutcode-latin-conv-start)
-              (set! res #f))
-            ((tutcode-auto-help-redisplay)
+           (cond
+            ((eq? res 'tutcode-auto-help-redisplay)
               (tutcode-auto-help-redisplay pc)
               (set! res #f))
-            ((tutcode-bushu-start)
-              (set! res #f))
-            ((tutcode-interactive-bushu-start)
+            ((symbol? res) ;XXX 部首合成変換中は交ぜ書き変換等は無効にする
               (set! res #f)))))
         (if res
           (begin
@@ -3618,43 +3618,31 @@
 ;;; tutcode-key-customで設定された交ぜ書き/部首合成変換開始のキーシーケンスを
 ;;; コード表に反映する
 (define (tutcode-custom-set-mazegaki/bushu-start-sequence!)
-  (let*
+  (let
     ((make-subrule
       (lambda (keyseq cmd)
-        (if
-          (and
-            keyseq
-            (> (string-length keyseq) 0))
+        (and keyseq
+             (> (string-length keyseq) 0))
           (let ((keys (reverse (string-to-list keyseq))))
-            (list (list (list keys) cmd)))
-          #f)))
-     (mazegaki-rule
-      (make-subrule tutcode-mazegaki-start-sequence
-        '(tutcode-mazegaki-start)))
-     (latin-conv-rule
-      (make-subrule tutcode-latin-conv-start-sequence
-        '(tutcode-latin-conv-start)))
-     (bushu-rule
-      (make-subrule tutcode-bushu-start-sequence
-        '(tutcode-bushu-start)))
-     (interactive-bushu-rule
-      (and
-        tutcode-use-interactive-bushu-conversion?
-        (make-subrule tutcode-interactive-bushu-start-sequence
-          '(tutcode-interactive-bushu-start))))
-     (auto-help-rule
-      (make-subrule tutcode-auto-help-redisplay-sequence
-        '(tutcode-auto-help-redisplay))))
-    (if mazegaki-rule
-      (tutcode-rule-set-sequences! mazegaki-rule))
-    (if latin-conv-rule
-      (tutcode-rule-set-sequences! latin-conv-rule))
-    (if bushu-rule
-      (tutcode-rule-set-sequences! bushu-rule))
-    (if interactive-bushu-rule
-      (tutcode-rule-set-sequences! interactive-bushu-rule))
-    (if auto-help-rule
-      (tutcode-rule-set-sequences! auto-help-rule))))
+            (list (list keys) cmd)))))
+    (tutcode-rule-set-sequences!
+      (filter
+        pair?
+        (list
+          (make-subrule tutcode-mazegaki-start-sequence
+            '(tutcode-mazegaki-start))
+          (make-subrule tutcode-latin-conv-start-sequence
+            '(tutcode-latin-conv-start))
+          (make-subrule tutcode-bushu-start-sequence
+            '(tutcode-bushu-start))
+          (and
+            tutcode-use-interactive-bushu-conversion?
+            (make-subrule tutcode-interactive-bushu-start-sequence
+              '(tutcode-interactive-bushu-start)))
+          (make-subrule tutcode-postfix-bushu-start-sequence
+            '(tutcode-postfix-bushu-start))
+          (make-subrule tutcode-auto-help-redisplay-sequence
+            '(tutcode-auto-help-redisplay)))))))
 
 ;;; コード表の一部の定義を上書き変更/追加する。~/.uimからの使用を想定。
 ;;; 呼び出し時にはtutcode-rule-userconfigに登録しておくだけで、
