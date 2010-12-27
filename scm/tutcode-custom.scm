@@ -96,6 +96,12 @@
   (N_ "Use Dvorak keyboard")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-use-kigou2-mode? #f
+  '(tutcode)
+  '(boolean)
+  (N_ "Enable two stroke kigou mode")
+  (N_ "long description will be here."))
+
 ;;
 ;; candidate window
 ;;

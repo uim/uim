@@ -115,6 +115,9 @@
 ;;;   <Control>_で記号入力モードのトグル。
 ;;;   全角英数入力モードとしても使えるようにしています。
 ;;;
+;;; 【2ストローク記号入力モード】
+;;;   百相鍵盤『き』と同様に、2打鍵で各種の記号・漢字を入力するモード。
+;;;
 ;;; 【設定例】
 ;;; * コード表の一部を変更したい場合は、例えば~/.uimで以下のように記述する。
 ;;;   (require "tutcode.scm")
@@ -170,17 +173,29 @@
 
 ;; actions of widget_tutcode_input_mode
 (define tutcode-input-mode-actions
-  '(action_tutcode_direct
-    action_tutcode_hiragana
-    action_tutcode_katakana
-    action_tutcode_kigou))
+  (if tutcode-use-kigou2-mode?
+    '(action_tutcode_direct
+      action_tutcode_hiragana
+      action_tutcode_katakana
+      action_tutcode_kigou
+      action_tutcode_kigou2)
+    '(action_tutcode_direct
+      action_tutcode_hiragana
+      action_tutcode_katakana
+      action_tutcode_kigou)))
 
 ;;; 使用するコード表。
 ;;; tutcode-context-new時に(tutcode-custom-load-rule!)で設定
 (define tutcode-rule ())
+;;; 2ストローク記号入力モード用コード表
+;;; (候補ウィンドウを使った記号入力モードでは、目的の文字までたどりつくために
+;;;  next-pageキーを何回も押す必要があって面倒なので、2打鍵で選択できるように)
+(define tutcode-kigou-rule ())
 ;;; tutcode-ruleから作成する、逆引き検索(漢字から打鍵リストを取得)用alist。
 ;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
 (define tutcode-reverse-rule-alist ())
+;;; tutcode-kigou-ruleから作成する、逆引き検索用alist。
+(define tutcode-reverse-kigou-rule-alist ())
 ;;; tutcode-bushudicから作成する、
 ;;; 逆引き検索(合成後の文字から合成用の2文字を取得)用alist。
 ;;; (自動ヘルプ用の部首合成変換候補検索時の高速化のため)
@@ -347,6 +362,8 @@
 ;;; 仮想鍵盤のストローク途中で、
 ;;; 続きに来る漢字のヒントとして表示する漢字に付けるマーク
 (define tutcode-hint-mark "*")
+;;; 2ストローク記号入力モード時に仮想鍵盤表示を行うかどうかの設定
+(define tutcode-use-stroke-help-window-another? #t)
 
 ;;; implementations
 
@@ -388,7 +405,8 @@
                      (and (tutcode-context-on? tc)
                           (not (eq? (tutcode-context-state tc)
                                     'tutcode-state-kigou))
-                          (not (tutcode-context-katakana-mode? tc)))))
+                          (not (tutcode-context-katakana-mode? tc))
+                          (not (tutcode-kigou2-mode? tc)))))
 		 (lambda (c)
 		   (let ((tc (tutcode-find-descendant-context c)))
                      (tutcode-prepare-activation tc)
@@ -399,6 +417,10 @@
                        (begin
                          (tutcode-reset-candidate-window tc)
                          (tutcode-context-set-state! tc 'tutcode-state-on)))
+                     (if (tutcode-kigou2-mode? tc)
+                       (begin
+                         (tutcode-reset-candidate-window tc)
+                         (tutcode-toggle-kigou2-mode tc)))
                      (tutcode-context-set-katakana-mode! tc #f)
                      (tutcode-update-preedit tc))))
 
@@ -413,7 +435,8 @@
                      (and (tutcode-context-on? tc)
                           (not (eq? (tutcode-context-state tc)
                                     'tutcode-state-kigou))
-                          (tutcode-context-katakana-mode? tc))))
+                          (tutcode-context-katakana-mode? tc)
+                          (not (tutcode-kigou2-mode? tc)))))
 		 (lambda (c)
 		   (let ((tc (tutcode-find-descendant-context c)))
                      (tutcode-prepare-activation tc)
@@ -424,6 +447,10 @@
                        (begin
                          (tutcode-reset-candidate-window tc)
                          (tutcode-context-set-state! tc 'tutcode-state-on)))
+                     (if (tutcode-kigou2-mode? tc)
+                       (begin
+                         (tutcode-reset-candidate-window tc)
+                         (tutcode-toggle-kigou2-mode tc)))
                      (tutcode-context-set-katakana-mode! tc #t)
                      (tutcode-update-preedit tc))))
 
@@ -446,6 +473,34 @@
                      (tutcode-begin-kigou-mode tc)
                      (tutcode-update-preedit tc))))
 
+(register-action 'action_tutcode_kigou2
+                 (lambda (tc)
+                   '(ja_fullwidth_alnum
+                     "き"
+                     "記号入力2"
+                     "記号入力モード2"))
+                 (lambda (c)
+                   (let ((tc (tutcode-find-descendant-context c)))
+                     (and (tutcode-context-on? tc)
+                          (not (eq? (tutcode-context-state tc)
+                                    'tutcode-state-kigou))
+                          (tutcode-kigou2-mode? tc))))
+                 (lambda (c)
+		   (let ((tc (tutcode-find-descendant-context c)))
+                     (tutcode-prepare-activation tc)
+                     (if
+                       (or
+                         (not (tutcode-context-on? tc)) ; 変換中状態は変更しない
+                         (eq? (tutcode-context-state tc) 'tutcode-state-kigou))
+                       (begin
+                         (tutcode-reset-candidate-window tc)
+                         (tutcode-context-set-state! tc 'tutcode-state-on)))
+                     (if (not (tutcode-kigou2-mode? tc))
+                       (begin
+                         (tutcode-reset-candidate-window tc)
+                         (tutcode-toggle-kigou2-mode tc)))
+                     (tutcode-update-preedit tc))))
+
 ;; Update widget definitions based on action configurations. The
 ;; procedure is needed for on-the-fly reconfiguration involving the
 ;; custom API
@@ -459,6 +514,7 @@
   (append
    context-rec-spec
    '((rk-context    ()) ; キーストロークから文字への変換のためのコンテキスト
+     (rk-context-another ()) ;もう一つのrk-context(2ストローク記号入力モード用)
      ;;; TUT-Code入力状態
      ;;; 'tutcode-state-off TUT-Codeオフ
      ;;; 'tutcode-state-on TUT-Codeオン
@@ -552,6 +608,10 @@
 (define tutcode-context-katakana-mode? tutcode-context-katakana-mode)
 (define (tutcode-context-on? pc)
   (not (eq? (tutcode-context-state pc) 'tutcode-state-off)))
+(define (tutcode-kigou2-mode? pc)
+  (and tutcode-use-kigou2-mode?
+       (eq? (rk-context-rule (tutcode-context-rk-context pc))
+            tutcode-kigou-rule)))
 
 ;;; TUT-Codeのコンテキストを新しく生成する。
 ;;; @return 生成したコンテキスト
@@ -613,6 +673,15 @@
         (set! tutcode-heading-label-char-list-for-kigou-mode
           tutcode-uim-heading-label-char-list-for-kigou-mode)))
     (tutcode-context-set-rk-context! tc (rk-context-new tutcode-rule #t #f))
+    (if tutcode-use-kigou2-mode?
+      (begin
+        (if (null? tutcode-kigou-rule)
+          (begin
+            (require "tutcode-kigou-rule.scm") ;2stroke記号入力モード用コード表
+            (tutcode-kigou-rule-translate
+              tutcode-candidate-window-table-layout)))
+        (tutcode-context-set-rk-context-another!
+          tc (rk-context-new tutcode-kigou-rule #t #f))))
     (if tutcode-use-recursive-learning?
       (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
     (tutcode-context-set-dialog! tc (tutcode-dialog-new tc))
@@ -770,6 +839,7 @@
 ;;; @param all-yomi 予測入力候補検索結果に含まれる全ての読み
 (define (tutcode-guide-set-candidates pc str completion? all-yomi)
   (let* ((cands (tutcode-context-prediction-candidates pc))
+         (rule (rk-context-rule (tutcode-context-rk-context pc)))
          (word all-yomi)
          (strlen (string-length str))
          (filtered-cands
@@ -815,7 +885,7 @@
          (cand-stroke
           (map
             (lambda (elem)
-              (list (list (tutcode-reverse-find-seq elem)) (list elem)))
+              (list (list (tutcode-reverse-find-seq elem rule)) (list elem)))
             candchars))
          (filtered-cand-stroke
           (filter
@@ -831,10 +901,11 @@
 ;;; @param str 部首合成予測入力候補の検索時に使用した漢字=入力済漢字
 (define (tutcode-guide-set-candidates-for-bushu pc)
   (let* ((word (tutcode-context-prediction-word pc))
+         (rule (rk-context-rule (tutcode-context-rk-context pc)))
          (cand-stroke
           (map
             (lambda (elem)
-              (list (list (tutcode-reverse-find-seq elem)) (list elem)))
+              (list (list (tutcode-reverse-find-seq elem rule)) (list elem)))
             word))
          (filtered-cand-stroke
           (filter
@@ -1213,6 +1284,20 @@
            'tutcode-candidate-window-kigou)
     (im-select-candidate pc 0)))
 
+;;; 2ストローク記号入力モード(tutcode-kigou-rule)とtutcode-ruleの切り替えを行う
+;;; @param pc コンテキストリスト
+(define (tutcode-toggle-kigou2-mode pc)
+  (if tutcode-use-kigou2-mode?
+    (let ((tmp-rkc (tutcode-context-rk-context pc))
+          (tmp-stroke-help? tutcode-use-stroke-help-window?))
+      (tutcode-context-set-rk-context! pc
+        (tutcode-context-rk-context-another pc))
+      (tutcode-context-set-rk-context-another! pc tmp-rkc)
+      (set! tutcode-use-stroke-help-window?
+        tutcode-use-stroke-help-window-another?)
+      (set! tutcode-use-stroke-help-window-another? tmp-stroke-help?)
+      (tutcode-context-set-guide-chars! pc ()))))
+
 ;;; 候補ウィンドウの表示を開始する
 (define (tutcode-check-candidate-window-begin pc)
   (if (and (eq? (tutcode-context-candidate-window pc)
@@ -1237,19 +1322,22 @@
     (let* ((rkc (tutcode-context-rk-context pc))
            (seq (rk-context-seq rkc))
            (seqlen (length seq))
-           (ret (rk-lib-find-partial-seqs (reverse seq) tutcode-rule))
+           (rule (rk-context-rule rkc))
+           (ret (rk-lib-find-partial-seqs (reverse seq) rule))
            (katakana? (tutcode-context-katakana-mode? pc))
            ;; 例:(("k" "あ") ("i" "い") ("g" "*贈"))
            (label-cand-alist
             (if (null? seq) ; tutcode-rule全部なめて作成→遅いのでキャッシュ
-              (if katakana?
-                (begin
+              (cond
+                ((tutcode-kigou2-mode? pc)
+                  tutcode-kigou-rule-stroke-help-top-page-alist)
+                (katakana?
                   (if (null? tutcode-stroke-help-top-page-katakana-alist)
                     (set! tutcode-stroke-help-top-page-katakana-alist
                       (tutcode-stroke-help-update-alist
                         () seqlen katakana? ret)))
                   tutcode-stroke-help-top-page-katakana-alist)
-                (begin
+                (else
                   (if (null? tutcode-stroke-help-top-page-alist)
                     (set! tutcode-stroke-help-top-page-alist
                       (tutcode-stroke-help-update-alist
@@ -1300,8 +1388,7 @@
     (begin
       (set! tutcode-use-stroke-help-window? #f)
       (tutcode-reset-candidate-window pc))
-    (begin
-      (set! tutcode-use-stroke-help-window? #t))))
+    (set! tutcode-use-stroke-help-window? #t)))
 
 ;;; 仮想鍵盤表示用データ作成
 ;;; @param label-cand-alist 表示用データ。
@@ -1505,7 +1592,9 @@
 ;;; @return 更新後の自動ヘルプ用alist
 (define (tutcode-auto-help-update-stroke-alist-with-kanji pc label-cands-alist
          cand-list kanji)
-  (let ((stroke (tutcode-reverse-find-seq kanji)))
+  (let*
+    ((rule (rk-context-rule (tutcode-context-rk-context pc)))
+     (stroke (tutcode-reverse-find-seq kanji rule)))
     (if stroke
       (begin
         (tutcode-stroke-help-guide-add-kanji
@@ -1514,7 +1603,7 @@
           label-cands-alist
           (cons (string-append (caar cand-list) "(" kanji ")") (cdar cand-list))
           stroke))
-      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji)))
+      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji rule)))
         ;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
         (if (not decomposed)
           label-cands-alist
@@ -1537,7 +1626,9 @@
 ;;; @return 更新後の自動ヘルプ用alist
 (define (tutcode-auto-help-update-stroke-alist-normal-with-kanji
           pc label-cands-alist kanji)
-  (let ((stroke (tutcode-reverse-find-seq kanji)))
+  (let*
+    ((rule (rk-context-rule (tutcode-context-rk-context pc)))
+     (stroke (tutcode-reverse-find-seq kanji rule)))
     (if stroke
       (begin
         (tutcode-stroke-help-guide-add-kanji
@@ -1546,7 +1637,7 @@
           label-cands-alist
           (cons (string-append kanji " ") stroke)
           kanji))
-      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji)))
+      (let ((decomposed (tutcode-auto-help-bushu-decompose kanji rule)))
         ;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
         (if (not decomposed)
           label-cands-alist
@@ -1930,7 +2021,11 @@
           ((tutcode-kigou-toggle-key? key key-state)
            (rk-flush rkc)
            (tutcode-begin-kigou-mode pc))
-          ((tutcode-kana-toggle-key? key key-state)
+          ((tutcode-kigou2-toggle-key? key key-state)
+           (rk-flush rkc)
+           (tutcode-toggle-kigou2-mode pc))
+          ((and (tutcode-kana-toggle-key? key key-state)
+                (not (tutcode-kigou2-mode? pc)))
            (rk-flush rkc)
            (tutcode-context-kana-toggle pc))
           ((tutcode-backspace-key? key key-state)
@@ -2026,6 +2121,11 @@
       ((tutcode-kigou-toggle-key? key key-state)
        (tutcode-reset-candidate-window pc)
        (tutcode-context-set-state! pc 'tutcode-state-on))
+      ((tutcode-kigou2-toggle-key? key key-state)
+       (tutcode-reset-candidate-window pc)
+       (if (not (tutcode-kigou2-mode? pc))
+         (tutcode-toggle-kigou2-mode pc))
+       (tutcode-context-set-state! pc 'tutcode-state-on))
       ;; スペースキーで全角スペース入力可能とするため、
       ;; next-candidate-key?のチェックより前にheading-label-char?をチェック
       ((and tutcode-commit-candidate-by-label-key?
@@ -2070,6 +2170,7 @@
   (let*
     ((pc (tutcode-find-descendant-context c))
      (rkc (tutcode-context-rk-context pc))
+     (kigou2-mode? (tutcode-kigou2-mode? pc))
      (res #f)
      ;; reset-candidate-windowでリセットされるので保存しておく
      (predicting?
@@ -2095,9 +2196,13 @@
            (tutcode-flush pc)
            (tutcode-context-set-state! pc 'tutcode-state-off))
           ((and (tutcode-kana-toggle-key? key key-state)
-                (not (tutcode-context-latin-conv pc)))
+                (not (tutcode-context-latin-conv pc))
+                (not kigou2-mode?))
            (rk-flush rkc)
            (tutcode-context-kana-toggle pc))
+          ((tutcode-kigou2-toggle-key? key key-state)
+           (rk-flush rkc)
+           (tutcode-toggle-kigou2-mode pc))
           ((tutcode-backspace-key? key key-state)
            (if (> (length (rk-context-seq rkc)) 0)
             (rk-flush rkc)
@@ -2123,13 +2228,15 @@
           ;; 候補数が1個の場合、変換後自動確定されてconvertingモードに入らない
           ;; ので、その場合でもpurgeできるように、ここでチェック
           ((and (tutcode-purge-candidate-key? key key-state)
-                (not (null? (tutcode-context-head pc))))
+                (not (null? (tutcode-context-head pc)))
+                (not kigou2-mode?))
            ;; convertingモードに移行してからpurge
            (tutcode-begin-conversion pc #f #f)
            (if (eq? (tutcode-context-state pc) 'tutcode-state-converting)
              (tutcode-proc-state-converting pc key key-state)))
           ((and (tutcode-register-candidate-key? key key-state)
-                tutcode-use-recursive-learning?)
+                tutcode-use-recursive-learning?
+                (not kigou2-mode?))
            (tutcode-context-set-state! pc 'tutcode-state-converting)
            (tutcode-setup-child-context pc 'tutcode-child-type-editor))
           ((symbol? key)
@@ -2203,9 +2310,13 @@
       ((tutcode-off-key? key key-state)
        (tutcode-flush pc)
        (tutcode-context-set-state! pc 'tutcode-state-off))
-      ((tutcode-kana-toggle-key? key key-state)
+      ((and (tutcode-kana-toggle-key? key key-state)
+            (not (tutcode-kigou2-mode? pc)))
        (rk-flush rkc)
        (tutcode-context-kana-toggle pc))
+      ((tutcode-kigou2-toggle-key? key key-state)
+       (rk-flush rkc)
+       (tutcode-toggle-kigou2-mode pc))
       ((tutcode-backspace-key? key key-state)
        (if (> (length (rk-context-seq rkc)) 0)
         (rk-flush rkc)
@@ -2558,21 +2669,22 @@
 ;;; 外字でない2つの文字のリストを返す
 ;;; 例: "繋" => (((("," "o"))("撃")) ((("f" "q"))("糸")))
 ;;; @param c 対象文字
+;;; @param rule tutcode-rule
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  見つからなかった場合は#f
-(define (tutcode-auto-help-bushu-decompose c)
+(define (tutcode-auto-help-bushu-decompose c rule)
   (let*
     ((bushu (tutcode-bushu-decompose c))
      (b1 (and bushu (car bushu)))
      (b2 (and bushu (cadr bushu)))
-     (seq1 (and b1 (tutcode-auto-help-get-stroke b1)))
-     (seq2 (and b2 (tutcode-auto-help-get-stroke b2))))
+     (seq1 (and b1 (tutcode-auto-help-get-stroke b1 rule)))
+     (seq2 (and b2 (tutcode-auto-help-get-stroke b2 rule))))
     (or
       ;; 足し算による合成
       (and seq1 seq2
         (list seq1 seq2))
       ;; 単純な引き算による合成
-      (tutcode-auto-help-bushu-decompose-by-subtraction c)
+      (tutcode-auto-help-bushu-decompose-by-subtraction c rule)
       ;; 部品による合成
       (or
         ;; 部首1が直接入力可能
@@ -2582,7 +2694,7 @@
             () 99
             (lambda (elem)
               (tutcode-auto-help-get-stroke-list-with-right-part
-                c b1 b2 seq1 elem))))
+                c b1 b2 seq1 rule elem))))
         ;; 部首2が直接入力可能
         ;; →(部首2)と(部首1を部品として持つ漢字)による合成が可能か?
         (and seq2 b1
@@ -2590,18 +2702,19 @@
             () 99
             (lambda (elem)
               (tutcode-auto-help-get-stroke-list-with-left-part
-                c b1 b2 seq2 elem))))
+                c b1 b2 seq2 rule elem))))
         ;; XXX: 部品どうしの合成や、3文字以上での合成は未対応
         ))))
 
 ;;; 自動ヘルプ:対象文字を入力する際の打鍵のリストを取得する。
 ;;; 例: "撃" => ((("," "o")) ("撃"))
 ;;; @param b 対象文字
+;;; @param rule tutcode-rule
 ;;; @return 打鍵リスト。入力不可能な場合は#f
-(define (tutcode-auto-help-get-stroke b)
+(define (tutcode-auto-help-get-stroke b rule)
   (let
     ((seq
-      (or (tutcode-reverse-find-seq b)
+      (or (tutcode-reverse-find-seq b rule)
           ;; 部首合成で使われる"3"のような直接入力可能な部首に対応するため、
           ;; ラベル文字に含まれていれば、直接入力可能とみなす
           (and
@@ -2642,13 +2755,14 @@
 ;;; 例: "歹" => (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
 ;;;    (元となるtutcode-bushudic内の要素は((("歹" "リ")) ("列")))
 ;;; @param c 対象文字
+;;; @param rule tutcode-rule
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  見つからなかった場合は#f
-(define (tutcode-auto-help-bushu-decompose-by-subtraction c)
+(define (tutcode-auto-help-bushu-decompose-by-subtraction c rule)
   (tutcode-auto-help-bushu-decompose-looking-bushudic tutcode-bushudic
     () 99
     (lambda (elem)
-      (tutcode-auto-help-get-stroke-list-by-subtraction c elem))))
+      (tutcode-auto-help-get-stroke-list-by-subtraction c rule elem))))
 
 ;;; 自動ヘルプ:部首合成に必要な打鍵数を数える
 ;;; @param bushu-compose-list 部首合成に使う2文字とストロークのリスト。
@@ -2661,13 +2775,14 @@
 ;;; 自動ヘルプ:対象文字を引き算により部首合成できる場合は、
 ;;; 合成に使う各文字と、そのストロークのリストを返す。
 ;;; @param c 対象文字
+;;; @param rule tutcode-rule
 ;;; @param min-stroke-bushu-list min-strokeとbushudic内の要素のリスト。
 ;;;  例: (6 ((("歹" "リ")) ("列")))
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  bushu-listを使って合成できない場合は#f。
 ;;;  例: (((("g" "t" "h")) ("列")) ((("G" "I")) ("リ")))
 (define (tutcode-auto-help-get-stroke-list-by-subtraction
-          c min-stroke-bushu-list)
+          c rule min-stroke-bushu-list)
   (and-let*
     ((min-stroke (car min-stroke-bushu-list))
      (bushu-list (cadr min-stroke-bushu-list))
@@ -2675,8 +2790,8 @@
      (b1 (caadr bushu-list))
      ;; 2つの部首のうち、c以外の部首を取得
      (b2 (if (= 2 (length mem)) (cadr mem) (car (caar bushu-list))))
-     (seq1 (tutcode-auto-help-get-stroke b1))
-     (seq2 (tutcode-auto-help-get-stroke b2))
+     (seq1 (tutcode-auto-help-get-stroke b1 rule))
+     (seq2 (tutcode-auto-help-get-stroke b2 rule))
      (ret (list seq1 seq2))
      ;; 部首合成は遅いので、先に打鍵数をチェック
      (small-stroke? (< (tutcode-auto-help-count-stroke-length ret) min-stroke))
@@ -2692,17 +2807,18 @@
 ;;; @param b1 部首1(直接入力可能)
 ;;; @param b2 部首2(直接入力不可能)
 ;;; @param seq1 b1の入力キーシーケンスと部首のリスト
+;;; @param rule tutcode-rule
 ;;; @param min-stroke-bushu-list min-strokeとbushudic内の要素のリスト。
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  bushu-listを使って合成できない場合は#f。
 (define (tutcode-auto-help-get-stroke-list-with-right-part
-         c b1 b2 seq1 min-stroke-bushu-list)
+         c b1 b2 seq1 rule min-stroke-bushu-list)
   (and-let*
     ((min-stroke (car min-stroke-bushu-list))
      (bushu-list (cadr min-stroke-bushu-list))
      (mem (member b2 (caar bushu-list)))
      (kanji (caadr bushu-list)) ; 部首2を部品として持つ漢字
-     (seq (tutcode-auto-help-get-stroke kanji))
+     (seq (tutcode-auto-help-get-stroke kanji rule))
      (ret (list seq1 seq))
      ;; 部首合成は遅いので、先に打鍵数をチェック
      (small-stroke? (< (tutcode-auto-help-count-stroke-length ret) min-stroke))
@@ -2719,19 +2835,20 @@
 ;;; @param b2 部首2(直接入力可能) (例: "言")
 ;;; @param seq2 b2の入力キーシーケンスと部首のリスト。
 ;;;  例: ((("b" ",")) ("言"))
+;;; @param rule tutcode-rule
 ;;; @param min-stroke-bushu-list min-strokeとbushudic内の要素のリスト。
 ;;;  例: (6 ((("性" "隹")) ("惟")))
 ;;; @return 対象文字の部首合成に必要な2つの文字とストロークのリスト。
 ;;;  bushu-listを使って合成できない場合は#f。
 ;;;  例: (((("e" "v" ".")) ("惟")) ((("b" ",")) ("言")))
 (define (tutcode-auto-help-get-stroke-list-with-left-part
-         c b1 b2 seq2 min-stroke-bushu-list)
+         c b1 b2 seq2 rule min-stroke-bushu-list)
   (and-let*
     ((min-stroke (car min-stroke-bushu-list))
      (bushu-list (cadr min-stroke-bushu-list))
      (mem (member b1 (caar bushu-list)))
      (kanji (caadr bushu-list)) ; 部首1を部品として持つ漢字
-     (seq (tutcode-auto-help-get-stroke kanji))
+     (seq (tutcode-auto-help-get-stroke kanji rule))
      (ret (list seq seq2))
      ;; 部首合成は遅いので、先に打鍵数をチェック
      (small-stroke? (< (tutcode-auto-help-count-stroke-length ret) min-stroke))
@@ -2787,17 +2904,31 @@
     word/cand))
 
 ;;; tutcode-ruleを逆引きして、変換後の文字から、入力キー列を取得する。
-;;; 例: (tutcode-reverse-find-seq "あ") => ("r" "k")
+;;; 例: (tutcode-reverse-find-seq "あ" tutcode-rule) => ("r" "k")
 ;;; @param c 変換後の文字
+;;; @param rule tutcode-rule
 ;;; @return 入力キーのリスト。tutcode-rule中にcが見つからなかった場合は#f
-(define (tutcode-reverse-find-seq c)
-  (if (null? tutcode-reverse-rule-alist)
-    (set! tutcode-reverse-rule-alist
-      (map
-        (lambda (elem)
-          (cons (caadr elem) (caar elem)))
-        tutcode-rule)))
-  (let ((res (assoc c tutcode-reverse-rule-alist)))
+(define (tutcode-reverse-find-seq c rule)
+  (let*
+    ((make-reverse-rule-alist
+      (lambda (r)
+        (map
+          (lambda (elem)
+            (cons (caadr elem) (caar elem)))
+          r)))
+     (alist
+      (if (eq? rule tutcode-kigou-rule)
+        (begin
+          (if (null? tutcode-reverse-kigou-rule-alist)
+            (set! tutcode-reverse-kigou-rule-alist
+              (make-reverse-rule-alist rule)))
+          tutcode-reverse-kigou-rule-alist)
+        (begin
+          (if (null? tutcode-reverse-rule-alist)
+            (set! tutcode-reverse-rule-alist
+              (make-reverse-rule-alist rule)))
+          tutcode-reverse-rule-alist)))
+     (res (assoc c alist)))
     (and res
       (cdr res))))
 
@@ -3038,37 +3169,110 @@
  tutcode-displace-handler
  )
 
-;;; コード表をQwertyからDvorak用に変換する。
-;;; @param qwerty Qwertyのコード表
-;;; @return Dvorakに変換したコード表
-(define (tutcode-rule-qwerty-to-dvorak qwerty)
+;;; コード表を変換する。
+;;; @param from 変換対象コード表
+;;; @param translate-alist 変換表
+;;; @return 変換したコード表
+(define (tutcode-rule-translate from translate-alist)
   (map
     (lambda (elem)
       (cons
         (list
           (map
             (lambda (key)
-              (cadr (assoc key tutcode-rule-qwerty-to-dvorak-alist)))
+              (let ((res (assoc key translate-alist)))
+                (if res
+                  (cadr res)
+                  key)))
             (caar elem)))
         (cdr elem)))
-    qwerty))
+    from))
+
+;;; コード表をQwertyからDvorak用に変換する。
+;;; @param qwerty Qwertyのコード表
+;;; @return Dvorakに変換したコード表
+(define (tutcode-rule-qwerty-to-dvorak qwerty)
+  (tutcode-rule-translate qwerty tutcode-rule-qwerty-to-dvorak-alist))
+
+;;; コード表をQwerty-jisからQwerty-us用に変換する。
+;;; @param jis Qwerty-jisのコード表
+;;; @return Qwerty-usに変換したコード表
+(define (tutcode-rule-qwerty-jis-to-qwerty-us jis)
+  (tutcode-rule-translate jis tutcode-rule-qwerty-jis-to-qwerty-us-alist))
+
+;;; kigou-ruleをキーボードレイアウトに合わせて変換する
+;;; @param layout tutcode-candidate-window-table-layout
+(define (tutcode-kigou-rule-translate layout)
+  (let
+    ((translate-stroke-help-alist
+      (lambda (lis translate-alist)
+        (map
+          (lambda (elem)
+            (cons
+              (let ((res (assoc (car elem) translate-alist)))
+                (if res
+                  (cadr res)
+                  (car elem)))
+              (cdr elem)))
+          lis))))
+    (case layout
+      ((qwerty-us)
+        (set! tutcode-kigou-rule
+          (tutcode-rule-qwerty-jis-to-qwerty-us
+            (tutcode-kigou-rule-pre-translate
+              tutcode-rule-qwerty-jis-to-qwerty-us-alist)))
+        (set! tutcode-kigou-rule-stroke-help-top-page-alist
+          (translate-stroke-help-alist 
+            tutcode-kigou-rule-stroke-help-top-page-alist
+            tutcode-rule-qwerty-jis-to-qwerty-us-alist)))
+      ((dvorak)
+        (set! tutcode-kigou-rule
+          (tutcode-rule-qwerty-to-dvorak
+            (tutcode-kigou-rule-pre-translate
+              tutcode-rule-qwerty-to-dvorak-alist)))
+        (set! tutcode-kigou-rule-stroke-help-top-page-alist
+          (translate-stroke-help-alist 
+            tutcode-kigou-rule-stroke-help-top-page-alist
+            tutcode-rule-qwerty-to-dvorak-alist))))))
+
+;;; Qwerty-jisからQwerty-usへの変換テーブル。
+(define tutcode-rule-qwerty-jis-to-qwerty-us-alist
+  '(
+    ("^" "=")
+    ("@" "[")
+    ("[" "]")
+    (":" "'")
+    ("]" "`")
+    ("\"" "@")
+    ("'" "&")
+    ("&" "^")
+    ("(" "*")
+    (")" "(")
+    ("|" ")") ;tutcode-kigou-rule用。<Shift>0をqwerty-jisでは|で代用してるので
+    ("=" "_")
+    ("~" "+")
+    ("_" "|") ;XXX
+    ("`" "{")
+    ("{" "}")
+    ("+" ":")
+    ("*" "\"")
+    ("}" "~")))
 
 ;;; QwertyからDvorakへの変換テーブル。
 (define tutcode-rule-qwerty-to-dvorak-alist
   '(
-    ;漢直で使うキー以外はコメントアウト
-    ("1" "1")
-    ("2" "2")
-    ("3" "3")
-    ("4" "4")
-    ("5" "5")
-    ("6" "6")
-    ("7" "7")
-    ("8" "8")
-    ("9" "9")
-    ("0" "0")
-    ;("-" "[")
-    ;("^" "]") ;106
+    ;("1" "1")
+    ;("2" "2")
+    ;("3" "3")
+    ;("4" "4")
+    ;("5" "5")
+    ;("6" "6")
+    ;("7" "7")
+    ;("8" "8")
+    ;("9" "9")
+    ;("0" "0")
+    ("-" "[")
+    ("^" "]") ;106
     ("q" "'")
     ("w" ",")
     ("e" ".")
@@ -3079,9 +3283,9 @@
     ("i" "c")
     ("o" "r")
     ("p" "l")
-    ;("@" "/") ;106
-    ;("[" "=") ;106
-    ("a" "a")
+    ("@" "/") ;106
+    ("[" "=") ;106
+    ;("a" "a")
     ("s" "o")
     ("d" "e")
     ("f" "u")
@@ -3091,25 +3295,33 @@
     ("k" "t")
     ("l" "n")
     (";" "s")
-    ;(":" "-") ;106
+    (":" "-") ;106
+    ("]" "`")
     ("z" ";")
     ("x" "q")
     ("c" "j")
     ("v" "k")
     ("b" "x")
     ("n" "b")
-    ("m" "m")
+    ;("m" "m")
     ("," "w")
     ("." "v")
     ("/" "z")
+    ;(" " " ")
     ;; shift
-    ;("\"" "@") ;106
-    ;("&" "^") ;106
-    ;("'" "&") ;106
-    ;("(" "*") ;106
-    ;(")" "(") ;106
-    ;("=" "{") ;106
-    ;("~" "}") ;106
+    ;("!" "!")
+    ("\"" "@") ;106
+    ;("#" "#")
+    ;("$" "$")
+    ;("%" "%")
+    ("&" "^") ;106
+    ("'" "&") ;106
+    ("(" "*") ;106
+    (")" "(") ;106
+    ("=" "{") ;106
+    ("~" "}") ;106
+    ("|" ")") ;tutcode-kigou-rule用。<Shift>0をqwerty-jisでは|で代用してるので
+    ("_" "|") ;XXX
     ("Q" "\"")
     ("W" "<")
     ("E" ">")
@@ -3120,9 +3332,9 @@
     ("I" "C")
     ("O" "R")
     ("P" "L")
-    ;("`" "?") ;106
-    ;("{" "+") ;106
-    ("A" "A")
+    ("`" "?") ;106
+    ("{" "+") ;106
+    ;("A" "A")
     ("S" "O")
     ("D" "E")
     ("F" "U")
@@ -3132,18 +3344,18 @@
     ("K" "T")
     ("L" "N")
     ("+" "S") ;106
-    ;("*" "_") ;106
+    ("*" "_") ;106
+    ("}" "~")
     ("Z" ":")
     ("X" "Q")
     ("C" "J")
     ("V" "K")
     ("B" "X")
     ("N" "B")
-    ("M" "M")
+    ;("M" "M")
     ("<" "W")
     (">" "V")
     ("?" "Z")
-    (" " " ")
     ))
 
 ;;; tutcode-customで設定されたコード表のファイル名からコード表名を作って、

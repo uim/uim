@@ -65,6 +65,12 @@
                (N_ "[TUT-Code] toggle kigou mode")
                (N_ "long description will be here"))
 
+(define-custom 'tutcode-kigou2-toggle-key '()
+               '(tutcode-keys1 mode-transition)
+               '(key)
+               (N_ "[TUT-Code] toggle two stroke kigou mode")
+               (N_ "long description will be here"))
+
 (define-custom 'tutcode-mazegaki-start-sequence "alj"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")
