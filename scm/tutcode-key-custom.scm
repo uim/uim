@@ -107,6 +107,12 @@
 	       (N_ "[TUT-Code] display last auto help")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-katakana-commit-key '()
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] commit as katakana in yomi input of mazegaki")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-stroke-help-toggle-key '("<Control>/")
                '(tutcode-keys1)
                '(key)

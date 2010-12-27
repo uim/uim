@@ -173,6 +173,7 @@
 (require "tutcode-bushudic.scm") ;部首合成変換辞書
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
 (require "tutcode-dialog.scm"); 交ぜ書き変換辞書からの削除確認ダイアログ
+(require "japanese.scm") ; for ja-wide or ja-make-kana-str{,-list}
 
 ;;; user configs
 
@@ -679,7 +680,6 @@
           ;; 記号入力モードを全角英数モードとして使うため、
           ;; tutcode-heading-label-char-list-for-kigou-modeを全角にして
           ;; tutcode-kigoudicの先頭に入れる
-          (require "japanese.scm") ; for ja-wide
           (set! tutcode-kigoudic
             (append
               (map (lambda (lst) (list (ja-wide lst)))
@@ -2287,6 +2287,14 @@
                 (not kigou2-mode?))
            (tutcode-context-set-state! pc 'tutcode-state-converting)
            (tutcode-setup-child-context pc 'tutcode-child-type-editor))
+          ((tutcode-katakana-commit-key? key key-state)
+            (tutcode-commit pc
+              ;;XXX:かなカナ混在時の反転(→カナかな)や、「ゑゐ」は未対応
+              (ja-make-kana-str (ja-make-kana-str-list head)
+                (if (tutcode-context-katakana-mode? pc)
+                  ja-type-hiragana
+                  ja-type-katakana)))
+            (tutcode-flush pc))
           ((symbol? key)
            (tutcode-flush pc)
            (tutcode-proc-state-on pc key key-state))
