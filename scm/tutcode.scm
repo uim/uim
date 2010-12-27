@@ -547,6 +547,104 @@
      ;;; 例: (((("," "r"))("石")) ((("u" "c"))("屋")) ((("u" "v"))("池")))
      (guide-chars ())
      )))
+(define-record 'tutcode-context tutcode-context-rec-spec)
+(define tutcode-context-new-internal tutcode-context-new)
+(define tutcode-context-katakana-mode? tutcode-context-katakana-mode)
+(define (tutcode-context-on? pc)
+  (not (eq? (tutcode-context-state pc) 'tutcode-state-off)))
+
+;;; TUT-Codeのコンテキストを新しく生成する。
+;;; @return 生成したコンテキスト
+(define (tutcode-context-new id im)
+  (if (not tutcode-dic)
+    (if (not (symbol-bound? 'skk-lib-dic-open))
+      (begin
+        (if (symbol-bound? 'uim-notify-info)
+          (uim-notify-info
+            (N_ "libuim-skk.so is not available. Mazegaki conversion is disabled")))
+        (set! tutcode-use-recursive-learning? #f)
+        (set! tutcode-enable-mazegaki-learning? #f))
+      (begin
+        (set! tutcode-dic (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified))
+        (if tutcode-use-recursive-learning?
+          (require "tutcode-editor.scm"))
+        (tutcode-read-personal-dictionary))))
+  (let ((tc (tutcode-context-new-internal id im)))
+    (tutcode-context-set-widgets! tc tutcode-widgets)
+    (if (null? tutcode-rule)
+      (begin
+        (tutcode-custom-load-rule! tutcode-rule-filename)
+        (if tutcode-use-dvorak?
+          (begin
+            (set! tutcode-rule (tutcode-rule-qwerty-to-dvorak tutcode-rule))
+            (set! tutcode-heading-label-char-list-for-prediction
+              tutcode-heading-label-char-list-for-prediction-dvorak)))
+        ;; tutcode-mazegaki/bushu-start-sequenceは、
+        ;; tutcode-use-dvorak?がオンのときはDvorakのシーケンスとみなして反映。
+        ;; つまり、ruleのqwerty-to-dvorak変換後に反映する。
+        (tutcode-custom-set-mazegaki/bushu-start-sequence!)
+        (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
+    ;; 表形式候補ウィンドウ用設定
+    (if (null? tutcode-heading-label-char-list)
+      (if tutcode-use-table-style-candidate-window?
+        (set! tutcode-heading-label-char-list
+          (case tutcode-candidate-window-table-layout
+            ((qwerty-jis) tutcode-table-heading-label-char-list-qwerty-jis)
+            ((qwerty-us) tutcode-table-heading-label-char-list-qwerty-us)
+            ((dvorak) tutcode-table-heading-label-char-list-dvorak)
+            (else tutcode-table-heading-label-char-list)))
+        (set! tutcode-heading-label-char-list
+          tutcode-uim-heading-label-char-list)))
+    (if (null? tutcode-heading-label-char-list-for-kigou-mode)
+      (if tutcode-use-table-style-candidate-window?
+        (begin
+          (set! tutcode-heading-label-char-list-for-kigou-mode
+            tutcode-table-heading-label-char-list-for-kigou-mode)
+          ;; 記号入力モードを全角英数モードとして使うため、
+          ;; tutcode-heading-label-char-list-for-kigou-modeを全角にして
+          ;; tutcode-kigoudicの先頭に入れる
+          (require "japanese.scm") ; for ja-wide
+          (set! tutcode-kigoudic
+            (append
+              (map (lambda (lst) (list (ja-wide lst)))
+                tutcode-heading-label-char-list-for-kigou-mode)
+              (list-tail tutcode-kigoudic
+                (length tutcode-heading-label-char-list-for-kigou-mode)))))
+        (set! tutcode-heading-label-char-list-for-kigou-mode
+          tutcode-uim-heading-label-char-list-for-kigou-mode)))
+    (tutcode-context-set-rk-context! tc (rk-context-new tutcode-rule #t #f))
+    (if tutcode-use-recursive-learning?
+      (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
+    (tutcode-context-set-dialog! tc (tutcode-dialog-new tc))
+    (if (or tutcode-use-completion? tutcode-use-prediction?)
+      (begin
+        (tutcode-context-set-prediction-ctx! tc (predict-make-meta-search))
+        (predict-meta-open (tutcode-context-prediction-ctx tc) "tutcode")
+        (predict-meta-set-external-charset! (tutcode-context-prediction-ctx tc) "EUC-JP")))
+    tc))
+
+;;; ひらがな/カタカナモードの切り替えを行う。
+;;; 現状の状態がひらがなモードの場合はカタカナモードに切り替える。
+;;; 現状の状態がカタカナモードの場合はひらがなモードに切り替える。
+;;; @param pc コンテキストリスト
+(define (tutcode-context-kana-toggle pc)
+  (let ((s (tutcode-context-katakana-mode? pc)))
+    (tutcode-context-set-katakana-mode! pc (not s))))
+
+;;; 根っこのコンテキストを取得する。
+(define (tutcode-find-root-context pc)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (if (null? ppc)
+      pc
+      (tutcode-find-root-context ppc))))
+
+;;; 枝先のコンテキスト(交ぜ書き変換の再帰的登録の一番深いところ
+;;; =現在編集中のコンテキスト)を取得する。
+(define (tutcode-find-descendant-context pc)
+  (let ((cpc (tutcode-context-child-context pc)))
+    (if (null? cpc)
+      pc
+      (tutcode-find-descendant-context cpc))))
 
 (define (tutcode-predict pc str)
   (predict-meta-search
@@ -766,105 +864,6 @@
         (tutcode-auto-help-update-stroke-alist-with-key label-cands-alist
           kanji (car stroke))
         (cdr kanji-list)))))
-
-(define-record 'tutcode-context tutcode-context-rec-spec)
-(define tutcode-context-new-internal tutcode-context-new)
-(define tutcode-context-katakana-mode? tutcode-context-katakana-mode)
-(define (tutcode-context-on? pc)
-  (not (eq? (tutcode-context-state pc) 'tutcode-state-off)))
-
-;;; TUT-Codeのコンテキストを新しく生成する。
-;;; @return 生成したコンテキスト
-(define (tutcode-context-new id im)
-  (if (not tutcode-dic)
-    (if (not (symbol-bound? 'skk-lib-dic-open))
-      (begin
-        (if (symbol-bound? 'uim-notify-info)
-          (uim-notify-info
-            (N_ "libuim-skk.so is not available. Mazegaki conversion is disabled")))
-        (set! tutcode-use-recursive-learning? #f)
-        (set! tutcode-enable-mazegaki-learning? #f))
-      (begin
-        (set! tutcode-dic (skk-lib-dic-open tutcode-dic-filename #f "localhost" 0 'unspecified))
-        (if tutcode-use-recursive-learning?
-          (require "tutcode-editor.scm"))
-        (tutcode-read-personal-dictionary))))
-  (let ((tc (tutcode-context-new-internal id im)))
-    (tutcode-context-set-widgets! tc tutcode-widgets)
-    (if (null? tutcode-rule)
-      (begin
-        (tutcode-custom-load-rule! tutcode-rule-filename)
-        (if tutcode-use-dvorak?
-          (begin
-            (set! tutcode-rule (tutcode-rule-qwerty-to-dvorak tutcode-rule))
-            (set! tutcode-heading-label-char-list-for-prediction
-              tutcode-heading-label-char-list-for-prediction-dvorak)))
-        ;; tutcode-mazegaki/bushu-start-sequenceは、
-        ;; tutcode-use-dvorak?がオンのときはDvorakのシーケンスとみなして反映。
-        ;; つまり、ruleのqwerty-to-dvorak変換後に反映する。
-        (tutcode-custom-set-mazegaki/bushu-start-sequence!)
-        (tutcode-rule-commit-sequences! tutcode-rule-userconfig)))
-    ;; 表形式候補ウィンドウ用設定
-    (if (null? tutcode-heading-label-char-list)
-      (if tutcode-use-table-style-candidate-window?
-        (set! tutcode-heading-label-char-list
-          (case tutcode-candidate-window-table-layout
-            ((qwerty-jis) tutcode-table-heading-label-char-list-qwerty-jis)
-            ((qwerty-us) tutcode-table-heading-label-char-list-qwerty-us)
-            ((dvorak) tutcode-table-heading-label-char-list-dvorak)
-            (else tutcode-table-heading-label-char-list)))
-        (set! tutcode-heading-label-char-list
-          tutcode-uim-heading-label-char-list)))
-    (if (null? tutcode-heading-label-char-list-for-kigou-mode)
-      (if tutcode-use-table-style-candidate-window?
-        (begin
-          (set! tutcode-heading-label-char-list-for-kigou-mode
-            tutcode-table-heading-label-char-list-for-kigou-mode)
-          ;; 記号入力モードを全角英数モードとして使うため、
-          ;; tutcode-heading-label-char-list-for-kigou-modeを全角にして
-          ;; tutcode-kigoudicの先頭に入れる
-          (require "japanese.scm") ; for ja-wide
-          (set! tutcode-kigoudic
-            (append
-              (map (lambda (lst) (list (ja-wide lst)))
-                tutcode-heading-label-char-list-for-kigou-mode)
-              (list-tail tutcode-kigoudic
-                (length tutcode-heading-label-char-list-for-kigou-mode)))))
-        (set! tutcode-heading-label-char-list-for-kigou-mode
-          tutcode-uim-heading-label-char-list-for-kigou-mode)))
-    (tutcode-context-set-rk-context! tc (rk-context-new tutcode-rule #t #f))
-    (if tutcode-use-recursive-learning?
-      (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
-    (tutcode-context-set-dialog! tc (tutcode-dialog-new tc))
-    (if (or tutcode-use-completion? tutcode-use-prediction?)
-      (begin
-        (tutcode-context-set-prediction-ctx! tc (predict-make-meta-search))
-        (predict-meta-open (tutcode-context-prediction-ctx tc) "tutcode")
-        (predict-meta-set-external-charset! (tutcode-context-prediction-ctx tc) "EUC-JP")))
-    tc))
-
-;;; ひらがな/カタカナモードの切り替えを行う。
-;;; 現状の状態がひらがなモードの場合はカタカナモードに切り替える。
-;;; 現状の状態がカタカナモードの場合はひらがなモードに切り替える。
-;;; @param pc コンテキストリスト
-(define (tutcode-context-kana-toggle pc)
-  (let ((s (tutcode-context-katakana-mode? pc)))
-    (tutcode-context-set-katakana-mode! pc (not s))))
-
-;;; 根っこのコンテキストを取得する。
-(define (tutcode-find-root-context pc)
-  (let ((ppc (tutcode-context-parent-context pc)))
-    (if (null? ppc)
-      pc
-      (tutcode-find-root-context ppc))))
-
-;;; 枝先のコンテキスト(交ぜ書き変換の再帰的登録の一番深いところ
-;;; =現在編集中のコンテキスト)を取得する。
-(define (tutcode-find-descendant-context pc)
-  (let ((cpc (tutcode-context-child-context pc)))
-    (if (null? cpc)
-      pc
-      (tutcode-find-descendant-context cpc))))
 
 ;;; 交ぜ書き変換用個人辞書を読み込む。
 (define (tutcode-read-personal-dictionary)
