@@ -38,7 +38,16 @@
 ;;;   前置型のみ実装しています。
 ;;;   再帰的な部首合成変換も可能です。
 ;;;   部首合成のアルゴリズムはtc-2.1のものです。
-;;; 
+;;;
+;;; * 対話的な部首合成変換
+;;;   以下のような設定をすると使用可能になります。
+;;;   (define tutcode-use-interactive-bushu-conversion? #t)
+;;;   (define tutcode-bushu-index2-filename "/usr/local/share/tc/bushu.index2")
+;;;   (define tutcode-bushu-expand-filename "/usr/local/share/tc/bushu.expand")
+;;;   (define tutcode-interactive-bushu-start-sequence "als")
+;;;   bushu.index2とbushu.expandファイルは、
+;;;   tc-2.3.1のインストール時に生成・インストールされるファイルです。
+;;;
 ;;; 【交ぜ書き変換】(alj)
 ;;;   単純な前置型交ぜ書き変換ができます。
 ;;;   交ぜ書き変換辞書はtc2と同じ形式(SKK辞書と同様の形式)です。
@@ -521,6 +530,7 @@
      ;;; 'tutcode-state-yomi 交ぜ書き変換の読み入力中
      ;;; 'tutcode-state-converting 交ぜ書き変換の候補選択中
      ;;; 'tutcode-state-bushu 部首入力・変換中
+     ;;; 'tutcode-state-interactive-bushu 対話的部首合成変換中
      ;;; 'tutcode-state-kigou 記号入力モード
      (state 'tutcode-state-off)
      ;;; カタカナモードかどうか
@@ -540,6 +550,7 @@
      ;;; 'tutcode-candidate-window-stroke-help 仮想鍵盤表示中
      ;;; 'tutcode-candidate-window-auto-help 自動ヘルプ表示中
      ;;; 'tutcode-candidate-window-predicting 補完/予測入力候補表示中
+     ;;; 'tutcode-candidate-window-interactive-bushu 対話的部首合成変換候補表示
      (candidate-window 'tutcode-candidate-window-off)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
@@ -569,6 +580,7 @@
      ;;; 'tutcode-predicting-completion 補完候補選択中
      ;;; 'tutcode-predicting-prediction 交ぜ書き変換時の予測入力候補選択中
      ;;; 'tutcode-predicting-bushu 部首合成変換時の予測入力候補選択中
+     ;;; 'tutcode-predicting-interactive-bushu 対話的部首合成変換中
      (predicting 'tutcode-predicting-off)
      ;;; 補完/予測入力用コンテキスト
      (prediction-ctx ())
@@ -581,7 +593,7 @@
      ;;; 補完/予測入力候補数
      (prediction-nr 0)
      ;;; 補完/予測入力候補の現在選択されているインデックス(熟語ガイド込み)
-     (prediction-index #f)
+     (prediction-index 0)
      ;;; 補完/予測入力候補数(熟語ガイド分含む)
      (prediction-nr-all 0)
      ;;; ページごとの補完/予測入力の候補表示数(熟語ガイド分は除く)
@@ -685,6 +697,8 @@
     (if tutcode-use-recursive-learning?
       (tutcode-context-set-editor! tc (tutcode-editor-new tc)))
     (tutcode-context-set-dialog! tc (tutcode-dialog-new tc))
+    (if tutcode-use-interactive-bushu-conversion?
+      (require "tutcode-bushu.scm"))
     (if (or tutcode-use-completion? tutcode-use-prediction?)
       (begin
         (tutcode-context-set-prediction-ctx! tc (predict-make-meta-search))
@@ -1163,10 +1177,15 @@
     (if (>= i 0)
       (begin
         (tutcode-context-set-prediction-index! pc i)
-        (if (eq? mode 'tutcode-predicting-bushu)
-          (tutcode-do-commit-prediction-for-bushu pc)
-          (tutcode-do-commit-prediction pc
-            (eq? mode 'tutcode-predicting-completion)))))))
+        (case mode
+          ((tutcode-predicting-bushu)
+            (tutcode-do-commit-prediction-for-bushu pc))
+          ((tutcode-predicting-interactive-bushu)
+            (tutcode-do-commit-prediction-for-interactive-bushu pc))
+          ((tutcode-predicting-completion)
+            (tutcode-do-commit-prediction pc #t))
+          (else
+            (tutcode-do-commit-prediction pc #f)))))))
 
 (define (tutcode-get-prediction-string pc)
   (tutcode-lib-get-nth-prediction
@@ -1194,6 +1213,14 @@
   (let ((str (tutcode-get-prediction-string pc)))
     (tutcode-reset-candidate-window pc)
     (tutcode-bushu-commit pc str)))
+
+;;; 対話的部首合成変換時の候補を確定する
+(define (tutcode-do-commit-prediction-for-interactive-bushu pc)
+  (let ((str (tutcode-get-prediction-string pc)))
+    (tutcode-reset-candidate-window pc)
+    (tutcode-commit pc str)
+    (tutcode-flush pc)
+    (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
 
 ;;; 交ぜ書き変換辞書から、現在選択されている候補を削除する。
 (define (tutcode-purge-candidate pc)
@@ -1434,6 +1461,7 @@
             ((tutcode-mazegaki-start) "◇")
             ((tutcode-latin-conv-start) "/")
             ((tutcode-bushu-start) "◆")
+            ((tutcode-interactive-bushu-start) "▼")
             ((tutcode-auto-help-redisplay) "≪")
             (else cand)))
          (cand-hint
@@ -1748,11 +1776,22 @@
         (let ((h (tutcode-make-string (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h))))
+      ((tutcode-state-interactive-bushu)
+        (im-pushback-preedit pc preedit-none "▼")
+        (let ((h (tutcode-make-string (tutcode-context-head pc))))
+          (if (string? h)
+            (im-pushback-preedit pc preedit-none h)))
+        (im-pushback-preedit pc preedit-cursor "")
+        (if (> (tutcode-lib-get-nr-predictions pc) 0)
+          (begin
+            (im-pushback-preedit pc preedit-underline "=>")
+            (im-pushback-preedit pc preedit-underline
+              (tutcode-get-prediction-string pc)))))
       ((tutcode-state-kigou)
         ;; 候補ウィンドウ非表示時でも候補選択できるようにpreedit表示
         (im-pushback-preedit pc preedit-reverse
           (tutcode-get-current-candidate-for-kigou-mode pc))))
-    (if (null? cpc)
+    (if (and (null? cpc) (not (eq? stat 'tutcode-state-interactive-bushu)))
       (im-pushback-preedit pc preedit-cursor ""))))
 
 ;;; preedit表示を更新する。
@@ -2085,6 +2124,10 @@
                 ((tutcode-bushu-start)
                   (tutcode-context-set-state! pc 'tutcode-state-bushu)
                   (tutcode-append-string pc "▲"))
+                ((tutcode-interactive-bushu-start)
+                  (tutcode-context-set-prediction-nr! pc 0)
+                  (tutcode-context-set-state! pc
+                    'tutcode-state-interactive-bushu))
                 ((tutcode-auto-help-redisplay)
                   (tutcode-auto-help-redisplay pc))
                 (else
@@ -2287,6 +2330,8 @@
               (tutcode-auto-help-redisplay pc)
               (set! res #f))
             ((tutcode-bushu-start)
+              (set! res #f))
+            ((tutcode-interactive-bushu-start)
               (set! res #f)))))
         (if res
           (begin
@@ -2385,6 +2430,8 @@
           (set! res #f))
         ((tutcode-bushu-start) ; 再帰的な部首合成変換
           (tutcode-append-string pc "▲")
+          (set! res #f))
+        ((tutcode-interactive-bushu-start)
           (set! res #f)))))
     (if res
       (tutcode-begin-bushu-conversion pc res))))
@@ -2421,6 +2468,155 @@
     ;; (合成した文字が2文字目ならば、連続して部首合成変換)
     (tutcode-begin-bushu-conversion pc convchar)))
 
+;;; 対話的部首合成変換のときのキー入力を処理する。
+;;; @param c コンテキストリスト
+;;; @param key 入力されたキー
+;;; @param key-state コントロールキー等の状態
+(define (tutcode-proc-state-interactive-bushu c key key-state)
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (rkc (tutcode-context-rk-context pc))
+     (head (tutcode-context-head pc))
+     (res #f)
+     (has-candidate? (> (tutcode-context-prediction-nr pc) 0))
+     ;; 候補表示のページ移動時は、reset-candidate-windowしたら駄目
+     (candidate-selection-keys-handled?
+      (if has-candidate?
+        (cond
+          ((tutcode-next-page-key? key key-state)
+            (tutcode-change-prediction-page pc #t)
+            #t)
+          ((tutcode-prev-page-key? key key-state)
+            (tutcode-change-prediction-page pc #f)
+            #t)
+          ((and (tutcode-next-candidate-key? key key-state)
+                ;; 2打鍵目のスペースキーの場合は候補選択ではない
+                (= (length (rk-context-seq rkc)) 0))
+            (tutcode-change-prediction-index pc 1)
+            #t)
+          ((tutcode-prev-candidate-key? key key-state)
+            (tutcode-change-prediction-index pc -1)
+            #t)
+          (else
+            #f))
+        #f)))
+    (if (not candidate-selection-keys-handled?)
+      (begin
+        (tutcode-reset-candidate-window pc)
+        (cond
+          ((tutcode-off-key? key key-state)
+           (tutcode-flush pc)
+           (tutcode-context-set-state! pc 'tutcode-state-off))
+          ((and (tutcode-kana-toggle-key? key key-state)
+                (not (tutcode-kigou2-mode? pc)))
+           (rk-flush rkc)
+           (tutcode-context-kana-toggle pc))
+          ((tutcode-kigou2-toggle-key? key key-state)
+           (rk-flush rkc)
+           (tutcode-toggle-kigou2-mode pc))
+          ((tutcode-backspace-key? key key-state)
+           (if (> (length (rk-context-seq rkc)) 0)
+            (rk-flush rkc)
+            (if (> (length head) 0)
+              (begin
+                (tutcode-context-set-head! pc (cdr head))
+                (if has-candidate?
+                  (tutcode-begin-interactive-bushu-conversion pc))))))
+          ((or
+            (tutcode-commit-key? key key-state)
+            (tutcode-return-key? key key-state))
+           (let ((str
+                  (cond
+                    (has-candidate?
+                      (tutcode-get-prediction-string pc))
+                    ((> (length head) 0)
+                      (tutcode-make-string (tutcode-context-head pc)))
+                    (else
+                      #f))))
+             (if str (tutcode-commit pc str))
+             (tutcode-flush pc)
+             (if str (tutcode-check-auto-help-window-begin pc (list str) ()))))
+          ((tutcode-cancel-key? key key-state)
+           (tutcode-flush pc))
+          ((tutcode-stroke-help-toggle-key? key key-state)
+           (tutcode-toggle-stroke-help pc))
+          ((or
+            (symbol? key)
+            (and
+              (modifier-key-mask key-state)
+              (not (shift-key-mask key-state))))
+           (tutcode-flush pc)
+           (tutcode-proc-state-on pc key key-state))
+          ((and (tutcode-heading-label-char-for-prediction? key)
+                (= (length (rk-context-seq rkc)) 0))
+            (tutcode-commit-by-label-key-for-prediction pc
+              (charcode->string key) 'tutcode-predicting-interactive-bushu))
+          ((not (rk-expect-key? rkc (charcode->string key)))
+           (if (> (length (rk-context-seq rkc)) 0)
+             (rk-flush rkc)
+             (set! res (charcode->string key))))
+          (else
+           (set! res (tutcode-push-key! pc (charcode->string key)))
+           (case res
+            ((tutcode-mazegaki-start) ;XXX 部首合成変換中は交ぜ書き変換は無効化
+              (set! res #f))
+            ((tutcode-latin-conv-start)
+              (set! res #f))
+            ((tutcode-auto-help-redisplay)
+              (tutcode-auto-help-redisplay pc)
+              (set! res #f))
+            ((tutcode-bushu-start)
+              (set! res #f))
+            ((tutcode-interactive-bushu-start)
+              (set! res #f)))))
+        (if res
+          (begin
+            (tutcode-append-string pc res)
+            (tutcode-begin-interactive-bushu-conversion pc)))))))
+
+;;; 対話的部首合成変換開始
+(define (tutcode-begin-interactive-bushu-conversion pc)
+  (let*
+    ((head (tutcode-context-head pc))
+     (res
+      (if (null? head)
+        ()
+        (tutcode-bushu-compose-interactively (reverse head)))))
+    (cond
+      ;; BSで入力文字が全部消された場合、preeditの候補を消すためnrを0に
+      ((null? head)
+        (tutcode-context-set-prediction-nr! pc 0)
+        (tutcode-context-set-prediction-candidates! pc ()))
+      ;; 新たな入力文字を加えた合成不能→新たな入力文字を削除
+      ((null? res)
+        (tutcode-context-set-head! pc (cdr (tutcode-context-head pc)))
+        (tutcode-context-set-candidate-window! pc
+          'tutcode-candidate-window-interactive-bushu)
+        (im-activate-candidate-selector pc
+          (tutcode-context-prediction-nr-all pc)
+          (tutcode-context-prediction-page-limit pc)))
+      (else
+        (let ((nr (length res)))
+          (tutcode-context-set-prediction-word! pc ())
+          (tutcode-context-set-prediction-candidates! pc res)
+          (tutcode-context-set-prediction-appendix! pc ())
+          (tutcode-context-set-prediction-nr! pc nr)
+          (tutcode-context-set-prediction-index! pc 0)
+          (let*
+            ((params (tutcode-prediction-calc-window-param nr 0))
+             (nr-all (list-ref params 0)) ; 全候補数
+             (page-limit (list-ref params 1)) ; ページ内候補数
+             (nr-in-page (list-ref params 2))) ; ページ内候補数
+            (if (> page-limit 0)
+              (begin
+                ;; 予測入力候補用変数を流用
+                (tutcode-context-set-prediction-nr-in-page! pc nr-in-page)
+                (tutcode-context-set-prediction-page-limit! pc page-limit)
+                (tutcode-context-set-prediction-nr-all! pc nr-all)
+                (tutcode-context-set-candidate-window! pc
+                  'tutcode-candidate-window-interactive-bushu)
+                (im-activate-candidate-selector pc nr-all page-limit)))))))))
+
 ;;; 新しい候補を選択する
 ;;; @param pc コンテキストリスト
 ;;; @param num 現在の候補番号から新候補番号までのオフセット
@@ -2444,16 +2640,12 @@
                     'tutcode-candidate-window-off))
         (im-select-candidate pc (tutcode-context-nth pc))))))
 
-;;; 次/前ページの補完/予測入力候補を表示する
-;;; @param next? #t:次ページ, #f:前ページ
-(define (tutcode-change-prediction-page pc next?)
+;;; 新しい補完/予測入力候補を選択する
+;;; @param num 現在の候補番号から新候補番号までのオフセット
+(define (tutcode-change-prediction-index pc num)
   (let* ((nr-all (tutcode-context-prediction-nr-all pc))
          (idx (tutcode-context-prediction-index pc))
-         (page-limit (tutcode-context-prediction-page-limit pc))
-         (n (+ idx
-              (if next?
-                page-limit
-                (- page-limit))))
+         (n (+ idx num))
          (compensated-n
           (cond
            ((>= n nr-all) (- nr-all 1))
@@ -2461,6 +2653,12 @@
            (else n))))
     (tutcode-context-set-prediction-index! pc compensated-n)
     (im-select-candidate pc compensated-n)))
+
+;;; 次/前ページの補完/予測入力候補を表示する
+;;; @param next? #t:次ページ, #f:前ページ
+(define (tutcode-change-prediction-page pc next?)
+  (let ((page-limit (tutcode-context-prediction-page-limit pc)))
+    (tutcode-change-prediction-index pc (if next? page-limit (- page-limit)))))
 
 ;;; 次/前ページの部首合成変換の予測入力候補を表示する
 ;;; @param next? #t:次ページ, #f:前ページ
@@ -2939,7 +3137,7 @@
     (not (null? (tutcode-context-child-context pc)))
     (memq (tutcode-context-state pc)
       '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
-                           tutcode-state-kigou))))
+        tutcode-state-interactive-bushu tutcode-state-kigou))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param c コンテキストリスト
@@ -2967,6 +3165,9 @@
           ((tutcode-state-bushu)
            (tutcode-proc-state-bushu pc key key-state)
            (tutcode-update-preedit pc))
+          ((tutcode-state-interactive-bushu)
+           (tutcode-proc-state-interactive-bushu pc key key-state)
+           (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
            (if (tutcode-state-has-preedit? c) ; 再帰学習時
@@ -2977,7 +3178,8 @@
             (if
               (and
                 (memq (tutcode-context-state newpc)
-                  '(tutcode-state-on tutcode-state-yomi tutcode-state-bushu))
+                  '(tutcode-state-on tutcode-state-yomi tutcode-state-bushu
+                    tutcode-state-interactive-bushu))
                 (not (tutcode-context-latin-conv newpc)))
               (tutcode-check-stroke-help-window-begin newpc)))))))
 
@@ -3037,6 +3239,9 @@
               (cond
                 ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
                   tutcode-nr-candidate-max-for-kigou-mode)
+                ((eq? (tutcode-context-state tc)
+                      'tutcode-state-interactive-bushu)
+                  (tutcode-context-prediction-page-limit tc))
                 ((not (eq? (tutcode-context-predicting tc)
                            'tutcode-predicting-off))
                   (tutcode-context-prediction-page-limit tc))
@@ -3101,6 +3306,22 @@
       ((eq? (tutcode-context-candidate-window tc)
             'tutcode-candidate-window-auto-help)
         (nth idx (tutcode-context-auto-help tc)))
+      ;; 対話的部首合成変換
+      ((eq? (tutcode-context-state tc) 'tutcode-state-interactive-bushu)
+        (let*
+          ;; 予測入力候補用変数を流用
+          ((nr-in-page (tutcode-context-prediction-nr-in-page tc))
+           (page-limit (tutcode-context-prediction-page-limit tc))
+           (pages (quotient idx page-limit))
+           (idx-in-page (remainder idx page-limit))
+           (nr-predictions (tutcode-lib-get-nr-predictions tc))
+           (p-idx (+ idx-in-page (* pages nr-in-page)))
+           (i (remainder p-idx nr-predictions))
+           (cand (tutcode-lib-get-nth-prediction tc i))
+           (n (remainder p-idx
+                (length tutcode-heading-label-char-list-for-prediction)))
+           (label (nth n tutcode-heading-label-char-list-for-prediction)))
+          (list cand label "")))
       ;; 交ぜ書き変換
       (else
         (let* ((cand (tutcode-get-nth-candidate tc idx))
@@ -3123,8 +3344,9 @@
           (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
           (tutcode-commit-with-auto-help pc))
         (tutcode-update-preedit pc))
-      ((and (eq? candwin 'tutcode-candidate-window-predicting)
-          (>= idx 0))
+      ((and (or (eq? candwin 'tutcode-candidate-window-predicting)
+                (eq? candwin 'tutcode-candidate-window-interactive-bushu))
+            (>= idx 0))
         (let*
           ((nr-in-page (tutcode-context-prediction-nr-in-page pc))
            (page-limit (tutcode-context-prediction-page-limit pc))
@@ -3137,10 +3359,12 @@
                (i (remainder p-idx nr-predictions))
                (mode (tutcode-context-predicting pc)))
               (tutcode-context-set-prediction-index! pc i)
-              (if (eq? mode 'tutcode-predicting-bushu)
-                (tutcode-do-commit-prediction-for-bushu pc)
-                (tutcode-do-commit-prediction pc
-                  (eq? mode 'tutcode-predicting-completion)))
+              (if (eq? candwin 'tutcode-candidate-window-interactive-bushu)
+                (tutcode-do-commit-prediction-for-interactive-bushu pc)
+                (if (eq? mode 'tutcode-predicting-bushu)
+                  (tutcode-do-commit-prediction-for-bushu pc)
+                  (tutcode-do-commit-prediction pc
+                    (eq? mode 'tutcode-predicting-completion))))
               (tutcode-update-preedit pc))))))))
 
 (tutcode-configure-widgets)
@@ -3413,6 +3637,11 @@
      (bushu-rule
       (make-subrule tutcode-bushu-start-sequence
         '(tutcode-bushu-start)))
+     (interactive-bushu-rule
+      (and
+        tutcode-use-interactive-bushu-conversion?
+        (make-subrule tutcode-interactive-bushu-start-sequence
+          '(tutcode-interactive-bushu-start))))
      (auto-help-rule
       (make-subrule tutcode-auto-help-redisplay-sequence
         '(tutcode-auto-help-redisplay))))
@@ -3422,6 +3651,8 @@
       (tutcode-rule-set-sequences! latin-conv-rule))
     (if bushu-rule
       (tutcode-rule-set-sequences! bushu-rule))
+    (if interactive-bushu-rule
+      (tutcode-rule-set-sequences! interactive-bushu-rule))
     (if auto-help-rule
       (tutcode-rule-set-sequences! auto-help-rule))))
 

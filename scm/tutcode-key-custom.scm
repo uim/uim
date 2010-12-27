@@ -83,6 +83,12 @@
 	       (N_ "[TUT-Code] bushu conversion mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-interactive-bushu-start-sequence ""
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] interactive bushu conversion mode")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-latin-conv-start-sequence "al/"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")

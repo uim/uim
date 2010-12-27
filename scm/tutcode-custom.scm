@@ -43,6 +43,10 @@
                      (N_ "TUT-Code dictionaries")
                      (N_ "Dictionary settings for TUT-Code"))
 
+(define-custom-group 'tutcode-bushu
+                     (N_ "Bushu conversion")
+                     (N_ "Bushu conversion settings for TUT-Code"))
+
 (define-custom-group 'tutcode-prediction
                     (N_ "Prediction")
                     (N_ "long description will be here."))
@@ -100,6 +104,26 @@
   '(tutcode)
   '(boolean)
   (N_ "Enable two stroke kigou mode")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-use-interactive-bushu-conversion? #f
+  '(tutcode tutcode-bushu)
+  '(boolean)
+  (N_ "Enable interactive bushu conversion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-bushu-index2-filename (string-append (sys-datadir)
+						 "/tc/bushu.index2")
+  '(tutcode tutcode-bushu)
+  '(pathname regular-file)
+  (N_ "bushu.index2 file")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-bushu-expand-filename (string-append (sys-datadir)
+						 "/tc/bushu.expand")
+  '(tutcode tutcode-bushu)
+  '(pathname regular-file)
+  (N_ "bushu.expand file")
   (N_ "long description will be here."))
 
 ;;
@@ -282,3 +306,13 @@
 		 'custom-activity-hooks
 		 (lambda ()
 		   tutcode-use-table-style-candidate-window?))
+
+(custom-add-hook 'tutcode-bushu-index2-filename
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-interactive-bushu-conversion?))
+
+(custom-add-hook 'tutcode-bushu-expand-filename
+		 'custom-activity-hooks
+		 (lambda ()
+		   tutcode-use-interactive-bushu-conversion?))
