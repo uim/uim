@@ -178,6 +178,7 @@ static void update_personal_dictionary_cache_with_file(dic_info *skk_dic,
 		const char *fn, int is_personal);
 static void look_get_comp(struct skk_comp_array *ca, const char *str);
 static uim_lisp look_get_top_word(const char *str);
+static char *quote_word(const char *word, const char *prefix);
 
 /* skkserv connection */
 #define SKK_SERV_BUFSIZ	1024
@@ -403,6 +404,12 @@ okuri_in_bracket(char *str)
 
   p = uim_strdup(str);
   term = next_slash_in_bracket(p);
+
+  if (*term == '\0') {
+    /* this is not the bracket used for skk-henkan-strict-okuri-precedence */
+    return NULL;
+  }
+  
   *term = '\0';
   return p;
 }
@@ -628,9 +635,19 @@ compose_line_parts(dic_info *di, struct skk_line *sl,
     if (tmp) {
       if (tmp[0] == '[') {
 	char *str = okuri_in_bracket(&tmp[1]);
-	tmp[0] = ' '; /* create first_space */
-	compose_line_parts(di, sl, str, &tmp[0]);
-	free(str);
+	if (!str) {
+	  /*
+	   * this is not the bracket used for
+	   * skk-henkan-strict-okuri-precedence
+	   */
+	  char *quoted = quote_word(tmp, "(concat \"");
+	  push_back_candidate_to_array(ca, quoted);
+	  free(quoted);
+	} else {
+	  tmp[0] = ' '; /* create first_space */
+	  compose_line_parts(di, sl, str, &tmp[0]);
+	  free(str);
+	}
       } else if (tmp[0] != ']') {
 	push_back_candidate_to_array(ca, tmp);
       }
