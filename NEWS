@@ -6,9 +6,9 @@ Overview of changes from 1.6.0 to 1.6.1
       intended for skk-henkan-strict-okuri-precedence.
 
   - libuim-skk.so
-    * Fix contamination of dictionary file of SKK-JISYO and tutcode's
-      mazegaki dictionary when user switches between uim-skk and
-      uim-tutcode dynamically.
+    * Fix possible contamination of dictionary file of SKK-JISYO and
+      tutcode's mazegaki dictionary when user switches between uim-skk
+      and uim-tutcode dynamically.
 
 * Enhancements
   - uim-tutcode
