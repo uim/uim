@@ -1,5 +1,15 @@
 Overview of changes from 1.6.0 to 1.6.1
 =======================================
+* Fixes
+  - uim-skk
+    * Don't crash with malformed words having brackets which are not
+      intended for skk-henkan-strict-okuri-precedence.
+
+  - libuim-skk.so
+    * Fix contamination of dictionary file of SKK-JISYO and tutcode's
+      mazegaki dictionary when user switches between uim-skk and
+      uim-tutcode dynamically.
+
 * Enhancements
   - uim-tutcode
     * Interactive bushu conversion
@@ -12,6 +22,23 @@ Overview of changes from 1.6.0 to 1.6.1
     * Add function to redisplay last auto help
     * Show kanji on auto help
     * Show hint kanji for intermediate sequence on virtual keyboard
+
+  - uim-pref
+    * Add configuration 'uim-pref-suppress-dot-uim-warning-dialog?'
+      (Set this variable #t in ~/.uim if you'd like to suppress the
+      dialog)
+
+  - uim.el
+    * Support Emacs24 (by Kan-Ru Chen, #31539)
+
+* Others
+  - Enable compilation even when the home directory of chrooted build
+    environment is non-writable (e.g. nobody user)
+
+  - tcode, trycode, and hangul modules are no longer enabled by
+    default.  Use more sophisticated tutcode and byeoru modules
+    instead.
+
 
 Overview of changes from 1.6.0-beta to 1.6.0
 ============================================
