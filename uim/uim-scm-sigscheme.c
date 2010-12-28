@@ -87,7 +87,7 @@ static void *uim_scm_callf_internal(struct callf_args *args);
 static void *uim_scm_c_int_internal(void *uim_lisp_integer);
 static void *uim_scm_make_int_internal(void *integer);
 static void *uim_scm_c_char_internal(void *uim_lisp_ch);
-static void *uim_scm_make_char_internal(void *ch);
+static void *uim_scm_make_char_internal(intptr_t ch);
 static const char *uim_scm_refer_c_str_internal(void *uim_lisp_str);
 static void *uim_scm_make_str_internal(const char *str);
 static void *uim_scm_make_str_directly_internal(char *str);
@@ -259,12 +259,11 @@ uim_scm_make_char(long ch)
 {
   assert(uim_scm_gc_any_contextp());
 
-  return (uim_lisp)uim_scm_call_with_gc_ready_stack(uim_scm_make_char_internal,
-                                                    (void *)(intptr_t)ch);
+  return (uim_lisp)uim_scm_call_with_gc_ready_stack((uim_gc_gate_func_ptr)uim_scm_make_char_internal, (void *)(intptr_t)ch);
 }
 
 static void *
-uim_scm_make_char_internal(void *ch)
+uim_scm_make_char_internal(intptr_t ch)
 {
   return (void *)SCM_MAKE_CHAR((scm_ichar_t)ch);
 }
