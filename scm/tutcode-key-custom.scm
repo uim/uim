@@ -65,6 +65,12 @@
                (N_ "[TUT-Code] toggle kigou mode")
                (N_ "long description will be here"))
 
+(define-custom 'tutcode-kigou2-toggle-key '()
+               '(tutcode-keys1 mode-transition)
+               '(key)
+               (N_ "[TUT-Code] toggle two stroke kigou mode")
+               (N_ "long description will be here"))
+
 (define-custom 'tutcode-mazegaki-start-sequence "alj"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")
@@ -77,6 +83,18 @@
 	       (N_ "[TUT-Code] bushu conversion mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-interactive-bushu-start-sequence ""
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] interactive bushu conversion mode")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-bushu-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix bushu conversion")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-latin-conv-start-sequence "al/"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")
@@ -87,6 +105,12 @@
                '(tutcode-keys1)
 	       '(string ".*")
 	       (N_ "[TUT-Code] display last auto help")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-katakana-commit-key '()
+               '(tutcode-keys1)
+	       '(key)
+	       (N_ "[TUT-Code] commit as katakana in yomi input of mazegaki")
 	       (N_ "long description will be here"))
 
 (define-custom 'tutcode-stroke-help-toggle-key '("<Control>/")

@@ -31,9 +31,9 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  skk.scm skk-editor.scm skk-custom.scm skk-key-custom.scm skk-dialog.scm \
  mana.scm mana-custom.scm mana-key-custom.scm \
  tcode.scm trycode.scm \
- tutcode.scm tutcode-custom.scm tutcode-key-custom.scm \
+ tutcode.scm tutcode-custom.scm tutcode-key-custom.scm tutcode-bushu.scm \
  tutcode-bushudic.scm tutcode-rule.scm tutcode-kigoudic.scm \
- tutcode-editor.scm tutcode-dialog.scm \
+ tutcode-editor.scm tutcode-dialog.scm tutcode-kigou-rule.scm \
  hangul.scm hangul2.scm hangul3.scm romaja.scm \
  byeoru.scm byeoru-dic.scm byeoru-symbols.scm \
  byeoru-custom.scm byeoru-key-custom.scm \
