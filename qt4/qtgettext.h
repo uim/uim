@@ -61,6 +61,11 @@
 #else /* ENABLE_NLS */
 
 #define mygettext(String) QString::fromLocal8Bit(String)
+/* undef original _(String) macro to use QString */
+#ifdef _
+#undef _
+#endif
+#define _(String) mygettext(String)
 #define UIC_(String, dummy) (String)
 #endif /* ENABLE_NLS */
 

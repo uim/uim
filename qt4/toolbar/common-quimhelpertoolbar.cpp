@@ -52,7 +52,7 @@ static void launchHelperApplication( const QString &command )
 {
     if ( !command.isEmpty() && !QProcess::startDetached( command ) ) {
         QMessageBox::warning( 0, "uim",
-            mygettext( "Cannot launch '%1'." ).arg( command ) );
+            _( "Cannot launch '%1'." ).arg( command ) );
     }
 }
 
