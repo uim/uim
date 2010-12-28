@@ -407,6 +407,7 @@ okuri_in_bracket(char *str)
 
   if (*term == '\0') {
     /* this is not the bracket used for skk-henkan-strict-okuri-precedence */
+    free(p);
     return NULL;
   }
   
