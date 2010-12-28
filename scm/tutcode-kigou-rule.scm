@@ -169,8 +169,11 @@
     ;((("1" "2"))("ÍË")) ;ÍËÆü¤ÎÁÞÆþ
     ;((("1" "3"))("»þ")) ;»þ¹ï¤ÎÁÞÆþ
     ((("1" "4"))(tutcode-bushu-start))
-    ((("1" "6"))(tutcode-latin-conv-start))
+    ((("1" "5"))(tutcode-interactive-bushu-start))
+    ((("1" "6"))(tutcode-postfix-bushu-start))
     ((("1" "7"))(tutcode-mazegaki-start))
+    ((("1" "8"))(tutcode-latin-conv-start))
+    ((("1" "9"))(tutcode-auto-help-redisplay))
     ((("1" "q"))("¡­"))
     ((("1" "w"))("¡®"))
     ((("1" "e"))("¡¯"))
