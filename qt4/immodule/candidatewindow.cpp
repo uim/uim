@@ -100,7 +100,9 @@ void CandidateWindow::setNrCandidates( int nrCands, int dLimit )
 
 void CandidateWindow::updateView( int newpage, int ncandidates )
 {
-    cList->clearSelection();
+    cList->clearContents();
+    annotations.clear();
+
     cList->setRowCount( ncandidates );
     for ( int i = 0; i < ncandidates ; i++ )
     {
