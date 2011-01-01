@@ -619,12 +619,13 @@ parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     }
 
     {
-        char *result;
-        result = g_locale_to_utf8(rhs_string_mb, -1, NULL, NULL, NULL);
-        if (!result)
-            goto error;
-        rhs_string_utf8 = strdup(result);
-        g_free(result);
+	char *result;
+	result = g_locale_to_utf8(rhs_string_mb, -1, NULL, NULL, NULL);
+	if (!result)
+	    rhs_string_utf8 = strdup("");
+	else
+	    rhs_string_utf8 = strdup(result);
+	g_free(result);
     }
 
     for (i = 0; i < n; i++) {
