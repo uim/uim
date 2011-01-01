@@ -621,7 +621,10 @@ parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
     {
 	char *result;
 	result = g_locale_to_utf8(rhs_string_mb, -1, NULL, NULL, NULL);
-	rhs_string_utf8 = strdup(result);
+	if (!result)
+	    rhs_string_utf8 = strdup("");
+	else
+	    rhs_string_utf8 = strdup(result);
 	g_free(result);
     }
 
