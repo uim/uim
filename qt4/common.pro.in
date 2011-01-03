@@ -17,7 +17,7 @@ QMAKE_CXXFLAGS_RELEASE += @CXXFLAGS@ @X_CFLAGS@
 # from Qt4 header files
 QMAKE_CXXFLAGS_DEBUG    = $$replace(QMAKE_CXXFLAGS_DEBUG, "-Wconversion", "")
 QMAKE_CXXFLAGS_RELEASE  = $$replace(QMAKE_CXXFLAGS_RELEASE, "-Wconversion", "")
- 
-QMAKE_STRIP =
+QMAKE_LINK              = @CXX@
+QMAKE_STRIP             =
  
 INSTALLS    += target
