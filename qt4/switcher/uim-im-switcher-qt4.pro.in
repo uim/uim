@@ -2,6 +2,7 @@ include(../common.pro)
 
 TEMPLATE = app
 
+# to include qtgettext.h
 INCLUDEPATH += @srcdir@/..
 LIBS += -lreplace -luim -luim-scm -luim-custom @LIBINTL@
 
