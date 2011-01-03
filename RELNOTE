@@ -36,6 +36,12 @@ What's New in 1.6.0
   - Internal plugin system reorganization
   - uim-elatin enhancement
   - Japanese multiple-segment IM enhancement
+      N.B. If you've modified ja-rk-rule (Roma-Kana table) in ~/.uim
+      for uim-1.5.x, please use ja-rk-rule-basic instead and call
+      (ja-rk-rule-update) after the definition.  For uim-skk users,
+      use skk-ja-rk-rule instead (see
+      http://code.google.com/p/uim-doc-ja/wiki/CustomizeUim for the
+      detailed setting).
 
 
 Notes for Packagers and System Integrators
