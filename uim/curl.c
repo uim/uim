@@ -296,7 +296,7 @@ uim_curl_url_unescape_internal(void *url_)
     return uim_scm_f();
 
   unescaped_url = curl_easy_unescape(curl, escaped_url,
-				     strlen(unescaped_url), &len);
+				     strlen(escaped_url), &len);
   unescaped_url_ = (len > 0) ? MAKE_STR(unescaped_url) : uim_scm_f();
 
   curl_free(unescaped_url);
