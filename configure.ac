@@ -1823,6 +1823,7 @@ AC_CONFIG_FILES([Makefile
 		 qt/test/Makefile
 		 qt/uimapplet.desktop
 		 qt4/Makefile
+		 qt4/common.pro
 		 qt4/candwin/Makefile
 		 qt4/candwin/uim-candwin-qt4.pro
 		 qt4/chardict/Makefile
