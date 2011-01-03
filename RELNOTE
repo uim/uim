@@ -1,13 +1,10 @@
-uim 1.6.0 Release Note
+uim 1.6.1 Release Note
 ======================
 
 About This Release
 ------------------
 
-This distribution of uim 1.6.0 is latest stable release of uim.
-
-This release achieved both considerable internal improvement and many
-user-visible new feature additions.
+This distribution of uim 1.6.1 is latest stable release of uim.
 
 Please report us if you find a problem.
 
@@ -19,7 +16,14 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
+New feature addition to uim-tutcodey. Minor bug fixes for uim-skk.
+Emacs24 support of uim.el.  Build fix on some environments.
+
 See NEWS for the fully detailed changes.
+
+
+What's New in 1.6.0
+-------------------
 
   - New IM uim-social-ime
   - New IM uim-ajax-ime
@@ -55,8 +59,9 @@ Notes for Packagers and System Integrators
     '--with-libgcroots=installed' to configure options for uim to disable
     build and install of the bundled version of libgcroots
 
-  - libuim, and libuim-custom ABI are updated, and some of libuim-scm
-    API are added.
+  - tcode, trycode, and hangul modules are no longer enabled by default.
+    Use more sophisticated 'tutcode' and 'byeoru' modules for these 
+    table based IMs instead .
 
 
 Roadmap
