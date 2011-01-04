@@ -328,9 +328,10 @@
       all-list)))
 
 (define (tutcode-bushu-weak-compose-set char-list strong-compose-set)
-  (let ((bushu-list (append-map tutcode-bushu-for-char char-list)))
+  (if (null? (cdr char-list)) ; char-list が一文字だけの時は何もしない
+    ()
     (tutcode-bushu-subtract-set
-      (tutcode-bushu-all-compose-set char-list bushu-list)
+      (tutcode-bushu-all-compose-set char-list ())
       strong-compose-set)))
 
 (define (tutcode-bushu-subset bushu-list)
