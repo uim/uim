@@ -142,15 +142,14 @@
   (lambda (mc)
     (m17nlib-lib-fill-new-candidates! (m17nlib-context-mc-id mc))
     (let* ((mid (m17nlib-context-mc-id mc))
-	   (max (m17nlib-lib-get-nr-candidates mid))
+	   (nrcands (m17nlib-lib-get-nr-candidates mid))
 	   (showing-candidate? (m17nlib-context-showing-candidate mc))
 	   (candidates-changed? (m17nlib-lib-candidates-changed? mid)))
-
       ;; FIXME: Rewrite this seriese of if with cond.
-      ;; close candidate window
       (if (or
 	   (and showing-candidate? candidates-changed?)
-	   (and showing-candidate? (not (m17nlib-lib-candidate-show? mid))))
+	   (and showing-candidate? (not (m17nlib-lib-candidate-show? mid)))
+	   (= nrcands 0))
 	  (begin
 	    (im-deactivate-candidate-selector mc)
 	    (m17nlib-context-set-showing-candidate! mc #f)))
@@ -161,10 +160,10 @@
 	    (and 
 	     (not showing-candidate?)
 	     (m17nlib-lib-candidate-show? mid)))
-	   (not (= max 0)))
+	   (not (= nrcands 0)))
 	  (begin
 	    (im-activate-candidate-selector
-	     mc max m17nlib-candidate-max)
+	     mc nrcands m17nlib-candidate-max)
 	    (im-select-candidate
 	     mc (m17nlib-lib-get-candidate-index mid))
 	    (m17nlib-context-set-showing-candidate! mc #t)))
