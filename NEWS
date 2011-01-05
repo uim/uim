@@ -1,6 +1,11 @@
 Overview of changes from 1.6.0 to 1.6.1
 =======================================
 * Fixes
+  - IM management system
+    * Fix crash while switching to the IM which has been once used but
+      then disabled and re-enabled again by "Enabled input methods"
+      widget of uim-pref.
+
   - uim-skk
     * Don't crash with malformed words having brackets which are not
       intended for skk-henkan-strict-okuri-precedence.
