@@ -31,13 +31,47 @@
 
 (require "util.scm")
 
+(define try-require-with-force-reload
+  (lambda (file)
+    (let ((loaded-str (string-append "*" file "-loaded*")))
+      (if (provided? loaded-str)
+        (try-load file)
+        (try-require file)))))
+
+;; see also pluin.scm
+(define require-module-with-force-reload
+  (lambda (module-name)
+    (set! currently-loading-module-name module-name)
+    ;; use try-require-with-force-reload because init-handler of the
+    ;; IM may be overwritten by stub-im handler
+    (let ((succeeded (or (module-load-with-force-reload module-name)
+                         (try-require-with-force-reload
+                           (find-module-scm-path
+                             uim-plugin-scm-load-path
+                             module-name)))))
+      (set! currently-loading-module-name #f)
+      succeeded)))
+
+;; see also pluin.scm
+(define module-load-with-force-reload
+  (lambda (module-name)
+    (if (require-dynlib module-name)
+      (let ((scm-path (find-module-scm-path
+                                    uim-plugin-scm-load-path module-name)))
+        (if (string? scm-path)
+          ;; use try-require-with-force-reload because init-handler of the
+          ;; im may be overwritten by stub-im handler
+          (try-require-with-force-reload scm-path)
+          #t))
+      #f)))
+
 (define stub-im-generate-init-handler
   (lambda (name module-name)
     (lambda (id fake-im fake-arg)
       (let* ((stub-im (retrieve-im name))
 	     (stub-im-init-handler (and stub-im
 					(im-init-handler stub-im))))
-	(and (require-module module-name)
+	(and (require-module-with-force-reload module-name)
 	     (let* ((im (retrieve-im name))
 		    (init-handler (im-init-handler im))
 		    (arg (im-init-arg im))

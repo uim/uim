@@ -55,22 +55,14 @@
 (define installed-im-module-list ())
 (define currently-loading-module-name #f)
 
-(define try-require-with-force-reload
-  (lambda (file)
-    (let ((loaded-str (string-append "*" file "-loaded*")))
-      (if (provided? loaded-str)
-        (try-load file)
-        (try-require file)))))
 ;;
 ;; TODO: write test for load-plugin
 ;; returns whether initialization is succeeded
 (define require-module
   (lambda (module-name)
     (set! currently-loading-module-name module-name)
-    ;; use try-require-with-force-reload because init-handler of the
-    ;; im may be overwritten by stub-im handler
     (let ((succeeded (or (module-load module-name)
-                         (try-require-with-force-reload
+                         (try-require
                            (find-module-scm-path
                              uim-plugin-scm-load-path
                              module-name)))))
@@ -142,8 +134,6 @@
       (let ((scm-path (find-module-scm-path
 				    uim-plugin-scm-load-path module-name)))
         (if (string? scm-path)
-          ;; use try-require-with-force-reload because init-handler of the
-          ;; im may be overwritten by stub-im handler
-          (try-require-with-force-reload scm-path)
+          (try-require scm-path)
           #t))
       #f)))
