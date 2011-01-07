@@ -2,7 +2,7 @@
   uim-sh.c: uim interactive shell for debugging, batch processing and
             serving as generic inferior process
 
-  Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2011 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 

@@ -1,6 +1,6 @@
 ;;; fileio.scm: low-level file IO functions for uim.
 ;;;
-;;; Copyright (c) 2009-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

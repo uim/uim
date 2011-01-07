@@ -1,4 +1,4 @@
-;;; Copyright (c) 2005-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2005-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -49,24 +49,24 @@
   (uim-eval
    '(begin
       (set! im-list ())
-      (undefine *hangul.scm-loaded*)))
-  (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
+      (undefine *pyload.scm-loaded*)))
+  (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
 
   (uim-eval
    '(define init-handler
-      (stub-im-generate-init-handler 'hangul2 "hangul")))
+      (stub-im-generate-init-handler 'py "pyload")))
   (assert-uim-true  '(procedure? init-handler))
-  (assert-uim-false '(retrieve-im 'hangul2))
+  (assert-uim-false '(retrieve-im 'py))
   (uim-eval
    '(define test-context
       (init-handler 0 #f #f)))
-  (assert-uim-equal 'hangul2
-                    '(im-name (retrieve-im 'hangul2)))
-  (assert-uim-equal "hangul"
-                    '(im-module-name (retrieve-im 'hangul2)))
-  (assert-uim-equal 'hangul2
+  (assert-uim-equal 'py
+                    '(im-name (retrieve-im 'py)))
+  (assert-uim-equal "pyload"
+                    '(im-module-name (retrieve-im 'py)))
+  (assert-uim-equal 'py
                     '(im-name (context-im test-context)))
-  (assert-uim-equal "hangul"
+  (assert-uim-equal "pyload"
                     '(im-module-name (context-im test-context)))
   #f)
 
@@ -74,25 +74,25 @@
   (uim-eval
    '(begin
       (set! im-list ())
-      (undefine *hangul.scm-loaded*)))
-  (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
+      (undefine *pyload.scm-loaded*)))
+  (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
 
   (uim-eval
    '(begin
       (register-stub-im
-       'hangul2
-       "ko"
+       'py
+       "zh_CN"
        "UTF-8"
-       "Hangul (2-bul)"
-       "2-bul style hangul input method"
-       "hangul")
-      (define init-handler (im-init-handler (retrieve-im 'hangul2)))
-      (im-set-init-handler! (retrieve-im 'hangul2) 'init)))
-  (assert-uim-equal '(hangul2
-                      "ko"
+       "New Pinyin (Simplified)"
+       "Pinyin input method (Simplified Chinese version)"
+       "pyload")
+      (define init-handler (im-init-handler (retrieve-im 'py)))
+      (im-set-init-handler! (retrieve-im 'py) 'init)))
+  (assert-uim-equal '(py
+                      "zh_CN"
                       "UTF-8"
-                      "Hangul (2-bul)"
-                      "2-bul style hangul input method"
+                      "New Pinyin (Simplified)"
+                      "Pinyin input method (Simplified Chinese version)"
                       ;; replace () with #f for R5RS compliant interpreter
                       #f ;; arg
                       init
@@ -109,12 +109,12 @@
                       #f ;; focus-out-handler
                       #f ;; place-handler
                       #f ;; displace-handler
-                      "hangul")
-                    '(retrieve-im 'hangul2))
-  (uim-eval '(im-set-init-handler! (retrieve-im 'hangul2) init-handler))
+                      "pyload")
+                    '(retrieve-im 'py))
+  (uim-eval '(im-set-init-handler! (retrieve-im 'py) init-handler))
 
   (assert-uim-true  '(procedure? (im-init-handler
-                                  (retrieve-im 'hangul2))))
+                                  (retrieve-im 'py))))
   ;; to prevent SEGV on create-context
   (uim-eval
    '(begin
@@ -127,142 +127,142 @@
       (define im-pushback-mode-list (lambda arg #f))
       (define im-update-mode-list (lambda arg #f))
       (define im-update-mode (lambda arg #f))
-      (create-context 0 #f 'hangul2)
+      (create-context 0 #f 'py)
 
       (define test-context (assv 0 context-list))))
 
-  (assert-uim-equal 'hangul2
+  (assert-uim-equal 'py
                     '(im-name (context-im test-context)))
-  (assert-uim-equal "hangul"
+  (assert-uim-equal "pyload"
                     '(im-module-name (context-im test-context)))
-  (uim-eval '(define test-hangul2 (retrieve-im 'hangul2)))
-  (assert-uim-equal 'hangul2
-                    '(im-name test-hangul2))
-  (assert-uim-equal "hangul"
-                    '(im-module-name test-hangul2))
-  (assert-uim-true  '(procedure? (im-init-handler test-hangul2)))
-  (assert-uim-false '(procedure? (im-release-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-mode-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-key-press-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-key-release-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-reset-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-get-candidate-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-set-candidate-index-handler test-hangul2)))
-  (assert-uim-true  '(procedure? (im-prop-activate-handler test-hangul2)))
+  (uim-eval '(define test-py (retrieve-im 'py)))
+  (assert-uim-equal 'py
+                    '(im-name test-py))
+  (assert-uim-equal "pyload"
+                    '(im-module-name test-py))
+  (assert-uim-true  '(procedure? (im-init-handler test-py)))
+  (assert-uim-false '(procedure? (im-release-handler test-py)))
+  (assert-uim-true  '(procedure? (im-mode-handler test-py)))
+  (assert-uim-true  '(procedure? (im-key-press-handler test-py)))
+  (assert-uim-true  '(procedure? (im-key-release-handler test-py)))
+  (assert-uim-true  '(procedure? (im-reset-handler test-py)))
+  (assert-uim-true  '(procedure? (im-get-candidate-handler test-py)))
+  (assert-uim-true  '(procedure? (im-set-candidate-index-handler test-py)))
+  (assert-uim-true  '(procedure? (im-prop-activate-handler test-py)))
   #f)
 
 (define (test-stub-im-generate-stub-im-list)
   (uim-eval
    '(begin
       (set! im-list ())
-      (undefine *tcode.scm-loaded*)
-      (undefine *hangul.scm-loaded*)
-      (set! installed-im-module-list '("tcode" "hangul"))))
-  (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
-  (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
+      (undefine *latin.scm-loaded*)
+      (undefine *pyload.scm-loaded*)
+      (set! installed-im-module-list '("latin" "pyload"))))
+  (assert-uim-false '(symbol-bound? '*latin.scm-loaded*))
+  (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
 
-  (assert-uim-false '(retrieve-im 'tcode))
-  (assert-uim-false '(retrieve-im 'hangul2))
-  (assert-uim-false '(retrieve-im 'hangul3))
+  (assert-uim-false '(retrieve-im 'latin))
+  (assert-uim-false '(retrieve-im 'py))
+  (assert-uim-false '(retrieve-im 'pyunihan))
 
   (assert-uim-equal ()
                     '(stub-im-generate-stub-im-list ()))
   (assert-uim-equal (list
                      (string-append
-                      "    (hangul2\n"
-                      "     \"ko\"\n"
+                      "    (py\n"
+                      "     \"zh_CN\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (2-beol)\"\n"
-                      "     \"2-beol style hangul input method\"\n"
-                      "     \"hangul\")\n"))
-                    '(stub-im-generate-stub-im-list '(hangul2)))
+                      "     \"New Pinyin (Simplified)\"\n"
+                      "     \"Pinyin input method (Simplified Chinese version)\"\n"
+                      "     \"pyload\")\n"))
+                    '(stub-im-generate-stub-im-list '(py)))
   (assert-uim-equal (list
                      (string-append
-                      "    (hangul3\n"
-                      "     \"ko\"\n"
+                      "    (pyunihan\n"
+                      "     \"zh\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (3-beol)\"\n"
-                      "     \"3-beol style hangul input method\"\n"
-                      "     \"hangul\")\n"))
-                    '(stub-im-generate-stub-im-list '(hangul3)))
+                      "     \"Pinyin (Unicode)\"\n"
+                      "     \"Pinyin input method (Unicode version)\"\n"
+                      "     \"pyload\")\n"))
+                    '(stub-im-generate-stub-im-list '(pyunihan)))
   (assert-uim-equal (list
                      (string-append
-                      "    (tcode\n"
-                      "     \"ja\"\n"
-                      "     \"EUC-JP\"\n"
-                      "     \"T-Code\"\n"
-                      "     \"A kanji direct input method\"\n"
-                      "     \"tcode\")\n"))
-                    '(stub-im-generate-stub-im-list '(tcode)))
+                      "    (latin\n"
+                      "     \"\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Latin characters\"\n"
+                      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
+                      "     \"latin\")\n"))
+                    '(stub-im-generate-stub-im-list '(latin)))
 
   (assert-uim-equal (list
                      (string-append
-                      "    (hangul2\n"
-                      "     \"ko\"\n"
+                      "    (py\n"
+                      "     \"zh_CN\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (2-beol)\"\n"
-                      "     \"2-beol style hangul input method\"\n"
-                      "     \"hangul\")\n")
+                      "     \"New Pinyin (Simplified)\"\n"
+                      "     \"Pinyin input method (Simplified Chinese version)\"\n"
+                      "     \"pyload\")\n")
                      (string-append
-                      "    (tcode\n"
-                      "     \"ja\"\n"
-                      "     \"EUC-JP\"\n"
-                      "     \"T-Code\"\n"
-                      "     \"A kanji direct input method\"\n"
-                      "     \"tcode\")\n")
-                     (string-append
-                      "    (hangul3\n"
-                      "     \"ko\"\n"
+                      "    (latin\n"
+                      "     \"\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (3-beol)\"\n"
-                      "     \"3-beol style hangul input method\"\n"
-                      "     \"hangul\")\n"))
-                    '(stub-im-generate-stub-im-list '(hangul2 tcode hangul3)))
+                      "     \"Latin characters\"\n"
+                      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
+                      "     \"latin\")\n")
+                     (string-append
+                      "    (pyunihan\n"
+                      "     \"zh\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Pinyin (Unicode)\"\n"
+                      "     \"Pinyin input method (Unicode version)\"\n"
+                      "     \"pyload\")\n"))
+                    '(stub-im-generate-stub-im-list '(py latin pyunihan)))
   #f)
 
 (define (test-stub-im-generate-all-stub-im-list)
   (uim-eval
    '(begin
       (set! im-list ())
-      (undefine *tcode.scm-loaded*)
-      (undefine *hangul.scm-loaded*)
-      (set! installed-im-module-list '("tcode" "hangul"))))
+      (undefine *latin.scm-loaded*)
+      (undefine *pyload.scm-loaded*)
+      (set! installed-im-module-list '("latin" "pyload"))))
   (assert-uim-equal (list
                      (string-append
-                      "    (tcode\n"
-                      "     \"ja\"\n"
-                      "     \"EUC-JP\"\n"
-                      "     \"T-Code\"\n"
-                      "     \"A kanji direct input method\"\n"
-                      "     \"tcode\")\n")
-                     (string-append
-                      "    (hangul2\n"
-                      "     \"ko\"\n"
+                      "    (latin\n"
+                      "     \"\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (2-beol)\"\n"
-                      "     \"2-beol style hangul input method\"\n"
-                      "     \"hangul\")\n")
+                      "     \"Latin characters\"\n"
+                      "     \"Latin characters mainly used for Latin and Germanic languages\"\n"
+                      "     \"latin\")\n")
                      (string-append
-                      "    (hangul3\n"
-                      "     \"ko\"\n"
+                      "    (py\n"
+                      "     \"zh_CN\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (3-beol)\"\n"
-                      "     \"3-beol style hangul input method\"\n"
-                      "     \"hangul\")\n")
+                      "     \"New Pinyin (Simplified)\"\n"
+                      "     \"Pinyin input method (Simplified Chinese version)\"\n"
+                      "     \"pyload\")\n")
                      (string-append
-                      "    (romaja\n"
-                      "     \"ko\"\n"
+                      "    (pyunihan\n"
+                      "     \"zh\"\n"
                       "     \"UTF-8\"\n"
-                      "     \"Hangul (Romaja)\"\n"
-                      "     \"Romaja input style hangul input method\"\n"
-                      "     \"hangul\")\n"))
+                      "     \"Pinyin (Unicode)\"\n"
+                      "     \"Pinyin input method (Unicode version)\"\n"
+                      "     \"pyload\")\n")
+                     (string-append
+                      "    (pinyin-big5\n"
+                      "     \"zh_TW:zh_HK\"\n"
+                      "     \"UTF-8\"\n"
+                      "     \"Pinyin (Traditional)\"\n"
+                      "     \"Pinyin input method (Traditional Chinese version)\"\n"
+                      "     \"pyload\")\n"))
                     '(stub-im-generate-all-stub-im-list))
 
   (uim-eval
    '(begin
       (set! im-list ())
-      (undefine *tcode.scm-loaded*)
-      (undefine *hangul.scm-loaded*)
+      (undefine *latin.scm-loaded*)
+      (undefine *pyload.scm-loaded*)
       (set! installed-im-module-list '())))
   (assert-uim-equal ()
                     '(stub-im-generate-all-stub-im-list))

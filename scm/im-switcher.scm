@@ -1,6 +1,6 @@
 ;;; im-switcher.scm: Action-based IM switcher
 ;;;
-;;; Copyright (c) 2006-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2006-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
@@ -43,7 +43,8 @@
     (anthy       . "An")
     (anthy-utf8  . "An")
     (byeoru      . "B")
-    (canna       . "C")
+    (canna       . "Ca")
+    (chewing     . "Ch")
     (elatin      . "E")
     (hangul2     . "H2")
     (hangul3     . "H3")
