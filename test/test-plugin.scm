@@ -45,35 +45,35 @@
    (uim-eval
     '(begin
        (set! im-list ())
-       (undefine *tcode.scm-loaded*)
-       (undefine *hangul.scm-loaded*)))
-   (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
-   (assert-uim-false '(symbol-bound? '*hangul.scm-loaded*))
-   (assert-uim-false '(retrieve-im 'tcode))
-   (assert-uim-false '(retrieve-im 'hangul2))
+       (undefine *latin.scm-loaded*)
+       (undefine *pyload.scm-loaded*)))
+   (assert-uim-false '(symbol-bound? '*latin.scm-loaded*))
+   (assert-uim-false '(symbol-bound? '*pyload.scm-loaded*))
+   (assert-uim-false '(retrieve-im 'latin))
+   (assert-uim-false '(retrieve-im 'py))
    ;; im-module-name == im-name
-   (assert-uim-true-value  '(require-module "tcode"))
-   (assert-uim-equal 'tcode
-		     '(im-name (retrieve-im 'tcode)))
-   (assert-uim-equal "tcode"
-		     '(im-module-name (retrieve-im 'tcode)))
+   (assert-uim-true-value  '(require-module "latin"))
+   (assert-uim-equal 'latin
+		     '(im-name (retrieve-im 'latin)))
+   (assert-uim-equal "latin"
+		     '(im-module-name (retrieve-im 'latin)))
    ;; im-module-name != im-name
-   (assert-uim-true-value  '(require-module "hangul"))
-   (assert-uim-equal 'hangul2
-		     '(im-name (retrieve-im 'hangul2)))
-   (assert-uim-equal "hangul"
-		     '(im-module-name (retrieve-im 'hangul2)))
+   (assert-uim-true-value  '(require-module "pyload"))
+   (assert-uim-equal 'py
+		     '(im-name (retrieve-im 'py)))
+   (assert-uim-equal "pyload"
+		     '(im-module-name (retrieve-im 'py)))
    ;; raw require does not set im-module-name
    (uim-eval '(set! im-list ()))
 
-   (uim-eval '(undefine *tcode.scm-loaded*))
-   (assert-uim-false '(symbol-bound? '*tcode.scm-loaded*))
-   (assert-uim-false '(retrieve-im 'tcode))
-   (assert-uim-true-value  '(require "tcode.scm"))
+   (uim-eval '(undefine *latin.scm-loaded*))
+   (assert-uim-false '(symbol-bound? '*latin.scm-loaded*))
+   (assert-uim-false '(retrieve-im 'latin))
+   (assert-uim-true-value  '(require "latin.scm"))
 
-   (assert-uim-equal 'tcode
-		     '(im-name (retrieve-im 'tcode)))
-   (assert-uim-false '(im-module-name (retrieve-im 'tcode)))
+   (assert-uim-equal 'latin
+		     '(im-name (retrieve-im 'latin)))
+   (assert-uim-false '(im-module-name (retrieve-im 'latin)))
 
    ;; nonexistent module
    (assert-uim-false '(require-module "nonexistent"))
