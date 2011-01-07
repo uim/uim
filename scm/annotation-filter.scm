@@ -1,6 +1,6 @@
 ;;; annotation-filter.scm: generic filter for uim
 ;;;
-;;; Copyright (c) 2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2010-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

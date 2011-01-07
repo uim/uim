@@ -1,6 +1,6 @@
 /*
 
-  Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
+  Copyright (c) 2003-2011 uim Project http://code.google.com/p/uim/
 
   All rights reserved.
 
@@ -162,7 +162,7 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
   icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
 
   dialog = gnome_about_new(_("uim Applet"), VERSION,
-			   "Copyright \xc2\xa9 2003-2010 uim Project.",
+			   "Copyright \xc2\xa9 2003-2011 uim Project.",
 			   _("Applet for indicating uim's status"),
 			   authors,
 			   NULL,

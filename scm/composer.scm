@@ -1,6 +1,6 @@
 ;;; composer.scm: The composer framework for uim
 ;;;
-;;; Copyright (c) 2005-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2005-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

@@ -1,4 +1,4 @@
-;;; Copyright (c) 2004-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2004-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;

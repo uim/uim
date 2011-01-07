@@ -1,6 +1,6 @@
 ;;; sj3v2-socket.scm: SJ3 protocol version 2 for uim.
 ;;;
-;;; Copyright (c) 2009-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2009-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
