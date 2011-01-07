@@ -54,7 +54,7 @@
 	     (require-module "anthy")
 	     (require-module "canna")
 	     (require-module "skk")
-	     (require-module "tcode")
+	     (require-module "latin")
 	     ;; Disable IMs that affect the default IM selection.
 	     (define test-im-disabled-im-list '(look
 						m17n-unicode
@@ -286,14 +286,11 @@
    (assert-false (uim-bool '(memq 'nonexistent (map car im-list))))
    (assert-true  (uim-bool '(memq 'anthy (map car im-list))))
    (assert-true  (uim-bool '(memq 'skk (map car im-list))))
-   (assert-true  (uim-bool '(memq 'tcode (map car im-list))))
+   (assert-true  (uim-bool '(memq 'latin(map car im-list))))
    (assert-true  (uim-bool '(memq 'tutcode (map car im-list))))
    (assert-true  (uim-bool '(memq 'py (map car im-list))))
    (assert-true  (uim-bool '(memq 'pyunihan (map car im-list))))
    (assert-true  (uim-bool '(memq 'pinyin-big5 (map car im-list))))
-   (assert-true  (uim-bool '(memq 'hangul2 (map car im-list))))
-   (assert-true  (uim-bool '(memq 'hangul3 (map car im-list))))
-   (assert-true  (uim-bool '(memq 'romaja (map car im-list))))
    (assert-true  (uim-bool '(memq 'viqr (map car im-list))))
    (assert-true  (uim-bool '(memq 'ipa-x-sampa (map car im-list))))
    (assert-true  (uim-bool '(memq 'direct (map car im-list))))
@@ -481,14 +478,12 @@
 		 (uim '(im-name (find-im 'anthy #f))))
    (assert-equal 'skk
 		 (uim '(im-name (find-im 'skk #f))))
-   (assert-equal 'tcode
-		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'latin
+		 (uim '(im-name (find-im 'latin #f))))
    (assert-equal 'py
 		 (uim '(im-name (find-im 'py #f))))
    (assert-equal 'pinyin-big5
 		 (uim '(im-name (find-im 'pinyin-big5 #f))))
-   (assert-equal 'hangul2
-		 (uim '(im-name (find-im 'hangul2 #f))))
    (assert-equal 'pyunihan
 		 (uim '(im-name (find-im 'pyunihan #f))))
    ;; implicit selection by locale information
@@ -538,14 +533,12 @@
 		 (uim '(im-name (find-im 'anthy #f))))
    (assert-equal 'skk
 		 (uim '(im-name (find-im 'skk #f))))
-   (assert-equal 'tcode
-		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'latin
+		 (uim '(im-name (find-im 'latin #f))))
    (assert-equal 'py
 		 (uim '(im-name (find-im 'py #f))))
    (assert-equal 'pinyin-big5
 		 (uim '(im-name (find-im 'pinyin-big5 #f))))
-   (assert-equal 'hangul2
-		 (uim '(im-name (find-im 'hangul2 #f))))
    (assert-equal 'pyunihan
 		 (uim '(im-name (find-im 'pyunihan #f))))
    (assert-equal 'pyunihan
@@ -582,14 +575,12 @@
 		 (uim '(im-name (find-im 'anthy #f))))
    (assert-equal 'skk
 		 (uim '(im-name (find-im 'skk #f))))
-   (assert-equal 'tcode
-		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'latin
+		 (uim '(im-name (find-im 'latin #f))))
    (assert-equal 'py
 		 (uim '(im-name (find-im 'py #f))))
    (assert-equal 'pinyin-big5
 		 (uim '(im-name (find-im 'pinyin-big5 #f))))
-   (assert-equal 'hangul2
-		 (uim '(im-name (find-im 'hangul2 #f))))
    (assert-equal 'pyunihan
 		 (uim '(im-name (find-im 'pyunihan #f))))
    (assert-equal 'pyunihan
@@ -626,14 +617,12 @@
 		 (uim '(im-name (find-im 'anthy #f))))
    (assert-equal 'skk
 		 (uim '(im-name (find-im 'skk #f))))
-   (assert-equal 'tcode
-		 (uim '(im-name (find-im 'tcode #f))))
+   (assert-equal 'latin
+		 (uim '(im-name (find-im 'latin #f))))
    (assert-equal 'py
 		 (uim '(im-name (find-im 'py #f))))
    (assert-equal 'pinyin-big5
 		 (uim '(im-name (find-im 'pinyin-big5 #f))))
-   (assert-equal 'hangul2
-		 (uim '(im-name (find-im 'hangul2 #f))))
    (assert-equal 'pyunihan
 		 (uim '(im-name (find-im 'pyunihan #f))))
    (assert-equal 'pyunihan
@@ -664,7 +653,7 @@
      (uim '(for-each require-module installed-im-module-list))
      (uim '(define test-im-anthy #f))
      (uim '(define test-im-skk #f))
-     (uim '(define test-im-tcode #f))
+     (uim '(define test-im-latin #f))
      (uim '(begin
 	     (set! test-im-anthy (assq 'anthy im-list))
 	     #t))
@@ -672,24 +661,24 @@
 	     (set! test-im-skk (assq 'skk im-list))
 	     #t))
      (uim '(begin
-	     (set! test-im-tcode (assq 'tcode im-list))
+	     (set! test-im-latin (assq 'latin im-list))
 	     #t))
      (uim '(begin
 	     (set! im-list (list test-im-anthy
 				 test-im-skk
-				 test-im-tcode))
+				 test-im-latin))
 	     #t))
      (uim '(begin
-	     (set! enabled-im-list '(anthy skk tcode))
+	     (set! enabled-im-list '(anthy skk latin))
 	     #t))))
 
   ("test next-im"
    (assert-equal 'skk
 		 (uim '(next-im 'anthy)))
-   (assert-equal 'tcode
+   (assert-equal 'latin
 		 (uim '(next-im 'skk)))
    (assert-equal 'anthy
-		 (uim '(next-im 'tcode)))
+		 (uim '(next-im 'latin)))
    (assert-equal 'anthy
 		 (uim '(next-im 'non-existent))))
 
@@ -701,14 +690,14 @@
 ;   ;; object in C world is missing
 ;   ;(uim '(create-context 0 #f 'anthy))
 ;   ;(uim '(create-context 1 #f 'skk))
-;   ;(uim '(create-context 2 #f 'tcode))
+;   ;(uim '(create-context 2 #f 'latin))
 ;   (assert-equal 'anthy
 ;		 (uim '(im-name current-im)))
 ;   ;; switch-im fails because create-context fails
-;   ;(uim '(switch-im 1 'tcode))
-;   (assert-equal 'tcode
+;   ;(uim '(switch-im 1 'latin))
+;   (assert-equal 'latin
 ;		 (uim '(im-name current-im)))
-;   (assert-equal 'tcode
+;   (assert-equal 'latin
 ;		 (uim '(im-name (context-im (find-context 1)))))
 ;   ;(uim '(switch-im 1 'skk))
 ;   (assert-equal 'skk
@@ -724,7 +713,7 @@
      ;; define as hand-made data to avoid that implementation of
      ;; register-context affect other tests
      (uim '(begin
-	     (set! context-list (list (im-new 1 (retrieve-im 'tcode))
+	     (set! context-list (list (im-new 1 (retrieve-im 'latin))
 				      (im-new 2 (retrieve-im 'direct))
 				      (im-new 3 (retrieve-im 'skk))
 				      (im-new 4 (retrieve-im 'anthy))))
@@ -741,7 +730,7 @@
 		 (uim '(context-uc (nth 3 context-list)))))
 
   ("test context-im"
-   (assert-equal 'tcode
+   (assert-equal 'latin
 		 (uim '(im-name (context-im (nth 0 context-list)))))
    (assert-equal 'direct
 		 (uim '(im-name (context-im (nth 1 context-list)))))
@@ -757,7 +746,7 @@
    (uim '(begin (remove-context (assv 3 context-list)) #t))
    (assert-equal 3
 		 (uim '(length context-list)))
-   (assert-equal 'tcode
+   (assert-equal 'latin
 		 (uim '(im-name (context-im (assv 1 context-list)))))
    (assert-equal 'direct
 		 (uim '(im-name (context-im (assv 2 context-list)))))
@@ -818,36 +807,36 @@
 	   #t))
    (assert-equal 5
 		 (uim '(length context-list)))
-   (assert-equal 'tcode
+   (assert-equal 'latin
 		 (uim '(im-name (context-im (assv 1 context-list)))))
    (assert-equal 'tutcode
 		 (uim '(im-name (context-im (assv 5 context-list)))))
 
    ;; sparse id must be accepted
    (uim '(begin
-	   (register-context (context-new 10 (find-im 'hangul2 #f)))
+	   (register-context (context-new 10 (find-im 'py #f)))
 	   #t))
    (assert-equal 6
 		 (uim '(length context-list)))
-   (assert-equal 'hangul2
+   (assert-equal 'py
 		 (uim '(im-name (context-im (assv 10 context-list)))))
 
    ;; additional sparse id
    (uim '(begin
-	   (register-context (context-new 8 (find-im 'hangul3 #f)))
+	   (register-context (context-new 8 (find-im 'pyunihan #f)))
 	   #t))
    (assert-equal 7
 		 (uim '(length context-list)))
-   (assert-equal 'hangul3
+   (assert-equal 'pyunihan
 		 (uim '(im-name (context-im (assv 8 context-list)))))
 
    ;; decrimented id
    (uim '(begin
-	   (register-context (context-new 0 (find-im 'romaja #f)))
+	   (register-context (context-new 0 (find-im 'pinyin-big5 #f)))
 	   #t))
    (assert-equal 8
 		 (uim '(length context-list)))
-   (assert-equal 'romaja
+   (assert-equal 'pinyin-big5
 		 (uim '(im-name (context-im (assv 0 context-list))))))
 
   ("test register-context (duplicate id)"
@@ -898,7 +887,7 @@
 	     (require-module "anthy")
 	     (require-module "canna")
 	     (require-module "skk")
-	     (require-module "tcode")))))
+	     (require-module "latin")))))
 
   ("test custom-im-list-as-choice-rec"
    (assert-equal '((canna "Canna" "A multi-segment kana-kanji conversion engine")
@@ -906,10 +895,10 @@
 		   (anthy "Anthy" "A multi-segment kana-kanji conversion engine"))
 		 (uim '(custom-im-list-as-choice-rec
 			(map retrieve-im '(canna skk anthy)))))
-   (assert-equal '((tcode
-		    "T-Code"
-		    "A kanji direct input method"))
+   (assert-equal '((latin
+		    "Latin characters"
+		    "Latin characters mainly used for Latin and Germanic languages"))
 		 (uim '(custom-im-list-as-choice-rec
-			(map retrieve-im '(tcode)))))
+			(map retrieve-im '(latin)))))
    (assert-equal ()
 		 (uim '(custom-im-list-as-choice-rec ())))))
