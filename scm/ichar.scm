@@ -1,6 +1,6 @@
 ;;; ichar.scm: Integer-based character processing (being obsoleted)
 ;;;
-;;; Copyright (c) 2003-2010 uim Project http://code.google.com/p/uim/
+;;; Copyright (c) 2003-2011 uim Project http://code.google.com/p/uim/
 ;;;
 ;;; All rights reserved.
 ;;;
