@@ -16,7 +16,7 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
-New feature addition to uim-tutcodey. Minor bug fixes for uim-skk.
+New feature addition to uim-tutcode. Minor bug fixes for uim-skk.
 Emacs24 support of uim.el.  Build fix on some environments.
 
 See NEWS for the fully detailed changes.
