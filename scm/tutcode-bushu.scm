@@ -30,7 +30,8 @@
 
 ;;; tutcode-bushu.scm: 対話的な部首合成変換
 ;;;
-;;; tc-2.3.1のtc-bushu.elを移植(sortは省略)。
+;;; tc-2.3.1のtc-bushu.elを移植(bushu.helpファイルやsortには未対応)。
+;;; (参考:部首合成アルゴリズムは[tcode-ml:1942]あたり)
 
 (require-extension (srfi 1 8))
 (require-dynlib "look")
