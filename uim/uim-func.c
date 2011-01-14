@@ -367,9 +367,9 @@ im_acquire_text(uim_lisp uc_, uim_lisp text_id_, uim_lisp origin_,
   free(former);
   free(latter);
   former_
-    = (TEXT_EMPTYP(cv_former)) ? uim_scm_null() : MAKE_STR_DIRECTLY(cv_former);
+    = (TEXT_EMPTYP(cv_former)) ? uim_scm_null() : LIST1(MAKE_STR_DIRECTLY(cv_former));
   latter_
-    = (TEXT_EMPTYP(cv_latter)) ? uim_scm_null() : MAKE_STR_DIRECTLY(cv_latter);
+    = (TEXT_EMPTYP(cv_latter)) ? uim_scm_null() : LIST1(MAKE_STR_DIRECTLY(cv_latter));
 
   return uim_scm_callf("ustr-new", "oo", former_, latter_);
 }
