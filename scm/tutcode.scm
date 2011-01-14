@@ -209,6 +209,7 @@
 (require "tutcode-kigoudic.scm") ;記号入力モード用の記号表
 (require "tutcode-dialog.scm"); 交ぜ書き変換辞書からの削除確認ダイアログ
 (require "japanese.scm") ; for ja-wide or ja-make-kana-str{,-list}
+(require "ustr.scm")
 
 ;;; user configs
 
@@ -2169,8 +2170,22 @@
                 (tutcode-context-set-prediction-nr! pc 0)
                 (tutcode-context-set-state! pc
                   'tutcode-state-interactive-bushu))
+              ((eq? res 'tutcode-postfix-bushu-start)
+                (tutcode-begin-postfix-bushu-conversion pc))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
+
+;;; 後置型部首合成変換を行う
+(define (tutcode-begin-postfix-bushu-conversion pc)
+  (and-let*
+    ((ustr (im-acquire-text pc 'primary 'cursor 2 0))
+     (former (ustr-former-seq ustr))
+     (former-seq (and (pair? former) (string-to-list (car former))))
+     (res (and (>= (length former-seq) 2)
+               (tutcode-bushu-convert (cadr former-seq) (car former-seq)))))
+    (im-delete-text pc 'primary 'cursor 2 0)
+    (tutcode-commit pc res)
+    (tutcode-check-auto-help-window-begin pc (list res) ())))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
