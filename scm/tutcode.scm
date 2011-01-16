@@ -2178,14 +2178,47 @@
 ;;; 後置型部首合成変換を行う
 (define (tutcode-begin-postfix-bushu-conversion pc)
   (and-let*
-    ((ustr (im-acquire-text pc 'primary 'cursor 2 0))
-     (former (ustr-former-seq ustr))
-     (former-seq (and (pair? former) (string-to-list (car former))))
+    ((former-seq (tutcode-postfix-acquire-text pc 2))
      (res (and (>= (length former-seq) 2)
                (tutcode-bushu-convert (cadr former-seq) (car former-seq)))))
-    (im-delete-text pc 'primary 'cursor 2 0)
+    (tutcode-postfix-delete-text pc 2)
     (tutcode-commit pc res)
     (tutcode-check-auto-help-window-begin pc (list res) ())))
+
+;;; 確定済文字列を取得する
+;;; @param len 取得する文字数
+;;; @return 取得した文字列のリスト(逆順)
+(define (tutcode-postfix-acquire-text pc len)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (if (not (null? ppc))
+      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-dialog)
+        ()
+        (let*
+          ((ec (tutcode-context-editor ppc))
+           (left-string (tutcode-editor-left-string ec)))
+          (if (> (length left-string) len)
+            (take left-string len)
+            left-string)))
+      (let*
+        ((ustr (im-acquire-text pc 'primary 'cursor len 0))
+         (former (and ustr (ustr-former-seq ustr)))
+         (former-seq (and (pair? former) (string-to-list (car former)))))
+        (or former-seq ())))))
+
+;;; 確定済文字列を削除する
+;;; @param len 削除する文字数
+(define (tutcode-postfix-delete-text pc len)
+  (let ((ppc (tutcode-context-parent-context pc)))
+    (if (not (null? ppc))
+      (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
+        (let*
+          ((ec (tutcode-context-editor ppc))
+           (left-string (tutcode-editor-left-string ec)))
+          (tutcode-editor-set-left-string! ec
+            (if (> (length left-string) len)
+              (drop left-string len)
+              ()))))
+      (im-delete-text pc 'primary 'cursor len 0))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
