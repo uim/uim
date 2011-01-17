@@ -5881,7 +5881,7 @@ msgstr "[TUT-Code] 直近の自動ヘルプを表示"
 
 #: ../scm/tutcode-key-custom.scm:113
 msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
-msgstr "交ぜ書き変換の読みをカタカナとして確定する"
+msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
 
 #: ../scm/tutcode-key-custom.scm:119
 msgid "[TUT-Code] toggle use of stroke help window"
