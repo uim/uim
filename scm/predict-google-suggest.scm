@@ -82,7 +82,7 @@
       (if (predict-google-suggest-use-ssl self)
           "encrypted.google.com"
           "google.com"))
-    (define (make-lang-query)
+    (define lang-query
       (if (assq (predict-google-suggest-language self)
                 google-suggest-charset-alist)
           (format "&hl=~a" (symbol->string (predict-google-suggest-language self)))
@@ -102,7 +102,7 @@
              (result (http:get google-suggest-server
                                (format "/complete/search?output=toolbar&q=~a~a"
                                        uri-string
-                                       (make-lang-query))
+                                       lang-query)
                                80
                                proxy
                                ssl))
