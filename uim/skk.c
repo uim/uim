@@ -211,7 +211,7 @@ is_okuri(const char *line_str)
   const char *b;
   /* find first white space */
   b = strchr(line_str, ' ');
-  if (!b)
+  if (!b || b == line_str)
     return 0;
   /* check previous character */
   b--;
