@@ -56,7 +56,10 @@
                            (N_ "Look-SKK prediction"))
                      (list 'sqlite3
                            (N_ "Sqlite3")
-                           (N_ "Sqlite3 prediction")))
+                           (N_ "Sqlite3 prediction"))
+                     (list 'google-suggest
+                           (N_ "Google Suggest")
+                           (N_ "Google Suggest prediction")))
                (N_ "Prediction methods")
                (N_ "long description will be here."))
 
@@ -155,3 +158,38 @@
                         (find (lambda (item)
                                 (eq? 'sqlite3 item))
                               predict-custom-methods))))
+
+;;
+;; predict-google-suggest
+;;
+(define-custom-group 'predict-google-suggest
+                     (N_ "Google suggest prediction")
+                     (N_ "long description will be here."))
+
+(define-custom 'predict-custom-google-suggest-candidates-max 5
+               '(predict predict-google-suggest)
+               '(integer 1 99)
+               (N_ "Max words of candidates for google suggest")
+               (N_ "long description will be here"))
+
+(custom-add-hook 'predict-custom-google-suggest-candidates-max
+                 'custom-activity-hooks
+                 (lambda ()
+                   (and predict-custom-enable?
+                        (find (lambda (item)
+                                (eq? 'google-suggest item))
+                              predict-custom-methods))))
+
+(define-custom 'predict-custom-google-suggest-language 'en
+               '(predict predict-google-suggest)
+               (list 'choice
+                     (list 'en (N_ "English") (N_ "English"))
+                     (list 'ja (N_ "Japanese")  (N_ "Japanese")))
+               (N_ "Language")
+               (N_ "long description will be here."))
+
+(define-custom 'predict-custom-google-suggest-use-ssl #t
+               '(predict predict-google-suggest)
+               '(boolean)
+               (N_ "Enable SSL with Google Suggest")
+               (N_ "long description will be here."))

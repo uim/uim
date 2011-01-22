@@ -99,13 +99,12 @@
 (for-each try-load
           '("predict-look.scm"
             "predict-look-skk.scm"
-            "predict-sqlite3.scm"))
+            "predict-sqlite3.scm"
+            "predict-google-suggest.scm"))
 
 ;;
 ;; uim-custom specific settings
 ;;
-
-
 (define-macro (make-predict-make-meta-search methods)
   `(if predict-custom-enable?
        (map-in-order (lambda (m)
@@ -122,7 +121,7 @@
 (define (predict-make-meta-search)
   (map-in-order (lambda (m)
                   (eval (list m) (interaction-environment)))
-                (make-predict-make-meta-search '(look look-skk sqlite3))))
+                (make-predict-make-meta-search '(look look-skk sqlite3 google-suggest))))
 
 (define (predict-meta-open methods im-name)
   (for-each (lambda (obj)

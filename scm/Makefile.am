@@ -18,6 +18,7 @@ SCM_FILES = plugin.scm im.scm im-custom.scm lazy-load.scm init.scm \
  generic.scm generic-custom.scm generic-key-custom.scm \
  generic-predict.scm predict-custom.scm \
  predict-look.scm predict-look-skk.scm predict-sqlite3.scm \
+ predict-google-suggest.scm \
  pyload.scm py.scm pyunihan.scm pinyin-big5.scm \
  xmload.scm \
  japanese.scm japanese-azik.scm japanese-kana.scm \
