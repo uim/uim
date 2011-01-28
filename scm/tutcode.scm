@@ -2598,11 +2598,13 @@
       ;; 新たな入力文字を加えた合成不能→新たな入力文字を削除
       ((null? res)
         (tutcode-context-set-head! pc (cdr (tutcode-context-head pc)))
-        (tutcode-context-set-candidate-window! pc
-          'tutcode-candidate-window-interactive-bushu)
-        (im-activate-candidate-selector pc
-          (tutcode-context-prediction-nr-all pc)
-          (tutcode-context-prediction-page-limit pc)))
+        (if (> (tutcode-context-prediction-nr pc) 0)
+          (begin
+            (tutcode-context-set-candidate-window! pc
+              'tutcode-candidate-window-interactive-bushu)
+            (im-activate-candidate-selector pc
+              (tutcode-context-prediction-nr-all pc)
+              (tutcode-context-prediction-page-limit pc)))))
       (else
         (let ((nr (length res)))
           (tutcode-context-set-prediction-word! pc ())
