@@ -106,6 +106,12 @@
   (N_ "Enable two stroke kigou mode")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-mazegaki-yomi-max 10
+  '(tutcode candwin)
+  '(integer 0 99)
+  (N_ "Maximum length of yomi for postfix mazegaki conversion")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-use-interactive-bushu-conversion? #f
   '(tutcode tutcode-bushu)
   '(boolean)

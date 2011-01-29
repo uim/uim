@@ -582,6 +582,9 @@
      (nth 0)
      ;;; 交ぜ書き変換の候補数
      (nr-candidates 0)
+     ;;; 後置型交ぜ書き変換時に、im-acquire-textで取得した読みの長さ
+     ;;; (確定時にim-delete-textするために使用)
+     (postfix-yomi-len 0)
      ;;; 候補ウィンドウの状態
      ;;; 'tutcode-candidate-window-off 非表示
      ;;; 'tutcode-candidate-window-converting 交ぜ書き変換候補表示中
@@ -1124,10 +1127,13 @@
 (define (tutcode-commit-with-auto-help pc)
   (let* ((head (tutcode-context-head pc))
          (res (tutcode-prepare-commit-string pc)))
+    (if (> (tutcode-context-postfix-yomi-len pc) 0)
+      (tutcode-postfix-delete-text pc (tutcode-context-postfix-yomi-len pc)))
     (tutcode-commit pc res)
     (tutcode-check-auto-help-window-begin pc (string-to-list res) head)))
 
 ;;; 交ぜ書き変換の候補選択時に、指定されたラベル文字に対応する候補を確定する
+;;; @param ch 入力されたラベル文字
 (define (tutcode-commit-by-label-key pc ch)
   ;; 現在候補ウィンドウに表示されていないラベル文字を入力した場合、
   ;; 現在以降の候補内において入力ラベル文字に対応する候補を確定する。
@@ -1299,6 +1305,7 @@
 ;;; @param pc コンテキストリスト
 ;;; @param autocommit? 候補が1個の場合に自動的に確定するかどうか
 ;;; @param recursive-learning? 候補が無い場合に再帰登録モードに入るかどうか
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
 (define (tutcode-begin-conversion pc autocommit? recursive-learning?)
   (let* ((yomi (tutcode-make-string (tutcode-context-head pc)))
          (res (and (symbol-bound? 'skk-lib-get-entry)
@@ -1317,14 +1324,43 @@
             (tutcode-check-candidate-window-begin pc)
             (if (eq? (tutcode-context-candidate-window pc)
                      'tutcode-candidate-window-converting)
-              (im-select-candidate pc 0)))))
+              (im-select-candidate pc 0))))
+        #t)
       ;; 候補無し
-      (if recursive-learning?
-        (begin
-          (tutcode-context-set-state! pc 'tutcode-state-converting)
-          (tutcode-setup-child-context pc 'tutcode-child-type-editor)))
-        ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
-        )))
+      (begin
+        (if recursive-learning?
+          (begin
+            (tutcode-context-set-state! pc 'tutcode-state-converting)
+            (tutcode-setup-child-context pc 'tutcode-child-type-editor)))
+          ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
+        #f))))
+
+;;; 読みの長さが指定されていない場合に、
+;;; 読みを縮めながら後置型交ぜ書き変換を行う。
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-begin-conversion-with-relimit-right pc)
+  (let* ((head (tutcode-context-head pc))
+         (yomi (tutcode-make-string head))
+         (res (and (symbol-bound? 'skk-lib-get-entry)
+                   (skk-lib-get-entry tutcode-dic yomi "" "" #f))))
+    (if res
+      (begin
+        (tutcode-context-set-nth! pc 0)
+        (tutcode-context-set-nr-candidates! pc
+         (skk-lib-get-nr-candidates tutcode-dic yomi "" "" #f))
+        (tutcode-context-set-state! pc 'tutcode-state-converting)
+        (tutcode-check-candidate-window-begin pc)
+        (if (eq? (tutcode-context-candidate-window pc)
+                 'tutcode-candidate-window-converting)
+          (im-select-candidate pc 0))
+        #t)
+      ;; 候補無し
+      (if (> (length head) 1)
+        (begin ;; 読みを1文字減らして再検索
+          (tutcode-context-set-head! pc (drop-right head 1))
+          (tutcode-context-set-postfix-yomi-len! pc (- (length head) 1))
+          (tutcode-begin-conversion-with-relimit-right pc))
+        #f))))
 
 ;;; 子コンテキストを作成する。
 ;;; @param type 'tutcode-child-type-editorか'tutcode-child-type-dialog
@@ -1501,6 +1537,16 @@
             ((tutcode-bushu-start) "◆")
             ((tutcode-interactive-bushu-start) "▼")
             ((tutcode-postfix-bushu-start) "▲")
+            ((tutcode-postfix-mazegaki-start) "△")
+            ((tutcode-postfix-mazegaki-1-start) "△1")
+            ((tutcode-postfix-mazegaki-2-start) "△2")
+            ((tutcode-postfix-mazegaki-3-start) "△3")
+            ((tutcode-postfix-mazegaki-4-start) "△4")
+            ((tutcode-postfix-mazegaki-5-start) "△5")
+            ((tutcode-postfix-mazegaki-6-start) "△6")
+            ((tutcode-postfix-mazegaki-7-start) "△7")
+            ((tutcode-postfix-mazegaki-8-start) "△8")
+            ((tutcode-postfix-mazegaki-9-start) "△9")
             ((tutcode-auto-help-redisplay) "≪")
             (else cand)))
          (cand-hint
@@ -1843,12 +1889,13 @@
 ;;; tutcode-editor側での編集完了時に呼ばれる。
 ;;; @param str エディタ側で確定された文字列
 (define (tutcode-commit-editor-context pc str)
-  (let ((ppc (tutcode-context-parent-context pc)))
-    (tutcode-flush pc)
-    (tutcode-context-set-child-context! pc ())
-    (tutcode-context-set-child-type! pc ())
-    (tutcode-commit pc str)
-    (tutcode-update-preedit pc)))
+  (if (> (tutcode-context-postfix-yomi-len pc) 0)
+    (tutcode-postfix-delete-text pc (tutcode-context-postfix-yomi-len pc)))
+  (tutcode-flush pc)
+  (tutcode-context-set-child-context! pc ())
+  (tutcode-context-set-child-type! pc ())
+  (tutcode-commit pc str)
+  (tutcode-update-preedit pc))
 
 ;;; 補完候補を検索して候補ウィンドウに表示する
 ;;; @param force-check? 必ず検索を行うかどうか。
@@ -2159,9 +2206,11 @@
                   (tutcode-check-completion pc #f 0)))
               ((eq? res 'tutcode-mazegaki-start)
                 (tutcode-context-set-latin-conv! pc #f)
+                (tutcode-context-set-postfix-yomi-len! pc 0)
                 (tutcode-context-set-state! pc 'tutcode-state-yomi))
               ((eq? res 'tutcode-latin-conv-start)
                 (tutcode-context-set-latin-conv! pc #t)
+                (tutcode-context-set-postfix-yomi-len! pc 0)
                 (tutcode-context-set-state! pc 'tutcode-state-yomi))
               ((eq? res 'tutcode-bushu-start)
                 (tutcode-context-set-state! pc 'tutcode-state-bushu)
@@ -2172,6 +2221,35 @@
                   'tutcode-state-interactive-bushu))
               ((eq? res 'tutcode-postfix-bushu-start)
                 (tutcode-begin-postfix-bushu-conversion pc))
+              ((eq? res 'tutcode-postfix-mazegaki-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc #f #f #f))
+              ((eq? res 'tutcode-postfix-mazegaki-1-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 1 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-2-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 2 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-3-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 3 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-4-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 4 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-5-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 5 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-6-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 6 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-7-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 7 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-8-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 8 #t
+                  tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-9-start)
+                (tutcode-begin-postfix-mazegaki-conversion pc 9 #t
+                  tutcode-use-recursive-learning?))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
 
@@ -2184,6 +2262,34 @@
     (tutcode-postfix-delete-text pc 2)
     (tutcode-commit pc res)
     (tutcode-check-auto-help-window-begin pc (list res) ())))
+
+;;; 後置型交ぜ書き変換を行う
+;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+;;; @param autocommit? 候補が1個の場合に自動的に確定するかどうか
+;;;  (yomi-lenが#fでない場合に有効)
+;;; @param recursive-learning? 候補が無い場合に再帰登録モードに入るかどうか
+;;;  (yomi-lenが#fでない場合に有効)
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-begin-postfix-mazegaki-conversion pc yomi-len autocommit?
+          recursive-learning?)
+  (let*
+    ((former-seq (tutcode-postfix-acquire-text pc
+                   (or yomi-len tutcode-mazegaki-yomi-max)))
+     (former-len (length former-seq)))
+    (if yomi-len
+      (if (>= former-len yomi-len)
+        (begin
+          (tutcode-context-set-head! pc (take former-seq yomi-len))
+          (tutcode-context-set-postfix-yomi-len! pc yomi-len)
+          (tutcode-begin-conversion pc autocommit? recursive-learning?))
+        #f)
+      ;; 読みの文字数が指定されていない→取得できた文字を使用(上限yomi-max)
+      (if (> former-len 0)
+        (begin
+          (tutcode-context-set-head! pc former-seq)
+          (tutcode-context-set-postfix-yomi-len! pc former-len)
+          (tutcode-begin-conversion-with-relimit-right pc))
+        #f))))
 
 ;;; 確定済文字列を取得する
 ;;; @param len 取得する文字数
@@ -2774,7 +2880,10 @@
 ;;; @param pc コンテキストリスト
 (define (tutcode-back-to-yomi-state pc)
   (tutcode-reset-candidate-window pc)
-  (tutcode-context-set-state! pc 'tutcode-state-yomi)
+  (tutcode-context-set-state! pc
+    (if (> (tutcode-context-postfix-yomi-len pc) 0)
+      'tutcode-state-on
+      'tutcode-state-yomi))
   (tutcode-context-set-nr-candidates! pc 0))
 
 ;;; 交ぜ書き変換の辞書登録状態から、候補選択状態に戻す。
@@ -2807,7 +2916,9 @@
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-proc-state-converting c key key-state)
-  (let ((pc (tutcode-find-descendant-context c)))
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (postfix-yomi-len (tutcode-context-postfix-yomi-len pc)))
     (cond
       ((tutcode-next-candidate-key? key key-state)
         (tutcode-change-candidate-index pc 1))
@@ -2819,9 +2930,8 @@
         (tutcode-change-candidate-index pc tutcode-nr-candidate-max))
       ((tutcode-prev-page-key? key key-state)
         (tutcode-change-candidate-index pc (- tutcode-nr-candidate-max)))
-      ((or
-        (tutcode-commit-key? key key-state)
-        (tutcode-return-key? key key-state))
+      ((or (tutcode-commit-key? key key-state)
+           (tutcode-return-key? key key-state))
         (tutcode-commit-with-auto-help pc))
       ((tutcode-purge-candidate-key? key key-state)
         (tutcode-reset-candidate-window pc)
@@ -2830,10 +2940,40 @@
             tutcode-use-recursive-learning?)
         (tutcode-reset-candidate-window pc)
         (tutcode-setup-child-context pc 'tutcode-child-type-editor))
+      ((and (> postfix-yomi-len 0)
+            (tutcode-postfix-mazegaki-relimit-right-key? key key-state))
+        (let ((head (tutcode-context-head pc)))
+          (if (> (length head) 1)
+            (begin ; 読みを縮めて再検索
+              (tutcode-reset-candidate-window pc)
+              (tutcode-context-set-head! pc (drop-right head 1))
+              (tutcode-context-set-postfix-yomi-len! pc (- (length head) 1))
+              (if (not (tutcode-begin-conversion-with-relimit-right pc))
+                (begin ; 候補無し→読みを縮めるのは中止
+                  (tutcode-context-set-head! pc head)
+                  (tutcode-context-set-postfix-yomi-len! pc (length head))))))))
+      ((and (> postfix-yomi-len 0)
+            (tutcode-postfix-mazegaki-relimit-left-key? key key-state))
+        (let ((head (tutcode-context-head pc)))
+          (if (< (length head) tutcode-mazegaki-yomi-max)
+            (begin ; 読みを伸ばして再検索
+              (tutcode-reset-candidate-window pc)
+              (let loop
+                ((len (+ (length head) 1)))
+                (if (> len tutcode-mazegaki-yomi-max)
+                  (begin ; yomi-maxになるまで伸ばしても候補無し→中止
+                    (tutcode-context-set-head! pc head)
+                    (tutcode-context-set-postfix-yomi-len! pc (length head)))
+                  (begin
+                    (if (not (tutcode-begin-postfix-mazegaki-conversion pc
+                              len #f #f))
+                      (loop (+ len 1)))))))))) ; 候補無し→さらに読みを伸ばす
       ((and tutcode-commit-candidate-by-label-key?
             (tutcode-heading-label-char? key))
         (tutcode-commit-by-label-key pc (charcode->string key)))
       (else
+        (if (> postfix-yomi-len 0)
+          (tutcode-postfix-delete-text pc postfix-yomi-len))
         (tutcode-commit pc (tutcode-prepare-commit-string pc))
         (tutcode-proc-state-on pc key key-state)))))
 
@@ -3241,8 +3381,11 @@
         (case (tutcode-context-state pc)
           ((tutcode-state-on)
            (tutcode-proc-state-on pc key key-state)
-           (if (tutcode-state-has-preedit? c)
-             ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
+           (if (or
+                 ;; 交ぜ書き変換や部首合成変換開始。△や▲を表示する
+                 (tutcode-state-has-preedit? c)
+                 ;; 文字数指定後置型交ぜ書き変換の再帰学習キャンセル
+                 (not (eq? (tutcode-find-descendant-context c) pc)))
              (tutcode-update-preedit pc)))
           ((tutcode-state-kigou)
            (tutcode-proc-state-kigou pc key key-state)
@@ -3732,6 +3875,26 @@
               '(tutcode-interactive-bushu-start)))
           (make-subrule tutcode-postfix-bushu-start-sequence
             '(tutcode-postfix-bushu-start))
+          (make-subrule tutcode-postfix-mazegaki-start-sequence
+            '(tutcode-postfix-mazegaki-start))
+          (make-subrule tutcode-postfix-mazegaki-1-start-sequence
+            '(tutcode-postfix-mazegaki-1-start))
+          (make-subrule tutcode-postfix-mazegaki-2-start-sequence
+            '(tutcode-postfix-mazegaki-2-start))
+          (make-subrule tutcode-postfix-mazegaki-3-start-sequence
+            '(tutcode-postfix-mazegaki-3-start))
+          (make-subrule tutcode-postfix-mazegaki-4-start-sequence
+            '(tutcode-postfix-mazegaki-4-start))
+          (make-subrule tutcode-postfix-mazegaki-5-start-sequence
+            '(tutcode-postfix-mazegaki-5-start))
+          (make-subrule tutcode-postfix-mazegaki-6-start-sequence
+            '(tutcode-postfix-mazegaki-6-start))
+          (make-subrule tutcode-postfix-mazegaki-7-start-sequence
+            '(tutcode-postfix-mazegaki-7-start))
+          (make-subrule tutcode-postfix-mazegaki-8-start-sequence
+            '(tutcode-postfix-mazegaki-8-start))
+          (make-subrule tutcode-postfix-mazegaki-9-start-sequence
+            '(tutcode-postfix-mazegaki-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay)))))))
 

@@ -95,6 +95,66 @@
 	       (N_ "[TUT-Code] postfix bushu conversion")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-postfix-mazegaki-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-1-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 1")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-2-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 2")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-3-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 3")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-4-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 4")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-5-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 5")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-6-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 6")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-7-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 7")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-8-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 8")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-9-start-sequence ""
+               '(tutcode-keys1)
+	       '(string ".*")
+	       (N_ "[TUT-Code] postfix mazegaki conversion with yomi 9")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-latin-conv-start-sequence "al/"
                '(tutcode-keys1 mode-transition)
 	       '(string ".*")
@@ -195,4 +255,16 @@
 	       '(tutcode-keys2)
 	       '(key)
 	       (N_ "[TUT-Code] purge the entry from dictionary")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-relimit-left-key '("<IgnoreShift><")
+	       '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] relimit yomi to left in postfix mazegaki")
+	       (N_ "long description will be here"))
+
+(define-custom 'tutcode-postfix-mazegaki-relimit-right-key '("<IgnoreShift>>")
+	       '(tutcode-keys2)
+	       '(key)
+	       (N_ "[TUT-Code] relimit yomi to right in postfix mazegaki")
 	       (N_ "long description will be here"))
