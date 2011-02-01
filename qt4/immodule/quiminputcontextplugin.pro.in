@@ -15,7 +15,6 @@ HEADERS += @srcdir@/abstractcandidatewindow.h \
            @srcdir@/qtextutil.h \
            @srcdir@/quiminfomanager.h \
            @srcdir@/quiminputcontext.h \
-           @srcdir@/quiminputcontext_compose.h \
            @srcdir@/subwindow.h
 
 SOURCES += @srcdir@/abstractcandidatewindow.cpp \
@@ -27,8 +26,12 @@ SOURCES += @srcdir@/abstractcandidatewindow.cpp \
            @srcdir@/qtextutil.cpp \
            @srcdir@/quiminfomanager.cpp \
            @srcdir@/quiminputcontext.cpp \
-           @srcdir@/quiminputcontext_compose.cpp \
            @srcdir@/subwindow.cpp
+
+!win32:!embedded:!mac {
+    HEADERS += @srcdir@/quiminputcontext_compose.h
+    SOURCES += @srcdir@/quiminputcontext_compose.cpp
+}
 
 TARGET = uiminputcontextplugin
 
