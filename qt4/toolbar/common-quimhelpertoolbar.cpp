@@ -45,9 +45,6 @@
 #include "uim/uim-scm.h"
 #include "qtgettext.h"
 
-static const QString ICONDIR = UIM_PIXMAPSDIR;
-static const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/16x16/actions";
-
 static void launchHelperApplication( const QString &command )
 {
     if ( !command.isEmpty() && !QProcess::startDetached( command ) ) {
@@ -71,6 +68,8 @@ QUimHelperToolbar::QUimHelperToolbar( QWidget *parent, bool isApplet )
     connect( m_indicator, SIGNAL( menuRequested( QMenu* ) ),
         this, SIGNAL( menuRequested( QMenu* ) ) );
 
+    const QString ICONDIR = UIM_PIXMAPSDIR;
+    const QString ACTION_ICONDIR = KDE4_ICONDIR "/oxygen/16x16/actions";
     const QSize size( ICON_SIZE, ICON_SIZE );
     m_swicon = QPixmap( ICONDIR + "/im_switcher.png" ).scaled(
         size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
