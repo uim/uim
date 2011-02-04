@@ -38,8 +38,6 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <panel-applet.h>
-#include <gnome.h>
-#include <libgnome/libgnome.h>
 #include <uim/uim.h>
 
 PanelApplet *uimapplet;
@@ -161,20 +159,20 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
   gchar *translators = _("TRANSLATORS");
   icon = gdk_pixbuf_new_from_file(UIM_PIXMAPSDIR "/uim-icon.png", NULL);
 
-  dialog = gnome_about_new(_("uim Applet"), VERSION,
-			   "Copyright \xc2\xa9 2003-2011 uim Project.",
-			   _("Applet for indicating uim's status"),
-			   authors,
-			   NULL,
-			   strcmp("TRANSLATORS", translators) ? translators
+  gtk_show_about_dialog(NULL,
+			   "program-name", _("uim Applet"),
+			   "version", VERSION,
+			   "copyright", "Copyright \xc2\xa9 2003-2011 uim Project.",
+			   "comments", _("Applet for indicating uim's status"),
+			   "authors", authors,
+			   "translator-credits",
+			       strcmp("TRANSLATORS", translators) ? translators
 			   				      : NULL,
-			   icon);
+			   "logo", icon, NULL);
 
   if (icon) {
-    gtk_window_set_icon(GTK_WINDOW(dialog), icon);
     g_object_unref(icon);
   }
-  gtk_widget_show(dialog);
 }
 
 static gboolean
