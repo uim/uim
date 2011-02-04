@@ -153,7 +153,6 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
 		     const gchar *verbname)
 {
   GdkPixbuf *icon = NULL;
-  GtkWidget *dialog;
   const gchar *authors[] = {"uim Project", NULL};
   /* Feel free to put your names here translators */
   gchar *translators = _("TRANSLATORS");
