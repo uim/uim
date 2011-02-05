@@ -121,32 +121,6 @@ exec_help(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
   system("uim-help &");
 }
 
-
-/* Opens gnome help application
- */
-#if 0
-static void
-display_help_dialog(BonoboUIComponent *uic, gpointer data,
-		    const gchar *verbname)
-{
-  GError *error = NULL;
-
-  gnome_help_display("uim", NULL, &error);
-
-  if (error) {
-    GtkWidget *dialog;
-    dialog = gtk_message_dialog_new(NULL,
-				    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-				    GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
-				    error->message);
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(dialog);
-    g_error_free(error);
-    error = NULL;
-  }
-}
-#endif
-
 /* Just the about window... If it's already open, just focus it */
 static void
 display_about_dialog(BonoboUIComponent *uic, gpointer data,
