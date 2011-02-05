@@ -141,6 +141,7 @@ display_about_dialog(BonoboUIComponent *uic, gpointer data,
 			   "translator-credits",
 			       strcmp("TRANSLATORS", translators) ? translators
 			   				      : NULL,
+			   "icon", icon,
 			   "logo", icon, NULL);
 
   if (icon) {
