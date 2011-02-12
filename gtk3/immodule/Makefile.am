@@ -1,7 +1,7 @@
 uim_gtk3_im_module_path = $(libdir)/gtk-3.0
 uim_gtk3_im_module_file = $(DESTDIR)$(sysconfdir)/gtk-3.0/gtk.immodules
 
-moduledir = $(uim_gtk3_im_module_path)/@GTK_BINARY_VERSION@/immodules
+moduledir = $(uim_gtk3_im_module_path)/@GTK3_BINARY_VERSION@/immodules
 
 if GTK3
 im_uim_la = im-uim.la
