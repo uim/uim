@@ -179,7 +179,7 @@ word_window_init(WordWindow *window)
 
   /* action area */
   check = gtk_check_button_new_with_label(_("continuance"));
-  gtk_box_pack_start(GTK_BOX(GTK_DIALOG(window)->action_area),
+  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_action_area(GTK_DIALOG(window))),
 		     check, FALSE, FALSE, 0);
   gtk_widget_show(check);
   window->continuance = check;
@@ -299,13 +299,22 @@ word_window_necessary_create(WordWindow *window)
     gint pos_num;
 
     pos_num = sizeof(pos_broad) / sizeof(pos_broad[0]);
+#if GTK_CHECK_VERSION(2, 24, 0)
+    combobox_pos_broad = gtk_combo_box_text_new();
+#else
     combobox_pos_broad = gtk_combo_box_new_text();
+#endif
     gtk_label_set_mnemonic_widget(GTK_LABEL(label), combobox_pos_broad);
     gtk_widget_show(combobox_pos_broad);
 
     for (i = 0; i < pos_num; i++) {
+#if GTK_CHECK_VERSION(2, 24, 0)
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox_pos_broad),
+				_(pos_broad[i]));
+#else
       gtk_combo_box_append_text(GTK_COMBO_BOX(combobox_pos_broad),
 				_(pos_broad[i]));
+#endif
     }
 
     alignment_pos_broad = gtk_alignment_new(0, 0.5, 0, 0);

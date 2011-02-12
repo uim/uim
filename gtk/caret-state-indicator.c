@@ -82,10 +82,16 @@ caret_state_indicator_timeout(gpointer data)
 static gint
 caret_state_indicator_paint_window(GtkWidget *window)
 {
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gtk_render_frame(gtk_widget_get_style_context(window),
+             gtk_widget_get_window(window),
+             0, 0, -1, -1);
+#else
   gtk_paint_flat_box(gtk_widget_get_style(window),
              gtk_widget_get_window(window),
              GTK_STATE_NORMAL, GTK_SHADOW_OUT, NULL, GTK_WIDGET(window),
              "tooltip", 0, 0, -1, -1);
+#endif
 
   return FALSE;
 }

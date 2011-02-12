@@ -34,7 +34,12 @@
 #include <config.h>
 
 #include <stdlib.h>
-#include <gdk/gdkkeysyms.h>
+# include <gtk/gtk.h>
+#if GTK_CHECK_VERSION(2, 90, 0)
+# include <gdk/gdkkeysyms-compat.h>
+#else
+# include <gdk/gdkkeysyms.h>
+#endif
 
 #include "gettext.h"
 
@@ -277,13 +282,13 @@ word_list_window_init (WordListWindow *window)
   gtk_widget_show(word_list);
   gtk_box_pack_start(GTK_BOX(vbox), word_list, TRUE, TRUE, 0);
 
-  g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
+  g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(window->word_list))),
 		   "button-press-event",
 		   G_CALLBACK(word_list_button_press_cb), window);
-  g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
+  g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(window->word_list))),
 		   "row-activated",
 		   G_CALLBACK(word_list_row_activated_cb), window);
-  g_signal_connect(G_OBJECT(GTK_BIN(window->word_list)->child),
+  g_signal_connect(G_OBJECT(gtk_bin_get_child(GTK_BIN(window->word_list))),
 		   "key-press-event",
 		   G_CALLBACK(word_list_key_press_cb), window);
   g_signal_connect(G_OBJECT(WORD_LIST_VIEW(window->word_list)->selection),
@@ -559,7 +564,7 @@ popup_menu_action_cb(GtkAction *action, WordListWindow *window)
   }
 }
 
-#if GTK_CHECK_VERSION(2, 6, 0)
+#if GTK_CHECK_VERSION(2, 6, 0) && !GTK_CHECK_VERSION(2, 18, 0)
 static void
 activate_url(GtkAboutDialog *about, const gchar *link, gpointer data)
 {
@@ -592,7 +597,9 @@ help_about_action_cb(GtkAction *action, WordListWindow *window)
     g_object_unref(pixbuf);
   }
   
+#if !GTK_CHECK_VERSION(2, 18, 0)
   gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
+#endif
   gtk_show_about_dialog (GTK_WINDOW(window),
 			 "name", name,
 			 "version", VERSION,

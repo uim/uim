@@ -1,2 +1,1 @@
-#SUBDIRS = candwin chardict edittest immodule pref  toolbar
-SUBDIRS = pad pref switcher toolbar
+SUBDIRS = candwin dict pad pref switcher toolbar

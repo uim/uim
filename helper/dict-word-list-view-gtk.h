@@ -38,9 +38,7 @@
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
-#include <gtk/gtkscrolledwindow.h>
-#include <gtk/gtktreemodel.h>
-#include <gtk/gtktreeview.h>
+#include <gtk/gtk.h>
 
 #include "dict-dict.h"
 

@@ -737,7 +737,7 @@ static void str_parse(gchar *str)
     } else if (strcmp("show", command) == 0) {
       candwin_show();
     } else if (strcmp("hide", command) == 0) {
-      gtk_widget_hide_all(GTK_WIDGET(cwin));
+      gtk_widget_hide(GTK_WIDGET(cwin));
       if (cwin->sub_window.window)
         gtk_widget_hide(cwin->sub_window.window);
     } else if (strcmp("move", command) == 0) {
@@ -804,7 +804,6 @@ main(int argc, char *argv[])
   /* disable uim context in annotation window */
   setenv("GTK_IM_MODULE", "gtk-im-context-simple", 1);
 
-  gtk_set_locale();
   gtk_init(&argc, &argv);
   if (uim_init() < 0)
     return 0;
@@ -1029,7 +1028,12 @@ uim_cand_win_gtk_create_sub_window(UIMCandidateWindow *cwin)
 static void
 uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
 {
-  gint x, y, w, h, d, sw, sh, x2, y2, w2, h2, d2;
+  gint x, y, w, h, sw, sh, x2, y2, w2, h2
+#if GTK_CHECK_VERSION(2, 90, 0)
+    ;
+#else
+    , d, d2;
+#endif
   GdkRectangle rect;
   GtkTreePath *path;
   GtkTreeViewColumn *focus_column;
@@ -1042,13 +1046,23 @@ uim_cand_win_gtk_layout_sub_window(UIMCandidateWindow *cwin)
   gtk_tree_path_free(path);
 
   gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
-                          &x, &y, &w, &h, &d);
+                          &x, &y, &w, &h
+#if GTK_CHECK_VERSION(2, 90, 0)
+                          );
+#else
+                          , &d);
+#endif
   gdk_window_get_origin(gtk_widget_get_window(GTK_WIDGET(cwin)), &x, &y);
 
   sw = gdk_screen_get_width  (gdk_screen_get_default ());
   sh = gdk_screen_get_height (gdk_screen_get_default ());
   gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
-                          &x2, &y2, &w2, &h2, &d2);
+                          &x2, &y2, &w2, &h2
+#if GTK_CHECK_VERSION(2, 90, 0)
+                          );
+#else
+                          , &d2);
+#endif
   if (x + w + w2 > sw)
     x = x - w2;
   else

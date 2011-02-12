@@ -785,7 +785,7 @@ static void str_parse(gchar *str)
     } else if (strcmp("show", command) == 0) {
       candwin_show();
     } else if (strcmp("hide", command) == 0) {
-      gtk_widget_hide_all(GTK_WIDGET(cwin));
+      gtk_widget_hide(GTK_WIDGET(cwin));
     } else if (strcmp("move", command) == 0) {
       candwin_move(tmp);
     } else if (strcmp("deactivate", command) == 0) {
@@ -850,7 +850,6 @@ main(int argc, char *argv[])
   /* disable uim context in annotation window */
   setenv("GTK_IM_MODULE", "gtk-im-context-simple", 1);
 
-  gtk_set_locale();
   gtk_init(&argc, &argv);
   if (uim_init() < 0)
     return 0;
