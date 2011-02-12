@@ -34,7 +34,12 @@
 #include <config.h>
 
 #include <glib.h>
-#include <gdk/gdkkeysyms.h>
+#include <gtk/gtk.h>
+#if GTK_CHECK_VERSION(2, 90, 0)
+# include <gdk/gdkkeysyms-compat.h>
+#else
+# include <gdk/gdkkeysyms.h>
+#endif
 
 #include <string.h>
 #include <stdlib.h>
@@ -612,7 +617,6 @@ main(int argc, char *argv[])
   textdomain(PACKAGE);
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 
-  gtk_set_locale();
   gtk_init(&argc, &argv);
 
   if (uim_init() < 0) {
@@ -624,7 +628,7 @@ main(int argc, char *argv[])
     GtkWidget *pref;
 
     im_uim_init_modifier_keys();
-    g_idle_add((GtkFunction) check_dot_uim_file, NULL);
+    g_idle_add((GSourceFunc) check_dot_uim_file, NULL);
     pref = create_pref_window();
     gtk_widget_show_all(pref);
 

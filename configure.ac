@@ -1862,6 +1862,7 @@ AC_CONFIG_FILES([Makefile
 		 gtk/test/test.sh
 		 gtk3/Makefile
 		 gtk3/pad/Makefile
+		 gtk3/pref/Makefile
 		 gtk3/switcher/Makefile
 		 gtk3/toolbar/Makefile
 		 qt/Makefile

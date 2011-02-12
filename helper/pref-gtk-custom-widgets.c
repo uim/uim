@@ -602,7 +602,12 @@ sync_value_choice(GtkComboBox *combobox)
   default_symbol = custom->value->as_choice->symbol;
 
   while (*item) {
+#if GTK_CHECK_VERSION(2, 24, 0)
+    gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combobox),
+        (*item)->label);
+#else
     gtk_combo_box_append_text(GTK_COMBO_BOX(combobox), (*item)->label);
+#endif
     if (!strcmp(default_symbol, (*item)->symbol))
       default_index = i;
     i++;
@@ -638,7 +643,11 @@ add_custom_type_choice(GtkWidget *vbox, struct uim_custom *custom)
   label = gtk_label_new(custom->label);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 0);
 
+#if GTK_CHECK_VERSION(2, 24, 0)
+  combobox = gtk_combo_box_text_new();
+#else
   combobox = gtk_combo_box_new_text();
+#endif
   gtk_box_pack_start (GTK_BOX (hbox), combobox, FALSE, TRUE, 0);
 
   g_object_set_data_full(G_OBJECT(combobox),

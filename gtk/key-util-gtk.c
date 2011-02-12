@@ -39,7 +39,11 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
+#if GTK_CHECK_VERSION(2, 90, 0)
+# include <gdk/gdkkeysyms-compat.h>
+#else
+# include <gdk/gdkkeysyms.h>
+#endif
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #include <X11/Xlib.h>
