@@ -914,7 +914,11 @@ uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
 static void
 uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
 {
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gint x, y, w, h, sw, sh, x2, y2, w2, h2;
+#else
   gint x, y, w, h, d, sw, sh, x2, y2, w2, h2, d2;
+#endif
   GdkRectangle rect;
   GtkTreePath *path;
   GtkTreeViewColumn *focus_column;
@@ -926,14 +930,24 @@ uim_cand_win_gtk_layout_sub_window(UIMCandWinGtk *cwin)
   gtk_tree_view_get_cell_area(GTK_TREE_VIEW(cwin->view), path, NULL, &rect);
   gtk_tree_path_free(path);
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
+			  &x, &y, &w, &h);
+#else
   gdk_window_get_geometry(gtk_widget_get_window(GTK_WIDGET(cwin)),
 			  &x, &y, &w, &h, &d);
+#endif
   gdk_window_get_origin(gtk_widget_get_window(GTK_WIDGET(cwin)), &x, &y);
 
   sw = gdk_screen_get_width  (gdk_screen_get_default ());
   sh = gdk_screen_get_height (gdk_screen_get_default ()); 
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
+			  &x2, &y2, &w2, &h2);
+#else
   gdk_window_get_geometry(gtk_widget_get_window(cwin->sub_window.window),
 			  &x2, &y2, &w2, &h2, &d2);
+#endif
   if (x + w + w2 > sw)
     x = x - w2;
   else

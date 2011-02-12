@@ -1863,6 +1863,7 @@ AC_CONFIG_FILES([Makefile
 		 gtk3/Makefile
 		 gtk3/candwin/Makefile
 		 gtk3/dict/Makefile
+		 gtk3/immodule/Makefile
 		 gtk3/pad/Makefile
 		 gtk3/pref/Makefile
 		 gtk3/switcher/Makefile

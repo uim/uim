@@ -487,12 +487,20 @@ index_changed_cb(UIMCandWinGtk *cwin, IMUIMContext *uic)
 static void
 layout_candwin(IMUIMContext *uic)
 {
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gint x, y, width, height;
+#else
   gint x, y, width, height, depth;
+#endif
 
   g_return_if_fail(uic);
 
   if (uic->win && uic->cwin) {
+#if GTK_CHECK_VERSION(2, 90, 0)
+    gdk_window_get_geometry(uic->win, &x, &y, &width, &height);
+#else
     gdk_window_get_geometry(uic->win, &x, &y, &width, &height, &depth);
+#endif
     gdk_window_get_origin(uic->win, &x, &y);
     uim_cand_win_gtk_layout(uic->cwin, x, y, width, height);
   }
@@ -1628,14 +1636,16 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
     if (rv)
       return FALSE;
 
+#if !GTK_CHECK_VERSION(2, 90, 0)
     /* FIXME: Can't compile with GSEAL_ENABLE */
     if (GTK_IS_TEXT_VIEW(uic->widget))
       GTK_TEXT_VIEW(uic->widget)->need_im_reset = TRUE;
     else if (GTK_IS_ENTRY(uic->widget)) {
-    /* FIXME: Can't compile with GSEAL_ENABLE */
+      /* FIXME: Can't compile with GSEAL_ENABLE */
       if (gtk_editable_get_editable(GTK_EDITABLE(uic->widget)))
-	GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
+        GTK_ENTRY(uic->widget)->need_im_reset = TRUE;
     }
+#endif
     return TRUE;
   }
 
