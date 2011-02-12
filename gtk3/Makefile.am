@@ -1,1 +1,1 @@
-SUBDIRS = candwin dict pad pref switcher toolbar
+SUBDIRS = candwin dict pad pref switcher test toolbar
