@@ -852,6 +852,29 @@ if test x"$panelapplet_have_set_background_api" = xyes; then
   AC_DEFINE(LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET, 1 , [libpanel-applet have set_background api])
 fi
 
+
+dnl ******************************
+dnl *** Check for Gtk3 Library ***
+dnl ******************************
+AC_ARG_WITH(gtk3,
+  AC_HELP_STRING([--with-gtk3],
+                 [build gtk3 helper applications
+                  @<:@default=no@:>@]),
+  [
+    case $with_gtk3 in
+      no)
+        use_gtk3="no"
+      ;;
+      yes|*)
+        PKG_CHECK_MODULES(GTK3, gtk+-3.0, use_gtk3="yes",use_gtk3="no")
+      ;;
+    esac
+  ],
+  [ 
+    PKG_CHECK_MODULES(GTK3, gtk+-3.0, use_gtk3="yes",use_gtk3="no")
+  ])
+
+
 dnl ****************************
 dnl *** Check for Qt Library ***
 dnl ****************************
@@ -968,11 +991,14 @@ esac
 default_toolkit="gtk"
 AC_ARG_ENABLE(default-toolkit,
   AC_HELP_STRING([--enable-default-toolkit],
-                 [Determine default toolkit (gtk, qt, or qt4)
+                 [Determine default toolkit (gtk, gtk3, qt, or qt4)
 		  @<:@default=gtk@:>@]),
   [
   if test x"$enable_default_toolkit" = "xgtk" && test x"$use_gtk2" = "xyes"; then
      default_toolkit="gtk"
+  fi
+  if test x"$enable_default_toolkit" = "xgtk3" && test x"$use_gtk3" = "xyes"; then
+     default_toolkit="gtk3"
   fi
   if test x"$enable_default_toolkit" = "xqt" && test x"$use_qt" = "xyes"; then
      default_toolkit="qt"
@@ -1179,7 +1205,9 @@ AM_CONDITIONAL(SQLITE3, test x$use_sqlite3 = xyes)
 AM_CONDITIONAL(FFI, test x$use_ffi = xyes)
 AM_CONDITIONAL(GTK2, test x$use_gtk2 = xyes)
 AM_CONDITIONAL(GTK2_4, test x$use_gtk2_4 = xyes)
+AM_CONDITIONAL(GTK3, test x$use_gtk3 = xyes)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK, test x$default_toolkit = xgtk)
+AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test x$default_toolkit = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test x$default_toolkit = xqt4)
 AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
@@ -1210,8 +1238,17 @@ GTK_LIBDIR=`$PKG_CONFIG gtk+-2.0 --variable=libdir`
 AC_SUBST(GTK_BINARY_VERSION)
 AC_SUBST(GTK_LIBDIR)
 
+GTK3_BINARY_VERSION=`$PKG_CONFIG gtk+-3.0 --variable=gtk_binary_version`
+GTK3_LIBDIR=`$PKG_CONFIG gtk+-3.0 --variable=libdir`
+AC_SUBST(GTK3_BINARY_VERSION)
+AC_SUBST(GTK3_LIBDIR)
+
 if test x$use_gtk2 = xyes ; then
 AC_DEFINE(USE_GTK2, 1, [use gtk2])
+fi
+
+if test x$use_gtk3 = xyes ; then
+    AC_DEFINE(USE_GTK3, 1, [use gtk3])
 fi
 
 if test x$use_qt = xyes ; then
@@ -1487,6 +1524,9 @@ AC_ARG_ENABLE(pref,
 	if test x"$default_toolkit" = "xgtk" && \
 	   test x"$use_gtk2_4" = "xyes"; then
 	  use_pref="yes"
+	elif test x"$default_toolkit" = "xgtk3" && \
+	     test x"$use_gtk3" = "xyes"; then
+	  use_pref="yes"
 	elif test x"$default_toolkit" = "xqt" && \
 	     test x"$use_qt" = "xyes"; then
 	  use_pref="yes"
@@ -1502,6 +1542,9 @@ AC_ARG_ENABLE(pref,
   [
     if test x"$default_toolkit" = "xgtk" && \
        test x"$use_gtk2_4" = "xyes"; then
+      use_pref="yes"
+    elif test x"$default_toolkit" = "xgtk3" && \
+         test x"$use_gtk3" = "xyes"; then
       use_pref="yes"
     elif test x"$default_toolkit" = "xqt" && \
          test x"$use_qt" = "xyes"; then
@@ -1817,6 +1860,10 @@ AC_CONFIG_FILES([Makefile
 		 gtk/Makefile
 		 gtk/test/Makefile
 		 gtk/test/test.sh
+		 gtk3/Makefile
+		 gtk3/pad/Makefile
+		 gtk3/switcher/Makefile
+		 gtk3/toolbar/Makefile
 		 qt/Makefile
 		 qt/chardict/Makefile
 		 qt/chardict/po/Makefile.in
@@ -1925,6 +1972,7 @@ Configure Result :
    SQLite3         : ${use_sqlite3}
    ffi             : ${use_ffi}
    Gtk+            : ${use_gtk2}
+   Gtk+3           : ${use_gtk3}
    Gnome Applet    : ${use_applet_gnome}
    Qt3             : ${use_qt}
    Qt3 immodule    : ${use_qtimmodule}

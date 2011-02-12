@@ -197,7 +197,11 @@ calc_menu_position(GtkMenu *menu, gint *x, gint *y, gboolean *push_in,
   g_return_if_fail(GTK_IS_BUTTON(button));
 
   gdk_window_get_origin(gtk_widget_get_window(button), x, y);
+#if GTK_CHECK_VERSION(2, 90, 0)
+  button_height = gdk_window_get_height(gtk_widget_get_window(button));
+#else
   gdk_drawable_get_size(gtk_widget_get_window(button), NULL, &button_height);
+#endif
 
 #if GTK_CHECK_VERSION(2, 18, 0)
   if (!gtk_widget_get_has_window(button)) {

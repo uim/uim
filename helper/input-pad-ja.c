@@ -549,7 +549,6 @@ int
 main(int argc, char *argv[])
 {
   setlocale(LC_ALL, "");
-  gtk_set_locale();
   bindtextdomain( PACKAGE, LOCALEDIR );
   textdomain( PACKAGE );
   bind_textdomain_codeset( PACKAGE, "UTF-8");

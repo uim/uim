@@ -119,7 +119,12 @@ helper_win_set_position(GtkWidget *window, gint x, gint y)
   sc_w = gdk_screen_width();
   sc_h = gdk_screen_height();
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+  w = gdk_window_get_width(gtk_widget_get_window(window));
+  h = gdk_window_get_height(gtk_widget_get_window(window));
+#else
   gdk_drawable_get_size(gtk_widget_get_window(window), &w, &h);
+#endif
 
   if (wx < 0)
     wx = 0;
@@ -143,7 +148,12 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
     sc_w = gdk_screen_width();
     sc_h = gdk_screen_height();
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+    w = gdk_window_get_width(gtk_widget_get_window(widget));
+    h = gdk_window_get_height(gtk_widget_get_window(widget));
+#else
     gdk_drawable_get_size(gtk_widget_get_window(widget), &w, &h);
+#endif
 
     wx = window_drag_start_x + ((gint)event->x_root - pointer_drag_start_x);
     wy = window_drag_start_y + ((gint)event->y_root - pointer_drag_start_y);
@@ -179,12 +189,19 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 #if GTK_CHECK_VERSION(2, 18, 0)
   GtkAllocation allocation;
   gtk_widget_get_allocation(widget, &allocation);
+# if GTK_CHECK_VERSION(2, 90, 0)
+  gtk_render_handle(gtk_widget_get_style_context(widget),
+		   gtk_widget_get_window(widget),
+		   allocation.x, allocation.y,
+		   allocation.width, allocation.height);
+# else
   gtk_paint_handle(gtk_widget_get_style(widget), gtk_widget_get_window(widget),
 		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
 		   rect, widget, "handlebox",
 		   allocation.x, allocation.y,
 		   allocation.width, allocation.height,
 		   GTK_ORIENTATION_VERTICAL);
+# endif
 #else
   gtk_paint_handle(widget->style, widget->window,
                    GTK_STATE_NORMAL, GTK_SHADOW_OUT,
@@ -245,8 +262,6 @@ main(int argc, char *argv[])
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 
   uim_init();
-
-  gtk_set_locale();
 
   gtk_init(&argc, &argv);
 
