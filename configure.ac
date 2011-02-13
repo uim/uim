@@ -799,6 +799,7 @@ LOCALEDIR=`eval eval echo ${datadir}/locale`
 localedir=$LOCALEDIR
 AC_DEFINE_UNQUOTED(LOCALEDIR, "$LOCALEDIR", [locale dir])
 AC_DEFINE_UNQUOTED(GNOMELOCALEDIR, "$LOCALEDIR", [locale dir for gnome])
+AC_DEFINE_UNQUOTED(GNOME3LOCALEDIR, "$LOCALEDIR", [locale dir for gnome3])
 # define XLIB directory for Compose file
 if test "x$x11_use_new_dir" = "xyes"; then
   AC_DEFINE_UNQUOTED(XLIB_DIR, "`$PKG_CONFIG x11 --variable=prefix`/share", [X11 Library Directory])
@@ -874,6 +875,23 @@ AC_ARG_WITH(gtk3,
     PKG_CHECK_MODULES(GTK3, gtk+-3.0, use_gtk3="yes",use_gtk3="no")
   ])
 
+AC_ARG_ENABLE(gnome3-applet,
+  AC_HELP_STRING([--enable-gnome3-applet],
+                 [enable uim applet for Gnome3 panel
+            @<:@default=no@:>@]),
+  [
+    case $enable_gnome3_applet in
+      no)
+        use_applet_gnome3="no"
+      ;;
+      yes|*)
+        PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-3.0, use_applet_gnome3="yes",use_applet_gnome3="no")
+      ;;
+    esac
+  ],
+  [
+    PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-3.0, use_applet_gnome3="yes",use_applet_gnome3="no")
+  ])
 
 dnl ****************************
 dnl *** Check for Qt Library ***
@@ -1216,6 +1234,7 @@ AM_CONDITIONAL(DEFAULT_TOOLKIT_GTK3, test x$default_toolkit = xgtk3)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT,  test x$default_toolkit = xqt)
 AM_CONDITIONAL(DEFAULT_TOOLKIT_QT4, test x$default_toolkit = xqt4)
 AM_CONDITIONAL(APPLET_GNOME, test x$use_applet_gnome = xyes)
+AM_CONDITIONAL(APPLET_GNOME3, test x$use_applet_gnome3 = xyes)
 AM_CONDITIONAL(UIM_FEP, test x$use_uim_fep = xyes)
 AM_CONDITIONAL(UIM_EL, test x$use_uim_el = xyes)
 AM_CONDITIONAL(XIM, test x$use_xim = xyes)
@@ -1982,8 +2001,9 @@ Configure Result :
    SQLite3         : ${use_sqlite3}
    ffi             : ${use_ffi}
    Gtk+            : ${use_gtk2}
-   Gtk+3           : ${use_gtk3}
    Gnome Applet    : ${use_applet_gnome}
+   Gtk+3           : ${use_gtk3}
+   Gnome3 Applet   : ${use_applet_gnome3}
    Qt3             : ${use_qt}
    Qt3 immodule    : ${use_qtimmodule}
    Qt4             : ${use_qt4}
