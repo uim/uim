@@ -164,6 +164,7 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
   gtk_widget_show_all(GTK_WIDGET(applet));
 
   action_group = gtk_action_group_new("uim Applet Actions");
+  gtk_action_group_set_translation_domain(action_group, GETTEXT_PACKAGE);
   gtk_action_group_add_actions(action_group, uim_menu_actions,
       G_N_ELEMENTS(uim_menu_actions), toolbar);
   panel_applet_setup_menu(applet, uim_menu_xml, action_group);
