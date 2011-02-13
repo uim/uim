@@ -51,16 +51,17 @@ static void exec_pad(GtkAction *action, gpointer data);
 static void exec_hand(GtkAction *action, gpointer data);
 static void exec_help(GtkAction *action, gpointer data);
 static void display_about_dialog(GtkAction *action, gpointer data);
+static void register_icons(void);
 
 extern GtkWidget *uim_toolbar_applet_new(void);
 
 
 static const GtkActionEntry uim_menu_actions[] = {
-  {"Switcher", UIM_PIXMAPSDIR"/im_switcher.png",
+  {"Switcher", "uim-im-switcher",
     N_("Switch input method"), NULL, NULL, G_CALLBACK(exec_switcher)},
   {"Pref", GTK_STOCK_PREFERENCES,
     N_("Preference"), NULL, NULL, G_CALLBACK(exec_pref)},
-  {"Dic", UIM_PIXMAPSDIR"/uim-dict.png",
+  {"Dic", "uim-dict",
     N_("Japanese dictionary editor"), NULL, NULL, G_CALLBACK(exec_dic)},
   {"Pad", GTK_STOCK_BOLD,
     N_("Input pad"), NULL, NULL, G_CALLBACK(exec_pad)},
@@ -144,6 +145,37 @@ display_about_dialog(GtkAction *action, gpointer data)
   }
 }
 
+static void
+register_icons(void)
+{
+  struct {
+    gchar *filename;
+    gchar *stock_id;
+  } stock_icons[] = {
+      {UIM_PIXMAPSDIR"/im_switcher.png", "uim-im-switcher"},
+      {UIM_PIXMAPSDIR"/uim-dict.png", "uim-dict"}
+  };
+  GtkIconFactory *icon_factory = gtk_icon_factory_new();
+  GtkIconSet *icon_set; 
+  GtkIconSource *icon_source;
+  gint n_stock_icons = G_N_ELEMENTS(stock_icons);
+  gint i;
+  
+  for (i = 0; i < n_stock_icons; i++) {
+    icon_set = gtk_icon_set_new();
+    icon_source = gtk_icon_source_new();
+    gtk_icon_source_set_filename (icon_source, stock_icons[i].filename);
+    gtk_icon_set_add_source(icon_set, icon_source);
+    gtk_icon_source_free(icon_source);
+    gtk_icon_factory_add(icon_factory, stock_icons[i].stock_id, icon_set);
+    gtk_icon_set_unref(icon_set);
+  }
+
+  gtk_icon_factory_add_default(icon_factory); 
+
+  g_object_unref(icon_factory);
+}
+
 static gboolean
 uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
 {
@@ -162,6 +194,8 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
   gtk_container_add(GTK_CONTAINER(applet), toolbar);
 
   gtk_widget_show_all(GTK_WIDGET(applet));
+
+  register_icons();
 
   action_group = gtk_action_group_new("uim Applet Actions");
   gtk_action_group_set_translation_domain(action_group, GETTEXT_PACKAGE);
