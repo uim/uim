@@ -16,6 +16,26 @@ uim_toolbar_applet_gnome3_CFLAGS = @GTK2_CFLAGS@ @APPLET_GNOME3_CFLAGS@
 uim_toolbar_applet_gnome3_SOURCES = toolbar-applet-gnome3.c \
 			       ../../helper/toolbar-common-gtk.c
 
+appletdir = $(datadir)/gnome-panel/applets
+applet_DATA = UimApplet.panel-applet
+applet_in_files = $(applet_DATA:=.in)
+
+$(applet_DATA): $(applet_in_files) Makefile
+	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
+	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
+
+servicedir = $(datadir)/dbus-1/services
+service_DATA = org.gnome.panel.applet.UimAppletFactory.service
+service_in_files = $(service_DATA:=.in)
+
+$(service_DATA): $(service_in_files) Makefile
+	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@
+
+DISTCLEANFILES = UimApplet.panel-applet.in UimApplet.panel-applet \
+		 UimApplet.panel-applet.in.tmp \
+		 org.gnome.panel.applet.UimAppletFactory.service.in \
+		 org.gnome.panel.applet.UimAppletFactory.service
+
 endif
 
 if GTK3
