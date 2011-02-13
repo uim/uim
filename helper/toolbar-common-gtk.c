@@ -86,7 +86,11 @@ static struct _CommandEntry command_entry[] = {
     N_("Switch input method"),
     NULL,
     "im_switcher",
+#if GTK_CHECK_VERSION(2, 90, 0)
+    "uim-im-switcher-gtk3",
+#else
     "uim-im-switcher-gtk",
+#endif
     "toolbar-show-switcher-button?",
     UIM_FALSE
   },
@@ -95,7 +99,11 @@ static struct _CommandEntry command_entry[] = {
     N_("Preference"),
     NULL,
     GTK_STOCK_PREFERENCES,
+#if GTK_CHECK_VERSION(2, 90, 0)
+    "uim-pref-gtk3",
+#else
     "uim-pref-gtk",
+#endif
     "toolbar-show-pref-button?",
     UIM_FALSE
   },
@@ -104,7 +112,11 @@ static struct _CommandEntry command_entry[] = {
     N_("Japanese dictionary editor"),
     NULL,
     "uim-dict",
+#if GTK_CHECK_VERSION(2, 90, 0)
+    "uim-dict-gtk3",
+#else
     "uim-dict-gtk",
+#endif
     "toolbar-show-dict-button?",
     UIM_FALSE
   },
@@ -113,7 +125,11 @@ static struct _CommandEntry command_entry[] = {
     N_("Input pad"),
     NULL,
     GTK_STOCK_BOLD,
+#if GTK_CHECK_VERSION(2, 90, 0)
+    "uim-input-pad-ja-gtk3",
+#else
     "uim-input-pad-ja",
+#endif
     "toolbar-show-input-pad-button?",
     UIM_FALSE
   },

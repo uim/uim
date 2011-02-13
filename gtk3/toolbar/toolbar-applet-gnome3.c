@@ -85,25 +85,25 @@ static const char uim_menu_xml[] =
 static void
 exec_switcher(GtkAction *action, gpointer data)
 {
-  system("uim-im-switcher-gtk &");
+  system("uim-im-switcher-gtk3 &");
 }
 
 static void
 exec_pref(GtkAction *action, gpointer data)
 {
-  system("uim-pref-gtk &");
+  system("uim-pref-gtk3 &");
 }
 
 static void
 exec_dic(GtkAction *action, gpointer data)
 {
-  system("uim-dict-gtk &");
+  system("uim-dict-gtk3 &");
 }
 
 static void
 exec_pad(GtkAction *action, gpointer data)
 {
-  system("uim-input-pad-ja &");
+  system("uim-input-pad-ja-gtk3 &");
 }
 
 static void
