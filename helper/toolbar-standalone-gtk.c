@@ -181,6 +181,26 @@ button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
   return FALSE;
 }
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+
+static gboolean
+handle_draw_cb(GtkWidget *widget, cairo_t *cr)
+{
+  GdkRectangle rect;
+  GtkAllocation allocation;
+
+  if (gdk_cairo_get_clip_rectangle(cr, &rect))
+    return FALSE;
+
+  gtk_widget_get_allocation(widget, &allocation);
+  gtk_render_handle(gtk_widget_get_style_context(widget), cr,
+		   allocation.x, allocation.y,
+		   allocation.width, allocation.height);
+  return FALSE;
+}
+
+#else
+
 static gboolean
 handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 {
@@ -189,19 +209,12 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 #if GTK_CHECK_VERSION(2, 18, 0)
   GtkAllocation allocation;
   gtk_widget_get_allocation(widget, &allocation);
-# if GTK_CHECK_VERSION(2, 90, 0)
-  gtk_render_handle(gtk_widget_get_style_context(widget),
-		   gtk_widget_get_window(widget),
-		   allocation.x, allocation.y,
-		   allocation.width, allocation.height);
-# else
   gtk_paint_handle(gtk_widget_get_style(widget), gtk_widget_get_window(widget),
 		   GTK_STATE_NORMAL, GTK_SHADOW_OUT,
 		   rect, widget, "handlebox",
 		   allocation.x, allocation.y,
 		   allocation.width, allocation.height,
 		   GTK_ORIENTATION_VERTICAL);
-# endif
 #else
   gtk_paint_handle(widget->style, widget->window,
                    GTK_STATE_NORMAL, GTK_SHADOW_OUT,
@@ -213,6 +226,8 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 
   return FALSE;
 }
+
+#endif
 
 static void
 size_allocate_cb(GtkWidget *widget, GtkAllocation *allocation, gpointer user_data)
@@ -289,8 +304,13 @@ main(int argc, char *argv[])
   toolbar = (GtkWidget*)uim_toolbar_standalone_new();
   gtk_box_pack_start(GTK_BOX(hbox), toolbar, FALSE, FALSE, 0);
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+  g_signal_connect(G_OBJECT(handle), "draw",
+		   G_CALLBACK(handle_draw_cb), NULL);
+#else
   g_signal_connect(G_OBJECT(handle), "expose-event",
 		   G_CALLBACK(handle_expose_event_cb), NULL);
+#endif
 
   g_signal_connect(G_OBJECT(window), "delete_event",
 		   G_CALLBACK(delete_event), NULL);
