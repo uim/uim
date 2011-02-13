@@ -164,7 +164,7 @@ register_icons(void)
   for (i = 0; i < n_stock_icons; i++) {
     icon_set = gtk_icon_set_new();
     icon_source = gtk_icon_source_new();
-    gtk_icon_source_set_filename (icon_source, stock_icons[i].filename);
+    gtk_icon_source_set_filename(icon_source, stock_icons[i].filename);
     gtk_icon_set_add_source(icon_set, icon_source);
     gtk_icon_source_free(icon_source);
     gtk_icon_factory_add(icon_factory, stock_icons[i].stock_id, icon_set);
