@@ -76,8 +76,6 @@ main(int argc, char *argv[])
   textdomain(PACKAGE);
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 
-  gtk_set_locale();
-
   uim_init();
 
   gtk_init(&argc, &argv);
