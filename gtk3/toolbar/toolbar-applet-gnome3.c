@@ -171,6 +171,7 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
 #if LIBPANEL_APPLET_HAVE_SET_BACKGROUND_WIDGET
   panel_applet_set_background_widget(applet, GTK_WIDGET(applet));
 #endif
+  g_object_unref(action_group);
 
   return TRUE;
 }
