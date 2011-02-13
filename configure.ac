@@ -1080,8 +1080,13 @@ AC_ARG_ENABLE(dict,
       ;;
       yes|*)
         PKG_CHECK_MODULES(DICT, gtk+-2.0 >= 2.4.0,
-                           use_dict="yes",
-                          AC_MSG_WARN([dict needs Gtk+ 2.4 or higher. dict disabled...]);use_dict="no")
+            use_dict="yes", use_dict="no")
+        if test "x$use_dict" = "xno"; then
+            PKG_CHECK_MODULES(DICT, gtk+-3.0, use_dict="yes", use_dict="no")
+        fi
+        if test "x$use_dict" = "xno"; then
+           AC_MSG_WARN([dict needs GTK+ 2 (> 2.4) or GTK+ 3. dict disabled...])
+        fi
 
       dnl Tests for -lcanna for dict
       if test "x$use_dict" = "xyes"; then
