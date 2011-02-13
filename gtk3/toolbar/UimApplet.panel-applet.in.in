@@ -1,0 +1,10 @@
+[Applet Factory]
+Id=UimAppletFactory
+Location=@LIBEXECDIR@/uim-toolbar-applet-gnome3
+_Name=uim Applet Factory
+_Description=uim applet factory
+
+[UimApplet]
+_Name=Input Method Indicator
+_Description=Indicates and controls the state of input method (for uim)
+Icon=@UIM_PIXMAPSDIR@/uim-icon.png

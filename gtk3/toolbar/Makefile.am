@@ -19,10 +19,15 @@ uim_toolbar_applet_gnome3_SOURCES = toolbar-applet-gnome3.c \
 appletdir = $(datadir)/gnome-panel/applets
 applet_DATA = UimApplet.panel-applet
 applet_in_files = $(applet_DATA:=.in)
+applet_in_in_files = $(applet_in_files:=.in)
 
-$(applet_DATA): $(applet_in_files) Makefile
+$(applet_in_files): $(applet_in_in_files) Makefile
 	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
 	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
+
+po_files = $(wildcard $(top_srcdir)/po/*.po)
+$(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files)
+	LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@ 
 
 servicedir = $(datadir)/dbus-1/services
 service_DATA = org.gnome.panel.applet.UimAppletFactory.service
