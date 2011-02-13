@@ -47,6 +47,8 @@ extern GtkWidget *uim_toolbar_standalone_new(void);
 static gboolean toolbar_dragging = FALSE;
 static gint window_drag_start_x = -1, window_drag_start_y = -1;
 static gint pointer_drag_start_x = -1, pointer_drag_start_y = -1;
+static void size_request_cb(GtkWidget *widget, GtkRequisition *req,
+                            gpointer data);
 
 #if GLIB_CHECK_VERSION(2, 6, 0)
 
@@ -101,7 +103,16 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
       height = -1;
       gtk_widget_show(toolbar);
     }
+#if GTK_CHECK_VERSION(2, 90, 0)
+    {
+      GtkRequisition req;
+      req.width = 1;
+      req.height = (height > 0) ? height : 1;
+      size_request_cb(widget, &req, NULL);
+    }
+#else
     gtk_widget_set_size_request(widget, -1, height);
+#endif
     break;
   default:
     break;
@@ -322,8 +333,10 @@ main(int argc, char *argv[])
 		   G_CALLBACK(motion_notify_event_cb), NULL);
   g_signal_connect(G_OBJECT(window), "size-allocate",
 		   G_CALLBACK(size_allocate_cb), NULL);
+#if !GTK_CHECK_VERSION(2, 90, 0)
   g_signal_connect(G_OBJECT(window), "size-request",
 		   G_CALLBACK(size_request_cb), NULL);
+#endif
 
   gtk_widget_show_all(GTK_WIDGET(window));
 
