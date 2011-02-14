@@ -22,8 +22,11 @@
 #define UIM_EGG_TRAY_ICON_H
 
 #include <gtk/gtk.h>
+#if GTK_CHECK_VERSION(2, 99, 3)
+# include <gtk/gtkx.h>
+#endif
 #ifdef GDK_WINDOWING_X11
-#include <gdk/gdkx.h>
+# include <gdk/gdkx.h>
 #endif
 
 G_BEGIN_DECLS
