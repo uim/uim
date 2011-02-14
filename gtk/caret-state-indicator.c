@@ -80,12 +80,15 @@ caret_state_indicator_timeout(gpointer data)
 }
 
 static gint
+#if GTK_CHECK_VERSION(2, 90, 0)
+caret_state_indicator_paint_window(GtkWidget *window, cairo_t *cr)
+#else
 caret_state_indicator_paint_window(GtkWidget *window)
+#endif
 {
 #if GTK_CHECK_VERSION(2, 90, 0)
-  gtk_render_frame(gtk_widget_get_style_context(window),
-             gtk_widget_get_window(window),
-             0, 0, -1, -1);
+  gtk_render_frame(gtk_widget_get_style_context(window), cr,
+             0, 0, 1, 1);
 #else
   gtk_paint_flat_box(gtk_widget_get_style(window),
              gtk_widget_get_window(window),
@@ -129,9 +132,15 @@ caret_state_indicator_new(void)
 			      DEFAULT_WINDOW_HEIGHT);
   gtk_widget_set_app_paintable(window, TRUE);
 
+#if GTK_CHECK_VERSION(2, 90, 0)
+  g_signal_connect(window, "draw",
+		   G_CALLBACK(caret_state_indicator_paint_window), 
+		   NULL);
+#else
   g_signal_connect(window, "expose_event",
 		   G_CALLBACK(caret_state_indicator_paint_window), 
 		   NULL);
+#endif
   g_signal_connect(window, "destroy",
 		   G_CALLBACK(caret_state_indicator_destroy_cb), 
 		   NULL);
