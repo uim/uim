@@ -51,6 +51,7 @@ static void exec_help(BonoboUIComponent *uic, gpointer data, const gchar *verbna
 static void display_about_dialog(BonoboUIComponent *uic, gpointer data, const gchar *verbname);
 
 extern GtkWidget *uim_toolbar_applet_new(void);
+extern void uim_launch_helper_application(const char *command);
 
 
 static const BonoboUIVerb uim_menu_verbs[] = {
@@ -88,37 +89,37 @@ static const char uim_menu_xml[] =
 static void
 exec_switcher(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-im-switcher-gtk &");
+  uim_launch_helper_application("uim-im-switcher-gtk");
 }
 
 static void
 exec_pref(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-pref-gtk &");
+  uim_launch_helper_application("uim-pref-gtk");
 }
 
 static void
 exec_dic(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-dict-gtk &");
+  uim_launch_helper_application("uim-dict-gtk");
 }
 
 static void
 exec_pad(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-input-pad-ja &");
+  uim_launch_helper_application("uim-input-pad-ja");
 }
 
 static void
 exec_hand(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-tomoe-gtk &");
+  uim_launch_helper_application("uim-tomoe-gtk");
 }
 
 static void
 exec_help(BonoboUIComponent *uic, gpointer data, const gchar *verbname)
 {
-  system("uim-help &");
+  uim_launch_helper_application("uim-help");
 }
 
 /* Just the about window... If it's already open, just focus it */
