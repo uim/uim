@@ -80,7 +80,7 @@ static const char uim_menu_xml[] =
   "             pixtype=\"stock\" pixname=\"edit\"/>\n"
   "   <menuitem name=\"Help Item\" verb=\"UimExecHelp\" _label=\"Help\"\n"
   "             pixtype=\"stock\" pixname=\"help\"/>\n"
-  "   <menuitem name=\"About Item\" verb=\"UimAbout\" _label=\"About ...\"\n"
+  "   <menuitem name=\"About Item\" verb=\"UimAbout\" _label=\"About\"\n"
   "             pixtype=\"stock\" pixname=\"gnome-stock-about\"/>\n"
   "</popup>\n";
 

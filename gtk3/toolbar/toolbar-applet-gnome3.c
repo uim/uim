@@ -71,7 +71,7 @@ static const GtkActionEntry uim_menu_actions[] = {
   {"Help", GTK_STOCK_HELP,
     N_("Help"), NULL, NULL, G_CALLBACK(exec_help)},
   {"About", GTK_STOCK_ABOUT,
-    N_("About ..."), NULL, NULL, G_CALLBACK(display_about_dialog)}
+    N_("About"), NULL, NULL, G_CALLBACK(display_about_dialog)}
 };
 
 static const char uim_menu_xml[] =
