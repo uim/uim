@@ -508,7 +508,11 @@ egg_tray_icon_send_manager_message (EggTrayIcon *icon,
   XSendEvent (display,
 	      icon->manager_window, False, NoEventMask, (XEvent *)&ev);
   gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (icon)));
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gdk_error_trap_pop_ignored ();
+#else
   gdk_error_trap_pop ();
+#endif
 }
 
 static void
@@ -750,7 +754,11 @@ egg_tray_icon_send_message (EggTrayIcon *icon,
 		  icon->manager_window, False, StructureNotifyMask, (XEvent *)&ev);
     }
   gdk_display_sync (gtk_widget_get_display (GTK_WIDGET (icon)));
+#if GTK_CHECK_VERSION(2, 90, 0)
+  gdk_error_trap_pop_ignored ();
+#else
   gdk_error_trap_pop ();
+#endif
 
   return stamp;
 }
