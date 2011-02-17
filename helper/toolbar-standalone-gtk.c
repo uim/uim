@@ -193,25 +193,17 @@ button_release_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
 }
 
 #if GTK_CHECK_VERSION(2, 90, 0)
-
 static gboolean
 handle_draw_cb(GtkWidget *widget, cairo_t *cr)
 {
-  GdkRectangle rect;
-  GtkAllocation allocation;
-
-  if (gdk_cairo_get_clip_rectangle(cr, &rect))
-    return FALSE;
-
-  gtk_widget_get_allocation(widget, &allocation);
   gtk_render_handle(gtk_widget_get_style_context(widget), cr,
-		   allocation.x, allocation.y,
-		   allocation.width, allocation.height);
+		   0, 0,
+		   gtk_widget_get_allocated_width(widget),
+		   gtk_widget_get_allocated_height(widget));
   return FALSE;
 }
 
 #else
-
 static gboolean
 handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 {
@@ -237,7 +229,6 @@ handle_expose_event_cb(GtkWidget *widget, GdkEventExpose *event)
 
   return FALSE;
 }
-
 #endif
 
 static void
