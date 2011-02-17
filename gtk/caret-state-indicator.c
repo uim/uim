@@ -88,7 +88,9 @@ caret_state_indicator_paint_window(GtkWidget *window)
 {
 #if GTK_CHECK_VERSION(2, 90, 0)
   gtk_render_frame(gtk_widget_get_style_context(window), cr,
-             0, 0, 1, 1);
+             0, 0,
+             gtk_widget_get_allocated_width(window),
+             gtk_widget_get_allocated_height(window));
 #else
   gtk_paint_flat_box(gtk_widget_get_style(window),
              gtk_widget_get_window(window),
