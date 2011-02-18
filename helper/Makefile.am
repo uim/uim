@@ -37,7 +37,11 @@ DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server \
 endif
 
 if APPLET_GNOME3
-libexec_PROGRAMS =  uim-toolbar-applet-gnome3
+if APPLET_GNOME
+libexec_PROGRAMS += uim-toolbar-applet-gnome3
+else
+libexec_PROGRAMS = uim-toolbar-applet-gnome3
+endif
 
 uim_toolbar_applet_gnome3_LDADD = @GTK2_LIBS@ @APPLET_GNOME3_LIBS@ \
 			   $(top_builddir)/uim/libuim-scm.la \
