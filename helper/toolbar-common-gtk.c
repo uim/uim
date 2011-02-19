@@ -188,7 +188,7 @@ set_button_style(GtkWidget *button)
                                     " -GtkWidget-focus-line-width: 0;\n"
                                     " -GtkWidget-focus-padding: 0;\n"
                                     " -top-padding: 0;\n"
-                                    " -buttom-padding: 0;\n"
+                                    " -bottom-padding: 0;\n"
                                     "}\n", -1, NULL);
     gtk_style_context_add_provider(context,
                                    GTK_STYLE_PROVIDER(provider),
