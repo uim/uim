@@ -105,10 +105,13 @@ button_press_event_cb(GtkWidget *widget, GdkEventButton *event, gpointer data)
     }
 #if GTK_CHECK_VERSION(2, 90, 0)
     {
-      GtkRequisition req;
-      req.width = 1;
-      req.height = (height > 0) ? height : 1;
-      size_request_cb(widget, &req, NULL);
+      GtkRequisition minimum_size, natural_size;
+      gtk_widget_get_preferred_size(widget, &minimum_size, &natural_size);
+      if (height > 0)
+        natural_size.height = height;
+      else if (height == 0)
+        natural_size.height = minimum_size.height;
+      size_request_cb(widget, &natural_size, NULL);
     }
 #else
     gtk_widget_set_size_request(widget, -1, height);
