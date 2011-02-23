@@ -2748,8 +2748,7 @@
        (tutcode-context-set-state! pc 'tutcode-state-on))
       ;; スペースキーで全角スペース入力可能とするため、
       ;; next-candidate-key?のチェックより前にheading-label-char?をチェック
-      ((and tutcode-commit-candidate-by-label-key?
-            (not (and (modifier-key-mask key-state)
+      ((and (not (and (modifier-key-mask key-state)
                       (not (shift-key-mask key-state))))
             (tutcode-heading-label-char-for-kigou-mode? key))
         (tutcode-commit-by-label-key-for-kigou-mode pc (charcode->string key))
@@ -2769,9 +2768,7 @@
       ((tutcode-prev-page-key? key key-state)
         (tutcode-change-candidate-index pc
           (- tutcode-nr-candidate-max-for-kigou-mode)))
-      ((or
-        (tutcode-commit-key? key key-state)
-        (tutcode-return-key? key key-state))
+      ((tutcode-commit-key? key key-state) ; return-keyはアプリに渡す
         (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc)))
       ((or
         (symbol? key)
