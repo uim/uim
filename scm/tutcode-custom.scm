@@ -236,7 +236,7 @@
 
 (define-custom 'tutcode-completion-chars-min 2
   '(tutcode tutcode-prediction)
-  '(integer 1 65535)
+  '(integer 0 65535)
   (N_ "Minimum character length for completion")
   (N_ "long description will be here."))
 
@@ -254,7 +254,7 @@
 
 (define-custom 'tutcode-prediction-start-char-count 2
   '(tutcode tutcode-prediction)
-  '(integer 1 65535)
+  '(integer 0 65535)
   (N_ "Character count to start input prediction")
   (N_ "long description will be here."))
 

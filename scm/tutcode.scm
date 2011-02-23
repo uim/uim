@@ -171,6 +171,9 @@
 ;;; ** 予測入力: 交ぜ書き変換の読み入力状態で<Control>.打鍵時
 ;;; * 補完候補表示にさらに<Control>.を打鍵すると対象文字を1つ減らして再補完。
 ;;;   長すぎる文字列を対象に補完された場合に、補完し直しができるように。
+;;; * 上記の補完開始文字数(tutcode-completion-chars-min)や
+;;;   予測開始文字数(tutcode-prediction-start-char-count)を0に設定すると、
+;;;   <Control>.打鍵時にのみ補完/予測入力候補を表示します。
 ;;; * 熟語ガイド(次に入力が予測される文字の打鍵ガイド)は
 ;;;   補完/予測入力候補から作っています。
 ;;; * 熟語ガイドで表示されている+付き文字に対応するキーを入力した場合、
@@ -2012,13 +2015,12 @@
             (if (> num 0)
               (take commit-strs-all num)
               commit-strs-all))
-           (str (tutcode-make-string commit-strs))
            (len (length commit-strs)))
       (if
         (or (>= len tutcode-completion-chars-min)
             (and force-check?
                  (> len 0)))
-        (begin
+        (let ((str (tutcode-make-string commit-strs)))
           (tutcode-lib-set-prediction-src-string pc str #t)
           (let ((nr (tutcode-lib-get-nr-predictions pc)))
             (if (and nr (> nr 0))
@@ -2059,13 +2061,13 @@
 (define (tutcode-check-prediction pc force-check?)
   (if (eq? (tutcode-context-predicting pc) 'tutcode-predicting-off)
     (let* ((head (tutcode-context-head pc))
-           (preconv-str (tutcode-make-string head))
            (preedit-len (length head)))
       (if
         (or (>= preedit-len tutcode-prediction-start-char-count)
             force-check?)
         (let*
-          ((all-yomi (tutcode-lib-set-prediction-src-string pc preconv-str #f))
+          ((preconv-str (tutcode-make-string head))
+           (all-yomi (tutcode-lib-set-prediction-src-string pc preconv-str #f))
            (nr (tutcode-lib-get-nr-predictions pc)))
           (if (and nr (> nr 0))
             (let*
@@ -2266,7 +2268,7 @@
                    (if (> (length (tutcode-context-commit-strs pc)) 0)
                      (tutcode-context-set-commit-strs! pc
                        (cdr (tutcode-context-commit-strs pc))))
-                   (if completing?
+                   (if (and completing? (> tutcode-completion-chars-min 0))
                      (tutcode-check-completion pc #f 0)))))))
           ((tutcode-stroke-help-toggle-key? key key-state)
            (tutcode-toggle-stroke-help pc))
@@ -2305,7 +2307,8 @@
             (cond
               ((string? res)
                 (tutcode-commit pc res)
-                (if tutcode-use-completion?
+                (if (and tutcode-use-completion?
+                         (> tutcode-completion-chars-min 0))
                   (tutcode-check-completion pc #f 0)))
               ((eq? res 'tutcode-mazegaki-start)
                 (tutcode-context-set-latin-conv! pc #f)
@@ -2826,7 +2829,7 @@
             (if (> (length head) 0)
               (begin
                 (tutcode-context-set-head! pc (cdr head))
-                (if predicting?
+                (if (and predicting? (> tutcode-prediction-start-char-count 0))
                   (tutcode-check-prediction pc #f))))))
           ((or
             (tutcode-commit-key? key key-state)
@@ -2937,6 +2940,7 @@
           (begin
             (tutcode-append-string pc res)
             (if (and tutcode-use-prediction?
+                     (> tutcode-prediction-start-char-count 0)
                      ;; 後置型部首合成変換によるauto-help表示済時は何もしない
                      (eq? (tutcode-context-candidate-window pc)
                           'tutcode-candidate-window-off))
