@@ -47,6 +47,10 @@
                      (N_ "Bushu conversion")
                      (N_ "Bushu conversion settings for TUT-Code"))
 
+(define-custom-group 'tutcode-mazegaki
+                     (N_ "Mazegaki conversion")
+                     (N_ "Mazegaki conversion settings for TUT-Code"))
+
 (define-custom-group 'tutcode-prediction
                     (N_ "Prediction")
                     (N_ "long description will be here."))
@@ -77,13 +81,13 @@
   (N_ "Code table name is 'filename-rule' when code table file name is 'filename.scm'."))
 
 (define-custom 'tutcode-enable-mazegaki-learning? #t
-  '(tutcode)
+  '(tutcode tutcode-mazegaki)
   '(boolean)
   (N_ "Enable learning in mazegaki conversion")
   (N_ "long description will be here."))
 
 (define-custom 'tutcode-use-recursive-learning? #t
-  '(tutcode)
+  '(tutcode tutcode-mazegaki)
   '(boolean)
   (N_ "Use recursive learning")
   (N_ "long description will be here."))
@@ -107,9 +111,21 @@
   (N_ "long description will be here."))
 
 (define-custom 'tutcode-mazegaki-yomi-max 10
-  '(tutcode candwin)
-  '(integer 0 99)
+  '(tutcode tutcode-mazegaki)
+  '(integer 1 99)
   (N_ "Maximum length of yomi for postfix mazegaki conversion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-mazegaki-enable-inflection? #f
+  '(tutcode tutcode-mazegaki)
+  '(boolean)
+  (N_ "Enable inflection in mazegaki conversion")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-mazegaki-suffix-max 4
+  '(tutcode tutcode-mazegaki)
+  '(integer 1 99)
+  (N_ "Maximum length of yomi suffix for mazegaki conversion")
   (N_ "long description will be here."))
 
 (define-custom 'tutcode-use-interactive-bushu-conversion? #f

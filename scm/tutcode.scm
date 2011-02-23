@@ -35,13 +35,8 @@
 ;;; TUT-Code以外のT-CodeやTry-Codeの入力も、コード表の設定により可能。
 ;;;
 ;;; 【部首合成変換】(ala)
-;;;   前置型のみ実装しています。
 ;;;   再帰的な部首合成変換も可能です。
 ;;;   部首合成のアルゴリズムはtc-2.1のものです。
-;;;
-;;; * 後置型部首合成変換は、交ぜ書き変換の読み入力中のみ対応しています。
-;;;   開始キーを以下のように設定すると使用可能になります。
-;;;   (define tutcode-postfix-bushu-start-sequence "ald")
 ;;;
 ;;; * 対話的な部首合成変換
 ;;;   tc-2.3.1のtc-bushu.elの移植です。(ただしsortは未対応です)
@@ -54,7 +49,6 @@
 ;;;   tc-2.3.1のインストール時に生成・インストールされるファイルです。
 ;;;
 ;;; 【交ぜ書き変換】(alj)
-;;;   単純な前置型交ぜ書き変換ができます。
 ;;;   交ぜ書き変換辞書はtc2と同じ形式(SKK辞書と同様の形式)です。
 ;;; 
 ;;; * 交ぜ書き変換辞書(例:/usr/local/share/tc/mazegaki.dic)へのアクセスは
@@ -70,14 +64,53 @@
 ;;;             あるいは、読みを入力後、|を押す。
 ;;;     + 削除: 辞書からの削除は、削除したい候補を選んで!を押す。
 ;;; 
-;;; * 活用する語の変換は自動的には行いません。
-;;;   読みに明示的に"―"を付加して変換してください。
+;;; * 活用する語の変換
+;;;   tutcode-mazegaki-enable-inflection?変数を#tに設定すると、活用しない語
+;;;   としての変換候補が見つからなかった時に、活用する語として変換を試みます。
+;;;   (ただし、活用しない語の候補が1個の場合の自動確定はしなくなります。
+;;;    次の文字の入力を開始すれば確定されます。)
+;;;   また、最初から活用する語として変換したい場合は、読みに"―"を付けるか、
+;;;   以下のキーで変換開始してください。
+;;;     tutcode-postfix-mazegaki-inflection-start-sequence (後置型用キーの流用)
+;;;
+;;;   候補表示中は、<と>キーにより、語幹(活用語尾以外の部分)の伸縮が可能です。
+;;;   (ただし、読みの入力時に"―"を付けて語幹を明示した場合を除く)
+;;;
 ;;; * 読みをカタカナとして確定
 ;;;   tutcode-katakana-commit-keyにカタカナ確定キーを設定すると
 ;;;   使用可能になります。
 ;;;
 ;;; * 英字変換(SKK abbrev)モードを追加しています(al/)。
 ;;;   例えば、「file」を入力して「ファイル」に変換する機能です。
+;;;
+;;; 【後置型変換】
+;;;   uimのsurrounding text関係のAPIを使って、
+;;;   カーソル前の文字列の取得・削除を行います。
+;;;   そのため、uimのsurrounding text APIをサポートしているブリッジ
+;;;   (uim-gtk, uim-qt, uim-qt4(lineeditのみ?))でのみ後置型変換が可能です。
+;;;
+;;; * 後置型部首合成変換は、開始キーをtutcode-postfix-bushu-start-sequenceに
+;;;   設定すると使用可能になります。
+;;; * 後置型交ぜ書き変換は、以下の開始キーを設定すると使用可能になります。
+;;;  活用しない語 tutcode-postfix-mazegaki-start-sequence
+;;;  活用する語   tutcode-postfix-mazegaki-inflection-start-sequence
+;;;  活用しない語(読み1文字) tutcode-postfix-mazegaki-1-start-sequence
+;;;   ...
+;;;  活用しない語(読み9文字) tutcode-postfix-mazegaki-9-start-sequence
+;;;  活用する語(読み1文字) tutcode-postfix-mazegaki-inflection-1-start-sequence
+;;;   ...
+;;;  活用する語(読み9文字) tutcode-postfix-mazegaki-inflection-9-start-sequence
+;;; * 後置型交ぜ書き変換における、読み/語幹の伸縮
+;;;   候補表示中は、<と>キーにより、読み/語幹の伸縮が可能です。
+;;;   活用する語に関しては、語幹が長いものを優先して変換します。
+;;;     例:「あおい」>「おい」>「い」
+;;;         (tutcode-mazegaki-enable-inflection?が#tの場合、
+;;;          さらに縮めると活用する語として変換)
+;;;        >「あおい―」>「あお―」>「おい―」>「あ―」>「お―」>「い―」
+;;;        (実際にはtc2付属のmazegaki.dicに「あおい―」は無いのでスキップ)
+;;; ** 読みの文字数を指定して変換開始した場合
+;;;    活用する語に関しては、読みは指定された文字数で固定して語幹のみ伸縮。
+;;;      例(「あおい」に対して3文字指定):「あおい―」>「あお―」>「あ―」
 ;;;
 ;;; 【ヘルプ機能】
 ;;; * 仮想鍵盤表示(表形式の候補ウィンドウを流用)
@@ -198,7 +231,7 @@
 ;;;  * 自動ヘルプ表示機能を追加。
 ;;;  * 補完/予測入力・熟語ガイド機能を追加。
 
-(require-extension (srfi 1 2))
+(require-extension (srfi 1 2 8))
 (require "generic.scm")
 (require "generic-predict.scm")
 (require-custom "tutcode-custom.scm")
@@ -413,6 +446,10 @@
 ;;; 2ストローク記号入力モード時に仮想鍵盤表示を行うかどうかの設定
 (define tutcode-use-stroke-help-window-another? #t)
 
+;;; 後置型交ぜ書き変換の読み取得時に、読みに含めない文字のリスト
+(define tutcode-postfix-mazegaki-terminate-char-list
+  '("\n" "\t" " " "、" "。" "，" "．" "・" "「" "」" "（" "）"))
+
 ;;; implementations
 
 ;;; 交ぜ書き変換辞書の初期化が終わっているかどうか
@@ -582,9 +619,18 @@
      (nth 0)
      ;;; 交ぜ書き変換の候補数
      (nr-candidates 0)
-     ;;; 後置型交ぜ書き変換時に、im-acquire-textで取得した読みの長さ
+     ;;; 後置型交ぜ書き変換時に、変換に使用する読みの長さ。
      ;;; (確定時にim-delete-textするために使用)
+     ;;; 後置型か前置型かの判定にも使用。(前置型の場合は0)
      (postfix-yomi-len 0)
+     ;;; 交ぜ書き変換開始時に指定された読みの文字数。
+     ;;; 前置型の場合は入力済みの読みの文字数。
+     (mazegaki-yomi-len-specified 0)
+     ;;; 交ぜ書き変換用の読み全体。後置型の場合は取得済みの読み
+     (mazegaki-yomi-all ())
+     ;;; 交ぜ書き変換時の活用語尾
+     ;;; (活用する語は語尾を―に置換して検索するので、確定時に戻すために使用)
+     (mazegaki-suffix ())
      ;;; 候補ウィンドウの状態
      ;;; 'tutcode-candidate-window-off 非表示
      ;;; 'tutcode-candidate-window-converting 交ぜ書き変換候補表示中
@@ -1032,6 +1078,10 @@
       (tutcode-context-set-state! pc 'tutcode-state-on)) ; 変換状態をクリアする
     (tutcode-context-set-head! pc ())
     (tutcode-context-set-nr-candidates! pc 0)
+    (tutcode-context-set-postfix-yomi-len! pc 0)
+    (tutcode-context-set-mazegaki-yomi-len-specified! pc 0)
+    (tutcode-context-set-mazegaki-yomi-all! pc ())
+    (tutcode-context-set-mazegaki-suffix! pc ())
     (tutcode-reset-candidate-window pc)
     (tutcode-context-set-latin-conv! pc #f)
     (tutcode-context-set-child-context! pc ())
@@ -1075,8 +1125,11 @@
 
 ;;; 交ぜ書き変換で確定した文字列を返す。
 ;;; @param pc コンテキストリスト
+;;; @return 確定した文字列
 (define (tutcode-prepare-commit-string pc)
-  (let* ((res (tutcode-get-current-candidate pc)))
+  (let ((res (tutcode-get-current-candidate pc))
+        (suffix (tutcode-context-mazegaki-suffix pc))
+        (head (tutcode-context-head pc)))
     ;; いつも特定のラベルキーで特定の候補を確定する使い方ができるように、
     ;; tutcode-enable-mazegaki-learning?が#fの場合は候補の並び順を変えない。
     ;; (例:「かい」の変換において、常にdキーで「悔」、eキーで「恢」を確定)
@@ -1085,14 +1138,16 @@
         ;; skk-lib-commit-candidateを呼ぶと学習が行われ、候補順が変更される
         (skk-lib-commit-candidate
           tutcode-dic
-          (cons (tutcode-make-string (tutcode-context-head pc)) "")
+          (cons (tutcode-make-string head) "")
           ""
           (tutcode-context-nth pc)
           #f)
         (if (> (tutcode-context-nth pc) 0)
           (tutcode-save-personal-dictionary #f))))
     (tutcode-flush pc)
-    res))
+    (if (null? suffix)
+      res
+      (string-append res (tutcode-make-string suffix)))))
 
 ;;; 記号入力モード時に確定した文字列を返す。
 (define (tutcode-prepare-commit-string-for-kigou-mode pc)
@@ -1126,11 +1181,15 @@
 ;;; im-commitを呼び出すとともに、自動ヘルプ表示のチェックを行う
 (define (tutcode-commit-with-auto-help pc)
   (let* ((head (tutcode-context-head pc))
-         (res (tutcode-prepare-commit-string pc)))
-    (if (> (tutcode-context-postfix-yomi-len pc) 0)
-      (tutcode-postfix-delete-text pc (tutcode-context-postfix-yomi-len pc)))
+         (yomi-len (tutcode-context-postfix-yomi-len pc))
+         (suffix (tutcode-context-mazegaki-suffix pc))
+         (res (tutcode-prepare-commit-string pc))) ; flushによりhead等がクリア
+    (if (> yomi-len 0)
+      (tutcode-postfix-delete-text pc yomi-len))
     (tutcode-commit pc res)
-    (tutcode-check-auto-help-window-begin pc (string-to-list res) head)))
+    (tutcode-check-auto-help-window-begin pc
+      (drop (string-to-list res) (length suffix))
+      (append suffix head))))
 
 ;;; 交ぜ書き変換の候補選択時に、指定されたラベル文字に対応する候補を確定する
 ;;; @param ch 入力されたラベル文字
@@ -1301,22 +1360,27 @@
           (take new-strs tutcode-completion-chars-max)
           new-strs)))))
 
-;;; 交ぜ書き辞書の検索を行う。
-;;; @param pc コンテキストリスト
+;;; 交ぜ書き変換を開始する
+;;; @param yomi 変換対象の読み(文字列の逆順リスト)
+;;; @param suffix 活用する語の変換を行う場合の活用語尾(文字列の逆順リスト)
 ;;; @param autocommit? 候補が1個の場合に自動的に確定するかどうか
 ;;; @param recursive-learning? 候補が無い場合に再帰登録モードに入るかどうか
 ;;; @return #t:候補が有った場合。#f:候補が無かった場合。
-(define (tutcode-begin-conversion pc autocommit? recursive-learning?)
-  (let* ((yomi (tutcode-make-string (tutcode-context-head pc)))
-         (res (and (symbol-bound? 'skk-lib-get-entry)
-                   (skk-lib-get-entry tutcode-dic yomi "" "" #f))))
+(define (tutcode-begin-conversion pc yomi suffix autocommit?
+          recursive-learning?)
+  (let*
+    ((yomi-str (tutcode-make-string yomi))
+     (res (and (symbol-bound? 'skk-lib-get-entry)
+               (skk-lib-get-entry tutcode-dic yomi-str "" "" #f)
+               (skk-lib-get-nr-candidates tutcode-dic yomi-str "" "" #f))))
     (if res
       (begin
+        (tutcode-context-set-head! pc yomi)
+        (tutcode-context-set-mazegaki-suffix! pc suffix)
         (tutcode-context-set-nth! pc 0)
-        (tutcode-context-set-nr-candidates! pc
-         (skk-lib-get-nr-candidates tutcode-dic yomi "" "" #f))
+        (tutcode-context-set-nr-candidates! pc res)
         (tutcode-context-set-state! pc 'tutcode-state-converting)
-        (if (and autocommit? (= (tutcode-context-nr-candidates pc) 1))
+        (if (and autocommit? (= res 1))
           ;; 候補が1個しかない場合は自動的に確定する。
           ;; (辞書登録はtutcode-register-candidate-keyを押して明示的に開始する)
           (tutcode-commit-with-auto-help pc)
@@ -1330,37 +1394,50 @@
       (begin
         (if recursive-learning?
           (begin
+            (tutcode-context-set-head! pc yomi)
+            (tutcode-context-set-mazegaki-suffix! pc suffix)
             (tutcode-context-set-state! pc 'tutcode-state-converting)
             (tutcode-setup-child-context pc 'tutcode-child-type-editor)))
           ;(tutcode-flush pc) ; flushすると入力した文字列が消えてがっかり
         #f))))
 
-;;; 読みの長さが指定されていない場合に、
-;;; 読みを縮めながら後置型交ぜ書き変換を行う。
+;;; 前置型交ぜ書き変換を開始する(活用する語にも対応)
+;;; @param inflection? 活用する語の検索を行うかどうか
 ;;; @return #t:候補が有った場合。#f:候補が無かった場合。
-(define (tutcode-begin-conversion-with-relimit-right pc)
-  (let* ((head (tutcode-context-head pc))
-         (yomi (tutcode-make-string head))
-         (res (and (symbol-bound? 'skk-lib-get-entry)
-                   (skk-lib-get-entry tutcode-dic yomi "" "" #f))))
-    (if res
-      (begin
-        (tutcode-context-set-nth! pc 0)
-        (tutcode-context-set-nr-candidates! pc
-         (skk-lib-get-nr-candidates tutcode-dic yomi "" "" #f))
-        (tutcode-context-set-state! pc 'tutcode-state-converting)
-        (tutcode-check-candidate-window-begin pc)
-        (if (eq? (tutcode-context-candidate-window pc)
-                 'tutcode-candidate-window-converting)
-          (im-select-candidate pc 0))
-        #t)
-      ;; 候補無し
-      (if (> (length head) 1)
-        (begin ;; 読みを1文字減らして再検索
-          (tutcode-context-set-head! pc (drop-right head 1))
-          (tutcode-context-set-postfix-yomi-len! pc (- (length head) 1))
-          (tutcode-begin-conversion-with-relimit-right pc))
-        #f))))
+(define (tutcode-begin-conversion-with-inflection pc inflection?)
+  (let*
+    ((yomi (tutcode-context-head pc))
+     (yomi-len (length yomi)))
+    (tutcode-context-set-postfix-yomi-len! pc 0)
+    (tutcode-context-set-mazegaki-yomi-len-specified! pc yomi-len)
+    (tutcode-context-set-mazegaki-yomi-all! pc yomi)
+    (if (or (not inflection?)
+            (not tutcode-mazegaki-enable-inflection?)
+            (tutcode-mazegaki-inflection? yomi)) ; 明示的に"―"付きで入力された
+      (tutcode-begin-conversion pc yomi () #t tutcode-use-recursive-learning?)
+      (or
+        (tutcode-begin-conversion pc yomi () #f #f)
+        ;; 活用する語として再検索
+          (or
+            (tutcode-mazegaki-inflection-relimit-right pc yomi-len yomi-len #f)
+            ;; 活用しない語として再帰学習
+            (and tutcode-use-recursive-learning?
+              (begin
+                (tutcode-begin-conversion pc yomi () #t
+                  tutcode-use-recursive-learning?))))))))
+
+;;; 活用する語の前置型交ぜ書き変換を開始する
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-begin-mazegaki-inflection-conversion pc)
+  (let*
+    ((yomi (tutcode-context-head pc))
+     (yomi-len (length yomi)))
+    (tutcode-context-set-postfix-yomi-len! pc 0)
+    (tutcode-context-set-mazegaki-yomi-len-specified! pc yomi-len)
+    (tutcode-context-set-mazegaki-yomi-all! pc yomi)
+    (if (tutcode-mazegaki-inflection? yomi) ; 明示的に"―"付きで入力された
+      (tutcode-begin-conversion pc yomi () #t tutcode-use-recursive-learning?)
+      (tutcode-mazegaki-inflection-relimit-right pc yomi-len yomi-len #f))))
 
 ;;; 子コンテキストを作成する。
 ;;; @param type 'tutcode-child-type-editorか'tutcode-child-type-dialog
@@ -1547,6 +1624,16 @@
             ((tutcode-postfix-mazegaki-7-start) "△7")
             ((tutcode-postfix-mazegaki-8-start) "△8")
             ((tutcode-postfix-mazegaki-9-start) "△9")
+            ((tutcode-postfix-mazegaki-inflection-start) "―")
+            ((tutcode-postfix-mazegaki-inflection-1-start) "―1")
+            ((tutcode-postfix-mazegaki-inflection-2-start) "―2")
+            ((tutcode-postfix-mazegaki-inflection-3-start) "―3")
+            ((tutcode-postfix-mazegaki-inflection-4-start) "―4")
+            ((tutcode-postfix-mazegaki-inflection-5-start) "―5")
+            ((tutcode-postfix-mazegaki-inflection-6-start) "―6")
+            ((tutcode-postfix-mazegaki-inflection-7-start) "―7")
+            ((tutcode-postfix-mazegaki-inflection-8-start) "―8")
+            ((tutcode-postfix-mazegaki-inflection-9-start) "―9")
             ((tutcode-auto-help-redisplay) "≪")
             (else cand)))
          (cand-hint
@@ -1825,7 +1912,8 @@
 ;;; preedit表示を更新する。
 (define (tutcode-do-update-preedit pc)
   (let ((stat (tutcode-context-state pc))
-        (cpc (tutcode-context-child-context pc)))
+        (cpc (tutcode-context-child-context pc))
+        (cursor-shown? #f))
     (case stat
       ((tutcode-state-yomi)
         (im-pushback-preedit pc preedit-none "△")
@@ -1835,8 +1923,16 @@
       ((tutcode-state-converting)
         (im-pushback-preedit pc preedit-none "△")
         (if (null? cpc)
-          (im-pushback-preedit pc preedit-none
-            (tutcode-get-current-candidate pc))
+          (begin
+            (im-pushback-preedit pc preedit-none
+              (tutcode-get-current-candidate pc))
+            (let ((suffix (tutcode-context-mazegaki-suffix pc))) ; 活用語尾
+              (if (pair? suffix)
+                (begin
+                  (im-pushback-preedit pc preedit-cursor "")
+                  (set! cursor-shown? #t)
+                  (im-pushback-preedit pc preedit-none
+                    (tutcode-make-string suffix))))))
           ;; child context's preedit
           (let ((h (tutcode-make-string (tutcode-context-head pc)))
                 (editor (tutcode-context-editor pc))
@@ -1849,7 +1945,8 @@
                     'tutcode-child-type-editor)
                 (tutcode-editor-get-left-string editor)
                 (tutcode-dialog-get-left-string dialog)))
-	    (tutcode-do-update-preedit cpc)
+            (tutcode-do-update-preedit cpc)
+            (set! cursor-shown? #t)
             (im-pushback-preedit pc preedit-none
               (if (eq? (tutcode-context-child-type pc)
                     'tutcode-child-type-editor)
@@ -1867,6 +1964,7 @@
           (if (string? h)
             (im-pushback-preedit pc preedit-none h)))
         (im-pushback-preedit pc preedit-cursor "")
+        (set! cursor-shown? #t)
         (if (> (tutcode-lib-get-nr-predictions pc) 0)
           (begin
             (im-pushback-preedit pc preedit-underline "=>")
@@ -1876,7 +1974,7 @@
         ;; 候補ウィンドウ非表示時でも候補選択できるようにpreedit表示
         (im-pushback-preedit pc preedit-reverse
           (tutcode-get-current-candidate-for-kigou-mode pc))))
-    (if (and (null? cpc) (not (eq? stat 'tutcode-state-interactive-bushu)))
+    (if (not cursor-shown?)
       (im-pushback-preedit pc preedit-cursor ""))))
 
 ;;; preedit表示を更新する。
@@ -1889,13 +1987,18 @@
 ;;; tutcode-editor側での編集完了時に呼ばれる。
 ;;; @param str エディタ側で確定された文字列
 (define (tutcode-commit-editor-context pc str)
-  (if (> (tutcode-context-postfix-yomi-len pc) 0)
-    (tutcode-postfix-delete-text pc (tutcode-context-postfix-yomi-len pc)))
-  (tutcode-flush pc)
-  (tutcode-context-set-child-context! pc ())
-  (tutcode-context-set-child-type! pc ())
-  (tutcode-commit pc str)
-  (tutcode-update-preedit pc))
+  (let ((yomi-len (tutcode-context-postfix-yomi-len pc))
+        (suffix (tutcode-context-mazegaki-suffix pc)))
+    (if (> yomi-len 0)
+      (tutcode-postfix-delete-text pc yomi-len))
+    (tutcode-flush pc)
+    (tutcode-context-set-child-context! pc ())
+    (tutcode-context-set-child-type! pc ())
+    (tutcode-commit pc
+      (if (null? suffix)
+        str
+        (string-append str (tutcode-make-string suffix))))
+    (tutcode-update-preedit pc)))
 
 ;;; 補完候補を検索して候補ウィンドウに表示する
 ;;; @param force-check? 必ず検索を行うかどうか。
@@ -2250,6 +2353,26 @@
               ((eq? res 'tutcode-postfix-mazegaki-9-start)
                 (tutcode-begin-postfix-mazegaki-conversion pc 9 #t
                   tutcode-use-recursive-learning?))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc #f))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-1-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 1))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-2-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 2))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-3-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 3))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-4-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 4))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-5-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 5))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-6-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 6))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-7-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 7))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-8-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 8))
+              ((eq? res 'tutcode-postfix-mazegaki-inflection-9-start)
+                (tutcode-begin-postfix-mazegaki-inflection-conversion pc 9))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
 
@@ -2263,7 +2386,7 @@
     (tutcode-commit pc res)
     (tutcode-check-auto-help-window-begin pc (list res) ())))
 
-;;; 後置型交ぜ書き変換を行う
+;;; 後置型交ぜ書き変換を開始する
 ;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
 ;;; @param autocommit? 候補が1個の場合に自動的に確定するかどうか
 ;;;  (yomi-lenが#fでない場合に有効)
@@ -2272,24 +2395,283 @@
 ;;; @return #t:候補が有った場合。#f:候補が無かった場合。
 (define (tutcode-begin-postfix-mazegaki-conversion pc yomi-len autocommit?
           recursive-learning?)
+  (tutcode-context-set-mazegaki-yomi-len-specified! pc (or yomi-len 0))
   (let*
-    ((former-seq (tutcode-postfix-acquire-text pc
-                   (or yomi-len tutcode-mazegaki-yomi-max)))
+    ((former-seq (tutcode-postfix-mazegaki-acquire-yomi pc yomi-len))
      (former-len (length former-seq)))
     (if yomi-len
-      (if (>= former-len yomi-len)
-        (begin
-          (tutcode-context-set-head! pc (take former-seq yomi-len))
+      (and
+        (>= former-len yomi-len)
+        (let ((yomi (take former-seq yomi-len)))
           (tutcode-context-set-postfix-yomi-len! pc yomi-len)
-          (tutcode-begin-conversion pc autocommit? recursive-learning?))
-        #f)
-      ;; 読みの文字数が指定されていない→取得できた文字を使用(上限yomi-max)
-      (if (> former-len 0)
+          (if (> yomi-len (length (tutcode-context-mazegaki-yomi-all pc)))
+            (tutcode-context-set-mazegaki-yomi-all! pc yomi))
+          (tutcode-begin-conversion pc yomi () autocommit? recursive-learning?)))
+      ;; 読みの文字数が指定されていない→読みを縮めながら変換
+      (and
+        (> former-len 0)
         (begin
-          (tutcode-context-set-head! pc former-seq)
           (tutcode-context-set-postfix-yomi-len! pc former-len)
-          (tutcode-begin-conversion-with-relimit-right pc))
-        #f))))
+          (tutcode-context-set-mazegaki-yomi-all! pc former-seq)
+          (tutcode-mazegaki-relimit-right pc former-seq #f))))))
+
+;;; 読みを縮めながら交ぜ書き変換を行う。
+;;; 活用しない語として検索しても候補が見つからない場合は、
+;;; 活用する語として検索を試みる。
+;;; @param yomi 変換対象の読み(文字列の逆順リスト)
+;;; @param relimit-first? (最初の辞書検索前に)先に読みを縮める
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-mazegaki-relimit-right pc yomi relimit-first?)
+  (or
+    (and
+      (not relimit-first?)
+      (tutcode-begin-conversion pc yomi () #f #f))
+    ;; 候補が見つからなかった
+    (or
+      (and
+        (> (length yomi) 1)
+        (> (tutcode-context-postfix-yomi-len pc) 0) ;前置型の場合は何もしない
+        (begin ; 読みを1文字減らして再検索
+          (tutcode-context-set-postfix-yomi-len! pc (- (length yomi) 1))
+          (tutcode-mazegaki-relimit-right pc (drop-right yomi 1) #f)))
+      (and tutcode-mazegaki-enable-inflection? ; 活用する語の検索に移行
+        (not (tutcode-mazegaki-inflection? yomi)) ; 明示的―→―は重複させない
+        (let*
+          ((len-specified (tutcode-context-mazegaki-yomi-len-specified pc))
+           (len
+            (if (> len-specified 0)
+              len-specified
+              (length (tutcode-context-mazegaki-yomi-all pc)))))
+          (tutcode-mazegaki-inflection-relimit-right pc len len #f))))))
+
+;;; 読みを伸ばしながら後置型交ぜ書き変換を行う。
+;;; @param yomi-len 検索する読みの長さ
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-postfix-mazegaki-relimit-left pc yomi-len)
+  (and
+    (<= yomi-len tutcode-mazegaki-yomi-max)
+    (let*
+      ((yomi-all (tutcode-context-mazegaki-yomi-all pc))
+       (yomi-all-len (length yomi-all)))
+      (if (<= yomi-len yomi-all-len)
+        (let ((yomi (take yomi-all yomi-len)))
+          (tutcode-context-set-postfix-yomi-len! pc yomi-len)
+          (or
+            (tutcode-begin-conversion pc yomi () #f #f)
+            (tutcode-postfix-mazegaki-relimit-left pc (+ yomi-len 1))))
+        ;; 取得済の読みが足りなくなった場合、上限のyomi-max長の読みを取得
+        (and
+          (< yomi-all-len tutcode-mazegaki-yomi-max)
+          (let ((former-seq (tutcode-postfix-mazegaki-acquire-yomi pc
+                             tutcode-mazegaki-yomi-max)))
+            (and
+              (> (length former-seq) yomi-all-len)
+              (begin
+                (tutcode-context-set-mazegaki-yomi-all! pc former-seq)
+                (tutcode-postfix-mazegaki-relimit-left pc yomi-len)))))))))
+
+;;; 指定された読みが、活用する語かどうかを返す
+;;; @param head 対象の読み
+;;; @return #t:活用する語の場合。#f:それ以外の場合。
+(define (tutcode-mazegaki-inflection? head)
+  (and
+    (pair? head)
+    (string=? "―" (car head))))
+
+;;; 活用する語として後置型交ぜ書き変換を開始する
+;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-begin-postfix-mazegaki-inflection-conversion pc yomi-len)
+  (tutcode-context-set-mazegaki-yomi-len-specified! pc (or yomi-len 0))
+  (let*
+    ((former-seq (tutcode-postfix-mazegaki-acquire-yomi pc yomi-len))
+     (former-len (length former-seq)))
+    (if yomi-len
+      (and
+        (>= former-len yomi-len)
+        (let ((yomi (take former-seq yomi-len)))
+          (tutcode-context-set-postfix-yomi-len! pc yomi-len)
+          (tutcode-context-set-mazegaki-yomi-all! pc yomi)
+          (if (tutcode-mazegaki-inflection? yomi)
+            ;; 明示的に"―"付きで入力された場合、活用しない語として検索する
+            ;; (活用する語として取り扱う場合は、"―"の位置を調整しながら
+            ;;  検索する形になるが、明示的に指定されている場合は位置調整不要)
+            (tutcode-begin-conversion pc yomi () #t
+              tutcode-use-recursive-learning?)
+            (tutcode-mazegaki-inflection-relimit-right pc
+              yomi-len yomi-len #f))))
+      ;; 読みの文字数が指定されていない→読み/語幹を縮めながら変換
+      (and
+        (> former-len 0)
+        ;; 語幹の長いものを優先して変換
+        (begin
+          (tutcode-context-set-postfix-yomi-len! pc former-len)
+          (tutcode-context-set-mazegaki-yomi-all! pc former-seq)
+          (if (tutcode-mazegaki-inflection? former-seq) ; 明示的"―"
+            (tutcode-mazegaki-relimit-right pc former-seq #f)
+            (tutcode-mazegaki-inflection-relimit-right pc
+              former-len former-len #f)))))))
+
+;;; 活用する語の交ぜ書き変換のため、
+;;; 読み/語幹を縮めながら、語幹が最長となる読みを見つけて変換を行う。
+;;; @param yomi-cur-len yomi-allのうちで現在変換対象となっている読みの長さ
+;;; @param len 検索対象とする語幹の長さ
+;;; @param relimit-first? (最初の辞書検索前に)先に読みを縮めるかどうか
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-mazegaki-inflection-relimit-right pc yomi-cur-len len
+          relimit-first?)
+  (and
+    (> len 0)
+    (let*
+      ((yomi-all (tutcode-context-mazegaki-yomi-all pc))
+       (len-specified (tutcode-context-mazegaki-yomi-len-specified pc)))
+      (or
+        ;; 語幹の長さ(len=length head)は保持したまま、読みを縮めながら検索
+        (let loop
+          ((yomi-cur (take yomi-all yomi-cur-len))
+           (skip-search? relimit-first?))
+          (let* ((yomi-len (length yomi-cur))
+                 (suffix-len (- yomi-len len)))
+            (and
+              (>= suffix-len 0)
+              (or
+                (and
+                  (not skip-search?)
+                  (<= suffix-len tutcode-mazegaki-suffix-max)
+                  (receive (suffix head) (split-at yomi-cur suffix-len)
+                    (if (> (tutcode-context-postfix-yomi-len pc) 0) ; 後置型?
+                      (tutcode-context-set-postfix-yomi-len! pc yomi-len))
+                    (tutcode-begin-conversion pc (cons "―" head) suffix #f #f)))
+                (and
+                  (= len-specified 0)
+                  ;; 読みを1文字縮めて検索
+                  (loop (drop-right yomi-cur 1) #f))))))
+        ;; 語幹を1文字縮めて検索
+        (tutcode-mazegaki-inflection-relimit-right pc
+          (if (> len-specified 0)
+            len-specified
+            (length yomi-all))
+          (- len 1) #f)))))
+
+;;; 活用する語の交ぜ書き変換のため、
+;;; 読み/語幹を伸ばしながら、語幹が最長となる読みを見つけて変換を行う。
+;;; @param yomi-cur-len yomi-allのうちで現在変換対象となっている読みの長さ
+;;; @param len 検索対象とする語幹の長さ
+;;; @param relimit-first? (最初の辞書検索前に)先に読みを伸ばす
+;;; @return #t:候補が有った場合。#f:候補が無かった場合。
+(define (tutcode-mazegaki-inflection-relimit-left pc yomi-cur-len len
+          relimit-first?)
+  (let*
+    ((yomi-all (tutcode-context-mazegaki-yomi-all pc))
+     (yomi-all-len (length yomi-all))
+     (len-specified (tutcode-context-mazegaki-yomi-len-specified pc)))
+    (or
+      (and
+        (<= len yomi-all-len)
+        (or
+          (let loop
+            ((yomi-len yomi-cur-len)
+             (skip-search? relimit-first?))
+            ;; 語幹の長さ(len=length head)は保持したまま読みを伸ばしながら検索
+            (and
+              (<= len yomi-len yomi-all-len)
+              (or
+                (and
+                  (not skip-search?)
+                  (<= (- yomi-len len) tutcode-mazegaki-suffix-max)
+                  (receive (suffix head)
+                           (split-at (take yomi-all yomi-len) (- yomi-len len))
+                    (if (> (tutcode-context-postfix-yomi-len pc) 0) ; 後置型?
+                      (tutcode-context-set-postfix-yomi-len! pc yomi-len))
+                    (tutcode-begin-conversion pc
+                      (cons "―" head) suffix #f #f)))
+                ;; 読みを1文字伸ばして検索
+                (and
+                  (= len-specified 0)
+                  (loop (+ yomi-len 1) #f)))))
+          ;; 語幹を1文字伸ばして検索
+          (tutcode-mazegaki-inflection-relimit-left pc
+            (if (> len-specified 0)
+              yomi-cur-len
+              (+ len 1)) ; 伸長後の語幹を持てる読みの最短長
+            (+ len 1) #f)))
+      ;; さらに伸ばす場合は、活用しない語の検索に移行
+      (if (> (tutcode-context-postfix-yomi-len pc) 0) ; 後置型?
+        (let ((len-new (if (> len-specified 0) len-specified 1)))
+          (tutcode-postfix-mazegaki-relimit-left pc len-new))
+        ;; 前置型
+        (tutcode-begin-conversion pc yomi-all () #f #f)))))
+
+;;; 交ぜ書き変換中のrelimit-rightキー入力時の処理を行う:
+;;; 読み/語幹を縮めて再検索
+(define (tutcode-mazegaki-proc-relimit-right pc)
+  (tutcode-reset-candidate-window pc)
+  (let*
+    ((head (tutcode-context-head pc))
+     (head-len (length head))
+     (postfix-yomi-len (tutcode-context-postfix-yomi-len pc))
+     (yomi-all (tutcode-context-mazegaki-yomi-all pc))
+     (inflection?
+      (and (tutcode-mazegaki-inflection? head)
+           (not (tutcode-mazegaki-inflection? yomi-all)))) ; 明示的"―"
+     (found?
+      (if (not inflection?)
+        (tutcode-mazegaki-relimit-right pc head #t)
+        (tutcode-mazegaki-inflection-relimit-right pc
+          (+ (- head-len 1)
+             (length (tutcode-context-mazegaki-suffix pc)))
+          (- head-len 1) #t)))) ; (car head)は"―"
+    (if (not found?) ; 候補無し→読み/語幹を縮めるのは中止
+      (tutcode-context-set-postfix-yomi-len! pc postfix-yomi-len))))
+
+;;; 交ぜ書き変換中のrelimit-leftキー入力時の処理を行う:
+;;; 読み/語幹を伸ばして再検索
+(define (tutcode-mazegaki-proc-relimit-left pc)
+  (tutcode-reset-candidate-window pc)
+  (let*
+    ((head (tutcode-context-head pc))
+     (head-len (length head))
+     (postfix-yomi-len (tutcode-context-postfix-yomi-len pc))
+     (yomi-all (tutcode-context-mazegaki-yomi-all pc))
+     (inflection?
+      (and (tutcode-mazegaki-inflection? head)
+           (not (tutcode-mazegaki-inflection? yomi-all)))) ; 明示的"―"
+     (found?
+      (if (not inflection?)
+        (and (> postfix-yomi-len 0) ; 後置型の場合は読みを伸ばす
+             (tutcode-postfix-mazegaki-relimit-left pc (+ head-len 1)))
+        (tutcode-mazegaki-inflection-relimit-left pc
+          (+ (- head-len 1)
+             (length (tutcode-context-mazegaki-suffix pc)))
+          (- head-len 1) #t)))) ; (car head)は"―"
+    (if (not found?) ; 候補無し→読み/語幹を伸ばすのは中止
+      (tutcode-context-set-postfix-yomi-len! pc postfix-yomi-len))))
+
+;;; 後置型交ぜ書き変換用の読みを取得する
+;;; @param yomi-len 指定された読みの文字数。指定されてない場合は#f。
+;;; @return 取得した読み(文字列の逆順リスト)
+(define (tutcode-postfix-mazegaki-acquire-yomi pc yomi-len)
+  (let ((former-seq (tutcode-postfix-acquire-text pc
+                     (or yomi-len tutcode-mazegaki-yomi-max))))
+    (if yomi-len
+      ;; XXX:読みの文字数が指定されている場合は"。"等も含める。relimit-left
+      ;;     経由の場合もユーザが明示的に指定したものとみなして同様に含める。
+      former-seq
+      ;; 読みの文字数が指定されていない→取得できた文字を使用(上限yomi-max)。
+      (let*
+        ;; 日本語文字とASCII文字の境目があれば、そこまでを取得する
+        ((ascii?
+          (lambda (str)
+            (let ((ch (string->ichar str)))
+              (and ch (<= ch 127)))))
+         (last-ascii? (and (pair? former-seq) (ascii? (car former-seq)))))
+        (take-while
+          (lambda (elem)
+            (and
+              (eq? (ascii? elem) last-ascii?)
+              ;; "、"や"。"以前の文字は読みに含めない。
+              (not (member elem tutcode-postfix-mazegaki-terminate-char-list))))
+          former-seq)))))
 
 ;;; 確定済文字列を取得する
 ;;; @param len 取得する文字数
@@ -2466,7 +2848,7 @@
                 (not (null? head))
                 (not kigou2-mode?))
            ;; convertingモードに移行してからpurge
-           (tutcode-begin-conversion pc #f #f)
+           (tutcode-begin-conversion pc head () #f #f)
            (if (eq? (tutcode-context-state pc) 'tutcode-state-converting)
              (tutcode-proc-state-converting pc key key-state)))
           ((and (tutcode-register-candidate-key? key key-state)
@@ -2491,7 +2873,7 @@
            ;; <Control>n等での変換開始?
            (if (tutcode-begin-conv-key? key key-state)
              (if (not (null? head))
-               (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
+               (tutcode-begin-conversion-with-inflection pc #t)
                (tutcode-flush pc))
              (begin
                (tutcode-flush pc)
@@ -2503,7 +2885,7 @@
           ((tutcode-context-latin-conv pc)
            (if (tutcode-begin-conv-key? key key-state) ; spaceキーでの変換開始?
              (if (not (null? head))
-               (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
+               (tutcode-begin-conversion-with-inflection pc #t)
                (tutcode-flush pc))
              (set! res (charcode->string key))))
           ((not (rk-expect-key? rkc (charcode->string key)))
@@ -2516,7 +2898,7 @@
              ;;  spaceで変換開始はできないので、<Control>n等を使う必要あり)
              (if (tutcode-begin-conv-key? key key-state)
                (if (not (null? head))
-                 (tutcode-begin-conversion pc #t tutcode-use-recursive-learning?)
+                 (tutcode-begin-conversion-with-inflection pc #t)
                  (tutcode-flush pc))
                (set! res (charcode->string key)))))
           (else
@@ -2533,6 +2915,22 @@
                 (begin
                   (tutcode-context-set-head! pc (cddr head))
                   (tutcode-check-auto-help-window-begin pc (list res) ()))))
+            ;; 活用しない語として変換開始。候補が1つの場合は自動確定
+            ((eq? res 'tutcode-postfix-mazegaki-start)
+              (set! res #f)
+              (if (not (null? head))
+                (tutcode-begin-conversion-with-inflection pc #f)
+                (begin
+                  (tutcode-flush pc)
+                  (tutcode-begin-postfix-mazegaki-conversion pc #f #f #f))))
+            ;; 活用する語として変換開始(postfix用キーシーケンスを流用)
+            ((eq? res 'tutcode-postfix-mazegaki-inflection-start)
+              (set! res #f)
+              (if (not (null? head))
+                (tutcode-begin-mazegaki-inflection-conversion pc)
+                (begin
+                  (tutcode-flush pc)
+                  (tutcode-begin-postfix-mazegaki-inflection-conversion pc #f))))
             ((symbol? res)
               (set! res #f)))))
         (if res
@@ -2879,12 +3277,13 @@
 ;;; 交ぜ書き変換の候補選択状態から、読み入力状態に戻す。
 ;;; @param pc コンテキストリスト
 (define (tutcode-back-to-yomi-state pc)
-  (tutcode-reset-candidate-window pc)
-  (tutcode-context-set-state! pc
-    (if (> (tutcode-context-postfix-yomi-len pc) 0)
-      'tutcode-state-on
-      'tutcode-state-yomi))
-  (tutcode-context-set-nr-candidates! pc 0))
+  (if (> (tutcode-context-postfix-yomi-len pc) 0) ; 後置型?
+    (tutcode-flush pc)
+    (begin
+      (tutcode-reset-candidate-window pc)
+      (tutcode-context-set-state! pc 'tutcode-state-yomi)
+      (tutcode-context-set-head! pc (tutcode-context-mazegaki-yomi-all pc))
+      (tutcode-context-set-nr-candidates! pc 0))))
 
 ;;; 交ぜ書き変換の辞書登録状態から、候補選択状態に戻す。
 ;;; @param pc コンテキストリスト
@@ -2916,9 +3315,7 @@
 ;;; @param key 入力されたキー
 ;;; @param key-state コントロールキー等の状態
 (define (tutcode-proc-state-converting c key key-state)
-  (let*
-    ((pc (tutcode-find-descendant-context c))
-     (postfix-yomi-len (tutcode-context-postfix-yomi-len pc)))
+  (let ((pc (tutcode-find-descendant-context c)))
     (cond
       ((tutcode-next-candidate-key? key key-state)
         (tutcode-change-candidate-index pc 1))
@@ -2940,40 +3337,18 @@
             tutcode-use-recursive-learning?)
         (tutcode-reset-candidate-window pc)
         (tutcode-setup-child-context pc 'tutcode-child-type-editor))
-      ((and (> postfix-yomi-len 0)
-            (tutcode-postfix-mazegaki-relimit-right-key? key key-state))
-        (let ((head (tutcode-context-head pc)))
-          (if (> (length head) 1)
-            (begin ; 読みを縮めて再検索
-              (tutcode-reset-candidate-window pc)
-              (tutcode-context-set-head! pc (drop-right head 1))
-              (tutcode-context-set-postfix-yomi-len! pc (- (length head) 1))
-              (if (not (tutcode-begin-conversion-with-relimit-right pc))
-                (begin ; 候補無し→読みを縮めるのは中止
-                  (tutcode-context-set-head! pc head)
-                  (tutcode-context-set-postfix-yomi-len! pc (length head))))))))
-      ((and (> postfix-yomi-len 0)
-            (tutcode-postfix-mazegaki-relimit-left-key? key key-state))
-        (let ((head (tutcode-context-head pc)))
-          (if (< (length head) tutcode-mazegaki-yomi-max)
-            (begin ; 読みを伸ばして再検索
-              (tutcode-reset-candidate-window pc)
-              (let loop
-                ((len (+ (length head) 1)))
-                (if (> len tutcode-mazegaki-yomi-max)
-                  (begin ; yomi-maxになるまで伸ばしても候補無し→中止
-                    (tutcode-context-set-head! pc head)
-                    (tutcode-context-set-postfix-yomi-len! pc (length head)))
-                  (begin
-                    (if (not (tutcode-begin-postfix-mazegaki-conversion pc
-                              len #f #f))
-                      (loop (+ len 1)))))))))) ; 候補無し→さらに読みを伸ばす
+      ((tutcode-mazegaki-relimit-right-key? key key-state)
+        (tutcode-mazegaki-proc-relimit-right pc))
+      ((tutcode-mazegaki-relimit-left-key? key key-state)
+        (tutcode-mazegaki-proc-relimit-left pc))
       ((and tutcode-commit-candidate-by-label-key?
+            (> (tutcode-context-nr-candidates pc) 1)
             (tutcode-heading-label-char? key))
         (tutcode-commit-by-label-key pc (charcode->string key)))
       (else
-        (if (> postfix-yomi-len 0)
-          (tutcode-postfix-delete-text pc postfix-yomi-len))
+        (let ((postfix-yomi-len (tutcode-context-postfix-yomi-len pc)))
+          (if (> postfix-yomi-len 0)
+            (tutcode-postfix-delete-text pc postfix-yomi-len)))
         (tutcode-commit pc (tutcode-prepare-commit-string pc))
         (tutcode-proc-state-on pc key key-state)))))
 
@@ -3895,6 +4270,26 @@
             '(tutcode-postfix-mazegaki-8-start))
           (make-subrule tutcode-postfix-mazegaki-9-start-sequence
             '(tutcode-postfix-mazegaki-9-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-1-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-1-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-2-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-2-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-3-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-3-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-4-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-4-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-5-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-5-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-6-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-6-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-7-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-7-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-8-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-8-start))
+          (make-subrule tutcode-postfix-mazegaki-inflection-9-start-sequence
+            '(tutcode-postfix-mazegaki-inflection-9-start))
           (make-subrule tutcode-auto-help-redisplay-sequence
             '(tutcode-auto-help-redisplay)))))))
 
