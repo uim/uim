@@ -601,8 +601,9 @@
 (define tutcode-context-rec-spec
   (append
    context-rec-spec
-   '((rk-context    ()) ; キーストロークから文字への変換のためのコンテキスト
-     (rk-context-another ()) ;もう一つのrk-context(2ストローク記号入力モード用)
+   (list
+     (list 'rk-context ()) ; キーストロークから文字への変換のためのコンテキスト
+     (list 'rk-context-another ()) ;もう一つのrk-context(2stroke記号入力モード)
      ;;; TUT-Code入力状態
      ;;; 'tutcode-state-off TUT-Codeオフ
      ;;; 'tutcode-state-on TUT-Codeオン
@@ -611,29 +612,29 @@
      ;;; 'tutcode-state-bushu 部首入力・変換中
      ;;; 'tutcode-state-interactive-bushu 対話的部首合成変換中
      ;;; 'tutcode-state-kigou 記号入力モード
-     (state 'tutcode-state-off)
+     (list 'state 'tutcode-state-off)
      ;;; カタカナモードかどうか
      ;;; #t: カタカナモード。#f: ひらがなモード。
-     (katakana-mode #f)
+     (list 'katakana-mode #f)
      ;;; 交ぜ書き変換/部首合成変換の対象の文字列リスト(逆順)
      ;;; (例: 交ぜ書き変換で読み「かん字」を入力した場合、("字" "ん" "か"))
-     (head ())
+     (list 'head ())
      ;;; 交ぜ書き変換の選択中の候補の番号
-     (nth 0)
+     (list 'nth 0)
      ;;; 交ぜ書き変換の候補数
-     (nr-candidates 0)
+     (list 'nr-candidates 0)
      ;;; 後置型交ぜ書き変換時に、変換に使用する読みの長さ。
      ;;; (確定時にim-delete-textするために使用)
      ;;; 後置型か前置型かの判定にも使用。(前置型の場合は0)
-     (postfix-yomi-len 0)
+     (list 'postfix-yomi-len 0)
      ;;; 交ぜ書き変換開始時に指定された読みの文字数。
      ;;; 前置型の場合は入力済みの読みの文字数。
-     (mazegaki-yomi-len-specified 0)
+     (list 'mazegaki-yomi-len-specified 0)
      ;;; 交ぜ書き変換用の読み全体。後置型の場合は取得済みの読み
-     (mazegaki-yomi-all ())
+     (list 'mazegaki-yomi-all ())
      ;;; 交ぜ書き変換時の活用語尾
      ;;; (活用する語は語尾を―に置換して検索するので、確定時に戻すために使用)
-     (mazegaki-suffix ())
+     (list 'mazegaki-suffix ())
      ;;; 候補ウィンドウの状態
      ;;; 'tutcode-candidate-window-off 非表示
      ;;; 'tutcode-candidate-window-converting 交ぜ書き変換候補表示中
@@ -642,69 +643,69 @@
      ;;; 'tutcode-candidate-window-auto-help 自動ヘルプ表示中
      ;;; 'tutcode-candidate-window-predicting 補完/予測入力候補表示中
      ;;; 'tutcode-candidate-window-interactive-bushu 対話的部首合成変換候補表示
-     (candidate-window 'tutcode-candidate-window-off)
+     (list 'candidate-window 'tutcode-candidate-window-off)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
-     (stroke-help ())
+     (list 'stroke-help ())
      ;;; 自動ヘルプ
-     (auto-help ())
+     (list 'auto-help ())
      ;;; 交ぜ書き変換辞書への再帰的登録のための子コンテキスト
-     (child-context ())
+     (list 'child-context ())
      ;;; 子コンテキストの種類
      ;;; 'tutcode-child-type-editor 登録用の変換後文字列編集エディタ
      ;;; 'tutcode-child-type-dialog 辞書からの削除確認ダイアログ
-     (child-type ())
+     (list 'child-type ())
      ;;; 親コンテキスト
-     (parent-context ())
+     (list 'parent-context ())
      ;;; 登録用文字列編集エディタ
-     (editor ())
+     (list 'editor ())
      ;;; 削除確認ダイアログ
-     (dialog ())
+     (list 'dialog ())
      ;;; 英字変換(SKK abbrev)モードかどうか
-     (latin-conv #f)
+     (list 'latin-conv #f)
      ;;; commit済の文字列リスト(補完用)
-     (commit-strs ())
+     (list 'commit-strs ())
      ;;; commit-strsのうちで補完に使用している文字数
-     (commit-strs-used-len 0)
+     (list 'commit-strs-used-len 0)
      ;;; 補完/予測入力の候補選択中かどうか
      ;;; 'tutcode-predicting-off 補完/予測入力の候補選択中でない
      ;;; 'tutcode-predicting-completion 補完候補選択中
      ;;; 'tutcode-predicting-prediction 交ぜ書き変換時の予測入力候補選択中
      ;;; 'tutcode-predicting-bushu 部首合成変換時の予測入力候補選択中
      ;;; 'tutcode-predicting-interactive-bushu 対話的部首合成変換中
-     (predicting 'tutcode-predicting-off)
+     (list 'predicting 'tutcode-predicting-off)
      ;;; 補完/予測入力用コンテキスト
-     (prediction-ctx ())
+     (list 'prediction-ctx ())
      ;;; 補完/予測入力候補の読みのリスト
-     (prediction-word ())
+     (list 'prediction-word ())
      ;;; 補完/予測入力候補の候補のリスト
-     (prediction-candidates ())
+     (list 'prediction-candidates ())
      ;;; 補完/予測入力候補のappendixのリスト
-     (prediction-appendix ())
+     (list 'prediction-appendix ())
      ;;; 補完/予測入力候補数
-     (prediction-nr 0)
+     (list 'prediction-nr 0)
      ;;; 補完/予測入力候補の現在選択されているインデックス(熟語ガイド込み)
-     (prediction-index 0)
+     (list 'prediction-index 0)
      ;;; 補完/予測入力候補数(熟語ガイド分含む)
-     (prediction-nr-all 0)
+     (list 'prediction-nr-all 0)
      ;;; ページごとの補完/予測入力の候補表示数(熟語ガイド分は除く)
-     (prediction-nr-in-page tutcode-nr-candidate-max-for-prediction)
+     (list 'prediction-nr-in-page tutcode-nr-candidate-max-for-prediction)
      ;;; ページごとの補完/予測入力の候補表示数(熟語ガイド分も含む)
-     (prediction-page-limit
+     (list 'prediction-page-limit
       (+ tutcode-nr-candidate-max-for-prediction
          tutcode-nr-candidate-max-for-guide))
      ;;; 部首合成変換の予測候補
-     (prediction-bushu ())
+     (list 'prediction-bushu ())
      ;;; 部首合成変換の予測候補の現在の表示ページの最初のインデックス番号
-     (prediction-bushu-page-start 0)
+     (list 'prediction-bushu-page-start 0)
      ;;; 熟語ガイド。補完/予測入力時の表示用。
      ;;; 予測される次の入力漢字の第1打鍵と入力漢字の対応のリスト。
      ;;; 例: (("," "石") ("u" "屋" "池"))
-     (guide ())
+     (list 'guide ())
      ;;; 熟語ガイド作成元データ。仮想鍵盤(stroke-help)へのガイド表示用。
      ;;; 文字とストロークのリスト(rk-lib-find-partial-seqs用形式)。
      ;;; 例: (((("," "r"))("石")) ((("u" "c"))("屋")) ((("u" "v"))("池")))
-     (guide-chars ())
+     (list 'guide-chars ())
      )))
 (define-record 'tutcode-context tutcode-context-rec-spec)
 (define tutcode-context-new-internal tutcode-context-new)
