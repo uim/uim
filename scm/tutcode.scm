@@ -89,6 +89,15 @@
 ;;;   そのため、uimのsurrounding text APIをサポートしているブリッジ
 ;;;   (uim-gtk, uim-qt, uim-qt4(lineeditのみ?))でのみ後置型変換が可能です。
 ;;;
+;;;   これら以外のブリッジでも後置型変換を使いたい場合、
+;;;   tutcode-enable-fallback-surrounding-text?を#tに設定すると、
+;;;   surrounding text APIが使用できない場合に、
+;;;   文字列の取得は内部の確定済文字列バッファから行い、
+;;;   文字列の削除は"\b"(tutcode-fallback-backspace-string)を送出します。
+;;;     - \b(BS,0x08)文字を受けた時に削除を行うアプリでのみ動作。
+;;;     - 内部の確定済文字列バッファは補完と兼用で、
+;;;       長さはtutcode-completion-chars-maxの値。
+;;;
 ;;; * 後置型部首合成変換は、開始キーをtutcode-postfix-bushu-start-sequenceに
 ;;;   設定すると使用可能になります。
 ;;; * 後置型交ぜ書き変換は、以下の開始キーを設定すると使用可能になります。
@@ -452,6 +461,9 @@
 ;;; 後置型交ぜ書き変換の読み取得時に、読みに含めない文字のリスト
 (define tutcode-postfix-mazegaki-terminate-char-list
   '("\n" "\t" " " "、" "。" "，" "．" "・" "「" "」" "（" "）"))
+
+;;; surrounding text APIが使えない時に、文字削除のためにcommitする文字列
+(define tutcode-fallback-backspace-string "\b")
 
 ;;; implementations
 
@@ -1160,7 +1172,7 @@
 ;;; im-commit-rawを呼び出す。
 ;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
 (define (tutcode-commit-raw pc key key-state)
-  (if tutcode-use-completion?
+  (if (or tutcode-use-completion? tutcode-enable-fallback-surrounding-text?)
     (tutcode-append-commit-string pc (im-get-raw-key-str key key-state)))
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
@@ -1172,8 +1184,12 @@
 ;;; im-commitを呼び出す。
 ;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
 ;;; @param str コミットする文字列
-(define (tutcode-commit pc str)
-  (if tutcode-use-completion?
+;;; @param opt-skip-append-commit-strs? commit-strsへの追加を
+;;;  スキップするかどうか。未指定時は#f
+(define (tutcode-commit pc str . opt-skip-append-commit-strs?)
+  (if
+    (and (or tutcode-use-completion? tutcode-enable-fallback-surrounding-text?)
+         (not (:optional opt-skip-append-commit-strs? #f)))
     (tutcode-append-commit-string pc str))
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
@@ -2264,13 +2280,15 @@
              (rk-flush rkc)
              (begin
                (tutcode-commit-raw pc key key-state)
-               (if tutcode-use-completion?
-                 (begin
-                   (if (> (length (tutcode-context-commit-strs pc)) 0)
-                     (tutcode-context-set-commit-strs! pc
-                       (cdr (tutcode-context-commit-strs pc))))
-                   (if (and completing? (> tutcode-completion-chars-min 0))
-                     (tutcode-check-completion pc #f 0)))))))
+               (if (and (or tutcode-use-completion?
+                            tutcode-enable-fallback-surrounding-text?)
+                        (pair? (tutcode-context-commit-strs pc)))
+                 (tutcode-context-set-commit-strs! pc
+                     (cdr (tutcode-context-commit-strs pc))))
+               (if (and tutcode-use-completion?
+                        completing?
+                        (> tutcode-completion-chars-min 0))
+                 (tutcode-check-completion pc #f 0)))))
           ((tutcode-stroke-help-toggle-key? key key-state)
            (tutcode-toggle-stroke-help pc))
           ((and tutcode-use-completion?
@@ -2695,7 +2713,15 @@
         ((ustr (im-acquire-text pc 'primary 'cursor len 0))
          (former (and ustr (ustr-former-seq ustr)))
          (former-seq (and (pair? former) (string-to-list (car former)))))
-        (or former-seq ())))))
+        (if ustr
+          (or former-seq ())
+          ;; im-acquire-text未対応環境の場合、内部の確定済文字列バッファを使用
+          (if tutcode-enable-fallback-surrounding-text?
+            (let ((commit-strs (tutcode-context-commit-strs pc)))
+              (if (> (length commit-strs) len)
+                (take commit-strs len)
+                commit-strs))
+            ()))))))
 
 ;;; 確定済文字列を削除する
 ;;; @param len 削除する文字数
@@ -2710,7 +2736,25 @@
             (if (> (length left-string) len)
               (drop left-string len)
               ()))))
-      (im-delete-text pc 'primary 'cursor len 0))))
+      (or
+        (im-delete-text pc 'primary 'cursor len 0)
+        ;; im-delete-text未対応環境の場合、"\b"を送る。
+        ;; XXX:"\b"を認識して文字を削除するアプリでないと動作しない
+        ;; (tutcode-commit-rawは入力済キーをそのままアプリに渡すことを指定する
+        ;;  ものなので、以下のようにbackspaceキー打鍵の生成には使えない
+        ;;  (tutcode-commit-raw pc 'backspace 0))
+        (and tutcode-enable-fallback-surrounding-text?
+          (begin
+            (let ((commit-strs (tutcode-context-commit-strs pc)))
+              (tutcode-context-set-commit-strs! pc
+                (if (> (length commit-strs) len)
+                  (drop commit-strs len)
+                  ())))
+            (if (> (string-length tutcode-fallback-backspace-string) 0)
+              (tutcode-commit pc
+                (tutcode-make-string
+                  (make-list len tutcode-fallback-backspace-string))
+                #t))))))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト

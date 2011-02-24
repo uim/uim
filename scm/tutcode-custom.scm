@@ -110,6 +110,12 @@
   (N_ "Enable two stroke kigou mode")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-enable-fallback-surrounding-text? #f
+  '(tutcode)
+  '(boolean)
+  (N_ "Enable fallback of surrounding text API")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-mazegaki-yomi-max 10
   '(tutcode tutcode-mazegaki)
   '(integer 1 99)
