@@ -63,7 +63,6 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
 
     adjustSize();
     handler = new UimToolbarDraggingHandler( this );
-    layout->addWidget( handler );
     handler->adjustSize();
     handler->show();
     connect( handler, SIGNAL( handleDoubleClicked() ),
@@ -71,7 +70,6 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
 
     
     toolbar = new QUimHelperToolbar( this );
-    layout->addWidget( toolbar );
     toolbar->adjustSize();
     toolbar->show();
     connect( toolbar, SIGNAL( toolbarResized() ), this, SLOT( slotToolbarResized() ) );
@@ -94,6 +92,9 @@ UimStandaloneToolbar::UimStandaloneToolbar( QWidget *parent )
                       QApplication::instance(), SLOT( quit() ) );
 
     show();
+
+    layout->addWidget( handler );
+    layout->addWidget( toolbar );
 }
 UimStandaloneToolbar::~UimStandaloneToolbar()
 {
