@@ -986,12 +986,7 @@
       (loop (cdr rev-chs-list))))))
 
 (define (byeoru-eat-list f ba lst)
-  (and (not (null? lst))
-       (let loop ((rev-lst (reverse lst)))
-	 (let ((res (f ba (car rev-lst))))
-	   (if (null? (cdr rev-lst))
-	       res
-	       (loop (cdr rev-lst)))))))
+  (fold-right (lambda (elt s) (f ba elt)) #t lst))
 
 (define (byeoru-automata-eat-orderless-key ba choices)
   (let ((uch (byeoru-automata-unsorted-choices-history ba))
@@ -1052,22 +1047,22 @@
 ;;; ----------------------------
 
 ;; Hangul choseong giyeog, U+1100.
-(define byeoru-ucs-code-choseong-giyeog 4352)
+(define byeoru-ucs-code-choseong-giyeog #x1100)
 
 ;; Hangul jungseong a, U+1161.
-(define byeoru-ucs-code-jungseong-a 4449)
+(define byeoru-ucs-code-jungseong-a #x1161)
 
 ;; Hangul jongseong giyeog, U+11A8.
-(define byeoru-ucs-code-jongseong-giyeog 4520)
+(define byeoru-ucs-code-jongseong-giyeog #x11a8)
 
 ;; Hangul choseong filler, U+115F.
-(define byeoru-ucs-code-choseong-filler 4447)
+(define byeoru-ucs-code-choseong-filler #x115f)
 
 ;; Hangul jungseong filler, U+1160.
-(define byeoru-ucs-code-jungseong-filler 4448)
+(define byeoru-ucs-code-jungseong-filler #x1160)
 
 ;; Hangul syllables block begins at U+AC00, 가.
-(define byeoru-ucs-code-ga 44032)
+(define byeoru-ucs-code-ga #xac00)
 
 ;; What I call johab here is not related to the KSSM combination
 ;; (johab) code, but is a list having the form (cho jung jong), where
@@ -1082,40 +1077,42 @@
 ;; This is the way an isolated jamo is encoded in the Unicode standard.
 ;; However, it doesn't seem to be well supported currently.
 (define byeoru-choseong-jamo-utf8-list
-  (map ucs-to-utf8-string
+  (map ucs->utf8-string
        (cons byeoru-ucs-code-choseong-filler
 	     (list-tabulate
 	      19 (lambda (n) (+ n byeoru-ucs-code-choseong-giyeog))))))
 
 (define byeoru-jungseong-jamo-utf8-list
-  (map ucs-to-utf8-string
+  (map ucs->utf8-string
        (cons byeoru-ucs-code-jungseong-filler
 	     (list-tabulate
 	      21 (lambda (n) (+ n byeoru-ucs-code-jungseong-a))))))
 
 (define byeoru-jongseong-jamo-utf8-list
-  (cons "" (map ucs-to-utf8-string
+  (cons "" (map ucs->utf8-string
 		(list-tabulate
 		 27 (lambda (n) (+ n byeoru-ucs-code-jongseong-giyeog))))))
 
 ;; So we show an incomplete syllable as a sequence of
 ;; Hangul compatibility jamos by default.
 (define byeoru-choseong-compatibility-jamo-utf8-list
-  (cons "" (map ucs-to-utf8-string
-		'(12593 12594 12596 12599 12600 12601 12609 12610 12611 12613
-		  12614 12615 12616 12617 12618 12619 12620 12621 12622))))
+  (cons "" (map ucs->utf8-string
+		'(#x3131 #x3132 #x3134 #x3137 #x3138 #x3139 #x3141 #x3142
+		  #x3143 #x3145 #x3146 #x3147 #x3148 #x3149 #x314a #x314b
+		  #x314c #x314d #x314e))))
 
 (define byeoru-jungseong-compatibility-jamo-utf8-list
-  (cons "" (map ucs-to-utf8-string
-		'(12623 12624 12625 12626 12627 12628 12629 12630 12631 12632
-		  12633 12634 12635 12636 12637 12638 12639 12640 12641 12642
-		  12643))))
+  (cons "" (map ucs->utf8-string
+		'(#x314f #x3150 #x3151 #x3152 #x3153 #x3154 #x3155 #x3156
+		  #x3157 #x3158 #x3159 #x315a #x315b #x315c #x315d #x315e
+		  #x315f #x3160 #x3161 #x3162 #x3163))))
 
 (define byeoru-jongseong-compatibility-jamo-utf8-list
-  (cons "" (map ucs-to-utf8-string
-		'(12593 12594 12595 12596 12597 12598 12599 12601 12602 12603
-		  12604 12605 12606 12607 12608 12609 12610 12612 12613 12614
-		  12615 12616 12618 12619 12620 12621 12622))))
+  (cons "" (map ucs->utf8-string
+		'(#x3131 #x3132 #x3133 #x3134 #x3135 #x3136 #x3137 #x3139
+		  #x313a #x313b #x313c #x313d #x313e #x313f #x3140 #x3141
+		  #x3142 #x3144 #x3145 #x3146 #x3147 #x3148 #x314a #x314b
+		  #x314c #x314d #x314e))))
 
 (define (byeoru-johab-to-utf8-string johab)
   (let ((cho (car johab))
@@ -1126,7 +1123,7 @@
       "")
      ;; We are basically using Normalization Form C.
      ((and (not (= cho 0)) (not (= jung 0)))
-      (ucs-to-utf8-string (byeoru-johab-to-ucs johab)))
+      (ucs->utf8-string (byeoru-johab-to-ucs johab)))
      (else
       (let ((cho-l (if byeoru-compatibility-jamos-for-incomplete-syllables?
 		       byeoru-choseong-compatibility-jamo-utf8-list
@@ -1369,7 +1366,7 @@
 	 (and entry
 	      (let ((choices (cdr entry)))
 		(if (number? choices)
-		    (ucs-to-utf8-string choices)
+		    (ucs->utf8-string choices)
 		    choices))))))
 
 (define byeoru-dic-filename "byeoru-dic.scm")
@@ -1393,7 +1390,7 @@
 	 (found (assoc id byeoru-dic)))
 
     (define (update-cands cands new-cands)
-      (fold
+      (fold-right
        (lambda (new lis)
 	 (let ((new-str (if (pair? new) (car new) new)))
 	   (cons new
@@ -1404,7 +1401,7 @@
        cands new-cands))
 
     (if found
-	(set-cdr! found (update-cands (cdr found) (reverse (cdr kons))))
+	(set-cdr! found (update-cands (cdr found) (cdr kons)))
 	(set! byeoru-dic (cons kons byeoru-dic)))))
 
 (define (byeoru-begin-conv bc)
@@ -1533,7 +1530,7 @@
 	  (byeoru-context-set-key-hist!
 	   bc (cons key (byeoru-context-key-hist bc)))
 	  #t))))))
-  
+
 (define (byeoru-backspace-romaja bc)
   (let ((key-hist (byeoru-context-key-hist bc)))
     (and (not (null? key-hist))
@@ -1541,11 +1538,9 @@
 	   (byeoru-automata-reset! (byeoru-context-automata bc))
 	   (rk-flush (byeoru-context-rkc bc))
 	   (byeoru-context-set-key-hist! bc '())
-	   (let loop ((rev-key-hist (reverse (cdr key-hist))))
-	     (or (null? rev-key-hist)
-		 (begin
-		   (byeoru-feed-romaja-key bc (car rev-key-hist) 0)
-		   (loop (cdr rev-key-hist)))))))))
+	   (fold-right (lambda (elt s) (byeoru-feed-romaja-key bc elt 0))
+		       #t (cdr key-hist))
+	   #t))))
 
 (define (byeoru-feed-hangul-key bc key key-state)
   (let ((choices (byeoru-key-to-choices key key-state)))
@@ -1771,7 +1766,7 @@
       ((symbol)
        (let* ((cand (list-ref cands (byeoru-context-cand-no bc)))
 	      (str (if (number? cand)
-		       (ucs-to-utf8-string cand)
+		       (ucs->utf8-string cand)
 		       cand))
 	      (menu-item
 	       (list-ref byeoru-menu-symbols
@@ -1938,7 +1933,7 @@
       (list (if (byeoru-context-commit-by-word? bc) "글자단위" "단어단위")
 	    (number->string (+ idx 1)) ""))
      ((number? cand)
-      (list (ucs-to-utf8-string cand)
+      (list (ucs->utf8-string cand)
 	    (number->string (+ idx 1)) ""))
      ((string? cand)
       ;; What's the use of the last ""?
