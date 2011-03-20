@@ -39,6 +39,7 @@ SUCH DAMAGE.
 #include <QtGui/QApplication>
 #include <QtGui/QClipboard>
 #include <QtGui/QLineEdit>
+#include <QtGui/QTextEdit>
 #ifdef ENABLE_QT4_QT3SUPPORT
 # include <Qt3Support/Q3TextEdit>
 #endif
@@ -127,6 +128,9 @@ QUimTextUtil::acquirePrimaryText( enum UTextOrigin origin,
 
     if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = acquirePrimaryTextInQLineEdit( origin, former_req_len,
+                                             latter_req_len, former, latter );
+    else if ( qobject_cast<QTextEdit *>( mWidget ) )
+        err = acquirePrimaryTextInQTextEdit( origin, former_req_len,
                                              latter_req_len, former, latter );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
@@ -242,6 +246,21 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
     }
 
     return 0;
+}
+
+int
+QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
+                                             int former_req_len,
+                                             int latter_req_len,
+                                             char **former, char **latter )
+{
+    // FIXME: Implement this
+    Q_UNUSED( origin )
+    Q_UNUSED( former_req_len )
+    Q_UNUSED( latter_req_len )
+    Q_UNUSED( former )
+    Q_UNUSED( latter )
+    return -1; 
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
@@ -420,6 +439,9 @@ QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
     if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = acquireSelectionTextInQLineEdit( origin, former_req_len,
                                                latter_req_len, former, latter );
+    else if ( qobject_cast<QTextEdit *>( mWidget ) )
+        err = acquireSelectionTextInQTextEdit( origin, former_req_len,
+                                               latter_req_len, former, latter );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = acquireSelectionTextInQ3TextEdit( origin, former_req_len,
@@ -485,6 +507,21 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
     }
 
     return 0;
+}
+
+int
+QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
+                                               int former_req_len,
+                                               int latter_req_len,
+                                               char **former, char **latter )
+{
+    // FIXME: Implement this
+    Q_UNUSED( origin )
+    Q_UNUSED( former_req_len )
+    Q_UNUSED( latter_req_len )
+    Q_UNUSED( former )
+    Q_UNUSED( latter )
+    return -1;
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
@@ -634,6 +671,9 @@ QUimTextUtil::deletePrimaryText( enum UTextOrigin origin, int former_req_len,
     if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = deletePrimaryTextInQLineEdit( origin, former_req_len,
                                             latter_req_len );
+    else if ( qobject_cast<QTextEdit *>( mWidget ) )
+        err = deletePrimaryTextInQTextEdit( origin, former_req_len,
+                                             latter_req_len );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = deletePrimaryTextInQ3TextEdit( origin, former_req_len,
@@ -725,6 +765,18 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
     edit->setCursorPosition( former_del_start );
 
     return 0;
+}
+
+int
+QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
+                                            int former_req_len,
+                                            int latter_req_len )
+{
+    // FIXME: Implement this
+    Q_UNUSED( origin )
+    Q_UNUSED( former_req_len )
+    Q_UNUSED( latter_req_len )
+    return -1; 
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
@@ -851,6 +903,9 @@ QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
     if ( qobject_cast<QLineEdit *>( mWidget ) )
         err = deleteSelectionTextInQLineEdit( origin, former_req_len,
                                               latter_req_len );
+    else if ( qobject_cast<QTextEdit *>( mWidget ) )
+        err = deleteSelectionTextInQTextEdit( origin, former_req_len,
+                                              latter_req_len );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
         err = deleteSelectionTextInQ3TextEdit( origin, former_req_len,
@@ -910,6 +965,18 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
     edit->del();
 
     return 0;
+}
+
+int
+QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
+                                              int former_req_len,
+                                              int latter_req_len )
+{
+    // FIXME: Implement this
+    Q_UNUSED( origin )
+    Q_UNUSED( former_req_len )
+    Q_UNUSED( latter_req_len )
+    return -1;
 }
 
 #ifdef ENABLE_QT4_QT3SUPPORT
