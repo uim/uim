@@ -62,9 +62,9 @@ private:
     int acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
                                        int former_req_len, int latter_req_len,
                                        char **former, char **latter );
-    int acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
-                                       int former_req_len, int latter_req_len,
-                                       char **former, char **latter );
+    int acquirePrimaryTextInQ3TextEdit( enum UTextOrigin origin,
+                                        int former_req_len, int latter_req_len,
+                                        char **former, char **latter );
 
     int acquireSelectionText( enum UTextOrigin origin,
                               int former_req_len, int latter_req_len,
@@ -73,10 +73,10 @@ private:
                                          int former_req_len,
                                          int latter_req_len,
                                          char **former, char **latter );
-    int acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
-                                         int former_req_len,
-                                         int latter_req_len,
-                                         char **former, char **latter );
+    int acquireSelectionTextInQ3TextEdit( enum UTextOrigin origin,
+                                          int former_req_len,
+                                          int latter_req_len,
+                                          char **former, char **latter );
 
     int acquireClipboardText( enum UTextOrigin origin,
                               int former_req_len, int latter_req_len,
@@ -86,19 +86,21 @@ private:
                            int former_req_len, int latter_req_len );
     int deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
                                       int former_req_len, int latter_req_len );
-    int deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
-                                      int former_req_len, int latter_req_len );
+    int deletePrimaryTextInQ3TextEdit( enum UTextOrigin origin,
+                                       int former_req_len,
+                                       int latter_req_len );
 
     int deleteSelectionText( enum UTextOrigin origin,
                              int former_req_len, int latter_req_len );
     int deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
                                        int former_req_len, int latter_req_len );
-    int deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
-                                       int former_req_len, int latter_req_len );
+    int deleteSelectionTextInQ3TextEdit( enum UTextOrigin origin,
+                                         int former_req_len,
+                                         int latter_req_len );
 
-    void QTextEditPositionBackward( int *para, int *index );
+    void Q3TextEditPositionBackward( int *para, int *index );
 
-    void QTextEditPositionForward( int *para, int *index );
+    void Q3TextEditPositionForward( int *para, int *index );
 
     void savePreedit();
     void restorePreedit();

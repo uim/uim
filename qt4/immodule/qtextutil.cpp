@@ -130,8 +130,8 @@ QUimTextUtil::acquirePrimaryText( enum UTextOrigin origin,
                                              latter_req_len, former, latter );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
-        err = acquirePrimaryTextInQTextEdit( origin, former_req_len,
-                                             latter_req_len, former, latter );
+        err = acquirePrimaryTextInQ3TextEdit( origin, former_req_len,
+                                              latter_req_len, former, latter );
 #endif
     else
         // FIXME other widgets?
@@ -246,10 +246,10 @@ QUimTextUtil::acquirePrimaryTextInQLineEdit( enum UTextOrigin origin,
 
 #ifdef ENABLE_QT4_QT3SUPPORT
 int
-QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
-                                             int former_req_len,
-                                             int latter_req_len,
-                                             char **former, char **latter )
+QUimTextUtil::acquirePrimaryTextInQ3TextEdit( enum UTextOrigin origin,
+                                              int former_req_len,
+                                              int latter_req_len,
+                                              char **former, char **latter )
 {
     Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     QString text;
@@ -282,7 +282,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( former_req_len >= 0 ) {
             for ( int i = 0; i < former_req_len; i++ )
-                QTextEditPositionBackward( &start_para, &start_index );
+                Q3TextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line )
                 start_index = 0;
@@ -299,7 +299,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( latter_req_len >= 0 ) {
             for ( int i = 0; i < latter_req_len; i++ )
-                QTextEditPositionForward( &end_para, &end_index );
+                Q3TextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line ) {
                 end_index = edit->paragraphLength( end_para );
@@ -326,7 +326,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( latter_req_len >= 0 ) {
             for ( int i = 0; i < latter_req_len; i++ )
-                QTextEditPositionForward( &end_para, &end_index );
+                Q3TextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line )
                 end_index = edit->paragraphLength( end_para );
@@ -359,7 +359,7 @@ QUimTextUtil::acquirePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( former_req_len >= 0 ) {
             for ( int i = 0; i < former_req_len; i++ )
-                QTextEditPositionBackward( &start_para, &start_index );
+                Q3TextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line )
                 start_index = 0;
@@ -422,8 +422,9 @@ QUimTextUtil::acquireSelectionText( enum UTextOrigin origin,
                                                latter_req_len, former, latter );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
-        err = acquireSelectionTextInQTextEdit( origin, former_req_len,
-                                               latter_req_len, former, latter );
+        err = acquireSelectionTextInQ3TextEdit( origin, former_req_len,
+                                                latter_req_len, former,
+                                                latter );
 #endif
     else
         // FIXME other widgets?
@@ -488,10 +489,10 @@ QUimTextUtil::acquireSelectionTextInQLineEdit( enum UTextOrigin origin,
 
 #ifdef ENABLE_QT4_QT3SUPPORT
 int
-QUimTextUtil::acquireSelectionTextInQTextEdit( enum UTextOrigin origin,
-                                               int former_req_len,
-                                               int latter_req_len,
-                                               char **former, char **latter )
+QUimTextUtil::acquireSelectionTextInQ3TextEdit( enum UTextOrigin origin,
+                                                int former_req_len,
+                                                int latter_req_len,
+                                                char **former, char **latter )
 {
     Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     QString text;
@@ -635,8 +636,8 @@ QUimTextUtil::deletePrimaryText( enum UTextOrigin origin, int former_req_len,
                                             latter_req_len );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
-        err = deletePrimaryTextInQTextEdit( origin, former_req_len,
-                                            latter_req_len );
+        err = deletePrimaryTextInQ3TextEdit( origin, former_req_len,
+                                             latter_req_len );
 #endif
     else
         // FIXME other widgets?
@@ -728,9 +729,9 @@ QUimTextUtil::deletePrimaryTextInQLineEdit( enum UTextOrigin origin,
 
 #ifdef ENABLE_QT4_QT3SUPPORT
 int
-QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
-                                            int former_req_len,
-                                            int latter_req_len )
+QUimTextUtil::deletePrimaryTextInQ3TextEdit( enum UTextOrigin origin,
+                                             int former_req_len,
+                                             int latter_req_len )
 {
     Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     int start_para, start_index, end_para, end_index, para, index;
@@ -750,7 +751,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( former_req_len >= 0 ) {
             for ( int i = 0; i < former_req_len; i++ )
-                QTextEditPositionBackward( &start_para, &start_index );
+                Q3TextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line ) {
                 start_index = 0;
@@ -764,7 +765,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
         }
         if ( latter_req_len >= 0 ) {
             for ( int i = 0; i < latter_req_len; i++ )
-                QTextEditPositionForward( &end_para, &end_index );
+                Q3TextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line ) {
                 end_index = edit->paragraphLength( end_para );
@@ -786,7 +787,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( latter_req_len >= 0 ) {
             for ( int i = 0; i < latter_req_len; i++ )
-                QTextEditPositionForward( &end_para, &end_index );
+                Q3TextEditPositionForward( &end_para, &end_index );
         } else {
             if ( latter_req_len == UTextExtent_Line ) {
                 end_index = edit->paragraphLength( end_para );
@@ -808,7 +809,7 @@ QUimTextUtil::deletePrimaryTextInQTextEdit( enum UTextOrigin origin,
 
         if ( former_req_len >= 0 ) {
             for ( int i = 0; i < former_req_len; i++ )
-                QTextEditPositionBackward( &start_para, &start_index );
+                Q3TextEditPositionBackward( &start_para, &start_index );
         } else {
             if ( former_req_len == UTextExtent_Line )
                 start_index = 0;
@@ -852,8 +853,8 @@ QUimTextUtil::deleteSelectionText( enum UTextOrigin origin,
                                               latter_req_len );
 #ifdef ENABLE_QT4_QT3SUPPORT
     else if ( qobject_cast<Q3TextEdit *>( mWidget ) )
-        err = deleteSelectionTextInQTextEdit( origin, former_req_len,
-                                              latter_req_len );
+        err = deleteSelectionTextInQ3TextEdit( origin, former_req_len,
+                                               latter_req_len );
 #endif
     else
         // FIXME other widgets?
@@ -913,9 +914,9 @@ QUimTextUtil::deleteSelectionTextInQLineEdit( enum UTextOrigin origin,
 
 #ifdef ENABLE_QT4_QT3SUPPORT
 int
-QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
-                                              int former_req_len,
-                                              int latter_req_len )
+QUimTextUtil::deleteSelectionTextInQ3TextEdit( enum UTextOrigin origin,
+                                               int former_req_len,
+                                               int latter_req_len )
 {
     Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     QString text;
@@ -950,7 +951,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                 end_para = sel_para_from;
                 end_index = sel_index_from;
                 for ( int i = 0; i < latter_req_len; i++)
-                    QTextEditPositionForward( &end_para, &end_index );
+                    Q3TextEditPositionForward( &end_para, &end_index );
             }
         } else {
             if (! ( ~latter_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
@@ -968,7 +969,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
                 start_para = sel_para_to;
                 start_index = sel_index_to;
                 for ( int i = 0; i < former_req_len; i++)
-                    QTextEditPositionBackward( &start_para, &start_index );
+                    Q3TextEditPositionBackward( &start_para, &start_index );
             }
         } else {
             if (! ( ~former_req_len & ( ~UTextExtent_Line | ~UTextExtent_Full ) ) )
@@ -989,7 +990,7 @@ QUimTextUtil::deleteSelectionTextInQTextEdit( enum UTextOrigin origin,
 }
 
 void
-QUimTextUtil::QTextEditPositionBackward( int *cursor_para, int *cursor_index )
+QUimTextUtil::Q3TextEditPositionBackward( int *cursor_para, int *cursor_index )
 {
     Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     int preedit_len, preedit_cursor_pos;
@@ -1025,7 +1026,7 @@ QUimTextUtil::QTextEditPositionBackward( int *cursor_para, int *cursor_index )
 }
 
 void
-QUimTextUtil::QTextEditPositionForward( int *cursor_para, int *cursor_index )
+QUimTextUtil::Q3TextEditPositionForward( int *cursor_para, int *cursor_index )
 {
     Q3TextEdit *edit = static_cast<Q3TextEdit *>( mWidget );
     int n_para = edit->paragraphs();
