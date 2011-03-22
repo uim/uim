@@ -109,8 +109,9 @@
   )
 
 (defun uim-leim-input-method-activate-hook ()
-  (setq current-input-method-title uim-leim-mode-line-string)
+  ;; Don't set input-method-title here.
 
+  ;; However, leave code fore xemacs since I cannot test with xemacs for now.
   (if uim-xemacs
       (uim-leim-xemacs-modeline-init))
   )
