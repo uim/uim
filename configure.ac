@@ -1323,7 +1323,10 @@ if test x$use_qt = xyes ; then
     fi
 
     # GUESS $QTLIBDIR
-    QTLIBDIR="$QTDIR/lib"
+    QTLIBDIR="$QTDIR/lib64"
+    if test ! -d "$QTLIBDIR"; then
+       QTLIBDIR="$QTDIR/lib"
+    fi
     if test ! -d "$QTLIBDIR"; then
        QTLIBDIR="/usr/lib/qt3"
     fi
