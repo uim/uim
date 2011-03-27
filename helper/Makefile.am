@@ -78,12 +78,10 @@ $(service_DATA): $(service_in_files) Makefile
 if APPLET_GNOME
 DISTCLEANFILES += UimApplet.panel-applet.in UimApplet.panel-applet \
 		 UimApplet.panel-applet.in.tmp \
-		 org.gnome.panel.applet.UimAppletFactory.service.in \
 		 org.gnome.panel.applet.UimAppletFactory.service
 else
 DISTCLEANFILES = UimApplet.panel-applet.in UimApplet.panel-applet \
 		 UimApplet.panel-applet.in.tmp \
-		 org.gnome.panel.applet.UimAppletFactory.service.in \
 		 org.gnome.panel.applet.UimAppletFactory.service
 endif
 endif
