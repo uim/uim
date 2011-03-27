@@ -9,9 +9,9 @@ LIBS += -luim-custom -luim-counted-init @LIBINTL@
 QMAKE_UIC = $$QMAKE_UIC -tr UIC_
 
 # Input
-HEADERS += @srcdir@/customwidgets.h @srcdir@/kseparator.h @srcdir@/qt4.h
+HEADERS += @srcdir@/customwidgets.h @srcdir@/qt4.h
 FORMS += @srcdir@/keyeditformbase.ui @srcdir@/olisteditformbase.ui
-SOURCES += @srcdir@/customwidgets.cpp @srcdir@/kseparator.cpp @srcdir@/qt4.cpp
+SOURCES += @srcdir@/customwidgets.cpp @srcdir@/qt4.cpp
 
 TARGET = uim-pref-qt4
 

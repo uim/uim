@@ -17,6 +17,6 @@ endif
 FORCE:
 
 EXTRA_DIST =  uim-pref-qt4.pro.in \
-	     customwidgets.h kseparator.h qt4.h \
+	     customwidgets.h qt4.h \
 	     keyeditformbase.ui olisteditformbase.ui \
-	     customwidgets.cpp kseparator.cpp qt4.cpp
+	     customwidgets.cpp qt4.cpp

@@ -5,13 +5,11 @@ LIBS += @LIBINTL@ @X11_LIBS@
 # Input
 HEADERS += @srcdir@/bushuviewwidget.h \
            @srcdir@/chargridview.h \
-           @srcdir@/kseparator.h \
            @srcdir@/qt4.h \
            @srcdir@/qtgettext.h \
            @srcdir@/unicodeviewwidget.h
 SOURCES += @srcdir@/bushuviewwidget.cpp \
            @srcdir@/chargridview.cpp \
-           @srcdir@/kseparator.cpp \
            @srcdir@/qt4.cpp \
            @srcdir@/unicodeviewwidget.cpp
 
