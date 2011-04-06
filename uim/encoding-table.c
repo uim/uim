@@ -50,6 +50,7 @@ static const char *alias_hkscs[] = {
   NULL
 };
 static const char *alias_eucjp[] = {
+  "EUC-JIS-2004", "EUC-JISX0213",
   "EUC-JP", "eucJP", "ujis",
   "Extended_UNIX_Code_Packed_Format_for_Japanese", "euc-jp",
   "csEUCPkdFmtJapanese",
