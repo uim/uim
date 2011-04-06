@@ -211,6 +211,15 @@
 ;;;   (通常の記号入力モードでは、目的の文字までたどりつくために
 ;;;   next-pageキーを何回も押す必要があって面倒なので)
 ;;;
+;;; 【漢字コード入力モード】
+;;;   漢字コードを指定して文字を入力するモード。漢字コード入力後スペースキー
+;;;   (tutcode-begin-conv-key)を押すと、対応する文字が確定されます。
+;;;   以下の3種類の形式での入力が可能(DDSKK 14.2と同様)。
+;;; + Unicode(UCS): U+の後に16進数。U+のかわりにuでもOK。(例:U+4E85またはu4e85)
+;;; + 区点番号(JIS X 0213): -で区切った、面-区-点番号(面区点それぞれ10進数)。
+;;;                         1面の場合、面-は省略可能。(例:1-48-13または48-13)
+;;; + JISコード(ISO-2022-JP): 4桁の16進数。(例:502d)
+;;;
 ;;; 【設定例】
 ;;; * コード表の一部を変更したい場合は、例えば~/.uimで以下のように記述する。
 ;;;   (require "tutcode.scm")
@@ -620,6 +629,7 @@
      ;;; 'tutcode-state-off TUT-Codeオフ
      ;;; 'tutcode-state-on TUT-Codeオン
      ;;; 'tutcode-state-yomi 交ぜ書き変換の読み入力中
+     ;;; 'tutcode-state-code 漢字コード入力中
      ;;; 'tutcode-state-converting 交ぜ書き変換の候補選択中
      ;;; 'tutcode-state-bushu 部首入力・変換中
      ;;; 'tutcode-state-interactive-bushu 対話的部首合成変換中
@@ -1459,6 +1469,104 @@
       (tutcode-begin-conversion pc yomi () #t tutcode-use-recursive-learning?)
       (tutcode-mazegaki-inflection-relimit-right pc yomi-len yomi-len #f))))
 
+;;; 入力された漢字コードに対応する漢字を確定する
+;;; @param str-list 漢字コード。入力された文字列のリスト(逆順)
+(define (tutcode-begin-kanji-code-input pc str-list)
+  (let
+    ((kanji
+      (cond
+        ((string-ci=? (last str-list) "u")
+          (tutcode-kanji-code-input-ucs str-list))
+        ((member "-" str-list)
+          (tutcode-kanji-code-input-kuten str-list))
+        (else
+          (tutcode-kanji-code-input-jis str-list)))))
+    (if (and kanji (> (string-length kanji) 0))
+      (begin
+        (tutcode-commit pc kanji)
+        (tutcode-flush pc)
+        (tutcode-check-auto-help-window-begin pc (list kanji) ())))))
+
+;;; 入力されたUCSに対応する漢字を確定する
+;;; @param str-list UCS(16進数)。入力された文字列のリスト(逆順)
+;;; @return EUC-JP文字列。正しくないコードの場合は#f
+(define (tutcode-kanji-code-input-ucs str-list)
+  (and-let*
+    ((str-list-1 (drop-right str-list 1)) ; drop last "U"
+     (not-only-u? (not (null? str-list-1)))
+     (ucs-str (if (string=? (last str-list-1) "+")
+                (drop-right str-list-1 1)
+                str-list-1))
+     (ucs (string->number (string-list-concat ucs-str) 16))
+     ;; エラー回避のため範囲チェック
+     (valid? ; sigscheme/src/sigschemeinternal.h:ICHAR_VALID_UNICODEP()
+      (or
+        (<= 0 ucs #xd7ff)
+        (<= #xe000 ucs #x10ffff)))
+     (utf8-str (ucs->utf8-string ucs))
+     (ic (iconv-open "EUC-JP" "UTF-8")))
+    (let ((eucj-str (iconv-code-conv ic utf8-str)))
+      (iconv-release ic)
+      eucj-str)))
+
+;;; 入力されたJIS X 0213の(面)区点番号に対応する漢字を確定する
+;;; @param str-list (面)区点番号。入力された文字列のリスト(逆順)
+;;; @return EUC-JP文字列。正しくない番号の場合は#f
+(define (tutcode-kanji-code-input-kuten str-list)
+  (and-let*
+    ((numlist (string-split (string-list-concat str-list) "-"))
+     (len (length numlist))
+     (valid-format? (<= 2 len 3))
+     (men (if (= len 3) (string->number (list-ref numlist 0)) 1))
+     (valid-men? (<= 1 men 2))
+     (ku (string->number (list-ref numlist (if (= len 3) 1 0))))
+     (ten (string->number (list-ref numlist (if (= len 3) 2 1)))))
+    (tutcode-jis-code->euc-jp-string
+      (if (= men 2) 'jisx0213-plane2 'jisx0213-plane1)
+      (+ ku #x20) (+ ten #x20))))
+
+;;; 入力されたJISコード(ISO-2022-JP)に対応する漢字を確定する
+;;; @param str-list JISコード。入力された文字列のリスト(逆順)
+;;; @return EUC-JP文字列。正しくないコードの場合は#f
+(define (tutcode-kanji-code-input-jis str-list)
+  (and-let*
+    ((length=4? (= (length str-list) 4))
+     (str1 (string-list-concat (take-right str-list 2)))
+     (str2 (string-list-concat (take str-list 2)))
+     (jis1 (string->number str1 16))
+     (jis2 (string->number str2 16)))
+    (tutcode-jis-code->euc-jp-string 'jisx0213-plane1 jis1 jis2)))
+
+;;; JISコード(ISO-2022-JP)をEUC-JP文字列に変換する
+;;; @param state 'jisx0213-plane1か'jisx0213-plane2
+;;; @param jis1 JISコードの1バイト目
+;;; @param jis2 JISコードの2バイト目
+;;; @return EUC-JP文字列。正しくないコードの場合は#f
+(define (tutcode-jis-code->euc-jp-string state jis1 jis2)
+  (let
+    ((ej0 (if (eq? state 'jisx0213-plane2) #x8f 0))
+     (ej1 (+ jis1 #x80))
+     (ej2 (+ jis2 #x80)))
+    (and
+      ;; sigscheme/src/encoding.c:eucjp_int2str()
+      (<= #xa1 ej1 #xfe) ; IN_GR94()
+      (if (= ej0 #x8f) ; SS3?
+        (<= #xa1 ej2 #xfe) ; IN_GR94()
+        (<= #xa0 ej2 #xff)) ; IN_GR96()
+      (tutcode-euc-jp-code->euc-jp-string
+        (+ (* ej0 #x10000) (* ej1 #x100) ej2)))))
+
+;;; EUC-JPコードをEUC-JP文字列に変換する (cf. ucs->utf8-string in ichar.scm)
+;;; @param code EUC-JPコード
+;;; @return EUC-JP文字列
+(define (tutcode-euc-jp-code->euc-jp-string code)
+  (with-char-codec "EUC-JP"
+    (lambda ()
+      (let ((str (list->string (list (integer->char code)))))
+        (with-char-codec "ISO-8859-1"
+          (lambda ()
+            (%%string-reconstruct! str)))))))
+
 ;;; 子コンテキストを作成する。
 ;;; @param type 'tutcode-child-type-editorか'tutcode-child-type-dialog
 (define (tutcode-setup-child-context pc type)
@@ -1631,6 +1739,7 @@
           (case cand
             ((tutcode-mazegaki-start) "◇")
             ((tutcode-latin-conv-start) "/")
+            ((tutcode-kanji-code-input-start) "□")
             ((tutcode-bushu-start) "◆")
             ((tutcode-interactive-bushu-start) "▼")
             ((tutcode-postfix-bushu-start) "▲")
@@ -1938,6 +2047,11 @@
       ((tutcode-state-yomi)
         (im-pushback-preedit pc preedit-none "△")
         (let ((h (tutcode-make-string (tutcode-context-head pc))))
+          (if (string? h)
+            (im-pushback-preedit pc preedit-none h))))
+      ((tutcode-state-code)
+        (im-pushback-preedit pc preedit-none "□")
+        (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h))))
       ((tutcode-state-converting)
@@ -2337,6 +2451,8 @@
                 (tutcode-context-set-latin-conv! pc #t)
                 (tutcode-context-set-postfix-yomi-len! pc 0)
                 (tutcode-context-set-state! pc 'tutcode-state-yomi))
+              ((eq? res 'tutcode-kanji-code-input-start)
+                (tutcode-context-set-state! pc 'tutcode-state-code))
               ((eq? res 'tutcode-bushu-start)
                 (tutcode-context-set-state! pc 'tutcode-state-bushu)
                 (tutcode-append-string pc "▲"))
@@ -2987,6 +3103,58 @@
                      (eq? (tutcode-context-candidate-window pc)
                           'tutcode-candidate-window-off))
               (tutcode-check-prediction pc #f))))))))
+
+;;; 漢字コード入力状態のときのキー入力を処理する。
+;;; @param key 入力されたキー
+;;; @param key-state コントロールキー等の状態
+(define (tutcode-proc-state-code c key key-state)
+  (let*
+    ((pc (tutcode-find-descendant-context c))
+     (head (tutcode-context-head pc))
+     (res #f))
+    (cond
+      ((and tutcode-use-with-vi?
+            (tutcode-vi-escape-key? key key-state))
+        (tutcode-flush pc)
+        (tutcode-context-set-state! pc 'tutcode-state-off)
+        (tutcode-commit-raw pc key key-state)) ; ESCキーをアプリにも渡す
+      ((tutcode-off-key? key key-state)
+        (tutcode-flush pc)
+        (tutcode-context-set-state! pc 'tutcode-state-off))
+      ((tutcode-kigou-toggle-key? key key-state)
+        (tutcode-flush pc)
+        (tutcode-begin-kigou-mode pc))
+      ((tutcode-kigou2-toggle-key? key key-state)
+        (tutcode-flush pc)
+        (if (not (tutcode-kigou2-mode? pc))
+          (tutcode-toggle-kigou2-mode pc)))
+      ((tutcode-backspace-key? key key-state)
+        (if (pair? head)
+          (tutcode-context-set-head! pc (cdr head))))
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-flush pc))
+      ((or (tutcode-commit-key? key key-state)
+           (tutcode-return-key? key key-state))
+        (tutcode-commit pc (string-list-concat head))
+        (tutcode-flush pc))
+      ((symbol? key)
+        (tutcode-flush pc)
+        (tutcode-proc-state-on pc key key-state))
+      ((and (modifier-key-mask key-state)
+            (not (shift-key-mask key-state)))
+        (if (tutcode-begin-conv-key? key key-state) ; <Control>n等での変換開始?
+          (if (pair? head)
+            (tutcode-begin-kanji-code-input pc head)
+            (tutcode-flush pc))
+          (begin
+            (tutcode-flush pc)
+            (tutcode-proc-state-on pc key key-state))))
+      ((tutcode-begin-conv-key? key key-state) ; spaceキーでの変換開始?
+        (if (pair? head)
+          (tutcode-begin-kanji-code-input pc head)
+          (tutcode-flush pc)))
+      (else
+        (tutcode-append-string pc (charcode->string key))))))
 
 ;;; 部首合成変換の部首入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
@@ -3789,7 +3957,8 @@
     (not (null? (tutcode-context-child-context pc)))
     (memq (tutcode-context-state pc)
       '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
-        tutcode-state-interactive-bushu tutcode-state-kigou))))
+        tutcode-state-interactive-bushu tutcode-state-kigou
+        tutcode-state-code))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param c コンテキストリスト
@@ -3822,6 +3991,9 @@
            (tutcode-update-preedit pc))
           ((tutcode-state-interactive-bushu)
            (tutcode-proc-state-interactive-bushu pc key key-state)
+           (tutcode-update-preedit pc))
+          ((tutcode-state-code)
+           (tutcode-proc-state-code pc key key-state)
            (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
@@ -4288,6 +4460,8 @@
             '(tutcode-mazegaki-start))
           (make-subrule tutcode-latin-conv-start-sequence
             '(tutcode-latin-conv-start))
+          (make-subrule tutcode-kanji-code-input-start-sequence
+            '(tutcode-kanji-code-input-start))
           (make-subrule tutcode-bushu-start-sequence
             '(tutcode-bushu-start))
           (and
