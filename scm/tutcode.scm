@@ -1513,17 +1513,16 @@
 ;;; @param str-list (面)区点番号。入力された文字列のリスト(逆順)
 ;;; @return EUC-JP文字列。正しくない番号の場合は#f
 (define (tutcode-kanji-code-input-kuten str-list)
-  (and-let*
+  (let*
     ((numlist (string-split (string-list-concat str-list) "-"))
-     (len (length numlist))
-     (valid-format? (<= 2 len 3))
-     (men (if (= len 3) (string->number (list-ref numlist 0)) 1))
-     (valid-men? (<= 1 men 2))
-     (ku (string->number (list-ref numlist (if (= len 3) 1 0))))
-     (ten (string->number (list-ref numlist (if (= len 3) 2 1)))))
-    (tutcode-jis-code->euc-jp-string
-      (if (= men 2) 'jisx0213-plane2 'jisx0213-plane1)
-      (+ ku #x20) (+ ten #x20))))
+     (men-exists? (>= (length numlist) 3))
+     (men (if men-exists? (string->number (list-ref numlist 0)) 1))
+     (ku (string->number (list-ref numlist (if men-exists? 1 0))))
+     (ten (string->number (list-ref numlist (if men-exists? 2 1)))))
+    (and men ku ten (<= 1 men 2)
+      (tutcode-jis-code->euc-jp-string
+        (if (= men 2) 'jisx0213-plane2 'jisx0213-plane1)
+        (+ ku #x20) (+ ten #x20)))))
 
 ;;; 入力されたJISコード(ISO-2022-JP)に対応する漢字を確定する
 ;;; @param str-list JISコード。入力された文字列のリスト(逆順)
