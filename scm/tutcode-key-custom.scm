@@ -227,6 +227,12 @@
 	       (N_ "[TUT-Code] kanji code input mode")
 	       (N_ "long description will be here"))
 
+(define-custom 'tutcode-history-start-sequence ""
+               '(tutcode-keys1 mode-transition)
+	       '(string ".*")
+	       (N_ "[TUT-Code] history")
+	       (N_ "long description will be here"))
+
 (define-custom 'tutcode-auto-help-redisplay-sequence ""
                '(tutcode-keys1)
 	       '(string ".*")

@@ -220,6 +220,11 @@
 ;;;                         1面の場合、面-は省略可能。(例:1-48-13または48-13)
 ;;; + JISコード(ISO-2022-JP): 4桁の16進数。(例:502d)
 ;;;
+;;; 【ヒストリ入力モード】
+;;;   最近の部首合成変換や交ぜ書き変換、補完/予測入力、記号入力、
+;;;   漢字コード入力で確定した文字列を再入力するモード。
+;;;   tutcode-history-sizeを1以上に設定すると有効になります。
+;;;
 ;;; 【設定例】
 ;;; * コード表の一部を変更したい場合は、例えば~/.uimで以下のように記述する。
 ;;;   (require "tutcode.scm")
@@ -429,6 +434,9 @@
 ;;; (全角英数モードとして使うには、tutcode-kigoudicと合わせる必要あり)
 (define tutcode-heading-label-char-list-for-kigou-mode ())
 
+;;; ヒストリ入力時の候補選択用ラベル文字のリスト
+(define tutcode-heading-label-char-list-for-history ())
+
 ;;; 補完/予測入力時の候補選択用ラベル文字のリスト。
 ;;; (通常の文字入力に影響しないように、1打鍵目とかぶらない文字を使用。
 ;;; 記号(や数字)は直接入力できるように、ここでは含めない)
@@ -634,6 +642,7 @@
      ;;; 'tutcode-state-bushu 部首入力・変換中
      ;;; 'tutcode-state-interactive-bushu 対話的部首合成変換中
      ;;; 'tutcode-state-kigou 記号入力モード
+     ;;; 'tutcode-state-history ヒストリ入力モード
      (list 'state 'tutcode-state-off)
      ;;; カタカナモードかどうか
      ;;; #t: カタカナモード。#f: ひらがなモード。
@@ -665,6 +674,7 @@
      ;;; 'tutcode-candidate-window-auto-help 自動ヘルプ表示中
      ;;; 'tutcode-candidate-window-predicting 補完/予測入力候補表示中
      ;;; 'tutcode-candidate-window-interactive-bushu 対話的部首合成変換候補表示
+     ;;; 'tutcode-candidate-window-history ヒストリ入力候補表示中
      (list 'candidate-window 'tutcode-candidate-window-off)
      ;;; ストローク表
      ;;; 次に入力するキーと文字の対応の、get-candidate-handler用形式でのリスト
@@ -689,6 +699,8 @@
      (list 'commit-strs ())
      ;;; commit-strsのうちで補完に使用している文字数
      (list 'commit-strs-used-len 0)
+     ;;; commitした文字列の履歴(ヒストリ入力用)
+     (list 'history ())
      ;;; 補完/予測入力の候補選択中かどうか
      ;;; 'tutcode-predicting-off 補完/予測入力の候補選択中でない
      ;;; 'tutcode-predicting-completion 補完候補選択中
@@ -781,6 +793,9 @@
             (else tutcode-table-heading-label-char-list)))
         (set! tutcode-heading-label-char-list
           tutcode-uim-heading-label-char-list)))
+    (if (null? tutcode-heading-label-char-list-for-history)
+      (set! tutcode-heading-label-char-list-for-history
+        tutcode-heading-label-char-list))
     (if (null? tutcode-heading-label-char-list-for-kigou-mode)
       (if tutcode-use-table-style-candidate-window?
         (begin
@@ -1140,6 +1155,11 @@
 (define (tutcode-get-nth-candidate-for-kigou-mode pc n)
  (car (nth n tutcode-kigoudic)))
 
+;;; ヒストリ入力モード時のn番目の候補を返す。
+;;; @param n 対象の候補番号
+(define (tutcode-get-nth-candidate-for-history pc n)
+  (list-ref (tutcode-context-history pc) n))
+
 ;;; 交ぜ書き変換中の現在選択中の候補を返す。
 ;;; @param pc コンテキストリスト
 (define (tutcode-get-current-candidate pc)
@@ -1148,6 +1168,10 @@
 ;;; 記号入力モード時の現在選択中の候補を返す。
 (define (tutcode-get-current-candidate-for-kigou-mode pc)
   (tutcode-get-nth-candidate-for-kigou-mode pc (tutcode-context-nth pc)))
+
+;;; ヒストリ入力モード時の現在選択中の候補を返す。
+(define (tutcode-get-current-candidate-for-history pc)
+  (tutcode-get-nth-candidate-for-history pc (tutcode-context-nth pc)))
 
 ;;; 交ぜ書き変換で確定した文字列を返す。
 ;;; @param pc コンテキストリスト
@@ -1179,6 +1203,10 @@
 (define (tutcode-prepare-commit-string-for-kigou-mode pc)
   (tutcode-get-current-candidate-for-kigou-mode pc))
 
+;;; ヒストリ入力モード時に確定した文字列を返す。
+(define (tutcode-prepare-commit-string-for-history pc)
+  (tutcode-get-current-candidate-for-history pc))
+
 ;;; im-commit-rawを呼び出す。
 ;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
 (define (tutcode-commit-raw pc key key-state)
@@ -1194,13 +1222,21 @@
 ;;; im-commitを呼び出す。
 ;;; ただし、子コンテキストの場合は、editorかdialogに入力キーを渡す。
 ;;; @param str コミットする文字列
-;;; @param opt-skip-append-commit-strs? commit-strsへの追加を
-;;;  スキップするかどうか。未指定時は#f
-(define (tutcode-commit pc str . opt-skip-append-commit-strs?)
-  (if
-    (and (or tutcode-use-completion? tutcode-enable-fallback-surrounding-text?)
-         (not (:optional opt-skip-append-commit-strs? #f)))
-    (tutcode-append-commit-string pc str))
+;;; @param opts オプション引数。
+;;;  opt-skip-append-commit-strs? commit-strsへの追加を
+;;;  スキップするかどうか。未指定時は#f。
+;;;  opt-skip-append-history? historyへの追加を
+;;;  スキップするかどうか。未指定時は#f。
+(define (tutcode-commit pc str . opts)
+  (let-optionals* opts ((opt-skip-append-commit-strs? #f)
+                        (opt-skip-append-history? #f))
+    (if (and
+          (or tutcode-use-completion? tutcode-enable-fallback-surrounding-text?)
+          (not opt-skip-append-commit-strs?))
+      (tutcode-append-commit-string pc str))
+    (if (and (> tutcode-history-size 0)
+             (not opt-skip-append-history?))
+      (tutcode-append-history pc str)))
   (let ((ppc (tutcode-context-parent-context pc)))
     (if (not (null? ppc))
       (if (eq? (tutcode-context-child-type ppc) 'tutcode-child-type-editor)
@@ -1231,29 +1267,44 @@
   ;; なるべく少ないキーで目的の候補を選べるようにするため)
   (let* ((nr (tutcode-context-nr-candidates pc))
          (nth (tutcode-context-nth pc))
-         (cur-page (cond
-                     ((= tutcode-nr-candidate-max 0) 0)
-                     (else
-                       (quotient nth tutcode-nr-candidate-max))))
-         ;; 現在候補ウィンドウに表示中の候補リストの先頭の候補番号
-         (cur-offset (* cur-page tutcode-nr-candidate-max))
-         (cur-labels (list-tail
-                       tutcode-heading-label-char-list
-                       (remainder cur-offset
-                                  (length tutcode-heading-label-char-list))))
-         (target-labels (member ch cur-labels))
-         (offset (if target-labels
-                   (- (length cur-labels) (length target-labels))
-                   (+ (length cur-labels)
-                      (- (length tutcode-heading-label-char-list)
-                         (length
-                           (member ch tutcode-heading-label-char-list))))))
-         (idx (+ cur-offset offset)))
+         (idx
+          (tutcode-get-idx-by-label-key ch nth tutcode-nr-candidate-max
+            tutcode-nr-candidate-max tutcode-heading-label-char-list)))
     (if (and (>= idx 0)
              (< idx nr))
       (begin
         (tutcode-context-set-nth! pc idx)
         (tutcode-commit-with-auto-help pc)))))
+
+;;; 候補選択時に、指定されたラベル文字に対応する候補番号を計算する
+;;; @param ch 入力されたラベル文字
+;;; @param nth 現在選択されている候補の番号
+;;; @param page-limit 候補選択ウィンドウでの各ページ内の候補数上限
+;;;                   (補完の場合:補完候補+熟語ガイド)
+;;; @param nr-in-page 候補選択ウィンドウでの各ページ内の候補数
+;;;                   (補完の場合:補完候補のみ)
+;;; @param heading-label-char-list ラベル文字の配列
+;;; @return 候補番号
+(define (tutcode-get-idx-by-label-key ch nth page-limit nr-in-page
+        heading-label-char-list)
+  (let*
+    ((cur-page (if (= page-limit 0)
+                  0
+                  (quotient nth page-limit)))
+     ;; 現在候補ウィンドウに表示中の候補リストの先頭の候補番号
+     (cur-offset (* cur-page nr-in-page))
+     (labellen (length heading-label-char-list))
+     (cur-labels
+       (list-tail heading-label-char-list (remainder cur-offset labellen)))
+     (target-labels (member ch cur-labels))
+     (offset (if target-labels
+               (- (length cur-labels) (length target-labels))
+               (+ (length cur-labels)
+                  (- labellen
+                     (length
+                       (member ch heading-label-char-list))))))
+     (idx (+ cur-offset offset)))
+    idx))
 
 ;;; 記号入力モード時に、指定されたラベル文字に対応する候補を確定する
 (define (tutcode-commit-by-label-key-for-kigou-mode pc ch)
@@ -1281,6 +1332,25 @@
         (tutcode-commit pc
           (tutcode-prepare-commit-string-for-kigou-mode pc))))))
 
+;;; ヒストリ入力の候補選択時に、指定されたラベル文字に対応する候補を確定する
+;;; @param ch 入力されたラベル文字
+(define (tutcode-commit-by-label-key-for-history pc ch)
+  (let* ((nr (tutcode-context-nr-candidates pc))
+         (nth (tutcode-context-nth pc))
+         (idx
+          (tutcode-get-idx-by-label-key ch nth
+            tutcode-nr-candidate-max-for-history
+            tutcode-nr-candidate-max-for-history
+            tutcode-heading-label-char-list-for-history)))
+    (if (and (>= idx 0)
+             (< idx nr))
+      (begin
+        (tutcode-context-set-nth! pc idx)
+        (let ((str (tutcode-prepare-commit-string-for-history pc)))
+          (tutcode-commit pc str)
+          (tutcode-flush pc)
+          (tutcode-check-auto-help-window-begin pc (string-to-list str) ()))))))
+
 ;;; 補完/予測入力候補表示時に、指定されたラベル文字に対応する候補を確定する
 ;;; @param ch 入力されたラベル文字
 ;;; @param mode tutcode-context-predictingの値
@@ -1288,24 +1358,11 @@
   (let*
     ((nth (tutcode-context-prediction-index pc))
      (page-limit (tutcode-context-prediction-page-limit pc))
-     (cur-page (quotient nth page-limit))
      (nr-in-page (tutcode-context-prediction-nr-in-page pc))
-     ;; 現在候補ウィンドウに表示中の候補リストの先頭の候補番号
-     (cur-offset (* cur-page nr-in-page))
-     (labellen (length tutcode-heading-label-char-list-for-prediction))
-     (cur-labels
-       (list-tail
-         tutcode-heading-label-char-list-for-prediction
-         (remainder cur-offset labellen)))
-     (target-labels (member ch cur-labels))
-     (offset (if target-labels
-               (- (length cur-labels) (length target-labels))
-               (+ (length cur-labels)
-                  (- labellen
-                     (length
-                       (member ch tutcode-heading-label-char-list-for-prediction))))))
+     (idx
+      (tutcode-get-idx-by-label-key ch nth page-limit nr-in-page
+        tutcode-heading-label-char-list-for-prediction))
      (nr (tutcode-lib-get-nr-predictions pc))
-     (idx (+ cur-offset offset))
      (i (remainder idx nr)))
     (if (>= i 0)
       (begin
@@ -1389,6 +1446,16 @@
         (if (> (length new-strs) tutcode-completion-chars-max)
           (take new-strs tutcode-completion-chars-max)
           new-strs)))))
+
+;;; commit文字列履歴リストhistoryに文字列を追加する。
+;;; @param str 追加する文字列
+(define (tutcode-append-history pc str)
+  (let* ((history (tutcode-context-history pc))
+         (new-history (cons str (delete str history))))
+    (tutcode-context-set-history! pc
+      (if (> (length new-history) tutcode-history-size)
+        (take new-history tutcode-history-size)
+        new-history))))
 
 ;;; 交ぜ書き変換を開始する
 ;;; @param yomi 変換対象の読み(文字列の逆順リスト)
@@ -1589,6 +1656,20 @@
            'tutcode-candidate-window-kigou)
     (im-select-candidate pc 0)))
 
+;;; ヒストリ入力の候補表示を開始する
+(define (tutcode-begin-history pc)
+  (if (and (> tutcode-history-size 0)
+           (pair? (tutcode-context-history pc)))
+    (begin
+      (tutcode-context-set-nth! pc 0)
+      (tutcode-context-set-nr-candidates! pc
+        (length (tutcode-context-history pc)))
+      (tutcode-context-set-state! pc 'tutcode-state-history)
+      (tutcode-check-candidate-window-begin pc)
+      (if (eq? (tutcode-context-candidate-window pc)
+               'tutcode-candidate-window-hisory)
+        (im-select-candidate pc 0)))))
+
 ;;; 2ストローク記号入力モード(tutcode-kigou-rule)とtutcode-ruleの切り替えを行う
 ;;; @param pc コンテキストリスト
 (define (tutcode-toggle-kigou2-mode pc)
@@ -1609,17 +1690,19 @@
                 'tutcode-candidate-window-off)
            tutcode-use-candidate-window?
            (>= (tutcode-context-nth pc) (- tutcode-candidate-op-count 1)))
-    (begin
+    (let ((state (tutcode-context-state pc)))
       (tutcode-context-set-candidate-window! pc
-        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-          'tutcode-candidate-window-kigou
-          'tutcode-candidate-window-converting))
+        (case state
+          ((tutcode-state-kigou) 'tutcode-candidate-window-kigou)
+          ((tutcode-state-history) 'tutcode-candidate-window-history)
+          (else 'tutcode-candidate-window-converting)))
       (im-activate-candidate-selector
         pc
         (tutcode-context-nr-candidates pc)
-        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-          tutcode-nr-candidate-max-for-kigou-mode
-          tutcode-nr-candidate-max)))))
+        (case state
+          ((tutcode-state-kigou) tutcode-nr-candidate-max-for-kigou-mode)
+          ((tutcode-state-history) tutcode-nr-candidate-max-for-history)
+          (else tutcode-nr-candidate-max))))))
 
 ;;; 仮想鍵盤の表示を開始する
 (define (tutcode-check-stroke-help-window-begin pc)
@@ -1739,6 +1822,7 @@
             ((tutcode-mazegaki-start) "◇")
             ((tutcode-latin-conv-start) "/")
             ((tutcode-kanji-code-input-start) "□")
+            ((tutcode-history-start) "◎")
             ((tutcode-bushu-start) "◆")
             ((tutcode-interactive-bushu-start) "▼")
             ((tutcode-postfix-bushu-start) "▲")
@@ -2106,7 +2190,11 @@
       ((tutcode-state-kigou)
         ;; 候補ウィンドウ非表示時でも候補選択できるようにpreedit表示
         (im-pushback-preedit pc preedit-reverse
-          (tutcode-get-current-candidate-for-kigou-mode pc))))
+          (tutcode-get-current-candidate-for-kigou-mode pc)))
+      ((tutcode-state-history)
+        (im-pushback-preedit pc preedit-none "◎")
+        (im-pushback-preedit pc preedit-none
+          (tutcode-get-current-candidate-for-history pc))))
     (if (not cursor-shown?)
       (im-pushback-preedit pc preedit-cursor ""))))
 
@@ -2438,7 +2526,7 @@
            (let ((res (tutcode-push-key! pc (charcode->string key))))
             (cond
               ((string? res)
-                (tutcode-commit pc res)
+                (tutcode-commit pc res #f (not (tutcode-kigou2-mode? pc)))
                 (if (and tutcode-use-completion?
                          (> tutcode-completion-chars-min 0))
                   (tutcode-check-completion pc #f 0)))
@@ -2510,6 +2598,8 @@
                 (tutcode-begin-postfix-mazegaki-inflection-conversion pc 8))
               ((eq? res 'tutcode-postfix-mazegaki-inflection-9-start)
                 (tutcode-begin-postfix-mazegaki-inflection-conversion pc 9))
+              ((eq? res 'tutcode-history-start)
+                (tutcode-begin-history pc))
               ((eq? res 'tutcode-auto-help-redisplay)
                 (tutcode-auto-help-redisplay pc))))))))))
 
@@ -2869,7 +2959,7 @@
               (tutcode-commit pc
                 (tutcode-make-string
                   (make-list len tutcode-fallback-backspace-string))
-                #t))))))))
+                #t #t))))))))
 
 ;;; 直接入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
@@ -2937,6 +3027,39 @@
         (tutcode-commit-raw pc key key-state))
       (else
         (tutcode-commit-raw pc key key-state)))))
+
+;;; ヒストリ入力モード時のキー入力を処理する。
+;;; @param key 入力されたキー
+;;; @param key-state コントロールキー等の状態
+(define (tutcode-proc-state-history c key key-state)
+  (let ((pc (tutcode-find-descendant-context c)))
+    (cond
+      ((tutcode-next-candidate-key? key key-state)
+        (tutcode-change-candidate-index pc 1))
+      ((tutcode-prev-candidate-key? key key-state)
+        (tutcode-change-candidate-index pc -1))
+      ((tutcode-next-page-key? key key-state)
+        (tutcode-change-candidate-index pc
+          tutcode-nr-candidate-max-for-history))
+      ((tutcode-prev-page-key? key key-state)
+        (tutcode-change-candidate-index pc
+          (- tutcode-nr-candidate-max-for-history)))
+      ((tutcode-cancel-key? key key-state)
+        (tutcode-flush pc))
+      ((and (not (and (modifier-key-mask key-state)
+                      (not (shift-key-mask key-state))))
+            (tutcode-heading-label-char-for-history? key))
+        (tutcode-commit-by-label-key-for-history pc (charcode->string key)))
+      ((or (tutcode-commit-key? key key-state)
+           (tutcode-return-key? key key-state))
+        (let ((str (tutcode-prepare-commit-string-for-history pc)))
+          (tutcode-commit pc str)
+          (tutcode-flush pc)
+          (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
+      (else
+        (tutcode-commit pc (tutcode-prepare-commit-string-for-history pc))
+        (tutcode-flush pc)
+        (tutcode-proc-state-on pc key key-state)))))
 
 ;;; 交ぜ書き変換の読み入力状態のときのキー入力を処理する。
 ;;; @param c コンテキストリスト
@@ -3435,7 +3558,10 @@
     (cond
       ((< new-nth 0)
        (set! new-nth 0))
-      ((and tutcode-use-recursive-learning? (= nth (- nr 1)) (>= new-nth nr))
+      ((and tutcode-use-recursive-learning?
+            (eq? (tutcode-context-state pc) 'tutcode-state-converting)
+            (= nth (- nr 1))
+            (>= new-nth nr))
        (tutcode-reset-candidate-window pc)
        (tutcode-setup-child-context pc 'tutcode-child-type-editor))
       ((>= new-nth nr)
@@ -3518,6 +3644,11 @@
 (define (tutcode-heading-label-char-for-kigou-mode? key)
   (member (charcode->string key) tutcode-heading-label-char-list-for-kigou-mode))
 
+;;; 入力されたキーがヒストリ入力モード時の候補ラベル文字かどうかを調べる
+;;; @param key 入力されたキー
+(define (tutcode-heading-label-char-for-history? key)
+  (member (charcode->string key) tutcode-heading-label-char-list-for-history))
+
 ;;; 入力されたキーが補完/予測入力時の候補ラベル文字かどうかを調べる
 ;;; @param key 入力されたキー
 (define (tutcode-heading-label-char-for-prediction? key)
@@ -3555,6 +3686,8 @@
       ((tutcode-mazegaki-relimit-left-key? key key-state)
         (tutcode-mazegaki-proc-relimit-left pc))
       ((and tutcode-commit-candidate-by-label-key?
+            (not (and (modifier-key-mask key-state)
+                      (not (shift-key-mask key-state))))
             (> (tutcode-context-nr-candidates pc) 1)
             (tutcode-heading-label-char? key))
         (tutcode-commit-by-label-key pc (charcode->string key)))
@@ -3957,7 +4090,7 @@
     (memq (tutcode-context-state pc)
       '(tutcode-state-yomi tutcode-state-bushu tutcode-state-converting
         tutcode-state-interactive-bushu tutcode-state-kigou
-        tutcode-state-code))))
+        tutcode-state-code tutcode-state-history))))
 
 ;;; キーが押されたときの処理の振り分けを行う。
 ;;; @param c コンテキストリスト
@@ -3993,6 +4126,9 @@
            (tutcode-update-preedit pc))
           ((tutcode-state-code)
            (tutcode-proc-state-code pc key key-state)
+           (tutcode-update-preedit pc))
+          ((tutcode-state-history)
+           (tutcode-proc-state-history pc key key-state)
            (tutcode-update-preedit pc))
           (else
            (tutcode-proc-state-off pc key key-state)
@@ -4054,6 +4190,8 @@
         (set! tutcode-nr-candidate-max (length tutcode-heading-label-char-list))
         (set! tutcode-nr-candidate-max-for-kigou-mode
           (length tutcode-heading-label-char-list-for-kigou-mode))
+        (set! tutcode-nr-candidate-max-for-history
+          (length tutcode-heading-label-char-list-for-history))
         (set! tutcode-nr-candidate-max-for-prediction
           (length tutcode-heading-label-char-list-for-prediction))
         (set! tutcode-nr-candidate-max-for-guide
@@ -4065,6 +4203,8 @@
               (cond
                 ((eq? (tutcode-context-state tc) 'tutcode-state-kigou)
                   tutcode-nr-candidate-max-for-kigou-mode)
+                ((eq? (tutcode-context-state tc) 'tutcode-state-history)
+                  tutcode-nr-candidate-max-for-history)
                 ((eq? (tutcode-context-state tc)
                       'tutcode-state-interactive-bushu)
                   (tutcode-context-prediction-page-limit tc))
@@ -4080,6 +4220,13 @@
                     (length tutcode-heading-label-char-list-for-kigou-mode)))
                (label (nth n tutcode-heading-label-char-list-for-kigou-mode)))
           ;; XXX:annotation表示は現状無効化されているので、常に""を返しておく
+          (list cand label "")))
+      ;; ヒストリ入力
+      ((eq? (tutcode-context-state tc) 'tutcode-state-history)
+        (let* ((cand (tutcode-get-nth-candidate-for-history tc idx))
+               (n (remainder idx
+                    (length tutcode-heading-label-char-list-for-history)))
+               (label (nth n tutcode-heading-label-char-list-for-history)))
           (list cand label "")))
       ;; 補完/予測入力候補
       ((not (eq? (tutcode-context-predicting tc) 'tutcode-predicting-off))
@@ -4161,14 +4308,22 @@
   (let* ((pc (tutcode-find-descendant-context c))
          (candwin (tutcode-context-candidate-window pc)))
     (cond
-      ((and (or (eq? candwin 'tutcode-candidate-window-converting)
-                (eq? candwin 'tutcode-candidate-window-kigou))
+      ((and (memq candwin '(tutcode-candidate-window-converting
+                            tutcode-candidate-window-kigou
+                            tutcode-candidate-window-history))
           (>= idx 0)
           (< idx (tutcode-context-nr-candidates pc)))
         (tutcode-context-set-nth! pc idx)
-        (if (eq? (tutcode-context-state pc) 'tutcode-state-kigou)
-          (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc))
-          (tutcode-commit-with-auto-help pc))
+        (case (tutcode-context-state pc)
+          ((tutcode-state-kigou)
+            (tutcode-commit pc (tutcode-prepare-commit-string-for-kigou-mode pc)))
+          ((tutcode-state-history)
+            (let ((str (tutcode-prepare-commit-string-for-history pc)))
+              (tutcode-commit pc str)
+              (tutcode-flush pc)
+              (tutcode-check-auto-help-window-begin pc (string-to-list str) ())))
+          (else
+            (tutcode-commit-with-auto-help pc)))
         (tutcode-update-preedit pc))
       ((and (or (eq? candwin 'tutcode-candidate-window-predicting)
                 (eq? candwin 'tutcode-candidate-window-interactive-bushu))
@@ -4461,6 +4616,8 @@
             '(tutcode-latin-conv-start))
           (make-subrule tutcode-kanji-code-input-start-sequence
             '(tutcode-kanji-code-input-start))
+          (make-subrule tutcode-history-start-sequence
+            '(tutcode-history-start))
           (make-subrule tutcode-bushu-start-sequence
             '(tutcode-bushu-start))
           (and

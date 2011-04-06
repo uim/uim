@@ -116,6 +116,12 @@
   (N_ "Enable fallback of surrounding text API")
   (N_ "long description will be here."))
 
+(define-custom 'tutcode-history-size 0
+  '(tutcode)
+  '(integer 0 65535)
+  (N_ "History size")
+  (N_ "long description will be here."))
+
 (define-custom 'tutcode-mazegaki-yomi-max 10
   '(tutcode tutcode-mazegaki)
   '(integer 1 99)
@@ -213,6 +219,12 @@
   '(tutcode candwin)
   '(integer 1 99)
   (N_ "Number of candidates in candidate window at a time for kanji combination guide")
+  (N_ "long description will be here."))
+
+(define-custom 'tutcode-nr-candidate-max-for-history 10
+  '(tutcode candwin)
+  '(integer 1 99)
+  (N_ "Number of candidates in candidate window at a time for history")
   (N_ "long description will be here."))
 
 (define-custom 'tutcode-use-stroke-help-window? #f
