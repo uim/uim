@@ -968,7 +968,7 @@
         ;; 補完時は、candsからは元々付いていた
         ;; 先頭のcommit-strsを削除しているので、復元
         (string-append
-          (tutcode-make-string
+          (string-list-concat
             (take (tutcode-context-commit-strs pc)
                   (tutcode-context-commit-strs-used-len pc)))
           cand)
@@ -1130,13 +1130,6 @@
     (if (not (null? cpc))
       (tutcode-flush cpc))))
 
-;;; 変換対象の文字列リストから文字列を作る。
-;;; @param sl 文字列リスト
-(define (tutcode-make-string sl)
-  (if (null? sl)
-    ""
-    (string-append (tutcode-make-string (cdr sl)) (car sl))))
-
 ;;; 交ぜ書き変換中のn番目の候補を返す。
 ;;; @param pc コンテキストリスト
 ;;; @param n 対象の候補番号
@@ -1145,7 +1138,7 @@
          (cand (skk-lib-get-nth-candidate
                 tutcode-dic
                 n
-                (cons (tutcode-make-string head) "")
+                (cons (string-list-concat head) "")
                 ""
                 #f)))
     cand))
@@ -1188,7 +1181,7 @@
         ;; skk-lib-commit-candidateを呼ぶと学習が行われ、候補順が変更される
         (skk-lib-commit-candidate
           tutcode-dic
-          (cons (tutcode-make-string head) "")
+          (cons (string-list-concat head) "")
           ""
           (tutcode-context-nth pc)
           #f)
@@ -1197,7 +1190,7 @@
     (tutcode-flush pc)
     (if (null? suffix)
       res
-      (string-append res (tutcode-make-string suffix)))))
+      (string-append res (string-list-concat suffix)))))
 
 ;;; 記号入力モード時に確定した文字列を返す。
 (define (tutcode-prepare-commit-string-for-kigou-mode pc)
@@ -1416,7 +1409,7 @@
 (define (tutcode-purge-candidate pc)
   (let ((res (skk-lib-purge-candidate
                tutcode-dic
-               (cons (tutcode-make-string (tutcode-context-head pc)) "")
+               (cons (string-list-concat (tutcode-context-head pc)) "")
                ""
                (tutcode-context-nth pc)
                #f)))
@@ -1466,7 +1459,7 @@
 (define (tutcode-begin-conversion pc yomi suffix autocommit?
           recursive-learning?)
   (let*
-    ((yomi-str (tutcode-make-string yomi))
+    ((yomi-str (string-list-concat yomi))
      (res (and (symbol-bound? 'skk-lib-get-entry)
                (skk-lib-get-entry tutcode-dic yomi-str "" "" #f)
                (skk-lib-get-nr-candidates tutcode-dic yomi-str "" "" #f))))
@@ -1743,7 +1736,7 @@
            (guide-candcombined
             (map
               (lambda (elem)
-                (list (car elem) (tutcode-make-string (cdr elem))))
+                (list (car elem) (string-list-concat (cdr elem))))
               guide-alist)))
           ;; 表示する候補文字列を、熟語ガイド(+)付き文字列に置き換える
           (for-each
@@ -1952,7 +1945,7 @@
             ((auto-help
               (map
                 (lambda (elem)
-                  (list (tutcode-make-string (cdr elem)) (car elem) ""))
+                  (list (string-list-concat (cdr elem)) (car elem) ""))
                 label-cands-alist)))
             (tutcode-context-set-auto-help! pc auto-help)
             (tutcode-context-set-candidate-window! pc
@@ -2129,7 +2122,7 @@
     (case stat
       ((tutcode-state-yomi)
         (im-pushback-preedit pc preedit-none "△")
-        (let ((h (tutcode-make-string (tutcode-context-head pc))))
+        (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h))))
       ((tutcode-state-code)
@@ -2149,9 +2142,9 @@
                   (im-pushback-preedit pc preedit-cursor "")
                   (set! cursor-shown? #t)
                   (im-pushback-preedit pc preedit-none
-                    (tutcode-make-string suffix))))))
+                    (string-list-concat suffix))))))
           ;; child context's preedit
-          (let ((h (tutcode-make-string (tutcode-context-head pc)))
+          (let ((h (string-list-concat (tutcode-context-head pc)))
                 (editor (tutcode-context-editor pc))
                 (dialog (tutcode-context-dialog pc)))
             (if (string? h)
@@ -2172,12 +2165,12 @@
             (im-pushback-preedit pc preedit-none "】"))))
       ;; 部首合成変換のマーカ▲は文字列としてhead内で管理(再帰的部首合成のため)
       ((tutcode-state-bushu)
-        (let ((h (tutcode-make-string (tutcode-context-head pc))))
+        (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h))))
       ((tutcode-state-interactive-bushu)
         (im-pushback-preedit pc preedit-none "▼")
-        (let ((h (tutcode-make-string (tutcode-context-head pc))))
+        (let ((h (string-list-concat (tutcode-context-head pc))))
           (if (string? h)
             (im-pushback-preedit pc preedit-none h)))
         (im-pushback-preedit pc preedit-cursor "")
@@ -2218,7 +2211,7 @@
     (tutcode-commit pc
       (if (null? suffix)
         str
-        (string-append str (tutcode-make-string suffix))))
+        (string-append str (string-list-concat suffix))))
     (tutcode-update-preedit pc)))
 
 ;;; 補完候補を検索して候補ウィンドウに表示する
@@ -2238,7 +2231,7 @@
         (or (>= len tutcode-completion-chars-min)
             (and force-check?
                  (> len 0)))
-        (let ((str (tutcode-make-string commit-strs)))
+        (let ((str (string-list-concat commit-strs)))
           (tutcode-lib-set-prediction-src-string pc str #t)
           (let ((nr (tutcode-lib-get-nr-predictions pc)))
             (if (and nr (> nr 0))
@@ -2284,7 +2277,7 @@
         (or (>= preedit-len tutcode-prediction-start-char-count)
             force-check?)
         (let*
-          ((preconv-str (tutcode-make-string head))
+          ((preconv-str (string-list-concat head))
            (all-yomi (tutcode-lib-set-prediction-src-string pc preconv-str #f))
            (nr (tutcode-lib-get-nr-predictions pc)))
           (if (and nr (> nr 0))
@@ -2957,7 +2950,7 @@
                   ())))
             (if (> (string-length tutcode-fallback-backspace-string) 0)
               (tutcode-commit pc
-                (tutcode-make-string
+                (apply string-append
                   (make-list len tutcode-fallback-backspace-string))
                 #t #t))))))))
 
@@ -3114,7 +3107,7 @@
           ((or
             (tutcode-commit-key? key key-state)
             (tutcode-return-key? key key-state))
-           (tutcode-commit pc (tutcode-make-string head))
+           (tutcode-commit pc (string-list-concat head))
            (tutcode-flush pc))
           ((tutcode-cancel-key? key key-state)
            (tutcode-flush pc))
@@ -3465,7 +3458,7 @@
                     (has-candidate?
                       (tutcode-get-prediction-string pc))
                     ((> (length head) 0)
-                      (tutcode-make-string (tutcode-context-head pc)))
+                      (string-list-concat (tutcode-context-head pc)))
                     (else
                       #f))))
              (if str (tutcode-commit pc str))
@@ -4268,7 +4261,7 @@
                    (label (car label-cands-alist))
                    (cands (cdr label-cands-alist))
                    (cand
-                    (tutcode-make-string
+                    (string-list-concat
                       (append cands (list tutcode-guide-mark)))))
                   (list cand label "")))))))
       ;; 仮想鍵盤

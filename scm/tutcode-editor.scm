@@ -119,7 +119,7 @@
                   (begin
                     (skk-lib-learn-word
                       tutcode-dic
-                      (cons (tutcode-make-string (tutcode-context-head sc)) "")
+                      (cons (string-list-concat (tutcode-context-head sc)) "")
                       ""
                       str
                       #f)
