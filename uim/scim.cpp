@@ -38,6 +38,7 @@
 #define Uses_SCIM_PANEL
 #define Uses_SCIM_SOCKET
 #define Uses_SCIM_SOCKET_TRANSACTION
+#define Uses_C_STRING
 
 #include <scim.h>
 #include "uim.h"
