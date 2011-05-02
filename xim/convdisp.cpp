@@ -489,7 +489,7 @@ void PeWin::draw_char(int x, int y, uchar ch, int stat)
 	    native_str = im->utf8_to_native_str(utf8);
 	    if (!native_str)
 		return;
-	    len = strlen(native_str);
+	    len = static_cast<int>(strlen(native_str));
 	    XmbDrawImageString(XimServer::gDpy, mPixmap, mFontset,
 			   gc, x, y, native_str, len);
 	    free(native_str);
@@ -499,7 +499,7 @@ void PeWin::draw_char(int x, int y, uchar ch, int stat)
 
 void PeWin::set_back(unsigned long p)
 {
-    mBack = p;
+    mBack = static_cast<unsigned int>(p);
     XSetBackground(XimServer::gDpy, mGC, p);
     XSetForeground(XimServer::gDpy, mClearGC, p);
 #if HAVE_XFT_UTF8_STRING
@@ -518,7 +518,7 @@ void PeWin::set_back(unsigned long p)
 
 void PeWin::set_fore(unsigned long p)
 {
-    mFore = p;
+    mFore = static_cast<unsigned int>(p);
     XSetForeground(XimServer::gDpy, mGC, p);
     XSetBackground(XimServer::gDpy, mClearGC, p);
 #if HAVE_XFT_UTF8_STRING
@@ -719,7 +719,7 @@ int PeLineWin::get_char_width(uchar ch)
 	    native_str = im->utf8_to_native_str(utf8);
 	    if (!native_str)
 		return 0;
-	    len = strlen(native_str);
+	    len = static_cast<int>(strlen(native_str));
 	    XmbTextExtents(mFontset, native_str, len, &ink, &logical);
 	    free(native_str);
 	}
@@ -1395,12 +1395,14 @@ bool ConvdispOv::check_atr()
     }
 
     if (!m_atr->has_atr(ICA_Foreground))
-	m_atr->foreground_pixel = BlackPixel(XimServer::gDpy,
-					     DefaultScreen(XimServer::gDpy));
+	m_atr->foreground_pixel
+		= static_cast<C32>(BlackPixel(XimServer::gDpy,
+					      DefaultScreen(XimServer::gDpy)));
 
     if (!m_atr->has_atr(ICA_Background))
-	m_atr->background_pixel = WhitePixel(XimServer::gDpy,
-					     DefaultScreen(XimServer::gDpy));
+	m_atr->background_pixel
+		= static_cast<C32>(WhitePixel(XimServer::gDpy,
+					      DefaultScreen(XimServer::gDpy)));
 
     return true;
 }
@@ -1463,7 +1465,7 @@ void ConvdispOv::layoutCharEnt()
 		    logical.width = 0;
 		    logical.height = (unsigned short)((i > 0) ? m_ce[i - 1].height : 0);
 		} else {
-		    len = strlen(str);
+		    len = static_cast<int>(strlen(str));
 		    XmbTextExtents(m_atr->font_set, str, len, &ink, &logical);
 		    free(str);
 		}
@@ -1655,7 +1657,7 @@ void ConvdispOs::compose_preedit_array(TxPacket *t)
     char *c = im->uStringToCtext(&s);
     int i, len = 0;
     if (c)
-	len = strlen(c);
+	len = static_cast<int>(strlen(c));
     t->pushC16((C16)len); // LENGTH
     for (i = 0; i < len; i++) {
 	t->pushC8(c[i]); // CTEXT
@@ -1675,7 +1677,7 @@ void ConvdispOs::compose_feedback_array(TxPacket *t)
     t->pushC16(0);
     std::list<pe_ustring>::iterator it;
     for (it = m_pe->ustrings.begin(); it != m_pe->ustrings.end(); ++it) {
-	len = (*it).s.size();
+	len = static_cast<int>((*it).s.size());
 	stat = (*it).stat;
 	xstat = FB_None;
 	if (stat & PE_REVERSE)

@@ -162,8 +162,10 @@ icxatr::icxatr()
     font_set_name = NULL;
     font_set = NULL;
     m_locale = NULL;
-    foreground_pixel = BlackPixel(XimServer::gDpy, DefaultScreen(XimServer::gDpy));
-    background_pixel = WhitePixel(XimServer::gDpy, DefaultScreen(XimServer::gDpy));
+    foreground_pixel = static_cast<C32>(BlackPixel(XimServer::gDpy,
+			                DefaultScreen(XimServer::gDpy)));
+    background_pixel = static_cast<C32>(WhitePixel(XimServer::gDpy,
+			                DefaultScreen(XimServer::gDpy)));
     line_space = 0;
 #if HAVE_XFT_UTF8_STRING
     m_use_xft = uim_scm_symbol_value_bool("uim-xim-use-xft-font?");
@@ -440,10 +442,10 @@ void XimIC::send_key_event(XKeyEvent *e)
     t->pushC8((C8)e->type);
     t->pushC8((C8)e->keycode);
     t->pushC16((C16)e->serial & 0xffff);
-    t->pushC32(e->time);
-    t->pushC32(e->root);
-    t->pushC32(e->window);
-    t->pushC32(e->subwindow);
+    t->pushC32(static_cast<C32>(e->time));
+    t->pushC32(static_cast<C32>(e->root));
+    t->pushC32(static_cast<C32>(e->window));
+    t->pushC32(static_cast<C32>(e->subwindow));
     t->pushC16((C16)e->x_root);
     t->pushC16((C16)e->y_root);
     t->pushC16((C16)e->x);
@@ -515,7 +517,7 @@ C16 XimIC::get_ic_atr(C16 id, TxPacket *t)
 
     switch (id) {
     case ICA_FocusWindow:
-	t->pushC32(m_xatr.focus_window);
+	t->pushC32(static_cast<C32>(m_xatr.focus_window));
 	break;
     case ICA_FilterEvents:
 	if (g_option_mask & OPT_ON_DEMAND_SYNC)
@@ -526,7 +528,7 @@ C16 XimIC::get_ic_atr(C16 id, TxPacket *t)
 	    t->pushC32(KeyPressMask); 
 	break;
     case ICA_InputStyle:
-	t->pushC32(m_xatr.input_style);
+	t->pushC32(static_cast<C32>(m_xatr.input_style));
   	break;
     default:
 	printf("try to get unknown ic attribute %d.\n", id);
@@ -585,7 +587,7 @@ void XimIC::reset_ic()
 	int len = 0;
 	p = get_im_by_id(mIMid)->uStringToCtext(&s);
 	if (p) {
-	    len = strlen(p);
+	    len = static_cast<int>(strlen(p));
 	    t->pushC16((C16)len); // length of committed strings
 	    for (i = 0; i < len; i++) {
 		t->pushC8(p[i]); // put string here
@@ -640,7 +642,7 @@ void XimIC::onSendPacket()
     t->pushC16(3); // XLookupChars|synchronous
 
     int i, len;
-    len = strlen(p);
+    len = static_cast<int>(strlen(p));
 
     t->pushC16((C16)len);
     for (i = 0; i < len; i++) {

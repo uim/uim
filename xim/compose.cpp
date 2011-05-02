@@ -427,7 +427,7 @@ XimIM::get_mb_string(char *buf, KeySym ks)
     mb = utf8_to_native_str(local_buf);
     if (!mb)
 	return 0;
-    len = strlen(mb);
+    len = static_cast<int>(strlen(mb));
     strlcpy(buf, mb, MB_LEN_MAX + 1);
     free(mb);
 
@@ -510,7 +510,7 @@ XimIM::parse_compose_line(FILE *fp, char **tokenbuf, size_t *buflen)
 		    if (token != KEY)
 			goto error;
 		}
-		tmp = modmask(*tokenbuf);
+		tmp = static_cast<unsigned int>(modmask(*tokenbuf));
 		if (!tmp) {
 		    goto error;
 		}
@@ -1076,7 +1076,7 @@ KeySymToUcs4(KeySym keysym)
 	return (keysym & 0x00ffffff);
 
     if (keysym > 0 && keysym < 0x100)
-	return keysym;
+	return static_cast<unsigned int>(keysym);
     else if (keysym > 0x1a0 && keysym < 0x200)
 	return keysym_to_unicode_1a1_1ff[keysym - 0x1a1];
     else if (keysym > 0x2a0 && keysym < 0x2ff)
@@ -1141,7 +1141,7 @@ mb_string_to_utf8(char *utf8, const char *str, int len, const char *enc) {
     strlcpy(utf8, outbuf, len + 1);
     free(outbuf);
 
-    return strlen(utf8);
+    return static_cast<int>(strlen(utf8));
 }
 
 /*

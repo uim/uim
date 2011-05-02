@@ -106,7 +106,7 @@ send_im_list(void)
 				       it->desc ? it->desc : "");
 	if (!tmp)
 	    return;
-	len = strlen(buf) + strlen(tmp);
+	len = static_cast<int>(strlen(buf) + strlen(tmp));
 	buf = (char *)realloc(buf, sizeof(char) * len + 1);
 	if (!buf)
 	    return;
@@ -117,7 +117,7 @@ send_im_list(void)
 	    asprintf(&tmp, "selected\n");
 	    if (!tmp)
 		return;
-	    len = strlen(buf) + strlen(tmp);
+	    len = static_cast<int>(strlen(buf) + strlen(tmp));
 	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
 	    if (!buf)
 		return;
@@ -127,7 +127,7 @@ send_im_list(void)
 	    asprintf(&tmp, "\n");
 	    if (!tmp)
 		return;
-	    len = strlen(buf) + strlen(tmp);
+	    len = static_cast<int>(strlen(buf) + strlen(tmp));
 	    buf = (char *)realloc(buf, sizeof(char) * len + 1);
 	    if (!buf)
 		return;
@@ -195,7 +195,7 @@ helper_str_parse(char *str)
 		if (!strcmp(charset, "UTF-8"))
 		    focusedContext->extra_input(line);
 		else {
-		    int len = strlen(line);
+		    int len = static_cast<int>(strlen(line));
 		    char *utf8_str = (char *)malloc(len * 6 + 1);
 		    if (!utf8_str)
 			return;

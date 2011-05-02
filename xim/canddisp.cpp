@@ -293,7 +293,7 @@ static void candwin_read_cb(int fd, int /* ev */)
     char buf[1024];
     int n;
 
-    n = read(fd, buf, 1024 - 1);
+    n = static_cast<int>(read(fd, buf, 1024 - 1));
     if (n == 0) {
 	terminate_canddisp_connection();
 	return;

@@ -185,7 +185,7 @@ static void main_loop()
 void
 add_window_watch(Window id, WindowIf *w, int mask)
 {
-    std::pair<unsigned int, WindowIf *> p(id, w);
+    std::pair<unsigned int, WindowIf *> p(static_cast<unsigned int>(id), w);
     window_watch_stat.insert(p);
 
     // Event mask is the same value defined in X,
@@ -203,7 +203,7 @@ void
 remove_window_watch(Window id)
 {
     std::map<unsigned int, WindowIf *>::iterator i;
-    i = window_watch_stat.find(id);
+    i = window_watch_stat.find(static_cast<unsigned int>(id));
     if (i != window_watch_stat.end())
 	window_watch_stat.erase(i);
 }
@@ -212,7 +212,7 @@ WindowIf *
 findWindowIf(Window w)
 {
     std::map<unsigned int, WindowIf *>::iterator i;
-    i = window_watch_stat.find(w);
+    i = window_watch_stat.find(static_cast<unsigned int>(w));
     if (i == window_watch_stat.end())
 	return NULL;
 
@@ -263,7 +263,8 @@ sendSelectionNotify(XEvent *ev, const char *buf, int len)
 void
 notifyLocale(XEvent *ev)
 {
-    sendSelectionNotify(ev, supported_locales, strlen(supported_locales) + 1);
+    sendSelectionNotify(ev, supported_locales,
+                        static_cast<int>(strlen(supported_locales)) + 1);
     if (g_option_mask & OPT_TRACE)
 	printf("selection notify request for locale.\n");
 }
@@ -428,7 +429,7 @@ init_supported_locales()
     int len;
 
     asprintf(&supported_locales, "@locale=");
-    len = strlen(supported_locales);
+    len = static_cast<int>(strlen(supported_locales));
 
     // get all locales
     s = compose_localenames_from_im_lang("*");
@@ -444,7 +445,7 @@ init_supported_locales()
 	tmp = sep;
     }
 
-    len += strlen(locales);
+    len += static_cast<int>(strlen(locales));
     supported_locales = (char *)realloc(supported_locales,
 		    sizeof(char) * len + 1);
     if (!supported_locales) {

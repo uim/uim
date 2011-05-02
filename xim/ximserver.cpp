@@ -272,7 +272,7 @@ XimServer::strToUstring(uString *d, const char *s)
     int l = 0, nbyte = 0;
     uchar ch;
 
-    len = strlen(s);
+    len = static_cast<int>(strlen(s));
     while (l < len && *s != 0 &&
 	   (nbyte = utf8_mbtowc(&ch, (const unsigned char *)s, len - l)) > 0) {
 	    d->push_back(ch);
@@ -1060,7 +1060,7 @@ char *InputContext::get_caret_state_label_from_prop_list(const char *str)
 	if (p) {
 	    p++;
 	    q = strchr(p, '\t');
-	    len = q - p;
+	    len = static_cast<int>(q - p);
 	    if (q && len < 10) {
 		strlcpy(label, p, len + 1);
 		if (!state_label) {
@@ -1110,8 +1110,8 @@ void InputContext::update_prop_list(const char *str)
 	Canddisp *disp = canddisp_singleton();
 
 	if (strcmp(show_caret_with, "time") == 0)
-	    timeout =
-		uim_scm_symbol_value_int("bridge-show-input-state-time-length");
+	    timeout = static_cast<int>(uim_scm_symbol_value_int(
+				    "bridge-show-input-state-time-length"));
 	else
 	    timeout = 0;
 
@@ -1257,18 +1257,19 @@ void keyState::check_key(keyEventX *x)
 	mModifier |= (gMod5Mask & mPreModState);
 
     if (x->key_sym < 128 && x->key_sym >= 32)
-	mKey = x->key_sym;
+	mKey = static_cast<int>(x->key_sym);
     else if (x->key_sym >= XK_F1 && x->key_sym <= XK_F35)
-	mKey = x->key_sym - XK_F1 + UKey_F1;
+	mKey = static_cast<int>(x->key_sym - XK_F1 + UKey_F1);
     // GTK+ and Qt don't support dead_stroke yet
     else if (x->key_sym >= XK_dead_grave && x->key_sym <= XK_dead_horn)
-	mKey = x->key_sym - XK_dead_grave + UKey_Dead_Grave;
+	mKey = static_cast<int>(x->key_sym - XK_dead_grave + UKey_Dead_Grave);
     else if (x->key_sym >= XK_Kanji && x->key_sym <= XK_Eisu_toggle)
-	mKey = x->key_sym - XK_Kanji + UKey_Kanji;
+	mKey = static_cast<int>(x->key_sym - XK_Kanji + UKey_Kanji);
     else if (x->key_sym >= XK_Hangul && x->key_sym <= XK_Hangul_Special)
-	mKey = x->key_sym - XK_Hangul + UKey_Hangul;
+	mKey = static_cast<int>(x->key_sym - XK_Hangul + UKey_Hangul);
     else if (x->key_sym >= XK_kana_fullstop && x->key_sym <= XK_semivoicedsound)
-	mKey = x->key_sym - XK_kana_fullstop + UKey_Kana_Fullstop;
+	mKey = static_cast<int>(
+			x->key_sym - XK_kana_fullstop + UKey_Kana_Fullstop);
     else {
 	switch (x->key_sym) {
 	case XK_yen: mKey = UKey_Yen; break;

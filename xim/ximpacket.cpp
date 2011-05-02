@@ -173,10 +173,10 @@ private:
 class TxString : public TxElement {
 public:
     TxString(char *s) {
-	init(s, strlen(s));
+	init(s, static_cast<int>(strlen(s)));
     }
     TxString(char *s, int len) {
-	init(s, len);
+	init(s, static_cast<int>(len));
     }
     virtual ~TxString() {
 	free(m_str);

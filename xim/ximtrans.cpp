@@ -116,8 +116,8 @@ void XIMATTRIBUTE::write_imattr_to_packet(TxPacket *p)
     for (i = 0, l = 0; i < (int)(sizeof(xim_attributes) / sizeof(XIMATTRIBUTE));
 	 i++) {
 	l += 6;
-	l += strlen(xim_attributes[i].name);
-	l += pad4(strlen(xim_attributes[i].name) + 2);
+	l += static_cast<int>(strlen(xim_attributes[i].name));
+	l += pad4(static_cast<int>(strlen(xim_attributes[i].name)) + 2);
     }
     p->pushC16((C16)l);
     for (i = 0; i < (int)(sizeof(xim_attributes) / sizeof(XIMATTRIBUTE)); i++) {
@@ -125,8 +125,9 @@ void XIMATTRIBUTE::write_imattr_to_packet(TxPacket *p)
 	p->pushC16(xim_attributes[i].type);
 	p->pushC16((C16)strlen(xim_attributes[i].name));
 	p->pushBytes(xim_attributes[i].name,
-		     strlen(xim_attributes[i].name));
-	p->pushBytes(tmp, pad4(strlen(xim_attributes[i].name)) + 2);
+		     static_cast<int>(strlen(xim_attributes[i].name)));
+	p->pushBytes(tmp, pad4(static_cast<int>(
+					strlen(xim_attributes[i].name))) + 2);
     }
 }
 
@@ -174,8 +175,8 @@ void XICATTRIBUTE::write_icattr_to_packet(TxPacket *p)
     }
     for (i = 0, l = 0; i < (int)(sizeof(xic_attributes) / sizeof(XICATTRIBUTE)); i++) {
 	l += 6;
-	l += strlen(xic_attributes[i].name);
-	l += pad4(strlen(xic_attributes[i].name) + 2);
+	l += static_cast<int>(strlen(xic_attributes[i].name));
+	l += pad4(static_cast<int>(strlen(xic_attributes[i].name)) + 2);
     }
     p->pushC16((C16)l);
     p->pushC16(0);
@@ -184,8 +185,9 @@ void XICATTRIBUTE::write_icattr_to_packet(TxPacket *p)
 	p->pushC16(xic_attributes[i].type);
 	p->pushC16((C16)strlen(xic_attributes[i].name));
 	p->pushBytes(xic_attributes[i].name,
-		     strlen(xic_attributes[i].name));
-	p->pushBytes(tmp, pad4(strlen(xic_attributes[i].name) + 2));
+		     static_cast<int>(strlen(xic_attributes[i].name)));
+	p->pushBytes(tmp, pad4(static_cast<int>(
+					strlen(xic_attributes[i].name)) + 2));
     }
 }
 
@@ -362,7 +364,7 @@ void Connection::push_error_packet(C16 imid, C16 icid, C16 er, const char *str)
 
     t->pushC16((C16)m);
     t->pushC16(er);
-    int l = strlen(str);
+    int l = static_cast<int>(strlen(str));
     char tmp[4];
     t->pushC16((C16)l);
     t->pushC16(0);

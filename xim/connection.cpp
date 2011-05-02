@@ -240,7 +240,7 @@ bool XConnection::readToBuf(XClientMessageEvent *ev)
 
 	    if (format == 8) {
 		memcpy(&mBuf.buf[mBuf.len], data, nrItems);
-		mBuf.len += nrItems;
+		mBuf.len += static_cast<int>(nrItems);
 	    } else
 		return false;
 	    XFree(data);
