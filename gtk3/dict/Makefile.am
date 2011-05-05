@@ -14,7 +14,8 @@ uim_dict_gtk3_SOURCES  = ../../helper/dict-main-gtk.c \
 			../../helper/dict-word-list-view-gtk.h \
 			../../helper/dict-word.c ../../helper/dict-word.h \
 			../../helper/dict-dict.c ../../helper/dict-dict.h \
-			../../helper/dict-cclass-dialog.c dict-cclass-dialog.h
+			../../helper/dict-cclass-dialog.c \
+			../../helper/dict-cclass-dialog.h
 						 
 uim_dict_gtk3_LDADD    = @GTK3_LIBS@ $(top_builddir)/uim/libuim-scm.la \
 			$(top_builddir)/uim/libuim.la
