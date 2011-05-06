@@ -1,7 +1,4 @@
-EXTRA_DIST = GNOME_UimApplet.server.in.in \
-	     UimApplet.panel-applet.in.in \
-	     org.gnome.panel.applet.UimAppletFactory.service.in \
-	     uim-dict-ui.xml.in
+EXTRA_DIST = GNOME_UimApplet.server.in.in uim-dict-ui.xml.in
 
 helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
 
@@ -36,60 +33,7 @@ $(server_in_files): $(server_in_in_files) Makefile
 	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
 DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server \
-		 GNOME_UimApplet.server.in.tmp toolbar-common-gtk3.c
-endif
-
-if APPLET_GNOME3
-if APPLET_GNOME
-libexec_PROGRAMS += uim-toolbar-applet-gnome3
-else
-libexec_PROGRAMS = uim-toolbar-applet-gnome3
-endif
-
-uim_toolbar_applet_gnome3_LDADD = @GTK3_LIBS@ @APPLET_GNOME3_LIBS@ \
-			   $(top_builddir)/uim/libuim-scm.la \
-			   $(top_builddir)/uim/libuim.la \
-			   $(top_builddir)/uim/libuim-custom.la
-uim_toolbar_applet_gnome3_CPPFLAGS = \
-			   $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
-									 
-uim_toolbar_applet_gnome3_CFLAGS = @GTK3_CFLAGS@ @APPLET_GNOME3_CFLAGS@
-
-uim_toolbar_applet_gnome3_SOURCES = toolbar-applet-gnome3.c \
-			       toolbar-common-gtk3.c
-
-toolbar-common-gtk3.c: $(top_srcdir)/helper/toolbar-common-gtk.c
-	$(LN_S) $< $@
-
-appletdir = $(datadir)/gnome-panel/applets
-applet_DATA = UimApplet.panel-applet
-applet_in_files = $(applet_DATA:=.in)
-applet_in_in_files = $(applet_in_files:=.in)
-
-$(applet_in_files): $(applet_in_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@.tmp
-	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
-
-po_files = $(wildcard $(top_srcdir)/po/*.po)
-$(applet_DATA): $(applet_in_files) $(INTLTOOL_MERGE) $(po_files)
-	LC_ALL=C $(INTLTOOL_MERGE) -d -u -c $(top_builddir)/po/.intltool-merge-cache $(top_srcdir)/po $< $@ 
-
-servicedir = $(datadir)/dbus-1/services
-service_DATA = org.gnome.panel.applet.UimAppletFactory.service
-service_in_files = $(service_DATA:=.in)
-
-$(service_DATA): $(service_in_files) Makefile
-	sed s,@LIBEXECDIR@,$(libexecdir),g <$< >$@
-
-if APPLET_GNOME
-DISTCLEANFILES += UimApplet.panel-applet.in UimApplet.panel-applet \
-		 UimApplet.panel-applet.in.tmp \
-		 org.gnome.panel.applet.UimAppletFactory.service
-else
-DISTCLEANFILES = UimApplet.panel-applet.in UimApplet.panel-applet \
-		 UimApplet.panel-applet.in.tmp \
-		 org.gnome.panel.applet.UimAppletFactory.service
-endif
+		 GNOME_UimApplet.server.in.tmp
 endif
 
 if GTK2
@@ -98,9 +42,6 @@ bin_PROGRAMS = uim-toolbar-gtk uim-toolbar-gtk-systray uim-im-switcher-gtk \
 if APPLET_GNOME
 libexec_PROGRAMS += uim-candwin-gtk uim-candwin-tbl-gtk
 else
-if APPLET_GNOME3
-libexec_PROGRAMS += uim-candwin-gtk uim-candwin-tbl-gtk
-endif
 libexec_PROGRAMS = uim-candwin-gtk uim-candwin-tbl-gtk
 endif
 

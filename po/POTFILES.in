@@ -1,3 +1,4 @@
+gtk3/toolbar/applet-gnome3.c
 helper/GNOME_UimApplet.server.in.in
 helper/dict-anthy.c
 helper/dict-canna.c
@@ -13,7 +14,6 @@ helper/input-pad-ja.c
 helper/pref-gtk-custom-widgets.c
 helper/pref-gtk.c
 helper/toolbar-applet-gnome.c
-helper/toolbar-applet-gnome3.c
 helper/toolbar-common-gtk.c
 helper/toolbar-standalone-gtk.c
 qt/pref-customwidgets.cpp
