@@ -36,7 +36,7 @@ $(server_in_files): $(server_in_in_files) Makefile
 	sed s,@UIM_PIXMAPSDIR@,$(uim_pixmapsdir),g <$@.tmp >$@
 
 DISTCLEANFILES = GNOME_UimApplet.server.in GNOME_UimApplet.server \
-		 GNOME_UimApplet.server.in.tmp
+		 GNOME_UimApplet.server.in.tmp toolbar-common-gtk3.c
 endif
 
 if APPLET_GNOME3
@@ -46,17 +46,20 @@ else
 libexec_PROGRAMS = uim-toolbar-applet-gnome3
 endif
 
-uim_toolbar_applet_gnome3_LDADD = @GTK2_LIBS@ @APPLET_GNOME3_LIBS@ \
+uim_toolbar_applet_gnome3_LDADD = @GTK3_LIBS@ @APPLET_GNOME3_LIBS@ \
 			   $(top_builddir)/uim/libuim-scm.la \
 			   $(top_builddir)/uim/libuim.la \
 			   $(top_builddir)/uim/libuim-custom.la
 uim_toolbar_applet_gnome3_CPPFLAGS = \
 			   $(helper_defs) -I$(top_srcdir) -I$(top_builddir)
 									 
-uim_toolbar_applet_gnome3_CFLAGS = @GTK2_CFLAGS@ @APPLET_GNOME3_CFLAGS@
+uim_toolbar_applet_gnome3_CFLAGS = @GTK3_CFLAGS@ @APPLET_GNOME3_CFLAGS@
 
 uim_toolbar_applet_gnome3_SOURCES = toolbar-applet-gnome3.c \
-			       toolbar-common-gtk.c
+			       toolbar-common-gtk3.c
+
+toolbar-common-gtk3.c: $(top_srcdir)/helper/toolbar-common-gtk.c
+	$(LN_S) $< $@
 
 appletdir = $(datadir)/gnome-panel/applets
 applet_DATA = UimApplet.panel-applet
