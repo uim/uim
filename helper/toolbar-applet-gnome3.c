@@ -181,6 +181,5 @@ uim_applet_new(PanelApplet *applet, const gchar *iid, gpointer data)
 
 PANEL_APPLET_OUT_PROCESS_FACTORY("UimAppletFactory",
                             PANEL_TYPE_APPLET,
-                            "uim Applet for GNOME",
                             (PanelAppletFactoryCallback)uim_applet_new,
                             NULL)

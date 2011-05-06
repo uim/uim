@@ -885,12 +885,12 @@ AC_ARG_ENABLE(gnome3-applet,
         use_applet_gnome3="no"
       ;;
       yes|*)
-        PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-3.0, use_applet_gnome3="yes",use_applet_gnome3="no")
+        PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-4.0, use_applet_gnome3="yes",use_applet_gnome3="no")
       ;;
     esac
   ],
   [
-    PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-3.0, use_applet_gnome3="yes",use_applet_gnome3="no")
+    PKG_CHECK_MODULES(APPLET_GNOME3, libpanelapplet-4.0, use_applet_gnome3="yes",use_applet_gnome3="no")
   ])
 
 dnl ****************************
