@@ -18,7 +18,7 @@ uim_toolbar_applet_gnome3_CFLAGS = @GTK3_CFLAGS@ @APPLET_GNOME3_CFLAGS@
 uim_toolbar_applet_gnome3_SOURCES = applet-gnome3.c \
 			       ../../helper/toolbar-common-gtk.c
 
-appletdir = $(datadir)/gnome-panel/applets
+appletdir = $(datadir)/gnome-panel/4.0/applets
 applet_DATA = UimApplet.panel-applet
 applet_in_files = $(applet_DATA:=.in)
 applet_in_in_files = $(applet_in_files:=.in)
