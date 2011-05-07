@@ -33,7 +33,7 @@
 
 #include <config.h>
 
-#include <pref-gtk-custom-widgets.h>
+#include "pref-gtk-custom-widgets.h"
 #include <gdk/gdkkeysyms.h>
 
 #include <string.h>
