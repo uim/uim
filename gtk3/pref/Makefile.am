@@ -1,5 +1,8 @@
 if GTK3
 if PREF
+
+helper_defs = -DUIM_DATADIR=\""$(datadir)/@PACKAGE@"\"
+
 bin_PROGRAMS = uim-pref-gtk3
 uim_pref_gtk3_SOURCES  = ../../helper/pref-gtk.c \
 			../../helper/pref-gtk-custom-widgets.c \
@@ -13,7 +16,7 @@ if LIBUIM_X_UTIL
 uim_pref_gtk3_LDADD += $(top_builddir)/uim/libuim-x-util.la
 endif
 uim_pref_gtk3_CPPFLAGS = $(helper_defs) -I$(top_srcdir) -I$(top_builddir) \
-			-I../../helper
+			-I$(top_srcdir)/helper
 uim_pref_gtk3_CFLAGS   = @GTK3_CFLAGS@
 endif
 endif
