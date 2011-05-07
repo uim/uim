@@ -55,6 +55,7 @@
 #include "uim/uim-im-switcher.h"
 #include "uim/gettext.h"
 #include "uim/uim-scm.h"
+#include "uim/counted-init.h"
 
 #include "gtk-im-uim.h"
 #include "uim-cand-win-gtk.h"
@@ -1656,7 +1657,7 @@ handle_key_on_toplevel(GtkWidget *widget, GdkEventKey *event, gpointer data)
 void
 im_module_init(GTypeModule *type_module)
 {
-  if (uim_init() == -1)
+  if (uim_counted_init() == -1)
     return;
 
   context_list.next = (IMUIMContext *)&context_list;
@@ -1689,5 +1690,5 @@ im_module_exit(void)
 #ifdef GDK_WINDOWING_X11
   im_uim_release_compose_tree();
 #endif
-  uim_quit();
+  uim_counted_quit();
 }

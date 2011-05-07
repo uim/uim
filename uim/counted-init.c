@@ -35,8 +35,6 @@ SUCH DAMAGE.
 #include "uim.h"
 #include "counted-init.h"
 
-unsigned int uim_init_count;
-
 int uim_counted_init()
 {
   uim_init_count++;

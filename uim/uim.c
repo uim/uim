@@ -80,6 +80,7 @@ void uim_anthy_utf8_plugin_instance_quit(void);
 static uim_bool uim_initialized;
 static uim_lisp protected0, protected1;
 
+unsigned int uim_init_count;
 
 /****************************************************************
  * Core APIs                                                    *

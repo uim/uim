@@ -42,6 +42,8 @@ int uim_counted_init(void);
 void uim_counted_quit(void);
 void uim_force_quit_regardless_of_count(void);
 
+extern unsigned int uim_init_count;
+
 #ifdef __cplusplus
 }
 #endif

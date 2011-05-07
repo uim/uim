@@ -42,6 +42,7 @@
 
 #include "uim/uim.h"
 #include "uim/uim-x-util.h"
+#include "uim/counted-init.h"
 
 #include "quiminfomanager.h"
 #include "quiminputcontext_with_slave.h"
@@ -107,7 +108,7 @@ UimInputContextPlugin::getQUimInfoManager()
 
 void UimInputContextPlugin::uimInit()
 {
-    if ( !uim_init() ) {
+    if ( !uim_counted_init() ) {
         if (!infoManager)
             infoManager = new QUimInfoManager();
 #if UIM_QT_USE_JAPANESE_KANA_KEYBOARD_HACK
@@ -121,7 +122,7 @@ void UimInputContextPlugin::uimQuit()
 {
     if ( uimReady )
     {
-        uim_quit();
+        uim_counted_quit();
         delete infoManager;
         uimReady = false;
     }
