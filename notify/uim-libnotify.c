@@ -73,7 +73,13 @@ uim_libnotify_notify(int urgency, int timeout, const char *body)
     return UIM_FALSE;
   }
 
+#ifdef NOTIFY_CHECK_VERSION
+  // libnotify 0.7.0 contains this API change
+  // and introduced the macro NOTIFY_CHECK_VERSION.
+  notification = notify_notification_new("uim", gmsg, UIM_ICON);
+#else
   notification = notify_notification_new("uim", gmsg, UIM_ICON, NULL);
+#endif
 
   if (!notification) {
     fprintf(stderr, "notify_notification_new: can not create notification object\n");
