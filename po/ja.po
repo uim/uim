@@ -156,9 +156,8 @@ msgid "Help"
 msgstr "ヘルプ"
 
 #: ../gtk3/toolbar/applet-gnome3.c:73
-#, fuzzy
 msgid "About"
-msgstr "このプログラムについて(_A)"
+msgstr "このプログラムについて"
 
 #. Feel free to put your names here translators
 #: ../gtk3/toolbar/applet-gnome3.c:128 ../helper/toolbar-applet-gnome.c:133
@@ -4385,12 +4384,11 @@ msgstr "Sqlite3予測"
 
 #: ../scm/predict-custom.scm:61
 msgid "Google Suggest"
-msgstr ""
+msgstr "Googleサジェスト"
 
 #: ../scm/predict-custom.scm:62
-#, fuzzy
 msgid "Google Suggest prediction"
-msgstr "予測入力を有効にする"
+msgstr "Googleサジェスト予測"
 
 #: ../scm/predict-custom.scm:63
 msgid "Prediction methods"
@@ -4417,18 +4415,16 @@ msgid "Max words of candidates for sqlite3"
 msgstr "Sqlite3予測の最大候補数"
 
 #: ../scm/predict-custom.scm:166
-#, fuzzy
 msgid "Google suggest prediction"
-msgstr "予測入力を有効にする"
+msgstr "Googleサジェスト予測"
 
 #: ../scm/predict-custom.scm:172
-#, fuzzy
 msgid "Max words of candidates for google suggest"
-msgstr "Look予測の最大候補数"
+msgstr "Googleサジェスト予測の最大候補数"
 
 #: ../scm/predict-custom.scm:194
 msgid "Enable SSL with Google Suggest"
-msgstr ""
+msgstr "Googleサジェストとの通信にSSLを利用する"
 
 #: ../scm/predict-sqlite3.scm:86
 msgid "cannot create dictionary directory"
@@ -5749,14 +5745,12 @@ msgid "Bushu conversion settings for TUT-Code"
 msgstr "TUT-Codeの部首合成変換設定"
 
 #: ../scm/tutcode-custom.scm:51
-#, fuzzy
 msgid "Mazegaki conversion"
-msgstr "[Mana] 変換開始"
+msgstr "交ぜ書き変換"
 
 #: ../scm/tutcode-custom.scm:52
-#, fuzzy
 msgid "Mazegaki conversion settings for TUT-Code"
-msgstr "TUT-Codeの部首合成変換設定"
+msgstr "TUT-Codeの交ぜ書き変換設定"
 
 #: ../scm/tutcode-custom.scm:66
 msgid "Mazegaki dictionary file"
@@ -5801,17 +5795,17 @@ msgstr ""
 #: ../scm/tutcode-custom.scm:128
 #, fuzzy
 msgid "Maximum length of yomi for postfix mazegaki conversion"
-msgstr "交ぜ書き変換中の予測入力を有効にする"
+msgstr "後置型交ぜ書き変換の読みの最大長"
 
 #: ../scm/tutcode-custom.scm:134
 #, fuzzy
 msgid "Enable inflection in mazegaki conversion"
-msgstr "交ぜ書き変換の学習を有効にする"
+msgstr "交ぜ書き変換での活用する語の変換を有効にする"
 
 #: ../scm/tutcode-custom.scm:140
 #, fuzzy
 msgid "Maximum length of yomi suffix for mazegaki conversion"
-msgstr "交ぜ書き変換中の予測入力を有効にする"
+msgstr "交ぜ書き変換での活用語尾の読みの最大長"
 
 #: ../scm/tutcode-custom.scm:146
 msgid "Enable interactive bushu conversion"
@@ -5874,7 +5868,7 @@ msgstr "熟語ガイドにおいて候補ウィンドウに一度に表示する
 #: ../scm/tutcode-custom.scm:227
 #, fuzzy
 msgid "Number of candidates in candidate window at a time for history"
-msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
+msgstr "ヒストリ入力において候補ウィンドウに一度に表示する候補数"
 
 #: ../scm/tutcode-custom.scm:233
 msgid "Use stroke help window"
@@ -5957,118 +5951,115 @@ msgid "[TUT-Code] postfix bushu conversion"
 msgstr "[TUT-Code] 後置型部首合成変換"
 
 #: ../scm/tutcode-key-custom.scm:101
-#, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用しない語)"
 
 #: ../scm/tutcode-key-custom.scm:107
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み1文字)"
 
 #: ../scm/tutcode-key-custom.scm:113
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み2文字)"
 
 #: ../scm/tutcode-key-custom.scm:119
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み3文字)"
 
 #: ../scm/tutcode-key-custom.scm:125
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み4文字)"
 
 #: ../scm/tutcode-key-custom.scm:131
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み5文字)"
 
 #: ../scm/tutcode-key-custom.scm:137
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み6文字)"
 
 #: ../scm/tutcode-key-custom.scm:143
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み7文字)"
 
 #: ../scm/tutcode-key-custom.scm:149
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み8文字)"
 
 #: ../scm/tutcode-key-custom.scm:155
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (読み9文字)"
 
 #: ../scm/tutcode-key-custom.scm:161
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語)"
 
 #: ../scm/tutcode-key-custom.scm:167
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み1文字)"
 
 #: ../scm/tutcode-key-custom.scm:173
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み2文字)"
 
 #: ../scm/tutcode-key-custom.scm:179
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み3文字)"
 
 #: ../scm/tutcode-key-custom.scm:185
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み4文字)"
 
 #: ../scm/tutcode-key-custom.scm:191
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み5文字)"
 
 #: ../scm/tutcode-key-custom.scm:197
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み6文字)"
 
 #: ../scm/tutcode-key-custom.scm:203
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み7文字)"
 
 #: ../scm/tutcode-key-custom.scm:209
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み8文字)"
 
 #: ../scm/tutcode-key-custom.scm:215
 #, fuzzy
 msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
-msgstr "[TUT-Code] 交ぜ書き変換モード"
+msgstr "[TUT-Code] 後置型交ぜ書き変換開始 (活用する語,読み9文字)"
 
 #: ../scm/tutcode-key-custom.scm:221
 msgid "[TUT-Code] latin conversion mode"
 msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
 
 #: ../scm/tutcode-key-custom.scm:227
-#, fuzzy
 msgid "[TUT-Code] kanji code input mode"
-msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
+msgstr "[TUT-Code] 漢字コード入力モード"
 
 #: ../scm/tutcode-key-custom.scm:233
-#, fuzzy
 msgid "[TUT-Code] history"
-msgstr "[TUT-Code] オン"
+msgstr "[TUT-Code] ヒストリ入力モード"
 
 #: ../scm/tutcode-key-custom.scm:239
 msgid "[TUT-Code] display last auto help"
@@ -6137,12 +6128,12 @@ msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
 #: ../scm/tutcode-key-custom.scm:335
 #, fuzzy
 msgid "[TUT-Code] relimit yomi to left in mazegaki"
-msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
+msgstr ""
 
 #: ../scm/tutcode-key-custom.scm:341
 #, fuzzy
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
-msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
+msgstr ""
 
 #: ../scm/tutcode.scm:762
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
