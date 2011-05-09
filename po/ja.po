@@ -99,13 +99,81 @@ msgid ""
 msgstr ""
 "Project-Id-Version: uim 1.5.0\n"
 "Report-Msgid-Bugs-To: uim-en@googlegroups.com\n"
-"POT-Creation-Date: 2010-12-27 19:49+0900\n"
+"POT-Creation-Date: 2011-05-09 15:13+0900\n"
 "PO-Revision-Date: 2009-02-14 21:58+0900\n"
 "Last-Translator: YamaKen <yamaken@bp.iij4u.or.jp>\n"
 "Language-Team: Japanese <anthy-dev@lists.sourceforge.jp>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../gtk3/toolbar/applet-gnome3.c:61 ../helper/toolbar-common-gtk.c:87
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:90
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:167
+msgid "Switch input method"
+msgstr "入力方式の切り換え"
+
+#: ../gtk3/toolbar/applet-gnome3.c:63 ../helper/toolbar-common-gtk.c:100
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:92
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:193
+msgid "Preference"
+msgstr "設定"
+
+#: ../gtk3/toolbar/applet-gnome3.c:65 ../helper/toolbar-common-gtk.c:113
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:94
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:218
+msgid "Japanese dictionary editor"
+msgstr "日本語辞書ツール"
+
+#: ../gtk3/toolbar/applet-gnome3.c:67 ../helper/toolbar-common-gtk.c:126
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:96
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:243
+msgid "Input pad"
+msgstr "入力パッド"
+
+#: ../gtk3/toolbar/applet-gnome3.c:69 ../helper/toolbar-common-gtk.c:139
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:98
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:268
+msgid "Handwriting input pad"
+msgstr "手書き入力パッド"
+
+#: ../gtk3/toolbar/applet-gnome3.c:71 ../helper/toolbar-common-gtk.c:152
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
+#: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:100
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:292 ../scm/im-custom.scm:130
+msgid "Help"
+msgstr "ヘルプ"
+
+#: ../gtk3/toolbar/applet-gnome3.c:73
+#, fuzzy
+msgid "About"
+msgstr "このプログラムについて(_A)"
+
+#. Feel free to put your names here translators
+#: ../gtk3/toolbar/applet-gnome3.c:128 ../helper/toolbar-applet-gnome.c:133
+msgid "TRANSLATORS"
+msgstr ""
+"TOKUNAGA Hiroyuki <tkng@xem.jp>\n"
+"Daichi Kawahata <daichik@users.sourceforge.net>"
+
+#: ../gtk3/toolbar/applet-gnome3.c:132 ../helper/toolbar-applet-gnome.c:137
+msgid "uim Applet"
+msgstr "uimアプレット"
+
+#: ../gtk3/toolbar/applet-gnome3.c:135 ../helper/toolbar-applet-gnome.c:140
+msgid "Applet for indicating uim's status"
+msgstr "uimの状態を示すアプレット"
 
 # 他のGNOMEアプレットのですます調に合わせた
 #: ../helper/GNOME_UimApplet.server.in.in.h:1
@@ -130,20 +198,20 @@ msgid "uim applet factory"
 msgstr "uimアプレット・ファクトリ"
 
 #: ../helper/dict-anthy.c:84 ../helper/dict-main-gtk.c:127
-#: ../helper/dict-word-list-win-gtk.c:348 ../helper/dict-word.c:133
+#: ../helper/dict-word-list-win-gtk.c:353 ../helper/dict-word.c:133
 #: ../helper/dict-word.c:148
 msgid "Anthy private dictionary"
 msgstr "Anthy個人辞書"
 
 #: ../helper/dict-canna.c:87 ../helper/dict-main-gtk.c:149
-#: ../helper/dict-word-list-win-gtk.c:352 ../helper/dict-word.c:135
+#: ../helper/dict-word-list-win-gtk.c:357 ../helper/dict-word.c:135
 #: ../helper/dict-word.c:150
 msgid "Canna private dictionary"
 msgstr "Canna個人辞書"
 
 #. construct dialog
 #: ../helper/dict-cclass-dialog.c:69 ../helper/dict-cclass-dialog.c:106
-#: ../helper/dict-word-list-view-gtk.c:269
+#: ../helper/dict-word-list-view-gtk.c:282
 msgid "Part of Speech"
 msgstr "品詞"
 
@@ -151,168 +219,168 @@ msgstr "品詞"
 msgid "Example"
 msgstr "例"
 
-#: ../helper/dict-main-gtk.c:235
+#: ../helper/dict-main-gtk.c:234
 #, c-format
 msgid "Error:%s\n"
 msgstr "エラー: %s\n"
 
-#: ../helper/dict-word-list-view-gtk.c:130
+#: ../helper/dict-word-list-view-gtk.c:138
 msgid "Show part of speech column"
 msgstr "品詞欄を表示"
 
-#: ../helper/dict-word-list-view-gtk.c:131
-#: ../helper/dict-word-list-view-gtk.c:140
+#: ../helper/dict-word-list-view-gtk.c:139
 #: ../helper/dict-word-list-view-gtk.c:148
-#: ../helper/dict-word-list-view-gtk.c:155
 #: ../helper/dict-word-list-view-gtk.c:156
 #: ../helper/dict-word-list-view-gtk.c:163
 #: ../helper/dict-word-list-view-gtk.c:164
+#: ../helper/dict-word-list-view-gtk.c:171
+#: ../helper/dict-word-list-view-gtk.c:172
 msgid "to be written"
 msgstr ""
 
-#: ../helper/dict-word-list-view-gtk.c:139
+#: ../helper/dict-word-list-view-gtk.c:147
 msgid "Show freq column"
 msgstr "使用頻度欄を表示"
 
-#: ../helper/dict-word-list-view-gtk.c:147
+#: ../helper/dict-word-list-view-gtk.c:155
 msgid "Show okuri column"
 msgstr "送り仮名欄を表示"
 
-#: ../helper/dict-word-list-view-gtk.c:201
+#: ../helper/dict-word-list-view-gtk.c:214
 msgid "Word Type"
 msgstr "単語の種類"
 
-#: ../helper/dict-word-list-view-gtk.c:219
+#: ../helper/dict-word-list-view-gtk.c:232
 msgid "Phonetic"
 msgstr "読み方"
 
-#: ../helper/dict-word-list-view-gtk.c:251
+#: ../helper/dict-word-list-view-gtk.c:264
 msgid "Literal"
 msgstr "書き方"
 
-#: ../helper/dict-word-list-view-gtk.c:287
+#: ../helper/dict-word-list-view-gtk.c:300
 msgid "Frequency"
 msgstr "使用頻度"
 
-#: ../helper/dict-word-list-view-gtk.c:299
+#: ../helper/dict-word-list-view-gtk.c:312
 msgid "Okuri"
 msgstr "送り仮名"
 
-#: ../helper/dict-word-list-win-gtk.c:98
+#: ../helper/dict-word-list-win-gtk.c:103
 msgid "_Dictionary"
 msgstr "辞書"
 
-#: ../helper/dict-word-list-win-gtk.c:99
+#: ../helper/dict-word-list-win-gtk.c:104
 msgid "_Select"
 msgstr "選択..."
 
-#: ../helper/dict-word-list-win-gtk.c:100
+#: ../helper/dict-word-list-win-gtk.c:105
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: ../helper/dict-word-list-win-gtk.c:101
+#: ../helper/dict-word-list-win-gtk.c:106
 msgid "_Option"
 msgstr "オプション(_O)"
 
-#: ../helper/dict-word-list-win-gtk.c:102
+#: ../helper/dict-word-list-win-gtk.c:107
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: ../helper/dict-word-list-win-gtk.c:103
+#: ../helper/dict-word-list-win-gtk.c:108
 msgid "_Quit"
 msgstr "終了(_Q)"
 
-#: ../helper/dict-word-list-win-gtk.c:104
+#: ../helper/dict-word-list-win-gtk.c:109
 msgid "Quit uim-dict"
 msgstr "uim-dict を終了します"
 
-#: ../helper/dict-word-list-win-gtk.c:105
+#: ../helper/dict-word-list-win-gtk.c:110
 msgid "A_dd..."
 msgstr "追加(_D)..."
 
-#: ../helper/dict-word-list-win-gtk.c:106
+#: ../helper/dict-word-list-win-gtk.c:111
 msgid "Add a new word"
 msgstr "新しい単語を追加します"
 
-#: ../helper/dict-word-list-win-gtk.c:107
+#: ../helper/dict-word-list-win-gtk.c:112
 msgid "_Remove..."
 msgstr "削除(_R)..."
 
-#: ../helper/dict-word-list-win-gtk.c:108
+#: ../helper/dict-word-list-win-gtk.c:113
 msgid "Remove the selected word"
 msgstr "選択した単語を削除します"
 
-#: ../helper/dict-word-list-win-gtk.c:109
+#: ../helper/dict-word-list-win-gtk.c:114
 msgid "_Edit..."
 msgstr "編集(_E)..."
 
-#: ../helper/dict-word-list-win-gtk.c:110
+#: ../helper/dict-word-list-win-gtk.c:115
 msgid "Edit the selected word"
 msgstr "選択した単語を編集します"
 
-#: ../helper/dict-word-list-win-gtk.c:111
+#: ../helper/dict-word-list-win-gtk.c:116
 msgid "_Popup Menu"
 msgstr "ポップアップメニュー(_P)"
 
-#: ../helper/dict-word-list-win-gtk.c:112
+#: ../helper/dict-word-list-win-gtk.c:117
 msgid "Show popup menu"
 msgstr "ポップアップ・メニューを表示します"
 
-#: ../helper/dict-word-list-win-gtk.c:113
+#: ../helper/dict-word-list-win-gtk.c:118
 msgid "_About"
 msgstr "このプログラムについて(_A)"
 
-#: ../helper/dict-word-list-win-gtk.c:114
-#: ../helper/dict-word-list-win-gtk.c:614
+#: ../helper/dict-word-list-win-gtk.c:119
+#: ../helper/dict-word-list-win-gtk.c:621
 msgid "About uim-dict"
 msgstr "uim-dict について"
 
-#: ../helper/dict-word-list-win-gtk.c:203
-#: ../helper/dict-word-list-win-gtk.c:204
+#: ../helper/dict-word-list-win-gtk.c:208
+#: ../helper/dict-word-list-win-gtk.c:209
 msgid "dictionary type"
 msgstr "辞書の種類"
 
-#: ../helper/dict-word-list-win-gtk.c:222
+#: ../helper/dict-word-list-win-gtk.c:227
 msgid "Couldn't open the dictionary.\n"
 msgstr "辞書を開くことができません。\n"
 
-#: ../helper/dict-word-list-win-gtk.c:241
+#: ../helper/dict-word-list-win-gtk.c:246
 msgid "Edit the dictionary"
 msgstr "辞書の編集"
 
-#: ../helper/dict-word-list-win-gtk.c:363
+#: ../helper/dict-word-list-win-gtk.c:368
 #, c-format
 msgid "%s"
 msgstr "%s"
 
-#: ../helper/dict-word-list-win-gtk.c:465
+#: ../helper/dict-word-list-win-gtk.c:470
 msgid "Are you sure to remove seleted words?"
 msgstr "選択した複数の単語を削除してもよろしいですか？"
 
-#: ../helper/dict-word-list-win-gtk.c:471
+#: ../helper/dict-word-list-win-gtk.c:476
 msgid "Are you sure to remove the selected word?"
 msgstr "選択した単語を削除してもよろしいですか？"
 
-#: ../helper/dict-word-list-win-gtk.c:500
+#: ../helper/dict-word-list-win-gtk.c:505
 msgid "Word deletion succeded."
 msgstr "単語の削除に成功しました。"
 
-#: ../helper/dict-word-list-win-gtk.c:506
+#: ../helper/dict-word-list-win-gtk.c:511
 msgid "Word deletion failed."
 msgstr "単語の削除に失敗しました。"
 
-#: ../helper/dict-word-list-win-gtk.c:573
+#: ../helper/dict-word-list-win-gtk.c:578
 msgid "uim-dict"
 msgstr "uim-dict"
 
-#: ../helper/dict-word-list-win-gtk.c:584
+#: ../helper/dict-word-list-win-gtk.c:589
 msgid ""
 "Copyright (C) 2003-2004 Masahito Omote\n"
 "Copyright (C) 2004-2011 uim Project\n"
 "All rights reserved."
 msgstr ""
 
-#: ../helper/dict-word-list-win-gtk.c:608
+#: ../helper/dict-word-list-win-gtk.c:615
 msgid ""
 "Copyright 2003-2004 Masahito Omote &lt;omote@utyuuzin.net&gt;\n"
 "Copyright 2004-2011 uim Project http://code.google.com/p/uim/\n"
@@ -386,84 +454,84 @@ msgstr "書き方(_L):"
 msgid "Part of _Speech:"
 msgstr "品詞(_S):"
 
-#: ../helper/dict-word-win-gtk.c:323
+#: ../helper/dict-word-win-gtk.c:332
 msgid "_Frequency:"
 msgstr "頻度(_F):"
 
-#: ../helper/dict-word-win-gtk.c:354
+#: ../helper/dict-word-win-gtk.c:363
 msgid "Part of Speech(_narrow):"
 msgstr "品詞(狭義)(_N):"
 
-#: ../helper/dict-word-win-gtk.c:365
+#: ../helper/dict-word-win-gtk.c:374
 msgid "_Browse..."
 msgstr "参照(_B)..."
 
-#: ../helper/dict-word-win-gtk.c:500
+#: ../helper/dict-word-win-gtk.c:509
 msgid "Word registration failed."
 msgstr "単語の登録に失敗しました。"
 
-#: ../helper/dict-word-win-gtk.c:507
+#: ../helper/dict-word-win-gtk.c:516
 msgid "Word registration succeded."
 msgstr "単語の登録に成功しました。"
 
-#: ../helper/dict-word-win-gtk.c:537
+#: ../helper/dict-word-win-gtk.c:546
 msgid "Phonetic is emtpy!"
 msgstr "読み方が入力されていません！"
 
-#: ../helper/dict-word-win-gtk.c:552
+#: ../helper/dict-word-win-gtk.c:561
 msgid "Literal is emtpy!"
 msgstr "書き方が入力されていません！"
 
-#: ../helper/dict-word-win-gtk.c:570
+#: ../helper/dict-word-win-gtk.c:579
 msgid "Part of speech is emtpy!"
 msgstr "品詞が入力されていません！"
 
-#: ../helper/eggtrayicon.c:143
+#: ../helper/eggtrayicon.c:154
 msgid "Orientation"
 msgstr "向き"
 
-#: ../helper/eggtrayicon.c:144
+#: ../helper/eggtrayicon.c:155
 msgid "The orientation of the tray."
 msgstr "トレイの向き"
 
-#: ../helper/im-switcher-gtk.c:308 ../qt/switcher-qt.cpp:112
+#: ../helper/im-switcher-gtk.c:306 ../qt/switcher-qt.cpp:112
 #: ../qt4/switcher/qt4.cpp:117
 msgid "InputMethodName"
 msgstr "入力方式名"
 
-#: ../helper/im-switcher-gtk.c:317 ../qt/switcher-qt.cpp:113
-#: ../qt4/switcher/qt4.cpp:117
+#: ../helper/im-switcher-gtk.c:315 ../qt/switcher-qt.cpp:113
+#: ../qt4/switcher/qt4.cpp:117 ../scm/predict-custom.scm:188
 msgid "Language"
 msgstr "言語名"
 
-#: ../helper/im-switcher-gtk.c:326 ../qt/switcher-qt.cpp:114
+#: ../helper/im-switcher-gtk.c:324 ../qt/switcher-qt.cpp:114
 #: ../qt4/switcher/qt4.cpp:117
 msgid "Description"
 msgstr "説明"
 
-#: ../helper/im-switcher-gtk.c:357 ../qt/switcher-qt.cpp:74
+#: ../helper/im-switcher-gtk.c:355 ../qt/switcher-qt.cpp:74
 #: ../qt4/switcher/qt4.cpp:77
 msgid "uim input method switcher"
 msgstr "uim 入力方式切り換え"
 
-#: ../helper/im-switcher-gtk.c:386 ../qt/switcher-qt.cpp:118
+#: ../helper/im-switcher-gtk.c:384 ../qt/switcher-qt.cpp:118
 #: ../qt4/switcher/qt4.cpp:133 ../scm/im-custom.scm:470
 msgid "Effective coverage"
 msgstr "変更の適用範囲"
 
 #. radio buttons for the switcher coverage
-#: ../helper/im-switcher-gtk.c:394 ../qt/switcher-qt.cpp:119
+#: ../helper/im-switcher-gtk.c:392 ../qt/switcher-qt.cpp:119
 #: ../qt4/switcher/qt4.cpp:123 ../scm/im-custom.scm:462
 msgid "whole desktop"
 msgstr "デスクトップ全体"
 
 #. default is "whole desktop"
-#: ../helper/im-switcher-gtk.c:395 ../qt/switcher-qt.cpp:122
+#: ../helper/im-switcher-gtk.c:393 ../qt/switcher-qt.cpp:122
 #: ../qt4/switcher/qt4.cpp:124
 msgid "current application only"
 msgstr "現在のアプリケーションのみ"
 
-#: ../helper/im-switcher-gtk.c:396 ../qt/switcher-qt.cpp:124
+#: ../helper/im-switcher-gtk.c:394 ../qt/switcher-qt.cpp:124
 #: ../qt4/switcher/qt4.cpp:125
 msgid "current text area only"
 msgstr "現在のテキスト領域のみ"
@@ -527,54 +595,54 @@ msgstr "ファイルを指定して下さい"
 msgid "Select..."
 msgstr "選択..."
 
-#: ../helper/pref-gtk-custom-widgets.c:1200
+#: ../helper/pref-gtk-custom-widgets.c:1209
 msgid "Enabled"
 msgstr "有効"
 
-#: ../helper/pref-gtk-custom-widgets.c:1226
+#: ../helper/pref-gtk-custom-widgets.c:1235
 msgid "Enabled items"
 msgstr "有効なアイテム"
 
-#: ../helper/pref-gtk-custom-widgets.c:1304
+#: ../helper/pref-gtk-custom-widgets.c:1313
 msgid "Disabled"
 msgstr "無効"
 
-#: ../helper/pref-gtk-custom-widgets.c:1330
+#: ../helper/pref-gtk-custom-widgets.c:1339
 msgid "Disabled items"
 msgstr "無効なアイテム"
 
-#: ../helper/pref-gtk-custom-widgets.c:1368
-#: ../helper/pref-gtk-custom-widgets.c:1901
+#: ../helper/pref-gtk-custom-widgets.c:1377
+#: ../helper/pref-gtk-custom-widgets.c:1910
 msgid "Edit..."
 msgstr "編集..."
 
-#: ../helper/pref-gtk-custom-widgets.c:1521 ../qt/pref-customwidgets.cpp:878
+#: ../helper/pref-gtk-custom-widgets.c:1530 ../qt/pref-customwidgets.cpp:878
 #: ../qt4/pref/customwidgets.cpp:892
 msgid "Press keys to grab (e.g. <Control>a)"
 msgstr "割り当てるキーを押して下さい (例 <Control>a)"
 
-#: ../helper/pref-gtk-custom-widgets.c:1522
+#: ../helper/pref-gtk-custom-widgets.c:1531
 msgid "Grabbing keys"
 msgstr "キーを取得中"
 
-#: ../helper/pref-gtk-custom-widgets.c:1743
+#: ../helper/pref-gtk-custom-widgets.c:1752
 #, c-format
 msgid "%s - key configuration"
 msgstr "%s - キー設定"
 
-#: ../helper/pref-gtk-custom-widgets.c:1782
+#: ../helper/pref-gtk-custom-widgets.c:1791
 msgid "Key preference"
 msgstr "キー設定"
 
-#: ../helper/pref-gtk-custom-widgets.c:1829
+#: ../helper/pref-gtk-custom-widgets.c:1838
 msgid "Key:"
 msgstr "キー:"
 
-#: ../helper/pref-gtk-custom-widgets.c:1846
+#: ../helper/pref-gtk-custom-widgets.c:1855
 msgid "Grab..."
 msgstr "取得..."
 
-#: ../helper/pref-gtk.c:148
+#: ../helper/pref-gtk.c:153
 msgid ""
 "Some value(s) have been changed.\n"
 "Save?"
@@ -582,7 +650,7 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "保存しますか？"
 
-#: ../helper/pref-gtk.c:227 ../qt/pref-qt.cpp:274 ../qt4/pref/qt4.cpp:276
+#: ../helper/pref-gtk.c:232 ../qt/pref-qt.cpp:274 ../qt4/pref/qt4.cpp:278
 msgid ""
 "Some value(s) have been changed.\n"
 "Do you really quit this program?"
@@ -590,32 +658,32 @@ msgstr ""
 "いくつかの値が変更されています。\n"
 "本当に終了しますか？"
 
-#: ../helper/pref-gtk.c:279 ../qt/pref-qt.cpp:145 ../qt4/pref/qt4.cpp:143
+#: ../helper/pref-gtk.c:284 ../qt/pref-qt.cpp:145 ../qt4/pref/qt4.cpp:142
 msgid "Group"
 msgstr "グループ"
 
 #. Defaults button
-#: ../helper/pref-gtk.c:380
+#: ../helper/pref-gtk.c:385
 msgid "_Defaults"
 msgstr "標準(_D)"
 
-#: ../helper/pref-gtk.c:384
+#: ../helper/pref-gtk.c:389
 msgid "Revert all changes to default"
 msgstr "全ての変更を標準に戻す"
 
-#: ../helper/pref-gtk.c:393
+#: ../helper/pref-gtk.c:398
 msgid "Apply all changes"
 msgstr "全ての設定変更を適用"
 
-#: ../helper/pref-gtk.c:400
+#: ../helper/pref-gtk.c:405
 msgid "Quit this application without applying changes"
 msgstr "設定変更を適用せず終了"
 
-#: ../helper/pref-gtk.c:410
+#: ../helper/pref-gtk.c:415
 msgid "Quit this application with applying changes"
 msgstr "設定を保存して終了"
 
-#: ../helper/pref-gtk.c:569
+#: ../helper/pref-gtk.c:574
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -632,81 +700,18 @@ msgstr ""
 "(このダイアログ表示を止めるには、~/.uimに次行を追加して下さい)\n"
 "(define uim-pref-suppress-dot-uim-warning-dialog? #t)"
 
-#. Feel free to put your names here translators
-#: ../helper/toolbar-applet-gnome.c:161
-msgid "TRANSLATORS"
-msgstr ""
-"TOKUNAGA Hiroyuki <tkng@xem.jp>\n"
-"Daichi Kawahata <daichik@users.sourceforge.net>"
-
-#: ../helper/toolbar-applet-gnome.c:164
-msgid "uim Applet"
-msgstr "uimアプレット"
-
-#: ../helper/toolbar-applet-gnome.c:166
-msgid "Applet for indicating uim's status"
-msgstr "uimの状態を示すアプレット"
-
-#: ../helper/toolbar-common-gtk.c:86
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:78
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:140
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:105
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:182
-msgid "Switch input method"
-msgstr "入力方式の切り換え"
-
-#: ../helper/toolbar-common-gtk.c:95
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:79
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:165
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:107
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:208
-msgid "Preference"
-msgstr "設定"
-
-#: ../helper/toolbar-common-gtk.c:104
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:80
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:189
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:109
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:233
-msgid "Japanese dictionary editor"
-msgstr "日本語辞書ツール"
-
-#: ../helper/toolbar-common-gtk.c:113
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:81
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:213
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:111
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:258
-msgid "Input pad"
-msgstr "入力パッド"
-
-#: ../helper/toolbar-common-gtk.c:122
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:82
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:237
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:113
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:283
-msgid "Handwriting input pad"
-msgstr "手書き入力パッド"
-
-#: ../helper/toolbar-common-gtk.c:135
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:83
-#: ../qt/toolbar-common-quimhelpertoolbar.cpp:260
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:115
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:307 ../scm/im-custom.scm:130
-msgid "Help"
-msgstr "ヘルプ"
-
-#: ../helper/toolbar-common-gtk.c:249 ../helper/toolbar-common-gtk.c:490
+#: ../helper/toolbar-common-gtk.c:290 ../helper/toolbar-common-gtk.c:538
 #, c-format
 msgid "Cannot launch '%s'."
 msgstr "'%s' を起動できません。"
 
-#: ../helper/toolbar-common-gtk.c:873
+#: ../helper/toolbar-common-gtk.c:921
 #: ../qt/toolbar-common-quimhelpertoolbar.cpp:85
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:118
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:103
 msgid "Quit this toolbar"
 msgstr "終了"
 
-#: ../helper/toolbar-standalone-gtk.c:301
+#: ../helper/toolbar-standalone-gtk.c:332
 #, c-format
 msgid "Unable to parse the geometry string '%s'"
 msgstr "ジオメトリ文字列 '%s' を解析できません"
@@ -721,7 +726,7 @@ msgstr "編集"
 msgid "Key Grab Dialog"
 msgstr "キー取得ダイアログ"
 
-#: ../qt/pref-qt.cpp:113 ../qt4/pref/qt4.cpp:110
+#: ../qt/pref-qt.cpp:113 ../qt4/pref/qt4.cpp:109
 msgid ""
 "The user customize file \"~/.uim\" is found.\n"
 "This file will override all conflicted settings set by\n"
@@ -733,37 +738,37 @@ msgstr ""
 "(\"~/.uim.d/customs/*.scm\") よりも優先されます。\n"
 "設定が反映されない場合は、このファイルの内容を確認して下さい。"
 
-#: ../qt/pref-qt.cpp:121 ../qt4/pref/qt4.cpp:118
+#: ../qt/pref-qt.cpp:121 ../qt4/pref/qt4.cpp:117
 msgid "~/.uim exists!"
 msgstr "~/.uim が存在します！"
 
-#: ../qt/pref-qt.cpp:163 ../qt4/pref/qt4.cpp:159
+#: ../qt/pref-qt.cpp:163 ../qt4/pref/qt4.cpp:158
 msgid "Defaults"
 msgstr "標準"
 
 #: ../qt/pref-qt.cpp:166 ../qt/pref-qt.cpp:257 ../qt/pref-qt.cpp:364
-#: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:162 ../qt4/pref/qt4.cpp:259
-#: ../qt4/pref/qt4.cpp:367 ../qt4/pref/ui_keyeditformbase.h:119
+#: ../qt/switcher-qt.cpp:129 ../qt4/pref/qt4.cpp:161 ../qt4/pref/qt4.cpp:261
+#: ../qt4/pref/qt4.cpp:371 ../qt4/pref/ui_keyeditformbase.h:119
 #: ../qt4/pref/ui_olisteditformbase.h:113 ../qt4/switcher/qt4.cpp:138
 msgid "OK"
 msgstr "OK"
 
-#: ../qt/pref-qt.cpp:169 ../qt4/pref/qt4.cpp:165 ../qt4/switcher/qt4.cpp:143
+#: ../qt/pref-qt.cpp:169 ../qt4/pref/qt4.cpp:164 ../qt4/switcher/qt4.cpp:143
 msgid "Apply"
 msgstr "適用"
 
 #: ../qt/pref-qt.cpp:173 ../qt/pref-qt.cpp:258 ../qt/switcher-qt.cpp:134
-#: ../qt4/pref/qt4.cpp:169 ../qt4/pref/qt4.cpp:260
+#: ../qt4/pref/qt4.cpp:168 ../qt4/pref/qt4.cpp:262
 #: ../qt4/pref/ui_keyeditformbase.h:120 ../qt4/pref/ui_olisteditformbase.h:114
 #: ../qt4/switcher/qt4.cpp:148
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: ../qt/pref-qt.cpp:255 ../qt4/pref/qt4.cpp:257
+#: ../qt/pref-qt.cpp:255 ../qt4/pref/qt4.cpp:259
 msgid "Save Confirm"
 msgstr "保存確認"
 
-#: ../qt/pref-qt.cpp:256 ../qt4/pref/qt4.cpp:258
+#: ../qt/pref-qt.cpp:256 ../qt4/pref/qt4.cpp:260
 msgid ""
 "The value was changed.\n"
 "Save?"
@@ -771,19 +776,19 @@ msgstr ""
 "値が変更されました。\n"
 "保存しますか？"
 
-#: ../qt/pref-qt.cpp:273 ../qt4/pref/qt4.cpp:275
+#: ../qt/pref-qt.cpp:273 ../qt4/pref/qt4.cpp:277
 msgid "Quit Confirm"
 msgstr "終了確認"
 
-#: ../qt/pref-qt.cpp:276 ../qt4/pref/qt4.cpp:278
+#: ../qt/pref-qt.cpp:276 ../qt4/pref/qt4.cpp:280
 msgid "Yes"
 msgstr "はい"
 
-#: ../qt/pref-qt.cpp:277 ../qt4/pref/qt4.cpp:279
+#: ../qt/pref-qt.cpp:277 ../qt4/pref/qt4.cpp:281
 msgid "No"
 msgstr "いいえ"
 
-#: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:363
+#: ../qt/pref-qt.cpp:360 ../qt4/pref/qt4.cpp:367
 msgid "Show this dialog on startup"
 msgstr "起動時にこのダイアログを表示"
 
@@ -815,7 +820,7 @@ msgstr "上げる"
 msgid "Down"
 msgstr "下げる"
 
-#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:56
+#: ../qt4/toolbar/common-quimhelpertoolbar.cpp:52
 msgid "Cannot launch '%1'."
 msgstr "'%1' を起動できません。"
 
@@ -984,22 +989,23 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/mana-custom.scm:320 ../scm/mana-key-custom.scm:37
 #: ../scm/mana-key-custom.scm:41 ../scm/mana-key-custom.scm:45
 #: ../scm/mana-key-custom.scm:49 ../scm/predict-custom.scm:39
-#: ../scm/predict-custom.scm:46 ../scm/predict-custom.scm:61
-#: ../scm/predict-custom.scm:73 ../scm/predict-custom.scm:108
-#: ../scm/predict-custom.scm:143 ../scm/prime-custom.scm:64
-#: ../scm/prime-custom.scm:70 ../scm/prime-custom.scm:76
-#: ../scm/prime-custom.scm:84 ../scm/prime-custom.scm:90
-#: ../scm/prime-custom.scm:105 ../scm/prime-custom.scm:111
-#: ../scm/prime-custom.scm:117 ../scm/prime-custom.scm:129
-#: ../scm/prime-custom.scm:153 ../scm/prime-custom.scm:159
-#: ../scm/prime-custom.scm:166 ../scm/prime-custom.scm:173
-#: ../scm/prime-custom.scm:181 ../scm/prime-custom.scm:202
-#: ../scm/prime-custom.scm:208 ../scm/prime-custom.scm:219
-#: ../scm/prime-key-custom.scm:65 ../scm/prime-key-custom.scm:69
-#: ../scm/prime-key-custom.scm:73 ../scm/sj3-custom.scm:44
-#: ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52 ../scm/sj3-custom.scm:62
-#: ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83 ../scm/sj3-custom.scm:89
-#: ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
+#: ../scm/predict-custom.scm:46 ../scm/predict-custom.scm:64
+#: ../scm/predict-custom.scm:76 ../scm/predict-custom.scm:111
+#: ../scm/predict-custom.scm:146 ../scm/predict-custom.scm:167
+#: ../scm/predict-custom.scm:189 ../scm/predict-custom.scm:195
+#: ../scm/prime-custom.scm:64 ../scm/prime-custom.scm:70
+#: ../scm/prime-custom.scm:76 ../scm/prime-custom.scm:84
+#: ../scm/prime-custom.scm:90 ../scm/prime-custom.scm:105
+#: ../scm/prime-custom.scm:111 ../scm/prime-custom.scm:117
+#: ../scm/prime-custom.scm:129 ../scm/prime-custom.scm:153
+#: ../scm/prime-custom.scm:159 ../scm/prime-custom.scm:166
+#: ../scm/prime-custom.scm:173 ../scm/prime-custom.scm:181
+#: ../scm/prime-custom.scm:202 ../scm/prime-custom.scm:208
+#: ../scm/prime-custom.scm:219 ../scm/prime-key-custom.scm:65
+#: ../scm/prime-key-custom.scm:69 ../scm/prime-key-custom.scm:73
+#: ../scm/sj3-custom.scm:44 ../scm/sj3-custom.scm:48 ../scm/sj3-custom.scm:52
+#: ../scm/sj3-custom.scm:62 ../scm/sj3-custom.scm:68 ../scm/sj3-custom.scm:83
+#: ../scm/sj3-custom.scm:89 ../scm/sj3-custom.scm:95 ../scm/sj3-custom.scm:101
 #: ../scm/sj3-custom.scm:200 ../scm/sj3-custom.scm:219
 #: ../scm/sj3-custom.scm:228 ../scm/sj3-custom.scm:270
 #: ../scm/sj3-custom.scm:279 ../scm/sj3-custom.scm:322
@@ -1045,21 +1051,24 @@ msgstr "Ajax-IME サーバ"
 #: ../scm/social-ime-custom.scm:396 ../scm/social-ime-custom.scm:402
 #: ../scm/social-ime-key-custom.scm:36 ../scm/social-ime-key-custom.scm:40
 #: ../scm/social-ime-key-custom.scm:44 ../scm/social-ime-key-custom.scm:48
-#: ../scm/tutcode-custom.scm:52 ../scm/tutcode-custom.scm:63
-#: ../scm/tutcode-custom.scm:70 ../scm/tutcode-custom.scm:83
-#: ../scm/tutcode-custom.scm:89 ../scm/tutcode-custom.scm:95
-#: ../scm/tutcode-custom.scm:101 ../scm/tutcode-custom.scm:107
-#: ../scm/tutcode-custom.scm:113 ../scm/tutcode-custom.scm:120
-#: ../scm/tutcode-custom.scm:127 ../scm/tutcode-custom.scm:137
-#: ../scm/tutcode-custom.scm:143 ../scm/tutcode-custom.scm:152
-#: ../scm/tutcode-custom.scm:158 ../scm/tutcode-custom.scm:164
-#: ../scm/tutcode-custom.scm:170 ../scm/tutcode-custom.scm:176
-#: ../scm/tutcode-custom.scm:182 ../scm/tutcode-custom.scm:188
-#: ../scm/tutcode-custom.scm:194 ../scm/tutcode-custom.scm:200
-#: ../scm/tutcode-custom.scm:206 ../scm/tutcode-custom.scm:213
-#: ../scm/tutcode-custom.scm:219 ../scm/tutcode-custom.scm:225
-#: ../scm/tutcode-custom.scm:231 ../scm/tutcode-custom.scm:237
-#: ../scm/tutcode-custom.scm:243 ../scm/tutcode-custom.scm:249
+#: ../scm/tutcode-custom.scm:56 ../scm/tutcode-custom.scm:67
+#: ../scm/tutcode-custom.scm:74 ../scm/tutcode-custom.scm:87
+#: ../scm/tutcode-custom.scm:93 ../scm/tutcode-custom.scm:99
+#: ../scm/tutcode-custom.scm:105 ../scm/tutcode-custom.scm:111
+#: ../scm/tutcode-custom.scm:117 ../scm/tutcode-custom.scm:123
+#: ../scm/tutcode-custom.scm:129 ../scm/tutcode-custom.scm:135
+#: ../scm/tutcode-custom.scm:141 ../scm/tutcode-custom.scm:147
+#: ../scm/tutcode-custom.scm:154 ../scm/tutcode-custom.scm:161
+#: ../scm/tutcode-custom.scm:171 ../scm/tutcode-custom.scm:177
+#: ../scm/tutcode-custom.scm:186 ../scm/tutcode-custom.scm:192
+#: ../scm/tutcode-custom.scm:198 ../scm/tutcode-custom.scm:204
+#: ../scm/tutcode-custom.scm:210 ../scm/tutcode-custom.scm:216
+#: ../scm/tutcode-custom.scm:222 ../scm/tutcode-custom.scm:228
+#: ../scm/tutcode-custom.scm:234 ../scm/tutcode-custom.scm:240
+#: ../scm/tutcode-custom.scm:246 ../scm/tutcode-custom.scm:253
+#: ../scm/tutcode-custom.scm:259 ../scm/tutcode-custom.scm:265
+#: ../scm/tutcode-custom.scm:271 ../scm/tutcode-custom.scm:277
+#: ../scm/tutcode-custom.scm:283 ../scm/tutcode-custom.scm:289
 #: ../scm/tutcode-key-custom.scm:38 ../scm/tutcode-key-custom.scm:42
 #: ../scm/wnn-custom.scm:44 ../scm/wnn-custom.scm:48 ../scm/wnn-custom.scm:52
 #: ../scm/wnn-custom.scm:62 ../scm/wnn-custom.scm:68 ../scm/wnn-custom.scm:83
@@ -1099,7 +1108,7 @@ msgstr "Ajax-IME (高度)"
 #: ../scm/ajax-ime-custom.scm:51 ../scm/anthy-custom.scm:47
 #: ../scm/anthy-utf8-custom.scm:54 ../scm/canna-custom.scm:51
 #: ../scm/sj3-custom.scm:51 ../scm/social-ime-custom.scm:51
-#: ../scm/tutcode-custom.scm:51 ../scm/wnn-custom.scm:51
+#: ../scm/tutcode-custom.scm:55 ../scm/wnn-custom.scm:51
 #: ../scm/yahoo-jp-custom.scm:51
 msgid "Prediction"
 msgstr "予測入力"
@@ -1124,7 +1133,7 @@ msgstr "文節区切り"
 #: ../scm/anthy-utf8-custom.scm:85 ../scm/canna-custom.scm:82
 #: ../scm/generic-custom.scm:42 ../scm/mana-custom.scm:74
 #: ../scm/sj3-custom.scm:82 ../scm/skk-custom.scm:68
-#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:136
+#: ../scm/social-ime-custom.scm:81 ../scm/tutcode-custom.scm:170
 #: ../scm/wnn-custom.scm:82 ../scm/yahoo-jp-custom.scm:82
 msgid "Use candidate window"
 msgstr "候補ウィンドウを使用する"
@@ -1133,7 +1142,7 @@ msgstr "候補ウィンドウを使用する"
 #: ../scm/anthy-utf8-custom.scm:91 ../scm/canna-custom.scm:88
 #: ../scm/generic-custom.scm:48 ../scm/mana-custom.scm:80
 #: ../scm/sj3-custom.scm:88 ../scm/skk-custom.scm:94
-#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:163
+#: ../scm/social-ime-custom.scm:87 ../scm/tutcode-custom.scm:197
 #: ../scm/wnn-custom.scm:88 ../scm/yahoo-jp-custom.scm:88
 msgid "Conversion key press count to show candidate window"
 msgstr "候補ウィンドウを表示するために変換キーを押す回数"
@@ -1143,7 +1152,7 @@ msgstr "候補ウィンドウを表示するために変換キーを押す回数
 #: ../scm/generic-custom.scm:54 ../scm/mana-custom.scm:86
 #: ../scm/prime-custom.scm:152 ../scm/sj3-custom.scm:94
 #: ../scm/skk-custom.scm:100 ../scm/social-ime-custom.scm:93
-#: ../scm/tutcode-custom.scm:169 ../scm/wnn-custom.scm:94
+#: ../scm/tutcode-custom.scm:203 ../scm/wnn-custom.scm:94
 #: ../scm/yahoo-jp-custom.scm:94
 msgid "Number of candidates in candidate window at a time"
 msgstr "候補ウィンドウに一度に表示する候補数"
@@ -1420,7 +1429,7 @@ msgstr "接続に関する警告を表示する"
 #: ../scm/anthy-utf8-custom.scm:368 ../scm/canna-custom.scm:401
 #: ../scm/mana-custom.scm:307 ../scm/prime-custom.scm:207
 #: ../scm/sj3-custom.scm:356 ../scm/skk-custom.scm:521
-#: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:94
+#: ../scm/social-ime-custom.scm:344 ../scm/tutcode-custom.scm:98
 #: ../scm/wnn-custom.scm:345 ../scm/yahoo-jp-custom.scm:350
 msgid "Enable vi-cooperative mode"
 msgstr "vi協調モードを有効にする"
@@ -1471,7 +1480,7 @@ msgstr "予測候補キャッシュ数"
 #: ../scm/ajax-ime-custom.scm:377 ../scm/anthy-custom.scm:329
 #: ../scm/anthy-utf8-custom.scm:336 ../scm/canna-custom.scm:444
 #: ../scm/sj3-custom.scm:399 ../scm/social-ime-custom.scm:395
-#: ../scm/tutcode-custom.scm:236 ../scm/wnn-custom.scm:382
+#: ../scm/tutcode-custom.scm:276 ../scm/wnn-custom.scm:382
 #: ../scm/yahoo-jp-custom.scm:412
 msgid "Character count to start input prediction"
 msgstr "予測入力が有効になる文字数"
@@ -1596,123 +1605,136 @@ msgstr "[Ajax-IME] 次文節"
 #: ../scm/mana-key-custom.scm:239 ../scm/mana-key-custom.scm:245
 #: ../scm/mana-key-custom.scm:251 ../scm/mana-key-custom.scm:257
 #: ../scm/mana-key-custom.scm:263 ../scm/mana-key-custom.scm:269
-#: ../scm/predict-custom.scm:79 ../scm/predict-custom.scm:85
-#: ../scm/predict-custom.scm:114 ../scm/predict-custom.scm:120
-#: ../scm/predict-custom.scm:149 ../scm/prime-key-custom.scm:80
-#: ../scm/prime-key-custom.scm:86 ../scm/prime-key-custom.scm:92
-#: ../scm/prime-key-custom.scm:98 ../scm/prime-key-custom.scm:104
-#: ../scm/prime-key-custom.scm:110 ../scm/prime-key-custom.scm:119
-#: ../scm/prime-key-custom.scm:125 ../scm/prime-key-custom.scm:131
-#: ../scm/prime-key-custom.scm:137 ../scm/prime-key-custom.scm:143
-#: ../scm/prime-key-custom.scm:149 ../scm/prime-key-custom.scm:155
-#: ../scm/prime-key-custom.scm:161 ../scm/prime-key-custom.scm:167
-#: ../scm/prime-key-custom.scm:173 ../scm/prime-key-custom.scm:182
-#: ../scm/prime-key-custom.scm:188 ../scm/prime-key-custom.scm:194
-#: ../scm/prime-key-custom.scm:200 ../scm/prime-key-custom.scm:206
-#: ../scm/prime-key-custom.scm:212 ../scm/prime-key-custom.scm:218
-#: ../scm/prime-key-custom.scm:224 ../scm/prime-key-custom.scm:230
-#: ../scm/prime-key-custom.scm:236 ../scm/sj3-key-custom.scm:54
-#: ../scm/sj3-key-custom.scm:60 ../scm/sj3-key-custom.scm:66
-#: ../scm/sj3-key-custom.scm:72 ../scm/sj3-key-custom.scm:78
-#: ../scm/sj3-key-custom.scm:84 ../scm/sj3-key-custom.scm:90
-#: ../scm/sj3-key-custom.scm:96 ../scm/sj3-key-custom.scm:102
-#: ../scm/sj3-key-custom.scm:108 ../scm/sj3-key-custom.scm:117
-#: ../scm/sj3-key-custom.scm:124 ../scm/sj3-key-custom.scm:130
-#: ../scm/sj3-key-custom.scm:136 ../scm/sj3-key-custom.scm:142
-#: ../scm/sj3-key-custom.scm:148 ../scm/sj3-key-custom.scm:154
-#: ../scm/sj3-key-custom.scm:160 ../scm/sj3-key-custom.scm:166
-#: ../scm/sj3-key-custom.scm:175 ../scm/sj3-key-custom.scm:181
-#: ../scm/sj3-key-custom.scm:187 ../scm/sj3-key-custom.scm:193
-#: ../scm/sj3-key-custom.scm:199 ../scm/sj3-key-custom.scm:205
-#: ../scm/sj3-key-custom.scm:211 ../scm/sj3-key-custom.scm:217
-#: ../scm/sj3-key-custom.scm:223 ../scm/sj3-key-custom.scm:233
-#: ../scm/sj3-key-custom.scm:239 ../scm/sj3-key-custom.scm:245
-#: ../scm/sj3-key-custom.scm:251 ../scm/sj3-key-custom.scm:257
-#: ../scm/sj3-key-custom.scm:263 ../scm/sj3-key-custom.scm:269
-#: ../scm/sj3-key-custom.scm:275 ../scm/sj3-key-custom.scm:281
-#: ../scm/skk-key-custom.scm:93 ../scm/skk-key-custom.scm:99
-#: ../scm/skk-key-custom.scm:105 ../scm/skk-key-custom.scm:111
-#: ../scm/skk-key-custom.scm:117 ../scm/skk-key-custom.scm:123
-#: ../scm/skk-key-custom.scm:129 ../scm/skk-key-custom.scm:135
-#: ../scm/skk-key-custom.scm:141 ../scm/skk-key-custom.scm:151
-#: ../scm/skk-key-custom.scm:157 ../scm/skk-key-custom.scm:163
-#: ../scm/skk-key-custom.scm:169 ../scm/skk-key-custom.scm:175
-#: ../scm/skk-key-custom.scm:181 ../scm/skk-key-custom.scm:187
-#: ../scm/skk-key-custom.scm:193 ../scm/skk-key-custom.scm:199
-#: ../scm/skk-key-custom.scm:205 ../scm/skk-key-custom.scm:211
-#: ../scm/skk-key-custom.scm:217 ../scm/skk-key-custom.scm:229
-#: ../scm/skk-key-custom.scm:247 ../scm/skk-key-custom.scm:253
-#: ../scm/skk-key-custom.scm:259 ../scm/skk-key-custom.scm:265
-#: ../scm/skk-key-custom.scm:271 ../scm/skk-key-custom.scm:277
-#: ../scm/skk-key-custom.scm:283 ../scm/social-ime-key-custom.scm:54
-#: ../scm/social-ime-key-custom.scm:60 ../scm/social-ime-key-custom.scm:66
-#: ../scm/social-ime-key-custom.scm:72 ../scm/social-ime-key-custom.scm:78
-#: ../scm/social-ime-key-custom.scm:84 ../scm/social-ime-key-custom.scm:90
-#: ../scm/social-ime-key-custom.scm:96 ../scm/social-ime-key-custom.scm:102
-#: ../scm/social-ime-key-custom.scm:108 ../scm/social-ime-key-custom.scm:117
-#: ../scm/social-ime-key-custom.scm:124 ../scm/social-ime-key-custom.scm:130
-#: ../scm/social-ime-key-custom.scm:136 ../scm/social-ime-key-custom.scm:142
-#: ../scm/social-ime-key-custom.scm:148 ../scm/social-ime-key-custom.scm:154
-#: ../scm/social-ime-key-custom.scm:160 ../scm/social-ime-key-custom.scm:166
-#: ../scm/social-ime-key-custom.scm:175 ../scm/social-ime-key-custom.scm:181
-#: ../scm/social-ime-key-custom.scm:187 ../scm/social-ime-key-custom.scm:193
-#: ../scm/social-ime-key-custom.scm:199 ../scm/social-ime-key-custom.scm:205
-#: ../scm/social-ime-key-custom.scm:211 ../scm/social-ime-key-custom.scm:217
-#: ../scm/social-ime-key-custom.scm:223 ../scm/social-ime-key-custom.scm:233
-#: ../scm/social-ime-key-custom.scm:239 ../scm/social-ime-key-custom.scm:245
-#: ../scm/social-ime-key-custom.scm:251 ../scm/social-ime-key-custom.scm:257
-#: ../scm/social-ime-key-custom.scm:263 ../scm/social-ime-key-custom.scm:269
-#: ../scm/social-ime-key-custom.scm:275 ../scm/social-ime-key-custom.scm:281
-#: ../scm/tutcode-key-custom.scm:48 ../scm/tutcode-key-custom.scm:54
-#: ../scm/tutcode-key-custom.scm:60 ../scm/tutcode-key-custom.scm:66
-#: ../scm/tutcode-key-custom.scm:72 ../scm/tutcode-key-custom.scm:78
-#: ../scm/tutcode-key-custom.scm:84 ../scm/tutcode-key-custom.scm:90
-#: ../scm/tutcode-key-custom.scm:96 ../scm/tutcode-key-custom.scm:102
-#: ../scm/tutcode-key-custom.scm:108 ../scm/tutcode-key-custom.scm:114
-#: ../scm/tutcode-key-custom.scm:120 ../scm/tutcode-key-custom.scm:126
-#: ../scm/tutcode-key-custom.scm:132 ../scm/tutcode-key-custom.scm:138
-#: ../scm/tutcode-key-custom.scm:144 ../scm/tutcode-key-custom.scm:150
-#: ../scm/tutcode-key-custom.scm:156 ../scm/tutcode-key-custom.scm:162
-#: ../scm/tutcode-key-custom.scm:168 ../scm/tutcode-key-custom.scm:174
-#: ../scm/tutcode-key-custom.scm:180 ../scm/tutcode-key-custom.scm:186
-#: ../scm/tutcode-key-custom.scm:192 ../scm/tutcode-key-custom.scm:198
-#: ../scm/wnn-key-custom.scm:54 ../scm/wnn-key-custom.scm:60
-#: ../scm/wnn-key-custom.scm:66 ../scm/wnn-key-custom.scm:72
-#: ../scm/wnn-key-custom.scm:78 ../scm/wnn-key-custom.scm:84
-#: ../scm/wnn-key-custom.scm:90 ../scm/wnn-key-custom.scm:96
-#: ../scm/wnn-key-custom.scm:102 ../scm/wnn-key-custom.scm:108
-#: ../scm/wnn-key-custom.scm:117 ../scm/wnn-key-custom.scm:124
-#: ../scm/wnn-key-custom.scm:130 ../scm/wnn-key-custom.scm:136
-#: ../scm/wnn-key-custom.scm:142 ../scm/wnn-key-custom.scm:148
-#: ../scm/wnn-key-custom.scm:154 ../scm/wnn-key-custom.scm:160
-#: ../scm/wnn-key-custom.scm:166 ../scm/wnn-key-custom.scm:175
-#: ../scm/wnn-key-custom.scm:181 ../scm/wnn-key-custom.scm:187
-#: ../scm/wnn-key-custom.scm:193 ../scm/wnn-key-custom.scm:199
-#: ../scm/wnn-key-custom.scm:205 ../scm/wnn-key-custom.scm:211
-#: ../scm/wnn-key-custom.scm:217 ../scm/wnn-key-custom.scm:223
-#: ../scm/wnn-key-custom.scm:233 ../scm/wnn-key-custom.scm:239
-#: ../scm/wnn-key-custom.scm:245 ../scm/wnn-key-custom.scm:251
-#: ../scm/wnn-key-custom.scm:257 ../scm/wnn-key-custom.scm:263
-#: ../scm/wnn-key-custom.scm:269 ../scm/wnn-key-custom.scm:275
-#: ../scm/wnn-key-custom.scm:281 ../scm/yahoo-jp-key-custom.scm:54
-#: ../scm/yahoo-jp-key-custom.scm:60 ../scm/yahoo-jp-key-custom.scm:66
-#: ../scm/yahoo-jp-key-custom.scm:72 ../scm/yahoo-jp-key-custom.scm:78
-#: ../scm/yahoo-jp-key-custom.scm:84 ../scm/yahoo-jp-key-custom.scm:90
-#: ../scm/yahoo-jp-key-custom.scm:96 ../scm/yahoo-jp-key-custom.scm:102
-#: ../scm/yahoo-jp-key-custom.scm:108 ../scm/yahoo-jp-key-custom.scm:117
-#: ../scm/yahoo-jp-key-custom.scm:124 ../scm/yahoo-jp-key-custom.scm:130
-#: ../scm/yahoo-jp-key-custom.scm:136 ../scm/yahoo-jp-key-custom.scm:142
-#: ../scm/yahoo-jp-key-custom.scm:148 ../scm/yahoo-jp-key-custom.scm:154
-#: ../scm/yahoo-jp-key-custom.scm:160 ../scm/yahoo-jp-key-custom.scm:166
-#: ../scm/yahoo-jp-key-custom.scm:175 ../scm/yahoo-jp-key-custom.scm:181
-#: ../scm/yahoo-jp-key-custom.scm:187 ../scm/yahoo-jp-key-custom.scm:193
-#: ../scm/yahoo-jp-key-custom.scm:199 ../scm/yahoo-jp-key-custom.scm:205
-#: ../scm/yahoo-jp-key-custom.scm:211 ../scm/yahoo-jp-key-custom.scm:217
-#: ../scm/yahoo-jp-key-custom.scm:223 ../scm/yahoo-jp-key-custom.scm:233
-#: ../scm/yahoo-jp-key-custom.scm:239 ../scm/yahoo-jp-key-custom.scm:245
-#: ../scm/yahoo-jp-key-custom.scm:251 ../scm/yahoo-jp-key-custom.scm:257
-#: ../scm/yahoo-jp-key-custom.scm:263 ../scm/yahoo-jp-key-custom.scm:269
-#: ../scm/yahoo-jp-key-custom.scm:275 ../scm/yahoo-jp-key-custom.scm:281
+#: ../scm/predict-custom.scm:82 ../scm/predict-custom.scm:88
+#: ../scm/predict-custom.scm:117 ../scm/predict-custom.scm:123
+#: ../scm/predict-custom.scm:152 ../scm/predict-custom.scm:173
+#: ../scm/prime-key-custom.scm:80 ../scm/prime-key-custom.scm:86
+#: ../scm/prime-key-custom.scm:92 ../scm/prime-key-custom.scm:98
+#: ../scm/prime-key-custom.scm:104 ../scm/prime-key-custom.scm:110
+#: ../scm/prime-key-custom.scm:119 ../scm/prime-key-custom.scm:125
+#: ../scm/prime-key-custom.scm:131 ../scm/prime-key-custom.scm:137
+#: ../scm/prime-key-custom.scm:143 ../scm/prime-key-custom.scm:149
+#: ../scm/prime-key-custom.scm:155 ../scm/prime-key-custom.scm:161
+#: ../scm/prime-key-custom.scm:167 ../scm/prime-key-custom.scm:173
+#: ../scm/prime-key-custom.scm:182 ../scm/prime-key-custom.scm:188
+#: ../scm/prime-key-custom.scm:194 ../scm/prime-key-custom.scm:200
+#: ../scm/prime-key-custom.scm:206 ../scm/prime-key-custom.scm:212
+#: ../scm/prime-key-custom.scm:218 ../scm/prime-key-custom.scm:224
+#: ../scm/prime-key-custom.scm:230 ../scm/prime-key-custom.scm:236
+#: ../scm/sj3-key-custom.scm:54 ../scm/sj3-key-custom.scm:60
+#: ../scm/sj3-key-custom.scm:66 ../scm/sj3-key-custom.scm:72
+#: ../scm/sj3-key-custom.scm:78 ../scm/sj3-key-custom.scm:84
+#: ../scm/sj3-key-custom.scm:90 ../scm/sj3-key-custom.scm:96
+#: ../scm/sj3-key-custom.scm:102 ../scm/sj3-key-custom.scm:108
+#: ../scm/sj3-key-custom.scm:117 ../scm/sj3-key-custom.scm:124
+#: ../scm/sj3-key-custom.scm:130 ../scm/sj3-key-custom.scm:136
+#: ../scm/sj3-key-custom.scm:142 ../scm/sj3-key-custom.scm:148
+#: ../scm/sj3-key-custom.scm:154 ../scm/sj3-key-custom.scm:160
+#: ../scm/sj3-key-custom.scm:166 ../scm/sj3-key-custom.scm:175
+#: ../scm/sj3-key-custom.scm:181 ../scm/sj3-key-custom.scm:187
+#: ../scm/sj3-key-custom.scm:193 ../scm/sj3-key-custom.scm:199
+#: ../scm/sj3-key-custom.scm:205 ../scm/sj3-key-custom.scm:211
+#: ../scm/sj3-key-custom.scm:217 ../scm/sj3-key-custom.scm:223
+#: ../scm/sj3-key-custom.scm:233 ../scm/sj3-key-custom.scm:239
+#: ../scm/sj3-key-custom.scm:245 ../scm/sj3-key-custom.scm:251
+#: ../scm/sj3-key-custom.scm:257 ../scm/sj3-key-custom.scm:263
+#: ../scm/sj3-key-custom.scm:269 ../scm/sj3-key-custom.scm:275
+#: ../scm/sj3-key-custom.scm:281 ../scm/skk-key-custom.scm:93
+#: ../scm/skk-key-custom.scm:99 ../scm/skk-key-custom.scm:105
+#: ../scm/skk-key-custom.scm:111 ../scm/skk-key-custom.scm:117
+#: ../scm/skk-key-custom.scm:123 ../scm/skk-key-custom.scm:129
+#: ../scm/skk-key-custom.scm:135 ../scm/skk-key-custom.scm:141
+#: ../scm/skk-key-custom.scm:151 ../scm/skk-key-custom.scm:157
+#: ../scm/skk-key-custom.scm:163 ../scm/skk-key-custom.scm:169
+#: ../scm/skk-key-custom.scm:175 ../scm/skk-key-custom.scm:181
+#: ../scm/skk-key-custom.scm:187 ../scm/skk-key-custom.scm:193
+#: ../scm/skk-key-custom.scm:199 ../scm/skk-key-custom.scm:205
+#: ../scm/skk-key-custom.scm:211 ../scm/skk-key-custom.scm:217
+#: ../scm/skk-key-custom.scm:229 ../scm/skk-key-custom.scm:247
+#: ../scm/skk-key-custom.scm:253 ../scm/skk-key-custom.scm:259
+#: ../scm/skk-key-custom.scm:265 ../scm/skk-key-custom.scm:271
+#: ../scm/skk-key-custom.scm:277 ../scm/skk-key-custom.scm:283
+#: ../scm/social-ime-key-custom.scm:54 ../scm/social-ime-key-custom.scm:60
+#: ../scm/social-ime-key-custom.scm:66 ../scm/social-ime-key-custom.scm:72
+#: ../scm/social-ime-key-custom.scm:78 ../scm/social-ime-key-custom.scm:84
+#: ../scm/social-ime-key-custom.scm:90 ../scm/social-ime-key-custom.scm:96
+#: ../scm/social-ime-key-custom.scm:102 ../scm/social-ime-key-custom.scm:108
+#: ../scm/social-ime-key-custom.scm:117 ../scm/social-ime-key-custom.scm:124
+#: ../scm/social-ime-key-custom.scm:130 ../scm/social-ime-key-custom.scm:136
+#: ../scm/social-ime-key-custom.scm:142 ../scm/social-ime-key-custom.scm:148
+#: ../scm/social-ime-key-custom.scm:154 ../scm/social-ime-key-custom.scm:160
+#: ../scm/social-ime-key-custom.scm:166 ../scm/social-ime-key-custom.scm:175
+#: ../scm/social-ime-key-custom.scm:181 ../scm/social-ime-key-custom.scm:187
+#: ../scm/social-ime-key-custom.scm:193 ../scm/social-ime-key-custom.scm:199
+#: ../scm/social-ime-key-custom.scm:205 ../scm/social-ime-key-custom.scm:211
+#: ../scm/social-ime-key-custom.scm:217 ../scm/social-ime-key-custom.scm:223
+#: ../scm/social-ime-key-custom.scm:233 ../scm/social-ime-key-custom.scm:239
+#: ../scm/social-ime-key-custom.scm:245 ../scm/social-ime-key-custom.scm:251
+#: ../scm/social-ime-key-custom.scm:257 ../scm/social-ime-key-custom.scm:263
+#: ../scm/social-ime-key-custom.scm:269 ../scm/social-ime-key-custom.scm:275
+#: ../scm/social-ime-key-custom.scm:281 ../scm/tutcode-key-custom.scm:48
+#: ../scm/tutcode-key-custom.scm:54 ../scm/tutcode-key-custom.scm:60
+#: ../scm/tutcode-key-custom.scm:66 ../scm/tutcode-key-custom.scm:72
+#: ../scm/tutcode-key-custom.scm:78 ../scm/tutcode-key-custom.scm:84
+#: ../scm/tutcode-key-custom.scm:90 ../scm/tutcode-key-custom.scm:96
+#: ../scm/tutcode-key-custom.scm:102 ../scm/tutcode-key-custom.scm:108
+#: ../scm/tutcode-key-custom.scm:114 ../scm/tutcode-key-custom.scm:120
+#: ../scm/tutcode-key-custom.scm:126 ../scm/tutcode-key-custom.scm:132
+#: ../scm/tutcode-key-custom.scm:138 ../scm/tutcode-key-custom.scm:144
+#: ../scm/tutcode-key-custom.scm:150 ../scm/tutcode-key-custom.scm:156
+#: ../scm/tutcode-key-custom.scm:162 ../scm/tutcode-key-custom.scm:168
+#: ../scm/tutcode-key-custom.scm:174 ../scm/tutcode-key-custom.scm:180
+#: ../scm/tutcode-key-custom.scm:186 ../scm/tutcode-key-custom.scm:192
+#: ../scm/tutcode-key-custom.scm:198 ../scm/tutcode-key-custom.scm:204
+#: ../scm/tutcode-key-custom.scm:210 ../scm/tutcode-key-custom.scm:216
+#: ../scm/tutcode-key-custom.scm:222 ../scm/tutcode-key-custom.scm:228
+#: ../scm/tutcode-key-custom.scm:234 ../scm/tutcode-key-custom.scm:240
+#: ../scm/tutcode-key-custom.scm:246 ../scm/tutcode-key-custom.scm:252
+#: ../scm/tutcode-key-custom.scm:258 ../scm/tutcode-key-custom.scm:264
+#: ../scm/tutcode-key-custom.scm:270 ../scm/tutcode-key-custom.scm:276
+#: ../scm/tutcode-key-custom.scm:282 ../scm/tutcode-key-custom.scm:288
+#: ../scm/tutcode-key-custom.scm:294 ../scm/tutcode-key-custom.scm:300
+#: ../scm/tutcode-key-custom.scm:306 ../scm/tutcode-key-custom.scm:312
+#: ../scm/tutcode-key-custom.scm:318 ../scm/tutcode-key-custom.scm:324
+#: ../scm/tutcode-key-custom.scm:330 ../scm/tutcode-key-custom.scm:336
+#: ../scm/tutcode-key-custom.scm:342 ../scm/wnn-key-custom.scm:54
+#: ../scm/wnn-key-custom.scm:60 ../scm/wnn-key-custom.scm:66
+#: ../scm/wnn-key-custom.scm:72 ../scm/wnn-key-custom.scm:78
+#: ../scm/wnn-key-custom.scm:84 ../scm/wnn-key-custom.scm:90
+#: ../scm/wnn-key-custom.scm:96 ../scm/wnn-key-custom.scm:102
+#: ../scm/wnn-key-custom.scm:108 ../scm/wnn-key-custom.scm:117
+#: ../scm/wnn-key-custom.scm:124 ../scm/wnn-key-custom.scm:130
+#: ../scm/wnn-key-custom.scm:136 ../scm/wnn-key-custom.scm:142
+#: ../scm/wnn-key-custom.scm:148 ../scm/wnn-key-custom.scm:154
+#: ../scm/wnn-key-custom.scm:160 ../scm/wnn-key-custom.scm:166
+#: ../scm/wnn-key-custom.scm:175 ../scm/wnn-key-custom.scm:181
+#: ../scm/wnn-key-custom.scm:187 ../scm/wnn-key-custom.scm:193
+#: ../scm/wnn-key-custom.scm:199 ../scm/wnn-key-custom.scm:205
+#: ../scm/wnn-key-custom.scm:211 ../scm/wnn-key-custom.scm:217
+#: ../scm/wnn-key-custom.scm:223 ../scm/wnn-key-custom.scm:233
+#: ../scm/wnn-key-custom.scm:239 ../scm/wnn-key-custom.scm:245
+#: ../scm/wnn-key-custom.scm:251 ../scm/wnn-key-custom.scm:257
+#: ../scm/wnn-key-custom.scm:263 ../scm/wnn-key-custom.scm:269
+#: ../scm/wnn-key-custom.scm:275 ../scm/wnn-key-custom.scm:281
+#: ../scm/yahoo-jp-key-custom.scm:54 ../scm/yahoo-jp-key-custom.scm:60
+#: ../scm/yahoo-jp-key-custom.scm:66 ../scm/yahoo-jp-key-custom.scm:72
+#: ../scm/yahoo-jp-key-custom.scm:78 ../scm/yahoo-jp-key-custom.scm:84
+#: ../scm/yahoo-jp-key-custom.scm:90 ../scm/yahoo-jp-key-custom.scm:96
+#: ../scm/yahoo-jp-key-custom.scm:102 ../scm/yahoo-jp-key-custom.scm:108
+#: ../scm/yahoo-jp-key-custom.scm:117 ../scm/yahoo-jp-key-custom.scm:124
+#: ../scm/yahoo-jp-key-custom.scm:130 ../scm/yahoo-jp-key-custom.scm:136
+#: ../scm/yahoo-jp-key-custom.scm:142 ../scm/yahoo-jp-key-custom.scm:148
+#: ../scm/yahoo-jp-key-custom.scm:154 ../scm/yahoo-jp-key-custom.scm:160
+#: ../scm/yahoo-jp-key-custom.scm:166 ../scm/yahoo-jp-key-custom.scm:175
+#: ../scm/yahoo-jp-key-custom.scm:181 ../scm/yahoo-jp-key-custom.scm:187
+#: ../scm/yahoo-jp-key-custom.scm:193 ../scm/yahoo-jp-key-custom.scm:199
+#: ../scm/yahoo-jp-key-custom.scm:205 ../scm/yahoo-jp-key-custom.scm:211
+#: ../scm/yahoo-jp-key-custom.scm:217 ../scm/yahoo-jp-key-custom.scm:223
+#: ../scm/yahoo-jp-key-custom.scm:233 ../scm/yahoo-jp-key-custom.scm:239
+#: ../scm/yahoo-jp-key-custom.scm:245 ../scm/yahoo-jp-key-custom.scm:251
+#: ../scm/yahoo-jp-key-custom.scm:257 ../scm/yahoo-jp-key-custom.scm:263
+#: ../scm/yahoo-jp-key-custom.scm:269 ../scm/yahoo-jp-key-custom.scm:275
+#: ../scm/yahoo-jp-key-custom.scm:281
 msgid "long description will be here"
 msgstr "詳細記述予定"
 
@@ -3555,8 +3577,9 @@ msgstr "デンマーク語"
 msgid "Dhivehi"
 msgstr "ディヴェヒ語"
 
-#: ../scm/iso-639-1.scm:72 ../scm/prime-custom.scm:54
-#: ../scm/prime-custom.scm:62 ../scm/prime-custom.scm:248
+#: ../scm/iso-639-1.scm:72 ../scm/predict-custom.scm:186
+#: ../scm/prime-custom.scm:54 ../scm/prime-custom.scm:62
+#: ../scm/prime-custom.scm:248
 msgid "English"
 msgstr "英語"
 
@@ -3677,8 +3700,9 @@ msgstr "アイルランド語"
 msgid "Italian"
 msgstr "イタリア語"
 
-#: ../scm/iso-639-1.scm:103 ../scm/prime-custom.scm:50
-#: ../scm/prime-custom.scm:61 ../scm/prime-custom.scm:243
+#: ../scm/iso-639-1.scm:103 ../scm/predict-custom.scm:187
+#: ../scm/prime-custom.scm:50 ../scm/prime-custom.scm:61
+#: ../scm/prime-custom.scm:243
 msgid "Japanese"
 msgstr "日本語"
 
@@ -4339,7 +4363,7 @@ msgstr "補助予測入力"
 msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, Wnn)"
 msgstr "Ajax-IME, Canna, SJ3, Wnn用予測入力を有効にする"
 
-#: ../scm/predict-custom.scm:53 ../scm/predict-custom.scm:72
+#: ../scm/predict-custom.scm:53 ../scm/predict-custom.scm:75
 msgid "Look prediction"
 msgstr "Look予測"
 
@@ -4347,7 +4371,7 @@ msgstr "Look予測"
 msgid "Look-SKK"
 msgstr ""
 
-#: ../scm/predict-custom.scm:56 ../scm/predict-custom.scm:107
+#: ../scm/predict-custom.scm:56 ../scm/predict-custom.scm:110
 msgid "Look-SKK prediction"
 msgstr "Look-SKK予測"
 
@@ -4355,33 +4379,56 @@ msgstr "Look-SKK予測"
 msgid "Sqlite3"
 msgstr ""
 
-#: ../scm/predict-custom.scm:59 ../scm/predict-custom.scm:142
+#: ../scm/predict-custom.scm:59 ../scm/predict-custom.scm:145
 msgid "Sqlite3 prediction"
 msgstr "Sqlite3予測"
 
-#: ../scm/predict-custom.scm:60
+#: ../scm/predict-custom.scm:61
+msgid "Google Suggest"
+msgstr ""
+
+#: ../scm/predict-custom.scm:62
+#, fuzzy
+msgid "Google Suggest prediction"
+msgstr "予測入力を有効にする"
+
+#: ../scm/predict-custom.scm:63
 msgid "Prediction methods"
 msgstr "予測方法"
 
-#: ../scm/predict-custom.scm:78
+#: ../scm/predict-custom.scm:81
 msgid "UNIX look dictionary file"
 msgstr "UNIX look辞書ファイル"
 
-#: ../scm/predict-custom.scm:84
+#: ../scm/predict-custom.scm:87
 msgid "Max words of candidates for look"
 msgstr "Look予測の最大候補数"
 
-#: ../scm/predict-custom.scm:113
+#: ../scm/predict-custom.scm:116
 msgid "Sorted SKK-JISYO dictionary file"
 msgstr "SKK-JISYOファイル"
 
-#: ../scm/predict-custom.scm:119
+#: ../scm/predict-custom.scm:122
 msgid "Max words of candidates for look-skk"
 msgstr "Look-SKK予測の最大候補数"
 
-#: ../scm/predict-custom.scm:148
+#: ../scm/predict-custom.scm:151
 msgid "Max words of candidates for sqlite3"
 msgstr "Sqlite3予測の最大候補数"
+
+#: ../scm/predict-custom.scm:166
+#, fuzzy
+msgid "Google suggest prediction"
+msgstr "予測入力を有効にする"
+
+#: ../scm/predict-custom.scm:172
+#, fuzzy
+msgid "Max words of candidates for google suggest"
+msgstr "Look予測の最大候補数"
+
+#: ../scm/predict-custom.scm:194
+msgid "Enable SSL with Google Suggest"
+msgstr ""
 
 #: ../scm/predict-sqlite3.scm:86
 msgid "cannot create dictionary directory"
@@ -5194,7 +5241,7 @@ msgstr "SKK サーバ"
 msgid "Dictionary files"
 msgstr "辞書ファイル"
 
-#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:157
+#: ../scm/skk-custom.scm:74 ../scm/tutcode-custom.scm:191
 msgid "Commit candidate by heading label keys"
 msgstr "見出し表示のキーで候補を確定する"
 
@@ -5274,7 +5321,7 @@ msgstr "ddskk"
 msgid "Visual style"
 msgstr "ビジュアルスタイル"
 
-#: ../scm/skk-custom.scm:443 ../scm/tutcode-custom.scm:88
+#: ../scm/skk-custom.scm:443 ../scm/tutcode-custom.scm:92
 msgid "Use recursive learning"
 msgstr "再帰学習を使用する"
 
@@ -5701,19 +5748,29 @@ msgstr "部首合成変換"
 msgid "Bushu conversion settings for TUT-Code"
 msgstr "TUT-Codeの部首合成変換設定"
 
-#: ../scm/tutcode-custom.scm:62
+#: ../scm/tutcode-custom.scm:51
+#, fuzzy
+msgid "Mazegaki conversion"
+msgstr "[Mana] 変換開始"
+
+#: ../scm/tutcode-custom.scm:52
+#, fuzzy
+msgid "Mazegaki conversion settings for TUT-Code"
+msgstr "TUT-Codeの部首合成変換設定"
+
+#: ../scm/tutcode-custom.scm:66
 msgid "Mazegaki dictionary file"
 msgstr "交ぜ書き変換辞書ファイル"
 
-#: ../scm/tutcode-custom.scm:69
+#: ../scm/tutcode-custom.scm:73
 msgid "Personal mazegaki dictionary file"
 msgstr "交ぜ書き変換個人用辞書ファイル"
 
-#: ../scm/tutcode-custom.scm:76
+#: ../scm/tutcode-custom.scm:80
 msgid "Code table file"
 msgstr "コード表ファイル"
 
-#: ../scm/tutcode-custom.scm:77
+#: ../scm/tutcode-custom.scm:81
 msgid ""
 "Code table name is 'filename-rule' when code table file name is 'filename."
 "scm'."
@@ -5721,109 +5778,137 @@ msgstr ""
 "コード表ファイル名がfilename.scmの場合、そのファイル内のfilename-rule変数を"
 "コード表として使用する"
 
-#: ../scm/tutcode-custom.scm:82
+#: ../scm/tutcode-custom.scm:86
 msgid "Enable learning in mazegaki conversion"
 msgstr "交ぜ書き変換の学習を有効にする"
 
-#: ../scm/tutcode-custom.scm:100
+#: ../scm/tutcode-custom.scm:104
 msgid "Use Dvorak keyboard"
 msgstr "Dvorakキーボードを使用する"
 
-#: ../scm/tutcode-custom.scm:106
+#: ../scm/tutcode-custom.scm:110
 msgid "Enable two stroke kigou mode"
 msgstr "2ストローク記号入力モードを有効にする"
 
-#: ../scm/tutcode-custom.scm:112
+#: ../scm/tutcode-custom.scm:116
+msgid "Enable fallback of surrounding text API"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:122
+msgid "History size"
+msgstr ""
+
+#: ../scm/tutcode-custom.scm:128
+#, fuzzy
+msgid "Maximum length of yomi for postfix mazegaki conversion"
+msgstr "交ぜ書き変換中の予測入力を有効にする"
+
+#: ../scm/tutcode-custom.scm:134
+#, fuzzy
+msgid "Enable inflection in mazegaki conversion"
+msgstr "交ぜ書き変換の学習を有効にする"
+
+#: ../scm/tutcode-custom.scm:140
+#, fuzzy
+msgid "Maximum length of yomi suffix for mazegaki conversion"
+msgstr "交ぜ書き変換中の予測入力を有効にする"
+
+#: ../scm/tutcode-custom.scm:146
 msgid "Enable interactive bushu conversion"
 msgstr "対話的な部首合成変換を有効にする"
 
-#: ../scm/tutcode-custom.scm:119
+#: ../scm/tutcode-custom.scm:153
 msgid "bushu.index2 file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:126
+#: ../scm/tutcode-custom.scm:160
 msgid "bushu.expand file"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:142
+#: ../scm/tutcode-custom.scm:176
 msgid "Use table style candidate window"
 msgstr "表形式の候補ウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:148
+#: ../scm/tutcode-custom.scm:182
 msgid "qwerty-jis"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:148
+#: ../scm/tutcode-custom.scm:182
 msgid "Qwerty JIS"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:149
+#: ../scm/tutcode-custom.scm:183
 msgid "qwerty-us"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:149
+#: ../scm/tutcode-custom.scm:183
 msgid "Qwerty US"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:150
+#: ../scm/tutcode-custom.scm:184
 msgid "dvorak"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:150
+#: ../scm/tutcode-custom.scm:184
 msgid "Dvorak"
 msgstr ""
 
-#: ../scm/tutcode-custom.scm:151
+#: ../scm/tutcode-custom.scm:185
 msgid "Key layout of table style candidate window"
 msgstr "表形式の候補ウィンドウのキー配列"
 
-#: ../scm/tutcode-custom.scm:175
+#: ../scm/tutcode-custom.scm:209
 msgid "Number of candidates in candidate window at a time for kigou mode"
 msgstr "記号モードにおいて候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:181
+#: ../scm/tutcode-custom.scm:215
 msgid "Number of candidates in candidate window at a time for prediction"
 msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:187
+#: ../scm/tutcode-custom.scm:221
 msgid ""
 "Number of candidates in candidate window at a time for kanji combination "
 "guide"
 msgstr "熟語ガイドにおいて候補ウィンドウに一度に表示する候補数"
 
-#: ../scm/tutcode-custom.scm:193
+#: ../scm/tutcode-custom.scm:227
+#, fuzzy
+msgid "Number of candidates in candidate window at a time for history"
+msgstr "補完/予測において候補ウィンドウに一度に表示する候補数"
+
+#: ../scm/tutcode-custom.scm:233
 msgid "Use stroke help window"
 msgstr "仮想鍵盤ウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:199
+#: ../scm/tutcode-custom.scm:239
 msgid "Use auto help window"
 msgstr "自動ヘルプウィンドウを使用する"
 
-#: ../scm/tutcode-custom.scm:205
+#: ../scm/tutcode-custom.scm:245
 msgid "Show real keys on auto help window"
 msgstr "自動ヘルプウィンドウにキーストロークを表示する"
 
-#: ../scm/tutcode-custom.scm:212
+#: ../scm/tutcode-custom.scm:252
 msgid "Enable completion"
 msgstr "補完を有効にする"
 
-#: ../scm/tutcode-custom.scm:218
+#: ../scm/tutcode-custom.scm:258
 msgid "Minimum character length for completion"
 msgstr "補完の際に考慮する文字数の最小値"
 
-#: ../scm/tutcode-custom.scm:224
+#: ../scm/tutcode-custom.scm:264
 msgid "Maximum character length for completion"
 msgstr "補完の際に考慮する文字数の最大値"
 
-#: ../scm/tutcode-custom.scm:230
+#: ../scm/tutcode-custom.scm:270
 msgid "Enable input prediction for mazegaki conversion"
 msgstr "交ぜ書き変換中の予測入力を有効にする"
 
-#: ../scm/tutcode-custom.scm:242
+#: ../scm/tutcode-custom.scm:282
 msgid "Enable Kanji combination guide"
 msgstr "熟語ガイドを有効にする"
 
-#: ../scm/tutcode-custom.scm:248
+#: ../scm/tutcode-custom.scm:288
 msgid "Enable input prediction for bushu conversion"
 msgstr "部首合成変換中の予測入力を有効にする"
 
@@ -5872,74 +5957,194 @@ msgid "[TUT-Code] postfix bushu conversion"
 msgstr "[TUT-Code] 後置型部首合成変換"
 
 #: ../scm/tutcode-key-custom.scm:101
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:107
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 1 character"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:113
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 2 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:119
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 3 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:125
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 4 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:131
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 5 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:137
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 6 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:143
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 7 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:149
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 8 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:155
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion of 9 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:161
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:167
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 1 character"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:173
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 2 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:179
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 3 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:185
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 4 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:191
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 5 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:197
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 6 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:203
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 7 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:209
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 8 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:215
+#, fuzzy
+msgid "[TUT-Code] postfix mazegaki conversion with inflection of 9 characters"
+msgstr "[TUT-Code] 交ぜ書き変換モード"
+
+#: ../scm/tutcode-key-custom.scm:221
 msgid "[TUT-Code] latin conversion mode"
 msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
 
-#: ../scm/tutcode-key-custom.scm:107
+#: ../scm/tutcode-key-custom.scm:227
+#, fuzzy
+msgid "[TUT-Code] kanji code input mode"
+msgstr "[TUT-Code] 英字変換(SKK abbrev)モード"
+
+#: ../scm/tutcode-key-custom.scm:233
+#, fuzzy
+msgid "[TUT-Code] history"
+msgstr "[TUT-Code] オン"
+
+#: ../scm/tutcode-key-custom.scm:239
 msgid "[TUT-Code] display last auto help"
 msgstr "[TUT-Code] 直近の自動ヘルプを表示"
 
-#: ../scm/tutcode-key-custom.scm:113
+#: ../scm/tutcode-key-custom.scm:245
 msgid "[TUT-Code] commit as katakana in yomi input of mazegaki"
 msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
 
-#: ../scm/tutcode-key-custom.scm:119
+#: ../scm/tutcode-key-custom.scm:251
 msgid "[TUT-Code] toggle use of stroke help window"
 msgstr "[TUT-Code] 仮想鍵盤ウィンドウの表示を反転"
 
-#: ../scm/tutcode-key-custom.scm:125
+#: ../scm/tutcode-key-custom.scm:257
 msgid "[TUT-Code] begin completion"
 msgstr "[TUT-Code] 補完開始"
 
-#: ../scm/tutcode-key-custom.scm:131
+#: ../scm/tutcode-key-custom.scm:263
 msgid "[TUT-Code] begin conversion"
 msgstr "[TUT-Code] 変換開始"
 
-#: ../scm/tutcode-key-custom.scm:137
+#: ../scm/tutcode-key-custom.scm:269
 msgid "[TUT-Code] commit"
 msgstr "[TUT-Code] 確定"
 
-#: ../scm/tutcode-key-custom.scm:143
+#: ../scm/tutcode-key-custom.scm:275
 msgid "[TUT-Code] cancel"
 msgstr "[TUT-Code] キャンセル"
 
-#: ../scm/tutcode-key-custom.scm:149
+#: ../scm/tutcode-key-custom.scm:281
 msgid "[TUT-Code] next candidate"
 msgstr "[TUT-Code] 次候補"
 
-#: ../scm/tutcode-key-custom.scm:155
+#: ../scm/tutcode-key-custom.scm:287
 msgid "[TUT-Code] previous candidate"
 msgstr "[TUT-Code] 前候補"
 
-#: ../scm/tutcode-key-custom.scm:161
+#: ../scm/tutcode-key-custom.scm:293
 msgid "[TUT-Code] next page of candidate window"
 msgstr "[TUT-Code] 候補ウィンドウの次ページ"
 
-#: ../scm/tutcode-key-custom.scm:167
+#: ../scm/tutcode-key-custom.scm:299
 msgid "[TUT-Code] previous page of candidate window"
 msgstr "[TUT-Code] 候補ウィンドウの前ページ"
 
-#: ../scm/tutcode-key-custom.scm:173
+#: ../scm/tutcode-key-custom.scm:305
 msgid "[TUT-Code] backspace"
 msgstr "[TUT-Code] バックスペース"
 
-#: ../scm/tutcode-key-custom.scm:179
+#: ../scm/tutcode-key-custom.scm:311
 msgid "[TUT-Code] return"
 msgstr "[TUT-Code] リターン"
 
-#: ../scm/tutcode-key-custom.scm:185
+#: ../scm/tutcode-key-custom.scm:317
 msgid "[TUT-Code] ESC keys on vi-cooperative mode"
 msgstr "[TUT-Code] vi協調モードでESCとして扱うキー"
 
-#: ../scm/tutcode-key-custom.scm:191
+#: ../scm/tutcode-key-custom.scm:323
 msgid "[TUT-Code] register new entry to dictionary"
 msgstr "[TUT-Code] 交ぜ書き変換個人辞書に単語を登録"
 
-#: ../scm/tutcode-key-custom.scm:197
+#: ../scm/tutcode-key-custom.scm:329
 msgid "[TUT-Code] purge the entry from dictionary"
 msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
 
-#: ../scm/tutcode.scm:641
+#: ../scm/tutcode-key-custom.scm:335
+#, fuzzy
+msgid "[TUT-Code] relimit yomi to left in mazegaki"
+msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
+
+#: ../scm/tutcode-key-custom.scm:341
+#, fuzzy
+msgid "[TUT-Code] relimit yomi to right in mazegaki"
+msgstr "[TUT-Code] 交ぜ書き変換の読みをカタカナとして確定する"
+
+#: ../scm/tutcode.scm:762
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
 msgstr "libuim-skk.soが利用不可能なため、交ぜ書き変換は無効"
 
@@ -6368,11 +6573,11 @@ msgstr "入力メソッド環境 (uim) を設定します"
 msgid "Input Method"
 msgstr "入力メソッド"
 
-#: ../uim/m17nlib.c:489
+#: ../uim/m17nlib.c:479
 msgid "m17n library IM open error"
 msgstr "m17nライブラリ IMオープンエラー"
 
-#: ../uim/m17nlib.c:528
+#: ../uim/m17nlib.c:518
 msgid "An input method provided by the m17n library"
 msgstr "m17nライブラリが提供する入力方式"
 
@@ -6404,18 +6609,18 @@ msgid "uim-openssl: DTLSv1_client_method() is not supported on this system"
 msgstr ""
 "uim-openssl: DTLSv1_client_method()はこのシステムではサポートされていません"
 
-#: ../uim/skk.c:1025
+#: ../uim/skk.c:1043
 msgid "uim-skk: error in expand_str"
 msgstr "uim-skk: expand_strでエラー。"
 
-#: ../uim/skk.c:1040
+#: ../uim/skk.c:1058
 msgid "uim-skk: too long word"
 msgstr "uim-skk: 語が長すぎます。"
 
 #. FIXME: gettext here to expand %s in accordance with the
 #. * locale for the selected notification agent. See also the TODO
 #. * comment of uim-notify.h  -- YamaKen 2008-02-11
-#: ../uim/skk.c:3681
+#: ../uim/skk.c:3699
 #, c-format
 msgid "uim-skk: connect to %s port %s failed"
 msgstr "uim-skk: ポート%sへ接続できませんでした。"
