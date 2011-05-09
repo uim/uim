@@ -1909,7 +1909,9 @@
 	(byeoru-flush-automata bc)
 	;; reset-handler does not commit a string
 	(byeoru-clear! bc)
-	(byeoru-update-preedit bc))))
+        ;; preedit clearing should be handled in the bridges level
+        ;; (byeoru-update-preedit bc)
+        )))
 
 (define (byeoru-focus-out-handler bc)
   (if (byeoru-context-on? bc)

@@ -1355,20 +1355,20 @@ im_uim_reset(GtkIMContext *ic)
   IMUIMContext *uic = IM_UIM_CONTEXT(ic);
 #if !defined(WORKAROUND_BROKEN_RESET_IN_GTK)
   uim_reset_context(uic->uc);
+  clear_cb(uic);
+  update_cb(uic);
 #else
   if (uic == focused_context) {
     uim_focus_out_context(uic->uc);
     uim_focus_in_context(uic->uc);
   } else {
     uim_reset_context(uic->uc);
+    clear_cb(uic);
+    update_cb(uic);
   }
 #endif
 #ifdef GDK_WINDOWING_X11
   im_uim_compose_reset(uic->compose);
-#endif
-#if !defined(WORKAROUND_BROKEN_RESET_IN_GTK)
-  clear_cb(uic);
-  update_cb(uic);
 #endif
 }
 
