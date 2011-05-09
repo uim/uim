@@ -54,7 +54,6 @@ static uim_dict_class *classes[] = {
 #endif
   NULL
 };
-static unsigned int nr_classes = sizeof(classes) / sizeof(uim_dict_class *);
 
 uim_dict *
 uim_dict_open(const char *identifier)
@@ -63,7 +62,7 @@ uim_dict_open(const char *identifier)
   uim_dict *dict;
 
   /* FIXME! use hash table? */
-  for (i = 0; i < nr_classes; i++) {
+  for (i = 0; i < classes[i]; i++) {
     dict = classes[i]->open(identifier);
     if (dict)
       return dict;
