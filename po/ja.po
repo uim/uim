@@ -6104,11 +6104,11 @@ msgstr "[TUT-Code] 交ぜ書き変換個人辞書中の単語を削除"
 
 #: ../scm/tutcode-key-custom.scm:335
 msgid "[TUT-Code] relimit yomi to left in mazegaki"
-msgstr "[TUT-Code] 交ぜ書き変換で読みを縮める"
+msgstr "[TUT-Code] 交ぜ書き変換で読みを伸ばす"
 
 #: ../scm/tutcode-key-custom.scm:341
 msgid "[TUT-Code] relimit yomi to right in mazegaki"
-msgstr "[TUT-Code] 交ぜ書き変換で読みを伸ばす"
+msgstr "[TUT-Code] 交ぜ書き変換で読みを縮める"
 
 #: ../scm/tutcode.scm:762
 msgid "libuim-skk.so is not available. Mazegaki conversion is disabled"
