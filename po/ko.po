@@ -5622,9 +5622,8 @@ msgid "Bushu conversion settings for TUT-Code"
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:51
-#, fuzzy
 msgid "Mazegaki conversion"
-msgstr "[전체] 변환 개시"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:52
 msgid "Mazegaki conversion settings for TUT-Code"
@@ -5739,9 +5738,8 @@ msgid ""
 msgstr ""
 
 #: ../scm/tutcode-custom.scm:227
-#, fuzzy
 msgid "Number of candidates in candidate window at a time for history"
-msgstr "후보창에 한번에 표시하는 후보의 수"
+msgstr ""
 
 #: ../scm/tutcode-custom.scm:233
 msgid "Use stroke help window"

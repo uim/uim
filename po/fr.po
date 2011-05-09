@@ -64,9 +64,8 @@ msgid "Help"
 msgstr "Aide"
 
 #: ../gtk3/toolbar/applet-gnome3.c:73
-#, fuzzy
 msgid "About"
-msgstr "_A propos"
+msgstr ""
 
 #. Feel free to put your names here translators
 #: ../gtk3/toolbar/applet-gnome3.c:128 ../helper/toolbar-applet-gnome.c:133
