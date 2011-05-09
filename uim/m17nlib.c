@@ -279,7 +279,7 @@ preedit_changedp(uim_lisp id_)
 static uim_lisp
 get_left_of_cursor(uim_lisp id_)
 {
-  int id, buflen, i;
+  int id, i;
   uim_lisp buf_;
   char *buf, *p;
   MInputContext *ic;
@@ -300,9 +300,7 @@ get_left_of_cursor(uim_lisp id_)
     p = m17nlib_utf8_find_next_char(p);
   *p = '\0';
 
-  buflen = strlen(buf);
-  buf_ = MAKE_STR(buf);
-  free(buf);
+  buf_ = MAKE_STR_DIRECTLY(buf);
 
   return buf_;
 }
@@ -310,7 +308,7 @@ get_left_of_cursor(uim_lisp id_)
 static uim_lisp
 get_right_of_cursor(uim_lisp id_)
 {
-  int id, buflen, i;
+  int id, i;
   uim_lisp buf_;
   char *buf, *p;
   MInputContext *ic;
@@ -327,9 +325,7 @@ get_right_of_cursor(uim_lisp id_)
   for (i = 0; i < ic->cursor_pos ;i++)
     p = m17nlib_utf8_find_next_char(p);
 
-  buflen = strlen(p);
-  buf_ = MAKE_STR(p);
-  free(buf);
+  buf_ = MAKE_STR_DIRECTLY(p);
 
   return buf_;
 }
@@ -337,7 +333,7 @@ get_right_of_cursor(uim_lisp id_)
 static uim_lisp
 get_left_of_candidate(uim_lisp id_)
 {
-  int id, buflen, i;
+  int id, i;
   uim_lisp buf_;
   char *buf, *p;
   MInputContext *ic;
@@ -358,9 +354,7 @@ get_left_of_candidate(uim_lisp id_)
     p = m17nlib_utf8_find_next_char(p);
   *p = '\0';
 
-  buflen = strlen(buf);
-  buf_ = MAKE_STR(buf);
-  free(buf);
+  buf_ = MAKE_STR_DIRECTLY(buf);
 
   return buf_;
 }
@@ -368,7 +362,7 @@ get_left_of_candidate(uim_lisp id_)
 static uim_lisp
 get_selected_candidate(uim_lisp id_)
 {
-  int id, buflen, i;
+  int id, i;
   uim_lisp buf_;
   char *buf, *p, *start;
   MInputContext *ic;
@@ -393,9 +387,7 @@ get_selected_candidate(uim_lisp id_)
     p = m17nlib_utf8_find_next_char(p);
   *p = '\0';
 
-  buflen = strlen(start);
-  buf_ = MAKE_STR(start);
-  free(buf);
+  buf_ = MAKE_STR_DIRECTLY(start);
 
   return buf_;
 }
@@ -403,7 +395,7 @@ get_selected_candidate(uim_lisp id_)
 static uim_lisp
 get_right_of_candidate(uim_lisp id_)
 {
-  int id, buflen, i;
+  int id, i;
   uim_lisp buf_;
   char *buf, *p;
   MInputContext *ic;
@@ -420,9 +412,7 @@ get_right_of_candidate(uim_lisp id_)
   for (i = 0; i < ic->candidate_to ;i++)
     p = m17nlib_utf8_find_next_char(p);
 
-  buflen = strlen(p);
-  buf_ = MAKE_STR(p);
-  free(buf);
+  buf_ = MAKE_STR_DIRECTLY(p);
 
   return buf_;
 }

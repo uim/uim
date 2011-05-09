@@ -189,10 +189,8 @@ void
 select_candidate(uim_context context, candidate_info *cand, int index)
 {
   int new_page;
-  int index_in_page;
 
   new_page = cand->disp_limit ? index / cand->disp_limit : 0;
-  index_in_page = cand->disp_limit ? index % cand->disp_limit : index;
 
   cand->index = index;
 

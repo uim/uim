@@ -157,17 +157,6 @@ motion_notify_event_cb(GtkWidget *widget, GdkEventMotion *event, gpointer data)
 {
   if (toolbar_dragging) {
     gint wx, wy;
-    gint w, h, sc_w, sc_h;
-
-    sc_w = gdk_screen_width();
-    sc_h = gdk_screen_height();
-
-#if GTK_CHECK_VERSION(2, 90, 0)
-    w = gdk_window_get_width(gtk_widget_get_window(widget));
-    h = gdk_window_get_height(gtk_widget_get_window(widget));
-#else
-    gdk_drawable_get_size(gtk_widget_get_window(widget), &w, &h);
-#endif
 
     wx = window_drag_start_x + ((gint)event->x_root - pointer_drag_start_x);
     wy = window_drag_start_y + ((gint)event->y_root - pointer_drag_start_y);

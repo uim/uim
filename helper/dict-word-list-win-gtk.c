@@ -647,13 +647,10 @@ activate_radio_action(GtkAction *action, GtkRadioAction *current,
 		      gpointer data)
 {
   WordListWindow *window;
-  const gchar *name, *typename;
   gboolean active;
   guint value;
 
   window = WORD_LIST_WINDOW(data);
-  name = gtk_action_get_name(GTK_ACTION(current));
-  typename = G_OBJECT_TYPE_NAME(GTK_ACTION(current));
   active = gtk_toggle_action_get_active(GTK_TOGGLE_ACTION(current));
   value = gtk_radio_action_get_current_value(GTK_RADIO_ACTION(current));
 

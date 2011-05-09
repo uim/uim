@@ -63,18 +63,11 @@ helper_send_im_list(void)
 
 #define HEADER_FORMAT "im_list\ncharset=%s\n"
 
-  for (i = 0; i < uim_get_nr_im(ua->context); i++) {
-	const char *name, *lang, *shortd;
-	name = uim_get_im_name(ua->context, i);
-	lang = uim_get_im_language(ua->context, i);
-	shortd = uim_get_im_short_desc(ua->context, i);
-  }
-
   buflen = uim_asprintf(&buf,  HEADER_FORMAT, ua->encoding);
 
 #undef HEADER_FORMAT
 
-  for (i = 0 ; i < uim_get_nr_im(ua->context); i++) {
+  for (i = 0 ; i < nim; i++) {
 	const char *name, *lang, *shortd;
 	char *tmpbuf;
 

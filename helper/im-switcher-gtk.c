@@ -196,11 +196,9 @@ get_selected_im_name(void)
 {
   GtkTreeSelection *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(switcher_tree_view));
   GtkTreeModel *model;
-  GtkTreeStore *store;
   GtkTreeIter iter;
   gchar *str_data;
   if (gtk_tree_selection_get_selected (sel, &model, &iter) == TRUE) {
-    store = GTK_TREE_STORE(model);
     gtk_tree_model_get (model, &iter,
 			NAME_COLUMN, &str_data,
 			-1);
