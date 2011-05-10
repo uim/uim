@@ -58,14 +58,13 @@ Supplementary explanation (only for help and not legal):
     modify, distribute and sell uim-toolbar-gtk-systray under the
     terms of LGPL *only*.
 
-  * qt/pref-kseparator.{cpp,h} and qt4/pref/kseparator.{cpp.h} are
-    come from kdeui, so you can use, modify, distribute and sell
-    uim-pref-qt{4} under the terms of LGPL *only*.
+  * qt/pref-kseparator.{cpp,h} come from kdeui, so you can use,
+    modify, distribute and sell uim-pref-qt under the terms of LGPL
+    *only*.
 
-  * qt/chardict/chardict-kseparator.{cpp,h} and
-    qt4/chardict/kseparator.cpp are come from kdeui, so you
-    can use, modify, distribute and sell uim-chardict-qt{4} under the
-    terms of LGPL *only*.
+  * qt/chardict/chardict-kseparator.{cpp,h} are come from kdeui, so
+    you can use, modify, distribute and sell uim-chardict-qt under
+    the terms of LGPL *only*.
 
   * pixmaps/*.{svg,png} are also licensed under the 3-clause BSD
     license, but has different copyright holders. See
