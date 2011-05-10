@@ -5786,11 +5786,11 @@ msgstr "2ストローク記号入力モードを有効にする"
 
 #: ../scm/tutcode-custom.scm:116
 msgid "Enable fallback of surrounding text API"
-msgstr ""
+msgstr "surrounding text APIの代替方法を有効にする"
 
 #: ../scm/tutcode-custom.scm:122
 msgid "History size"
-msgstr ""
+msgstr "確定文字列の履歴サイズ"
 
 #: ../scm/tutcode-custom.scm:128
 msgid "Maximum length of yomi for postfix mazegaki conversion"
@@ -5810,11 +5810,11 @@ msgstr "対話的な部首合成変換を有効にする"
 
 #: ../scm/tutcode-custom.scm:153
 msgid "bushu.index2 file"
-msgstr ""
+msgstr "bushu.index2ファイル"
 
 #: ../scm/tutcode-custom.scm:160
 msgid "bushu.expand file"
-msgstr ""
+msgstr "bushu.expandファイル"
 
 #: ../scm/tutcode-custom.scm:176
 msgid "Use table style candidate window"
