@@ -21,4 +21,4 @@ target_link_libraries(plasma_applet_uim ${KDE4_PLASMA_LIBS} ${KDE4_KDEUI_LIBS}
         -luim -luim-scm)
  
 install(TARGETS plasma_applet_uim DESTINATION ${PLUGIN_INSTALL_DIR})
-install(FILES plasma-applet-uim.desktop DESTINATION ${SERVICES_INSTALL_DIR})
+install(FILES ${CMAKE_BINARY_DIR}/../plasma-applet-uim.desktop DESTINATION ${SERVICES_INSTALL_DIR})
