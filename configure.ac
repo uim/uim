@@ -1968,7 +1968,7 @@ if test x$use_qt4 = xyes; then
         ${CMAKE} \
             -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${X_CFLAGS}" \
             -DCMAKE_BUILD_TYPE=${cmake_build_type} \
-            -DCMAKE_INSTALL_PREFIX=`$KDE4_CONFIG --prefix` \
+            -DCMAKE_INSTALL_PREFIX=${prefix} \
             -DCMAKE_SKIP_RPATH=true -DKDE4_USE_ALWAYS_FULL_RPATH=false \
             ${ac_abs_top_srcdir}/qt4/toolbar
         cd -
