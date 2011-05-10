@@ -188,8 +188,24 @@
                (N_ "Language")
                (N_ "long description will be here."))
 
+(custom-add-hook 'predict-custom-google-suggest-language
+                 'custom-activity-hooks
+                 (lambda ()
+                   (and predict-custom-enable?
+                        (find (lambda (item)
+                                (eq? 'google-suggest item))
+                              predict-custom-methods))))
+
 (define-custom 'predict-custom-google-suggest-use-ssl #t
                '(predict predict-google-suggest)
                '(boolean)
                (N_ "Enable SSL with Google Suggest")
                (N_ "long description will be here."))
+
+(custom-add-hook 'predict-custom-google-suggest-use-ssl
+                 'custom-activity-hooks
+                 (lambda ()
+                   (and predict-custom-enable?
+                        (find (lambda (item)
+                                (eq? 'google-suggest item))
+                              predict-custom-methods))))
