@@ -62,7 +62,7 @@ uim_dict_open(const char *identifier)
   uim_dict *dict;
 
   /* FIXME! use hash table? */
-  for (i = 0; i < classes[i]; i++) {
+  for (i = 0; classes[i]; i++) {
     dict = classes[i]->open(identifier);
     if (dict)
       return dict;
