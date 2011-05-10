@@ -16,11 +16,30 @@ Overview of changes from 1.6.x to 1.7.0-alpha
     * Support GNOME3
 
 * Fixes
+  - uim Scheme library
+    * Fix im-acquire-text brokeness
+
   - uim-toolbar-qt4
     * Fix bug: Can't set starting position of Qt4 toolbar (#34034)
 
   - uim-notify
     * Fix compilation with libnotify >= 0.7.0
+
+  - uim-tutcode
+    * Fix behavior with interactive bushu conversion
+
+  - uim-skk
+    * Fix crash upon an illegal line in SKK dictionary
+
+  - Emacs bridge
+    * Don't disturb other leim's modelines (#35318)
+
+  - Qt4 bridge
+    * Fix crash of applications upon exit when widget style of
+      QGtkStyle is used
+
+  - uim-dict-gtk
+    * Fix a minor bug
 
 * Enhancements
   - uim-tutcode
@@ -29,6 +48,16 @@ Overview of changes from 1.6.x to 1.7.0-alpha
     * Add inflection support for postfix and prefix mazegaki conversion
     * Kanji code (JIS/Kuten/Unicode) input mode
     * History input mode
+
+  - libuim
+    * Support locale with EUC-JIS-2004 and EUC-JISX0213 encodings
+
+  - generic-predict
+    * Add support for completion with Google Suggest 
+
+* Others
+  - GTK+2 bridge
+    * Discard support for version below 2.14.
 
 
 Overview of changes from 1.6.0 to 1.6.1
