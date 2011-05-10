@@ -1,10 +1,13 @@
-uim 1.6.1 Release Note
-======================
+uim 1.7.0-alpha Release Note
+============================
 
 About This Release
 ------------------
 
-This distribution of uim 1.6.1 is latest stable release of uim.
+This distribution of uim 1.7.0-alpha is a preview release for testing
+purpose.  Since it may contain serious unknown problems, it should not
+be used for important work. For such situations, use our latest stable
+release uim 1.6.1.
 
 Please report us if you find a problem.
 
@@ -16,32 +19,12 @@ Bug tracking system: http://bugs.freedesktop.org/
 What's New
 ----------
 
-New feature addition to uim-tutcode. Minor bug fixes for uim-skk.
-Emacs24 support of uim.el.  Build fix on some environments.
+ - GTK+3 bridge
+ - GTK+3 and GNOME3 tools
+ - Improved uim-tutcode
+ - Generic completion support with Google Suggest
 
 See NEWS for the fully detailed changes.
-
-
-What's New in 1.6.0
--------------------
-
-  - New IM uim-social-ime
-  - New IM uim-ajax-ime
-  - New IM uim-yahoo-jp
-  - Support Wubi86 and ZhengMa tables with Generic IM
-  - Improved uim-tutcode with many nice features with table style
-    candidate window
-  - Stable Qt4 bridge
-  - Annotation system
-  - Internal plugin system reorganization
-  - uim-elatin enhancement
-  - Japanese multiple-segment IM enhancement
-      N.B. If you've modified ja-rk-rule (Roma-Kana table) in ~/.uim
-      for uim-1.5.x, please use ja-rk-rule-basic instead and call
-      (ja-rk-rule-update) after the definition.  For uim-skk users,
-      use skk-ja-rk-rule instead (see
-      http://code.google.com/p/uim-doc-ja/wiki/CustomizeUim for the
-      detailed setting).
 
 
 Notes for Packagers and System Integrators
@@ -65,15 +48,11 @@ Notes for Packagers and System Integrators
     '--with-libgcroots=installed' to configure options for uim to disable
     build and install of the bundled version of libgcroots
 
-  - tcode, trycode, and hangul modules are no longer enabled by default.
-    Use more sophisticated 'tutcode' and 'byeoru' modules for these 
-    table based IMs instead .
-
 
 Roadmap
 -------
 
-  - uim 1.7.0 and later
+  - uim 1.8.0 and later
 
     The time for drastic reconstruction. Many user-visible changes.
 
