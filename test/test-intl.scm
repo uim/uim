@@ -41,8 +41,8 @@
                                      :output :pipe
                                      :error :pipe
                                      :wait #t)))
-    (or (and (= 0 (process-exit-status locale-process))
-             (find #/\./ (port->string-list (process-output locale-process))))
+    (or ;(and (= 0 (process-exit-status locale-process))
+        ;     (find #/\./ (port->string-list (process-output locale-process))))
         (sys-getenv "LANG")
         (sys-getenv "LC_ALL"))))
 
@@ -67,6 +67,8 @@
          ;; generated on my environment. So, I guess available locales
          ;; from "locale -a" and use the current locale as fallback locale.
          ;;   -- kou 2009-03-22 -- Wow! just (- a-year 1) ago!
+         ;;
+         ;; at last, just use LANG -- ek 2011-05-11
          (lang (guess-current-locale))
          (LC_MESSAGES-dir (build-path locale-dir lang "LC_MESSAGES")))
     (make-directory* LC_MESSAGES-dir)
