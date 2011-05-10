@@ -1013,7 +1013,6 @@ reset_icon(void)
 
   if (GTK_IS_ICON_FACTORY(uim_factory)) {
     gtk_icon_factory_remove_default(uim_factory);
-    g_object_unref(uim_factory);
     uim_factory = NULL;
     init_icon();
   }
