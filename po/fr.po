@@ -4222,7 +4222,7 @@ msgid "Ancillary Prediction"
 msgstr ""
 
 #: ../scm/predict-custom.scm:45
-msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, Wnn)"
+msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, TUT-Code, Wnn)"
 msgstr ""
 
 #: ../scm/predict-custom.scm:53 ../scm/predict-custom.scm:75

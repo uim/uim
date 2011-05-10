@@ -42,7 +42,7 @@
 (define-custom 'predict-custom-enable? #f
                '(predict)
                '(boolean)
-               (N_ "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, Wnn)")
+               (N_ "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, TUT-Code, Wnn)")
                (N_ "long description will be here."))
 
 (define-custom 'predict-custom-methods '()

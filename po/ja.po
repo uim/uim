@@ -4359,8 +4359,8 @@ msgid "Ancillary Prediction"
 msgstr "補助予測入力"
 
 #: ../scm/predict-custom.scm:45
-msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, Wnn)"
-msgstr "Ajax-IME, Canna, SJ3, Wnn用予測入力を有効にする"
+msgid "Enable ancillary prediction (for Ajax-IME, Canna, SJ3, TUT-Code, Wnn)"
+msgstr "Ajax-IME, Canna, SJ3, TUT-Code, Wnn用予測入力を有効にする"
 
 #: ../scm/predict-custom.scm:53 ../scm/predict-custom.scm:75
 msgid "Look prediction"
