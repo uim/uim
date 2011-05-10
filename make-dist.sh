@@ -15,12 +15,12 @@ RELEASE_SUFFIX=""
 CONF_MAINT="--enable-maintainer-mode"
 CONF_NOWERROR="--disable-warnings-into-error"
 CONF_COMMON="$CONF_MAINT $CONF_NOWERROR"
-CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-gnome-applet --disable-kde-applet --disable-pref --disable-dict --without-anthy --without-canna --without-mana --without-prime --without-m17nlib --without-scim --without-gtk2 --without-gnome2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
+CONF_NONE="$CONF_COMMON --disable-debug --disable-fep --disable-emacs --disable-gnome-applet --disable-kde-applet --disable-pref --disable-dict --without-anthy --without-canna --without-mana --without-prime --without-skk --without-x --without-xft --without-m17nlib --without-scim --without-gtk2 --without-qt --without-qt-immodule --disable-compat-scm --without-eb --without-libedit"
 CONF_DEFAULT="$CONF_COMMON"
 # --without-scim since it is broken
 # --without-qt
 # FIXME: hardcoded --with-eb-conf
-CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-kde-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gnome2 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=/etc/eb.conf --with-libedit --with-qt4 --with-qt4-immodule"
+CONF_FULL_WO_MAINT="$CONF_NOWERROR --enable-debug --enable-fep --enable-emacs --enable-gnome-applet --enable-gnome3-applet --enable-kde-applet --enable-kde4-applet --enable-pref --enable-dict --enable-notify --with-anthy --with-canna --with-wnn --with-sj3 --with-mana --with-prime --with-m17nlib --without-scim --with-gtk2 --with-gtk3 --without-qt --without-qt-immodule --enable-compat-scm --with-eb --with-eb-conf=/etc/eb.conf --with-libedit --with-qt4 --with-qt4-immodule"
 CONF_FULL="$CONF_MAINT $CONF_FULL_WO_MAINT"
 
 
