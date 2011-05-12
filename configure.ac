@@ -878,7 +878,7 @@ AC_ARG_WITH(gtk3,
 AC_ARG_ENABLE(gnome3-applet,
   AC_HELP_STRING([--enable-gnome3-applet],
                  [enable uim applet for Gnome3 panel
-            @<:@default=yet@:>@]),
+            @<:@default=yes@:>@]),
   [
     case $enable_gnome3_applet in
       no)
