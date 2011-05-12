@@ -53,7 +53,7 @@ static void exec_help(GtkAction *action, gpointer data);
 static void display_about_dialog(GtkAction *action, gpointer data);
 
 extern GtkWidget *uim_toolbar_applet_new(void);
-extern void uim_launch_helper_application(const char *command);
+extern void uim_toolbar_launch_helper_application(const char *command);
 
 
 static const GtkActionEntry uim_menu_actions[] = {
@@ -85,37 +85,37 @@ static const char uim_menu_xml[] =
 static void
 exec_switcher(GtkAction *action, gpointer data)
 {
-  uim_launch_helper_application("uim-im-switcher-gtk3");
+  uim_toolbar_launch_helper_application("uim-im-switcher-gtk3");
 }
 
 static void
 exec_pref(GtkAction *action, gpointer data)
 {
-  uim_launch_helper_application("uim-pref-gtk3");
+  uim_toolbar_launch_helper_application("uim-pref-gtk3");
 }
 
 static void
 exec_dic(GtkAction *action, gpointer data)
 {
-  uim_launch_helper_application("uim-dict-gtk3");
+  uim_toolbar_launch_helper_application("uim-dict-gtk3");
 }
 
 static void
 exec_pad(GtkAction *action, gpointer data)
 {
-  uim_launch_helper_application("uim-input-pad-ja-gtk3");
+  uim_toolbar_launch_helper_application("uim-input-pad-ja-gtk3");
 }
 
 static void
 exec_hand(GtkAction *action, gpointer data)
 {
-  uim_launch_helper_application("uim-tomoe-gtk");
+  uim_toolbar_launch_helper_application("uim-tomoe-gtk");
 }
 
 static void
 exec_help(GtkAction *uic, gpointer data)
 {
-  uim_launch_helper_application("uim-help");
+  uim_toolbar_launch_helper_application("uim-help");
 }
 
 /* Just the about window... If it's already open, just focus it */

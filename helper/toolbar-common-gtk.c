@@ -58,7 +58,7 @@ GtkWidget *uim_toolbar_trayicon_new(void);
 GtkWidget *uim_toolbar_applet_new(void);
 void uim_toolbar_check_helper_connection(GtkWidget *widget);
 void uim_toolbar_get_im_list(void);
-void uim_launch_helper_application(const char *command);
+void uim_toolbar_launch_helper_application(const char *command);
 
 
 enum {
@@ -281,7 +281,7 @@ right_click_menu_quit_activated(GtkMenu *menu_item, gpointer data)
 }
 
 void
-uim_launch_helper_application(const char *command)
+uim_toolbar_launch_helper_application(const char *command)
 {
   if (command) {
     if (!g_spawn_command_line_async(command, NULL)) {
@@ -298,7 +298,7 @@ static void
 right_click_menu_activated(GtkMenu *menu_item, gpointer data)
 {
   const char *command = data;
-  uim_launch_helper_application(command);
+  uim_toolbar_launch_helper_application(command);
 }
 
 static gboolean
