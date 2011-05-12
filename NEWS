@@ -1,7 +1,7 @@
 Overview of changes from 1.7.0-alpha to 1.7.0
 =============================================
 * Fixes
-  - Correct Wubi86 and Zhengma tables
+  - Fix sort order of Wubi86 and Zhengma tables in 1.7.0-alpha
 
 
 Overview of changes from 1.6.x to 1.7.0-alpha
