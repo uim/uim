@@ -859,8 +859,8 @@ dnl *** Check for Gtk3 Library ***
 dnl ******************************
 AC_ARG_WITH(gtk3,
   AC_HELP_STRING([--with-gtk3],
-                 [build gtk3 helper applications
-                  @<:@default=no@:>@]),
+                 [build GTK+3 immodule and helper applications
+                  @<:@default=yes@:>@]),
   [
     case $with_gtk3 in
       no)
@@ -878,7 +878,7 @@ AC_ARG_WITH(gtk3,
 AC_ARG_ENABLE(gnome3-applet,
   AC_HELP_STRING([--enable-gnome3-applet],
                  [enable uim applet for Gnome3 panel
-            @<:@default=no@:>@]),
+            @<:@default=yet@:>@]),
   [
     case $enable_gnome3_applet in
       no)
