@@ -1,8 +1,11 @@
 Overview of changes from 1.7.0-alpha to 1.7.0
 =============================================
 * Fixes
-  - Fix sort order of Wubi86 and Zhengma tables in 1.7.0-alpha
+  - Generic IM
+    * Fix sort order of Wubi86 and Zhengma tables in 1.7.0-alpha
 
+  - GTK+3 bridge
+    * Avoid repeated change of subwindow size in some annotation text
 
 Overview of changes from 1.6.x to 1.7.0-alpha
 =============================================
