@@ -900,11 +900,7 @@ uim_cand_win_gtk_create_sub_window(UIMCandWinGtk *cwin)
 
   cwin->sub_window.text_view = text_view = gtk_text_view_new();
   gtk_text_view_set_editable(GTK_TEXT_VIEW(text_view), FALSE);
-#if GTK_CHECK_VERSION(2, 90, 0)
   gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD_CHAR);
-#else
-  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(text_view), GTK_WRAP_WORD);
-#endif
   gtk_widget_show(text_view);
 
   gtk_container_add(GTK_CONTAINER(scrwin), text_view);
