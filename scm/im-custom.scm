@@ -728,6 +728,13 @@
   (N_ "Custom filter connection setting")
   (N_ "long description will be here."))
 
+(custom-add-hook 'annotation-filter-server-setting?
+  'custom-activity-hooks
+  (lambda ()
+    (and enable-annotation?
+         (eq? annotation-agent 'filter))))
+
+
 (define-custom 'annotation-filter-unix-domain-socket-path "/path/of/socket"
   '(annotation filter)
   '(pathname regular-file)
